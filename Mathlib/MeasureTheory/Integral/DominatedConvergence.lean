@@ -28,7 +28,7 @@ for the Bochner integral.
 
 -/
 
-open MeasureTheory
+open MeasureTheory Metric
 
 /-!
 ## The Lebesgue dominated convergence theorem for the Bochner integral
@@ -377,10 +377,11 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
     rwa [closure_Icc]
 #align interval_integral.continuous_within_at_primitive intervalIntegral.continuousWithinAt_primitive
 
-variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
+variable {X : Type*} [TopologicalSpace X]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
-theorem continuousAt_parametric_primitive_of_dominated {F : X → ℝ → E} (bound : ℝ → ℝ) (a b : ℝ)
+theorem continuousAt_parametric_primitive_of_dominated [FirstCountableTopology X]
+    {F : X → ℝ → E} (bound : ℝ → ℝ) (a b : ℝ)
     {a₀ b₀ : ℝ} {x₀ : X} (hF_meas : ∀ x, AEStronglyMeasurable (F x) (μ.restrict <| Ι a b))
     (h_bound : ∀ᶠ x in 𝓝 x₀, ∀ᵐ t ∂μ.restrict <| Ι a b, ‖F x t‖ ≤ bound t)
     (bound_integrable : IntervalIntegrable bound μ a b)
@@ -399,7 +400,7 @@ theorem continuousAt_parametric_primitive_of_dominated {F : X → ℝ → E} (bo
     rw [nhds_prod_eq]
     refine (h_bound.prod_mk Ioo_nhds).mono ?_
     rintro ⟨x, t⟩ ⟨hx : ∀ᵐ t : ℝ ∂μ.restrict (Ι a b), ‖F x t‖ ≤ bound t, ht : t ∈ Ioo a b⟩
-    dsimp (config := { eta := false })
+    dsimp
     have hiF : ∀ {x a₀ b₀},
         (∀ᵐ t : ℝ ∂μ.restrict (Ι a b), ‖F x t‖ ≤ bound t) → a₀ ∈ Ioo a b → b₀ ∈ Ioo a b →
           IntervalIntegrable (F x) μ a₀ b₀ := fun {x a₀ b₀} hx ha₀ hb₀ ↦
@@ -513,6 +514,119 @@ nonrec theorem _root_.MeasureTheory.Integrable.continuous_primitive (h_int : Int
     (a : ℝ) : Continuous fun b => ∫ x in a..b, f x ∂μ :=
   continuous_primitive (fun _ _ => h_int.intervalIntegrable) a
 #align measure_theory.integrable.continuous_primitive MeasureTheory.Integrable.continuous_primitive
+
+variable [IsLocallyFiniteMeasure μ] {f : X → ℝ → E}
+
+theorem continuous_parametric_primitive_of_continuous
+    {a₀ : ℝ} (hf : Continuous f.uncurry) :
+    Continuous fun p : X × ℝ ↦ ∫ t in a₀..p.2, f p.1 t ∂μ := by
+  rw [continuous_iff_continuousAt]
+  rintro ⟨q, b₀⟩
+  apply Metric.continuousAt_iff'.2 (fun ε εpos ↦ ?_)
+  cases' exists_lt (min a₀ b₀) with a a_lt
+  cases' exists_gt (max a₀ b₀) with b lt_b
+  rw [lt_min_iff] at a_lt
+  rw [max_lt_iff] at lt_b
+  have : IsCompact ({q} ×ˢ (Icc a b)) := isCompact_singleton.prod isCompact_Icc
+  obtain ⟨M, hM⟩ := this.bddAbove_image hf.norm.continuousOn
+  obtain ⟨δ, δpos, hδ, h'δ, h''δ⟩ : ∃ (δ : ℝ), 0 < δ ∧ δ < 1 ∧ Icc (b₀ - δ) (b₀ + δ) ⊆ Icc a b ∧
+      (M + 1) * (μ (Icc (b₀ - δ) (b₀ + δ))).toReal + δ * (μ (Icc a b)).toReal < ε := by
+    have A : ∀ᶠ δ in 𝓝[>] (0 : ℝ), δ ∈ Ioo 0 1 := Ioo_mem_nhdsWithin_Ioi (by simp)
+    have B : ∀ᶠ δ in 𝓝 0, Icc (b₀ - δ) (b₀ + δ) ⊆ Icc a b := by
+      have I : Tendsto (fun δ ↦ b₀ - δ) (𝓝 0) (𝓝 (b₀ - 0)) := tendsto_const_nhds.sub tendsto_id
+      have J : Tendsto (fun δ ↦ b₀ + δ) (𝓝 0) (𝓝 (b₀ + 0)) := tendsto_const_nhds.add tendsto_id
+      simp only [sub_zero, add_zero] at I J
+      filter_upwards [(tendsto_order.1 I).1 _ a_lt.2, (tendsto_order.1 J).2 _ lt_b.2] with δ hδ h'δ
+      exact Icc_subset_Icc hδ.le h'δ.le
+    have C : ∀ᶠ δ in 𝓝 0,
+        (M + 1) * (μ (Icc (b₀ - δ) (b₀ + δ))).toReal + δ * (μ (Icc a b)).toReal < ε := by
+      suffices Tendsto
+        (fun δ ↦ (M + 1) * (μ (Icc (b₀ - δ) (b₀ + δ))).toReal + δ * (μ (Icc a b)).toReal)
+          (𝓝 0) (𝓝 ((M + 1) * (0 : ℝ≥0∞).toReal + 0 * (μ (Icc a b)).toReal)) by
+        simp only [zero_toReal, mul_zero, zero_mul, add_zero] at this
+        exact (tendsto_order.1 this).2 _ εpos
+      apply Tendsto.add (Tendsto.mul tendsto_const_nhds _)
+        (Tendsto.mul tendsto_id tendsto_const_nhds)
+      exact (tendsto_toReal zero_ne_top).comp (tendsto_measure_Icc _ _)
+    rcases (A.and ((B.and C).filter_mono nhdsWithin_le_nhds)).exists with ⟨δ, hδ, h'δ, h''δ⟩
+    exact ⟨δ, hδ.1, hδ.2, h'δ, h''δ⟩
+  obtain ⟨v, v_mem, hv⟩ : ∃ v ∈ 𝓝[univ] q, ∀ p ∈ v, ∀ x ∈ Icc a b, dist (f p x) (f q x) < δ :=
+    IsCompact.mem_uniformity_of_prod isCompact_Icc hf.continuousOn (mem_univ _)
+      (dist_mem_uniformity δpos)
+  have : v ×ˢ (Ioo (b₀ - δ) (b₀ + δ)) ∈ 𝓝 (q, b₀) := by
+    rw [nhdsWithin_univ] at v_mem
+    simp only [prod_mem_nhds_iff, v_mem, true_and]
+    apply Ioo_mem_nhds <;> linarith
+  filter_upwards [this]
+  rintro ⟨p, s⟩ ⟨hp : p ∈ v, hs : s ∈ Ioo (b₀ - δ) (b₀ + δ)⟩
+  simp only [dist_eq_norm] at hv ⊢
+  have J r u v : IntervalIntegrable (f r) μ u v := (hf.uncurry_left _).intervalIntegrable _ _
+  calc
+  ‖∫ t in a₀..s, f p t ∂μ - ∫ t in a₀..b₀, f q t ∂μ‖
+    = ‖(∫ t in a₀..s, f p t ∂μ - ∫ t in a₀..b₀, f p t ∂μ)
+        + (∫ t in a₀..b₀, f p t ∂μ - ∫ t in a₀..b₀, f q t ∂μ)‖ := by congr 1; abel
+  _ ≤ ‖∫ t in a₀..s, f p t ∂μ - ∫ t in a₀..b₀, f p t ∂μ‖
+        + ‖∫ t in a₀..b₀, f p t ∂μ - ∫ t in a₀..b₀, f q t ∂μ‖ := norm_add_le _ _
+  _ = ‖∫ t in b₀..s, f p t ∂μ‖ + ‖∫ t in a₀..b₀, (f p t - f q t) ∂μ‖ := by
+      congr 2
+      · rw [integral_interval_sub_left (J _ _ _) (J _ _ _)]
+      · rw [integral_sub (J _ _ _) (J _ _ _)]
+  _ ≤ ∫ t in Ι b₀ s, ‖f p t‖ ∂μ + ∫ t in Ι a₀ b₀, ‖f p t - f q t‖ ∂μ := by
+      gcongr
+      · exact norm_integral_le_integral_norm_Ioc
+      · exact norm_integral_le_integral_norm_Ioc
+  _ ≤ ∫ t in Icc (b₀ - δ) (b₀ + δ), ‖f p t‖ ∂μ + ∫ t in Icc a b, ‖f p t - f q t‖ ∂μ := by
+      gcongr
+      · apply set_integral_mono_set
+        · exact (hf.uncurry_left _).norm.integrableOn_Icc
+        · exact eventually_of_forall (fun x ↦ norm_nonneg _)
+        · have : Ι b₀ s ⊆ Icc (b₀ - δ) (b₀ + δ) := by
+            apply (uIoc_subset_uIcc _ _).trans (uIcc_subset_Icc ?_ ⟨hs.1.le, hs.2.le⟩ )
+            simp [δpos.le]
+          exact eventually_of_forall this
+      · apply set_integral_mono_set
+        · exact ((hf.uncurry_left _).sub (hf.uncurry_left _)).norm.integrableOn_Icc
+        · exact eventually_of_forall (fun x ↦ norm_nonneg _)
+        · have : Ι a₀ b₀ ⊆ Icc a b := (uIoc_subset_uIcc _ _).trans
+            (uIcc_subset_Icc ⟨a_lt.1.le, lt_b.1.le⟩ ⟨a_lt.2.le, lt_b.2.le⟩)
+          exact eventually_of_forall this
+  _ ≤ ∫ t in Icc (b₀ - δ) (b₀ + δ), M + 1 ∂μ + ∫ _t in Icc a b, δ ∂μ := by
+      gcongr
+      · apply set_integral_mono_on
+        · exact (hf.uncurry_left _).norm.integrableOn_Icc
+        · exact continuous_const.integrableOn_Icc
+        · exact measurableSet_Icc
+        · intro x hx
+          calc ‖f p x‖ = ‖f q x + (f p x - f q x)‖ := by congr; abel
+          _ ≤ ‖f q x‖ + ‖f p x - f q x‖ := norm_add_le _ _
+          _ ≤ M + δ := by
+              gcongr
+              · apply hM
+                change (fun x ↦ ‖Function.uncurry f x‖) (q, x) ∈ _
+                apply mem_image_of_mem
+                simp only [singleton_prod, mem_image, Prod.mk.injEq, true_and, exists_eq_right]
+                exact h'δ hx
+              · exact le_of_lt (hv _ hp _ (h'δ hx))
+          _ ≤ M + 1 := by linarith
+      · apply set_integral_mono_on
+        · exact ((hf.uncurry_left _).sub (hf.uncurry_left _)).norm.integrableOn_Icc
+        · exact continuous_const.integrableOn_Icc
+        · exact measurableSet_Icc
+        · intro x hx
+          exact le_of_lt (hv _ hp _ hx)
+  _ = (M + 1) * (μ (Icc (b₀ - δ) (b₀ + δ))).toReal + δ * (μ (Icc a b)).toReal := by simp [mul_comm]
+  _ < ε := h''δ
+
+@[fun_prop]
+theorem continuous_parametric_intervalIntegral_of_continuous {a₀ : ℝ}
+    (hf : Continuous f.uncurry) {s : X → ℝ} (hs : Continuous s) :
+    Continuous fun x ↦ ∫ t in a₀..s x, f x t ∂μ :=
+  show Continuous ((fun p : X × ℝ ↦ ∫ t in a₀..p.2, f p.1 t ∂μ) ∘ fun x ↦ (x, s x)) from
+    (continuous_parametric_primitive_of_continuous hf).comp₂ continuous_id hs
+
+theorem continuous_parametric_intervalIntegral_of_continuous'
+    (hf : Continuous f.uncurry) (a₀ b₀ : ℝ) :
+    Continuous fun x ↦ ∫ t in a₀..b₀, f x t ∂μ := by fun_prop
 
 end ContinuousPrimitive
 
