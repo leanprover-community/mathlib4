@@ -1,5 +1,6 @@
 import Mathlib.RingTheory.FormallyEtale
 import Mathlib.RingTheory.FinitePresentation
+import Mathlib.StabilityFinitePres
 
 universe u
 
@@ -44,9 +45,10 @@ section
 
 variable (A : Type u) [CommRing A] [Algebra R A] [Etale R A]
 variable (B : Type u) [CommRing B] [Algebra R B]
+
 instance Etale.baseChange : Etale B (B ⊗[R] A) where
   formallyEtale := FormallyEtale.base_change B
-  finitePresentation := sorry
+  finitePresentation := FinitePresentation.baseChange _ finitePresentation
 
 --
 --TODO
@@ -54,13 +56,23 @@ instance Etale.baseChange : Etale B (B ⊗[R] A) where
 --- strategy: etale implies formally unramified, which is equivalent
 -- to vanishing Kaehler differentials (latter is not yet formalized but
 -- https://www.math.uni-bonn.de/people/ja/alggeoII/notes_II.pdf Lemma 5.1 should be helpful)
+
+-- Christian: actually this is formalised, see
+-- docs#Algebra.FormallyUnramified.iff_subsingleton_kaehlerDifferential
 --
---theorem Etale.KaehlerDifferentialZero (Etale R A) : Ω[A⁄R] = 0 := sorry
---- there is a universe problem in the statement.
+
+theorem Etale.KaehlerDifferentialZero [Etale R A] : Subsingleton (Ω[A⁄R]) := by
+  rw [← Algebra.FormallyUnramified.iff_subsingleton_kaehlerDifferential]
+  exact FormallyEtale.to_unramified
+
+-- there was no universe problem. the problem was wrong syntax
+-- (Etale R A) had to be replaced with [Etale R A]
+-- unfortunately Lean sometimes shows very bad error messages as in this example
 
 -- 2. Localization R -> R_f is etale
 -- 3. If R=k is a field, A is etale iff A is a finite product of fields
---
+--    this is a nice goal, I am afraid we need dimension theory for this (at least that's what the SP does)
+--    but maybe there is a direct way
 
 
 end
