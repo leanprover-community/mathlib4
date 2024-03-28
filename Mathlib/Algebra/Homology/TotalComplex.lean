@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Linear.Basic
+import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.ComplexShapeSigns
 import Mathlib.Algebra.Homology.HomologicalBicomplex
 
@@ -30,7 +31,7 @@ namespace HomologicalComplex₂
 
 variable {C : Type*} [Category C] [Preadditive C]
   {I₁ I₂ I₁₂ : Type*} {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂}
-  (K L M : HomologicalComplex₂ C c₁ c₂) (φ : K ⟶ L) (ψ : L ⟶ M)
+  (K L M : HomologicalComplex₂ C c₁ c₂) (φ φ' : K ⟶ L) (ψ : L ⟶ M)
   (c₁₂ : ComplexShape I₁₂) [DecidableEq I₁₂]
   [TotalComplexShape c₁ c₂ c₁₂]
 
@@ -336,6 +337,7 @@ namespace total
 
 variable {K L M}
 
+variable {c₁₂} in
 @[ext]
 lemma hom_ext {A : C} {i₁₂ : I₁₂} {f g : (K.total c₁₂).X i₁₂ ⟶ A}
     (h : ∀ (i₁ : I₁) (i₂ : I₂) (hi : ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂) = i₁₂),
@@ -386,7 +388,6 @@ noncomputable def map : K.total c₁₂ ⟶ L.total c₁₂ where
     dsimp [total]
     rw [comp_add, add_comp, mapAux.mapMap_D₁, mapAux.mapMap_D₂]
 
-@[simp]
 lemma forget_map :
     (HomologicalComplex.forget C c₁₂).map (map φ c₁₂) =
       GradedObject.mapMap (toGradedObjectMap φ) _ := rfl
@@ -408,6 +409,7 @@ end total
 
 section
 
+variable {K L}
 variable [L.HasTotal c₁₂]
 
 @[reassoc (attr := simp)]
@@ -422,6 +424,19 @@ lemma ιTotalOrZero_map (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂) :
       (φ.f i₁).f i₂ ≫ L.ιTotalOrZero c₁₂ i₁ i₂ i₁₂ := by
   simp [total.map, ιTotalOrZero]
 
+@[simp] lemma total.map_add :
+    total.map (φ + φ') c₁₂ = total.map φ c₁₂ + total.map φ' c₁₂ := by aesop_cat
+
+@[simp] lemma total.map_sub :
+    total.map (φ - φ') c₁₂ = total.map φ c₁₂ - total.map φ' c₁₂ := by aesop_cat
+
+@[simp] lemma total.map_neg :
+    total.map (-φ) c₁₂ = -total.map φ c₁₂ := by aesop_cat
+
+variable (K L)
+
+@[simp] lemma total.map_zero : total.map (0 : K ⟶ L) c₁₂ = 0 := by aesop_cat
+
 end
 
 variable (C c₁ c₂)
@@ -433,5 +448,7 @@ noncomputable def totalFunctor :
     HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex C c₁₂ where
   obj K := K.total c₁₂
   map φ := total.map φ c₁₂
+
+instance : (totalFunctor C c₁ c₂ c₁₂).Additive where
 
 end HomologicalComplex₂
