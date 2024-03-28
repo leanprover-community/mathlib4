@@ -3,7 +3,7 @@ Copyright (c) 2023 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Combinatorics.SimpleGraph.Finite
+import Mathlib.Combinatorics.SimpleGraph.Maps
 
 /-!
 # Local graph operations
@@ -165,3 +165,114 @@ theorem card_edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.
   rw [G.edgeFinset_sup_edge hn h, card_cons]
 
 end AddEdge
+
+section Restrict
+
+variable [Fintype V] [DecidableRel G.Adj] (K : Finset V)
+
+/-- The natural embedding from `{ x // x ∈ K }` to `V`, lifted to `Sym2`s. -/
+def sym2SubtypeEmb : Sym2 { x // x ∈ K } ↪ Sym2 V where
+  toFun := Sym2.map Subtype.val
+  inj' a b := by refine' a.inductionOn₂ b _; simp
+
+/-- The graph formed by retaining only those edges wholly within `K`, but keeping the
+vertex set intact. -/
+def restrictSubset : SimpleGraph V where
+  Adj s t := G.Adj s t ∧ s ∈ K ∧ t ∈ K
+  symm s t := by simp_all [adj_comm]
+
+/-- The graph formed by retaining only those edges from `K` to `Kᶜ`. -/
+def betweenSubset : SimpleGraph V where
+  Adj s t := G.Adj s t ∧ ¬(s ∈ K ↔ t ∈ K)
+  symm s t := by dsimp only; rw [adj_comm]; aesop
+
+/-- The graph formed by retaining only those edges wholly within `K` and restricting
+the vertex set to match. -/
+def restrictSubtype : SimpleGraph K where
+  Adj s t := G.Adj s t
+  symm s t := by simp_all [adj_comm]
+
+instance : DecidableRel (G.restrictSubtype K).Adj := by simp only [restrictSubtype]; infer_instance
+instance : DecidableRel (G.restrictSubset K).Adj := by simp only [restrictSubset]; infer_instance
+instance : DecidableRel (G.betweenSubset K).Adj := by simp only [betweenSubset]; infer_instance
+
+theorem restrictSubset_le : G.restrictSubset K ≤ G := by
+  intro a b; simp only [restrictSubset]; tauto
+
+theorem restrictSubtype_map :
+    (G.restrictSubtype K).map ⟨Subtype.val, Subtype.val_injective⟩ =
+    (G.restrictSubset K) := by
+  ext a b
+  simp only [restrictSubtype, map_adj, Function.Embedding.coeFn_mk, Subtype.exists, exists_prop,
+    restrictSubset]
+  constructor <;> intro h
+  · obtain ⟨_, _, _, _, _, _, _⟩ := h; aesop
+  · use a, h.2.1, b, h.2.2; tauto
+
+theorem restrictSubtype_edgeFinset_map :
+    (G.restrictSubtype K).edgeFinset.map (sym2SubtypeEmb _) =
+    (G.restrictSubset K).edgeFinset := by
+  ext e
+  refine' e.inductionOn _
+  intro x y
+  simp_rw [sym2SubtypeEmb, mem_map, Function.Embedding.coeFn_mk, restrictSubset, restrictSubtype,
+    mem_edgeFinset, mem_edgeSet]
+  constructor
+  · rw [forall_exists_index]; intro a; refine' a.inductionOn _; intro u v ⟨m, q⟩
+    simp only [Sym2.map_pair_eq, Sym2.eq] at q
+    cases' q; aesop; rw [adj_comm]; aesop
+  · simp_rw [and_imp]; intro ha mx my; use s(⟨x, mx⟩, ⟨y, my⟩); simpa using ha
+
+theorem restrictSubtype_edgeFinset_card :
+    (G.restrictSubtype K).edgeFinset.card = (G.restrictSubset K).edgeFinset.card := by
+  rw [← restrictSubtype_edgeFinset_map, card_map]
+
+theorem edgeFinset_decompose : G.edgeFinset =
+    (G.restrictSubset K).edgeFinset ∪ (G.restrictSubset Kᶜ).edgeFinset ∪
+    (G.betweenSubset K).edgeFinset := by
+  ext e
+  refine' e.inductionOn _
+  intro x y
+  simp_rw [mem_union, mem_edgeFinset, mem_edgeSet, restrictSubset, betweenSubset, mem_compl]
+  tauto
+
+theorem edgeFinset_decompose_card : G.edgeFinset.card =
+    (G.restrictSubset K).edgeFinset.card + (G.restrictSubset Kᶜ).edgeFinset.card +
+    (G.betweenSubset K).edgeFinset.card := by
+  rw [G.edgeFinset_decompose K, card_union_of_disjoint, card_union_of_disjoint]
+  · rw [disjoint_iff_inter_eq_empty]
+    ext e; refine' e.inductionOn _; intro x y
+    simp_rw [mem_inter, mem_edgeFinset, mem_edgeSet, restrictSubset, mem_compl]
+    tauto
+  · rw [disjoint_iff_inter_eq_empty]
+    ext e; refine' e.inductionOn _; intro x y
+    simp_rw [mem_inter, mem_union, mem_edgeFinset, mem_edgeSet, restrictSubset, betweenSubset,
+      mem_compl]
+    tauto
+
+theorem betweenSubset_edgeFinset : (G.betweenSubset K).edgeFinset =
+    Kᶜ.biUnion fun b ↦ (K.filter (G.Adj · b)).map (Sym2.congrEmb b) := by
+  ext e; refine' e.inductionOn _; intro a b
+  simp_rw [betweenSubset, mem_biUnion, Set.mem_toFinset, mem_edgeSet, Sym2.congrEmb, mem_map,
+    mem_filter, Function.Embedding.coeFn_mk, Sym2.eq_iff, mem_compl]
+  constructor
+  · rw [and_imp]; intro j s; push_neg at s
+    cases' s with h h
+    · use b, h.2, a, ⟨h.1, j⟩; tauto
+    · use a, h.1, b, ⟨h.2, j.symm⟩; tauto
+  · simp only [forall_exists_index, and_imp]
+    intro a' ma b' mb e q
+    cases' q with h h
+    · rw [h.1, h.2, adj_comm] at e; aesop
+    · rw [h.1, h.2] at e; aesop
+
+open BigOperators in
+theorem betweenSubset_edgeFinset_card : (G.betweenSubset K).edgeFinset.card =
+    ∑ b in Kᶜ, (K.filter (G.Adj · b)).card := by
+  rw [betweenSubset_edgeFinset, card_biUnion]
+  · simp
+  · simp_rw [disjoint_iff_ne, mem_map, mem_filter, forall_exists_index, and_imp,
+      Sym2.congrEmb, Function.Embedding.coeFn_mk]
+    aesop
+
+end Restrict

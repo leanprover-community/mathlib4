@@ -118,6 +118,13 @@ or equal to the corresponding summand `g i` of another finite sum, then
 `∑ i in s, f i ≤ ∑ i in s, g i`. -/
 add_decl_doc sum_le_sum
 
+theorem sum_tsub_distrib {f g : ι → ℕ} (h : ∀ x ∈ s, g x ≤ f x) :
+    ∑ x in s, (f x - g x) = ∑ x in s, f x - ∑ x in s, g x := by
+  rw [← Int.ofNat_inj, Nat.cast_sum, Nat.cast_sub (sum_le_sum h)]
+  have : ∀ x ∈ s, ((f x - g x : ℕ) : ℤ) = f x - g x := fun x m ↦ Nat.cast_sub (h x m)
+  rw [sum_congr rfl this]
+  simp
+
 /-- In an ordered commutative monoid, if each factor `f i` of one finite product is less than or
 equal to the corresponding factor `g i` of another finite product, then `s.prod f ≤ s.prod g`.
 

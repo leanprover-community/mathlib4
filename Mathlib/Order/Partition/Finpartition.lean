@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Order.SupIndep
 import Mathlib.Order.Atoms
 import Mathlib.Data.Fintype.Powerset
+import Mathlib.Data.Nat.Order.Lemmas
 
 #align_import order.partition.finpartition from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
@@ -31,6 +32,8 @@ We provide many ways to build finpartitions:
 * `Finpartition.discrete`: The discrete finpartition of `s : Finset α` made of singletons.
 * `Finpartition.bind`: Puts together the finpartitions of the parts of a finpartition into a new
   finpartition.
+* `Finpartition.ofSetoid`: With `Fintype α`, constructs the finpartition of `univ : Finset α`
+  induced by the equivalence classes of `s : Setoid α`.
 * `Finpartition.atomise`: Makes a finpartition of `s : Finset α` by breaking `s` along all finsets
   in `F : Finset (Finset α)`. Two elements of `s` belong to the same part iff they belong to the
   same elements of `F`.
@@ -47,8 +50,6 @@ not because the parts of `P` and the parts of `Q` have the same elements that `P
 `Finpartition.ofErase`.
 
 ## TODO
-
-Link `Finpartition` and `Setoid.isPartition`.
 
 The order is the wrong way around to make `Finpartition a` a graded order. Is it bad to depart from
 the literature and turn the order around?
@@ -119,6 +120,25 @@ def copy {a b : α} (P : Finpartition a) (h : a = b) : Finpartition b
   not_bot_mem := P.not_bot_mem
 #align finpartition.copy Finpartition.copy
 
+/-- Transfer a finpartition over an order isomorphism. -/
+def map {β : Type*} [Lattice β] [OrderBot β] {a : α} (P : Finpartition a) (e : α ≃o β) :
+    Finpartition (e a) where
+  parts := P.parts.map e
+  supIndep u hu _ hb hbu _ hx hxu := by
+    rw [← map_symm_subset] at hu
+    simp only [mem_map_equiv] at hb
+    have := P.supIndep hu hb (by simp [hbu]) (map_rel e.symm hx) ?_
+    · rw [← e.symm.map_bot] at this
+      exact e.symm.map_rel_iff.mp this
+    · convert e.symm.map_rel_iff.mpr hxu
+      rw [map_finset_sup, sup_map]
+      rfl
+  sup_parts := by simp [← P.sup_parts]
+  not_bot_mem := by
+    rw [mem_map_equiv]
+    convert P.not_bot_mem
+    exact e.symm.map_bot
+
 variable (α)
 
 /-- The empty finpartition. -/
@@ -185,6 +205,10 @@ theorem parts_nonempty_iff : P.parts.Nonempty ↔ a ≠ ⊥ := by
 theorem parts_nonempty (P : Finpartition a) (ha : a ≠ ⊥) : P.parts.Nonempty :=
   parts_nonempty_iff.2 ha
 #align finpartition.parts_nonempty Finpartition.parts_nonempty
+
+@[simp]
+theorem parts_equiv {β : Type*} [Lattice β] [OrderBot β] {e : α ≃o β} :
+    (P.map e).parts = P.parts.map e := rfl
 
 instance : Unique (Finpartition (⊥ : α)) :=
   { (inferInstance : Inhabited (Finpartition (⊥ : α))) with
@@ -466,10 +490,89 @@ theorem nonempty_of_mem_parts {a : Finset α} (ha : a ∈ P.parts) : a.Nonempty 
 lemma eq_of_mem_parts (ht : t ∈ P.parts) (hu : u ∈ P.parts) (hat : a ∈ t) (hau : a ∈ u) : t = u :=
   P.disjoint.elim ht hu <| not_disjoint_iff.2 ⟨a, hat, hau⟩
 
-theorem exists_mem {a : α} (ha : a ∈ s) : ∃ t ∈ P.parts, a ∈ t := by
+theorem exists_mem (ha : a ∈ s) : ∃ t ∈ P.parts, a ∈ t := by
   simp_rw [← P.sup_parts] at ha
   exact mem_sup.1 ha
 #align finpartition.exists_mem Finpartition.exists_mem
+
+theorem existsUnique_mem (ha : a ∈ s) : ∃! t, t ∈ P.parts ∧ a ∈ t := by
+  obtain ⟨t, ht, ht'⟩ := P.exists_mem ha
+  refine' ⟨t, ⟨ht, ht'⟩, _⟩
+  rintro u ⟨hu, hu'⟩
+  exact P.eq_of_mem_parts hu ht hu' ht'
+
+/-- The part of the finpartition that `a` lies in. -/
+def part (ha : a ∈ s) : Finset α := choose (hp := P.existsUnique_mem ha)
+
+theorem part_mem (ha : a ∈ s) : P.part ha ∈ P.parts := choose_mem _ _ _
+
+theorem mem_part (ha : a ∈ s) : a ∈ P.part ha := choose_property _ _ _
+
+/-- First equivalence in the `IsEquipartition.partPreservingEquiv` chain. -/
+noncomputable def equivProduct : s ≃ { t : Finset α × ℕ // t.1 ∈ P.parts ∧ t.2 < t.1.card } where
+  toFun x := by
+    let p := P.part x.2
+    exact ⟨⟨p, p.equivFin ⟨x.1, P.mem_part x.2⟩⟩,
+      ⟨by dsimp only; exact P.part_mem x.2, by dsimp only; apply Fin.prop⟩⟩
+  invFun t := by
+    obtain ⟨⟨p, i⟩, ⟨m, l⟩⟩ := t
+    let x := p.equivFin.symm ⟨i, l⟩
+    exact ⟨x.1, mem_of_subset ((le_sup m).trans P.sup_parts.le) x.2⟩
+  left_inv x := by simp
+  right_inv t := by
+    obtain ⟨⟨p, i⟩, ⟨m, l⟩⟩ := t
+    let x := p.equivFin.symm ⟨i, l⟩
+    have ξ : x.1 ∈ s := mem_of_subset ((le_sup m).trans P.sup_parts.le) x.2
+    have ξ' : P.part ξ = p := P.eq_of_mem_parts (P.part_mem _) m (P.mem_part _) x.2
+    simp only [ξ', Subtype.mk.injEq, Prod.mk.injEq, true_and]
+    have : p.equivFin x = i := by simp [x]
+    convert this
+
+theorem equivProduct_part_eq_part {b} (ha : a ∈ s) (hb : b ∈ s) : P.part ha = P.part hb ↔
+    (P.equivProduct ⟨a, ha⟩).1.1 = (P.equivProduct ⟨b, hb⟩).1.1 := ⟨id, id⟩
+
+theorem equivProduct3_lt {n} (l : n < s.card) :
+    n % P.parts.card < P.parts.card ∧
+    n % P.parts.card + P.parts.card * (n / P.parts.card) < s.card := by
+  have y : 0 < P.parts.card := by
+    have z := n.zero_le.trans_lt l
+    rw [Finset.card_pos] at z ⊢
+    obtain ⟨_, m⟩ := z
+    have := P.part_mem m
+    use P.part m
+  exact ⟨Nat.mod_lt _ y, by rw [Nat.mod_add_div]; exact l⟩
+
+/-- Third equivalence in the `IsEquipartition.partPreservingEquiv` chain. -/
+def equivProduct3 :
+    { t : ℕ × ℕ // t.1 < P.parts.card ∧ t.1 + P.parts.card * t.2 < s.card } ≃
+    Fin s.card where
+  toFun := fun ⟨⟨r, q⟩, ⟨_, b⟩⟩ ↦ ⟨r + P.parts.card * q, b⟩
+  invFun := fun ⟨n, l⟩ ↦
+    ⟨⟨n % P.parts.card, n / P.parts.card⟩, equivProduct3_lt (P := P) l⟩
+  left_inv := fun ⟨⟨r, q⟩, ⟨a, b⟩⟩ ↦ by
+    simp only [Nat.add_mul_mod_self_left, Subtype.mk.injEq, Prod.mk.injEq]
+    have y : 0 < P.parts.card := r.zero_le.trans_lt a
+    constructor
+    · rw [Nat.mod_eq_iff_lt y.ne.symm]; exact a
+    · rw [Nat.add_mul_div_left _ _ y, (Nat.div_eq_zero_iff y).mpr a, zero_add]
+  right_inv := fun ⟨n, l⟩ ↦ by
+    dsimp only; split; rename_i lt
+    simp_rw [Subtype.mk.injEq, Prod.mk.injEq, Fin.mk.injEq] at lt ⊢
+    rw [← lt.1, ← lt.2, Nat.mod_add_div]
+
+theorem equivProduct3_part_eq_part {t u} :
+    t.1.1 = u.1.1 ↔ (equivProduct3 P t) % P.parts.card = (equivProduct3 P u) % P.parts.card := by
+  unfold equivProduct3
+  constructor <;> intro h
+  · aesop
+  · aesop_destruct_products
+    rename_i a _ b _ l1 _ l2 _ e
+    simp_all only [Equiv.coe_fn_mk, Nat.add_mul_mod_self_left]
+    have y : 0 < P.parts.card := a.zero_le.trans_lt l1
+    have a' : a % P.parts.card = a := by rw [Nat.mod_eq_iff_lt y.ne.symm]; exact l1
+    have b' : b % P.parts.card = b := by rw [Nat.mod_eq_iff_lt y.ne.symm]; exact l2
+    rw [a', b'] at e
+    exact e
 
 theorem biUnion_parts : P.parts.biUnion id = s :=
   (sup_eq_biUnion _ _).symm.trans P.sup_parts
@@ -518,6 +621,53 @@ theorem card_parts_le_card (P : Finpartition s) : P.parts.card ≤ s.card := by
   rw [← card_bot s]
   exact card_mono bot_le
 #align finpartition.card_parts_le_card Finpartition.card_parts_le_card
+
+/-- Note that this inequality still holds when `P` is empty. -/
+lemma card_mod_card_parts_le : s.card % P.parts.card ≤ P.parts.card := by
+  rcases P.parts.card.eq_zero_or_pos with h | h
+  · have h' := h
+    rw [Finset.card_eq_zero, parts_eq_empty_iff, bot_eq_empty, ← Finset.card_eq_zero] at h'
+    rw [h, h']
+  · exact (Nat.mod_lt _ h).le
+
+variable [Fintype α]
+
+/-- A setoid over a finite type induces a finpartition of the type's elements,
+where the parts are the setoid's equivalence classes. -/
+def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α) where
+  parts := univ.image fun a => univ.filter (s.r a)
+  supIndep := by
+    simp only [mem_univ, forall_true_left, supIndep_iff_pairwiseDisjoint, Set.PairwiseDisjoint,
+      Set.Pairwise, coe_image, coe_univ, Set.image_univ, Set.mem_range, ne_eq,
+      forall_exists_index, forall_apply_eq_imp_iff]
+    intro _ _ q
+    contrapose! q
+    rw [not_disjoint_iff] at q
+    obtain ⟨c, ⟨d1, d2⟩⟩ := q
+    rw [id_eq, mem_filter] at d1 d2
+    ext y
+    simp only [mem_univ, forall_true_left, mem_filter, true_and]
+    exact ⟨fun r1 => s.trans (s.trans d2.2 (s.symm d1.2)) r1,
+           fun r2 => s.trans (s.trans d1.2 (s.symm d2.2)) r2⟩
+  sup_parts := by
+    ext a
+    simp only [sup_image, Function.id_comp, mem_univ, mem_sup, mem_filter, true_and, iff_true]
+    use a; exact s.refl a
+  not_bot_mem := by
+    rw [bot_eq_empty, mem_image, not_exists]
+    intro a
+    simp only [filter_eq_empty_iff, not_forall, mem_univ, forall_true_left, true_and, not_not]
+    use a; exact s.refl a
+
+theorem mem_part_ofSetoid_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
+    b ∈ (ofSetoid s).part (mem_univ a) ↔ s.r a b := by
+  simp only [part, ofSetoid]
+  generalize_proofs H
+  have := choose_spec _ _ H
+  simp only [mem_univ, mem_image, true_and] at this
+  obtain ⟨⟨_, hc⟩, this⟩ := this
+  simp only [← hc, mem_univ, mem_filter, true_and] at this ⊢
+  exact ⟨s.trans (s.symm this), s.trans this⟩
 
 section Atomise
 
@@ -601,5 +751,38 @@ theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
 #align finpartition.card_filter_atomise_le_two_pow Finpartition.card_filter_atomise_le_two_pow
 
 end Atomise
+
+section Representatives
+
+/-- Choose representatives from each part of a finpartition, collecting them into a finset. -/
+noncomputable def reprs : Finset α :=
+  P.parts.attach.map ⟨fun p => (P.nonempty_of_mem_parts p.2).choose, by
+    rw [Injective]
+    intro ⟨v1, p1⟩ ⟨v2, p2⟩ eq
+    rw [Subtype.mk.injEq]
+    exact P.eq_of_mem_parts p1 p2 (eq ▸ (P.nonempty_of_mem_parts p1).choose_spec)
+      (P.nonempty_of_mem_parts p2).choose_spec⟩
+
+theorem card_reprs : P.reprs.card = P.parts.card := by simp [reprs]
+
+theorem mem_of_reprs (h : a ∈ P.reprs) : a ∈ s := by
+  simp_rw [reprs, mem_map, mem_attach, true_and] at h
+  obtain ⟨p, rfl⟩ := h
+  exact mem_of_subset ((le_sup p.2).trans P.sup_parts.le) (P.nonempty_of_mem_parts p.2).choose_spec
+
+/-- Two representatives coming from the same part are equal. -/
+theorem reprs_injective {b : α} (ha : a ∈ P.reprs) (hb : b ∈ P.reprs)
+    (hc : P.part (P.mem_of_reprs ha) = P.part (P.mem_of_reprs hb)) : a = b := by
+  rw [reprs, mem_map] at ha hb
+  obtain ⟨⟨_, am⟩, _, ha'⟩ := ha
+  obtain ⟨⟨_, bm⟩, _, hb'⟩ := hb
+  rw [P.eq_of_mem_parts (P.part_mem _) am (P.mem_part _)
+    (ha' ▸ (P.nonempty_of_mem_parts am).choose_spec),
+      P.eq_of_mem_parts (P.part_mem _) bm (P.mem_part _)
+    (hb' ▸ (P.nonempty_of_mem_parts bm).choose_spec)] at hc
+  simp_rw [hc] at ha'
+  exact ha' ▸ hb'
+
+end Representatives
 
 end Finpartition

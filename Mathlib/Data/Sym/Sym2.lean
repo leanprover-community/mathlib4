@@ -194,6 +194,11 @@ theorem mk_eq_mk_iff {p q : α × α} : Sym2.mk p = Sym2.mk q ↔ p = q ∨ p = 
   simp only [eq_iff, Prod.mk.inj_iff, Prod.swap_prod_mk]
 #align sym2.mk_eq_mk_iff Sym2.mk_eq_mk_iff
 
+/-- The embedding into `Sym2 α` consisting of pairing with a fixed element. -/
+def congrEmb (a : α) : α ↪ Sym2 α where
+  toFun b := s(a, b)
+  inj' _ _ c := congr_right.mp c
+
 /-- The universal property of `Sym2`; symmetric functions of two arguments are equivalent to
 functions from `Sym2`. Note that when `β` is `Prop`, it can sometimes be more convenient to use
 `Sym2.fromRel` instead. -/
