@@ -92,6 +92,28 @@ def step : tm.Cfg → Option tm.Cfg :=
   Turing.TM2.step tm.m
 #align turing.fin_tm2.step Turing.FinTM2.step
 
+/--
+A (TM2) Multi-tape Turing Machine composing the operations of two other Multi-tape Turing Machines.
+This machine should work by first carrying out the oppertions of the first machine on the subset of
+tapes associated with the first machine, then copying the output tape of the first machine to the
+input tape of the second machine, then running the second machine.
+-/
+def comp (m1 m2 : FinTM2) : FinTM2 where
+  K := m1.K ⊕ m2.K
+  kDecidableEq := sorry
+  kFin := sorry
+  k₀ := Sum.inl m1.k₀
+  k₁ := Sum.inr m2.k₁
+  Γ := Sum.elim m1.Γ m2.Γ
+  Λ := Unit ⊕ m1.Λ ⊕ m2.Λ
+  main := Sum.inl ()
+  ΛFin := sorry
+  σ := m1.σ ⊕ m2.σ
+  initialState := Sum.inl m1.initialState
+  σFin := sorry
+  Γk₀Fin := sorry
+  m := sorry
+
 end
 
 end FinTM2
@@ -157,7 +179,6 @@ def EvalsToInTime.trans {σ : Type*} (f : σ → Option σ) (m₁ : ℕ) (m₂ :
     EvalsToInTime f a c (m₂ + m₁) :=
   ⟨EvalsTo.trans f a b c h₁.toEvalsTo h₂.toEvalsTo, add_le_add h₂.steps_le_m h₁.steps_le_m⟩
 #align turing.evals_to_in_time.trans Turing.EvalsToInTime.trans
-
 /-- A proof of tm outputting l' when given l. -/
 def TM2Outputs (tm : FinTM2) (l : List (tm.Γ tm.k₀)) (l' : Option (List (tm.Γ tm.k₁))) :=
   EvalsTo tm.step (initList tm l) ((Option.map (haltList tm)) l')
@@ -286,7 +307,6 @@ instance inhabitedEvalsToInTime :
     Inhabited (EvalsToInTime (fun _ : Unit => some ⟨⟩) ⟨⟩ (some ⟨⟩) 0) :=
   ⟨EvalsToInTime.refl _ _⟩
 #align turing.inhabited_evals_to_in_time Turing.inhabitedEvalsToInTime
-
 instance inhabitedTM2EvalsTo : Inhabited (EvalsTo (fun _ : Unit => some ⟨⟩) ⟨⟩ (some ⟨⟩)) :=
   ⟨EvalsTo.refl _ _⟩
 #align turing.inhabited_tm2_evals_to Turing.inhabitedTM2EvalsTo
@@ -314,6 +334,11 @@ instance inhabitedTM2Computable :
 instance inhabitedTM2ComputableAux : Inhabited (TM2ComputableAux Bool Bool) :=
   ⟨(default : TM2Computable finEncodingBoolBool finEncodingBoolBool id).toTM2ComputableAux⟩
 #align turing.inhabited_tm2_computable_aux Turing.inhabitedTM2ComputableAux
+
+def TM2ComputableInPolyTime.comp {α β γ : Type} {eα : FinEncoding α} {eβ : FinEncoding β}
+    {eγ : FinEncoding γ} {f : α → β} {g : β → γ} (h1 : TM2ComputableInPolyTime eα eβ f)
+    (h2 : TM2ComputableInPolyTime eβ eγ g) :
+    TM2ComputableInPolyTime eα eγ (g ∘ f) := sorry
 
 end
 
