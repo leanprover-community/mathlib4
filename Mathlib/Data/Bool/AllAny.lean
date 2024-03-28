@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Basic
 import Mathlib.Init.Data.Bool.Lemmas
+import Mathlib.Data.Bool.Basic
 
 #align_import data.bool.all_any from "leanprover-community/mathlib"@"5a3e819569b0f12cbec59d740a2613018e7b8eec"
 
