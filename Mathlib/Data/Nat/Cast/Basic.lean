@@ -65,13 +65,13 @@ def castRingHom : ℕ →+* α :=
 lemma _root_.nsmul_eq_mul' (a : α) (n : ℕ) : n • a = a * n := by
   induction n with
   | zero => rw [zero_nsmul, Nat.cast_zero, mul_zero]
-  | succ n ih => rw [succ_nsmul', ih, Nat.cast_succ, mul_add, mul_one]
+  | succ n ih => rw [succ_nsmul, ih, Nat.cast_succ, mul_add, mul_one]
 #align nsmul_eq_mul' nsmul_eq_mul'
 
 @[simp] lemma _root_.nsmul_eq_mul (n : ℕ) (a : α) : n • a = n * a := by
   induction n with
   | zero => rw [zero_nsmul, Nat.cast_zero, zero_mul]
-  | succ n ih => rw [succ_nsmul', ih, Nat.cast_succ, add_mul, one_mul]
+  | succ n ih => rw [succ_nsmul, ih, Nat.cast_succ, add_mul, one_mul]
 #align nsmul_eq_mul nsmul_eq_mul
 
 end NonAssocSemiring
