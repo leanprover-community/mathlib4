@@ -119,10 +119,8 @@ theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
       (Associates.mk <| generator <| torsionOf R M x) ∣ Associates.mk p ^ n :=
     by ext n; rw [← Associates.mk_pow, Associates.mk_dvd_mk, ← mem_iff_generator_dvd]; rfl
   have := (isTorsion'_powers_iff p).mp hM x; rw [prop] at this
-  classical
-  convert
-    Associates.eq_pow_find_of_dvd_irreducible_pow ((Associates.irreducible_mk p).mpr hp)
-      this.choose_spec
+  convert Associates.eq_pow_find_of_dvd_irreducible_pow (Associates.irreducible_mk.mpr hp)
+    this.choose_spec
 #align ideal.torsion_of_eq_span_pow_p_order Ideal.torsionOf_eq_span_pow_pOrder
 
 theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ pOrder hM y))
