@@ -53,7 +53,7 @@ theorem energy_le_one : P.energy G ≤ 1 :=
           (sq_le_one_iff <| G.edgeDensity_nonneg _ _).2 <| G.edgeDensity_le_one _ _
       _ = P.parts.offDiag.card := (Nat.smul_one_eq_coe _)
       _ ≤ _ := by
-        rw [offDiag_card, one_mul]
+        rw [card_offDiag, one_mul]
         norm_cast
         rw [sq]
         exact tsub_le_self
