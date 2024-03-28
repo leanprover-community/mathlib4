@@ -658,8 +658,7 @@ variable [ContinuousMul R] [ContinuousSMul R M]
 
 variable (R ι) in
 /-- The canonical continuous multilinear map on `R^ι`, associating to `m` the product of all the
-`m i` (multiplied by a fixed reference element `z` in the target module). See also
-`ContinuousMultilinearMap.mkPiRingSmul`, which is also multilinear in `z`. -/
+`m i` (multiplied by a fixed reference element `z` in the target module). -/
 protected def mkPiRing (z : M) : ContinuousMultilinearMap R (fun _ : ι => R) M :=
   (ContinuousMultilinearMap.mkPiAlgebra R ι R).smulRight z
 #align continuous_multilinear_map.mk_pi_field ContinuousMultilinearMap.mkPiRing
@@ -689,69 +688,6 @@ theorem mkPiRing_zero : ContinuousMultilinearMap.mkPiRing R ι (0 : M) = 0 := by
 theorem mkPiRing_eq_zero_iff (z : M) : ContinuousMultilinearMap.mkPiRing R ι z = 0 ↔ z = 0 := by
   rw [← mkPiRing_zero, mkPiRing_eq_iff]
 #align continuous_multilinear_map.mk_pi_field_eq_zero_iff ContinuousMultilinearMap.mkPiRing_eq_zero_iff
-
-open Sum
-
-variable (R' : Type) (M' : Type w) [CommRing R'] [AddCommGroup M'] [Module R' M']
-  [TopologicalSpace R'] [ContinuousMul R'] [TopologicalSpace M'] [ContinuousSMul R' M']
-
-/-- An auxiliary type of the form `(ULift R)^ι × M`, indexed by a sum type for convenience,
-where the ring `R : Type` is lifted to the same universe as `M` to make sure that we can define
-multilinear maps on this type. Useful to define the continuous multilinear map
-`(m₁, ..., mₙ, z) ↦ (m₁ * ... * mₙ) • z`, called `ContinuousMultilinearMap.mkPiRingSmul`. -/
-@[reducible] def SumProdUliftRingSpace (ι : Type*) : ι ⊕ Unit → Type w
-  | inl _ => ULift R'
-  | inr _ => M'
-
-instance : (i : ι ⊕ Unit) → AddCommMonoid (SumProdUliftRingSpace R' M' ι i)
-  | inl _ | inr _  => by infer_instance
-
-instance : (i : ι ⊕ Unit) → Module R' (SumProdUliftRingSpace R' M' ι i)
-  | inl _ | inr _  => by infer_instance
-
-instance : (i : ι ⊕ Unit) → TopologicalSpace (SumProdUliftRingSpace R' M ι i)
-  | inl _ | inr _  => by infer_instance
-
-/-- The canonical continuous multilinear map on `R^ι × M`, associating to `(m, z)` the product
-of all the `m i` multiplied by `z`. To interpret this map as a single multilinear map, `R` and `M`
-should be in the same universe. To avoid this restriction, we assume that `R` is in `Type`, and
-lift it to the universe of `M`.
-
-If you don't need linearity in `z`, use instead `ContinuousMultilinearMap.mkPiRing` which has no
-universe issues as `z` is fixed.
--/
-@[simps]
-def mkPiRingSmul [Fintype ι] : ContinuousMultilinearMap R' (SumProdUliftRingSpace R' M' ι) M' where
-  toFun := fun m ↦ (∏ i : ι, m (Sum.inl i)) • m (Sum.inr ())
-  map_add' := by
-    classical
-    intro h m i x y
-    let m' : ι → ULift R' := fun i ↦ m (Sum.inl i)
-    have A (j : ι) (z : ULift R') : ∏ i : ι, update m (inl j) z (inl i)
-        = ∏ i : ι, update m' j z i := by
-      congr with i
-      rcases eq_or_ne i j with rfl|hij
-      · simp
-      · simp [hij]
-    cases i with
-    | inr j => simp
-    | inl j =>
-        have : (x + y).down = x.down + y.down := rfl
-        simp [A, Finset.prod_update_of_mem, add_smul, this, add_mul]
-  map_smul' := by
-    classical
-    intro h m i c x
-    let m' : ι → ULift R' := fun i ↦ m (Sum.inl i)
-    have A (j : ι) (z : ULift R') : ∏ i : ι, update m (inl j) z (inl i)
-        = ∏ i : ι, update m' j z i := by
-      congr with i
-      rcases eq_or_ne i j with rfl|hij
-      · simp
-      · simp [hij]
-    cases i with
-    | inr j => simp [smul_smul, mul_comm]
-    | inl j => simp [A, Finset.prod_update_of_mem]
-  cont := by continuity
 
 end CommRing
 
