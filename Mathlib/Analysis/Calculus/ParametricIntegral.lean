@@ -61,10 +61,16 @@ open TopologicalSpace MeasureTheory Filter Metric
 open scoped Topology Filter
 
 variable {α : Type*} [MeasurableSpace α] {μ : Measure α} {𝕜 : Type*} [IsROrC 𝕜] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E] {H : Type*}
+  [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] {H : Type*}
   [NormedAddCommGroup H] [NormedSpace 𝕜 H]
 
 variable {F : H → α → E} {x₀ : H} {bound : α → ℝ} {ε : ℝ}
+
+lemma foo [CompleteSpace (ℝ →L[ℝ] E)] : CompleteSpace E := by
+  let f : E ≃ₗᵢ[ℝ] (ℝ →L[ℝ] E) := (ContinuousLinearMap.ring_lmap_equiv_self ℝ E).symm
+
+
+#exit
 
 /-- Differentiation under integral of `x ↦ ∫ F x a` at a given point `x₀`, assuming `F x₀` is
 integrable, `‖F x a - F x₀ a‖ ≤ bound a * ‖x - x₀‖` for `x` in a ball around `x₀` for ae `a` with
@@ -102,6 +108,15 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
       exact ha_diff.le_of_lip' (b_nonneg a) (mem_of_superset (ball_mem_nhds _ ε_pos) <| ha_lip)
     b_int.mono' hF'_meas this
   refine ⟨hF'_int, ?_⟩
+  by_cases hE : CompleteSpace E; swap
+  · simp [integral, hE]
+    by_cases h'E : CompleteSpace (H →L[𝕜] E); swap
+    · simpa [integral, h'E] using hasFDerivAt_const 0 x₀
+    ·
+
+
+#exit
+
   have h_ball : ball x₀ ε ∈ 𝓝 x₀ := ball_mem_nhds x₀ ε_pos
   have : ∀ᶠ x in 𝓝 x₀, ‖x - x₀‖⁻¹ * ‖((∫ a, F x a ∂μ) - ∫ a, F x₀ a ∂μ) - (∫ a, F' a ∂μ) (x - x₀)‖ =
       ‖∫ a, ‖x - x₀‖⁻¹ • (F x a - F x₀ a - F' a (x - x₀)) ∂μ‖ := by
