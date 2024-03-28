@@ -41,18 +41,12 @@ sythesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
 
 
 /-- Synthesize arguments `xs` either with typeclass synthesis, with funProp or with discharger. -/
-def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
-    (funProp : Expr → FunPropM (Option Result)) :
+def synthesizeArgs (thmId : Origin) (xs : Array Expr) (funProp : Expr → FunPropM (Option Result)) :
     FunPropM Bool := do
   let mut postponed : Array Expr := #[]
-  for x in xs, bi in bis do
+  for x in xs do
     let type ← inferType x
-    if bi.isInstImplicit then
-      unless (← synthesizeInstance thmId x type) do
-        logError s!"Failed to synthesize instance {← ppExpr type} \
-        when applying theorem {← ppOrigin' thmId}."
-        return false
-    else if (← instantiateMVars x).isMVar then
+    if (← instantiateMVars x).isMVar then
 
       -- try type class
       if (← isClass? type).isSome then
@@ -60,7 +54,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
           continue
 
       -- try function property
-      if (← isFunProp type.getForallBody) then
+      if (← isFunPropGoal type) then
         if let .some ⟨proof⟩ ← funProp type then
           if (← isDefEq x proof) then
             continue
@@ -104,7 +98,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
 
 
 /-- Try to apply theorem - core function -/
-def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type : Expr) (e : Expr)
+def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (e : Expr)
     (thmId : Origin) (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   withTraceNode `Meta.Tactic.fun_prop
     (fun r => return s!"[{ExceptToEmoji.toEmoji r}] applying: {← ppOrigin' thmId}") do
@@ -114,7 +108,7 @@ def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type
 
   if (← isDefEq type e) then
 
-    if ¬(← synthesizeArgs thmId xs bis funProp) then
+    if ¬(← synthesizeArgs thmId xs funProp) then
       return none
     let proof ← instantiateMVars (mkAppN val xs)
 
@@ -126,25 +120,27 @@ def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type
 
 
 /-- Try to apply a theorem provided some of the theorem arguments. -/
-def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
-    (hint : Array (Nat×Expr))
+def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin) (hint : Array (Nat×Expr))
     (funProp : Expr → FunPropM (Option Result)) (newMCtxDepth : Bool := false) :
     FunPropM (Option Result) := do
   let go : FunPropM (Option Result) := do
     let thmProof ← thmOrigin.getValue
     let type ← inferType thmProof
-    let (xs, bis, type) ← forallMetaTelescope type
+    let (xs, _, type) ← forallMetaTelescope type
 
-    for (i,x) in hint do
-      try
-        for (id,v) in hint do
-          xs[id]!.mvarId!.assignIfDefeq v
-      catch _ =>
-        trace[Meta.Tactic.fun_trans]
-          "failed to use hint {i} `{← ppExpr x} when applying theorem {← ppOrigin thmOrigin}"
+    try
+      for (id,v) in hint do
+        xs[id]!.mvarId!.assignIfDefeq v
+    catch _ =>
+      let hintsString ← hint.mapM fun (n,e) => do pure s!"{n}: {← ppExpr e}"
+      trace[Meta.Tactic.fun_prop]
+        "failed to use `{← FunProp.ppOrigin thmOrigin}` with hints `{hintsString}` on `{e}`"
+      return .none
 
-    tryTheoremCore xs bis thmProof type e thmOrigin funProp
+    tryTheoremCore xs thmProof type e thmOrigin funProp
 
+  -- simplifier introduces new mctx depth here but it for `fun_prop` this does not seem to be
+  -- a good idea so by default we do not introduce new mctx depth.
   if newMCtxDepth then
     withNewMCtxDepth go
   else
@@ -160,77 +156,105 @@ def tryTheorem? (e : Expr) (thmOrigin : Origin) (funProp : Expr → FunPropM (Op
 /-- Apply lambda calculus rule P fun x => x` -/
 def applyIdRule (funPropDecl : FunPropDecl) (e X : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
-  let ext := lambdaTheoremsExt.getState (← getEnv)
-  let .some thm := ext.theorems.find? (funPropDecl.funPropName, .id)
-    | trace[Meta.Tactic.fun_prop]
-        "missing identity rule to prove `{← ppExpr e}`"
-      return none
-  let .id id_X := thm.thmArgs | return none
+  let thms ← getLambdaTheorems funPropDecl.funPropName .id
+  if thms.size = 0 then
+    let msg := s!"missing identity rule to prove `{← ppExpr e}`"
+    logError msg
+    trace[Meta.Tactic.fun_prop] msg
+    return none
 
-  tryTheoremWithHint? e (.decl thm.thmName) #[(id_X,X)] funProp
+  for thm in thms do
+    let .id id_X := thm.thmArgs | return none
+    if let .some r ← tryTheoremWithHint? e (.decl thm.thmName) #[(id_X,X)] funProp then
+      return r
+
+  return none
 
 /-- Apply lambda calculus rule P fun x => y` -/
-def applyConstRule (funPropDecl : FunPropDecl) (e X y : Expr)
+def applyConstRule (funPropDecl : FunPropDecl) (e : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
+  let thms ← getLambdaTheorems funPropDecl.funPropName .const
+  if thms.size = 0 then
+    let msg := s!"missing constant rule to prove `{← ppExpr e}`"
+    logError msg
+    trace[Meta.Tactic.fun_prop] msg
+    return none
 
-  let ext := lambdaTheoremsExt.getState (← getEnv)
-  let .some thm := ext.theorems.find? (funPropDecl.funPropName, .const)
-    | trace[Meta.Tactic.fun_prop]
-        "missing constant rule to prove `{← ppExpr e}`"
-      return none
-  let .const id_X id_y := thm.thmArgs | return none
+  for thm in thms do
+    let .const := thm.thmArgs | return none
+    if let .some r ← tryTheorem? e (.decl thm.thmName) funProp then
+      return r
 
-  tryTheoremWithHint? e (.decl thm.thmName) #[(id_X,X),(id_y,y)] funProp
+  return none
 
 /-- Apply lambda calculus rule P fun f => f i` -/
 def applyProjRule (funPropDecl : FunPropDecl) (e x XY : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
-  let ext := lambdaTheoremsExt.getState (← getEnv)
+  -- let ext := lambdaTheoremsExt.getState (← getEnv)
   let .forallE n X Y _ := XY | return none
 
+  let thms ← getLambdaTheorems funPropDecl.funPropName .proj
   -- non dependent case
   if ¬(Y.hasLooseBVars) then
-    if let .some thm := ext.theorems.find? (funPropDecl.funPropName, .proj) then
+    for thm in thms do
       let .proj id_x id_Y := thm.thmArgs | return none
-      return ← tryTheoremWithHint? e (.decl thm.thmName) #[(id_x,x),(id_Y,Y)] funProp
+      if let .some r ← tryTheoremWithHint? e (.decl thm.thmName) #[(id_x,x),(id_Y,Y)] funProp then
+        return r
 
   -- dependent case
   -- can also handle non-dependent cases if non-dependent theorem is not available
   let Y := Expr.lam n X Y default
 
-  let .some thm := ext.theorems.find? (funPropDecl.funPropName, .projDep)
-    | trace[Meta.Tactic.fun_prop]
-        "missing projection rule to prove `{← ppExpr e}`"
-      return none
-  let .projDep id_x id_Y := thm.thmArgs | return none
+  let thms' ← getLambdaTheorems funPropDecl.funPropName .projDep
 
-  tryTheoremWithHint? e (.decl thm.thmName) #[(id_x,x),(id_Y,Y)] funProp
+  if thms.size = 0 ∧ thms'.size = 0 then
+    let msg := s!"missing projection rule to prove `{← ppExpr e}`"
+    logError msg
+    trace[Meta.Tactic.fun_prop] msg
+    return none
+
+  for thm in thms' do
+    let .projDep id_x id_Y := thm.thmArgs | return none
+    if let .some r ← tryTheoremWithHint? e (.decl thm.thmName) #[(id_x,x),(id_Y,Y)] funProp then
+      return r
+
+  return none
 
 /-- Apply lambda calculus rule `P f → P g → P fun x => f (g x)` -/
 def applyCompRule (funPropDecl : FunPropDecl) (e f g : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
-  let ext := lambdaTheoremsExt.getState (← getEnv)
-  let .some thm := ext.theorems.find? (funPropDecl.funPropName, .comp)
-    | trace[Meta.Tactic.fun_prop]
-        "missing composition rule to prove `{← ppExpr e}`"
-      return none
-  let .comp id_f id_g := thm.thmArgs | return none
+  let thms ← getLambdaTheorems funPropDecl.funPropName .comp
+  if thms.size = 0 then
+    let msg := s!"missing composition rule to prove `{← ppExpr e}`"
+    logError msg
+    trace[Meta.Tactic.fun_prop] msg
+    return none
 
-  tryTheoremWithHint? e (.decl thm.thmName) #[(id_f,f),(id_g,g)] funProp
+  for thm in thms do
+    let .comp id_f id_g := thm.thmArgs | return none
+    if let .some r ← tryTheoremWithHint? e (.decl thm.thmName) #[(id_f,f),(id_g,g)] funProp then
+      return r
+
+  return none
 
 /-- Apply lambda calculus rule `∀ y, P (f · y) → P fun x y => f x y` -/
 def applyPiRule (funPropDecl : FunPropDecl) (e f : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
-  let ext := lambdaTheoremsExt.getState (← getEnv)
-  let .some thm := ext.theorems.find? (funPropDecl.funPropName, .pi)
-    | trace[Meta.Tactic.fun_prop]
-        "missing pi rule to prove `{← ppExpr e}`"
-      return none
-  let .pi id_f := thm.thmArgs | return none
+  let thms ← getLambdaTheorems funPropDecl.funPropName .pi
+  if thms.size = 0 then
+    let msg := s!"missing pi rule to prove `{← ppExpr e}`"
+    logError msg
+    trace[Meta.Tactic.fun_prop] msg
+    return none
 
-  tryTheoremWithHint? e (.decl thm.thmName) #[(id_f,f)] funProp
+  for thm in thms do
+    let .pi id_f := thm.thmArgs | return none
+    if let .some r ← tryTheoremWithHint? e (.decl thm.thmName) #[(id_f,f)] funProp then
+      return r
+
+  return none
 
 
 /-- Prove function property of `fun x => let y := g x; f x y`. -/
@@ -341,7 +365,6 @@ def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     else
       let .some (f,g) ← fData.peeloffArgDecomposition | return none
       applyCompRule funPropDecl e f g funProp
-
 
 /-- Prove function property of `fun f => f x₁ ... xₙ`. -/
 def bvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
@@ -524,7 +547,7 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
   let .some (funName,_) := fData.fn.const?
-    | throwError "fun_prop bug: invelid use of const app case"
+    | throwError "fun_prop bug: invalid use of const app case"
   let globalThms ← getDeclTheorems funPropDecl funName fData.mainArgs fData.args.size
 
   trace[Meta.Tactic.fun_prop]
@@ -569,6 +592,7 @@ mutual
   /-- Main `funProp` function. Returns proof of `e`. -/
   partial def funProp (e : Expr) : FunPropM (Option Result) := do
 
+    let e ← instantiateMVars e
     -- check cache
     if let .some { expr := _, proof? := .some proof } := (← get).cache.find? e then
       trace[Meta.Tactic.fun_prop.cache] "cached result for {e}"
@@ -587,7 +611,6 @@ mutual
             | return none
           cacheResult e {proof := ← mkLambdaFVars xs r.proof }
       | .mdata _ e' => funProp e'
-      | .mvar _ => instantiateMVars e >>= funProp
       | _ =>
         let .some r ← main e
           | return none
@@ -626,7 +649,7 @@ mutual
       if fData.isIdentityFun then
         applyIdRule funPropDecl e (← fData.domainType) funProp
       else if fData.isConstantFun then
-        applyConstRule funPropDecl e (← fData.domainType) (Mor.mkAppN fData.fn fData.args) funProp
+        applyConstRule funPropDecl e funProp
       else
         match fData.fn with
         | .fvar id =>
@@ -634,7 +657,6 @@ mutual
             bvarAppCase funPropDecl e fData funProp
           else
             fvarAppCase funPropDecl e fData funProp
-        | .mvar .. => funProp (← instantiateMVars e)
         | .const .. | .proj .. => do
           constAppCase funPropDecl e fData funProp
         | _ =>
