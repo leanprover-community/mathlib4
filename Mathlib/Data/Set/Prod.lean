@@ -518,6 +518,14 @@ theorem diagonal_eq_univ [Subsingleton α] : diagonal α = univ := diagonal_eq_u
 
 end Diagonal
 
+/-- A function is `Function.const α a` for some `a` if and only if `∀ x y, f x = f y`. -/
+theorem range_const_eq_diagonal {α β : Type*} [hβ : Nonempty β] :
+    range (const α) = {f : α → β | ∀ x y, f x = f y} := by
+  refine (range_eq_iff _ _).mpr ⟨fun _ _ _ ↦ rfl, fun f hf ↦ ?_⟩
+  rcases isEmpty_or_nonempty α with h|⟨⟨a⟩⟩
+  · exact hβ.elim fun b ↦ ⟨b, Subsingleton.elim _ _⟩
+  · exact ⟨f a, funext fun x ↦ hf _ _⟩
+
 end Set
 
 section Pullback

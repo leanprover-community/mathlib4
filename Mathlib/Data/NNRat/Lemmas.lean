@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Function.Indicator
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Data.NNRat.Defs
 import Mathlib.Data.Rat.Field

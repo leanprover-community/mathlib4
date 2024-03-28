@@ -29,9 +29,7 @@ open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace Bornology
 open scoped Topology Interval ENNReal BigOperators
 
 variable {X Y E F R : Type*} [MeasurableSpace X] [TopologicalSpace X]
-
 variable [MeasurableSpace Y] [TopologicalSpace Y]
-
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] {f g : X → E} {μ : Measure X} {s : Set X}
 
 namespace MeasureTheory
@@ -398,7 +396,6 @@ open MeasureTheory
 section borel
 
 variable [OpensMeasurableSpace X]
-
 variable {K : Set X} {a b : X}
 
 /-- A continuous function `f` is locally integrable with respect to any locally finite measure. -/
@@ -492,7 +489,7 @@ theorem MonotoneOn.integrableOn_of_measure_ne_top (hmono : MonotoneOn f s) {a b 
   rcases isBounded_iff_forall_norm_le.mp this with ⟨C, hC⟩
   have A : IntegrableOn (fun _ => C) s μ := by
     simp only [hs.lt_top, integrableOn_const, or_true_iff]
-  refine'
+  exact
     Integrable.mono' A (aemeasurable_restrict_of_monotoneOn h's hmono).aestronglyMeasurable
       ((ae_restrict_iff' h's).mpr <| ae_of_all _ fun y hy => hC (f y) (mem_image_of_mem f hy))
 #align monotone_on.integrable_on_of_measure_ne_top MonotoneOn.integrableOn_of_measure_ne_top
