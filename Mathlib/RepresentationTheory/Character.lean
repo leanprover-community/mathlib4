@@ -254,6 +254,7 @@ def averageFunction (α : G → k) (V : FdRep k G) : V.V →ₗ[k] V.V :=
 
 def averageClassFunction (α : G → k) (h : IsClassFunction α) (V : FdRep k G) : V ⟶ V := by
   use averageFunction α V
+  simp_rw [MonCat.coe_of]
   intro g'
   ext v
   rw [averageFunction, CategoryTheory.comp_apply, CategoryTheory.comp_apply, invOf_eq_inv]
@@ -263,9 +264,14 @@ def averageClassFunction (α : G → k) (h : IsClassFunction α) (V : FdRep k G)
   congr 1
   rw [LinearMap.sum_apply, LinearMap.sum_apply, map_sum]
   simp_rw [smul_apply, map_smul]
-  rw [MonCat.coe_of] at g'
-  rw [Fintype.sum_equiv (Equiv.mulLeft g') _ _ _]
-  sorry
+  rw [Fintype.sum_equiv (Equiv.trans (Equiv.mulLeft g'⁻¹) (Equiv.mulRight g')) _ _ _]
+  intro x
+  simp only [Equiv.trans_apply, Equiv.coe_mulLeft, Equiv.coe_mulRight, map_mul, mul_apply]
+  have := h x g'⁻¹
+  rw [inv_inv] at this
+  rw [this]
+  rw [← mul_apply ((ρ V) g') _ _, ← map_mul _ g' _]
+  simp only [mul_right_inv, map_one, one_apply]
 
 end Orthogonality
 
