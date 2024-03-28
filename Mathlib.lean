@@ -3036,6 +3036,7 @@ import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
 import Mathlib.NumberTheory.Zsqrtd.ToReal
 import Mathlib.Order.Antichain
 import Mathlib.Order.Antisymmetrization
+import Mathlib.Order.ApproximantsFixedPoints
 import Mathlib.Order.Atoms
 import Mathlib.Order.Atoms.Finite
 import Mathlib.Order.Basic
