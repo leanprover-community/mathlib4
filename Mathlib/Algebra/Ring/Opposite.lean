@@ -12,75 +12,82 @@ import Mathlib.Algebra.Ring.Hom.Defs
 # Ring structures on the multiplicative opposite
 -/
 
-
-universe u v
-
-variable (α : Type u)
+variable {α : Type*}
 
 namespace MulOpposite
 
-instance instDistrib [Distrib α] : Distrib αᵐᵒᵖ :=
-  { MulOpposite.add α, MulOpposite.mul α with
-    left_distrib := fun x y z => unop_injective <| add_mul (unop y) (unop z) (unop x),
-    right_distrib := fun x y z => unop_injective <| mul_add (unop z) (unop x) (unop y) }
+instance instDistrib [Distrib α] : Distrib αᵐᵒᵖ where
+  left_distrib _ _ _ := unop_injective <| add_mul _ _ _
+  right_distrib _ _ _ := unop_injective <| mul_add _ _ _
 
 instance instMulZeroClass [MulZeroClass α] : MulZeroClass αᵐᵒᵖ where
-  zero := 0
-  mul := (· * ·)
-  zero_mul x := unop_injective <| mul_zero <| unop x
-  mul_zero x := unop_injective <| zero_mul <| unop x
+  zero_mul _ := unop_injective <| mul_zero _
+  mul_zero _ := unop_injective <| zero_mul _
 
-instance instMulZeroOneClass [MulZeroOneClass α] : MulZeroOneClass αᵐᵒᵖ :=
-  { MulOpposite.instMulZeroClass α, MulOpposite.mulOneClass α with }
+instance instMulZeroOneClass [MulZeroOneClass α] : MulZeroOneClass αᵐᵒᵖ where
+  __ := instMulOneClass
+  __ := instMulZeroClass
 
-instance instSemigroupWithZero [SemigroupWithZero α] : SemigroupWithZero αᵐᵒᵖ :=
-  { MulOpposite.semigroup α, MulOpposite.instMulZeroClass α with }
+instance instSemigroupWithZero [SemigroupWithZero α] : SemigroupWithZero αᵐᵒᵖ where
+  __ := instSemigroup
+  __ := instMulZeroClass
 
-instance instMonoidWithZero [MonoidWithZero α] : MonoidWithZero αᵐᵒᵖ :=
-  { MulOpposite.monoid α, MulOpposite.instMulZeroOneClass α with }
+instance instMonoidWithZero [MonoidWithZero α] : MonoidWithZero αᵐᵒᵖ where
+  __ := instMonoid
+  __ := instMulZeroOneClass
 
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] :
-    NonUnitalNonAssocSemiring αᵐᵒᵖ :=
-  { MulOpposite.addCommMonoid α, MulOpposite.instMulZeroClass α, MulOpposite.instDistrib α with }
+    NonUnitalNonAssocSemiring αᵐᵒᵖ where
+  __ := instAddCommMonoid
+  __ := instDistrib
+  __ := instMulZeroClass
 
-instance instNonUnitalSemiring [NonUnitalSemiring α] : NonUnitalSemiring αᵐᵒᵖ :=
-  { MulOpposite.instSemigroupWithZero α, MulOpposite.instNonUnitalNonAssocSemiring α with }
+instance instNonUnitalSemiring [NonUnitalSemiring α] : NonUnitalSemiring αᵐᵒᵖ where
+  __ := instNonUnitalNonAssocSemiring
+  __ := instSemigroupWithZero
 
-instance instNonAssocSemiring [NonAssocSemiring α] : NonAssocSemiring αᵐᵒᵖ :=
-  { MulOpposite.addMonoidWithOne α, MulOpposite.instMulZeroOneClass α,
-    MulOpposite.instNonUnitalNonAssocSemiring α with }
+instance instNonAssocSemiring [NonAssocSemiring α] : NonAssocSemiring αᵐᵒᵖ where
+  __ := instNonUnitalNonAssocSemiring
+  __ := instMulZeroOneClass
+  __ := instAddCommMonoidWithOne
 
-instance instSemiring [Semiring α] : Semiring αᵐᵒᵖ :=
-  { MulOpposite.instNonUnitalSemiring α, MulOpposite.instNonAssocSemiring α,
-    MulOpposite.instMonoidWithZero α with }
+instance instSemiring [Semiring α] : Semiring αᵐᵒᵖ where
+  __ := instNonUnitalSemiring
+  __ := instNonAssocSemiring
+  __ := instMonoidWithZero
 
-instance instNonUnitalCommSemiring [NonUnitalCommSemiring α] : NonUnitalCommSemiring αᵐᵒᵖ :=
-  { MulOpposite.instNonUnitalSemiring α, MulOpposite.commSemigroup α with }
+instance instNonUnitalCommSemiring [NonUnitalCommSemiring α] : NonUnitalCommSemiring αᵐᵒᵖ where
+  __ := instNonUnitalSemiring
+  __ := instCommSemigroup
 
-instance instCommSemiring [CommSemiring α] : CommSemiring αᵐᵒᵖ :=
-  { MulOpposite.instSemiring α, MulOpposite.commSemigroup α with }
+instance instCommSemiring [CommSemiring α] : CommSemiring αᵐᵒᵖ where
+  __ := instSemiring
+  __ := instCommMonoid
 
-instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing α] : NonUnitalNonAssocRing αᵐᵒᵖ :=
-  { MulOpposite.addCommGroup α, MulOpposite.instMulZeroClass α,
-    MulOpposite.instDistrib α with }
+instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing α] : NonUnitalNonAssocRing αᵐᵒᵖ where
+  __ := instAddCommGroup
+  __ := instNonUnitalNonAssocSemiring
 
-instance instNonUnitalRing [NonUnitalRing α] : NonUnitalRing αᵐᵒᵖ :=
-  { MulOpposite.addCommGroup α, MulOpposite.instSemigroupWithZero α,
-    MulOpposite.instDistrib α with }
+instance instNonUnitalRing [NonUnitalRing α] : NonUnitalRing αᵐᵒᵖ where
+  __ := instNonUnitalNonAssocRing
+  __ := instNonUnitalSemiring
 
-instance instNonAssocRing [NonAssocRing α] : NonAssocRing αᵐᵒᵖ :=
-  { MulOpposite.addCommGroup α, MulOpposite.instMulZeroOneClass α,
-    MulOpposite.instDistrib α, MulOpposite.addGroupWithOne α with }
+instance instNonAssocRing [NonAssocRing α] : NonAssocRing αᵐᵒᵖ where
+  __ := instNonUnitalNonAssocRing
+  __ := instNonAssocSemiring
+  __ := instAddCommGroupWithOne
 
-instance instRing [Ring α] : Ring αᵐᵒᵖ :=
-  { MulOpposite.monoid α, MulOpposite.instNonAssocRing α with }
+instance instRing [Ring α] : Ring αᵐᵒᵖ where
+  __ := instSemiring
+  __ := instAddCommGroupWithOne
 
-instance instNonUnitalCommRing [NonUnitalCommRing α] : NonUnitalCommRing αᵐᵒᵖ :=
-  { MulOpposite.instNonUnitalRing α,
-    MulOpposite.instNonUnitalCommSemiring α with }
+instance instNonUnitalCommRing [NonUnitalCommRing α] : NonUnitalCommRing αᵐᵒᵖ where
+  __ := instNonUnitalRing
+  __ := instNonUnitalCommSemiring
 
-instance instCommRing [CommRing α] : CommRing αᵐᵒᵖ :=
-  { MulOpposite.instRing α, MulOpposite.instCommSemiring α with }
+instance instCommRing [CommRing α] : CommRing αᵐᵒᵖ where
+  __ := instRing
+  __ := instCommMonoid
 
 instance instNoZeroDivisors [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors αᵐᵒᵖ where
   eq_zero_or_eq_zero_of_mul_eq_zero (H : op (_ * _) = op (0 : α)) :=
@@ -90,76 +97,89 @@ instance instNoZeroDivisors [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivis
 instance instIsDomain [Ring α] [IsDomain α] : IsDomain αᵐᵒᵖ :=
   NoZeroDivisors.to_isDomain _
 
-instance instGroupWithZero [GroupWithZero α] : GroupWithZero αᵐᵒᵖ :=
-  { MulOpposite.instMonoidWithZero α, MulOpposite.divInvMonoid α,
-    MulOpposite.nontrivial α with
-    mul_inv_cancel := fun _ hx => unop_injective <| inv_mul_cancel <| unop_injective.ne hx,
-    inv_zero := unop_injective inv_zero }
+instance instGroupWithZero [GroupWithZero α] : GroupWithZero αᵐᵒᵖ where
+  __ := instMonoidWithZero
+  __ := instNontrivial
+  __ := instDivInvMonoid
+  mul_inv_cancel _ hx := unop_injective <| inv_mul_cancel <| unop_injective.ne hx
+  inv_zero := unop_injective inv_zero
 
 end MulOpposite
 
 namespace AddOpposite
 
-instance instDistrib [Distrib α] : Distrib αᵃᵒᵖ :=
-  { AddOpposite.add α, @AddOpposite.mul α _ with
-    left_distrib := fun x y z => unop_injective <| mul_add (unop x) (unop z) (unop y),
-    right_distrib := fun x y z => unop_injective <| add_mul (unop y) (unop x) (unop z) }
+instance instDistrib [Distrib α] : Distrib αᵃᵒᵖ where
+  left_distrib _ _ _ := unop_injective <| mul_add _ _ _
+  right_distrib _ _ _ := unop_injective <| add_mul _ _ _
 
 instance instMulZeroClass [MulZeroClass α] : MulZeroClass αᵃᵒᵖ where
-  zero := 0
-  mul := (· * ·)
-  zero_mul x := unop_injective <| zero_mul <| unop x
-  mul_zero x := unop_injective <| mul_zero <| unop x
+  zero_mul _ := unop_injective <| zero_mul _
+  mul_zero _ := unop_injective <| mul_zero _
 
-instance instMulZeroOneClass [MulZeroOneClass α] : MulZeroOneClass αᵃᵒᵖ :=
-  { AddOpposite.instMulZeroClass α, AddOpposite.mulOneClass α with }
+instance instMulZeroOneClass [MulZeroOneClass α] : MulZeroOneClass αᵃᵒᵖ where
+  __ := instMulOneClass
+  __ := instMulZeroClass
 
-instance instSemigroupWithZero [SemigroupWithZero α] : SemigroupWithZero αᵃᵒᵖ :=
-  { AddOpposite.semigroup α, AddOpposite.instMulZeroClass α with }
+instance instSemigroupWithZero [SemigroupWithZero α] : SemigroupWithZero αᵃᵒᵖ where
+  __ := instSemigroup
+  __ := instMulZeroClass
 
-instance instMonoidWithZero [MonoidWithZero α] : MonoidWithZero αᵃᵒᵖ :=
-  { AddOpposite.monoid α, AddOpposite.instMulZeroOneClass α with }
+instance instMonoidWithZero [MonoidWithZero α] : MonoidWithZero αᵃᵒᵖ where
+  __ := instMonoid
+  __ := instMulZeroOneClass
 
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] :
-    NonUnitalNonAssocSemiring αᵃᵒᵖ :=
-  { AddOpposite.addCommMonoid α, AddOpposite.instMulZeroClass α, AddOpposite.instDistrib α with }
+    NonUnitalNonAssocSemiring αᵃᵒᵖ where
+  __ := instAddCommMonoid
+  __ := instDistrib
+  __ := instMulZeroClass
 
-instance instNonUnitalSemiring [NonUnitalSemiring α] : NonUnitalSemiring αᵃᵒᵖ :=
-  { AddOpposite.instSemigroupWithZero α, AddOpposite.instNonUnitalNonAssocSemiring α with }
+instance instNonUnitalSemiring [NonUnitalSemiring α] : NonUnitalSemiring αᵃᵒᵖ where
+  __ := instNonUnitalNonAssocSemiring
+  __ := instSemigroupWithZero
 
-instance instNonAssocSemiring [NonAssocSemiring α] : NonAssocSemiring αᵃᵒᵖ :=
-  { AddOpposite.instMulZeroOneClass α, AddOpposite.instNonUnitalNonAssocSemiring α,
-    AddOpposite.addCommMonoidWithOne _ with }
+instance instNonAssocSemiring [NonAssocSemiring α] : NonAssocSemiring αᵃᵒᵖ where
+  __ := instNonUnitalNonAssocSemiring
+  __ := instMulZeroOneClass
+  __ := instAddCommMonoidWithOne
 
-instance instSemiring [Semiring α] : Semiring αᵃᵒᵖ :=
-  { AddOpposite.instNonUnitalSemiring α, AddOpposite.instNonAssocSemiring α,
-    AddOpposite.instMonoidWithZero α with }
+instance instSemiring [Semiring α] : Semiring αᵃᵒᵖ where
+  __ := instNonUnitalSemiring
+  __ := instNonAssocSemiring
+  __ := instMonoidWithZero
 
-instance instNonUnitalCommSemiring [NonUnitalCommSemiring α] : NonUnitalCommSemiring αᵃᵒᵖ :=
-  { AddOpposite.instNonUnitalSemiring α, AddOpposite.commSemigroup α with }
+instance instNonUnitalCommSemiring [NonUnitalCommSemiring α] : NonUnitalCommSemiring αᵃᵒᵖ where
+  __ := instNonUnitalSemiring
+  __ := instCommSemigroup
 
-instance instCommSemiring [CommSemiring α] : CommSemiring αᵃᵒᵖ :=
-  { AddOpposite.instSemiring α, AddOpposite.commSemigroup α with }
+instance instCommSemiring [CommSemiring α] : CommSemiring αᵃᵒᵖ where
+  __ := instSemiring
+  __ := instCommMonoid
 
-instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing α] : NonUnitalNonAssocRing αᵃᵒᵖ :=
-  { AddOpposite.addCommGroup α, AddOpposite.instMulZeroClass α, AddOpposite.instDistrib α with }
+instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing α] : NonUnitalNonAssocRing αᵃᵒᵖ where
+  __ := instAddCommGroup
+  __ := instNonUnitalNonAssocSemiring
 
-instance instNonUnitalRing [NonUnitalRing α] : NonUnitalRing αᵃᵒᵖ :=
-  { AddOpposite.addCommGroup α, AddOpposite.instSemigroupWithZero α,
-    AddOpposite.instDistrib α with }
+instance instNonUnitalRing [NonUnitalRing α] : NonUnitalRing αᵃᵒᵖ where
+  __ := instNonUnitalNonAssocRing
+  __ := instNonUnitalSemiring
 
-instance instNonAssocRing [NonAssocRing α] : NonAssocRing αᵃᵒᵖ :=
-  { AddOpposite.addCommGroupWithOne α, AddOpposite.instMulZeroOneClass α,
-    AddOpposite.instDistrib α with }
+instance instNonAssocRing [NonAssocRing α] : NonAssocRing αᵃᵒᵖ where
+  __ := instNonUnitalNonAssocRing
+  __ := instNonAssocSemiring
+  __ := instAddCommGroupWithOne
 
-instance instRing [Ring α] : Ring αᵃᵒᵖ :=
-  { AddOpposite.instNonAssocRing α, AddOpposite.instSemiring α with }
+instance instRing [Ring α] : Ring αᵃᵒᵖ where
+  __ := instSemiring
+  __ := instAddCommGroupWithOne
 
-instance instNonUnitalCommRing [NonUnitalCommRing α] : NonUnitalCommRing αᵃᵒᵖ :=
-  { AddOpposite.instNonUnitalRing α, AddOpposite.instNonUnitalCommSemiring α with }
+instance instNonUnitalCommRing [NonUnitalCommRing α] : NonUnitalCommRing αᵃᵒᵖ where
+  __ := instNonUnitalRing
+  __ := instNonUnitalCommSemiring
 
-instance instCommRing [CommRing α] : CommRing αᵃᵒᵖ :=
-  { AddOpposite.instRing α, AddOpposite.instCommSemiring α with }
+instance instCommRing [CommRing α] : CommRing αᵃᵒᵖ where
+  __ := instRing
+  __ := instCommMonoid
 
 instance instNoZeroDivisors [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors αᵃᵒᵖ where
   eq_zero_or_eq_zero_of_mul_eq_zero (H : op (_ * _) = op (0 : α)) :=
@@ -169,11 +189,12 @@ instance instNoZeroDivisors [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivis
 instance instIsDomain [Ring α] [IsDomain α] : IsDomain αᵃᵒᵖ :=
   NoZeroDivisors.to_isDomain _
 
-instance instGroupWithZero [GroupWithZero α] : GroupWithZero αᵃᵒᵖ :=
-  { AddOpposite.instMonoidWithZero α, AddOpposite.divInvMonoid α,
-    AddOpposite.nontrivial α with
-    mul_inv_cancel := fun _ hx => unop_injective <| mul_inv_cancel <| unop_injective.ne hx,
-    inv_zero := unop_injective inv_zero }
+instance instGroupWithZero [GroupWithZero α] : GroupWithZero αᵃᵒᵖ where
+  __ := instMonoidWithZero
+  __ := instNontrivial
+  __ := instDivInvMonoid
+  mul_inv_cancel _ hx := unop_injective <| mul_inv_cancel <| unop_injective.ne hx
+  inv_zero := unop_injective inv_zero
 
 end AddOpposite
 
