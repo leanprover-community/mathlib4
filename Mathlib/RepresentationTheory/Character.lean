@@ -126,6 +126,7 @@ theorem average_char_eq_finrank_invariants (V : FdRep k G) :
 
 end Group
 
+
 namespace MonoidAlgebra
 
 universe u₁ u₂
@@ -134,36 +135,8 @@ instance {k : Type u₁} {G : Type u₂} [Semiring k] :
     Coe G (MonoidAlgebra k G) where
   coe g := MonoidAlgebra.single g 1
 
--- def std_basis (k : Type u₁) (G : Type u₂) [Semiring k] :
---     Basis G k (MonoidAlgebra k G) :=
---   .ofRepr (LinearEquiv.refl _ _)
-
--- instance my_inst {k : Type u₁} {G : Type u₂} [Semiring k] :
---     CoeDep (Type u₂) G (Basis G k (MonoidAlgebra k G)) where
---   coe := std_basis k G
-
--- instance {k : Type u₁} {G : Type u₂} [Semiring k] :
---     Inhabited (Basis G k (MonoidAlgebra k G)) :=
---   ⟨std_basis k G⟩
-
--- instance {k : Type u₁} {G : Type u₂} [Semiring k] :
---     Module.Free k (MonoidAlgebra k G) where
---   exists_basis := ⟨G, std_basis k G⟩
-
 end MonoidAlgebra
 
-
--- def is_conj_inv (f : MonoidAlgebra k G →ₗ[k] k) := ∀ g h : G, f (h * g * h⁻¹) = f g
-
--- def ClassFuntion := {f : MonoidAlgebra k G →ₗ[k] k // is_conj_inv f}
-
--- lemma char_is_class_func (V : FdRep k G) :
---     is_conj_inv (Basis.constr (MonoidAlgebra.my_inst.coe : Basis G k (MonoidAlgebra k G)) k V.character) := by
---   intro g h
---   have foo := Basis.constr_basis G k V.character h
---   have (g : G) : B g = MonoidAlgebra.single g 1 := B.repr_self g
---   repeat rw [← this]
---   sorry
 
 section ClassFunction
 
