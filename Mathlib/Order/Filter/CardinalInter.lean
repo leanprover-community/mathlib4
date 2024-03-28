@@ -11,8 +11,8 @@ import Mathlib.SetTheory.Cardinal.Ordinal
 # Filters with a cardinal intersection property
 
 In this file we define `CardinalInterFilter l c` to be the class of filters with the following
-property: for any collection of sets `s ∈ l` with cardinality strictly less than `c`, their intersection
-belongs to `l` as well.
+property: for any collection of sets `s ∈ l` with cardinality strictly less than `c`, 
+their intersection belongs to `l` as well.
 
 # Main results
 * `CardinalInterFilter.filter_is_aleph0` establishes that every filter `l` is a
