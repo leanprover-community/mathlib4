@@ -150,7 +150,7 @@ def orthogonal (B : BilinForm R M) (N : Submodule R M) : Submodule R M where
     rw [IsOrtho, smul_right, show B n x = 0 from hx n hn, mul_zero]
 #align bilin_form.orthogonal BilinForm.orthogonal
 
-variable {N L : Submodule R M}
+variable {N L : Submodule R M} {N₂ : Submodule R M}
 
 @[simp]
 theorem mem_orthogonal_iff {N : Submodule R M} {m : M} :
@@ -161,7 +161,7 @@ theorem mem_orthogonal_iff {N : Submodule R M} {m : M} :
 theorem orthogonal_le (h : N ≤ L) : B.orthogonal L ≤ B.orthogonal N := fun _ hn l hl => hn l (h hl)
 #align bilin_form.orthogonal_le BilinForm.orthogonal_le
 
-theorem le_orthogonal_orthogonal (b : B.IsRefl) : N ≤ B.orthogonal (B.orthogonal N) :=
+theorem le_orthogonal_orthogonal (b : B.IsRefl) : N₂ ≤ B.orthogonal (B.orthogonal N₂) :=
   fun n hn _ hm => b _ _ (hm n hn)
 #align bilin_form.le_orthogonal_orthogonal BilinForm.le_orthogonal_orthogonal
 
@@ -276,7 +276,7 @@ theorem toLin_restrict_ker_eq_inf_orthogonal (B : BilinForm K V) (W : Subspace K
     constructor
     · simp [hx]
     · intro y _
-      rw [IsOrtho, b]
+      rw [IsOrtho, b.eq_zero]
       change (B.toLin.domRestrict W) ⟨x, hx⟩ y = 0
       rw [hker]
       rfl
@@ -284,7 +284,7 @@ theorem toLin_restrict_ker_eq_inf_orthogonal (B : BilinForm K V) (W : Subspace K
     refine' ⟨⟨x, hx.1⟩, _, rfl⟩
     ext y
     change B x y = 0
-    rw [b]
+    rw [b.eq_zero]
     exact hx.2 _ Submodule.mem_top
 #align bilin_form.to_lin_restrict_ker_eq_inf_orthogonal BilinForm.toLin_restrict_ker_eq_inf_orthogonal
 
@@ -325,7 +325,7 @@ theorem restrict_nondegenerate_of_isCompl_orthogonal {B : BilinForm K V} {W : Su
     obtain ⟨hx₁, hx₂⟩ := mem_inf.1 hx
     refine' Subtype.mk_eq_mk.1 (b₂ ⟨x, hx₁⟩ _)
     rintro ⟨n, hn⟩
-    rw [restrict_apply, coe_mk, coe_mk, b₁]
+    rw [restrict_apply, coe_mk, coe_mk, b₁.eq_zero]
     exact hx₂ n hn
   refine' IsCompl.of_eq this (eq_top_of_finrank_eq <| (finrank_le _).antisymm _)
   conv_rhs => rw [← add_zero (finrank K _)]
@@ -361,7 +361,7 @@ theorem restrictOrthogonalSpanSingletonNondegenerate (B : BilinForm K V) (b₁ :
   rcases Submodule.mem_sup.1 this with ⟨y, hy, z, hz, rfl⟩
   specialize hm ⟨z, hz⟩
   rw [restrict] at hm
-  erw [add_right, show B m.1 y = 0 by rw [b₂]; exact m.2 y hy, hm, add_zero]
+  erw [add_right, show B m.1 y = 0 by rw [b₂.eq_zero]; exact m.2 y hy, hm, add_zero]
 #align bilin_form.restrict_orthogonal_span_singleton_nondegenerate BilinForm.restrictOrthogonalSpanSingletonNondegenerate
 
 end BilinForm
