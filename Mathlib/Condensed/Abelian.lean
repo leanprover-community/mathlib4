@@ -6,6 +6,7 @@ Authors: Adam Topaz
 import Mathlib.Topology.Sheaves.Abelian
 import Mathlib.Algebra.Category.GroupCat.Abelian
 import Mathlib.Algebra.Category.GroupCat.FilteredColimits
+import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.Condensed.Basic
 
 /-!
@@ -26,6 +27,5 @@ abbrev CondensedAb := Condensed.{u} AddCommGroupCat.{u+1}
 
 noncomputable instance CondensedAb.abelian :
     CategoryTheory.Abelian CondensedAb.{u} :=
-  letI : PreservesLimits (forget AddCommGroupCat.{u+1}) :=
-    AddCommGroupCat.forgetPreservesLimits.{u+1}
+  haveI : HasLimits (Sheaf (coherentTopology CompHaus) AddCommGroupCat.{u+1}) := inferInstance
   CategoryTheory.sheafIsAbelian
