@@ -151,6 +151,20 @@ protected theorem div_pos (ha : a ≠ 0) (hb : b ≠ ∞) : 0 < a / b :=
   ENNReal.mul_pos ha <| ENNReal.inv_ne_zero.2 hb
 #align ennreal.div_pos ENNReal.div_pos
 
+@[simp] lemma mul_inv_le_one (a : ℝ≥0∞) : a * a⁻¹ ≤ 1 := by
+  obtain rfl | ha₀ := eq_or_ne a 0
+  · simp
+  obtain rfl | ha := eq_or_ne a ⊤
+  · simp
+  · exact (ENNReal.mul_inv_cancel ha₀ ha).le
+
+@[simp] lemma inv_mul_le_one (a : ℝ≥0∞) : a⁻¹ * a ≤ 1 := by simp [mul_comm]
+
+@[simp] lemma mul_inv_ne_top (a : ℝ≥0∞) : a * a⁻¹ ≠ ⊤ :=
+  ne_top_of_le_ne_top one_ne_top a.mul_inv_le_one
+
+@[simp] lemma inv_mul_ne_top (a : ℝ≥0∞) : a⁻¹ * a ≠ ⊤ := by simp [mul_comm]
+
 protected theorem mul_inv {a b : ℝ≥0∞} (ha : a ≠ 0 ∨ b ≠ ∞) (hb : a ≠ ∞ ∨ b ≠ 0) :
     (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
   induction' b using recTopCoe with b
@@ -469,6 +483,8 @@ theorem add_thirds (a : ℝ≥0∞) : a / 3 + a / 3 + a / 3 = a := by
 
 @[simp] theorem div_pos_iff : 0 < a / b ↔ a ≠ 0 ∧ b ≠ ∞ := by simp [pos_iff_ne_zero, not_or]
 #align ennreal.div_pos_iff ENNReal.div_pos_iff
+
+lemma div_ne_zero : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠ ⊤ := by rw [← pos_iff_ne_zero, div_pos_iff]
 
 protected theorem half_pos (h : a ≠ 0) : 0 < a / 2 := by
   simp only [div_pos_iff, ne_eq, h, not_false_eq_true, two_ne_top, and_self]
