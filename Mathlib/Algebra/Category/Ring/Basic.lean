@@ -25,7 +25,7 @@ universe u v
 open CategoryTheory
 
 /-- The category of semirings. -/
-def SemiRingCat : Type (u + 1) :=
+abbrev SemiRingCat : Type (u + 1) :=
   Bundled Semiring
 set_option linter.uppercaseLean3 false in
 #align SemiRing SemiRingCat
@@ -51,18 +51,9 @@ instance bundledHom : BundledHom AssocRingHom where
 set_option linter.uppercaseLean3 false in
 #align SemiRing.bundled_hom SemiRingCat.bundledHom
 
-deriving instance LargeCategory for SemiRingCat
-
 -- Porting note: deriving fails for ConcreteCategory, adding instance manually.
 --deriving instance LargeCategory, ConcreteCategory for SemiRingCat
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
-
-instance : ConcreteCategory SemiRingCat := by
-  dsimp [SemiRingCat]
-  infer_instance
-
-instance : CoeSort SemiRingCat (Type*) where
-  coe X := X.α
 
 -- Porting note: Hinting to Lean that `forget R` and `R` are the same
 unif_hint forget_obj_eq_coe (R : SemiRingCat) where ⊢
@@ -70,12 +61,7 @@ unif_hint forget_obj_eq_coe (R : SemiRingCat) where ⊢
 
 instance instSemiring (X : SemiRingCat) : Semiring X := X.str
 
-instance instSemiring' (X : SemiRingCat) : Semiring <| (forget SemiRingCat).obj X := X.str
-
 instance instFunLike {X Y : SemiRingCat} : FunLike (X ⟶ Y) X Y :=
-  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible and instance
-  -- transparency. It seems that `(CategoryTheory.forget SemiRingCat).toPrefunctor` is not
-  -- unfolding during unification
   ConcreteCategory.instFunLike
 
 -- Porting note (#10754): added instance
@@ -168,7 +154,7 @@ instance forgetReflectIsos : ReflectsIsomorphisms (forget SemiRingCat) where
 end SemiRingCat
 
 /-- The category of rings. -/
-def RingCat : Type (u + 1) :=
+abbrev RingCat : Type (u + 1) :=
   Bundled Ring
 set_option linter.uppercaseLean3 false in
 #align Ring RingCat
@@ -181,14 +167,6 @@ instance : BundledHom.ParentProjection @Ring.toSemiring :=
 -- Porting note: Another place where mathlib had derived a concrete category
 -- but this does not work here, so we add the instance manually.
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
-deriving instance LargeCategory for RingCat
-
-instance : ConcreteCategory RingCat := by
-  dsimp [RingCat]
-  infer_instance
-
-instance : CoeSort RingCat (Type*) where
-  coe X := X.α
 
 instance (X : RingCat) : Ring X := X.str
 
@@ -197,8 +175,6 @@ unif_hint forget_obj_eq_coe (R : RingCat) where ⊢
   (forget RingCat).obj R ≟ R
 
 instance instRing (X : RingCat) : Ring X := X.str
-
-instance instRing' (X : RingCat) : Ring <| (forget RingCat).obj X := X.str
 
 instance instFunLike {X Y : RingCat} : FunLike (X ⟶ Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency

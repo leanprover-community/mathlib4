@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Multiset.Bind
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Set.Lattice
-import Mathlib.Algebra.Order.WithZero
 
 #align_import data.finset.basic from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
 
@@ -200,7 +200,7 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 
 /-! ### set coercion -/
 
--- Porting note: new definition
+-- Porting note (#11445): new definition
 /-- Convert a finset to a set in the natural way. -/
 @[coe] def toSet (s : Finset α) : Set α :=
   { a | a ∈ s }
@@ -224,7 +224,7 @@ theorem coe_mem {s : Finset α} (x : (s : Set α)) : ↑x ∈ s :=
   x.2
 #align finset.coe_mem Finset.coe_mem
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem mk_coe {s : Finset α} (x : (s : Set α)) {h} : (⟨x, h⟩ : (s : Set α)) = x :=
   Subtype.coe_eta _ _
 #align finset.mk_coe Finset.mk_coe
@@ -260,13 +260,13 @@ theorem coe_injective {α} : Injective ((↑) : Finset α → Set α) := fun _s 
 instance {α : Type u} : CoeSort (Finset α) (Type u) :=
   ⟨fun s => { x // x ∈ s }⟩
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 protected theorem forall_coe {α : Type*} (s : Finset α) (p : s → Prop) :
     (∀ x : s, p x) ↔ ∀ (x : α) (h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.forall
 #align finset.forall_coe Finset.forall_coe
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 protected theorem exists_coe {α : Type*} (s : Finset α) (p : s → Prop) :
     (∃ x : s, p x) ↔ ∃ (x : α) (h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.exists
@@ -881,7 +881,7 @@ theorem mem_cons {h} : b ∈ s.cons a h ↔ b = a ∨ b ∈ s :=
 theorem mem_cons_of_mem {a b : α} {s : Finset α} {hb : b ∉ s} (ha : a ∈ s) : a ∈ cons b s hb :=
   Multiset.mem_cons_of_mem ha
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem mem_cons_self (a : α) (s : Finset α) {h} : a ∈ cons a s h :=
   Multiset.mem_cons_self _ _
 #align finset.mem_cons_self Finset.mem_cons_self
@@ -1167,7 +1167,7 @@ theorem insert_ne_self : insert a s ≠ s ↔ a ∉ s :=
   insert_eq_self.not
 #align finset.insert_ne_self Finset.insert_ne_self
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem pair_eq_singleton (a : α) : ({a, a} : Finset α) = {a} :=
   insert_eq_of_mem <| mem_singleton_self _
 #align finset.pair_eq_singleton Finset.pair_eq_singleton
@@ -1176,7 +1176,7 @@ theorem Insert.comm (a b : α) (s : Finset α) : insert a (insert b s) = insert 
   ext fun x => by simp only [mem_insert, or_left_comm]
 #align finset.insert.comm Finset.Insert.comm
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 @[norm_cast]
 theorem coe_pair {a b : α} : (({a, b} : Finset α) : Set α) = {a, b} := by
   ext
@@ -1192,7 +1192,7 @@ theorem pair_comm (a b : α) : ({a, b} : Finset α) = {b, a} :=
   Insert.comm a b ∅
 #align finset.pair_comm Finset.pair_comm
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem insert_idem (a : α) (s : Finset α) : insert a (insert a s) = insert a s :=
   ext fun x => by simp only [mem_insert, ← or_assoc, or_self_iff]
 #align finset.insert_idem Finset.insert_idem
@@ -1791,7 +1791,7 @@ instance : DistribLattice (Finset α) :=
 theorem union_left_idem (s t : Finset α) : s ∪ (s ∪ t) = s ∪ t := sup_left_idem _ _
 #align finset.union_left_idem Finset.union_left_idem
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem union_right_idem (s t : Finset α) : s ∪ t ∪ t = s ∪ t := sup_right_idem _ _
 #align finset.union_right_idem Finset.union_right_idem
 
@@ -1799,25 +1799,31 @@ theorem union_right_idem (s t : Finset α) : s ∪ t ∪ t = s ∪ t := sup_righ
 theorem inter_left_idem (s t : Finset α) : s ∩ (s ∩ t) = s ∩ t := inf_left_idem _ _
 #align finset.inter_left_idem Finset.inter_left_idem
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem inter_right_idem (s t : Finset α) : s ∩ t ∩ t = s ∩ t := inf_right_idem _ _
 #align finset.inter_right_idem Finset.inter_right_idem
 
-theorem inter_distrib_left (s t u : Finset α) : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
+theorem inter_union_distrib_left (s t u : Finset α) : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
   inf_sup_left _ _ _
-#align finset.inter_distrib_left Finset.inter_distrib_left
+#align finset.inter_distrib_left Finset.inter_union_distrib_left
 
-theorem inter_distrib_right (s t u : Finset α) : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
+theorem union_inter_distrib_right (s t u : Finset α) : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
   inf_sup_right _ _ _
-#align finset.inter_distrib_right Finset.inter_distrib_right
+#align finset.inter_distrib_right Finset.union_inter_distrib_right
 
-theorem union_distrib_left (s t u : Finset α) : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
+theorem union_inter_distrib_left (s t u : Finset α) : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
   sup_inf_left _ _ _
-#align finset.union_distrib_left Finset.union_distrib_left
+#align finset.union_distrib_left Finset.union_inter_distrib_left
 
-theorem union_distrib_right (s t u : Finset α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
+theorem inter_union_distrib_right (s t u : Finset α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
   sup_inf_right _ _ _
-#align finset.union_distrib_right Finset.union_distrib_right
+#align finset.union_distrib_right Finset.inter_union_distrib_right
+
+-- 2024-03-22
+@[deprecated] alias inter_distrib_left := inter_union_distrib_left
+@[deprecated] alias inter_distrib_right := union_inter_distrib_right
+@[deprecated] alias union_distrib_left := union_inter_distrib_left
+@[deprecated] alias union_distrib_right := inter_union_distrib_right
 
 theorem union_union_distrib_left (s t u : Finset α) : s ∪ (t ∪ u) = s ∪ t ∪ (s ∪ u) :=
   sup_sup_distrib_left _ _ _
@@ -2169,7 +2175,7 @@ theorem sdiff_inter_self (s₁ s₂ : Finset α) : s₂ \ s₁ ∩ s₁ = ∅ :=
   inf_sdiff_self_left
 #align finset.sdiff_inter_self Finset.sdiff_inter_self
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 protected theorem sdiff_self (s₁ : Finset α) : s₁ \ s₁ = ∅ :=
   _root_.sdiff_self
 #align finset.sdiff_self Finset.sdiff_self
@@ -2236,7 +2242,7 @@ theorem sdiff_union_inter (s t : Finset α) : s \ t ∪ s ∩ t = s :=
   sup_sdiff_inf _ _
 #align finset.sdiff_union_inter Finset.sdiff_union_inter
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem sdiff_idem (s t : Finset α) : (s \ t) \ t = s \ t :=
   _root_.sdiff_idem
 #align finset.sdiff_idem Finset.sdiff_idem
@@ -2372,7 +2378,7 @@ theorem erase_union_distrib (s t : Finset α) (a : α) : (s ∪ t).erase a = s.e
 #align finset.erase_union_distrib Finset.erase_union_distrib
 
 theorem insert_inter_distrib (s t : Finset α) (a : α) :
-    insert a (s ∩ t) = insert a s ∩ insert a t := by simp_rw [insert_eq, union_distrib_left]
+    insert a (s ∩ t) = insert a s ∩ insert a t := by simp_rw [insert_eq, union_inter_distrib_left]
 #align finset.insert_inter_distrib Finset.insert_inter_distrib
 
 theorem erase_sdiff_distrib (s t : Finset α) (a : α) : (s \ t).erase a = s.erase a \ t.erase a :=
@@ -2559,7 +2565,7 @@ def piecewise {α : Type*} {δ : α → Sort*} (s : Finset α) (f g : ∀ i, δ 
 
 variable {δ : α → Sort*} (s : Finset α) (f g : ∀ i, δ i)
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem piecewise_insert_self [DecidableEq α] {j : α} [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g j = f j := by simp [piecewise]
 #align finset.piecewise_insert_self Finset.piecewise_insert_self
@@ -3151,12 +3157,12 @@ theorem range_add_one : range (n + 1) = insert n (range n) :=
   range_succ
 #align finset.range_add_one Finset.range_add_one
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem not_mem_range_self : n ∉ range n :=
   Multiset.not_mem_range_self
 #align finset.not_mem_range_self Finset.not_mem_range_self
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) :=
   Multiset.self_mem_range_succ n
 #align finset.self_mem_range_succ Finset.self_mem_range_succ
@@ -3754,9 +3760,9 @@ theorem biUnion_insert [DecidableEq α] {a : α} : (insert a s).biUnion t = t a 
       exists_eq_left]
 #align finset.bUnion_insert Finset.biUnion_insert
 
--- ext <| λ x, by simp [or_and_distrib_right, exists_or_distrib]
 theorem biUnion_congr (hs : s₁ = s₂) (ht : ∀ a ∈ s₁, t₁ a = t₂ a) : s₁.biUnion t₁ = s₂.biUnion t₂ :=
-  ext fun x => by
+  ext fun x ↦ by
+    -- Porting note: this entire proof was `simp [or_and_distrib_right, exists_or_distrib]`
     simp_rw [mem_biUnion]
     apply exists_congr
     simp (config := { contextual := true }) only [hs, and_congr_right_iff, ht, implies_true]

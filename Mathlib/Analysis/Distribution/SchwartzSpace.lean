@@ -7,10 +7,10 @@ import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.Calculus.LineDeriv.Basic
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+import Mathlib.Topology.Algebra.UniformFilterBasis
 
 #align_import analysis.schwartz_space from "leanprover-community/mathlib"@"e137999b2c6f2be388f4cd3bbf8523de1910cd2b"
 
@@ -65,11 +65,8 @@ noncomputable section
 open scoped BigOperators Nat
 
 variable {𝕜 𝕜' D E F G V : Type*}
-
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
-
 variable [NormedAddCommGroup F] [NormedSpace ℝ F]
-
 variable (E F)
 
 /-- A function is a Schwartz function if it is smooth and all derivatives decay faster than
@@ -448,7 +445,6 @@ section Seminorms
 
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-
 variable (𝕜)
 
 /-- The seminorms of the Schwartz space given by the best constants in the definition of
@@ -563,7 +559,6 @@ section Topology
 
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-
 variable (𝕜 E F)
 
 instance instTopologicalSpace : TopologicalSpace 𝓢(E, F) :=
@@ -663,6 +658,23 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
     simpa [this] using .const _
   · exact (f.le_op_norm x).trans (by simp [mul_add])
 
+variable [NormedAddCommGroup D] [NormedSpace ℝ D]
+variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D] [FiniteDimensional ℝ D]
+
+open MeasureTheory FiniteDimensional
+
+/-- A measure `μ` has temperate growth if there is an `n : ℕ` such that `(1 + ‖x‖) ^ (- n)` is
+`μ`-integrable. -/
+class _root_.MeasureTheory.Measure.HasTemperateGrowth (μ : Measure D) : Prop :=
+  exists_integrable : ∃ (n : ℕ), Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ
+
+instance _root_.MeasureTheory.Measure.IsFiniteMeasure.instHasTemperateGrowth {μ : Measure D}
+    [h : IsFiniteMeasure μ] : μ.HasTemperateGrowth := ⟨⟨0, by simp⟩⟩
+
+instance _root_.MeasureTheory.Measure.IsAddHaarMeasure.instHasTemperateGrowth {μ : Measure D}
+    [h : μ.IsAddHaarMeasure] : μ.HasTemperateGrowth :=
+  ⟨⟨finrank ℝ D + 1, by apply integrable_one_add_norm; norm_num⟩⟩
+
 end TemperateGrowth
 
 section CLM
@@ -671,13 +683,9 @@ section CLM
 
 
 variable [NormedField 𝕜] [NormedField 𝕜']
-
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-
 variable [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
-
 variable [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
-
 variable {σ : 𝕜 →+* 𝕜'}
 
 /-- Create a semilinear map between Schwartz spaces.
@@ -767,7 +775,6 @@ end EvalCLM
 section Multiplication
 
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-
 variable [NormedAddCommGroup G] [NormedSpace ℝ G]
 
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
@@ -831,15 +838,10 @@ end Multiplication
 section Comp
 
 variable (𝕜)
-
-variable [IsROrC 𝕜]
-
+variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-
 variable [NormedAddCommGroup G] [NormedSpace ℝ G]
-
 variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-
 variable [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G]
 
 /-- Composition with a function on the right is a continuous linear map on Schwartz space
@@ -916,8 +918,7 @@ section Derivatives
 
 
 variable (𝕜)
-
-variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
@@ -1025,63 +1026,62 @@ section Integration
 
 open Real Complex Filter MeasureTheory MeasureTheory.Measure FiniteDimensional
 
-variable [NormedAddCommGroup D] [NormedSpace ℝ D] [NormedAddCommGroup V] [NormedSpace ℂ V]
-variable [MeasurableSpace D] [BorelSpace D] [FiniteDimensional ℝ D]
+variable [RCLike 𝕜]
+variable [NormedAddCommGroup D] [NormedSpace ℝ D]
+variable [NormedAddCommGroup V] [NormedSpace ℝ V] [NormedSpace 𝕜 V]
+variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D]
 
-lemma integrable_pow_mul (f : 𝓢(D, V)) {μ : Measure D} (k : ℕ) [IsAddHaarMeasure μ] :
-    Integrable (fun x ↦ ‖x‖ ^ k * ‖f x‖) μ := by
-  let l := finrank ℝ D + 1 + k
+variable {μ : Measure D} [hμ : HasTemperateGrowth μ]
+
+variable (μ) in
+lemma integrable_pow_mul (f : 𝓢(D, V))
+    (k : ℕ) : Integrable (fun x ↦ ‖x‖ ^ k * ‖f x‖) μ := by
+  rcases hμ.exists_integrable with ⟨n, h⟩
+  let l := n + k
   obtain ⟨C, C_nonneg, hC⟩ : ∃ C, 0 ≤ C ∧ ∀ x, (1 + ‖x‖) ^ l * ‖f x‖ ≤ C := by
     use 2 ^ l * (Finset.Iic (l, 0)).sup (fun m ↦ SchwartzMap.seminorm ℝ m.1 m.2) f, by positivity
     simpa using f.one_add_le_sup_seminorm_apply (m := (l, 0)) (k := l) (n := 0) le_rfl le_rfl
-  have : Integrable (fun x : D ↦ C * (1 + ‖x‖) ^ (-((finrank ℝ D + 1 : ℕ) : ℝ))) μ := by
-    apply (integrable_one_add_norm ?_).const_mul
-    exact Nat.cast_lt.mpr Nat.le.refl
+  have : Integrable (fun x : D ↦ C * (1 + ‖x‖) ^ (-(n : ℝ))) μ := h.const_mul _
   apply this.mono ((aestronglyMeasurable_id.norm.pow _).mul f.continuous.aestronglyMeasurable.norm)
     (eventually_of_forall (fun x ↦ ?_))
   conv_rhs => rw [norm_of_nonneg (by positivity), rpow_neg (by positivity), ← div_eq_mul_inv]
   rw [le_div_iff' (by positivity)]
   simp only [id_eq, Pi.mul_apply, Pi.pow_apply, norm_mul, norm_pow, norm_norm, rpow_nat_cast]
   calc
-    (1 + ‖x‖) ^ (finrank ℝ D + 1) * (‖x‖ ^ k * ‖f x‖)
-      ≤ (1 + ‖x‖) ^ (finrank ℝ D + 1) * ((1 + ‖x‖) ^ k * ‖f x‖) := by gcongr; simp
-    _ = (1 + ‖x‖) ^ (finrank ℝ D + 1 + k) * ‖f x‖ := by simp only [pow_add, mul_assoc]
+    (1 + ‖x‖) ^ n * (‖x‖ ^ k * ‖f x‖)
+      ≤ (1 + ‖x‖) ^ n * ((1 + ‖x‖) ^ k * ‖f x‖) := by gcongr; simp
+    _ = (1 + ‖x‖) ^ (n + k) * ‖f x‖ := by simp only [pow_add, mul_assoc]
     _ ≤ C := hC x
 
-lemma integrable (f : 𝓢(D, V)) {μ : Measure D} [IsAddHaarMeasure μ] :
-    Integrable f μ :=
-  (f.integrable_pow_mul (μ := μ) 0).mono f.continuous.aestronglyMeasurable
+lemma integrable (f : 𝓢(D, V)) : Integrable f μ :=
+  (f.integrable_pow_mul μ 0).mono f.continuous.aestronglyMeasurable
     (eventually_of_forall (fun _ ↦ by simp))
 
+variable (𝕜 μ) in
 /-- The integral as a continuous linear map from Schwartz space to the codomain. -/
-def integralCLM (μ : Measure D) [IsAddHaarMeasure μ] : 𝓢(D, V) →L[ℝ] V :=
+def integralCLM : 𝓢(D, V) →L[𝕜] V :=
   mkCLMtoNormedSpace (∫ x, · x ∂μ)
-    (fun f g ↦ integral_add f.integrable g.integrable)
+    (fun f g ↦ by
+      exact integral_add f.integrable g.integrable)
     (integral_smul · ·)
     (by
-      let l := finrank ℝ D + 1
-      let m := (l, 0)
-      use Finset.Iic (l, 0), 2 ^ l * ∫ x : D, (1 + ‖x‖) ^ (- (l : ℝ)) ∂μ
-      have hpos : 0 ≤ ∫ x : D, (1 + ‖x‖) ^ (- (l : ℝ)) ∂μ := by
-        apply integral_nonneg
-        intro
-        positivity
+      rcases hμ.exists_integrable with ⟨n, h⟩
+      let m := (n, 0)
+      use Finset.Iic m, 2 ^ n * ∫ x : D, (1 + ‖x‖) ^ (- (n : ℝ)) ∂μ
       refine ⟨by positivity, fun f ↦ (norm_integral_le_integral_norm f).trans ?_⟩
-      have h : ∀ x, ‖f x‖ ≤ (1 + ‖x‖) ^ (-(l : ℝ)) *
-          (2^l * ((Finset.Iic m).sup (fun m' => SchwartzMap.seminorm ℝ m'.1 m'.2) f)) := by
+      have h' : ∀ x, ‖f x‖ ≤ (1 + ‖x‖) ^ (-(n : ℝ)) *
+          (2 ^ n * ((Finset.Iic m).sup (fun m' => SchwartzMap.seminorm 𝕜 m'.1 m'.2) f)) := by
         intro x
         rw [rpow_neg (by positivity), ← div_eq_inv_mul, le_div_iff' (by positivity), rpow_nat_cast]
-        simpa using one_add_le_sup_seminorm_apply (m := m) (k := l) (n := 0) le_rfl le_rfl f x
-      apply (integral_mono (by simpa using f.integrable_pow_mul (μ := μ) 0) _ h).trans
-      · rw [integral_mul_right, ← mul_assoc]
-        gcongr ?_ * ?_
-        · rw [mul_comm]
-        · rfl
-      apply (integrable_one_add_norm (by simp)).mul_const)
+        simpa using one_add_le_sup_seminorm_apply (m := m) (k := n) (n := 0) le_rfl le_rfl f x
+      apply (integral_mono (by simpa using f.integrable_pow_mul μ 0) _ h').trans
+      · rw [integral_mul_right, ← mul_assoc, mul_comm (2 ^ n)]
+        rfl
+      apply h.mul_const)
 
+variable (𝕜) in
 @[simp]
-lemma integralCLM_apply {μ : Measure D} [IsAddHaarMeasure μ] (f : 𝓢(D, V)) :
-    integralCLM μ f = ∫ x, f x ∂μ := rfl
+lemma integralCLM_apply (f : 𝓢(D, V)) : integralCLM 𝕜 μ f = ∫ x, f x ∂μ := by rfl
 
 end Integration
 
@@ -1115,8 +1115,7 @@ def toContinuousMap (f : 𝓢(E, F)) : C(E, F) :=
 #align schwartz_map.to_continuous_map SchwartzMap.toContinuousMap
 
 variable (𝕜 E F)
-
-variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The inclusion map from Schwartz functions to bounded continuous functions as a continuous linear
 map. -/
@@ -1137,6 +1136,8 @@ theorem toBoundedContinuousFunctionCLM_apply (f : 𝓢(E, F)) (x : E) :
 
 variable {E}
 
+section DiracDelta
+
 /-- The Dirac delta distribution -/
 def delta (x : E) : 𝓢(E, F) →L[𝕜] F :=
   (BoundedContinuousFunction.evalCLM 𝕜 x).comp (toBoundedContinuousFunctionCLM 𝕜 E F)
@@ -1146,6 +1147,16 @@ def delta (x : E) : 𝓢(E, F) →L[𝕜] F :=
 theorem delta_apply (x₀ : E) (f : 𝓢(E, F)) : delta 𝕜 F x₀ f = f x₀ :=
   rfl
 #align schwartz_map.delta_apply SchwartzMap.delta_apply
+
+open MeasureTheory MeasureTheory.Measure
+
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] [CompleteSpace F]
+
+/-- Integrating against the Dirac measure is equal to the delta distribution. -/
+@[simp]
+theorem integralCLM_dirac_eq_delta (x : E) : integralCLM 𝕜 (dirac x) = delta 𝕜 F x := by aesop
+
+end DiracDelta
 
 end BoundedContinuousFunction
 
@@ -1187,7 +1198,7 @@ def toZeroAtInfty (f : 𝓢(E, F)) : C₀(E, F) where
   rfl
 
 variable (𝕜 E F)
-variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The inclusion map from Schwartz functions to continuous functions vanishing at infinity as a
 continuous linear map. -/

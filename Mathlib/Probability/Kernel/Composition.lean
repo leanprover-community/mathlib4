@@ -906,6 +906,13 @@ instance IsSFiniteKernel.fst (κ : kernel α (β × γ)) [IsSFiniteKernel κ] : 
   by rw [kernel.fst]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.fst ProbabilityTheory.kernel.IsSFiniteKernel.fst
 
+instance (priority := 100) isFiniteKernel_of_isFiniteKernel_fst {κ : kernel α (β × γ)}
+    [h : IsFiniteKernel (fst κ)] :
+    IsFiniteKernel κ := by
+  refine ⟨h.bound, h.bound_lt_top, fun a ↦ le_trans ?_ (measure_le_bound (fst κ) a Set.univ)⟩
+  rw [fst_apply' _ _ MeasurableSet.univ]
+  simp
+
 lemma fst_map_prod (κ : kernel α β) {f : β → γ} {g : β → δ}
     (hf : Measurable f) (hg : Measurable g) :
     fst (map κ (fun x ↦ (f x, g x)) (hf.prod_mk hg)) = map κ f hf := by
@@ -913,6 +920,11 @@ lemma fst_map_prod (κ : kernel α β) {f : β → γ} {g : β → δ}
   rw [fst_apply' _ _ hs, map_apply', map_apply' _ _ _ hs]
   · rfl
   · exact measurable_fst hs
+
+lemma fst_map_id_prod (κ : kernel α β) {γ : Type*} {mγ : MeasurableSpace γ}
+    {f : β → γ} (hf : Measurable f) :
+    fst (map κ (fun a ↦ (a, f a)) (measurable_id.prod_mk hf)) = κ := by
+  rw [fst_map_prod _ measurable_id' hf, kernel.map_id']
 
 @[simp]
 lemma fst_compProd (κ : kernel α β) (η : kernel (α × β) γ) [IsSFiniteKernel κ] [IsMarkovKernel η] :
@@ -967,6 +979,13 @@ instance IsSFiniteKernel.snd (κ : kernel α (β × γ)) [IsSFiniteKernel κ] : 
   by rw [kernel.snd]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.snd ProbabilityTheory.kernel.IsSFiniteKernel.snd
 
+instance (priority := 100) isFiniteKernel_of_isFiniteKernel_snd {κ : kernel α (β × γ)}
+    [h : IsFiniteKernel (snd κ)] :
+    IsFiniteKernel κ := by
+  refine ⟨h.bound, h.bound_lt_top, fun a ↦ le_trans ?_ (measure_le_bound (snd κ) a Set.univ)⟩
+  rw [snd_apply' _ _ MeasurableSet.univ]
+  simp
+
 lemma snd_map_prod (κ : kernel α β) {f : β → γ} {g : β → δ}
     (hf : Measurable f) (hg : Measurable g) :
     snd (map κ (fun x ↦ (f x, g x)) (hf.prod_mk hg)) = map κ g hg := by
@@ -974,6 +993,11 @@ lemma snd_map_prod (κ : kernel α β) {f : β → γ} {g : β → δ}
   rw [snd_apply' _ _ hs, map_apply', map_apply' _ _ _ hs]
   · rfl
   · exact measurable_snd hs
+
+lemma snd_map_prod_id (κ : kernel α β) {γ : Type*} {mγ : MeasurableSpace γ}
+    {f : β → γ} (hf : Measurable f) :
+    snd (map κ (fun a ↦ (f a, a)) (hf.prod_mk measurable_id)) = κ := by
+  rw [snd_map_prod _ hf measurable_id', kernel.map_id']
 
 lemma snd_prodMkLeft (δ : Type*) [MeasurableSpace δ] (κ : kernel α (β × γ)) :
     snd (prodMkLeft δ κ) = prodMkLeft δ (snd κ) := rfl

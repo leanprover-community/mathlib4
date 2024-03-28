@@ -154,7 +154,7 @@ theorem nodup_of_pairwise_disjoint {l : List (Perm α)} (h1 : (1 : Perm α) ∉ 
 
 theorem pow_apply_eq_self_of_apply_eq_self {x : α} (hfx : f x = x) : ∀ n : ℕ, (f ^ n) x = x
   | 0 => rfl
-  | n + 1 => by rw [pow_succ', mul_apply, hfx, pow_apply_eq_self_of_apply_eq_self hfx n]
+  | n + 1 => by rw [pow_succ, mul_apply, hfx, pow_apply_eq_self_of_apply_eq_self hfx n]
 #align equiv.perm.pow_apply_eq_self_of_apply_eq_self Equiv.Perm.pow_apply_eq_self_of_apply_eq_self
 
 theorem zpow_apply_eq_self_of_apply_eq_self {x : α} (hfx : f x = x) : ∀ n : ℤ, (f ^ n) x = x
@@ -167,16 +167,16 @@ theorem pow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
   | 0 => Or.inl rfl
   | n + 1 =>
     (pow_apply_eq_of_apply_apply_eq_self hffx n).elim
-      (fun h => Or.inr (by rw [pow_succ, mul_apply, h]))
-      fun h => Or.inl (by rw [pow_succ, mul_apply, h, hffx])
+      (fun h => Or.inr (by rw [pow_succ', mul_apply, h]))
+      fun h => Or.inl (by rw [pow_succ', mul_apply, h, hffx])
 #align equiv.perm.pow_apply_eq_of_apply_apply_eq_self Equiv.Perm.pow_apply_eq_of_apply_apply_eq_self
 
 theorem zpow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
     ∀ i : ℤ, (f ^ i) x = x ∨ (f ^ i) x = f x
   | (n : ℕ) => pow_apply_eq_of_apply_apply_eq_self hffx n
   | Int.negSucc n => by
-    rw [zpow_negSucc, inv_eq_iff_eq, ← f.injective.eq_iff, ← mul_apply, ← pow_succ, eq_comm,
-      inv_eq_iff_eq, ← mul_apply, ← pow_succ', @eq_comm _ x, or_comm]
+    rw [zpow_negSucc, inv_eq_iff_eq, ← f.injective.eq_iff, ← mul_apply, ← pow_succ', eq_comm,
+      inv_eq_iff_eq, ← mul_apply, ← pow_succ, @eq_comm _ x, or_comm]
     exact pow_apply_eq_of_apply_apply_eq_self hffx _
 #align equiv.perm.zpow_apply_eq_of_apply_apply_eq_self Equiv.Perm.zpow_apply_eq_of_apply_apply_eq_self
 
@@ -364,7 +364,7 @@ theorem apply_mem_support {x : α} : f x ∈ f.support ↔ x ∈ f.support := by
   rw [mem_support, mem_support, Ne.def, Ne.def, apply_eq_iff_eq]
 #align equiv.perm.apply_mem_support Equiv.Perm.apply_mem_support
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem apply_pow_apply_eq_iff (f : Perm α) (n : ℕ) {x : α} :
     f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
@@ -375,7 +375,7 @@ theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.support ↔ x
   simp only [mem_support, ne_eq, apply_pow_apply_eq_iff]
 #align equiv.perm.pow_apply_mem_support Equiv.Perm.pow_apply_mem_support
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem apply_zpow_apply_eq_iff (f : Perm α) (n : ℤ) {x : α} :
     f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
@@ -391,7 +391,7 @@ theorem pow_eq_on_of_mem_support (h : ∀ x ∈ f.support ∩ g.support, f x = g
   induction' k with k hk
   · simp
   · intro x hx
-    rw [pow_succ', mul_apply, pow_succ', mul_apply, h _ hx, hk]
+    rw [pow_succ, mul_apply, pow_succ, mul_apply, h _ hx, hk]
     rwa [mem_inter, apply_mem_support, ← h _ hx, apply_mem_support, ← mem_inter]
 #align equiv.perm.pow_eq_on_of_mem_support Equiv.Perm.pow_eq_on_of_mem_support
 
@@ -600,7 +600,7 @@ theorem card_support_ne_one (f : Perm α) : f.support.card ≠ 1 := by
 
 @[simp]
 theorem card_support_le_one {f : Perm α} : f.support.card ≤ 1 ↔ f = 1 := by
-  rw [le_iff_lt_or_eq, Nat.lt_succ_iff, le_zero_iff, card_support_eq_zero, or_iff_not_imp_right,
+  rw [le_iff_lt_or_eq, Nat.lt_succ_iff, Nat.le_zero, card_support_eq_zero, or_iff_not_imp_right,
     imp_iff_right f.card_support_ne_one]
 #align equiv.perm.card_support_le_one Equiv.Perm.card_support_le_one
 

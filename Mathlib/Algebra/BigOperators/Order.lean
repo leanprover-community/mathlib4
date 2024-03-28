@@ -854,7 +854,7 @@ because `compareHyp` can't look for assumptions behind binders.
 @[positivity Finset.sum _ _]
 def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
   match e with
-  | ~q(@Finset.sum _ $ι $instα $s $f) =>
+  | ~q(@Finset.sum $ι _ $instα $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
     have body : Q($α) := .betaRev f #[i]
     let rbody ← core zα pα body

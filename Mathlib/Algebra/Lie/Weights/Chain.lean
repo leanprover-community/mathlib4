@@ -65,7 +65,7 @@ lemma eventually_weightSpace_smul_add_eq_bot :
     simp [f]
   intro k l hkl
   replace hkl : (k : ℤ) • χ₁ = (l : ℤ) • χ₁ := by
-    simpa only [f, add_left_inj, coe_nat_zsmul] using hkl
+    simpa only [f, add_left_inj, natCast_zsmul] using hkl
   exact Nat.cast_inj.mp <| smul_left_injective ℤ hχ₁ hkl
 
 lemma exists_weightSpace_smul_add_eq_bot :
@@ -79,9 +79,9 @@ lemma exists₂_weightSpace_smul_add_eq_bot :
   obtain ⟨q, hq₀, hq⟩ := exists_weightSpace_smul_add_eq_bot M χ₁ χ₂ hχ₁
   obtain ⟨p, hp₀, hp⟩ := exists_weightSpace_smul_add_eq_bot M (-χ₁) χ₂ (neg_ne_zero.mpr hχ₁)
   refine ⟨-(p : ℤ), by simpa, q, by simpa, ?_, ?_⟩
-  · rw [neg_smul, ← smul_neg, coe_nat_zsmul]
+  · rw [neg_smul, ← smul_neg, natCast_zsmul]
     exact hp
-  · rw [coe_nat_zsmul]
+  · rw [natCast_zsmul]
     exact hq
 
 end
@@ -209,7 +209,7 @@ lemma exists_forall_mem_rootSpaceProductNegSelf_smul_add_eq_zero
     LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (weightSpaceChain M α χ p q) h₃]
   simp_rw [LieSubmodule.toEndomorphism_restrict_eq_toEndomorphism,
     trace_toEndomorphism_weightSpace, Pi.add_apply, Pi.smul_apply, smul_add, ← smul_assoc,
-    Finset.sum_add_distrib, ← Finset.sum_smul, coe_nat_zsmul]
+    Finset.sum_add_distrib, ← Finset.sum_smul, natCast_zsmul]
 
 end IsCartanSubalgebra
 

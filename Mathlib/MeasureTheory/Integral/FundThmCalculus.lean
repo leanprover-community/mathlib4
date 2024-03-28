@@ -1251,7 +1251,7 @@ theorem integral_deriv_eq_sub' (f) (hderiv : deriv f = f')
 
 /-- A variant of `intervalIntegral.integral_deriv_eq_sub`, the Fundamental theorem
 of calculus, involving integrating over the unit interval. -/
-lemma integral_unitInterval_deriv_eq_sub [IsROrC 𝕜] [NormedSpace 𝕜 E] [IsScalarTower ℝ 𝕜 E]
+lemma integral_unitInterval_deriv_eq_sub [RCLike 𝕜] [NormedSpace 𝕜 E] [IsScalarTower ℝ 𝕜 E]
     {f f' : 𝕜 → E} {z₀ z₁ : 𝕜}
     (hcont : ContinuousOn (fun t : ℝ ↦ f' (z₀ + t • z₁)) (Set.Icc 0 1))
     (hderiv : ∀ t ∈ Set.Icc (0 : ℝ) 1, HasDerivAt f (f' (z₀ + t • z₁)) (z₀ + t • z₁)) :
@@ -1361,7 +1361,7 @@ theorem integral_mul_deriv_eq_deriv_mul {u v u' v' : ℝ → A}
     (hu' : IntervalIntegrable u' volume a b) (hv' : IntervalIntegrable v' volume a b) :
     ∫ x in a..b, u x * v' x = u b * v b - u a * v a - ∫ x in a..b, u' x * v x := by
   rw [← integral_deriv_mul_eq_sub hu hv hu' hv', ← integral_sub]
-  · exact integral_congr fun x _ => by simp only [add_sub_cancel']
+  · exact integral_congr fun x _ => by simp only [add_sub_cancel_left]
   · exact
       (hu'.mul_continuousOn (HasDerivAt.continuousOn hv)).add
         (hv'.continuousOn_mul (HasDerivAt.continuousOn hu))

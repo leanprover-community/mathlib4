@@ -134,7 +134,6 @@ noncomputable section
 universe u v w
 
 variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
-
 variable (K : Type w) [Field K] [Algebra F K]
 
 section IsPurelyInseparable
@@ -385,7 +384,7 @@ instance perfectClosure.perfectRing (p : ℕ) [ExpChar E p]
   obtain ⟨x', hx⟩ := surjective_frobenius E p x.1
   obtain ⟨n, y, hy⟩ := (mem_perfectClosure_iff_pow_mem p).1 x.2
   rw [frobenius_def] at hx
-  rw [← hx, ← pow_mul, ← pow_succ] at hy
+  rw [← hx, ← pow_mul, ← pow_succ'] at hy
   exact ⟨⟨x', (mem_perfectClosure_iff_pow_mem p).2 ⟨n + 1, y, hy⟩⟩, by
     simp_rw [frobenius_def, SubmonoidClass.mk_pow, hx]⟩
 
@@ -1006,8 +1005,8 @@ theorem IntermediateField.sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInsepara
     rintro x ⟨y, hy⟩
     obtain ⟨n, z, hz⟩ := IsPurelyInseparable.pow_mem F q y
     refine ⟨n, algebraMap F M z, ?_⟩
-    rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply F E K, hz, ← hy, map_pow]
-    rfl
+    rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply F E K, hz, ← hy, map_pow,
+      AlgHom.toRingHom_eq_coe, IsScalarTower.coe_toAlgHom]
   have h := lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic F E L
     (IsPurelyInseparable.isAlgebraic F E)
   rw [IsPurelyInseparable.sepDegree_eq_one F E, Cardinal.lift_one, one_mul] at h
