@@ -326,7 +326,7 @@ lemma leftRegular_apply (x : MonoidAlgebra k G) (g : G) :
     Finsupp.sum_single_index, one_mul]
   rfl
 
-lemma dimension_irreducible_dvd_card_group : ∀ V : FdRep k G, Simple V → finrank k V ∣ Fintype.card G := by
+lemma dim_irrep_dvd_card_group : ∀ V : FdRep k G, Simple V → finrank k V ∣ Fintype.card G := by
   sorry
 
 /-- Irreducbile characters are a basis of ClassFunction G -/
@@ -368,7 +368,22 @@ lemma orthogonal_to_all_characters_implies_zero (f : G → k) (hf : IsClassFunct
               exact h V hV
         rw [← hc] at tr
         simp only [Action.Hom.id_hom, map_smul, smul_eq_mul, mul_eq_mul_left_iff] at this
-        sorry
+        apply Or.resolve_right at this
+        have tr_rank := this hz
+        simp at tr
+        apply Or.resolve_left at tr
+        have tr_zero := tr hz
+        rw [tr_zero] at tr_rank
+        symm at tr_rank
+        have inv_dim : Invertible (finrank k V : k) := by
+          choose a ha using dim_irrep_dvd_card_group k G V hV
+          apply_fun (fun (n : ℕ) ↦ (n : k)) at ha
+          have : (Fintype.card G : k) ≠ 0 := by
+            apply nonzero_of_invertible
+          -- apply ne_zero_of_dvd_ne_zero
+          sorry
+        rw [tr_rank] at inv_dim
+        apply nonzero_of_invertible (0 : k) rfl
       simp only [c_zero, zero_smul]
     sorry -- needs Maschke's theorem
   have : (averageClassFunction f' hf' (RegularRep k G)).hom (1 : MonoidAlgebra k G) = 0 := by
@@ -376,7 +391,6 @@ lemma orthogonal_to_all_characters_implies_zero (f : G → k) (hf : IsClassFunct
     rfl
   simp_rw [averageClassFunction, averageFunction, RegularRep] at this
   change (⅟((Fintype.card ↑G) : k) • (∑ g, f' g • (ρ (of (ofMulAction k ↑G ↑G))) g) (1 : MonoidAlgebra k G)) = 0 at this
-
   have action (g : G) (x : MonoidAlgebra k G) : ((ρ (of (ofMulAction k ↑G ↑G))) g) x = (MonoidAlgebra.single g 1) * x := by
         show Representation.ofMulAction k G G g x = _
         apply leftRegular_apply
