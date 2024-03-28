@@ -8,6 +8,7 @@ import Mathlib.Algebra.BigOperators.Multiset.Order
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Finset.Powerset
+import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sum
