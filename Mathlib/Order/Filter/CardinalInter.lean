@@ -11,7 +11,7 @@ import Mathlib.SetTheory.Cardinal.Ordinal
 # Filters with a cardinal intersection property
 
 In this file we define `CardinalInterFilter l c` to be the class of filters with the following
-property: for any collection of sets `s ∈ l` with cardinality at most `c`, their intersection
+property: for any collection of sets `s ∈ l` with cardinality strictly less than `c`, their intersection
 belongs to `l` as well.
 
 # Main results
@@ -51,7 +51,7 @@ theorem cardinal_sInter_mem {S : Set (Set α)} [CardinalInterFilter l c] (hSc : 
   CardinalInterFilter.cardinal_sInter_mem _ hSc⟩
 
 /-- Every filter is a CardinalInterFilter with c = aleph0 -/
-theorem CardinalInterFilter.filter_is_aleph0 (l : Filter α) : CardinalInterFilter l aleph0 where
+theorem _root_.Filter.cardinalInterFilter_aleph0 (l : Filter α) : CardinalInterFilter l aleph0 where
   cardinal_sInter_mem := by
     simp_all only [aleph_zero, lt_aleph0_iff_subtype_finite, setOf_mem_eq, sInter_mem,
       implies_true, forall_const]
@@ -65,20 +65,20 @@ theorem CardinalInterFilter.toCountableInterFilter (l : Filter α) [CardinalInte
       (lt_of_le_of_lt (Set.Countable.le_aleph0 hS) hc) a
 
 /-- Every CountableInterFilter is a CardinalInterFilter with c = aleph 1-/
-theorem CountableInterFilter.toCardinalInterFilter (l : Filter α) [CountableInterFilter l] :
+instance CountableInterFilter.toCardinalInterFilter (l : Filter α) [CountableInterFilter l] :
     CardinalInterFilter l (aleph 1) where
   cardinal_sInter_mem := fun S hS a ↦ CountableInterFilter.countable_sInter_mem S
     ((countable_iff_lt_aleph_one S).mpr hS) a
 
 /-- Every CardinalInterFilter for some c also is a CardinalInterFilter for some a < c -/
-theorem CardinalInterFilter.to_lower_cardinality (l : Filter α) [CardinalInterFilter l c]
+theorem CardinalInterFilter.of_CardinalInterFilter_of_lt (l : Filter α) [CardinalInterFilter l c]
     {a : Cardinal.{u}} (hac : a < c) :
   CardinalInterFilter l a where
     cardinal_sInter_mem :=
       fun S hS a ↦ CardinalInterFilter.cardinal_sInter_mem S (lt_trans hS hac) a
 
--- NOTE: Some basic API to show that this works, initial reviews may concentrate on the above
--- definitions first.
+namespace Filter
+
 variable [CardinalInterFilter l c]
 
 theorem cardinal_iInter_mem {s : ι → Set α} (hic : #ι < c) :
