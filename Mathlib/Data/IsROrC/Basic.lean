@@ -26,6 +26,17 @@ immediately from the two instances of the class.
 The instance for `ℝ` is registered in this file.
 The instance for `ℂ` is declared in `Mathlib/Analysis/Complex/Basic.lean`.
 
+## A note on `AlgebraicClosure ℝ`
+
+`AlgebraicClosure ℝ` is a field isomorphic to the `ℂ` but with no preferred choice of square
+root of `-1`. However there is still a unique non-identity `ℝ`-algebra isomorphism
+`conj : AlgebraicClosure ℝ →ₐ[ℝ] AlgebraicClosure ℝ` making it into a `StarRing`, there is a natural
+norm on `AlgebraicClosure ℝ` (coming from the isomorphism with `ℂ`, as the norm on `ℂ` is
+`conj`-invariant), and all of the results about `IsROrC` fields which do not mention `im` or
+`I` or `ℂ` (for example, every single result in `Mathlib.Data.IsROrC.Lemmas`) is also true
+for `AlgebraicClosure ℝ`. If and when we need this theory (it plays a role in the local Langlands
+philosophy), we may need to rethink the generality in which those lemmas are proved.
+
 ## Implementation notes
 
 The coercion from reals into an `IsROrC` field is done by registering `IsROrC.ofReal` as
@@ -53,6 +64,29 @@ open ComplexConjugate
 
 /--
 This typeclass captures properties shared by ℝ and ℂ, with an API that closely matches that of ℂ.
+
+While the name of the class begins with `Is`,
+this typeclass carries data (all operations common to real and complex numbers),
+it does not just claim the existence of these operations.
+
+In particular, `IsROrC.I` is equal to `Complex.I`, not `-Complex.I`
+in case of the complex numbers instance.
+For real numbers, it is chosen to be zero.
+
+This class has exactly two instances: one for `ℝ` and one for `ℂ`.
+In particular, there is no instance for `ULift K`.
+This is done to make it possible to use` [IsROrC K] [NormedSpace K E]`
+as an assumption of an instance.
+
+To avoid non-defeq instance diamonds, every data-carrying instance for `IsROrC` fields
+must agree with the corresponding instances for `ℝ` and `ℂ`.
+In most cases, we ensure these definitional equalities by `extend`ing corresponding typeclasses
+and reusing their `ℝ` and `ℂ` instances in the instances for `IsROrC ℝ` and `IsROrC ℂ`.
+
+Some `Prop`-valued axioms of this typeclass (e.g., completeness) can be deduced from the others,
+but we do not minimize the axioms,
+because it is easier to prove extra axioms in 2 instances
+than to deduce them from other axioms.
 -/
 class IsROrC (K : semiOutParam (Type*)) extends DenselyNormedField K, StarRing K,
     NormedAlgebra ℝ K, CompleteSpace K where
