@@ -1,4 +1,4 @@
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Init
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Init.Function

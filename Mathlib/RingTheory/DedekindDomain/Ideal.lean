@@ -583,13 +583,12 @@ open FractionalIdeal
 
 open Ideal
 
-noncomputable instance FractionalIdeal.semifield : Semifield (FractionalIdeal A⁰ K) :=
-  { coeIdeal_injective.nontrivial with
-    inv := fun I => I⁻¹
-    inv_zero := inv_zero' _
-    div := (· / ·)
-    div_eq_mul_inv := FractionalIdeal.div_eq_mul_inv
-    mul_inv_cancel := fun I => FractionalIdeal.mul_inv_cancel }
+noncomputable instance FractionalIdeal.semifield : Semifield (FractionalIdeal A⁰ K) where
+  __ := coeIdeal_injective.nontrivial
+  inv_zero := inv_zero' _
+  div_eq_mul_inv := FractionalIdeal.div_eq_mul_inv
+  mul_inv_cancel _ := FractionalIdeal.mul_inv_cancel
+  nnqsmul := _
 #align fractional_ideal.semifield FractionalIdeal.semifield
 
 /-- Fractional ideals have cancellative multiplication in a Dedekind domain.

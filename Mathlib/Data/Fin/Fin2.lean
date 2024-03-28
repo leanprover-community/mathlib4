@@ -3,9 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init.Data.Nat.Notation
-import Mathlib.Mathport.Rename
+import Mathlib.Data.Nat.Init
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Mathport.Rename
 
 #align_import data.fin.fin2 from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 

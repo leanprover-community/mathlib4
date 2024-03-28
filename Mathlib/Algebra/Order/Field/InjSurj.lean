@@ -20,41 +20,46 @@ open Function OrderDual
 variable {ι α β : Type*}
 
 namespace Function
+variable [Zero β] [One β] [Add β] [Mul β] [Neg β] [Sub β] [Pow β ℕ] [SMul ℕ β] [SMul ℚ≥0 β]
+  [SMul ℤ β] [SMul ℚ β] [NatCast β] [IntCast β] [NNRatCast β] [RatCast β] [Inv β] [Div β] [Pow β ℤ]
+  [Sup β] [Inf β]
 
 -- See note [reducible non-instances]
 /-- Pullback a `LinearOrderedSemifield` under an injective map. -/
 @[reducible]
-def Injective.linearOrderedSemifield [LinearOrderedSemifield α] [Zero β] [One β] [Add β] [Mul β]
-    [Pow β ℕ] [SMul ℕ β] [NatCast β] [Inv β] [Div β] [Pow β ℤ] [Sup β] [Inf β] (f : β → α)
-    (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
-    (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (div : ∀ x y, f (x / y) = f x / f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
+def Injective.linearOrderedSemifield [LinearOrderedSemifield α] (f : β → α) (hf : Injective f)
+    (zero : f 0 = 0) (one : f 1 = 1)
+    (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
+    (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
+    (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
-    (nat_cast : ∀ n : ℕ, f n = n) (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y))
-    (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) : LinearOrderedSemifield β :=
-  { hf.linearOrderedSemiring f zero one add mul nsmul npow nat_cast hsup hinf,
-    hf.semifield f zero one add mul inv div nsmul npow zpow nat_cast with }
+    (natCast : ∀ n : ℕ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q)
+    (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
+    LinearOrderedSemifield β where
+  toLinearOrderedCommSemiring :=
+    hf.linearOrderedCommSemiring f zero one add mul nsmul npow natCast hsup hinf
+  __ := hf.semifield f zero one add mul inv div nsmul nnqsmul npow zpow natCast nnratCast
 #align function.injective.linear_ordered_semifield Function.Injective.linearOrderedSemifield
 
 
 -- See note [reducible non-instances]
 /-- Pullback a `LinearOrderedField` under an injective map. -/
 @[reducible]
-def Injective.linearOrderedField [LinearOrderedField α] [Zero β] [One β] [Add β] [Mul β] [Neg β]
-    [Sub β] [Pow β ℕ] [SMul ℕ β] [SMul ℤ β] [SMul ℚ β] [NatCast β] [IntCast β]
-    [RatCast β] [Inv β] [Div β] [Pow β ℤ] [Sup β] [Inf β] (f : β → α) (hf : Injective f)
+def Injective.linearOrderedField [LinearOrderedField α] (f : β → α) (hf : Injective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (qsmul : ∀ (x) (n : ℚ), f (n • x) = n • f x)
+    (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x)
+    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (qsmul : ∀ (q : ℚ) (x), f (q • x) = q • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
-    (nat_cast : ∀ n : ℕ, f n = n) (int_cast : ∀ n : ℤ, f n = n) (rat_cast : ∀ n : ℚ, f n = n)
-    (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
-    LinearOrderedField β :=
-  { hf.linearOrderedRing f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast hsup hinf,
-    hf.field f zero one add mul neg sub inv div nsmul zsmul qsmul npow zpow nat_cast int_cast
-      rat_cast with }
+    (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q)
+    (ratCast : ∀ q : ℚ, f q = q) (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y))
+    (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) : LinearOrderedField β where
+  toLinearOrderedCommRing := hf.linearOrderedCommRing f zero one add mul neg sub nsmul zsmul npow
+    natCast intCast hsup hinf
+  __ := hf.field f zero one add mul neg sub inv div nsmul nnqsmul zsmul qsmul npow zpow natCast
+    intCast nnratCast ratCast
 #align function.injective.linear_ordered_field Function.Injective.linearOrderedField
 
 end Function

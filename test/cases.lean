@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Cases
 import Mathlib.Init.Logic
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Init
 
 set_option autoImplicit true
 example (x : α × β × γ) : True := by

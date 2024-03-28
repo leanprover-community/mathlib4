@@ -3,7 +3,7 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Data.Nat.Init
 import Mathlib.Init.Logic
 import Mathlib.Tactic.Constructor
 import Std.Tactic.PermuteGoals

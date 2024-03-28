@@ -227,7 +227,7 @@ theorem int_cast_surjective : Function.Surjective ((↑) : ℤ → ZMod n) :=
 #align zmod.int_cast_surjective ZMod.int_cast_surjective
 
 theorem cast_id : ∀ (n) (i : ZMod n), (ZMod.cast i : ZMod n) = i
-  | 0, _ => Int.cast_id
+  | 0, _ => Int.cast_id _
   | _ + 1, i => nat_cast_zmod_val i
 #align zmod.cast_id ZMod.cast_id
 
@@ -1039,7 +1039,7 @@ theorem valMinAbs_def_pos {n : ℕ} [NeZero n] (x : ZMod n) :
 
 @[simp, norm_cast]
 theorem coe_valMinAbs : ∀ {n : ℕ} (x : ZMod n), (x.valMinAbs : ZMod n) = x
-  | 0, x => Int.cast_id
+  | 0, x => Int.cast_id _
   | k@(n + 1), x => by
     rw [valMinAbs_def_pos]
     split_ifs
@@ -1244,12 +1244,11 @@ private theorem mul_inv_cancel_aux (a : ZMod p) (h : a ≠ 0) : a * a⁻¹ = 1 :
   rwa [Nat.Prime.coprime_iff_not_dvd Fact.out, ← CharP.cast_eq_zero_iff (ZMod p)]
 
 /-- Field structure on `ZMod p` if `p` is prime. -/
-instance : Field (ZMod p) :=
-  { inferInstanceAs (CommRing (ZMod p)), inferInstanceAs (Inv (ZMod p)),
-    ZMod.nontrivial p with
-    mul_inv_cancel := mul_inv_cancel_aux p
-    inv_zero := inv_zero p
-    qsmul := qsmulRec _ }
+instance : Field (ZMod p) where
+  mul_inv_cancel := mul_inv_cancel_aux p
+  inv_zero := inv_zero p
+  nnqsmul := _
+  qsmul := _
 
 /-- `ZMod p` is an integral domain when `p` is prime. -/
 instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by

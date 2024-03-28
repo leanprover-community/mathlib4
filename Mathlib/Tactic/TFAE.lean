@@ -3,10 +3,10 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Simon Hudon, Thomas Murrills, Mario Carneiro
 -/
-import Qq
-import Mathlib.Init.Data.Nat.Notation
-import Mathlib.Util.AtomM
 import Mathlib.Data.List.TFAE
+import Mathlib.Data.Nat.Init
+import Mathlib.Util.AtomM
+import Qq
 
 /-!
 # The Following Are Equivalent (TFAE)

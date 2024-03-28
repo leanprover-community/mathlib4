@@ -5,7 +5,6 @@ Authors: Yaël Dillies, George Shakan
 -/
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Data.Finset.Pointwise
-import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Tactic.GCongr
 import Mathlib.Algebra.GroupPower.Order
 

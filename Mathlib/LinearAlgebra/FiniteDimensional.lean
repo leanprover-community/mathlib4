@@ -854,6 +854,7 @@ noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [h : R
         rw [dif_neg hx]
         exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx) :)
     inv_zero := dif_pos rfl
+    nnqsmul := _
     qsmul := qsmulRec _ }
 #align division_ring_of_finite_dimensional divisionRingOfFiniteDimensional
 

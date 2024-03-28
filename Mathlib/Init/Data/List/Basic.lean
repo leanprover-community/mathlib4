@@ -3,8 +3,8 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
+import Mathlib.Data.Nat.Init
 import Mathlib.Mathport.Rename
-import Mathlib.Init.Data.Nat.Notation
 import Std.Data.List.Basic
 /-!
 Definitions for `List` not (yet) in `Std`

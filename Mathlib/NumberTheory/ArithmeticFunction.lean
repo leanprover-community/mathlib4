@@ -190,9 +190,7 @@ instance intCoe [AddGroupWithOne R] : Coe (ArithmeticFunction ℤ) (ArithmeticFu
   ⟨ofInt⟩
 #align nat.arithmetic_function.int_coe ArithmeticFunction.intCoe
 
-@[simp]
-theorem intCoe_int (f : ArithmeticFunction ℤ) : ofInt f = f :=
-  ext fun _ => Int.cast_id
+@[simp] lemma intCoe_int (f : ArithmeticFunction ℤ) : ofInt f = f := ext fun _ ↦ Int.cast_id _
 #align nat.arithmetic_function.int_coe_int ArithmeticFunction.intCoe_int
 
 @[simp]

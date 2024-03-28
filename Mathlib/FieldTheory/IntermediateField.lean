@@ -234,9 +234,9 @@ protected theorem zsmul_mem {x : L} (hx : x ∈ S) (n : ℤ) : n • x ∈ S :=
   zsmul_mem hx n
 #align intermediate_field.zsmul_mem IntermediateField.zsmul_mem
 
-protected theorem coe_int_mem (n : ℤ) : (n : L) ∈ S :=
-  coe_int_mem S n
-#align intermediate_field.coe_int_mem IntermediateField.coe_int_mem
+protected theorem intCast_mem (n : ℤ) : (n : L) ∈ S :=
+  intCast_mem S n
+#align intermediate_field.coe_int_mem IntermediateField.intCast_mem
 
 protected theorem coe_add (x y : S) : (↑(x + y) : L) = ↑x + ↑y :=
   rfl
@@ -268,8 +268,8 @@ protected theorem coe_pow (x : S) (n : ℕ) : (↑(x ^ n : S) : L) = (x : L) ^ n
 
 end InheritedLemmas
 
-theorem coe_nat_mem (n : ℕ) : (n : L) ∈ S := by simpa using coe_int_mem S n
-#align intermediate_field.coe_nat_mem IntermediateField.coe_nat_mem
+theorem natCast_mem (n : ℕ) : (n : L) ∈ S := by simpa using intCast_mem S n
+#align intermediate_field.coe_nat_mem IntermediateField.natCast_mem
 
 end IntermediateField
 
@@ -329,6 +329,7 @@ def Subfield.toIntermediateField (S : Subfield L) (algebra_map_mem : ∀ x, alge
 
 namespace IntermediateField
 
+-- TODO: This is just a special case of `SubfieldClass.toField`
 /-- An intermediate field inherits a field structure -/
 instance toField : Field S :=
   S.toSubfield.toField

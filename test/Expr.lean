@@ -1,5 +1,5 @@
 import Mathlib.Lean.Expr.ReplaceRec
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Init
 import Lean.Elab.Command
 
 open Lean Meta Elab Command

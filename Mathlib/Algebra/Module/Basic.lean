@@ -461,8 +461,8 @@ theorem map_inv_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [DivisionRing R] [DivisionRing S] [Module R M]
     [Module S M₂] (z : ℤ) (x : M) : f ((z⁻¹ : R) • x) = (z⁻¹ : S) • f x := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
-  · rw [Int.cast_Nat_cast, Int.cast_Nat_cast, map_inv_nat_cast_smul _ R S]
-  · simp_rw [Int.cast_neg, Int.cast_Nat_cast, inv_neg, neg_smul, map_neg,
+  · rw [Int.cast_natCast, Int.cast_natCast, map_inv_nat_cast_smul _ R S]
+  · simp_rw [Int.cast_neg, Int.cast_natCast, inv_neg, neg_smul, map_neg,
       map_inv_nat_cast_smul _ R S]
 #align map_inv_int_cast_smul map_inv_int_cast_smul
 
@@ -480,11 +480,6 @@ theorem map_rat_smul [AddCommGroup M] [AddCommGroup M₂]
     (f : F) (c : ℚ) (x : M) : f (c • x) = c • f x :=
   map_rat_cast_smul f ℚ ℚ c x
 #align map_rat_smul map_rat_smul
-
-
-/-- A `Module` over `ℚ` restricts to a `Module` over `ℚ≥0`. -/
-instance [AddCommMonoid α] [Module ℚ α] : Module NNRat α :=
-  Module.compHom α NNRat.coeHom
 
 /-- There can be at most one `Module ℚ E` structure on an additive commutative group. -/
 instance subsingleton_rat_module (E : Type*) [AddCommGroup E] : Subsingleton (Module ℚ E) :=

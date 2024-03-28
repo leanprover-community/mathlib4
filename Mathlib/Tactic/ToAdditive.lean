@@ -3,9 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 -/
-import Mathlib.Init.Data.Nat.Notation
-import Mathlib.Data.String.Defs
 import Mathlib.Data.Array.Defs
+import Mathlib.Data.Nat.Init
+import Mathlib.Data.String.Defs
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp

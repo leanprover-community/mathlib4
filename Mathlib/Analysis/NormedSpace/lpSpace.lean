@@ -890,7 +890,7 @@ theorem _root_.nat_cast_memℓp_infty (n : ℕ) : Memℓp (n : ∀ i, B i) ∞ :
 #align nat_cast_mem_ℓp_infty nat_cast_memℓp_infty
 
 theorem _root_.int_cast_memℓp_infty (z : ℤ) : Memℓp (z : ∀ i, B i) ∞ :=
-  coe_int_mem (lpInftySubring B) z
+  intCast_mem (lpInftySubring B) z
 #align int_cast_mem_ℓp_infty int_cast_memℓp_infty
 
 @[simp]

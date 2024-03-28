@@ -388,7 +388,7 @@ theorem addOrderOf_coe_rat {q : ℚ} : addOrderOf (↑(↑q * p) : AddCircle p) 
   have : (↑(q.den : ℤ) : 𝕜) ≠ 0 := by
     norm_cast
     exact q.pos.ne.symm
-  rw [← @Rat.num_den q, Rat.cast_mk_of_ne_zero _ _ this, Int.cast_ofNat, Rat.num_den,
+  rw [← q.num_divInt_den, Rat.cast_divInt_of_ne_zero _ this, Int.cast_ofNat, Rat.num_divInt_den,
     addOrderOf_div_of_gcd_eq_one' q.pos q.reduced]
 #align add_circle.add_order_of_coe_rat AddCircle.addOrderOf_coe_rat
 

@@ -2,12 +2,10 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
-
 -/
-
-import Std.Data.Nat.Gcd
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Init
 import Mathlib.Mathport.Rename
+import Std.Data.Nat.Gcd
 
 #align_import init.data.nat.gcd from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 
