@@ -307,6 +307,30 @@ instance instTopologicalSpace : TopologicalSpace (WeakSpace 𝕜 E) :=
 instance instContinuousAdd : ContinuousAdd (WeakSpace 𝕜 E) :=
   WeakBilin.instContinuousAdd (topDualPairing 𝕜 E).flip
 
+
+variable (𝕜 E) in
+/-- There is a canonical map `E → WeakSpace 𝕜 E` (the "identity"
+mapping). It is a linear equivalence. -/
+def toWeakSpace : E ≃ₗ[𝕜] WeakSpace 𝕜 E := LinearEquiv.refl 𝕜 E
+
+variable (𝕜 E) in
+/-- For a topological vector space `E`, "identity mapping" `E → WeakSpace 𝕜 E` is continuous.
+This definition implements it as a continuous linear map. -/
+def continuousLinearMapToWeakSpace : E →L[𝕜] WeakSpace 𝕜 E where
+  __ := toWeakSpace 𝕜 E
+  cont := by
+    apply WeakBilin.continuous_of_continuous_eval
+    exact ContinuousLinearMap.continuous
+
+variable (𝕜 E) in
+@[simp]
+theorem continuousLinearMapToWeakSpace_eq_toWeakSpace (x : E) :
+    continuousLinearMapToWeakSpace 𝕜 E x = toWeakSpace 𝕜 E x := by rfl
+
+theorem continuousLinearMapToWeakSpace_bijective :
+    Function.Bijective (continuousLinearMapToWeakSpace 𝕜 E) :=
+  (toWeakSpace 𝕜 E).bijective
+
 variable [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]
 
 /-- A continuous linear map from `E` to `F` is still continuous when `E` and `F` are equipped with
@@ -325,6 +349,16 @@ theorem map_apply (f : E →L[𝕜] F) (x : E) : WeakSpace.map f x = f x :=
 theorem coe_map (f : E →L[𝕜] F) : (WeakSpace.map f : E → F) = f :=
   rfl
 #align weak_space.coe_map WeakSpace.coe_map
+
+/-- The canonical map from `WeakSpace 𝕜 E` to `E` is an open map. -/
+theorem isOpenMap_inv_toWeakSpace : IsOpenMap (toWeakSpace 𝕜 E).symm :=
+  IsOpenMap.of_inverse (continuousLinearMapToWeakSpace 𝕜 E).cont
+    (toWeakSpace 𝕜 E).left_inv (toWeakSpace 𝕜 E).right_inv
+
+/-- A set in `E` which is open in the weak topology is open. -/
+theorem isOpen_of_isOpen_WeakSpace (V : Set E)
+    (hV : IsOpen ((continuousLinearMapToWeakSpace 𝕜 E) '' V : Set (WeakSpace 𝕜 E))) : IsOpen V := by
+  simpa [Set.image_image] using isOpenMap_inv_toWeakSpace _ hV
 
 end WeakSpace
 
