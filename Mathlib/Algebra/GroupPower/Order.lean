@@ -451,9 +451,6 @@ theorem pow_bit0_nonneg (a : R) (n : ℕ) : 0 ≤ a ^ bit0 n := by
   exact mul_self_nonneg _
 #align pow_bit0_nonneg pow_bit0_nonneg
 
-alias pow_two_nonneg := sq_nonneg
-#align pow_two_nonneg pow_two_nonneg
-
 theorem pow_bit0_pos {a : R} (h : a ≠ 0) (n : ℕ) : 0 < a ^ bit0 n :=
   (pow_bit0_nonneg a n).lt_of_ne (pow_ne_zero _ h).symm
 #align pow_bit0_pos pow_bit0_pos
