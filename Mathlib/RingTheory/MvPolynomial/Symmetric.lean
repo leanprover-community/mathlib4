@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang, Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Combinatorics.Partition
+import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.Sym.Basic
