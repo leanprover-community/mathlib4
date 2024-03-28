@@ -167,18 +167,3 @@ instance [Finite σ] (N : ℕ) : Module.Finite R (restrictTotalDegree σ R N) :=
 end Degree
 
 end MvPolynomial
-
--- this is here to avoid import cycle issues
-namespace Polynomial
-
-/-- The monomials form a basis on `R[X]`. -/
-noncomputable def basisMonomials : Basis ℕ R R[X] :=
-  Basis.ofRepr (toFinsuppIsoAlg R).toLinearEquiv
-#align polynomial.basis_monomials Polynomial.basisMonomials
-
-@[simp]
-theorem coe_basisMonomials : (basisMonomials R : ℕ → R[X]) = fun s => monomial s 1 :=
-  funext fun _ => ofFinsupp_single _ _
-#align polynomial.coe_basis_monomials Polynomial.coe_basisMonomials
-
-end Polynomial
