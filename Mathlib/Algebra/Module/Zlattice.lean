@@ -84,6 +84,23 @@ lemma fundamentalDomain_pi_basisFun [Fintype ι] :
     fundamentalDomain (Pi.basisFun ℝ ι) = Set.pi Set.univ fun _ : ι ↦ Set.Ico (0 : ℝ) 1 := by
   ext; simp
 
+  /-- The Voronoi domain of the ℤ-lattice spanned by `b`. -/
+def VoronoiDomain : Set E := {m | ∀ v ∈ span ℤ (Set.range b), ‖m‖ ≤ ‖m - v‖}
+
+@[simp]
+theorem mem_VoronoiDomain {m : E} :
+    m ∈ VoronoiDomain b ↔ ∀ v ∈ span ℤ (Set.range b), ‖m‖ ≤ ‖m - v‖ := Iff.rfl
+
+theorem map_VoronoiDomain {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] (f : E ≃ₗ[K] F) :
+    f '' (VoronoiDomain b) = VoronoiDomain (b.map f) := by
+  ext x
+  sorry -- this seems like it should be true but need to find a proof
+
+@[simp]
+theorem VoronoiDomain_reindex {ι' : Type*} (e : ι ≃ ι') :
+    VoronoiDomain (b.reindex e) = VoronoiDomain b := by
+  ext; simp
+
 variable [FloorRing K]
 
 section Fintype
