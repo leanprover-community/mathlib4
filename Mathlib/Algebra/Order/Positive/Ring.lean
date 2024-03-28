@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.InjSurj
+import Mathlib.Tactic.FastInstance
 
 #align_import algebra.order.positive.ring from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 
@@ -36,21 +37,25 @@ theorem coe_add (x y : { x : M // 0 < x }) : ↑(x + y) = (x + y : M) :=
 #align positive.coe_add Positive.coe_add
 
 instance addSemigroup : AddSemigroup { x : M // 0 < x } :=
+  fast_instance%
   Subtype.coe_injective.addSemigroup _ coe_add
 #align positive.subtype.add_semigroup Positive.addSemigroup
 
 instance addCommSemigroup {M : Type*} [AddCommMonoid M] [Preorder M]
     [CovariantClass M M (· + ·) (· < ·)] : AddCommSemigroup { x : M // 0 < x } :=
+  fast_instance%
   Subtype.coe_injective.addCommSemigroup _ coe_add
 #align positive.subtype.add_comm_semigroup Positive.addCommSemigroup
 
 instance addLeftCancelSemigroup {M : Type*} [AddLeftCancelMonoid M] [Preorder M]
     [CovariantClass M M (· + ·) (· < ·)] : AddLeftCancelSemigroup { x : M // 0 < x } :=
+  fast_instance%
   Subtype.coe_injective.addLeftCancelSemigroup _ coe_add
 #align positive.subtype.add_left_cancel_semigroup Positive.addLeftCancelSemigroup
 
 instance addRightCancelSemigroup {M : Type*} [AddRightCancelMonoid M] [Preorder M]
     [CovariantClass M M (· + ·) (· < ·)] : AddRightCancelSemigroup { x : M // 0 < x } :=
+  fast_instance%
   Subtype.coe_injective.addRightCancelSemigroup _ coe_add
 #align positive.subtype.add_right_cancel_semigroup Positive.addRightCancelSemigroup
 
@@ -114,9 +119,11 @@ theorem val_pow (x : { x : R // 0 < x }) (n : ℕ) :
 #align positive.coe_pow Positive.val_pow
 
 instance : Semigroup { x : R // 0 < x } :=
+  fast_instance%
   Subtype.coe_injective.semigroup Subtype.val val_mul
 
 instance : Distrib { x : R // 0 < x } :=
+  fast_instance%
   Subtype.coe_injective.distrib _ coe_add val_mul
 
 instance [Nontrivial R] : One { x : R // 0 < x } :=
@@ -128,6 +135,7 @@ theorem val_one [Nontrivial R] : ((1 : { x : R // 0 < x }) : R) = 1 :=
 #align positive.coe_one Positive.val_one
 
 instance [Nontrivial R] : Monoid { x : R // 0 < x } :=
+  fast_instance%
   Subtype.coe_injective.monoid _ val_one val_mul val_pow
 
 end Mul
@@ -136,6 +144,7 @@ section mul_comm
 
 instance orderedCommMonoid [StrictOrderedCommSemiring R] [Nontrivial R] :
     OrderedCommMonoid { x : R // 0 < x } :=
+  fast_instance%
   { Subtype.partialOrder _,
     Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow with
     mul_le_mul_left := fun _ _ hxy c =>
@@ -146,6 +155,7 @@ instance orderedCommMonoid [StrictOrderedCommSemiring R] [Nontrivial R] :
 ordered cancellative commutative monoid. -/
 instance linearOrderedCancelCommMonoid [LinearOrderedCommSemiring R] :
     LinearOrderedCancelCommMonoid { x : R // 0 < x } :=
+  fast_instance%
   { Subtype.instLinearOrder _, Positive.orderedCommMonoid with
     le_of_mul_le_mul_left := fun a _ _ h => Subtype.coe_le_coe.1 <| (mul_le_mul_left a.2).1 h }
 #align positive.subtype.linear_ordered_cancel_comm_monoid Positive.linearOrderedCancelCommMonoid

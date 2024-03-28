@@ -6,6 +6,7 @@ Authors: Stuart Presnell, Eric Wieser, Yaël Dillies, Patrick Massot, Scott Morr
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Tactic.FastInstance
 
 #align_import data.set.intervals.instances from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
 
@@ -140,11 +141,13 @@ theorem mul_le_right {x y : Icc (0 : α) 1} : x * y ≤ y :=
 #align set.Icc.mul_le_right Set.Icc.mul_le_right
 
 instance monoidWithZero : MonoidWithZero (Icc (0 : α) 1) :=
+  fast_instance%
   Subtype.coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_pow
 #align set.Icc.monoid_with_zero Set.Icc.monoidWithZero
 
 instance commMonoidWithZero {α : Type*} [OrderedCommSemiring α] :
     CommMonoidWithZero (Icc (0 : α) 1) :=
+  fast_instance%
   Subtype.coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul coe_pow
 #align set.Icc.comm_monoid_with_zero Set.Icc.commMonoidWithZero
 
@@ -231,10 +234,12 @@ theorem coe_mul (x y : Ico (0 : α) 1) : ↑(x * y) = (x * y : α) :=
 #align set.Ico.coe_mul Set.Ico.coe_mul
 
 instance semigroup : Semigroup (Ico (0 : α) 1) :=
+  fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
 #align set.Ico.semigroup Set.Ico.semigroup
 
 instance commSemigroup {α : Type*} [OrderedCommSemiring α] : CommSemigroup (Ico (0 : α) 1) :=
+  fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
 #align set.Ico.comm_semigroup Set.Ico.commSemigroup
 
@@ -304,19 +309,23 @@ theorem coe_pow (x : Ioc (0 : α) 1) (n : ℕ) : ↑(x ^ n) = ((x : α) ^ n) :=
 #align set.Ioc.coe_pow Set.Ioc.coe_pow
 
 instance semigroup : Semigroup (Ioc (0 : α) 1) :=
+  fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
 #align set.Ioc.semigroup Set.Ioc.semigroup
 
 instance monoid [Nontrivial α] : Monoid (Ioc (0 : α) 1) :=
+  fast_instance%
   Subtype.coe_injective.monoid _ coe_one coe_mul coe_pow
 #align set.Ioc.monoid Set.Ioc.monoid
 
 instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigroup (Ioc (0 : α) 1) :=
+  fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
 #align set.Ioc.comm_semigroup Set.Ioc.commSemigroup
 
 instance commMonoid {α : Type*} [StrictOrderedCommSemiring α] [Nontrivial α] :
     CommMonoid (Ioc (0 : α) 1) :=
+  fast_instance%
   Subtype.coe_injective.commMonoid _ coe_one coe_mul coe_pow
 #align set.Ioc.comm_monoid Set.Ioc.commMonoid
 
@@ -360,10 +369,12 @@ theorem coe_mul (x y : Ioo (0 : α) 1) : ↑(x * y) = (x * y : α) :=
 #align set.Ioo.coe_mul Set.Ioo.coe_mul
 
 instance semigroup : Semigroup (Ioo (0 : α) 1) :=
+  fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
 #align set.Ioo.semigroup Set.Ioo.semigroup
 
 instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigroup (Ioo (0 : α) 1) :=
+  fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
 #align set.Ioo.comm_semigroup Set.Ioo.commSemigroup
 
