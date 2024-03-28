@@ -98,6 +98,11 @@ def fintypeCatToLightProfinite : FintypeCat ⥤ LightProfinite.{u} where
   obj X := X.toLightProfinite
   map f := FintypeCat.toProfinite.map f
 
+/-- The fully faithful embedding of `LightProfinite` in `TopCat`. -/
+@[simps!]
+def toTopCat : LightProfinite ⥤ TopCat :=
+  lightToProfinite ⋙ Profinite.toTopCat
+
 end LightProfinite
 
 noncomputable section EssentiallySmall
