@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Data.RCLike.Basic
+import Mathlib.Analysis.RCLike.Basic
 
 #align_import analysis.locally_convex.continuous_of_bounded from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 

@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Data.Complex.Module
 import Mathlib.Data.Complex.Order
 import Mathlib.Data.Complex.Exponential
-import Mathlib.Data.RCLike.Basic
+import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.RealVectorSpace
 
