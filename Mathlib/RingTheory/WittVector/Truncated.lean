@@ -270,11 +270,11 @@ theorem truncateFun_sub (x y : 𝕎 R) :
   witt_truncateFun_tac
 #align witt_vector.truncate_fun_sub WittVector.truncateFun_sub
 
-theorem truncateFun_nsmul (x : 𝕎 R) (m : ℕ) : truncateFun n (m • x) = m • truncateFun n x := by
+theorem truncateFun_nsmul (m : ℕ) (x : 𝕎 R) : truncateFun n (m • x) = m • truncateFun n x := by
   witt_truncateFun_tac
 #align witt_vector.truncate_fun_nsmul WittVector.truncateFun_nsmul
 
-theorem truncateFun_zsmul (x : 𝕎 R) (m : ℤ) : truncateFun n (m • x) = m • truncateFun n x := by
+theorem truncateFun_zsmul (m : ℤ) (x : 𝕎 R) : truncateFun n (m • x) = m • truncateFun n x := by
   witt_truncateFun_tac
 #align witt_vector.truncate_fun_zsmul WittVector.truncateFun_zsmul
 
