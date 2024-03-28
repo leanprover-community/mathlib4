@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory
+import Mathlib.AlgebraicTopology.AugmentedSimplexCategory
+import Mathlib.CategoryTheory.Arrow
 import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Opposites
@@ -18,6 +20,9 @@ A simplicial object in a category `C` is a `C`-valued presheaf on `SimplexCatego
 
 Use the notation `X _[n]` in the `Simplicial` locale to obtain the `n`-th term of a
 (co)simplicial object `X`, where `n` is a natural number.
+
+Define augmented simplicial objects via the comma category construction, and show that this is
+equivalent to functors `AugmentedSimplexCategoryᵒᵖ ⥤ C`.
 
 -/
 
@@ -401,6 +406,326 @@ theorem augment_hom_zero (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X�
     (X.augment X₀ f w).hom.app (op [0]) = f := by simp
 #align category_theory.simplicial_object.augment_hom_zero CategoryTheory.SimplicialObject.augment_hom_zero
 
+
+
+
+namespace augFuncEquiv
+open AugmentedSimplexCategory
+namespace functor'
+/--The object map for the functor
+`(AugmentedSimplexCategoryᵒᵖ ⥤ C) ⥤ Augmented C`-/
+def obj' (X : AugmentedSimplexCategoryᵒᵖ ⥤ C) :
+    SimplicialObject.Augmented C where
+    left := SimplexCategory.augment.op ⋙ X
+    right := X.obj (op [0]ₐ)
+    hom :=
+    {
+      app := fun d => X.map (map_from_initial (SimplexCategory.augment.obj d.unop).len ).op
+      naturality := by
+        intros
+        simp only [Functor.id_obj, Functor.comp_obj, Functor.op_obj, Functor.const_obj_obj,
+          Functor.comp_map, Functor.op_map, ← X.map_comp, ← op_comp, smallCategory_comp, Hom.comp,
+          Functor.const_obj_map, Category.comp_id]
+        apply congrArg X.map ∘ congrArg op
+        apply IsInitial.hom_ext zeroIsInitial
+    }
+/--The morphism map for the functor
+ `(AugmentedSimplexCategoryᵒᵖ ⥤ C) ⥤ Augmented C` -/
+def map' {X  Y : AugmentedSimplexCategoryᵒᵖ ⥤ C} (f : X⟶ Y) : obj' X ⟶ obj' Y where
+  left := whiskerLeft SimplexCategory.augment.op f
+  right := f.app  (op [0]ₐ)
+  w := by
+       ext
+       rw [Functor.id_map,NatTrans.comp_app,NatTrans.comp_app]
+       simp only [Functor.id_obj, Functor.const_obj_obj, whiskerLeft_app, Functor.op_obj,
+         Functor.const_map_app,obj',Functor.id_obj, Functor.op_obj, Functor.comp_obj,
+          NatTrans.naturality]
+
+end functor'
+
+/--The functor `(AugmentedSimplexCategoryᵒᵖ ⥤ C)⥤ Augmented C`-/
+def functor' : (AugmentedSimplexCategoryᵒᵖ ⥤ C)⥤ SimplicialObject.Augmented C  where
+  obj := functor'.obj'
+  map := functor'.map'
+
+namespace inverse'
+namespace obj'
+/--The object map for the functor which is the image of `X ∈ Augmented C` under the functor
+`Augmented C ⥤ (AugmentedSimplexCategoryᵒᵖ ⥤ C)`-/
+def obj'' (X: SimplicialObject.Augmented C) (Y : AugmentedSimplexCategoryᵒᵖ  ): C :=
+    if Y.unop.len=0 then X.right else X.left.obj (op [Y.unop.len-1])
+
+/--Part of the morphism map for the functor which is the image of `X ∈ Augmented C`
+ under the functor  `Augmented C ⥤ (AugmentedSimplexCategoryᵒᵖ ⥤ C)`-/
+def mapTargetZero' (X: SimplicialObject.Augmented C) (Y : AugmentedSimplexCategoryᵒᵖ  ) :
+    obj'.obj'' X Y ⟶ X.right :=  by
+    by_cases hY : Y.unop.len=0
+    · exact eqToHom (if_pos hY )
+    · exact (eqToHom (if_neg hY )) ≫  X.hom.app (op [Y.unop.len-1])
+
+/--The morphism map for the functor which is the image of `X ∈ Augmented C`
+ under the functor  `Augmented C ⥤ (AugmentedSimplexCategoryᵒᵖ ⥤ C)`-/
+def map'' (X: SimplicialObject.Augmented C) {Y Z: AugmentedSimplexCategoryᵒᵖ} (f: Y ⟶ Z) :
+    obj'.obj'' X Y ⟶ obj'.obj'' X Z :=  by
+    by_cases hZ : Z.unop.len =0
+    · exact  (mapTargetZero' X Y)≫ (eqToHom (if_pos hZ).symm)
+    · exact eqToHom (if_neg (strict_initial' f.unop hZ))
+       ≫ X.left.map (unaugment.map f.unop hZ).op  ≫ eqToHom (if_neg hZ).symm
+
+end obj'
+/--The object map for the functor
+`Augmented C ⥤ (AugmentedSimplexCategoryᵒᵖ ⥤ C)`-/
+def obj' (X: SimplicialObject.Augmented C) : (AugmentedSimplexCategoryᵒᵖ ⥤ C) where
+  obj := obj'.obj'' X
+  map := obj'.map'' X
+  map_id := by
+    simp only
+    intro Y
+    unfold obj'.map'' inverse'.obj'.mapTargetZero'
+    by_cases hY: Y.unop.len=0
+    ·  rw [dif_pos hY,dif_pos hY,eqToHom_trans,eqToHom_refl]
+    ·  rw [dif_neg hY,unop_id,unaugment.map_id,show
+       (𝟙 (SimplexCategory.mk (Y.unop.len - 1))).op = 𝟙 (op (SimplexCategory.mk (Y.unop.len - 1)))
+       from rfl,X.left.map_id,← eqToHom_refl,← eqToHom_refl,← eqToHom_refl,eqToHom_trans,
+       eqToHom_trans]
+       all_goals rfl
+  map_comp := by
+    intro Y Z W f g
+    unfold inverse'.obj'.map'' inverse'.obj'.mapTargetZero'
+    dsimp only
+    by_cases hW : W.unop.len=0
+    · rw [dif_pos hW,dif_pos hW]
+      by_cases hZ : Z.unop.len=0
+      · rw [dif_pos hZ,dif_pos hZ]
+        simp only [Functor.id_obj, eqToHom_trans, Category.assoc]
+      · have hx:= X.hom.naturality (unaugment.map f.unop hZ).op
+        unfold unaugment.obj at hx
+        rw [dif_neg hZ,dif_neg hZ,dif_neg (strict_initial' f.unop hZ),← Category.assoc,
+        ← Category.assoc,← Category.assoc,Category.assoc _ (eqToHom _) (eqToHom _),eqToHom_trans,
+        eqToHom_refl,Category.comp_id,Category.assoc (eqToHom _) (X.left.map _) _,show
+        X.left.map (unaugment.map f.unop hZ).op = ((𝟭 (SimplicialObject C)).obj X.left).map
+        (unaugment.map f.unop hZ).op from rfl, hx]
+        simp only [Functor.id_obj, Category.assoc, Functor.const_obj_obj, Functor.const_obj_map,
+          Category.comp_id]
+    · rw [dif_neg hW,dif_neg hW,dif_neg (strict_initial' g.unop hW),unop_comp,unaugment.map_comp,
+      op_comp,X.left.map_comp]
+      simp only [Functor.id_obj, Category.assoc, eqToHom_trans_assoc, eqToHom_refl,
+        Category.id_comp]
+/--The morphism map for the functor
+`Augmented C ⥤ (AugmentedSimplexCategoryᵒᵖ ⥤ C)`-/
+def map'  {X1 X2: SimplicialObject.Augmented C}  (f :X1 ⟶ X2): obj' X1 ⟶ obj' X2 where
+  app Y :=by
+      by_cases  hY: Y.unop.len=0
+      · exact eqToHom (if_pos hY) ≫ f.right ≫ eqToHom (if_pos hY).symm
+      · exact eqToHom (if_neg hY) ≫ f.left.app (op [Y.unop.len-1]) ≫ eqToHom (if_neg hY).symm
+  naturality := by
+      intro Y Z g
+      dsimp
+      unfold obj' inverse'.obj'.map''
+      dsimp
+      by_cases hZ : Z.unop.len =0
+      · unfold inverse'.obj'.mapTargetZero'
+        rw [dif_pos hZ,dif_pos hZ,dif_pos hZ]
+        by_cases hY : Y.unop.len=0
+        · simp only [dif_pos hY,eqToHom_trans, eqToHom_trans_assoc, Category.assoc]
+        · simp only [dif_neg hY,Functor.id_obj, Category.assoc, eqToHom_trans_assoc, eqToHom_refl,
+            Category.id_comp]
+          rw [← Category.assoc,← Category.assoc, Category.assoc _ _ f.right]
+          have h2 := congrFun (congrArg NatTrans.app f.w) (op [Y.unop.len - 1])
+          rw [NatTrans.comp_app,NatTrans.comp_app,show ((const C).map f.right).app
+            (op [Y.unop.len - 1]) = f.right from rfl] at h2
+          simp only [← h2,Functor.id_obj, Functor.const_obj_obj, Functor.id_map, Category.assoc]
+      · rw [dif_neg hZ,dif_neg hZ,dif_neg hZ,dif_neg (strict_initial' g.unop hZ )]
+        simp only [Category.assoc, eqToHom_trans_assoc, eqToHom_refl, Category.id_comp]
+        rw [← Category.assoc,← Category.assoc,← Category.assoc,← Category.assoc,
+        Category.assoc _ _ (X2.left.map _),← f.left.naturality,Category.assoc,Category.assoc,
+        Category.assoc,Category.assoc]
+        congr
+
+end inverse'
+/--The functor
+`Augmented C ⥤ (AugmentedSimplexCategoryᵒᵖ ⥤ C)`-/
+def inverse' : SimplicialObject.Augmented C ⥤ (AugmentedSimplexCategoryᵒᵖ ⥤ C)  where
+  obj := inverse'.obj'
+  map := inverse'.map'
+  map_id := by
+    intros
+    apply NatTrans.ext
+    funext
+    simp only [inverse'.map', instCategoryAugmented_id_right, Category.id_comp, eqToHom_trans,
+      eqToHom_refl, Functor.id_obj, instCategoryAugmented_id_left_app, dite_eq_ite, ite_self,
+      NatTrans.id_app]
+  map_comp := by
+    intros
+    apply NatTrans.ext
+    funext Y
+    by_cases h: Y.unop.len=0
+    · simp only [inverse'.map',Functor.id_obj, instCategoryAugmented_comp_right, Category.assoc,
+      instCategoryAugmented_comp_left_app, dif_pos h, NatTrans.comp_app, eqToHom_trans_assoc,
+      eqToHom_refl, Category.id_comp]
+    · simp only [inverse'.map',Functor.id_obj, instCategoryAugmented_comp_right, Category.assoc,
+      instCategoryAugmented_comp_left_app, dif_neg h, NatTrans.comp_app, eqToHom_trans_assoc,
+      eqToHom_refl, Category.id_comp]
+
+
+namespace unitIso'
+
+lemma app' (X : AugmentedSimplexCategoryᵒᵖ ⥤ C) : (functor' ⋙ inverse' ).obj X =X :=by
+    rw [Functor.comp_obj]
+    apply Functor.ext
+    case h_obj =>
+      intro Y
+      unfold inverse' inverse'.obj' inverse'.obj'.obj'' functor' functor'.obj'
+      by_cases hY :Y.unop.len=0
+      · simp only [Functor.comp_obj, Functor.op_obj, unop_op,if_pos hY,congrArg X.obj]
+        exact congrArg X.obj (congrArg op hY.symm)
+      · nth_rewrite 2 [← (op_unop Y)]
+        rw [← unaugment_augment_obj hY]
+        exact if_neg hY
+    case h_map =>
+      intro Y Z f
+      unfold inverse' inverse'.obj' inverse'.obj'.map'' inverse'.obj'.mapTargetZero'
+      by_cases hZ : Z.unop.len =0
+      · dsimp
+        rw [dif_pos hZ]
+        by_cases hY : Y.unop.len =0
+        · let hx:= congrArg X.map
+            (congrArg Quiver.Hom.op (map_into_initial_eqToHom (lenZeroIsInitial hY) f.unop))
+          rw [eqToHom_op,eqToHom_map X,Quiver.Hom.op_unop] at hx
+          simp only [dif_pos hY,eqToHom_trans, hx, op_unop]
+        · unfold functor' functor'.obj'
+          simp only [dif_neg hY,Functor.id_obj,Functor.op_obj, Functor.comp_obj, unop_op]
+          rw [show map_from_initial (SimplexCategory.augment.obj [Y.unop.len-1]).len
+           =(eqToHom (congrArg op (unaugment_augment_obj hY)) ≫f≫eqToHom (congrArg op hZ)).unop by
+           apply IsInitial.hom_ext zeroIsInitial,Quiver.Hom.op_unop,X.map_comp,X.map_comp,
+           eqToHom_map X,eqToHom_map X,eqToHom_trans_assoc,Category.assoc,Category.assoc,
+           eqToHom_trans]
+      · nth_rewrite 2 [← (Quiver.Hom.op_unop f)]
+        rw [← unaugment_augment_map f.unop hZ,op_comp, op_comp,X.map_comp,X.map_comp,eqToHom_op,
+        eqToHom_op,eqToHom_map X,eqToHom_map X,Category.assoc,Category.assoc,eqToHom_trans,
+        eqToHom_trans_assoc]
+        exact dif_neg hZ
+
+
+lemma nat' (X1 X2 : AugmentedSimplexCategoryᵒᵖ ⥤ C)  (F :X1⟶ X2):
+    (𝟭 (AugmentedSimplexCategoryᵒᵖ ⥤ C)).map F ≫ eqToHom (app' X2).symm
+    = eqToHom (app' X1).symm  ≫ (functor' ⋙ inverse').map F:= by
+  simp only [Functor.id_obj, Functor.comp_obj, Functor.id_map, Functor.comp_map]
+  apply NatTrans.ext
+  funext d
+  unfold functor'  inverse'  inverse'.map'
+  simp
+  by_cases hd: d.unop.len=0
+  · rw [dif_pos hd]
+    simp only [comp_eqToHom_iff,eqToHom_trans_assoc, Category.assoc, eqToHom_trans]
+    exact dcongr_arg F.app (unop_eq_iff_eq_op.mp hd)
+  · rw [dif_neg hd]
+    unfold functor'.map'
+    simp only [Functor.id_obj, whiskerLeft_app, Functor.op_obj, unop_op, eqToHom_trans_assoc,
+      comp_eqToHom_iff, Category.assoc, eqToHom_trans]
+    refine  dcongr_arg F.app ?_
+    change op d.unop =_
+    apply congrArg
+    exact (AugmentedSimplexCategory.unaugment_augment_obj hd).symm
+
+end unitIso'
+/--The unit of the equivalance between
+`Augmented C` and `(AugmentedSimplexCategoryᵒᵖ ⥤ C)`-/
+def unitIso' : 𝟭 (AugmentedSimplexCategoryᵒᵖ ⥤ C) ≅ functor' ⋙ inverse' where
+  hom := {
+    app := fun X => eqToHom (unitIso'.app' X).symm
+    naturality := fun ⦃X Y⦄ f ↦ unitIso'.nat' X Y f
+  }
+  inv := {
+    app := fun X => eqToHom (unitIso'.app' X)
+    naturality := by
+      intros
+      rw [← eqToHom_comp_iff,← Category.assoc, comp_eqToHom_iff]
+      exact (unitIso'.nat' _ _ _).symm
+  }
+
+namespace counitIso'
+/--Part of the data of the app map for the counit of the equivalance between
+`Augmented C` and `(AugmentedSimplexCategoryᵒᵖ ⥤ C)`-/
+def app' (X : Augmented C) : ((inverse'⋙ functor' ).obj X) ≅ X:= by
+    refine Comma.isoMk (CategoryTheory.eqToIso ?_) (CategoryTheory.eqToIso (by rfl)) ?_
+    change  SimplexCategory.augment.op ⋙ inverse'.obj' X = X.left
+    apply Functor.ext
+    intro Y Z f
+    simp only [inverse'.obj', Functor.comp_obj, Functor.op_obj, Functor.comp_map,
+      inverse'.obj'.map'', unop_op, Functor.id_obj, eqToHom_refl, Functor.op_map,
+      Quiver.Hom.unop_op, Category.comp_id, Category.id_comp,
+      dif_neg (SimplexCategory.augment_len Z.unop)]
+    exact congrArg X.left.map (congrArg op (SimplexCategory.augment_unaugment_map f.unop))
+    intros
+    rfl
+    apply NatTrans.ext
+    funext d
+    unfold functor' inverse'  functor'.obj' inverse'.obj' inverse'.obj'.obj''
+      inverse'.obj'.map'' inverse'.obj'.mapTargetZero'
+    simp only [Functor.id_obj, Functor.op_obj, Functor.comp_obj, unop_op, eqToHom_refl,
+      Quiver.Hom.unop_op, Functor.const_obj_obj, eqToIso.hom, Functor.id_map,
+      instCategorySimplicialObject_comp_app, Category.id_comp, Category.comp_id,
+      CategoryTheory.eqToIso_refl, Iso.refl_hom, Functor.map_id]
+    rw [dif_pos (by rfl),eqToHom_app,eqToHom_refl]
+    exact Category.id_comp (X.hom.app d)
+end counitIso'
+/--The counit of the equivalance between
+`Augmented C` and `(AugmentedSimplexCategoryᵒᵖ ⥤ C)`-/
+def counitIso'   : inverse' ⋙  functor' ≅ 𝟭 (Augmented C) where
+  hom := {
+    app := fun X => (augFuncEquiv.counitIso'.app' X).hom
+    naturality := by
+      intro X1 X2 F
+      unfold functor' functor'.map' augFuncEquiv.counitIso'.app' inverse' inverse'.map'
+      apply Comma.hom_ext
+      · apply NatTrans.ext
+        funext d
+        simp [Comma.comp_left]
+        rw [dif_neg (SimplexCategory.augment_len d.unop),eqToHom_app,eqToHom_app]
+        exact eqToHom_naturality F.left.app (by rfl)
+      · simp [Comma.comp_right]
+        rw [dif_pos (by rfl),show 𝟙 (functor'.obj (inverse'.obj' X1)).right≫F.right=F.right
+         from Category.id_comp F.right]
+        exact Category.comp_id F.right
+  }
+  inv := {
+    app := fun X => (augFuncEquiv.counitIso'.app' X).inv
+    naturality := by
+        intro X1 X2 F
+        unfold functor' functor'.map' augFuncEquiv.counitIso'.app' inverse' inverse'.map'
+        apply Comma.hom_ext
+        · apply NatTrans.ext
+          funext d
+          simp only [Functor.id_obj, Functor.comp_obj, Functor.id_map, CategoryTheory.eqToIso_refl,
+            instCategoryAugmented_comp_left_app, Comma.isoMk_inv_left, eqToIso.inv,
+            Functor.comp_map, unop_op, eqToHom_refl, Category.comp_id, Category.id_comp,
+            whiskerLeft_app, Functor.op_obj]
+          rw [dif_neg (SimplexCategory.augment_len d.unop),eqToHom_app,eqToHom_app]
+          exact eqToHom_naturality F.left.app rfl
+        · simp only [Functor.id_obj, Functor.comp_obj, Functor.id_map, CategoryTheory.eqToIso_refl,
+          instCategoryAugmented_comp_right, Comma.isoMk_inv_right, Iso.refl_inv, Functor.comp_map,
+          unop_op, eqToHom_refl, Category.comp_id, Category.id_comp]
+          rw [dif_pos (by rfl), show 𝟙 (functor'.obj (inverse'.obj' X1)).right ≫ F.right =F.right
+           from  Category.id_comp F.right]
+          exact Category.comp_id F.right
+  }
+end augFuncEquiv
+open augFuncEquiv in
+/--The equivelence between `Augmented C` and `AugmentedSimplexCategoryᵒᵖ ⥤ C`-/
+def augFuncEquiv : AugmentedSimplexCategoryᵒᵖ ⥤ C  ≌ (Augmented C) where
+  functor := functor'
+  inverse := inverse'
+  unitIso := unitIso'
+  counitIso := counitIso'
+  functor_unitIso_comp := by
+      intros
+      unfold  unitIso' counitIso' counitIso'.app'  Comma.isoMk
+      dsimp
+      apply Comma.hom_ext
+      · rw [eqToHom_map,Comma.comp_left,Comma.eqToHom_left,Comma.id_left,eqToHom_trans,eqToHom_refl]
+      · rw [eqToHom_map,Comma.comp_right,Comma.eqToHom_right,eqToHom_refl,Category.comp_id
+         ,Comma.id_right]
 end SimplicialObject
 
 -- porting note (#10927): removed @[nolint has_nonempty_instance]
