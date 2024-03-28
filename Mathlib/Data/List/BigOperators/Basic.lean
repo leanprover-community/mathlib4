@@ -24,7 +24,7 @@ of elements of a list and `List.alternatingProd`, `List.alternatingSum`, their a
 counterparts. These are defined in [`Data.List.BigOperators.Defs`](./Defs).
 -/
 
-variable {ι α M N P M₀ G R : Type*}
+variable {ι α β γ M N P M₀ G R : Type*}
 
 namespace List
 
@@ -631,6 +631,16 @@ theorem prod_set' (L : List G) (n : ℕ) (a : G) :
 
 end CommGroup
 
+@[simp]
+theorem sum_zipWith_distrib_left [Semiring γ] (f : α → β → γ) (n : γ) (l : List α) (l' : List β) :
+    (l.zipWith (fun x y => n * f x y) l').sum = n * (l.zipWith f l').sum := by
+  induction' l with hd tl hl generalizing f n l'
+  · simp
+  · cases' l' with hd' tl'
+    · simp
+    · simp [hl, mul_add]
+#align list.sum_zip_with_distrib_left List.sum_zipWith_distrib_left
+
 @[to_additive]
 theorem eq_of_prod_take_eq [LeftCancelMonoid M] {L L' : List M} (h : L.length = L'.length)
     (h' : ∀ i ≤ L.length, (L.take i).prod = (L'.take i).prod) : L = L' := by
@@ -872,6 +882,10 @@ end MonoidHom
   (List.foldl_eq_foldr Nat.add_comm Nat.add_assoc _ _).symm
 
 namespace List
+
+lemma length_sigma {σ : α → Type*} (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
+    length (l₁.sigma l₂) = (l₁.map fun a ↦ length (l₂ a)).sum := by simp [length_sigma']
+#align list.length_sigma List.length_sigma
 
 lemma ranges_join (l : List ℕ) : l.ranges.join = range l.sum := by simp [ranges_join']
 
