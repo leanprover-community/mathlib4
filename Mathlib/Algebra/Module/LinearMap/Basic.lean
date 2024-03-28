@@ -286,10 +286,7 @@ as a `σ`-semilinear map for any ring homomorphism `σ` which we know is the ide
 def id' {σ : R →+* R} [RingHomId σ] : M →ₛₗ[σ] M where
   toFun x := x
   map_add' x y := rfl
-  map_smul' r x := by
-    have := (RingHomId.eq_id : σ = _)
-    subst this
-    rfl
+  map_smul' r x := by simp [RingHomId.eq_id (σ := σ)]
 
 @[simp, norm_cast]
 theorem id'_coe {σ : R →+* R} [RingHomId σ] : ((id' : M →ₛₗ[σ] M) : M → M) = _root_.id :=

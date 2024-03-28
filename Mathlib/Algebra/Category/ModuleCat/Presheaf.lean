@@ -62,22 +62,22 @@ theorem map_apply (P : PresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) (x) :
     P.map f x = (P.presheaf.map f) x :=
   rfl
 
-instance (X : Cᵒᵖ) : RingHomId (R.map (𝟙 X)) where
-  eq_id := R.map_id X
+instance ringHomId (X : Cᵒᵖ) : RingHomId (R.map (𝟙 X)) where
+  eq_id := by rw [R.map_id X]; rfl
 
-instance {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
+instance ringHomCompTriple {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
     RingHomCompTriple (R.map f) (R.map g) (R.map (f ≫ g)) where
-  comp_eq := (R.map_comp f g).symm
+  comp_eq := by rw [R.map_comp f g]; rfl
 
 @[simp]
 theorem map_id (P : PresheafOfModules R) (X : Cᵒᵖ) :
-    P.map (𝟙 X) = LinearMap.id' := by
+    P.map (𝟙 X) = by convert LinearMap.id'; apply ringHomId := by
   ext
   simp
 
 @[simp]
 theorem map_comp (P : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    P.map (f ≫ g) = (P.map g).comp (P.map f) := by
+    P.map (f ≫ g) = by convert (P.map g).comp (P.map f); apply ringHomCompTriple := by
   ext
   simp
 

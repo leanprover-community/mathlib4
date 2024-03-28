@@ -249,14 +249,14 @@ lemma Algebra.intTrace_eq_of_isLocalization
   let f : Aₘ →+* K := IsLocalization.map _ (T := A⁰) (RingHom.id A) hM
   letI := f.toAlgebra
   have : IsScalarTower A Aₘ K := IsScalarTower.of_algebraMap_eq'
-    (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, RingHomCompTriple.comp_eq])
+    (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, ← RingHomCompTriple.comp_eq])
   letI := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M Aₘ K
   let g : Bₘ →+* L := IsLocalization.map _
       (M := algebraMapSubmonoid B M) (T := algebraMapSubmonoid B A⁰)
       (RingHom.id B) (Submonoid.monotone_map hM)
   letI := g.toAlgebra
   have : IsScalarTower B Bₘ L := IsScalarTower.of_algebraMap_eq'
-    (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, RingHomCompTriple.comp_eq])
+    (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, ← RingHomCompTriple.comp_eq])
   letI := ((algebraMap K L).comp f).toAlgebra
   have : IsScalarTower Aₘ K L := IsScalarTower.of_algebraMap_eq' rfl
   have : IsScalarTower Aₘ Bₘ L := by
