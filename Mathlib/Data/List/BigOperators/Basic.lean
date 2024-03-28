@@ -24,9 +24,9 @@ variable {ι α M N P M₀ G R : Type*}
 
 namespace List
 
-section Monoid
+section MulOneClass
 
-variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
+variable [MulOneClass M] {l : List M} {a : M}
 
 @[to_additive (attr := simp)]
 theorem prod_nil : ([] : List M).prod = 1 :=
@@ -39,6 +39,23 @@ theorem prod_singleton : [a].prod = a :=
   one_mul a
 #align list.prod_singleton List.prod_singleton
 #align list.sum_singleton List.sum_singleton
+
+@[to_additive (attr := simp)]
+theorem prod_one_cons : (1 :: l).prod = l.prod := by
+  rw [prod, foldl, mul_one]
+
+@[to_additive]
+theorem prod_map_one {l : List ι} :
+    (l.map fun _ => (1 : M)).prod = 1 := by
+  induction l with
+  | nil => rfl
+  | cons hd tl ih => rw [map_cons, prod_one_cons, ih]
+
+end MulOneClass
+
+section Monoid
+
+variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
 
 @[to_additive (attr := simp)]
 theorem prod_cons : (a :: l).prod = a * l.prod :=
@@ -90,7 +107,7 @@ theorem prod_replicate (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
   induction' n with n ih
   · rw [pow_zero]
     rfl
-  · rw [replicate_succ, prod_cons, ih, pow_succ]
+  · rw [replicate_succ, prod_cons, ih, pow_succ']
 #align list.prod_replicate List.prod_replicate
 #align list.sum_replicate List.sum_replicate
 

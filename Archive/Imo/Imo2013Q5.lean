@@ -132,7 +132,7 @@ theorem pow_f_le_f_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n) {x : ℚ} (hx : 
   cases' pn with pn
   · norm_num
   have hpn' := hpn pn.succ_pos
-  rw [pow_succ' x (pn + 1), pow_succ' (f x) (pn + 1)]
+  rw [pow_succ x (pn + 1), pow_succ (f x) (pn + 1)]
   have hxp : 0 < x := by positivity
   calc
     f (x ^ (pn + 1) * x) ≤ f (x ^ (pn + 1)) * f x := H1 (x ^ (pn + 1)) x (pow_pos hxp (pn + 1)) hxp
@@ -163,7 +163,7 @@ theorem fixed_point_of_gt_1 {f : ℚ → ℝ} {x : ℚ} (hx : 1 < x)
       (x : ℝ) + (a ^ N - x : ℚ) ≤ f x + (a ^ N - x : ℚ) := by gcongr; exact H5 x hx
       _ ≤ f x + f (a ^ N - x) := by gcongr; exact H5 _ h_big_enough
   have hxp : 0 < x := by positivity
-  have hNp : 0 < N := by by_contra! H; rw [le_zero_iff.mp H] at hN; linarith
+  have hNp : 0 < N := by by_contra! H; rw [Nat.le_zero.mp H] at hN; linarith
   have h2 :=
     calc
       f x + f (a ^ N - x) ≤ f (x + (a ^ N - x)) := H2 x (a ^ N - x) hxp (by positivity)
