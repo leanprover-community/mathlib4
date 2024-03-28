@@ -115,7 +115,6 @@ def Algebra.toUnit
     T ⟶ A.functor.obj (𝟙_ _) :=
   A.isTerminal.lift <| .mk _ <| .mk (fun j => j.as.elim) (fun j => j.as.elim)
 
-
 variable {L}
 
 lemma Algebra.toUnit_unique
@@ -469,6 +468,30 @@ lemma lift_unique
     apply Algebra.toUnit_unique
 
 end free
+
+def free : (S → Type u) ⥤ L.Algebra (Type (max v u)) where
+  obj X := L.FreeAlgebra X
+  map f := L.lift _ fun T x => L.incl T <| f _ x
+  map_id := by
+    intro X
+    apply L.lift_unique
+    intro T x
+    apply L.incl_lift
+  map_comp := by
+    intro X Y Z f g
+    apply L.lift_unique
+    intro A x
+    rfl
+
+@[simps!]
+def adjunction {L : LawvereTheory.{u} S} : free ⊣ L.algebraForget _ := Adjunction.mkOfHomEquiv {
+  homEquiv := fun _ _ => {
+    toFun := fun f _ x => f.app _ <| L.incl _ x
+    invFun := fun f => L.lift _ fun _ x => f _ x
+    left_inv := fun _ => L.lift_unique _ _ _ fun _ _ => rfl
+    right_inv := fun _ => rfl }
+  homEquiv_naturality_left_symm := fun _ _ => L.lift_unique _ _ _ fun _ _ => rfl
+  homEquiv_naturality_right := fun _ _ => rfl }
 
 end LawvereTheory
 end CategoryTheory
