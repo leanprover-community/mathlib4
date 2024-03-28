@@ -163,3 +163,78 @@ theorem compl_antitone : Antitone (compl : α → α) :=
 #align compl_antitone compl_antitone
 
 end BooleanAlgebra
+
+section Set
+open Set
+variable {s t : Set α}
+
+namespace Function.Embedding
+
+/-- An injection from `α` to `β` gives one from `Set α` to `Set β`.  -/
+def setImage (f : α ↪ β) : Set α ↪o Set β where
+  toFun := image f
+  inj' := image_injective.2 f.injective
+  map_rel_iff' := image_subset_image_iff f.injective
+
+@[simp] lemma setImage_apply (f : α ↪ β) (s : Set α) : f.setImage s = f '' s := rfl
+
+end Function.Embedding
+
+namespace Equiv
+
+/-- An equivalence of types yields an order isomorphism between their lattices of subsets. -/
+def setOrderIso (e : α ≃ β) : Set α ≃o Set β where
+  toEquiv := Equiv.Set.congr e
+  map_rel_iff' := by simp
+#align equiv.to_order_iso_set Equiv.setOrderIso
+
+@[simp] lemma setOrderIso_toEquiv (e : α ≃ β) : e.setOrderIso.toEquiv = Equiv.Set.congr e := rfl
+@[simp] lemma setOrderIso_toEmbedding (e : α ≃ β) :
+    e.setOrderIso.toOrderEmbedding = e.toEmbedding.setImage := rfl
+
+@[simp] lemma setOrderIso_apply (e : α ≃ β) (s : Set α) : e.setOrderIso s = e '' s := rfl
+@[simp] lemma setOrderIso_symm_apply (e : α ≃ β) (s : Set β) : e.setOrderIso.symm s = e.symm '' s :=
+  rfl
+
+lemma setOrderIso_subset_iff (e : α ≃ β) : e.setOrderIso s ⊆ e.setOrderIso t ↔ s ⊆ t :=
+  e.setOrderIso.map_rel_iff
+
+lemma setOrderIso_symm_subset_iff (e : α ≃ β) {s t : Set β} :
+    e.setOrderIso.symm s ⊆ e.setOrderIso.symm t ↔ s ⊆ t :=
+  e.setOrderIso.symm.map_rel_iff
+
+end Equiv
+
+/-- Given `s : Set α`, the type `Set s` is order-isomorphic to the type of subsets of `s`. -/
+def Set.subtypeOrderIso (s : Set α) : Set s ≃o {t : Set α // t ⊆ s} where
+  toFun r := ⟨((↑)) '' r, by rintro _ ⟨⟨x,h⟩, _, rfl⟩; exact h⟩
+  invFun r := ((↑) : _ → α) ⁻¹' r
+  left_inv := fun _ ↦ preimage_image_eq _ Subtype.val_injective
+  right_inv := fun r ↦ by cases r; simpa
+  map_rel_iff' := by simp [preimage_image_eq _ Subtype.val_injective]
+
+theorem Set.subtypeOrderIso_apply (s : Set α) (t : Set s) :
+    (s.subtypeOrderIso t : Set α) = ((↑)) '' t := rfl
+
+theorem Set.subtypeOrderIso_apply_symm {s : Set α} (t : {r : Set α // r ⊆ s}) :
+    s.subtypeOrderIso.symm t = ((↑) : _ → α) ⁻¹' t := rfl
+
+@[simp] theorem Set.subtypeOrderIso_subset_iff (s : Set α) {r r' : Set s} :
+    (s.subtypeOrderIso r : Set α) ⊆ s.subtypeOrderIso r' ↔ r ⊆ r' :=
+  s.subtypeOrderIso.map_rel_iff'
+
+@[simp] theorem Set.subtypeOrderIso_symm_subset_iff (s : Set α) {r r' : {t : Set α // t ⊆ s}} :
+    s.subtypeOrderIso.symm r ⊆ s.subtypeOrderIso.symm r' ↔ (r : Set α) ⊆ r' :=
+  s.subtypeOrderIso.symm.map_rel_iff'
+
+@[simp] theorem Set.mem_subtypeOrderIso_iff (s : Set α) {x : α} {r : Set s} :
+    x ∈ (s.subtypeOrderIso r : Set α) ↔ ∃ (hx : x ∈ s), ⟨x,hx⟩ ∈ r := by
+  simp [Set.subtypeOrderIso]
+
+@[simp] theorem Set.mem_subtypeOrderIso_iff' (s : Set α) {x : α} {r : Set s} :
+    x ∈ (s.subtypeOrderIso r : Set α) ↔ ∃ y, y ∈ r ∧ y = x := Iff.rfl
+
+@[simp] theorem Set.mem_subtypeOrderIso_symm_iff {s : Set α} {x : s} {t : {t : Set α // t ⊆ s}} :
+    x ∈ s.subtypeOrderIso.symm t ↔ (x : α) ∈ (t : Set α) := Iff.rfl
+
+end Set
