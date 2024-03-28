@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Util.AtomM
+import Mathlib.Control.Basic
 import Mathlib.Data.Rat.Order
 
 /-!
@@ -965,6 +966,223 @@ def evalDiv (rα : Q(DivisionRing $α)) (czα : Option Q(CharZero $α)) (va : Ex
   let ⟨d, vd, (pd : Q($a * $_c = $d))⟩ := evalMul sα va vc
   pure ⟨d, vd, (q(div_pf $pc $pd) : Expr)⟩
 
+/-- A precomputed `Cache` for `ℕ`. -/
+def Cache.nat : Cache sℕ := { rα := none, dα := none, czα := some q(inferInstance) }
+
+/-- Checks whether `e` would be processed by `eval` as a ring expression,
+or otherwise if it is an atom or something simplifiable via `norm_num`.
+
+We use this in `ring_nf` to avoid rewriting atoms unnecessarily.
+
+Returns:
+* `none` if `eval` would process `e` as an algebraic ring expression
+* `some none` if `eval` would treat `e` as an atom.
+* `some (some r)` if `eval` would not process `e` as an algebraic ring expression,
+  but `NormNum.derive` can nevertheless simplify `e`, with result `r`.
+-/
+-- Note this is not the same as whether the result of `eval` is an atom. (e.g. consider `x + 0`.)
+def isAtomOrDerivable {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+    (c : Cache sα) (e : Q($α)) : AtomM (Option (Option (Result (ExSum sα) e))) := do
+  let els := try
+      pure <| some (evalCast sα (← derive e))
+    catch _ => pure (some none)
+  let .const n _ := (← whnfR e).getAppFn | els
+  match n, c.rα, c.dα with
+  | ``HAdd.hAdd, _, _ | ``Add.add, _, _
+  | ``HMul.hMul, _, _ | ``Mul.mul, _, _
+  | ``HSMul.hSMul, _, _
+  | ``HPow.hPow, _, _ | ``Pow.pow, _, _
+  | ``FunLike.coe, _, _
+  | ``Neg.neg, some _, _
+  | ``HSub.hSub, some _, _ | ``Sub.sub, some _, _
+  | ``Inv.inv, _, some _
+  | ``HDiv.hDiv, _, some _ | ``Div.div, _, some _ => pure none
+  | _, _, _ => els
+
+section
+variable (e : Q($α)) (els : AtomM β)
+
+/-- Match function for `$a + $b`, extracted from `eval` to speed up compilation. -/
+@[specialize] def eval.matchAdd (ok : Q($α) → Q($α) → AtomM β) : AtomM β :=
+  match e with | ~q($a + $b) => ok a b | _ => els
+
+/-- Match function for `$a * $b`, extracted from `eval` to speed up compilation. -/
+@[specialize] def eval.matchMul (ok : Q($α) → Q($α) → AtomM β) : AtomM β :=
+  match e with | ~q($a * $b) => ok a b | _ => els
+
+/-- Match function for `$a • $b`, extracted from `eval` to speed up compilation. -/
+@[specialize] def eval.matchSMul (ok : Q(ℕ) → Q($α) → AtomM β) : AtomM β :=
+  match e with | ~q(($a : ℕ) • ($b : «$α»)) => ok a b | _ => els
+
+/-- Match function for `$a ^ $b`, extracted from `eval` to speed up compilation. -/
+@[specialize] def eval.matchPow (ok : Q($α) → Q(ℕ) → AtomM β) : AtomM β :=
+  match e with | ~q($a ^ $b) => ok a b | _ => els
+
+/-- Match function for `-$a`, extracted from `eval` to speed up compilation. -/
+@[specialize] def eval.matchNeg (_rα : Q(Ring $α)) (ok : Q($α) → AtomM β) : AtomM β :=
+  match e with | ~q(-$a) => ok a | _ => els
+
+/-- Match function for `$a - $b`, extracted from `eval` to speed up compilation. -/
+@[specialize] def eval.matchSub (_rα : Q(Ring $α))
+    (ok : Q($α) → Q($α) → AtomM β) : AtomM β :=
+  match e with | ~q($a - $b) => ok a b | _ => els
+
+/-- Match function for `$a⁻¹`, extracted from `eval` to speed up compilation. -/
+@[specialize] def eval.matchInv (_dα : Q(DivisionRing $α))
+    (ok : Q($α) → AtomM β) : AtomM β :=
+  match e with | ~q($a⁻¹) => ok a | _ => els
+
+/-- Match function for `$a / $b`, extracted from `eval` to speed up compilation. -/
+@[specialize] def eval.matchDiv (_dα : Q(DivisionRing $α))
+    (ok : Q($α) → Q($α) → AtomM β) : AtomM β :=
+  match e with | ~q($a / $b) => ok a b | _ => els
+
+/-- Match function for `($f : $γ →+* $α) $a`, extracted from `eval` to speed up compilation. -/
+@[specialize] def eval.matchHom
+    (ok : ∀ {v} (γ : Q(Type v)) (_sγ : Q(CommSemiring $γ)), Q($γ →+* $α) → Q($γ) → AtomM β) :
+    AtomM β := do
+  let #[F, γ, _, _, f, a] := (← whnfR e).getAppArgs | els
+  let .const ``RingHom [v, _] := (← whnfR F).getAppFn | els
+  let γ : Q(Type v) := γ
+  let some sγ ← try? (synthInstanceQ (q(CommSemiring $γ) : Q(Type v))) | els
+  ok γ sγ f a
+
+end
+
+section
+variable [CommSemiring S] {f : R →+* S}
+
+theorem isNat_hom : IsNat a n → IsNat (f a) n
+  | ⟨_⟩ => ⟨by subst_vars; simp⟩
+
+theorem isInt_hom {R S} [Ring R] [Ring S] {f : R →+* S} {a : R} : IsInt a n → IsInt (f a) n
+  | ⟨_⟩ => ⟨by subst_vars; simp⟩
+
+theorem isRat_hom {R S} [Ring R] [Ring S] {f : R →+* S} {a : R} : IsRat a n d → IsRat (f a) n d
+  | ⟨_, h⟩ => by
+    refine ⟨⟨f ⅟d, ?_, ?_⟩, by simp [h]⟩ <;> rw [← map_natCast f, ← map_mul f] <;> simp
+end
+
+/-- If `e` is a numeral and `f` is a ring hom, then `f e` represents the same numeral. -/
+def mapNormNum
+    {u v} {α : Q(Type u)} (sα : Q(CommSemiring $α)) {β : Q(Type v)} (sβ : Q(CommSemiring $β))
+    (cα : Cache sα) (f : Q($β →+* $α)) {e : Q($β)} :
+    NormNum.Result e → Option (NormNum.Result q($f $e))
+  | .isNat sβ lit p => do
+    assumeInstancesCommute
+    let inst := q(AddCommMonoidWithOne.toAddMonoidWithOne)
+    some (.isNat inst lit q(isNat_hom $p))
+  | .isNegNat rβ lit p => do
+    let rα ← cα.rα
+    have f : Q(by clear! $sα $sβ; exact $β →+* $α) := f
+    some (.isNegNat rα lit (q(isInt_hom (f := $f) $p) : Expr))
+  | .isRat dβ q n d p => do
+    let dα ← cα.dα
+    have f : Q(by clear! $sα $sβ; exact $β →+* $α) := f
+    some (.isRat dα q n d (q(isRat_hom (f := $f) $p) : Expr))
+  | _ => none
+
+section
+variable [CommSemiring S] {f : R →+* S}
+theorem add_hom_congr (_ : f a = a') (_ : f b = b')
+    (_ : a' + b' = c) : f (a + b) = c := by subst_vars; simp
+
+theorem mul_hom_congr (_ : f a = a') (_ : f b = b')
+    (_ : a' * b' = c) : f (a * b) = c := by subst_vars; simp
+
+theorem nsmul_hom_congr (_ : (a : ℕ) = a') (_ : f b = b')
+    (_ : a' • b' = c) : f (a • (b : R)) = c := by subst_vars; simp
+
+theorem pow_hom_congr (_ : f a = a') (_ : b = b')
+    (_ : a' ^ b' = c) : f (a ^ b) = c := by subst_vars; simp
+
+theorem neg_hom_congr {R S} [Ring R] [Ring S] {f : R →+* S} {a : R} {a' b : S} (_ : f a = a')
+    (_ : -a' = b) : f (-a) = b := by subst_vars; simp
+
+theorem sub_hom_congr {R S} [Ring R] [Ring S] {f : R →+* S} {a b : R} {a' b' c : S}
+    (_ : f a = a') (_ : f b = b') (_ : a' - b' = c) : f (a - b) = c := by subst_vars; simp
+
+theorem inv_hom_congr {R S} [DivisionRing R] [DivisionRing S] {f : R →+* S} {a : R} {a' b : S}
+    (_ : f a = a') (_ : a'⁻¹ = b) : f a⁻¹ = b := by subst_vars; simp
+
+theorem div_hom_congr {R S} [DivisionRing R] [DivisionRing S] {f : R →+* S} {a b : R} {a' b' c : S}
+    (_ : f a = a') (_ : f b = b') (_ : a' / b' = c) : f (a / b) = c := by subst_vars; simp
+
+theorem hom_hom_congr [CommSemiring T] {g : S →+* T} {a : R} {b : T}
+    (h : (g.comp f) a = b) : g (f a) = b := h
+end
+
+variable (evalNat : (a : Q(ℕ)) → AtomM (Result (ExSum sℕ) a))
+  {u} {α : Q(Type u)} (sα : Q(CommSemiring $α)) (cα : Cache sα) in
+/--
+Evaluates expression `e` of type `β` into a normalized representation as a polynomial,
+distributing ring hom `f` over all atoms.
+-/
+partial def evalHom
+    {v} {β : Q(Type v)} (sβ : Q(CommSemiring $β)) (cβ : Cache sβ) (f : Q($β →+* $α))
+    (e : Q($β)) : AtomM (Result (ExSum sα) q($f $e)) := do
+  let els := do
+    try evalCast sα (← mapNormNum sα sβ cα f (← derive e))
+    catch _ => evalAtom sα q($f $e)
+  let .const n _ := (← whnfR e).getAppFn | els
+  match n, cα.rα, cβ.rα, cα.dα, cβ.dα with
+  | ``HAdd.hAdd, _, _, _, _ | ``Add.add, _, _, _, _ =>
+    eval.matchAdd sβ e els fun a b => do
+      let ⟨_, va, pa⟩ ← evalHom sβ cβ f a
+      let ⟨_, vb, pb⟩ ← evalHom sβ cβ f b
+      let ⟨c, vc, p⟩ := evalAdd sα va vb
+      pure ⟨c, vc, (q(add_hom_congr $pa $pb $p) : Expr)⟩
+  | ``HMul.hMul, _, _, _, _ | ``Mul.mul, _, _, _, _ =>
+    eval.matchMul sβ e els fun a b => do
+      let ⟨_, va, pa⟩ ← evalHom sβ cβ f a
+      let ⟨_, vb, pb⟩ ← evalHom sβ cβ f b
+      let ⟨c, vc, p⟩ := evalMul sα va vb
+      pure ⟨c, vc, (q(mul_hom_congr $pa $pb $p) : Expr)⟩
+  | ``HSMul.hSMul, _, _, _, _ =>
+    eval.matchSMul sβ e els fun a b => do
+      let ⟨_, va, pa⟩ ← evalNat a
+      let ⟨_, vb, pb⟩ ← evalHom sβ cβ f b
+      let ⟨c, vc, p⟩ ← evalNSMul sα va vb
+      pure ⟨c, vc, (q(nsmul_hom_congr $pa $pb $p) : Expr)⟩
+  | ``HPow.hPow, _, _, _, _ | ``Pow.pow, _, _, _, _ =>
+    eval.matchPow sβ e els fun a b => do
+      let ⟨_, va, pa⟩ ← evalHom sβ cβ f a
+      let ⟨_, vb, pb⟩ ← evalNat b
+      let ⟨c, vc, p⟩ := evalPow sα va vb
+      pure ⟨c, vc, (q(pow_hom_congr $pa $pb $p) : Expr)⟩
+  | ``Neg.neg, some rα, some rβ, _, _ =>
+    eval.matchNeg e els rβ fun a => do
+      have f : Q(by clear! $sα $sβ; exact $β →+* $α) := f
+      let ⟨a', va, (pa : Q($f $a = $a'))⟩ ← evalHom sβ cβ f a
+      let ⟨b, vb, p⟩ := evalNeg sα rα va
+      pure ⟨b, vb, (q(neg_hom_congr $pa $p) : Expr)⟩
+  | ``HSub.hSub, some rα, some rβ, _, _ | ``Sub.sub, some rα, some rβ, _, _ =>
+    eval.matchSub e els rβ fun a b => do
+      have f : Q(by clear! $sα $sβ; exact $β →+* $α) := f
+      let ⟨a', va, (pa : Q($f $a = $a'))⟩ ← evalHom sβ cβ f a
+      let ⟨b', vb, (pb : Q($f $b = $b'))⟩ ← evalHom sβ cβ f b
+      let ⟨c, vc, p⟩ := evalSub sα rα va vb
+      pure ⟨c, vc, (q(sub_hom_congr $pa $pb $p) : Expr)⟩
+  | ``Inv.inv, _, _, some dα, some dβ =>
+    eval.matchInv e els dβ fun a => do
+      have f : Q(by clear! $sα $sβ; exact $β →+* $α) := f
+      let ⟨a', va, (pa : Q($f $a = $a'))⟩ ← evalHom sβ cβ f a
+      let ⟨b, vb, p⟩ ← va.evalInv sα dα cα.czα
+      pure ⟨b, vb, (q(inv_hom_congr $pa $p) : Expr)⟩
+  | ``HDiv.hDiv, _, _, some dα, some dβ | ``Div.div, _, _, some dα, some dβ =>
+    eval.matchDiv e els dβ fun a b => do
+      have f : Q(by clear! $sα $sβ; exact $β →+* $α) := f
+      let ⟨a', va, (pa : Q($f $a = $a'))⟩ ← evalHom sβ cβ f a
+      let ⟨b', vb, (pb : Q($f $b = $b'))⟩ ← evalHom sβ cβ f b
+      let ⟨c, vc, p⟩ ← evalDiv sα dα cα.czα va vb
+      pure ⟨c, vc, (q(div_hom_congr $pa $pb $p) : Expr)⟩
+  | ``FunLike.coe, _, _, _, _ =>
+    eval.matchHom sβ e els fun _ sγ g b => do
+      let cγ ← mkCache sγ
+      let ⟨c, vc, p⟩ ← evalHom sγ cγ q(($f).comp $g) b
+      pure ⟨c, vc, (q(hom_hom_congr $p) : Expr)⟩
+  | _, _, _, _, _ => els
+
 theorem add_congr (_ : a = a') (_ : b = b')
     (_ : a' + b' = c) : (a + b : R) = c := by subst_vars; rfl
 
@@ -989,38 +1207,6 @@ theorem inv_congr {R} [DivisionRing R] {a a' b : R} (_ : a = a')
 theorem div_congr {R} [DivisionRing R] {a a' b b' c : R} (_ : a = a') (_ : b = b')
     (_ : a' / b' = c) : (a / b : R) = c := by subst_vars; rfl
 
-/-- A precomputed `Cache` for `ℕ`. -/
-def Cache.nat : Cache sℕ := { rα := none, dα := none, czα := some q(inferInstance) }
-
-/-- Checks whether `e` would be processed by `eval` as a ring expression,
-or otherwise if it is an atom or something simplifiable via `norm_num`.
-
-We use this in `ring_nf` to avoid rewriting atoms unnecessarily.
-
-Returns:
-* `none` if `eval` would process `e` as an algebraic ring expression
-* `some none` if `eval` would treat `e` as an atom.
-* `some (some r)` if `eval` would not process `e` as an algebraic ring expression,
-  but `NormNum.derive` can nevertheless simplify `e`, with result `r`.
--/
--- Note this is not the same as whether the result of `eval` is an atom. (e.g. consider `x + 0`.)
-def isAtomOrDerivable {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    (c : Cache sα) (e : Q($α)) : AtomM (Option (Option (Result (ExSum sα) e))) := do
-  let els := try
-      pure <| some (evalCast sα (← derive e))
-    catch _ => pure (some none)
-  let .const n _ := (← withReducible <| whnf e).getAppFn | els
-  match n, c.rα, c.dα with
-  | ``HAdd.hAdd, _, _ | ``Add.add, _, _
-  | ``HMul.hMul, _, _ | ``Mul.mul, _, _
-  | ``HSMul.hSMul, _, _
-  | ``HPow.hPow, _, _ | ``Pow.pow, _, _
-  | ``Neg.neg, some _, _
-  | ``HSub.hSub, some _, _ | ``Sub.sub, some _, _
-  | ``Inv.inv, _, some _
-  | ``HDiv.hDiv, _, some _ | ``Div.div, _, some _ => pure none
-  | _, _, _ => els
-
 /--
 Evaluates expression `e` of type `α` into a normalized representation as a polynomial.
 This is the main driver of `ring`, which calls out to `evalAdd`, `evalMul` etc.
@@ -1030,60 +1216,59 @@ partial def eval {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
   let els := do
     try evalCast sα (← derive e)
     catch _ => evalAtom sα e
-  let .const n _ := (← withReducible <| whnf e).getAppFn | els
+  let .const n _ := (← whnfR e).getAppFn | els
   match n, c.rα, c.dα with
-  | ``HAdd.hAdd, _, _ | ``Add.add, _, _ => match e with
-    | ~q($a + $b) =>
+  | ``HAdd.hAdd, _, _ | ``Add.add, _, _ =>
+    eval.matchAdd sα e els fun a b => do
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ := evalAdd sα va vb
       pure ⟨c, vc, (q(add_congr $pa $pb $p) : Expr)⟩
-    | _ => els
-  | ``HMul.hMul, _, _ | ``Mul.mul, _, _ => match e with
-    | ~q($a * $b) =>
+  | ``HMul.hMul, _, _ | ``Mul.mul, _, _ =>
+    eval.matchMul sα e els fun a b => do
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ := evalMul sα va vb
       pure ⟨c, vc, (q(mul_congr $pa $pb $p) : Expr)⟩
-    | _ => els
-  | ``HSMul.hSMul, _, _ => match e with
-    | ~q(($a : ℕ) • ($b : «$α»)) =>
+  | ``HSMul.hSMul, _, _ =>
+    eval.matchSMul sα e els fun a b => do
       let ⟨_, va, pa⟩ ← eval sℕ .nat a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ ← evalNSMul sα va vb
       pure ⟨c, vc, (q(nsmul_congr $pa $pb $p) : Expr)⟩
-    | _ => els
-  | ``HPow.hPow, _, _ | ``Pow.pow, _, _ => match e with
-    | ~q($a ^ $b) =>
+  | ``HPow.hPow, _, _ | ``Pow.pow, _, _ =>
+    eval.matchPow sα e els fun a b => do
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sℕ .nat b
       let ⟨c, vc, p⟩ := evalPow sα va vb
       pure ⟨c, vc, (q(pow_congr $pa $pb $p) : Expr)⟩
-    | _ => els
-  | ``Neg.neg, some rα, _ => match e with
-    | ~q(-$a) =>
+  | ``Neg.neg, some rα, _ =>
+    eval.matchNeg e els rα fun a => do
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨b, vb, p⟩ := evalNeg sα rα va
       pure ⟨b, vb, (q(neg_congr $pa $p) : Expr)⟩
-  | ``HSub.hSub, some rα, _ | ``Sub.sub, some rα, _ => match e with
-    | ~q($a - $b) => do
+  | ``HSub.hSub, some rα, _ | ``Sub.sub, some rα, _ =>
+    eval.matchSub e els rα fun a b => do
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ := evalSub sα rα va vb
       pure ⟨c, vc, (q(sub_congr $pa $pb $p) : Expr)⟩
-    | _ => els
-  | ``Inv.inv, _, some dα => match e with
-    | ~q($a⁻¹) =>
+  | ``Inv.inv, _, some dα =>
+    eval.matchInv e els dα fun a => do
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨b, vb, p⟩ ← va.evalInv sα dα c.czα
       pure ⟨b, vb, (q(inv_congr $pa $p) : Expr)⟩
-  | ``HDiv.hDiv, _, some dα | ``Div.div, _, some dα => match e with
-    | ~q($a / $b) => do
+  | ``HDiv.hDiv, _, some dα | ``Div.div, _, some dα =>
+    eval.matchDiv e els dα fun a b => do
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ ← evalDiv sα dα c.czα va vb
       pure ⟨c, vc, (q(div_congr $pa $pb $p) : Expr)⟩
-    | _ => els
+  | ``FunLike.coe, _, _ =>
+    eval.matchHom sα e els fun _ sβ f b => do
+      let cβ ← mkCache sβ
+      let ⟨c, vc, p⟩ ← evalHom (eval sℕ .nat) sα c sβ cβ f b
+      pure ⟨c, vc, (p : Expr)⟩
   | _, _, _ => els
 
 /-- `CSLift α β` is a typeclass used by `ring` for lifting operations from `α`

@@ -177,3 +177,8 @@ example {n : ℝ} (_hn : 0 ≤ n) : (n + 1 / 2) ^ 2 * (n + 1 + 1 / 3) ≤ (n + 1
   ring_nf
   trace_state
   exact test_sorry
+
+noncomputable def C {α} [Ring α] : α →+* R x α := test_sorry
+
+example (p : R Unit ℤ) : C 1 * p = p := by ring
+example (p : R Unit ℤ) (r : ℤ) : C (2 * r) * p = C r * p + C r * p := by ring
