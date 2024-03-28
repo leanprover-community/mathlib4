@@ -290,6 +290,17 @@ def optionEquivLeft : MvPolynomial (Option S₁) R ≃ₐ[R] Polynomial (MvPolyn
     (by ext : 2 <;> simp [← Polynomial.C_eq_algebraMap]) (by ext i : 2; cases i <;> simp)
 #align mv_polynomial.option_equiv_left MvPolynomial.optionEquivLeft
 
+lemma optionEquivLeft_X_some (x : S₁) : optionEquivLeft R S₁ (X (some x)) = Polynomial.C (X x) := by
+  simp only [MvPolynomial.optionEquivLeft_apply, MvPolynomial.aeval_X]
+
+lemma optionEquivLeft_X_none : optionEquivLeft R S₁ (X none) = Polynomial.X := by
+  simp only [MvPolynomial.optionEquivLeft_apply, @MvPolynomial.aeval_X]
+
+lemma optionEquivLeft_C (r : R) : optionEquivLeft R S₁ (C r) = Polynomial.C (C r) := by
+  unfold optionEquivLeft AlgEquiv.ofAlgHom
+  simp only [Option.elim, AlgEquiv.coe_mk, aeval_C]
+  rfl
+
 end
 
 /-- The algebra isomorphism between multivariable polynomials in `Option S₁` and
@@ -308,6 +319,21 @@ def optionEquivRight : MvPolynomial (Option S₁) R ≃ₐ[R] MvPolynomial S₁ 
         simp only [Option.elim, AlgHom.coe_comp, comp_apply, aeval_X, aevalTower_C,
           Polynomial.aeval_X, AlgHom.coe_id, id.def, aevalTower_X])
 #align mv_polynomial.option_equiv_right MvPolynomial.optionEquivRight
+
+@[simp]
+lemma optionEquivRight_X_some (x : S₁) : optionEquivRight R S₁ (X (some x)) = X x := by
+  unfold optionEquivRight AlgEquiv.ofAlgHom
+  simp only [AlgEquiv.coe_mk, aeval_X, Option.elim]
+
+@[simp]
+lemma optionEquivRight_X_none : optionEquivRight R S₁ (X none) = C Polynomial.X := by
+  unfold optionEquivRight AlgEquiv.ofAlgHom
+  simp only [AlgEquiv.coe_mk, aeval_X, Option.elim]
+
+@[simp]
+lemma optionEquivRight_C (r : R) : optionEquivRight R S₁ (C r) = C (Polynomial.C r) := by
+  unfold optionEquivRight AlgEquiv.ofAlgHom
+  simp only [Option.elim, AlgEquiv.coe_mk, aeval_C, C_eq_algebraMap, algebraMap_apply]
 
 variable (n : ℕ)
 
