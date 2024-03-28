@@ -1275,7 +1275,7 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
     rcases eq_or_ne (f x) 0 with (h'x | h'x)
     · simp only [h'x, zero_smul]
     · rw [hx _]
-      simpa only [Ne.def, ENNReal.coe_eq_zero] using h'x
+      simpa only [Ne, ENNReal.coe_eq_zero] using h'x
 #align integral_with_density_eq_integral_smul integral_withDensity_eq_integral_smul
 
 theorem integral_withDensity_eq_integral_smul₀ {f : X → ℝ≥0} (hf : AEMeasurable f μ) (g : X → E) :
@@ -1331,7 +1331,7 @@ theorem measure_le_lintegral_thickenedIndicator (μ : Measure X) {E : Set X}
     μ E ≤ ∫⁻ x, (thickenedIndicator δ_pos E x : ℝ≥0∞) ∂μ := by
   convert measure_le_lintegral_thickenedIndicatorAux μ E_mble δ
   dsimp
-  simp only [thickenedIndicatorAux_lt_top.ne, ENNReal.coe_toNNReal, Ne.def, not_false_iff]
+  simp only [thickenedIndicatorAux_lt_top.ne, ENNReal.coe_toNNReal, Ne, not_false_iff]
 #align measure_le_lintegral_thickened_indicator measure_le_lintegral_thickenedIndicator
 
 end thickenedIndicator

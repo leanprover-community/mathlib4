@@ -209,7 +209,7 @@ theorem smul_mem_polar {s : Set E} {x' : Dual 𝕜 E} {c : 𝕜} (hc : ∀ z, z 
     rw [eq z]
     apply mul_le_mul (le_of_eq rfl) (hc z hzs) (norm_nonneg _) (norm_nonneg _)
   have cancel : ‖c⁻¹‖ * ‖c‖ = 1 := by
-    simp only [c_zero, norm_eq_zero, Ne.def, not_false_iff, inv_mul_cancel, norm_inv]
+    simp only [c_zero, norm_eq_zero, Ne, not_false_iff, inv_mul_cancel, norm_inv]
   rwa [cancel] at le
 #align normed_space.smul_mem_polar NormedSpace.smul_mem_polar
 

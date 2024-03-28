@@ -7,6 +7,7 @@ import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Bits
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
+import Mathlib.Data.Bool.Basic
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
 

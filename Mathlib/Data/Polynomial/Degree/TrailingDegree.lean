@@ -67,11 +67,9 @@ def TrailingMonic (p : R[X]) :=
   trailingCoeff p = (1 : R)
 #align polynomial.trailing_monic Polynomial.TrailingMonic
 
--- Adaptation note: 2024-03-15: this was called `def`.
--- Should lean be changed to allow that as a name again?
-theorem TrailingMonic.definition : TrailingMonic p ↔ trailingCoeff p = 1 :=
+theorem TrailingMonic.def : TrailingMonic p ↔ trailingCoeff p = 1 :=
   Iff.rfl
-#align polynomial.trailing_monic.def Polynomial.TrailingMonic.definition
+#align polynomial.trailing_monic.def Polynomial.TrailingMonic.def
 
 instance TrailingMonic.decidable [DecidableEq R] : Decidable (TrailingMonic p) :=
   inferInstanceAs <| Decidable (trailingCoeff p = (1 : R))

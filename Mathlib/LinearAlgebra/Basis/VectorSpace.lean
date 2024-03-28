@@ -170,7 +170,7 @@ theorem nonzero_span_atom (v : V) (hv : v ≠ 0) : IsAtom (span K {v} : Submodul
     by_contra h
     apply hT.2
     change span K {v} ≤ T
-    simp_rw [span_singleton_le_iff_mem, ← Ne.def, Submodule.ne_bot_iff] at *
+    simp_rw [span_singleton_le_iff_mem, ← Ne.eq_def, Submodule.ne_bot_iff] at *
     rcases h with ⟨s, ⟨hs, hz⟩⟩
     rcases mem_span_singleton.1 (hT.1 hs) with ⟨a, rfl⟩
     rcases eq_or_ne a 0 with rfl | h

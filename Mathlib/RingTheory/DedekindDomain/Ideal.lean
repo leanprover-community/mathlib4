@@ -385,7 +385,7 @@ theorem exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDomain A] (hNF :
   classical
     have := Multiset.map_erase PrimeSpectrum.asIdeal PrimeSpectrum.ext P Z
     obtain ⟨hP0, hZP0⟩ : P.asIdeal ≠ ⊥ ∧ ((Z.erase P).map PrimeSpectrum.asIdeal).prod ≠ ⊥ := by
-      rwa [Ne.def, ← Multiset.cons_erase hPZ', Multiset.prod_cons, Ideal.mul_eq_bot, not_or, ←
+      rwa [Ne, ← Multiset.cons_erase hPZ', Multiset.prod_cons, Ideal.mul_eq_bot, not_or, ←
         this] at hprodZ
     -- By maximality of `P` and `M`, we have that `P ≤ M` implies `P = M`.
     have hPM' := (P.IsPrime.isMaximal hP0).eq_of_le hM.ne_top hPM
@@ -1091,7 +1091,7 @@ theorem idealFactorsFunOfQuotHom_id :
     idealFactorsFunOfQuotHom (RingHom.id (A ⧸ J)).surjective = OrderHom.id :=
   OrderHom.ext _ _
     (funext fun X => by
-      simp only [idealFactorsFunOfQuotHom, map_id, OrderHom.coe_mk, OrderHom.id_coe, id.def,
+      simp only [idealFactorsFunOfQuotHom, map_id, OrderHom.coe_mk, OrderHom.id_coe, id,
         comap_map_of_surjective (Ideal.Quotient.mk J) Quotient.mk_surjective, ←
         RingHom.ker_eq_comap_bot (Ideal.Quotient.mk J), mk_ker,
         sup_eq_left.mpr (dvd_iff_le.mp X.prop), Subtype.coe_eta])

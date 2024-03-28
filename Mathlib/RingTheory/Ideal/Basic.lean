@@ -273,7 +273,7 @@ theorem IsPrime.mem_of_pow_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : ℕ
 
 theorem not_isPrime_iff {I : Ideal α} :
     ¬I.IsPrime ↔ I = ⊤ ∨ ∃ (x : α) (_hx : x ∉ I) (y : α) (_hy : y ∉ I), x * y ∈ I := by
-  simp_rw [Ideal.isPrime_iff, not_and_or, Ne.def, Classical.not_not, not_forall, not_or]
+  simp_rw [Ideal.isPrime_iff, not_and_or, Ne, Classical.not_not, not_forall, not_or]
   exact
     or_congr Iff.rfl
       ⟨fun ⟨x, y, hxy, hx, hy⟩ => ⟨x, hx, y, hy, hxy⟩, fun ⟨x, hx, y, hy, hxy⟩ =>
@@ -803,7 +803,7 @@ theorem not_isField_iff_exists_ideal_bot_lt_and_lt_top [Nontrivial R] :
     obtain ⟨x, mem, ne_zero⟩ := SetLike.exists_of_lt bot_lt
     rw [Submodule.mem_bot] at ne_zero
     obtain ⟨y, hy⟩ := hf.mul_inv_cancel ne_zero
-    rw [lt_top_iff_ne_top, Ne.def, Ideal.eq_top_iff_one, ← hy] at lt_top
+    rw [lt_top_iff_ne_top, Ne, Ideal.eq_top_iff_one, ← hy] at lt_top
     exact lt_top (I.mul_mem_right _ mem)
 #align ring.not_is_field_iff_exists_ideal_bot_lt_and_lt_top Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top
 

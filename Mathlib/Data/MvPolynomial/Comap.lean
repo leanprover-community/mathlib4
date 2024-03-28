@@ -47,7 +47,7 @@ theorem comap_apply (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R) (x : τ 
 @[simp]
 theorem comap_id_apply (x : σ → R) : comap (AlgHom.id R (MvPolynomial σ R)) x = x := by
   funext i
-  simp only [comap, AlgHom.id_apply, id.def, aeval_X]
+  simp only [comap, AlgHom.id_apply, id, aeval_X]
 #align mv_polynomial.comap_id_apply MvPolynomial.comap_id_apply
 
 variable (σ R)

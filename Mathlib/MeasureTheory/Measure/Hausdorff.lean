@@ -621,7 +621,7 @@ theorem hausdorffMeasure_zero_or_top {d₁ d₂ : ℝ} (h : d₁ < d₂) (s : Se
   intro c hc
   refine' le_iff'.1 (mkMetric_mono_smul ENNReal.coe_ne_top (mod_cast hc) _) s
   have : 0 < ((c : ℝ≥0∞) ^ (d₂ - d₁)⁻¹) := by
-    rw [ENNReal.coe_rpow_of_ne_zero hc, pos_iff_ne_zero, Ne.def, ENNReal.coe_eq_zero,
+    rw [ENNReal.coe_rpow_of_ne_zero hc, pos_iff_ne_zero, Ne, ENNReal.coe_eq_zero,
       NNReal.rpow_eq_zero_iff]
     exact mt And.left hc
   filter_upwards [Ico_mem_nhdsWithin_Ici ⟨le_rfl, this⟩]
@@ -634,7 +634,7 @@ theorem hausdorffMeasure_zero_or_top {d₁ d₂ : ℝ} (h : d₁ < d₂) (s : Se
     · simp only [h₂, ENNReal.zero_rpow_of_pos, zero_le, ENNReal.zero_div, ENNReal.coe_zero]
     · simp only [h.trans_le h₂, ENNReal.div_top, zero_le, ENNReal.zero_rpow_of_neg,
         ENNReal.coe_zero]
-  · have : (r : ℝ≥0∞) ≠ 0 := by simpa only [ENNReal.coe_eq_zero, Ne.def] using hr₀
+  · have : (r : ℝ≥0∞) ≠ 0 := by simpa only [ENNReal.coe_eq_zero, Ne] using hr₀
     rw [← ENNReal.rpow_sub _ _ this ENNReal.coe_ne_top]
     refine' (ENNReal.rpow_lt_rpow hrc (sub_pos.2 h)).le.trans _
     rw [← ENNReal.rpow_mul, inv_mul_cancel (sub_pos.2 h).ne', ENNReal.rpow_one]
@@ -1027,7 +1027,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
         intros n hn
         simp only [ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr hn), comp_apply,
           ENNReal.ofReal_coe_nat]
-      · simp only [ENNReal.ofReal_ne_top, Ne.def, not_false_iff]
+      · simp only [ENNReal.ofReal_ne_top, Ne, not_false_iff]
 #align measure_theory.hausdorff_measure_pi_real MeasureTheory.hausdorffMeasure_pi_real
 
 variable (ι X)

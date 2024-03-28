@@ -498,12 +498,10 @@ instance IsRoot.decidable [DecidableEq R] : Decidable (IsRoot p a) := by
   unfold IsRoot; infer_instance
 #align polynomial.is_root.decidable Polynomial.IsRoot.decidable
 
--- Adaptation note: 2024-03-15: this was called `def`.
--- Should lean be changed to allow that as a name again?
 @[simp]
-theorem IsRoot.definition : IsRoot p a ↔ p.eval a = 0 :=
+theorem IsRoot.def : IsRoot p a ↔ p.eval a = 0 :=
   Iff.rfl
-#align polynomial.is_root.def Polynomial.IsRoot.definition
+#align polynomial.is_root.def Polynomial.IsRoot.def
 
 theorem IsRoot.eq_zero (h : IsRoot p x) : eval x p = 0 :=
   h
@@ -1160,11 +1158,11 @@ theorem coe_compRingHom_apply (p q : R[X]) : (compRingHom q : R[X] → R[X]) p =
 #align polynomial.coe_comp_ring_hom_apply Polynomial.coe_compRingHom_apply
 
 theorem root_mul_left_of_isRoot (p : R[X]) {q : R[X]} : IsRoot q a → IsRoot (p * q) a := fun H => by
-  rw [IsRoot, eval_mul, IsRoot.definition.1 H, mul_zero]
+  rw [IsRoot, eval_mul, IsRoot.def.1 H, mul_zero]
 #align polynomial.root_mul_left_of_is_root Polynomial.root_mul_left_of_isRoot
 
 theorem root_mul_right_of_isRoot {p : R[X]} (q : R[X]) : IsRoot p a → IsRoot (p * q) a := fun H =>
-  by rw [IsRoot, eval_mul, IsRoot.definition.1 H, zero_mul]
+  by rw [IsRoot, eval_mul, IsRoot.def.1 H, zero_mul]
 #align polynomial.root_mul_right_of_is_root Polynomial.root_mul_right_of_isRoot
 
 theorem eval₂_multiset_prod (s : Multiset R[X]) (x : S) :
@@ -1323,7 +1321,7 @@ theorem eval_sub (p q : R[X]) (x : R) : (p - q).eval x = p.eval x - q.eval x :=
 #align polynomial.eval_sub Polynomial.eval_sub
 
 theorem root_X_sub_C : IsRoot (X - C a) b ↔ a = b := by
-  rw [IsRoot.definition, eval_sub, eval_X, eval_C, sub_eq_zero, eq_comm]
+  rw [IsRoot.def, eval_sub, eval_X, eval_C, sub_eq_zero, eq_comm]
 #align polynomial.root_X_sub_C Polynomial.root_X_sub_C
 
 @[simp]
