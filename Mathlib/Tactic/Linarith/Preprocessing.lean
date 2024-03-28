@@ -298,7 +298,7 @@ def cancelDenoms : Preprocessor where
   name := "cancel denominators"
   transform := fun pf => (do
       let (_, lhs) ← parseCompAndExpr (← inferType pf)
-      guard <| lhs.containsConst (fun n => n = ``HDiv.hDiv || n = ``Div.div)
+      guard <| lhs.containsConst (fun n => n = ``HDiv.hDiv || n = ``Div.div || n = ``Inv.inv)
       pure [← normalizeDenominatorsLHS pf lhs])
     <|> return [pf]
 end cancelDenoms
