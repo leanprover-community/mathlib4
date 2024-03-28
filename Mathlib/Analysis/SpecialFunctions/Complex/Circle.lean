@@ -5,6 +5,7 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
+import Mathlib.Topology.IsLocalHomeomorph
 
 #align_import analysis.special_functions.complex.circle from "leanprover-community/mathlib"@"f333194f5ecd1482191452c5ea60b37d4d6afa08"
 
@@ -45,6 +46,9 @@ theorem expMapCircle_arg (z : circle) : expMapCircle (arg z) = z :=
 
 namespace circle
 
+theorem arg_eq_pi_iff {z : circle} : arg z = π ↔ z = expMapCircle π :=
+  ⟨fun h ↦ h ▸ (expMapCircle_arg z).symm, fun h ↦ h ▸ arg_expMapCircle (neg_lt_self pi_pos) le_rfl⟩
+
 /-- `Complex.arg ∘ (↑)` and `expMapCircle` define a partial equivalence between `circle` and `ℝ`
 with `source = Set.univ` and `target = Set.Ioc (-π) π`. -/
 @[simps (config := .asFn)]
@@ -67,6 +71,27 @@ noncomputable def argEquiv : circle ≃ Ioc (-π) π where
   left_inv _ := argPartialEquiv.left_inv trivial
   right_inv x := Subtype.ext <| argPartialEquiv.right_inv x.2
 #align circle.arg_equiv circle.argEquiv
+
+/-- `Complex.arg ∘ (↑)` and `expMapCircle` define a partial equivalence between `circle` and `ℝ`
+with `source = Set.univ` and `target = Set.Ioo (-π) π`. -/
+@[simps (config := .asFn)]
+noncomputable def argPartialHomeomorph : PartialHomeomorph circle ℝ :=
+  { toFun := arg ∘ (↑)
+    invFun := expMapCircle
+    source := {expMapCircle π}ᶜ
+    target := Set.Ioo (-π) π
+    map_source' :=
+      fun x h ↦ let h' := arg_mem_Ioc x; ⟨h'.1, lt_of_le_of_ne h'.2 (h ∘ arg_eq_pi_iff.mp)⟩
+    map_target' :=
+      fun x h h' ↦ h.2.ne ((arg_expMapCircle h.1 h.2.le).symm.trans (arg_eq_pi_iff.mpr h'))
+    left_inv' := fun x _ ↦ expMapCircle_arg x
+    right_inv' := fun x hx ↦ arg_expMapCircle hx.1 hx.2.le
+    open_source := isOpen_compl_singleton
+    open_target := isOpen_Ioo
+    continuousOn_toFun := ContinuousAt.continuousOn fun x h ↦ (continuousAt_arg
+        (mem_slitPlane_iff_arg.mpr ⟨mt arg_eq_pi_iff.mp h, ne_zero_of_mem_circle x⟩)).comp
+          continuousAt_subtype_val
+    continuousOn_invFun := Continuous.continuousOn (by continuity) }
 
 end circle
 
@@ -150,3 +175,18 @@ theorem Real.Angle.arg_expMapCircle (θ : Real.Angle) :
   rw [Real.Angle.expMapCircle_coe, expMapCircle_apply, exp_mul_I, ← ofReal_cos, ← ofReal_sin, ←
     Real.Angle.cos_coe, ← Real.Angle.sin_coe, arg_cos_add_sin_mul_I_coe_angle]
 #align real.angle.arg_exp_map_circle Real.Angle.arg_expMapCircle
+
+-- todo: upgrade this to `IsCoveringMap expMapCircle`.
+lemma isLocalHomeomorph_expMapCircle : IsLocalHomeomorph expMapCircle := by
+  intro t
+  let e1 : PartialHomeomorph ℝ circle := circle.argPartialHomeomorph.symm
+  let e2 : PartialHomeomorph ℝ ℝ := ((Homeomorph.addRight t).toPartialHomeomorphOfImageEq
+    (Ioo (-π) π) isOpen_Ioo (Ioo (-π + t) (π + t)) (image_add_const_Ioo t (-π) π)).symm
+  let e3 : PartialHomeomorph circle circle :=
+    (Homeomorph.mulRight (expMapCircle t)).toPartialHomeomorphOfImageEq
+      {expMapCircle π}ᶜ isOpen_compl_singleton {expMapCircle (π + t)}ᶜ
+        (by rw [image_compl_eq (Homeomorph.bijective _), image_singleton,
+          Homeomorph.coe_mulRight, expMapCircle_add])
+  let e4 : PartialHomeomorph ℝ circle := e2.trans' (e1.trans' e3 rfl) rfl
+  exact ⟨e4, ⟨add_lt_of_neg_left t (neg_neg_of_pos pi_pos), lt_add_of_pos_left t pi_pos⟩,
+    funext fun x ↦ (congrArg _ (sub_add_cancel x t).symm).trans (expMapCircle_add (x - t) t)⟩
