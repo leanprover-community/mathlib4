@@ -344,8 +344,9 @@ theorem isInteger_or_isInteger [h : ValuationRing R] (x : K) :
 
 variable {R}
 
--- This implies that valuation rings are integrally closed through typeclass search.
-instance (priority := 100) [ValuationRing R] : IsBezout R := by
+/-- This instance implies that valuation rings are integrally closed through typeclass search.
+We make this a scoped instance, so you have to `open ValuationRing` to get this. -/
+scoped instance (priority := 100) [ValuationRing R] : IsBezout R := by
   classical
   rw [IsBezout.iff_span_pair_isPrincipal]
   intro x y
@@ -354,7 +355,8 @@ instance (priority := 100) [ValuationRing R] : IsBezout R := by
   · erw [sup_eq_right.mpr h]; exact ⟨⟨_, rfl⟩⟩
   · erw [sup_eq_left.mpr h]; exact ⟨⟨_, rfl⟩⟩
 
-instance (priority := 100) [LocalRing R] [IsBezout R] : ValuationRing R := by
+/-- We make this a scoped instance, so you have to `open ValuationRing` to get this. -/
+scoped instance (priority := 100) [LocalRing R] [IsBezout R] : ValuationRing R := by
   classical
   refine iff_dvd_total.mpr ⟨fun a b => ?_⟩
   obtain ⟨g, e : _ = Ideal.span _⟩ := IsBezout.span_pair_isPrincipal a b
