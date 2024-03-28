@@ -18,33 +18,33 @@ was defined in `Mathlib.Data.Rat.Defs`.
 
 ## Main Definitions
 
-- `Rat.field` is the field structure on `ℚ`.
+- `Rat.instField` is the field structure on `ℚ`.
 
 ## Implementation notes
 
 We have to define the field structure in a separate file to avoid cyclic imports:
 the `Field` class contains a map from `ℚ` (see `Field`'s docstring for the rationale),
-so we have a dependency `Rat.field → Field → Rat` that is reflected in the import
-hierarchy `Mathlib.Data.Rat.basic → Mathlib.Algebra.Field.Defs → Std.Data.Rat`.
+so we have a dependency `Rat.Field → Field → Rat` that is reflected in the import
+hierarchy `Mathlib.Data.Rat.Basic → Mathlib.Algebra.Field.Defs → Std.Data.Rat`.
 
 ## Tags
 
 rat, rationals, field, ℚ, numerator, denominator, num, denom
 -/
 
-
 namespace Rat
 
-instance field : Field ℚ :=
-  { mul_inv_cancel := Rat.commGroupWithZero.mul_inv_cancel
-    inv_zero := Rat.commGroupWithZero.inv_zero
-    ratCast := Rat.cast
-    ratCast_mk := fun a b h1 h2 => (num_div_den _).symm
-    qsmul := (· * ·) }
+instance instField : Field ℚ where
+  toCommRing := commRing
+  __ := commGroupWithZero
+  ratCast_def q := (num_div_den _).symm
+  qsmul := qsmulRec (↑)
 
 -- Extra instances to short-circuit type class resolution
 instance divisionRing : DivisionRing ℚ := by infer_instance
 
-instance instLinearOrderedField : LinearOrderedField ℚ := { field, instLinearOrderedCommRing with }
+instance instLinearOrderedField : LinearOrderedField ℚ where
+  __ := instLinearOrderedCommRing
+  __ := instField
 
 end Rat
