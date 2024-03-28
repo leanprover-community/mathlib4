@@ -3,9 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
-import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.Polynomial.Degree.Lemmas
-import Mathlib.Data.Polynomial.Monic
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Monic
 
 #align_import data.polynomial.integral_normalization from "leanprover-community/mathlib"@"6f401acf4faec3ab9ab13a42789c4f68064a61cd"
 

@@ -3,7 +3,7 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Polynomial.Coeff
+import Mathlib.Algebra.Polynomial.Coeff
 import Mathlib.Data.Nat.Choose.Basic
 
 #align_import data.nat.choose.vandermonde from "leanprover-community/mathlib"@"d6814c584384ddf2825ff038e868451a7c956f31"
