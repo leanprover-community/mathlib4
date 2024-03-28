@@ -95,6 +95,17 @@ instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
         Subtype.ext <| by simp only [Subalgebra.coe_mul, map_mul, Subtype.coe_mk] }
 #align number_field.ring_of_integers_algebra NumberField.inst_ringOfIntegersAlgebra
 
+attribute [local instance 2000] inst_ringOfIntegersAlgebra Algebra.toSMul Algebra.toModule
+
+instance [Algebra K L] : IsScalarTower (𝓞 K) K L :=
+  IsScalarTower.of_algebraMap_eq (fun _ ↦ rfl)
+
+instance [Algebra K L] : IsScalarTower (𝓞 K) (𝓞 L) L :=
+  IsScalarTower.of_algebraMap_eq (fun _ ↦ rfl)
+
+instance (priority := 100) [Algebra K L] [NumberField L] : FiniteDimensional K L :=
+  Module.Finite.of_restrictScalars_finite ℚ K L
+
 -- diamond at `reducible_and_instances` #10906
 example : Algebra.id (𝓞 K) = inst_ringOfIntegersAlgebra K K := rfl
 
@@ -110,6 +121,9 @@ instance : IsIntegralClosure (𝓞 K) ℤ K :=
 
 instance [NumberField K] : IsIntegrallyClosed (𝓞 K) :=
   integralClosure.isIntegrallyClosedOfFiniteExtension ℚ
+
+instance [Algebra K L] : IsIntegralClosure (𝓞 L) (𝓞 K) L :=
+  isIntegralClosure_of_isScalarTower ℤ (𝓞 K) K L (𝓞 L)
 
 theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (x : K) :=
   x.2
