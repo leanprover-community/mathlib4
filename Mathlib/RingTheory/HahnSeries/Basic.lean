@@ -358,7 +358,7 @@ theorem suppBddBelow_supp_PWO (f : Γ → R) (hf : BddBelow (Function.support f)
 
 theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀(m : Γ), m < n → f m = 0) :
     BddBelow (Function.support f) := by
-  unfold BddBelow Set.Nonempty lowerBounds
+  simp only [BddBelow, Set.Nonempty, lowerBounds]
   use n
   intro m hm
   rw [Function.mem_support, ne_eq] at hm
