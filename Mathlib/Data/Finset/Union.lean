@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Multiset.Bind
+import Mathlib.Order.SetNotation
 
 /-!
 # Unions of finite sets
