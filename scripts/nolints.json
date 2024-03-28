@@ -446,7 +446,6 @@
  ["docBlame", "Stream'.unfolds"],
  ["docBlame", "StrictWeakOrder.Equiv"],
  ["docBlame", "StrictWeakOrder.«term_≈[_]_»"],
- ["docBlame", "StructureGroupoid.members"],
  ["docBlame", "SubNegMonoid.zsmul"],
  ["docBlame", "Submodule.«term_∙_»"],
  ["docBlame", "Topology.«termI^_»"],
