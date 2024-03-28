@@ -15,8 +15,8 @@ open scoped BigOperators
 namespace Finset
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] (f : ℕ → R) (g : ℕ → M) {m n : ℕ}
 
--- The partial sum of `g`, starting from zero
-local notation "G " n:80 => ∑ i in range n, g i
+/-- The partial sum of `g`, starting from zero -/
+local notation "G " n:80 => Finset.sum (range n) g
 
 /-- **Summation by parts**, also known as **Abel's lemma** or an **Abel transformation** -/
 theorem sum_Ico_by_parts (hmn : m < n) :
