@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Bhavik Mehta. All rights reserved.
+Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta
+Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Algebra.Order.Group.Abs
@@ -159,18 +159,6 @@ lemma prod_lt_prod_of_nonempty' (hs : s ≠ ∅) (hfg : ∀ i ∈ s, f i < g i) 
 
 end OrderedCancelCommMonoid
 
-lemma prod_nonneg [OrderedCommSemiring α] {m : Multiset α} (h : ∀ a ∈ m, (0 : α) ≤ a) :
-    0 ≤ m.prod := by
-  revert h
-  refine' m.induction_on _ _
-  · rintro -
-    rw [prod_zero]
-    exact zero_le_one
-  intro a s hs ih
-  rw [prod_cons]
-  exact mul_nonneg (ih _ <| mem_cons_self _ _) (hs fun a ha => ih _ <| mem_cons_of_mem ha)
-#align multiset.prod_nonneg Multiset.prod_nonneg
-
 lemma abs_sum_le_sum_abs [LinearOrderedAddCommGroup α] {s : Multiset α} :
     abs s.sum ≤ (s.map abs).sum :=
   le_sum_of_subadditive _ abs_zero abs_add s
@@ -192,6 +180,18 @@ variable [CanonicallyOrderedCommMonoid α] {m : Multiset α} {a : α}
 #align multiset.sum_eq_zero_iff Multiset.sum_eq_zero_iff
 
 end CanonicallyOrderedCommMonoid
+
+lemma prod_nonneg [OrderedCommSemiring α] {m : Multiset α} (h : ∀ a ∈ m, (0 : α) ≤ a) :
+    0 ≤ m.prod := by
+  revert h
+  refine' m.induction_on _ _
+  · rintro -
+    rw [prod_zero]
+    exact zero_le_one
+  intro a s hs ih
+  rw [prod_cons]
+  exact mul_nonneg (ih _ <| mem_cons_self _ _) (hs fun a ha => ih _ <| mem_cons_of_mem ha)
+#align multiset.prod_nonneg Multiset.prod_nonneg
 
 @[simp]
 lemma _root_.CanonicallyOrderedCommSemiring.multiset_prod_pos [CanonicallyOrderedCommSemiring α]

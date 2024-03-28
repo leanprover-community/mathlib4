@@ -23,9 +23,9 @@ counterparts.
 
 -- Make sure we haven't imported `Data.Nat.Order.Basic`
 assert_not_exists OrderedSub
+
 -- TODO
 -- assert_not_exists Ring
-
 
 variable {ι α β γ M N P M₀ G R : Type*}
 
