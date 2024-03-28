@@ -5,8 +5,8 @@ Authors: Eric Wieser, Jireh Loreaux
 -/
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Group.Commute.Units
+import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.Algebra.Invertible.Basic
-import Mathlib.GroupTheory.Subsemigroup.Operations
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Logic.Basic
 

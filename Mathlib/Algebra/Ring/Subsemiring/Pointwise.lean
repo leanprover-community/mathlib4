@@ -3,9 +3,9 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Group.Submonoid.Pointwise
 import Mathlib.Algebra.GroupRingAction.Basic
-import Mathlib.RingTheory.Subsemiring.Basic
-import Mathlib.GroupTheory.Submonoid.Pointwise
+import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Data.Set.Pointwise.Basic
 
 #align_import ring_theory.subsemiring.pointwise from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
@@ -174,4 +174,3 @@ theorem le_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) {S T : Subsemiring R} :
 end GroupWithZero
 
 end Subsemiring
-

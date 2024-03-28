@@ -3,10 +3,8 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-
 import Mathlib.Algebra.Order.Ring.InjSurj
-import Mathlib.GroupTheory.Submonoid.Order
-import Mathlib.RingTheory.Subsemiring.Basic
+import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-!
 # `Order`ed instances for `SubsemiringClass` and `Subsemiring`.

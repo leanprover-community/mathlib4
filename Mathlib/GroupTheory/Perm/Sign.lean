@@ -3,12 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-
+import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.Perm.Support
-import Mathlib.GroupTheory.Subgroup.Finite
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Tactic.NormNum.Ineq
 

@@ -3,8 +3,8 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jujian Zhang
 -/
-import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
 # Submonoid of opposite monoids

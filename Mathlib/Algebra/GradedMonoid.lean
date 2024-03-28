@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.InjSurj
+import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Data.List.FinRange
 import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Sigma.Basic
 import Lean.Elab.Tactic

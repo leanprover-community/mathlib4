@@ -5,8 +5,8 @@ Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.Submonoid.Operations
 
 #align_import group_theory.congruence from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 

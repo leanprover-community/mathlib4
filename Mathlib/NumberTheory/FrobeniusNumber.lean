@@ -3,9 +3,8 @@ Copyright (c) 2021 Alex Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Zhao
 -/
+import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Data.Nat.ModEq
-import Mathlib.GroupTheory.Submonoid.Basic
-import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
 
