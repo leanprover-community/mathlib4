@@ -3,7 +3,7 @@ Copyright (c) 2023 Mantas Bakšys, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys, Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Rearrangement
 import Mathlib.GroupTheory.Perm.Cycle.Basic
