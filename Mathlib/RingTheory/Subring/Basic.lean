@@ -99,6 +99,7 @@ instance (priority := 75) toHasIntCast : IntCast s :=
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a ring inherits a ring structure -/
 instance (priority := 75) toRing : Ring s :=
+  fast_instance%
   Subtype.coe_injective.ring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 #align subring_class.to_ring SubringClass.toRing
@@ -107,6 +108,7 @@ instance (priority := 75) toRing : Ring s :=
 /-- A subring of a `CommRing` is a `CommRing`. -/
 instance (priority := 75) toCommRing {R} [CommRing R] [SetLike S R] [SubringClass S R] :
     CommRing s :=
+  fast_instance%
   Subtype.coe_injective.commRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 #align subring_class.to_comm_ring SubringClass.toCommRing
@@ -766,6 +768,7 @@ section DivisionRing
 variable {K : Type u} [DivisionRing K]
 
 instance : Field (center K) :=
+  fast_instance%
   { inferInstanceAs (CommRing (center K)) with
     inv := fun a => ⟨a⁻¹, Set.inv_mem_center₀ a.prop⟩
     mul_inv_cancel := fun ⟨a, ha⟩ h => Subtype.ext <| mul_inv_cancel <| Subtype.coe_injective.ne h
