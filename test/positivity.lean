@@ -298,8 +298,12 @@ example : 0 ≤ Real.log 1 := by positivity
 example : 0 ≤ Real.log 0 := by positivity
 example : 0 ≤ Real.log (-1) := by positivity
 
-example {V : Type _} [NormedCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity
-example {V : Type _} [NormedAddCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity
+example {V : Type*} [NormedCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity
+example {V : Type*} [NormedAddCommGroup V] [LinearOrder V] {x : V} (hx : x ≠ 0) : 0 < ‖x‖ :=
+  by positivity
+example {V : Type*} [NormedAddCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity
+
+example : 0 ≤ ‖Multiplicative.ofAdd (37 : ℤ)‖ := by positivity
 
 example [MetricSpace α] (x y : α) : 0 ≤ dist x y := by positivity
 example [MetricSpace α] {s : Set α} : 0 ≤ Metric.diam s := by positivity
