@@ -889,6 +889,7 @@ variable {A n}
 
 lemma mem_torsionBy (x : A) : x ∈ A[n] ↔ n • x = 0 := by simp
 
+@[simp]
 lemma nsmul_torsionBy (x : A[n]) : n • x = 0 :=
   ZeroMemClass.coe_eq_zero.mp <| (mem_torsionBy _).mp x.property
 
