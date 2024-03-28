@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Data.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.Tactic.ComputeDegree
 

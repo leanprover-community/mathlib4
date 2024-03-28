@@ -3,12 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Data.MvPolynomial.Rename
-import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.MvPolynomial.Degrees
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.MvPolynomial.Rename
+import Mathlib.Algebra.MvPolynomial.Degrees
+import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Logic.Equiv.Fin
-import Mathlib.Algebra.BigOperators.Fin
 
 #align_import data.mv_polynomial.equiv from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 

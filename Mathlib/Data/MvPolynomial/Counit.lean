@@ -3,7 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.MvPolynomial.Basic
+import Mathlib.Algebra.MvPolynomial.Basic
 
 #align_import data.mv_polynomial.counit from "leanprover-community/mathlib"@"abb3121f210743a930dea73cd766d988079bdf8b"
 

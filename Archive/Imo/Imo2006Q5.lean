@@ -3,7 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Data.Polynomial.RingDivision
+import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Dynamics.PeriodicPts
 
 #align_import imo.imo2006_q5 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"

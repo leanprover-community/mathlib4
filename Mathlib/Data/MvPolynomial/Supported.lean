@@ -3,7 +3,7 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.MvPolynomial.Variables
+import Mathlib.Algebra.MvPolynomial.Variables
 
 #align_import data.mv_polynomial.supported from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 

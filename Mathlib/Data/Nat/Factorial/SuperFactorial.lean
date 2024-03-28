@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
 import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.Polynomial.Monic
 import Mathlib.LinearAlgebra.Vandermonde
 import Mathlib.RingTheory.Polynomial.Pochhammer
 

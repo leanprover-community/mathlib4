@@ -3,8 +3,8 @@ Copyright (c) 2021 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, David Loeffler
 -/
-import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.Polynomial.Derivative
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.NumberTheory.Bernoulli
 

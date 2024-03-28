@@ -3,7 +3,7 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Data.Polynomial.Degree.Definitions
+import Mathlib.Algebra.Polynomial.Degree.Definitions
 
 #align_import ring_theory.polynomial.opposites from "leanprover-community/mathlib"@"63417e01fbc711beaf25fa73b6edb395c0cfddd0"
 

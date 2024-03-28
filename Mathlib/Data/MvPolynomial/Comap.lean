@@ -3,7 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.MvPolynomial.Rename
+import Mathlib.Algebra.MvPolynomial.Rename
 
 #align_import data.mv_polynomial.comap from "leanprover-community/mathlib"@"aba31c938d3243cc671be7091b28a1e0814647ee"
 

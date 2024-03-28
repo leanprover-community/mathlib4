@@ -3,12 +3,12 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.Algebra.MvPolynomial.Supported
 import Mathlib.LinearAlgebra.LinearIndependent
-import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.Data.MvPolynomial.Supported
+import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Algebraic
-import Mathlib.Data.MvPolynomial.Equiv
+import Mathlib.RingTheory.MvPolynomial.Basic
 
 #align_import ring_theory.algebraic_independent from "leanprover-community/mathlib"@"949dc57e616a621462062668c9f39e4e17b64b69"
 

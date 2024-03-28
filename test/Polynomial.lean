@@ -1,4 +1,4 @@
-import Mathlib.Data.Polynomial.Basic
+import Mathlib.Algebra.Polynomial.Basic
 
 open Polynomial
 
