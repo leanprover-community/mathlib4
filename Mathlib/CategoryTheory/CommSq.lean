@@ -78,7 +78,7 @@ theorem vert_inv {g : W ≅ Y} {h : X ≅ Z} (p : CommSq f g.hom h.hom i) :
 theorem horiz_inv {f : W ≅ X} {i : Y ≅ Z} (p : CommSq f.hom g h i.hom) :
     CommSq f.inv h g i.inv := flip (vert_inv (flip p))
 
-/-- The composite of two commutative squares as below is commutative.
+/-- The composite of two commutative squares as below is a commutative square.
 ```
   W ---f---> X ---f'--> X'
   |          |          |
