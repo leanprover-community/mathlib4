@@ -101,21 +101,60 @@ lemma isIso_of_isIso_apply (f : X ⟶ Y) [hf : ∀ i, IsIso (f i)] :
   change IsIso (isoMk X Y (fun i => asIso (f i))).hom
   infer_instance
 
-@[reassoc (attr := simp)]
-lemma iso_hom_inv_id_apply (e : X ≅ Y) (i : β) :
-    e.hom i ≫ e.inv i = 𝟙 _ :=
-  congr_fun e.hom_inv_id i
-
-@[reassoc (attr := simp)]
-lemma iso_inv_hom_id_apply (e : X ≅ Y) (i : β) :
-    e.inv i ≫ e.hom i = 𝟙 _ :=
-  congr_fun e.inv_hom_id i
-
 instance isIso_apply_of_isIso (f : X ⟶ Y) [IsIso f] (i : β) : IsIso (f i) := by
   change IsIso ((eval i).map f)
   infer_instance
 
 end
+
+end GradedObject
+
+namespace Iso
+
+variable {C D E J : Type*} [Category C] [Category D] [Category E]
+  {X Y : GradedObject J C}
+
+@[reassoc (attr := simp)]
+lemma hom_inv_id_eval (e : X ≅ Y) (j : J) :
+    e.hom j ≫ e.inv j = 𝟙 _ := by
+  rw [← GradedObject.categoryOfGradedObjects_comp, e.hom_inv_id,
+    GradedObject.categoryOfGradedObjects_id]
+
+@[reassoc (attr := simp)]
+lemma inv_hom_id_eval (e : X ≅ Y) (j : J) :
+    e.inv j ≫ e.hom j = 𝟙 _ := by
+  rw [← GradedObject.categoryOfGradedObjects_comp, e.inv_hom_id,
+    GradedObject.categoryOfGradedObjects_id]
+
+@[reassoc (attr := simp)]
+lemma map_hom_inv_id_eval (e : X ≅ Y) (F : C ⥤ D) (j : J) :
+    F.map (e.hom j) ≫ F.map (e.inv j) = 𝟙 _ := by
+  rw [← F.map_comp, ← GradedObject.categoryOfGradedObjects_comp, e.hom_inv_id,
+    GradedObject.categoryOfGradedObjects_id, Functor.map_id]
+
+@[reassoc (attr := simp)]
+lemma map_inv_hom_id_eval (e : X ≅ Y) (F : C ⥤ D) (j : J) :
+    F.map (e.inv j) ≫ F.map (e.hom j) = 𝟙 _ := by
+  rw [← F.map_comp, ← GradedObject.categoryOfGradedObjects_comp, e.inv_hom_id,
+    GradedObject.categoryOfGradedObjects_id, Functor.map_id]
+
+@[reassoc (attr := simp)]
+lemma map_hom_inv_id_eval_app (e : X ≅ Y) (F : C ⥤ D ⥤ E) (j : J) (Y : D) :
+    (F.map (e.hom j)).app Y ≫ (F.map (e.inv j)).app Y = 𝟙 _ := by
+  rw [← NatTrans.comp_app, ← F.map_comp, hom_inv_id_eval,
+    Functor.map_id, NatTrans.id_app]
+
+@[reassoc (attr := simp)]
+lemma map_inv_hom_id_eval_app (e : X ≅ Y) (F : C ⥤ D ⥤ E) (j : J) (Y : D) :
+    (F.map (e.inv j)).app Y ≫ (F.map (e.hom j)).app Y = 𝟙 _ := by
+  rw [← NatTrans.comp_app, ← F.map_comp, inv_hom_id_eval,
+    Functor.map_id, NatTrans.id_app]
+
+end Iso
+
+namespace GradedObject
+
+variable {C : Type u} [Category.{v} C]
 
 section
 
@@ -170,7 +209,6 @@ def comapEquiv {β γ : Type w} (e : β ≃ γ) : GradedObject β C ≌ GradedOb
     (comapEq C (by ext; simp)).trans (Pi.comapComp _ _ _).symm
 #align category_theory.graded_object.comap_equiv CategoryTheory.GradedObject.comapEquiv
 
--- See note [dsimp, simp].
 end
 
 instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObjectWithShift s C) ℤ :=

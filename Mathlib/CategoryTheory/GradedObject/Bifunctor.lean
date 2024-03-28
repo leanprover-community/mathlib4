@@ -81,6 +81,56 @@ lemma ι_mapBifunctorMapMap {X₁ X₂ : GradedObject I C₁} (f : X₁ ⟶ X₂
         ιMapBifunctorMapObj F p X₂ Y₂ i j k h := by
   simp [ιMapBifunctorMapObj, mapBifunctorMapMap]
 
+@[ext]
+lemma mapBifunctorMapObj_ext {X : GradedObject I C₁} {Y : GradedObject J C₂} {A : C₃} {k : K}
+    [HasMap (((mapBifunctor F I J).obj X).obj Y) p]
+    {f g : mapBifunctorMapObj F p X Y k ⟶ A}
+    (h : ∀ (i : I) (j : J) (hij : p ⟨i, j⟩ = k),
+      ιMapBifunctorMapObj F p X Y i j k hij ≫ f = ιMapBifunctorMapObj F p X Y i j k hij ≫ g) :
+      f = g := by
+  apply mapObj_ext
+  rintro ⟨i, j⟩ hij
+  exact h i j hij
+
+variable {F p} in
+/-- Constructor for morphisms from `mapBifunctorMapObj F p X Y k`. -/
+noncomputable def mapBifunctorMapObjDesc
+    {X : GradedObject I C₁} {Y : GradedObject J C₂} {A : C₃} {k : K}
+    [HasMap (((mapBifunctor F I J).obj X).obj Y) p]
+    (f : ∀ (i : I) (j : J) (_ : p ⟨i, j⟩ = k), (F.obj (X i)).obj (Y j) ⟶ A) :
+    mapBifunctorMapObj F p X Y k ⟶ A :=
+  descMapObj _ _ (fun ⟨i, j⟩ hij => f i j hij)
+
+@[reassoc (attr := simp)]
+lemma ι_mapBifunctorMapObjDesc {X : GradedObject I C₁} {Y : GradedObject J C₂} {A : C₃} {k : K}
+    [HasMap (((mapBifunctor F I J).obj X).obj Y) p]
+    (f : ∀ (i : I) (j : J) (_ : p ⟨i, j⟩ = k), (F.obj (X i)).obj (Y j) ⟶ A)
+    (i : I) (j : J) (hij : p ⟨i, j⟩ = k) :
+    ιMapBifunctorMapObj F p X Y i j k hij ≫ mapBifunctorMapObjDesc f = f i j hij := by
+  apply ι_descMapObj
+
+section
+
+variable {X₁ X₂ : GradedObject I C₁} {Y₁ Y₂ : GradedObject J C₂}
+    [HasMap (((mapBifunctor F I J).obj X₁).obj Y₁) p]
+    [HasMap (((mapBifunctor F I J).obj X₂).obj Y₂) p]
+
+/-- The isomorphism `mapBifunctorMapObj F p X₁ Y₁ ≅ mapBifunctorMapObj F p X₂ Y₂`
+induced by isomorphisms `X₁ ≅ X₂` and `Y₁ ≅ Y₂`. -/
+@[simps]
+noncomputable def mapBifunctorMapMapIso (e : X₁ ≅ X₂) (e' : Y₁ ≅ Y₂) :
+    mapBifunctorMapObj F p X₁ Y₁ ≅ mapBifunctorMapObj F p X₂ Y₂ where
+  hom := mapBifunctorMapMap F p e.hom e'.hom
+  inv := mapBifunctorMapMap F p e.inv e'.inv
+  hom_inv_id := by ext; simp
+  inv_hom_id := by ext; simp
+
+instance (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) [IsIso f] [IsIso g] :
+    IsIso (mapBifunctorMapMap F p f g) :=
+  (inferInstance : IsIso (mapBifunctorMapMapIso F p (asIso f) (asIso g)).hom)
+
+end
+
 attribute [local simp] mapBifunctorMapMap
 
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` and a map `p : I × J → K`, this is the
