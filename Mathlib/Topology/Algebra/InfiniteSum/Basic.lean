@@ -369,7 +369,7 @@ theorem tprod_eq_prod {s : Finset β} (hf : ∀ b ∉ s, f b = 1) :
 #align tsum_eq_sum tsum_eq_sum
 
 @[to_additive (attr := simp)]
-theorem tprod_zero : ∏' _ : β, (1 : α) = 1 := by rw [tprod_eq_finprod] <;> simp
+theorem tprod_one : ∏' _ : β, (1 : α) = 1 := by rw [tprod_eq_finprod] <;> simp
 #align tsum_zero tsum_zero
 #align tsum_zero' tsum_zero
 
