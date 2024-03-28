@@ -415,8 +415,8 @@ theorem isReal_or_isComplex (w : InfinitePlace K) : IsReal w ∨ IsComplex w := 
 #align number_field.infinite_place.is_real_or_is_complex NumberField.InfinitePlace.isReal_or_isComplex
 
 variable (K) in
-theorem disjoint_isReal_isComplex : Disjoint {(w : InfinitePlace K) | IsReal w}
-    {(w : InfinitePlace K) | IsComplex w} :=
+theorem disjoint_isReal_isComplex :
+    Disjoint {(w : InfinitePlace K) | IsReal w} {(w : InfinitePlace K) | IsComplex w} :=
   Set.disjoint_iff.2 <| fun _ hw ↦ not_isReal_iff_isComplex.2 hw.2 hw.1
 
 theorem ne_of_isReal_isComplex {w w' : InfinitePlace K} (h : IsReal w) (h' : IsComplex w') :
