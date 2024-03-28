@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.Fintype.Powerset
@@ -37,13 +38,6 @@ lemma sum_mul_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → α) (
     (∑ i in s, f i) * ∑ j in t, g j = ∑ i in s, ∑ j in t, f i * g j := by
   simp_rw [sum_mul, ← mul_sum]
 #align finset.sum_mul_sum Finset.sum_mul_sum
-
-lemma sum_range_succ_mul_sum_range_succ (m n : ℕ) (f g : ℕ → α) :
-    (∑ i in range (m + 1), f i) * ∑ i in range (n + 1), g i =
-      (∑ i in range m, f i) * ∑ i in range n, g i +
-        f m * ∑ i in range n, g i + (∑ i in range m, f i) * g n + f m * g n := by
-  simp only [add_mul, mul_add, add_assoc, sum_range_succ]
-#align finset.sum_range_succ_mul_sum_range_succ Finset.sum_range_succ_mul_sum_range_succ
 
 end NonUnitalNonAssocSemiring
 
@@ -223,15 +217,6 @@ theorem prod_one_sub_ordered [LinearOrder ι] (s : Finset ι) (f : ι → α) :
   rw [prod_sub_ordered]
   simp
 #align finset.prod_one_sub_ordered Finset.prod_one_sub_ordered
-
-theorem prod_range_cast_nat_sub (n k : ℕ) :
-    ∏ i in range k, (n - i : α) = (∏ i in range k, (n - i) : ℕ) := by
-  rw [prod_natCast]
-  rcases le_or_lt k n with hkn | hnk
-  · exact prod_congr rfl fun i hi => (Nat.cast_sub <| (mem_range.1 hi).le.trans hkn).symm
-  · rw [← mem_range] at hnk
-    rw [prod_eq_zero hnk, prod_eq_zero hnk] <;> simp
-#align finset.prod_range_cast_nat_sub Finset.prod_range_cast_nat_sub
 
 end CommRing
 

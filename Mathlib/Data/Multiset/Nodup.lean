@@ -12,6 +12,8 @@ import Mathlib.Data.Multiset.Range
 # The `Nodup` predicate for multisets without duplicate elements.
 -/
 
+-- Make sure we haven't imported `Data.Nat.Order.Basic`
+assert_not_exists NeZero.one_le
 
 namespace Multiset
 

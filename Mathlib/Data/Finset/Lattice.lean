@@ -3,12 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Multiset.Lattice
-import Mathlib.Order.CompleteLattice
+import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Hom.Lattice
 
 #align_import data.finset.lattice from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
@@ -228,14 +229,6 @@ theorem _root_.List.foldr_sup_eq_sup_toFinset [DecidableEq α] (l : List α) :
     Multiset.map_id]
   rfl
 #align list.foldr_sup_eq_sup_to_finset List.foldr_sup_eq_sup_toFinset
-
-theorem subset_range_sup_succ (s : Finset ℕ) : s ⊆ range (s.sup id).succ := fun _ hn =>
-  mem_range.2 <| Nat.lt_succ_of_le <| @le_sup _ _ _ _ _ id _ hn
-#align finset.subset_range_sup_succ Finset.subset_range_sup_succ
-
-theorem exists_nat_subset_range (s : Finset ℕ) : ∃ n : ℕ, s ⊆ range n :=
-  ⟨_, s.subset_range_sup_succ⟩
-#align finset.exists_nat_subset_range Finset.exists_nat_subset_range
 
 theorem sup_induction {p : α → Prop} (hb : p ⊥) (hp : ∀ a₁, p a₁ → ∀ a₂, p a₂ → p (a₁ ⊔ a₂))
     (hs : ∀ b ∈ s, p (f b)) : p (s.sup f) := by

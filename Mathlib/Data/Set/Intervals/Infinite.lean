@@ -18,19 +18,6 @@ preorder is an infinite type.
 
 variable {α : Type*} [Preorder α]
 
-/-- A nonempty preorder with no maximal element is infinite. This is not an instance to avoid
-a cycle with `Infinite α → Nontrivial α → Nonempty α`. -/
-theorem NoMaxOrder.infinite [Nonempty α] [NoMaxOrder α] : Infinite α :=
-  let ⟨f, hf⟩ := Nat.exists_strictMono α
-  Infinite.of_injective f hf.injective
-#align no_max_order.infinite NoMaxOrder.infinite
-
-/-- A nonempty preorder with no minimal element is infinite. This is not an instance to avoid
-a cycle with `Infinite α → Nontrivial α → Nonempty α`. -/
-theorem NoMinOrder.infinite [Nonempty α] [NoMinOrder α] : Infinite α :=
-  @NoMaxOrder.infinite αᵒᵈ _ _ _
-#align no_min_order.infinite NoMinOrder.infinite
-
 namespace Set
 
 section DenselyOrdered

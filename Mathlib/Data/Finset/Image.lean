@@ -3,10 +3,8 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Embedding
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Int.Order.Basic
 
 #align_import data.finset.image from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
@@ -288,26 +286,6 @@ theorem attach_map_val {s : Finset α} : s.attach.map (Embedding.subtype _) = s 
   eq_of_veq <| by rw [map_val, attach_val]; exact Multiset.attach_map_val _
 #align finset.attach_map_val Finset.attach_map_val
 
-theorem disjoint_range_addLeftEmbedding (a b : ℕ) :
-    Disjoint (range a) (map (addLeftEmbedding a) (range b)) := by
-  refine' disjoint_iff_inf_le.mpr _
-  intro k hk
-  simp only [exists_prop, mem_range, inf_eq_inter, mem_map, addLeftEmbedding, mem_inter]
-    at hk
-  obtain ⟨a, _, ha⟩ := hk.2
-  simpa [← ha] using hk.1
-#align finset.disjoint_range_add_left_embedding Finset.disjoint_range_addLeftEmbedding
-
-theorem disjoint_range_addRightEmbedding (a b : ℕ) :
-    Disjoint (range a) (map (addRightEmbedding a) (range b)) := by
-  refine' disjoint_iff_inf_le.mpr _
-  intro k hk
-  simp only [exists_prop, mem_range, inf_eq_inter, mem_map, addRightEmbedding, mem_inter]
-    at hk
-  obtain ⟨a, _, ha⟩ := hk.2
-  simpa [← ha] using hk.1
-#align finset.disjoint_range_add_right_embedding Finset.disjoint_range_addRightEmbedding
-
 theorem map_disjiUnion {f : α ↪ β} {s : Finset α} {t : β → Finset γ} {h} :
     (s.map f).disjiUnion t h =
       s.disjiUnion (fun a => t (f a)) fun _ ha _ hb hab =>
@@ -327,11 +305,6 @@ theorem disjiUnion_map {s : Finset α} {t : α → Finset β} {f : β ↪ γ} {h
 #align finset.disj_Union_map Finset.disjiUnion_map
 
 end Map
-
-theorem range_add_one' (n : ℕ) :
-    range (n + 1) = insert 0 ((range n).map ⟨fun i => i + 1, fun i j => by simp⟩) := by
-  ext (⟨⟩ | ⟨n⟩) <;> simp [Nat.succ_eq_add_one, Nat.zero_lt_succ n]
-#align finset.range_add_one' Finset.range_add_one'
 
 /-! ### image -/
 
@@ -600,38 +573,6 @@ theorem _root_.Disjoint.of_image_finset {s t : Finset α} {f : α → β}
     ne_of_apply_ne f <| h.forall_ne_finset (mem_image_of_mem _ ha) (mem_image_of_mem _ hb)
 #align disjoint.of_image_finset Disjoint.of_image_finset
 
-theorem mem_range_iff_mem_finset_range_of_mod_eq' [DecidableEq α] {f : ℕ → α} {a : α} {n : ℕ}
-    (hn : 0 < n) (h : ∀ i, f (i % n) = f i) :
-    a ∈ Set.range f ↔ a ∈ (Finset.range n).image fun i => f i := by
-  constructor
-  · rintro ⟨i, hi⟩
-    simp only [mem_image, exists_prop, mem_range]
-    exact ⟨i % n, Nat.mod_lt i hn, (rfl.congr hi).mp (h i)⟩
-  · rintro h
-    simp only [mem_image, exists_prop, Set.mem_range, mem_range] at *
-    rcases h with ⟨i, _, ha⟩
-    exact ⟨i, ha⟩
-#align finset.mem_range_iff_mem_finset_range_of_mod_eq' Finset.mem_range_iff_mem_finset_range_of_mod_eq'
-
-theorem mem_range_iff_mem_finset_range_of_mod_eq [DecidableEq α] {f : ℤ → α} {a : α} {n : ℕ}
-    (hn : 0 < n) (h : ∀ i, f (i % n) = f i) :
-    a ∈ Set.range f ↔ a ∈ (Finset.range n).image (fun (i : ℕ) => f i) :=
-  suffices (∃ i, f (i % n) = a) ↔ ∃ i, i < n ∧ f ↑i = a by simpa [h]
-  have hn' : 0 < (n : ℤ) := Int.ofNat_lt.mpr hn
-  Iff.intro
-    (fun ⟨i, hi⟩ =>
-      have : 0 ≤ i % ↑n := Int.emod_nonneg _ (ne_of_gt hn')
-      ⟨Int.toNat (i % n), by
-        rw [← Int.ofNat_lt, Int.toNat_of_nonneg this]; exact ⟨Int.emod_lt_of_pos i hn', hi⟩⟩)
-    fun ⟨i, hi, ha⟩ =>
-    ⟨i, by rw [Int.emod_eq_of_lt (Int.ofNat_zero_le _) (Int.ofNat_lt_ofNat_of_lt hi), ha]⟩
-#align finset.mem_range_iff_mem_finset_range_of_mod_eq Finset.mem_range_iff_mem_finset_range_of_mod_eq
-
-theorem range_add (a b : ℕ) : range (a + b) = range a ∪ (range b).map (addLeftEmbedding a) := by
-  rw [← val_inj, union_val]
-  exact Multiset.range_add_eq_union a b
-#align finset.range_add Finset.range_add
-
 @[simp]
 theorem attach_image_val [DecidableEq α] {s : Finset α} : s.attach.image Subtype.val = s :=
   eq_of_veq <| by rw [image_val, attach_val, Multiset.attach_map_val, dedup_eq_self]
@@ -845,14 +786,6 @@ theorem subset_image_iff [DecidableEq β] {s : Set α} {t : Finset β} {f : α �
   refine' ⟨t.map (Embedding.subtype _), map_subtype_subset _, _⟩
   ext y; simp
 #align finset.subset_image_iff Finset.subset_image_iff
-
-theorem range_sdiff_zero {n : ℕ} : range (n + 1) \ {0} = (range n).image Nat.succ := by
-  induction' n with k hk
-  · simp
-  conv_rhs => rw [range_succ]
-  rw [range_succ, image_insert, ← hk, insert_sdiff_of_not_mem]
-  simp
-#align finset.range_sdiff_zero Finset.range_sdiff_zero
 
 end Finset
 

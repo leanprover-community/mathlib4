@@ -3,9 +3,10 @@ Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Embedding
+import Mathlib.Data.Set.Intervals.Monoid
 import Mathlib.Order.Cover
 import Mathlib.Order.LocallyFinite
-import Mathlib.Data.Set.Intervals.Monoid
 
 #align_import data.finset.locally_finite from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
 

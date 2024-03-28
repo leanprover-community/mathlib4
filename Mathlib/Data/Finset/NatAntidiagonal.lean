@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Data.Finset.Card
-import Mathlib.Data.Multiset.NatAntidiagonal
 import Mathlib.Data.Finset.Antidiagonal
+import Mathlib.Data.Multiset.NatAntidiagonal
+import Mathlib.Data.Nat.Interval
 
 #align_import data.finset.nat_antidiagonal from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 

@@ -1043,11 +1043,10 @@ lemma exists_eq_of_iSup_eq_of_not_isLimit
     {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{v}) (hf : BddAbove (range f))
     (ω : Cardinal.{v}) (hω : ¬ ω.IsLimit)
     (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
-  refine (not_and_or.mp hω).elim (fun e ↦ ⟨hι.some, ?_⟩)
-    (Cardinal.exists_eq_of_iSup_eq_of_not_isSuccLimit.{u, v} f ω · h)
-  cases not_not.mp e
-  rw [← le_zero_iff] at h ⊢
-  exact (le_ciSup hf _).trans h
+  rw [IsLimit, not_and_or, not_ne_iff] at hω
+  obtain rfl | hω := hω
+  · exact ⟨hι.some, nonpos_iff_eq_zero.1 $ (le_ciSup hf _).trans h.le⟩
+  · exact Cardinal.exists_eq_of_iSup_eq_of_not_isSuccLimit.{u, v} f ω hω h
 
 -- Porting note: simpNF is not happy with universe levels.
 @[simp, nolint simpNF]

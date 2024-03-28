@@ -3,8 +3,9 @@ Copyright (c) 2022 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
 -/
-import Mathlib.Order.UpperLower.Basic
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Nat.Interval
+import Mathlib.Order.UpperLower.Basic
 
 #align_import combinatorics.young.young_diagram from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 

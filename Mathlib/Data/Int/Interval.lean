@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Order.LocallyFinite
 import Mathlib.Data.Finset.LocallyFinite.Basic
+import Mathlib.Data.Nat.Interval
+import Mathlib.Order.LocallyFinite
 
 #align_import data.int.interval from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 

@@ -259,7 +259,7 @@ theorem ranges_disjoint (l : List ℕ) :
       rw [mem_map]
       rintro ⟨v, _, rfl⟩
       rw [mem_range] at hu
-      exact lt_iff_not_le.mp hu le_self_add
+      omega
     · rw [pairwise_map]
       apply Pairwise.imp _ hl
       intro u v

@@ -42,22 +42,6 @@ end Commute
 
 namespace List
 
-@[to_additive card_nsmul_le_sum]
-theorem pow_card_le_prod [Monoid M] [Preorder M]
-    [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)] [CovariantClass M M (· * ·) (· ≤ ·)]
-    (l : List M) (n : M) (h : ∀ x ∈ l, n ≤ x) : n ^ l.length ≤ l.prod :=
-  @prod_le_pow_card Mᵒᵈ _ _ _ _ l n h
-#align list.pow_card_le_prod List.pow_card_le_prod
-#align list.card_nsmul_le_sum List.card_nsmul_le_sum
-
-@[to_additive]
-theorem prod_eq_one_iff [CanonicallyOrderedCommMonoid M] (l : List M) :
-    l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
-  ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
-    rw [List.eq_replicate.2 ⟨_, h⟩, prod_replicate, one_pow]; exact (length l); rfl⟩
-#align list.prod_eq_one_iff List.prod_eq_one_iff
-#align list.sum_eq_zero_iff List.sum_eq_zero_iff
-
 /-- If a product of integers is `-1`, then at least one factor must be `-1`. -/
 theorem neg_one_mem_of_prod_eq_neg_one {l : List ℤ} (h : l.prod = -1) : (-1 : ℤ) ∈ l := by
   obtain ⟨x, h₁, h₂⟩ := exists_mem_ne_one_of_prod_ne_one (ne_of_eq_of_ne h (by decide))

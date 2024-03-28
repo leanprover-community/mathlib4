@@ -3,9 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Data.Nat.Interval
-import Mathlib.Tactic.Linarith
 
 #align_import algebra.big_operators.intervals from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -301,12 +300,162 @@ lemma prod_range_diag_flip (n : ℕ) (f : ℕ → ℕ → M) :
 end Generic
 
 section Nat
+variable {M : Type*} (f g : ℕ → M) {m n : ℕ}
 
-variable {M : Type*}
-variable (f g : ℕ → M) {m n : ℕ}
+section CommMonoid
+variable [CommMonoid M]
 
-section Group
+/-- A product over `powerset s` is equal to the double product over sets of subsets of `s` with
+`card s = k`, for `k = 1, ..., card s`. -/
+@[to_additive "A sum over `powerset s` is equal to the double sum over sets of subsets of `s` with
+  `card s = k`, for `k = 1, ..., card s`"]
+lemma prod_powerset (s : Finset α) (f : Finset α → M) :
+    ∏ t in powerset s, f t = ∏ j in range (card s + 1), ∏ t in powersetCard j s, f t := by
+  rw [powerset_card_disjiUnion, prod_disjiUnion]
+#align finset.prod_powerset Finset.prod_powerset
+#align finset.sum_powerset Finset.sum_powerset
 
+@[to_additive]
+lemma prod_range_succ_comm (f : ℕ → M) (n : ℕ) :
+    (∏ x in range (n + 1), f x) = f n * ∏ x in range n, f x := by
+  rw [range_succ, prod_insert not_mem_range_self]
+#align finset.prod_range_succ_comm Finset.prod_range_succ_comm
+#align finset.sum_range_succ_comm Finset.sum_range_succ_comm
+
+@[to_additive]
+lemma prod_range_succ (f : ℕ → M) (n : ℕ) :
+    (∏ x in range (n + 1), f x) = (∏ x in range n, f x) * f n := by
+  simp only [mul_comm, prod_range_succ_comm]
+#align finset.prod_range_succ Finset.prod_range_succ
+#align finset.sum_range_succ Finset.sum_range_succ
+
+@[to_additive]
+lemma prod_range_succ' (f : ℕ → M) :
+    ∀ n, ∏ k in range (n + 1), f k = (∏ k in range n, f (k + 1)) * f 0
+  | 0 => prod_range_succ _ _
+  | n + 1 => by rw [prod_range_succ _ n, mul_right_comm, ← prod_range_succ' _ n, prod_range_succ]
+#align finset.prod_range_succ' Finset.prod_range_succ'
+#align finset.sum_range_succ' Finset.sum_range_succ'
+
+@[to_additive]
+lemma eventually_constant_prod {u : ℕ → M} {N : ℕ} (hu : ∀ n ≥ N, u n = 1) {n : ℕ} (hn : N ≤ n) :
+    ∏ k in range n, u k = ∏ k in range N, u k := by
+  obtain ⟨m, rfl : n = N + m⟩ := le_iff_exists_add.mp hn
+  clear hn
+  induction' m with m hm
+  · simp
+  erw [prod_range_succ]
+  simp [*]
+#align finset.eventually_constant_prod Finset.eventually_constant_prod
+#align finset.eventually_constant_sum Finset.eventually_constant_sum
+
+@[to_additive]
+lemma prod_range_add (f : ℕ → M) (n m : ℕ) :
+    (∏ x in range (n + m), f x) = (∏ x in range n, f x) * ∏ x in range m, f (n + x) := by
+  induction' m with m hm
+  · simp
+  · erw [Nat.add_succ, prod_range_succ, prod_range_succ, hm, mul_assoc]
+#align finset.prod_range_add Finset.prod_range_add
+#align finset.sum_range_add Finset.sum_range_add
+
+@[to_additive]
+lemma prod_range_add_div_prod_range {α : Type*} [CommGroup α] (f : ℕ → α) (n m : ℕ) :
+    (∏ k in range (n + m), f k) / ∏ k in range n, f k = ∏ k in Finset.range m, f (n + k) :=
+  div_eq_of_eq_mul' (prod_range_add f n m)
+#align finset.prod_range_add_div_prod_range Finset.prod_range_add_div_prod_range
+#align finset.sum_range_add_sub_sum_range Finset.sum_range_add_sub_sum_range
+
+@[to_additive]
+lemma prod_range_zero (f : ℕ → M) : ∏ k in range 0, f k = 1 := by rw [range_zero, prod_empty]
+#align finset.prod_range_zero Finset.prod_range_zero
+#align finset.sum_range_zero Finset.sum_range_zero
+
+@[to_additive sum_range_one]
+lemma prod_range_one (f : ℕ → M) : ∏ k in range 1, f k = f 0 := by
+  rw [range_one, prod_singleton]
+#align finset.prod_range_one Finset.prod_range_one
+#align finset.sum_range_one Finset.sum_range_one
+
+/-- For any product along `{0, ..., n - 1}` of a commutative-monoid-valued function, we can verify
+that it's equal to a different function just by checking ratios of adjacent terms.
+
+This is a multiplicative discrete analogue of the fundamental theorem of calculus. -/
+@[to_additive "For any sum along `{0, ..., n - 1}` of a commutative-monoid-valued function, we can
+verify that it's equal to a different function just by checking differences of adjacent terms.
+
+This is a discrete analogue of the fundamental theorem of calculus."]
+lemma prod_range_induction (f s : ℕ → M) (base : s 0 = 1)
+    (step : ∀ n, s (n + 1) = s n * f n) (n : ℕ) :
+    ∏ k in Finset.range n, f k = s n := by
+  induction' n with k hk
+  · rw [Finset.prod_range_zero, base]
+  · simp only [hk, Finset.prod_range_succ, step, mul_comm]
+#align finset.prod_range_induction Finset.prod_range_induction
+#align finset.sum_range_induction Finset.sum_range_induction
+
+/-- A telescoping product along `{0, ..., n - 1}` of a commutative group valued function reduces to
+the ratio of the last and first factors. -/
+@[to_additive "A telescoping sum along `{0, ..., n - 1}` of an additive commutative group valued
+function reduces to the difference of the last and first terms."]
+lemma prod_range_div {M : Type*} [CommGroup M] (f : ℕ → M) (n : ℕ) :
+    (∏ i in range n, f (i + 1) / f i) = f n / f 0 := by apply prod_range_induction <;> simp
+#align finset.prod_range_div Finset.prod_range_div
+#align finset.sum_range_sub Finset.sum_range_sub
+
+@[to_additive]
+lemma prod_range_div' {M : Type*} [CommGroup M] (f : ℕ → M) (n : ℕ) :
+    (∏ i in range n, f i / f (i + 1)) = f 0 / f n := by apply prod_range_induction <;> simp
+#align finset.prod_range_div' Finset.prod_range_div'
+#align finset.sum_range_sub' Finset.sum_range_sub'
+
+@[to_additive]
+lemma eq_prod_range_div {M : Type*} [CommGroup M] (f : ℕ → M) (n : ℕ) :
+    f n = f 0 * ∏ i in range n, f (i + 1) / f i := by rw [prod_range_div, mul_div_cancel]
+#align finset.eq_prod_range_div Finset.eq_prod_range_div
+#align finset.eq_sum_range_sub Finset.eq_sum_range_sub
+
+@[to_additive]
+lemma eq_prod_range_div' {M : Type*} [CommGroup M] (f : ℕ → M) (n : ℕ) :
+    f n = ∏ i in range (n + 1), if i = 0 then f 0 else f i / f (i - 1) := by
+  conv_lhs => rw [Finset.eq_prod_range_div f]
+  simp [Finset.prod_range_succ', mul_comm]
+#align finset.eq_prod_range_div' Finset.eq_prod_range_div'
+#align finset.eq_sum_range_sub' Finset.eq_sum_range_sub'
+
+/-- A telescoping sum along `{0, ..., n-1}` of an `ℕ`-valued function
+reduces to the difference of the last and first terms
+when the function we are summing is monotone.
+-/
+lemma sum_range_tsub [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α]
+    [ContravariantClass α α (· + ·) (· ≤ ·)] {f : ℕ → α} (h : Monotone f) (n : ℕ) :
+    ∑ i in range n, (f (i + 1) - f i) = f n - f 0 := by
+  apply sum_range_induction
+  case base => apply tsub_self
+  case step =>
+    intro n
+    have h₁ : f n ≤ f (n + 1) := h (Nat.le_succ _)
+    have h₂ : f 0 ≤ f n := h (Nat.zero_le _)
+    rw [tsub_add_eq_add_tsub h₂, add_tsub_cancel_of_le h₁]
+#align finset.sum_range_tsub Finset.sum_range_tsub
+
+@[to_additive]
+lemma pow_eq_prod_const (b : M) : ∀ n, b ^ n = ∏ _k in range n, b := by simp
+#align finset.pow_eq_prod_const Finset.pow_eq_prod_const
+#align finset.nsmul_eq_sum_const Finset.nsmul_eq_sum_const
+
+@[to_additive]
+lemma prod_flip {n : ℕ} (f : ℕ → M) :
+    (∏ r in range (n + 1), f (n - r)) = ∏ k in range (n + 1), f k := by
+  induction' n with n ih
+  · rw [prod_range_one, prod_range_one]
+  · rw [prod_range_succ', prod_range_succ _ (Nat.succ n)]
+    simp [← ih]
+#align finset.prod_flip Finset.prod_flip
+#align finset.sum_flip Finset.sum_flip
+
+end CommMonoid
+
+section CommGroup
 variable [CommGroup M]
 
 @[to_additive]
@@ -334,7 +483,38 @@ theorem prod_Ico_succ_div_top (hmn : m ≤ n) :
 #align finset.prod_Ico_succ_div_top Finset.prod_Ico_succ_div_top
 #align finset.sum_Ico_succ_sub_top Finset.sum_Ico_succ_sub_top
 
-end Group
+end CommGroup
 
+section NonUnitalNonAssocSemiring
+variable [NonUnitalNonAssocSemiring α]
+
+lemma sum_range_succ_mul_sum_range_succ (m n : ℕ) (f g : ℕ → α) :
+    (∑ i in range (m + 1), f i) * ∑ i in range (n + 1), g i =
+      (∑ i in range m, f i) * ∑ i in range n, g i +
+        f m * ∑ i in range n, g i + (∑ i in range m, f i) * g n + f m * g n := by
+  simp only [add_mul, mul_add, add_assoc, sum_range_succ]
+#align finset.sum_range_succ_mul_sum_range_succ Finset.sum_range_succ_mul_sum_range_succ
+
+end NonUnitalNonAssocSemiring
+
+section CommRing
+variable [CommRing α]
+
+lemma prod_range_cast_nat_sub (n k : ℕ) :
+    ∏ i in range k, (n - i : α) = (∏ i in range k, (n - i) : ℕ) := by
+  rw [prod_natCast]
+  rcases le_or_lt k n with hkn | hnk
+  · exact prod_congr rfl fun i hi => (Nat.cast_sub <| (mem_range.1 hi).le.trans hkn).symm
+  · rw [← mem_range] at hnk
+    rw [prod_eq_zero hnk, prod_eq_zero hnk] <;> simp
+#align finset.prod_range_cast_nat_sub Finset.prod_range_cast_nat_sub
+
+end CommRing
 end Nat
 end Finset
+
+lemma Multiset.sup_powersetCard {α : Type*} [DecidableEq α] (x : Multiset α) :
+    (Finset.range (card x + 1)).sup x.powersetCard = x.powerset := by
+  convert bind_powerset_len x using 1
+  rw [Multiset.bind, Multiset.join, ← Finset.range_val, ← Finset.sum_eq_multiset_sum, eq_comm]
+  exact finset_sum_eq_sup_iff_disjoint.mpr fun _ _ _ _ h ↦ pairwise_disjoint_powersetCard x h#align multiset.sup_powerset_len Multiset.sup_powersetCard

@@ -29,9 +29,29 @@ open BigOperators
 
 open Finset
 
-variable {α : Type*} {β : Type*}
+variable {α β M : Type*}
+
+/-- It is equivalent to compute the product of a function over `Fin n` or `Finset.range n`. -/
+@[to_additive "It is equivalent to sum a function over `fin n` or `finset.range n`."]
+lemma Fin.prod_univ_eq_prod_range [CommMonoid M] (f : ℕ → M) (n : ℕ) :
+    ∏ i : Fin n, f i = ∏ i in range n, f i :=
+  calc
+    ∏ i : Fin n, f i = ∏ i : { x // x ∈ range n }, f i :=
+      Fintype.prod_equiv (Fin.equivSubtype.trans (Equiv.subtypeEquivRight (by simp))) _ _ (by simp)
+    _ = ∏ i in range n, f i := by rw [← attach_eq_univ, prod_attach]
+#align fin.prod_univ_eq_prod_range Fin.prod_univ_eq_prod_range
+#align fin.sum_univ_eq_sum_range Fin.sum_univ_eq_sum_range
 
 namespace Finset
+
+@[to_additive]
+lemma prod_fin_eq_prod_range [CommMonoid M] {n : ℕ} (f : Fin n → M) :
+    ∏ i, f i = ∏ i in range n, if h : i < n then f ⟨i, h⟩ else 1 := by
+  rw [← Fin.prod_univ_eq_prod_range, prod_congr rfl]
+  rintro ⟨i, hi⟩ _
+  simp only [hi, dif_pos]
+#align finset.prod_fin_eq_prod_range Finset.prod_fin_eq_prod_range
+#align finset.sum_fin_eq_sum_range Finset.sum_fin_eq_sum_range
 
 @[to_additive]
 theorem prod_range [CommMonoid β] {n : ℕ} (f : ℕ → β) :

@@ -34,6 +34,7 @@ reality anymore. Rename them.
 universe u v
 
 namespace Nat
+variable {m n : ℕ}
 
 /-! ### instances -/
 

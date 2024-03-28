@@ -5,6 +5,7 @@ Authors: Alexander Bentkamp
 -/
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Nat.Interval
 
 #align_import data.holor from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 

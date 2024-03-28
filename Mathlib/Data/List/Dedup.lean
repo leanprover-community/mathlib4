@@ -97,8 +97,9 @@ theorem dedup_eq_cons (l : List α) (a : α) (l' : List α) :
   refine' ⟨fun h => _, fun h => _⟩
   · refine' ⟨mem_dedup.1 (h.symm ▸ mem_cons_self _ _), fun ha => _, by rw [h, tail_cons]⟩
     have : count a l.dedup ≤ 1 := nodup_iff_count_le_one.1 (nodup_dedup l) a
-    rw [h, count_cons_self, add_le_iff_nonpos_left] at this
-    exact not_le_of_lt (count_pos_iff_mem.2 ha) this
+    rw [h, count_cons_self] at this
+    have := count_pos_iff_mem.2 ha
+    omega
   · have := @List.cons_head!_tail α ⟨a⟩ _ (ne_nil_of_mem (mem_dedup.2 h.1))
     have hal : a ∈ l.dedup := mem_dedup.2 h.1
     rw [← this, mem_cons, or_iff_not_imp_right] at hal
@@ -160,7 +161,8 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
         | false => simp only
     · by_cases hp : p a
       · refine' _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h]) _
-        simp [hp, count_dedup]
+        simp only [hp, count_filter, count_dedup, mem_cons, true_or, ↓reduceIte]
+        rfl
       · refine' _root_.trans (List.sum_eq_zero fun n hn => _) (by simp [hp])
         obtain ⟨a', ha'⟩ := List.mem_map.1 hn
         split_ifs at ha' with ha

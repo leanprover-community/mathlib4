@@ -540,10 +540,9 @@ theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
       refine' lt_add_of_pos_right _ _
       rw [(Finset.sum_const_zero.symm : 0 = ∑ k in Finset.Ico i (j + 1), 0)]
       refine' Finset.sum_lt_sum (fun m _ ↦ Set.indicator_nonneg (fun _ _ ↦ zero_le_one) _)
-        ⟨j - 1, Finset.mem_Ico.2 ⟨(Nat.le_sub_iff_add_le (le_trans ((le_add_iff_nonneg_left _).2
-          zero_le') hj₁)).2 hj₁, lt_of_le_of_lt (Nat.sub_le _ _) j.lt_succ_self⟩, _⟩
-      rw [Nat.sub_add_cancel (le_trans ((le_add_iff_nonneg_left _).2 zero_le') hj₁),
-        Set.indicator_of_mem hj₂]
+        ⟨j - 1, Finset.mem_Ico.2 ⟨le_tsub_of_add_le_right hj₁,
+          (Nat.sub_le _ _).trans_lt j.lt_succ_self⟩, _⟩
+      rw [Nat.sub_add_cancel (le_trans le_add_self hj₁), Set.indicator_of_mem hj₂]
       exact zero_lt_one
   · rintro hω i
     rw [Set.mem_setOf_eq, tendsto_atTop_atTop] at hω

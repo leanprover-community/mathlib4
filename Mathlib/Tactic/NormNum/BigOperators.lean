@@ -3,9 +3,11 @@ Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Floris van Doorn
 -/
-import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.List.FinRange
+import Mathlib.Data.Nat.Interval
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormNum.Basic
 
 #align_import algebra.big_operators.norm_num from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 

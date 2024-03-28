@@ -293,24 +293,6 @@ theorem pairwise_disjoint_powersetCard (s : Finset α) :
     hij <| (mem_powersetCard.mp hi).2.symm.trans (mem_powersetCard.mp hj).2
 #align finset.pairwise_disjoint_powerset_len Finset.pairwise_disjoint_powersetCard
 
-theorem powerset_card_disjiUnion (s : Finset α) :
-    Finset.powerset s =
-      (range (s.card + 1)).disjiUnion (fun i => powersetCard i s)
-        (s.pairwise_disjoint_powersetCard.set_pairwise _) := by
-  refine' ext fun a => ⟨fun ha => _, fun ha => _⟩
-  · rw [mem_disjiUnion]
-    exact
-      ⟨a.card, mem_range.mpr (Nat.lt_succ_of_le (card_le_card (mem_powerset.mp ha))),
-        mem_powersetCard.mpr ⟨mem_powerset.mp ha, rfl⟩⟩
-  · rcases mem_disjiUnion.mp ha with ⟨i, _hi, ha⟩
-    exact mem_powerset.mpr (mem_powersetCard.mp ha).1
-#align finset.powerset_card_disj_Union Finset.powerset_card_disjiUnion
-
-theorem powerset_card_biUnion [DecidableEq (Finset α)] (s : Finset α) :
-    Finset.powerset s = (range (s.card + 1)).biUnion fun i => powersetCard i s := by
-  simpa only [disjiUnion_eq_biUnion] using powerset_card_disjiUnion s
-#align finset.powerset_card_bUnion Finset.powerset_card_biUnion
-
 theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.card) :
     (powersetCard n.succ u).sup id = u := by
   apply le_antisymm

@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Nat.Interval
 
 #align_import ring_theory.prime from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 

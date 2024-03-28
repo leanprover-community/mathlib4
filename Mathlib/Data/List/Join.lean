@@ -134,7 +134,7 @@ theorem drop_take_succ_join_eq_get (L : List (List α)) (i : Fin L.length) :
     (L.join.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum =
       get L i := by
   have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
-    simp [map_take, take_take]
+    simp [map_take, take_take, Nat.min_eq_left]
   simp only [this, length_map, take_sum_join, drop_sum_join, drop_take_succ_eq_cons_get,
     join, append_nil]
 
@@ -147,7 +147,7 @@ theorem drop_take_succ_join_eq_nthLe (L : List (List α)) {i : ℕ} (hi : i < L.
     (L.join.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum =
       nthLe L i hi := by
   have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
-    simp [map_take, take_take]
+    simp [map_take, take_take, Nat.min_eq_left]
   simp [take_sum_join, this, drop_sum_join, drop_take_succ_eq_cons_nthLe _ hi]
 #align list.drop_take_succ_join_eq_nth_le List.drop_take_succ_join_eq_nthLe
 

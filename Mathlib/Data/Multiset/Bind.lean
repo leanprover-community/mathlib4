@@ -22,6 +22,9 @@ This file defines a few basic operations on `Multiset`, notably the monadic bind
 * `Multiset.sigma`: Disjoint sum of multisets in a sigma type.
 -/
 
+-- Make sure we haven't imported `Data.Nat.Order.Basic`
+assert_not_exists NeZero.one_le
+
 universe v
 
 variable {α : Type*} {β : Type v} {γ δ : Type*}

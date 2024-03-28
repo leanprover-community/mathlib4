@@ -7,6 +7,7 @@ Authors: Chris Hughes
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Int.Order.Units
+import Mathlib.Data.Nat.Interval
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.GroupTheory.Subgroup.Finite
 import Mathlib.Logic.Equiv.Fin

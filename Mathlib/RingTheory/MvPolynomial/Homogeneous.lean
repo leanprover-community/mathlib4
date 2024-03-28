@@ -350,7 +350,7 @@ lemma exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux
     rw [Finsupp.coe_zero, Pi.zero_apply]
     by_cases hi : i ∈ d.support
     · have := hF.finSuccEquiv_coeff_isHomogeneous n 0 (add_zero _) hd
-      rw [Finset.sum_eq_zero_iff_of_nonneg (fun _ _ ↦ zero_le')] at this
+      rw [Finset.sum_eq_zero_iff_of_nonneg (fun _ _ ↦ Nat.zero_le _)] at this
       exact this i hi
     · simpa using hi
 

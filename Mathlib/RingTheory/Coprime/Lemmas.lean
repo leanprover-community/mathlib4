@@ -6,6 +6,7 @@ Authors: Kenny Lau, Ken Lee, Chris Hughes
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Int.GCD
+import Mathlib.Data.Nat.Interval
 import Mathlib.RingTheory.Coprime.Basic
 
 #align_import ring_theory.coprime.lemmas from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"

@@ -5,6 +5,8 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Multiset.Bind
 import Mathlib.Data.List.MinMax
+import Mathlib.Data.Multiset.Dedup
+import Mathlib.Data.Nat.Order.Basic
 
 #align_import data.multiset.fold from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
