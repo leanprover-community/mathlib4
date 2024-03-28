@@ -1636,7 +1636,7 @@ instance Rat.borelSpace : BorelSpace ℚ :=
   ⟨borel_eq_top_of_countable.symm⟩
 #align rat.borel_space Rat.borelSpace
 
-/- Instances on `Real` and `Complex` are special cases of `IsROrC` but without these instances,
+/- Instances on `Real` and `Complex` are special cases of `RCLike` but without these instances,
 Lean fails to prove `BorelSpace (ι → ℝ)`, so we leave them here. -/
 instance Real.measurableSpace : MeasurableSpace ℝ :=
   borel ℝ

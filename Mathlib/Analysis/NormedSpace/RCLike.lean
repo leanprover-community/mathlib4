@@ -3,7 +3,7 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Data.IsROrC.Basic
+import Mathlib.Data.RCLike.Basic
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
 import Mathlib.Analysis.NormedSpace.Pointwise
 
@@ -25,16 +25,16 @@ None.
 
 ## Notes
 
-This file exists mainly to avoid importing `IsROrC` in the main normed space theory files.
+This file exists mainly to avoid importing `RCLike` in the main normed space theory files.
 -/
 
 
 open Metric
 
-variable {𝕜 : Type*} [IsROrC 𝕜] {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]
 
-theorem IsROrC.norm_coe_norm {z : E} : ‖(‖z‖ : 𝕜)‖ = ‖z‖ := by simp
-#align is_R_or_C.norm_coe_norm IsROrC.norm_coe_norm
+theorem RCLike.norm_coe_norm {z : E} : ‖(‖z‖ : 𝕜)‖ = ‖z‖ := by simp
+#align is_R_or_C.norm_coe_norm RCLike.norm_coe_norm
 
 variable [NormedSpace 𝕜 E]
 
@@ -49,7 +49,7 @@ theorem norm_smul_inv_norm {x : E} (hx : x ≠ 0) : ‖(‖x‖⁻¹ : 𝕜) •
 theorem norm_smul_inv_norm' {r : ℝ} (r_nonneg : 0 ≤ r) {x : E} (hx : x ≠ 0) :
     ‖((r : 𝕜) * (‖x‖ : 𝕜)⁻¹) • x‖ = r := by
   have : ‖x‖ ≠ 0 := by simp [hx]
-  field_simp [norm_smul, r_nonneg, isROrC_simps]
+  field_simp [norm_smul, r_nonneg, rclike_simps]
 #align norm_smul_inv_norm' norm_smul_inv_norm'
 
 theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] 𝕜)
@@ -63,7 +63,7 @@ theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f :
     apply h
     rw [mem_sphere_zero_iff_norm]
     exact norm_smul_inv_norm' r_pos.le z_zero
-  have r_ne_zero : (r : 𝕜) ≠ 0 := IsROrC.ofReal_ne_zero.mpr r_pos.ne'
+  have r_ne_zero : (r : 𝕜) ≠ 0 := RCLike.ofReal_ne_zero.mpr r_pos.ne'
   have eq : f z = ‖z‖ / r * f z₁ := by
     rw [hz₁, LinearMap.map_smul, smul_eq_mul]
     rw [← mul_assoc, ← mul_assoc, div_mul_cancel₀ _ r_ne_zero, mul_inv_cancel, one_mul]
@@ -99,8 +99,8 @@ alias ContinuousLinearMap.op_norm_bound_of_ball_bound :=
 
 variable (𝕜)
 
-theorem NormedSpace.sphere_nonempty_isROrC [Nontrivial E] {r : ℝ} (hr : 0 ≤ r) :
+theorem NormedSpace.sphere_nonempty_rclike [Nontrivial E] {r : ℝ} (hr : 0 ≤ r) :
     Nonempty (sphere (0 : E) r) :=
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   (NormedSpace.sphere_nonempty.mpr hr).coe_sort
-#align normed_space.sphere_nonempty_is_R_or_C NormedSpace.sphere_nonempty_isROrC
+#align normed_space.sphere_nonempty_is_R_or_C NormedSpace.sphere_nonempty_rclike

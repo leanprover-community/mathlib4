@@ -179,7 +179,7 @@ theorem rotation_trans (θ₁ θ₂ : Real.Angle) :
 @[simp]
 theorem kahler_rotation_left (x y : V) (θ : Real.Angle) :
     o.kahler (o.rotation θ x) y = conj (θ.expMapCircle : ℂ) * o.kahler x y := by
-  -- Porting note: this needed the `Complex.conj_ofReal` instead of `IsROrC.conj_ofReal`;
+  -- Porting note: this needed the `Complex.conj_ofReal` instead of `RCLike.conj_ofReal`;
   -- I believe this is because the respective coercions are no longer defeq, and
   -- `Real.Angle.coe_expMapCircle` uses the `Complex` version.
   simp only [o.rotation_apply, map_add, map_mul, LinearMap.map_smulₛₗ, RingHom.id_apply,

@@ -225,7 +225,7 @@ theorem exists_eq_pow_mul_and_not_dvd {a b : α} (hfin : Finite a b) :
   obtain ⟨c, hc⟩ := multiplicity.pow_multiplicity_dvd hfin
   refine' ⟨c, hc, _⟩
   rintro ⟨k, hk⟩
-  rw [hk, ← mul_assoc, ← _root_.pow_succ'] at hc
+  rw [hk, ← mul_assoc, ← _root_.pow_succ] at hc
   have h₁ : a ^ ((multiplicity a b).get hfin + 1) ∣ b := ⟨k, hc⟩
   exact (multiplicity.eq_coe_iff.1 (by simp)).2 h₁
 #align multiplicity.exists_eq_pow_mul_and_not_dvd multiplicity.exists_eq_pow_mul_and_not_dvd
@@ -523,7 +523,7 @@ theorem finite_mul_iff {p a b : α} (hp : Prime p) : Finite p (a * b) ↔ Finite
 
 theorem finite_pow {p a : α} (hp : Prime p) : ∀ {k : ℕ} (_ : Finite p a), Finite p (a ^ k)
   | 0, _ => ⟨0, by simp [mt isUnit_iff_dvd_one.2 hp.2.1]⟩
-  | k + 1, ha => by rw [_root_.pow_succ]; exact finite_mul hp ha (finite_pow hp ha)
+  | k + 1, ha => by rw [_root_.pow_succ']; exact finite_mul hp ha (finite_pow hp ha)
 #align multiplicity.finite_pow multiplicity.finite_pow
 
 variable [DecidableRel ((· ∣ ·) : α → α → Prop)]

@@ -38,7 +38,7 @@ theorem hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
   | 0 => by
     rw [pow_zero, h1]
     rfl
-  | n + 1 => by rw [pow_succ, iterate_succ', hmul, hom_coe_pow c h1 hmul f n]
+  | n + 1 => by rw [pow_succ, iterate_succ, hmul, hom_coe_pow c h1 hmul f n]
 #align hom_coe_pow hom_coe_pow
 
 @[to_additive (attr := simp)]

@@ -153,7 +153,7 @@ theorem WfDvdMonoid.max_power_factor' [CommMonoidWithZero α] [WfDvdMonoid α] {
   obtain ⟨a, ⟨n, rfl⟩, hm⟩ := wellFounded_dvdNotUnit.has_min
     {a | ∃ n, x ^ n * a = a₀} ⟨a₀, 0, by rw [pow_zero, one_mul]⟩
   refine ⟨n, a, ?_, rfl⟩; rintro ⟨d, rfl⟩
-  exact hm d ⟨n + 1, by rw [pow_succ', mul_assoc]⟩
+  exact hm d ⟨n + 1, by rw [pow_succ, mul_assoc]⟩
     ⟨(right_ne_zero_of_mul <| right_ne_zero_of_mul h), x, hx, mul_comm _ _⟩
 
 theorem WfDvdMonoid.max_power_factor [CommMonoidWithZero α] [WfDvdMonoid α] {a₀ x : α}
@@ -163,7 +163,7 @@ theorem WfDvdMonoid.max_power_factor [CommMonoidWithZero α] [WfDvdMonoid α] {a
 theorem multiplicity.finite_of_not_isUnit [CancelCommMonoidWithZero α] [WfDvdMonoid α]
     {a b : α} (ha : ¬IsUnit a) (hb : b ≠ 0) : multiplicity.Finite a b := by
   obtain ⟨n, c, ndvd, rfl⟩ := WfDvdMonoid.max_power_factor' hb ha
-  exact ⟨n, by rwa [pow_succ', mul_dvd_mul_iff_left (left_ne_zero_of_mul hb)]⟩
+  exact ⟨n, by rwa [pow_succ, mul_dvd_mul_iff_left (left_ne_zero_of_mul hb)]⟩
 
 section Prio
 
@@ -548,7 +548,7 @@ theorem factors_pow {x : α} (n : ℕ) :
   | n+1 =>
     · by_cases h0 : x = 0
       · simp [h0, zero_pow n.succ_ne_zero, smul_zero]
-      · rw [pow_succ, succ_nsmul]
+      · rw [pow_succ', succ_nsmul']
         refine' Multiset.Rel.trans _ (factors_mul h0 (pow_ne_zero n h0)) _
         refine' Multiset.Rel.add _ <| factors_pow n
         exact Multiset.rel_refl_of_refl_on fun y _ => Associated.refl _
@@ -726,7 +726,7 @@ theorem normalizedFactors_pow {x : α} (n : ℕ) :
   · simp
   by_cases h0 : x = 0
   · simp [h0, zero_pow n.succ_ne_zero, smul_zero]
-  rw [pow_succ, succ_nsmul, normalizedFactors_mul h0 (pow_ne_zero _ h0), ih]
+  rw [pow_succ', succ_nsmul', normalizedFactors_mul h0 (pow_ne_zero _ h0), ih]
 #align unique_factorization_monoid.normalized_factors_pow UniqueFactorizationMonoid.normalizedFactors_pow
 
 theorem _root_.Irreducible.normalizedFactors_pow {p : α} (hp : Irreducible p) (k : ℕ) :

@@ -106,7 +106,7 @@ theorem cyclotomic_irreducible_pow_of_irreducible_pow {p : ℕ} (hp : Nat.Prime 
   induction' k with k hk
   · simpa using h
   have : m + k ≠ 0 := (add_pos_of_pos_of_nonneg hm k.zero_le).ne'
-  rw [Nat.add_succ, pow_succ', ← cyclotomic_expand_eq_cyclotomic hp <| dvd_pow_self p this] at h
+  rw [Nat.add_succ, pow_succ, ← cyclotomic_expand_eq_cyclotomic hp <| dvd_pow_self p this] at h
   exact hk (by omega) (of_irreducible_expand hp.ne_zero h)
 #align polynomial.cyclotomic_irreducible_pow_of_irreducible_pow Polynomial.cyclotomic_irreducible_pow_of_irreducible_pow
 
@@ -128,7 +128,7 @@ theorem cyclotomic_mul_prime_eq_pow_of_not_dvd (R : Type*) {p n : ℕ} [hp : Fac
     rw [← map_cyclotomic _ (algebraMap (ZMod p) R), ← map_cyclotomic _ (algebraMap (ZMod p) R),
       this, Polynomial.map_pow]
   apply mul_right_injective₀ (cyclotomic_ne_zero n <| ZMod p); dsimp
-  rw [← pow_succ, tsub_add_cancel_of_le hp.out.one_lt.le, mul_comm, ← ZMod.expand_card]
+  rw [← pow_succ', tsub_add_cancel_of_le hp.out.one_lt.le, mul_comm, ← ZMod.expand_card]
   conv_rhs => rw [← map_cyclotomic_int]
   rw [← map_expand, cyclotomic_expand_eq_cyclotomic_mul hp.out hn, Polynomial.map_mul,
     map_cyclotomic, map_cyclotomic]
@@ -153,12 +153,12 @@ theorem cyclotomic_mul_prime_pow_eq (R : Type*) {p m : ℕ} [Fact (Nat.Prime p)]
   | 1, _ => by
     rw [pow_one, Nat.sub_self, pow_zero, mul_comm, cyclotomic_mul_prime_eq_pow_of_not_dvd R hm]
   | a + 2, _ => by
-    have hdiv : p ∣ p ^ a.succ * m := ⟨p ^ a * m, by rw [← mul_assoc, pow_succ]⟩
-    rw [pow_succ, mul_assoc, mul_comm, cyclotomic_mul_prime_dvd_eq_pow R hdiv,
+    have hdiv : p ∣ p ^ a.succ * m := ⟨p ^ a * m, by rw [← mul_assoc, pow_succ']⟩
+    rw [pow_succ', mul_assoc, mul_comm, cyclotomic_mul_prime_dvd_eq_pow R hdiv,
       cyclotomic_mul_prime_pow_eq _ _ a.succ_pos, ← pow_mul]
     congr 1
     simp only [tsub_zero, Nat.succ_sub_succ_eq_sub]
-    rwa [Nat.mul_sub_right_distrib, mul_comm, pow_succ']
+    rwa [Nat.mul_sub_right_distrib, mul_comm, pow_succ]
 #align polynomial.cyclotomic_mul_prime_pow_eq Polynomial.cyclotomic_mul_prime_pow_eq
 
 /-- If `R` is of characteristic `p` and `¬p ∣ m`, then `ζ` is a root of `cyclotomic (p ^ k * m) R`

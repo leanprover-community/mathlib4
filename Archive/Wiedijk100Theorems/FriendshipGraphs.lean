@@ -93,7 +93,7 @@ theorem adjMatrix_sq_of_ne {v w : V} (hvw : v ≠ w) :
   We use it to show that nonadjacent vertices have equal degrees. -/
 theorem adjMatrix_pow_three_of_not_adj {v w : V} (non_adj : ¬G.Adj v w) :
     (G.adjMatrix R ^ 3 : Matrix V V R) v w = degree G v := by
-  rw [pow_succ, adjMatrix_mul_apply, degree, card_eq_sum_ones, Nat.cast_sum]
+  rw [pow_succ', adjMatrix_mul_apply, degree, card_eq_sum_ones, Nat.cast_sum]
   apply sum_congr rfl
   intro x hx
   rw [adjMatrix_sq_of_ne _ hG, Nat.cast_one]
@@ -226,7 +226,7 @@ theorem adjMatrix_pow_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
   | k + 2 =>
     induction' k with k hind
     · exact adjMatrix_sq_mod_p_of_regular hG dmod hd
-    rw [pow_succ, hind (Nat.le_add_left 2 k)]
+    rw [pow_succ', hind (Nat.le_add_left 2 k)]
     exact adjMatrix_mul_const_one_mod_p_of_regular dmod hd
 #align theorems_100.friendship.adj_matrix_pow_mod_p_of_regular Theorems100.Friendship.adjMatrix_pow_mod_p_of_regular
 

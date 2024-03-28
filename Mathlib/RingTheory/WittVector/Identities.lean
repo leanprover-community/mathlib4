@@ -65,7 +65,7 @@ theorem coeff_p_pow_eq_zero [CharP R p] {i j : ℕ} (hj : j ≠ i) : ((p : 𝕎 
   induction' i with i hi generalizing j
   · rw [pow_zero, one_coeff_eq_of_pos]
     exact Nat.pos_of_ne_zero hj
-  · rw [pow_succ', ← frobenius_verschiebung, coeff_frobenius_charP]
+  · rw [pow_succ, ← frobenius_verschiebung, coeff_frobenius_charP]
     cases j
     · rw [verschiebung_coeff_zero, zero_pow hp.out.ne_zero]
     · rw [verschiebung_coeff_succ, hi (ne_of_apply_ne _ hj), zero_pow hp.out.ne_zero]

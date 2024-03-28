@@ -1530,7 +1530,7 @@ theorem prod_list_map_count [DecidableEq α] (l : List α) {M : Type*} [CommMono
   simp only [List.map, List.prod_cons, toFinset_cons, IH]
   by_cases has : a ∈ s.toFinset
   · rw [insert_eq_of_mem has, ← insert_erase has, prod_insert (not_mem_erase _ _),
-      prod_insert (not_mem_erase _ _), ← mul_assoc, count_cons_self, pow_succ]
+      prod_insert (not_mem_erase _ _), ← mul_assoc, count_cons_self, pow_succ']
     congr 1
     refine' prod_congr rfl fun x hx => _
     rw [count_cons_of_ne (ne_of_mem_erase hx)]
