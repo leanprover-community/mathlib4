@@ -193,7 +193,7 @@ lemma _root_.Real.lipschitzWith_toNNReal : LipschitzWith 1 Real.toNNReal := by
   simpa only [ge_iff_le, NNReal.coe_one, dist_prod_same_right, one_mul, Real.dist_eq] using
     lipschitzWith_iff_dist_le_mul.mp lipschitzWith_max (x, 0) (y, 0)
 
-lemma cauchySeq_image (hf : LipschitzWith K f) {u : ℕ → α} (hu : CauchySeq u) :
+lemma cauchySeq_comp (hf : LipschitzWith K f) {u : ℕ → α} (hu : CauchySeq u) :
     CauchySeq (f ∘ u) := by
   rcases cauchySeq_iff_le_tendsto_0.1 hu with ⟨b, b_nonneg, hb, blim⟩
   refine cauchySeq_iff_le_tendsto_0.2 ⟨fun n ↦ K * b n, ?_, ?_, ?_⟩
@@ -315,7 +315,7 @@ theorem isBounded_image2 (f : α → β → γ) {K₁ K₂ : ℝ≥0} {s : Set �
       (ediam_image2_le _ _ _ hf₁ hf₂)
 #align lipschitz_on_with.bounded_image2 LipschitzOnWith.isBounded_image2
 
-lemma cauchySeq_image (hf : LipschitzOnWith K f s)
+lemma cauchySeq_comp (hf : LipschitzOnWith K f s)
     {u : ℕ → α} (hu : CauchySeq u) (h'u : range u ⊆ s) :
     CauchySeq (f ∘ u) := by
   rcases cauchySeq_iff_le_tendsto_0.1 hu with ⟨b, b_nonneg, hb, blim⟩
