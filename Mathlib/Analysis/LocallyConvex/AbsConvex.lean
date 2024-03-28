@@ -125,7 +125,7 @@ instance AbsConvexOpenSets.instNonempty : Nonempty (AbsConvexOpenSets 𝕜 E) :=
 
 end AbsolutelyConvexSets
 
-variable [IsROrC 𝕜]
+variable [RCLike 𝕜]
 variable [AddCommGroup E] [TopologicalSpace E]
 variable [Module 𝕜 E] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
 variable [ContinuousSMul ℝ E]

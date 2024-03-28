@@ -29,9 +29,9 @@ import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Module
-import Mathlib.Algebra.BigOperators.Multiset.Abs
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Algebra.BigOperators.Multiset.Lemmas
+import Mathlib.Algebra.BigOperators.Multiset.Order
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Algebra.BigOperators.Option
 import Mathlib.Algebra.BigOperators.Order
@@ -667,7 +667,7 @@ import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.ContDiff.Defs
 import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
-import Mathlib.Analysis.Calculus.ContDiff.IsROrC
+import Mathlib.Analysis.Calculus.ContDiff.RCLike
 import Mathlib.Analysis.Calculus.Darboux
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.AffineMap
@@ -913,7 +913,6 @@ import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.Analysis.NormedSpace.HomeomorphBall
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
 import Mathlib.Analysis.NormedSpace.Int
-import Mathlib.Analysis.NormedSpace.IsROrC
 import Mathlib.Analysis.NormedSpace.LinearIsometry
 import Mathlib.Analysis.NormedSpace.LpEquiv
 import Mathlib.Analysis.NormedSpace.MStructure
@@ -935,6 +934,7 @@ import Mathlib.Analysis.NormedSpace.PiTensorProduct.ProjectiveSeminorm
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.NormedSpace.ProdLp
 import Mathlib.Analysis.NormedSpace.QuaternionExponential
+import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Analysis.NormedSpace.Ray
 import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.Analysis.NormedSpace.RieszLemma
@@ -1016,8 +1016,8 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecificLimits.FloorPow
-import Mathlib.Analysis.SpecificLimits.IsROrC
 import Mathlib.Analysis.SpecificLimits.Normed
+import Mathlib.Analysis.SpecificLimits.RCLike
 import Mathlib.Analysis.Subadditive
 import Mathlib.Analysis.SumIntegralComparisons
 import Mathlib.Analysis.SumOverResidueClass
@@ -1405,6 +1405,7 @@ import Mathlib.CategoryTheory.Sites.Coherent.Basic
 import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
 import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
 import Mathlib.CategoryTheory.Sites.Coherent.Comparison
+import Mathlib.CategoryTheory.Sites.Coherent.CoverDense
 import Mathlib.CategoryTheory.Sites.Coherent.Equivalence
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
 import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
@@ -1790,8 +1791,6 @@ import Mathlib.Data.Int.Sqrt
 import Mathlib.Data.Int.Star
 import Mathlib.Data.Int.SuccPred
 import Mathlib.Data.Int.Units
-import Mathlib.Data.IsROrC.Basic
-import Mathlib.Data.IsROrC.Lemmas
 import Mathlib.Data.LazyList.Basic
 import Mathlib.Data.List.AList
 import Mathlib.Data.List.Basic
@@ -1834,6 +1833,7 @@ import Mathlib.Data.List.Permutation
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
+import Mathlib.Data.List.ReduceOption
 import Mathlib.Data.List.Rotate
 import Mathlib.Data.List.Sections
 import Mathlib.Data.List.Sigma
@@ -1966,7 +1966,6 @@ import Mathlib.Data.Nat.Pairing
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Nat.PartENat
 import Mathlib.Data.Nat.Periodic
-import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.PrimeNormNum
@@ -2058,6 +2057,8 @@ import Mathlib.Data.QPF.Multivariate.Constructions.Quot
 import Mathlib.Data.QPF.Multivariate.Constructions.Sigma
 import Mathlib.Data.QPF.Univariate.Basic
 import Mathlib.Data.Quot
+import Mathlib.Data.RCLike.Basic
+import Mathlib.Data.RCLike.Lemmas
 import Mathlib.Data.Rat.BigOperators
 import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Data.Rat.Cast.Defs
@@ -2808,7 +2809,7 @@ import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Arctan
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
-import Mathlib.MeasureTheory.Function.SpecialFunctions.IsROrC
+import Mathlib.MeasureTheory.Function.SpecialFunctions.RCLike
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
@@ -2978,6 +2979,7 @@ import Mathlib.NumberTheory.LSeries.Convergence
 import Mathlib.NumberTheory.LSeries.Convolution
 import Mathlib.NumberTheory.LSeries.Deriv
 import Mathlib.NumberTheory.LSeries.Linearity
+import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
 import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 import Mathlib.NumberTheory.LegendreSymbol.Basic
 import Mathlib.NumberTheory.LegendreSymbol.GaussEisensteinLemmas
@@ -3215,17 +3217,18 @@ import Mathlib.Probability.Independence.ZeroOne
 import Mathlib.Probability.Integration
 import Mathlib.Probability.Kernel.Basic
 import Mathlib.Probability.Kernel.Composition
-import Mathlib.Probability.Kernel.CondCdf
 import Mathlib.Probability.Kernel.CondDistrib
 import Mathlib.Probability.Kernel.Condexp
 import Mathlib.Probability.Kernel.Disintegration
 import Mathlib.Probability.Kernel.Disintegration.CdfToKernel
+import Mathlib.Probability.Kernel.Disintegration.CondCdf
 import Mathlib.Probability.Kernel.Disintegration.Density
 import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 import Mathlib.Probability.Kernel.IntegralCompProd
 import Mathlib.Probability.Kernel.Invariance
 import Mathlib.Probability.Kernel.MeasurableIntegral
 import Mathlib.Probability.Kernel.MeasureCompProd
+import Mathlib.Probability.Kernel.RadonNikodym
 import Mathlib.Probability.Kernel.WithDensity
 import Mathlib.Probability.Martingale.Basic
 import Mathlib.Probability.Martingale.BorelCantelli

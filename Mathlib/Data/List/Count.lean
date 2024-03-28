@@ -179,7 +179,7 @@ theorem prod_map_eq_pow_single [Monoid β] (a : α) (f : α → β)
   · specialize h a fun a' ha' hfa' => hf a' ha' (mem_cons_of_mem _ hfa')
     rw [List.map_cons, List.prod_cons, count_cons, h]
     split_ifs with ha'
-    · rw [ha', _root_.pow_succ]
+    · rw [ha', _root_.pow_succ']
     · rw [hf a' (Ne.symm ha') (List.mem_cons_self a' as), one_mul, add_zero]
 #align list.prod_map_eq_pow_single List.prod_map_eq_pow_single
 #align list.sum_map_eq_nsmul_single List.sum_map_eq_nsmul_single

@@ -702,7 +702,7 @@ theorem locally_const_basicOpen (U : Opens (PrimeSpectrum.Top R))
   -- Actually, we will need a *nonzero* power of `h`.
   -- This is because we will need the equality `basicOpen (h ^ n) = basicOpen h`, which only
   -- holds for a nonzero power `n`. We therefore artificially increase `n` by one.
-  replace hn := Ideal.mul_mem_left (Ideal.span {g}) h hn
+  replace hn := Ideal.mul_mem_right h (Ideal.span {g}) hn
   rw [← pow_succ, Ideal.mem_span_singleton'] at hn
   cases' hn with c hc
   have basic_opens_eq := PrimeSpectrum.basicOpen_pow h (n + 1) (by omega)
@@ -869,7 +869,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
       ← Finset.set_biUnion_coe, ← Set.image_eq_iUnion] at ht_cover
     apply PrimeSpectrum.vanishingIdeal_anti_mono ht_cover
     exact PrimeSpectrum.subset_vanishingIdeal_zeroLocus {f} (Set.mem_singleton f)
-  replace hn := Ideal.mul_mem_left _ f hn
+  replace hn := Ideal.mul_mem_right f _ hn
   erw [← pow_succ, Finsupp.mem_span_image_iff_total] at hn
   rcases hn with ⟨b, b_supp, hb⟩
   rw [Finsupp.total_apply_of_mem_supported R b_supp] at hb

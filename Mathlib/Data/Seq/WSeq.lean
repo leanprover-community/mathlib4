@@ -737,7 +737,7 @@ theorem dropn_add (s : WSeq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
 #align stream.wseq.dropn_add Stream'.WSeq.dropn_add
 
 theorem dropn_tail (s : WSeq α) (n) : drop (tail s) n = drop s (n + 1) := by
-  rw [add_comm]
+  rw [Nat.add_comm]
   symm
   apply dropn_add
 #align stream.wseq.dropn_tail Stream'.WSeq.dropn_tail
@@ -1039,7 +1039,7 @@ theorem liftRel_dropn_destruct {R : α → β → Prop} {s t} (H : LiftRel R s t
     ∀ n, Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct (drop s n)) (destruct (drop t n))
   | 0 => liftRel_destruct H
   | n + 1 => by
-    simp only [LiftRelO, drop, Nat.add_eq, add_zero, destruct_tail, tail.aux]
+    simp only [LiftRelO, drop, Nat.add_eq, Nat.add_zero, destruct_tail, tail.aux]
     apply liftRel_bind
     apply liftRel_dropn_destruct H n
     exact fun {a b} o =>
@@ -1379,7 +1379,7 @@ theorem tail_ofSeq (s : Seq α) : tail (ofSeq s) = ofSeq s.tail := by
 theorem dropn_ofSeq (s : Seq α) : ∀ n, drop (ofSeq s) n = ofSeq (s.drop n)
   | 0 => rfl
   | n + 1 => by
-    simp only [drop, Nat.add_eq, add_zero, Seq.drop]
+    simp only [drop, Nat.add_eq, Nat.add_zero, Seq.drop]
     rw [dropn_ofSeq s n, tail_ofSeq]
 #align stream.wseq.dropn_of_seq Stream'.WSeq.dropn_ofSeq
 

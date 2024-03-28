@@ -1140,7 +1140,7 @@ section Monoids
 protected theorem pow {M : Type*} [Monoid M] (c : Con M) :
     ∀ (n : ℕ) {w x}, c w x → c (w ^ n) (x ^ n)
   | 0, w, x, _ => by simpa using c.refl _
-  | Nat.succ n, w, x, h => by simpa [pow_succ] using c.mul h (Con.pow c n h)
+  | Nat.succ n, w, x, h => by simpa [pow_succ] using c.mul (Con.pow c n h) h
 #align con.pow Con.pow
 #align add_con.nsmul AddCon.nsmul
 
