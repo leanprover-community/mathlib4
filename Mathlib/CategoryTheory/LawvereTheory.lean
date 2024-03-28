@@ -220,49 +220,49 @@ inductive FreeRel :
       FreeRel (x.lift _ _ y) (x'.lift _ _ y')
   | unit_unique (x y : L.FreeRep X .nil) : FreeRel x y
 
-def FreeSetoid (A : ProdWord S) :
+def freeSetoid (A : ProdWord S) :
     Setoid (L.FreeRep X A) where
   r := L.FreeRel _
   iseqv := ⟨.rfl, .symm, .trans⟩
 
-def Free (A : ProdWord S) : Type _ :=
-  Quotient <| L.FreeSetoid X A
+def free (A : ProdWord S) : Type _ :=
+  Quotient <| L.freeSetoid X A
 
 variable {L X}
-def Free.fst {A B : ProdWord S} :
-    L.Free X (A.prod B) → L.Free X A :=
+def free.fst {A B : ProdWord S} :
+    L.free X (A.prod B) → L.free X A :=
   Quotient.lift (fun a => Quotient.mk _ <| a.map _ _ <| L.fst' _ _)
   fun _ _ h => Quotient.sound <| .map_congr _ _ h
 
-def Free.snd {A B : ProdWord S} :
-    L.Free X (A.prod B) → L.Free X B :=
+def free.snd {A B : ProdWord S} :
+    L.free X (A.prod B) → L.free X B :=
   Quotient.lift (fun a => Quotient.mk _ <| a.map _ _ <| L.snd' _ _)
   fun _ _ h => Quotient.sound <| .map_congr _ _ h
 
-def Free.lift {A B : ProdWord S}
-    (x : L.Free X A) (y : L.Free X B) :
-    L.Free X (A.prod B) :=
+def free.lift {A B : ProdWord S}
+    (x : L.free X A) (y : L.free X B) :
+    L.free X (A.prod B) :=
   Quotient.liftOn₂ x y (fun a b => Quotient.mk _ <| .lift _ _ a b)
   fun _ _ _ _ h₁ h₂ => Quotient.sound <| .lift_congr _ _ _ _ _ _ h₁ h₂
 
-lemma Free.lift_fst {A B : ProdWord S}
-    (x : L.Free X A) (y :  L.Free X B) :
+lemma free.lift_fst {A B : ProdWord S}
+    (x : L.free X A) (y :  L.free X B) :
     (x.lift y).fst = x := by
   rcases x with ⟨x⟩
   rcases y with ⟨y⟩
   apply Quotient.sound
   apply FreeRel.lift_fst
 
-lemma Free.lift_snd {A B : ProdWord S}
-    (x : L.Free X A) (y :  L.Free X B) :
+lemma free.lift_snd {A B : ProdWord S}
+    (x : L.free X A) (y :  L.free X B) :
     (x.lift y).snd = y := by
   rcases x with ⟨x⟩
   rcases y with ⟨y⟩
   apply Quotient.sound
   apply FreeRel.lift_snd
 
-lemma Free.lift_ext {A B : ProdWord S}
-    (x y : L.Free X (A.prod B))
+lemma free.lift_ext {A B : ProdWord S}
+    (x y : L.free X (A.prod B))
     (h_fst : x.fst = y.fst)
     (h_snd : x.snd = y.snd) :
     x = y := by
@@ -273,17 +273,17 @@ lemma Free.lift_ext {A B : ProdWord S}
   exact Quotient.exact h_fst
   exact Quotient.exact h_snd
 
-lemma Free.unit_ext
-    (x y : L.Free X .nil) : x = y := by
+lemma free.unit_ext
+    (x y : L.free X .nil) : x = y := by
   rcases x with ⟨x⟩
   rcases y with ⟨x⟩
   apply Quotient.sound
   apply FreeRel.unit_unique
 
 variable (L X)
-def FreeAlgebra : L.Algebra (Type (max v u u')) where
+def freeAlgebra : L.Algebra (Type (max v u u')) where
   functor := {
-    obj := fun A => L.Free X A.as
+    obj := fun A => L.free X A.as
     map := fun f =>
       Quotient.lift
       (fun r => Quotient.mk _ <| FreeRep.map _ _ f r)
@@ -299,16 +299,16 @@ def FreeAlgebra : L.Algebra (Type (max v u u')) where
       apply Quotient.sound
       apply FreeRel.map_comp }
   isLimit := fun ⟨A⟩ ⟨B⟩ => Limits.BinaryFan.isLimitMk
-    (fun S x => Free.lift _ _)
-    (fun S => funext fun x => Free.lift_fst _ _)
-    (fun S => funext fun x => Free.lift_snd _ _)
-    (fun S m h1 h2 => funext fun x => Free.lift_ext _ _
-      (by simp only [Free.lift_fst] ; exact congr_fun h1 _)
-      (by simp only [Free.lift_snd] ; exact congr_fun h2 _))
+    (fun S x => free.lift _ _)
+    (fun S => funext fun x => free.lift_fst _ _)
+    (fun S => funext fun x => free.lift_snd _ _)
+    (fun S m h1 h2 => funext fun x => free.lift_ext _ _
+      (by simp only [free.lift_fst] ; exact congr_fun h1 _)
+      (by simp only [free.lift_snd] ; exact congr_fun h2 _))
   isTerminal := .mk
     (fun S _ => Quotient.mk _ <| .unit)
     (fun S j => j.as.elim)
-    (fun S _ _ => funext fun _ => Free.unit_ext _ _)
+    (fun S _ _ => funext fun _ => free.unit_ext _ _)
 
 variable {L X} {Y : S → Type u'} (f : X ⟶ Y)
 
@@ -327,7 +327,7 @@ def liftRep
 def liftAppAux
     (Y : L.Algebra (Type max v u u'))
     (f : (A : S) → X A → Y.functor.obj (L.singleton A)) (A : ProdWord S) :
-    L.Free X A → Y.functor.obj (L.of A) :=
+    L.free X A → Y.functor.obj (L.of A) :=
   Quotient.lift
     (liftRep _ f _)
     fun a b h => by
@@ -374,21 +374,25 @@ def liftAppAux
 def lift
     (Y : L.Algebra (Type max v u u'))
     (f : (A : S) → X A → Y.functor.obj (L.singleton A)) :
-    L.FreeAlgebra X ⟶ Y where
+    L.freeAlgebra X ⟶ Y where
   app := fun ⟨A⟩ => liftAppAux Y f A
   naturality := by
     rintro ⟨A⟩ ⟨B⟩ f
     apply funext
     rintro ⟨x⟩
-    dsimp [FreeAlgebra] at x ⊢
+    dsimp [freeAlgebra] at x ⊢
     cases x with
     | of _ => cases B <;> rfl
     | map _ => cases B <;> rfl
     | lift _ _ => cases B <;> rfl
     | unit => cases B <;> rfl
 
-def incl (A : S) : X A → L.Free X (.of A) :=
+variable (X) in
+def incl (A : S) : X A → L.free X (.of A) :=
   fun x => Quotient.mk _ <| .of _ x
+
+def inclHom (L : LawvereTheory.{u} S) (X : S → Type u) :
+  X ⟶ (L.algebraForget _).obj (L.freeAlgebra X) := L.incl _
 
 @[simp]
 lemma incl_lift
@@ -396,14 +400,14 @@ lemma incl_lift
     (f : (A : S) → X A → Y.functor.obj (L.singleton A))
     (A : S)
     (x : X A) :
-    (lift Y f).app (L.singleton A) (incl _ x) = f _ x :=
+    (lift Y f).app (L.singleton A) (incl X _ x) = f _ x :=
   rfl
 
 lemma lift_unique
     (Y : L.Algebra (Type max v u u'))
-    (f g : L.FreeAlgebra X ⟶ Y)
+    (f g : L.freeAlgebra X ⟶ Y)
     (h : ∀ (A : S) (x : X A),
-      f.app (L.singleton A) (incl _ x) = g.app (L.singleton A) (incl _ x)) :
+      f.app (L.singleton A) (incl _ _ x) = g.app (L.singleton A) (incl _ _ x)) :
     f = g := by
   apply NatTrans.ext ; funext ⟨A⟩
   apply funext ; rintro ⟨x⟩
@@ -411,9 +415,9 @@ lemma lift_unique
   induction x with
   | of _ => apply h
   | map A B e x h =>
-    dsimp [FreeAlgebra] at h
+    dsimp [freeAlgebra] at h
     specialize h (Quotient.mk _ x)
-    let FA := L.FreeAlgebra X
+    let FA := L.freeAlgebra X
     change
       (FA.functor.map e ≫ f.app (.mk B)) (Quotient.mk _ x) =
       (FA.functor.map e ≫ g.app (.mk B)) (Quotient.mk _ x)
@@ -422,7 +426,7 @@ lemma lift_unique
     simp [h]
     rfl
   | lift A B x y h1 h2 =>
-    let FA := L.FreeAlgebra X
+    let FA := L.freeAlgebra X
     let x' : FA.functor.obj (L.of A) := Quotient.mk _ x
     let y' : FA.functor.obj (L.of B) := Quotient.mk _ y
     let π1 : FA.functor.obj (L.of A) × FA.functor.obj (L.of B) ⟶ FA.functor.obj (L.of A) :=
@@ -461,7 +465,7 @@ lemma lift_unique
       funext
       exact h2
   | unit =>
-    let FA := L.FreeAlgebra X
+    let FA := L.freeAlgebra X
     let u : FA.functor.obj (𝟙_ _) := Quotient.mk _ .unit
     let e : PUnit ⟶ FA.functor.obj (𝟙_ _) := fun _ => u
     suffices e ≫ f.app _ = e ≫ g.app _ from congr_fun this .unit
@@ -469,29 +473,50 @@ lemma lift_unique
 
 end free
 
-def free : (S → Type u) ⥤ L.Algebra (Type (max v u)) where
-  obj X := L.FreeAlgebra X
-  map f := L.lift _ fun T x => L.incl T <| f _ x
+variable (L) in
+def freeFunctor : (S → Type u) ⥤ L.Algebra (Type (max v u)) where
+  obj X := L.freeAlgebra X
+  map f := L.lift _ fun T x => L.incl _ T <| f _ x
   map_id := by
     intro X
     apply L.lift_unique
     intro T x
-    apply L.incl_lift
+    rfl
   map_comp := by
     intro X Y Z f g
     apply L.lift_unique
     intro A x
     rfl
 
-@[simps!]
-def adjunction {L : LawvereTheory.{u} S} : free ⊣ L.algebraForget _ := Adjunction.mkOfHomEquiv {
+def adjunction (L : LawvereTheory.{u} S) :
+    L.freeFunctor ⊣ L.algebraForget _ := Adjunction.mkOfHomEquiv {
   homEquiv := fun _ _ => {
-    toFun := fun f _ x => f.app _ <| L.incl _ x
+    toFun := fun f _ x => f.app _ <| L.incl _ _ x
     invFun := fun f => L.lift _ fun _ x => f _ x
     left_inv := fun _ => L.lift_unique _ _ _ fun _ _ => rfl
     right_inv := fun _ => rfl }
   homEquiv_naturality_left_symm := fun _ _ => L.lift_unique _ _ _ fun _ _ => rfl
   homEquiv_naturality_right := fun _ _ => rfl }
+
+@[simp]
+lemma adjunction_homEquiv_apply
+  {L : LawvereTheory.{u} S} {X : S → Type u} {Y : L.Algebra (Type u)} (f : L.freeAlgebra X ⟶ Y)  :
+  L.adjunction.homEquiv _ _ f = L.inclHom _ ≫ (L.algebraForget _).map f := rfl
+
+@[simp]
+lemma adjunction_homEquiv_symm_apply
+  {L : LawvereTheory.{u} S} {X : S → Type u} {Y : L.Algebra (Type u)} (f : X ⟶ (L.algebraForget _).obj Y) :
+  (L.adjunction.homEquiv _ _).symm f = L.lift _ f := rfl
+
+@[simp]
+lemma adjunction_unit_app
+  {L : LawvereTheory.{u} S} (X : S → Type u) :
+  L.adjunction.unit.app X = L.inclHom _ := rfl
+
+@[simp]
+lemma adjunction_counit_app
+  {L : LawvereTheory.{u} S} (X : L.Algebra (Type u)) :
+  L.adjunction.counit.app X = L.lift _ (𝟙 ((L.algebraForget _).obj X)) := rfl
 
 end LawvereTheory
 end CategoryTheory
