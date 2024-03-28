@@ -402,24 +402,24 @@ theorem tprod_bool (f : Bool → α) : ∏' i : Bool, f i = f false * f true := 
 #align tsum_bool tsum_bool
 
 @[to_additive]
-theorem tprod_eq_single {f : β → α} (b : β) (hf : ∀ b' ≠ b, f b' = 1) :
+theorem tprod_eq_mulSingle {f : β → α} (b : β) (hf : ∀ b' ≠ b, f b' = 1) :
     ∏' b, f b = f b := by
   rw [tprod_eq_prod (s := {b}), prod_singleton]
   exact fun b' hb' ↦ hf b' (by simpa using hb')
 #align tsum_eq_single tsum_eq_single
 
 @[to_additive]
-theorem tprod_tprod_eq_single (f : β → γ → α) (b : β) (c : γ) (hfb : ∀ b' ≠ b, f b' c = 1)
+theorem tprod_tprod_eq_mulSingle (f : β → γ → α) (b : β) (c : γ) (hfb : ∀ b' ≠ b, f b' c = 1)
     (hfc : ∀ b', ∀ c' ≠ c, f b' c' = 1) : ∏' (b') (c'), f b' c' = f b c :=
   calc
-    ∏' (b') (c'), f b' c' = ∏' b', f b' c := tprod_congr fun b' ↦ tprod_eq_single _ (hfc b')
-    _ = f b c := tprod_eq_single _ hfb
+    ∏' (b') (c'), f b' c' = ∏' b', f b' c := tprod_congr fun b' ↦ tprod_eq_mulSingle _ (hfc b')
+    _ = f b c := tprod_eq_mulSingle _ hfb
 #align tsum_tsum_eq_single tsum_tsum_eq_single
 
 @[to_additive (attr := simp)]
 theorem tprod_ite_eq (b : β) [DecidablePred (· = b)] (a : α) :
     ∏' b', (if b' = b then a else 1) = a := by
-  rw [tprod_eq_single b]
+  rw [tprod_eq_mulSingle b]
   · simp
   · intro b' hb'; simp [hb']
 #align tsum_ite_eq tsum_ite_eq
@@ -579,8 +579,8 @@ theorem tprod_mul (hf : Prodable f) (hg : Prodable g) :
   (hf.hasProd.mul hg.hasProd).tprod_eq
 #align tsum_add tsum_add
 
-@[to_additive]
-theorem tprod_prod {f : γ → β → α} {s : Finset γ} (hf : ∀ i ∈ s, Prodable (f i)) :
+@[to_additive tsum_sum]
+theorem tprod_of_prod {f : γ → β → α} {s : Finset γ} (hf : ∀ i ∈ s, Prodable (f i)) :
     ∏' b, ∏ i in s, f i b = ∏ i in s, ∏' b, f i b :=
   (hasProd_prod fun i hi ↦ (hf i hi).hasProd).tprod_eq
 #align tsum_sum tsum_sum
@@ -596,7 +596,7 @@ theorem tprod_eq_mul_tprod_ite' [DecidableEq β] {f : β → α} (b : β) (hf : 
       tprod_mul ⟨ite (b = b) (f b) 1, hasProd_single b fun b hb ↦ if_neg hb⟩ hf
     _ = ite (b = b) (f b) 1 * ∏' x, update f b 1 x := by
       congr
-      exact tprod_eq_single b fun b' hb' ↦ if_neg hb'
+      exact tprod_eq_mulSingle b fun b' hb' ↦ if_neg hb'
     _ = f b * ∏' x, ite (x = b) 1 (f x) := by
       simp only [update, eq_self_iff_true, if_true, eq_rec_constant, dite_eq_ite]
 #align tsum_eq_add_tsum_ite' tsum_eq_add_tsum_ite'
