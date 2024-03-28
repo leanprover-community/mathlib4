@@ -80,6 +80,28 @@ instance [Preorder α] : OrderHomClass (ClosureOperator α) α α where
 
 initialize_simps_projections ClosureOperator (toFun → apply, IsClosed → isClosed)
 
+
+/-- If `c` is a closure operator on `α` and `e` an order-isomorphism
+between `α` and `β` then `e ∘ c ∘ e⁻¹` is a closure operator on `β`. -/
+@[simps apply]
+def conjBy {α β} [Preorder α] [Preorder β] (c : ClosureOperator α)
+    (e : α ≃o β) : ClosureOperator β where
+  toFun := e.conj c
+  IsClosed b := c.IsClosed (e.symm b)
+  monotone' _ _ h :=
+    (map_le_map_iff e).mpr <| c.monotone <| (map_le_map_iff e.symm).mpr h
+  le_closure' _ := e.symm_apply_le.mp (c.le_closure' _)
+  idempotent' _ :=
+    congrArg e <| Eq.trans (congrArg c (e.symm_apply_apply _)) (c.idempotent' _)
+  isClosed_iff := Iff.trans c.isClosed_iff e.eq_symm_apply
+
+lemma conjBy_refl {α} [Preorder α] (c : ClosureOperator α) :
+    c.conjBy (OrderIso.refl α) = c := rfl
+
+lemma conjBy_trans {α β γ} [Preorder α] [Preorder β] [Preorder γ]
+    (e₁ : α ≃o β) (e₂ : β ≃o γ) (c : ClosureOperator α) :
+    c.conjBy (e₁.trans e₂) = (c.conjBy e₁).conjBy e₂ := rfl
+
 section PartialOrder
 
 variable [PartialOrder α]
@@ -103,8 +125,13 @@ variable {α} [PartialOrder α] (c : ClosureOperator α)
 
 @[ext]
 theorem ext : ∀ c₁ c₂ : ClosureOperator α, (c₁ : α → α) = (c₂ : α → α) → c₁ = c₂ :=
-  DFunLike.coe_injective
+  @DFunLike.ext' _ _ _ _
 #align closure_operator.ext ClosureOperator.ext
+
+-- this should probably be the defautlt?
+@[ext]
+theorem ext' : ∀ c₁ c₂ : ClosureOperator α, (∀ x, c₁ x = c₂ x) → c₁ = c₂ :=
+  DFunLike.ext
 
 /-- Constructor for a closure operator using the weaker idempotency axiom: `f (f x) ≤ f x`. -/
 @[simps]
@@ -195,6 +222,15 @@ theorem IsClosed.closure_le_iff (hy : c.IsClosed y) : c x ≤ y ↔ x ≤ y := b
 
 lemma closure_min (hxy : x ≤ y) (hy : c.IsClosed y) : c x ≤ y := hy.closure_le_iff.2 hxy
 
+lemma closure_IsGLB (x : α) : IsGLB { y | x ≤ y ∧ c.IsClosed y } (c x) where
+  left _ := and_imp.mpr closure_min
+  right _ h := h ⟨c.le_closure x, c.isClosed_closure x⟩
+
+theorem ext_IsClosed (c₁ c₂ : ClosureOperator α)
+    (h : ∀ x, c₁.IsClosed x ↔ c₂.IsClosed x) : c₁ = c₂ :=
+  ext' c₁ c₂ <| fun x => IsGLB.unique (c₁.closure_IsGLB x) <|
+    (Set.ext (and_congr_right' <| h ·)).substr (c₂.closure_IsGLB x)
+
 /-- A closure operator is equal to the closure operator obtained by feeding `c.closed` into the
 `ofPred` constructor. -/
 theorem eq_ofPred_closed (c : ClosureOperator α) :
@@ -262,6 +298,11 @@ def ofCompletePred (p : α → Prop) (hsinf : ∀ s, (∀ a ∈ s, p a) → p (s
     (fun a ↦ hsinf _ <| forall_mem_range.2 fun b ↦ b.2.2)
     (fun a b hab hb ↦ iInf_le_of_le ⟨b, hab, hb⟩ le_rfl)
 
+theorem sInf_IsClosed {c : ClosureOperator α} {S : Set α}
+    (H : ∀ x ∈ S, c.IsClosed x) : c.IsClosed (sInf S) :=
+  isClosed_iff_closure_le.mpr <| le_of_le_of_eq c.monotone.map_sInf_le <|
+    Eq.trans (biInf_congr (c.isClosed_iff.mp <| H · ·)) sInf_eq_iInf.symm
+
 @[simp]
 theorem closure_iSup_closure (f : ι → α) : c (⨆ i, c (f i)) = c (⨆ i, f i) :=
   le_antisymm (le_closure_iff.1 <| iSup_le fun i => c.monotone <| le_iSup f i) <|
@@ -278,6 +319,18 @@ theorem closure_iSup₂_closure (f : ∀ i, κ i → α) :
 end CompleteLattice
 
 end ClosureOperator
+
+/-- Conjugating `ClosureOperators` on `α` and on `β` by a fixed isomorphism
+`e : α ≃o β` gives an equivalence `ClosureOperator α ≃ ClosureOperator β`. -/
+@[simps apply symm_apply]
+def OrderIso.equivClosureOperator {α β} [Preorder α] [Preorder β] (e : α ≃o β) :
+    ClosureOperator α ≃ ClosureOperator β where
+  toFun     c := c.conjBy e
+  invFun    c := c.conjBy e.symm
+  left_inv  c := Eq.trans (c.conjBy_trans _ _).symm
+                 <| Eq.trans (congrArg _ e.self_trans_symm) c.conjBy_refl
+  right_inv c := Eq.trans (c.conjBy_trans _ _).symm
+                 <| Eq.trans (congrArg _ e.symm_trans_self) c.conjBy_refl
 
 /-! ### Lower adjoint -/
 
