@@ -246,10 +246,8 @@ continuous. -/
 theorem continuous_of_bound (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : Continuous f := by
   let D := max C 1
   have D_pos : 0 ≤ D := le_trans zero_le_one (le_max_right _ _)
-  replace H : ∀ m, ‖f m‖ ≤ D * ∏ i, ‖m i‖ := by
-    intro m
-    apply le_trans (H m) (mul_le_mul_of_nonneg_right (le_max_left _ _) _)
-    exact prod_nonneg fun (i : ι) _ => norm_nonneg (m i)
+  replace H (m) : ‖f m‖ ≤ D * ∏ i, ‖m i‖ :=
+    (H m).trans (mul_le_mul_of_nonneg_right (le_max_left _ _) $ by positivity)
   refine' continuous_iff_continuousAt.2 fun m => _
   refine'
     continuousAt_of_locally_lipschitz zero_lt_one
@@ -373,7 +371,7 @@ variable {f m}
 theorem le_mul_prod_of_le_opNorm_of_le {C : ℝ} {b : ι → ℝ} (hC : ‖f‖ ≤ C) (hm : ∀ i, ‖m i‖ ≤ b i) :
     ‖f m‖ ≤ C * ∏ i, b i :=
   (f.le_opNorm m).trans <| mul_le_mul hC (prod_le_prod (fun _ _ ↦ norm_nonneg _) fun _ _ ↦ hm _)
-    (prod_nonneg fun _ _ ↦ norm_nonneg _) ((opNorm_nonneg _).trans hC)
+    (by positivity) ((opNorm_nonneg _).trans hC)
 
 @[deprecated]
 alias le_mul_prod_of_le_op_norm_of_le :=
@@ -421,8 +419,7 @@ alias le_of_op_norm_le :=
 variable (f)
 
 theorem ratio_le_opNorm : (‖f m‖ / ∏ i, ‖m i‖) ≤ ‖f‖ :=
-  div_le_of_nonneg_of_le_mul (prod_nonneg fun _ _ => norm_nonneg _) (opNorm_nonneg _)
-    (f.le_opNorm m)
+  div_le_of_nonneg_of_le_mul (by positivity) (opNorm_nonneg _) (f.le_opNorm m)
 #align continuous_multilinear_map.ratio_le_op_norm ContinuousMultilinearMap.ratio_le_opNorm
 
 @[deprecated]
@@ -807,9 +804,8 @@ theorem MultilinearMap.mkContinuous_norm_le (f : MultilinearMap 𝕜 E G) {C : �
 nonnegative. -/
 theorem MultilinearMap.mkContinuous_norm_le' (f : MultilinearMap 𝕜 E G) {C : ℝ}
     (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : ‖f.mkContinuous C H‖ ≤ max C 0 :=
-  ContinuousMultilinearMap.opNorm_le_bound _ (le_max_right _ _) fun m =>
-    (H m).trans <|
-      mul_le_mul_of_nonneg_right (le_max_left _ _) (prod_nonneg fun _ _ => norm_nonneg _)
+  ContinuousMultilinearMap.opNorm_le_bound _ (le_max_right _ _) fun m ↦ (H m).trans $
+    mul_le_mul_of_nonneg_right (le_max_left _ _) $ by positivity
 #align multilinear_map.mk_continuous_norm_le' MultilinearMap.mkContinuous_norm_le'
 
 namespace ContinuousMultilinearMap
@@ -1039,8 +1035,7 @@ def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
           LinearMap.mkContinuous_apply, Pi.smul_apply, AddHom.coe_mk] }
     ‖f‖ fun m => by
       dsimp only [MultilinearMap.coe_mk]
-      refine LinearMap.mkContinuous_norm_le _
-        (mul_nonneg (norm_nonneg f) (prod_nonneg fun i _ => norm_nonneg (m i))) _
+      exact LinearMap.mkContinuous_norm_le _ (by positivity) _
 #align continuous_linear_map.flip_multilinear ContinuousLinearMap.flipMultilinear
 #align continuous_linear_map.flip_multilinear_apply_apply ContinuousLinearMap.flipMultilinear_apply_apply
 
@@ -1113,7 +1108,7 @@ def mkContinuousMultilinear (f : MultilinearMap 𝕜 E (MultilinearMap 𝕜 E' G
       simp only [coe_mk]
       refine ((f m).mkContinuous_norm_le' _).trans_eq ?_
       rw [max_mul_of_nonneg, zero_mul]
-      exact prod_nonneg fun _ _ => norm_nonneg _
+      positivity
 #align multilinear_map.mk_continuous_multilinear MultilinearMap.mkContinuousMultilinear
 
 @[simp]
@@ -1144,7 +1139,7 @@ set_option linter.uppercaseLean3 false
 
 theorem norm_compContinuousLinearMap_le (g : ContinuousMultilinearMap 𝕜 E₁ G)
     (f : ∀ i, E i →L[𝕜] E₁ i) : ‖g.compContinuousLinearMap f‖ ≤ ‖g‖ * ∏ i, ‖f i‖ :=
-  opNorm_le_bound _ (mul_nonneg (norm_nonneg _) <| prod_nonneg fun i _ => norm_nonneg _) fun m =>
+  opNorm_le_bound _ (by positivity) fun m =>
     calc
       ‖g fun i => f i (m i)‖ ≤ ‖g‖ * ∏ i, ‖f i (m i)‖ := g.le_opNorm _
       _ ≤ ‖g‖ * ∏ i, ‖f i‖ * ‖m i‖ :=
@@ -1203,7 +1198,7 @@ variable (G)
 
 theorem norm_compContinuousLinearMapL_le (f : ∀ i, E i →L[𝕜] E₁ i) :
     ‖compContinuousLinearMapL (G := G) f‖ ≤ ∏ i, ‖f i‖ :=
-  LinearMap.mkContinuous_norm_le _ (prod_nonneg fun _ _ => norm_nonneg _) _
+  LinearMap.mkContinuous_norm_le _ (by positivity) _
 #align continuous_multilinear_map.norm_comp_continuous_linear_mapL_le ContinuousMultilinearMap.norm_compContinuousLinearMapL_le
 
 variable (𝕜 E E₁)
@@ -1360,8 +1355,6 @@ addition of `Finset.prod` where needed. The duplication could be avoided by dedu
 case from the multilinear case via a currying isomorphism. However, this would mess up imports,
 and it is more satisfactory to have the simplest case as a standalone proof. -/
 instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearMap 𝕜 E G) := by
-  have nonneg : ∀ v : ∀ i, E i, 0 ≤ ∏ i, ‖v i‖ := fun v =>
-    Finset.prod_nonneg fun i _ => norm_nonneg _
   -- We show that every Cauchy sequence converges.
   refine' Metric.complete_of_cauchySeq_tendsto fun f hf => _
   -- We now expand out the definition of a Cauchy sequence,
@@ -1370,12 +1363,13 @@ instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearM
   have cau : ∀ v, CauchySeq fun n => f n v := by
     intro v
     apply cauchySeq_iff_le_tendsto_0.2 ⟨fun n => b n * ∏ i, ‖v i‖, _, _, _⟩
-    · intro
-      exact mul_nonneg (b0 _) (nonneg v)
+    · intro n
+      have := b0 n
+      positivity
     · intro n m N hn hm
       rw [dist_eq_norm]
       apply le_trans ((f n - f m).le_opNorm v) _
-      exact mul_le_mul_of_nonneg_right (b_bound n m N hn hm) (nonneg v)
+      exact mul_le_mul_of_nonneg_right (b_bound n m N hn hm) $ by positivity
     · simpa using b_lim.mul tendsto_const_nhds
   -- We assemble the limits points of those Cauchy sequences
   -- (which exist as `G` is complete)
@@ -1400,7 +1394,7 @@ instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearM
     have A : ∀ n, ‖f n v‖ ≤ (b 0 + ‖f 0‖) * ∏ i, ‖v i‖ := by
       intro n
       apply le_trans ((f n).le_opNorm _) _
-      apply mul_le_mul_of_nonneg_right _ (nonneg v)
+      apply mul_le_mul_of_nonneg_right _ $ by positivity
       calc
         ‖f n‖ = ‖f n - f 0 + f 0‖ := by
           congr 1
@@ -1420,7 +1414,7 @@ instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearM
     have A : ∀ᶠ m in atTop, ‖(f n - f m) v‖ ≤ b n * ∏ i, ‖v i‖ := by
       refine' eventually_atTop.2 ⟨n, fun m hm => _⟩
       apply le_trans ((f n - f m).le_opNorm _) _
-      exact mul_le_mul_of_nonneg_right (b_bound n m n le_rfl hm) (nonneg v)
+      exact mul_le_mul_of_nonneg_right (b_bound n m n le_rfl hm) $ by positivity
     have B : Tendsto (fun m => ‖(f n - f m) v‖) atTop (𝓝 ‖(f n - Fcont) v‖) :=
       Tendsto.norm (tendsto_const_nhds.sub (hF v))
     exact le_of_tendsto B A
