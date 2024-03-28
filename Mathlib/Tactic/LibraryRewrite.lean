@@ -64,8 +64,8 @@ def isBadModule (name : Name) : Bool :=
 /-- Similar to `Name.isBlackListed`. -/
 def isBadDecl (name : Name) (cinfo : ConstantInfo) (env : Environment) : Bool :=
   (match cinfo with
-    | .axiomInfo v => v.isUnsafe
     | .thmInfo .. => false
+    | .axiomInfo v => v.isUnsafe
     | _ => true)
   || (match name with
     | .str _ "inj"
@@ -76,7 +76,6 @@ def isBadDecl (name : Name) (cinfo : ConstantInfo) (env : Environment) : Bool :=
   || name.isInternalDetail
   || isAuxRecursor env name
   || isNoConfusion env name
-  || isMatcherCore env name
 
 /-- Extract the left and right hand sides of an equality or iff statement. -/
 def matchEqn? (e : Expr) : Option (Expr × Expr) :=

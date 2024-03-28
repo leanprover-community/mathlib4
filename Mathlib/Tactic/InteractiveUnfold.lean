@@ -5,6 +5,7 @@ Authors: Jovan Gerbscheid
 -/
 import Lean
 import Std.Lean.Position
+import Std.Lean.Name
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Lean.SubExpr
 import Mathlib.Lean.Meta.KAbstractPositions
@@ -53,21 +54,32 @@ partial def unfolds (e : Expr) : MetaM (Array Expr) := do
   go e' (if e == e' then #[] else #[e'])
 where
   go (e : Expr) (acc : Array Expr) : MetaM (Array Expr) := do
-  if let some e ← reduceNat? e then
-    return #[e]
-  if let some e ← reduceNative? e then
-    return #[e]
-  if let some e ← unfold? e then
-    let e ← whnfCore e
-    go e (acc.push e)
-  else
-    return acc
+    if let some e ← reduceNat? e then
+      return #[e]
+    if let some e ← reduceNative? e then
+      return #[e]
+    if let some e ← unfold? e then
+      -- whnfCore can give a recursion depth error, so we catch it
+      withCatchingRuntimeEx do
+      try
+        withoutCatchingRuntimeEx do
+        let e ← (whnfCore e)
+        go e (acc.push e)
+      catch _ =>
+        return acc
+    else
+      return acc
 
+def isUserFriendly (e : Expr) : Bool :=
+  !e.foldConsts (init := false) (fun name bool => bool || name.isInternalDetail)
+
+def filteredUnfolds (e : Expr) : MetaM (Array Expr) :=
+  return (← unfolds e).filter isUserFriendly
 
 /-- Return the unfolds from `unfolds` together with the tactic strings that do the unfoldings. -/
 def unfoldsWithTacticString (e : Expr) (occ : Option Nat) (loc : Option Name) :
     MetaM (Array (Expr × String)) := do
-  let replacements ← unfolds e
+  let replacements ← filteredUnfolds e
   let mut results := #[]
   let mut forbidden := HashSet.empty.insert s! "show {← printToPaste (← mkEq e e)} from rfl"
   for replacement in replacements do
