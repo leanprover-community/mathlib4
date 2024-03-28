@@ -923,6 +923,26 @@ theorem forall_prop_congr' {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h �
   propext (forall_prop_congr hq hp)
 #align forall_prop_congr' forall_prop_congr'
 
+#align forall_congr_eq forall_congr
+
+lemma imp_congr_eq {a b c d : Prop} (h₁ : a = c) (h₂ : b = d) : (a → b) = (c → d) :=
+  propext (imp_congr h₁.to_iff h₂.to_iff)
+
+lemma imp_congr_ctx_eq {a b c d : Prop} (h₁ : a = c) (h₂ : c → b = d) : (a → b) = (c → d) :=
+  propext (imp_congr_ctx h₁.to_iff fun hc ↦ (h₂ hc).to_iff)
+
+lemma eq_true_intro (h : a) : a = True := propext (iff_true_intro h)
+lemma eq_false_intro (h : ¬a) : a = False := propext (iff_false_intro h)
+
+/-- Alias of `propext`. -/
+lemma Iff.eq : (a ↔ b) → a = b := propext
+
+lemma iff_eq_eq : (a ↔ b) = (a = b) := propext ⟨propext, Eq.to_iff⟩
+
+-- They were not used in Lean 3 and there are already lemmas with those names in Lean 4
+#noalign eq_false
+#noalign eq_true
+
 /-- See `IsEmpty.forall_iff` for the `False` version. -/
 @[simp] theorem forall_true_left (p : True → Prop) : (∀ x, p x) ↔ p True.intro :=
   forall_prop_of_true _
