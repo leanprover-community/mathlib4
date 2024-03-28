@@ -64,7 +64,7 @@ We also set up the theory for `PseudoEMetricSpace` and `PseudoMetricSpace`.
 
 set_option linter.uppercaseLean3 false
 
-open Real Set Filter IsROrC Bornology BigOperators Uniformity Topology NNReal ENNReal
+open Real Set Filter RCLike Bornology BigOperators Uniformity Topology NNReal ENNReal
 
 noncomputable section
 
@@ -395,13 +395,12 @@ attribute [local instance] PiLp.pseudoMetricAux
 
 theorem lipschitzWith_equiv_aux : LipschitzWith 1 (WithLp.equiv p (∀ i, β i)) := by
   intro x y
+  simp_rw [ENNReal.coe_one, one_mul, edist_pi_def, Finset.sup_le_iff, Finset.mem_univ,
+    forall_true_left, WithLp.equiv_pi_apply]
   rcases p.dichotomy with (rfl | h)
-  · simpa only [ENNReal.coe_one, one_mul, edist_eq_iSup, edist, Finset.sup_le_iff, Finset.mem_univ,
-      forall_true_left] using le_iSup fun i => edist (x i) (y i)
+  · simpa only [edist_eq_iSup] using le_iSup fun i => edist (x i) (y i)
   · have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel₀ 1 (zero_lt_one.trans_le h).ne'
     rw [edist_eq_sum (zero_lt_one.trans_le h)]
-    simp only [edist, forall_prop_of_true, one_mul, Finset.mem_univ, Finset.sup_le_iff,
-      ENNReal.coe_one]
     intro i
     calc
       edist (x i) (y i) = (edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by

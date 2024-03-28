@@ -538,7 +538,7 @@ def IsKernel.isoKernel {Z : C} (l : Z ⟶ X) {s : KernelFork f} (hs : IsLimit s)
     Cones.ext i.symm fun j => by
       cases j
       · exact (Iso.eq_inv_comp i).2 h
-      · dsimp; rw[← h]; simp
+      · dsimp; rw [← h]; simp
 #align category_theory.limits.is_kernel.iso_kernel CategoryTheory.Limits.IsKernel.isoKernel
 
 /-- If `i` is an isomorphism such that `i.hom ≫ kernel.ι f = l`, then `l` is a kernel of `f`. -/

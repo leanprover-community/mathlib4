@@ -69,7 +69,7 @@ theorem dvd {p : A[X]} (hp : Polynomial.aeval x p = 0) : minpoly A x ∣ p := by
   by_cases hp0 : p = 0
   · simp only [hp0, dvd_zero]
   have hx : IsIntegral A x := IsAlgebraic.isIntegral ⟨p, hp0, hp⟩
-  rw [← dvd_iff_modByMonic_eq_zero (monic hx)]
+  rw [← modByMonic_eq_zero_iff_dvd (monic hx)]
   by_contra hnz
   apply degree_le_of_ne_zero A x hnz
     ((aeval_modByMonic_eq_self_of_root (monic hx) (aeval _ _)).trans hp) |>.not_lt

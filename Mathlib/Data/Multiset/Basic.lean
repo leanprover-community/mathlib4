@@ -726,7 +726,7 @@ theorem mem_of_mem_nsmul {a : α} {s : Multiset α} {n : ℕ} (h : a ∈ n • s
   · rw [zero_nsmul] at h
     exact absurd h (not_mem_zero _)
   · rw [succ_nsmul, mem_add] at h
-    exact h.elim id ih
+    exact h.elim ih id
 #align multiset.mem_of_mem_nsmul Multiset.mem_of_mem_nsmul
 
 @[simp]
@@ -734,7 +734,7 @@ theorem mem_nsmul {a : α} {s : Multiset α} {n : ℕ} (h0 : n ≠ 0) : a ∈ n 
   refine' ⟨mem_of_mem_nsmul, fun h => _⟩
   obtain ⟨n, rfl⟩ := exists_eq_succ_of_ne_zero h0
   rw [succ_nsmul, mem_add]
-  exact Or.inl h
+  exact Or.inr h
 #align multiset.mem_nsmul Multiset.mem_nsmul
 
 theorem nsmul_cons {s : Multiset α} (n : ℕ) (a : α) :
@@ -2306,7 +2306,7 @@ theorem countP_add (s t) : countP p (s + t) = countP p s + countP p t := by
 
 @[simp]
 theorem countP_nsmul (s) (n : ℕ) : countP p (n • s) = n * countP p s := by
-  induction n <;> simp [*, succ_nsmul', succ_mul, zero_nsmul]
+  induction n <;> simp [*, succ_nsmul, succ_mul, zero_nsmul]
 #align multiset.countp_nsmul Multiset.countP_nsmul
 
 theorem card_eq_countP_add_countP (s) : card s = countP p s + countP (fun x => ¬p x) s :=
@@ -2491,7 +2491,7 @@ theorem coe_countAddMonoidHom {a : α} : (countAddMonoidHom a : Multiset α → 
 
 @[simp]
 theorem count_nsmul (a : α) (n s) : count a (n • s) = n * count a s := by
-  induction n <;> simp [*, succ_nsmul', succ_mul, zero_nsmul]
+  induction n <;> simp [*, succ_nsmul, succ_mul, zero_nsmul]
 #align multiset.count_nsmul Multiset.count_nsmul
 
 @[simp]
@@ -2681,11 +2681,11 @@ theorem inter_replicate (s : Multiset α) (n : ℕ) (x : α) :
   rw [inter_comm, replicate_inter, min_comm]
 #align multiset.inter_replicate Multiset.inter_replicate
 
-theorem erase_attach_map_val [DecidableEq α] (s : Multiset α) (x : {x // x ∈ s}) :
+theorem erase_attach_map_val (s : Multiset α) (x : {x // x ∈ s}) :
     (s.attach.erase x).map (↑) = s.erase x := by
   rw [Multiset.map_erase _ val_injective, attach_map_val]
 
-theorem erase_attach_map [DecidableEq α] (s : Multiset α) (f : α → β) (x : {x // x ∈ s}) :
+theorem erase_attach_map (s : Multiset α) (f : α → β) (x : {x // x ∈ s}) :
     (s.attach.erase x).map (fun j : {x // x ∈ s} ↦ f j) = (s.erase x).map f := by
   simp only [← Function.comp_apply (f := f)]
   rw [← map_map, erase_attach_map_val]

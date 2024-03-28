@@ -155,7 +155,7 @@ theorem card_commutator_dvd_index_center_pow [Finite (commutatorSet G)] :
   · simp_rw [hG, zero_mul, zero_add, pow_one, dvd_zero]
   haveI : FiniteIndex (center G) := ⟨hG⟩
   -- Rewrite as `|Z(G) ∩ G'| * [G' : Z(G) ∩ G'] ∣ [G : Z(G)] ^ ([G : Z(G)] * n) * [G : Z(G)]`
-  rw [← ((center G).subgroupOf (_root_.commutator G)).card_mul_index, pow_succ']
+  rw [← ((center G).subgroupOf (_root_.commutator G)).card_mul_index, pow_succ]
   -- We have `h1 : [G' : Z(G) ∩ G'] ∣ [G : Z(G)]`
   have h1 := relindex_dvd_index_of_normal (center G) (_root_.commutator G)
   -- So we can reduce to proving `|Z(G) ∩ G'| ∣ [G : Z(G)] ^ ([G : Z(G)] * n)`
@@ -195,7 +195,7 @@ theorem card_commutator_le_of_finite_commutatorSet [Finite (commutatorSet G)] :
     h1.trans
       (Nat.pow_le_pow_of_le_right Finite.card_pos (rank_closureCommutatorRepresentatives_le G))
   replace h2 := h2.trans (pow_dvd_pow _ (add_le_add_right (mul_le_mul_right' h1 _) 1))
-  rw [← pow_succ'] at h2
+  rw [← pow_succ] at h2
   refine' (Nat.le_of_dvd _ h2).trans (Nat.pow_le_pow_left h1 _)
   exact pow_pos (Nat.pos_of_ne_zero FiniteIndex.finiteIndex) _
 #align subgroup.card_commutator_le_of_finite_commutator_set Subgroup.card_commutator_le_of_finite_commutatorSet
