@@ -392,9 +392,8 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
   simp_rw [lmarginal_singleton]
   ext x
   cases t with | mk t_i t_j t_hij t_c =>
-  simp [transvection, mulVec_stdBasisMatrix]
-  simp_rw [Function.update_noteq t_hij.symm, ← Function.update_add, add_zero]
-  rw [lintegral_add_right_eq_self fun xᵢ ↦ indicator (univ.pi s) 1 (Function.update x t_i xᵢ)]
+  simp [transvection, mulVec_stdBasisMatrix, t_hij.symm, ← Function.update_add,
+    lintegral_add_right_eq_self fun xᵢ ↦ indicator (univ.pi s) 1 (Function.update x t_i xᵢ)]
 #align real.volume_preserving_transvection_struct Real.volume_preserving_transvectionStruct
 
 /-- Any invertible matrix rescales Lebesgue measure through the absolute value of its
