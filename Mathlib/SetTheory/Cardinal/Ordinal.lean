@@ -48,7 +48,7 @@ cardinal arithmetic (for infinite cardinals)
 
 noncomputable section
 
-open Function Set Equiv Order Cardinal Ordinal
+open Function Set Cardinal Equiv Order Ordinal
 
 open scoped Classical
 
