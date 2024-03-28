@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Pi
+import Mathlib.Data.Finset.Prod
+import Mathlib.Logic.Equiv.Fin
 import Mathlib.Data.Fintype.Basic
 
 #align_import data.fintype.pi from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
@@ -134,3 +136,67 @@ theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [F
     (Finset.univ.pi fun a : α => (Finset.univ : Finset (β a))) = Finset.univ := by
   ext; simp
 #align finset.univ_pi_univ Finset.univ_pi_univ
+
+lemma Fin.mem_piFinset_succ_iff {n : ℕ} {α : Fin (n + 1) → Type*} (p : (i : Fin (n + 1)) → α i)
+    (S : (i : Fin (n + 1)) → Finset (α i)) :
+    p ∈ Fintype.piFinset S ↔ p 0 ∈ S 0 ∧ Fin.tail p ∈ Fintype.piFinset (Fin.tail S) := by
+  simp only [Fintype.mem_piFinset, forall_fin_succ, Fin.tail]
+
+lemma Fin.cons_mem_piFinset_cons_iff {n : ℕ} {α : Fin (n + 1) → Type*}
+    (x : α 0) (xs : (i : Fin n) → α i.succ)
+    (S₀ : Finset (α 0)) (Sᵢ : (i : Fin n) → Finset (α i.succ)) :
+    Fin.cons x xs ∈ Fintype.piFinset (Fin.cons S₀ Sᵢ) ↔ x ∈ S₀ ∧ xs ∈ Fintype.piFinset Sᵢ := by
+  simp_rw [Fin.mem_piFinset_succ_iff, cons_zero, tail_cons]
+
+lemma Fin.mem_piFinset_succ_iff' {n : ℕ} {α : Fin (n + 1) → Type*} (p : (i : Fin (n + 1)) → α i)
+    (S : (i : Fin (n + 1)) → Finset (α i)) :
+    p ∈ Fintype.piFinset S ↔
+      Fin.init p ∈ Fintype.piFinset (Fin.init S) ∧ p (Fin.last n) ∈ S (Fin.last n) := by
+  simp only [Fintype.mem_piFinset, forall_fin_succ', Fin.init]
+
+lemma Fin.snoc_mem_piFinset_snoc_iff {n : ℕ} {α : Fin (n + 1) → Type*}
+    (xs : (i : Fin n) → α i.castSucc) (x : α (.last n))
+    (Sᵢ : (i : Fin n) → Finset (α i.castSucc)) (Sₙ : Finset (α <| .last n)) :
+    Fin.snoc xs x ∈ Fintype.piFinset (Fin.snoc Sᵢ Sₙ) ↔ xs ∈ Fintype.piFinset Sᵢ ∧ x ∈ Sₙ := by
+  simp_rw [Fin.mem_piFinset_succ_iff', init_snoc, snoc_last]
+
+lemma Finset.map_piFinSuccAbove_filter_piFinset_succAbove {n : ℕ} (k : Fin (n + 1))
+    {α : Fin (n + 1) → Type*}
+    (p : ((i : Fin n) → α (Fin.succAbove k i)) → Prop) [DecidablePred p]
+    (S : (i : Fin (n + 1)) → Finset (α i)) :
+    ((Fintype.piFinset S).filter fun r ↦ p (fun x ↦ r <| Fin.succAbove k x)).map
+      (Equiv.piFinSuccAbove α k).toEmbedding
+    = S k ×ˢ (Fintype.piFinset (fun x ↦ S <| Fin.succAbove k x)).filter p := by
+  congr
+  ext ⟨x, f⟩
+  simp? [Fin.forall_iff_succAbove
+        k] says simp only [mem_map_equiv, Equiv.piFinSuccAbove_symm_apply, mem_filter,
+      Fintype.mem_piFinset, Fin.forall_iff_succAbove k, Fin.insertNth_apply_same,
+      Fin.insertNth_apply_succAbove, mem_product]
+  tauto
+
+lemma Finset.map_piFinSuccAbove_filter_piFinset {n : ℕ} {α : Fin (n + 1) → Type*}
+    (p : ((i : Fin n) → α i.succ) → Prop) [DecidablePred p]
+    (S : (i : Fin (n + 1)) → Finset (α i)) :
+    ((Fintype.piFinset S).filter fun r ↦ p (Fin.tail r)).map
+      (Equiv.piFinSuccAbove α 0).toEmbedding
+    = S 0 ×ˢ (Fintype.piFinset (Fin.tail S)).filter p :=
+  Finset.map_piFinSuccAbove_filter_piFinset_succAbove 0 p S
+
+lemma Finset.filter_piFinset_eq_map_piFinSuccAbove_symm {n : ℕ} {α : Fin (n + 1) → Type*}
+    (p : ((i : Fin n) → α i.succ) → Prop) [DecidablePred p]
+    (S : ∀ i, Finset (α i)) :
+    ((Fintype.piFinset S).filter fun r ↦ p (Fin.tail r))
+    = (S 0 ×ˢ (Fintype.piFinset (Fin.tail S)).filter p).map
+        (Equiv.piFinSuccAbove α 0).symm.toEmbedding := by
+  rw [← Finset.map_piFinSuccAbove_filter_piFinset, Finset.map_map,
+    Function.Embedding.equiv_toEmbedding_trans_symm_toEmbedding, map_refl]
+
+lemma Finset.card_filter_succ_piFinset_eq {n : ℕ} {α : Fin (n + 1) → Type*}
+    (p : ((i : Fin n) → α i.succ) → Prop) [DecidablePred p]
+    (S : (i : Fin (n + 1)) → Finset (α i)) :
+    ((Fintype.piFinset S).filter fun r ↦ p (Fin.tail r)).card
+    = (S 0).card * ((Fintype.piFinset (Fin.tail S)).filter p).card := by
+  rw [← Finset.card_map ((Equiv.piFinSuccAbove α 0).toEmbedding),
+    map_piFinSuccAbove_filter_piFinset]
+  exact Finset.card_product (S 0) ((Fintype.piFinset (Fin.tail S)).filter p)
