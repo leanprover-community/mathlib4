@@ -83,7 +83,7 @@ theorem trinomial_natTrailingDegree (hkm : k < m) (hmn : m < n) (hu : u ≠ 0) :
   refine'
     natTrailingDegree_eq_of_trailingDegree_eq_some
       ((Finset.le_inf fun i h => _).antisymm <|
-          le_trailingDegree_of_ne_zero <| by rwa [trinomial_trailing_coeff' hkm hmn]).symm
+          trailingDegree_le_of_ne_zero <| by rwa [trinomial_trailing_coeff' hkm hmn]).symm
   replace h := support_trinomial' k m n u v w h
   rw [mem_insert, mem_insert, mem_singleton] at h
   rcases h with (rfl | rfl | rfl)
