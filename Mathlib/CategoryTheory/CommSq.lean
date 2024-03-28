@@ -87,9 +87,9 @@ theorem vert_inv {g : W ≅ Y} {h : X ≅ Z} (p : CommSq f g.hom h.hom i) :
 ```
 -/
 lemma CommSq_comp {W X X' Y Z Z' : C} {f : W ⟶ X} {f' : X ⟶ X'} {g : W ⟶ Y} {h : X ⟶ Z}
-  {h' : X' ⟶ Z'} {i : Y ⟶ Z} {i' : Z ⟶ Z'} (hsq₁ : CommSq f g h i) (hsq₂ : CommSq f' h h' i') :
-  CommSq (f ≫ f') g h' (i ≫ i') :=
-  ⟨by rw [←Category.assoc, Category.assoc, ←hsq₁.w, hsq₂.w, Category.assoc]⟩
+    {h' : X' ⟶ Z'} {i : Y ⟶ Z} {i' : Z ⟶ Z'} (hsq₁ : CommSq f g h i) (hsq₂ : CommSq f' h h' i') :
+    CommSq (f ≫ f') g h' (i ≫ i') :=
+  ⟨by rw [←Category.assoc, Category.assoc, ← hsq₁.w, hsq₂.w, Category.assoc]⟩
 
 /-- If the vertical morphisms of a commutative square are isomorphism, then we
   also get a commutative square by replacing them with there inverses -/
