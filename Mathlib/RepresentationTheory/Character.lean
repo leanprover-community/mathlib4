@@ -320,6 +320,9 @@ lemma leftRegular_apply (x : MonoidAlgebra k G) (g : G) :
     Finsupp.sum_single_index, one_mul]
   rfl
 
+lemma dimension_irreducible_dvd_card_group : ∀ V : FdRep k G, Simple V → finrank k V ∣ Fintype.card G := by
+  sorry
+
 /-- Irreducbile characters are a basis of ClassFunction G -/
 lemma orthogonal_to_all_characters_implies_zero (f : G → k) (hf : IsClassFunction f) (h : ∀ V : FdRep k G, Simple V → scalarProduct f V.character = (0 : k)) : f = 0 := by
   let f' : (G → k) := fun g => f g⁻¹
@@ -336,91 +339,65 @@ lemma orthogonal_to_all_characters_implies_zero (f : G → k) (hf : IsClassFunct
           averageClassFunction f' hf' V := by
         apply exists_smul_eq_of_finrank_eq_one ?_ ?_ (averageClassFunction f' hf' V)
         · simp [finrank_hom_simple_simple V V]
-        · sorry
+        · exact id_nonzero V
       rw [← hc]
-      have czero : c = 0 := by
+      have c_zero : c = 0 := by
+        have : LinearMap.trace k V (c • (Action.Hom.id V).hom) = c * finrank k V := by
+          simp only [map_smul, smul_eq_mul, mul_eq_mul_left_iff]
+          left
+          exact LinearMap.trace_id k _
+        by_contra hz
+        have tr : LinearMap.trace k V (averageClassFunction f' hf' V).hom = 0 := by
+          calc
+            LinearMap.trace k V (averageClassFunction f' hf' V).hom = ⅟ (Fintype.card G : k) • ∑ g : G, f' g * V.character g := by
+              simp_rw [character, averageClassFunction, averageFunction]
+              simp only [invOf_eq_inv, map_smul, map_sum, smul_eq_mul]
+            _ = ⅟ (Fintype.card G : k) • ∑ g : G, f' g * (of (dual V.ρ)).character g⁻¹ := by
+              simp_rw [char_dual, inv_inv]
+            _ = ⅟ (Fintype.card G : k) • ∑ g : G, f g * V.character g⁻¹ := by
+                rw [Fintype.sum_equiv (Equiv.inv G) _ _]
+                simp only [char_dual, inv_inv, Equiv.inv_apply, forall_const, f']
+            _ = 0 := by
+              simp_rw [scalarProduct] at h
+              exact h V hV
+        rw [← hc] at tr
+        simp only [Action.Hom.id_hom, map_smul, smul_eq_mul, mul_eq_mul_left_iff] at this
         sorry
-      simp only [czero, zero_smul]
+      simp only [c_zero, zero_smul]
     sorry -- needs Maschke's theorem
-  have sum_zero :  ⅟ (Fintype.card G : k) • (∑ g, (f' g) • MonoidAlgebra.single g 1) = (0 : MonoidAlgebra k G) := by
-    have act_as (x : MonoidAlgebra k G) : (averageClassFunction f' hf' (RegularRep k G)).hom x = ⅟ (Fintype.card G : k) • (∑ g, (f' g) • MonoidAlgebra.single g 1) * x := by
-      rw [averageClassFunction]
-      simp only [averageFunction, invOf_eq_inv]
-      simp_rw [RegularRep]
-      have (g : G) (x : MonoidAlgebra k G) : ((ρ (of (ofMulAction k ↑G ↑G))) g) x = (MonoidAlgebra.single g 1) * x := by
+  have : (averageClassFunction f' hf' (RegularRep k G)).hom (1 : MonoidAlgebra k G) = 0 := by
+    simp only [reg_zero, Action.zero_hom]
+    rfl
+  simp_rw [averageClassFunction, averageFunction, RegularRep] at this
+  change (⅟((Fintype.card ↑G) : k) • (∑ g, f' g • (ρ (of (ofMulAction k ↑G ↑G))) g) (1 : MonoidAlgebra k G)) = 0 at this
+
+  have action (g : G) (x : MonoidAlgebra k G) : ((ρ (of (ofMulAction k ↑G ↑G))) g) x = (MonoidAlgebra.single g 1) * x := by
         show Representation.ofMulAction k G G g x = _
         apply leftRegular_apply
-      sorry
-    simp_rw [averageClassFunction, averageFunction] at reg_zero
-    sorry
-  sorry
-  --   simp_rw [scalarProduct, ← char_dual V, f']
-  --   have : scalarProduct (of (dual V.ρ)).character f = 0 := by
-  --     rw [scalarProduct_symmetric]
-  --     apply h (of (dual V.ρ)) ?_
-  --     rw [← simple_iff_dual_simple]
-  --     exact hV
-  --   rw [← this]
-  --   rw [scalarProduct]
-  --   congr
-  --   ext g
-  --   rw [mul_comm]
-  -- have (V : FdRep k G) (hV : Simple V) : averageClassFunction f' hf' V = (0 : V ⟶  V) := by
-
-  --   rw [← hc]
-  --   have tr : LinearMap.trace k V (averageClassFunction f' hf' V).hom = 0 := by
-  --     calc
-  --       LinearMap.trace k V (averageClassFunction f' hf' V).hom = ⅟ (Fintype.card G : k) • ∑ g : G, f' g * V.character g := by
-  --         simp_rw [character, averageClassFunction, averageFunction]
-  --         simp only [invOf_eq_inv, map_smul, map_sum, smul_eq_mul]
-  --       _ = ⅟ (Fintype.card G : k) • ∑ g : G, f' g * (of (dual V.ρ)).character g⁻¹ := by
-  --         simp_rw [char_dual, inv_inv]
-  --       _ = 0 := by
-  --         apply h' (of (dual V.ρ)) ?_
-  --         rw [← simple_iff_dual_simple]
-  --         exact hV
-  --   rw [← hc] at tr
-  --   have : LinearMap.trace k V (c • (Action.Hom.id V).hom) = c * finrank k V := by
-  --     simp only [map_smul, smul_eq_mul, mul_eq_mul_left_iff]
-  --     left
-  --     exact LinearMap.trace_id k _
-  --   by_cases hc : c = 0
-  --   · rw [hc]
-  --     simp only [zero_smul]
-  --   · simp only [Action.smul_hom, Action.Hom.id_hom, map_smul, smul_eq_mul, mul_eq_zero, hc,
-  --     false_or] at tr
-  --     simp only [Action.Hom.id_hom, map_smul, smul_eq_mul, mul_eq_mul_left_iff, hc, or_false, tr] at this
-  --     symm at this
-  --     have : (finrank k V : k) ≠ (0 : k) := by
-  --       sorry --exact nonzero_of_invertible (finrank k V)
-  --     contradiction
-  -- have average_reg_zero : averageClassFunction f' hf' (RegularRep k G) = (0 : RegularRep k G ⟶  RegularRep k G) := by
-  --   sorry -- Needs Maschke's theorem!
-  -- have sum_zero : ∑ g, (f' g) • MonoidAlgebra.single g⁻¹ 1 = (0 : MonoidAlgebra k G) := by
-  --   have act_as (x : MonoidAlgebra k G) : (averageClassFunction f' hf' (RegularRep k G)).hom x = ⅟ (Fintype.card G : k) • (∑ g, (f' g) • MonoidAlgebra.single g 1) * x := by
-  --     rw [averageClassFunction]
-  --     simp only [averageFunction, invOf_eq_inv]
-  --     simp_rw [RegularRep]
-  --     have (g : G) (x : MonoidAlgebra k G) : ((ρ (of (ofMulAction k ↑G ↑G))) g) x = (MonoidAlgebra.single g 1) * x := by
-  --       show Representation.ofMulAction k G G g x = _
-  --       apply leftRegular_apply
-  --     sorry
-  --   sorry
-  -- rw [Fintype.sum_equiv (Equiv.inv G) (fun g ↦ f' g • (MonoidAlgebra.single g⁻¹ 1))
-  --   (fun g ↦ f g • (MonoidAlgebra.single g 1))] at sum_zero
-  -- swap
-  -- intro g
-  -- simp only [Equiv.inv_apply, inv_inv]
-  -- funext g
-  -- have : f g = ∑ x : ↑G, f x • (MonoidAlgebra.single x (1 : k)) g := by
-  --   simp only [MonoidAlgebra.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero,
-  --     Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte]
-  -- rw [this]
-  -- simp only [smul_eq_mul]
-  -- have that : ∑ x : ↑G, f x * (MonoidAlgebra.single x 1) g = (∑ x : ↑G, f x • MonoidAlgebra.single x (1 : k)) g := by sorry
-  -- rw [that]
-  -- simp only [sum_zero, Finsupp.coe_zero, Pi.zero_apply]
-
+  erw [LinearMap.sum_apply] at this
+  conv at this =>
+    enter [1, 2, 2, d]
+    simp
+  simp_rw [action] at this
+  simp only [invOf_eq_inv, mul_one, smul_eq_zero, inv_eq_zero] at this
+  apply Or.resolve_left at this
+  specialize this (nonzero_of_invertible _)
+  have ff' : f = 0 ↔ f' = 0 := by
+    constructor
+    · intro h
+      simp only [h, Pi.zero_apply, f']
+      rfl
+    · intro h
+      ext g
+      have : f g = f' g⁻¹ := by
+        simp only [f', inv_inv]
+      rw [this, h]
+      rfl
+  rw [ff']
+  ext g
+  apply linearIndependent_iff'.1 (Basis.linearIndependent (stdBasis k G)) Finset.univ f'
+  exact this
+  simp only [Finset.mem_univ]
 
 end RegularRepresentation
 
