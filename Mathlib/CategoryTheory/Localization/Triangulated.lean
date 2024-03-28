@@ -3,11 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
+import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 import Mathlib.CategoryTheory.Triangulated.Functor
-import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Shift.Localization
-import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-! # Localization of triangulated categories
 
