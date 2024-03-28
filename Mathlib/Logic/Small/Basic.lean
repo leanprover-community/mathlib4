@@ -23,7 +23,10 @@ section
 
 open scoped Classical
 
-instance small_subtype (α : Type v) [Small.{w} α] (P : α → Prop) : Small.{w} { x // P x } :=
+-- We set `priority := 900` so that this instance applies after instances for specific set
+-- constructions on synthesis problems of the form `Small ↥s` for some set `s`.
+instance (priority := 900) small_subtype (α : Type v) [Small.{w} α] (P : α → Prop) :
+    Small.{w} { x // P x } :=
   small_map (equivShrink α).subtypeEquivOfSubtype'
 #align small_subtype small_subtype
 
