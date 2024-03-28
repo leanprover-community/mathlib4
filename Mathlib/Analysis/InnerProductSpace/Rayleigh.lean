@@ -37,7 +37,7 @@ A slightly more elaborate corollary is that if `E` is complete and `T` is a comp
 -/
 
 
-variable {𝕜 : Type*} [IsROrC 𝕜]
+variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
@@ -132,7 +132,7 @@ theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
   apply (InnerProductSpace.toDualMap ℝ F).injective
   simp only [LinearIsometry.map_add, LinearIsometry.map_smul, LinearIsometry.map_zero]
   -- Note: #8386 changed `map_smulₛₗ` into `map_smulₛₗ _`
-  simp only [map_smulₛₗ _, IsROrC.conj_to_real]
+  simp only [map_smulₛₗ _, RCLike.conj_to_real]
   change a • innerSL ℝ x₀ + b • innerSL ℝ (T x₀) = 0
   apply smul_right_injective (F →L[ℝ] ℝ) (two_ne_zero : (2 : ℝ) ≠ 0)
   simpa only [two_smul, smul_add, add_smul, add_zero] using h₂
@@ -170,7 +170,7 @@ variable [CompleteSpace E] {T : E →L[𝕜] E}
 theorem eq_smul_self_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : E}
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
     T x₀ = (↑(T.rayleighQuotient x₀) : 𝕜) • x₀ := by
-  letI := InnerProductSpace.isROrCToReal 𝕜 E
+  letI := InnerProductSpace.rclikeToReal 𝕜 E
   let hSA := hT.isSymmetric.restrictScalars.toSelfAdjoint.prop
   exact hSA.eq_smul_self_of_isLocalExtrOn_real hextr
 #align is_self_adjoint.eq_smul_self_of_is_local_extr_on IsSelfAdjoint.eq_smul_self_of_isLocalExtrOn
@@ -240,8 +240,8 @@ namespace IsSymmetric
 /-- The supremum of the Rayleigh quotient of a symmetric operator `T` on a nontrivial
 finite-dimensional vector space is an eigenvalue for that operator. -/
 theorem hasEigenvalue_iSup_of_finiteDimensional (hT : T.IsSymmetric) :
-    HasEigenvalue T ↑(⨆ x : { x : E // x ≠ 0 }, IsROrC.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2 : ℝ) := by
-  haveI := FiniteDimensional.proper_isROrC 𝕜 E
+    HasEigenvalue T ↑(⨆ x : { x : E // x ≠ 0 }, RCLike.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2 : ℝ) := by
+  haveI := FiniteDimensional.proper_rclike 𝕜 E
   let T' := hT.toSelfAdjoint
   obtain ⟨x, hx⟩ : ∃ x : E, x ≠ 0 := exists_ne 0
   have H₁ : IsCompact (sphere (0 : E) ‖x‖) := isCompact_sphere _ _
@@ -260,8 +260,8 @@ theorem hasEigenvalue_iSup_of_finiteDimensional (hT : T.IsSymmetric) :
 /-- The infimum of the Rayleigh quotient of a symmetric operator `T` on a nontrivial
 finite-dimensional vector space is an eigenvalue for that operator. -/
 theorem hasEigenvalue_iInf_of_finiteDimensional (hT : T.IsSymmetric) :
-    HasEigenvalue T ↑(⨅ x : { x : E // x ≠ 0 }, IsROrC.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2 : ℝ) := by
-  haveI := FiniteDimensional.proper_isROrC 𝕜 E
+    HasEigenvalue T ↑(⨅ x : { x : E // x ≠ 0 }, RCLike.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2 : ℝ) := by
+  haveI := FiniteDimensional.proper_rclike 𝕜 E
   let T' := hT.toSelfAdjoint
   obtain ⟨x, hx⟩ : ∃ x : E, x ≠ 0 := exists_ne 0
   have H₁ : IsCompact (sphere (0 : E) ‖x‖) := isCompact_sphere _ _

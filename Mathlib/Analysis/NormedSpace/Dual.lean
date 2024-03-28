@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
-import Mathlib.Analysis.NormedSpace.IsROrC
+import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Analysis.LocallyConvex.Polar
 
 #align_import analysis.normed_space.dual from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
@@ -107,7 +107,7 @@ end General
 
 section BidualIsometry
 
-variable (𝕜 : Type v) [IsROrC 𝕜] {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable (𝕜 : Type v) [RCLike 𝕜] {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- If one controls the norm of every `f x`, then one controls the norm of `x`.
     Compare `ContinuousLinearMap.opNorm_le_bound`. -/
@@ -118,7 +118,7 @@ theorem norm_le_dual_bound (x : E) {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ f : Dual 
     · simp only [h, hMp, norm_zero]
     · obtain ⟨f, hf₁, hfx⟩ : ∃ f : E →L[𝕜] 𝕜, ‖f‖ = 1 ∧ f x = ‖x‖ := exists_dual_vector 𝕜 x h
       calc
-        ‖x‖ = ‖(‖x‖ : 𝕜)‖ := IsROrC.norm_coe_norm.symm
+        ‖x‖ = ‖(‖x‖ : 𝕜)‖ := RCLike.norm_coe_norm.symm
         _ = ‖f x‖ := by rw [hfx]
         _ ≤ M * ‖f‖ := (hM f)
         _ = M := by rw [hf₁, mul_one]
@@ -240,7 +240,7 @@ theorem closedBall_inv_subset_polar_closedBall {r : ℝ} :
 
 /-- The `polar` of closed ball in a normed space `E` is the closed ball of the dual with
 inverse radius. -/
-theorem polar_closedBall {𝕜 E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
+theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
     (hr : 0 < r) : polar 𝕜 (closedBall (0 : E) r) = closedBall (0 : Dual 𝕜 E) r⁻¹ := by
   refine' Subset.antisymm _ (closedBall_inv_subset_polar_closedBall 𝕜)
   intro x' h

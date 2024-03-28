@@ -305,7 +305,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
     · refine' intervalIntegral.intervalIntegrable_cpow' _
       rwa [sub_re, one_re, ← zero_sub, sub_lt_sub_iff_right]
     · apply Continuous.continuousOn
-      exact IsROrC.continuous_ofReal.comp -- Porting note: was `continuity`
+      exact RCLike.continuous_ofReal.comp -- Porting note: was `continuity`
         ((continuous_const.sub (continuous_id'.div_const ↑n)).pow n)
   -- pointwise limit of f
   have f_tends : ∀ x : ℝ, x ∈ Ioi (0 : ℝ) →

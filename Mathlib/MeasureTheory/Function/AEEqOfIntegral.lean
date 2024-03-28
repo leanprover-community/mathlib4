@@ -52,7 +52,7 @@ namespace MeasureTheory
 
 section AeEqOfForall
 
-variable {α E 𝕜 : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsROrC 𝕜]
+variable {α E 𝕜 : Type*} {m : MeasurableSpace α} {μ : Measure α} [RCLike 𝕜]
 
 theorem ae_eq_zero_of_forall_inner [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
     [SecondCountableTopology E] {f : α → E} (hf : ∀ c : E, (fun x => (inner c (f x) : 𝕜)) =ᵐ[μ] 0) :
@@ -100,7 +100,7 @@ theorem ae_eq_zero_of_forall_dual_of_isSeparable [NormedAddCommGroup E] [NormedS
       _ ≤ 1 * ‖(x : E) - a‖ := (ContinuousLinearMap.le_of_opNorm_le _ (hs x).1 _)
       _ < ‖a‖ / 2 := by rw [one_mul]; rwa [dist_eq_norm'] at hx
       _ < ‖(x : E)‖ := I
-      _ = ‖s x x‖ := by rw [(hs x).2, IsROrC.norm_coe_norm]
+      _ = ‖s x x‖ := by rw [(hs x).2, RCLike.norm_coe_norm]
   have hfs : ∀ y : d, ∀ᵐ x ∂μ, ⟪f x, s y⟫ = (0 : 𝕜) := fun y => hf (s y)
   have hf' : ∀ᵐ x ∂μ, ∀ y : d, ⟪f x, s y⟫ = (0 : 𝕜) := by rwa [ae_all_iff]
   filter_upwards [hf', h't] with x hx h'x

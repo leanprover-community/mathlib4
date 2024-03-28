@@ -30,7 +30,7 @@ decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a d
 -/
 
 
-variable {𝕜 : Type*} [IsROrC 𝕜]
+variable {𝕜 : Type*} [RCLike 𝕜]
 variable {n : Type*} [LinearOrder n] [IsWellOrder n (· < ·)] [LocallyFiniteOrderBot n]
 
 section set_options
@@ -108,7 +108,7 @@ theorem LDL.diag_eq_lowerInv_conj : LDL.diag hS = LDL.lowerInv hS * S * (LDL.low
   · simp only [LDL.diag, hij, diagonal_apply_ne, Ne.def, not_false_iff, mul_mul_apply]
     rw [conjTranspose, transpose_map, transpose_transpose, dotProduct_mulVec,
       (LDL.lowerInv_orthogonal hS fun h : j = i => hij h.symm).symm, ← inner_conj_symm,
-      mulVec_transpose, EuclideanSpace.inner_piLp_equiv_symm, ← IsROrC.star_def, ←
+      mulVec_transpose, EuclideanSpace.inner_piLp_equiv_symm, ← RCLike.star_def, ←
       star_dotProduct_star, dotProduct_comm, star_star]
     rfl
 #align LDL.diag_eq_lower_inv_conj LDL.diag_eq_lowerInv_conj
