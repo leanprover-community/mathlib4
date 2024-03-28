@@ -375,15 +375,15 @@ lemma orthogonal_to_all_characters_implies_zero (f : G → k) (hf : IsClassFunct
         have tr_zero := tr hz
         rw [tr_zero] at tr_rank
         symm at tr_rank
-        have inv_dim : Invertible (finrank k V : k) := by
+        have inv_dim : (finrank k V : k) ≠ 0 := by
           choose a ha using dim_irrep_dvd_card_group k G V hV
           apply_fun (fun (n : ℕ) ↦ (n : k)) at ha
           have : (Fintype.card G : k) ≠ 0 := by
             apply nonzero_of_invertible
-          -- apply ne_zero_of_dvd_ne_zero
-          sorry
+          rw [ha, Nat.cast_mul] at this
+          exact left_ne_zero_of_mul this
         rw [tr_rank] at inv_dim
-        apply nonzero_of_invertible (0 : k) rfl
+        tauto
       simp only [c_zero, zero_smul]
     sorry -- needs Maschke's theorem
   have : (averageClassFunction f' hf' (RegularRep k G)).hom (1 : MonoidAlgebra k G) = 0 := by
