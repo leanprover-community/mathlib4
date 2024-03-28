@@ -11,10 +11,10 @@ import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 Let `W : MorphismProperty C`, and objects `X` and `Y` in `C`. In this file,
 we introduce structures like `W.LeftFraction₂ X Y` which consists of two
 left fractions with the "same denominator" which shall be important in
-the construction of a preadditive structure on the localized category
+the construction of the preadditive structure on the localized category
 when `C` is preadditive and `W` has a left calculus of fractions.
 
-When `W` has a left calculus of fractions, we generalize the lemma
+When `W` has a left calculus of fractions, we generalize the lemmas
 `RightFraction.exists_leftFraction` as `RightFraction₂.exists_leftFraction₂`,
 `Localization.exists_leftFraction` as `Localization.exists_leftFraction₂` and
 `Localization.exists_leftFraction₃`, and
@@ -24,8 +24,8 @@ When `W` has a left calculus of fractions, we generalize the lemma
 
 The lemmas in this file are phrased with data that is bundled into structures like
 `LeftFraction₂` or `LeftFraction₃`. It could have been possible to phrase them
-with "unbundled data". However, this would require introduce 4 or 5 variables instead
-of one. It is also very convenient to use dot notation is possible.
+with "unbundled data". However, this would require introducing 4 or 5 variables instead
+of one. It is also very convenient to use dot notation.
 Many definitions have been made reducible so as to ease rewrites when this API is used.
 
 -/
