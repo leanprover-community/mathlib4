@@ -141,7 +141,7 @@ theorem prod_replicate (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
   induction' n with n ih
   · rw [pow_zero]
     rfl
-  · rw [replicate_succ, prod_cons, ih, pow_succ]
+  · rw [replicate_succ, prod_cons, ih, pow_succ']
 #align list.prod_replicate List.prod_replicate
 #align list.sum_replicate List.sum_replicate
 

@@ -56,13 +56,13 @@ instance commSemiring : CommSemiring ℕ where
   mul_comm := Nat.mul_comm
   natCast n := n
   natCast_zero := rfl
-  natCast_succ n := rfl
+  natCast_succ _ := rfl
   nsmul m n := m * n
   nsmul_zero := Nat.zero_mul
-  nsmul_succ _ _ := by dsimp only; rw [Nat.add_comm, Nat.right_distrib, Nat.one_mul]
+  nsmul_succ := succ_mul
   npow m n := n ^ m
   npow_zero := Nat.pow_zero
-  npow_succ _ _ := Nat.pow_succ'
+  npow_succ _ _ := rfl
 
 /-! Extra instances to short-circuit type class resolution and ensure computability -/
 
