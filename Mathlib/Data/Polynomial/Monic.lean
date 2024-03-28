@@ -129,7 +129,7 @@ theorem Monic.pow (hp : Monic p) : ∀ n : ℕ, Monic (p ^ n)
   | 0 => monic_one
   | n + 1 => by
     rw [pow_succ]
-    exact hp.mul (Monic.pow hp n)
+    exact (Monic.pow hp n).mul hp
 #align polynomial.monic.pow Polynomial.Monic.pow
 
 theorem Monic.add_of_left (hp : Monic p) (hpq : degree q < degree p) : Monic (p + q) := by
@@ -223,7 +223,7 @@ theorem nextCoeff_mul (hp : Monic p) (hq : Monic q) :
 theorem nextCoeff_pow (hp : p.Monic) (n : ℕ) : (p ^ n).nextCoeff = n • p.nextCoeff := by
   induction n with
   | zero => rw [pow_zero, Nat.zero_eq, zero_smul, ← map_one (f := C), nextCoeff_C_eq_zero]
-  | succ n ih => rw [pow_succ, hp.nextCoeff_mul (hp.pow n), ih, succ_nsmul]
+  | succ n ih => rw [pow_succ, (hp.pow n).nextCoeff_mul hp, ih, succ_nsmul]
 
 theorem eq_one_of_map_eq_one {S : Type*} [Semiring S] [Nontrivial S] (f : R →+* S) (hp : p.Monic)
     (map_eq : p.map f = 1) : p = 1 := by
@@ -241,7 +241,7 @@ theorem eq_one_of_map_eq_one {S : Type*} [Semiring S] [Nontrivial S] (f : R →+
 theorem natDegree_pow (hp : p.Monic) (n : ℕ) : (p ^ n).natDegree = n * p.natDegree := by
   induction' n with n hn
   · simp
-  · rw [pow_succ, hp.natDegree_mul (hp.pow n), hn, Nat.succ_mul, add_comm]
+  · rw [pow_succ, (hp.pow n).natDegree_mul hp, hn, Nat.succ_mul, add_comm]
 #align polynomial.monic.nat_degree_pow Polynomial.Monic.natDegree_pow
 
 end Monic

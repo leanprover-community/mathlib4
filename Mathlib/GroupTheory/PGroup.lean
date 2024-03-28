@@ -150,7 +150,7 @@ theorem card_eq_or_dvd : Nat.card G = 1 ∨ p ∣ Nat.card G := by
     rw [Nat.card_eq_fintype_card, hn]
     cases' n with n n
     · exact Or.inl rfl
-    · exact Or.inr ⟨p ^ n, by rw [pow_succ]⟩
+    · exact Or.inr ⟨p ^ n, by rw [pow_succ']⟩
   · rw [Nat.card_eq_zero_of_infinite]
     exact Or.inr ⟨0, rfl⟩
 #align is_p_group.card_eq_or_dvd IsPGroup.card_eq_or_dvd

@@ -282,7 +282,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
           le_trans (le_trans (mul_le_mul_right' (nnnorm_pow_le' a n.succ_pos) (r ^ n.succ)) _)
             (le_max_left _ _)
         · by_cases h : ‖a‖₊ = 0
-          · simp only [h, zero_mul, zero_le', pow_succ]
+          · simp only [h, zero_mul, zero_le', pow_succ']
           · rw [← coe_inv h, coe_lt_coe, NNReal.lt_inv_iff_mul_lt h] at hr
             simpa only [← mul_pow, mul_comm] using pow_le_one' hr.le n.succ
     r_pos := ENNReal.inv_pos.mpr coe_ne_top
@@ -482,9 +482,9 @@ theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [Complet
     exact div_le_div (pow_nonneg (norm_nonneg _) n) (norm_pow_le' (a - ↑ₐ z) (zero_lt_iff.mpr hn))
       (mod_cast Nat.factorial_pos n) (mod_cast Nat.factorial_le (lt_add_one n).le)
   have h₀ : (∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ (n + 1)) = (a - ↑ₐ z) * b := by
-    simpa only [mul_smul_comm, pow_succ] using hb.tsum_mul_left (a - ↑ₐ z)
+    simpa only [mul_smul_comm, pow_succ'] using hb.tsum_mul_left (a - ↑ₐ z)
   have h₁ : (∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ (n + 1)) = b * (a - ↑ₐ z) := by
-    simpa only [pow_succ', Algebra.smul_mul_assoc] using hb.tsum_mul_right (a - ↑ₐ z)
+    simpa only [pow_succ, Algebra.smul_mul_assoc] using hb.tsum_mul_right (a - ↑ₐ z)
   have h₃ : exp 𝕜 (a - ↑ₐ z) = 1 + (a - ↑ₐ z) * b := by
     rw [exp_eq_tsum]
     convert tsum_eq_zero_add (expSeries_summable' (𝕂 := 𝕜) (a - ↑ₐ z))

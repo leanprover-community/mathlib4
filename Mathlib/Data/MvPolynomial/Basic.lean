@@ -411,7 +411,7 @@ theorem induction_on_monomial {M : MvPolynomial σ R → Prop} (h_C : ∀ a, M (
       intro e
       induction e with
       | zero => simp [ih]
-      | succ e e_ih => simp [ih, pow_succ', (mul_assoc _ _ _).symm, h_X, e_ih]
+      | succ e e_ih => simp [ih, pow_succ, (mul_assoc _ _ _).symm, h_X, e_ih]
     simp [add_comm, monomial_add_single, this]
 #align mv_polynomial.induction_on_monomial MvPolynomial.induction_on_monomial
 

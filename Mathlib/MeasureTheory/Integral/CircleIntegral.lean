@@ -656,7 +656,7 @@ theorem integral_sub_inv_of_mem_ball {c w : ℂ} {R : ℝ} (hw : w ∈ ball c R)
   simp only [div_eq_mul_inv, mul_pow, integral_const_mul, mul_assoc]
   rw [(integral_congr hR.le fun z hz => _).trans (H n hn), mul_zero]
   intro z _
-  rw [← pow_succ', ← zpow_natCast, inv_zpow, ← zpow_neg, Int.ofNat_succ, neg_add,
+  rw [← pow_succ, ← zpow_natCast, inv_zpow, ← zpow_neg, Int.ofNat_succ, neg_add,
     sub_eq_add_neg _ (1 : ℤ)]
 #align circle_integral.integral_sub_inv_of_mem_ball circleIntegral.integral_sub_inv_of_mem_ball
 

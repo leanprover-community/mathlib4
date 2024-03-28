@@ -538,7 +538,7 @@ theorem eval_mul_X_sub_C {p : R[X]} (r : R) : (p * (X - C r)).eval r = 0 := by
   conv_lhs =>
     congr
     arg 2
-    simp [coeff_mul_X_sub_C, sub_mul, mul_assoc, ← pow_succ]
+    simp [coeff_mul_X_sub_C, sub_mul, mul_assoc, ← pow_succ']
   rw [sum_range_sub']
   simp [coeff_monomial]
 set_option linter.uppercaseLean3 false in
@@ -571,7 +571,7 @@ lemma aeval_apply_smul_mem_of_le_comap'
   · simp_rw [map_add, add_smul]
     exact Submodule.add_mem q h₁ h₂
   · dsimp only at hmq ⊢
-    rw [pow_succ, mul_left_comm, map_mul, aeval_X, mul_smul]
+    rw [pow_succ', mul_left_comm, map_mul, aeval_X, mul_smul]
     rw [← q.map_le_iff_le_comap] at hq
     exact hq ⟨_, hmq, rfl⟩
 

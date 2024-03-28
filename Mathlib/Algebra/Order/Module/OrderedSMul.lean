@@ -86,7 +86,7 @@ instance Nat.orderedSMul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ 
     | succ n =>
       induction n with
       | zero => dsimp; rwa [one_nsmul, one_nsmul]
-      | succ n ih => simp only [succ_nsmul _ n.succ, _root_.add_lt_add hab (ih n.succ_pos)]
+      | succ n ih => simp only [succ_nsmul _ n.succ, _root_.add_lt_add (ih n.succ_pos) hab]
 #align nat.ordered_smul Nat.orderedSMul
 
 instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=

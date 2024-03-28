@@ -137,7 +137,7 @@ theorem dickson_one_one_eval_add_inv (x y : R) (h : x * y = 1) :
   | n + 2 => by
     simp only [eval_sub, eval_mul, dickson_one_one_eval_add_inv x y h _, eval_X, dickson_add_two,
       C_1, eval_one]
-    conv_lhs => simp only [pow_succ, add_mul, mul_add, h, ← mul_assoc, mul_comm y x, one_mul]
+    conv_lhs => simp only [pow_succ', add_mul, mul_add, h, ← mul_assoc, mul_comm y x, one_mul]
     ring
 #align polynomial.dickson_one_one_eval_add_inv Polynomial.dickson_one_one_eval_add_inv
 

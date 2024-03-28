@@ -280,7 +280,7 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
   refine' ⟨g ^ k, _⟩
   rw [ht]
   apply orderOf_eq_prime_pow
-  · rwa [hk, mul_comm, ht, pow_succ', ← mul_assoc, Nat.mul_div_cancel _ hp.pos, pow_mul] at hg
+  · rwa [hk, mul_comm, ht, pow_succ, ← mul_assoc, Nat.mul_div_cancel _ hp.pos, pow_mul] at hg
   · rw [← Nat.succ_eq_add_one, ← ht, ← pow_mul, mul_comm, ← hk]
     exact pow_exponent_eq_one g
 #align nat.prime.exists_order_of_eq_pow_factorization_exponent Nat.Prime.exists_orderOf_eq_pow_factorization_exponent
@@ -493,7 +493,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
     apply Nat.pow_succ_factorization_not_dvd (hG.orderOf_pos <| t ^ p ^ k).ne' hp
   rw [(Commute.all _ g).orderOf_mul_eq_mul_orderOf_of_coprime hcoprime, hpk',
     hg, ha, hk, pow_add, pow_add, pow_one, ← mul_assoc, ← mul_assoc,
-    Nat.div_mul_cancel, mul_assoc, lt_mul_iff_one_lt_right <| hG.orderOf_pos t, ← pow_succ']
+    Nat.div_mul_cancel, mul_assoc, lt_mul_iff_one_lt_right <| hG.orderOf_pos t, ← pow_succ]
   exact one_lt_pow hp.one_lt a.succ_ne_zero
   exact hpk
 

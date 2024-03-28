@@ -851,7 +851,7 @@ theorem pow_right_mono {I J : Ideal R} (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n
   induction' n with _ hn
   · rw [pow_zero, pow_zero]
   · rw [pow_succ, pow_succ]
-    exact Ideal.mul_mono e hn
+    exact Ideal.mul_mono hn e
 #align ideal.pow_right_mono Ideal.pow_right_mono
 
 @[simp]
@@ -1945,7 +1945,7 @@ theorem le_comap_pow (n : ℕ) : K.comap f ^ n ≤ (K ^ n).comap f := by
   · rw [pow_zero, pow_zero, Ideal.one_eq_top, Ideal.one_eq_top]
     exact rfl.le
   · rw [pow_succ, pow_succ]
-    exact (Ideal.mul_mono_right n_ih).trans (Ideal.le_comap_mul f)
+    exact (Ideal.mul_mono_left n_ih).trans (Ideal.le_comap_mul f)
 #align ideal.le_comap_pow Ideal.le_comap_pow
 
 end CommRing

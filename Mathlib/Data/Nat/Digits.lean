@@ -736,7 +736,7 @@ theorem eleven_dvd_of_palindrome (p : (digits 10 n).Palindrome) (h : Even (digit
   replace h : Even dig.length := by rwa [List.length_map]
   refine' eleven_dvd_iff.2 ⟨0, (_ : dig.alternatingSum = 0)⟩
   have := dig.alternatingSum_reverse
-  rw [(p.map _).reverse_eq, _root_.pow_succ, h.neg_one_pow, mul_one, neg_one_zsmul] at this
+  rw [(p.map _).reverse_eq, _root_.pow_succ', h.neg_one_pow, mul_one, neg_one_zsmul] at this
   exact eq_zero_of_neg_eq this.symm
 #align nat.eleven_dvd_of_palindrome Nat.eleven_dvd_of_palindrome
 

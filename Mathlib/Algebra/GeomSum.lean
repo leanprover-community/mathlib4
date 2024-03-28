@@ -46,7 +46,7 @@ variable [Semiring α]
 
 theorem geom_sum_succ {x : α} {n : ℕ} :
     ∑ i in range (n + 1), x ^ i = (x * ∑ i in range n, x ^ i) + 1 := by
-  simp only [mul_sum, ← pow_succ, sum_range_succ', pow_zero]
+  simp only [mul_sum, ← pow_succ', sum_range_succ', pow_zero]
 #align geom_sum_succ geom_sum_succ
 
 theorem geom_sum_succ' {x : α} {n : ℕ} :
@@ -115,16 +115,16 @@ protected theorem Commute.geom_sum₂_mul_add {x y : α} (h : Commute x y) (n : 
     have f_succ : ∀ i, i ∈ range n → f (n + 1) i = y * f n i := fun i hi => by
       rw [hf]
       have : Commute y ((x + y) ^ i) := (h.symm.add_right (Commute.refl y)).pow_right i
-      rw [← mul_assoc, this.eq, mul_assoc, ← pow_succ y (n - 1 - i)]
+      rw [← mul_assoc, this.eq, mul_assoc, ← pow_succ' y (n - 1 - i)]
       congr 2
       rw [add_tsub_cancel_right, ← tsub_add_eq_tsub_tsub, add_comm 1 i]
       have : i + 1 + (n - (i + 1)) = n := add_tsub_cancel_of_le (mem_range.mp hi)
       rw [add_comm (i + 1)] at this
       rw [← this, add_tsub_cancel_right, add_comm i 1, ← add_assoc, add_tsub_cancel_right]
-    rw [pow_succ (x + y), add_mul, sum_range_succ_comm, add_mul, f_last, add_assoc]
+    rw [pow_succ' (x + y), add_mul, sum_range_succ_comm, add_mul, f_last, add_assoc]
     rw [(((Commute.refl x).add_right h).pow_right n).eq]
     congr 1
-    rw [sum_congr rfl f_succ, ← mul_sum, pow_succ y, mul_assoc, ← mul_add y, ih]
+    rw [sum_congr rfl f_succ, ← mul_sum, pow_succ' y, mul_assoc, ← mul_add y, ih]
 #align commute.geom_sum₂_mul_add Commute.geom_sum₂_mul_add
 
 end Semiring
@@ -305,7 +305,7 @@ protected theorem Commute.geom_sum₂_succ_eq {α : Type u} [Ring α] {x y : α}
     ∑ i in range (n + 1), x ^ i * y ^ (n - i) =
       x ^ n + y * ∑ i in range n, x ^ i * y ^ (n - 1 - i) := by
   simp_rw [mul_sum, sum_range_succ_comm, tsub_self, pow_zero, mul_one, add_right_inj, ← mul_assoc,
-    (h.symm.pow_right _).eq, mul_assoc, ← pow_succ]
+    (h.symm.pow_right _).eq, mul_assoc, ← pow_succ']
   refine' sum_congr rfl fun i hi => _
   suffices n - 1 - i + 1 = n - i by rw [this]
   cases' n with n
@@ -392,7 +392,7 @@ theorem geom_sum_inv [DivisionRing α] {x : α} (hx1 : x ≠ 1) (hx0 : x ≠ 0) 
   have h₃ : x - 1 ≠ 0 := mt sub_eq_zero.1 hx1
   have h₄ : x * (x ^ n)⁻¹ = (x ^ n)⁻¹ * x :=
     Nat.recOn n (by simp) fun n h => by
-      rw [pow_succ, mul_inv_rev, ← mul_assoc, h, mul_assoc, mul_inv_cancel hx0, mul_assoc,
+      rw [pow_succ', mul_inv_rev, ← mul_assoc, h, mul_assoc, mul_inv_cancel hx0, mul_assoc,
         inv_mul_cancel hx0]
   rw [geom_sum_eq h₁, div_eq_iff_mul_eq h₂, ← mul_right_inj' h₃, ← mul_assoc, ← mul_assoc,
     mul_inv_cancel h₃]

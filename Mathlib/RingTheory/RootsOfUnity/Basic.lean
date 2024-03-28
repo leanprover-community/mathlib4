@@ -360,7 +360,7 @@ theorem pow_eq_one_iff_dvd (l : ℕ) : ζ ^ l = 1 ↔ k ∣ l :=
 
 theorem isUnit (h : IsPrimitiveRoot ζ k) (h0 : 0 < k) : IsUnit ζ := by
   apply isUnit_of_mul_eq_one ζ (ζ ^ (k - 1))
-  rw [← pow_succ, tsub_add_cancel_of_le h0.nat_succ_le, h.pow_eq_one]
+  rw [← pow_succ', tsub_add_cancel_of_le h0.nat_succ_le, h.pow_eq_one]
 #align is_primitive_root.is_unit IsPrimitiveRoot.isUnit
 
 theorem pow_ne_one_of_pos_of_lt (h0 : 0 < l) (hl : l < k) : ζ ^ l ≠ 1 :=
@@ -662,7 +662,7 @@ theorem neZero' {n : ℕ+} (hζ : IsPrimitiveRoot ζ n) : NeZero ((n : ℕ) : R)
     haveI : NeZero p := NeZero.of_pos (Nat.pos_of_dvd_of_pos hp n.pos)
     haveI hpri : Fact p.Prime := CharP.char_is_prime_of_pos R p
     have := hζ.pow_eq_one
-    rw [hm.1, hk, pow_succ, mul_assoc, pow_mul', ← frobenius_def, ← frobenius_one p] at this
+    rw [hm.1, hk, pow_succ', mul_assoc, pow_mul', ← frobenius_def, ← frobenius_one p] at this
     exfalso
     have hpos : 0 < p ^ k * m := by
       refine' mul_pos (pow_pos hpri.1.pos _) (Nat.pos_of_ne_zero fun h => _)
@@ -670,7 +670,7 @@ theorem neZero' {n : ℕ+} (hζ : IsPrimitiveRoot ζ n) : NeZero ((n : ℕ) : R)
       rw [h] at H
       simp at H
     refine' hζ.pow_ne_one_of_pos_of_lt hpos _ (frobenius_inj R p this)
-    · rw [hm.1, hk, pow_succ, mul_assoc, mul_comm p]
+    · rw [hm.1, hk, pow_succ', mul_assoc, mul_comm p]
       exact lt_mul_of_one_lt_right hpos hpri.1.one_lt
   · exact NeZero.of_not_dvd R hp
 #align is_primitive_root.ne_zero' IsPrimitiveRoot.neZero'

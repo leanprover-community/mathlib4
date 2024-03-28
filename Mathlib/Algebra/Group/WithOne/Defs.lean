@@ -279,7 +279,9 @@ instance monoidWithZero [Monoid α] : MonoidWithZero (WithZero α) :=
       | some x => congr_arg some <| pow_zero x,
     npow_succ := fun n x =>
       match x with
-      | none => rfl
+      | none => by
+        change 0 ^ (n + 1) = 0 ^ n * 0
+        simp only [mul_zero]; rfl
       | some x => congr_arg some <| pow_succ x n }
 
 instance commMonoidWithZero [CommMonoid α] : CommMonoidWithZero (WithZero α) :=
@@ -338,7 +340,10 @@ instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) :=
       | some x => congr_arg some <| zpow_zero x,
     zpow_succ' := fun n x =>
       match x with
-      | none => rfl
+      | none => by
+        change 0 ^ _ = 0 ^ _ * 0
+        simp only [mul_zero]
+        rfl
       | some x => congr_arg some <| DivInvMonoid.zpow_succ' n x,
     zpow_neg' := fun n x =>
       match x with

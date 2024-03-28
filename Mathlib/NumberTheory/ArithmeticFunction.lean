@@ -548,18 +548,18 @@ theorem ppow_apply {f : ArithmeticFunction R} {k x : ℕ} (kpos : 0 < k) : f.ppo
   rfl
 #align nat.arithmetic_function.ppow_apply ArithmeticFunction.ppow_apply
 
-theorem ppow_succ {f : ArithmeticFunction R} {k : ℕ} : f.ppow (k + 1) = f.pmul (f.ppow k) := by
-  ext x
-  rw [ppow_apply (Nat.succ_pos k), _root_.pow_succ]
-  induction k <;> simp
-#align nat.arithmetic_function.ppow_succ ArithmeticFunction.ppow_succ
-
-theorem ppow_succ' {f : ArithmeticFunction R} {k : ℕ} {kpos : 0 < k} :
-    f.ppow (k + 1) = (f.ppow k).pmul f := by
+theorem ppow_succ' {f : ArithmeticFunction R} {k : ℕ} : f.ppow (k + 1) = f.pmul (f.ppow k) := by
   ext x
   rw [ppow_apply (Nat.succ_pos k), _root_.pow_succ']
   induction k <;> simp
-#align nat.arithmetic_function.ppow_succ' ArithmeticFunction.ppow_succ'
+#align nat.arithmetic_function.ppow_succ ArithmeticFunction.ppow_succ'
+
+theorem ppow_succ {f : ArithmeticFunction R} {k : ℕ} {kpos : 0 < k} :
+    f.ppow (k + 1) = (f.ppow k).pmul f := by
+  ext x
+  rw [ppow_apply (Nat.succ_pos k), _root_.pow_succ]
+  induction k <;> simp
+#align nat.arithmetic_function.ppow_succ' ArithmeticFunction.ppow_succ
 
 end Pmul
 
@@ -927,7 +927,7 @@ theorem IsMultiplicative.ppow [CommSemiring R] {f : ArithmeticFunction R} (hf : 
     {k : ℕ} : IsMultiplicative (f.ppow k) := by
   induction' k with k hi
   · exact isMultiplicative_zeta.nat_cast
-  · rw [ppow_succ]
+  · rw [ppow_succ']
     apply hf.pmul hi
 #align nat.arithmetic_function.is_multiplicative.ppow ArithmeticFunction.IsMultiplicative.ppow
 

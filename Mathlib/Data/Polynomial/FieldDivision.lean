@@ -48,7 +48,7 @@ theorem derivative_rootMultiplicity_of_root_of_mem_nonZeroDivisors
   have hm : m - 1 + 1 = m := Nat.sub_add_cancel <| (rootMultiplicity_pos h).2 hpt
   have hndvd : ¬(X - C t) ^ m ∣ derivative p := by
     rw [hp, derivative_mul, dvd_add_left (dvd_mul_right _ _),
-      derivative_X_sub_C_pow, ← hm, pow_succ', hm, mul_comm (C _), mul_assoc,
+      derivative_X_sub_C_pow, ← hm, pow_succ, hm, mul_comm (C _), mul_assoc,
       dvd_cancel_left_mem_nonZeroDivisors (monic_X_sub_C t |>.pow _ |>.mem_nonZeroDivisors)]
     rw [dvd_iff_isRoot, IsRoot] at hndvd ⊢
     rwa [eval_mul, eval_C, mul_left_mem_nonZeroDivisors_eq_zero_iff hnzd]

@@ -118,7 +118,7 @@ theorem lcs_le_lcs_of_is_nilpotent_span_sup_eq_top {n i j : ℕ}
     exact le_sup_of_le_left hIM
   · simp only [LieIdeal.lcs_succ, i.add_succ l, lie_top_eq_of_span_sup_eq_top hxI, sup_le_iff]
     refine' ⟨(Submodule.map_mono ih).trans _, le_sup_of_le_right _⟩
-    · rw [Submodule.map_sup, ← Submodule.map_comp, ← LinearMap.mul_eq_comp, ← pow_succ, ←
+    · rw [Submodule.map_sup, ← Submodule.map_comp, ← LinearMap.mul_eq_comp, ← pow_succ', ←
         I.lcs_succ]
       exact sup_le_sup_left coe_map_toEndomorphism_le _
     · refine' le_trans (mono_lie_right _ _ I _) (mono_lie_right _ _ I hIM)

@@ -276,7 +276,7 @@ instance commMonoid : CommMonoid (Localization S) where
   npow := Localization.npow S
   npow_zero x := show Localization.npow S 0 x = .one S by
     rw [Localization.npow, Localization.one]; apply (r S).commMonoid.npow_zero
-  npow_succ n x := show .npow S n.succ x = x.mul S (.npow S n x) by
+  npow_succ n x := show Localization.npow S n.succ x = (Localization.npow S n x).mul S x by
     rw [Localization.npow, Localization.mul]; apply (r S).commMonoid.npow_succ
 
 variable {S}

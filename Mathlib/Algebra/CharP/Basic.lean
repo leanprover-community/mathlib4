@@ -296,7 +296,7 @@ theorem sub_pow_char_pow_of_commute [Ring R] {p : ℕ} [Fact p.Prime] [CharP R p
   induction n with
   | zero => simp
   | succ n n_ih =>
-      rw [pow_succ', pow_mul, pow_mul, pow_mul, n_ih]
+      rw [pow_succ, pow_mul, pow_mul, pow_mul, n_ih]
       apply sub_pow_char_of_commute; apply Commute.pow_pow h
 #align sub_pow_char_pow_of_commute sub_pow_char_pow_of_commute
 

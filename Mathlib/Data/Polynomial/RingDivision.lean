@@ -864,7 +864,7 @@ theorem roots_pow (p : R[X]) (n : ℕ) : (p ^ n).roots = n • p.roots := by
   · rw [pow_zero, roots_one, Nat.zero_eq, zero_smul, empty_eq_zero]
   · rcases eq_or_ne p 0 with (rfl | hp)
     · rw [zero_pow n.succ_ne_zero, roots_zero, smul_zero]
-    · rw [pow_succ', roots_mul (mul_ne_zero (pow_ne_zero _ hp) hp), ihn, Nat.succ_eq_add_one,
+    · rw [pow_succ, roots_mul (mul_ne_zero (pow_ne_zero _ hp) hp), ihn, Nat.succ_eq_add_one,
         add_smul, one_smul]
 #align polynomial.roots_pow Polynomial.roots_pow
 

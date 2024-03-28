@@ -471,7 +471,7 @@ theorem of_pow : ∀ n : ℕ, Irrational (x ^ n) → Irrational x
     exact (h ⟨1, cast_one⟩).elim
   | n + 1 => fun h => by
     rw [pow_succ] at h
-    exact h.mul_cases.elim id (of_pow n)
+    exact h.mul_cases.elim (of_pow n) id
 #align irrational.of_pow Irrational.of_pow
 
 open Int in

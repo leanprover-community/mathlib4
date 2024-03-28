@@ -134,7 +134,7 @@ set_option linter.uppercaseLean3 false in
 theorem content_X_pow {k : ℕ} : content ((X : R[X]) ^ k) = 1 := by
   induction' k with k hi
   · simp
-  rw [pow_succ, content_X_mul, hi]
+  rw [pow_succ', content_X_mul, hi]
 set_option linter.uppercaseLean3 false in
 #align polynomial.content_X_pow Polynomial.content_X_pow
 

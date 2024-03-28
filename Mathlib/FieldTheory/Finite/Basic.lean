@@ -226,7 +226,7 @@ theorem pow_card_sub_one_eq_one (a : K) (ha : a ≠ 0) : a ^ (q - 1) = 1 := by
 theorem pow_card (a : K) : a ^ q = a := by
   by_cases h : a = 0; · rw [h]; apply zero_pow Fintype.card_ne_zero
   rw [← Nat.succ_pred_eq_of_pos Fintype.card_pos, pow_succ, Nat.pred_eq_sub_one,
-    pow_card_sub_one_eq_one a h, mul_one]
+    pow_card_sub_one_eq_one a h, one_mul]
 #align finite_field.pow_card FiniteField.pow_card
 
 theorem pow_card_pow (n : ℕ) (a : K) : a ^ q ^ n = a := by
@@ -379,7 +379,7 @@ theorem frobenius_pow {p : ℕ} [Fact p.Prime] [CharP K p] {n : ℕ} (hcard : q 
   clear hcard
   induction' n with n hn
   · simp
-  · rw [pow_succ, pow_succ', pow_mul, RingHom.mul_def, RingHom.comp_apply, frobenius_def, hn]
+  · rw [pow_succ', pow_succ, pow_mul, RingHom.mul_def, RingHom.comp_apply, frobenius_def, hn]
 #align finite_field.frobenius_pow FiniteField.frobenius_pow
 
 open Polynomial

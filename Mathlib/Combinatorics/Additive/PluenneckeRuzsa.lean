@@ -187,7 +187,7 @@ theorem card_add_nsmul_le {α : Type*} [AddCommGroup α] [DecidableEq α] {A B :
   · simp
   induction' n with n ih
   · simp
-  rw [succ_nsmul, ← add_assoc, _root_.pow_succ, mul_assoc, ← mul_div_right_comm, le_div_iff,
+  rw [succ_nsmul', ← add_assoc, _root_.pow_succ', mul_assoc, ← mul_div_right_comm, le_div_iff,
     ← cast_mul]
   swap; exact cast_pos.2 hA.card_pos
   refine' (cast_le.2 <| add_pluennecke_petridis _ hAB).trans _
@@ -202,7 +202,7 @@ theorem card_mul_pow_le (hAB : ∀ A' ⊆ A, (A * B).card * A'.card ≤ (A' * B)
   · simp
   induction' n with n ih
   · simp
-  rw [_root_.pow_succ, ← mul_assoc, _root_.pow_succ, @mul_assoc ℚ≥0, ← mul_div_right_comm,
+  rw [_root_.pow_succ', ← mul_assoc, _root_.pow_succ', @mul_assoc ℚ≥0, ← mul_div_right_comm,
     le_div_iff, ← cast_mul]
   swap; exact cast_pos.2 hA.card_pos
   refine' (cast_le.2 <| mul_pluennecke_petridis _ hAB).trans _

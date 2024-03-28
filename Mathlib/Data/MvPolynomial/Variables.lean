@@ -137,7 +137,7 @@ theorem vars_pow (φ : MvPolynomial σ R) (n : ℕ) : (φ ^ n).vars ⊆ φ.vars 
   classical
   induction' n with n ih
   · simp
-  · rw [pow_succ]
+  · rw [pow_succ']
     apply Finset.Subset.trans (vars_mul _ _)
     exact Finset.union_subset (Finset.Subset.refl _) ih
 #align mv_polynomial.vars_pow MvPolynomial.vars_pow

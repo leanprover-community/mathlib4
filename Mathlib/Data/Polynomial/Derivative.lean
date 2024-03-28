@@ -459,8 +459,8 @@ variable [CommSemiring R]
 theorem derivative_pow_succ (p : R[X]) (n : ℕ) :
     derivative (p ^ (n + 1)) = C (n + 1 : R) * p ^ n * derivative p :=
   Nat.recOn n (by simp) fun n ih => by
-    rw [pow_succ', derivative_mul, ih, Nat.add_one, mul_right_comm, C_add,
-      add_mul, add_mul, pow_succ', ← mul_assoc, C_1, one_mul]; simp [add_mul]
+    rw [pow_succ, derivative_mul, ih, Nat.add_one, mul_right_comm, C_add,
+      add_mul, add_mul, pow_succ, ← mul_assoc, C_1, one_mul]; simp [add_mul]
 #align polynomial.derivative_pow_succ Polynomial.derivative_pow_succ
 
 theorem derivative_pow (p : R[X]) (n : ℕ) :
@@ -559,7 +559,7 @@ theorem derivative_eval₂_C (p q : R[X]) :
     (fun p₁ p₂ ih₁ ih₂ => by
       rw [eval₂_add, derivative_add, ih₁, ih₂, derivative_add, eval₂_add, add_mul])
     fun n r ih => by
-    rw [pow_succ', ← mul_assoc, eval₂_mul, eval₂_X, derivative_mul, ih, @derivative_mul _ _ _ X,
+    rw [pow_succ, ← mul_assoc, eval₂_mul, eval₂_X, derivative_mul, ih, @derivative_mul _ _ _ X,
       derivative_X, mul_one, eval₂_add, @eval₂_mul _ _ _ _ X, eval₂_X, add_mul, mul_right_comm]
 set_option linter.uppercaseLean3 false in
 #align polynomial.derivative_eval₂_C Polynomial.derivative_eval₂_C

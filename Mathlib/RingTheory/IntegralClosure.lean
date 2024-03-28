@@ -600,7 +600,7 @@ theorem normalizeScaleRoots_coeff_mul_leadingCoeff_pow (i : ℕ) (hp : 1 ≤ nat
     zero_mul, mem_support_iff, ite_mul, Ne.def, ite_not]
   split_ifs with h₁ h₂
   · simp [h₁]
-  · rw [h₂, leadingCoeff, ← pow_succ, tsub_add_cancel_of_le hp]
+  · rw [h₂, leadingCoeff, ← pow_succ', tsub_add_cancel_of_le hp]
   · rw [mul_assoc, ← pow_add, tsub_add_cancel_of_le]
     apply Nat.le_sub_one_of_lt
     rw [lt_iff_le_and_ne]
@@ -618,7 +618,7 @@ theorem leadingCoeff_smul_normalizeScaleRoots (p : R[X]) :
   split_ifs with h₁ h₂
   · simp [*]
   · simp [*]
-  · rw [mul_comm, mul_assoc, ← pow_succ', tsub_right_comm,
+  · rw [mul_comm, mul_assoc, ← pow_succ, tsub_right_comm,
       tsub_add_cancel_of_le]
     rw [Nat.succ_le_iff]
     exact tsub_pos_of_lt (lt_of_le_of_ne (le_natDegree_of_ne_zero h₁) h₂)
