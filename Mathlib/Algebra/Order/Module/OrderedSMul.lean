@@ -65,8 +65,7 @@ instance OrderedSMul.toPosSMulStrictMono : PosSMulStrictMono R M where
 instance OrderedSMul.toPosSMulReflectLT : PosSMulReflectLT R M :=
   PosSMulReflectLT.of_pos fun _a ha _b₁ _b₂ h ↦ OrderedSMul.lt_of_smul_lt_smul_of_pos h ha
 
-instance OrderDual.instOrderedSMul [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M]
-    [OrderedSMul R M] : OrderedSMul R Mᵒᵈ where
+instance OrderDual.instOrderedSMul : OrderedSMul R Mᵒᵈ where
   smul_lt_smul_of_pos := OrderedSMul.smul_lt_smul_of_pos (M := M)
   lt_of_smul_lt_smul_of_pos := OrderedSMul.lt_of_smul_lt_smul_of_pos (M := M)
 
@@ -87,7 +86,7 @@ instance Nat.orderedSMul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ 
     | succ n =>
       induction n with
       | zero => dsimp; rwa [one_nsmul, one_nsmul]
-      | succ n ih => simp only [succ_nsmul _ n.succ, _root_.add_lt_add hab (ih n.succ_pos)]
+      | succ n ih => simp only [succ_nsmul _ n.succ, _root_.add_lt_add (ih n.succ_pos) hab]
 #align nat.ordered_smul Nat.orderedSMul
 
 instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=

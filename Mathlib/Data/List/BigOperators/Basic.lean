@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 import Mathlib.Data.List.BigOperators.Defs
 import Mathlib.Data.List.Forall2
 import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Ring.Commute
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Int.Basic
 
@@ -23,9 +24,9 @@ variable {ι α M N P M₀ G R : Type*}
 
 namespace List
 
-section Monoid
+section MulOneClass
 
-variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
+variable [MulOneClass M] {l : List M} {a : M}
 
 @[to_additive (attr := simp)]
 theorem prod_nil : ([] : List M).prod = 1 :=
@@ -38,6 +39,23 @@ theorem prod_singleton : [a].prod = a :=
   one_mul a
 #align list.prod_singleton List.prod_singleton
 #align list.sum_singleton List.sum_singleton
+
+@[to_additive (attr := simp)]
+theorem prod_one_cons : (1 :: l).prod = l.prod := by
+  rw [prod, foldl, mul_one]
+
+@[to_additive]
+theorem prod_map_one {l : List ι} :
+    (l.map fun _ => (1 : M)).prod = 1 := by
+  induction l with
+  | nil => rfl
+  | cons hd tl ih => rw [map_cons, prod_one_cons, ih]
+
+end MulOneClass
+
+section Monoid
+
+variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
 
 @[to_additive (attr := simp)]
 theorem prod_cons : (a :: l).prod = a * l.prod :=
@@ -89,7 +107,7 @@ theorem prod_replicate (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
   induction' n with n ih
   · rw [pow_zero]
     rfl
-  · rw [replicate_succ, prod_cons, ih, pow_succ]
+  · rw [replicate_succ, prod_cons, ih, pow_succ']
 #align list.prod_replicate List.prod_replicate
 #align list.sum_replicate List.sum_replicate
 
@@ -144,10 +162,9 @@ theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α
 #align list.sum_map_add List.sum_map_add
 
 @[simp]
-theorem prod_map_neg {α} [CommMonoid α] [HasDistribNeg α] (l : List α) :
+theorem prod_map_neg [HasDistribNeg M] (l : List M) :
     (l.map Neg.neg).prod = (-1) ^ l.length * l.prod := by
-  simpa only [id_eq, neg_mul, one_mul, map_const', prod_replicate, map_id]
-    using @prod_map_mul α α _ l (fun _ => -1) id
+  induction l <;> simp [*, pow_succ, ((Commute.neg_one_left _).pow_left _).left_comm]
 #align list.prod_map_neg List.prod_map_neg
 
 @[to_additive]
@@ -447,6 +464,14 @@ theorem prod_drop_succ :
 #align list.prod_drop_succ List.prod_drop_succ
 #align list.sum_drop_succ List.sum_drop_succ
 
+/-- Cancellation of a telescoping product. -/
+@[to_additive "Cancellation of a telescoping sum."]
+theorem prod_range_div' (n : ℕ) (f : ℕ → G) :
+    ((range n).map fun k ↦ f k / f (k + 1)).prod = f 0 / f n := by
+  induction' n with n h
+  · exact (div_self' (f 0)).symm
+  · rw [range_succ, map_append, map_singleton, prod_append, prod_singleton, h, div_mul_div_cancel']
+
 end Group
 
 section CommGroup
@@ -460,6 +485,13 @@ theorem prod_inv : ∀ L : List G, L.prod⁻¹ = (L.map fun x => x⁻¹).prod
   | x :: xs => by simp [mul_comm, prod_inv xs]
 #align list.prod_inv List.prod_inv
 #align list.sum_neg List.sum_neg
+
+/-- Cancellation of a telescoping product. -/
+@[to_additive "Cancellation of a telescoping sum."]
+theorem prod_range_div (n : ℕ) (f : ℕ → G) :
+    ((range n).map fun k ↦ f (k + 1) / f k).prod = f n / f 0 := by
+  have h : ((·⁻¹) ∘ fun k ↦ f (k + 1) / f k) = fun k ↦ f k / f (k + 1) := by ext; apply inv_div
+  rw [← inv_inj, prod_inv, map_map, inv_div, h, prod_range_div']
 
 /-- Alternative version of `List.prod_set` when the list is over a group -/
 @[to_additive "Alternative version of `List.sum_set` when the list is over a group"]

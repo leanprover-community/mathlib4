@@ -78,7 +78,7 @@ theorem length_le_sum_of_one_le (L : List ℕ) (h : ∀ i ∈ L, 1 ≤ i) : L.le
 #align list.length_le_sum_of_one_le List.length_le_sum_of_one_le
 
 theorem dvd_prod [CommMonoid M] {a} {l : List M} (ha : a ∈ l) : a ∣ l.prod := by
-  let ⟨s, t, h⟩ := mem_split ha
+  let ⟨s, t, h⟩ := append_of_mem ha
   rw [h, prod_append, prod_cons, mul_left_comm]
   exact dvd_mul_right _ _
 #align list.dvd_prod List.dvd_prod
@@ -100,7 +100,7 @@ theorem alternatingProd_append :
       alternatingProd (l₁ ++ l₂) = alternatingProd l₁ * alternatingProd l₂ ^ (-1 : ℤ) ^ length l₁
   | [], l₂ => by simp
   | a :: l₁, l₂ => by
-    simp_rw [cons_append, alternatingProd_cons, alternatingProd_append, length_cons, pow_succ,
+    simp_rw [cons_append, alternatingProd_cons, alternatingProd_append, length_cons, pow_succ',
       neg_mul, one_mul, zpow_neg, ← div_eq_mul_inv, div_div]
 #align list.alternating_prod_append List.alternatingProd_append
 #align list.alternating_sum_append List.alternatingSum_append
@@ -111,7 +111,7 @@ theorem alternatingProd_reverse :
   | [] => by simp only [alternatingProd_nil, one_zpow, reverse_nil]
   | a :: l => by
     simp_rw [reverse_cons, alternatingProd_append, alternatingProd_reverse,
-      alternatingProd_singleton, alternatingProd_cons, length_reverse, length, pow_succ, neg_mul,
+      alternatingProd_singleton, alternatingProd_cons, length_reverse, length, pow_succ', neg_mul,
       one_mul, zpow_neg, inv_inv]
     rw [mul_comm, ← div_eq_mul_inv, div_zpow]
 #align list.alternating_prod_reverse List.alternatingProd_reverse
