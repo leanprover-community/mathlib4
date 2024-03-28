@@ -435,8 +435,8 @@ instance EuclideanSpace.instSmoothManifoldWithCornersSphere {n : ℕ} [Fact (fin
         stereographic'_source]
       simp only [modelWithCornersSelf_coe, modelWithCornersSelf_coe_symm, Set.preimage_id,
         Set.range_id, Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq, Set.preimage_setOf_eq]
-      simp only [id.def, comp_apply, Submodule.subtypeL_apply, PartialHomeomorph.coe_coe_symm,
-        innerSL_apply, Ne.def, sphere_ext_iff, real_inner_comm (v' : E)]
+      simp only [id, comp_apply, Submodule.subtypeL_apply, PartialHomeomorph.coe_coe_symm,
+        innerSL_apply, Ne, sphere_ext_iff, real_inner_comm (v' : E)]
       rfl)
 
 /-- The inclusion map (i.e., `coe`) from the sphere in `E` to `E` is smooth.  -/

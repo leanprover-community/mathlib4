@@ -570,7 +570,7 @@ open Multiset
 
 theorem prime_X_sub_C (r : R) : Prime (X - C r) :=
   ⟨X_sub_C_ne_zero r, not_isUnit_X_sub_C r, fun _ _ => by
-    simp_rw [dvd_iff_isRoot, IsRoot.definition, eval_mul, mul_eq_zero]
+    simp_rw [dvd_iff_isRoot, IsRoot.def, eval_mul, mul_eq_zero]
     exact id⟩
 set_option linter.uppercaseLean3 false in
 #align polynomial.prime_X_sub_C Polynomial.prime_X_sub_C
@@ -739,7 +739,7 @@ theorem isRoot_of_mem_roots (h : a ∈ p.roots) : IsRoot p a :=
 
 -- Porting note: added during port.
 lemma mem_roots_iff_aeval_eq_zero (w : p ≠ 0) : x ∈ roots p ↔ aeval x p = 0 := by
-  rw [mem_roots w, IsRoot.definition, aeval_def, eval₂_eq_eval_map]
+  rw [mem_roots w, IsRoot.def, aeval_def, eval₂_eq_eval_map]
   simp
 
 theorem card_le_degree_of_subset_roots {p : R[X]} {Z : Finset R} (h : Z.val ⊆ p.roots) :
@@ -784,7 +784,7 @@ theorem roots.le_of_dvd (h : q ≠ 0) : p ∣ q → roots p ≤ roots q := by
 #align polynomial.roots.le_of_dvd Polynomial.roots.le_of_dvd
 
 theorem mem_roots_sub_C' {p : R[X]} {a x : R} : x ∈ (p - C a).roots ↔ p ≠ C a ∧ p.eval x = a := by
-  rw [mem_roots', IsRoot.definition, sub_ne_zero, eval_sub, sub_eq_zero, eval_C]
+  rw [mem_roots', IsRoot.def, sub_ne_zero, eval_sub, sub_eq_zero, eval_C]
 set_option linter.uppercaseLean3 false in
 #align polynomial.mem_roots_sub_C' Polynomial.mem_roots_sub_C'
 
@@ -932,7 +932,7 @@ def nthRoots (n : ℕ) (a : R) : Multiset R :=
 
 @[simp]
 theorem mem_nthRoots {n : ℕ} (hn : 0 < n) {a x : R} : x ∈ nthRoots n a ↔ x ^ n = a := by
-  rw [nthRoots, mem_roots (X_pow_sub_C_ne_zero hn a), IsRoot.definition, eval_sub, eval_C, eval_pow,
+  rw [nthRoots, mem_roots (X_pow_sub_C_ne_zero hn a), IsRoot.def, eval_sub, eval_C, eval_pow,
     eval_X, sub_eq_zero]
 #align polynomial.mem_nth_roots Polynomial.mem_nthRoots
 
@@ -1018,7 +1018,7 @@ theorem one_mem_nthRootsFinset (hn : 0 < n) : 1 ∈ nthRootsFinset n R := by
 end NthRoots
 
 theorem Monic.comp (hp : p.Monic) (hq : q.Monic) (h : q.natDegree ≠ 0) : (p.comp q).Monic := by
-  rw [Monic.def', leadingCoeff_comp h, Monic.def'.1 hp, Monic.def'.1 hq, one_pow, one_mul]
+  rw [Monic.def, leadingCoeff_comp h, Monic.def.1 hp, Monic.def.1 hq, one_pow, one_mul]
 #align polynomial.monic.comp Polynomial.Monic.comp
 
 theorem Monic.comp_X_add_C (hp : p.Monic) (r : R) : (p.comp (X + C r)).Monic := by
@@ -1084,7 +1084,7 @@ theorem aroots_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] :
 
 theorem mem_aroots' [CommRing S] [IsDomain S] [Algebra T S] {p : T[X]} {a : S} :
     a ∈ p.aroots S ↔ p.map (algebraMap T S) ≠ 0 ∧ aeval a p = 0 := by
-  rw [mem_roots', IsRoot.definition, ← eval₂_eq_eval_map, aeval_def]
+  rw [mem_roots', IsRoot.def, ← eval₂_eq_eval_map, aeval_def]
 
 theorem mem_aroots [CommRing S] [IsDomain S] [Algebra T S]
     [NoZeroSMulDivisors T S] {p : T[X]} {a : S} : a ∈ p.aroots S ↔ p ≠ 0 ∧ aeval a p = 0 := by
@@ -1383,7 +1383,7 @@ lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero {R} [CommRing R] [IsDomain R]
     _ ≤ Finset.card p.roots.toFinset := Finset.card_mono ?_
   intro _
   simp only [Finset.mem_image, Finset.mem_univ, true_and, Multiset.mem_toFinset, mem_roots', ne_eq,
-    IsRoot.definition, forall_exists_index, hp, not_false_eq_true]
+    IsRoot.def, forall_exists_index, hp, not_false_eq_true]
   rintro x rfl
   exact heval _
 
