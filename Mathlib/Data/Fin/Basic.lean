@@ -341,11 +341,7 @@ theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
 
 @[simp] lemma cast_eq_self (a : Fin n) : cast rfl a = a := rfl
 
-theorem rev_involutive : Involutive (rev : Fin n → Fin n) := fun i =>
-  ext <| by
-    dsimp only [rev]
-    rw [← tsub_tsub, tsub_tsub_cancel_of_le (Nat.add_one_le_iff.2 i.is_lt),
-      add_tsub_cancel_right]
+theorem rev_involutive : Involutive (rev : Fin n → Fin n) := rev_rev
 #align fin.rev_involutive Fin.rev_involutive
 
 /-- `Fin.rev` as an `Equiv.Perm`, the antitone involution `Fin n → Fin n` given by
@@ -425,14 +421,21 @@ theorem le_rev_iff {i j : Fin n} : i ≤ rev j ↔ j ≤ rev i := by
 #align fin.last_val Fin.val_last
 #align fin.le_last Fin.le_last
 
-instance : BoundedOrder (Fin (n + 1)) where
-  top := last n
-  le_top := le_last
-  bot := 0
-  bot_le := zero_le
+theorem val_rev_zero : ((rev 0 : Fin (n + 1)) : ℕ) = n := rfl
 
-instance : Lattice (Fin (n + 1)) :=
+theorem val_rev_zero' [NeZero n]: ((rev 0 : Fin n) : ℕ) = n.pred := rfl
+
+instance [NeZero n] : BoundedOrder (Fin n) where
+  top := rev 0
+  le_top i := Nat.le_pred_of_lt i.is_lt
+  bot := 0
+  bot_le := Fin.zero_le'
+
+instance : Lattice (Fin n) :=
   LinearOrder.toLattice
+
+@[simp] theorem rev_bot [NeZero n] : rev (⊥ : Fin n) = ⊤ := rfl
+@[simp] theorem rev_top [NeZero n] : rev (⊤ : Fin n) = ⊥ := rev_rev _
 
 #align fin.last_pos Fin.last_pos
 #align fin.eq_last_of_not_lt Fin.eq_last_of_not_lt
@@ -441,13 +444,19 @@ theorem last_pos' [NeZero n] : 0 < last n := NeZero.pos n
 
 theorem one_lt_last [NeZero n] : 1 < last (n + 1) := (lt_add_iff_pos_left 1).mpr (NeZero.pos n)
 
-theorem top_eq_last (n : ℕ) : ⊤ = Fin.last n :=
-  rfl
+theorem bot_eq_zero (n : ℕ) [NeZero n] : ⊥ = (0 : Fin n) := rfl
+#align fin.bot_eq_zero Fin.bot_eq_zero
+
+theorem top_eq_rev_zero (n : ℕ) [NeZero n] : ⊤ = rev (0 : Fin n) := rfl
+
+theorem top_eq_last (n : ℕ) : ⊤ = last n := rfl
 #align fin.top_eq_last Fin.top_eq_last
 
-theorem bot_eq_zero (n : ℕ) : ⊥ = (0 : Fin (n + 1)) :=
-  rfl
-#align fin.bot_eq_zero Fin.bot_eq_zero
+/- There is a slight asymmetry here, in the sense that `0` is of type `Fin n` when we have
+`[NeZero n]` whereas `last n` is of type `Fin (n + 1)`. To address this properly would
+require a change to the standard library, defining `NeZero n` and thus re-defining `last n`,
+or possibly just `last`, as `rev 0`, of type `Fin n`. As we can see from these lemmas, this
+would be definitionally equal to the existing definition. -/
 
 section
 
