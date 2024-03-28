@@ -5,7 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Data.List.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.List.Order
 
 /-!
 # Order properties of big operators
