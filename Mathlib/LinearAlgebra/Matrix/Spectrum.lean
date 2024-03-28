@@ -55,60 +55,133 @@ noncomputable def eigenvectorBasis : OrthonormalBasis n 𝕜 (EuclideanSpace �
     (Fintype.equivOfCardEq (Fintype.card_fin _))
 #align matrix.is_hermitian.eigenvector_basis Matrix.IsHermitian.eigenvectorBasis
 
-/-- A matrix whose columns are an orthonormal basis of eigenvectors of a hermitian matrix. -/
+lemma mulVec_eigenvectorBasis (j : n) :
+A *ᵥ (hA.eigenvectorBasis j) = hA.eigenvalues j • hA.eigenvectorBasis j := by
+    have h1 := LinearMap.IsSymmetric.apply_eigenvectorBasis
+            (isHermitian_iff_isSymmetric.1 hA) finrank_euclideanSpace
+            ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)
+    rw [IsROrC.real_smul_eq_coe_smul (K := 𝕜)]
+    convert h1 using 2
+    all_goals rw [eigenvectorBasis, OrthonormalBasis.reindex_apply]
+
+/-A matrix whose columns are an orthonormal basis of eigenvectors of a hermitian matrix. -/
 --noncomputable def eigenvectorMatrix : Matrix n n 𝕜 :=
 --  (PiLp.basisFun _ 𝕜 n).toMatrix (eigenvectorBasis hA).toBasis
 --#align matrix.is_hermitian.eigenvector_matrix Matrix.IsHermitian.eigenvectorMatrix
 
-/--Find out the right kind of docstring for this!-/
-noncomputable def Matrix.IsHermitian.eigenvectorUnitary {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
-    {A : Matrix n n 𝕜} [DecidableEq n] (hA : Matrix.IsHermitian A) :
+/--Unitary matrix whose columns are Orthonormal Basis of Eigenvectors of Hermitian Matrix-/
+noncomputable def Matrix.IsHermitian.eigenvectorUnitary {𝕜 : Type*} [IsROrC 𝕜] {n : Type*}
+    [Fintype n]{A : Matrix n n 𝕜} [DecidableEq n] (hA : Matrix.IsHermitian A) :
     Matrix.unitaryGroup n 𝕜 :=
-    ⟨(EuclideanSpace.basisFun n 𝕜).toBasis.toMatrix (eigenvectorBasis hA).toBasis,
+    ⟨(EuclideanSpace.basisFun n 𝕜).toBasis.toMatrix (hA.eigenvectorBasis).toBasis,
     OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary
     (EuclideanSpace.basisFun n 𝕜) (eigenvectorBasis hA)⟩
 
+/--The coercion from the subtype eigenvectorUnitary to the underlying matrix-/
+lemma eigenvectorUnitary_coe {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
+    {A : Matrix n n 𝕜} [DecidableEq n] (hA : Matrix.IsHermitian A) :
+    Matrix.IsHermitian.eigenvectorUnitary hA =
+      (EuclideanSpace.basisFun n 𝕜).toBasis.toMatrix (hA.eigenvectorBasis).toBasis :=
+  rfl
 
-/-- The inverse of `eigenvectorMatrix` -/
-noncomputable def eigenvectorMatrixInv : Matrix n n 𝕜 :=
-  (eigenvectorBasis hA).toBasis.toMatrix (PiLp.basisFun _ 𝕜 n)
-#align matrix.is_hermitian.eigenvector_matrix_inv Matrix.IsHermitian.eigenvectorMatrixInv
 
-theorem eigenvectorMatrix_mul_inv : hA.eigenvectorMatrix * hA.eigenvectorMatrixInv = 1 := by
-  apply Basis.toMatrix_mul_toMatrix_flip
-#align matrix.is_hermitian.eigenvector_matrix_mul_inv Matrix.IsHermitian.eigenvectorMatrix_mul_inv
+@[simp]
+theorem eigenvectorUnitary_apply (i j : n) :
+    (Matrix.IsHermitian.eigenvectorUnitary hA : Matrix n n 𝕜) i j = hA.eigenvectorBasis j i :=
+  rfl
 
-noncomputable instance : Invertible hA.eigenvectorMatrixInv :=
-  invertibleOfLeftInverse _ _ hA.eigenvectorMatrix_mul_inv
+@[simp]
+theorem _root_.Matrix.unitaryGroup.inv_coe_eq_star (U : Matrix.unitaryGroup n 𝕜) :
+    (U⁻¹ : Matrix n n 𝕜) = (star U : Matrix n n 𝕜) := by
+    refine inv_eq_left_inv ?h
+    exact UnitaryGroup.star_mul_self U
 
-noncomputable instance : Invertible hA.eigenvectorMatrix :=
-  invertibleOfRightInverse _ _ hA.eigenvectorMatrix_mul_inv
+lemma star_coe_eigenvectorUnitary :
+    (star (Matrix.IsHermitian.eigenvectorUnitary hA) : Matrix n n 𝕜) =
+      (eigenvectorBasis hA).toBasis.toMatrix (EuclideanSpace.basisFun n 𝕜).toBasis := by
+   rw [←Matrix.unitaryGroup.inv_coe_eq_star]
+   exact inv_eq_left_inv (Basis.toMatrix_mul_toMatrix_flip
+   (eigenvectorBasis hA).toBasis (EuclideanSpace.basisFun n 𝕜).toBasis)
 
-theorem eigenvectorMatrix_apply (i j : n) : hA.eigenvectorMatrix i j = hA.eigenvectorBasis j i := by
-  simp_rw [eigenvectorMatrix, Basis.toMatrix_apply, OrthonormalBasis.coe_toBasis,
-    PiLp.basisFun_repr]
-#align matrix.is_hermitian.eigenvector_matrix_apply Matrix.IsHermitian.eigenvectorMatrix_apply
+theorem eigenvectorUnitary_mulVec (j : n) :
+(Matrix.IsHermitian.eigenvectorUnitary hA : Matrix n n 𝕜) *ᵥ Pi.single j 1 = hA.eigenvectorBasis j
+:=by simp only [mulVec_single, eigenvectorUnitary_apply, mul_one]
 
-/-- The columns of `Matrix.IsHermitian.eigenVectorMatrix` form the basis-/
-theorem transpose_eigenvectorMatrix_apply (i : n) :
-    hA.eigenvectorMatrixᵀ i = hA.eigenvectorBasis i :=
-  funext fun j => eigenvectorMatrix_apply hA j i
+theorem star_eigenvectorUnitary_mulVec (j : n) :
+(star (Matrix.IsHermitian.eigenvectorUnitary hA : Matrix n n 𝕜)) *ᵥ hA.eigenvectorBasis j =
+Pi.single j 1 := by
+rw [←eigenvectorUnitary_mulVec, mulVec_mulVec, unitary.coe_star_mul_self, one_mulVec]
 
-theorem eigenvectorMatrixInv_apply (i j : n) :
-    hA.eigenvectorMatrixInv i j = star (hA.eigenvectorBasis i j) := by
-  rw [eigenvectorMatrixInv, Basis.toMatrix_apply, OrthonormalBasis.coe_toBasis_repr_apply,
-    OrthonormalBasis.repr_apply_apply, PiLp.basisFun_apply, WithLp.equiv_symm_single,
-    EuclideanSpace.inner_single_right, one_mul, IsROrC.star_def]
-#align matrix.is_hermitian.eigenvector_matrix_inv_apply Matrix.IsHermitian.eigenvectorMatrixInv_apply
+theorem spectral_theorem1 :
+    A * (Matrix.IsHermitian.eigenvectorUnitary hA : Matrix n n 𝕜)
+    = (Matrix.IsHermitian.eigenvectorUnitary hA : Matrix n n 𝕜) *
+    diagonal (IsROrC.ofReal ∘ hA.eigenvalues) := by
+apply LinearEquiv.injective (@Matrix.toLin' 𝕜 _ n n _ _)
+apply Basis.ext ((EuclideanSpace.basisFun n 𝕜).toBasis)
+intro i
+rw [Matrix.toLin'_mul,Matrix.toLin'_mul, LinearMap.comp_apply, LinearMap.comp_apply]
+rw [OrthonormalBasis.coe_toBasis, EuclideanSpace.basisFun_apply, toLin'_apply]
 
-theorem conjTranspose_eigenvectorMatrixInv : hA.eigenvectorMatrixInvᴴ = hA.eigenvectorMatrix := by
-  ext i j
-  rw [conjTranspose_apply, eigenvectorMatrixInv_apply, eigenvectorMatrix_apply, star_star]
-#align matrix.is_hermitian.conj_transpose_eigenvector_matrix_inv Matrix.IsHermitian.conjTranspose_eigenvectorMatrixInv
+#exit
 
-theorem conjTranspose_eigenvectorMatrix : hA.eigenvectorMatrixᴴ = hA.eigenvectorMatrixInv := by
-  rw [← conjTranspose_eigenvectorMatrixInv, conjTranspose_conjTranspose]
-#align matrix.is_hermitian.conj_transpose_eigenvector_matrix Matrix.IsHermitian.conjTranspose_eigenvectorMatrix
+-- (Matrix.toLin' (A * (Matrix.IsHermitian.eigenvectorUnitary hA : Matrix n n 𝕜)))
+--      (Matrix.toLin' ((Matrix.IsHermitian.eigenvectorUnitary hA : Matrix n n 𝕜) *
+--       diagonal (IsROrC.ofReal ∘ hA.eigenvalues)))
+--maybe apply the above to each basis vector and prove all these equalities
+--Need some sort of congr_arg thing to translate the goal into something like this
+
+
+--/-- The inverse of `eigenvector Matrix` -/
+--noncomputable def eigenvectorMatrixInv : Matrix n n 𝕜 :=
+--  (eigenvectorBasis hA).toBasis.toMatrix (PiLp.basisFun _ 𝕜 n)
+--#align matrix.is_hermitian.eigenvector_matrix_inv Matrix.IsHermitian.eigenvectorMatrixInv
+
+--theorem eigenvectorMatrix_mul_inv : hA.eigenvectorMatrix * hA.eigenvectorMatrixInv = 1 := by
+--  apply Basis.toMatrix_mul_toMatrix_flip
+--#align matrix.is_hermitian.eigenvector_matrix_mul_inv Matrix.IsHermitian.eigenvectorMatrix_mul_inv
+
+--noncomputable instance : Invertible hA.eigenvectorMatrixInv :=
+--  invertibleOfLeftInverse _ _ hA.eigenvectorMatrix_mul_inv
+
+--noncomputable instance : Invertible hA.eigenvectorMatrix :=
+--  invertibleOfRightInverse _ _ hA.eigenvectorMatrix_mul_inv
+
+--theorem eigenvectorMatrix_apply (i j : n) : hA.eigenvectorMatrix i j = hA.eigenvectorBasis j i := by
+--  simp_rw [eigenvectorMatrix, Basis.toMatrix_apply, OrthonormalBasis.coe_toBasis,
+--    PiLp.basisFun_repr]
+--#align matrix.is_hermitian.eigenvector_matrix_apply Matrix.IsHermitian.eigenvectorMatrix_apply
+
+--/-- The columns of `Matrix.IsHermitian.eigenVectorMatrix` form the basis-/
+--theorem transpose_eigenvectorMatrix_apply (i : n) :
+--    hA.eigenvectorMatrixᵀ i = hA.eigenvectorBasis i :=
+--  funext fun j => eigenvectorMatrix_apply hA j i
+
+--/-- The columns of `Matrix.IsHermitian.eigenvectorUnitary` form the basis-/
+--theorem transpose_eigenvectorUnitary (i : n) :
+--    ((Matrix.IsHermitian.eigenvectorUnitary hA : Matrix n n 𝕜))ᵀ i = hA.eigenvectorBasis i :=
+--  funext fun j => eigenvectorUnitary_apply hA j i
+
+--theorem eigenvectorMatrixInv_apply (i j : n) :
+--    hA.eigenvectorMatrixInv i j = star (hA.eigenvectorBasis i j) := by
+--  rw [eigenvectorMatrixInv, Basis.toMatrix_apply, OrthonormalBasis.coe_toBasis_repr_apply,
+--    OrthonormalBasis.repr_apply_apply, PiLp.basisFun_apply, WithLp.equiv_symm_single,
+--    EuclideanSpace.inner_single_right, one_mul, IsROrC.star_def]
+--#align matrix.is_hermitian.eigenvector_matrix_inv_apply Matrix.IsHermitian.eigenvectorMatrixInv_apply
+
+--theorem conjTranspose_eigenvectorMatrixInv : hA.eigenvectorMatrixInvᴴ = hA.eigenvectorMatrix := by
+--  ext i j
+--  rw [conjTranspose_apply, eigenvectorMatrixInv_apply, eigenvectorMatrix_apply, star_star]
+--#align matrix.is_hermitian.conj_transpose_eigenvector_matrix_inv Matrix.IsHermitian.conjTranspose_eigenvectorMatrixInv
+
+--theorem conjTranspose_eigenvectorMatrixInv : hA.eigenvectorMatrixInvᴴ = hA.eigenvectorMatrix := by
+--  ext i j
+--  rw [conjTranspose_apply, eigenvectorMatrixInv_apply, eigenvectorMatrix_apply, star_star]
+--#align matrix.is_hermitian.conj_transpose_eigenvector_matrix_inv Matrix.IsHermitian.conjTranspose_eigenvectorMatrixInv
+
+--theorem conjTranspose_eigenvectorMatrix : hA.eigenvectorMatrixᴴ = hA.eigenvectorMatrixInv := by
+--  rw [← conjTranspose_eigenvectorMatrixInv, conjTranspose_conjTranspose]
+--#align matrix.is_hermitian.conj_transpose_eigenvector_matrix Matrix.IsHermitian.conjTranspose_eigenvectorMatrix
+
 
 /-- **Diagonalization theorem**, **spectral theorem** for matrices; A hermitian matrix can be
 diagonalized by a change of basis.
