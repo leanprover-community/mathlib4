@@ -384,14 +384,11 @@ theorem additiveFunction_val_eq_hilbertPolynomial_eval
     · simp only [h1, ↓reduceIte, eval_zero, Int.cast_eq_zero]
       rw [hμ, ← auxPolynomial_mul_eq 𝒜 ℳ μ S,
         ← pow_rootMultiplicity_mul_auxPolynomial'_eq_auxPolynomial 𝒜 ℳ μ S h]
-      let one_sub : ℤ⟦X⟧ˣ := {
-        val := 1 - PowerSeries.X
-        inv := invOfUnit (1 - PowerSeries.X) 1
-        val_inv := @PowerSeries.mul_invOfUnit ℤ _ (1 - PowerSeries.X) 1 <| by
-          simp only [map_sub, map_one, constantCoeff_X, sub_zero, Units.val_one]
-        inv_val := by
+      let one_sub : ℤ⟦X⟧ˣ := ⟨1 - PowerSeries.X, invOfUnit (1 - PowerSeries.X) 1,
+        @PowerSeries.mul_invOfUnit ℤ _ (1 - PowerSeries.X) 1 <| by
+          simp only [map_sub, map_one, constantCoeff_X, sub_zero, Units.val_one], by
           rw [mul_comm]; exact @PowerSeries.mul_invOfUnit ℤ _ (1 - PowerSeries.X) 1 <| by
-            simp only [map_sub, map_one, constantCoeff_X, sub_zero, Units.val_one] }
+            simp only [map_sub, map_one, constantCoeff_X, sub_zero, Units.val_one]⟩
       rw [show poles S = one_sub ^ S.toFinset.card by
         rw [poles]; simp_rw [hS]; simp only [pow_one, Finset.prod_const, Finset.card_attach];
         exact Units.eq_iff.mp rfl, coe_mul, coe_pow, show @ToPowerSeries ℤ
@@ -479,7 +476,8 @@ theorem hilbertPolynomial_natDegree_eq_sub (hhP : hilbertPolynomial 𝒜 ℳ μ 
   · exfalso; rw [hilbertPolynomial] at hhP;
     simp only [h, ↓reduceDite, ne_eq, not_true_eq_false] at hhP
   · by_cases h1 : S.toFinset.card ≤ (auxPolynomial 𝒜 ℳ μ S).rootMultiplicity 1
-    · rw [hilbertPolynomial] at hhP; simp [h1] at hhP
+    · rw [hilbertPolynomial] at hhP; simp only [h1, ↓reduceIte, dite_eq_ite, ite_self, ne_eq,
+      not_true_eq_false] at hhP
     · refine' Polynomial.natDegree_eq_of_le_of_coeff_ne_zero _ _
       · rw [hilbertPolynomial]; simp only [h, ↓reduceDite, h1, ↓reduceIte]
         rw [polynomial_of_polynomial]; simp only [zsmul_eq_mul]
