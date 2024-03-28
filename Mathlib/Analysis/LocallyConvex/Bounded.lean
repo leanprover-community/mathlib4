@@ -342,7 +342,7 @@ theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
     tendsto_add
   rw [add_zero] at h
   have h' := (nhds_basis_balanced 𝕜 E).prod (nhds_basis_balanced 𝕜 E)
-  simp_rw [← nhds_prod_eq, id.def] at h'
+  simp_rw [← nhds_prod_eq, id] at h'
   rcases h.basis_left h' U hU with ⟨x, hx, h''⟩
   rcases hs x.snd hx.2.1 with ⟨t, ht, hs⟩
   refine Absorbs.mono_right ?_ hs

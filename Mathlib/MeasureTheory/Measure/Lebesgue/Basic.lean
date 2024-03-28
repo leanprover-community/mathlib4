@@ -59,11 +59,11 @@ theorem volume_eq_stieltjes_id : (volume : Measure ℝ) = StieltjesFunction.id.m
         Real.measure_ext_Ioo_rat fun p q => by
           simp only [Measure.map_apply (measurable_const_add a) measurableSet_Ioo,
             sub_sub_sub_cancel_right, StieltjesFunction.measure_Ioo, StieltjesFunction.id_leftLim,
-            StieltjesFunction.id_apply, id.def, preimage_const_add_Ioo]⟩
+            StieltjesFunction.id_apply, id, preimage_const_add_Ioo]⟩
   have A : StieltjesFunction.id.measure (stdOrthonormalBasis ℝ ℝ).toBasis.parallelepiped = 1 := by
     change StieltjesFunction.id.measure (parallelepiped (stdOrthonormalBasis ℝ ℝ)) = 1
     rcases parallelepiped_orthonormalBasis_one_dim (stdOrthonormalBasis ℝ ℝ) with (H | H) <;>
-      simp only [H, StieltjesFunction.measure_Icc, StieltjesFunction.id_apply, id.def, tsub_zero,
+      simp only [H, StieltjesFunction.measure_Icc, StieltjesFunction.id_apply, id, tsub_zero,
         StieltjesFunction.id_leftLim, sub_neg_eq_add, zero_add, ENNReal.ofReal_one]
   conv_rhs =>
     rw [addHaarMeasure_unique StieltjesFunction.id.measure
@@ -391,7 +391,7 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
     ext f k
     simp only [e, g, p, LinearEquiv.map_smul, dite_eq_ite, LinearMap.id_coe, ite_not,
       Algebra.id.smul_eq_mul, one_mul, dotProduct, stdBasisMatrix,
-      MeasurableEquiv.piEquivPiSubtypeProd_symm_apply, id.def, transvection, Pi.add_apply,
+      MeasurableEquiv.piEquivPiSubtypeProd_symm_apply, id, transvection, Pi.add_apply,
       zero_mul, LinearMap.smul_apply, Function.comp_apply,
       MeasurableEquiv.piEquivPiSubtypeProd_apply, Matrix.TransvectionStruct.toMatrix_mk,
       Matrix.mulVec, LinearEquiv.map_add, ite_mul, Matrix.toLin'_apply, Pi.smul_apply,

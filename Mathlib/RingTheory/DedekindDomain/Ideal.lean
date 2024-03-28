@@ -1091,7 +1091,7 @@ theorem idealFactorsFunOfQuotHom_id :
     idealFactorsFunOfQuotHom (RingHom.id (A ⧸ J)).surjective = OrderHom.id :=
   OrderHom.ext _ _
     (funext fun X => by
-      simp only [idealFactorsFunOfQuotHom, map_id, OrderHom.coe_mk, OrderHom.id_coe, id.def,
+      simp only [idealFactorsFunOfQuotHom, map_id, OrderHom.coe_mk, OrderHom.id_coe, id,
         comap_map_of_surjective (Ideal.Quotient.mk J) Quotient.mk_surjective, ←
         RingHom.ker_eq_comap_bot (Ideal.Quotient.mk J), mk_ker,
         sup_eq_left.mpr (dvd_iff_le.mp X.prop), Subtype.coe_eta])

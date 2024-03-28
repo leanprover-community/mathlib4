@@ -1670,7 +1670,7 @@ theorem swap_comp_apply {a b x : α} (π : Perm α) :
 #align equiv.swap_comp_apply Equiv.swap_comp_apply
 
 theorem swap_eq_update (i j : α) : (Equiv.swap i j : α → α) = update (update id j i) i j :=
-  funext fun x => by rw [update_apply _ i j, update_apply _ j i, Equiv.swap_apply_def, id.def]
+  funext fun x => by rw [update_apply _ i j, update_apply _ j i, Equiv.swap_apply_def, id]
 #align equiv.swap_eq_update Equiv.swap_eq_update
 
 theorem comp_swap_eq_update (i j : α) (f : α → β) :

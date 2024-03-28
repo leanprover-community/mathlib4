@@ -766,7 +766,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
   have Pu : ∀ n, P (u n) := by
     intro n
     induction' n with n IH
-    · simp only [P, u, Prod.forall, id.def, Function.iterate_zero, Nat.zero_eq]
+    · simp only [P, u, Prod.forall, id, Function.iterate_zero, Nat.zero_eq]
       simp only [Finset.not_mem_empty, IsEmpty.forall_iff, Finset.coe_empty, forall₂_true_iff,
         and_self_iff, pairwiseDisjoint_empty]
     · rw [u_succ]
@@ -792,7 +792,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
       intro n
       induction' n with n IH
       · simp only [u, le_refl, diff_empty, one_mul, iUnion_false, iUnion_empty, pow_zero,
-          Nat.zero_eq, Function.iterate_zero, id.def, Finset.not_mem_empty]
+          Nat.zero_eq, Function.iterate_zero, id, Finset.not_mem_empty]
       calc
         μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ u n.succ), closedBall p.fst p.snd) ≤
             N / (N + 1) * μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ u n), closedBall p.fst p.snd) := by
