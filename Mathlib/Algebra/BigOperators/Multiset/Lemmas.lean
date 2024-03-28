@@ -45,13 +45,6 @@ lemma prod_ne_zero (h : (0 : α) ∉ s) : s.prod ≠ 0 := mt prod_eq_zero_iff.1 
 
 end CommMonoidWithZero
 
-@[to_additive]
-theorem prod_eq_one_iff [CanonicallyOrderedCommMonoid α] {m : Multiset α} :
-    m.prod = 1 ↔ ∀ x ∈ m, x = (1 : α) :=
-  Quotient.inductionOn m fun l => by simpa using List.prod_eq_one_iff l
-#align multiset.prod_eq_one_iff Multiset.prod_eq_one_iff
-#align multiset.sum_eq_zero_iff Multiset.sum_eq_zero_iff
-
 section NonUnitalSemiring
 variable [NonUnitalSemiring α] {s : Multiset α} {a : α}
 
@@ -63,13 +56,6 @@ lemma dvd_sum : (∀ x ∈ s, a ∣ x) → a ∣ s.sum :=
 
 end NonUnitalSemiring
 end Multiset
-
-@[simp]
-lemma CanonicallyOrderedCommSemiring.multiset_prod_pos {R} [CanonicallyOrderedCommSemiring R]
-    [Nontrivial R] {m : Multiset R} : 0 < m.prod ↔ (∀ x ∈ m, (0 : R) < x) := by
-  rcases m with ⟨l⟩
-  rw [Multiset.quot_mk_to_coe'', Multiset.prod_coe]
-  exact CanonicallyOrderedCommSemiring.list_prod_pos
 
 open Multiset
 

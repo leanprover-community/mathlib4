@@ -5,7 +5,7 @@ Authors: Kyle Miller, Yury Kudryashov
 -/
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Set.Finite
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.BigOperators
 

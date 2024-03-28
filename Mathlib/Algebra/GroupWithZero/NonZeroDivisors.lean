@@ -3,6 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma, Oliver Nash
 -/
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.GroupTheory.Submonoid.Operations
 import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.GroupTheory.Submonoid.MulOpposite
@@ -239,12 +240,6 @@ theorem nonZeroDivisors_le_comap_nonZeroDivisors_of_injective [NoZeroDivisors M'
     [MonoidWithZeroHomClass F M M'] (f : F) (hf : Function.Injective f) : M⁰ ≤ M'⁰.comap f :=
   Submonoid.le_comap_of_map_le _ (map_le_nonZeroDivisors_of_injective _ hf le_rfl)
 #align non_zero_divisors_le_comap_non_zero_divisors_of_injective nonZeroDivisors_le_comap_nonZeroDivisors_of_injective
-
-@[deprecated Multiset.prod_eq_zero_iff] -- since 26 Dec 2023
-theorem prod_zero_iff_exists_zero [NoZeroDivisors M₁] [Nontrivial M₁] {s : Multiset M₁} :
-    s.prod = 0 ↔ ∃ (r : M₁) (_ : r ∈ s), r = 0 := by
-  simp [Multiset.prod_eq_zero_iff]
-#align prod_zero_iff_exists_zero prod_zero_iff_exists_zero
 
 end nonZeroDivisors
 

@@ -3091,6 +3091,23 @@ theorem add_eq_union_iff_disjoint [DecidableEq α] {s t : Multiset α} :
     Nat.min_eq_zero_iff, Nat.add_eq_max_iff]
 #align multiset.add_eq_union_iff_disjoint Multiset.add_eq_union_iff_disjoint
 
+lemma add_eq_union_left_of_le [DecidableEq α] {s t u : Multiset α} (h : t ≤ s) :
+    u + s = u ∪ t ↔ u.Disjoint s ∧ s = t := by
+  rw [← add_eq_union_iff_disjoint]
+  refine ⟨fun h0 ↦ ?_, ?_⟩
+  · rw [and_iff_right_of_imp]
+    · exact (le_of_add_le_add_left <| h0.trans_le <| union_le_add u t).antisymm h
+    · rintro rfl
+      exact h0
+  · rintro ⟨h0, rfl⟩
+    exact h0
+#align multiset.add_eq_union_left_of_le Multiset.add_eq_union_left_of_le
+
+lemma add_eq_union_right_of_le [DecidableEq α] {x y z : Multiset α} (h : z ≤ y) :
+    x + y = x ∪ z ↔ y = z ∧ x.Disjoint y := by
+  simpa only [and_comm] using add_eq_union_left_of_le h
+#align multiset.add_eq_union_right_of_le Multiset.add_eq_union_right_of_le
+
 theorem disjoint_map_map {f : α → γ} {g : β → γ} {s : Multiset α} {t : Multiset β} :
     Disjoint (s.map f) (t.map g) ↔ ∀ a ∈ s, ∀ b ∈ t, f a ≠ g b := by
   simp [Disjoint, @eq_comm _ (f _) (g _)]

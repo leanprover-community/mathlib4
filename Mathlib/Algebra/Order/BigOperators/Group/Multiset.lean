@@ -5,11 +5,15 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.List.Basic
 import Mathlib.Algebra.BigOperators.Multiset.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Group.Abs
 
 /-!
-# Big operators in an algebraic ordered structure
+# Big operators on a multiset in ordered groups
+
+This file contains the results concerning the interaction of multiset big operators with ordered
+groups.
 -/
 
 variable {ι α β : Type*}
@@ -156,25 +160,24 @@ lemma prod_lt_prod_of_nonempty' (hs : s ≠ ∅) (hfg : ∀ i ∈ s, f i < g i) 
 
 end OrderedCancelCommMonoid
 
-@[to_additive]
-lemma le_prod_of_mem [CanonicallyOrderedCommMonoid α] {s : Multiset α} {a : α} (h : a ∈ s) :
-    a ≤ s.prod := by
-  obtain ⟨t, rfl⟩ := exists_cons_of_mem h
+section CanonicallyOrderedCommMonoid
+variable [CanonicallyOrderedCommMonoid α] {m : Multiset α} {a : α}
+
+@[to_additive] lemma prod_eq_one_iff : m.prod = 1 ↔ ∀ x ∈ m, x = (1 : α) :=
+  Quotient.inductionOn m fun l ↦ by simpa using List.prod_eq_one_iff
+#align multiset.prod_eq_one_iff Multiset.prod_eq_one_iff
+#align multiset.sum_eq_zero_iff Multiset.sum_eq_zero_iff
+
+@[to_additive] lemma le_prod_of_mem (ha : a ∈ m) : a ≤ m.prod := by
+  obtain ⟨t, rfl⟩ := exists_cons_of_mem ha
   rw [prod_cons]
   exact _root_.le_mul_right (le_refl a)
 #align multiset.le_prod_of_mem Multiset.le_prod_of_mem
 #align multiset.le_sum_of_mem Multiset.le_sum_of_mem
 
+end CanonicallyOrderedCommMonoid
+
 lemma abs_sum_le_sum_abs [LinearOrderedAddCommGroup α] {s : Multiset α} :
-    abs s.sum ≤ (s.map abs).sum :=
+    |s.sum| ≤ (s.map abs).sum :=
   le_sum_of_subadditive _ abs_zero abs_add s
 #align multiset.abs_sum_le_sum_abs Multiset.abs_sum_le_sum_abs
-
-lemma prod_nonneg [OrderedCommSemiring α] {s : Multiset α} (h : ∀ a ∈ s, (0 : α) ≤ a) :
-    0 ≤ s.prod := by
-  revert h
-  refine s.induction_on ?_ fun a s hs ih ↦ ?_
-  · simp
-  · rw [prod_cons]
-    exact mul_nonneg (ih _ <| mem_cons_self _ _) (hs fun a ha ↦ ih _ <| mem_cons_of_mem ha)
-#align multiset.prod_nonneg Multiset.prod_nonneg
