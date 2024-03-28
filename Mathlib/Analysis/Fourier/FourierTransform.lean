@@ -322,7 +322,7 @@ theorem vector_fourierIntegral_eq_integral_exp_smul {V : Type*} [AddCommGroup V]
 theorem fourierIntegral_convergent_iff {V W : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     [NormedAddCommGroup W] [NormedSpace ℝ W] [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
     (f : V → E) (L : V →L[ℝ] W →L[ℝ] ℝ) (w : W) :
-    Integrable (fun v : V ↦ 𝐞 (-L v w) • f v) μ ↔ Integrable f μ :=
+    Integrable (fun v : V ↦ 𝐞 (- L v w) • f v) μ ↔ Integrable f μ :=
   (VectorFourier.fourier_integral_convergent_iff (E := E) (L := L.toLinearMap₂)
     continuous_fourierChar L.continuous₂ _).symm
 

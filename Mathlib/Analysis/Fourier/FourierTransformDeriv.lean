@@ -292,6 +292,22 @@ lemma truc [CompleteSpace E] [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
       sorry /-refine (fourier_integral_convergent_iff continuous_fourierChar ?_ _).1 ?_
       · exact L.continuous₂
       · exact integrable_bloublou (hf (k+1) (ENat.add_one_le_of_lt hk)) h'f -/
+    have I' : Integrable (fun v ↦ 𝐞 (-((ContinuousLinearMap.toLinearMap₂ L) v) w)
+        • mul_L L (fun v ↦ bloublou L f v k) v) μ := by
+      refine (fourier_integral_convergent_iff continuous_fourierChar ?_ _).1 ?_
+      · exact L.continuous₂
+      · apply ((hf (k+1) (ENat.add_one_le_of_lt hk)).const_mul ((2 * π * ‖L‖) ^ (k + 1))).mono'
+          (aestronglyMeasurable_mul_L L (aestronglyMeasurable_boublou h'f))
+        filter_upwards with v
+        rw [norm_mul_L]
+        calc
+        2 * π * ‖L v‖ * ‖bloublou L f v k‖
+          ≤ 2 * π * (‖L‖ * ‖v‖) * ((2 * π * ‖L‖) ^ k * ‖v‖ ^ k * ‖f v‖) := by
+            gcongr
+            · exact L.le_opNorm v
+            · exact norm_bloublou_le L f v k
+        _ = (2 * π * ‖L‖) ^ (k + 1) * (‖v‖ ^ (k + 1) * ‖f v‖) := by
+            simp only [pow_succ, mul_pow]; ring
     have E : ContinuousMultilinearMap.curryLeft
         (fourierIntegral 𝐞 μ (ContinuousLinearMap.toLinearMap₂ L)
           (fun v ↦ bloublou L f v (Nat.succ k)) w) =
@@ -301,31 +317,13 @@ lemma truc [CompleteSpace E] [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
       have B v w' : (bloublou L f v (Nat.succ k)) (Fin.cons w' m) =
           -(2 * ↑π * Complex.I) • (L v) w' • (bloublou L f v k) m := by
         simp [pow_succ, smul_comm (M := ℝ) (N := ℂ) (α := E), Fin.prod_univ_succ, smul_smul]
-      have A : (∫ (v : V), 𝐞 (-(L.toLinearMap₂ v w)) • mul_L L (fun v ↦ bloublou L f v k) v ∂μ) w'
-          = ∫ (v : V), (𝐞 (-(L.toLinearMap₂ v w))
-            • mul_L L (fun v ↦ bloublou L f v k) v) w' ∂μ := by sorry
-        /- rw [ContinuousLinearMap.integral_apply]
-        refine (fourier_integral_convergent_iff continuous_fourierChar ?_ _).1 ?_
-        · exact L.continuous₂
-        · apply ((hf (k+1) (ENat.add_one_le_of_lt hk)).const_mul ((2 * π * ‖L‖) ^ (k + 1))).mono'
-            (aestronglyMeasurable_mul_L L (aestronglyMeasurable_boublou h'f))
-          filter_upwards with v
-          rw [norm_mul_L]
-          calc
-          2 * π * ‖L v‖ * ‖bloublou L f v k‖
-            ≤ 2 * π * (‖L‖ * ‖v‖) * ((2 * π * ‖L‖) ^ k * ‖v‖ ^ k * ‖f v‖) := by
-              gcongr
-              · exact L.le_opNorm v
-              · exact norm_bloublou_le L f v k
-          _ = (2 * π * ‖L‖) ^ (k + 1) * (‖v‖ ^ (k + 1) * ‖f v‖) := by
-              simp only [pow_succ, mul_pow]; ring -/
       simp only [ContinuousMultilinearMap.curryLeft_apply]
-      rw [fourierIntegral, ContinuousMultilinearMap.integral_apply K, fourierIntegral, A,
-          ContinuousMultilinearMap.integral_apply]
-      · simp only [ContinuousMultilinearMap.smul_apply, mul_L,
-          ContinuousLinearMap.neg_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply,
-          ContinuousLinearMap.smulRight_apply, ContinuousMultilinearMap.neg_apply, B]
-      · sorry
+      rw [fourierIntegral, ContinuousMultilinearMap.integral_apply K, fourierIntegral,
+          ContinuousLinearMap.integral_apply I',
+          ContinuousMultilinearMap.integral_apply (I'.apply_continuousLinearMap _)]
+      simp only [ContinuousMultilinearMap.smul_apply, mul_L,
+        ContinuousLinearMap.neg_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply,
+        ContinuousLinearMap.smulRight_apply, ContinuousMultilinearMap.neg_apply, B]
     rw [E]
     exact hasFDerivAt_fourier L I J w
   · intro k hk
