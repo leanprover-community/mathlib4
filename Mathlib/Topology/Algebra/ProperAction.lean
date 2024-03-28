@@ -157,7 +157,7 @@ lemma properSMul_of_closed_embedding {H : Type*} [Group H] [MulAction H X] [Topo
     [ProperSMul G X] (f : H →* G) (f_clemb : ClosedEmbedding f)
     (f_compat : ∀ (h : H) (x : X), f h • x = h • x) : ProperSMul H X where
   isProperMap_smul_pair' := by
-    have := IsProperMap_of_closedEmbedding f_clemb
+    have := isProperMap_of_closedEmbedding f_clemb
     have : IsProperMap (Prod.map f (fun x : X ↦ x)) := IsProperMap.prod_map this isProperMap_id
     have : (fun hx : H × X ↦ (hx.1 • hx.2, hx.2)) = (fun hx ↦ (f hx.1 • hx.2, hx.2)) := by
       simp [f_compat]
@@ -173,7 +173,7 @@ instance {H : Subgroup G} [ProperSMul G X] [H_closed : IsClosed (H : Set G)] : P
   isProperMap_smul_pair' := by
     have : IsProperMap (fun hx : H × X ↦ ((hx.1, hx.2) : G × X)) := by
       change IsProperMap (Prod.map ((↑) : H → G) (fun x ↦ x))
-      exact IsProperMap.prod_map (isProperMap_subtype_val H_closed) isProperMap_id
+      exact IsProperMap.prod_map (isProperMap_subtype_val_of_closed H_closed) isProperMap_id
     have : IsProperMap (fun hx : H × X ↦ (hx.1 • hx.2, hx.2)) := by
       change IsProperMap ((fun gx ↦ (gx.1 • gx.2, gx.2)) ∘
         (fun hx : H × X ↦ ((hx.1, hx.2) : G × X)))
@@ -187,13 +187,13 @@ then this topological space is T2."]
 theorem t2Space_of_properSMul_of_t2Group [h_proper : ProperSMul G X] [T2Space G] : T2Space X := by
   let f := fun x : X ↦ ((1 : G), x)
   have proper_f : IsProperMap f := by
-    apply IsProperMap_of_closedEmbedding
+    apply isProperMap_of_closedEmbedding
     rw [closedEmbedding_iff]
     constructor
     · let g := fun gx : G × X ↦ gx.2
       have : Function.LeftInverse g f := by intro x; simp
       exact Function.LeftInverse.embedding this (by fun_prop) (by fun_prop)
-    · have : range f = ({1} ×ˢ univ) := by simp
+    · have : Set.range f = ({1} ×ˢ Set.univ) := by simp
       rw [this]
       exact IsClosed.prod isClosed_singleton isClosed_univ
   rw [t2_iff_isClosed_diagonal]
