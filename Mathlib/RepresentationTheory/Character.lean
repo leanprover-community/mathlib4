@@ -249,8 +249,15 @@ def averageFunction (α : G → k) (V : FdRep k G) : (V.V →ₗ[k] V.V) := ⅟ 
 
 def averageClassFunction (α : G → k) (h : IsClassFunction α) (V : FdRep k G) : (V ⟶  V) := by
   use averageFunction α V
-  intro g
-  rw [averageFunction]
+  intro g'
+  ext v
+  rw [averageFunction, CategoryTheory.comp_apply, CategoryTheory.comp_apply, invOf_eq_inv]
+  change ((Fintype.card G) : k)⁻¹ • (∑ g : ↑G, α g • V.ρ g) ((V.ρ g') v) = (V.ρ g') (((Fintype.card G) : k)⁻¹ • (∑ g : ↑G, α g • V.ρ g) v)
+  rw [LinearMap.map_smul]
+  congr 1
+  rw [LinearMap.sum_apply, LinearMap.sum_apply, map_sum]
+  simp_rw [smul_apply, map_smul]
+
   sorry
 
 end Orthogonality
@@ -277,7 +284,7 @@ lemma RegularRep_character_ne_one (g : G) (h : g ≠ 1) : (RegularRep k G).chara
   intro g'
   simp only [toMatrix, LinearEquiv.trans_apply, Matrix.diag_apply, toMatrix'_apply,
     LinearEquiv.arrowCongr_apply, Basis.equivFun_symm_apply, ite_smul, one_smul, zero_smul,
-    Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, Basis.equivFun_apply]
+    Finset.sum_ite_eq', Finset.mem_univ, Basis.equivFun_apply]
   erw [ofMulAction_single]
   apply Finsupp.single_eq_of_ne
   simp only [smul_eq_mul, ne_eq, mul_left_eq_self]
@@ -292,7 +299,7 @@ lemma RegularRep_character : (RegularRep k G).character =
     simp [h, RegularRep_character_ne_one k G]
 
 lemma scalarProduct_RegularRep_eq_dimension (V : FdRep k G) :
-    scalarProduct (RegularRep k G).character V.character = (FiniteDimensional.finrank k V : k) := by
+    scalarProduct (RegularRep k G).character V.character = (finrank k V : k) := by
   simp only
     [ RegularRep_character, scalarProduct, invOf_eq_inv, ite_mul
     , zero_mul, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, inv_one
