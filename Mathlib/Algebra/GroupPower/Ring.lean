@@ -250,19 +250,3 @@ protected theorem eq_or_eq_neg_of_sq_eq_sq (a b : Rˣ) (h : a ^ 2 = b ^ 2) : a =
 end Units
 
 end CommRing
-
-section LinearOrderedSemiring
-
-variable [LinearOrderedSemiring R] [ExistsAddOfLE R]
-
-lemma sq_pos_iff (a : R) : 0 < a ^ 2 ↔ a ≠ 0 := by
-  rw [← pow_ne_zero_iff two_ne_zero, (sq_nonneg a).lt_iff_ne, ne_comm]
-#align sq_pos_iff sq_pos_iff
-
-alias ⟨_, sq_pos_of_ne_zero⟩ := sq_pos_iff
-#align sq_pos_of_ne_zero sq_pos_of_ne_zero
-
-alias pow_two_pos_of_ne_zero := sq_pos_of_ne_zero
-#align pow_two_pos_of_ne_zero pow_two_pos_of_ne_zero
-
-end LinearOrderedSemiring
