@@ -140,6 +140,10 @@ theorem eq_preimage_iff_image_eq {α β} (e : α ≃ β) (s t) : s = e ⁻¹' t 
   Set.eq_preimage_iff_image_eq e.bijective
 #align equiv.eq_preimage_iff_image_eq Equiv.eq_preimage_iff_image_eq
 
+lemma setOf_apply_symm_eq_image_setOf {α β} (e : α ≃ β) (p : α → Prop) :
+    {b | p (e.symm b)} = e '' {a | p a} := by
+  rw [Equiv.image_eq_preimage, preimage_setOf_eq]
+
 @[simp]
 theorem prod_assoc_preimage {α β γ} {s : Set α} {t : Set β} {u : Set γ} :
     Equiv.prodAssoc α β γ ⁻¹' s ×ˢ t ×ˢ u = (s ×ˢ t) ×ˢ u := by
