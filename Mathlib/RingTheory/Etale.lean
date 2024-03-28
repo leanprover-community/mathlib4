@@ -1,6 +1,8 @@
 import Mathlib.RingTheory.FormallyEtale
 import Mathlib.RingTheory.FinitePresentation
 import Mathlib.StabilityFinitePres
+import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 
 universe u
 
@@ -53,12 +55,23 @@ theorem Etale.Subsingleton_kaehlerDifferential [Etale R A] : Subsingleton (Î©[Aâ
   exact FormallyEtale.to_unramified
 
 --renamed theorem, hopefully closer to naming conventions.
+end
+
+section
+
+variable (r : R)
+variable (A : Type u) [CommRing A] [Algebra R A] [IsLocalization.Away r A]
+
+theorem Etale.IsLocalization_Away (r : R) [IsLocalization.Away r A] : Etale R A where
+  formallyEtale := Algebra.FormallyEtale.of_isLocalization (Submonoid.powers r)
+  finitePresentation := IsLocalization.Away.finitePresentation r
+
+--not sure about the naming convention.
 
 --TODO
 -- 2. Localization R -> R_f is etale, or more general localization
 -- 3. If R=k is a field, A is etale iff A is a finite product of fields
 --    this is a nice goal, I am afraid we need dimension theory for this (at least that's what the SP does)
 --    but maybe there is a direct way
-
 
 end
