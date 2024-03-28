@@ -303,7 +303,7 @@ theorem derivative_mul {f g : R[X]} : derivative (f * g) = derivative f * g + f 
   cases n
   · simp only [add_zero, Nat.cast_zero, mul_zero, map_zero, Nat.zero_eq]
   rename_i m n
-  simp only [Nat.add_succ_sub_one, add_tsub_cancel_right, Nat.zero_eq]
+  simp only [Nat.add_succ_sub_one, add_tsub_cancel_right, Nat.zero_eq, Nat.succ_eq_add_one]
   rw [add_assoc, add_comm n 1]
 #align polynomial.derivative_mul Polynomial.derivative_mul
 
