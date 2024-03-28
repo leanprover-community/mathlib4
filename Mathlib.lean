@@ -1544,6 +1544,7 @@ import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.TMComputable
 import Mathlib.Computability.TMToPartrec
 import Mathlib.Computability.TuringMachine
+import Mathlib.Computability.UniformlyPrimcodable
 import Mathlib.Condensed.Abelian
 import Mathlib.Condensed.Adjunctions
 import Mathlib.Condensed.Basic
