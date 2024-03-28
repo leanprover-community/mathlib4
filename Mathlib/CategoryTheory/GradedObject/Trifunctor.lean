@@ -33,7 +33,6 @@ variable {C₁ C₂ C₃ C₄ C₁₂ C₂₃ : Type*}
 
 namespace GradedObject
 
-/-- Auxiliary definition for `mapTrifunctor`. -/
 @[simps]
 def mapTrifunctorObj {I₁ : Type*} (X₁ : GradedObject I₁ C₁) (I₂ I₃ : Type*) :
     GradedObject I₂ C₂ ⥤ GradedObject I₃ C₃ ⥤ GradedObject (I₁ × I₂ × I₃) C₄ where
@@ -195,20 +194,21 @@ noncomputable def mapTrifunctorMapFunctorObj (X₁ : GradedObject I₁ C₁)
     { app := fun X₃ => mapTrifunctorMapMap F p (𝟙 X₁) φ (𝟙 X₃)
       naturality := fun {X₃ Y₃} ψ => by
         ext j i₁ i₂ i₃ h
-        dsimp
-        simp only [ι_mapTrifunctorMapMap_assoc, categoryOfGradedObjects_id, Functor.map_id,
-          NatTrans.id_app, ι_mapTrifunctorMapMap, id_comp, NatTrans.naturality_assoc] }
+        simp only [categoryOfGradedObjects_id, NatTrans.id_app, id_eq,
+          categoryOfGradedObjects_comp,
+          ι_mapTrifunctorMapMap_assoc, Functor.map_id, ι_mapTrifunctorMapMap, id_comp,
+          NatTrans.naturality_assoc] }
   map_id X₂ := by
     dsimp
     ext X₃ j i₁ i₂ i₃ h
-    simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
-      NatTrans.id_app, id_comp, comp_id]
+    simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id, NatTrans.id_app,
+      id_comp, comp_id]
   map_comp {X₂ Y₂ Z₂} φ ψ := by
     dsimp
-    ext X₃ j i₁ i₂ i₃
-    simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
-      NatTrans.id_app, categoryOfGradedObjects_comp, Functor.map_comp, NatTrans.comp_app,
-      id_comp, assoc, ι_mapTrifunctorMapMap_assoc]
+    ext X₃ j i₁ i₂ i₃ h
+    simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id, NatTrans.id_app,
+      categoryOfGradedObjects_comp, Functor.map_comp, NatTrans.comp_app, id_comp, assoc,
+      ι_mapTrifunctorMapMap_assoc]
 
 /-- Given a trifunctor `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` and a map `p : I₁ × I₂ × I₃ → J`,
 this is the functor
@@ -283,6 +283,16 @@ noncomputable def ιMapBifunctor₁₂BifunctorMapObj (i₁ : I₁) (i₂ : I₂
   (G.map (ιMapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂ i₁ i₂ _ rfl)).app (X₃ i₃) ≫
     ιMapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ (ρ₁₂.p ⟨i₁, i₂⟩) i₃ j
       (by rw [← h, ← ρ₁₂.hpq])
+
+@[reassoc]
+lemma ιMapBifunctor₁₂BifunctorMapObj_eq (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J)
+    (h : r (i₁, i₂, i₃) = j) (i₁₂ : ρ₁₂.I₁₂) (h₁₂ : ρ₁₂.p ⟨i₁, i₂⟩ = i₁₂) :
+    ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j h =
+      (G.map (ιMapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂ i₁ i₂ i₁₂ h₁₂)).app (X₃ i₃) ≫
+    ιMapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ i₁₂ i₃ j
+      (by rw [← h₁₂, ← h, ← ρ₁₂.hpq]) := by
+  subst h₁₂
+  rfl
 
 /-- The cofan consisting of the inclusions given by `ιMapBifunctor₁₂BifunctorMapObj`. -/
 noncomputable def cofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
@@ -424,6 +434,16 @@ noncomputable def ιMapBifunctorBifunctor₂₃MapObj (i₁ : I₁) (i₂ : I₂
   (F.obj (X₁ i₁)).map (ιMapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃ i₂ i₃ _ rfl) ≫
     ιMapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) i₁ (ρ₂₃.p ⟨i₂, i₃⟩) j
       (by rw [← h, ← ρ₂₃.hpq])
+
+@[reassoc]
+lemma ιMapBifunctorBifunctor₂₃MapObj_eq (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J)
+    (h : r (i₁, i₂, i₃) = j) (i₂₃ : ρ₂₃.I₂₃) (h₂₃ : ρ₂₃.p ⟨i₂, i₃⟩ = i₂₃) :
+    ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h =
+  (F.obj (X₁ i₁)).map (ιMapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃ i₂ i₃ i₂₃ h₂₃) ≫
+    ιMapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) i₁ i₂₃ j
+      (by rw [← h, ← h₂₃, ← ρ₂₃.hpq]) := by
+  subst h₂₃
+  rfl
 
 /-- The cofan consisting of the inclusions given by `ιMapBifunctorBifunctor₂₃MapObj`. -/
 noncomputable def cofan₃MapBifunctorBifunctor₂₃MapObj (j : J) :
