@@ -279,7 +279,7 @@ instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
     add_neg_cancel := fun a ha ↦ mul_inv_cancel (G₀ := α) (id ha : Additive.toMul a ≠ 0) }
 
 lemma pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
-  rw [← one_mul (a ^ n), pow_succ];
+  rw [← one_mul (a ^ n), pow_succ'];
   exact mul_lt_right₀ _ ha (pow_ne_zero _ (zero_lt_one.trans ha).ne')
 #align pow_lt_pow_succ pow_lt_pow_succ
 

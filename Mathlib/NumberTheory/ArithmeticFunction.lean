@@ -548,18 +548,18 @@ theorem ppow_apply {f : ArithmeticFunction R} {k x : ℕ} (kpos : 0 < k) : f.ppo
   rfl
 #align nat.arithmetic_function.ppow_apply ArithmeticFunction.ppow_apply
 
-theorem ppow_succ {f : ArithmeticFunction R} {k : ℕ} : f.ppow (k + 1) = f.pmul (f.ppow k) := by
-  ext x
-  rw [ppow_apply (Nat.succ_pos k), _root_.pow_succ]
-  induction k <;> simp
-#align nat.arithmetic_function.ppow_succ ArithmeticFunction.ppow_succ
-
-theorem ppow_succ' {f : ArithmeticFunction R} {k : ℕ} {kpos : 0 < k} :
-    f.ppow (k + 1) = (f.ppow k).pmul f := by
+theorem ppow_succ' {f : ArithmeticFunction R} {k : ℕ} : f.ppow (k + 1) = f.pmul (f.ppow k) := by
   ext x
   rw [ppow_apply (Nat.succ_pos k), _root_.pow_succ']
   induction k <;> simp
-#align nat.arithmetic_function.ppow_succ' ArithmeticFunction.ppow_succ'
+#align nat.arithmetic_function.ppow_succ ArithmeticFunction.ppow_succ'
+
+theorem ppow_succ {f : ArithmeticFunction R} {k : ℕ} {kpos : 0 < k} :
+    f.ppow (k + 1) = (f.ppow k).pmul f := by
+  ext x
+  rw [ppow_apply (Nat.succ_pos k), _root_.pow_succ]
+  induction k <;> simp
+#align nat.arithmetic_function.ppow_succ' ArithmeticFunction.ppow_succ
 
 end Pmul
 
@@ -927,7 +927,7 @@ theorem IsMultiplicative.ppow [CommSemiring R] {f : ArithmeticFunction R} (hf : 
     {k : ℕ} : IsMultiplicative (f.ppow k) := by
   induction' k with k hi
   · exact isMultiplicative_zeta.nat_cast
-  · rw [ppow_succ]
+  · rw [ppow_succ']
     apply hf.pmul hi
 #align nat.arithmetic_function.is_multiplicative.ppow ArithmeticFunction.IsMultiplicative.ppow
 
@@ -1080,6 +1080,25 @@ theorem moebius_ne_zero_iff_eq_or {n : ℕ} : μ n ≠ 0 ↔ μ n = 1 ∨ μ n =
     apply neg_one_pow_eq_or
   · rcases h with (h | h) <;> simp [h]
 #align nat.arithmetic_function.moebius_ne_zero_iff_eq_or ArithmeticFunction.moebius_ne_zero_iff_eq_or
+
+theorem moebius_sq_eq_one_of_squarefree {l : ℕ} (hl : Squarefree l) : μ l ^ 2 = 1 := by
+  rw [moebius_apply_of_squarefree hl, ← pow_mul, mul_comm, pow_mul, neg_one_sq, one_pow]
+
+theorem abs_moebius_eq_one_of_squarefree {l : ℕ} (hl : Squarefree l) : |μ l| = 1 := by
+  simp only [moebius_apply_of_squarefree hl, abs_pow, abs_neg, abs_one, one_pow]
+
+theorem moebius_sq {n : ℕ} :
+    μ n ^ 2 = if Squarefree n then 1 else 0 := by
+  split_ifs with h
+  · exact moebius_sq_eq_one_of_squarefree h
+  · simp only [pow_eq_zero_iff, moebius_eq_zero_of_not_squarefree h,
+    zero_pow (show 2 ≠ 0 by norm_num)]
+
+theorem abs_moebius {n : ℕ} :
+    |μ n| = if Squarefree n then 1 else 0 := by
+  split_ifs with h
+  · exact abs_moebius_eq_one_of_squarefree h
+  · simp only [moebius_eq_zero_of_not_squarefree h, abs_zero]
 
 theorem moebius_apply_prime {p : ℕ} (hp : p.Prime) : μ p = -1 := by
   rw [moebius_apply_of_squarefree hp.squarefree, cardFactors_apply_prime hp, pow_one]

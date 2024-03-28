@@ -244,13 +244,13 @@ theorem pow_nonneg (H : 0 ≤ a) : ∀ n : ℕ, 0 ≤ a ^ n
     exact zero_le_one
   | n + 1 => by
     rw [pow_succ]
-    exact mul_nonneg H (pow_nonneg H _)
+    exact mul_nonneg (pow_nonneg H _) H
 #align pow_nonneg pow_nonneg
 
 lemma pow_le_pow_of_le_one (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) : ∀ {m n : ℕ}, m ≤ n → a ^ n ≤ a ^ m
   | _, _, Nat.le.refl => le_rfl
   | _, _, Nat.le.step h => by
-    rw [pow_succ]
+    rw [pow_succ']
     exact (mul_le_of_le_one_left (pow_nonneg ha₀ _) ha₁).trans $ pow_le_pow_of_le_one ha₀ ha₁ h
 #align pow_le_pow_of_le_one pow_le_pow_of_le_one
 
@@ -561,7 +561,7 @@ theorem pow_pos (H : 0 < a) : ∀ n : ℕ, 0 < a ^ n
     exact zero_lt_one
   | n + 1 => by
     rw [pow_succ]
-    exact mul_pos H (pow_pos H _)
+    exact mul_pos  (pow_pos H _) H
 #align pow_pos pow_pos
 
 theorem mul_self_lt_mul_self (h1 : 0 ≤ a) (h2 : a < b) : a * a < b * b :=
