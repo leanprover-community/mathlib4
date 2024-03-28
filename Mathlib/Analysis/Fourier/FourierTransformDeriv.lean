@@ -24,7 +24,7 @@ noncomputable section
 
 open Real Complex MeasureTheory Filter TopologicalSpace
 
-open scoped FourierTransform Topology
+open scoped FourierTransform Topology BigOperators
 
 lemma Real.hasDerivAt_fourierChar (x : ℝ) : HasDerivAt (𝐞 · : ℝ → ℂ) (2 * π * I * 𝐞 x) x := by
   have h1 (y : ℝ) : 𝐞 y = fourier 1 (y : UnitAddCircle) := by
@@ -90,7 +90,7 @@ variable {f}
 /-- Main theorem of this section: if both `f` and `x ↦ ‖x‖ * ‖f x‖` are integrable, then the
 Fourier transform of `f` has a Fréchet derivative (everywhere in its domain) and its derivative is
 the Fourier transform of `smulRight L f`. -/
-theorem hasFDerivAt_fourier [CompleteSpace E] [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
+theorem hasFDerivAt_fourier [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
     [SecondCountableTopologyEither V (W →L[ℝ] ℝ)]
     (hf : Integrable f μ) (hf' : Integrable (fun v : V ↦ ‖v‖ * ‖f v‖) μ) (w : W) :
     HasFDerivAt (VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ f)
@@ -125,8 +125,6 @@ This is designed so that the Fourier transform of `v ↦ fourierPowSMulRight L f
 def fourierPowSMulRight (f : V → E) (v : V) : FormalMultilinearSeries ℝ W E := fun n ↦
   (- (2 * π * I))^n • ((ContinuousMultilinearMap.mkPiRing ℝ (Fin n) (f v)).compContinuousLinearMap
   (fun _i ↦ L v))
-
-open scoped BigOperators
 
 @[simp] lemma fourierPowSMulRight_apply {f : V → E} {v : V} {n : ℕ} {m : Fin n → W} :
     fourierPowSMulRight L f v n m = (- (2 * π * I))^n • (∏ i, L v (m i)) • f v := by
@@ -177,8 +175,6 @@ attribute [local instance 2000] secondCountableTopologyEither_of_left
 
 variable [SecondCountableTopology V] [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
 
-#where
-
 lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierPowSMulRight
    {n : ℕ} (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun v ↦ fourierPowSMulRight L f v n) μ := by
@@ -194,14 +190,20 @@ lemma integrable_fourierPowSMulRight {n : ℕ} (hf : Integrable (fun v ↦ ‖v�
   filter_upwards with v
   exact (norm_fourierPowSMulRight_le L f v n).trans (le_of_eq (by ring))
 
+#check ContinuousLinearMap.integral_apply
+
 set_option maxHeartbeats 400000 in
-lemma hasFTaylorSeriesUpTo_fourierIntegral
-    [CompleteSpace E] {N : ℕ∞}
+lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖^n * ‖f v‖) μ)
     (h'f : AEStronglyMeasurable f μ) :
     HasFTaylorSeriesUpTo N (VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ f)
     (fun w n ↦ VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂
       (fun v ↦ fourierPowSMulRight L f v n) w) := by
+  by_cases hE : CompleteSpace E; swap
+  ·
+
+#exit
+
   constructor
   · intro w
     simp only [uncurry0_apply, Matrix.zero_empty, fourierIntegral]
@@ -253,14 +255,6 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral
     apply fourierIntegral_continuous Real.continuous_fourierChar (by apply L.continuous₂)
     exact integrable_fourierPowSMulRight (hf n hn) h'f
 
-
-
-#exit
-
-
-def ContDiff (n : ℕ∞) (f : E → F) : Prop :=
-  ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpTo n f p
-#align cont_diff ContDiff
 
 
 

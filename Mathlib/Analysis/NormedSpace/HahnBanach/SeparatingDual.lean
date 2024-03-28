@@ -154,9 +154,9 @@ variable (𝕜 E F : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup E
 complete. -/
 lemma completeSpace_of_completeSpace_continuousLinearMap [CompleteSpace (E →L[𝕜] F)] :
     CompleteSpace F := by
+  refine Metric.complete_of_cauchySeq_tendsto fun f hf => ?_
   obtain ⟨v, hv⟩ : ∃ (v : E), v ≠ 0 := exists_ne 0
   obtain ⟨φ, hφ⟩ : ∃ φ : E →L[𝕜] 𝕜, φ v = 1 := exists_eq_one hv
-  refine' Metric.complete_of_cauchySeq_tendsto fun f hf => _
   let g : ℕ → (E →L[𝕜] F) := fun n ↦ ContinuousLinearMap.smulRightL 𝕜 E F φ (f n)
   have : CauchySeq g := (ContinuousLinearMap.smulRightL 𝕜 E F φ).lipschitz.cauchySeq_image hf
   obtain ⟨a, ha⟩ : ∃ a, Tendsto g atTop (𝓝 a) := cauchy_iff_exists_le_nhds.mp this
@@ -169,6 +169,20 @@ lemma completeSpace_of_completeSpace_continuousLinearMap [CompleteSpace (E →L[
 lemma completeSpace_continuousLinearMap_iff :
     CompleteSpace (E →L[𝕜] F) ↔ CompleteSpace F :=
   ⟨fun h ↦ completeSpace_of_completeSpace_continuousLinearMap 𝕜 E F, fun h ↦ by infer_instance⟩
+
+variable {ι : Type*} [Fintype ι] (M : ι → Type*) [∀ i, NormedAddCommGroup (M i)]
+  [∀ i, NormedSpace 𝕜 (M i)] [∀ i, SeparatingDual 𝕜 (M i)]
+
+lemma completeSpace_of_completeSpace_continuousMultilinearMap
+    [CompleteSpace (ContinuousMultilinearMap 𝕜 M F)]
+    {m : ∀ i, M i} (hm : ∀ i, m i ≠ 0) : CompleteSpace F := by
+  refine Metric.complete_of_cauchySeq_tendsto fun f hf => ?_
+  have : ∀ i, ∃ φ : M i →L[𝕜] 𝕜, φ (m i) = 1 := fun i ↦ exists_eq_one (hm i)
+  choose φ hφ using this
+  let g : ℕ → (ContinuousMultilinearMap 𝕜 M F) := fun n ↦
+    (ContinuousMultilinearMap.mkPiRing 𝕜 ι (f n)).compContinuousLinearMap φ
+  have : CauchySeq g :=
+
 
 end
 
