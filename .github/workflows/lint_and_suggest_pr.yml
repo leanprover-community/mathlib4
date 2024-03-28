@@ -26,10 +26,10 @@ jobs:
         run: |
           ./scripts/lint-style.sh --fix
 
-      - name: suggester / lint-style
-        uses: reviewdog/action-suggester@v1
-        with:
-          tool_name: lint-style
+#      - name: suggester / lint-style
+#        uses: reviewdog/action-suggester@v1
+#        with:
+#          tool_name: lint-style
 
       - name: Install bibtool
         run: |
