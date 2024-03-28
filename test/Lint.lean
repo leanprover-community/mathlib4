@@ -26,3 +26,12 @@ def Foo.foo := True
 run_cmd Lean.Elab.Command.liftTermElabM do
   let decl := (← Lean.getEnv).find? ``Foo.add.add
   guard decl.isSome
+
+namespace Nat
+/--
+warning: The namespace 'Nat' is duplicated in the declaration 'Foo.Nat.Nat.Nats' [linter.dupNamespace]
+-/
+#guard_msgs in
+alias Nat.Nats := Nat
+
+end Nat
