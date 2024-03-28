@@ -5,6 +5,7 @@ Authors: Jakob von Raumer
 -/
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.LinearAlgebra.PiTensorProduct
 
 #align_import linear_algebra.tensor_product_basis from "leanprover-community/mathlib"@"f784cc6142443d9ee623a20788c282112c322081"
 
@@ -53,4 +54,47 @@ theorem Basis.tensorProduct_repr_tmul_apply (b : Basis ι R M) (c : Basis κ R N
 #align basis.tensor_product_repr_tmul_apply Basis.tensorProduct_repr_tmul_apply
 
 end CommSemiring
+
+section PiTensorProduct
+
+open PiTensorProduct BigOperators
+
+attribute [local ext] PiTensorProduct.ext
+
+open LinearMap
+
+open scoped TensorProduct
+
+variable {ι R : Type*} [CommSemiring R]
+
+variable {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+
+variable {κ : ι → Type*}
+
+variable [Fintype ι] [DecidableEq ι] [(i : ι) → DecidableEq (κ i)] [(x : R) → Decidable (x ≠ 0)]
+
+/-- Let `ι` be a `Fintype` and `M` be a family of modules indexed by `ι`. If `b i : κ i → M i`
+is a basis for every `i` in `ι`, then `fun (p : Π i, κ i) ↦ ⨂ₜ[R] i, b i (p i)` is a basis
+of `⨂[R] i, M i`.
+-/
+def Basis.piTensorProduct (b : Π i, Basis (κ i) R (M i)) :
+    Basis (Π i, κ i) R (⨂[R] i, M i) :=
+  Finsupp.basisSingleOne.map
+    ((PiTensorProduct.congr (fun i ↦ (b i).repr)).trans <|
+        (finsuppPiTensorProduct R _ _).trans <|
+          Finsupp.lcongr (Equiv.refl _) (constantBaseRingEquiv _ R).toLinearEquiv).symm
+
+theorem Basis.piTensorProduct_apply (b : Π i, Basis (κ i) R (M i)) (p : Π i, κ i) :
+    Basis.piTensorProduct b p = ⨂ₜ[R] i, (b i) (p i) := by
+  simp only [piTensorProduct, LinearEquiv.trans_symm, Finsupp.lcongr_symm, Equiv.refl_symm,
+    AlgEquiv.toLinearEquiv_symm, map_apply, Finsupp.coe_basisSingleOne, LinearEquiv.trans_apply,
+    Finsupp.lcongr_single, Equiv.refl_apply, AlgEquiv.toLinearEquiv_apply, _root_.map_one]
+  apply LinearEquiv.injective (PiTensorProduct.congr (fun i ↦ (b i).repr))
+  simp only [LinearEquiv.apply_symm_apply, congr_tprod, repr_self]
+  apply LinearEquiv.injective (finsuppPiTensorProduct R κ fun _ ↦ R)
+  simp only [LinearEquiv.apply_symm_apply, finsuppPiTensorProduct_single]
+  rfl
+
+end PiTensorProduct
+
 end

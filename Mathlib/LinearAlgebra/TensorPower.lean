@@ -178,7 +178,7 @@ theorem one_mul {n} (a : ⨂[R]^n M) : cast R M (zero_add n) (ₜ1 ₜ* a) = a :
     refine' congr_arg a (Fin.ext _)
     simp
   | add x y hx hy =>
-    rw [TensorProduct.tmul_add, map_add, map_add, hx, hy]
+    rw [TensorProduct.tmul_add, LinearEquiv.map_add, LinearEquiv.map_add, hx, hy]
 #align tensor_power.one_mul TensorPower.one_mul
 
 theorem mul_one {n} (a : ⨂[R]^n M) : cast R M (add_zero _) (a ₜ* ₜ1) = a := by
@@ -192,7 +192,7 @@ theorem mul_one {n} (a : ⨂[R]^n M) : cast R M (add_zero _) (a ₜ* ₜ1) = a :
     refine' congr_arg a (Fin.ext _)
     simp
   | add x y hx hy =>
-    rw [TensorProduct.add_tmul, map_add, map_add, hx, hy]
+    rw [TensorProduct.add_tmul, LinearEquiv.map_add, LinearEquiv.map_add, hx, hy]
 #align tensor_power.mul_one TensorPower.mul_one
 
 theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R]^nc) M) :
@@ -267,7 +267,7 @@ instance gsemiring : DirectSum.GSemiring fun i => ⨂[R]^i M :=
     add_mul := fun a₁ a₂ b => LinearMap.map_add₂ _ _ _ _
     natCast := fun n => algebraMap₀ (n : R)
     natCast_zero := by simp only [Nat.cast_zero, map_zero]
-    natCast_succ := fun n => by simp only [Nat.cast_succ, map_add, algebraMap₀_one] }
+    natCast_succ := fun n => by simp only [Nat.cast_succ, LinearEquiv.map_add, algebraMap₀_one] }
 #align tensor_power.gsemiring TensorPower.gsemiring
 
 example : Semiring (⨁ n : ℕ, ⨂[R]^n M) := by infer_instance
