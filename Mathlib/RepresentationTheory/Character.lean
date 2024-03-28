@@ -306,8 +306,6 @@ lemma scalarProduct_RegularRep_eq_dimension (V : FdRep k G) :
     , char_one, smul_eq_mul, ← mul_assoc, inv_mul_cancel_of_invertible, one_mul
     ]
 
-
-
 lemma leftRegular_apply (x : MonoidAlgebra k G) (g : G) :
     ofMulAction k G G g x = MonoidAlgebra.single g 1 * x := by
   simp only [ofMulAction_def, smul_eq_mul, Finsupp.lmapDomain_apply,
@@ -381,9 +379,22 @@ lemma orthogonal_to_all_characters_implies_zero (f : G → k) (hf : IsClassFunct
       have (g : G) (x : MonoidAlgebra k G) : ((ρ (of (ofMulAction k ↑G ↑G))) g) x = (MonoidAlgebra.single g 1) * x := by
         show Representation.ofMulAction k G G g x = _
         apply leftRegular_apply
-
-
-
+      sorry
+    sorry
+  rw [Fintype.sum_equiv (Equiv.inv G) (fun g ↦ f' g • (MonoidAlgebra.single g⁻¹ 1))
+    (fun g ↦ f g • (MonoidAlgebra.single g 1))] at sum_zero
+  swap
+  intro g
+  simp only [Equiv.inv_apply, inv_inv]
+  funext g
+  have : f g = ∑ x : ↑G, f x • (MonoidAlgebra.single x (1 : k)) g := by
+    simp only [MonoidAlgebra.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero,
+      Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte]
+  rw [this]
+  simp only [smul_eq_mul]
+  have that : ∑ x : ↑G, f x * (MonoidAlgebra.single x 1) g = (∑ x : ↑G, f x • MonoidAlgebra.single x (1 : k)) g := by sorry
+  rw [that]
+  simp only [sum_zero, Finsupp.coe_zero, Pi.zero_apply]
 
 
 end RegularRepresentation
