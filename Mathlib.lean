@@ -1876,6 +1876,7 @@ import Mathlib.Data.MvPolynomial.Monad
 import Mathlib.Data.MvPolynomial.PDeriv
 import Mathlib.Data.MvPolynomial.Polynomial
 import Mathlib.Data.MvPolynomial.Rename
+import Mathlib.Data.MvPolynomial.SchwartzZippel
 import Mathlib.Data.MvPolynomial.Supported
 import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.Data.NNRat.BigOperators
