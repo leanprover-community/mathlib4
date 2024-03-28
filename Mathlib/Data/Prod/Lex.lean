@@ -104,6 +104,12 @@ instance preorder (α β : Type*) [Preorder α] [Preorder β] : Preorder (α ×�
               exact h }
 #align prod.lex.preorder Prod.Lex.preorder
 
+theorem monotone_fst [Preorder α] [LE β] (t c : α ×ₗ β) (h : t ≤ c) :
+    (ofLex t).1 ≤ (ofLex c).1 := by
+  cases ((Prod.Lex.le_iff t c).mp h) with
+  | inl h' => exact h'.le
+  | inr h' => exact h'.1.le
+
 section Preorder
 
 variable [PartialOrder α] [Preorder β]
