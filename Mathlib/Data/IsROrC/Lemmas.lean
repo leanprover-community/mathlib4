@@ -46,19 +46,15 @@ instance isROrC_to_real : FiniteDimensional ℝ K :=
 variable (K E)
 variable [NormedAddCommGroup E] [NormedSpace K E]
 
-/-- A finite dimensional vector space over an `IsROrC` is a proper metric space.
-
-This is not an instance because it would cause a search for `FiniteDimensional ?x E` before
-`IsROrC ?x`. -/
-theorem proper_isROrC [FiniteDimensional K E] : ProperSpace E := by
-  letI : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ K E
-  letI : FiniteDimensional ℝ E := FiniteDimensional.trans ℝ K E
-  infer_instance
+/-- A finite dimensional vector space over an `IsROrC` is a proper metric space. -/
+instance (priority := 100) proper_isROrC [FiniteDimensional K E] : ProperSpace E :=
+  FiniteDimensional.proper K E
 #align finite_dimensional.proper_is_R_or_C FiniteDimensional.proper_isROrC
 
 variable {E}
 
-instance IsROrC.properSpace_submodule (S : Submodule K E) [FiniteDimensional K S] :
+@[deprecated proper_isROrC]
+theorem IsROrC.properSpace_submodule (S : Submodule K E) [FiniteDimensional K S] :
     ProperSpace S :=
   proper_isROrC K S
 #align finite_dimensional.is_R_or_C.proper_space_submodule FiniteDimensional.IsROrC.properSpace_submodule
