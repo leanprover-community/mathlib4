@@ -588,6 +588,7 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 --  let mut sfvrs : HashSet FVarId := .empty
 --  let mut stains : HashSet FVarId := .empty
   let _ : Ord FVarId := ⟨fun f g => compare f.name.toString g.name.toString⟩
+  let mut stains : HashMap FVarId SyntaxNodeKind := .empty
   for d in x do for (s, ctxb, ctx, mvsb, mvs) in d do
 --    let newMVb := mvsb.diff mvs
 --    let newMVa := mvs.diff mvsb
@@ -597,13 +598,23 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 --    for locs in getLocs s do
 --    for locs in getStained! s do
 --      Meta.inspect s
-    logInfoAt s m!"{s}\nstains '{getStained! s}'"
+--    logInfoAt s m!"{s}\nstains '{getStained! s}'"
     let currMVara := mvs[0]!
     let currMVarb := mvsb[0]!
     let lctxb := ((ctxb.decls.find? currMVarb).getD default).lctx
     let lctxa := ((ctx.decls.find? currMVara).getD default).lctx
-    logInfoAt s m!"{s}\nstains '{(getStained! s).map fun d =>
-      ((((d.toFVarId lctxb).map (·.name)).zip ((d.toFVarId lctxa).map (·.name))))}'"
+    for d in getStained! s do
+      if stainers.contains s.getKind then
+        let locsAfter := d.toFVarId lctxa
+        for l in locsAfter do
+          stains := stains.insert l s.getKind
+      else
+        let locsBefore := d.toFVarId lctxb
+        for l in locsBefore do
+          if let some kind := stains.find? l then
+            Linter.logLint linter.nonTerminalSimp s m!"{kind} stained '{d}'"
+--    logInfoAt s m!"{s}\nstains '{(getStained! s).map fun d =>
+--      ((((d.toFVarId lctxb).map (·.name)).zip ((d.toFVarId lctxa).map (·.name))))}'"
 
 initialize addLinter nonTerminalSimpLinter
 
