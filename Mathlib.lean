@@ -2804,6 +2804,7 @@ import Mathlib.MeasureTheory.Function.SpecialFunctions.RCLike
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
+import Mathlib.MeasureTheory.Function.UnifTight
 import Mathlib.MeasureTheory.Function.UniformIntegrable
 import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Group.AddCircle

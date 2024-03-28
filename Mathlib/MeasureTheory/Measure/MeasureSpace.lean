@@ -1897,6 +1897,13 @@ theorem eventually_cofinite {p : α → Prop} : (∀ᶠ x in μ.cofinite, p x) �
   Iff.rfl
 #align measure_theory.measure.eventually_cofinite MeasureTheory.Measure.eventually_cofinite
 
+instance : IsMeasurablyGenerated μ.cofinite where
+  exists_measurable_subset s hs := by
+    refine ⟨(toMeasurable μ sᶜ)ᶜ, ?_, (measurableSet_toMeasurable _ _).compl, ?_⟩
+    · rwa [compl_mem_cofinite, measure_toMeasurable]
+    · rw [compl_subset_comm]
+      apply subset_toMeasurable
+
 end Measure
 
 open Measure
