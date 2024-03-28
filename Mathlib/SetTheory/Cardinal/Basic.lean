@@ -2104,6 +2104,11 @@ theorem mk_insert {α : Type u} {s : Set α} {a : α} (h : a ∉ s) :
   simpa
 #align cardinal.mk_insert Cardinal.mk_insert
 
+theorem mk_insert_le {α : Type u} {s : Set α} {a : α} : #(insert a s : Set α) ≤ #s + 1 := by
+  by_cases h : a ∈ s
+  · simp only [insert_eq_of_mem h, self_le_add_right]
+  · rw [mk_insert h]
+
 theorem mk_sum_compl {α} (s : Set α) : #s + #(sᶜ : Set α) = #α :=
   mk_congr (Equiv.Set.sumCompl s)
 #align cardinal.mk_sum_compl Cardinal.mk_sum_compl
