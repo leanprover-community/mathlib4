@@ -220,7 +220,7 @@ protected noncomputable def groupWithZero (I : Ideal R) [hI : I.IsMaximal] :
 #align ideal.quotient.group_with_zero Ideal.Quotient.groupWithZero
 
 /-- The quotient by a maximal ideal is a field. This is a `def` rather than `instance`, since users
-will have computable inverses (and `qsmul`, `rat_cast`) in some applications.
+will have computable inverses (and `qsmul`, `ratCast`) in some applications.
 
 See note [reducible non-instances]. -/
 @[reducible]

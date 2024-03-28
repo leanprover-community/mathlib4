@@ -956,7 +956,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
   -- first check that `volume s ≤ μH s`
   · have Hle : volume ≤ (μH[Fintype.card ι] : Measure (ι → ℝ)) := by
       refine' le_hausdorffMeasure _ _ ∞ ENNReal.coe_lt_top fun s _ => _
-      rw [ENNReal.rpow_nat_cast]
+      rw [ENNReal.rpow_natCast]
       exact Real.volume_pi_le_diam_pow s
     rw [← volume_pi_pi fun i => Ioo (a i : ℝ) (b i)]
     exact Measure.le_iff'.1 Hle _
@@ -1008,7 +1008,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
       refine' liminf_le_liminf _ _
       · filter_upwards [B] with _ hn
         apply Finset.sum_le_sum fun i _ => _
-        simp only [ENNReal.rpow_nat_cast]
+        simp only [ENNReal.rpow_natCast]
         intros i _
         exact pow_le_pow_left' (hn i) _
       · isBoundedDefault
@@ -1022,7 +1022,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
       · apply
           Tendsto.congr' _
             ((ENNReal.continuous_ofReal.tendsto _).comp
-              ((tendsto_nat_ceil_mul_div_atTop (I i)).comp tendsto_nat_cast_atTop_atTop))
+              ((tendsto_nat_ceil_mul_div_atTop (I i)).comp tendsto_natCast_atTop_atTop))
         apply eventually_atTop.2 ⟨1, fun n hn => _⟩
         intros n hn
         simp only [ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr hn), comp_apply,

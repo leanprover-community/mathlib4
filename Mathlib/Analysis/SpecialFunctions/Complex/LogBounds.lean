@@ -81,7 +81,7 @@ lemma hasDerivAt_logTaylor (n : ℕ) (z : ℂ) :
   | zero => simp [logTaylor_succ, logTaylor_zero, Pi.add_def, hasDerivAt_const]
   | succ n ih =>
     rw [logTaylor_succ]
-    simp only [cpow_nat_cast, Nat.cast_add, Nat.cast_one, Nat.odd_iff_not_even,
+    simp only [cpow_natCast, Nat.cast_add, Nat.cast_one, Nat.odd_iff_not_even,
       Finset.sum_range_succ, (show (-1) ^ (n + 1 + 1) = (-1) ^ n by ring)]
     refine HasDerivAt.add ih ?_
     simp only [Nat.odd_iff_not_even, Int.cast_pow, Int.cast_neg, Int.cast_one, mul_div_assoc]

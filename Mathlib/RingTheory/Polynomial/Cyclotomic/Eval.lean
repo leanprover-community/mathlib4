@@ -54,10 +54,10 @@ theorem eval₂_one_cyclotomic_prime_pow {R S : Type*} [CommRing R] [Semiring S]
 private theorem cyclotomic_neg_one_pos {n : ℕ} (hn : 2 < n) {R} [LinearOrderedCommRing R] :
     0 < eval (-1 : R) (cyclotomic n R) := by
   haveI := NeZero.of_gt hn
-  rw [← map_cyclotomic_int, ← Int.cast_one, ← Int.cast_neg, eval_int_cast_map, Int.coe_castRingHom,
+  rw [← map_cyclotomic_int, ← Int.cast_one, ← Int.cast_neg, eval_intCast_map, Int.coe_castRingHom,
     Int.cast_pos]
   suffices 0 < eval (↑(-1 : ℤ)) (cyclotomic n ℝ) by
-    rw [← map_cyclotomic_int n ℝ, eval_int_cast_map, Int.coe_castRingHom] at this
+    rw [← map_cyclotomic_int n ℝ, eval_intCast_map, Int.coe_castRingHom] at this
     simpa only [Int.cast_pos] using this
   simp only [Int.cast_one, Int.cast_neg]
   have h0 := cyclotomic_coeff_zero ℝ hn.le
@@ -144,7 +144,7 @@ theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
   · simp
   have hn : 1 < n := one_lt_iff_ne_zero_and_ne_one.mpr ⟨hn'.ne', (h Nat.prime_two 0).symm⟩
   rsuffices h | h : eval 1 (cyclotomic n ℤ) = 1 ∨ eval 1 (cyclotomic n ℤ) = -1
-  · have := eval_int_cast_map (Int.castRingHom R) (cyclotomic n ℤ) 1
+  · have := eval_intCast_map (Int.castRingHom R) (cyclotomic n ℤ) 1
     simpa only [map_cyclotomic, Int.cast_one, h, eq_intCast] using this
   · exfalso
     linarith [cyclotomic_nonneg n (le_refl (1 : ℤ))]

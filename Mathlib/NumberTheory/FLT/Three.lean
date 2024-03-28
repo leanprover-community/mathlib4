@@ -26,7 +26,7 @@ private lemma cube_of_castHom_ne_zero {n : ZMod 9} :
 private lemma cube_of_not_dvd {n : ℕ} (h : ¬ 3 ∣ n) :
     (n : ZMod 9) ^ 3 = 1 ∨ (n : ZMod 9) ^ 3 = 8 := by
   apply cube_of_castHom_ne_zero
-  rwa [map_natCast, Ne, Fin.nat_cast_eq_zero]
+  rwa [map_natCast, Ne, Fin.natCast_eq_zero]
 
 /--If `a b c : ℕ` are such that `¬ 3 ∣ a * b * c`, then `a ^ 3 + b ^ 3 ≠ c ^ 3`. -/
 theorem fermatLastTheoremThree_case_1 {a b c : ℕ} (hdvd : ¬ 3 ∣ a * b * c) :

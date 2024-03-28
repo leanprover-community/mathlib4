@@ -132,11 +132,11 @@ See note [reducible non-instances]. -/
 protected def addMonoidWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ M₁] [NatCast M₁]
     [AddMonoidWithOne M₂] (f : M₁ → M₂) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (nat_cast : ∀ n : ℕ, f n = n) : AddMonoidWithOne M₁ :=
+    (natCast : ∀ n : ℕ, f n = n) : AddMonoidWithOne M₁ :=
   { hf.addMonoid f zero add nsmul with
     natCast := Nat.cast,
-    natCast_zero := hf (by erw [nat_cast, Nat.cast_zero, zero]),
-    natCast_succ := fun n => hf (by erw [nat_cast, Nat.cast_succ, add, one, nat_cast]), one := 1 }
+    natCast_zero := hf (by erw [natCast, Nat.cast_zero, zero]),
+    natCast_succ := fun n => hf (by erw [natCast, Nat.cast_succ, add, one, natCast]), one := 1 }
 #align function.injective.add_monoid_with_one Function.Injective.addMonoidWithOne
 
 /-- A type endowed with `1` and `*` is a left cancel monoid, if it admits an injective map that
@@ -194,8 +194,8 @@ See note [reducible non-instances]. -/
 protected def addCommMonoidWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ M₁] [NatCast M₁]
     [AddCommMonoidWithOne M₂] (f : M₁ → M₂) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (nat_cast : ∀ n : ℕ, f n = n) : AddCommMonoidWithOne M₁ :=
-  { hf.addMonoidWithOne f zero one add nsmul nat_cast, hf.addCommMonoid f zero add nsmul with }
+    (natCast : ∀ n : ℕ, f n = n) : AddCommMonoidWithOne M₁ :=
+  { hf.addMonoidWithOne f zero one add nsmul natCast, hf.addCommMonoid f zero add nsmul with }
 #align function.injective.add_comm_monoid_with_one Function.Injective.addCommMonoidWithOne
 
 /-- A type endowed with `1` and `*` is a cancel commutative monoid, if it admits an injective map
@@ -326,13 +326,13 @@ protected def addGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ
     [SMul ℤ M₁] [NatCast M₁] [IntCast M₁] [AddGroupWithOne M₂] (f : M₁ → M₂) (hf : Injective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (nat_cast : ∀ n : ℕ, f n = n)
-    (int_cast : ∀ n : ℤ, f n = n) : AddGroupWithOne M₁ :=
+    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (natCast : ∀ n : ℕ, f n = n)
+    (intCast : ∀ n : ℤ, f n = n) : AddGroupWithOne M₁ :=
   { hf.addGroup f zero add neg sub nsmul zsmul,
-    hf.addMonoidWithOne f zero one add nsmul nat_cast with
+    hf.addMonoidWithOne f zero one add nsmul natCast with
     intCast := Int.cast,
-    intCast_ofNat := fun n => hf (by rw [nat_cast, ← Int.cast, int_cast, Int.cast_ofNat]),
-    intCast_negSucc := fun n => hf (by erw [int_cast, neg, nat_cast, Int.cast_negSucc] ) }
+    intCast_ofNat := fun n => hf (by rw [natCast, ← Int.cast, intCast, Int.cast_ofNat]),
+    intCast_negSucc := fun n => hf (by erw [intCast, neg, natCast, Int.cast_negSucc] ) }
 #align function.injective.add_group_with_one Function.Injective.addGroupWithOne
 
 /-- A type endowed with `1`, `*` and `⁻¹` is a commutative group, if it admits an injective map that
@@ -356,9 +356,9 @@ protected def addCommGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul
     [SMul ℤ M₁] [NatCast M₁] [IntCast M₁] [AddCommGroupWithOne M₂] (f : M₁ → M₂) (hf : Injective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (nat_cast : ∀ n : ℕ, f n = n)
-    (int_cast : ∀ n : ℤ, f n = n) : AddCommGroupWithOne M₁ :=
-  { hf.addGroupWithOne f zero one add neg sub nsmul zsmul nat_cast int_cast,
+    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (natCast : ∀ n : ℕ, f n = n)
+    (intCast : ∀ n : ℤ, f n = n) : AddCommGroupWithOne M₁ :=
+  { hf.addGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast,
     hf.addCommMonoid f zero add nsmul with }
 #align function.injective.add_comm_group_with_one Function.Injective.addCommGroupWithOne
 
@@ -446,11 +446,11 @@ map that preserves `0`, `1` and `*` from an additive monoid with one. See note
 protected def addMonoidWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [SMul ℕ M₂] [NatCast M₂]
     [AddMonoidWithOne M₁] (f : M₁ → M₂) (hf : Surjective f) (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (nat_cast : ∀ n : ℕ, f n = n) : AddMonoidWithOne M₂ :=
+    (natCast : ∀ n : ℕ, f n = n) : AddMonoidWithOne M₂ :=
   { hf.addMonoid f zero add nsmul with
     natCast := Nat.cast,
-    natCast_zero := by rw [← Nat.cast, ← nat_cast, Nat.cast_zero, zero]
-    natCast_succ := fun n => by rw [← Nat.cast, ← nat_cast, Nat.cast_succ, add, one, nat_cast]
+    natCast_zero := by rw [← Nat.cast, ← natCast, Nat.cast_zero, zero]
+    natCast_succ := fun n => by rw [← Nat.cast, ← natCast, Nat.cast_succ, add, one, natCast]
     one := 1 }
 #align function.surjective.add_monoid_with_one Function.Surjective.addMonoidWithOne
 
@@ -473,8 +473,8 @@ See note [reducible non-instances]. -/
 protected def addCommMonoidWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [SMul ℕ M₂] [NatCast M₂]
     [AddCommMonoidWithOne M₁] (f : M₁ → M₂) (hf : Surjective f) (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (nat_cast : ∀ n : ℕ, f n = n) : AddCommMonoidWithOne M₂ :=
-  { hf.addMonoidWithOne f zero one add nsmul nat_cast, hf.addCommMonoid _ zero add nsmul with }
+    (natCast : ∀ n : ℕ, f n = n) : AddCommMonoidWithOne M₂ :=
+  { hf.addMonoidWithOne f zero one add nsmul natCast, hf.addCommMonoid _ zero add nsmul with }
 #align function.surjective.add_comm_monoid_with_one Function.Surjective.addCommMonoidWithOne
 
 /-- A type has an involutive inversion if it admits a surjective map that preserves `⁻¹` to a type
@@ -536,14 +536,14 @@ protected def addGroupWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [Neg M₂
     [SMul ℤ M₂] [NatCast M₂] [IntCast M₂] [AddGroupWithOne M₁] (f : M₁ → M₂) (hf : Surjective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (nat_cast : ∀ n : ℕ, f n = n)
-    (int_cast : ∀ n : ℤ, f n = n) : AddGroupWithOne M₂ :=
-  { hf.addMonoidWithOne f zero one add nsmul nat_cast,
+    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (natCast : ∀ n : ℕ, f n = n)
+    (intCast : ∀ n : ℤ, f n = n) : AddGroupWithOne M₂ :=
+  { hf.addMonoidWithOne f zero one add nsmul natCast,
     hf.addGroup f zero add neg sub nsmul zsmul with
     intCast := Int.cast,
-    intCast_ofNat := fun n => by rw [← Int.cast, ← int_cast, Int.cast_ofNat, nat_cast],
+    intCast_ofNat := fun n => by rw [← Int.cast, ← intCast, Int.cast_ofNat, natCast],
     intCast_negSucc := fun n => by
-      rw [← Int.cast, ← int_cast, Int.cast_negSucc, neg, nat_cast] }
+      rw [← Int.cast, ← intCast, Int.cast_negSucc, neg, natCast] }
 #align function.surjective.add_group_with_one Function.Surjective.addGroupWithOne
 
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a commutative group, if it admits a surjective
@@ -568,9 +568,9 @@ protected def addCommGroupWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [Neg 
     [SMul ℤ M₂] [NatCast M₂] [IntCast M₂] [AddCommGroupWithOne M₁] (f : M₁ → M₂) (hf : Surjective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (nat_cast : ∀ n : ℕ, f n = n)
-    (int_cast : ∀ n : ℤ, f n = n) : AddCommGroupWithOne M₂ :=
-  { hf.addGroupWithOne f zero one add neg sub nsmul zsmul nat_cast int_cast,
+    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (natCast : ∀ n : ℕ, f n = n)
+    (intCast : ∀ n : ℤ, f n = n) : AddCommGroupWithOne M₂ :=
+  { hf.addGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast,
     hf.addCommMonoid _ zero add nsmul with }
 #align function.surjective.add_comm_group_with_one Function.Surjective.addCommGroupWithOne
 

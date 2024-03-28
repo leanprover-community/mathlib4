@@ -56,8 +56,8 @@ lemma summable_jacobiTheta₂_term_bound (S : ℝ) {T : ℝ} (hT : 0 < T) :
   simp only [neg_mul, Pi.sub_apply, sub_neg_eq_add, neg_add_rev, neg_neg]
   suffices Tendsto (fun n ↦ n * (π * T * n - (2 * π * S + 1)) : ℕ → ℝ) atTop atTop by
     convert this using 2 with n; ring
-  refine tendsto_nat_cast_atTop_atTop.atTop_mul_atTop (tendsto_atTop_add_const_right _ _ ?_)
-  exact tendsto_nat_cast_atTop_atTop.const_mul_atTop (mul_pos pi_pos hT)
+  refine tendsto_natCast_atTop_atTop.atTop_mul_atTop (tendsto_atTop_add_const_right _ _ ?_)
+  exact tendsto_natCast_atTop_atTop.const_mul_atTop (mul_pos pi_pos hT)
 
 /-- Differentiability of `Θ z τ` in `τ`, for fixed `z`. (This is weaker than differentiability
 in both variables simultaneously, but we do not have a version of

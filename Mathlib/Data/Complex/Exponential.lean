@@ -249,7 +249,7 @@ theorem exp_conj : exp (conj x) = conj (exp x) := by
   dsimp [exp', Function.comp_def, cauSeqConj]
   rw [map_sum (starRingEnd _)]
   refine' sum_congr rfl fun n _ => _
-  rw [map_div₀, map_pow, ← ofReal_nat_cast, conj_ofReal]
+  rw [map_div₀, map_pow, ← ofReal_natCast, conj_ofReal]
 #align complex.exp_conj Complex.exp_conj
 
 @[simp]
@@ -1397,7 +1397,7 @@ nonrec theorem exp_bound {x : ℝ} (hx : |x| ≤ 1) {n : ℕ} (hn : 0 < n) :
   convert exp_bound hxc hn using 2 <;>
   -- Porting note: was `norm_cast`
   simp only [← abs_ofReal, ← ofReal_sub, ← ofReal_exp, ← ofReal_sum, ← ofReal_pow,
-    ← ofReal_div, ← ofReal_nat_cast]
+    ← ofReal_div, ← ofReal_natCast]
 #align real.exp_bound Real.exp_bound
 
 theorem exp_bound' {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) {n : ℕ} (hn : 0 < n) :

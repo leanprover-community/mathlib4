@@ -118,10 +118,10 @@ instance AddMonoid.End.instRing [AddCommGroup M] : Ring (AddMonoid.End M) :=
 
 /-- See also `AddMonoid.End.intCast_def`. -/
 @[simp]
-theorem AddMonoid.End.int_cast_apply [AddCommGroup M] (z : ℤ) (m : M) :
+theorem AddMonoid.End.intCast_apply [AddCommGroup M] (z : ℤ) (m : M) :
     (↑z : AddMonoid.End M) m = z • m :=
   rfl
-#align add_monoid.End.int_cast_apply AddMonoid.End.int_cast_apply
+#align add_monoid.End.int_cast_apply AddMonoid.End.intCast_apply
 
 /-!
 ### Morphisms of morphisms

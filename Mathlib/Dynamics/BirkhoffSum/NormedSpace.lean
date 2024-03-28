@@ -77,7 +77,7 @@ theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage {f : α → α} {g : �
     Tendsto (fun n ↦ birkhoffAverage 𝕜 f g n (f x) - birkhoffAverage 𝕜 f g n x) atTop (𝓝 0) := by
   rcases Metric.isBounded_range_iff.1 h with ⟨C, hC⟩
   have : Tendsto (fun n : ℕ ↦ C / n) atTop (𝓝 0) :=
-    tendsto_const_nhds.div_atTop tendsto_nat_cast_atTop_atTop
+    tendsto_const_nhds.div_atTop tendsto_natCast_atTop_atTop
   refine squeeze_zero_norm (fun n ↦ ?_) this
   rw [← dist_eq_norm, dist_birkhoffAverage_apply_birkhoffAverage]
   gcongr

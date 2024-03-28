@@ -136,7 +136,7 @@ theorem tendsto_exp_div_rpow_atTop (s : ℝ) : Tendsto (fun x : ℝ => exp x / x
   cases' archimedean_iff_nat_lt.1 Real.instArchimedean s with n hn
   refine' tendsto_atTop_mono' _ _ (tendsto_exp_div_pow_atTop n)
   filter_upwards [eventually_gt_atTop (0 : ℝ), eventually_ge_atTop (1 : ℝ)] with x hx₀ hx₁
-  rw [div_le_div_left (exp_pos _) (pow_pos hx₀ _) (rpow_pos_of_pos hx₀ _), ← Real.rpow_nat_cast]
+  rw [div_le_div_left (exp_pos _) (pow_pos hx₀ _) (rpow_pos_of_pos hx₀ _), ← Real.rpow_natCast]
   exact rpow_le_rpow_of_exponent_le hx₁ hn.le
 #align tendsto_exp_div_rpow_at_top tendsto_exp_div_rpow_atTop
 
@@ -298,7 +298,7 @@ theorem isLittleO_rpow_exp_pos_mul_atTop (s : ℝ) {b : ℝ} (hb : 0 < b) :
 /-- `x ^ k = o(exp(b * x))` as `x → ∞` for any integer `k` and positive `b`. -/
 theorem isLittleO_zpow_exp_pos_mul_atTop (k : ℤ) {b : ℝ} (hb : 0 < b) :
     (fun x : ℝ => x ^ k) =o[atTop] fun x => exp (b * x) := by
-  simpa only [Real.rpow_int_cast] using isLittleO_rpow_exp_pos_mul_atTop k hb
+  simpa only [Real.rpow_intCast] using isLittleO_rpow_exp_pos_mul_atTop k hb
 #align is_o_zpow_exp_pos_mul_at_top isLittleO_zpow_exp_pos_mul_atTop
 
 /-- `x ^ k = o(exp(b * x))` as `x → ∞` for any natural `k` and positive `b`. -/

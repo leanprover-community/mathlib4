@@ -67,7 +67,7 @@ lemma zero_mul_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (h : a 
     a * b = 0 := by
   simp [h]
 
-lemma nat_cast_nonneg (α : Type u) [OrderedSemiring α] (n : ℕ) : (0 : α) ≤ n := Nat.cast_nonneg n
+lemma natCast_nonneg (α : Type u) [OrderedSemiring α] (n : ℕ) : (0 : α) ≤ n := Nat.cast_nonneg n
 
 end Linarith
 

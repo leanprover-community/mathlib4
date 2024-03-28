@@ -323,7 +323,7 @@ theorem principal_mul_iff_mul_left_eq {o : Ordinal} :
 theorem principal_mul_omega : Principal (· * ·) omega := fun a b ha hb =>
   match a, b, lt_omega.1 ha, lt_omega.1 hb with
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
-    dsimp only; rw [← nat_cast_mul]
+    dsimp only; rw [← natCast_mul]
     apply nat_lt_omega
 #align ordinal.principal_mul_omega Ordinal.principal_mul_omega
 
@@ -415,7 +415,7 @@ theorem mul_eq_opow_log_succ {a b : Ordinal.{u}} (ha : a ≠ 0) (hb : Principal 
 theorem principal_opow_omega : Principal (·^·) omega := fun a b ha hb =>
   match a, b, lt_omega.1 ha, lt_omega.1 hb with
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
-    simp_rw [← nat_cast_opow]
+    simp_rw [← natCast_opow]
     apply nat_lt_omega
 #align ordinal.principal_opow_omega Ordinal.principal_opow_omega
 

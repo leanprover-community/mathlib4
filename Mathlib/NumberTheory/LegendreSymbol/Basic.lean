@@ -182,7 +182,7 @@ theorem sq_one' {a : ℤ} (ha : (a : ZMod p) ≠ 0) : legendreSym p (a ^ 2) = 1 
 
 /-- The Legendre symbol depends only on `a` mod `p`. -/
 protected theorem mod (a : ℤ) : legendreSym p a = legendreSym p (a % p) := by
-  simp only [legendreSym, int_cast_mod]
+  simp only [legendreSym, intCast_mod]
 #align legendre_sym.mod legendreSym.mod
 
 /-- When `p ∤ a`, then `legendreSym p a = 1` iff `a` is a square mod `p`. -/
@@ -263,7 +263,7 @@ theorem eq_zero_mod_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legend
 /-- If `legendreSym p a = -1` and `p` divides `x^2 - a*y^2`, then `p` must divide `x` and `y`. -/
 theorem prime_dvd_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legendreSym p a = -1) {x y : ℤ}
     (hxy : (p : ℤ) ∣ x ^ 2 - a * y ^ 2) : ↑p ∣ x ∧ ↑p ∣ y := by
-  simp_rw [← ZMod.int_cast_zmod_eq_zero_iff_dvd] at hxy ⊢
+  simp_rw [← ZMod.intCast_zmod_eq_zero_iff_dvd] at hxy ⊢
   push_cast at hxy
   exact eq_zero_mod_of_eq_neg_one h hxy
 #align legendre_sym.prime_dvd_of_eq_neg_one legendreSym.prime_dvd_of_eq_neg_one

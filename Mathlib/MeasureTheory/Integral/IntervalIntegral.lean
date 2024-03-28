@@ -1222,9 +1222,9 @@ variable {μ : Measure ℝ} {f : ℝ → E}
 theorem _root_.MeasureTheory.Integrable.hasSum_intervalIntegral (hfi : Integrable f μ) (y : ℝ) :
     HasSum (fun n : ℤ => ∫ x in y + n..y + n + 1, f x ∂μ) (∫ x, f x ∂μ) := by
   simp_rw [integral_of_le (le_add_of_nonneg_right zero_le_one)]
-  rw [← integral_univ, ← iUnion_Ioc_add_int_cast y]
+  rw [← integral_univ, ← iUnion_Ioc_add_intCast y]
   exact
-    hasSum_integral_iUnion (fun i => measurableSet_Ioc) (pairwise_disjoint_Ioc_add_int_cast y)
+    hasSum_integral_iUnion (fun i => measurableSet_Ioc) (pairwise_disjoint_Ioc_add_intCast y)
       hfi.integrableOn
 #align measure_theory.integrable.has_sum_interval_integral MeasureTheory.Integrable.hasSum_intervalIntegral
 

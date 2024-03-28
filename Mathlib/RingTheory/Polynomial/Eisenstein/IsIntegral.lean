@@ -56,7 +56,7 @@ theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
       congr
       next => skip
       ext
-      rw [lcoeff_apply, ← C_eq_nat_cast, C_mul_X_pow_eq_monomial, coeff_monomial]
+      rw [lcoeff_apply, ← C_eq_natCast, C_mul_X_pow_eq_monomial, coeff_monomial]
     rw [natDegree_comp, show (X + 1 : ℤ[X]) = X + C 1 by simp, natDegree_X_add_C, mul_one,
       natDegree_cyclotomic, Nat.totient_prime hp.out] at hi
     simp only [hi.trans_le (Nat.sub_le _ _), sum_ite_eq', mem_range, if_true,
@@ -88,7 +88,7 @@ theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (
       rw [Nat.zero_add, pow_one] at hi ⊢
       exact (cyclotomic_comp_X_add_one_isEisensteinAt p).mem hi
     · intro i hi
-      rw [Ideal.submodule_span_eq, Ideal.mem_span_singleton, ← ZMod.int_cast_zmod_eq_zero_iff_dvd,
+      rw [Ideal.submodule_span_eq, Ideal.mem_span_singleton, ← ZMod.intCast_zmod_eq_zero_iff_dvd,
         show ↑(_  : ℤ) = Int.castRingHom (ZMod p) _ by rfl, ← coeff_map, map_comp, map_cyclotomic,
         Polynomial.map_add, map_X, Polynomial.map_one, pow_add, pow_one,
         cyclotomic_mul_prime_dvd_eq_pow, pow_comp, ← ZMod.expand_card, coeff_expand hp.out.pos]
@@ -100,7 +100,7 @@ theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (
         rw [hk, pow_succ', mul_assoc] at hi
         rw [hk, mul_comm, Nat.mul_div_cancel _ hp.out.pos]
         replace hn := hn (lt_of_mul_lt_mul_left' hi)
-        rw [Ideal.submodule_span_eq, Ideal.mem_span_singleton, ← ZMod.int_cast_zmod_eq_zero_iff_dvd,
+        rw [Ideal.submodule_span_eq, Ideal.mem_span_singleton, ← ZMod.intCast_zmod_eq_zero_iff_dvd,
            show ↑(_  : ℤ) = Int.castRingHom (ZMod p) _ by rfl, ← coeff_map] at hn
         simpa [map_comp] using hn
       · exact ⟨p ^ n, by rw [pow_succ']⟩

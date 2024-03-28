@@ -1093,9 +1093,9 @@ theorem card_succ (o : Ordinal) : card (succ o) = card o + 1 := by
   simp only [← add_one_eq_succ, card_add, card_one]
 #align ordinal.card_succ Ordinal.card_succ
 
-theorem nat_cast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
+theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
   rfl
-#align ordinal.nat_cast_succ Ordinal.nat_cast_succ
+#align ordinal.nat_cast_succ Ordinal.natCast_succ
 
 instance uniqueIioOne : Unique (Iio (1 : Ordinal))
     where

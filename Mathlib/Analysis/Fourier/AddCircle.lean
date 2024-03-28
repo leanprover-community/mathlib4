@@ -160,7 +160,7 @@ theorem fourier_coe_apply {n : ℤ} {x : ℝ} :
     fourier n (x : AddCircle T) = Complex.exp (2 * π * Complex.I * n * x / T) := by
   rw [fourier_apply, ← QuotientAddGroup.mk_zsmul, toCircle, Function.Periodic.lift_coe,
     expMapCircle_apply, Complex.ofReal_mul, Complex.ofReal_div, Complex.ofReal_mul, zsmul_eq_mul,
-    Complex.ofReal_mul, Complex.ofReal_int_cast]
+    Complex.ofReal_mul, Complex.ofReal_intCast]
   norm_num
   congr 1; ring
 #align fourier_coe_apply fourier_coe_apply

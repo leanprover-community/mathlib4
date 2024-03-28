@@ -94,7 +94,7 @@ variable {k a}
 
 theorem map_dickson (f : R →+* S) : ∀ n : ℕ, map f (dickson k a n) = dickson k (f a) n
   | 0 => by
-    simp_rw [dickson_zero, Polynomial.map_sub, Polynomial.map_nat_cast, Polynomial.map_ofNat]
+    simp_rw [dickson_zero, Polynomial.map_sub, Polynomial.map_natCast, Polynomial.map_ofNat]
   | 1 => by simp only [dickson_one, map_X]
   | n + 2 => by
     simp only [dickson_add_two, Polynomial.map_sub, Polynomial.map_mul, map_X, map_C]
@@ -132,7 +132,7 @@ theorem dickson_one_one_eval_add_inv (x y : R) (h : x * y = 1) :
     -- Porting note: Original proof was
     -- `simp only [bit0, eval_one, eval_add, pow_zero, dickson_zero]; norm_num`
     suffices eval (x + y) 2 = 2 by convert this <;> norm_num
-    exact eval_nat_cast
+    exact eval_natCast
   | 1 => by simp only [eval_X, dickson_one, pow_one]
   | n + 2 => by
     simp only [eval_sub, eval_mul, dickson_one_one_eval_add_inv x y h _, eval_X, dickson_add_two,

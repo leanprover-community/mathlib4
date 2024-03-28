@@ -476,9 +476,9 @@ theorem to_of_nat : ∀ n : ℕ, ((n : Num) : ℕ) = n
 #align num.to_of_nat Num.to_of_nat
 
 @[simp, norm_cast]
-theorem of_nat_cast {α} [AddMonoidWithOne α] (n : ℕ) : ((n : Num) : α) = n := by
+theorem of_natCast {α} [AddMonoidWithOne α] (n : ℕ) : ((n : Num) : α) = n := by
   rw [← cast_to_nat, to_of_nat]
-#align num.of_nat_cast Num.of_nat_cast
+#align num.of_nat_cast Num.of_natCast
 
 @[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem of_nat_inj {m n : ℕ} : (m : Num) = n ↔ m = n :=
@@ -1530,14 +1530,14 @@ theorem of_nat_toZNumNeg (n : ℕ) : Num.toZNumNeg n = -n := by rw [← of_nat_t
 #align znum.of_nat_to_znum_neg ZNum.of_nat_toZNumNeg
 
 @[simp, norm_cast]
-theorem of_int_cast [AddGroupWithOne α] (n : ℤ) : ((n : ZNum) : α) = n := by
+theorem of_intCast [AddGroupWithOne α] (n : ℤ) : ((n : ZNum) : α) = n := by
   rw [← cast_to_int, to_of_int]
-#align znum.of_int_cast ZNum.of_int_cast
+#align znum.of_int_cast ZNum.of_intCast
 
 @[simp, norm_cast]
-theorem of_nat_cast [AddGroupWithOne α] (n : ℕ) : ((n : ZNum) : α) = n := by
-  rw [← Int.cast_ofNat, of_int_cast, Int.cast_ofNat]
-#align znum.of_nat_cast ZNum.of_nat_cast
+theorem of_natCast [AddGroupWithOne α] (n : ℕ) : ((n : ZNum) : α) = n := by
+  rw [← Int.cast_ofNat, of_intCast, Int.cast_ofNat]
+#align znum.of_nat_cast ZNum.of_natCast
 
 @[simp, norm_cast]
 theorem dvd_to_int (m n : ZNum) : (m : ℤ) ∣ n ↔ m ∣ n :=

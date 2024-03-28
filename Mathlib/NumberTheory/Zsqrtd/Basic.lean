@@ -532,13 +532,13 @@ theorem norm_one : norm (1 : ℤ√d) = 1 := by simp [norm]
 #align zsqrtd.norm_one Zsqrtd.norm_one
 
 @[simp]
-theorem norm_int_cast (n : ℤ) : norm (n : ℤ√d) = n * n := by simp [norm]
-#align zsqrtd.norm_int_cast Zsqrtd.norm_int_cast
+theorem norm_intCast (n : ℤ) : norm (n : ℤ√d) = n * n := by simp [norm]
+#align zsqrtd.norm_int_cast Zsqrtd.norm_intCast
 
 @[simp]
-theorem norm_nat_cast (n : ℕ) : norm (n : ℤ√d) = n * n :=
-  norm_int_cast n
-#align zsqrtd.norm_nat_cast Zsqrtd.norm_nat_cast
+theorem norm_natCast (n : ℕ) : norm (n : ℤ√d) = n * n :=
+  norm_intCast n
+#align zsqrtd.norm_nat_cast Zsqrtd.norm_natCast
 
 @[simp]
 theorem norm_mul (n m : ℤ√d) : norm (n * m) = norm n * norm m := by

@@ -289,9 +289,9 @@ protected def Function.Injective.divisionSemiring [DivisionSemiring β] [Zero α
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
-    (nat_cast : ∀ n : ℕ, f n = n) : DivisionSemiring α :=
+    (natCast : ∀ n : ℕ, f n = n) : DivisionSemiring α :=
   { hf.groupWithZero f zero one mul inv div npow zpow,
-    hf.semiring f zero one add mul nsmul npow nat_cast with }
+    hf.semiring f zero one add mul nsmul npow natCast with }
 #align function.injective.division_semiring Function.Injective.divisionSemiring
 
 /-- Pullback a `DivisionSemiring` along an injective function.
@@ -306,17 +306,17 @@ protected def Function.Injective.divisionRing [DivisionRing K] {K'} [Zero K'] [O
     (div : ∀ x y, f (x / y) = f x / f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
     (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (qsmul : ∀ (x) (n : ℚ), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
-    (nat_cast : ∀ n : ℕ, f n = n) (int_cast : ∀ n : ℤ, f n = n) (rat_cast : ∀ n : ℚ, f n = n) :
+    (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) (ratCast : ∀ n : ℚ, f n = n) :
     DivisionRing K' :=
   { hf.groupWithZero f zero one mul inv div npow zpow,
-    hf.ring f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast with
+    hf.ring f zero one add mul neg sub nsmul zsmul npow natCast intCast with
     ratCast := Rat.cast,
     ratCast_mk := fun a b h1 h2 ↦
       hf
         (by
-          erw [rat_cast, mul, inv, int_cast, nat_cast]
+          erw [ratCast, mul, inv, intCast, natCast]
           exact DivisionRing.ratCast_mk a b h1 h2),
-    qsmul := (· • ·), qsmul_eq_mul' := fun a x ↦ hf (by erw [qsmul, mul, Rat.smul_def, rat_cast]) }
+    qsmul := (· • ·), qsmul_eq_mul' := fun a x ↦ hf (by erw [qsmul, mul, Rat.smul_def, ratCast]) }
 #align function.injective.division_ring Function.Injective.divisionRing
 
 -- See note [reducible non-instances]
@@ -328,9 +328,9 @@ protected def Function.Injective.semifield [Semifield β] [Zero α] [Mul α] [Ad
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
-    (nat_cast : ∀ n : ℕ, f n = n) : Semifield α :=
+    (natCast : ∀ n : ℕ, f n = n) : Semifield α :=
   { hf.commGroupWithZero f zero one mul inv div npow zpow,
-    hf.commSemiring f zero one add mul nsmul npow nat_cast with }
+    hf.commSemiring f zero one add mul nsmul npow natCast with }
 #align function.injective.semifield Function.Injective.semifield
 
 /-- Pullback a `Field` along an injective function.
@@ -344,17 +344,17 @@ protected def Function.Injective.field [Field K] {K'} [Zero K'] [Mul K'] [Add K'
     (div : ∀ x y, f (x / y) = f x / f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
     (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (qsmul : ∀ (x) (n : ℚ), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
-    (nat_cast : ∀ n : ℕ, f n = n) (int_cast : ∀ n : ℤ, f n = n) (rat_cast : ∀ n : ℚ, f n = n) :
+    (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) (ratCast : ∀ n : ℚ, f n = n) :
     Field K' :=
   { hf.commGroupWithZero f zero one mul inv div npow zpow,
-    hf.commRing f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast with
+    hf.commRing f zero one add mul neg sub nsmul zsmul npow natCast intCast with
     ratCast := Rat.cast,
     ratCast_mk := fun a b h1 h2 ↦
       hf
         (by
-          erw [rat_cast, mul, inv, int_cast, nat_cast]
+          erw [ratCast, mul, inv, intCast, natCast]
           exact DivisionRing.ratCast_mk a b h1 h2),
-    qsmul := (· • ·), qsmul_eq_mul' := fun a x ↦ hf (by erw [qsmul, mul, Rat.smul_def, rat_cast]) }
+    qsmul := (· • ·), qsmul_eq_mul' := fun a x ↦ hf (by erw [qsmul, mul, Rat.smul_def, ratCast]) }
 #align function.injective.field Function.Injective.field
 
 /-! ### Order dual -/

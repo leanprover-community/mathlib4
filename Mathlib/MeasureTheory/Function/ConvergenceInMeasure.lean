@@ -142,7 +142,7 @@ namespace ExistsSeqTendstoAe
 
 theorem exists_nat_measure_lt_two_inv (hfg : TendstoInMeasure μ f atTop g) (n : ℕ) :
     ∃ N, ∀ m ≥ N, μ { x | (2 : ℝ)⁻¹ ^ n ≤ dist (f m x) (g x) } ≤ (2⁻¹ : ℝ≥0∞) ^ n := by
-  specialize hfg ((2⁻¹ : ℝ) ^ n) (by simp only [Real.rpow_nat_cast, inv_pos, zero_lt_two, pow_pos])
+  specialize hfg ((2⁻¹ : ℝ) ^ n) (by simp only [Real.rpow_natCast, inv_pos, zero_lt_two, pow_pos])
   rw [ENNReal.tendsto_atTop_zero] at hfg
   exact hfg ((2 : ℝ≥0∞)⁻¹ ^ n) (pos_iff_ne_zero.mpr fun h_zero => by simpa using pow_eq_zero h_zero)
 #align measure_theory.exists_seq_tendsto_ae.exists_nat_measure_lt_two_inv MeasureTheory.ExistsSeqTendstoAe.exists_nat_measure_lt_two_inv
