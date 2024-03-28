@@ -1396,6 +1396,12 @@ theorem IsBigO.trans_tendsto_nhds (hfg : f =O[l] g') {y : F'} (hg : Tendsto g' l
   hfg.trans <| hg.isBigO_one F
 #align asymptotics.is_O.trans_tendsto_nhds Asymptotics.IsBigO.trans_tendsto_nhds
 
+theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [NormedRing E] [NormOneClass E]
+    [TopologicalSpace α] {f : α → E} {x : α} :
+    (ContinuousAt f x) ↔ (fun (y : α) ↦ f y - f x) =o[𝓝 x] (fun (_ : α) ↦ (1 : E)) := by
+  convert (Asymptotics.isLittleO_one_iff (f' := fun (y : α) ↦ f y - f x) (l := 𝓝 x) (F := E)).symm
+  exact tendsto_sub_nhds_zero_iff.symm
+
 end
 
 theorem isLittleO_const_iff {c : F''} (hc : c ≠ 0) :
