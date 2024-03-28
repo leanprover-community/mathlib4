@@ -142,13 +142,17 @@ section ClassFunction
 
 variable {G : Type u} [Group G]
 
-def IsClassFunction (f : G → k) : Prop := ∀ (g h : G), f (h * g * h⁻¹) = f g
+def IsClassFunction (f : G → k) : Prop :=
+  ∀ (g h : G), f (h * g * h⁻¹) = f g
 
-def IsClassFunction' (f : MonoidAlgebra k G →ₗ[k] k) : Prop := ∀ (g h : G), f (h * g * h⁻¹) = f g
+def IsClassFunction' (f : MonoidAlgebra k G →ₗ[k] k) : Prop :=
+  ∀ (g h : G), f (h * g * h⁻¹) = f g
 
-def ClassFunction := { f : G → k // IsClassFunction f }
+def ClassFunction :=
+  { f : G → k // IsClassFunction f }
 
-def ClassFunction' := { f : MonoidAlgebra k G →ₗ[k] k // IsClassFunction' f }
+def ClassFunction' :=
+  { f : MonoidAlgebra k G →ₗ[k] k // IsClassFunction' f }
 
 theorem isClassFunction_iff (f : G → k) : IsClassFunction f ↔
     IsClassFunction' (Finsupp.lift k k G f) := by
@@ -245,9 +249,10 @@ lemma simple_iff_dual_simple : ∀ V : FdRep k G, Simple V ↔ Simple (of (dual 
     simp_rw [simple_iff_norm_one, scalarProduct, char_dual, inv_inv, mul_comm] at h
     exact h
 
-def averageFunction (α : G → k) (V : FdRep k G) : (V.V →ₗ[k] V.V) := ⅟ (Fintype.card G : k) • ∑ g : G, (α g) • (V.ρ g)
+def averageFunction (α : G → k) (V : FdRep k G) : V.V →ₗ[k] V.V :=
+  ⅟ (Fintype.card G : k) • ∑ g : G, (α g) • (V.ρ g)
 
-def averageClassFunction (α : G → k) (h : IsClassFunction α) (V : FdRep k G) : (V ⟶  V) := by
+def averageClassFunction (α : G → k) (h : IsClassFunction α) (V : FdRep k G) : V ⟶ V := by
   use averageFunction α V
   intro g'
   ext v
@@ -257,8 +262,8 @@ def averageClassFunction (α : G → k) (h : IsClassFunction α) (V : FdRep k G)
   congr 1
   rw [LinearMap.sum_apply, LinearMap.sum_apply, map_sum]
   simp_rw [smul_apply, map_smul]
-
-  sorry
+  rw [MonCat.coe_of] at g'
+  rw [Fintype.sum_equiv (Equiv.mulLeft g') _ _ _]
 
 end Orthogonality
 
