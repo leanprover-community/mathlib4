@@ -38,8 +38,11 @@ theorem IntervalWithMeasure.IntervalIntegrable_dot (s : IntervalWithMeasure)(p q
 
 
 -- polynomials with a structure of inner product space
+set_option linter.unusedVariables false
 @[inline, reducible]
 abbrev MySpace (s: IntervalWithMeasure) := WithLp 2 ℝ[X]
+
+set_option linter.unusedVariables true
 
 
 variable { s : IntervalWithMeasure }
@@ -77,11 +80,12 @@ theorem MySpace.inner_def (x y : MySpace s) : ⟪x, y⟫_ℝ = s.dot x y :=
   rfl
 
 
--- a nonzero polynomial that is nonnegative on an open interval, has positive integral in that interval
+-- a nonzero polynomial that is nonnegative on an open interval,
+-- has positive integral in that interval
 theorem MySpace.integral_pos_of_pos {p : MySpace s} (hne0 : p ≠ 0)
-    (hpos : ∀ x : ℝ, x ∈ Ioo s.a s.b → p.eval x ≥ 0) : 0 < ∫ (x : ℝ) in s.a..s.b, p.eval x ∂s.μ := by
+  (hpos : ∀ x : ℝ, x ∈ Ioo s.a s.b → p.eval x ≥ 0) : 0 < ∫ (x : ℝ) in s.a..s.b, p.eval x ∂s.μ := by
 
-  have hpge0ae : 0 ≤ᶠ[MeasureTheory.Measure.ae (MeasureTheory.Measure.restrict s.μ (Ι s.a s.b))] p.eval := by
+  have hpge0ae : 0 ≤ᶠ[Measure.ae (Measure.restrict s.μ (Ι s.a s.b))] p.eval := by
     apply MeasureTheory.ae_restrict_uIoc_iff.mpr
     simp only [Pi.zero_apply]
     constructor
@@ -120,14 +124,15 @@ theorem MySpace.integral_pos_of_pos {p : MySpace s} (hne0 : p ≠ 0)
     have hf : Set.Finite ({x : ℝ | p.eval x = 0} ∩ Ioc s.a s.b) := by
       apply Set.Finite.subset hff0
       apply Set.inter_subset_left
-    have hu : ({x : ℝ | p.eval x ≠ 0} ∩ Ioc s.a s.b) ∪ ({x : ℝ | p.eval x = 0} ∩ Ioc s.a s.b) = Ioc s.a s.b := by
+    have hu : ({x : ℝ | p.eval x ≠ 0} ∩ Ioc s.a s.b) ∪ ({x : ℝ | p.eval x = 0} ∩ Ioc s.a s.b) =
+        Ioc s.a s.b := by
       rw [← Set.union_inter_distrib_right]
       rw [←Set.setOf_or]
       have duh (x : ℝ) : (p.eval x ≠ 0 ∨ p.eval x = 0) = True := eq_true (ne_or_eq (p.eval x) 0)
       simp only [duh]
       simp only [setOf_true, Set.univ_inter]
-    have h : s.μ ({x : ℝ | p.eval x ≠ 0} ∩ Ioc s.a s.b) + s.μ ({x : ℝ | p.eval x = 0} ∩ Ioc s.a s.b) =
-        s.μ (Ioc s.a s.b) := by
+    have h : s.μ ({x : ℝ | p.eval x ≠ 0} ∩ Ioc s.a s.b) +
+        s.μ ({x : ℝ | p.eval x = 0} ∩ Ioc s.a s.b) = s.μ (Ioc s.a s.b) := by
       rw [← (MeasureTheory.measure_union hd2 (Set.Finite.measurableSet hf))]
       rw [hu]
 
@@ -281,7 +286,8 @@ theorem natbot_le_of_lt_add_one {a b : WithBot Nat} (hlt : a < b + 1) : a ≤ b 
       apply Order.le_of_lt_succ hlt
 
 
-theorem natbot_lt_of_le_sub_one {a : WithBot ℕ} {b : ℕ} (hpos : 0 < b) (hlt : a ≤ ↑(b - 1)) : a < ↑b := by
+theorem natbot_lt_of_le_sub_one {a : WithBot ℕ} {b : ℕ} (hpos : 0 < b) (hlt : a ≤ ↑(b - 1)) :
+    a < ↑b := by
   cases h : a with
   | none =>
     apply WithBot.none_lt_some
@@ -308,7 +314,8 @@ theorem natbot_le_sub_one_of_lt {a : WithBot ℕ} {b : ℕ} (hle : a < ↑b) : a
     apply Nat.le_pred_of_lt this
 
 
-theorem OrthoPoly_orthogonal_low_deg' {n : ℕ} {p : MySpace s} (hdegp : degree p < n) : ⟪OrthoPoly s n, p⟫_ℝ = 0 := by
+theorem OrthoPoly_orthogonal_low_deg' {n : ℕ} {p : MySpace s} (hdegp : degree p < n) :
+    ⟪OrthoPoly s n, p⟫_ℝ = 0 := by
   cases n with
   | zero =>
     rw [Polynomial.degree_eq_bot.mp (Nat.WithBot.lt_zero_iff.mp hdegp)]
@@ -369,7 +376,8 @@ theorem OrthoPoly_deg (n : ℕ) : degree (OrthoPoly s n) = n := by
 
 
 theorem OrthoPoly_natdeg (n : ℕ) : natDegree (OrthoPoly s n) = n := by
-  have : (OrthoPoly s n).degree = (OrthoPoly s n).natDegree := Polynomial.degree_eq_natDegree OrthoPoly_ne_zero
+  have : (OrthoPoly s n).degree = (OrthoPoly s n).natDegree :=
+    Polynomial.degree_eq_natDegree OrthoPoly_ne_zero
   rw [OrthoPoly_deg] at this
   simp only [Nat.cast_inj] at this
   rw [← this]
@@ -400,7 +408,8 @@ theorem three_term_recurrence (n : ℕ) : ∃ a b c : ℝ, OrthoPoly s (n+2) =
       rw [← add_assoc]
       nth_rw 3 [add_comm]
       exact rfl
-    have hlco : (OrthoPoly s (n+2) : ℝ[X]).leadingCoeff = ((a • X : ℝ[X]) * (OrthoPoly s (n+1))).leadingCoeff := by
+    have hlco : (OrthoPoly s (n+2) : ℝ[X]).leadingCoeff =
+        ((a • X : ℝ[X]) * (OrthoPoly s (n+1))).leadingCoeff := by
       rw [Polynomial.leadingCoeff_mul, smul_eq_C_mul a, Polynomial.leadingCoeff_mul,
           Polynomial.leadingCoeff_C a, Polynomial.leadingCoeff_X]
       simp only [a]
@@ -430,10 +439,13 @@ theorem three_term_recurrence (n : ℕ) : ∃ a b c : ℝ, OrthoPoly s (n+2) =
       exact (fun j a a_1 ↦ a ((fun x hp ↦ smul_eq_zero.mpr (Or.inl hp)) j a_1)) x my_hp
     let hc4 := Finite.Set.subset (C.support) hsupport
     let hfinite2 := Fintype.ofFinite D.support
-    have : ∑ j in Set.toFinset D.support, D j = ∑ j in Set.toFinset (OrthoPoly s '' ↑(Finset.range (n + 2))), D j := by
-      rw [←(finsum_eq_sum_of_support_toFinset_subset D hc4 (fun ⦃a⦄ a_1 ↦ (subset_toFinset.mpr hc1) ((toFinset_subset.mpr hsupport) a_1)))]
+    have : ∑ j in Set.toFinset D.support, D j =
+        ∑ j in Set.toFinset (OrthoPoly s '' ↑(Finset.range (n + 2))), D j := by
+      rw [←(finsum_eq_sum_of_support_toFinset_subset D hc4
+        (fun ⦃a⦄ a_1 ↦ (subset_toFinset.mpr hc1) ((toFinset_subset.mpr hsupport) a_1)))]
       exact (finsum_eq_sum_of_support_toFinset_subset D hc4 fun ⦃a⦄ a ↦ a).symm
-    have : ∑ j in C.support, C j • j = ∑ j in toFinset (OrthoPoly s '' (Finset.range (n + 2))), C j • j := by
+    have : ∑ j in C.support, C j • j =
+        ∑ j in toFinset (OrthoPoly s '' (Finset.range (n + 2))), C j • j := by
       rw [←this, ←(finsum_eq_sum_of_support_toFinset_subset D hc4 (toFinset_subset.mpr hsupport))]
       exact finsum_eq_sum_of_support_toFinset_subset D hc4 fun ⦃a⦄ a ↦ a
     rw [this]
@@ -443,15 +455,18 @@ theorem three_term_recurrence (n : ℕ) : ∃ a b c : ℝ, OrthoPoly s (n+2) =
       have hq : natDegree (OrthoPoly s a1) = natDegree (OrthoPoly s a2) := hp
       rw [OrthoPoly_natdeg a1, OrthoPoly_natdeg a2] at hq
       exact hq
-    have injective_sum (f : ℕ → MySpace s)(g : MySpace s → MySpace s)(A : Finset ℕ)(hp: Fintype (f '' A))(hf : f.Injective) :
+    have injective_sum (f : ℕ → MySpace s)(g : MySpace s → MySpace s)
+        (A : Finset ℕ)(hp: Fintype (f '' A))(hf : f.Injective) :
       ∑ j in Set.toFinset (f '' A), g j = ∑ i in A, g (f i) := by
       simp only [toFinset_image, Finset.toFinset_coe]
       exact (Finset.sum_image (fun x _ y _ a ↦ hf a))
-    rw [injective_sum (OrthoPoly s) (λ x => C x • x) (Finset.range (n + 2)) hfinite (Function.Injective.of_comp this)]
+    rw [injective_sum (OrthoPoly s) (λ x => C x • x) (Finset.range (n + 2))
+      hfinite (Function.Injective.of_comp this)]
     exact rfl
 
   rcases this with ⟨ coef, hcoef ⟩
-  have : OrthoPoly s (n + 2) - (a • X : ℝ[X]) * OrthoPoly s (n + 1) = OrthoPoly s (n + 2) + C (-a) * X * OrthoPoly s (n + 1) := by
+  have : OrthoPoly s (n + 2) - (a • X : ℝ[X]) * OrthoPoly s (n + 1) =
+      OrthoPoly s (n + 2) + C (-a) * X * OrthoPoly s (n + 1) := by
     rw [Polynomial.smul_eq_C_mul a, Polynomial.C_neg]
     simp only [neg_mul]
     exact rfl
@@ -460,7 +475,8 @@ theorem three_term_recurrence (n : ℕ) : ∃ a b c : ℝ, OrthoPoly s (n+2) =
   have p_1 : ∀ j ∈ Finset.range n , ⟪p, (OrthoPoly s j)⟫_ℝ = 0 := by
     rw [this]
     intro i hilessn
-    rw [MySpace.InnerProductSpaceCore.add_left (OrthoPoly s (n + 2)) ((Polynomial.C (-a) * X) * OrthoPoly s (n + 1)) (OrthoPoly s i),
+    rw [MySpace.InnerProductSpaceCore.add_left (OrthoPoly s (n + 2))
+      ((C (-a) * X) * OrthoPoly s (n + 1)) (OrthoPoly s i),
       OrthoPoly_orthogonal (Nat.ne_of_gt (Nat.le.step (Nat.le.step (List.mem_range.mp hilessn))))]
     have : -a • (X * OrthoPoly s (n + 1)) = C (-a) * X * OrthoPoly s (n + 1) := by
       simp only [neg_smul, map_neg, neg_mul, neg_inj]
@@ -471,7 +487,8 @@ theorem three_term_recurrence (n : ℕ) : ∃ a b c : ℝ, OrthoPoly s (n+2) =
       simp only [Nat.cast_lt]
       exact Finset.mem_range.mp hilessn
     have : ⟪C (-a) * X * OrthoPoly s (n + 1), OrthoPoly s i⟫_ℝ = 0 := by
-      rw [←this, MySpace.InnerProductSpaceCore.smul_left (X * OrthoPoly s (n + 1)) (OrthoPoly s i) (-a)]
+      rw [←this,
+        MySpace.InnerProductSpaceCore.smul_left (X * OrthoPoly s (n + 1)) (OrthoPoly s i) (-a)]
       have : degree (X * OrthoPoly s i) ≤ n := by
         rw [congrArg degree (mul_comm X (OrthoPoly s i)), Polynomial.degree_mul_X]
         exact Nat.WithBot.add_one_le_of_lt ht
@@ -481,10 +498,12 @@ theorem three_term_recurrence (n : ℕ) : ∃ a b c : ℝ, OrthoPoly s (n+2) =
       exact mul_eq_zero_of_right ((starRingEnd ℝ) (-a)) this
     exact Linarith.eq_of_eq_of_eq rfl this
 
-  have p_2 : ∀ j ∈ Finset.range n, ∑ i in Finset.range (n + 2), ⟪coef i • OrthoPoly s i, OrthoPoly s j⟫_ℝ = 0 := by
+  have p_2 : ∀ j ∈ Finset.range n, ∑ i in Finset.range (n + 2),
+      ⟪coef i • OrthoPoly s i, OrthoPoly s j⟫_ℝ = 0 := by
     intro j hq
     have := p_1 j hq
-    rw [hcoef, sum_inner (Finset.range (n + 2)) (λi => coef i • OrthoPoly s i) (OrthoPoly s j)] at this
+    rw [hcoef,
+      sum_inner (Finset.range (n + 2)) (λi => coef i • OrthoPoly s i) (OrthoPoly s j)] at this
     exact this
   have hcoefeq0 : ∀ i ∈ Finset.range n , coef i = 0 := by
     intro j hp
@@ -493,10 +512,12 @@ theorem three_term_recurrence (n : ℕ) : ∃ a b c : ℝ, OrthoPoly s (n+2) =
       rw [MySpace.InnerProductSpaceCore.smul_left]
       exact mul_eq_zero_of_right ((starRingEnd ℝ) (coef i)) (OrthoPoly_orthogonal inotj)
     have hh : ⟪coef j • OrthoPoly s j, OrthoPoly s j⟫_ℝ = 0 := by
-      rw [←(sum_eq_single_of_mem j (Finset.mem_range.mpr (Nat.le.step (Nat.le.step (List.mem_range.mp hp)))) this)]
+      rw [←(sum_eq_single_of_mem j
+        (Finset.mem_range.mpr (Nat.le.step (Nat.le.step (List.mem_range.mp hp)))) this)]
       exact (p_2 j hp)
     rw [MySpace.InnerProductSpaceCore.smul_left, mul_eq_zero, or_iff_not_imp_right] at hh
-    exact hh ((fun a a_1 ↦ a ((MySpace.InnerProductSpaceCore.definite (OrthoPoly s j)) a_1)) OrthoPoly_ne_zero)
+    exact hh ((fun a a_1 ↦ a ((MySpace.InnerProductSpaceCore.definite (OrthoPoly s j)) a_1))
+      OrthoPoly_ne_zero)
   have : p = (coef n) • (OrthoPoly s n) + (coef (n+1)) • (OrthoPoly s (n+1)) := by
     rw [hcoef, Finset.sum_range_succ (fun x ↦ coef x • OrthoPoly s x) (n + 1)]
     simp only [add_left_inj]
@@ -519,7 +540,8 @@ def OrthoPoly_internal_roots (s : IntervalWithMeasure) (n : ℕ) : Finset ℝ :=
   Finset.filter (fun r => r ∈ Ioo s.a s.b) (OrthoPoly s n).roots.toFinset
 
 
-theorem OrthoPoly_internal_roots_le (s : IntervalWithMeasure) (n : ℕ) : (OrthoPoly_internal_roots s n).card ≤ n := by
+theorem OrthoPoly_internal_roots_le (s : IntervalWithMeasure) (n : ℕ) :
+    (OrthoPoly_internal_roots s n).card ≤ n := by
   unfold OrthoPoly_internal_roots
   have h : (OrthoPoly s n).roots.toFinset.card <= n := by
     have := Multiset.toFinset_card_le (OrthoPoly s n).roots
@@ -533,14 +555,16 @@ theorem OrthoPoly_internal_roots_le (s : IntervalWithMeasure) (n : ℕ) : (Ortho
 
 
 -- the n-th orthogonal polynomial has n distinct roots in the internal part of the domain interval
-theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) : (OrthoPoly_internal_roots s n).card = n := by
+theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) :
+    (OrthoPoly_internal_roots s n).card = n := by
   have hor := LE.le.lt_or_eq (OrthoPoly_internal_roots_le s n)
 
   cases hor with
   | inl hlt =>
     exfalso
     unfold OrthoPoly_internal_roots at hlt
-    let internal_roots : Multiset ℝ := Multiset.filter (fun r => r ∈ Ioo s.a s.b) (OrthoPoly s n).roots
+    let internal_roots : Multiset ℝ :=
+      Multiset.filter (fun r => r ∈ Ioo s.a s.b) (OrthoPoly s n).roots
     have his : internal_roots ≤ (OrthoPoly s n).roots := by
       simp only [Set.mem_Ioo, Multiset.filter_le]
     have hd := ((Multiset.prod_X_sub_C_dvd_iff_le_roots OrthoPoly_ne_zero) internal_roots).mpr his
@@ -577,7 +601,8 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) : (Ortho
       rw [hnir] at this
       contradiction
 
-    have hrs : (∀ x : ℝ, x ∈ Ioo s.a s.b → r.eval x < 0) ∨ (∀ x : ℝ, x ∈ Ioo s.a s.b → r.eval x > 0) := by
+    have hrs : (∀ x : ℝ, x ∈ Ioo s.a s.b → r.eval x < 0) ∨
+        (∀ x : ℝ, x ∈ Ioo s.a s.b → r.eval x > 0) := by
       have ⟨y, hy⟩ := Set.nonempty_Ioo.mpr s.hab
       have hevy := hrevne0 y hy
       cases ne_iff_lt_or_gt.mp hevy with
@@ -640,15 +665,17 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) : (Ortho
 
       rw [MySpace.inner_def, IntervalWithMeasure.dot]
 
-      have ⟨q, hq2⟩ : ∃q : ℝ[X], q*q = Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots) * po := by
+      have ⟨q, hq2⟩ : ∃q : ℝ[X], q * q =
+          Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots) * po := by
         simp only [count_roots, Multiset.toFinset_filter]
         rw [Finset.prod_eq_multiset_prod]
         rw [← Multiset.prod_add]
         rw [← Multiset.map_add]
         rw [Finset.filter_val]
         rw [← Multiset.filter_add]
-        have ⟨q, hq2⟩ : ∃q : Multiset ℝ, (OrthoPoly s n).roots + (Finset.filter (fun r ↦
-            rootMultiplicity r (OrthoPoly s n) % 2 = 1) (OrthoPoly s n).roots.toFinset).val = 2 • q:= by
+        have ⟨q, hq2⟩ : ∃q : Multiset ℝ, (OrthoPoly s n).roots + (Finset.filter
+            (fun r ↦ rootMultiplicity r (OrthoPoly s n) % 2 = 1)
+            (OrthoPoly s n).roots.toFinset).val = 2 • q:= by
           apply Multiset.exists_smul_of_dvd_count
           rw [Finset.filter_val]
           intro a ha
@@ -680,7 +707,8 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) : (Ortho
           exact dvd_refl 2
           exact Nat.ModEq.symm this
 
-        use Multiset.prod (Multiset.map (fun a ↦ X - C a) (Multiset.filter (fun r ↦ r ∈ Set.Ioo s.a s.b) q))
+        use Multiset.prod (Multiset.map (fun a ↦ X - C a)
+          (Multiset.filter (fun r ↦ r ∈ Set.Ioo s.a s.b) q))
         rw [hq2]
         rw [← Multiset.prod_add, ← Multiset.map_add, ← Multiset.filter_add, two_smul]
 
@@ -694,7 +722,8 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) : (Ortho
         <;> intro _
         <;> apply Polynomial.X_sub_C_ne_zero
 
-      have hle : ∀x : ℝ, (Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots) * po).eval x ≥ 0 := by
+      have hle : ∀x : ℝ,
+          (Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots) * po).eval x ≥ 0 := by
         intro x
         rw [← hq2]
         simp only [eval_mul, ge_iff_le]
@@ -709,9 +738,9 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) : (Ortho
         rw [← intervalIntegral.integral_neg]
 
         have : ∫ (x : ℝ) in s.a..s.b, -eval x
-                (po * Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots) * r) ∂s.μ =
+              (po * Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots) * r) ∂s.μ =
                ∫ (x : ℝ) in s.a..s.b, eval x
-                (po * Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots) * (-r)) ∂s.μ := by
+              (po * Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots) * (-r)) ∂s.μ := by
           apply intervalIntegral.integral_congr
           rw [Set.EqOn]
           intro x _
@@ -746,7 +775,7 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) : (Ortho
     exact heq
 
 theorem OrthoPoly_factorization (s : IntervalWithMeasure) (n : ℕ) : ∃a : ℝ, a ≠ 0 ∧
-    (OrthoPoly s n) = a • Finset.prod (OrthoPoly_internal_roots s n) (fun μ ↦ (X - C μ : ℝ[X])) := by
+    (OrthoPoly s n) = a • Finset.prod (OrthoPoly_internal_roots s n) (fun μ ↦(X - C μ : ℝ[X])) := by
   let internal_roots := OrthoPoly_internal_roots s n
   have his : internal_roots.val ≤ (OrthoPoly s n).roots := by
     simp only
@@ -793,7 +822,8 @@ def Quadrature.card (q : Quadrature) : ℕ :=
   q.nodes.card
 
 
-theorem Quadrature.eq {a b : Quadrature} (hn : a.nodes = b.nodes) (hw : HEq a.weights b.weights) : a = b := by
+theorem Quadrature.eq {a b : Quadrature} (hn : a.nodes = b.nodes) (hw : HEq a.weights b.weights) :
+    a = b := by
   cases a with
   | mk na wa =>
     cases b with
@@ -840,7 +870,8 @@ theorem Quadrature.interp_nint (s : IntervalWithMeasure) (F : Finset ℝ) (p : �
   simp only [eval_mul]
   simp only [eval_C, intervalIntegral.integral_const_mul]
   simp only [mul_comm (∫ (x_1 : ℝ) in s.a..s.b, eval x_1 (Lagrange.basis F id _) ∂s.μ)]
-  let f : ℝ -> ℝ := fun x => eval (↑x) p * ∫ (x_1 : ℝ) in s.a..s.b, eval x_1 (Lagrange.basis F id ↑x) ∂s.μ
+  let f : ℝ -> ℝ :=
+    fun x => eval (↑x) p * ∫ (x_1 : ℝ) in s.a..s.b, eval x_1 (Lagrange.basis F id ↑x) ∂s.μ
   rw [Finset.sum_coe_sort F f]
   intro i _
   apply s.hpi
@@ -878,8 +909,8 @@ theorem Quadrature.interp_exact (s : IntervalWithMeasure) (F : Finset ℝ) (hpos
 
 
 -- a quadrature formula on n nodes with exactnes at least n-1 is interpolatory
-theorem Quadrature.is_interp (q : Quadrature) (s : IntervalWithMeasure) (hex : q.exact s (q.card-1)) :
-    ∃ F : Finset ℝ, q = Quadrature.interp s F := by
+theorem Quadrature.is_interp (q : Quadrature) (s : IntervalWithMeasure)
+    (hex : q.exact s (q.card-1)) : ∃ F : Finset ℝ, q = Quadrature.interp s F := by
   use q.nodes
   unfold interp
   apply Quadrature.eq
@@ -906,12 +937,13 @@ theorem Quadrature.is_interp (q : Quadrature) (s : IntervalWithMeasure) (hex : q
     rw [id_eq] at this
     exact this
   simp_rw [hev] at this
-  simp only [univ_eq_attach, mul_ite, mul_one, mul_zero, sum_ite_eq, Finset.mem_attach, ↓reduceIte] at this
+  simp only [univ_eq_attach, mul_ite, mul_one, mul_zero,
+    sum_ite_eq, Finset.mem_attach, ↓reduceIte] at this
   exact this
 
 -- a quadrature formula on n nodes with exactness at least 2n - 2 has positive weights
-theorem Quadrature.pos_weights (q : Quadrature) (s : IntervalWithMeasure) (hex : q.exact s (2*(q.card - 1))) :
-    ∀ x : q.nodes, q.weights x > 0 := by
+theorem Quadrature.pos_weights (q : Quadrature) (s : IntervalWithMeasure)
+    (hex : q.exact s (2*(q.card - 1))) : ∀ x : q.nodes, q.weights x > 0 := by
   intro x
 
   let p := Finset.prod (q.nodes.erase x) (fun n => (X - C n)^2)
@@ -981,7 +1013,8 @@ theorem Quadrature.Gaussian (s : IntervalWithMeasure) (n : ℕ) : Quadrature :=
   Quadrature.interp s (OrthoPoly_internal_roots s n)
 
 
-theorem Quadrature.Gaussian_card (s : IntervalWithMeasure) (n : ℕ) : (Quadrature.Gaussian s n).card = n := by
+theorem Quadrature.Gaussian_card (s : IntervalWithMeasure) (n : ℕ) :
+    (Quadrature.Gaussian s n).card = n := by
   unfold card
   unfold Gaussian
   unfold interp
@@ -1075,10 +1108,12 @@ theorem Quadrature.Gaussian_exact (s : IntervalWithMeasure) (n : ℕ) (hpos : 0 
   rw [this]
   have : s.int (a * (p /ₘ a)) = 0 := by
     change IntervalWithMeasure.dot s a (p /ₘ a) = 0
-    change IntervalWithMeasure.dot s (C (Polynomial.leadingCoeff (OrthoPoly s n))⁻¹ * (OrthoPoly s n)) (p /ₘ a) = 0
+    change IntervalWithMeasure.dot s
+      (C (Polynomial.leadingCoeff (OrthoPoly s n))⁻¹ * (OrthoPoly s n)) (p /ₘ a) = 0
     unfold IntervalWithMeasure.dot
     rw [mul_assoc, mul_comm, mul_assoc]
-    change IntervalWithMeasure.dot s (OrthoPoly s n) (p /ₘ a * C (leadingCoeff (OrthoPoly s n))⁻¹)  = 0
+    change IntervalWithMeasure.dot s (OrthoPoly s n)
+      (p /ₘ a * C (leadingCoeff (OrthoPoly s n))⁻¹)  = 0
     apply OrthoPoly_orthogonal_low_deg'
     rw [degree_mul,  Polynomial.degree_C hcoeffne0, add_zero]
     exact hdegdiv
@@ -1092,7 +1127,8 @@ theorem Quadrature.Gaussian_exact (s : IntervalWithMeasure) (n : ℕ) (hpos : 0 
 
 
 -- there are no quadrature formulas on n nodes with exactness 2n
-theorem Quadrature.max_exactness (q : Quadrature) (s : IntervalWithMeasure) : ¬ q.exact s (2*q.card) := by
+theorem Quadrature.max_exactness (q : Quadrature) (s : IntervalWithMeasure) :
+    ¬ q.exact s (2*q.card) := by
   unfold exact
   simp only [Nat.cast_mul, Nat.cast_ofNat, not_forall, exists_prop]
   let p := Finset.prod q.nodes (fun n => (X - C n)^2)
