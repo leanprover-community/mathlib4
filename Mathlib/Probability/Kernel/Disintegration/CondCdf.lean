@@ -383,49 +383,8 @@ theorem integral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : �
   (isCondKernelCDF_condCDF ρ).integral () x
 #align probability_theory.integral_cond_cdf ProbabilityTheory.integral_condCDF
 
-section Measure
-
-theorem measure_condCDF_Iic (ρ : Measure (α × ℝ)) (a : α) (x : ℝ) :
-    (condCDF ρ a).measure (Iic x) = ENNReal.ofReal (condCDF ρ a x) := by
-  rw [← sub_zero (condCDF ρ a x)]
-  exact (condCDF ρ a).measure_Iic (tendsto_condCDF_atBot ρ a) _
-#align probability_theory.measure_cond_cdf_Iic ProbabilityTheory.measure_condCDF_Iic
-
-theorem measure_condCDF_univ (ρ : Measure (α × ℝ)) (a : α) : (condCDF ρ a).measure univ = 1 := by
-  rw [← ENNReal.ofReal_one, ← sub_zero (1 : ℝ)]
-  exact StieltjesFunction.measure_univ _ (tendsto_condCDF_atBot ρ a) (tendsto_condCDF_atTop ρ a)
-#align probability_theory.measure_cond_cdf_univ ProbabilityTheory.measure_condCDF_univ
-
-instance instIsProbabilityMeasureCondCDF (ρ : Measure (α × ℝ)) (a : α) :
-    IsProbabilityMeasure (condCDF ρ a).measure :=
-  ⟨measure_condCDF_univ ρ a⟩
-
-/-- The function `a ↦ (condCDF ρ a).measure` is measurable. -/
-theorem measurable_measure_condCDF (ρ : Measure (α × ℝ)) :
-    Measurable fun a => (condCDF ρ a).measure := by
-  rw [Measure.measurable_measure]
-  refine' fun s hs => ?_
-  -- Porting note: supplied `C`
-  refine' MeasurableSpace.induction_on_inter
-    (C := fun s => Measurable fun b ↦ StieltjesFunction.measure (condCDF ρ b) s)
-    (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic _ _ _ _ hs
-  · simp only [measure_empty, measurable_const]
-  · rintro S ⟨u, rfl⟩
-    simp_rw [measure_condCDF_Iic ρ _ u]
-    exact (measurable_condCDF ρ u).ennreal_ofReal
-  · intro t ht ht_cd_meas
-    have :
-      (fun a => (condCDF ρ a).measure tᶜ) =
-        (fun a => (condCDF ρ a).measure univ) - fun a => (condCDF ρ a).measure t := by
-      ext1 a
-      rw [measure_compl ht (measure_ne_top (condCDF ρ a).measure _), Pi.sub_apply]
-    simp_rw [this, measure_condCDF_univ ρ]
-    exact Measurable.sub measurable_const ht_cd_meas
-  · intro f hf_disj hf_meas hf_cd_meas
-    simp_rw [measure_iUnion hf_disj hf_meas]
-    exact Measurable.ennreal_tsum hf_cd_meas
-#align probability_theory.measurable_measure_cond_cdf ProbabilityTheory.measurable_measure_condCDF
-
-end Measure
+#noalign probability_theory.measure_cond_cdf_Iic
+#noalign probability_theory.measure_cond_cdf_univ
+#noalign probability_theory.measurable_measure_cond_cdf
 
 end ProbabilityTheory
