@@ -211,6 +211,13 @@ theorem roots_normalize {p : R[X]} : (normalize p).roots = p.roots := by
   rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
 #align polynomial.roots_normalize Polynomial.roots_normalize
 
+theorem normUnit_X : normUnit (X : Polynomial R) = 1 := by
+  have := coe_normUnit (R := R) (p := X)
+  rwa [leadingCoeff_X, normUnit_one, Units.val_one, map_one, Units.val_eq_one] at this
+
+theorem X_eq_normalize : (X : Polynomial R) = normalize X := by
+  simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
+
 end NormalizationMonoid
 
 end IsDomain
