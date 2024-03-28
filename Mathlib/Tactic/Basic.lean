@@ -8,6 +8,7 @@ import Std
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.UnusedTactic
 import Mathlib.Tactic.TypeStar
 
 set_option autoImplicit true
