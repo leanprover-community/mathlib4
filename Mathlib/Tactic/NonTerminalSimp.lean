@@ -560,7 +560,9 @@ def showFVars : InfoTree → CommandElabM Unit
     let _ ← c.toArray.mapM showFVars
   | .context _ t => showFVars t
   | .hole _ => return
+
 open Lsp
+
 /-- The main entry point to the unreachable tactic linter. -/
 def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
   unless getLinterHash (← getOptions) && (← getInfoState).enabled do
@@ -601,7 +603,7 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
     let lctxb := ((ctxb.decls.find? currMVarb).getD default).lctx
     let lctxa := ((ctx.decls.find? currMVara).getD default).lctx
     logInfoAt s m!"{s}\nstains '{(getStained! s).map fun d =>
-      ((((d.toFVarId lctxa).map (·.name)).zip ((d.toFVarId lctxb).map (·.name))))}'"
+      ((((d.toFVarId lctxb).map (·.name)).zip ((d.toFVarId lctxa).map (·.name))))}'"
 
 initialize addLinter nonTerminalSimpLinter
 
