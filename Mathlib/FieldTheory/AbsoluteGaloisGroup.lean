@@ -49,7 +49,7 @@ noncomputable instance : TopologicalSpace (G_K K) := krullTopology K (AlgebraicC
 
 instance absoluteGaloisGroup.commutator_closure_isNormal :
     (commutator (G_K K)).topologicalClosure.Normal :=
-  Subgroup.is_normal_topologicalClosure (commutator (G_K K))
+  Subgroup.normal_topologicalClosure (commutator (G_K K))
 
 /-- The topological abelianization of `absoluteGaloisGroup`, that is, the quotient of
   `absoluteGaloisGroup` by the topological closure of its commutator subgroup. -/

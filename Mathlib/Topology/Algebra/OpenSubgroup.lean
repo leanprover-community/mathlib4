@@ -360,6 +360,12 @@ instance : Lattice (OpenSubgroup G) :=
     toSubgroup_injective.semilatticeSup ((↑) : OpenSubgroup G → Subgroup G) fun _ _ => rfl with
     toPartialOrder := instPartialOrderOpenSubgroup }
 
+@[to_additive]
+def identityComponent (G : Type*) [TopologicalSpace G] [Group G]
+    [TopologicalGroup G] [LocallyConnectedSpace G] : OpenSubgroup G where
+  toSubgroup := .identityComponent G
+  isOpen' := isOpen_connectedComponent
+
 end OpenSubgroup
 
 namespace Submodule
