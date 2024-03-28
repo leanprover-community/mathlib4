@@ -291,6 +291,32 @@ def compareHyp (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα pα e) :
     | _, _ => pure .none
   | _ => pure .none
 
+/-- A variation on `assumption` which checks if the hypothesis `ldecl` is `a ≤ f`
+where `a` is a numeral and `e = f x` for some `x`. -/
+def compareHypFun (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα pα e) := do
+  have e' : Q(Prop) := ldecl.type
+  let p : Q($e') := .fvar ldecl.fvarId
+  match e' with
+  | ~q(@LE.le.{u} ($β → $β) $_le $lo $hi) =>
+    let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
+    let a ← mkFreshExprMVarQ q($α)
+    let .defEq _h ← isDefEqQ q($e) q($hi $a) | return .none
+    match lo with
+    | ~q(0) =>
+      assertInstancesCommute
+      return .nonnegative q(Pi.le_def.mp $p $a)
+    | _ => pure .none
+  | ~q(@LT.lt.{u} ($β → $β) $_le $lo $hi) =>
+    let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
+    let a ← mkFreshExprMVarQ q($α)
+    let .defEq _h ← isDefEqQ q($e) q($hi $a) | return .none
+    match lo with
+    | ~q(0) =>
+      assertInstancesCommute
+      return .nonnegative q((Pi.lt_def.mp $p).1 $a)
+    | _ => pure .none
+  | _ => pure .none
+
 variable {zα pα} in
 /-- The main combinator which combines multiple `positivity` results.
 It assumes `t₁` has already been run for a result, and runs `t₂` and takes the best result.
@@ -329,6 +355,7 @@ def core (e : Q($α)) : MetaM (Strictness zα pα e) := do
   for ldecl in ← getLCtx do
     if !ldecl.isImplementationDetail then
       result ← orElse result <| compareHyp zα pα e ldecl
+      result ← orElse result <| compareHypFun zα pα e ldecl
   trace[Tactic.positivity] "{e} => {result.toString}"
   throwNone (pure result)
 
