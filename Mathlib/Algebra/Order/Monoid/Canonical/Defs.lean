@@ -48,16 +48,24 @@ instance (priority := 100) Group.existsMulOfLE (α : Type u) [Group α] [LE α] 
 #align add_group.has_exists_add_of_le AddGroup.existsAddOfLE
 
 section MulOneClass
+variable [MulOneClass α] [Preorder α] [ExistsMulOfLE α] {a b : α}
+  [CovariantClass α α (· * ·) (· ≤ ·)] [ContravariantClass α α (· * ·) (· ≤ ·)]
+  [CovariantClass α α (· * ·) (· < ·)] [ContravariantClass α α (· * ·) (· < ·)]
 
-variable [MulOneClass α] [Preorder α] [ContravariantClass α α (· * ·) (· < ·)] [ExistsMulOfLE α]
-  {a b : α}
+@[to_additive] lemma exists_one_le_mul_of_le (h : a ≤ b) : ∃ c, 1 ≤ c ∧ a * c = b := by
+  obtain ⟨c, rfl⟩ := exists_mul_of_le h; exact ⟨c, one_le_of_le_mul_right h, rfl⟩
 
-@[to_additive]
-theorem exists_one_lt_mul_of_lt' (h : a < b) : ∃ c, 1 < c ∧ a * c = b := by
-  obtain ⟨c, rfl⟩ := exists_mul_of_le h.le
-  exact ⟨c, one_lt_of_lt_mul_right h, rfl⟩
+@[to_additive] lemma exists_one_lt_mul_of_lt' (h : a < b) : ∃ c, 1 < c ∧ a * c = b := by
+  obtain ⟨c, rfl⟩ := exists_mul_of_le h.le; exact ⟨c, one_lt_of_lt_mul_right h, rfl⟩
 #align exists_one_lt_mul_of_lt' exists_one_lt_mul_of_lt'
 #align exists_pos_add_of_lt' exists_pos_add_of_lt'
+
+@[to_additive] lemma le_iff_exists_one_le_mul : a ≤ b ↔ ∃ c, 1 ≤ c ∧ a * c = b :=
+  ⟨exists_one_le_mul_of_le, by rintro ⟨c, hc, rfl⟩; exact le_mul_of_one_le_right' hc⟩
+#align le_iff_exists_nonneg_add le_iff_exists_nonneg_add
+
+@[to_additive] lemma lt_iff_exists_one_lt_mul : a < b ↔ ∃ c, 1 < c ∧ a * c = b :=
+  ⟨exists_one_lt_mul_of_lt', by rintro ⟨c, hc, rfl⟩; exact lt_mul_of_one_lt_right' _ hc⟩
 
 end MulOneClass
 

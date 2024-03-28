@@ -806,6 +806,52 @@ instance instSMulPosReflectLE [SMulPosReflectLE α β] : SMulPosReflectLE α β�
 end Right
 end OrderDual
 
+section StrictOrderedSemiring
+variable [StrictOrderedSemiring α] [OrderedAddCommMonoid β] [Module α β] [ExistsAddOfLE α]
+  [ExistsAddOfLE β]
+
+section PosSMulMono
+variable [PosSMulMono α β] [ContravariantClass β β (· + ·) (· ≤ ·)] {a₁ a₂ : α} {b₁ b₂ : β}
+
+/-- Binary **rearrangement inequality**. -/
+lemma smul_add_smul_le_smul_add_smul (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
+    a₁ • b₂ + a₂ • b₁ ≤ a₁ • b₁ + a₂ • b₂ := by
+  obtain ⟨a, ha₀, rfl⟩ := le_iff_exists_nonneg_add.1 ha
+  obtain ⟨b, hb₀, rfl⟩ := le_iff_exists_nonneg_add.1 hb
+  rw [smul_add, add_right_comm, smul_add, ← add_assoc, add_smul _ _ b]
+  exact add_le_add_left (le_add_of_nonneg_right $ smul_nonneg ha₀ hb₀) _
+#align smul_add_smul_le_smul_add_smul smul_add_smul_le_smul_add_smul
+
+/-- Binary **rearrangement inequality**. -/
+lemma smul_add_smul_le_smul_add_smul' (ha : a₂ ≤ a₁) (hb : b₂ ≤ b₁) :
+    a₁ • b₂ + a₂ • b₁ ≤ a₁ • b₁ + a₂ • b₂ := by
+  simp_rw [add_comm (a₁ • _)]; exact smul_add_smul_le_smul_add_smul ha hb
+#align smul_add_smul_le_smul_add_smul' smul_add_smul_le_smul_add_smul'
+
+end PosSMulMono
+
+section PosSMulStrictMono
+variable [PosSMulStrictMono α β] [CovariantClass β β (· + ·) (· < ·)]
+    [ContravariantClass β β (· + ·) (· < ·)] {a₁ a₂ : α} {b₁ b₂ : β}
+
+/-- Binary strict **rearrangement inequality**. -/
+lemma smul_add_smul_lt_smul_add_smul (ha : a₁ < a₂) (hb : b₁ < b₂) :
+    a₁ • b₂ + a₂ • b₁ < a₁ • b₁ + a₂ • b₂ := by
+  obtain ⟨a, ha₀, rfl⟩ := lt_iff_exists_pos_add.1 ha
+  obtain ⟨b, hb₀, rfl⟩ := lt_iff_exists_pos_add.1 hb
+  rw [smul_add, add_right_comm, smul_add, ← add_assoc, add_smul _ _ b]
+  exact add_lt_add_left (lt_add_of_pos_right _ $ smul_pos ha₀ hb₀) _
+#align smul_add_smul_lt_smul_add_smul smul_add_smul_lt_smul_add_smul
+
+/-- Binary strict **rearrangement inequality**. -/
+lemma smul_add_smul_lt_smul_add_smul' (ha : a₂ < a₁) (hb : b₂ < b₁) :
+    a₁ • b₂ + a₂ • b₁ < a₁ • b₁ + a₂ • b₂ := by
+  simp_rw [add_comm (a₁ • _)]; exact smul_add_smul_lt_smul_add_smul ha hb
+#align smul_add_smul_lt_smul_add_smul' smul_add_smul_lt_smul_add_smul'
+
+end PosSMulStrictMono
+end StrictOrderedSemiring
+
 section OrderedRing
 variable [OrderedRing α]
 
@@ -889,43 +935,6 @@ lemma smul_neg_iff_of_neg_left (ha : a < 0) : a • b < 0 ↔ 0 < b := by
 #align smul_neg_iff_of_neg smul_neg_iff_of_neg_left
 
 end PosSMulStrictMono
-
-/-- Binary **rearrangement inequality**. -/
-lemma smul_add_smul_le_smul_add_smul [PosSMulMono α β] [ContravariantClass β β (· + ·) (· ≤ ·)]
-    {b₁ b₂ : α} {a d : β} (hab : b₁ ≤ b₂) (hcd : a ≤ d) : b₁ • d + b₂ • a ≤ b₁ • a + b₂ • d := by
-  obtain ⟨b₂, rfl⟩ := exists_add_of_le hab
-  obtain ⟨d, rfl⟩ := exists_add_of_le hcd
-  rw [smul_add, add_right_comm, smul_add, ← add_assoc, add_smul _ _ d]
-  rw [le_add_iff_nonneg_right] at hab hcd
-  exact add_le_add_left (le_add_of_nonneg_right <| smul_nonneg hab hcd) _
-#align smul_add_smul_le_smul_add_smul smul_add_smul_le_smul_add_smul
-
-/-- Binary **rearrangement inequality**. -/
-lemma smul_add_smul_le_smul_add_smul' [PosSMulMono α β] [ContravariantClass β β (· + ·) (· ≤ ·)]
-    {b₁ b₂ : α} {a d : β} (hba : b₂ ≤ b₁) (hdc : d ≤ a) : b₁ • d + b₂ • a ≤ b₁ • a + b₂ • d := by
-  rw [add_comm (b₁ • d), add_comm (b₁ • a)]
-  exact smul_add_smul_le_smul_add_smul hba hdc
-#align smul_add_smul_le_smul_add_smul' smul_add_smul_le_smul_add_smul'
-
-/-- Binary strict **rearrangement inequality**. -/
-lemma smul_add_smul_lt_smul_add_smul [PosSMulStrictMono α β] [CovariantClass β β (· + ·) (· < ·)]
-    [ContravariantClass β β (· + ·) (· < ·)] {b₁ b₂ : α} {a d : β} (hab : b₁ < b₂) (hcd : a < d) :
-    b₁ • d + b₂ • a < b₁ • a + b₂ • d := by
-  obtain ⟨b₂, rfl⟩ := exists_add_of_le hab.le
-  obtain ⟨d, rfl⟩ := exists_add_of_le hcd.le
-  rw [smul_add, add_right_comm, smul_add, ← add_assoc, add_smul _ _ d]
-  rw [lt_add_iff_pos_right] at hab hcd
-  exact add_lt_add_left (lt_add_of_pos_right _ <| smul_pos hab hcd) _
-#align smul_add_smul_lt_smul_add_smul smul_add_smul_lt_smul_add_smul
-
-/-- Binary strict **rearrangement inequality**. -/
-lemma smul_add_smul_lt_smul_add_smul' [PosSMulStrictMono α β] [CovariantClass β β (· + ·) (· < ·)]
-    [ContravariantClass β β (· + ·) (· < ·)] {b₁ b₂ : α} {a d : β} (hba : b₂ < b₁) (hdc : d < a) :
-    b₁ • d + b₂ • a < b₁ • a + b₂ • d := by
-  rw [add_comm (b₁ • d), add_comm (b₁ • a)]
-  exact smul_add_smul_lt_smul_add_smul hba hdc
-#align smul_add_smul_lt_smul_add_smul' smul_add_smul_lt_smul_add_smul'
-
 end OrderedAddCommGroup
 
 section LinearOrderedAddCommGroup
