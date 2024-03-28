@@ -1108,7 +1108,7 @@ together with their matching scores, in decreasing order of score.
 
 Each entry of type `Array α × Nat` corresponds to one pattern.
 
-If `unify := false`, then metavariables in `e` are treated as opaque variables.
+If `unify := false`, then unassigned metavariables in `e` are treated as opaque variables.
 This is for when you don't want to instantiate metavariables in `e`.
 
 If `allowRootStar := false`, then we don't allow `e` or the matched key in `d`

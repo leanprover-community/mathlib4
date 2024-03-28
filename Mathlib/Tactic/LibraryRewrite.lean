@@ -95,7 +95,7 @@ def updateDiscrTree (name : Name) (cinfo : ConstantInfo) (d : RefinedDiscrTree R
     { name, symm := false, numParams := vars.size }
     { name, symm := true,  numParams := vars.size }
 
-section
+section Cache
 
 open Std.Tactic
 
@@ -138,18 +138,54 @@ def getCachedRewriteLemmas : MetaM (RefinedDiscrTree RewriteLemma) :=
 def getLocalRewriteLemmas : MetaM (RefinedDiscrTree RewriteLemma) := do
   (← getEnv).constants.map₂.foldlM (init := {}) (fun tree n c => updateDiscrTree n c tree)
 
-end
+end Cache
 
 
 
-open Widget ProofWidgets Jsx
+/-- Return all potential rewrite lemmata -/
+def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Bool)) := do
+  let localResults  ← (← getLocalRewriteLemmas ).getMatchWithScore e (unify := false)
+  let cachedResults ← (← getCachedRewriteLemmas).getMatchWithScore e (unify := false)
+  let allResults := localResults.map (·.1, true) ++ cachedResults.map (·.1, false)
+  return allResults
 
-def RewriteLemma.pattern (rwLemma : RewriteLemma) : MetaM CodeWithInfos := do
-  let cinfo ← getConstInfo rwLemma.name
-  forallTelescope cinfo.type fun _ e => do
-    let some (lhs, rhs) := matchEqn? e | throwError "Expected equation, not {indentExpr e}"
-    let side := if rwLemma.symm then rhs else lhs
-    ppExprTagged side
+structure Rewrite extends RewriteLemma where
+  proof : Expr
+  replacement : Expr
+  extraGoals : Array (MVarId × BinderInfo)
+
+/-- If `rwLemma` can be used to rewrite `e`, return the rewrite. -/
+def checkLemma (rwLemma : RewriteLemma) (e : Expr) : MetaM (Option Rewrite) := do
+  let thm ← try mkConstWithFreshMVarLevels rwLemma.name catch _ => return none
+  let (mvars, binderInfos, eqn) ← forallMetaTelescope (← inferType thm)
+  let some (lhs, rhs) := matchEqn? eqn | return none
+  let (lhs, rhs) := if rwLemma.symm then (rhs, lhs) else (lhs, rhs)
+  unless ← withReducible (isDefEq lhs e) do return none
+
+  let mut extraGoals := #[]
+  for mvar in mvars, bi in binderInfos do
+    -- we need to check that all instances can be synthesized
+    if bi.isInstImplicit then
+      let .some inst ← trySynthInstance (← mvar.mvarId!.getType) | return none
+      unless ← isDefEq inst mvar do
+        return none
+    else
+      unless ← mvar.mvarId!.isAssigned do
+        extraGoals := extraGoals.push (mvar.mvarId!, bi)
+
+  let replacement ← instantiateMVars rhs
+  let proof ← instantiateMVars (mkAppN thm mvars)
+  return some { rwLemma with proof, replacement, extraGoals }
+
+/-- Return all applicable library rewrites of `e`.
+The boolean flag indicates whether the lemmata are from the current file. -/
+def getRewrites (e : Expr) : MetaM (Array (Array Rewrite × Bool)) := do
+  let candidates ← getCandidates e
+  candidates.filterMapM fun (candidates, isLocal) => do
+    let rewrites ← candidates.filterMapM (checkLemma · e)
+    unless rewrites.isEmpty do
+      return (rewrites, isLocal)
+    return none
 
 open PrettyPrinter Delaborator SubExpr in
 /-- if `e` is an application of a rewrite lemma,
@@ -157,19 +193,18 @@ return `e` as a string for pasting into the editor.
 
 if `explicit = true`, we print the lemma application explicitly. This is for when the rewrite
 creates new goals.
-We avoid printing instance arguments or universe levels by setting their options to `false`.
-We ignore any `Options` set by the user. -/
+We ignore `Options` set by the user. -/
 def printRewriteLemma (e : Expr) (explicit : Bool) : MetaM String :=
-  withOptions (fun _ => Options.empty
-    |>.setBool `pp.universes false
-    |>.setBool `pp.match false
-    |>.setBool `pp.instances false
-    |>.setBool `pp.unicode.fun true) do
   if explicit then
+    withOptions (fun _ => Options.empty
+      |>.setBool `pp.universes false
+      |>.setBool `pp.match false
+      |>.setBool `pp.instances false
+      |>.setBool `pp.unicode.fun true) do
     let (stx, _) ← delabCore e (delab := delabExplicit)
-    return Format.pretty (← ppTerm stx)
+    return Format.pretty (← ppTerm stx) (indent := 2)
   else
-    return Format.pretty (← Meta.ppExpr e)
+    printToPaste e
 where
   /-- See `delabApp` and `delabAppCore`. -/
   delabExplicit : Delab := do
@@ -192,33 +227,11 @@ partial def getUnusedMVarName (suggestion : Name) (names : PersistentHashMap Nam
   else
     name
 
-structure RewriteApplication extends RewriteLemma where
-  tactic : String
-  replacement : String
-  extraGoals : Array CodeWithInfos
-  prettyLemma : CodeWithInfos
-
-def rewriteCall (rwLemma : RewriteLemma) (loc : SubExpr.GoalLocation) (subExpr : Expr)
-    (occ : Option Nat) (initNames : PersistentHashMap Name MVarId) :
-    MetaM (Option RewriteApplication) := do
-  -- the lemma might not be imported, so we use a try-catch block here.
-  let thm ← try mkConstWithFreshMVarLevels rwLemma.name catch _ => return none
-  let (mvars, bis, eqn) ← forallMetaTelescope (← inferType thm)
-  let some (lhs, rhs) := matchEqn? eqn | return none
-  let (lhs, rhs) := if rwLemma.symm then (rhs, lhs) else (lhs, rhs)
-  unless ← withReducible (isDefEq lhs subExpr) do return none
-
-  let mut extraGoals := #[]
-  let mut allAssigned := true
+def tacticString (rw : Rewrite) (occ : Option Nat) (loc : Option Name)
+    (initNames : PersistentHashMap Name MVarId) : MetaM String := do
   let mut initNames := initNames
-  for mvar in mvars, bi in bis do
-    let mvarId := mvar.mvarId!
-    -- we need to check that all instances can be synthesized
-    if bi.isInstImplicit then
-      let .some _ ← trySynthInstance (← mvarId.getType) | return none
-      -- maybe check that the synthesized instance and `mvar` are `isDefEq`?
-    else if !(← mvarId.isAssigned) then
-      allAssigned := false
+  for (mvarId, _) in rw.extraGoals do
+    unless ← mvarId.isAssigned do
       let name ← mvarId.getTag
       -- if the userName has macro scopes, it comes from a non-dependent arrow,
       -- so we use `?_` instead
@@ -228,81 +241,86 @@ def rewriteCall (rwLemma : RewriteLemma) (loc : SubExpr.GoalLocation) (subExpr :
         let name := getUnusedMVarName name initNames
         mvarId.setTag name
         initNames := initNames.insert name mvarId
-      if bi.isExplicit then
-        let extraGoal ← instantiateMVars (← mvarId.getType)
-        extraGoals := extraGoals.push (← ppExprTagged extraGoal)
+  let proof ← printRewriteLemma rw.proof !rw.extraGoals.isEmpty
+  return mkRewrite occ rw.symm proof loc
 
-  let replacement := (← ppExprTagged (← instantiateMVars rhs)).stripTags
-  let lemmaApplication ← instantiateMVars (mkAppN thm mvars)
+open Widget ProofWidgets Jsx
 
-  let location ← (do match loc with
-    | .hyp fvarId
-    | .hypType fvarId _ => return s! " at {← fvarId.getUserName}"
-    | _ => return "")
-  let symm := if rwLemma.symm then "← " else ""
-  let cfg := match occ with
-    | none => ""
-    | some occ => s! " (config := \{ occs := .pos [{occ}]})"
-  let tactic := s! "rw{cfg} [{symm}{← printRewriteLemma lemmaApplication !allAssigned}]{location}"
-  -- we pretty print the lemma without `@` before the name
-  let prettyLemma := match ← ppExprTagged (← mkConstWithLevelParams rwLemma.name) with
-    | .tag tag _ => .tag tag (.text rwLemma.name.toString)
+structure RewriteInterface extends RewriteLemma where
+  tactic : String
+  replacement : String
+  extraGoals : Array CodeWithInfos
+  prettyLemma : CodeWithInfos
+
+def Rewrite.toInterface (rw : Rewrite) (occ : Option Nat) (loc : Option Name)
+    (initNames : PersistentHashMap Name MVarId) : MetaM RewriteInterface := do
+  let tactic ← tacticString rw occ loc initNames
+  let replacement := Format.pretty (← ppExpr rw.replacement)
+  let mut extraGoals := #[]
+  for (mvarId, bi) in rw.extraGoals do
+    if bi.isExplicit then
+      let extraGoal ← ppExprTagged (← instantiateMVars (← mvarId.getType))
+      extraGoals := extraGoals.push extraGoal
+  let prettyLemma : CodeWithInfos := match ← ppExprTagged (← mkConstWithLevelParams rw.name) with
+    | .tag tag _ => .tag tag (.text s!"{rw.name}")
     | code => code
-  return some { rwLemma with tactic, extraGoals, replacement, prettyLemma }
+  return { rw with tactic, replacement, extraGoals, prettyLemma }
 
-/-- The library results are displayed to the user in sections. Each section corresponds to
-a particular pattern and to whether the lemma is defined in the file that the user is in. -/
-structure Section where
-  pattern : CodeWithInfos
-  isLocal : Bool
-  results : Array RewriteApplication
+/-- Return the Interfaces for rewriting `e`, both filtered and unfiltered. -/
+def getRewriteInterfaces (e : Expr) (occ : Option Nat) (loc : Option Name)
+    (initNames : PersistentHashMap Name MVarId) :
+    MetaM (Array (Array RewriteInterface × Bool) × Array (Array RewriteInterface × Bool)) := do
+  let mut dedup := #[]
+  let mut all := #[]
+  for (rewrites, isLocal) in ← getRewrites e do
+    let results ← rewrites.mapM (·.toInterface occ loc initNames)
+    all := all.push (results, isLocal)
+    let duplicates : HashMap String Name := results.foldl
+      (init := HashMap.empty.insert (Format.pretty (← ppExpr e)) .anonymous) fun map rw =>
+      if rw.extraGoals.isEmpty && !map.contains rw.replacement then
+        map.insert rw.replacement rw.name
+      else
+        map
+    let filtered := results.filter fun rw =>
+        match duplicates.find? rw.replacement with
+        | some name => name == rw.name
+        | none      => true
+    unless filtered.isEmpty do
+      dedup := dedup.push (filtered, isLocal)
+  return (dedup, all)
 
+def RewriteLemma.pattern (rwLemma : RewriteLemma) : MetaM CodeWithInfos := do
+  let cinfo ← getConstInfo rwLemma.name
+  forallTelescope cinfo.type fun _ e => do
+    let some (lhs, rhs) := matchEqn? e | throwError "Expected equation, not {indentExpr e}"
+    let side := if rwLemma.symm then rhs else lhs
+    ppExprTagged side
 
-structure FilterDetailsProps where
-  message : String
-  filtered : Html
-  all : Html
-  initiallyFiltered : Bool
-deriving RpcEncodable
-
-/-- `FilterDetails` is a details component that has a button for switching between a filtered
-and a non-filtered view. -/
-@[widget_module]
-def FilterDetails : Component FilterDetailsProps where
-  javascript := include_str "LibraryRewrite" / "FilterDetails.js"
-
-def renderFilterResults (results : Array Section × Array Section) (init : Option Html)
-    (range : Lsp.Range) (doc : FileWorker.EditableDocument) : Html :=
-  let (filtered, all) := results;
-  <FilterDetails
-    message={"Rewrite suggestions:"}
-    all={renderResults true all}
-    filtered={renderResults false filtered}
-    initiallyFiltered={true} />
-where
-  renderResults (showNames : Bool) (results : Array Section) : Html :=
-    let htmls := results.map (renderSection showNames)
-    let htmls := match init with
+def renderRewrites (results : Array (Array RewriteInterface × Bool)) (init : Option Html)
+    (range : Lsp.Range) (doc : FileWorker.EditableDocument) (showNames : Bool) : MetaM Html := do
+  let htmls ← results.mapM (renderSection showNames)
+  let htmls := match init with
       | some html => #[html] ++ htmls
       | none => htmls
-    if results.isEmpty then
-      .text "No rewrites found."
-    else
-      .element "div" #[("style", json% {"marginLeft" : "4px"})] htmls
-
-  renderSection (showNames : Bool) (sec : Section) : Html :=
-    <details «open»={true}>
+  if htmls.isEmpty then
+    return .text "No rewrites found."
+  else
+    return .element "div" #[("style", json% {"marginLeft" : "4px"})] htmls
+where
+  renderSection (showNames : Bool) (sec : Array RewriteInterface × Bool) : MetaM Html := do
+    let some first := sec.1[0]? | return <div/>
+    return <details «open»={true}>
       <summary className="mv2 pointer">
         {.text "Pattern "}
-        <InteractiveCode fmt={sec.pattern}/>
-        {.text (if sec.isLocal then " (local results)" else "")}
+        <InteractiveCode fmt={← first.pattern}/>
+        {.text (if sec.2 then " (local results)" else "")}
       </summary>
-      {renderSectionCore showNames sec}
+      {renderSectionCore showNames sec.1}
     </details>
 
-  renderSectionCore (showNames : Bool)  (sec : Section): Html :=
+  renderSectionCore (showNames : Bool) (sec : Array RewriteInterface) : Html :=
     .element "ul" #[("style", json% { "padding-left" : "30px"})] <|
-    sec.results.map fun rw =>
+    sec.map fun rw =>
       <li> { .element "p" #[] <|
         let button :=
           <span className="font-code"> {
@@ -316,60 +334,18 @@ where
           if showNames then #[<br/>, <InteractiveCode fmt={rw.prettyLemma}/>] else #[] }
       </li>
 
-/-- Return all potenital rewrite lemmata -/
-def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Bool)) := do
-  let localResults  ← (← getLocalRewriteLemmas ).getMatchWithScore e (unify := true)
-  let cachedResults ← (← getCachedRewriteLemmas).getMatchWithScore e (unify := true)
-  let allResults := localResults.map (·.1, true) ++ cachedResults.map (·.1, false)
-  return allResults
+structure FilterDetailsProps where
+  message : String
+  filtered : Html
+  all : Html
+  initiallyFiltered : Bool
+deriving RpcEncodable
 
-def checkLemmata (ass : Array (Array RewriteLemma × Bool)) (loc : SubExpr.GoalLocation)
-    (subExpr : Expr) (occ : Option Nat) (initNames : PersistentHashMap Name MVarId) :
-    MetaM (Array Section × Array Section) := do
-  let subExprString := (← ppExprTagged subExpr).stripTags
-  let mut results := #[]
-  let mut dedups := #[]
-  for (as, isLocal) in ass do
-    let mut bs := #[]
-    for a in as do
-      if let some b ← rewriteCall a loc subExpr occ initNames then
-        bs := bs.push b
-    if h : bs.size > 0 then
-      let pattern ← bs[0].pattern
-      results := results.push { pattern, isLocal, results := bs }
-      bs := dedupLemmata bs subExprString
-      if bs.size > 0 then
-        dedups := dedups.push { pattern, isLocal, results := bs }
-  return (dedups, results)
-where
-  /-- Remove duplicate lemmata and lemmata that do not change the expression. -/
-  dedupLemmata (lemmata : Array RewriteApplication) (subExprString : String) :
-      Array RewriteApplication :=
-    let replacements : HashMap String Name := lemmata.foldl (init := .empty) fun map lem =>
-      if lem.extraGoals.isEmpty && !map.contains lem.replacement then
-        map.insert lem.replacement lem.name
-      else
-        map
-    lemmata.filter fun lem =>
-      if lem.replacement == subExprString then
-        false
-      else
-        match replacements.find? lem.replacement with
-        | some name => name == lem.name
-        | none      => true
-
-def getLibraryRewrites (loc : SubExpr.GoalsLocation) :
-    ExceptT String MetaM (Array Section × Array Section) := do
-  let { userNames := initNames, .. } ← getMCtx
-  let e ← loc.rootExpr
-  let subExpr ← Core.viewSubexpr loc.pos e
-  if subExpr.hasLooseBVars then
-    throwThe String "rw doesn't work on expressions with bound variables."
-  let rwLemmas ← getCandidates subExpr
-  let positions ← kabstractPositions subExpr e
-  let occurrence := if positions.size == 1 then none else
-    positions.findIdx? (· == loc.pos) |>.map (· + 1)
-  checkLemmata rwLemmas loc.loc subExpr occurrence initNames
+/-- `FilterDetails` is a details component that has a button for switching between a filtered
+and a non-filtered view. -/
+@[widget_module]
+def FilterDetails : Component FilterDetailsProps where
+  javascript := include_str "LibraryRewrite" / "FilterDetails.js"
 
 @[server_rpc_method_cancellable]
 def LibraryRewrite.rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
@@ -387,13 +363,25 @@ def LibraryRewrite.rpc (props : SelectInsertParams) : RequestM (RequestTask Html
     let md ← goal.mvarId.getDecl
     let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
     Meta.withLCtx lctx md.localInstances do
-      profileitM Exception "libraryRewrite" (← getOptions) do
-        let unfolds ← InteractiveUnfold.getDefinitions loc
-        let unfolds := (InteractiveUnfold.renderDefinitions · props.replaceRange doc)
-          <$> unfolds.toOption
-        match ← getLibraryRewrites loc with
-        | .ok results => return renderFilterResults results unfolds props.replaceRange doc
-        | .error msg  => return .text msg
+      profileitM Exception "rw??" (← getOptions) do
+
+        let { userNames := initNames, .. } ← getMCtx
+        let some (subExpr, occ) ← viewKAbstractSubExpr (← loc.rootExpr) loc.pos |
+          return .text "rw doesn't work on expressions with bound variables."
+        let location ← loc.location
+
+        let unfolds ← InteractiveUnfold.unfoldsWithTacticString subExpr occ location
+        let unfoldsHtml ← if unfolds.isEmpty then pure none else
+          InteractiveUnfold.renderDefinitions unfolds props.replaceRange doc
+
+        let (filtered, all) ← getRewriteInterfaces subExpr occ location initNames
+        let filtered ← renderRewrites filtered unfoldsHtml props.replaceRange doc false
+        let all      ← renderRewrites all      unfoldsHtml props.replaceRange doc true
+        return <FilterDetails
+          message={"Rewrite suggestions:"}
+          all={all}
+          filtered={filtered}
+          initiallyFiltered={true} />
 
 @[widget_module]
 def LibraryRewrite : Component SelectInsertParams :=
@@ -409,3 +397,15 @@ elab stx:"rw??" : tactic => do
   let some range := (← getFileMap).rangeOfStx? stx | return
   Widget.savePanelWidgetInfo (hash LibraryRewrite.javascript)
     (pure $ json% { replaceRange : $range }) stx
+
+-- def slow (n : Nat):Bool := (n.fold (init := #[]) (fun a b => #[a] ++ b)|>.size) == n
+-- def t (x b:Bool) := (x,b)
+-- @[inline] def g (n : Nat) : Bool → _ :=
+--   let x : Bool :=  slow n
+--   t x
+-- def h ( n : Nat) :=
+--   let y := g n
+--   (y true, y false)
+-- set_option profiler true
+-- #eval g 30000 false
+-- #eval h 30000

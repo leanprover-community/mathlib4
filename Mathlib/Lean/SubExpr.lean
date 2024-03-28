@@ -8,14 +8,14 @@ import Lean.Meta
 /-! This file defines some functions for dealing with `SubExpr.GoalsLocation`. -/
 
 namespace Lean.SubExpr.GoalsLocation
-/-- The `Expr` specified by the `GoalsLocation`. -/
+/-- The root expression of the position specified by the `GoalsLocation`. -/
 def rootExpr : GoalsLocation → MetaM Expr
   | ⟨_, .hyp fvarId⟩        => fvarId.getType
   | ⟨_, .hypType fvarId _⟩  => fvarId.getType
   | ⟨_, .hypValue fvarId _⟩ => do return (← fvarId.getDecl).value
   | ⟨mvarId, .target _⟩     => mvarId.getType
 
-/-- The `Pos` specified by the `GoalsLocation`. -/
+/-- The `SubExpr.Pos` specified by the `GoalsLocation`. -/
 def pos : GoalsLocation → Pos
   | ⟨_, .hyp _⟩          => .root
   | ⟨_, .hypType _ pos⟩  => pos

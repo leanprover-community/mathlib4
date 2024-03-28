@@ -2476,6 +2476,7 @@ import Mathlib.Lean.Meta.RefinedDiscrTree.StateList
 import Mathlib.Lean.Meta.Simp
 import Mathlib.Lean.Name
 import Mathlib.Lean.PrettyPrinter.Delaborator
+import Mathlib.Lean.SubExpr
 import Mathlib.Lean.Thunk
 import Mathlib.LinearAlgebra.AdicCompletion
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
