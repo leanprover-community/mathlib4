@@ -71,7 +71,8 @@ lemma isProperMap_smul_pair (G X : Type*) [Group G] [MulAction G X]
 open Filter Topology
 
 variable {G X Y Z W : Type*} [Group G] [MulAction G X] [MulAction G Y]
-variable [TopologicalSpace G] [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
+variable [TopologicalSpace G] [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+[TopologicalSpace W]
 
 @[to_additive]
 instance continuousSmul_of_properSMul [ProperSMul G X] : ContinuousSMul G X where
