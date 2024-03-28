@@ -30,31 +30,18 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℚ` with 
 
 open Function
 
-/-- Nonnegative rational numbers. -/
-def NNRat := { q : ℚ // 0 ≤ q } deriving
-  CanonicallyOrderedCommSemiring, CanonicallyLinearOrderedAddCommMonoid, Sub, Inhabited
-#align nnrat NNRat
+deriving instance CanonicallyOrderedCommSemiring for NNRat
+deriving instance CanonicallyLinearOrderedAddCommMonoid for NNRat
+deriving instance Sub for NNRat
+deriving instance Inhabited for NNRat
 
--- Porting note (#10754): Added these instances to get `OrderedSub, DenselyOrdered, Archimedean`
--- instead of `deriving` them
-instance : OrderedSub NNRat := Nonneg.orderedSub
-
--- mathport name: nnrat
-scoped[NNRat] notation "ℚ≥0" => NNRat
+-- TODO: `deriving instance OrderedSub for NNRat` doesn't work yet, so we add the instance manually
+instance NNRat.instOrderedSub : OrderedSub NNRat := Nonneg.orderedSub
 
 namespace NNRat
 
 variable {α : Type*} {p q : ℚ≥0}
 
-instance instCoe : Coe ℚ≥0 ℚ := ⟨Subtype.val⟩
-
-/-
--- Simp lemma to put back `n.val` into the normal form given by the coercion.
-@[simp]
-theorem val_eq_coe (q : ℚ≥0) : q.val = q :=
-  rfl
--/
--- Porting note: `val_eq_coe` is no longer needed.
 #noalign nnrat.val_eq_coe
 
 instance canLift : CanLift ℚ ℚ≥0 (↑) fun q ↦ 0 ≤ q where
@@ -356,26 +343,21 @@ namespace NNRat
 
 variable {p q : ℚ≥0}
 
-/-- The numerator of a nonnegative rational. -/
-@[pp_dot] def num (q : ℚ≥0) : ℕ := (q : ℚ).num.natAbs
-#align nnrat.num NNRat.num
-
-/-- The denominator of a nonnegative rational. -/
-@[pp_dot] def den (q : ℚ≥0) : ℕ := (q : ℚ).den
-#align nnrat.denom NNRat.den
-
 @[norm_cast] lemma num_coe (q : ℚ≥0) : (q : ℚ).num = q.num := by
   simp [num, abs_of_nonneg, Rat.num_nonneg, q.2]
 
 theorem natAbs_num_coe : (q : ℚ).num.natAbs = q.num := rfl
 #align nnrat.nat_abs_num_coe NNRat.natAbs_num_coe
 
-@[simp, norm_cast] lemma den_coe : (q : ℚ).den = q.den := rfl
+@[norm_cast] lemma den_coe : (q : ℚ).den = q.den := rfl
 #align nnrat.denom_coe NNRat.den_coe
 
 @[simp] lemma num_ne_zero : q.num ≠ 0 ↔ q ≠ 0 := by simp [num]
 @[simp] lemma num_pos : 0 < q.num ↔ 0 < q := by simp [pos_iff_ne_zero]
 @[simp] lemma den_pos (q : ℚ≥0) : 0 < q.den := Rat.den_pos _
+@[simp] lemma den_ne_zero (q : ℚ≥0) : q.den ≠ 0 := Rat.den_ne_zero _
+
+lemma coprime_num_den (q : ℚ≥0) : q.num.Coprime q.den := by simpa [num, den] using Rat.reduced _
 
 -- TODO: Rename `Rat.coe_nat_num`, `Rat.intCast_den`, `Rat.ofNat_num`, `Rat.ofNat_den`
 @[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
@@ -393,7 +375,34 @@ theorem ext_num_den_iff : p = q ↔ p.num = q.num ∧ p.den = q.den :=
   ⟨by rintro rfl; exact ⟨rfl, rfl⟩, fun h ↦ ext_num_den h.1 h.2⟩
 #align nnrat.ext_num_denom_iff NNRat.ext_num_den_iff
 
-end NNRat
+/-- Form the quotient `n / d` where `n d : ℕ`.
 
--- `NNRat` needs to be available in the definition of `Field`
-assert_not_exists Field
+See also `Rat.divInt` and `mkRat`. -/
+def divNat (n d : ℕ) : ℚ≥0 := ⟨.divInt n d, Rat.divInt_nonneg n.cast_nonneg d.cast_nonneg⟩
+
+variable {n₁ n₂ d₁ d₂ d : ℕ}
+
+@[simp, norm_cast] lemma coe_divNat (n d : ℕ) : (divNat n d : ℚ) = .divInt n d := rfl
+
+lemma mk_divInt (n d : ℕ) :
+    ⟨.divInt n d, Rat.divInt_nonneg n.cast_nonneg d.cast_nonneg⟩ = divNat n d := rfl
+
+lemma divNat_inj (h₁ : d₁ ≠ 0) (h₂ : d₂ ≠ 0) : divNat n₁ d₁ = divNat n₂ d₂ ↔ n₁ * d₂ = n₂ * d₁ := by
+  rw [← coe_inj]; simp [Rat.mkRat_eq_iff, h₁, h₂]; norm_cast
+
+@[simp] lemma num_divNat_den (q : ℚ≥0) : divNat q.num q.den = q :=
+  ext $ by rw [← (q : ℚ).mkRat_num_den']; simp [num_coe, den_coe]
+
+/-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with nonnegative rational
+numbers of the form `n / d` with `d ≠ 0` and `n`, `d` coprime. -/
+@[elab_as_elim]
+def numDenCasesOn.{u} {C : ℚ≥0 → Sort u} (q) (H : ∀ n d, d ≠ 0 → n.Coprime d → C (divNat n d)) :
+    C q := by rw [← q.num_divNat_den]; exact H _ _ q.den_ne_zero q.coprime_num_den
+
+lemma add_def (q r : ℚ≥0) : q + r = divNat (q.num * r.den + r.num * q.den) (q.den * r.den) := by
+  ext; simp [Rat.add_def', Rat.mkRat_eq, num_coe, den_coe]
+
+lemma mul_def (q r : ℚ≥0) : q * r = divNat (q.num * r.num) (q.den * r.den) := by
+  ext; simp [Rat.mul_def', Rat.mkRat_eq, num_coe, den_coe]
+
+end NNRat
