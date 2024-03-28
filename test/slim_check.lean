@@ -428,6 +428,35 @@ issue: 1 = 0 does not hold
     exact test_sorry
   trivial
 
+example (f : ULift.{1} ℕ) : true := by
+  have : f = ⟨0⟩ := by
+    success_if_fail_with_msg "
+===================
+Found problems!
+f := 1
+issue: ULift.up 1 = ULift.up 0 does not hold
+(0 shrinks)
+-------------------"
+      slim_check (config := { randomSeed := some 257 })
+    exact test_sorry
+  trivial
+
+
+example (α : Type u) (l : List α) : true := by
+  have : l = l ++ l := by
+    success_if_fail_with_msg "
+===================
+Found problems!
+α := \"ULift ℤ\"
+l := [0]
+issue: [ULift.up 0] = [ULift.up 0, ULift.up 0] does not hold
+(1 shrinks)
+-------------------
+"
+      slim_check (config := { randomSeed := some 257 })
+    exact test_sorry
+  trivial
+
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/slim_check.20question/near/412709012
 open scoped BigOperators in
 /--
