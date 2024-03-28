@@ -3,18 +3,21 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.Basic
+import Mathlib.CategoryTheory.EffectiveEpi.Comp
+import Mathlib.Data.Fintype.Card
 /-!
 
 # Functors preserving effective epimorphisms
 
-This file concerns functors which preserve effective epimorphisms and effective epimporphic
-families.
+This file concerns functors which preserve and/or reflect effective epimorphisms and effective
+epimorphic families.
 
 ## TODO
-- Define the classes `PreservesEffectiveEpiFamilies`, `ReflectsEffectiveEpis`, etc. 
-- Find sufficient conditions on functors to preserve/reflect effective epis.
+- Find nice sufficient conditions in terms of preserving/reflecting (co)limits, to preserve/reflect
+  effective epis, similar to `CategoryTheory.preserves_epi_of_preservesColimit`.
 -/
+
+universe u
 
 namespace CategoryTheory
 
@@ -72,15 +75,14 @@ example {X B : C} (π : X ⟶ B) (F : C ⥤ D) [IsEquivalence F] [EffectiveEpi �
 
 end Equivalence
 
-section Preserves
+namespace Functor
 
 variable {D : Type*} [Category D]
 
-namespace Functor
+section Preserves
 
 /--
-A functor preserves effective epimorphisms if it maps effective epimorphisms to effective
-epimorphisms.
+A class describing the property of preserving effective epimorphisms.
 -/
 class PreservesEffectiveEpis (F : C ⥤ D) : Prop where
   /--
@@ -93,9 +95,146 @@ instance map_effectiveEpi (F : C ⥤ D) [F.PreservesEffectiveEpis] {X Y : C} (f 
     [EffectiveEpi f] : EffectiveEpi (F.map f) :=
   PreservesEffectiveEpis.preserves f
 
-instance (F : C ⥤ D) [IsEquivalence F] : F.PreservesEffectiveEpis where
+/--
+A class describing the property of preserving effective epimorphic families.
+-/
+class PreservesEffectiveEpiFamilies (F : C ⥤ D) : Prop where
+  /--
+  A functor preserves effective epimorphic families if it maps effective epimorphic families to
+  effective epimorphic families.
+  -/
+  preserves : ∀ {α : Type*} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π],
+    EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a))
+
+instance map_effectiveEpiFamily (F : C ⥤ D) [F.PreservesEffectiveEpiFamilies]
+    {α : Type*} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π] :
+    EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a)) :=
+  PreservesEffectiveEpiFamilies.preserves X π
+
+/--
+A class describing the property of preserving finite effective epimorphic families.
+-/
+class PreservesFiniteEffectiveEpiFamilies (F : C ⥤ D) : Prop where
+  /--
+  A functor preserves finite effective epimorphic families if it maps finite effective epimorphic
+  families to effective epimorphic families.
+  -/
+  preserves : ∀ {α : Type} [Finite α] {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B))
+    [EffectiveEpiFamily X π],
+    EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a))
+
+instance map_finite_effectiveEpiFamily (F : C ⥤ D) [F.PreservesFiniteEffectiveEpiFamilies]
+    {α : Type} [Finite α] {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π] :
+    EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a)) :=
+  PreservesFiniteEffectiveEpiFamilies.preserves X π
+
+instance (F : C ⥤ D) [PreservesEffectiveEpiFamilies F] : PreservesFiniteEffectiveEpiFamilies F where
+  preserves _ _ := inferInstance
+
+instance (F : C ⥤ D) [PreservesFiniteEffectiveEpiFamilies F] : PreservesEffectiveEpis F where
   preserves _ := inferInstance
 
-end Functor
+instance (F : C ⥤ D) [IsEquivalence F] : F.PreservesEffectiveEpiFamilies where
+  preserves _ _ := inferInstance
 
 end Preserves
+
+section Reflects
+
+/--
+A class describing the property of reflecting effective epimorphisms.
+-/
+class ReflectsEffectiveEpis (F : C ⥤ D) : Prop where
+  /--
+  A functor reflects effective epimorphisms if it only maps effective
+  epimorphisms to effective epimorphisms.
+  -/
+  reflects : ∀ {X Y : C} (f : X ⟶ Y), EffectiveEpi (F.map f) → EffectiveEpi f
+
+lemma effectiveEpi_of_map (F : C ⥤ D) [F.ReflectsEffectiveEpis] {X Y : C} (f : X ⟶ Y)
+    (h : EffectiveEpi (F.map f)) : EffectiveEpi f :=
+  ReflectsEffectiveEpis.reflects f h
+
+/--
+A class describing the property of reflecting effective epimorphic families.
+-/
+class ReflectsEffectiveEpiFamilies (F : C ⥤ D) : Prop where
+  /--
+  A functor reflects effective epimorphic families if it only maps effective epimorphic families to
+  effective epimorphic families.
+  -/
+  reflects : ∀ {α : Type u} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B)),
+    EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a)) →
+    EffectiveEpiFamily X π
+
+lemma effectiveEpiFamily_of_map (F : C ⥤ D) [ReflectsEffectiveEpiFamilies.{_, _, u} F]
+    {α : Type u} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B))
+    (h : EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a))) :
+    EffectiveEpiFamily X π :=
+  ReflectsEffectiveEpiFamilies.reflects X π h
+
+/--
+A class describing the property of reflecting finite effective epimorphic families.
+-/
+class ReflectsFiniteEffectiveEpiFamilies (F : C ⥤ D) : Prop where
+  /--
+  A functor reflects finite effective epimorphic families if it only maps finite effective
+  epimorphic families to finite effective epimorphic families.
+  -/
+  reflects : ∀ {α : Type} [Finite α] {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B)),
+    EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a)) →
+    EffectiveEpiFamily X π
+
+lemma finite_effectiveEpiFamily_of_map (F : C ⥤ D) [ReflectsFiniteEffectiveEpiFamilies F]
+    {α : Type} [Finite α] {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B))
+    (h : EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a))) :
+    EffectiveEpiFamily X π :=
+  ReflectsFiniteEffectiveEpiFamilies.reflects X π h
+
+instance (F : C ⥤ D) [PreservesEffectiveEpiFamilies F] : PreservesFiniteEffectiveEpiFamilies F where
+  preserves _ _ := inferInstance
+
+instance (F : C ⥤ D) [ReflectsEffectiveEpiFamilies F] : ReflectsEffectiveEpis F where
+  reflects _ h := by
+    rw [effectiveEpi_iff_effectiveEpiFamily] at h
+    have := F.effectiveEpiFamily_of_map _ _ h
+    infer_instance
+
+instance (F : C ⥤ D) [ReflectsEffectiveEpiFamilies F] : ReflectsFiniteEffectiveEpiFamilies F where
+  reflects _ _ h := by
+    have := F.effectiveEpiFamily_of_map _ _ h
+    infer_instance
+
+instance (F : C ⥤ D) [ReflectsEffectiveEpiFamilies F] : ReflectsEffectiveEpis F where
+  reflects _ h := by
+    rw [effectiveEpi_iff_effectiveEpiFamily] at h
+    have := F.effectiveEpiFamily_of_map _ _ h
+    infer_instance
+
+instance (F : C ⥤ D) [ReflectsEffectiveEpiFamilies F] : ReflectsFiniteEffectiveEpiFamilies F where
+  reflects _ _ h := by
+    have := F.effectiveEpiFamily_of_map _ _ h
+    infer_instance
+
+instance (F : C ⥤ D) [ReflectsFiniteEffectiveEpiFamilies F] : ReflectsEffectiveEpis F where
+  reflects _ h := by
+    rw [effectiveEpi_iff_effectiveEpiFamily] at h
+    have := F.finite_effectiveEpiFamily_of_map _ _ h
+    infer_instance
+
+instance (F : C ⥤ D) [IsEquivalence F] : F.PreservesEffectiveEpiFamilies where
+  preserves _ _ := inferInstance
+
+instance (F : C ⥤ D) [IsEquivalence F] : F.ReflectsEffectiveEpiFamilies where
+  reflects {α B} X π _ := by
+    let i : (a : α) → X a ⟶ (inv F).obj (F.obj (X a)) := fun a ↦ (asEquivalence F).unit.app _
+    have : EffectiveEpiFamily X (fun a ↦ (i a) ≫ (inv F).map (F.map (π a))) := inferInstance
+    simp only [asEquivalence_functor, asEquivalence_inverse, IsEquivalence.inv_fun_map, comp_obj,
+      id_obj, Iso.hom_inv_id_app_assoc, i] at this
+    have : EffectiveEpiFamily X (fun a ↦ (π a ≫ (asEquivalence F).unit.app B) ≫
+        (asEquivalence F).unitInv.app _) := inferInstance
+    simpa
+
+end Reflects
+
+end Functor
