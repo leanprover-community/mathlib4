@@ -79,7 +79,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   -- If `card α ≤ bound ε l`, then the partition into singletons is acceptable.
   · refine' ⟨⊥, bot_isEquipartition _, _⟩
     rw [card_bot, card_univ]
-    exact ⟨hl, hα, botIsUniform _ hε⟩
+    exact ⟨hl, hα, bot_isUniform _ hε⟩
   -- Else, let's start from a dummy equipartition of size `initialBound ε l`.
   let t := initialBound ε l
   have htα : t ≤ (univ : Finset α).card :=
@@ -89,7 +89,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   obtain hε₁ | hε₁ := le_total 1 ε
   -- If `ε ≥ 1`, then this dummy equipartition is `ε`-uniform, so we're done.
   · exact ⟨dum, hdum₁, (le_initialBound ε l).trans hdum₂.ge,
-      hdum₂.le.trans (initialBound_le_bound ε l), (dum.isUniformOne G).mono hε₁⟩
+      hdum₂.le.trans (initialBound_le_bound ε l), (dum.isUniform_one G).mono hε₁⟩
   -- Else, set up the induction on energy. We phrase it through the existence for each `i` of an
   -- equipartition of size bounded by `stepBound^[i] (initialBound ε l)` and which is either
   -- `ε`-uniform or has energy at least `ε ^ 5 / 4 * i`.
