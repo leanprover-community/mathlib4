@@ -571,6 +571,22 @@ theorem cancel_iso_inv_right_assoc {W X X' Y Z : C} (f : W ⟶ X) (g : X ⟶ Y) 
   simp only [← Category.assoc, cancel_mono]
 #align category_theory.iso.cancel_iso_inv_right_assoc CategoryTheory.Iso.cancel_iso_inv_right_assoc
 
+section
+
+variable {D E : Type*} [Category D] [Category E] {X Y : C} (e : X ≅ Y)
+
+@[reassoc (attr := simp)]
+lemma map_hom_inv_id (F : C ⥤ D) :
+    F.map e.hom ≫ F.map e.inv = 𝟙 _ := by
+  rw [← F.map_comp, e.hom_inv_id, F.map_id]
+
+@[reassoc (attr := simp)]
+lemma map_inv_hom_id (F : C ⥤ D) :
+    F.map e.inv ≫ F.map e.hom = 𝟙 _ := by
+  rw [← F.map_comp, e.inv_hom_id, F.map_id]
+
+end
+
 end Iso
 
 namespace Functor
@@ -585,8 +601,6 @@ variable [Category.{v₂} D]
 def mapIso (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.obj X ≅ F.obj Y where
   hom := F.map i.hom
   inv := F.map i.inv
-  hom_inv_id := by rw [← map_comp, Iso.hom_inv_id, ← map_id]
-  inv_hom_id := by rw [← map_comp, Iso.inv_hom_id, ← map_id]
 #align category_theory.functor.map_iso CategoryTheory.Functor.mapIso
 #align category_theory.functor.map_iso_inv CategoryTheory.Functor.mapIso_inv
 #align category_theory.functor.map_iso_hom CategoryTheory.Functor.mapIso_hom
