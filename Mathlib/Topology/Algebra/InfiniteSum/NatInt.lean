@@ -10,10 +10,10 @@ import Mathlib.Logic.Encodable.Lattice
 /-!
 # Infinite sums over `ℕ` and `ℤ`
 
-This file contains lemmas about `HasSum`, `Summable`, `tsum`, `HasProd`, `Prodable`, `tprod` applied
-to the important special cases where the domain is `ℕ` or `ℤ`. For instance, we prove the formula
-`∑ i in range k, f i + ∑' i, f (i + k) = ∑' i, f i`, in `sum_add_tsum_nat_add`, as well as several
-results relating sums on `ℕ` and `ℤ`.
+This file contains lemmas about `HasSum`, `Summable`, `tsum`, `HasProd`, `Multipliable`, `tprod`
+applied to the important special cases where the domain is `ℕ` or `ℤ`. For instance, we prove the
+formula `∑ i in range k, f i + ∑' i, f (i + k) = ∑' i, f i`, in `sum_add_tsum_nat_add`, as well as
+several results relating sums on `ℕ` and `ℤ`.
 -/
 
 noncomputable section
@@ -74,10 +74,10 @@ end ContinuousMul
 
 end HasProd
 
-namespace Prodable
+namespace Multipliable
 
 @[to_additive]
-theorem hasSum_iff_tendsto_nat [T2Space M] {f : ℕ → M} (hf : Prodable f) :
+theorem hasSum_iff_tendsto_nat [T2Space M] {f : ℕ → M} (hf : Multipliable f) :
     HasProd f m ↔ Tendsto (fun n : ℕ ↦ ∏ i in range n, f i) atTop (𝓝 m) := by
   refine ⟨fun h ↦ h.tendsto_prod_nat, fun h ↦ ?_⟩
   rw [tendsto_nhds_unique h hf.hasProd.tendsto_prod_nat]
@@ -89,17 +89,17 @@ section ContinuousMul
 variable [ContinuousMul M]
 
 @[to_additive]
-theorem comp_nat_mul {f : ℕ → M} {k : ℕ} (h : Prodable fun n ↦ f (n + k)) : Prodable f :=
-  h.hasProd.prod_range_mul.prodable
+theorem comp_nat_mul {f : ℕ → M} {k : ℕ} (h : Multipliable fun n ↦ f (n + k)) : Multipliable f :=
+  h.hasProd.prod_range_mul.multipliable
 
 @[to_additive]
-theorem even_mul_odd {f : ℕ → M} (he : Prodable fun k ↦ f (2 * k))
-    (ho : Prodable fun k ↦ f (2 * k + 1)) : Prodable f :=
-  (he.hasProd.even_mul_odd ho.hasProd).prodable
+theorem even_mul_odd {f : ℕ → M} (he : Multipliable fun k ↦ f (2 * k))
+    (ho : Multipliable fun k ↦ f (2 * k + 1)) : Multipliable f :=
+  (he.hasProd.even_mul_odd ho.hasProd).multipliable
 
 end ContinuousMul
 
-end Prodable
+end Multipliable
 
 section tprod
 
@@ -175,19 +175,19 @@ variable [ContinuousMul M]
 
 @[to_additive]
 theorem prod_mul_tprod_nat_mul'
-    {f : ℕ → M} {k : ℕ} (h : Prodable (fun n ↦ f (n + k))) :
+    {f : ℕ → M} {k : ℕ} (h : Multipliable (fun n ↦ f (n + k))) :
     ((∏ i in range k, f i) * ∏' i, f (i + k)) = ∏' i, f i :=
   h.hasProd.prod_range_mul.tprod_eq.symm
 
 @[to_additive]
 theorem tprod_eq_zero_mul'
-    {f : ℕ → M} (hf : Prodable (fun n ↦ f (n + 1))) :
+    {f : ℕ → M} (hf : Multipliable (fun n ↦ f (n + 1))) :
     ∏' b, f b = f 0 * ∏' b, f (b + 1) := by
   simpa only [prod_range_one] using (prod_mul_tprod_nat_mul' hf).symm
 
 @[to_additive]
-theorem tprod_even_mul_odd {f : ℕ → M} (he : Prodable fun k ↦ f (2 * k))
-    (ho : Prodable fun k ↦ f (2 * k + 1)) :
+theorem tprod_even_mul_odd {f : ℕ → M} (he : Multipliable fun k ↦ f (2 * k))
+    (ho : Multipliable fun k ↦ f (2 * k + 1)) :
     (∏' k, f (2 * k)) * ∏' k, f (2 * k + 1) = ∏' k, f k :=
   (he.hasProd.even_mul_odd ho.hasProd).tprod_eq.symm
 #align tsum_even_add_odd tsum_even_add_odd
@@ -210,9 +210,10 @@ theorem hasProd_nat_add_iff {f : ℕ → G} (k : ℕ) :
 #align has_sum_nat_add_iff hasSum_nat_add_iff
 
 @[to_additive]
-theorem prodable_nat_add_iff {f : ℕ → G} (k : ℕ) : (Prodable fun n ↦ f (n + k)) ↔ Prodable f :=
+theorem multipliable_nat_add_iff {f : ℕ → G} (k : ℕ) :
+    (Multipliable fun n ↦ f (n + k)) ↔ Multipliable f :=
   Iff.symm <|
-    (Equiv.mulRight (∏ i in range k, f i)).surjective.prodable_iff_of_hasProd_iff
+    (Equiv.mulRight (∏ i in range k, f i)).surjective.multipliable_iff_of_hasProd_iff
       (hasProd_nat_add_iff k).symm
 #align summable_nat_add_iff summable_nat_add_iff
 
@@ -223,15 +224,15 @@ theorem hasProd_nat_add_iff' {f : ℕ → G} (k : ℕ) :
 #align has_sum_nat_add_iff' hasSum_nat_add_iff'
 
 @[to_additive]
-theorem prod_mul_tprod_nat_add [T2Space G] {f : ℕ → G} (k : ℕ) (h : Prodable f) :
+theorem prod_mul_tprod_nat_add [T2Space G] {f : ℕ → G} (k : ℕ) (h : Multipliable f) :
     ((∏ i in range k, f i) * ∏' i, f (i + k)) = ∏' i, f i :=
-  prod_mul_tprod_nat_mul' <| (prodable_nat_add_iff k).2 h
+  prod_mul_tprod_nat_mul' <| (multipliable_nat_add_iff k).2 h
 #align sum_add_tsum_nat_add sum_add_tsum_nat_add
 
 @[to_additive]
-theorem tprod_eq_zero_mul [T2Space G] {f : ℕ → G} (hf : Prodable f) :
+theorem tprod_eq_zero_mul [T2Space G] {f : ℕ → G} (hf : Multipliable f) :
     ∏' b, f b = f 0 * ∏' b, f (b + 1) :=
-  tprod_eq_zero_mul' <| (prodable_nat_add_iff 1).2 hf
+  tprod_eq_zero_mul' <| (multipliable_nat_add_iff 1).2 hf
 #align tsum_eq_zero_add tsum_eq_zero_add
 
 /-- For `f : ℕ → G`, the product `∏' k, f (k + i)` tends to one. This does not require a
@@ -240,14 +241,14 @@ multipliability assumption on `f`, as otherwise all such sums are one. -/
 summability assumption on `f`, as otherwise all such sums are zero."]
 theorem tendsto_prod_nat_add [T2Space G] (f : ℕ → G) :
     Tendsto (fun i ↦ ∏' k, f (k + i)) atTop (𝓝 1) := by
-  by_cases hf : Prodable f
+  by_cases hf : Multipliable f
   · have h₀ : (fun i ↦ (∏' i, f i) / ∏ j in range i, f j) = fun i ↦ ∏' k : ℕ, f (k + i) := by
       ext1 i
       rw [div_eq_iff_eq_mul, mul_comm, prod_mul_tprod_nat_add i hf]
     have h₁ : Tendsto (fun _ : ℕ ↦ ∏' i, f i) atTop (𝓝 (∏' i, f i)) := tendsto_const_nhds
     simpa only [h₀, div_self'] using Tendsto.div' h₁ hf.hasProd.tendsto_prod_nat
-  · refine tendsto_const_nhds.congr fun n ↦ (tprod_eq_one_of_not_prodable ?_).symm
-    rwa [prodable_nat_add_iff n]
+  · refine tendsto_const_nhds.congr fun n ↦ (tprod_eq_one_of_not_multipliable ?_).symm
+    rwa [multipliable_nat_add_iff n]
 #align tendsto_sum_nat_add tendsto_sum_nat_add
 
 end TopologicalGroup
@@ -262,7 +263,8 @@ theorem cauchySeq_finset_iff_nat_tprod_vanishing {f : ℕ → G} :
       ∀ e ∈ 𝓝 (1 : G), ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∏' n : t, f n) ∈ e := by
   refine cauchySeq_finset_iff_tprod_vanishing.trans ⟨fun vanish e he ↦ ?_, fun vanish e he ↦ ?_⟩
   · obtain ⟨s, hs⟩ := vanish e he
-    refine ⟨if h : s.Nonempty then s.max' h + 1 else 0, fun t ht ↦ hs _ <| Set.disjoint_left.mpr ?_⟩
+    refine ⟨if h : s.Nonempty then s.max' h + 1 else 0,
+      fun t ht ↦ hs _ <| Set.disjoint_left.mpr ?_⟩
     split_ifs at ht with h
     · exact fun m hmt hms ↦ (s.le_max' _ hms).not_lt (Nat.succ_le_iff.mp <| ht hmt)
     · exact fun _ _ hs ↦ h ⟨_, hs⟩
@@ -273,9 +275,9 @@ theorem cauchySeq_finset_iff_nat_tprod_vanishing {f : ℕ → G} :
 variable [CompleteSpace G]
 
 @[to_additive]
-theorem prodable_iff_nat_tprod_vanishing {f : ℕ → G} : Prodable f ↔
+theorem multipliable_iff_nat_tprod_vanishing {f : ℕ → G} : Multipliable f ↔
     ∀ e ∈ 𝓝 1, ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∏' n : t, f n) ∈ e := by
-  rw [prodable_iff_cauchySeq_finset, cauchySeq_finset_iff_nat_tprod_vanishing]
+  rw [multipliable_iff_cauchySeq_finset, cauchySeq_finset_iff_nat_tprod_vanishing]
 
 end UniformGroup
 
@@ -284,14 +286,15 @@ section TopologicalGroup
 variable [TopologicalSpace G] [TopologicalGroup G]
 
 @[to_additive]
-theorem Prodable.nat_tprod_vanishing {f : ℕ → G} (hf : Prodable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 1) :
-    ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∏' n : t, f n) ∈ e :=
+theorem Multipliable.nat_tprod_vanishing {f : ℕ → G} (hf : Multipliable f) ⦃e : Set G⦄
+    (he : e ∈ 𝓝 1) : ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∏' n : t, f n) ∈ e :=
   letI : UniformSpace G := TopologicalGroup.toUniformSpace G
   have : UniformGroup G := comm_topologicalGroup_is_uniform
   cauchySeq_finset_iff_nat_tprod_vanishing.1 hf.hasProd.cauchySeq e he
 
 @[to_additive]
-theorem Prodable.tendsto_atTop_one {f : ℕ → G} (hf : Prodable f) : Tendsto f atTop (𝓝 1) := by
+theorem Multipliable.tendsto_atTop_one {f : ℕ → G} (hf : Multipliable f) :
+    Tendsto f atTop (𝓝 1) := by
   rw [← Nat.cofinite_eq_atTop]
   exact hf.tendsto_cofinite_one
 #align summable.tendsto_at_top_zero Summable.tendsto_atTop_zero
@@ -328,12 +331,12 @@ lemma HasProd.nat_mul_neg_add_one {f : ℤ → M} (hf : HasProd f m) :
       forall_apply_eq_imp_iff₂, not_false_eq_true, implies_true, forall_const]
 
 @[to_additive Summable.nat_add_neg_add_one]
-lemma Prodable.nat_mul_neg_add_one {f : ℤ → M} (hf : Prodable f) :
-    Prodable (fun n : ℕ ↦ f n * f (-(n + 1))) :=
-  hf.hasProd.nat_mul_neg_add_one.prodable
+lemma Multipliable.nat_mul_neg_add_one {f : ℤ → M} (hf : Multipliable f) :
+    Multipliable (fun n : ℕ ↦ f n * f (-(n + 1))) :=
+  hf.hasProd.nat_mul_neg_add_one.multipliable
 
 @[to_additive tsum_nat_add_neg_add_one]
-lemma tprod_nat_mul_neg_add_one [T2Space M] {f : ℤ → M} (hf : Prodable f) :
+lemma tprod_nat_mul_neg_add_one [T2Space M] {f : ℤ → M} (hf : Multipliable f) :
     ∏' (n : ℕ), (f n * f (-(n + 1))) = ∏' (n : ℤ), f n :=
   hf.hasProd.nat_mul_neg_add_one.tprod_eq
 
@@ -360,14 +363,14 @@ lemma HasProd.of_nat_of_neg_add_one {f : ℤ → M}
 @[deprecated] alias HasSum.nonneg_add_neg := HasSum.of_nat_of_neg_add_one
 
 @[to_additive Summable.of_nat_of_neg_add_one]
-lemma Prodable.of_nat_of_neg_add_one {f : ℤ → M}
-    (hf₁ : Prodable fun n : ℕ ↦ f n)  (hf₂ : Prodable fun n : ℕ ↦ f (-(n + 1))) :
-    Prodable f :=
-  (hf₁.hasProd.of_nat_of_neg_add_one hf₂.hasProd).prodable
+lemma Multipliable.of_nat_of_neg_add_one {f : ℤ → M}
+    (hf₁ : Multipliable fun n : ℕ ↦ f n)  (hf₂ : Multipliable fun n : ℕ ↦ f (-(n + 1))) :
+    Multipliable f :=
+  (hf₁.hasProd.of_nat_of_neg_add_one hf₂.hasProd).multipliable
 
 @[to_additive tsum_of_nat_of_neg_add_one]
 lemma tprod_of_nat_of_neg_add_one [T2Space M] {f : ℤ → M}
-    (hf₁ : Prodable fun n : ℕ ↦ f n) (hf₂ : Prodable fun n : ℕ ↦ f (-(n + 1))) :
+    (hf₁ : Multipliable fun n : ℕ ↦ f n) (hf₂ : Multipliable fun n : ℕ ↦ f (-(n + 1))) :
     ∏' n : ℤ, f n = (∏' n : ℕ, f n) * ∏' n : ℕ, f (-(n + 1)) :=
   (hf₁.hasProd.of_nat_of_neg_add_one hf₂.hasProd).tprod_eq
 
@@ -382,21 +385,21 @@ lemma HasProd.int_rec {f g : ℕ → M} (hf : HasProd f m) (hg : HasProd g m') :
   HasProd.of_nat_of_neg_add_one hf hg
 #align has_sum.int_rec HasSum.int_rec
 
-/-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` are both prodable then so is the
+/-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` are both multipliable then so is the
 `ℤ`-indexed sequence: `..., g₂, g₁, g₀, f₀, f₁, f₂, ...` (with `f₀` at the `0`-th position). -/
 @[to_additive "If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` are both summable then so is the
 `ℤ`-indexed sequence: `..., g₂, g₁, g₀, f₀, f₁, f₂, ...` (with `f₀` at the `0`-th position)."]
-lemma Prodable.int_rec {f g : ℕ → M} (hf : Prodable f) (hg : Prodable g) :
-    Prodable (Int.rec f g) :=
+lemma Multipliable.int_rec {f g : ℕ → M} (hf : Multipliable f) (hg : Multipliable g) :
+    Multipliable (Int.rec f g) :=
   .of_nat_of_neg_add_one hf hg
 
-/-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` are both prodable, then the product of the
+/-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` are both multipliable, then the product of the
 `ℤ`-indexed sequence: `..., g₂, g₁, g₀, f₀, f₁, f₂, ...` (with `f₀` at the `0`-th position) is
 `(∏' n, f n) * ∏' n, g n`. -/
 @[to_additive "If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` are both summable, then the sum of the
 `ℤ`-indexed sequence: `..., g₂, g₁, g₀, f₀, f₁, f₂, ...` (with `f₀` at the `0`-th position) is
 `∑' n, f n + ∑' n, g n`."]
-lemma tprod_int_rec [T2Space M] {f g : ℕ → M} (hf : Prodable f) (hg : Prodable g) :
+lemma tprod_int_rec [T2Space M] {f g : ℕ → M} (hf : Multipliable f) (hg : Multipliable g) :
     ∏' n : ℤ, Int.rec f g n = (∏' n : ℕ, f n) * ∏' n : ℕ, g n :=
   (hf.hasProd.int_rec hg.hasProd).tprod_eq
 
@@ -447,12 +450,12 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
   HasSum.nat_add_neg
 
 @[to_additive]
-theorem Prodable.nat_mul_neg {f : ℤ → M} (hf : Prodable f) :
-    Prodable fun n : ℕ ↦ f n * f (-n) :=
-  hf.hasProd.nat_mul_neg.prodable
+theorem Multipliable.nat_mul_neg {f : ℤ → M} (hf : Multipliable f) :
+    Multipliable fun n : ℕ ↦ f n * f (-n) :=
+  hf.hasProd.nat_mul_neg.multipliable
 
 @[to_additive]
-lemma tprod_nat_mul_neg [T2Space M] {f : ℤ → M} (hf : Prodable f) :
+lemma tprod_nat_mul_neg [T2Space M] {f : ℤ → M} (hf : Multipliable f) :
     ∏' n : ℕ, (f n * f (-n)) = (∏' n : ℤ, f n) * f 0 :=
   hf.hasProd.nat_mul_neg.tprod_eq
 
@@ -468,14 +471,14 @@ theorem HasProd.of_add_one_of_neg_add_one {f : ℤ → M}
   HasSum.of_add_one_of_neg_add_one
 
 @[to_additive Summable.of_add_one_of_neg_add_one]
-lemma Prodable.of_add_one_of_neg_add_one {f : ℤ → M}
-    (hf₁ : Prodable fun n : ℕ ↦ f (n + 1)) (hf₂ : Prodable fun n : ℕ ↦ f (-(n + 1))) :
-    Prodable f :=
-  (hf₁.hasProd.of_add_one_of_neg_add_one hf₂.hasProd).prodable
+lemma Multipliable.of_add_one_of_neg_add_one {f : ℤ → M}
+    (hf₁ : Multipliable fun n : ℕ ↦ f (n + 1)) (hf₂ : Multipliable fun n : ℕ ↦ f (-(n + 1))) :
+    Multipliable f :=
+  (hf₁.hasProd.of_add_one_of_neg_add_one hf₂.hasProd).multipliable
 
 @[to_additive tsum_of_add_one_of_neg_add_one]
 lemma tprod_of_add_one_of_neg_add_one [T2Space M] {f : ℤ → M}
-    (hf₁ : Prodable fun n : ℕ ↦ f (n + 1)) (hf₂ : Prodable fun n : ℕ ↦ f (-(n + 1))) :
+    (hf₁ : Multipliable fun n : ℕ ↦ f (n + 1)) (hf₂ : Multipliable fun n : ℕ ↦ f (-(n + 1))) :
     ∏' n : ℤ, f n = (∏' n : ℕ, f (n + 1)) * f 0 * ∏' n : ℕ, f (-(n + 1)) :=
   (hf₁.hasProd.of_add_one_of_neg_add_one hf₂.hasProd).tprod_eq
 
@@ -494,9 +497,9 @@ lemma HasProd.of_nat_of_neg {f : ℤ → G} (hf₁ : HasProd (fun n : ℕ ↦ f 
   rwa [← hasProd_nat_add_iff' 1, prod_range_one, Nat.cast_zero, neg_zero] at hf₂
 
 @[to_additive]
-lemma Prodable.of_nat_of_neg {f : ℤ → G} (hf₁ : Prodable fun n : ℕ ↦ f n)
-    (hf₂ : Prodable fun n : ℕ ↦ f (-n)) : Prodable f :=
-  (hf₁.hasProd.of_nat_of_neg hf₂.hasProd).prodable
+lemma Multipliable.of_nat_of_neg {f : ℤ → G} (hf₁ : Multipliable fun n : ℕ ↦ f n)
+    (hf₂ : Multipliable fun n : ℕ ↦ f (-n)) : Multipliable f :=
+  (hf₁.hasProd.of_nat_of_neg hf₂.hasProd).multipliable
 #align summable_int_of_summable_nat Summable.of_nat_of_neg
 
 -- deprecated 2024-03-04
@@ -505,7 +508,7 @@ lemma Prodable.of_nat_of_neg {f : ℤ → G} (hf₁ : Prodable fun n : ℕ ↦ f
 
 @[to_additive]
 lemma tprod_of_nat_of_neg [T2Space G] {f : ℤ → G}
-    (hf₁ : Prodable fun n : ℕ ↦ f n) (hf₂ : Prodable fun n : ℕ ↦ f (-n)) :
+    (hf₁ : Multipliable fun n : ℕ ↦ f n) (hf₂ : Multipliable fun n : ℕ ↦ f (-n)) :
     ∏' n : ℤ, f n = (∏' n : ℕ, f n) * (∏' n : ℕ, f (-n)) / f 0 :=
   (hf₁.hasProd.of_nat_of_neg hf₂.hasProd).tprod_eq
 
@@ -516,16 +519,16 @@ section UniformGroup -- results which depend on completeness
 variable [UniformSpace G] [UniformGroup G] [CompleteSpace G]
 
 @[to_additive "\"iff\" version of `Summable.of_nat_of_neg_add_one`."]
-lemma prodable_int_iff_prodable_nat_and_neg_add_one {f : ℤ → G} :
-    Prodable f ↔ (Prodable fun n : ℕ ↦ f n) ∧ (Prodable fun n : ℕ ↦ f (-(n + 1))) := by
-  refine ⟨fun p ↦ ⟨?_, ?_⟩, fun ⟨hf₁, hf₂⟩ ↦ Prodable.of_nat_of_neg_add_one hf₁ hf₂⟩ <;>
+lemma multipliable_int_iff_multipliable_nat_and_neg_add_one {f : ℤ → G} : Multipliable f ↔
+    (Multipliable fun n : ℕ ↦ f n) ∧ (Multipliable fun n : ℕ ↦ f (-(n + 1))) := by
+  refine ⟨fun p ↦ ⟨?_, ?_⟩, fun ⟨hf₁, hf₂⟩ ↦ Multipliable.of_nat_of_neg_add_one hf₁ hf₂⟩ <;>
   apply p.comp_injective
   exacts [Nat.cast_injective, @Int.negSucc.inj]
 
 @[to_additive "\"iff\" version of `Summable.of_natCast_neg_natCast`."]
-lemma prodable_int_iff_prodable_nat_and_neg {f : ℤ → G} :
-    Prodable f ↔ (Prodable fun n : ℕ ↦ f n) ∧ (Prodable fun n : ℕ ↦ f (-n)) := by
-  refine ⟨fun p ↦ ⟨?_, ?_⟩, fun ⟨hf₁, hf₂⟩ ↦ Prodable.of_nat_of_neg hf₁ hf₂⟩ <;>
+lemma multipliable_int_iff_multipliable_nat_and_neg {f : ℤ → G} :
+    Multipliable f ↔ (Multipliable fun n : ℕ ↦ f n) ∧ (Multipliable fun n : ℕ ↦ f (-n)) := by
+  refine ⟨fun p ↦ ⟨?_, ?_⟩, fun ⟨hf₁, hf₂⟩ ↦ Multipliable.of_nat_of_neg hf₁ hf₂⟩ <;>
   apply p.comp_injective
   exacts [Nat.cast_injective, neg_injective.comp Nat.cast_injective]
 

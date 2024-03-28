@@ -28,8 +28,8 @@ generally, see `HasSum.tendsto_sum_nat`.
 -/
 
 /- **NOTE**. This file is intended to be kept short, just enough to state the basic definitions and
-three key lemmas relating them together, namely `Summable.hasSum`, `Prodable.hasProd`,
-`HasSum.tsum_eq`, `HasProd.tprod_eq`, `Summable.hasSum_iff`, and `Prodable.hasProd_iff`.
+three key lemmas relating them together, namely `Summable.hasSum`, `Multipliable.hasProd`,
+`HasSum.tsum_eq`, `HasProd.tprod_eq`, `Summable.hasSum_iff`, and `Multipliable.hasProd_iff`.
 
 Do not add further lemmas here -- add them to `InfiniteSum.Basic` or (preferably) another, more
 specific file. -/
@@ -68,9 +68,9 @@ def HasProd (f : β → α) (a : α) : Prop :=
   Tendsto (fun s : Finset β ↦ ∏ b in s, f b) atTop (𝓝 a)
 #align has_sum HasSum
 
-/-- `Prodable f` means that `f` has some (infinite) product. Use `tprod` to get the value. -/
+/-- `Multipliable f` means that `f` has some (infinite) product. Use `tprod` to get the value. -/
 @[to_additive "`Summable f` means that `f` has some (infinite) sum. Use `tsum` to get the value."]
-def Prodable (f : β → α) : Prop :=
+def Multipliable (f : β → α) : Prop :=
   ∃ a, HasProd f a
 #align summable Summable
 
@@ -78,7 +78,7 @@ open scoped Classical in
 /-- `∏' i, f i` is the product of `f` it exists, or 1 otherwise. -/
 @[to_additive "`∑' i, f i` is the sum of `f` it exists, or 0 otherwise."]
 noncomputable irreducible_def tprod {β} (f : β → α) :=
-  if h : Prodable f then
+  if h : Multipliable f then
   /- Note that the sum might not be uniquely defined if the topology is not separated.
   When the support of `f` is finite, we make the most reasonable choice to use the finite sum over
   the support. Otherwise, we choose arbitrarily an `a` satisfying `HasSum f a`. -/
@@ -96,12 +96,13 @@ notation3 "∑' "(...)", "r:67:(scoped f => tsum f) => r
 variable {f g : β → α} {a b : α} {s : Finset β}
 
 @[to_additive]
-theorem HasProd.prodable (h : HasProd f a) : Prodable f :=
+theorem HasProd.multipliable (h : HasProd f a) : Multipliable f :=
   ⟨a, h⟩
 #align has_sum.summable HasSum.summable
 
 @[to_additive]
-theorem tprod_eq_one_of_not_prodable (h : ¬Prodable f) : ∏' b, f b = 1 := by simp [tprod_def, h]
+theorem tprod_eq_one_of_not_multipliable (h : ¬Multipliable f) : ∏' b, f b = 1 := by
+  simp [tprod_def, h]
 #align tsum_eq_zero_of_not_summable tsum_eq_zero_of_not_summable
 
 @[to_additive]
@@ -137,12 +138,12 @@ theorem hasProd_prod_of_ne_finset_one (hf : ∀ (b) (_ : b ∉ s), f b = 1) :
 #align has_sum_sum_of_ne_finset_zero hasSum_sum_of_ne_finset_zero
 
 @[to_additive]
-theorem prodable_of_ne_finset_one (hf : ∀ (b) (_ : b ∉ s), f b = 1) : Prodable f :=
-  (hasProd_prod_of_ne_finset_one hf).prodable
+theorem multipliable_of_ne_finset_one (hf : ∀ (b) (_ : b ∉ s), f b = 1) : Multipliable f :=
+  (hasProd_prod_of_ne_finset_one hf).multipliable
 #align summable_of_ne_finset_zero summable_of_ne_finset_zero
 
 @[to_additive]
-theorem Prodable.hasProd (ha : Prodable f) : HasProd f (∏' b, f b) := by
+theorem Multipliable.hasProd (ha : Multipliable f) : HasProd f (∏' b, f b) := by
   simp only [tprod_def, ha, dite_true]
   by_cases H : (mulSupport f).Finite
   · simp [H, hasProd_prod_of_ne_finset_one, finprod_eq_prod]
@@ -158,11 +159,11 @@ variable [T2Space α]
 
 @[to_additive]
 theorem HasProd.tprod_eq (ha : HasProd f a) : ∏' b, f b = a :=
-  (Prodable.hasProd ⟨a, ha⟩).unique ha
+  (Multipliable.hasProd ⟨a, ha⟩).unique ha
 #align has_sum.tsum_eq HasSum.tsum_eq
 
 @[to_additive]
-theorem Prodable.hasProd_iff (h : Prodable f) : HasProd f a ↔ ∏' b, f b = a :=
+theorem Multipliable.hasProd_iff (h : Multipliable f) : HasProd f a ↔ ∏' b, f b = a :=
   Iff.intro HasProd.tprod_eq fun eq ↦ eq ▸ h.hasProd
 #align summable.has_sum_iff Summable.hasSum_iff
 

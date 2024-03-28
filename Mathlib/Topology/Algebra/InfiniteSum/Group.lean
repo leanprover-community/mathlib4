@@ -32,18 +32,18 @@ theorem HasProd.inv (h : HasProd f a) : HasProd (fun b ↦ (f b)⁻¹) a⁻¹ :=
 #align has_sum.neg HasSum.neg
 
 @[to_additive]
-theorem Prodable.inv (hf : Prodable f) : Prodable fun b ↦ (f b)⁻¹ :=
-  hf.hasProd.inv.prodable
+theorem Multipliable.inv (hf : Multipliable f) : Multipliable fun b ↦ (f b)⁻¹ :=
+  hf.hasProd.inv.multipliable
 #align summable.neg Summable.neg
 
 @[to_additive]
-theorem Prodable.of_inv (hf : Prodable fun b ↦ (f b)⁻¹) : Prodable f := by
+theorem Multipliable.of_inv (hf : Multipliable fun b ↦ (f b)⁻¹) : Multipliable f := by
   simpa only [inv_inv] using hf.inv
 #align summable.of_neg Summable.of_neg
 
 @[to_additive]
-theorem prodable_inv_iff : (Prodable fun b ↦ (f b)⁻¹) ↔ Prodable f :=
-  ⟨Prodable.of_inv, Prodable.inv⟩
+theorem multipliable_inv_iff : (Multipliable fun b ↦ (f b)⁻¹) ↔ Multipliable f :=
+  ⟨Multipliable.of_inv, Multipliable.inv⟩
 #align summable_neg_iff summable_neg_iff
 
 @[to_additive]
@@ -54,18 +54,20 @@ theorem HasProd.div (hf : HasProd f a₁) (hg : HasProd g a₂) :
 #align has_sum.sub HasSum.sub
 
 @[to_additive]
-theorem Prodable.div (hf : Prodable f) (hg : Prodable g) : Prodable fun b ↦ f b / g b :=
-  (hf.hasProd.div hg.hasProd).prodable
+theorem Multipliable.div (hf : Multipliable f) (hg : Multipliable g) :
+    Multipliable fun b ↦ f b / g b :=
+  (hf.hasProd.div hg.hasProd).multipliable
 #align summable.sub Summable.sub
 
 @[to_additive]
-theorem Prodable.trans_div (hg : Prodable g) (hfg : Prodable fun b ↦ f b / g b) : Prodable f := by
+theorem Multipliable.trans_div (hg : Multipliable g) (hfg : Multipliable fun b ↦ f b / g b) :
+    Multipliable f := by
   simpa only [div_mul_cancel] using hfg.mul hg
 #align summable.trans_sub Summable.trans_sub
 
 @[to_additive]
-theorem prodable_iff_of_prodable_div (hfg : Prodable fun b ↦ f b / g b) :
-    Prodable f ↔ Prodable g :=
+theorem multipliable_iff_of_multipliable_div (hfg : Multipliable fun b ↦ f b / g b) :
+    Multipliable f ↔ Multipliable g :=
   ⟨fun hf ↦ hf.trans_div <| by simpa only [inv_div] using hfg.inv, fun hg ↦ hg.trans_div hfg⟩
 #align summable_iff_of_summable_sub summable_iff_of_summable_sub
 
@@ -80,9 +82,9 @@ theorem HasProd.update (hf : HasProd f a₁) (b : β) [DecidableEq β] (a : α) 
 #align has_sum.update HasSum.update
 
 @[to_additive]
-theorem Prodable.update (hf : Prodable f) (b : β) [DecidableEq β] (a : α) :
-    Prodable (update f b a) :=
-  (hf.hasProd.update b a).prodable
+theorem Multipliable.update (hf : Multipliable f) (b : β) [DecidableEq β] (a : α) :
+    Multipliable (update f b a) :=
+  (hf.hasProd.update b a).multipliable
 #align summable.update Summable.update
 
 @[to_additive]
@@ -101,10 +103,10 @@ theorem HasProd.hasProd_iff_compl {s : Set β} (hf : HasProd (f ∘ (↑) : s �
 #align has_sum.has_sum_iff_compl HasSum.hasSum_iff_compl
 
 @[to_additive]
-theorem Prodable.prodable_compl_iff {s : Set β} (hf : Prodable (f ∘ (↑) : s → α)) :
-    Prodable (f ∘ (↑) : ↑sᶜ → α) ↔ Prodable f :=
-  ⟨fun ⟨_, ha⟩ ↦ (hf.hasProd.hasProd_compl_iff.1 ha).prodable, fun ⟨_, ha⟩ ↦
-    (hf.hasProd.hasProd_iff_compl.1 ha).prodable⟩
+theorem Multipliable.multipliable_compl_iff {s : Set β} (hf : Multipliable (f ∘ (↑) : s → α)) :
+    Multipliable (f ∘ (↑) : ↑sᶜ → α) ↔ Multipliable f :=
+  ⟨fun ⟨_, ha⟩ ↦ (hf.hasProd.hasProd_compl_iff.1 ha).multipliable, fun ⟨_, ha⟩ ↦
+    (hf.hasProd.hasProd_iff_compl.1 ha).multipliable⟩
 #align summable.summable_compl_iff Summable.summable_compl_iff
 
 @[to_additive]
@@ -120,15 +122,15 @@ protected theorem Finset.hasProd_iff_compl (s : Finset β) :
 #align finset.has_sum_iff_compl Finset.hasSum_iff_compl
 
 @[to_additive]
-protected theorem Finset.prodable_compl_iff (s : Finset β) :
-    (Prodable fun x : { x // x ∉ s } ↦ f x) ↔ Prodable f :=
-  (s.prodable f).prodable_compl_iff
+protected theorem Finset.multipliable_compl_iff (s : Finset β) :
+    (Multipliable fun x : { x // x ∉ s } ↦ f x) ↔ Multipliable f :=
+  (s.multipliable f).multipliable_compl_iff
 #align finset.summable_compl_iff Finset.summable_compl_iff
 
 @[to_additive]
-theorem Set.Finite.prodable_compl_iff {s : Set β} (hs : s.Finite) :
-    Prodable (f ∘ (↑) : ↑sᶜ → α) ↔ Prodable f :=
-  (hs.prodable f).prodable_compl_iff
+theorem Set.Finite.multipliable_compl_iff {s : Set β} (hs : s.Finite) :
+    Multipliable (f ∘ (↑) : ↑sᶜ → α) ↔ Multipliable f :=
+  (hs.multipliable f).multipliable_compl_iff
 #align set.finite.summable_compl_iff Set.Finite.summable_compl_iff
 
 @[to_additive]
@@ -146,30 +148,31 @@ variable [T2Space α]
 
 @[to_additive]
 theorem tprod_inv : ∏' b, (f b)⁻¹ = (∏' b, f b)⁻¹ := by
-  by_cases hf : Prodable f
+  by_cases hf : Multipliable f
   · exact hf.hasProd.inv.tprod_eq
-  · simp [tprod_eq_one_of_not_prodable hf, tprod_eq_one_of_not_prodable (mt Prodable.of_inv hf)]
+  · simp [tprod_eq_one_of_not_multipliable hf,
+      tprod_eq_one_of_not_multipliable (mt Multipliable.of_inv hf)]
 #align tsum_neg tsum_neg
 
 @[to_additive]
-theorem tprod_div (hf : Prodable f) (hg : Prodable g) :
+theorem tprod_div (hf : Multipliable f) (hg : Multipliable g) :
     ∏' b, (f b / g b) = (∏' b, f b) / ∏' b, g b :=
   (hf.hasProd.div hg.hasProd).tprod_eq
 #align tsum_sub tsum_sub
 
 @[to_additive]
-theorem prod_mul_tprod_compl {s : Finset β} (hf : Prodable f) :
+theorem prod_mul_tprod_compl {s : Finset β} (hf : Multipliable f) :
     (∏ x in s, f x) * ∏' x : ↑(s : Set β)ᶜ, f x = ∏' x, f x :=
-  ((s.hasProd f).mul_compl (s.prodable_compl_iff.2 hf).hasProd).tprod_eq.symm
+  ((s.hasProd f).mul_compl (s.multipliable_compl_iff.2 hf).hasProd).tprod_eq.symm
 #align sum_add_tsum_compl sum_add_tsum_compl
 
-/-- Let `f : β → α` be a prodable function and let `b ∈ β` be an index.
+/-- Let `f : β → α` be a multipliable function and let `b ∈ β` be an index.
 Lemma `tprod_eq_mul_tprod_ite` writes `∏ n, f n` as `f b` times the product of the
 remaining terms. -/
 @[to_additive "Let `f : β → α` be a summable function and let `b ∈ β` be an index.
 Lemma `tsum_eq_add_tsum_ite` writes `Σ' n, f n` as `f b` plus the sum of the
 remaining terms."]
-theorem tprod_eq_mul_tprod_ite [DecidableEq β] (hf : Prodable f) (b : β) :
+theorem tprod_eq_mul_tprod_ite [DecidableEq β] (hf : Multipliable f) (b : β) :
     ∏' n, f n = f b * ∏' n, ite (n = b) 1 (f n) := by
   rw [(hasProd_ite_div_hasProd hf.hasProd b).tprod_eq]
   exact (mul_div_cancel _ _).symm
@@ -186,8 +189,8 @@ variable [CommGroup α] [UniformSpace α]
 /-- The **Cauchy criterion** for infinite products, also known as the **Cauchy convergence test** -/
 @[to_additive "The **Cauchy criterion** for infinite sums, also known as the
 **Cauchy convergence test**"]
-theorem prodable_iff_cauchySeq_finset [CompleteSpace α] {f : β → α} :
-    Prodable f ↔ CauchySeq fun s : Finset β ↦ ∏ b in s, f b := by
+theorem multipliable_iff_cauchySeq_finset [CompleteSpace α] {f : β → α} :
+    Multipliable f ↔ CauchySeq fun s : Finset β ↦ ∏ b in s, f b := by
   classical exact cauchy_map_iff_exists_tendsto.symm
 #align summable_iff_cauchy_seq_finset summable_iff_cauchySeq_finset
 
@@ -228,7 +231,7 @@ theorem cauchySeq_finset_iff_tprod_vanishing :
   · obtain ⟨o, ho, o_closed, oe⟩ := exists_mem_nhds_isClosed_subset he
     obtain ⟨s, hs⟩ := vanish o ho
     refine ⟨s, fun t hts ↦ oe ?_⟩
-    by_cases ht : Prodable fun a : t ↦ f a
+    by_cases ht : Multipliable fun a : t ↦ f a
     · classical
       refine o_closed.mem_of_tendsto ht.hasProd (eventually_of_forall fun t' ↦ ?_)
       rw [← prod_subtype_map_embedding fun _ _ ↦ by rfl]
@@ -236,30 +239,31 @@ theorem cauchySeq_finset_iff_tprod_vanishing :
       simp_rw [Finset.mem_map]
       rintro _ ⟨b, -, rfl⟩
       exact hts b.prop
-    · exact tprod_eq_one_of_not_prodable ht ▸ mem_of_mem_nhds ho
+    · exact tprod_eq_one_of_not_multipliable ht ▸ mem_of_mem_nhds ho
   · obtain ⟨s, hs⟩ := vanish _ he
     exact ⟨s, fun t hts ↦ (t.tprod_subtype f).symm ▸ hs _ hts⟩
 
 variable [CompleteSpace α]
 
 @[to_additive]
-theorem prodable_iff_vanishing :
-    Prodable f ↔ ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∏ b in t, f b) ∈ e := by
-  rw [prodable_iff_cauchySeq_finset, cauchySeq_finset_iff_prod_vanishing]
+theorem multipliable_iff_vanishing :
+    Multipliable f ↔
+    ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∏ b in t, f b) ∈ e := by
+  rw [multipliable_iff_cauchySeq_finset, cauchySeq_finset_iff_prod_vanishing]
 #align summable_iff_vanishing summable_iff_vanishing
 
 @[to_additive]
-theorem prodable_iff_tprod_vanishing : Prodable f ↔
+theorem multipliable_iff_tprod_vanishing : Multipliable f ↔
     ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t : Set β, Disjoint t s → (∏' b : t, f b) ∈ e := by
-  rw [prodable_iff_cauchySeq_finset, cauchySeq_finset_iff_tprod_vanishing]
+  rw [multipliable_iff_cauchySeq_finset, cauchySeq_finset_iff_tprod_vanishing]
 
 -- TODO: generalize to monoid with a uniform continuous subtraction operator: `(a + b) - b = a`
 @[to_additive]
-theorem Prodable.prodable_of_eq_one_or_self (hf : Prodable f) (h : ∀ b, g b = 1 ∨ g b = f b) :
-    Prodable g := by
+theorem Multipliable.multipliable_of_eq_one_or_self (hf : Multipliable f)
+    (h : ∀ b, g b = 1 ∨ g b = f b) : Multipliable g := by
   classical
-  exact prodable_iff_vanishing.2 fun e he ↦
-    let ⟨s, hs⟩ := prodable_iff_vanishing.1 hf e he
+  exact multipliable_iff_vanishing.2 fun e he ↦
+    let ⟨s, hs⟩ := multipliable_iff_vanishing.1 hf e he
     ⟨s, fun t ht ↦
       have eq : ∏ b in t.filter fun b ↦ g b = f b, f b = ∏ b in t, g b :=
         calc
@@ -274,38 +278,38 @@ theorem Prodable.prodable_of_eq_one_or_self (hf : Prodable f) (h : ∀ b, g b = 
 #align summable.summable_of_eq_zero_or_self Summable.summable_of_eq_zero_or_self
 
 @[to_additive]
-protected theorem Prodable.mulIndicator (hf : Prodable f) (s : Set β) :
-    Prodable (s.mulIndicator f) :=
-  hf.prodable_of_eq_one_or_self <| Set.mulIndicator_eq_one_or_self _ _
+protected theorem Multipliable.mulIndicator (hf : Multipliable f) (s : Set β) :
+    Multipliable (s.mulIndicator f) :=
+  hf.multipliable_of_eq_one_or_self <| Set.mulIndicator_eq_one_or_self _ _
 #align summable.indicator Summable.indicator
 
 @[to_additive]
-theorem Prodable.comp_injective {i : γ → β} (hf : Prodable f) (hi : Injective i) :
-    Prodable (f ∘ i) := by
+theorem Multipliable.comp_injective {i : γ → β} (hf : Multipliable f) (hi : Injective i) :
+    Multipliable (f ∘ i) := by
   simpa only [Set.mulIndicator_range_comp] using
-    (hi.prodable_iff (fun x hx ↦ Set.mulIndicator_of_not_mem hx _)).2
+    (hi.multipliable_iff (fun x hx ↦ Set.mulIndicator_of_not_mem hx _)).2
     (hf.mulIndicator (Set.range i))
 #align summable.comp_injective Summable.comp_injective
 
 @[to_additive]
-theorem Prodable.subtype (hf : Prodable f) (s : Set β) : Prodable (f ∘ (↑) : s → α) :=
+theorem Multipliable.subtype (hf : Multipliable f) (s : Set β) : Multipliable (f ∘ (↑) : s → α) :=
   hf.comp_injective Subtype.coe_injective
 #align summable.subtype Summable.subtype
 
 @[to_additive]
-theorem prodable_subtype_and_compl {s : Set β} :
-    ((Prodable fun x : s ↦ f x) ∧ Prodable fun x : ↑sᶜ ↦ f x) ↔ Prodable f :=
-  ⟨and_imp.2 Prodable.mul_compl, fun h ↦ ⟨h.subtype s, h.subtype sᶜ⟩⟩
+theorem multipliable_subtype_and_compl {s : Set β} :
+    ((Multipliable fun x : s ↦ f x) ∧ Multipliable fun x : ↑sᶜ ↦ f x) ↔ Multipliable f :=
+  ⟨and_imp.2 Multipliable.mul_compl, fun h ↦ ⟨h.subtype s, h.subtype sᶜ⟩⟩
 #align summable_subtype_and_compl summable_subtype_and_compl
 
 @[to_additive]
-theorem tprod_subtype_mul_tprod_subtype_compl [T2Space α] {f : β → α} (hf : Prodable f)
+theorem tprod_subtype_mul_tprod_subtype_compl [T2Space α] {f : β → α} (hf : Multipliable f)
     (s : Set β) : (∏' x : s, f x) * ∏' x : ↑sᶜ, f x = ∏' x, f x :=
   ((hf.subtype s).hasProd.mul_compl (hf.subtype { x | x ∉ s }).hasProd).unique hf.hasProd
 #align tsum_subtype_add_tsum_subtype_compl tsum_subtype_add_tsum_subtype_compl
 
 @[to_additive]
-theorem prod_mul_tprod_subtype_compl [T2Space α] {f : β → α} (hf : Prodable f) (s : Finset β) :
+theorem prod_mul_tprod_subtype_compl [T2Space α] {f : β → α} (hf : Multipliable f) (s : Finset β) :
     (∏ x in s, f x) * ∏' x : { x // x ∉ s }, f x = ∏' x, f x := by
   rw [← tprod_subtype_mul_tprod_subtype_compl hf s]
   simp only [Finset.tprod_subtype', mul_right_inj]
@@ -319,7 +323,7 @@ section TopologicalGroup
 variable {G : Type*} [TopologicalSpace G] [CommGroup G] [TopologicalGroup G] {f : α → G}
 
 @[to_additive]
-theorem Prodable.vanishing (hf : Prodable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 (1 : G)) :
+theorem Multipliable.vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 (1 : G)) :
     ∃ s : Finset α, ∀ t, Disjoint t s → (∏ k in t, f k) ∈ e := by
   classical
   letI : UniformSpace G := TopologicalGroup.toUniformSpace G
@@ -328,7 +332,7 @@ theorem Prodable.vanishing (hf : Prodable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 (1
 #align summable.vanishing Summable.vanishing
 
 @[to_additive]
-theorem Prodable.tprod_vanishing (hf : Prodable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 1) :
+theorem Multipliable.tprod_vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 1) :
     ∃ s : Finset α, ∀ t : Set α, Disjoint t s → (∏' b : t, f b) ∈ e := by
   classical
   letI : UniformSpace G := TopologicalGroup.toUniformSpace G
@@ -343,18 +347,18 @@ the whole space. This does not need a summability assumption, as otherwise all s
 theorem tendsto_tprod_compl_atTop_one (f : α → G) :
     Tendsto (fun s : Finset α ↦ ∏' a : { x // x ∉ s }, f a) atTop (𝓝 1) := by
   classical
-  by_cases H : Prodable f
+  by_cases H : Multipliable f
   · intro e he
     obtain ⟨s, hs⟩ := H.tprod_vanishing he
     rw [Filter.mem_map, mem_atTop_sets]
     exact ⟨s, fun t hts ↦ hs _ <| Set.disjoint_left.mpr fun a ha has ↦ ha (hts has)⟩
-  · refine tendsto_const_nhds.congr fun _ ↦ (tprod_eq_one_of_not_prodable ?_).symm
-    rwa [Finset.prodable_compl_iff]
+  · refine tendsto_const_nhds.congr fun _ ↦ (tprod_eq_one_of_not_multipliable ?_).symm
+    rwa [Finset.multipliable_compl_iff]
 #align tendsto_tsum_compl_at_top_zero tendsto_tsum_compl_atTop_zero
 
 @[to_additive "Series divergence test: if `f` is a convergent series, then `f x` tends to zero along
 `cofinite`."]
-theorem Prodable.tendsto_cofinite_one (hf : Prodable f) : Tendsto f cofinite (𝓝 1) := by
+theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofinite (𝓝 1) := by
   intro e he
   rw [Filter.mem_map]
   rcases hf.vanishing he with ⟨s, hs⟩
@@ -363,13 +367,13 @@ theorem Prodable.tendsto_cofinite_one (hf : Prodable f) : Tendsto f cofinite (�
 #align summable.tendsto_cofinite_zero Summable.tendsto_cofinite_zero
 
 @[to_additive]
-theorem Prodable.countable_mulSupport [FirstCountableTopology G] [T1Space G]
-    (hf : Prodable f) : f.mulSupport.Countable := by
+theorem Multipliable.countable_mulSupport [FirstCountableTopology G] [T1Space G]
+    (hf : Multipliable f) : f.mulSupport.Countable := by
   simpa only [ker_nhds] using hf.tendsto_cofinite_one.countable_compl_preimage_ker
 
 @[to_additive]
-theorem prodable_const_iff [Infinite β] [T2Space G] (a : G) :
-    Prodable (fun _ : β ↦ a) ↔ a = 1 := by
+theorem multipliable_const_iff [Infinite β] [T2Space G] (a : G) :
+    Multipliable (fun _ : β ↦ a) ↔ a = 1 := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · by_contra ha
     have : {a}ᶜ ∈ 𝓝 1 := compl_singleton_mem_nhds (Ne.symm ha)
@@ -377,7 +381,7 @@ theorem prodable_const_iff [Infinite β] [T2Space G] (a : G) :
       simpa [← Set.finite_univ_iff] using h.tendsto_cofinite_one this
     exact not_finite β
   · rintro rfl
-    exact prodable_one
+    exact multipliable_one
 
 @[to_additive (attr := simp)]
 theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := by
@@ -388,7 +392,7 @@ theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := 
   · simp only [Nat.card_eq_zero_of_infinite, pow_zero]
     rcases eq_or_ne a 1 with rfl|ha
     · simp
-    · apply tprod_eq_one_of_not_prodable
-      simpa [prodable_const_iff] using ha
+    · apply tprod_eq_one_of_not_multipliable
+      simpa [multipliable_const_iff] using ha
 
 end TopologicalGroup

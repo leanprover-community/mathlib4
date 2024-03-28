@@ -28,7 +28,7 @@ variable [Preorder α] [CommMonoid α] [TopologicalSpace α] [OrderClosedTopolog
   {f : ℕ → α} {c : α}
 
 @[to_additive]
-theorem tprod_le_of_prod_range_le (hf : Prodable f) (h : ∀ n, ∏ i in range n, f i ≤ c) :
+theorem tprod_le_of_prod_range_le (hf : Multipliable f) (h : ∀ n, ∏ i in range n, f i ≤ c) :
     ∏' n, f n ≤ c :=
   let ⟨_l, hl⟩ := hf
   hl.tprod_eq.symm ▸ le_of_tendsto' hl.tendsto_prod_nat h
@@ -76,8 +76,8 @@ theorem hasProd_le_inj {g : κ → α} (e : ι → κ) (he : Injective e)
 
 @[to_additive]
 theorem tprod_le_tprod_of_inj {g : κ → α} (e : ι → κ) (he : Injective e)
-    (hs : ∀ c, c ∉ Set.range e → 1 ≤ g c) (h : ∀ i, f i ≤ g (e i)) (hf : Prodable f)
-    (hg : Prodable g) : tprod f ≤ tprod g :=
+    (hs : ∀ c, c ∉ Set.range e → 1 ≤ g c) (h : ∀ i, f i ≤ g (e i)) (hf : Multipliable f)
+    (hg : Multipliable g) : tprod f ≤ tprod g :=
   hasProd_le_inj _ he hs h hf.hasProd hg.hasProd
 #align tsum_le_tsum_of_inj tsum_le_tsum_of_inj
 
@@ -102,37 +102,38 @@ theorem le_hasProd (hf : HasProd f a) (i : ι) (hb : ∀ j, j ≠ i → 1 ≤ f 
 #align le_has_sum le_hasSum
 
 @[to_additive]
-theorem prod_le_tprod {f : ι → α} (s : Finset ι) (hs : ∀ i, i ∉ s → 1 ≤ f i) (hf : Prodable f) :
+theorem prod_le_tprod {f : ι → α} (s : Finset ι) (hs : ∀ i, i ∉ s → 1 ≤ f i) (hf : Multipliable f) :
     ∏ i in s, f i ≤ ∏' i, f i :=
   prod_le_hasProd s hs hf.hasProd
 #align sum_le_tsum sum_le_tsum
 
 @[to_additive]
-theorem le_tprod (hf : Prodable f) (i : ι) (hb : ∀ j, j ≠ i → 1 ≤ f j) : f i ≤ ∏' i, f i :=
+theorem le_tprod (hf : Multipliable f) (i : ι) (hb : ∀ j, j ≠ i → 1 ≤ f j) : f i ≤ ∏' i, f i :=
   le_hasProd hf.hasProd i hb
 #align le_tsum le_tsum
 
 @[to_additive]
-theorem tprod_le_tprod (h : ∀ i, f i ≤ g i) (hf : Prodable f) (hg : Prodable g) :
+theorem tprod_le_tprod (h : ∀ i, f i ≤ g i) (hf : Multipliable f) (hg : Multipliable g) :
     ∏' i, f i ≤ ∏' i, g i :=
   hasProd_le h hf.hasProd hg.hasProd
 #align tsum_le_tsum tsum_le_tsum
 
 @[to_additive (attr := mono)]
-theorem tprod_mono (hf : Prodable f) (hg : Prodable g) (h : f ≤ g) : ∏' n, f n ≤ ∏' n, g n :=
+theorem tprod_mono (hf : Multipliable f) (hg : Multipliable g) (h : f ≤ g) :
+    ∏' n, f n ≤ ∏' n, g n :=
   tprod_le_tprod h hf hg
 #align tsum_mono tsum_mono
 
 @[to_additive]
-theorem tprod_le_of_prod_le (hf : Prodable f) (h : ∀ s, ∏ i in s, f i ≤ a₂) : ∏' i, f i ≤ a₂ :=
+theorem tprod_le_of_prod_le (hf : Multipliable f) (h : ∀ s, ∏ i in s, f i ≤ a₂) : ∏' i, f i ≤ a₂ :=
   hasProd_le_of_prod_le hf.hasProd h
 #align tsum_le_of_sum_le tsum_le_of_sum_le
 
 @[to_additive]
 theorem tprod_le_of_prod_le' (ha₂ : 1 ≤ a₂) (h : ∀ s, ∏ i in s, f i ≤ a₂) : ∏' i, f i ≤ a₂ := by
-  by_cases hf : Prodable f
+  by_cases hf : Multipliable f
   · exact tprod_le_of_prod_le hf h
-  · rw [tprod_eq_one_of_not_prodable hf]
+  · rw [tprod_eq_one_of_not_multipliable hf]
     exact ha₂
 #align tsum_le_of_sum_le' tsum_le_of_sum_le'
 
@@ -148,16 +149,16 @@ theorem HasProd.le_one (h : ∀ i, g i ≤ 1) (ha : HasProd g a) : a ≤ 1 :=
 
 @[to_additive]
 theorem tprod_one_le (h : ∀ i, 1 ≤ g i) : 1 ≤ ∏' i, g i := by
-  by_cases hg : Prodable g
+  by_cases hg : Multipliable g
   · exact hg.hasProd.one_le h
-  · rw [tprod_eq_one_of_not_prodable hg]
+  · rw [tprod_eq_one_of_not_multipliable hg]
 #align tsum_nonneg tsum_nonneg
 
 @[to_additive]
 theorem tprod_le_one (h : ∀ i, f i ≤ 1) : ∏' i, f i ≤ 1 := by
-  by_cases hf : Prodable f
+  by_cases hf : Multipliable f
   · exact hf.hasProd.le_one h
-  · rw [tprod_eq_one_of_not_prodable hf]
+  · rw [tprod_eq_one_of_not_multipliable hf]
 #align tsum_nonpos tsum_nonpos
 
 -- Porting note: generalized from `OrderedAddCommGroup` to `OrderedAddCommMonoid`
@@ -192,23 +193,23 @@ theorem hasProd_strict_mono (hf : HasProd f a₁) (hg : HasProd g a₂) (h : f <
 #align has_sum_strict_mono hasSum_strict_mono
 
 @[to_additive]
-theorem tprod_lt_tprod (h : f ≤ g) (hi : f i < g i) (hf : Prodable f) (hg : Prodable g) :
+theorem tprod_lt_tprod (h : f ≤ g) (hi : f i < g i) (hf : Multipliable f) (hg : Multipliable g) :
     ∏' n, f n < ∏' n, g n :=
   hasProd_lt h hi hf.hasProd hg.hasProd
 #align tsum_lt_tsum tsum_lt_tsum
 
 @[to_additive (attr := mono)]
-theorem tprod_strict_mono (hf : Prodable f) (hg : Prodable g) (h : f < g) :
+theorem tprod_strict_mono (hf : Multipliable f) (hg : Multipliable g) (h : f < g) :
     ∏' n, f n < ∏' n, g n :=
   let ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
   tprod_lt_tprod hle hi hf hg
 #align tsum_strict_mono tsum_strict_mono
 
 @[to_additive]
-theorem tprod_one_lt (hsum : Prodable g) (hg : ∀ i, 1 ≤ g i) (i : ι) (hi : 1 < g i) :
+theorem tprod_one_lt (hsum : Multipliable g) (hg : ∀ i, 1 ≤ g i) (i : ι) (hi : 1 < g i) :
     1 < ∏' i, g i := by
-  rw [← tprod_zero]
-  exact tprod_lt_tprod hg hi prodable_one hsum
+  rw [← tprod_one]
+  exact tprod_lt_tprod hg hi multipliable_one hsum
 #align tsum_pos tsum_pos
 
 end OrderedCommGroup
@@ -224,7 +225,7 @@ theorem le_hasProd' (hf : HasProd f a) (i : ι) : f i ≤ a :=
 #align le_has_sum' le_hasSum'
 
 @[to_additive]
-theorem le_tprod' (hf : Prodable f) (i : ι) : f i ≤ ∏' i, f i :=
+theorem le_tprod' (hf : Multipliable f) (i : ι) : f i ≤ ∏' i, f i :=
   le_tprod hf i fun _ _ ↦ one_le _
 #align le_tsum' le_tsum'
 
@@ -234,12 +235,12 @@ theorem hasProd_one_iff : HasProd f 1 ↔ ∀ x, f x = 1 :=
 #align has_sum_zero_iff hasSum_zero_iff
 
 @[to_additive]
-theorem tprod_eq_one_iff (hf : Prodable f) : ∏' i, f i = 1 ↔ ∀ x, f x = 1 := by
+theorem tprod_eq_one_iff (hf : Multipliable f) : ∏' i, f i = 1 ↔ ∀ x, f x = 1 := by
   rw [← hasProd_one_iff, hf.hasProd_iff]
 #align tsum_eq_zero_iff tsum_eq_zero_iff
 
 @[to_additive]
-theorem tprod_ne_one_iff (hf : Prodable f) : ∏' i, f i ≠ 1 ↔ ∃ x, f x ≠ 1 := by
+theorem tprod_ne_one_iff (hf : Multipliable f) : ∏' i, f i ≠ 1 ↔ ∃ x, f x ≠ 1 := by
   rw [Ne.def, tprod_eq_one_iff hf, not_forall]
 #align tsum_ne_zero_iff tsum_ne_zero_iff
 
@@ -276,16 +277,16 @@ theorem hasProd_of_isLUB [CanonicallyLinearOrderedCommMonoid α] [TopologicalSpa
 #align has_sum_of_is_lub hasSum_of_isLUB
 
 @[to_additive]
-theorem prodable_mabs_iff [LinearOrderedCommGroup α] [UniformSpace α] [UniformGroup α]
-    [CompleteSpace α] {f : ι → α} : (Prodable fun x ↦ mabs (f x)) ↔ Prodable f :=
+theorem multipliable_mabs_iff [LinearOrderedCommGroup α] [UniformSpace α] [UniformGroup α]
+    [CompleteSpace α] {f : ι → α} : (Multipliable fun x ↦ mabs (f x)) ↔ Multipliable f :=
   let s := { x | 1 ≤ f x }
   have h1 : ∀ x : s, mabs (f x) = f x := fun x ↦ mabs_of_one_le x.2
   have h2 : ∀ x : ↑sᶜ, mabs (f x) = (f x)⁻¹ := fun x ↦ mabs_of_lt_one (not_le.1 x.2)
-  calc (Prodable fun x ↦ mabs (f x)) ↔
-      (Prodable fun x : s ↦ mabs (f x)) ∧ Prodable fun x : ↑sᶜ ↦ mabs (f x) :=
-        prodable_subtype_and_compl.symm
-  _ ↔ (Prodable fun x : s ↦ f x) ∧ Prodable fun x : ↑sᶜ ↦ (f x)⁻¹ := by simp only [h1, h2]
-  _ ↔ Prodable f := by simp only [prodable_inv_iff, prodable_subtype_and_compl]
+  calc (Multipliable fun x ↦ mabs (f x)) ↔
+      (Multipliable fun x : s ↦ mabs (f x)) ∧ Multipliable fun x : ↑sᶜ ↦ mabs (f x) :=
+        multipliable_subtype_and_compl.symm
+  _ ↔ (Multipliable fun x : s ↦ f x) ∧ Multipliable fun x : ↑sᶜ ↦ (f x)⁻¹ := by simp only [h1, h2]
+  _ ↔ Multipliable f := by simp only [multipliable_inv_iff, multipliable_subtype_and_compl]
 #align summable_abs_iff summable_abs_iff
 
 alias ⟨Summable.of_abs, Summable.abs⟩ := summable_abs_iff

@@ -53,8 +53,9 @@ lemma tprod_setProd_singleton_right (s : Set β) (c : γ) (f : β × γ → α) 
   rw [tprod_congr_set_coe _ Set.prod_singleton, tprod_image _ ((Prod.mk.inj_right c).injOn _)]
 
 @[to_additive Summable.prod_symm]
-theorem Prodable.prod_symm {f : β × γ → α} (hf : Prodable f) : Prodable fun p : γ × β ↦ f p.swap :=
-  (Equiv.prodComm γ β).prodable_iff.2 hf
+theorem Multipliable.prod_symm {f : β × γ → α} (hf : Multipliable f) :
+    Multipliable fun p : γ × β ↦ f p.swap :=
+  (Equiv.prodComm γ β).multipliable_iff.2 hf
 #align summable.prod_symm Summable.prod_symm
 
 end ProdDomain
@@ -110,9 +111,9 @@ theorem HasProd.prod_fiberwise {f : β × γ → α} {g : β → α} {a : α} (h
 #align has_sum.prod_fiberwise HasSum.prod_fiberwise
 
 @[to_additive]
-theorem Prodable.sigma' {γ : β → Type*} {f : (Σb : β, γ b) → α} (ha : Prodable f)
-    (hf : ∀ b, Prodable fun c ↦ f ⟨b, c⟩) : Prodable fun b ↦ ∏' c, f ⟨b, c⟩ :=
-  (ha.hasProd.sigma fun b ↦ (hf b).hasProd).prodable
+theorem Multipliable.sigma' {γ : β → Type*} {f : (Σb : β, γ b) → α} (ha : Multipliable f)
+    (hf : ∀ b, Multipliable fun c ↦ f ⟨b, c⟩) : Multipliable fun b ↦ ∏' c, f ⟨b, c⟩ :=
+  (ha.hasProd.sigma fun b ↦ (hf b).hasProd).multipliable
 #align summable.sigma' Summable.sigma'
 
 end RegularSpace
@@ -123,25 +124,28 @@ variable [T3Space α]
 
 @[to_additive]
 theorem HasProd.sigma_of_hasProd {γ : β → Type*} {f : (Σb : β, γ b) → α} {g : β → α}
-    {a : α} (ha : HasProd g a) (hf : ∀ b, HasProd (fun c ↦ f ⟨b, c⟩) (g b)) (hf' : Prodable f) :
+    {a : α} (ha : HasProd g a) (hf : ∀ b, HasProd (fun c ↦ f ⟨b, c⟩) (g b)) (hf' : Multipliable f) :
     HasProd f a := by simpa [(hf'.hasProd.sigma hf).unique ha] using hf'.hasProd
 #align has_sum.sigma_of_has_sum HasSum.sigma_of_hasSum
 
 @[to_additive]
-theorem tprod_sigma' {γ : β → Type*} {f : (Σb : β, γ b) → α} (h₁ : ∀ b, Prodable fun c ↦ f ⟨b, c⟩)
-    (h₂ : Prodable f) : ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
+theorem tprod_sigma' {γ : β → Type*} {f : (Σb : β, γ b) → α}
+    (h₁ : ∀ b, Multipliable fun c ↦ f ⟨b, c⟩) (h₂ : Multipliable f) :
+    ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
   (h₂.hasProd.sigma fun b ↦ (h₁ b).hasProd).tprod_eq.symm
 #align tsum_sigma' tsum_sigma'
 
 @[to_additive tsum_prod']
-theorem tprod_prod' {f : β × γ → α} (h : Prodable f) (h₁ : ∀ b, Prodable fun c ↦ f (b, c)) :
+theorem tprod_prod' {f : β × γ → α} (h : Multipliable f)
+    (h₁ : ∀ b, Multipliable fun c ↦ f (b, c)) :
     ∏' p, f p = ∏' (b) (c), f (b, c) :=
   (h.hasProd.prod_fiberwise fun b ↦ (h₁ b).hasProd).tprod_eq.symm
 #align tsum_prod' tsum_prod'
 
 @[to_additive]
-theorem tprod_comm' {f : β → γ → α} (h : Prodable (Function.uncurry f)) (h₁ : ∀ b, Prodable (f b))
-    (h₂ : ∀ c, Prodable fun b ↦ f b c) : ∏' (c) (b), f b c = ∏' (b) (c), f b c := by
+theorem tprod_comm' {f : β → γ → α} (h : Multipliable (Function.uncurry f))
+    (h₁ : ∀ b, Multipliable (f b)) (h₂ : ∀ c, Multipliable fun b ↦ f b c) :
+    ∏' (c) (b), f b c = ∏' (b) (c), f b c := by
   erw [← tprod_prod' h h₁, ← tprod_prod' h.prod_symm h₂,
       ← (Equiv.prodComm γ β).tprod_eq (uncurry f)]
   rfl
@@ -156,20 +160,21 @@ section CompleteSpace
 variable [CommGroup α] [UniformSpace α] [UniformGroup α] [CompleteSpace α]
 
 @[to_additive]
-theorem Prodable.sigma_factor {γ : β → Type*} {f : (Σb : β, γ b) → α} (ha : Prodable f) (b : β) :
-    Prodable fun c ↦ f ⟨b, c⟩ :=
+theorem Multipliable.sigma_factor {γ : β → Type*} {f : (Σb : β, γ b) → α}
+    (ha : Multipliable f) (b : β) :
+    Multipliable fun c ↦ f ⟨b, c⟩ :=
   ha.comp_injective sigma_mk_injective
 #align summable.sigma_factor Summable.sigma_factor
 
 @[to_additive]
-theorem Prodable.sigma {γ : β → Type*} {f : (Σb : β, γ b) → α} (ha : Prodable f) :
-    Prodable fun b ↦ ∏' c, f ⟨b, c⟩ :=
+theorem Multipliable.sigma {γ : β → Type*} {f : (Σb : β, γ b) → α} (ha : Multipliable f) :
+    Multipliable fun b ↦ ∏' c, f ⟨b, c⟩ :=
   ha.sigma' fun b ↦ ha.sigma_factor b
 #align summable.sigma Summable.sigma
 
 @[to_additive Summable.prod_factor]
-theorem Prodable.prod_factor {f : β × γ → α} (h : Prodable f) (b : β) :
-    Prodable fun c ↦ f (b, c) :=
+theorem Multipliable.prod_factor {f : β × γ → α} (h : Multipliable f) (b : β) :
+    Multipliable fun c ↦ f (b, c) :=
   h.comp_injective fun _ _ h ↦ (Prod.ext_iff.1 h).2
 #align summable.prod_factor Summable.prod_factor
 
@@ -177,26 +182,26 @@ theorem Prodable.prod_factor {f : β × γ → α} (h : Prodable f) (b : β) :
 lemma HasProd.tprod_fiberwise [T2Space α] {f : β → α} {a : α} (hf : HasProd f a) (g : β → γ) :
     HasProd (fun c : γ ↦ ∏' b : g ⁻¹' {c}, f b) a :=
   (((Equiv.sigmaFiberEquiv g).hasProd_iff).mpr hf).sigma <|
-    fun _ ↦ ((hf.prodable.subtype _).hasProd_iff).mpr rfl
+    fun _ ↦ ((hf.multipliable.subtype _).hasProd_iff).mpr rfl
 
 section CompleteT0Space
 
 variable [T0Space α]
 
 @[to_additive]
-theorem tprod_sigma {γ : β → Type*} {f : (Σb : β, γ b) → α} (ha : Prodable f) :
+theorem tprod_sigma {γ : β → Type*} {f : (Σb : β, γ b) → α} (ha : Multipliable f) :
     ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
   tprod_sigma' (fun b ↦ ha.sigma_factor b) ha
 #align tsum_sigma tsum_sigma
 
 @[to_additive tsum_prod]
-theorem tprod_prod {f : β × γ → α} (h : Prodable f) :
+theorem tprod_prod {f : β × γ → α} (h : Multipliable f) :
     ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
   tprod_prod' h h.prod_factor
 #align tsum_prod tsum_prod
 
 @[to_additive]
-theorem tprod_comm {f : β → γ → α} (h : Prodable (Function.uncurry f)) :
+theorem tprod_comm {f : β → γ → α} (h : Multipliable (Function.uncurry f)) :
     ∏' (c) (b), f b c = ∏' (b) (c), f b c :=
   tprod_comm' h h.prod_factor h.prod_symm.prod_factor
 #align tsum_comm tsum_comm
@@ -216,12 +221,12 @@ theorem Pi.hasProd {f : ι → ∀ x, π x} {g : ∀ x, π x} :
 #align pi.has_sum Pi.hasSum
 
 @[to_additive]
-theorem Pi.prodable {f : ι → ∀ x, π x} : Prodable f ↔ ∀ x, Prodable fun i ↦ f i x := by
-  simp only [Prodable, Pi.hasProd, Classical.skolem]
+theorem Pi.multipliable {f : ι → ∀ x, π x} : Multipliable f ↔ ∀ x, Multipliable fun i ↦ f i x := by
+  simp only [Multipliable, Pi.hasProd, Classical.skolem]
 #align pi.summable Pi.summable
 
 @[to_additive]
-theorem tprod_apply [∀ x, T2Space (π x)] {f : ι → ∀ x, π x} {x : α} (hf : Prodable f) :
+theorem tprod_apply [∀ x, T2Space (π x)] {f : ι → ∀ x, π x} {x : α} (hf : Multipliable f) :
     (∏' i, f i) x = ∏' i, f i x :=
   (Pi.hasProd.mp hf.hasProd x).tprod_eq.symm
 #align tsum_apply tsum_apply

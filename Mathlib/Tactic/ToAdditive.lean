@@ -946,7 +946,7 @@ def nameDict : String → List String
   | "semiconj"    => ["add", "Semiconj"]
   | "zpowers"     => ["zmultiples"]
   | "powers"      => ["multiples"]
-  | "prodable"    => ["summable"]
+  | "multipliable"=> ["summable"]
   | x             => [x]
 
 /--
