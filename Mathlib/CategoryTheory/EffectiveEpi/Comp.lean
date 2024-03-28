@@ -19,37 +19,106 @@ open Limits
 variable {C : Type*} [Category C]
 
 /--
-A split epi followed by an effective epi is an effective epi. This version takes an explicit section
-to the split epi, and is mainly used to define `effectiveEpiStructCompOfEffectiveEpiSplitEpi`,
+An effective epi family precomposed by a family of split epis is effective epimorphic.
+This version takes an explicit section to the split epis, and is mainly used to define
+`effectiveEpiStructCompOfEffectiveEpiSplitEpi`,
 which takes a `IsSplitEpi` instance instead.
 -/
 noncomputable
-def effectiveEpiStructCompOfEffectiveEpiSplitEpi' {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) (i : X ⟶ Y)
-    (hi : i ≫ g = 𝟙 _) [EffectiveEpi f] : EffectiveEpiStruct (g ≫ f) where
-  desc e w := EffectiveEpi.desc f (i ≫ e) fun g₁ g₂ _ ↦ (by
+def effectiveEpiFamilyStructCompOfEffectiveEpiSplitEpi' {α : Type*} {B : C} {X Y : α → C}
+    (f : (a : α) → X a ⟶ B) (g : (a : α) → Y a ⟶ X a) (i : (a : α) → X a ⟶ Y a)
+    (hi : ∀ a, i a ≫ g a = 𝟙 _) [EffectiveEpiFamily _ f] :
+    EffectiveEpiFamilyStruct _ (fun a ↦ g a ≫ f a) where
+  desc e w := EffectiveEpiFamily.desc _ f (fun a ↦ i a ≫ e a) fun a₁ a₂ g₁ g₂ _ ↦ (by
     simp only [← Category.assoc]
-    apply w (g₁ ≫ i) (g₂ ≫ i)
+    apply w _ _ (g₁ ≫ i a₁) (g₂ ≫ i a₂)
     simpa [← Category.assoc, hi])
-  fac e w := by
-    simp only [Category.assoc, EffectiveEpi.fac]
-    rw [← Category.id_comp e, ← Category.assoc, ← Category.assoc]
+  fac e w a := by
+    simp only [Category.assoc, EffectiveEpiFamily.fac]
+    rw [← Category.id_comp (e a), ← Category.assoc, ← Category.assoc]
     apply w
     simp only [Category.comp_id, Category.id_comp, ← Category.assoc]
     aesop
   uniq _ _ _ hm := by
-    apply EffectiveEpi.uniq f
-    rw [← hm, ← Category.assoc, ← Category.assoc, hi, Category.id_comp]
+    apply EffectiveEpiFamily.uniq _ f
+    intro a
+    rw [← hm a, ← Category.assoc, ← Category.assoc, hi, Category.id_comp]
 
-/-- A split epi followed by an effective epi is an effective epi. -/
+/--
+An effective epi family precomposed with a family of split epis is effective epimorphic.
+-/
 noncomputable
-def effectiveEpiStructCompOfEffectiveEpiSplitEpi {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) [IsSplitEpi g]
-    [EffectiveEpi f] : EffectiveEpiStruct (g ≫ f) :=
-  effectiveEpiStructCompOfEffectiveEpiSplitEpi' f g
-    (IsSplitEpi.exists_splitEpi (f := g)).some.section_
-    (IsSplitEpi.exists_splitEpi (f := g)).some.id
+def effectiveEpiFamilyStructCompOfEffectiveEpiSplitEpi {α : Type*} {B : C} {X Y : α → C}
+    (f : (a : α) → X a ⟶ B) (g : (a : α) → Y a ⟶ X a) [∀ a, IsSplitEpi (g a)]
+    [EffectiveEpiFamily _ f] : EffectiveEpiFamilyStruct _ (fun a ↦ g a ≫ f a) :=
+  effectiveEpiFamilyStructCompOfEffectiveEpiSplitEpi' f g
+    (fun a ↦ section_ (g a))
+    (fun a ↦ IsSplitEpi.id (g a))
 
-instance {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) [IsSplitEpi g] [EffectiveEpi f] :
-    EffectiveEpi (g ≫ f) := ⟨⟨effectiveEpiStructCompOfEffectiveEpiSplitEpi f g⟩⟩
+instance {α : Type*} {B : C} {X Y : α → C}
+    (f : (a : α) → X a ⟶ B) (g : (a : α) → Y a ⟶ X a) [∀ a, IsSplitEpi (g a)]
+    [EffectiveEpiFamily _ f] : EffectiveEpiFamily _ (fun a ↦ g a ≫ f a) :=
+  ⟨⟨effectiveEpiFamilyStructCompOfEffectiveEpiSplitEpi f g⟩⟩
+
+example {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) [IsSplitEpi g] [EffectiveEpi f] :
+    EffectiveEpi (g ≫ f) := inferInstance
+
+instance IsSplitEpi.EffectiveEpi {B X : C} (f : X ⟶ B) [IsSplitEpi f] : EffectiveEpi f := by
+  rw [← Category.comp_id f]
+  infer_instance
+
+/--
+If a family of morphisms with fixed target, precomposed by a family of split epis is
+effective epimorphic, then the original family is as well.
+This version takes an explicit section to the split epis, and is mainly used to define
+`effectiveEpiStructCompOfEffectiveEpiSplitEpi`,
+which takes a `IsSplitEpi` instance instead.
+-/
+noncomputable
+def effectiveEpiFamilyStructOfEffectiveEpiSplitEpiComp' {α : Type*} {B : C} {X Y : α → C}
+    (f : (a : α) → X a ⟶ B) (g : (a : α) → Y a ⟶ X a) (i : (a : α) → X a ⟶ Y a)
+    (hi : ∀ a, i a ≫ g a = 𝟙 _) [EffectiveEpiFamily _ (fun a ↦ g a ≫ f a)] :
+    EffectiveEpiFamilyStruct _ f where
+  desc e w := EffectiveEpiFamily.desc _ (fun a ↦ g a ≫ f a) (fun a ↦ g a ≫ e a) fun a₁ a₂ g₁ g₂ hg ↦
+    (by
+      simp only [← Category.assoc] at hg
+      simpa using w a₁ a₂ (g₁ ≫ g a₁) (g₂ ≫ g a₂) hg)
+  fac e w a := by
+    have := EffectiveEpiFamily.fac _ (fun a ↦ g a ≫ f a) (fun a ↦ g a ≫ e a) fun a₁ a₂ g₁ g₂ hg ↦
+      (by
+        simp only [← Category.assoc] at hg
+        simpa using w a₁ a₂ (g₁ ≫ g a₁) (g₂ ≫ g a₂) hg)
+    have := congrArg (i a ≫ ·) (this a)
+    simp only [← Category.assoc, hi a] at this
+    simpa using this
+  uniq _ _ _ hm := by
+    apply EffectiveEpiFamily.uniq _ (fun a ↦ g a ≫ f a)
+    intro a
+    rw [← hm, ← Category.assoc]
+
+/--
+If a family of morphisms with fixed target, precomposed by a family of split epis is
+effective epimorphic, then the original family is as well.
+-/
+noncomputable
+def effectiveEpiFamilyStructOfEffectiveEpiSplitEpiComp {α : Type*} {B : C} {X Y : α → C}
+    (f : (a : α) → X a ⟶ B) (g : (a : α) → Y a ⟶ X a) [∀ a, IsSplitEpi (g a)]
+    [EffectiveEpiFamily _ (fun a ↦ g a ≫ f a)] : EffectiveEpiFamilyStruct _ f :=
+  effectiveEpiFamilyStructOfEffectiveEpiSplitEpiComp' f g
+    (fun a ↦ section_ (g a))
+    (fun a ↦ IsSplitEpi.id (g a))
+
+lemma effectiveEpiFamily_of_effectiveEpi_splitEpi_comp {α : Type*} {B : C} {X Y : α → C}
+    (f : (a : α) → X a ⟶ B) (g : (a : α) → Y a ⟶ X a) [∀ a, IsSplitEpi (g a)]
+    [EffectiveEpiFamily _ (fun a ↦ g a ≫ f a)] : EffectiveEpiFamily _ f :=
+  ⟨⟨effectiveEpiFamilyStructOfEffectiveEpiSplitEpiComp f g⟩⟩
+
+lemma effectiveEpi_of_effectiveEpi_splitEpi_comp {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X)
+    [IsSplitEpi g] [EffectiveEpi (g ≫ f)] : EffectiveEpi f :=
+  have := (effectiveEpi_iff_effectiveEpiFamily (g ≫ f)).mp inferInstance
+  have := effectiveEpiFamily_of_effectiveEpi_splitEpi_comp
+    (X := fun () ↦ X) (Y := fun () ↦ Y) (fun () ↦ f) (fun () ↦ g)
+  inferInstance
 
 section CompIso
 
@@ -85,27 +154,7 @@ section IsoComp
 variable {B : C} {α : Type*} (X Y : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π]
   (i : (a : α) → Y a ⟶ X a) [∀ a, IsIso (i a)]
 
-theorem effectiveEpiFamilyStructIsoComp_aux {W : C} (e : (a : α) → Y a ⟶ W)
-    (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ Y a₁) (g₂ : Z ⟶ Y a₂),
-      g₁ ≫ i a₁ ≫ π a₁ = g₂ ≫ i a₂ ≫ π a₂ → g₁ ≫ e a₁ = g₂ ≫ e a₂)
-    {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂) (hg : g₁ ≫ π a₁ = g₂ ≫ π a₂) :
-    g₁ ≫ (fun a ↦ inv (i a) ≫ e a) a₁ = g₂ ≫ (fun a ↦ inv (i a) ≫ e a) a₂ := by
-  simp only [← Category.assoc]
-  apply h
-  simp [hg]
-
-/-- An effective epi family preceded by a family of isos is an effective epi family. -/
-noncomputable
-def effectiveEpiFamilyStructIsoComp : EffectiveEpiFamilyStruct Y (fun a ↦ i a ≫ π a) where
-  desc e h := EffectiveEpiFamily.desc X π (fun a ↦ inv (i a) ≫ e a)
-    (effectiveEpiFamilyStructIsoComp_aux X Y π i e h)
-  fac _ _ _ := by simp
-  uniq e h m hm := by
-    simp only [Category.assoc] at hm
-    simp [← EffectiveEpiFamily.uniq X π (fun a ↦ inv (i a) ≫ e a)
-      (effectiveEpiFamilyStructIsoComp_aux X Y π i e h) m fun a ↦ by simpa using hm a]
-
-instance effectiveEpiFamilyIsoComp : EffectiveEpiFamily Y (fun a ↦ i a ≫ π a) :=
-  ⟨⟨effectiveEpiFamilyStructIsoComp X Y π i⟩⟩
+example : EffectiveEpiFamily Y (fun a ↦ i a ≫ π a) :=
+  inferInstance
 
 end IsoComp
