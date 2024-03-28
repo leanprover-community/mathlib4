@@ -6,7 +6,7 @@ Authors: Sam van Gool, Jake Levinson
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Sheaves.Stalks
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-import Mathlib.CategoryTheory.Sites.Surjective
+import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 #align_import topology.sheaves.locally_surjective from "leanprover-community/mathlib"@"fb7698eb37544cbb66292b68b40e54d001f8d1a9"
 
@@ -55,14 +55,18 @@ such that `$T_*(s_V) = t|_V$`.
 See `TopCat.Presheaf.isLocallySurjective_iff` below.
 -/
 def IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
-  CategoryTheory.IsLocallySurjective (Opens.grothendieckTopology X) T
+  CategoryTheory.Presheaf.IsLocallySurjective (Opens.grothendieckTopology X) T
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_locally_surjective TopCat.Presheaf.IsLocallySurjective
 
 theorem isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :
     IsLocallySurjective T ↔
-      ∀ (U t), ∀ x ∈ U, ∃ (V : _) (ι : V ⟶ U), (∃ s, T.app _ s = t |_ₕ ι) ∧ x ∈ V :=
-  Iff.rfl
+      ∀ (U t), ∀ x ∈ U, ∃ (V : _) (ι : V ⟶ U), (∃ s, T.app _ s = t |_ₕ ι) ∧ x ∈ V := by
+  constructor
+  · intro h U
+    apply h.imageSieve_mem
+  · intro h
+    refine' ⟨fun _ => h _ _⟩
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_locally_surjective_iff TopCat.Presheaf.isLocallySurjective_iff
 
@@ -74,6 +78,7 @@ variable [Limits.HasColimits C] [Limits.PreservesFilteredColimits (forget C)]
 is for all the induced maps on stalks to be surjective. -/
 theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     IsLocallySurjective T ↔ ∀ x : X, Function.Surjective ((stalkFunctor C x).map T) := by
+  rw [isLocallySurjective_iff]
   constructor <;> intro hT
   · /- human proof:
         Let g ∈ Γₛₜ 𝒢 x be a germ. Represent it on an open set U ⊆ X
