@@ -961,6 +961,7 @@ import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+import Mathlib.Analysis.SpecialFunctions.Log.ENNReal
 import Mathlib.Analysis.SpecialFunctions.Log.Monotone
 import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
