@@ -150,7 +150,7 @@ lemma IsProperMap.comp (hf : IsProperMap f) (hg : IsProperMap g) :
 
 /-- If the composition of two continuous functions `g ∘ f` is proper and `f` is surjective,
 then `g` is proper. -/
-lemma isProperMap_of_isProperComp_of_surj {f : X → Y} {g : Y → Z} (hf : Continuous f)
+lemma isProperMap_of_comp_of_surj {f : X → Y} {g : Y → Z} (hf : Continuous f)
     (hg : Continuous g) (hgf : IsProperMap (g ∘ f)) (f_surj : f.Surjective) : IsProperMap g := by
   refine ⟨hg, fun ℱ z h ↦ ?_⟩
   rcases hgf with ⟨_, h'⟩
@@ -162,8 +162,8 @@ lemma isProperMap_of_isProperComp_of_surj {f : X → Y} {g : Y → Z} (hf : Cont
   apply neBot_of_comap
   apply NeBot.mono hx2
   calc
-    nhds x ⊓ comap f ℱ ≤ comap f (nhds (f x)) ⊓ comap f ℱ := inf_le_inf_right (comap f ℱ)
-      (hf.tendsto x).le_comap
+    nhds x ⊓ comap f ℱ
+      ≤ comap f (nhds (f x)) ⊓ comap f ℱ := inf_le_inf_right (comap f ℱ) (hf.tendsto x).le_comap
     _ = comap f (nhds (f x) ⊓ ℱ) := by rw [← comap_inf]
 
 /-- If the composition of two continuous functions `g ∘ f` is proper and `g` is injective,
@@ -191,7 +191,7 @@ lemma isProperMap_of_comp_of_t2 [T2Space Y] (hf : Continuous f) (hg : Continuous
     rw [Tendsto, ← map_map]
     calc
       map g (map f ↑𝒰) ≤ map g (nhds y) := map_mono h
-      _ ≤ nhds (g y) := hg.tendsto y
+      _                ≤ nhds (g y) := hg.tendsto y
   rcases h' this with ⟨x, _, hx⟩
   exact ⟨x, hx⟩
 
@@ -298,13 +298,13 @@ lemma isProperMap_iff_isClosedMap_of_inj (f_cont : Continuous f) (f_inj : f.Inje
   apply Set.Subsingleton.preimage subsingleton_singleton f_inj
 
 /-- A injective continuous and closed map is proper. -/
-lemma isProperMap_of_IsClosedMap_of_inj (f_cont : Continuous f) (f_inj : f.Injective)
+lemma isProperMap_of_isClosedMap_of_inj (f_cont : Continuous f) (f_inj : f.Injective)
     (f_closed : IsClosedMap f) : IsProperMap f :=
   (isProperMap_iff_isClosedMap_of_inj f_cont f_inj).2 f_closed
 
 /-- The coercion from a closed subset is proper. -/
 lemma isProperMap_subtype_val_of_closed {U : Set X} (hU : IsClosed U) : IsProperMap ((↑) : U → X) :=
-  isProperMap_of_IsClosedMap_of_inj continuous_subtype_val Subtype.val_injective
+  isProperMap_of_isClosedMap_of_inj continuous_subtype_val Subtype.val_injective
   hU.closedEmbedding_subtype_val.isClosedMap
 
 /-- The restriction of a proper map to a closed subset is proper. -/
@@ -314,7 +314,7 @@ lemma isProperMap_restr_of_proper_of_closed {U : Set X} (hf : IsProperMap f) (hU
 
 /-- A closed embedding is proper. -/
 lemma isProperMap_of_closedEmbedding (hf : ClosedEmbedding f) : IsProperMap f :=
-  isProperMap_of_IsClosedMap_of_inj hf.continuous hf.inj hf.isClosedMap
+  isProperMap_of_isClosedMap_of_inj hf.continuous hf.inj hf.isClosedMap
 
 /-- The range of a proper map is closed. -/
 lemma IsProperMap.closed_range (hf : IsProperMap f) : IsClosed (range f) :=
