@@ -3,13 +3,16 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.List.Basic
+import Mathlib.Algebra.BigOperators.List.Order
 import Mathlib.Algebra.BigOperators.Multiset.Basic
-import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Data.Multiset.Fold
+import Mathlib.Data.List.MinMax
+import Mathlib.Data.Nat.Order.Basic
 
 /-!
-# Big operators in an algebraic ordered structure
+# Order properties of big operators
 -/
 
 variable {ι α β : Type*}
@@ -156,25 +159,59 @@ lemma prod_lt_prod_of_nonempty' (hs : s ≠ ∅) (hfg : ∀ i ∈ s, f i < g i) 
 
 end OrderedCancelCommMonoid
 
-@[to_additive]
-lemma le_prod_of_mem [CanonicallyOrderedCommMonoid α] {s : Multiset α} {a : α} (h : a ∈ s) :
-    a ≤ s.prod := by
-  obtain ⟨t, rfl⟩ := exists_cons_of_mem h
-  rw [prod_cons]
-  exact _root_.le_mul_right (le_refl a)
-#align multiset.le_prod_of_mem Multiset.le_prod_of_mem
-#align multiset.le_sum_of_mem Multiset.le_sum_of_mem
-
 lemma abs_sum_le_sum_abs [LinearOrderedAddCommGroup α] {s : Multiset α} :
     abs s.sum ≤ (s.map abs).sum :=
   le_sum_of_subadditive _ abs_zero abs_add s
 #align multiset.abs_sum_le_sum_abs Multiset.abs_sum_le_sum_abs
 
-lemma prod_nonneg [OrderedCommSemiring α] {s : Multiset α} (h : ∀ a ∈ s, (0 : α) ≤ a) :
-    0 ≤ s.prod := by
+section CanonicallyOrderedCommMonoid
+variable [CanonicallyOrderedCommMonoid α] {m : Multiset α} {a : α}
+
+@[to_additive] lemma le_prod_of_mem (h : a ∈ m) : a ≤ m.prod := by
+  obtain ⟨m', rfl⟩ := exists_cons_of_mem h
+  rw [prod_cons]
+  exact _root_.le_mul_right (le_refl a)
+#align multiset.le_prod_of_mem Multiset.le_prod_of_mem
+#align multiset.le_sum_of_mem Multiset.le_sum_of_mem
+
+@[to_additive] lemma prod_eq_one_iff : m.prod = 1 ↔ ∀ x ∈ m, x = 1 :=
+  Quotient.inductionOn m fun l => by simpa using List.prod_eq_one_iff
+#align multiset.prod_eq_one_iff Multiset.prod_eq_one_iff
+#align multiset.sum_eq_zero_iff Multiset.sum_eq_zero_iff
+
+end CanonicallyOrderedCommMonoid
+
+lemma prod_nonneg [OrderedCommSemiring α] {m : Multiset α} (h : ∀ a ∈ m, (0 : α) ≤ a) :
+    0 ≤ m.prod := by
   revert h
-  refine s.induction_on ?_ fun a s hs ih ↦ ?_
-  · simp
-  · rw [prod_cons]
-    exact mul_nonneg (ih _ <| mem_cons_self _ _) (hs fun a ha ↦ ih _ <| mem_cons_of_mem ha)
+  refine' m.induction_on _ _
+  · rintro -
+    rw [prod_zero]
+    exact zero_le_one
+  intro a s hs ih
+  rw [prod_cons]
+  exact mul_nonneg (ih _ <| mem_cons_self _ _) (hs fun a ha => ih _ <| mem_cons_of_mem ha)
 #align multiset.prod_nonneg Multiset.prod_nonneg
+
+@[simp]
+lemma _root_.CanonicallyOrderedCommSemiring.multiset_prod_pos [CanonicallyOrderedCommSemiring α]
+    [Nontrivial α] {m : Multiset α} : 0 < m.prod ↔ ∀ x ∈ m, 0 < x := by
+  rcases m with ⟨l⟩
+  rw [Multiset.quot_mk_to_coe'', Multiset.prod_coe]
+  exact CanonicallyOrderedCommSemiring.list_prod_pos
+
+section CanonicallyLinearOrderedAddCommMonoid
+variable [CanonicallyLinearOrderedAddCommMonoid α]
+
+lemma max_le_of_forall_le (l : Multiset α) (n : α) (h : ∀ x ∈ l, x ≤ n) : l.fold max ⊥ ≤ n := by
+  induction l using Quotient.inductionOn
+  simpa using List.max_le_of_forall_le _ _ h
+#align multiset.max_le_of_forall_le Multiset.max_le_of_forall_le
+
+end CanonicallyLinearOrderedAddCommMonoid
+
+lemma max_nat_le_of_forall_le (l : Multiset ℕ) (n : ℕ) (h : ∀ x ∈ l, x ≤ n) : l.fold max 0 ≤ n :=
+  max_le_of_forall_le l n h
+#align multiset.max_nat_le_of_forall_le Multiset.max_nat_le_of_forall_le
+
+end Multiset

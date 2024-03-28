@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Archive.Examples.IfNormalization.Statement
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Algebra.Order.Monoid.MinMax
 import Mathlib.Data.List.AList
 import Mathlib.Tactic.Recall
 
