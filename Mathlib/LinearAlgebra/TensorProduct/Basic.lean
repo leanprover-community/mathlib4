@@ -761,7 +761,8 @@ theorem rid_symm_apply (m : M) : (TensorProduct.rid R M).symm m = m ⊗ₜ 1 :=
 #align tensor_product.rid_symm_apply TensorProduct.rid_symm_apply
 
 variable (R) in
-theorem lid_eq_rid : lid R R = rid R R := LinearEquiv.toLinearMap_injective <| ext' mul_comm
+theorem lid_eq_rid : TensorProduct.lid R R = TensorProduct.rid R R :=
+  LinearEquiv.toLinearMap_injective <| ext' mul_comm
 
 open LinearMap
 
