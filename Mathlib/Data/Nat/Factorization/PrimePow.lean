@@ -81,7 +81,7 @@ theorem exists_ord_compl_eq_one_iff_isPrimePow {n : ℕ} (hn : n ≠ 1) :
   rw [← Nat.eq_of_dvd_of_div_eq_one (Nat.ord_proj_dvd n p) h] at hn ⊢
   refine' ⟨p, n.factorization p, pp, _, by simp⟩
   contrapose! hn
-  simp [le_zero_iff.1 hn]
+  simp [Nat.le_zero.1 hn]
 #align exists_ord_compl_eq_one_iff_is_prime_pow exists_ord_compl_eq_one_iff_isPrimePow
 
 /-- An equivalent definition for prime powers: `n` is a prime power iff there is a unique prime

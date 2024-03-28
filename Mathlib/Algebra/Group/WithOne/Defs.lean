@@ -29,6 +29,10 @@ In Lean 3, we use `id` here and there to get correct types of proofs. This is re
 `WithOne` and `WithZero` are marked as `Irreducible` at the end of
 `Mathlib.Algebra.Group.WithOne.Defs`, so proofs that use `Option α` instead of `WithOne α` no
 longer typecheck. In Lean 4, both types are plain `def`s, so we don't need these `id`s.
+
+## TODO
+
+`WithOne.coe_mul` and `WithZero.coe_mul` have inconsistent use of implicit parameters
 -/
 
 

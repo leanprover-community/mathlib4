@@ -249,9 +249,7 @@ theorem kstar_eq_one : a∗ = 1 ↔ a ≤ 1 :=
     fun h ↦ one_le_kstar.antisymm' <| kstar_le_of_mul_le_left le_rfl <| by rwa [one_mul]⟩
 #align kstar_eq_one kstar_eq_one
 
-@[simp]
-theorem kstar_zero : (0 : α)∗ = 1 :=
-  kstar_eq_one.2 zero_le_one
+@[simp] lemma kstar_zero : (0 : α)∗ = 1 := kstar_eq_one.2 (zero_le _)
 #align kstar_zero kstar_zero
 
 @[simp]
