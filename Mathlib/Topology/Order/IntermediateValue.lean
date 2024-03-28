@@ -516,7 +516,7 @@ theorem setOf_isPreconnected_eq_of_ordered :
     isPreconnected_univ, isPreconnected_empty]
 #align set_of_is_preconnected_eq_of_ordered setOf_isPreconnected_eq_of_ordered
 
-lemma isTotallyDisconnected_iff_le {s : Set α} :
+lemma isTotallyDisconnected_iff_lt {s : Set α} :
     IsTotallyDisconnected s ↔ ∀ x ∈ s, ∀ y ∈ s, x < y → ∃ z ∉ s, x < z ∧ z < y := by
   simp_rw [IsTotallyDisconnected, isPreconnected_iff_ordConnected, ← not_nontrivial_iff]
   refine ⟨fun h x hx y hy hxy ↦ ?_, fun h t hts ht ⟨x, hx, y, hy, hxy⟩ ↦ ?_⟩
