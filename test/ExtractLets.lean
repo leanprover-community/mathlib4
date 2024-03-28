@@ -30,6 +30,8 @@ example (h : let x := 1; let y := 2; x + 1 = y) : True := by
   guard_hyp h :ₛ a + 1 = b
   trivial
 
+-- mutes `'intros' tactic does nothing [linter.unusedTactic]`
+set_option linter.unusedTactic false in
 example (h : let x := 1; let y := 2; x + 1 = y) : True := by
   extract_lets x at h
   intros
