@@ -126,6 +126,7 @@ theorem average_char_eq_finrank_invariants (V : FdRep k G) :
 
 end Group
 
+
 namespace MonoidAlgebra
 
 universe u₁ u₂
@@ -134,48 +135,24 @@ instance {k : Type u₁} {G : Type u₂} [Semiring k] :
     Coe G (MonoidAlgebra k G) where
   coe g := MonoidAlgebra.single g 1
 
--- def std_basis (k : Type u₁) (G : Type u₂) [Semiring k] :
---     Basis G k (MonoidAlgebra k G) :=
---   .ofRepr (LinearEquiv.refl _ _)
-
--- instance my_inst {k : Type u₁} {G : Type u₂} [Semiring k] :
---     CoeDep (Type u₂) G (Basis G k (MonoidAlgebra k G)) where
---   coe := std_basis k G
-
--- instance {k : Type u₁} {G : Type u₂} [Semiring k] :
---     Inhabited (Basis G k (MonoidAlgebra k G)) :=
---   ⟨std_basis k G⟩
-
--- instance {k : Type u₁} {G : Type u₂} [Semiring k] :
---     Module.Free k (MonoidAlgebra k G) where
---   exists_basis := ⟨G, std_basis k G⟩
-
 end MonoidAlgebra
 
-
--- def is_conj_inv (f : MonoidAlgebra k G →ₗ[k] k) := ∀ g h : G, f (h * g * h⁻¹) = f g
-
--- def ClassFuntion := {f : MonoidAlgebra k G →ₗ[k] k // is_conj_inv f}
-
--- lemma char_is_class_func (V : FdRep k G) :
---     is_conj_inv (Basis.constr (MonoidAlgebra.my_inst.coe : Basis G k (MonoidAlgebra k G)) k V.character) := by
---   intro g h
---   have foo := Basis.constr_basis G k V.character h
---   have (g : G) : B g = MonoidAlgebra.single g 1 := B.repr_self g
---   repeat rw [← this]
---   sorry
 
 section ClassFunction
 
 variable {G : Type u} [Group G]
 
-def IsClassFunction (f : G → k) : Prop := ∀ (g h : G), f (h * g * h⁻¹) = f g
+def IsClassFunction (f : G → k) : Prop :=
+  ∀ (g h : G), f (h * g * h⁻¹) = f g
 
-def IsClassFunction' (f : MonoidAlgebra k G →ₗ[k] k) : Prop := ∀ (g h : G), f (h * g * h⁻¹) = f g
+def IsClassFunction' (f : MonoidAlgebra k G →ₗ[k] k) : Prop :=
+  ∀ (g h : G), f (h * g * h⁻¹) = f g
 
-def ClassFunction := { f : G → k // IsClassFunction f }
+def ClassFunction :=
+  { f : G → k // IsClassFunction f }
 
-def ClassFunction' := { f : MonoidAlgebra k G →ₗ[k] k // IsClassFunction' f }
+def ClassFunction' :=
+  { f : MonoidAlgebra k G →ₗ[k] k // IsClassFunction' f }
 
 theorem isClassFunction_iff (f : G → k) : IsClassFunction f ↔
     IsClassFunction' (Finsupp.lift k k G f) := by
@@ -218,6 +195,13 @@ variable [Fintype G] [Invertible (Fintype.card G : k)]
 
 def scalarProduct (φ ψ : G → k) := ⅟ (Fintype.card G : k) • ∑ g : G, φ g * ψ g⁻¹
 
+lemma scalarProduct_symmetric : ∀ φ ψ : G → k, scalarProduct φ ψ = scalarProduct ψ φ := by
+  intro φ ψ
+  simp_rw [scalarProduct]
+  rw [Fintype.sum_equiv (Equiv.inv G) _ _]
+  simp only [Equiv.inv_apply, inv_inv, mul_comm]
+  tauto
+
 /-- Orthogonality of characters for irreducible representations of finite group over an
 algebraically closed field whose characteristic doesn't divide the order of the group. -/
 theorem char_orthonormal (V W : FdRep k G) [Simple V] [Simple W] :
@@ -243,6 +227,198 @@ theorem char_orthonormal (V W : FdRep k G) [Simple V] [Simple W] :
   rw_mod_cast [finrank_hom_simple_simple W V, Iso.nonempty_iso_symm]
 #align fdRep.char_orthonormal FdRep.char_orthonormal
 
+theorem simple_iff_norm_one : ∀ V : FdRep k G, Simple V ↔ scalarProduct V.character V.character = 1 := by
+  intro V
+  constructor
+  · intro h
+    rw [char_orthonormal V V]
+    simp only [ite_eq_left_iff, not_nonempty_iff, not_isEmpty_of_nonempty, zero_ne_one,
+      IsEmpty.forall_iff]
+  · intro h
+    sorry
+
+lemma simple_iff_dual_simple : ∀ V : FdRep k G, Simple V ↔ Simple (of (dual V.ρ)) := by
+  intro V
+  constructor
+  · intro h
+    rw [simple_iff_norm_one] at h
+    simp_rw [simple_iff_norm_one, scalarProduct, char_dual, inv_inv, mul_comm]
+    exact h
+  · intro h
+    rw [simple_iff_norm_one]
+    simp_rw [simple_iff_norm_one, scalarProduct, char_dual, inv_inv, mul_comm] at h
+    exact h
+
+def averageFunction (α : G → k) (V : FdRep k G) : V.V →ₗ[k] V.V :=
+  ⅟ (Fintype.card G : k) • ∑ g : G, (α g) • (V.ρ g)
+
+def averageClassFunction (α : G → k) (h : IsClassFunction α) (V : FdRep k G) : V ⟶ V := by
+  use averageFunction α V
+  simp_rw [MonCat.coe_of]
+  intro g'
+  ext v
+  rw [averageFunction, CategoryTheory.comp_apply, CategoryTheory.comp_apply, invOf_eq_inv]
+  change ((Fintype.card G) : k)⁻¹ • (∑ g : ↑G, α g • V.ρ g) ((V.ρ g') v)
+    = (V.ρ g') (((Fintype.card G) : k)⁻¹ • (∑ g : ↑G, α g • V.ρ g) v)
+  rw [LinearMap.map_smul]
+  congr 1
+  rw [LinearMap.sum_apply, LinearMap.sum_apply, map_sum]
+  simp_rw [smul_apply, map_smul]
+  rw [Fintype.sum_equiv (Equiv.trans (Equiv.mulLeft g'⁻¹) (Equiv.mulRight g')) _ _ _]
+  intro x
+  simp only [Equiv.trans_apply, Equiv.coe_mulLeft, Equiv.coe_mulRight, map_mul, mul_apply]
+  have := h x g'⁻¹
+  rw [inv_inv] at this
+  rw [this]
+  rw [← mul_apply ((ρ V) g') _ _, ← map_mul _ g' _]
+  simp only [mul_right_inv, map_one, one_apply]
+
 end Orthogonality
+
+section RegularRepresentation
+
+variable {G : GroupCat.{u}} [IsAlgClosed k]
+variable [Fintype G] [DecidableEq G] [Invertible (Fintype.card G : k)]
+
+variable (k G)
+
+def RegularRep : FdRep k G := FdRep.of (Representation.ofMulAction k G G)
+
+def stdBasis : Basis G k (RegularRep k G) :=
+  Basis.ofRepr (LinearEquiv.refl _ _)
+
+lemma RegularRep_character_one : (RegularRep k G).character (1 : G) = (Fintype.card G : k) := by
+  rw [character, LinearMap.trace_eq_matrix_trace k (stdBasis k G)]
+  simp only [map_one, toMatrix_one, Matrix.trace_one]
+
+lemma RegularRep_character_ne_one (g : G) (h : g ≠ 1) : (RegularRep k G).character g = (0 : k) := by
+  rw [character, LinearMap.trace_eq_matrix_trace k (stdBasis k G)]
+  apply Fintype.sum_eq_zero
+  intro g'
+  simp only [toMatrix, LinearEquiv.trans_apply, Matrix.diag_apply, toMatrix'_apply,
+    LinearEquiv.arrowCongr_apply, Basis.equivFun_symm_apply, ite_smul, one_smul, zero_smul,
+    Finset.sum_ite_eq', Finset.mem_univ, Basis.equivFun_apply]
+  erw [ofMulAction_single]
+  apply Finsupp.single_eq_of_ne
+  simp only [smul_eq_mul, ne_eq, mul_left_eq_self]
+  exact h
+
+lemma RegularRep_character : (RegularRep k G).character =
+    fun (g : G) ↦ if g = 1 then (Fintype.card G : k) else 0 := by
+  ext g
+  if h : g = 1 then
+    simp [h, RegularRep_character_one k G]
+  else
+    simp [h, RegularRep_character_ne_one k G]
+
+lemma scalarProduct_RegularRep_eq_dimension (V : FdRep k G) :
+    scalarProduct (RegularRep k G).character V.character = (finrank k V : k) := by
+  simp only
+    [ RegularRep_character, scalarProduct, invOf_eq_inv, ite_mul
+    , zero_mul, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, inv_one
+    , char_one, smul_eq_mul, ← mul_assoc, inv_mul_cancel_of_invertible, one_mul
+    ]
+
+lemma leftRegular_apply (x : MonoidAlgebra k G) (g : G) :
+    ofMulAction k G G g x = MonoidAlgebra.single g 1 * x := by
+  simp only [ofMulAction_def, smul_eq_mul, Finsupp.lmapDomain_apply,
+    MonoidAlgebra.mul_def (g := x), zero_mul, Finsupp.single_zero, Finsupp.sum_zero,
+    Finsupp.sum_single_index, one_mul]
+  rfl
+
+lemma dim_irrep_dvd_card_group : ∀ V : FdRep k G, Simple V → finrank k V ∣ Fintype.card G := by
+  sorry
+
+/-- Irreducbile characters are a basis of ClassFunction G -/
+lemma orthogonal_to_all_characters_implies_zero (f : G → k) (hf : IsClassFunction f) (h : ∀ V : FdRep k G, Simple V → scalarProduct f V.character = (0 : k)) : f = 0 := by
+  let f' : (G → k) := fun g => f g⁻¹
+  have hf' : IsClassFunction f' := by
+    intro g h
+    simp only [mul_inv_rev, inv_inv, ← mul_assoc, f']
+    exact hf g⁻¹ h
+  have reg_zero : averageClassFunction f' hf' (RegularRep k G) =
+      (0 : RegularRep k G ⟶  RegularRep k G) := by
+    congr
+    have h' : ∀ V : FdRep k G, Simple V → averageClassFunction f' hf'  V = (0 : V ⟶  V) := by
+      intro V hV
+      have ⟨c, hc⟩ : ∃ c : k, @HSMul.hSMul k (V ⟶ V) (V ⟶ V) instHSMul c (Action.Hom.id V) =
+          averageClassFunction f' hf' V := by
+        apply exists_smul_eq_of_finrank_eq_one ?_ ?_ (averageClassFunction f' hf' V)
+        · simp [finrank_hom_simple_simple V V]
+        · exact id_nonzero V
+      rw [← hc]
+      have c_zero : c = 0 := by
+        have : LinearMap.trace k V (c • (Action.Hom.id V).hom) = c * finrank k V := by
+          simp only [map_smul, smul_eq_mul, mul_eq_mul_left_iff]
+          left
+          exact LinearMap.trace_id k _
+        by_contra hz
+        have tr : LinearMap.trace k V (averageClassFunction f' hf' V).hom = 0 := by
+          calc
+            LinearMap.trace k V (averageClassFunction f' hf' V).hom = ⅟ (Fintype.card G : k) • ∑ g : G, f' g * V.character g := by
+              simp_rw [character, averageClassFunction, averageFunction]
+              simp only [invOf_eq_inv, map_smul, map_sum, smul_eq_mul]
+            _ = ⅟ (Fintype.card G : k) • ∑ g : G, f' g * (of (dual V.ρ)).character g⁻¹ := by
+              simp_rw [char_dual, inv_inv]
+            _ = ⅟ (Fintype.card G : k) • ∑ g : G, f g * V.character g⁻¹ := by
+                rw [Fintype.sum_equiv (Equiv.inv G) _ _]
+                simp only [char_dual, inv_inv, Equiv.inv_apply, forall_const, f']
+            _ = 0 := by
+              simp_rw [scalarProduct] at h
+              exact h V hV
+        rw [← hc] at tr
+        simp only [Action.Hom.id_hom, map_smul, smul_eq_mul, mul_eq_mul_left_iff] at this
+        apply Or.resolve_right at this
+        have tr_rank := this hz
+        simp at tr
+        apply Or.resolve_left at tr
+        have tr_zero := tr hz
+        rw [tr_zero] at tr_rank
+        symm at tr_rank
+        have inv_dim : (finrank k V : k) ≠ 0 := by
+          choose a ha using dim_irrep_dvd_card_group k G V hV
+          apply_fun (fun (n : ℕ) ↦ (n : k)) at ha
+          have : (Fintype.card G : k) ≠ 0 := by
+            apply nonzero_of_invertible
+          rw [ha, Nat.cast_mul] at this
+          exact left_ne_zero_of_mul this
+        rw [tr_rank] at inv_dim
+        tauto
+      simp only [c_zero, zero_smul]
+    sorry -- needs Maschke's theorem
+  have : (averageClassFunction f' hf' (RegularRep k G)).hom (1 : MonoidAlgebra k G) = 0 := by
+    simp only [reg_zero, Action.zero_hom]
+    rfl
+  simp_rw [averageClassFunction, averageFunction, RegularRep] at this
+  change (⅟((Fintype.card ↑G) : k) • (∑ g, f' g • (ρ (of (ofMulAction k ↑G ↑G))) g) (1 : MonoidAlgebra k G)) = 0 at this
+  have action (g : G) (x : MonoidAlgebra k G) : ((ρ (of (ofMulAction k ↑G ↑G))) g) x = (MonoidAlgebra.single g 1) * x := by
+        show Representation.ofMulAction k G G g x = _
+        apply leftRegular_apply
+  erw [LinearMap.sum_apply] at this
+  conv at this =>
+    enter [1, 2, 2, d]
+    simp
+  simp_rw [action] at this
+  simp only [invOf_eq_inv, mul_one, smul_eq_zero, inv_eq_zero] at this
+  apply Or.resolve_left at this
+  specialize this (nonzero_of_invertible _)
+  have ff' : f = 0 ↔ f' = 0 := by
+    constructor
+    · intro h
+      simp only [h, Pi.zero_apply, f']
+      rfl
+    · intro h
+      ext g
+      have : f g = f' g⁻¹ := by
+        simp only [f', inv_inv]
+      rw [this, h]
+      rfl
+  rw [ff']
+  ext g
+  apply linearIndependent_iff'.1 (Basis.linearIndependent (stdBasis k G)) Finset.univ f'
+  exact this
+  simp only [Finset.mem_univ]
+
+end RegularRepresentation
 
 end FdRep
