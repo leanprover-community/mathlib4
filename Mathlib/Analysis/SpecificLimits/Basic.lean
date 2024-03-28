@@ -604,7 +604,7 @@ end ENNReal
 
 
 theorem factorial_tendsto_atTop : Tendsto Nat.factorial atTop atTop :=
-  tendsto_atTop_atTop_of_monotone Nat.monotone_factorial fun n ↦ ⟨n, n.self_le_factorial⟩
+  tendsto_atTop_atTop_of_monotone (fun _ _ ↦ Nat.factorial_le) fun n ↦ ⟨n, n.self_le_factorial⟩
 #align factorial_tendsto_at_top factorial_tendsto_atTop
 
 theorem tendsto_factorial_div_pow_self_atTop :
@@ -693,7 +693,7 @@ theorem tendsto_nat_ceil_div_atTop : Tendsto (fun x ↦ (⌈x⌉₊ : R) / x) at
   simpa using tendsto_nat_ceil_mul_div_atTop (zero_le_one' R)
 #align tendsto_nat_ceil_div_at_top tendsto_nat_ceil_div_atTop
 
-lemma Nat.tendsto_div_const_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (λ x ↦ x / n) atTop atTop := by
+lemma Nat.tendsto_div_const_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (· / n) atTop atTop := by
   rw [Tendsto, map_div_atTop_eq_nat n hn.bot_lt]
 
 end

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison
 -/
 import Mathlib.Data.Fin.Basic
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.InsertNth
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Small.Defs
 import Mathlib.Order.GameAdd
@@ -1274,8 +1274,7 @@ instance : NegZeroClass PGame :=
 theorem neg_ofLists (L R : List PGame) :
     -ofLists L R = ofLists (R.map fun x => -x) (L.map fun x => -x) := by
   set_option linter.deprecated false in
-  simp only [ofLists, neg_def, List.length_map, List.nthLe_map', eq_self_iff_true, true_and,
-    mk.injEq]
+  simp only [ofLists, neg_def, List.nthLe_map', mk.injEq, List.length_map, true_and]
   constructor
   all_goals
     apply hfunext
@@ -1664,7 +1663,7 @@ def Relabelling.addCongr : ∀ {w x y z : PGame.{u}}, w ≡r x → y ≡r z → 
     · exact Hwx.addCongr (hL₂ j)
     · exact (hR₁ i).addCongr Hyz
     · exact Hwx.addCongr (hR₂ j)
-termination_by w x y z => (x, z)
+termination_by _ x _ z => (x, z)
 #align pgame.relabelling.add_congr SetTheory.PGame.Relabelling.addCongr
 
 instance : Sub PGame :=

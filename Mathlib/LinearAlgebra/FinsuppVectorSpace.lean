@@ -29,7 +29,6 @@ namespace Finsupp
 section Ring
 
 variable {R : Type*} {M : Type*} {ι : Type*}
-
 variable [Ring R] [AddCommGroup M] [Module R M]
 
 theorem linearIndependent_single {φ : ι → Type*} {f : ∀ ι, φ ι → M}
@@ -57,13 +56,12 @@ end Ring
 section Semiring
 
 variable {R : Type*} {M : Type*} {ι : Type*}
-
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 open LinearMap Submodule
 
 open scoped Classical in
-/-- The basis on `ι →₀ M` with basis vectors `λ ⟨i, x⟩, single i (b i x)`. -/
+/-- The basis on `ι →₀ M` with basis vectors `fun ⟨i, x⟩ ↦ single i (b i x)`. -/
 protected def basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) : Basis (Σi, φ i) R (ι →₀ M) :=
   Basis.ofRepr
     { toFun := fun g =>
@@ -158,9 +156,7 @@ end DFinsupp
 namespace Basis
 
 variable {R M n : Type*}
-
 variable [DecidableEq n]
-
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 theorem _root_.Finset.sum_single_ite [Fintype n] (a : R) (i : n) :

@@ -1615,12 +1615,14 @@ theorem ordConnected_iff_upperClosure_inter_lowerClosure :
 
 @[simp]
 theorem upperBounds_lowerClosure : upperBounds (lowerClosure s : Set α) = upperBounds s :=
-  (upperBounds_mono_set subset_lowerClosure).antisymm λ _a ha _b ⟨_c, hc, hcb⟩ => hcb.trans <| ha hc
+  (upperBounds_mono_set subset_lowerClosure).antisymm
+    fun _a ha _b ⟨_c, hc, hcb⟩ ↦ hcb.trans <| ha hc
 #align upper_bounds_lower_closure upperBounds_lowerClosure
 
 @[simp]
 theorem lowerBounds_upperClosure : lowerBounds (upperClosure s : Set α) = lowerBounds s :=
-  (lowerBounds_mono_set subset_upperClosure).antisymm λ _a ha _b ⟨_c, hc, hcb⟩ => (ha hc).trans hcb
+  (lowerBounds_mono_set subset_upperClosure).antisymm
+    fun _a ha _b ⟨_c, hc, hcb⟩ ↦ (ha hc).trans hcb
 #align lower_bounds_upper_closure lowerBounds_upperClosure
 
 @[simp]

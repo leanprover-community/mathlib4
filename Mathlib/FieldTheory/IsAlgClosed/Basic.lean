@@ -92,7 +92,7 @@ theorem exists_pow_nat_eq [IsAlgClosed k] (x : k) {n : ℕ} (hn : 0 < n) : ∃ z
     exact ne_of_gt (WithBot.coe_lt_coe.2 hn)
   obtain ⟨z, hz⟩ := exists_root (X ^ n - C x) this
   · use z
-    simp only [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def] at hz
+    simp only [eval_C, eval_X, eval_pow, eval_sub, IsRoot.definition] at hz
     exact sub_eq_zero.1 hz
 #align is_alg_closed.exists_pow_nat_eq IsAlgClosed.exists_pow_nat_eq
 
@@ -246,7 +246,6 @@ private noncomputable irreducible_def lift_aux : L →ₐ[K] M :=
     (IntermediateField.adjoin_univ K L)
 
 variable {R : Type u} [CommRing R]
-
 variable {S : Type v} [CommRing S] [IsDomain S] [Algebra R S] [Algebra R M] [NoZeroSMulDivisors R S]
   [NoZeroSMulDivisors R M] (hS : Algebra.IsAlgebraic R S)
 

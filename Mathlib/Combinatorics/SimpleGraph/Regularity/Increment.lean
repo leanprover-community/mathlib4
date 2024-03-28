@@ -126,7 +126,6 @@ lemma le_sum_distinctPairs_edgeDensity_sq (x : {i // i ∈ P.parts.offDiag}) (h�
       ((if G.IsUniform ε x.1.1 x.1.2 then 0 else ε ^ 4 / 3) - ε ^ 5 / 25) ≤
     (∑ i in distinctPairs G ε hP x, G.edgeDensity i.1 i.2 ^ 2 : ℝ) / 16 ^ P.parts.card := by
   rw [distinctPairs, ← add_sub_assoc, add_sub_right_comm]
-  push_cast
   split_ifs with h
   · rw [add_zero]
     exact edgeDensity_chunk_uniform hPα hPε _ _
@@ -144,7 +143,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ P.parts.card)
   calc
     _ = (∑ x in P.parts.offDiag, (G.edgeDensity x.1 x.2 : ℝ) ^ 2 +
           P.parts.card ^ 2 * (ε ^ 5 / 4) : ℝ) / P.parts.card ^ 2 := by
-        rw [coe_energy, add_div, mul_div_cancel_left]; positivity
+        rw [coe_energy, add_div, mul_div_cancel_left₀]; positivity
     _ ≤ (∑ x in P.parts.offDiag.attach, (∑ i in distinctPairs G ε hP x,
           G.edgeDensity i.1 i.2 ^ 2 : ℝ) / 16 ^ P.parts.card) / P.parts.card ^ 2 := ?_
     _ = (∑ x in P.parts.offDiag.attach, ∑ i in distinctPairs G ε hP x,
