@@ -156,4 +156,28 @@ instance [IsFiniteMeasure μ] [IsFiniteKernel κ] : IsFiniteMeasure (μ ⊗ₘ �
 instance [IsProbabilityMeasure μ] [IsMarkovKernel κ] : IsProbabilityMeasure (μ ⊗ₘ κ) := by
   rw [compProd]; infer_instance
 
+lemma absolutelyContinuous_compProd_left {ν : Measure α} [SFinite μ] [SFinite ν]
+    (hμν : μ ≪ ν) (κ : kernel α β) [IsSFiniteKernel κ]  :
+    μ ⊗ₘ κ ≪ ν ⊗ₘ κ := by
+  refine Measure.AbsolutelyContinuous.mk fun s hs hs_zero ↦ ?_
+  rw [Measure.compProd_apply hs, lintegral_eq_zero_iff (kernel.measurable_kernel_prod_mk_left hs)]
+    at hs_zero ⊢
+  exact hμν.ae_eq hs_zero
+
+lemma absolutelyContinuous_compProd_right (μ : Measure α)
+    [SFinite μ] [IsSFiniteKernel κ] [IsSFiniteKernel η]
+    (hκη : ∀ᵐ a ∂μ, κ a ≪ η a) :
+    μ ⊗ₘ κ ≪ μ ⊗ₘ η := by
+  refine Measure.AbsolutelyContinuous.mk fun s hs hs_zero ↦ ?_
+  rw [Measure.compProd_apply hs, lintegral_eq_zero_iff (kernel.measurable_kernel_prod_mk_left hs)]
+    at hs_zero ⊢
+  filter_upwards [hs_zero, hκη] with a ha_zero ha_ac using ha_ac ha_zero
+
+lemma absolutelyContinuous_compProd {ν : Measure α}
+    [SFinite μ] [SFinite ν] [IsSFiniteKernel κ] [IsSFiniteKernel η]
+    (hμν : μ ≪ ν) (hκη : ∀ᵐ a ∂ν, κ a ≪ η a) :
+    μ ⊗ₘ κ ≪ ν ⊗ₘ η :=
+  (Measure.absolutelyContinuous_compProd_left hμν κ).trans
+    (Measure.absolutelyContinuous_compProd_right ν hκη)
+
 end MeasureTheory.Measure
