@@ -889,13 +889,13 @@ variable {A n}
 
 lemma mem_torsionBy (x : A) : x ∈ A[n] ↔ n • x = 0 := by simp
 
-lemma nsmul_torsionBy_eq_zero (x : A[n]) : n • x = 0 :=
+lemma nsmul_torsionBy (x : A[n]) : n • x = 0 :=
   ZeroMemClass.coe_eq_zero.mp <| (mem_torsionBy _).mp x.property
 
 lemma mod_nsmul_torsionBy_eq_nsmul (m : A[n]) (s : ℕ) :
     (s % n) • m = s • m := by
   nth_rewrite 2 [← Nat.div_add_mod s n]
-  rw [add_smul, self_eq_add_left, mul_comm, mul_smul, nsmul_torsionBy_eq_zero, smul_zero]
+  rw [add_smul, self_eq_add_left, mul_comm, mul_smul, nsmul_torsionBy, smul_zero]
 
 instance moduleZModTorsionBy [Fact (1 < n)] : Module (ZMod n) A[n] where
   smul a m := a.val • m
