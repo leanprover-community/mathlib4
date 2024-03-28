@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!
 
@@ -90,8 +91,8 @@ theorem exists_linearIndependent_of_lt_rank [StrongRankCondition R]
   obtain ⟨t, ht, ht'⟩ := exists_set_linearIndependent R (M ⧸ Submodule.span R s)
   choose sec hsec using Submodule.Quotient.mk_surjective (Submodule.span R s)
   have hsec' : Submodule.Quotient.mk ∘ sec = id := funext hsec
-  have hst : Disjoint s (sec '' t)
-  · rw [Set.disjoint_iff]
+  have hst : Disjoint s (sec '' t) := by
+    rw [Set.disjoint_iff]
     rintro _ ⟨hxs, ⟨x, hxt, rfl⟩⟩
     apply ht'.ne_zero ⟨x, hxt⟩
     rw [Subtype.coe_mk, ← hsec x, Submodule.Quotient.mk_eq_zero]
@@ -110,8 +111,8 @@ theorem exists_linearIndependent_cons_of_lt_rank [StrongRankCondition R] {n : �
     (hv : LinearIndependent R v) (h : n < Module.rank R M) :
     ∃ (x : M), LinearIndependent R (Fin.cons x v) := by
   obtain ⟨t, h₁, h₂, h₃⟩ := exists_linearIndependent_of_lt_rank hv.to_subtype_range
-  have : range v ≠ t
-  · refine fun e ↦ h.ne ?_
+  have : range v ≠ t := by
+    refine fun e ↦ h.ne ?_
     rw [← e, ← lift_injective.eq_iff, mk_range_eq_of_injective hv.injective] at h₂
     simpa only [mk_fintype, Fintype.card_fin, lift_natCast, lift_id'] using h₂
   obtain ⟨x, hx, hx'⟩ := nonempty_of_ssubset (h₁.ssubset_of_ne this)
@@ -139,8 +140,8 @@ theorem exists_linearIndependent_pair_of_one_lt_rank [StrongRankCondition R]
 
 theorem exists_smul_not_mem_of_rank_lt {N : Submodule R M} (h : Module.rank R N < Module.rank R M) :
     ∃ m : M, ∀ r : R, r ≠ 0 → r • m ∉ N := by
-  have : Module.rank R (M ⧸ N) ≠ 0
-  · intro e
+  have : Module.rank R (M ⧸ N) ≠ 0 := by
+    intro e
     rw [← rank_quotient_add_rank N, e, zero_add] at h
     exact h.ne rfl
   rw [ne_eq, rank_eq_zero_iff, (Submodule.Quotient.mk_surjective N).forall] at this
