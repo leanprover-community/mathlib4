@@ -293,7 +293,16 @@ theorem ofMulAction_single (g : G) (x : H) (r : k) :
   Finsupp.mapDomain_single
 #align representation.of_mul_action_single Representation.ofMulAction_single
 
+noncomputable abbrev leftRegular := ofMulAction k G G
+
+lemma leftRegular_apply (g : G) (x : MonoidAlgebra k G) :
+    ofMulAction k G G g x = MonoidAlgebra.single g 1 * x := by
+  simp only [ofMulAction_def, smul_eq_mul, Finsupp.lmapDomain_apply,
+    MonoidAlgebra.mul_def (g := x), zero_mul, Finsupp.single_zero, Finsupp.sum_zero,
+    Finsupp.sum_single_index, one_mul]
+  rfl
 end MulAction
+
 section DistribMulAction
 
 variable (k G A : Type*) [CommSemiring k] [Monoid G] [AddCommMonoid A] [Module k A]

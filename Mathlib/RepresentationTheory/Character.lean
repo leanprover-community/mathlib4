@@ -325,7 +325,16 @@ lemma scalarProduct_RegularRep_eq_dimension (V : FdRep k G) :
     , zero_mul, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, inv_one
     , char_one, smul_eq_mul, ← mul_assoc, inv_mul_cancel_of_invertible, one_mul
     ]
-#check FdRep.ρ
+
+
+
+lemma leftRegular_apply (x : MonoidAlgebra k G) (g : G) :
+    ofMulAction k G G g x = MonoidAlgebra.single g 1 * x := by
+  simp only [ofMulAction_def, smul_eq_mul, Finsupp.lmapDomain_apply,
+    MonoidAlgebra.mul_def (g := x), zero_mul, Finsupp.single_zero, Finsupp.sum_zero,
+    Finsupp.sum_single_index, one_mul]
+  rfl
+
 /-- Irreducbile characters are a basis of ClassFunction G -/
 lemma orthogonal_to_all_characters_implies_zero (f : G → k) (hf : IsClassFunction f) (h : ∀ V : FdRep k G, Simple V → scalarProduct f V.character = (0 : k)) : f = fun _ ↦ (0 : k) := by
   let f' : (G → k) := fun g => f g⁻¹
@@ -385,13 +394,13 @@ lemma orthogonal_to_all_characters_implies_zero (f : G → k) (hf : IsClassFunct
   have average_reg_zero : averageClassFunction f' hf' (RegularRep k G) = (0 : RegularRep k G ⟶  RegularRep k G) := by
     sorry -- Needs Maschke's theorem!
   have sum_zero : ∑ g, (f' g) • MonoidAlgebra.single g⁻¹ 1 = (0 : MonoidAlgebra k G) := by
-    have act_as (x : MonoidAlgebra k G) : (averageClassFunction f' hf' (RegularRep k G)).hom x = ⅟ (Fintype.card G : k) • (∑ g, (f' g) • MonoidAlgebra.single g⁻¹ 1) * x := by
+    have act_as (x : MonoidAlgebra k G) : (averageClassFunction f' hf' (RegularRep k G)).hom x = ⅟ (Fintype.card G : k) • (∑ g, (f' g) • MonoidAlgebra.single g 1) * x := by
       rw [averageClassFunction]
       simp only [averageFunction, invOf_eq_inv]
       simp_rw [RegularRep]
-      have (x : MonoidAlgebra k G) (g : G) : ((ρ (of (ofMulAction k ↑G ↑G))) g) x = (MonoidAlgebra.single g 1) * x := by
+      have (g : G) (x : MonoidAlgebra k G) : ((ρ (of (ofMulAction k ↑G ↑G))) g) x = (MonoidAlgebra.single g 1) * x := by
         show Representation.ofMulAction k G G g x = _
-        --erw [Rep.of_ρ]
+        apply leftRegular_apply
 
 
 
