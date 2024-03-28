@@ -285,7 +285,7 @@ theorem intervalIntegral_add_zsmul_eq (hf : Periodic f T) (n : ℤ) (t : ℝ)
   have : ∀ m : ℕ, (∫ x in (0)..m • T, f x) = m • ∫ x in (0)..T, f x := fun m ↦ by
     induction' m with m ih
     · simp
-    · simp only [succ_nsmul', hf.intervalIntegral_add_eq_add 0 (m • T) h_int, ih, zero_add]
+    · simp only [succ_nsmul, hf.intervalIntegral_add_eq_add 0 (m • T) h_int, ih, zero_add]
   -- Then prove it for all integers
   cases' n with n n
   · simp [← this n]

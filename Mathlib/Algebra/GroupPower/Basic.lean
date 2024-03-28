@@ -61,13 +61,13 @@ theorem nsmul_zero (n : ℕ) : n • (0 : A) = 0 := by
 #align nsmul_zero nsmul_zero
 
 @[simp]
-theorem one_nsmul (a : A) : 1 • a = a := by rw [succ_nsmul, zero_nsmul, add_zero]
+theorem one_nsmul (a : A) : 1 • a = a := by rw [succ_nsmul, zero_nsmul, zero_add]
 #align one_nsmul one_nsmul
 
 theorem add_nsmul (a : A) (m n : ℕ) : (m + n) • a = m • a + n • a := by
-  induction m with
-  | zero => rw [Nat.zero_add, zero_nsmul, zero_add]
-  | succ m ih => rw [Nat.succ_add, Nat.succ_eq_add_one, succ_nsmul, ih, succ_nsmul, add_assoc]
+  induction n with
+  | zero => rw [Nat.add_zero, zero_nsmul, add_zero]
+  | succ n ih => rw [Nat.add_succ, Nat.succ_eq_add_one, succ_nsmul, ih, succ_nsmul, add_assoc]
 #align add_nsmul add_nsmul
 
 -- the attributes are intentionally out of order.
@@ -79,7 +79,7 @@ theorem one_pow (n : ℕ) : (1 : M) ^ n = 1 := by
 #align one_pow one_pow
 
 @[to_additive existing (attr := simp) one_nsmul]
-theorem pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, mul_one]
+theorem pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
 #align pow_one pow_one
 
 /-- Note that most of the lemmas about powers of two refer to it as `sq`. -/
@@ -92,25 +92,25 @@ theorem pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, mul_one]
 #align sq sq
 
 @[to_additive three'_nsmul]
-theorem pow_three' (a : M) : a ^ 3 = a * a * a := by rw [pow_succ', pow_two]
+theorem pow_three' (a : M) : a ^ 3 = a * a * a := by rw [pow_succ, pow_two]
 #align pow_three' pow_three'
 
 @[to_additive three_nsmul]
-theorem pow_three (a : M) : a ^ 3 = a * (a * a) := by rw [pow_succ, pow_two]
+theorem pow_three (a : M) : a ^ 3 = a * (a * a) := by rw [pow_succ', pow_two]
 #align pow_three pow_three
 
 @[to_additive existing add_nsmul]
 theorem pow_add (a : M) (m n : ℕ) : a ^ (m + n) = a ^ m * a ^ n := by
   induction' n with n ih
   · rw [Nat.add_zero, pow_zero, mul_one]
-  · rw [pow_succ', ← mul_assoc, ← ih, ← pow_succ', Nat.add_assoc]
+  · rw [pow_succ, ← mul_assoc, ← ih, ← pow_succ, Nat.add_assoc]
 #align pow_add pow_add
 
 @[to_additive mul_nsmul]
 theorem pow_mul (a : M) (m n : ℕ) : a ^ (m * n) = (a ^ m) ^ n := by
   induction' n with n ih
   · rw [Nat.mul_zero, pow_zero, pow_zero]
-  · rw [Nat.mul_succ, pow_add, pow_succ', ih]
+  · rw [Nat.mul_succ, pow_add, pow_succ, ih]
 -- Porting note: we are taking the opportunity to swap the names `mul_nsmul` and `mul_nsmul'`
 -- using #align, so that in mathlib4 they will match the multiplicative ones.
 #align pow_mul pow_mul
@@ -125,7 +125,7 @@ theorem pow_mul' (a : M) (m n : ℕ) : a ^ (m * n) = (a ^ n) ^ m := by rw [Nat.m
 theorem Commute.mul_pow {a b : M} (h : Commute a b) (n : ℕ) : (a * b) ^ n = a ^ n * b ^ n := by
   induction' n with n ih
   · rw [pow_zero, pow_zero, pow_zero, one_mul]
-  · simp only [pow_succ, ih, ← mul_assoc, (h.pow_left n).right_comm]
+  · simp only [pow_succ', ih, ← mul_assoc, (h.pow_left n).right_comm]
 #align commute.mul_pow Commute.mul_pow
 #align add_commute.add_nsmul AddCommute.add_nsmul
 
@@ -186,7 +186,7 @@ theorem pow_bit0 (a : M) (n : ℕ) : a ^ bit0 n = a ^ n * a ^ n :=
 
 @[to_additive bit1_nsmul]
 theorem pow_bit1 (a : M) (n : ℕ) : a ^ bit1 n = a ^ n * a ^ n * a := by
-  rw [bit1, pow_succ', pow_bit0]
+  rw [bit1, pow_succ, pow_bit0]
 #align pow_bit1 pow_bit1
 #align bit1_nsmul bit1_nsmul
 
@@ -198,7 +198,7 @@ theorem pow_bit0' (a : M) (n : ℕ) : a ^ bit0 n = (a * a) ^ n := by
 
 @[to_additive bit1_nsmul']
 theorem pow_bit1' (a : M) (n : ℕ) : a ^ bit1 n = (a * a) ^ n * a := by
-  rw [bit1, pow_succ', pow_bit0']
+  rw [bit1, pow_succ, pow_bit0']
 #align pow_bit1' pow_bit1'
 #align bit1_nsmul' bit1_nsmul'
 
@@ -209,7 +209,7 @@ theorem pow_mul_pow_eq_one {a b : M} (n : ℕ) (h : a * b = 1) : a ^ n * b ^ n =
   induction' n with n hn
   · simp
   · calc
-      a ^ n.succ * b ^ n.succ = a ^ n * a * (b * b ^ n) := by rw [pow_succ', pow_succ]
+      a ^ n.succ * b ^ n.succ = a ^ n * a * (b * b ^ n) := by rw [pow_succ, pow_succ']
       _ = a ^ n * (a * b) * b ^ n := by simp only [mul_assoc]
       _ = 1 := by simp [h, hn]
 #align pow_mul_pow_eq_one pow_mul_pow_eq_one
@@ -425,10 +425,10 @@ theorem inv_pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ 
 
 @[to_additive add_one_zsmul]
 lemma zpow_add_one (a : G) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
-  | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_natCast, pow_succ']
+  | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_natCast, pow_succ]
   | -[0+1] => by simp [Int.negSucc_eq', Int.add_left_neg]
   | -[n + 1+1] => by
-    rw [zpow_negSucc, pow_succ, mul_inv_rev, inv_mul_cancel_right]
+    rw [zpow_negSucc, pow_succ', mul_inv_rev, inv_mul_cancel_right]
     rw [Int.negSucc_eq, Int.neg_add, Int.neg_add_cancel_right]
     exact zpow_negSucc _ _
 #align zpow_add_one zpow_add_one

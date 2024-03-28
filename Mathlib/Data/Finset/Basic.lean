@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Multiset.Bind
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Set.Lattice
-import Mathlib.Algebra.Order.WithZero
 
 #align_import data.finset.basic from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
 
