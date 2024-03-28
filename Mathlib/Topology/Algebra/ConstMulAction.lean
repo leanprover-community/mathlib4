@@ -187,6 +187,17 @@ theorem isClosed_setOf_map_smul [Monoid N] (α β) [MulAction M α] [MulAction N
     isClosed_eq (continuous_apply _) ((continuous_apply _).const_smul _)
 #align is_closed_set_of_map_smul isClosed_setOf_map_smulₓ
 
+variable [T2Space α] in
+variable (α) in
+/--
+The set `MulAction.fixedBy α m` for a continuous, multiplicative action on a Hausdorff space
+is closed.
+-/
+@[to_additive "The set `AddAction.fixedBy α m` for a continuous, additive action on a Hausdorff
+space is closed."]
+theorem MulAction.isClosed_fixedBy (m : M) : IsClosed (fixedBy α m) :=
+  isClosed_eq (continuous_const_smul m) continuous_id
+
 end Monoid
 
 section Group
@@ -284,6 +295,52 @@ theorem interior_smul (c : G) (s : Set α) : interior (c • s) = c • interior
   ((Homeomorph.smul c).image_interior s).symm
 #align interior_smul interior_smul
 #align interior_vadd interior_vadd
+
+section GroupSeparation
+
+variable [T2Space α]
+
+/--
+If the set of group elements `s` is finite and its action on the point `x` is injective,
+then one can construct an open set `t` such that for every pair `g ≠ h` of `s`,
+`g • t` is disjoint from `h • t`.
+-/
+@[to_additive "If the set of group elements `s` is finite and its action on the point `x` is
+injective, then one can construct an open set `t` such that for every pair `g ≠ h` of `s`,
+`g +ᵥ t` is disjoint from `h +ᵥ t`."]
+theorem Set.InjOn.t2_separation_smul {s : Set G} {x : α} (inj_on : s.InjOn (· • x))
+    (s_finite : s.Finite) : ∃ t : Set α, IsOpen t ∧ x ∈ t ∧
+      s.PairwiseDisjoint (fun g => g • t) := by
+  let ⟨t, ht, disj⟩ := Set.Finite.t2_separation <| Set.Finite.image (· • x) s_finite
+
+  refine ⟨⋂ g ∈ s, g⁻¹ • t (g • x),
+    Set.Finite.isOpen_biInter s_finite fun g _ => IsOpen.smul (ht (g • x)).right g⁻¹,
+    ?mem,
+    Set.PairwiseDisjoint.mono_on (inj_on.pairwiseDisjoint_image.mp disj) fun g g_in_s => ?disj⟩
+  · simp_rw [Set.mem_iInter, Set.mem_inv_smul_set_iff, ht, forall_true_iff]
+  · simp only [Function.comp_apply, Set.le_eq_subset, Set.set_smul_subset_iff]
+    exact Set.biInter_subset_of_mem g_in_s
+
+/--
+If the action of a group `G` on `α` is continuous, then for all points not fixed by `g : G`,
+there exists an open set `s` such that `x ∈ s` and `g • s` is disjoint from `s`.
+-/
+@[to_additive "If the action of a group `G` on `α` is continuous, then for all points not fixed
+by `g : G`, there exists an open set `s` such that `x ∈ s` and `g +ᵥ s` is disjoint from `s`."]
+theorem t2_separation_smul {x : α} {g : G} (gx_ne : g • x ≠ x) :
+    ∃ s : Set α, IsOpen s ∧ x ∈ s ∧ Disjoint s (g • s) := by
+  have inj : Set.InjOn (· • x) {g, 1} := by
+    rw [Set.injOn_pair, one_smul]
+    exact fun h => (gx_ne h).elim
+
+  let ⟨t, t_open, x_in_t, pw_disj⟩ := Set.InjOn.t2_separation_smul inj (toFinite {g, 1})
+
+  refine ⟨t, t_open, x_in_t, ?disj⟩
+  simpa [Function.onFun_apply Disjoint, one_smul] using
+    (pairwise_pair.mp pw_disj fun eq => gx_ne (eq.symm ▸ one_smul G x)).right
+
+
+end GroupSeparation
 
 end Group
 
