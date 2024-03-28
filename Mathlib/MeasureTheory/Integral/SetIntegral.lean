@@ -945,6 +945,20 @@ end ContinuousSetIntegral
 
 end MeasureTheory
 
+section OpenPos
+
+open Measure
+
+variable [TopologicalSpace X] [OpensMeasurableSpace X] {μ : Measure X} [IsOpenPosMeasure μ]
+
+theorem Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero [IsFiniteMeasureOnCompacts μ]
+    {f : X → ℝ} {x : X} (f_cont : Continuous f) (f_comp : HasCompactSupport f) (f_nonneg : 0 ≤ f)
+    (f_x : f x ≠ 0) : 0 < (∫ x, f x ∂μ) :=
+  integral_pos_of_integrable_nonneg_nonzero f_cont (f_cont.integrable_of_hasCompactSupport f_comp)
+    f_nonneg f_x
+
+end OpenPos
+
 /-! Fundamental theorem of calculus for set integrals -/
 section FTC
 
