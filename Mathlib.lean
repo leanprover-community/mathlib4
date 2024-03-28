@@ -939,6 +939,7 @@ import Mathlib.Analysis.Quaternion
 import Mathlib.Analysis.Seminorm
 import Mathlib.Analysis.SpecialFunctions.Arsinh
 import Mathlib.Analysis.SpecialFunctions.Bernstein
+import Mathlib.Analysis.SpecialFunctions.BinEntropy
 import Mathlib.Analysis.SpecialFunctions.CompareExp
 import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 import Mathlib.Analysis.SpecialFunctions.Complex.Arctan
