@@ -59,7 +59,7 @@ theorem of_isBigO_im_re_rpow (hre : Tendsto re l atTop) (r : ℝ) (hr : im =O[l]
   ⟨hre, fun n =>
     IsLittleO.isBigO <|
       calc
-        (fun z : ℂ => z.im ^ n) =O[l] fun z => (z.re ^ r) ^ n := by norm_cast; exact hr.pow n
+        (fun z : ℂ => z.im ^ n) =O[l] fun z => (z.re ^ r) ^ n := hr.pow n
         _ =ᶠ[l] fun z => z.re ^ (r * n) :=
           ((hre.eventually_ge_atTop 0).mono fun z hz => by
             simp only [Real.rpow_mul hz r n, Real.rpow_nat_cast])
@@ -132,7 +132,6 @@ theorem isLittleO_log_abs_re (hl : IsExpCmpFilter l) : (fun z => Real.log (abs z
         (hl.tendsto_re.eventually_ge_atTop 1).mono fun z hz => by
           have h2 : 0 < Real.sqrt 2 := by simp
           have hz' : 1 ≤ abs z := hz.trans (re_le_abs z)
-          have _ : 0 < abs z := one_pos.trans_le hz'
           have hm₀ : 0 < max z.re |z.im| := lt_max_iff.2 (Or.inl <| one_pos.trans_le hz)
           rw [one_mul, Real.norm_eq_abs, _root_.abs_of_nonneg (Real.log_nonneg hz')]
           refine' le_trans _ (le_abs_self _)
@@ -174,7 +173,7 @@ theorem isLittleO_cpow_exp (hl : IsExpCmpFilter l) (a : ℂ) {b : ℝ} (hb : 0 <
       hl.isTheta_cpow_exp_re_mul_log a
     _ =o[l] fun z => exp (b * z) :=
       IsLittleO.of_norm_right <| by
-        simp only [norm_eq_abs, abs_exp, ofReal_mul_re, Real.isLittleO_exp_comp_exp_comp]
+        simp only [norm_eq_abs, abs_exp, re_ofReal_mul, Real.isLittleO_exp_comp_exp_comp]
         refine (IsEquivalent.refl.sub_isLittleO ?_).symm.tendsto_atTop
           (hl.tendsto_re.const_mul_atTop hb)
         exact (hl.isLittleO_log_abs_re.const_mul_left _).const_mul_right hb.ne'
@@ -188,12 +187,12 @@ theorem isLittleO_cpow_mul_exp {b₁ b₂ : ℝ} (hl : IsExpCmpFilter l) (hb : b
     (fun z => z ^ a₁ * exp (b₁ * z)) =ᶠ[l] fun z => z ^ a₂ * exp (b₁ * z) * z ^ (a₁ - a₂) :=
       hl.eventually_ne.mono fun z hz => by
         simp only
-        rw [mul_right_comm, ← cpow_add _ _ hz, add_sub_cancel'_right]
+        rw [mul_right_comm, ← cpow_add _ _ hz, add_sub_cancel]
     _ =o[l] fun z => z ^ a₂ * exp (b₁ * z) * exp (↑(b₂ - b₁) * z) :=
       ((isBigO_refl (fun z => z ^ a₂ * exp (b₁ * z)) l).mul_isLittleO <|
         hl.isLittleO_cpow_exp _ (sub_pos.2 hb))
     _ =ᶠ[l] fun z => z ^ a₂ * exp (b₂ * z) := by
-      simp only [ofReal_sub, sub_mul, mul_assoc, ← exp_add, add_sub_cancel'_right]
+      simp only [ofReal_sub, sub_mul, mul_assoc, ← exp_add, add_sub_cancel]
       norm_cast
 #align complex.is_exp_cmp_filter.is_o_cpow_mul_exp Complex.IsExpCmpFilter.isLittleO_cpow_mul_exp
 

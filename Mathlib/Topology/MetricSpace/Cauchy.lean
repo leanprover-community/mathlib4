@@ -3,7 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.PseudoMetric
 
 /-!
 ## Cauchy sequences in (pseudo-)metric spaces
@@ -53,7 +53,7 @@ variable [Nonempty β] [SemilatticeSup β]
 
 /-- In a pseudometric space, Cauchy sequences are characterized by the fact that, eventually,
 the distance between its elements is arbitrarily small -/
--- porting note: @[nolint ge_or_gt] doesn't exist
+-- Porting note: @[nolint ge_or_gt] doesn't exist
 theorem Metric.cauchySeq_iff {u : β → α} :
     CauchySeq u ↔ ∀ ε > 0, ∃ N, ∀ m ≥ N, ∀ n ≥ N, dist (u m) (u n) < ε :=
   uniformity_basis_dist.cauchySeq_iff
@@ -68,14 +68,14 @@ theorem Metric.cauchySeq_iff' {u : β → α} :
 -- see Note [nolint_ge]
 /-- In a pseudometric space, uniform Cauchy sequences are characterized by the fact that,
 eventually, the distance between all its elements is uniformly, arbitrarily small. -/
--- porting note: no attr @[nolint ge_or_gt]
+-- Porting note: no attr @[nolint ge_or_gt]
 theorem Metric.uniformCauchySeqOn_iff {γ : Type*} {F : β → γ → α} {s : Set γ} :
     UniformCauchySeqOn F atTop s ↔ ∀ ε > (0 : ℝ),
       ∃ N : β, ∀ m ≥ N, ∀ n ≥ N, ∀ x ∈ s, dist (F m x) (F n x) < ε := by
   constructor
   · intro h ε hε
     let u := { a : α × α | dist a.fst a.snd < ε }
-    have hu : u ∈ 𝓤 α := Metric.mem_uniformity_dist.mpr ⟨ε, hε, by simp⟩
+    have hu : u ∈ 𝓤 α := Metric.mem_uniformity_dist.mpr ⟨ε, hε, by simp [u]⟩
     rw [← @Filter.eventually_atTop_prod_self' _ _ _ fun m =>
       ∀ x ∈ s, dist (F m.fst x) (F m.snd x) < ε]
     specialize h u hu
@@ -155,5 +155,16 @@ theorem cauchySeq_iff_le_tendsto_0 {s : ℕ → α} :
     exact le_of_lt (hN _ (le_trans hn hm') _ (le_trans hn hn')),
    fun ⟨b, _, b_bound, b_lim⟩ => cauchySeq_of_le_tendsto_0 b b_bound b_lim⟩
 #align cauchy_seq_iff_le_tendsto_0 cauchySeq_iff_le_tendsto_0
+
+lemma Metric.exists_subseq_bounded_of_cauchySeq (u : ℕ → α) (hu : CauchySeq u) (b : ℕ → ℝ)
+    (hb : ∀ n, 0 < b n) :
+    ∃ f : ℕ → ℕ, StrictMono f ∧ ∀ n, ∀ m ≥ f n, dist (u m) (u (f n)) < b n := by
+  rw [cauchySeq_iff] at hu
+  have hu' : ∀ k, ∀ᶠ (n : ℕ) in atTop, ∀ m ≥ n, dist (u m) (u n) < b k := by
+    intro k
+    rw [eventually_atTop]
+    obtain ⟨N, hN⟩ := hu (b k) (hb k)
+    exact ⟨N, fun m hm r hr => hN r (hm.trans hr) m hm⟩
+  exact Filter.extraction_forall_of_eventually hu'
 
 end CauchySeq

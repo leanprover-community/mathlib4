@@ -235,7 +235,7 @@ theorem mapAccumr_eq_map {f : α → σ → σ × β} {s₀ : σ} (S : Set σ) (
     (closure : ∀ a s, s ∈ S → (f a s).1 ∈ S)
     (out : ∀ a s s', s ∈ S → s' ∈ S → (f a s).2 = (f a s').2) :
     (mapAccumr f xs s₀).snd = map (f · s₀ |>.snd) xs := by
-  rw[Vector.map_eq_mapAccumr]
+  rw [Vector.map_eq_mapAccumr]
   apply mapAccumr_bisim_tail
   use fun s _ => s ∈ S, h₀
   exact @fun s _q a h => ⟨closure a s h, out a s s₀ h h₀⟩
@@ -253,7 +253,7 @@ theorem mapAccumr₂_eq_map₂ {f : α → β → σ → σ × γ} {s₀ : σ} (
     (closure : ∀ a b s, s ∈ S → (f a b s).1 ∈ S)
     (out : ∀ a b s s', s ∈ S → s' ∈ S → (f a b s).2 = (f a b s').2) :
     (mapAccumr₂ f xs ys s₀).snd = map₂ (f · · s₀ |>.snd) xs ys := by
-  rw[Vector.map₂_eq_mapAccumr₂]
+  rw [Vector.map₂_eq_mapAccumr₂]
   apply mapAccumr₂_bisim_tail
   use fun s _ => s ∈ S, h₀
   exact @fun s _q a b h => ⟨closure a b s h, out a b s s₀ h h₀⟩
@@ -342,10 +342,9 @@ variable {xs : Vector α n} {ys : Vector β n}
 theorem mapAccumr₂_unused_input_left [Inhabited α] (f : α → β → σ → σ × γ)
     (h : ∀ a b s, f default b s = f a b s) :
     mapAccumr₂ f xs ys s = mapAccumr (fun b s => f default b s) ys s := by
-  induction xs, ys using Vector.revInductionOn₂ generalizing s
-  case nil => rfl
-  case snoc xs ys x y ih =>
-    simp[h x y s, ih]
+  induction xs, ys using Vector.revInductionOn₂ generalizing s with
+  | nil => rfl
+  | snoc xs ys x y ih => simp [h x y s, ih]
 
 /--
   If `f` returns the same output and next state for every value of it's second argument, then
@@ -355,10 +354,9 @@ theorem mapAccumr₂_unused_input_left [Inhabited α] (f : α → β → σ → 
 theorem mapAccumr₂_unused_input_right [Inhabited β] (f : α → β → σ → σ × γ)
     (h : ∀ a b s, f a default s = f a b s) :
     mapAccumr₂ f xs ys s = mapAccumr (fun a s => f a default s) xs s := by
-  induction xs, ys using Vector.revInductionOn₂ generalizing s
-  case nil => rfl
-  case snoc xs ys x y ih =>
-    simp[h x y s, ih]
+  induction xs, ys using Vector.revInductionOn₂ generalizing s with
+  | nil => rfl
+  | snoc xs ys x y ih => simp [h x y s, ih]
 
 end UnusedInput
 

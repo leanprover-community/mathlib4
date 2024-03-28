@@ -41,7 +41,6 @@ open BigOperators Matrix
 universe v
 
 variable {α β m n o : Type*} {m' n' : α → Type*}
-
 variable {R : Type v} [CommRing R] {M N : Matrix m m R} {b : m → α}
 
 namespace Matrix
@@ -67,7 +66,7 @@ theorem blockTriangular_reindex_iff {b : n → α} {e : m ≃ n} :
   · convert h.submatrix
     simp only [reindex_apply, submatrix_submatrix, submatrix_id_id, Equiv.symm_comp_self]
   · convert h.submatrix
-    simp only [comp.assoc b e e.symm, Equiv.self_comp_symm, comp.right_id]
+    simp only [comp.assoc b e e.symm, Equiv.self_comp_symm, comp_id]
 #align matrix.block_triangular_reindex_iff Matrix.blockTriangular_reindex_iff
 
 protected theorem BlockTriangular.transpose :

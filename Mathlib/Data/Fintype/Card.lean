@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.List.NodupEquivFin
-import Mathlib.Tactic.Positivity
+import Mathlib.Data.Set.Image
 
 #align_import data.fintype.card from "leanprover-community/mathlib"@"bf2428c9486c407ca38b5b3fb10b87dad0bc99fa"
 
@@ -225,9 +225,9 @@ theorem card_unique [Unique α] [h : Fintype α] : Fintype.card α = 1 :=
 /-- Note: this lemma is specifically about `Fintype.ofIsEmpty`. For a statement about
 arbitrary `Fintype` instances, use `Fintype.card_eq_zero`. -/
 @[simp]
-theorem card_of_isEmpty [IsEmpty α] : @Fintype.card α Fintype.ofIsEmpty = 0 :=
+theorem card_ofIsEmpty [IsEmpty α] : @Fintype.card α Fintype.ofIsEmpty = 0 :=
   rfl
-#align fintype.card_of_is_empty Fintype.card_of_isEmpty
+#align fintype.card_of_is_empty Fintype.card_ofIsEmpty
 
 end Fintype
 
@@ -261,7 +261,7 @@ theorem Finset.card_eq_iff_eq_univ [Fintype α] (s : Finset α) :
 #align finset.card_eq_iff_eq_univ Finset.card_eq_iff_eq_univ
 
 theorem Finset.card_le_univ [Fintype α] (s : Finset α) : s.card ≤ Fintype.card α :=
-  card_le_of_subset (subset_univ s)
+  card_le_card (subset_univ s)
 #align finset.card_le_univ Finset.card_le_univ
 
 theorem Finset.card_lt_univ_of_not_mem [Fintype α] {s : Finset α} {x : α} (hx : x ∉ s) :
@@ -340,17 +340,13 @@ theorem card_finset_fin_le {n : ℕ} (s : Finset (Fin n)) : s.card ≤ n := by
   simpa only [Fintype.card_fin] using s.card_le_univ
 #align card_finset_fin_le card_finset_fin_le
 
-theorem Fin.equiv_iff_eq {m n : ℕ} : Nonempty (Fin m ≃ Fin n) ↔ m = n :=
-  ⟨fun ⟨h⟩ => by simpa using Fintype.card_congr h, fun h => ⟨Equiv.cast <| h ▸ rfl⟩⟩
-#align fin.equiv_iff_eq Fin.equiv_iff_eq
-
---@[simp] Porting note: simp can prove it
+--@[simp] Porting note (#10618): simp can prove it
 theorem Fintype.card_subtype_eq (y : α) [Fintype { x // x = y }] :
     Fintype.card { x // x = y } = 1 :=
   Fintype.card_unique
 #align fintype.card_subtype_eq Fintype.card_subtype_eq
 
---@[simp] Porting note: simp can prove it
+--@[simp] Porting note (#10618): simp can prove it
 theorem Fintype.card_subtype_eq' (y : α) [Fintype { x // y = x }] :
     Fintype.card { x // y = x } = 1 :=
   Fintype.card_unique
@@ -397,6 +393,12 @@ theorem Fintype.card_orderDual (α : Type*) [Fintype α] : Fintype.card αᵒᵈ
 theorem Fintype.card_lex (α : Type*) [Fintype α] : Fintype.card (Lex α) = Fintype.card α :=
   rfl
 #align fintype.card_lex Fintype.card_lex
+
+@[simp] lemma Fintype.card_multiplicative (α : Type*) [Fintype α] :
+    card (Multiplicative α) = card α := Finset.card_map _
+
+@[simp] lemma Fintype.card_additive (α : Type*) [Fintype α] : card (Additive α) = card α :=
+  Finset.card_map _
 
 /-- Given that `α ⊕ β` is a fintype, `α` is also a fintype. This is non-computable as it uses
 that `Sum.inl` is an injection, but there's no clear inverse if `α` is empty. -/
@@ -448,11 +450,14 @@ noncomputable def Fintype.ofFinite (α : Type*) [Finite α] : Fintype α :=
 #align fintype.of_finite Fintype.ofFinite
 
 theorem Finite.of_injective {α β : Sort*} [Finite β] (f : α → β) (H : Injective f) : Finite α := by
-  cases nonempty_fintype (PLift β)
-  rw [← Equiv.injective_comp Equiv.plift f, ← Equiv.comp_injective _ Equiv.plift.symm] at H
-  haveI := Fintype.ofInjective _ H
-  exact Finite.of_equiv _ Equiv.plift
+  rcases Finite.exists_equiv_fin β with ⟨n, ⟨e⟩⟩
+  classical exact .of_equiv (Set.range (e ∘ f)) (Equiv.ofInjective _ (e.injective.comp H)).symm
 #align finite.of_injective Finite.of_injective
+
+/-- This instance also provides `[Finite s]` for `s : Set α`. -/
+instance Subtype.finite {α : Sort*} [Finite α] {p : α → Prop} : Finite { x // p x } :=
+  Finite.of_injective (↑) Subtype.coe_injective
+#align subtype.finite Subtype.finite
 
 theorem Finite.of_surjective {α β : Sort*} [Finite α] (f : α → β) (H : Surjective f) : Finite β :=
   Finite.of_injective _ <| injective_surjInv H
@@ -505,7 +510,7 @@ theorem card_range_le {α β : Type*} (f : α → β) [Fintype α] [Fintype (Set
   Fintype.card_le_of_surjective (fun a => ⟨f a, by simp⟩) fun ⟨_, a, ha⟩ => ⟨a, by simpa using ha⟩
 #align fintype.card_range_le Fintype.card_range_le
 
-theorem card_range {α β F : Type*} [EmbeddingLike F α β] (f : F) [Fintype α]
+theorem card_range {α β F : Type*} [FunLike F α β] [EmbeddingLike F α β] (f : F) [Fintype α]
     [Fintype (Set.range f)] : Fintype.card (Set.range f) = Fintype.card α :=
   Eq.symm <| Fintype.card_congr <| Equiv.ofInjective _ <| EmbeddingLike.injective f
 #align fintype.card_range Fintype.card_range
@@ -535,6 +540,8 @@ theorem card_eq_zero_iff : card α = 0 ↔ IsEmpty α := by
 @[simp] theorem card_eq_zero [IsEmpty α] : card α = 0 :=
   card_eq_zero_iff.2 ‹_›
 #align fintype.card_eq_zero Fintype.card_eq_zero
+
+alias card_of_isEmpty := card_eq_zero
 
 theorem card_eq_one_iff_nonempty_unique : card α = 1 ↔ Nonempty (Unique α) :=
   ⟨fun h =>
@@ -575,7 +582,7 @@ theorem card_le_one_iff : card α ≤ 1 ↔ ∀ a b : α, a = b :=
       let ⟨x, hx⟩ := card_eq_one_iff.1 ha.symm
       rw [hx a, hx b], fun _ => ha ▸ le_rfl⟩
   | n + 2, ha =>
-    ⟨fun h => False.elim $ by rw [← ha] at h; cases h with | step h => cases h; done, fun h =>
+    ⟨fun h => False.elim <| by rw [← ha] at h; cases h with | step h => cases h; , fun h =>
       card_unit ▸ card_le_of_injective (fun _ => ()) fun _ _ _ => h _ _⟩
 #align fintype.card_le_one_iff Fintype.card_le_one_iff
 
@@ -630,7 +637,7 @@ namespace Finite
 
 variable [Finite α]
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem surjective_of_injective {f : α → α} (hinj : Injective f) : Surjective f := by
   intro x
   have := Classical.propDecidable
@@ -973,7 +980,7 @@ noncomputable def fintypeOfNotInfinite {α : Type*} (h : ¬Infinite α) : Fintyp
 
 section
 
-open Classical
+open scoped Classical
 
 /-- Any type is (classically) either a `Fintype`, or `Infinite`.
 
@@ -1112,12 +1119,12 @@ private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
   rintro m n h
   letI := Classical.decEq α
   wlog hmlen : m ≤ n generalizing m n
-  · exact (this h.symm $ le_of_not_le hmlen).symm
+  · exact (this h.symm <| le_of_not_le hmlen).symm
   by_contra hmn
   have hmn : m < n := lt_of_le_of_ne hmlen hmn
   refine (Classical.choose_spec (exists_not_mem_finset
-    ((Multiset.range n).pmap (λ m (_ : m < n) => natEmbeddingAux α m)
-      (fun _ => Multiset.mem_range.1)).toFinset)) ?_
+    ((Multiset.range n).pmap (fun m (_ : m < n) ↦ natEmbeddingAux α m)
+      (fun _ ↦ Multiset.mem_range.1)).toFinset)) ?_
   refine Multiset.mem_toFinset.2 (Multiset.mem_pmap.2 ⟨m, Multiset.mem_range.2 hmn, ?_⟩)
   rw [h, natEmbeddingAux]
 
@@ -1230,7 +1237,8 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
   constructor
   · -- length
     rw [← ranges_length c]
-    simp only [map_map, map_pmap, Function.comp_apply, length_map, length_pmap, pmap_eq_map]
+    simp only [l, klift', map_map, map_pmap, Function.comp_apply, length_map, length_pmap,
+      pmap_eq_map]
   constructor
   · -- nodup
     intro s
@@ -1248,7 +1256,7 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
       intro u hu v hv huv
       apply disjoint_pmap
       · intro a a' ha ha' h
-        simpa only [Fin.mk_eq_mk] using h
+        simpa only [klift, Fin.mk_eq_mk] using h
       exact huv
 
 end Ranges
@@ -1274,9 +1282,8 @@ to that instance and use that name.
 @[elab_as_elim]
 theorem Fintype.induction_subsingleton_or_nontrivial {P : ∀ (α) [Fintype α], Prop} (α : Type*)
     [Fintype α] (hbase : ∀ (α) [Fintype α] [Subsingleton α], P α)
-    (hstep :
-      ∀ (α) [Fintype α] [Nontrivial α],
-        ∀ _ih : ∀ (β) [Fintype β], ∀ _h : Fintype.card β < Fintype.card α, P β, P α) :
+    (hstep : ∀ (α) [Fintype α] [Nontrivial α],
+      (∀ (β) [Fintype β], Fintype.card β < Fintype.card α → P β) → P α) :
     P α := by
   obtain ⟨n, hn⟩ : ∃ n, Fintype.card α = n := ⟨Fintype.card α, rfl⟩
   induction' n using Nat.strong_induction_on with n ih generalizing α

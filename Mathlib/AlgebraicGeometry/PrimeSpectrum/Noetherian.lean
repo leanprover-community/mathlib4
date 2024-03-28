@@ -20,7 +20,6 @@ namespace PrimeSpectrum
 open Submodule
 
 variable (R : Type u) [CommRing R] [IsNoetherianRing R]
-
 variable {A : Type u} [CommRing A] [IsDomain A] [IsNoetherianRing A]
 
 /-- In a noetherian ring, every ideal contains a product of prime ideals
@@ -68,8 +67,7 @@ theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {
       Multiset.prod (Z.map asIdeal) ≤ I ∧ Multiset.prod (Z.map asIdeal) ≠ ⊥)
     (fun (M : Ideal A) hgt => _) I
   intro h_nzM
-  have hA_nont : Nontrivial A
-  apply IsDomain.toNontrivial
+  have hA_nont : Nontrivial A := IsDomain.toNontrivial
   by_cases h_topM : M = ⊤
   · rcases h_topM with rfl
     obtain ⟨p_id, h_nzp, h_pp⟩ : ∃ p : Ideal A, p ≠ ⊥ ∧ p.IsPrime := by
@@ -106,5 +104,10 @@ instance : NoetherianSpace (PrimeSpectrum R) := by
   have H := ‹IsNoetherianRing R›
   rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at H
   exact (closedsEmbedding R).dual.wellFounded H
+
+lemma _root_.minimalPrimes.finite_of_isNoetherianRing : (minimalPrimes R).Finite :=
+  minimalPrimes.equivIrreducibleComponents R
+    |>.set_finite_iff
+    |>.mpr NoetherianSpace.finite_irreducibleComponents
 
 end PrimeSpectrum

@@ -3,8 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Order.WithBot
-import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Data.Nat.Cast.Defs
+import Mathlib.Data.Option.Defs
+import Mathlib.Data.Option.NAry
+import Mathlib.Logic.Nontrivial.Basic
+import Mathlib.Tactic.Common
 
 #align_import algebra.group.with_one.defs from "leanprover-community/mathlib"@"995b47e555f1b6297c7cf16855f1023e355219fb"
 
@@ -25,6 +29,10 @@ In Lean 3, we use `id` here and there to get correct types of proofs. This is re
 `WithOne` and `WithZero` are marked as `Irreducible` at the end of
 `Mathlib.Algebra.Group.WithOne.Defs`, so proofs that use `Option α` instead of `WithOne α` no
 longer typecheck. In Lean 4, both types are plain `def`s, so we don't need these `id`s.
+
+## TODO
+
+`WithOne.coe_mul` and `WithZero.coe_mul` have inconsistent use of implicit parameters
 -/
 
 
@@ -88,7 +96,7 @@ instance inhabited : Inhabited (WithOne α) :=
 instance nontrivial [Nonempty α] : Nontrivial (WithOne α) :=
   Option.nontrivial
 
--- porting note: this new declaration is here to make `((a : α): WithOne α)` have type `WithOne α`;
+-- Porting note: this new declaration is here to make `((a : α): WithOne α)` have type `WithOne α`;
 -- otherwise the coercion kicks in and it becomes `Option.some a : WithOne α` which
 -- becomes `Option.some a : Option α`.
 /-- The canonical map from `α` into `WithOne α` -/
@@ -109,7 +117,7 @@ def recOneCoe {C : WithOne α → Sort*} (h₁ : C 1) (h₂ : ∀ a : α, C a) :
 #align with_one.rec_one_coe WithOne.recOneCoe
 #align with_zero.rec_zero_coe WithZero.recZeroCoe
 
--- porting note: in Lean 3 the to-additivised declaration
+-- Porting note: in Lean 3 the to-additivised declaration
 -- would automatically get this; right now in Lean 4...I don't
 -- know if it does or not, and I don't know how to check, so
 -- I'll add it manually just to be sure.
@@ -119,8 +127,7 @@ attribute [elab_as_elim] WithZero.recZeroCoe
 /-- Deconstruct an `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
 @[to_additive unzero
       "Deconstruct an `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`."]
-def unone {x : WithOne α} (hx : x ≠ 1) : α :=
-  WithBot.unbot x hx
+def unone : ∀ {x : WithOne α}, x ≠ 1 → α | (x : α), _ => x
 #align with_one.unone WithOne.unone
 #align with_zero.unzero WithZero.unzero
 
@@ -131,12 +138,12 @@ theorem unone_coe {x : α} (hx : (x : WithOne α) ≠ 1) : unone hx = x :=
 #align with_zero.unzero_coe WithZero.unzero_coe
 
 @[to_additive (attr := simp) coe_unzero]
-theorem coe_unone {x : WithOne α} (hx : x ≠ 1) : ↑(unone hx) = x :=
-  WithBot.coe_unbot x hx
+lemma coe_unone : ∀ {x : WithOne α} (hx : x ≠ 1), unone hx = x
+  | (x : α), _ => rfl
 #align with_one.coe_unone WithOne.coe_unone
 #align with_zero.coe_unzero WithZero.coe_unzero
 
--- porting note: in Lean 4 the `some_eq_coe` lemmas present in the lean 3 version
+-- Porting note: in Lean 4 the `some_eq_coe` lemmas present in the lean 3 version
 -- of this file are syntactic tautologies
 #noalign with_one.some_eq_coe
 #noalign with_zero.some_eq_coe
@@ -177,29 +184,37 @@ protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 �
 #align with_one.cases_on WithOne.cases_on
 #align with_zero.cases_on WithZero.cases_on
 
--- port note: I don't know if `elab_as_elim` is being added to the additivised declaration.
+-- Porting note: I don't know if `elab_as_elim` is being added to the additivised declaration.
 attribute [elab_as_elim] WithZero.cases_on
 
 @[to_additive]
 instance mulOneClass [Mul α] : MulOneClass (WithOne α) where
   mul := (· * ·)
   one := 1
-  one_mul := (Option.liftOrGet_isLeftId _).1
-  mul_one := (Option.liftOrGet_isRightId _).1
-
-@[to_additive]
-instance monoid [Semigroup α] : Monoid (WithOne α) :=
-  { WithOne.mulOneClass with mul_assoc := (Option.liftOrGet_isAssociative _).1 }
-
-@[to_additive]
-instance commMonoid [CommSemigroup α] : CommMonoid (WithOne α) :=
-  { WithOne.monoid with mul_comm := (Option.liftOrGet_isCommutative _).1 }
+  one_mul := (Option.liftOrGet_isId _).left_id
+  mul_one := (Option.liftOrGet_isId _).right_id
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_mul [Mul α] (a b : α) : ((a * b : α) : WithOne α) = a * b :=
-  rfl
+lemma coe_mul [Mul α] (a b : α) : (↑(a * b) : WithOne α) = a * b := rfl
 #align with_one.coe_mul WithOne.coe_mul
 #align with_zero.coe_add WithZero.coe_add
+
+@[to_additive]
+instance monoid [Semigroup α] : Monoid (WithOne α) where
+  __ := mulOneClass
+  mul_assoc a b c := match a, b, c with
+    | 1, b, c => by simp
+    | (a : α), 1, c => by simp
+    | (a : α), (b : α), 1 => by simp
+    | (a : α), (b : α), (c : α) => by simp_rw [← coe_mul, mul_assoc]
+
+@[to_additive]
+instance commMonoid [CommSemigroup α] : CommMonoid (WithOne α) where
+  mul_comm := fun a b => match a, b with
+    | (a : α), (b : α) => congr_arg some (mul_comm a b)
+    | (_ : α), 1 => rfl
+    | 1, (_ : α) => rfl
+    | 1, 1 => rfl
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inv [Inv α] (a : α) : ((a⁻¹ : α) : WithOne α) = (a : WithOne α)⁻¹ :=
@@ -268,7 +283,9 @@ instance monoidWithZero [Monoid α] : MonoidWithZero (WithZero α) :=
       | some x => congr_arg some <| pow_zero x,
     npow_succ := fun n x =>
       match x with
-      | none => rfl
+      | none => by
+        change 0 ^ (n + 1) = 0 ^ n * 0
+        simp only [mul_zero]; rfl
       | some x => congr_arg some <| pow_succ x n }
 
 instance commMonoidWithZero [CommMonoid α] : CommMonoidWithZero (WithZero α) :=
@@ -327,7 +344,10 @@ instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) :=
       | some x => congr_arg some <| zpow_zero x,
     zpow_succ' := fun n x =>
       match x with
-      | none => rfl
+      | none => by
+        change 0 ^ _ = 0 ^ _ * 0
+        simp only [mul_zero]
+        rfl
       | some x => congr_arg some <| DivInvMonoid.zpow_succ' n x,
     zpow_neg' := fun n x =>
       match x with
@@ -367,28 +387,12 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero α)
           rw [Nat.cast_succ, coe_add, coe_one]
       }
 
-instance instLeftDistribClass [Mul α] [Add α] [LeftDistribClass α] :
-    LeftDistribClass (WithZero α) where
-  left_distrib a b c := by
-    cases' a with a; · rfl
-    cases' b with b <;> cases' c with c <;> try rfl
-    exact congr_arg some (left_distrib _ _ _)
-
-instance instRightDistribClass [Mul α] [Add α] [RightDistribClass α] :
-    RightDistribClass (WithZero α) where
-  right_distrib a b c := by
-    cases' c with c
-    · change (a + b) * 0 = a * 0 + b * 0
-      simp
-    cases' a with a <;> cases' b with b <;> try rfl
-    exact congr_arg some (right_distrib _ _ _)
-
-instance instDistrib [Distrib α] : Distrib (WithZero α) where
-  left_distrib := left_distrib
-  right_distrib := right_distrib
-
-instance semiring [Semiring α] : Semiring (WithZero α) :=
-  { WithZero.addMonoidWithOne, WithZero.addCommMonoid, WithZero.mulZeroClass,
-    WithZero.monoidWithZero, WithZero.instDistrib with }
-
 end WithZero
+
+-- Check that we haven't needed to import all the basic lemmas about groups,
+-- by asserting a random sample don't exist here:
+assert_not_exists inv_involutive
+assert_not_exists div_right_inj
+assert_not_exists pow_ite
+
+assert_not_exists Ring
