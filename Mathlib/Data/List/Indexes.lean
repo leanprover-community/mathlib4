@@ -253,6 +253,63 @@ theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : 
     Bool.cond_decide]
 #align list.find_indexes_eq_map_indexes_values List.findIdxs_eq_map_indexesValues
 
+section FindIdx -- TODO: upstream to Std
+
+theorem findIdx_eq_length_of_not_exists {p : α → Bool} {xs : List α} (h : ∀ x ∈ xs, ¬p x) :
+    xs.findIdx p = xs.length := by
+  induction xs with
+  | nil => simp_all
+  | cons x xs ih =>
+    simp_rw [findIdx_cons, h x (mem_cons_self x xs), cond_false, length_cons, Nat.succ.injEq]
+    apply ih; intro y hy; exact h y <| mem_cons.mpr (Or.inr hy)
+
+theorem findIdx_le_length (p : α → Bool) {xs : List α} : xs.findIdx p ≤ xs.length := by
+  by_cases e : ∃ x ∈ xs, p x
+  · exact (findIdx_lt_length_of_exists e).le
+  · push_neg at e; exact (findIdx_eq_length_of_not_exists e).le
+
+theorem findIdx_lt_length_iff_exists {p : α → Bool} {xs : List α} :
+    (∃ x ∈ xs, p x) ↔ xs.findIdx p < xs.length := by
+  constructor <;> intro h
+  · exact findIdx_lt_length_of_exists h
+  · use xs.get ⟨xs.findIdx p, h⟩
+    exact ⟨xs.get_mem _ _, findIdx_get⟩
+
+/-- If `xs.findIdx p = i` then `p` does not hold for elements with indices less than `i`. -/
+theorem not_of_lt_findIdx {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.findIdx p) :
+    ¬p (xs.get ⟨i, h.trans_le (findIdx_le_length p)⟩) := by
+  revert i
+  induction xs with
+  | nil => intro i h; rw [findIdx_nil] at h; omega
+  | cons x xs ih =>
+    intro i h
+    have ho := h
+    rw [findIdx_cons] at h
+    have npx : ¬p x := by by_contra y; rw [y, cond_true] at h; omega
+    simp_rw [npx, cond_false] at h
+    cases' i.eq_zero_or_pos with e e
+    · simpa only [e, Fin.zero_eta, get_cons_zero]
+    · have ipm := Nat.succ_pred_eq_of_pos e
+      have ilt := ho.trans_le (findIdx_le_length p)
+      rw [(Fin.mk_eq_mk (h' := ipm ▸ ilt)).mpr ipm.symm, get_cons_succ]
+      rw [← ipm, Nat.succ_lt_succ_iff] at h
+      exact ih h
+
+theorem le_findIdx_of_not {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length)
+    (h2 : ∀ (j) (hji : j < i), ¬p (xs.get ⟨j, hji.trans h⟩)) :
+    i ≤ xs.findIdx p := by
+  by_contra! f
+  exact absurd (@findIdx_get _ p xs (f.trans h)) (h2 (xs.findIdx p) f)
+
+theorem eq_findIdx_of_not {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length)
+    (h2 : ∀ (j) (hji : j < i), ¬p (xs.get ⟨j, hji.trans h⟩))
+    (h3 : p (xs.get ⟨i, h⟩)) : xs.findIdx p = i := by
+  apply Nat.le_antisymm _ (le_findIdx_of_not h h2)
+  contrapose! h3
+  exact not_of_lt_findIdx h3
+
+end FindIdx
+
 section FoldlIdx
 
 -- Porting note: Changed argument order of `foldlIdxSpec` to align better with `foldlIdx`.
