@@ -158,7 +158,7 @@ lemma completeSpace_of_completeSpace_continuousLinearMap [CompleteSpace (E →L[
   obtain ⟨v, hv⟩ : ∃ (v : E), v ≠ 0 := exists_ne 0
   obtain ⟨φ, hφ⟩ : ∃ φ : E →L[𝕜] 𝕜, φ v = 1 := exists_eq_one hv
   let g : ℕ → (E →L[𝕜] F) := fun n ↦ ContinuousLinearMap.smulRightL 𝕜 E F φ (f n)
-  have : CauchySeq g := (ContinuousLinearMap.smulRightL 𝕜 E F φ).lipschitz.cauchySeq_image hf
+  have : CauchySeq g := (ContinuousLinearMap.smulRightL 𝕜 E F φ).lipschitz.cauchySeq_comp hf
   obtain ⟨a, ha⟩ : ∃ a, Tendsto g atTop (𝓝 a) := cauchy_iff_exists_le_nhds.mp this
   refine ⟨a v, ?_⟩
   have : Tendsto (fun n ↦ g n v) atTop (𝓝 (a v)) := by
@@ -170,9 +170,13 @@ lemma completeSpace_continuousLinearMap_iff :
     CompleteSpace (E →L[𝕜] F) ↔ CompleteSpace F :=
   ⟨fun h ↦ completeSpace_of_completeSpace_continuousLinearMap 𝕜 E F, fun h ↦ by infer_instance⟩
 
-variable {ι : Type*} [Fintype ι] (M : ι → Type*) [∀ i, NormedAddCommGroup (M i)]
+open ContinuousMultilinearMap
+
+variable {ι : Type*} [Fintype ι] {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)]
   [∀ i, NormedSpace 𝕜 (M i)] [∀ i, SeparatingDual 𝕜 (M i)]
 
+/-- If a space of multilinear maps from `Π i, E i` to `F` is complete, and each `E i` has a nonzero
+element, then `F` is complete. -/
 lemma completeSpace_of_completeSpace_continuousMultilinearMap
     [CompleteSpace (ContinuousMultilinearMap 𝕜 M F)]
     {m : ∀ i, M i} (hm : ∀ i, m i ≠ 0) : CompleteSpace F := by
@@ -180,9 +184,20 @@ lemma completeSpace_of_completeSpace_continuousMultilinearMap
   have : ∀ i, ∃ φ : M i →L[𝕜] 𝕜, φ (m i) = 1 := fun i ↦ exists_eq_one (hm i)
   choose φ hφ using this
   let g : ℕ → (ContinuousMultilinearMap 𝕜 M F) := fun n ↦
-    (ContinuousMultilinearMap.mkPiRing 𝕜 ι (f n)).compContinuousLinearMap φ
-  have : CauchySeq g :=
+    compContinuousLinearMapL φ
+    (ContinuousMultilinearMap.smulRightL 𝕜 _ F ((ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι 𝕜)) (f n))
+  have : CauchySeq g := by
+    refine (ContinuousLinearMap.lipschitz _).cauchySeq_comp ?_
+    exact (ContinuousLinearMap.lipschitz _).cauchySeq_comp hf
+  obtain ⟨a, ha⟩ : ∃ a, Tendsto g atTop (𝓝 a) := cauchy_iff_exists_le_nhds.mp this
+  refine ⟨a m, ?_⟩
+  have : Tendsto (fun n ↦ g n m) atTop (𝓝 (a m)) := ((continuous_eval_left _).tendsto _).comp ha
+  simpa [g, hφ]
 
+lemma completeSpace_continuousMultilinearMap_iff {m : ∀ i, M i} (hm : ∀ i, m i ≠ 0) :
+    CompleteSpace (ContinuousMultilinearMap 𝕜 M F) ↔ CompleteSpace F :=
+  ⟨fun h ↦ completeSpace_of_completeSpace_continuousMultilinearMap 𝕜 F hm,
+    fun h ↦ by infer_instance⟩
 
 end
 
