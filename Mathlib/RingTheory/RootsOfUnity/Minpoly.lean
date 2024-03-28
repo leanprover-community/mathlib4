@@ -165,7 +165,7 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
   · replace hunit := degree_eq_zero_of_isUnit hunit
     rw [degree_map_eq_of_leadingCoeff_ne_zero (Int.castRingHom (ZMod p)) _] at hunit
     · exact (minpoly.degree_pos (isIntegral h hpos)).ne' hunit
-    simp only [Pmonic, eq_intCast, Monic.leadingCoeff, Int.cast_one, Ne.def, not_false_iff,
+    simp only [Pmonic, eq_intCast, Monic.leadingCoeff, Int.cast_one, Ne, not_false_iff,
       one_ne_zero]
 #align is_primitive_root.minpoly_eq_pow IsPrimitiveRoot.minpoly_eq_pow
 

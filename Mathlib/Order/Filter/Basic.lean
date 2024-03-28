@@ -530,7 +530,7 @@ theorem neBot_of_le {f g : Filter α} [hf : NeBot f] (hg : f ≤ g) : NeBot g :=
 #align filter.ne_bot_of_le Filter.neBot_of_le
 
 @[simp] theorem sup_neBot {f g : Filter α} : NeBot (f ⊔ g) ↔ NeBot f ∨ NeBot g := by
-  simp only [neBot_iff, not_and_or, Ne.def, sup_eq_bot_iff]
+  simp only [neBot_iff, not_and_or, Ne, sup_eq_bot_iff]
 #align filter.sup_ne_bot Filter.sup_neBot
 
 theorem not_disjoint_self_iff : ¬Disjoint f f ↔ f.NeBot := by rw [disjoint_self, neBot_iff]
@@ -1330,7 +1330,7 @@ theorem Eventually.exists {p : α → Prop} {f : Filter α} [NeBot f] (hp : ∀�
 #align filter.eventually.exists Filter.Eventually.exists
 
 lemma frequently_iff_neBot {p : α → Prop} : (∃ᶠ x in l, p x) ↔ NeBot (l ⊓ 𝓟 {x | p x}) := by
-  rw [neBot_iff, Ne.def, inf_principal_eq_bot]; rfl
+  rw [neBot_iff, Ne, inf_principal_eq_bot]; rfl
 
 lemma frequently_mem_iff_neBot {s : Set α} : (∃ᶠ x in l, x ∈ s) ↔ NeBot (l ⊓ 𝓟 s) :=
   frequently_iff_neBot
