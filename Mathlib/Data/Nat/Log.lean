@@ -40,7 +40,7 @@ def log (b : ℕ) : ℕ → ℕ
 @[simp]
 theorem log_eq_zero_iff {b n : ℕ} : log b n = 0 ↔ n < b ∨ b ≤ 1 := by
   rw [log, dite_eq_right_iff]
-  simp only [add_eq_zero_iff, one_ne_zero, and_false, imp_false, not_and_or, not_le, not_lt]
+  simp only [Nat.add_eq_zero_iff, Nat.one_ne_zero, and_false, imp_false, not_and_or, not_le, not_lt]
 #align nat.log_eq_zero_iff Nat.log_eq_zero_iff
 
 theorem log_of_lt {b n : ℕ} (hb : n < b) : log b n = 0 :=
@@ -93,7 +93,7 @@ theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
   | succ x =>
     rw [log]; split_ifs with h
     · have b_pos : 0 < b := lt_of_succ_lt hb
-      rw [succ_eq_add_one, Nat.add_le_add_iff_right, ← ih (y / b) (div_lt_self
+      rw [Nat.add_le_add_iff_right, ← ih (y / b) (div_lt_self
         (Nat.pos_iff_ne_zero.2 hy) hb) (Nat.div_pos h.1 b_pos).ne', le_div_iff_mul_le b_pos,
         pow_succ', Nat.mul_comm]
     · exact iff_of_false (fun hby => h ⟨(le_self_pow x.succ_ne_zero _).trans hby, hb⟩)
@@ -136,16 +136,8 @@ theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
   rcases em (1 < b ∧ n ≠ 0) with (⟨hb, hn⟩ | hbn)
   · rw [le_antisymm_iff, ← Nat.lt_succ_iff, ← pow_le_iff_le_log, ← lt_pow_iff_log_lt, and_comm] <;>
       assumption
-<<<<<<< HEAD
-  · have hm : m ≠ 0 := h.resolve_right hbn
-    rw [not_and_or, not_lt, Ne, not_not] at hbn
-    rcases hbn with (hb | rfl)
-    · simpa only [log_of_left_le_one hb, hm.symm, false_iff_iff, not_and, not_lt] using
-        le_trans (pow_le_pow_right_of_le_one' hb m.le_succ)
-    · simp [@eq_comm _ 0, hm]
-=======
   have hm : m ≠ 0 := h.resolve_right hbn
-  rw [not_and_or, not_lt, Ne.def, not_not] at hbn
+  rw [not_and_or, not_lt, Ne, not_not] at hbn
   rcases hbn with (hb | rfl)
   · obtain rfl | rfl := le_one_iff_eq_zero_or_eq_one.1 hb
     any_goals
@@ -153,7 +145,6 @@ theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
         at h
       simp [h, eq_comm (a := 0), Nat.zero_pow (Nat.pos_iff_ne_zero.2 _)] <;> omega
   · simp [@eq_comm _ 0, hm]
->>>>>>> bump/v4.8.0
 #align nat.log_eq_iff Nat.log_eq_iff
 
 theorem log_eq_of_pow_le_of_lt_pow {b m n : ℕ} (h₁ : b ^ m ≤ n) (h₂ : n < b ^ (m + 1)) :
@@ -303,7 +294,7 @@ theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ 
     exact clog_pos hb
   have b_pos : 0 < b := zero_lt_of_lt hb
   rw [clog]; split_ifs with h
-  · rw [succ_eq_add_one, Nat.add_le_add_iff_right, ← ih ((x + b - 1) / b) (add_pred_div_lt hb h.2),
+  · rw [Nat.add_le_add_iff_right, ← ih ((x + b - 1) / b) (add_pred_div_lt hb h.2),
       Nat.div_le_iff_le_mul_add_pred b_pos, Nat.mul_comm b, ← Nat.pow_succ,
       Nat.add_sub_assoc (Nat.succ_le_of_lt b_pos), Nat.add_le_add_iff_right]
   · exact iff_of_true ((not_lt.1 (not_and.1 h hb)).trans <| succ_le_of_lt <| Nat.pow_pos b_pos)
