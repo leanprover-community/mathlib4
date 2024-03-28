@@ -582,7 +582,7 @@ variable (K)
 noncomputable abbrev NrRealPlaces := card { w : InfinitePlace K // IsReal w }
 
 /-- The number of infinite complex places of the number field `K`. -/
-noncomputable abbrev NrComplexPlaces := card { w : InfinitePlace K // IsComplex w }
+theorem card_eq_nrRealPlaces_add_nrComplexPlaces :
 
 theorem card_eq_nrRealPlaces_add_nrComplexPlaces : 
     Fintype.card (InfinitePlace K) = NrRealPlaces K + NrComplexPlaces K := by
