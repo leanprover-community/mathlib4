@@ -132,7 +132,7 @@ theorem pow_f_le_f_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n) {x : ℚ} (hx : 
   cases' pn with pn
   · norm_num
   have hpn' := hpn pn.succ_pos
-  rw [pow_succ' x (pn + 1), pow_succ' (f x) (pn + 1)]
+  rw [pow_succ x (pn + 1), pow_succ (f x) (pn + 1)]
   have hxp : 0 < x := by positivity
   calc
     f (x ^ (pn + 1) * x) ≤ f (x ^ (pn + 1)) * f x := H1 (x ^ (pn + 1)) x (pow_pos hxp (pn + 1)) hxp

@@ -206,7 +206,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
     ext x
     by_cases hx : x ≤ 0
     · rw [← neg_nonneg] at hx
-      simp [sup_eq_left.mpr hx, pow_succ']
+      simp [sup_eq_left.mpr hx, pow_succ]
     · rw [not_le, ← neg_neg_iff_pos] at hx
       simp [sup_eq_right.mpr hx.le]
   have h_c_spec₀ : SpectrumRestricts (- (star c * c)) (ContinuousMap.realToNNReal ·) := by

@@ -107,7 +107,7 @@ protected lemma pow [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) (k : 
   | 0 => .one
   | 1 => by simpa using hM
   | (k + 2) => by
-    rw [pow_succ', pow_succ]
+    rw [pow_succ, pow_succ']
     simpa only [hM.isHermitian.eq] using (hM.pow k).mul_mul_conjTranspose_same M
 
 protected lemma inv [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) : M⁻¹.PosSemidef := by
