@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Embedding
-import Mathlib.Algebra.Order.WithZero
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Int.Order.Basic
