@@ -224,10 +224,14 @@ theorem natAbs_ediv (a b : ℤ) (H : b ∣ a) : natAbs (a / b) = natAbs a / natA
     _ = natAbs a / natAbs b := by rw [Int.ediv_mul_cancel H]
 #align int.nat_abs_div Int.natAbs_ediv
 
+/-- special case of `mul_dvd_mul_iff_right` for `ℤ`.
+Duplicated here to keep simple imports for this file. -/
 theorem dvd_of_mul_dvd_mul_left {i j k : ℤ} (k_non_zero : k ≠ 0) (H : k * i ∣ k * j) : i ∣ j :=
   Dvd.elim H fun l H1 => by rw [mul_assoc] at H1; exact ⟨_, mul_left_cancel₀ k_non_zero H1⟩
 #align int.dvd_of_mul_dvd_mul_left Int.dvd_of_mul_dvd_mul_left
 
+/-- special case of `mul_dvd_mul_iff_right` for `ℤ`.
+Duplicated here to keep simple imports for this file. -/
 theorem dvd_of_mul_dvd_mul_right {i j k : ℤ} (k_non_zero : k ≠ 0) (H : i * k ∣ j * k) : i ∣ j := by
   rw [mul_comm i k, mul_comm j k] at H; exact dvd_of_mul_dvd_mul_left k_non_zero H
 #align int.dvd_of_mul_dvd_mul_right Int.dvd_of_mul_dvd_mul_right

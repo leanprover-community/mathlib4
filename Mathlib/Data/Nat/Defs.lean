@@ -10,6 +10,7 @@ import Mathlib.Tactic.Cases
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Use
+import Mathlib.Util.AssertExists
 
 #align_import data.nat.basic from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 
@@ -41,6 +42,9 @@ order instances.
 The names of this file, `Data.Nat.Basic` and `Data.Nat.Order.Basic` are archaic and don't match up
 with reality anymore. Rename them.
 -/
+
+/- We don't want to import the algebraic hierarchy in this file. -/
+assert_not_exists Monoid
 
 open Function
 
@@ -1123,10 +1127,14 @@ protected lemma dvd_add_left (h : a ∣ c) : a ∣ b + c ↔ a ∣ b := (Nat.dvd
 protected lemma dvd_add_right (h : a ∣ b) : a ∣ b + c ↔ a ∣ c := (Nat.dvd_add_iff_right h).symm
 #align nat.dvd_add_right Nat.dvd_add_right
 
+/-- special case of `mul_dvd_mul_iff_left` for `ℕ`.
+Duplicated here to keep simple imports for this file. -/
 protected lemma mul_dvd_mul_iff_left (ha : 0 < a) : a * b ∣ a * c ↔ b ∣ c :=
   exists_congr fun d ↦ by rw [Nat.mul_assoc, Nat.mul_right_inj $ ne_of_gt ha]
 #align nat.mul_dvd_mul_iff_left Nat.mul_dvd_mul_iff_left
 
+/-- special case of `mul_dvd_mul_iff_right` for `ℕ`.
+Duplicated here to keep simple imports for this file. -/
 protected lemma mul_dvd_mul_iff_right (hc : 0 < c) : a * c ∣ b * c ↔ a ∣ b :=
   exists_congr fun d ↦ by rw [Nat.mul_right_comm, Nat.mul_left_inj $ ne_of_gt hc]
 #align nat.mul_dvd_mul_iff_right Nat.mul_dvd_mul_iff_right
