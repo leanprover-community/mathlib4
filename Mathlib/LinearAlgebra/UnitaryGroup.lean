@@ -196,6 +196,8 @@ def embeddingGL : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
 set_option linter.uppercaseLean3 false in
 #align matrix.unitary_group.embedding_GL Matrix.UnitaryGroup.embeddingGL
 
+abbrev specialUnitaryGroup :=  @MonoidHom.ker (Matrix.unitaryGroup n α) _ α _ ↑(@Matrix.detMonoidHom n _ _ α _)
+
 end UnitaryGroup
 
 section OrthogonalGroup
