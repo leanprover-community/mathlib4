@@ -171,7 +171,7 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
   · rw [Ideal.span, ← minpoly.ker_aeval_eq_span_minpoly]; exact id
   · rintro ⟨p⟩; exact p.induction_on (fun k ↦ by simp [R, Algebra.commute_algebraMap_left])
       (fun p q hp hq ↦ by simpa using hp.add_left hq)
-      fun n k ↦ by simpa [R, pow_succ', ← mul_assoc _ _ X] using (·.mul_left comm)
+      fun n k ↦ by simpa [R, pow_succ, ← mul_assoc _ _ X] using (·.mul_left comm)
   · simpa only [RingHom.mem_ker, eval₂AlgHom'_apply, eval₂_map, AlgHom.comp_algebraMap_of_tower]
       using minpoly.aeval K g
   have : Algebra.adjoin K {f, g} ≤ φ.range := Algebra.adjoin_le fun x ↦ by
