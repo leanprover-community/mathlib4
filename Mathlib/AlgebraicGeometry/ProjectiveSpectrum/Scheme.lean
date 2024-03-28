@@ -53,20 +53,25 @@ open sets in `Proj`, more specifically:
     * This ideal is prime, the proof can be found in
       `ProjIsoSpecTopComponent.FromSpec.carrier.prime`.
     Hence we have a well defined function `Spec.T A⁰_f → Proj.T | (pbo f)`, this function is called
-    `ProjIsoSpecTopComponent.FromSpec.toFun`. But to prove the continuity of this function,
-    we need to prove `fromSpec ∘ toSpec` and `toSpec ∘ fromSpec` are both identities (TBC).
+    `ProjIsoSpecTopComponent.FromSpec.toFun`. But to prove the continuity of this function, we need
+    to prove `fromSpec ∘ toSpec` and `toSpec ∘ fromSpec` are both identities; these are achieved in
+    `ProjIsoSpecTopComponent.fromSpec_toSpec` and `ProjIsoSpecTopComponent.toSpec_fromSpec`.
 
 ## Main Definitions and Statements
 
-* `degreeZeroPart`: the degree zero part of the localized ring `Aₓ` where `x` is a homogeneous
-  element of degree `n` is the subring of elements of the form `a/f^m` where `a` has degree `mn`.
-
 For a homogeneous element `f` of degree `n`
-* `ProjIsoSpecTopComponent.toSpec`: `forward f` is the
-  continuous map between `Proj.T| pbo f` and `Spec.T A⁰_f`
+* `ProjIsoSpecTopComponent.toSpec`: the continuous map between `Proj.T| pbo f` and `Spec.T A⁰_f`
+  defined by sending `x : Proj| (pbo f)` to `A⁰_f ∩ span {g / 1 | g ∈ x}`. We also denote this map
+  as `ψ`.
 * `ProjIsoSpecTopComponent.ToSpec.preimage_eq`: for any `a: A`, if `a/f^m` has degree zero,
   then the preimage of `sbo a/f^m` under `to_Spec f` is `pbo f ∩ pbo a`.
 
+If we further assume `n` is positive
+* `ProjIsoSpecTopComponent.fromSpec`: the continuous map between `Spec.T A⁰_f` and `Proj.T| pbo f`
+  defined by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`. We also denote this map as `φ`
+* `projIsoSpecTopComponent`: the homeomorphism `Proj.T| pbo f ≅ Spec.T A⁰_f` obtained by `φ` and
+  `ψ`.
+## Reference
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]: Chapter II.2 Proposition 2.5
 -/
 
@@ -711,6 +716,67 @@ lemma toSpec_bijective {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m):
 
 end fromSpecToSpec
 
+variable {𝒜} in
+/--The continuous function `Spec A⁰_f → Proj|D(f)` by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`.-/
+def fromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
+    (Spec.T (A⁰_ f)) ⟶ (Proj.T| (pbo f)) where
+  toFun := FromSpec.toFun f_deg hm
+  continuous_toFun :=
+    (IsTopologicalBasis.continuous_iff <|
+      IsTopologicalBasis.inducing (α := Proj.T| (pbo f)) (β := Proj) (f := Subtype.val)
+        (hf := ⟨rfl⟩) (h := ProjectiveSpectrum.isTopologicalBasis_basic_opens 𝒜)).mpr fun s hs ↦ by
+    obtain ⟨_, ⟨a, rfl⟩, rfl⟩ := hs
+
+    suffices o1 : IsOpen <| toSpec '' (Subtype.val ⁻¹' (pbo a).1 : Set (Proj.T| (pbo f))) by
+      convert o1
+      ext s x
+      simp only [Set.mem_preimage, LocallyRingedSpace.restrict_carrier,
+        Spec.locallyRingedSpaceObj_toSheafedSpace, Spec.sheafedSpaceObj_carrier, Set.mem_image]
+      constructor
+      · intro h; exact ⟨_, h, toSpec_fromSpec 𝒜 hm f_deg _⟩
+      · rintro ⟨x, hx', rfl⟩; erw [fromSpec_toSpec 𝒜 hm f_deg x]; exact hx'
+
+    rw [calc Subtype.val ⁻¹' (pbo a).1
+      _ = {x  : Proj.T| (pbo f) | x.1 ∈ (pbo f) ⊓ pbo a} := by
+          ext ⟨x, (hx : f ∉ _)⟩
+          show _ ↔ _ ∧ _
+          simp [hx]
+      _ = {x | x.1 ∈ (pbo f) ⊓ (⨆ i : ℕ, pbo (decompose 𝒜 a i))} := by
+          simp_rw [ProjectiveSpectrum.basicOpen_eq_union_of_projection 𝒜 a]; rfl
+      _ = {x | x.1 ∈ ⨆ i : ℕ, (pbo f) ⊓ pbo (decompose 𝒜 a i)} := by rw [inf_iSup_eq]
+      _ = ⋃ i : ℕ, {x | x.1 ∈ (pbo f) ⊓ pbo (decompose 𝒜 a i)} := by
+        ext x
+        simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_inf, Opens.mem_mk, Set.mem_iUnion,
+          Set.mem_inter_iff, Set.mem_compl_iff, SetLike.mem_coe]
+        rfl, Set.image_iUnion]
+    refine isOpen_iUnion fun i ↦ ?_
+
+    suffices toSpec (f := f) '' {x | x.1 ∈ (pbo f) ⊓ pbo (decompose 𝒜 a i)} =
+      (PrimeSpectrum.basicOpen (R := A⁰_ f) <|
+        Quotient.mk'' ⟨m * i, ⟨decompose 𝒜 a i ^ m, SetLike.pow_mem_graded _ (Submodule.coe_mem _)⟩,
+          ⟨f^i, by rw [mul_comm]; exact SetLike.pow_mem_graded _ f_deg⟩, ⟨i, rfl⟩⟩).1 from
+      this ▸ (PrimeSpectrum.basicOpen _).2
+
+    apply_fun _ using Set.preimage_injective.mpr (toSpec_surjective 𝒜 hm f_deg)
+    erw [Set.preimage_image_eq _ (toSpec_injective 𝒜 hm f_deg), ToSpec.preimage_eq,
+      ProjectiveSpectrum.basicOpen_pow 𝒜 _ m hm]
+    rfl
+
 end ProjIsoSpecTopComponent
+
+variable {𝒜} in
+/--
+The homeomorphism `Proj|D(f) ≅ Spec A⁰_f` defined by
+- `φ : Proj|D(f) ⟶ Spec A⁰_f` by sending `x` to `A⁰_f ∩ span {g / 1 | g ∈ x}`
+- `ψ : Spec A⁰_f ⟶ Proj|D(f)` by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`.
+-/
+def projIsoSpecTopComponent {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
+    (Proj.T| (pbo f)) ≅ (Spec.T (A⁰_ f))  where
+  hom := ProjIsoSpecTopComponent.toSpec
+  inv := ProjIsoSpecTopComponent.fromSpec hm f_deg
+  hom_inv_id := ConcreteCategory.hom_ext _ _ fun x ↦
+    ProjIsoSpecTopComponent.fromSpec_toSpec 𝒜 hm f_deg x
+  inv_hom_id := ConcreteCategory.hom_ext _ _ fun x ↦
+    ProjIsoSpecTopComponent.toSpec_fromSpec 𝒜 hm f_deg x
 
 end AlgebraicGeometry
