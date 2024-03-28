@@ -92,8 +92,8 @@ theorem reduce_to_p_prime {P : Prop} :
     -- Krull's Thm: There exists a prime ideal `P` such that `I ≤ P`
     rcases Ideal.exists_le_maximal I hI_ne_top with ⟨M, hM_max, h_IM⟩
     let r := ringChar (R ⧸ M)
-    have r_pos : r ≠ 0
-    · have q_zero :=
+    have r_pos : r ≠ 0 := by
+      have q_zero :=
         congr_arg (Ideal.Quotient.factor I M h_IM) (CharP.cast_eq_zero (R ⧸ I) q)
       simp only [map_natCast, map_zero] at q_zero
       apply ne_zero_of_dvd_ne_zero (ne_of_gt q_pos)
@@ -125,8 +125,8 @@ theorem reduce_to_maximal_ideal {p : ℕ} (hp : Nat.Prime p) :
         -- Without this it seems that lean does not find `hr` as an instance.
         have hr := hr
         convert hr
-        have r_dvd_p : r ∣ p
-        · rw [← CharP.cast_eq_zero_iff (R ⧸ M) r p]
+        have r_dvd_p : r ∣ p := by
+          rw [← CharP.cast_eq_zero_iff (R ⧸ M) r p]
           convert congr_arg (Ideal.Quotient.factor I M hM_ge) (CharP.cast_eq_zero (R ⧸ I) p)
         symm
         apply (Nat.Prime.eq_one_or_self_of_dvd hp r r_dvd_p).resolve_left
@@ -250,8 +250,7 @@ end ConstructionAlgebraRat
 theorem of_not_mixedCharZero [CharZero R] (h : ∀ p > 0, ¬MixedCharZero R p) :
     ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
   intro I hI_ne_top
-  suffices h_charP : CharP (R ⧸ I) 0
-  · apply CharP.charP_to_charZero
+  suffices CharP (R ⧸ I) 0 from CharP.charP_to_charZero _
   cases CharP.exists (R ⧸ I) with
   | intro p hp =>
     cases p with

@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Set.Intervals.Monotone
-import Mathlib.Topology.Algebra.Order.MonotoneConvergence
-import Mathlib.Topology.MetricSpace.Bounded
 import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.Order.MonotoneConvergence
 
 #align_import analysis.box_integral.box.basic from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 /-!
@@ -56,7 +56,8 @@ open Set Function Metric Filter
 
 noncomputable section
 
-open NNReal Classical Topology
+open scoped Classical
+open NNReal Topology
 
 namespace BoxIntegral
 
@@ -511,7 +512,7 @@ theorem nndist_le_distortion_mul (I : Box ι) (i : ι) :
   calc
     nndist I.lower I.upper =
         nndist I.lower I.upper / nndist (I.lower i) (I.upper i) * nndist (I.lower i) (I.upper i) :=
-      (div_mul_cancel _ <| mt nndist_eq_zero.1 (I.lower_lt_upper i).ne).symm
+      (div_mul_cancel₀ _ <| mt nndist_eq_zero.1 (I.lower_lt_upper i).ne).symm
     _ ≤ I.distortion * nndist (I.lower i) (I.upper i) := by
       apply mul_le_mul_right'
       apply Finset.le_sup (Finset.mem_univ i)

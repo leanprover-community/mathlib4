@@ -21,7 +21,9 @@ namespace Int
 @[norm_cast]
 theorem coe_nat_dvd {m n : ℕ} : (↑m : ℤ) ∣ ↑n ↔ m ∣ n :=
   ⟨fun ⟨a, ae⟩ =>
-    m.eq_zero_or_pos.elim (fun m0 => by simp [m0] at ae; simp [ae, m0]) fun m0l => by
+    m.eq_zero_or_pos.elim (fun m0 => by
+      simp only [m0, Nat.cast_zero, zero_mul, cast_eq_zero] at ae
+      simp [ae, m0]) fun m0l => by
       cases'
         eq_ofNat_of_zero_le
           (@nonneg_of_mul_nonneg_right ℤ _ m a (by simp [ae.symm]) (by simpa using m0l)) with

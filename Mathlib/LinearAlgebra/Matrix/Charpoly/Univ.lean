@@ -35,7 +35,6 @@ namespace Matrix.charpoly
 
 variable {R S : Type*} (n : Type*) [CommRing R] [CommRing S] [Fintype n] [DecidableEq n]
 variable (f : R →+* S)
-
 variable (R)
 
 /-- The universal characteristic polynomial for `n × n`-matrices,
@@ -73,7 +72,7 @@ variable (R)
 
 lemma univ_monic : (univ R n).Monic := charpoly_monic (mvPolynomialX n n R)
 
--- no @[simp], since simp can prove this
+-- Porting note (#10618): no @[simp], since simp can prove this
 lemma univ_natDegree [Nontrivial R] : (univ R n).natDegree = Fintype.card n :=
   charpoly_natDegree_eq_dim (mvPolynomialX n n R)
 

@@ -104,12 +104,12 @@ theorem _root_.MeasurableSet.nullMeasurableSet (h : MeasurableSet s) : NullMeasu
   ⟨s, h, ae_eq_refl _⟩
 #align measurable_set.null_measurable_set MeasurableSet.nullMeasurableSet
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem nullMeasurableSet_empty : NullMeasurableSet ∅ μ :=
   MeasurableSet.empty
 #align measure_theory.null_measurable_set_empty MeasureTheory.nullMeasurableSet_empty
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem nullMeasurableSet_univ : NullMeasurableSet univ μ :=
   MeasurableSet.univ
 #align measure_theory.null_measurable_set_univ MeasureTheory.nullMeasurableSet_univ
@@ -209,7 +209,7 @@ protected theorem disjointed {f : ℕ → Set α} (h : ∀ i, NullMeasurableSet 
   MeasurableSet.disjointed h n
 #align measure_theory.null_measurable_set.disjointed MeasureTheory.NullMeasurableSet.disjointed
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove thisrove this
 protected theorem const (p : Prop) : NullMeasurableSet { _a : α | p } μ :=
   MeasurableSet.const p
 #align measure_theory.null_measurable_set.const MeasureTheory.NullMeasurableSet.const
@@ -225,7 +225,7 @@ protected theorem insert [MeasurableSingletonClass (NullMeasurableSpace α μ)]
 #align measure_theory.null_measurable_set.insert MeasureTheory.NullMeasurableSet.insert
 
 theorem exists_measurable_superset_ae_eq (h : NullMeasurableSet s μ) :
-    ∃ t, t ⊇ s ∧ MeasurableSet t ∧ t =ᵐ[μ] s := by
+    ∃ t ⊇ s, MeasurableSet t ∧ t =ᵐ[μ] s := by
   rcases h with ⟨t, htm, hst⟩
   refine' ⟨t ∪ toMeasurable μ (s \ t), _, htm.union (measurableSet_toMeasurable _ _), _⟩
   · exact diff_subset_iff.1 (subset_toMeasurable _ _)
@@ -243,7 +243,7 @@ theorem compl_toMeasurable_compl_ae_eq (h : NullMeasurableSet s μ) : (toMeasura
 #align measure_theory.null_measurable_set.compl_to_measurable_compl_ae_eq MeasureTheory.NullMeasurableSet.compl_toMeasurable_compl_ae_eq
 
 theorem exists_measurable_subset_ae_eq (h : NullMeasurableSet s μ) :
-    ∃ t, t ⊆ s ∧ MeasurableSet t ∧ t =ᵐ[μ] s :=
+    ∃ t ⊆ s, MeasurableSet t ∧ t =ᵐ[μ] s :=
   ⟨(toMeasurable μ sᶜ)ᶜ, compl_subset_comm.2 <| subset_toMeasurable _ _,
     (measurableSet_toMeasurable _ _).compl, compl_toMeasurable_compl_ae_eq h⟩
 #align measure_theory.null_measurable_set.exists_measurable_subset_ae_eq MeasureTheory.NullMeasurableSet.exists_measurable_subset_ae_eq

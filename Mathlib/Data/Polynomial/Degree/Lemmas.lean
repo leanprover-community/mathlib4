@@ -162,21 +162,18 @@ theorem natDegree_lt_coeff_mul (h : p.natDegree + q.natDegree < m + n) :
 
 theorem coeff_mul_of_natDegree_le (pm : p.natDegree ≤ m) (qn : q.natDegree ≤ n) :
     (p * q).coeff (m + n) = p.coeff m * q.coeff n := by
-  rcases eq_or_lt_of_le pm with (rfl | hm) <;> rcases eq_or_lt_of_le qn with (rfl | hn)
-  · exact natDegree_add_coeff_mul _ _
-  · rw [coeff_eq_zero_of_natDegree_lt hn, mul_zero]
-    exact natDegree_lt_coeff_mul (add_lt_add_left hn _)
-  · rw [coeff_eq_zero_of_natDegree_lt hm, zero_mul]
-    exact natDegree_lt_coeff_mul (add_lt_add_right hm _)
-  · rw [coeff_eq_zero_of_natDegree_lt hn, mul_zero]
-    exact natDegree_lt_coeff_mul (add_lt_add hm hn)
+  simp_rw [← Polynomial.toFinsupp_apply, toFinsupp_mul]
+  refine AddMonoidAlgebra.apply_add_of_supDegree_le ?_ Function.injective_id ?_ ?_
+  · simp
+  · rwa [supDegree_eq_natDegree, id_eq]
+  · rwa [supDegree_eq_natDegree, id_eq]
 #align polynomial.coeff_mul_of_nat_degree_le Polynomial.coeff_mul_of_natDegree_le
 
 theorem coeff_pow_of_natDegree_le (pn : p.natDegree ≤ n) :
     (p ^ m).coeff (m * n) = p.coeff n ^ m := by
   induction' m with m hm
   · simp
-  · rw [pow_succ', pow_succ', ← hm, Nat.succ_mul, coeff_mul_of_natDegree_le _ pn]
+  · rw [pow_succ, pow_succ, ← hm, Nat.succ_mul, coeff_mul_of_natDegree_le _ pn]
     refine' natDegree_pow_le.trans (le_trans _ (le_refl _))
     exact mul_le_mul_of_nonneg_left pn m.zero_le
 #align polynomial.coeff_pow_of_nat_degree_le Polynomial.coeff_pow_of_natDegree_le
@@ -298,10 +295,9 @@ theorem degree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
   · simp [h]
   simp only [h, or_false]
   refine ⟨fun h2 ↦ ?_, degree_map_eq_of_leadingCoeff_ne_zero f⟩
-  have h3 : natDegree (map f p) = natDegree p
-  · simp_rw [natDegree, h2]
-  have h4 : map f p ≠ 0
-  · rwa [ne_eq, ← degree_eq_bot, h2, degree_eq_bot]
+  have h3 : natDegree (map f p) = natDegree p := by simp_rw [natDegree, h2]
+  have h4 : map f p ≠ 0 := by
+    rwa [ne_eq, ← degree_eq_bot, h2, degree_eq_bot]
   rwa [← coeff_natDegree, ← coeff_map, ← h3, coeff_natDegree, ne_eq, leadingCoeff_eq_zero]
 
 @[simp]
@@ -411,7 +407,7 @@ theorem natDegree_iterate_comp (k : ℕ) :
     (p.comp^[k] q).natDegree = p.natDegree ^ k * q.natDegree := by
   induction' k with k IH
   · simp
-  · rw [Function.iterate_succ_apply', natDegree_comp, IH, pow_succ, mul_assoc]
+  · rw [Function.iterate_succ_apply', natDegree_comp, IH, pow_succ', mul_assoc]
 #align polynomial.nat_degree_iterate_comp Polynomial.natDegree_iterate_comp
 
 theorem leadingCoeff_comp (hq : natDegree q ≠ 0) :

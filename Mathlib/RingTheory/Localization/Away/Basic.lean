@@ -32,7 +32,6 @@ commutative ring, field of fractions
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) {S : Type*} [CommSemiring S]
-
 variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 namespace IsLocalization
@@ -176,10 +175,9 @@ variable {R : Type*} [CommRing R]
 
 section NumDen
 
-open UniqueFactorizationMonoid IsLocalization
+open IsLocalization
 
 variable (x : R)
-
 variable (B : Type*) [CommRing B] [Algebra R B] [IsLocalization.Away x B]
 
 /-- `selfZPow x (m : ℤ)` is `x ^ m` as an element of the localization away from `x`. -/
@@ -281,7 +279,7 @@ theorem selfZPow_pow_sub (a : R) (b : B) (m d : ℤ) :
     rwa [mul_comm _ b, mul_assoc b _ _, selfZPow_mul_neg, mul_one] at this
 #align self_zpow_pow_sub selfZPow_pow_sub
 
-variable [IsDomain R] [NormalizationMonoid R] [UniqueFactorizationMonoid R]
+variable [IsDomain R] [WfDvdMonoid R]
 
 theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
     ∃ (a : R) (n : ℤ), ¬x ∣ a ∧ selfZPow x B n * algebraMap R B a = b := by
@@ -301,8 +299,7 @@ theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
         (mem_nonZeroDivisors_iff_ne_zero.mpr hx.ne_zero)
     exact IsLocalization.injective B (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
   simp only [← hy] at H
-  classical
-  obtain ⟨m, a, hyp1, hyp2⟩ := max_power_factor ha₀ hx
+  obtain ⟨m, a, hyp1, hyp2⟩ := WfDvdMonoid.max_power_factor ha₀ hx
   refine' ⟨a, m - d, _⟩
   rw [← mk'_one (M := Submonoid.powers x) B, selfZPow_pow_sub, selfZPow_coe_nat, selfZPow_coe_nat,
     ← map_pow _ _ d, mul_comm _ b, H, hyp2, map_mul, map_pow _ _ m]

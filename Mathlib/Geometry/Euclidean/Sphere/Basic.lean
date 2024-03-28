@@ -242,7 +242,7 @@ theorem Cospherical.affineIndependent {s : Set P} (hs : Cospherical s) {p : Fin 
   intro hc
   rw [collinear_iff_of_mem (Set.mem_range_self (0 : Fin 3))] at hc
   rcases hc with ⟨v, hv⟩
-  rw [Set.forall_range_iff] at hv
+  rw [Set.forall_mem_range] at hv
   have hv0 : v ≠ 0 := by
     intro h
     have he : p 1 = p 0 := by simpa [h] using hv 1

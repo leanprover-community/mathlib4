@@ -22,7 +22,8 @@ variable {R R' A T B ι : Type*}
 
 namespace AddMonoidAlgebra
 
-open Classical BigOperators
+open scoped Classical
+open BigOperators
 
 /-!
 
@@ -176,7 +177,7 @@ theorem sup_support_multiset_prod_le (degb0 : degb 0 ≤ 0)
     (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b) (m : Multiset R[A]) :
     m.prod.support.sup degb ≤ (m.map fun f : R[A] => f.support.sup degb).sum := by
   induction m using Quot.inductionOn
-  rw [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.coe_sum, Multiset.coe_prod]
+  rw [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.sum_coe, Multiset.prod_coe]
   exact sup_support_list_prod_le degb0 degbm _
 #align add_monoid_algebra.sup_support_multiset_prod_le AddMonoidAlgebra.sup_support_multiset_prod_le
 
@@ -218,10 +219,9 @@ variable [Semiring R] [Ring R']
 
 section SupDegree
 
-variable [AddZeroClass A] [SemilatticeSup B] [AddZeroClass B] [OrderBot B]
-  (D : A → B)
+variable [AddZeroClass A] [SemilatticeSup B] [Add B] [OrderBot B] (D : A → B)
 
-/-- Let `R` be a semiring, let `A, B` be two `AddZeroClass`es, let `B` be an `OrderBot`,
+/-- Let `R` be a semiring, let `A` be an `AddZeroClass`, let `B` be an `OrderBot`,
 and let `D : A → B` be a "degree" function.
 For an element `f : R[A]`, the element `supDegree f : B` is the supremum of all the elements in the
 support of `f`, or `⊥` if `f` is zero.
@@ -295,31 +295,36 @@ theorem supDegree_prod_le {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [Ad
 
 variable [CovariantClass B B (· + ·) (· < ·)] [CovariantClass B B (Function.swap (· + ·)) (· < ·)]
 
-theorem apply_add_of_supDegree_eq (hD : D.Injective) {ap aq : A}
-    (hp : p.supDegree D = D ap) (hq : q.supDegree D = D aq) :
+theorem apply_add_of_supDegree_le (hD : D.Injective) {ap aq : A}
+    (hp : p.supDegree D ≤ D ap) (hq : q.supDegree D ≤ D aq) :
     (p * q) (ap + aq) = p ap * q aq := by
   simp_rw [mul_apply, Finsupp.sum]
   rw [Finset.sum_eq_single ap, Finset.sum_eq_single aq, if_pos rfl]
   · refine fun a ha hne => if_neg (fun he => ?_)
     apply_fun D at he; simp_rw [hadd] at he
-    exact (add_lt_add_left (((Finset.le_sup ha).trans_eq hq).lt_of_ne <| hD.ne_iff.2 hne) _).ne he
+    exact (add_lt_add_left (((Finset.le_sup ha).trans hq).lt_of_ne <| hD.ne_iff.2 hne) _).ne he
   · intro h; rw [if_pos rfl, Finsupp.not_mem_support_iff.1 h, mul_zero]
   · refine fun a ha hne => Finset.sum_eq_zero (fun a' ha' => if_neg <| fun he => ?_)
     apply_fun D at he
     simp_rw [hadd] at he
     have := covariantClass_le_of_lt B B (· + ·)
-    exact (add_lt_add_of_lt_of_le (((Finset.le_sup ha).trans_eq hp).lt_of_ne <| hD.ne_iff.2 hne)
-      <| (Finset.le_sup ha').trans_eq hq).ne he
+    exact (add_lt_add_of_lt_of_le (((Finset.le_sup ha).trans hp).lt_of_ne <| hD.ne_iff.2 hne)
+      <| (Finset.le_sup ha').trans hq).ne he
   · refine fun h => Finset.sum_eq_zero (fun a _ => ite_eq_right_iff.mpr <| fun _ => ?_)
     rw [Finsupp.not_mem_support_iff.mp h, zero_mul]
+
+theorem supDegree_withBot_some_comp {s : AddMonoidAlgebra R A} (hs : s.support.Nonempty) :
+    supDegree (WithBot.some ∘ D) s = supDegree D s := by
+  unfold AddMonoidAlgebra.supDegree
+  rw [← Finset.coe_sup' hs, Finset.sup'_eq_sup]
 
 end SupDegree
 
 section InfDegree
 
-variable [AddZeroClass A] [SemilatticeInf T] [AddZeroClass T] [OrderTop T]
+variable [AddZeroClass A] [SemilatticeInf T] [Add T] [OrderTop T] (D : A → T)
 
-/-- Let `R` be a semiring, let `A, B` be two `AddZeroClass`es, let `T` be an `OrderTop`,
+/-- Let `R` be a semiring, let `A` be an `AddZeroClass`, let `T` be an `OrderTop`,
 and let `D : A → T` be a "degree" function.
 For an element `f : R[A]`, the element `infDegree f : T` is the infimum of all the elements in the
 support of `f`, or `⊤` if `f` is zero.
@@ -327,19 +332,25 @@ Often, the Type `T` is `WithTop A`,
 If, further, `A` has a linear order, then this notion coincides with the usual one,
 using the minimum of the exponents. -/
 @[reducible]
-def infDegree (D : A → T) (f : R[A]) : T :=
+def infDegree (f : R[A]) : T :=
   f.support.inf D
 
-theorem le_infDegree_add (D : A → T) (f g : R[A]) :
+theorem le_infDegree_add (f g : R[A]) :
     (f.infDegree D) ⊓ (g.infDegree D) ≤ (f + g).infDegree D :=
   le_inf_support_add D f g
 
 variable [CovariantClass T T (· + ·) (· ≤ ·)] [CovariantClass T T (Function.swap (· + ·)) (· ≤ ·)]
-  (D : A →+ T) in
+  (D : AddHom A T) in
 theorem le_infDegree_mul (f g : R[A]) :
     f.infDegree D + g.infDegree D ≤ (f * g).infDegree D :=
-  --  Porting note: added `a b` in `AddMonoidHom.map_add D a b`, was `AddMonoidHom.map_add D _ _`
-  le_inf_support_mul (fun {a b : A} => (AddMonoidHom.map_add D a b).ge) _ _
+  le_inf_support_mul (fun {a b : A} => (map_add D a b).ge) _ _
+
+variable {D}
+
+theorem infDegree_withTop_some_comp {s : AddMonoidAlgebra R A} (hs : s.support.Nonempty) :
+    infDegree (WithTop.some ∘ D) s = infDegree D s := by
+  unfold AddMonoidAlgebra.infDegree
+  rw [← Finset.coe_inf' hs, Finset.inf'_eq_inf]
 
 end InfDegree
 

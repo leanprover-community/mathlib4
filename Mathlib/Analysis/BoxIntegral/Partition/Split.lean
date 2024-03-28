@@ -40,7 +40,8 @@ rectangular box, partition, hyperplane
 
 noncomputable section
 
-open Classical BigOperators Filter
+open scoped Classical
+open BigOperators Filter
 
 open Function Set Filter
 
@@ -66,7 +67,7 @@ theorem coe_splitLower : (splitLower I i x : Set (ι → ℝ)) = ↑I ∩ { y | 
   ext y
   simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_setOf_eq, forall_and, ← Pi.le_def,
     le_update_iff, le_min_iff, and_assoc, and_forall_ne (p := fun j => y j ≤ upper I j) i, mem_def]
-  rw [and_comm (a := y i ≤ x), Pi.le_def]
+  rw [and_comm (a := y i ≤ x)]
 #align box_integral.box.coe_split_lower BoxIntegral.Box.coe_splitLower
 
 theorem splitLower_le : I.splitLower i x ≤ I :=

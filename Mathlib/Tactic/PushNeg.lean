@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis, Jireh Loreaux
 -/
 
-import Lean
+import Lean.Elab.Tactic.Location
 import Mathlib.Logic.Basic
 import Mathlib.Init.Order.Defs
 import Mathlib.Tactic.Conv
