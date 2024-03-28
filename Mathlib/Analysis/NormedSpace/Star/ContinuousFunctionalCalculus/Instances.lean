@@ -113,7 +113,7 @@ lemma unitary_iff_isStarNormal_and_spectrum_subset_circle {u : A} :
     constructor
     all_goals
       apply cfc_congr _ (fun x hx ↦ ?_)
-      simp only [IsROrC.star_def, mul_comm x]
+      simp only [RCLike.star_def, mul_comm x]
       apply hu at hx
       rwa [SetLike.mem_coe, mem_circle_iff_normSq, ← Complex.ofReal_injective.eq_iff,
         Complex.normSq_eq_conj_mul_self] at hx
