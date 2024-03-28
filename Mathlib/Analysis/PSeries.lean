@@ -32,7 +32,7 @@ p-series, Cauchy condensation test
 /-!
 ### Cauchy condensation test
 
-In this section we prove the Cauchy condensation test: for `f : ℕ → ℝ≥0` or `f : ℕ → ℝ`,
+In this section we prove the Cauchy condensation test: for an antitone `f : ℕ → ℝ≥0` or `f : ℕ → ℝ`,
 `∑ k, f k` converges if and only if so does `∑ k, 2 ^ k f (2 ^ k)`. Instead of giving a monolithic
 proof, we split it into a series of lemmas with explicit estimates of partial sums of each series in
 terms of the partial sums of the other series.
@@ -56,7 +56,7 @@ theorem le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m
   have : ∀ k ∈ Ico (2 ^ n) (2 ^ (n + 1)), f k ≤ f (2 ^ n) := fun k hk =>
     hf (pow_pos zero_lt_two _) (mem_Ico.mp hk).1
   convert sum_le_sum this
-  simp [pow_succ, two_mul]
+  simp [pow_succ, mul_two]
 #align finset.le_sum_condensed' Finset.le_sum_condensed'
 
 theorem le_sum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
@@ -81,13 +81,13 @@ theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m
     exact hf (Nat.one_le_two_pow.trans_lt <| (Nat.lt_succ_of_le le_rfl).trans_le (mem_Ico.mp hk).1)
       (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
   convert sum_le_sum this
-  simp [pow_succ, two_mul]
+  simp [pow_succ, mul_two]
 #align finset.sum_condensed_le' Finset.sum_condensed_le'
 
 theorem sum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k in range (n + 1), 2 ^ k • f (2 ^ k)) ≤ f 1 + 2 • ∑ k in Ico 2 (2 ^ n + 1), f k := by
   convert add_le_add_left (nsmul_le_nsmul_right (sum_condensed_le' hf n) 2) (f 1)
-  simp [sum_range_succ', add_comm, pow_succ, mul_nsmul', sum_nsmul]
+  simp [sum_range_succ', add_comm, pow_succ', mul_nsmul', sum_nsmul]
 #align finset.sum_condensed_le Finset.sum_condensed_le
 
 end Finset
@@ -139,7 +139,7 @@ theorem summable_condensed_iff {f : ℕ → ℝ≥0} (hf : ∀ ⦃m n⦄, 0 < m 
 end NNReal
 
 open NNReal in
-/-- Cauchy condensation test for series of nonnegative real numbers. -/
+/-- Cauchy condensation test for antitone series of nonnegative real numbers. -/
 theorem summable_condensed_iff_of_nonneg {f : ℕ → ℝ} (h_nonneg : ∀ n, 0 ≤ f n)
     (h_mono : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
     (Summable fun k : ℕ => (2 : ℝ) ^ k * f (2 ^ k)) ↔ Summable f := by

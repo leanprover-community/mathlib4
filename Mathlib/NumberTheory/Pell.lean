@@ -290,7 +290,7 @@ theorem x_pow_pos {a : Solution₁ d} (hax : 0 < a.x) (n : ℕ) : 0 < (a ^ n).x 
   induction' n with n ih
   · simp only [Nat.zero_eq, pow_zero, x_one, zero_lt_one]
   · rw [pow_succ]
-    exact x_mul_pos hax ih
+    exact x_mul_pos ih hax
 #align pell.solution₁.x_pow_pos Pell.Solution₁.x_pow_pos
 
 /-- If `(x, y)` is a solution with `x` and `y` positive, then all its powers with positive
@@ -299,7 +299,7 @@ theorem y_pow_succ_pos {a : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) (n : 
     0 < (a ^ n.succ).y := by
   induction' n with n ih
   · simp only [Nat.zero_eq, ← Nat.one_eq_succ_zero, hay, pow_one]
-  · rw [pow_succ]
+  · rw [pow_succ']
     exact y_mul_pos hax hay (x_pow_pos hax _) ih
 #align pell.solution₁.y_pow_succ_pos Pell.Solution₁.y_pow_succ_pos
 
@@ -684,7 +684,7 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
     lift (a * a₁⁻¹).x to ℕ using hxx₁.le with x' hx'
     -- Porting note: `ih` has its arguments in a different order compared to lean 3.
     obtain ⟨n, hn⟩ := ih x' (mod_cast hxx₂.trans_eq hax'.symm) hyy hx' hxx₁
-    exact ⟨n + 1, by rw [pow_succ, ← hn, mul_comm a, ← mul_assoc, mul_inv_self, one_mul]⟩
+    exact ⟨n + 1, by rw [pow_succ', ← hn, mul_comm a, ← mul_assoc, mul_inv_self, one_mul]⟩
 #align pell.is_fundamental.eq_pow_of_nonneg Pell.IsFundamental.eq_pow_of_nonneg
 
 /-- Every solution is, up to a sign, a power of a given fundamental solution. -/
