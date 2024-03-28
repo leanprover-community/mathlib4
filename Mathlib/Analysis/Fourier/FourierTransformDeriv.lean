@@ -176,7 +176,7 @@ attribute [local instance 2000] secondCountableTopologyEither_of_left
 variable [SecondCountableTopology V] [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
 
 lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierPowSMulRight
-   {n : ℕ} (hf : AEStronglyMeasurable f μ) :
+    {n : ℕ} (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun v ↦ fourierPowSMulRight L f v n) μ := by
   simp_rw [fourierPowSMulRight_eq_comp]
   apply AEStronglyMeasurable.const_smul'
@@ -190,7 +190,7 @@ lemma integrable_fourierPowSMulRight {n : ℕ} (hf : Integrable (fun v ↦ ‖v�
   filter_upwards with v
   exact (norm_fourierPowSMulRight_le L f v n).trans (le_of_eq (by ring))
 
-#check ContinuousLinearMap.integral_apply
+variable (L)
 
 set_option maxHeartbeats 400000 in
 lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
@@ -199,11 +199,6 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
     HasFTaylorSeriesUpTo N (VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ f)
     (fun w n ↦ VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂
       (fun v ↦ fourierPowSMulRight L f v n) w) := by
-  by_cases hE : CompleteSpace E; swap
-  ·
-
-#exit
-
   constructor
   · intro w
     simp only [uncurry0_apply, Matrix.zero_empty, fourierIntegral]
@@ -255,8 +250,21 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
     apply fourierIntegral_continuous Real.continuous_fourierChar (by apply L.continuous₂)
     exact integrable_fourierPowSMulRight (hf n hn) h'f
 
+lemma contDiff_fourierIntegral {N : ℕ∞}
+    (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖^n * ‖f v‖) μ) :
+    ContDiff ℝ N (VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ f) := by
+  by_cases h'f : Integrable f μ
+  · exact (hasFTaylorSeriesUpTo_fourierIntegral L hf h'f.1).contDiff
+  · have : VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ f = 0 := by
+      ext w; simp [fourierIntegral, integral, h'f]
+    simpa [this] using contDiff_const
 
-
+lemma iteratedFDeriv_fourierIntegral {N : ℕ∞}
+    (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖^n * ‖f v‖) μ)
+    (h'f : AEStronglyMeasurable f μ) {n : ℕ} (hn : n ≤ N) :
+    iteratedFDeriv ℝ n (VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ f) =
+      VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ fourierPowSMulRight L f v n) :=
+  ((hasFTaylorSeriesUpTo_fourierIntegral L hf h'f).eq_iteratedFDeriv hn).symm
 
 section inner
 
@@ -265,7 +273,7 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [SecondCou
 
 /-- Notation for the Fourier transform on a real inner product space -/
 abbrev integralFourier (f : V → E) (μ : Measure V := by volume_tac) :=
-  fourierIntegral 𝐞 μ (innerₛₗ ℝ) f
+  fourierIntegral 𝐞 μ (innerₗ V) f
 
 /-- The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of
     `fun v ↦ ((-2 * π * I) • f v) ⊗ (innerSL ℝ v)`. -/
