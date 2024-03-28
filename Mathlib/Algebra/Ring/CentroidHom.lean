@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Christopher Hoskin
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Module.Hom
+import Mathlib.Algebra.Star.Basic
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 import Mathlib.RingTheory.Subsemiring.Basic
@@ -669,5 +670,41 @@ def commRing (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0)
 #align centroid_hom.comm_ring CentroidHom.commRing
 
 end NonUnitalRing
+
+
+section StarRing
+
+variable [NonUnitalNonAssocSemiring α] [StarRing α]
+
+instance : Star (CentroidHom α) where
+  star f :=
+  { toFun := fun a => star (f (star a))
+    map_zero' := by
+      simp only [star_zero, map_zero]
+    map_add' := fun a b => by simp only [star_add, map_add]
+    map_mul_left' := fun a b => by simp only [star_mul, map_mul_right, star_star]
+    map_mul_right' := fun a b => by simp only [star_mul, map_mul_left, star_star] }
+
+
+@[simp] lemma star_apply (f : CentroidHom α) (a : α) : (star f) a = star (f (star a)) := rfl
+
+instance instStarAddMonoid : StarAddMonoid (CentroidHom α) where
+  star_involutive f := by
+    ext
+    rw [star_apply, star_apply, star_star, star_star]
+  star_add f g := ext fun _ => star_add _ _
+
+/--
+Let `α` be a star ring with commutative centroid. Then the centroid is a star ring.
+-/
+@[reducible]
+def starRingOfCommCentroidHom (mul_comm : IsCommutative (CentroidHom α) (· * ·)) :
+    StarRing (CentroidHom α) where
+  __ := instStarAddMonoid
+  star_mul f g := by
+    ext
+    rw [mul_comm.comm, star_apply, mul_apply, mul_apply, star_apply, star_apply, star_star]
+
+end StarRing
 
 end CentroidHom
