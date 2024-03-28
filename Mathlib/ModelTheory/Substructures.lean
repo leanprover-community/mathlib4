@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson
+Authors: Aaron Anderson, Gabin Kolly
 -/
 import Mathlib.Order.Closure
 import Mathlib.ModelTheory.Semantics
@@ -944,6 +944,11 @@ theorem codRestrict_apply (p : L.Substructure N) (f : M ↪[L] N) {h} (x : M) :
 #align first_order.language.embedding.cod_restrict_apply FirstOrder.Language.Embedding.codRestrict_apply
 
 @[simp]
+theorem codRestrict_apply' (p : L.Substructure N) (f : M ↪[L] N) {h} (x : M) :
+    codRestrict p f h x = ⟨f x, h x⟩ :=
+  rfl
+
+@[simp]
 theorem comp_codRestrict (f : M ↪[L] N) (g : N ↪[L] P) (p : L.Substructure P) (h : ∀ b, g b ∈ p) :
     ((codRestrict p g h).comp f : M ↪[L] p) = codRestrict p (g.comp f) fun _ => h _ :=
   ext fun _ => rfl
@@ -978,6 +983,11 @@ theorem substructureEquivMap_apply (f : M ↪[L] N) (p : L.Substructure M) (x : 
   rfl
 #align first_order.language.embedding.substructure_equiv_map_apply FirstOrder.Language.Embedding.substructureEquivMap_apply
 
+@[simp]
+theorem subtype_substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
+    (subtype _).comp (f.substructureEquivMap s).toEmbedding = f.comp (subtype _) := by
+  ext; rfl
+
 /-- The equivalence between the domain and the range of an embedding `f`. -/
 noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
   toFun := codRestrict f.toHom.range f f.toHom.mem_range_self
@@ -993,6 +1003,10 @@ noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
 theorem equivRange_apply (f : M ↪[L] N) (x : M) : (f.equivRange x : N) = f x :=
   rfl
 #align first_order.language.embedding.equiv_range_apply FirstOrder.Language.Embedding.equivRange_apply
+
+@[simp]
+theorem subtype_equivRange (f : M ↪[L] N) : (subtype _).comp f.equivRange.toEmbedding = f := by
+  ext; rfl
 
 end Embedding
 
@@ -1012,6 +1026,9 @@ namespace Substructure
 def inclusion {S T : L.Substructure M} (h : S ≤ T) : S ↪[L] T :=
   S.subtype.codRestrict _ fun x => h x.2
 #align first_order.language.substructure.inclusion FirstOrder.Language.Substructure.inclusion
+
+@[simp]
+theorem inclusion_self (S : L.Substructure M) : inclusion (le_refl S) = Embedding.refl L S := rfl
 
 @[simp]
 theorem coe_inclusion {S T : L.Substructure M} (h : S ≤ T) :
