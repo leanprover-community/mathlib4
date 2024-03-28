@@ -777,7 +777,7 @@ theorem orthonormal_subtype_iff_ite [DecidableEq E] {s : Set E} :
 vectors picks out the coefficient of that vector. -/
 theorem Orthonormal.inner_right_finsupp {v : ι → E} (hv : Orthonormal 𝕜 v) (l : ι →₀ 𝕜) (i : ι) :
     ⟪v i, Finsupp.total ι E 𝕜 v l⟫ = l i := by
-  classical!
+  classical
   simpa [Finsupp.total_apply, Finsupp.inner_sum, orthonormal_iff_ite.mp hv] using Eq.symm
 #align orthonormal.inner_right_finsupp Orthonormal.inner_right_finsupp
 
@@ -785,7 +785,7 @@ theorem Orthonormal.inner_right_finsupp {v : ι → E} (hv : Orthonormal 𝕜 v)
 vectors picks out the coefficient of that vector. -/
 theorem Orthonormal.inner_right_sum {v : ι → E} (hv : Orthonormal 𝕜 v) (l : ι → 𝕜) {s : Finset ι}
     {i : ι} (hi : i ∈ s) : ⟪v i, ∑ i in s, l i • v i⟫ = l i := by
-  classical!
+  classical
   simp [inner_sum, inner_smul_right, orthonormal_iff_ite.mp hv, hi]
 #align orthonormal.inner_right_sum Orthonormal.inner_right_sum
 
@@ -806,7 +806,7 @@ theorem Orthonormal.inner_left_finsupp {v : ι → E} (hv : Orthonormal 𝕜 v) 
 vectors picks out the coefficient of that vector. -/
 theorem Orthonormal.inner_left_sum {v : ι → E} (hv : Orthonormal 𝕜 v) (l : ι → 𝕜) {s : Finset ι}
     {i : ι} (hi : i ∈ s) : ⟪∑ i in s, l i • v i, v i⟫ = conj (l i) := by
-  classical!
+  classical
   simp only [sum_inner, inner_smul_left, orthonormal_iff_ite.mp hv, hi, mul_boole,
     Finset.sum_ite_eq', if_true]
 #align orthonormal.inner_left_sum Orthonormal.inner_left_sum
@@ -847,7 +847,7 @@ sum of the weights.
 -/
 theorem Orthonormal.inner_left_right_finset {s : Finset ι} {v : ι → E} (hv : Orthonormal 𝕜 v)
     {a : ι → ι → 𝕜} : (∑ i in s, ∑ j in s, a i j • ⟪v j, v i⟫) = ∑ k in s, a k k := by
-  classical!
+  classical
   simp [orthonormal_iff_ite.mp hv, Finset.sum_ite_of_true]
 #align orthonormal.inner_left_right_finset Orthonormal.inner_left_right_finset
 
@@ -865,7 +865,7 @@ theorem Orthonormal.linearIndependent {v : ι → E} (hv : Orthonormal 𝕜 v) :
 orthonormal family. -/
 theorem Orthonormal.comp {ι' : Type*} {v : ι → E} (hv : Orthonormal 𝕜 v) (f : ι' → ι)
     (hf : Function.Injective f) : Orthonormal 𝕜 (v ∘ f) := by
-  classical!
+  classical
   rw [orthonormal_iff_ite] at hv ⊢
   intro i j
   convert hv (f i) (f j) using 1
@@ -902,7 +902,7 @@ theorem Orthonormal.inner_finsupp_eq_zero {v : ι → E} (hv : Orthonormal 𝕜 
 the corresponding vector in the original family or its negation. -/
 theorem Orthonormal.orthonormal_of_forall_eq_or_eq_neg {v w : ι → E} (hv : Orthonormal 𝕜 v)
     (hw : ∀ i, w i = v i ∨ w i = -v i) : Orthonormal 𝕜 w := by
-  classical!
+  classical
   rw [orthonormal_iff_ite] at *
   intro i j
   cases' hw i with hi hi <;> cases' hw j with hj hj <;>
@@ -917,7 +917,7 @@ adapted from the corresponding development of the theory of linearly independent
 variable (𝕜 E)
 
 theorem orthonormal_empty : Orthonormal 𝕜 (fun x => x : (∅ : Set E) → E) := by
-  classical!
+  classical
   simp [orthonormal_subtype_iff_ite]
 #align orthonormal_empty orthonormal_empty
 
@@ -926,7 +926,7 @@ variable {𝕜 E}
 theorem orthonormal_iUnion_of_directed {η : Type*} {s : η → Set E} (hs : Directed (· ⊆ ·) s)
     (h : ∀ i, Orthonormal 𝕜 (fun x => x : s i → E)) :
     Orthonormal 𝕜 (fun x => x : (⋃ i, s i) → E) := by
-  classical!
+  classical
   rw [orthonormal_subtype_iff_ite]
   rintro x ⟨_, ⟨i, rfl⟩, hxi⟩ y ⟨_, ⟨j, rfl⟩, hyj⟩
   obtain ⟨k, hik, hjk⟩ := hs i j
@@ -2029,7 +2029,7 @@ theorem OrthogonalFamily.inner_right_dfinsupp [DecidableEq ι] (l : ⨁ i, G i) 
 
 theorem OrthogonalFamily.inner_right_fintype [Fintype ι] (l : ∀ i, G i) (i : ι) (v : G i) :
     ⟪V i v, ∑ j : ι, V j (l j)⟫ = ⟪v, l i⟫ := by
-  classical!
+  classical
   calc
     ⟪V i v, ∑ j : ι, V j (l j)⟫ = ∑ j : ι, ⟪V i v, V j (l j)⟫ := by rw [inner_sum]
     _ = ∑ j, ite (i = j) ⟪V i v, V j (l j)⟫ 0 :=
@@ -2040,7 +2040,7 @@ theorem OrthogonalFamily.inner_right_fintype [Fintype ι] (l : ∀ i, G i) (i : 
 
 theorem OrthogonalFamily.inner_sum (l₁ l₂ : ∀ i, G i) (s : Finset ι) :
     ⟪∑ i in s, V i (l₁ i), ∑ j in s, V j (l₂ j)⟫ = ∑ i in s, ⟪l₁ i, l₂ i⟫ := by
-  classical!
+  classical
   calc
     ⟪∑ i in s, V i (l₁ i), ∑ j in s, V j (l₂ j)⟫ = ∑ j in s, ∑ i in s, ⟪V i (l₁ i), V j (l₂ j)⟫ :=
       by simp only [_root_.sum_inner, _root_.inner_sum]
@@ -2158,7 +2158,7 @@ pairwise intersections of elements of the family are 0. -/
 theorem OrthogonalFamily.independent {V : ι → Submodule 𝕜 E}
     (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) :
     CompleteLattice.Independent V := by
-  classical!
+  classical
   apply CompleteLattice.independent_of_dfinsupp_lsum_injective
   refine LinearMap.ker_eq_bot.mp ?_
   rw [Submodule.eq_bot_iff]

@@ -333,7 +333,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem X_pow_card_pow_sub_X_natDegree_eq (hn : n ≠ 0) (hp : 1 < p) :
     (X ^ p ^ n - X : K'[X]).natDegree = p ^ n :=
-  X_pow_card_sub_X_natDegree_eq K' <| Nat.one_lt_pow _ _ hn hp
+  X_pow_card_sub_X_natDegree_eq K' <| Nat.one_lt_pow hn hp
 set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_pow_sub_X_nat_degree_eq FiniteField.X_pow_card_pow_sub_X_natDegree_eq
 
@@ -346,7 +346,7 @@ set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_sub_X_ne_zero FiniteField.X_pow_card_sub_X_ne_zero
 
 theorem X_pow_card_pow_sub_X_ne_zero (hn : n ≠ 0) (hp : 1 < p) : (X ^ p ^ n - X : K'[X]) ≠ 0 :=
-  X_pow_card_sub_X_ne_zero K' <| Nat.one_lt_pow _ _ hn hp
+  X_pow_card_sub_X_ne_zero K' <| Nat.one_lt_pow hn hp
 set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_pow_sub_X_ne_zero FiniteField.X_pow_card_pow_sub_X_ne_zero
 

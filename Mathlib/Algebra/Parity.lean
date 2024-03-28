@@ -306,7 +306,7 @@ set_option linter.deprecated false in
 
 @[simp]
 theorem even_two : Even (2 : α) :=
-  ⟨1, by rw[one_add_one_eq_two]⟩
+  ⟨1, by rw [one_add_one_eq_two]⟩
 #align even_two even_two
 
 @[simp]

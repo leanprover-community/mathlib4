@@ -165,7 +165,7 @@ def signAux {n : ℕ} (a : Perm (Fin n)) : ℤˣ :=
 @[simp]
 theorem signAux_one (n : ℕ) : signAux (1 : Perm (Fin n)) = 1 := by
   unfold signAux
-  conv => rhs; rw [← @Finset.prod_const_one ℤˣ _ (finPairsLT n)]
+  conv => rhs; rw [← @Finset.prod_const_one _ _ (finPairsLT n)]
   exact Finset.prod_congr rfl fun a ha => if_neg (mem_finPairsLT.1 ha).not_le
 #align equiv.perm.sign_aux_one Equiv.Perm.signAux_one
 
