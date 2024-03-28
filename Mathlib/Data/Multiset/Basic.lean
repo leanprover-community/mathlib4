@@ -1408,7 +1408,7 @@ theorem map_surjective_of_surjective {f : α → β} (hf : Function.Surjective f
 /-- `foldl f H b s` is the lift of the list operation `foldl f b l`,
   which folds `f` over the multiset. It is well defined when `f` is right-commutative,
   that is, `f (f b a₁) a₂ = f (f b a₂) a₁`. -/
-def foldl (f : β → α → β) (H : RightCommutative f) (b : β) (s : Multiset α) : β :=
+def foldl (f : β → α → β) (H : Binary.RightCommutative f) (b : β) (s : Multiset α) : β :=
   Quot.liftOn s (fun l => List.foldl f b l) fun _l₁ _l₂ p => p.foldl_eq H b
 #align multiset.foldl Multiset.foldl
 
@@ -1430,7 +1430,7 @@ theorem foldl_add (f : β → α → β) (H b s t) : foldl f H b (s + t) = foldl
 /-- `foldr f H b s` is the lift of the list operation `foldr f b l`,
   which folds `f` over the multiset. It is well defined when `f` is left-commutative,
   that is, `f a₁ (f a₂ b) = f a₂ (f a₁ b)`. -/
-def foldr (f : α → β → β) (H : LeftCommutative f) (b : β) (s : Multiset α) : β :=
+def foldr (f : α → β → β) (H : Binary.LeftCommutative f) (b : β) (s : Multiset α) : β :=
   Quot.liftOn s (fun l => List.foldr f b l) fun _l₁ _l₂ p => p.foldr_eq H b
 #align multiset.foldr Multiset.foldr
 
@@ -1455,33 +1455,33 @@ theorem foldr_add (f : α → β → β) (H b s t) : foldr f H b (s + t) = foldr
 #align multiset.foldr_add Multiset.foldr_add
 
 @[simp]
-theorem coe_foldr (f : α → β → β) (H : LeftCommutative f) (b : β) (l : List α) :
+theorem coe_foldr (f : α → β → β) (H : Binary.LeftCommutative f) (b : β) (l : List α) :
     foldr f H b l = l.foldr f b :=
   rfl
 #align multiset.coe_foldr Multiset.coe_foldr
 
 @[simp]
-theorem coe_foldl (f : β → α → β) (H : RightCommutative f) (b : β) (l : List α) :
+theorem coe_foldl (f : β → α → β) (H : Binary.RightCommutative f) (b : β) (l : List α) :
     foldl f H b l = l.foldl f b :=
   rfl
 #align multiset.coe_foldl Multiset.coe_foldl
 
-theorem coe_foldr_swap (f : α → β → β) (H : LeftCommutative f) (b : β) (l : List α) :
+theorem coe_foldr_swap (f : α → β → β) (H : Binary.LeftCommutative f) (b : β) (l : List α) :
     foldr f H b l = l.foldl (fun x y => f y x) b :=
   (congr_arg (foldr f H b) (coe_reverse l)).symm.trans <| foldr_reverse _ _ _
 #align multiset.coe_foldr_swap Multiset.coe_foldr_swap
 
-theorem foldr_swap (f : α → β → β) (H : LeftCommutative f) (b : β) (s : Multiset α) :
+theorem foldr_swap (f : α → β → β) (H : Binary.LeftCommutative f) (b : β) (s : Multiset α) :
     foldr f H b s = foldl (fun x y => f y x) (fun _x _y _z => (H _ _ _).symm) b s :=
   Quot.inductionOn s fun _l => coe_foldr_swap _ _ _ _
 #align multiset.foldr_swap Multiset.foldr_swap
 
-theorem foldl_swap (f : β → α → β) (H : RightCommutative f) (b : β) (s : Multiset α) :
+theorem foldl_swap (f : β → α → β) (H : Binary.RightCommutative f) (b : β) (s : Multiset α) :
     foldl f H b s = foldr (fun x y => f y x) (fun _x _y _z => (H _ _ _).symm) b s :=
   (foldr_swap _ _ _ _).symm
 #align multiset.foldl_swap Multiset.foldl_swap
 
-theorem foldr_induction' (f : α → β → β) (H : LeftCommutative f) (x : β) (q : α → Prop)
+theorem foldr_induction' (f : α → β → β) (H : Binary.LeftCommutative f) (x : β) (q : α → Prop)
     (p : β → Prop) (s : Multiset α) (hpqf : ∀ a b, q a → p b → p (f a b)) (px : p x)
     (q_s : ∀ a ∈ s, q a) : p (foldr f H x s) := by
   revert s
@@ -1492,20 +1492,20 @@ theorem foldr_induction' (f : α → β → β) (H : LeftCommutative f) (x : β)
   exact hpqf a (foldr f H x s) (hsa a (mem_cons_self a s)) (hs hps)
 #align multiset.foldr_induction' Multiset.foldr_induction'
 
-theorem foldr_induction (f : α → α → α) (H : LeftCommutative f) (x : α) (p : α → Prop)
+theorem foldr_induction (f : α → α → α) (H : Binary.LeftCommutative f) (x : α) (p : α → Prop)
     (s : Multiset α) (p_f : ∀ a b, p a → p b → p (f a b)) (px : p x) (p_s : ∀ a ∈ s, p a) :
     p (foldr f H x s) :=
   foldr_induction' f H x p p s p_f px p_s
 #align multiset.foldr_induction Multiset.foldr_induction
 
-theorem foldl_induction' (f : β → α → β) (H : RightCommutative f) (x : β) (q : α → Prop)
+theorem foldl_induction' (f : β → α → β) (H : Binary.RightCommutative f) (x : β) (q : α → Prop)
     (p : β → Prop) (s : Multiset α) (hpqf : ∀ a b, q a → p b → p (f b a)) (px : p x)
     (q_s : ∀ a ∈ s, q a) : p (foldl f H x s) := by
   rw [foldl_swap]
   exact foldr_induction' (fun x y => f y x) (fun x y z => (H _ _ _).symm) x q p s hpqf px q_s
 #align multiset.foldl_induction' Multiset.foldl_induction'
 
-theorem foldl_induction (f : α → α → α) (H : RightCommutative f) (x : α) (p : α → Prop)
+theorem foldl_induction (f : α → α → α) (H : Binary.RightCommutative f) (x : α) (p : α → Prop)
     (s : Multiset α) (p_f : ∀ a b, p a → p b → p (f b a)) (px : p x) (p_s : ∀ a ∈ s, p a) :
     p (foldl f H x s) :=
   foldl_induction' f H x p p s p_f px p_s

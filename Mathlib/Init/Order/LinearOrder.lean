@@ -90,7 +90,7 @@ theorem min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
 #align min_assoc min_assoc
 
 theorem min_left_comm : ∀ a b c : α, min a (min b c) = min b (min a c) :=
-  left_comm (@min α _) (@min_comm α _) (@min_assoc α _)
+  Binary.left_comm (@min α _) ⟨@min_comm α _⟩ ⟨@min_assoc α _⟩
 #align min_left_comm min_left_comm
 
 @[simp]
@@ -123,7 +123,7 @@ theorem max_assoc (a b c : α) : max (max a b) c = max a (max b c) := by
 #align max_assoc max_assoc
 
 theorem max_left_comm : ∀ a b c : α, max a (max b c) = max b (max a c) :=
-  left_comm (@max α _) (@max_comm α _) (@max_assoc α _)
+  Binary.left_comm (@max α _) ⟨@max_comm α _⟩ ⟨@max_assoc α _⟩
 #align max_left_comm max_left_comm
 
 @[simp]

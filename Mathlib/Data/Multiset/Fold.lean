@@ -29,11 +29,11 @@ local notation a " * " b => op a b
 /-- `fold op b s` folds a commutative associative operation `op` over
   the multiset `s`. -/
 def fold : α → Multiset α → α :=
-  foldr op (left_comm _ hc.comm ha.assoc)
+  foldr op (Binary.left_comm _ hc ha)
 #align multiset.fold Multiset.fold
 
 theorem fold_eq_foldr (b : α) (s : Multiset α) :
-    fold op b s = foldr op (left_comm _ hc.comm ha.assoc) b s :=
+    fold op b s = foldr op (Binary.left_comm _ hc ha) b s :=
   rfl
 #align multiset.fold_eq_foldr Multiset.fold_eq_foldr
 
@@ -47,7 +47,7 @@ theorem coe_fold_l (b : α) (l : List α) : fold op b l = l.foldl op b :=
 #align multiset.coe_fold_l Multiset.coe_fold_l
 
 theorem fold_eq_foldl (b : α) (s : Multiset α) :
-    fold op b s = foldl op (right_comm _ hc.comm ha.assoc) b s :=
+    fold op b s = foldl op (Binary.right_comm _ hc ha) b s :=
   Quot.inductionOn s fun _ => coe_fold_l _ _ _
 #align multiset.fold_eq_foldl Multiset.fold_eq_foldl
 

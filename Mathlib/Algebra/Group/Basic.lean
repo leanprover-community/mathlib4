@@ -154,13 +154,13 @@ variable [CommSemigroup G]
 
 @[to_additive]
 theorem mul_left_comm : ∀ a b c : G, a * (b * c) = b * (a * c) :=
-  left_comm Mul.mul mul_comm mul_assoc
+  Binary.left_comm Mul.mul ⟨mul_comm⟩ ⟨mul_assoc⟩
 #align mul_left_comm mul_left_comm
 #align add_left_comm add_left_comm
 
 @[to_additive]
 theorem mul_right_comm : ∀ a b c : G, a * b * c = a * c * b :=
-  right_comm Mul.mul mul_comm mul_assoc
+  Binary.right_comm Mul.mul ⟨mul_comm⟩  ⟨mul_assoc⟩
 #align mul_right_comm mul_right_comm
 #align add_right_comm add_right_comm
 
