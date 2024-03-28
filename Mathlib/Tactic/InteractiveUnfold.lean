@@ -6,153 +6,93 @@ Authors: Jovan Gerbscheid
 import Lean
 import Std.Lean.Position
 import Mathlib.Tactic.Widget.SelectPanelUtils
+import Mathlib.Lean.SubExpr
 import Mathlib.Lean.Meta.KAbstractPositions
 
 /-! # Interactive unfolding -/
 
 open Lean Meta Server Widget ProofWidgets Jsx
-namespace Mathlib.Tactic.InteractiveUnfold
 
+namespace Mathlib.Tactic
 
-/-- The `Expr` at a `SubExpr.GoalsLocation`. -/
-def _root_.Lean.SubExpr.GoalsLocation.rootExpr : SubExpr.GoalsLocation → MetaM Expr
-  | ⟨_, .hyp fvarId⟩        => fvarId.getType
-  | ⟨_, .hypType fvarId _⟩  => fvarId.getType
-  | ⟨_, .hypValue fvarId _⟩ => do return (← fvarId.getDecl).value
-  | ⟨mvarId, .target _⟩     => mvarId.getType
-
-/-- The `SubExpr.Pos` of a `SubExpr.GoalsLocation`. -/
-def _root_.Lean.SubExpr.GoalsLocation.pos : SubExpr.GoalsLocation → SubExpr.Pos
-  | ⟨_, .hyp _⟩          => .root
-  | ⟨_, .hypType _ pos⟩  => pos
-  | ⟨_, .hypValue _ pos⟩ => pos
-  | ⟨_, .target pos⟩     => pos
-
-
-/-- Reduction function for the `unfold'` tactic. -/
-def unfold (e : Expr) : MetaM (Option Expr) := do
-  /- β-reduction -/
-  if e.isHeadBetaTarget then
-    return some (e.withAppRev Expr.betaRev)
-  /- η-reduction -/
-  if let some e := e.etaExpandedStrict? then
-    return e
-  /- ζ-reduction -/
-  if let .letE _ _ v b _ := e then
-    return b.instantiate1 v
-  /- unfolding a let-bound free variable -/
-  if let .fvar fvarId := e.getAppFn then
-    if let some value ← fvarId.getValue? then
-      return value.betaRev e.getAppRevArgs
-  /- projection reduction -/
-  if let some e ← reduceProj? e then
-    return e.headBeta
-  if let .const n _ := e.getAppFn then
-    if ← isProjectionFn n then
-      if let some e ← unfoldDefinition? e then
-        if let some r ← reduceProj? e.getAppFn then
-          return mkAppN r e.getAppArgs |>.headBeta
-  /- unfolding a matcher -/
-  match (← reduceMatcher? e) with
-  | .reduced e  => return e
-  | .partialApp => return none
-  | .stuck _    => return none
-  | .notMatcher =>
-  /- unfolding an if statement -/
-  match_expr e with
-  | ite _ _ i tb eb =>
-    match_expr ← whnf i with
-    | isTrue  _ _ => return some tb
-    | isFalse _ _ => return some eb
-    | _ => return none
-  | dite _ _ i tb eb =>
-    match_expr ← whnf i with
-    | isTrue  _ h => return some (tb.betaRev #[h])
-    | isFalse _ h => return some (eb.betaRev #[h])
-    | _ => return none
-  | _ =>
-  /- unfolding a constant defined with well founded recursion -/
-  if let .const n lvls := e.getAppFn then
-    if let some info := Elab.WF.eqnInfoExt.find? (← getEnv) n then
-      return (info.value.instantiateLevelParams info.levelParams lvls).beta e.getAppArgs
-  /- unfolding a constant -/
-  if let some e' ← unfoldDefinition? e then
-    return e'
-
-  return none
-
-partial def unfolds (e : Expr) (acc : Array Expr := #[]) : MetaM (Array Expr) := do
-  if let some e ← unfold e then
-    unfolds e (acc.push e)
-  else
-    let e' ← whnf e
-    if e == e' then
-      return acc
-    else
-      return acc.push e'
-
+def mkRewrite (occ : Option Nat) (symm : Bool) (rewrite : String)
+    (loc : Option Name) : String :=
+  let cfg := match occ with
+    | some n => s! " (config := \{ occs := .pos [{n}]})"
+    | none => ""
+  let loc := match loc with
+    | some n => s! " at {n}"
+    | none => ""
+  let symm := if symm then "← " else ""
+  s! "rw{cfg} [{symm}{rewrite}]{loc}"
 
 def printToPaste (e : Expr) : MetaM String :=
   withOptions (fun _ => Options.empty
     |>.setBool `pp.universes false
     |>.setBool `pp.match false
     |>.setBool `pp.unicode.fun true) do
-  return Format.pretty (← Meta.ppExpr e)
+  return Format.pretty (← Meta.ppExpr e) (indent := 2)
 
-def getDefinitions (loc : SubExpr.GoalsLocation) :
-    ExceptT Html MetaM (Array (CodeWithInfos × String)) := do
-  let e ← loc.rootExpr
-  let subExpr ← Core.viewSubexpr loc.pos e
-  if subExpr.hasLooseBVars then
-    throwThe Html $ .text "rw doesn't work on expressions with bound variables."
-  let subExpr ← instantiateMVars subExpr
+namespace InteractiveUnfold
 
-  let replacements ← unfolds subExpr
+/-- same as `unfoldDefinition?`, except it handles well founded recursive definitions better. -/
+def unfold? (e : Expr) : MetaM (Option Expr) := do
+  if let .const n lvls := e.getAppFn then
+    /- unfolding a constant defined with well founded recursion -/
+    if let some info := Elab.WF.eqnInfoExt.find? (← getEnv) n then
+      if info.levelParams.length == lvls.length then
+        return (info.value.instantiateLevelParams info.levelParams lvls).beta e.getAppArgs
+    /- unfolding any other constant -/
+    else if let some e ← unfoldDefinition? e then
+      return e
+  return none
 
-  let positions ← kabstractPositions subExpr e
-  let cfg := if positions.size == 1 then "" else
-    match positions.findIdx? (· == loc.pos) with
-    | some n => s! " (config := \{ occs := .pos [{n+1}] })"
-    | none => ""
-  let location ← (do match loc.loc with
-    | .hyp fvarId
-    | .hypType fvarId _ => return s! " at {← fvarId.getUserName}"
-    | _ => return "")
-  let lhs ← printToPaste subExpr
+/-- Return an array of consecutive unfoldings of `e`. -/
+partial def unfolds (e : Expr) : MetaM (Array Expr) := do
+  let e' ← whnfCore e
+  go e' (if e == e' then #[] else #[e'])
+where
+  go (e : Expr) (acc : Array Expr) : MetaM (Array Expr) := do
+  if let some e ← reduceNat? e then
+    return #[e]
+  if let some e ← reduceNative? e then
+    return #[e]
+  if let some e ← unfold? e then
+    let e ← whnfCore e
+    go e (acc.push e)
+  else
+    return acc
 
+
+/-- Return the unfolds from `unfolds` together with the tactic strings that do the unfoldings. -/
+def unfoldsWithTacticString (e : Expr) (occ : Option Nat) (loc : Option Name) :
+    MetaM (Array (Expr × String)) := do
+  let replacements ← unfolds e
   let mut results := #[]
-  let mut forbidden : HashSet String := HashSet.empty.insert lhs
-  for d in replacements do
-    let rhs ← printToPaste d
-    unless forbidden.contains rhs do
-      forbidden := forbidden.insert rhs
-      results := results.push
-        (← ppExprTagged d, s! "rw{cfg} [show {lhs} = {rhs} from rfl]{location}")
-
-  if results.isEmpty then
-    throwThe Html
-      <span>
-        could not find a definition for {<InteractiveCode fmt={← ppExprTagged subExpr}/>}
-      </span>
-
+  let mut forbidden := HashSet.empty.insert s! "show {← printToPaste (← mkEq e e)} from rfl"
+  for replacement in replacements do
+    let rfl := s! "show {← printToPaste (← mkEq e replacement)} from rfl"
+    unless forbidden.contains rfl do
+      forbidden := forbidden.insert rfl
+      results := results.push (replacement, mkRewrite occ false rfl loc)
   return results
 
-def renderDefinitions (defs : Array (CodeWithInfos × String)) (range : Lsp.Range)
-    (doc : FileWorker.EditableDocument) : Html :=
-  <details «open»={true}>
+def renderDefinitions (defs : Array (Expr × String)) (range : Lsp.Range)
+    (doc : FileWorker.EditableDocument) : MetaM Html := do
+  return <details «open»={true}>
     <summary className="mv2 pointer">
       {.text "Definitional rewrites:"}
     </summary>
     {
     .element "ul" #[("style", json% { "padding-left" : "30px"})] <|
-      defs.map fun (replacement, tactic) =>
-        <li> {
-        .element "p" #[] <|
-          #[<span className="font-code"> {
-            Html.ofComponent MakeEditLink
-              (.ofReplaceRange doc.meta range tactic)
-              #[.text replacement.stripTags] }
-          </span>] }
+      ← defs.mapM fun (replacement, tactic) => do
+        return <li> {
+          .element "p" #[] <|
+            #[<span className="font-code" style={json% { "white-space" : "pre-wrap" }}> {
+              Html.ofComponent MakeEditLink
+                (.ofReplaceRange doc.meta range tactic)
+                #[.text $ Format.pretty $ (← Meta.ppExpr replacement)] }
+            </span>] }
         </li> }
   </details>
 
@@ -173,12 +113,15 @@ def InteractiveUnfold.rpc (props : SelectInsertParams) : RequestM (RequestTask H
     let md ← goal.mvarId.getDecl
     let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
     Meta.withLCtx lctx md.localInstances do
-      match ← getDefinitions loc with
-      | .error msg  => return msg
-      | .ok results =>
-        if results.isEmpty then
-          return .text ""
-        return renderDefinitions results props.replaceRange doc
+
+      let some (subExpr, occ) ← viewKAbstractSubExpr (← loc.rootExpr) loc.pos |
+        return .text "rw doesn't work on expressions with bound variables."
+      let results ← unfoldsWithTacticString subExpr occ (← loc.location)
+      if results.isEmpty then
+        return <span>
+          could not find a definition for {<InteractiveCode fmt={← ppExprTagged subExpr}/>}
+        </span>
+      renderDefinitions results props.replaceRange doc
 
 
 @[widget_module]
@@ -186,19 +129,14 @@ def InteractiveUnfold : Component SelectInsertParams :=
   mk_rpc_widget% InteractiveUnfold.rpc
 
 
-/-- Unfold the selected expression in one of the following ways:
-
-- β-reduction: `(fun x₁ .. xₙ => t[x₁, .., xₙ]) a₁ .. aₙ` → `t[a₁, .., aₙ]`
-- η-reduction: `fun x₁ .. xₙ => f x₁ .. xₙ` → `f`
-- ζ-reduction: `let a := v; t[a]` → `t[v]`
-- projection reduction: `instAddNat.1 a b` → `Nat.add a b`
-- unfolding a constant or a let-bound free variable: `Surjective f` → `∀ b, ∃ a, f a = b`
+/-- Unfold the selected expression any number of times.
+After each unfold, we apply `whnfCore` to simplify the expression.
+Explicit natural number expressions are copmuted directly.
 
 To use `unfold?`, shift-click an expression in the tactic state.
 This gives a list of rewrite suggestions for the selected expression.
-Click on a suggestion to replace `unfols?` by a tactic that performs this rewrite.
-
- -/
+Click on a suggestion to replace `unfold?` by a tactic that performs this rewrite.
+-/
 elab stx:"unfold?" : tactic => do
   let some range := (← getFileMap).rangeOfStx? stx | return
   Widget.savePanelWidgetInfo (hash InteractiveUnfold.javascript)
