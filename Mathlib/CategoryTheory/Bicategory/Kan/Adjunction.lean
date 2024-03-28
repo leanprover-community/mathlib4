@@ -3,14 +3,18 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
+import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
 import Mathlib.CategoryTheory.Bicategory.Adjunction
+import Mathlib.Tactic.TFAE
 
 /-!
 # Adjunctions as Kan extensions
 
-We show that adjunctions are realized as Kan extensions or Kan lifts. We also show that a left
-adjoint commutes with a left Kan extension.
+We show that adjunctions are realized as Kan extensions or Kan lifts.
+
+We also show that a left adjoint commutes with a left Kan extension. Under the assumption that
+`IsLeftAdjoint h`, the isomorphism `f⁺ (g ≫ h) ≅ f⁺ g ≫ h` can be accessed by
+`Lan.CommuteWith.lanCompIso f g h`.
 
 ## References
 
@@ -35,10 +39,12 @@ variable {B : Type u} [Bicategory.{w, v} B] {a b c : B}
 
 section LeftExtension
 
+open LeftExtension
+
 /-- For an adjuntion `f ⊣ u`, `u` is an absolute left Kan extension of the identity along `f`.
 The unit of this Kan extension is given by the unit of the adjunction. -/
 def Adjunction.isAbsoluteLeftKan {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u) :
-    LeftExtension.IsAbsKan (.mk u adj.unit) := fun {x} h ↦
+    IsAbsKan (.mk u adj.unit) := fun {x} h ↦
   .mk (fun s  ↦ LeftExtension.homMk
     (𝟙 _ ⊗≫ u ◁ s.unit ⊗≫ adj.counit ▷ s.extension ⊗≫ 𝟙 _ : u ≫ h ⟶ s.extension) <|
       calc _
@@ -67,7 +73,7 @@ def Adjunction.isAbsoluteLeftKan {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u) :
 /-- A left Kan extension of the identity along `f` such that `f` commutes with is a right adjoint
 to `f`. The unit of this adjoint is given by the unit of the Kan extension. -/
 def LeftExtension.IsKan.adjunction {f : a ⟶ b} {t : LeftExtension f (𝟙 a)}
-    (H : LeftExtension.IsKan t) (H' : LeftExtension.IsKan (t.whisker f)) :
+    (H : IsKan t) (H' : IsKan (t.whisker f)) :
       f ⊣ t.extension :=
   let ε : t.extension ≫ f ⟶ 𝟙 b := H'.desc <| .mk _ <| (λ_ f).hom ≫ (ρ_ f).inv
   have Hε : leftZigzag t.unit ε = (λ_ f).hom ≫ (ρ_ f).inv := by
@@ -90,19 +96,36 @@ def LeftExtension.IsKan.adjunction {f : a ⟶ b} {t : LeftExtension f (𝟙 a)}
 
 /-- For an adjuntion `f ⊣ u`, `u` is a left Kan extension of the identity along `f`.
 The unit of this Kan extension is given by the unit of the adjunction. -/
-def LeftExtension.IsAbsKan.adjunction {f : a ⟶ b} (t : LeftExtension f (𝟙 a))
-    (H : LeftExtension.IsAbsKan t) :
-      f ⊣ t.extension :=
+def LeftExtension.IsAbsKan.adjunction {f : a ⟶ b} (t : LeftExtension f (𝟙 a)) (H : IsAbsKan t) :
+    f ⊣ t.extension :=
   H.isKan.adjunction (H f)
+
+theorem isLeftAdjoint_TFAE (f : a ⟶ b) :
+    List.TFAE [
+      IsLeftAdjoint f,
+      HasAbsLeftKanExtension f (𝟙 a),
+      ∃ _ : HasLeftKanExtension f (𝟙 a), Lan.CommuteWith f (𝟙 a) f] := by
+  tfae_have 1 → 2
+  · intro h
+    exact IsAbsKan.hasAbsLeftKanExtension (rightAdjoint.adjunction f).isAbsoluteLeftKan
+  tfae_have 2 → 3
+  · intro h
+    exact ⟨inferInstance, inferInstance⟩
+  tfae_have 3 → 1
+  · intro ⟨h, h'⟩
+    exact .mk <| (lanIsKan f (𝟙 a)).adjunction <| Lan.CommuteWith.isKan f (𝟙 a) f
+  tfae_finish
 
 end LeftExtension
 
 section LeftLift
 
+open LeftLift
+
 /-- For an adjuntion `f ⊣ u`, `f` is an absolute left Kan lift of the identity along `u`.
 The unit of this Kan lift is given by the unit of the adjunction. -/
 def Adjunction.isAbsoluteLeftKanLift {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u) :
-    LeftLift.IsAbsKan (.mk f adj.unit) := fun {x} h ↦
+    IsAbsKan (.mk f adj.unit) := fun {x} h ↦
   .mk (fun s ↦ LeftLift.homMk
     (𝟙 _ ⊗≫ s.unit ▷ f ⊗≫ s.lift ◁ adj.counit ⊗≫ 𝟙 _ : h ≫ f ⟶ s.lift) <|
       calc _
@@ -130,7 +153,7 @@ def Adjunction.isAbsoluteLeftKanLift {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u)
 /-- A left Kan lift of the identity along `u` such that `u` commutes with is a left adjoint
 to `u`. The unit of this adjoint is given by the unit of the Kan lift. -/
 def LeftLift.IsKan.adjunction {u : b ⟶ a} {t : LeftLift u (𝟙 a)}
-    (H : LeftLift.IsKan t) (H' : LeftLift.IsKan (t.whisker u)) :
+    (H : IsKan t) (H' : IsKan (t.whisker u)) :
       t.lift ⊣ u :=
   let ε : u ≫ t.lift ⟶ 𝟙 b := H'.desc <| .mk _ <| (ρ_ u).hom ≫ (λ_ u).inv
   have Hε : rightZigzag t.unit ε = (ρ_ u).hom ≫ (λ_ u).inv := by
@@ -153,9 +176,25 @@ def LeftLift.IsKan.adjunction {u : b ⟶ a} {t : LeftLift u (𝟙 a)}
 
 /-- For an adjuntion `f ⊣ u`, `f` is a left Kan lift of the identity along `u`.
 The unit of this Kan lift is given by the unit of the adjunction. -/
-def LeftLift.IsAbsKan.adjunction {u : b ⟶ a} (t : LeftLift u (𝟙 a)) (H : LeftLift.IsAbsKan t) :
+def LeftLift.IsAbsKan.adjunction {u : b ⟶ a} (t : LeftLift u (𝟙 a)) (H : IsAbsKan t) :
     t.lift ⊣ u :=
   H.isKan.adjunction (H u)
+
+theorem isRightAdjoint_TFAE (u : b ⟶ a) :
+    List.TFAE [
+      IsRightAdjoint u,
+      HasAbsLeftKanLift u (𝟙 a),
+      ∃ _ : HasLeftKanLift u (𝟙 a), LanLift.CommuteWith u (𝟙 a) u] := by
+  tfae_have 1 → 2
+  · intro h
+    exact IsAbsKan.hasAbsLeftKanLift (leftAdjoint.adjunction u).isAbsoluteLeftKanLift
+  tfae_have 2 → 3
+  · intro h
+    exact ⟨inferInstance, inferInstance⟩
+  tfae_have 3 → 1
+  · intro ⟨h, h'⟩
+    exact .mk <| (lanLiftIsKan u (𝟙 a)).adjunction <| LanLift.CommuteWith.isKan u (𝟙 a) u
+  tfae_finish
 
 end LeftLift
 
@@ -199,6 +238,10 @@ def isKanOfWhiskerLeftAdjoint
         rw [← whisker_exchange]; simp [bicategoricalComp]
       _ = _ := by
         rw [Hτ']; simp [bicategoricalComp]
+
+instance {f : a ⟶ b} {g : a ⟶ c} {x : B} {h : c ⟶ x} [IsLeftAdjoint h] [HasLeftKanExtension f g] :
+    Lan.CommuteWith f g h :=
+  ⟨⟨isKanOfWhiskerLeftAdjoint (lanIsKan f g) (rightAdjoint.adjunction h)⟩⟩
 
 end LeftExtension
 
