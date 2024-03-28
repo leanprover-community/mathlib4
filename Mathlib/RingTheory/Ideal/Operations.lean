@@ -958,7 +958,7 @@ def radical (I : Ideal R) : Ideal R where
   carrier := { r | ∃ n : ℕ, r ^ n ∈ I }
   zero_mem' := ⟨1, (pow_one (0 : R)).symm ▸ I.zero_mem⟩
   add_mem' := fun {x y} ⟨m, hxmi⟩ ⟨n, hyni⟩ =>
-    ⟨m + n, add_pow_add_mem_of_pow_mem I hxmi hyni⟩
+    ⟨m + n - 1, add_pow_add_pred_mem_of_pow_mem I hxmi hyni⟩
 -- Porting note: Below gives weird errors without `by exact`
   smul_mem' {r s} := by exact fun ⟨n, h⟩ ↦ ⟨n, (mul_pow r s n).symm ▸ I.mul_mem_left (r ^ n) h⟩
 #align ideal.radical Ideal.radical
