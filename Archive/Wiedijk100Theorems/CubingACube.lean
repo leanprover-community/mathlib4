@@ -573,7 +573,7 @@ theorem cannot_cube_a_cube :
     ∀ {s : Set (Cube n)}, s.Finite →           -- given a finite collection of (hyper)cubes
     s.Nontrivial →                             -- containing at least two elements
     s.PairwiseDisjoint Cube.toSet →            -- which is pairwise disjoint
-    ⋃ c ∈ s, Cube.toSet c = unitCube.toSet → -- whose union is the unit cube
+    ⋃ c ∈ s, Cube.toSet c = unitCube.toSet →   -- whose union is the unit cube
     InjOn Cube.w s →                           -- such that the widths of all cubes are different
     False := by                                -- then we can derive a contradiction
   intro n hn s hfin h2 hd hU hinj

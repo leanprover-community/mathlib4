@@ -98,14 +98,8 @@ theorem coeff_of_lt_order (n : ℕ) (h : ↑n < order φ) : coeff R n φ = 0 := 
 
 /-- The `0` power series is the unique power series with infinite order.-/
 @[simp]
-theorem order_eq_top {φ : R⟦X⟧} : φ.order = ⊤ ↔ φ = 0 := by
-  constructor
-  · intro h
-    ext n
-    rw [(coeff R n).map_zero, coeff_of_lt_order]
-    simp [h]
-  · rintro rfl
-    exact order_zero
+theorem order_eq_top {φ : R⟦X⟧} : φ.order = ⊤ ↔ φ = 0 :=
+  PartENat.not_dom_iff_eq_top.symm.trans order_finite_iff_ne_zero.not_left
 #align power_series.order_eq_top PowerSeries.order_eq_top
 
 /-- The order of a formal power series is at least `n` if
