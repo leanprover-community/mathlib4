@@ -128,7 +128,7 @@ instance lawfulApplicative : LawfulApplicative Finset :=
     seq_assoc := fun s t u => by
       ext a
       simp_rw [seq_def, fmap_def]
-      simp only [exists_prop, mem_sup, mem_image]
+      simp only [mem_sup, mem_image]
       constructor
       · rintro ⟨g, hg, b, ⟨f, hf, a, ha, rfl⟩, rfl⟩
         exact ⟨g ∘ f, ⟨comp g, ⟨g, hg, rfl⟩, f, hf, rfl⟩, a, ha, rfl⟩
@@ -165,7 +165,7 @@ instance : LawfulMonad Finset :=
     bind_pure_comp := fun f s => sup_singleton'' _ _
     bind_map := fun t s => rfl
     pure_bind := fun t s => sup_singleton
-    bind_assoc := fun s f g => by simp only [bind, ← sup_biUnion, sup_eq_biUnion, biUnion_biUnion] }
+    bind_assoc := fun s f g => by simp only [bind, sup_eq_biUnion, biUnion_biUnion] }
 
 end Monad
 

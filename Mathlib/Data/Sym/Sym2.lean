@@ -317,7 +317,7 @@ theorem mem_iff' {a b c : α} : Sym2.Mem a s(b, c) ↔ a = b ∨ a = c :=
 instance : SetLike (Sym2 α) α where
   coe z := { x | z.Mem x }
   coe_injective' z z' h := by
-    simp only [Set.ext_iff, Set.mem_setOf_eq] at h
+    simp only [Set.ext_iff] at h
     induction' z using Sym2.ind with x y
     induction' z' using Sym2.ind with x' y'
     have hx := h x; have hy := h y; have hx' := h x'; have hy' := h y'
@@ -726,7 +726,7 @@ theorem filter_image_mk_isDiag [DecidableEq α] (s : Finset α) :
     ((s ×ˢ s).image Sym2.mk).filter IsDiag = s.diag.image Sym2.mk := by
   ext z
   induction' z using Sym2.inductionOn
-  simp only [mem_image, mem_diag, exists_prop, mem_filter, Prod.exists, mem_product]
+  simp only [mem_image, mem_diag, mem_filter, Prod.exists, mem_product]
   constructor
   · rintro ⟨⟨a, b, ⟨ha, hb⟩, h⟩, hab⟩
     rw [← h, Sym2.mk_isDiag_iff] at hab

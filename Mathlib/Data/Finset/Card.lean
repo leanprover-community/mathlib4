@@ -663,7 +663,7 @@ theorem one_lt_card : 1 < s.card ↔ ∃ a ∈ s, ∃ b ∈ s, a ≠ b := by
 
 theorem one_lt_card_iff : 1 < s.card ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
   rw [one_lt_card]
-  simp only [exists_prop, exists_and_left]
+  simp only [exists_and_left]
 #align finset.one_lt_card_iff Finset.one_lt_card_iff
 
 theorem one_lt_card_iff_nontrivial : 1 < s.card ↔ s.Nontrivial := by

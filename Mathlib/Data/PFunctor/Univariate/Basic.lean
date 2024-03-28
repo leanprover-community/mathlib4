@@ -156,7 +156,7 @@ theorem fst_map (x : P α) (f : α → β) : (P.map f x).1 = x.1 := by cases x; 
 @[simp]
 theorem iget_map [DecidableEq P.A] [Inhabited α] [Inhabited β] (x : P α)
     (f : α → β) (i : P.Idx) (h : i.1 = x.1) : (P.map f x).iget i = f (x.iget i) := by
-  simp only [Obj.iget, fst_map, *, dif_pos, eq_self_iff_true]
+  simp only [Obj.iget, fst_map, *, eq_self_iff_true]
   cases x
   rfl
 #align pfunctor.iget_map PFunctor.iget_map
@@ -209,7 +209,7 @@ theorem liftp_iff {α : Type u} (p : α → Prop) (x : P α) :
 
 theorem liftp_iff' {α : Type u} (p : α → Prop) (a : P.A) (f : P.B a → α) :
     @Liftp.{u} P.Obj _ α p ⟨a, f⟩ ↔ ∀ i, p (f i) := by
-  simp only [liftp_iff, Sigma.mk.inj_iff]; constructor <;> intro h
+  simp only [liftp_iff]; constructor <;> intro h
   · rcases h with ⟨a', f', heq, h'⟩
     cases heq
     assumption
@@ -242,7 +242,7 @@ open Set
 
 theorem supp_eq {α : Type u} (a : P.A) (f : P.B a → α) :
     @supp.{u} P.Obj _ α (⟨a, f⟩ : P α) = f '' univ := by
-  ext x; simp only [supp, image_univ, mem_range, mem_setOf_eq]
+  ext x; simp only [supp, image_univ, mem_setOf_eq]
   constructor <;> intro h
   · apply @h fun x => ∃ y : P.B a, f y = x
     rw [liftp_iff']

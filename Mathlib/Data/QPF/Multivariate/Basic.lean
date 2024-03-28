@@ -269,14 +269,14 @@ theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftPP
   · rintro α p ⟨a, f⟩
     have h' := h
     rw [suppPreservation_iff_isUniform] at h'
-    dsimp only [SuppPreservation, supp] at h
+    dsimp only [SuppPreservation] at h
     simp only [liftP_iff_of_isUniform, supp_eq_of_isUniform, MvPFunctor.liftP_iff', h',
       image_univ, mem_range, exists_imp]
     constructor <;> intros <;> subst_vars <;> solve_by_elim
   · rintro α ⟨a, f⟩
     simp only [LiftPPreservation] at h
     ext
-    simp only [supp, h, mem_setOf_eq]
+    simp only [supp, h]
 #align mvqpf.supp_preservation_iff_liftp_preservation MvQPF.suppPreservation_iff_liftpPreservation
 
 theorem liftpPreservation_iff_uniform : q.LiftPPreservation ↔ q.IsUniform := by
