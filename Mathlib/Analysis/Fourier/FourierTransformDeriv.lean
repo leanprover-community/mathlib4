@@ -6,10 +6,9 @@ Authors: Alex Kontorovich, David Loeffler, Heather Macbeth
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.Fourier.FourierTransform
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
 
 /-!
-# Derivatives of the Fourier transform
+# Derivative of the Fourier transform
 
 In this file we compute the Fréchet derivative of the Fourier transform of `f`, where `f` is a
 function such that both `f` and `v ↦ ‖v‖ * ‖f v‖` are integrable. Here the Fourier transform is
