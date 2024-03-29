@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Interval.Set.Monoid
-import Mathlib.Order.Interval.Finset.Basic
+import Mathlib.Order.Interval.Finset.Defs
 
 #align_import data.finset.locally_finite from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
 
