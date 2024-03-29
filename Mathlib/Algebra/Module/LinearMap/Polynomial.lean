@@ -378,10 +378,7 @@ lemma polyCharpoly_map_aeval
   rw [← polyCharpoly_map_eval (TensorProductEndₗ R A M ∘ₗ baseChange A φ) _ (basis A bₘ),
     polyCharpoly_baseChange, Polynomial.map_map]
   congr
-  symm
-  apply DFunLike.ext
-  intro
-  apply MvPolynomial.eval_map
+  exact DFunLike.ext _ _ fun f ↦ (MvPolynomial.eval_map (algebraMap R A) x f).symm
 
 open Algebra.TensorProduct MvPolynomial in
 lemma polyCharpoly_basisIndep (bₘ' : Basis ιM R M) :
