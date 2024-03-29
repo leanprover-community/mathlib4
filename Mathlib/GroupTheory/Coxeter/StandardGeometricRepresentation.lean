@@ -97,7 +97,7 @@ private lemma Polynomial.Chebyshev.USubOne_real_neg_cos_eq {m : ℕ} (n : ℕ) (
 
 private lemma Polynomial.Chebyshev.U_real_neg_cos_eq {m : ℕ} (n : ℕ) (hm : m > 1) :
     eval (- cos (π / m)) (U ℝ n) = (-1) ^ n * sin (π * ((n + 1) / m)) / sin (π / m) := by
-  rw [← USubOne_add_one, USubOne_real_neg_cos_eq _ hm, pow_succ]
+  rw [← USubOne_add_one, USubOne_real_neg_cos_eq _ hm, pow_succ']
   simp [neg_mul, neg_div]
 
 namespace Finsupp
@@ -283,7 +283,7 @@ theorem orthoReflection_mul_orthoReflection_pow_apply {v v' : V} (k : ℕ)
   induction' k with k ih
   · simp [USubOne]
   · /- Apply inductive hypothesis. -/
-    rw [pow_succ, LinearMap.mul_apply, ih, LinearMap.mul_apply]
+    rw [pow_succ', LinearMap.mul_apply, ih, LinearMap.mul_apply]
 
     /- Expand everything out. -/
     simp only [map_sub, map_add, map_smul]
@@ -401,7 +401,7 @@ private lemma fixed_of_orthogonal {v v' : V} (w : V) {m : ℕ}
     (((r hv) * (r hv')) ^ m) w = w := by
   induction' m with m ih
   · simp
-  · rw [pow_succ, LinearMap.mul_apply, ih, LinearMap.mul_apply]
+  · rw [pow_succ', LinearMap.mul_apply, ih, LinearMap.mul_apply]
     dsimp [orthoReflection]
     simp [hvw, hv'w]
 
