@@ -21,7 +21,7 @@ on `re s > 1`; see `LSeries_vonMangoldt_eq_deriv_riemannZeta_div`.
 We also prove some general results on L-series associated to Dirichlet characters
 (i.e., Dirichlet L-series). For example, we show that the abscissa of absolute convergence
 equals `1` (see `DirichletCharacter.absicssaOfAbsConv`) and that the L-series does not
-vanish on the open half-plane `re s > 1` (see `DirichletCharacter.LSeries_ne_zero`).
+vanish on the open half-plane `re s > 1` (see `DirichletCharacter.LSeries_ne_zero_of_one_lt_re`).
 
 We deduce results on the Riemann zeta function (which is `L 1` or `L ↗ζ` on `re s > 1`)
 as special cases.
@@ -210,7 +210,8 @@ lemma LSeries.mul_mu_eq_one {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ}
 -/
 
 /-- The L-series of a Dirichlet character does not vanish on the right half-plane `re s > 1`. -/
-lemma LSeries_ne_zero {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 < s.re) : L ↗χ s ≠ 0 :=
+lemma LSeries_ne_zero_of_one_lt_re {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 < s.re) :
+    L ↗χ s ≠ 0 :=
   fun h ↦ by simpa only [h, zero_mul, zero_ne_one] using LSeries.mul_mu_eq_one χ hs
 
 end DirichletCharacter
@@ -282,7 +283,7 @@ lemma LSeries_zeta_mul_Lseries_moebius {s : ℂ} (hs : 1 < s.re) : L ↗ζ s * L
 
 /-- The L-series of the arithmetic function `ζ` does not vanish on the right half-plane
 `re s > 1`.-/
-lemma LSeries_zeta_ne_zero {s : ℂ} (hs : 1 < s.re) : L ↗ζ s ≠ 0 :=
+lemma LSeries_zeta_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : L ↗ζ s ≠ 0 :=
   fun h ↦ by simpa only [h, zero_mul, zero_ne_one] using LSeries_zeta_mul_Lseries_moebius hs
 
 end ArithmeticFunction
@@ -305,12 +306,12 @@ lemma LSeries_one_mul_Lseries_moebius {s : ℂ} (hs : 1 < s.re) : L 1 s * L ↗�
 
 /-- The L-series of the constant sequence `1` does not vanish on the right half-plane
 `re s > 1`.-/
-lemma LSeries_one_ne_zero {s : ℂ} (hs : 1 < s.re) : L 1 s ≠ 0 :=
-  LSeries_zeta_eq ▸ LSeries_zeta_ne_zero hs
+lemma LSeries_one_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : L 1 s ≠ 0 :=
+  LSeries_zeta_eq ▸ LSeries_zeta_ne_zero_of_one_lt_re hs
 
 /-- The Riemann Zeta Function does not vanish on the half-plane `re s > 1`. -/
 lemma riemannZeta_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : riemannZeta s ≠ 0 :=
-  LSeries_one_eq_riemannZeta hs ▸ LSeries_one_ne_zero hs
+  LSeries_one_eq_riemannZeta hs ▸ LSeries_one_ne_zero_of_one_lt_re hs
 
 end zeta
 
@@ -384,7 +385,7 @@ lemma LSeries_twist_vonMangoldt_eq {N : ℕ} (χ : DirichletCharacter ℂ N) {s 
   have hs' : abscissaOfAbsConv ↗χ < s.re := by
     rwa [absicssaOfAbsConv_eq_one hN, ← EReal.coe_one, EReal.coe_lt_coe_iff]
   have hΛ : LSeriesSummable (↗χ * ↗Λ) s := LSeriesSummable_twist_vonMangoldt χ hs
-  rw [eq_div_iff <| LSeries_ne_zero χ hs, ← LSeries_convolution' hΛ hχ,
+  rw [eq_div_iff <| LSeries_ne_zero_of_one_lt_re χ hs, ← LSeries_convolution' hΛ hχ,
     convolution_twist_vonMangoldt, LSeries_deriv hs', neg_neg]
   exact LSeries_congr s fun _ _ ↦ by simp only [Pi.mul_apply, mul_comm, logMul]
 
