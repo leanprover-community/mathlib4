@@ -91,24 +91,14 @@ open Nat
 
 lemma LSeries.one_convolution_eq_zeta_convolution {R : Type*} [Semiring R] (f : ℕ → R):
     (1 : ℕ → R) ⍟ f = ((ArithmeticFunction.zeta ·) : ℕ → R) ⍟ f := by
-  ext ⟨- | n⟩
-  · simp only [zero_eq, convolution_map_zero, ArithmeticFunction.zeta_apply, cast_ite, cast_zero,
-      cast_one]
-  · simp only [convolution_def, Pi.one_apply, one_mul, ArithmeticFunction.zeta_apply, cast_ite,
-      cast_zero, cast_one, ite_mul, zero_mul]
-    refine Finset.sum_congr rfl fun p hp ↦ ?_
-    simp only [left_ne_zero_of_mem_divisorsAntidiagonal hp, ↓reduceIte]
+  refine convolution_congr (fun n hn ↦ ?_) fun _ _ ↦ rfl
+  simp only [Pi.one_apply, ArithmeticFunction.zeta_apply, hn, ↓reduceIte, cast_one]
 
 lemma LSeries.convolution_one_eq_convolution_zeta {R : Type*} [Semiring R] (f : ℕ → R):
     f ⍟ (1 : ℕ → R) = f ⍟ ((ArithmeticFunction.zeta ·) : ℕ → R) := by
   -- need to repeat the proof, as to use commutativity we need a `CommSemiring`
-  ext ⟨- | n⟩
-  · simp only [zero_eq, convolution_map_zero, ArithmeticFunction.zeta_apply, cast_ite, cast_zero,
-      cast_one]
-  · simp only [convolution_def, Pi.one_apply, one_mul, ArithmeticFunction.zeta_apply, cast_ite,
-      cast_zero, cast_one, ite_mul, zero_mul]
-    refine Finset.sum_congr rfl fun p hp ↦ ?_
-    simp only [right_ne_zero_of_mem_divisorsAntidiagonal hp, ↓reduceIte]
+  refine convolution_congr (fun _ _ ↦ rfl) fun n hn ↦ ?_
+  simp only [Pi.one_apply, ArithmeticFunction.zeta_apply, hn, ↓reduceIte, cast_one]
 
 /-- `χ₁` is (local) notation for the (necessarily trivial) Dirichlet charcater modulo `1`. -/
 local notation (name := Dchar_one) "χ₁" => (1 : DirichletCharacter ℂ 1)
