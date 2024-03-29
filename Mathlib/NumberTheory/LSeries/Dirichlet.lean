@@ -35,7 +35,8 @@ open scoped LSeries.notation
 
 /-- `δ` is the function underlying the arithmetic function `1`. -/
 lemma ArithmeticFunction.one_eq_delta : ↗(1 : ArithmeticFunction ℂ) = δ := by
-  ext ⟨- | _⟩ <;> simp only [map_zero, one_apply, LSeries.delta, ↓reduceIte]
+  ext
+  simp only [one_apply, LSeries.delta]
 
 section Moebius
 
@@ -63,7 +64,7 @@ lemma not_LSeriesSummable_moebius_at_one : ¬ LSeriesSummable ↗μ 1 := by
 
 /-- The L-series of the Möbius function converges absolutely at `s` if and only if `re s > 1`. -/
 lemma LSeriesSummable_moebius_iff {s : ℂ} : LSeriesSummable ↗μ s ↔ 1 < s.re := by
-  refine ⟨fun H ↦? _, LSeriesSummable_of_bounded_of_one_lt_re (m := 1) fun n ↦ ?_⟩
+  refine ⟨fun H ↦ ?_, LSeriesSummable_of_bounded_of_one_lt_re (m := 1) fun n ↦ ?_⟩
   · by_contra! h
     have h' : s.re ≤ (1 : ℂ).re := by simp only [one_re, h]
     exact not_LSeriesSummable_moebius_at_one <| LSeriesSummable.of_re_le_re h' H
@@ -119,8 +120,7 @@ the indicator function of `{1}`. -/
 lemma convolution_mul_moebius {n : ℕ} (χ : DirichletCharacter ℂ n) : ↗χ ⍟ (↗χ * ↗μ) = δ := by
   have : (1 : ℕ → ℂ) ⍟ (μ ·) = δ := by
     rw [one_convolution_eq_zeta_convolution, ← one_eq_delta]
-    change ⇑(ζ : ArithmeticFunction ℂ) ⍟ ⇑(μ : ArithmeticFunction ℂ) = ⇑(1 : ArithmeticFunction ℂ)
-    simp only [coe_mul, coe_zeta_mul_coe_moebius]
+    simp_rw [← natCoe_apply, ← intCoe_apply, coe_mul, coe_zeta_mul_coe_moebius]
   nth_rewrite 1 [← mul_one ↗χ]
   simpa only [← mul_convolution_distrib χ 1 ↗μ, this] using
     mul_delta <| by simp only [cast_one, map_one]
@@ -135,8 +135,7 @@ lemma delta_mul {n : ℕ} (χ : DirichletCharacter ℂ n) : δ * ↗χ = δ :=
 lemma modZero_eq_delta {χ : DirichletCharacter ℂ 0} : ↗χ = δ := by
   ext n
   rcases eq_or_ne n 0 with rfl | hn
-  · simp only [CharP.cast_eq_zero, isUnit_zero_iff, zero_ne_one, not_false_eq_true,
-      MulCharClass.map_nonunit, delta, ↓reduceIte]
+  · simp_rw [cast_zero, MulCharClass.map_nonunit χ not_isUnit_zero, delta, if_false]
   rcases eq_or_ne n 1 with rfl | hn'
   · simp only [cast_one, map_one, delta, ↓reduceIte]
   have : ¬ IsUnit (n : ZMod 0) := fun h ↦ hn' <| ZMod.eq_one_of_isUnit_natCast h
@@ -146,8 +145,7 @@ lemma modZero_eq_delta {χ : DirichletCharacter ℂ 0} : ↗χ = δ := by
 lemma modOne_eq_one {R : Type*} [CommSemiring R] {χ : DirichletCharacter R 1} :
     ((χ ·) : ℕ → R) = 1 := by
   ext
-  rw [show χ = (MulChar.trivial (ZMod 1) _) from χ.level_one]
-  simp only [MulChar.trivial_apply, isUnit_of_subsingleton, ↓reduceIte, Pi.one_apply]
+  rw [χ.level_one, MulChar.one_apply (isUnit_of_subsingleton _), Pi.one_apply]
 
 lemma LSeries_modOne_eq : L ↗χ₁ = L 1 :=
   congr_arg L modOne_eq_one
@@ -277,17 +275,11 @@ domain of convergence `1 < re s`. -/
 lemma LSeriesHasSum_zeta {s : ℂ} (hs : 1 < s.re) : LSeriesHasSum ↗ζ s (riemannZeta s) :=
   LSeries_zeta_eq_riemannZeta hs ▸ (zeta_LSeriesSummable_iff.mpr hs).LSeriesHasSum
 
-lemma convolution_zeta_moebius : ↗ζ ⍟ ↗μ = δ := by
-  have hζ : ↗ζ = ↗(ζ : ArithmeticFunction ℂ) := rfl
-  have hμ : ↗μ = ↗(μ : ArithmeticFunction ℂ) := rfl
-  ext
-  simp only [hμ, hζ, coe_mul, coe_zeta_mul_coe_moebius, one_apply, delta]
-
 /-- The L-series of the arithmetic function `ζ` and of the Möbius function are inverses. -/
 lemma LSeries_zeta_mul_Lseries_moebius {s : ℂ} (hs : 1 < s.re) : L ↗ζ s * L ↗μ s = 1 := by
-  rw [← LSeries_convolution' (zeta_LSeriesSummable_iff.mpr hs)
-    (LSeriesSummable_moebius_iff.mpr hs),
-    convolution_zeta_moebius, LSeries_delta, Pi.one_apply]
+  rw [←LSeries_convolution' (zeta_LSeriesSummable_iff.mpr hs) (LSeriesSummable_moebius_iff.mpr hs)]
+  simp_rw [← natCoe_apply, ← intCoe_apply, coe_mul, coe_zeta_mul_coe_moebius, one_eq_delta,
+    LSeries_delta, Pi.one_apply]
 
 /-- The L-series of the arithmetic function `ζ` does not vanish on the right half-plane
 `re s > 1`.-/
@@ -382,7 +374,7 @@ lemma LSeriesSummable_twist_vonMangoldt {N : ℕ} (χ : DirichletCharacter ℂ N
 
 /-- The L-series of the twist of the von Mangoldt function `Λ` by a Dirichlet character `χ` at `s`
 equals the negative logarithmtic dericative of the L-series of `χ` when `re s > 1`. -/
-lemma LSeries_twist_vonMangoldt_eq  {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 < s.re) :
+lemma LSeries_twist_vonMangoldt_eq {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 < s.re) :
     L (↗χ * ↗Λ) s = - deriv (L ↗χ) s / L ↗χ s := by
   rcases eq_or_ne N 0 with rfl | hN
   · simp only [modZero_eq_delta, delta_mul_eq_smul_delta, vonMangoldt_apply_one, ofReal_zero,
