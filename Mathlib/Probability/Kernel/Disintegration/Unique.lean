@@ -15,7 +15,7 @@ import Mathlib.Probability.Kernel.Disintegration.Integral
 -/
 
 
-open MeasureTheory Set Filter
+open MeasureTheory Set Filter MeasurableSpace
 
 open scoped ENNReal MeasureTheory Topology ProbabilityTheory
 

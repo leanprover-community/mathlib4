@@ -23,7 +23,7 @@ provided.
 
 -/
 
-open MeasureTheory ProbabilityTheory
+open MeasureTheory ProbabilityTheory MeasurableSpace
 
 open scoped ENNReal
 

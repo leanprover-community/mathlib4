@@ -63,7 +63,7 @@ file `Unique.lean`.
 
 #align_import probability.kernel.disintegration from "leanprover-community/mathlib"@"6315581f5650ffa2fbdbbbedc41243c8d7070981"
 
-open MeasureTheory Set Filter
+open MeasureTheory Set Filter MeasurableSpace
 
 open scoped ENNReal MeasureTheory Topology ProbabilityTheory
 
@@ -408,18 +408,6 @@ lemma compProd_fst_condKernelCountable (κ : kernel α (β × Ω)) [IsFiniteKern
 end Countable
 
 section CountableOrCountablyGenerated
-
-class CountableOrCountablyGenerated (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] : Prop :=
-  (countableOrCountablyGenerated :
-    (Countable α ∧ MeasurableSingletonClass α) ∨ MeasurableSpace.CountablyGenerated β)
-
-instance instCountableOrCountablyGenerated_of_countable
-    [h1 : Countable α] [h2 : MeasurableSingletonClass α] :
-  CountableOrCountablyGenerated α β := ⟨Or.inl ⟨h1, h2⟩⟩
-
-instance instCountableOrCountablyGenerated_of_standardBorelSpace
-    [h : MeasurableSpace.CountablyGenerated β] :
-  CountableOrCountablyGenerated α β := ⟨Or.inr h⟩
 
 open Classical in
 noncomputable
