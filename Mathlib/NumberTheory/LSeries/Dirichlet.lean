@@ -114,6 +114,12 @@ lemma mul_convolution_distrib {R : Type*} [CommSemiring R] {n : ℕ} (χ : Diric
   rw [(Nat.mem_divisorsAntidiagonal.mp hp).1.symm, Nat.cast_mul, map_mul]
   exact mul_mul_mul_comm ..
 
+lemma mul_delta {n : ℕ} (χ : DirichletCharacter ℂ n) : ↗χ * δ = δ :=
+  LSeries.mul_delta <| by rw [cast_one, MulChar.map_one]
+
+lemma delta_mul {n : ℕ} (χ : DirichletCharacter ℂ n) : δ * ↗χ = δ :=
+  mul_comm δ _ ▸ mul_delta ..
+
 open ArithmeticFunction in
 /-- The convolution of a Dirichlet character `χ` with the twist `χ * μ` is `δ`,
 the indicator function of `{1}`. -/
@@ -122,14 +128,7 @@ lemma convolution_mul_moebius {n : ℕ} (χ : DirichletCharacter ℂ n) : ↗χ 
     rw [one_convolution_eq_zeta_convolution, ← one_eq_delta]
     simp_rw [← natCoe_apply, ← intCoe_apply, coe_mul, coe_zeta_mul_coe_moebius]
   nth_rewrite 1 [← mul_one ↗χ]
-  simpa only [← mul_convolution_distrib χ 1 ↗μ, this] using
-    mul_delta <| by simp only [cast_one, map_one]
-
-lemma mul_delta {n : ℕ} (χ : DirichletCharacter ℂ n) : ↗χ * δ = δ :=
-  LSeries.mul_delta <| by rw [cast_one, MulChar.map_one]
-
-lemma delta_mul {n : ℕ} (χ : DirichletCharacter ℂ n) : δ * ↗χ = δ :=
-  mul_comm δ _ ▸ mul_delta ..
+  simpa only [← mul_convolution_distrib χ 1 ↗μ, this] using mul_delta _
 
 /-- The Dirichlet character mod `0` corresponds to `δ`. -/
 lemma modZero_eq_delta {χ : DirichletCharacter ℂ 0} : ↗χ = δ := by
