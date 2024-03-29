@@ -33,7 +33,7 @@ def cantorSet := iInf preCantorSet
 ## Simple Properties
 -/
 
-/--The ternary Cantor set inherits the metric and in particular the topology from the reals.-/
+/-- The ternary Cantor set inherits the metric and in particular the topology from the reals. -/
 instance cantorSet.metricSpace : MetricSpace cantorSet := Subtype.metricSpace
 
 
@@ -69,13 +69,13 @@ theorem zero_mem_cantorSet : 0 ∈ cantorSet := by
   exact zero_mem_preCantorSet
 
 
---The ternary Cantor set is a subset of [0,1].
+/-- The ternary Cantor set is a subset of [0,1]. -/
 lemma cantorSet_subset_unitInterval : cantorSet ⊆ Set.Icc 0 1 := by
   intro x hx
   simp only [cantorSet, Set.iInf_eq_iInter, Set.mem_iInter] at hx
   exact hx 0
 
-/--The ternary Cantor set is closed -/
+/-- The ternary Cantor set is closed. -/
 lemma isClosed_cantorSet : IsClosed cantorSet  := by
   let f := Homeomorph.mulLeft₀ (1/3:ℝ) (by norm_num)
   let g :=  (Homeomorph.addLeft (2:ℝ)).trans f
@@ -94,6 +94,6 @@ lemma isClosed_cantorSet : IsClosed cantorSet  := by
       simp [g, f, div_eq_inv_mul]
 
 
-/--The ternary Cantor set is compact.-/
+/-- The ternary Cantor set is compact. -/
 lemma isCompact_cantorSet : IsCompact cantorSet :=
   isCompact_Icc.of_isClosed_subset isClosed_cantorSet cantorSet_subset_unitInterval
