@@ -279,7 +279,8 @@ lemma LSeriesHasSum_zeta {s : ℂ} (hs : 1 < s.re) : LSeriesHasSum ↗ζ s (riem
 
 /-- The L-series of the arithmetic function `ζ` and of the Möbius function are inverses. -/
 lemma LSeries_zeta_mul_Lseries_moebius {s : ℂ} (hs : 1 < s.re) : L ↗ζ s * L ↗μ s = 1 := by
-  rw [←LSeries_convolution' (LSeriesSummable_zeta_iff.mpr hs) (LSeriesSummable_moebius_iff.mpr hs)]
+  rw [← LSeries_convolution' (LSeriesSummable_zeta_iff.mpr hs)
+    (LSeriesSummable_moebius_iff.mpr hs)]
   simp_rw [← natCoe_apply, ← intCoe_apply, coe_mul, coe_zeta_mul_coe_moebius, one_eq_delta,
     LSeries_delta, Pi.one_apply]
 
