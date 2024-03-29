@@ -87,10 +87,9 @@ open scoped ENNReal MeasureTheory Topology ProbabilityTheory
 
 namespace ProbabilityTheory
 
-variable {α β γ Ω Ω': Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+variable {α β γ Ω : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
   {mγ : MeasurableSpace γ} [MeasurableSpace.CountablyGenerated γ]
   [MeasurableSpace Ω] [StandardBorelSpace Ω] [Nonempty Ω]
-  [MeasurableSpace Ω'] [StandardBorelSpace Ω'] [Nonempty Ω']
 
 section BorelSnd
 
@@ -425,21 +424,21 @@ instance instCountableOrCountablyGenerated_of_standardBorelSpace
 open Classical in
 noncomputable
 irreducible_def kernel.condKernel [h : CountableOrCountablyGenerated α β]
-    (κ : kernel α (β × Ω')) [IsFiniteKernel κ] :
-    kernel (α × β) Ω' :=
+    (κ : kernel α (β × Ω)) [IsFiniteKernel κ] :
+    kernel (α × β) Ω :=
   if hα : Countable α ∧ MeasurableSingletonClass α then
     letI := hα.1; letI := hα.2; condKernelCountable κ
   else
     letI := h.countableOrCountablyGenerated.resolve_left hα; condKernelBorel κ
 
 instance kernel.instIsMarkovKernel_condKernel [CountableOrCountablyGenerated α β]
-    (κ : kernel α (β × Ω')) [IsFiniteKernel κ] :
+    (κ : kernel α (β × Ω)) [IsFiniteKernel κ] :
     IsMarkovKernel (kernel.condKernel κ) := by
   rw [kernel.condKernel_def]
   split_ifs <;> infer_instance
 
 lemma kernel.compProd_fst_condKernel [hαβ : CountableOrCountablyGenerated α β]
-    (κ : kernel α (β × Ω')) [IsFiniteKernel κ] :
+    (κ : kernel α (β × Ω)) [IsFiniteKernel κ] :
     kernel.fst κ ⊗ₖ kernel.condKernel κ = κ := by
   rw [kernel.condKernel_def]
   split_ifs with h
