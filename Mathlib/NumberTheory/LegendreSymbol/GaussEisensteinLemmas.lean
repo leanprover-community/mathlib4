@@ -51,9 +51,9 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
     · apply lt_succ_of_le; apply natAbs_valMinAbs_le
     · rw [nat_cast_natAbs_valMinAbs]
       split_ifs
-      · erw [mul_div_cancel' _ hap, valMinAbs_def_pos, val_cast_of_lt (hep hb),
+      · erw [mul_div_cancel₀ _ hap, valMinAbs_def_pos, val_cast_of_lt (hep hb),
           if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_ofNat]
-      · erw [mul_neg, mul_div_cancel' _ hap, natAbs_valMinAbs_neg, valMinAbs_def_pos,
+      · erw [mul_neg, mul_div_cancel₀ _ hap, natAbs_valMinAbs_neg, valMinAbs_def_pos,
           val_cast_of_lt (hep hb), if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_ofNat]
   exact Multiset.map_eq_map_of_bij_of_nodup _ _ (Finset.nodup _) (Finset.nodup _)
     (fun x _ => (a * x : ZMod p).valMinAbs.natAbs) hmem
@@ -175,11 +175,10 @@ private theorem sum_Ico_eq_card_lt {p q : ℕ} :
     calc
       ∑ a in Ico 1 (p / 2).succ, a * q / p =
           ∑ a in Ico 1 (p / 2).succ, ((Ico 1 (q / 2).succ).filter fun x => x * p ≤ a * q).card :=
-        Finset.sum_congr rfl fun x hx => div_eq_filter_card (Nat.pos_of_ne_zero hp0)
-          (calc
-            x * q / p ≤ p / 2 * q / p := Nat.div_le_div_right
-              (mul_le_mul_of_nonneg_right (le_of_lt_succ <| (mem_Ico.mp hx).2) (Nat.zero_le _))
-            _ ≤ _ := Nat.div_mul_div_le_div _ _ _)
+        Finset.sum_congr rfl fun x hx => div_eq_filter_card (Nat.pos_of_ne_zero hp0) <|
+          calc
+            x * q / p ≤ p / 2 * q / p := by have := le_of_lt_succ (mem_Ico.mp hx).2; gcongr
+            _ ≤ _ := Nat.div_mul_div_le_div _ _ _
       _ = _ := by
         rw [← card_sigma]
         exact card_congr (fun a _ => ⟨a.1, a.2⟩) (by
@@ -234,7 +233,7 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
       have := le_total (x.2 * p) (x.1 * q)
       simp only [mem_union, mem_filter, mem_Ico, mem_product]
       tauto
-  rw [sum_Ico_eq_card_lt, sum_Ico_eq_card_lt, hswap, ← card_disjoint_union hdisj, hunion,
+  rw [sum_Ico_eq_card_lt, sum_Ico_eq_card_lt, hswap, ← card_union_of_disjoint hdisj, hunion,
     card_product]
   simp only [card_Ico, tsub_zero, succ_sub_succ_eq_sub]
 #align zmod.sum_mul_div_add_sum_mul_div_eq_mul ZMod.sum_mul_div_add_sum_mul_div_eq_mul

@@ -34,7 +34,6 @@ open BigOperators
 section OrderedRing
 
 variable [OrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-
 variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 /-- The segment of points weakly between `x` and `y`. When convexity is refactored to support
@@ -68,11 +67,11 @@ theorem right_mem_affineSegment (x y : P) : y ∈ affineSegment R x y :=
 
 @[simp]
 theorem affineSegment_same (x : P) : affineSegment R x x = {x} := by
-  -- porting note: added as this doesn't do anything in `simp_rw` any more
+  -- Porting note: added as this doesn't do anything in `simp_rw` any more
   rw [affineSegment]
   -- Note: when adding "simp made no progress" in lean4#2336,
   -- had to change `lineMap_same` to `lineMap_same _`. Not sure why?
-  -- porting note: added `_ _` and `Function.const`
+  -- Porting note: added `_ _` and `Function.const`
   simp_rw [lineMap_same _, AffineMap.coe_const _ _, Function.const,
     (Set.nonempty_Icc.mpr zero_le_one).image_const]
 #align affine_segment_same affineSegment_same
@@ -554,7 +553,6 @@ end OrderedRing
 section StrictOrderedCommRing
 
 variable [StrictOrderedCommRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-
 variable {R}
 
 theorem Wbtw.sameRay_vsub {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) (z -ᵥ y) := by
@@ -583,7 +581,6 @@ end StrictOrderedCommRing
 section LinearOrderedRing
 
 variable [LinearOrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-
 variable {R}
 
 /-- Suppose lines from two vertices of a triangle to interior points of the opposite side meet at
@@ -670,7 +667,6 @@ end LinearOrderedRing
 section LinearOrderedField
 
 variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-
 variable {R}
 
 theorem wbtw_iff_left_eq_or_right_mem_image_Ici {x y z : P} :

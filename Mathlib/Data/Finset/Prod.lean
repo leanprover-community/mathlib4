@@ -168,17 +168,17 @@ theorem filter_product_card (s : Finset α) (t : Finset β) (p : α → Prop) (q
       (s.filter p).card * (t.filter q).card +
         (s.filter (¬ p ·)).card * (t.filter (¬ q ·)).card := by
   classical
-    rw [← card_product, ← card_product, ← filter_product, ← filter_product, ← card_union_eq]
-    · apply congr_arg
-      ext ⟨a, b⟩
-      simp only [filter_union_right, mem_filter, mem_product]
-      constructor <;> intro h <;> use h.1
-      · simp only [h.2, Function.comp_apply, Decidable.em, and_self]
-      · revert h
-        simp only [Function.comp_apply, and_imp]
-        rintro _ _ (_|_) <;> simp [*]
-    · apply Finset.disjoint_filter_filter'
-      exact (disjoint_compl_right.inf_left _).inf_right _
+  rw [← card_product, ← card_product, ← filter_product, ← filter_product, ← card_union_of_disjoint]
+  · apply congr_arg
+    ext ⟨a, b⟩
+    simp only [filter_union_right, mem_filter, mem_product]
+    constructor <;> intro h <;> use h.1
+    · simp only [h.2, Function.comp_apply, Decidable.em, and_self]
+    · revert h
+      simp only [Function.comp_apply, and_imp]
+      rintro _ _ (_|_) <;> simp [*]
+  · apply Finset.disjoint_filter_filter'
+    exact (disjoint_compl_right.inf_left _).inf_right _
 #align finset.filter_product_card Finset.filter_product_card
 
 theorem empty_product (t : Finset β) : (∅ : Finset α) ×ˢ t = ∅ :=
@@ -205,7 +205,7 @@ theorem Nonempty.snd (h : (s ×ˢ t).Nonempty) : t.Nonempty :=
   ⟨xy.2, (mem_product.1 hxy).2⟩
 #align finset.nonempty.snd Finset.Nonempty.snd
 
-@[simp]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem nonempty_product : (s ×ˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.product h.2⟩
 #align finset.nonempty_product Finset.nonempty_product

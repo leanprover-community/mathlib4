@@ -77,7 +77,9 @@ info: Try this: have : p ∣ p ∨ p ∣ p := dvd_or_dvd hp (Exists.intro p (Eq.
 ---
 info: Try this: have : p ≠ 0 := ne_zero hp
 ---
-info: Try this: have : p ∣ p * p ↔ p ∣ p ∨ p ∣ p := dvd_mul hp
+info: Try this: have : p ∣ p * p ↔ p ∣ p ∨ p ∣ p := Prime.dvd_mul hp
+---
+info: Try this: have : IsPrimal p := isPrimal hp
 ---
 info: Try this: have : p ≠ 1 := ne_one hp
 -/
@@ -97,7 +99,7 @@ theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p �
     have?! using hp
     guard_hyp Prime.not_unit : ¬IsUnit p := not_unit hp
     contradiction
-  rw [pow_succ] at h
+  rw [pow_succ'] at h
   cases' dvd_or_dvd hp h with dvd_a dvd_pow
   · assumption
   exact ih dvd_pow

@@ -18,7 +18,8 @@ We construct the power functions `x ^ y`, where `x` and `y` are real numbers.
 
 noncomputable section
 
-open Classical Real BigOperators ComplexConjugate
+open scoped Classical
+open Real BigOperators ComplexConjugate
 
 open Finset Set
 
@@ -48,7 +49,7 @@ theorem rpow_def (x y : ℝ) : x ^ y = ((x : ℂ) ^ (y : ℂ)).re := rfl
 theorem rpow_def_of_nonneg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) :
     x ^ y = if x = 0 then if y = 0 then 1 else 0 else exp (log x * y) := by
   simp only [rpow_def, Complex.cpow_def]; split_ifs <;>
-  simp_all [(Complex.ofReal_log hx).symm, -Complex.ofReal_mul, -IsROrC.ofReal_mul,
+  simp_all [(Complex.ofReal_log hx).symm, -Complex.ofReal_mul, -RCLike.ofReal_mul,
       (Complex.ofReal_mul _ _).symm, Complex.exp_ofReal_re, Complex.ofReal_eq_zero]
 #align real.rpow_def_of_nonneg Real.rpow_def_of_nonneg
 
@@ -185,7 +186,7 @@ theorem norm_rpow_of_nonneg {x y : ℝ} (hx_nonneg : 0 ≤ x) : ‖x ^ y‖ = �
   exact abs_rpow_of_nonneg hx_nonneg
 #align real.norm_rpow_of_nonneg Real.norm_rpow_of_nonneg
 
-variable {x y z : ℝ}
+variable {w x y z : ℝ}
 
 theorem rpow_add (hx : 0 < x) (y z : ℝ) : x ^ (y + z) = x ^ y * x ^ z := by
   simp only [rpow_def_of_pos hx, mul_add, exp_add]
@@ -198,6 +199,10 @@ theorem rpow_add' (hx : 0 ≤ x) (h : y + z ≠ 0) : x ^ (y + z) = x ^ y * x ^ z
     exact this.imp zero_rpow zero_rpow
   · exact rpow_add pos _ _
 #align real.rpow_add' Real.rpow_add'
+
+/-- Variant of `Real.rpow_add'` that avoids having to prove `y + z = w` twice. -/
+lemma rpow_of_add_eq (hx : 0 ≤ x) (hw : w ≠ 0) (h : y + z = w) : x ^ w = x ^ y * x ^ z := by
+  rw [← h, rpow_add' hx]; rwa [h]
 
 theorem rpow_add_of_nonneg (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 ≤ z) :
     x ^ (y + z) = x ^ y * x ^ z := by
@@ -350,29 +355,29 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: exponentiation by a real number is positive (namely 1)
 when the exponent is zero. The other cases are done in `evalRpow`. -/
-@[positivity (_ : ℝ) ^ (0 : ℝ), Pow.pow (_ : ℝ) (0 : ℝ), Real.rpow (_ : ℝ) (0 : ℝ)]
-def evalRpowZero : PositivityExt where eval {_ _} _ _ e := do
-  let .app (.app (f : Q(ℝ → ℝ → ℝ)) (a : Q(ℝ))) (_ : Q(ℝ)) ← withReducible (whnf e)
-    | throwError "not Real.rpow"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.rpow)
-  pure (.positive (q(Real.rpow_zero_pos $a) : Expr))
+@[positivity (_ : ℝ) ^ (0 : ℝ)]
+def evalRpowZero : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q($a ^ (0 : ℝ)) =>
+    assertInstancesCommute
+    pure (.positive q(Real.rpow_zero_pos $a))
+  | _, _, _ => throwError "not Real.rpow"
 
 /-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when
 the base is nonnegative and positive when the base is positive. -/
-@[positivity (_ : ℝ) ^ (_ : ℝ), Pow.pow (_ : ℝ) (_ : ℝ), Real.rpow (_ : ℝ) (_ : ℝ)]
-def evalRpow : PositivityExt where eval {_ _} zα pα e := do
-  let .app (.app (f : Q(ℝ → ℝ → ℝ)) (a : Q(ℝ))) (b : Q(ℝ)) ← withReducible (whnf e)
-    | throwError "not Real.rpow"
-  guard <| ← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.rpow)
-  let ra ← core zα pα a
-  match ra with
-  | .positive pa =>
-      have pa' : Q(0 < $a) := pa
-      pure (.positive (q(Real.rpow_pos_of_pos $pa' $b) : Expr))
-  | .nonnegative pa =>
-      have pa' : Q(0 ≤ $a) := pa
-      pure (.nonnegative (q(Real.rpow_nonneg $pa' $b) : Expr))
-  | _ => pure .none
+@[positivity (_ : ℝ) ^ (_ : ℝ)]
+def evalRpow : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q($a ^ ($b : ℝ)) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa =>
+        pure (.positive q(Real.rpow_pos_of_pos $pa $b))
+    | .nonnegative pa =>
+        pure (.nonnegative q(Real.rpow_nonneg $pa $b))
+    | _ => pure .none
+  | _, _, _ => throwError "not Real.rpow"
 
 end Mathlib.Meta.Positivity
 
@@ -449,7 +454,7 @@ theorem rpow_two (x : ℝ) : x ^ (2 : ℝ) = x ^ 2 := by
 #align real.rpow_two Real.rpow_two
 
 theorem rpow_neg_one (x : ℝ) : x ^ (-1 : ℝ) = x⁻¹ := by
-  suffices H : x ^ ((-1 : ℤ) : ℝ) = x⁻¹; · rwa [Int.cast_neg, Int.cast_one] at H
+  suffices H : x ^ ((-1 : ℤ) : ℝ) = x⁻¹ by rwa [Int.cast_neg, Int.cast_one] at H
   simp only [rpow_int_cast, zpow_one, zpow_neg]
 #align real.rpow_neg_one Real.rpow_neg_one
 

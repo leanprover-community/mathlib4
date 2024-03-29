@@ -22,7 +22,7 @@ open Set
 
 namespace Nat
 
-open Classical
+open scoped Classical
 
 noncomputable instance : InfSet ℕ :=
   ⟨fun s ↦ if h : ∃ n, n ∈ s then @Nat.find (fun n ↦ n ∈ s) _ h else 0⟩
@@ -149,7 +149,7 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
 
 theorem sSup_mem {s : Set ℕ} (h₁ : s.Nonempty) (h₂ : BddAbove s) : sSup s ∈ s :=
   let ⟨k, hk⟩ := h₂
-  h₁.cSup_mem ((finite_le_nat k).subset hk)
+  h₁.csSup_mem ((finite_le_nat k).subset hk)
 #align nat.Sup_mem Nat.sSup_mem
 
 theorem sInf_add {n : ℕ} {p : ℕ → Prop} (hn : n ≤ sInf { m | p m }) :
@@ -158,8 +158,7 @@ theorem sInf_add {n : ℕ} {p : ℕ → Prop} (hn : n ≤ sInf { m | p m }) :
   · rw [h, Nat.sInf_empty, zero_add]
     obtain hnp | hnp := hn.eq_or_lt
     · exact hnp
-    suffices hp : p (sInf { m | p m } - n + n)
-    · exact (h.subset hp).elim
+    suffices hp : p (sInf { m | p m } - n + n) from (h.subset hp).elim
     rw [tsub_add_cancel_of_le hn]
     exact csInf_mem (nonempty_of_pos_sInf <| n.zero_le.trans_lt hnp)
   · have hp : ∃ n, n ∈ { m | p m } := ⟨_, hm⟩
@@ -170,9 +169,9 @@ theorem sInf_add {n : ℕ} {p : ℕ → Prop} (hn : n ≤ sInf { m | p m }) :
 
 theorem sInf_add' {n : ℕ} {p : ℕ → Prop} (h : 0 < sInf { m | p m }) :
     sInf { m | p m } + n = sInf { m | p (m - n) } := by
-  suffices h₁ : n ≤ sInf {m | p (m - n)}
-  convert sInf_add h₁
-  · simp_rw [add_tsub_cancel_right]
+  suffices h₁ : n ≤ sInf {m | p (m - n)} by
+    convert sInf_add h₁
+    simp_rw [add_tsub_cancel_right]
   obtain ⟨m, hm⟩ := nonempty_of_pos_sInf h
   refine'
     le_csInf ⟨m + n, _⟩ fun b hb ↦

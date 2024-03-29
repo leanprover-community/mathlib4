@@ -94,9 +94,16 @@ def Sum.mul (s1 s2 : Sum) : Sum :=
     RBMap.empty
 
 /-- The `n`th power of `s : Sum` is the `n`-fold product of `s`, with `s.pow 0 = Sum.one`. -/
-def Sum.pow (s : Sum) : ℕ → Sum
-  | 0     => Sum.one
-  | (k+1) => s.mul (s.pow k)
+partial def Sum.pow (s : Sum) : ℕ → Sum
+  | 0 => Sum.one
+  | 1 => s
+  | n =>
+    let m := n >>> 1
+    let a := s.pow m
+    if n &&& 1 = 0 then
+      a.mul a
+    else
+      a.mul a |>.mul s
 
 /-- `SumOfMonom m` lifts `m` to a sum with coefficient `1`. -/
 def SumOfMonom (m : Monom) : Sum :=
@@ -189,7 +196,7 @@ but each monomial key is replaced with its index according to `map`.
 If any new monomials are encountered, they are assigned variable numbers and `map` is updated.
  -/
 def elimMonom (s : Sum) (m : Map Monom ℕ) : Map Monom ℕ × Map ℕ ℤ :=
-  s.foldr (λ mn coeff ⟨map, out⟩ =>
+  s.foldr (fun mn coeff ⟨map, out⟩ ↦
     match map.find? mn with
     | some n => ⟨map, out.insert n coeff⟩
     | none =>

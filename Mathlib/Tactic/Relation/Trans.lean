@@ -178,3 +178,9 @@ elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
 
   throwError m!"no applicable transitivity lemma found for {indentExpr tgt}
 "
+
+syntax "transitivity" (ppSpace colGt term)? : tactic
+set_option hygiene false in
+macro_rules
+  | `(tactic| transitivity) => `(tactic| trans)
+  | `(tactic| transitivity $e) => `(tactic| trans $e)

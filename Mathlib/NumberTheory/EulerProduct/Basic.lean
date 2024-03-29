@@ -15,9 +15,9 @@ The main result in this file is `EulerProduct.eulerProduct`, which says that
 if `f : ℕ → R` is norm-summable, where `R` is a complete normed commutative ring and `f` is
 multiplicative on coprime arguments with `f 0 = 0`, then
 `∏ p in primesBelow N, ∑' e : ℕ, f (p^e)` tends to `∑' n, f n` as `N` tends to infinity.
-`Nat.ArithmeticFunction.IsMultiplicative.eulerProduct` is a version of
+`ArithmeticFunction.IsMultiplicative.eulerProduct` is a version of
 `EulerProduct.eulerProduct` for multiplicative arithmetic functions in the sense of
-`Nat.ArithmeticFunction.IsMultiplicative`.
+`ArithmeticFunction.IsMultiplicative`.
 
 There is also a version `EulerProduct.eulerProduct_completely_multiplicative`, which states that
 `∏ p in primesBelow N, (1 - f p)⁻¹` tends to `∑' n, f n` as `N` tends to infinity,
@@ -105,7 +105,7 @@ lemma norm_tsum_smoothNumbers_sub_tsum_lt (hsum : Summable f) (hf₀ : f 0 = 0)
   refine ⟨N₀, fun N hN₁ ↦ ?_⟩
   convert hN₀ _ <| N.smoothNumbers_compl.trans fun _ ↦ hN₁.le.trans
   simp_rw [← tsum_subtype_add_tsum_subtype_compl hsum N.smoothNumbers,
-    add_sub_cancel', tsum_eq_tsum_diff_singleton (N.smoothNumbers)ᶜ hf₀]
+    add_sub_cancel_left, tsum_eq_tsum_diff_singleton (N.smoothNumbers)ᶜ hf₀]
 
 open Filter
 
@@ -132,7 +132,7 @@ complete normed commutative ring `R`: if `‖f ·‖` is summable, then
 Since there are no infinite products yet in Mathlib, we state it in the form of
 convergence of finite partial products. -/
 -- TODO: Change to use `∏'` once infinite products are in Mathlib
-nonrec theorem _root_.Nat.ArithmeticFunction.IsMultiplicative.eulerProduct
+nonrec theorem _root_.ArithmeticFunction.IsMultiplicative.eulerProduct
     {f : ArithmeticFunction R} (hf : f.IsMultiplicative) (hsum : Summable (‖f ·‖)) :
     Tendsto (fun n : ℕ ↦ ∏ p in primesBelow n, ∑' e, f (p ^ e)) atTop (𝓝 (∑' n, f n)) :=
   eulerProduct hf.1 hf.2 hsum f.map_zero

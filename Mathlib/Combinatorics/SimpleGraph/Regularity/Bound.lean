@@ -232,7 +232,7 @@ variable {ι 𝕜 : Type*} [LinearOrderedField 𝕜] (r : ι → ι → Prop) [D
 theorem mul_sq_le_sum_sq (hst : s ⊆ t) (f : ι → 𝕜) (hs : x ^ 2 ≤ ((∑ i in s, f i) / s.card) ^ 2)
     (hs' : (s.card : 𝕜) ≠ 0) : (s.card : 𝕜) * x ^ 2 ≤ ∑ i in t, f i ^ 2 :=
   (mul_le_mul_of_nonneg_left (hs.trans sum_div_card_sq_le_sum_sq_div_card) <|
-    Nat.cast_nonneg _).trans <| (mul_div_cancel' _ hs').le.trans <|
+    Nat.cast_nonneg _).trans <| (mul_div_cancel₀ _ hs').le.trans <|
       sum_le_sum_of_subset_of_nonneg hst fun _ _ _ => sq_nonneg _
 #align szemeredi_regularity.mul_sq_le_sum_sq SzemerediRegularity.mul_sq_le_sum_sq
 
@@ -247,9 +247,9 @@ theorem add_div_le_sum_sq_div_card (hst : s ⊆ t) (f : ι → 𝕜) (d : 𝕜) 
     sq_le_sq.2 (by rwa [abs_of_nonneg hx])
   have h₂ : x ^ 2 ≤ ((∑ i in s, (f i - (∑ j in t, f j) / t.card)) / s.card) ^ 2 := by
     apply h₁.trans
-    rw [sum_sub_distrib, sum_const, nsmul_eq_mul, sub_div, mul_div_cancel_left _ hscard.ne']
+    rw [sum_sub_distrib, sum_const, nsmul_eq_mul, sub_div, mul_div_cancel_left₀ _ hscard.ne']
   apply (add_le_add_right ht _).trans
-  rw [← mul_div_right_comm, le_div_iff htcard, add_mul, div_mul_cancel _ htcard.ne']
+  rw [← mul_div_right_comm, le_div_iff htcard, add_mul, div_mul_cancel₀ _ htcard.ne']
   have h₃ := mul_sq_le_sum_sq hst (fun i => (f i - (∑ j in t, f j) / t.card)) h₂ hscard.ne'
   apply (add_le_add_left h₃ _).trans
   -- Porting note: was
@@ -273,17 +273,24 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `SzemerediRegularity.initialBound` is always positive. -/
 @[positivity SzemerediRegularity.initialBound _ _]
-def evalInitialBound : PositivityExt where eval {_ _} _ _ e := do
-  let (.app (.app _ (ε : Q(ℝ))) (l : Q(ℕ))) ← whnfR e | throwError "not initialBound"
-  pure (.positive (q(SzemerediRegularity.initialBound_pos $ε $l) : Lean.Expr))
+def evalInitialBound : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(SzemerediRegularity.initialBound $ε $l) =>
+    assertInstancesCommute
+    pure (.positive q(SzemerediRegularity.initialBound_pos $ε $l))
+  | _, _, _ => throwError "not initialBound"
+
 
 example (ε : ℝ) (l : ℕ) : 0 < SzemerediRegularity.initialBound ε l := by positivity
 
 /-- Extension for the `positivity` tactic: `SzemerediRegularity.bound` is always positive. -/
 @[positivity SzemerediRegularity.bound _ _]
-def evalBound : PositivityExt where eval {_ _} _ _ e := do
-  let (.app (.app _ (ε : Q(ℝ))) (l : Q(ℕ))) ← whnfR e | throwError "not bound"
-  pure (.positive (q(SzemerediRegularity.bound_pos $ε $l) : Lean.Expr))
+def evalBound : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(SzemerediRegularity.bound $ε $l) =>
+    assertInstancesCommute
+    pure (.positive q(SzemerediRegularity.bound_pos $ε $l))
+  | _, _, _ => throwError "not bound"
 
 example (ε : ℝ) (l : ℕ) : 0 < SzemerediRegularity.bound ε l := by positivity
 

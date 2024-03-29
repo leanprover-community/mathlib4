@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Gabriel Ebner, Floris van Doorn
 -/
 import Std.Tactic.OpenPrivate
-import Std.Lean.Meta.DiscrTree
 import Lean.Elab.Tactic.Simp
 
 /-!
@@ -80,10 +79,11 @@ def mkSimpTheoremsFromConst' (declName : Name) (post : Bool) (inv : Bool) (prio 
         auxNames := auxNames.push auxName
         r := r.push <| ← mkSimpTheoremCore (.decl declName)
           (mkConst auxName (cinfo.levelParams.map mkLevelParam)) #[] (mkConst auxName) post prio
+          false
       return (auxNames, r)
     else
       return (#[], #[← mkSimpTheoremCore (.decl declName) (mkConst declName <|
-        cinfo.levelParams.map mkLevelParam) #[] (mkConst declName) post prio])
+        cinfo.levelParams.map mkLevelParam) #[] (mkConst declName) post prio false])
 
 /-- Similar to `addSimpTheorem` except that it returns an array of all auto-generated
   simp-theorems. -/
