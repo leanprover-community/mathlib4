@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
 import Mathlib.Order.Filter.CountableInter
+import Mathlib.Order.Filter.CardinalInter
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.SetTheory.Cardinal.Cofinality
 
@@ -11,7 +12,8 @@ import Mathlib.SetTheory.Cardinal.Cofinality
 # The cocardinal filter
 
 In this file we define `Filter.cocardinal hc`: the filter of sets with cardinality less than
-  `c` that satisfies `Cardinal.aleph0 < c`.
+  `c` that satisfies `Cardinal.aleph0 < c`. Such filters are `CardinalInterFilter` with cardinality
+  `c`.
 
 -/
 
@@ -56,7 +58,7 @@ def ofCardinalUnion (hc : 2 < c) (p : Set α → Prop)
   refine .ofCardinalInter hc {s | p sᶜ} (fun S hSc hSp ↦ ?_)
     fun s t ht hsub ↦ hmono sᶜ ht tᶜ (compl_subset_compl.2 hsub)
   rw [mem_setOf_eq, compl_sInter]
-  exact hUnion (compl '' S) (lt_of_le_of_lt Cardinal.mk_image_le hSc) (ball_image_iff.2 hSp)
+  exact hUnion (compl '' S) (lt_of_le_of_lt Cardinal.mk_image_le hSc) (forall_mem_image.2 hSp)
 
 -- TO DO: Generalises, CardinalInterFilter generalisation of CountableInterFilter is in another PR.
 instance countableInter_ofCardinalnter (hc : Cardinal.aleph0 < c) (l : Set (Set α))
