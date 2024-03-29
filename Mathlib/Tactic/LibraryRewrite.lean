@@ -5,6 +5,8 @@ Authors: Jovan Gerbscheid, Anand Rao
 -/
 import Mathlib.Lean.Meta.RefinedDiscrTree
 import Mathlib.Tactic.InteractiveUnfold
+import Std.Util.Cache
+import Std.Util.Pickle
 
 /-!
 # Point & click library rewriting
