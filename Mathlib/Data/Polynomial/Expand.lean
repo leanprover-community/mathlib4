@@ -89,7 +89,7 @@ theorem expand_one (f : R[X]) : expand R 1 f = f :=
 
 theorem expand_pow (f : R[X]) : expand R (p ^ q) f = (expand R p)^[q] f :=
   Nat.recOn q (by rw [pow_zero, expand_one, Function.iterate_zero, id]) fun n ih => by
-    rw [Function.iterate_succ_apply', pow_succ, expand_mul, ih]
+    rw [Function.iterate_succ_apply', pow_succ', expand_mul, ih]
 #align polynomial.expand_pow Polynomial.expand_pow
 
 theorem derivative_expand (f : R[X]) : Polynomial.derivative (expand R p f) =
@@ -273,7 +273,7 @@ theorem map_expand_pow_char (f : R[X]) (n : ℕ) :
   induction' n with _ n_ih
   · simp [RingHom.one_def]
   symm
-  rw [pow_succ', pow_mul, ← n_ih, ← expand_char, pow_succ, RingHom.mul_def, ← map_map, mul_comm,
+  rw [pow_succ, pow_mul, ← n_ih, ← expand_char, pow_succ', RingHom.mul_def, ← map_map, mul_comm,
     expand_mul, ← map_expand]
 #align polynomial.map_expand_pow_char Polynomial.map_expand_pow_char
 
@@ -324,7 +324,7 @@ theorem of_irreducible_expand_pow {p : ℕ} (hp : p ≠ 0) {f : R[X]} {n : ℕ} 
     Irreducible (expand R (p ^ n) f) → Irreducible f :=
   Nat.recOn n (fun hf => by rwa [pow_zero, expand_one] at hf) fun n ih hf =>
     ih <| of_irreducible_expand hp <| by
-      rw [pow_succ] at hf
+      rw [pow_succ'] at hf
       rwa [expand_expand]
 #align polynomial.of_irreducible_expand_pow Polynomial.of_irreducible_expand_pow
 

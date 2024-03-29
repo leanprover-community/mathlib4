@@ -46,7 +46,7 @@ theorem bound_of_shell [RingHomIsometric σ₁₂] (f : E →ₛₗ[σ₁₂] F)
   exact SemilinearMapClass.bound_of_shell_semi_normed f ε_pos hc hf (norm_ne_zero_iff.2 hx)
 #align linear_map.bound_of_shell LinearMap.bound_of_shell
 
-/-- `LinearMap.bound_of_ball_bound'` is a version of this lemma over a field satisfying `IsROrC`
+/-- `LinearMap.bound_of_ball_bound'` is a version of this lemma over a field satisfying `RCLike`
 that produces a concrete bound.
 -/
 theorem bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] Fₗ)
