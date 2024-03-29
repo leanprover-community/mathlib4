@@ -186,14 +186,14 @@ theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
 
 section Maps
 
-variable {α' σ' : Type*} (f : α' → α) (g : σ ≃ σ')
+variable {α' σ' : Type*}
 
 /--
 `M.comap f` pulls back the alphabet of `M` along `f`. In other words, it applies `f` to the input
 before passing it to `M`.
 -/
 @[simps]
-def comap : DFA α' σ where
+def comap (f : α' → α) : DFA α' σ where
   step s a := M.step s (f a)
   start := M.start
   accept := M.accept
@@ -202,17 +202,18 @@ def comap : DFA α' σ where
 theorem comap_id : M.comap id = M := rfl
 
 @[simp]
-theorem evalFrom_comap (s : σ) (x : List α') :
+theorem evalFrom_comap (f : α' → α) (s : σ) (x : List α') :
     (M.comap f).evalFrom s x = M.evalFrom s (x.map f) := by
   induction x using List.list_reverse_induction with
   | base => simp
   | ind x a ih => simp [ih]
 
 @[simp]
-theorem eval_comap (x : List α') : (M.comap f).eval x = M.eval (x.map f) := by simp [eval]
+theorem eval_comap (f : α' → α) (x : List α') : (M.comap f).eval x = M.eval (x.map f) := by
+  simp [eval]
 
 @[simp]
-theorem accepts_comap : (M.comap f).accepts = List.map f ⁻¹' M.accepts := by
+theorem accepts_comap (f : α' → α) : (M.comap f).accepts = List.map f ⁻¹' M.accepts := by
   ext x
   conv =>
     rhs
@@ -221,7 +222,7 @@ theorem accepts_comap : (M.comap f).accepts = List.map f ⁻¹' M.accepts := by
 
 /-- Lifts an equivalence on states to an equivalence on DFAs. -/
 @[simps apply_step apply_start apply_accept]
-def reindex : DFA α σ ≃ DFA α σ' where
+def reindex (g : σ ≃ σ') : DFA α σ ≃ DFA α σ' where
   toFun M := {
     step := fun s a => g (M.step (g.symm s) a)
     start := g M.start
@@ -239,24 +240,27 @@ def reindex : DFA α σ ≃ DFA α σ' where
 theorem reindex_refl : reindex (Equiv.refl σ) M = M := rfl
 
 @[simp]
-theorem symm_reindex : (reindex (α := α) g).symm = reindex g.symm := rfl
+theorem symm_reindex (g : σ ≃ σ') : (reindex (α := α) g).symm = reindex g.symm := rfl
 
 @[simp]
-theorem evalFrom_reindex (s : σ') (x : List α) :
+theorem evalFrom_reindex (g : σ ≃ σ') (s : σ') (x : List α) :
     (reindex g M).evalFrom s x = g (M.evalFrom (g.symm s) x) := by
   induction x using List.list_reverse_induction with
   | base => simp
   | ind x a ih => simp [ih]
 
 @[simp]
-theorem eval_reindex (x : List α) : (reindex g M).eval x = g (M.eval x) := by simp [eval]
+theorem eval_reindex (g : σ ≃ σ') (x : List α) : (reindex g M).eval x = g (M.eval x) := by
+  simp [eval]
 
 @[simp]
-theorem accepts_reindex : (reindex g M).accepts = M.accepts := by
+theorem accepts_reindex (g : σ ≃ σ') : (reindex g M).accepts = M.accepts := by
   ext x
   simp [mem_accepts]
 
-theorem comap_reindex : (reindex g M).comap f = reindex g (M.comap f) := by simp [comap, reindex]
+theorem comap_reindex (f : α' → α) (g : σ ≃ σ') :
+    (reindex g M).comap f = reindex g (M.comap f) := by
+  simp [comap, reindex]
 
 end Maps
 
