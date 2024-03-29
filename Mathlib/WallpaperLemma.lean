@@ -41,21 +41,17 @@ example {p q r : ℕ} (hp : 2 ≤ p) (hpq : p ≤ q) (hqr : q ≤ r) (h : (p:ℚ
   have H₁ : 3⁻¹ ≤ (p:ℚ)⁻¹ := by linarith only [h, h₂, h₃]
   have H₂ : (q:ℚ)⁻¹ < 2⁻¹ := by linarith only [h, h₁, h₂]
   -- ** Real work starts here
-  obtain hp | hp₂ := eq_or_gt_of_le H₁
-  · have hq : (q:ℚ)⁻¹ = 3⁻¹ := by linarith only [h, h₂, h₃, hp]
-    have hr : (r:ℚ)⁻¹ = 3⁻¹ := by linarith only [h, hp, hq]
-    cancel_nat_inv at hp hq hr
-    simp [hp, hq, hr]
+  obtain hp₂ | hp := (eq_or_gt_of_le H₁).symm
   have hp : (p:ℚ)⁻¹ = 2⁻¹ := by inv_bounds hp₂, hp
   have H₃ : 4⁻¹ ≤ (q:ℚ)⁻¹ := by linarith only [h, hp, h₃]
-  obtain hq | hq₂ := eq_or_gt_of_le H₃
-  · have hr : (r:ℚ)⁻¹ = 4⁻¹ := by linarith only [h, hp, hq]
-    cancel_nat_inv at hp hq hr
-    simp [hp, hq, hr]
-  · have hq : (q:ℚ)⁻¹ = 3⁻¹ := by inv_bounds hq₂, H₂
-    have hr : (r:ℚ)⁻¹ = 6⁻¹ := by linarith only [h, hp, hq]
-    cancel_nat_inv at hp hq hr
-    simp [hp, hq, hr]
+  obtain hq₂ | hq := (eq_or_gt_of_le H₃).symm
+  have hq : (q:ℚ)⁻¹ = 3⁻¹ := by inv_bounds hq₂, H₂
+  all_goals
+    sorry
+    -- linear_solve hq : (q:ℚ)⁻¹
+    -- linear_solve hr : (r:ℚ)⁻¹
+    -- cancel_nat_inv at hp hq hr
+    -- simp [hp, hq, hr]
 
 /-- Classification of triples `(p, q, r)` of natural numbers, such that `p⁻¹ + q⁻¹ + r⁻¹ = 1`.
 Method 2: hybrid. -/
