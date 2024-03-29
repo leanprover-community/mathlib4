@@ -20,7 +20,8 @@ We also prove basic properties of these functions.
 
 noncomputable section
 
-open Classical Real NNReal ENNReal BigOperators ComplexConjugate
+open scoped Classical
+open Real NNReal ENNReal BigOperators ComplexConjugate
 
 open Finset Function Set
 
@@ -575,7 +576,7 @@ lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
 
 @[simp, norm_cast]
 lemma rpow_int_cast (x : ℝ≥0∞) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
-  cases n <;> simp only [Int.ofNat_eq_coe, Int.cast_ofNat, rpow_nat_cast, zpow_coe_nat,
+  cases n <;> simp only [Int.ofNat_eq_coe, Int.cast_ofNat, rpow_nat_cast, zpow_natCast,
     Int.cast_negSucc, rpow_neg, zpow_negSucc]
 
 theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2

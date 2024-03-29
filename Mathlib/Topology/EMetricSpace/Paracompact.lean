@@ -45,12 +45,12 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   have hpow_le : ∀ {m n : ℕ}, m ≤ n → (2⁻¹ : ℝ≥0∞) ^ n ≤ 2⁻¹ ^ m := @fun m n h =>
     pow_le_pow_right_of_le_one' (ENNReal.inv_le_one.2 ENNReal.one_lt_two.le) h
   have h2pow : ∀ n : ℕ, 2 * (2⁻¹ : ℝ≥0∞) ^ (n + 1) = 2⁻¹ ^ n := fun n => by
-    simp [pow_succ, ← mul_assoc, ENNReal.mul_inv_cancel two_ne_zero two_ne_top]
+    simp [pow_succ', ← mul_assoc, ENNReal.mul_inv_cancel two_ne_zero two_ne_top]
   -- Consider an open covering `S : Set (Set α)`
   refine' ⟨fun ι s ho hcov => _⟩
   simp only [iUnion_eq_univ_iff] at hcov
   -- choose a well founded order on `S`
-  -- Porting note: todo: add lemma that claims `∃ i : LinearOrder ι, WellFoundedLT ι`
+  -- Porting note (#11215): TODO: add lemma that claims `∃ i : LinearOrder ι, WellFoundedLT ι`
   let _ : LinearOrder ι := by classical exact linearOrderOfSTO WellOrderingRel
   have wf : WellFounded ((· < ·) : ι → ι → Prop) := @IsWellFounded.wf ι WellOrderingRel _
   -- Let `ind x` be the minimal index `s : S` such that `x ∈ s`.

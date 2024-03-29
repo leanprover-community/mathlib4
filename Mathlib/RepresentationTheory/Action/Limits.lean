@@ -237,10 +237,16 @@ section Preadditive
 
 variable [Preadditive V]
 
+instance {X Y : Action V G} : Add (X ⟶ Y) where
+  add f g := ⟨f.hom + g.hom, by simp [f.comm, g.comm]⟩
+
+instance {X Y : Action V G} : Neg (X ⟶ Y) where
+  neg f := ⟨-f.hom, by simp [f.comm]⟩
+
 instance : Preadditive (Action V G) where
   homGroup X Y :=
-    { add := fun f g => ⟨f.hom + g.hom, by simp [f.comm, g.comm]⟩
-      neg := fun f => ⟨-f.hom, by simp [f.comm]⟩
+    { nsmul := nsmulRec
+      zsmul := zsmulRec
       zero_add := by intros; ext; exact zero_add _
       add_zero := by intros; ext; exact add_zero _
       add_assoc := by intros; ext; exact add_assoc _ _ _
@@ -320,13 +326,11 @@ set_option linter.uppercaseLean3 false in
 
 variable {H : MonCat.{u}} (f : G ⟶ H)
 
-instance res_additive [Preadditive V] : (res V f).Additive where
+instance res_additive : (res V f).Additive where
 set_option linter.uppercaseLean3 false in
 #align Action.res_additive Action.res_additive
 
-variable {R : Type*} [Semiring R]
-
-instance res_linear [Preadditive V] [Linear R V] : (res V f).Linear R where
+instance res_linear : (res V f).Linear R where
 set_option linter.uppercaseLean3 false in
 #align Action.res_linear Action.res_linear
 

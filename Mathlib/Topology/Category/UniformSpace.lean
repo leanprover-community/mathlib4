@@ -107,7 +107,7 @@ structure CpltSepUniformSpace where
   α : Type u
   [isUniformSpace : UniformSpace α]
   [isCompleteSpace : CompleteSpace α]
-  [isSeparated : SeparatedSpace α]
+  [isT0 : T0Space α]
 #align CpltSepUniformSpace CpltSepUniformSpace
 
 namespace CpltSepUniformSpace
@@ -115,7 +115,7 @@ namespace CpltSepUniformSpace
 instance : CoeSort CpltSepUniformSpace (Type u) :=
   ⟨CpltSepUniformSpace.α⟩
 
-attribute [instance] isUniformSpace isCompleteSpace isSeparated
+attribute [instance] isUniformSpace isCompleteSpace isT0
 
 /-- The function forgetting that a complete separated uniform spaces is complete and separated. -/
 def toUniformSpace (X : CpltSepUniformSpace) : UniformSpaceCat :=
@@ -126,23 +126,22 @@ instance completeSpace (X : CpltSepUniformSpace) : CompleteSpace (toUniformSpace
   CpltSepUniformSpace.isCompleteSpace X
 #align CpltSepUniformSpace.complete_space CpltSepUniformSpace.completeSpace
 
-instance separatedSpace (X : CpltSepUniformSpace) : SeparatedSpace (toUniformSpace X).α :=
-  CpltSepUniformSpace.isSeparated X
-#align CpltSepUniformSpace.separated_space CpltSepUniformSpace.separatedSpace
+instance t0Space (X : CpltSepUniformSpace) : T0Space (toUniformSpace X).α :=
+  CpltSepUniformSpace.isT0 X
+#align CpltSepUniformSpace.separated_space CpltSepUniformSpace.t0Space
 
 /-- Construct a bundled `UniformSpace` from the underlying type and the appropriate typeclasses. -/
-def of (X : Type u) [UniformSpace X] [CompleteSpace X] [SeparatedSpace X] : CpltSepUniformSpace :=
+def of (X : Type u) [UniformSpace X] [CompleteSpace X] [T0Space X] : CpltSepUniformSpace :=
   ⟨X⟩
 #align CpltSepUniformSpace.of CpltSepUniformSpace.of
 
 @[simp]
-theorem coe_of (X : Type u) [UniformSpace X] [CompleteSpace X] [SeparatedSpace X] :
+theorem coe_of (X : Type u) [UniformSpace X] [CompleteSpace X] [T0Space X] :
     (of X : Type u) = X :=
   rfl
 #align CpltSepUniformSpace.coe_of CpltSepUniformSpace.coe_of
 
 instance : Inhabited CpltSepUniformSpace :=
-  haveI : SeparatedSpace Empty := separated_iff_t2.mpr (by infer_instance)
   ⟨CpltSepUniformSpace.of Empty⟩
 
 /-- The category instance on `CpltSepUniformSpace`. -/
@@ -223,7 +222,7 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
           left_inv := fun f => by dsimp; erw [extension_comp_coe]
           right_inv := fun f => by
             apply Subtype.eq; funext x; cases f
-            exact @Completion.extension_coe _ _ _ _ _ (CpltSepUniformSpace.separatedSpace _)
+            exact @Completion.extension_coe _ _ _ _ _ (CpltSepUniformSpace.t0Space _)
               ‹_› _ }
       homEquiv_naturality_left_symm := fun {X' X Y} f g => by
         apply hom_ext; funext x; dsimp

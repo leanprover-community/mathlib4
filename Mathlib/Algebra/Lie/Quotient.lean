@@ -35,11 +35,8 @@ universe u v w w₁ w₂
 namespace LieSubmodule
 
 variable {R : Type u} {L : Type v} {M : Type w}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
-
 variable [LieRingModule L M] [LieModule R L M]
-
 variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
 
 /-- The quotient of a Lie module by a Lie submodule. It is a Lie module. -/
@@ -233,9 +230,7 @@ end LieSubmodule
 namespace LieHom
 
 variable {R L L' : Type*}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
-
 variable (f : L →ₗ⁅R⁆ L')
 
 /-- The first isomorphism theorem for morphisms of Lie algebras. -/
