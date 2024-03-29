@@ -424,7 +424,7 @@ instance instCountableOrCountablyGenerated_of_standardBorelSpace
 
 open Classical in
 noncomputable
-def kernel.condKernel [h : CountableOrCountablyGenerated α β]
+irreducible_def kernel.condKernel [h : CountableOrCountablyGenerated α β]
     (κ : kernel α (β × Ω')) [IsFiniteKernel κ] :
     kernel (α × β) Ω' :=
   if hα : Countable α ∧ MeasurableSingletonClass α then
@@ -435,13 +435,13 @@ def kernel.condKernel [h : CountableOrCountablyGenerated α β]
 instance kernel.instIsMarkovKernel_condKernel [CountableOrCountablyGenerated α β]
     (κ : kernel α (β × Ω')) [IsFiniteKernel κ] :
     IsMarkovKernel (kernel.condKernel κ) := by
-  unfold kernel.condKernel
+  rw [kernel.condKernel_def]
   split_ifs <;> infer_instance
 
 lemma kernel.compProd_fst_condKernel [hαβ : CountableOrCountablyGenerated α β]
     (κ : kernel α (β × Ω')) [IsFiniteKernel κ] :
     kernel.fst κ ⊗ₖ kernel.condKernel κ = κ := by
-  unfold kernel.condKernel
+  rw [kernel.condKernel_def]
   split_ifs with h
   · have := h.1
     have := h.2

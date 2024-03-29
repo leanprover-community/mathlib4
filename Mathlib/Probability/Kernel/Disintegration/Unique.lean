@@ -77,10 +77,10 @@ disintegration kernel. -/
 theorem eq_condKernel_of_kernel_eq_compProd (κ : kernel (α × β) Ω) [IsFiniteKernel κ]
     (hκ : ρ = kernel.fst ρ ⊗ₖ κ) (a : α) :
     ∀ᵐ x ∂(kernel.fst ρ a), κ (a, x) = kernel.condKernel ρ (a, x) := by
--- The idea is to transporting the question to `ℝ` from `Ω` using `exists_measurableEmbedding_real`
+-- The idea is to transporting the question to `ℝ` from `Ω` using `exists_embeddingReal`
 -- and then constructing a measure on `α × ℝ` using the obtained measurable embedding
-  let f := measurableEmbedding_real Ω
-  let hf := measurableEmbedding_measurableEmbedding_real Ω
+  let f := embeddingReal Ω
+  let hf := measurableEmbedding_embeddingReal Ω
   set ρ' : kernel α (β × ℝ) := kernel.map ρ (Prod.map id f)
     (measurable_id.prod_map hf.measurable) with hρ'def
   have hρ' : kernel.fst ρ' = kernel.fst ρ := by
@@ -176,10 +176,10 @@ theorem Measure.eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFini
     (hκ : ρ = ρ.fst ⊗ₘ κ) :
     ∀ᵐ x ∂ρ.fst, κ x = ρ.condKernel x := by
   -- The idea is to transporting the question to `ℝ` from `Ω` using
-  -- `exists_measurableEmbedding_real` and then constructing a measure on `α × ℝ` using
+  -- `exists_embeddingReal` and then constructing a measure on `α × ℝ` using
   -- the obtained measurable embedding
-  let f := measurableEmbedding_real Ω
-  let hf := measurableEmbedding_measurableEmbedding_real Ω
+  let f := embeddingReal Ω
+  let hf := measurableEmbedding_embeddingReal Ω
   set ρ' : Measure (α × ℝ) := ρ.map (Prod.map id f) with hρ'def
   have hρ' : ρ'.fst = ρ.fst := by
     ext s hs
