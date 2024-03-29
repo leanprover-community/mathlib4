@@ -296,7 +296,7 @@ def LevyProkhorov.probabilityMeasure (μ : LevyProkhorov (ProbabilityMeasure Ω)
 /-- Coercion to the type synonym `LevyProkhorov (ProbabilityMeasure Ω)`
 from `ProbabilityMeasure Ω`. -/
 def ProbabilityMeasure.toLevyProkhorov (μ : ProbabilityMeasure Ω) :
-  LevyProkhorov (ProbabilityMeasure Ω) := μ
+    LevyProkhorov (ProbabilityMeasure Ω) := μ
 
 /-- Coercion from the type synonym `LevyProkhorov (FiniteMeasure Ω)` to `FiniteMeasure Ω`. -/
 def LevyProkhorov.finiteMeasure (μ : LevyProkhorov (FiniteMeasure Ω)) :
@@ -551,7 +551,8 @@ lemma continuous_probabilityMeasure_toLevyProkhorov [SeparableSpace Ω] :
     SeparableSpace.exists_measurable_partition_diam_le Ω third_ε_pos
   have Es_union_incr : Monotone (fun (n : ℕ) ↦ ⋃ i ∈ Iio n, Es i) :=
     fun _ _ hnm ↦ biUnion_mono (Iio_subset_Iio_iff.mpr hnm) (fun _ _ ↦ le_rfl)
-  have large' : Tendsto (P.toMeasure ∘ fun n => ⋃ i, ⋃ (_ : i < n), Es i) atTop (𝓝 (P.toMeasure univ)) := by
+  have large' :
+      Tendsto (P.toMeasure ∘ fun n => ⋃ i, ⋃ (_ : i < n), Es i) atTop (𝓝 (P.toMeasure univ)) := by
     convert @tendsto_measure_iUnion Ω ℕ _ P _ _ _ (fun (n : ℕ) ↦ ⋃ i ∈ Iio n, Es i) Es_union_incr
     apply subset_antisymm _ (subset_univ _)
     simpa only [← biUnion_iUnion, iUnion_Iio, mem_univ, iUnion_true, univ_subset_iff] using Es_cover
@@ -567,8 +568,10 @@ lemma continuous_probabilityMeasure_toLevyProkhorov [SeparableSpace Ω] :
   simp only [Function.comp_apply, mem_Ioi] at hN
   have Js_finite : Set.Finite {J | J ⊆ Iio N} := Finite.finite_subsets <| finite_Iio N
   set Gs := (fun (J : Set ℕ) ↦ thickening (ε/3) (⋃ j ∈ J, Es j)) '' {J | J ⊆ Iio N}
-  have Gs_open' : ∀ (J : Set ℕ), IsOpen (thickening (ε/3) (⋃ j ∈ J, Es j)) := fun J ↦ isOpen_thickening
-  have important : ∀ G, IsOpen G → ({Q | P.toMeasure G < Q.toMeasure G + ENNReal.ofReal (ε/3)} ∈ 𝓝 P) := by
+  have Gs_open' : ∀ (J : Set ℕ), IsOpen (thickening (ε/3) (⋃ j ∈ J, Es j)) :=
+    fun J ↦ isOpen_thickening
+  have important :
+      ∀ G, IsOpen G → ({Q | P.toMeasure G < Q.toMeasure G + ENNReal.ofReal (ε/3)} ∈ 𝓝 P) := by
     intro G G_open
     by_cases easy : P.toMeasure G < ENNReal.ofReal (ε/3)
     · exact eventually_of_forall (fun _ ↦ lt_of_lt_of_le easy le_add_self)
@@ -578,8 +581,8 @@ lemma continuous_probabilityMeasure_toLevyProkhorov [SeparableSpace Ω] :
       · exact (lt_of_lt_of_le third_ε_pos' easy).ne.symm
       · exact third_ε_pos'.ne.symm
     filter_upwards [gt_mem_sets_of_limsInf_gt (α := ℝ≥0∞) isBounded_ge_of_bot
-        (show P.toMeasure G - ENNReal.ofReal (ε/3) < limsInf ((𝓝 P).map (fun Q ↦ Q.toMeasure G)) from aux)]
-      with Q hQ
+        (show P.toMeasure G - ENNReal.ofReal (ε/3) < limsInf ((𝓝 P).map (fun Q ↦ Q.toMeasure G))
+          from aux)] with Q hQ
     simp only [preimage_setOf_eq, mem_setOf_eq] at hQ
     convert ENNReal.add_lt_add_right (ofReal_ne_top (r := ε/3)) hQ
     exact (tsub_add_cancel_of_le easy).symm
@@ -645,6 +648,8 @@ theorem levyProkhorov_eq_convergenceInDistribution [SeparableSpace Ω] :
   le_antisymm (continuous_probabilityMeasure_toLevyProkhorov (Ω := Ω)).coinduced_le
               levyProkhorov_le_convergenceInDistribution
 
+/-- The identity map is a homeomorphism from `ProbabilityMeasure Ω` with the topology of
+convergence in distribution to `ProbabilityMeasure Ω` with the Lévy-Prokhorov (pseudo)metric. -/
 def homeomorph_probabilityMeasure_levyProkhorov [SeparableSpace Ω] :
     Homeomorph (ProbabilityMeasure Ω) (LevyProkhorov (ProbabilityMeasure Ω)) where
   toFun := ProbabilityMeasure.toLevyProkhorov (Ω := Ω)
