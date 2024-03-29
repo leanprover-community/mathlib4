@@ -163,6 +163,11 @@ open Lean Parser.Tactic
 /- S -/ syntax (name := elide) "elide " num (location)? : tactic
 /- S -/ syntax (name := unelide) "unelide" (location)? : tactic
 
+/-- `ext1? pat*` is like `ext1 pat*` but gives a suggestion on what pattern to use -/
+/- M -/ syntax (name := ext1?) "ext1?" (colGt ppSpace rintroPat)* : tactic
+/-- `ext? pat*` is like `ext pat*` but gives a suggestion on what pattern to use -/
+/- M -/ syntax (name := ext?) "ext?" (colGt ppSpace rintroPat)* (" : " num)? : tactic
+
 /- S -/ syntax (name := clarify) "clarify" (config)?
   (Parser.Tactic.simpArgs)? (" using " term,+)? : tactic
 /- S -/ syntax (name := safe) "safe" (config)?
