@@ -232,7 +232,7 @@ theorem prefix_take_iff {x y : List α} {n : ℕ} : x <+: y.take n ↔ x <+: y �
     rw [hp, List.take_take]
     simp [min_eq_left, hl, hl']
 
-theorem concat_prefix_of_length_lt {x y : List α} (h : x <+: y) (hl : x.length < y.length) :
+theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.length) :
     x ++ [y.get ⟨x.length, hl⟩] <+: y := by
   use y.drop (x.length + 1)
   nth_rw 1 [List.prefix_iff_eq_take.mp h]
