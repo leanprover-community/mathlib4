@@ -16,7 +16,9 @@ def kabstractPositions (p e : Expr) : MetaM (Array SubExpr.Pos) := do
   let mctx ← getMCtx
   let pHeadIdx := p.toHeadIndex
   let pNumArgs := p.headNumArgs
-  let rec visit (e : Expr) (pos : SubExpr.Pos) (positions : Array SubExpr.Pos) :
+  let rec
+  /-- The main loop that loops though all subexpressions -/
+  visit (e : Expr) (pos : SubExpr.Pos) (positions : Array SubExpr.Pos) :
       MetaM (Array SubExpr.Pos) := do
     let visitChildren : Array SubExpr.Pos → MetaM (Array SubExpr.Pos) :=
       match e with

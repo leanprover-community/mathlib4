@@ -115,7 +115,11 @@ open Lean Meta
 
 namespace Lean.Meta.RefinedDiscrTree
 
-/-! ## Definitions -/
+/-!
+### Definitions
+
+We define `Key`, `Trie`, `RefinedDiscrTree` and `DTExpr`, and some basic functions for them.
+-/
 
 /-- Discrimination tree key. -/
 inductive Key where
@@ -262,11 +266,19 @@ where
     | t => .path #[k] t
 instance [ToFormat α] : ToFormat (Trie α) := ⟨Trie.format⟩
 
+end RefinedDiscrTree
+
+open RefinedDiscrTree
 
 /-- Discrimination tree. It is an index from expressions to values of type `α`. -/
-structure _root_.Lean.Meta.RefinedDiscrTree (α : Type) where
+structure RefinedDiscrTree (α : Type) where
   /-- The underlying `PersistentHashMap` of a `RefinedDiscrTree`. -/
   root : PersistentHashMap Key (Trie α) := {}
+
+namespace RefinedDiscrTree
+
+variable {α : Type}
+
 instance : Inhabited (RefinedDiscrTree α) := ⟨{}⟩
 
 private partial def format [ToFormat α] (d : RefinedDiscrTree α) : Format :=
@@ -338,10 +350,14 @@ partial def DTExpr.size : DTExpr → Nat
   | .forall d b => 1 + d.size + b.size
   | _ => 1
 
-def DTExpr.eqv (a b : DTExpr) : Bool :=
-  (go a b).run' {}
+/-- Equality on `DTExpr`, up to star pattern renaming. -/
+partial def DTExpr.eqv (a b : DTExpr) : Bool :=
+  (go a b).run' ({}, {})
 where
-  go (a b : DTExpr) : StateM (HashMap MVarId MVarId) Bool :=
+  /-- Is `a` equivalent to `b`?
+  The hasmap stores assignments of stars in `a` in terms of stars in `b`,
+  and the set stores which stars in `b` have an assignment -/
+  go (a b : DTExpr) : StateM (HashMap MVarId MVarId × HashSet MVarId) Bool :=
     match a, b with
     | .opaque           , .opaque            => pure true
     | .const n₁ as₁     , .const n₂ as₂      => pure (n₁ == n₂) <&&> goArray as₁ as₂
@@ -354,36 +370,39 @@ where
     | .proj n₁ i₁ a₁ as₁, .proj n₂ i₂ a₂ as₂ => pure (n₁ == n₂ && i₁ == i₂)
                                             <&&> go a₁ a₂ <&&> goArray as₁ as₂
     | .star none        , .star none         => pure true
-    | .star (some id₁)  , .star (some id₂)   => modifyGet fun map => match map.find? id₁ with
-      | some id => (id == id₂, map)
-      | none => (true, map.insert id₁ id₂)
+    | .star (some mvarId₁)  , .star (some mvarId₂)   => do
+      let (hmap, hset) ← get
+      match hmap.find? mvarId₁ with
+      | some mvarId => return mvarId == mvarId₂
+      | none =>
+        if hset.contains mvarId₂ then
+          return false
+        set (hmap.insert mvarId₁ mvarId₂, hset.insert mvarId₂)
+        return true
     | _ , _ => return false
 
-  goArray (as bs : Array DTExpr) : StateM (HashMap MVarId MVarId) Bool := do
-    if h : as.size = bs.size then
-      for g : i in [:as.size] do
-        unless ← go as[i] (bs[i]'(h ▸ g.2)) do
+  /-- Is `as` pointwise equivalent to `bs`? This is just like `Array.isEqv`, but monadic -/
+  goArray (as bs : Array DTExpr) : StateM (HashMap MVarId MVarId × HashSet MVarId) Bool := do
+    if as.size = bs.size then
+      for a in as, b in bs do
+        unless ← go a b do
           return false
       return true
-    else
-      return false
+    return false
 
-/-! ## Encoding an Expr -/
 
-/-- This state is used to turn the indexing by `MVarId` and `FVarId` in `DTExpr` into
-indexing by `Nat` in `Key`. -/
-private structure Flatten.State where
-  stars : Array MVarId := #[]
 
-private def getStar (mvarId? : Option MVarId) : StateM Flatten.State Nat :=
+/-! ### Encoding an Expr as a DTExpr -/
+
+private def getStar (mvarId? : Option MVarId) : StateM (Array MVarId) Nat :=
   modifyGet fun s =>
     match mvarId? with
-    | some mvarId => match s.stars.getIdx? mvarId with
+    | some mvarId => match s.getIdx? mvarId with
       | some idx => (idx, s)
-      | none => (s.stars.size, { s with stars := s.stars.push mvarId })
-    | none => (s.stars.size, { s with stars := s.stars.push ⟨.anonymous⟩ })
+      | none => (s.size, s.push mvarId)
+    | none => (s.size, s.push ⟨.anonymous⟩)
 
-private partial def DTExpr.flattenAux (todo : Array Key) : DTExpr → StateM Flatten.State (Array Key)
+private partial def DTExpr.flattenAux (todo : Array Key) : DTExpr → StateM (Array MVarId) (Array Key)
   | .star i        => return todo.push (.star (← getStar i))
   | .opaque        => return todo.push .opaque
   | .const n as    => as.foldlM flattenAux (todo.push (.const n as.size))
@@ -848,6 +867,7 @@ partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
 
 end MkDTExpr
 
+/-- Return `true` if the `DTExpr` has pattern `*` or `Eq(*, *, *)`. -/
 def DTExpr.isSpecific : DTExpr → Bool
   | .star _
   | .const ``Eq #[.star _, .star _, .star _] => false
@@ -873,7 +893,8 @@ def mkDTExprs (e : Expr) (config : WhnfCoreConfig) (onlySpecific : Bool)
     return if onlySpecific then es.filter (·.isSpecific) else es
 
 
-/-! ## Inserting intro a RefinedDiscrTree -/
+
+/-! ### Inserting intro a RefinedDiscrTree -/
 
 variable {α : Type}
 
@@ -967,7 +988,8 @@ def insertEqn [BEq α] (d : RefinedDiscrTree α) (lhs rhs : Expr) (vLhs vRhs : �
 
 
 
-/-! ## Matching with a RefinedDiscrTree
+/-!
+### Matching with a RefinedDiscrTree
 
 We use a very simple unification algorithm. For all star/metavariable patterns in the
 `RefinedDiscrTree` and in the target, we store the assignment, and when it is assigned again,
@@ -1134,6 +1156,7 @@ partial def getMatchWithScoreWithExtra (d : RefinedDiscrTree α) (e : Expr) (uni
   let result ← go e 0
   return result.qsort (·.2.1 > ·.2.1)
 where
+  /-- Auxiliary function for `getMatchWithScoreWithExtra` -/
   go (e : Expr) (numIgnored : Nat) : MetaM (Array (Array α × Nat × Nat)) := do
   let result ← getMatchWithScore d e unify config allowRootStar
   let result := result.map fun (a, b) => (a, b, numIgnored)

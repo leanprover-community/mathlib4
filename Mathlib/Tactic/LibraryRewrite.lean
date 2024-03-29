@@ -32,10 +32,13 @@ namespace Mathlib.Tactic.LibraryRewrite
 
 open Lean Meta Server
 
-/-- The structure that we store in the `RefinedDiscrTree`. -/
+/-- The rewrite lemma structure that we store in the `RefinedDiscrTree`. -/
 structure RewriteLemma where
+  /-- The name of the lemma -/
   name : Name
+  /-- `symm` is `true` when rewriting from right to left -/
   symm : Bool
+  /-- The number of arguments that the lemma takes -/
   numParams : Nat
 deriving BEq, Inhabited
 
@@ -60,6 +63,7 @@ instance : LT RewriteLemma := ⟨fun a b => RewriteLemma.lt a b⟩
 instance (a b : RewriteLemma) : Decidable (a < b) :=
   inferInstanceAs (Decidable (RewriteLemma.lt a b))
 
+/-- Return whether the definitions in this module should be ignored. -/
 def isBadModule (name : Name) : Bool :=
   (`Mathlib.Tactic).isPrefixOf name
 
@@ -101,41 +105,41 @@ section Cache
 open Std.Tactic
 
 @[reducible]
-def RewriteCache := Cache (RefinedDiscrTree RewriteLemma)
+private def RewriteCache := Cache (RefinedDiscrTree RewriteLemma)
 
-def RewriteCache.mk (init : Option (RefinedDiscrTree RewriteLemma) := none) : IO RewriteCache :=
+/-- Construct the `RewriteCache` of all lemmas. -/
+def RewriteCache.mk : IO RewriteCache :=
   Cache.mk do
-    match init with
-    | some tree => return tree
-    | none =>
-      profileitM Exception "rw??: init cache" (← getOptions) do
-        let env ← getEnv
-        let mut tree := {}
-        for moduleName in env.header.moduleNames, data in env.header.moduleData do
-          if isBadModule moduleName then
-            continue
-          for cinfo in data.constants do
-            tree ← updateDiscrTree cinfo.name cinfo tree
-        return tree.mapArrays (·.qsort (· < ·))
+    profileitM Exception "rw??: init cache" (← getOptions) do
+      let env ← getEnv
+      let mut tree := {}
+      for moduleName in env.header.moduleNames, data in env.header.moduleData do
+        if isBadModule moduleName then
+          continue
+        for cinfo in data.constants do
+          tree ← updateDiscrTree cinfo.name cinfo tree
+      return tree.mapArrays (·.qsort (· < ·))
 
+/-- The file path of the pre-build `RewriteCache` cache -/
 def cachePath : IO System.FilePath := do
   try
     return (← findOLean `MathlibExtras.LibraryRewrites).withExtension "extra"
   catch _ =>
     return ".lake" / "build" / "lib" / "MathlibExtras" / "LibraryRewrites.extra"
 
-initialize cachedData : RewriteCache ← unsafe do
+private initialize cachedData : RewriteCache ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
     let (d, _r) ← unpickle (RefinedDiscrTree RewriteLemma) path
-    -- We can drop the `CompactedRegion` value; we do not plan to free it
-    RewriteCache.mk (init := some d)
+    Cache.mk (pure d)
   else
     RewriteCache.mk
 
+/-- Get the `RefinedDiscrTree` of all rewrite lemmas, attempting to get it from pre-built cache. -/
 def getCachedRewriteLemmas : MetaM (RefinedDiscrTree RewriteLemma) :=
   cachedData.get
 
+/-- Construct the `RefinedDiscrTree` of all lemmas defined in the current file. -/
 def getLocalRewriteLemmas : MetaM (RefinedDiscrTree RewriteLemma) := do
   (← getEnv).constants.map₂.foldlM (init := {}) (fun tree n c => updateDiscrTree n c tree)
 
@@ -150,9 +154,13 @@ def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Bool)) := do
   let allResults := localResults.map (·.1, true) ++ cachedResults.map (·.1, false)
   return allResults
 
+/-- A rewrite lemma that has been applied to an expression. -/
 structure Rewrite extends RewriteLemma where
+  /-- The proof of the rewrite -/
   proof : Expr
+  /-- The replacement expression obtained from the rewrite -/
   replacement : Expr
+  /-- The extra goals created by the rewrite -/
   extraGoals : Array (MVarId × BinderInfo)
 
 /-- If `rwLemma` can be used to rewrite `e`, return the rewrite. -/
@@ -203,9 +211,9 @@ def printRewriteLemma (e : Expr) (explicit : Bool) : MetaM String :=
       |>.setBool `pp.instances false
       |>.setBool `pp.unicode.fun true) do
     let (stx, _) ← delabCore e (delab := delabExplicit)
-    return Format.pretty (← ppTerm stx) (indent := 2)
+    return Format.pretty (← ppTerm stx) (width := 90) (indent := 2)
   else
-    printToPaste e
+    PasteString e
 where
   /-- See `delabApp` and `delabAppCore`. -/
   delabExplicit : Delab := do
@@ -213,6 +221,8 @@ where
     let paramKinds ← getParamKinds e.getAppFn e.getAppArgs
     delabAppExplicitCore e.getAppNumArgs delabConst paramKinds
 
+/-- Return a unique name for a metavariable based on the given suggestion.
+Similar to `Lean.Meta.getUnusedUserName`, which is for free variables. -/
 partial def getUnusedMVarName (suggestion : Name) (names : PersistentHashMap Name MVarId)
     (i : Option Nat := none) : Name :=
   let name := match i with
@@ -228,6 +238,7 @@ partial def getUnusedMVarName (suggestion : Name) (names : PersistentHashMap Nam
   else
     name
 
+/-- Return the rewrite tactic that performs the rewrite. -/
 def tacticString (rw : Rewrite) (occ : Option Nat) (loc : Option Name)
     (initNames : PersistentHashMap Name MVarId) : MetaM String := do
   let mut initNames := initNames
@@ -247,12 +258,18 @@ def tacticString (rw : Rewrite) (occ : Option Nat) (loc : Option Name)
 
 open Widget ProofWidgets Jsx
 
+/-- The structure with all data necessary for rendering a rewrite suggestion -/
 structure RewriteInterface extends RewriteLemma where
+  /-- The rewrite tactic string that performs the rewrite -/
   tactic : String
+  /-- The replacement expression obtained from the rewrite -/
   replacement : String
+  /-- The extra goals created by the rewrite -/
   extraGoals : Array CodeWithInfos
+  /-- The lemma name with hover information -/
   prettyLemma : CodeWithInfos
 
+/-- Construct the `RewriteInterface` from a `Rewrite`. -/
 def Rewrite.toInterface (rw : Rewrite) (occ : Option Nat) (loc : Option Name)
     (initNames : PersistentHashMap Name MVarId) : MetaM RewriteInterface := do
   let tactic ← tacticString rw occ loc initNames
@@ -290,16 +307,19 @@ def getRewriteInterfaces (e : Expr) (occ : Option Nat) (loc : Option Name)
       dedup := dedup.push (filtered, isLocal)
   return (dedup, all)
 
-def RewriteLemma.pattern (rwLemma : RewriteLemma) : MetaM CodeWithInfos := do
+/-- Render the matching side of the rewrite lemma.
+This is shown at the header of each section of rewrite results. -/
+def RewriteLemma.pattern (rwLemma : RewriteLemma) : MetaM Html := do
   let cinfo ← getConstInfo rwLemma.name
   forallTelescope cinfo.type fun _ e => do
     let some (lhs, rhs) := matchEqn? e | throwError "Expected equation, not {indentExpr e}"
     let side := if rwLemma.symm then rhs else lhs
-    ppExprTagged side
+    return <InteractiveCode fmt={← ppExprTagged side}/>
 
+/-- Render the given rewrite results. -/
 def renderRewrites (results : Array (Array RewriteInterface × Bool)) (init : Option Html)
     (range : Lsp.Range) (doc : FileWorker.EditableDocument) (showNames : Bool) : MetaM Html := do
-  let htmls ← results.mapM (renderSection showNames)
+  let htmls ← results.filterMapM (renderSection showNames)
   let htmls := match init with
       | some html => #[html] ++ htmls
       | none => htmls
@@ -308,17 +328,19 @@ def renderRewrites (results : Array (Array RewriteInterface × Bool)) (init : Op
   else
     return .element "div" #[("style", json% {"marginLeft" : "4px"})] htmls
 where
-  renderSection (showNames : Bool) (sec : Array RewriteInterface × Bool) : MetaM Html := do
-    let some first := sec.1[0]? | return <div/>
+  /-- Render one section of rewrite results. -/
+  renderSection (showNames : Bool) (sec : Array RewriteInterface × Bool) : MetaM (Option Html) := do
+    let some first := sec.1[0]? | return none
     return <details «open»={true}>
       <summary className="mv2 pointer">
-        {.text "Pattern "}
-        <InteractiveCode fmt={← first.pattern}/>
-        {.text (if sec.2 then " (local results)" else "")}
+        Pattern
+        {← first.pattern}
+        {.text (if sec.2 then "(local results)" else "")}
       </summary>
       {renderSectionCore showNames sec.1}
     </details>
 
+  /-- Render the list of rewrite results in one section. -/
   renderSectionCore (showNames : Bool) (sec : Array RewriteInterface) : Html :=
     .element "ul" #[("style", json% { "padding-left" : "30px"})] <|
     sec.map fun rw =>
@@ -335,10 +357,15 @@ where
           if showNames then #[<br/>, <InteractiveCode fmt={rw.prettyLemma}/>] else #[] }
       </li>
 
+/-- The props for the `FilterDetails` component. -/
 structure FilterDetailsProps where
+  /-- The title -/
   message : String
+  /-- What is shown in the filtered state -/
   filtered : Html
+  /-- What is shown in the non-filtered state -/
   all : Html
+  /-- Whether to start in the filtered state -/
   initiallyFiltered : Bool
 deriving RpcEncodable
 
@@ -349,7 +376,7 @@ def FilterDetails : Component FilterDetailsProps where
   javascript := include_str "LibraryRewrite" / "FilterDetails.js"
 
 @[server_rpc_method_cancellable]
-def LibraryRewrite.rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
+private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
   RequestM.asTask do
   let doc ← RequestM.readDoc
   let some loc := props.selectedLocations.back? |
@@ -371,9 +398,8 @@ def LibraryRewrite.rpc (props : SelectInsertParams) : RequestM (RequestTask Html
           return .text "rw doesn't work on expressions with bound variables."
         let location ← loc.location
 
-        let unfolds ← InteractiveUnfold.unfoldsWithTacticString subExpr occ location
-        let unfoldsHtml ← if unfolds.isEmpty then pure none else
-          InteractiveUnfold.renderDefinitions unfolds props.replaceRange doc
+        let unfoldsHtml ←
+          InteractiveUnfold.renderDefinitions subExpr occ location props.replaceRange doc
 
         let (filtered, all) ← getRewriteInterfaces subExpr occ location initNames
         let filtered ← renderRewrites filtered unfoldsHtml props.replaceRange doc false
@@ -384,8 +410,9 @@ def LibraryRewrite.rpc (props : SelectInsertParams) : RequestM (RequestTask Html
           filtered={filtered}
           initiallyFiltered={true} />
 
+/-- The component called by the `rw??` tactic -/
 @[widget_module]
-def LibraryRewrite : Component SelectInsertParams :=
+def LibraryRewriteComponent : Component SelectInsertParams :=
   mk_rpc_widget% LibraryRewrite.rpc
 
 /--
@@ -396,17 +423,5 @@ Click on the filter icon to switch to an unfiltered view that also shows the lem
 -/
 elab stx:"rw??" : tactic => do
   let some range := (← getFileMap).rangeOfStx? stx | return
-  Widget.savePanelWidgetInfo (hash LibraryRewrite.javascript)
+  Widget.savePanelWidgetInfo (hash LibraryRewriteComponent.javascript)
     (pure $ json% { replaceRange : $range }) stx
-
--- def slow (n : Nat):Bool := (n.fold (init := #[]) (fun a b => #[a] ++ b)|>.size) == n
--- def t (x b:Bool) := (x,b)
--- @[inline] def g (n : Nat) : Bool → _ :=
---   let x : Bool :=  slow n
---   t x
--- def h ( n : Nat) :=
---   let y := g n
---   (y true, y false)
--- set_option profiler true
--- #eval g 30000 false
--- #eval h 30000
