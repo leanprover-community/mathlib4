@@ -764,7 +764,7 @@ theorem prod_alternatingWord_eq_prod_alternatingWord (i i' : B) (m : ℕ) (hm : 
     rw [(by ring : -(k * 2) + ↑(M i i') * 2 = (-k + ↑(M i i')) * 2)]
     rw [Int.mul_ediv_cancel _ (by norm_num), Int.mul_ediv_cancel _ (by norm_num)]
     rw [zpow_add, zpow_natCast]
-    rw [simple_mul_pow']
+    rw [simple_mul_simple_pow']
     rw [zpow_neg, ← inv_zpow]
     simp
   · rcases odd with ⟨k, rfl⟩
@@ -780,7 +780,7 @@ theorem prod_alternatingWord_eq_prod_alternatingWord (i i' : B) (m : ℕ) (hm : 
     rw [Int.add_mul_ediv_right _ _ (by norm_num), Int.add_mul_ediv_right _ _ (by norm_num)]
     norm_num
     rw [zpow_add, zpow_add, zpow_natCast]
-    rw [simple_mul_pow']
+    rw [simple_mul_simple_pow']
     rw [zpow_neg, ← inv_zpow, zpow_neg, ← inv_zpow]
     simp [← mul_assoc]
 
