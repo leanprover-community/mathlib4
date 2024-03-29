@@ -5,6 +5,7 @@ Authors: Markus Himmel, Johan Commelin, Scott Morrison
 -/
 import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
 import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Abelian.NonPreadditive
@@ -497,6 +498,38 @@ theorem monoLift_comp [Mono f] {T : C} (g : T ⟶ Y) (hg : g ≫ cokernel.π f =
   (monoIsKernelOfCokernel _ (colimit.isColimit _)).fac (KernelFork.ofι _ hg)
     WalkingParallelPair.zero
 #align category_theory.abelian.mono_lift_comp CategoryTheory.Abelian.monoLift_comp
+
+section
+
+variable {D : Type*} [Category D] [HasZeroMorphisms D]
+
+noncomputable def isLimitMapConeOfKernelForkOfιCokernelConditionOfMono
+    {X Y : D} (i : X ⟶ Y) [HasCokernel i] (F : D ⥤ C)
+    [F.PreservesZeroMorphisms] [Mono (F.map i)]
+    [PreservesColimit (parallelPair i 0) F] :
+    IsLimit (F.mapCone (KernelFork.ofι i (cokernel.condition i))) := by
+  let e : parallelPair (cokernel.π (F.map i)) 0 ≅ parallelPair (cokernel.π i) 0 ⋙ F :=
+    parallelPair.ext (Iso.refl _) (asIso (cokernelComparison i F)) (by simp) (by simp)
+  refine' IsLimit.postcomposeInvEquiv e _ _
+  let hi := Abelian.monoIsKernelOfCokernel _ (cokernelIsCokernel (F.map i))
+  refine' IsLimit.ofIsoLimit hi (Fork.ext (Iso.refl _) _)
+  change 𝟙 _ ≫ F.map i ≫ 𝟙 _ = F.map i
+  rw [Category.comp_id, Category.id_comp]
+
+noncomputable def isColimitMapCoconeOfCokernelCoforkOfπKernelConditionOfEpi
+    {X Y : D} (p : X ⟶ Y) [HasKernel p] (F : D ⥤ C)
+    [F.PreservesZeroMorphisms] [Epi (F.map p)]
+    [PreservesLimit (parallelPair p 0) F] :
+    IsColimit (F.mapCocone (CokernelCofork.ofπ p (kernel.condition p))) := by
+  let e : parallelPair (kernel.ι p) 0 ⋙ F ≅ parallelPair (kernel.ι (F.map p)) 0 := by
+    refine' parallelPair.ext (asIso (kernelComparison p F)) (Iso.refl _) (by simp) (by simp)
+  refine' IsColimit.precomposeInvEquiv e _ _
+  let hp := Abelian.epiIsCokernelOfKernel _ (kernelIsKernel (F.map p))
+  refine' IsColimit.ofIsoColimit hp (Cofork.ext (Iso.refl _) _)
+  change F.map p ≫ 𝟙 _ = 𝟙 _ ≫ F.map p
+  rw [Category.comp_id, Category.id_comp]
+
+end
 
 end CokernelOfKernel
 
