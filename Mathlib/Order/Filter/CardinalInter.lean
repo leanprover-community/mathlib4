@@ -370,6 +370,6 @@ theorem cardinalGenerate_isGreatest (hc : 2 < c) :
     IsGreatest { f : Filter α | CardinalInterFilter f c ∧ g ⊆ f.sets } (cardinalGenerate g hc) := by
   refine' ⟨⟨inferInstance, fun s => CardinalGenerateSets.basic⟩, _⟩
   rintro f ⟨fct, hf⟩
-  rwa [@le_cardinalGenerate_iff_of_cardinalInterFilter _ _ _ fct]
+  rwa [@le_cardinalGenerate_iff_of_cardinalInterFilter _ _ _ f fct]
 
 end Filter
