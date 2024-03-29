@@ -178,8 +178,8 @@ instance addCommGroup : AddCommGroup (ℤ√d) := by
     zero := (0 : ℤ√d)
     sub := fun a b => a + -b
     neg := Neg.neg
-    zsmul := @zsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩
     nsmul := @nsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩
+    zsmul := @zsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩ (@nsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩)
     add_assoc := ?_
     zero_add := ?_
     add_zero := ?_
