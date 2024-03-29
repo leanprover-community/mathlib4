@@ -305,7 +305,7 @@ theorem reverse_leadingCoeff (f : R[X]) : f.reverse.leadingCoeff = f.trailingCoe
 theorem reverse_natTrailingDegree (f : R[X]) : f.reverse.natTrailingDegree = 0 := by
   by_cases hf : f = 0
   · rw [hf, reverse_zero, natTrailingDegree_zero]
-  · rw [← le_zero_iff]
+  · rw [← Nat.le_zero]
     apply natTrailingDegree_le_of_ne_zero
     rw [coeff_zero_reverse]
     exact mt leadingCoeff_eq_zero.mp hf
@@ -362,7 +362,7 @@ theorem coeff_one_reverse (f : R[X]) : coeff (reverse f) 1 = nextCoeff f := by
 
 @[simp] lemma reverse_mul_X_pow (p : R[X]) (n : ℕ) : reverse (p * X ^ n) = reverse p := by
   induction' n with n ih; simp
-  rw [pow_succ', ← mul_assoc, reverse_mul_X, ih]
+  rw [pow_succ, ← mul_assoc, reverse_mul_X, ih]
 
 @[simp] lemma reverse_X_pow_mul (p : R[X]) (n : ℕ) : reverse (X ^ n * p) = reverse p := by
   rw [commute_X_pow p, reverse_mul_X_pow]

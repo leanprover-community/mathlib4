@@ -332,6 +332,21 @@ theorem IsCyclic.exists_monoid_generator [Finite α] [IsCyclic α] :
 #align is_cyclic.exists_monoid_generator IsCyclic.exists_monoid_generator
 #align is_add_cyclic.exists_add_monoid_generator IsAddCyclic.exists_addMonoid_generator
 
+@[to_additive]
+lemma IsCyclic.exists_ofOrder_eq_natCard [h : IsCyclic α] : ∃ g : α, orderOf g = Nat.card α := by
+  obtain ⟨g, hg⟩ := h.exists_generator
+  use g
+  rw [← card_zpowers g, (eq_top_iff' (zpowers g)).mpr hg]
+  exact (Nat.card_congr (Equiv.Set.univ α))
+
+@[to_additive]
+lemma IsCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype [Fintype α] :
+    IsCyclic α ↔ ∃ g : α, orderOf g = Nat.card α := by
+  refine ⟨fun h ↦ h.exists_ofOrder_eq_natCard, fun h ↦ ?_⟩
+  obtain ⟨g, hg⟩ := h
+  refine isCyclic_of_orderOf_eq_card g ?_
+  simp [hg]
+
 section
 
 variable [DecidableEq α] [Fintype α]
@@ -439,7 +454,7 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
   by_contra h0
   -- Must qualify `Finset.card_eq_zero` because of leanprover/lean4#2849
   -- Must specify the argument `α` to avoid mathlib4#10830
-  simp_rw [not_lt, _root_.le_zero_iff (α := ℕ), Finset.card_eq_zero] at h0
+  simp_rw [not_lt, Nat.le_zero, Finset.card_eq_zero] at h0
   apply lt_irrefl c
   calc
     c = ∑ m in c.divisors, (univ.filter fun a : α => orderOf a = m).card := by
