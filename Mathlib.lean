@@ -321,7 +321,6 @@ import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 import Mathlib.Algebra.Lie.Normalizer
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Quotient
-import Mathlib.Algebra.Lie.Rank
 import Mathlib.Algebra.Lie.Semisimple
 import Mathlib.Algebra.Lie.SkewAdjoint
 import Mathlib.Algebra.Lie.Solvable
@@ -348,6 +347,7 @@ import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Module.LinearMap.End
 import Mathlib.Algebra.Module.LinearMap.Pointwise
+import Mathlib.Algebra.Module.LinearMap.Polynomial
 import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.Algebra.Module.MinimalAxioms
 import Mathlib.Algebra.Module.Opposites
