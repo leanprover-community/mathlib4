@@ -3,6 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
+import Mathlib.Algebra.Group.Pi.Sum
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Set.Function
 import Mathlib.GroupTheory.GroupAction.Defs
@@ -278,3 +279,47 @@ theorem Function.extend_smul {R α β γ : Type*} [SMul R γ] (r : R) (f : α �
 #align function.extend_vadd Function.extend_vadd
 
 end Extend
+namespace Sum
+
+variable {ια ιβ M : Type*} {α : (i : ια) → Type u} {β : (i : ιβ) → Type u}
+
+@[to_additive]
+instance instElimSMul [∀ i : ια, SMul M (α i)]
+    [∀ i : ιβ, SMul M (β i)] (i : ια ⊕ ιβ) :
+    SMul M (Sum.elim α β i) :=
+  match i with
+  | Sum.inl i => inferInstanceAs (SMul M (α i))
+  | Sum.inr i => inferInstanceAs (SMul M (β i))
+
+@[to_additive]
+instance instElimMulAction [Monoid M] [∀ i : ια, MulAction M (α i)]
+    [∀ i : ιβ, MulAction M (β i)] (i : ια ⊕ ιβ) : MulAction M (Sum.elim α β i) :=
+  { one_smul := fun _ => match i with
+    | Sum.inl i => one_smul M (α := α i) _
+    | Sum.inr i => one_smul M (α := β i) _
+    mul_smul := fun _ _ _ => match i with
+    | Sum.inl i => mul_smul (β := α i) _ _ _
+    | Sum.inr i => mul_smul (β := β i) _ _ _ }
+
+instance instElimDistribMulAction [Monoid M]
+    [∀ i : ια, AddMonoid (α i)] [∀ i : ιβ, AddMonoid (β i)]
+    [∀ i : ια, DistribMulAction M (α i)] [∀ i : ιβ, DistribMulAction M (β i)] (i : ια ⊕ ιβ) :
+    DistribMulAction M (Sum.elim α β i) :=
+  { smul_zero := fun _ => match i with
+    | Sum.inl i => smul_zero (A := α i) _
+    | Sum.inr i => smul_zero (A := β i) _
+    smul_add := fun _ _ _ => match i with
+    | Sum.inl i => smul_add (A := α i) _ _ _
+    | Sum.inr i => smul_add (A := β i) _ _ _ }
+
+instance instElimMulDistribMulAction [Monoid M] [∀ i : ια, Monoid (α i)] [∀ i : ιβ, Monoid (β i)]
+    [∀ i : ια, MulDistribMulAction M (α i)] [∀ i : ιβ, MulDistribMulAction M (β i)] (i : ια ⊕ ιβ) :
+    MulDistribMulAction M (Sum.elim α β i) :=
+  { smul_one := fun _ => match i with
+    | Sum.inl i => smul_one (A := α i) _
+    | Sum.inr i => smul_one (A := β i) _
+    smul_mul := fun _ _ _ => match i with
+    | Sum.inl i => MulDistribMulAction.smul_mul (A := α i) _ _ _
+    | Sum.inr i => MulDistribMulAction.smul_mul (A := β i) _ _ _ }
+
+end Sum

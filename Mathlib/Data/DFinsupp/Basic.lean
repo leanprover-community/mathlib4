@@ -131,6 +131,13 @@ theorem zero_apply (i : ι) : (0 : Π₀ i, β i) i = 0 :=
   rfl
 #align dfinsupp.zero_apply DFinsupp.zero_apply
 
+/-- Create an element of `Π₀ i, β i` from a finset `s` and a function `x`
+which is 0 outside this finset. -/
+@[simps!] def onFinset (s : Finset ι) (f : (i : ι) → β i) (hf : ∀ a, f a ≠ 0 → a ∈ s) :
+    Π₀ i : ι, β i where
+  toFun := f
+  support' := Trunc.mk ⟨s.1, fun i => by by_cases h : f i = 0 <;> tauto⟩
+
 /-- The composition of `f : β₁ → β₂` and `g : Π₀ i, β₁ i` is
   `mapRange f hf g : Π₀ i, β₂ i`, well defined when `f 0 = 0`.
 
@@ -1709,7 +1716,88 @@ theorem equivProdDFinsupp_smul [Monoid γ] [∀ i, AddMonoid (α i)] [∀ i, Dis
 #align dfinsupp.equiv_prod_dfinsupp_smul DFinsupp.equivProdDFinsupp_smul
 
 end Equiv
+section Sum
 
+variable {ια ιβ : Type*} [DecidableEq ια] [DecidableEq ιβ] {α : (i : ια) → Type u}
+  {β : (i : ιβ) → Type u}
+
+section
+
+variable [∀ i : ια, Zero (α i)] [∀ i : ιβ, Zero (β i)]
+  [(i : ια) → (x : α i) → Decidable (x ≠ 0)] [(i : ιβ) → (x : β i) → Decidable (x ≠ 0)]
+
+/-- The `DFinsupp` indexed by `ια ⊕ ιβ` induced by a pair of `DFinsupp`s indexed by `ια` and
+`ιβ` respectively. -/
+noncomputable def sumElim (f : Π₀ i, α i) (g : Π₀ i, β i) :
+    Π₀ (i : ια ⊕ ιβ), Sum.elim α β i := by
+  classical
+  exact onFinset (Finset.disjSum (support f) (support g))
+    (fun i => match i with
+    | Sum.inl i => f i
+    | Sum.inr i => g i)
+    fun i => match i with
+    | Sum.inl i => fun h => by simp_all
+    | Sum.inr i => fun h => by simp_all
+
+@[simp, norm_cast]
+theorem coe_sumElim (f : Π₀ i, α i) (g : Π₀ i, β i) :
+    ⇑(sumElim f g) = Sum.elim f g :=
+  rfl
+
+theorem sumElim_apply (f : Π₀ i, α i) (g : Π₀ i, β i) (x : ια ⊕ ιβ) :
+    sumElim f g x = Sum.elim f g x :=
+  rfl
+
+theorem sumElim_inl (f : Π₀ i, α i) (g : Π₀ i, β i) (x : ια) :
+    sumElim f g (Sum.inl x) = f x :=
+  rfl
+
+theorem sumElim_inr (f : Π₀ i, α i) (g : Π₀ i, β i) (x : ιβ) :
+    sumElim f g (Sum.inr x) = g x :=
+  rfl
+
+variable (α β)
+
+/-- Given families of types `αᵢ, βᵢ` indexed by `ια, ιβ` respectively, this is the natural
+equivalence between `DFinsupps` on the induced family indexed by `ια ⊕ ιβ`, and the product
+of the `DFinsupp`s on `αᵢ` and on `βᵢ`. -/
+noncomputable def sumDFinsuppEquivProdDFinsupp :
+    (Π₀ i : ια ⊕ ιβ, Sum.elim α β i) ≃ (Π₀ i : ια, α i) × (Π₀ i : ιβ, β i) where
+  toFun := fun f => ⟨comapDomain Sum.inl Sum.inl_injective f,
+    comapDomain Sum.inr Sum.inr_injective f⟩
+  invFun := fun ⟨f, g⟩ => sumElim f g
+  left_inv := fun _ => ext fun j => match j with
+    | Sum.inl _ => rfl
+    | Sum.inr _ => rfl
+  right_inv := fun ⟨_, _⟩ => Prod.ext (ext fun _ => rfl) (ext fun _ => rfl)
+
+variable {α β}
+
+@[simp, norm_cast] lemma coe_sumDFinsuppEquivProdDFinsupp_fst
+    (x : Π₀ i : ια ⊕ ιβ, Sum.elim α β i) :
+    ⇑(sumDFinsuppEquivProdDFinsupp α β x).1 = comapDomain Sum.inl Sum.inl_injective f := rfl
+
+@[simp, norm_cast] lemma coe_sumDFinsuppEquivProdDFinsupp_snd
+    (x : Π₀ i : ια ⊕ ιβ, Sum.elim α β i) :
+    ⇑(sumDFinsuppEquivProdDFinsupp α β x).2 = comapDomain Sum.inr Sum.inr_injective f := rfl
+
+@[simp, norm_cast] lemma coe_sumDFinsuppEquivProdDFinsupp_symm
+    (f : Π₀ i : ια, α i) (g : Π₀ : i : ιβ, β i) :
+    ⇑((sumDFinsuppEquivProdDFinsupp α β).symm (f, g)) = sumElim f g := rfl
+
+end
+section
+variable [∀ i : ια, AddZeroClass (α i)] [∀ i : ιβ, AddZeroClass (β i)]
+  [(i : ια) → (x : α i) → Decidable (x ≠ 0)] [(i : ιβ) → (x : β i) → Decidable (x ≠ 0)]
+
+@[simps! apply symm_apply]
+noncomputable def sumDFinsuppAddEquivProdDFinsupp :
+    (⨁ (i : ια ⊕ ιβ), Sum.elim α β i) ≃+ (⨁ i : ια, α i) × (⨁ i : ιβ, β i) :=
+  { DFinsupp.sumFinsuppEquivProdFinsupp α β with
+    map_add' := fun _ _ => Prod.ext (DFinsupp.ext fun _ => rfl) (DFinsupp.ext fun _ => rfl) }
+
+end
+end Sum
 section ProdAndSum
 
 /-- `DFinsupp.prod f g` is the product of `g i (f i)` over the support of `f`. -/

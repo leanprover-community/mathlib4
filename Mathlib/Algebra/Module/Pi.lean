@@ -113,3 +113,19 @@ instance _root_.Function.noZeroSMulDivisors {ι α β : Type*} [Semiring α] [Ad
 #align function.no_zero_smul_divisors Function.noZeroSMulDivisors
 
 end Pi
+namespace Sum
+
+variable {ια ιβ k : Type*} {α : (i : ια) → Type u} {β : (i : ιβ) → Type u} [Semiring k]
+
+instance instElimModule {k : Type*}
+    [∀ (i : ια), AddCommMonoid (α i)] [∀ i : ιβ, AddCommMonoid (β i)]
+    [∀ (i : ια), Module k (α i)] [∀ i : ιβ, Module k (β i)] (i : ια ⊕ ιβ) :
+    Module k (Sum.elim α β i) :=
+  { add_smul := fun _ _ _ => match i with
+    | Sum.inl i => add_smul (M := α i) _ _ _
+    | Sum.inr i => add_smul (M := β i) _ _ _
+    zero_smul := fun _ => match i with
+    | Sum.inl i => zero_smul (M := α i) _ _
+    | Sum.inr i => zero_smul (M := β i) _ _ }
+
+end Sum
