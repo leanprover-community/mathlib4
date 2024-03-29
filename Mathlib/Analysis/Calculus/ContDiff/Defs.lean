@@ -1608,7 +1608,7 @@ theorem iteratedFDerivWithin_univ {n : ℕ} :
 #align iterated_fderiv_within_univ iteratedFDerivWithin_univ
 
 theorem HasFTaylorSeriesUpTo.eq_iteratedFDeriv
-    (h : HasFTaylorSeriesUpTo n f p) {m : ℕ} (hmn : (m : ℕ∞) ≤ n) :
+    (h : HasFTaylorSeriesUpTo n f p) {m : ℕ} (hmn : (m : ℕ∞) ≤ n) (x : E) :
     p x m = iteratedFDeriv 𝕜 m f x := by
   rw [← iteratedFDerivWithin_univ]
   rw [← hasFTaylorSeriesUpToOn_univ_iff] at h

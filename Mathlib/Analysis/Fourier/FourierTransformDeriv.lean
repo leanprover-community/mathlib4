@@ -250,7 +250,8 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
     apply fourierIntegral_continuous Real.continuous_fourierChar (by apply L.continuous₂)
     exact integrable_fourierPowSMulRight (hf n hn) h'f
 
-lemma contDiff_fourierIntegral {N : ℕ∞}
+/-- If `‖v‖^n * ‖f v‖` is integrable for all `n ≤ N`, then the Fourier transform of `f` is `C^n`. -/
+theorem contDiff_fourierIntegral {N : ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖^n * ‖f v‖) μ) :
     ContDiff ℝ N (VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ f) := by
   by_cases h'f : Integrable f μ
@@ -259,12 +260,15 @@ lemma contDiff_fourierIntegral {N : ℕ∞}
       ext w; simp [fourierIntegral, integral, h'f]
     simpa [this] using contDiff_const
 
+/-- If `‖v‖^n * ‖f v‖` is integrable for all `n ≤ N`, then the `n`-th derivative of `f` is the
+Fourier transform of `fourierPowSMulRight L f v n`, i.e., `(L v)^n * f v`. -/
 lemma iteratedFDeriv_fourierIntegral {N : ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖^n * ‖f v‖) μ)
     (h'f : AEStronglyMeasurable f μ) {n : ℕ} (hn : n ≤ N) :
     iteratedFDeriv ℝ n (VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ f) =
-      VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ fourierPowSMulRight L f v n) :=
-  ((hasFTaylorSeriesUpTo_fourierIntegral L hf h'f).eq_iteratedFDeriv hn).symm
+      VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ fourierPowSMulRight L f v n) := by
+  ext1 w
+  exact ((hasFTaylorSeriesUpTo_fourierIntegral L hf h'f).eq_iteratedFDeriv hn w).symm
 
 section inner
 
