@@ -28,7 +28,8 @@ p-series, Cauchy condensation test
 ### Schlömilch's generalization of the Cauchy condensation test
 
 In this section we prove the Schlömilch's generalization of the Cauchy condensation test:
-for `u : ℕ → ℕ` and `f : ℕ → ℝ≥0` or `f : ℕ → ℝ`, `∑ k, f k` converges if and only if
+for a strictly increasing `u : ℕ → ℕ` with ratio of successive differences bounded and an 
+antitone `f : ℕ → ℝ≥0` or `f : ℕ → ℝ`, `∑ k, f k` converges if and only if
 so does `∑ k, (u (k + 1) - u k) * f (u k)`. Instead of giving a monolithic proof, we split it
 into a series of lemmas with explicit estimates of partial sums of each series in terms of the
 partial sums of the other series.
@@ -60,7 +61,7 @@ theorem le_sum_schlomilch' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f 
   have : ∀ k ∈ Ico (u n) (u (n + 1)), f k ≤ f (u n) := fun k hk =>
     hf (Nat.succ_le_of_lt (h_pos n)) (mem_Ico.mp hk).1
   convert sum_le_sum this
-  simp [pow_succ, two_mul]
+  simp [pow_succ, mul_two]
 
 theorem le_sum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (hu : Monotone u) (n : ℕ) : (∑ k in range (u n), f k) ≤ ∑ k in range (u 0), f k +
@@ -82,7 +83,7 @@ theorem sum_schlomilch_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f 
     hf (Nat.lt_of_le_of_lt (Nat.succ_le_of_lt (h_pos n)) <| (Nat.lt_succ_of_le le_rfl).trans_le
       (mem_Ico.mp hk).1) (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
   convert sum_le_sum this
-  simp [pow_succ, two_mul]
+  simp [pow_succ, mul_two]
 
 theorem sum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (h_nonneg : ∀ n, 0 ≤ f n) (hu : Monotone u) (h_succ_diff : SuccDiffBounded C u) (n : ℕ) :

@@ -296,7 +296,7 @@ theorem sub_pow_char_pow_of_commute [Ring R] {p : ℕ} [Fact p.Prime] [CharP R p
   induction n with
   | zero => simp
   | succ n n_ih =>
-      rw [pow_succ', pow_mul, pow_mul, pow_mul, n_ih]
+      rw [pow_succ, pow_mul, pow_mul, pow_mul, n_ih]
       apply sub_pow_char_of_commute; apply Commute.pow_pow h
 #align sub_pow_char_pow_of_commute sub_pow_char_pow_of_commute
 
@@ -354,7 +354,7 @@ theorem CharP.neg_one_pow_char_pow [Ring R] (p n : ℕ) [CharP R p] [Fact p.Prim
 
 theorem RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [Semiring L] [Nontrivial L]
     (f : K →+* L) (p : ℕ) : CharP K p ↔ CharP L p := by
-  simp only [charP_iff, ← f.injective.eq_iff, map_natCast f, f.map_zero]
+  simp only [charP_iff, ← f.injective.eq_iff, map_natCast f, map_zero f]
 #align ring_hom.char_p_iff_char_p RingHom.charP_iff_charP
 
 namespace CharP
