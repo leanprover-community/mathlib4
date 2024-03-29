@@ -3201,8 +3201,6 @@ import Mathlib.Probability.StrongLaw
 import Mathlib.Probability.Variance
 import Mathlib.ProofTheory.Calculus
 import Mathlib.ProofTheory.FirstOrder.Arith.Language
-import Mathlib.ProofTheory.FirstOrder.Basic.Syntax.Formula
-import Mathlib.ProofTheory.FirstOrder.Basic.Syntax.Rew
 import Mathlib.ProofTheory.FirstOrder.Basic.Syntax.Term
 import Mathlib.ProofTheory.LogicSymbol
 import Mathlib.ProofTheory.Matrix
