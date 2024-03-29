@@ -80,7 +80,7 @@ lemma term_of_ne_zero {n : ℕ} (hn : n ≠ 0) (f : ℕ → ℂ) (s : ℂ) :
     term f s n = f n / n ^ s :=
   if_neg hn
 
-lemma term_congr {f g : ℕ → ℂ} (h : ∀ n ≠ 0, f n = g n) (s : ℂ) (n : ℕ) :
+lemma term_congr {f g : ℕ → ℂ} (h : ∀ {n} (_ : n ≠ 0), f n = g n) (s : ℂ) (n : ℕ) :
     term f s n = term g s n := by
   rcases eq_or_ne n 0 with hn | hn <;> simp [hn, h]
 
@@ -124,7 +124,7 @@ def LSeries (f : ℕ → ℂ) (s : ℂ) : ℂ :=
   ∑' n, term f s n
 #align nat.arithmetic_function.l_series LSeries
 
-lemma LSeries_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ n ≠ 0, f n = g n) :
+lemma LSeries_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ {n} (_ : n ≠ 0), f n = g n) :
     LSeries f s = LSeries g s :=
   tsum_congr <| term_congr h s
 
@@ -133,7 +133,7 @@ def LSeriesSummable (f : ℕ → ℂ) (s : ℂ) : Prop :=
   Summable (term f s)
 #align nat.arithmetic_function.l_series_summable LSeriesSummable
 
-lemma LSeriesSummable_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ n ≠ 0, f n = g n) :
+lemma LSeriesSummable_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ {n} (_ : n ≠ 0), f n = g n) :
     LSeriesSummable f s ↔ LSeriesSummable g s :=
   summable_congr <| term_congr h s
 
@@ -191,7 +191,7 @@ lemma LSeriesHasSum_iff {f : ℕ → ℂ} {s a : ℂ} :
     LSeriesHasSum f s a ↔ LSeriesSummable f s ∧ LSeries f s = a :=
   ⟨fun H ↦ ⟨H.LSeriesSummable, H.LSeries_eq⟩, fun ⟨H₁, H₂⟩ ↦ H₂ ▸ H₁.LSeriesHasSum⟩
 
-lemma LSeriesHasSum_congr {f g : ℕ → ℂ} (s a : ℂ) (h : ∀ n ≠ 0, f n = g n) :
+lemma LSeriesHasSum_congr {f g : ℕ → ℂ} (s a : ℂ) (h : ∀ {n} (_ : n ≠ 0), f n = g n) :
     LSeriesHasSum f s a ↔ LSeriesHasSum g s a := by
   simp only [LSeriesHasSum_iff, LSeriesSummable_congr s h, LSeries_congr s h]
 

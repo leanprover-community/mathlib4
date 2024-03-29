@@ -37,7 +37,8 @@ def toArithmeticFunction {R : Type*} [Zero R] (f : ℕ → R) : ArithmeticFuncti
   toFun n := if n = 0 then 0 else f n
   map_zero' := rfl
 
-lemma toArithmeticFunction_congr {R : Type*} [Zero R] {f f' : ℕ → R} (h : ∀ n ≠ 0, f n = f' n) :
+lemma toArithmeticFunction_congr {R : Type*} [Zero R] {f f' : ℕ → R}
+    (h : ∀ {n} (_ : n ≠ 0), f n = f' n) :
     toArithmeticFunction f = toArithmeticFunction f' := by
   ext ⟨- | _⟩
   · simp only [Nat.zero_eq, ArithmeticFunction.map_zero]
@@ -63,7 +64,7 @@ noncomputable def LSeries.convolution {R : Type*} [Semiring R] (f g : ℕ → R)
 scoped[LSeries.notation] infixl:70 " ⍟ " => LSeries.convolution
 
 lemma LSeries.convolution_congr {R : Type*} [Semiring R] {f f' g g' : ℕ → R}
-    (hf : ∀ n ≠ 0, f n = f' n) (hg : ∀ n ≠ 0, g n = g' n) :
+    (hf : ∀ {n} (_ : n ≠ 0), f n = f' n) (hg : ∀ {n} (_ : n ≠ 0), g n = g' n) :
     f ⍟ g = f' ⍟ g' := by
   simp only [convolution, toArithmeticFunction_congr hf, toArithmeticFunction_congr hg]
 

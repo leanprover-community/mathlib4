@@ -90,18 +90,17 @@ end Moebius
 open Nat
 
 open scoped ArithmeticFunction.zeta in
-lemma ArithmeticFunction.const_one_eq_zeta {R : Type*} [Semiring R] :
-    ∀ n ≠ 0, (1 : ℕ → R) n = (ζ ·) n := by
-  intro _ hn
+lemma ArithmeticFunction.const_one_eq_zeta {R : Type*} [Semiring R] {n : ℕ} (hn : n ≠ 0) :
+  (1 : ℕ → R) n = (ζ ·) n := by
   simp only [Pi.one_apply, zeta_apply, hn, ↓reduceIte, cast_one]
 
 lemma LSeries.one_convolution_eq_zeta_convolution {R : Type*} [Semiring R] (f : ℕ → R):
     (1 : ℕ → R) ⍟ f = ((ArithmeticFunction.zeta ·) : ℕ → R) ⍟ f :=
-  convolution_congr ArithmeticFunction.const_one_eq_zeta fun _ _ ↦ rfl
+  convolution_congr ArithmeticFunction.const_one_eq_zeta fun _ ↦ rfl
 
 lemma LSeries.convolution_one_eq_convolution_zeta {R : Type*} [Semiring R] (f : ℕ → R):
     f ⍟ (1 : ℕ → R) = f ⍟ ((ArithmeticFunction.zeta ·) : ℕ → R) :=
-  convolution_congr (fun _ _ ↦ rfl) ArithmeticFunction.const_one_eq_zeta
+  convolution_congr (fun _ ↦ rfl) ArithmeticFunction.const_one_eq_zeta
 
 /-- `χ₁` is (local) notation for the (necessarily trivial) Dirichlet charcater modulo `1`. -/
 local notation (name := Dchar_one) "χ₁" => (1 : DirichletCharacter ℂ 1)
@@ -262,7 +261,7 @@ theorem LSeriesSummable_zeta_iff {s : ℂ} : LSeriesSummable (ζ ·) s ↔ 1 < s
 
 /-- The abscissa of (absolute) convergence of the arithmetic function `ζ` is `1`. -/
 lemma abscissaOfAbsConv_zeta : abscissaOfAbsConv ↗ζ = 1 := by
-  rw [abscissaOfAbsConv_congr (g := 1) fun n hn ↦ by simp [hn], abscissaOfAbsConv_one]
+  rw [abscissaOfAbsConv_congr (g := 1) fun hn ↦ by simp [hn], abscissaOfAbsConv_one]
 
 /-- The L-series of the arithmetic function `ζ` equals the Riemann Zeta Function on its
 domain of convergence `1 < re s`. -/
@@ -391,7 +390,7 @@ lemma LSeries_twist_vonMangoldt_eq {N : ℕ} (χ : DirichletCharacter ℂ N) {s 
   have hΛ : LSeriesSummable (↗χ * ↗Λ) s := LSeriesSummable_twist_vonMangoldt χ hs
   rw [eq_div_iff <| LSeries_ne_zero_of_one_lt_re χ hs, ← LSeries_convolution' hΛ hχ,
     convolution_twist_vonMangoldt, LSeries_deriv hs', neg_neg]
-  exact LSeries_congr s fun _ _ ↦ by simp only [Pi.mul_apply, mul_comm, logMul]
+  exact LSeries_congr s fun _ ↦ by simp only [Pi.mul_apply, mul_comm, logMul]
 
 end DirichletCharacter
 
@@ -401,7 +400,7 @@ open DirichletCharacter in
 /-- The L-series of the von Mangoldt function `Λ` equals the negative logarithmic derivative
 of the L-series of the constant sequence `1` on its domain of convergence `re s > 1`. -/
 lemma LSeries_vonMangoldt_eq {s : ℂ} (hs : 1 < s.re) : L ↗Λ s = - deriv (L 1) s / L 1 s := by
-  refine (LSeries_congr s fun n _ ↦ ?_).trans <|
+  refine (LSeries_congr s fun {n} _ ↦ ?_).trans <|
     LSeries_modOne_eq ▸ LSeries_twist_vonMangoldt_eq χ₁ hs
   simp only [Subsingleton.eq_one (n : ZMod 1), map_one, Pi.mul_apply, one_mul]
 
