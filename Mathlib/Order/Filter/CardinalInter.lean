@@ -156,6 +156,8 @@ theorem EventuallyEq.cardinal_bInter {S : Set ι} (hS : #S < c)
   (EventuallyLE.cardinal_bInter hS fun i hi => (h i hi).le).antisymm
     (EventuallyLE.cardinal_bInter hS fun i hi => (h i hi).symm.le)
 
+/-- Construct a filter with cardinal `c` intersection property. This constructor deduces
+`Filter.univ_sets` and `Filter.inter_sets` from the cardinal `c` intersection property. -/
 def ofCardinalInter (l : Set (Set α)) (hc : 2 < c)
     (hp : ∀ S : Set (Set α), (#S < c) → S ⊆ l → ⋂₀ S ∈ l)
     (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l) : Filter α where
