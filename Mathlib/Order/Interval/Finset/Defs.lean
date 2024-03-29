@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Finset.Preimage
-import Mathlib.Data.Set.Intervals.UnorderedInterval
-import Mathlib.Data.Set.Intervals.Image
+import Mathlib.Order.Interval.Set.Image
+import Mathlib.Order.Interval.Set.UnorderedInterval
 
 #align_import order.locally_finite from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
@@ -19,7 +19,7 @@ sense of `Icc`/`Ico`/`Ioc`/`Ioo` as lists, multisets, or finsets.
 Further, if the order is bounded above (resp. below), then we can also make sense of the
 "unbounded" intervals `Ici`/`Ioi` (resp. `Iic`/`Iio`).
 
-Many theorems about these intervals can be found in `Data.Finset.LocallyFinite`.
+Many theorems about these intervals can be found in `Order.Interval.Finset.Basic`.
 
 ## Examples
 
@@ -34,22 +34,14 @@ In a `LocallyFiniteOrder`,
 * `Finset.Ioc`: Open-closed interval as a finset.
 * `Finset.Ioo`: Open-open interval as a finset.
 * `Finset.uIcc`: Unordered closed interval as a finset.
-* `Multiset.Icc`: Closed-closed interval as a multiset.
-* `Multiset.Ico`: Closed-open interval as a multiset.
-* `Multiset.Ioc`: Open-closed interval as a multiset.
-* `Multiset.Ioo`: Open-open interval as a multiset.
 
 In a `LocallyFiniteOrderTop`,
 * `Finset.Ici`: Closed-infinite interval as a finset.
 * `Finset.Ioi`: Open-infinite interval as a finset.
-* `Multiset.Ici`: Closed-infinite interval as a multiset.
-* `Multiset.Ioi`: Open-infinite interval as a multiset.
 
 In a `LocallyFiniteOrderBot`,
 * `Finset.Iic`: Infinite-open interval as a finset.
 * `Finset.Iio`: Infinite-closed interval as a finset.
-* `Multiset.Iic`: Infinite-open interval as a multiset.
-* `Multiset.Iio`: Infinite-closed interval as a multiset.
 
 ## Instances
 
@@ -512,113 +504,6 @@ theorem coe_uIcc (a b : α) : (Finset.uIcc a b : Set α) = Set.uIcc a b :=
 end Lattice
 
 end Finset
-
-/-! ### Intervals as multisets -/
-
-
-namespace Multiset
-
-variable [Preorder α]
-
-section LocallyFiniteOrder
-
-variable [LocallyFiniteOrder α]
-
-/-- The multiset of elements `x` such that `a ≤ x` and `x ≤ b`. Basically `Set.Icc a b` as a
-multiset. -/
-def Icc (a b : α) : Multiset α :=
-  (Finset.Icc a b).val
-#align multiset.Icc Multiset.Icc
-
-/-- The multiset of elements `x` such that `a ≤ x` and `x < b`. Basically `Set.Ico a b` as a
-multiset. -/
-def Ico (a b : α) : Multiset α :=
-  (Finset.Ico a b).val
-#align multiset.Ico Multiset.Ico
-
-/-- The multiset of elements `x` such that `a < x` and `x ≤ b`. Basically `Set.Ioc a b` as a
-multiset. -/
-def Ioc (a b : α) : Multiset α :=
-  (Finset.Ioc a b).val
-#align multiset.Ioc Multiset.Ioc
-
-/-- The multiset of elements `x` such that `a < x` and `x < b`. Basically `Set.Ioo a b` as a
-multiset. -/
-def Ioo (a b : α) : Multiset α :=
-  (Finset.Ioo a b).val
-#align multiset.Ioo Multiset.Ioo
-
-@[simp]
-theorem mem_Icc {a b x : α} : x ∈ Icc a b ↔ a ≤ x ∧ x ≤ b := by
-  rw [Icc, ← Finset.mem_def, Finset.mem_Icc]
-#align multiset.mem_Icc Multiset.mem_Icc
-
-@[simp]
-theorem mem_Ico {a b x : α} : x ∈ Ico a b ↔ a ≤ x ∧ x < b := by
-  rw [Ico, ← Finset.mem_def, Finset.mem_Ico]
-#align multiset.mem_Ico Multiset.mem_Ico
-
-@[simp]
-theorem mem_Ioc {a b x : α} : x ∈ Ioc a b ↔ a < x ∧ x ≤ b := by
-  rw [Ioc, ← Finset.mem_def, Finset.mem_Ioc]
-#align multiset.mem_Ioc Multiset.mem_Ioc
-
-@[simp]
-theorem mem_Ioo {a b x : α} : x ∈ Ioo a b ↔ a < x ∧ x < b := by
-  rw [Ioo, ← Finset.mem_def, Finset.mem_Ioo]
-#align multiset.mem_Ioo Multiset.mem_Ioo
-
-end LocallyFiniteOrder
-
-section LocallyFiniteOrderTop
-
-variable [LocallyFiniteOrderTop α]
-
-/-- The multiset of elements `x` such that `a ≤ x`. Basically `Set.Ici a` as a multiset. -/
-def Ici (a : α) : Multiset α :=
-  (Finset.Ici a).val
-#align multiset.Ici Multiset.Ici
-
-/-- The multiset of elements `x` such that `a < x`. Basically `Set.Ioi a` as a multiset. -/
-def Ioi (a : α) : Multiset α :=
-  (Finset.Ioi a).val
-#align multiset.Ioi Multiset.Ioi
-
-@[simp]
-theorem mem_Ici {a x : α} : x ∈ Ici a ↔ a ≤ x := by rw [Ici, ← Finset.mem_def, Finset.mem_Ici]
-#align multiset.mem_Ici Multiset.mem_Ici
-
-@[simp]
-theorem mem_Ioi {a x : α} : x ∈ Ioi a ↔ a < x := by rw [Ioi, ← Finset.mem_def, Finset.mem_Ioi]
-#align multiset.mem_Ioi Multiset.mem_Ioi
-
-end LocallyFiniteOrderTop
-
-section LocallyFiniteOrderBot
-
-variable [LocallyFiniteOrderBot α]
-
-/-- The multiset of elements `x` such that `x ≤ b`. Basically `Set.Iic b` as a multiset. -/
-def Iic (b : α) : Multiset α :=
-  (Finset.Iic b).val
-#align multiset.Iic Multiset.Iic
-
-/-- The multiset of elements `x` such that `x < b`. Basically `Set.Iio b` as a multiset. -/
-def Iio (b : α) : Multiset α :=
-  (Finset.Iio b).val
-#align multiset.Iio Multiset.Iio
-
-@[simp]
-theorem mem_Iic {b x : α} : x ∈ Iic b ↔ x ≤ b := by rw [Iic, ← Finset.mem_def, Finset.mem_Iic]
-#align multiset.mem_Iic Multiset.mem_Iic
-
-@[simp]
-theorem mem_Iio {b x : α} : x ∈ Iio b ↔ x < b := by rw [Iio, ← Finset.mem_def, Finset.mem_Iio]
-#align multiset.mem_Iio Multiset.mem_Iio
-
-end LocallyFiniteOrderBot
-
-end Multiset
 
 /-! ### Finiteness of `Set` intervals -/
 

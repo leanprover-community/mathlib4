@@ -10,7 +10,7 @@ import Mathlib.Order.SupClosed
 import Mathlib.Order.SupIndep
 import Mathlib.Order.Zorn
 import Mathlib.Data.Finset.Order
-import Mathlib.Data.Set.Intervals.OrderIso
+import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Data.Finite.Set
 import Mathlib.Tactic.TFAE
 

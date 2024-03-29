@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Data.Set.Intervals.OrderEmbedding
+import Mathlib.Order.Interval.Set.OrderEmbedding
 import Mathlib.Order.Antichain
 import Mathlib.Order.SetNotation
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Order.Interval.Set.Basic
 
 #align_import data.set.intervals.with_bot_top from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
 

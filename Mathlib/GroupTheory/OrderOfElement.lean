@@ -8,7 +8,7 @@ import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Set.Pointwise.Basic
-import Mathlib.Data.Set.Intervals.Infinite
+import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Index
 

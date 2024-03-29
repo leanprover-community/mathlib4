@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy
 -/
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Logic.Pairwise
 
 #align_import data.set.intervals.group from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"

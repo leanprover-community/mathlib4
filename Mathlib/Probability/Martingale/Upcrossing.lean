@@ -3,7 +3,7 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Data.Set.Intervals.Monotone
+import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Probability.Process.HittingTime
 import Mathlib.Probability.Martingale.Basic
 

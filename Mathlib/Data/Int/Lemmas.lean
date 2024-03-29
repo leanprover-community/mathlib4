@@ -6,7 +6,7 @@ Authors: Jeremy Avigad
 import Mathlib.Data.Int.Bitwise
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Set.Function
-import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Order.Interval.Set.Basic
 
 #align_import data.int.lemmas from "leanprover-community/mathlib"@"09597669f02422ed388036273d8848119699c22f"
 

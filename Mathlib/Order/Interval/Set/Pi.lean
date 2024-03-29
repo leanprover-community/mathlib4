@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Data.Set.Intervals.Basic
-import Mathlib.Data.Set.Intervals.UnorderedInterval
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.UnorderedInterval
 import Mathlib.Data.Set.Lattice
 
 #align_import data.set.intervals.pi from "leanprover-community/mathlib"@"e4bc74cbaf429d706cb9140902f7ca6c431e75a4"

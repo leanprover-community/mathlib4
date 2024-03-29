@@ -3,23 +3,116 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.LocallyFinite.Basic
+import Mathlib.Order.Interval.Finset.Basic
 
 #align_import data.multiset.locally_finite from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
 /-!
 # Intervals as multisets
 
-This file provides basic results about all the `Multiset.Ixx`, which are defined in
-`Order.LocallyFinite`.
+This file defines intervals as multisets.
 
-Note that intervals of multisets themselves (`Multiset.LocallyFiniteOrder`) are defined elsewhere.
+## Main declarations
+
+In a `LocallyFiniteOrder`,
+* `Multiset.Icc`: Closed-closed interval as a multiset.
+* `Multiset.Ico`: Closed-open interval as a multiset.
+* `Multiset.Ioc`: Open-closed interval as a multiset.
+* `Multiset.Ioo`: Open-open interval as a multiset.
+
+In a `LocallyFiniteOrderTop`,
+* `Multiset.Ici`: Closed-infinite interval as a multiset.
+* `Multiset.Ioi`: Open-infinite interval as a multiset.
+
+In a `LocallyFiniteOrderBot`,
+* `Multiset.Iic`: Infinite-open interval as a multiset.
+* `Multiset.Iio`: Infinite-closed interval as a multiset.
+
+## TODO
+
+Do we really need this file at all? (March 2024)
 -/
 
 
 variable {α : Type*}
 
 namespace Multiset
+
+section LocallyFiniteOrder
+variable [Preorder α] [LocallyFiniteOrder α] {a b x : α}
+
+/-- The multiset of elements `x` such that `a ≤ x` and `x ≤ b`. Basically `Set.Icc a b` as a
+multiset. -/
+def Icc (a b : α) : Multiset α := (Finset.Icc a b).val
+#align multiset.Icc Multiset.Icc
+
+/-- The multiset of elements `x` such that `a ≤ x` and `x < b`. Basically `Set.Ico a b` as a
+multiset. -/
+def Ico (a b : α) : Multiset α := (Finset.Ico a b).val
+#align multiset.Ico Multiset.Ico
+
+/-- The multiset of elements `x` such that `a < x` and `x ≤ b`. Basically `Set.Ioc a b` as a
+multiset. -/
+def Ioc (a b : α) : Multiset α := (Finset.Ioc a b).val
+#align multiset.Ioc Multiset.Ioc
+
+/-- The multiset of elements `x` such that `a < x` and `x < b`. Basically `Set.Ioo a b` as a
+multiset. -/
+def Ioo (a b : α) : Multiset α := (Finset.Ioo a b).val
+#align multiset.Ioo Multiset.Ioo
+
+@[simp] lemma mem_Icc : x ∈ Icc a b ↔ a ≤ x ∧ x ≤ b := by rw [Icc, ← Finset.mem_def, Finset.mem_Icc]
+#align multiset.mem_Icc Multiset.mem_Icc
+
+@[simp] lemma mem_Ico : x ∈ Ico a b ↔ a ≤ x ∧ x < b := by rw [Ico, ← Finset.mem_def, Finset.mem_Ico]
+#align multiset.mem_Ico Multiset.mem_Ico
+
+@[simp] lemma mem_Ioc : x ∈ Ioc a b ↔ a < x ∧ x ≤ b := by rw [Ioc, ← Finset.mem_def, Finset.mem_Ioc]
+#align multiset.mem_Ioc Multiset.mem_Ioc
+
+@[simp] lemma mem_Ioo : x ∈ Ioo a b ↔ a < x ∧ x < b := by rw [Ioo, ← Finset.mem_def, Finset.mem_Ioo]
+#align multiset.mem_Ioo Multiset.mem_Ioo
+
+end LocallyFiniteOrder
+
+section LocallyFiniteOrderTop
+
+variable [Preorder α] [LocallyFiniteOrderTop α] {a x : α}
+
+/-- The multiset of elements `x` such that `a ≤ x`. Basically `Set.Ici a` as a multiset. -/
+def Ici (a : α) : Multiset α := (Finset.Ici a).val
+#align multiset.Ici Multiset.Ici
+
+/-- The multiset of elements `x` such that `a < x`. Basically `Set.Ioi a` as a multiset. -/
+def Ioi (a : α) : Multiset α := (Finset.Ioi a).val
+#align multiset.Ioi Multiset.Ioi
+
+@[simp] lemma mem_Ici : x ∈ Ici a ↔ a ≤ x := by rw [Ici, ← Finset.mem_def, Finset.mem_Ici]
+#align multiset.mem_Ici Multiset.mem_Ici
+
+@[simp] lemma mem_Ioi : x ∈ Ioi a ↔ a < x := by rw [Ioi, ← Finset.mem_def, Finset.mem_Ioi]
+#align multiset.mem_Ioi Multiset.mem_Ioi
+
+end LocallyFiniteOrderTop
+
+section LocallyFiniteOrderBot
+variable [Preorder α] [LocallyFiniteOrderBot α] {b x : α}
+
+/-- The multiset of elements `x` such that `x ≤ b`. Basically `Set.Iic b` as a multiset. -/
+def Iic (b : α) : Multiset α := (Finset.Iic b).val
+#align multiset.Iic Multiset.Iic
+
+/-- The multiset of elements `x` such that `x < b`. Basically `Set.Iio b` as a multiset. -/
+def Iio (b : α) : Multiset α := (Finset.Iio b).val
+#align multiset.Iio Multiset.Iio
+
+@[simp] lemma mem_Iic : x ∈ Iic b ↔ x ≤ b := by rw [Iic, ← Finset.mem_def, Finset.mem_Iic]
+#align multiset.mem_Iic Multiset.mem_Iic
+
+@[simp] lemma mem_Iio : x ∈ Iio b ↔ x < b := by rw [Iio, ← Finset.mem_def, Finset.mem_Iio]
+#align multiset.mem_Iio Multiset.mem_Iio
+
+end LocallyFiniteOrderBot
 
 section Preorder
 

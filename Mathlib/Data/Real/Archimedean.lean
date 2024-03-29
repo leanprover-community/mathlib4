@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Floris van Doorn
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Set.Intervals.Disjoint
+import Mathlib.Order.Interval.Set.Disjoint
 
 #align_import data.real.basic from "leanprover-community/mathlib"@"cb42593171ba005beaaf4549fcfe0dece9ada4c9"
 

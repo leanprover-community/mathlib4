@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Set.Intervals.Disjoint
+import Mathlib.Order.Interval.Set.Disjoint
 import Mathlib.Order.SuccPred.Basic
 
 #align_import data.set.intervals.monotone from "leanprover-community/mathlib"@"4d06b17aea8cf2e220f0b0aa46cd0231593c5c97"

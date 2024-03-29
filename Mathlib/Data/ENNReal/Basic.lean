@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.Real.NNReal
-import Mathlib.Data.Set.Intervals.WithBotTop
+import Mathlib.Order.Interval.Set.WithBotTop
 
 #align_import data.real.ennreal from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
