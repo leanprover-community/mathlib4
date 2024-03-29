@@ -102,7 +102,7 @@ lemma LSeries.convolution_one_eq_convolution_zeta {R : Type*} [Semiring R] (f : 
     f ⍟ (1 : ℕ → R) = f ⍟ ((ArithmeticFunction.zeta ·) : ℕ → R) :=
   convolution_congr (fun _ ↦ rfl) ArithmeticFunction.const_one_eq_zeta
 
-/-- `χ₁` is (local) notation for the (necessarily trivial) Dirichlet charcater modulo `1`. -/
+/-- `χ₁` is (local) notation for the (necessarily trivial) Dirichlet character modulo `1`. -/
 local notation (name := Dchar_one) "χ₁" => (1 : DirichletCharacter ℂ 1)
 
 namespace DirichletCharacter
@@ -227,8 +227,8 @@ section zeta
 /-!
 ### The L-series of the constant sequence 1 / the arithmetic function ζ
 
-Both give the same L-series (since the difference in values at zero has no effect);
-see `ArithmeticFunction.LSeries_zeta_eq`, which agrees with the Riemann zeta function
+Both give the same L-series (since the difference in values at zero has no effect;
+see `ArithmeticFunction.LSeries_zeta_eq`), which agrees with the Riemann zeta function
 on `re s > 1`. We state most results in two versions, one for `1` and one for `↗ζ`.
 -/
 
@@ -300,7 +300,7 @@ domain of convergence `1 < re s`. -/
 lemma LSeries_one_eq_riemannZeta {s : ℂ} (hs : 1 < s.re) : L 1 s = riemannZeta s :=
   LSeries_zeta_eq ▸ LSeries_zeta_eq_riemannZeta hs
 
-/-- The L-series of the constant sequence `1` equals the Riemann Zeta Function on its
+/-- The L-series of the constant sequence `1` equals the Riemann zeta function on its
 domain of convergence `1 < re s`. -/
 lemma LSeriesHasSum_one {s : ℂ} (hs : 1 < s.re) : LSeriesHasSum 1 s (riemannZeta s) :=
   LSeries_one_eq_riemannZeta hs ▸ (LSeriesSummable_one_iff.mpr hs).LSeriesHasSum
@@ -376,7 +376,7 @@ lemma LSeriesSummable_twist_vonMangoldt {N : ℕ} (χ : DirichletCharacter ℂ N
   LSeriesSummable_mul χ <| LSeriesSummable_vonMangoldt hs
 
 /-- The L-series of the twist of the von Mangoldt function `Λ` by a Dirichlet character `χ` at `s`
-equals the negative logarithmtic dericative of the L-series of `χ` when `re s > 1`. -/
+equals the negative logarithmtic derivative of the L-series of `χ` when `re s > 1`. -/
 lemma LSeries_twist_vonMangoldt_eq {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 < s.re) :
     L (↗χ * ↗Λ) s = - deriv (L ↗χ) s / L ↗χ s := by
   rcases eq_or_ne N 0 with rfl | hN
