@@ -166,7 +166,7 @@ theorem natTrailingDegree_le_of_ne_zero (h : coeff p n ≠ 0) : natTrailingDegre
     exact h rfl
 #align polynomial.nat_trailing_degree_le_of_ne_zero Polynomial.natTrailingDegree_le_of_ne_zero
 
-lemma constantCoeff_natTrailingDegree_eq_zero : coeff p p.natTrailingDegree = 0 ↔ p = 0 := by
+@[simp] lemma coeff_natTrailingDegree_eq_zero : coeff p p.natTrailingDegree = 0 ↔ p = 0 := by
   constructor
   · rintro h
     by_contra hp
@@ -176,14 +176,14 @@ lemma constantCoeff_natTrailingDegree_eq_zero : coeff p p.natTrailingDegree = 0 
   · rintro rfl
     simp
 
-lemma constantCoeff_natTrailingDegree_ne_zero : coeff p p.natTrailingDegree ≠ 0 ↔ p ≠ 0 :=
-  constantCoeff_natTrailingDegree_eq_zero.not
+lemma coeff_natTrailingDegree_ne_zero : coeff p p.natTrailingDegree ≠ 0 ↔ p ≠ 0 :=
+  coeff_natTrailingDegree_eq_zero.not
 
 @[simp] lemma natTrailingDegree_eq_zero : natTrailingDegree p = 0 ↔ p = 0 ∨ coeff p 0 ≠ 0 := by
   constructor
   · rw [or_iff_not_imp_left]
     rintro h hp
-    rwa [← h, constantCoeff_natTrailingDegree_ne_zero]
+    rwa [← h, coeff_natTrailingDegree_ne_zero]
   · rintro (rfl | h)
     · simp
     · exact nonpos_iff_eq_zero.1 $ natTrailingDegree_le_of_ne_zero h
