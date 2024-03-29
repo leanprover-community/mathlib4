@@ -143,5 +143,3 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
       add_tsub_tsub_cancel ha₀, add_tsub_cancel_right]
     exact dvd_mul_right _ _
 #align oxford_invariants.week3_p1 OxfordInvariants.Week3P1
-
-#minimize_imports
