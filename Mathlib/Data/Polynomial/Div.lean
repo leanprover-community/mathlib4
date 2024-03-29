@@ -52,7 +52,7 @@ theorem X_pow_dvd_iff {f : R[X]} {n : ℕ} : X ^ n ∣ f ↔ ∀ d < n, f.coeff 
       rw [zero_add, ← hgf, hd n (Nat.lt_succ_self n)] at this
       obtain ⟨k, hgk⟩ := Polynomial.X_dvd_iff.mpr this.symm
       use k
-      rwa [pow_succ', mul_assoc, ← hgk]⟩
+      rwa [pow_succ, mul_assoc, ← hgk]⟩
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_pow_dvd_iff Polynomial.X_pow_dvd_iff
 
@@ -475,7 +475,7 @@ theorem coeff_divByMonic_X_sub_C (p : R[X]) (a : R) (n : ℕ) :
           sum_cons, Nat.sub_self, pow_zero, one_mul, mul_sum]
       congr 1; refine sum_congr ?_ fun i hi ↦ ?_
       · ext; simp [Nat.succ_le]
-      rw [← mul_assoc, ← pow_succ, eq_comm, i.sub_succ', Nat.sub_add_cancel]
+      rw [← mul_assoc, ← pow_succ', eq_comm, i.sub_succ', Nat.sub_add_cancel]
       apply Nat.le_sub_of_add_le
       rw [add_comm]; exact (mem_Icc.mp hi).1
     · exact this _ le_rfl
@@ -697,7 +697,7 @@ theorem eval_divByMonic_pow_rootMultiplicity_ne_zero {p : R[X]} (a : R) (hp : p 
   rw [Ne.def, ← IsRoot.definition, ← dvd_iff_isRoot]
   rintro ⟨q, hq⟩
   have := pow_mul_divByMonic_rootMultiplicity_eq p a
-  rw [hq, ← mul_assoc, ← pow_succ', rootMultiplicity_eq_multiplicity, dif_neg hp] at this
+  rw [hq, ← mul_assoc, ← pow_succ, rootMultiplicity_eq_multiplicity, dif_neg hp] at this
   exact
     multiplicity.is_greatest'
       (multiplicity_finite_of_degree_pos_of_monic
