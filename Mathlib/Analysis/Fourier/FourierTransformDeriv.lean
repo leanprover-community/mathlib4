@@ -261,7 +261,7 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
     rw [integral_apply]
     · simp only [fourierPowSMulRight, pow_zero, one_smul, smul_apply, compContinuousLinearMap_apply,
         mkPiRing_apply, Finset.univ_eq_empty, Finset.prod_empty]
-    · simpa only [ContinuousLinearMap.toLinearMap₂_apply, fourierIntegral_convergent_iff] using
+    · simpa only [ContinuousLinearMap.toLinearMap₂_apply, fourierIntegral_convergent_iff'] using
         integrable_fourierPowSMulRight (hf 0 bot_le) h'f
   · intro n hn w
     have I₁ : Integrable (fun v ↦ fourierPowSMulRight L f v n) μ :=
@@ -278,11 +278,11 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
       _ = (2 * π * ‖L‖) ^ n * (‖v‖ ^ (n + 1) * ‖f v‖) := by rw [pow_succ]; ring
     have I₃ : Integrable (fun v ↦ 𝐞 (-L.toLinearMap₂ v w)
         • fourierPowSMulRight L f v (Nat.succ n)) μ := by
-      simpa only [ContinuousLinearMap.toLinearMap₂_apply, fourierIntegral_convergent_iff] using
+      simpa only [ContinuousLinearMap.toLinearMap₂_apply, fourierIntegral_convergent_iff'] using
         integrable_fourierPowSMulRight (hf (n + 1) (ENat.add_one_le_of_lt hn)) h'f
     have I₄ : Integrable (fun v ↦ 𝐞 (-L.toLinearMap₂ v w)
         • fourierSMulRight L (fun v ↦ fourierPowSMulRight L f v n) v) μ := by
-      simp only [ContinuousLinearMap.toLinearMap₂_apply, fourierIntegral_convergent_iff]
+      simp only [ContinuousLinearMap.toLinearMap₂_apply, fourierIntegral_convergent_iff']
       apply (I₂.const_mul ((2 * π * ‖L‖))).mono' h'f.fourierPowSMulRight.fourierSMulRight
       filter_upwards with v
       exact (norm_fourierSMulRight_le _ _ _).trans (le_of_eq (by ring))
@@ -370,7 +370,7 @@ theorem iteratedFDeriv_fourierIntegral {N : ℕ∞}
 
 lemma hasDerivAt_fourierIntegral
     {f : ℝ → E} (hf : Integrable f) (hf' : Integrable (fun x : ℝ ↦ x • f x)) (w : ℝ) :
-    HasDerivAt (𝓕 f) (𝓕 (fun x : ℝ ↦ (-2 * ↑π * I * x) • f x) w) w := by
+    HasDerivAt (𝓕 f) (𝓕 (fun x : ℝ ↦ (-2 * π * I * x) • f x) w) w := by
   have hf'' : Integrable (fun v : ℝ ↦ ‖v‖ * ‖f v‖) := by simpa only [norm_smul] using hf'.norm
   let L := ContinuousLinearMap.mul ℝ ℝ
   have h_int : Integrable fun v ↦ fourierSMulRight L f v := by
@@ -392,13 +392,13 @@ lemma hasDerivAt_fourierIntegral
 
 theorem deriv_fourierIntegral
     {f : ℝ → E} (hf : Integrable f) (hf' : Integrable (fun x : ℝ ↦ x • f x)) (x : ℝ) :
-    deriv (𝓕 f) x = 𝓕 (fun x : ℝ ↦ (-2 * ↑π * I * x) • f x) x :=
+    deriv (𝓕 f) x = 𝓕 (fun x : ℝ ↦ (-2 * π * I * x) • f x) x :=
   (hasDerivAt_fourierIntegral hf hf' x).deriv
 
 theorem iteratedDeriv_fourierIntegral
     {f : ℝ → E} {N : ℕ∞} {n : ℕ}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun x ↦ x^n • f x)) (hn : n ≤ N) (x : ℝ) :
-    iteratedDeriv n (𝓕 f) x = 𝓕 (fun x : ℝ ↦ (-2 * ↑π * I * x) ^ n • f x) x := by
+    iteratedDeriv n (𝓕 f) x = 𝓕 (fun x : ℝ ↦ (-2 * π * I * x) ^ n • f x) x := by
   have I : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖^n * ‖f v‖) := by
     intro n hn
     convert (hf n hn).norm with x
@@ -406,14 +406,14 @@ theorem iteratedDeriv_fourierIntegral
   have J : AEStronglyMeasurable f := by
     convert (hf 0 (zero_le _)).1 with x
     simp
+  have K : Integrable (fun v ↦ 𝐞 (-⟪v, x⟫_ℝ) • fourierPowSMulRight (innerSL ℝ) f v n) := by
+    simpa [-IsROrC.inner_apply] using integrable_fourierPowSMulRight (I n hn) J
   rw [iteratedDeriv, iteratedFDeriv_fourierIntegral I J hn, fourierIntegral_eq,
-    ContinuousMultilinearMap.integral_apply, fourierIntegral_eq]
+    ContinuousMultilinearMap.integral_apply K, fourierIntegral_eq]
   congr with y
   suffices (-(2 * ↑π * Complex.I)) ^ n • y ^ n • f y = (-(2 * ↑π * Complex.I * ↑y)) ^ n • f y by
     simpa only [IsROrC.inner_apply, conj_trivial, ContinuousMultilinearMap.smul_apply,
       fourierPowSMulRight_apply, innerSL_apply _, mul_one, Finset.prod_const, Finset.card_fin,
       neg_mul, smul_left_cancel_iff]
   have : y ^ n • f y = ((y ^ n : ℝ) : ℂ) • f y := rfl
-  rw [neg_pow]
-  conv_rhs => rw [neg_pow]
-  simp only [this, smul_smul, mul_pow, ofReal_pow, mul_assoc]
+  simp only [← neg_mul, this, smul_smul, mul_pow, ofReal_pow, mul_assoc]

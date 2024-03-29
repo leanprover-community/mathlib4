@@ -318,8 +318,11 @@ theorem vector_fourierIntegral_eq_integral_exp_smul {V : Type*} [AddCommGroup V]
     neg_mul]
 #align real.vector_fourier_integral_eq_integral_exp_smul Real.vector_fourierIntegral_eq_integral_exp_smul
 
+/-- The Fourier integral is well defined iff the function is integrable. Version with a general
+continuous bilinear function `L`. For the specialization to the inner product in an inner product
+space, see `Real.fourierIntegral_convergent_iff`. -/
 @[simp]
-theorem fourierIntegral_convergent_iff {V W : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+theorem fourierIntegral_convergent_iff' {V W : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     [NormedAddCommGroup W] [NormedSpace ℝ W] [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
     (f : V → E) (L : V →L[ℝ] W →L[ℝ] ℝ) (w : W) :
     Integrable (fun v : V ↦ 𝐞 (- L v w) • f v) μ ↔ Integrable f μ :=
@@ -391,5 +394,9 @@ theorem fourierIntegral_real_eq_integral_exp_smul (f : ℝ → E) (w : ℝ) :
 
 @[deprecated] alias fourierIntegral_eq_integral_exp_smul :=
   fourierIntegral_real_eq_integral_exp_smul -- deprecated on 2024-02-21
+
+@[simp] theorem fourierIntegral_convergent_iff {μ : Measure V} (f : V → E) (w : V) :
+    Integrable (fun v : V ↦ 𝐞 (- ⟪v, w⟫) • f v) μ ↔ Integrable f μ :=
+  fourierIntegral_convergent_iff' f (innerSL ℝ) _
 
 end Real
