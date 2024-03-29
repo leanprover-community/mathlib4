@@ -555,6 +555,9 @@ theorem reverse_cons' (a : α) (l : List α) : reverse (a :: l) = concat (revers
   simp only [reverse_cons, concat_eq_append]
 #align list.reverse_cons' List.reverse_cons'
 
+theorem reverse_concat' (l : List α) (a : α) : (l ++ [a]).reverse = a :: l.reverse := by
+  rw [reverse_append]; rfl
+
 -- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem reverse_singleton (a : α) : reverse [a] = [a] :=
