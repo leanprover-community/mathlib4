@@ -758,7 +758,7 @@ theorem prod_alternatingWord_eq_pow (i i' : B) (m : ℕ) :
       simp [Nat.odd_iff_not_even.mp h₁, h₂]
       rw [Nat.add_mul_div_right _ _ (by norm_num : 0 < 2)]
       norm_num
-      rw [pow_succ, mul_assoc]
+      rw [pow_succ', mul_assoc]
 
 theorem prod_alternatingWord_eq_prod_alternatingWord (i i' : B) (m : ℕ) (hm : m ≤ M i i' * 2) :
     π (alternatingWord i i' m) = π (alternatingWord i' i (M i i' * 2 - m)) := by
