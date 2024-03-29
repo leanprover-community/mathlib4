@@ -63,6 +63,7 @@ where
       withCatchingRuntimeEx do
       try
         withoutCatchingRuntimeEx do
+        withIncRecDepth do
         let e ← (whnfCore e)
         go e (acc.push e)
       catch _ =>
@@ -71,7 +72,7 @@ where
       return acc
 
 def isUserFriendly (e : Expr) : Bool :=
-  !e.foldConsts (init := false) (fun name bool => bool || name.isInternalDetail)
+  !e.foldConsts (init := false) (fun name => (· || name.isInternalDetail))
 
 def filteredUnfolds (e : Expr) : MetaM (Array Expr) :=
   return (← unfolds e).filter isUserFriendly
