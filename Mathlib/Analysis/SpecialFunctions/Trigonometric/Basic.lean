@@ -135,17 +135,17 @@ scoped notation "π" => Real.pi
 
 @[simp]
 theorem cos_pi_div_two : cos (π / 2) = 0 := by
-  rw [Real.pi, mul_div_cancel_left _ (two_ne_zero' ℝ)]
+  rw [Real.pi, mul_div_cancel_left₀ _ (two_ne_zero' ℝ)]
   exact (Classical.choose_spec exists_cos_eq_zero).2
 #align real.cos_pi_div_two Real.cos_pi_div_two
 
 theorem one_le_pi_div_two : (1 : ℝ) ≤ π / 2 := by
-  rw [Real.pi, mul_div_cancel_left _ (two_ne_zero' ℝ)]
+  rw [Real.pi, mul_div_cancel_left₀ _ (two_ne_zero' ℝ)]
   exact (Classical.choose_spec exists_cos_eq_zero).1.1
 #align real.one_le_pi_div_two Real.one_le_pi_div_two
 
 theorem pi_div_two_le_two : π / 2 ≤ 2 := by
-  rw [Real.pi, mul_div_cancel_left _ (two_ne_zero' ℝ)]
+  rw [Real.pi, mul_div_cancel_left₀ _ (two_ne_zero' ℝ)]
   exact (Classical.choose_spec exists_cos_eq_zero).1.2
 #align real.pi_div_two_le_two Real.pi_div_two_le_two
 
@@ -226,12 +226,12 @@ open Real
 
 @[simp]
 theorem sin_pi : sin π = 0 := by
-  rw [← mul_div_cancel_left π (two_ne_zero' ℝ), two_mul, add_div, sin_add, cos_pi_div_two]; simp
+  rw [← mul_div_cancel_left₀ π (two_ne_zero' ℝ), two_mul, add_div, sin_add, cos_pi_div_two]; simp
 #align real.sin_pi Real.sin_pi
 
 @[simp]
 theorem cos_pi : cos π = -1 := by
-  rw [← mul_div_cancel_left π (two_ne_zero' ℝ), mul_div_assoc, cos_two_mul, cos_pi_div_two]
+  rw [← mul_div_cancel_left₀ π (two_ne_zero' ℝ), mul_div_assoc, cos_two_mul, cos_pi_div_two]
   norm_num
 #align real.cos_pi Real.cos_pi
 
@@ -742,7 +742,7 @@ theorem cos_pi_over_two_pow : ∀ n : ℕ, cos (π / 2 ^ (n + 1)) = sqrtTwoAddSe
     have A : (1 : ℝ) < 2 ^ (n + 1) := one_lt_pow one_lt_two n.succ_ne_zero
     have B : π / 2 ^ (n + 1) < π := div_lt_self pi_pos A
     have C : 0 < π / 2 ^ (n + 1) := by positivity
-    rw [pow_succ', div_mul_eq_div_div, cos_half, cos_pi_over_two_pow n, sqrtTwoAddSeries,
+    rw [pow_succ, div_mul_eq_div_div, cos_half, cos_pi_over_two_pow n, sqrtTwoAddSeries,
       add_div_eq_mul_add_div, one_mul, ← div_mul_eq_div_div, sqrt_div, sqrt_mul_self] <;>
       linarith [sqrtTwoAddSeries_nonneg le_rfl n]
 #align real.cos_pi_over_two_pow Real.cos_pi_over_two_pow
@@ -979,7 +979,7 @@ theorem tan_periodic : Function.Periodic tan π := by
   simpa only [Function.Periodic, tan_eq_sin_div_cos] using sin_antiperiodic.div cos_antiperiodic
 #align real.tan_periodic Real.tan_periodic
 
--- Porting note: added
+-- Porting note (#10756): added theorem
 @[simp]
 theorem tan_pi : tan π = 0 := by rw [tan_periodic.eq, tan_zero]
 

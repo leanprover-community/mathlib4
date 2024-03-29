@@ -738,13 +738,12 @@ lemma Memℒp.piecewise [DecidablePred (· ∈ s)]
   constructor
   · have h : ∀ᵐ (x : α) ∂μ, x ∈ s →
         (‖Set.piecewise s f g x‖₊ : ℝ≥0∞) ^ p.toReal = (‖f x‖₊ : ℝ≥0∞) ^ p.toReal := by
-      refine ae_of_all _ (fun a ha ↦ ?_)
-      simp [ha]
+      filter_upwards with a ha using by simp [ha]
     rw [set_lintegral_congr_fun hs h]
     exact lintegral_rpow_nnnorm_lt_top_of_snorm_lt_top hp_zero hp_top hf.2
   · have h : ∀ᵐ (x : α) ∂μ, x ∈ sᶜ →
         (‖Set.piecewise s f g x‖₊ : ℝ≥0∞) ^ p.toReal = (‖g x‖₊ : ℝ≥0∞) ^ p.toReal := by
-      refine ae_of_all _ (fun a ha ↦ ?_)
+      filter_upwards with a ha
       have ha' : a ∉ s := ha
       simp [ha']
     rw [set_lintegral_congr_fun hs.compl h]
@@ -1121,25 +1120,26 @@ theorem comp_memℒp' (L : E →L[𝕜] F) {f : α → E} (hf : Memℒp f p μ) 
   (L.comp_memℒp (hf.toLp f)).ae_eq (EventuallyEq.fun_comp hf.coeFn_toLp _)
 #align continuous_linear_map.comp_mem_ℒp' ContinuousLinearMap.comp_memℒp'
 
-section IsROrC
+section RCLike
 
-variable {K : Type*} [IsROrC K]
+variable {K : Type*} [RCLike K]
 
 theorem _root_.MeasureTheory.Memℒp.ofReal {f : α → ℝ} (hf : Memℒp f p μ) :
     Memℒp (fun x => (f x : K)) p μ :=
-  (@IsROrC.ofRealCLM K _).comp_memℒp' hf
+  (@RCLike.ofRealCLM K _).comp_memℒp' hf
 #align measure_theory.mem_ℒp.of_real MeasureTheory.Memℒp.ofReal
 
 theorem _root_.MeasureTheory.memℒp_re_im_iff {f : α → K} :
-    Memℒp (fun x => IsROrC.re (f x)) p μ ∧ Memℒp (fun x => IsROrC.im (f x)) p μ ↔ Memℒp f p μ := by
+    Memℒp (fun x ↦ RCLike.re (f x)) p μ ∧ Memℒp (fun x ↦ RCLike.im (f x)) p μ ↔
+      Memℒp f p μ := by
   refine' ⟨_, fun hf => ⟨hf.re, hf.im⟩⟩
   rintro ⟨hre, him⟩
-  convert MeasureTheory.Memℒp.add (E := K) hre.ofReal (him.ofReal.const_mul IsROrC.I)
+  convert MeasureTheory.Memℒp.add (E := K) hre.ofReal (him.ofReal.const_mul RCLike.I)
   ext1 x
-  rw [Pi.add_apply, mul_comm, IsROrC.re_add_im]
+  rw [Pi.add_apply, mul_comm, RCLike.re_add_im]
 #align measure_theory.mem_ℒp_re_im_iff MeasureTheory.memℒp_re_im_iff
 
-end IsROrC
+end RCLike
 
 theorem add_compLp (L L' : E →L[𝕜] F) (f : Lp E p μ) :
     (L + L').compLp f = L.compLp f + L'.compLp f := by
@@ -1148,7 +1148,7 @@ theorem add_compLp (L L' : E →L[𝕜] F) (f : Lp E p μ) :
   refine' EventuallyEq.trans _ (Lp.coeFn_add _ _).symm
   refine'
     EventuallyEq.trans _ (EventuallyEq.add (L.coeFn_compLp' f).symm (L'.coeFn_compLp' f).symm)
-  refine' eventually_of_forall fun x => _
+  filter_upwards with x
   rw [coe_add', Pi.add_def]
 #align continuous_linear_map.add_comp_Lp ContinuousLinearMap.add_compLp
 

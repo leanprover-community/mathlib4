@@ -157,7 +157,7 @@ protected theorem mul (q r : ℚ) : padicNorm p (q * r) = padicNorm p q * padicN
 @[simp]
 protected theorem div (q r : ℚ) : padicNorm p (q / r) = padicNorm p q / padicNorm p r :=
   if hr : r = 0 then by simp [hr]
-  else eq_div_of_mul_eq (padicNorm.nonzero hr) (by rw [← padicNorm.mul, div_mul_cancel _ hr])
+  else eq_div_of_mul_eq (padicNorm.nonzero hr) (by rw [← padicNorm.mul, div_mul_cancel₀ _ hr])
 #align padic_norm.div padicNorm.div
 
 /-- The `p`-adic norm of an integer is at most `1`. -/

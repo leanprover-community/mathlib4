@@ -516,6 +516,7 @@ theorem equivCongr_trans (e₁₂ : A₁ ≃ₐ[R] A₂) (e₁₂' : A₁' ≃�
   rfl
 
 /-- If an algebra morphism has an inverse, it is an algebra isomorphism. -/
+@[simps]
 def ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ : f.comp g = AlgHom.id R A₂)
     (h₂ : g.comp f = AlgHom.id R A₁) : A₁ ≃ₐ[R] A₂ :=
   { f with
