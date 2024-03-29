@@ -89,16 +89,19 @@ end Moebius
 
 open Nat
 
+open scoped ArithmeticFunction.zeta in
+lemma ArithmeticFunction.const_one_eq_zeta {R : Type*} [Semiring R] :
+    ∀ n ≠ 0, (1 : ℕ → R) n = (ζ ·) n := by
+  intro _ hn
+  simp only [Pi.one_apply, zeta_apply, hn, ↓reduceIte, cast_one]
+
 lemma LSeries.one_convolution_eq_zeta_convolution {R : Type*} [Semiring R] (f : ℕ → R):
-    (1 : ℕ → R) ⍟ f = ((ArithmeticFunction.zeta ·) : ℕ → R) ⍟ f := by
-  refine convolution_congr (fun n hn ↦ ?_) fun _ _ ↦ rfl
-  simp only [Pi.one_apply, ArithmeticFunction.zeta_apply, hn, ↓reduceIte, cast_one]
+    (1 : ℕ → R) ⍟ f = ((ArithmeticFunction.zeta ·) : ℕ → R) ⍟ f :=
+  convolution_congr ArithmeticFunction.const_one_eq_zeta fun _ _ ↦ rfl
 
 lemma LSeries.convolution_one_eq_convolution_zeta {R : Type*} [Semiring R] (f : ℕ → R):
-    f ⍟ (1 : ℕ → R) = f ⍟ ((ArithmeticFunction.zeta ·) : ℕ → R) := by
-  -- need to repeat the proof, as to use commutativity we need a `CommSemiring`
-  refine convolution_congr (fun _ _ ↦ rfl) fun n hn ↦ ?_
-  simp only [Pi.one_apply, ArithmeticFunction.zeta_apply, hn, ↓reduceIte, cast_one]
+    f ⍟ (1 : ℕ → R) = f ⍟ ((ArithmeticFunction.zeta ·) : ℕ → R) :=
+  convolution_congr (fun _ _ ↦ rfl) ArithmeticFunction.const_one_eq_zeta
 
 /-- `χ₁` is (local) notation for the (necessarily trivial) Dirichlet charcater modulo `1`. -/
 local notation (name := Dchar_one) "χ₁" => (1 : DirichletCharacter ℂ 1)
@@ -247,15 +250,12 @@ namespace ArithmeticFunction
 to the constant sequence `1`. -/
 lemma LSeries_zeta_eq : L ↗ζ = L 1 := by
   ext s
-  refine LSeries_congr s fun n hn ↦ ?_
-  simp only [zeta_apply, hn, ↓reduceIte, cast_one, Pi.one_apply]
+  exact (LSeries_congr s const_one_eq_zeta).symm
 
 /-- The `LSeries` associated to the arithmetic function `ζ` converges at `s` if and only if
 `re s > 1`. -/
-theorem LSeriesSummable_zeta_iff {s : ℂ} : LSeriesSummable (ζ ·) s ↔ 1 < s.re := by
-  have (n : ℕ) (hn : n ≠ 0) : ζ n = (1 : ℕ → ℂ) n := by
-    simp only [ArithmeticFunction.zeta_apply, hn, ↓reduceIte, cast_one, Pi.one_apply]
-  exact (LSeriesSummable_congr s this).trans <| LSeriesSummable_one_iff
+theorem LSeriesSummable_zeta_iff {s : ℂ} : LSeriesSummable (ζ ·) s ↔ 1 < s.re :=
+  (LSeriesSummable_congr s const_one_eq_zeta).symm.trans <| LSeriesSummable_one_iff
 #align nat.arithmetic_function.zeta_l_series_summable_iff_one_lt_re ArithmeticFunction.LSeriesSummable_zeta_iff
 -- deprecated 2024-03-29
 @[deprecated] alias zeta_LSeriesSummable_iff_one_lt_re := LSeriesSummable_zeta_iff
