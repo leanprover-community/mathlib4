@@ -402,7 +402,8 @@ private def getStar (mvarId? : Option MVarId) : StateM (Array MVarId) Nat :=
       | none => (s.size, s.push mvarId)
     | none => (s.size, s.push ⟨.anonymous⟩)
 
-private partial def DTExpr.flattenAux (todo : Array Key) : DTExpr → StateM (Array MVarId) (Array Key)
+private partial def DTExpr.flattenAux (todo : Array Key) :
+    DTExpr → StateM (Array MVarId) (Array Key)
   | .star i        => return todo.push (.star (← getStar i))
   | .opaque        => return todo.push .opaque
   | .const n as    => as.foldlM flattenAux (todo.push (.const n as.size))
