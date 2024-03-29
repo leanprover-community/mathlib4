@@ -850,7 +850,7 @@ protected def zsmul [Zero α] [Add α] [Neg α] : SMul ℤ (Finset α) :=
 multiplication/division!) of a `Finset`. See note [pointwise nat action]. -/
 @[to_additive existing]
 protected def zpow [One α] [Mul α] [Inv α] : Pow (Finset α) ℤ :=
-  ⟨fun s n => zpowRec n s⟩
+  ⟨fun s n => zpowRec npowRec n s⟩
 #align finset.has_zpow Finset.zpow
 
 scoped[Pointwise] attribute [instance] Finset.nsmul Finset.npow Finset.zsmul Finset.zpow
