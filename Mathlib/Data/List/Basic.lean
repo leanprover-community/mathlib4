@@ -397,10 +397,10 @@ theorem cons_eq_append_iff {a b c : List α} {x : α} :
 @[deprecated] alias append_right_cancel := append_cancel_right -- deprecated since 2024-01-18
 #align list.append_right_cancel List.append_cancel_right
 
-@[simp] theorem append_left_eq_self {x y : List α} : y ++ x = x ↔ y = [] := by
-  rw [← append_left_inj (s₁ := y), nil_append]
+@[simp] theorem append_left_eq_self {x y : List α} : x ++ y = y ↔ x = [] := by
+  rw [← append_left_inj (s₁ := x), nil_append]
 
-@[simp] theorem self_eq_append_left {x y : List α} : x = y ++ x ↔ y = [] := by
+@[simp] theorem self_eq_append_left {x y : List α} : y = x ++ y ↔ x = [] := by
   rw [eq_comm, append_left_eq_self]
 
 @[simp] theorem append_right_eq_self {x y : List α} : x ++ y = x ↔ y = [] := by
