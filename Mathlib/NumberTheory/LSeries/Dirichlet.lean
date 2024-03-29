@@ -266,8 +266,8 @@ lemma LSeries_zeta_eq_riemannZeta {s : ℂ} (hs : 1 < s.re) : L ↗ζ s = rieman
     zeta_eq_tsum_one_div_nat_cpow hs]
   refine tsum_congr fun n ↦ ?_
   rcases eq_or_ne n 0 with rfl | hn
-  · simp only [term_zero, CharP.cast_eq_zero, ne_eq, ne_zero_of_one_lt_re hs, not_false_eq_true,
-      zero_cpow, div_zero]
+  · simp only [term_zero, cast_zero, ne_eq, ne_zero_of_one_lt_re hs, not_false_eq_true, zero_cpow,
+      div_zero]
   · simp only [ne_eq, hn, not_false_eq_true, term_of_ne_zero, ↓reduceIte, one_div]
 
 /-- The L-series of the arithmetic function `ζ` equals the Riemann Zeta Function on its
