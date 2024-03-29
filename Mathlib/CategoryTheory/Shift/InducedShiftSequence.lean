@@ -13,7 +13,7 @@ monoid `M`, we have defined in the file `CategoryTheory.Shift.ShiftSequence`
 a type class `G.ShiftSequence M` which provides functors `G.shift a : C ⥤ A` for all `a : M`,
 isomorphisms `shiftFunctor C n ⋙ G.shift a ≅ G.shift a'` when `n + a = a'`,
 and isomorphisms `G.isoShift a : shiftFunctor C a ⋙ G ≅ G.shift a` for all `a`, all of
-which satisfy good coherence properties. The idea is that it allows to uses functors
+which satisfy good coherence properties. The idea is that it allows to use functors
 `G.shift a` which may have better definitional properties than `shiftFunctor C a ⋙ G`.
 The typical example shall be `[(homologyFunctor C (ComplexShape.up ℤ) 0).ShiftSequence ℤ]`
 for any abelian category `C` (TODO).
@@ -21,9 +21,8 @@ for any abelian category `C` (TODO).
 Similarly as a shift on categories may induce a shift on a quotient or a localized
 category (see the file `CategoryTheory.Shift.Induced`), this file shows that
 under certain assumptions, there is an induced "shift sequence". The main application
-of this construction will be the construction of a shift sequence for the homology
-functor on the homotopy category of cochain complexes (TODO),
-and also on the derived category (TODO).
+will be the construction of a shift sequence for the homology functor on the
+homotopy category of cochain complexes (TODO), and also on the derived category (TODO).
 
 -/
 
