@@ -7,6 +7,7 @@ import Mathlib.Algebra.AddTorsor
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.Topology.Algebra.ConstMulAction
+import Mathlib.Algebra.Module.ULift
 
 #align_import topology.algebra.mul_action from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 
@@ -72,6 +73,10 @@ variable {M X Y α : Type*} [TopologicalSpace M] [TopologicalSpace X] [Topologic
 section SMul
 
 variable [SMul M X] [ContinuousSMul M X]
+
+@[to_additive]
+instance : ContinuousSMul (ULift M) X :=
+  ⟨(continuous_smul (M := M)).comp₂ (continuous_uLift_down.comp continuous_fst) continuous_snd⟩
 
 @[to_additive]
 instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstSMul M X where
