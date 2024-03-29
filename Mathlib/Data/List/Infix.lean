@@ -70,12 +70,13 @@ theorem infix_rfl : l <:+: l :=
 theorem prefix_concat (a : α) (l) : l <+: concat l a := by simp
 #align list.prefix_concat List.prefix_concat
 
-theorem prefix_concat_iff {x y : List α} {a : α} : x <+: y ++ [a] ↔ x = y ++ [a] ∨ x <+: y := by
-  convert suffix_cons_iff using 1
-  · rw [← List.reverse_concat, List.reverse_suffix, ← concat_eq_append]
-  · congr! 1
-    · rw [← List.reverse_concat, ← concat_eq_append, reverse_inj]
-    · apply reverse_suffix.symm
+theorem reverse_concat' (l : List α) (a : α) : (l ++ [a]).reverse = a :: l.reverse := by
+  rw [reverse_append]; rfl
+
+theorem prefix_concat_iff {l₁ l₂ : List α} {a : α} :
+    l₁ <+: l₂ ++ [a] ↔ l₁ = l₂ ++ [a] ∨ l₁ <+: l₂ := by
+  simpa only [← reverse_concat', reverse_inj, reverse_suffix] using
+    suffix_cons_iff (l₁ := l₁.reverse) (l₂ := l₂.reverse)
 
 #align list.infix_cons List.infix_cons
 #align list.infix_concat List.infix_concat

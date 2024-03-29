@@ -1367,16 +1367,20 @@ theorem take_one_drop_eq_of_lt_length' {l : List α} {n : ℕ} (h : n < l.length
 
 #align list.ext List.ext
 
-theorem ext_get? {l₁ l₂ : List α} (h' : ∀ n < max l₁.length l₂.length, l₁.get? n = l₂.get? n) :
+-- TODO one may rename ext in the standard library, and it is also not clear
+-- which of ext_get?, ext_get?', ext_get should be @[ext], if any
+theorem ext_get? : ∀ {l₁ l₂ : List α}, (∀ n, l₁.get? n = l₂.get? n) → l₁ = l₂ := ext
+
+theorem ext_get?' {l₁ l₂ : List α} (h' : ∀ n < max l₁.length l₂.length, l₁.get? n = l₂.get? n) :
     l₁ = l₂ := by
   apply ext
   intro n
   rcases Nat.lt_or_ge n <| max l₁.length l₂.length with hn | hn
   · exact h' n hn
-  · simp_all [Nat.max_le, List.get?_eq_none.mpr]
+  · simp_all [Nat.max_le, get?_eq_none.mpr]
 
-theorem ext_iff {l₁ l₂ : List α} : l₁ = l₂ ↔ ∀ n, l₁.get? n = l₂.get? n :=
-  ⟨by rintro rfl _; rfl, List.ext⟩
+theorem ext_get?_iff {l₁ l₂ : List α} : l₁ = l₂ ↔ ∀ n, l₁.get? n = l₂.get? n :=
+  ⟨by rintro rfl _; rfl, ext_get?⟩
 
 theorem ext_get_iff {l₁ l₂ : List α} :
     l₁ = l₂ ↔ l₁.length = l₂.length ∧ ∀ n h₁ h₂, get l₁ ⟨n, h₁⟩ = get l₂ ⟨n, h₂⟩ := by
@@ -1386,9 +1390,9 @@ theorem ext_get_iff {l₁ l₂ : List α} :
   · intro ⟨h₁, h₂⟩
     exact ext_get h₁ h₂
 
-theorem ext_get?_iff {l₁ l₂ : List α} : l₁ = l₂ ↔
+theorem ext_get?'_iff {l₁ l₂ : List α} : l₁ = l₂ ↔
     ∀ n < max l₁.length l₂.length, l₁.get? n = l₂.get? n :=
-  ⟨by rintro rfl _ _; rfl, List.ext_get?⟩
+  ⟨by rintro rfl _ _; rfl, ext_get?'⟩
 
 @[deprecated ext_get]
 theorem ext_nthLe {l₁ l₂ : List α} (hl : length l₁ = length l₂)
