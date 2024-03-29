@@ -3,11 +3,8 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee
 -/
-import Mathlib.GroupTheory.Coxeter.Basic
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Data.Int.Parity
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Group
+import Mathlib.GroupTheory.Coxeter.Basic
 
 /-!
 # The length function, reduced words, and descents
@@ -303,7 +300,7 @@ theorem exists_leftDescent_of_ne_one {w : W} (hw : w ≠ 1) : ∃ i : B, cs.IsLe
   have h₁ : ω ≠ [] := by rintro rfl; simp at hw
   rcases List.exists_cons_of_ne_nil h₁ with ⟨i, ω', rfl⟩
   use i
-  rw [IsLeftDescent, ← h, wordProd_cons, simple_mul_self_mul]
+  rw [IsLeftDescent, ← h, wordProd_cons, simple_mul_simple_cancel_left]
   calc
     ℓ (π ω') ≤ ω'.length                := cs.length_wordProd_le ω'
     _        < (i :: ω').length         := by simp
@@ -351,12 +348,12 @@ theorem not_isRightDescent_iff (w : W) (i : B) :
 
 theorem isLeftDescent_iff_not_isLeftDescent_mul (w : W) (i : B) :
     cs.IsLeftDescent w i ↔ ¬ cs.IsLeftDescent ((s i) * w) i := by
-  rw [isLeftDescent_iff, not_isLeftDescent_iff, simple_mul_self_mul]
+  rw [isLeftDescent_iff, not_isLeftDescent_iff, simple_mul_simple_cancel_left]
   tauto
 
 theorem isRightDescent_iff_not_isRightDescent_mul (w : W) (i : B) :
     cs.IsRightDescent w i ↔ ¬ cs.IsRightDescent (w * (s i)) i := by
-  rw [isRightDescent_iff, not_isRightDescent_iff, mul_simple_mul_self]
+  rw [isRightDescent_iff, not_isRightDescent_iff, simple_mul_simple_cancel_right]
   tauto
 
 end CoxeterSystem
