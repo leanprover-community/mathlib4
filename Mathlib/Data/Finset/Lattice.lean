@@ -8,6 +8,7 @@ import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Multiset.Lattice
+import Mathlib.Data.Set.Lattice
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Hom.Lattice
 
