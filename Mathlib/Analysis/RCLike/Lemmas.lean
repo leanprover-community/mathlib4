@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.FieldTheory.Tower
-import Mathlib.Data.RCLike.Basic
+import Mathlib.Analysis.RCLike.Basic
 
 #align_import data.is_R_or_C.lemmas from "leanprover-community/mathlib"@"468b141b14016d54b479eb7a0fff1e360b7e3cf6"
 

@@ -7,7 +7,7 @@ import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
 import Mathlib.Analysis.InnerProductSpace.Symmetric
 import Mathlib.Analysis.NormedSpace.RCLike
-import Mathlib.Data.RCLike.Lemmas
+import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.Algebra.DirectSum.Decomposition
 
 #align_import analysis.inner_product_space.projection from "leanprover-community/mathlib"@"0b7c740e25651db0ba63648fbae9f9d6f941e31b"

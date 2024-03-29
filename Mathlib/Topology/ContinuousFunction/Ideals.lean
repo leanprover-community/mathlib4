@@ -6,7 +6,7 @@ Authors: Jireh Loreaux
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.ContinuousFunction.Compact
 import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Data.RCLike.Basic
+import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Topology.Algebra.Module.CharacterSpace
 
