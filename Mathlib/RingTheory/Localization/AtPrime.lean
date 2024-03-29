@@ -33,7 +33,6 @@ commutative ring, field of fractions
 
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
-
 variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 section AtPrime
@@ -132,6 +131,12 @@ namespace AtPrime
 
 variable (I : Ideal R) [hI : I.IsPrime] [IsLocalization.AtPrime S I]
 
+/-- The prime ideals in the localization of a commutative ring at a prime ideal I are in
+order-preserving bijection with the prime ideals contained in I. -/
+def orderIsoOfPrime : { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPrime ∧ p ≤ I } :=
+  (IsLocalization.orderIsoOfPrime I.primeCompl S).trans <| .setCongr _ _ <| show setOf _ = setOf _
+    by ext; simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left]
+
 theorem isUnit_to_map_iff (x : R) : IsUnit ((algebraMap R S) x) ↔ x ∈ I.primeCompl :=
   ⟨fun h hx =>
     (isPrime_of_isPrime_disjoint I.primeCompl S I hI disjoint_compl_left).ne_top <|
@@ -176,7 +181,6 @@ open IsLocalization
 attribute [local instance] Classical.propDecidable
 
 variable (I : Ideal R) [hI : I.IsPrime]
-
 variable {I}
 
 /-- The unique maximal ideal of the localization at `I.primeCompl` lies over the ideal `I`. -/

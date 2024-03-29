@@ -3,8 +3,8 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Order.IntermediateValue
-import Mathlib.Topology.LocalExtr
+import Mathlib.Topology.Order.LocalExtr
+import Mathlib.Topology.Order.IntermediateValue
 import Mathlib.Topology.Support
 
 #align_import topology.algebra.order.compact from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
@@ -55,13 +55,13 @@ export CompactIccSpace (isCompact_Icc)
 
 variable {α : Type*}
 
--- Porting note: new lemma;
+-- Porting note (#10756): new lemma;
 -- Porting note (#11215): TODO: make it the definition
 lemma CompactIccSpace.mk' [TopologicalSpace α] [Preorder α]
     (h : ∀ {a b : α}, a ≤ b → IsCompact (Icc a b)) : CompactIccSpace α where
   isCompact_Icc {a b} := by_cases h fun hab => by rw [Icc_eq_empty hab]; exact isCompact_empty
 
--- Porting note: new lemma;
+-- Porting note (#10756): new lemma;
 -- Porting note (#11215): TODO: drop one `'`
 lemma CompactIccSpace.mk'' [TopologicalSpace α] [PartialOrder α]
     (h : ∀ {a b : α}, a < b → IsCompact (Icc a b)) : CompactIccSpace α :=
@@ -109,9 +109,10 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
     rw [diff_subset_iff]
     exact Subset.trans Icc_subset_Icc_union_Ioc <| union_subset_union Subset.rfl <|
       Ioc_subset_Ioc_left hy.1.le
-  rcases hc.2.eq_or_lt with (rfl | hlt); · exact hcs.2
-  contrapose! hf
-  intro U hU
+  rcases hc.2.eq_or_lt with (rfl | hlt)
+  · exact hcs.2
+  exfalso
+  refine hf fun U hU => ?_
   rcases (mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
       (mem_nhdsWithin_of_mem_nhds hU) with
     ⟨y, hxy, hyU⟩
@@ -201,7 +202,7 @@ theorem IsCompact.exists_isLUB [ClosedIciTopology α] {s : Set α} (hs : IsCompa
   IsCompact.exists_isGLB (α := αᵒᵈ) hs ne_s
 #align is_compact.exists_is_lub IsCompact.exists_isLUB
 
-theorem cocompact_le_atBot_atTop [LinearOrder α] [CompactIccSpace α] :
+theorem cocompact_le_atBot_atTop [CompactIccSpace α] :
     cocompact α ≤ atBot ⊔ atTop := by
   refine fun s hs ↦ mem_cocompact.mpr <| (isEmpty_or_nonempty α).casesOn ?_ ?_ <;> intro
   · exact ⟨∅, isCompact_empty, fun x _ ↦ (IsEmpty.false x).elim⟩
@@ -210,7 +211,7 @@ theorem cocompact_le_atBot_atTop [LinearOrder α] [CompactIccSpace α] :
     refine ⟨Icc t u, isCompact_Icc, fun x hx ↦ ?_⟩
     exact (not_and_or.mp hx).casesOn (fun h ↦ ht x (le_of_not_le h)) fun h ↦ hu x (le_of_not_le h)
 
-theorem cocompact_le_atBot [LinearOrder α] [OrderTop α] [CompactIccSpace α] :
+theorem cocompact_le_atBot [OrderTop α] [CompactIccSpace α] :
     cocompact α ≤ atBot := by
   refine fun _ hs ↦ mem_cocompact.mpr <| (isEmpty_or_nonempty α).casesOn ?_ ?_ <;> intro
   · exact ⟨∅, isCompact_empty, fun x _ ↦ (IsEmpty.false x).elim⟩
@@ -218,11 +219,11 @@ theorem cocompact_le_atBot [LinearOrder α] [OrderTop α] [CompactIccSpace α] :
     refine ⟨Icc t ⊤, isCompact_Icc, fun _ hx ↦ ?_⟩
     exact (not_and_or.mp hx).casesOn (fun h ↦ ht _ (le_of_not_le h)) (fun h ↦ (h le_top).elim)
 
-theorem cocompact_le_atTop [LinearOrder α] [OrderBot α] [CompactIccSpace α] :
+theorem cocompact_le_atTop [OrderBot α] [CompactIccSpace α] :
     cocompact α ≤ atTop :=
   cocompact_le_atBot (α := αᵒᵈ)
 
-theorem atBot_le_cocompact [LinearOrder α] [NoMinOrder α] [ClosedIicTopology α] :
+theorem atBot_le_cocompact [NoMinOrder α] [ClosedIicTopology α] :
     atBot ≤ cocompact α := by
   refine fun s hs ↦ ?_
   obtain ⟨t, ht, hts⟩ := mem_cocompact.mp hs
@@ -235,26 +236,26 @@ theorem atBot_le_cocompact [LinearOrder α] [NoMinOrder α] [ClosedIicTopology �
     exact Filter.mem_atBot_sets.mpr ⟨b, fun b' hb' ↦ hts <| Classical.byContradiction
       fun hc ↦ LT.lt.false <| hb'.trans_lt <| hb.trans_le <| ha.2 (not_not_mem.mp hc)⟩
 
-theorem atTop_le_cocompact [LinearOrder α] [NoMaxOrder α] [ClosedIciTopology α] :
+theorem atTop_le_cocompact [NoMaxOrder α] [ClosedIciTopology α] :
     atTop ≤ cocompact α :=
   atBot_le_cocompact (α := αᵒᵈ)
 
-theorem atBot_atTop_le_cocompact [LinearOrder α] [NoMinOrder α] [NoMaxOrder α]
+theorem atBot_atTop_le_cocompact [NoMinOrder α] [NoMaxOrder α]
     [OrderClosedTopology α] : atBot ⊔ atTop ≤ cocompact α :=
   sup_le atBot_le_cocompact atTop_le_cocompact
 
 @[simp 900]
-theorem cocompact_eq_atBot_atTop [LinearOrder α] [NoMaxOrder α] [NoMinOrder α]
+theorem cocompact_eq_atBot_atTop [NoMaxOrder α] [NoMinOrder α]
     [OrderClosedTopology α] [CompactIccSpace α] : cocompact α = atBot ⊔ atTop :=
   cocompact_le_atBot_atTop.antisymm atBot_atTop_le_cocompact
 
 @[simp]
-theorem cocompact_eq_atBot [LinearOrder α] [NoMinOrder α] [OrderTop α]
+theorem cocompact_eq_atBot [NoMinOrder α] [OrderTop α]
     [ClosedIicTopology α] [CompactIccSpace α] : cocompact α = atBot :=
   cocompact_le_atBot.antisymm atBot_le_cocompact
 
 @[simp]
-theorem cocompact_eq_atTop [LinearOrder α] [NoMaxOrder α] [OrderBot α]
+theorem cocompact_eq_atTop [NoMaxOrder α] [OrderBot α]
     [ClosedIciTopology α] [CompactIccSpace α] : cocompact α = atTop :=
   cocompact_le_atTop.antisymm atTop_le_cocompact
 

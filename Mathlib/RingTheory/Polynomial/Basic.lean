@@ -197,7 +197,7 @@ theorem exists_degree_le_of_mem_span {s : Set R[X]} {p : R[X]}
   by_contra! h
   by_cases hp_zero : p = 0
   · rw [hp_zero, degree_zero] at h
-    rcases hs with ⟨x,hx⟩
+    rcases hs with ⟨x, hx⟩
     exact not_lt_bot (h x hx)
   · have : p ∈ degreeLT R (natDegree p) := by
       refine (Submodule.span_le.mpr fun p' p'_mem => ?_) hp
@@ -214,9 +214,8 @@ theorem exists_degree_le_of_mem_span_of_finite {s : Set R[X]} (s_fin : s.Finite)
   rcases Set.Finite.exists_maximal_wrt degree s s_fin hs with ⟨a, has, hmax⟩
   refine ⟨a, has, fun p hp => ?_⟩
   rcases exists_degree_le_of_mem_span hs hp with ⟨p', hp'⟩
-  have p'max := hmax p' hp'.left
   by_cases h : degree a ≤ degree p'
-  · rw [← p'max h] at hp'; exact hp'.right
+  · rw [← hmax p' hp'.left h] at hp'; exact hp'.right
   · exact le_trans hp'.right (not_le.mp h).le
 
 /-- The span of every finite set of polynomials is contained in a `degreeLE n` for some `n`. -/
@@ -523,7 +522,7 @@ variable {q : R[X]}
 
 theorem mem_ker_modByMonic (hq : q.Monic) {p : R[X]} :
     p ∈ LinearMap.ker (modByMonicHom q) ↔ q ∣ p :=
-  LinearMap.mem_ker.trans (dvd_iff_modByMonic_eq_zero hq)
+  LinearMap.mem_ker.trans (modByMonic_eq_zero_iff_dvd hq)
 #align polynomial.mem_ker_mod_by_monic Polynomial.mem_ker_modByMonic
 
 @[simp]
@@ -815,7 +814,6 @@ end CommRing
 end Ideal
 
 variable {σ : Type v} {M : Type w}
-
 variable [CommRing R] [CommRing S] [AddCommGroup M] [Module R M]
 
 section Prime
@@ -1213,10 +1211,10 @@ theorem map_mvPolynomial_eq_eval₂ {S : Type*} [CommRing S] [Finite σ] (ϕ : M
     ϕ p = MvPolynomial.eval₂ (ϕ.comp MvPolynomial.C) (fun s => ϕ (MvPolynomial.X s)) p := by
   cases nonempty_fintype σ
   refine' Trans.trans (congr_arg ϕ (MvPolynomial.as_sum p)) _
-  rw [MvPolynomial.eval₂_eq', ϕ.map_sum]
+  rw [MvPolynomial.eval₂_eq', map_sum ϕ]
   congr
   ext
-  simp only [monomial_eq, ϕ.map_pow, ϕ.map_prod, ϕ.comp_apply, ϕ.map_mul, Finsupp.prod_pow]
+  simp only [monomial_eq, ϕ.map_pow, map_prod ϕ, ϕ.comp_apply, ϕ.map_mul, Finsupp.prod_pow]
 #align mv_polynomial.map_mv_polynomial_eq_eval₂ MvPolynomial.map_mvPolynomial_eq_eval₂
 
 /-- If every coefficient of a polynomial is in an ideal `I`, then so is the polynomial itself,

@@ -33,7 +33,6 @@ the exact value.
 -/
 
 set_option autoImplicit true
-set_option relaxedAutoImplicit true
 
 /--
 Given `[EstimatorData a ε]`

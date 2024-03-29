@@ -84,6 +84,10 @@ theorem nhds_eq_comap (hf : Inducing f) : ∀ x : X, 𝓝 x = comap f (𝓝 <| f
   inducing_iff_nhds.1 hf
 #align inducing.nhds_eq_comap Inducing.nhds_eq_comap
 
+theorem basis_nhds {p : ι → Prop} {s : ι → Set Y} (hf : Inducing f) {x : X}
+    (h_basis : (𝓝 (f x)).HasBasis p s) : (𝓝 x).HasBasis p (preimage f ∘ s) :=
+  hf.nhds_eq_comap x ▸ h_basis.comap f
+
 theorem nhdsSet_eq_comap (hf : Inducing f) (s : Set X) :
     𝓝ˢ s = comap f (𝓝ˢ (f '' s)) := by
   simp only [nhdsSet, sSup_image, comap_iSup, hf.nhds_eq_comap, iSup_image]
@@ -468,9 +472,11 @@ theorem of_nonempty (h : ∀ s, IsClosed s → s.Nonempty → IsClosed (f '' s))
   · exact h s hs h2s
 #align is_closed_map.of_nonempty IsClosedMap.of_nonempty
 
-theorem closed_range (hf : IsClosedMap f) : IsClosed (range f) :=
+theorem isClosed_range (hf : IsClosedMap f) : IsClosed (range f) :=
   @image_univ _ _ f ▸ hf _ isClosed_univ
-#align is_closed_map.closed_range IsClosedMap.closed_range
+#align is_closed_map.closed_range IsClosedMap.isClosed_range
+
+@[deprecated] alias closed_range := isClosed_range -- 2024-03-17
 
 theorem to_quotientMap (hcl : IsClosedMap f) (hcont : Continuous f)
     (hsurj : Surjective f) : QuotientMap f :=
@@ -531,12 +537,12 @@ section OpenEmbedding
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 theorem OpenEmbedding.isOpenMap (hf : OpenEmbedding f) : IsOpenMap f :=
-  hf.toEmbedding.toInducing.isOpenMap hf.open_range
+  hf.toEmbedding.toInducing.isOpenMap hf.isOpen_range
 #align open_embedding.is_open_map OpenEmbedding.isOpenMap
 
 theorem OpenEmbedding.map_nhds_eq (hf : OpenEmbedding f) (x : X) :
     map f (𝓝 x) = 𝓝 (f x) :=
-  hf.toEmbedding.map_nhds_of_mem _ <| hf.open_range.mem_nhds <| mem_range_self _
+  hf.toEmbedding.map_nhds_of_mem _ <| hf.isOpen_range.mem_nhds <| mem_range_self _
 #align open_embedding.map_nhds_eq OpenEmbedding.map_nhds_eq
 
 theorem OpenEmbedding.open_iff_image_open (hf : OpenEmbedding f) {s : Set X} :
@@ -644,7 +650,7 @@ theorem continuous (hf : ClosedEmbedding f) : Continuous f :=
 #align closed_embedding.continuous ClosedEmbedding.continuous
 
 theorem isClosedMap (hf : ClosedEmbedding f) : IsClosedMap f :=
-  hf.toEmbedding.toInducing.isClosedMap hf.closed_range
+  hf.toEmbedding.toInducing.isClosedMap hf.isClosed_range
 #align closed_embedding.is_closed_map ClosedEmbedding.isClosedMap
 
 theorem closed_iff_image_closed (hf : ClosedEmbedding f) {s : Set X} :
@@ -673,12 +679,12 @@ theorem _root_.closedEmbedding_of_continuous_injective_closed (h₁ : Continuous
 #align closed_embedding_of_continuous_injective_closed closedEmbedding_of_continuous_injective_closed
 
 theorem _root_.closedEmbedding_id : ClosedEmbedding (@id X) :=
-  ⟨embedding_id, IsClosedMap.id.closed_range⟩
+  ⟨embedding_id, IsClosedMap.id.isClosed_range⟩
 #align closed_embedding_id closedEmbedding_id
 
 theorem comp (hg : ClosedEmbedding g) (hf : ClosedEmbedding f) :
     ClosedEmbedding (g ∘ f) :=
-  ⟨hg.toEmbedding.comp hf.toEmbedding, (hg.isClosedMap.comp hf.isClosedMap).closed_range⟩
+  ⟨hg.toEmbedding.comp hf.toEmbedding, (hg.isClosedMap.comp hf.isClosedMap).isClosed_range⟩
 #align closed_embedding.comp ClosedEmbedding.comp
 
 theorem closure_image_eq (hf : ClosedEmbedding f) (s : Set X) :

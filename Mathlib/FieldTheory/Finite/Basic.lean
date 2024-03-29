@@ -204,13 +204,10 @@ theorem sum_subgroup_pow_eq_zero [CommRing K] [NoZeroDivisors K]
                   * (Multiset.map (fun i : G => (i.val : K) ^ k) Finset.univ.val).sum = 0 := by
     rw [sub_mul, mul_comm, ← h_multiset_map_sum, one_mul, sub_self]
   rw [mul_eq_zero] at hzero
-  rcases hzero with h | h
-  · contrapose! ha
-    ext
-    rw [← sub_eq_zero]
-    simp_rw [SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val, OneMemClass.coe_one,
-      Units.val_one, h]
-  · exact h
+  refine hzero.resolve_left fun h => ha ?_
+  ext
+  rw [← sub_eq_zero]
+  simp_rw [SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val, OneMemClass.coe_one, Units.val_one, h]
 
 section
 
@@ -229,7 +226,7 @@ theorem pow_card_sub_one_eq_one (a : K) (ha : a ≠ 0) : a ^ (q - 1) = 1 := by
 theorem pow_card (a : K) : a ^ q = a := by
   by_cases h : a = 0; · rw [h]; apply zero_pow Fintype.card_ne_zero
   rw [← Nat.succ_pred_eq_of_pos Fintype.card_pos, pow_succ, Nat.pred_eq_sub_one,
-    pow_card_sub_one_eq_one a h, mul_one]
+    pow_card_sub_one_eq_one a h, one_mul]
 #align finite_field.pow_card FiniteField.pow_card
 
 theorem pow_card_pow (n : ℕ) (a : K) : a ^ q ^ n = a := by
@@ -336,7 +333,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem X_pow_card_pow_sub_X_natDegree_eq (hn : n ≠ 0) (hp : 1 < p) :
     (X ^ p ^ n - X : K'[X]).natDegree = p ^ n :=
-  X_pow_card_sub_X_natDegree_eq K' <| Nat.one_lt_pow _ _ hn hp
+  X_pow_card_sub_X_natDegree_eq K' <| Nat.one_lt_pow hn hp
 set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_pow_sub_X_nat_degree_eq FiniteField.X_pow_card_pow_sub_X_natDegree_eq
 
@@ -349,7 +346,7 @@ set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_sub_X_ne_zero FiniteField.X_pow_card_sub_X_ne_zero
 
 theorem X_pow_card_pow_sub_X_ne_zero (hn : n ≠ 0) (hp : 1 < p) : (X ^ p ^ n - X : K'[X]) ≠ 0 :=
-  X_pow_card_sub_X_ne_zero K' <| Nat.one_lt_pow _ _ hn hp
+  X_pow_card_sub_X_ne_zero K' <| Nat.one_lt_pow hn hp
 set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_pow_sub_X_ne_zero FiniteField.X_pow_card_pow_sub_X_ne_zero
 
@@ -363,7 +360,7 @@ theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := b
     have : (roots (X ^ q - X : K[X])).toFinset = Finset.univ := by
       rw [eq_univ_iff_forall]
       intro x
-      rw [Multiset.mem_toFinset, mem_roots aux, IsRoot.def, eval_sub, eval_pow, eval_X,
+      rw [Multiset.mem_toFinset, mem_roots aux, IsRoot.definition, eval_sub, eval_pow, eval_X,
         sub_eq_zero, pow_card]
     rw [← this, Multiset.toFinset_val, eq_comm, Multiset.dedup_eq_self]
     apply nodup_roots
@@ -382,7 +379,7 @@ theorem frobenius_pow {p : ℕ} [Fact p.Prime] [CharP K p] {n : ℕ} (hcard : q 
   clear hcard
   induction' n with n hn
   · simp
-  · rw [pow_succ, pow_succ', pow_mul, RingHom.mul_def, RingHom.comp_apply, frobenius_def, hn]
+  · rw [pow_succ', pow_succ, pow_mul, RingHom.mul_def, RingHom.comp_apply, frobenius_def, hn]
 #align finite_field.frobenius_pow FiniteField.frobenius_pow
 
 open Polynomial

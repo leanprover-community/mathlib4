@@ -42,14 +42,12 @@ adjoint
 
 noncomputable section
 
-open IsROrC
+open RCLike
 
 open scoped ComplexConjugate
 
-variable {𝕜 E F G : Type*} [IsROrC 𝕜]
-
+variable {𝕜 E F G : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
-
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 F] [InnerProductSpace 𝕜 G]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
@@ -319,7 +317,6 @@ end IsSelfAdjoint
 namespace LinearMap
 
 variable [CompleteSpace E]
-
 variable {T : E →ₗ[𝕜] E}
 
 /-- The **Hellinger--Toeplitz theorem**: Construct a self-adjoint operator from an everywhere
@@ -545,11 +542,15 @@ lemma _root_.LinearIsometryEquiv.star_eq_symm (e : H ≃ₗᵢ[𝕜] H) :
 
 theorem norm_map_of_mem_unitary {u : H →L[𝕜] H} (hu : u ∈ unitary (H →L[𝕜] H)) (x : H) :
     ‖u x‖ = ‖x‖ :=
-  u.norm_map_iff_adjoint_comp_self.mpr (unitary.star_mul_self_of_mem hu) x
+  -- Elaborates faster with this broken out #11299
+  have := unitary.star_mul_self_of_mem hu
+  u.norm_map_iff_adjoint_comp_self.mpr this x
 
 theorem inner_map_map_of_mem_unitary {u : H →L[𝕜] H} (hu : u ∈ unitary (H →L[𝕜] H)) (x y : H) :
     ⟪u x, u y⟫_𝕜 = ⟪x, y⟫_𝕜 :=
-  u.inner_map_map_iff_adjoint_comp_self.mpr (unitary.star_mul_self_of_mem hu) x y
+  -- Elaborates faster with this broken out #11299
+  have := unitary.star_mul_self_of_mem hu
+  u.inner_map_map_iff_adjoint_comp_self.mpr this x y
 
 end ContinuousLinearMap
 

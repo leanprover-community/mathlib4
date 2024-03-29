@@ -401,7 +401,7 @@ theorem inv_subtypePerm (f : Perm α) (hf) :
 
 private theorem pow_aux (hf : ∀ x, p x ↔ p (f x)) : ∀ {n : ℕ} (x), p x ↔ p ((f ^ n) x)
   | 0, _ => Iff.rfl
-  | _ + 1, _ => (pow_aux hf _).trans (hf _)
+  | _ + 1, _ => (hf _).trans (pow_aux hf _)
 
 @[simp]
 theorem subtypePerm_pow (f : Perm α) (n : ℕ) (hf) :
@@ -630,8 +630,8 @@ variable [AddGroup α] (a b : α)
 #align equiv.zpow_add_left Equiv.zpow_addLeft
 
 @[simp] lemma zpow_addRight : ∀ (n : ℤ), Equiv.addRight a ^ n = Equiv.addRight (n • a)
-  | (Int.ofNat n) => by simp
-  | (Int.negSucc n) => by simp
+  | Int.ofNat n => by simp
+  | Int.negSucc n => by simp
 #align equiv.zpow_add_right Equiv.zpow_addRight
 
 end AddGroup
@@ -683,8 +683,8 @@ lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
 
 @[to_additive existing (attr := simp) zpow_addRight]
 lemma zpow_mulRight : ∀ n : ℤ, Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n)
-  | (Int.ofNat n) => by simp
-  | (Int.negSucc n) => by simp
+  | Int.ofNat n => by simp
+  | Int.negSucc n => by simp
 #align equiv.zpow_mul_right Equiv.zpow_mulRight
 
 end Group
@@ -709,8 +709,8 @@ lemma BijOn.perm_pow : BijOn f s s → ∀ n : ℕ, BijOn (f ^ n) s s := by
 #align set.bij_on.perm_pow Set.BijOn.perm_pow
 
 lemma BijOn.perm_zpow (hf : BijOn f s s) : ∀ n : ℤ, BijOn (f ^ n) s s
-  | (Int.ofNat n) => hf.perm_pow n
-  | (Int.negSucc n) => (hf.perm_pow (n + 1)).perm_inv
+  | Int.ofNat n => hf.perm_pow n
+  | Int.negSucc n => (hf.perm_pow (n + 1)).perm_inv
 #align set.bij_on.perm_zpow Set.BijOn.perm_zpow
 
 end Set

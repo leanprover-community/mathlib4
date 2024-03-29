@@ -316,6 +316,3 @@ assert_not_exists Fintype
 assert_not_exists Set.Icc
 
 assert_not_exists GaloisConnection
-
--- These are less significant, but should not be relaxed until at least after port to Lean 4.
-assert_not_exists LinearOrderedCommGroupWithZero

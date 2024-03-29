@@ -21,6 +21,8 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
   open sets.
 * `T0Space`: A T₀/Kolmogorov space is a space where, for every two points `x ≠ y`,
   there is an open set that contains one, but not the other.
+* `R0Space`: An R₀ space (sometimes called a *symmetric space*) is a topological space
+  such that the `Specializes` relation is symmetric.
 * `T1Space`: A T₁/Fréchet space is a space where every singleton set is closed.
   This is equivalent to, for every pair `x ≠ y`, there existing an open set containing `x`
   but not `y` (`t1Space_iff_exists_open` shows that these conditions are equivalent.)
@@ -381,6 +383,87 @@ theorem T0Space.of_open_cover (h : ∀ x, ∃ s : Set X, x ∈ s ∧ IsOpen s �
     ⟨s, hxs, (hxy.mem_open_iff hso).1 hxs, hs⟩
 #align t0_space.of_open_cover T0Space.of_open_cover
 
+/-- A topological space is called an R₀ space, if `Specializes` relation is symmetric.
+
+In other words, given two points `x y : X`,
+if every neighborhood of `y` contains `x`, then every neighborhood of `x` containx `y`. -/
+@[mk_iff]
+class R0Space (X : Type u) [TopologicalSpace X] : Prop where
+  /-- In an R₀ space, the `Specializes` relation is symmetric. -/
+  specializes_symmetric : Symmetric (Specializes : X → X → Prop)
+
+export R0Space (specializes_symmetric)
+
+section R0Space
+
+variable [R0Space X] {x y : X}
+
+/-- In an R₀ space, the `Specializes` relation is symmetric, dot notation version. -/
+theorem Specializes.symm (h : x ⤳ y) : y ⤳ x := specializes_symmetric h
+#align specializes.symm Specializes.symm
+
+/-- In an R₀ space, the `Specializes` relation is symmetric, `Iff` version. -/
+theorem specializes_comm : x ⤳ y ↔ y ⤳ x := ⟨Specializes.symm, Specializes.symm⟩
+#align specializes_comm specializes_comm
+
+/-- In an R₀ space, `Specializes` is equivalent to `Inseparable`. -/
+theorem specializes_iff_inseparable : x ⤳ y ↔ Inseparable x y :=
+  ⟨fun h ↦ h.antisymm h.symm, Inseparable.specializes⟩
+#align specializes_iff_inseparable specializes_iff_inseparable
+
+/-- In an R₀ space, `Specializes` implies `Inseparable`. -/
+alias ⟨Specializes.inseparable, _⟩ := specializes_iff_inseparable
+
+theorem Inducing.r0Space [TopologicalSpace Y] {f : Y → X} (hf : Inducing f) : R0Space Y where
+  specializes_symmetric a b := by
+    simpa only [← hf.specializes_iff] using Specializes.symm
+
+instance {p : X → Prop} : R0Space {x // p x} := inducing_subtype_val.r0Space
+
+instance [TopologicalSpace Y] [R0Space Y] : R0Space (X × Y) where
+  specializes_symmetric _ _ h := h.fst.symm.prod h.snd.symm
+
+instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, R0Space (X i)] :
+    R0Space (∀ i, X i) where
+  specializes_symmetric _ _ h := specializes_pi.2 fun i ↦ (specializes_pi.1 h i).symm
+
+/-- In an R₀ space, the closure of a singleton is a compact set. -/
+theorem isCompact_closure_singleton : IsCompact (closure {x}) := by
+  refine isCompact_of_finite_subcover fun U hUo hxU ↦ ?_
+  obtain ⟨i, hi⟩ : ∃ i, x ∈ U i := mem_iUnion.1 <| hxU <| subset_closure rfl
+  refine ⟨{i}, fun y hy ↦ ?_⟩
+  rw [← specializes_iff_mem_closure, specializes_comm] at hy
+  simpa using hy.mem_open (hUo i) hi
+
+theorem Filter.coclosedCompact_le_cofinite : coclosedCompact X ≤ cofinite :=
+  le_cofinite_iff_compl_singleton_mem.2 fun _ ↦
+    compl_mem_coclosedCompact.2 isCompact_closure_singleton
+#align filter.coclosed_compact_le_cofinite Filter.coclosedCompact_le_cofinite
+
+variable (X)
+
+/-- In an R₀ space, relatively compact sets form a bornology.
+Its cobounded filter is `Filter.coclosedCompact`.
+See also `Bornology.inCompact` the bornology of sets contained in a compact set. -/
+def Bornology.relativelyCompact : Bornology X where
+  cobounded' := Filter.coclosedCompact X
+  le_cofinite' := Filter.coclosedCompact_le_cofinite
+#align bornology.relatively_compact Bornology.relativelyCompact
+
+variable {X}
+
+theorem Bornology.relativelyCompact.isBounded_iff {s : Set X} :
+    @Bornology.IsBounded _ (Bornology.relativelyCompact X) s ↔ IsCompact (closure s) :=
+  compl_mem_coclosedCompact
+#align bornology.relatively_compact.is_bounded_iff Bornology.relativelyCompact.isBounded_iff
+
+/-- In an R₀ space, the closure of a finite set is a compact set. -/
+theorem Set.Finite.isCompact_closure {s : Set X} (hs : s.Finite) : IsCompact (closure s) :=
+  let _ : Bornology X := .relativelyCompact X
+  Bornology.relativelyCompact.isBounded_iff.1 hs.isBounded
+
+end R0Space
+
 /-- A T₁ space, also known as a Fréchet space, is a topological space
   where every singleton set is closed. Equivalently, for every pair
   `x ≠ y`, there is an open set containing `x` and not `y`. -/
@@ -444,35 +527,6 @@ theorem TopologicalSpace.IsTopologicalBasis.exists_mem_of_ne [T1Space X] {b : Se
   rcases hb.isOpen_iff.1 isOpen_ne x h with ⟨a, ab, xa, ha⟩
   exact ⟨a, ab, xa, fun h => ha h rfl⟩
 #align topological_space.is_topological_basis.exists_mem_of_ne TopologicalSpace.IsTopologicalBasis.exists_mem_of_ne
-
-theorem Filter.coclosedCompact_le_cofinite [T1Space X] :
-    Filter.coclosedCompact X ≤ Filter.cofinite := fun s hs =>
-  compl_compl s ▸ hs.isCompact.compl_mem_coclosedCompact_of_isClosed hs.isClosed
-#align filter.coclosed_compact_le_cofinite Filter.coclosedCompact_le_cofinite
-
-variable (X)
-
-/-- In a `T1Space`, relatively compact sets form a bornology. Its cobounded filter is
-`Filter.coclosedCompact`. See also `Bornology.inCompact` the bornology of sets contained
-in a compact set. -/
-def Bornology.relativelyCompact [T1Space X] : Bornology X where
-  cobounded' := Filter.coclosedCompact X
-  le_cofinite' := Filter.coclosedCompact_le_cofinite
-#align bornology.relatively_compact Bornology.relativelyCompact
-
-variable {X}
-
-theorem Bornology.relativelyCompact.isBounded_iff [T1Space X] {s : Set X} :
-    @Bornology.IsBounded _ (Bornology.relativelyCompact X) s ↔ IsCompact (closure s) := by
-  change sᶜ ∈ Filter.coclosedCompact X ↔ _
-  rw [Filter.mem_coclosedCompact]
-  constructor
-  · rintro ⟨t, ht₁, ht₂, hst⟩
-    rw [compl_subset_compl] at hst
-    exact ht₂.of_isClosed_subset isClosed_closure (closure_minimal hst ht₁)
-  · intro h
-    exact ⟨closure s, isClosed_closure, h, compl_subset_compl.mpr subset_closure⟩
-#align bornology.relatively_compact.is_bounded_iff Bornology.relativelyCompact.isBounded_iff
 
 protected theorem Finset.isClosed [T1Space X] (s : Finset X) : IsClosed (s : Set X) :=
   s.finite_toSet.isClosed
@@ -571,6 +625,9 @@ theorem pure_le_nhds_iff [T1Space X] {a b : X} : pure a ≤ 𝓝 b ↔ a = b :=
 theorem nhds_le_nhds_iff [T1Space X] {a b : X} : 𝓝 a ≤ 𝓝 b ↔ a = b :=
   specializes_iff_eq
 #align nhds_le_nhds_iff nhds_le_nhds_iff
+
+instance (priority := 100) [T1Space X] : R0Space X where
+  specializes_symmetric _ _ := by rw [specializes_iff_eq, specializes_iff_eq]; exact Eq.symm
 
 instance : T1Space (CofiniteTopology X) :=
   t1Space_iff_continuous_cofinite_of.mpr continuous_id
@@ -928,33 +985,16 @@ export R1Space (specializes_or_disjoint_nhds)
 
 variable [R1Space X] {x y : X}
 
+instance (priority := 100) : R0Space X where
+  specializes_symmetric _ _ h := (specializes_or_disjoint_nhds _ _).resolve_right <| fun hd ↦
+    h.not_disjoint hd.symm
+
 theorem disjoint_nhds_nhds_iff_not_specializes : Disjoint (𝓝 x) (𝓝 y) ↔ ¬x ⤳ y :=
   ⟨fun hd hspec ↦ hspec.not_disjoint hd, (specializes_or_disjoint_nhds _ _).resolve_left⟩
 #align disjoint_nhds_nhds_iff_not_specializes disjoint_nhds_nhds_iff_not_specializes
 
 theorem specializes_iff_not_disjoint : x ⤳ y ↔ ¬Disjoint (𝓝 x) (𝓝 y) :=
   disjoint_nhds_nhds_iff_not_specializes.not_left.symm
-
-/-- In an R₁ space, the `Specializes` relation is symmetric,
-i.e., an R₁ space is an R₀ space. -/
-theorem Specializes.symm (h : x ⤳ y) : y ⤳ x := by
-  simpa only [specializes_iff_not_disjoint, disjoint_comm] using h
-#align specializes.symm Specializes.symm
-
-/-- In an R₁ space, the `Specializes` relation is symmetric,
-i.e., an R₁ space is an R₀ space. -/
-theorem specializes_comm : x ⤳ y ↔ y ⤳ x := ⟨Specializes.symm, Specializes.symm⟩
-#align specializes_comm specializes_comm
-
-/-- In an R₁ space, `Specializes` is equivalent to `Inseparable`,
-i.e., an R₁ space is an R₀ space. -/
-theorem specializes_iff_inseparable : x ⤳ y ↔ Inseparable x y :=
-  ⟨fun h ↦ h.antisymm h.symm, Inseparable.specializes⟩
-#align specializes_iff_inseparable specializes_iff_inseparable
-
-/-- In an R₁ space, `Specializes` implies `Inseparable`,
-i.e., an R₁ space is an R₀ space. -/
-alias ⟨Specializes.inseparable, _⟩ := specializes_iff_inseparable
 
 theorem disjoint_nhds_nhds_iff_not_inseparable : Disjoint (𝓝 x) (𝓝 y) ↔ ¬Inseparable x y := by
   rw [disjoint_nhds_nhds_iff_not_specializes, specializes_iff_inseparable]
@@ -1151,6 +1191,21 @@ theorem IsCompact.isCompact_isClosed_basis_nhds {x : X} {L : Set X} (hLc : IsCom
       continuous_id (interior_mem_nhds.2 hU) hLc hxL
     ⟨closure K, mem_of_superset hKx subset_closure, ⟨hKc.closure, isClosed_closure⟩,
       (hKc.closure_subset_of_isOpen isOpen_interior hKU).trans interior_subset⟩
+
+/-- In an R₁ space, the filters `coclosedCompact` and `cocompact` are equal. -/
+@[simp]
+theorem Filter.coclosedCompact_eq_cocompact : coclosedCompact X = cocompact X := by
+  refine le_antisymm ?_ cocompact_le_coclosedCompact
+  rw [hasBasis_coclosedCompact.le_basis_iff hasBasis_cocompact]
+  exact fun K hK ↦ ⟨closure K, ⟨isClosed_closure, hK.closure⟩, compl_subset_compl.2 subset_closure⟩
+#align filter.coclosed_compact_eq_cocompact Filter.coclosedCompact_eq_cocompact
+
+/-- In an R₁ space, the bornologies `relativelyCompact` and `inCompact` are equal. -/
+@[simp]
+theorem Bornology.relativelyCompact_eq_inCompact :
+    Bornology.relativelyCompact X = Bornology.inCompact X :=
+  Bornology.ext _ _ Filter.coclosedCompact_eq_cocompact
+#align bornology.relatively_compact_eq_in_compact Bornology.relativelyCompact_eq_inCompact
 
 /-!
 ### Lemmas about a weakly locally compact R₁ space
@@ -1623,16 +1678,19 @@ theorem Set.EqOn.of_subset_closure [T2Space Y] {s t : Set X} {f g : X → Y} (h 
       ((hg x hx).mono_left <| nhdsWithin_mono _ hst) (h.eventuallyEq_of_mem self_mem_nhdsWithin)
 #align set.eq_on.of_subset_closure Set.EqOn.of_subset_closure
 
-theorem Function.LeftInverse.closed_range [T2Space X] {f : X → Y} {g : Y → X}
+theorem Function.LeftInverse.isClosed_range [T2Space X] {f : X → Y} {g : Y → X}
     (h : Function.LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : IsClosed (range g) :=
   have : EqOn (g ∘ f) id (closure <| range g) :=
     h.rightInvOn_range.eqOn.closure (hg.comp hf) continuous_id
   isClosed_of_closure_subset fun x hx => ⟨f x, this hx⟩
-#align function.left_inverse.closed_range Function.LeftInverse.closed_range
+#align function.left_inverse.closed_range Function.LeftInverse.isClosed_range
+
+@[deprecated] alias Function.LeftInverse.closed_range :=
+  Function.LeftInverse.isClosed_range -- 2024-03-17
 
 theorem Function.LeftInverse.closedEmbedding [T2Space X] {f : X → Y} {g : Y → X}
     (h : Function.LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : ClosedEmbedding g :=
-  ⟨h.embedding hf hg, h.closed_range hf hg⟩
+  ⟨h.embedding hf hg, h.isClosed_range hf hg⟩
 #align function.left_inverse.closed_embedding Function.LeftInverse.closedEmbedding
 
 theorem SeparatedNhds.of_isCompact_isCompact [T2Space X] {s t : Set X} (hs : IsCompact s)
@@ -1671,18 +1729,6 @@ theorem IsCompact.isClosed [T2Space X] {s : Set X} (hs : IsCompact s) : IsClosed
       SeparatedNhds.of_isCompact_isCompact hs isCompact_singleton (disjoint_singleton_right.2 hx)
     ⟨v, (uv.mono_left <| show s ≤ u from su).subset_compl_left, vo, by simpa using xv⟩
 #align is_compact.is_closed IsCompact.isClosed
-
-@[simp]
-theorem Filter.coclosedCompact_eq_cocompact [T2Space X] : coclosedCompact X = cocompact X := by
-  simp only [coclosedCompact, cocompact, iInf_and',
-    and_iff_right_of_imp (@IsCompact.isClosed X _ _ _)]
-#align filter.coclosed_compact_eq_cocompact Filter.coclosedCompact_eq_cocompact
-
-@[simp]
-theorem Bornology.relativelyCompact_eq_inCompact [T2Space X] :
-    Bornology.relativelyCompact X = Bornology.inCompact X :=
-  Bornology.ext _ _ Filter.coclosedCompact_eq_cocompact
-#align bornology.relatively_compact_eq_in_compact Bornology.relativelyCompact_eq_inCompact
 
 theorem IsCompact.preimage_continuous [CompactSpace X] [T2Space Y] {f : X → Y} {s : Set Y}
     (hs : IsCompact s) (hf : Continuous f) : IsCompact (f ⁻¹' s) :=
@@ -1946,7 +1992,7 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
 
 /-- In a regular space, if a compact set and a closed set are disjoint, then they have disjoint
 neighborhoods. -/
-lemma SeparatedNhds.of_isCompact_isClosed [RegularSpace X] {s t : Set X}
+lemma SeparatedNhds.of_isCompact_isClosed {s t : Set X}
     (hs : IsCompact s) (ht : IsClosed t) (hst : Disjoint s t) : SeparatedNhds s t := by
   simpa only [separatedNhds_iff_disjoint, hs.disjoint_nhdsSet_left, disjoint_nhds_nhdsSet,
     ht.closure_eq, disjoint_left] using hst
@@ -2343,8 +2389,8 @@ theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s 
       rw [connectedComponent_eq_iInter_isClopen] at hx
       intro hU
       let N := { s // IsClopen s ∧ x ∈ s }
-      suffices ∃ s : N, s.val ⊆ U by
-        rcases this with ⟨⟨s, hs, hs'⟩, hs''⟩; exact ⟨s, ⟨hs', hs⟩, hs''⟩
+      rsuffices ⟨⟨s, hs, hs'⟩, hs''⟩ : ∃ s : N, s.val ⊆ U
+      · exact ⟨s, ⟨hs', hs⟩, hs''⟩
       haveI : Nonempty N := ⟨⟨univ, isClopen_univ, mem_univ x⟩⟩
       have hNcl : ∀ s : N, IsClosed s.val := fun s => s.property.1.1
       have hdir : Directed Superset fun s : N => s.val := by

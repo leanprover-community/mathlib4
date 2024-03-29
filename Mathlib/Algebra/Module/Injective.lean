@@ -93,7 +93,6 @@ set_option linter.uppercaseLean3 false in
 namespace Module.Baer
 
 variable {R Q} {M N : Type*} [AddCommGroup M] [AddCommGroup N]
-
 variable [Module R M] [Module R N] (i : M →ₗ[R] N) (f : M →ₗ[R] Q)
 
 /-- If we view `M` as a submodule of `N` via the injective linear map `i : M ↪ N`, then a submodule
@@ -445,7 +444,7 @@ protected theorem extension_property (h : Module.Baer R Q)
     { toFun := ((extensionOfMax f g).toLinearPMap
         ⟨·, (extensionOfMax_to_submodule_eq_top f g h).symm ▸ ⟨⟩⟩)
       map_add' := fun x y ↦ by rw [← LinearPMap.map_add]; congr
-      map_smul' := fun r x ↦  by rw [← LinearPMap.map_smul]; dsimp } <|
+      map_smul' := fun r x ↦ by rw [← LinearPMap.map_smul]; dsimp } <|
     LinearMap.ext fun x ↦ ((extensionOfMax f g).is_extension x).symm
 
 theorem extension_property_addMonoidHom (h : Module.Baer ℤ Q)

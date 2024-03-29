@@ -333,15 +333,18 @@ protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • 
     rw [ihx, ihy, add_add_add_comm]
 #align tensor_product.add_smul TensorProduct.add_smul
 
+instance addMonoid : AddMonoid (M ⊗[R] N) :=
+{ TensorProduct.addZeroClass _ _ with
+  toAddSemigroup := TensorProduct.addSemigroup _ _
+  toZero := (TensorProduct.addZeroClass _ _).toZero
+  nsmul := fun n v => n • v
+  nsmul_zero := by simp [TensorProduct.zero_smul]
+  nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
+    forall_const] }
+
 instance addCommMonoid : AddCommMonoid (M ⊗[R] N) :=
-  { TensorProduct.addCommSemigroup _ _,
-    TensorProduct.addZeroClass _ _ with
-    toAddSemigroup := TensorProduct.addSemigroup _ _
-    toZero := (TensorProduct.addZeroClass _ _).toZero
-    nsmul := fun n v => n • v
-    nsmul_zero := by simp [TensorProduct.zero_smul]
-    nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
-      forall_const] }
+  { TensorProduct.addCommSemigroup _ _ with
+    toAddMonoid := TensorProduct.addMonoid }
 
 instance leftDistribMulAction : DistribMulAction R' (M ⊗[R] N) :=
   have : ∀ (r : R') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => rfl
@@ -756,6 +759,10 @@ theorem rid_tmul (m : M) (r : R) : (TensorProduct.rid R M) (m ⊗ₜ r) = r • 
 theorem rid_symm_apply (m : M) : (TensorProduct.rid R M).symm m = m ⊗ₜ 1 :=
   rfl
 #align tensor_product.rid_symm_apply TensorProduct.rid_symm_apply
+
+variable (R) in
+theorem lid_eq_rid : TensorProduct.lid R R = TensorProduct.rid R R :=
+  LinearEquiv.toLinearMap_injective <| ext' mul_comm
 
 open LinearMap
 
@@ -1374,7 +1381,7 @@ instance addCommGroup : AddCommGroup (M ⊗[R] N) :=
     add_left_neg := fun x => TensorProduct.add_left_neg x
     zsmul := fun n v => n • v
     zsmul_zero' := by simp [TensorProduct.zero_smul]
-    zsmul_succ' := by simp [Nat.succ_eq_one_add, TensorProduct.one_smul, TensorProduct.add_smul]
+    zsmul_succ' := by simp [Nat.succ_eq_add_one, TensorProduct.one_smul, TensorProduct.add_smul]
     zsmul_neg' := fun n x => by
       change (-n.succ : ℤ) • x = -(((n : ℤ) + 1) • x)
       rw [← zero_add (_ • x), ← TensorProduct.add_left_neg ((n.succ : ℤ) • x), add_assoc,
