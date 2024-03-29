@@ -1786,12 +1786,17 @@ variable {α β}
 
 end
 section
+
+variable (α β)
 variable [∀ i : ια, AddZeroClass (α i)] [∀ i : ιβ, AddZeroClass (β i)]
   [(i : ια) → (x : α i) → Decidable (x ≠ 0)] [(i : ιβ) → (x : β i) → Decidable (x ≠ 0)]
 
+/-- Given families of types `αᵢ, βᵢ` indexed by `ια, ιβ` respectively, this is the natural
+additive equivalence between `DFinsupps` on the induced family indexed by `ια ⊕ ιβ`, and the
+product of the `DFinsupp`s on `αᵢ` and on `βᵢ`. -/
 @[simps! apply symm_apply]
 noncomputable def sumDFinsuppAddEquivProdDFinsupp :
-    (⨁ (i : ια ⊕ ιβ), Sum.elim α β i) ≃+ (⨁ i : ια, α i) × (⨁ i : ιβ, β i) :=
+    (Π₀ (i : ια ⊕ ιβ), Sum.elim α β i) ≃+ (Π₀ i : ια, α i) × (Π₀ i : ιβ, β i) :=
   { DFinsupp.sumFinsuppEquivProdFinsupp α β with
     map_add' := fun _ _ => Prod.ext (DFinsupp.ext fun _ => rfl) (DFinsupp.ext fun _ => rfl) }
 

@@ -290,7 +290,24 @@ noncomputable def lequivProdDirectSum : (⨁ i, α i) ≃ₗ[R] α none × ⨁ i
 #align direct_sum.lequiv_prod_direct_sum DirectSum.lequivProdDirectSum
 
 end Option
+section Sum
 
+variable (R)
+variable {ια ιβ : Type*} [DecidableEq ια] [DecidableEq ιβ] (α : (i : ια) → Type u)
+  (β : (i : ιβ) → Type u) [∀ i : ια, AddCommMonoid (α i)] [∀ i : ιβ, AddCommMonoid (β i)]
+  [∀ i : ια, Module R (α i)] [∀ i : ιβ, Module R (β i)]
+  [(i : ια) → (x : α i) → Decidable (x ≠ 0)] [(i : ιβ) → (x : β i) → Decidable (x ≠ 0)]
+
+/-- Given families of `R`-modules `αᵢ, βᵢ` indexed by `ια, ιβ` respectively, this is the
+natural `R`-linear equivalence between the direct sum of the induced family indexed by `ια ⊕ ιβ`,
+and the product of the direct sums of the `αᵢ` and of the `βᵢ`. -/
+@[simps! apply symm_apply]
+noncomputable def sumDirectSumLEquivProdDirectSum :
+    (⨁ (i : ια ⊕ ιβ), Sum.elim α β i) ≃ₗ[R] (⨁ i : ια, α i) × (⨁ i : ιβ, β i) :=
+  { DirectSum.sumDirectSumAddEquivProdDirectSum α β with
+    map_smul' := fun _ _ => Prod.ext (DFinsupp.ext fun _ => rfl) (DFinsupp.ext fun _ => rfl) }
+
+end Sum
 end General
 
 section Submodule

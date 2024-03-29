@@ -306,7 +306,21 @@ noncomputable def addEquivProdDirectSum : (⨁ i, α i) ≃+ α none × ⨁ i, �
 #align direct_sum.add_equiv_prod_direct_sum DirectSum.addEquivProdDirectSum
 
 end Option
+section Sum
 
+variable {ια ιβ : Type*} [DecidableEq ια] [DecidableEq ιβ] (α : (i : ια) → Type u)
+  (β : (i : ιβ) → Type u) [∀ i : ια, AddCommMonoid (α i)] [∀ i : ιβ, AddCommMonoid (β i)]
+  [(i : ια) → (x : α i) → Decidable (x ≠ 0)] [(i : ιβ) → (x : β i) → Decidable (x ≠ 0)]
+
+/-- Given families of `AddCommMonoid`s `αᵢ, βᵢ` indexed by `ια, ιβ` respectively, this is the
+natural additive equivalence between the direct sum of the induced family indexed by `ια ⊕ ιβ`,
+and the product of the direct sums of the `αᵢ` and of the `βᵢ`. -/
+@[simps! apply symm_apply]
+noncomputable def sumDirectSumAddEquivProdDirectSum :
+    (⨁ (i : ια ⊕ ιβ), Sum.elim α β i) ≃+ (⨁ i : ια, α i) × (⨁ i : ιβ, β i) :=
+  { DFinsupp.sumDFinsuppAddEquivProdDFinsupp α β with }
+
+end Sum
 section Sigma
 
 variable {α : ι → Type u} {δ : ∀ i, α i → Type w} [∀ i j, AddCommMonoid (δ i j)]
