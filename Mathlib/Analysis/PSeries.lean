@@ -63,11 +63,23 @@ theorem le_sum_schlomilch' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f 
   convert sum_le_sum this
   simp [pow_succ, mul_two]
 
+theorem le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
+    (∑ k in Ico 1 (2 ^ n), f k) ≤ ∑ k in range n, 2 ^ k • f (2 ^ k) := by
+  convert le_sum_schlomilch' hf (fun n => pow_pos zero_lt_two n) (fun m n hm => pow_le_pow_right one_le_two hm) n using 2
+  simp [pow_succ, mul_two, two_mul]
+#align finset.le_sum_condensed' Finset.le_sum_condensed'
+
 theorem le_sum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (hu : Monotone u) (n : ℕ) : (∑ k in range (u n), f k) ≤ ∑ k in range (u 0), f k +
     ∑ k in range n, (u (k + 1) - u k) • f (u k) := by
   convert add_le_add_left (le_sum_schlomilch' hf h_pos hu n) (∑ k in range (u 0), f k)
   rw [← sum_range_add_sum_Ico _ (hu n.zero_le)]
+
+theorem le_sum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
+    (∑ k in range (2 ^ n), f k) ≤ f 0 + ∑ k in range n, 2 ^ k • f (2 ^ k) := by
+  convert add_le_add_left (le_sum_condensed' hf n) (f 0)
+  rw [← sum_range_add_sum_Ico _ n.one_le_two_pow, sum_range_succ, sum_range_zero, zero_add]
+#align finset.le_sum_condensed Finset.le_sum_condensed
 
 theorem sum_schlomilch_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (hu : Monotone u) (n : ℕ) : (∑ k in range n, (u (k + 1) - u k) • f (u (k + 1))) ≤
@@ -84,6 +96,12 @@ theorem sum_schlomilch_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f 
       (mem_Ico.mp hk).1) (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
   convert sum_le_sum this
   simp [pow_succ, mul_two]
+
+theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
+    (∑ k in range n, 2 ^ k • f (2 ^ (k + 1))) ≤ ∑ k in Ico 2 (2 ^ n + 1), f k := by
+  convert sum_schlomilch_le' hf (fun n => pow_pos zero_lt_two n) (fun m n hm => pow_le_pow_right one_le_two hm) n using 2
+  simp [pow_succ, mul_two, two_mul]
+#align finset.sum_condensed_le' Finset.sum_condensed_le'
 
 theorem sum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (h_nonneg : ∀ n, 0 ≤ f n) (hu : Monotone u) (h_succ_diff : SuccDiffBounded C u) (n : ℕ) :
@@ -104,6 +122,12 @@ theorem sum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f
     exact mod_cast h_succ_diff k
   convert sum_le_sum this
   simp [smul_sum]
+
+theorem sum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
+    (∑ k in range (n + 1), 2 ^ k • f (2 ^ k)) ≤ f 1 + 2 • ∑ k in Ico 2 (2 ^ n + 1), f k := by
+  convert add_le_add_left (nsmul_le_nsmul_right (sum_condensed_le' hf n) 2) (f 1)
+  simp [sum_range_succ', add_comm, pow_succ', mul_nsmul', sum_nsmul]
+#align finset.sum_condensed_le Finset.sum_condensed_le
 end Finset
 
 namespace ENNReal
@@ -125,6 +149,14 @@ theorem le_tsum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f 
   simp only [nsmul_eq_mul, this]
   apply ENNReal.sum_le_tsum
 
+theorem le_tsum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
+    ∑' k, f k ≤ f 0 + ∑' k : ℕ, 2 ^ k * f (2 ^ k) := by
+  rw [ENNReal.tsum_eq_iSup_nat' (Nat.tendsto_pow_atTop_atTop_of_one_lt _root_.one_lt_two)]
+  refine' iSup_le fun n => (Finset.le_sum_condensed hf n).trans (add_le_add_left _ _)
+  simp only [nsmul_eq_mul, Nat.cast_pow, Nat.cast_two]
+  apply ENNReal.sum_le_tsum
+#align ennreal.le_tsum_condensed ENNReal.le_tsum_condensed
+
 theorem tsum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (h_nonneg : ∀ n, 0 <= f n) (hu_strict : StrictMono u) (h_succ_diff : SuccDiffBounded C u) :
     ∑' k : ℕ, (u (k + 1) - u k) * f (u k) ≤ (u 1 - u 0) * f (u 0) + C * ∑' k, f k := by
@@ -136,6 +168,17 @@ theorem tsum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → 
           (mul_le_mul_of_nonneg_left (ENNReal.sum_le_tsum <| Finset.Ico (u 0 + 1) (u n + 1)) ?_) _)
   simpa using Finset.sum_schlomilch_le hf h_pos h_nonneg hu_strict.monotone h_succ_diff n
   exact zero_le _
+
+theorem tsum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) :
+    (∑' k : ℕ, 2 ^ k * f (2 ^ k)) ≤ f 1 + 2 * ∑' k, f k := by
+  rw [ENNReal.tsum_eq_iSup_nat' (tendsto_atTop_mono Nat.le_succ tendsto_id), two_mul, ← two_nsmul]
+  refine
+    iSup_le fun n =>
+      le_trans ?_
+        (add_le_add_left
+          (nsmul_le_nsmul_right (ENNReal.sum_le_tsum <| Finset.Ico 2 (2 ^ n + 1)) _) _)
+  simpa using Finset.sum_condensed_le hf n
+#align ennreal.tsum_condensed_le ENNReal.tsum_condensed_le
 end ENNReal
 
 namespace NNReal
