@@ -957,6 +957,9 @@ theorem IsRegular.pos {c : Cardinal} (H : c.IsRegular) : 0 < c :=
   aleph0_pos.trans_le H.1
 #align cardinal.is_regular.pos Cardinal.IsRegular.pos
 
+def IsRegular.nat_lt {c : Cardinal} (H : c.IsRegular) : ∀ (n : ℕ), n < c := fun n =>
+  lt_of_lt_of_le (nat_lt_aleph0 n) (Cardinal.IsRegular.aleph0_le H)
+
 theorem IsRegular.ord_pos {c : Cardinal} (H : c.IsRegular) : 0 < c.ord := by
   rw [Cardinal.lt_ord, card_zero]
   exact H.pos
@@ -1113,6 +1116,25 @@ theorem sum_lt_of_isRegular {ι : Type u} {f : ι → Cardinal} {c : Cardinal} (
     (hι : #ι < c) : (∀ i, f i < c) → sum f < c :=
   sum_lt_lift_of_isRegular.{u, u} hc (by rwa [lift_id])
 #align cardinal.sum_lt_of_is_regular Cardinal.sum_lt_of_isRegular
+
+@[simp]
+theorem iUnion_iff {ι : Type u} {α : Type u} {t : ι → Set α} {c : Cardinal}
+    (hc : Cardinal.IsRegular c) (hι : #ι < c) : #(⋃ i, t i) < c ↔ ∀ i, #(t i) < c := by
+  constructor
+  · exact fun h _ =>  lt_of_le_of_lt (Cardinal.mk_le_mk_of_subset <| subset_iUnion _ _) h
+  · intro h
+    apply lt_of_le_of_lt (Cardinal.mk_sUnion_le _)
+    apply Cardinal.mul_lt_of_lt (Cardinal.IsRegular.aleph0_le hc)
+      (lt_of_le_of_lt Cardinal.mk_range_le hι)
+    · apply Cardinal.iSup_lt_of_isRegular hc (lt_of_le_of_lt Cardinal.mk_range_le hι)
+      simpa
+
+theorem biUnion_iff {α β : Type u} {s : Set α} {t : ∀ a ∈ s, Set β} {c : Cardinal}
+    (hc : Cardinal.IsRegular c) (hs : #s < c) :
+    #(⋃ a ∈ s, t a ‹_›) < c ↔ ∀ a (ha : a ∈ s), # (t a ha) < c := by
+  rw [biUnion_eq_iUnion, iUnion_iff, SetCoe.forall']
+  · exact hc
+  · exact hs
 
 theorem nfpFamily_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal → Ordinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) (hc' : c ≠ ℵ₀) (hf : ∀ (i), ∀ b < c.ord, f i b < c.ord) {a}
