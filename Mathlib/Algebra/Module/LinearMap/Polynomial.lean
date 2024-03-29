@@ -41,56 +41,11 @@ that evaluates on elements `x` of `L` to the characteristic polynomial of `φ x`
 
 -/
 
-open scoped BigOperators
-
--- move to `Mathlib.Data.MvPolynomial.Degrees`
-lemma MvPolynomial.totalDegree_monomial_le
-    {R σ : Type*} [CommSemiring R] (m : σ →₀ ℕ) (r : R) :
-    (monomial m r).totalDegree ≤ m.sum fun _ ↦ id := by
-  if hr : r = 0 then
-    simp only [hr, map_zero, totalDegree_zero, zero_le]
-  else
-    rw [totalDegree_monomial _ hr]
-    exact le_rfl
+open scoped BigOperators Matrix
 
 section Basis
 
 variable {R M ι : Type*} [CommRing R] [AddCommGroup M] [Module R M] [Fintype ι] [DecidableEq ι]
-
-open scoped Matrix
-
--- move to Mathlib.LinearAlgebra.Matrix.ToLin
-/-- The standard basis of the endomorphism algebra of a module
-induced by a basis of the module.
-
-If `M` is a module with basis `b` indexed by a finite type `ι`,
-then `Basis.end b` is the basis of `Module.End R M` indexed by `ι × ι`
-where `(i, j)` indexes the linear map that sends `b j` to `b i`
-and sends all other basis vectors to `0`.  -/
-@[simps! repr_apply]
-noncomputable
-def Basis.end (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
-  (Matrix.stdBasis R ι ι).map (LinearMap.toMatrix b b).symm
-
--- move to Mathlib.LinearAlgebra.Matrix.ToLin
--- the left hand side simplifies, so this is a bad simp lemma
-lemma Basis.end_repr_symm_apply (b : Basis ι R M) (ij : ι × ι →₀ R) :
-    b.end.repr.symm ij =
-    (Matrix.toLin b b) ((Finsupp.total (ι × ι) (Matrix ι ι R) R (Matrix.stdBasis R ι ι)) ij) :=
-  congrArg (Matrix.toLin b b) (Basis.repr_symm_apply (Matrix.stdBasis R ι ι) ij)
-
--- move to Mathlib.LinearAlgebra.Matrix.ToLin
-lemma Basis.end_apply (b : Basis ι R M) (ij : ι × ι) :
-    (b.end ij) = (Matrix.toLin b b) (Matrix.stdBasis R ι ι ij) := by
-  erw [end_repr_symm_apply, Finsupp.total_single, one_smul]
-
--- move to Mathlib.LinearAlgebra.Matrix.ToLin
-lemma Basis.end_apply_apply (b : Basis ι R M) (ij : ι × ι) (k : ι) :
-    (b.end ij) (b k) = if ij.2 = k then b ij.1 else 0 := by
-  rcases ij with ⟨i, j⟩
-  rw [end_apply, Matrix.stdBasis_eq_stdBasisMatrix, Matrix.toLin_self]
-  dsimp only [Matrix.stdBasisMatrix]
-  simp_rw [ite_smul, one_smul, zero_smul, ite_and, Finset.sum_ite_eq, Finset.mem_univ, if_true]
 
 -- move to Mathlib.RingTheory.TensorProduct.Basic
 open Algebra.TensorProduct LinearMap in
@@ -103,51 +58,6 @@ lemma Basis.baseChange_end (A : Type*) [CommRing A] [Algebra R A] (b : Basis ι 
   split <;> simp only [TensorProduct.tmul_zero]
 
 end Basis
-
-namespace LinearMap
-
-variable (R A M : Type*) [CommRing R] [CommRing A] [Algebra R A] [AddCommGroup M] [Module R M]
-
-open Module
-open scoped TensorProduct
-
--- move to Mathlib.RingTheory.TensorProduct.Basic
-/-- The natural linear map $A ⊗ (\text{End}_R M) → \text{End}_A (A ⊗ M)$,
-where `M` is an `R`-module, and `A` an `R`-algebra.
-
-See `TensorProductEnd` for the same map, bundled as `A`-algebra homomorphism. -/
-@[simps!]
-noncomputable
-def TensorProductEndₗ : A ⊗[R] (End R M) →ₗ[A] End A (A ⊗[R] M) :=
-  TensorProduct.AlgebraTensorModule.lift <|
-  { toFun := fun a ↦ a • baseChangeHom R A M M
-    map_add' := by simp only [add_smul, forall_true_iff]
-    map_smul' := by simp only [smul_assoc, RingHom.id_apply, forall_true_iff] }
-
--- move to Mathlib.RingTheory.TensorProduct.Basic
-/-- The natural `A`-algebra homomorphism $A ⊗ (\text{End}_R M) → \text{End}_A (A ⊗ M)$,
-where `M` is an `R`-module, and `A` an `R`-algebra. -/
-@[simps!]
-noncomputable
-def TensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
-  Algebra.TensorProduct.algHomOfLinearMapTensorProduct
-    (TensorProductEndₗ R A M)
-    (fun a b f g ↦ by
-      apply LinearMap.ext
-      intro x
-      simp only [TensorProductEndₗ, mul_comm a b, mul_eq_comp,
-        TensorProduct.AlgebraTensorModule.lift_apply, TensorProduct.lift.tmul, coe_restrictScalars,
-        coe_mk, AddHom.coe_mk, mul_smul, smul_apply, baseChangeHom_apply, baseChange_comp,
-        comp_apply, Algebra.mul_smul_comm, Algebra.smul_mul_assoc])
-    (by
-      apply LinearMap.ext
-      intro x
-      simp only [TensorProductEndₗ, TensorProduct.AlgebraTensorModule.lift_apply,
-        TensorProduct.lift.tmul, coe_restrictScalars, coe_mk, AddHom.coe_mk, one_smul,
-        baseChangeHom_apply, baseChange_eq_ltensor, one_apply]
-      erw [lTensor_id, LinearMap.id_apply])
-
-end LinearMap
 
 namespace Matrix
 

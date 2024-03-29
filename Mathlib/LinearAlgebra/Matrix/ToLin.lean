@@ -1008,3 +1008,39 @@ def algEquivMatrix [Fintype n] (h : Basis n R M) : Module.End R M ≃ₐ[R] Matr
 #align alg_equiv_matrix algEquivMatrix
 
 end
+
+namespace Basis
+
+variable {R M ι : Type*} [CommRing R] [AddCommGroup M] [Module R M] [Fintype ι] [DecidableEq ι]
+
+/-- The standard basis of the endomorphism algebra of a module
+induced by a basis of the module.
+
+If `M` is a module with basis `b` indexed by a finite type `ι`,
+then `Basis.end b` is the basis of `Module.End R M` indexed by `ι × ι`
+where `(i, j)` indexes the linear map that sends `b j` to `b i`
+and sends all other basis vectors to `0`.  -/
+@[simps! repr_apply]
+noncomputable
+def _root_.Basis.end (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
+  (Matrix.stdBasis R ι ι).map (LinearMap.toMatrix b b).symm
+
+-- the left hand side simplifies, so this is a bad simp lemma
+lemma end_repr_symm_apply (b : Basis ι R M) (ij : ι × ι →₀ R) :
+    b.end.repr.symm ij =
+    (Matrix.toLin b b) ((Finsupp.total (ι × ι) (Matrix ι ι R) R (Matrix.stdBasis R ι ι)) ij) :=
+  congrArg (Matrix.toLin b b) (Basis.repr_symm_apply (Matrix.stdBasis R ι ι) ij)
+
+lemma end_apply (b : Basis ι R M) (ij : ι × ι) :
+    (b.end ij) = (Matrix.toLin b b) (Matrix.stdBasis R ι ι ij) := by
+  erw [end_repr_symm_apply, Finsupp.total_single, one_smul]
+
+lemma end_apply_apply (b : Basis ι R M) (ij : ι × ι) (k : ι) :
+    (b.end ij) (b k) = if ij.2 = k then b ij.1 else 0 := by
+  rcases ij with ⟨i, j⟩
+  rw [end_apply, Matrix.stdBasis_eq_stdBasisMatrix, Matrix.toLin_self]
+  dsimp only [Matrix.stdBasisMatrix]
+  simp_rw [ite_smul, one_smul, zero_smul, ite_and, Finset.sum_ite_eq, Finset.mem_univ, if_true]
+
+end Basis
+
