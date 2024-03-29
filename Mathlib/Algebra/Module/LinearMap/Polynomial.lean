@@ -213,7 +213,8 @@ lemma polyCharpoly_ne_zero [Nontrivial R] : (polyCharpoly φ b bₘ) ≠ 0 :=
   (polyCharpoly_monic _ _ _).ne_zero
 
 @[simp]
-lemma polyCharpoly_natDegree [Nontrivial R] : (polyCharpoly φ b bₘ).natDegree = Fintype.card ιM := by
+lemma polyCharpoly_natDegree [Nontrivial R] :
+    (polyCharpoly φ b bₘ).natDegree = Fintype.card ιM := by
   rw [polyCharpoly, (charpoly.univ_monic _ _).natDegree_map, charpoly.univ_natDegree]
 
 lemma polyCharpoly_coeff_isHomogeneous (i j : ℕ) (hij : i + j = Fintype.card ιM) :
