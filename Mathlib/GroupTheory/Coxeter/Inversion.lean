@@ -148,7 +148,7 @@ theorem rightInvSeq_concat (ω : List B) (i : B) :
   · dsimp [rightInvSeq]
     rw [ih]
     simp only [concat_eq_append, wordProd_append, wordProd_cons, wordProd_nil, mul_one, mul_inv_rev,
-      simple_inv, cons_append, cons.injEq, and_true]
+      inv_simple, cons_append, cons.injEq, and_true]
     group
 
 theorem leftInvSeq_concat (ω : List B) (i : B) :
@@ -158,7 +158,7 @@ theorem leftInvSeq_concat (ω : List B) (i : B) :
   · dsimp [leftInvSeq]
     rw [ih]
     simp only [concat_eq_append, map_append, map_cons, _root_.map_mul, MulAut.conj_apply,
-      simple_inv, map_inv, mul_inv_rev, map_nil, wordProd_cons, cons_append, cons.injEq,
+      inv_simple, map_inv, mul_inv_rev, map_nil, wordProd_cons, cons_append, cons.injEq,
       append_cancel_left_eq, and_true, true_and]
     group
     simp [mul_assoc]
