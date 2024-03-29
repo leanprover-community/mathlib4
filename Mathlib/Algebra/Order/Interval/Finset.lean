@@ -11,8 +11,7 @@ import Mathlib.Order.Interval.Finset.Basic
 /-!
 # Algebraic properties of finset intervals
 
-This file provides results about the intee basic results about all the `Finset.Ixx`, which are defined in
-`Order.Interval.Finset.Defs`.
+This file provides results about the interaction of algebra with `Finset.Ixx`.
 -/
 
 open Function OrderDual
