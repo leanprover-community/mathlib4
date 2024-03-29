@@ -470,6 +470,7 @@ lemma DenseRange.iUnion_uniformity_ball {X ι : Type*} [UniformSpace X] {xs : ι
   rw [← biUnion_range (f := xs) (g := fun x ↦ UniformSpace.ball x U)]
   exact Dense.biUnion_uniformity_ball xs_dense hU
 
+-- TODO: Add in...
 lemma SeparableSpace.exists_measurable_partition_diam_le
     (X : Type*) [PseudoMetricSpace X] [SeparableSpace X]
     [MeasurableSpace X] [OpensMeasurableSpace X] {ε : ℝ} (ε_pos : 0 < ε) :
@@ -502,19 +503,6 @@ lemma SeparableSpace.exists_measurable_partition_diam_le
     rw [← aux]
     apply iUnion_disjointed
   · exact disjoint_disjointed Bs
-
--- TODO: Add in ...
-open EMetric in
-theorem infEdist_biUnion {α : Type*} [PseudoEMetricSpace α] (f : ι → Set α) (I : Set ι) (x : α) :
-    infEdist x (⋃ i ∈ I, f i) = ⨅ i ∈ I, infEdist x (f i) := by
-  convert infEdist_iUnion (ι := I) (fun i ↦ f i) x
-  · exact biUnion_eq_iUnion I _
-  · exact iInf_subtype'
-
--- TODO: Add in ...
-theorem thickening_biUnion {α : Type*} [PseudoEMetricSpace α] (δ : ℝ) (f : ι → Set α) (I : Set ι) :
-    thickening δ (⋃ i ∈ I, f i) = ⋃ i ∈ I, thickening δ (f i) := by
-  simp_rw [thickening, infEdist_biUnion, iInf_lt_iff, setOf_exists]
 
 lemma iUnion_biUnion {X ι κ : Type*} (As : ι → Set X) {Js : κ → Set ι} :
     ⋃ k, ⋃ i ∈ Js k, As i = ⋃ i ∈ (⋃ k, Js k), As i :=

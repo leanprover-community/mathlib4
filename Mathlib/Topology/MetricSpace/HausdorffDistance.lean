@@ -92,6 +92,12 @@ theorem infEdist_iUnion (f : ι → Set α) (x : α) : infEdist x (⋃ i, f i) =
   iInf_iUnion f _
 #align emetric.inf_edist_Union EMetric.infEdist_iUnion
 
+lemma infEdist_biUnion {ι : Type*} (f : ι → Set α) (I : Set ι) (x : α) :
+    infEdist x (⋃ i ∈ I, f i) = ⨅ i ∈ I, infEdist x (f i) := by
+  convert infEdist_iUnion (ι := I) (fun i ↦ f i) x
+  · exact biUnion_eq_iUnion I _
+  · exact iInf_subtype'
+
 /-- The edist to a singleton is the edistance to the single point of this singleton -/
 @[simp]
 theorem infEdist_singleton : infEdist x {y} = edist x y :=
