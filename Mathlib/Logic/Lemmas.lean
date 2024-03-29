@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Logic.Basic
-import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.SplitIfs
 
@@ -74,13 +73,3 @@ lemma Prop.exists {f : Prop → Prop} : (∃ p, f p) ↔ f True ∨ f False :=
   ⟨fun ⟨p, h⟩ ↦ by refine' (em p).imp _ _ <;> intro H <;> convert h <;> simp [H],
     by rintro (h | h) <;> exact ⟨_, h⟩⟩
 #align Prop.exists Prop.exists
-
-open Function
-
-lemma not_involutive : Involutive Not := fun _ ↦ propext not_not
-
-lemma not_injective : Injective Not := not_involutive.injective
-
-lemma not_surjective : Surjective Not := not_involutive.surjective
-
-lemma not_bijective : Bijective Not := not_involutive.bijective
