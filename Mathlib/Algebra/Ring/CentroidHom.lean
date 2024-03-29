@@ -698,7 +698,7 @@ instance instStarAddMonoid : StarAddMonoid (CentroidHom α) where
 Let `α` be a star ring with commutative centroid. Then the centroid is a star ring.
 -/
 @[reducible]
-def starRingOfCommCentroidHom (mul_comm : IsCommutative (CentroidHom α) (· * ·)) :
+def starRingOfCommCentroidHom (mul_comm : Std.Commutative (α := CentroidHom α) (· * ·)) :
     StarRing (CentroidHom α) where
   __ := instStarAddMonoid
   star_mul f g := by
