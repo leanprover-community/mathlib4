@@ -23,6 +23,12 @@ up to cancelling inverses and making the possible simplifications by considering
 natural numbers. -/
 macro "exact_mod_inv" h:term : tactic => `(tactic| (cancel_nat_inv at $h:term ⊢; exact $h))
 
+theorem Nat.le_antisymm' {n m : ℕ} (h1 : n + 1 ≤ m + 1) (h2 : m ≤ n ) : n = m :=
+  Nat.le_antisymm (Nat.le_of_succ_le_succ h1) h2
+
+macro "inv_bounds" h1:term "," h2:term : tactic =>
+  `(tactic| (cancel_nat_inv at $h1:term $h2:term ⊢; exact Nat.le_antisymm' $h1 $h2))
+
 /-- Classification of triples `(p, q, r)` of natural numbers, such that `p⁻¹ + q⁻¹ + r⁻¹ = 1`.
 Method 1: following a textbook. -/
 example {p q r : ℕ} (hp : 2 ≤ p) (hpq : p ≤ q) (hqr : q ≤ r) (h : (p:ℚ)⁻¹ + (q:ℚ)⁻¹ + (r:ℚ)⁻¹ = 1) :
@@ -40,20 +46,16 @@ example {p q r : ℕ} (hp : 2 ≤ p) (hpq : p ≤ q) (hqr : q ≤ r) (h : (p:ℚ
     have hr : (r:ℚ)⁻¹ = 3⁻¹ := by linarith only [h, hp, hq]
     cancel_nat_inv at hp hq hr
     simp [hp, hq, hr]
-  cancel_nat_inv at hp₂
-  interval_cases p
-  push_cast at h
-  have H₃ : 4⁻¹ ≤ (q:ℚ)⁻¹ := by linarith only [h, h₃]
+  have hp : (p:ℚ)⁻¹ = 2⁻¹ := by inv_bounds hp₂, hp
+  have H₃ : 4⁻¹ ≤ (q:ℚ)⁻¹ := by linarith only [h, hp, h₃]
   obtain hq | hq₂ := eq_or_gt_of_le H₃
-  · have hr : (r:ℚ)⁻¹ = 4⁻¹ := by linarith only [h, hq]
-    cancel_nat_inv at hq hr
-    simp [hq, hr]
-  cancel_nat_inv at hq₂ H₂
-  interval_cases q
-  push_cast at h
-  have hr : (r:ℚ)⁻¹ = 6⁻¹ := by linarith only [h]
-  cancel_nat_inv at hr
-  simp [hr]
+  · have hr : (r:ℚ)⁻¹ = 4⁻¹ := by linarith only [h, hp, hq]
+    cancel_nat_inv at hp hq hr
+    simp [hp, hq, hr]
+  · have hq : (q:ℚ)⁻¹ = 3⁻¹ := by inv_bounds hq₂, H₂
+    have hr : (r:ℚ)⁻¹ = 6⁻¹ := by linarith only [h, hp, hq]
+    cancel_nat_inv at hp hq hr
+    simp [hp, hq, hr]
 
 /-- Classification of triples `(p, q, r)` of natural numbers, such that `p⁻¹ + q⁻¹ + r⁻¹ = 1`.
 Method 2: hybrid. -/
