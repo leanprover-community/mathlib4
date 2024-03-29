@@ -3,7 +3,8 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.RingTheory.HahnSeries
+import Mathlib.RingTheory.HahnSeries.PowerSeries
+import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.Localization.FractionRing
 
 #align_import ring_theory.laurent_series from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
@@ -21,8 +22,8 @@ import Mathlib.RingTheory.Localization.FractionRing
 
 -/
 
-
-open HahnSeries BigOperators Classical Polynomial
+open scoped Classical
+open HahnSeries BigOperators Polynomial
 
 noncomputable section
 
@@ -33,7 +34,7 @@ abbrev LaurentSeries (R : Type*) [Zero R] :=
   HahnSeries ℤ R
 #align laurent_series LaurentSeries
 
-variable {R : Type u}
+variable {R : Type*}
 
 namespace LaurentSeries
 
@@ -96,7 +97,7 @@ theorem single_order_mul_powerSeriesPart (x : LaurentSeries R) :
   by_cases h : x.order ≤ n
   · rw [Int.eq_natAbs_of_zero_le (sub_nonneg_of_le h), coeff_coe_powerSeries,
       powerSeriesPart_coeff, ← Int.eq_natAbs_of_zero_le (sub_nonneg_of_le h),
-      add_sub_cancel'_right]
+      add_sub_cancel]
   · rw [ofPowerSeries_apply, embDomain_notin_range]
     · contrapose! h
       exact order_le_of_coeff_ne_zero h.symm
@@ -169,17 +170,17 @@ open LaurentSeries
 
 variable {R' : Type*} [Semiring R] [Ring R'] (f g : PowerSeries R) (f' g' : PowerSeries R')
 
-@[norm_cast] -- Porting note: simp can prove this
+@[norm_cast] -- Porting note (#10618): simp can prove this
 theorem coe_zero : ((0 : PowerSeries R) : LaurentSeries R) = 0 :=
   (ofPowerSeries ℤ R).map_zero
 #align power_series.coe_zero PowerSeries.coe_zero
 
-@[norm_cast] -- Porting note: simp can prove this
+@[norm_cast] -- Porting note (#10618): simp can prove this
 theorem coe_one : ((1 : PowerSeries R) : LaurentSeries R) = 1 :=
   (ofPowerSeries ℤ R).map_one
 #align power_series.coe_one PowerSeries.coe_one
 
-@[norm_cast] -- Porting note: simp can prove this
+@[norm_cast] -- Porting note (#10618): simp can prove this
 theorem coe_add : ((f + g : PowerSeries R) : LaurentSeries R) = f + g :=
   (ofPowerSeries ℤ R).map_add _ _
 #align power_series.coe_add PowerSeries.coe_add
@@ -194,7 +195,7 @@ theorem coe_neg : ((-f' : PowerSeries R') : LaurentSeries R') = -f' :=
   (ofPowerSeries ℤ R').map_neg _
 #align power_series.coe_neg PowerSeries.coe_neg
 
-@[norm_cast] -- Porting note: simp can prove this
+@[norm_cast] -- Porting note (#10618): simp can prove this
 theorem coe_mul : ((f * g : PowerSeries R) : LaurentSeries R) = f * g :=
   (ofPowerSeries ℤ R).map_mul _ _
 #align power_series.coe_mul PowerSeries.coe_mul
@@ -211,13 +212,14 @@ theorem coeff_coe (i : ℤ) :
       not_false_iff]
 #align power_series.coeff_coe PowerSeries.coeff_coe
 
--- Porting note: simp can prove this, and removed norm_cast attribute
+-- Porting note (#10618): simp can prove this
+-- Porting note: removed norm_cast attribute
 theorem coe_C (r : R) : ((C R r : PowerSeries R) : LaurentSeries R) = HahnSeries.C r :=
   ofPowerSeries_C _
 set_option linter.uppercaseLean3 false in
 #align power_series.coe_C PowerSeries.coe_C
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem coe_X : ((X : PowerSeries R) : LaurentSeries R) = single 1 1 :=
   ofPowerSeries_X
 set_option linter.uppercaseLean3 false in

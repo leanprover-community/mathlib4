@@ -186,7 +186,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
       have h : ∀ n : ℕ, ∃ n' : ℕ, n < n' ∧ r (f (n + m)) (f (n' + m)) := by
         intro n
         have h := hm _ (le_add_of_nonneg_left n.zero_le)
-        simp only [exists_prop, not_not, Set.mem_setOf_eq, not_forall] at h
+        simp only [bad, exists_prop, not_not, Set.mem_setOf_eq, not_forall] at h
         obtain ⟨n', hn1, hn2⟩ := h
         obtain ⟨x, hpos, rfl⟩ := exists_pos_add_of_lt hn1
         refine' ⟨n + x, add_lt_add_left hpos n, _⟩

@@ -23,6 +23,10 @@ and provide instances for some basic constructions (`⊥`, `⊤`, `Filter.princi
 `Filter.comap`, `Inf.inf`). We also provide a custom constructor `Filter.ofCountableInter`
 that deduces two axioms of a `Filter` from the countable intersection property.
 
+Note that there also exists a typeclass `CardinalInterFilter`, and thus an alternative spelling of
+`CountableInterFilter` as `CardinalInterFilter l (aleph 1)`. The former (defined here) is the
+preferred spelling; it has the advantage of not requiring the user to import the theory ordinals.
+
 ## Tags
 filter, countable
 -/
@@ -49,7 +53,7 @@ theorem countable_sInter_mem {S : Set (Set α)} (hSc : S.Countable) : ⋂₀ S �
 #align countable_sInter_mem countable_sInter_mem
 
 theorem countable_iInter_mem [Countable ι] {s : ι → Set α} : (⋂ i, s i) ∈ l ↔ ∀ i, s i ∈ l :=
-  sInter_range s ▸ (countable_sInter_mem (countable_range _)).trans forall_range_iff
+  sInter_range s ▸ (countable_sInter_mem (countable_range _)).trans forall_mem_range
 #align countable_Inter_mem countable_iInter_mem
 
 theorem countable_bInter_mem {ι : Type*} {S : Set ι} (hS : S.Countable) {s : ∀ i ∈ S, Set α} :
@@ -164,7 +168,7 @@ def Filter.ofCountableUnion (p : Set α → Prop)
     (hmono : ∀ t, p t → ∀ s ⊆ t, p s) : Filter α := by
   refine .ofCountableInter {s | p sᶜ} (fun S hSc hSp ↦ ?_) fun s t ht hsub ↦ ?_
   · rw [mem_setOf_eq, compl_sInter]
-    exact hUnion _ (hSc.image _) (ball_image_iff.2 hSp)
+    exact hUnion _ (hSc.image _) (forall_mem_image.2 hSp)
   · exact hmono _ ht _ (compl_subset_compl.2 hsub)
 
 instance Filter.countableInter_ofCountableUnion (p : Set α → Prop) (h₁ h₂) :
@@ -248,7 +252,7 @@ def countableGenerate : Filter α :=
   --deriving CountableInterFilter
 #align filter.countable_generate Filter.countableGenerate
 
---Porting note: could not de derived
+-- Porting note: could not de derived
 instance : CountableInterFilter (countableGenerate g) := by
   delta countableGenerate; infer_instance
 
@@ -268,7 +272,7 @@ theorem mem_countableGenerate_iff {s : Set α} :
     refine' ⟨⋃ (s) (H : s ∈ S), T s H, by simpa, Sct.biUnion Tct, _⟩
     apply subset_sInter
     intro s H
-    refine' subset_trans (sInter_subset_sInter (subset_iUnion₂ s H)) (hT s H)
+    exact subset_trans (sInter_subset_sInter (subset_iUnion₂ s H)) (hT s H)
   rcases h with ⟨S, Sg, Sct, hS⟩
   refine' mem_of_superset ((countable_sInter_mem Sct).mpr _) hS
   intro s H

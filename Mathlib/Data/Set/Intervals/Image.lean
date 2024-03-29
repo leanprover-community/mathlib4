@@ -290,27 +290,27 @@ theorem image_subtype_val_Ioi_subset (a : {x // p x}) :
 
 @[simp]
 lemma image_subtype_val_Ici_Iic {a : α} (b : Ici a) : Subtype.val '' Iic b = Icc a b :=
-  (Subtype.image_preimage_val (Ici a) (Iic b.1)).trans Iic_inter_Ici
+  (Subtype.image_preimage_val (Ici a) (Iic b.1)).trans Ici_inter_Iic
 
 @[simp]
 lemma image_subtype_val_Ici_Iio {a : α} (b : Ici a) : Subtype.val '' Iio b = Ico a b :=
-  (Subtype.image_preimage_val (Ici a) (Iio b.1)).trans Iio_inter_Ici
+  (Subtype.image_preimage_val (Ici a) (Iio b.1)).trans Ici_inter_Iio
 
 @[simp]
 lemma image_subtype_val_Ici_Ici {a : α} (b : Ici a) : Subtype.val '' Ici b = Ici b.1 :=
-  (Subtype.image_preimage_val (Ici a) (Ici b.1)).trans <| inter_eq_left.2 <| Ici_subset_Ici.2 b.2
+  (Subtype.image_preimage_val (Ici a) (Ici b.1)).trans <| inter_eq_right.2 <| Ici_subset_Ici.2 b.2
 
 @[simp]
 lemma image_subtype_val_Ici_Ioi {a : α} (b : Ici a) : Subtype.val '' Ioi b = Ioi b.1 :=
-  (Subtype.image_preimage_val (Ici a) (Ioi b.1)).trans <| inter_eq_left.2 <| Ioi_subset_Ici b.2
+  (Subtype.image_preimage_val (Ici a) (Ioi b.1)).trans <| inter_eq_right.2 <| Ioi_subset_Ici b.2
 
 @[simp]
 lemma image_subtype_val_Iic_Ici {a : α} (b : Iic a) : Subtype.val '' Ici b = Icc b.1 a :=
-  Subtype.image_preimage_val (Iic a) (Ici b.1)
+  (Subtype.image_preimage_val _ _).trans <| inter_comm _ _
 
 @[simp]
 lemma image_subtype_val_Iic_Ioi {a : α} (b : Iic a) : Subtype.val '' Ioi b = Ioc b.1 a :=
-  Subtype.image_preimage_val (Iic a) (Ioi b.1)
+  (Subtype.image_preimage_val _ _).trans <| inter_comm _ _
 
 @[simp]
 lemma image_subtype_val_Iic_Iic {a : α} (b : Iic a) : Subtype.val '' Iic b = Iic b.1 :=
@@ -322,23 +322,23 @@ lemma image_subtype_val_Iic_Iio {a : α} (b : Iic a) : Subtype.val '' Iio b = Ii
 
 @[simp]
 lemma image_subtype_val_Ioi_Ici {a : α} (b : Ioi a) : Subtype.val '' Ici b = Ici b.1 :=
-  (Subtype.image_preimage_val (Ioi a) (Ici b.1)).trans <| inter_eq_left.2 <| Ici_subset_Ioi.2 b.2
+  (Subtype.image_preimage_val (Ioi a) (Ici b.1)).trans <| inter_eq_right.2 <| Ici_subset_Ioi.2 b.2
 
 @[simp]
 lemma image_subtype_val_Ioi_Iic {a : α} (b : Ioi a) : Subtype.val '' Iic b = Ioc a b :=
-  (Subtype.image_preimage_val (Ioi a) (Iic b.1)).trans Iic_inter_Ioi
+  (Subtype.image_preimage_val (Ioi a) (Iic b.1)).trans Ioi_inter_Iic
 
 @[simp]
 lemma image_subtype_val_Ioi_Ioi {a : α} (b : Ioi a) : Subtype.val '' Ioi b = Ioi b.1 :=
-  (Subtype.image_preimage_val (Ioi a) (Ioi b.1)).trans <| inter_eq_left.2 <| Ioi_subset_Ioi b.2.le
+  (Subtype.image_preimage_val (Ioi a) (Ioi b.1)).trans <| inter_eq_right.2 <| Ioi_subset_Ioi b.2.le
 
 @[simp]
 lemma image_subtype_val_Ioi_Iio {a : α} (b : Ioi a) : Subtype.val '' Iio b = Ioo a b :=
-  (Subtype.image_preimage_val (Ioi a) (Iio b.1)).trans Iio_inter_Ioi
+  (Subtype.image_preimage_val (Ioi a) (Iio b.1)).trans Ioi_inter_Iio
 
 @[simp]
 lemma image_subtype_val_Iio_Ici {a : α} (b : Iio a) : Subtype.val '' Ici b = Ico b.1 a :=
-  Subtype.image_preimage_val (Iio a) (Ici b.1)
+  (Subtype.image_preimage_val _ _).trans <| inter_comm _ _
 
 @[simp]
 lemma image_subtype_val_Iio_Iic {a : α} (b : Iio a) : Subtype.val '' Iic b = Iic b.1 :=
@@ -346,7 +346,7 @@ lemma image_subtype_val_Iio_Iic {a : α} (b : Iio a) : Subtype.val '' Iic b = Ii
 
 @[simp]
 lemma image_subtype_val_Iio_Ioi {a : α} (b : Iio a) : Subtype.val '' Ioi b = Ioo b.1 a :=
-  Subtype.image_preimage_val (Iio a) (Ioi b.1)
+  (Subtype.image_preimage_val _ _).trans <| inter_comm _ _
 
 @[simp]
 lemma image_subtype_val_Iio_Iio {a : α} (b : Iio a) : Subtype.val '' Iio b = Iio b.1 :=
@@ -356,13 +356,13 @@ private lemma image_subtype_val_Ixx_Ixi {p q r : α → α → Prop} {a b : α} 
     (h : ∀ {x}, r c x → p a x) :
     Subtype.val '' {y : {x // p a x ∧ q x b} | r c.1 y.1} = {y : α | r c.1 y ∧ q y b} :=
   (Subtype.image_preimage_val {x | p a x ∧ q x b} {y | r c.1 y}).trans <| by
-    ext; simp (config := { contextual := true }) [h]
+    ext; simp (config := { contextual := true }) [@and_comm (r _ _), h]
 
 private lemma image_subtype_val_Ixx_Iix {p q r : α → α → Prop} {a b : α} (c : {x // p a x ∧ q x b})
     (h : ∀ {x}, r x c → q x b) :
     Subtype.val '' {y : {x // p a x ∧ q x b} | r y.1 c.1} = {y : α | p a y ∧ r y c.1} :=
   (Subtype.image_preimage_val {x | p a x ∧ q x b} {y | r y c.1}).trans <| by
-    ext; simp (config := { contextual := true }) [@and_comm (p _ _), h]
+    ext; simp (config := { contextual := true}) [h]
 
 @[simp]
 lemma image_subtype_val_Icc_Ici {a b : α} (c : Icc a b) : Subtype.val '' Ici c = Icc c.1 b :=

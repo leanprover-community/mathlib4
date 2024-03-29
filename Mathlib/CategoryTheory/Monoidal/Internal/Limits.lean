@@ -28,7 +28,6 @@ noncomputable section
 namespace Mon_
 
 variable {J : Type v} [SmallCategory J]
-
 variable {C : Type u} [Category.{v} C] [HasLimits C] [MonoidalCategory.{v} C]
 
 /-- We construct the (candidate) limit of a functor `F : J ⥤ Mon_ C`

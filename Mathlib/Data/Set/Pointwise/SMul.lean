@@ -1030,6 +1030,10 @@ lemma inv_smul_set_distrib (a : α) (s : Set α) : (a • s)⁻¹ = op a⁻¹ �
 lemma inv_op_smul_set_distrib (a : α) (s : Set α) : (op a • s)⁻¹ = a⁻¹ • s⁻¹ := by
   ext; simp [mem_smul_set_iff_inv_smul_mem]
 
+@[to_additive (attr := simp)]
+lemma smul_set_disjoint_iff : Disjoint (a • s) (a • t) ↔ Disjoint s t := by
+  simp [disjoint_iff, ← smul_set_inter]
+
 end Group
 
 section GroupWithZero
@@ -1131,7 +1135,7 @@ section Semiring
 
 variable [Semiring α] [AddCommMonoid β] [Module α β]
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem add_smul_subset (a b : α) (s : Set β) : (a + b) • s ⊆ a • s + b • s := by
   rintro _ ⟨x, hx, rfl⟩
   simpa only [add_smul] using add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hx)

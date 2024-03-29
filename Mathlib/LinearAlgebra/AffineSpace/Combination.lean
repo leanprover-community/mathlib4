@@ -54,11 +54,8 @@ theorem univ_fin2 : (univ : Finset (Fin 2)) = {0, 1} := by
 #align finset.univ_fin2 Finset.univ_fin2
 
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
-
 variable [S : AffineSpace V P]
-
 variable {ι : Type*} (s : Finset ι)
-
 variable {ι₂ : Type*} (s₂ : Finset ι₂)
 
 /-- A weighted sum of the results of subtracting a base point from the
@@ -775,7 +772,6 @@ end Finset
 namespace Finset
 
 variable (k : Type*) {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
-
 variable [AffineSpace V P] {ι : Type*} (s : Finset ι) {ι₂ : Type*} (s₂ : Finset ι₂)
 
 /-- The weights for the centroid of some points. -/
@@ -1002,7 +998,7 @@ theorem weightedVSub_mem_vectorSpan {s : Finset ι} {w : ι → k} (h : ∑ i in
       rw [Finsupp.total_apply, Finsupp.onFinset_sum hwx]
       · apply Finset.sum_congr rfl
         intro i hi
-        simp [Set.indicator_apply, if_pos hi]
+        simp [w', Set.indicator_apply, if_pos hi]
       · exact fun _ => zero_smul k _
 #align weighted_vsub_mem_vector_span weightedVSub_mem_vectorSpan
 
@@ -1161,7 +1157,7 @@ theorem mem_affineSpan_iff_eq_weightedVSubOfPoint_vadd [Nontrivial k] (p : ι �
         · simp [Finset.sum_insert hj, Finset.sum_update_of_not_mem hj, hj]
       have hww : ∀ i, i ≠ j → w i = w' i := by
         intro i hij
-        simp [hij]
+        simp [w', hij]
       rw [s.weightedVSubOfPoint_eq_of_weights_eq p j w w' hww, ←
         s.weightedVSubOfPoint_insert w' p j, ←
         (insert j s).affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w' p h₁ (p j)]
@@ -1194,7 +1190,6 @@ end AffineSpace'
 section DivisionRing
 
 variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
-
 variable [AffineSpace V P] {ι : Type*}
 
 open Set Finset
@@ -1234,7 +1229,6 @@ end DivisionRing
 namespace AffineMap
 
 variable {k : Type*} {V : Type*} (P : Type*) [CommRing k] [AddCommGroup V] [Module k V]
-
 variable [AffineSpace V P] {ι : Type*} (s : Finset ι)
 
 -- TODO: define `affineMap.proj`, `affineMap.fst`, `affineMap.snd`

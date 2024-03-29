@@ -3,7 +3,6 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Order.Cover
 
@@ -235,7 +234,7 @@ theorem mulSupport_pow [Monoid M] (f : α → M) (n : ℕ) :
     (mulSupport fun x => f x ^ n) ⊆ mulSupport f := by
   induction' n with n hfn
   · simp [pow_zero, mulSupport_one]
-  · simpa only [pow_succ] using (mulSupport_mul f _).trans (union_subset Subset.rfl hfn)
+  · simpa only [pow_succ'] using (mulSupport_mul f _).trans (union_subset Subset.rfl hfn)
 #align function.mul_support_pow Function.mulSupport_pow
 #align function.support_nsmul Function.support_nsmul
 

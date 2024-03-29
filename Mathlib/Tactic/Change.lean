@@ -30,7 +30,7 @@ example : (fun x : Nat => x) 0 = 1 := by
 -/
 syntax (name := change?) "change?" (ppSpace colGt term)? : tactic
 
-open Lean Meta Elab.Tactic Std.Tactic.TryThis in
+open Lean Meta Elab.Tactic Meta.Tactic.TryThis in
 elab_rules : tactic
 | `(tactic|change?%$tk $[$sop:term]?) => withMainContext do
   let stx ← getRef

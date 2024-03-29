@@ -64,7 +64,7 @@ We also set up the theory for `PseudoEMetricSpace` and `PseudoMetricSpace`.
 
 set_option linter.uppercaseLean3 false
 
-open Real Set Filter IsROrC Bornology BigOperators Uniformity Topology NNReal ENNReal
+open Real Set Filter RCLike Bornology BigOperators Uniformity Topology NNReal ENNReal
 
 noncomputable section
 
@@ -79,7 +79,7 @@ abbrev PiLp (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) : Type _ :=
 instance (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) [∀ i, Inhabited (α i)] : Inhabited (PiLp p α) :=
   ⟨fun _ => default⟩
 
-@[ext] -- porting note: new lemma
+@[ext] -- Porting note (#10756): new lemma
 protected theorem PiLp.ext {p : ℝ≥0∞} {ι : Type*} {α : ι → Type*} {x y : PiLp p α}
     (h : ∀ i, x i = y i) : x = y := funext h
 
@@ -92,7 +92,6 @@ for Pi types will not trigger. -/
 variable {𝕜 p α}
 variable [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
 variable [∀ i, Module 𝕜 (β i)] [∀ i, BoundedSMul 𝕜 (β i)] (c : 𝕜)
-
 variable (x y : PiLp p β) (i : ι)
 
 @[simp]
@@ -302,7 +301,6 @@ explaining why having definitionally the right uniformity is often important.
 
 
 variable [Fact (1 ≤ p)] [∀ i, PseudoMetricSpace (α i)] [∀ i, PseudoEMetricSpace (β i)]
-
 variable [Fintype ι]
 
 /-- Endowing the space `PiLp p β` with the `L^p` pseudoemetric structure. This definition is not
@@ -397,13 +395,12 @@ attribute [local instance] PiLp.pseudoMetricAux
 
 theorem lipschitzWith_equiv_aux : LipschitzWith 1 (WithLp.equiv p (∀ i, β i)) := by
   intro x y
+  simp_rw [ENNReal.coe_one, one_mul, edist_pi_def, Finset.sup_le_iff, Finset.mem_univ,
+    forall_true_left, WithLp.equiv_pi_apply]
   rcases p.dichotomy with (rfl | h)
-  · simpa only [ENNReal.coe_one, one_mul, edist_eq_iSup, edist, Finset.sup_le_iff, Finset.mem_univ,
-      forall_true_left] using le_iSup fun i => edist (x i) (y i)
-  · have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le h).ne'
+  · simpa only [edist_eq_iSup] using le_iSup fun i => edist (x i) (y i)
+  · have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel₀ 1 (zero_lt_one.trans_le h).ne'
     rw [edist_eq_sum (zero_lt_one.trans_le h)]
-    simp only [edist, forall_prop_of_true, one_mul, Finset.mem_univ, Finset.sup_le_iff,
-      ENNReal.coe_one]
     intro i
     calc
       edist (x i) (y i) = (edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
@@ -423,7 +420,7 @@ theorem antilipschitzWith_equiv_aux :
     exact fun i => Finset.le_sup (f := fun i => edist (x i) (y i)) (Finset.mem_univ i)
   · have pos : 0 < p.toReal := zero_lt_one.trans_le h
     have nonneg : 0 ≤ 1 / p.toReal := one_div_nonneg.2 (le_of_lt pos)
-    have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (ne_of_gt pos)
+    have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel₀ 1 (ne_of_gt pos)
     rw [edist_eq_sum pos, ENNReal.toReal_div 1 p]
     simp only [edist, ← one_div, ENNReal.one_toReal]
     calc
@@ -488,14 +485,16 @@ theorem continuous_equiv_symm [∀ i, UniformSpace (β i)] :
   continuous_id
 #align pi_Lp.continuous_equiv_symm PiLp.continuous_equiv_symm
 
-variable [Fintype ι]
-
 instance bornology [∀ i, Bornology (β i)] : Bornology (PiLp p β) :=
   Pi.instBornology
 #align pi_Lp.bornology PiLp.bornology
 
 -- throughout the rest of the file, we assume `1 ≤ p`
 variable [Fact (1 ≤ p)]
+
+section Fintype
+
+variable [Fintype ι]
 
 /-- pseudoemetric space instance on the product of finitely many pseudoemetric spaces, using the
 `L^p` pseudoedistance, and having as uniformity the product uniformity. -/
@@ -664,7 +663,7 @@ instance instBoundedSMul [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (�
     · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
       have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
       rw [nnnorm_eq_sum hpt, nnnorm_eq_sum hpt, NNReal.rpow_one_div_le_iff hp0, NNReal.mul_rpow,
-        ← NNReal.rpow_mul, div_mul_cancel 1 hp0.ne', NNReal.rpow_one, Finset.mul_sum]
+        ← NNReal.rpow_mul, div_mul_cancel₀ 1 hp0.ne', NNReal.rpow_one, Finset.mul_sum]
       simp_rw [← NNReal.mul_rpow, smul_apply]
       exact Finset.sum_le_sum fun i _ => NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le
 
@@ -688,9 +687,7 @@ def equivₗᵢ : PiLp ∞ β ≃ₗᵢ[𝕜] ∀ i, β i :=
 #align pi_Lp.equivₗᵢ PiLp.equivₗᵢ
 
 variable {ι' : Type*}
-
 variable [Fintype ι']
-
 variable (p 𝕜)
 variable (E : Type*) [NormedAddCommGroup E] [Module 𝕜 E] [BoundedSMul 𝕜 E]
 
@@ -720,7 +717,7 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_apply (e : ι ≃ ι') (v : PiL
 theorem _root_.LinearIsometryEquiv.piLpCongrLeft_symm (e : ι ≃ ι') :
     (LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e).symm =
       LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e.symm :=
-  LinearIsometryEquiv.ext fun z => by -- porting note: was `rfl`
+  LinearIsometryEquiv.ext fun z => by -- Porting note: was `rfl`
     simp only [LinearIsometryEquiv.piLpCongrLeft, LinearIsometryEquiv.symm,
       LinearIsometryEquiv.coe_mk]
     unfold PiLp WithLp
@@ -742,7 +739,6 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_single [DecidableEq ι] [Decida
 section Single
 
 variable (p)
-
 variable [DecidableEq ι]
 
 -- Porting note: added `hp`
@@ -875,8 +871,11 @@ protected def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where
   continuous_invFun := continuous_equiv_symm _ _
 #align pi_Lp.continuous_linear_equiv PiLp.continuousLinearEquiv
 
+end Fintype
+
 section Basis
 
+variable [Finite ι] [Ring 𝕜]
 variable (ι)
 
 /-- A version of `Pi.basisFun` for `PiLp`. -/
@@ -911,9 +910,11 @@ theorem basisFun_map :
   rfl
 #align pi_Lp.basis_fun_map PiLp.basisFun_map
 
+end Basis
+
 open Matrix
 
-nonrec theorem basis_toMatrix_basisFun_mul
+nonrec theorem basis_toMatrix_basisFun_mul [Fintype ι]
     {𝕜} [SeminormedCommRing 𝕜] (b : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜))
     (A : Matrix ι ι 𝕜) :
     b.toMatrix (PiLp.basisFun _ _ _) * A =
@@ -924,7 +925,5 @@ nonrec theorem basis_toMatrix_basisFun_mul
     LinearEquiv.symm_apply_apply] at this
   exact this
 #align pi_Lp.basis_to_matrix_basis_fun_mul PiLp.basis_toMatrix_basisFun_mul
-
-end Basis
 
 end PiLp

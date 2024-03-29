@@ -52,7 +52,7 @@ namespace MeasureTheory
 
 section AeEqOfForall
 
-variable {α E 𝕜 : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsROrC 𝕜]
+variable {α E 𝕜 : Type*} {m : MeasurableSpace α} {μ : Measure α} [RCLike 𝕜]
 
 theorem ae_eq_zero_of_forall_inner [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
     [SecondCountableTopology E] {f : α → E} (hf : ∀ c : E, (fun x => (inner c (f x) : 𝕜)) =ᵐ[μ] 0) :
@@ -100,7 +100,7 @@ theorem ae_eq_zero_of_forall_dual_of_isSeparable [NormedAddCommGroup E] [NormedS
       _ ≤ 1 * ‖(x : E) - a‖ := (ContinuousLinearMap.le_of_opNorm_le _ (hs x).1 _)
       _ < ‖a‖ / 2 := by rw [one_mul]; rwa [dist_eq_norm'] at hx
       _ < ‖(x : E)‖ := I
-      _ = ‖s x x‖ := by rw [(hs x).2, IsROrC.norm_coe_norm]
+      _ = ‖s x x‖ := by rw [(hs x).2, RCLike.norm_coe_norm]
   have hfs : ∀ y : d, ∀ᵐ x ∂μ, ⟪f x, s y⟫ = (0 : 𝕜) := fun y => hf (s y)
   have hf' : ∀ᵐ x ∂μ, ∀ y : d, ⟪f x, s y⟫ = (0 : 𝕜) := by rwa [ae_all_iff]
   filter_upwards [hf', h't] with x hx h'x
@@ -268,13 +268,13 @@ theorem ae_nonneg_of_forall_set_integral_nonneg_of_stronglyMeasurable (hfm : Str
   have hs : MeasurableSet s := hfm.measurableSet_le stronglyMeasurable_const
   have mus : μ s < ∞ := by
     let c : ℝ≥0 := ⟨|b|, abs_nonneg _⟩
-    have c_pos : (c : ℝ≥0∞) ≠ 0 := by simpa [← NNReal.coe_eq_zero] using hb_neg.ne
+    have c_pos : (c : ℝ≥0∞) ≠ 0 := by simpa [c, ← NNReal.coe_eq_zero] using hb_neg.ne
     calc
       μ s ≤ μ {x | (c : ℝ≥0∞) ≤ ‖f x‖₊} := by
         apply measure_mono
         intro x hx
-        simp only [Set.mem_setOf_eq] at hx
-        simpa only [nnnorm, abs_of_neg hb_neg, abs_of_neg (hx.trans_lt hb_neg), Real.norm_eq_abs,
+        simp only [s, Set.mem_setOf_eq] at hx
+        simpa only [c, nnnorm, abs_of_neg hb_neg, abs_of_neg (hx.trans_lt hb_neg), Real.norm_eq_abs,
           Subtype.mk_le_mk, neg_le_neg_iff, Set.mem_setOf_eq, ENNReal.coe_le_coe, NNReal] using hx
       _ ≤ (∫⁻ x, ‖f x‖₊ ∂μ) / c :=
         (meas_ge_le_lintegral_div hfm.aemeasurable.ennnorm c_pos ENNReal.coe_ne_top)
@@ -375,14 +375,14 @@ theorem ae_eq_zero_restrict_of_forall_set_integral_eq_zero_real {f : α → ℝ}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
     (hf_zero : ∀ s, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = 0) {t : Set α}
     (ht : MeasurableSet t) (hμt : μ t ≠ ∞) : f =ᵐ[μ.restrict t] 0 := by
-  suffices h_and : f ≤ᵐ[μ.restrict t] 0 ∧ 0 ≤ᵐ[μ.restrict t] f
-  exact h_and.1.mp (h_and.2.mono fun x hx1 hx2 => le_antisymm hx2 hx1)
+  suffices h_and : f ≤ᵐ[μ.restrict t] 0 ∧ 0 ≤ᵐ[μ.restrict t] f from
+    h_and.1.mp (h_and.2.mono fun x hx1 hx2 => le_antisymm hx2 hx1)
   refine'
     ⟨_,
       ae_nonneg_restrict_of_forall_set_integral_nonneg hf_int_finite
         (fun s hs hμs => (hf_zero s hs hμs).symm.le) ht hμt⟩
-  suffices h_neg : 0 ≤ᵐ[μ.restrict t] -f
-  · refine' h_neg.mono fun x hx => _
+  suffices h_neg : 0 ≤ᵐ[μ.restrict t] -f by
+    refine' h_neg.mono fun x hx => _
     rw [Pi.neg_apply] at hx
     simpa using hx
   refine'
@@ -517,8 +517,8 @@ theorem ae_eq_zero_of_forall_set_integral_eq_of_finStronglyMeasurable_trim (hm :
     rw [EventuallyEq, ae_restrict_iff' (MeasurableSet.compl (hm _ ht_meas))]
     exact eventually_of_forall htf_zero
   have hf_meas_m : StronglyMeasurable[m] f := hf.stronglyMeasurable
-  suffices : f =ᵐ[μ.restrict t] 0
-  exact ae_of_ae_restrict_of_ae_restrict_compl _ this htf_zero
+  suffices f =ᵐ[μ.restrict t] 0 from
+    ae_of_ae_restrict_of_ae_restrict_compl _ this htf_zero
   refine' measure_eq_zero_of_trim_eq_zero hm _
   refine' ae_eq_zero_of_forall_set_integral_eq_of_sigmaFinite _ _
   · intro s hs hμs
@@ -568,8 +568,8 @@ almost everwhere.-/
 lemma ae_eq_zero_of_forall_set_integral_isClosed_eq_zero {μ : Measure β} {f : β → E}
     (hf : Integrable f μ) (h'f : ∀ (s : Set β), IsClosed s → ∫ x in s, f x ∂μ = 0) :
     f =ᵐ[μ] 0 := by
-  suffices : ∀ s, MeasurableSet s → ∫ x in s, f x ∂μ = 0
-  · exact hf.ae_eq_zero_of_forall_set_integral_eq_zero (fun s hs _ ↦ this s hs)
+  suffices ∀ s, MeasurableSet s → ∫ x in s, f x ∂μ = 0 from
+    hf.ae_eq_zero_of_forall_set_integral_eq_zero (fun s hs _ ↦ this s hs)
   have A : ∀ (t : Set β), MeasurableSet t → ∫ (x : β) in t, f x ∂μ = 0
       → ∫ (x : β) in tᶜ, f x ∂μ = 0 := by
     intro t t_meas ht
@@ -590,8 +590,8 @@ lemma ae_eq_zero_of_forall_set_integral_isCompact_eq_zero
     f =ᵐ[μ] 0 := by
   apply ae_eq_zero_of_forall_set_integral_isClosed_eq_zero hf (fun s hs ↦ ?_)
   let t : ℕ → Set β := fun n ↦ compactCovering β n ∩ s
-  suffices H : Tendsto (fun n ↦ ∫ x in t n, f x ∂μ) atTop (𝓝 (∫ x in s, f x ∂μ))
-  · have A : ∀ n, ∫ x in t n, f x ∂μ = 0 :=
+  suffices H : Tendsto (fun n ↦ ∫ x in t n, f x ∂μ) atTop (𝓝 (∫ x in s, f x ∂μ)) by
+    have A : ∀ n, ∫ x in t n, f x ∂μ = 0 :=
       fun n ↦ h'f _ (IsCompact.inter_right (isCompact_compactCovering β n) hs)
     simp_rw [A, tendsto_const_nhds_iff] at H
     exact H.symm
