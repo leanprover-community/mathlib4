@@ -45,7 +45,7 @@ open scoped BigOperators
 
 -- move to `Mathlib.Data.MvPolynomial.Degrees`
 lemma MvPolynomial.totalDegree_monomial_le
-    {R σ : Type*} [CommSemiring R] [Fintype σ] (m : σ →₀ ℕ) (r : R) :
+    {R σ : Type*} [CommSemiring R] (m : σ →₀ ℕ) (r : R) :
     (monomial m r).totalDegree ≤ m.sum fun _ ↦ id := by
   if hr : r = 0 then
     simp only [hr, map_zero, totalDegree_zero, zero_le]
@@ -67,10 +67,17 @@ If `M` is a module with basis `b` indexed by a finite type `ι`,
 then `Basis.end b` is the basis of `Module.End R M` indexed by `ι × ι`
 where `(i, j)` indexes the linear map that sends `b j` to `b i`
 and sends all other basis vectors to `0`.  -/
-@[simps! repr_apply repr_symm_apply]
+@[simps! repr_apply]
 noncomputable
 def Basis.end (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
   (Matrix.stdBasis R ι ι).map (LinearMap.toMatrix b b).symm
+
+-- move to Mathlib.LinearAlgebra.Matrix.ToLin
+-- the left hand side simplifies, so this is a bad simp lemma
+lemma Basis.end_repr_symm_apply (b : Basis ι R M) (ij : ι × ι →₀ R) :
+    b.end.repr.symm ij =
+    (Matrix.toLin b b) ((Finsupp.total (ι × ι) (Matrix ι ι R) R (Matrix.stdBasis R ι ι)) ij) :=
+  congrArg (Matrix.toLin b b) (Basis.repr_symm_apply (Matrix.stdBasis R ι ι) ij)
 
 -- move to Mathlib.LinearAlgebra.Matrix.ToLin
 lemma Basis.end_apply (b : Basis ι R M) (ij : ι × ι) :
