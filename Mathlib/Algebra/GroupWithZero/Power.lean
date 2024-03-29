@@ -70,11 +70,11 @@ theorem zero_zpow_eq (n : ℤ) : (0 : G₀) ^ n = if n = 0 then 1 else 0 := by
 #align zero_zpow_eq zero_zpow_eq
 
 theorem zpow_add_one₀ {a : G₀} (ha : a ≠ 0) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
-  | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_natCast, pow_succ']
+  | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_natCast, pow_succ]
   | -[0+1] => by erw [zpow_zero, zpow_negSucc, pow_one, inv_mul_cancel ha]
   | -[n + 1+1] => by
     rw [Int.negSucc_eq, zpow_neg, neg_add, neg_add_cancel_right, zpow_neg, ← Int.ofNat_succ,
-      zpow_natCast, zpow_natCast, pow_succ _ (n + 1), mul_inv_rev, mul_assoc, inv_mul_cancel ha,
+      zpow_natCast, zpow_natCast, pow_succ' _ (n + 1), mul_inv_rev, mul_assoc, inv_mul_cancel ha,
       mul_one]
 #align zpow_add_one₀ zpow_add_one₀
 
@@ -178,7 +178,7 @@ variable {G₀ : Type*} [CommGroupWithZero G₀]
 theorem div_sq_cancel (a b : G₀) : a ^ 2 * b / a = a * b := by
   by_cases ha : a = 0
   · simp [ha]
-  rw [sq, mul_assoc, mul_div_cancel_left _ ha]
+  rw [sq, mul_assoc, mul_div_cancel_left₀ _ ha]
 #align div_sq_cancel div_sq_cancel
 
 end

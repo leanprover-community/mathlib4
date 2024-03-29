@@ -818,11 +818,11 @@ def Scheme.openCoverOfSuprEqTop {s : Type*} (X : Scheme) (U : s → Opens X)
   obj i := X.restrict (U i).openEmbedding
   map i := X.ofRestrict (U i).openEmbedding
   f x :=
-    haveI : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : Opens X) by triv
+    haveI : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : Opens X) by trivial
     (Opens.mem_iSup.mp this).choose
   Covers x := by
     erw [Subtype.range_coe]
-    have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : Opens X) by triv
+    have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : Opens X) by trivial
     exact (Opens.mem_iSup.mp this).choose_spec
 #align algebraic_geometry.Scheme.open_cover_of_supr_eq_top AlgebraicGeometry.Scheme.openCoverOfSuprEqTop
 
