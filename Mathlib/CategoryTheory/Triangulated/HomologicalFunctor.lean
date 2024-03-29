@@ -55,6 +55,16 @@ instance (L : C ⥤ D) (F : D ⥤ A) [L.CommShift ℤ] [L.IsTriangulated] [F.IsH
     (L ⋙ F).IsHomological where
   exact T hT := F.map_distinguished_exact _ (L.map_distinguished T hT)
 
+lemma IsHomological.mk' [F.PreservesZeroMorphisms]
+    (hF : ∀ (T : Pretriangulated.Triangle C) (hT : T ∈ distTriang C),
+      ∃ (T' : Pretriangulated.Triangle C) (e : T ≅ T'),
+      ((shortComplexOfDistTriangle T' (isomorphic_distinguished _ hT _ e.symm)).map F).Exact) :
+    F.IsHomological where
+  exact T hT := by
+    obtain ⟨T', e, h'⟩ := hF T hT
+    exact (ShortComplex.exact_iff_of_iso
+      (F.mapShortComplex.mapIso ((shortComplexOfDistTriangleIsoOfIso e hT)))).2 h'
+
 variable [F.IsHomological]
 
 lemma IsHomological.of_iso {F₁ F₂ : C ⥤ A} [F₁.IsHomological] (e : F₁ ≅ F₂) :
