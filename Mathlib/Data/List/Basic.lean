@@ -1390,7 +1390,7 @@ theorem ext_get_iff {l₁ l₂ : List α} :
   · intro ⟨h₁, h₂⟩
     exact ext_get h₁ h₂
 
-theorem ext_get?'_iff {l₁ l₂ : List α} : l₁ = l₂ ↔
+theorem ext_get?_iff' {l₁ l₂ : List α} : l₁ = l₂ ↔
     ∀ n < max l₁.length l₂.length, l₁.get? n = l₂.get? n :=
   ⟨by rintro rfl _ _; rfl, ext_get?'⟩
 
