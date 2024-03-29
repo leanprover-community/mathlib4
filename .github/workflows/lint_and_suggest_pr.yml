@@ -1,0 +1,83 @@
+
+on:
+  pull_request
+
+name: lint and suggest
+
+jobs:
+  style_lint:
+    if: github.repository == 'leanprover-community/mathlib4' && github.event.pull_request.draft == false
+    name: Lint style
+    runs-on: ubuntu-latest
+    steps:
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+
+      - uses: actions/checkout@v3
+
+      - name: install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      - name: lint
+        continue-on-error: true
+        run: |
+          ./scripts/lint-style.sh --fix
+
+      - name: suggester / lint-style
+        uses: reviewdog/action-suggester@v1
+        with:
+          tool_name: lint-style
+
+      - name: Install bibtool
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bibtool
+
+      - name: lint references.bib
+        continue-on-error: true
+        run: |
+          ./scripts/lint-bib.sh
+
+      - name: suggester / lint-bib
+        uses: reviewdog/action-suggester@v1
+        with:
+          tool_name: lint-bib
+
+  check_imported:
+    if: github.repository == 'leanprover-community/mathlib4' && github.event.pull_request.draft == false
+    name: Check all files imported
+    runs-on: ubuntu-latest
+    steps:
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+
+      - uses: actions/checkout@v3
+
+      - name: update Mathlib.lean
+        run: |
+          git ls-files 'Mathlib/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
+
+      - name: update MathlibExtras.lean
+        run: |
+          git ls-files 'MathlibExtras/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > MathlibExtras.lean
+
+      - name: update Mathlib/Tactic.lean
+        run: |
+          git ls-files 'Mathlib/Tactic/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib/Tactic.lean
+
+      - name: update Counterexamples.lean
+        run: |
+          git ls-files 'Counterexamples/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Counterexamples.lean
+
+      - name: update Archive.lean
+        run: |
+          git ls-files 'Archive/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Archive.lean
+
+      - name: suggester / import list
+        uses: reviewdog/action-suggester@v1
+        with:
+          tool_name: imports

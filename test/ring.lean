@@ -1,6 +1,9 @@
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
+private axiom test_sorry : ∀ {α}, α
+set_option autoImplicit true
+
 -- We deliberately mock R here so that we don't have to import the deps
 axiom Real : Type
 notation "ℝ" => Real
@@ -9,10 +12,12 @@ notation "ℝ" => Real
 example (x y : ℕ) : x + y = y + x := by ring
 example (x y : ℕ) : x + y + y = 2 * y + x := by ring
 example (x y : ℕ) : x + id y = y + id x := by ring!
+example (x y : ℕ+) : x + y = y + x := by ring
 example {α} [CommRing α] (x y : α) : x + y + y - x = 2 * y := by ring
 example {α} [CommSemiring α] (x y : α) : (x + y)^2 = x^2 + 2 • x * y + y^2 := by ring
 
 example (x y : ℕ) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by ring
+example (x y : ℕ+) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by ring
 example (x y : ℝ) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by ring
 example {α} [CommSemiring α] (x : α) : (x + 1) ^ 6 = (1 + x) ^ 6 := by ring
 example (n : ℕ) : (n / 2) + (n / 2) = 2 * (n / 2) := by ring
@@ -100,6 +105,10 @@ example : 22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 46 := by
   trivial -- FIXME: not needed in lean 3
 
 -- Example with ring failing to discharge, to normalizing the goal
+/--
+info: Try this: ring_nf
+-/
+#guard_msgs in
 example : (22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 47) = (74 = 75) := by
   conv => ring
   trivial
@@ -110,13 +119,17 @@ example (x : ℕ) : 22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 := by
   trivial
 
 -- Example with ring failing to discharge, to normalizing the goal
+/--
+info: Try this: ring_nf
+-/
+#guard_msgs in
 example (x : ℕ) : (22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 + 1)
                     = (7 * x + 46 = 7 * x + 47) := by
   conv => ring
   trivial
 
 -- check that mdata is consumed
-def f : Nat → Nat := sorry
+noncomputable def f : Nat → Nat := test_sorry
 
 example (a : Nat) : 1 * f a * 1 = f (a + 0) := by
   have ha : a + 0 = a := by ring
@@ -132,8 +145,8 @@ example (a b : ℤ) : a+b=0 ↔ b+a=0 := by
 example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by ring
 
 -- simulate the type of MvPolynomial
-def R : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
-instance : CommRing (R a b) := sorry
+def R : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
+noncomputable instance : CommRing (R a b) := test_sorry
 
 example (p : R PUnit.{u+1} PUnit.{v+1}) : p + 0 = p := by
   ring
@@ -145,3 +158,22 @@ example (p : R PUnit.{u+1} PUnit.{v+1}) : p + 0 = p := by
   ring_nf
 example (p q : R PUnit.{u+1} PUnit.{v+1}) : p + q = q + p := by
   ring_nf
+
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring_nf.20returns.20ugly.20literals/near/400988184
+example {n : ℝ} :
+    (n + 1 / 2) ^ 2 * (n + 1 + 1 / 3) = 1 / 3 + n * (19 / 12) + n ^ 2 * (7 / 3) + n ^ 3 := by
+  -- `conv_lhs` prevents `ring_nf` picking a bad normalization for both sides.
+  conv_lhs => ring_nf
+
+-- We can't use `guard_target =ₛ` here, as while it does detect stray `OfNat`s, it also complains
+-- about differing instance paths.
+/--
+info: n : ℝ
+_hn : 0 ≤ n
+⊢ 1 / 3 + n * (19 / 12) + n ^ 2 * (7 / 3) + n ^ 3 ≤ 1 / 3 + n * (5 / 3) + n ^ 2 * (7 / 3) + n ^ 3
+-/
+#guard_msgs (info) in
+example {n : ℝ} (_hn : 0 ≤ n) : (n + 1 / 2) ^ 2 * (n + 1 + 1 / 3) ≤ (n + 1 / 3) * (n + 1) ^ 2 := by
+  ring_nf
+  trace_state
+  exact test_sorry

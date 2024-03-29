@@ -3,8 +3,8 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.PresheafedSpace.Gluing
-import Mathlib.AlgebraicGeometry.OpenImmersion.Scheme
+import Mathlib.Geometry.RingedSpace.PresheafedSpace.Gluing
+import Mathlib.AlgebraicGeometry.OpenImmersion
 
 #align_import algebraic_geometry.gluing from "leanprover-community/mathlib"@"533f62f4dd62a5aad24a04326e6e787c8f7e98b1"
 
@@ -180,7 +180,7 @@ theorem ι_jointly_surjective (x : 𝖣.glued.carrier) :
   𝖣.ι_jointly_surjective (forgetToTop ⋙ forget TopCat) x
 #align algebraic_geometry.Scheme.glue_data.ι_jointly_surjective AlgebraicGeometry.Scheme.GlueData.ι_jointly_surjective
 
--- Porting note : promote to higher priority to short circuit simplifier
+-- Porting note: promote to higher priority to short circuit simplifier
 @[simp (high), reassoc]
 theorem glue_condition (i j : D.J) : D.t i j ≫ D.f j i ≫ D.ι j = D.f i j ≫ D.ι i :=
   𝖣.glue_condition i j
@@ -378,7 +378,6 @@ theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.1.base := by
   rw [𝒰.gluedCover.ι_eq_iff]
   right
   use e.hom ⟨⟨x, y⟩, h⟩
-  simp_rw [← comp_apply]
   constructor
   -- Porting note: in the two subproofs below, added the `change` lines
   · change (e.hom ≫ _) ⟨(x, y), h⟩ = x
@@ -415,7 +414,7 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.1.base := by
     convert hU (𝒰.f x) using 1
     rw [← ι_fromGlued]; erw [coe_comp]; rw [Set.preimage_comp]
     congr! 1
-    refine' Set.preimage_image_eq _ 𝒰.fromGlued_injective
+    exact Set.preimage_image_eq _ 𝒰.fromGlued_injective
   · exact ⟨hx, 𝒰.Covers x⟩
 #align algebraic_geometry.Scheme.open_cover.from_glued_open_map AlgebraicGeometry.Scheme.OpenCover.fromGlued_open_map
 

@@ -12,7 +12,7 @@ import Mathlib.Topology.Bornology.Basic
 
 This file defines locally bounded maps between bornologies.
 
-We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
+We use the `DFunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 
 ## Types of morphisms
@@ -44,7 +44,7 @@ section
 
 You should extend this class when you extend `LocallyBoundedMap`. -/
 class LocallyBoundedMapClass (F : Type*) (α β : outParam <| Type*) [Bornology α]
-    [Bornology β] extends FunLike F α fun _ => β where
+    [Bornology β] [FunLike F α β] : Prop where
   /-- The pullback of the `Bornology.cobounded` filter under the function is contained in the
   cobounded filter. Equivalently, the function maps bounded sets to bounded sets. -/
   comap_cobounded_le (f : F) : (cobounded β).comap f ≤ cobounded α
@@ -54,10 +54,12 @@ end
 
 export LocallyBoundedMapClass (comap_cobounded_le)
 
-theorem IsBounded.image [Bornology α] [Bornology β] [LocallyBoundedMapClass F α β] {f : F}
+variable [FunLike F α β]
+
+theorem Bornology.IsBounded.image [Bornology α] [Bornology β] [LocallyBoundedMapClass F α β] (f : F)
     {s : Set α} (hs : IsBounded s) : IsBounded (f '' s) :=
   comap_cobounded_le_iff.1 (comap_cobounded_le f) hs
-#align is_bounded.image IsBounded.image
+#align is_bounded.image Bornology.IsBounded.image
 
 /-- Turn an element of a type `F` satisfying `LocallyBoundedMapClass F α β` into an actual
 `LocallyBoundedMap`. This is declared as the default coercion from `F` to
@@ -76,26 +78,22 @@ namespace LocallyBoundedMap
 
 variable [Bornology α] [Bornology β] [Bornology γ] [Bornology δ]
 
-instance : LocallyBoundedMapClass (LocallyBoundedMap α β) α β where
+instance : FunLike (LocallyBoundedMap α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
     cases g
     congr
+
+instance : LocallyBoundedMapClass (LocallyBoundedMap α β) α β where
   comap_cobounded_le f := f.comap_cobounded_le'
 
-/- omitting helper instance because it is not needed in Lean 4.
-/-- Helper instance for when there's too many metavariables to apply the coercion via `FunLike`
-directly.
-instance : CoeFun (LocallyBoundedMap α β) fun _ => α → β where
-  coe := LocallyBoundedMap.toFun -/ -/
-
--- porting note: syntactic tautology because of the way coercions work
+-- Porting note: syntactic tautology because of the way coercions work
 #noalign locally_bounded_map.to_fun_eq_coe
 
 @[ext]
 theorem ext {f g : LocallyBoundedMap α β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align locally_bounded_map.ext LocallyBoundedMap.ext
 
 /-- Copy of a `LocallyBoundedMap` with a new `toFun` equal to the old one. Useful to fix
@@ -110,7 +108,7 @@ theorem coe_copy (f : LocallyBoundedMap α β) (f' : α → β) (h : f' = f) : �
 #align locally_bounded_map.coe_copy LocallyBoundedMap.coe_copy
 
 theorem copy_eq (f : LocallyBoundedMap α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align locally_bounded_map.copy_eq LocallyBoundedMap.copy_eq
 
 /-- Construct a `LocallyBoundedMap` from the fact that the function maps bounded sets to bounded
@@ -118,7 +116,7 @@ sets. -/
 def ofMapBounded (f : α → β) (h : ∀ ⦃s : Set α⦄, IsBounded s → IsBounded (f '' s)) :
     LocallyBoundedMap α β :=
   ⟨f, comap_cobounded_le_iff.2 h⟩
--- porting note: I had to provide the type of `h` explicitly.
+-- Porting note: I had to provide the type of `h` explicitly.
 #align locally_bounded_map.of_map_bounded LocallyBoundedMap.ofMapBounded
 
 @[simp]
@@ -188,12 +186,14 @@ theorem id_comp (f : LocallyBoundedMap α β) : (LocallyBoundedMap.id β).comp f
   ext fun _ => rfl
 #align locally_bounded_map.id_comp LocallyBoundedMap.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : LocallyBoundedMap β γ} {f : LocallyBoundedMap α β}
     (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congrArg (fun x => comp x f)⟩
--- porting note: unification was not strong enough to do `congrArg _`.
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congrArg (fun x => comp x f)⟩
+-- Porting note: unification was not strong enough to do `congrArg _`.
 #align locally_bounded_map.cancel_right LocallyBoundedMap.cancel_right
 
+@[simp]
 theorem cancel_left {g : LocallyBoundedMap β γ} {f₁ f₂ : LocallyBoundedMap α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩

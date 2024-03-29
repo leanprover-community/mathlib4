@@ -123,7 +123,7 @@ def asSubtype (f : α →. β) (s : f.Dom) : β :=
 the type of pairs `(p : α → Prop, f : Subtype p → β)`. -/
 def equivSubtype : (α →. β) ≃ Σp : α → Prop, Subtype p → β :=
   ⟨fun f => ⟨fun a => (f a).Dom, asSubtype f⟩, fun f x => ⟨f.1 x, fun h => f.2 ⟨x, h⟩⟩, fun f =>
-    funext fun a => Part.eta _, fun ⟨p, f⟩ => by dsimp; congr ⟩
+    funext fun a => Part.eta _, fun ⟨p, f⟩ => by dsimp; congr⟩
 #align pfun.equiv_subtype PFun.equivSubtype
 
 theorem asSubtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x) (domx : x ∈ f.Dom) :
@@ -248,10 +248,10 @@ case `f.fix a` returns `f a`), or it is undefined (in which case `f.fix a` is un
 it is in the `α` part of `β ⊕ α` (in which case we repeat the procedure, so `f.fix a` will return
 `f.fix (f a)`). -/
 def fix (f : α →. Sum β α) : α →. β := fun a =>
-  Part.assert (Acc (fun x y => Sum.inr x ∈ f y) a) $ fun h =>
+  Part.assert (Acc (fun x y => Sum.inr x ∈ f y) a) fun h =>
     WellFounded.fixF
       (fun a IH =>
-        Part.assert (f a).Dom $ fun hf =>
+        Part.assert (f a).Dom fun hf =>
           match e : (f a).get hf with
           | Sum.inl b => Part.some b
           | Sum.inr a' => IH a' ⟨hf, e⟩)
@@ -268,13 +268,13 @@ theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
   ⟨fun h => by
     let ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
     rw [WellFounded.fixFEq] at h₂
-    simp at h₂
+    simp only [Part.mem_assert_iff] at h₂
     cases' h₂ with h₂ h₃
-    split at h₃ <;> simp at h₃
-    next e => subst b; refine' Or.inl ⟨h₂, e⟩
+    split at h₃
+    next e => simp only [Part.mem_some_iff] at h₃; subst b; exact Or.inl ⟨h₂, e⟩
     next e => exact Or.inr ⟨_, ⟨_, e⟩, Part.mem_assert _ h₃⟩,
    fun h => by
-    simp [fix]
+    simp only [fix, Part.mem_assert_iff]
     rcases h with (⟨h₁, h₂⟩ | ⟨a', h, h₃⟩)
     · refine' ⟨⟨_, fun y h' => _⟩, _⟩
       · injection Part.mem_unique ⟨h₁, h₂⟩ h'
@@ -342,7 +342,7 @@ theorem fixInduction_spec {C : α → Sort*} {f : α →. Sum β α} {b : β} {a
     @fixInduction _ _ C _ _ _ h H = H a h fun a' h' => fixInduction (fix_fwd h h') H := by
   unfold fixInduction
   -- Porting note: `generalize` required to address `generalize_proofs` bug
-  generalize (Part.mem_assert_iff.1 h).fst = ha
+  generalize @fixInduction.proof_1 α β f b a h = ha
   induction ha
   rfl
 #align pfun.fix_induction_spec PFun.fixInduction_spec
@@ -487,7 +487,7 @@ theorem mem_core_res (f : α → β) (s : Set α) (t : Set β) (x : α) :
 
 section
 
-open Classical
+open scoped Classical
 
 theorem core_res (f : α → β) (s : Set α) (t : Set β) : (res f s).core t = sᶜ ∪ f ⁻¹' t := by
   ext x
@@ -516,7 +516,7 @@ theorem preimage_eq (f : α →. β) (s : Set β) : f.preimage s = f.core s ∩ 
 #align pfun.preimage_eq PFun.preimage_eq
 
 theorem core_eq (f : α →. β) (s : Set β) : f.core s = f.preimage s ∪ f.Domᶜ := by
-  rw [preimage_eq, Set.union_distrib_right, Set.union_comm (Dom f), Set.compl_union_self,
+  rw [preimage_eq, Set.inter_union_distrib_right, Set.union_comm (Dom f), Set.compl_union_self,
     Set.inter_univ, Set.union_eq_self_of_subset_right (f.compl_dom_subset_core s)]
 #align pfun.core_eq PFun.core_eq
 
@@ -695,16 +695,16 @@ theorem prodLift_fst_comp_snd_comp (f : α →. γ) (g : β →. δ) :
 
 @[simp]
 theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=
-  ext fun _ _ => by simp [eq_comm]
+  ext fun _ _ ↦ by simp [eq_comm]
 #align pfun.prod_map_id_id PFun.prodMap_id_id
 
 @[simp]
 theorem prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →. ε) (g₂ : ε →. ι) :
     (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) := -- by
-  -- Porting note: was `by tidy`, below is a golf'd version of the `tidy?` proof
-  ext $ λ ⟨_, _⟩ ⟨_, _⟩ =>
-  ⟨λ ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩ => ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩,
-   λ ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩ => ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩⟩
+  -- Porting note: was `by tidy`, below is a golfed version of the `tidy?` proof
+  ext <| fun ⟨_, _⟩ ⟨_, _⟩ ↦
+  ⟨fun ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩ ↦ ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩,
+   fun ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩ ↦ ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩⟩
 #align pfun.prod_map_comp_comp PFun.prodMap_comp_comp
 
 end PFun

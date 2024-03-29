@@ -1,6 +1,8 @@
 import Mathlib.Tactic.CancelDenoms
 import Mathlib.Tactic.Ring
 
+private axiom test_sorry : ∀ {α}, α
+universe u
 section
 variable {α : Type u} [LinearOrderedField α] (a b c d : α)
 
@@ -79,7 +81,35 @@ example (h : a + b = c) : a/5 + d*(b/4) = c - 4*a/5 + b*2*d/8 - b := by
   rw [← h]
   ring
 
-example (h : 40 * (4 * a + d * (5 * b)) ≠ 20 * (40 * c - 4 * (8 * a) + b * 2 * (5 * d) - 40 * b)) : a/5 + d*(b/4) ≠ c - 4*a/5 + b*2*d/8 - b := by
+example (h : 2 * (4 * a + d * 5 * b) ≠ (40 * c - 32 * a + b * 2 * 5 * d - 40 * b)) : a/5 + d*(b/4) ≠ c - 4*a/5 + b*2*d/8 - b := by
+  cancel_denoms
+  assumption
+
+example (h : 27 ≤ (a + 3) ^ 3) : 1 ≤ (a / 3 + 1) ^ 3 := by
+  cancel_denoms
+  assumption
+
+example (h : a > 2) : 1 < 2⁻¹ * a := by
+  cancel_denoms
+  assumption
+
+example (h : 6 * b = a⁻¹ * 3 + c * 2): b = a⁻¹ * 2⁻¹ + c * 3⁻¹ := by
+  cancel_denoms
+  assumption
+
+example (h : a * 5 + b * 6 = 30 * c) : a * 2⁻¹ * 3⁻¹ + b * 5⁻¹ = c := by
+  cancel_denoms
+  assumption
+
+example (h : 5 * a^2 + 4 * b^3 = 0) : a ^ 2 / 4 + b ^ 3 / 5 = 0 := by
+  cancel_denoms
+  assumption
+
+example (h : 5 * a^3 * b^2 = 72 * c) : (a/2)^3 * (b/3)^2 = c/5 := by
+  cancel_denoms
+  assumption
+
+example (h: (5 * a ^ 3 + 8)^2 = 1600 * c) : ((a / 2) ^ 3 + 1/5)^2 = c := by
   cancel_denoms
   assumption
 
@@ -87,9 +117,9 @@ end
 
 section
 -- simulate the type of complex numbers
-def C : Type := sorry
-instance : Field C := sorry
-instance : CharZero C := sorry
+def C : Type := test_sorry
+noncomputable instance : Field C := test_sorry
+instance : CharZero C := test_sorry
 variable (a b c d : C)
 example (h : a + b = c) : a/5 + d*(b/4) = c - 4*a/5 + b*2*d/8 - b := by
   cancel_denoms

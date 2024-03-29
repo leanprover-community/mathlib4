@@ -3,7 +3,6 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark
 -/
-import Mathlib.Algebra.Order.WithZero
 import Mathlib.Data.Polynomial.Monic
 
 #align_import algebra.polynomial.big_operators from "leanprover-community/mathlib"@"47adfab39a11a072db552f47594bf8ed2cf8a722"
@@ -59,13 +58,17 @@ theorem natDegree_sum_le (f : ι → S[X]) :
   simpa using natDegree_multiset_sum_le (s.val.map f)
 #align polynomial.nat_degree_sum_le Polynomial.natDegree_sum_le
 
+lemma natDegree_sum_le_of_forall_le {n : ℕ} (f : ι → S[X]) (h : ∀ i ∈ s, natDegree (f i) ≤ n) :
+    natDegree (∑ i in s, f i) ≤ n :=
+  le_trans (natDegree_sum_le s f) <| (Finset.fold_max_le n).mpr <| by simpa
+
 theorem degree_list_sum_le (l : List S[X]) : degree l.sum ≤ (l.map natDegree).maximum := by
   by_cases h : l.sum = 0
   · simp [h]
   · rw [degree_eq_natDegree h]
     suffices (l.map natDegree).maximum = ((l.map natDegree).foldr max 0 : ℕ) by
       rw [this]
-      simpa [this, Nat.cast_withBot] using natDegree_list_sum_le l
+      simpa using natDegree_list_sum_le l
     rw [← List.foldr_max_of_ne_nil]
     · congr
     contrapose! h
@@ -99,7 +102,7 @@ theorem coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p �
       simpa using hl'
     have hdn : natDegree hd ≤ n := hl _ (List.mem_cons_self _ _)
     rcases hdn.eq_or_lt with (rfl | hdn')
-    · cases' h.eq_or_lt with h' h'
+    · rcases h.eq_or_lt with h' | h'
       · rw [← h', coeff_mul_degree_add_degree, leadingCoeff, leadingCoeff]
       · rw [coeff_eq_zero_of_natDegree_lt, coeff_eq_zero_of_natDegree_lt h', mul_zero]
         exact natDegree_mul_le.trans_lt (add_lt_add_left h' _)
@@ -142,10 +145,14 @@ theorem leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
     t.prod.leadingCoeff = (t.map leadingCoeff).prod := by
   induction' t using Multiset.induction_on with a t ih; · simp
   simp only [Multiset.map_cons, Multiset.prod_cons] at h ⊢
-  rw [Polynomial.leadingCoeff_mul'] <;>
-    · rw [ih]
-      simp [*]
-      apply right_ne_zero_of_mul h
+  rw [Polynomial.leadingCoeff_mul']
+  · rw [ih]
+    simp only [ne_eq]
+    apply right_ne_zero_of_mul h
+  · rw [ih]
+    exact h
+    simp only [ne_eq, not_false_eq_true]
+    apply right_ne_zero_of_mul h
 #align polynomial.leading_coeff_multiset_prod' Polynomial.leadingCoeff_multiset_prod'
 
 /-- The leading coefficient of a product of polynomials is equal to
@@ -262,15 +269,16 @@ theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multise
     (t.map fun x => X - C x).prod.coeff ((Multiset.card t) - 1) = -t.sum := by
   nontriviality R
   convert multiset_prod_X_sub_C_nextCoeff (by assumption)
-  rw [nextCoeff]; split_ifs with h
-  · rw [natDegree_multiset_prod_of_monic] at h <;> simp only [Multiset.mem_map] at *
+  rw [nextCoeff, if_neg]
+  swap
+  · rw [natDegree_multiset_prod_of_monic]
     swap
-    · rintro _ ⟨_, _, rfl⟩
+    · simp only [Multiset.mem_map]
+      rintro _ ⟨_, _, rfl⟩
       apply monic_X_sub_C
-    simp_rw [Multiset.sum_eq_zero_iff, Multiset.mem_map] at h
-    contrapose! h
+    simp_rw [Multiset.sum_eq_zero_iff, Multiset.mem_map]
     obtain ⟨x, hx⟩ := card_pos_iff_exists_mem.mp ht
-    exact ⟨_, ⟨_, ⟨x, hx, rfl⟩, natDegree_X_sub_C _⟩, one_ne_zero⟩
+    exact fun h => one_ne_zero <| h 1 ⟨_, ⟨x, hx, rfl⟩, natDegree_X_sub_C _⟩
   congr; rw [natDegree_multiset_prod_of_monic] <;> · simp [natDegree_X_sub_C, monic_X_sub_C]
 set_option linter.uppercaseLean3 false in
 #align polynomial.multiset_prod_X_sub_C_coeff_card_pred Polynomial.multiset_prod_X_sub_C_coeff_card_pred

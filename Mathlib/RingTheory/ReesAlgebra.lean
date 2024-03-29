@@ -41,7 +41,7 @@ def reesAlgebra : Subalgebra R R[X] where
     rw [coeff_mul]
     apply Ideal.sum_mem
     rintro ⟨j, k⟩ e
-    rw [← Finset.Nat.mem_antidiagonal.mp e, pow_add]
+    rw [← Finset.mem_antidiagonal.mp e, pow_add]
     exact Ideal.mul_mem_mul (hf j) (hg k)
   one_mem' i := by
     rw [coeff_one]
@@ -83,7 +83,7 @@ theorem monomial_mem_adjoin_monomial {I : Ideal R} {n : ℕ} {r : R} (hr : r ∈
     monomial n r ∈ Algebra.adjoin R (Submodule.map (monomial 1 : R →ₗ[R] R[X]) I : Set R[X]) := by
   induction' n with n hn generalizing r
   · exact Subalgebra.algebraMap_mem _ _
-  · rw [pow_succ] at hr
+  · rw [pow_succ'] at hr
     apply Submodule.smul_induction_on
       -- Porting note: did not need help with motive previously
       (p := fun r => (monomial (Nat.succ n)) r ∈ Algebra.adjoin R (Submodule.map (monomial 1) I)) hr

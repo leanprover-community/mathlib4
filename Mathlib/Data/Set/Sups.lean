@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.NAry
 import Mathlib.Order.UpperLower.Basic
+import Mathlib.Order.SupClosed
 
 #align_import data.set.sups from "leanprover-community/mathlib"@"20715f4ac6819ef2453d9e5106ecd086a5dc2a5e"
 
@@ -20,7 +21,7 @@ This file defines a few binary operations on `Set α` for use in set family comb
 
 ## Notation
 
-We define the following notation in locale `set_family`:
+We define the following notation in locale `SetFamily`:
 * `s ⊻ t`
 * `s ⊼ t`
 
@@ -32,7 +33,7 @@ We define the following notation in locale `set_family`:
 
 open Function
 
-variable {α : Type*}
+variable {F α β : Type*}
 
 /-- Notation typeclass for pointwise supremum `⊻`. -/
 class HasSups (α : Type*) where
@@ -45,8 +46,7 @@ class HasInfs (α : Type*) where
 #align has_infs HasInfs
 
 -- mathport name: «expr ⊻ »
-infixl:74
-  " ⊻ " => HasSups.sups
+infixl:74 " ⊻ " => HasSups.sups
   -- This notation is meant to have higher precedence than `⊔` and `⊓`, but still within the
   -- realm of other binary notation
 
@@ -56,8 +56,8 @@ infixl:75 " ⊼ " => HasInfs.infs
 namespace Set
 
 section Sups
-
-variable [SemilatticeSup α] (s s₁ s₂ t t₁ t₂ u v : Set α)
+variable [SemilatticeSup α] [SemilatticeSup β] [FunLike F α β] [SupHomClass F α β]
+variable (s s₁ s₂ t t₁ t₂ u v : Set α)
 
 /-- `s ⊻ t` is the set of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t`. -/
 protected def hasSups : HasSups (Set α) :=
@@ -65,7 +65,7 @@ protected def hasSups : HasSups (Set α) :=
 #align set.has_sups Set.hasSups
 
 scoped[SetFamily] attribute [instance] Set.hasSups
--- porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
+-- Porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
 -- instance
 open SetFamily
 
@@ -170,6 +170,18 @@ theorem sups_inter_subset_right : s ⊻ (t₁ ∩ t₂) ⊆ s ⊻ t₁ ∩ s ⊻
   image2_inter_subset_right
 #align set.sups_inter_subset_right Set.sups_inter_subset_right
 
+lemma image_sups (f : F) (s t : Set α) : f '' (s ⊻ t) = f '' s ⊻ f '' t :=
+  image_image2_distrib <| map_sup f
+
+lemma subset_sups_self : s ⊆ s ⊻ s := fun _a ha ↦ mem_sups.2 ⟨_, ha, _, ha, sup_idem _⟩
+lemma sups_subset_self : s ⊻ s ⊆ s ↔ SupClosed s := sups_subset_iff
+
+@[simp] lemma sups_eq_self : s ⊻ s = s ↔ SupClosed s :=
+  subset_sups_self.le.le_iff_eq.symm.trans sups_subset_self
+
+lemma sep_sups_le (s t : Set α) (a : α) :
+    {b ∈ s ⊻ t | b ≤ a} = {b ∈ s | b ≤ a} ⊻ {b ∈ t | b ≤ a} := by ext; aesop
+
 variable (s t u)
 
 theorem iUnion_image_sup_left : ⋃ a ∈ s, (· ⊔ ·) a '' t = s ⊻ t :=
@@ -181,19 +193,13 @@ theorem iUnion_image_sup_right : ⋃ b ∈ t, (· ⊔ b) '' s = s ⊻ t :=
 #align set.Union_image_sup_right Set.iUnion_image_sup_right
 
 @[simp]
-theorem image_sup_prod (s t : Set α) : Set.image2 (fun x x_1 => x ⊔ x_1) s t = s ⊻ t := by
-  have : (s ×ˢ t).image (uncurry (· ⊔ ·)) = Set.image2 (fun x x_1 => x ⊔ x_1) s t := by
-    simp only [ge_iff_le, image_uncurry_prod]
-  rw [← this]
-  exact image_uncurry_prod _ _ _
+theorem image_sup_prod (s t : Set α) : Set.image2 (· ⊔ ·) s t = s ⊻ t := rfl
 #align set.image_sup_prod Set.image_sup_prod
 
-theorem sups_assoc : s ⊻ t ⊻ u = s ⊻ (t ⊻ u) :=
-  image2_assoc fun _ _ _ => sup_assoc
+theorem sups_assoc : s ⊻ t ⊻ u = s ⊻ (t ⊻ u) := image2_assoc sup_assoc
 #align set.sups_assoc Set.sups_assoc
 
-theorem sups_comm : s ⊻ t = t ⊻ s :=
-  image2_comm fun _ _ => sup_comm
+theorem sups_comm : s ⊻ t = t ⊻ s := image2_comm sup_comm
 #align set.sups_comm Set.sups_comm
 
 theorem sups_left_comm : s ⊻ (t ⊻ u) = t ⊻ (s ⊻ u) :=
@@ -212,7 +218,8 @@ end Sups
 
 section Infs
 
-variable [SemilatticeInf α] (s s₁ s₂ t t₁ t₂ u v : Set α)
+variable [SemilatticeInf α] [SemilatticeInf β] [FunLike F α β] [InfHomClass F α β]
+variable (s s₁ s₂ t t₁ t₂ u v : Set α)
 
 /-- `s ⊼ t` is the set of elements of the form `a ⊓ b` where `a ∈ s`, `b ∈ t`. -/
 protected def hasInfs : HasInfs (Set α) :=
@@ -220,7 +227,7 @@ protected def hasInfs : HasInfs (Set α) :=
 #align set.has_infs Set.hasInfs
 
 scoped[SetFamily] attribute [instance] Set.hasInfs
--- porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
+-- Porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
 -- instance
 open SetFamily
 
@@ -250,7 +257,7 @@ theorem image_subset_infs_left : b ∈ t → (fun a => a ⊓ b) '' s ⊆ s ⊼ t
   image_subset_image2_left
 #align set.image_subset_infs_left Set.image_subset_infs_left
 
-theorem image_subset_infs_right : a ∈ s → (· ⊓ ·) a '' t ⊆ s ⊼ t :=
+theorem image_subset_infs_right : a ∈ s → (a ⊓ ·) '' t ⊆ s ⊼ t :=
   image_subset_image2_right
 #align set.image_subset_infs_right Set.image_subset_infs_right
 
@@ -325,9 +332,21 @@ theorem infs_inter_subset_right : s ⊼ (t₁ ∩ t₂) ⊆ s ⊼ t₁ ∩ s ⊼
   image2_inter_subset_right
 #align set.infs_inter_subset_right Set.infs_inter_subset_right
 
+lemma image_infs (f : F) (s t : Set α) : f '' (s ⊼ t) = f '' s ⊼ f '' t :=
+  image_image2_distrib <| map_inf f
+
+lemma subset_infs_self : s ⊆ s ⊼ s := fun _a ha ↦ mem_infs.2 ⟨_, ha, _, ha, inf_idem _⟩
+lemma infs_self_subset : s ⊼ s ⊆ s ↔ InfClosed s := infs_subset_iff
+
+@[simp] lemma infs_self : s ⊼ s = s ↔ InfClosed s :=
+  subset_infs_self.le.le_iff_eq.symm.trans infs_self_subset
+
+lemma sep_infs_le (s t : Set α) (a : α) :
+    {b ∈ s ⊼ t | a ≤ b} = {b ∈ s | a ≤ b} ⊼ {b ∈ t | a ≤ b} := by ext; aesop
+
 variable (s t u)
 
-theorem iUnion_image_inf_left : ⋃ a ∈ s, (· ⊓ ·) a '' t = s ⊼ t :=
+theorem iUnion_image_inf_left : ⋃ a ∈ s, (a ⊓ ·) '' t = s ⊼ t :=
   iUnion_image_left _
 #align set.Union_image_inf_left Set.iUnion_image_inf_left
 
@@ -343,12 +362,10 @@ theorem image_inf_prod (s t : Set α) : Set.image2 (fun x x_1 => x ⊓ x_1) s t 
   exact image_uncurry_prod _ _ _
 #align set.image_inf_prod Set.image_inf_prod
 
-theorem infs_assoc : s ⊼ t ⊼ u = s ⊼ (t ⊼ u) :=
-  image2_assoc fun _ _ _ => inf_assoc
+theorem infs_assoc : s ⊼ t ⊼ u = s ⊼ (t ⊼ u) := image2_assoc inf_assoc
 #align set.infs_assoc Set.infs_assoc
 
-theorem infs_comm : s ⊼ t = t ⊼ s :=
-  image2_comm fun _ _ => inf_comm
+theorem infs_comm : s ⊼ t = t ⊼ s := image2_comm inf_comm
 #align set.infs_comm Set.infs_comm
 
 theorem infs_left_comm : s ⊼ (t ⊼ u) = t ⊼ (s ⊼ u) :=
@@ -372,19 +389,19 @@ section DistribLattice
 variable [DistribLattice α] (s t u : Set α)
 
 theorem sups_infs_subset_left : s ⊻ t ⊼ u ⊆ (s ⊻ t) ⊼ (s ⊻ u) :=
-  image2_distrib_subset_left fun _ _ _ => sup_inf_left
+  image2_distrib_subset_left sup_inf_left
 #align set.sups_infs_subset_left Set.sups_infs_subset_left
 
 theorem sups_infs_subset_right : t ⊼ u ⊻ s ⊆ (t ⊻ s) ⊼ (u ⊻ s) :=
-  image2_distrib_subset_right fun _ _ _ => sup_inf_right
+  image2_distrib_subset_right sup_inf_right
 #align set.sups_infs_subset_right Set.sups_infs_subset_right
 
 theorem infs_sups_subset_left : s ⊼ (t ⊻ u) ⊆ s ⊼ t ⊻ s ⊼ u :=
-  image2_distrib_subset_left fun _ _ _ => inf_sup_left
+  image2_distrib_subset_left inf_sup_left
 #align set.infs_sups_subset_left Set.infs_sups_subset_left
 
 theorem infs_sups_subset_right : (t ⊻ u) ⊼ s ⊆ t ⊼ s ⊻ u ⊼ s :=
-  image2_distrib_subset_right fun _ _ _ => inf_sup_right
+  image2_distrib_subset_right inf_sup_right
 #align set.infs_sups_subset_right Set.infs_sups_subset_right
 
 end DistribLattice

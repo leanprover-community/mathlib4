@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
-#align_import algebraic_topology.dold_kan.decomposition from "leanprover-community/mathlib"@"9af20344b24ef1801b599d296aaed8b9fffdc360"
+#align_import algebraic_topology.dold_kan.decomposition from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 
@@ -52,17 +52,17 @@ the $y_i$ are in degree $n$. -/
 theorem decomposition_Q (n q : ℕ) :
     ((Q q).f (n + 1) : X _[n + 1] ⟶ X _[n + 1]) =
       ∑ i : Fin (n + 1) in Finset.filter (fun i : Fin (n + 1) => (i : ℕ) < q) Finset.univ,
-        (P i).f (n + 1) ≫ X.δ i.revPerm.succ ≫ X.σ (Fin.revPerm i) := by
+        (P i).f (n + 1) ≫ X.δ i.rev.succ ≫ X.σ (Fin.rev i) := by
   induction' q with q hq
   · simp only [Nat.zero_eq, Q_zero, HomologicalComplex.zero_f_apply, Nat.not_lt_zero,
       Finset.filter_False, Finset.sum_empty]
   · by_cases hqn : q + 1 ≤ n + 1
     swap
-    · rw [Q_is_eventually_constant (show n + 1 ≤ q by linarith), hq]
+    · rw [Q_is_eventually_constant (show n + 1 ≤ q by omega), hq]
       congr 1
       ext ⟨x, hx⟩
       simp only [Nat.succ_eq_add_one, Finset.mem_filter, Finset.mem_univ, true_and]
-      constructor <;> intro <;> linarith
+      omega
     · cases' Nat.le.dest (Nat.succ_le_succ_iff.mp hqn) with a ha
       rw [Q_succ, HomologicalComplex.sub_f_apply, HomologicalComplex.comp_f, hq]
       symm
@@ -70,12 +70,12 @@ theorem decomposition_Q (n q : ℕ) :
       let q' : Fin (n + 1) := ⟨q, Nat.succ_le_iff.mp hqn⟩
       rw [← @Finset.add_sum_erase _ _ _ _ _ _ q' (by simp)]
       congr
-      · have hnaq' : n = a + q := by linarith
+      · have hnaq' : n = a + q := by omega
         simp only [Fin.val_mk, (HigherFacesVanish.of_P q n).comp_Hσ_eq hnaq',
-          q'.revPerm_eq hnaq', neg_neg]
+          q'.rev_eq hnaq', neg_neg]
         rfl
       · ext ⟨i, hi⟩
-        simp only [Nat.succ_eq_add_one, Nat.lt_succ_iff_lt_or_eq, Finset.mem_univ,
+        simp only [q', Nat.succ_eq_add_one, Nat.lt_succ_iff_lt_or_eq, Finset.mem_univ,
           forall_true_left, Finset.mem_filter, lt_self_iff_false, or_true, and_self, not_true,
           Finset.mem_erase, ne_eq, Fin.mk.injEq, true_and]
         aesop
@@ -84,7 +84,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (X)
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- The structure `MorphComponents` is an ad hoc structure that is used in
 the proof that `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ))`
 reflects isomorphisms. The fields are the data that are needed in order to
@@ -100,10 +100,10 @@ namespace MorphComponents
 
 variable {X} {n : ℕ} {Z Z' : C} (f : MorphComponents X n Z) (g : X' ⟶ X) (h : Z ⟶ Z')
 
-/-- The morphism `X _[n+1] ⟶ Z ` associated to `f : MorphComponents X n Z`. -/
+/-- The morphism `X _[n+1] ⟶ Z` associated to `f : MorphComponents X n Z`. -/
 def φ {Z : C} (f : MorphComponents X n Z) : X _[n + 1] ⟶ Z :=
-  PInfty.f (n + 1) ≫ f.a + ∑ i : Fin (n + 1), (P i).f (n + 1) ≫ X.δ i.revPerm.succ ≫
-    f.b (Fin.revPerm i)
+  PInfty.f (n + 1) ≫ f.a + ∑ i : Fin (n + 1), (P i).f (n + 1) ≫ X.δ i.rev.succ ≫
+    f.b (Fin.rev i)
 #align algebraic_topology.dold_kan.morph_components.φ AlgebraicTopology.DoldKan.MorphComponents.φ
 
 variable (X n)

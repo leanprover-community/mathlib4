@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Order.UpperLower
 import Mathlib.Topology.Algebra.Group.Basic
 
-#align_import topology.algebra.order.upper_lower from "leanprover-community/mathlib"@"992efbda6f85a5c9074375d3c7cb9764c64d8f72"
+#align_import topology.algebra.order.upper_lower from "leanprover-community/mathlib"@"b1abe23ae96fef89ad30d9f4362c307f72a55010"
 
 /-!
 # Topological facts about upper/lower/order-connected sets
@@ -45,11 +45,11 @@ instance (priority := 100) OrderedCommGroup.to_hasUpperLowerClosure [OrderedComm
   isUpperSet_closure s h x y hxy hx :=
     closure_mono (h.smul_subset <| one_le_div'.2 hxy) <| by
       rw [closure_smul]
-      exact ⟨x, hx, div_mul_cancel' _ _⟩
+      exact ⟨x, hx, div_mul_cancel _ _⟩
   isLowerSet_closure s h x y hxy hx :=
     closure_mono (h.smul_subset <| div_le_one'.2 hxy) <| by
       rw [closure_smul]
-      exact ⟨x, hx, div_mul_cancel' _ _⟩
+      exact ⟨x, hx, div_mul_cancel _ _⟩
   isOpen_upperClosure s hs := by
     rw [← mul_one s, ← mul_upperClosure]
     exact hs.mul_right
@@ -104,7 +104,7 @@ protected theorem IsUpperSet.interior (h : IsUpperSet s) : IsUpperSet (interior 
 #align is_upper_set.interior IsUpperSet.interior
 
 protected theorem IsLowerSet.interior (h : IsLowerSet s) : IsLowerSet (interior s) :=
-  h.ofDual.interior
+  h.toDual.interior
 #align is_lower_set.interior IsLowerSet.interior
 
 protected theorem Set.OrdConnected.interior (h : s.OrdConnected) : (interior s).OrdConnected := by

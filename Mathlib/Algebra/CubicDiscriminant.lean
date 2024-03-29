@@ -87,7 +87,7 @@ section Coeff
 private theorem coeffs : (∀ n > 3, P.toPoly.coeff n = 0) ∧ P.toPoly.coeff 3 = P.a ∧
     P.toPoly.coeff 2 = P.b ∧ P.toPoly.coeff 1 = P.c ∧ P.toPoly.coeff 0 = P.d := by
   simp only [toPoly, coeff_add, coeff_C, coeff_C_mul_X, coeff_C_mul_X_pow]
-  norm_num
+  set_option tactic.skipAssignedInstances false in norm_num
   intro n hn
   repeat' rw [if_neg]
   any_goals linarith only [hn]
@@ -135,7 +135,7 @@ theorem toPoly_injective (P Q : Cubic R) : P.toPoly = Q.toPoly ↔ P = Q :=
 #align cubic.to_poly_injective Cubic.toPoly_injective
 
 theorem of_a_eq_zero (ha : P.a = 0) : P.toPoly = C P.b * X ^ 2 + C P.c * X + C P.d := by
-  rw [toPoly, ha, C_0, MulZeroClass.zero_mul, zero_add]
+  rw [toPoly, ha, C_0, zero_mul, zero_add]
 #align cubic.of_a_eq_zero Cubic.of_a_eq_zero
 
 theorem of_a_eq_zero' : toPoly ⟨0, b, c, d⟩ = C b * X ^ 2 + C c * X + C d :=
@@ -143,7 +143,7 @@ theorem of_a_eq_zero' : toPoly ⟨0, b, c, d⟩ = C b * X ^ 2 + C c * X + C d :=
 #align cubic.of_a_eq_zero' Cubic.of_a_eq_zero'
 
 theorem of_b_eq_zero (ha : P.a = 0) (hb : P.b = 0) : P.toPoly = C P.c * X + C P.d := by
-  rw [of_a_eq_zero ha, hb, C_0, MulZeroClass.zero_mul, zero_add]
+  rw [of_a_eq_zero ha, hb, C_0, zero_mul, zero_add]
 #align cubic.of_b_eq_zero Cubic.of_b_eq_zero
 
 theorem of_b_eq_zero' : toPoly ⟨0, 0, c, d⟩ = C c * X + C d :=
@@ -151,7 +151,7 @@ theorem of_b_eq_zero' : toPoly ⟨0, 0, c, d⟩ = C c * X + C d :=
 #align cubic.of_b_eq_zero' Cubic.of_b_eq_zero'
 
 theorem of_c_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) : P.toPoly = C P.d := by
-  rw [of_b_eq_zero ha hb, hc, C_0, MulZeroClass.zero_mul, zero_add]
+  rw [of_b_eq_zero ha hb, hc, C_0, zero_mul, zero_add]
 #align cubic.of_c_eq_zero Cubic.of_c_eq_zero
 
 theorem of_c_eq_zero' : toPoly ⟨0, 0, 0, d⟩ = C d :=
@@ -233,7 +233,7 @@ theorem leadingCoeff_of_c_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) :
   rw [of_c_eq_zero ha hb hc, leadingCoeff_C]
 #align cubic.leading_coeff_of_c_eq_zero Cubic.leadingCoeff_of_c_eq_zero
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- porting note (#10618): simp can prove this
 theorem leadingCoeff_of_c_eq_zero' : (toPoly ⟨0, 0, 0, d⟩).leadingCoeff = d :=
   leadingCoeff_of_c_eq_zero rfl rfl rfl
 #align cubic.leading_coeff_of_c_eq_zero' Cubic.leadingCoeff_of_c_eq_zero'
@@ -291,7 +291,7 @@ def equiv : Cubic R ≃ { p : R[X] // p.degree ≤ 3 } where
     -- Porting note: Added `simp only [Nat.zero_eq, Nat.succ_eq_add_one] <;> ring_nf`
     -- There's probably a better way to do this.
     ext (_ | _ | _ | _ | n) <;> simp only [Nat.zero_eq, Nat.succ_eq_add_one] <;> ring_nf
-      <;> simp only [coeffs]
+      <;> try simp only [coeffs]
     have h3 : 3 < 4 + n := by linarith only
     rw [coeff_eq_zero h3,
       (degree_le_iff_coeff_zero (f : R[X]) 3).mp f.2 _ <| WithBot.coe_lt_coe.mpr (by exact h3)]
@@ -368,7 +368,7 @@ theorem degree_of_d_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) (hd : P
   rw [of_d_eq_zero ha hb hc hd, degree_zero]
 #align cubic.degree_of_d_eq_zero Cubic.degree_of_d_eq_zero
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- porting note (#10618): simp can prove this
 theorem degree_of_d_eq_zero' : (⟨0, 0, 0, 0⟩ : Cubic R).toPoly.degree = ⊥ :=
   degree_of_d_eq_zero rfl rfl rfl rfl
 #align cubic.degree_of_d_eq_zero' Cubic.degree_of_d_eq_zero'
@@ -431,7 +431,7 @@ theorem natDegree_of_c_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) :
   rw [of_c_eq_zero ha hb hc, natDegree_C]
 #align cubic.nat_degree_of_c_eq_zero Cubic.natDegree_of_c_eq_zero
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- porting note (#10618): simp can prove this
 theorem natDegree_of_c_eq_zero' : (toPoly ⟨0, 0, 0, d⟩).natDegree = 0 :=
   natDegree_of_c_eq_zero rfl rfl rfl
 #align cubic.nat_degree_of_c_eq_zero' Cubic.natDegree_of_c_eq_zero'

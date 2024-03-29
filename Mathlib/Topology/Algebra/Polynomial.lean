@@ -22,9 +22,9 @@ In this file we prove the following lemmas.
   `Polynomial.continuousWithinAt_aeval`, `Polynomial.continuousOn_aeval`.
 * `Polynomial.continuous`:  `Polynomial.eval` defines a continuous functions;
   we also prove convenience lemmas `Polynomial.continuousAt`, `Polynomial.continuousWithinAt`,
-  `Polynomial.continuous_on`.
-* `Polynomial.tendsto_norm_atTop`: `λ x, ‖Polynomial.eval (z x) p‖` tends to infinity provided that
-  `fun x ↦ ‖z x‖` tends to infinity and `0 < degree p`;
+  `Polynomial.continuousOn`.
+* `Polynomial.tendsto_norm_atTop`: `fun x ↦ ‖Polynomial.eval (z x) p‖` tends to infinity provided
+  that `fun x ↦ ‖z x‖` tends to infinity and `0 < degree p`;
 * `Polynomial.tendsto_abv_eval₂_atTop`, `Polynomial.tendsto_abv_atTop`,
   `Polynomial.tendsto_abv_aeval_atTop`: a few versions of the previous statement for
   `IsAbsoluteValue abv` instead of norm.
@@ -45,26 +45,29 @@ section TopologicalSemiring
 
 variable {R S : Type*} [Semiring R] [TopologicalSpace R] [TopologicalSemiring R] (p : R[X])
 
-@[continuity]
+@[continuity, fun_prop]
 protected theorem continuous_eval₂ [Semiring S] (p : S[X]) (f : S →+* R) :
     Continuous fun x => p.eval₂ f x := by
   simp only [eval₂_eq_sum, Finsupp.sum]
   exact continuous_finset_sum _ fun c _ => continuous_const.mul (continuous_pow _)
 #align polynomial.continuous_eval₂ Polynomial.continuous_eval₂
 
-@[continuity]
+@[continuity, fun_prop]
 protected theorem continuous : Continuous fun x => p.eval x :=
   p.continuous_eval₂ _
 #align polynomial.continuous Polynomial.continuous
 
+@[fun_prop]
 protected theorem continuousAt {a : R} : ContinuousAt (fun x => p.eval x) a :=
   p.continuous.continuousAt
 #align polynomial.continuous_at Polynomial.continuousAt
 
+@[fun_prop]
 protected theorem continuousWithinAt {s a} : ContinuousWithinAt (fun x => p.eval x) s a :=
   p.continuous.continuousWithinAt
 #align polynomial.continuous_within_at Polynomial.continuousWithinAt
 
+@[fun_prop]
 protected theorem continuousOn {s} : ContinuousOn (fun x => p.eval x) s :=
   p.continuous.continuousOn
 #align polynomial.continuous_on Polynomial.continuousOn
@@ -76,20 +79,23 @@ section TopologicalAlgebra
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [TopologicalSpace A]
   [TopologicalSemiring A] (p : R[X])
 
-@[continuity]
+@[continuity, fun_prop]
 protected theorem continuous_aeval : Continuous fun x : A => aeval x p :=
   p.continuous_eval₂ _
 #align polynomial.continuous_aeval Polynomial.continuous_aeval
 
+@[fun_prop]
 protected theorem continuousAt_aeval {a : A} : ContinuousAt (fun x : A => aeval x p) a :=
   p.continuous_aeval.continuousAt
 #align polynomial.continuous_at_aeval Polynomial.continuousAt_aeval
 
+@[fun_prop]
 protected theorem continuousWithinAt_aeval {s a} :
     ContinuousWithinAt (fun x : A => aeval x p) s a :=
   p.continuous_aeval.continuousWithinAt
 #align polynomial.continuous_within_at_aeval Polynomial.continuousWithinAt_aeval
 
+@[fun_prop]
 protected theorem continuousOn_aeval {s} : ContinuousOn (fun x : A => aeval x p) s :=
   p.continuous_aeval.continuousOn
 #align polynomial.continuous_on_aeval Polynomial.continuousOn_aeval
@@ -165,8 +171,7 @@ theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 
   obtain hB | hB := lt_or_le B 0
   · rw [eq_one_of_roots_le hB h1 h2 h3, Polynomial.map_one, natDegree_one, zero_tsub, pow_zero,
       one_mul, coeff_one]
-    split_ifs <;> norm_num [h]
-    simp [‹0 = i›]
+    split_ifs with h <;> simp [h]
   rw [← h1.natDegree_map f]
   obtain hi | hi := lt_or_le (map f p).natDegree i
   · rw [coeff_eq_zero_of_natDegree_lt hi, norm_zero]
@@ -174,12 +179,12 @@ theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 
   rw [coeff_eq_esymm_roots_of_splits ((splits_id_iff_splits f).2 h2) hi, (h1.map _).leadingCoeff,
     one_mul, norm_mul, norm_pow, norm_neg, norm_one, one_pow, one_mul]
   apply ((norm_multiset_sum_le _).trans <| sum_le_card_nsmul _ _ fun r hr => _).trans
-  · rw [Multiset.map_map, card_map, card_powersetLen, ← natDegree_eq_card_roots' h2,
+  · rw [Multiset.map_map, card_map, card_powersetCard, ← natDegree_eq_card_roots' h2,
       Nat.choose_symm hi, mul_comm, nsmul_eq_mul]
   intro r hr
   simp_rw [Multiset.mem_map] at hr
   obtain ⟨_, ⟨s, hs, rfl⟩, rfl⟩ := hr
-  rw [mem_powersetLen] at hs
+  rw [mem_powersetCard] at hs
   lift B to ℝ≥0 using hB
   rw [← coe_nnnorm, ← NNReal.coe_pow, NNReal.coe_le_coe, ← nnnormHom_apply, ← MonoidHom.coe_coe,
     MonoidHom.map_multiset_prod]
@@ -204,8 +209,8 @@ theorem coeff_bdd_of_roots_le {B : ℝ} {d : ℕ} (f : F →+* K) {p : F[X]} (h1
   · rw [eq_one_of_roots_le hB h1 h2 h4, Polynomial.map_one, coeff_one]
     refine' _root_.trans _
       (one_le_mul_of_one_le_of_one_le (one_le_pow_of_one_le (le_max_right B 1) d) _)
-    · split_ifs <;> norm_num
-    · exact_mod_cast Nat.succ_le_iff.mpr (Nat.choose_pos (d.div_le_self 2))
+    · split_ifs <;> set_option tactic.skipAssignedInstances false in norm_num
+    · exact mod_cast Nat.succ_le_iff.mpr (Nat.choose_pos (d.div_le_self 2))
 #align polynomial.coeff_bdd_of_roots_le Polynomial.coeff_bdd_of_roots_le
 
 end Roots

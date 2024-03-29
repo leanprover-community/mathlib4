@@ -3,9 +3,8 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Int.Units
-import Mathlib.Algebra.GroupPower.Order
 
 #align_import data.int.order.units from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
 
@@ -28,7 +27,7 @@ theorem units_sq (u : ℤˣ) : u ^ 2 = 1 := by
   rw [Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one, isUnit_sq u.isUnit]
 #align int.units_sq Int.units_sq
 
-alias units_sq ← units_pow_two
+alias units_pow_two := units_sq
 #align int.units_pow_two Int.units_pow_two
 
 @[simp]
@@ -39,15 +38,16 @@ theorem units_mul_self (u : ℤˣ) : u * u = 1 := by rw [← sq, units_sq]
 theorem units_inv_eq_self (u : ℤˣ) : u⁻¹ = u := by rw [inv_eq_iff_mul_eq_one, units_mul_self]
 #align int.units_inv_eq_self Int.units_inv_eq_self
 
+theorem units_div_eq_mul (u₁ u₂ : ℤˣ) : u₁ / u₂ = u₁ * u₂ := by
+  rw [div_eq_mul_inv, units_inv_eq_self]
+
 -- `Units.val_mul` is a "wrong turn" for the simplifier, this undoes it and simplifies further
 @[simp]
 theorem units_coe_mul_self (u : ℤˣ) : (u * u : ℤ) = 1 := by
   rw [← Units.val_mul, units_mul_self, Units.val_one]
 #align int.units_coe_mul_self Int.units_coe_mul_self
 
-@[simp]
-theorem neg_one_pow_ne_zero {n : ℕ} : (-1 : ℤ) ^ n ≠ 0 :=
-  pow_ne_zero _ (abs_pos.mp (by simp))
+theorem neg_one_pow_ne_zero {n : ℕ} : (-1 : ℤ) ^ n ≠ 0 := by simp
 #align int.neg_one_pow_ne_zero Int.neg_one_pow_ne_zero
 
 theorem sq_eq_one_of_sq_lt_four {x : ℤ} (h1 : x ^ 2 < 4) (h2 : x ≠ 0) : x ^ 2 = 1 :=

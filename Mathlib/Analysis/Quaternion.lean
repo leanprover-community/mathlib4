@@ -34,7 +34,7 @@ quaternion, normed ring, normed space, normed algebra
 
 
 -- mathport name: quaternion.real
-scoped[Quaternion] notation "ℍ" => Quaternion ℝ
+@[inherit_doc] scoped[Quaternion] notation "ℍ" => Quaternion ℝ
 
 open scoped RealInnerProductSpace
 
@@ -80,12 +80,12 @@ theorem nnnorm_coe (a : ℝ) : ‖(a : ℍ)‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_coe a
 #align quaternion.nnnorm_coe Quaternion.nnnorm_coe
 
-@[simp, nolint simpNF] -- Porting note: simp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
   simp_rw [norm_eq_sqrt_real_inner, inner_self, normSq_star]
 #align quaternion.norm_star Quaternion.norm_star
 
-@[simp, nolint simpNF] -- Porting note: simp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_star a
 #align quaternion.nnnorm_star Quaternion.nnnorm_star
@@ -96,7 +96,7 @@ noncomputable instance : NormedDivisionRing ℍ where
     simp only [norm_eq_sqrt_real_inner, inner_self, normSq.map_mul]
     exact Real.sqrt_mul normSq_nonneg _
 
--- porting note: added `noncomputable`
+-- Porting note: added `noncomputable`
 noncomputable instance : NormedAlgebra ℝ ℍ where
   norm_smul_le := norm_smul_le
   toAlgebra := Quaternion.algebra
@@ -147,7 +147,7 @@ theorem coeComplex_one : ((1 : ℂ) : ℍ) = 1 :=
   rfl
 #align quaternion.coe_complex_one Quaternion.coeComplex_one
 
-@[simp, norm_cast, nolint simpNF] -- Porting note: simp cannot prove this
+@[simp, norm_cast, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem coe_real_complex_mul (r : ℝ) (z : ℂ) : (r • z : ℍ) = ↑r * ↑z := by ext <;> simp
 #align quaternion.coe_real_complex_mul Quaternion.coe_real_complex_mul
 
@@ -172,10 +172,10 @@ theorem coe_ofComplex : ⇑ofComplex = coeComplex := rfl
 
 /-- The norm of the components as a euclidean vector equals the norm of the quaternion. -/
 theorem norm_piLp_equiv_symm_equivTuple (x : ℍ) :
-    ‖(PiLp.equiv 2 fun _ : Fin 4 => _).symm (equivTuple ℝ x)‖ = ‖x‖ := by
+    ‖(WithLp.equiv 2 (Fin 4 → _)).symm (equivTuple ℝ x)‖ = ‖x‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner, inner_self, normSq_def', PiLp.inner_apply,
     Fin.sum_univ_four]
-  simp_rw [IsROrC.inner_apply, starRingEnd_apply, star_trivial, ← sq]
+  simp_rw [RCLike.inner_apply, starRingEnd_apply, star_trivial, ← sq]
   rfl
 set_option linter.uppercaseLean3 false in
 #align quaternion.norm_pi_Lp_equiv_symm_equiv_tuple Quaternion.norm_piLp_equiv_symm_equivTuple
@@ -184,8 +184,8 @@ set_option linter.uppercaseLean3 false in
 @[simps apply symm_apply]
 noncomputable def linearIsometryEquivTuple : ℍ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin 4) :=
   { (QuaternionAlgebra.linearEquivTuple (-1 : ℝ) (-1 : ℝ)).trans
-      (PiLp.linearEquiv 2 ℝ fun _ : Fin 4 => ℝ).symm with
-    toFun := fun a => (PiLp.equiv _ fun _ : Fin 4 => _).symm ![a.1, a.2, a.3, a.4]
+      (WithLp.linearEquiv 2 ℝ (Fin 4 → ℝ)).symm with
+    toFun := fun a => (WithLp.equiv _ (Fin 4 → _)).symm ![a.1, a.2, a.3, a.4]
     invFun := fun a => ⟨a 0, a 1, a 2, a 3⟩
     norm_map' := norm_piLp_equiv_symm_equivTuple }
 #align quaternion.linear_isometry_equiv_tuple Quaternion.linearIsometryEquivTuple

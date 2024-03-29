@@ -3,9 +3,9 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Monoid.Cancel.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Order.Hom.Basic
+import Mathlib.Util.AssertExists
 
 #align_import algebra.order.group.defs from "leanprover-community/mathlib"@"b599f4e4e5cf1fbcb4194503671d3d9e569c1fce"
 
@@ -46,8 +46,8 @@ attribute [to_additive] OrderedCommGroup
 
 @[to_additive]
 instance OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGroup α] :
-    CovariantClass α α (· * ·)
-      (· ≤ ·) where elim a b c bc := OrderedCommGroup.mul_le_mul_left b c bc a
+    CovariantClass α α (· * ·) (· ≤ ·) where
+      elim a b c bc := OrderedCommGroup.mul_le_mul_left b c bc a
 #align ordered_comm_group.to_covariant_class_left_le OrderedCommGroup.to_covariantClass_left_le
 #align ordered_add_comm_group.to_covariant_class_left_le OrderedAddCommGroup.to_covariantClass_left_le
 
@@ -60,7 +60,7 @@ instance (priority := 100) OrderedCommGroup.toOrderedCancelCommMonoid [OrderedCo
 #align ordered_add_comm_group.to_ordered_cancel_add_comm_monoid OrderedAddCommGroup.toOrderedCancelAddCommMonoid
 
 example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· + ·)) (· < ·) :=
-  AddRightCancelSemigroup.covariant_swap_add_lt_of_covariant_swap_add_le α
+  IsRightCancelAdd.covariant_swap_add_lt_of_covariant_swap_add_le α
 
 -- Porting note: this instance is not used,
 -- and causes timeouts after lean4#2210.
@@ -69,8 +69,8 @@ example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· 
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
 theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCommGroup α] :
-    ContravariantClass α α (· * ·)
-      (· ≤ ·) where elim a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
+    ContravariantClass α α (· * ·) (· ≤ ·) where
+      elim a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
 #align ordered_comm_group.to_contravariant_class_left_le OrderedCommGroup.to_contravariantClass_left_le
 #align ordered_add_comm_group.to_contravariant_class_left_le OrderedAddCommGroup.to_contravariantClass_left_le
 
@@ -80,8 +80,8 @@ theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCom
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
 theorem OrderedCommGroup.to_contravariantClass_right_le (α : Type u) [OrderedCommGroup α] :
-    ContravariantClass α α (swap (· * ·))
-      (· ≤ ·) where elim a b c bc := by simpa using mul_le_mul_right' bc a⁻¹
+    ContravariantClass α α (swap (· * ·)) (· ≤ ·) where
+      elim a b c bc := by simpa using mul_le_mul_right' bc a⁻¹
 #align ordered_comm_group.to_contravariant_class_right_le OrderedCommGroup.to_contravariantClass_right_le
 #align ordered_add_comm_group.to_contravariant_class_right_le OrderedAddCommGroup.to_contravariantClass_right_le
 
@@ -250,7 +250,7 @@ theorem le_mul_inv_iff_mul_le : c ≤ a * b⁻¹ ↔ c * b ≤ a :=
 #align le_mul_inv_iff_mul_le le_mul_inv_iff_mul_le
 #align le_add_neg_iff_add_le le_add_neg_iff_add_le
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 @[to_additive]
 theorem mul_inv_le_one_iff_le : a * b⁻¹ ≤ 1 ↔ a ≤ b :=
   mul_inv_le_iff_le_mul.trans <| by rw [one_mul]
@@ -313,7 +313,7 @@ theorem lt_mul_inv_iff_mul_lt : c < a * b⁻¹ ↔ c * b < a :=
 #align lt_mul_inv_iff_mul_lt lt_mul_inv_iff_mul_lt
 #align lt_add_neg_iff_add_lt lt_add_neg_iff_add_lt
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 @[to_additive]
 theorem inv_mul_lt_one_iff_lt : a * b⁻¹ < 1 ↔ a < b := by
   rw [← mul_lt_mul_iff_right b, inv_mul_cancel_right, one_mul]
@@ -346,7 +346,7 @@ theorem inv_le_inv_iff : a⁻¹ ≤ b⁻¹ ↔ b ≤ a := by
 #align inv_le_inv_iff inv_le_inv_iff
 #align neg_le_neg_iff neg_le_neg_iff
 
-alias neg_le_neg_iff ↔ le_of_neg_le_neg _
+alias ⟨le_of_neg_le_neg, _⟩ := neg_le_neg_iff
 #align le_of_neg_le_neg le_of_neg_le_neg
 
 @[to_additive]
@@ -368,7 +368,7 @@ theorem le_div_self_iff (a : α) {b : α} : a ≤ a / b ↔ b ≤ 1 := by
 #align le_div_self_iff le_div_self_iff
 #align le_sub_self_iff le_sub_self_iff
 
-alias sub_le_self_iff ↔ _ sub_le_self
+alias ⟨_, sub_le_self⟩ := sub_le_self_iff
 #align sub_le_self sub_le_self
 
 end TypeclassesLeftRightLE
@@ -395,13 +395,13 @@ theorem lt_inv' : a < b⁻¹ ↔ b < a⁻¹ := by rw [← inv_lt_inv_iff, inv_in
 #align lt_inv' lt_inv'
 #align lt_neg lt_neg
 
-alias lt_inv' ↔ lt_inv_of_lt_inv _
+alias ⟨lt_inv_of_lt_inv, _⟩ := lt_inv'
 #align lt_inv_of_lt_inv lt_inv_of_lt_inv
 
 attribute [to_additive] lt_inv_of_lt_inv
 #align lt_neg_of_lt_neg lt_neg_of_lt_neg
 
-alias inv_lt' ↔ inv_lt_of_inv_lt' _
+alias ⟨inv_lt_of_inv_lt', _⟩ := inv_lt'
 #align inv_lt_of_inv_lt' inv_lt_of_inv_lt'
 
 attribute [to_additive neg_lt_of_neg_lt] inv_lt_of_inv_lt'
@@ -420,7 +420,7 @@ theorem div_lt_self_iff (a : α) {b : α} : a / b < a ↔ 1 < b := by
 #align div_lt_self_iff div_lt_self_iff
 #align sub_lt_self_iff sub_lt_self_iff
 
-alias sub_lt_self_iff ↔ _ sub_lt_self
+alias ⟨_, sub_lt_self⟩ := sub_lt_self_iff
 #align sub_lt_self sub_lt_self
 
 end TypeclassesLeftRightLT
@@ -439,7 +439,7 @@ theorem Left.inv_le_self (h : 1 ≤ a) : a⁻¹ ≤ a :=
 #align left.inv_le_self Left.inv_le_self
 #align left.neg_le_self Left.neg_le_self
 
-alias Left.neg_le_self ← neg_le_self
+alias neg_le_self := Left.neg_le_self
 #align neg_le_self neg_le_self
 
 @[to_additive]
@@ -460,7 +460,7 @@ theorem Left.inv_lt_self (h : 1 < a) : a⁻¹ < a :=
 #align left.inv_lt_self Left.inv_lt_self
 #align left.neg_lt_self Left.neg_lt_self
 
-alias Left.neg_lt_self ← neg_lt_self
+alias neg_lt_self := Left.neg_lt_self
 #align neg_lt_self neg_lt_self
 
 @[to_additive]
@@ -565,85 +565,85 @@ end LT
 
 end CommGroup
 
-alias Left.inv_le_one_iff ↔ one_le_of_inv_le_one _
+alias ⟨one_le_of_inv_le_one, _⟩ := Left.inv_le_one_iff
 #align one_le_of_inv_le_one one_le_of_inv_le_one
 
 attribute [to_additive] one_le_of_inv_le_one
 #align nonneg_of_neg_nonpos nonneg_of_neg_nonpos
 
-alias Left.one_le_inv_iff ↔ le_one_of_one_le_inv _
+alias ⟨le_one_of_one_le_inv, _⟩ := Left.one_le_inv_iff
 #align le_one_of_one_le_inv le_one_of_one_le_inv
 
 attribute [to_additive nonpos_of_neg_nonneg] le_one_of_one_le_inv
 #align nonpos_of_neg_nonneg nonpos_of_neg_nonneg
 
-alias inv_lt_inv_iff ↔ lt_of_inv_lt_inv _
+alias ⟨lt_of_inv_lt_inv, _⟩ := inv_lt_inv_iff
 #align lt_of_inv_lt_inv lt_of_inv_lt_inv
 
 attribute [to_additive] lt_of_inv_lt_inv
 #align lt_of_neg_lt_neg lt_of_neg_lt_neg
 
-alias Left.inv_lt_one_iff ↔ one_lt_of_inv_lt_one _
+alias ⟨one_lt_of_inv_lt_one, _⟩ := Left.inv_lt_one_iff
 #align one_lt_of_inv_lt_one one_lt_of_inv_lt_one
 
 attribute [to_additive] one_lt_of_inv_lt_one
 #align pos_of_neg_neg pos_of_neg_neg
 
-alias Left.inv_lt_one_iff ← inv_lt_one_iff_one_lt
+alias inv_lt_one_iff_one_lt := Left.inv_lt_one_iff
 #align inv_lt_one_iff_one_lt inv_lt_one_iff_one_lt
 
 attribute [to_additive] inv_lt_one_iff_one_lt
 #align neg_neg_iff_pos neg_neg_iff_pos
 
-alias Left.inv_lt_one_iff ← inv_lt_one'
+alias inv_lt_one' := Left.inv_lt_one_iff
 #align inv_lt_one' inv_lt_one'
 
 attribute [to_additive neg_lt_zero] inv_lt_one'
 #align neg_lt_zero neg_lt_zero
 
-alias Left.one_lt_inv_iff ↔ inv_of_one_lt_inv _
+alias ⟨inv_of_one_lt_inv, _⟩ := Left.one_lt_inv_iff
 #align inv_of_one_lt_inv inv_of_one_lt_inv
 
 attribute [to_additive neg_of_neg_pos] inv_of_one_lt_inv
 #align neg_of_neg_pos neg_of_neg_pos
 
-alias Left.one_lt_inv_iff ↔ _ one_lt_inv_of_inv
+alias ⟨_, one_lt_inv_of_inv⟩ := Left.one_lt_inv_iff
 #align one_lt_inv_of_inv one_lt_inv_of_inv
 
 attribute [to_additive neg_pos_of_neg] one_lt_inv_of_inv
 #align neg_pos_of_neg neg_pos_of_neg
 
-alias le_inv_mul_iff_mul_le ↔ mul_le_of_le_inv_mul _
+alias ⟨mul_le_of_le_inv_mul, _⟩ := le_inv_mul_iff_mul_le
 #align mul_le_of_le_inv_mul mul_le_of_le_inv_mul
 
 attribute [to_additive] mul_le_of_le_inv_mul
 #align add_le_of_le_neg_add add_le_of_le_neg_add
 
-alias le_inv_mul_iff_mul_le ↔ _ le_inv_mul_of_mul_le
+alias ⟨_, le_inv_mul_of_mul_le⟩ := le_inv_mul_iff_mul_le
 #align le_inv_mul_of_mul_le le_inv_mul_of_mul_le
 
 attribute [to_additive] le_inv_mul_of_mul_le
 #align le_neg_add_of_add_le le_neg_add_of_add_le
 
-alias inv_mul_le_iff_le_mul ↔ _ inv_mul_le_of_le_mul
+alias ⟨_, inv_mul_le_of_le_mul⟩ := inv_mul_le_iff_le_mul
 #align inv_mul_le_of_le_mul inv_mul_le_of_le_mul
 
 -- Porting note: was `inv_mul_le_iff_le_mul`
 attribute [to_additive] inv_mul_le_of_le_mul
 
-alias lt_inv_mul_iff_mul_lt ↔ mul_lt_of_lt_inv_mul _
+alias ⟨mul_lt_of_lt_inv_mul, _⟩ := lt_inv_mul_iff_mul_lt
 #align mul_lt_of_lt_inv_mul mul_lt_of_lt_inv_mul
 
 attribute [to_additive] mul_lt_of_lt_inv_mul
 #align add_lt_of_lt_neg_add add_lt_of_lt_neg_add
 
-alias lt_inv_mul_iff_mul_lt ↔ _ lt_inv_mul_of_mul_lt
+alias ⟨_, lt_inv_mul_of_mul_lt⟩ := lt_inv_mul_iff_mul_lt
 #align lt_inv_mul_of_mul_lt lt_inv_mul_of_mul_lt
 
 attribute [to_additive] lt_inv_mul_of_mul_lt
 #align lt_neg_add_of_add_lt lt_neg_add_of_add_lt
 
-alias inv_mul_lt_iff_lt_mul ↔ lt_mul_of_inv_mul_lt inv_mul_lt_of_lt_mul
+alias ⟨lt_mul_of_inv_mul_lt, inv_mul_lt_of_lt_mul⟩ := inv_mul_lt_iff_lt_mul
 #align lt_mul_of_inv_mul_lt lt_mul_of_inv_mul_lt
 #align inv_mul_lt_of_lt_mul inv_mul_lt_of_lt_mul
 
@@ -653,43 +653,43 @@ attribute [to_additive] lt_mul_of_inv_mul_lt
 attribute [to_additive] inv_mul_lt_of_lt_mul
 #align neg_add_lt_of_lt_add neg_add_lt_of_lt_add
 
-alias lt_mul_of_inv_mul_lt ← lt_mul_of_inv_mul_lt_left
+alias lt_mul_of_inv_mul_lt_left := lt_mul_of_inv_mul_lt
 #align lt_mul_of_inv_mul_lt_left lt_mul_of_inv_mul_lt_left
 
 attribute [to_additive] lt_mul_of_inv_mul_lt_left
 #align lt_add_of_neg_add_lt_left lt_add_of_neg_add_lt_left
 
-alias Left.inv_le_one_iff ← inv_le_one'
+alias inv_le_one' := Left.inv_le_one_iff
 #align inv_le_one' inv_le_one'
 
 attribute [to_additive neg_nonpos] inv_le_one'
 #align neg_nonpos neg_nonpos
 
-alias Left.one_le_inv_iff ← one_le_inv'
+alias one_le_inv' := Left.one_le_inv_iff
 #align one_le_inv' one_le_inv'
 
 attribute [to_additive neg_nonneg] one_le_inv'
 #align neg_nonneg neg_nonneg
 
-alias Left.one_lt_inv_iff ← one_lt_inv'
+alias one_lt_inv' := Left.one_lt_inv_iff
 #align one_lt_inv' one_lt_inv'
 
 attribute [to_additive neg_pos] one_lt_inv'
 #align neg_pos neg_pos
 
-alias mul_lt_mul_left' ← OrderedCommGroup.mul_lt_mul_left'
+alias OrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_left'
 #align ordered_comm_group.mul_lt_mul_left' OrderedCommGroup.mul_lt_mul_left'
 
 attribute [to_additive OrderedAddCommGroup.add_lt_add_left] OrderedCommGroup.mul_lt_mul_left'
 #align ordered_add_comm_group.add_lt_add_left OrderedAddCommGroup.add_lt_add_left
 
-alias le_of_mul_le_mul_left' ← OrderedCommGroup.le_of_mul_le_mul_left
+alias OrderedCommGroup.le_of_mul_le_mul_left := le_of_mul_le_mul_left'
 #align ordered_comm_group.le_of_mul_le_mul_left OrderedCommGroup.le_of_mul_le_mul_left
 
 attribute [to_additive] OrderedCommGroup.le_of_mul_le_mul_left
 #align ordered_add_comm_group.le_of_add_le_add_left OrderedAddCommGroup.le_of_add_le_add_left
 
-alias lt_of_mul_lt_mul_left' ← OrderedCommGroup.lt_of_mul_lt_mul_left
+alias OrderedCommGroup.lt_of_mul_lt_mul_left := lt_of_mul_lt_mul_left'
 #align ordered_comm_group.lt_of_mul_lt_mul_left OrderedCommGroup.lt_of_mul_lt_mul_left
 
 attribute [to_additive] OrderedCommGroup.lt_of_mul_lt_mul_left
@@ -705,13 +705,13 @@ section Right
 
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c d : α}
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem div_le_div_iff_right (c : α) : a / c ≤ b / c ↔ a ≤ b := by
   simpa only [div_eq_mul_inv] using mul_le_mul_iff_right _
 #align div_le_div_iff_right div_le_div_iff_right
 #align sub_le_sub_iff_right sub_le_sub_iff_right
 
-@[to_additive sub_le_sub_right]
+@[to_additive (attr := gcongr) sub_le_sub_right]
 theorem div_le_div_right' (h : a ≤ b) (c : α) : a / c ≤ b / c :=
   (div_le_div_iff_right c).2 h
 #align div_le_div_right' div_le_div_right'
@@ -723,17 +723,17 @@ theorem one_le_div' : 1 ≤ a / b ↔ b ≤ a := by
 #align one_le_div' one_le_div'
 #align sub_nonneg sub_nonneg
 
-alias sub_nonneg ↔ le_of_sub_nonneg sub_nonneg_of_le
+alias ⟨le_of_sub_nonneg, sub_nonneg_of_le⟩ := sub_nonneg
 #align sub_nonneg_of_le sub_nonneg_of_le
 #align le_of_sub_nonneg le_of_sub_nonneg
 
-@[to_additive (attr := simp) sub_nonpos]
+@[to_additive sub_nonpos]
 theorem div_le_one' : a / b ≤ 1 ↔ a ≤ b := by
   rw [← mul_le_mul_iff_right b, one_mul, div_eq_mul_inv, inv_mul_cancel_right]
 #align div_le_one' div_le_one'
 #align sub_nonpos sub_nonpos
 
-alias sub_nonpos ↔ le_of_sub_nonpos sub_nonpos_of_le
+alias ⟨le_of_sub_nonpos, sub_nonpos_of_le⟩ := sub_nonpos
 #align sub_nonpos_of_le sub_nonpos_of_le
 #align le_of_sub_nonpos le_of_sub_nonpos
 
@@ -743,7 +743,7 @@ theorem le_div_iff_mul_le : a ≤ c / b ↔ a * b ≤ c := by
 #align le_div_iff_mul_le le_div_iff_mul_le
 #align le_sub_iff_add_le le_sub_iff_add_le
 
-alias le_sub_iff_add_le ↔ add_le_of_le_sub_right le_sub_right_of_add_le
+alias ⟨add_le_of_le_sub_right, le_sub_right_of_add_le⟩ := le_sub_iff_add_le
 #align add_le_of_le_sub_right add_le_of_le_sub_right
 #align le_sub_right_of_add_le le_sub_right_of_add_le
 
@@ -752,6 +752,10 @@ theorem div_le_iff_le_mul : a / c ≤ b ↔ a ≤ b * c := by
   rw [← mul_le_mul_iff_right c, div_eq_mul_inv, inv_mul_cancel_right]
 #align div_le_iff_le_mul div_le_iff_le_mul
 #align sub_le_iff_le_add sub_le_iff_le_add
+
+-- Note: we intentionally don't have `@[simp]` for the additive version,
+-- since the LHS simplifies with `tsub_le_iff_right`
+attribute [simp] div_le_iff_le_mul
 
 -- TODO: Should we get rid of `sub_le_iff_le_add` in favor of
 -- (a renamed version of) `tsub_le_iff_right`?
@@ -766,17 +770,16 @@ end Right
 section Left
 
 variable [CovariantClass α α (· * ·) (· ≤ ·)]
-
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem div_le_div_iff_left (a : α) : a / b ≤ a / c ↔ c ≤ b := by
   rw [div_eq_mul_inv, div_eq_mul_inv, ← mul_le_mul_iff_left a⁻¹, inv_mul_cancel_left,
     inv_mul_cancel_left, inv_le_inv_iff]
 #align div_le_div_iff_left div_le_div_iff_left
 #align sub_le_sub_iff_left sub_le_sub_iff_left
 
-@[to_additive sub_le_sub_left]
+@[to_additive (attr := gcongr) sub_le_sub_left]
 theorem div_le_div_left' (h : a ≤ b) (c : α) : c / b ≤ c / a :=
   (div_le_div_iff_left c).2 h
 #align div_le_div_left' div_le_div_left'
@@ -805,7 +808,7 @@ theorem le_div_iff_mul_le' : b ≤ c / a ↔ a * b ≤ c := by rw [le_div_iff_mu
 #align le_div_iff_mul_le' le_div_iff_mul_le'
 #align le_sub_iff_add_le' le_sub_iff_add_le'
 
-alias le_sub_iff_add_le' ↔ add_le_of_le_sub_left le_sub_left_of_add_le
+alias ⟨add_le_of_le_sub_left, le_sub_left_of_add_le⟩ := le_sub_iff_add_le'
 #align le_sub_left_of_add_le le_sub_left_of_add_le
 #align add_le_of_le_sub_left add_le_of_le_sub_left
 
@@ -814,7 +817,7 @@ theorem div_le_iff_le_mul' : a / b ≤ c ↔ a ≤ b * c := by rw [div_le_iff_le
 #align div_le_iff_le_mul' div_le_iff_le_mul'
 #align sub_le_iff_le_add' sub_le_iff_le_add'
 
-alias sub_le_iff_le_add' ↔ le_add_of_sub_left_le sub_left_le_of_le_add
+alias ⟨le_add_of_sub_left_le, sub_left_le_of_le_add⟩ := sub_le_iff_le_add'
 #align sub_left_le_of_le_add sub_left_le_of_le_add
 #align le_add_of_sub_left_le le_add_of_sub_left_le
 
@@ -847,7 +850,7 @@ section Preorder
 
 variable [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b c d : α}
 
-@[to_additive sub_le_sub]
+@[to_additive (attr := gcongr) sub_le_sub]
 theorem div_le_div'' (hab : a ≤ b) (hcd : c ≤ d) : a / d ≤ b / c := by
   rw [div_eq_mul_inv, div_eq_mul_inv, mul_comm b, mul_inv_le_inv_mul_iff, mul_comm]
   exact mul_le_mul' hab hcd
@@ -874,7 +877,7 @@ theorem div_lt_div_iff_right (c : α) : a / c < b / c ↔ a < b := by
 #align div_lt_div_iff_right div_lt_div_iff_right
 #align sub_lt_sub_iff_right sub_lt_sub_iff_right
 
-@[to_additive sub_lt_sub_right]
+@[to_additive (attr := gcongr) sub_lt_sub_right]
 theorem div_lt_div_right' (h : a < b) (c : α) : a / c < b / c :=
   (div_lt_div_iff_right c).2 h
 #align div_lt_div_right' div_lt_div_right'
@@ -886,21 +889,21 @@ theorem one_lt_div' : 1 < a / b ↔ b < a := by
 #align one_lt_div' one_lt_div'
 #align sub_pos sub_pos
 
-alias sub_pos ↔ lt_of_sub_pos sub_pos_of_lt
+alias ⟨lt_of_sub_pos, sub_pos_of_lt⟩ := sub_pos
 #align lt_of_sub_pos lt_of_sub_pos
 #align sub_pos_of_lt sub_pos_of_lt
 
-@[to_additive (attr := simp) sub_neg]
+@[to_additive (attr := simp) sub_neg "For `a - -b = a + b`, see `sub_neg_eq_add`."]
 theorem div_lt_one' : a / b < 1 ↔ a < b := by
   rw [← mul_lt_mul_iff_right b, one_mul, div_eq_mul_inv, inv_mul_cancel_right]
 #align div_lt_one' div_lt_one'
 #align sub_neg sub_neg
 
-alias sub_neg ↔ lt_of_sub_neg sub_neg_of_lt
+alias ⟨lt_of_sub_neg, sub_neg_of_lt⟩ := sub_neg
 #align lt_of_sub_neg lt_of_sub_neg
 #align sub_neg_of_lt sub_neg_of_lt
 
-alias sub_neg ← sub_lt_zero
+alias sub_lt_zero := sub_neg
 #align sub_lt_zero sub_lt_zero
 
 @[to_additive]
@@ -909,7 +912,7 @@ theorem lt_div_iff_mul_lt : a < c / b ↔ a * b < c := by
 #align lt_div_iff_mul_lt lt_div_iff_mul_lt
 #align lt_sub_iff_add_lt lt_sub_iff_add_lt
 
-alias lt_sub_iff_add_lt ↔ add_lt_of_lt_sub_right lt_sub_right_of_add_lt
+alias ⟨add_lt_of_lt_sub_right, lt_sub_right_of_add_lt⟩ := lt_sub_iff_add_lt
 #align add_lt_of_lt_sub_right add_lt_of_lt_sub_right
 #align lt_sub_right_of_add_lt lt_sub_right_of_add_lt
 
@@ -919,7 +922,7 @@ theorem div_lt_iff_lt_mul : a / c < b ↔ a < b * c := by
 #align div_lt_iff_lt_mul div_lt_iff_lt_mul
 #align sub_lt_iff_lt_add sub_lt_iff_lt_add
 
-alias sub_lt_iff_lt_add ↔ lt_add_of_sub_right_lt sub_right_lt_of_lt_add
+alias ⟨lt_add_of_sub_right_lt, sub_right_lt_of_lt_add⟩ := sub_lt_iff_lt_add
 #align lt_add_of_sub_right_lt lt_add_of_sub_right_lt
 #align sub_right_lt_of_lt_add sub_right_lt_of_lt_add
 
@@ -943,7 +946,7 @@ theorem inv_lt_div_iff_lt_mul : a⁻¹ < b / c ↔ c < a * b := by
 #align inv_lt_div_iff_lt_mul inv_lt_div_iff_lt_mul
 #align neg_lt_sub_iff_lt_add neg_lt_sub_iff_lt_add
 
-@[to_additive sub_lt_sub_left]
+@[to_additive (attr := gcongr) sub_lt_sub_left]
 theorem div_lt_div_left' (h : a < b) (c : α) : c / b < c / a :=
   (div_lt_div_iff_left c).2 h
 #align div_lt_div_left' div_lt_div_left'
@@ -972,7 +975,7 @@ theorem lt_div_iff_mul_lt' : b < c / a ↔ a * b < c := by rw [lt_div_iff_mul_lt
 #align lt_div_iff_mul_lt' lt_div_iff_mul_lt'
 #align lt_sub_iff_add_lt' lt_sub_iff_add_lt'
 
-alias lt_sub_iff_add_lt' ↔ add_lt_of_lt_sub_left lt_sub_left_of_add_lt
+alias ⟨add_lt_of_lt_sub_left, lt_sub_left_of_add_lt⟩ := lt_sub_iff_add_lt'
 #align lt_sub_left_of_add_lt lt_sub_left_of_add_lt
 #align add_lt_of_lt_sub_left add_lt_of_lt_sub_left
 
@@ -981,7 +984,7 @@ theorem div_lt_iff_lt_mul' : a / b < c ↔ a < b * c := by rw [div_lt_iff_lt_mul
 #align div_lt_iff_lt_mul' div_lt_iff_lt_mul'
 #align sub_lt_iff_lt_add' sub_lt_iff_lt_add'
 
-alias sub_lt_iff_lt_add' ↔ lt_add_of_sub_left_lt sub_left_lt_of_lt_add
+alias ⟨lt_add_of_sub_left_lt, sub_left_lt_of_lt_add⟩ := sub_lt_iff_lt_add'
 #align lt_add_of_sub_left_lt lt_add_of_sub_left_lt
 #align sub_left_lt_of_lt_add sub_left_lt_of_lt_add
 
@@ -1009,7 +1012,7 @@ section Preorder
 
 variable [Preorder α] [CovariantClass α α (· * ·) (· < ·)] {a b c d : α}
 
-@[to_additive sub_lt_sub]
+@[to_additive (attr := gcongr) sub_lt_sub]
 theorem div_lt_div'' (hab : a < b) (hcd : c < d) : a / d < b / c := by
   rw [div_eq_mul_inv, div_eq_mul_inv, mul_comm b, mul_inv_lt_inv_mul_iff, mul_comm]
   exact mul_lt_mul_of_lt_of_lt hab hcd
@@ -1018,6 +1021,13 @@ theorem div_lt_div'' (hab : a < b) (hcd : c < d) : a / d < b / c := by
 
 end Preorder
 
+section LinearOrder
+variable [LinearOrder α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b c d : α}
+
+@[to_additive] lemma lt_or_lt_of_div_lt_div : a / d < b / c → a < b ∨ c < d := by
+  contrapose!; exact fun h ↦ div_le_div'' h.1 h.2
+
+end LinearOrder
 end CommGroup
 
 section LinearOrder
@@ -1026,7 +1036,7 @@ variable [Group α] [LinearOrder α]
 
 @[to_additive (attr := simp) cmp_sub_zero]
 theorem cmp_div_one' [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b : α) :
-    cmp (a / b) 1 = cmp a b := by rw [← cmp_mul_right' _ _ b, one_mul, div_mul_cancel']
+    cmp (a / b) 1 = cmp a b := by rw [← cmp_mul_right' _ _ b, one_mul, div_mul_cancel]
 #align cmp_div_one' cmp_div_one'
 #align cmp_sub_zero cmp_sub_zero
 
@@ -1063,7 +1073,7 @@ theorem div_le_inv_mul_iff [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
 -- What is the point of this lemma?  See comment about `div_le_inv_mul_iff` above.
 -- Note: we intentionally don't have `@[simp]` for the additive version,
 -- since the LHS simplifies with `tsub_le_iff_right`
-@[to_additive, simp]
+@[to_additive]
 theorem div_le_div_flip {α : Type*} [CommGroup α] [LinearOrder α]
     [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} : a / b ≤ b / a ↔ a ≤ b := by
   rw [div_eq_mul_inv b, mul_comm]
@@ -1086,7 +1096,7 @@ addition is monotone. -/
 class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, LinearOrder α
 #align linear_ordered_add_comm_group LinearOrderedAddCommGroup
 
-/-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
+/-- A linearly ordered commutative group with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
 class LinearOrderedAddCommGroupWithTop (α : Type*) extends LinearOrderedAddCommMonoidWithTop α,
   SubNegMonoid α, Nontrivial α where
@@ -1159,75 +1169,23 @@ instance (priority := 100) LinearOrderedCommGroup.toLinearOrderedCancelCommMonoi
 #align linear_ordered_comm_group.to_linear_ordered_cancel_comm_monoid LinearOrderedCommGroup.toLinearOrderedCancelCommMonoid
 #align linear_ordered_add_comm_group.to_linear_ordered_cancel_add_comm_monoid LinearOrderedAddCommGroup.toLinearOrderedAddCancelCommMonoid
 
+@[to_additive (attr := simp)]
+theorem inv_le_self_iff : a⁻¹ ≤ a ↔ 1 ≤ a := by simp [inv_le_iff_one_le_mul']
+#align neg_le_self_iff neg_le_self_iff
+
+@[to_additive (attr := simp)]
+theorem inv_lt_self_iff : a⁻¹ < a ↔ 1 < a := by simp [inv_lt_iff_one_lt_mul]
+#align neg_lt_self_iff neg_lt_self_iff
+
+@[to_additive (attr := simp)]
+theorem le_inv_self_iff : a ≤ a⁻¹ ↔ a ≤ 1 := by simp [← not_iff_not]
+#align le_neg_self_iff le_neg_self_iff
+
+@[to_additive (attr := simp)]
+theorem lt_inv_self_iff : a < a⁻¹ ↔ a < 1 := by simp [← not_iff_not]
+#align lt_neg_self_iff lt_neg_self_iff
+
 end LinearOrderedCommGroup
-
-namespace AddCommGroup
-
-/-- A collection of elements in an `AddCommGroup` designated as "non-negative".
-This is useful for constructing an `OrderedAddCommGroup`
-by choosing a positive cone in an existing `AddCommGroup`. -/
--- Porting note: @[nolint has_nonempty_instance]
-structure PositiveCone (α : Type*) [AddCommGroup α] where
-  nonneg : α → Prop
-  pos : α → Prop := fun a => nonneg a ∧ ¬nonneg (-a)
-  pos_iff : ∀ a, pos a ↔ nonneg a ∧ ¬nonneg (-a) := by intros; rfl
-  zero_nonneg : nonneg 0
-  add_nonneg : ∀ {a b}, nonneg a → nonneg b → nonneg (a + b)
-  nonneg_antisymm : ∀ {a}, nonneg a → nonneg (-a) → a = 0
-#align add_comm_group.positive_cone AddCommGroup.PositiveCone
-
-/-- A positive cone in an `AddCommGroup` induces a linear order if
-for every `a`, either `a` or `-a` is non-negative. -/
--- Porting note: @[nolint has_nonempty_instance]
-structure TotalPositiveCone (α : Type*) [AddCommGroup α] extends PositiveCone α where
-  /-- For any `a` the proposition `nonneg a` is decidable -/
-  nonnegDecidable : DecidablePred nonneg
-  /-- Either `a` or `-a` is `nonneg` -/
-  nonneg_total : ∀ a : α, nonneg a ∨ nonneg (-a)
-#align add_comm_group.total_positive_cone AddCommGroup.TotalPositiveCone
-
-/-- Forget that a `TotalPositiveCone` is total. -/
-add_decl_doc TotalPositiveCone.toPositiveCone
-#align add_comm_group.total_positive_cone.to_positive_cone AddCommGroup.TotalPositiveCone.toPositiveCone
-
-end AddCommGroup
-
-namespace OrderedAddCommGroup
-
-open AddCommGroup
-
-/-- Construct an `OrderedAddCommGroup` by
-designating a positive cone in an existing `AddCommGroup`. -/
-def mkOfPositiveCone {α : Type*} [AddCommGroup α] (C : PositiveCone α) : OrderedAddCommGroup α :=
-  { ‹AddCommGroup α› with
-    le := fun a b => C.nonneg (b - a),
-    lt := fun a b => C.pos (b - a),
-    lt_iff_le_not_le := fun a b => by simp [C.pos_iff],
-    le_refl := fun a => by simp [C.zero_nonneg],
-    le_trans := fun a b c nab nbc => by simpa [← sub_add_sub_cancel] using C.add_nonneg nbc nab,
-    le_antisymm := fun a b nab nba =>
-      eq_of_sub_eq_zero <| C.nonneg_antisymm nba (by rwa [neg_sub]),
-    add_le_add_left := fun a b nab c => by simpa using nab }
-#align ordered_add_comm_group.mk_of_positive_cone OrderedAddCommGroup.mkOfPositiveCone
-
-end OrderedAddCommGroup
-
-namespace LinearOrderedAddCommGroup
-
-open AddCommGroup
-
-/-- Construct a `LinearOrderedAddCommGroup` by
-designating a positive cone in an existing `AddCommGroup`
-such that for every `a`, either `a` or `-a` is non-negative. -/
-def mkOfPositiveCone {α : Type*} [AddCommGroup α] (C : TotalPositiveCone α) :
-    LinearOrderedAddCommGroup α :=
-  { OrderedAddCommGroup.mkOfPositiveCone C.toPositiveCone with
-    -- Porting note: was `C.nonneg_total (b - a)`
-    le_total := fun a b => by simpa [neg_sub] using C.nonneg_total (b - a)
-    decidableLE := fun a b => C.nonnegDecidable _ }
-#align linear_ordered_add_comm_group.mk_of_positive_cone LinearOrderedAddCommGroup.mkOfPositiveCone
-
-end LinearOrderedAddCommGroup
 
 section NormNumLemmas
 
@@ -1235,14 +1193,14 @@ section NormNumLemmas
 expected signatures.  -/
 variable [OrderedCommGroup α] {a b : α}
 
-@[to_additive neg_le_neg]
+@[to_additive (attr := gcongr) neg_le_neg]
 theorem inv_le_inv' : a ≤ b → b⁻¹ ≤ a⁻¹ :=
   -- Porting note: explicit type annotation was not needed before.
   (@inv_le_inv_iff α ..).mpr
 #align inv_le_inv' inv_le_inv'
 #align neg_le_neg neg_le_neg
 
-@[to_additive neg_lt_neg]
+@[to_additive (attr := gcongr) neg_lt_neg]
 theorem inv_lt_inv' : a < b → b⁻¹ < a⁻¹ :=
   -- Porting note: explicit type annotation was not needed before.
   (@inv_lt_inv_iff α ..).mpr
@@ -1332,3 +1290,8 @@ theorem StrictAntiOn.inv (hf : StrictAntiOn f s) : StrictMonoOn (fun x => (f x)�
 #align strict_anti_on.neg StrictAntiOn.neg
 
 end
+
+/-
+`NeZero` should not be needed at this point in the ordered algebraic hierarchy.
+-/
+assert_not_exists NeZero

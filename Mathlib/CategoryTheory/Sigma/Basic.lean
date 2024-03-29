@@ -58,8 +58,7 @@ lemma comp_def (i : I) (X Y Z : C i) (f : X ⟶ Y) (g : Y ⟶ Z) : comp (mk f) (
   rfl
 #align category_theory.sigma.sigma_hom.comp_def CategoryTheory.Sigma.SigmaHom.comp_def
 
-lemma assoc
-  : ∀ {X Y Z W : Σi, C i} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ W), (f ≫ g) ≫ h = f ≫ g ≫ h
+lemma assoc : ∀ {X Y Z W : Σi, C i} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ W), (f ≫ g) ≫ h = f ≫ g ≫ h
   | _, _, _, _, mk _, mk _, mk _ => congr_arg mk (Category.assoc _ _ _)
 #align category_theory.sigma.sigma_hom.assoc CategoryTheory.Sigma.SigmaHom.assoc
 
@@ -96,7 +95,7 @@ instance (i : I) : Full (incl i : C i ⥤ Σi, C i) where
   witness := fun ⟨_⟩ => rfl
 
 instance (i : I) : Faithful (incl i : C i ⥤ Σi, C i) where
-  -- Porting note: was `tidy`
+  -- Porting note (#10936): was `tidy`
   map_injective {_ _ _ _} h := by injection h
 
 section
@@ -252,7 +251,6 @@ end
 namespace Functor
 
 -- variable {C}
-
 variable {D : I → Type u₁} [∀ i, Category.{v₁} (D i)]
 
 /-- Assemble an `I`-indexed family of functors into a functor between the sigma types.
@@ -266,7 +264,6 @@ end Functor
 namespace natTrans
 
 variable {D : I → Type u₁} [∀ i, Category.{v₁} (D i)]
-
 variable {F G : ∀ i, C i ⥤ D i}
 
 /-- Assemble an `I`-indexed family of natural transformations into a single natural transformation.

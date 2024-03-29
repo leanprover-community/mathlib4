@@ -3,7 +3,7 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
 -/
-import Mathlib.CategoryTheory.Arrow
+import Mathlib.CategoryTheory.Comma.Arrow
 
 #align_import category_theory.comm_sq from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
@@ -71,12 +71,15 @@ theorem unop {W X Y Z : Cᵒᵖ} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : 
   ⟨by simp only [← unop_comp, p.w]⟩
 #align category_theory.comm_sq.unop CategoryTheory.CommSq.unop
 
+theorem vert_inv {g : W ≅ Y} {h : X ≅ Z} (p : CommSq f g.hom h.hom i) :
+    CommSq i g.inv h.inv f :=
+  ⟨by rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp, p.w]⟩
+
 end CommSq
 
 namespace Functor
 
 variable {D : Type*} [Category D]
-
 variable (F : C ⥤ D) {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
 theorem map_commSq (s : CommSq f g h i) : CommSq (F.map f) (F.map g) (F.map h) (F.map i) :=
@@ -85,7 +88,7 @@ theorem map_commSq (s : CommSq f g h i) : CommSq (F.map f) (F.map g) (F.map h) (
 
 end Functor
 
-alias Functor.map_commSq ← CommSq.map
+alias CommSq.map := Functor.map_commSq
 #align category_theory.comm_sq.map CategoryTheory.CommSq.map
 
 namespace CommSq
@@ -105,7 +108,7 @@ variable {A B X Y : C} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
 
 The datum of a lift in a commutative square, i.e. an up-right-diagonal
 morphism which makes both triangles commute. -/
--- Porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 @[ext]
 structure LiftStruct (sq : CommSq f i p g) where
   /-- The lift. -/

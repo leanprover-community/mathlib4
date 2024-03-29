@@ -75,7 +75,7 @@ theorem Sphere.secondInter_eq_self_iff {s : Sphere P} {p : P} {v : V} :
     rwa [Sphere.secondInter, eq_comm, eq_vadd_iff_vsub_eq, vsub_self, eq_comm, smul_eq_zero,
       or_iff_left hv, div_eq_zero_iff, inner_self_eq_zero, or_iff_left hv, mul_eq_zero,
       or_iff_right (by norm_num : (-2 : ℝ) ≠ 0)] at hp
-  · rw [Sphere.secondInter, hp, MulZeroClass.mul_zero, zero_div, zero_smul, zero_vadd]
+  · rw [Sphere.secondInter, hp, mul_zero, zero_div, zero_smul, zero_vadd]
 #align euclidean_geometry.sphere.second_inter_eq_self_iff EuclideanGeometry.Sphere.secondInter_eq_self_iff
 
 /-- A point on a line through a point on a sphere equals that point or `secondInter`. -/
@@ -104,8 +104,8 @@ theorem Sphere.secondInter_smul (s : Sphere P) (p : P) (v : V) {r : ℝ} (hr : r
     s.secondInter p (r • v) = s.secondInter p v := by
   simp_rw [Sphere.secondInter, real_inner_smul_left, inner_smul_right, smul_smul,
     div_mul_eq_div_div]
-  rw [mul_comm, ← mul_div_assoc, ← mul_div_assoc, mul_div_cancel_left _ hr, mul_comm, mul_assoc,
-    mul_div_cancel_left _ hr, mul_comm]
+  rw [mul_comm, ← mul_div_assoc, ← mul_div_assoc, mul_div_cancel_left₀ _ hr, mul_comm, mul_assoc,
+    mul_div_cancel_left₀ _ hr, mul_comm]
 #align euclidean_geometry.sphere.second_inter_smul EuclideanGeometry.Sphere.secondInter_smul
 
 /-- `secondInter` is unchanged by negating the vector. -/
@@ -122,7 +122,7 @@ theorem Sphere.secondInter_secondInter (s : Sphere P) (p : P) (v : V) :
   by_cases hv : v = 0; · simp [hv]
   have hv' : ⟪v, v⟫ ≠ 0 := inner_self_ne_zero.2 hv
   simp only [Sphere.secondInter, vadd_vsub_assoc, vadd_vadd, inner_add_right, inner_smul_right,
-    div_mul_cancel _ hv']
+    div_mul_cancel₀ _ hv']
   rw [← @vsub_eq_zero_iff_eq V, vadd_vsub, ← add_smul, ← add_div]
   convert zero_smul ℝ (M := V) _
   convert zero_div (G₀ := ℝ) _

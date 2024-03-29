@@ -53,11 +53,11 @@ inner product space, Hilbert space, norm
 -/
 
 
-open IsROrC
+open RCLike
 
 open scoped ComplexConjugate
 
-variable {𝕜 : Type*} [IsROrC 𝕜] (E : Type*) [NormedAddCommGroup E]
+variable {𝕜 : Type*} [RCLike 𝕜] (E : Type*) [NormedAddCommGroup E]
 
 /-- Predicate for the parallelogram identity to hold in a normed group. This is a scalar-less
 version of `InnerProductSpace`. If you have an `InnerProductSpaceable` assumption, you can
@@ -126,11 +126,11 @@ theorem _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Con
 
 theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
   simp only [inner_]
-  have h₁ : IsROrC.normSq (4 : 𝕜) = 16 := by
+  have h₁ : RCLike.normSq (4 : 𝕜) = 16 := by
     have : ((4 : ℝ) : 𝕜) = (4 : 𝕜) := by norm_cast
-    rw [← this, normSq_eq_def', IsROrC.norm_of_nonneg (by norm_num : (0 : ℝ) ≤ 4)]
+    rw [← this, normSq_eq_def', RCLike.norm_of_nonneg (by norm_num : (0 : ℝ) ≤ 4)]
     norm_num
-  have h₂ : ‖x + x‖ = 2 * ‖x‖ := by rw [← two_smul 𝕜, norm_smul, IsROrC.norm_two]
+  have h₂ : ‖x + x‖ = 2 * ‖x‖ := by rw [← two_smul 𝕜, norm_smul, RCLike.norm_two]
   simp only [h₁, h₂, algebraMap_eq_ofReal, sub_self, norm_zero, mul_re, inv_re, ofNat_re, map_sub,
     map_add, ofReal_re, ofNat_im, ofReal_im, mul_im, I_re, inv_im]
   ring
@@ -144,7 +144,7 @@ theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
   simp only [map_sub, map_add, algebraMap_eq_ofReal, ← ofReal_mul, conj_ofReal, map_mul, conj_I]
   rw [add_comm y x, norm_sub_rev]
   by_cases hI : (I : 𝕜) = 0
-  · simp only [hI, neg_zero, MulZeroClass.zero_mul]
+  · simp only [hI, neg_zero, zero_mul]
   -- Porting note: this replaces `norm_I_of_ne_zero` which does not exist in Lean 4
   have : ‖(I : 𝕜)‖ = 1 := by
     rw [← mul_self_inj_of_nonneg (norm_nonneg I) zero_le_one, one_mul, ← norm_mul,
@@ -219,14 +219,14 @@ private theorem add_left_aux7 (y z : E) :
     2 * (‖(I : 𝕜) • y + z‖ * ‖(I : 𝕜) • y + z‖ + ‖z‖ * ‖z‖) - ‖(I : 𝕜) • y‖ * ‖(I : 𝕜) • y‖ := by
   apply eq_sub_of_add_eq
   have h₀ := parallelogram_identity ((I : 𝕜) • y + z) z
-  convert h₀ using 4 <;> · try simp only [two_smul, smul_add]; abel
+  convert h₀ using 4 <;> · (try simp only [two_smul, smul_add]); abel
 
 private theorem add_left_aux8 (y z : E) :
     ‖(I : 𝕜) • y - 2 • z‖ * ‖(I : 𝕜) • y - 2 • z‖ =
     2 * (‖(I : 𝕜) • y - z‖ * ‖(I : 𝕜) • y - z‖ + ‖z‖ * ‖z‖) - ‖(I : 𝕜) • y‖ * ‖(I : 𝕜) • y‖ := by
   apply eq_sub_of_add_eq'
   have h₀ := parallelogram_identity ((I : 𝕜) • y - z) z
-  convert h₀ using 4 <;> · try simp only [two_smul, smul_add]; abel
+  convert h₀ using 4 <;> · (try simp only [two_smul, smul_add]); abel
 
 theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 𝕜 y z := by
   simp only [inner_, ← mul_add]
@@ -243,8 +243,8 @@ theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 
 
 theorem nat (n : ℕ) (x y : E) : inner_ 𝕜 ((n : 𝕜) • x) y = (n : 𝕜) * inner_ 𝕜 x y := by
   induction' n with n ih
-  · simp only [inner_, Nat.zero_eq, zero_sub, Nat.cast_zero, MulZeroClass.zero_mul,
-      eq_self_iff_true, zero_smul, zero_add, MulZeroClass.mul_zero, sub_self, norm_neg, smul_zero]
+  · simp only [inner_, Nat.zero_eq, zero_sub, Nat.cast_zero, zero_mul,
+      eq_self_iff_true, zero_smul, zero_add, mul_zero, sub_self, norm_neg, smul_zero]
   · simp only [Nat.cast_succ, add_smul, one_smul]
     rw [add_left, ih, add_mul, one_mul]
 #align inner_product_spaceable.nat InnerProductSpaceable.nat
@@ -260,8 +260,8 @@ private theorem int_prop (n : ℤ) : innerProp' E (n : 𝕜) := by
   · rw [Int.sign_eq_neg_one_of_neg hn, innerProp_neg_one ((n.natAbs : 𝕜) • x), nat]
     simp only [map_neg, neg_mul, one_mul, mul_eq_mul_left_iff, true_or_iff, Int.natAbs_eq_zero,
       eq_self_iff_true, Int.cast_one, map_one, neg_inj, Nat.cast_eq_zero, Int.cast_neg]
-  · simp only [inner_, Int.cast_zero, zero_sub, Nat.cast_zero, MulZeroClass.zero_mul,
-      eq_self_iff_true, Int.sign_zero, zero_smul, zero_add, MulZeroClass.mul_zero, smul_zero,
+  · simp only [inner_, Int.cast_zero, zero_sub, Nat.cast_zero, zero_mul,
+      eq_self_iff_true, Int.sign_zero, zero_smul, zero_add, mul_zero, smul_zero,
       sub_self, norm_neg, Int.natAbs_zero]
   · rw [Int.sign_eq_one_of_pos hn]
     simp only [one_mul, mul_eq_mul_left_iff, true_or_iff, Int.natAbs_eq_zero, eq_self_iff_true,
@@ -270,11 +270,11 @@ private theorem int_prop (n : ℤ) : innerProp' E (n : 𝕜) := by
 private theorem rat_prop (r : ℚ) : innerProp' E (r : 𝕜) := by
   intro x y
   have : (r.den : 𝕜) ≠ 0 := by
-    haveI : CharZero 𝕜 := IsROrC.charZero_isROrC
-    exact_mod_cast r.pos.ne'
+    haveI : CharZero 𝕜 := RCLike.charZero_rclike
+    exact mod_cast r.pos.ne'
   rw [← r.num_div_den, ← mul_right_inj' this, ← nat r.den _ y, smul_smul, Rat.cast_div]
-  simp only [map_natCast, Rat.cast_coe_nat, map_intCast, Rat.cast_coe_int, map_div₀]
-  rw [← mul_assoc, mul_div_cancel' _ this, int_prop _ x, map_intCast]
+  simp only [map_natCast, Rat.cast_natCast, map_intCast, Rat.cast_intCast, map_div₀]
+  rw [← mul_assoc, mul_div_cancel₀ _ this, int_prop _ x, map_intCast]
 
 private theorem real_prop (r : ℝ) : innerProp' E (r : 𝕜) := by
   intro x y
@@ -283,7 +283,7 @@ private theorem real_prop (r : ℝ) : innerProp' E (r : 𝕜) := by
   refine' Rat.denseEmbedding_coe_real.dense.equalizer _ _ (funext fun X => _)
   · exact (continuous_ofReal.smul continuous_const).inner_ continuous_const
   · exact (continuous_conj.comp continuous_ofReal).mul continuous_const
-  · simp only [Function.comp_apply, IsROrC.ofReal_ratCast, rat_prop _ _]
+  · simp only [Function.comp_apply, RCLike.ofReal_ratCast, rat_prop _ _]
 
 private theorem I_prop : innerProp' E (I : 𝕜) := by
   by_cases hI : (I : 𝕜) = 0
@@ -327,7 +327,6 @@ noncomputable def InnerProductSpace.ofNorm
 #align inner_product_space.of_norm InnerProductSpace.ofNorm
 
 variable (E)
-
 variable [InnerProductSpaceable E]
 
 /-- **Fréchet–von Neumann–Jordan Theorem**. A normed space `E` whose norm satisfies the
@@ -343,7 +342,6 @@ theorem nonempty_innerProductSpace : Nonempty (InnerProductSpace 𝕜 E) :=
 #align nonempty_inner_product_space nonempty_innerProductSpace
 
 variable {𝕜 E}
-
 variable [NormedSpace ℝ E]
 
 -- TODO: Replace `InnerProductSpace.toUniformConvexSpace`

@@ -31,7 +31,6 @@ variable {C : Type u₁} [Category.{v₁} C]
 section ReflectsIso
 
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable {E : Type u₃} [Category.{v₃} E]
 
 /-- Define what it means for a functor `F : C ⥤ D` to reflect isomorphisms: for any
@@ -51,8 +50,8 @@ theorem isIso_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [IsIso (F.ma
 
 instance (priority := 100) reflectsIsomorphisms_of_full_and_faithful
     (F : C ⥤ D) [Full F] [Faithful F] :
-    ReflectsIsomorphisms F
-    where reflects f i :=
+    ReflectsIsomorphisms F where
+  reflects f i :=
     ⟨⟨F.preimage (inv (F.map f)), ⟨F.map_injective (by simp), F.map_injective (by simp)⟩⟩⟩
 #align category_theory.of_full_and_faithful CategoryTheory.reflectsIsomorphisms_of_full_and_faithful
 

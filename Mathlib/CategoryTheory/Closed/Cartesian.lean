@@ -75,7 +75,7 @@ abbrev CartesianClosed (C : Type u) [Category.{v} C] [HasFiniteProducts C] :=
   MonoidalClosed C
 #align category_theory.cartesian_closed CategoryTheory.CartesianClosed
 
--- porting note: added to ease the port of `CategoryTheory.Closed.Types`
+-- Porting note: added to ease the port of `CategoryTheory.Closed.Types`
 /-- Constructor for `CartesianClosed C`. -/
 def CartesianClosed.mk (C : Type u) [Category.{v} C] [HasFiniteProducts C]
     (h : ∀ X, IsLeftAdjoint (@MonoidalCategory.tensorLeft _ _
@@ -84,7 +84,6 @@ def CartesianClosed.mk (C : Type u) [Category.{v} C] [HasFiniteProducts C]
   ⟨fun X => ⟨h X⟩⟩
 
 variable {C : Type u} [Category.{v} C] (A B : C) {X X' Y Y' Z : C}
-
 variable [HasFiniteProducts C] [Exponentiable A]
 
 /-- This is (-)^A. -/
@@ -109,27 +108,30 @@ abbrev coev : 𝟭 C ⟶ prod.functor.obj A ⋙ exp A :=
   ihom.coev A
 #align category_theory.exp.coev CategoryTheory.exp.coev
 
--- porting note: notation fails to elaborate with `quotPrecheck` on.
+-- Porting note: notation fails to elaborate with `quotPrecheck` on.
 set_option quotPrecheck false in
+/-- Morphisms obtained using an exponentiable object. -/
 notation:20 A " ⟹ " B:19 => (exp A).obj B
 
 open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Delaborator for `Prefunctor.obj` -/
 @[delab app.Prefunctor.obj]
 def delabPrefunctorObjExp : Delab := do
   let e ← getExpr
-  guard $ e.isAppOfArity' ``Prefunctor.obj 6
+  guard <| e.isAppOfArity' ``Prefunctor.obj 6
   let A ← withNaryArg 4 do
     let e ← getExpr
-    guard $ e.isAppOfArity' ``Functor.toPrefunctor 5
+    guard <| e.isAppOfArity' ``Functor.toPrefunctor 5
     withNaryArg 4 do
       let e ← getExpr
-      guard $ e.isAppOfArity' ``exp 5
+      guard <| e.isAppOfArity' ``exp 5
       withNaryArg 2 delab
   let B ← withNaryArg 5 delab
   `($A ⟹ $B)
 
--- porting note: notation fails to elaborate with `quotPrecheck` on.
+-- Porting note: notation fails to elaborate with `quotPrecheck` on.
 set_option quotPrecheck false in
+/-- Morphisms from an exponentiable object. -/
 notation:30 B " ^^ " A:30 => (exp A).obj B
 
 @[simp, reassoc]
@@ -137,7 +139,7 @@ theorem ev_coev : Limits.prod.map (𝟙 A) ((coev A).app B) ≫ (ev A).app (A �
   ihom.ev_coev A B
 #align category_theory.exp.ev_coev CategoryTheory.exp.ev_coev
 
-@[simp, reassoc]
+@[reassoc]
 theorem coev_ev : (coev A).app (A ⟹ B) ≫ (exp A).map ((ev A).app B) = 𝟙 (A ⟹ B) :=
   ihom.coev_ev A B
 #align category_theory.exp.coev_ev CategoryTheory.exp.coev_ev
@@ -162,12 +164,14 @@ def uncurry : (Y ⟶ A ⟹ X) → (A ⨯ Y ⟶ X) :=
   ((exp.adjunction A).homEquiv _ _).symm
 #align category_theory.cartesian_closed.uncurry CategoryTheory.CartesianClosed.uncurry
 
-@[simp]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
 theorem homEquiv_apply_eq (f : A ⨯ Y ⟶ X) : (exp.adjunction A).homEquiv _ _ f = curry f :=
   rfl
 #align category_theory.cartesian_closed.hom_equiv_apply_eq CategoryTheory.CartesianClosed.homEquiv_apply_eq
 
-@[simp]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
 theorem homEquiv_symm_apply_eq (f : Y ⟶ A ⟹ X) :
     ((exp.adjunction A).homEquiv _ _).symm f = uncurry f :=
   rfl
@@ -207,12 +211,12 @@ theorem curry_uncurry (f : X ⟶ A ⟹ Y) : curry (uncurry f) = f :=
   (Closed.isAdj.adj.homEquiv _ _).right_inv f
 #align category_theory.cartesian_closed.curry_uncurry CategoryTheory.CartesianClosed.curry_uncurry
 
--- porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
+-- Porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
 theorem curry_eq_iff (f : A ⨯ Y ⟶ X) (g : Y ⟶ A ⟹ X) : curry f = g ↔ f = uncurry g :=
   Adjunction.homEquiv_apply_eq (exp.adjunction A) f g
 #align category_theory.cartesian_closed.curry_eq_iff CategoryTheory.CartesianClosed.curry_eq_iff
 
--- porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
+-- Porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
 theorem eq_curry_iff (f : A ⨯ Y ⟶ X) (g : Y ⟶ A ⟹ X) : g = curry f ↔ uncurry g = f :=
   Adjunction.eq_homEquiv_apply (exp.adjunction A) f g
 #align category_theory.cartesian_closed.eq_curry_iff CategoryTheory.CartesianClosed.eq_curry_iff
@@ -318,9 +322,9 @@ def zeroMul {I : C} (t : IsInitial I) : A ⨯ I ≅ I where
   hom := Limits.prod.snd
   inv := t.to _
   hom_inv_id := by
-    have : (prod.snd : A ⨯ I ⟶ I) = CartesianClosed.uncurry (t.to _)
-    rw [← curry_eq_iff]
-    apply t.hom_ext
+    have : (prod.snd : A ⨯ I ⟶ I) = CartesianClosed.uncurry (t.to _) := by
+      rw [← curry_eq_iff]
+      apply t.hom_ext
     rw [this, ← uncurry_natural_right, ← eq_curry_iff]
     apply t.hom_ext
   inv_hom_id := t.hom_ext _ _
@@ -336,7 +340,7 @@ def powZero {I : C} (t : IsInitial I) [CartesianClosed C] : I ⟹ B ≅ ⊤_ C w
   hom := default
   inv := CartesianClosed.curry ((mulZero t).hom ≫ t.to _)
   hom_inv_id := by
-    -- Porting note: mathport thought that the `mulZero` here was `MulZeroClass.mul_zero`!
+    -- Porting note: mathport thought that the `mulZero` here was `mul_zero`!
     rw [← curry_natural_left, curry_eq_iff, ← cancel_epi (mulZero t).inv]
     apply t.hom_ext
 #align category_theory.pow_zero CategoryTheory.powZero
@@ -407,15 +411,17 @@ def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClos
     { isAdj := by
         haveI q : Exponentiable (e.inverse.obj X) := inferInstance
         have : IsLeftAdjoint (prod.functor.obj (e.inverse.obj X)) := q.isAdj
-        have : e.functor ⋙ prod.functor.obj X ⋙ e.inverse ≅ prod.functor.obj (e.inverse.obj X)
-        apply NatIso.ofComponents _ _
-        · intro Y
-          apply asIso (prodComparison e.inverse X (e.functor.obj Y)) ≪≫ _
-          apply prod.mapIso (Iso.refl _) (e.unitIso.app Y).symm
-        · intro Y Z g
-          dsimp
-          simp [prodComparison, prod.comp_lift, ← e.inverse.map_comp, ← e.inverse.map_comp_assoc]
-          -- I wonder if it would be a good idea to make `map_comp` a simp lemma the other way round
+        have : e.functor ⋙ prod.functor.obj X ⋙ e.inverse ≅
+            prod.functor.obj (e.inverse.obj X) := by
+          apply NatIso.ofComponents _ _
+          · intro Y
+            apply asIso (prodComparison e.inverse X (e.functor.obj Y)) ≪≫ _
+            apply prod.mapIso (Iso.refl _) (e.unitIso.app Y).symm
+          · intro Y Z g
+            dsimp
+            simp [prodComparison, prod.comp_lift, ← e.inverse.map_comp, ← e.inverse.map_comp_assoc]
+            -- I wonder if it would be a good idea to
+            -- make `map_comp` a simp lemma the other way round
         · have : IsLeftAdjoint (e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
             Adjunction.leftAdjointOfNatIso this.symm
           have : IsLeftAdjoint (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
@@ -426,10 +432,11 @@ def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClos
             apply isoWhiskerRight e.counitIso (prod.functor.obj X ⋙ e.inverse ⋙ e.functor) ≪≫ _
             change prod.functor.obj X ⋙ e.inverse ⋙ e.functor ≅ prod.functor.obj X
             apply isoWhiskerLeft (prod.functor.obj X) e.counitIso
-          skip
           apply Adjunction.leftAdjointOfNatIso this }
 #align category_theory.cartesian_closed_of_equiv CategoryTheory.cartesianClosedOfEquiv
 
 end Functor
 
+attribute [nolint simpNF] CategoryTheory.CartesianClosed.homEquiv_apply_eq
+  CategoryTheory.CartesianClosed.homEquiv_symm_apply_eq
 end CategoryTheory

@@ -67,7 +67,7 @@ theorem hermite_zero : hermite 0 = C 1 :=
   rfl
 #align polynomial.hermite_zero Polynomial.hermite_zero
 
--- Porting note: There was initially @[simp] on this line but it was removed
+-- Porting note (#10618): There was initially @[simp] on this line but it was removed
 -- because simp can prove this theorem
 theorem hermite_one : hermite 1 = X := by
   rw [hermite_succ, hermite_zero]
@@ -96,14 +96,14 @@ theorem coeff_hermite_of_lt {n k : ℕ} (hnk : n < k) : coeff (hermite n) k = 0 
   · apply coeff_C
   · have : n + k + 1 + 2 = n + (k + 2) + 1 := by ring
     rw [Nat.succ_eq_add_one, coeff_hermite_succ_succ, add_right_comm, this, ih k, ih (k + 2),
-      MulZeroClass.mul_zero, sub_zero]
+      mul_zero, sub_zero]
 #align polynomial.coeff_hermite_of_lt Polynomial.coeff_hermite_of_lt
 
 @[simp]
 theorem coeff_hermite_self (n : ℕ) : coeff (hermite n) n = 1 := by
   induction' n with n ih
   · apply coeff_C
-  · rw [coeff_hermite_succ_succ, ih, coeff_hermite_of_lt, MulZeroClass.mul_zero, sub_zero]
+  · rw [coeff_hermite_succ_succ, ih, coeff_hermite_of_lt, mul_zero, sub_zero]
     simp
 #align polynomial.coeff_hermite_self Polynomial.coeff_hermite_self
 
@@ -135,10 +135,10 @@ theorem coeff_hermite_of_odd_add {n k : ℕ} (hnk : Odd (n + k)) : coeff (hermit
   · rw [Nat.zero_eq, zero_add k] at hnk
     exact coeff_hermite_of_lt hnk.pos
   · cases' k with k
-    · rw [Nat.succ_add_eq_succ_add] at hnk
+    · rw [Nat.succ_add_eq_add_succ] at hnk
       rw [coeff_hermite_succ_zero, ih hnk, neg_zero]
-    · rw [coeff_hermite_succ_succ, ih, ih, MulZeroClass.mul_zero, sub_zero]
-      · rwa [Nat.succ_add_eq_succ_add] at hnk
+    · rw [coeff_hermite_succ_succ, ih, ih, mul_zero, sub_zero]
+      · rwa [Nat.succ_add_eq_add_succ] at hnk
       · rw [(by rw [Nat.succ_add, Nat.add_succ] : n.succ + k.succ = n + k + 2)] at hnk
         exact (Nat.odd_add.mp hnk).mpr even_two
 #align polynomial.coeff_hermite_of_odd_add Polynomial.coeff_hermite_of_odd_add
@@ -155,8 +155,8 @@ theorem coeff_hermite_explicit :
   | 0, _ => by simp
   | n + 1, 0 => by
     convert coeff_hermite_succ_zero (2 * n + 1) using 1
-    -- porting note: ring_nf did not solve the goal on line 165
-    rw [coeff_hermite_explicit n 1, (by rw [Nat.left_distrib, mul_one, Nat.succ_sub_one] :
+    -- Porting note: ring_nf did not solve the goal on line 165
+    rw [coeff_hermite_explicit n 1, (by rw [Nat.left_distrib, mul_one, Nat.add_one_sub_one] :
       2 * (n + 1) - 1 = 2 * n + 1), Nat.doubleFactorial_add_one, Nat.choose_zero_right,
       Nat.choose_one_right, pow_succ]
     push_cast
@@ -169,16 +169,16 @@ theorem coeff_hermite_explicit :
         hermite_explicit (n + 1) (k + 1) =
           hermite_explicit (n + 1) k - (k + 2) * hermite_explicit n (k + 2) := by
       intro n k
-      simp only
+      simp only [hermite_explicit]
       -- Factor out (-1)'s.
       rw [mul_comm (↑k + _ : ℤ), sub_eq_add_neg]
       nth_rw 3 [neg_eq_neg_one_mul]
-      simp only [mul_assoc, ← mul_add, pow_succ]
+      simp only [mul_assoc, ← mul_add, pow_succ']
       congr 2
       -- Factor out double factorials.
       norm_cast
-      -- porting note: ring_nf did not solve the goal on line 186
-      rw [(by rw [Nat.left_distrib, mul_one, Nat.succ_sub_one] : 2 * (n + 1) - 1 = 2 * n + 1),
+      -- Porting note: ring_nf did not solve the goal on line 186
+      rw [(by rw [Nat.left_distrib, mul_one, Nat.add_one_sub_one] : 2 * (n + 1) - 1 = 2 * n + 1),
         Nat.doubleFactorial_add_one, mul_comm (2 * n + 1)]
       simp only [mul_assoc, ← mul_add]
       congr 1
@@ -186,29 +186,22 @@ theorem coeff_hermite_explicit :
       rw [(by ring : 2 * (n + 1) + (k + 1) = 2 * n + 1 + (k + 1) + 1),
         (by ring : 2 * (n + 1) + k = 2 * n + 1 + (k + 1)),
         (by ring : 2 * n + (k + 2) = 2 * n + 1 + (k + 1))]
-      rw [Nat.choose, Nat.choose_succ_right_eq (2 * n + 1 + (k + 1)) (k + 1), Nat.add_sub_cancel,
-        Int.negSucc_eq]
-      -- porting note: ring could not solve the goal so the lines 195, 198-200 were added.
-      ring_nf
-      simp only [sub_eq_add_neg, ← neg_mul, ← right_distrib _ _ ((-(1 : ℤ)) ^ n), ← neg_add]
-      norm_cast
-      simp only [← add_assoc, add_comm]
+      rw [Nat.choose, Nat.choose_succ_right_eq (2 * n + 1 + (k + 1)) (k + 1), Nat.add_sub_cancel]
+      ring
     change _ = hermite_explicit _ _
     rw [← add_assoc, coeff_hermite_succ_succ, hermite_explicit_recur]
     congr
     · rw [coeff_hermite_explicit (n + 1) k]
     · rw [(by ring : 2 * (n + 1) + k = 2 * n + (k + 2)), coeff_hermite_explicit n (k + 2)]
--- porting note: Lean 3 worked this out automatically
-termination_by _ n k => (n, k)
 #align polynomial.coeff_hermite_explicit Polynomial.coeff_hermite_explicit
 
 theorem coeff_hermite_of_even_add {n k : ℕ} (hnk : Even (n + k)) :
     coeff (hermite n) k = (-1) ^ ((n - k) / 2) * (n - k - 1)‼ * Nat.choose n k := by
-  cases' le_or_lt k n with h_le h_lt
+  rcases le_or_lt k n with h_le | h_lt
   · rw [Nat.even_add, ← Nat.even_sub h_le] at hnk
     obtain ⟨m, hm⟩ := hnk
-    -- porting note: linarith failed to find a contradiction by itself
-    rw [(by linarith [by rwa [Nat.sub_eq_iff_eq_add h_le] at hm] : n = 2 * m + k),
+    -- Porting note: linarith failed to find a contradiction by itself
+    rw [(by omega : n = 2 * m + k),
       Nat.add_sub_cancel, Nat.mul_div_cancel_left _ (Nat.succ_pos 1), coeff_hermite_explicit]
   · simp [Nat.choose_eq_zero_of_lt h_lt, coeff_hermite_of_lt h_lt]
 #align polynomial.coeff_hermite_of_even_add Polynomial.coeff_hermite_of_even_add

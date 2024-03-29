@@ -3,7 +3,7 @@ Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.StructuredArrow
+import Mathlib.CategoryTheory.Comma.StructuredArrow
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.PUnit
 
@@ -47,7 +47,7 @@ def Functor.Elements (F : C ⥤ Type w) :=
   Σc : C, F.obj c
 #align category_theory.functor.elements CategoryTheory.Functor.Elements
 
--- porting note: added because Sigma.ext would be triggered automatically
+-- Porting note: added because Sigma.ext would be triggered automatically
 lemma Functor.Elements.ext {F : C ⥤ Type w} (x y : F.Elements) (h₁ : x.fst = y.fst)
     (h₂ : F.map (eqToHom h₁) x.snd = y.snd) : x = y := by
   cases x
@@ -83,16 +83,20 @@ theorem id_val {F : C ⥤ Type w} {p : F.Elements} : (𝟙 p : p ⟶ p).val = �
   rfl
 #align category_theory.category_of_elements.id_val CategoryTheory.CategoryOfElements.id_val
 
+@[simp]
+theorem map_snd {F : C ⥤ Type w} {p q : F.Elements} (f : p ⟶ q) : (F.map f.val) p.2 = q.2 :=
+  f.property
+
 end CategoryOfElements
 
-noncomputable instance groupoidOfElements {G : Type u} [Groupoid.{v} G] (F : G ⥤ Type w) :
+instance groupoidOfElements {G : Type u} [Groupoid.{v} G] (F : G ⥤ Type w) :
     Groupoid F.Elements
     where
   inv {p q} f :=
-    ⟨inv f.val,
+    ⟨Groupoid.inv f.val,
       calc
-        F.map (inv f.val) q.2 = F.map (inv f.val) (F.map f.val p.2) := by rw [f.2]
-        _ = (F.map f.val ≫ F.map (inv f.val)) p.2 := rfl
+        F.map (Groupoid.inv f.val) q.2 = F.map (Groupoid.inv f.val) (F.map f.val p.2) := by rw [f.2]
+        _ = (F.map f.val ≫ F.map (Groupoid.inv f.val)) p.2 := rfl
         _ = p.2 := by
           rw [← F.map_comp]
           simp
@@ -116,13 +120,19 @@ def π : F.Elements ⥤ C where
   map f := f.val
 #align category_theory.category_of_elements.π CategoryTheory.CategoryOfElements.π
 
+instance : Faithful (π F) where
+
+instance : ReflectsIsomorphisms (π F) where
+  reflects {X Y} f h := ⟨⟨⟨inv ((π F).map f),
+    by rw [← map_snd f, ← FunctorToTypes.map_comp_apply]; simp⟩, by aesop_cat⟩⟩
+
 /-- A natural transformation between functors induces a functor between the categories of elements.
 -/
 @[simps]
 def map {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : F₁.Elements ⥤ F₂.Elements
     where
   obj t := ⟨t.1, α.app t.1 t.2⟩
-  map {t₁ t₂} k := ⟨k.1, by simpa [← k.2] using (FunctorToTypes.naturality _ _ α k.1 t₁.2).symm⟩
+  map {t₁ t₂} k := ⟨k.1, by simpa [← map_snd] using (FunctorToTypes.naturality _ _ α k.1 t₁.2).symm⟩
 #align category_theory.category_of_elements.map CategoryTheory.CategoryOfElements.map
 
 @[simp]
@@ -246,9 +256,7 @@ theorem to_fromCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
     ext x f
     convert congr_fun (X_hom.naturality f.op).symm (𝟙 X_left)
     simp
-  · intro X Y f
-    ext
-    simp [CostructuredArrow.eqToHom_left]
+  · aesop
 #align category_theory.category_of_elements.to_from_costructured_arrow_eq CategoryTheory.CategoryOfElements.to_fromCostructuredArrow_eq
 
 /-- The equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` given by yoneda lemma. -/
@@ -275,10 +283,20 @@ theorem costructuredArrow_yoneda_equivalence_naturality {F₁ F₂ : Cᵒᵖ ⥤
     congr
     ext _ f
     simpa using congr_fun (α.naturality f.op).symm (unop X).snd
-  · intro X Y f
-    ext
-    simp [CostructuredArrow.eqToHom_left]
+  · simp [autoParam]
 #align category_theory.category_of_elements.costructured_arrow_yoneda_equivalence_naturality CategoryTheory.CategoryOfElements.costructuredArrow_yoneda_equivalence_naturality
+
+/-- The equivalence `F.elementsᵒᵖ ≌ (yoneda, F)` is compatible with the forgetful functors. -/
+@[simps!]
+def costructuredArrowYonedaEquivalenceFunctorProj (F : Cᵒᵖ ⥤ Type v) :
+    (costructuredArrowYonedaEquivalence F).functor ⋙ CostructuredArrow.proj _ _ ≅ (π F).leftOp :=
+  Iso.refl _
+
+/-- The equivalence `F.elementsᵒᵖ ≌ (yoneda, F)` is compatible with the forgetful functors. -/
+@[simps!]
+def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ Type v) :
+    (costructuredArrowYonedaEquivalence F).inverse ⋙ (π F).leftOp ≅ CostructuredArrow.proj _ _ :=
+  Iso.refl _
 
 end CategoryOfElements
 

@@ -17,7 +17,7 @@ and `S : D` as a subtype of the subobjects of `A.right`. We deduce that `Structu
 well-powered if `C` is.
 
 ## Main declarations
-* `StructuredArrow.subobjectEquiv `: the order-equivalence between `Subobject A` and a subtype of
+* `StructuredArrow.subobjectEquiv`: the order-equivalence between `Subobject A` and a subtype of
   `Subobject A.right`.
 
 ## Implementation notes
@@ -114,11 +114,15 @@ def subobjectEquiv [HasLimits C] [PreservesLimits T] (A : StructuredArrow S T) :
       exact congr_arg CommaMorphism.right (Subobject.ofMkLEMk_comp h)
 #align category_theory.structured_arrow.subobject_equiv CategoryTheory.StructuredArrow.subobjectEquiv
 
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] CategoryTheory.StructuredArrow.subobjectEquiv_symm_apply
+  CategoryTheory.StructuredArrow.subobjectEquiv_apply_coe
+
 /-- If `C` is well-powered and complete and `T` preserves limits, then `StructuredArrow S T` is
     well-powered. -/
 instance wellPowered_structuredArrow [WellPowered C] [HasLimits C] [PreservesLimits T] :
-    WellPowered (StructuredArrow S T)
-    where subobject_small X := small_map (subobjectEquiv X).toEquiv
+    WellPowered (StructuredArrow S T) where
+  subobject_small X := small_map (subobjectEquiv X).toEquiv
 #align category_theory.structured_arrow.well_powered_structured_arrow CategoryTheory.StructuredArrow.wellPowered_structuredArrow
 
 end StructuredArrow
@@ -235,8 +239,8 @@ def quotientEquiv [HasColimits C] [PreservesColimits S] (A : CostructuredArrow S
 /-- If `C` is well-copowered and cocomplete and `S` preserves colimits, then
     `CostructuredArrow S T` is well-copowered. -/
 instance well_copowered_costructuredArrow [WellPowered Cᵒᵖ] [HasColimits C] [PreservesColimits S] :
-    WellPowered (CostructuredArrow S T)ᵒᵖ
-    where subobject_small X := small_map (quotientEquiv (unop X)).toEquiv
+    WellPowered (CostructuredArrow S T)ᵒᵖ where
+  subobject_small X := small_map (quotientEquiv (unop X)).toEquiv
 #align category_theory.costructured_arrow.well_copowered_costructured_arrow CategoryTheory.CostructuredArrow.well_copowered_costructuredArrow
 
 end CostructuredArrow

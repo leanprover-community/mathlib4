@@ -3,6 +3,7 @@ Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
+import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.InnerProductSpace.Basic
 
 #align_import geometry.euclidean.inversion from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
@@ -22,8 +23,6 @@ Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality
 `EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist`.
 -/
 
-set_option autoImplicit true
-
 noncomputable section
 
 open Metric Function AffineMap Set AffineSubspace
@@ -42,6 +41,11 @@ sphere. -/
 def inversion (c : P) (R : ℝ) (x : P) : P :=
   (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c
 #align euclidean_geometry.inversion EuclideanGeometry.inversion
+
+-- Adaptation note: nightly-2024-03-16: added to replace simp [inversion]
+theorem inversion_def :
+    inversion = fun (c : P) (R : ℝ) (x : P) => (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c :=
+  rfl
 
 /-!
 ### Basic properties
@@ -109,7 +113,7 @@ theorem inversion_inversion (c : P) {R : ℝ} (hR : R ≠ 0) (x : P) :
   rcases eq_or_ne x c with (rfl | hne)
   · rw [inversion_self, inversion_self]
   · rw [inversion, dist_inversion_center, inversion_vsub_center, smul_smul, ← mul_pow,
-      div_mul_div_comm, div_mul_cancel _ (dist_ne_zero.2 hne), ← sq, div_self, one_pow, one_smul,
+      div_mul_div_comm, div_mul_cancel₀ _ (dist_ne_zero.2 hne), ← sq, div_self, one_pow, one_smul,
       vsub_vadd]
     exact pow_ne_zero _ hR
 #align euclidean_geometry.inversion_inversion EuclideanGeometry.inversion_inversion
@@ -182,12 +186,12 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
     dist a c * dist b d ≤ dist a b * dist c d + dist b c * dist a d := by
   -- If one of the points `b`, `c`, `d` is equal to `a`, then the inequality is trivial.
   rcases eq_or_ne b a with (rfl | hb)
-  · rw [dist_self, MulZeroClass.zero_mul, zero_add]
+  · rw [dist_self, zero_mul, zero_add]
   rcases eq_or_ne c a with (rfl | hc)
-  · rw [dist_self, MulZeroClass.zero_mul]
+  · rw [dist_self, zero_mul]
     apply_rules [add_nonneg, mul_nonneg, dist_nonneg]
   rcases eq_or_ne d a with (rfl | hd)
-  · rw [dist_self, MulZeroClass.mul_zero, add_zero, dist_comm d, dist_comm d, mul_comm]
+  · rw [dist_self, mul_zero, add_zero, dist_comm d, dist_comm d, mul_comm]
   /- Otherwise, we apply the triangle inequality to `EuclideanGeometry.inversion a 1 b`,
     `EuclideanGeometry.inversion a 1 c`, and `EuclideanGeometry.inversion a 1 d`. -/
   have H := dist_triangle (inversion a 1 b) (inversion a 1 c) (inversion a 1 d)
@@ -206,9 +210,9 @@ open EuclideanGeometry
 ### Continuity of inversion
 -/
 
-protected theorem Filter.Tendsto.inversion {l : Filter α} {fc fx : α → P} {fR : α → ℝ}
-    (hc : Tendsto fc l (𝓝 c)) (hR : Tendsto fR l (𝓝 R)) (hx : Tendsto fx l (𝓝 x))
-    (hne : x ≠ c) :
+protected theorem Filter.Tendsto.inversion {α : Type*} {x c : P} {R : ℝ} {l : Filter α}
+    {fc fx : α → P} {fR : α → ℝ} (hc : Tendsto fc l (𝓝 c)) (hR : Tendsto fR l (𝓝 R))
+    (hx : Tendsto fx l (𝓝 x)) (hne : x ≠ c) :
     Tendsto (fun a ↦ inversion (fc a) (fR a) (fx a)) l (𝓝 (inversion c R x)) :=
   (((hR.div (hx.dist hc) <| dist_ne_zero.2 hne).pow 2).smul (hx.vsub hc)).vadd hc
 

@@ -3,10 +3,9 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Algebra.Hom.Equiv.TypeTags
+import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Data.ZMod.Quotient
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.Norm
 
 #align_import ring_theory.dedekind_domain.selmer_group from "leanprover-community/mathlib"@"2032a878972d5672e7c27c957e7a6e297b044973"
 
@@ -74,7 +73,7 @@ open scoped Classical DiscreteValuation nonZeroDivisors
 
 universe u v
 
-variable {R : Type u} [CommRing R] [IsDomain R] [IsDedekindDomain R] {K : Type v} [Field K]
+variable {R : Type u} [CommRing R] [IsDedekindDomain R] {K : Type v} [Field K]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 /-! ### Valuations of non-zero elements -/
@@ -136,7 +135,7 @@ theorem valuation_of_unit_eq (x : Rˣ) :
 
 /-- The multiplicative `v`-adic valuation on `Kˣ` modulo `n`-th powers. -/
 def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=
-  (Int.quotientZmultiplesNatEquivZMod n).toMultiplicative.toMonoidHom.comp <|
+  (Int.quotientZMultiplesNatEquivZMod n).toMultiplicative.toMonoidHom.comp <|
     QuotientGroup.map (powMonoidHom n : Kˣ →* Kˣ).range
       (AddSubgroup.toSubgroup (AddSubgroup.zmultiples (n : ℤ)))
       v.valuationOfNeZero
@@ -149,7 +148,8 @@ def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=
 @[simp]
 theorem valuation_of_unit_mod_eq (n : ℕ) (x : Rˣ) :
     v.valuationOfNeZeroMod n (Units.map (algebraMap R K : R →* K) x : K/n) = 1 := by
-  rw [valuationOfNeZeroMod, MonoidHom.comp_apply, ← QuotientGroup.coe_mk',
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [valuationOfNeZeroMod, MonoidHom.comp_apply, ← QuotientGroup.coe_mk',
     QuotientGroup.map_mk' (G := Kˣ) (N := MonoidHom.range (powMonoidHom n)),
     valuation_of_unit_eq, QuotientGroup.mk_one, map_one]
 #align is_dedekind_domain.height_one_spectrum.valuation_of_unit_mod_eq IsDedekindDomain.HeightOneSpectrum.valuation_of_unit_mod_eq
@@ -170,7 +170,7 @@ def selmerGroup : Subgroup <| K/n where
 #align is_dedekind_domain.selmer_group IsDedekindDomain.selmerGroup
 
 -- Porting note: was `scoped[SelmerGroup]` but that does not work even using `open SelmerGroup`
-local notation K "⟮" S "," n "⟯" => @selmerGroup _ _ _ _ K _ _ _ S n
+local notation K "⟮" S "," n "⟯" => @selmerGroup _ _ _ K _ _ _ S n
 
 namespace selmerGroup
 
@@ -200,17 +200,17 @@ def fromUnit {n : ℕ} : Rˣ →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ wh
   toFun x :=
     ⟨QuotientGroup.mk <| Units.map (algebraMap R K).toMonoidHom x, fun v _ =>
       v.valuation_of_unit_mod_eq n x⟩
-  map_one' := by simp only [map_one, QuotientGroup.mk_one, Subgroup.mk_eq_one_iff]
+  map_one' := by simp only [map_one, QuotientGroup.mk_one, Subgroup.mk_eq_one]
   map_mul' _ _ := by simp only [RingHom.toMonoidHom_eq_coe, map_mul, MonoidHom.mem_range,
     powMonoidHom_apply, QuotientGroup.mk_mul, Submonoid.mk_mul_mk]
 #align is_dedekind_domain.selmer_group.from_unit IsDedekindDomain.selmerGroup.fromUnit
 
 theorem fromUnit_ker [hn : Fact <| 0 < n] :
-    (@fromUnit R _ _ _ K _ _ _ n).ker = (powMonoidHom n : Rˣ →* Rˣ).range := by
+    (@fromUnit R _ _ K _ _ _ n).ker = (powMonoidHom n : Rˣ →* Rˣ).range := by
   ext ⟨_, _, _, _⟩
   constructor
   · intro hx
-    rcases(QuotientGroup.eq_one_iff _).mp (Subtype.mk.inj hx) with ⟨⟨v, i, vi, iv⟩, hx⟩
+    rcases (QuotientGroup.eq_one_iff _).mp (Subtype.mk.inj hx) with ⟨⟨v, i, vi, iv⟩, hx⟩
     have hv : ↑(_ ^ n : Kˣ) = algebraMap R K _ := by exact congr_arg Units.val hx
     have hi : ↑(_ ^ n : Kˣ)⁻¹ = algebraMap R K _ := by exact congr_arg Units.inv hx
     rw [Units.val_pow_eq_pow_val] at hv
@@ -240,7 +240,7 @@ def fromUnitLift [Fact <| 0 < n] : (R/n) →* K⟮(∅ : Set <| HeightOneSpectru
 #align is_dedekind_domain.selmer_group.from_unit_lift IsDedekindDomain.selmerGroup.fromUnitLift
 
 theorem fromUnitLift_injective [Fact <| 0 < n] :
-    Function.Injective <| @fromUnitLift R _ _ _ K _ _ _ n _ := by
+    Function.Injective <| @fromUnitLift R _ _ K _ _ _ n _ := by
   dsimp only [fromUnitLift, MonoidHom.coe_comp, MulEquiv.coe_toMonoidHom]
   exact Function.Injective.comp (QuotientGroup.kerLift_injective _) (MulEquiv.injective _)
 #align is_dedekind_domain.selmer_group.from_unit_lift_injective IsDedekindDomain.selmerGroup.fromUnitLift_injective

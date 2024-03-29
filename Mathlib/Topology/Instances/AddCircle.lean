@@ -10,7 +10,7 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Topology.Instances.Real
-import Mathlib.Topology.PathConnected
+import Mathlib.Topology.Connected.PathConnected
 
 #align_import topology.instances.add_circle from "leanprover-community/mathlib"@"213b0cff7bc5ab6696ee07cceec80829ce42efec"
 
@@ -121,27 +121,9 @@ end Continuity
 
 /-- The "additive circle": `𝕜 ⧸ (ℤ ∙ p)`. See also `Circle` and `Real.angle`. -/
 @[nolint unusedArguments]
-def AddCircle [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p : 𝕜) :=
+abbrev AddCircle [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p : 𝕜) :=
   𝕜 ⧸ zmultiples p
 #align add_circle AddCircle
-
--- Porting note: the following section replaces a failing `deriving` statement
-section instances
-
-variable [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p : 𝕜)
-
-instance : AddCommGroup (AddCircle p) :=
-  inferInstanceAs (AddCommGroup (𝕜 ⧸ zmultiples p))
-instance : TopologicalSpace (AddCircle p) :=
-  inferInstanceAs (TopologicalSpace (𝕜 ⧸ zmultiples p))
-instance : TopologicalAddGroup (AddCircle p) :=
-  inferInstanceAs (TopologicalAddGroup (𝕜 ⧸ zmultiples p))
-instance : Inhabited (AddCircle p) :=
-  inferInstanceAs (Inhabited (𝕜 ⧸ zmultiples p))
-
-instance : Coe 𝕜 (AddCircle p) := ⟨QuotientAddGroup.mk⟩
-
-end instances
 
 namespace AddCircle
 
@@ -177,10 +159,10 @@ theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
     (x : AddCircle p) = 0 ↔ ∃ n : ℕ, n • p = x := by
   rw [coe_eq_zero_iff]
   constructor <;> rintro ⟨n, rfl⟩
-  · replace hx : 0 < n
-    · contrapose! hx
+  · replace hx : 0 < n := by
+      contrapose! hx
       simpa only [← neg_nonneg, ← zsmul_neg, zsmul_neg'] using zsmul_nonneg hp.le (neg_nonneg.2 hx)
-    exact ⟨n.toNat, by rw [← coe_nat_zsmul, Int.toNat_of_nonneg hx.le]⟩
+    exact ⟨n.toNat, by rw [← natCast_zsmul, Int.toNat_of_nonneg hx.le]⟩
   · exact ⟨(n : ℤ), by simp⟩
 #align add_circle.coe_eq_zero_of_pos_iff AddCircle.coe_eq_zero_of_pos_iff
 
@@ -188,7 +170,7 @@ theorem coe_period : (p : AddCircle p) = 0 :=
   (QuotientAddGroup.eq_zero_iff p).2 <| mem_zmultiples p
 #align add_circle.coe_period AddCircle.coe_period
 
-/- Porting note: `simp` attribute removed because linter reports:
+/- Porting note (#10618): `simp` attribute removed because linter reports:
 simp can prove this:
   by simp only [@mem_zmultiples, @QuotientAddGroup.mk_add_of_mem]
 -/
@@ -203,9 +185,6 @@ protected theorem continuous_mk' :
 #align add_circle.continuous_mk' AddCircle.continuous_mk'
 
 variable [hp : Fact (0 < p)] (a : 𝕜) [Archimedean 𝕜]
-
-instance instCircularOrderAddCircle : CircularOrder (AddCircle p) :=
-  QuotientAddGroup.circularOrder
 
 /-- The equivalence between `AddCircle p` and the half-open interval `[a, a + p)`, whose inverse
 is the natural quotient map. -/
@@ -243,7 +222,7 @@ theorem coe_eq_coe_iff_of_mem_Ico {x y : 𝕜} (hx : x ∈ Ico a (a + p)) (hy : 
 #align add_circle.coe_eq_coe_iff_of_mem_Ico AddCircle.coe_eq_coe_iff_of_mem_Ico
 
 theorem liftIco_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ico a (a + p)) :
-  liftIco p a f ↑x = f x := by
+    liftIco p a f ↑x = f x := by
   have : (equivIco p a) x = ⟨x, hx⟩ := by
     rw [Equiv.apply_eq_iff_eq_symm_apply]
     rfl
@@ -252,7 +231,7 @@ theorem liftIco_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ico a (a + p))
 #align add_circle.lift_Ico_coe_apply AddCircle.liftIco_coe_apply
 
 theorem liftIoc_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ioc a (a + p)) :
-  liftIoc p a f ↑x = f x := by
+    liftIoc p a f ↑x = f x := by
   have : (equivIoc p a) x = ⟨x, hx⟩ := by
     rw [Equiv.apply_eq_iff_eq_symm_apply]
     rfl
@@ -355,8 +334,7 @@ instance : DivisibleBy (AddCircle p) ℤ where
   div_zero x := by
     simp only [algebraMap.coe_zero, Int.cast_zero, inv_zero, zero_mul, QuotientAddGroup.mk_zero]
   div_cancel {n} x hn := by
-    replace hn : (n : 𝕜) ≠ 0
-    · norm_cast
+    replace hn : (n : 𝕜) ≠ 0 := by norm_cast
     change n • QuotientAddGroup.mk' _ ((n : 𝕜)⁻¹ * ↑(equivIco p 0 x)) = x
     rw [← map_zsmul, ← smul_mul_assoc, zsmul_eq_mul, mul_inv_cancel hn, one_mul]
     exact (equivIco p 0).symm_apply_apply x
@@ -371,7 +349,7 @@ theorem addOrderOf_period_div {n : ℕ} (h : 0 < n) : addOrderOf ((p / n : 𝕜)
   rw [addOrderOf_eq_iff h]
   replace h : 0 < (n : 𝕜) := Nat.cast_pos.2 h
   refine' ⟨_, fun m hn h0 => _⟩ <;> simp only [Ne, ← coe_nsmul, nsmul_eq_mul]
-  · rw [mul_div_cancel' _ h.ne', coe_period]
+  · rw [mul_div_cancel₀ _ h.ne', coe_period]
   rw [coe_eq_zero_of_pos_iff p hp.out (mul_pos (Nat.cast_pos.2 h0) <| div_pos hp.out h)]
   rintro ⟨k, hk⟩
   rw [mul_div, eq_div_iff h.ne', nsmul_eq_mul, mul_right_comm, ← Nat.cast_mul,
@@ -383,11 +361,10 @@ variable (p)
 
 theorem gcd_mul_addOrderOf_div_eq {n : ℕ} (m : ℕ) (hn : 0 < n) :
     m.gcd n * addOrderOf (↑(↑m / ↑n * p) : AddCircle p) = n := by
-  rw [mul_comm_div, ← nsmul_eq_mul, coe_nsmul, addOrderOf_nsmul'']
+  rw [mul_comm_div, ← nsmul_eq_mul, coe_nsmul, IsOfFinAddOrder.addOrderOf_nsmul]
   · rw [addOrderOf_period_div hn, Nat.gcd_comm, Nat.mul_div_cancel']
     exact n.gcd_dvd_left m
-  · rw [← addOrderOf_pos_iff, addOrderOf_period_div hn]
-    exact hn
+  · rwa [← addOrderOf_pos_iff, addOrderOf_period_div hn]
 #align add_circle.gcd_mul_add_order_of_div_eq AddCircle.gcd_mul_addOrderOf_div_eq
 
 variable {p}
@@ -426,12 +403,12 @@ theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
   have h0 : (_ : 𝕜) ≠ 0 := Nat.cast_ne_zero.2 h.ne'
   rw [nsmul_eq_mul, mul_comm, ← div_eq_iff h0, ← a.ediv_add_emod' n, add_smul, add_div,
     zsmul_eq_mul, Int.cast_mul, Int.cast_ofNat, mul_assoc, ← mul_div, mul_comm _ p,
-    mul_div_cancel p h0] at ha
-  have han : _ = a % n := Int.toNat_of_nonneg (Int.emod_nonneg _ <| by exact_mod_cast h.ne')
-  have he : (↑(↑((a % n).toNat) / ↑n * p) : AddCircle p) = k
-  · convert congr_arg (QuotientAddGroup.mk : 𝕜 → (AddCircle p)) ha using 1
+    mul_div_cancel_right₀ p h0] at ha
+  have han : _ = a % n := Int.toNat_of_nonneg (Int.emod_nonneg _ <| mod_cast h.ne')
+  have he : (↑(↑((a % n).toNat) / ↑n * p) : AddCircle p) = k := by
+    convert congr_arg (QuotientAddGroup.mk : 𝕜 → (AddCircle p)) ha using 1
     rw [coe_add, ← Int.cast_ofNat, han, zsmul_eq_mul, mul_div_right_comm, eq_comm, add_left_eq_self,
-      ←zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
+      ← zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
   refine' ⟨(a % n).toNat, _, _, he⟩
   · rw [← Int.ofNat_lt, han]
     exact Int.emod_lt_of_pos _ (Int.ofNat_lt.2 h)
@@ -444,7 +421,7 @@ theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
 
 theorem exists_gcd_eq_one_of_isOfFinAddOrder {u : AddCircle p} (h : IsOfFinAddOrder u) :
     ∃ m : ℕ, m.gcd (addOrderOf u) = 1 ∧ m < addOrderOf u ∧ ↑((m : 𝕜) / addOrderOf u * p) = u :=
-  let ⟨m, hl, hg, he⟩ := (addOrderOf_eq_pos_iff <| addOrderOf_pos' h).1 rfl
+  let ⟨m, hl, hg, he⟩ := (addOrderOf_eq_pos_iff h.addOrderOf_pos).1 rfl
   ⟨m, hg, hl, he⟩
 #align add_circle.exists_gcd_eq_one_of_is_of_fin_add_order AddCircle.exists_gcd_eq_one_of_isOfFinAddOrder
 
@@ -459,12 +436,12 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
     Equiv.ofBijective (fun m => ⟨↑((m : 𝕜) / n * p), addOrderOf_div_of_gcd_eq_one hn m.prop.2⟩)
       (by
         refine' ⟨fun m₁ m₂ h => Subtype.ext _, fun u => _⟩
-        · simp_rw [Subtype.ext_iff, Subtype.coe_mk] at h
+        · simp_rw [Subtype.ext_iff] at h
           rw [← sub_eq_zero, ← coe_sub, ← sub_mul, ← sub_div, ← Int.cast_ofNat m₁,
             ← Int.cast_ofNat m₂, ← Int.cast_sub, coe_eq_zero_iff] at h
           obtain ⟨m, hm⟩ := h
           rw [← mul_div_right_comm, eq_div_iff, mul_comm, ← zsmul_eq_mul, mul_smul_comm, ←
-            nsmul_eq_mul, ← coe_nat_zsmul, smul_smul,
+            nsmul_eq_mul, ← natCast_zsmul, smul_smul,
             (zsmul_strictMono_left hp.out).injective.eq_iff, mul_comm] at hm
           swap
           · exact Nat.cast_ne_zero.2 hn.ne'
@@ -506,7 +483,7 @@ end LinearOrderedField
 
 variable (p : ℝ)
 
-instance pathConnectedSpace : PathConnectedSpace $ AddCircle p :=
+instance pathConnectedSpace : PathConnectedSpace <| AddCircle p :=
   (inferInstance : PathConnectedSpace (Quotient _))
 
 /-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is compact. -/
@@ -517,21 +494,9 @@ instance compactSpace [Fact (0 < p)] : CompactSpace <| AddCircle p := by
 
 /-- The action on `ℝ` by right multiplication of its the subgroup `zmultiples p` (the multiples of
 `p:ℝ`) is properly discontinuous. -/
-instance : ProperlyDiscontinuousVAdd (AddSubgroup.opposite (zmultiples p)) ℝ :=
+instance : ProperlyDiscontinuousVAdd (zmultiples p).op ℝ :=
   (zmultiples p).properlyDiscontinuousVAdd_opposite_of_tendsto_cofinite
     (AddSubgroup.tendsto_zmultiples_subtype_cofinite p)
-
-/-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is Hausdorff. -/
-instance : T2Space (AddCircle p) :=
-  t2Space_of_properlyDiscontinuousVAdd_of_t2Space
-
-/-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is normal. -/
-instance [Fact (0 < p)] : NormalSpace (AddCircle p) :=
-  normalOfCompactT2
-
-/-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is second-countable. -/
-instance : SecondCountableTopology (AddCircle p) :=
-  QuotientAddGroup.secondCountableTopology
 
 end AddCircle
 
@@ -604,7 +569,7 @@ theorem equivIccQuot_comp_mk_eq_toIocMod :
       Quot.mk _ ⟨toIocMod hp.out a x, Ioc_subset_Icc_self <| toIocMod_mem_Ioc _ _ x⟩ := by
   rw [equivIccQuot_comp_mk_eq_toIcoMod]
   funext x
-  by_cases a ≡ x [PMOD p]
+  by_cases h : a ≡ x [PMOD p]
   · simp_rw [(modEq_iff_toIcoMod_eq_left hp.out).1 h, (modEq_iff_toIocMod_eq_right hp.out).1 h]
     exact Quot.sound EndpointIdent.mk
   · simp_rw [(not_modEq_iff_toIcoMod_eq_toIocMod hp.out).1 h]

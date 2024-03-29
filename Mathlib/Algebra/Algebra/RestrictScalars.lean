@@ -32,12 +32,12 @@ typeclass instead.
 There are many similarly-named definitions elsewhere which do not refer to this type alias. These
 refer to restricting the scalar type in a bundled type, such as from `A →ₗ[R] B` to `A →ₗ[S] B`:
 
-* `LinearMap.RestrictScalars`
-* `LinearEquiv.RestrictScalars`
-* `AlgHom.RestrictScalars`
-* `AlgEquiv.RestrictScalars`
-* `Submodule.RestrictScalars`
-* `Subalgebra.RestrictScalars`
+* `LinearMap.restrictScalars`
+* `LinearEquiv.restrictScalars`
+* `AlgHom.restrictScalars`
+* `AlgEquiv.restrictScalars`
+* `Submodule.restrictScalars`
+* `Subalgebra.restrictScalars`
 -/
 
 
@@ -125,7 +125,7 @@ The preferred way of setting this up is
 -/
 instance RestrictScalars.opModule [Module Sᵐᵒᵖ M] : Module Rᵐᵒᵖ (RestrictScalars R S M) :=
   letI : Module Sᵐᵒᵖ (RestrictScalars R S M) := ‹Module Sᵐᵒᵖ M›
-  Module.compHom M (RingHom.op $ algebraMap R S)
+  Module.compHom M (RingHom.op <| algebraMap R S)
 #align restrict_scalars.op_module RestrictScalars.opModule
 
 instance RestrictScalars.isCentralScalar [Module S M] [Module Sᵐᵒᵖ M] [IsCentralScalar S M] :
@@ -137,9 +137,9 @@ instance RestrictScalars.isCentralScalar [Module S M] [Module Sᵐᵒᵖ M] [IsC
 of `RestrictScalars R S M`.
 -/
 def RestrictScalars.lsmul [Module S M] : S →ₐ[R] Module.End R (RestrictScalars R S M) :=
-  letI-- We use `RestrictScalars.moduleOrig` in the implementation,
+  -- We use `RestrictScalars.moduleOrig` in the implementation,
   -- but not in the type.
-   : Module S (RestrictScalars R S M) := RestrictScalars.moduleOrig R S M
+  letI : Module S (RestrictScalars R S M) := RestrictScalars.moduleOrig R S M
   Algebra.lsmul R R (RestrictScalars R S M)
 #align restrict_scalars.lsmul RestrictScalars.lsmul
 
@@ -214,11 +214,11 @@ theorem RestrictScalars.ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :
 #align restrict_scalars.ring_equiv_map_smul RestrictScalars.ringEquiv_map_smul
 
 /-- `R ⟶ S` induces `S-Alg ⥤ R-Alg` -/
-instance : Algebra R (RestrictScalars R S A) :=
+instance RestrictScalars.algebra : Algebra R (RestrictScalars R S A) :=
   { (algebraMap S A).comp (algebraMap R S) with
     smul := (· • ·)
-    commutes' := fun _ _ ↦ Algebra.commutes' _ _
-    smul_def' := fun _ _ ↦ Algebra.smul_def' _ _ }
+    commutes' := fun _ _ ↦ Algebra.commutes' (A := A) _ _
+    smul_def' := fun _ _ ↦ Algebra.smul_def' (A := A) _ _ }
 
 @[simp]
 theorem RestrictScalars.ringEquiv_algebraMap (r : R) :

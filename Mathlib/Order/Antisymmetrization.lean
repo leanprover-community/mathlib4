@@ -24,7 +24,7 @@ such that `a ≤ b` and `b ≤ a`.
   preorder, `Antisymmetrization α` is a partial order.
 -/
 
-/- Porting Notes: There are many changes from `toAntisymmetrization (· ≤ ·)` to
+/- Porting note: There are many changes from `toAntisymmetrization (· ≤ ·)` to
 `@toAntisymmetrization α (· ≤ ·) _` -/
 
 open Function OrderDual
@@ -71,7 +71,7 @@ theorem antisymmRel_iff_eq [IsRefl α r] [IsAntisymm α r] {a b : α} : Antisymm
   antisymm_iff
 #align antisymm_rel_iff_eq antisymmRel_iff_eq
 
-alias antisymmRel_iff_eq ↔ AntisymmRel.eq _
+alias ⟨AntisymmRel.eq, _⟩ := antisymmRel_iff_eq
 #align antisymm_rel.eq AntisymmRel.eq
 
 end Relation
@@ -222,7 +222,7 @@ theorem OrderHom.coe_antisymmetrization (f : α →o β) :
   rfl
 #align order_hom.coe_antisymmetrization OrderHom.coe_antisymmetrization
 
-/- Porting notes: Removed @[simp] attribute. With this `simp` lemma the LHS of
+/- Porting note: Removed @[simp] attribute. With this `simp` lemma the LHS of
 `OrderHom.antisymmetrization_apply_mk` is not in normal-form -/
 theorem OrderHom.antisymmetrization_apply (f : α →o β) (a : Antisymmetrization α (· ≤ ·)) :
     f.antisymmetrization a = Quotient.map' f (liftFun_antisymmRel f) a :=

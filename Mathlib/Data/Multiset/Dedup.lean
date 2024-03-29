@@ -81,7 +81,7 @@ theorem dedup_eq_self {s : Multiset α} : dedup s = s ↔ Nodup s :=
   ⟨fun e => e ▸ nodup_dedup s, Quot.induction_on s fun _ h => congr_arg ofList h.dedup⟩
 #align multiset.dedup_eq_self Multiset.dedup_eq_self
 
-alias dedup_eq_self ↔ _ Nodup.dedup
+alias ⟨_, Nodup.dedup⟩ := dedup_eq_self
 #align multiset.nodup.dedup Multiset.Nodup.dedup
 
 theorem count_dedup (m : Multiset α) (a : α) : m.dedup.count a = if a ∈ m then 1 else 0 :=
@@ -91,19 +91,9 @@ theorem count_dedup (m : Multiset α) (a : α) : m.dedup.count a = if a ∈ m th
 #align multiset.count_dedup Multiset.count_dedup
 
 @[simp]
-theorem dedup_idempotent {m : Multiset α} : m.dedup.dedup = m.dedup :=
-  Quot.induction_on m fun _ => @congr_arg _ _ _ _ ofList List.dedup_idempotent
-#align multiset.dedup_idempotent Multiset.dedup_idempotent
-
-@[simp]
-theorem dedup_bind_dedup [DecidableEq β] (m : Multiset α) (f : α → Multiset β) :
-    (m.dedup.bind f).dedup = (m.bind f).dedup := by
-  ext x
-  -- Porting note: was `simp_rw [count_dedup, mem_bind, mem_dedup]`
-  simp_rw [count_dedup]
-  refine if_congr ?_ rfl rfl
-  simp
-#align multiset.dedup_bind_dedup Multiset.dedup_bind_dedup
+theorem dedup_idem {m : Multiset α} : m.dedup.dedup = m.dedup :=
+  Quot.induction_on m fun _ => @congr_arg _ _ _ _ ofList List.dedup_idem
+#align multiset.dedup_idempotent Multiset.dedup_idem
 
 theorem dedup_eq_zero {s : Multiset α} : dedup s = 0 ↔ s = 0 :=
   ⟨fun h => eq_zero_of_subset_zero <| h ▸ subset_dedup _, fun h => h.symm ▸ dedup_zero⟩

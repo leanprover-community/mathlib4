@@ -49,8 +49,7 @@ self-adjoint operator, spectral theorem, diagonalization theorem
 -/
 
 
-variable {𝕜 : Type*} [IsROrC 𝕜] [dec_𝕜 : DecidableEq 𝕜]
-
+variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
@@ -129,7 +128,7 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot : (⨆ μ, eigenspace T μ)
   -- a self-adjoint operator on a nontrivial inner product space has an eigenvalue
   haveI :=
     hT'.subsingleton_of_no_eigenvalue_finiteDimensional hT.orthogonalComplement_iSup_eigenspaces
-  exact Submodule.eq_bot_of_subsingleton _
+  exact Submodule.eq_bot_of_subsingleton
 #align linear_map.is_symmetric.orthogonal_supr_eigenspaces_eq_bot LinearMap.IsSymmetric.orthogonalComplement_iSup_eigenspaces_eq_bot
 
 theorem orthogonalComplement_iSup_eigenspaces_eq_bot' :
@@ -138,8 +137,6 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot' :
     rw [iSup_ne_bot_subtype, hT.orthogonalComplement_iSup_eigenspaces_eq_bot]
 #align linear_map.is_symmetric.orthogonal_supr_eigenspaces_eq_bot' LinearMap.IsSymmetric.orthogonalComplement_iSup_eigenspaces_eq_bot'
 
--- porting note: a modest increast in the `synthInstance.maxHeartbeats`, but we should still fix it.
-set_option synthInstance.maxHeartbeats 23000 in
 /-- The eigenspaces of a self-adjoint operator on a finite-dimensional inner product space `E` gives
 an internal direct sum decomposition of `E`.
 
@@ -214,7 +211,7 @@ for a self-adjoint operator `T` on `E`.
 
 TODO Postcompose with a permutation so that these eigenvalues are listed in increasing order. -/
 noncomputable irreducible_def eigenvalues (i : Fin n) : ℝ :=
-  @IsROrC.re 𝕜 _ <| (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
+  @RCLike.re 𝕜 _ <| (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
     hT.orthogonalFamily_eigenspaces').val
 #align linear_map.is_symmetric.eigenvalues LinearMap.IsSymmetric.eigenvalues
 
@@ -225,17 +222,17 @@ theorem hasEigenvector_eigenvectorBasis (i : Fin n) :
     (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
       hT.orthogonalFamily_eigenspaces').val
   simp_rw [eigenvalues]
-  change HasEigenvector T (IsROrC.re μ) v
+  change HasEigenvector T (RCLike.re μ) v
   have key : HasEigenvector T μ v := by
     have H₁ : v ∈ eigenspace T μ := by
-      simp_rw [eigenvectorBasis]
+      simp_rw [v, eigenvectorBasis]
       exact
         hT.direct_sum_isInternal.subordinateOrthonormalBasis_subordinate hn i
           hT.orthogonalFamily_eigenspaces'
     have H₂ : v ≠ 0 := by simpa using (hT.eigenvectorBasis hn).toBasis.ne_zero i
     exact ⟨H₁, H₂⟩
-  have re_μ : ↑(IsROrC.re μ) = μ := by
-    rw [← IsROrC.conj_eq_iff_re]
+  have re_μ : ↑(RCLike.re μ) = μ := by
+    rw [← RCLike.conj_eq_iff_re]
     exact hT.conj_eigenvalue_eq_self (hasEigenvalue_of_hasEigenvector key)
   simpa [re_μ] using key
 #align linear_map.is_symmetric.has_eigenvector_eigenvector_basis LinearMap.IsSymmetric.hasEigenvector_eigenvectorBasis
@@ -264,8 +261,7 @@ theorem eigenvectorBasis_apply_self_apply (v : E) (i : Fin n) :
       congr_arg (fun v => (hT.eigenvectorBasis hn).repr v i)
         (this ((hT.eigenvectorBasis hn).repr v))
   intro w
-  simp_rw [← OrthonormalBasis.sum_repr_symm, LinearMap.map_sum, LinearMap.map_smul,
-    apply_eigenvectorBasis]
+  simp_rw [← OrthonormalBasis.sum_repr_symm, map_sum, map_smul, apply_eigenvectorBasis]
   apply Fintype.sum_congr
   intro a
   rw [smul_smul, mul_comm]
@@ -279,8 +275,6 @@ end LinearMap
 
 section Nonneg
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 @[simp]
 theorem inner_product_apply_eigenvector {μ : 𝕜} {v : E} {T : E →ₗ[𝕜] E}
     (h : v ∈ Module.End.eigenspace T μ) : ⟪v, T v⟫ = μ * (‖v‖ : 𝕜) ^ 2 := by
@@ -288,27 +282,27 @@ theorem inner_product_apply_eigenvector {μ : 𝕜} {v : E} {T : E →ₗ[𝕜] 
 #align inner_product_apply_eigenvector inner_product_apply_eigenvector
 
 theorem eigenvalue_nonneg_of_nonneg {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenvalue T μ)
-    (hnn : ∀ x : E, 0 ≤ IsROrC.re ⟪x, T x⟫) : 0 ≤ μ := by
+    (hnn : ∀ x : E, 0 ≤ RCLike.re ⟪x, T x⟫) : 0 ≤ μ := by
   obtain ⟨v, hv⟩ := hμ.exists_hasEigenvector
   have hpos : (0 : ℝ) < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv.2
-  have : IsROrC.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
-    have := congr_arg IsROrC.re (inner_product_apply_eigenvector hv.1)
-    -- porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
-    rw [←IsROrC.ofReal_pow, ←IsROrC.ofReal_mul] at this
-    exact_mod_cast this
-  exact (zero_le_mul_right hpos).mp (this ▸ hnn v)
+  have : RCLike.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
+    have := congr_arg RCLike.re (inner_product_apply_eigenvector hv.1)
+    -- Porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
+    rw [← RCLike.ofReal_pow, ← RCLike.ofReal_mul] at this
+    exact mod_cast this
+  exact (mul_nonneg_iff_of_pos_right hpos).mp (this ▸ hnn v)
 #align eigenvalue_nonneg_of_nonneg eigenvalue_nonneg_of_nonneg
 
 theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenvalue T μ)
-    (hnn : ∀ x : E, 0 < IsROrC.re ⟪x, T x⟫) : 0 < μ := by
+    (hnn : ∀ x : E, 0 < RCLike.re ⟪x, T x⟫) : 0 < μ := by
   obtain ⟨v, hv⟩ := hμ.exists_hasEigenvector
   have hpos : (0 : ℝ) < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv.2
-  have : IsROrC.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
-    have := congr_arg IsROrC.re (inner_product_apply_eigenvector hv.1)
-    -- porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
-    rw [←IsROrC.ofReal_pow, ←IsROrC.ofReal_mul] at this
-    exact_mod_cast this
-  exact (zero_lt_mul_right hpos).mp (this ▸ hnn v)
+  have : RCLike.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
+    have := congr_arg RCLike.re (inner_product_apply_eigenvector hv.1)
+    -- Porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
+    rw [← RCLike.ofReal_pow, ← RCLike.ofReal_mul] at this
+    exact mod_cast this
+  exact (mul_pos_iff_of_pos_right hpos).mp (this ▸ hnn v)
 #align eigenvalue_pos_of_pos eigenvalue_pos_of_pos
 
 end Nonneg

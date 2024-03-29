@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.Lattice
 import Mathlib.Logic.Denumerable
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Hom.Basic
+import Mathlib.Data.Set.Basic
 
 #align_import order.order_iso_nat from "leanprover-community/mathlib"@"210657c4ea4a4a7b234392f70a3a2a83346dfa90"
 
@@ -185,7 +186,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
       have h : ∀ n : ℕ, ∃ n' : ℕ, n < n' ∧ r (f (n + m)) (f (n' + m)) := by
         intro n
         have h := hm _ (le_add_of_nonneg_left n.zero_le)
-        simp only [exists_prop, not_not, Set.mem_setOf_eq, not_forall] at h
+        simp only [bad, exists_prop, not_not, Set.mem_setOf_eq, not_forall] at h
         obtain ⟨n', hn1, hn2⟩ := h
         obtain ⟨x, hpos, rfl⟩ := exists_pos_add_of_lt hn1
         refine' ⟨n + x, add_lt_add_left hpos n, _⟩
@@ -228,10 +229,9 @@ theorem WellFounded.monotone_chain_condition' [Preorder α] :
 theorem WellFounded.monotone_chain_condition [PartialOrder α] :
     WellFounded ((· > ·) : α → α → Prop) ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → a n = a m :=
   WellFounded.monotone_chain_condition'.trans <| by
-  -- porting note: was congrm ∀ a, ∃ n, ∀ m (h : n ≤ m), (_ : Prop)
-  congr! 4
-  rename_i a n m
-  simp (config := {contextual := true}) [lt_iff_le_and_ne, fun h => a.mono h]
+  congrm ∀ a, ∃ n, ∀ m h, ?_
+  rw [lt_iff_le_and_ne]
+  simp [a.mono h]
 #align well_founded.monotone_chain_condition WellFounded.monotone_chain_condition
 
 /-- Given an eventually-constant monotone sequence `a₀ ≤ a₁ ≤ a₂ ≤ ...` in a partially-ordered
@@ -252,7 +252,7 @@ theorem WellFounded.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
     (h : WellFounded ((· > ·) : α → α → Prop)) (a : ℕ →o α) :
     iSup a = monotonicSequenceLimit a := by
   refine' (iSup_le fun m => _).antisymm (le_iSup a _)
-  cases' le_or_lt m (monotonicSequenceLimitIndex a) with hm hm
+  rcases le_or_lt m (monotonicSequenceLimitIndex a) with hm | hm
   · exact a.monotone hm
   · cases' WellFounded.monotone_chain_condition'.1 h a with n hn
     have : n ∈ {n | ∀ m, n ≤ m → a n = a m} := fun k hk => (a.mono hk).eq_of_not_lt (hn k hk)

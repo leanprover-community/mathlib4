@@ -3,8 +3,8 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Lean
-import Mathlib.Init.Align
+import Mathlib.Mathport.Rename
+import Mathlib.Tactic.PPWithUniv
 
 /-! # `ToLevel` class
 
@@ -22,12 +22,14 @@ namespace Lean
 
 /-- A class to create `Level` expressions that denote particular universe levels in Lean.
 `Lean.ToLevel.toLevel.{u}` evaluates to a `Lean.Level` term representing `u` -/
+@[pp_with_univ]
 class ToLevel.{u} where
   /-- A `Level` that represents the universe level `u`. -/
   toLevel : Level
   /-- The universe itself. This is only here to avoid the "unused universe parameter" error. -/
   univ : Type u := Sort u
 export ToLevel (toLevel)
+attribute [pp_with_univ] toLevel
 #align reflected_univ Lean.ToLevel
 #align reflected_univ.lvl Lean.ToLevel.toLevel
 

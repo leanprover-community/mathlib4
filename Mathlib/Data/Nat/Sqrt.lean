@@ -3,8 +3,8 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Parity
 import Mathlib.Data.Int.Order.Basic
-import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.ForSqrt
 
 #align_import data.nat.sqrt from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
@@ -46,8 +46,8 @@ To turn this into a lean proof we need to manipulate, use properties of natural 
 -/
 private theorem sqrt_isSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
   match n with
-  | 0 => simp [IsSqrt]
-  | 1 => simp [IsSqrt]
+  | 0 => simp [IsSqrt, sqrt]
+  | 1 => simp [IsSqrt, sqrt]
   | n + 2 =>
     have h : ¬ (n + 2) ≤ 1 := by simp
     simp only [IsSqrt, sqrt, h, ite_false]
@@ -56,9 +56,9 @@ private theorem sqrt_isSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
     rw [lt_add_one_iff, add_assoc, ← mul_two]
     refine le_trans (div_add_mod' (n + 2) 2).ge ?_
     rw [add_comm, add_le_add_iff_right, add_mod_right]
-    simp only [zero_lt_two, add_div_right, succ_mul_succ_eq]
+    simp only [zero_lt_two, add_div_right, succ_mul_succ]
     refine le_trans (b := 1) ?_ ?_
-    · exact (lt_succ.1 $ mod_lt n zero_lt_two)
+    · exact (lt_succ.1 <| mod_lt n zero_lt_two)
     · simp only [le_add_iff_nonneg_left]; exact zero_le _
 
 theorem sqrt_le (n : ℕ) : sqrt n * sqrt n ≤ n :=
@@ -83,7 +83,7 @@ theorem sqrt_le_add (n : ℕ) : n ≤ sqrt n * sqrt n + sqrt n + sqrt n := by
 
 theorem le_sqrt {m n : ℕ} : m ≤ sqrt n ↔ m * m ≤ n :=
   ⟨fun h => le_trans (mul_self_le_mul_self h) (sqrt_le n),
-   fun h => le_of_lt_succ <| mul_self_lt_mul_self_iff.2 <| lt_of_le_of_lt h (lt_succ_sqrt n)⟩
+    fun h => le_of_lt_succ <| Nat.mul_self_lt_mul_self_iff.1 <| lt_of_le_of_lt h (lt_succ_sqrt n)⟩
 #align nat.le_sqrt Nat.le_sqrt
 
 theorem le_sqrt' {m n : ℕ} : m ≤ sqrt n ↔ m ^ 2 ≤ n := by simpa only [pow_two] using le_sqrt
@@ -176,12 +176,17 @@ theorem exists_mul_self' (x : ℕ) : (∃ n, n ^ 2 = x) ↔ sqrt x ^ 2 = x := by
   simpa only [pow_two] using exists_mul_self x
 #align nat.exists_mul_self' Nat.exists_mul_self'
 
+/-- `IsSquare` can be decided on `ℕ` by checking against the square root. -/
+instance : DecidablePred (IsSquare : ℕ → Prop) :=
+  fun m => decidable_of_iff' (Nat.sqrt m * Nat.sqrt m = m) <| by
+    simp_rw [← Nat.exists_mul_self m, IsSquare, eq_comm]
+
 theorem sqrt_mul_sqrt_lt_succ (n : ℕ) : sqrt n * sqrt n < n + 1 :=
-  lt_succ_iff.mpr (sqrt_le _)
+  Nat.lt_succ_iff.mpr (sqrt_le _)
 #align nat.sqrt_mul_sqrt_lt_succ Nat.sqrt_mul_sqrt_lt_succ
 
 theorem sqrt_mul_sqrt_lt_succ' (n : ℕ) : sqrt n ^ 2 < n + 1 :=
-  lt_succ_iff.mpr (sqrt_le' _)
+  Nat.lt_succ_iff.mpr (sqrt_le' _)
 #align nat.sqrt_mul_sqrt_lt_succ' Nat.sqrt_mul_sqrt_lt_succ'
 
 theorem succ_le_succ_sqrt (n : ℕ) : n + 1 ≤ (sqrt n + 1) * (sqrt n + 1) :=
@@ -196,8 +201,8 @@ theorem succ_le_succ_sqrt' (n : ℕ) : n + 1 ≤ (sqrt n + 1) ^ 2 :=
 theorem not_exists_sq {n m : ℕ} (hl : m * m < n) (hr : n < (m + 1) * (m + 1)) :
     ¬∃ t, t * t = n := by
   rintro ⟨t, rfl⟩
-  have h1 : m < t := Nat.mul_self_lt_mul_self_iff.mpr hl
-  have h2 : t < m + 1 := Nat.mul_self_lt_mul_self_iff.mpr hr
+  have h1 : m < t := Nat.mul_self_lt_mul_self_iff.1 hl
+  have h2 : t < m + 1 := Nat.mul_self_lt_mul_self_iff.1 hr
   exact (not_lt_of_ge <| le_of_lt_succ h2) h1
 #align nat.not_exists_sq Nat.not_exists_sq
 

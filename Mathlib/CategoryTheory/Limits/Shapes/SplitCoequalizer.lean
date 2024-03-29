@@ -35,11 +35,8 @@ namespace CategoryTheory
 universe v v₂ u u₂
 
 variable {C : Type u} [Category.{v} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable (G : C ⥤ D)
-
 variable {X Y : C} (f g : X ⟶ Y)
 
 /-- A split coequalizer diagram consists of morphisms
@@ -170,8 +167,8 @@ noncomputable def HasSplitCoequalizer.isSplitCoequalizer [HasSplitCoequalizer f 
 #align category_theory.has_split_coequalizer.is_split_coequalizer CategoryTheory.HasSplitCoequalizer.isSplitCoequalizer
 
 /-- If `f, g` is split, then `G f, G g` is split. -/
-instance map_is_split_pair [HasSplitCoequalizer f g] : HasSplitCoequalizer (G.map f) (G.map g)
-    where splittable :=
+instance map_is_split_pair [HasSplitCoequalizer f g] : HasSplitCoequalizer (G.map f) (G.map g) where
+  splittable :=
     ⟨_, _, ⟨IsSplitCoequalizer.map (HasSplitCoequalizer.isSplitCoequalizer f g) _⟩⟩
 #align category_theory.map_is_split_pair CategoryTheory.map_is_split_pair
 

@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Vector.Basic
 import Mathlib.Logic.Equiv.List
-import Mathlib.Control.Traversable.Equiv
 
 #align_import logic.equiv.array from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
@@ -78,9 +77,9 @@ instance for `array` was)
 /-- If `α` is encodable, then so is `Array α`. -/
 instance Array.encodable {α} [Encodable α] : Encodable (Array α) :=
   Encodable.ofEquiv _ (Equiv.arrayEquivList _)
-#align array.encodable Array.encodable
+#noalign array.encodable
 
 /-- If `α` is countable, then so is `Array α`. -/
 instance Array.countable {α} [Countable α] : Countable (Array α) :=
   Countable.of_equiv _ (Equiv.arrayEquivList α).symm
-#align array.countable Array.countable
+#noalign array.countable

@@ -32,9 +32,11 @@ giry monad
 
 noncomputable section
 
-open Classical BigOperators ENNReal
+open scoped Classical
+open BigOperators ENNReal
 
-open Classical Set Filter
+open scoped Classical
+open Set Filter
 
 variable {α β : Type*}
 
@@ -98,7 +100,7 @@ theorem measurable_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) :
 functions. -/
 def join (m : Measure (Measure α)) : Measure α :=
   Measure.ofMeasurable (fun s _ => ∫⁻ μ, μ s ∂m)
-    (by simp only [measure_empty, lintegral_const, MulZeroClass.zero_mul])
+    (by simp only [measure_empty, lintegral_const, zero_mul])
     (by
       intro f hf h
       simp_rw [measure_iUnion h hf]
@@ -162,7 +164,7 @@ theorem bind_zero_right (m : Measure α) : bind m (0 : α → Measure β) = 0 :=
   ext1 s hs
   simp only [bind, hs, join_apply, coe_zero, Pi.zero_apply]
   rw [lintegral_map (measurable_coe hs) measurable_zero]
-  simp only [Pi.zero_apply, coe_zero, lintegral_const, MulZeroClass.zero_mul]
+  simp only [Pi.zero_apply, coe_zero, lintegral_const, zero_mul]
 #align measure_theory.measure.bind_zero_right MeasureTheory.Measure.bind_zero_right
 
 @[simp]

@@ -66,7 +66,7 @@ theorem le_lfp {a : α} (h : ∀ b, f b ≤ b → a ≤ b) : a ≤ lfp f :=
   le_sInf h
 #align order_hom.le_lfp OrderHom.le_lfp
 
--- porting note: for the rest of the file, replace the dot notation `_.lfp` with `lfp _`
+-- Porting note: for the rest of the file, replace the dot notation `_.lfp` with `lfp _`
 -- same for `_.gfp`, `_.dual`
 -- Probably related to https://github.com/leanprover/lean4/issues/1910
 theorem map_le_lfp {a : α} (ha : a ≤ lfp f) : f a ≤ lfp f :=
@@ -101,8 +101,7 @@ theorem lfp_induction {p : α → Prop} (step : ∀ a, p a → a ≤ lfp f → p
     (hSup : ∀ s, (∀ a ∈ s, p a) → p (sSup s)) : p (lfp f) := by
   set s := { a | a ≤ lfp f ∧ p a }
   specialize hSup s fun a => And.right
-  suffices : sSup s = lfp f
-  exact this ▸ hSup
+  suffices sSup s = lfp f from this ▸ hSup
   have h : sSup s ≤ lfp f := sSup_le fun b => And.left
   have hmem : f (sSup s) ∈ s := ⟨f.map_le_lfp h, step _ hSup h⟩
   exact h.antisymm (f.lfp_le <| le_sSup hmem)
@@ -244,7 +243,7 @@ theorem le_map_sup_fixedPoints (x y : fixedPoints f) : (x ⊔ y : α) ≤ f (x �
     _ ≤ f (x ⊔ y) := f.mono.le_map_sup x y
 #align order_hom.le_map_sup_fixed_points OrderHom.le_map_sup_fixedPoints
 
--- porting note: `x ⊓ y` without the `.val`sw fails to synthesize `Inf` instance
+-- Porting note: `x ⊓ y` without the `.val`sw fails to synthesize `Inf` instance
 theorem map_inf_fixedPoints_le (x y : fixedPoints f) : f (x ⊓ y) ≤ x.val ⊓ y.val :=
   f.dual.le_map_sup_fixedPoints x y
 #align order_hom.map_inf_fixed_points_le OrderHom.map_inf_fixedPoints_le
@@ -280,10 +279,10 @@ instance : SemilatticeSup (fixedPoints f) :=
 /- porting note: removed `Subtype.partialOrder _` from mathlib3port version,
   threw `typeclass instance` error and was seemingly unnecessary?-/
 instance : SemilatticeInf (fixedPoints f) :=
-  { OrderDual.semilatticeInf (fixedPoints (OrderHom.dual f)) with
+  { OrderDual.instSemilatticeInf (fixedPoints (OrderHom.dual f)) with
     inf := fun x y => f.prevFixed (x ⊓ y) (f.map_inf_fixedPoints_le x y) }
 
--- porting note: `coe` replaced with `Subtype.val`
+-- Porting note: `coe` replaced with `Subtype.val`
 instance : CompleteSemilatticeSup (fixedPoints f) :=
   { Subtype.partialOrder _ with
     sSup := fun s =>
@@ -292,14 +291,14 @@ instance : CompleteSemilatticeSup (fixedPoints f) :=
           fun _ ⟨x, hx⟩ => hx.2 ▸ x.2)
     le_sSup := fun _ _ hx =>
       Subtype.coe_le_coe.1 <| le_trans (le_sSup <| Set.mem_image_of_mem _ hx) (f.le_nextFixed _)
-    sSup_le := fun _ _ hx => f.nextFixed_le _ <| sSup_le <| Set.ball_image_iff.2 hx }
+    sSup_le := fun _ _ hx => f.nextFixed_le _ <| sSup_le <| Set.forall_mem_image.2 hx }
 
 instance : CompleteSemilatticeInf (fixedPoints f) :=
   { Subtype.partialOrder _ with
     sInf := fun s =>
       f.prevFixed (sInf (Subtype.val '' s))
         (f.map_sInf_subset_fixedPoints_le (Subtype.val '' s) fun _ ⟨x, hx⟩ => hx.2 ▸ x.2)
-    le_sInf := fun _ _ hx => f.le_prevFixed _ <| le_sInf <| Set.ball_image_iff.2 hx
+    le_sInf := fun _ _ hx => f.le_prevFixed _ <| le_sInf <| Set.forall_mem_image.2 hx
     sInf_le := fun _ _ hx =>
       Subtype.coe_le_coe.1 <| le_trans (f.prevFixed_le _) (sInf_le <| Set.mem_image_of_mem _ hx) }
 

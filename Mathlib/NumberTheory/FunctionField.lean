@@ -154,7 +154,7 @@ variable [DecidableEq (RatFunc Fq)]
 Explicitly, if `f/g ∈ Fq(t)` is a nonzero quotient of polynomials, its valuation at infinity is
 `Multiplicative.ofAdd(degree(f) - degree(g))`. -/
 def inftyValuationDef (r : RatFunc Fq) : ℤₘ₀ :=
-  if r = 0 then 0 else Multiplicative.ofAdd r.intDegree
+  if r = 0 then 0 else ↑(Multiplicative.ofAdd r.intDegree)
 #align function_field.infty_valuation_def FunctionField.inftyValuationDef
 
 theorem InftyValuation.map_zero' : inftyValuationDef Fq 0 = 0 :=
@@ -169,9 +169,9 @@ theorem InftyValuation.map_mul' (x y : RatFunc Fq) :
     inftyValuationDef Fq (x * y) = inftyValuationDef Fq x * inftyValuationDef Fq y := by
   rw [inftyValuationDef, inftyValuationDef, inftyValuationDef]
   by_cases hx : x = 0
-  · rw [hx, MulZeroClass.zero_mul, if_pos (Eq.refl _), MulZeroClass.zero_mul]
+  · rw [hx, zero_mul, if_pos (Eq.refl _), zero_mul]
   · by_cases hy : y = 0
-    · rw [hy, MulZeroClass.mul_zero, if_pos (Eq.refl _), MulZeroClass.mul_zero]
+    · rw [hy, mul_zero, if_pos (Eq.refl _), mul_zero]
     · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← WithZero.coe_mul, WithZero.coe_inj,
         ← ofAdd_add, RatFunc.intDegree_mul hx hy]
 #align function_field.infty_valuation.map_mul' FunctionField.InftyValuation.map_mul'
@@ -244,11 +244,13 @@ def inftyValuedFqt : Valued (RatFunc Fq) ℤₘ₀ :=
 set_option linter.uppercaseLean3 false in
 #align function_field.infty_valued_Fqt FunctionField.inftyValuedFqt
 
-theorem inftyValuedFqt.def {x : RatFunc Fq} :
+-- Adaptation note: 2024-03-15
+-- Renamed to avoid the reserved name `inftyValuedFqt.def`.
+theorem inftyValuedFqt.def' {x : RatFunc Fq} :
     @Valued.v (RatFunc Fq) _ _ _ (inftyValuedFqt Fq) x = inftyValuationDef Fq x :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align function_field.infty_valued_Fqt.def FunctionField.inftyValuedFqt.def
+#align function_field.infty_valued_Fqt.def FunctionField.inftyValuedFqt.def'
 
 /-- The completion `Fq((t⁻¹))` of `Fq(t)` with respect to the valuation at infinity. -/
 def FqtInfty :=
@@ -269,11 +271,13 @@ instance valuedFqtInfty : Valued (FqtInfty Fq) ℤₘ₀ :=
 set_option linter.uppercaseLean3 false in
 #align function_field.valued_Fqt_infty FunctionField.valuedFqtInfty
 
-theorem valuedFqtInfty.def {x : FqtInfty Fq} :
+-- Adaptation note: 2024-03-15
+-- Renamed to avoid the reserved name `valuedFqtInfty.def`.
+theorem valuedFqtInfty.def' {x : FqtInfty Fq} :
     Valued.v x = @Valued.extension (RatFunc Fq) _ _ _ (inftyValuedFqt Fq) x :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align function_field.valued_Fqt_infty.def FunctionField.valuedFqtInfty.def
+#align function_field.valued_Fqt_infty.def FunctionField.valuedFqtInfty.def'
 
 end InftyValuation
 

@@ -29,42 +29,35 @@ open BigOperators Polynomial
 section Embeddings
 
 variable (F : Type*) [Field F]
--- Porting note: timed out in term mode.
--- Using `apply` appears to be faster than using `refine/exact`.
+
+open AdjoinRoot in
 /-- If `p` is the minimal polynomial of `a` over `F` then `F[a] ≃ₐ[F] F[x]/(p)` -/
 def AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly {R : Type*} [CommRing R] [Algebra F R] (x : R) :
-    Algebra.adjoin F ({x} : Set R) ≃ₐ[F] AdjoinRoot (minpoly F x) := by
-  refine AlgEquiv.symm ?_
-  refine AlgEquiv.ofBijective
-      (AlgHom.codRestrict (AdjoinRoot.liftHom _ x <| minpoly.aeval F x) _ fun p => ?_) ⟨?_, ?_⟩
-  · induction p using AdjoinRoot.induction_on with
-    | ih p => exact (Algebra.adjoin_singleton_eq_range_aeval F x).symm ▸
-        (Polynomial.aeval _).mem_range.mpr ⟨p, rfl⟩
-  · apply (AlgHom.injective_codRestrict _ _ _).2
-    apply (injective_iff_map_eq_zero _).2
-    intro p
-    induction p using AdjoinRoot.induction_on with
-    | ih p =>
-      intro hp
-      apply Ideal.Quotient.eq_zero_iff_mem.2
-      apply Ideal.mem_span_singleton.2
-      apply minpoly.dvd F x hp
-  · intro y
-    let ⟨p, hp⟩ := (SetLike.ext_iff.1 (Algebra.adjoin_singleton_eq_range_aeval F x) (y : R)).1 y.2
-    exact ⟨AdjoinRoot.mk _ p, Subtype.eq hp⟩
+    Algebra.adjoin F ({x} : Set R) ≃ₐ[F] AdjoinRoot (minpoly F x) :=
+  AlgEquiv.symm <| AlgEquiv.ofBijective (Minpoly.toAdjoin F x) <| by
+    refine ⟨(injective_iff_map_eq_zero _).2 fun P₁ hP₁ ↦ ?_, Minpoly.toAdjoin.surjective F x⟩
+    obtain ⟨P, rfl⟩ := mk_surjective P₁
+    refine AdjoinRoot.mk_eq_zero.mpr (minpoly.dvd F x ?_)
+    rwa [Minpoly.toAdjoin_apply', liftHom_mk, ← Subalgebra.coe_eq_zero, aeval_subalgebra_coe] at hP₁
 #align alg_equiv.adjoin_singleton_equiv_adjoin_root_minpoly AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly
+
+/-- Produce an algebra homomorphism `Adjoin R {x} →ₐ[R] T` sending `x` to
+a root of `x`'s minimal polynomial in `T`. -/
+noncomputable def Algebra.adjoin.liftSingleton {S T : Type*}
+    [CommRing S] [CommRing T] [Algebra F S] [Algebra F T]
+    (x : S) (y : T) (h : aeval y (minpoly F x) = 0) :
+    Algebra.adjoin F {x} →ₐ[F] T :=
+  (AdjoinRoot.liftHom _ y h).comp (AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly F x).toAlgHom
 
 open Finset
 
-set_option maxHeartbeats 500000 in
-set_option synthInstance.maxHeartbeats 120000 in
 /-- If `K` and `L` are field extensions of `F` and we have `s : Finset K` such that
 the minimal polynomial of each `x ∈ s` splits in `L` then `Algebra.adjoin F s` embeds in `L`. -/
-theorem lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
-    (s : Finset K) : (∀ x ∈ s, IsIntegral F x ∧ Polynomial.Splits (algebraMap F L) (minpoly F x)) →
-      Nonempty (Algebra.adjoin F (↑s : Set K) →ₐ[F] L) := by
+theorem Polynomial.lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] [Algebra F K]
+    [Algebra F L] (s : Finset K) : (∀ x ∈ s, IsIntegral F x ∧
+      Splits (algebraMap F L) (minpoly F x)) → Nonempty (Algebra.adjoin F (s : Set K) →ₐ[F] L) := by
   classical
-    refine' Finset.induction_on s (fun _ => _) fun a s _ ih H => _
+    refine Finset.induction_on s (fun _ ↦ ?_) fun a s _ ih H ↦ ?_
     · rw [coe_empty, Algebra.adjoin_empty]
       exact ⟨(Algebra.ofId F L).comp (Algebra.botEquiv F K)⟩
     rw [forall_mem_insert] at H
@@ -72,26 +65,57 @@ theorem lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] [Algebra F 
     cases' ih H3 with f
     choose H3 _ using H3
     rw [coe_insert, Set.insert_eq, Set.union_comm, Algebra.adjoin_union_eq_adjoin_adjoin]
-    letI := (f : Algebra.adjoin F (↑s : Set K) →+* L).toAlgebra
-    haveI : FiniteDimensional F (Algebra.adjoin F (↑s : Set K)) :=
-      ((Submodule.fg_iff_finiteDimensional _).1
-        (FG_adjoin_of_finite s.finite_toSet H3)).of_subalgebra_toSubmodule
-    letI := fieldOfFiniteDimensional F (Algebra.adjoin F (↑s : Set K))
-    have H5 : IsIntegral (Algebra.adjoin F (s : Set K)) a := isIntegral_of_isScalarTower H1
-    have H6 : (minpoly (Algebra.adjoin F (s : Set K)) a).Splits
-        (algebraMap (Algebra.adjoin F (s : Set K)) L) := by
-      have : Polynomial.map (algebraMap F (Algebra.adjoin F (s : Set K))) (minpoly F a) ≠ 0 :=
-        Polynomial.map_ne_zero <| minpoly.ne_zero H1
-      refine' Polynomial.splits_of_splits_of_dvd _ this
-        ((Polynomial.splits_map_iff _ _).2 _) (minpoly.dvd _ _ _)
+    set Ks := Algebra.adjoin F (s : Set K)
+    haveI : FiniteDimensional F Ks := ((Submodule.fg_iff_finiteDimensional _).1
+      (fg_adjoin_of_finite s.finite_toSet H3)).of_subalgebra_toSubmodule
+    letI := fieldOfFiniteDimensional F Ks
+    letI := (f : Ks →+* L).toAlgebra
+    have H5 : IsIntegral Ks a := H1.tower_top
+    have H6 : (minpoly Ks a).Splits (algebraMap Ks L) := by
+      refine splits_of_splits_of_dvd _ ((minpoly.monic H1).map (algebraMap F Ks)).ne_zero
+        ((splits_map_iff _ _).2 ?_) (minpoly.dvd _ _ ?_)
       · rw [← IsScalarTower.algebraMap_eq]
         exact H2
       · rw [Polynomial.aeval_map_algebraMap, minpoly.aeval]
-    obtain ⟨y, hy⟩ := Polynomial.exists_root_of_splits _ H6 (ne_of_lt (minpoly.degree_pos H5)).symm
-    refine' ⟨Subalgebra.ofRestrictScalars F _ _⟩
-    refine' (AdjoinRoot.liftHom (minpoly (Algebra.adjoin F (↑s : Set K)) a) y hy).comp _
-    exact (AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly
-      (Algebra.adjoin F (↑s : Set K)) a).toAlgHom
-#align lift_of_splits lift_of_splits
+    obtain ⟨y, hy⟩ := Polynomial.exists_root_of_splits _ H6 (minpoly.degree_pos H5).ne'
+    exact ⟨Subalgebra.ofRestrictScalars F _ <| Algebra.adjoin.liftSingleton Ks a y hy⟩
+#align lift_of_splits Polynomial.lift_of_splits
 
 end Embeddings
+
+variable {R K L M : Type*} [CommRing R] [Field K] [Field L] [CommRing M] [Algebra R K] [Algebra R L]
+  [Algebra R M] {x : L} (int : IsIntegral R x) (h : Splits (algebraMap R K) (minpoly R x))
+
+theorem IsIntegral.mem_range_algHom_of_minpoly_splits (f : K →ₐ[R] L) : x ∈ f.range :=
+  show x ∈ Set.range f from Set.image_subset_range _ _ <| by
+    rw [image_rootSet h f, mem_rootSet']
+    exact ⟨((minpoly.monic int).map _).ne_zero, minpoly.aeval R x⟩
+
+theorem IsIntegral.mem_range_algebraMap_of_minpoly_splits [Algebra K L] [IsScalarTower R K L] :
+    x ∈ (algebraMap K L).range :=
+  int.mem_range_algHom_of_minpoly_splits h (IsScalarTower.toAlgHom R K L)
+
+variable [Algebra K M] [IsScalarTower R K M] {x : M} (int : IsIntegral R x)
+
+theorem IsIntegral.minpoly_splits_tower_top' {f : K →+* L}
+    (h : Splits (f.comp <| algebraMap R K) (minpoly R x)) :
+    Splits f (minpoly K x) :=
+  splits_of_splits_of_dvd _ ((minpoly.monic int).map _).ne_zero
+    ((splits_map_iff _ _).mpr h) (minpoly.dvd_map_of_isScalarTower R _ x)
+
+theorem IsIntegral.minpoly_splits_tower_top [Algebra K L] [IsScalarTower R K L]
+    (h : Splits (algebraMap R L) (minpoly R x)) :
+    Splits (algebraMap K L) (minpoly K x) := by
+  rw [IsScalarTower.algebraMap_eq R K L] at h
+  exact int.minpoly_splits_tower_top' h
+
+/-- If `K / E / F` is a ring extension tower, `L` is a subalgebra of `K / F`,
+then `[E[L] : E] ≤ [L : F]`. -/
+lemma Subalgebra.adjoin_rank_le {F : Type*} (E : Type*) {K : Type*}
+    [CommRing F] [StrongRankCondition F] [CommRing E] [StrongRankCondition E] [Ring K]
+    [SMul F E] [Algebra E K] [Algebra F K] [IsScalarTower F E K]
+    (L : Subalgebra F K) [Module.Free F L] :
+    Module.rank E (Algebra.adjoin E (L : Set K)) ≤ Module.rank F L := by
+  rw [← rank_toSubmodule, Module.Free.rank_eq_card_chooseBasisIndex F L,
+    L.adjoin_eq_span_basis E (Module.Free.chooseBasis F L)]
+  exact rank_span_le _ |>.trans Cardinal.mk_range_le

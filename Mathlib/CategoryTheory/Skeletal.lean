@@ -33,9 +33,7 @@ namespace CategoryTheory
 open Category
 
 variable (C : Type u₁) [Category.{v₁} C]
-
 variable (D : Type u₂) [Category.{v₂} D]
-
 variable {E : Type u₃} [Category.{v₃} E]
 
 /-- A category is skeletal if isomorphic objects are equal. -/
@@ -201,8 +199,8 @@ theorem comp_toThinSkeleton (F : C ⥤ D) : F ⋙ toThinSkeleton D = toThinSkele
 #align category_theory.thin_skeleton.comp_to_thin_skeleton CategoryTheory.ThinSkeleton.comp_toThinSkeleton
 
 /-- Given a natural transformation `F₁ ⟶ F₂`, induce a natural transformation `map F₁ ⟶ map F₂`.-/
-def mapNatTrans {F₁ F₂ : C ⥤ D} (k : F₁ ⟶ F₂) : map F₁ ⟶ map F₂
-    where app X := Quotient.recOnSubsingleton X fun x => ⟨⟨⟨k.app x⟩⟩⟩
+def mapNatTrans {F₁ F₂ : C ⥤ D} (k : F₁ ⟶ F₂) : map F₁ ⟶ map F₂ where
+  app X := Quotient.recOnSubsingleton X fun x => ⟨⟨⟨k.app x⟩⟩⟩
 #align category_theory.thin_skeleton.map_nat_trans CategoryTheory.ThinSkeleton.mapNatTrans
 
 /- Porting note: `map₂ObjMap`, `map₂Functor`, and `map₂NatTrans` were all extracted
@@ -338,13 +336,13 @@ def lowerAdjunction (R : D ⥤ C) (L : C ⥤ D) (h : L ⊣ R) : ThinSkeleton.map
         {
           app := fun X => by
             letI := isIsomorphicSetoid C
-            refine' Quotient.recOnSubsingleton X fun x => homOfLE ⟨h.unit.app x⟩ }
+            exact Quotient.recOnSubsingleton X fun x => homOfLE ⟨h.unit.app x⟩ }
       -- TODO: make quotient.rec_on_subsingleton' so the letI isn't needed
       counit :=
         {
           app := fun X => by
             letI := isIsomorphicSetoid D
-            refine' Quotient.recOnSubsingleton X fun x => homOfLE ⟨h.counit.app x⟩ } }
+            exact Quotient.recOnSubsingleton X fun x => homOfLE ⟨h.counit.app x⟩ } }
 #align category_theory.thin_skeleton.lower_adjunction CategoryTheory.ThinSkeleton.lowerAdjunction
 
 end ThinSkeleton

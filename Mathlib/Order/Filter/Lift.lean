@@ -32,11 +32,12 @@ variable {f f₁ f₂ : Filter α} {g g₁ g₂ : Set α → Filter β}
 theorem lift_top (g : Set α → Filter β) : (⊤ : Filter α).lift g = g univ := by simp [Filter.lift]
 #align filter.lift_top Filter.lift_top
 
--- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`
+-- Porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`
 /-- If `(p : ι → Prop, s : ι → Set α)` is a basis of a filter `f`, `g` is a monotone function
 `Set α → Filter γ`, and for each `i`, `(pg : β i → Prop, sg : β i → Set α)` is a basis
-of the filter `g (s i)`, then `(λ (i : ι) (x : β i), p i ∧ pg i x, λ (i : ι) (x : β i), sg i x)`
-is a basis of the filter `f.lift g`.
+of the filter `g (s i)`, then
+`(fun (i : ι) (x : β i) ↦ p i ∧ pg i x, fun (i : ι) (x : β i) ↦ sg i x)` is a basis
+of the filter `f.lift g`.
 
 This basis is parametrized by `i : ι` and `x : β i`, so in order to formulate this fact using
 `Filter.HasBasis` one has to use `Σ i, β i` as the index type, see `Filter.HasBasis.lift`.
@@ -54,7 +55,8 @@ theorem HasBasis.mem_lift_iff {ι} {p : ι → Prop} {s : ι → Set α} {f : Fi
 
 /-- If `(p : ι → Prop, s : ι → Set α)` is a basis of a filter `f`, `g` is a monotone function
 `Set α → Filter γ`, and for each `i`, `(pg : β i → Prop, sg : β i → Set α)` is a basis
-of the filter `g (s i)`, then `(λ (i : ι) (x : β i), p i ∧ pg i x, λ (i : ι) (x : β i), sg i x)`
+of the filter `g (s i)`, then
+`(fun (i : ι) (x : β i) ↦ p i ∧ pg i x, fun (i : ι) (x : β i) ↦ sg i x)`
 is a basis of the filter `f.lift g`.
 
 This basis is parametrized by `i : ι` and `x : β i`, so in order to formulate this fact using
@@ -423,7 +425,7 @@ theorem prod_def {f : Filter α} {g : Filter β} :
     iInf_prod, iInf_and] using iInf_congr fun i => iInf_comm
 #align filter.prod_def Filter.prod_def
 
-alias mem_prod_self_iff ← mem_prod_same_iff
+alias mem_prod_same_iff := mem_prod_self_iff
 #align filter.mem_prod_same_iff Filter.mem_prod_same_iff
 
 theorem prod_same_eq : f ×ˢ f = f.lift' fun t : Set α => t ×ˢ t :=

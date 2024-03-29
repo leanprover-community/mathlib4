@@ -8,10 +8,7 @@ import Mathlib.Data.Finset.Card
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Rename
-import Mathlib.Data.Nat.Parity
-import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.MvPolynomial.Symmetric
-import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Newton's Identities
@@ -53,9 +50,9 @@ namespace MvPolynomial
 
 open Finset Nat
 
-variable (σ : Type*) [Fintype σ] [DecidableEq σ] (R : Type*) [CommRing R]
-
 namespace NewtonIdentities
+
+variable (σ : Type*) [Fintype σ] [DecidableEq σ] (R : Type*) [CommRing R]
 
 private def pairs (k : ℕ) : Finset (Finset σ × σ) :=
   univ.filter (fun t ↦ card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst))
@@ -93,6 +90,7 @@ private theorem pairMap_mem_pairs {k : ℕ} (t : Finset σ × σ) (h : t ∈ pai
     simp only [card_erase_of_mem h1, tsub_le_iff_right, mem_erase, ne_eq, h1]
     refine ⟨le_step h, ?_⟩
     by_contra h2
+    simp only [not_true_eq_false, and_true, not_forall, not_false_eq_true, exists_prop] at h2
     rw [← h2] at h
     exact not_le_of_lt (sub_lt (card_pos.mpr ⟨t.snd, h1⟩) zero_lt_one) h
   · rw [pairMap_of_snd_nmem_fst σ h1]
@@ -138,55 +136,36 @@ private theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 
     (fun t _ ↦ (fun _ ↦ pairMap_ne_self σ t)) (pairMap_mem_pairs σ)
     (fun t _ ↦ pairMap_involutive σ t)
 
-private theorem sum_filter_pairs_eq_sum_powersetLen_sum (k : ℕ)
+private theorem sum_filter_pairs_eq_sum_powersetCard_sum (k : ℕ)
     (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst = k) (pairs σ k), f t) =
-    ∑ A in powersetLen k univ, (∑ j in A, f (A, j)) := by
+    ∑ A in powersetCard k univ, (∑ j in A, f (A, j)) := by
   apply sum_finset_product
   aesop
 
-private theorem sum_filter_pairs_eq_sum_powersetLen_mem_filter_antidiagonal_sum (k : ℕ) (a : ℕ × ℕ)
+private theorem sum_filter_pairs_eq_sum_powersetCard_mem_filter_antidiagonal_sum (k : ℕ) (a : ℕ × ℕ)
     (ha : a ∈ (antidiagonal k).filter (fun a ↦ a.fst < k)) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst = a.fst) (pairs σ k), f t) =
-    ∑ A in powersetLen a.fst univ, (∑ j, f (A, j)) := by
+    ∑ A in powersetCard a.fst univ, (∑ j, f (A, j)) := by
   apply sum_finset_product
-  simp only [mem_filter, mem_powerset_len_univ_iff, mem_univ, and_true, and_iff_right_iff_imp]
+  simp only [mem_filter, mem_powersetCard_univ, mem_univ, and_true, and_iff_right_iff_imp]
   rintro p hp
   have : card p.fst ≤ k := by apply le_of_lt; aesop
   aesop
 
-private theorem sum_filter_pairs_eq_sum_filter_antidiagonal_powersetLen_sum (k : ℕ)
+private lemma filter_pairs_lt (k : ℕ) :
+    (pairs σ k).filter (fun (s, _) ↦ s.card < k) =
+      (range k).disjiUnion (powersetCard · univ) ((pairwise_disjoint_powersetCard _).set_pairwise _)
+        ×ˢ univ := by ext; aesop (add unsafe le_of_lt)
+
+private theorem sum_filter_pairs_eq_sum_filter_antidiagonal_powersetCard_sum (k : ℕ)
     (f : Finset σ × σ → MvPolynomial σ R) :
-    (∑ t in filter (fun t ↦ card t.fst < k) (pairs σ k), f t) =
-    ∑ a in (antidiagonal k).filter (fun a ↦ a.fst < k),
-    ∑ A in powersetLen a.fst univ, (∑ j, f (A, j)) := by
-  have equiv_i (a : ℕ × ℕ) (ha : a ∈ (antidiagonal k).filter (fun a ↦ a.fst < k)) :=
-    sum_filter_pairs_eq_sum_powersetLen_mem_filter_antidiagonal_sum σ R k a ha f
-  simp only [← sum_congr rfl equiv_i]
-  have pdisj : Set.PairwiseDisjoint ((antidiagonal k).filter (fun a ↦ a.fst < k))
-      (fun (a : ℕ × ℕ) ↦ (filter (fun t ↦ card t.fst = a.fst) (pairs σ k))) := by
-    simp only [Set.PairwiseDisjoint, Disjoint, pairs, filter_filter, ne_eq, le_eq_subset,
-      bot_eq_empty]
-    intro x hx y hy xny s hs hs' a ha
-    simp only [mem_univ, forall_true_left, Prod.forall] at hs hs'
-    rw [ne_eq, antidiagonal_congr (mem_filter.mp hx).left (mem_filter.mp hy).left,
-      ← (mem_filter.mp (hs ha)).right.right, ← (mem_filter.mp (hs' ha)).right.right] at xny
-    exact (xny rfl).elim
-  have hdisj := @sum_disjiUnion _ _ _ f _ ((antidiagonal k).filter (fun a ↦ a.fst < k))
-    (fun (a : ℕ × ℕ) ↦ (filter (fun t ↦ card t.fst = a.fst) (pairs σ k))) pdisj
-  have disj_equiv : disjiUnion ((antidiagonal k).filter (fun a ↦ a.fst < k))
-      (fun a ↦ filter (fun t ↦ card t.fst = a.fst) (pairs σ k)) pdisj =
-      filter (fun t ↦ card t.fst < k) (pairs σ k) := by
-    ext a
-    rw [mem_disjiUnion, mem_filter]
-    refine' ⟨_, fun haf ↦ ⟨(card a.fst, k - card a.fst), _, _⟩⟩
-    · rintro ⟨n, hnk, ha⟩
-      have hnk' : n.fst ≤ k := by apply le_of_lt; aesop
-      aesop
-    · simp_all only [mem_antidiagonal, mem_filter, mem_pairs, disjiUnion_eq_biUnion,
-        add_tsub_cancel_of_le]
-    · simp_all only [mem_antidiagonal, mem_filter, mem_pairs, disjiUnion_eq_biUnion, implies_true]
-  simp only [← hdisj, disj_equiv]
+    ∑ t in (pairs σ k).filter fun t ↦ card t.fst < k, f t =
+      ∑ a in (antidiagonal k).filter fun a ↦ a.fst < k,
+        ∑ A in powersetCard a.fst univ, ∑ j, f (A, j) := by
+  rw [filter_pairs_lt, sum_product, sum_disjiUnion]
+  refine sum_nbij' (fun n ↦ (n, k - n)) Prod.fst ?_ ?_ ?_ ?_ ?_ <;>
+    simp (config := { contextual := true }) [@eq_comm _ _ k, Nat.add_sub_cancel', le_of_lt]
 
 private theorem disjoint_filter_pairs_lt_filter_pairs_eq (k : ℕ) :
     Disjoint (filter (fun t ↦ card t.fst < k) (pairs σ k))
@@ -205,40 +184,43 @@ private theorem disjUnion_filter_pairs_eq_pairs (k : ℕ) :
   have hacard := le_iff_lt_or_eq.mp ha.2.1
   tauto
 
-private theorem esymm_summand_to_weight (k : ℕ) (A : Finset σ) (h : A ∈ powersetLen k univ) :
+private theorem esymm_summand_to_weight (k : ℕ) (A : Finset σ) (h : A ∈ powersetCard k univ) :
     ∑ j in A, weight σ R k (A, j) = k * (-1) ^ k * (∏ i in A, X i : MvPolynomial σ R) := by
-  simp [weight, mem_powerset_len_univ_iff.mp h, mul_assoc]
+  simp [weight, mem_powersetCard_univ.mp h, mul_assoc]
 
 private theorem esymm_to_weight (k : ℕ) : k * esymm σ R k =
     (-1) ^ k * ∑ t in filter (fun t ↦ card t.fst = k) (pairs σ k), weight σ R k t := by
-  rw [esymm, sum_filter_pairs_eq_sum_powersetLen_sum σ R k (fun t ↦ weight σ R k t),
+  rw [esymm, sum_filter_pairs_eq_sum_powersetCard_sum σ R k (fun t ↦ weight σ R k t),
     sum_congr rfl (esymm_summand_to_weight σ R k), mul_comm (k : MvPolynomial σ R) ((-1) ^ k),
     ← mul_sum, ← mul_assoc, ← mul_assoc, ← pow_add, Even.neg_one_pow ⟨k, rfl⟩, one_mul]
 
 private theorem esymm_mul_psum_summand_to_weight (k : ℕ) (a : ℕ × ℕ) (ha : a ∈ antidiagonal k) :
-    ∑ A in powersetLen a.fst univ, ∑ j, weight σ R k (A, j) =
+    ∑ A in powersetCard a.fst univ, ∑ j, weight σ R k (A, j) =
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd := by
   simp only [esymm, psum_def, weight, ← mul_assoc, mul_sum]
   rw [sum_comm]
   refine' sum_congr rfl fun x _ ↦ _
   rw [sum_mul]
   refine' sum_congr rfl fun s hs ↦ _
-  rw [mem_powerset_len_univ_iff.mp hs, ← mem_antidiagonal.mp ha, add_sub_self_left]
+  rw [mem_powersetCard_univ.mp hs, ← mem_antidiagonal.mp ha, add_sub_self_left]
 
 private theorem esymm_mul_psum_to_weight (k : ℕ) :
     ∑ a in (antidiagonal k).filter (fun a ↦ a.fst < k),
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd =
     ∑ t in filter (fun t ↦ card t.fst < k) (pairs σ k), weight σ R k t := by
   rw [← sum_congr rfl (fun a ha ↦ esymm_mul_psum_summand_to_weight σ R k a (mem_filter.mp ha).left),
-    sum_filter_pairs_eq_sum_filter_antidiagonal_powersetLen_sum σ R k]
+    sum_filter_pairs_eq_sum_filter_antidiagonal_powersetCard_sum σ R k]
 
 end NewtonIdentities
+
+variable (σ : Type*) [Fintype σ] (R : Type*) [CommRing R]
 
 /-- **Newton's identities** give a recurrence relation for the kth elementary symmetric polynomial
 in terms of lower degree elementary symmetric polynomials and power sums. -/
 theorem mul_esymm_eq_sum (k : ℕ) : k * esymm σ R k =
     (-1) ^ (k + 1) * ∑ a in (antidiagonal k).filter (fun a ↦ a.fst < k),
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd := by
+  classical
   rw [NewtonIdentities.esymm_to_weight σ R k, NewtonIdentities.esymm_mul_psum_to_weight σ R k,
     eq_comm, ← sub_eq_zero, sub_eq_add_neg, neg_mul_eq_neg_mul,
     neg_eq_neg_one_mul ((-1 : MvPolynomial σ R) ^ k)]
@@ -251,9 +233,9 @@ theorem mul_esymm_eq_sum (k : ℕ) : k * esymm σ R k =
 theorem sum_antidiagonal_card_esymm_psum_eq_zero :
     ∑ a in antidiagonal (Fintype.card σ), (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd = 0 := by
   let k := Fintype.card σ
-  suffices : (-1 : MvPolynomial σ R) ^ (k + 1) *
-    ∑ a in antidiagonal k, (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd = 0
-  · simpa using this
+  suffices (-1 : MvPolynomial σ R) ^ (k + 1) *
+      ∑ a in antidiagonal k, (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd = 0 by
+    simpa using this
   simp [← sum_filter_add_sum_filter_not (antidiagonal k) (fun a ↦ a.fst < k), ← mul_esymm_eq_sum,
     mul_add, ← mul_assoc, ← pow_add, mul_comm ↑k (esymm σ R k)]
 
@@ -270,7 +252,7 @@ theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) : psum σ R k =
   have sub_both_sides := congrArg (· - (-1 : MvPolynomial σ R) ^ (k + 1) *
     ∑ a in ((antidiagonal k).filter (fun a ↦ a.fst < k)).filter (fun a ↦ 0 < a.fst),
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd) hesymm
-  simp only [left_distrib, add_sub_cancel'] at sub_both_sides
+  simp only [left_distrib, add_sub_cancel_left] at sub_both_sides
   have sub_both_sides := congrArg ((-1 : MvPolynomial σ R) ^ (k + 1) * ·) sub_both_sides
   simp only [mul_sub_left_distrib, ← mul_assoc, ← pow_add, Even.neg_one_pow ⟨k + 1, rfl⟩, one_mul,
     not_le, lt_one_iff, filter_filter (fun a : ℕ × ℕ ↦ a.fst < k) (fun a ↦ ¬0 < a.fst)]
@@ -280,7 +262,7 @@ theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) : psum σ R k =
     rw [mem_filter, mem_antidiagonal, mem_singleton]
     refine' ⟨_, fun ha ↦ by aesop⟩
     rintro ⟨ha, ⟨_, ha0⟩⟩
-    rw [← ha, Nat.eq_zero_of_nonpos a.fst ha0, zero_add, ← Nat.eq_zero_of_nonpos a.fst ha0]
+    rw [← ha, Nat.eq_zero_of_not_pos ha0, zero_add, ← Nat.eq_zero_of_not_pos ha0]
   rw [this, sum_singleton] at sub_both_sides
   simp only [_root_.pow_zero, esymm_zero, mul_one, one_mul, filter_filter] at sub_both_sides
   exact sub_both_sides.symm

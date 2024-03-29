@@ -111,12 +111,12 @@ theorem ofConjAct_toConjAct (x : G) : ofConjAct (toConjAct x) = x :=
   rfl
 #align conj_act.of_conj_act_to_conj_act ConjAct.ofConjAct_toConjAct
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem ofConjAct_one : ofConjAct (1 : ConjAct G) = 1 :=
   rfl
 #align conj_act.of_conj_act_one ConjAct.ofConjAct_one
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem toConjAct_one : toConjAct (1 : G) = 1 :=
   rfl
 #align conj_act.to_conj_act_one ConjAct.toConjAct_one
@@ -131,12 +131,12 @@ theorem toConjAct_inv (x : G) : toConjAct x⁻¹ = (toConjAct x)⁻¹ :=
   rfl
 #align conj_act.to_conj_act_inv ConjAct.toConjAct_inv
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem ofConjAct_mul (x y : ConjAct G) : ofConjAct (x * y) = ofConjAct x * ofConjAct y :=
   rfl
 #align conj_act.of_conj_act_mul ConjAct.ofConjAct_mul
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem toConjAct_mul (x y : G) : toConjAct (x * y) = toConjAct x * toConjAct y :=
   rfl
 #align conj_act.to_conj_act_mul ConjAct.toConjAct_mul
@@ -162,7 +162,7 @@ theorem units_smul_def (g : ConjAct Mˣ) (h : M) : g • h = ofConjAct g * h * �
   rfl
 #align conj_act.units_smul_def ConjAct.units_smul_def
 
--- porting note: very slow without `simp only` and need to separate `units_smul_def`
+-- porting note (#11083): very slow without `simp only` and need to separate `units_smul_def`
 -- so that things trigger appropriately
 instance unitsMulDistribMulAction : MulDistribMulAction (ConjAct Mˣ) M where
   one_smul := by simp only [units_smul_def, ofConjAct_one, Units.val_one, one_mul, inv_one,
@@ -178,8 +178,8 @@ instance unitsMulDistribMulAction : MulDistribMulAction (ConjAct Mˣ) M where
 
 
 instance unitsSMulCommClass [SMul α M] [SMulCommClass α M M] [IsScalarTower α M M] :
-    SMulCommClass α (ConjAct Mˣ) M
-    where smul_comm a um m := by rw [units_smul_def, units_smul_def, mul_smul_comm, smul_mul_assoc]
+    SMulCommClass α (ConjAct Mˣ) M where
+  smul_comm a um m := by rw [units_smul_def, units_smul_def, mul_smul_comm, smul_mul_assoc]
 #align conj_act.units_smul_comm_class ConjAct.unitsSMulCommClass
 
 instance unitsSMulCommClass' [SMul α M] [SMulCommClass M α M] [IsScalarTower α M M] :
@@ -194,7 +194,7 @@ section Semiring
 
 variable [Semiring R]
 
--- porting note: very slow without `simp only` and need to separate `units_smul_def`
+-- porting note (#11083): very slow without `simp only` and need to separate `units_smul_def`
 -- so that things trigger appropriately
 instance unitsMulSemiringAction : MulSemiringAction (ConjAct Rˣ) R :=
   { ConjAct.unitsMulDistribMulAction with
@@ -213,17 +213,17 @@ section GroupWithZero
 
 variable [GroupWithZero G₀]
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem ofConjAct_zero : ofConjAct (0 : ConjAct G₀) = 0 :=
   rfl
 #align conj_act.of_conj_act_zero ConjAct.ofConjAct_zero
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem toConjAct_zero : toConjAct (0 : G₀) = 0 :=
   rfl
 #align conj_act.to_conj_act_zero ConjAct.toConjAct_zero
 
--- porting note: very slow without `simp only` and need to separate `smul_def`
+-- porting note (#11083): very slow without `simp only` and need to separate `smul_def`
 -- so that things trigger appropriately
 instance mulAction₀ : MulAction (ConjAct G₀) G₀ where
   one_smul := by
@@ -235,8 +235,8 @@ instance mulAction₀ : MulAction (ConjAct G₀) G₀ where
 #align conj_act.mul_action₀ ConjAct.mulAction₀
 
 instance smulCommClass₀ [SMul α G₀] [SMulCommClass α G₀ G₀] [IsScalarTower α G₀ G₀] :
-    SMulCommClass α (ConjAct G₀) G₀
-    where smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
+    SMulCommClass α (ConjAct G₀) G₀ where
+  smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
 #align conj_act.smul_comm_class₀ ConjAct.smulCommClass₀
 
 instance smulCommClass₀' [SMul α G₀] [SMulCommClass G₀ α G₀] [IsScalarTower α G₀ G₀] :
@@ -251,7 +251,7 @@ section DivisionRing
 
 variable [DivisionRing K]
 
--- porting note: very slow without `simp only` and need to separate `smul_def`
+-- porting note (#11083): very slow without `simp only` and need to separate `smul_def`
 -- so that things trigger appropriately
 instance distribMulAction₀ : DistribMulAction (ConjAct K) K :=
   { ConjAct.mulAction₀ with
@@ -267,7 +267,9 @@ end DivisionRing
 
 variable [Group G]
 
--- porting note: very slow without `simp only` and need to separate `smul_def`
+-- todo: this file is not in good order; I will refactor this after the PR
+
+-- porting note (#11083): very slow without `simp only` and need to separate `smul_def`
 -- so that things trigger appropriately
 instance : MulDistribMulAction (ConjAct G) G where
   smul_mul := by
@@ -280,8 +282,8 @@ instance : MulDistribMulAction (ConjAct G) G where
     simp only [map_mul, mul_assoc, mul_inv_rev, forall_const, «forall»]
 
 instance smulCommClass [SMul α G] [SMulCommClass α G G] [IsScalarTower α G G] :
-    SMulCommClass α (ConjAct G) G
-    where smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
+    SMulCommClass α (ConjAct G) G where
+  smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
 #align conj_act.smul_comm_class ConjAct.smulCommClass
 
 instance smulCommClass' [SMul α G] [SMulCommClass G α G] [IsScalarTower α G G] :
@@ -309,7 +311,7 @@ theorem orbitRel_conjAct : (orbitRel (ConjAct G) G).Rel = IsConj :=
   funext₂ fun g h => by rw [orbitRel_apply, mem_orbit_conjAct]
 #align conj_act.orbit_rel_conj_act ConjAct.orbitRel_conjAct
 
-theorem orbit_eq_carrier_conjClasses [Group G] (g : G) :
+theorem orbit_eq_carrier_conjClasses (g : G) :
     orbit (ConjAct G) g = (ConjClasses.mk g).carrier := by
   ext h
   rw [ConjClasses.mem_carrier_iff_mk_eq, ConjClasses.mk_eq_mk_iff_isConj, mem_orbit_conjAct]
@@ -375,3 +377,31 @@ instance normal_of_characteristic_of_normal {H : Subgroup G} [hH : H.Normal] {K 
 #align conj_act.normal_of_characteristic_of_normal ConjAct.normal_of_characteristic_of_normal
 
 end ConjAct
+
+section Units
+
+variable [Monoid M]
+
+/-- The stabilizer of `Mˣ` acting on itself by conjugation at `x : Mˣ` is exactly the
+units of the centralizer of `x : M`. -/
+@[simps! apply_coe_val symm_apply_val_coe]
+def unitsCentralizerEquiv (x : Mˣ) :
+    (Submonoid.centralizer ({↑x} : Set M))ˣ ≃* MulAction.stabilizer (ConjAct Mˣ) x :=
+  MulEquiv.symm
+  { toFun := MonoidHom.toHomUnits <|
+      { toFun := fun u ↦ ⟨↑(ConjAct.ofConjAct u.1 : Mˣ), by
+          rintro x ⟨rfl⟩
+          have : (u : ConjAct Mˣ) • x = x := u.2
+          rwa [ConjAct.smul_def, mul_inv_eq_iff_eq_mul, Units.ext_iff, eq_comm] at this⟩,
+        map_one' := rfl,
+        map_mul' := fun a b ↦ rfl }
+    invFun := fun u ↦
+      ⟨ConjAct.toConjAct (Units.map (Submonoid.centralizer ({↑x} : Set M)).subtype u), by
+      change _ • _ = _
+      simp only [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct, mul_inv_eq_iff_eq_mul]
+      exact Units.ext <| (u.1.2 x <| Set.mem_singleton _).symm⟩
+    left_inv := fun _ ↦ by ext; rfl
+    right_inv := fun _ ↦ by ext; rfl
+    map_mul' := map_mul _ }
+
+end Units

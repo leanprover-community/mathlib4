@@ -60,7 +60,9 @@ theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = FreeAbelianGroup �
   rfl
 #align AddCommGroup.free_obj_coe AddCommGroupCat.free_obj_coe
 
-@[simp]
+-- This currently can't be a `simp` lemma,
+-- because `free_obj_coe` will simplify implicit arguments in the LHS.
+-- (The `simpNF` linter will, correctly, complain.)
 theorem free_map_coe {α β : Type u} {f : α → β} (x : FreeAbelianGroup α) :
     (free.map f) x = f <$> x :=
   rfl
@@ -89,7 +91,7 @@ the monomorphisms in `AddCommGroup` are just the injective functions.
 -/
 -- Porting note: had to elaborate instance of Mono rather than just using `apply_instance`.
 example {G H : AddCommGroupCat.{u}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
-  (mono_iff_injective (FunLike.coe f)).mp (Functor.map_mono (forget AddCommGroupCat) f)
+  (mono_iff_injective (DFunLike.coe f)).mp (Functor.map_mono (forget AddCommGroupCat) f)
 
 
 end AddCommGroupCat
@@ -102,9 +104,11 @@ def free : Type u ⥤ GroupCat where
   obj α := of (FreeGroup α)
   map := FreeGroup.map
   map_id := by
-    intros; ext1; rw [←FreeGroup.map.unique]; intros; rfl
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    intros; ext1; erw [← FreeGroup.map.unique] <;> intros <;> rfl
   map_comp := by
-    intros; ext1; rw [←FreeGroup.map.unique]; intros; rfl
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    intros; ext1; erw [← FreeGroup.map.unique] <;> intros <;> rfl
 #align Group.free GroupCat.free
 
 /-- The free-forgetful adjunction for groups.

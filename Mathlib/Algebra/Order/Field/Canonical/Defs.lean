@@ -5,7 +5,7 @@ Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Algebra.Order.WithZero
+import Mathlib.Algebra.Order.Monoid.WithZero
 
 #align_import algebra.order.field.canonical.defs from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 
@@ -30,7 +30,7 @@ instance (priority := 100) CanonicallyLinearOrderedSemifield.toLinearOrderedComm
 #align canonically_linear_ordered_semifield.to_linear_ordered_comm_group_with_zero CanonicallyLinearOrderedSemifield.toLinearOrderedCommGroupWithZero
 
 -- See note [lower instance priority]
-instance (priority := 100) CanonicallyLinearOrderedSemifield.toCanonicallyLinearOrderedAddMonoid
-    [CanonicallyLinearOrderedSemifield α] : CanonicallyLinearOrderedAddMonoid α :=
+instance (priority := 100) CanonicallyLinearOrderedSemifield.toCanonicallyLinearOrderedAddCommMonoid
+    [CanonicallyLinearOrderedSemifield α] : CanonicallyLinearOrderedAddCommMonoid α :=
   { ‹CanonicallyLinearOrderedSemifield α› with }
-#align canonically_linear_ordered_semifield.to_canonically_linear_ordered_add_monoid CanonicallyLinearOrderedSemifield.toCanonicallyLinearOrderedAddMonoid
+#align canonically_linear_ordered_semifield.to_canonically_linear_ordered_add_monoid CanonicallyLinearOrderedSemifield.toCanonicallyLinearOrderedAddCommMonoid

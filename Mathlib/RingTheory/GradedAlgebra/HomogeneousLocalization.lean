@@ -70,13 +70,9 @@ open DirectSum BigOperators Pointwise
 open DirectSum SetLike
 
 variable {ι R A : Type*}
-
 variable [AddCommMonoid ι] [DecidableEq ι]
-
 variable [CommRing R] [CommRing A] [Algebra R A]
-
 variable (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
-
 variable (x : Submonoid A)
 
 local notation "at " x => Localization x
@@ -234,7 +230,7 @@ instance : Pow (NumDenSameDeg 𝒜 x) ℕ where
       @GradedMonoid.GMonoid.gnpow _ (fun i => ↥(𝒜 i)) _ _ n _ c.den, by
         induction' n with n ih
         · simpa only [Nat.zero_eq, coe_gnpow, pow_zero] using Submonoid.one_mem _
-        · simpa only [pow_succ', coe_gnpow] using x.mul_mem ih c.den_mem⟩
+        · simpa only [pow_succ, coe_gnpow] using x.mul_mem ih c.den_mem⟩
 
 @[simp]
 theorem deg_pow (c : NumDenSameDeg 𝒜 x) (n : ℕ) : (c ^ n).deg = n • c.deg :=
@@ -335,19 +331,17 @@ instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
 section SMul
 
 variable {α : Type*} [SMul α R] [SMul α A] [IsScalarTower α R A]
-
 variable [IsScalarTower α A A]
 
 instance : SMul α (HomogeneousLocalization 𝒜 x) where
   smul m := Quotient.map' (m • ·) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
     change Localization.mk _ _ = Localization.mk _ _
     simp only [num_smul, den_smul]
-    convert congr_arg (fun z : at x => m • z) h <;> rw [Localization.smul_mk] <;> rfl
+    convert congr_arg (fun z : at x => m • z) h <;> rw [Localization.smul_mk]
 
 @[simp]
 theorem smul_val (y : HomogeneousLocalization 𝒜 x) (n : α) : (n • y).val = n • y.val := by
   induction y using Quotient.inductionOn
-  simp only [Quotient.liftOn₂'_mk, Quotient.liftOn'_mk]
   change Localization.mk _ _ = n • Localization.mk _ _
   dsimp only
   rw [Localization.smul_mk]
@@ -408,7 +402,6 @@ theorem one_val : (1 : HomogeneousLocalization 𝒜 x).val = 1 :=
 theorem add_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 + y2).val = y1.val + y2.val := by
   induction y1 using Quotient.inductionOn
   induction y2 using Quotient.inductionOn
-  simp only [Quotient.liftOn₂'_mk, Quotient.liftOn'_mk]
   change Localization.mk _ _ = Localization.mk _ _ + Localization.mk _ _
   dsimp only
   rw [Localization.add_mk]
@@ -419,7 +412,6 @@ theorem add_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 + y2).val = y1.va
 theorem mul_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 * y2).val = y1.val * y2.val := by
   induction y1 using Quotient.inductionOn
   induction y2 using Quotient.inductionOn
-  simp only [Quotient.liftOn₂'_mk, Quotient.liftOn'_mk]
   change Localization.mk _ _ = Localization.mk _ _ * Localization.mk _ _
   dsimp only
   rw [Localization.mk_mul]
@@ -429,7 +421,6 @@ theorem mul_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 * y2).val = y1.va
 @[simp]
 theorem neg_val (y : HomogeneousLocalization 𝒜 x) : (-y).val = -y.val := by
   induction y using Quotient.inductionOn
-  simp only [Quotient.liftOn₂'_mk, Quotient.liftOn'_mk]
   change Localization.mk _ _ = -Localization.mk _ _
   dsimp only
   rw [Localization.neg_mk]
@@ -444,7 +435,6 @@ theorem sub_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 - y2).val = y1.va
 @[simp]
 theorem pow_val (y : HomogeneousLocalization 𝒜 x) (n : ℕ) : (y ^ n).val = y.val ^ n := by
   induction y using Quotient.inductionOn
-  simp only [Quotient.liftOn₂'_mk, Quotient.liftOn'_mk]
   change Localization.mk _ _ = Localization.mk _ _ ^ n
   rw [Localization.mk_pow]
   dsimp only
@@ -525,7 +515,6 @@ theorem eq_num_div_den (f : HomogeneousLocalization 𝒜 x) :
   have := Quotient.out_eq' f
   apply_fun HomogeneousLocalization.val at this
   rw [← this]
-  simp only [Quotient.liftOn'_mk'']
   rfl
 #align homogeneous_localization.eq_num_div_denom HomogeneousLocalization.eq_num_div_den
 

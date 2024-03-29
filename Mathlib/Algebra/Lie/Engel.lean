@@ -70,9 +70,7 @@ into a single statement about nilpotency of Lie modules. This is not usually emp
 universe u₁ u₂ u₃ u₄
 
 variable {R : Type u₁} {L : Type u₂} {L₂ : Type u₃} {M : Type u₄}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L₂] [LieAlgebra R L₂]
-
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 namespace LieSubmodule
@@ -120,7 +118,7 @@ theorem lcs_le_lcs_of_is_nilpotent_span_sup_eq_top {n i j : ℕ}
     exact le_sup_of_le_left hIM
   · simp only [LieIdeal.lcs_succ, i.add_succ l, lie_top_eq_of_span_sup_eq_top hxI, sup_le_iff]
     refine' ⟨(Submodule.map_mono ih).trans _, le_sup_of_le_right _⟩
-    · rw [Submodule.map_sup, ← Submodule.map_comp, ← LinearMap.mul_eq_comp, ← pow_succ, ←
+    · rw [Submodule.map_sup, ← Submodule.map_comp, ← LinearMap.mul_eq_comp, ← pow_succ', ←
         I.lcs_succ]
       exact sup_le_sup_left coe_map_toEndomorphism_le _
     · refine' le_trans (mono_lie_right _ _ I _) (mono_lie_right _ _ I hIM)
@@ -158,10 +156,8 @@ be nilpotent is that the image of the map `L → End(M)` consists of nilpotent e
 Engel's theorem `LieAlgebra.isEngelian_of_isNoetherian` states that any Noetherian Lie algebra is
 Engelian. -/
 def LieAlgebra.IsEngelian : Prop :=
-  ∀ (M : Type u₄) [AddCommGroup M],
-    ∀ [Module R M] [LieRingModule L M],
-      ∀ [LieModule R L M],
-        ∀ _ : ∀ x : L, _root_.IsNilpotent (toEndomorphism R L M x), LieModule.IsNilpotent R L M
+  ∀ (M : Type u₄) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M],
+    (∀ x : L, _root_.IsNilpotent (toEndomorphism R L M x)) → LieModule.IsNilpotent R L M
 #align lie_algebra.is_engelian LieAlgebra.IsEngelian
 
 variable {R L}
@@ -183,7 +179,7 @@ theorem Function.Surjective.isEngelian {f : L →ₗ⁅R⁆ L₂} (hf : Function
   have surj_id : Function.Surjective (LinearMap.id : M →ₗ[R] M) := Function.surjective_id
   haveI : LieModule.IsNilpotent R L M := h M hnp
   apply hf.lieModuleIsNilpotent surj_id
-  -- Porting note: was `simp`
+  -- porting note (#10745): was `simp`
   intros; simp only [LinearMap.id_coe, id_eq]; rfl
 #align function.surjective.is_engelian Function.Surjective.isEngelian
 
@@ -222,19 +218,17 @@ theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalg
 
 attribute [local instance] LieSubalgebra.subsingleton_bot
 
-variable [IsNoetherian R L]
-
 /-- *Engel's theorem*.
 
 Note that this implies all traditional forms of Engel's theorem via
 `LieModule.nontrivial_max_triv_of_isNilpotent`, `LieModule.isNilpotent_iff_forall`,
 `LieAlgebra.isNilpotent_iff_forall`. -/
-theorem LieAlgebra.isEngelian_of_isNoetherian : LieAlgebra.IsEngelian R L := by
+theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.IsEngelian R L := by
   intro M _i1 _i2 _i3 _i4 h
   rw [← isNilpotent_range_toEndomorphism_iff]
   let L' := (toEndomorphism R L M).range
-  replace h : ∀ y : L', _root_.IsNilpotent (y : Module.End R M)
-  · rintro ⟨-, ⟨y, rfl⟩⟩
+  replace h : ∀ y : L', _root_.IsNilpotent (y : Module.End R M) := by
+    rintro ⟨-, ⟨y, rfl⟩⟩
     simp [h]
   change LieModule.IsNilpotent R L' M
   let s := {K : LieSubalgebra R L' | LieAlgebra.IsEngelian R K}
@@ -283,15 +277,22 @@ theorem LieAlgebra.isEngelian_of_isNoetherian : LieAlgebra.IsEngelian R L := by
   exact hK₃ ▸ hK₁
 #align lie_algebra.is_engelian_of_is_noetherian LieAlgebra.isEngelian_of_isNoetherian
 
-/-- Engel's theorem. -/
-theorem LieModule.isNilpotent_iff_forall :
+/-- Engel's theorem.
+
+See also `LieModule.isNilpotent_iff_forall'` which assumes that `M` is Noetherian instead of `L`. -/
+theorem LieModule.isNilpotent_iff_forall [IsNoetherian R L] :
     LieModule.IsNilpotent R L M ↔ ∀ x, _root_.IsNilpotent <| toEndomorphism R L M x :=
   ⟨fun _ ↦ isNilpotent_toEndomorphism_of_isNilpotent R L M,
    fun h => LieAlgebra.isEngelian_of_isNoetherian M h⟩
 #align lie_module.is_nilpotent_iff_forall LieModule.isNilpotent_iff_forall
 
 /-- Engel's theorem. -/
-theorem LieAlgebra.isNilpotent_iff_forall :
+theorem LieModule.isNilpotent_iff_forall' [IsNoetherian R M] :
+    LieModule.IsNilpotent R L M ↔ ∀ x, _root_.IsNilpotent <| toEndomorphism R L M x := by
+  rw [← isNilpotent_range_toEndomorphism_iff, LieModule.isNilpotent_iff_forall]; simp
+
+/-- Engel's theorem. -/
+theorem LieAlgebra.isNilpotent_iff_forall [IsNoetherian R L] :
     LieAlgebra.IsNilpotent R L ↔ ∀ x, _root_.IsNilpotent <| LieAlgebra.ad R L x :=
   LieModule.isNilpotent_iff_forall
 #align lie_algebra.is_nilpotent_iff_forall LieAlgebra.isNilpotent_iff_forall

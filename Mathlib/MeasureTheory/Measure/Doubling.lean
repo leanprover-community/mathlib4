@@ -25,9 +25,6 @@ This file records basic facts about uniformly locally doubling measures.
   appearing in the definition of a uniformly locally doubling measure.
 -/
 
--- Porting note: for 2 ^ n in exists_eventually_forall_measure_closedBall_le_mul
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section
 
 open Set Filter Metric MeasureTheory TopologicalSpace ENNReal NNReal Topology
@@ -83,10 +80,10 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
     refine' (ih.and (exists_measure_closedBall_le_mul' μ)).mono fun ε hε x => _
     calc
       μ (closedBall x ((2 : ℝ) ^ (n + 1) * ε)) = μ (closedBall x ((2 : ℝ) ^ n * (2 * ε))) := by
-        rw [pow_succ', mul_assoc]
+        rw [pow_succ, mul_assoc]
       _ ≤ ↑(C ^ n) * μ (closedBall x (2 * ε)) := (hε.1 x)
       _ ≤ ↑(C ^ n) * (C * μ (closedBall x ε)) := by gcongr; exact hε.2 x
-      _ = ↑(C ^ (n + 1)) * μ (closedBall x ε) := by rw [← mul_assoc, pow_succ', ENNReal.coe_mul]
+      _ = ↑(C ^ (n + 1)) * μ (closedBall x ε) := by rw [← mul_assoc, pow_succ, ENNReal.coe_mul]
   rcases lt_or_le K 1 with (hK | hK)
   · refine' ⟨1, _⟩
     simp only [ENNReal.coe_one, one_mul]
@@ -117,7 +114,7 @@ theorem one_le_scalingConstantOf (K : ℝ) : 1 ≤ scalingConstantOf μ K :=
 theorem eventually_measure_mul_le_scalingConstantOf_mul (K : ℝ) :
     ∃ R : ℝ,
       0 < R ∧
-        ∀ (x t r) (_ : t ∈ Ioc 0 K) (_ : r ≤ R),
+        ∀ x t r, t ∈ Ioc 0 K → r ≤ R →
           μ (closedBall x (t * r)) ≤ scalingConstantOf μ K * μ (closedBall x r) := by
   have h := Classical.choose_spec (exists_eventually_forall_measure_closedBall_le_mul μ K)
   rcases mem_nhdsWithin_Ioi_iff_exists_Ioc_subset.1 h with ⟨R, Rpos, hR⟩
@@ -125,7 +122,7 @@ theorem eventually_measure_mul_le_scalingConstantOf_mul (K : ℝ) :
   rcases lt_trichotomy r 0 with (rneg | rfl | rpos)
   · have : t * r < 0 := mul_neg_of_pos_of_neg ht.1 rneg
     simp only [closedBall_eq_empty.2 this, measure_empty, zero_le']
-  · simp only [MulZeroClass.mul_zero, closedBall_zero]
+  · simp only [mul_zero, closedBall_zero]
     refine' le_mul_of_one_le_of_le _ le_rfl
     apply ENNReal.one_le_coe_iff.2 (le_max_right _ _)
   · apply (hR ⟨rpos, hr⟩ x t ht.2).trans _
@@ -135,7 +132,7 @@ theorem eventually_measure_mul_le_scalingConstantOf_mul (K : ℝ) :
 theorem eventually_measure_le_scaling_constant_mul (K : ℝ) :
     ∀ᶠ r in 𝓝[>] 0, ∀ x, μ (closedBall x (K * r)) ≤ scalingConstantOf μ K * μ (closedBall x r) := by
   filter_upwards [Classical.choose_spec
-      (exists_eventually_forall_measure_closedBall_le_mul μ K)]with r hr x
+      (exists_eventually_forall_measure_closedBall_le_mul μ K)] with r hr x
   exact (hr x K le_rfl).trans (mul_le_mul_right' (ENNReal.coe_le_coe.2 (le_max_left _ _)) _)
 #align is_unif_loc_doubling_measure.eventually_measure_le_scaling_constant_mul IsUnifLocDoublingMeasure.eventually_measure_le_scaling_constant_mul
 

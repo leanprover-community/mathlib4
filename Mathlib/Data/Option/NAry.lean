@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Option.Basic
+import Mathlib.Init.Function
 
 #align_import data.option.n_ary from "leanprover-community/mathlib"@"995b47e555f1b6297c7cf16855f1023e355219fb"
 
@@ -29,6 +29,7 @@ We do not define `Option.map₃` as its only purpose so far would be to prove pr
 
 set_option autoImplicit true
 
+universe u
 
 open Function
 
@@ -44,12 +45,12 @@ def map₂ (f : α → β → γ) (a : Option α) (b : Option β) : Option γ :=
 
 /-- `Option.map₂` in terms of monadic operations. Note that this can't be taken as the definition
 because of the lack of universe polymorphism. -/
-theorem map₂_def {α β γ : Type _} (f : α → β → γ) (a : Option α) (b : Option β) :
+theorem map₂_def {α β γ : Type u} (f : α → β → γ) (a : Option α) (b : Option β) :
     map₂ f a b = f <$> a <*> b :=
   by cases a <;> rfl
 #align option.map₂_def Option.map₂_def
 
--- porting note: In Lean3, was `@[simp]` but now `simp` can prove it
+-- Porting note (#10618): In Lean3, was `@[simp]` but now `simp` can prove it
 theorem map₂_some_some (f : α → β → γ) (a : α) (b : β) : map₂ f (some a) (some b) = f a b := rfl
 #align option.map₂_some_some Option.map₂_some_some
 
@@ -69,13 +70,13 @@ theorem map₂_coe_left (f : α → β → γ) (a : α) (b : Option β) : map₂
   rfl
 #align option.map₂_coe_left Option.map₂_coe_left
 
--- porting note: This proof was `rfl` in Lean3, but now is not.
+-- Porting note: This proof was `rfl` in Lean3, but now is not.
 @[simp]
 theorem map₂_coe_right (f : α → β → γ) (a : Option α) (b : β) : map₂ f a b = a.map fun a => f a b :=
   by cases a <;> rfl
 #align option.map₂_coe_right Option.map₂_coe_right
 
--- porting note: Removed the `@[simp]` tag as membership of an `Option` is no-longer simp-normal.
+-- Porting note: Removed the `@[simp]` tag as membership of an `Option` is no-longer simp-normal.
 theorem mem_map₂_iff {c : γ} : c ∈ map₂ f a b ↔ ∃ a' b', a' ∈ a ∧ b' ∈ b ∧ f a' b' = c :=
   by simp [map₂]
 #align option.mem_map₂_iff Option.mem_map₂_iff

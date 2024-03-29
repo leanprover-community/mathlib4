@@ -1,8 +1,7 @@
-import Std.Tactic.HaveI
-import Mathlib.Data.List.Basic
+import Std.Tactic.Alias
 
 attribute [simp] Array.toArrayAux_eq
 
-alias Array.data_toArray ← List.toArray_data
+alias List.toArray_data := Array.data_toArray
 
 namespace Array

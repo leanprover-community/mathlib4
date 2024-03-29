@@ -60,8 +60,8 @@ theorem lhopital_zero_right_on_Ioo (hff' : ∀ x ∈ Ioo a b, HasDerivAt f (f' x
     have : Tendsto g (𝓝[<] x) (𝓝 0) := by
       rw [← h, ← nhdsWithin_Ioo_eq_nhdsWithin_Iio hx.1]
       exact ((hgg' x hx).continuousAt.continuousWithinAt.mono <| sub x hx).tendsto
-    obtain ⟨y, hyx, hy⟩ : ∃ c ∈ Ioo a x, g' c = 0
-    exact exists_hasDerivAt_eq_zero' hx.1 hga this fun y hy => hgg' y <| sub x hx hy
+    obtain ⟨y, hyx, hy⟩ : ∃ c ∈ Ioo a x, g' c = 0 :=
+      exists_hasDerivAt_eq_zero' hx.1 hga this fun y hy => hgg' y <| sub x hx hy
     exact hg' y (sub x hx hyx) hy
   have : ∀ x ∈ Ioo a b, ∃ c ∈ Ioo a x, f x * g' c = g x * f' c := by
     intro x hx
@@ -80,7 +80,6 @@ theorem lhopital_zero_right_on_Ioo (hff' : ∀ x ∈ Ioo a b, HasDerivAt f (f' x
   have cmp : ∀ x ∈ Ioo a b, a < c x ∧ c x < x := fun x hx => (hc x hx).1
   rw [← nhdsWithin_Ioo_eq_nhdsWithin_Ioi hab]
   apply tendsto_nhdsWithin_congr this
-  simp only
   apply hdiv.comp
   refine' tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
     (tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds
@@ -169,7 +168,7 @@ theorem lhopital_zero_atTop_on_Ioi (hff' : ∀ x ∈ Ioi a, HasDerivAt f (f' x) 
       unfold Function.comp
       simp only
       erw [mul_div_mul_right]
-      refine' neg_ne_zero.mpr (inv_ne_zero <| pow_ne_zero _ <| ne_of_gt hx))
+      exact neg_ne_zero.mpr (inv_ne_zero <| pow_ne_zero _ <| ne_of_gt hx))
   have := this.comp tendsto_inv_atTop_zero'
   unfold Function.comp at this
   simpa only [inv_inv]

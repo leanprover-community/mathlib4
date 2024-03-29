@@ -28,9 +28,7 @@ This file contains results about bases in normed affine spaces.
 section Barycentric
 
 variable {ι 𝕜 E P : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-
 variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable [MetricSpace P] [NormedAddTorsor E P]
 
 theorem isOpenMap_barycentric_coord [Nontrivial ι] (b : AffineBasis ι 𝕜 P) (i : ι) :
@@ -74,7 +72,7 @@ theorem AffineBasis.interior_convexHull {ι E : Type*} [Finite ι] [NormedAddCom
     have : convexHull ℝ (range b) = ⋂ i, b.coord i ⁻¹' Ici 0 := by
       rw [b.convexHull_eq_nonneg_coord, setOf_forall]; rfl
     ext
-    simp only [this, interior_iInter, ←
+    simp only [this, interior_iInter_of_finite, ←
       IsOpenMap.preimage_interior_eq_interior_preimage (isOpenMap_barycentric_coord b _)
         (continuous_barycentric_coord b _),
       interior_Ici, mem_iInter, mem_setOf_eq, mem_Ioi, mem_preimage]
@@ -96,19 +94,19 @@ theorem IsOpen.exists_between_affineIndependent_span_eq_top {s u : Set P} (hu : 
   let f : P → P := fun y => lineMap q y (ε / dist y q)
   have hf : ∀ y, f y ∈ u := by
     refine' fun y => hεu _
-    simp only
+    simp only [f]
     rw [Metric.mem_closedBall, lineMap_apply, dist_vadd_left, norm_smul, Real.norm_eq_abs,
       dist_eq_norm_vsub V y q, abs_div, abs_of_pos ε0, abs_of_nonneg (norm_nonneg _), div_mul_comm]
     exact mul_le_of_le_one_left ε0.le (div_self_le_one _)
-  have hεyq : ∀ (y) (_ : y ∉ s), ε / dist y q ≠ 0 := fun y hy =>
+  have hεyq : ∀ y ∉ s, ε / dist y q ≠ 0 := fun y hy =>
     div_ne_zero ε0.ne' (dist_ne_zero.2 (ne_of_mem_of_not_mem hq hy).symm)
   classical
   let w : t → ℝˣ := fun p => if hp : (p : P) ∈ s then 1 else Units.mk0 _ (hεyq (↑p) hp)
   refine' ⟨Set.range fun p : t => lineMap q p (w p : ℝ), _, _, _, _⟩
-  · intro p hp; use ⟨p, ht₁ hp⟩; simp [hp]
+  · intro p hp; use ⟨p, ht₁ hp⟩; simp [w, hp]
   · rintro y ⟨⟨p, hp⟩, rfl⟩
     by_cases hps : p ∈ s <;>
-    simp only [hps, lineMap_apply_one, Units.val_mk0, dif_neg, dif_pos, not_false_iff,
+    simp only [w, hps, lineMap_apply_one, Units.val_mk0, dif_neg, dif_pos, not_false_iff,
       Units.val_one, Subtype.coe_mk] <;>
     [exact hsu hps; exact hf p]
   · exact (ht₂.units_lineMap ⟨q, ht₁ hq⟩ w).range
@@ -116,8 +114,7 @@ theorem IsOpen.exists_between_affineIndependent_span_eq_top {s u : Set P} (hu : 
 #align is_open.exists_between_affine_independent_span_eq_top IsOpen.exists_between_affineIndependent_span_eq_top
 
 theorem IsOpen.exists_subset_affineIndependent_span_eq_top {u : Set P} (hu : IsOpen u)
-    (hne : u.Nonempty) :
-    ∃ (s : _) (_ : s ⊆ u), AffineIndependent ℝ ((↑) : s → P) ∧ affineSpan ℝ s = ⊤ := by
+    (hne : u.Nonempty) : ∃ s ⊆ u, AffineIndependent ℝ ((↑) : s → P) ∧ affineSpan ℝ s = ⊤ := by
   rcases hne with ⟨x, hx⟩
   rcases hu.exists_between_affineIndependent_span_eq_top (singleton_subset_iff.mpr hx)
     (singleton_nonempty _) (affineIndependent_of_subsingleton _ _) with ⟨s, -, hsu, hs⟩

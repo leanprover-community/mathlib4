@@ -1,0 +1,34 @@
+# This job merges every commit to `master` into `nightly-testing`, resolving merge conflicts in favor of `nightly-testing`.
+
+name: Merge master to nightly
+
+on:
+  schedule:
+    - cron: '30 */3 * * *'  # 8AM CET/11PM PT
+
+jobs:
+  merge-to-nightly:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.NIGHTLY_TESTING }}
+
+      - name: Configure Git User
+        run: |
+          git config user.name "leanprover-community-mathlib4-bot"
+          git config user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
+
+      - name: Merge master to nightly favoring nightly changes
+        run: |
+          git checkout nightly-testing
+          # If the merge goes badly, we proceed anyway via '|| true'.
+          # CI will report failures on the 'nightly-testing' branch direct to Zulip.
+          git merge master --strategy-option ours --no-commit --allow-unrelated-histories || true
+          git add .
+          # If there's nothing to do (because there are no new commits from master),
+          # that's okay, hence the '|| true'.
+          git commit -m "Merge master into nightly-testing" || true
+          git push origin nightly-testing

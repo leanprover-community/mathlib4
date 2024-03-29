@@ -35,7 +35,6 @@ namespace MeasureTheory
 open TopologicalSpace
 
 variable {μ ν : Measure α}
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 /-- Given a measure `μ` and an integrable function `f`, `μ.withDensityᵥ f` is
@@ -128,6 +127,23 @@ theorem withDensityᵥ_smul' {𝕜 : Type*} [NontriviallyNormedField 𝕜] [Norm
     (μ.withDensityᵥ fun x => r • f x) = r • μ.withDensityᵥ f :=
   withDensityᵥ_smul f r
 #align measure_theory.with_densityᵥ_smul' MeasureTheory.withDensityᵥ_smul'
+
+theorem withDensityᵥ_smul_eq_withDensityᵥ_withDensity {f : α → ℝ≥0} {g : α → E}
+    (hf : AEMeasurable f μ) (hfg : Integrable (f • g) μ) :
+    μ.withDensityᵥ (f • g) = (μ.withDensity (fun x ↦ f x)).withDensityᵥ g := by
+  ext s hs
+  rw [withDensityᵥ_apply hfg hs,
+    withDensityᵥ_apply ((integrable_withDensity_iff_integrable_smul₀ hf).mpr hfg) hs,
+    set_integral_withDensity_eq_set_integral_smul₀ hf.restrict _ hs]
+  rfl
+
+theorem withDensityᵥ_smul_eq_withDensityᵥ_withDensity' {f : α → ℝ≥0∞} {g : α → E}
+    (hf : AEMeasurable f μ) (hflt : ∀ᵐ x ∂μ, f x < ∞)
+    (hfg : Integrable (fun x ↦ (f x).toReal • g x) μ) :
+    μ.withDensityᵥ (fun x ↦ (f x).toReal • g x) = (μ.withDensity f).withDensityᵥ g := by
+  rw [← withDensity_congr_ae (coe_toNNReal_ae_eq hflt),
+    ← withDensityᵥ_smul_eq_withDensityᵥ_withDensity hf.ennreal_toNNReal hfg]
+  rfl
 
 theorem Measure.withDensityᵥ_absolutelyContinuous (μ : Measure α) (f : α → ℝ) :
     μ.withDensityᵥ f ≪ᵥ μ.toENNRealVectorMeasure := by

@@ -1,6 +1,7 @@
 import Mathlib.Tactic.Relation.Trans
 import Std.Data.Nat.Lemmas
 
+set_option autoImplicit true
 -- testing that the attribute is recognized and used
 def nleq (a b : Nat) : Prop := a ≤ b
 

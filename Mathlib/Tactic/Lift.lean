@@ -3,9 +3,8 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Tactic.Cases
-import Mathlib.Tactic.PermuteGoals
-import Mathlib.Init.Data.Int.Order
+import Mathlib.Tactic.Basic
+import Mathlib.Init.Data.Int.Basic
 
 /-!
 # lift tactic
@@ -107,8 +106,8 @@ syntax (name := lift) "lift " term " to " term (" using " term)?
 
 /-- Generate instance for the `lift` tactic. -/
 def Lift.getInst (old_tp new_tp : Expr) : MetaM (Expr × Expr × Expr) := do
-  let coe ← mkFreshExprMVar (some $ .forallE `a new_tp old_tp .default)
-  let p ← mkFreshExprMVar (some $ .forallE `a old_tp (.sort .zero) .default)
+  let coe ← mkFreshExprMVar (some <| .forallE `a new_tp old_tp .default)
+  let p ← mkFreshExprMVar (some <| .forallE `a old_tp (.sort .zero) .default)
   let inst_type ← mkAppM ``CanLift #[old_tp, new_tp, coe, p]
   let inst ← synthInstance inst_type -- TODO: catch error
   return (← instantiateMVars p, ← instantiateMVars coe, ← instantiateMVars inst)
@@ -146,16 +145,17 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
                else pure newEqName
   let newEqIdent := mkIdent newEqName
   -- Run rcases on the proof of the lift condition
-  replaceMainGoal (← Std.Tactic.RCases.rcases #[(none, prfSyn)]
+  replaceMainGoal (← Lean.Elab.Tactic.RCases.rcases #[(none, prfSyn)]
     (.tuple Syntax.missing <| [newVarName, newEqName].map (.one Syntax.missing)) goal)
   -- if we use a new variable, then substitute it everywhere
   if isNewVar then
-    for decl in ←getLCtx do
+    for decl in ← getLCtx do
       if decl.userName != newEqName then
         let declIdent := mkIdent decl.userName
         -- The line below fails if $declIdent is there only once.
-        evalTactic (← `(tactic| simp only [← $newEqIdent] at $declIdent $declIdent))
-    evalTactic (← `(tactic| simp only [← $newEqIdent]))
+        evalTactic (← `(tactic| simp (config := {failIfUnchanged := false})
+          only [← $newEqIdent] at $declIdent $declIdent))
+    evalTactic (← `(tactic| simp (config := {failIfUnchanged := false}) only [← $newEqIdent]))
   -- Clear the temporary hypothesis used for the new variable name if applicable
   if isNewVar && !isNewEq then
     evalTactic (← `(tactic| clear $newEqIdent))

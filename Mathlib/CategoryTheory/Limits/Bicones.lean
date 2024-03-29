@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.Cones
-import Mathlib.CategoryTheory.FinCategory
+import Mathlib.CategoryTheory.FinCategory.Basic
 
 #align_import category_theory.limits.bicones from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.FinCategory
 
 Given a category `J`, a walking `Bicone J` is a category whose objects are the objects of `J` and
 two extra vertices `Bicone.left` and `Bicone.right`. The morphisms are the morphisms of `J` and
-`left ⟶ j`, `right ⟶ j` for each `j : J` such that `⬝ ⟶ j` and `⬝ ⟶ k` commutes with each
+`left ⟶ j`, `right ⟶ j` for each `j : J` such that `(· ⟶ j)` and `(· ⟶ k)` commutes with each
 `f : j ⟶ k`.
 
 Given a diagram `F : J ⥤ C` and two `Cone F`s, we can join them into a diagram `Bicone J ⥤ C` via
@@ -29,7 +29,7 @@ noncomputable section
 
 open CategoryTheory.Limits
 
-open Classical
+open scoped Classical
 
 namespace CategoryTheory
 

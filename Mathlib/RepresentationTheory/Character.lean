@@ -15,6 +15,15 @@ import Mathlib.RepresentationTheory.Invariants
 This file introduces characters of representation and proves basic lemmas about how characters
 behave under various operations on representations.
 
+A key result is the orthogonality of characters for irreducible representations of finite group
+over an algebraically closed field whose characteristic doesn't divide the order of the group. It
+is the theorem `char_orthonormal`
+
+# Implementation notes
+
+Irreducible representations are implemented categorically, using the `Simple` class defined in
+`Mathlib.CategoryTheory.Simple`
+
 # TODO
 * Once we have the monoidal closed structure on `FdRep k G` and a better API for the rigid
 structure, `char_dual` and `char_linHom` should probably be stated in terms of `Vᘁ` and `ihom V W`.
@@ -61,7 +70,7 @@ theorem char_tensor (V W : FdRep k G) : (V ⊗ W).character = V.character * W.ch
 -- Porting note: adding variant of `char_tensor` to make the simp-set confluent
 @[simp]
 theorem char_tensor' (V W : FdRep k G) :
-  character (Action.FunctorCategoryEquivalence.inverse.obj
+    character (Action.FunctorCategoryEquivalence.inverse.obj
     (Action.FunctorCategoryEquivalence.functor.obj V ⊗
      Action.FunctorCategoryEquivalence.functor.obj W)) = V.character * W.character := by
   simp [← char_tensor]

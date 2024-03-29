@@ -79,11 +79,12 @@ section Casts
 
 /-- Abbreviation for `eqToHom` that accepts points in a topological space -/
 abbrev hcast {X : TopCat} {x₀ x₁ : X} (hx : x₀ = x₁) : fromTop x₀ ⟶ fromTop x₁ :=
-  eqToHom hx
+  eqToHom <| FundamentalGroupoid.ext _ _ hx
 #align continuous_map.homotopy.hcast ContinuousMap.Homotopy.hcast
 
 @[simp]
-theorem hcast_def {X : TopCat} {x₀ x₁ : X} (hx₀ : x₀ = x₁) : hcast hx₀ = eqToHom hx₀ :=
+theorem hcast_def {X : TopCat} {x₀ x₁ : X} (hx₀ : x₀ = x₁) :
+    hcast hx₀ = eqToHom (FundamentalGroupoid.ext _ _ hx₀) :=
   rfl
 #align continuous_map.homotopy.hcast_def ContinuousMap.Homotopy.hcast_def
 
@@ -103,7 +104,9 @@ private theorem end_path : f x₁ = g x₃ := by convert hfg 1 <;> simp only [Pa
 theorem eq_path_of_eq_image :
     (πₘ f).map ⟦p⟧ = hcast (start_path hfg) ≫ (πₘ g).map ⟦q⟧ ≫ hcast (end_path hfg).symm := by
   rw [Functor.conj_eqToHom_iff_heq
-    ((πₘ f).map ⟦p⟧) ((πₘ g).map ⟦q⟧) (start_path hfg) (end_path hfg)]
+    ((πₘ f).map ⟦p⟧) ((πₘ g).map ⟦q⟧)
+    (FundamentalGroupoid.ext _ _ <| start_path hfg)
+    (FundamentalGroupoid.ext _ _ <| end_path hfg)]
   exact heq_path_of_eq_image hfg
 #align continuous_map.homotopy.eq_path_of_eq_image ContinuousMap.Homotopy.eq_path_of_eq_image
 
@@ -139,10 +142,11 @@ many of the paths do not have defeq starting/ending points, so we end up needing
 /-- Interpret a homotopy `H : C(I × X, Y)` as a map `C(ULift I × X, Y)` -/
 def uliftMap : C(TopCat.of (ULift.{u} I × X), Y) :=
   ⟨fun x => H (x.1.down, x.2),
-    H.continuous.comp ((continuous_induced_dom.comp continuous_fst).prod_mk continuous_snd)⟩
+    H.continuous.comp ((continuous_uLift_down.comp continuous_fst).prod_mk continuous_snd)⟩
 #align continuous_map.homotopy.ulift_map ContinuousMap.Homotopy.uliftMap
 
-@[simp]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
 theorem ulift_apply (i : ULift.{u} I) (x : X) : H.uliftMap (i, x) = H (i.down, x) :=
   rfl
 #align continuous_map.homotopy.ulift_apply ContinuousMap.Homotopy.ulift_apply
@@ -151,7 +155,7 @@ theorem ulift_apply (i : ULift.{u} I) (x : X) : H.uliftMap (i, x) = H (i.down, x
  typechecker. In particular, the first path should be on the ulifted unit interval. -/
 abbrev prodToProdTopI {a₁ a₂ : TopCat.of (ULift I)} {b₁ b₂ : X} (p₁ : fromTop a₁ ⟶ fromTop a₂)
     (p₂ : fromTop b₁ ⟶ fromTop b₂) :=
-  (prodToProdTop (TopCat.of <| ULift I) X).map (X := (a₁, b₁)) (Y := (a₂, b₂)) (p₁, p₂)
+  (prodToProdTop (TopCat.of <| ULift I) X).map (X := (⟨a₁⟩, ⟨b₁⟩)) (Y := (⟨a₂⟩, ⟨b₂⟩)) (p₁, p₂)
 set_option linter.uppercaseLean3 false in
 #align continuous_map.homotopy.prod_to_prod_Top_I ContinuousMap.Homotopy.prodToProdTopI
 
@@ -171,7 +175,8 @@ theorem apply_zero_path : (πₘ f).map p = hcast (H.apply_zero x₀).symm ≫
     hcast (H.apply_zero x₁) :=
   Quotient.inductionOn p fun p' => by
     apply @eq_path_of_eq_image _ _ _ _ H.uliftMap _ _ _ _ _ ((Path.refl (ULift.up _)).prod p')
-    rw [Path.prod_coe]; simp_rw [ulift_apply]; simp
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [Path.prod_coe]; simp_rw [ulift_apply]; simp
 #align continuous_map.homotopy.apply_zero_path ContinuousMap.Homotopy.apply_zero_path
 
 /-- Proof that `g(p) = H(1 ⟶ 1, p)`, with the appropriate casts -/
@@ -180,14 +185,17 @@ theorem apply_one_path : (πₘ g).map p = hcast (H.apply_one x₀).symm ≫
     hcast (H.apply_one x₁) :=
   Quotient.inductionOn p fun p' => by
     apply @eq_path_of_eq_image _ _ _ _ H.uliftMap _ _ _ _ _ ((Path.refl (ULift.up _)).prod p')
-    rw [Path.prod_coe]; simp_rw [ulift_apply]; simp
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [Path.prod_coe]; simp_rw [ulift_apply]; simp
 #align continuous_map.homotopy.apply_one_path ContinuousMap.Homotopy.apply_one_path
 
 /-- Proof that `H.evalAt x = H(0 ⟶ 1, x ⟶ x)`, with the appropriate casts -/
 theorem evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
-    (πₘ H.uliftMap).map (prodToProdTopI uhpath01 (𝟙 x)) ≫ hcast (H.apply_one x).symm.symm := by
+    (πₘ H.uliftMap).map (prodToProdTopI uhpath01 (𝟙 (fromTop x))) ≫
+      hcast (H.apply_one x).symm.symm := by
   dsimp only [prodToProdTopI, uhpath01, hcast]
-  refine' (@Functor.conj_eqToHom_iff_heq (πₓ Y) _ _ _ _ _ _ _ _ (H.apply_one x).symm).mpr _
+  refine' (@Functor.conj_eqToHom_iff_heq (πₓ Y) _ _ _ _ _ _ _ _
+    (FundamentalGroupoid.ext _ _ <| H.apply_one x).symm).mpr _
   simp only [id_eq_path_refl, prodToProdTop_map, Path.Homotopic.prod_lift, map_eq, ←
     Path.Homotopic.map_lift]
   apply Path.Homotopic.hpath_hext; intro; rfl
@@ -222,7 +230,7 @@ variable {X Y : TopCat.{u}} {f g : C(X, Y)} (H : ContinuousMap.Homotopy f g)
 functors `f` and `g` -/
 -- Porting note: couldn't use category arrow `\hom` in statement, needed to expand
 def homotopicMapsNatIso : @Quiver.Hom _ Functor.category.toQuiver (πₘ f) (πₘ g) where
-  app x := ⟦H.evalAt x⟧
+  app x := ⟦H.evalAt x.as⟧
   -- Porting note: Turned `rw` into `erw` in the line below
   naturality x y p := by erw [(H.eq_diag_path p).1, (H.eq_diag_path p).2]
 #align fundamental_groupoid_functor.homotopic_maps_nat_iso FundamentalGroupoidFunctor.homotopicMapsNatIso

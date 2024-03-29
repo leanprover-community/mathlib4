@@ -3,8 +3,10 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.GroupPower.Lemmas
-import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Nat.Cast.Commute
+import Mathlib.Data.Set.Defs
 
 #align_import algebra.parity from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
@@ -58,12 +60,43 @@ theorem isSquare_mul_self (m : α) : IsSquare (m * m) :=
 #align even_add_self even_add_self
 
 @[to_additive]
-theorem isSquare_op_iff (a : α) : IsSquare (op a) ↔ IsSquare a :=
-  ⟨fun ⟨c, hc⟩ => ⟨unop c, by rw [← unop_mul, ← hc, unop_op]⟩, fun ⟨c, hc⟩ => by simp [hc]⟩
+theorem isSquare_op_iff {a : α} : IsSquare (op a) ↔ IsSquare a :=
+  ⟨fun ⟨c, hc⟩ => ⟨unop c, congr_arg unop hc⟩, fun ⟨c, hc⟩ => ⟨op c, congr_arg op hc⟩⟩
 #align is_square_op_iff isSquare_op_iff
 #align even_op_iff even_op_iff
 
+@[to_additive]
+theorem isSquare_unop_iff {a : αᵐᵒᵖ} : IsSquare (unop a) ↔ IsSquare a := isSquare_op_iff.symm
+
+@[to_additive]
+instance [DecidablePred (IsSquare : α → Prop)] : DecidablePred (IsSquare : αᵐᵒᵖ → Prop) :=
+  fun _ => decidable_of_iff _ isSquare_unop_iff
+
+@[simp]
+theorem even_ofMul_iff {a : α} : Even (Additive.ofMul a) ↔ IsSquare a := Iff.rfl
+
+@[simp]
+theorem isSquare_toMul_iff {a : Additive α} : IsSquare (Additive.toMul a) ↔ Even a := Iff.rfl
+
+instance [DecidablePred (IsSquare : α → Prop)] : DecidablePred (Even : Additive α → Prop) :=
+  fun _ => decidable_of_iff _ isSquare_toMul_iff
+
 end Mul
+
+section Add
+variable [Add α]
+
+@[simp]
+theorem isSquare_ofAdd_iff {a : α} : IsSquare (Multiplicative.ofAdd a) ↔ Even a := Iff.rfl
+
+@[simp]
+theorem even_toAdd_iff {a : Multiplicative α} :
+    Even (Multiplicative.toAdd a) ↔ IsSquare a := Iff.rfl
+
+instance [DecidablePred (Even : α → Prop)] : DecidablePred (IsSquare : Multiplicative α → Prop) :=
+  fun _ => decidable_of_iff _ even_toAdd_iff
+
+end Add
 
 @[to_additive (attr := simp)]
 theorem isSquare_one [MulOneClass α] : IsSquare (1 : α) :=
@@ -72,7 +105,8 @@ theorem isSquare_one [MulOneClass α] : IsSquare (1 : α) :=
 #align even_zero even_zero
 
 @[to_additive]
-theorem IsSquare.map [MulOneClass α] [MulOneClass β] [MonoidHomClass F α β] {m : α} (f : F) :
+theorem IsSquare.map [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
+    {m : α} (f : F) :
     IsSquare m → IsSquare (f m) := by
   rintro ⟨m, rfl⟩
   exact ⟨f m, by simp⟩
@@ -89,7 +123,7 @@ theorem isSquare_iff_exists_sq (m : α) : IsSquare m ↔ ∃ c, m = c ^ 2 := by 
 #align is_square_iff_exists_sq isSquare_iff_exists_sq
 #align even_iff_exists_two_nsmul even_iff_exists_two_nsmul
 
-alias isSquare_iff_exists_sq ↔ IsSquare.exists_sq isSquare_of_exists_sq
+alias ⟨IsSquare.exists_sq, isSquare_of_exists_sq⟩ := isSquare_iff_exists_sq
 #align is_square.exists_sq IsSquare.exists_sq
 #align is_square_of_exists_sq isSquare_of_exists_sq
 
@@ -106,7 +140,7 @@ theorem IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
 #align is_square.pow IsSquare.pow
 #align even.nsmul Even.nsmul
 
-/- Porting note: `simp` attribute removed because linter reports:
+/- Porting note (#10618): `simp` attribute removed because linter reports:
 simp can prove this:
   by simp only [even_two, Even.nsmul']
 -/
@@ -117,7 +151,7 @@ theorem Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
 #align even.is_square_pow Even.isSquare_pow
 #align even.nsmul' Even.nsmul'
 
-/- Porting note: `simp` attribute removed because linter reports:
+/- Porting note (#10618): `simp` attribute removed because linter reports:
 simp can prove this:
   by simp only [even_two, Even.is_square_pow]
 -/
@@ -165,11 +199,11 @@ theorem isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
   refine' ⟨fun h => _, fun h => _⟩
   · rw [← isSquare_op_iff, ← inv_inv a]
     exact h.map (MulEquiv.inv' α)
-  · exact ((isSquare_op_iff a).mpr h).map (MulEquiv.inv' α).symm
+  · exact (isSquare_op_iff.mpr h).map (MulEquiv.inv' α).symm
 #align is_square_inv isSquare_inv
 #align even_neg even_neg
 
-alias isSquare_inv ↔ _ IsSquare.inv
+alias ⟨_, IsSquare.inv⟩ := isSquare_inv
 #align is_square.inv IsSquare.inv
 
 attribute [to_additive] IsSquare.inv
@@ -194,7 +228,7 @@ theorem Even.neg_one_zpow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_zpow,
 
 end DivisionMonoid
 
-theorem even_abs [SubtractionMonoid α] [LinearOrder α] {a : α} : Even |a| ↔ Even a := by
+theorem even_abs [AddGroup α] [LinearOrder α] {a : α} : Even |a| ↔ Even a := by
   cases abs_choice a
   · have h : abs a = a := by assumption
     simp only [h, even_neg]
@@ -218,7 +252,7 @@ theorem Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquar
 #align even.zsmul' Even.zsmul'
 
 -- `Odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
-theorem Even.tsub [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α]
+theorem Even.tsub [CanonicallyLinearOrderedAddCommMonoid α] [Sub α] [OrderedSub α]
     [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) :
     Even (m - n) := by
   obtain ⟨a, rfl⟩ := hm
@@ -234,7 +268,7 @@ theorem even_iff_exists_bit0 [Add α] {a : α} : Even a ↔ ∃ b, a = bit0 b :=
   Iff.rfl
 #align even_iff_exists_bit0 even_iff_exists_bit0
 
-alias even_iff_exists_bit0 ↔ Even.exists_bit0 _
+alias ⟨Even.exists_bit0, _⟩ := even_iff_exists_bit0
 #align even.exists_bit0 Even.exists_bit0
 
 section Semiring
@@ -248,7 +282,7 @@ theorem even_iff_exists_two_mul (m : α) : Even m ↔ ∃ c, m = 2 * c := by
 theorem even_iff_two_dvd {a : α} : Even a ↔ 2 ∣ a := by simp [Even, Dvd.dvd, two_mul]
 #align even_iff_two_dvd even_iff_two_dvd
 
-alias even_iff_two_dvd ↔ Even.two_dvd _
+alias ⟨Even.two_dvd, _⟩ := even_iff_two_dvd
 #align even.two_dvd Even.two_dvd
 
 theorem Even.trans_dvd (hm : Even m) (hn : m ∣ n) : Even n :=
@@ -272,7 +306,7 @@ set_option linter.deprecated false in
 
 @[simp]
 theorem even_two : Even (2 : α) :=
-  ⟨1, by rw[one_add_one_eq_two]⟩
+  ⟨1, by rw [one_add_one_eq_two]⟩
 #align even_two even_two
 
 @[simp]
@@ -293,7 +327,7 @@ theorem Even.pow_of_ne_zero (hm : Even m) : ∀ {a : ℕ}, a ≠ 0 → Even (m ^
   | 0, a0 => (a0 rfl).elim
   | a + 1, _ => by
     rw [pow_succ]
-    exact hm.mul_right _
+    exact hm.mul_left _
 #align even.pow_of_ne_zero Even.pow_of_ne_zero
 
 section WithOdd
@@ -310,7 +344,7 @@ theorem odd_iff_exists_bit1 {a : α} : Odd a ↔ ∃ b, a = bit1 b :=
     rfl
 #align odd_iff_exists_bit1 odd_iff_exists_bit1
 
-alias odd_iff_exists_bit1 ↔ Odd.exists_bit1 _
+alias ⟨Odd.exists_bit1, _⟩ := odd_iff_exists_bit1
 #align odd.exists_bit1 Odd.exists_bit1
 
 set_option linter.deprecated false in
@@ -366,7 +400,7 @@ theorem odd_two_mul_add_one (m : α) : Odd (2 * m + 1) :=
 
 @[simp] lemma one_add_self_self : Odd (1 + m + m) := by simp [add_comm 1 m]
 
-theorem Odd.map [RingHomClass F α β] (f : F) : Odd m → Odd (f m) := by
+theorem Odd.map [FunLike F α β] [RingHomClass F α β] (f : F) : Odd m → Odd (f m) := by
   rintro ⟨m, rfl⟩
   exact ⟨f m, by simp [two_mul]⟩
 #align odd.map Odd.map
@@ -385,7 +419,7 @@ theorem Odd.pow (hm : Odd m) : ∀ {a : ℕ}, Odd (m ^ a)
     exact odd_one
   | a + 1 => by
     rw [pow_succ]
-    exact hm.mul <| Odd.pow hm
+    exact (Odd.pow hm).mul hm
 #align odd.pow Odd.pow
 
 end WithOdd
@@ -411,7 +445,7 @@ section CanonicallyOrderedCommSemiring
 
 variable [CanonicallyOrderedCommSemiring α]
 
--- this holds more generally in a `CanonicallyOrderedAddMonoid` if we refactor `Odd` to use
+-- this holds more generally in a `CanonicallyOrderedAddCommMonoid` if we refactor `Odd` to use
 -- either `2 • t` or `t + t` instead of `2 * t`.
 theorem Odd.pos [Nontrivial α] {n : α} (hn : Odd n) : 0 < n := by
   obtain ⟨k, rfl⟩ := hn
@@ -425,7 +459,7 @@ section Ring
 
 variable [Ring α] {a b : α} {n : ℕ}
 
-/- Porting note: attribute `simp` removed based on linter report
+/- Porting note (#10618): attribute `simp` removed based on linter report
 simp can prove this:
   by simp only [even_neg, even_two]
 -/
@@ -445,7 +479,7 @@ theorem odd_neg : Odd (-a) ↔ Odd a :=
   ⟨fun h => neg_neg a ▸ h.neg, Odd.neg⟩
 #align odd_neg odd_neg
 
-/- Porting note: attribute `simp` removed based on linter report
+/- Porting note (#10618): attribute `simp` removed based on linter report
 simp can prove this:
   by simp only [odd_neg, odd_one]
 -/
@@ -512,7 +546,7 @@ theorem Odd.pow_neg_iff (hn : Odd n) : a ^ n < 0 ↔ a < 0 :=
   ⟨fun h => lt_of_not_le fun ha => h.not_le <| pow_nonneg ha _, hn.pow_neg⟩
 #align odd.pow_neg_iff Odd.pow_neg_iff
 
-theorem Even.pow_pos_iff (hn : Even n) (h₀ : 0 < n) : 0 < a ^ n ↔ a ≠ 0 :=
+theorem Even.pow_pos_iff (hn : Even n) (h₀ : n ≠ 0) : 0 < a ^ n ↔ a ≠ 0 :=
   ⟨fun h ha => by
     rw [ha, zero_pow h₀] at h
     exact lt_irrefl 0 h, hn.pow_pos⟩
