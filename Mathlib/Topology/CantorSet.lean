@@ -1,24 +1,35 @@
+/-
+Copyright (c) 2015 Joe Cool. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Artur Szafarczyk, Suraj Krishna M S, JB Stiegler, Isabelle Dubois,
+Tomáš Jakl, Lorenzo Zanichelli, Alina Yan, Emilie Uthaiwat, Jana Göken
+under guidance of Filippo A. E. Nuccio
+-/
 import Mathlib.Tactic.Linarith
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 
-/-- This file contains the definition of the Cantor ternary set
+/- This file contains the definition of the Cantor ternary set
 as well as some first properties, which will be updated later.
 
 
-We give a definition by the iteration of to functions T_L and T_R.--/
+We give a definition by the iteration of to functions T_L and T_R.-/
 
+/-We define the map which generates the left intervals of the ternary Cantor set.-/
 noncomputable
 def T_L (x : ℝ) : ℝ := x/3
 
+/-We define the map which generates the right intervals of the ternary Cantor set.-/
 noncomputable
 def T_R (x : ℝ) : ℝ := (2+x)/3
 
+/-We define the preCantorSet as the preimages under the iterations of T_L and T_R.-/
 def preCantorSet : ℕ → Set ℝ
   | 0 => Set.Icc 0 1
   | Nat.succ n => T_L '' preCantorSet n ∪ T_R '' preCantorSet n
 
+/-We define the Cantor set as the limit of all preCantorSets.-/
 def cantorSet := iInf preCantorSet
 
 
@@ -29,14 +40,16 @@ def cantorSet := iInf preCantorSet
 
 
 /- Function which takes n and k as input and gives the union of two closed intervals as output-/
-
 def prePreCantorSetIcc (n k : ℕ) : Set ℝ :=
   Set.Icc ((3*k)/3^n) ((3*k+1)/3^n) ∪ Set.Icc ((3*k+2)/3^n) ((3*k+3)/3^n)
 
+/- fill-/
 def preCantorSetIcc (n : ℕ) := ⋃ (k : ℕ) (_ : k ≤ 3^(n-1)-1), prePreCantorSetIcc n k
 
+/- fill -/
 def cantorSetIcc := ⋂ (i : ℕ) (_ : 1 ≤ i), preCantorSetIcc i
 
+/- fill -/
 def h (n : ℕ) (i : ℕ) (_ : i ≤ n) : Set ℝ := preCantorSetIcc i
 
 
