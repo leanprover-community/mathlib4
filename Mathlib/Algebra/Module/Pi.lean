@@ -117,7 +117,7 @@ namespace Sum
 
 variable {ια ιβ k : Type*} {α : (i : ια) → Type u} {β : (i : ιβ) → Type u} [Semiring k]
 
-instance instElimModule {k : Type*}
+instance instElimModule
     [∀ (i : ια), AddCommMonoid (α i)] [∀ i : ιβ, AddCommMonoid (β i)]
     [∀ (i : ια), Module k (α i)] [∀ i : ιβ, Module k (β i)] (i : ια ⊕ ιβ) :
     Module k (Sum.elim α β i) :=
