@@ -575,7 +575,8 @@ lemma continuous_probabilityMeasure_toLevyProkhorov [SeparableSpace Ω] :
     convert ENNReal.add_lt_add_right (ofReal_ne_top (r := ε/3)) hQ
     exact (tsub_add_cancel_of_le easy).symm
   have Gs_mem_nhds := fun (J : Set ℕ) ↦ important _ (Gs_open' J)
-  filter_upwards [(Finset.iInter_mem_sets Js_finite.toFinset).mpr <| fun J _ ↦ Gs_mem_nhds J] with Q hQ
+  filter_upwards [(Finset.iInter_mem_sets Js_finite.toFinset).mpr <| fun J _ ↦ Gs_mem_nhds J]
+    with Q hQ
   simp only [Finite.mem_toFinset, mem_setOf_eq, thickening_iUnion, mem_iInter] at hQ
   apply lt_of_le_of_lt ?_ (show 2*ε/3 < ε by linarith)
   rw [LevyProkhorov.dist_def, levyProkhorovDist, levyProkhorovEDist_comm]
