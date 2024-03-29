@@ -198,4 +198,3 @@ theorem ae_empty_or_univ_of_image_ae_le (hf : Ergodic f μ) (hs : MeasurableSet 
 end IsFiniteMeasure
 
 end Ergodic
---Edna was here
