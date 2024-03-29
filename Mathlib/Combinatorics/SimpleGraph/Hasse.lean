@@ -143,7 +143,7 @@ def Walk.ofPathGraphHom_end (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (n +
     have hij : G.Adj (hom i) (hom j) := Hom.map_adj hom (pathGraph_adj.mpr (Or.inl rfl))
     let w' : G.Walk (hom j) (hom ⊤) := Walk.ofPathGraphHom_end G hom j
     Walk.cons hij w'
-termination_by _ => n - i.val
+termination_by n - i.val
 
 /-- Create a walk from a path graph homomorphism. -/
 def Walk.ofPathGraphHom (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (n + 1) →g G) :
@@ -210,18 +210,15 @@ def Walk.toPathGraphHomAux (G : SimpleGraph α) :
           rw [ha', hb']
           simp only [toFun]
           apply hom'.map_rel ?_
-          simp only [Fin.pred, pathGraph_adj, Fin.coe_subNat, Fin.val_succ]
+          simp only [Fin.pred, pathGraph_adj, Fin.coe_subNat, Fin.val_succ, b']
           rw [← hab']
           exact Or.inl (Fin.mk_eq_mk.mp ha'.symm)
       let hom : pathGraph (p.length + 2) →g G := ⟨toFun, map_rel'⟩
       have hhom : hom ⊥ = u ∧ hom ⊤ = w := by
         have hhom' : ∀ (a : Fin (p.length + 2)), hom a = toFun a := fun a ↦ rfl
-        simp only [length]
         rw [hhom' ⊥, hhom' ⊤]
         apply And.intro
-        · simp only [dite_eq_left_iff]
-          intro hbot
-          exact (hbot rfl).elim
+        · rfl
         · simp only [toFun, Nat.succ_ne_zero p.length]
           exact hw
       exact ⟨hom, hhom⟩
@@ -255,7 +252,7 @@ theorem Walk.length_ofPathGraphHom_end {G : SimpleGraph α} {n : ℕ} (hom : pat
     have hni : 1 ≤ n - i.val := Nat.le_sub_of_add_le' hi'
     rw [← tsub_add_cancel_of_le hni]
     rfl
-termination_by _ => n - i.val
+termination_by n - i.val
 
 @[simp]
 theorem Walk.length_ofPathGraphHom {G : SimpleGraph α} {n : ℕ} (hom : pathGraph (n + 1) →g G) :
@@ -324,7 +321,7 @@ theorem Walk.ofPathGraphHom_val_rec (G : SimpleGraph α) {n : ℕ} (hom : pathGr
       simp [i', j']
       rw [← j.val.succ_add_sub_one i.val]
       exact (Nat.add_sub_assoc h' (i.val + 1)).symm
-termination_by _ => n - i.val
+termination_by n - i.val
 
 theorem Walk.ofPathGraphHom_val (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (n + 1) →g G)
     (i : Fin (n + 1)) : (ofPathGraphHom α G hom).getVert i.val = hom i := by
