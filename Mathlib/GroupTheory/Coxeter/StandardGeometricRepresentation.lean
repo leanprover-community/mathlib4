@@ -3,17 +3,11 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee
 -/
-import Mathlib.GroupTheory.Coxeter.Basic
-import Mathlib.GroupTheory.Coxeter.Length
-import Mathlib.RepresentationTheory.Basic
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Complex.Exponential
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.RingTheory.Polynomial.Chebyshev
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
 import Mathlib.LinearAlgebra.Reflection
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.Data.Int.Parity
+import Mathlib.RepresentationTheory.Basic
+import Mathlib.GroupTheory.Coxeter.Length
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
 
 /-!
 # The standard geometric representation
@@ -666,7 +660,7 @@ private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬ cs.IsRigh
     -- Now we simplify this using `alternatingWord_succ'`.
     rw [haw] at h₅
     dsimp at h₅
-    rw [alternatingWord_succ', wordProd_cons, mul_inv_rev, simple_inv, ← mul_assoc] at h₅
+    rw [alternatingWord_succ', wordProd_cons, mul_inv_rev, inv_simple, ← mul_assoc] at h₅
     set j := if Even m then i' else i with h₆
     -- `h₅ : ℓ (w * (aw m)⁻¹ * s j) + (m + 1) ≠ length cs w`
 
@@ -687,7 +681,7 @@ private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬ cs.IsRigh
       nth_rw 1 [← Nat.sub_add_cancel h₃]
       rw [haw]
       dsimp
-      rw [alternatingWord_succ', wordProd_cons, mul_inv_rev, mul_assoc, simple_inv,
+      rw [alternatingWord_succ', wordProd_cons, mul_inv_rev, mul_assoc, inv_simple,
         simple_mul_self, mul_one]
 
     have h₁₀ : ¬ cs.IsRightDescent (w * (aw m)⁻¹) j' := by
