@@ -83,19 +83,22 @@ scoped notation "StronglyMeasurable[" m "]" => @MeasureTheory.StronglyMeasurable
 
 /-- A function is `FinStronglyMeasurable` with respect to a measure if it is the limit of simple
   functions with support with finite measure. -/
-def FinStronglyMeasurable [Zero β] {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) : Prop :=
+def FinStronglyMeasurable [Zero β]
+    {_ : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ fs : ℕ → α →ₛ β, (∀ n, μ (support (fs n)) < ∞) ∧ ∀ x, Tendsto (fun n => fs n x) atTop (𝓝 (f x))
 #align measure_theory.fin_strongly_measurable MeasureTheory.FinStronglyMeasurable
 
 /-- A function is `AEStronglyMeasurable` with respect to a measure `μ` if it is almost everywhere
 equal to the limit of a sequence of simple functions. -/
-def AEStronglyMeasurable {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) : Prop :=
+def AEStronglyMeasurable
+    {_ : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ g, StronglyMeasurable g ∧ f =ᵐ[μ] g
 #align measure_theory.ae_strongly_measurable MeasureTheory.AEStronglyMeasurable
 
 /-- A function is `AEFinStronglyMeasurable` with respect to a measure if it is almost everywhere
 equal to the limit of a sequence of simple functions with support with finite measure. -/
-def AEFinStronglyMeasurable [Zero β] {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) : Prop :=
+def AEFinStronglyMeasurable
+    [Zero β] {_ : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ g, FinStronglyMeasurable g μ ∧ f =ᵐ[μ] g
 #align measure_theory.ae_fin_strongly_measurable MeasureTheory.AEFinStronglyMeasurable
 
