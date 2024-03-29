@@ -79,14 +79,43 @@ theorem support_add_subset {x y : HahnSeries Γ R} : support (x + y) ⊆ support
   rw [ha.1, ha.2, add_zero]
 #align hahn_series.support_add_subset HahnSeries.support_add_subset
 
+theorem IsMinWFMinLEWFMinAdd {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} (hx : x ≠ 0) (hy : y ≠ 0)
+    (hxy : x + y ≠ 0) : min (Set.IsWF.min x.isWF_support (support_nonempty_iff.2 hx))
+      (Set.IsWF.min y.isWF_support (support_nonempty_iff.2 hy)) ≤
+      Set.IsWF.min (x + y).isWF_support (support_nonempty_iff.2 hxy) := by
+  rw [(Set.IsWF.min_union _ _ _ _).symm]
+  exact Set.IsWF.min_le_min_of_subset (support_add_subset (x := x) (y := y))
+
+theorem min_orderTop_le_orderTop_add {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} :
+    min x.orderTop y.orderTop ≤ (x + y).orderTop := by
+  by_cases hx : x = 0; · simp [hx]
+  by_cases hy : y = 0; · simp [hy]
+  by_cases hxy : x + y = 0; · simp [hxy]
+  rw [orderTop_of_ne hx, orderTop_of_ne hy, orderTop_of_ne hxy, ← @WithTop.coe_min,
+    WithTop.coe_le_coe]
+  exact IsMinWFMinLEWFMinAdd hx hy hxy
+
 theorem min_order_le_order_add {Γ} [Zero Γ] [LinearOrder Γ] {x y : HahnSeries Γ R}
     (hxy : x + y ≠ 0) : min x.order y.order ≤ (x + y).order := by
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
   rw [order_of_ne hx, order_of_ne hy, order_of_ne hxy]
-  refine' le_of_eq_of_le _ (Set.IsWF.min_le_min_of_subset (support_add_subset (x := x) (y := y)))
-  exact (Set.IsWF.min_union _ _ _ _).symm
+  exact IsMinWFMinLEWFMinAdd hx hy hxy
 #align hahn_series.min_order_le_order_add HahnSeries.min_order_le_order_add
+
+theorem orderTop_add_eq {Γ} [Zero Γ] [LinearOrder Γ] {x y : HahnSeries Γ R}
+    (hxy : x.orderTop < y.orderTop) : (x + y).orderTop = x.orderTop := by
+  have hx : x ≠ 0 := ne_zero_iff_orderTop.mpr <| LT.lt.ne_top hxy
+  let g : Γ := WithTop.untop x.orderTop (ne_zero_iff_orderTop.mp hx)
+  have hg : g = x.orderTop := untop_orderTop_of_ne_zero hx
+  have hcxyne : (x+y).coeff g ≠ 0 := by
+    rw [show (x+y).coeff g = x.coeff g + y.coeff g from rfl,
+      coeff_eq_zero_of_lt_orderTop (lt_of_eq_of_lt hg hxy), add_zero]
+    exact coeff_orderTop_ne_zero hx hg.symm
+  have hxyx : (x + y).orderTop ≤ x.orderTop := by
+    rw [← hg]
+    exact orderTop_le_of_coeff_ne_zero hcxyne
+  exact le_antisymm hxyx (le_of_eq_of_le (min_eq_left_of_lt hxy).symm min_orderTop_le_orderTop_add)
 
 /-- `single` as an additive monoid/group homomorphism -/
 @[simps!]
@@ -333,6 +362,8 @@ end Domain
 end Module
 
 section LeadingTerm
+
+-- add orderTop versions!
 
 theorem nonzero_of_nonzero_add_single [Zero Γ] [PartialOrder Γ] [AddMonoid R]
     {x y : HahnSeries Γ R} (hxy : x = y + single x.order (x.coeff x.order)) (hy : y ≠ 0) :
