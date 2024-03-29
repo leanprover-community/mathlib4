@@ -1369,7 +1369,7 @@ theorem take_one_drop_eq_of_lt_length' {l : List α} {n : ℕ} (h : n < l.length
 
 -- TODO one may rename ext in the standard library, and it is also not clear
 -- which of ext_get?, ext_get?', ext_get should be @[ext], if any
-theorem ext_get? : ∀ {l₁ l₂ : List α}, (∀ n, l₁.get? n = l₂.get? n) → l₁ = l₂ := ext
+alias ext_get? := ext
 
 theorem ext_get?' {l₁ l₂ : List α} (h' : ∀ n < max l₁.length l₂.length, l₁.get? n = l₂.get? n) :
     l₁ = l₂ := by
