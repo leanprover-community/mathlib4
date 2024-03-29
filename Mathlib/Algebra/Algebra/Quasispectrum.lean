@@ -279,7 +279,7 @@ lemma quasispectrum_eq_spectrum_union_zero (R : Type*) {A : Type*} [Semifield R]
     [Algebra R A] (a : A) : quasispectrum R a = spectrum R a ∪ {0} := by
   convert quasispectrum_eq_spectrum_union R a
   ext x
-  simpa using isUnit_iff_ne_zero |>.symm |> not_iff_not.mpr
+  simp
 
 namespace Unitization
 
