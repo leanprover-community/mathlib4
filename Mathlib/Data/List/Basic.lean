@@ -2919,6 +2919,25 @@ theorem Sublist.map (f : α → β) {l₁ l₂ : List α} (s : l₁ <+ l₂) : m
   filterMap_eq_map f ▸ s.filterMap _
 #align list.sublist.map List.Sublist.map
 
+theorem filterMap_eq_bind_toList (f : α → Option β) (l : List α) :
+    l.filterMap f = l.bind fun a ↦ (f a).toList := by
+  induction' l with a l ih <;> simp
+  rcases f a <;> simp [ih]
+
+theorem filterMap_congr {f g : α → Option β} {l : List α}
+    (h : ∀ x ∈ l, f x = g x) : l.filterMap f = l.filterMap g := by
+  induction' l with a l ih <;> simp
+  simp [ih (fun x hx ↦ h x (List.mem_cons_of_mem a hx))]
+  cases' hfa : f a with b
+  · have : g a = none := Eq.symm (by simpa [hfa] using h a (by simp))
+    simp [this]
+  · have : g a = some b := Eq.symm (by simpa [hfa] using h a (by simp))
+    simp [this]
+
+theorem filterMap_eq_map_of_eq_some {f : α → Option β} {g : α → β} {l : List α}
+    (h : ∀ x ∈ l, f x = some (g x)) : l.filterMap f = l.map g :=
+  Eq.trans (filterMap_congr $ by simpa) (congr_fun (List.filterMap_eq_map _) _)
+
 /-! ### filter -/
 
 section Filter
@@ -3852,7 +3871,7 @@ section lookup
 variable {α β : Type*} [BEq α] [LawfulBEq α]
 
 lemma lookup_graph (f : α → β) {a : α} {as : List α} (h : a ∈ as) :
-    lookup a (as.map $ fun x => (x, f x)) = some (f a) := by
+    lookup a (as.map fun x => (x, f x)) = some (f a) := by
   induction' as with a' as ih
   · exact (List.not_mem_nil _ h).elim
   · by_cases ha : a = a'
