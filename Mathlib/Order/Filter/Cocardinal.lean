@@ -46,8 +46,8 @@ theorem mem_cocardinal {s : Set α} :
     s ∈ @cocardinal α c hreg ↔ Cardinal.mk (sᶜ : Set α) < c := Iff.rfl
 
 @[simp]
-theorem eventually_cocardinal {p : α → Prop} : (
-  ∀ᶠ x in cocardinal hreg, p x) ↔ #{ x | ¬p x } < c := Iff.rfl
+theorem eventually_cocardinal {p : α → Prop} :
+    (∀ᶠ x in cocardinal hreg, p x) ↔ #{ x | ¬p x } < c := Iff.rfl
 
 theorem hasBasis_cocardinal : HasBasis (cocardinal hreg)
     (fun s : Set α => (#s < c)) compl :=
