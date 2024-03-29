@@ -504,24 +504,6 @@ lemma SeparableSpace.exists_measurable_partition_diam_le
     apply iUnion_disjointed
   · exact disjoint_disjointed Bs
 
-lemma iUnion_biUnion {X ι κ : Type*} (As : ι → Set X) {Js : κ → Set ι} :
-    ⋃ k, ⋃ i ∈ Js k, As i = ⋃ i ∈ (⋃ k, Js k), As i :=
-  (biUnion_iUnion (fun k ↦ Js k) fun i ↦ As i).symm
-
-lemma prob_compl_lt_one_sub_of_lt_prob {μ : Measure Ω} [IsProbabilityMeasure μ]
-    {A : Set Ω} {p : ℝ≥0∞} (hμA : p < μ A) (A_mble : MeasurableSet A) :
-    μ Aᶜ < 1 - p := by
-  have p_lt_one : p < 1 := lt_of_lt_of_le hμA prob_le_one
-  rw [prob_compl_eq_one_sub A_mble]
-  apply ENNReal.sub_lt_of_sub_lt prob_le_one (Or.inl one_ne_top)
-  convert hμA
-  exact ENNReal.sub_sub_cancel one_ne_top p_lt_one.le
-
-lemma prob_compl_le_one_sub_of_le_prob {μ : Measure Ω} [IsProbabilityMeasure μ]
-    {A : Set Ω} {p : ℝ≥0∞} (hμA : p ≤ μ A) (A_mble : MeasurableSet A) :
-    μ Aᶜ ≤ 1 - p := by
-  simpa [prob_compl_eq_one_sub A_mble] using tsub_le_tsub_left hμA 1
-
 variable [PseudoMetricSpace Ω] [OpensMeasurableSpace Ω]
 
 lemma continuous_probabilityMeasure_toLevyProkhorov [SeparableSpace Ω] :
