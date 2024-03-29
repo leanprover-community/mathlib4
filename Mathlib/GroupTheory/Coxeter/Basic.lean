@@ -173,7 +173,8 @@ end CoxeterGroup
 a group `W` and the group presentation corresponding to a Coxeter matrix. Equivalently, this
 can be seen as a list of generators of `W` parameterized by the underlying type of `M`, which
 satisfy the relations of the Coxeter matrix `M`. -/
-structure CoxeterSystem (W : Type*) [Group W]  where
+@[ext]
+structure CoxeterSystem (W : Type*) [Group W] where
   isCoxeter : M.IsCoxeter
   /-- `mulEquiv` is the isomorphism between the group `W` and the group presentation
   corresponding to a Coxeter matrix `M`. -/
@@ -647,6 +648,17 @@ theorem ext_simple {G : Type*} [Monoid G] {φ₁ φ₂ : W →* G} (h : ∀ i : 
   apply MonoidHom.eq_of_eqOn_denseM (cs.submonoid_closure_range_simple)
   rintro x ⟨i, rfl⟩
   exact h i
+
+/-- If two Coxeter systems on the same group `W` have the same Coxeter matrix `M : Matrix B B ℕ`
+and the same simple reflection map `B → W`, then they are identical. -/
+theorem simpleReflection_injective : Injective (simpleReflection : CoxeterSystem M W → B → W) := by
+  intro cs1 cs2 h
+  apply CoxeterSystem.ext
+  apply MulEquiv.toMonoidHom_injective
+  apply cs1.ext_simple
+  intro i
+  nth_rw 2 [h]
+  simp [simpleReflection]
 
 /-! ### Words -/
 
