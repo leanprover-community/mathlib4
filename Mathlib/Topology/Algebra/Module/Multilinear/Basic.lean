@@ -658,10 +658,11 @@ variable [ContinuousMul R] [ContinuousSMul R M]
 
 variable (R ι) in
 /-- The canonical continuous multilinear map on `R^ι`, associating to `m` the product of all the
-`m i` (multiplied by a fixed reference element `z` in the target module). -/
+`m i` (multiplied by a fixed reference element `z` in the target module) -/
 protected def mkPiRing (z : M) : ContinuousMultilinearMap R (fun _ : ι => R) M :=
   (ContinuousMultilinearMap.mkPiAlgebra R ι R).smulRight z
 #align continuous_multilinear_map.mk_pi_field ContinuousMultilinearMap.mkPiRing
+
 
 @[simp]
 theorem mkPiRing_apply (z : M) (m : ι → R) :

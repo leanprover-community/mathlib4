@@ -1156,7 +1156,7 @@ theorem mkPiAlgebraFin_apply_const (a : A) :
 end
 
 /-- Given an `R`-multilinear map `f` taking values in `R`, `f.smulRight z` is the map
-sending `m` to `f m • z`. See `smulRightₗ` for a version as a bilinear map. -/
+sending `m` to `f m • z`. -/
 def smulRight (f : MultilinearMap R M₁ R) (z : M₂) : MultilinearMap R M₁ M₂ :=
   (LinearMap.smulRight LinearMap.id z).compMultilinearMap f
 #align multilinear_map.smul_right MultilinearMap.smulRight
@@ -1166,19 +1166,6 @@ theorem smulRight_apply (f : MultilinearMap R M₁ R) (z : M₂) (m : ∀ i, M�
     f.smulRight z m = f m • z :=
   rfl
 #align multilinear_map.smul_right_apply MultilinearMap.smulRight_apply
-
-variable (R M₁ M₂) in
-/-- Bilinear map realizing `(f, z) ↦ f.smulRight z`. -/
-def smulRightₗ : MultilinearMap R M₁ R →ₗ[R] M₂ →ₗ[R] MultilinearMap R M₁ M₂ where
-  toFun := fun f ↦
-    { toFun := fun z ↦ f.smulRight z
-      map_add' := fun x y ↦ by ext; simp
-      map_smul' := fun c x ↦ by ext; simp [smul_smul, mul_comm] }
-  map_add' := fun f g ↦ by ext; simp [add_smul]
-  map_smul' := fun c f ↦ by ext; simp [smul_smul]
-
-@[simp] lemma smulRightₗ_apply (f : MultilinearMap R M₁ R) (z : M₂) :
-    smulRightₗ R M₁ M₂ f z = f.smulRight z := rfl
 
 variable (R ι)
 

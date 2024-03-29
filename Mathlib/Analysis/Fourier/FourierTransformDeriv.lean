@@ -108,7 +108,8 @@ lemma hasFDerivAt_fourierChar_smul (v : V) (w : W) :
 
 lemma norm_fourierSMulRight (L : V →L[ℝ] W →L[ℝ] ℝ) (f : V → E) (v : V) :
     ‖fourierSMulRight L f v‖ = (2 * π) * ‖L v‖ * ‖f v‖ := by
-  rw [fourierSMulRight, norm_smul, norm_neg, norm_mul, norm_mul, norm_eq_abs I, abs_I,
+  rw [fourierSMulRight, norm_smul _ (ContinuousLinearMap.smulRight (L v) (f v)),
+    norm_neg, norm_mul, norm_mul, norm_eq_abs I, abs_I,
     mul_one, norm_eq_abs ((_ : ℝ) : ℂ), Complex.abs_of_nonneg pi_pos.le, norm_eq_abs (2 : ℂ),
     Complex.abs_two, ContinuousLinearMap.norm_smulRight_apply, ← mul_assoc]
 
@@ -144,8 +145,8 @@ theorem hasFDerivAt_fourierIntegral [MeasurableSpace V] [BorelSpace V] [SecondCo
   let F' : W → V → W →L[ℝ] E := fun w' v ↦ 𝐞 (-L v w') • fourierSMulRight L f v
   let B : V → ℝ := fun v ↦ 2 * π * ‖L‖ * ‖v‖ * ‖f v‖
   have h0 (w' : W) : Integrable (F w') μ :=
-    (VectorFourier.fourier_integral_convergent_iff continuous_fourierChar
-      (by apply L.continuous₂ : Continuous (fun p : V × W ↦ L.toLinearMap₂ p.1 p.2)) w').mp hf
+    (fourierIntegral_convergent_iff continuous_fourierChar
+      (by apply L.continuous₂ : Continuous (fun p : V × W ↦ L.toLinearMap₂ p.1 p.2)) w').2 hf
   have h1 : ∀ᶠ w' in 𝓝 w, AEStronglyMeasurable (F w') μ :=
     eventually_of_forall (fun w' ↦ (h0 w').aestronglyMeasurable)
   have h3 : AEStronglyMeasurable (F' w) μ := by
@@ -154,7 +155,7 @@ theorem hasFDerivAt_fourierIntegral [MeasurableSpace V] [BorelSpace V] [SecondCo
     exact (L.continuous₂.comp (Continuous.Prod.mk_left w)).neg
   have h4 : (∀ᵐ v ∂μ, ∀ (w' : W), w' ∈ Metric.ball w 1 → ‖F' w' v‖ ≤ B v) := by
     filter_upwards with v w' _
-    rw [norm_circle_smul]
+    rw [norm_circle_smul _ (fourierSMulRight L f v)]
     exact norm_fourierSMulRight_le L f v
   have h5 : Integrable B μ := by simpa only [← mul_assoc] using hf'.const_mul (2 * π * ‖L‖)
   have h6 : ∀ᵐ v ∂μ, ∀ w', w' ∈ Metric.ball w 1 → HasFDerivAt (fun x ↦ F x v) (F' w' v) w' :=
@@ -293,8 +294,8 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
       ext w' m
       have B v w' : fourierPowSMulRight L f v (Nat.succ n) (Fin.cons w' m) =
           -(2 * ↑π * Complex.I) • L v w' • (fourierPowSMulRight L f v n) m := by
-        simp only [fourierPowSMulRight_apply, pow_succ, neg_mul, Fin.prod_univ_succ, Fin.cons_zero,
-          Fin.cons_succ, neg_smul, smul_comm (M := ℝ) (N := ℂ) (α := E), smul_smul]
+        simp only [fourierPowSMulRight_apply, pow_succ, Fin.prod_univ_succ, Fin.cons_zero,
+          Fin.cons_succ, smul_comm (M := ℝ) (N := ℂ) (α := E), smul_smul, mul_comm]
       simp only [fourierIntegral, curryLeft_apply, integral_apply I₃,
         ContinuousLinearMap.integral_apply I₄, integral_apply (I₄.apply_continuousLinearMap _)]
       simp only [ContinuousLinearMap.toLinearMap₂_apply, smul_apply, B, fourierPowSMulRight_apply,
@@ -382,7 +383,8 @@ lemma hasDerivAt_fourierIntegral
     rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.mul_apply', mul_one,
       ContinuousLinearMap.map_smul]
     exact congr_arg (fun x ↦ v • x) (one_smul ℝ (f v)).symm
-  rw [fourier_integral_convergent_iff continuous_fourierChar L.continuous₂ w] at h_int
+  rw [← VectorFourier.fourierIntegral_convergent_iff continuous_fourierChar L.continuous₂ w]
+    at h_int
   convert (VectorFourier.hasFDerivAt_fourierIntegral L hf hf'' w).hasDerivAt using 1
   erw [ContinuousLinearMap.integral_apply h_int]
   simp_rw [ContinuousLinearMap.smul_apply, fourierSMulRight, ContinuousLinearMap.smul_apply,
@@ -407,12 +409,12 @@ theorem iteratedDeriv_fourierIntegral
     convert (hf 0 (zero_le _)).1 with x
     simp
   have K : Integrable (fun v ↦ 𝐞 (-⟪v, x⟫_ℝ) • fourierPowSMulRight (innerSL ℝ) f v n) := by
-    simpa [-IsROrC.inner_apply] using integrable_fourierPowSMulRight (I n hn) J
+    simpa [-RCLike.inner_apply] using integrable_fourierPowSMulRight (I n hn) J
   rw [iteratedDeriv, iteratedFDeriv_fourierIntegral I J hn, fourierIntegral_eq,
     ContinuousMultilinearMap.integral_apply K, fourierIntegral_eq]
   congr with y
   suffices (-(2 * ↑π * Complex.I)) ^ n • y ^ n • f y = (-(2 * ↑π * Complex.I * ↑y)) ^ n • f y by
-    simpa only [IsROrC.inner_apply, conj_trivial, ContinuousMultilinearMap.smul_apply,
+    simpa only [RCLike.inner_apply, conj_trivial, ContinuousMultilinearMap.smul_apply,
       fourierPowSMulRight_apply, innerSL_apply _, mul_one, Finset.prod_const, Finset.card_fin,
       neg_mul, smul_left_cancel_iff]
   have : y ^ n • f y = ((y ^ n : ℝ) : ℂ) • f y := rfl
