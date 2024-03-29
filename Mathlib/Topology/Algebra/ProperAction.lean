@@ -208,7 +208,7 @@ theorem t2Space_of_properSMul_of_t2Group [h_proper : ProperSMul G X] [T2Space G]
 
 /-- If G acts properly on X, then the quotient space is Hausdorff (T2) -/
 theorem t2Space_of_ProperSMul (hproper:ProperSMul G X) :
-  T2Space (Quotient (MulAction.orbitRel G X)) := by
+    T2Space (Quotient (MulAction.orbitRel G X)) := by
   rw [t2_iff_isClosed_diagonal] -- T2 if the diagonal is closed
   set R := MulAction.orbitRel G X -- the orbit relation
   set XmodG := Quotient R -- the quotient
