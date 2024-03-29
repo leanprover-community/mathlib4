@@ -85,9 +85,11 @@ theorem monic_of_subsingleton [Subsingleton R] (p : R[X]) : Monic p :=
   Subsingleton.elim _ _
 #align polynomial.monic_of_subsingleton Polynomial.monic_of_subsingleton
 
-theorem Monic.def : Monic p ↔ leadingCoeff p = 1 :=
+-- Adaptation note: 2024-03-15
+-- Renamed to avoid the reserved name `Monic.def`.
+theorem Monic.def' : Monic p ↔ leadingCoeff p = 1 :=
   Iff.rfl
-#align polynomial.monic.def Polynomial.Monic.def
+#align polynomial.monic.def Polynomial.Monic.def'
 
 instance Monic.decidable [DecidableEq R] : Decidable (Monic p) := by unfold Monic; infer_instance
 #align polynomial.monic.decidable Polynomial.Monic.decidable
@@ -831,9 +833,9 @@ theorem degree_pow_le (p : R[X]) : ∀ n : ℕ, degree (p ^ n) ≤ n • degree 
   | 0 => by rw [pow_zero, zero_nsmul]; exact degree_one_le
   | n + 1 =>
     calc
-      degree (p ^ (n + 1)) ≤ degree p + degree (p ^ n) := by
+      degree (p ^ (n + 1)) ≤ degree (p ^ n) + degree p := by
         rw [pow_succ]; exact degree_mul_le _ _
-      _ ≤ _ := by rw [succ_nsmul]; exact add_le_add le_rfl (degree_pow_le _ _)
+      _ ≤ _ := by rw [succ_nsmul]; exact add_le_add (degree_pow_le _ _) le_rfl
 #align polynomial.degree_pow_le Polynomial.degree_pow_le
 
 theorem degree_pow_le_of_le {a : WithBot ℕ} (b : ℕ) (hp : degree p ≤ a) :
@@ -841,7 +843,7 @@ theorem degree_pow_le_of_le {a : WithBot ℕ} (b : ℕ) (hp : degree p ≤ a) :
   induction b with
   | zero => simp [degree_one_le]
   | succ n hn =>
-      rw [Nat.cast_succ, add_mul, one_mul, pow_succ']
+      rw [Nat.cast_succ, add_mul, one_mul, pow_succ]
       exact degree_mul_le_of_le hn hp
 
 @[simp]
@@ -1027,16 +1029,16 @@ theorem C_mul_X_pow_eq_self (h : p.support.card ≤ 1) : C p.leadingCoeff * X ^ 
 
 theorem leadingCoeff_pow' : leadingCoeff p ^ n ≠ 0 → leadingCoeff (p ^ n) = leadingCoeff p ^ n :=
   Nat.recOn n (by simp) fun n ih h => by
-    have h₁ : leadingCoeff p ^ n ≠ 0 := fun h₁ => h <| by rw [pow_succ, h₁, mul_zero]
-    have h₂ : leadingCoeff p * leadingCoeff (p ^ n) ≠ 0 := by rwa [pow_succ, ← ih h₁] at h
-    rw [pow_succ, pow_succ, leadingCoeff_mul' h₂, ih h₁]
+    have h₁ : leadingCoeff p ^ n ≠ 0 := fun h₁ => h <| by rw [pow_succ, h₁, zero_mul]
+    have h₂ : leadingCoeff p * leadingCoeff (p ^ n) ≠ 0 := by rwa [pow_succ', ← ih h₁] at h
+    rw [pow_succ', pow_succ', leadingCoeff_mul' h₂, ih h₁]
 #align polynomial.leading_coeff_pow' Polynomial.leadingCoeff_pow'
 
 theorem degree_pow' : ∀ {n : ℕ}, leadingCoeff p ^ n ≠ 0 → degree (p ^ n) = n • degree p
   | 0 => fun h => by rw [pow_zero, ← C_1] at *; rw [degree_C h, zero_nsmul]
   | n + 1 => fun h => by
-    have h₁ : leadingCoeff p ^ n ≠ 0 := fun h₁ => h <| by rw [pow_succ, h₁, mul_zero]
-    have h₂ : leadingCoeff p * leadingCoeff (p ^ n) ≠ 0 := by
+    have h₁ : leadingCoeff p ^ n ≠ 0 := fun h₁ => h <| by rw [pow_succ, h₁, zero_mul]
+    have h₂ : leadingCoeff (p ^ n) * leadingCoeff p ≠ 0 := by
       rwa [pow_succ, ← leadingCoeff_pow' h₁] at h
     rw [pow_succ, degree_mul' h₂, succ_nsmul, degree_pow' h₁]
 #align polynomial.degree_pow' Polynomial.degree_pow'
@@ -1097,9 +1099,9 @@ natDegree_mul_le.trans <| add_le_add ‹_› ‹_›
 theorem natDegree_pow_le {p : R[X]} {n : ℕ} : (p ^ n).natDegree ≤ n * p.natDegree := by
   induction' n with i hi
   · simp
-  · rw [pow_succ, Nat.succ_mul, add_comm]
+  · rw [pow_succ, Nat.succ_mul]
     apply le_trans natDegree_mul_le
-    exact add_le_add_left hi _
+    exact add_le_add_right hi _
 #align polynomial.nat_degree_pow_le Polynomial.natDegree_pow_le
 
 theorem natDegree_pow_le_of_le (n : ℕ) (hp : natDegree p ≤ m) :
@@ -1111,7 +1113,7 @@ theorem coeff_pow_mul_natDegree (p : R[X]) (n : ℕ) :
     (p ^ n).coeff (n * p.natDegree) = p.leadingCoeff ^ n := by
   induction' n with i hi
   · simp
-  · rw [pow_succ', pow_succ', Nat.succ_mul]
+  · rw [pow_succ, pow_succ, Nat.succ_mul]
     by_cases hp1 : p.leadingCoeff ^ i = 0
     · rw [hp1, zero_mul]
       by_cases hp2 : p ^ i = 0
@@ -1202,7 +1204,7 @@ theorem eq_C_coeff_zero_iff_natDegree_eq_zero : p = C (p.coeff 0) ↔ p.natDegre
   ⟨fun h ↦ by rw [h, natDegree_C], eq_C_of_natDegree_eq_zero⟩
 
 theorem eq_one_of_monic_natDegree_zero (hf : p.Monic) (hfd : p.natDegree = 0) : p = 1 := by
-  rw [Monic.def, leadingCoeff, hfd] at hf
+  rw [Monic.def', leadingCoeff, hfd] at hf
   rw [eq_C_of_natDegree_eq_zero hfd, hf, map_one]
 
 theorem ne_zero_of_coe_le_degree (hdeg : ↑n ≤ p.degree) : p ≠ 0 :=

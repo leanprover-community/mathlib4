@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Kernel.Basic
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 
 #align_import probability.kernel.measurable_integral from "leanprover-community/mathlib"@"28b2a92f2996d28e580450863c130955de0ed398"
 
@@ -274,17 +275,17 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
     simp only [SimpleFunc.integral_eq_sum_of_subset (this _)]
     refine' Finset.stronglyMeasurable_sum _ fun x _ => _
     refine' (Measurable.ennreal_toReal _).stronglyMeasurable.smul_const _
-    simp only [SimpleFunc.coe_comp, preimage_comp]
+    simp only [s', SimpleFunc.coe_comp, preimage_comp]
     apply kernel.measurable_kernel_prod_mk_left
     exact (s n).measurableSet_fiber x
   have h2f' : Tendsto f' atTop (𝓝 fun x : α => ∫ y : β, f x y ∂κ x) := by
     rw [tendsto_pi_nhds]; intro x
     by_cases hfx : Integrable (f x) (κ x)
-    · have : ∀ n, Integrable (s' n x) (κ x) := by
-        intro n; apply (hfx.norm.add hfx.norm).mono' (s' n x).aestronglyMeasurable
-        apply eventually_of_forall; intro y
-        simp_rw [SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
-      simp only [ hfx, SimpleFunc.integral_eq_integral _ (this _), indicator_of_mem,
+    · have (n) : Integrable (s' n x) (κ x) := by
+        apply (hfx.norm.add hfx.norm).mono' (s' n x).aestronglyMeasurable
+        filter_upwards with y
+        simp_rw [s', SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
+      simp only [f',  hfx, SimpleFunc.integral_eq_integral _ (this _), indicator_of_mem,
         mem_setOf_eq]
       refine'
         tendsto_integral_of_dominated_convergence (fun y => ‖f x y‖ + ‖f x y‖)
@@ -299,7 +300,7 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
         refine' eventually_of_forall fun y => SimpleFunc.tendsto_approxOn hf.measurable (by simp) _
         apply subset_closure
         simp [-uncurry_apply_pair]
-    · simp [hfx, integral_undef]
+    · simp [f', hfx, integral_undef]
   exact stronglyMeasurable_of_tendsto _ hf' h2f'
 #align measure_theory.strongly_measurable.integral_kernel_prod_right MeasureTheory.StronglyMeasurable.integral_kernel_prod_right
 

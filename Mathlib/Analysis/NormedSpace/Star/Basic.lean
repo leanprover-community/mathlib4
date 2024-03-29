@@ -155,11 +155,8 @@ end NonUnital
 section ProdPi
 
 variable {ι R₁ R₂ : Type*} {R : ι → Type*}
-
 variable [NonUnitalNormedRing R₁] [StarRing R₁] [CstarRing R₁]
-
 variable [NonUnitalNormedRing R₂] [StarRing R₂] [CstarRing R₂]
-
 variable [∀ i, NonUnitalNormedRing (R i)] [∀ i, StarRing (R i)]
 
 /-- This instance exists to short circuit type class resolution because of problems with
@@ -267,7 +264,7 @@ theorem IsSelfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CstarRing 
     (hx : IsSelfAdjoint x) (n : ℕ) : ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n := by
   induction' n with k hk
   · simp only [pow_zero, pow_one, Nat.zero_eq]
-  · rw [pow_succ, pow_mul', sq]
+  · rw [pow_succ', pow_mul', sq]
     nth_rw 1 [← selfAdjoint.mem_iff.mp hx]
     rw [← star_pow, CstarRing.nnnorm_star_mul_self, ← sq, hk, pow_mul']
 #align is_self_adjoint.nnnorm_pow_two_pow IsSelfAdjoint.nnnorm_pow_two_pow
@@ -280,11 +277,8 @@ theorem selfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CstarRing E]
 section starₗᵢ
 
 variable [CommSemiring 𝕜] [StarRing 𝕜]
-
 variable [SeminormedAddCommGroup E] [StarAddMonoid E] [NormedStarGroup E]
-
 variable [Module 𝕜 E] [StarModule 𝕜 E]
-
 variable (𝕜)
 
 /-- `star` bundled as a linear isometric equivalence -/

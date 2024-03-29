@@ -5,13 +5,11 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Units
-import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.MinMax
 import Mathlib.Algebra.Order.Monoid.NatCast
-import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Tactic.Tauto
@@ -246,13 +244,13 @@ theorem pow_nonneg (H : 0 ≤ a) : ∀ n : ℕ, 0 ≤ a ^ n
     exact zero_le_one
   | n + 1 => by
     rw [pow_succ]
-    exact mul_nonneg H (pow_nonneg H _)
+    exact mul_nonneg (pow_nonneg H _) H
 #align pow_nonneg pow_nonneg
 
 lemma pow_le_pow_of_le_one (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) : ∀ {m n : ℕ}, m ≤ n → a ^ n ≤ a ^ m
   | _, _, Nat.le.refl => le_rfl
   | _, _, Nat.le.step h => by
-    rw [pow_succ]
+    rw [pow_succ']
     exact (mul_le_of_le_one_left (pow_nonneg ha₀ _) ha₁).trans $ pow_le_pow_of_le_one ha₀ ha₁ h
 #align pow_le_pow_of_le_one pow_le_pow_of_le_one
 
@@ -563,7 +561,7 @@ theorem pow_pos (H : 0 < a) : ∀ n : ℕ, 0 < a ^ n
     exact zero_lt_one
   | n + 1 => by
     rw [pow_succ]
-    exact mul_pos H (pow_pos H _)
+    exact mul_pos  (pow_pos H _) H
 #align pow_pos pow_pos
 
 theorem mul_self_lt_mul_self (h1 : 0 ≤ a) (h2 : a < b) : a * a < b * b :=
@@ -813,11 +811,9 @@ def StrictOrderedRing.toOrderedRing' [@DecidableRel α (· ≤ ·)] : OrderedRin
 #align strict_ordered_ring.to_ordered_ring' StrictOrderedRing.toOrderedRing'
 
 -- see Note [lower instance priority]
-instance (priority := 100) StrictOrderedRing.toOrderedRing : OrderedRing α :=
-  { ‹StrictOrderedRing α› with
-    mul_nonneg := fun a b =>
-      letI := @StrictOrderedRing.toOrderedRing' α _ (Classical.decRel _)
-      mul_nonneg }
+instance (priority := 100) StrictOrderedRing.toOrderedRing : OrderedRing α where
+  __ := ‹StrictOrderedRing α›
+  mul_nonneg := fun _ _ => mul_nonneg
 #align strict_ordered_ring.to_ordered_ring StrictOrderedRing.toOrderedRing
 
 end StrictOrderedRing
@@ -1216,12 +1212,17 @@ lemma sq_nonneg (a : α) : 0 ≤ a ^ 2 := by
     b ^ 2 + a * b = (a + b) * b := by rw [add_comm, sq, add_mul]
     _ = a * (a + b) := by simp [← hab]
     _ = a ^ 2 + a * b := by rw [sq, mul_add]
+#align sq_nonneg sq_nonneg
+
+alias pow_two_nonneg := sq_nonneg
+#align pow_two_nonneg pow_two_nonneg
 
 lemma mul_self_nonneg (a : α) : 0 ≤ a * a := by simpa only [sq] using sq_nonneg a
 
 /-- The sum of two squares is zero iff both elements are zero. -/
 lemma mul_self_add_mul_self_eq_zero : a * a + b * b = 0 ↔ a = 0 ∧ b = 0 := by
-  rw [add_eq_zero_iff', mul_self_eq_zero, mul_self_eq_zero] <;> apply mul_self_nonneg
+  rw [add_eq_zero_iff', mul_self_eq_zero (M₀ := α), mul_self_eq_zero (M₀ := α)] <;>
+    apply mul_self_nonneg
 #align mul_self_add_mul_self_eq_zero mul_self_add_mul_self_eq_zero
 
 lemma eq_zero_of_mul_self_add_mul_self_eq_zero (h : a * a + b * b = 0) : a = 0 :=
@@ -1280,21 +1281,23 @@ instance (priority := 100) LinearOrderedRing.toLinearOrderedAddCommGroup :
 -- `[LinearOrderedSemiring α] [ExistsAddOfLE α]`?
 
 lemma mul_neg_iff : a * b < 0 ↔ 0 < a ∧ b < 0 ∨ a < 0 ∧ 0 < b := by
-  rw [← neg_pos, neg_mul_eq_mul_neg, mul_pos_iff, neg_pos, neg_lt_zero]
+  rw [← neg_pos, neg_mul_eq_mul_neg, mul_pos_iff (α := α), neg_pos, neg_lt_zero]
 #align mul_neg_iff mul_neg_iff
 
 lemma mul_nonpos_iff : a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a ≤ 0 ∧ 0 ≤ b := by
-  rw [← neg_nonneg, neg_mul_eq_mul_neg, mul_nonneg_iff, neg_nonneg, neg_nonpos]
+  rw [← neg_nonneg, neg_mul_eq_mul_neg, mul_nonneg_iff (α := α), neg_nonneg, neg_nonpos]
 #align mul_nonpos_iff mul_nonpos_iff
 
 lemma mul_nonneg_iff_neg_imp_nonpos : 0 ≤ a * b ↔ (a < 0 → b ≤ 0) ∧ (b < 0 → a ≤ 0) := by
-  rw [← neg_mul_neg, mul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
+  rw [← neg_mul_neg, mul_nonneg_iff_pos_imp_nonneg (α := α)]; simp only [neg_pos, neg_nonneg]
 
 lemma mul_nonpos_iff_pos_imp_nonpos : a * b ≤ 0 ↔ (0 < a → b ≤ 0) ∧ (b < 0 → 0 ≤ a) := by
-  rw [← neg_nonneg, ← mul_neg, mul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
+  rw [← neg_nonneg, ← mul_neg, mul_nonneg_iff_pos_imp_nonneg (α := α)]
+  simp only [neg_pos, neg_nonneg]
 
 lemma mul_nonpos_iff_neg_imp_nonneg : a * b ≤ 0 ↔ (a < 0 → 0 ≤ b) ∧ (0 < b → a ≤ 0) := by
-  rw [← neg_nonneg, ← neg_mul, mul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
+  rw [← neg_nonneg, ← neg_mul, mul_nonneg_iff_pos_imp_nonneg (α := α)]
+  simp only [neg_pos, neg_nonneg]
 
 lemma neg_one_lt_zero : -1 < (0 : α) := neg_lt_zero.2 zero_lt_one
 #align neg_one_lt_zero neg_one_lt_zero

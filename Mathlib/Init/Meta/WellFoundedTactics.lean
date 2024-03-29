@@ -3,7 +3,6 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Std.Data.Nat.Lemmas
 import Mathlib.Mathport.Rename
 
 #align_import init.meta.well_founded_tactics from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"

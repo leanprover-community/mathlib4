@@ -698,7 +698,7 @@ noncomputable def ofSigmaCoforkFunctor : Cofork I.fstSigmaMap I.sndSigmaMap ⥤ 
         -- `Multicofork.ofSigmaCofork_ι_app_left` before `Multicofork.fst_app_right`,
         -- but mathlib4 finds `Multicofork.fst_app_right` first.
         { simp [-Multicofork.fst_app_right] }
-        -- porting note: similarly here, the `simp` set seems to be non-confluent
+        -- Porting note: similarly here, the `simp` set seems to be non-confluent
         { simp [-Multicofork.ofSigmaCofork_pt] } }
 
 /--
@@ -716,7 +716,7 @@ noncomputable def multicoforkEquivSigmaCofork :
   counitIso := NatIso.ofComponents fun K =>
     Cofork.ext (Iso.refl _)
       (by
-        -- porting note: in mathlib3 this was just `ext` and I don't know why it's not here
+        -- Porting note: in mathlib3 this was just `ext` and I don't know why it's not here
         apply Limits.colimit.hom_ext
         rintro ⟨j⟩
         dsimp

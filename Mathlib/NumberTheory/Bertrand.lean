@@ -66,7 +66,7 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
   rw [← div_le_one (rpow_pos_of_pos four_pos x), ← div_div_eq_mul_div, ← rpow_sub four_pos, ←
     mul_div 2 x, mul_div_left_comm, ← mul_one_sub, (by norm_num1 : (1 : ℝ) - 2 / 3 = 1 / 3),
     mul_one_div, ← log_nonpos_iff (hf' x h5), ← hf x h5]
-  -- porting note: the proof was rewritten, because it was too slow
+  -- porting note (#11083): the proof was rewritten, because it was too slow
   have h : ConcaveOn ℝ (Set.Ioi 0.5) f := by
     apply ConcaveOn.sub
     apply ConcaveOn.add

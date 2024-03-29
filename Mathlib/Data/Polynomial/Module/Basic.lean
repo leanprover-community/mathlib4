@@ -88,6 +88,24 @@ instance instIsScalarTowerOrigPolynomial : IsScalarTower R R[X] <| AEval R M a w
 instance instFinitePolynomial [Finite R M] : Finite R[X] <| AEval R M a :=
   Finite.of_restrictScalars_finite R _ _
 
+/-- Construct an `R[X]`-linear map out of `AEval R M a` from a `R`-linear map out of `M`. -/
+def _root_.LinearMap.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N]
+    [IsScalarTower R R[X] N] (f : M →ₗ[R] N) (hf : ∀ m : M, f (a • m) = (X : R[X]) • f m) :
+    AEval R M a →ₗ[R[X]] N where
+  __ := f ∘ₗ (of R M a).symm
+  map_smul' p := p.induction_on (fun k m ↦ by simp [C_eq_algebraMap])
+    (fun p q hp hq m ↦ by simp_all [add_smul]) fun n k h m ↦ by
+      simp_rw [RingHom.id_apply, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
+        LinearMap.comp_apply, LinearEquiv.coe_toLinearMap] at h ⊢
+      simp_rw [pow_succ, ← mul_assoc, mul_smul _ X, ← hf, ← of_symm_X_smul, ← h]
+
+lemma annihilator_eq_ker_aeval [FaithfulSMul A M] :
+    annihilator R[X] (AEval R M a) = RingHom.ker (aeval a) := by
+  ext p
+  simp_rw [mem_annihilator, RingHom.mem_ker]
+  change (∀ m : M, aeval a p • m = 0) ↔ _
+  exact ⟨fun h ↦ eq_of_smul_eq_smul (α := M) <| by simp [h], fun h ↦ by simp [h]⟩
+
 @[simp]
 lemma annihilator_top_eq_ker_aeval [FaithfulSMul A M] :
     (⊤ : Submodule R[X] <| AEval R M a).annihilator = RingHom.ker (aeval a) := by
@@ -208,12 +226,11 @@ def PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] :=
 
 variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 
---porting note: stated instead of deriving
-noncomputable instance : Inhabited (PolynomialModule R M) := Finsupp.inhabited
-noncomputable instance : AddCommGroup (PolynomialModule R M) := Finsupp.addCommGroup
+-- Porting note: stated instead of deriving
+noncomputable instance : Inhabited (PolynomialModule R M) := Finsupp.instInhabited
+noncomputable instance : AddCommGroup (PolynomialModule R M) := Finsupp.instAddCommGroup
 
 variable {M}
-
 variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
 namespace PolynomialModule
@@ -227,7 +244,7 @@ instance instFunLike : FunLike (PolynomialModule R M) ℕ M :=
   Finsupp.instFunLike
 
 instance : CoeFun (PolynomialModule R M) fun _ => ℕ → M :=
-  Finsupp.coeFun
+  Finsupp.instCoeFun
 
 theorem zero_apply (i : ℕ) : (0 : PolynomialModule R M) i = 0 :=
   Finsupp.zero_apply
@@ -398,7 +415,6 @@ noncomputable def equivPolynomial {S : Type*} [CommRing S] [Algebra R S] :
 #align polynomial_module.equiv_polynomial PolynomialModule.equivPolynomial
 
 variable (R' : Type*) {M' : Type*} [CommRing R'] [AddCommGroup M'] [Module R' M']
-
 variable [Algebra R R'] [Module R M'] [IsScalarTower R R' M']
 
 /-- The image of a polynomial under a linear map. -/
