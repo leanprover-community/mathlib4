@@ -28,7 +28,7 @@ p-series, Cauchy condensation test
 ### Schlömilch's generalization of the Cauchy condensation test
 
 In this section we prove the Schlömilch's generalization of the Cauchy condensation test:
-for a strictly increasing `u : ℕ → ℕ` with ratio of successive differences bounded and an 
+for a strictly increasing `u : ℕ → ℕ` with ratio of successive differences bounded and an
 antitone `f : ℕ → ℝ≥0` or `f : ℕ → ℝ`, `∑ k, f k` converges if and only if
 so does `∑ k, (u (k + 1) - u k) * f (u k)`. Instead of giving a monolithic proof, we split it
 into a series of lemmas with explicit estimates of partial sums of each series in terms of the
@@ -166,15 +166,15 @@ theorem summable_schlomilch_iff {C : ℕ} {u : ℕ → ℕ} {f : ℕ → ℝ≥0
 open ENNReal in
 theorem summable_condensed_iff {f : ℕ → ℝ≥0} (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
     (Summable fun k : ℕ => (2 : ℝ≥0) ^ k * f (2 ^ k)) ↔ Summable f := by
-  have h_pos : ∀ (n : ℕ), 0 < 2 ^ n := fun n => pow_pos zero_lt_two n
+  have h_pos (n : ℕ) : 0 < 2 ^ n := pow_pos zero_lt_two n
   have hu_strict : StrictMono (2 ^ ·) := fun m n hm =>
       pow_lt_pow_right (Nat.lt_succ_self 1) hm
   have h_succ_diff : SuccDiffBounded 2 (2 ^ ·) := by
     intro n
-    simp [pow_succ, two_mul]
+    simp [pow_succ, mul_two, two_mul]
   have hC_nonzero : 2 ≠ 0 := by norm_num
   convert summable_schlomilch_iff hf h_pos hu_strict hC_nonzero h_succ_diff
-  simp [pow_succ, two_mul]
+  simp [pow_succ, mul_two, two_mul]
 end NNReal
 #align nnreal.summable_condensed_iff NNReal.summable_condensed_iff
 
@@ -196,15 +196,15 @@ theorem summable_schlomilch_iff_of_nonneg {C : ℕ} {u : ℕ → ℕ} {f : ℕ �
 theorem summable_condensed_iff_of_nonneg {f : ℕ → ℝ} (h_nonneg : ∀ n, 0 ≤ f n)
     (h_mono : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
     (Summable fun k : ℕ => (2 : ℝ) ^ k * f (2 ^ k)) ↔ Summable f := by
-  have h_pos : ∀ (n : ℕ), 0 < 2 ^ n := fun n => pow_pos zero_lt_two n
+  have h_pos (n : ℕ) : 0 < 2 ^ n := pow_pos zero_lt_two n
   have hu_strict : StrictMono (2 ^ ·) := fun m n hm =>
       pow_lt_pow_right (Nat.lt_succ_self 1) hm
   have h_succ_diff : SuccDiffBounded 2 (2 ^ ·) := by
     intro n
-    simp [pow_succ, two_mul]
+    simp [pow_succ, mul_two, two_mul]
   have hC_nonzero : 2 ≠ 0 := by norm_num
   convert summable_schlomilch_iff_of_nonneg h_nonneg h_mono h_pos hu_strict hC_nonzero h_succ_diff
-  simp [pow_succ, two_mul]
+  simp [pow_succ, mul_two, two_mul]
 #align summable_condensed_iff_of_nonneg summable_condensed_iff_of_nonneg
 
 section p_series
