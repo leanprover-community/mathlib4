@@ -159,21 +159,27 @@ theorem card_mul_mul_card_le_card_mul_mul_card_mul (A B C : Finset α) :
 #align finset.card_mul_mul_card_le_card_mul_mul_card_mul Finset.card_mul_mul_card_le_card_mul_mul_card_mul
 #align finset.card_add_mul_card_le_card_add_mul_card_add Finset.card_add_mul_card_le_card_add_mul_card_add
 
-/-- **Ruzsa's triangle inequality**. Add-sub-sub version. -/
+/-- **Ruzsa's triangle inequality**. Mul-div-div version. -/
+@[to_additive card_add_mul_card_le_card_sub_mul_card_sub
+      "**Ruzsa's triangle inequality**. Add-sub-sub version."]
 theorem card_mul_mul_le_card_div_mul_card_div (A B C : Finset α) :
     (A * C).card * B.card ≤ (A / B).card * (B / C).card := by
   rw [div_eq_mul_inv, ← card_inv B, ← card_inv (B / C), inv_div', div_inv_eq_mul]
   exact card_mul_mul_card_le_card_mul_mul_card_mul _ _ _
 #align finset.card_mul_mul_le_card_div_mul_card_div Finset.card_mul_mul_le_card_div_mul_card_div
 
-/-- **Ruzsa's triangle inequality**. Sub-add-sub version. -/
+/-- **Ruzsa's triangle inequality**. Div-mul-div version. -/
+@[to_additive card_sub_mul_card_le_card_add_mul_card_sub
+      "**Ruzsa's triangle inequality**. Sub-add-sub version."]
 theorem card_div_mul_le_card_mul_mul_card_div (A B C : Finset α) :
     (A / C).card * B.card ≤ (A * B).card * (B / C).card := by
   rw [div_eq_mul_inv, div_eq_mul_inv]
   exact card_mul_mul_card_le_card_mul_mul_card_mul _ _ _
 #align finset.card_div_mul_le_card_mul_mul_card_div Finset.card_div_mul_le_card_mul_mul_card_div
 
-/-- **Ruzsa's triangle inequality**. Sub-sub-add version. -/
+/-- **Ruzsa's triangle inequality**. Div-div-mul version. -/
+@[to_additive card_sub_mul_card_le_card_sub_mul_card_add
+      "**Ruzsa's triangle inequality**. Sub-sub-add version."]
 theorem card_div_mul_le_card_div_mul_card_mul (A B C : Finset α) :
     (A / C).card * B.card ≤ (A / B).card * (B * C).card := by
   rw [← div_inv_eq_mul, div_eq_mul_inv]
