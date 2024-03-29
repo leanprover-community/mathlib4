@@ -194,8 +194,9 @@ instance : AddCommGroup (Poly α) := by
             neg := (Neg.neg : Poly α → Poly α)
             sub := Sub.sub
             zero := 0
-            zsmul := @zsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩
             nsmul := @nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩
+            zsmul := @zsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩
+              (@nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩)
             .. }
   all_goals
     intros
