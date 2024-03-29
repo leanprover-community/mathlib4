@@ -3,14 +3,21 @@ Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Lean.Meta
+-- import Lean.Meta
 import Mathlib.Lean.Meta.RefinedDiscrTree.StateList
-import Mathlib.Algebra.Group.Pi.Basic
+import Std.Data.List.Basic
+import Lean.Compiler.LCNF.JoinPoints
 
 /-!
 We define discrimination trees for the purpose of unifying local expressions with library results.
 
-This structure is based on `Lean.Meta.DiscrTree`.
+This data structure is based on `Lean.Meta.DiscrTree`, and includes many more features.
+Comparing performance with `Lean.Meta.DiscrTree`, this version is a bit slower.
+However in practice this does not matter, because a lookup in a discrimination tree is always
+combined with `isDefEq` unification and these unifications are significantly more expensive,
+so the extra lookup cost is neglegible, while better discrimination tree indexing, and thus
+less potential matches can save a significant amount of computation.
+
 I document here what features are not in the original:
 
 - The keys `Key.lam`, `Key.forall` and `Key.bvar` have been introduced in order to allow for
@@ -371,7 +378,7 @@ private structure Flatten.State where
 private def getStar (mvarId? : Option MVarId) : StateM Flatten.State Nat :=
   modifyGet fun s =>
     match mvarId? with
-    | some mvarId => match s.stars.findIdx? (· == mvarId) with
+    | some mvarId => match s.stars.getIdx? mvarId with
       | some idx => (idx, s)
       | none => (s.stars.size, { s with stars := s.stars.push mvarId })
     | none => (s.stars.size, { s with stars := s.stars.push ⟨.anonymous⟩ })
@@ -555,10 +562,10 @@ Optionally return the `(type, lhs, rhs, lambdas)`. -/
 @[inline] def reduceHBinOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
     MetaM (Option (Expr × Expr × Expr × List FVarId)) :=
   match n with
-  | ``HAdd.hAdd => reduceHBinOpAux args lambdas ``instHAdd ``Pi.instAdd
-  | ``HMul.hMul => reduceHBinOpAux args lambdas ``instHMul ``Pi.instMul
-  | ``HSub.hSub => reduceHBinOpAux args lambdas ``instHSub ``Pi.instSub
-  | ``HDiv.hDiv => reduceHBinOpAux args lambdas ``instHDiv ``Pi.instDiv
+  | ``HAdd.hAdd => reduceHBinOpAux args lambdas ``instHAdd `Pi.instAdd
+  | ``HMul.hMul => reduceHBinOpAux args lambdas ``instHMul `Pi.instMul
+  | ``HSub.hSub => reduceHBinOpAux args lambdas ``instHSub `Pi.instSub
+  | ``HDiv.hDiv => reduceHBinOpAux args lambdas ``instHDiv `Pi.instDiv
   | _ => return none
 
 /-- Normalize an application of a unary operator like `Inv.inv`, using:
@@ -597,8 +604,8 @@ Optionally return the `(type, arg, lambdas)`. -/
 @[inline] def reduceUnOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
     MetaM (Option (Expr × Expr × List FVarId)) :=
   match n with
-  | ``Neg.neg => reduceUnOpAux args lambdas ``Pi.instNeg
-  | ``Inv.inv => reduceUnOpAux args lambdas ``Pi.instInv
+  | ``Neg.neg => reduceUnOpAux args lambdas `Pi.instNeg
+  |  `Inv.inv => reduceUnOpAux args lambdas `Pi.instInv
   | _ => return none
 
 @[specialize]
@@ -683,7 +690,7 @@ partial def mkDTExprAux (e : Expr) (root : Bool) : ReaderT Context MetaM DTExpr 
           let type ← mkDTExprAux (← fvarId.getType) false
           return .const ``id #[type]
     withLams lambdas do
-      if let some idx := (← read).bvars.findIdx? (· == fvarId) then
+      if let some idx := (← read).bvars.indexOf? fvarId then
         return .bvar idx (← argDTExprs)
       if (← read).fvarInContext fvarId then
         return .fvar fvarId (← argDTExprs)
@@ -810,7 +817,7 @@ partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
           return .const ``id #[type]
     withLams lambdas do
       let c ← read
-      if let some idx := c.bvars.findIdx? (· == fvarId) then
+      if let some idx := c.bvars.indexOf? fvarId then
         return .bvar idx (← argDTExprs)
       guard !(c.forbiddenVars.contains fvarId)
       if c.fvarInContext fvarId then

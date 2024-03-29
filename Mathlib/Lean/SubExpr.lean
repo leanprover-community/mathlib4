@@ -3,7 +3,8 @@ Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Lean.Meta
+import Lean.Meta.Tactic.Util
+import Lean.SubExpr
 
 /-! This file defines some functions for dealing with `SubExpr.GoalsLocation`. -/
 
