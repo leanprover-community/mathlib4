@@ -70,17 +70,12 @@ theorem infix_rfl : l <:+: l :=
 theorem prefix_concat (a : α) (l) : l <+: concat l a := by simp
 #align list.prefix_concat List.prefix_concat
 
-theorem prefix_concat_iff {x y : List α} {a : α} : x <+: y ++ [a] ↔ x <+: y ∨ x = y ++ [a] := by
-  constructor
-  · intro ⟨z, h⟩
-    induction' z using List.reverseRecOn with z
-    · rw [List.append_nil] at h
-      exact Or.inr h
-    · rw [← List.append_assoc] at h
-      exact Or.inl ⟨z, List.append_inj_left' h rfl⟩
-  · rintro (h | rfl)
-    · exact List.IsPrefix.trans h <| List.prefix_append y [a]
-    · exact List.prefix_rfl
+theorem prefix_concat_iff {x y : List α} {a : α} : x <+: y ++ [a] ↔ x = y ++ [a] ∨ x <+: y := by
+  convert suffix_cons_iff using 1
+  · rw [← List.reverse_concat, List.reverse_suffix, ← concat_eq_append]
+  · congr! 1
+    · rw [← List.reverse_concat, ← concat_eq_append, reverse_inj]
+    · apply reverse_suffix.symm
 
 #align list.infix_cons List.infix_cons
 #align list.infix_concat List.infix_concat
@@ -543,15 +538,15 @@ theorem mem_of_mem_suffix (hx : a ∈ l₁) (hl : l₁ <:+ l₂) : a ∈ l₂ :=
   hl.subset hx
 #align list.mem_of_mem_suffix List.mem_of_mem_suffix
 
-theorem IsPrefix.ne_nil {x y : List α} (hx : x ≠ []) (h : x <+: y) : y ≠ [] := by
+theorem IsPrefix.ne_nil {x y : List α} (h : x <+: y) (hx : x ≠ []) : y ≠ [] := by
   rintro rfl; exact hx <| List.prefix_nil.mp h
 
-theorem IsPrefix.get_eq {x y : List α} {n} (hn : n < x.length) (h : x <+: y) :
+theorem IsPrefix.get_eq {x y : List α} (h : x <+: y) {n} (hn : n < x.length) :
     x.get ⟨n, hn⟩ = y.get ⟨n, hn.trans_le h.length_le⟩ := by
   obtain ⟨_, rfl⟩ := h
   exact (List.get_append n hn).symm
 
-theorem IsPrefix.head_eq {x y : List α} (hx : x ≠ []) (h : x <+: y) :
+theorem IsPrefix.head_eq {x y : List α} (h : x <+: y) (hx : x ≠ []) :
     x.head hx = y.head (h.ne_nil hx) := by
   cases x <;> cases y <;> simp only [head_cons, ne_eq, not_true_eq_false] at hx ⊢
   all_goals (obtain ⟨_, h⟩ := h; injection h)
