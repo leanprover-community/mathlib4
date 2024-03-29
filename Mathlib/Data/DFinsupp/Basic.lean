@@ -1728,10 +1728,9 @@ variable [∀ i : ια, Zero (α i)] [∀ i : ιβ, Zero (β i)]
 
 /-- The `DFinsupp` indexed by `ια ⊕ ιβ` induced by a pair of `DFinsupp`s indexed by `ια` and
 `ιβ` respectively. -/
-noncomputable def sumElim (f : Π₀ i, α i) (g : Π₀ i, β i) :
-    Π₀ (i : ια ⊕ ιβ), Sum.elim α β i := by
-  classical
-  exact onFinset (Finset.disjSum (support f) (support g))
+def sumElim (f : Π₀ i, α i) (g : Π₀ i, β i) :
+    Π₀ (i : ια ⊕ ιβ), Sum.elim α β i :=
+  onFinset (Finset.disjSum (support f) (support g))
     (fun i => match i with
     | Sum.inl i => f i
     | Sum.inr i => g i)
