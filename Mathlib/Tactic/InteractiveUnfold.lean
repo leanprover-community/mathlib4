@@ -28,6 +28,30 @@ def unfold? (e : Expr) : MetaM (Option Expr) := do
       return e
   return none
 
+
+
+/-- Unfold a class projection when the instance is tagged with `@[default_instance]`. -/
+def unfoldProjDefaultInst? (e : Expr) : MetaM (Option Expr) := do
+  match e.getAppFn with
+  | .const declName .. =>
+    match ← getProjectionFnInfo? declName with
+    | some { fromClass := true, ctorName, .. } => do
+      let some (ConstantInfo.ctorInfo c) := (← getEnv).find? ctorName | return none
+
+      let defaults ← getDefaultInstances c.induct
+      if defaults.isEmpty then return none
+
+      let some e ← withDefault <| unfoldDefinition? e | return none
+      let .proj _ i c := e.getAppFn | return none
+
+      let .const inst _ := c.getAppFn | return none
+      unless defaults.any (·.1 == inst) do return none
+
+      let some r ← project? c i | return none
+      return mkAppN r e.getAppArgs |>.headBeta
+    | _ => return none
+  | _ => return none
+
 /-- Return the consecutive unfoldings of `e`. -/
 partial def unfolds (e : Expr) : MetaM (Array Expr) := do
   let e' ← whnfCore e
@@ -42,6 +66,9 @@ where
         return #[e]
       if let some e ← reduceNative? e then
         return #[e]
+      if let some e ← unfoldProjDefaultInst? e then
+        let e ← whnfCore e
+        return ← go e acc
       if let some e ← unfold? e then
         -- Note: whnfCore can give a recursion depth error
         let e ← whnfCore e
@@ -153,7 +180,7 @@ def UnfoldComponent : Component SelectInsertParams :=
 /-- Unfold the selected expression any number of times.
 - After each unfold?, we apply `whnfCore` to simplify the expression.
 - Explicit natural number expressions are evaluated.
-- The results of class projections marked with `@[default_instance]` are skipped.
+- The results of class projections of instances marked with `@[default_instance]` are not shown.
   This is relevant for notational type classes like `+`: we don't want to suggest `Add.add a b`
   as an unfolding of `a + b`.
 
