@@ -78,8 +78,6 @@ variable [TopologicalSpace Z] [TopologicalSpace W]
 instance continuousSmul_of_properSMul [ProperSMul G X] : ContinuousSMul G X where
   continuous_smul := (isProperMap_smul_pair G X).continuous.fst
 
-
-
 /-- A group acts `G` properly on a topological space `X` if and only if for all ultrafilters
 `𝒰` on `X`, if `𝒰` converges to `(x₁, x₂)` along the map `(g, x) ↦ (g • x, x)`,
 then there exists `g : G` such that `g • x₂ = x₁` and `𝒰.fst` converges to `g`. -/
@@ -146,7 +144,6 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto_t2 [T2Space X] : Prope
     exact continuous_snd
     assumption
 
-
 /-- If two groups `H` and `G` act on a topological space `X` such that `G` acts properly and
 there exists a group homomorphims `H → G` which is a closed embedding compatible with the actions,
 then `H` also acts properly on `X`. -/
@@ -180,8 +177,6 @@ instance {H : Subgroup G} [ProperSMul G X] [H_closed : IsClosed (H : Set G)] : P
       exact this.comp (isProperMap_smul_pair G X)
     assumption
 
-
-
 /-- If a T2 group acts properly on a topological space, then this topological space is T2. -/
 @[to_additive "If a T2 group acts properly on a topological space,
 then this topological space is T2."]
@@ -205,8 +200,8 @@ theorem t2Space_of_properSMul_of_t2Group [h_proper : ProperSMul G X] [T2Space G]
   rw [← range_gf]
   exact (proper_f.comp proper_g).closed_range
 
-
-/-- If G acts properly on X, then the quotient space is Hausdorff (T2) -/
+/-- If `G` acts properly on `X`, then the quotient space is Hausdorff (T2). -/
+@[to_additive "If `G` acts properly on `X`, then the quotient space is Hausdorff (T2)."]
 theorem t2Space_of_ProperSMul (hproper:ProperSMul G X) :
     T2Space (Quotient (MulAction.orbitRel G X)) := by
   rw [t2_iff_isClosed_diagonal] -- T2 if the diagonal is closed
