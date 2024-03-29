@@ -97,3 +97,10 @@ theorem _root_.Set.cardinal_iff_frequently_cocardinal {s : Set α} :
 theorem eventually_cocardinal_ne (x : α) : ∀ᶠ a in cocardinal hreg, a ≠ x := by
   simp [Set.finite_singleton x]
   exact IsRegular.nat_lt hreg 1
+
+abbrev cocountable : Filter α := cocardinal Cardinal.isRegular_aleph_one
+
+@[simp]
+theorem mem_cocountable {s : Set α} :
+    s ∈ @cocountable α ↔ (sᶜ : Set α).Countable := by
+  rw [Cardinal.countable_iff_lt_aleph_one, mem_cocardinal]
