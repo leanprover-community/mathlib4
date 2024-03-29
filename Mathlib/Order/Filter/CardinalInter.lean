@@ -92,8 +92,7 @@ variable [CardinalInterFilter l c]
 theorem cardinal_iInter_mem {s : ι → Set α} (hic : #ι < c) :
     (⋂ i, s i) ∈ l ↔ ∀ i, s i ∈ l := by
   rw [← sInter_range _]
-  apply Iff.trans
-  apply cardinal_sInter_mem (lt_of_le_of_lt Cardinal.mk_range_le hic)
+  apply (cardinal_sInter_mem (lt_of_le_of_lt Cardinal.mk_range_le hic)).trans
   exact forall_mem_range
 
 theorem cardinal_bInter_mem {S : Set ι} (hS : #S < c)
@@ -176,7 +175,6 @@ def ofCardinalInter (l : Set (Set α)) (hc : 2 < c)
     have : #({s, t} : Set (Set α)) ≤ 2 := by
       calc
       _ ≤ #({t} : Set (Set α)) + 1 := Cardinal.mk_insert_le
-      _ = 1 + 1 := by rw [Cardinal.mk_singleton]
       _ = 2 := by norm_num
     exact lt_of_le_of_lt this hc
 
@@ -312,9 +310,8 @@ theorem cardinal_iUnion_iff {hι : #ι < c} {hreg : Cardinal.IsRegular c}  {t : 
   · intro h
     apply lt_of_le_of_lt (Cardinal.mk_sUnion_le _)
     apply Cardinal.mul_lt_of_lt (Cardinal.IsRegular.aleph0_le hreg)
-    · exact lt_of_le_of_lt Cardinal.mk_range_le hι
-    · apply Cardinal.iSup_lt_of_isRegular hreg
-      apply lt_of_le_of_lt Cardinal.mk_range_le hι
+      (lt_of_le_of_lt Cardinal.mk_range_le hι)
+    · apply Cardinal.iSup_lt_of_isRegular hreg (lt_of_le_of_lt Cardinal.mk_range_le hι)
       simpa
 
 theorem Cardinal.biUnion_iff {s : Set α} {t : ∀ a ∈ s, Set β} {hreg : Cardinal.IsRegular c}
