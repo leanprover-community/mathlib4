@@ -13,6 +13,8 @@ import Mathlib.Data.Set.Lattice
 This file contains lemmas about intervals that cannot be included into `Data.Set.Intervals.Basic`
 because this would create an `import` cycle. Namely, lemmas in this file can use definitions
 from `Data.Set.Lattice`, including `Disjoint`.
+
+We consider various intersections and unions of half infinite intervals.
 -/
 
 
@@ -255,5 +257,22 @@ theorem iUnion_Iic_eq_Iic_iSup {R : Type*} [CompleteLinearOrder R] {f : ι → R
     (has_greatest_elem : (⨆ i, f i) ∈ range f) : ⋃ i : ι, Iic (f i) = Iic (⨆ i, f i) :=
   @iUnion_Ici_eq_Ici_iInf ι (OrderDual R) _ f has_greatest_elem
 #align Union_Iic_eq_Iic_supr iUnion_Iic_eq_Iic_iSup
+
+theorem iUnion_Iio_eq_univ_iff : ⋃ i, Iio (f i) = univ ↔ (¬ BddAbove (range f)) := by
+  simp [not_bddAbove_iff, Set.eq_univ_iff_forall]
+
+theorem iUnion_Iic_of_not_bddAbove_range (hf : ¬ BddAbove (range f)) : ⋃ i, Iic (f i) = univ := by
+  refine  Set.eq_univ_of_subset ?_ (iUnion_Iio_eq_univ_iff.mpr hf)
+  gcongr
+  exact Iio_subset_Iic_self
+
+theorem iInter_Iic_eq_empty_iff : ⋂ i, Iic (f i) = ∅ ↔ ¬ BddBelow (range f) := by
+  simp [not_bddBelow_iff, Set.eq_empty_iff_forall_not_mem]
+
+theorem iInter_Iio_of_not_bddBelow_range (hf : ¬ BddBelow (range f)) : ⋂ i, Iio (f i) = ∅ := by
+  refine' eq_empty_of_subset_empty _
+  rw [← iInter_Iic_eq_empty_iff.mpr hf]
+  gcongr
+  exact Iio_subset_Iic_self
 
 end UnionIxx

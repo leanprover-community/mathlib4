@@ -142,7 +142,7 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
     intro m i
     induction' m with m ihm
     · simp [J, Nat.zero_eq]
-    simp only [pow_succ', J_succ, upper_sub_lower_splitCenterBox, ihm, div_div]
+    simp only [pow_succ, J_succ, upper_sub_lower_splitCenterBox, ihm, div_div]
   have h0 : J 0 = I := rfl
   clear_value J
   clear hpI hs J_succ s

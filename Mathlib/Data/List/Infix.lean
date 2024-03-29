@@ -155,7 +155,8 @@ theorem eq_of_suffix_of_length_eq (h : l₁ <:+ l₂) : l₁.length = l₂.lengt
 #align list.mem_of_mem_drop List.mem_of_mem_drop
 
 lemma dropSlice_sublist (n m : ℕ) (l : List α) : l.dropSlice n m <+ l :=
-  calc l.dropSlice n m = take n l ++ drop m (drop n l) := by rw [dropSlice_eq, drop_drop, add_comm]
+  calc
+    l.dropSlice n m = take n l ++ drop m (drop n l) := by rw [dropSlice_eq, drop_drop, Nat.add_comm]
   _ <+ take n l ++ drop n l := (Sublist.refl _).append (drop_sublist _ _)
   _ = _ := take_append_drop _ _
 #align list.slice_sublist List.dropSlice_sublist
@@ -310,7 +311,7 @@ theorem cons_prefix_iff : a :: l₁ <+: b :: l₂ ↔ a = b ∧ l₁ <+: l₂ :=
     rwa [prefix_cons_inj]
 #align list.cons_prefix_iff List.cons_prefix_iff
 
-theorem IsPrefix.map (h : l₁ <+: l₂) (f : α → β) : l₁.map f <+: l₂.map f := by
+protected theorem IsPrefix.map (h : l₁ <+: l₂) (f : α → β) : l₁.map f <+: l₂.map f := by
   induction' l₁ with hd tl hl generalizing l₂
   · simp only [nil_prefix, map_nil]
   · cases' l₂ with hd₂ tl₂
@@ -319,7 +320,7 @@ theorem IsPrefix.map (h : l₁ <+: l₂) (f : α → β) : l₁.map f <+: l₂.m
       simp only [List.map_cons, h, prefix_cons_inj, hl, map]
 #align list.is_prefix.map List.IsPrefix.map
 
-theorem IsPrefix.filter_map (h : l₁ <+: l₂) (f : α → Option β) :
+protected theorem IsPrefix.filterMap (h : l₁ <+: l₂) (f : α → Option β) :
     l₁.filterMap f <+: l₂.filterMap f := by
   induction' l₁ with hd₁ tl₁ hl generalizing l₂
   · simp only [nil_prefix, filterMap_nil]
@@ -329,9 +330,11 @@ theorem IsPrefix.filter_map (h : l₁ <+: l₂) (f : α → Option β) :
       rw [← @singleton_append _ hd₁ _, ← @singleton_append _ hd₂ _, filterMap_append,
         filterMap_append, h.left, prefix_append_right_inj]
       exact hl h.right
-#align list.is_prefix.filter_map List.IsPrefix.filter_map
+#align list.is_prefix.filter_map List.IsPrefix.filterMap
 
-theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
+@[deprecated] alias IsPrefix.filter_map := IsPrefix.filterMap
+
+protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
     l₁.reduceOption <+: l₂.reduceOption :=
   h.filter_map id
 #align list.is_prefix.reduce_option List.IsPrefix.reduceOption
@@ -540,16 +543,16 @@ theorem mem_of_mem_suffix (hx : a ∈ l₁) (hl : l₁ <:+ l₂) : a ∈ l₂ :=
   hl.subset hx
 #align list.mem_of_mem_suffix List.mem_of_mem_suffix
 
-theorem ne_nil_prefix {x y : List α} (hx : x ≠ []) (h : x <+: y) : y ≠ [] := by
+theorem IsPrefix.ne_nil {x y : List α} (hx : x ≠ []) (h : x <+: y) : y ≠ [] := by
   rintro rfl; exact hx <| List.prefix_nil.mp h
 
-theorem get_eq_prefix {x y : List α} {n} (hn : n < x.length) (h : x <+: y) :
-    x.get ⟨n, hn⟩ = y.get ⟨n, by replace h := h.length_le; omega⟩ := by
+theorem IsPrefix.get_eq {x y : List α} {n} (hn : n < x.length) (h : x <+: y) :
+    x.get ⟨n, hn⟩ = y.get ⟨n, hn.trans_le h.length_le⟩ := by
   obtain ⟨_, rfl⟩ := h
   exact (List.get_append n hn).symm
 
-theorem head_eq_prefix {x y : List α} (hx : x ≠ []) (h : x <+: y) :
-    x.head hx = y.head (ne_nil_prefix hx h) := by
+theorem IsPrefix.head_eq {x y : List α} (hx : x ≠ []) (h : x <+: y) :
+    x.head hx = y.head (h.ne_nil hx) := by
   cases x <;> cases y <;> simp only [head_cons, ne_eq, not_true_eq_false] at hx ⊢
   all_goals (obtain ⟨_, h⟩ := h; injection h)
 
