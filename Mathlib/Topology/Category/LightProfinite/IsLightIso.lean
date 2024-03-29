@@ -78,7 +78,7 @@ def natTrans_nat_op_mk {C : Type*} [Category C] {F G : ℕᵒᵖ ⥤ C} (f : (n 
       rfl
 
 def homMk {X Y : LightProfinite}
-    (f : (n : ℕ) → X ⟶ fintypeCatToLightProfinite.obj (Y.diagram.obj ⟨n⟩))
+    (f : (n : ℕ) → X ⟶ Y.component n)
     (w : ∀ n, Y.transitionMap n ∘ f (n + 1) = f n) : X ⟶ Y :=
   let c : Cone (Y.diagram ⋙ FintypeCat.toProfinite) := ⟨X.toProfinite, natTrans_nat_op_mk f
     (by intro n; ext; exact congrFun (w n).symm _)⟩
@@ -89,3 +89,19 @@ def homMk' {X Y : LightProfinite}
     (w : ∀ n, Y.transitionMap n ∘ f (n + 1) = f n) : X ⟶ Y :=
   let _ : ∀ n, TopologicalSpace (Y.diagram.obj ⟨n⟩) := ⊥
   homMk (fun n ↦ ⟨f n, (f n).2.continuous⟩) w
+
+def homMk'' {X Y : LightProfinite}
+    (f : (n : ℕ) → X ⟶ Y.component n)
+    (w : ∀ n, f (n + 1) ≫ Y.transitionMap' n = f n) : X ⟶ Y := by
+  refine homMk f ?_
+  intro n
+  ext x
+  have := w n
+  rw [DFunLike.ext_iff] at this
+  exact this x
+  -- or
+  -- let c : Cone (Y.diagram ⋙ FintypeCat.toProfinite) := ⟨X.toProfinite, natTrans_nat_op_mk f
+  --   (by intro n; simpa using (w n).symm)⟩
+  -- Y.isLimit.lift c
+
+  -- TODO: check that the same `f` gives the same `homMk` 
