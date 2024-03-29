@@ -55,7 +55,7 @@ theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.su
     induction' n with n ih
     · exact subset_closure (Set.mem_insert_of_mem _ (Set.mem_singleton _))
     · convert H.mul_mem (H.mul_mem h3 ih) (H.inv_mem h3)
-      simp_rw [mul_swap_eq_swap_mul, mul_inv_cancel_right, pow_succ]
+      simp_rw [mul_swap_eq_swap_mul, mul_inv_cancel_right, pow_succ']
       rfl
   have step2 : ∀ n : ℕ, swap x ((σ ^ n) x) ∈ H := by
     intro n
@@ -63,7 +63,7 @@ theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.su
     · simp only [Nat.zero_eq, pow_zero, coe_one, id_eq, swap_self, Set.mem_singleton_iff]
       convert H.one_mem
     · by_cases h5 : x = (σ ^ n) x
-      · rw [pow_succ, mul_apply, ← h5]
+      · rw [pow_succ', mul_apply, ← h5]
         exact h4
       by_cases h6 : x = (σ ^ (n + 1) : Perm α) x
       · rw [← h6, swap_self]
