@@ -27,6 +27,11 @@ that evaluates on elements `x` of `L` to the characteristic polynomial of `φ x`
 
 ## Main declarations
 
+* `Matrix.toMvPolynomial M i`: the family of multivariate polynomials that evaluates on `c : n → R`
+  to the dot product of the `i`-th row of `M` with `c`.
+* `LinearMap.toMvPolynomial b₁ b₂ f`: a version of `Matrix.toMvPolynomial` for linear maps `f`
+  with respect to bases `b₁` and `b₂` of the domain and codomain.
+`Matrix.toMvPolynomial M i` is the sum of the monomials `C (M i j) * X j`.
 * `LinearMap.polyCharpoly`: the multivariate polynomial that evaluates on elements `x` of `L`
   to the characteristic polynomial of `φ x`.
 * `LinearMap.polyCharpoly_map`: the evaluation of `polyCharpoly` on elements `x` of `L`
@@ -55,6 +60,13 @@ variable {R M ι : Type*} [CommRing R] [AddCommGroup M] [Module R M] [Fintype ι
 open scoped Matrix
 
 -- move to Mathlib.LinearAlgebra.Matrix.ToLin
+/-- The standard basis of the endomorphism algebra of a module
+induced by a basis of the module.
+
+If `M` is a module with basis `b` indexed by a finite type `ι`,
+then `Basis.end b` is the basis of `Module.End R M` indexed by `ι × ι`
+where `(i, j)` indexes the linear map that sends `b j` to `b i`
+and sends all other basis vectors to `0`.  -/
 @[simps! repr_apply repr_symm_apply]
 noncomputable
 def Basis.end (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
@@ -93,6 +105,11 @@ open Module
 open scoped TensorProduct
 
 -- move to Mathlib.RingTheory.TensorProduct.Basic
+/-- The natural linear map $A ⊗ (\text{End}_R M) → \text{End}_A (A ⊗ M)$,
+where `M` is an `R`-module, and `A` an `R`-algebra.
+
+See `TensorProductEnd` for the same map, bundled as `A`-algebra homomorphism. -/
+@[simps!]
 noncomputable
 def TensorProductEndₗ : A ⊗[R] (End R M) →ₗ[A] End A (A ⊗[R] M) :=
   TensorProduct.AlgebraTensorModule.lift <|
@@ -101,6 +118,9 @@ def TensorProductEndₗ : A ⊗[R] (End R M) →ₗ[A] End A (A ⊗[R] M) :=
     map_smul' := by simp only [smul_assoc, RingHom.id_apply, forall_true_iff] }
 
 -- move to Mathlib.RingTheory.TensorProduct.Basic
+/-- The natural `A`-algebra homomorphism $A ⊗ (\text{End}_R M) → \text{End}_A (A ⊗ M)$,
+where `M` is an `R`-module, and `A` an `R`-algebra. -/
+@[simps!]
 noncomputable
 def TensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
   Algebra.TensorProduct.algHomOfLinearMapTensorProduct
@@ -129,6 +149,11 @@ variable [Fintype n] [Fintype o] [CommSemiring R] [CommSemiring S]
 
 open MvPolynomial
 
+/-- Let `M` be an `(m × n)`-matrix over `R`.
+Then `Matrix.toMvPolynomial M` is the family (indexed by `i : m`)
+of multivariate polynomials in `n` variables over `R` that evaluates on `c : n → R`
+to the dot product of the `i`-th row of `M` with `c`:
+`Matrix.toMvPolynomial M i` is the sum of the monomials `C (M i j) * X j`. -/
 noncomputable
 def toMvPolynomial (M : Matrix m n R) (i : m) : MvPolynomial n R :=
   ∑ j, monomial (.single j 1) (M i j)
@@ -187,6 +212,11 @@ variable (b₁ : Basis ι₁ R M₁) (b₂ : Basis ι₂ R M₂) (b₃ : Basis �
 
 open MvPolynomial
 
+/-- Let `f : M₁ →ₗ[R] M₂` be an `R`-linear map
+between modules `M₁` and `M₂` with bases `b₁` and `b₂` respectively.
+Then `LinearMap.toMvPolynomial b₁ b₂ f` is the family of multivariate polynomials over `R`
+that evaluates on an element `x` of `M₁` (represented on the basis `b₁`)
+to the element `f x` of `M₂` (represented on the basis `b₂`). -/
 noncomputable
 def toMvPolynomial (f : M₁ →ₗ[R] M₂) (i : ι₂) :
     MvPolynomial ι₁ R :=
@@ -248,11 +278,12 @@ variable [DecidableEq ιM] (b : Basis ι R L) (bₘ : Basis ιM R M)
 
 open Matrix
 
-/-- Let `L` and `M` be modules over `R`,
-and let `φ : L →ₗ[R] Module.End R M` be a linear map.
+/-- Let `L` and `M` be modules over `R`, and let `φ : L →ₗ[R] Module.End R M` be a linear map.
 Let `b` be a basis of `L` and `bₘ` a basis of `M`.
 Then `polyCharpoly φ b bₘ` is the polynomial that evaluates on elements `x` of `L`
-to the characteristic polynomial of `φ x` acting on `M`. -/
+to the characteristic polynomial of `φ x` acting on `M`.
+
+This definition does not depend on the choice of `bₘ`. See TODO. -/
 noncomputable
 def polyCharpoly : Polynomial (MvPolynomial ι R) :=
   (charpoly.univ R ιM).map <| MvPolynomial.bind₁ (φ.toMvPolynomial b bₘ.end)
