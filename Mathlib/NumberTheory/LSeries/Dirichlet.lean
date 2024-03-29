@@ -161,7 +161,7 @@ lemma not_LSeriesSummable_at_one {N : ℕ} (hN : N ≠ 0) (χ : DirichletCharact
   by_cases hn : n ∈ {(m : ℕ) | (m : ZMod N) = 1}
   · rw [Set.indicator_of_mem hn]
     rcases eq_or_ne n 0 with rfl | hn₀
-    · simp only [CharP.cast_eq_zero, div_zero, ↓reduceIte, le_refl]
+    · simp only [cast_zero, div_zero, ↓reduceIte, le_refl]
     simp only [hn₀, ↓reduceIte]
     gcongr
     rw [hn, map_one, norm_one]
@@ -264,7 +264,7 @@ lemma abscissaOfAbsConv_zeta : abscissaOfAbsConv ↗ζ = 1 := by
 /-- The L-series of the arithmetic function `ζ` equals the Riemann Zeta Function on its
 domain of convergence `1 < re s`. -/
 lemma LSeries_zeta_eq_riemannZeta {s : ℂ} (hs : 1 < s.re) : L ↗ζ s = riemannZeta s := by
-  simp only [LSeries, natCoe_apply, zeta_apply, cast_ite, CharP.cast_eq_zero, cast_one,
+  simp only [LSeries, natCoe_apply, zeta_apply, cast_ite, cast_zero, cast_one,
     zeta_eq_tsum_one_div_nat_cpow hs]
   refine tsum_congr fun n ↦ ?_
   rcases eq_or_ne n 0 with rfl | hn
