@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Kernel.Disintegration.Density
 import Mathlib.Probability.Kernel.WithDensity
-import Mathlib.Probability.Kernel.MeasureCompProd
 
 /-!
 # Radon-Nikodym derivative and Lebesgue decomposition for kernels
@@ -59,6 +58,12 @@ everywhere (although `rnDeriv κ η` has that value almost everywhere). See the 
 ## References
 
 Theorem 1.28 in [O. Kallenberg, Random Measures, Theory and Applications][kallenberg2017].
+
+## TODO
+
+* prove uniqueness results.
+* link kernel Radon-Nikodym derivative and Radon-Nikodym derivative of measures, and similarly for
+  singular parts.
 
 -/
 
