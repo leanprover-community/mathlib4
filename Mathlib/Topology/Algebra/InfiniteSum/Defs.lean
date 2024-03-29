@@ -21,10 +21,6 @@ monoid.
 Note: There are summable sequences which are not unconditionally convergent! The other way holds
 generally, see `HasSum.tendsto_sum_nat`.
 
-## References
-
-* Bourbaki: General Topology (1995), Chapter 3 §5 (Infinite sums in commutative groups)
-
 ## Implementation notes
 
 We say that a function `f : β → α` has an unconditional product of `a` if the function
@@ -38,6 +34,10 @@ the product `∏' n : ℕ, (n : ℝ)` unconditionally exists and is equal to `0`
 of its terms is `0` (even though the product of the remaining terms diverges). Users who would
 prefer that these products be considered not to exist can carry them out in the unit group `ℝˣ`
 rather than in `ℝ`.
+
+## References
+
+* Bourbaki: General Topology (1995), Chapter 3 §5 (Infinite sums in commutative groups)
 
 -/
 
