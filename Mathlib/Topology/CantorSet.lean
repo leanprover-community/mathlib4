@@ -1,14 +1,13 @@
 /-
-Copyright (c) 2015 Joe Cool. All rights reserved.
+Copyright (c) 2024 Jana Göken. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Artur Szafarczyk, Suraj Krishna M S, JB Stiegler, Isabelle Dubois,
 Tomáš Jakl, Lorenzo Zanichelli, Alina Yan, Emilie Uthaiwat, Jana Göken
 under guidance of Filippo A. E. Nuccio
 -/
-import Mathlib.Tactic.Linarith
 import Mathlib.Topology.Metrizable.Basic
-import Mathlib.Topology.Connected.TotallyDisconnected
-import Mathlib.Analysis.SpecialFunctions.Log.Base
+import Mathlib.Topology.Algebra.GroupWithZero
+import Mathlib.Topology.Instances.Real
 
 /- This file contains the definition of the Cantor ternary set
 as well as some first properties, which will be updated later.
@@ -43,15 +42,11 @@ def cantorSet := iInf preCantorSet
 def prePreCantorSetIcc (n k : ℕ) : Set ℝ :=
   Set.Icc ((3*k)/3^n) ((3*k+1)/3^n) ∪ Set.Icc ((3*k+2)/3^n) ((3*k+3)/3^n)
 
-/- fill-/
+/- PreCantorSetIcc n is a union of subintervals of length 1/3^n -/
 def preCantorSetIcc (n : ℕ) := ⋃ (k : ℕ) (_ : k ≤ 3^(n-1)-1), prePreCantorSetIcc n k
 
-/- fill -/
+/- The second definition of the Cantor set  is the intersection of the sets PreCantorSetIcc n -/
 def cantorSetIcc := ⋂ (i : ℕ), preCantorSetIcc i
-
-/- fill -/
-def h (n : ℕ) (i : ℕ) (_ : i ≤ n) : Set ℝ := preCantorSetIcc i
-
 
 /--
          Simple exercises
@@ -109,8 +104,7 @@ lemma cantorSet_subset_UnitInterval : cantorSet ⊆ Set.Icc 0 1 := by
 
 
 /--The ternary Cantor set inherits the metric and in particular the topology from the reals.-/
-instance cantorSet.metricSpace : MetricSpace cantorSet :=
-  Subtype.metricSpace
+instance cantorSet.metricSpace : MetricSpace cantorSet := Subtype.metricSpace
 
 
 /--The ternary Cantor set is closed -/
