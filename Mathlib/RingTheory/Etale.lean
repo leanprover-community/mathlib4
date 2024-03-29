@@ -32,9 +32,7 @@ namespace Algebra
 section
 
 variable (R : Type u) [CommSemiring R]
-
 variable (A : Type u) [Semiring A] [Algebra R A]
-
 variable {B : Type u} [CommRing B] [Algebra R B] (I : Ideal B)
 
 /-- An `R`-algebra `A` is formally unramified if for every `R`-algebra, every square-zero ideal
@@ -196,9 +194,8 @@ theorem FormallySmooth.liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ
   erw [← FormallySmooth.mk_lift _ hg'
     ((Ideal.quotientKerAlgEquivOfSurjective hg).symm.toAlgHom.comp f)]
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).injective
-  rw [AlgEquiv.apply_symm_apply, Ideal.quotientKerAlgEquivOfSurjective,
-    Ideal.quotientKerAlgEquivOfRightInverse.apply]
-  exact (Ideal.kerLiftAlg_mk _ _).symm
+  simp only [liftOfSurjective, AlgEquiv.apply_symm_apply, AlgEquiv.toAlgHom_eq_coe,
+    Ideal.quotientKerAlgEquivOfSurjective_apply, RingHom.kerLift_mk, RingHom.coe_coe]
 #align algebra.formally_smooth.lift_of_surjective_apply Algebra.FormallySmooth.liftOfSurjective_apply
 
 @[simp]
@@ -213,7 +210,6 @@ end
 section OfEquiv
 
 variable {R : Type u} [CommSemiring R]
-
 variable {A B : Type u} [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 theorem FormallySmooth.of_equiv [FormallySmooth R A] (e : A ≃ₐ[R] B) : FormallySmooth R B := by
@@ -268,9 +264,7 @@ end Polynomial
 section Comp
 
 variable (R : Type u) [CommSemiring R]
-
 variable (A : Type u) [CommSemiring A] [Algebra R A]
-
 variable (B : Type u) [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
 
 theorem FormallySmooth.comp [FormallySmooth R A] [FormallySmooth A B] : FormallySmooth R B := by
@@ -321,9 +315,7 @@ end Comp
 section OfSurjective
 
 variable {R S : Type u} [CommRing R] [CommSemiring S]
-
 variable {P A : Type u} [CommRing A] [Algebra R A] [CommRing P] [Algebra R P]
-
 variable (I : Ideal P) (f : P →ₐ[R] A) (hf : Function.Surjective f)
 
 theorem FormallySmooth.of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (RingHom.ker f.toRingHom) ^ 2)
@@ -427,9 +419,7 @@ section BaseChange
 open scoped TensorProduct
 
 variable {R : Type u} [CommSemiring R]
-
 variable {A : Type u} [Semiring A] [Algebra R A]
-
 variable (B : Type u) [CommSemiring B] [Algebra R B]
 
 instance FormallyUnramified.base_change [FormallyUnramified R A] :
@@ -466,13 +456,9 @@ end BaseChange
 section Localization
 
 variable {R S Rₘ Sₘ : Type u} [CommRing R] [CommRing S] [CommRing Rₘ] [CommRing Sₘ]
-
 variable (M : Submonoid R)
-
 variable [Algebra R S] [Algebra R Sₘ] [Algebra S Sₘ] [Algebra R Rₘ] [Algebra Rₘ Sₘ]
-
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
-
 variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
 
 -- Porting note: no longer supported

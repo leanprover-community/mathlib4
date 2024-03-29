@@ -7,8 +7,8 @@ import Mathlib.Data.Int.Basic
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.Rel
-import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Linarith
 
 /-!
 # Series of a relation
@@ -191,7 +191,7 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
   toFun := Fin.append p q ∘ Fin.cast (by abel)
   step i := by
     obtain hi | rfl | hi :=
-      lt_trichotomy i (Fin.castLE (by linarith) (Fin.last _ : Fin (p.length + 1)))
+      lt_trichotomy i (Fin.castLE (by omega) (Fin.last _ : Fin (p.length + 1)))
     · convert p.step ⟨i.1, hi⟩ <;> convert Fin.append_left p q _ <;> rfl
     · convert connect
       · convert Fin.append_left p q _; rfl
@@ -199,7 +199,7 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
     · set x := _; set y := _
       change r (Fin.append p q x) (Fin.append p q y)
       have hx : x = Fin.natAdd _ ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
-          i.2.trans <| by linarith!⟩ := by
+          i.2.trans <| by omega⟩ := by
         ext; dsimp [x, y]; rw [Nat.add_sub_cancel']; exact hi
       have hy : y = Fin.natAdd _ ⟨i - p.length, Nat.sub_lt_left_of_lt_add (le_of_lt hi)
           (by exact i.2)⟩ := by
@@ -232,7 +232,7 @@ lemma append_apply_right (p q : RelSeries r) (connect : r p.last q.head)
   conv_rhs => rw [add_assoc, add_comm 1, ← add_assoc]
   change _ % _ = _
   simp only [Nat.add_mod_mod, Nat.mod_add_mod, Nat.one_mod, Nat.mod_succ_eq_iff_lt]
-  linarith [i.2]
+  omega
 
 @[simp] lemma head_append (p q : RelSeries r) (connect : r p.last q.head) :
     (p.append q connect).head = p.head :=
@@ -242,7 +242,6 @@ lemma append_apply_right (p q : RelSeries r) (connect : r p.last q.head)
     (p.append q connect).last = q.last := by
   delta last
   convert append_apply_right p q connect (Fin.last _)
-  congr
   ext
   change _ = _ % _
   simp only [append_length, Fin.val_last, Fin.natAdd_last, Nat.one_mod, Nat.mod_add_mod,
@@ -254,15 +253,13 @@ For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves
 `a₀ -r→ a₁ -r→ ... -r→ aₙ ↦ f a₀ -s→ f a₁ -s→ ... -s→ f aₙ`
 -/
 @[simps length]
-def map (p : RelSeries r)
-    (f : α → β) (hf : ∀ ⦃x y : α⦄, r x y → s (f x) (f y)) : RelSeries s where
+def map (p : RelSeries r) (f : r →r s) : RelSeries s where
   length := p.length
-  toFun := f.comp p
-  step := (hf <| p.step .)
+  toFun := f.1.comp p
+  step := (f.2 <| p.step .)
 
-@[simp] lemma map_apply (p : RelSeries r)
-    (f : α → β) (hf : ∀ ⦃x y : α⦄, r x y → s (f x) (f y)) (i : Fin (p.length + 1)) :
-    p.map f hf i = f (p i) := rfl
+@[simp] lemma map_apply (p : RelSeries r) (f : r →r s) (i : Fin (p.length + 1)) :
+    p.map f i = f (p i) := rfl
 
 /--
 If `a₀ -r→ a₁ -r→ ... -r→ aₙ` is an `r`-series and `a` is such that
@@ -297,7 +294,7 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
           Fin.insertNth_apply_same]
     · rw [Nat.lt_iff_add_one_le, le_iff_lt_or_eq] at hm
       obtain hm | hm := hm
-      · convert p.step ⟨m.1 - 1, Nat.sub_lt_right_of_lt_add (by linarith) m.2⟩
+      · convert p.step ⟨m.1 - 1, Nat.sub_lt_right_of_lt_add (by omega) m.2⟩
         · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above (h := hm)]
           aesop
@@ -327,13 +324,13 @@ def reverse (p : RelSeries r) : RelSeries (fun (a b : α) ↦ r b a) where
   toFun := p ∘ Fin.rev
   step i := by
     rw [Function.comp_apply, Function.comp_apply]
-    have hi : i.1 + 1 ≤ p.length := by linarith [i.2]
-    convert p.step ⟨p.length - (i.1 + 1), Nat.sub_lt_self (by linarith) hi⟩
+    have hi : i.1 + 1 ≤ p.length := by omega
+    convert p.step ⟨p.length - (i.1 + 1), Nat.sub_lt_self (by omega) hi⟩
     · ext; simp
     · ext
       simp only [Fin.val_rev, Fin.coe_castSucc, Nat.succ_sub_succ_eq_sub, Fin.val_succ]
       rw [Nat.sub_eq_iff_eq_add, add_assoc, add_comm 1 i.1, Nat.sub_add_cancel] <;>
-      aesop
+      omega
 
 @[simp] lemma reverse_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
     p.reverse i = p i.rev := rfl
@@ -415,7 +412,7 @@ def smash (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
     · erw [dif_neg h₂]
       by_cases h₁ : i.1 < p.length
       · erw [dif_pos h₁]
-        have h₃ : p.length = i.1 + 1 := by linarith
+        have h₃ : p.length = i.1 + 1 := by omega
         convert p.step ⟨i, h₁⟩ using 1
         convert connect.symm
         · aesop
@@ -445,25 +442,23 @@ lemma smash_succ_castAdd {p q : RelSeries r} (h : p.last = q.head)
     convert h.symm
     · congr
       simp only [Fin.val_succ, Fin.coe_castAdd, Nat.zero_mod, tsub_eq_zero_iff_le]
-      linarith [i.2]
+      omega
     · congr
       ext
       change i.1 + 1 = p.length
-      linarith [i.2]
+      omega
 
 lemma smash_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
     smash p q h (Fin.castSucc <| i.natAdd p.length) = q (Fin.castSucc i) := by
-  rw [smash_toFun]
-  split_ifs with H
-  · simp only [Fin.coe_castSucc, Fin.coe_natAdd, add_lt_iff_neg_left, not_lt_zero'] at H
-  · congr
-    exact Nat.add_sub_self_left _ _
+  rw [smash_toFun, dif_neg (by simp)]
+  congr
+  exact Nat.add_sub_self_left _ _
 
 lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
     smash p q h (i.natAdd p.length).succ = q i.succ := by
   rw [smash_toFun]
   split_ifs with H
-  · have H' : p.length < p.length + (i.1 + 1) := by linarith
+  · have H' : p.length < p.length + (i.1 + 1) := by omega
     exact (lt_irrefl _ (H.trans H')).elim
   · congr
     simp only [Fin.val_succ, Fin.coe_natAdd]
@@ -485,6 +480,12 @@ end RelSeries
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
 abbrev FiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
   Rel.FiniteDimensional ((. < .) : γ → γ → Prop)
+
+instance FiniteDimensionalOrder.ofUnique (γ : Type*) [Preorder γ] [Unique γ] :
+    FiniteDimensionalOrder γ where
+  exists_longest_relSeries := ⟨.singleton _ default, fun x ↦ by
+    by_contra! r
+    exact (ne_of_lt <| x.step ⟨0, by omega⟩) <| Subsingleton.elim _ _⟩
 
 /-- A type is infinite dimensional if it has `LTSeries` of at least arbitrary length -/
 abbrev InfiniteDimensionalOrder (γ : Type*) [Preorder γ] :=

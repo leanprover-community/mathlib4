@@ -249,7 +249,8 @@ end commMap
 
 noncomputable section stdBasis
 
-open Classical Complex MeasureTheory MeasureTheory.Measure Zspan Matrix BigOperators
+open scoped Classical
+open Complex MeasureTheory MeasureTheory.Measure Zspan Matrix BigOperators
   ComplexConjugate
 
 variable [NumberField K]
@@ -559,7 +560,7 @@ instance : NoAtoms (volume : Measure (E K)) := by
 
 /-- The fudge factor that appears in the formula for the volume of `convexBodyLT`. -/
 noncomputable abbrev convexBodyLTFactor : ℝ≥0 :=
-  (2:ℝ≥0) ^ NrRealPlaces K * NNReal.pi ^ NrComplexPlaces K
+  (2 : ℝ≥0) ^ NrRealPlaces K * NNReal.pi ^ NrComplexPlaces K
 
 theorem convexBodyLTFactor_ne_zero : convexBodyLTFactor K ≠ 0 :=
   mul_ne_zero (pow_ne_zero _ two_ne_zero) (pow_ne_zero _ pi_ne_zero)
@@ -618,7 +619,7 @@ section convexBodyLT'
 
 open  Metric ENNReal NNReal
 
-open Classical
+open scoped Classical
 
 variable (f : InfinitePlace K → ℝ≥0) (w₀ : {w : InfinitePlace K // IsComplex w})
 
@@ -632,7 +633,7 @@ abbrev convexBodyLT' : Set (E K) :=
     if w = w₀ then {x | |x.re| < 1 ∧ |x.im| < (f w : ℝ) ^ 2} else ball 0 (f w)))
 
 theorem convexBodyLT'_mem {x : K} :
-    mixedEmbedding K x ∈ (convexBodyLT' K f w₀) ↔
+    mixedEmbedding K x ∈ convexBodyLT' K f w₀ ↔
       (∀ w : InfinitePlace K, w ≠ w₀ → w x < f w) ∧
       |(w₀.val.embedding x).re| < 1 ∧ |(w₀.val.embedding x).im| < (f w₀: ℝ) ^ 2 := by
   simp_rw [mixedEmbedding, RingHom.prod_apply, Set.mem_prod, Set.mem_pi, Set.mem_univ,
@@ -650,8 +651,8 @@ theorem convexBodyLT'_mem {x : K} :
     · rw [if_neg (by exact Subtype.ne_of_val_ne h_ne)]
       exact h₁ w h_ne
 
-theorem convexBodyLT'_neg_mem (x : E K) (hx : x ∈ (convexBodyLT' K f w₀)) :
-    -x ∈ (convexBodyLT' K f w₀) := by
+theorem convexBodyLT'_neg_mem (x : E K) (hx : x ∈ convexBodyLT' K f w₀) :
+    -x ∈ convexBodyLT' K f w₀ := by
   simp [Set.mem_prod, Prod.fst_neg, Set.mem_pi, Set.mem_univ, Pi.neg_apply,
     mem_ball_zero_iff, norm_neg, Real.norm_eq_abs, forall_true_left, Subtype.forall,
     Prod.snd_neg, Complex.norm_eq_abs] at hx ⊢
@@ -674,7 +675,7 @@ variable [NumberField K]
 
 /-- The fudge factor that appears in the formula for the volume of `convexBodyLT'`. -/
 noncomputable abbrev convexBodyLT'Factor : ℝ≥0 :=
-  (2:ℝ≥0) ^ (NrRealPlaces K + 2) * NNReal.pi ^ (NrComplexPlaces K - 1)
+  (2 : ℝ≥0) ^ (NrRealPlaces K + 2) * NNReal.pi ^ (NrComplexPlaces K - 1)
 
 theorem convexBodyLT'Factor_ne_zero : convexBodyLT'Factor K ≠ 0 :=
   mul_ne_zero (pow_ne_zero _ two_ne_zero) (pow_ne_zero _ pi_ne_zero)
@@ -684,7 +685,7 @@ theorem one_le_convexBodyLT'Factor : 1 ≤ convexBodyLT'Factor K :=
     (one_le_pow_of_one_le (le_trans one_le_two Real.two_le_pi) _)
 
 theorem convexBodyLT'_volume :
-    volume (convexBodyLT' K f w₀) = (convexBodyLT'Factor K) * ∏ w, (f w) ^ (mult w) := by
+    volume (convexBodyLT' K f w₀) = convexBodyLT'Factor K * ∏ w, (f w) ^ (mult w) := by
   have vol_box : ∀ B : ℝ≥0, volume {x : ℂ | |x.re| < 1 ∧ |x.im| < B^2} = 4*B^2 := by
     intro B
     rw [← (Complex.volume_preserving_equiv_real_prod.symm).measure_preimage]
@@ -708,20 +709,20 @@ theorem convexBodyLT'_volume :
       · refine Finset.prod_congr rfl (fun w' hw' ↦ ?_)
         rw [if_neg (Finset.ne_of_mem_erase hw'), Complex.volume_ball]
       · simpa only [ite_true] using vol_box (f w₀)
-    _ = ((2:ℝ≥0) ^ NrRealPlaces K *
+    _ = ((2 : ℝ≥0) ^ NrRealPlaces K *
           (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val))) *
             ((∏ x in Finset.univ.erase  w₀, ENNReal.ofReal (f x.val) ^ 2) *
               ↑pi ^ (NrComplexPlaces K - 1) * (4 * (f w₀) ^ 2)) := by
       simp_rw [ofReal_mul (by norm_num : 0 ≤ (2 : ℝ)), Finset.prod_mul_distrib, Finset.prod_const,
         Finset.card_erase_of_mem (Finset.mem_univ _), Finset.card_univ, ofReal_ofNat,
         ofReal_coe_nnreal, coe_ofNat]
-    _ = (convexBodyLT'Factor K) * (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val))
+    _ = convexBodyLT'Factor K * (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val))
         * (∏ x : {w // IsComplex w}, ENNReal.ofReal (f x.val) ^ 2) := by
-      rw [show (4:ℝ≥0∞) = (2:ℝ≥0) ^ 2 by norm_num, convexBodyLT'Factor, pow_add,
+      rw [show (4 : ℝ≥0∞) = (2 : ℝ≥0) ^ 2 by norm_num, convexBodyLT'Factor, pow_add,
         ← Finset.prod_erase_mul _ _ (Finset.mem_univ w₀), ofReal_coe_nnreal]
       simp_rw [coe_mul, ENNReal.coe_pow]
       ring
-    _ = (convexBodyLT'Factor K) * ∏ w, (f w) ^ (mult w) := by
+    _ = convexBodyLT'Factor K * ∏ w, (f w) ^ (mult w) := by
       simp_rw [mult, pow_ite, pow_one, Finset.prod_ite, ofReal_coe_nnreal, not_isReal_iff_isComplex,
         coe_mul, coe_finset_prod, ENNReal.coe_pow, mul_assoc]
       congr 3
@@ -739,7 +740,6 @@ open ENNReal MeasureTheory Fintype
 open scoped Real Classical BigOperators NNReal
 
 variable [NumberField K] (B : ℝ)
-
 variable {K}
 
 /-- The function that sends `x : ({w // IsReal w} → ℝ) × ({w // IsComplex w} → ℂ)` to
@@ -862,7 +862,7 @@ theorem convexBodySum_compact : IsCompact (convexBodySum K B) := by
 
 /-- The fudge factor that appears in the formula for the volume of `convexBodyLt`. -/
 noncomputable abbrev convexBodySumFactor : ℝ≥0 :=
-  (2:ℝ≥0) ^ NrRealPlaces K * (NNReal.pi / 2) ^ NrComplexPlaces K / (finrank ℚ K).factorial
+  (2 : ℝ≥0) ^ NrRealPlaces K * (NNReal.pi / 2) ^ NrComplexPlaces K / (finrank ℚ K).factorial
 
 theorem convexBodySumFactor_ne_zero : convexBodySumFactor K ≠ 0 := by
   refine div_ne_zero ?_ <| Nat.cast_ne_zero.mpr (Nat.factorial_ne_zero _)
@@ -928,7 +928,8 @@ end convexBodySum
 
 section minkowski
 
-open MeasureTheory MeasureTheory.Measure Classical FiniteDimensional Zspan Real Submodule
+open scoped Classical
+open MeasureTheory MeasureTheory.Measure FiniteDimensional Zspan Real Submodule
 
 open scoped ENNReal NNReal nonZeroDivisors IntermediateField
 
@@ -1036,7 +1037,7 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
     {B : ℝ≥0} (hB : minkowskiBound K ↑1 < convexBodyLT'Factor K * B) :
     ∃ a ∈ 𝓞 K, ℚ⟮(a:K)⟯ = ⊤ ∧ (∀ w : InfinitePlace K, w a < Real.sqrt (1 + B ^ 2)) := by
   have : minkowskiBound K ↑1 <
-      volume (convexBodyLT' K (fun w ↦ if w = w₀ then (NNReal.sqrt B) else 1) ⟨w₀, hw₀⟩) := by
+      volume (convexBodyLT' K (fun w ↦ if w = w₀ then NNReal.sqrt B else 1) ⟨w₀, hw₀⟩) := by
     rw [convexBodyLT'_volume, ← Finset.prod_erase_mul _ _ (Finset.mem_univ w₀)]
     simp_rw [ite_pow, one_pow]
     rw [Finset.prod_ite_eq']
@@ -1059,7 +1060,7 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
         exact h_le₀.2
     · refine lt_of_lt_of_le (if_neg h_eq ▸ h_le w h_eq) ?_
       rw [NNReal.coe_one, Real.le_sqrt' zero_lt_one, one_pow]
-      norm_num
+      set_option tactic.skipAssignedInstances false in norm_num
 
 theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
     (h : (minkowskiBound K I) ≤ volume (convexBodySum K B)) :
@@ -1075,10 +1076,6 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
   have h_fund := Zspan.isAddFundamentalDomain (fractionalIdealLatticeBasis K I) volume
   have : Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I))).toAddSubgroup := by
     change Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I)): Set (E K))
-    infer_instance
-  have : DiscreteTopology
-      (span ℤ (Set.range (fractionalIdealLatticeBasis K I))).toAddSubgroup := by
-    change DiscreteTopology (span ℤ (Set.range (fractionalIdealLatticeBasis K I)): Set (E K))
     infer_instance
   obtain ⟨⟨x, hx⟩, h_nz, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure
       h_fund (fun _ ↦ convexBodySum_neg_mem K B) (convexBodySum_convex K B)

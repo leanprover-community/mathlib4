@@ -49,6 +49,7 @@ attribute [inherit_doc NormedSpace] NormedSpace.norm_smul_le
 end Prio
 
 variable [NormedField 𝕜] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
+variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 
 -- see Note [lower instance priority]
 instance (priority := 100) NormedSpace.boundedSMul [NormedSpace 𝕜 E] : BoundedSMul 𝕜 E :=
@@ -67,9 +68,6 @@ variable (𝕜) in
 theorem norm_zsmul [NormedSpace 𝕜 E] (n : ℤ) (x : E) : ‖n • x‖ = ‖(n : 𝕜)‖ * ‖x‖ := by
   rw [← norm_smul, ← Int.smul_one_eq_coe, smul_assoc, one_smul]
 #align norm_zsmul norm_zsmul
-
-variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 theorem eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < ε) :
     ∀ᶠ y in 𝓝 x, ‖c • (y - x)‖ < ε :=
@@ -109,7 +107,8 @@ instance NormedSpace.discreteTopology_zmultiples
 open NormedField
 
 instance ULift.normedSpace : NormedSpace 𝕜 (ULift E) :=
-  { ULift.seminormedAddCommGroup (E := E), ULift.module' with
+  { __ := ULift.seminormedAddCommGroup (E := E),
+    __ := ULift.module'
     norm_smul_le := fun s x => (norm_smul_le s x.down : _) }
 
 /-- The product of two normed spaces is a normed space, with the sup norm. -/

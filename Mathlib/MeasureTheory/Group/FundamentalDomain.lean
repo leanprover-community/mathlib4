@@ -613,7 +613,7 @@ theorem fundamentalFrontier_union_fundamentalInterior :
     fundamentalFrontier G s ∪ fundamentalInterior G s = s :=
   inter_union_diff _ _
 #align measure_theory.fundamental_frontier_union_fundamental_interior MeasureTheory.fundamentalFrontier_union_fundamentalInterior
--- porting note: there is a typo in `to_additive` in mathlib3, so there is no additive version
+-- Porting note: there is a typo in `to_additive` in mathlib3, so there is no additive version
 
 @[to_additive (attr := simp) MeasureTheory.sdiff_addFundamentalInterior]
 theorem sdiff_fundamentalInterior : s \ fundamentalInterior G s = fundamentalFrontier G s :=

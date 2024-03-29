@@ -7,7 +7,7 @@ import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.Seminorm
 import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Data.IsROrC.Basic
+import Mathlib.Data.RCLike.Basic
 
 #align_import analysis.convex.gauge from "leanprover-community/mathlib"@"373b03b5b9d0486534edbe94747f23cb3712f93d"
 
@@ -318,17 +318,17 @@ theorem gauge_smul_left [Module α E] [SMulCommClass α ℝ ℝ] [IsScalarTower 
 
 end LinearOrderedField
 
-section IsROrC
+section RCLike
 
-variable [IsROrC 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
+variable [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
 theorem gauge_norm_smul (hs : Balanced 𝕜 s) (r : 𝕜) (x : E) :
     gauge s (‖r‖ • x) = gauge s (r • x) := by
   unfold gauge
   congr with θ
-  rw [@IsROrC.real_smul_eq_coe_smul 𝕜]
+  rw [@RCLike.real_smul_eq_coe_smul 𝕜]
   refine' and_congr_right fun hθ => (hs.smul _).smul_mem_iff _
-  rw [IsROrC.norm_ofReal, abs_norm]
+  rw [RCLike.norm_ofReal, abs_norm]
 #align gauge_norm_smul gauge_norm_smul
 
 /-- If `s` is balanced, then the Minkowski functional is ℂ-homogeneous. -/
@@ -336,7 +336,7 @@ theorem gauge_smul (hs : Balanced 𝕜 s) (r : 𝕜) (x : E) : gauge s (r • x)
   rw [← smul_eq_mul, ← gauge_smul_of_nonneg (norm_nonneg r), gauge_norm_smul hs]
 #align gauge_smul gauge_smul
 
-end IsROrC
+end RCLike
 
 open Filter
 
@@ -394,13 +394,13 @@ theorem gauge_lt_one_eq_self_of_isOpen (hs₁ : Convex ℝ s) (hs₀ : (0 : E) �
   exact hs₂.interior_eq.symm
 #align gauge_lt_one_eq_self_of_open gauge_lt_one_eq_self_of_isOpen
 
--- porting note: droped unneeded assumptions
+-- Porting note: droped unneeded assumptions
 theorem gauge_lt_one_of_mem_of_isOpen (hs₂ : IsOpen s) {x : E} (hx : x ∈ s) :
     gauge s x < 1 :=
   interior_subset_gauge_lt_one s <| by rwa [hs₂.interior_eq]
 #align gauge_lt_one_of_mem_of_open gauge_lt_one_of_mem_of_isOpenₓ
 
--- porting note: droped unneeded assumptions
+-- Porting note: droped unneeded assumptions
 theorem gauge_lt_of_mem_smul (x : E) (ε : ℝ) (hε : 0 < ε) (hs₂ : IsOpen s) (hx : x ∈ ε • s) :
     gauge s x < ε := by
   have : ε⁻¹ • x ∈ s := by rwa [← mem_smul_set_iff_inv_smul_mem₀ hε.ne']
@@ -504,9 +504,9 @@ theorem gauge_eq_one_iff_mem_frontier (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0)
 
 end TopologicalVectorSpace
 
-section IsROrC
+section RCLike
 
-variable [IsROrC 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
+variable [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
 /-- `gauge s` as a seminorm when `s` is balanced, convex and absorbent. -/
 @[simps!]
@@ -527,7 +527,7 @@ theorem gaugeSeminorm_ball_one (hs : IsOpen s) : (gaugeSeminorm hs₀ hs₁ hs�
   exact gauge_lt_one_eq_self_of_isOpen hs₁ hs₂.zero_mem hs
 #align gauge_seminorm_ball_one gaugeSeminorm_ball_one
 
-end IsROrC
+end RCLike
 
 /-- Any seminorm arises as the gauge of its unit ball. -/
 @[simp]

@@ -3,7 +3,7 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Order.ProjIcc
+import Mathlib.Topology.Order.ProjIcc
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.UnitInterval
 
@@ -63,7 +63,8 @@ on `(-∞, 0]` and to `y` on `[1, +∞)`.
 
 noncomputable section
 
-open Classical Topology Filter unitInterval Set Function
+open scoped Classical
+open Topology Filter unitInterval Set Function
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι : Type*}
 
@@ -89,7 +90,7 @@ instance Path.funLike : FunLike (Path x y) I X where
 instance Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
   map_continuous := fun γ => show Continuous γ.toContinuousMap by continuity
 
--- porting note: not necessary in light of the instance above
+-- Porting note: not necessary in light of the instance above
 /-
 instance : CoeFun (Path x y) fun _ => I → X :=
   ⟨fun p => p.toFun⟩
@@ -108,7 +109,7 @@ theorem coe_mk_mk (f : I → X) (h₁) (h₂ : f 0 = x) (h₃ : f 1 = y) :
     ⇑(mk ⟨f, h₁⟩ h₂ h₃ : Path x y) = f :=
   rfl
 #align path.coe_mk Path.coe_mk_mk
--- porting note: the name `Path.coe_mk` better refers to a new lemma below
+-- Porting note: the name `Path.coe_mk` better refers to a new lemma below
 
 variable (γ : Path x y)
 
@@ -140,7 +141,7 @@ theorem coe_toContinuousMap : ⇑γ.toContinuousMap = γ :=
   rfl
 #align path.coe_to_continuous_map Path.coe_toContinuousMap
 
--- porting note: this is needed because of the `Path.continuousMapClass` instance
+-- Porting note: this is needed because of the `Path.continuousMapClass` instance
 @[simp]
 theorem coe_mk : ⇑(γ : C(I, X)) = γ :=
   rfl
@@ -315,6 +316,7 @@ theorem ofLine_mem {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h�
 
 attribute [local simp] Iic_def
 
+set_option tactic.skipAssignedInstances false in
 /-- Concatenation of two paths from `x` to `y` and from `y` to `z`, putting the first
 path on `[0, 1/2]` and the second one on `[1/2, 1]`. -/
 @[trans]
@@ -677,13 +679,13 @@ theorem truncate_self {a b : X} (γ : Path a b) (t : ℝ) :
   split_ifs with h₁ h₂ <;> congr
 #align path.truncate_self Path.truncate_self
 
-@[simp 1001] -- porting note: increase `simp` priority so left-hand side doesn't simplify
+@[simp 1001] -- Porting note: increase `simp` priority so left-hand side doesn't simplify
 theorem truncate_zero_zero {a b : X} (γ : Path a b) :
     γ.truncate 0 0 = (Path.refl a).cast (by rw [min_self, γ.extend_zero]) γ.extend_zero := by
   convert γ.truncate_self 0
 #align path.truncate_zero_zero Path.truncate_zero_zero
 
-@[simp 1001] -- porting note: increase `simp` priority so left-hand side doesn't simplify
+@[simp 1001] -- Porting note: increase `simp` priority so left-hand side doesn't simplify
 theorem truncate_one_one {a b : X} (γ : Path a b) :
     γ.truncate 1 1 = (Path.refl b).cast (by rw [min_self, γ.extend_one]) γ.extend_one := by
   convert γ.truncate_self 1
@@ -717,7 +719,7 @@ theorem coe_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf₀
     (hf₁ : f 1 = 1) : ⇑(γ.reparam f hfcont hf₀ hf₁) = γ ∘ f :=
   rfl
 #align path.coe_to_fun Path.coe_reparam
--- porting note: this seems like it was poorly named (was: `coe_to_fun`)
+-- Porting note: this seems like it was poorly named (was: `coe_to_fun`)
 
 @[simp]
 theorem reparam_id (γ : Path x y) : γ.reparam id continuous_id rfl rfl = γ := by
@@ -1063,7 +1065,7 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
     · use Path.refl (p' 0)
       · constructor
         · rintro i hi
-          rw [le_zero_iff.mp hi]
+          rw [Nat.le_zero.mp hi]
           exact ⟨0, rfl⟩
         · rw [range_subset_iff]
           rintro _x
@@ -1138,7 +1140,6 @@ theorem pathConnectedSpace_iff_zerothHomotopy :
     exact Quotient.sound (PathConnectedSpace.joined x y)
   · unfold ZerothHomotopy
     rintro ⟨h, h'⟩
-    skip
     exact ⟨(nonempty_quotient_iff _).mp h, fun x y => Quotient.exact <| Subsingleton.elim ⟦x⟧ ⟦y⟧⟩
 #align path_connected_space_iff_zeroth_homotopy pathConnectedSpace_iff_zerothHomotopy
 

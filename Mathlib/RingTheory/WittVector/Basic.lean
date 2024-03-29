@@ -54,7 +54,6 @@ open MvPolynomial Function
 open scoped BigOperators
 
 variable {p : ℕ} {R S T : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S] [CommRing T]
-
 variable {α : Type*} {β : Type*}
 
 -- mathport name: expr𝕎
@@ -73,7 +72,7 @@ def mapFun (f : α → β) : 𝕎 α → 𝕎 β := fun x => mk _ (f ∘ x.coeff
 
 namespace mapFun
 
--- porting note: switched the proof to tactic mode. I think that `ext` was the issue.
+-- Porting note: switched the proof to tactic mode. I think that `ext` was the issue.
 theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) := by
   intros _ _ h
   ext p
@@ -85,7 +84,7 @@ theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 
     by ext n; simp only [mapFun, coeff_mk, comp_apply, Classical.choose_spec (hf (x.coeff n))]⟩
 #align witt_vector.map_fun.surjective WittVector.mapFun.surjective
 
--- porting note: using `(x y : 𝕎 R)` instead of `(x y : WittVector p R)` produced sorries.
+-- Porting note: using `(x y : 𝕎 R)` instead of `(x y : WittVector p R)` produced sorries.
 variable (f : R →+* S) (x y : WittVector p R)
 
 /-- Auxiliary tactic for showing that `mapFun` respects the ring operations. -/
@@ -93,10 +92,10 @@ variable (f : R →+* S) (x y : WittVector p R)
 macro "map_fun_tac" : tactic => `(tactic| (
   ext n
   simp only [mapFun, mk, comp_apply, zero_coeff, map_zero,
-    -- porting note: the lemmas on the next line do not have the `simp` tag in mathlib4
+    -- Porting note: the lemmas on the next line do not have the `simp` tag in mathlib4
     add_coeff, sub_coeff, mul_coeff, neg_coeff, nsmul_coeff, zsmul_coeff, pow_coeff,
     peval, map_aeval, algebraMap_int_eq, coe_eval₂Hom] <;>
-  try { cases n <;> simp <;> done } <;>  -- porting note: this line solves `one`
+  try { cases n <;> simp <;> done } <;>  -- Porting note: this line solves `one`
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl <;>
   ext ⟨i, k⟩ <;>
     fin_cases i <;> rfl))

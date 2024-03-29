@@ -56,7 +56,7 @@ variable (F : Type*) [Field F] (E : Type*) [Field E] [Algebra F E]
 theorem exists_primitive_element_of_finite_top [Finite E] : ∃ α : E, F⟮α⟯ = ⊤ := by
   obtain ⟨α, hα⟩ := @IsCyclic.exists_generator Eˣ _ _
   use α
-  apply eq_top_iff.mpr
+  rw [eq_top_iff]
   rintro x -
   by_cases hx : x = 0
   · rw [hx]
@@ -90,14 +90,13 @@ theorem primitive_element_inf_aux_exists_c (f g : F[X]) :
   let s := (sf.bind fun α' => sg.map fun β' => -(α' - α) / (β' - β)).toFinset
   let s' := s.preimage ϕ fun x _ y _ h => ϕ.injective h
   obtain ⟨c, hc⟩ := Infinite.exists_not_mem_finset s'
-  simp_rw [s, Finset.mem_preimage, Multiset.mem_toFinset, Multiset.mem_bind, Multiset.mem_map]
+  simp_rw [s', s, Finset.mem_preimage, Multiset.mem_toFinset, Multiset.mem_bind, Multiset.mem_map]
     at hc
   push_neg at hc
   exact ⟨c, hc⟩
 #align field.primitive_element_inf_aux_exists_c Field.primitive_element_inf_aux_exists_c
 
 variable (F)
-
 variable [Algebra F E]
 
 /-- This is the heart of the proof of the primitive element theorem. It shows that if `F` is
@@ -116,7 +115,7 @@ theorem primitive_element_inf_aux [IsSeparable F E] : ∃ γ : E, F⟮α, β⟯ 
     apply le_antisymm
     · rw [adjoin_le_iff]
       have α_in_Fγ : α ∈ F⟮γ⟯ := by
-        rw [← add_sub_cancel α (c • β)]
+        rw [← add_sub_cancel_right α (c • β)]
         exact F⟮γ⟯.sub_mem (mem_adjoin_simple_self F γ) (F⟮γ⟯.toSubalgebra.smul_mem β_in_Fγ c)
       rintro x (rfl | rfl) <;> assumption
     · rw [adjoin_simple_le_iff]
@@ -133,7 +132,7 @@ theorem primitive_element_inf_aux [IsSeparable F E] : ∃ γ : E, F⟮α, β⟯ 
     have finale : β = algebraMap F⟮γ⟯ E (-p.coeff 0 / p.coeff 1) := by
       rw [map_div₀, RingHom.map_neg, ← coeff_map, ← coeff_map, p_linear]
       -- Porting note: had to add `-map_add` to avoid going in the wrong direction.
-      simp [mul_sub, coeff_C, mul_div_cancel_left β (mt leadingCoeff_eq_zero.mp h_ne_zero),
+      simp [mul_sub, coeff_C, mul_div_cancel_left₀ β (mt leadingCoeff_eq_zero.mp h_ne_zero),
         -map_add]
       -- Porting note: an alternative solution is:
       -- simp_rw [Polynomial.coeff_C_mul, Polynomial.coeff_sub, mul_sub,
@@ -146,7 +145,7 @@ theorem primitive_element_inf_aux [IsSeparable F E] : ∃ γ : E, F⟮α, β⟯ 
   have h_root : h.eval β = 0 := by
     apply eval_gcd_eq_zero
     · rw [eval_comp, eval_sub, eval_mul, eval_C, eval_C, eval_X, eval_map, ← aeval_def, ←
-        Algebra.smul_def, add_sub_cancel, minpoly.aeval]
+        Algebra.smul_def, add_sub_cancel_right, minpoly.aeval]
     · rw [eval_map, ← aeval_def, minpoly.aeval]
   have h_splits : Splits ιEE' h :=
     splits_of_splits_gcd_right ιEE' map_g_ne_zero (SplittingField.splits _)
@@ -195,7 +194,7 @@ private theorem primitive_element_inf_aux_of_finite_intermediateField
     rw [smul_smul, inv_mul_eq_div, div_self (sub_ne_zero.2 hneq), one_smul] at β_in_K
     have α_in_K : α ∈ F⟮α + x • β⟯ := by
       convert ← sub_mem αxβ_in_K (smul_mem _ β_in_K)
-      apply add_sub_cancel
+      apply add_sub_cancel_right
     rintro x (rfl | rfl) <;> assumption
   · rw [adjoin_simple_le_iff]
     have α_in_Fαβ : α ∈ F⟮α, β⟯ := subset_adjoin F {α, β} (Set.mem_insert α {β})
@@ -205,7 +204,6 @@ private theorem primitive_element_inf_aux_of_finite_intermediateField
 end PrimitiveElementInf
 
 variable (F E : Type*) [Field F] [Field E]
-
 variable [Algebra F E]
 
 section SeparableAssumption

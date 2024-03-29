@@ -68,11 +68,8 @@ For now, the definitions assume `S` is commutative, so the choice doesn't matter
 universe u v w z
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-
 variable [Algebra R S] [Algebra R T]
-
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
-
 variable {ι κ : Type w} [Fintype ι]
 
 open FiniteDimensional
@@ -90,10 +87,9 @@ open LinearMap (BilinForm)
 namespace Algebra
 
 variable (b : Basis ι R S)
-
 variable (R S)
 
-/-- The trace of an element `s` of an `R`-algebra is the trace of `(*) s`,
+/-- The trace of an element `s` of an `R`-algebra is the trace of `(s * ·)`,
 as an `R`-linear map. -/
 noncomputable def trace : S →ₗ[R] R :=
   (LinearMap.trace R S).comp (lmul R S).toLinearMap
@@ -159,7 +155,7 @@ theorem trace_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*}
 #align algebra.trace_trace_of_basis Algebra.trace_trace_of_basis
 
 theorem trace_comp_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*} [Finite ι]
-    [Fintype κ] (b : Basis ι R S) (c : Basis κ S T) :
+    [Finite κ] (b : Basis ι R S) (c : Basis κ S T) :
     (trace R S).comp ((trace S T).restrictScalars R) = trace R T := by
   ext
   rw [LinearMap.comp_apply, LinearMap.restrictScalars_apply, trace_trace_of_basis b c]
@@ -235,7 +231,6 @@ section EqSumRoots
 open Algebra Polynomial
 
 variable {F : Type*} [Field F]
-
 variable [Algebra K S] [Algebra K F]
 
 /-- Given `pb : PowerBasis K S`, the trace of `pb.gen` is `-(minpoly K pb.gen).nextCoeff`. -/
@@ -315,7 +310,6 @@ theorem trace_eq_sum_roots [FiniteDimensional K L] {x : L}
 end EqSumRoots
 
 variable {F : Type*} [Field F]
-
 variable [Algebra R L] [Algebra L F] [Algebra R F] [IsScalarTower R L F]
 
 open Polynomial
@@ -458,7 +452,6 @@ section DetNeZero
 namespace Algebra
 
 variable (A : Type u) {B : Type v} (C : Type z)
-
 variable [CommRing A] [CommRing B] [Algebra A B] [CommRing C] [Algebra A C]
 
 open Finset
@@ -571,11 +564,8 @@ theorem embeddingsMatrixReindex_eq_vandermonde (pb : PowerBasis A B)
 section Field
 
 variable (K) (E : Type z) [Field E]
-
 variable [Algebra K E]
-
 variable [Module.Finite K L] [IsSeparable K L] [IsAlgClosed E]
-
 variable (b : κ → L) (pb : PowerBasis K L)
 
 theorem traceMatrix_eq_embeddingsMatrix_mul_trans :

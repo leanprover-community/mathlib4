@@ -17,7 +17,6 @@ This file proves some lemmas about pointwise algebraic operations with lists of 
 namespace Set
 
 variable {F α β γ : Type*}
-
 variable [Monoid α] {s t : Set α} {a : α} {m n : ℕ}
 
 open Pointwise

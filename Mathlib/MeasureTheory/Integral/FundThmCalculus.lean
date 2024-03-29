@@ -9,7 +9,7 @@ import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.NormedSpace.Dual
-import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Integral.VitaliCaratheodory
 
 #align_import measure_theory.integral.fund_thm_calculus from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
@@ -145,7 +145,8 @@ set_option autoImplicit true
 
 noncomputable section
 
-open MeasureTheory Set Classical Filter Function
+open scoped Classical
+open MeasureTheory Set Filter Function
 
 open scoped Classical Topology Filter ENNReal BigOperators Interval NNReal
 
@@ -1113,7 +1114,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
           simp only [integral_Icc_eq_integral_Ioc', Real.volume_singleton]
 #align interval_integral.sub_le_integral_of_has_deriv_right_of_le_Ico intervalIntegral.sub_le_integral_of_hasDeriv_right_of_le_Ico
 
--- porting note: Lean was adding `lb`/`lb'` to the arguments of this theorem, so I enclosed FTC-1
+-- Porting note: Lean was adding `lb`/`lb'` to the arguments of this theorem, so I enclosed FTC-1
 -- into a `section`
 /-- Hard part of FTC-2 for integrable derivatives, real-valued functions: one has
 `g b - g a ≤ ∫ y in a..b, g' y` when `g'` is integrable.
@@ -1250,7 +1251,7 @@ theorem integral_deriv_eq_sub' (f) (hderiv : deriv f = f')
 
 /-- A variant of `intervalIntegral.integral_deriv_eq_sub`, the Fundamental theorem
 of calculus, involving integrating over the unit interval. -/
-lemma integral_unitInterval_deriv_eq_sub [IsROrC 𝕜] [NormedSpace 𝕜 E] [IsScalarTower ℝ 𝕜 E]
+lemma integral_unitInterval_deriv_eq_sub [RCLike 𝕜] [NormedSpace 𝕜 E] [IsScalarTower ℝ 𝕜 E]
     {f f' : 𝕜 → E} {z₀ z₁ : 𝕜}
     (hcont : ContinuousOn (fun t : ℝ ↦ f' (z₀ + t • z₁)) (Set.Icc 0 1))
     (hderiv : ∀ t ∈ Set.Icc (0 : ℝ) 1, HasDerivAt f (f' (z₀ + t • z₁)) (z₀ + t • z₁)) :
@@ -1340,6 +1341,8 @@ section Parts
 
 variable [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
 
+/-- For improper integrals, see `MeasureTheory.integral_deriv_mul_eq_sub`,
+`MeasureTheory.integral_Ioi_deriv_mul_eq_sub`, and `MeasureTheory.integral_Iic_deriv_mul_eq_sub`. -/
 theorem integral_deriv_mul_eq_sub {u v u' v' : ℝ → A} (hu : ∀ x ∈ uIcc a b, HasDerivAt u (u' x) x)
     (hv : ∀ x ∈ uIcc a b, HasDerivAt v (v' x) x) (hu' : IntervalIntegrable u' volume a b)
     (hv' : IntervalIntegrable v' volume a b) :
@@ -1349,12 +1352,16 @@ theorem integral_deriv_mul_eq_sub {u v u' v' : ℝ → A} (hu : ∀ x ∈ uIcc a
       (hv'.continuousOn_mul (HasDerivAt.continuousOn hu))
 #align interval_integral.integral_deriv_mul_eq_sub intervalIntegral.integral_deriv_mul_eq_sub
 
+/-- **Integration by parts**. For improper integrals, see
+`MeasureTheory.integral_mul_deriv_eq_deriv_mul`,
+`MeasureTheory.integral_Ioi_mul_deriv_eq_deriv_mul`,
+and `MeasureTheory.integral_Iic_mul_deriv_eq_deriv_mul`. -/
 theorem integral_mul_deriv_eq_deriv_mul {u v u' v' : ℝ → A}
     (hu : ∀ x ∈ uIcc a b, HasDerivAt u (u' x) x) (hv : ∀ x ∈ uIcc a b, HasDerivAt v (v' x) x)
     (hu' : IntervalIntegrable u' volume a b) (hv' : IntervalIntegrable v' volume a b) :
     ∫ x in a..b, u x * v' x = u b * v b - u a * v a - ∫ x in a..b, u' x * v x := by
   rw [← integral_deriv_mul_eq_sub hu hv hu' hv', ← integral_sub]
-  · exact integral_congr fun x _ => by simp only [add_sub_cancel']
+  · exact integral_congr fun x _ => by simp only [add_sub_cancel_left]
   · exact
       (hu'.mul_continuousOn (HasDerivAt.continuousOn hv)).add
         (hv'.continuousOn_mul (HasDerivAt.continuousOn hu))

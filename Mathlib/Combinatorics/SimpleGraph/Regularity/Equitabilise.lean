@@ -47,7 +47,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
   -- Get rid of the easy case `m = 0`
   obtain rfl | m_pos := m.eq_zero_or_pos
   · refine' ⟨⊥, by simp, _, by simpa using hs.symm⟩
-    simp only [le_zero_iff, card_eq_zero, mem_biUnion, exists_prop, mem_filter, id.def, and_assoc,
+    simp only [Nat.le_zero, card_eq_zero, mem_biUnion, exists_prop, mem_filter, id.def, and_assoc,
       sdiff_eq_empty_iff_subset, subset_iff]
     exact fun x hx a ha =>
       ⟨{a}, mem_map_of_mem _ (P.le hx ha), singleton_subset_iff.2 ha, mem_singleton_self _⟩
@@ -189,7 +189,7 @@ theorem card_filter_equitabilise_small (hm : m ≠ 0) :
 theorem card_parts_equitabilise (hm : m ≠ 0) : (P.equitabilise h).parts.card = a + b := by
   rw [← filter_true_of_mem fun x => card_eq_of_mem_parts_equitabilise, filter_or,
     card_union_of_disjoint, P.card_filter_equitabilise_small _ hm, P.card_filter_equitabilise_big]
-  -- Porting note: was `infer_instance`
+  -- Porting note (#11187): was `infer_instance`
   exact disjoint_filter.2 fun x _ h₀ h₁ => Nat.succ_ne_self m <| h₁.symm.trans h₀
 #align finpartition.card_parts_equitabilise Finpartition.card_parts_equitabilise
 

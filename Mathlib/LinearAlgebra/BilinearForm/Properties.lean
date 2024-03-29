@@ -20,10 +20,8 @@ Given any term `B` of type `BilinForm`, due to a coercion, can use
 the notation `B x y` to refer to the function field, ie. `B x y = B.bilin x y`.
 
 In this file we use the following type variables:
- - `M`, `M'`, ... are modules over the semiring `R`,
- - `M₁`, `M₁'`, ... are modules over the ring `R₁`,
- - `M₂`, `M₂'`, ... are modules over the commutative semiring `R₂`,
- - `M₃`, `M₃'`, ... are modules over the commutative ring `R₃`,
+ - `M`, `M'`, ... are modules over the commutative semiring `R`,
+ - `M₁`, `M₁'`, ... are modules over the commutative ring `R₁`,
  - `V`, ... is a vector space over the field `K`.
 
 ## References
@@ -40,20 +38,13 @@ open BigOperators
 
 universe u v w
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-
-variable {R₁ : Type*} {M₁ : Type*} [Ring R₁] [AddCommGroup M₁] [Module R₁ M₁]
-
-variable {R₂ : Type*} {M₂ : Type*} [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
-
-variable {R₃ : Type*} {M₃ : Type*} [CommRing R₃] [AddCommGroup M₃] [Module R₃ M₃]
-
+variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
 variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
+variable {M' M'' : Type*}
+variable [AddCommMonoid M'] [AddCommMonoid M''] [Module R M'] [Module R M'']
 
-variable {M₂' M₂'' : Type*}
-variable [AddCommMonoid M₂'] [AddCommMonoid M₂''] [Module R₂ M₂'] [Module R₂ M₂'']
-
-variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁} {B₂ : BilinForm R₂ M₂}
+variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁}
 
 namespace BilinForm
 
@@ -76,8 +67,9 @@ protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsRefl) : (-B).IsRefl :=
   neg_eq_zero.mpr ∘ hB x y ∘ neg_eq_zero.mp
 #align bilin_form.is_refl.neg BilinForm.IsRefl.neg
 
-protected theorem smul {α} [Semiring α] [Module α R] [SMulCommClass α R R] [NoZeroSMulDivisors α R]
-    (a : α) {B : BilinForm R M} (hB : B.IsRefl) : (a • B).IsRefl := fun _ _ h =>
+protected theorem smul {α} [CommSemiring α] [Module α R] [SMulCommClass α R R]
+    [NoZeroSMulDivisors α R] (a : α) {B : BilinForm R M} (hB : B.IsRefl) :
+    (a • B).IsRefl := fun _ _ h =>
   (smul_eq_zero.mp h).elim (fun ha => smul_eq_zero_of_left ha _) fun hBz =>
     smul_eq_zero_of_right _ (hB _ _ hBz)
 #align bilin_form.is_refl.smul BilinForm.IsRefl.smul
@@ -148,7 +140,7 @@ theorem isSymm_neg {B : BilinForm R₁ M₁} : (-B).IsSymm ↔ B.IsSymm :=
 #align bilin_form.is_symm_neg BilinForm.isSymm_neg
 
 variable (R₂) in
-theorem isSymm_iff_flip [Algebra R₂ R] : B.IsSymm ↔ flipHom R₂ B = B :=
+theorem isSymm_iff_flip : B.IsSymm ↔ flipHom B = B :=
   (forall₂_congr fun _ _ => by exact eq_comm).trans ext_iff.symm
 #align bilin_form.is_symm_iff_flip' BilinForm.isSymm_iff_flip
 
@@ -209,9 +201,7 @@ theorem isAlt_neg {B : BilinForm R₁ M₁} : (-B).IsAlt ↔ B.IsAlt :=
 section LinearAdjoints
 
 variable (B) (F : BilinForm R M)
-
 variable {M' : Type*} [AddCommMonoid M'] [Module R M']
-
 variable (B' : BilinForm R M') (f f' : M →ₗ[R] M') (g g' : M' →ₗ[R] M)
 
 /-- Given a pair of modules equipped with bilinear forms, this is the condition for a pair of
@@ -250,7 +240,6 @@ theorem IsAdjointPair.add (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' 
 #align bilin_form.is_adjoint_pair.add BilinForm.IsAdjointPair.add
 
 variable {M₁' : Type*} [AddCommGroup M₁'] [Module R₁ M₁']
-
 variable {B₁' : BilinForm R₁ M₁'} {f₁ f₁' : M₁ →ₗ[R₁] M₁'} {g₁ g₁' : M₁' →ₗ[R₁] M₁}
 
 theorem IsAdjointPair.sub (h : IsAdjointPair B₁ B₁' f₁ g₁) (h' : IsAdjointPair B₁ B₁' f₁' g₁') :
@@ -258,15 +247,14 @@ theorem IsAdjointPair.sub (h : IsAdjointPair B₁ B₁' f₁ g₁) (h' : IsAdjoi
   rw [LinearMap.sub_apply, LinearMap.sub_apply, sub_left, sub_right, h, h']
 #align bilin_form.is_adjoint_pair.sub BilinForm.IsAdjointPair.sub
 
-variable {B₂' : BilinForm R₂ M₂'} {f₂ f₂' : M₂ →ₗ[R₂] M₂'} {g₂ g₂' : M₂' →ₗ[R₂] M₂}
+variable {B₂' : BilinForm R M'} {f₂ f₂' : M →ₗ[R] M'} {g₂ g₂' : M' →ₗ[R] M}
 
-theorem IsAdjointPair.smul (c : R₂) (h : IsAdjointPair B₂ B₂' f₂ g₂) :
-    IsAdjointPair B₂ B₂' (c • f₂) (c • g₂) := fun x y => by
+theorem IsAdjointPair.smul (c : R) (h : IsAdjointPair B B₂' f₂ g₂) :
+    IsAdjointPair B B₂' (c • f₂) (c • g₂) := fun x y => by
   rw [LinearMap.smul_apply, LinearMap.smul_apply, smul_left, smul_right, h]
 #align bilin_form.is_adjoint_pair.smul BilinForm.IsAdjointPair.smul
 
 variable {M'' : Type*} [AddCommMonoid M''] [Module R M'']
-
 variable (B'' : BilinForm R M'')
 
 theorem IsAdjointPair.comp {f' : M' →ₗ[R] M''} {g' : M'' →ₗ[R] M'} (h : IsAdjointPair B B' f g)
@@ -279,7 +267,7 @@ theorem IsAdjointPair.mul {f g f' g' : Module.End R M} (h : IsAdjointPair B B f 
   rw [LinearMap.mul_apply, LinearMap.mul_apply, h, h']
 #align bilin_form.is_adjoint_pair.mul BilinForm.IsAdjointPair.mul
 
-variable (B B' B₁ B₂) (F₂ : BilinForm R₂ M₂)
+variable (B B' B₁ B₂) (F₂ : BilinForm R M)
 
 /-- The condition for an endomorphism to be "self-adjoint" with respect to a pair of bilinear forms
 on the underlying module. In the case that these two forms are identical, this is the usual concept
@@ -290,7 +278,7 @@ def IsPairSelfAdjoint (f : Module.End R M) :=
 #align bilin_form.is_pair_self_adjoint BilinForm.IsPairSelfAdjoint
 
 /-- The set of pair-self-adjoint endomorphisms are a submodule of the type of all endomorphisms. -/
-def isPairSelfAdjointSubmodule : Submodule R₂ (Module.End R₂ M₂) where
+def isPairSelfAdjointSubmodule : Submodule R (Module.End R M) where
   carrier := { f | IsPairSelfAdjoint B₂ F₂ f }
   zero_mem' := isAdjointPair_zero
   add_mem' hf hg := hf.add hg
@@ -298,11 +286,11 @@ def isPairSelfAdjointSubmodule : Submodule R₂ (Module.End R₂ M₂) where
 #align bilin_form.is_pair_self_adjoint_submodule BilinForm.isPairSelfAdjointSubmodule
 
 @[simp]
-theorem mem_isPairSelfAdjointSubmodule (f : Module.End R₂ M₂) :
+theorem mem_isPairSelfAdjointSubmodule (f : Module.End R M) :
     f ∈ isPairSelfAdjointSubmodule B₂ F₂ ↔ IsPairSelfAdjoint B₂ F₂ f := Iff.rfl
 #align bilin_form.mem_is_pair_self_adjoint_submodule BilinForm.mem_isPairSelfAdjointSubmodule
 
-theorem isPairSelfAdjoint_equiv (e : M₂' ≃ₗ[R₂] M₂) (f : Module.End R₂ M₂) :
+theorem isPairSelfAdjoint_equiv (e : M' ≃ₗ[R] M) (f : Module.End R M) :
     IsPairSelfAdjoint B₂ F₂ f ↔
       IsPairSelfAdjoint (B₂.comp ↑e ↑e) (F₂.comp ↑e ↑e) (e.symm.conj f) := by
   have hₗ : (F₂.comp ↑e ↑e).compLeft (e.symm.conj f) = (F₂.compLeft f).comp ↑e ↑e := by
@@ -311,7 +299,7 @@ theorem isPairSelfAdjoint_equiv (e : M₂' ≃ₗ[R₂] M₂) (f : Module.End R�
   have hᵣ : (B₂.comp ↑e ↑e).compRight (e.symm.conj f) = (B₂.compRight f).comp ↑e ↑e := by
     ext
     simp [LinearEquiv.conj_apply]
-  have he : Function.Surjective (⇑(↑e : M₂' →ₗ[R₂] M₂) : M₂' → M₂) := e.surjective
+  have he : Function.Surjective (⇑(↑e : M' →ₗ[R] M) : M' → M) := e.surjective
   show BilinForm.IsAdjointPair _ _ _ _ ↔ BilinForm.IsAdjointPair _ _ _ _
   rw [isAdjointPair_iff_compLeft_eq_compRight, isAdjointPair_iff_compLeft_eq_compRight, hᵣ,
     hₗ, comp_inj _ _ he he]
@@ -338,26 +326,24 @@ theorem isSkewAdjoint_iff_neg_self_adjoint (f : Module.End R₁ M₁) :
 /-- The set of self-adjoint endomorphisms of a module with bilinear form is a submodule. (In fact
 it is a Jordan subalgebra.) -/
 def selfAdjointSubmodule :=
-  isPairSelfAdjointSubmodule B₂ B₂
+  isPairSelfAdjointSubmodule B B
 #align bilin_form.self_adjoint_submodule BilinForm.selfAdjointSubmodule
 
 @[simp]
-theorem mem_selfAdjointSubmodule (f : Module.End R₂ M₂) :
-    f ∈ B₂.selfAdjointSubmodule ↔ B₂.IsSelfAdjoint f :=
+theorem mem_selfAdjointSubmodule (f : Module.End R M) :
+    f ∈ B.selfAdjointSubmodule ↔ B.IsSelfAdjoint f :=
   Iff.rfl
 #align bilin_form.mem_self_adjoint_submodule BilinForm.mem_selfAdjointSubmodule
-
-variable (B₃ : BilinForm R₃ M₃)
 
 /-- The set of skew-adjoint endomorphisms of a module with bilinear form is a submodule. (In fact
 it is a Lie subalgebra.) -/
 def skewAdjointSubmodule :=
-  isPairSelfAdjointSubmodule (-B₃) B₃
+  isPairSelfAdjointSubmodule (-B₁) B₁
 #align bilin_form.skew_adjoint_submodule BilinForm.skewAdjointSubmodule
 
 @[simp]
-theorem mem_skewAdjointSubmodule (f : Module.End R₃ M₃) :
-    f ∈ B₃.skewAdjointSubmodule ↔ B₃.IsSkewAdjoint f := by
+theorem mem_skewAdjointSubmodule (f : Module.End R₁ M₁) :
+    f ∈ B₁.skewAdjointSubmodule ↔ B₁.IsSkewAdjoint f := by
   rw [isSkewAdjoint_iff_neg_self_adjoint]
   exact Iff.rfl
 #align bilin_form.mem_skew_adjoint_submodule BilinForm.mem_skewAdjointSubmodule
@@ -392,22 +378,21 @@ theorem not_nondegenerate_zero [Nontrivial M] : ¬(0 : BilinForm R M).Nondegener
 
 end
 
-variable {M₂' : Type*}
-
-variable [AddCommMonoid M₂'] [Module R₂ M₂']
+variable {M' : Type*}
+variable [AddCommMonoid M'] [Module R M']
 
 theorem Nondegenerate.ne_zero [Nontrivial M] {B : BilinForm R M} (h : B.Nondegenerate) : B ≠ 0 :=
   fun h0 => not_nondegenerate_zero R M <| h0 ▸ h
 #align bilin_form.nondegenerate.ne_zero BilinForm.Nondegenerate.ne_zero
 
-theorem Nondegenerate.congr {B : BilinForm R₂ M₂} (e : M₂ ≃ₗ[R₂] M₂') (h : B.Nondegenerate) :
+theorem Nondegenerate.congr {B : BilinForm R M} (e : M ≃ₗ[R] M') (h : B.Nondegenerate) :
     (congr e B).Nondegenerate := fun m hm =>
   e.symm.map_eq_zero_iff.1 <|
     h (e.symm m) fun n => (congr_arg _ (e.symm_apply_apply n).symm).trans (hm (e n))
 #align bilin_form.nondegenerate.congr BilinForm.Nondegenerate.congr
 
 @[simp]
-theorem nondegenerate_congr_iff {B : BilinForm R₂ M₂} (e : M₂ ≃ₗ[R₂] M₂') :
+theorem nondegenerate_congr_iff {B : BilinForm R M} (e : M ≃ₗ[R] M') :
     (congr e B).Nondegenerate ↔ B.Nondegenerate :=
   ⟨fun h => by
     convert h.congr e.symm
@@ -415,7 +400,7 @@ theorem nondegenerate_congr_iff {B : BilinForm R₂ M₂} (e : M₂ ≃ₗ[R₂]
 #align bilin_form.nondegenerate_congr_iff BilinForm.nondegenerate_congr_iff
 
 /-- A bilinear form is nondegenerate if and only if it has a trivial kernel. -/
-theorem nondegenerate_iff_ker_eq_bot {B : BilinForm R₂ M₂} :
+theorem nondegenerate_iff_ker_eq_bot {B : BilinForm R M} :
     B.Nondegenerate ↔ LinearMap.ker (BilinForm.toLin B) = ⊥ := by
   rw [LinearMap.ker_eq_bot']
   constructor <;> intro h
@@ -428,7 +413,7 @@ theorem nondegenerate_iff_ker_eq_bot {B : BilinForm R₂ M₂} :
     exact hm x
 #align bilin_form.nondegenerate_iff_ker_eq_bot BilinForm.nondegenerate_iff_ker_eq_bot
 
-theorem Nondegenerate.ker_eq_bot {B : BilinForm R₂ M₂} (h : B.Nondegenerate) :
+theorem Nondegenerate.ker_eq_bot {B : BilinForm R M} (h : B.Nondegenerate) :
     LinearMap.ker (BilinForm.toLin B) = ⊥ :=
   nondegenerate_iff_ker_eq_bot.mp h
 #align bilin_form.nondegenerate.ker_eq_bot BilinForm.Nondegenerate.ker_eq_bot
