@@ -1212,6 +1212,10 @@ lemma sq_nonneg (a : α) : 0 ≤ a ^ 2 := by
     b ^ 2 + a * b = (a + b) * b := by rw [add_comm, sq, add_mul]
     _ = a * (a + b) := by simp [← hab]
     _ = a ^ 2 + a * b := by rw [sq, mul_add]
+#align sq_nonneg sq_nonneg
+
+alias pow_two_nonneg := sq_nonneg
+#align pow_two_nonneg pow_two_nonneg
 
 lemma mul_self_nonneg (a : α) : 0 ≤ a * a := by simpa only [sq] using sq_nonneg a
 
