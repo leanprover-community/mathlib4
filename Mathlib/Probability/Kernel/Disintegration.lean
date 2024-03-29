@@ -3,7 +3,7 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Kexing Ying
 -/
-import Mathlib.Probability.Kernel.CondCdf
+import Mathlib.Probability.Kernel.Disintegration.CondCdf
 import Mathlib.MeasureTheory.Constructions.Polish
 import Mathlib.Probability.Kernel.MeasureCompProd
 
@@ -66,7 +66,7 @@ noncomputable def condKernelReal (ρ : Measure (α × ℝ)) : kernel α ℝ wher
 #align probability_theory.cond_kernel_real ProbabilityTheory.condKernelReal
 
 instance (ρ : Measure (α × ℝ)) : IsMarkovKernel (condKernelReal ρ) :=
-  ⟨fun a => by rw [condKernelReal]; exact instIsProbabilityMeasure ρ a⟩
+  ⟨fun a => by rw [condKernelReal]; exact instIsProbabilityMeasureCondCDF ρ a⟩
 
 theorem condKernelReal_Iic (ρ : Measure (α × ℝ)) (a : α) (x : ℝ) :
     condKernelReal ρ a (Iic x) = ENNReal.ofReal (condCDF ρ a x) :=
@@ -277,7 +277,7 @@ theorem exists_cond_kernel (γ : Type*) [MeasurableSpace γ] :
     rfl
   have h_ae : ∀ᵐ a ∂ρ.fst, a ∈ ρ_set := by
     rw [ae_iff]
-    simp only [not_mem_compl_iff, setOf_mem_eq, measure_toMeasurable]
+    simp only [ρ_set, not_mem_compl_iff, setOf_mem_eq, measure_toMeasurable]
     change ρ.fst {a : α | a ∉ {a' : α | condKernelReal ρ' a' (range f) = 1}} = 0
     rw [← ae_iff, ← h_fst]
     refine' ae_condKernelReal_eq_one ρ' hf.measurableSet_range _
@@ -534,7 +534,7 @@ lemma eq_condKernel_of_measure_eq_compProd_real (ρ : Measure (α × ℝ)) [IsFi
     exact ae_all_iff.2 fun q => eq_condKernel_of_measure_eq_compProd' ρ κ hκ measurableSet_Iic
   · filter_upwards [huniv] with x hxuniv t ht heq
     rw [measure_compl ht <| measure_ne_top _ _, heq, hxuniv, measure_compl ht <| measure_ne_top _ _]
-  · refine' ae_of_all _ (fun x f hdisj hf heq => _)
+  · filter_upwards with x f hdisj hf heq
     rw [measure_iUnion hdisj hf, measure_iUnion hdisj hf]
     exact tsum_congr heq
 
@@ -555,7 +555,7 @@ theorem eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFiniteKernel
   have hρ'' : ∀ᵐ x ∂ρ'.fst, kernel.map κ f hf.measurable x = ρ'.condKernel x := by
     refine' eq_condKernel_of_measure_eq_compProd_real ρ' (kernel.map κ f hf.measurable) _
     ext s hs
-    simp only [Measure.map_apply (measurable_id.prod_map hf.measurable) hs]
+    simp only [ρ', Measure.map_apply (measurable_id.prod_map hf.measurable) hs]
     conv_lhs => congr; rw [hκ]
     rw [Measure.compProd_apply hs, Measure.compProd_apply
       (measurable_id.prod_map hf.measurable hs), (_ : (ρ.map (Prod.map id f)).fst = ρ.fst)]
@@ -643,7 +643,7 @@ theorem Integrable.integral_norm_condKernel {f : α × Ω → F} (hf_int : Integ
 theorem Integrable.norm_integral_condKernel {f : α × Ω → E} (hf_int : Integrable f ρ) :
     Integrable (fun x => ‖∫ y, f (x, y) ∂ρ.condKernel x‖) ρ.fst := by
   refine' hf_int.integral_norm_condKernel.mono hf_int.1.integral_condKernel.norm _
-  refine' eventually_of_forall fun x => _
+  filter_upwards with x
   rw [norm_norm]
   refine' (norm_integral_le_integral_norm _).trans_eq (Real.norm_of_nonneg _).symm
   exact integral_nonneg_of_ae (eventually_of_forall fun y => norm_nonneg _)

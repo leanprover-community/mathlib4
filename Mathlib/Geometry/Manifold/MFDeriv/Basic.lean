@@ -109,7 +109,7 @@ variable [Is : SmoothManifoldWithCorners I M] [I's : SmoothManifoldWithCorners I
 /-- `UniqueMDiffWithinAt` achieves its goal: it implies the uniqueness of the derivative. -/
 nonrec theorem UniqueMDiffWithinAt.eq (U : UniqueMDiffWithinAt I s x)
     (h : HasMFDerivWithinAt I I' f s x f') (h₁ : HasMFDerivWithinAt I I' f s x f₁') : f' = f₁' := by
-  -- porting note: didn't need `convert` because of finding instances by unification
+  -- Porting note: didn't need `convert` because of finding instances by unification
   convert U.eq h.2 h₁.2
 #align unique_mdiff_within_at.eq UniqueMDiffWithinAt.eq
 
@@ -378,7 +378,7 @@ theorem mdifferentiableAt_iff_of_mem_source {x' : M} {y : M'}
 
 /-! ### Deducing differentiability from smoothness -/
 
--- porting note: moved from `ContMDiffMFDeriv`
+-- Porting note: moved from `ContMDiffMFDeriv`
 variable {n : ℕ∞}
 
 theorem ContMDiffWithinAt.mdifferentiableWithinAt (hf : ContMDiffWithinAt I I' n f s x)

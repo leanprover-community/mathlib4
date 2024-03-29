@@ -1,6 +1,5 @@
 import Lean.Elab.Eval
 import Lean.Elab.Tactic.ElabTerm
-import Std.Util.TermUnsafe
 
 namespace Mathlib.Tactic
 open Lean Meta Elab Tactic Term

@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Mario Carneiro
 import Qq.MetaM
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.Attr.Core
-import Std.Tactic.SolveByElim
 
 /-! # The `nontriviality` tactic. -/
 
@@ -44,13 +43,14 @@ def nontrivialityByElim (α : Q(Type u)) (g : MVarId) (simpArgs : Array Syntax) 
     g.assign q(subsingleton_or_nontrivial_elim $g₁ $g₂)
     pure g₂.mvarId!
 
+open Lean.Elab.Tactic.SolveByElim in
 /--
 Tries to generate a `Nontrivial α` instance using `nontrivial_of_ne` or `nontrivial_of_lt`
 and local hypotheses.
 -/
 def nontrivialityByAssumption (g : MVarId) : MetaM Unit := do
   g.inferInstance <|> do
-    _ ← SolveByElim.solveByElim.processSyntax {maxDepth := 6}
+    _ ← processSyntax {maxDepth := 6}
       false false [← `(nontrivial_of_ne), ← `(nontrivial_of_lt)] [] #[] [g]
 
 /-- Attempts to generate a `Nontrivial α` hypothesis.

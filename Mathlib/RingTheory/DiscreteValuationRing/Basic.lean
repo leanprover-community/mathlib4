@@ -42,7 +42,7 @@ discrete valuation ring
 -/
 
 
-open Classical
+open scoped Classical
 
 universe u
 
@@ -183,10 +183,10 @@ theorem unique_irreducible ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible 
     simp [not_irreducible_one, pow_zero] at this
   · simpa only [pow_one] using hn.symm
   · obtain ⟨n, rfl⟩ : ∃ k, n = 1 + k + 1 := Nat.exists_eq_add_of_lt H
-    rw [pow_succ] at this
+    rw [pow_succ'] at this
     rcases this.isUnit_or_isUnit rfl with (H0 | H0)
     · exact (hϖ.not_unit H0).elim
-    · rw [add_comm, pow_succ] at H0
+    · rw [add_comm, pow_succ'] at H0
       exact (hϖ.not_unit (isUnit_of_mul_isUnit_left H0)).elim
 #align discrete_valuation_ring.has_unit_mul_pow_irreducible_factorization.unique_irreducible DiscreteValuationRing.HasUnitMulPowIrreducibleFactorization.unique_irreducible
 
@@ -218,7 +218,7 @@ theorem toUniqueFactorizationMonoid : UniqueFactorizationMonoid R :=
         exact h
       left
       obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hm
-      rw [pow_succ]
+      rw [pow_succ']
       apply dvd_mul_of_dvd_left dvd_rfl _
     · rw [Multiset.prod_replicate]
       exact Classical.choose_spec (spec.2 hx)
@@ -292,7 +292,7 @@ theorem of_ufd_of_unique_irreducible {R : Type u} [CommRing R] [IsDomain R]
   obtain ⟨p, hp⟩ := h₁
   refine' ⟨PID, ⟨Ideal.span {p}, ⟨_, _⟩, _⟩⟩
   · rw [Submodule.ne_bot_iff]
-    refine' ⟨p, Ideal.mem_span_singleton.mpr (dvd_refl p), hp.ne_zero⟩
+    exact ⟨p, Ideal.mem_span_singleton.mpr (dvd_refl p), hp.ne_zero⟩
   · rwa [Ideal.span_singleton_prime hp.ne_zero, ← UniqueFactorizationMonoid.irreducible_iff_prime]
   · intro I
     rw [← Submodule.IsPrincipal.span_singleton_generator I]
@@ -318,7 +318,6 @@ theorem ofHasUnitMulPowIrreducibleFactorization {R : Type u} [CommRing R] [IsDom
 section
 
 variable [CommRing R] [IsDomain R] [DiscreteValuationRing R]
-
 variable {R}
 
 theorem associated_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irreducible ϖ) :

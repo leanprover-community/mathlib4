@@ -95,7 +95,6 @@ instance : CoeFun (GrothendieckTopology C) fun _ => ∀ X : C, Set (Sieve X) :=
 
 variable {C}
 variable {X Y : C} {S R : Sieve X}
-
 variable (J : GrothendieckTopology C)
 
 /-- An extensionality lemma in terms of the coercion to a pi-type.
@@ -402,7 +401,7 @@ def atomic (hro : RightOreCondition C) : GrothendieckTopology C
 
 /-- `J.Cover X` denotes the poset of covers of `X` with respect to the
 Grothendieck topology `J`. -/
--- porting note : Lean 3 inferred `Type max u v`, Lean 4 by default gives `Type (max 0 u v)`
+-- Porting note: Lean 3 inferred `Type max u v`, Lean 4 by default gives `Type (max 0 u v)`
 def Cover (X : C) : Type max u v :=
   { S : Sieve X // S ∈ J X } -- deriving Preorder
 #align category_theory.grothendieck_topology.cover CategoryTheory.GrothendieckTopology.Cover
@@ -425,7 +424,7 @@ instance : Coe (J.Cover X) (Sieve X) :=
 -/
 
 /-
-Porting note: Added this def as a replacement for the "dangerous" `Coe` above.
+Porting note (#11445): Added this def as a replacement for the "dangerous" `Coe` above.
 -/
 /-- The sieve associated to a term of `J.Cover X`.-/
 def sieve (S : J.Cover X) : Sieve X := S.1

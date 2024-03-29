@@ -1,5 +1,4 @@
 import Mathlib.Tactic.Convert
-import Std.Tactic.GuardExpr
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Set.Image
 

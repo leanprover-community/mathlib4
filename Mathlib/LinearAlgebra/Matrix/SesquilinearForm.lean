@@ -52,9 +52,7 @@ section AuxToLinearMap
 
 variable [Semiring R₁] [Semiring S₁] [Semiring R₂] [Semiring S₂] [AddCommMonoid N₂]
   [Module S₁ N₂] [Module S₂ N₂] [SMulCommClass S₂ S₁ N₂]
-
 variable [Fintype n] [Fintype m]
-
 variable (σ₁ : R₁ →+* S₁) (σ₂ : R₂ →+* S₂)
 
 /-- The map from `Matrix n n R` to bilinear maps on `n → R`.
@@ -93,12 +91,10 @@ section AuxToMatrix
 
 section CommSemiring
 
-variable [Semiring R] [Semiring R₁] [Semiring S₁] [Semiring R₂] [Semiring S₂]
-
+variable [CommSemiring R] [Semiring R₁] [Semiring S₁] [Semiring R₂] [Semiring S₂]
 variable [AddCommMonoid M₁] [Module R₁ M₁] [AddCommMonoid M₂] [Module R₂ M₂] [AddCommMonoid N₂]
   [Module R N₂] [Module S₁ N₂] [Module S₂ N₂] [SMulCommClass S₁ R N₂] [SMulCommClass S₂ R N₂]
   [SMulCommClass S₂ S₁ N₂]
-
 variable {σ₁ : R₁ →+* S₁} {σ₂ : R₂ →+* S₂}
 
 variable (R)
@@ -122,7 +118,6 @@ theorem LinearMap.toMatrix₂Aux_apply (f : M₁ →ₛₗ[σ₁] M₂ →ₛₗ
 #align linear_map.to_matrix₂_aux_apply LinearMap.toMatrix₂Aux_apply
 
 variable [Fintype n] [Fintype m]
-
 variable [DecidableEq n] [DecidableEq m]
 
 theorem LinearMap.toLinearMap₂'Aux_toMatrix₂Aux (f : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂) :
@@ -154,14 +149,11 @@ This section deals with the conversion between matrices and sesquilinear maps on
 -/
 
 
-variable [Semiring R] [AddCommMonoid N₂] [Module R N₂] [Semiring R₁] [Semiring R₂]
+variable [CommSemiring R] [AddCommMonoid N₂] [Module R N₂] [Semiring R₁] [Semiring R₂]
   [SMulCommClass R R N₂] [Semiring S₁] [Semiring S₂] [Module S₁ N₂] [Module S₂ N₂]
   [SMulCommClass S₁ R N₂] [SMulCommClass S₂ R N₂] [SMulCommClass S₂ S₁ N₂]
-
 variable {σ₁ : R₁ →+* S₁} {σ₂ : R₂ →+* S₂}
-
 variable [Fintype n] [Fintype m]
-
 variable [DecidableEq n] [DecidableEq m]
 
 /-- The linear equivalence between sesquilinear maps and `n × m` matrices -/
@@ -298,7 +290,6 @@ variable [Fintype n] [Fintype m]
 variable [DecidableEq n] [DecidableEq m]
 
 variable [Fintype n'] [Fintype m']
-
 variable [DecidableEq n'] [DecidableEq m']
 
 @[simp]
@@ -372,11 +363,8 @@ variable [CommSemiring R]
 variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid N₂]
   [Module R N₂] --[SMulCommClass R R N₂]
    --[IsCentralScalar R N₂]
-
 variable [DecidableEq n] [Fintype n]
-
 variable [DecidableEq m] [Fintype m]
-
 variable (b₁ : Basis n R M₁) (b₂ : Basis m R M₂)
 
 /-- `LinearMap.toMatrix₂ b₁ b₂` is the equivalence between `R`-bilinear maps on `M` and
@@ -455,15 +443,10 @@ theorem LinearMap.toMatrix₂_toLinearMap₂ (M : Matrix n m N₂) :
 #align linear_map.to_matrix₂_to_linear_map₂ LinearMap.toMatrix₂_toLinearMap₂
 
 variable [AddCommMonoid M₁'] [Module R M₁']
-
 variable [AddCommMonoid M₂'] [Module R M₂']
-
 variable (b₁' : Basis n' R M₁')
-
 variable (b₂' : Basis m' R M₂')
-
 variable [Fintype n'] [Fintype m']
-
 variable [DecidableEq n'] [DecidableEq m']
 
 -- Cannot be a `simp` lemma because `b₁` and `b₂` must be inferred.
@@ -547,17 +530,11 @@ section MatrixAdjoints
 open Matrix
 
 variable [CommRing R]
-
 variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
-
 variable [Fintype n] [Fintype n']
-
 variable (b₁ : Basis n R M₁) (b₂ : Basis n' R M₂)
-
 variable (J J₂ : Matrix n n R) (J' : Matrix n' n' R)
-
 variable (A : Matrix n' n R) (A' : Matrix n n' R)
-
 variable (A₁ A₂ : Matrix n n R)
 
 /-- The condition for the matrices `A`, `A'` to be an adjoint pair with respect to the square
@@ -629,7 +606,7 @@ theorem Matrix.isAdjointPair_equiv (P : Matrix n n R) (h : IsUnit P) :
     dsimp only [Matrix.IsAdjointPair]
     simp only [Matrix.transpose_mul]
     simp only [← mul_assoc, P.transpose_nonsing_inv]
-    -- porting note: the previous proof used `conv` and was causing timeouts, so we use `convert`
+    -- Porting note: the previous proof used `conv` and was causing timeouts, so we use `convert`
     convert this using 2
     · rw [mul_assoc, mul_assoc, ← mul_assoc J]
       rfl
@@ -702,7 +679,6 @@ section Det
 open Matrix
 
 variable [CommRing R₁] [AddCommMonoid M₁] [Module R₁ M₁]
-
 variable [DecidableEq ι] [Fintype ι]
 
 theorem _root_.Matrix.separatingLeft_toLinearMap₂'_iff_separatingLeft_toLinearMap₂

@@ -72,7 +72,7 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
       rcases n with _|n
       · fin_cases i
         dsimp at h hi
-        rw [show q = 0 by linarith]
+        rw [show q = 0 by omega]
         change X.σ 0 ≫ (P 1).f 1 = 0
         simp only [P_succ, HomologicalComplex.add_f_apply, comp_add,
           HomologicalComplex.id_f, AlternatingFaceMapComplex.obj_d_eq, Hσ,
@@ -102,17 +102,17 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
         simp only [Nat.succ_eq_add_one] at hi
         obtain ⟨k, hk⟩ := Nat.le.dest (Nat.lt_succ_iff.mp (Fin.is_lt j))
         rw [add_comm] at hk
-        have hi' : i = Fin.castSucc ⟨i, by linarith⟩ := by
+        have hi' : i = Fin.castSucc ⟨i, by omega⟩ := by
           ext
           simp only [Fin.castSucc_mk, Fin.eta]
         have eq := hq j.rev.succ (by
           simp only [← hk, Fin.rev_eq j hk.symm, Nat.succ_eq_add_one, Fin.succ_mk, Fin.val_mk]
-          linarith)
+          omega)
         rw [HomologicalComplex.comp_f, assoc, assoc, assoc, hi',
           SimplicialObject.σ_comp_σ_assoc, reassoc_of% eq, zero_comp, comp_zero, comp_zero,
           comp_zero]
         simp only [Fin.rev_eq j hk.symm, Fin.le_iff_val_le_val, Fin.val_mk]
-        linarith
+        omega
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.σ_comp_P_eq_zero AlgebraicTopology.DoldKan.σ_comp_P_eq_zero
 
