@@ -370,7 +370,8 @@ Note that we define it more generally in a lattice as `Set.Ioo (a ⊓ b) (a ⊔ 
 `uIoo` corresponds to the bounding box of the two elements. -/
 def uIoo (a b : α) : Set α := Ioo (a ⊓ b) (a ⊔ b)
 
-@[simp] lemma dual_uIoo (a b : α) : uIoo (toDual a) (toDual b) = ofDual ⁻¹' uIoo a b := dual_Ioo (α := α)
+@[simp] lemma dual_uIoo (a b : α) : uIoo (toDual a) (toDual b) = ofDual ⁻¹' uIoo a b :=
+  dual_Ioo (α := α)
 
 @[simp]
 lemma uIoo_of_le (h : a ≤ b) : uIoo a b = Ioo a b := by rw [uIoo, inf_eq_left.2 h, sup_eq_right.2 h]
