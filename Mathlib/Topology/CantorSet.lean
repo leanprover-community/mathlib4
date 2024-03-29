@@ -88,7 +88,7 @@ noncomputable def Homeomorph_T_L := Homeomorph.mulLeft₀ (1/3:ℝ) (by norm_num
 noncomputable def Homeomorph_T_R := (Homeomorph.addLeft (2:ℝ)).trans Homeomorph_T_L
 
 
---The tenary Cantor set is a subset of [0,1].
+--The ternary Cantor set is a subset of [0,1].
 
 lemma cantorSet_subset_UnitInterval : cantorSet ⊆ Set.Icc 0 1 := by
   intro x hx
@@ -96,13 +96,13 @@ lemma cantorSet_subset_UnitInterval : cantorSet ⊆ Set.Icc 0 1 := by
   exact hx 0
 
 
-/--The tenary Cantor set inherits the metric and in particular the topology from the reals.-/
+/--The ternary Cantor set inherits the metric and in particular the topology from the reals.-/
 
 instance cantorSet.metricSpace : MetricSpace cantorSet :=
   Subtype.metricSpace
 
 
-/--The tenary Cantor set is closed -/
+/--The ternary Cantor set is closed -/
 
 lemma cantorSet_IsClosed : IsClosed cantorSet  := by
   apply isClosed_iInter
@@ -122,17 +122,17 @@ lemma cantorSet_IsClosed : IsClosed cantorSet  := by
       simp [T_R, Homeomorph_T_R, Homeomorph_T_L, div_eq_inv_mul]
 
 
-/--The tenary Cantor set is compact.-/
+/--The ternary Cantor set is compact.-/
 
 lemma cantorSet_IsCompact : IsCompact cantorSet :=
   isCompact_Icc.of_isClosed_subset cantorSet_IsClosed cantorSet_subset_UnitInterval
 
 
-/--The tenary Cantor set is a Hausorff space.-/
+/--The ternary Cantor set is a Hausorff space.-/
 
 lemma cantorSet_IsT2 : T2Space cantorSet := by
   infer_instance
 
-/-The tenary Cantor set is metrizble.-/
+/-The ternary Cantor set is metrizble.-/
 lemma cantorSet_IsMetrizable : TopologicalSpace.MetrizableSpace cantorSet := by
   infer_instance
