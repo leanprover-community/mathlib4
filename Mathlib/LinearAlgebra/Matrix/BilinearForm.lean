@@ -74,7 +74,7 @@ theorem Matrix.toBilin'Aux_stdBasis [Fintype n] [DecidableEq n] (M : Matrix n n 
 
 This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
 def BilinForm.toMatrixAux (b : n → M₂) : BilinForm R₂ M₂ →ₗ[R₂] Matrix n n R₂ :=
-  (LinearMap.toMatrix₂Aux b b) ∘ₗ BilinForm.toLinHom
+  (LinearMap.toMatrix₂Aux R₂ b b) ∘ₗ BilinForm.toLinHom
 #align bilin_form.to_matrix_aux BilinForm.toMatrixAux
 
 @[simp]
