@@ -877,7 +877,7 @@ class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
   /-- `a / b := a * b⁻¹` -/
   protected div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ := by intros; rfl
   /-- The power operation: `a ^ n = a * ··· * a`; `a ^ (-n) = a⁻¹ * ··· a⁻¹` (`n` times) -/
-  protected zpow : ℤ → G → G := zpowRec
+  protected zpow : ℤ → G → G := zpowRec npowRec
   /-- `a ^ 0 = 1` -/
   protected zpow_zero' : ∀ a : G, zpow 0 a = 1 := by intros; rfl
   /-- `a ^ (n + 1) = a ^ n * a` -/
