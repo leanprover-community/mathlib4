@@ -45,7 +45,7 @@ def cocardinal (hreg : Cardinal.IsRegular c) : Filter α := by
 theorem mem_cocardinal {s : Set α} :
     s ∈ @cocardinal α c hreg ↔ Cardinal.mk (sᶜ : Set α) < c := Iff.rfl
 
-instance cardinalInter_ofCoCardinal :
+instance cardinalInter_ofCocardinal :
     CardinalInterFilter (@cocardinal α c hreg) c where
   cardinal_sInter_mem := by
     have hc : Cardinal.aleph0 ≤ c := Cardinal.IsRegular.aleph0_le hreg
