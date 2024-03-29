@@ -99,7 +99,7 @@ theorem sum_schlomilch_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f 
   simp [pow_succ, mul_two]
 
 theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
-  (∑ k in range n, 2 ^ k • f (2 ^ (k + 1))) ≤ ∑ k in Ico 2 (2 ^ n + 1), f k := by
+    (∑ k in range n, 2 ^ k • f (2 ^ (k + 1))) ≤ ∑ k in Ico 2 (2 ^ n + 1), f k := by
   convert sum_schlomilch_le' hf (fun n => pow_pos zero_lt_two n)
     (fun m n hm => pow_le_pow_right one_le_two hm) n using 2
   simp [pow_succ, mul_two, two_mul]
