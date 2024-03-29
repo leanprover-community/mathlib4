@@ -1123,6 +1123,26 @@ lemma SMulPosReflectLT.lift [SMulPosReflectLT α γ] : SMulPosReflectLT α β wh
 
 end Lift
 
+section Nat
+
+instance OrderedSemiring.toPosSMulMonoNat [OrderedSemiring α] : PosSMulMono ℕ α where
+  elim _n _ _a _b hab := nsmul_le_nsmul_right hab _
+
+instance OrderedSemiring.toSMulPosMonoNat [OrderedSemiring α] : SMulPosMono ℕ α where
+  elim _a ha _m _n hmn := nsmul_le_nsmul_left ha hmn
+
+instance StrictOrderedSemiring.toPosSMulStrictMonoNat [StrictOrderedSemiring α] :
+    PosSMulStrictMono ℕ α where
+  elim _n hn _a _b hab := nsmul_right_strictMono hn.ne' hab
+
+instance StrictOrderedSemiring.toSMulPosStrictMonoNat [StrictOrderedSemiring α] :
+    SMulPosStrictMono ℕ α where
+  elim _a ha _m _n hmn := nsmul_lt_nsmul_left ha hmn
+
+end Nat
+
+-- TODO: Instances for `Int` and `Rat`
+
 namespace Mathlib.Meta.Positivity
 section OrderedSMul
 variable [Zero α] [Zero β] [SMulZeroClass α β] [Preorder α] [Preorder β] [PosSMulMono α β] {a : α}
@@ -1155,8 +1175,8 @@ def evalHSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
   let .app (.app (.app (.app (.app (.app
         (.const ``HSMul.hSMul [u1, _, _]) (β : Q(Type u1))) _) _) _)
           (a : Q($β))) (b : Q($α)) ← whnfR e | throwError "failed to match hSMul"
-  let zM : Q(Zero $β) ← synthInstanceQ (q(Zero $β))
-  let pM : Q(PartialOrder $β) ← synthInstanceQ (q(PartialOrder $β))
+  let zM : Q(Zero $β) ← synthInstanceQ q(Zero $β)
+  let pM : Q(PartialOrder $β) ← synthInstanceQ q(PartialOrder $β)
   -- Using `q()` here would be impractical, as we would have to manually `synthInstanceQ` all the
   -- required typeclasses. Ideally we could tell `q()` to do this automatically.
   match ← core zM pM a, ← core zα pα b with

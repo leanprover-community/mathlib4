@@ -3,7 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.Algebra.Category.GroupCat.Limits
@@ -131,7 +131,7 @@ end HasLimit
 
 open HasLimit
 
-variable {J : Type} [Fintype J]
+variable {J : Type} [Finite J]
 
 /-- We verify that the biproduct we've just defined is isomorphic to the `AddCommGroupCat` structure
 on the dependent function type.

@@ -3,8 +3,10 @@ Copyright (c) 2017 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 -/
-import Mathlib.Data.Real.Basic
+import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.GroupWithZero.Bitwise
+import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Image
 
 #align_import data.complex.basic from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
@@ -24,12 +26,13 @@ open Set Function
 
 /-- Complex numbers consist of two `Real`s: a real part `re` and an imaginary part `im`. -/
 structure Complex : Type where
+  /-- The real part of a complex number. -/
   re : ℝ
+  /-- The imaginary part of a complex number. -/
   im : ℝ
 #align complex Complex
 
-
-notation "ℂ" => Complex
+@[inherit_doc] notation "ℂ" => Complex
 
 namespace Complex
 
@@ -365,7 +368,7 @@ defined in `Data.Complex.Module`. -/
 instance : Nontrivial ℂ :=
   pullback_nonzero re rfl rfl
 
--- porting note: moved from `Module/Data/Complex/Basic.lean`
+-- Porting note: moved from `Module/Data/Complex/Basic.lean`
 section SMul
 
 variable {R : Type*} [SMul R ℝ]
@@ -413,7 +416,7 @@ instance addCommGroup : AddCommGroup ℂ :=
     add_left_neg := by intros; ext <;> simp }
 
 
-instance Complex.addGroupWithOne : AddGroupWithOne ℂ :=
+instance addGroupWithOne : AddGroupWithOne ℂ :=
   { Complex.addCommGroup with
     natCast := fun n => ⟨n, 0⟩
     natCast_zero := by
@@ -433,7 +436,7 @@ instance Complex.addGroupWithOne : AddGroupWithOne ℂ :=
 
 -- Porting note: proof needed modifications and rewritten fields
 instance commRing : CommRing ℂ :=
-  { Complex.addGroupWithOne with
+  { addGroupWithOne with
     mul := (· * ·)
     npow := @npowRec _ ⟨(1 : ℂ)⟩ ⟨(· * ·)⟩
     add_comm := by intros; ext <;> simp [add_comm]
@@ -457,7 +460,7 @@ instance : Ring ℂ := by infer_instance
 instance : CommSemiring ℂ :=
   inferInstance
 
--- porting note: added due to changes in typeclass search order
+-- Porting note: added due to changes in typeclass search order
 /-- This shortcut instance ensures we do not find `Semiring` via the noncomputable
 `Complex.field` instance. -/
 instance : Semiring ℂ :=
@@ -499,7 +502,7 @@ theorem I_pow_bit1 (n : ℕ) : I ^ bit1 n = (-1 : ℂ) ^ n * I := by rw [pow_bit
 set_option linter.uppercaseLean3 false in
 #align complex.I_pow_bit1 Complex.I_pow_bit1
 
---Porting note: new theorem
+-- Porting note (#10756): new theorem
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
@@ -565,7 +568,7 @@ theorem conj_bit1 (z : ℂ) : conj (bit1 z) = bit1 (conj z) :=
 #align complex.conj_bit1 Complex.conj_bit1
 end
 -- @[simp]
-/- Porting note: `simp` attribute removed as the result could be proved
+/- Porting note (#11119): `simp` attribute removed as the result could be proved
 by `simp only [@map_neg, Complex.conj_i, @neg_neg]`
 -/
 theorem conj_neg_I : conj (-I) = I :=
@@ -587,7 +590,7 @@ theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
     ext rfl (neg_eq_iff_add_eq_zero.mpr (add_self_eq_zero.mpr h))⟩
 #align complex.conj_eq_iff_im Complex.conj_eq_iff_im
 
--- `simpNF` complains about this being provable by `IsROrC.star_def` even
+-- `simpNF` complains about this being provable by `RCLike.star_def` even
 -- though it's not imported by this file.
 -- Porting note: linter `simpNF` not found
 @[simp]
@@ -649,14 +652,14 @@ theorem normSq_eq_conj_mul_self {z : ℂ} : (normSq z : ℂ) = conj z * z := by
 #align complex.norm_sq_eq_conj_mul_self Complex.normSq_eq_conj_mul_self
 
 -- @[simp]
-/- Porting note: `simp` attribute removed as linter reports this can be proved
+/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_zero]` -/
 theorem normSq_zero : normSq 0 = 0 :=
   normSq.map_zero
 #align complex.norm_sq_zero Complex.normSq_zero
 
 -- @[simp]
-/- Porting note: `simp` attribute removed as linter reports this can be proved
+/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_one]` -/
 theorem normSq_one : normSq 1 = 1 :=
   normSq.map_one
@@ -900,14 +903,14 @@ set_option linter.uppercaseLean3 false in
 #align complex.inv_I Complex.inv_I
 
 -- @[simp]
-/- Porting note: `simp` attribute removed as linter reports this can be proved
+/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_inv₀]` -/
 theorem normSq_inv (z : ℂ) : normSq z⁻¹ = (normSq z)⁻¹ :=
   map_inv₀ normSq z
 #align complex.norm_sq_inv Complex.normSq_inv
 
 -- @[simp]
-/- Porting note: `simp` attribute removed as linter reports this can be proved
+/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_div₀]` -/
 theorem normSq_div (z w : ℂ) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
@@ -956,16 +959,13 @@ instance charZero : CharZero ℂ :=
 
 /-- A complex number `z` plus its conjugate `conj z` is `2` times its real part. -/
 theorem re_eq_add_conj (z : ℂ) : (z.re : ℂ) = (z + conj z) / 2 := by
-  have : (↑(↑2 : ℝ) : ℂ) = (2 : ℂ) := rfl
-  simp only [add_conj, ofReal_mul, ofReal_one, ofReal_bit0, this,
-    mul_div_cancel_left (z.re : ℂ) two_ne_zero]
+  simp only [add_conj, ofReal_mul, ofReal_ofNat, mul_div_cancel_left₀ (z.re : ℂ) two_ne_zero]
 #align complex.re_eq_add_conj Complex.re_eq_add_conj
 
 /-- A complex number `z` minus its conjugate `conj z` is `2i` times its imaginary part. -/
 theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
-  have : (↑2 : ℝ ) * I = 2 * I := rfl
-  simp only [sub_conj, ofReal_mul, ofReal_one, ofReal_bit0, mul_right_comm, this,
-    mul_div_cancel_left _ (mul_ne_zero two_ne_zero I_ne_zero : 2 * I ≠ 0)]
+  simp only [sub_conj, ofReal_mul, ofReal_ofNat, mul_right_comm,
+    mul_div_cancel_left₀ _ (mul_ne_zero two_ne_zero I_ne_zero : 2 * I ≠ 0)]
 #align complex.im_eq_sub_conj Complex.im_eq_sub_conj
 
 end Complex

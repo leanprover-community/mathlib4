@@ -63,7 +63,7 @@ structure IsTree : Prop where
 
 variable {G}
 
-@[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := λ _a _w hw ↦ hw.ne_bot rfl
+@[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := fun _a _w hw ↦ hw.ne_bot rfl
 
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
@@ -182,8 +182,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
         congrArg (·.snd) h
       have h3 := congrArg length (hf' _ (((f _).tail _).copy h1 rfl) ?_)
       rw [length_copy, ← add_left_inj 1, length_tail_add_one] at h3
-      · exfalso
-        linarith
+      · omega
       · simp only [ne_eq, eq_mp_eq_cast, id_eq, isPath_copy]
         exact (hf _).tail _
   case surj =>
@@ -197,12 +196,12 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
       rw [← hf' _ nil IsPath.nil, length_nil,
           ← hf' _ (.cons h .nil) (IsPath.nil.cons <| by simpa using h.ne),
           length_cons, length_nil] at h'
-      simp [le_zero_iff, Nat.one_ne_zero] at h'
+      simp [Nat.le_zero, Nat.one_ne_zero] at h'
     rw [← hf' _ (.cons h.symm (f x)) ((cons_isPath_iff _ _).2 ⟨hf _, fun hy => ?contra⟩)]
     rfl
     case contra =>
-      suffices : (f x).takeUntil y hy = .cons h .nil
-      · rw [← take_spec _ hy] at h'
+      suffices (f x).takeUntil y hy = .cons h .nil by
+        rw [← take_spec _ hy] at h'
         simp [this, hf' _ _ ((hf _).dropUntil hy)] at h'
       refine (hG.existsUnique_path _ _).unique ((hf _).takeUntil _) ?_
       simp [h.ne]

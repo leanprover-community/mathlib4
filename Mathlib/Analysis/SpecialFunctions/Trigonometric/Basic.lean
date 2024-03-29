@@ -44,7 +44,8 @@ sin, cos, tan, angle
 
 noncomputable section
 
-open Classical Topology Filter Set
+open scoped Classical
+open Topology Filter Set
 
 namespace Complex
 
@@ -134,17 +135,17 @@ scoped notation "π" => Real.pi
 
 @[simp]
 theorem cos_pi_div_two : cos (π / 2) = 0 := by
-  rw [Real.pi, mul_div_cancel_left _ (two_ne_zero' ℝ)]
+  rw [Real.pi, mul_div_cancel_left₀ _ (two_ne_zero' ℝ)]
   exact (Classical.choose_spec exists_cos_eq_zero).2
 #align real.cos_pi_div_two Real.cos_pi_div_two
 
 theorem one_le_pi_div_two : (1 : ℝ) ≤ π / 2 := by
-  rw [Real.pi, mul_div_cancel_left _ (two_ne_zero' ℝ)]
+  rw [Real.pi, mul_div_cancel_left₀ _ (two_ne_zero' ℝ)]
   exact (Classical.choose_spec exists_cos_eq_zero).1.1
 #align real.one_le_pi_div_two Real.one_le_pi_div_two
 
 theorem pi_div_two_le_two : π / 2 ≤ 2 := by
-  rw [Real.pi, mul_div_cancel_left _ (two_ne_zero' ℝ)]
+  rw [Real.pi, mul_div_cancel_left₀ _ (two_ne_zero' ℝ)]
   exact (Classical.choose_spec exists_cos_eq_zero).1.2
 #align real.pi_div_two_le_two Real.pi_div_two_le_two
 
@@ -164,8 +165,11 @@ theorem pi_pos : 0 < π :=
   lt_of_lt_of_le (by norm_num) two_le_pi
 #align real.pi_pos Real.pi_pos
 
+theorem pi_nonneg : 0 ≤ π :=
+  pi_pos.le
+
 theorem pi_ne_zero : π ≠ 0 :=
-  ne_of_gt pi_pos
+  pi_pos.ne'
 #align real.pi_ne_zero Real.pi_ne_zero
 
 theorem pi_div_two_pos : 0 < π / 2 :=
@@ -182,8 +186,12 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `π` is always positive. -/
 @[positivity Real.pi]
-def evalRealPi : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ _ := do
-  pure (.positive (q(Real.pi_pos) : Lean.Expr))
+def evalRealPi : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(Real.pi) =>
+    assertInstancesCommute
+    pure (.positive q(Real.pi_pos))
+  | _, _, _ => throwError "not Real.pi"
 
 end Mathlib.Meta.Positivity
 
@@ -218,12 +226,12 @@ open Real
 
 @[simp]
 theorem sin_pi : sin π = 0 := by
-  rw [← mul_div_cancel_left π (two_ne_zero' ℝ), two_mul, add_div, sin_add, cos_pi_div_two]; simp
+  rw [← mul_div_cancel_left₀ π (two_ne_zero' ℝ), two_mul, add_div, sin_add, cos_pi_div_two]; simp
 #align real.sin_pi Real.sin_pi
 
 @[simp]
 theorem cos_pi : cos π = -1 := by
-  rw [← mul_div_cancel_left π (two_ne_zero' ℝ), mul_div_assoc, cos_two_mul, cos_pi_div_two]
+  rw [← mul_div_cancel_left₀ π (two_ne_zero' ℝ), mul_div_assoc, cos_two_mul, cos_pi_div_two]
   norm_num
 #align real.cos_pi Real.cos_pi
 
@@ -389,22 +397,22 @@ theorem cos_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : cos (n * (2 * π) - x) = co
   cos_neg x ▸ cos_periodic.int_mul_sub_eq n
 #align real.cos_int_mul_two_pi_sub Real.cos_int_mul_two_pi_sub
 
--- porting note : was @[simp] but simp can prove it
+-- Porting note (#10618): was @[simp], but simp can prove it
 theorem cos_nat_mul_two_pi_add_pi (n : ℕ) : cos (n * (2 * π) + π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.nat_mul n).add_antiperiod_eq cos_antiperiodic
 #align real.cos_nat_mul_two_pi_add_pi Real.cos_nat_mul_two_pi_add_pi
 
--- porting note : was @[simp] but simp can prove it
+-- Porting note (#10618): was @[simp], but simp can prove it
 theorem cos_int_mul_two_pi_add_pi (n : ℤ) : cos (n * (2 * π) + π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.int_mul n).add_antiperiod_eq cos_antiperiodic
 #align real.cos_int_mul_two_pi_add_pi Real.cos_int_mul_two_pi_add_pi
 
--- porting note : was @[simp] but simp can prove it
+-- Porting note (#10618): was @[simp], but simp can prove it
 theorem cos_nat_mul_two_pi_sub_pi (n : ℕ) : cos (n * (2 * π) - π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.nat_mul n).sub_antiperiod_eq cos_antiperiodic
 #align real.cos_nat_mul_two_pi_sub_pi Real.cos_nat_mul_two_pi_sub_pi
 
--- porting note : was @[simp] but simp can prove it
+-- Porting note (#10618): was @[simp], but simp can prove it
 theorem cos_int_mul_two_pi_sub_pi (n : ℤ) : cos (n * (2 * π) - π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.int_mul n).sub_antiperiod_eq cos_antiperiodic
 #align real.cos_int_mul_two_pi_sub_pi Real.cos_int_mul_two_pi_sub_pi
@@ -571,39 +579,32 @@ theorem cos_eq_one_iff_of_lt_of_lt {x : ℝ} (hx₁ : -(2 * π) < x) (hx₂ : x 
     rw [mul_lt_iff_lt_one_left two_pi_pos] at hx₂
     rw [neg_lt, neg_mul_eq_neg_mul, mul_lt_iff_lt_one_left two_pi_pos] at hx₁
     norm_cast at hx₁ hx₂
-    obtain rfl : n = 0 := le_antisymm (by linarith) (by linarith)
+    obtain rfl : n = 0 := le_antisymm (by omega) (by omega)
     simp, fun h => by simp [h]⟩
 #align real.cos_eq_one_iff_of_lt_of_lt Real.cos_eq_one_iff_of_lt_of_lt
 
-theorem cos_lt_cos_of_nonneg_of_le_pi_div_two {x y : ℝ} (hx₁ : 0 ≤ x) (hy₂ : y ≤ π / 2)
-    (hxy : x < y) : cos y < cos x := by
-  rw [← sub_lt_zero, cos_sub_cos]
-  have : 0 < sin ((y + x) / 2) := by refine' sin_pos_of_pos_of_lt_pi _ _ <;> linarith
-  have : 0 < sin ((y - x) / 2) := by refine' sin_pos_of_pos_of_lt_pi _ _ <;> linarith
-  nlinarith
-#align real.cos_lt_cos_of_nonneg_of_le_pi_div_two Real.cos_lt_cos_of_nonneg_of_le_pi_div_two
+theorem sin_lt_sin_of_lt_of_le_pi_div_two {x y : ℝ} (hx₁ : -(π / 2) ≤ x) (hy₂ : y ≤ π / 2)
+    (hxy : x < y) : sin x < sin y := by
+  rw [← sub_pos, sin_sub_sin]
+  have : 0 < sin ((y - x) / 2) := by apply sin_pos_of_pos_of_lt_pi <;> linarith
+  have : 0 < cos ((y + x) / 2) := by refine cos_pos_of_mem_Ioo ⟨?_, ?_⟩ <;> linarith
+  positivity
+#align real.sin_lt_sin_of_lt_of_le_pi_div_two Real.sin_lt_sin_of_lt_of_le_pi_div_two
+
+theorem strictMonoOn_sin : StrictMonoOn sin (Icc (-(π / 2)) (π / 2)) := fun _ hx _ hy hxy =>
+  sin_lt_sin_of_lt_of_le_pi_div_two hx.1 hy.2 hxy
+#align real.strict_mono_on_sin Real.strictMonoOn_sin
 
 theorem cos_lt_cos_of_nonneg_of_le_pi {x y : ℝ} (hx₁ : 0 ≤ x) (hy₂ : y ≤ π) (hxy : x < y) :
-    cos y < cos x :=
-  match (le_total x (π / 2) : x ≤ π / 2 ∨ π / 2 ≤ x), le_total y (π / 2) with
-  | Or.inl _, Or.inl hy => cos_lt_cos_of_nonneg_of_le_pi_div_two hx₁ hy hxy
-  | Or.inl hx, Or.inr hy =>
-    (lt_or_eq_of_le hx).elim
-      (fun hx =>
-        calc
-          cos y ≤ 0 := cos_nonpos_of_pi_div_two_le_of_le hy (by linarith [pi_pos])
-          _ < cos x := cos_pos_of_mem_Ioo ⟨by linarith, hx⟩)
-      fun hx =>
-      calc
-        cos y < 0 := cos_neg_of_pi_div_two_lt_of_lt (by linarith) (by linarith [pi_pos])
-        _ = cos x := by rw [hx, cos_pi_div_two]
-  | Or.inr hx, Or.inl hy => by linarith
-  | Or.inr hx, Or.inr hy =>
-    neg_lt_neg_iff.1
-      (by
-        rw [← cos_pi_sub, ← cos_pi_sub]; apply cos_lt_cos_of_nonneg_of_le_pi_div_two <;>
-          linarith)
+    cos y < cos x := by
+  rw [← sin_pi_div_two_sub, ← sin_pi_div_two_sub]
+  apply sin_lt_sin_of_lt_of_le_pi_div_two <;> linarith
 #align real.cos_lt_cos_of_nonneg_of_le_pi Real.cos_lt_cos_of_nonneg_of_le_pi
+
+theorem cos_lt_cos_of_nonneg_of_le_pi_div_two {x y : ℝ} (hx₁ : 0 ≤ x) (hy₂ : y ≤ π / 2)
+    (hxy : x < y) : cos y < cos x :=
+  cos_lt_cos_of_nonneg_of_le_pi hx₁ (hy₂.trans (by linarith)) hxy
+#align real.cos_lt_cos_of_nonneg_of_le_pi_div_two Real.cos_lt_cos_of_nonneg_of_le_pi_div_two
 
 theorem strictAntiOn_cos : StrictAntiOn cos (Icc 0 π) := fun _ hx _ hy hxy =>
   cos_lt_cos_of_nonneg_of_le_pi hx.1 hy.2 hxy
@@ -613,16 +614,6 @@ theorem cos_le_cos_of_nonneg_of_le_pi {x y : ℝ} (hx₁ : 0 ≤ x) (hy₂ : y �
     cos y ≤ cos x :=
   (strictAntiOn_cos.le_iff_le ⟨hx₁.trans hxy, hy₂⟩ ⟨hx₁, hxy.trans hy₂⟩).2 hxy
 #align real.cos_le_cos_of_nonneg_of_le_pi Real.cos_le_cos_of_nonneg_of_le_pi
-
-theorem sin_lt_sin_of_lt_of_le_pi_div_two {x y : ℝ} (hx₁ : -(π / 2) ≤ x) (hy₂ : y ≤ π / 2)
-    (hxy : x < y) : sin x < sin y := by
-  rw [← cos_sub_pi_div_two, ← cos_sub_pi_div_two, ← cos_neg (x - _), ← cos_neg (y - _)]
-  apply cos_lt_cos_of_nonneg_of_le_pi <;> linarith
-#align real.sin_lt_sin_of_lt_of_le_pi_div_two Real.sin_lt_sin_of_lt_of_le_pi_div_two
-
-theorem strictMonoOn_sin : StrictMonoOn sin (Icc (-(π / 2)) (π / 2)) := fun _ hx _ hy hxy =>
-  sin_lt_sin_of_lt_of_le_pi_div_two hx.1 hy.2 hxy
-#align real.strict_mono_on_sin Real.strictMonoOn_sin
 
 theorem sin_le_sin_of_le_of_le_pi_div_two {x y : ℝ} (hx₁ : -(π / 2) ≤ x) (hy₂ : y ≤ π / 2)
     (hxy : x ≤ y) : sin x ≤ sin y :=
@@ -751,7 +742,7 @@ theorem cos_pi_over_two_pow : ∀ n : ℕ, cos (π / 2 ^ (n + 1)) = sqrtTwoAddSe
     have A : (1 : ℝ) < 2 ^ (n + 1) := one_lt_pow one_lt_two n.succ_ne_zero
     have B : π / 2 ^ (n + 1) < π := div_lt_self pi_pos A
     have C : 0 < π / 2 ^ (n + 1) := by positivity
-    rw [pow_succ', div_mul_eq_div_div, cos_half, cos_pi_over_two_pow n, sqrtTwoAddSeries,
+    rw [pow_succ, div_mul_eq_div_div, cos_half, cos_pi_over_two_pow n, sqrtTwoAddSeries,
       add_div_eq_mul_add_div, one_mul, ← div_mul_eq_div_div, sqrt_div, sqrt_mul_self] <;>
       linarith [sqrtTwoAddSeries_nonneg le_rfl n]
 #align real.cos_pi_over_two_pow Real.cos_pi_over_two_pow
@@ -927,6 +918,16 @@ theorem tan_pi_div_four : tan (π / 4) = 1 := by
 theorem tan_pi_div_two : tan (π / 2) = 0 := by simp [tan_eq_sin_div_cos]
 #align real.tan_pi_div_two Real.tan_pi_div_two
 
+@[simp]
+theorem tan_pi_div_six : tan (π / 6) = 1 / sqrt 3 := by
+  rw [tan_eq_sin_div_cos, sin_pi_div_six, cos_pi_div_six]
+  ring
+
+@[simp]
+theorem tan_pi_div_three : tan (π / 3) = sqrt 3 := by
+  rw [tan_eq_sin_div_cos, sin_pi_div_three, cos_pi_div_three]
+  ring
+
 theorem tan_pos_of_pos_of_lt_pi_div_two {x : ℝ} (h0x : 0 < x) (hxp : x < π / 2) : 0 < tan x := by
   rw [tan_eq_sin_div_cos]
   exact div_pos (sin_pos_of_pos_of_lt_pi h0x (by linarith)) (cos_pos_of_mem_Ioo ⟨by linarith, hxp⟩)
@@ -948,38 +949,22 @@ theorem tan_nonpos_of_nonpos_of_neg_pi_div_two_le {x : ℝ} (hx0 : x ≤ 0) (hpx
   neg_nonneg.1 (tan_neg x ▸ tan_nonneg_of_nonneg_of_le_pi_div_two (by linarith) (by linarith))
 #align real.tan_nonpos_of_nonpos_of_neg_pi_div_two_le Real.tan_nonpos_of_nonpos_of_neg_pi_div_two_le
 
-theorem tan_lt_tan_of_nonneg_of_lt_pi_div_two {x y : ℝ} (hx₁ : 0 ≤ x) (hy₂ : y < π / 2)
-    (hxy : x < y) : tan x < tan y := by
-  rw [tan_eq_sin_div_cos, tan_eq_sin_div_cos]
-  exact
-    div_lt_div (sin_lt_sin_of_lt_of_le_pi_div_two (by linarith) (le_of_lt hy₂) hxy)
-      (cos_le_cos_of_nonneg_of_le_pi hx₁ (by linarith) (le_of_lt hxy))
-      (sin_nonneg_of_nonneg_of_le_pi (by linarith) (by linarith))
-      (cos_pos_of_mem_Ioo ⟨by linarith, hy₂⟩)
-#align real.tan_lt_tan_of_nonneg_of_lt_pi_div_two Real.tan_lt_tan_of_nonneg_of_lt_pi_div_two
+theorem strictMonoOn_tan : StrictMonoOn tan (Ioo (-(π / 2)) (π / 2)) := by
+  rintro x hx y hy hlt
+  rw [tan_eq_sin_div_cos, tan_eq_sin_div_cos,
+    div_lt_div_iff (cos_pos_of_mem_Ioo hx) (cos_pos_of_mem_Ioo hy), mul_comm, ← sub_pos, ← sin_sub]
+  exact sin_pos_of_pos_of_lt_pi (sub_pos.2 hlt) <| by linarith [hx.1, hy.2]
+#align real.strict_mono_on_tan Real.strictMonoOn_tan
 
 theorem tan_lt_tan_of_lt_of_lt_pi_div_two {x y : ℝ} (hx₁ : -(π / 2) < x) (hy₂ : y < π / 2)
     (hxy : x < y) : tan x < tan y :=
-  match le_total x 0, le_total y 0 with
-  | Or.inl hx0, Or.inl hy0 =>
-    neg_lt_neg_iff.1 <| by
-      rw [← tan_neg, ← tan_neg]
-      exact tan_lt_tan_of_nonneg_of_lt_pi_div_two (neg_nonneg.2 hy0) (neg_lt.2 hx₁) (neg_lt_neg hxy)
-  | Or.inl hx0, Or.inr hy0 =>
-    (lt_or_eq_of_le hy0).elim
-      (fun hy0 =>
-        calc
-          tan x ≤ 0 := tan_nonpos_of_nonpos_of_neg_pi_div_two_le hx0 (le_of_lt hx₁)
-          _ < tan y := tan_pos_of_pos_of_lt_pi_div_two hy0 hy₂)
-      fun hy0 => by
-      rw [← hy0, tan_zero]; exact tan_neg_of_neg_of_pi_div_two_lt (hy0.symm ▸ hxy) hx₁
-  | Or.inr hx0, Or.inl hy0 => by linarith
-  | Or.inr hx0, Or.inr _ => tan_lt_tan_of_nonneg_of_lt_pi_div_two hx0 hy₂ hxy
+  strictMonoOn_tan ⟨hx₁, hxy.trans hy₂⟩ ⟨hx₁.trans hxy, hy₂⟩ hxy
 #align real.tan_lt_tan_of_lt_of_lt_pi_div_two Real.tan_lt_tan_of_lt_of_lt_pi_div_two
 
-theorem strictMonoOn_tan : StrictMonoOn tan (Ioo (-(π / 2)) (π / 2)) := fun _ hx _ hy =>
-  tan_lt_tan_of_lt_of_lt_pi_div_two hx.1 hy.2
-#align real.strict_mono_on_tan Real.strictMonoOn_tan
+theorem tan_lt_tan_of_nonneg_of_lt_pi_div_two {x y : ℝ} (hx₁ : 0 ≤ x) (hy₂ : y < π / 2)
+    (hxy : x < y) : tan x < tan y :=
+  tan_lt_tan_of_lt_of_lt_pi_div_two (by linarith) hy₂ hxy
+#align real.tan_lt_tan_of_nonneg_of_lt_pi_div_two Real.tan_lt_tan_of_nonneg_of_lt_pi_div_two
 
 theorem injOn_tan : InjOn tan (Ioo (-(π / 2)) (π / 2)) :=
   strictMonoOn_tan.injOn
@@ -994,7 +979,7 @@ theorem tan_periodic : Function.Periodic tan π := by
   simpa only [Function.Periodic, tan_eq_sin_div_cos] using sin_antiperiodic.div cos_antiperiodic
 #align real.tan_periodic Real.tan_periodic
 
--- Porting note: added
+-- Porting note (#10756): added theorem
 @[simp]
 theorem tan_pi : tan π = 0 := by rw [tan_periodic.eq, tan_zero]
 

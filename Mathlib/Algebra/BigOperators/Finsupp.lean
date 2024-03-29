@@ -27,13 +27,9 @@ open Finset Function
 open BigOperators
 
 variable {α ι γ A B C : Type*} [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C]
-
 variable {t : ι → A → C} (h0 : ∀ i, t i 0 = 0) (h1 : ∀ i x y, t i (x + y) = t i x + t i y)
-
 variable {s : Finset α} {f : α → ι →₀ A} (i : ι)
-
 variable (g : ι →₀ A) (k : ι → A → γ → B) (x : γ)
-
 variable {β M M' N P G H R S : Type*}
 
 namespace Finsupp
@@ -141,7 +137,7 @@ theorem prod_ite_eq' [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M �
 #align finsupp.prod_ite_eq' Finsupp.prod_ite_eq'
 #align finsupp.sum_ite_eq' Finsupp.sum_ite_eq'
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem sum_ite_self_eq' [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α →₀ N) (a : α) :
     (f.sum fun x v => ite (x = a) v 0) = f a := by
@@ -236,7 +232,8 @@ end CommMonoidWithZero
 end Finsupp
 
 @[to_additive]
-theorem map_finsupp_prod [Zero M] [CommMonoid N] [CommMonoid P] {H : Type*} [MonoidHomClass H N P]
+theorem map_finsupp_prod [Zero M] [CommMonoid N] [CommMonoid P] {H : Type*}
+    [FunLike H N P] [MonoidHomClass H N P]
     (h : H) (f : α →₀ M) (g : α → M → N) : h (f.prod g) = f.prod fun a b => h (g a b) :=
   map_prod h _ _
 #align map_finsupp_prod map_finsupp_prod
@@ -515,7 +512,7 @@ theorem equivFunOnFinite_symm_eq_sum [Fintype α] [AddCommMonoid M] (f : α → 
   ext
   simp
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem liftAddHom_apply_single [AddCommMonoid M] [AddCommMonoid N] (f : α → M →+ N) (a : α)
     (b : M) : (liftAddHom (α := α) (M := M) (N := N)) f (single a b) = f a b :=
@@ -591,7 +588,7 @@ theorem support_sum_eq_biUnion {α : Type*} {ι : Type*} {M : Type*} [DecidableE
     rw [Finsupp.support_add_eq, hs]
     rw [hs, Finset.disjoint_biUnion_right]
     intro j hj
-    refine' h _ _ (ne_of_mem_of_not_mem hj hi).symm
+    exact h _ _ (ne_of_mem_of_not_mem hj hi).symm
 #align finsupp.support_sum_eq_bUnion Finsupp.support_sum_eq_biUnion
 
 theorem multiset_map_sum [Zero M] {f : α →₀ M} {m : β → γ} {h : α → M → Multiset β} :
@@ -687,7 +684,7 @@ theorem Finsupp.sum_apply' : g.sum k x = g.sum fun i b => k i b x :=
 
 section
 
-open Classical
+open scoped Classical
 
 theorem Finsupp.sum_sum_index' : (∑ x in s, f x).sum t = ∑ x in s, (f x).sum t :=
   Finset.induction_on s rfl fun a s has ih => by

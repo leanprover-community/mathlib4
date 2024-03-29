@@ -47,7 +47,7 @@ indexed by the natural numbers, implemented as `{ f : ℕ → R | ∀ n, f (n + 
 def Ring.perfectionSubsemiring (R : Type u₁) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime]
     [CharP R p] : Subsemiring (ℕ → R) :=
   { Monoid.perfection R p with
-    zero_mem' := fun _ => zero_pow <| hp.1.pos
+    zero_mem' := fun _ ↦ zero_pow hp.1.ne_zero
     add_mem' := fun hf hg n => (frobenius_add R p _ _).trans <| congr_arg₂ _ (hf n) (hg n) }
 #align ring.perfection_subsemiring Ring.perfectionSubsemiring
 
@@ -163,7 +163,8 @@ theorem frobenius_pthRoot : (frobenius _ p).comp (pthRoot R p) = RingHom.id _ :=
 
 theorem coeff_add_ne_zero {f : Ring.Perfection R p} {n : ℕ} (hfn : coeff R p n f ≠ 0) (k : ℕ) :
     coeff R p (n + k) f ≠ 0 :=
-  Nat.recOn k hfn fun k ih h => ih <| by erw [← coeff_pow_p, RingHom.map_pow, h, zero_pow hp.1.pos]
+  Nat.recOn k hfn fun k ih h => ih <| by
+    erw [← coeff_pow_p, RingHom.map_pow, h, zero_pow hp.1.ne_zero]
 #align perfection.coeff_add_ne_zero Perfection.coeff_add_ne_zero
 
 theorem coeff_ne_zero_of_le {f : Ring.Perfection R p} {m n : ℕ} (hfm : coeff R p m f ≠ 0)
@@ -189,10 +190,10 @@ noncomputable def lift (R : Type u₁) [CommSemiring R] [CharP R p] [PerfectRing
   toFun f :=
     { toFun := fun r => ⟨fun n => f (((frobeniusEquiv R p).symm : R →+* R)^[n] r),
         fun n => by erw [← f.map_pow, Function.iterate_succ_apply', frobeniusEquiv_symm_pow_p]⟩
-      map_one' := ext fun n => (congr_arg f <| RingHom.iterate_map_one _ _).trans f.map_one
+      map_one' := ext fun n => (congr_arg f <| iterate_map_one _ _).trans f.map_one
       map_mul' := fun x y =>
         ext fun n => (congr_arg f <| iterate_map_mul _ _ _ _).trans <| f.map_mul _ _
-      map_zero' := ext fun n => (congr_arg f <| RingHom.iterate_map_zero _ _).trans f.map_zero
+      map_zero' := ext fun n => (congr_arg f <| iterate_map_zero _ _).trans f.map_zero
       map_add' := fun x y =>
         ext fun n => (congr_arg f <| iterate_map_add _ _ _ _).trans <| f.map_add _ _ }
   invFun := RingHom.comp <| coeff S p 0
@@ -240,9 +241,7 @@ structure PerfectionMap (p : ℕ) [Fact p.Prime] {R : Type u₁} [CommSemiring R
 namespace PerfectionMap
 
 variable {p : ℕ} [Fact p.Prime]
-
 variable {R : Type u₁} [CommSemiring R] [CharP R p]
-
 variable {P : Type u₃} [CommSemiring P] [CharP P p] [PerfectRing P p]
 
 /-- Create a `PerfectionMap` from an isomorphism to the perfection. -/
@@ -339,9 +338,7 @@ theorem hom_ext [PerfectRing R p] {S : Type u₂} [CommSemiring S] [CharP S p] {
 #align perfection_map.hom_ext PerfectionMap.hom_ext
 
 variable {P} (p)
-
 variable {S : Type u₂} [CommSemiring S] [CharP S p]
-
 variable {Q : Type u₄} [CommSemiring Q] [CharP Q p] [PerfectRing Q p]
 
 /-- A ring homomorphism `R →+* S` induces `P →+* Q`, a map of the respective perfections. -/
@@ -370,9 +367,7 @@ end PerfectionMap
 section Perfectoid
 
 variable (K : Type u₁) [Field K] (v : Valuation K ℝ≥0)
-
 variable (O : Type u₂) [CommRing O] [Algebra O K] (hv : v.Integers O)
-
 variable (p : ℕ)
 
 -- Porting note: Specified all arguments explicitly
@@ -479,8 +474,9 @@ theorem mul_ne_zero_of_pow_p_ne_zero {x y : ModP K v O hv p} (hx : x ^ p ≠ 0) 
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective y
   have h1p : (0 : ℝ) < 1 / p := one_div_pos.2 (Nat.cast_pos.2 hp.1.pos)
-  erw [← RingHom.map_mul]; erw [← RingHom.map_pow] at hx hy
-  erw [← v_p_lt_val hv] at hx hy ⊢
+  rw [← (Ideal.Quotient.mk (Ideal.span {(p : O)})).map_mul]
+  rw [← (Ideal.Quotient.mk (Ideal.span {(p : O)})).map_pow] at hx hy
+  rw [← v_p_lt_val hv] at hx hy ⊢
   rw [RingHom.map_pow, v.map_pow, ← rpow_lt_rpow_iff h1p, ← rpow_nat_cast, ← rpow_mul,
     mul_one_div_cancel (Nat.cast_ne_zero.2 hp.1.ne_zero : (p : ℝ) ≠ 0), rpow_one] at hx hy
   rw [RingHom.map_mul, v.map_mul]; refine' lt_of_le_of_lt _ (mul_lt_mul₀ hx hy)
@@ -547,7 +543,7 @@ theorem valAux_eq {f : PreTilt K v O hv p} {n : ℕ} (hfn : coeff _ _ n f ≠ 0)
     exact coeff_nat_find_add_ne_zero k
   erw [ih (coeff_nat_find_add_ne_zero k), ← hx, ← coeff_pow_p, RingHom.map_pow, ← hx,
     ← RingHom.map_pow, ModP.preVal_mk h1, ModP.preVal_mk h2, RingHom.map_pow, v.map_pow, ← pow_mul,
-    pow_succ]
+    pow_succ']
   rfl
 #align pre_tilt.val_aux_eq PreTilt.valAux_eq
 

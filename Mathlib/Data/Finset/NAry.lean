@@ -114,7 +114,7 @@ theorem image₂_subset_iff_right : image₂ f s t ⊆ u ↔ ∀ b ∈ t, (s.ima
   simp_rw [image₂_subset_iff, image_subset_iff, @forall₂_swap α]
 #align finset.image₂_subset_iff_right Finset.image₂_subset_iff_right
 
-@[simp]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem image₂_nonempty_iff : (image₂ f s t).Nonempty ↔ s.Nonempty ∧ t.Nonempty := by
   rw [← coe_nonempty, coe_image₂]
   exact image2_nonempty_iff
@@ -508,8 +508,8 @@ theorem card_dvd_card_image₂_right (hf : ∀ a ∈ s, Injective (f a))
     (hs.subset <| Set.image_subset _ <| coe_subset.2 <| subset_insert _ _)
   rw [image₂_insert_left]
   by_cases h : Disjoint (image (f a) t) (image₂ f s t)
-  · rw [card_union_eq h]
-    exact (card_image_of_injective _ <| hf _ <| mem_insert_self _ _).symm.dvd.add ih
+  · rw [card_union_of_disjoint h]
+    exact Nat.dvd_add (card_image_of_injective _ <| hf _ <| mem_insert_self _ _).symm.dvd ih
   simp_rw [← biUnion_image_left, disjoint_biUnion_right, not_forall] at h
   obtain ⟨b, hb, h⟩ := h
   rwa [union_eq_right.2]

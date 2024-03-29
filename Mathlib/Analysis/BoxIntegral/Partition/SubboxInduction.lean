@@ -33,7 +33,8 @@ namespace BoxIntegral
 
 open Set Metric
 
-open Classical Topology
+open scoped Classical
+open Topology
 
 noncomputable section
 
@@ -118,7 +119,7 @@ theorem exists_taggedPartition_isHenstock_isSubordinate_homothetic (I : Box ι)
       intro J' hJ'
       rcases (splitCenter J).mem_biUnionTagged.1 hJ' with ⟨J₁, h₁, h₂⟩
       refine' ⟨n J₁ J' + 1, fun i => _⟩
-      simp only [hn J₁ h₁ J' h₂, upper_sub_lower_of_mem_splitCenter h₁, pow_succ, div_div]
+      simp only [hn J₁ h₁ J' h₂, upper_sub_lower_of_mem_splitCenter h₁, pow_succ', div_div]
     refine' ⟨_, hP, isHenstock_biUnionTagged.2 hHen, isSubordinate_biUnionTagged.2 hr, hsub, _⟩
     refine' TaggedPrepartition.distortion_of_const _ hP.nonempty_boxes fun J' h' => _
     rcases hsub J' h' with ⟨n, hn⟩

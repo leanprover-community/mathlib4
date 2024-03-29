@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import algebra.category.Module.change_of_rings from "leanprover-community/mathlib"@"56b71f0b55c03f70332b862e65c3aa1aa1249ca1"
 
@@ -53,7 +53,6 @@ universe v u₁ u₂ u₃
 namespace RestrictScalars
 
 variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
-
 variable (M : ModuleCat.{v} S)
 
 /-- Any `S`-module M is also an `R`-module via a ring homomorphism `f : R ⟶ S` by defining
@@ -154,19 +153,26 @@ section
 
 variable {R : Type u₁} [Ring R] (f : R →+* R) (hf : f = RingHom.id R)
 
+/-- For a `R`-module `M`, the restriction of scalars of `M` by the identity morphisms identifies
+to `M`. -/
+def restrictScalarsId'App (M : ModuleCat R) : (restrictScalars f).obj M ≅ M :=
+  LinearEquiv.toModuleIso' <|
+    @AddEquiv.toLinearEquiv _ _ _ _ _ _ (((restrictScalars f).obj M).isModule) _
+      (by rfl) (fun r x ↦ by subst hf; rfl)
+
+lemma restrictScalarsId'App_hom_apply (M : ModuleCat R) (x : M) :
+    (restrictScalarsId'App f hf M).hom x = x :=
+  rfl
+
+lemma restrictScalarsId'App_inv_apply (M : ModuleCat R) (x : M) :
+    (restrictScalarsId'App f hf M).inv x = x :=
+  rfl
+
 /-- The restriction of scalars by a ring morphism that is the identity identify to the
 identity functor. -/
-def restrictScalarsId' : ModuleCat.restrictScalars.{v} f ≅ 𝟭 _ := by subst hf; rfl
-
--- This lemma has always been bad, but lean4#2644 made `simp` start noticing
-@[simp, nolint simpNF]
-lemma restrictScalarsId'_inv_apply (M : ModuleCat R) (x : M) :
-    (restrictScalarsId' f hf).inv.app M x = x := by subst hf; rfl
-
--- This lemma has always been bad, but lean4#2644 made `simp` start noticing
-@[simp, nolint simpNF]
-lemma restrictScalarsId'_hom_apply (M : ModuleCat R) (x : M) :
-    (restrictScalarsId' f hf).hom.app M x = x := by subst hf; rfl
+@[simps! hom_app inv_app]
+def restrictScalarsId' : ModuleCat.restrictScalars.{v} f ≅ 𝟭 _ :=
+    NatIso.ofComponents <| fun M ↦ restrictScalarsId'App f hf M
 
 variable (R)
 
@@ -181,21 +187,27 @@ section
 variable {R₁ : Type u₁} {R₂ : Type u₂} {R₃ : Type u₃} [Ring R₁] [Ring R₂] [Ring R₃]
   (f : R₁ →+* R₂) (g : R₂ →+* R₃) (gf : R₁ →+* R₃) (hgf : gf = g.comp f)
 
+/-- For each `R₃`-module `M`, restriction of scalars of `M` by a composition of ring morphisms
+identifies to successively restricting scalars. -/
+def restrictScalarsComp'App (M : ModuleCat R₃) :
+    (restrictScalars gf).obj M ≅ (restrictScalars f).obj ((restrictScalars g).obj M) :=
+  (AddEquiv.toLinearEquiv (by rfl) (fun r x ↦ by subst hgf; rfl)).toModuleIso'
+
+lemma restrictScalarsComp'App_hom_apply (M : ModuleCat R₃) (x : M) :
+    (restrictScalarsComp'App f g gf hgf M).hom x = x :=
+  rfl
+
+lemma restrictScalarsComp'App_inv_apply (M : ModuleCat R₃) (x : M) :
+    (restrictScalarsComp'App f g gf hgf M).inv x = x :=
+  rfl
+
 /-- The restriction of scalars by a composition of ring morphisms identify to the
 composition of the restriction of scalars functors. -/
+@[simps! hom_app inv_app]
 def restrictScalarsComp' :
     ModuleCat.restrictScalars.{v} gf ≅
-      ModuleCat.restrictScalars g ⋙ ModuleCat.restrictScalars f := by subst hgf; rfl
-
--- This lemma has always been bad, but lean4#2644 made `simp` start noticing
-@[simp, nolint simpNF]
-lemma restrictScalarsComp'_hom_apply (M : ModuleCat R₃) (x : M) :
-    (restrictScalarsComp' f g gf hgf).hom.app M x = x := by subst hgf; rfl
-
--- This lemma has always been bad, but lean4#2644 made `simp` start noticing
-@[simp, nolint simpNF]
-lemma restrictScalarsComp'_inv_apply (M : ModuleCat R₃) (x : M) :
-    (restrictScalarsComp' f g gf hgf).inv.app M x = x := by subst hgf; rfl
+      ModuleCat.restrictScalars g ⋙ ModuleCat.restrictScalars f :=
+  NatIso.ofComponents <| fun M ↦ restrictScalarsComp'App f g gf hgf M
 
 /-- The restriction of scalars by a composition of ring morphisms identify to the
 composition of the restriction of scalars functors. -/
@@ -420,8 +432,6 @@ namespace RestrictionCoextensionAdj
 
 variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 
--- Porting note: too much time
-set_option maxHeartbeats 500000 in
 /-- Given `R`-module X and `S`-module Y, any `g : (restrictScalars f).obj Y ⟶ X`
 corresponds to `Y ⟶ (coextendScalars f).obj X` by sending `y ↦ (s ↦ g (s • y))`
 -/
@@ -446,8 +456,8 @@ def HomEquiv.fromRestriction {X : ModuleCat R} {Y : ModuleCat S}
       rw [smul_add, map_add]
   map_smul' := fun (s : S) (y : Y) => LinearMap.ext fun t : S => by
       -- Porting note: used to be simp [mul_smul]
-      rw [RingHom.id_apply, LinearMap.coe_mk, ModuleCat.CoextendScalars.smul_apply',
-        LinearMap.coe_mk]
+      simp only [LinearMap.coe_mk, AddHom.coe_mk, RingHom.id_apply]
+      rw [ModuleCat.CoextendScalars.smul_apply', LinearMap.coe_mk]
       dsimp
       rw [mul_smul]
 #align category_theory.Module.restriction_coextension_adj.hom_equiv.from_restriction ModuleCat.RestrictionCoextensionAdj.HomEquiv.fromRestriction
@@ -483,6 +493,7 @@ def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙ coextendScalars 
     map_add' := fun y1 y2 =>
       LinearMap.ext fun s : S => by
         -- Porting note: double dsimp seems odd
+        set_option tactic.skipAssignedInstances false in
         dsimp
         rw [LinearMap.add_apply, LinearMap.coe_mk, LinearMap.coe_mk, LinearMap.coe_mk]
         dsimp
@@ -502,7 +513,7 @@ protected def unit' : 𝟭 (ModuleCat S) ⟶ restrictScalars f ⋙ coextendScala
   app Y := app' f Y
   naturality Y Y' g :=
     LinearMap.ext fun y : Y => LinearMap.ext fun s : S => by
-      -- Porting note: previously simp [CoextendScalars.map_apply]
+      -- Porting note (#10745): previously simp [CoextendScalars.map_apply]
       simp only [ModuleCat.coe_comp, Functor.id_map, Functor.id_obj, Functor.comp_obj,
         Functor.comp_map]
       rw [coe_comp, coe_comp, Function.comp, Function.comp]
@@ -547,12 +558,12 @@ def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S]
     { toFun := RestrictionCoextensionAdj.HomEquiv.fromRestriction.{u₁,u₂,v} f
       invFun := RestrictionCoextensionAdj.HomEquiv.toRestriction.{u₁,u₂,v} f
       left_inv := fun g => LinearMap.ext fun x : X => by
-        -- Porting note: once just simp
+        -- Porting note (#10745): once just simp
         rw [RestrictionCoextensionAdj.HomEquiv.toRestriction_apply, AddHom.toFun_eq_coe,
           LinearMap.coe_toAddHom, RestrictionCoextensionAdj.HomEquiv.fromRestriction_apply_apply,
           one_smul]
       right_inv := fun g => LinearMap.ext fun x => LinearMap.ext fun s : S => by
-        -- Porting note: once just simp
+        -- Porting note (#10745): once just simp
         rw [RestrictionCoextensionAdj.HomEquiv.fromRestriction_apply_apply,
           RestrictionCoextensionAdj.HomEquiv.toRestriction_apply, AddHom.toFun_eq_coe,
           LinearMap.coe_toAddHom, LinearMap.map_smulₛₗ, RingHom.id_apply,
@@ -561,7 +572,7 @@ def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S]
   counit := RestrictionCoextensionAdj.counit'.{u₁,u₂,v} f
   homEquiv_unit := LinearMap.ext fun y => rfl
   homEquiv_counit := fun {X Y g} => LinearMap.ext <| by
-    -- Porting note: previously simp [RestrictionCoextensionAdj.counit']
+    -- Porting note (#10745): previously simp [RestrictionCoextensionAdj.counit']
     intro x; dsimp
     rw [coe_comp, Function.comp]
     change _ = (((restrictScalars f).map g) x).toFun (1 : S)
@@ -797,7 +808,7 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
         rw [Function.comp_apply, ExtendRestrictScalarsAdj.counit_app]
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [ExtendRestrictScalarsAdj.Counit.map_apply]
-        dsimp
+        set_option tactic.skipAssignedInstances false in dsimp
         rw [TensorProduct.lift.tmul]
         rfl
       · rw [map_add,map_add]
