@@ -40,5 +40,5 @@ macro_rules
        (by_contra! h;
         -- if the below `exact` call fails then this tactic should fail with the message
         -- tactic failed: <goal type> and <type of h> are not definitionally equal
-        have $e:ident : $y := by { try push_neg; exact h };
+        have $e:ident : $y := by { (try push_neg); exact h };
         clear h))
