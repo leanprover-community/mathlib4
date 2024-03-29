@@ -86,7 +86,7 @@ variable [TopologicalSpace Z] [TopologicalSpace W]
 instance continuousSmul_of_properSMul [ProperSMul G X] : ContinuousSMul G X where
   continuous_smul := (isProperMap_smul_pair G X).continuous.fst
 
-/-- A group acts `G` properly on a topological space `X` if and only if for all ultrafilters
+/-- A group `G` acts properly on a topological space `X` if and only if for all ultrafilters
 `𝒰` on `X`, if `𝒰` converges to `(x₁, x₂)` along the map `(g, x) ↦ (g • x, x)`,
 then there exists `g : G` such that `g • x₂ = x₁` and `𝒰.fst` converges to `g`. -/
 @[to_additive "A group acts `G` properly on a topological space `X` if and only if
@@ -125,7 +125,7 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto : ProperSMul G X ↔ C
     exact continuous_snd
     assumption
 
-/-- A group acts `G` properly on a T2 topological space `X` if and only if for all ultrafilters
+/-- A group `G` acts properly on a T2 topological space `X` if and only if for all ultrafilters
 `𝒰` on `X`, if `𝒰` converges to `(x₁, x₂)` along the map `(g, x) ↦ (g • x, x)`,
 then there exists `g : G` such that `𝒰.fst` converges to `g`. -/
 theorem properSMul_iff_continuousSMul_ultrafilter_tendsto_t2 [T2Space X] : ProperSMul G X ↔
