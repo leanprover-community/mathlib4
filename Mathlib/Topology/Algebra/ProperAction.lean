@@ -146,15 +146,65 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto_t2 [T2Space X] : Prope
     exact continuous_snd
     assumption
 
-/-
-theorem properSMul_iff_continuousSMul_ultrafilter_tendsto_t2 [T2Space X]:
-    ProperSMul G X ↔ ContinuousSMul G X ∧ (∀ ℱ : Ultrafilter (G × X), ∀ x₁ x₂ : X,
-    Tendsto (fun gx ↦ ⟨gx.1 • gx.2, gx.2⟩ : G × X → X × X) ℱ (𝓝 (x₁, x₂)) →
-    ∃ g : G, Tendsto Prod.fst (ℱ : Filter (G × X)) (𝓝 g)) := by
-  sorry
+
+/-- If two groups `H` and `G` act on a topological space `X` such that `G` acts properly and
+there exists a group homomorphims `H → G` which is a closed embedding compatible with the actions,
+then `H` also acts properly on `X`. -/
+@[to_additive "If two groups `H` and `G` act on a topological space `X` such that `G` acts properly
+and there exists a group homomorphims `H → G` which is a closed embedding compatible with the
+actions, then `H` also acts properly on `X`."]
+lemma properSMul_of_closed_embedding {H : Type*} [Group H] [MulAction H X] [TopologicalSpace H]
+    [ProperSMul G X] (f : H →* G) (f_clemb : ClosedEmbedding f)
+    (f_compat : ∀ (h : H) (x : X), f h • x = h • x) : ProperSMul H X where
+  isProperMap_smul_pair' := by
+    have := isProperMap_of_closedEmbedding f_clemb
+    have : IsProperMap (Prod.map f (fun x : X ↦ x)) := IsProperMap.prod_map this isProperMap_id
+    have : (fun hx : H × X ↦ (hx.1 • hx.2, hx.2)) = (fun hx ↦ (f hx.1 • hx.2, hx.2)) := by
+      simp [f_compat]
+    rw [this]
+    change IsProperMap ((fun gx : G × X ↦ (gx.1 • gx.2, gx.2)) ∘ (Prod.map f (fun x ↦ x)))
+    apply IsProperMap.comp
+    assumption
+    exact isProperMap_smul_pair G X
+
+/-- If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`. -/
+@[to_additive "If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`."]
+instance {H : Subgroup G} [ProperSMul G X] [H_closed : IsClosed (H : Set G)] : ProperSMul H X where
+  isProperMap_smul_pair' := by
+    have : IsProperMap (fun hx : H × X ↦ ((hx.1, hx.2) : G × X)) := by
+      change IsProperMap (Prod.map ((↑) : H → G) (fun x ↦ x))
+      exact IsProperMap.prod_map (isProperMap_subtype_val_of_closed H_closed) isProperMap_id
+    have : IsProperMap (fun hx : H × X ↦ (hx.1 • hx.2, hx.2)) := by
+      change IsProperMap ((fun gx ↦ (gx.1 • gx.2, gx.2)) ∘
+        (fun hx : H × X ↦ ((hx.1, hx.2) : G × X)))
+      exact this.comp (isProperMap_smul_pair G X)
+    assumption
 
 
--/
+
+/-- If a T2 group acts properly on a topological space, then this topological space is T2. -/
+@[to_additive "If a T2 group acts properly on a topological space,
+then this topological space is T2."]
+theorem t2Space_of_properSMul_of_t2Group [h_proper : ProperSMul G X] [T2Space G] : T2Space X := by
+  let f := fun x : X ↦ ((1 : G), x)
+  have proper_f : IsProperMap f := by
+    apply isProperMap_of_closedEmbedding
+    rw [closedEmbedding_iff]
+    constructor
+    · let g := fun gx : G × X ↦ gx.2
+      have : Function.LeftInverse g f := by intro x; simp
+      exact Function.LeftInverse.embedding this (by fun_prop) (by fun_prop)
+    · have : Set.range f = ({1} ×ˢ Set.univ) := by simp
+      rw [this]
+      exact IsClosed.prod isClosed_singleton isClosed_univ
+  rw [t2_iff_isClosed_diagonal]
+  let g := fun gx : G × X ↦ (gx.1 • gx.2, gx.2)
+  have proper_g : IsProperMap g := (properSMul_iff G X).1 h_proper
+  have : g ∘ f = fun x ↦ (x, x) := by ext x <;> simp
+  have range_gf : Set.range (g ∘ f) = Set.diagonal X := by simp [this]
+  rw [← range_gf]
+  exact (proper_f.comp proper_g).closed_range
+
 
 /-- If G acts properly on X, then the quotient space is Hausdorff (T2) -/
 theorem t2Space_of_ProperSMul (hproper:ProperSMul G X) :
@@ -194,60 +244,3 @@ theorem t2Space_of_ProperSMul (hproper:ProperSMul G X) :
     simp [m]
   rw [r_eq_r']
   exact hproper.isProperMap_smul_pair'.isClosedMap.closed_range
-
-/-- If two groups `H` and `G` act on a topological space `X` such that `G` acts properly and
-there exists a group homomorphims `H → G` which is a closed embedding compatible with the actions,
-then `H` also acts properly on `X`. -/
-@[to_additive "If two groups `H` and `G` act on a topological space `X` such that `G` acts properly
-and there exists a group homomorphims `H → G` which is a closed embedding compatible with the
-actions, then `H` also acts properly on `X`."]
-lemma properSMul_of_closed_embedding {H : Type*} [Group H] [MulAction H X] [TopologicalSpace H]
-    [ProperSMul G X] (f : H →* G) (f_clemb : ClosedEmbedding f)
-    (f_compat : ∀ (h : H) (x : X), f h • x = h • x) : ProperSMul H X where
-  isProperMap_smul_pair' := by
-    have := isProperMap_of_closedEmbedding f_clemb
-    have : IsProperMap (Prod.map f (fun x : X ↦ x)) := IsProperMap.prod_map this isProperMap_id
-    have : (fun hx : H × X ↦ (hx.1 • hx.2, hx.2)) = (fun hx ↦ (f hx.1 • hx.2, hx.2)) := by
-      simp [f_compat]
-    rw [this]
-    change IsProperMap ((fun gx : G × X ↦ (gx.1 • gx.2, gx.2)) ∘ (Prod.map f (fun x ↦ x)))
-    apply IsProperMap.comp
-    assumption
-    exact isProperMap_smul_pair G X
-
-/-- If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`. -/
-@[to_additive "If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`."]
-instance {H : Subgroup G} [ProperSMul G X] [H_closed : IsClosed (H : Set G)] : ProperSMul H X where
-  isProperMap_smul_pair' := by
-    have : IsProperMap (fun hx : H × X ↦ ((hx.1, hx.2) : G × X)) := by
-      change IsProperMap (Prod.map ((↑) : H → G) (fun x ↦ x))
-      exact IsProperMap.prod_map (isProperMap_subtype_val_of_closed H_closed) isProperMap_id
-    have : IsProperMap (fun hx : H × X ↦ (hx.1 • hx.2, hx.2)) := by
-      change IsProperMap ((fun gx ↦ (gx.1 • gx.2, gx.2)) ∘
-        (fun hx : H × X ↦ ((hx.1, hx.2) : G × X)))
-      exact this.comp (isProperMap_smul_pair G X)
-    assumption
-
-
-/-- If a T2 group acts properly on a topological space, then this topological space is T2. -/
-@[to_additive "If a T2 group acts properly on a topological space,
-then this topological space is T2."]
-theorem t2Space_of_properSMul_of_t2Group [h_proper : ProperSMul G X] [T2Space G] : T2Space X := by
-  let f := fun x : X ↦ ((1 : G), x)
-  have proper_f : IsProperMap f := by
-    apply isProperMap_of_closedEmbedding
-    rw [closedEmbedding_iff]
-    constructor
-    · let g := fun gx : G × X ↦ gx.2
-      have : Function.LeftInverse g f := by intro x; simp
-      exact Function.LeftInverse.embedding this (by fun_prop) (by fun_prop)
-    · have : Set.range f = ({1} ×ˢ Set.univ) := by simp
-      rw [this]
-      exact IsClosed.prod isClosed_singleton isClosed_univ
-  rw [t2_iff_isClosed_diagonal]
-  let g := fun gx : G × X ↦ (gx.1 • gx.2, gx.2)
-  have proper_g : IsProperMap g := (properSMul_iff G X).1 h_proper
-  have : g ∘ f = fun x ↦ (x, x) := by ext x <;> simp
-  have range_gf : Set.range (g ∘ f) = Set.diagonal X := by simp [this]
-  rw [← range_gf]
-  exact (proper_f.comp proper_g).closed_range
