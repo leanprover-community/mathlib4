@@ -379,10 +379,8 @@ theorem thickening_iUnion (δ : ℝ) (f : ι → Set α) :
   simp_rw [thickening, infEdist_iUnion, iInf_lt_iff, setOf_exists]
 #align metric.thickening_Union Metric.thickening_iUnion
 
-@[simp]
 lemma thickening_biUnion {ι : Type*} (δ : ℝ) (f : ι → Set α) (I : Set ι) :
-    thickening δ (⋃ i ∈ I, f i) = ⋃ i ∈ I, thickening δ (f i) := by
-  simp_rw [thickening, infEdist_biUnion, iInf_lt_iff, setOf_exists]
+    thickening δ (⋃ i ∈ I, f i) = ⋃ i ∈ I, thickening δ (f i) := by simp only [thickening_iUnion]
 
 theorem ediam_cthickening_le (ε : ℝ≥0) :
     EMetric.diam (cthickening ε s) ≤ EMetric.diam s + 2 * ε := by
