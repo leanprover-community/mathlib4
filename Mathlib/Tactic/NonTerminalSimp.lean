@@ -186,6 +186,12 @@ def ignored : HashSet Name := HashSet.empty
   |>.insert ``Lean.Parser.Tactic.tacticRepeat_
   |>.insert ``Lean.Parser.Tactic.tacticStop_
   |>.insert ``Lean.Parser.Tactic.«tactic_<;>_»
+  |>.insert `«;»
+  |>.insert ``cdotTk
+  |>.insert ``cdot
+  -- followers: `rfl, omega`
+  |>.insert ``Lean.Parser.Tactic.tacticRfl
+  |>.insert ``Lean.Parser.Tactic.omega
 
 /-- `SyntaxNodeKind`s of tactics that stain the locations on which they act
 and that can only be followed by other `stainers`. -/
@@ -193,6 +199,14 @@ def stainers : HashSet Name := HashSet.empty
   |>.insert ``Lean.Parser.Tactic.simp
   |>.insert ``Lean.Parser.Tactic.simpAll
 --  |>.insert ``Lean.Parser.Tactic.rwSeq  -- remove me! `rw` is not a stainer!
+
+/-- `getIds stx` extracts the `declId` nodes from the `Syntax` `stx`.
+If `stx` is an `alias` or an `export`, then it extracts an `ident`, instead of a `declId`. -/
+partial
+def getIds : Syntax → Array Name
+  | .node _ _ args => (args.attach.map fun ⟨a, _⟩ => getIds a).flatten
+  | .ident _ _ name _ => #[name]
+  | _ => default
 
 /-- The main entry point to the unreachable tactic linter. -/
 def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
@@ -203,33 +217,47 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
   let trees ← getInfoTrees
   let x := trees.toList.map (extractRealGoalsCtx' (fun _ => true))
   let _ : Ord FVarId := ⟨fun f g => compare f.name.toString g.name.toString⟩
-  let mut stains : HashMap FVarId SyntaxNodeKind := .empty
+  -- `stains` records pairs `(location, mvar)`, where `location` is either a hypothesis or the main goal
+  -- modified by a flexible tactic and `mvar` is the metavariable containing the modified location
+  let mut stains : HashMap (FVarId × MVarId) SyntaxNodeKind := .empty
   for d in x do for (s, ctx0, ctx1, mvs0, mvs1) in d do
+    if ! ignored.contains s.getKind then
+--      logInfoAt s[0] m!"{mvs0.map (·.name)} ⊆ -- '{s}'\n{mvs1.map (·.name)}"
     let skind := s.getKind
-    if ignored.contains skind then dbg_trace "ignoring {skind}" continue
-    let currMVar0 := mvs1.getD 0 default
-    let currMVar1 := mvs0.getD 0 default
-    let lctx0 := ((ctx0.decls.find? currMVar1).getD default).lctx
-    let lctxa := ((ctx1.decls.find? currMVar0).getD default).lctx
+    if ignored.contains skind then /-dbg_trace "ignoring {skind}"-/ continue
     for d in getStained! s do
       let shouldStain? := match stainers.contains skind, onlyOrNotSimp s, skind, (! mvs1.length < mvs0.length) with
         | false, _, _, _ => false -- not a stainer
-        | _, false, _, _ => false -- `simp only`
-        | true, true, ``Lean.Parser.Tactic.simp, solves? => solves? -- if `simp *not* only` check if it closes a goal
+        | _, tf, ``Lean.Parser.Tactic.simp, _ => /-dbg_trace "{s}`simp *not* only`";-/ !tf -- `simp *not* only`
+--        | true, true, ``Lean.Parser.Tactic.simp, solves? => solves? -- if `simp *not* only` check if it closes a goal
         | true, true, ``Lean.Parser.Tactic.simpAll, _ => true -- `simp_all`
-        | true, true, _, _ => true
-      logInfoAt s m!"{shouldStain?}"
+        | true, _, _, _ => true
+--      logInfoAt s m!"{shouldStain?}"
+      let stained_in_syntax := getL s
+--      let found_stained := stained_in_syntax.filter (·.toFVarId lctx0 != default)
+--      let stained_in_syntax := stained_in_syntax.filter
+--      logInfo m!"'{s}'\n* stained_in_syntax: {stained_in_syntax}\n* found_fvs: {found_fvs.map fun d => (((lctx0.fvarIdToDecl.find? d).getD default).userName, d.name)}"
+--      logInfo m!"'{s}' has ids: {stained_in_syntax}\n  found: {(found_stained).map fun d => (((lctx0.fvarIdToDecl.find? (d.toFVarId lctx0)).getD default).userName, d.name)}"
+
+--      logInfo m!"'{s}' has ids: {stained_in_syntax}\n  stained: {(stained_in_syntax.map (·.toFVarId lctx0)).flatten.map fun d => (((lctx0.fvarIdToDecl.find? d).getD default).userName, d.name)}"
       if shouldStain? then
 --      if stainers.contains skind &&
 --        !onlyOrNotSimp s &&
 --        (! mvs1.length < mvs0.length) then
-        let locsAfter := d.toFVarId lctxa
-        for l in locsAfter do
-          stains := stains.insert l skind
+        for currMVar1 in mvs1 do--.getD 0 default
+          let lctx1 := ((ctx1.decls.find? currMVar1).getD default).lctx
+          let locsAfter := d.toFVarId lctx1
+          for l in locsAfter do
+            trace[flexible] m!"{s} is staining {(((lctx1.fvarIdToDecl.find? l).getD default).userName, l.name)}"
+            stains := stains.insert (l, currMVar1) skind
       else
-        let locsBefore := d.toFVarId lctx0
-        for l in locsBefore do
-          if let some kind := stains.find? l then
-            Linter.logLint linter.nonTerminalSimp s m!"{kind} stained '{d}' at '{s}'"
+        for currMVar0 in mvs0 do --.getD 0 default
+          let lctx0 := ((ctx0.decls.find? currMVar0).getD default).lctx
+          let found_fvs := (stained_in_syntax.map (·.toFVarId lctx0)).flatten.filter (· != default)
+          let locsBefore := d.toFVarId lctx0 ++ found_fvs
+          for l in locsBefore do
+            if let some kind := stains.find? (l, currMVar0) then
+              Linter.logLint linter.nonTerminalSimp s m!"{kind} stained '{d}' at '{s}'"
 
+#check HashMap
 initialize addLinter nonTerminalSimpLinter
