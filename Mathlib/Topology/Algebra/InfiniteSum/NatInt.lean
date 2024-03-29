@@ -89,7 +89,7 @@ section ContinuousMul
 variable [ContinuousMul M]
 
 @[to_additive]
-theorem comp_nat_mul {f : ℕ → M} {k : ℕ} (h : Multipliable fun n ↦ f (n + k)) : Multipliable f :=
+theorem comp_nat_add {f : ℕ → M} {k : ℕ} (h : Multipliable fun n ↦ f (n + k)) : Multipliable f :=
   h.hasProd.prod_range_mul.multipliable
 
 @[to_additive]
@@ -110,7 +110,7 @@ section Encodable
 variable [Encodable β]
 
 /-- You can compute a product over an encodable type by multiplying over the natural numbers and
-taking a supremum. This is useful for outer measures. -/
+taking a supremum. -/
 @[to_additive "You can compute a sum over an encodable type by summing over the natural numbers and
   taking a supremum. This is useful for outer measures."]
 theorem tprod_iSup_decode₂ [CompleteLattice α] (m : α → M) (m0 : m ⊥ = 1) (s : β → α) :

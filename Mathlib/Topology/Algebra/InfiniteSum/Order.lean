@@ -147,8 +147,8 @@ theorem HasProd.le_one (h : ∀ i, g i ≤ 1) (ha : HasProd g a) : a ≤ 1 :=
   hasProd_le h ha hasProd_one
 #align has_sum.nonpos HasSum.nonpos
 
-@[to_additive]
-theorem tprod_one_le (h : ∀ i, 1 ≤ g i) : 1 ≤ ∏' i, g i := by
+@[to_additive tsum_nonneg]
+theorem one_le_tprod (h : ∀ i, 1 ≤ g i) : 1 ≤ ∏' i, g i := by
   by_cases hg : Multipliable g
   · exact hg.hasProd.one_le h
   · rw [tprod_eq_one_of_not_multipliable hg]
@@ -205,8 +205,8 @@ theorem tprod_strict_mono (hf : Multipliable f) (hg : Multipliable g) (h : f < g
   tprod_lt_tprod hle hi hf hg
 #align tsum_strict_mono tsum_strict_mono
 
-@[to_additive]
-theorem tprod_one_lt (hsum : Multipliable g) (hg : ∀ i, 1 ≤ g i) (i : ι) (hi : 1 < g i) :
+@[to_additive tsum_pos]
+theorem one_lt_tprod (hsum : Multipliable g) (hg : ∀ i, 1 ≤ g i) (i : ι) (hi : 1 < g i) :
     1 < ∏' i, g i := by
   rw [← tprod_one]
   exact tprod_lt_tprod hg hi multipliable_one hsum

@@ -25,6 +25,20 @@ generally, see `HasSum.tendsto_sum_nat`.
 
 * Bourbaki: General Topology (1995), Chapter 3 §5 (Infinite sums in commutative groups)
 
+## Implementation notes
+
+We say that a function `f : β → α` has an unconditional product of `a` if the function
+`fun s : Finset β ↦ ∏ b in s, f b` converges to `a` on the `atTop` filter on `Finset β`. In other
+words, for every neighborhood `U` of `a`, there exists a finite set `s : Finset β` of indices such
+that `∏ b in s', f b ∈ U` for any finite set `s'` which is a superset of `s`.
+
+This may yield some unexpected results. For example, according to this definition, the product
+`∏' n : ℕ, (1 : ℝ) / 2` unconditionally exists and is equal to `0`. More strikingly,
+the product `∏' n : ℕ, (n : ℝ)` unconditionally exists and is equal to `0`, because one
+of its terms is `0` (even though the product of the remaining terms diverges). Users who would
+prefer that these products be considered not to exist can carry them out in the unit group `ℝˣ`
+rather than in `ℝ`.
+
 -/
 
 /- **NOTE**. This file is intended to be kept short, just enough to state the basic definitions and
@@ -50,8 +64,7 @@ variable [CommMonoid α] [TopologicalSpace α]
 
 These are defined in an identical way to infinite sums (`HasSum`). For example, we say that
 the function `ℕ → ℝ` sending `n` to `1 / 2` has a product of `0`, rather than saying that it does
-not converge as some authors would.
--/
+not converge as some authors would. -/
 @[to_additive "Infinite sum on a topological monoid
 
 The `atTop` filter on `Finset β` is the limit of all finite sets towards the entire type. So we sum

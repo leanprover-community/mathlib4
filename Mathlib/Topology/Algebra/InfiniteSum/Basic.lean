@@ -311,6 +311,9 @@ theorem Multipliable.compl_add {s : Set β} (hs : Multipliable (f ∘ (↑) : (s
   (hs.hasProd.compl_mul hsc.hasProd).multipliable
 #align summable.compl_add Summable.compl_add
 
+/-- Version of `HasProd.update` for `CommMonoid` rather than `CommGroup`.
+Rather than showing that `f.update` has a specific product in terms of `HasProd`,
+it gives a relationship between the products of `f` and `f.update` given that both exist. -/
 @[to_additive "Version of `HasSum.update` for `AddCommMonoid` rather than `AddCommGroup`.
 Rather than showing that `f.update` has a specific sum in terms of `HasSum`,
 it gives a relationship between the sums of `f` and `f.update` given that both exist."]
@@ -327,6 +330,9 @@ theorem HasProd.update' {α β : Type*} [TopologicalSpace α] [CommMonoid α] [T
   exact HasProd.unique h (hf'.mul (hasProd_ite_eq b (f b)))
 #align has_sum.update' HasSum.update'
 
+/-- Version of `hasProd_ite_div_hasProd` for `CommMonoid` rather than `CommGroup`.
+Rather than showing that the `ite` expression has a specific product in terms of `HasProd`, it gives
+a relationship between the products of `f` and `ite (n = b) 0 (f n)` given that both exist. -/
 @[to_additive "Version of `hasSum_ite_sub_hasSum` for `AddCommMonoid` rather than `AddCommGroup`.
 Rather than showing that the `ite` expression has a specific sum in terms of `HasSum`,
 it gives a relationship between the sums of `f` and `ite (n = b) 0 (f n)` given that both exist."]
@@ -587,6 +593,8 @@ theorem tprod_of_prod {f : γ → β → α} {s : Finset γ} (hf : ∀ i ∈ s, 
   (hasProd_prod fun i hi ↦ (hf i hi).hasProd).tprod_eq
 #align tsum_sum tsum_sum
 
+/-- Version of `tprod_eq_mul_tprod_ite` for `CommMonoid` rather than `CommGroup`.
+Requires a different convergence assumption involving `Function.update`. -/
 @[to_additive "Version of `tsum_eq_add_tsum_ite` for `AddCommMonoid` rather than `AddCommGroup`.
 Requires a different convergence assumption involving `Function.update`."]
 theorem tprod_eq_mul_tprod_ite' [DecidableEq β] {f : β → α} (b : β)
