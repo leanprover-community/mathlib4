@@ -115,25 +115,25 @@ theorem conjTranspose_row [Star α] (v : m → α) : (row v)ᴴ = col (star v) :
 #align matrix.conj_transpose_row Matrix.conjTranspose_row
 
 theorem row_vecMul [Fintype m] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : m → α) :
-    Matrix.row (Matrix.vecMul v M) = Matrix.row v * M := by
+    Matrix.row (v ᵥ* M) = Matrix.row v * M := by
   ext
   rfl
 #align matrix.row_vec_mul Matrix.row_vecMul
 
 theorem col_vecMul [Fintype m] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : m → α) :
-    Matrix.col (Matrix.vecMul v M) = (Matrix.row v * M)ᵀ := by
+    Matrix.col (v ᵥ* M) = (Matrix.row v * M)ᵀ := by
   ext
   rfl
 #align matrix.col_vec_mul Matrix.col_vecMul
 
 theorem col_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : n → α) :
-    Matrix.col (Matrix.mulVec M v) = M * Matrix.col v := by
+    Matrix.col (M *ᵥ v) = M * Matrix.col v := by
   ext
   rfl
 #align matrix.col_mul_vec Matrix.col_mulVec
 
 theorem row_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : n → α) :
-    Matrix.row (Matrix.mulVec M v) = (M * Matrix.col v)ᵀ := by
+    Matrix.row (M *ᵥ v) = (M * Matrix.col v)ᵀ := by
   ext
   rfl
 #align matrix.row_mul_vec Matrix.row_mulVec

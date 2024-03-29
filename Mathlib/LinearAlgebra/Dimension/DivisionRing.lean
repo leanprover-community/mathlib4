@@ -36,7 +36,6 @@ noncomputable section
 universe u v v' v'' u₁' w w'
 
 variable {K R : Type u} {V V₁ V₂ V₃ : Type v} {V' V'₁ : Type v'} {V'' : Type v''}
-
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
 open BigOperators Cardinal Basis Submodule Function Set
@@ -46,11 +45,8 @@ section Module
 section DivisionRing
 
 variable [DivisionRing K]
-
 variable [AddCommGroup V] [Module K V]
-
 variable [AddCommGroup V'] [Module K V']
-
 variable [AddCommGroup V₁] [Module K V₁]
 
 /-- If a vector space has a finite dimension, the index set of `Basis.ofVectorSpace` is finite. -/
@@ -58,13 +54,6 @@ theorem Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0 (h : Module.rank K V <
     (Basis.ofVectorSpaceIndex K V).Finite :=
   finite_def.2 <| (Basis.ofVectorSpace K V).nonempty_fintype_index_of_rank_lt_aleph0 h
 #align basis.finite_of_vector_space_index_of_rank_lt_aleph_0 Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0
-
--- TODO how far can we generalise this?
-theorem rank_span_le (s : Set V) : Module.rank K (span K s) ≤ #s := by
-  obtain ⟨b, hb, hsab, hlib⟩ := exists_linearIndependent K s
-  convert Cardinal.mk_le_mk_of_subset hb
-  rw [← hsab, rank_span_set hlib]
-#align rank_span_le rank_span_le
 
 theorem rank_quotient_add_rank (p : Submodule K V) :
     Module.rank K (V ⧸ p) + Module.rank K p = Module.rank K V := by
@@ -124,7 +113,6 @@ theorem exists_linearIndependent_pair_of_one_lt_rank
 section
 
 variable [AddCommGroup V₂] [Module K V₂]
-
 variable [AddCommGroup V₃] [Module K V₃]
 
 open LinearMap
@@ -188,7 +176,6 @@ end
 end DivisionRing
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V] [AddCommGroup V₁] [Module K V₁]
-
 variable [AddCommGroup V'] [Module K V']
 
 /-- The `ι` indexed basis on `V`, where `ι` is an empty type and `V` is zero-dimensional.
@@ -237,11 +224,11 @@ theorem rank_le_one_iff : Module.rank K V ≤ 1 ↔ ∃ v₀ : V, ∀ v, ∃ r :
     rw [← b.mk_eq_rank'', Cardinal.le_one_iff_subsingleton, subsingleton_coe] at hd
     rcases eq_empty_or_nonempty (ofVectorSpaceIndex K V) with (hb | ⟨⟨v₀, hv₀⟩⟩)
     · use 0
-      have h' : ∀ v : V, v = 0 := by simpa [hb, Submodule.eq_bot_iff] using b.span_eq.symm
+      have h' : ∀ v : V, v = 0 := by simpa [b, hb, Submodule.eq_bot_iff] using b.span_eq.symm
       intro v
       simp [h' v]
     · use v₀
-      have h' : (K ∙ v₀) = ⊤ := by simpa [hd.eq_singleton_of_mem hv₀] using b.span_eq
+      have h' : (K ∙ v₀) = ⊤ := by simpa [b, hd.eq_singleton_of_mem hv₀] using b.span_eq
       intro v
       have hv : v ∈ (⊤ : Submodule K V) := mem_top
       rwa [← h', mem_span_singleton] at hv
@@ -325,68 +312,6 @@ section Span
 open Submodule FiniteDimensional
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
-
-variable (K)
-
-/-- The rank of a set of vectors as a natural number. -/
-protected noncomputable def Set.finrank (s : Set V) : ℕ :=
-  finrank K (span K s)
-#align set.finrank Set.finrank
-
-variable {K}
-
-theorem finrank_span_le_card (s : Set V) [Fintype s] : finrank K (span K s) ≤ s.toFinset.card :=
-  finrank_le_of_rank_le (by simpa using rank_span_le (K := K) s)
-#align finrank_span_le_card finrank_span_le_card
-
-theorem finrank_span_finset_le_card (s : Finset V) : (s : Set V).finrank K ≤ s.card :=
-  calc
-    (s : Set V).finrank K ≤ (s : Set V).toFinset.card := finrank_span_le_card (V := V) s
-    _ = s.card := by simp
-#align finrank_span_finset_le_card finrank_span_finset_le_card
-
-theorem finrank_range_le_card {ι : Type*} [Fintype ι] {b : ι → V} :
-    (Set.range b).finrank K ≤ Fintype.card ι := by
-  classical
-  refine (finrank_span_le_card _).trans ?_
-  rw [Set.toFinset_range]
-  exact Finset.card_image_le
-#align finrank_range_le_card finrank_range_le_card
-
-theorem finrank_span_eq_card {ι : Type*} [Fintype ι] {b : ι → V} (hb : LinearIndependent K b) :
-    finrank K (span K (Set.range b)) = Fintype.card ι :=
-  finrank_eq_of_rank_eq
-    (by
-      have : Module.rank K (span K (Set.range b)) = #(Set.range b) := rank_span hb
-      rwa [← lift_inj, mk_range_eq_of_injective hb.injective, Cardinal.mk_fintype, lift_natCast,
-        lift_eq_nat_iff] at this)
-#align finrank_span_eq_card finrank_span_eq_card
-
-theorem finrank_span_set_eq_card (s : Set V) [Fintype s] (hs : LinearIndependent K ((↑) : s → V)) :
-    finrank K (span K s) = s.toFinset.card :=
-  finrank_eq_of_rank_eq
-    (by
-      have : Module.rank K (span K s) = #s := rank_span_set hs
-      rwa [Cardinal.mk_fintype, ← Set.toFinset_card] at this)
-#align finrank_span_set_eq_card finrank_span_set_eq_card
-
-theorem finrank_span_finset_eq_card (s : Finset V) (hs : LinearIndependent K ((↑) : s → V)) :
-    finrank K (span K (s : Set V)) = s.card := by
-  convert finrank_span_set_eq_card (s : Set V) hs
-  ext
-  simp
-#align finrank_span_finset_eq_card finrank_span_finset_eq_card
-
-theorem span_lt_of_subset_of_card_lt_finrank {s : Set V} [Fintype s] {t : Submodule K V}
-    (subset : s ⊆ t) (card_lt : s.toFinset.card < finrank K t) : span K s < t :=
-  lt_of_le_of_finrank_lt_finrank (span_le.mpr subset)
-    (lt_of_le_of_lt (finrank_span_le_card _) card_lt)
-#align span_lt_of_subset_of_card_lt_finrank span_lt_of_subset_of_card_lt_finrank
-
-theorem span_lt_top_of_card_lt_finrank {s : Set V} [Fintype s]
-    (card_lt : s.toFinset.card < finrank K V) : span K s < ⊤ :=
-  lt_top_of_finrank_lt_finrank (lt_of_le_of_lt (finrank_span_le_card _) card_lt)
-#align span_lt_top_of_card_lt_finrank span_lt_top_of_card_lt_finrank
 
 /-- Given a family of `n` linearly independent vectors in a finite-dimensional space of
 dimension `> n`, one may extend the family by another vector while retaining linear independence. -/
@@ -479,20 +404,20 @@ theorem linearIndependent_iff_card_eq_finrank_span {ι : Type*} [Fintype ι] {b 
       have h : span K (f '' Set.range b') = map f (span K (Set.range b')) := span_image f
       have hf : f '' Set.range b' = Set.range b := by
         ext x
-        simp [Set.mem_image, Set.mem_range]
+        simp [f, Set.mem_image, Set.mem_range]
       rw [hf] at h
       have hx : (x : V) ∈ span K (Set.range b) := x.property
       conv at hx =>
         arg 2
         rw [h]
-      simpa [mem_map] using hx
+      simpa [f, mem_map] using hx
     have hi : LinearMap.ker f = ⊥ := ker_subtype _
     convert (linearIndependent_of_top_le_span_of_card_eq_finrank hs hc).map' _ hi
 #align linear_independent_iff_card_eq_finrank_span linearIndependent_iff_card_eq_finrank_span
 
 theorem linearIndependent_iff_card_le_finrank_span {ι : Type*} [Fintype ι] {b : ι → V} :
     LinearIndependent K b ↔ Fintype.card ι ≤ (Set.range b).finrank K := by
-  rw [linearIndependent_iff_card_eq_finrank_span, finrank_range_le_card.le_iff_eq]
+  rw [linearIndependent_iff_card_eq_finrank_span, (finrank_range_le_card _).le_iff_eq]
 #align linear_independent_iff_card_le_finrank_span linearIndependent_iff_card_le_finrank_span
 
 /-- A family of `finrank K V` vectors forms a basis if they span the whole space. -/
@@ -530,27 +455,26 @@ end Basis
 section Cardinal
 
 variable (K)
-
 variable [DivisionRing K]
 
 /-- Key lemma towards the Erdős-Kaplansky theorem from https://mathoverflow.net/a/168624 -/
 theorem max_aleph0_card_le_rank_fun_nat : max ℵ₀ #K ≤ Module.rank K (ℕ → K) := by
   have aleph0_le : ℵ₀ ≤ Module.rank K (ℕ → K) := (rank_finsupp_self K ℕ).symm.trans_le
-    (Finsupp.lcoeFun.rank_le_of_injective <| by exact FunLike.coe_injective)
+    (Finsupp.lcoeFun.rank_le_of_injective <| by exact DFunLike.coe_injective)
   refine max_le aleph0_le ?_
   obtain card_K | card_K := le_or_lt #K ℵ₀
   · exact card_K.trans aleph0_le
   by_contra!
   obtain ⟨⟨ιK, bK⟩⟩ := Module.Free.exists_basis (R := K) (M := ℕ → K)
   let L := Subfield.closure (Set.range (fun i : ιK × ℕ ↦ bK i.1 i.2))
-  have hLK : #L < #K
-  · refine (Subfield.cardinal_mk_closure_le_max _).trans_lt
+  have hLK : #L < #K := by
+    refine (Subfield.cardinal_mk_closure_le_max _).trans_lt
       (max_lt_iff.mpr ⟨mk_range_le.trans_lt ?_, card_K⟩)
     rwa [mk_prod, ← aleph0, lift_uzero, bK.mk_eq_rank'', mul_aleph0_eq aleph0_le]
   letI := Module.compHom K (RingHom.op L.subtype)
   obtain ⟨⟨ιL, bL⟩⟩ := Module.Free.exists_basis (R := Lᵐᵒᵖ) (M := K)
-  have card_ιL : ℵ₀ ≤ #ιL
-  · contrapose! hLK
+  have card_ιL : ℵ₀ ≤ #ιL := by
+    contrapose! hLK
     haveI := @Fintype.ofFinite _ (lt_aleph0_iff_finite.mp hLK)
     rw [bL.repr.toEquiv.cardinal_eq, mk_finsupp_of_fintype,
         ← MulOpposite.opEquiv.cardinal_eq] at card_K ⊢

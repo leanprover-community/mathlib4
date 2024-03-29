@@ -5,7 +5,9 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Permutation
-import Mathlib.Data.List.Range
+import Mathlib.Data.List.Pairwise
+import Mathlib.Data.List.InsertNth
+import Mathlib.Data.List.Lattice
 import Mathlib.Data.Nat.Factorial.Basic
 
 #align_import data.list.perm from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
@@ -277,7 +279,7 @@ theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} (lcomm : Left
 
 section
 
-variable {op : α → α → α} [IA : IsAssociative α op] [IC : IsCommutative α op]
+variable {op : α → α → α} [IA : Std.Associative op] [IC : Std.Commutative op]
 
 -- mathport name: op
 local notation a " * " b => op a b
@@ -351,7 +353,7 @@ alias ⟨subperm.of_cons, subperm.cons⟩ := subperm_cons
 #align list.subperm.of_cons List.subperm.of_cons
 #align list.subperm.cons List.subperm.cons
 
---Porting note: commented out
+-- Porting note: commented out
 --attribute [protected] subperm.cons
 
 theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (d₁ : Nodup l₁) (h₁ : a ∉ l₁) (h₂ : a ∈ l₂)
@@ -371,7 +373,7 @@ theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (d₁ : Nodup l₁) (
     have am : a ∈ r₂ := by
       simp only [find?, mem_cons] at h₂
       exact h₂.resolve_left fun e => h₁ <| e.symm ▸ bm
-    rcases mem_split bm with ⟨t₁, t₂, rfl⟩
+    rcases append_of_mem bm with ⟨t₁, t₂, rfl⟩
     have st : t₁ ++ t₂ <+ t₁ ++ b :: t₂ := by simp
     rcases ih (d₁.sublist st) (mt (fun x => st.subset x) h₁) am
         (Perm.cons_inv <| p.trans perm_middle) with
@@ -613,9 +615,8 @@ theorem Perm.drop_inter {α} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : x
     xs.drop n ~ ys.inter (xs.drop n) := by
   by_cases h'' : n ≤ xs.length
   · let n' := xs.length - n
-    have h₀ : n = xs.length - n' := by
-      rwa [tsub_tsub_cancel_of_le]
-    have h₁ : n' ≤ xs.length := by apply tsub_le_self
+    have h₀ : n = xs.length - n' := by rwa [Nat.sub_sub_self]
+    have h₁ : n' ≤ xs.length := Nat.sub_le ..
     have h₂ : xs.drop n = (xs.reverse.take n').reverse := by
       rw [reverse_take _ h₁, h₀, reverse_reverse]
     rw [h₂]
@@ -625,7 +626,7 @@ theorem Perm.drop_inter {α} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : x
     apply (reverse_perm _).trans; assumption
   · have : drop n xs = [] := by
       apply eq_nil_of_length_eq_zero
-      rw [length_drop, tsub_eq_zero_iff_le]
+      rw [length_drop, Nat.sub_eq_zero_iff_le]
       apply le_of_not_ge h''
     simp [this, List.inter]
 #align list.perm.drop_inter List.Perm.drop_inter
@@ -652,7 +653,7 @@ theorem perm_of_mem_permutationsAux :
   rcases m with (m | ⟨l₁, l₂, m, _, rfl⟩)
   · exact (IH1 _ m).trans perm_middle
   · have p : l₁ ++ l₂ ~ is := by
-      simp [permutations] at m
+      simp only [mem_cons] at m
       cases' m with e m
       · simp [e]
       exact is.append_nil ▸ IH2 _ m
@@ -697,7 +698,7 @@ theorem mem_permutationsAux_of_perm :
   rcases IH1 _ (p.trans perm_middle) with (⟨is', p', e⟩ | m)
   · clear p
     subst e
-    rcases mem_split (p'.symm.subset (mem_cons_self _ _)) with ⟨l₁, l₂, e⟩
+    rcases append_of_mem (p'.symm.subset (mem_cons_self _ _)) with ⟨l₁, l₂, e⟩
     subst is'
     have p := (perm_middle.symm.trans p').cons_inv
     cases' l₂ with a l₂'
@@ -711,7 +712,7 @@ theorem mem_permutations {s t : List α} : s ∈ permutations t ↔ s ~ t :=
   ⟨perm_of_mem_permutations, mem_permutations_of_perm_lemma mem_permutationsAux_of_perm⟩
 #align list.mem_permutations List.mem_permutations
 
---Porting note: temporary theorem to solve diamond issue
+-- Porting note: temporary theorem to solve diamond issue
 private theorem DecEq_eq {α : Type*} [DecidableEq α] :
      instBEqList = @instBEq (List α) instDecidableEqList :=
   congr_arg BEq.mk <| by
@@ -746,7 +747,7 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
 theorem Perm.permutations' {s t : List α} (p : s ~ t) : permutations' s ~ permutations' t := by
   induction' p with a s t _ IH a b l s t u _ _ IH₁ IH₂; · simp
   · exact IH.bind_right _
-  · dsimp [permutations']
+  · dsimp
     rw [bind_assoc, bind_assoc]
     apply Perm.bind_left
     intro l' _
@@ -800,7 +801,7 @@ theorem nthLe_permutations'Aux (s : List α) (x : α) (n : ℕ)
     (hn : n < length (permutations'Aux x s)) :
     (permutations'Aux x s).nthLe n hn = s.insertNth n x := by
   induction' s with y s IH generalizing n
-  · simp only [length, zero_add, lt_one_iff] at hn
+  · simp only [length, zero_add, Nat.lt_one_iff] at hn
     simp [hn]
   · cases n
     · simp [nthLe]
@@ -862,8 +863,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
   intro H
   obtain ⟨k, hk, hk'⟩ := nthLe_of_mem H
   rw [nodup_iff_nthLe_inj] at h
-  suffices k = k + 1 by simp at this
-  refine' h k (k + 1) _ _ _
+  refine k.succ_ne_self.symm $ h k (k + 1) ?_ ?_ ?_
   · simpa [Nat.lt_succ_iff] using hk.le
   · simpa using hk
   rw [nthLe_permutations'Aux, nthLe_permutations'Aux]

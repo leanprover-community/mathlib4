@@ -70,13 +70,9 @@ open DirectSum BigOperators Pointwise
 open DirectSum SetLike
 
 variable {ι R A : Type*}
-
 variable [AddCommMonoid ι] [DecidableEq ι]
-
 variable [CommRing R] [CommRing A] [Algebra R A]
-
 variable (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
-
 variable (x : Submonoid A)
 
 local notation "at " x => Localization x
@@ -234,7 +230,7 @@ instance : Pow (NumDenSameDeg 𝒜 x) ℕ where
       @GradedMonoid.GMonoid.gnpow _ (fun i => ↥(𝒜 i)) _ _ n _ c.den, by
         induction' n with n ih
         · simpa only [Nat.zero_eq, coe_gnpow, pow_zero] using Submonoid.one_mem _
-        · simpa only [pow_succ', coe_gnpow] using x.mul_mem ih c.den_mem⟩
+        · simpa only [pow_succ, coe_gnpow] using x.mul_mem ih c.den_mem⟩
 
 @[simp]
 theorem deg_pow (c : NumDenSameDeg 𝒜 x) (n : ℕ) : (c ^ n).deg = n • c.deg :=
@@ -335,7 +331,6 @@ instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
 section SMul
 
 variable {α : Type*} [SMul α R] [SMul α A] [IsScalarTower α R A]
-
 variable [IsScalarTower α A A]
 
 instance : SMul α (HomogeneousLocalization 𝒜 x) where

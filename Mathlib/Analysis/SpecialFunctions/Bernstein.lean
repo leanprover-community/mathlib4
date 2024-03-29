@@ -75,7 +75,7 @@ namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq Function
 
-@[positivity FunLike.coe _ _]
+@[positivity DFunLike.coe _ _]
 def evalBernstein : PositivityExt where eval {_ _} _zα _pα e := do
   let .app (.app _coe (.app (.app _ n) ν)) x ← whnfR e | throwError "not bernstein polynomial"
   let p ← mkAppOptM ``bernstein_nonneg #[n, ν, x]
@@ -120,7 +120,7 @@ theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
   apply_fun fun x : ℝ => x * n using GroupWithZero.mul_right_injective h'
   dsimp
   conv_lhs => simp only [Finset.sum_mul, z]
-  conv_rhs => rw [div_mul_cancel _ h']
+  conv_rhs => rw [div_mul_cancel₀ _ h']
   have := bernsteinPolynomial.variance ℝ n
   apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
   simp? [AlgHom.map_sum, Finset.sum_range, ← Polynomial.nat_cast_mul] at this says
@@ -232,7 +232,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
   simp only [Metric.nhds_basis_ball.tendsto_right_iff, Metric.mem_ball, dist_eq_norm]
   intro ε h
   let δ := δ f ε h
-  have nhds_zero := tendsto_const_div_atTop_nhds_0_nat (2 * ‖f‖ * δ ^ (-2 : ℤ))
+  have nhds_zero := tendsto_const_div_atTop_nhds_zero_nat (2 * ‖f‖ * δ ^ (-2 : ℤ))
   filter_upwards [nhds_zero.eventually (gt_mem_nhds (half_pos h)), eventually_gt_atTop 0] with n nh
     npos'
   have npos : 0 < (n : ℝ) := by positivity

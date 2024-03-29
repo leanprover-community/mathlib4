@@ -3,10 +3,11 @@ Copyright (c) 2022 Yaël Dillies, George Shakan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, George Shakan
 -/
-import Mathlib.Combinatorics.DoubleCounting
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Data.Finset.Pointwise
-import Mathlib.Data.Rat.NNRat
+import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Tactic.GCongr
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import combinatorics.additive.pluennecke_ruzsa from "leanprover-community/mathlib"@"4aab2abced69a9e579b1e6dc2856ed3db48e2cbd"
 
@@ -186,7 +187,7 @@ theorem card_add_nsmul_le {α : Type*} [AddCommGroup α] [DecidableEq α] {A B :
   · simp
   induction' n with n ih
   · simp
-  rw [succ_nsmul, ← add_assoc, _root_.pow_succ, mul_assoc, ← mul_div_right_comm, le_div_iff,
+  rw [succ_nsmul', ← add_assoc, _root_.pow_succ', mul_assoc, ← mul_div_right_comm, le_div_iff,
     ← cast_mul]
   swap; exact cast_pos.2 hA.card_pos
   refine' (cast_le.2 <| add_pluennecke_petridis _ hAB).trans _
@@ -201,7 +202,7 @@ theorem card_mul_pow_le (hAB : ∀ A' ⊆ A, (A * B).card * A'.card ≤ (A' * B)
   · simp
   induction' n with n ih
   · simp
-  rw [_root_.pow_succ, ← mul_assoc, _root_.pow_succ, @mul_assoc ℚ≥0, ← mul_div_right_comm,
+  rw [_root_.pow_succ', ← mul_assoc, _root_.pow_succ', @mul_assoc ℚ≥0, ← mul_div_right_comm,
     le_div_iff, ← cast_mul]
   swap; exact cast_pos.2 hA.card_pos
   refine' (cast_le.2 <| mul_pluennecke_petridis _ hAB).trans _

@@ -160,7 +160,7 @@ theorem sol_eq_of_eq_init (u v : ℕ → α) (hu : E.IsSolution u) (hv : E.IsSol
   set u' : ↥E.solSpace := ⟨u, hu⟩
   set v' : ↥E.solSpace := ⟨v, hv⟩
   change u'.val = v'.val
-  suffices h' : u' = v'; exact h' ▸ rfl
+  suffices h' : u' = v' from h' ▸ rfl
   rw [← E.toInit.toEquiv.apply_eq_iff_eq, LinearEquiv.coe_toEquiv]
   ext x
   exact mod_cast h (mem_range.mpr x.2)
@@ -216,7 +216,7 @@ def charPoly : α[X] :=
   `q` is a root of `E`'s characteristic polynomial. -/
 theorem geom_sol_iff_root_charPoly (q : α) :
     (E.IsSolution fun n ↦ q ^ n) ↔ E.charPoly.IsRoot q := by
-  rw [charPoly, Polynomial.IsRoot.def, Polynomial.eval]
+  rw [charPoly, Polynomial.IsRoot.definition, Polynomial.eval]
   simp only [Polynomial.eval₂_finset_sum, one_mul, RingHom.id_apply, Polynomial.eval₂_monomial,
     Polynomial.eval₂_sub]
   constructor

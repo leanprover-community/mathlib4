@@ -3,16 +3,15 @@ Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow
 -/
-import Mathlib.Algebra.Module.LinearMap
-import Mathlib.LinearAlgebra.Basis.Bilinear
+import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.LinearAlgebra.Basic
+import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.Algebra.EuclideanDomain.Instances
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 
 #align_import linear_algebra.sesquilinear_form from "leanprover-community/mathlib"@"87c54600fe3cdc7d32ff5b50873ac724d86aef8d"
 
 /-!
-# Sesquilinear form
+# Sesquilinear maps
 
 This files provides properties about sesquilinear maps and forms. The maps considered are of the
 form `M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M`, where `I₁ : R₁ →+* R` and `I₂ : R₂ →+* R` are ring homomorphisms and
@@ -151,9 +150,7 @@ theorem linearIndependent_of_isOrthoᵢ {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ
       rw [isOrthoᵢ_def.1 hv₁ _ _ hij, smul_zero]
     simp_rw [B.map_sum₂, map_smulₛₗ₂, hsum] at this
     apply (map_eq_zero I₁).mp
-    exact Or.elim (smul_eq_zero.mp this)
-      (fun y ↦ by simpa using y)
-      (fun hfalse ↦ False.elim $ (hv₂ i) hfalse)
+    exact (smul_eq_zero.mp this).elim _root_.id (hv₂ i · |>.elim)
 set_option linter.uppercaseLean3 false in
 #align linear_map.linear_independent_of_is_Ortho LinearMap.linearIndependent_of_isOrthoᵢ
 
@@ -245,7 +242,10 @@ theorem domRestrict (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p 
 
 end IsSymm
 
-theorem isSymm_iff_eq_flip {B : M →ₗ[R] M →ₗ[R] R} : B.IsSymm ↔ B = B.flip := by
+@[simp]
+theorem isSymm_zero : (0 : M →ₛₗ[I] M →ₗ[R] R).IsSymm := fun _ _ => map_zero _
+
+theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.flip := by
   constructor <;> intro h
   · ext
     rw [← h, flip_apply, RingHom.id_apply]
@@ -260,7 +260,11 @@ end Symmetric
 
 section Alternating
 
-variable [CommRing R] [AddCommGroup M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
+section CommSemiring
+
+section AddCommMonoid
+
+variable [CommSemiring R] [AddCommMonoid M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
   [Module R₁ M₁] {I₁ : R₁ →+* R} {I₂ : R₁ →+* R} {I : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
 
 /-- The proposition that a sesquilinear map is alternating -/
@@ -268,13 +272,22 @@ def IsAlt (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Prop :=
   ∀ x, B x x = 0
 #align linear_map.is_alt LinearMap.IsAlt
 
-namespace IsAlt
-
 variable (H : B.IsAlt)
 
-theorem self_eq_zero (x : M₁) : B x x = 0 :=
+theorem IsAlt.self_eq_zero (x : M₁) : B x x = 0 :=
   H x
 #align linear_map.is_alt.self_eq_zero LinearMap.IsAlt.self_eq_zero
+
+end AddCommMonoid
+
+section AddCommGroup
+
+namespace IsAlt
+
+variable [CommSemiring R] [AddCommGroup M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
+  [Module R₁ M₁] {I₁ : R₁ →+* R} {I₂ : R₁ →+* R} {I : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
+
+variable (H : B.IsAlt)
 
 theorem neg (x y : M₁) : -B x y = B y x := by
   have H1 : B (y + x) (y + x) = 0 := self_eq_zero H (y + x)
@@ -295,6 +308,15 @@ theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
 
 end IsAlt
 
+end AddCommGroup
+
+end CommSemiring
+
+section Semiring
+
+variable [CommRing R] [AddCommGroup M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
+  [Module R₁ M₁] {I : R₁ →+* R}
+
 theorem isAlt_iff_eq_neg_flip [NoZeroDivisors R] [CharZero R] {B : M₁ →ₛₗ[I] M₁ →ₛₗ[I] R} :
     B.IsAlt ↔ B = -B.flip := by
   constructor <;> intro h
@@ -306,6 +328,8 @@ theorem isAlt_iff_eq_neg_flip [NoZeroDivisors R] [CharZero R] {B : M₁ →ₛ�
   simp only [neg_apply, flip_apply, ← add_eq_zero_iff_eq_neg] at h'
   exact add_self_eq_zero.mp h'
 #align linear_map.is_alt_iff_eq_neg_flip LinearMap.isAlt_iff_eq_neg_flip
+
+end Semiring
 
 end Alternating
 
@@ -368,8 +392,7 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
   rcases mem_span_finset.1 h.1 with ⟨μ, rfl⟩
   replace h := h.2 x (by simp [Submodule.mem_span] : x ∈ Submodule.span K₁ ({x} : Finset V₁))
   rw [Finset.sum_singleton] at h ⊢
-  suffices hμzero : μ x = 0
-  · rw [hμzero, zero_smul, Submodule.mem_bot]
+  suffices hμzero : μ x = 0 by rw [hμzero, zero_smul, Submodule.mem_bot]
   rw [isOrtho_def, map_smulₛₗ] at h
   exact Or.elim (smul_eq_zero.mp h)
       (fun y ↦ by simpa using y)
@@ -390,7 +413,7 @@ theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] 
 
 -- todo: Generalize this to sesquilinear maps
 theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : ¬B.IsOrtho x x) :
-    (K ∙ x) ⊔ @Submodule.orthogonalBilin _ _ _ _ _ _ _ _ _ (_) _ _ (K ∙ x) B = ⊤ := by
+    (K ∙ x) ⊔ Submodule.orthogonalBilin (N := K ∙ x) (B := B) = ⊤ := by
   rw [orthogonal_span_singleton_eq_to_lin_ker]
   exact (B x).span_singleton_sup_ker_eq_top hx
 #align linear_map.span_singleton_sup_orthogonal_eq_top LinearMap.span_singleton_sup_orthogonal_eq_top
@@ -399,7 +422,7 @@ theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x 
 /-- Given a bilinear form `B` and some `x` such that `B x x ≠ 0`, the span of the singleton of `x`
   is complement to its orthogonal complement. -/
 theorem isCompl_span_singleton_orthogonal {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : ¬B.IsOrtho x x) :
-    IsCompl (K ∙ x) (@Submodule.orthogonalBilin _ _ _ _ _ _ _ _ _ (_) _ _ (K ∙ x) B) :=
+    IsCompl (K ∙ x) (Submodule.orthogonalBilin (N := K ∙ x) (B := B)) :=
   { disjoint := disjoint_iff.2 <| span_singleton_inf_orthogonal_eq_bot B x hx
     codisjoint := codisjoint_iff.2 <| span_singleton_sup_orthogonal_eq_top hx }
 #align linear_map.is_compl_span_singleton_orthogonal LinearMap.isCompl_span_singleton_orthogonal
@@ -414,21 +437,13 @@ section AdjointPair
 section AddCommMonoid
 
 variable [CommSemiring R]
-
 variable [AddCommMonoid M] [Module R M]
-
 variable [AddCommMonoid M₁] [Module R M₁]
-
 variable [AddCommMonoid M₂] [Module R M₂]
-
 variable [AddCommMonoid M₃] [Module R M₃]
-
 variable {I : R →+* R}
-
 variable {B F : M →ₗ[R] M →ₛₗ[I] M₃} {B' : M₁ →ₗ[R] M₁ →ₛₗ[I] M₃} {B'' : M₂ →ₗ[R] M₂ →ₛₗ[I] M₃}
-
 variable {f f' : M →ₗ[R] M₁} {g g' : M₁ →ₗ[R] M}
-
 variable (B B' f g)
 
 /-- Given a pair of modules equipped with bilinear maps, this is the condition for a pair of
@@ -474,15 +489,10 @@ end AddCommMonoid
 section AddCommGroup
 
 variable [CommRing R]
-
 variable [AddCommGroup M] [Module R M]
-
 variable [AddCommGroup M₁] [Module R M₁]
-
 variable [AddCommGroup M₂] [Module R M₂]
-
 variable {B F : M →ₗ[R] M →ₗ[R] M₂} {B' : M₁ →ₗ[R] M₁ →ₗ[R] M₂}
-
 variable {f f' : M →ₗ[R] M₁} {g g' : M₁ →ₗ[R] M}
 
 theorem IsAdjointPair.sub (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' f' g') :
@@ -507,13 +517,9 @@ section SelfadjointPair
 section AddCommMonoid
 
 variable [CommSemiring R]
-
 variable [AddCommMonoid M] [Module R M]
-
 variable [AddCommMonoid M₁] [Module R M₁]
-
 variable {I : R →+* R}
-
 variable (B F : M →ₗ[R] M →ₛₗ[I] M₁)
 
 /-- The condition for an endomorphism to be "self-adjoint" with respect to a pair of bilinear maps
@@ -535,9 +541,7 @@ end AddCommMonoid
 section AddCommGroup
 
 variable [CommRing R]
-
 variable [AddCommGroup M] [Module R M] [AddCommGroup M₁] [Module R M₁]
-
 variable [AddCommGroup M₂] [Module R M₂] (B F : M →ₗ[R] M →ₗ[R] M₂)
 
 /-- The set of pair-self-adjoint endomorphisms are a submodule of the type of all endomorphisms. -/
@@ -653,7 +657,6 @@ variable [AddCommMonoid Mₗ₁] [AddCommMonoid Mₗ₂] [AddCommMonoid Mₗ₁'
   [AddCommMonoid M]
 
 variable [Module R Mₗ₁] [Module R Mₗ₂] [Module R Mₗ₁'] [Module R Mₗ₂'] [Module R M]
-
 variable {B : Mₗ₁ →ₗ[R] Mₗ₂ →ₗ[R] M} (e₁ : Mₗ₁ ≃ₗ[R] Mₗ₁') (e₂ : Mₗ₂ ≃ₗ[R] Mₗ₂')
 
 theorem SeparatingLeft.congr (h : B.SeparatingLeft) :
@@ -783,8 +786,7 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
   apply Finset.sum_eq_zero
   rintro j -
   rw [map_smulₛₗ]
-  suffices : B (v i) (v j) = 0
-  · rw [this, smul_zero]
+  suffices B (v i) (v j) = 0 by rw [this, smul_zero]
   obtain rfl | hij := eq_or_ne i j
   · exact ho
   · exact h hij
@@ -815,9 +817,7 @@ theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self [NoZeroSMulDivisors 
   specialize hB (v i)
   simp_rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, map_sum₂, map_smulₛₗ₂] at hB
   rw [Finset.sum_eq_single i] at hB
-  · exact Or.elim (smul_eq_zero.mp hB)
-      (fun y ↦ by simpa using y)
-      (fun hfalse ↦ False.elim $ (h i) hfalse)
+  · exact (smul_eq_zero.mp hB).elim _root_.id (h i).elim
   · intro j _hj hij
     replace hij : B (v j) (v i) = 0 := hO hij
     rw [hij, RingHom.id_apply, smul_zero]

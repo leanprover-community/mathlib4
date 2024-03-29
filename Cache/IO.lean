@@ -70,7 +70,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.10"
+  "0.1.11"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -89,11 +89,19 @@ def getLeanTar : IO String := do
 
 abbrev PackageDirs := Lean.RBMap String FilePath compare
 
+structure CacheM.Context where
+  mathlibDepPath : FilePath
+  packageDirs : PackageDirs
+
+abbrev CacheM := ReaderT CacheM.Context IO
+
 /-- Whether this is running on Mathlib repo or not -/
 def isMathlibRoot : IO Bool :=
   FilePath.mk "Mathlib" |>.pathExists
 
-def parseMathlibDepPath (json : Lean.Json) : Except String (Option FilePath) := do
+section
+
+private def parseMathlibDepPath (json : Lean.Json) : Except String (Option FilePath) := do
   let deps ← (← json.getObjVal? "packages").getArr?
   for d in deps do
     let n := ← (← d.getObjVal? "name").getStr?
@@ -106,7 +114,7 @@ def parseMathlibDepPath (json : Lean.Json) : Except String (Option FilePath) := 
       return LAKEPACKAGESDIR / "mathlib"
   return none
 
-def mathlibDepPath : IO FilePath := do
+private def CacheM.mathlibDepPath : IO FilePath := do
   let raw ← IO.FS.readFile "lake-manifest.json"
   match (Lean.Json.parse raw >>= parseMathlibDepPath) with
   | .ok (some p) => return p
@@ -118,9 +126,9 @@ def mathlibDepPath : IO FilePath := do
   | .error e => throw <| IO.userError s!"Cannot parse lake-manifest.json: {e}"
 
 -- TODO this should be generated automatically from the information in `lakefile.lean`.
-def getPackageDirs : IO PackageDirs := do
-  let root ← mathlibDepPath
-  return .ofList [
+private def CacheM.getContext : IO CacheM.Context := do
+  let root ← CacheM.mathlibDepPath
+  return ⟨root, .ofList [
     ("Mathlib", root),
     ("MathlibExtras", root),
     ("Archive", root),
@@ -129,15 +137,22 @@ def getPackageDirs : IO PackageDirs := do
     ("Std", LAKEPACKAGESDIR / "std"),
     ("Cli", LAKEPACKAGESDIR / "Cli"),
     ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
-    ("Qq", LAKEPACKAGESDIR / "Qq")
-  ]
+    ("Qq", LAKEPACKAGESDIR / "Qq"),
+    ("ImportGraph", LAKEPACKAGESDIR / "importGraph")
+  ]⟩
 
-initialize pkgDirs : PackageDirs ← getPackageDirs
+def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 
-def getPackageDir (path : FilePath) : IO FilePath :=
+end
+
+def mathlibDepPath : CacheM FilePath := return (← read).mathlibDepPath
+
+def getPackageDirs : CacheM PackageDirs := return (← read).packageDirs
+
+def getPackageDir (path : FilePath) : CacheM FilePath := do
   match path.withExtension "" |>.components.head? with
   | none => throw <| IO.userError "Can't find package directory for empty path"
-  | some pkg => match pkgDirs.find? pkg with
+  | some pkg => match (← getPackageDirs).find? pkg with
     | none => throw <| IO.userError s!"Unknown package directory for {pkg}"
     | some path => return path
 
@@ -155,13 +170,16 @@ where
       loop h (← processLine a line)
 
 /-- Runs a terminal command and retrieves its output -/
-def runCmd (cmd : String) (args : Array String) (throwFailure := true) : IO String := do
+def runCmd (cmd : String) (args : Array String) (throwFailure stderrAsErr := true) : IO String := do
   let out ← IO.Process.output { cmd := cmd, args := args }
-  if out.exitCode != 0 && throwFailure then throw <| IO.userError out.stderr
-  else return out.stdout
+  if (out.exitCode != 0 || stderrAsErr && !out.stderr.isEmpty) && throwFailure then
+    throw <| IO.userError s!"failure in {cmd} {args}:\n{out.stderr}"
+  else if !out.stderr.isEmpty then
+    IO.eprintln out.stderr
+  return out.stdout
 
-def runCurl (args : Array String) (throwFailure := true) : IO String := do
-  runCmd (← getCurl) args throwFailure
+def runCurl (args : Array String) (throwFailure stderrAsErr := true) : IO String := do
+  runCmd (← getCurl) (#["--no-progress-meter"] ++ args) throwFailure stderrAsErr
 
 def validateCurl : IO Bool := do
   if (← CURLBIN.pathExists) then return true
@@ -178,7 +196,7 @@ def validateCurl : IO Bool := do
       if kernel == "Linux" && arch ∈ ["x86_64", "aarch64"] then
         IO.println s!"curl is too old; downloading more recent version"
         IO.FS.createDirAll IO.CACHEDIR
-        let _ ← runCmd "curl" #[
+        let _ ← runCmd "curl" (stderrAsErr := false) #[
           s!"https://github.com/leanprover-community/static-curl/releases/download/v{CURLVERSION}/curl-{arch}-linux-static",
           "-L", "-o", CURLBIN.toString]
         let _ ← runCmd "chmod" #["u+x", CURLBIN.toString]
@@ -224,7 +242,7 @@ def validateLeanTar : IO Unit := do
   IO.println s!"installing leantar {LEANTARVERSION}"
   IO.FS.createDirAll IO.CACHEDIR
   let ext := if win then "zip" else "tar.gz"
-  let _ ← runCmd "curl" #[
+  let _ ← runCmd "curl" (stderrAsErr := false) #[
     s!"https://github.com/digama0/leangz/releases/download/v{LEANTARVERSION}/leantar-v{LEANTARVERSION}-{target}.{ext}",
     "-L", "-o", s!"{LEANTARBIN}.{ext}"]
   let _ ← runCmd "tar" #["-xf", s!"{LEANTARBIN}.{ext}",
@@ -266,7 +284,7 @@ def mkDir (path : FilePath) : IO Unit := do
 Given a path to a Lean file, concatenates the paths to its build files.
 Each build file also has a `Bool` indicating whether that file is required for caching to proceed.
 -/
-def mkBuildPaths (path : FilePath) : IO <| List (FilePath × Bool) := do
+def mkBuildPaths (path : FilePath) : CacheM <| List (FilePath × Bool) := do
   let packageDir ← getPackageDir path
   return [
     -- Note that `packCache` below requires that the `.trace` file is first in this list.
@@ -286,8 +304,9 @@ def allExist (paths : List (FilePath × Bool)) : IO Bool := do
   pure true
 
 /-- Compresses build files into the local cache and returns an array with the compressed files -/
-def packCache (hashMap : HashMap) (overwrite verbose : Bool) (comment : Option String := none) :
-    IO <| Array String := do
+def packCache (hashMap : HashMap) (overwrite verbose unpackedOnly : Bool)
+    (comment : Option String := none) :
+    CacheM <| Array String := do
   mkDir CACHEDIR
   IO.println "Compressing cache"
   let mut acc := #[]
@@ -298,6 +317,7 @@ def packCache (hashMap : HashMap) (overwrite verbose : Bool) (comment : Option S
     let buildPaths ← mkBuildPaths path
     if ← allExist buildPaths then
       if overwrite || !(← zipPath.pathExists) then
+        acc := acc.push (path, zip)
         tasks := tasks.push <| ← IO.asTask do
           -- Note here we require that the `.trace` file is first
           -- in the list generated by `mkBuildPaths`.
@@ -305,7 +325,8 @@ def packCache (hashMap : HashMap) (overwrite verbose : Bool) (comment : Option S
             | unreachable!
           runCmd (← getLeanTar) <| #[zipPath.toString, trace] ++
             (if let some c := comment then #["-c", s!"git=mathlib4@{c}"] else #[]) ++ args
-      acc := acc.push (path, zip)
+      else if !unpackedOnly then
+        acc := acc.push (path, zip)
   for task in tasks do
     _ ← IO.ofExcept task.get
   acc := acc.qsort (·.1.1 < ·.1.1)
@@ -328,14 +349,14 @@ def isPathFromMathlib (path : FilePath) : Bool :=
   | _ => false
 
 /-- Decompresses build files into their respective folders -/
-def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
+def unpackCache (hashMap : HashMap) (force : Bool) : CacheM Unit := do
   let hashMap ← hashMap.filterExists true
   let size := hashMap.size
   if size > 0 then
     let now ← IO.monoMsNow
     IO.println s!"Decompressing {size} file(s)"
     let isMathlibRoot ← isMathlibRoot
-    let args := (if force then #["-f"] else #[]) ++ #["-x", "-j", "-"]
+    let args := (if force then #["-f"] else #[]) ++ #["-x", "--delete-corrupted", "-j", "-"]
     let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
     let (stdin, child) ← child.takeStdin
     let mathlibDepPath := (← mathlibDepPath).toString

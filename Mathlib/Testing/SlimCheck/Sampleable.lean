@@ -3,8 +3,9 @@ Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
+import Mathlib.Data.Int.Order.Basic
+import Mathlib.Init.Data.List.Instances
 import Mathlib.Testing.SlimCheck.Gen
-import Qq
 
 #align_import testing.slim_check.sampleable from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
 
@@ -94,7 +95,7 @@ open Random Gen
 /-- Given an example `x : α`, `Shrinkable α` gives us a way to shrink it
 and suggest simpler examples. -/
 class Shrinkable (α : Type u) where
-  shrink : (x : α) → List α := λ _ => []
+  shrink : (x : α) → List α := fun _ ↦ []
 
 /-- `SampleableExt` can be used in two ways. The first (and most common)
 is to simply generate values of a type directly using the `Gen` monad,
@@ -158,7 +159,7 @@ instance Fin.shrinkable {n : Nat} : Shrinkable (Fin n.succ) where
 
 /-- `Int.shrinkable` operates like `Nat.shrinkable` but also includes the negative variants. -/
 instance Int.shrinkable : Shrinkable Int where
-  shrink n := Nat.shrink n.natAbs |>.map (λ x => ([x, -x] : List ℤ)) |>.join
+  shrink n := Nat.shrink n.natAbs |>.map (fun x ↦ ([x, -x] : List ℤ)) |>.join
 
 instance Rat.shrinkable : Shrinkable Rat where
   shrink r :=
@@ -169,14 +170,14 @@ instance Char.shrinkable : Shrinkable Char := {}
 
 instance Prod.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] :
     Shrinkable (Prod α β) where
-  shrink := λ (fst,snd) =>
+  shrink := fun (fst,snd) ↦
     let shrink1 := shrA.shrink fst |>.map fun x ↦ (x, snd)
     let shrink2 := shrB.shrink snd |>.map fun x ↦ (fst, x)
     shrink1 ++ shrink2
 
 instance Sigma.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] :
     Shrinkable ((_ : α) × β) where
-  shrink := λ ⟨fst,snd⟩ =>
+  shrink := fun ⟨fst,snd⟩ ↦
     let shrink1 := shrA.shrink fst |>.map fun x ↦ ⟨x, snd⟩
     let shrink2 := shrB.shrink snd |>.map fun x ↦ ⟨fst, x⟩
     shrink1 ++ shrink2
@@ -200,7 +201,7 @@ instance Nat.sampleableExt : SampleableExt Nat :=
 
 instance Fin.sampleableExt {n : Nat} : SampleableExt (Fin (n.succ)) :=
   mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (← getSize)) (by
-    simp only [LE.le, Fin.ofNat, Nat.zero_mod, Fin.zero_eta, Fin.val_zero]
+    simp only [Fin.ofNat, Fin.val_zero]
     exact Nat.zero_le _))
 
 instance Int.sampleableExt : SampleableExt Int :=
@@ -268,7 +269,7 @@ instance inhabited [inst : Inhabited α] : Inhabited (NoShrink α) := inst
 instance repr [inst : Repr α] : Repr (NoShrink α) := inst
 
 instance shrinkable : Shrinkable (NoShrink α) where
-  shrink := λ _ => []
+  shrink := fun _ ↦ []
 
 instance sampleableExt [SampleableExt α] [Repr α] : SampleableExt (NoShrink α) :=
   SampleableExt.mkSelfContained <| (NoShrink.mk ∘ SampleableExt.interp) <$> SampleableExt.sample
