@@ -21,12 +21,15 @@ import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
   pseudoemetric on the space of finite measures.
 * `levyProkhorovDist_pseudoMetricSpace_probabilityMeasure`: The Lévy-Prokhorov distance is a
   pseudoemetric on the space of probability measures.
+* `levyProkhorov_le_convergenceInDistribution`: The topology of the Lévy-Prokhorov metric on
+  probability measures is always at least as fine as the topology of convergence in distribution.
+* `levyProkhorov_eq_convergenceInDistribution`: The topology of the Lévy-Prokhorov metric on
+  probability measures on a separable space coincides with the topology of convergence in
+  distribution.
 
 ## Todo
 
 * Show that in Borel spaces, the Lévy-Prokhorov distance is a metric; not just a pseudometric.
-* Prove that if `X` is metrizable and separable, then the Lévy-Prokhorov distance metrizes the
-  topology of weak convergence.
 
 ## Tags
 
@@ -74,6 +77,7 @@ lemma right_measure_le_of_levyProkhorovEDist_lt {μ ν : Measure Ω} {c : ℝ≥
   obtain ⟨c', ⟨hc', lt_c⟩⟩ := sInf_lt_iff.mp h
   exact meas_le_of_le_of_forall_le_meas_thickening_add ν μ lt_c.le (hc' B B_mble).2
 
+/-- A general sufficient condition for bounding `levyProkhorovEDist` from above. -/
 lemma levyProkhorovEDist_le_of_forall_add_pos_le (μ ν : Measure Ω) (δ : ℝ≥0∞)
     (h : ∀ ε B, 0 < ε → ε < ∞ → MeasurableSet B →
       μ B ≤ ν (thickening (δ + ε).toReal B) + δ + ε ∧
@@ -87,6 +91,7 @@ lemma levyProkhorovEDist_le_of_forall_add_pos_le (μ ν : Measure Ω) (δ : ℝ�
   intro B B_mble
   simpa only [add_assoc] using h ε B (coe_pos.mpr hε) coe_lt_top B_mble
 
+/-- A simple general sufficient condition for bounding `levyProkhorovEDist` from above. -/
 lemma levyProkhorovEDist_le_of_forall (μ ν : Measure Ω) (δ : ℝ≥0∞)
     (h : ∀ ε B, δ < ε → ε < ∞ → MeasurableSet B →
         μ B ≤ ν (thickening ε.toReal B) + ε ∧ ν B ≤ μ (thickening ε.toReal B) + ε) :
@@ -227,50 +232,48 @@ noncomputable instance levyProkhorovDist_pseudoMetricSpace_probabilityMeasure :
 lemma LevyProkhorov.dist_def (μ ν : LevyProkhorov (ProbabilityMeasure Ω)) :
     dist μ ν = levyProkhorovDist μ.toMeasure ν.toMeasure := rfl
 
+/-- A simple sufficient condition for bounding `levyProkhorovEDist` between probability measures
+from above. The condition involves only one of two natural bounds, the other bound is for free. -/
 lemma levyProkhorovEDist_le_of_forall_add_pos_le'
     (μ ν : Measure Ω) [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] (δ : ℝ≥0∞)
     (h : ∀ ε B, 0 < ε → ε < ∞ → MeasurableSet B → μ B ≤ ν (thickening (δ + ε).toReal B) + δ + ε) :
     levyProkhorovEDist μ ν ≤ δ := by
   apply levyProkhorovEDist_le_of_forall_add_pos_le μ ν δ
   intro ε B ε_pos ε_lt_top B_mble
-  refine ⟨?_, ?_⟩
-  · exact h ε B ε_pos ε_lt_top B_mble
-  · have B_subset := subset_compl_thickening_compl_thickening_self (δ + ε).toReal B
-    have key := measure_mono (μ := ν) B_subset
-    rw [prob_compl_eq_one_sub isOpen_thickening.measurableSet] at key
-    apply key.trans
-    have Tc_mble := (isOpen_thickening (δ := (δ + ε).toReal) (E := B)).isClosed_compl.measurableSet
-    specialize h ε (thickening (δ + ε).toReal B)ᶜ ε_pos ε_lt_top Tc_mble
-    rw [prob_compl_eq_one_sub isOpen_thickening.measurableSet] at h
-    have bar := add_le_add (c := μ (thickening (δ + ε).toReal B)) h rfl.le
-    rw [tsub_add_cancel_of_le prob_le_one, add_assoc, add_assoc] at bar
-    apply (tsub_le_tsub_right bar _).trans
-    rw [ENNReal.add_sub_cancel_left (measure_ne_top ν _), add_comm ε, ← add_assoc, add_comm δ]
+  refine ⟨h ε B ε_pos ε_lt_top B_mble, ?_⟩
+  have B_subset := subset_compl_thickening_compl_thickening_self (δ + ε).toReal B
+  apply (measure_mono (μ := ν) B_subset).trans
+  rw [prob_compl_eq_one_sub isOpen_thickening.measurableSet]
+  have Tc_mble := (isOpen_thickening (δ := (δ + ε).toReal) (E := B)).isClosed_compl.measurableSet
+  specialize h ε (thickening (δ + ε).toReal B)ᶜ ε_pos ε_lt_top Tc_mble
+  rw [prob_compl_eq_one_sub isOpen_thickening.measurableSet] at h
+  have almost := add_le_add (c := μ (thickening (δ + ε).toReal B)) h rfl.le
+  rw [tsub_add_cancel_of_le prob_le_one, add_assoc, add_assoc] at almost
+  apply (tsub_le_tsub_right almost _).trans
+  rw [ENNReal.add_sub_cancel_left (measure_ne_top ν _), add_comm ε, ← add_assoc, add_comm δ]
 
+/-- A simple sufficient condition for bounding `levyProkhorovDist` between probability measures
+from above. The condition involves only one of two natural bounds, the other bound is for free. -/
 lemma levyProkhorovDist_le_of_forall_add_pos_le
     (μ ν : Measure Ω) [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {δ : ℝ} (δ_nn : 0 ≤ δ)
     (h : ∀ ε B, 0 < ε → MeasurableSet B → μ B ≤ ν (thickening (δ + ε) B) + ENNReal.ofReal (δ + ε)) :
     levyProkhorovDist μ ν ≤ δ := by
-  rw [levyProkhorovDist]
   apply toReal_le_of_le_ofReal δ_nn
   apply levyProkhorovEDist_le_of_forall_add_pos_le' μ ν (ENNReal.ofReal δ)
   intro ε B ε_pos ε_lt_top B_mble
   have aux₁ : δ + ENNReal.toReal ε = ENNReal.toReal (ENNReal.ofReal δ + ε) := by
-    rw [ENNReal.toReal_add ofReal_ne_top ε_lt_top.ne]
-    congr
-    rw [toReal_ofReal δ_nn]
+    rw [ENNReal.toReal_add ofReal_ne_top ε_lt_top.ne, toReal_ofReal δ_nn]
   have aux₂ : ENNReal.ofReal δ + ε = ENNReal.ofReal (δ + ENNReal.toReal ε) := by
-    rw [ENNReal.ofReal_add δ_nn toReal_nonneg]
-    congr
-    rw [ofReal_toReal ε_lt_top.ne]
+    rw [ENNReal.ofReal_add δ_nn toReal_nonneg, ofReal_toReal ε_lt_top.ne]
+  rw [add_assoc, ← aux₁, aux₂]
   have ε_pos' : 0 < ε.toReal := toReal_pos ε_pos.ne.symm ε_lt_top.ne
-  specialize h ε.toReal B ε_pos' B_mble
-  rw [add_assoc, ← aux₁]
-  convert h
+  exact h ε.toReal B ε_pos' B_mble
 
 end Levy_Prokhorov --section
 
-section Levy_Prokhorov_comparison
+section Levy_Prokhorov_is_finer
+
+/-! ### The Lévy-Prokhorov topology is at least as fine as convergence in distribution -/
 
 open BoundedContinuousFunction
 
@@ -441,18 +444,24 @@ lemma continuous_levyProkhorov_to_probabilityMeasure :
                ge_iff_le, forall_exists_index]
     refine ⟨0, fun a i hia ↦ le_trans (integral_nonneg f_nn) (hia i rfl.le)⟩
 
-/-- The topology of the Lévy-Prokhorov metric is finer than the topology of convergence in
+/-- The topology of the Lévy-Prokhorov metric is at least as fine as the topology of convergence in
 distribution. -/
 theorem levyProkhorov_le_convergenceInDistribution :
     TopologicalSpace.coinduced (LevyProkhorov.probabilityMeasure (Ω := Ω)) inferInstance
       ≤ (inferInstance : TopologicalSpace (ProbabilityMeasure Ω)) :=
   (continuous_levyProkhorov_to_probabilityMeasure).coinduced_le
 
+end Levy_Prokhorov_is_finer
 
 
--- **The other direction**
 
-open TopologicalSpace
+section Levy_Prokhorov_metrizes_convergence_in_distribution
+
+/-! ### On separable spaces the Lévy-Prokhorov distance metrizes convergence in distribution -/
+
+open BoundedContinuousFunction TopologicalSpace
+
+variable {ι : Type*} {Ω : Type*} [MeasurableSpace Ω]
 
 -- TODO: Add to mathlib
 lemma DenseRange.iUnion_uniformity_ball {X ι : Type*} [UniformSpace X] {xs : ι → X}
@@ -524,6 +533,8 @@ lemma prob_compl_le_one_sub_of_le_prob {μ : Measure Ω} [IsProbabilityMeasure �
     {A : Set Ω} {p : ℝ≥0∞} (hμA : p ≤ μ A) (A_mble : MeasurableSet A) :
     μ Aᶜ ≤ 1 - p := by
   simpa [prob_compl_eq_one_sub A_mble] using tsub_le_tsub_left hμA 1
+
+variable [PseudoMetricSpace Ω] [OpensMeasurableSpace Ω]
 
 lemma continuous_probabilityMeasure_toLevyProkhorov [SeparableSpace Ω] :
     Continuous (ProbabilityMeasure.toLevyProkhorov (Ω := Ω)) := by
@@ -653,6 +664,6 @@ theorem pseudoMetrizableSpace_probabilityMeasure [SeparableSpace Ω] :
     PseudoMetrizableSpace (ProbabilityMeasure Ω) :=
   (homeomorph_probabilityMeasure_levyProkhorov (Ω := Ω)).inducing.pseudoMetrizableSpace
 
-end Levy_Prokhorov_comparison
+end Levy_Prokhorov_metrizes_convergence_in_distribution
 
 end MeasureTheory -- namespace
