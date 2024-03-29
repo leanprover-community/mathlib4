@@ -89,7 +89,7 @@ theorem revAt_add {N O n o : ℕ} (hn : n ≤ N) (ho : o ≤ O) :
   repeat' rw [add_tsub_cancel_left]
 #align polynomial.rev_at_add Polynomial.revAt_add
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem revAt_zero (N : ℕ) : revAt N 0 = N := by simp
 #align polynomial.rev_at_zero Polynomial.revAt_zero
 
@@ -143,7 +143,7 @@ theorem reflect_C_mul (f : R[X]) (r : R) (N : ℕ) : reflect N (C r * f) = C r *
 set_option linter.uppercaseLean3 false in
 #align polynomial.reflect_C_mul Polynomial.reflect_C_mul
 
--- @[simp] -- Porting note: simp can prove this (once `reflect_monomial` is in simp scope)
+-- @[simp] -- Porting note (#10618): simp can prove this (once `reflect_monomial` is in simp scope)
 theorem reflect_C_mul_X_pow (N n : ℕ) {c : R} : reflect N (C c * X ^ n) = C c * X ^ revAt N n := by
   ext
   rw [reflect_C_mul, coeff_C_mul, coeff_C_mul, coeff_X_pow, coeff_reflect]
@@ -305,7 +305,7 @@ theorem reverse_leadingCoeff (f : R[X]) : f.reverse.leadingCoeff = f.trailingCoe
 theorem reverse_natTrailingDegree (f : R[X]) : f.reverse.natTrailingDegree = 0 := by
   by_cases hf : f = 0
   · rw [hf, reverse_zero, natTrailingDegree_zero]
-  · rw [← le_zero_iff]
+  · rw [← Nat.le_zero]
     apply natTrailingDegree_le_of_ne_zero
     rw [coeff_zero_reverse]
     exact mt leadingCoeff_eq_zero.mp hf
@@ -362,7 +362,7 @@ theorem coeff_one_reverse (f : R[X]) : coeff (reverse f) 1 = nextCoeff f := by
 
 @[simp] lemma reverse_mul_X_pow (p : R[X]) (n : ℕ) : reverse (p * X ^ n) = reverse p := by
   induction' n with n ih; simp
-  rw [pow_succ', ← mul_assoc, reverse_mul_X, ih]
+  rw [pow_succ, ← mul_assoc, reverse_mul_X, ih]
 
 @[simp] lemma reverse_X_pow_mul (p : R[X]) (n : ℕ) : reverse (X ^ n * p) = reverse p := by
   rw [commute_X_pow p, reverse_mul_X_pow]

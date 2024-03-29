@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Topology.Algebra.Order.ProjIcc
+import Mathlib.Topology.Order.ProjIcc
 
 #align_import analysis.special_functions.trigonometric.inverse from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -20,13 +20,15 @@ Basic inequalities on trigonometric functions.
 
 noncomputable section
 
-open Classical Topology Filter
+open scoped Classical
+open Topology Filter
 
 open Set Filter
 
 open Real
 
 namespace Real
+variable {x y : ℝ}
 
 /-- Inverse of the `sin` function, returns values in the range `-π / 2 ≤ arcsin x ≤ π / 2`.
 It defaults to `-π / 2` on `(-∞, -1)` and to `π / 2` to `(1, ∞)`. -/
@@ -362,6 +364,9 @@ theorem cos_arccos {x : ℝ} (hx₁ : -1 ≤ x) (hx₂ : x ≤ 1) : cos (arccos 
 theorem arccos_cos {x : ℝ} (hx₁ : 0 ≤ x) (hx₂ : x ≤ π) : arccos (cos x) = x := by
   rw [arccos, ← sin_pi_div_two_sub, arcsin_sin] <;> simp [sub_eq_add_neg] <;> linarith
 #align real.arccos_cos Real.arccos_cos
+
+lemma arccos_eq_of_eq_cos (hy₀ : 0 ≤ y) (hy₁ : y ≤ π) (hxy : x = cos y) : arccos x = y := by
+  rw [hxy, arccos_cos hy₀ hy₁]
 
 theorem strictAntiOn_arccos : StrictAntiOn arccos (Icc (-1) 1) := fun _ hx _ hy h =>
   sub_lt_sub_left (strictMonoOn_arcsin hx hy h) _

@@ -3,11 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.Real.NNReal
+import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
+import Mathlib.Data.Real.NNReal
 import Mathlib.Data.Set.Intervals.WithBotTop
-import Mathlib.Tactic.GCongr.Core
-import Mathlib.Algebra.GroupPower.Order
 
 #align_import data.real.ennreal from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
@@ -90,7 +89,8 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 -/
 
 
-open Set BigOperators NNReal
+open Function Set NNReal
+open scoped BigOperators
 
 variable {α : Type*}
 
@@ -129,21 +129,21 @@ noncomputable instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (W
 noncomputable instance : LinearOrderedAddCommMonoidWithTop ℝ≥0∞ :=
   inferInstanceAs (LinearOrderedAddCommMonoidWithTop (WithTop ℝ≥0))
 
--- porting note: rfc: redefine using pattern matching?
+-- Porting note: rfc: redefine using pattern matching?
 noncomputable instance : Inv ℝ≥0∞ := ⟨fun a => sInf { b | 1 ≤ a * b }⟩
 
 noncomputable instance : DivInvMonoid ℝ≥0∞ where
 
 variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 
--- porting note: are these 2 instances still required in Lean 4?
+-- Porting note: are these 2 instances still required in Lean 4?
 instance covariantClass_mul_le : CovariantClass ℝ≥0∞ ℝ≥0∞ (· * ·) (· ≤ ·) := inferInstance
 #align ennreal.covariant_class_mul_le ENNReal.covariantClass_mul_le
 
 instance covariantClass_add_le : CovariantClass ℝ≥0∞ ℝ≥0∞ (· + ·) (· ≤ ·) := inferInstance
 #align ennreal.covariant_class_add_le ENNReal.covariantClass_add_le
 
--- porting note: todo: add a `WithTop` instance and use it here
+-- Porting note (#11215): TODO: add a `WithTop` instance and use it here
 noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
   { inferInstanceAs (LinearOrderedAddCommMonoidWithTop ℝ≥0∞),
       inferInstanceAs (CommSemiring ℝ≥0∞) with
@@ -176,17 +176,22 @@ instance canLift : CanLift ℝ≥0∞ ℝ≥0 ofNNReal (· ≠ ∞) := WithTop.c
 
 @[simp] theorem some_eq_coe' (a : ℝ≥0) : (WithTop.some a : ℝ≥0∞) = (↑a : ℝ≥0∞) := rfl
 
-protected theorem coe_injective : Function.Injective ((↑) : ℝ≥0 → ℝ≥0∞) := WithTop.coe_injective
+lemma coe_injective : Injective ((↑) : ℝ≥0 → ℝ≥0∞) := WithTop.coe_injective
+
+@[simp, norm_cast] lemma coe_inj : (p : ℝ≥0∞) = q ↔ p = q := coe_injective.eq_iff
+#align ennreal.coe_eq_coe ENNReal.coe_inj
+
+lemma coe_ne_coe : (p : ℝ≥0∞) ≠ q ↔ p ≠ q := coe_inj.not
 
 theorem range_coe' : range ofNNReal = Iio ∞ := WithTop.range_coe
 theorem range_coe : range ofNNReal = {∞}ᶜ := (isCompl_range_some_none ℝ≥0).symm.compl_eq.symm
 
 /-- `toNNReal x` returns `x` if it is real, otherwise 0. -/
-protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
+@[pp_dot] protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
 #align ennreal.to_nnreal ENNReal.toNNReal
 
 /-- `toReal x` returns `x` if it is real, `0` otherwise. -/
-protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
+@[pp_dot] protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
 #align ennreal.to_real ENNReal.toReal
 
 /-- `ofReal x` returns `x` if it is nonnegative, `0` otherwise. -/
@@ -368,9 +373,6 @@ theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤
 
 @[simp] theorem zero_lt_top : 0 < ∞ := coe_lt_top
 
-@[simp, norm_cast] theorem coe_eq_coe : (↑r : ℝ≥0∞) = ↑q ↔ r = q := WithTop.coe_eq_coe
-#align ennreal.coe_eq_coe ENNReal.coe_eq_coe
-
 @[simp, norm_cast] theorem coe_le_coe : (↑r : ℝ≥0∞) ≤ ↑q ↔ r ≤ q := WithTop.coe_le_coe
 #align ennreal.coe_le_coe ENNReal.coe_le_coe
 
@@ -382,49 +384,53 @@ alias ⟨_, coe_le_coe_of_le⟩ := coe_le_coe
 attribute [gcongr] ENNReal.coe_le_coe_of_le
 
 -- Needed until `@[gcongr]` accepts iff statements
-alias ⟨_, coe_lt_coe_of_le⟩ := coe_lt_coe
-attribute [gcongr] ENNReal.coe_lt_coe_of_le
+alias ⟨_, coe_lt_coe_of_lt⟩ := coe_lt_coe
+attribute [gcongr] ENNReal.coe_lt_coe_of_lt
 
 theorem coe_mono : Monotone ofNNReal := fun _ _ => coe_le_coe.2
 #align ennreal.coe_mono ENNReal.coe_mono
 
 theorem coe_strictMono : StrictMono ofNNReal := fun _ _ => coe_lt_coe.2
 
-@[simp, norm_cast] theorem coe_eq_zero : (↑r : ℝ≥0∞) = 0 ↔ r = 0 := coe_eq_coe
+@[simp, norm_cast] theorem coe_eq_zero : (↑r : ℝ≥0∞) = 0 ↔ r = 0 := coe_inj
 #align ennreal.coe_eq_zero ENNReal.coe_eq_zero
 
-@[simp, norm_cast] theorem zero_eq_coe : 0 = (↑r : ℝ≥0∞) ↔ 0 = r := coe_eq_coe
+@[simp, norm_cast] theorem zero_eq_coe : 0 = (↑r : ℝ≥0∞) ↔ 0 = r := coe_inj
 #align ennreal.zero_eq_coe ENNReal.zero_eq_coe
 
-@[simp, norm_cast] theorem coe_eq_one : (↑r : ℝ≥0∞) = 1 ↔ r = 1 := coe_eq_coe
+@[simp, norm_cast] theorem coe_eq_one : (↑r : ℝ≥0∞) = 1 ↔ r = 1 := coe_inj
 #align ennreal.coe_eq_one ENNReal.coe_eq_one
 
-@[simp, norm_cast] theorem one_eq_coe : 1 = (↑r : ℝ≥0∞) ↔ 1 = r := coe_eq_coe
+@[simp, norm_cast] theorem one_eq_coe : 1 = (↑r : ℝ≥0∞) ↔ 1 = r := coe_inj
 #align ennreal.one_eq_coe ENNReal.one_eq_coe
 
 @[simp, norm_cast] theorem coe_pos : 0 < (r : ℝ≥0∞) ↔ 0 < r := coe_lt_coe
 #align ennreal.coe_pos ENNReal.coe_pos
 
-theorem coe_ne_zero : (r : ℝ≥0∞) ≠ 0 ↔ r ≠ 0 := not_congr coe_eq_coe
+theorem coe_ne_zero : (r : ℝ≥0∞) ≠ 0 ↔ r ≠ 0 := coe_eq_zero.not
 #align ennreal.coe_ne_zero ENNReal.coe_ne_zero
 
-@[simp, norm_cast] theorem coe_add : ↑(r + p) = (r : ℝ≥0∞) + p := WithTop.coe_add _ _
+lemma coe_ne_one : (r : ℝ≥0∞) ≠ 1 ↔ r ≠ 1 := coe_eq_one.not
+
+@[simp, norm_cast] lemma coe_add (x y : ℝ≥0) : (↑(x + y) : ℝ≥0∞) = x + y := rfl
 #align ennreal.coe_add ENNReal.coe_add
 
-@[simp, norm_cast]
-theorem coe_mul : ↑(r * p) = (r : ℝ≥0∞) * p :=
-  WithTop.coe_mul
+@[simp, norm_cast] lemma coe_mul (x y : ℝ≥0) : (↑(x * y) : ℝ≥0∞) = x * y := rfl
 #align ennreal.coe_mul ENNReal.coe_mul
+
+@[norm_cast] lemma coe_nsmul (n : ℕ) (x : ℝ≥0) : (↑(n • x) : ℝ≥0∞) = n • x := rfl
+
+@[simp, norm_cast] lemma coe_pow (x : ℝ≥0) (n : ℕ) : (↑(x ^ n) : ℝ≥0∞) = x ^ n := rfl
 
 #noalign ennreal.coe_bit0
 #noalign ennreal.coe_bit1
 
 -- See note [no_index around OfNat.ofNat]
-@[simp, norm_cast] -- porting note: new
+@[simp, norm_cast] -- Porting note (#10756): new theorem
 theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((no_index (OfNat.ofNat n) : ℝ≥0) : ℝ≥0∞) = OfNat.ofNat n := rfl
 
--- porting note: todo: add lemmas about `OfNat.ofNat` and `<`/`≤`
+-- Porting note (#11215): TODO: add lemmas about `OfNat.ofNat` and `<`/`≤`
 
 theorem coe_two : ((2 : ℝ≥0) : ℝ≥0∞) = 2 := rfl
 #align ennreal.coe_two ENNReal.coe_two
@@ -436,7 +442,7 @@ theorem toNNReal_eq_toNNReal_iff (x y : ℝ≥0∞) :
 
 theorem toReal_eq_toReal_iff (x y : ℝ≥0∞) :
     x.toReal = y.toReal ↔ x = y ∨ x = 0 ∧ y = ⊤ ∨ x = ⊤ ∧ y = 0 := by
-  simp only [ENNReal.toReal, NNReal.coe_eq, toNNReal_eq_toNNReal_iff]
+  simp only [ENNReal.toReal, NNReal.coe_inj, toNNReal_eq_toNNReal_iff]
 #align ennreal.to_real_eq_to_real_iff ENNReal.toReal_eq_toReal_iff
 
 theorem toNNReal_eq_toNNReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ ⊤) :
@@ -446,12 +452,10 @@ theorem toNNReal_eq_toNNReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y �
 
 theorem toReal_eq_toReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ ⊤) :
     x.toReal = y.toReal ↔ x = y := by
-  simp only [ENNReal.toReal, NNReal.coe_eq, toNNReal_eq_toNNReal_iff' hx hy]
+  simp only [ENNReal.toReal, NNReal.coe_inj, toNNReal_eq_toNNReal_iff' hx hy]
 #align ennreal.to_real_eq_to_real_iff' ENNReal.toReal_eq_toReal_iff'
 
-@[simp]
-nonrec theorem one_lt_two : (1 : ℝ≥0∞) < 2 :=
-  coe_one ▸ coe_two ▸ mod_cast (one_lt_two : 1 < 2)
+theorem one_lt_two : (1 : ℝ≥0∞) < 2 := Nat.one_lt_ofNat
 #align ennreal.one_lt_two ENNReal.one_lt_two
 
 @[simp] theorem two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
@@ -501,7 +505,7 @@ theorem iSup_ne_top [CompleteLattice α] (f : ℝ≥0∞ → α) :
 
 theorem iInf_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
     ⨅ n, f n = (⨅ n : ℝ≥0, f n) ⊓ f ∞ :=
-  (iInf_option f).trans inf_comm
+  (iInf_option f).trans (inf_comm _ _)
 #align ennreal.infi_ennreal ENNReal.iInf_ennreal
 
 theorem iSup_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
@@ -513,9 +517,9 @@ theorem iSup_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
 def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where
   toFun := some
   map_one' := coe_one
-  map_mul' _ _ := coe_mul
+  map_mul' _ _ := coe_mul _ _
   map_zero' := coe_zero
-  map_add' _ _ := coe_add
+  map_add' _ _ := coe_add _ _
 #align ennreal.of_nnreal_hom ENNReal.ofNNRealHom
 
 @[simp] theorem coe_ofNNRealHom : ⇑ofNNRealHom = some := rfl
@@ -623,7 +627,7 @@ theorem max_zero_right : max a 0 = a :=
 @[simp] theorem sup_eq_max : a ⊔ b = max a b := rfl
 #align ennreal.sup_eq_max ENNReal.sup_eq_max
 
--- porting note: moved `le_of_forall_pos_le_add` down
+-- Porting note: moved `le_of_forall_pos_le_add` down
 
 theorem lt_iff_exists_rat_btwn :
     a < b ↔ ∃ q : ℚ, 0 ≤ q ∧ a < Real.toNNReal q ∧ (Real.toNNReal q : ℝ≥0∞) < b :=
@@ -765,7 +769,7 @@ theorem coe_iInf {ι : Sort*} [Nonempty ι] (f : ι → ℝ≥0) : (↑(iInf f) 
 
 theorem coe_mem_upperBounds {s : Set ℝ≥0} :
     ↑r ∈ upperBounds (ofNNReal '' s) ↔ r ∈ upperBounds s := by
-  simp (config := { contextual := true }) [upperBounds, ball_image_iff, -mem_image, *]
+  simp (config := { contextual := true }) [upperBounds, forall_mem_image, -mem_image, *]
 #align ennreal.coe_mem_upper_bounds ENNReal.coe_mem_upperBounds
 
 lemma iSup_coe_eq_top : ⨆ i, (f i : ℝ≥0∞) = ⊤ ↔ ¬ BddAbove (range f) := WithTop.iSup_coe_eq_top
@@ -777,7 +781,7 @@ end CompleteLattice
 
 section Bit
 
--- porting note: removed lemmas about `bit0` and `bit1`
+-- Porting note: removed lemmas about `bit0` and `bit1`
 -- TODO: add lemmas about `OfNat.ofNat`
 
 #noalign ennreal.bit0_strict_mono
@@ -814,9 +818,9 @@ theorem preimage_coe_nnreal_ennreal (h : u.OrdConnected) : ((↑) ⁻¹' u : Set
   h.preimage_mono ENNReal.coe_mono
 #align set.ord_connected.preimage_coe_nnreal_ennreal Set.OrdConnected.preimage_coe_nnreal_ennreal
 
--- porting note: todo: generalize to `WithTop`
+-- Porting note (#11215): TODO: generalize to `WithTop`
 theorem image_coe_nnreal_ennreal (h : t.OrdConnected) : ((↑) '' t : Set ℝ≥0∞).OrdConnected := by
-  refine' ⟨ball_image_iff.2 fun x hx => ball_image_iff.2 fun y hy z hz => _⟩
+  refine' ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => _⟩
   rcases ENNReal.le_coe_iff.1 hz.2 with ⟨z, rfl, -⟩
   exact mem_image_of_mem _ (h.out hx hy ⟨ENNReal.coe_le_coe.1 hz.1, ENNReal.coe_le_coe.1 hz.2⟩)
 #align set.ord_connected.image_coe_nnreal_ennreal Set.OrdConnected.image_coe_nnreal_ennreal
@@ -839,23 +843,24 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `ENNReal.toReal`. -/
 @[positivity ENNReal.toReal _]
-def evalENNRealtoReal : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app (f : Q(ENNReal → Real)) (a : Q(ENNReal))) ← whnfR e | throwError "not ENNReal.toReal"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ENNReal.toReal)
-  pure (.nonnegative (q(@ENNReal.toReal_nonneg $a) : Expr))
+def evalENNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(ENNReal.toReal $a) =>
+    assertInstancesCommute
+    pure (.nonnegative q(ENNReal.toReal_nonneg))
+  | _, _, _ => throwError "not ENNReal.toReal"
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofNNReal`. -/
 @[positivity ENNReal.ofNNReal _]
-def evalENNRealOfNNReal : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app (f : Q(NNReal → ENNReal)) (a : Q(NNReal))) ← whnfR e | throwError "not ENNReal.ofNNReal"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ENNReal.ofNNReal)
-  let zα' ← synthInstanceQ (q(Zero NNReal) : Q(Type))
-  let pα' ← synthInstanceQ (q(PartialOrder NNReal) : Q(Type))
-  let ra ← core zα' pα' a
-  assertInstancesCommute
-  match ra with
-  | .positive pa => pure (.positive (q(Iff.mpr (@ENNReal.coe_pos $a) $pa) : Expr))
-  | _ => pure .none
+def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofNNReal $a) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa => pure <| .positive q(ENNReal.coe_pos.mpr $pa)
+    | _ => pure .none
+  | _, _, _ => throwError "not ENNReal.ofNNReal"
 
 end Mathlib.Meta.Positivity
 

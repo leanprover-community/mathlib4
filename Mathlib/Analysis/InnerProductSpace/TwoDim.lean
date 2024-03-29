@@ -74,11 +74,15 @@ open scoped RealInnerProductSpace ComplexConjugate
 
 open FiniteDimensional
 
-lemma FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two {K V : Type*} [DivisionRing K]
+lemma FiniteDimensional.of_fact_finrank_eq_two {K V : Type*} [DivisionRing K]
     [AddCommGroup V] [Module K V] [Fact (finrank K V = 2)] : FiniteDimensional K V :=
-  fact_finiteDimensional_of_finrank_eq_succ 1
+  .of_fact_finrank_eq_succ 1
 
-attribute [local instance] FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two
+attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
+
+@[deprecated] -- Since 2024/02/02
+alias FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two :=
+  FiniteDimensional.of_fact_finrank_eq_two
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [Fact (finrank ℝ E = 2)]
   (o : Orientation ℝ E (Fin 2))
@@ -89,10 +93,10 @@ namespace Orientation
 notation `ω`). When evaluated on two vectors, it gives the oriented area of the parallelogram they
 span. -/
 irreducible_def areaForm : E →ₗ[ℝ] E →ₗ[ℝ] ℝ := by
-  let z : E [Λ^Fin 0]→ₗ[ℝ] ℝ ≃ₗ[ℝ] ℝ :=
+  let z : E [⋀^Fin 0]→ₗ[ℝ] ℝ ≃ₗ[ℝ] ℝ :=
     AlternatingMap.constLinearEquivOfIsEmpty.symm
-  let y : E [Λ^Fin 1]→ₗ[ℝ] ℝ →ₗ[ℝ] E →ₗ[ℝ] ℝ :=
-    LinearMap.llcomp ℝ E (E [Λ^Fin 0]→ₗ[ℝ] ℝ) ℝ z ∘ₗ AlternatingMap.curryLeftLinearMap
+  let y : E [⋀^Fin 1]→ₗ[ℝ] ℝ →ₗ[ℝ] E →ₗ[ℝ] ℝ :=
+    LinearMap.llcomp ℝ E (E [⋀^Fin 0]→ₗ[ℝ] ℝ) ℝ z ∘ₗ AlternatingMap.curryLeftLinearMap
   exact y ∘ₗ AlternatingMap.curryLeftLinearMap (R' := ℝ) o.volumeForm
 #align orientation.area_form Orientation.areaForm
 
@@ -279,7 +283,7 @@ theorem rightAngleRotation_symm :
   exact LinearIsometryEquiv.toLinearIsometry_injective rfl
 #align orientation.right_angle_rotation_symm Orientation.rightAngleRotation_symm
 
--- @[simp] -- Porting note: simp already proves this
+-- @[simp] -- Porting note (#10618): simp already proves this
 theorem inner_rightAngleRotation_self (x : E) : ⟪J x, x⟫ = 0 := by simp
 #align orientation.inner_right_angle_rotation_self Orientation.inner_rightAngleRotation_self
 
@@ -304,7 +308,7 @@ theorem areaForm_rightAngleRotation_right (x y : E) : ω x (J y) = ⟪x, y⟫ :=
   rw [← o.inner_rightAngleRotation_left, o.inner_comp_rightAngleRotation]
 #align orientation.area_form_right_angle_rotation_right Orientation.areaForm_rightAngleRotation_right
 
--- @[simp] -- Porting note: simp already proves this
+-- @[simp] -- Porting note (#10618): simp already proves this
 theorem areaForm_comp_rightAngleRotation (x y : E) : ω (J x) (J y) = ω x y := by simp
 #align orientation.area_form_comp_right_angle_rotation Orientation.areaForm_comp_rightAngleRotation
 
@@ -452,7 +456,7 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
         map_smul, map_add, real_inner_smul_right, inner_add_right, Matrix.cons_val_one,
         Matrix.head_cons, Algebra.id.smul_eq_mul, areaForm_rightAngleRotation_right,
         mul_zero, add_zero, zero_add, neg_zero, inner_rightAngleRotation_right,
-        real_inner_self_eq_norm_sq]
+        real_inner_self_eq_norm_sq, zero_smul, one_smul]
       exact this
     rintro ⟨ha, hb⟩
     have hx' : 0 < ‖x‖ := by simpa using hx
@@ -481,7 +485,7 @@ theorem kahler_apply_apply (x y : E) : o.kahler x y = ⟪x, y⟫ + ω x y • Co
 #align orientation.kahler_apply_apply Orientation.kahler_apply_apply
 
 theorem kahler_swap (x y : E) : o.kahler x y = conj (o.kahler y x) := by
-  have : ∀ r : ℝ, Complex.ofReal' r = @IsROrC.ofReal ℂ _ r := fun r => rfl
+  have : ∀ r : ℝ, Complex.ofReal' r = @RCLike.ofReal ℂ _ r := fun r => rfl
   simp only [kahler_apply_apply]
   rw [real_inner_comm, areaForm_swap]
   simp [this]
@@ -520,7 +524,7 @@ theorem kahler_comp_rightAngleRotation' (x y : E) :
 
 @[simp]
 theorem kahler_neg_orientation (x y : E) : (-o).kahler x y = conj (o.kahler x y) := by
-  have : ∀ r : ℝ, Complex.ofReal' r = @IsROrC.ofReal ℂ _ r := fun r => rfl
+  have : ∀ r : ℝ, Complex.ofReal' r = @RCLike.ofReal ℂ _ r := fun r => rfl
   simp [kahler_apply_apply, this]
 #align orientation.kahler_neg_orientation Orientation.kahler_neg_orientation
 

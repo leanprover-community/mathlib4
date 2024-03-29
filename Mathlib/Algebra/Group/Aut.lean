@@ -256,7 +256,7 @@ protected theorem smul_def {A} [AddMonoid A] (f : AddAut A) (a : A) : f • a = 
 
 /-- `AddAut.applyDistribMulAction` is faithful. -/
 instance apply_faithfulSMul {A} [AddMonoid A] : FaithfulSMul (AddAut A) A :=
-  ⟨fun h => AddEquiv.ext h ⟩
+  ⟨fun h => AddEquiv.ext h⟩
 #align add_aut.apply_has_faithful_smul AddAut.apply_faithfulSMul
 
 /-- Additive group conjugation, `AddAut.conj g h = g + h - g`, as an additive monoid
@@ -291,7 +291,7 @@ theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).symm h = -g + h + g :=
   rfl
 #align add_aut.conj_symm_apply AddAut.conj_symm_apply
 
--- Porting note : the exact translation of this mathlib3 lemma would be`(-conj g) h = -g + h + g`,
+-- Porting note: the exact translation of this mathlib3 lemma would be`(-conj g) h = -g + h + g`,
 -- but this no longer pass the simp_nf linter, as the LHS simplifies by `toMul_neg` to
 -- `(Additive.toMul (conj g))⁻¹`.
 @[simp]

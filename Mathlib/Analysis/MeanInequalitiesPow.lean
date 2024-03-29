@@ -47,7 +47,8 @@ universe u v
 
 open Finset
 
-open Classical BigOperators NNReal ENNReal
+open scoped Classical
+open BigOperators NNReal ENNReal
 
 noncomputable section
 
@@ -71,10 +72,10 @@ theorem pow_arith_mean_le_arith_mean_pow_of_even (w z : ι → ℝ) (hw : ∀ i 
 theorem pow_sum_div_card_le_sum_pow {f : ι → ℝ} (n : ℕ) (hf : ∀ a ∈ s, 0 ≤ f a) :
     (∑ x in s, f x) ^ (n + 1) / (s.card : ℝ) ^ n ≤ ∑ x in s, f x ^ (n + 1) := by
   rcases s.eq_empty_or_nonempty with (rfl | hs)
-  · simp_rw [Finset.sum_empty, zero_pow' _ (Nat.succ_ne_zero n), zero_div]; rfl
+  · simp_rw [Finset.sum_empty, zero_pow n.succ_ne_zero, zero_div]; rfl
   · have hs0 : 0 < (s.card : ℝ) := Nat.cast_pos.2 hs.card_pos
     suffices (∑ x in s, f x / s.card) ^ (n + 1) ≤ ∑ x in s, f x ^ (n + 1) / s.card by
-      rwa [← Finset.sum_div, ← Finset.sum_div, div_pow, pow_succ' (s.card : ℝ), ← div_div,
+      rwa [← Finset.sum_div, ← Finset.sum_div, div_pow, pow_succ (s.card : ℝ), ← div_div,
         div_le_iff hs0, div_mul, div_self hs0.ne', div_one] at this
     have :=
       @ConvexOn.map_sum_le ℝ ℝ ℝ ι _ _ _ _ _ _ (Set.Ici 0) (fun x => x ^ (n + 1)) s
@@ -231,10 +232,8 @@ namespace ENNReal
 functions and real exponents. -/
 theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ i in s, w i = 1) {p : ℝ}
     (hp : 1 ≤ p) : (∑ i in s, w i * z i) ^ p ≤ ∑ i in s, w i * z i ^ p := by
-  have hp_pos : 0 < p
-  positivity
-  have hp_nonneg : 0 ≤ p
-  positivity
+  have hp_pos : 0 < p := by positivity
+  have hp_nonneg : 0 ≤ p := by positivity
   have hp_not_neg : ¬p < 0 := by simp [hp_nonneg]
   have h_top_iff_rpow_top : ∀ (i : ι), i ∈ s → (w i * z i = ⊤ ↔ w i * z i ^ p = ⊤) := by
     simp [ENNReal.mul_eq_top, hp_pos, hp_nonneg, hp_not_neg]
@@ -274,7 +273,7 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
       refine' sum_congr rfl fun i hi => (coe_toNNReal _).symm
       refine' (lt_top_of_sum_ne_top _ hi).ne
       exact hw'.symm ▸ ENNReal.one_ne_top
-    rwa [← coe_eq_coe, ← h_sum_nnreal]
+    rwa [← coe_inj, ← h_sum_nnreal]
 #align ennreal.rpow_arith_mean_le_arith_mean_rpow ENNReal.rpow_arith_mean_le_arith_mean_rpow
 
 /-- Weighted generalized mean inequality, version for two elements of `ℝ≥0∞` and real
@@ -320,7 +319,7 @@ theorem rpow_add_rpow_le_add {p : ℝ} (a b : ℝ≥0∞) (hp1 : 1 ≤ p) :
 theorem rpow_add_rpow_le {p q : ℝ} (a b : ℝ≥0∞) (hp_pos : 0 < p) (hpq : p ≤ q) :
     (a ^ q + b ^ q) ^ (1 / q) ≤ (a ^ p + b ^ p) ^ (1 / p) := by
   have h_rpow : ∀ a : ℝ≥0∞, a ^ q = (a ^ p) ^ (q / p) := fun a => by
-    rw [← ENNReal.rpow_mul, _root_.mul_div_cancel' _ hp_pos.ne']
+    rw [← ENNReal.rpow_mul, mul_div_cancel₀ _ hp_pos.ne']
   have h_rpow_add_rpow_le_add :
     ((a ^ p) ^ (q / p) + (b ^ p) ^ (q / p)) ^ (1 / (q / p)) ≤ a ^ p + b ^ p := by
     refine' rpow_add_rpow_le_add (a ^ p) (b ^ p) _

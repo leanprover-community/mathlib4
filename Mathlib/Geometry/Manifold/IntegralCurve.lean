@@ -60,7 +60,7 @@ integral curve, vector field, local existence, uniqueness
 
 open scoped Manifold Topology
 
-open Set
+open Function Set
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
@@ -147,9 +147,8 @@ lemma IsIntegralCurveAt.continuousAt (hγ : IsIntegralCurveAt γ v t₀) :
   have ⟨_, hs, hγ⟩ := isIntegralCurveAt_iff.mp hγ
   hγ.continuousAt <| mem_of_mem_nhds hs
 
-lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) :
-    Continuous γ := continuous_iff_continuousAt.mpr
-      fun _ ↦ (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
+lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) : Continuous γ :=
+  continuous_iff_continuousAt.mpr fun _ ↦ (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
 
 /-- If `γ` is an integral curve of a vector field `v`, then `γ t` is tangent to `v (γ t)` when
   expressed in the local chart around the initial point `γ t₀`. -/
@@ -193,8 +192,7 @@ section Translation
 lemma IsIntegralCurveOn.comp_add (hγ : IsIntegralCurveOn γ v s) (dt : ℝ) :
     IsIntegralCurveOn (γ ∘ (· + dt)) v { t | t + dt ∈ s } := by
   intros t ht
-  rw [Function.comp_apply,
-    ← ContinuousLinearMap.comp_id (ContinuousLinearMap.smulRight 1 (v (γ (t + dt))))]
+  rw [comp_apply, ← ContinuousLinearMap.comp_id (ContinuousLinearMap.smulRight 1 (v (γ (t + dt))))]
   apply HasMFDerivAt.comp t (hγ (t + dt) ht)
   refine ⟨(continuous_add_right _).continuousAt, ?_⟩
   simp only [mfld_simps, hasFDerivWithinAt_univ]
@@ -246,7 +244,7 @@ section Scaling
 lemma IsIntegralCurveOn.comp_mul (hγ : IsIntegralCurveOn γ v s) (a : ℝ) :
     IsIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
   intros t ht
-  rw [Function.comp_apply, Pi.smul_apply, ← ContinuousLinearMap.smulRight_comp]
+  rw [comp_apply, Pi.smul_apply, ← ContinuousLinearMap.smulRight_comp]
   refine HasMFDerivAt.comp t (hγ (t * a) ht) ⟨(continuous_mul_right _).continuousAt, ?_⟩
   simp only [mfld_simps, hasFDerivWithinAt_univ]
   exact HasFDerivAt.mul_const' (hasFDerivAt_id _) _
@@ -268,7 +266,7 @@ lemma IsIntegralCurveAt.comp_mul_ne_zero (hγ : IsIntegralCurveAt γ v t₀) {a 
   convert h.comp_mul a
   ext t
   rw [mem_setOf_eq, Metric.mem_ball, Metric.mem_ball, Real.dist_eq, Real.dist_eq,
-    lt_div_iff (abs_pos.mpr ha), ← abs_mul, sub_mul, div_mul_cancel _ ha]
+    lt_div_iff (abs_pos.mpr ha), ← abs_mul, sub_mul, div_mul_cancel₀ _ ha]
 
 lemma isIntegralCurveAt_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
@@ -277,7 +275,7 @@ lemma isIntegralCurveAt_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
   · ext t
     simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
-  · simp only [div_inv_eq_mul, div_mul_cancel _ ha]
+  · simp only [div_inv_eq_mul, div_mul_cancel₀ _ ha]
 
 lemma IsIntegralCurve.comp_mul (hγ : IsIntegralCurve γ v) (a : ℝ) :
     IsIntegralCurve (γ ∘ (· * a)) (a • v) := by
@@ -346,7 +344,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
     mem_of_mem_of_subset hf3' (extChartAt I x₀).target_subset_preimage_source
   have hft2 := mem_extChartAt_source I xₜ
   -- express the derivative of the integral curve in the local chart
-  refine ⟨(continuousAt_extChartAt_symm'' _ _ hf3').comp h.continuousAt,
+  refine ⟨(continuousAt_extChartAt_symm'' _ hf3').comp h.continuousAt,
     HasDerivWithinAt.hasFDerivWithinAt ?_⟩
   simp only [mfld_simps, hasDerivWithinAt_univ]
   show HasDerivAt ((extChartAt I xₜ ∘ (extChartAt I x₀).symm) ∘ f) (v xₜ) t
@@ -387,7 +385,7 @@ theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt (hγt₀ : I.IsInteriorPoi
   -- extract a set `s` on which `v'` is Lipschitz
   rw [contMDiffAt_iff] at hv
   obtain ⟨_, hv⟩ := hv
-  obtain ⟨K, s, hs, hlip⟩ : ∃ K, ∃ s ∈ nhds _, LipschitzOnWith K v' s :=
+  obtain ⟨K, s, hs, hlip⟩ : ∃ K, ∃ s ∈ 𝓝 _, LipschitzOnWith K v' s :=
     (hv.contDiffAt (range_mem_nhds_isInteriorPoint hγt₀)).snd.exists_lipschitzOnWith
   have hlip (t : ℝ) : LipschitzOnWith K ((fun _ ↦ v') t) ((fun _ ↦ s) t) := hlip
   -- internal lemmas to reduce code duplication
@@ -439,14 +437,14 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
     (h : γ t₀ = γ' t₀) : EqOn γ γ' (Ioo a b) := by
   set s := {t | γ t = γ' t} ∩ Ioo a b with hs
   -- since `Ioo a b` is connected, we get `s = Ioo a b` by showing that `s` is clopen in `Ioo a b`
-  -- in the subtype toplogy (`s` is also non-empty by assumption)
+  -- in the subtype topology (`s` is also non-empty by assumption)
   -- here we use a slightly weaker alternative theorem
   suffices hsub : Ioo a b ⊆ s from fun t ht ↦ mem_setOf.mp ((subset_def ▸ hsub) t ht).1
   apply isPreconnected_Ioo.subset_of_closure_inter_subset (s := Ioo a b) (u := s) _
     ⟨t₀, ⟨ht₀, ⟨h, ht₀⟩⟩⟩
   · -- is this really the most convenient way to pass to subtype topology?
     -- TODO: shorten this when better API around subtype topology exists
-    rw [hs, ← Subtype.image_preimage_val, ← Subtype.image_preimage_val,
+    rw [hs, inter_comm, ← Subtype.image_preimage_val, inter_comm, ← Subtype.image_preimage_val,
       image_subset_image_iff Subtype.val_injective, preimage_setOf_eq]
     intros t ht
     rw [mem_preimage, ← closure_subtype] at ht
@@ -500,5 +498,37 @@ theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [BoundarylessManifold I
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     (hγ : IsIntegralCurve γ v) (hγ' : IsIntegralCurve γ' v) (h : γ t₀ = γ' t₀) : γ = γ' :=
   isIntegralCurve_eq_of_contMDiff (fun _ ↦ BoundarylessManifold.isInteriorPoint I) hv hγ hγ' h
+
+/-- For a global integral curve `γ`, if it crosses itself at `a b : ℝ`, then it is periodic with
+period `a - b`. -/
+lemma IsIntegralCurve.periodic_of_eq [BoundarylessManifold I M]
+    (hγ : IsIntegralCurve γ v)
+    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
+    (heq : γ a = γ b) : Periodic γ (a - b) := by
+  intro t
+  apply congrFun <|
+    isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless (t₀ := b) hv (hγ.comp_add _) hγ _
+  rw [comp_apply, add_sub_cancel, heq]
+
+/-- A global integral curve is injective xor periodic with positive period. -/
+lemma IsIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
+    (hγ : IsIntegralCurve γ v)
+    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) :
+    Xor' (∃ T > 0, Periodic γ T) (Injective γ) := by
+  rw [xor_iff_iff_not]
+  refine ⟨fun ⟨T, hT, hf⟩ ↦ hf.not_injective (ne_of_gt hT), ?_⟩
+  intro h
+  rw [Injective] at h
+  push_neg at h
+  obtain ⟨a, b, heq, hne⟩ := h
+  refine ⟨|a - b|, ?_, ?_⟩
+  · rw [gt_iff_lt, abs_pos, sub_ne_zero]
+    exact hne
+  · by_cases hab : a - b < 0
+    · rw [abs_of_neg hab, neg_sub]
+      exact hγ.periodic_of_eq hv heq.symm
+    · rw [not_lt] at hab
+      rw [abs_of_nonneg hab]
+      exact hγ.periodic_of_eq hv heq
 
 end ExistUnique
