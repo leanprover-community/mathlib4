@@ -137,7 +137,7 @@ lemma LSeries_iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaO
     simp_rw [derivWithin_of_isOpen (isOpen_re_gt_EReal _) h] at this
     rw [iteratedDeriv_succ, this]
     simp only [Pi.mul_def, Pi.pow_apply, Pi.neg_apply, Pi.one_apply, deriv_const_mul_field',
-      pow_succ', mul_assoc, neg_one_mul, Function.iterate_succ', Function.comp_def,
+      pow_succ, mul_assoc, neg_one_mul, Function.iterate_succ', Function.comp_def,
       LSeries_deriv <| absicssaOfAbsConv_logPowMul.symm ▸ h]
 
 /-!

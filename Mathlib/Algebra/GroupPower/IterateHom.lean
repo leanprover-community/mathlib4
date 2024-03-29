@@ -38,7 +38,7 @@ theorem hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
   | 0 => by
     rw [pow_zero, h1]
     rfl
-  | n + 1 => by rw [pow_succ, iterate_succ', hmul, hom_coe_pow c h1 hmul f n]
+  | n + 1 => by rw [pow_succ, iterate_succ, hmul, hom_coe_pow c h1 hmul f n]
 #align hom_coe_pow hom_coe_pow
 
 @[to_additive (attr := simp)]
@@ -118,7 +118,7 @@ variable [Monoid G] (a : G) (n : ℕ)
 theorem smul_iterate [MulAction G H] : (a • · : H → H)^[n] = (a ^ n • ·) :=
   funext fun b =>
     Nat.recOn n (by rw [iterate_zero, id.def, pow_zero, one_smul])
-    fun n ih => by rw [iterate_succ', comp_apply, ih, pow_succ, mul_smul]
+    fun n ih => by rw [iterate_succ', comp_apply, ih, pow_succ', mul_smul]
 #align smul_iterate smul_iterate
 #align vadd_iterate vadd_iterate
 

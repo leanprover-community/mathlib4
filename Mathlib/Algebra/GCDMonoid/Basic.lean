@@ -576,7 +576,7 @@ theorem gcd_pow_right_dvd_pow_gcd [GCDMonoid α] {a b : α} {k : ℕ} :
   · induction' k with k hk
     · rw [pow_zero, pow_zero]
       exact (gcd_one_right' a).dvd
-    rw [pow_succ, pow_succ]
+    rw [pow_succ', pow_succ']
     trans gcd a b * gcd a (b ^ k)
     · exact gcd_mul_dvd_mul_gcd a b (b ^ k)
     · exact (mul_dvd_mul_iff_left hg).mpr hk

@@ -120,7 +120,7 @@ theorem UniformContinuous.pow_const [UniformSpace β] {f : β → α} (hf : Unif
     simp_rw [pow_zero]
     exact uniformContinuous_const
   | n + 1 => by
-    simp_rw [pow_succ]
+    simp_rw [pow_succ']
     exact hf.mul (hf.pow_const n)
 #align uniform_continuous.pow_const UniformContinuous.pow_const
 #align uniform_continuous.const_nsmul UniformContinuous.const_nsmul
