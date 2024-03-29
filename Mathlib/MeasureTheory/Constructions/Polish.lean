@@ -1083,12 +1083,11 @@ theorem exists_measurableEmbedding_real : ∃ f : α → ℝ, MeasurableEmbeddin
 
 /-- A measurable embedding of a standard Borel space into `ℝ`. -/
 noncomputable
-def measurableEmbedding_real (Ω : Type*) [MeasurableSpace Ω] [StandardBorelSpace Ω] : Ω → ℝ :=
+def embeddingReal (Ω : Type*) [MeasurableSpace Ω] [StandardBorelSpace Ω] : Ω → ℝ :=
   (exists_measurableEmbedding_real Ω).choose
 
-lemma measurableEmbedding_measurableEmbedding_real
-    (Ω : Type*) [MeasurableSpace Ω] [StandardBorelSpace Ω] :
-    MeasurableEmbedding (measurableEmbedding_real Ω) :=
+lemma measurableEmbedding_embeddingReal (Ω : Type*) [MeasurableSpace Ω] [StandardBorelSpace Ω] :
+    MeasurableEmbedding (embeddingReal Ω) :=
   (exists_measurableEmbedding_real Ω).choose_spec
 
 end MeasureTheory

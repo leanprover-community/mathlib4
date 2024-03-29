@@ -104,13 +104,13 @@ On `ℝ`, we get disintegration by constructing a map `f` with the property `IsK
 noncomputable
 def condKernelBorelSnd (κ : kernel α (β × Ω)) {f : α × β → StieltjesFunction}
     (hf : IsCondKernelCDF f
-      (kernel.map κ (Prod.map (id : β → β) (measurableEmbedding_real Ω))
-        (measurable_id.prod_map (measurableEmbedding_measurableEmbedding_real Ω).measurable))
-      (kernel.fst (kernel.map κ (Prod.map (id : β → β) (measurableEmbedding_real Ω))
-        (measurable_id.prod_map (measurableEmbedding_measurableEmbedding_real Ω).measurable)))) :
+      (kernel.map κ (Prod.map (id : β → β) (embeddingReal Ω))
+        (measurable_id.prod_map (measurableEmbedding_embeddingReal Ω).measurable))
+      (kernel.fst (kernel.map κ (Prod.map (id : β → β) (embeddingReal Ω))
+        (measurable_id.prod_map (measurableEmbedding_embeddingReal Ω).measurable)))) :
     kernel (α × β) Ω :=
-  let e := measurableEmbedding_real Ω
-  let he := measurableEmbedding_measurableEmbedding_real Ω
+  let e := embeddingReal Ω
+  have he := measurableEmbedding_embeddingReal Ω
   let x₀ := (range_nonempty e).choose
   kernel.comapRight
     (kernel.piecewise (measurableSet_toKernel_eq_one hf he.measurableSet_range)
@@ -120,10 +120,10 @@ def condKernelBorelSnd (κ : kernel α (β × Ω)) {f : α × β → StieltjesFu
 instance instIsMarkovKernel_condKernelBorelSnd (κ : kernel α (β × Ω))
     {f : α × β → StieltjesFunction}
     (hf : IsCondKernelCDF f
-      (kernel.map κ (Prod.map (id : β → β) (measurableEmbedding_real Ω))
-        (measurable_id.prod_map (measurableEmbedding_measurableEmbedding_real Ω).measurable))
-      (kernel.fst (kernel.map κ (Prod.map (id : β → β) (measurableEmbedding_real Ω))
-        (measurable_id.prod_map (measurableEmbedding_measurableEmbedding_real Ω).measurable)))) :
+      (kernel.map κ (Prod.map (id : β → β) (embeddingReal Ω))
+        (measurable_id.prod_map (measurableEmbedding_embeddingReal Ω).measurable))
+      (kernel.fst (kernel.map κ (Prod.map (id : β → β) (embeddingReal Ω))
+        (measurable_id.prod_map (measurableEmbedding_embeddingReal Ω).measurable)))) :
     IsMarkovKernel (condKernelBorelSnd κ hf) := by
   rw [condKernelBorelSnd]
   refine kernel.IsMarkovKernel.comapRight _ _ fun a ↦ ?_
@@ -132,20 +132,20 @@ instance instIsMarkovKernel_condKernelBorelSnd (κ : kernel α (β × Ω))
   · exact h_mem
   · classical
     rw [kernel.deterministic_apply' _ _
-        (measurableEmbedding_measurableEmbedding_real Ω).measurableSet_range,
+        (measurableEmbedding_embeddingReal Ω).measurableSet_range,
       Set.indicator_apply, if_pos]
-    exact (range_nonempty (measurableEmbedding_real Ω)).choose_spec
+    exact (range_nonempty (embeddingReal Ω)).choose_spec
 
 lemma compProd_fst_condKernelBorelSnd (κ : kernel α (β × Ω)) [IsFiniteKernel κ]
     {f : α × β → StieltjesFunction}
     (hf : IsCondKernelCDF f
-      (kernel.map κ (Prod.map (id : β → β) (measurableEmbedding_real Ω))
-        (measurable_id.prod_map (measurableEmbedding_measurableEmbedding_real Ω).measurable))
-      (kernel.fst (kernel.map κ (Prod.map (id : β → β) (measurableEmbedding_real Ω))
-        (measurable_id.prod_map (measurableEmbedding_measurableEmbedding_real Ω).measurable)))) :
+      (kernel.map κ (Prod.map (id : β → β) (embeddingReal Ω))
+        (measurable_id.prod_map (measurableEmbedding_embeddingReal Ω).measurable))
+      (kernel.fst (kernel.map κ (Prod.map (id : β → β) (embeddingReal Ω))
+        (measurable_id.prod_map (measurableEmbedding_embeddingReal Ω).measurable)))) :
     kernel.fst κ ⊗ₖ condKernelBorelSnd κ hf = κ := by
-  let e := measurableEmbedding_real Ω
-  let he := measurableEmbedding_measurableEmbedding_real Ω
+  let e := embeddingReal Ω
+  let he := measurableEmbedding_embeddingReal Ω
   let κ' := kernel.map κ (Prod.map (id : β → β) e) (measurable_id.prod_map he.measurable)
   have h_prod_embed : MeasurableEmbedding (Prod.map (id : β → β) e) :=
     MeasurableEmbedding.id.prod_mk he
@@ -266,8 +266,8 @@ lemma isCondKernelCDF_condKernelCDF (κ : kernel α (γ × ℝ)) [IsFiniteKernel
 
 noncomputable
 def condKernelBorel (κ : kernel α (γ × Ω)) [IsFiniteKernel κ] : kernel (α × γ) Ω :=
-  let f := measurableEmbedding_real Ω
-  let hf := measurableEmbedding_measurableEmbedding_real Ω
+  let f := embeddingReal Ω
+  let hf := measurableEmbedding_embeddingReal Ω
   let κ' := kernel.map κ (Prod.map (id : γ → γ) f) (measurable_id.prod_map hf.measurable)
   condKernelBorelSnd κ (isCondKernelCDF_condKernelCDF κ')
 
@@ -286,8 +286,8 @@ section Unit
 
 noncomputable
 def condKernelUnitBorel (κ : kernel Unit (α × Ω)) [IsFiniteKernel κ] : kernel (Unit × α) Ω :=
-  let f := measurableEmbedding_real Ω
-  let hf := measurableEmbedding_measurableEmbedding_real Ω
+  let f := embeddingReal Ω
+  let hf := measurableEmbedding_embeddingReal Ω
   let κ' := kernel.map κ (Prod.map (id : α → α) f) (measurable_id.prod_map hf.measurable)
   condKernelBorelSnd κ (isCondKernelCDF_condCDF (κ' ()))
 
