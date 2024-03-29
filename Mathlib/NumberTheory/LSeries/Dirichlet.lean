@@ -91,7 +91,7 @@ open Nat
 
 open scoped ArithmeticFunction.zeta in
 lemma ArithmeticFunction.const_one_eq_zeta {R : Type*} [Semiring R] {n : ℕ} (hn : n ≠ 0) :
-  (1 : ℕ → R) n = (ζ ·) n := by
+    (1 : ℕ → R) n = (ζ ·) n := by
   simp only [Pi.one_apply, zeta_apply, hn, ↓reduceIte, cast_one]
 
 lemma LSeries.one_convolution_eq_zeta_convolution {R : Type*} [Semiring R] (f : ℕ → R):
