@@ -499,7 +499,7 @@ theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
   (replicate_left_injective a).eq_iff
 #align list.replicate_left_inj List.replicate_left_inj
 
-@[simp] theorem head_replicate {n} {a : α} (h : List.replicate n a ≠ []) : head _ h = a := by
+@[simp] theorem head_replicate (n : ℕ) (a : α) (h) : head (replicate n a) h = a := by
   cases n <;> simp at h ⊢
 /-! ### pure -/
 
