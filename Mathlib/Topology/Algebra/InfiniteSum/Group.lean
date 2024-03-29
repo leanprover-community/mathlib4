@@ -356,8 +356,10 @@ theorem tendsto_tprod_compl_atTop_one (f : α → G) :
     rwa [Finset.multipliable_compl_iff]
 #align tendsto_tsum_compl_at_top_zero tendsto_tsum_compl_atTop_zero
 
-@[to_additive "Series divergence test: if `f` is a convergent series, then `f x` tends to zero along
-`cofinite`."]
+/-- Series divergence test: if `f` is unconditionally multipliable, then `f x` tends to one along
+`cofinite`. -/
+@[to_additive "Series divergence test: if `f` is unconditionally summable, then `f x` tends to zero
+along `cofinite`."]
 theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofinite (𝓝 1) := by
   intro e he
   rw [Filter.mem_map]
