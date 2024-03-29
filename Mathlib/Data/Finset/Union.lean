@@ -11,8 +11,15 @@ import Mathlib.Order.SetNotation
 # Unions of finite sets
 
 This file defines the union of a family `t : α → Finset β` of finsets bounded by a finset
-`s : Finset α`. We define both `Finset.biUnion` which requires decidable equality on `β` and
-`Finset.disjiUnion` which instead assumes the `t a` are pairwise disjoint.
+`s : Finset α`.
+
+## Main declarations
+
+* `Finset.disjUnion`: Given a hypothesis `h` which states that finsets `s` and `t` are disjoint,
+  `s.disjUnion t h` is the set such that `a ∈ disjUnion s t h` iff `a ∈ s` or `a ∈ t`; this does
+  not require decidable equality on the type `α`.
+* `Finset.biUnion`: Finite unions of finsets; given an indexing function `f : α → Finset β` and an
+  `s : Finset α`, `s.biUnion f` is the union of all finsets of the form `f a` for `a ∈ s`.
 
 ## TODO
 

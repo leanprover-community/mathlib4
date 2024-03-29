@@ -86,9 +86,6 @@ In Lean, we use lattice notation to talk about things involving unions and inter
   See `Finset.sup`/`Finset.biUnion` for finite unions.
 * `Finset.instInterFinset`: Defines `s ∩ t` (or `s ⊓ t`) as the intersection of `s` and `t`.
   See `Finset.inf` for finite intersections.
-* `Finset.disjUnion`: Given a hypothesis `h` which states that finsets `s` and `t` are disjoint,
-  `s.disjUnion t h` is the set such that `a ∈ disjUnion s t h` iff `a ∈ s` or `a ∈ t`; this does
-  not require decidable equality on the type `α`.
 
 ### Operations on two or more finsets
 
@@ -101,14 +98,6 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 * `Finset.instSDiffFinset`: Defines the set difference `s \ t` for finsets `s` and `t`.
 * `Finset.product`: Given finsets of `α` and `β`, defines finsets of `α × β`.
   For arbitrary dependent products, see `Mathlib.Data.Finset.Pi`.
-* `Finset.biUnion`: Finite unions of finsets; given an indexing function `f : α → Finset β` and an
-  `s : Finset α`, `s.biUnion f` is the union of all finsets of the form `f a` for `a ∈ s`.
-* `Finset.bInter`: TODO: Implement finite intersections.
-
-### Maps constructed using finsets
-
-* `Finset.piecewise`: Given two functions `f`, `g`, `s.piecewise f g` is a function which is equal
-  to `f` on `s` and `g` on the complement.
 
 ### Predicates on finsets
 

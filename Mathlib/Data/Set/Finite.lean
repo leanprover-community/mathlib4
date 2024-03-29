@@ -485,7 +485,7 @@ instance fintypeMap {α β} [DecidableEq β] :
 #align set.fintype_map Set.fintypeMap
 
 instance fintypeLTNat (n : ℕ) : Fintype { i | i < n } :=
-  Fintype.ofFinset ⟨_, Multiset.nodup_range n⟩ <| by simp
+  Fintype.ofFinset (Finset.range n) <| by simp
 #align set.fintype_lt_nat Set.fintypeLTNat
 
 instance fintypeLENat (n : ℕ) : Fintype { i | i ≤ n } := by
@@ -1357,8 +1357,8 @@ noncomputable def Infinite.natEmbedding (s : Set α) (h : s.Infinite) : ℕ ↪ 
 #align set.infinite.nat_embedding Set.Infinite.natEmbedding
 
 theorem Infinite.exists_subset_card_eq {s : Set α} (hs : s.Infinite) (n : ℕ) :
-    ∃ t : Finset α, ↑t ⊆ s ∧ t.card = n := by
-  obtain ⟨t, ht, rfl⟩ := hs.to_subtype.exists_subset_card_eq n; exact ⟨t.map $ .subtype _, by simp⟩
+    ∃ t : Finset α, ↑t ⊆ s ∧ t.card = n :=
+  ⟨((Finset.range n).map (hs.natEmbedding _)).map (Embedding.subtype _), by simp⟩
 #align set.infinite.exists_subset_card_eq Set.Infinite.exists_subset_card_eq
 
 theorem infinite_of_finite_compl [Infinite α] {s : Set α} (hs : sᶜ.Finite) : s.Infinite := fun h =>

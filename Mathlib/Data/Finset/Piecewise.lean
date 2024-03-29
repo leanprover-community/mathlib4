@@ -9,6 +9,8 @@ import Mathlib.Data.Set.Intervals.Basic
 /-!
 # Functions defined piecewise on a finset
 
+This file defines `Finset.piecewise`: Given two functions `f`, `g`, `s.piecewise f g` is a function
+which is equal to `f` on `s` and `g` on the complement.
 
 ## TODO
 
