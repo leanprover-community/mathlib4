@@ -40,8 +40,10 @@ register_option linter.nonTerminalSimp : Bool := {
 
 namespace nonTerminalSimp
 
-/-- `onlyOrNotSimp stx` if `stx` is syntax for `simp` *without* `only`, then returns `false` else
-returs `true`. -/
+/-- `onlyOrNotSimp stx` returns
+* `false` if `stx` is syntax for `simp` *without* `only`,
+* otherwise it returns `true`.
+-/
 def onlyOrNotSimp : Syntax → Bool
   | .node _info `Lean.Parser.Tactic.simp #[_, _, _, only?, _, _] => only?[0].getAtomVal == "only"
   | _ => true
@@ -161,8 +163,6 @@ def getStained! (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : Arr
 /-- Gets the value of the `linter.nonTerminalSimp` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.nonTerminalSimp o
 
-open Lean Term Elab Command Meta
-
 def stained.toFVarId (lctx: LocalContext) : stained → Array FVarId
   | name n   => #[((lctx.findFromUserName? n).getD default).fvarId]
   | goal     => #[default]
@@ -182,11 +182,16 @@ def ignored : HashSet Name := HashSet.empty
   |>.insert ``Lean.Parser.Tactic.tacticTry_
   |>.insert `«]»
   |>.insert `Std.Tactic.«tacticOn_goal-_=>_»
+  |>.insert ``Lean.Parser.Tactic.tacticSorry
+  |>.insert ``Lean.Parser.Tactic.tacticRepeat_
+  |>.insert ``Lean.Parser.Tactic.tacticStop_
+  |>.insert ``Lean.Parser.Tactic.«tactic_<;>_»
 
 /-- `SyntaxNodeKind`s of tactics that stain the locations on which they act
 and that can only be followed by other `stainers`. -/
 def stainers : HashSet Name := HashSet.empty
   |>.insert ``Lean.Parser.Tactic.simp
+  |>.insert ``Lean.Parser.Tactic.simpAll
 --  |>.insert ``Lean.Parser.Tactic.rwSeq  -- remove me! `rw` is not a stainer!
 
 /-- The main entry point to the unreachable tactic linter. -/
@@ -199,23 +204,32 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
   let x := trees.toList.map (extractRealGoalsCtx' (fun _ => true))
   let _ : Ord FVarId := ⟨fun f g => compare f.name.toString g.name.toString⟩
   let mut stains : HashMap FVarId SyntaxNodeKind := .empty
-  for d in x do for (s, ctxb, ctx, mvsb, mvs) in d do
-    if ignored.contains s.getKind then continue
-    let currMVara := mvs.getD 0 default
-    let currMVarb := mvsb.getD 0 default
-    let lctxb := ((ctxb.decls.find? currMVarb).getD default).lctx
-    let lctxa := ((ctx.decls.find? currMVara).getD default).lctx
+  for d in x do for (s, ctx0, ctx1, mvs0, mvs1) in d do
+    let skind := s.getKind
+    if ignored.contains skind then dbg_trace "ignoring {skind}" continue
+    let currMVar0 := mvs1.getD 0 default
+    let currMVar1 := mvs0.getD 0 default
+    let lctx0 := ((ctx0.decls.find? currMVar1).getD default).lctx
+    let lctxa := ((ctx1.decls.find? currMVar0).getD default).lctx
     for d in getStained! s do
-      if stainers.contains s.getKind &&
-        !onlyOrNotSimp s &&
-        (! mvs.length < mvsb.length) then
+      let shouldStain? := match stainers.contains skind, onlyOrNotSimp s, skind, (! mvs1.length < mvs0.length) with
+        | false, _, _, _ => false -- not a stainer
+        | _, false, _, _ => false -- `simp only`
+        | true, true, ``Lean.Parser.Tactic.simp, solves? => solves? -- if `simp *not* only` check if it closes a goal
+        | true, true, ``Lean.Parser.Tactic.simpAll, _ => true -- `simp_all`
+        | true, true, _, _ => true
+      logInfoAt s m!"{shouldStain?}"
+      if shouldStain? then
+--      if stainers.contains skind &&
+--        !onlyOrNotSimp s &&
+--        (! mvs1.length < mvs0.length) then
         let locsAfter := d.toFVarId lctxa
         for l in locsAfter do
-          stains := stains.insert l s.getKind
+          stains := stains.insert l skind
       else
-        let locsBefore := d.toFVarId lctxb
+        let locsBefore := d.toFVarId lctx0
         for l in locsBefore do
           if let some kind := stains.find? l then
-            Linter.logLint linter.nonTerminalSimp s m!"{kind} stained '{d}'"
+            Linter.logLint linter.nonTerminalSimp s m!"{kind} stained '{d}' at '{s}'"
 
 initialize addLinter nonTerminalSimpLinter
