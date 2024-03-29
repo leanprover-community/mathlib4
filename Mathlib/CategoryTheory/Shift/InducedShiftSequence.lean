@@ -18,7 +18,7 @@ which satisfy good coherence properties. The idea is that it allows to use funct
 The typical example shall be `[(homologyFunctor C (ComplexShape.up ℤ) 0).ShiftSequence ℤ]`
 for any abelian category `C` (TODO).
 
-Similarly as a shift on categories may induce a shift on a quotient or a localized
+Similarly as a shift on a category may induce a shift on a quotient or a localized
 category (see the file `CategoryTheory.Shift.Induced`), this file shows that
 under certain assumptions, there is an induced "shift sequence". The main application
 will be the construction of a shift sequence for the homology functor on the
