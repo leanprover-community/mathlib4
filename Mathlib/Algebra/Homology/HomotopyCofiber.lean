@@ -3,6 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.Algebra.Homology.HomologicalComplexBiprod
 import Mathlib.Algebra.Homology.Homotopy
 
 /-! The homotopy cofiber of a morphism of homological complexes
@@ -12,7 +13,7 @@ between homological complexes in `HomologicalComplex C c`. In degree `i`,
 it is isomorphic to `(F.X j) ⊞ (G.X i)` if there is a `j` such that `c.Rel i j`,
 and `G.X i` otherwise. (This is also known as the mapping cone of `φ`. Under
 the name `CochainComplex.mappingCone`, a specific API shall be developed
-for the case of cochain complexes indexed by `ℤ` (TODO).)
+for the case of cochain complexes indexed by `ℤ`.)
 
 When we assume `hc : ∀ j, ∃ i, c.Rel i j` (which holds in the case of chain complexes,
 or cochain complexes indexed by `ℤ`), then for any homological complex `K`,
@@ -28,7 +29,7 @@ see `cylinder.desc`. There is also a homotopy equivalence
 `cylinder.homotopyEquiv K : HomotopyEquiv K.cylinder K`. From the construction of
 the cylinder, we deduce the lemma `Homotopy.map_eq_of_inverts_homotopyEquivalences`
 which assert that if a functor inverts homotopy equivalences, then the image of
-two homotopic maps are equal (TODO).
+two homotopic maps are equal.
 
 -/
 
@@ -229,7 +230,6 @@ noncomputable def homotopyCofiber : HomologicalComplex C c where
       · simp [homotopyCofiber.inlX_d' φ j k hjk hk]
     · simp
 
-
 namespace homotopyCofiber
 
 /-- The right inclusion `G ⟶ homotopyCofiber φ`. -/
@@ -366,5 +366,191 @@ noncomputable def descEquiv (K : HomologicalComplex C c) (hc : ∀ j, ∃ i, c.R
     aesop_cat
 
 end homotopyCofiber
+
+section
+
+variable (K)
+variable [∀ i, HasBinaryBiproduct (K.X i) (K.X i)]
+  [HasHomotopyCofiber (biprod.lift (𝟙 K) (-𝟙 K))]
+
+/-- The cylinder object of a homological complex `K` is the homotopy cofiber
+of the morphism  `biprod.lift (𝟙 K) (-𝟙 K) : K ⟶ K ⊞ K`. -/
+noncomputable abbrev cylinder := homotopyCofiber (biprod.lift (𝟙 K) (-𝟙 K))
+
+namespace cylinder
+
+/-- The left inclusion `K ⟶ K.cylinder`. -/
+noncomputable def ι₀ : K ⟶ K.cylinder := biprod.inl ≫ homotopyCofiber.inr _
+
+/-- The right inclusion `K ⟶ K.cylinder`. -/
+noncomputable def ι₁ : K ⟶ K.cylinder := biprod.inr ≫ homotopyCofiber.inr _
+
+variable {K}
+
+section
+
+variable (φ₀ φ₁ : K ⟶ F) (h : Homotopy φ₀ φ₁)
+
+/-- The morphism `K.cylinder ⟶ F` that is induced by two morphisms `φ₀ φ₁ : K ⟶ F`
+and a homotopy `h : Homotopy φ₀ φ₁`. -/
+noncomputable def desc : K.cylinder ⟶ F :=
+  homotopyCofiber.desc _ (biprod.desc φ₀ φ₁)
+    (Homotopy.trans (Homotopy.ofEq (by
+      simp only [biprod.lift_desc, id_comp, neg_comp, sub_eq_add_neg]))
+      ((Homotopy.equivSubZero h)))
+
+@[reassoc (attr := simp)]
+lemma ι₀_desc : ι₀ K ≫ desc φ₀ φ₁ h = φ₀ := by simp [ι₀, desc]
+
+@[reassoc (attr := simp)]
+lemma ι₁_desc : ι₁ K ≫ desc φ₀ φ₁ h = φ₁ := by simp [ι₁, desc]
+
+end
+
+variable (K)
+
+/-- The projection `π : K.cylinder ⟶ K`. -/
+noncomputable def π : K.cylinder ⟶ K := desc (𝟙 K) (𝟙 K) (Homotopy.refl _)
+
+@[reassoc (attr := simp)]
+lemma ι₀_π : ι₀ K ≫ π K = 𝟙 K := by simp [π]
+
+@[reassoc (attr := simp)]
+lemma ι₁_π : ι₁ K ≫ π K = 𝟙 K := by simp [π]
+
+/-- The left inclusion `K.X i ⟶ K.cylinder.X j` when `c.Rel j i`. -/
+noncomputable abbrev inlX (i j : ι) (hij : c.Rel j i) : K.X i ⟶ K.cylinder.X j :=
+  homotopyCofiber.inlX (biprod.lift (𝟙 K) (-𝟙 K)) i j hij
+
+/-- The right inclusion `(K ⊞ K).X i ⟶ K.cylinder.X i`. -/
+noncomputable abbrev inrX (i : ι) : (K ⊞ K).X i ⟶ K.cylinder.X i :=
+  homotopyCofiber.inrX (biprod.lift (𝟙 K) (-𝟙 K)) i
+
+@[reassoc (attr := simp)]
+lemma inlX_π (i j : ι) (hij : c.Rel j i) :
+    inlX K i j hij ≫ (π K).f j = 0 := by
+  erw [homotopyCofiber.inlX_desc_f]
+  simp [Homotopy.equivSubZero]
+
+@[reassoc (attr := simp)]
+lemma inrX_π (i : ι) :
+    inrX K i ≫ (π K).f i = (biprod.desc (𝟙 _) (𝟙 K)).f i :=
+  homotopyCofiber.inrX_desc_f _ _ _ _
+
+section
+
+variable (hc : ∀ j, ∃ i, c.Rel i j)
+
+namespace πCompι₀Homotopy
+
+/-- A null homotopic map `K.cylinder ⟶ K.cylinder` which identifies to
+`π K ≫ ι₀ K - 𝟙 _`, see `nullHomotopicMap_eq`. -/
+noncomputable def nullHomotopicMap : K.cylinder ⟶ K.cylinder :=
+  Homotopy.nullHomotopicMap'
+    (fun i j hij => homotopyCofiber.sndX (biprod.lift (𝟙 K) (-𝟙 K)) i ≫
+      (biprod.snd : K ⊞ K ⟶ K).f i ≫ inlX K i j hij)
+
+/-- The obvious homotopy from `nullHomotopicMap K` to zero. -/
+noncomputable def nullHomotopy : Homotopy (nullHomotopicMap K) 0 :=
+  Homotopy.nullHomotopy' _
+
+lemma inlX_nullHomotopy_f (i j : ι) (hij : c.Rel j i) :
+    inlX K i j hij ≫ (nullHomotopicMap K).f j =
+      inlX K i j hij ≫ (π K ≫ ι₀ K - 𝟙 _).f j := by
+  dsimp [nullHomotopicMap]
+  by_cases hj : ∃ (k : ι), c.Rel k j
+  · obtain ⟨k, hjk⟩ := hj
+    simp only [assoc, Homotopy.nullHomotopicMap'_f hjk hij, homotopyCofiber_X, homotopyCofiber_d,
+      homotopyCofiber.d_sndX_assoc _ _ _ hij, add_comp, comp_add, homotopyCofiber.inlX_fstX_assoc,
+      homotopyCofiber.inlX_sndX_assoc, zero_comp, add_zero, comp_sub, inlX_π_assoc, comp_id,
+      zero_sub, ← HomologicalComplex.comp_f_assoc, biprod.lift_snd, neg_f_apply, id_f,
+      neg_comp, id_comp]
+  · simp only [not_exists] at hj
+    simp only [Homotopy.nullHomotopicMap'_f_of_not_rel_right hij hj,
+      homotopyCofiber_X, homotopyCofiber_d, assoc, comp_sub, comp_id,
+      homotopyCofiber.d_sndX_assoc _ _ _ hij, add_comp, comp_add, zero_comp, add_zero,
+      homotopyCofiber.inlX_fstX_assoc, homotopyCofiber.inlX_sndX_assoc,
+      ← HomologicalComplex.comp_f_assoc, biprod.lift_snd, neg_f_apply, id_f, neg_comp,
+      id_comp, inlX_π_assoc, zero_sub]
+
+lemma biprod_lift_id_sub_id : biprod.lift (𝟙 K) (-𝟙 K) = biprod.inl - biprod.inr :=
+  biprod.hom_ext _ _ (by simp) (by simp)
+
+lemma inrX_nullHomotopy_f (j : ι) :
+    inrX K j ≫ (nullHomotopicMap K).f j = inrX K j ≫ (π K ≫ ι₀ K - 𝟙 _).f j := by
+  obtain ⟨i, hij⟩ := hc j
+  dsimp [nullHomotopicMap]
+  by_cases hj : ∃ (k : ι), c.Rel j k
+  · obtain ⟨k, hjk⟩ := hj
+    simp only [Homotopy.nullHomotopicMap'_f hij hjk,
+      homotopyCofiber_X, homotopyCofiber_d, assoc, comp_add,
+      homotopyCofiber.inrX_d_assoc, homotopyCofiber.inrX_sndX_assoc, comp_sub,
+      inrX_π_assoc, comp_id, ← Hom.comm_assoc, homotopyCofiber.inlX_d _ _ _ _ _ hjk,
+      comp_neg, add_neg_cancel_left]
+    rw [← cancel_epi (biprodXIso K K j).inv]
+    ext
+    · simp [ι₀]
+    · dsimp
+      simp only [inr_biprodXIso_inv_assoc, biprod_inr_snd_f_assoc, comp_sub,
+        biprod_inr_desc_f_assoc, id_f, id_comp, ι₀, comp_f, biprod_lift_id_sub_id,
+        sub_f_apply, sub_comp, homotopyCofiber_X, homotopyCofiber.inr_f]
+  · simp only [not_exists] at hj
+    simp only [assoc, Homotopy.nullHomotopicMap'_f_of_not_rel_left hij hj, homotopyCofiber_X,
+      homotopyCofiber_d, homotopyCofiber.inlX_d' _ _ _ _ (hj _), homotopyCofiber.inrX_sndX_assoc,
+      comp_sub, inrX_π_assoc, comp_id, ι₀, comp_f, homotopyCofiber.inr_f]
+    rw [← cancel_epi (biprodXIso K K j).inv]
+    ext
+    · simp
+    · simp [biprod_lift_id_sub_id]
+
+lemma nullHomotopicMap_eq : nullHomotopicMap K = π K ≫ ι₀ K - 𝟙 _ := by
+  ext i
+  by_cases hi : c.Rel i (c.next i)
+  · exact homotopyCofiber.ext_from_X (biprod.lift (𝟙 K) (-𝟙 K)) (c.next i) i hi
+      (inlX_nullHomotopy_f _ _ _ _) (inrX_nullHomotopy_f _ hc _)
+  · exact homotopyCofiber.ext_from_X' (biprod.lift (𝟙 K) (-𝟙 K)) _ hi (inrX_nullHomotopy_f _ hc _)
+
+end πCompι₀Homotopy
+
+/-- The homotopy between `π K ≫ ι₀ K` and `𝟙 K.cylinder`. -/
+noncomputable def πCompι₀Homotopy : Homotopy (π K ≫ ι₀ K) (𝟙 K.cylinder) :=
+  Homotopy.equivSubZero.symm
+    ((Homotopy.ofEq (πCompι₀Homotopy.nullHomotopicMap_eq K hc).symm).trans
+      (πCompι₀Homotopy.nullHomotopy K))
+
+/-- The homotopy equivalence between `K.cylinder` and `K`. -/
+noncomputable def homotopyEquiv : HomotopyEquiv K.cylinder K where
+  hom := π K
+  inv := ι₀ K
+  homotopyHomInvId := πCompι₀Homotopy K hc
+  homotopyInvHomId := Homotopy.ofEq (by simp)
+
+/-- The homotopy between `cylinder.ι₀ K` and `cylinder.ι₁ K`. -/
+noncomputable def homotopy₀₁ : Homotopy (ι₀ K) (ι₁ K) :=
+  (Homotopy.ofEq (by simp)).trans (((πCompι₀Homotopy K hc).compLeft (ι₁ K)).trans
+    (Homotopy.ofEq (by simp)))
+
+lemma map_ι₀_eq_map_ι₁ {D : Type*} [Category D] (H : HomologicalComplex C c ⥤ D)
+    (hH : (homotopyEquivalences C c).IsInvertedBy H) :
+    H.map (ι₀ K) = H.map (ι₁ K) := by
+  have : IsIso (H.map (cylinder.π K)) := hH _ ⟨homotopyEquiv K hc, rfl⟩
+  simp only [← cancel_mono (H.map (cylinder.π K)), ← H.map_comp, ι₀_π, H.map_id, ι₁_π]
+
+end
+
+end cylinder
+
+/-- If a functor inverts homotopy equivalences, it sends homotopic maps to the same map. -/
+lemma _root_.Homotopy.map_eq_of_inverts_homotopyEquivalences
+    {φ₀ φ₁ : F ⟶ G} (h : Homotopy φ₀ φ₁) (hc : ∀ j, ∃ i, c.Rel i j)
+    [∀ i, HasBinaryBiproduct (F.X i) (F.X i)]
+    [HasHomotopyCofiber (biprod.lift (𝟙 F) (-𝟙 F))]
+    {D : Type*} [Category D] (H : HomologicalComplex C c ⥤ D)
+    (hH : (homotopyEquivalences C c).IsInvertedBy H) :
+    H.map φ₀ = H.map φ₁ := by
+  simp only [← cylinder.ι₀_desc _ _ h, ← cylinder.ι₁_desc _ _ h, H.map_comp,
+    cylinder.map_ι₀_eq_map_ι₁ _ hc _ hH]
+
+end
 
 end HomologicalComplex

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.LinearAlgebra.Quotient
+import Mathlib.LinearAlgebra.Basic
 
 
 /-! # Exactness of a pair
@@ -60,7 +60,7 @@ lemma LinearMap.exact_iff : Exact f g ↔ LinearMap.ker g = LinearMap.range f :=
   Iff.symm <| SetLike.ext_iff
 
 lemma Exact.linearMap_comp_eq_zero (h : Exact f g) : g.comp f = 0 :=
-  FunLike.coe_injective h.comp_eq_zero
+  DFunLike.coe_injective h.comp_eq_zero
 
 end LinearMap
 

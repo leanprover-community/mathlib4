@@ -31,7 +31,6 @@ namespace Ideal
 universe u v w
 
 variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [Algebra S R]
-
 variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] (I : Ideal R)
 
 -- Porting note: instances that were derived automatically need to be proved by hand (see below)
@@ -160,7 +159,8 @@ theorem cotangentEquivIdeal_apply (x : I.Cotangent) :
 #align ideal.cotangent_equiv_ideal_apply Ideal.cotangentEquivIdeal_apply
 
 theorem cotangentEquivIdeal_symm_apply (x : R) (hx : x ∈ I) :
-    I.cotangentEquivIdeal.symm ⟨(I ^ 2).mkQ x, Submodule.mem_map_of_mem hx⟩ =
+    -- Note: #8386 had to specify `(R₂ := R)` because `I.toCotangent` suggested `R ⧸ I^2` instead
+    I.cotangentEquivIdeal.symm ⟨(I ^ 2).mkQ x, Submodule.mem_map_of_mem (R₂ := R) hx⟩ =
       I.toCotangent ⟨x, hx⟩ := by
   apply I.cotangentEquivIdeal.injective
   rw [I.cotangentEquivIdeal.apply_symm_apply]
