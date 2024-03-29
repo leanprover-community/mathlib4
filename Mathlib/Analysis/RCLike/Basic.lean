@@ -180,10 +180,10 @@ theorem ofReal_inj {z w : ℝ} : (z : K) = (w : K) ↔ z = w :=
   algebraMap.coe_inj
 #align is_R_or_C.of_real_inj RCLike.ofReal_inj
 
--- replaced by `ROrCLike.ofNat_re`
+-- replaced by `RCLike.ofNat_re`
 #noalign is_R_or_C.bit0_re
 #noalign is_R_or_C.bit1_re
--- replaced by `ROrCLike.ofNat_im`
+-- replaced by `RCLike.ofNat_im`
 #noalign is_R_or_C.bit0_im
 #noalign is_R_or_C.bit1_im
 
@@ -200,7 +200,7 @@ theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : K) = r + s :=
   algebraMap.coe_add _ _
 #align is_R_or_C.of_real_add RCLike.ofReal_add
 
--- replaced by `ROrCLike.ofReal_ofNat`
+-- replaced by `RCLike.ofReal_ofNat`
 #noalign is_R_or_C.of_real_bit0
 #noalign is_R_or_C.of_real_bit1
 
@@ -344,7 +344,7 @@ theorem conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
   simp only [ofReal_im, conj_im, eq_self_iff_true, conj_re, and_self_iff, neg_zero]
 #align is_R_or_C.conj_of_real RCLike.conj_ofReal
 
--- replaced by `ROrCLike.conj_ofNat`
+-- replaced by `RCLike.conj_ofNat`
 #noalign is_R_or_C.conj_bit0
 #noalign is_R_or_C.conj_bit1
 
