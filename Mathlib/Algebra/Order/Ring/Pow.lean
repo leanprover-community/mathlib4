@@ -32,7 +32,7 @@ lemma one_add_mul_le_pow' (Hsq : 0 ≤ a * a) (Hsq' : 0 ≤ (1 + a) * (1 + a)) (
           simp only [add_comm, add_left_comm]
       _ ≤ (1 + a) * (1 + a) * (1 + a) ^ n :=
         mul_le_mul_of_nonneg_left (one_add_mul_le_pow' Hsq Hsq' H _) Hsq'
-      _ = (1 + a) ^ (n + 2) := by simp only [pow_succ, mul_assoc]
+      _ = (1 + a) ^ (n + 2) := by simp only [pow_succ', mul_assoc]
 #align one_add_mul_le_pow' one_add_mul_le_pow'
 
 end OrderedSemiring

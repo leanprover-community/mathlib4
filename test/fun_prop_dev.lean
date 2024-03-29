@@ -354,7 +354,7 @@ def iterate (n : Nat) (f : α → α) (x : α) : α :=
   | n+1 => iterate n f (f x)
 
 theorem iterate_con (n : Nat) (f : α → α) (hf : Con f) : Con (iterate n f) := by
-  induction n <;> (simp[iterate]; fun_prop)
+  induction n <;> (simp [iterate]; fun_prop)
 
 
 example : let f := fun x : α => x; Con f := by fun_prop

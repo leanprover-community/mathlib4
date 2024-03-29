@@ -268,7 +268,7 @@ theorem IsPrime.mem_of_pow_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : ℕ
   · rw [pow_zero] at H
     exact (mt (eq_top_iff_one _).2 hI.1).elim H
   · rw [pow_succ] at H
-    exact Or.casesOn (hI.mem_or_mem H) id ih
+    exact Or.casesOn (hI.mem_or_mem H) ih id
 #align ideal.is_prime.mem_of_pow_mem Ideal.IsPrime.mem_of_pow_mem
 
 theorem not_isPrime_iff {I : Ideal α} :
@@ -575,7 +575,7 @@ variable {b}
 
 theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
   Nat.casesOn n (Not.elim (by decide))
-    (fun m _hm => (pow_succ a m).symm ▸ I.mul_mem_right (a ^ m) ha) hn
+    (fun m _hm => (pow_succ a m).symm ▸ I.mul_mem_left (a ^ m) ha) hn
 #align ideal.pow_mem_of_mem Ideal.pow_mem_of_mem
 
 theorem IsPrime.mul_mem_iff_mem_or_mem {I : Ideal α} (hI : I.IsPrime) :
