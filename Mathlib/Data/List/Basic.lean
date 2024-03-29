@@ -501,6 +501,7 @@ theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
 
 @[simp] theorem head_replicate (n : ℕ) (a : α) (h) : head (replicate n a) h = a := by
   cases n <;> simp at h ⊢
+
 /-! ### pure -/
 
 theorem mem_pure {α} (x y : α) : x ∈ (pure y : List α) ↔ x = y := by simp
