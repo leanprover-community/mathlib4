@@ -174,14 +174,10 @@ a group `W` and the group presentation corresponding to a Coxeter matrix. Equiva
 can be seen as a list of generators of `W` parameterized by the underlying type of `M`, which
 satisfy the relations of the Coxeter matrix `M`. -/
 structure CoxeterSystem (W : Type*) [Group W]  where
-  /-- `CoxeterSystem.ofMulEquiv` constructs a Coxeter system given a proof that `M` is a Coxeter
-  matrix and an equivalence with the group
-  presentation corresponding to a Coxeter matrix `M`. -/
-  ofMulEquiv ::
-    isCoxeter : M.IsCoxeter
-    /-- `mulEquiv` is the isomorphism between the group `W` and the group presentation
-    corresponding to a Coxeter matrix `M`. -/
-    mulEquiv : W ≃* Matrix.CoxeterGroup M
+  isCoxeter : M.IsCoxeter
+  /-- `mulEquiv` is the isomorphism between the group `W` and the group presentation
+  corresponding to a Coxeter matrix `M`. -/
+  mulEquiv : W ≃* Matrix.CoxeterGroup M
 
 /-- A group is a Coxeter group if it admits a Coxeter system for some Coxeter matrix `M`. -/
 class IsCoxeterGroup (W : Type u) [Group W] : Prop where
@@ -194,39 +190,11 @@ open Matrix
 variable {B B' W H : Type*} [DecidableEq B] [DecidableEq B'] [Group W] [Group H]
 variable {M : Matrix B B ℕ}
 
-/-- A Coxeter system for `W` with Coxeter matrix `M` indexed by `B`, is associated to
-a map `B → W` recording the images of the indices. -/
-instance funLike : FunLike (CoxeterSystem M W) B W where
-  coe cs := fun b => cs.mulEquiv.symm (.of b)
-  coe_injective' := by
-    rintro ⟨_, cs⟩ ⟨_, cs'⟩ hcs'
-    have H : (cs.symm : CoxeterGroup M →* W) = (cs'.symm : CoxeterGroup M →* W) := by
-      unfold CoxeterGroup
-      ext i; exact congr_fun hcs' i
-    have : cs.symm = cs'.symm := by ext x; exact DFunLike.congr_fun H x
-    rw [ofMulEquiv.injEq, ← MulEquiv.symm_symm cs, ← MulEquiv.symm_symm cs', this]
-
-@[simp]
-theorem mulEquiv_apply_coe (cs : CoxeterSystem M W) (b : B) : cs.mulEquiv (cs b) = .of b :=
-  cs.mulEquiv.eq_symm_apply.mp rfl
-
-/-- The map sending a Coxeter system to its associated map `B → W` is injective. -/
-theorem ext' {cs₁ cs₂ : CoxeterSystem M W} (H : ⇑cs₁ = ⇑cs₂) : cs₁ = cs₂ := DFunLike.coe_injective H
-
-/-- Extensionality rule for Coxeter systems. -/
-theorem ext {cs₁ cs₂ : CoxeterSystem M W} (H : ∀ b, cs₁ b = cs₂ b) : cs₁ = cs₂ :=
-  ext' <| by ext; apply H
-
 /-- The canonical Coxeter system of the Coxeter group over `X`. -/
-def ofCoxeterGroup (X : Type*) (D : Matrix X X ℕ) (hD : IsCoxeter D) :
+def ofCoxeterGroup {X : Type*} {D : Matrix X X ℕ} (hD : IsCoxeter D) :
     CoxeterSystem D (CoxeterGroup D) where
   isCoxeter := hD
   mulEquiv := .refl _
-
-@[simp]
-theorem ofCoxeterGroup_apply {X : Type*} (D : Matrix X X ℕ) (hD : IsCoxeter D) (x : X) :
-    CoxeterSystem.ofCoxeterGroup X D hD x = CoxeterGroup.of D x :=
-  rfl
 
 theorem map_relations_eq_reindex_relations (e : B ≃ B') :
     (MulEquiv.toMonoidHom (FreeGroup.freeGroupCongr e)) '' CoxeterGroup.Relations.toSet M =
@@ -266,22 +234,15 @@ theorem equivCoxeterGroup_symm_apply_of (b' : B') (M : Matrix B B ℕ) (e : B �
 /-- Reindex a Coxeter system through a bijection of the indexing sets. -/
 @[simps]
 protected def reindex (cs : CoxeterSystem M W) (e : B ≃ B') :
-    CoxeterSystem (reindex e e M) W :=
-  ofMulEquiv (M.reindex_isCoxeter e cs.isCoxeter) (cs.mulEquiv.trans (equivCoxeterGroup e))
-
-@[simp]
-theorem reindex_apply (cs : CoxeterSystem M W) (e : B ≃ B') (b' : B') :
-    cs.reindex e b' = cs (e.symm b') :=
-  rfl
+    CoxeterSystem (reindex e e M) W where
+  isCoxeter := M.reindex_isCoxeter e cs.isCoxeter
+  mulEquiv := cs.mulEquiv.trans (equivCoxeterGroup e)
 
 /-- Pushing a Coxeter system through a group isomorphism. -/
 @[simps]
-protected def map (cs : CoxeterSystem M W) (e : W ≃* H) : CoxeterSystem M H :=
-  ofMulEquiv cs.isCoxeter (e.symm.trans cs.mulEquiv)
-
-@[simp]
-theorem map_apply (cs : CoxeterSystem M W) (e : W ≃* H) (b : B) : cs.map e b = e (cs b) :=
-  rfl
+protected def map (cs : CoxeterSystem M W) (e : W ≃* H) : CoxeterSystem M H where
+  isCoxeter := cs.isCoxeter
+  mulEquiv := e.symm.trans cs.mulEquiv
 
 end CoxeterSystem
 
@@ -517,6 +478,20 @@ variable (cs : CoxeterSystem M W)
 def simpleReflection (i : B) : W := cs.mulEquiv.symm (PresentedGroup.of i)
 
 local prefix:100 "s" => cs.simpleReflection
+
+@[simp]
+theorem ofCoxeterGroup_simple (hM : IsCoxeter M) :
+    (CoxeterSystem.ofCoxeterGroup hM).simpleReflection = CoxeterGroup.of M := rfl
+
+@[simp]
+theorem reindex_simple {B' : Type*} (e : B ≃ B') (i' : B') :
+    (cs.reindex e).simpleReflection i' = s (e.symm i') :=
+  rfl
+
+@[simp]
+theorem map_simple {W' : Type*} [Group W'] (e : W ≃* W') (i : B) :
+    (cs.map e).simpleReflection i = e (s i) :=
+  rfl
 
 @[simp] theorem simple_mul_self (i : B) : s i * s i = 1 := by
   dsimp [simpleReflection]
