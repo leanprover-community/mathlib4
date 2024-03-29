@@ -76,7 +76,7 @@ theorem mirror_natTrailingDegree : p.mirror.natTrailingDegree = p.natTrailingDeg
   by_cases hp : p = 0
   · rw [hp, mirror_zero]
   · rw [mirror, natTrailingDegree_mul_X_pow ((mt reverse_eq_zero.mp) hp),
-      reverse_natTrailingDegree, zero_add]
+      natTrailingDegree_reverse, zero_add]
 #align polynomial.mirror_nat_trailing_degree Polynomial.mirror_natTrailingDegree
 
 theorem coeff_mirror (n : ℕ) :
