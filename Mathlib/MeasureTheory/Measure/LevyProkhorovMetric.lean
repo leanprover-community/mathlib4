@@ -227,18 +227,6 @@ noncomputable instance levyProkhorovDist_pseudoMetricSpace_probabilityMeasure :
 lemma LevyProkhorov.dist_def (μ ν : LevyProkhorov (ProbabilityMeasure Ω)) :
     dist μ ν = levyProkhorovDist μ.toMeasure ν.toMeasure := rfl
 
--- TODO: Add this.
-lemma subset_compl_thickening_compl_thickening_self {X : Type*} [PseudoEMetricSpace X]
-    (δ : ℝ) (E : Set X) :
-    E ⊆ (thickening δ (thickening δ E)ᶜ)ᶜ := by
-  intro x x_in_E
-  simp only [thickening, mem_compl_iff, mem_setOf_eq, not_lt]
-  apply EMetric.le_infEdist.mpr
-  intro y hy
-  simp only [mem_compl_iff, mem_setOf_eq, not_lt] at hy
-  rw [edist_comm]
-  exact le_trans hy <| EMetric.infEdist_le_edist_of_mem x_in_E
-
 lemma levyProkhorovEDist_le_of_forall_add_pos_le'
     (μ ν : Measure Ω) [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] (δ : ℝ≥0∞)
     (h : ∀ ε B, 0 < ε → ε < ∞ → MeasurableSet B → μ B ≤ ν (thickening (δ + ε).toReal B) + δ + ε) :
