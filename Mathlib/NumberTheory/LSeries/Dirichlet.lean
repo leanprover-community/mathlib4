@@ -87,15 +87,28 @@ end Moebius
 ### L-series of Dirichlet characters
 -/
 
+open Nat
+
 lemma LSeries.one_convolution_eq_zeta_convolution {R : Type*} [Semiring R] (f : ℕ → R):
     (1 : ℕ → R) ⍟ f = ((ArithmeticFunction.zeta ·) : ℕ → R) ⍟ f := by
   ext ⟨- | n⟩
-  · simp only [Nat.zero_eq, convolution_map_zero, ArithmeticFunction.zeta_apply, Nat.cast_ite,
-      Nat.cast_zero, Nat.cast_one]
-  · simp only [convolution_def, Pi.one_apply, one_mul, ArithmeticFunction.zeta_apply, Nat.cast_ite,
-      Nat.cast_zero, Nat.cast_one, ite_mul, zero_mul]
+  · simp only [zero_eq, convolution_map_zero, ArithmeticFunction.zeta_apply, cast_ite, cast_zero,
+      cast_one]
+  · simp only [convolution_def, Pi.one_apply, one_mul, ArithmeticFunction.zeta_apply, cast_ite,
+      cast_zero, cast_one, ite_mul, zero_mul]
     refine Finset.sum_congr rfl fun p hp ↦ ?_
-    simp only [(Nat.ne_zero_of_mem_divisorsAntidiagonal hp).1, ↓reduceIte]
+    simp only [left_ne_zero_of_mem_divisorsAntidiagonal hp, ↓reduceIte]
+
+lemma LSeries.convolution_one_eq_convolution_zeta {R : Type*} [Semiring R] (f : ℕ → R):
+    f ⍟ (1 : ℕ → R) = f ⍟ ((ArithmeticFunction.zeta ·) : ℕ → R) := by
+  -- need to repeat the proof, as to use commutativity we need a `CommSemiring`
+  ext ⟨- | n⟩
+  · simp only [zero_eq, convolution_map_zero, ArithmeticFunction.zeta_apply, cast_ite, cast_zero,
+      cast_one]
+  · simp only [convolution_def, Pi.one_apply, one_mul, ArithmeticFunction.zeta_apply, cast_ite,
+      cast_zero, cast_one, ite_mul, zero_mul]
+    refine Finset.sum_congr rfl fun p hp ↦ ?_
+    simp only [right_ne_zero_of_mem_divisorsAntidiagonal hp, ↓reduceIte]
 
 /-- `χ₁` is (local) notation for the (necessarily trivial) Dirichlet charcater modulo `1`. -/
 local notation (name := Dchar_one) "χ₁" => (1 : DirichletCharacter ℂ 1)
@@ -111,7 +124,7 @@ lemma mul_convolution_distrib {R : Type*} [CommSemiring R] {n : ℕ} (χ : Diric
   ext n
   simp only [Pi.mul_apply, LSeries.convolution_def, Finset.mul_sum]
   refine Finset.sum_congr rfl fun p hp ↦ ?_
-  rw [(Nat.mem_divisorsAntidiagonal.mp hp).1.symm, Nat.cast_mul, map_mul]
+  rw [(mem_divisorsAntidiagonal.mp hp).1.symm, cast_mul, map_mul]
   exact mul_mul_mul_comm ..
 
 lemma mul_delta {n : ℕ} (χ : DirichletCharacter ℂ n) : ↗χ * δ = δ :=
@@ -251,7 +264,7 @@ lemma LSeries_zeta_eq : L ↗ζ = L 1 := by
 `re s > 1`. -/
 theorem LSeriesSummable_zeta_iff {s : ℂ} : LSeriesSummable (ζ ·) s ↔ 1 < s.re := by
   have (n : ℕ) (hn : n ≠ 0) : ζ n = (1 : ℕ → ℂ) n := by
-    simp only [ArithmeticFunction.zeta_apply, hn, ↓reduceIte, Nat.cast_one, Pi.one_apply]
+    simp only [ArithmeticFunction.zeta_apply, hn, ↓reduceIte, cast_one, Pi.one_apply]
   exact (LSeriesSummable_congr s this).trans <| LSeriesSummable_one_iff
 #align nat.arithmetic_function.zeta_l_series_summable_iff_one_lt_re ArithmeticFunction.LSeriesSummable_zeta_iff
 -- deprecated 2024-03-29
@@ -339,10 +352,8 @@ lemma convolution_vonMangoldt_zeta : ↗Λ ⍟ ↗ζ = ↗Complex.log := by
   norm_cast
   simpa [-vonMangoldt_mul_zeta] using congr_arg (· n) vonMangoldt_mul_zeta
 
-lemma convolution_vonMangoldt_const_one : ↗Λ ⍟ 1 = ↗Complex.log := by
-  have : ∀ n ≠ 0, (1 : ℕ → ℂ) n = ↗ζ n :=
-    fun n hn ↦ by simp only [Pi.one_apply, zeta_apply, hn, ↓reduceIte, cast_one]
-  rw [LSeries.convolution_congr (fun _ _ ↦ rfl) this, convolution_vonMangoldt_zeta]
+lemma convolution_vonMangoldt_const_one : ↗Λ ⍟ 1 = ↗Complex.log :=
+  (convolution_one_eq_convolution_zeta _).trans convolution_vonMangoldt_zeta
 
 /-- The L-series of the von Mangoldt function `Λ` converges at `s` when `re s > 1`. -/
 lemma LSeriesSummable_vonMangoldt {s : ℂ} (hs : 1 < s.re) : LSeriesSummable ↗Λ s := by
