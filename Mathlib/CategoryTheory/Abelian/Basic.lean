@@ -503,6 +503,9 @@ section
 
 variable {D : Type*} [Category D] [HasZeroMorphisms D]
 
+/-- If `F : D ⥤ C` is a functor to an abelian category, `i : X ⟶ Y` is a morphisms
+admitting a cokernel such that `F` preserves this cokernel and  `F.map i` is a mono,
+then `F.map X` identifies to the kernel of `F.map (cokernel.π i)`. -/
 noncomputable def isLimitMapConeOfKernelForkOfιCokernelConditionOfMono
     {X Y : D} (i : X ⟶ Y) [HasCokernel i] (F : D ⥤ C)
     [F.PreservesZeroMorphisms] [Mono (F.map i)]
@@ -516,13 +519,16 @@ noncomputable def isLimitMapConeOfKernelForkOfιCokernelConditionOfMono
   change 𝟙 _ ≫ F.map i ≫ 𝟙 _ = F.map i
   rw [Category.comp_id, Category.id_comp]
 
+/-- If `F : D ⥤ C` is a functor to an abelian category, `p : X ⟶ Y` is a morphisms
+admitting a kernel such that `F` preserves this kernel and  `F.map p` is an epi,
+then `F.map Y` identifies to the cokernel of `F.map (kernel.ι p)`. -/
 noncomputable def isColimitMapCoconeOfCokernelCoforkOfπKernelConditionOfEpi
     {X Y : D} (p : X ⟶ Y) [HasKernel p] (F : D ⥤ C)
     [F.PreservesZeroMorphisms] [Epi (F.map p)]
     [PreservesLimit (parallelPair p 0) F] :
     IsColimit (F.mapCocone (CokernelCofork.ofπ p (kernel.condition p))) := by
-  let e : parallelPair (kernel.ι p) 0 ⋙ F ≅ parallelPair (kernel.ι (F.map p)) 0 := by
-    refine' parallelPair.ext (asIso (kernelComparison p F)) (Iso.refl _) (by simp) (by simp)
+  let e : parallelPair (kernel.ι p) 0 ⋙ F ≅ parallelPair (kernel.ι (F.map p)) 0 :=
+    parallelPair.ext (asIso (kernelComparison p F)) (Iso.refl _) (by simp) (by simp)
   refine' IsColimit.precomposeInvEquiv e _ _
   let hp := Abelian.epiIsCokernelOfKernel _ (kernelIsKernel (F.map p))
   refine' IsColimit.ofIsoColimit hp (Cofork.ext (Iso.refl _) _)
