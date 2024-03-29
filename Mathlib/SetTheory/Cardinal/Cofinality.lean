@@ -957,7 +957,7 @@ theorem IsRegular.pos {c : Cardinal} (H : c.IsRegular) : 0 < c :=
   aleph0_pos.trans_le H.1
 #align cardinal.is_regular.pos Cardinal.IsRegular.pos
 
-def IsRegular.nat_lt {c : Cardinal} (H : c.IsRegular) : ∀ (n : ℕ), n < c := fun n =>
+theorem IsRegular.nat_lt {c : Cardinal} (H : c.IsRegular) : ∀ (n : ℕ), n < c := fun n =>
   lt_of_lt_of_le (nat_lt_aleph0 n) (Cardinal.IsRegular.aleph0_le H)
 
 theorem IsRegular.ord_pos {c : Cardinal} (H : c.IsRegular) : 0 < c.ord := by
