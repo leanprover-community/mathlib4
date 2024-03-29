@@ -14,8 +14,8 @@ import Mathlib.Data.Fintype.Sum
 /-!
 # The Hales-Jewett theorem
 
-We prove the Hales-Jewett theorem. We deduce Van der Waerden's theorem and the extended Hales-Jewett
-theorem as corollaries.
+We prove the Hales-Jewett theorem. We deduce Van der Waerden's theorem and the multidimensional
+Hales-Jewett theorem as corollaries.
 
 The Hales-Jewett theorem is a result in Ramsey theory dealing with *combinatorial lines*. Given
 an 'alphabet' `α : Type*` and `a b : α`, an example of a combinatorial line in `α^5` is
@@ -27,8 +27,8 @@ the idea of *color focusing* and a *product argument*. See the proof of
 `Combinatorics.Line.exists_mono_in_high_dimension'` for details.
 
 *Combinatorial subspaces* are higher-dimensional analogues of combinatorial lines. See
-`Combinatorics.Subspace`. The extended Hales-Jewett theorem generalises the statement above from
-combinatorial lines to combinatorial subspaces of a fixed dimension.
+`Combinatorics.Subspace`. The multidimensional Hales-Jewett theorem generalises the statement above
+from combinatorial lines to combinatorial subspaces of a fixed dimension.
 
 The version of Van der Waerden's theorem in this file states that whenever a commutative monoid `M`
 is finitely colored and `S` is a finite subset, there exists a monochromatic homothetic copy of `S`.
@@ -38,7 +38,7 @@ to `∑ i : ι, v i`, which sends a combinatorial line to a homothetic copy of `
 ## Main results
 
 - `Combinatorics.Line.exists_mono_in_high_dimension`: The Hales-Jewett theorem.
-- `Combinatorics.Subspace.exists_mono_in_high_dimension`: The extended Hales-Jewett theorem.
+- `Combinatorics.Subspace.exists_mono_in_high_dimension`: The multidimensional Hales-Jewett theorem.
 - `Combinatorics.exists_mono_homothetic_copy`: A generalization of Van der Waerden's theorem.
 
 ## Implementation details
@@ -484,9 +484,9 @@ theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset
 
 namespace Subspace
 
-/-- The **extended Hales-Jewett theorem**: For any finite types `η`, `α` and `κ`, there exists a
-finite type `ι` such that whenever the hypercube `ι → α` is `κ`-colored, there is a monochromatic
-combinatorial subspace of dimension `η`. -/
+/-- The **multidimensional Hales-Jewett theorem**, aka **extended Hales-Jewett theorem**: For any
+finite types `η`, `α` and `κ`, there exists a finite type `ι` such that whenever the hypercube
+`ι → α` is `κ`-colored, there is a monochromatic combinatorial subspace of dimension `η`. -/
 theorem exists_mono_in_high_dimension (α κ η) [Fintype α] [Fintype κ] [Fintype η] :
     ∃ (ι : Type) (_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Subspace η α ι, l.IsMono C := by
   obtain ⟨ι, _, hι⟩ := Line.exists_mono_in_high_dimension (Shrink.{0} η → α) κ
