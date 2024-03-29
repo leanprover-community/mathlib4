@@ -320,7 +320,7 @@ theorem cardinal_iUnion_iff {hι : #ι < c} {hreg : Cardinal.IsRegular c}  {t : 
       simpa
 
 theorem Cardinal.biUnion_iff {s : Set α} {t : ∀ a ∈ s, Set β} {hreg : Cardinal.IsRegular c}
-   (hs : #s < c) : #(⋃ a ∈ s, t a ‹_›) < c ↔ ∀ a (ha : a ∈ s), # (t a ha) < c := by
+    (hs : #s < c) : #(⋃ a ∈ s, t a ‹_›) < c ↔ ∀ a (ha : a ∈ s), # (t a ha) < c := by
   rw [biUnion_eq_iUnion, cardinal_iUnion_iff, SetCoe.forall']
   · exact hs
   · exact hreg
