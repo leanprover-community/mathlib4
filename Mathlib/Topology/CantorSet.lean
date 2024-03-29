@@ -102,7 +102,6 @@ noncomputable def Homeomorph_T_R := (Homeomorph.addLeft (2:ℝ)).trans Homeomorp
 
 
 --The ternary Cantor set is a subset of [0,1].
-
 lemma cantorSet_subset_UnitInterval : cantorSet ⊆ Set.Icc 0 1 := by
   intro x hx
   simp only [cantorSet, Set.iInf_eq_iInter, Set.mem_iInter] at hx
@@ -110,13 +109,11 @@ lemma cantorSet_subset_UnitInterval : cantorSet ⊆ Set.Icc 0 1 := by
 
 
 /--The ternary Cantor set inherits the metric and in particular the topology from the reals.-/
-
 instance cantorSet.metricSpace : MetricSpace cantorSet :=
   Subtype.metricSpace
 
 
 /--The ternary Cantor set is closed -/
-
 lemma cantorSet_IsClosed : IsClosed cantorSet  := by
   apply isClosed_iInter
   intro n
@@ -136,13 +133,11 @@ lemma cantorSet_IsClosed : IsClosed cantorSet  := by
 
 
 /--The ternary Cantor set is compact.-/
-
 lemma cantorSet_IsCompact : IsCompact cantorSet :=
   isCompact_Icc.of_isClosed_subset cantorSet_IsClosed cantorSet_subset_UnitInterval
 
 
 /--The ternary Cantor set is a Hausorff space.-/
-
 lemma cantorSet_IsT2 : T2Space cantorSet := by
   infer_instance
 
