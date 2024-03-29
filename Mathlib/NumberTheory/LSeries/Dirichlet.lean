@@ -248,11 +248,11 @@ lemma LSeries_zeta_eq : L ↗ζ = L 1 := by
 
 /-- The `LSeries` associated to the arithmetic function `ζ` converges at `s` if and only if
 `re s > 1`. -/
-theorem zeta_LSeriesSummable_iff {s : ℂ} : LSeriesSummable (ζ ·) s ↔ 1 < s.re := by
+theorem LSeriesSummable_zeta_iff {s : ℂ} : LSeriesSummable (ζ ·) s ↔ 1 < s.re := by
   have (n : ℕ) (hn : n ≠ 0) : ζ n = (1 : ℕ → ℂ) n := by
     simp only [ArithmeticFunction.zeta_apply, hn, ↓reduceIte, Nat.cast_one, Pi.one_apply]
   exact (LSeriesSummable_congr s this).trans <| LSeriesSummable_one_iff
-#align nat.arithmetic_function.zeta_l_series_summable_iff_one_lt_re ArithmeticFunction.zeta_LSeriesSummable_iff
+#align nat.arithmetic_function.zeta_l_series_summable_iff_one_lt_re ArithmeticFunction.LSeriesSummable_zeta_iff
 
 /-- The abscissa of (absolute) convergence of the arithmetic function `ζ` is `1`. -/
 lemma abscissaOfAbsConv_zeta : abscissaOfAbsConv ↗ζ = 1 := by
@@ -272,11 +272,11 @@ lemma LSeries_zeta_eq_riemannZeta {s : ℂ} (hs : 1 < s.re) : L ↗ζ s = rieman
 /-- The L-series of the arithmetic function `ζ` equals the Riemann Zeta Function on its
 domain of convergence `1 < re s`. -/
 lemma LSeriesHasSum_zeta {s : ℂ} (hs : 1 < s.re) : LSeriesHasSum ↗ζ s (riemannZeta s) :=
-  LSeries_zeta_eq_riemannZeta hs ▸ (zeta_LSeriesSummable_iff.mpr hs).LSeriesHasSum
+  LSeries_zeta_eq_riemannZeta hs ▸ (LSeriesSummable_zeta_iff.mpr hs).LSeriesHasSum
 
 /-- The L-series of the arithmetic function `ζ` and of the Möbius function are inverses. -/
 lemma LSeries_zeta_mul_Lseries_moebius {s : ℂ} (hs : 1 < s.re) : L ↗ζ s * L ↗μ s = 1 := by
-  rw [←LSeries_convolution' (zeta_LSeriesSummable_iff.mpr hs) (LSeriesSummable_moebius_iff.mpr hs)]
+  rw [←LSeries_convolution' (LSeriesSummable_zeta_iff.mpr hs) (LSeriesSummable_moebius_iff.mpr hs)]
   simp_rw [← natCoe_apply, ← intCoe_apply, coe_mul, coe_zeta_mul_coe_moebius, one_eq_delta,
     LSeries_delta, Pi.one_apply]
 
