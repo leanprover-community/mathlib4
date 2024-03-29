@@ -74,18 +74,16 @@ theorem cardinalInterFilter_aleph_one_iff :
     CardinalInterFilter.cardinal_sInter_mem S ((countable_iff_lt_aleph_one S).1 h) a⟩,
    fun _ ↦ CountableInterFilter.toCardinalInterFilter l⟩
 
-/-- Every CardinalInterFilter for some c also is a CardinalInterFilter for some a < c -/
-theorem CardinalInterFilter.of_CardinalInterFilter_of_lt (l : Filter α) [CardinalInterFilter l c]
-    {a : Cardinal.{u}} (hac : a < c) :
-  CardinalInterFilter l a where
-    cardinal_sInter_mem :=
-      fun S hS a ↦ CardinalInterFilter.cardinal_sInter_mem S (lt_trans hS hac) a
-
+/-- Every CardinalInterFilter for some c also is a CardinalInterFilter for some a ≤ c -/
 theorem CardinalInterFilter.of_CardinalInterFilter_of_le (l : Filter α) [CardinalInterFilter l c]
     {a : Cardinal.{u}} (hac : a ≤ c) :
   CardinalInterFilter l a where
     cardinal_sInter_mem :=
       fun S hS a ↦ CardinalInterFilter.cardinal_sInter_mem S (lt_of_lt_of_le hS hac) a
+
+theorem CardinalInterFilter.of_CardinalInterFilter_of_lt (l : Filter α) [CardinalInterFilter l c]
+    {a : Cardinal.{u}} (hac : a < c) : CardinalInterFilter l a :=
+  CardinalInterFilter.of_CardinalInterFilter_of_le l (hac.le)
 
 namespace Filter
 
