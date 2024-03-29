@@ -1377,8 +1377,8 @@ theorem ext_get? {l₁ l₂ : List α} (h' : ∀ n < max l₁.length l₂.length
 theorem ext_iff {l₁ l₂ : List α} : l₁ = l₂ ↔ ∀ n, l₁.get? n = l₂.get? n :=
   ⟨by rintro rfl _; rfl, List.ext⟩
 
-theorem ext_get_iff {l₁ l₂ : List α} : l₁ = l₂ ↔
-    l₁.length = l₂.length ∧ ∀ n h₁ h₂, get l₁ ⟨n, h₁⟩ = get l₂ ⟨n, h₂⟩ := by
+theorem ext_get_iff {l₁ l₂ : List α} :
+    l₁ = l₂ ↔ l₁.length = l₂.length ∧ ∀ n h₁ h₂, get l₁ ⟨n, h₁⟩ = get l₂ ⟨n, h₂⟩ := by
   constructor
   · rintro rfl
     exact ⟨rfl, fun _ _ _ ↦ rfl⟩
