@@ -358,7 +358,7 @@ theorem irreducible_of_coprime' (hp : IsUnitTrinomial p)
     replace hp := hp.leadingCoeff_isUnit
     rw [leadingCoeff_mul] at hp
     replace hp := isUnit_of_mul_isUnit_left hp
-    rw [not_lt, le_zero_iff] at this
+    rw [not_lt, Nat.le_zero] at this
     rwa [eq_C_of_natDegree_eq_zero this, isUnit_C, ← this]
   intro hq''
   rw [natDegree_pos_iff_degree_pos] at hq''
