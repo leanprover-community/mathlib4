@@ -62,7 +62,7 @@ lemma hasFDerivAt_fourierChar_smul (v : V) (w : W) :
   ring_nf
 
 lemma norm_fourierSMulRight (L : V →L[ℝ] W →L[ℝ] ℝ) (f : V → E) (v : V) :
-      ‖fourierSMulRight L f v‖ = (2 * π) * ‖L v‖ * ‖f v‖ := by
+    ‖fourierSMulRight L f v‖ = (2 * π) * ‖L v‖ * ‖f v‖ := by
   rw [fourierSMulRight, norm_smul, norm_neg, norm_mul, norm_mul, norm_eq_abs I, abs_I,
     mul_one, norm_eq_abs ((_ : ℝ) : ℂ), Complex.abs_of_nonneg pi_pos.le, norm_eq_abs (2 : ℂ),
     Complex.abs_two, ContinuousLinearMap.norm_smulRight_apply, ← mul_assoc]
