@@ -24,10 +24,10 @@ supplied for true DFA's.
 Currently, there are two disjoint sets of simp lemmas: one for `DFA.eval`, and another for
 `DFA.evalFrom`. You can switch from the former to the latter using `simp [eval]`.
 
-TODO:
+## TODO
+
 - Should we unify these simp sets, such that `eval` is rewritten to `evalFrom` automatically?
-- Should `mem_accepts` and `mem_acceptsFrom` be marked `@[simp]`? This depends on the question
-  above, as they map to `eval` and `evalFrom` respectively.
+- Should `mem_accepts` and `mem_acceptsFrom` be marked `@[simp]`?
 -/
 
 
