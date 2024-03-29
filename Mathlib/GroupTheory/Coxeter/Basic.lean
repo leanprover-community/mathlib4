@@ -493,7 +493,7 @@ theorem map_simple {W' : Type*} [Group W'] (e : W ≃* W') (i : B) :
     (cs.map e).simpleReflection i = e (s i) :=
   rfl
 
-@[simp] theorem simple_mul_self (i : B) : s i * s i = 1 := by
+@[simp] theorem simple_mul_simple_self (i : B) : s i * s i = 1 := by
   dsimp [simpleReflection]
   rw [← _root_.map_mul, PresentedGroup.of, ← QuotientGroup.mk_mul]
   have : (FreeGroup.of i) * (FreeGroup.of i) ∈ CoxeterGroup.Relations.toSet M := by
@@ -506,18 +506,18 @@ theorem map_simple {W' : Type*} [Group W'] (e : W ≃* W') (i : B) :
   rw [this]
   simp
 
-@[simp] theorem mul_simple_mul_self {w : W} (i : B) : w * s i * s i = w := by
+@[simp] theorem simple_mul_simple_cancel_right {w : W} (i : B) : w * s i * s i = w := by
   simp [mul_assoc]
 
-@[simp] theorem simple_mul_self_mul {w : W} (i : B) : s i * (s i * w) = w := by
+@[simp] theorem simple_mul_simple_cancel_left {w : W} (i : B) : s i * (s i * w) = w := by
   simp [← mul_assoc]
 
-@[simp] theorem simple_sqr (i : B) : s i ^ 2 = 1 := pow_two (s i) ▸ cs.simple_mul_self i
+@[simp] theorem simple_sq (i : B) : s i ^ 2 = 1 := pow_two (s i) ▸ cs.simple_mul_simple_self i
 
-@[simp] theorem simple_inv (i : B) : (s i)⁻¹ = s i :=
-  (eq_inv_of_mul_eq_one_right (cs.simple_mul_self i)).symm
+@[simp] theorem inv_simple (i : B) : (s i)⁻¹ = s i :=
+  (eq_inv_of_mul_eq_one_right (cs.simple_mul_simple_self i)).symm
 
-@[simp] theorem simple_mul_pow (i i' : B) : ((s i) * (s i')) ^ M i i' = 1 := by
+@[simp] theorem simple_mul_simple_pow (i i' : B) : ((s i) * (s i')) ^ M i i' = 1 := by
   dsimp [simpleReflection]
   rw [← _root_.map_mul, ← map_pow, PresentedGroup.of, PresentedGroup.of,
       ← QuotientGroup.mk_mul, ← QuotientGroup.mk_pow]
@@ -530,8 +530,8 @@ theorem map_simple {W' : Type*} [Group W'] (e : W ≃* W') (i : B) :
   rw [this]
   simp
 
-@[simp] theorem simple_mul_pow' (i i' : B) : ((s i') * (s i)) ^ M i i' = 1 :=
-  cs.isCoxeter.symmetric.apply i' i ▸ cs.simple_mul_pow i' i
+@[simp] theorem simple_mul_simple_pow' (i i' : B) : ((s i') * (s i)) ^ M i i' = 1 :=
+  cs.isCoxeter.symmetric.apply i' i ▸ cs.simple_mul_simple_pow i' i
 
 /-- The simple reflections of `W` generate `W` as a group. -/
 theorem subgroup_closure_range_simple : Subgroup.closure (Set.range cs.simpleReflection) = ⊤ := by
@@ -548,10 +548,10 @@ theorem submonoid_closure_range_simple : Submonoid.closure (Set.range cs.simpleR
     constructor
     · rintro ⟨i, rfl⟩
       use i
-      simp only [simple_inv]
+      simp only [inv_simple]
     · rintro ⟨i, hi⟩
       use i
-      simpa only [simple_inv, inv_inv] using congrArg (·⁻¹) hi
+      simpa only [inv_simple, inv_inv] using congrArg (·⁻¹) hi
 
   have h₁ : S = S ∪ S⁻¹ := by rw [← h₀, Set.union_self]
 
@@ -613,13 +613,12 @@ private theorem relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsL
 private def groupLift {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f) : W →* G :=
   (PresentedGroup.toGroup (relations_liftable hf)).comp cs.mulEquiv.toMonoidHom
 
-private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) : B → Gˣ :=
-  fun i ↦ {
-    val := f i,
-    inv := f i,
-    val_inv := pow_one (f i * f i) ▸ (cs.isCoxeter.diagonal i ▸ hf i i),
-    inv_val := pow_one (f i * f i) ▸ (cs.isCoxeter.diagonal i ▸ hf i i),
-  }
+private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
+    Gˣ where
+  val := f i
+  inv := f i
+  val_inv := pow_one (f i * f i) ▸ (cs.isCoxeter.diagonal i ▸ hf i i)
+  inv_val := pow_one (f i * f i) ▸ (cs.isCoxeter.diagonal i ▸ hf i i)
 
 /-- Extend the function `f : B → G` to a monoid homomorphism
 `f' : W → G` satisfying `f' (s i) = f i` for all `i`.
@@ -650,6 +649,7 @@ theorem ext_simple {G : Type*} [Monoid G] {φ₁ φ₂ : W →* G} (h : ∀ i : 
   exact h i
 
 /-! ### Words -/
+
 /-- The product of the simple reflections of `W` corresponding to the indices in `ω`.-/
 def wordProd (ω : List B) : W := prod (map cs.simpleReflection ω)
 
@@ -676,7 +676,7 @@ theorem wordProd_concat (i : B) (ω : List B) :
   · simp
   · simpa using ih
 
-theorem wordProd_surjective : Surjective (cs.wordProd) := by
+theorem wordProd_surjective : Surjective cs.wordProd := by
   intro w
   apply cs.simple_induction_left w
   · use nil
