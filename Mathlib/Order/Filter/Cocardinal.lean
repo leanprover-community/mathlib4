@@ -3,12 +3,11 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-import Mathlib.Order.Filter.AtTopBot
-import Mathlib.Order.Filter.Pi
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Order.Filter.CardinalInter
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.SetTheory.Cardinal.Cofinality
+import Mathlib.Order.Filter.Bases
 
 /-!
 # The cocardinal filter
@@ -114,9 +113,9 @@ theorem eventually_cocardinal_ne (x : α) : ∀ᶠ a in cocardinal hreg, a ≠ x
   simp [Set.finite_singleton x]
   exact IsRegular.nat_lt hreg 1
 
+/-- The filter defined by all sets that have countable complements. -/
 abbrev cocountable : Filter α := cocardinal Cardinal.isRegular_aleph_one
 
-@[simp]
 theorem mem_cocountable {s : Set α} :
     s ∈ @cocountable α ↔ (sᶜ : Set α).Countable := by
   rw [Cardinal.countable_iff_lt_aleph_one, mem_cocardinal]
