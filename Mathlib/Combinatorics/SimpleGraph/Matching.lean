@@ -197,9 +197,8 @@ theorem mem_supp_of_adj {u : Set V} {v w : V}
 
 lemma odd_matches_node_outside {M : Subgraph G} {u : Set V}
     {c : ConnectedComponent ((⊤ : Subgraph G).deleteVerts u).coe}
-    (hM : Subgraph.IsPerfectMatching M)
-    (codd : Odd (Nat.card c.supp)) : ∃ (w : u.Elem) (v : ((⊤ : G.Subgraph).deleteVerts u).verts.Elem),
-        M.Adj v w ∧ v ∈ c.supp := by
+    (hM : Subgraph.IsPerfectMatching M) (codd : Odd (Nat.card c.supp)) :
+    ∃ (w : u.Elem) (v : ((⊤ : G.Subgraph).deleteVerts u).verts.Elem), M.Adj v w ∧ v ∈ c.supp := by
     by_contra! h
     have h' : (M.induce c.supp).IsMatching := by
       intro v hv
