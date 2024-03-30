@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Lemmas
+import Mathlib.Algebra.BigOperators.Multiset.Order
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Finset.Powerset
+import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sum
@@ -1529,7 +1531,7 @@ theorem prod_list_map_count [DecidableEq α] (l : List α) {M : Type*} [CommMono
   simp only [List.map, List.prod_cons, toFinset_cons, IH]
   by_cases has : a ∈ s.toFinset
   · rw [insert_eq_of_mem has, ← insert_erase has, prod_insert (not_mem_erase _ _),
-      prod_insert (not_mem_erase _ _), ← mul_assoc, count_cons_self, pow_succ]
+      prod_insert (not_mem_erase _ _), ← mul_assoc, count_cons_self, pow_succ']
     congr 1
     refine' prod_congr rfl fun x hx => _
     rw [count_cons_of_ne (ne_of_mem_erase hx)]
