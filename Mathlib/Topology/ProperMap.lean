@@ -273,21 +273,18 @@ lemma isProperMap_of_isClosedMap_of_inj (f_cont : Continuous f) (f_inj : f.Injec
 /-- The identity is proper. -/
 @[simp] lemma isProperMap_id : IsProperMap (id : X → X) := (Homeomorph.refl X).isProperMap
 
+/-- A closed embedding is proper. -/
+lemma isProperMap_of_closedEmbedding (hf : ClosedEmbedding f) : IsProperMap f :=
+  isProperMap_of_isClosedMap_of_inj hf.continuous hf.inj hf.isClosedMap
+
 /-- The coercion from a closed subset is proper. -/
 lemma isProperMap_subtype_val_of_closed {U : Set X} (hU : IsClosed U) : IsProperMap ((↑) : U → X) :=
-  isProperMap_of_isClosedMap_of_inj
-    continuous_subtype_val
-    Subtype.val_injective
-    hU.closedEmbedding_subtype_val.isClosedMap
+  isProperMap_of_closedEmbedding hU.closedEmbedding_subtype_val
 
 /-- The restriction of a proper map to a closed subset is proper. -/
 lemma isProperMap_restr_of_proper_of_closed {U : Set X} (hf : IsProperMap f) (hU : IsClosed U) :
     IsProperMap (fun x : U ↦ f x) :=
   IsProperMap.comp (isProperMap_subtype_val_of_closed hU) hf
-
-/-- A closed embedding is proper. -/
-lemma isProperMap_of_closedEmbedding (hf : ClosedEmbedding f) : IsProperMap f :=
-  isProperMap_of_isClosedMap_of_inj hf.continuous hf.inj hf.isClosedMap
 
 /-- The range of a proper map is closed. -/
 lemma IsProperMap.closed_range (hf : IsProperMap f) : IsClosed (range f) :=
