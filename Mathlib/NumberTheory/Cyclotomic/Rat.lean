@@ -360,8 +360,8 @@ lemma toInteger_pow_sub_one_norm_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k
   simp
 
 open nonZeroDivisors in
-/-- The norm, relative to `ℤ`, of `ζ ^ 2 ^ k - 1` in a `2 ^ (k + 1)`-th cyclotomic extension of `ℚ` is
-`(-2) ^ 2 ^ k`. -/
+/-- The norm, relative to `ℤ`, of `ζ ^ 2 ^ k - 1` in a `2 ^ (k + 1)`-th cyclotomic extension of `ℚ`
+is `(-2) ^ 2 ^ k`. -/
 lemma toInteger_pow_sub_one_norm_two [IsCyclotomicExtension {2 ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑((2 : ℕ+) ^ (k + 1))) :
     Algebra.norm ℤ (hζ.toInteger ^ 2 ^ k - 1) = (-2) ^ (2 : ℕ) ^ k := by
@@ -374,8 +374,8 @@ lemma toInteger_pow_sub_one_norm_two [IsCyclotomicExtension {2 ^ (k + 1)} ℚ K]
     (cyclotomic.irreducible_rat (pow_pos (by decide) _))]
   simp
 
-/-- The norm, relative to `ℤ`, of `ζ ^ p ^ s - 1` in a `p ^ (k + 1)`-th cyclotomic extension of `ℚ` is
-`p ^ p ^ s` if `s ≤ k` and `p ≠ 2`. -/
+/-- The norm, relative to `ℤ`, of `ζ ^ p ^ s - 1` in a `p ^ (k + 1)`-th cyclotomic extension of `ℚ`
+is `p ^ p ^ s` if `s ≤ k` and `p ≠ 2`. -/
 lemma toInteger_pow_sub_one_norm_prime_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) {s : ℕ} (hs : s ≤ k) (hodd : p ≠ 2) :
     Algebra.norm ℤ (hζ.toInteger ^ (p : ℕ) ^ s - 1) = p ^ (p : ℕ) ^ s := by
@@ -392,7 +392,8 @@ lemma toInteger_sub_one_norm_prime_ne_two [IsCyclotomicExtension {p ^ (k + 1)} �
     Algebra.norm ℤ (hζ.toInteger - 1) = p := by
   simpa using hζ.toInteger_pow_sub_one_norm_prime_ne_two (Nat.zero_le _) hodd
 
-/-- The norm, relative to `ℤ`, of `ζ - 1` in a `p`-th cyclotomic extension of `ℚ` is `p` if `p ≠ 2`. -/
+/-- The norm, relative to `ℤ`, of `ζ - 1` in a `p`-th cyclotomic extension of `ℚ` is `p` if
+`p ≠ 2`. -/
 lemma toInteger_sub_one_norm [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoot ζ p)
     (h : p ≠ 2) : Algebra.norm ℤ (hζ.toInteger - 1) = p := by
   have : IsCyclotomicExtension {p ^ (0 + 1)} ℚ K := by simpa using hcycl
@@ -401,7 +402,7 @@ lemma toInteger_sub_one_norm [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ : Is
 
 /-- The norm, relative to `ℤ`, of `ζ - 1` in a `p ^ (k + 1)`-th cyclotomic extension of `ℚ` is
 a prime if `p ^ (k  + 1) ≠ 2`. -/
-lemma prime_toInteger_sub_one_norm_prime_of_pow_ne_two [hcycl : IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
+lemma prime_toInteger_sub_one_norm_prime_of_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) (htwo : p ^ (k  + 1) ≠ 2) :
     Prime (Algebra.norm ℤ (hζ.toInteger - 1)) := by
   have := hζ.toInteger_pow_sub_one_norm_prime_pow_ne_two (zero_le _) htwo
