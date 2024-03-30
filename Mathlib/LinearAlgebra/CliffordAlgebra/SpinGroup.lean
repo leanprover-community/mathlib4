@@ -43,9 +43,7 @@ Try to show the reverse statement is true in finite dimensions.
 -/
 
 variable {R : Type*} [CommRing R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M]
-
 variable {Q : QuadraticForm R M}
 
 section Pin
