@@ -23,8 +23,9 @@ open scoped Pointwise
 zero on the filter of cofinite sets. For each finite subset of `α`, consider the partial sum of `f`
 on that subset. These partial sums form a Cauchy filter. -/
 theorem cauchy_partial_sums_of_tendsto_cofinite_zero {α G : Type*} [AddCommGroup G] [UniformSpace G]
-    [UniformAddGroup G] [NonarchimedeanAddGroup G] [DecidableEq α] {f : α → G}
+    [UniformAddGroup G] [NonarchimedeanAddGroup G] {f : α → G}
     (hf : Tendsto f cofinite (𝓝 0)) : Cauchy (map (fun S ↦ Finset.sum S f) atTop) := by
+  classical
   constructor
   · exact map_neBot
   · /- Let `U` be an entourage of `G`. We wish to show that if we take the partial sum of `f` on two
@@ -77,14 +78,14 @@ theorem cauchy_partial_sums_of_tendsto_cofinite_zero {α G : Type*} [AddCommGrou
 /-- Let `G` be a complete nonarchimedean abelian group, and let `f : α → G` be a function that tends
 to zero on the filter of cofinite sets. Then `f` is unconditionally summable. -/
 theorem summable_of_tendsto_cofinite_zero {α G : Type*} [AddCommGroup G] [UniformSpace G]
-    [UniformAddGroup G] [CompleteSpace G] [NonarchimedeanAddGroup G] [DecidableEq α] {f : α → G}
+    [UniformAddGroup G] [CompleteSpace G] [NonarchimedeanAddGroup G] {f : α → G}
     (hf : Tendsto f cofinite (𝓝 0)) : Summable f :=
   CompleteSpace.complete (cauchy_partial_sums_of_tendsto_cofinite_zero hf)
 
 /-- Let `G` be a complete nonarchimedean abelian group. Then a function `f : α → G` is
 unconditionally summable if and only if it tends to zero on the filter of cofinite sets. -/
 theorem summable_iff_tendsto_cofinite_zero {α G : Type*} [AddCommGroup G] [UniformSpace G]
-    [UniformAddGroup G] [CompleteSpace G] [NonarchimedeanAddGroup G] [DecidableEq α]
+    [UniformAddGroup G] [CompleteSpace G] [NonarchimedeanAddGroup G]
     (f : α → G) : Summable f ↔ Tendsto f cofinite (𝓝 0) :=
   ⟨Summable.tendsto_cofinite_zero, summable_of_tendsto_cofinite_zero⟩
 
