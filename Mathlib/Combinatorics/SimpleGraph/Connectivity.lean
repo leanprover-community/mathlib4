@@ -5,7 +5,6 @@ Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 import Mathlib.Data.List.Rotate
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 #align_import combinatorics.simple_graph.connectivity from "leanprover-community/mathlib"@"b99e2d58a5e6861833fa8de11e51a81144258db4"
 
