@@ -124,35 +124,81 @@ def NormalExpr.zero' : M NormalExpr := return NormalExpr.zero (← read).α0
 
 open NormalExpr
 
+/--
+  Let `α` be an additive commutative monoid.
+  Let `n` be in `ℕ`.
+  Let `k`, `x`, `a`, and `a'` be in `α`.
+  If `k + a = a'`, then `k + term n x a = term n x a'`.
+-/
 theorem const_add_term {α} [AddCommMonoid α] (k n x a a') (h : k + a = a') :
     k + @term α _ n x a = term n x a' := by
   simp [h.symm, term, add_comm, add_assoc]
 
+/--
+  Let `α` be an additive commutative group.
+  Let `n` be in `ℤ`.
+  Let `k`, `x`, `a`, and `a'` be in `α`.
+  If `k + a = a'`, then `k + termg n x a = termg n x a'`.
+-/
 theorem const_add_termg {α} [AddCommGroup α] (k n x a a') (h : k + a = a') :
     k + @termg α _ n x a = termg n x a' := by
   simp [h.symm, termg, add_comm, add_assoc]
 
+/--
+  Let `α` be an additive commutative monoid.
+  Let `n` be in `ℕ`.
+  Let `k`, `x`, `a`, and `a'` be in `α`.
+  If `a + k = a'`, then `term n x a + k = term n x a'`.
+-/
 theorem term_add_const {α} [AddCommMonoid α] (n x a k a') (h : a + k = a') :
     @term α _ n x a + k = term n x a' := by
   simp [h.symm, term, add_assoc]
 
+/--
+  Let `α` be an additive commutative group.
+  Let `n` be in `ℤ`.
+  Let `k`, `x`, `a`, and `a'` be in `α`.
+  If `k + a = a'`, then `k + termg n x a = termg n x a'`.
+-/
 theorem term_add_constg {α} [AddCommGroup α] (n x a k a') (h : a + k = a') :
     @termg α _ n x a + k = termg n x a' := by
   simp [h.symm, termg, add_assoc]
 
+/--
+  Let `α` be an additive commutative monoid.
+  Let `n₁`, `n₂` and `n'` be in `ℕ`.
+  Let `x`, `a₁`, `a₂` and `a'` be in `α`.
+  If `n₁ + n₂ = n'` and `a₁ + a₂ = a'`, then `term n₁ x a₁ + term n₂ x a₂ = term n' x a'`.
+-/
 theorem term_add_term {α} [AddCommMonoid α] (n₁ x a₁ n₂ a₂ n' a') (h₁ : n₁ + n₂ = n')
     (h₂ : a₁ + a₂ = a') : @term α _ n₁ x a₁ + @term α _ n₂ x a₂ = term n' x a' := by
   simp [h₁.symm, h₂.symm, term, add_nsmul, add_assoc, add_left_comm]
 
+/--
+  Let `α` be an additive commutative group.
+  Let `n₁`, `n₂` and `n'` be in `ℤ`.
+  Let `x`, `a₁`, `a₂` and `a'` be in `α`.
+  If `n₁ + n₂ = n'` and `a₁ + a₂ = a'`, then `termg n₁ x a₁ + termg n₂ x a₂ = termg n' x a'`.
+-/
 theorem term_add_termg {α} [AddCommGroup α] (n₁ x a₁ n₂ a₂ n' a')
     (h₁ : n₁ + n₂ = n') (h₂ : a₁ + a₂ = a') :
     @termg α _ n₁ x a₁ + @termg α _ n₂ x a₂ = termg n' x a' := by
   simp only [termg, h₁.symm, add_zsmul, h₂.symm]
   exact add_add_add_comm (n₁ • x) a₁ (n₂ • x) a₂
 
+/--
+  Let `α` be an additive commutative monoid.
+  Let `x` and `a` be in `α`.
+  Then `term 0 x a = a`.
+-/
 theorem zero_term {α} [AddCommMonoid α] (x a) : @term α _ 0 x a = a := by
   simp [term, zero_nsmul, one_nsmul]
 
+/--
+  Let `α` be an additive commutative group.
+  Let `x` and `a` be in `α`.
+  Then `term 0 x a = a`.
+-/
 theorem zero_termg {α} [AddCommGroup α] (x a) : @termg α _ 0 x a = a := by
   simp [termg, zero_zsmul]
 
@@ -184,6 +230,12 @@ partial def evalAdd : NormalExpr → NormalExpr → M (NormalExpr × Expr)
       let (a', h) ← evalAdd he₁ a₂
       return (← term' n₂ x₂ a', ← iapp ``const_add_term #[e₁, n₂.1, x₂.2, a₂, a', h])
 
+/--
+  Let `α` be an additive commutative group.
+  Let `n` and `n'` be in `ℤ`.
+  Let `x`, `a` and `a'` be in `α`.
+  If `-n = n'` and `-a = a'`, then `-termg n x a = termg n' x a'`.
+-/
 theorem term_neg {α} [AddCommGroup α] (n x a n' a')
     (h₁ : -n = n') (h₂ : -a = a') : -@termg α _ n x a = termg n' x a' := by
   simpa [h₂.symm, h₁.symm, termg] using add_comm _ _
