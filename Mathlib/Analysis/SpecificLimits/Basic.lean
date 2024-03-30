@@ -22,9 +22,11 @@ instances of these such as `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 
 noncomputable section
 
-open Classical Set Function Filter Finset Metric
+open scoped Classical
+open Set Function Filter Finset Metric
 
-open Classical Topology Nat BigOperators uniformity NNReal ENNReal
+open scoped Classical
+open Topology Nat BigOperators uniformity NNReal ENNReal
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 
@@ -175,26 +177,26 @@ theorem geom_lt {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) {n : ℕ} (hn : 0 < n
     (h : ∀ k < n, c * u k < u (k + 1)) : c ^ n * u 0 < u n := by
   apply (monotone_mul_left_of_nonneg hc).seq_pos_lt_seq_of_le_of_lt hn _ _ h
   · simp
-  · simp [_root_.pow_succ, mul_assoc, le_refl]
+  · simp [_root_.pow_succ', mul_assoc, le_refl]
 #align geom_lt geom_lt
 
 theorem geom_le {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) (n : ℕ) (h : ∀ k < n, c * u k ≤ u (k + 1)) :
     c ^ n * u 0 ≤ u n := by
   apply (monotone_mul_left_of_nonneg hc).seq_le_seq n _ _ h <;>
-    simp [_root_.pow_succ, mul_assoc, le_refl]
+    simp [_root_.pow_succ', mul_assoc, le_refl]
 #align geom_le geom_le
 
 theorem lt_geom {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) {n : ℕ} (hn : 0 < n)
     (h : ∀ k < n, u (k + 1) < c * u k) : u n < c ^ n * u 0 := by
   apply (monotone_mul_left_of_nonneg hc).seq_pos_lt_seq_of_lt_of_le hn _ h _
   · simp
-  · simp [_root_.pow_succ, mul_assoc, le_refl]
+  · simp [_root_.pow_succ', mul_assoc, le_refl]
 #align lt_geom lt_geom
 
 theorem le_geom {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) (n : ℕ) (h : ∀ k < n, u (k + 1) ≤ c * u k) :
     u n ≤ c ^ n * u 0 := by
   apply (monotone_mul_left_of_nonneg hc).seq_le_seq n _ h _ <;>
-    simp [_root_.pow_succ, mul_assoc, le_refl]
+    simp [_root_.pow_succ', mul_assoc, le_refl]
 #align le_geom le_geom
 
 /-- If a sequence `v` of real numbers satisfies `k * v n ≤ v (n+1)` with `1 < k`,
@@ -602,7 +604,7 @@ end ENNReal
 
 
 theorem factorial_tendsto_atTop : Tendsto Nat.factorial atTop atTop :=
-  tendsto_atTop_atTop_of_monotone Nat.monotone_factorial fun n ↦ ⟨n, n.self_le_factorial⟩
+  tendsto_atTop_atTop_of_monotone (fun _ _ ↦ Nat.factorial_le) fun n ↦ ⟨n, n.self_le_factorial⟩
 #align factorial_tendsto_at_top factorial_tendsto_atTop
 
 theorem tendsto_factorial_div_pow_self_atTop :
@@ -626,7 +628,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
       · positivity
       · refine' (div_le_one <| mod_cast hn).mpr _
         norm_cast
-        linarith)
+        omega)
 #align tendsto_factorial_div_pow_self_at_top tendsto_factorial_div_pow_self_atTop
 
 /-!
@@ -691,7 +693,7 @@ theorem tendsto_nat_ceil_div_atTop : Tendsto (fun x ↦ (⌈x⌉₊ : R) / x) at
   simpa using tendsto_nat_ceil_mul_div_atTop (zero_le_one' R)
 #align tendsto_nat_ceil_div_at_top tendsto_nat_ceil_div_atTop
 
-lemma Nat.tendsto_div_const_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (λ x ↦ x / n) atTop atTop := by
+lemma Nat.tendsto_div_const_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (· / n) atTop atTop := by
   rw [Tendsto, map_div_atTop_eq_nat n hn.bot_lt]
 
 end

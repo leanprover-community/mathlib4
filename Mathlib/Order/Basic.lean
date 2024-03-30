@@ -163,11 +163,6 @@ section
 
 variable [Preorder α] {a b c : α}
 
-/-- A version of `le_refl` where the argument is implicit -/
-theorem le_rfl : a ≤ a :=
-  le_refl a
-#align le_rfl le_rfl
-
 @[simp]
 theorem lt_self_iff_false (x : α) : x < x ↔ False :=
   ⟨lt_irrefl x, False.elim⟩
@@ -832,13 +827,13 @@ instance instPartialOrder (α : Type*) [PartialOrder α] : PartialOrder αᵒᵈ
 
 instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
-  le_total := λ a b : α => le_total b a
+  le_total := fun a b : α ↦ le_total b a
   max := fun a b ↦ (min a b : α)
   min := fun a b ↦ (max a b : α)
   min_def := fun a b ↦ show (max .. : α) = _ by rw [max_comm, max_def]; rfl
   max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
-  decidableLE := (inferInstance : DecidableRel (λ a b : α => b ≤ a))
-  decidableLT := (inferInstance : DecidableRel (λ a b : α => b < a))
+  decidableLE := (inferInstance : DecidableRel (fun a b : α ↦ b ≤ a))
+  decidableLT := (inferInstance : DecidableRel (fun a b : α ↦ b < a))
 #align order_dual.linear_order OrderDual.instLinearOrder
 
 instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fun [x : Inhabited α] => x
@@ -1247,7 +1242,7 @@ instance decidableLT [Preorder α] [h : @DecidableRel α (· < ·)] {p : α → 
 /-- A subtype of a linear order is a linear order. We explicitly give the proofs of decidable
 equality and decidable order in order to ensure the decidability instances are all definitionally
 equal. -/
-instance linearOrder [LinearOrder α] (p : α → Prop) : LinearOrder (Subtype p) :=
+instance instLinearOrder [LinearOrder α] (p : α → Prop) : LinearOrder (Subtype p) :=
   @LinearOrder.lift (Subtype p) _ _ ⟨fun x y ↦ ⟨max x y, max_rec' _ x.2 y.2⟩⟩
     ⟨fun x y ↦ ⟨min x y, min_rec' _ x.2 y.2⟩⟩ (fun (a : Subtype p) ↦ (a : α))
     Subtype.coe_injective (fun _ _ ↦ rfl) fun _ _ ↦
@@ -1268,7 +1263,7 @@ namespace Prod
 instance (α : Type u) (β : Type v) [LE α] [LE β] : LE (α × β) :=
   ⟨fun p q ↦ p.1 ≤ q.1 ∧ p.2 ≤ q.2⟩
 
--- Porting note: new instance
+-- Porting note (#10754): new instance
 instance instDecidableLE (α : Type u) (β : Type v) [LE α] [LE β] (x y : α × β)
     [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) := And.decidable
 
@@ -1432,7 +1427,7 @@ namespace PUnit
 
 variable (a b : PUnit.{u + 1})
 
-instance linearOrder : LinearOrder PUnit where
+instance instLinearOrder : LinearOrder PUnit where
   le  := fun _ _ ↦ True
   lt  := fun _ _ ↦ False
   max := fun _ _ ↦ unit

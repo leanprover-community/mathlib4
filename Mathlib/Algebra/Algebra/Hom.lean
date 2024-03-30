@@ -23,9 +23,6 @@ This file defines bundled homomorphisms of `R`-algebras.
 * `A →ₐ[R] B` : `R`-algebra homomorphism from `A` to `B`.
 -/
 
-set_option autoImplicit true
-
-
 open BigOperators
 
 universe u v w u₁ v₁
@@ -62,7 +59,7 @@ class AlgHomClass (F : Type*) (R A B : outParam Type*)
 
 namespace AlgHomClass
 
-variable {R : Type*} {A : Type*} {B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+variable {R A B F : Type*} [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] [FunLike F A B]
 
 -- see Note [lower instance priority]
@@ -72,14 +69,14 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
 #align alg_hom_class.linear_map_class AlgHomClass.linearMapClass
 
--- Porting note: A new definition underlying a coercion `↑`.
+-- Porting note (#11445): A new definition underlying a coercion `↑`.
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
-def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →ₐ[R] B :=
-  { (f : A →+* B) with
-      toFun := f
-      commutes' := AlgHomClass.commutes f }
+def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →ₐ[R] B where
+  __ := (f : A →+* B)
+  toFun := f
+  commutes' := AlgHomClass.commutes f
 
 instance coeTC {F : Type*} [FunLike F A B] [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
   ⟨AlgHomClass.toAlgHom⟩
@@ -94,7 +91,6 @@ variable {R : Type u} {A : Type v} {B : Type w} {C : Type u₁} {D : Type v₁}
 section Semiring
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
-
 variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 
 -- Porting note: we don't port specialized `CoeFun` instances if there is `DFunLike` instead
@@ -133,13 +129,9 @@ theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
   rfl
 #align alg_hom.to_fun_eq_coe AlgHom.toFun_eq_coe
 
-attribute [coe] AlgHom.toRingHom
+#noalign alg_hom.coe_ring_hom
 
-instance coeOutRingHom : CoeOut (A →ₐ[R] B) (A →+* B) :=
-  ⟨AlgHom.toRingHom⟩
-#align alg_hom.coe_ring_hom AlgHom.coeOutRingHom
-
--- Porting note: A new definition underlying a coercion `↑`.
+-- Porting note (#11445): A new definition underlying a coercion `↑`.
 @[coe]
 def toMonoidHom' (f : A →ₐ[R] B) : A →* B := (f : A →+* B)
 
@@ -147,7 +139,7 @@ instance coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) :=
   ⟨AlgHom.toMonoidHom'⟩
 #align alg_hom.coe_monoid_hom AlgHom.coeOutMonoidHom
 
--- Porting note: A new definition underlying a coercion `↑`.
+-- Porting note (#11445): A new definition underlying a coercion `↑`.
 @[coe]
 def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := (f : A →+* B)
 
@@ -426,8 +418,8 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
   φ.toLinearMap.map_smul_of_tower r x
 #align alg_hom.map_smul_of_tower AlgHom.map_smul_of_tower
 
-theorem map_list_prod (s : List A) : φ s.prod = (s.map φ).prod :=
-  φ.toRingHom.map_list_prod s
+nonrec theorem map_list_prod (s : List A) : φ s.prod = (s.map φ).prod :=
+  map_list_prod φ s
 #align alg_hom.map_list_prod AlgHom.map_list_prod
 
 @[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
@@ -459,7 +451,6 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
-
 variable [Algebra R A] [Algebra R B] (φ : A →ₐ[R] B)
 
 protected theorem map_multiset_prod (s : Multiset A) : φ s.prod = (s.map φ).prod :=
@@ -481,7 +472,6 @@ end CommSemiring
 section Ring
 
 variable [CommSemiring R] [Ring A] [Ring B]
-
 variable [Algebra R A] [Algebra R B] (φ : A →ₐ[R] B)
 
 protected theorem map_neg (x) : φ (-x) = -φ x :=
@@ -555,7 +545,6 @@ end
 namespace Algebra
 
 variable (R : Type u) (A : Type v)
-
 variable [CommSemiring R] [Semiring A] [Algebra R A]
 
 /-- `AlgebraMap` as an `AlgHom`. -/
@@ -596,7 +585,6 @@ end Algebra
 namespace MulSemiringAction
 
 variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
-
 variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 
 /-- Each element of the monoid defines an algebra homomorphism.

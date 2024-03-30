@@ -7,8 +7,8 @@ import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.LinearAlgebra.TensorProduct
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import data.matrix.kronecker from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
@@ -49,7 +49,6 @@ namespace Matrix
 open Matrix
 
 variable {R α α' β β' γ γ' : Type*}
-
 variable {l m n p : Type*} {q r : Type*} {l' m' n' p' : Type*}
 
 section KroneckerMap
@@ -430,7 +429,6 @@ section Module
 suppress_compilation
 
 variable [CommSemiring R] [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
-
 variable [Module R α] [Module R β] [Module R γ]
 
 /-- The Kronecker tensor product. This is just a shorthand for `kroneckerMap (⊗ₜ)`.

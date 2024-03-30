@@ -38,9 +38,7 @@ add_decl_doc Subalgebra.toSubsemiring
 namespace Subalgebra
 
 variable {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
-
 variable [CommSemiring R]
-
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
 
 instance : SetLike (Subalgebra R A) A where
@@ -510,7 +508,6 @@ end Subalgebra
 namespace Submodule
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-
 variable (p : Submodule R A)
 
 /-- A submodule containing `1` and closed under multiplication is a subalgebra. -/
@@ -560,11 +557,8 @@ end Submodule
 namespace AlgHom
 
 variable {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
-
 variable [CommSemiring R]
-
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
-
 variable (φ : A →ₐ[R] B)
 
 /-- Range of an `AlgHom` as a subalgebra. -/
@@ -626,6 +620,14 @@ def rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
   f.codRestrict f.range f.mem_range_self
 #align alg_hom.range_restrict AlgHom.rangeRestrict
 
+theorem rangeRestrict_surjective (f : A →ₐ[R] B) : Function.Surjective (f.rangeRestrict) :=
+  fun ⟨_y, hy⟩ =>
+    let ⟨x, hx⟩ := hy
+    ⟨x, SetCoe.ext hx⟩
+
+theorem ker_rangeRestrict (f : A →ₐ[R] B) : RingHom.ker f.rangeRestrict = RingHom.ker f :=
+  Ideal.ext fun _ ↦ Subtype.ext_iff
+
 /-- The equalizer of two R-algebra homomorphisms -/
 def equalizer (ϕ ψ : A →ₐ[R] B) : Subalgebra R A where
   carrier := { a | ϕ a = ψ a }
@@ -655,7 +657,6 @@ end AlgHom
 namespace AlgEquiv
 
 variable {R : Type u} {A : Type v} {B : Type w}
-
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 /-- Restrict an algebra homomorphism with a left inverse to an algebra isomorphism to its range.
@@ -716,7 +717,6 @@ end AlgEquiv
 namespace Algebra
 
 variable (R : Type u) {A : Type v} {B : Type w}
-
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- The minimal subalgebra that includes `s`. -/
@@ -846,7 +846,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → Subalgebra R A} : (↑(⨅ i, S i) : S
 #align algebra.coe_infi Algebra.coe_iInf
 
 theorem mem_iInf {ι : Sort*} {S : ι → Subalgebra R A} {x : A} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
-  simp only [iInf, mem_sInf, Set.forall_range_iff]
+  simp only [iInf, mem_sInf, Set.forall_mem_range]
 #align algebra.mem_infi Algebra.mem_iInf
 
 open Subalgebra in
@@ -940,9 +940,7 @@ namespace Subalgebra
 open Algebra
 
 variable {R : Type u} {A : Type v} {B : Type w}
-
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-
 variable (S : Subalgebra R A)
 
 /-- The top subalgebra is isomorphic to the algebra.
@@ -1136,7 +1134,8 @@ variable (K)
 variable (f : ∀ i, K i →ₐ[R] B) (hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h))
   (T : Subalgebra R A) (hT : T = iSup K)
 
--- Porting note: TODO: turn `hT` into an assumption `T ≤ iSup K`. That's what `Set.iUnionLift` needs
+-- Porting note (#11215): TODO: turn `hT` into an assumption `T ≤ iSup K`.
+-- That's what `Set.iUnionLift` needs
 -- Porting note: the proofs of `map_{zero,one,add,mul}` got a bit uglier, probably unification trbls
 /-- Define an algebra homomorphism on a directed supremum of subalgebras by defining
 it on each subalgebra, and proving that it agrees on the intersection of subalgebras. -/

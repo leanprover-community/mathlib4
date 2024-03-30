@@ -467,10 +467,10 @@ theorem indepSets_piiUnionInter_of_disjoint [IsMarkovKernel κ] {s : ι → Set 
       rw [Finset.mem_union] at hi_mem_union
       cases' hi_mem_union with hi1 hi2
       · have hi2 : i ∉ p2 := fun hip2 => Set.disjoint_left.mp hST (hp1 hi1) (hp2 hip2)
-        simp_rw [if_pos hi1, if_neg hi2, Set.inter_univ]
+        simp_rw [g, if_pos hi1, if_neg hi2, Set.inter_univ]
         exact ht1_m i hi1
       · have hi1 : i ∉ p1 := fun hip1 => Set.disjoint_right.mp hST (hp2 hi2) (hp1 hip1)
-        simp_rw [if_neg hi1, if_pos hi2, Set.univ_inter]
+        simp_rw [g, if_neg hi1, if_pos hi2, Set.univ_inter]
         exact ht2_m i hi2
     have h_p1_inter_p2 :
       ((⋂ x ∈ p1, f1 x) ∩ ⋂ x ∈ p2, f2 x) =
@@ -485,7 +485,7 @@ theorem indepSets_piiUnionInter_of_disjoint [IsMarkovKernel κ] {s : ι → Set 
   filter_upwards [h_P_inter, h_indep p1 ht1_m, h_indep p2 ht2_m] with a h_P_inter ha1 ha2
   have h_μg : ∀ n, κ a (g n) = (ite (n ∈ p1) (κ a (f1 n)) 1) * (ite (n ∈ p2) (κ a (f2 n)) 1) := by
     intro n
-    dsimp only
+    dsimp only [g]
     split_ifs with h1 h2
     · exact absurd rfl (Set.disjoint_iff_forall_ne.mp hST (hp1 h1) (hp2 h2))
     all_goals simp only [measure_univ, one_mul, mul_one, Set.inter_univ, Set.univ_inter]
@@ -584,7 +584,7 @@ theorem iIndepSets.piiUnionInter_of_not_mem {π : ι → Set (Set Ω)} {a : ι} 
   let f := fun n => ite (n = a) t2 (ite (n ∈ s) (ft1 n) Set.univ)
   have h_f_mem : ∀ n ∈ insert a s, f n ∈ π n := by
     intro n hn_mem_insert
-    dsimp only
+    dsimp only [f]
     cases' Finset.mem_insert.mp hn_mem_insert with hn_mem hn_mem
     · simp [hn_mem, ht2_mem_pia]
     · have hn_ne_a : n ≠ a := by rintro rfl; exact haS (hs_mem hn_mem)
@@ -598,11 +598,11 @@ theorem iIndepSets.piiUnionInter_of_not_mem {π : ι → Set (Set Ω)} {a : ι} 
       conv => lhs; intro i hns; rw [← h_forall i hns]
     intro n hnS
     have hn_ne_a : n ≠ a := by rintro rfl; exact haS (hs_mem hnS)
-    simp_rw [if_pos hnS, if_neg hn_ne_a]
+    simp_rw [f, if_pos hnS, if_neg hn_ne_a]
   have h_μ_t1 : ∀ᵐ a' ∂μ, κ a' t1 = ∏ n in s, κ a' (f n) := by
     filter_upwards [hp_ind s h_f_mem_pi] with a' ha'
     rw [h_t1, ← ha']
-  have h_t2 : t2 = f a := by simp
+  have h_t2 : t2 = f a := by simp [f]
   have h_μ_inter : ∀ᵐ a' ∂μ, κ a' (t1 ∩ t2) = ∏ n in insert a s, κ a' (f n) := by
     have h_t1_inter_t2 : t1 ∩ t2 = ⋂ n ∈ insert a s, f n := by
       rw [h_t1, h_t2, Finset.set_biInter_insert, Set.inter_comm]
@@ -759,11 +759,11 @@ theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Ty
     dite (i ∈ S) (fun hi_mem => (h_meas i hi_mem).choose) fun _ => Set.univ
   have h_measβ : ∀ i ∈ S, MeasurableSet[m i] (setsβ i) := by
     intro i hi_mem
-    simp_rw [dif_pos hi_mem]
+    simp_rw [setsβ, dif_pos hi_mem]
     exact (h_meas i hi_mem).choose_spec.1
   have h_preim : ∀ i ∈ S, setsΩ i = f i ⁻¹' setsβ i := by
     intro i hi_mem
-    simp_rw [dif_pos hi_mem]
+    simp_rw [setsβ, dif_pos hi_mem]
     exact (h_meas i hi_mem).choose_spec.2.symm
   have h_left_eq : ∀ a, κ a (⋂ i ∈ S, setsΩ i) = κ a (⋂ i ∈ S, (f i) ⁻¹' (setsβ i)) := by
     intro a
@@ -857,31 +857,31 @@ theorem iIndepFun.indepFun_finset [IsMarkovKernel κ] (S T : Finset ι) (hST : D
   let sets_s' : ∀ i : ι, Set (β i) := fun i =>
     dite (i ∈ S) (fun hi => sets_s ⟨i, hi⟩) fun _ => Set.univ
   have h_sets_s'_eq : ∀ {i} (hi : i ∈ S), sets_s' i = sets_s ⟨i, hi⟩ := by
-    intro i hi; simp_rw [dif_pos hi]
+    intro i hi; simp_rw [sets_s', dif_pos hi]
   have h_sets_s'_univ : ∀ {i} (_hi : i ∈ T), sets_s' i = Set.univ := by
-    intro i hi; simp_rw [dif_neg (Finset.disjoint_right.mp hST hi)]
+    intro i hi; simp_rw [sets_s', dif_neg (Finset.disjoint_right.mp hST hi)]
   let sets_t' : ∀ i : ι, Set (β i) := fun i =>
     dite (i ∈ T) (fun hi => sets_t ⟨i, hi⟩) fun _ => Set.univ
   have h_sets_t'_univ : ∀ {i} (_hi : i ∈ S), sets_t' i = Set.univ := by
-    intro i hi; simp_rw [dif_neg (Finset.disjoint_left.mp hST hi)]
+    intro i hi; simp_rw [sets_t', dif_neg (Finset.disjoint_left.mp hST hi)]
   have h_meas_s' : ∀ i ∈ S, MeasurableSet (sets_s' i) := by
     intro i hi; rw [h_sets_s'_eq hi]; exact hs1 _
   have h_meas_t' : ∀ i ∈ T, MeasurableSet (sets_t' i) := by
-    intro i hi; simp_rw [dif_pos hi]; exact ht1 _
+    intro i hi; simp_rw [sets_t', dif_pos hi]; exact ht1 _
   have h_eq_inter_S : (fun (ω : Ω) (i : ↥S) =>
     f (↑i) ω) ⁻¹' Set.pi Set.univ sets_s = ⋂ i ∈ S, f i ⁻¹' sets_s' i := by
     ext1 x
     simp_rw [Set.mem_preimage, Set.mem_univ_pi, Set.mem_iInter]
     constructor <;> intro h
     · intro i hi; simp only [h_sets_s'_eq hi, Set.mem_preimage]; exact h ⟨i, hi⟩
-    · rintro ⟨i, hi⟩; specialize h i hi; rwa [dif_pos hi] at h
+    · rintro ⟨i, hi⟩; specialize h i hi; simp only [sets_s'] at h; rwa [dif_pos hi] at h
   have h_eq_inter_T : (fun (ω : Ω) (i : ↥T) => f (↑i) ω) ⁻¹' Set.pi Set.univ sets_t
     = ⋂ i ∈ T, f i ⁻¹' sets_t' i := by
     ext1 x
     simp only [Set.mem_preimage, Set.mem_univ_pi, Set.mem_iInter]
     constructor <;> intro h
-    · intro i hi; simp_rw [dif_pos hi]; exact h ⟨i, hi⟩
-    · rintro ⟨i, hi⟩; specialize h i hi; simp_rw [dif_pos hi] at h; exact h
+    · intro i hi; simp_rw [sets_t', dif_pos hi]; exact h ⟨i, hi⟩
+    · rintro ⟨i, hi⟩; specialize h i hi; simp_rw [sets_t', dif_pos hi] at h; exact h
   rw [iIndepFun_iff_measure_inter_preimage_eq_mul] at hf_Indep
   have h_Inter_inter :
     ((⋂ i ∈ S, f i ⁻¹' sets_s' i) ∩ ⋂ i ∈ T, f i ⁻¹' sets_t' i) =
@@ -892,10 +892,12 @@ theorem iIndepFun.indepFun_finset [IsMarkovKernel κ] (S T : Finset ι) (hST : D
     · intro i hi
       cases' hi with hiS hiT
       · replace h := h.1 i hiS
-        simp_rw [dif_pos hiS, dif_neg (Finset.disjoint_left.mp hST hiS)]
+        simp_rw [sets_s', sets_t', dif_pos hiS, dif_neg (Finset.disjoint_left.mp hST hiS)]
+        simp only [sets_s'] at h
         exact ⟨by rwa [dif_pos hiS] at h, Set.mem_univ _⟩
       · replace h := h.2 i hiT
-        simp_rw [dif_pos hiT, dif_neg (Finset.disjoint_right.mp hST hiT)]
+        simp_rw [sets_s', sets_t', dif_pos hiT, dif_neg (Finset.disjoint_right.mp hST hiT)]
+        simp only [sets_t'] at h
         exact ⟨Set.mem_univ _, by rwa [dif_pos hiT] at h⟩
     · exact ⟨fun i hi => (h i (Or.inl hi)).1, fun i hi => (h i (Or.inr hi)).2⟩
   have h_meas_inter : ∀ i ∈ S ∪ T, MeasurableSet (sets_s' i ∩ sets_t' i) := by
@@ -943,7 +945,7 @@ theorem iIndepFun.indepFun_prod_mk [IsMarkovKernel κ] (hf_Indep : iIndepFun m f
   rw [h_left, h_right]
   refine' (hf_Indep.indepFun_finset s {k} _ hf_meas).comp h_meas_left h_meas_right
   rw [Finset.disjoint_singleton_right]
-  simp only [Finset.mem_insert, Finset.mem_singleton, not_or]
+  simp only [s, Finset.mem_insert, Finset.mem_singleton, not_or]
   exact ⟨hik.symm, hjk.symm⟩
 
 open Finset in

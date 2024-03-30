@@ -4,6 +4,10 @@ import Mathlib.Tactic.RunCmd
 import Std.Tactic.GuardMsgs
 
 section inactive_hash_linter
+
+/-!
+#  Set the `#`-command linter to `false`
+-/
 set_option linter.hashCommand false
 
 theorem fo₁ : True := .intro
@@ -24,11 +28,15 @@ theorem fo₁ : True := .intro
 end inactive_hash_linter
 
 section active_hash_linter
+/-!
+#  Set the `#`-command linter to `true`
+-/
+set_option linter.hashCommand true
 
 theorem fo₂ : True := .intro
+-- `#align` is allowed
 #align false fo₂
 
-set_option linter.hashCommand true in
 /--
 info: 0
 ---
@@ -38,7 +46,6 @@ warning: `#`-commands, such as '#eval', are not allowed in 'Mathlib'
 #guard_msgs in
 #eval 0
 
-set_option linter.hashCommand true in
 /--
 info: constructor PUnit.unit.{u} : PUnit
 ---
@@ -48,7 +55,6 @@ warning: `#`-commands, such as '#print', are not allowed in 'Mathlib'
 #guard_msgs in
 #print PUnit.unit
 
-set_option linter.hashCommand true in
 /--
 info: 0 : Nat
 ---
@@ -58,7 +64,6 @@ warning: `#`-commands, such as '#check', are not allowed in 'Mathlib'
 #guard_msgs in
 #check 0
 
-set_option linter.hashCommand true in
 /--
 info: constructor PUnit.unit.{u} : PUnit
 ---
@@ -70,5 +75,37 @@ warning: `#`-commands, such as '#print', are not allowed in 'Mathlib'
 
 -- `run_cmd` is allowed
 run_cmd if false then Lean.logInfo "0"
+
+-- Testing the the linter enters `in` recursively.
+
+/--
+info: n : Nat
+---
+warning: `#`-commands, such as '#check', are not allowed in 'Mathlib' [linter.hashCommand]
+-/
+#guard_msgs in
+variable (n : Nat) in
+#check n
+
+/--
+info: n : Nat
+---
+warning: `#`-commands, such as '#check', are not allowed in 'Mathlib' [linter.hashCommand]
+-/
+#guard_msgs in
+open Nat in
+variable (n : Nat) in
+variable (n : Nat) in
+#check n
+
+/--
+info: n : Nat
+---
+warning: `#`-commands, such as '#check', are not allowed in 'Mathlib' [linter.hashCommand]
+-/
+#guard_msgs in
+open Nat in
+variable (n : Nat) in
+#check n
 
 end active_hash_linter

@@ -479,7 +479,7 @@ theorem eq_zero_iff_coeFn_eq_zero {f : lp E p} : f = 0 ↔ ⇑f = 0 := by
   rw [lp.ext_iff, coeFn_zero]
 #align lp.eq_zero_iff_coe_fn_eq_zero lp.eq_zero_iff_coeFn_eq_zero
 
--- porting note: this was very slow, so I squeezed the `simp` calls
+-- porting note (#11083): this was very slow, so I squeezed the `simp` calls
 @[simp]
 theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -504,7 +504,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
         · cases isEmpty_or_nonempty α
           · -- porting note (#10745): was `simp [lp.eq_zero' f]`
             rw [lp.eq_zero' f]
-            simp only [zero_add, norm_zero, le_refl] -- porting note: just `simp` was slow
+            simp only [zero_add, norm_zero, le_refl] -- porting note (#11083): just `simp` was slow
           refine' (lp.isLUB_norm (f + g)).2 _
           rintro x ⟨i, rfl⟩
           refine' le_trans _ (add_mem_upperBounds_add
@@ -602,9 +602,7 @@ end ComparePointwise
 section BoundedSMul
 
 variable {𝕜 : Type*} {𝕜' : Type*}
-
 variable [NormedRing 𝕜] [NormedRing 𝕜']
-
 variable [∀ i, Module 𝕜 (E i)] [∀ i, Module 𝕜' (E i)]
 
 instance : Module 𝕜 (PreLp E) :=
@@ -698,7 +696,6 @@ end BoundedSMul
 section DivisionRing
 
 variable {𝕜 : Type*}
-
 variable [NormedDivisionRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
 
 theorem norm_const_smul (hp : p ≠ 0) {c : 𝕜} (f : lp E p) : ‖c • f‖ = ‖c‖ * ‖f‖ := by
@@ -763,12 +760,11 @@ instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
     rcases p.trichotomy with (rfl | rfl | h)
     · exfalso
       have := ENNReal.toReal_mono ENNReal.zero_ne_top hp.elim
-      norm_num at this
+      set_option tactic.skipAssignedInstances false in norm_num at this
     · simp only [lp.norm_eq_ciSup, lp.star_apply, norm_star]
     · simp only [lp.norm_eq_tsum_rpow h, lp.star_apply, norm_star]
 
 variable {𝕜 : Type*} [Star 𝕜] [NormedRing 𝕜]
-
 variable [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)] [∀ i, StarModule 𝕜 (E i)]
 
 instance : StarModule 𝕜 (lp E p) where
@@ -944,7 +940,6 @@ end NormedCommRing
 section Algebra
 
 variable {I : Type*} {𝕜 : Type*} {B : I → Type*}
-
 variable [NormedField 𝕜] [∀ i, NormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
 
 /-- A variant of `Pi.algebra` that lean can't find otherwise. -/
@@ -984,7 +979,6 @@ end Algebra
 section Single
 
 variable {𝕜 : Type*} [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
-
 variable [DecidableEq α]
 
 /-- The element of `lp E p` which is `a : E i` at the index `i`, and zero elsewhere. -/
@@ -1174,8 +1168,7 @@ theorem norm_le_of_tendsto {C : ℝ} {F : ι → lp E p} (hCF : ∀ᶠ k in l, �
 /-- If `f` is the pointwise limit of a bounded sequence in `lp E p`, then `f` is in `lp E p`. -/
 theorem memℓp_of_tendsto {F : ι → lp E p} (hF : Bornology.IsBounded (Set.range F)) {f : ∀ a, E a}
     (hf : Tendsto (id fun i => F i : ι → ∀ a, E a) l (𝓝 f)) : Memℓp f p := by
-  obtain ⟨C, _, hCF'⟩ := hF.exists_pos_norm_le
-  have hCF : ∀ k, ‖F k‖ ≤ C := fun k => hCF' _ ⟨k, rfl⟩
+  obtain ⟨C, hCF⟩ : ∃ C, ∀ k, ‖F k‖ ≤ C := hF.exists_norm_le.imp fun _ ↦ Set.forall_mem_range.1
   rcases eq_top_or_lt_top p with (rfl | hp)
   · apply memℓp_infty
     use C

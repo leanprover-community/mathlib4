@@ -606,7 +606,7 @@ theorem deriv_add_eq_mul_omega_add (a b : Ordinal.{u}) : deriv (a + ·) b = a * 
 
 /-! ### Fixed points of multiplication -/
 
---Porting note: commented out, doesn't seem necessary
+-- Porting note: commented out, doesn't seem necessary
 -- local infixr:0 "^" => @Pow.pow Ordinal Ordinal Ordinal.hasPow
 
 @[simp]

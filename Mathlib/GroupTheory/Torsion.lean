@@ -75,7 +75,7 @@ noncomputable def IsTorsion.group [Monoid G] (tG : IsTorsion G) : Group G :=
   { ‹Monoid G› with
     inv := fun g => g ^ (orderOf g - 1)
     mul_left_inv := fun g => by
-      erw [← pow_succ', tsub_add_cancel_of_le, pow_orderOf_eq_one]
+      erw [← pow_succ, tsub_add_cancel_of_le, pow_orderOf_eq_one]
       exact (tG g).orderOf_pos }
 #align is_torsion.group IsTorsion.group
 #align is_torsion.add_group IsTorsion.addGroup
@@ -449,3 +449,21 @@ theorem IsTorsionFree.quotient_torsion : IsTorsionFree <| G ⧸ torsion G := fun
 #align add_is_torsion_free.quotient_torsion AddIsTorsionFree.quotient_torsion
 
 end CommGroup
+
+lemma isTorsionFree_iff_noZeroSMulDivisors_nat {M : Type*} [AddMonoid M] :
+    AddMonoid.IsTorsionFree M ↔ NoZeroSMulDivisors ℕ M := by
+  simp_rw [AddMonoid.IsTorsionFree, isOfFinAddOrder_iff_nsmul_eq_zero, not_exists, not_and,
+    pos_iff_ne_zero, noZeroSMulDivisors_iff, forall_swap (β := ℕ)]
+  exact forall₂_congr fun _ _ ↦ by tauto
+
+lemma isTorsionFree_iff_noZeroSMulDivisors_int [AddGroup G] :
+    AddMonoid.IsTorsionFree G ↔ NoZeroSMulDivisors ℤ G := by
+  simp_rw [AddMonoid.IsTorsionFree, isOfFinAddOrder_iff_zsmul_eq_zero, not_exists, not_and,
+    noZeroSMulDivisors_iff, forall_swap (β := ℤ)]
+  exact forall₂_congr fun _ _ ↦ by tauto
+
+@[deprecated] -- 2024-02-29
+alias AddMonoid.IsTorsionFree_iff_noZeroSMulDivisors := isTorsionFree_iff_noZeroSMulDivisors_int
+
+lemma IsTorsionFree.of_noZeroSMulDivisors {M : Type*} [AddMonoid M] [NoZeroSMulDivisors ℕ M] :
+    AddMonoid.IsTorsionFree M := isTorsionFree_iff_noZeroSMulDivisors_nat.2 ‹_›

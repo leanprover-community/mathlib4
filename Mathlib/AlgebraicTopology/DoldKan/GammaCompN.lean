@@ -52,7 +52,7 @@ def Γ₀NondegComplexIso (K : ChainComplex C ℕ) : (Γ₀.splitting K).nondegC
         · intro h
           replace h := congr_arg SimplexCategory.len h
           change n + 1 = n at h
-          linarith
+          omega
         · simpa only [Isδ₀.iff] using hi)
 #align algebraic_topology.dold_kan.Γ₀_nondeg_complex_iso AlgebraicTopology.DoldKan.Γ₀NondegComplexIso
 
@@ -186,7 +186,7 @@ theorem N₂Γ₂_inv_app_f_f (X : Karoubi (ChainComplex C ℕ)) (n : ℕ) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₂Γ₂_inv_app_f_f AlgebraicTopology.DoldKan.N₂Γ₂_inv_app_f_f
 
--- porting note: added to ease the proof of `N₂Γ₂_compatible_with_N₁Γ₀`
+-- Porting note: added to ease the proof of `N₂Γ₂_compatible_with_N₁Γ₀`
 lemma whiskerLeft_toKaroubi_N₂Γ₂_hom :
     whiskerLeft (toKaroubi (ChainComplex C ℕ)) N₂Γ₂.hom = N₂Γ₂ToKaroubiIso.hom ≫ N₁Γ₀.hom := by
   let e : _ ≅ toKaroubi (ChainComplex C ℕ) ⋙ 𝟭 _ := N₂Γ₂ToKaroubiIso ≪≫ N₁Γ₀

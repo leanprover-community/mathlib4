@@ -126,7 +126,7 @@ theorem map_zero (d : ℕ) (a : Fin 0 → ℕ) : map d a = 0 := by simp [map]
 
 theorem map_succ (a : Fin (n + 1) → ℕ) :
     map d a = a 0 + (∑ x : Fin n, a x.succ * d ^ (x : ℕ)) * d := by
-  simp [map, Fin.sum_univ_succ, _root_.pow_succ', ← mul_assoc, ← sum_mul]
+  simp [map, Fin.sum_univ_succ, _root_.pow_succ, ← mul_assoc, ← sum_mul]
 #align behrend.map_succ Behrend.map_succ
 
 theorem map_succ' (a : Fin (n + 1) → ℕ) : map d a = a 0 + map d (a ∘ Fin.succ) * d :=
@@ -243,7 +243,7 @@ theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 +
   refine' exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun x hx => _) nonempty_range_succ _
   · rw [mem_range, Nat.lt_succ_iff]
     exact sum_sq_le_of_mem_box hx
-  · rw [card_range, _root_.nsmul_eq_mul, mul_div_assoc', cast_add_one, mul_div_cancel_left,
+  · rw [card_range, _root_.nsmul_eq_mul, mul_div_assoc', cast_add_one, mul_div_cancel_left₀,
       card_box]
     exact (cast_add_one_pos _).ne'
 #align behrend.exists_large_sphere_aux Behrend.exists_large_sphere_aux
@@ -256,7 +256,7 @@ theorem exists_large_sphere (n d : ℕ) :
   · simp
   obtain rfl | hd := d.eq_zero_or_pos
   · simp
-  refine' (div_le_div_of_le_left _ _ _).trans hk
+  refine' (div_le_div_of_nonneg_left _ _ _).trans hk
   · exact cast_nonneg _
   · exact cast_add_one_pos _
   simp only [← le_sub_iff_add_le', cast_mul, ← mul_sub, cast_pow, cast_sub hd, sub_sq, one_pow,
@@ -264,7 +264,7 @@ theorem exists_large_sphere (n d : ℕ) :
   apply one_le_mul_of_one_le_of_one_le
   · rwa [one_le_cast]
   rw [_root_.le_sub_iff_add_le]
-  norm_num
+  set_option tactic.skipAssignedInstances false in norm_num
   exact one_le_cast.2 hd
 #align behrend.exists_large_sphere Behrend.exists_large_sphere
 
@@ -327,13 +327,11 @@ theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) �
 
 theorem exp_neg_two_mul_le {x : ℝ} (hx : 0 < x) : exp (-2 * x) < exp (2 - ⌈x⌉₊) / ⌈x⌉₊ := by
   have h₁ := ceil_lt_add_one hx.le
-  have h₂ : 1 - x ≤ 2 - ⌈x⌉₊ := by
-    rw [_root_.le_sub_iff_add_le]
-    apply (add_le_add_left h₁.le _).trans_eq
-    rw [← add_assoc, sub_add_cancel]
-    linarith
-  refine' lt_of_le_of_lt _ (div_lt_div_of_lt_left (exp_pos _) (cast_pos.2 <| ceil_pos.2 hx) h₁)
-  refine' le_trans _ (div_le_div_of_le (add_nonneg hx.le zero_le_one) (exp_le_exp.2 h₂))
+  have h₂ : 1 - x ≤ 2 - ⌈x⌉₊ := by linarith
+  calc
+    _ ≤ exp (1 - x) / (x + 1) := ?_
+    _ ≤ exp (2 - ⌈x⌉₊) / (x + 1) := by gcongr
+    _ < _ := by gcongr
   rw [le_div_iff (add_pos hx zero_lt_one), ← le_div_iff' (exp_pos _), ← exp_sub, neg_mul,
     sub_neg_eq_add, two_mul, sub_add_add_cancel, add_comm _ x]
   exact le_trans (le_add_of_nonneg_right zero_le_one) (add_one_le_exp _)
@@ -429,9 +427,9 @@ set_option linter.uppercaseLean3 false in
 theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dValue N := by
   apply div_lt_floor _
   rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv]
-  · apply le_trans _ (div_le_div_of_le_left _ _ (ceil_lt_mul _).le)
+  · apply le_trans _ (div_le_div_of_nonneg_left _ _ (ceil_lt_mul _).le)
     rw [mul_comm, ← div_div, div_sqrt, le_div_iff]
-    · norm_num; exact le_sqrt_log hN
+    · set_option tactic.skipAssignedInstances false in norm_num; exact le_sqrt_log hN
     · norm_num1
     · apply log_nonneg
       rw [one_le_cast]
