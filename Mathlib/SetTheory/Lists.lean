@@ -83,7 +83,7 @@ def toList : ∀ {b}, Lists' α b → List (Lists α)
   | _, cons' a l => ⟨_, a⟩ :: l.toList
 #align lists'.to_list Lists'.toList
 
--- porting notes: removed @[simp]
+-- Porting note (#10618): removed @[simp]
 -- simp can prove this: by simp only [@Lists'.toList, @Sigma.eta]
 theorem toList_cons (a : Lists α) (l) : toList (cons a l) = a :: l.toList := by simp
 #align lists'.to_list_cons Lists'.toList_cons
@@ -117,7 +117,7 @@ theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
       -- change l' with cons' a l
       --
       -- This can be removed.
-      simpa [cons] using IH rfl
+      simpa [cons, l'] using IH rfl
 #align lists'.of_to_list Lists'.of_toList
 
 end Lists'
@@ -476,7 +476,7 @@ instance : Inhabited (Finsets α) :=
 
 instance [DecidableEq α] : DecidableEq (Finsets α) := by
   unfold Finsets
-  -- porting notes: infer_instance does not work for some reason
+  -- Porting note: infer_instance does not work for some reason
   exact (Quotient.decidableEq (d := fun _ _ => Lists.Equiv.decidable _ _))
 
 end Finsets

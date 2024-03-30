@@ -318,9 +318,8 @@ theorem IntegrableOn.restrict_toMeasurable (hf : IntegrableOn f s μ) (h's : ∀
   apply Measure.restrict_toMeasurable_of_cover _ A
   intro x hx
   have : 0 < ‖f x‖ := by simp only [h's x hx, norm_pos_iff, Ne.def, not_false_iff]
-  obtain ⟨n, hn⟩ : ∃ n, u n < ‖f x‖; exact ((tendsto_order.1 u_lim).2 _ this).exists
-  refine' mem_iUnion.2 ⟨n, _⟩
-  exact subset_toMeasurable _ _ hn.le
+  obtain ⟨n, hn⟩ : ∃ n, u n < ‖f x‖ := ((tendsto_order.1 u_lim).2 _ this).exists
+  exact mem_iUnion.2 ⟨n, subset_toMeasurable _ _ hn.le⟩
 #align measure_theory.integrable_on.restrict_to_measurable MeasureTheory.IntegrableOn.restrict_toMeasurable
 
 /-- If a function is integrable on a set `s`, and vanishes on `t \ s`, then it is integrable on `t`
@@ -482,13 +481,10 @@ theorem IntegrableAtFilter.inf_of_right (hl : IntegrableAtFilter f l μ) :
 @[simp]
 theorem IntegrableAtFilter.inf_ae_iff {l : Filter α} :
     IntegrableAtFilter f (l ⊓ μ.ae) μ ↔ IntegrableAtFilter f l μ := by
-  refine' ⟨_, fun h => h.filter_mono inf_le_left⟩
+  refine ⟨?_, fun h ↦ h.filter_mono inf_le_left⟩
   rintro ⟨s, ⟨t, ht, u, hu, rfl⟩, hf⟩
-  refine' ⟨t, ht, _⟩
-  refine' hf.integrable.mono_measure fun v hv => _
-  simp only [Measure.restrict_apply hv]
-  refine' measure_mono_ae (mem_of_superset hu fun x hx => _)
-  exact fun ⟨hv, ht⟩ => ⟨hv, ⟨ht, hx⟩⟩
+  refine ⟨t, ht, hf.congr_set_ae <| eventuallyEq_set.2 ?_⟩
+  filter_upwards [hu] with x hx using (and_iff_left hx).symm
 #align measure_theory.integrable_at_filter.inf_ae_iff MeasureTheory.IntegrableAtFilter.inf_ae_iff
 
 alias ⟨IntegrableAtFilter.of_inf_ae, _⟩ := IntegrableAtFilter.inf_ae_iff

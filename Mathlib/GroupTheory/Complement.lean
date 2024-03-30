@@ -348,7 +348,7 @@ lemma exists_right_transversal (H : Subgroup G) (g : G) :
 lemma exists_left_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
     ∃ S : Set G, S * H' = H ∧ Nat.card S * Nat.card H' = Nat.card H := by
   let H'' : Subgroup H := H'.comap H.subtype
-  have : H' = H''.map H.subtype := by simp [h]
+  have : H' = H''.map H.subtype := by simp [H'', h]
   rw [this]
   obtain ⟨S, cmem, -⟩ := H''.exists_left_transversal 1
   refine ⟨H.subtype '' S, ?_, ?_⟩
@@ -364,7 +364,7 @@ lemma exists_left_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
 lemma exists_right_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
     ∃ S : Set G, H' * S = H ∧ Nat.card H' * Nat.card S = Nat.card H := by
   let H'' : Subgroup H := H'.comap H.subtype
-  have : H' = H''.map H.subtype := by simp [h]
+  have : H' = H''.map H.subtype := by simp [H'', h]
   rw [this]
   obtain ⟨S, cmem, -⟩ := H''.exists_right_transversal 1
   refine ⟨H.subtype '' S, ?_, ?_⟩
@@ -835,7 +835,7 @@ theorem transferTransversal_apply'' (q : orbitRel.Quotient (zpowers g) (G ⧸ H)
     ← zpow_one_add, Int.cast_add, Int.cast_neg, Int.cast_one, int_cast_cast, cast_id', id.def, ←
     sub_eq_neg_add, cast_sub_one, add_sub_cancel'_right]
   by_cases hk : k = 0
-  · rw [if_pos hk, if_pos hk, zpow_ofNat]
+  · rw [if_pos hk, if_pos hk, zpow_coe_nat]
   · rw [if_neg hk, if_neg hk]
 #align subgroup.transfer_transversal_apply'' Subgroup.transferTransversal_apply''
 

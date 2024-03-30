@@ -187,11 +187,11 @@ theorem range_coe' : range ofNNReal = Iio ∞ := WithTop.range_coe
 theorem range_coe : range ofNNReal = {∞}ᶜ := (isCompl_range_some_none ℝ≥0).symm.compl_eq.symm
 
 /-- `toNNReal x` returns `x` if it is real, otherwise 0. -/
-protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
+@[pp_dot] protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
 #align ennreal.to_nnreal ENNReal.toNNReal
 
 /-- `toReal x` returns `x` if it is real, `0` otherwise. -/
-protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
+@[pp_dot] protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
 #align ennreal.to_real ENNReal.toReal
 
 /-- `ofReal x` returns `x` if it is nonnegative, `0` otherwise. -/
@@ -384,8 +384,8 @@ alias ⟨_, coe_le_coe_of_le⟩ := coe_le_coe
 attribute [gcongr] ENNReal.coe_le_coe_of_le
 
 -- Needed until `@[gcongr]` accepts iff statements
-alias ⟨_, coe_lt_coe_of_le⟩ := coe_lt_coe
-attribute [gcongr] ENNReal.coe_lt_coe_of_le
+alias ⟨_, coe_lt_coe_of_lt⟩ := coe_lt_coe
+attribute [gcongr] ENNReal.coe_lt_coe_of_lt
 
 theorem coe_mono : Monotone ofNNReal := fun _ _ => coe_le_coe.2
 #align ennreal.coe_mono ENNReal.coe_mono
@@ -455,9 +455,7 @@ theorem toReal_eq_toReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ �
   simp only [ENNReal.toReal, NNReal.coe_inj, toNNReal_eq_toNNReal_iff' hx hy]
 #align ennreal.to_real_eq_to_real_iff' ENNReal.toReal_eq_toReal_iff'
 
-@[simp]
-nonrec theorem one_lt_two : (1 : ℝ≥0∞) < 2 :=
-  coe_one ▸ coe_two ▸ mod_cast (one_lt_two : 1 < 2)
+theorem one_lt_two : (1 : ℝ≥0∞) < 2 := Nat.one_lt_ofNat
 #align ennreal.one_lt_two ENNReal.one_lt_two
 
 @[simp] theorem two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top

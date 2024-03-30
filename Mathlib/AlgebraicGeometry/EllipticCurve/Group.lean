@@ -17,8 +17,8 @@ under the geometric group law defined in `Mathlib.AlgebraicGeometry.EllipticCurv
 
 Let `W` be a Weierstrass curve over a field `F` given by a Weierstrass equation $W(X, Y) = 0$ in
 affine coordinates. As in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine`, the set of nonsingular
-rational points $W(F)$ of `W` consist of the unique point at infinity $0$ and nonsingular affine
-points $(x, y)$. With this description, there is an addition-preserving injection between $W(F)$
+rational points `W⟮F⟯` of `W` consist of the unique point at infinity $0$ and nonsingular affine
+points $(x, y)$. With this description, there is an addition-preserving injection between `W⟮F⟯`
 and the ideal class group of the coordinate ring $F[W] := F[X, Y] / \langle W(X, Y)\rangle$ of `W`.
 This is defined by mapping the point at infinity $0$ to the trivial ideal class and an affine point
 $(x, y)$ to the ideal class of the invertible fractional ideal $\langle X - x, Y - y\rangle$.
@@ -112,7 +112,7 @@ instance instIsDomainCoordinateRing_of_Field {F : Type u} [Field F] (W : Affine 
 noncomputable abbrev mk : R[X][Y] →+* W.CoordinateRing :=
   AdjoinRoot.mk W.polynomial
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The class of the element $X - x$ in $R[W]$ for some $x \in R$. -/
 noncomputable def XClass (x : R) : W.CoordinateRing :=
   mk W <| C <| X - C x
@@ -125,7 +125,7 @@ lemma XClass_ne_zero [Nontrivial R] (x : R) : XClass W x ≠ 0 :=
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.X_class_ne_zero WeierstrassCurve.Affine.CoordinateRing.XClass_ne_zero
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The class of the element $Y - y(X)$ in $R[W]$ for some $y(X) \in R[X]$. -/
 noncomputable def YClass (y : R[X]) : W.CoordinateRing :=
   mk W <| Y - C y
@@ -144,21 +144,21 @@ lemma C_addPolynomial (x y L : R) : mk W (C <| W.addPolynomial x y L) =
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.C_add_polynomial WeierstrassCurve.Affine.CoordinateRing.C_addPolynomial
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The ideal $\langle X - x \rangle$ of $R[W]$ for some $x \in R$. -/
 noncomputable def XIdeal (x : R) : Ideal W.CoordinateRing :=
   span {XClass W x}
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.X_ideal WeierstrassCurve.Affine.CoordinateRing.XIdeal
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The ideal $\langle Y - y(X) \rangle$ of $R[W]$ for some $y(X) \in R[X]$. -/
 noncomputable def YIdeal (y : R[X]) : Ideal W.CoordinateRing :=
   span {YClass W y}
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.Y_ideal WeierstrassCurve.Affine.CoordinateRing.YIdeal
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The ideal $\langle X - x, Y - y(X) \rangle$ of $R[W]$ for some $x \in R$ and $y(X) \in R[X]$. -/
 noncomputable def XYIdeal (x : R) (y : R[X]) : Ideal W.CoordinateRing :=
   span {XClass W x, YClass W y}
@@ -303,7 +303,7 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.equation x₁ y₁
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.XY_ideal_mul_XY_ideal WeierstrassCurve.Affine.CoordinateRing.XYIdeal_mul_XYIdeal
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The non-zero fractional ideal $\langle X - x, Y - y \rangle$ of $F(W)$ for some $x, y \in F$. -/
 noncomputable def XYIdeal' {x y : F} (h : W.nonsingular x y) :
     (FractionalIdeal W.CoordinateRing⁰ W.FunctionField)ˣ :=
@@ -563,7 +563,7 @@ noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) 
         (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ fun h => (hx h).elim).symm
 #align weierstrass_curve.point.to_class WeierstrassCurve.Affine.Point.toClass
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma toClass_zero : toClass (0 : W.Point) = 0 :=
   rfl
 #align weierstrass_curve.point.to_class_zero WeierstrassCurve.Affine.Point.toClass_zero
@@ -573,7 +573,7 @@ lemma toClass_some {x y : F} (h : W.nonsingular x y) :
   rfl
 #align weierstrass_curve.point.to_class_some WeierstrassCurve.Affine.Point.toClass_some
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
   rcases P, Q with ⟨_ | @⟨x₁, y₁, _⟩, _ | @⟨x₂, y₂, _⟩⟩
   any_goals rfl
@@ -591,12 +591,12 @@ lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
     · exact fun ⟨hx, hy⟩ => some_add_some_of_Yeq hx hy
 #align weierstrass_curve.point.add_eq_zero WeierstrassCurve.Affine.Point.add_eq_zero
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma add_left_neg (P : W.Point) : -P + P = 0 := by
   rw [add_eq_zero]
 #align weierstrass_curve.point.add_left_neg WeierstrassCurve.Affine.Point.add_left_neg
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma neg_add_eq_zero (P Q : W.Point) : -P + Q = 0 ↔ P = Q := by
   rw [add_eq_zero, neg_inj]
 #align weierstrass_curve.point.neg_add_eq_zero WeierstrassCurve.Affine.Point.neg_add_eq_zero

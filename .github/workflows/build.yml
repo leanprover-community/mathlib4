@@ -230,10 +230,16 @@ jobs:
             lake build > tmp & tail --pid=$! -n +1 -F tmp | (! (grep -m 1 " Building Mathlib" && kill $! ))
           fi
 
+      - name: find `#`-commands
+        id: hash_commands
+        run: |
+          chmod u+x scripts/lint_hash_commands.sh
+          ./scripts/lint_hash_commands.sh
+
       - name: build archive
         id: archive
         run: |
-          # Note: we should not be including `Archive` and `Countexamples` in the cache.
+          # Note: we should not be including `Archive` and `Counterexamples` in the cache.
           # We do this for now for the sake of not rebuilding them in every CI run
           # even when they are not touched.
           # Since `Archive` and `Counterexamples` files have very simple dependencies,

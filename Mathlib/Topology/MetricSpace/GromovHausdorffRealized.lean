@@ -222,8 +222,8 @@ private theorem dist_mem_candidates :
   exact ⟨fun x y => rfl, fun x y => rfl⟩
 
 /-- The distance on `X ⊕ Y` as a candidate -/
-def candidatesBDist (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Inhabited X]
-    [MetricSpace Y] [CompactSpace Y] [Inhabited Y] : Cb X Y :=
+def candidatesBDist (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X]
+    [MetricSpace Y] [CompactSpace Y] [Nonempty Y] : Cb X Y :=
   candidatesBOfCandidates _ dist_mem_candidates
 #align Gromov_Hausdorff.candidates_b_dist GromovHausdorff.candidatesBDist
 
@@ -442,7 +442,7 @@ def premetricOptimalGHDist : PseudoMetricSpace (X ⊕ Y) where
   dist_self x := candidates_refl (optimalGHDist_mem_candidatesB X Y)
   dist_comm x y := candidates_symm (optimalGHDist_mem_candidatesB X Y)
   dist_triangle x y z := candidates_triangle (optimalGHDist_mem_candidatesB X Y)
-  -- Porting note: Added a proof for `edist_dist`
+  -- Porting note (#10888): added proof for `edist_dist`
   edist_dist x y := by
     simp only
     congr

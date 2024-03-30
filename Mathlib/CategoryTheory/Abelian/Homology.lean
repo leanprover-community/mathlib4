@@ -87,11 +87,11 @@ instance : Epi (homologyCToK f g w) := by
   apply Pseudoelement.epi_of_pseudo_surjective
   intro a
   let b := kernel.ι (cokernel.desc f g w) a
-  obtain ⟨c, hc⟩ : ∃ c, cokernel.π f c = b
-  apply Pseudoelement.pseudo_surjective_of_epi (cokernel.π f)
+  obtain ⟨c, hc⟩ : ∃ c, cokernel.π f c = b := by
+    apply Pseudoelement.pseudo_surjective_of_epi (cokernel.π f)
   have : g c = 0 := by
     rw [show g = cokernel.π f ≫ cokernel.desc f g w by simp, Pseudoelement.comp_apply, hc]
-    simp [← Pseudoelement.comp_apply]
+    simp [b, ← Pseudoelement.comp_apply]
   obtain ⟨d, hd⟩ : ∃ d, kernel.ι g d = c := by
     apply (Pseudoelement.pseudo_exact_of_exact exact_kernel_ι).2 _ this
   use cokernel.π (kernel.lift g f w) d

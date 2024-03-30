@@ -80,7 +80,7 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
   obtain ⟨u, uT, hu⟩ : ∃ u ∈ T, ∀ v ∈ T, u ⊆ v → v = u := by
     refine' zorn_subset _ fun U UT hU => _
     refine' ⟨⋃₀ U, _, fun s hs => subset_sUnion_of_mem hs⟩
-    simp only [Set.sUnion_subset_iff, and_imp, exists_prop, forall_exists_index, mem_sUnion,
+    simp only [T, Set.sUnion_subset_iff, and_imp, exists_prop, forall_exists_index, mem_sUnion,
       Set.mem_setOf_eq]
     refine'
       ⟨fun u hu => (UT hu).1, (pairwiseDisjoint_sUnion hU.directedOn).2 fun u hu => (UT hu).2.1,
@@ -188,7 +188,7 @@ theorem exists_disjoint_subfamily_covering_enlargment_closedBall [MetricSpace α
   · exact A a ⟨ha, h'a⟩
   · rcases ht with ⟨b, rb⟩
     rcases A b ⟨rb.1, rb.2⟩ with ⟨c, cu, _⟩
-    refine' ⟨c, cu, by simp only [closedBall_eq_empty.2 h'a, empty_subset]⟩
+    exact ⟨c, cu, by simp only [closedBall_eq_empty.2 h'a, empty_subset]⟩
 #align vitali.exists_disjoint_subfamily_covering_enlargment_closed_ball Vitali.exists_disjoint_subfamily_covering_enlargment_closedBall
 
 /-- The measurable Vitali covering theorem. Assume one is given a family `t` of closed sets with
@@ -332,7 +332,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
     set k := ⋃ (a : v) (_ : a ∈ w), B a
     have k_closed : IsClosed k := isClosed_biUnion_finset fun i _ => h't _ (ut (vu i.2))
     have z_notmem_k : z ∉ k := by
-      simp only [not_exists, exists_prop, mem_iUnion, mem_sep_iff, forall_exists_index,
+      simp only [k, not_exists, exists_prop, mem_iUnion, mem_sep_iff, forall_exists_index,
         SetCoe.exists, not_and, exists_and_right, Subtype.coe_mk]
       intro b hbv _ h'z
       have : z ∈ (s \ ⋃ a ∈ u, B a) ∩ ⋃ a ∈ u, B a :=
@@ -346,15 +346,15 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
     obtain ⟨d, dpos, hd⟩ : ∃ d, 0 < d ∧ closedBall z d ⊆ ball x (R x) \ k :=
       nhds_basis_closedBall.mem_iff.1 this
     -- choose an element `a` of the family `t` contained in this small ball
-    obtain ⟨a, hat, ad, rfl⟩ : ∃ a ∈ t, r a ≤ min d (R z) ∧ c a = z
-    exact hf z ((mem_diff _).1 (mem_of_mem_inter_left hz)).1 (min d (R z)) (lt_min dpos (hR0 z))
+    obtain ⟨a, hat, ad, rfl⟩ : ∃ a ∈ t, r a ≤ min d (R z) ∧ c a = z :=
+      hf z ((mem_diff _).1 (mem_of_mem_inter_left hz)).1 (min d (R z)) (lt_min dpos (hR0 z))
     have ax : B a ⊆ ball x (R x) := by
       refine' (hB a hat).trans _
       refine' Subset.trans _ (hd.trans (diff_subset (ball x (R x)) k))
       exact closedBall_subset_closedBall (ad.trans (min_le_left _ _))
     -- it intersects an element `b` of `u` with comparable diameter, by definition of `u`
-    obtain ⟨b, bu, ab, bdiam⟩ : ∃ b ∈ u, (B a ∩ B b).Nonempty ∧ r a ≤ 2 * r b
-    exact hu a ⟨hat, ad.trans (min_le_right _ _)⟩
+    obtain ⟨b, bu, ab, bdiam⟩ : ∃ b ∈ u, (B a ∩ B b).Nonempty ∧ r a ≤ 2 * r b :=
+      hu a ⟨hat, ad.trans (min_le_right _ _)⟩
     have bv : b ∈ v := by
       refine' ⟨bu, ab.mono _⟩
       rw [inter_comm]
@@ -379,8 +379,8 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
       have B : dist e (c b) ≤ r b := mem_closedBall.1 (hB b (ut bu) eb)
       simp only [mem_closedBall]
       linarith only [dist_triangle (c a) e (c b), A, B, bdiam]
-    suffices H : closedBall (c b'') (3 * r b'') ⊆ ⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a)
-    exact H zb
+    suffices H : closedBall (c b'') (3 * r b'')
+        ⊆ ⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a) from H zb
     exact subset_iUnion (fun a : { a // a ∉ w } => closedBall (c a) (3 * r a)) b''
   -- now that we have proved our main inclusion, we can use it to estimate the measure of the points
   -- in `ball x (r x)` not covered by `u`.

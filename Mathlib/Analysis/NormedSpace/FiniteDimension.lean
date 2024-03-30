@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.Normed.Group.Lemmas
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.AffineIsometry
-import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Topology.Algebra.Module.FiniteDimension
@@ -217,7 +216,7 @@ theorem LipschitzOnWith.extend_finite_dimension {α : Type*} [PseudoMetricSpace 
       apply A.symm.lipschitz
     apply (LAsymm.comp hg).weaken
     rw [lipschitzExtensionConstant, ← mul_assoc]
-    refine' mul_le_mul' (le_max_left _ _) le_rfl
+    exact mul_le_mul' (le_max_left _ _) le_rfl
   · intro x hx
     have : A (f x) = g x := gs hx
     simp only [(· ∘ ·), ← this, A.symm_apply_apply]
@@ -267,8 +266,8 @@ protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
       Tendsto.norm <| ((continuous_apply i).tendsto _).sub tendsto_const_nhds
   simp only [sub_self, norm_zero, Finset.sum_const_zero] at this
   refine' (this.eventually (gt_mem_nhds <| inv_pos.2 K0)).mono fun g hg => _
-  replace hg : ∑ i, ‖g i - f i‖₊ < K⁻¹
-  · rw [← NNReal.coe_lt_coe]
+  replace hg : ∑ i, ‖g i - f i‖₊ < K⁻¹ := by
+    rw [← NNReal.coe_lt_coe]
     push_cast
     exact hg
   rw [LinearMap.ker_eq_bot]
@@ -386,8 +385,7 @@ instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
       exact ⟨n, le_of_lt hn⟩
     choose n hn using this
     use n
-    replace hn : ∀ i : Fin d, ‖(φ - (v.constrL <| u ∘ n)) (v i)‖ ≤ ε / (2 * C)
-    · simp [hn]
+    replace hn : ∀ i : Fin d, ‖(φ - (v.constrL <| u ∘ n)) (v i)‖ ≤ ε / (2 * C) := by simp [hn]
     have : C * (ε / (2 * C)) = ε / 2 := by
       rw [eq_div_iff (two_ne_zero : (2 : ℝ) ≠ 0), mul_comm, ← mul_assoc,
         mul_div_cancel' _ (ne_of_gt h_2C)]
@@ -400,7 +398,7 @@ instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
   intro x y hxy
   calc
     dist x y ≤ dist x (Φ x) + dist (Φ x) y := dist_triangle _ _ _
-    _ = dist x (Φ x) + dist y (Φ y) := by simp [hxy, dist_comm]
+    _ = dist x (Φ x) + dist y (Φ y) := by simp [Φ, hxy, dist_comm]
     _ ≤ ε := by linarith [hn x, hn y]
 
 theorem AffineSubspace.closed_of_finiteDimensional {P : Type*} [MetricSpace P]
@@ -426,7 +424,7 @@ theorem exists_norm_le_le_norm_sub_of_finset {c : 𝕜} (hc : 1 < ‖c‖) {R : 
       ext x
       simp [h]
     have : FiniteDimensional 𝕜 (⊤ : Submodule 𝕜 E) := by rwa [this]
-    refine' Module.finite_def.2 ((Submodule.fg_top _).1 (Module.finite_def.1 this))
+    exact Module.finite_def.2 ((Submodule.fg_top _).1 (Module.finite_def.1 this))
   obtain ⟨x, xR, hx⟩ : ∃ x : E, ‖x‖ ≤ R ∧ ∀ y : E, y ∈ F → 1 ≤ ‖x - y‖ :=
     riesz_lemma_of_norm_lt hc hR Fclosed this
   have hx' : ∀ y : E, y ∈ F → 1 ≤ ‖y - x‖ := by
@@ -476,7 +474,7 @@ theorem FiniteDimensional.of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
   let g := fun n : ℕ => c • f n
   have A : ∀ n, g n ∈ Metric.closedBall (0 : E) r := by
     intro n
-    simp only [norm_smul, dist_zero_right, Metric.mem_closedBall]
+    simp only [g, norm_smul, dist_zero_right, Metric.mem_closedBall]
     calc
       ‖c‖ * ‖f n‖ ≤ r / R * R := by gcongr; exact hc.2.le; apply fle
       _ = r := by field_simp [(zero_lt_one.trans Rgt).ne']
@@ -490,7 +488,7 @@ theorem FiniteDimensional.of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
   calc
     ‖c‖ ≤ dist (g (φ (N + 1))) (g (φ N)) := by
       conv_lhs => rw [← mul_one ‖c‖]
-      simp only [dist_eq_norm, ← smul_sub, norm_smul]
+      simp only [g, dist_eq_norm, ← smul_sub, norm_smul]
       gcongr
       apply lef (ne_of_gt _)
       exact φmono (Nat.lt_succ_self N)

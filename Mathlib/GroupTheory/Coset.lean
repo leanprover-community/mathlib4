@@ -508,7 +508,7 @@ theorem eq' {a b : α} : (mk a : α ⧸ s) = mk b ↔ a⁻¹ * b ∈ s :=
 #align quotient_group.eq' QuotientGroup.eq'
 #align quotient_add_group.eq' QuotientAddGroup.eq'
 
-@[to_additive] -- porting note: `simp` can prove this.
+@[to_additive] -- Porting note (#10618): `simp` can prove this.
 theorem out_eq' (a : α ⧸ s) : mk a.out' = a :=
   Quotient.out_eq' a
 #align quotient_group.out_eq' QuotientGroup.out_eq'

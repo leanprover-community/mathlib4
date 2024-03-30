@@ -317,7 +317,7 @@ theorem y_zpow_pos {a : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) {n : ℤ}
 theorem x_zpow_pos {a : Solution₁ d} (hax : 0 < a.x) (n : ℤ) : 0 < (a ^ n).x := by
   cases n with
   | ofNat n =>
-    rw [Int.ofNat_eq_coe, zpow_ofNat]
+    rw [Int.ofNat_eq_coe, zpow_coe_nat]
     exact x_pow_pos hax n
   | negSucc n =>
     rw [zpow_negSucc]
@@ -330,7 +330,7 @@ theorem sign_y_zpow_eq_sign_of_x_pos_of_y_pos {a : Solution₁ d} (hax : 0 < a.x
     (n : ℤ) : (a ^ n).y.sign = n.sign := by
   rcases n with ((_ | n) | n)
   · rfl
-  · rw [Int.ofNat_eq_coe, zpow_ofNat]
+  · rw [Int.ofNat_eq_coe, zpow_coe_nat]
     exact Int.sign_eq_one_of_pos (y_pow_succ_pos hax hay n)
   · rw [zpow_negSucc]
     exact Int.sign_eq_neg_one_of_neg (neg_neg_of_pos (y_pow_succ_pos hax hay n))
@@ -555,7 +555,7 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
   rcases le_or_lt 0 n with hn | hn
   · exact H n hn
   · let m : ℤ := -n - 1
-    have hm : n = -m - 1 := by simp only [neg_sub, sub_neg_eq_add, add_tsub_cancel_left]
+    have hm : n = -m - 1 := by simp only [m, neg_sub, sub_neg_eq_add, add_tsub_cancel_left]
     rw [hm, sub_add_cancel, ← neg_add', zpow_neg, zpow_neg, y_inv, y_inv, neg_lt_neg_iff]
     exact H _ (by linarith [hn])
 #align pell.is_fundamental.y_strict_mono Pell.IsFundamental.y_strictMono

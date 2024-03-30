@@ -337,7 +337,7 @@ theorem rotate_eq_iff {l l' : List α} {n : ℕ} :
     l.rotate n = l' ↔ l = l'.rotate (l'.length - n % l'.length) := by
   rw [← @rotate_eq_rotate _ l _ n, rotate_rotate, ← rotate_mod l', add_mod]
   rcases l'.length.zero_le.eq_or_lt with hl | hl
-  · rw [eq_nil_of_length_eq_zero hl.symm, rotate_nil, rotate_eq_nil_iff]
+  · rw [eq_nil_of_length_eq_zero hl.symm, rotate_nil]
   · rcases (Nat.zero_le (n % l'.length)).eq_or_lt with hn | hn
     · simp [← hn]
     · rw [mod_eq_of_lt (tsub_lt_self hl hn), tsub_add_cancel_of_le (α := ℕ), mod_self, rotate_zero]
@@ -373,12 +373,12 @@ theorem rotate_reverse (l : List α) (n : ℕ) :
   rw [← length_reverse l]
   let k := n % l.reverse.length
   cases' hk' : k with k'
-  · simp_all! [length_reverse, ← rotate_rotate]
+  · simp_all! [k, length_reverse, ← rotate_rotate]
   · cases' l with x l
     · simp
     · rw [Nat.mod_eq_of_lt, tsub_add_cancel_of_le (α := ℕ), rotate_length]
       · exact tsub_le_self
-      · exact tsub_lt_self (by simp) (by simp_all!)
+      · exact tsub_lt_self (by simp) (by simp_all! [k])
 #align list.rotate_reverse List.rotate_reverse
 
 theorem map_rotate {β : Type*} (f : α → β) (l : List α) (n : ℕ) :

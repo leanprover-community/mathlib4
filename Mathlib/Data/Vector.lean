@@ -87,7 +87,7 @@ def toList (v : Vector α n) : List α :=
   v.1
 #align vector.to_list Vector.toList
 
--- porting notes: align to `List` API
+-- Porting note: align to `List` API
 /-- nth element of a vector, indexed by a `Fin` type. -/
 def get : ∀ _ : Vector α n, Fin n → α
   | ⟨l, h⟩, i => l.nthLe i.1 (by rw [h]; exact i.2)
@@ -188,7 +188,7 @@ final result.
 def mapAccumr (f : α → σ → σ × β) : Vector α n → σ → σ × Vector β n
   | ⟨x, px⟩, c =>
     let res := List.mapAccumr f x c
-    ⟨res.1, res.2, by simp [*]⟩
+    ⟨res.1, res.2, by simp [*, res]⟩
 #align vector.map_accumr Vector.mapAccumr
 
 /-- Runs a function over a pair of vectors returning the intermediate results and a
@@ -198,7 +198,7 @@ def mapAccumr₂ {α β σ φ : Type} (f : α → β → σ → σ × φ) :
     Vector α n → Vector β n → σ → σ × Vector φ n
   | ⟨x, px⟩, ⟨y, py⟩, c =>
     let res := List.mapAccumr₂ f x y c
-    ⟨res.1, res.2, by simp [*]⟩
+    ⟨res.1, res.2, by simp [*, res]⟩
 #align vector.map_accumr₂ Vector.mapAccumr₂
 
 end Accum
@@ -246,7 +246,7 @@ theorem toList_mk (v : List α) (P : List.length v = n) : toList (Subtype.mk v P
 #align vector.to_list_mk Vector.toList_mk
 
 /-- A nil vector maps to a nil list. -/
-@[simp, nolint simpNF] -- Porting note: simp can prove this in the future
+@[simp, nolint simpNF] -- Porting note (#10618): simp can prove this in the future
 theorem toList_nil : toList nil = @List.nil α :=
   rfl
 #align vector.to_list_nil Vector.toList_nil

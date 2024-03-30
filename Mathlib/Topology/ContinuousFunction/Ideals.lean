@@ -214,7 +214,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   have ht : IsClosed t := isClosed_le continuous_const (map_continuous f).nnnorm
   have htI : Disjoint t (setOfIdeal I)ᶜ := by
     refine' Set.subset_compl_iff_disjoint_left.mp fun x hx => _
-    simpa only [Set.mem_setOf, Set.mem_compl_iff, not_le] using
+    simpa only [t, Set.mem_setOf, Set.mem_compl_iff, not_le] using
       (nnnorm_eq_zero.mpr (mem_idealOfSet.mp hf hx)).trans_lt (half_pos hε)
   /- It suffices to produce `g : C(X, ℝ≥0)` which takes values in `[0,1]` and is constantly `1` on
     `t` such that when composed with the natural embedding of `ℝ≥0` into `𝕜` lies in the ideal `I`.
@@ -376,7 +376,7 @@ theorem setOfIdeal_eq_compl_singleton (I : Ideal C(X, 𝕜)) [hI : I.IsMaximal] 
   have h : (idealOfSet 𝕜 (setOfIdeal I)).IsMaximal :=
     (idealOfSet_ofIdeal_isClosed (inferInstance : IsClosed (I : Set C(X, 𝕜)))).symm ▸ hI
   obtain ⟨x, hx⟩ := Opens.isCoatom_iff.1 ((idealOfSet_isMaximal_iff 𝕜 (opensOfIdeal I)).1 h)
-  refine ⟨x, congr_arg (fun (s : Opens X) => (s : Set X)) hx⟩
+  exact ⟨x, congr_arg (fun (s : Opens X) => (s : Set X)) hx⟩
 #align continuous_map.set_of_ideal_eq_compl_singleton ContinuousMap.setOfIdeal_eq_compl_singleton
 
 theorem ideal_isMaximal_iff (I : Ideal C(X, 𝕜)) [hI : IsClosed (I : Set C(X, 𝕜))] :

@@ -301,7 +301,7 @@ theorem smul_ae_eq_self_of_mem_zpowers {x y : G} (hs : (x • s : Set α) =ᵐ[�
   have he' : QuasiMeasurePreserving e.symm μ μ :=
     (measurePreserving_smul x⁻¹ μ).quasiMeasurePreserving
   have h := he.image_zpow_ae_eq he' k hs
-  simp only [← MonoidHom.map_zpow] at h
+  simp only [e, ← MonoidHom.map_zpow] at h
   simpa only [MulAction.toPermHom_apply, MulAction.toPerm_apply, image_smul] using h
 #align measure_theory.smul_ae_eq_self_of_mem_zpowers MeasureTheory.smul_ae_eq_self_of_mem_zpowers
 

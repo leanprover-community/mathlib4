@@ -261,7 +261,6 @@ theorem divInt_one (n : ℤ) : n /. 1 = n :=
   show divInt _ _ = _ by
     rw [divInt]
     simp [mkRat, normalize]
-    rfl
 
 theorem mkRat_one {n : ℤ} : mkRat n 1 = n := by
   simp [Rat.mkRat_eq, Rat.divInt_one]

@@ -83,10 +83,10 @@ because it holds over any field, whereas `spectrum.map_polynomial_aeval_of_degre
 theorem subset_polynomial_aeval (a : A) (p : 𝕜[X]) : (eval · p) '' σ a ⊆ σ (aeval a p) := by
   rintro _ ⟨k, hk, rfl⟩
   let q := C (eval k p) - p
-  have hroot : IsRoot q k := by simp only [eval_C, eval_sub, sub_self, IsRoot.def]
+  have hroot : IsRoot q k := by simp only [q, eval_C, eval_sub, sub_self, IsRoot.def]
   rw [← mul_div_eq_iff_isRoot, ← neg_mul_neg, neg_sub] at hroot
   have aeval_q_eq : ↑ₐ (eval k p) - aeval a p = aeval a q := by
-    simp only [aeval_C, AlgHom.map_sub, sub_left_inj]
+    simp only [q, aeval_C, AlgHom.map_sub, sub_left_inj]
   rw [mem_iff, aeval_q_eq, ← hroot, aeval_mul]
   have hcomm := (Commute.all (C k - X) (-(q / (X - C k)))).map (aeval a : 𝕜[X] →ₐ[𝕜] A)
   apply mt fun h => (hcomm.isUnit_mul_iff.mp h).1

@@ -63,12 +63,12 @@ attribute [instance] ConcreteCategory.instFunLike in
 instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe f := f
 
--- Porting note: simp can prove this; removed simp
+-- Porting note (#10618): simp can prove this; removed simp
 theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶ X) x = x := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.id_app TopCat.id_app
 
--- Porting note: simp can prove this; removed simp
+-- Porting note (#10618): simp can prove this; removed simp
 theorem comp_app {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g : X → Z) x = g (f x) := rfl
 set_option linter.uppercaseLean3 false in

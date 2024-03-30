@@ -218,6 +218,12 @@ theorem _root_.isSelfAdjoint_natCast (n : ℕ) : IsSelfAdjoint (n : R) :=
   star_natCast _
 #align is_self_adjoint_nat_cast isSelfAdjoint_natCast
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem _root_.isSelfAdjoint_ofNat (n : ℕ) [n.AtLeastTwo] :
+    IsSelfAdjoint (no_index (OfNat.ofNat n : R)) :=
+  _root_.isSelfAdjoint_natCast n
+
 end Semiring
 
 section CommSemigroup
@@ -538,7 +544,7 @@ section SMul
 
 variable [Star R] [TrivialStar R] [AddCommGroup A] [StarAddMonoid A]
 
-@[aesop safe apply (rule_sets [SetLike])]
+@[aesop safe apply (rule_sets := [SetLike])]
 theorem smul_mem [Monoid R] [DistribMulAction R A] [StarModule R A] (r : R) {x : A}
     (h : x ∈ skewAdjoint A) : r • x ∈ skewAdjoint A := by
   rw [mem_iff, star_smul, star_trivial, mem_iff.mp h, smul_neg r]
@@ -595,6 +601,11 @@ protected instance IsStarNormal.star [Mul R] [StarMul R] {x : R} [IsStarNormal x
 protected instance IsStarNormal.neg [Ring R] [StarAddMonoid R] {x : R} [IsStarNormal x] :
     IsStarNormal (-x) :=
   ⟨show star (-x) * -x = -x * star (-x) by simp_rw [star_neg, neg_mul_neg, star_comm_self']⟩
+
+protected instance IsStarNormal.map {F R S : Type*} [Mul R] [Star R] [Mul S] [Star S]
+    [FunLike F R S] [MulHomClass F R S] [StarHomClass F R S] (f : F) (r : R) [hr : IsStarNormal r] :
+    IsStarNormal (f r) where
+  star_comm_self := by simpa [map_star] using congr(f $(hr.star_comm_self))
 
 -- see Note [lower instance priority]
 instance (priority := 100) TrivialStar.isStarNormal [Mul R] [StarMul R] [TrivialStar R]

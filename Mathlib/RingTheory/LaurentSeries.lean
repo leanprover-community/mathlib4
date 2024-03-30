@@ -170,17 +170,17 @@ open LaurentSeries
 
 variable {R' : Type*} [Semiring R] [Ring R'] (f g : PowerSeries R) (f' g' : PowerSeries R')
 
-@[norm_cast] -- Porting note: simp can prove this
+@[norm_cast] -- Porting note (#10618): simp can prove this
 theorem coe_zero : ((0 : PowerSeries R) : LaurentSeries R) = 0 :=
   (ofPowerSeries ℤ R).map_zero
 #align power_series.coe_zero PowerSeries.coe_zero
 
-@[norm_cast] -- Porting note: simp can prove this
+@[norm_cast] -- Porting note (#10618): simp can prove this
 theorem coe_one : ((1 : PowerSeries R) : LaurentSeries R) = 1 :=
   (ofPowerSeries ℤ R).map_one
 #align power_series.coe_one PowerSeries.coe_one
 
-@[norm_cast] -- Porting note: simp can prove this
+@[norm_cast] -- Porting note (#10618): simp can prove this
 theorem coe_add : ((f + g : PowerSeries R) : LaurentSeries R) = f + g :=
   (ofPowerSeries ℤ R).map_add _ _
 #align power_series.coe_add PowerSeries.coe_add
@@ -195,7 +195,7 @@ theorem coe_neg : ((-f' : PowerSeries R') : LaurentSeries R') = -f' :=
   (ofPowerSeries ℤ R').map_neg _
 #align power_series.coe_neg PowerSeries.coe_neg
 
-@[norm_cast] -- Porting note: simp can prove this
+@[norm_cast] -- Porting note (#10618): simp can prove this
 theorem coe_mul : ((f * g : PowerSeries R) : LaurentSeries R) = f * g :=
   (ofPowerSeries ℤ R).map_mul _ _
 #align power_series.coe_mul PowerSeries.coe_mul
@@ -212,13 +212,14 @@ theorem coeff_coe (i : ℤ) :
       not_false_iff]
 #align power_series.coeff_coe PowerSeries.coeff_coe
 
--- Porting note: simp can prove this, and removed norm_cast attribute
+-- Porting note (#10618): simp can prove this
+-- Porting note: removed norm_cast attribute
 theorem coe_C (r : R) : ((C R r : PowerSeries R) : LaurentSeries R) = HahnSeries.C r :=
   ofPowerSeries_C _
 set_option linter.uppercaseLean3 false in
 #align power_series.coe_C PowerSeries.coe_C
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem coe_X : ((X : PowerSeries R) : LaurentSeries R) = single 1 1 :=
   ofPowerSeries_X
 set_option linter.uppercaseLean3 false in

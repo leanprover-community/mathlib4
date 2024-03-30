@@ -48,6 +48,10 @@ There is some discrepancy in the literature about naming; some say 'cofinal' ins
 The explanation for this is that the 'co' prefix here is *not* the usual category-theoretic one
 indicating duality, but rather indicating the sense of "along with".
 
+## See also
+In `CategoryTheory.Filtered.Final` we give additional equivalent conditions in the case that
+`C` is filtered.
+
 ## Future work
 Dualise condition 3 above and the implications 2 ⇒ 3 and 3 ⇒ 1 to initial functors.
 
@@ -122,32 +126,30 @@ theorem initial_of_final_op (F : C ⥤ D) [Final F.op] : Initial F :=
 
 /-- If a functor `R : D ⥤ C` is a right adjoint, it is final. -/
 theorem final_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Final R :=
-  {
-    out := fun c =>
+  { out := fun c =>
       let u : StructuredArrow c R := StructuredArrow.mk (adj.unit.app c)
       @zigzag_isConnected _ _ ⟨u⟩ fun f g =>
         Relation.ReflTransGen.trans
           (Relation.ReflTransGen.single
             (show Zag f u from
-              Or.inr ⟨StructuredArrow.homMk ((adj.homEquiv c f.right).symm f.hom) (by simp)⟩))
+              Or.inr ⟨StructuredArrow.homMk ((adj.homEquiv c f.right).symm f.hom) (by simp [u])⟩))
           (Relation.ReflTransGen.single
             (show Zag u g from
-              Or.inl ⟨StructuredArrow.homMk ((adj.homEquiv c g.right).symm g.hom) (by simp)⟩)) }
+              Or.inl ⟨StructuredArrow.homMk ((adj.homEquiv c g.right).symm g.hom) (by simp [u])⟩)) }
 #align category_theory.functor.final_of_adjunction CategoryTheory.Functor.final_of_adjunction
 
 /-- If a functor `L : C ⥤ D` is a left adjoint, it is initial. -/
 theorem initial_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Initial L :=
-  {
-    out := fun d =>
+  { out := fun d =>
       let u : CostructuredArrow L d := CostructuredArrow.mk (adj.counit.app d)
       @zigzag_isConnected _ _ ⟨u⟩ fun f g =>
         Relation.ReflTransGen.trans
           (Relation.ReflTransGen.single
             (show Zag f u from
-              Or.inl ⟨CostructuredArrow.homMk (adj.homEquiv f.left d f.hom) (by simp)⟩))
+              Or.inl ⟨CostructuredArrow.homMk (adj.homEquiv f.left d f.hom) (by simp [u])⟩))
           (Relation.ReflTransGen.single
             (show Zag u g from
-              Or.inr ⟨CostructuredArrow.homMk (adj.homEquiv g.left d g.hom) (by simp)⟩)) }
+              Or.inr ⟨CostructuredArrow.homMk (adj.homEquiv g.left d g.hom) (by simp [u])⟩)) }
 #align category_theory.functor.initial_of_adjunction CategoryTheory.Functor.initial_of_adjunction
 
 instance (priority := 100) final_of_isRightAdjoint (F : C ⥤ D) [h : IsRightAdjoint F] : Final F :=
@@ -445,12 +447,6 @@ theorem cofinal_of_isTerminal_colimit_comp_yoneda
   let b := IsTerminal.isTerminalObj ((evaluation _ _).obj (Opposite.op d)) _ h
   exact b.ofIso <| preservesColimitIso ((evaluation _ _).obj (Opposite.op d)) (F ⋙ yoneda)
 
-end LocallySmall
-
-section SmallCategory
-
-variable {C : Type v} [Category.{v} C] {D : Type v} [Category.{v} D] (F : C ⥤ D)
-
 /-- If the universal morphism `colimit (F ⋙ coyoneda.obj (op d)) ⟶ colimit (coyoneda.obj (op d))`
 is an isomorphism (as it always is when `F` is cofinal),
 then `colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit`
@@ -460,6 +456,12 @@ def Final.colimitCompCoyonedaIso (d : D) [IsIso (colimit.pre (coyoneda.obj (op d
     colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit :=
   asIso (colimit.pre (coyoneda.obj (op d)) F) ≪≫ Coyoneda.colimitCoyonedaIso (op d)
 #align category_theory.functor.final.colimit_comp_coyoneda_iso CategoryTheory.Functor.Final.colimitCompCoyonedaIso
+
+end LocallySmall
+
+section SmallCategory
+
+variable {C : Type v} [Category.{v} C] {D : Type v} [Category.{v} D] (F : C ⥤ D)
 
 theorem final_iff_isIso_colimit_pre : Final F ↔ ∀ G : D ⥤ Type v, IsIso (colimit.pre G F) :=
   ⟨fun _ => inferInstance,

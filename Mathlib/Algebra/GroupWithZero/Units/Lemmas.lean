@@ -63,6 +63,22 @@ theorem mul_eq_one_iff_inv_eq₀ (ha : a ≠ 0) : a * b = 1 ↔ a⁻¹ = b :=
   IsUnit.mul_eq_one_iff_inv_eq ha.isUnit
 #align mul_eq_one_iff_inv_eq₀ mul_eq_one_iff_inv_eq₀
 
+/-- A variant of `eq_mul_inv_iff_mul_eq₀` that moves the nonzero hypothesis to another variable. -/
+lemma mul_eq_of_eq_mul_inv₀ (ha : a ≠ 0) (h : a = c * b⁻¹) : a * b = c := by
+  rwa [← eq_mul_inv_iff_mul_eq₀]; rintro rfl; simp [ha] at h
+
+/-- A variant of `eq_inv_mul_iff_mul_eq₀` that moves the nonzero hypothesis to another variable. -/
+lemma mul_eq_of_eq_inv_mul₀ (hb : b ≠ 0) (h : b = a⁻¹ * c) : a * b = c := by
+  rwa [← eq_inv_mul_iff_mul_eq₀]; rintro rfl; simp [hb] at h
+
+/-- A variant of `inv_mul_eq_iff_eq_mul₀` that moves the nonzero hypothesis to another variable. -/
+lemma eq_mul_of_inv_mul_eq₀ (hc : c ≠ 0) (h : b⁻¹ * a = c) : a = b * c := by
+  rwa [← inv_mul_eq_iff_eq_mul₀]; rintro rfl; simp [hc.symm] at h
+
+/-- A variant of `mul_inv_eq_iff_eq_mul₀` that moves the nonzero hypothesis to another variable. -/
+lemma eq_mul_of_mul_inv_eq₀ (hb : b ≠ 0) (h : a * c⁻¹ = b) : a = b * c := by
+  rwa [← mul_inv_eq_iff_eq_mul₀]; rintro rfl; simp [hb.symm] at h
+
 @[simp]
 theorem div_mul_cancel (a : G₀) (h : b ≠ 0) : a / b * b = a :=
   IsUnit.div_mul_cancel h.isUnit _

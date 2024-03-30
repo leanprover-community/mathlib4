@@ -52,7 +52,7 @@ theorem types_hom {α β : Type u} : (α ⟶ β) = (α → β) :=
   rfl
 #align category_theory.types_hom CategoryTheory.types_hom
 
--- porting note: this lemma was not here in Lean 3. Lean 3 `ext` would solve this goal
+-- porting note (#10688): this lemma was not here in Lean 3. Lean 3 `ext` would solve this goal
 -- because of its "if all else fails, apply all `ext` lemmas" policy,
 -- which apparently we want to move away from.
 @[ext] theorem types_ext {α β : Type u} (f g : α ⟶ β) (h : ∀ a : α, f a = g a) : f = g := by
@@ -124,7 +124,7 @@ def sections (F : J ⥤ Type w) : Set (∀ j, F.obj j) :=
   { u | ∀ {j j'} (f : j ⟶ j'), F.map f (u j) = u j' }
 #align category_theory.functor.sections CategoryTheory.Functor.sections
 
--- porting note: added this simp lemma
+-- Porting note (#10756): added this simp lemma
 @[simp]
 lemma sections_property {F : J ⥤ Type w} (s : (F.sections : Type _))
     {j j' : J} (f : j ⟶ j') : F.map f (s.val j) = s.val j' :=

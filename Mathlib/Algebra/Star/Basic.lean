@@ -9,9 +9,10 @@ import Mathlib.Algebra.Ring.Aut
 import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Invertible.Defs
-import Mathlib.GroupTheory.GroupAction.Opposite
+import Mathlib.Data.NNRat.Defs
 import Mathlib.Data.Rat.Cast.Defs
 import Mathlib.Data.SetLike.Basic
+import Mathlib.GroupTheory.GroupAction.Opposite
 
 #align_import algebra.star.basic from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -39,6 +40,7 @@ assert_not_exists Subgroup
 universe u v w
 
 open MulOpposite
+open scoped NNRat
 
 /-- Notation typeclass (with no default notation!) for an algebraic structure with a star operation.
 -/
@@ -65,7 +67,7 @@ class StarMemClass (S R : Type*) [Star R] [SetLike S R] : Prop where
 
 export StarMemClass (star_mem)
 
-attribute [aesop safe apply (rule_sets [SetLike])] star_mem
+attribute [aesop safe apply (rule_sets := [SetLike])] star_mem
 
 namespace StarMemClass
 
@@ -473,9 +475,13 @@ def starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
 #align star_ring_of_comm starRingOfComm
 
 instance Nat.instStarRing : StarRing ℕ := starRingOfComm
+instance Int.instStarRing : StarRing ℤ := starRingOfComm
 instance Rat.instStarRing : StarRing ℚ := starRingOfComm
+instance NNRat.instStarRing : StarRing ℚ≥0 := starRingOfComm
 instance Nat.instTrivialStar : TrivialStar ℕ := ⟨fun _ ↦ rfl⟩
+instance Int.instTrivialStar : TrivialStar ℤ := ⟨fun _ ↦ rfl⟩
 instance Rat.instTrivialStar : TrivialStar ℚ := ⟨fun _ ↦ rfl⟩
+instance NNRat.instTrivialStar : TrivialStar ℚ≥0 := ⟨fun _ ↦ rfl⟩
 
 /-- A star module `A` over a star ring `R` is a module which is a star add monoid,
 and the two star structures are compatible in the sense
@@ -559,7 +565,7 @@ instance {A : Type*} [Star A] [SMul R A] [StarModule R A] : StarModule Rˣ A :=
 
 end Units
 
-theorem IsUnit.star [Monoid R] [StarMul R] {a : R} : IsUnit a → IsUnit (star a)
+protected theorem IsUnit.star [Monoid R] [StarMul R] {a : R} : IsUnit a → IsUnit (star a)
   | ⟨u, hu⟩ => ⟨Star.star u, hu ▸ rfl⟩
 #align is_unit.star IsUnit.star
 
@@ -576,7 +582,7 @@ theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
   rw [Ring.inverse_non_unit _ ha, Ring.inverse_non_unit _ (mt isUnit_star.mp ha), star_zero]
 #align ring.inverse_star Ring.inverse_star
 
-instance Invertible.star {R : Type*} [MulOneClass R] [StarMul R] (r : R) [Invertible r] :
+protected instance Invertible.star {R : Type*} [MulOneClass R] [StarMul R] (r : R) [Invertible r] :
     Invertible (star r) where
   invOf := Star.star (⅟ r)
   invOf_mul_self := by rw [← star_mul, mul_invOf_self, star_one]

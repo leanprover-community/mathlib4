@@ -179,7 +179,7 @@ theorem Prime.five_le_of_ne_two_of_ne_three {p : ℕ} (hp : p.Prime) (h_two : p 
     (h_three : p ≠ 3) : 5 ≤ p := by
   by_contra! h
   revert h_two h_three hp
-  -- Porting note: was `decide!`
+  -- Porting note (#11043): was `decide!`
   match p with
   | 0 => decide
   | 1 => decide
@@ -293,7 +293,7 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     · exact ⟨k2, dk, a⟩
     · refine'
         have := minFac_lemma n k h
-        minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [e, left_distrib]) fun m m2 d => _
+        minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [k, e, left_distrib]) fun m m2 d => _
       rcases Nat.eq_or_lt_of_le (a m m2 d) with me | ml
       · subst me
         contradiction

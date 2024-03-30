@@ -401,13 +401,13 @@ theorem toIdeal_iInf {κ : Sort*} (s : κ → HomogeneousIdeal 𝒜) :
   rw [iInf, toIdeal_sInf, iInf_range]
 #align homogeneous_ideal.to_ideal_infi HomogeneousIdeal.toIdeal_iInf
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem toIdeal_iSup₂ {κ : Sort*} {κ' : κ → Sort*} (s : ∀ i, κ' i → HomogeneousIdeal 𝒜) :
     (⨆ (i) (j), s i j).toIdeal = ⨆ (i) (j), (s i j).toIdeal := by
   simp_rw [toIdeal_iSup]
 #align homogeneous_ideal.to_ideal_supr₂ HomogeneousIdeal.toIdeal_iSup₂
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem toIdeal_iInf₂ {κ : Sort*} {κ' : κ → Sort*} (s : ∀ i, κ' i → HomogeneousIdeal 𝒜) :
     (⨅ (i) (j), s i j).toIdeal = ⨅ (i) (j), (s i j).toIdeal := by
   simp_rw [toIdeal_iInf]
@@ -559,7 +559,7 @@ theorem Ideal.le_toIdeal_homogeneousHull : I ≤ (Ideal.homogeneousHull 𝒜 I).
 theorem Ideal.homogeneousHull_mono : Monotone (Ideal.homogeneousHull 𝒜) := fun I J I_le_J => by
   apply Ideal.span_mono
   rintro r ⟨hr1, ⟨x, hx⟩, rfl⟩
-  refine' ⟨hr1, ⟨⟨x, I_le_J hx⟩, rfl⟩⟩
+  exact ⟨hr1, ⟨⟨x, I_le_J hx⟩, rfl⟩⟩
 #align ideal.homogeneous_hull_mono Ideal.homogeneousHull_mono
 
 variable {I 𝒜}

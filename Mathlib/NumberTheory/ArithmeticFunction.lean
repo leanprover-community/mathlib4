@@ -9,6 +9,7 @@ import Mathlib.NumberTheory.Divisors
 import Mathlib.Data.Nat.Squarefree
 import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Tactic.ArithMult
 
 #align_import number_theory.arithmetic_function from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -609,7 +610,7 @@ section MonoidWithZero
 
 variable [MonoidWithZero R]
 
-@[simp]
+@[simp, arith_mult]
 theorem map_one {f : ArithmeticFunction R} (h : f.IsMultiplicative) : f 1 = 1 :=
   h.1
 #align nat.arithmetic_function.is_multiplicative.map_one ArithmeticFunction.IsMultiplicative.map_one
@@ -645,18 +646,21 @@ theorem map_prod_of_subset_primeFactors [CommSemiring R] {f : ArithmeticFunction
     f (∏ a in t, a) = ∏ a : ℕ in t, f a :=
   map_prod_of_prime h_mult t fun _ a => prime_of_mem_primeFactors (ht a)
 
+@[arith_mult]
 theorem nat_cast {f : ArithmeticFunction ℕ} [Semiring R] (h : f.IsMultiplicative) :
     IsMultiplicative (f : ArithmeticFunction R) :=
                                  -- porting note: was `by simp [cop, h]`
   ⟨by simp [h], fun {m n} cop => by simp [h.2 cop]⟩
 #align nat.arithmetic_function.is_multiplicative.nat_cast ArithmeticFunction.IsMultiplicative.nat_cast
 
+@[arith_mult]
 theorem int_cast {f : ArithmeticFunction ℤ} [Ring R] (h : f.IsMultiplicative) :
     IsMultiplicative (f : ArithmeticFunction R) :=
                                  -- porting note: was `by simp [cop, h]`
   ⟨by simp [h], fun {m n} cop => by simp [h.2 cop]⟩
 #align nat.arithmetic_function.is_multiplicative.int_cast ArithmeticFunction.IsMultiplicative.int_cast
 
+@[arith_mult]
 theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)
     (hg : g.IsMultiplicative) : IsMultiplicative (f * g) := by
   refine ⟨by simp [hf.1, hg.1], ?_⟩
@@ -718,6 +722,7 @@ theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicati
     ring
 #align nat.arithmetic_function.is_multiplicative.mul ArithmeticFunction.IsMultiplicative.mul
 
+@[arith_mult]
 theorem pmul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)
     (hg : g.IsMultiplicative) : IsMultiplicative (f.pmul g) :=
   ⟨by simp [hf, hg], fun {m n} cop => by
@@ -725,6 +730,7 @@ theorem pmul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicat
     ring⟩
 #align nat.arithmetic_function.is_multiplicative.pmul ArithmeticFunction.IsMultiplicative.pmul
 
+@[arith_mult]
 theorem pdiv [CommGroupWithZero R] {f g : ArithmeticFunction R} (hf : IsMultiplicative f)
     (hg : IsMultiplicative g) : IsMultiplicative (pdiv f g) :=
   ⟨ by simp [hf, hg], fun {m n} cop => by
@@ -769,6 +775,7 @@ theorem eq_iff_eq_on_prime_powers [CommMonoidWithZero R] (f : ArithmeticFunction
   exact Finset.prod_congr rfl fun p hp ↦ h p _ (Nat.prime_of_mem_primeFactors hp)
 #align nat.arithmetic_function.is_multiplicative.eq_iff_eq_on_prime_powers ArithmeticFunction.IsMultiplicative.eq_iff_eq_on_prime_powers
 
+@[arith_mult]
 theorem prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) :
     IsMultiplicative (prodPrimeFactors f) := by
   rw [iff_ne_zero]
@@ -802,8 +809,8 @@ theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R
   · simp only [hy, f.map_zero, mul_zero, Nat.lcm_zero_right, Nat.gcd_zero_right, zero_mul]
   have hgcd_ne_zero : x.gcd y ≠ 0 := gcd_ne_zero_left hx
   have hlcm_ne_zero : x.lcm y ≠ 0 := lcm_ne_zero hx hy
-  have hfi_zero : ∀ {i}, f (i ^ 0) = 1
-  · intro i; rw [Nat.pow_zero, hf.1]
+  have hfi_zero : ∀ {i}, f (i ^ 0) = 1 := by
+    intro i; rw [Nat.pow_zero, hf.1]
   iterate 4 rw [hf.multiplicative_factorization f (by assumption),
     Finsupp.prod_of_support_subset _ _ _ (fun _ _ => hfi_zero)
       (s := (x.primeFactors ⊔ y.primeFactors))]
@@ -888,6 +895,7 @@ theorem zeta_mul_pow_eq_sigma {k : ℕ} : ζ * pow k = σ k := by
   simp [hx]
 #align nat.arithmetic_function.zeta_mul_pow_eq_sigma ArithmeticFunction.zeta_mul_pow_eq_sigma
 
+@[arith_mult]
 theorem isMultiplicative_one [MonoidWithZero R] : IsMultiplicative (1 : ArithmeticFunction R) :=
   IsMultiplicative.iff_ne_zero.2
     ⟨by simp, by
@@ -899,14 +907,17 @@ theorem isMultiplicative_one [MonoidWithZero R] : IsMultiplicative (1 : Arithmet
       exact Or.inl hm'⟩
 #align nat.arithmetic_function.is_multiplicative_one ArithmeticFunction.isMultiplicative_one
 
+@[arith_mult]
 theorem isMultiplicative_zeta : IsMultiplicative ζ :=
   IsMultiplicative.iff_ne_zero.2 ⟨by simp, by simp (config := { contextual := true })⟩
 #align nat.arithmetic_function.is_multiplicative_zeta ArithmeticFunction.isMultiplicative_zeta
 
+@[arith_mult]
 theorem isMultiplicative_id : IsMultiplicative ArithmeticFunction.id :=
   ⟨rfl, fun {_ _} _ => rfl⟩
 #align nat.arithmetic_function.is_multiplicative_id ArithmeticFunction.isMultiplicative_id
 
+@[arith_mult]
 theorem IsMultiplicative.ppow [CommSemiring R] {f : ArithmeticFunction R} (hf : f.IsMultiplicative)
     {k : ℕ} : IsMultiplicative (f.ppow k) := by
   induction' k with k hi
@@ -915,10 +926,12 @@ theorem IsMultiplicative.ppow [CommSemiring R] {f : ArithmeticFunction R} (hf : 
     apply hf.pmul hi
 #align nat.arithmetic_function.is_multiplicative.ppow ArithmeticFunction.IsMultiplicative.ppow
 
+@[arith_mult]
 theorem isMultiplicative_pow {k : ℕ} : IsMultiplicative (pow k) :=
   isMultiplicative_id.ppow
 #align nat.arithmetic_function.is_multiplicative_pow ArithmeticFunction.isMultiplicative_pow
 
+@[arith_mult]
 theorem isMultiplicative_sigma {k : ℕ} : IsMultiplicative (σ k) := by
   rw [← zeta_mul_pow_eq_sigma]
   apply isMultiplicative_zeta.mul isMultiplicative_pow
@@ -1085,6 +1098,7 @@ theorem moebius_apply_isPrimePow_not_prime {n : ℕ} (hn : IsPrimePow n) (hn' : 
   exact hn' (by simpa)
 #align nat.arithmetic_function.moebius_apply_is_prime_pow_not_prime ArithmeticFunction.moebius_apply_isPrimePow_not_prime
 
+@[arith_mult]
 theorem isMultiplicative_moebius : IsMultiplicative μ := by
   rw [IsMultiplicative.iff_ne_zero]
   refine' ⟨by simp, fun {n m} hn hm hnm => _⟩
@@ -1193,7 +1207,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
     | succ n =>
       rw [coe_zeta_smul_apply]
       simp only [n.succ_ne_zero, forall_prop_of_true, succ_pos', if_false, ZeroHom.coe_mk]
-      simp only [coe_mk, succ_ne_zero, ite_false]
+      simp only [f', g', coe_mk, succ_ne_zero, ite_false]
       rw [sum_congr rfl fun x hx => ?_]
       rw [if_neg (Nat.pos_of_mem_divisors hx).ne']
   trans μ • g' = f'
@@ -1209,7 +1223,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
       simp only [n.succ_ne_zero, forall_prop_of_true, succ_pos', smul_apply, if_false,
         ZeroHom.coe_mk]
       -- porting note: added following `simp only`
-      simp only [Nat.isUnit_iff, coe_mk, ZeroHom.toFun_eq_coe, succ_ne_zero, ite_false]
+      simp only [f', g', Nat.isUnit_iff, coe_mk, ZeroHom.toFun_eq_coe, succ_ne_zero, ite_false]
       rw [sum_congr rfl fun x hx => ?_]
       rw [if_neg (Nat.pos_of_mem_divisors (snd_mem_divisors_of_mem_antidiagonal hx)).ne']
 #align nat.arithmetic_function.sum_eq_iff_sum_smul_moebius_eq ArithmeticFunction.sum_eq_iff_sum_smul_moebius_eq

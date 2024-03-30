@@ -59,7 +59,7 @@ instance : CoeSort GroupCat (Type*) where
 @[to_additive]
 instance (X : GroupCat) : Group X := X.str
 
--- porting note: this instance was not necessary in mathlib
+-- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : GroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
@@ -68,18 +68,18 @@ instance {X Y : GroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
 instance instFunLike (X Y : GroupCat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (X →* Y) X Y from inferInstance
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_id {X : GroupCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : GroupCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 @[to_additive]
 lemma comp_def {X Y Z : GroupCat} {f : X ⟶ Y} {g : Y ⟶ Z} : f ≫ g = g.comp f := rfl
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[simp] lemma forget_map (f : X ⟶ Y) : (forget GroupCat).map f = (f : X → Y) := rfl
 
 @[to_additive (attr := ext)]
@@ -121,7 +121,7 @@ set_option linter.uppercaseLean3 false in
 @[to_additive]
 instance : Coe GroupCat.{u} MonCat.{u} where coe := (forget₂ GroupCat MonCat).obj
 
--- porting note: this instance was not necessary in mathlib
+-- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
 instance (G H : GroupCat) : One (G ⟶ H) := (inferInstance : One (MonoidHom G H))
 
@@ -208,7 +208,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.add_comm_group_instance AddCommGroupCat.addCommGroupInstance
 
--- porting note: this instance was not necessary in mathlib
+-- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : CommGroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
@@ -217,18 +217,18 @@ instance {X Y : CommGroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
 instance instFunLike (X Y : CommGroupCat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (X →* Y) X Y from inferInstance
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_id {X : CommGroupCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : CommGroupCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 @[to_additive]
 lemma comp_def {X Y Z : CommGroupCat} {f : X ⟶ Y} {g : Y ⟶ Z} : f ≫ g = g.comp f := rfl
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma forget_map {X Y : CommGroupCat} (f : X ⟶ Y) :
     (forget CommGroupCat).map f = (f : X → Y) :=
@@ -295,7 +295,7 @@ set_option linter.uppercaseLean3 false in
 @[to_additive]
 instance : Coe CommGroupCat.{u} CommMonCat.{u} where coe := (forget₂ CommGroupCat CommMonCat).obj
 
--- porting note: this instance was not necessary in mathlib
+-- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
 instance (G H : CommGroupCat) : One (G ⟶ H) := (inferInstance : One (MonoidHom G H))
 

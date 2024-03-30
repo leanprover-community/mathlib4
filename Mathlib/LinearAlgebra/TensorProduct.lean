@@ -945,6 +945,19 @@ def homTensorHomMap : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) →ₗ[R] M ⊗[R] 
 
 variable {R M N P Q}
 
+/--
+This is a binary version of `TensorProduct.map`: Given a bilinear map `f : M ⟶ P ⟶ Q` and a
+bilinear map `g : N ⟶ S ⟶ T`, if we think `f` and `g` as linear maps with two inputs, then
+`map₂ f g` is a bilinear map taking two inputs `M ⊗ N → P ⊗ S → Q ⊗ S` defined by
+`map₂ f g (m ⊗ n) (p ⊗ s) = f m p ⊗ g n s`.
+
+Mathematically, `TensorProduct.map₂` is defined as the composition
+`M ⊗ N -map→ Hom(P, Q) ⊗ Hom(S, T) -homTensorHomMap→ Hom(P ⊗ S, Q ⊗ T)`.
+-/
+def map₂ (f : M →ₗ[R] P →ₗ[R] Q) (g : N →ₗ[R] S →ₗ[R] T) :
+    M ⊗[R] N →ₗ[R] P ⊗[R] S →ₗ[R] Q ⊗[R] T :=
+  homTensorHomMap R _ _ _ _ ∘ₗ map f g
+
 @[simp]
 theorem mapBilinear_apply (f : M →ₗ[R] P) (g : N →ₗ[R] Q) : mapBilinear R M N P Q f g = map f g :=
   rfl
@@ -967,6 +980,10 @@ theorem homTensorHomMap_apply (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     homTensorHomMap R M N P Q (f ⊗ₜ g) = map f g :=
   rfl
 #align tensor_product.hom_tensor_hom_map_apply TensorProduct.homTensorHomMap_apply
+
+@[simp]
+theorem map₂_apply_tmul (f : M →ₗ[R] P →ₗ[R] Q) (g : N →ₗ[R] S →ₗ[R] T) (m : M) (n : N) :
+    map₂ f g (m ⊗ₜ n) = map (f m) (g n) := rfl
 
 @[simp]
 theorem map_zero_left (g : N →ₗ[R] Q) : map (0 : M →ₗ[R] P) g = 0 :=
@@ -1337,8 +1354,8 @@ protected theorem add_left_neg (x : M ⊗[R] N) : -x + x = 0 :=
     (by rw [add_zero]; apply (Neg.aux R).map_zero)
     (fun x y => by convert (add_tmul (R := R) (-x) x y).symm; rw [add_left_neg, zero_tmul])
     fun x y hx hy => by
-    suffices : -x + x + (-y + y) = 0
-    · rw [← this]
+    suffices -x + x + (-y + y) = 0 by
+      rw [← this]
       unfold Neg.neg neg
       simp only
       rw [map_add]

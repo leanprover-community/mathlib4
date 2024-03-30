@@ -3,10 +3,9 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Topology.Algebra.ContinuousAffineMap
-import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.NormedSpace.AffineIsometry
-import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Topology.Algebra.ContinuousAffineMap
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 
 #align_import analysis.normed_space.continuous_affine_map from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 
@@ -260,9 +259,7 @@ def toConstProdContinuousLinearMap : (V →A[𝕜] W) ≃ₗᵢ[𝕜] W × (V �
   left_inv f := by
     ext
     rw [f.decomp]
-    -- Porting note: previously `simp` closed the goal, but now we need to rewrite:
-    simp only [coe_add, ContinuousLinearMap.coe_toContinuousAffineMap, Pi.add_apply]
-    rw [ContinuousAffineMap.coe_const, Function.const_apply]
+    simp only [coe_add, ContinuousLinearMap.coe_toContinuousAffineMap, Pi.add_apply, coe_const]
   right_inv := by rintro ⟨v, f⟩; ext <;> simp
   map_add' _ _ := rfl
   map_smul' _ _ := rfl

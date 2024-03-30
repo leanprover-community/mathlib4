@@ -612,9 +612,9 @@ noncomputable def Equiv.Simps.invFun (e : α ≃ β) : β → α := Classical.ch
 run_cmd liftTermElabM <| do
   successIfFail (getRawProjections .missing `FaultyManualCoercion.Equiv)
 -- "Invalid custom projection:
---   λ {α : Sort u_1} {β : Sort u_2} (e : α ≃ β), Classical.choice _
+--   fun {α : Sort u_1} {β : Sort u_2} (e : α ≃ β) ↦ Classical.choice _
 -- Expression is not definitionally equal to
---   λ (α : Sort u_1) (β : Sort u_2) (x : α ≃ β), x.invFun"
+--   fun (α : Sort u_1) (β : Sort u_2) (x : α ≃ β) ↦ x.invFun"
 
 end FaultyManualCoercion
 

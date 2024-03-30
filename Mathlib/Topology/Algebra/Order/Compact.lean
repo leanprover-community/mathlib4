@@ -87,7 +87,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   set s := { x ∈ Icc a b | Icc a x ∉ f }
   have hsb : b ∈ upperBounds s := fun x hx => hx.1.2
   have sbd : BddAbove s := ⟨b, hsb⟩
-  have ha : a ∈ s := by simp [hpt, hab]
+  have ha : a ∈ s := by simp [s, hpt, hab]
   rcases hab.eq_or_lt with (rfl | _hlt)
   · exact ha.2
   -- porting note: the `obtain` below was instead
@@ -174,8 +174,8 @@ variable {α β γ : Type*} [LinearOrder α] [TopologicalSpace α]
 theorem IsCompact.exists_isLeast [ClosedIicTopology α] {s : Set α} (hs : IsCompact s)
     (ne_s : s.Nonempty) : ∃ x, IsLeast s x := by
   haveI : Nonempty s := ne_s.to_subtype
-  suffices : (s ∩ ⋂ x ∈ s, Iic x).Nonempty
-  · exact ⟨this.choose, this.choose_spec.1, mem_iInter₂.mp this.choose_spec.2⟩
+  suffices (s ∩ ⋂ x ∈ s, Iic x).Nonempty from
+    ⟨this.choose, this.choose_spec.1, mem_iInter₂.mp this.choose_spec.2⟩
   rw [biInter_eq_iInter]
   by_contra H
   rw [not_nonempty_iff_eq_empty] at H

@@ -143,8 +143,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
       · exact this z hzD hzB y hyD hyB h'.symm (h'.lt_or_lt.resolve_left h)
       rcases memD.1 hyD with ⟨y', rfl, hsuby, -, hdisty⟩
       rcases memD.1 hzD with ⟨z', rfl, -, -, hdistz⟩
-      suffices : edist z' y' < 3 * 2⁻¹ ^ m
-      exact nmem_of_lt_ind h (hsuby this)
+      suffices edist z' y' < 3 * 2⁻¹ ^ m from nmem_of_lt_ind h (hsuby this)
       calc
         edist z' y' ≤ edist z' x + edist x y' := edist_triangle _ _ _
         _ ≤ edist z z' + edist z x + (edist y x + edist y y') :=

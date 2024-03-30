@@ -109,6 +109,11 @@ theorem toNat_coe (n : ℕ) : toNat n = n :=
   rfl
 #align enat.to_nat_coe ENat.toNat_coe
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] : toNat (no_index (OfNat.ofNat n)) = n :=
+  rfl
+
 @[simp]
 theorem toNat_top : toNat ⊤ = 0 :=
   rfl
@@ -135,9 +140,28 @@ theorem recTopCoe_coe {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) 
     @recTopCoe C d f ↑x = f x :=
   rfl
 
+@[simp]
+theorem recTopCoe_zero {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) : @recTopCoe C d f 0 = f 0 :=
+  rfl
+
+@[simp]
+theorem recTopCoe_one {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) : @recTopCoe C d f 1 = f 1 :=
+  rfl
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem recTopCoe_ofNat {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) [x.AtLeastTwo] :
+    @recTopCoe C d f (no_index (OfNat.ofNat x)) = f (OfNat.ofNat x) :=
+  rfl
+
 --Porting note: new theorem copied from `WithTop`
 @[simp]
 theorem top_ne_coe (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
+  fun.
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem top_ne_ofNat (a : ℕ) [a.AtLeastTwo] : ⊤ ≠ (no_index (OfNat.ofNat a : ℕ∞)) :=
   fun.
 
 --Porting note: new theorem copied from `WithTop`
@@ -145,10 +169,24 @@ theorem top_ne_coe (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
 theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
   fun.
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_ne_top (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℕ∞)) ≠ ⊤ :=
+  fun.
+
 --Porting note: new theorem copied from `WithTop`
 @[simp]
 theorem top_sub_coe (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
   WithTop.top_sub_coe
+
+@[simp]
+theorem top_sub_one : (⊤ : ℕ∞) - 1 = ⊤ :=
+  top_sub_coe 1
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem top_sub_ofNat (a : ℕ) [a.AtLeastTwo] : (⊤ : ℕ∞) - (no_index (OfNat.ofNat a)) = ⊤ :=
+  top_sub_coe a
 
 @[simp]
 theorem zero_lt_top : (0 : ℕ∞) < ⊤ :=
@@ -159,7 +197,7 @@ theorem sub_top (a : ℕ∞) : a - ⊤ = 0 :=
   WithTop.sub_top
 
 @[simp]
-theorem coe_toNat_eq_self : ENat.toNat (n : ℕ∞) = n ↔ n ≠ ⊤ :=
+theorem coe_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
   ENat.recTopCoe (by decide) (fun _ => by simp [toNat_coe]) n
 #align enat.coe_to_nat_eq_self ENat.coe_toNat_eq_self
 

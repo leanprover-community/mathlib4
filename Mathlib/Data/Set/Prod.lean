@@ -181,7 +181,8 @@ theorem insert_prod : insert a s ×ˢ t = Prod.mk a '' t ∪ s ×ˢ t := by
 
 theorem prod_insert : s ×ˢ insert b t = (fun a => (a, b)) '' s ∪ s ×ˢ t := by
   ext ⟨x, y⟩
-  -- Porting note: was `simp (config := { contextual := true }) [image, iff_def, or_imp, Imp.swap]`
+  -- porting note (#10745):
+  -- was `simp (config := { contextual := true }) [image, iff_def, or_imp, Imp.swap]`
   simp only [mem_prod, mem_insert_iff, image, mem_union, mem_setOf_eq, Prod.mk.injEq]
   refine ⟨fun h => ?_, fun h => ?_⟩
   · obtain ⟨hx, rfl|hy⟩ := h
@@ -509,6 +510,11 @@ theorem diag_image (s : Set α) : (fun x => (x, x)) '' s = diagonal α ∩ s ×�
     rintro ⟨rfl : x = y, h2x⟩
     exact mem_image_of_mem _ h2x.1
 #align set.diag_image Set.diag_image
+
+theorem diagonal_eq_univ_iff : diagonal α = univ ↔ Subsingleton α := by
+  simp only [subsingleton_iff, eq_univ_iff_forall, Prod.forall, mem_diagonal_iff]
+
+theorem diagonal_eq_univ [Subsingleton α] : diagonal α = univ := diagonal_eq_univ_iff.2 ‹_›
 
 end Diagonal
 

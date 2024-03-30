@@ -183,7 +183,7 @@ theorem coeff_comp_monomial (n : σ →₀ ℕ) : (coeff R n).comp (monomial R n
   LinearMap.ext <| coeff_monomial_same n
 #align mv_power_series.coeff_comp_monomial MvPowerSeries.coeff_comp_monomial
 
--- Porting note: simp can prove this.
+-- Porting note (#10618): simp can prove this.
 -- @[simp]
 theorem coeff_zero (n : σ →₀ ℕ) : coeff R n (0 : MvPowerSeries σ R) = 0 :=
   rfl
@@ -500,13 +500,13 @@ theorem constantCoeff_comp_C : (constantCoeff σ R).comp (C σ R) = RingHom.id R
 set_option linter.uppercaseLean3 false in
 #align mv_power_series.constant_coeff_comp_C MvPowerSeries.constantCoeff_comp_C
 
--- Porting note: simp can prove this.
+-- Porting note (#10618): simp can prove this.
 -- @[simp]
 theorem constantCoeff_zero : constantCoeff σ R 0 = 0 :=
   rfl
 #align mv_power_series.constant_coeff_zero MvPowerSeries.constantCoeff_zero
 
--- Porting note: simp can prove this.
+-- Porting note (#10618): simp can prove this.
 -- @[simp]
 theorem constantCoeff_one : constantCoeff σ R 1 = 1 :=
   rfl
@@ -525,7 +525,7 @@ theorem isUnit_constantCoeff (φ : MvPowerSeries σ R) (h : IsUnit φ) :
   h.map _
 #align mv_power_series.is_unit_constant_coeff MvPowerSeries.isUnit_constantCoeff
 
--- Porting note: simp can prove this.
+-- Porting note (#10618): simp can prove this.
 -- @[simp]
 theorem coeff_smul (f : MvPowerSeries σ R) (n) (a : R) : coeff _ n (a • f) = a * coeff _ n f :=
   rfl
@@ -1026,7 +1026,7 @@ theorem zero_inv : (0 : MvPowerSeries σ k)⁻¹ = 0 := by
   rw [inv_eq_zero, constantCoeff_zero]
 #align mv_power_series.zero_inv MvPowerSeries.zero_inv
 
--- Porting note: simp can prove this.
+-- Porting note (#10618): simp can prove this.
 -- @[simp]
 theorem invOfUnit_eq (φ : MvPowerSeries σ k) (h : constantCoeff σ k φ ≠ 0) :
     invOfUnit φ (Units.mk0 _ h) = φ⁻¹ :=
@@ -1613,13 +1613,13 @@ theorem constantCoeff_comp_C : (constantCoeff R).comp (C R) = RingHom.id R :=
 set_option linter.uppercaseLean3 false in
 #align power_series.constant_coeff_comp_C PowerSeries.constantCoeff_comp_C
 
--- Porting note: simp can prove this.
+-- Porting note (#10618): simp can prove this.
 -- @[simp]
 theorem constantCoeff_zero : constantCoeff R 0 = 0 :=
   rfl
 #align power_series.constant_coeff_zero PowerSeries.constantCoeff_zero
 
--- Porting note: simp can prove this.
+-- Porting note (#10618): simp can prove this.
 -- @[simp]
 theorem constantCoeff_one : constantCoeff R 1 = 1 :=
   rfl
@@ -2275,7 +2275,7 @@ theorem zero_inv : (0 : PowerSeries k)⁻¹ = 0 :=
   MvPowerSeries.zero_inv
 #align power_series.zero_inv PowerSeries.zero_inv
 
--- Porting note: simp can prove this.
+-- Porting note (#10618): simp can prove this.
 -- @[simp]
 theorem invOfUnit_eq (φ : PowerSeries k) (h : constantCoeff k φ ≠ 0) :
     invOfUnit φ (Units.mk0 _ h) = φ⁻¹ :=
@@ -2548,8 +2548,7 @@ theorem order_monomial_of_ne_zero (n : ℕ) (a : R) (h : a ≠ 0) : order (monom
 with any other power series is `0`. -/
 theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order) :
     coeff R n (φ * ψ) = 0 := by
-  suffices : coeff R n (φ * ψ) = ∑ p in antidiagonal n, 0
-  rw [this, Finset.sum_const_zero]
+  suffices coeff R n (φ * ψ) = ∑ p in antidiagonal n, 0 by rw [this, Finset.sum_const_zero]
   rw [coeff_mul]
   apply Finset.sum_congr rfl
   intro x hx

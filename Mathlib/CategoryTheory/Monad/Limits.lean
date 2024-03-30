@@ -318,13 +318,13 @@ noncomputable def monadicCreatesColimitOfPreservesColimit (R : D ⥤ C) (K : J �
     (Adjunction.toMonad (Adjunction.ofRightAdjoint R)))
       (Adjunction.toMonad (Adjunction.ofRightAdjoint R)).toFunctor := by
     dsimp
-    refine' preservesColimitOfIsoDiagram _ i.symm
+    exact preservesColimitOfIsoDiagram _ i.symm
   letI : PreservesColimit
     (((K ⋙ A) ⋙ Monad.forget (Adjunction.toMonad (Adjunction.ofRightAdjoint R))) ⋙
       (Adjunction.toMonad (Adjunction.ofRightAdjoint R)).toFunctor)
       (Adjunction.toMonad (Adjunction.ofRightAdjoint R)).toFunctor := by
     dsimp
-    refine' preservesColimitOfIsoDiagram _ (isoWhiskerRight i (leftAdjoint R ⋙ R)).symm
+    exact preservesColimitOfIsoDiagram _ (isoWhiskerRight i (leftAdjoint R ⋙ R)).symm
   letI : CreatesColimit (K ⋙ A) B := CategoryTheory.Monad.forgetCreatesColimit _
   letI : CreatesColimit K (A ⋙ B) := CategoryTheory.compCreatesColimit _ _
   let e := (Monad.comparisonForget (Adjunction.ofRightAdjoint R))

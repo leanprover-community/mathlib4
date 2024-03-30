@@ -64,7 +64,7 @@ instance hasColimits : HasColimits SSet := by
   dsimp only [SSet]
   infer_instance
 
--- Porting note: added an `ext` lemma.
+-- Porting note (#10756): added an `ext` lemma.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
@@ -360,7 +360,7 @@ instance Truncated.hasColimits : HasColimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
--- Porting note: added an `ext` lemma.
+-- Porting note (#10756): added an `ext` lemma.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma Truncated.hom_ext {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=

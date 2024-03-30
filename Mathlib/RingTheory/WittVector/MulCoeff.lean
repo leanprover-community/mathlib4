@@ -270,7 +270,7 @@ theorem nth_mul_coeff' (n : ℕ) :
     cases' ha with ha ha <;> linarith only [ha]
   use f
   intro x y
-  dsimp [peval]
+  dsimp [f, peval]
   rw [← hf₀]
   congr
   ext a

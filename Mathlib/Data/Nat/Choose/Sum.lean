@@ -41,15 +41,15 @@ theorem add_pow (h : Commute x y) (n : ℕ) :
   let t : ℕ → ℕ → R := fun n m ↦ x ^ m * y ^ (n - m) * choose n m
   change (x + y) ^ n = ∑ m in range (n + 1), t n m
   have h_first : ∀ n, t n 0 = y ^ n := fun n ↦ by
-    simp only [choose_zero_right, _root_.pow_zero, Nat.cast_one, mul_one, one_mul, tsub_zero]
+    simp only [t, choose_zero_right, _root_.pow_zero, Nat.cast_one, mul_one, one_mul, tsub_zero]
   have h_last : ∀ n, t n n.succ = 0 := fun n ↦ by
-    simp only [ge_iff_le, choose_succ_self, cast_zero, mul_zero]
+    simp only [t, ge_iff_le, choose_succ_self, cast_zero, mul_zero]
   have h_middle :
     ∀ n i : ℕ, i ∈ range n.succ → (t n.succ ∘ Nat.succ) i =
       x * t n i + y * t n i.succ := by
     intro n i h_mem
     have h_le : i ≤ n := Nat.le_of_lt_succ (mem_range.mp h_mem)
-    dsimp only
+    dsimp only [t]
     rw [Function.comp_apply, choose_succ_succ, Nat.cast_add, mul_add]
     congr 1
     · rw [pow_succ x, succ_sub_succ, mul_assoc, mul_assoc, mul_assoc]
@@ -60,7 +60,7 @@ theorem add_pow (h : Commute x y) (n : ℕ) :
         rw [pow_succ y, mul_assoc, mul_assoc, mul_assoc, mul_assoc]
   induction' n with n ih
   · rw [_root_.pow_zero, sum_range_succ, range_zero, sum_empty, zero_add]
-    dsimp only
+    dsimp only [t]
     rw [_root_.pow_zero, _root_.pow_zero, choose_self, Nat.cast_one, mul_one, mul_one]
   · rw [sum_range_succ', h_first]
     erw [sum_congr rfl (h_middle n), sum_add_distrib, add_assoc]
@@ -196,8 +196,8 @@ theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) 
       (∏ i in range (n + 1), f i (n + 1 - i) ^ n.choose i) *
         ∏ i in range (n + 1), f (i + 1) (n - i) ^ n.choose i := by
   have A : (∏ i in range (n + 1), f (i + 1) (n - i) ^ (n.choose (i + 1))) * f 0 (n + 1) =
-    ∏ i in range (n + 1), f i (n + 1 - i) ^ (n.choose i)
-  · rw [prod_range_succ, prod_range_succ']
+      ∏ i in range (n + 1), f i (n + 1 - i) ^ (n.choose i) := by
+    rw [prod_range_succ, prod_range_succ']
     simp
   rw [prod_range_succ']
   simpa [Nat.choose_succ_succ, pow_add, prod_mul_distrib, A, mul_assoc] using mul_comm _ _

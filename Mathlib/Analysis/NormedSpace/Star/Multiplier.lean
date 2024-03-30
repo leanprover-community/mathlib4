@@ -3,11 +3,9 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux, Jon Bannon
 -/
-import Mathlib.Algebra.Star.StarAlgHom
-import Mathlib.Analysis.NormedSpace.Star.Basic
-import Mathlib.Analysis.NormedSpace.OperatorNorm
-import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
 import Mathlib.Analysis.NormedSpace.Star.Unitization
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 #align_import analysis.normed_space.star.multiplier from "leanprover-community/mathlib"@"ba5ff5ad5d120fb0ef094ad2994967e9bfaf5112"
 
@@ -99,8 +97,8 @@ variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
 Because the multiplier algebra is defined as the algebra of double centralizers, there is a natural
 injection `DoubleCentralizer.toProdMulOpposite : 𝓜(𝕜, A) → (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ`
-defined by `λ a, (a.fst, MulOpposite.op a.snd)`. We use this map to pull back the ring, module and
-algebra structure from `(A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ` to `𝓜(𝕜, A)`. -/
+defined by `fun a ↦ (a.fst, MulOpposite.op a.snd)`. We use this map to pull back the ring, module
+and algebra structure from `(A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ` to `𝓜(𝕜, A)`. -/
 
 variable {𝕜 A}
 

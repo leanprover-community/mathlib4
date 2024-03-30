@@ -129,10 +129,10 @@ instance (priority := 10) exponentialIdeal_of_preservesBinaryProducts
   let ε : i ⋙ L ⟶ 𝟭 D := ir.counit
   apply ExponentialIdeal.mk'
   intro B A
-  let q : i.obj (L.obj (A ⟹ i.obj B)) ⟶ A ⟹ i.obj B
-  apply CartesianClosed.curry (ir.homEquiv _ _ _)
-  apply _ ≫ (ir.homEquiv _ _).symm ((exp.ev A).app (i.obj B))
-  refine' prodComparison L A _ ≫ Limits.prod.map (𝟙 _) (ε.app _) ≫ inv (prodComparison _ _ _)
+  let q : i.obj (L.obj (A ⟹ i.obj B)) ⟶ A ⟹ i.obj B := by
+    apply CartesianClosed.curry (ir.homEquiv _ _ _)
+    apply _ ≫ (ir.homEquiv _ _).symm ((exp.ev A).app (i.obj B))
+    exact prodComparison L A _ ≫ Limits.prod.map (𝟙 _) (ε.app _) ≫ inv (prodComparison _ _ _)
   have : η.app (A ⟹ i.obj B) ≫ q = 𝟙 (A ⟹ i.obj B) := by
     dsimp
     rw [← curry_natural_left, curry_eq_iff, uncurry_id_eq_ev, ← ir.homEquiv_naturality_left,
@@ -149,7 +149,7 @@ variable [ExponentialIdeal i]
 itself cartesian closed.
 -/
 def cartesianClosedOfReflective : CartesianClosed D :=
-  { monoidalOfHasFiniteProducts D with -- Porting note: Added this instance
+  { monoidalOfHasFiniteProducts D with -- Porting note (#10754): added this instance
     closed := fun B =>
       { isAdj :=
           { right := i ⋙ exp (i.obj B) ⋙ leftAdjoint i

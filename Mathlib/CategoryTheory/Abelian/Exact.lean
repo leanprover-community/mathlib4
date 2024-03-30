@@ -67,9 +67,9 @@ theorem exact_iff : Exact f g ↔ f ≫ g = 0 ∧ kernel.ι g ≫ cokernel.π f 
   constructor
   · exact fun h ↦ ⟨h.1, kernel_comp_cokernel f g h⟩
   · refine fun h ↦ ⟨h.1, ?_⟩
-    suffices hl :
-      IsLimit (KernelFork.ofι (imageSubobject f).arrow (imageSubobject_arrow_comp_eq_zero h.1))
-    · have : imageToKernel f g h.1 = (hl.conePointUniqueUpToIso (limit.isLimit _)).hom ≫
+    suffices hl : IsLimit
+        (KernelFork.ofι (imageSubobject f).arrow (imageSubobject_arrow_comp_eq_zero h.1)) by
+      have : imageToKernel f g h.1 = (hl.conePointUniqueUpToIso (limit.isLimit _)).hom ≫
           (kernelSubobjectIso _).inv := by ext; simp
       rw [this]
       infer_instance

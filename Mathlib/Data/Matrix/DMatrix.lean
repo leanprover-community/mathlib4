@@ -3,7 +3,6 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Group.Pi
 import Mathlib.Data.Fintype.Basic
 
 #align_import data.matrix.dmatrix from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
@@ -79,7 +78,7 @@ def row {α : n → Type v} (v : ∀ j, α j) : DMatrix Unit n fun _i j => α j
   | _x, y => v y
 #align dmatrix.row DMatrix.row
 
--- port note: Old proof is Pi.inhabited.
+-- Porting note: Old proof is Pi.inhabited.
 instance [inst : ∀ i j, Inhabited (α i j)] : Inhabited (DMatrix m n α) :=
   ⟨fun i j => (inst i j).default⟩
 
@@ -116,7 +115,7 @@ instance [∀ i j, AddCommGroup (α i j)] : AddCommGroup (DMatrix m n α) :=
 instance [∀ i j, Unique (α i j)] : Unique (DMatrix m n α) :=
   Pi.unique
 
--- Port note: old proof is Pi.Subsingleton
+-- Porting note: old proof is Pi.Subsingleton
 instance [∀ i j, Subsingleton (α i j)] : Subsingleton (DMatrix m n α) :=
   by constructor; simp only [DMatrix, eq_iff_true_of_subsingleton, implies_true]
 

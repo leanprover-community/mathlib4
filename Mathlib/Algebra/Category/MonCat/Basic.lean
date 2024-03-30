@@ -80,7 +80,7 @@ instance : CoeSort MonCat (Type*) where
 @[to_additive]
 instance (X : MonCat) : Monoid X := X.str
 
--- porting note: this instance was not necessary in mathlib
+-- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : MonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
@@ -93,15 +93,15 @@ instance instFunLike (X Y : MonCat) : FunLike (X ⟶ Y) X Y :=
 instance instMonoidHomClass (X Y : MonCat) : MonoidHomClass (X ⟶ Y) X Y :=
   inferInstanceAs <| MonoidHomClass (X →* Y) X Y
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_id {X : MonCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : MonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)] lemma forget_map (f : X ⟶ Y) : (forget MonCat).map f = f := rfl
 
 @[to_additive (attr := ext)]
@@ -206,7 +206,7 @@ instance : CoeSort CommMonCat (Type*) where
 @[to_additive]
 instance (X : CommMonCat) : CommMonoid X := X.str
 
--- porting note: this instance was not necessary in mathlib
+-- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : CommMonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
@@ -215,15 +215,15 @@ instance {X Y : CommMonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
 instance instFunLike (X Y : CommMonCat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (X →* Y) X Y by infer_instance
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_id {X : CommMonCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : CommMonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma forget_map {X Y : CommMonCat} (f : X ⟶ Y) :
     (forget CommMonCat).map f = (f : X → Y) :=

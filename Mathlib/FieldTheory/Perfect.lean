@@ -217,8 +217,8 @@ instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
   have hfa : aeval a f = 0 := by rw [aeval_def, map_rootOfSplits _ (SplittingField.splits f) hf_deg]
   have ha_pow : a ^ p = ι y := by rwa [AlgHom.map_sub, aeval_X_pow, aeval_C, sub_eq_zero] at hfa
   let g : K[X] := minpoly K a
-  suffices : (g.map ι).natDegree = 1
-  · rw [g.natDegree_map, ← degree_eq_iff_natDegree_eq_of_pos Nat.one_pos] at this
+  suffices (g.map ι).natDegree = 1 by
+    rw [g.natDegree_map, ← degree_eq_iff_natDegree_eq_of_pos Nat.one_pos] at this
     obtain ⟨a' : K, ha' : ι a' = a⟩ := minpoly.mem_range_of_degree_eq_one K a this
     refine' ⟨a', NoZeroSMulDivisors.algebraMap_injective K L _⟩
     rw [RingHom.map_frobenius, ha', frobenius_def, ha_pow]

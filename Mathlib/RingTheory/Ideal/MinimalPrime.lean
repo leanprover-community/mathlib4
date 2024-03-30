@@ -218,7 +218,7 @@ theorem Ideal.minimalPrimes_eq_subsingleton_self [I.IsPrime] : I.minimalPrimes =
   constructor
   · exact fun H => (H.2 ⟨inferInstance, rfl.le⟩ H.1.2).antisymm H.1.2
   · rintro (rfl : J = I)
-    refine' ⟨⟨inferInstance, rfl.le⟩, fun _ h _ => h.2⟩
+    exact ⟨⟨inferInstance, rfl.le⟩, fun _ h _ => h.2⟩
 #align ideal.minimal_primes_eq_subsingleton_self Ideal.minimalPrimes_eq_subsingleton_self
 
 end

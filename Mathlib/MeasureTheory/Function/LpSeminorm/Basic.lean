@@ -283,7 +283,7 @@ theorem snorm'_const (c : F) (hq_pos : 0 < q) :
   rw [snorm', lintegral_const, ENNReal.mul_rpow_of_nonneg _ _ (by simp [hq_pos.le] : 0 ≤ 1 / q)]
   congr
   rw [← ENNReal.rpow_mul]
-  suffices hq_cancel : q * (1 / q) = 1; · rw [hq_cancel, ENNReal.rpow_one]
+  suffices hq_cancel : q * (1 / q) = 1 by rw [hq_cancel, ENNReal.rpow_one]
   rw [one_div, mul_inv_cancel (ne_of_lt hq_pos).symm]
 #align measure_theory.snorm'_const MeasureTheory.snorm'_const
 
@@ -292,8 +292,7 @@ theorem snorm'_const' [IsFiniteMeasure μ] (c : F) (hc_ne_zero : c ≠ 0) (hq_ne
   rw [snorm', lintegral_const, ENNReal.mul_rpow_of_ne_top _ (measure_ne_top μ Set.univ)]
   · congr
     rw [← ENNReal.rpow_mul]
-    suffices hp_cancel : q * (1 / q) = 1
-    · rw [hp_cancel, ENNReal.rpow_one]
+    suffices hp_cancel : q * (1 / q) = 1 by rw [hp_cancel, ENNReal.rpow_one]
     rw [one_div, mul_inv_cancel hq_ne_zero]
   · rw [Ne.def, ENNReal.rpow_eq_top_iff, not_or, not_and_or, not_and_or]
     constructor
@@ -621,6 +620,10 @@ theorem snorm_mono_measure (f : α → F) (hμν : ν ≤ μ) : snorm f p ν ≤
 theorem Memℒp.mono_measure {f : α → E} (hμν : ν ≤ μ) (hf : Memℒp f p μ) : Memℒp f p ν :=
   ⟨hf.1.mono_measure hμν, (snorm_mono_measure f hμν).trans_lt hf.2⟩
 #align measure_theory.mem_ℒp.mono_measure MeasureTheory.Memℒp.mono_measure
+
+lemma snorm_restrict_le (f : α → F) (p : ℝ≥0∞) (μ : Measure α) (s : Set α) :
+    snorm f p (μ.restrict s) ≤ snorm f p μ :=
+  snorm_mono_measure f Measure.restrict_le_self
 
 theorem Memℒp.restrict (s : Set α) {f : α → E} (hf : Memℒp f p μ) : Memℒp f p (μ.restrict s) :=
   hf.mono_measure Measure.restrict_le_self

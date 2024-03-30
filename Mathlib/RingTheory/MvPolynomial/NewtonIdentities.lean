@@ -233,9 +233,9 @@ theorem mul_esymm_eq_sum (k : ℕ) : k * esymm σ R k =
 theorem sum_antidiagonal_card_esymm_psum_eq_zero :
     ∑ a in antidiagonal (Fintype.card σ), (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd = 0 := by
   let k := Fintype.card σ
-  suffices : (-1 : MvPolynomial σ R) ^ (k + 1) *
-    ∑ a in antidiagonal k, (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd = 0
-  · simpa using this
+  suffices (-1 : MvPolynomial σ R) ^ (k + 1) *
+      ∑ a in antidiagonal k, (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd = 0 by
+    simpa using this
   simp [← sum_filter_add_sum_filter_not (antidiagonal k) (fun a ↦ a.fst < k), ← mul_esymm_eq_sum,
     mul_add, ← mul_assoc, ← pow_add, mul_comm ↑k (esymm σ R k)]
 

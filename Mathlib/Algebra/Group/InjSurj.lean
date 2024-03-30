@@ -250,8 +250,8 @@ protected def divInvMonoid [DivInvMonoid M₂] (f : M₁ → M₂) (hf : Injecti
   { hf.monoid f one mul npow, ‹Inv M₁›, ‹Div M₁› with
     zpow := fun n x => x ^ n,
     zpow_zero' := fun x => hf <| by erw [zpow, zpow_zero, one],
-    zpow_succ' := fun n x => hf <| by erw [zpow, mul, zpow_ofNat, pow_succ, zpow, zpow_ofNat],
-    zpow_neg' := fun n x => hf <| by erw [zpow, zpow_negSucc, inv, zpow, zpow_ofNat],
+    zpow_succ' := fun n x => hf <| by erw [zpow, mul, zpow_coe_nat, pow_succ, zpow, zpow_coe_nat],
+    zpow_neg' := fun n x => hf <| by erw [zpow, zpow_negSucc, inv, zpow, zpow_coe_nat],
     div_eq_mul_inv := fun x y => hf <| by erw [div, mul, inv, div_eq_mul_inv] }
 #align function.injective.div_inv_monoid Function.Injective.divInvMonoid
 #align function.injective.sub_neg_monoid Function.Injective.subNegMonoid
@@ -506,10 +506,10 @@ protected def divInvMonoid [DivInvMonoid M₁] (f : M₁ → M₂) (hf : Surject
     zpow_zero' := hf.forall.2 fun x => by dsimp only; erw [← zpow, zpow_zero, ← one],
     zpow_succ' := fun n => hf.forall.2 fun x => by
       dsimp only
-      erw [← zpow, ← zpow, zpow_ofNat, zpow_ofNat, pow_succ, ← mul],
+      erw [← zpow, ← zpow, zpow_coe_nat, zpow_coe_nat, pow_succ, ← mul],
     zpow_neg' := fun n => hf.forall.2 fun x => by
       dsimp only
-      erw [← zpow, ← zpow, zpow_negSucc, zpow_ofNat, inv],
+      erw [← zpow, ← zpow, zpow_negSucc, zpow_coe_nat, inv],
     div_eq_mul_inv := hf.forall₂.2 fun x y => by erw [← inv, ← mul, ← div, div_eq_mul_inv] }
 #align function.surjective.div_inv_monoid Function.Surjective.divInvMonoid
 #align function.surjective.sub_neg_monoid Function.Surjective.subNegMonoid

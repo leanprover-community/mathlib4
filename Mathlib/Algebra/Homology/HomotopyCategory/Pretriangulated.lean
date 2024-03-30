@@ -446,9 +446,9 @@ lemma complete_distinguished_triangle_morphism
   let γ := e₁.hom ≫ CochainComplex.mappingCone.trianglehMapOfHomotopy H ≫ e₂.inv
   have comm₂ := γ.comm₂
   have comm₃ := γ.comm₃
-  dsimp at comm₂ comm₃
+  dsimp [γ] at comm₂ comm₃
   simp only [ha', hb'] at comm₂ comm₃
-  exact ⟨γ.hom₃, by simpa using comm₂, by simpa using comm₃⟩
+  exact ⟨γ.hom₃, by simpa [γ] using comm₂, by simpa [γ] using comm₃⟩
 
 end Pretriangulated
 

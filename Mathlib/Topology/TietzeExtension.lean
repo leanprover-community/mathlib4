@@ -333,7 +333,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
   have hac : a < c := left_lt_add_div_two.2 hlt
   have hcb : c < b := add_div_two_lt_right.2 hlt
   have hsub : c - a = b - c := by
-    field_simp
+    field_simp [c]
     ring
   /- Due to `exists_extension_forall_mem_Icc_of_closedEmbedding`, there exists an extension `g`
     such that `g y ∈ [a, b]` for all `y`. However, if `a` and/or `b` do not belong to the range of
@@ -357,8 +357,8 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
         (he.closed_range.union <| isClosed_Ici.preimage g.continuous)
         (isClosed_singleton.preimage g.continuous) hd (sub_nonneg.2 hac.le) with
       ⟨dg, dg0, dga, dgmem⟩
-    replace hgf : ∀ x, (g + dg) (e x) = f x
-    · intro x
+    replace hgf : ∀ x, (g + dg) (e x) = f x := by
+      intro x
       simp [dg0 (Or.inl <| mem_range_self _), ← hgf]
     refine' ⟨g + dg, fun y => _, funext hgf⟩
     · have hay : a < (g + dg) y := by
@@ -390,8 +390,8 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
       (he.closed_range.union <| isClosed_Iic.preimage g.continuous)
       (isClosed_singleton.preimage g.continuous) hd (sub_nonneg.2 hcb.le) with
     ⟨dg, dg0, dgb, dgmem⟩
-  replace hgf : ∀ x, (g - dg) (e x) = f x
-  · intro x
+  replace hgf : ∀ x, (g - dg) (e x) = f x := by
+    intro x
     simp [dg0 (Or.inl <| mem_range_self _), ← hgf]
   refine' ⟨g - dg, fun y => _, funext hgf⟩
   · have hyb : (g - dg) y < b := by
@@ -431,7 +431,7 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : X →ᵇ ℝ) {t : S
     ∃ g : Y →ᵇ ℝ, (∀ y, g y ∈ t) ∧ g ∘ e = f := by
   cases isEmpty_or_nonempty X
   · rcases hne with ⟨c, hc⟩
-    refine' ⟨const Y c, fun _ => hc, funext fun x => isEmptyElim x⟩
+    exact ⟨const Y c, fun _ => hc, funext fun x => isEmptyElim x⟩
   rcases exists_extension_forall_exists_le_ge_of_closedEmbedding f he with ⟨g, hg, hgf⟩
   refine' ⟨g, fun y => _, hgf⟩
   rcases hg y with ⟨xl, xu, h⟩

@@ -127,7 +127,7 @@ theorem isUnit_res_toΓSpecMapBasicOpen : IsUnit (X.toToΓSpecMapBasicOpen r r) 
   convert
     (X.presheaf.map <| (eqToHom <| X.toΓSpecMapBasicOpen_eq r).op).isUnit_map
       (X.toRingedSpace.isUnit_res_basicOpen r)
-  -- Porting note : `rw [comp_apply]` to `erw [comp_apply]`
+  -- Porting note: `rw [comp_apply]` to `erw [comp_apply]`
   erw [← comp_apply, ← Functor.map_comp]
   congr
 #align algebraic_geometry.LocallyRingedSpace.is_unit_res_to_Γ_Spec_map_basic_open AlgebraicGeometry.LocallyRingedSpace.isUnit_res_toΓSpecMapBasicOpen
@@ -202,7 +202,7 @@ theorem toΓSpecSheafedSpace_app_eq :
 
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace_app_eq AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace_app_eq
 
--- Porting note : need a helper lemma `toΓSpecSheafedSpace_app_spec_assoc` to help compile
+-- Porting note: need a helper lemma `toΓSpecSheafedSpace_app_spec_assoc` to help compile
 -- `toStalk_stalkMap_to_Γ_Spec`
 @[reassoc] theorem toΓSpecSheafedSpace_app_spec (r : Γ.obj (op X)) :
     toOpen (Γ.obj (op X)) (basicOpen r) ≫ X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) =
@@ -219,7 +219,7 @@ theorem toStalk_stalkMap_toΓSpec (x : X) :
       ⟨X.toΓSpecFun x, by rw [basicOpen_one]; trivial⟩]
   rw [← Category.assoc, Category.assoc (toOpen _ _)]
   erw [stalkFunctor_map_germ]
-  -- Porting note : was `rw [← assoc, toΓSpecSheafedSpace_app_spec]`, but Lean did not like it.
+  -- Porting note: was `rw [← assoc, toΓSpecSheafedSpace_app_spec]`, but Lean did not like it.
   rw [toΓSpecSheafedSpace_app_spec_assoc]
   unfold ΓToStalk
   rw [← stalkPushforward_germ _ X.toΓSpecBase X.presheaf ⊤]
@@ -250,11 +250,11 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     rw [← toStalk_stalkMap_toΓSpec]
     erw [comp_apply, ← he]
     rw [RingHom.map_mul]
-    -- Porting note : `IsLocalization.map_units` and the goal needs to be simplified before Lean
+    -- Porting note: `IsLocalization.map_units` and the goal needs to be simplified before Lean
     -- realize it is useful
     have := IsLocalization.map_units (R := Γ.obj (op X)) S s
     dsimp at this ⊢
-    refine ht.mul <| this.map _
+    exact ht.mul <| this.map _
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec AlgebraicGeometry.LocallyRingedSpace.toΓSpec
 
 theorem comp_ring_hom_ext {X : LocallyRingedSpace} {R : CommRingCat} {f : R ⟶ Γ.obj (op X)}
@@ -266,11 +266,11 @@ theorem comp_ring_hom_ext {X : LocallyRingedSpace} {R : CommRingCat} {f : R ⟶ 
           toOpen R (basicOpen r) ≫ β.1.c.app (op (basicOpen r))) :
     X.toΓSpec ≫ Spec.locallyRingedSpaceMap f = β := by
   ext1
-  -- Porting note : need more hand holding here
+  -- Porting note: need more hand holding here
   change (X.toΓSpec.1 ≫ _).base = _ at w
   apply Spec.basicOpen_hom_ext w
   intro r U
-  -- Porting note : changed `rw` to `erw`
+  -- Porting note: changed `rw` to `erw`
   erw [LocallyRingedSpace.comp_val_c_app]
   erw [toOpen_comp_comap_assoc]
   rw [Category.assoc]
@@ -354,7 +354,7 @@ def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} 
         exact congr_arg Quiver.Hom.op (left_triangle X)
       right_triangle := by
         ext R : 2
-        -- Porting note : a little bit hand holding
+        -- Porting note: a little bit hand holding
         change identityToΓSpec.app _ ≫ 𝟙 _ ≫ Spec.toLocallyRingedSpace.map _ =
           𝟙 _
         simp_rw [Category.id_comp, show (NatIso.op SpecΓIdentity).inv.app R =
@@ -435,7 +435,7 @@ theorem adjunction_unit_app_app_top (X : Scheme) :
     SpecΓIdentity.hom.app (X.presheaf.obj (op ⊤)) := by
   have := congr_app ΓSpec.adjunction.left_triangle X
   dsimp at this
-  -- Porting Notes: Slightly changed some rewrites.
+  -- Porting note: Slightly changed some rewrites.
   -- Originally:
   --  rw [← is_iso.eq_comp_inv] at this
   --  simp only [Γ_Spec.LocallyRingedSpace_adjunction_counit, nat_trans.op_app, category.id_comp,

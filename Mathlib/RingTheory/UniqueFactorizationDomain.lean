@@ -832,8 +832,8 @@ theorem dvdNotUnit_iff_normalizedFactors_lt_normalizedFactors {x y : α} (hx : x
 theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
     normalizedFactors (s.prod) = (s.map normalizedFactors).sum := by
   cases subsingleton_or_nontrivial α
-  · obtain rfl : s = 0
-    · apply Multiset.eq_zero_of_forall_not_mem
+  · obtain rfl : s = 0 := by
+      apply Multiset.eq_zero_of_forall_not_mem
       intro _
       convert hs
     simp

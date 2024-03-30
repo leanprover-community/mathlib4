@@ -64,11 +64,6 @@ theorem const_eventuallyEq [NeBot l] {a b : β} : ((fun _ => a) =ᶠ[l] fun _ =>
   @const_eventuallyEq' _ _ _ _ a b
 #align filter.const_eventually_eq Filter.const_eventuallyEq
 
-theorem EventuallyEq.comp_tendsto {f' : α → β} (H : f =ᶠ[l] f') {g : γ → α} {lc : Filter γ}
-    (hg : Tendsto g lc l) : f ∘ g =ᶠ[lc] f' ∘ g :=
-  hg.eventually H
-#align filter.eventually_eq.comp_tendsto Filter.EventuallyEq.comp_tendsto
-
 /-- Setoid used to define the space of germs. -/
 def germSetoid (l : Filter α) (β : Type*) : Setoid (α → β) where
   r := EventuallyEq l
@@ -122,6 +117,26 @@ def const {l : Filter α} (b : β) : (Germ l β) := ofFun fun _ => b
 
 instance coeTC : CoeTC β (Germ l β) :=
   ⟨const⟩
+
+/-- A germ `P` of functions `α → β` is constant w.r.t. `l`. -/
+def IsConstant {l : Filter α} (P : Germ l β) : Prop :=
+  P.liftOn (fun f ↦ ∃ b : β, f =ᶠ[l] (fun _ ↦ b)) <| by
+    suffices ∀ f g : α → β, ∀ b : β, f =ᶠ[l] g → (f =ᶠ[l] fun _ ↦ b) → (g =ᶠ[l] fun _ ↦ b) from
+      fun f g h ↦ propext ⟨fun ⟨b, hb⟩ ↦ ⟨b, this f g b h hb⟩, fun ⟨b, hb⟩ ↦ ⟨b, h.trans hb⟩⟩
+    exact fun f g b hfg hf ↦ (hfg.symm).trans hf
+
+theorem isConstant_coe {l : Filter α} {b} (h : ∀ x', f x' = b) : (↑f : Germ l β).IsConstant :=
+  ⟨b, eventually_of_forall (fun x ↦ h x)⟩
+
+@[simp]
+theorem isConstant_coe_const {l : Filter α} {b : β} : (fun _ : α ↦ b : Germ l β).IsConstant := by
+  use b
+
+/-- If `f : α → β` is constant w.r.t. `l` and `g : β → γ`, then `g ∘ f : α → γ` also is. -/
+lemma isConstant_comp {l : Filter α} {f : α → β} {g : β → γ}
+    (h : (f : Germ l β).IsConstant) : ((g ∘ f) : Germ l γ).IsConstant := by
+  obtain ⟨b, hb⟩ := h
+  exact ⟨g b, hb.fun_comp g⟩
 
 @[simp]
 theorem quot_mk_eq_coe (l : Filter α) (f : α → β) : Quot.mk _ f = (f : Germ l β) :=
@@ -252,11 +267,29 @@ theorem coe_compTendsto (f : α → β) {lc : Filter γ} {g : γ → α} (hg : T
   rfl
 #align filter.germ.coe_comp_tendsto Filter.Germ.coe_compTendsto
 
-@[simp, nolint simpNF] -- Porting note: simp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem compTendsto'_coe (f : Germ l β) {lc : Filter γ} {g : γ → α} (hg : Tendsto g lc l) :
     f.compTendsto' _ hg.germ_tendsto = f.compTendsto g hg :=
   rfl
 #align filter.germ.comp_tendsto'_coe Filter.Germ.compTendsto'_coe
+
+theorem Filter.Tendsto.congr_germ {f g : β → γ} {l : Filter α} {l' : Filter β} (h : f =ᶠ[l'] g)
+    {φ : α → β} (hφ : Tendsto φ l l') : (f ∘ φ : Germ l γ) = g ∘ φ :=
+  EventuallyEq.germ_eq (h.comp_tendsto hφ)
+
+lemma isConstant_comp_tendsto {lc : Filter γ} {g : γ → α}
+    (hf : (f : Germ l β).IsConstant) (hg : Tendsto g lc l) : IsConstant (f ∘ g : Germ lc β) := by
+  rcases hf with ⟨b, hb⟩
+  exact ⟨b, hb.comp_tendsto hg⟩
+
+/-- If a germ `f : Germ l β` is constant, where `l : Filter α`,
+and a function `g : γ → α` tends to `l` along `lc : Filter γ`,
+the germ of the composition `f ∘ g` is also constant. -/
+lemma isConstant_compTendsto {f : Germ l β} {lc : Filter γ} {g : γ → α}
+    (hf : f.IsConstant) (hg : Tendsto g lc l) : (f.compTendsto g hg).IsConstant := by
+  rcases Quotient.exists_rep f with ⟨f, rfl⟩
+  exact isConstant_comp_tendsto hf hg
+
 @[simp, norm_cast]
 theorem const_inj [NeBot l] {a b : β} : (↑a : Germ l β) = ↑b ↔ a = b :=
   coe_eq.trans const_eventuallyEq

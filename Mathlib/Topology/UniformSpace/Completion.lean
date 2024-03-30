@@ -97,7 +97,7 @@ private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lif
         (monotone_setOf fun p => @Filter.monotone_mem _ (p.2.val ×ˢ p.1.val)))
       (by
         have h := fun p : CauchyFilter α × CauchyFilter α => @Filter.prod_comm _ _ p.2.val p.1.val
-        simp [Function.comp, h, mem_map']
+        simp [f, Function.comp, h, mem_map']
         exact le_rfl)
   exact h₁.trans_le h₂
 
@@ -281,9 +281,10 @@ end Extend
 
 end
 
-theorem cauchyFilter_eq {α : Type*} [Inhabited α] [UniformSpace α] [CompleteSpace α]
-    [SeparatedSpace α] {f g : CauchyFilter α} :
-    lim f.1 = lim g.1 ↔ (f, g) ∈ separationRel (CauchyFilter α) := by
+theorem cauchyFilter_eq {α : Type*} [UniformSpace α] [CompleteSpace α] [SeparatedSpace α]
+    {f g : CauchyFilter α} :
+    haveI := f.2.1.nonempty; lim f.1 = lim g.1 ↔ (f, g) ∈ separationRel (CauchyFilter α) := by
+  haveI := f.2.1.nonempty
   constructor
   · intro e s hs
     rcases CauchyFilter.mem_uniformity'.1 hs with ⟨t, tu, ts⟩

@@ -97,7 +97,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
       exact funext fun n => neK ⟨Icc 0 1, isCompact_Icc⟩ _
     -- Minor tidying to finish
     _ = 𝓕 f m := by
-      rw [fourierIntegral_eq_integral_exp_smul]
+      rw [fourierIntegral_real_eq_integral_exp_smul]
       congr 1 with x : 1
       rw [smul_eq_mul, comp_apply, coe_mk, coe_mk, ContinuousMap.toFun_eq_coe, fourier_coe_apply]
       congr 2
@@ -117,7 +117,7 @@ theorem Real.tsum_eq_tsum_fourierIntegral {f : C(ℝ, ℂ)}
     convert h_sum
     exact Real.fourierCoeff_tsum_comp_add h_norm _
   convert (has_pointwise_sum_fourier_series_of_summable this x).tsum_eq.symm using 1
-  · simpa only [coe_mk, ← QuotientAddGroup.mk_zero, Periodic.lift_coe, zsmul_one, comp_apply,
+  · simpa only [F, coe_mk, ← QuotientAddGroup.mk_zero, Periodic.lift_coe, zsmul_one, comp_apply,
       coe_addRight, zero_add]
        using (hasSum_apply (summable_of_locally_summable_norm h_norm).hasSum x).tsum_eq
   · simp_rw [← Real.fourierCoeff_tsum_comp_add h_norm, smul_eq_mul, coe_mk]
@@ -129,7 +129,7 @@ section RpowDecay
 variable {E : Type*} [NormedAddCommGroup E]
 
 /-- If `f` is `O(x ^ (-b))` at infinity, then so is the function
-`λ x, ‖f.restrict (Icc (x + R) (x + S))‖` for any fixed `R` and `S`. -/
+`fun x ↦ ‖f.restrict (Icc (x + R) (x + S))‖` for any fixed `R` and `S`. -/
 theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
     (hf : f =O[atTop] fun x : ℝ => |x| ^ (-b)) (R S : ℝ) :
     (fun x : ℝ => ‖f.restrict (Icc (x + R) (x + S))‖) =O[atTop] fun x : ℝ => |x| ^ (-b) := by

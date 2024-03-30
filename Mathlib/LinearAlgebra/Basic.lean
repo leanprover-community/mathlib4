@@ -408,7 +408,7 @@ theorem isLinearMap_sub {R M : Type*} [Semiring R] [AddCommGroup M] [Module R M]
     IsLinearMap R fun x : M × M => x.1 - x.2 := by
   apply IsLinearMap.mk
   · intro x y
-    -- Porting note: was `simp [add_comm, add_left_comm, sub_eq_add_neg]`
+    -- porting note (#10745): was `simp [add_comm, add_left_comm, sub_eq_add_neg]`
     rw [Prod.fst_add, Prod.snd_add]
     abel
   · intro x y
@@ -448,7 +448,7 @@ theorem map_subtype_le (p' : Submodule R p) : map p.subtype p' ≤ p := by
 
 /-- Under the canonical linear map from a submodule `p` to the ambient space `M`, the image of the
 maximal submodule of `p` is just `p`. -/
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_subtype_top : map p.subtype (⊤ : Submodule R p) = p := by simp
 #align submodule.map_subtype_top Submodule.map_subtype_top
 
@@ -567,20 +567,24 @@ theorem submoduleImage_apply_of_le {M' : Type*} [AddCommGroup M'] [Module R M']
 
 end Image
 
+section rangeRestrict
+
+variable [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂)
+
+@[simp] theorem range_rangeRestrict : range f.rangeRestrict = ⊤ := by simp [f.range_codRestrict _]
+#align linear_map.range_range_restrict LinearMap.range_rangeRestrict
+
+theorem surjective_rangeRestrict : Surjective f.rangeRestrict := by
+  rw [← range_eq_top, range_rangeRestrict]
+
+@[simp] theorem ker_rangeRestrict : ker f.rangeRestrict = ker f := LinearMap.ker_codRestrict _ _ _
+#align linear_map.ker_range_restrict LinearMap.ker_rangeRestrict
+
+end rangeRestrict
+
 end Semiring
 
 end LinearMap
-
-@[simp]
-theorem LinearMap.range_rangeRestrict [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M]
-    [Module R M₂] (f : M →ₗ[R] M₂) : range f.rangeRestrict = ⊤ := by simp [f.range_codRestrict _]
-#align linear_map.range_range_restrict LinearMap.range_rangeRestrict
-
-@[simp]
-theorem LinearMap.ker_rangeRestrict [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M]
-    [Module R M₂] (f : M →ₗ[R] M₂) : ker f.rangeRestrict = ker f :=
-  LinearMap.ker_codRestrict _ _ _
-#align linear_map.ker_range_restrict LinearMap.ker_rangeRestrict
 
 /-! ### Linear equivalences -/
 
@@ -926,12 +930,12 @@ variable {re₃₄ : RingHomInvPair σ₃₄ σ₄₃} {re₄₃ : RingHomInvPai
 
 variable (e e₁ : M ≃ₛₗ[σ₁₂] M₂) (e₂ : M₃ ≃ₛₗ[σ₃₄] M₄)
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_neg (a : M) : e (-a) = -e a :=
   e.toLinearMap.map_neg a
 #align linear_equiv.map_neg LinearEquiv.map_neg
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_sub (a b : M) : e (a - b) = e a - e b :=
   e.toLinearMap.map_sub a b
 #align linear_equiv.map_sub LinearEquiv.map_sub

@@ -104,8 +104,13 @@ theorem monic_X_pow_add {n : ℕ} (H : degree p ≤ n) : Monic (X ^ (n + 1) + p)
 set_option linter.uppercaseLean3 false in
 #align polynomial.monic_X_pow_add Polynomial.monic_X_pow_add
 
+variable (a) in
+theorem monic_X_pow_add_C {n : ℕ} (h : n ≠ 0) : (X ^ n + C a).Monic := by
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
+  exact monic_X_pow_add <| degree_C_le.trans Nat.WithBot.coe_nonneg
+
 theorem monic_X_add_C (x : R) : Monic (X + C x) :=
-  pow_one (X : R[X]) ▸ monic_X_pow_add degree_C_le
+  pow_one (X : R[X]) ▸ monic_X_pow_add_C x one_ne_zero
 set_option linter.uppercaseLean3 false in
 #align polynomial.monic_X_add_C Polynomial.monic_X_add_C
 
@@ -184,7 +189,7 @@ theorem degree_mul_comm (hp : p.Monic) (q : R[X]) : (p * q).degree = (q * p).deg
 
 nonrec theorem natDegree_mul' (hp : p.Monic) (hq : q ≠ 0) :
     (p * q).natDegree = p.natDegree + q.natDegree := by
-  rw [natDegree_mul', add_comm]
+  rw [natDegree_mul']
   simpa [hp.leadingCoeff, leadingCoeff_ne_zero]
 #align polynomial.monic.nat_degree_mul' Polynomial.Monic.natDegree_mul'
 
@@ -393,9 +398,7 @@ set_option linter.uppercaseLean3 false in
 /-- `X ^ n - a` is monic. -/
 theorem monic_X_pow_sub_C {R : Type u} [Ring R] (a : R) {n : ℕ} (h : n ≠ 0) :
     (X ^ n - C a).Monic := by
-  obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  apply monic_X_pow_sub _
-  exact le_trans degree_C_le Nat.WithBot.coe_nonneg
+  simpa only [map_neg, ← sub_eq_add_neg] using monic_X_pow_add_C (-a) h
 set_option linter.uppercaseLean3 false in
 #align polynomial.monic_X_pow_sub_C Polynomial.monic_X_pow_sub_C
 

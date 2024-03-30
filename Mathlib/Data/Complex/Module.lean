@@ -185,14 +185,19 @@ instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [Algeb
     Algebra ℝ A :=
   RestrictScalars.algebra ℝ ℂ A
 
--- try to make sure we're not introducing diamonds.
+-- try to make sure we're not introducing diamonds but we will need
+-- `reducible_and_instances` which currently fails #10906
 example : Prod.algebra ℝ ℂ ℂ = (Prod.algebra ℂ ℂ ℂ).complexToReal := rfl
+
+-- try to make sure we're not introducing diamonds but we will need
+-- `reducible_and_instances` which currently fails #10906
 example {ι : Type*} [Fintype ι] :
     Pi.algebra (R := ℝ) ι (fun _ ↦ ℂ) = (Pi.algebra (R := ℂ) ι (fun _ ↦ ℂ)).complexToReal :=
   rfl
+
 example {A : Type*} [Ring A] [inst : Algebra ℂ A] :
     (inst.complexToReal).toModule = (inst.toModule).complexToReal :=
-  rfl
+  by with_reducible_and_instances rfl
 
 @[simp, norm_cast]
 theorem Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (y : E) :
@@ -304,7 +309,7 @@ theorem toMatrix_conjAe :
 theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ ℂ ∨ f = conjAe := by
   refine'
       (eq_or_eq_neg_of_sq_eq_sq (f I) I <| by rw [← map_pow, I_sq, map_neg, map_one]).imp _ _ <;>
-    refine' fun h => algHom_ext _
+    refine fun h => algHom_ext ?_
   exacts [h, conj_I.symm ▸ h]
 #align complex.real_alg_hom_eq_id_or_conj Complex.real_algHom_eq_id_or_conj
 

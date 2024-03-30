@@ -23,8 +23,8 @@ In this file we prove the following lemmas.
 * `Polynomial.continuous`:  `Polynomial.eval` defines a continuous functions;
   we also prove convenience lemmas `Polynomial.continuousAt`, `Polynomial.continuousWithinAt`,
   `Polynomial.continuousOn`.
-* `Polynomial.tendsto_norm_atTop`: `λ x, ‖Polynomial.eval (z x) p‖` tends to infinity provided that
-  `fun x ↦ ‖z x‖` tends to infinity and `0 < degree p`;
+* `Polynomial.tendsto_norm_atTop`: `fun x ↦ ‖Polynomial.eval (z x) p‖` tends to infinity provided
+  that `fun x ↦ ‖z x‖` tends to infinity and `0 < degree p`;
 * `Polynomial.tendsto_abv_eval₂_atTop`, `Polynomial.tendsto_abv_atTop`,
   `Polynomial.tendsto_abv_aeval_atTop`: a few versions of the previous statement for
   `IsAbsoluteValue abv` instead of norm.
@@ -45,26 +45,29 @@ section TopologicalSemiring
 
 variable {R S : Type*} [Semiring R] [TopologicalSpace R] [TopologicalSemiring R] (p : R[X])
 
-@[continuity]
+@[continuity, fun_prop]
 protected theorem continuous_eval₂ [Semiring S] (p : S[X]) (f : S →+* R) :
     Continuous fun x => p.eval₂ f x := by
   simp only [eval₂_eq_sum, Finsupp.sum]
   exact continuous_finset_sum _ fun c _ => continuous_const.mul (continuous_pow _)
 #align polynomial.continuous_eval₂ Polynomial.continuous_eval₂
 
-@[continuity]
+@[continuity, fun_prop]
 protected theorem continuous : Continuous fun x => p.eval x :=
   p.continuous_eval₂ _
 #align polynomial.continuous Polynomial.continuous
 
+@[fun_prop]
 protected theorem continuousAt {a : R} : ContinuousAt (fun x => p.eval x) a :=
   p.continuous.continuousAt
 #align polynomial.continuous_at Polynomial.continuousAt
 
+@[fun_prop]
 protected theorem continuousWithinAt {s a} : ContinuousWithinAt (fun x => p.eval x) s a :=
   p.continuous.continuousWithinAt
 #align polynomial.continuous_within_at Polynomial.continuousWithinAt
 
+@[fun_prop]
 protected theorem continuousOn {s} : ContinuousOn (fun x => p.eval x) s :=
   p.continuous.continuousOn
 #align polynomial.continuous_on Polynomial.continuousOn
@@ -76,20 +79,23 @@ section TopologicalAlgebra
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [TopologicalSpace A]
   [TopologicalSemiring A] (p : R[X])
 
-@[continuity]
+@[continuity, fun_prop]
 protected theorem continuous_aeval : Continuous fun x : A => aeval x p :=
   p.continuous_eval₂ _
 #align polynomial.continuous_aeval Polynomial.continuous_aeval
 
+@[fun_prop]
 protected theorem continuousAt_aeval {a : A} : ContinuousAt (fun x : A => aeval x p) a :=
   p.continuous_aeval.continuousAt
 #align polynomial.continuous_at_aeval Polynomial.continuousAt_aeval
 
+@[fun_prop]
 protected theorem continuousWithinAt_aeval {s a} :
     ContinuousWithinAt (fun x : A => aeval x p) s a :=
   p.continuous_aeval.continuousWithinAt
 #align polynomial.continuous_within_at_aeval Polynomial.continuousWithinAt_aeval
 
+@[fun_prop]
 protected theorem continuousOn_aeval {s} : ContinuousOn (fun x : A => aeval x p) s :=
   p.continuous_aeval.continuousOn
 #align polynomial.continuous_on_aeval Polynomial.continuousOn_aeval

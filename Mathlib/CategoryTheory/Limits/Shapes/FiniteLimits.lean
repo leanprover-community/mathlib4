@@ -163,13 +163,11 @@ variable {J : Type v}
 
 namespace WidePullbackShape
 
-instance fintypeObj [Fintype J] : Fintype (WidePullbackShape J) := by
-  rw [WidePullbackShape]
-  infer_instance
+instance fintypeObj [Fintype J] : Fintype (WidePullbackShape J) :=
+  instFintypeOption
 #align category_theory.limits.wide_pullback_shape.fintype_obj CategoryTheory.Limits.WidePullbackShape.fintypeObj
 
-instance fintypeHom (j j' : WidePullbackShape J) : Fintype (j ⟶ j')
-    where
+instance fintypeHom (j j' : WidePullbackShape J) : Fintype (j ⟶ j') where
   elems := by
     cases' j' with j'
     · cases' j with j
@@ -226,12 +224,11 @@ for every finite collection of morphisms
 -/
 class HasFiniteWidePullbacks : Prop where
   /-- `C` has all wide pullbacks any Fintype `J`-/
-  out (J : Type) [Fintype J] : HasLimitsOfShape (WidePullbackShape J) C
+  out (J : Type) [Finite J] : HasLimitsOfShape (WidePullbackShape J) C
 #align category_theory.limits.has_finite_wide_pullbacks CategoryTheory.Limits.HasFiniteWidePullbacks
 
 instance hasLimitsOfShape_widePullbackShape (J : Type) [Finite J] [HasFiniteWidePullbacks C] :
     HasLimitsOfShape (WidePullbackShape J) C := by
-  cases nonempty_fintype J
   haveI := @HasFiniteWidePullbacks.out C _ _ J
   infer_instance
 #align category_theory.limits.has_limits_of_shape_wide_pullback_shape CategoryTheory.Limits.hasLimitsOfShape_widePullbackShape
@@ -241,12 +238,11 @@ for every finite collection of morphisms
 -/
 class HasFiniteWidePushouts : Prop where
   /-- `C` has all wide pushouts any Fintype `J`-/
-  out (J : Type) [Fintype J] : HasColimitsOfShape (WidePushoutShape J) C
+  out (J : Type) [Finite J] : HasColimitsOfShape (WidePushoutShape J) C
 #align category_theory.limits.has_finite_wide_pushouts CategoryTheory.Limits.HasFiniteWidePushouts
 
 instance hasColimitsOfShape_widePushoutShape (J : Type) [Finite J] [HasFiniteWidePushouts C] :
     HasColimitsOfShape (WidePushoutShape J) C := by
-  cases nonempty_fintype J
   haveI := @HasFiniteWidePushouts.out C _ _ J
   infer_instance
 #align category_theory.limits.has_colimits_of_shape_wide_pushout_shape CategoryTheory.Limits.hasColimitsOfShape_widePushoutShape
@@ -255,7 +251,7 @@ instance hasColimitsOfShape_widePushoutShape (J : Type) [Finite J] [HasFiniteWid
 it also has finite wide pullbacks
 -/
 theorem hasFiniteWidePullbacks_of_hasFiniteLimits [HasFiniteLimits C] : HasFiniteWidePullbacks C :=
-  ⟨fun _ _ => HasFiniteLimits.out _⟩
+  ⟨fun J _ => by cases nonempty_fintype J; exact HasFiniteLimits.out _⟩
 #align category_theory.limits.has_finite_wide_pullbacks_of_has_finite_limits CategoryTheory.Limits.hasFiniteWidePullbacks_of_hasFiniteLimits
 
 /-- Finite wide pushouts are finite colimits, so if `C` has all finite colimits,
@@ -263,7 +259,7 @@ it also has finite wide pushouts
 -/
 theorem hasFiniteWidePushouts_of_has_finite_limits [HasFiniteColimits C] :
     HasFiniteWidePushouts C :=
-  ⟨fun _ _ => HasFiniteColimits.out _⟩
+  ⟨fun J _ => by cases nonempty_fintype J; exact HasFiniteColimits.out _⟩
 #align category_theory.limits.has_finite_wide_pushouts_of_has_finite_limits CategoryTheory.Limits.hasFiniteWidePushouts_of_has_finite_limits
 
 instance fintypeWalkingPair : Fintype WalkingPair where

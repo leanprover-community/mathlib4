@@ -394,7 +394,7 @@ theorem c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
   let d := (↑ₘg 1 1 : ℝ)
   calc
     (c * z.im) ^ 2 ≤ (c * z.im) ^ 2 + (c * z.re + d) ^ 2 := by nlinarith
-    _ = Complex.normSq (denom g z) := by dsimp [denom, Complex.normSq]; ring
+    _ = Complex.normSq (denom g z) := by dsimp [c, d, denom, Complex.normSq]; ring
 #align upper_half_plane.c_mul_im_sq_le_norm_sq_denom UpperHalfPlane.c_mul_im_sq_le_normSq_denom
 
 @[simp]
@@ -535,19 +535,19 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : ↑�
         (w +ᵥ ·) ∘ (ModularGroup.S • · : ℍ → ℍ) ∘ (v +ᵥ · : ℍ → ℍ) ∘ (u • · : ℍ → ℍ) := by
   have h_denom := denom_ne_zero g
   induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h
-  replace hc : c ≠ 0; · simpa using hc
+  replace hc : c ≠ 0 := by simpa using hc
   refine' ⟨⟨_, mul_self_pos.mpr hc⟩, c * d, a / c, _⟩
   ext1 ⟨z, hz⟩; ext1
   suffices (↑a * z + b) / (↑c * z + d) = a / c - (c * d + ↑c * ↑c * z)⁻¹ by
     -- Porting note: golfed broken proof
     simpa only [modular_S_smul, inv_neg, Function.comp_apply, coe_vadd, Complex.ofReal_mul,
       coe_pos_real_smul, Complex.real_smul, Complex.ofReal_div, coe_mk]
-  replace hc : (c : ℂ) ≠ 0; · norm_cast
-  replace h_denom : ↑c * z + d ≠ 0; · simpa using h_denom ⟨z, hz⟩
+  replace hc : (c : ℂ) ≠ 0 := by norm_cast
+  replace h_denom : ↑c * z + d ≠ 0 := by simpa using h_denom ⟨z, hz⟩
   have h_aux : (c : ℂ) * d + ↑c * ↑c * z ≠ 0 := by
     rw [mul_assoc, ← mul_add, add_comm]
     exact mul_ne_zero hc h_denom
-  replace h : (a * d - b * c : ℂ) = (1 : ℂ); · norm_cast
+  replace h : (a * d - b * c : ℂ) = (1 : ℂ) := by norm_cast
   field_simp
   linear_combination (-(z * (c:ℂ) ^ 2) - c * d) * h
 #align upper_half_plane.exists_SL2_smul_eq_of_apply_zero_one_ne_zero UpperHalfPlane.exists_SL2_smul_eq_of_apply_zero_one_ne_zero

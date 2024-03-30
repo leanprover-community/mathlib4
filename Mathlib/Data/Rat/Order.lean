@@ -239,9 +239,9 @@ theorem nonneg_iff_zero_le {a} : Rat.Nonneg a ↔ 0 ≤ a := by
   simp
 #align rat.nonneg_iff_zero_le Rat.nonneg_iff_zero_le
 
-theorem num_nonneg_iff_zero_le : ∀ {a : ℚ}, 0 ≤ a.num ↔ 0 ≤ a
+@[simp] lemma num_nonneg : ∀ {a : ℚ}, 0 ≤ a.num ↔ 0 ≤ a
   | ⟨n, d, h, c⟩ => @nonneg_iff_zero_le ⟨n, d, h, c⟩
-#align rat.num_nonneg_iff_zero_le Rat.num_nonneg_iff_zero_le
+#align rat.num_nonneg_iff_zero_le Rat.num_nonneg
 
 protected theorem add_le_add_left {a b c : ℚ} : c + a ≤ c + b ↔ a ≤ b := by
   rw [Rat.le_iff_Nonneg, add_sub_add_left_eq_sub, Rat.le_iff_Nonneg]
@@ -275,10 +275,13 @@ instance : OrderedCancelAddCommMonoid ℚ := by infer_instance
 
 instance : OrderedAddCommMonoid ℚ := by infer_instance
 
-theorem num_pos_iff_pos {a : ℚ} : 0 < a.num ↔ 0 < a :=
-  lt_iff_lt_of_le_iff_le <| by
-    simpa [(by cases a; rfl : (-a).num = -a.num)] using @num_nonneg_iff_zero_le (-a)
-#align rat.num_pos_iff_pos Rat.num_pos_iff_pos
+@[simp] lemma num_nonpos {a : ℚ} : a.num ≤ 0 ↔ a ≤ 0 := by simpa using @num_nonneg (-a)
+@[simp] lemma num_pos {a : ℚ} : 0 < a.num ↔ 0 < a := lt_iff_lt_of_le_iff_le num_nonpos
+#align rat.num_pos_iff_pos Rat.num_pos
+@[simp] lemma num_neg {a : ℚ} : a.num < 0 ↔ a < 0 := lt_iff_lt_of_le_iff_le num_nonneg
+
+@[deprecated] alias num_nonneg_iff_zero_le := num_nonneg -- 2024-02-16
+@[deprecated] alias num_pos_iff_pos := num_pos -- 2024-02-16
 
 theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
     (a : ℚ) / b < c / d ↔ a * d < c * b := by

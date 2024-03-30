@@ -2174,7 +2174,7 @@ theorem prod_eq_zero_iff : ∏ x in s, f x = 0 ↔ ∃ a ∈ s, f a = 0 := by
   classical
     induction' s using Finset.induction_on with a s ha ih
     · exact ⟨Not.elim one_ne_zero, fun ⟨_, H, _⟩ => by simp at H⟩
-    · rw [prod_insert ha, mul_eq_zero, exists_mem_insert, ih, ← bex_def]
+    · rw [prod_insert ha, mul_eq_zero, exists_mem_insert, ih]
 #align finset.prod_eq_zero_iff Finset.prod_eq_zero_iff
 
 theorem prod_ne_zero_iff : ∏ x in s, f x ≠ 0 ↔ ∀ a ∈ s, f a ≠ 0 := by
@@ -2314,8 +2314,8 @@ theorem prod_subtype_mul_prod_subtype {α β : Type*} [Fintype α] [CommMonoid �
     let s := { x | p x }.toFinset
     rw [← Finset.prod_subtype s, ← Finset.prod_subtype sᶜ]
     · exact Finset.prod_mul_prod_compl _ _
-    · simp
-    · simp
+    · simp [s]
+    · simp [s]
 #align fintype.prod_subtype_mul_prod_subtype Fintype.prod_subtype_mul_prod_subtype
 #align fintype.sum_subtype_add_sum_subtype Fintype.sum_subtype_add_sum_subtype
 

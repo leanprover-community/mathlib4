@@ -623,7 +623,7 @@ theorem factorization_gcd {a b : ℕ} (ha_pos : a ≠ 0) (hb_pos : b ≠ 0) :
   let d := dfac.prod (· ^ ·)
   have dfac_prime : ∀ p : ℕ, p ∈ dfac.support → Prime p := by
     intro p hp
-    have : p ∈ a.factors ∧ p ∈ b.factors := by simpa using hp
+    have : p ∈ a.factors ∧ p ∈ b.factors := by simpa [dfac] using hp
     exact prime_of_mem_factors this.1
   have h1 : d.factorization = dfac := prod_pow_factorization_eq_self dfac_prime
   have hd_pos : d ≠ 0 := (factorizationEquiv.invFun ⟨dfac, dfac_prime⟩).2.ne'
@@ -639,7 +639,7 @@ theorem factorization_gcd {a b : ℕ} (ha_pos : a ≠ 0) (hb_pos : b ≠ 0) :
       contradiction
     have hea' := (factorization_le_iff_dvd he_pos ha_pos).mpr hea
     have heb' := (factorization_le_iff_dvd he_pos hb_pos).mpr heb
-    simp [← factorization_le_iff_dvd he_pos hd_pos, h1, hea', heb']
+    simp [dfac, ← factorization_le_iff_dvd he_pos hd_pos, h1, hea', heb']
 #align nat.factorization_gcd Nat.factorization_gcd
 
 theorem factorization_lcm {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :

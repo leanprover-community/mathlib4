@@ -139,7 +139,7 @@ def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
 @[simp]
 theorem toEven_ι (m : M) : (toEven Q (ι Q m) : CliffordAlgebra (Q' Q)) = e0 Q * v Q m := by
   rw [toEven, CliffordAlgebra.lift_ι_apply]
-  -- porting note: was `rw`
+  -- Porting note (#10691): was `rw`
   erw [LinearMap.codRestrict_apply]
   rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.mulLeft_apply]
 #align clifford_algebra.to_even_ι CliffordAlgebra.toEven_ι
@@ -182,7 +182,7 @@ theorem ofEven_ι (x y : M × R) :
   lift_lets
   intro f
   -- TODO: replacing `?_` with `_` takes way longer?
-  refine @even.lift_ι R (M × R) _ _ _ (Q' Q) _ _ _ ⟨f, ?_, ?_⟩ x y
+  exact @even.lift_ι R (M × R) _ _ _ (Q' Q) _ _ _ ⟨f, ?_, ?_⟩ x y
 #align clifford_algebra.of_even_ι CliffordAlgebra.ofEven_ι
 
 theorem toEven_comp_ofEven : (toEven Q).comp (ofEven Q) = AlgHom.id R _ :=

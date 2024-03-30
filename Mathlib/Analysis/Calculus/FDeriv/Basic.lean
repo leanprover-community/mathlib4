@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.TangentCone
-import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Asymptotics
 
 #align_import analysis.calculus.fderiv.basic from "leanprover-community/mathlib"@"41bef4ae1254365bc190aee63b947674d2977f01"
 
@@ -696,8 +696,8 @@ theorem fderivWithin_inter (ht : t ∈ 𝓝 x) : fderivWithin 𝕜 f (s ∩ t) x
 theorem fderivWithin_univ : fderivWithin 𝕜 f univ = fderiv 𝕜 f := by
   ext1 x
   nontriviality E
-  have H : 𝓝[univ \ {x}] x ≠ ⊥
-  · rw [← compl_eq_univ_diff, ← neBot_iff]
+  have H : 𝓝[univ \ {x}] x ≠ ⊥ := by
+    rw [← compl_eq_univ_diff, ← neBot_iff]
     exact Module.punctured_nhds_neBot 𝕜 E x
   simp [fderivWithin, fderiv, H]
 #align fderiv_within_univ fderivWithin_univ

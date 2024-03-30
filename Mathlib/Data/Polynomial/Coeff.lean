@@ -114,7 +114,7 @@ theorem finset_sum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
     coeff (p.sum f) n = p.sum fun a b => coeff (f a b) n := by
   rcases p with ⟨⟩
-  -- Porting note: Was `simp [Polynomial.sum, support, coeff]`.
+  -- porting note (#10745): was `simp [Polynomial.sum, support, coeff]`.
   simp [Polynomial.sum, support_ofFinsupp, coeff_ofFinsupp]
 #align polynomial.coeff_sum Polynomial.coeff_sum
 
@@ -319,8 +319,8 @@ theorem mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 :=
 #align polynomial.mul_X_pow_eq_zero Polynomial.mul_X_pow_eq_zero
 
 theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := by
-  suffices : IsLeftRegular (X^n : R[X])
-  · exact ⟨this, this.right_of_commute (fun p => commute_X_pow p n)⟩
+  suffices IsLeftRegular (X^n : R[X]) from
+    ⟨this, this.right_of_commute (fun p => commute_X_pow p n)⟩
   intro P Q (hPQ : X^n * P = X^n * Q)
   ext i
   rw [← coeff_X_pow_mul P n i, hPQ, coeff_X_pow_mul Q n i]
@@ -359,7 +359,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ
       let ψ : R[X] := ∑ i in φ.support, monomial i (c' i)
       use ψ
       ext i
-      simp only [coeff_C_mul, mem_support_iff, coeff_monomial, finset_sum_coeff,
+      simp only [c', ψ, coeff_C_mul, mem_support_iff, coeff_monomial, finset_sum_coeff,
         Finset.sum_ite_eq']
       split_ifs with hi
       · rw [hc]
@@ -397,7 +397,7 @@ theorem nat_cast_coeff_zero {n : ℕ} {R : Type*} [Semiring R] : (n : R[X]).coef
   simp only [coeff_nat_cast_ite, ite_true]
 #align polynomial.nat_cast_coeff_zero Polynomial.nat_cast_coeff_zero
 
-@[norm_cast] -- @[simp] -- Porting note: simp can prove this
+@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem nat_cast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
     (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
@@ -413,7 +413,7 @@ theorem int_cast_coeff_zero {i : ℤ} {R : Type*} [Ring R] : (i : R[X]).coeff 0 
   cases i <;> simp
 #align polynomial.int_cast_coeff_zero Polynomial.int_cast_coeff_zero
 
-@[norm_cast] -- @[simp] -- Porting note: simp can prove this
+@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem int_cast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
   · intro h

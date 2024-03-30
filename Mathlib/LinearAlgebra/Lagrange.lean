@@ -640,7 +640,7 @@ theorem nodalWeight_ne_zero (hvs : Set.InjOn v s) (hi : i ∈ s) : nodalWeight s
   rw [nodalWeight, prod_ne_zero_iff]
   intro j hj
   rcases mem_erase.mp hj with ⟨hij, hj⟩
-  refine' inv_ne_zero (sub_ne_zero_of_ne (mt (hvs.eq_iff hi hj).mp hij.symm))
+  exact inv_ne_zero (sub_ne_zero_of_ne (mt (hvs.eq_iff hi hj).mp hij.symm))
 #align lagrange.nodal_weight_ne_zero Lagrange.nodalWeight_ne_zero
 
 end NodalWeight

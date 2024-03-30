@@ -1270,6 +1270,11 @@ theorem LinearIsometryEquiv.inner_map_map (f : E ≃ₗᵢ[𝕜] E') (x y : E) :
   f.toLinearIsometry.inner_map_map x y
 #align linear_isometry_equiv.inner_map_map LinearIsometryEquiv.inner_map_map
 
+/-- The adjoint of a linear isometric equivalence is its inverse. -/
+theorem LinearIsometryEquiv.inner_map_eq_flip (f : E ≃ₗᵢ[𝕜] E') (x : E) (y : E') :
+    ⟪f x, y⟫_𝕜 = ⟪x, f.symm y⟫_𝕜 := by
+  conv_lhs => rw [← f.apply_symm_apply y, f.inner_map_map]
+
 /-- A linear map that preserves the inner product is a linear isometry. -/
 def LinearMap.isometryOfInner (f : E →ₗ[𝕜] E') (h : ∀ x y, ⟪f x, f y⟫ = ⟪x, y⟫) : E →ₗᵢ[𝕜] E' :=
   ⟨f, fun x => by simp only [@norm_eq_sqrt_inner 𝕜, h]⟩
@@ -1715,8 +1720,7 @@ theorem inner_lt_one_iff_real_of_norm_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖
 /-- The sphere of radius `r = ‖y‖` is tangent to the plane `⟪x, y⟫ = ‖y‖ ^ 2` at `x = y`. -/
 theorem eq_of_norm_le_re_inner_eq_norm_sq {x y : E} (hle : ‖x‖ ≤ ‖y‖) (h : re ⟪x, y⟫ = ‖y‖ ^ 2) :
     x = y := by
-  suffices H : re ⟪x - y, x - y⟫ ≤ 0
-  · rwa [inner_self_nonpos, sub_eq_zero] at H
+  suffices H : re ⟪x - y, x - y⟫ ≤ 0 by rwa [inner_self_nonpos, sub_eq_zero] at H
   have H₁ : ‖x‖ ^ 2 ≤ ‖y‖ ^ 2 := by gcongr
   have H₂ : re ⟪y, x⟫ = ‖y‖ ^ 2 := by rwa [← inner_conj_symm, conj_re]
   simpa [inner_sub_left, inner_sub_right, ← norm_sq_eq_inner, h, H₂] using H₁
@@ -1753,6 +1757,18 @@ theorem innerₛₗ_apply_coe (v : E) : ⇑(innerₛₗ 𝕜 v) = fun w => ⟪v,
 theorem innerₛₗ_apply (v w : E) : innerₛₗ 𝕜 v w = ⟪v, w⟫ :=
   rfl
 #align innerₛₗ_apply innerₛₗ_apply
+
+variable (F)
+/-- The inner product as a bilinear map in the real case. -/
+def innerₗ : F →ₗ[ℝ] F →ₗ[ℝ] ℝ := innerₛₗ ℝ
+
+@[simp] lemma flip_innerₗ : (innerₗ F).flip = innerₗ F := by
+  ext v w
+  exact real_inner_comm v w
+
+variable {F}
+
+@[simp] lemma innerₗ_apply (v w : F) : innerₗ F v w = ⟪v, w⟫_ℝ := rfl
 
 /-- The inner product as a continuous sesquilinear map. Note that `toDualMap` (resp. `toDual`)
 in `InnerProductSpace.Dual` is a version of this given as a linear isometry (resp. linear
@@ -1874,15 +1890,14 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
     intro z
     simp only [mul_conj, normSq_eq_def']
     norm_cast
-  suffices hbf : ‖x - ∑ i in s, ⟪v i, x⟫ • v i‖ ^ 2 = ‖x‖ ^ 2 - ∑ i in s, ‖⟪v i, x⟫‖ ^ 2
-  · rw [← sub_nonneg, ← hbf]
+  suffices hbf : ‖x - ∑ i in s, ⟪v i, x⟫ • v i‖ ^ 2 = ‖x‖ ^ 2 - ∑ i in s, ‖⟪v i, x⟫‖ ^ 2 by
+    rw [← sub_nonneg, ← hbf]
     simp only [norm_nonneg, pow_nonneg]
   rw [@norm_sub_sq 𝕜, sub_add]
-  classical
-    simp only [@InnerProductSpace.norm_sq_eq_inner 𝕜, _root_.inner_sum, _root_.sum_inner]
-    simp only [inner_smul_right, two_mul, inner_smul_left, inner_conj_symm, ← mul_assoc, h₂,
-      add_sub_cancel, sub_right_inj]
-    simp only [map_sum, ← inner_conj_symm x, ← h₃]
+  simp only [@InnerProductSpace.norm_sq_eq_inner 𝕜, _root_.inner_sum, _root_.sum_inner]
+  simp only [inner_smul_right, two_mul, inner_smul_left, inner_conj_symm, ← mul_assoc, h₂,
+    add_sub_cancel, sub_right_inj]
+  simp only [map_sum, ← inner_conj_symm x, ← h₃]
 
 #align orthonormal.sum_inner_products_le Orthonormal.sum_inner_products_le
 
@@ -2076,7 +2091,7 @@ theorem OrthogonalFamily.norm_sq_diff_sum [DecidableEq ι] (f : ∀ i, G i) (s�
   have hF₂ : ∀ i ∈ s₂ \ s₁, F i = -f i := fun i hi => if_neg (Finset.mem_sdiff.mp hi).2
   have hF : ∀ i, ‖F i‖ = ‖f i‖ := by
     intro i
-    dsimp only
+    dsimp only [F]
     split_ifs <;> simp only [eq_self_iff_true, norm_neg]
   have :
     ‖(∑ i in s₁ \ s₂, V i (F i)) + ∑ i in s₂ \ s₁, V i (F i)‖ ^ 2 =
@@ -2272,7 +2287,8 @@ end Continuous
 
 section ReApplyInnerSelf
 
-/-- Extract a real bilinear form from an operator `T`, by taking the pairing `λ x, re ⟪T x, x⟫`. -/
+/-- Extract a real bilinear form from an operator `T`,
+by taking the pairing `fun x ↦ re ⟪T x, x⟫`. -/
 def ContinuousLinearMap.reApplyInnerSelf (T : E →L[𝕜] E) (x : E) : ℝ :=
   re ⟪T x, x⟫
 #align continuous_linear_map.re_apply_inner_self ContinuousLinearMap.reApplyInnerSelf

@@ -320,7 +320,7 @@ theorem IsIntegralClosure.comap_ne_bot [Nontrivial R] {I : Ideal A} (I_ne_bot : 
 
 theorem IsIntegralClosure.eq_bot_of_comap_eq_bot [Nontrivial R] {I : Ideal A} :
     I.comap (algebraMap R A) = ⊥ → I = ⊥ := by
-  -- Porting note : `imp_of_not_imp_not` seems not existing
+  -- Porting note: `imp_of_not_imp_not` seems not existing
   contrapose; exact (IsIntegralClosure.comap_ne_bot S)
 #align ideal.is_integral_closure.eq_bot_of_comap_eq_bot Ideal.IsIntegralClosure.eq_bot_of_comap_eq_bot
 
@@ -406,12 +406,12 @@ lemma exists_ideal_comap_le_prime (P : Ideal R) [P.IsPrime]
     ∃ Q ≥ I, Q.IsPrime ∧ Q.comap (algebraMap R S) ≤ P := by
   let Sₚ := Localization (Algebra.algebraMapSubmonoid S P.primeCompl)
   let Iₚ := I.map (algebraMap S Sₚ)
-  have hI' : Disjoint (Algebra.algebraMapSubmonoid S P.primeCompl : Set S) I
-  · rw [Set.disjoint_iff]
+  have hI' : Disjoint (Algebra.algebraMapSubmonoid S P.primeCompl : Set S) I := by
+    rw [Set.disjoint_iff]
     rintro _ ⟨⟨x, hx : x ∉ P, rfl⟩, hx'⟩
     exact (hx (hI hx')).elim
-  have : Iₚ ≠ ⊤
-  · rw [Ne.def, Ideal.eq_top_iff_one, IsLocalization.mem_map_algebraMap_iff
+  have : Iₚ ≠ ⊤ := by
+    rw [Ne.def, Ideal.eq_top_iff_one, IsLocalization.mem_map_algebraMap_iff
       (Algebra.algebraMapSubmonoid S P.primeCompl) Sₚ, not_exists]
     simp only [one_mul, IsLocalization.eq_iff_exists (Algebra.algebraMapSubmonoid S P.primeCompl),
       not_exists]

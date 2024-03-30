@@ -356,7 +356,7 @@ theorem HasCompactSupport.smul_right (hf : HasCompactSupport f) : HasCompactSupp
 
 theorem HasCompactSupport.smul_left' (hf : HasCompactSupport f') : HasCompactSupport (f • f') := by
   rw [hasCompactSupport_iff_eventuallyEq] at hf ⊢
-  refine' hf.mono fun x hx => by simp_rw [Pi.smul_apply', hx, Pi.zero_apply, smul_zero]
+  exact hf.mono fun x hx => by simp_rw [Pi.smul_apply', hx, Pi.zero_apply, smul_zero]
 #align has_compact_support.smul_left' HasCompactSupport.smul_left'
 
 end SMulWithZero
@@ -369,12 +369,12 @@ variable {f f' : α → β} {x : α}
 
 theorem HasCompactSupport.mul_right (hf : HasCompactSupport f) : HasCompactSupport (f * f') := by
   rw [hasCompactSupport_iff_eventuallyEq] at hf ⊢
-  refine' hf.mono fun x hx => by simp_rw [Pi.mul_apply, hx, Pi.zero_apply, zero_mul]
+  exact hf.mono fun x hx => by simp_rw [Pi.mul_apply, hx, Pi.zero_apply, zero_mul]
 #align has_compact_support.mul_right HasCompactSupport.mul_right
 
 theorem HasCompactSupport.mul_left (hf : HasCompactSupport f') : HasCompactSupport (f * f') := by
   rw [hasCompactSupport_iff_eventuallyEq] at hf ⊢
-  refine' hf.mono fun x hx => by simp_rw [Pi.mul_apply, hx, Pi.zero_apply, mul_zero]
+  exact hf.mono fun x hx => by simp_rw [Pi.mul_apply, hx, Pi.zero_apply, mul_zero]
 #align has_compact_support.mul_left HasCompactSupport.mul_left
 
 end MulZeroClass
@@ -411,7 +411,8 @@ theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [On
         rw [inter_assoc] at hz
         exact mem_of_mem_inter_left hz
       replace hz := mem_of_mem_inter_right (mem_of_mem_inter_left hz)
-      simp only [Finset.mem_filter, Finite.mem_toFinset, mem_setOf_eq, mem_iInter, and_imp] at hz
+      simp only [js, Finset.mem_filter, Finite.mem_toFinset, mem_setOf_eq, mem_iInter,
+        and_imp] at hz
       suffices (mulSupport fun i => f i z) ⊆ hnf.toFinset by
         refine' hnf.toFinset.subset_coe_filter_of_subset_forall _ this fun i hi => _
         specialize hz i ⟨z, ⟨hi, hzn⟩⟩

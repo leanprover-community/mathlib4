@@ -372,7 +372,7 @@ instance isArtinian_of_quotient_of_artinian (R) [Ring R] (M) [AddCommGroup M] [M
 theorem isArtinian_of_tower (R) {S M} [CommRing R] [Ring S] [AddCommGroup M] [Algebra R S]
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsArtinian R M) : IsArtinian S M := by
   rw [isArtinian_iff_wellFounded] at h ⊢
-  refine' (Submodule.restrictScalarsEmbedding R S M).wellFounded h
+  exact (Submodule.restrictScalarsEmbedding R S M).wellFounded h
 #align is_artinian_of_tower isArtinian_of_tower
 
 instance (R) [CommRing R] [IsArtinianRing R] (I : Ideal R) : IsArtinianRing (R ⧸ I) :=
@@ -453,11 +453,10 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
     refine H (Ideal.mul_le_left.trans (le_of_le_smul_of_le_jacobson_bot (fg_span_singleton _) le_rfl
       (le_sup_right.trans_eq (this.eq_of_not_lt (hJ' _ ?_)).symm)))
     exact lt_of_le_of_ne le_sup_left fun h => H <| h.symm ▸ le_sup_right
-  have : Ideal.span {x} * Jac ^ (n + 1) ≤ ⊥
-  calc
+  have : Ideal.span {x} * Jac ^ (n + 1) ≤ ⊥ := calc
     Ideal.span {x} * Jac ^ (n + 1) = Ideal.span {x} * Jac * Jac ^ n := by rw [pow_succ, ← mul_assoc]
     _ ≤ J * Jac ^ n := (mul_le_mul (by rwa [mul_comm]) le_rfl)
-    _ = ⊥ := by simp
+    _ = ⊥ := by simp [J]
   refine' hxJ (mem_annihilator.2 fun y hy => (mem_bot R).1 _)
   refine' this (mul_mem_mul (mem_span_singleton_self x) _)
   rwa [← hn (n + 1) (Nat.le_succ _)]

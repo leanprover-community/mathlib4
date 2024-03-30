@@ -164,11 +164,11 @@ theorem pentagon (W X Y Z : ModuleCat R) :
 
 theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom (𝟙 (ModuleCat.of R R)) f ≫ (leftUnitor N).hom = (leftUnitor M).hom ≫ f := by
-  -- Porting note: broken ext
+  -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply LinearMap.ext_ring
   apply LinearMap.ext; intro x
-  -- Porting note: used to be dsimp
+  -- Porting note (#10934): used to be dsimp
   change ((leftUnitor N).hom) ((tensorHom (𝟙 (of R R)) f) ((1 : R) ⊗ₜ[R] x)) =
     f (((leftUnitor M).hom) (1 ⊗ₜ[R] x))
   erw [TensorProduct.lid_tmul, TensorProduct.lid_tmul]
@@ -178,11 +178,11 @@ theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
 
 theorem rightUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom f (𝟙 (ModuleCat.of R R)) ≫ (rightUnitor N).hom = (rightUnitor M).hom ≫ f := by
-  -- Porting note: broken ext
+  -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply LinearMap.ext; intro x
   apply LinearMap.ext_ring
-  -- Porting note: used to be dsimp
+  -- Porting note (#10934): used to be dsimp
   change ((rightUnitor N).hom) ((tensorHom f (𝟙 (of R R))) (x ⊗ₜ[R] (1 : R))) =
     f (((rightUnitor M).hom) (x ⊗ₜ[R] 1))
   erw [TensorProduct.rid_tmul, TensorProduct.rid_tmul]
@@ -196,7 +196,7 @@ theorem triangle (M N : ModuleCat.{u} R) :
   apply TensorProduct.ext_threefold
   intro x y z
   change R at y
-  -- Porting note: used to be dsimp [tensorHom, associator]
+  -- Porting note (#10934): used to be dsimp [tensorHom, associator]
   change x ⊗ₜ[R] ((leftUnitor N).hom) (y ⊗ₜ[R] z) = ((rightUnitor M).hom) (x ⊗ₜ[R] y) ⊗ₜ[R] z
   erw [TensorProduct.lid_tmul, TensorProduct.rid_tmul]
   exact (TensorProduct.smul_tmul _ _ _).symm

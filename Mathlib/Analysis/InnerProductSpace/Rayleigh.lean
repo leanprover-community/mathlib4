@@ -15,18 +15,18 @@ import Mathlib.LinearAlgebra.Eigenspace.Basic
 # The Rayleigh quotient
 
 The Rayleigh quotient of a self-adjoint operator `T` on an inner product space `E` is the function
-`λ x, ⟪T x, x⟫ / ‖x‖ ^ 2`.
+`fun x ↦ ⟪T x, x⟫ / ‖x‖ ^ 2`.
 
 The main results of this file are `IsSelfAdjoint.hasEigenvector_of_isMaxOn` and
 `IsSelfAdjoint.hasEigenvector_of_isMinOn`, which state that if `E` is complete, and if the
 Rayleigh quotient attains its global maximum/minimum over some sphere at the point `x₀`, then `x₀`
-is an eigenvector of `T`, and the `iSup`/`iInf` of `λ x, ⟪T x, x⟫ / ‖x‖ ^ 2` is the corresponding
+is an eigenvector of `T`, and the `iSup`/`iInf` of `fun x ↦ ⟪T x, x⟫ / ‖x‖ ^ 2` is the corresponding
 eigenvalue.
 
 The corollaries `LinearMap.IsSymmetric.hasEigenvalue_iSup_of_finiteDimensional` and
 `LinearMap.IsSymmetric.hasEigenvalue_iSup_of_finiteDimensional` state that if `E` is
 finite-dimensional and nontrivial, then `T` has some (nonzero) eigenvectors with eigenvalue the
-`iSup`/`iInf` of `λ x, ⟪T x, x⟫ / ‖x‖ ^ 2`.
+`iSup`/`iInf` of `fun x ↦ ⟪T x, x⟫ / ‖x‖ ^ 2`.
 
 ## TODO
 
@@ -72,9 +72,9 @@ theorem image_rayleigh_eq_image_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
   · rintro ⟨x, hx : x ≠ 0, hxT⟩
     have : ‖x‖ ≠ 0 := by simp [hx]
     let c : 𝕜 := ↑‖x‖⁻¹ * r
-    have : c ≠ 0 := by simp [hx, hr.ne']
+    have : c ≠ 0 := by simp [c, hx, hr.ne']
     refine' ⟨c • x, _, _⟩
-    · field_simp [norm_smul, abs_of_pos hr]
+    · field_simp [c, norm_smul, abs_of_pos hr]
     · rw [T.rayleigh_smul x this]
       exact hxT
   · rintro ⟨x, hx, hxT⟩
@@ -125,7 +125,7 @@ theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
     ext x
     simp [dist_eq_norm]
   -- find Lagrange multipliers for the function `T.re_apply_inner_self` and the
-  -- hypersurface-defining function `λ x, ‖x‖ ^ 2`
+  -- hypersurface-defining function `fun x ↦ ‖x‖ ^ 2`
   obtain ⟨a, b, h₁, h₂⟩ :=
     IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt_1d H (hasStrictFDerivAt_norm_sq x₀)
       (hT.isSymmetric.hasStrictFDerivAt_reApplyInnerSelf x₀)
@@ -154,7 +154,7 @@ theorem eq_smul_self_of_isLocalExtrOn_real (hT : IsSelfAdjoint T) {x₀ : F}
   have hc : T x₀ = c • x₀ := by
     have : b * (b⁻¹ * a) = a := by field_simp [mul_comm]
     apply smul_right_injective F hb
-    simp [eq_neg_of_add_eq_zero_left h₂, ← mul_smul, this]
+    simp [c, eq_neg_of_add_eq_zero_left h₂, ← mul_smul, this]
   convert hc
   have : ‖x₀‖ ≠ 0 := by simp [hx₀]
   have := congr_arg (fun x => ⟪x, x₀⟫_ℝ) hc

@@ -898,7 +898,7 @@ theorem tendstoUniformlyOnFilter_iff {F : ι → β → α} {f : β → α} {p :
       ∀ ε > 0, ∀ᶠ n : ι × β in p ×ˢ p', dist (f n.snd) (F n.fst n.snd) < ε := by
   refine' ⟨fun H ε hε => H _ (dist_mem_uniformity hε), fun H u hu => _⟩
   rcases mem_uniformity_dist.1 hu with ⟨ε, εpos, hε⟩
-  refine' (H ε εpos).mono fun n hn => hε hn
+  exact (H ε εpos).mono fun n hn => hε hn
 #align metric.tendsto_uniformly_on_filter_iff Metric.tendstoUniformlyOnFilter_iff
 
 /-- Expressing locally uniform convergence on a set using `dist`. -/

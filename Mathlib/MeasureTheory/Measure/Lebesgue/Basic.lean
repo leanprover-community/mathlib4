@@ -90,11 +90,11 @@ theorem volume_Ioo {a b : ℝ} : volume (Ioo a b) = ofReal (b - a) := by simp [v
 theorem volume_Ioc {a b : ℝ} : volume (Ioc a b) = ofReal (b - a) := by simp [volume_val]
 #align real.volume_Ioc Real.volume_Ioc
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem volume_singleton {a : ℝ} : volume ({a} : Set ℝ) = 0 := by simp [volume_val]
 #align real.volume_singleton Real.volume_singleton
 
--- @[simp] -- Porting note: simp can prove this, after mathlib4#4628
+-- @[simp] -- Porting note (#10618): simp can prove this, after mathlib4#4628
 theorem volume_univ : volume (univ : Set ℝ) = ∞ :=
   ENNReal.eq_top_of_forall_nnreal_le fun r =>
     calc
@@ -388,7 +388,7 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
   have : (toLin' t.toMatrix : (ι → ℝ) → ι → ℝ) = e.symm ∘ F ∘ e := by
     cases t with | mk t_i t_j t_hij t_c =>
     ext f k
-    simp only [LinearEquiv.map_smul, dite_eq_ite, LinearMap.id_coe, ite_not,
+    simp only [e, g, p, LinearEquiv.map_smul, dite_eq_ite, LinearMap.id_coe, ite_not,
       Algebra.id.smul_eq_mul, one_mul, dotProduct, stdBasisMatrix,
       MeasurableEquiv.piEquivPiSubtypeProd_symm_apply, id.def, transvection, Pi.add_apply,
       zero_mul, LinearMap.smul_apply, Function.comp_apply,
@@ -447,8 +447,8 @@ theorem map_linearMap_volume_pi_eq_smul_volume_pi {f : (ι → ℝ) →ₗ[ℝ] 
   classical
     -- this is deduced from the matrix case
     let M := LinearMap.toMatrix' f
-    have A : LinearMap.det f = det M := by simp only [LinearMap.det_toMatrix']
-    have B : f = toLin' M := by simp only [toLin'_toMatrix']
+    have A : LinearMap.det f = det M := by simp only [M, LinearMap.det_toMatrix']
+    have B : f = toLin' M := by simp only [M, toLin'_toMatrix']
     rw [A, B]
     apply map_matrix_volume_pi_eq_smul_volume_pi
     rwa [A] at hf
@@ -665,7 +665,7 @@ theorem ae_restrict_of_ae_restrict_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s 
   · have : μ.restrict (s \ u) = 0 := by simp only [restrict_eq_zero, hfinite.measure_zero]
     simp only [this, ae_zero, eventually_bot]
   · rintro ⟨⟨a, as⟩, ⟨b, bs⟩⟩ -
-    dsimp
+    dsimp [T]
     rcases le_or_lt b a with (hba | hab)
     · simp only [Ioo_eq_empty_of_le hba, inter_empty, restrict_empty, ae_zero, eventually_bot]
     · exact h a b as bs hab

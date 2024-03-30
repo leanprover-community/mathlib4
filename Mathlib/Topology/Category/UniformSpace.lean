@@ -79,7 +79,7 @@ theorem coe_id (X : UniformSpaceCat) : (𝟙 X : X → X) = id :=
   rfl
 #align UniformSpace.coe_id UniformSpaceCat.coe_id
 
--- Porting note : removed `simp` attribute due to `LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`
+-- Porting note: removed `simp` attribute due to `LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`
 theorem coe_mk {X Y : UniformSpaceCat} (f : X → Y) (hf : UniformContinuous f) :
     ((⟨f, hf⟩ : X ⟶ Y) : X → Y) = f :=
   rfl
@@ -194,7 +194,7 @@ noncomputable def extensionHom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
   property := Completion.uniformContinuous_extension
 #align UniformSpace.extension_hom UniformSpaceCat.extensionHom
 
--- Porting note : added this instance to make things compile
+-- Porting note (#10754): added this instance to make things compile
 instance (X : UniformSpaceCat) : UniformSpace ((forget _).obj X) :=
   show UniformSpace X from inferInstance
 
@@ -227,7 +227,7 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
       homEquiv_naturality_left_symm := fun {X' X Y} f g => by
         apply hom_ext; funext x; dsimp
         erw [coe_comp]
-        -- Porting note : used to be `erw [← Completion.extension_map]`
+        -- Porting note: used to be `erw [← Completion.extension_map]`
         have := (Completion.extension_map (γ := Y) (f := g) g.2 f.2)
         simp only [forget_map_eq_coe] at this ⊢
         erw [this]

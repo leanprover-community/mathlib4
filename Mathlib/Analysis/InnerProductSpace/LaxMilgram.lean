@@ -3,11 +3,7 @@ Copyright (c) 2022 Daniel Roca González. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Roca González
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.NormedSpace.Banach
-import Mathlib.Analysis.NormedSpace.OperatorNorm
-import Mathlib.Topology.MetricSpace.Antilipschitz
 
 #align_import analysis.inner_product_space.lax_milgram from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 

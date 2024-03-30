@@ -52,8 +52,8 @@ theorem bot_topologicalSpace_eq_generateFrom_of_pred_succOrder [PartialOrder α]
     (⊥ : TopologicalSpace α) = generateFrom { s | ∃ a, s = Ioi a ∨ s = Iio a } := by
   refine' (eq_bot_of_singletons_open fun a => _).symm
   have h_singleton_eq_inter : {a} = Iio (succ a) ∩ Ioi (pred a) := by
-    suffices h_singleton_eq_inter' : {a} = Iic a ∩ Ici a
-    · rw [h_singleton_eq_inter', ← Ioi_pred, ← Iio_succ]
+    suffices h_singleton_eq_inter' : {a} = Iic a ∩ Ici a by
+      rw [h_singleton_eq_inter', ← Ioi_pred, ← Iio_succ]
     rw [inter_comm, Ici_inter_Iic, Icc_self a]
   rw [h_singleton_eq_inter]
   letI := Preorder.topology α

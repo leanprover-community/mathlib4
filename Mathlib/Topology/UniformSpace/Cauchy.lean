@@ -477,14 +477,14 @@ theorem cauchySeq_tendsto_of_isComplete [Preorder β] {K : Set α} (h₁ : IsCom
     ⟨univ, univ_mem, by rwa [image_univ, range_subset_iff]⟩
 #align cauchy_seq_tendsto_of_is_complete cauchySeq_tendsto_of_isComplete
 
-theorem Cauchy.le_nhds_lim [CompleteSpace α] [Nonempty α] {f : Filter α} (hf : Cauchy f) :
-    f ≤ 𝓝 (lim f) :=
+theorem Cauchy.le_nhds_lim [CompleteSpace α] {f : Filter α} (hf : Cauchy f) :
+    haveI := hf.1.nonempty; f ≤ 𝓝 (lim f) :=
   _root_.le_nhds_lim (CompleteSpace.complete hf)
 set_option linter.uppercaseLean3 false in
 #align cauchy.le_nhds_Lim Cauchy.le_nhds_lim
 
-theorem CauchySeq.tendsto_limUnder [Preorder β] [CompleteSpace α] [Nonempty α] {u : β → α}
-    (h : CauchySeq u) : Tendsto u atTop (𝓝 <| limUnder atTop u) :=
+theorem CauchySeq.tendsto_limUnder [Preorder β] [CompleteSpace α] {u : β → α} (h : CauchySeq u) :
+    haveI := h.1.nonempty; Tendsto u atTop (𝓝 <| limUnder atTop u) :=
   h.le_nhds_lim
 #align cauchy_seq.tendsto_lim CauchySeq.tendsto_limUnder
 

@@ -152,7 +152,7 @@ theorem sum_subgroup_units_eq_zero [Ring K] [NoZeroDivisors K]
   have h_sum_map := Finset.univ.sum_map a_mul_emb fun x => ((x : Kˣ) : K)
   -- ... and the former is the sum of x over G.
   -- By algebraic manipulation, we have Σ G, x = ∑ G, a x = a ∑ G, x
-  simp only [h_unchanged, Function.Embedding.coeFn_mk, Function.Embedding.toFun_eq_coe,
+  simp only [a_mul_emb, h_unchanged, Function.Embedding.coeFn_mk, Function.Embedding.toFun_eq_coe,
     mulLeftEmbedding_apply, Submonoid.coe_mul, Subgroup.coe_toSubmonoid, Units.val_mul,
     ← Finset.mul_sum] at h_sum_map
   -- thus one of (a - 1) or ∑ G, x is zero
@@ -196,10 +196,9 @@ theorem sum_subgroup_pow_eq_zero [CommRing K] [NoZeroDivisors K]
     congr
     rw [eq_comm]
     exact Multiset.map_univ_val_equiv (Equiv.mulRight a)
-  have h_multiset_map_sum :
-    (Multiset.map (fun x : G => ((x : Kˣ) : K) ^ k) Finset.univ.val).sum =
-      (Multiset.map (fun x : G => ((x : Kˣ) : K) ^ k * ((a : Kˣ) : K) ^ k) Finset.univ.val).sum
-  rw [h_multiset_map]
+  have h_multiset_map_sum : (Multiset.map (fun x : G => ((x : Kˣ) : K) ^ k) Finset.univ.val).sum =
+    (Multiset.map (fun x : G => ((x : Kˣ) : K) ^ k * ((a : Kˣ) : K) ^ k) Finset.univ.val).sum := by
+    rw [h_multiset_map]
   rw [Multiset.sum_map_mul_right] at h_multiset_map_sum
   have hzero : (((a : Kˣ) : K) ^ k - 1 : K)
                   * (Multiset.map (fun i : G => (i.val : K) ^ k) Finset.univ.val).sum = 0 := by
@@ -299,7 +298,7 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
               cast_card_eq_zero, Nat.cast_one, zero_sub]
             show 1 ≤ q; exact Fintype.card_pos_iff.mpr ⟨0⟩
         rw [← forall_pow_eq_one_iff, DFunLike.ext_iff]
-        apply forall_congr'; intro x; simp [Units.ext_iff]
+        apply forall_congr'; intro x; simp [φ, Units.ext_iff]
 #align finite_field.sum_pow_units FiniteField.sum_pow_units
 
 /-- The sum of `x ^ i` as `x` ranges over a finite field of cardinality `q`
@@ -312,12 +311,12 @@ theorem sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : ∑ x : K, x ^ i = 0
     let φ : Kˣ ↪ K := ⟨fun x ↦ x, Units.ext⟩
     have : univ.map φ = univ \ {0} := by
       ext x
-      simp only [true_and_iff, Function.Embedding.coeFn_mk, mem_sdiff, Units.exists_iff_ne_zero,
+      simp only [φ, true_and_iff, Function.Embedding.coeFn_mk, mem_sdiff, Units.exists_iff_ne_zero,
         mem_univ, mem_map, exists_prop_of_true, mem_singleton]
     calc
       ∑ x : K, x ^ i = ∑ x in univ \ {(0 : K)}, x ^ i := by
         rw [← sum_sdiff ({0} : Finset K).subset_univ, sum_singleton, zero_pow hi, add_zero]
-      _ = ∑ x : Kˣ, (x ^ i : K) := by simp [← this, univ.sum_map φ]
+      _ = ∑ x : Kˣ, (x ^ i : K) := by simp [φ, ← this, univ.sum_map φ]
       _ = 0 := by rw [sum_pow_units K i, if_neg]; exact hiq
 #align finite_field.sum_pow_lt_card_sub_one FiniteField.sum_pow_lt_card_sub_one
 
@@ -417,7 +416,7 @@ theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p,
       (by rw [ZMod.card, hp_odd])
   refine' ⟨a, b, _⟩
   rw [← sub_eq_zero]
-  simpa only [eval_C, eval_X, eval_pow, eval_sub, ← add_sub_assoc] using hab
+  simpa only [f, g, eval_C, eval_X, eval_pow, eval_sub, ← add_sub_assoc] using hab
 #align zmod.sq_add_sq ZMod.sq_add_sq
 
 end ZMod

@@ -129,7 +129,7 @@ theorem sl_non_abelian [Fintype n] [Nontrivial R] (h : 1 < Fintype.card n) :
   intro c
   have c' : A.val * B.val = B.val * A.val := by
     rw [← sub_eq_zero, ← sl_bracket, c.trivial, ZeroMemClass.coe_zero]
-  simpa [stdBasisMatrix, Matrix.mul_apply, hij] using congr_fun (congr_fun c' i) i
+  simpa [A, B, stdBasisMatrix, Matrix.mul_apply, hij] using congr_fun (congr_fun c' i) i
 #align lie_algebra.special_linear.sl_non_abelian LieAlgebra.SpecialLinear.sl_non_abelian
 
 end SpecialLinear

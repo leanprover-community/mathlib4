@@ -256,8 +256,8 @@ theorem log_injOn_pos : Set.InjOn log (Set.Ioi 0) :=
 #align real.log_inj_on_pos Real.log_injOn_pos
 
 theorem log_lt_sub_one_of_pos (hx1 : 0 < x) (hx2 : x ≠ 1) : log x < x - 1 := by
-  have h : log x ≠ 0
-  · rwa [← log_one, log_injOn_pos.ne_iff hx1]
+  have h : log x ≠ 0 := by
+    rwa [← log_one, log_injOn_pos.ne_iff hx1]
     exact mem_Ioi.mpr zero_lt_one
   linarith [add_one_lt_exp h, exp_log hx1]
 #align real.log_lt_sub_one_of_pos Real.log_lt_sub_one_of_pos
@@ -299,7 +299,7 @@ theorem log_pow (x : ℝ) (n : ℕ) : log (x ^ n) = n * log x := by
 @[simp]
 theorem log_zpow (x : ℝ) (n : ℤ) : log (x ^ n) = n * log x := by
   induction n
-  · rw [Int.ofNat_eq_coe, zpow_ofNat, log_pow, Int.cast_ofNat]
+  · rw [Int.ofNat_eq_coe, zpow_coe_nat, log_pow, Int.cast_ofNat]
   rw [zpow_negSucc, log_inv, log_pow, Int.cast_negSucc, Nat.cast_add_one, neg_mul_eq_neg_mul]
 #align real.log_zpow Real.log_zpow
 
@@ -466,8 +466,8 @@ namespace Real
 
 theorem tendsto_log_comp_add_sub_log (y : ℝ) :
     Tendsto (fun x : ℝ => log (x + y) - log x) atTop (𝓝 0) := by
-  have : Tendsto (fun x ↦ 1 + y / x) atTop (𝓝 (1 + 0))
-  · exact tendsto_const_nhds.add (tendsto_const_nhds.div_atTop tendsto_id)
+  have : Tendsto (fun x ↦ 1 + y / x) atTop (𝓝 (1 + 0)) :=
+    tendsto_const_nhds.add (tendsto_const_nhds.div_atTop tendsto_id)
   rw [← comap_exp_nhds_exp, exp_zero, tendsto_comap_iff, ← add_zero (1 : ℝ)]
   refine' this.congr' _
   filter_upwards [eventually_gt_atTop (0 : ℝ), eventually_gt_atTop (-y)] with x hx₀ hxy

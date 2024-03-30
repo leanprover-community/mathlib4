@@ -35,11 +35,11 @@ theorem snorm'_trim (hm : m ≤ m0) {f : α → E} (hf : StronglyMeasurable[m] f
 theorem limsup_trim (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] f) :
     (μ.trim hm).ae.limsup f = μ.ae.limsup f := by
   simp_rw [limsup_eq]
-  suffices h_set_eq : { a : ℝ≥0∞ | ∀ᵐ n ∂μ.trim hm, f n ≤ a } = { a : ℝ≥0∞ | ∀ᵐ n ∂μ, f n ≤ a }
-  · rw [h_set_eq]
+  suffices h_set_eq : { a : ℝ≥0∞ | ∀ᵐ n ∂μ.trim hm, f n ≤ a } = { a : ℝ≥0∞ | ∀ᵐ n ∂μ, f n ≤ a } by
+    rw [h_set_eq]
   ext1 a
-  suffices h_meas_eq : μ { x | ¬f x ≤ a } = μ.trim hm { x | ¬f x ≤ a }
-  · simp_rw [Set.mem_setOf_eq, ae_iff, h_meas_eq]; rfl
+  suffices h_meas_eq : μ { x | ¬f x ≤ a } = μ.trim hm { x | ¬f x ≤ a } by
+    simp_rw [Set.mem_setOf_eq, ae_iff, h_meas_eq]; rfl
   refine' (trim_measurableSet_eq hm _).symm
   refine' @MeasurableSet.compl _ _ m (@measurableSet_le ℝ≥0∞ _ _ _ _ m _ _ _ _ _ hf _)
   exact @measurable_const _ _ _ m _

@@ -136,7 +136,7 @@ theorem coe_injective : Injective ((↑) : MultilinearMap R M₁ M₂ → (∀ i
   DFunLike.coe_injective
 #align multilinear_map.coe_injective MultilinearMap.coe_injective
 
-@[norm_cast] -- Porting note: Removed simp attribute, simp can prove this
+@[norm_cast] -- Porting note (#10618): Removed simp attribute, simp can prove this
 theorem coe_inj {f g : MultilinearMap R M₁ M₂} : (f : (∀ i, M₁ i) → M₂) = g ↔ f = g :=
   DFunLike.coe_fn_eq
 #align multilinear_map.coe_inj MultilinearMap.coe_inj
@@ -464,8 +464,8 @@ theorem map_piecewise_add [DecidableEq ι] (m m' : ∀ i, M₁ i) (t : Finset ι
     ext j
     by_cases h : j = i
     · rw [h]
-      simp [hit]
-    · by_cases h' : j ∈ t <;> simp [h, hit, h']
+      simp [m'', hit]
+    · by_cases h' : j ∈ t <;> simp [m'', h, hit, h']
   rw [A, f.map_add, B, C, Finset.sum_powerset_insert hit, Hrec, Hrec, add_comm (_ : M₂)]
   congr 1
   refine Finset.sum_congr rfl fun s hs => ?_
@@ -473,8 +473,8 @@ theorem map_piecewise_add [DecidableEq ι] (m m' : ∀ i, M₁ i) (t : Finset ι
     ext j
     by_cases h : j = i
     · rw [h]
-      simp [Finset.not_mem_of_mem_powerset_of_not_mem hs hit]
-    · by_cases h' : j ∈ s <;> simp [h, h']
+      simp [m'', Finset.not_mem_of_mem_powerset_of_not_mem hs hit]
+    · by_cases h' : j ∈ s <;> simp [m'', h, h']
   rw [this]
 #align multilinear_map.map_piecewise_add MultilinearMap.map_piecewise_add
 
@@ -545,14 +545,14 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     intro i
     by_cases hi : i = i₀
     · rw [hi]
-      simp only [sdiff_subset, update_same]
-    · simp only [hi, update_noteq, Ne.def, not_false_iff, Finset.Subset.refl]
+      simp only [B, sdiff_subset, update_same]
+    · simp only [B, hi, update_noteq, Ne.def, not_false_iff, Finset.Subset.refl]
   have C_subset_A : ∀ i, C i ⊆ A i := by
     intro i
     by_cases hi : i = i₀
     · rw [hi]
-      simp only [hj₂, Finset.singleton_subset_iff, update_same]
-    · simp only [hi, update_noteq, Ne.def, not_false_iff, Finset.Subset.refl]
+      simp only [C, hj₂, Finset.singleton_subset_iff, update_same]
+    · simp only [C, hi, update_noteq, Ne.def, not_false_iff, Finset.Subset.refl]
   -- split the sum at `i₀` as the sum over `B i₀` plus the sum over `C i₀`, to use additivity.
   have A_eq_BC :
     (fun i => ∑ j in A i, g i j) =
@@ -562,15 +562,15 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     by_cases hi : i = i₀
     · rw [hi, update_same]
       have : A i₀ = B i₀ ∪ C i₀ := by
-        simp only [Function.update_same, Finset.sdiff_union_self_eq_union]
+        simp only [B, C, Function.update_same, Finset.sdiff_union_self_eq_union]
         symm
         simp only [hj₂, Finset.singleton_subset_iff, Finset.union_eq_left]
       rw [this]
       refine Finset.sum_union <| Finset.disjoint_right.2 fun j hj => ?_
       have : j = j₂ := by
-        simpa using hj
+        simpa [C] using hj
       rw [this]
-      simp only [mem_sdiff, eq_self_iff_true, not_true, not_false_iff, Finset.mem_singleton,
+      simp only [B, mem_sdiff, eq_self_iff_true, not_true, not_false_iff, Finset.mem_singleton,
         update_same, and_false_iff]
     · simp [hi]
   have Beq :
@@ -580,7 +580,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     by_cases hi : i = i₀
     · rw [hi]
       simp only [update_same]
-    · simp only [hi, update_noteq, Ne.def, not_false_iff]
+    · simp only [B, hi, update_noteq, Ne.def, not_false_iff]
   have Ceq :
     Function.update (fun i => ∑ j in A i, g i j) i₀ (∑ j in C i₀, g i₀ j) = fun i =>
       ∑ j in C i, g i j := by
@@ -588,7 +588,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     by_cases hi : i = i₀
     · rw [hi]
       simp only [update_same]
-    · simp only [hi, update_noteq, Ne.def, not_false_iff]
+    · simp only [C, hi, update_noteq, Ne.def, not_false_iff]
   -- Express the inductive assumption for `B`
   have Brec : (f fun i => ∑ j in B i, g i j) = ∑ r in piFinset B, f fun i => g i (r i) := by
     have : (∑ i, Finset.card (B i)) < ∑ i, Finset.card (A i) := by
@@ -596,7 +596,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
         Finset.sum_lt_sum (fun i _ => Finset.card_le_card (B_subset_A i))
           ⟨i₀, Finset.mem_univ _, _⟩
       have : {j₂} ⊆ A i₀ := by simp [hj₂]
-      simp only [Finset.card_sdiff this, Function.update_same, Finset.card_singleton]
+      simp only [B, Finset.card_sdiff this, Function.update_same, Finset.card_singleton]
       exact Nat.pred_lt (ne_of_gt (lt_trans Nat.zero_lt_one hi₀))
     rw [h] at this
     exact IH _ this B rfl
@@ -604,11 +604,11 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
   have Crec : (f fun i => ∑ j in C i, g i j) = ∑ r in piFinset C, f fun i => g i (r i) := by
     have : (∑ i, Finset.card (C i)) < ∑ i, Finset.card (A i) :=
       Finset.sum_lt_sum (fun i _ => Finset.card_le_card (C_subset_A i))
-        ⟨i₀, Finset.mem_univ _, by simp [hi₀]⟩
+        ⟨i₀, Finset.mem_univ _, by simp [C, hi₀]⟩
     rw [h] at this
     exact IH _ this C rfl
   have D : Disjoint (piFinset B) (piFinset C) :=
-    haveI : Disjoint (B i₀) (C i₀) := by simp
+    haveI : Disjoint (B i₀) (C i₀) := by simp [B, C]
     piFinset_disjoint_of_disjoint B C this
   have pi_BC : piFinset A = piFinset B ∪ piFinset C := by
     apply Finset.Subset.antisymm
@@ -617,15 +617,15 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
       · apply Finset.mem_union_right
         refine mem_piFinset.2 fun i => ?_
         by_cases hi : i = i₀
-        · have : r i₀ ∈ C i₀ := by simp [hri₀]
+        · have : r i₀ ∈ C i₀ := by simp [C, hri₀]
           rwa [hi]
-        · simp [hi, mem_piFinset.1 hr i]
+        · simp [C, hi, mem_piFinset.1 hr i]
       · apply Finset.mem_union_left
         refine mem_piFinset.2 fun i => ?_
         by_cases hi : i = i₀
-        · have : r i₀ ∈ B i₀ := by simp [hri₀, mem_piFinset.1 hr i₀]
+        · have : r i₀ ∈ B i₀ := by simp [B, hri₀, mem_piFinset.1 hr i₀]
           rwa [hi]
-        · simp [hi, mem_piFinset.1 hr i]
+        · simp [B, hi, mem_piFinset.1 hr i]
     · exact
         Finset.union_subset (piFinset_subset _ _ fun i => B_subset_A i)
           (piFinset_subset _ _ fun i => C_subset_A i)

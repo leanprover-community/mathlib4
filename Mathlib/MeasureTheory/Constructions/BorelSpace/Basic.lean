@@ -1246,9 +1246,9 @@ theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
       Measurable.isLUB (fun i ↦ Measurable.piecewise hs (hf i) g'_meas) this
     intro b
     by_cases hb : b ∈ s
-    · have A : ∀ i, f' i b = f i b := fun i ↦ by simp [hb]
+    · have A : ∀ i, f' i b = f i b := fun i ↦ by simp [f', hb]
       simpa [A] using hg b hb
-    · have A : ∀ i, f' i b = g' b := fun i ↦ by simp [hb]
+    · have A : ∀ i, f' i b = g' b := fun i ↦ by simp [f', hb]
       have : {a | ∃ (_i : ι), g' b = a} = {g' b} := by
         apply Subset.antisymm
         · rintro - ⟨_j, rfl⟩
@@ -1269,7 +1269,7 @@ theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ 
   let g_seq := (aeSeqSet hf p).piecewise g fun _ => hα.some
   have hg_seq : ∀ b, IsLUB { a | ∃ i, aeSeq hf p i b = a } (g_seq b) := by
     intro b
-    simp only [aeSeq, Set.piecewise]
+    simp only [g_seq, aeSeq, Set.piecewise]
     split_ifs with h
     · have h_set_eq : { a : α | ∃ i : ι, (hf i).mk (f i) b = a } =
         { a : α | ∃ i : ι, f i b = a } := by
@@ -1499,10 +1499,10 @@ theorem aemeasurable_biSup {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ �
   let g : ι → δ → α := fun i ↦ if hi : i ∈ s then (hf i hi).mk (f i) else fun _b ↦ sSup ∅
   have : ∀ i ∈ s, Measurable (g i) := by
     intro i hi
-    simpa [hi] using (hf i hi).measurable_mk
+    simpa [g, hi] using (hf i hi).measurable_mk
   refine ⟨fun b ↦ ⨆ (i) (_ : i ∈ s), g i b, measurable_biSup s hs this, ?_⟩
   have : ∀ i ∈ s, ∀ᵐ b ∂μ, f i b = g i b :=
-    fun i hi ↦ by simpa [hi] using (hf i hi).ae_eq_mk
+    fun i hi ↦ by simpa [g, hi] using (hf i hi).ae_eq_mk
   filter_upwards [(ae_ball_iff hs).2 this] with b hb
   exact iSup_congr fun i => iSup_congr (hb i)
 #align ae_measurable_bsupr aemeasurable_biSup
@@ -2075,10 +2075,10 @@ theorem measurable_coe_nnreal_real_iff {f : α → ℝ≥0} :
 #align measurable_coe_nnreal_real_iff measurable_coe_nnreal_real_iff
 
 @[simp, norm_cast]
-theorem aEMeasurable_coe_nnreal_real_iff {f : α → ℝ≥0} {μ : Measure α} :
+theorem aemeasurable_coe_nnreal_real_iff {f : α → ℝ≥0} {μ : Measure α} :
     AEMeasurable (fun x => f x : α → ℝ) μ ↔ AEMeasurable f μ :=
   ⟨fun h => by simpa only [Real.toNNReal_coe] using h.real_toNNReal, AEMeasurable.coe_nnreal_real⟩
-#align ae_measurable_coe_nnreal_real_iff aEMeasurable_coe_nnreal_real_iff
+#align ae_measurable_coe_nnreal_real_iff aemeasurable_coe_nnreal_real_iff
 
 /-- The set of finite `ℝ≥0∞` numbers is `MeasurableEquiv` to `ℝ≥0`. -/
 def MeasurableEquiv.ennrealEquivNNReal : { r : ℝ≥0∞ | r ≠ ∞ } ≃ᵐ ℝ≥0 :=
@@ -2329,7 +2329,7 @@ theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → �
   · have :
       ⋃ i, sigma_finite_sets i ∩ norm_sets i = (⋃ i, sigma_finite_sets i) ∩ ⋃ i, norm_sets i := by
       refine' Set.iUnion_inter_of_monotone (monotone_spanningSets μ) fun i j hij x => _
-      simp only [Set.mem_setOf_eq]
+      simp only [norm_sets, Set.mem_setOf_eq]
       refine' fun hif => hif.trans _
       exact mod_cast hij
     rw [this, norm_sets_spanning, iUnion_spanningSets μ, Set.inter_univ]

@@ -102,7 +102,7 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
   set s := { x | f x ≤ B x } ∩ Icc a b
   have A : ContinuousOn (fun x => (f x, B x)) (Icc a b) := hf.prod hB
   have : IsClosed s := by
-    simp only [inter_comm]
+    simp only [s, inter_comm]
     exact A.preimage_isClosed_of_isClosed isClosed_Icc OrderClosedTopology.isClosed_le'
   apply this.Icc_subset_of_forall_exists_gt ha
   rintro x ⟨hxB : f x ≤ B x, xab⟩ y hy
@@ -118,8 +118,8 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
     have HB : ∀ᶠ z in 𝓝[>] x, r < slope B x z :=
       (hasDerivWithinAt_iff_tendsto_slope' <| lt_irrefl x).1 (hB' x xab).Ioi_of_Ici
         (Ioi_mem_nhds hrB)
-    obtain ⟨z, hfz, hzB, hz⟩ : ∃ z, slope f x z < r ∧ r < slope B x z ∧ z ∈ Ioc x y
-    exact (hf'.and_eventually (HB.and (Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, hy⟩))).exists
+    obtain ⟨z, hfz, hzB, hz⟩ : ∃ z, slope f x z < r ∧ r < slope B x z ∧ z ∈ Ioc x y :=
+      (hf'.and_eventually (HB.and (Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, hy⟩))).exists
     refine' ⟨z, _, hz⟩
     have := (hfz.trans hzB).le
     rwa [slope_def_field, slope_def_field, div_le_div_right (sub_pos.2 hz.1), hxB,
@@ -349,7 +349,7 @@ theorem norm_image_sub_le_of_norm_deriv_right_le_segment {f' : ℝ → E} {C : �
     intro x
     simpa using (hasDerivAt_const x C).mul ((hasDerivAt_id x).sub (hasDerivAt_const x a))
   convert image_norm_le_of_norm_deriv_right_le_deriv_boundary hg hg' _ hB bound
-  simp only; rw [sub_self, norm_zero, sub_self, mul_zero]
+  simp only [g, B]; rw [sub_self, norm_zero, sub_self, mul_zero]
 #align norm_image_sub_le_of_norm_deriv_right_le_segment norm_image_sub_le_of_norm_deriv_right_le_segment
 
 /-- A function on `[a, b]` with the norm of the derivative within `[a, b]`
@@ -470,7 +470,7 @@ theorem norm_image_sub_le_of_norm_hasFDerivWithin_le
       AffineMap.hasDerivWithinAt_lineMap segm
   have bound : ∀ t ∈ Ico (0 : ℝ) 1, ‖f' (g t) (y - x)‖ ≤ C * ‖y - x‖ := fun t ht =>
     le_of_opNorm_le _ (bound _ <| segm <| Ico_subset_Icc_self ht) _
-  simpa using norm_image_sub_le_of_norm_deriv_le_segment_01' hD bound
+  simpa [g] using norm_image_sub_le_of_norm_deriv_le_segment_01' hD bound
 #align convex.norm_image_sub_le_of_norm_has_fderiv_within_le Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le
 
 /-- The mean value theorem on a convex set: if the derivative of a function is bounded by `C` on
@@ -494,8 +494,9 @@ theorem exists_nhdsWithin_lipschitzOnWith_of_hasFDerivWithinAt_of_nnnorm_lt (hs 
     {f : E → G} (hder : ∀ᶠ y in 𝓝[s] x, HasFDerivWithinAt f (f' y) s y)
     (hcont : ContinuousWithinAt f' s x) (K : ℝ≥0) (hK : ‖f' x‖₊ < K) :
     ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t := by
-  obtain ⟨ε, ε0, hε⟩ : ∃ ε > 0, ball x ε ∩ s ⊆ { y | HasFDerivWithinAt f (f' y) s y ∧ ‖f' y‖₊ < K }
-  exact mem_nhdsWithin_iff.1 (hder.and <| hcont.nnnorm.eventually (gt_mem_nhds hK))
+  obtain ⟨ε, ε0, hε⟩ : ∃ ε > 0,
+      ball x ε ∩ s ⊆ { y | HasFDerivWithinAt f (f' y) s y ∧ ‖f' y‖₊ < K } :=
+    mem_nhdsWithin_iff.1 (hder.and <| hcont.nnnorm.eventually (gt_mem_nhds hK))
   rw [inter_comm] at hε
   refine' ⟨s ∩ ball x ε, inter_mem_nhdsWithin _ (ball_mem_nhds _ ε0), _⟩
   exact
@@ -729,7 +730,7 @@ variable (f f' : ℝ → ℝ) {a b : ℝ} (hab : a < b) (hfc : ContinuousOn f (I
 theorem exists_ratio_hasDerivAt_eq_ratio_slope :
     ∃ c ∈ Ioo a b, (g b - g a) * f' c = (f b - f a) * g' c := by
   let h x := (g b - g a) * f x - (f b - f a) * g x
-  have hI : h a = h b := by simp only; ring
+  have hI : h a = h b := by simp only [h]; ring
   let h' x := (g b - g a) * f' x - (f b - f a) * g' x
   have hhh' : ∀ x ∈ Ioo a b, HasDerivAt h (h' x) x := fun x hx =>
     ((hff' x hx).const_mul (g b - g a)).sub ((hgg' x hx).const_mul (f b - f a))
@@ -841,8 +842,8 @@ theorem Convex.mul_sub_le_image_sub_of_le_deriv {D : Set ℝ} (hD : Convex ℝ D
   have hxyD : Icc x y ⊆ D := hD.ordConnected.out hx hy
   have hxyD' : Ioo x y ⊆ interior D :=
     subset_sUnion_of_mem ⟨isOpen_Ioo, Ioo_subset_Icc_self.trans hxyD⟩
-  obtain ⟨a, a_mem, ha⟩ : ∃ a ∈ Ioo x y, deriv f a = (f y - f x) / (y - x)
-  exact exists_deriv_eq_slope f hxy' (hf.mono hxyD) (hf'.mono hxyD')
+  obtain ⟨a, a_mem, ha⟩ : ∃ a ∈ Ioo x y, deriv f a = (f y - f x) / (y - x) :=
+    exists_deriv_eq_slope f hxy' (hf.mono hxyD) (hf'.mono hxyD')
   have : C ≤ (f y - f x) / (y - x) := ha ▸ hf'_ge _ (hxyD' a_mem)
   exact (le_div_iff (sub_pos.2 hxy')).1 this
 #align convex.mul_sub_le_image_sub_of_le_deriv Convex.mul_sub_le_image_sub_of_le_deriv
@@ -1063,10 +1064,10 @@ theorem MonotoneOn.convexOn_of_deriv {D : Set ℝ} (hD : Convex ℝ D) {f : ℝ 
       have hyzD' : Ioo y z ⊆ interior D :=
         subset_sUnion_of_mem ⟨isOpen_Ioo, Ioo_subset_Icc_self.trans hyzD⟩
       -- Then we apply MVT to both `[x, y]` and `[y, z]`
-      obtain ⟨a, ⟨hxa, hay⟩, ha⟩ : ∃ a ∈ Ioo x y, deriv f a = (f y - f x) / (y - x)
-      exact exists_deriv_eq_slope f hxy (hf.mono hxyD) (hf'.mono hxyD')
-      obtain ⟨b, ⟨hyb, hbz⟩, hb⟩ : ∃ b ∈ Ioo y z, deriv f b = (f z - f y) / (z - y)
-      exact exists_deriv_eq_slope f hyz (hf.mono hyzD) (hf'.mono hyzD')
+      obtain ⟨a, ⟨hxa, hay⟩, ha⟩ : ∃ a ∈ Ioo x y, deriv f a = (f y - f x) / (y - x) :=
+        exists_deriv_eq_slope f hxy (hf.mono hxyD) (hf'.mono hxyD')
+      obtain ⟨b, ⟨hyb, hbz⟩, hb⟩ : ∃ b ∈ Ioo y z, deriv f b = (f z - f y) / (z - y) :=
+        exists_deriv_eq_slope f hyz (hf.mono hyzD) (hf'.mono hyzD')
       rw [← ha, ← hb]
       exact hf'_mono (hxyD' ⟨hxa, hay⟩) (hyzD' ⟨hyb, hbz⟩) (hay.trans hyb).le)
 #align monotone_on.convex_on_of_deriv MonotoneOn.convexOn_of_deriv
@@ -1086,8 +1087,8 @@ theorem StrictMonoOn.exists_slope_lt_deriv_aux {x y : ℝ} {f : ℝ → ℝ} (hf
     ∃ a ∈ Ioo x y, (f y - f x) / (y - x) < deriv f a := by
   have A : DifferentiableOn ℝ f (Ioo x y) := fun w wmem =>
     (differentiableAt_of_deriv_ne_zero (h w wmem)).differentiableWithinAt
-  obtain ⟨a, ⟨hxa, hay⟩, ha⟩ : ∃ a ∈ Ioo x y, deriv f a = (f y - f x) / (y - x)
-  exact exists_deriv_eq_slope f hxy hf A
+  obtain ⟨a, ⟨hxa, hay⟩, ha⟩ : ∃ a ∈ Ioo x y, deriv f a = (f y - f x) / (y - x) :=
+    exists_deriv_eq_slope f hxy hf A
   rcases nonempty_Ioo.2 hay with ⟨b, ⟨hab, hby⟩⟩
   refine' ⟨b, ⟨hxa.trans hab, hby⟩, _⟩
   rw [← ha]
@@ -1132,8 +1133,8 @@ theorem StrictMonoOn.exists_deriv_lt_slope_aux {x y : ℝ} {f : ℝ → ℝ} (hf
     ∃ a ∈ Ioo x y, deriv f a < (f y - f x) / (y - x) := by
   have A : DifferentiableOn ℝ f (Ioo x y) := fun w wmem =>
     (differentiableAt_of_deriv_ne_zero (h w wmem)).differentiableWithinAt
-  obtain ⟨a, ⟨hxa, hay⟩, ha⟩ : ∃ a ∈ Ioo x y, deriv f a = (f y - f x) / (y - x)
-  exact exists_deriv_eq_slope f hxy hf A
+  obtain ⟨a, ⟨hxa, hay⟩, ha⟩ : ∃ a ∈ Ioo x y, deriv f a = (f y - f x) / (y - x) :=
+    exists_deriv_eq_slope f hxy hf A
   rcases nonempty_Ioo.2 hxa with ⟨b, ⟨hxb, hba⟩⟩
   refine' ⟨b, ⟨hxb, hba.trans hay⟩, _⟩
   rw [← ha]
@@ -1190,10 +1191,10 @@ theorem StrictMonoOn.strictConvexOn_of_deriv {D : Set ℝ} (hD : Convex ℝ D) {
       subset_sUnion_of_mem ⟨isOpen_Ioo, Ioo_subset_Icc_self.trans hyzD⟩
     -- Then we get points `a` and `b` in each interval `[x, y]` and `[y, z]` where the derivatives
     -- can be compared to the slopes between `x, y` and `y, z` respectively.
-    obtain ⟨a, ⟨hxa, hay⟩, ha⟩ : ∃ a ∈ Ioo x y, (f y - f x) / (y - x) < deriv f a
-    · exact StrictMonoOn.exists_slope_lt_deriv (hf.mono hxyD) hxy (hf'.mono hxyD')
-    obtain ⟨b, ⟨hyb, hbz⟩, hb⟩ : ∃ b ∈ Ioo y z, deriv f b < (f z - f y) / (z - y)
-    · exact StrictMonoOn.exists_deriv_lt_slope (hf.mono hyzD) hyz (hf'.mono hyzD')
+    obtain ⟨a, ⟨hxa, hay⟩, ha⟩ : ∃ a ∈ Ioo x y, (f y - f x) / (y - x) < deriv f a :=
+      StrictMonoOn.exists_slope_lt_deriv (hf.mono hxyD) hxy (hf'.mono hxyD')
+    obtain ⟨b, ⟨hyb, hbz⟩, hb⟩ : ∃ b ∈ Ioo y z, deriv f b < (f z - f y) / (z - y) :=
+      StrictMonoOn.exists_deriv_lt_slope (hf.mono hyzD) hyz (hf'.mono hyzD')
     apply ha.trans (lt_trans _ hb)
     exact hf' (hxyD' ⟨hxa, hay⟩) (hyzD' ⟨hyb, hbz⟩) (hay.trans hyb)
 #align strict_mono_on.strict_convex_on_of_deriv StrictMonoOn.strictConvexOn_of_deriv
@@ -1415,7 +1416,7 @@ theorem domain_mvt {f : E → ℝ} {s : Set E} {x y : E} {f' : E → E →L[ℝ]
   rcases hMVT with ⟨t, Ht, hMVT'⟩
   rw [segment_eq_image_lineMap, bex_image_iff]
   refine ⟨t, hsub Ht, ?_⟩
-  simpa using hMVT'.symm
+  simpa [g] using hMVT'.symm
 #align domain_mvt domain_mvt
 
 section IsROrC

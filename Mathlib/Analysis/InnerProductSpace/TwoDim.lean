@@ -283,7 +283,7 @@ theorem rightAngleRotation_symm :
   exact LinearIsometryEquiv.toLinearIsometry_injective rfl
 #align orientation.right_angle_rotation_symm Orientation.rightAngleRotation_symm
 
--- @[simp] -- Porting note: simp already proves this
+-- @[simp] -- Porting note (#10618): simp already proves this
 theorem inner_rightAngleRotation_self (x : E) : ⟪J x, x⟫ = 0 := by simp
 #align orientation.inner_right_angle_rotation_self Orientation.inner_rightAngleRotation_self
 
@@ -308,7 +308,7 @@ theorem areaForm_rightAngleRotation_right (x y : E) : ω x (J y) = ⟪x, y⟫ :=
   rw [← o.inner_rightAngleRotation_left, o.inner_comp_rightAngleRotation]
 #align orientation.area_form_right_angle_rotation_right Orientation.areaForm_rightAngleRotation_right
 
--- @[simp] -- Porting note: simp already proves this
+-- @[simp] -- Porting note (#10618): simp already proves this
 theorem areaForm_comp_rightAngleRotation (x y : E) : ω (J x) (J y) = ω x y := by simp
 #align orientation.area_form_comp_right_angle_rotation Orientation.areaForm_comp_rightAngleRotation
 

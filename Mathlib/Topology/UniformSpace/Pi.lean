@@ -42,6 +42,11 @@ theorem Pi.uniformity :
 
 variable {α}
 
+instance [Countable ι] [∀ i, IsCountablyGenerated (𝓤 (α i))] :
+    IsCountablyGenerated (𝓤 (∀ i, α i)) := by
+  rw [Pi.uniformity]
+  infer_instance
+
 theorem uniformContinuous_pi {β : Type*} [UniformSpace β] {f : β → ∀ i, α i} :
     UniformContinuous f ↔ ∀ i, UniformContinuous fun x => f x i := by
   -- porting note: required `Function.comp` to close

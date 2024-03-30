@@ -978,6 +978,13 @@ theorem Continuous.comp_continuousOn {g : β → γ} {f : α → β} {s : Set α
   hg.continuousOn.comp hf (mapsTo_univ _ _)
 #align continuous.comp_continuous_on Continuous.comp_continuousOn
 
+@[fun_prop]
+theorem Continuous.comp_continuousOn'
+    {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {g : β → γ}
+    {f : α → β} {s : Set α} (hg : Continuous g) (hf : ContinuousOn f s) :
+    ContinuousOn (fun x ↦ g (f x)) s :=
+  hg.comp_continuousOn hf
+
 theorem ContinuousOn.comp_continuous {g : β → γ} {f : α → β} {s : Set β} (hg : ContinuousOn g s)
     (hf : Continuous f) (hs : ∀ x, f x ∈ s) : Continuous (g ∘ f) := by
   rw [continuous_iff_continuousOn_univ] at *

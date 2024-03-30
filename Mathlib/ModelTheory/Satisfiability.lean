@@ -638,8 +638,8 @@ theorem induction_on_all_ex {P : ∀ {m}, L.BoundedFormula α m → Prop} (φ : 
     (hse : ∀ {m} {φ₁ φ₂ : L.BoundedFormula α m},
       Theory.SemanticallyEquivalent ∅ φ₁ φ₂ → (P φ₁ ↔ P φ₂)) :
     P φ := by
-  suffices h' : ∀ {m} {φ : L.BoundedFormula α m}, φ.IsPrenex → P φ
-  · exact (hse φ.semanticallyEquivalent_toPrenex).2 (h' φ.toPrenex_isPrenex)
+  suffices h' : ∀ {m} {φ : L.BoundedFormula α m}, φ.IsPrenex → P φ from
+    (hse φ.semanticallyEquivalent_toPrenex).2 (h' φ.toPrenex_isPrenex)
   intro m φ hφ
   induction' hφ with _ _ hφ _ _ _ hφ _ _ _ hφ
   · exact hqf hφ

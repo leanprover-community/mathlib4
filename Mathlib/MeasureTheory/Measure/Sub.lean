@@ -73,16 +73,17 @@ theorem sub_apply [IsFiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ �
   -- We begin by defining `measure_sub`, which will be equal to `(μ - ν)`.
   let measure_sub : Measure α := MeasureTheory.Measure.ofMeasurable
     (fun (t : Set α) (_ : MeasurableSet t) => μ t - ν t) (by simp)
-    (by
-      intro g h_meas h_disj; simp only; rw [ENNReal.tsum_sub]
-      repeat' rw [← MeasureTheory.measure_iUnion h_disj h_meas]
-      exacts [MeasureTheory.measure_ne_top _ _, fun i => h₂ _ (h_meas _)])
+    (fun g h_meas h_disj ↦ by
+      simp only [measure_iUnion h_disj h_meas]
+      rw [ENNReal.tsum_sub _ (h₂ <| g ·)]
+      rw [← measure_iUnion h_disj h_meas]
+      apply measure_ne_top)
   -- Now, we demonstrate `μ - ν = measure_sub`, and apply it.
   have h_measure_sub_add : ν + measure_sub = μ := by
     ext1 t h_t_measurable_set
     simp only [Pi.add_apply, coe_add]
     rw [MeasureTheory.Measure.ofMeasurable_apply _ h_t_measurable_set, add_comm,
-      tsub_add_cancel_of_le (h₂ t h_t_measurable_set)]
+      tsub_add_cancel_of_le (h₂ t)]
   have h_measure_sub_eq : μ - ν = measure_sub := by
     rw [MeasureTheory.Measure.sub_def]
     apply le_antisymm
@@ -98,7 +99,7 @@ theorem sub_apply [IsFiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ �
 
 theorem sub_add_cancel_of_le [IsFiniteMeasure ν] (h₁ : ν ≤ μ) : μ - ν + ν = μ := by
   ext1 s h_s_meas
-  rw [add_apply, sub_apply h_s_meas h₁, tsub_add_cancel_of_le (h₁ s h_s_meas)]
+  rw [add_apply, sub_apply h_s_meas h₁, tsub_add_cancel_of_le (h₁ s)]
 #align measure_theory.measure.sub_add_cancel_of_le MeasureTheory.Measure.sub_add_cancel_of_le
 
 theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
@@ -120,7 +121,7 @@ theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
         apply le_add_right _
         rw [← restrict_eq_self μ (inter_subset_right _ _),
           ← restrict_eq_self ν (inter_subset_right _ _)]
-        apply h_ν'_in _ (h_meas_t.inter h_meas_s)
+        apply h_ν'_in
       · rw [add_apply, restrict_apply (h_meas_t.diff h_meas_s), diff_eq, inter_assoc, inter_self,
           ← add_apply]
         have h_mu_le_add_top : μ ≤ ν' + ν + ⊤ := by simp only [add_top, le_top]

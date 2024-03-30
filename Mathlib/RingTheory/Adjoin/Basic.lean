@@ -40,7 +40,7 @@ variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra R A] [Algebra S A] [Algebra R B] [IsScalarTower R S A]
 variable {s t : Set A}
 
-@[aesop safe 20 apply (rule_sets [SetLike])]
+@[aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_adjoin : s ⊆ adjoin R s :=
   Algebra.gc.le_u_l s
 #align algebra.subset_adjoin Algebra.subset_adjoin
@@ -267,7 +267,7 @@ theorem adjoin_inl_union_inr_eq_prod (s) (t) :
       mem_adjoin_of_map_mul R LinearMap.inr_map_mul hb
     replace Ha : (a, (0 : B)) ∈ P := adjoin_mono (Set.subset_union_left _ _) Ha
     replace Hb : ((0 : A), b) ∈ P := adjoin_mono (Set.subset_union_right _ _) Hb
-    simpa using Subalgebra.add_mem _ Ha Hb
+    simpa [P] using Subalgebra.add_mem _ Ha Hb
 #align algebra.adjoin_inl_union_inr_eq_prod Algebra.adjoin_inl_union_inr_eq_prod
 
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a commutative
