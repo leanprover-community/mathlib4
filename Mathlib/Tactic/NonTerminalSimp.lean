@@ -189,9 +189,19 @@ def ignored : HashSet Name := HashSet.empty
   |>.insert `«;»
   |>.insert ``cdotTk
   |>.insert ``cdot
-  -- followers: `rfl, omega`
+  -- followers: `rfl, omega, abel, ring, linarith, linarith, norm_cast`
   |>.insert ``Lean.Parser.Tactic.tacticRfl
   |>.insert ``Lean.Parser.Tactic.omega
+  |>.insert `Mathlib.Tactic.Abel.abel
+  |>.insert `Mathlib.Tactic.RingNF.ring
+  |>.insert `linarith
+  |>.insert `nlinarith
+  |>.insert ``Lean.Parser.Tactic.tacticNorm_cast_
+
+/-
+simp_all only
+simp; simpa
+-/
 
 /-- `SyntaxNodeKind`s of tactics that stain the locations on which they act
 and that can only be followed by other `stainers`. -/
@@ -259,5 +269,4 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
             if let some kind := stains.find? (l, currMVar0) then
               Linter.logLint linter.nonTerminalSimp s m!"{kind} stained '{d}' at '{s}'"
 
-#check HashMap
 initialize addLinter nonTerminalSimpLinter
