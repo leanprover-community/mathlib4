@@ -113,7 +113,7 @@ def ofSym {n : ℕ} {σ : Type*} (s : Sym σ n) [DecidableEq σ] : n.Partition w
     rw [this, Multiset.toFinset_sum_count_eq]
     exact s.2
 
-lemma ofSymEquiv {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ] (e : σ ≃ τ) (s : Sym σ n) :
+lemma ofSym_map {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ] (e : σ ≃ τ) (s : Sym σ n) :
     Nat.Partition.ofSym (s.map e) = Nat.Partition.ofSym s := by
   simp only [ofSym, Sym.val_eq_coe, Sym.coe_map, toFinset_val, mk.injEq]
   rw [Multiset.dedup_map_dedup_eq_injective]
