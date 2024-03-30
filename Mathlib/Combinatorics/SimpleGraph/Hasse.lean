@@ -8,6 +8,7 @@ import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.SuccPred.Relation
 import Mathlib.Tactic.FinCases
+import Mathlib.Data.ZMod.Defs
 
 #align_import combinatorics.simple_graph.hasse from "leanprover-community/mathlib"@"8a38a697305292b37a61650e2c3bd3502d98c805"
 

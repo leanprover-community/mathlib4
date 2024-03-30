@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Rémi Bottinelli
 -/
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Connectivity of subgraphs and induced graphs
