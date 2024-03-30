@@ -1234,7 +1234,7 @@ theorem zipWith_def {ι : Type u} {β : ι → Type v} {β₁ : ι → Type v₁
     {f : ∀ i, β₁ i → β₂ i → β i} {hf : ∀ i, f i 0 0 = 0} {g₁ : Π₀ i, β₁ i} {g₂ : Π₀ i, β₂ i} :
     zipWith f hf g₁ g₂ = mk (g₁.support ∪ g₂.support) fun i => f i.1 (g₁ i.1) (g₂ i.1) := by
   ext i
-  by_cases h1 : g₁ i ≠ 0 <;> by_cases h2 : g₂ i ≠ 0 <;> simp only [not_not, Ne.def] at h1 h2 <;>
+  by_cases h1 : g₁ i ≠ 0 <;> by_cases h2 : g₂ i ≠ 0 <;> simp only [not_not, Ne] at h1 h2 <;>
     simp [h1, h2, hf]
 #align dfinsupp.zip_with_def DFinsupp.zipWith_def
 

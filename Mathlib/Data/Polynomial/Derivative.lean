@@ -346,7 +346,7 @@ theorem iterate_derivative_nat_cast_mul {n k : ℕ} {f : R[X]} :
 theorem mem_support_derivative [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
     n ∈ (derivative p).support ↔ n + 1 ∈ p.support := by
   suffices ¬p.coeff (n + 1) * (n + 1 : ℕ) = 0 ↔ coeff p (n + 1) ≠ 0 by
-    simpa only [mem_support_iff, coeff_derivative, Ne.def, Nat.cast_succ]
+    simpa only [mem_support_iff, coeff_derivative, Ne, Nat.cast_succ]
   rw [← nsmul_eq_mul', smul_eq_zero]
   simp only [Nat.succ_ne_zero, false_or_iff]
 #align polynomial.mem_support_derivative Polynomial.mem_support_derivative
@@ -362,7 +362,7 @@ theorem degree_derivative_eq [NoZeroSMulDivisors ℕ R] (p : R[X]) (hp : 0 < nat
     apply le_natDegree_of_mem_supp _ hn
   · refine' le_sup _
     rw [mem_support_derivative, tsub_add_cancel_of_le, mem_support_iff]
-    · rw [coeff_natDegree, Ne.def, leadingCoeff_eq_zero]
+    · rw [coeff_natDegree, Ne, leadingCoeff_eq_zero]
       intro h
       rw [h, natDegree_zero] at hp
       exact hp.false

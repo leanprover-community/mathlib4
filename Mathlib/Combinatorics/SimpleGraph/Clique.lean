@@ -59,7 +59,7 @@ theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
   constructor
   · intro h
     ext ⟨v, hv⟩ ⟨w, hw⟩
-    simp only [comap_adj, Subtype.coe_mk, top_adj, Ne.def, Subtype.mk_eq_mk]
+    simp only [comap_adj, Subtype.coe_mk, top_adj, Ne, Subtype.mk_eq_mk]
     exact ⟨Adj.ne, h hv hw⟩
   · intro h v hv w hw hne
     have h2 : (G.induce s).Adj ⟨v, hv⟩ ⟨w, hw⟩ = _ := rfl
