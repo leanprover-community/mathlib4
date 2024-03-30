@@ -501,11 +501,11 @@ theorem existsUnique_mem (ha : a ∈ s) : ∃! t, t ∈ P.parts ∧ a ∈ t := b
   exact P.eq_of_mem_parts hu ht hu' ht'
 
 /-- The part of the finpartition that `a` lies in. -/
-def part (ha : a ∈ s) : Finset α := choose (hp := P.existsUnique_mem ha)
+def part (a : α) : Finset α := if ha : a ∈ s then choose (hp := P.existsUnique_mem ha) else ∅
 
-theorem part_mem (ha : a ∈ s) : P.part ha ∈ P.parts := choose_mem _ _ _
+theorem part_mem (ha : a ∈ s) : P.part a ∈ P.parts := by simp [part, ha, choose_mem]
 
-theorem mem_part (ha : a ∈ s) : a ∈ P.part ha := choose_property _ _ _
+theorem mem_part (ha : a ∈ s) : a ∈ P.part a := by simp [part, ha, choose_property]
 
 theorem biUnion_parts : P.parts.biUnion id = s :=
   (sup_eq_biUnion _ _).symm.trans P.sup_parts
@@ -585,8 +585,8 @@ def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α
     use a; exact s.refl a
 
 theorem mem_part_ofSetoid_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
-    b ∈ (ofSetoid s).part (mem_univ a) ↔ s.r a b := by
-  simp only [part, ofSetoid]
+    b ∈ (ofSetoid s).part a ↔ s.r a b := by
+  simp_rw [part, ofSetoid, mem_univ, reduceDite]
   generalize_proofs H
   have := choose_spec _ _ H
   simp only [mem_univ, mem_image, true_and] at this
@@ -690,20 +690,22 @@ noncomputable def reprs : Finset α :=
 
 theorem card_reprs : P.reprs.card = P.parts.card := by simp [reprs]
 
-theorem mem_of_reprs (h : a ∈ P.reprs) : a ∈ s := by
+theorem reprs_subset : P.reprs ⊆ s := fun _ h ↦ by
   simp_rw [reprs, mem_map, mem_attach, true_and] at h
   obtain ⟨p, rfl⟩ := h
   exact mem_of_subset ((le_sup p.2).trans P.sup_parts.le) (P.nonempty_of_mem_parts p.2).choose_spec
 
 /-- Two representatives coming from the same part are equal. -/
 theorem reprs_injective {b : α} (ha : a ∈ P.reprs) (hb : b ∈ P.reprs)
-    (hc : P.part (P.mem_of_reprs ha) = P.part (P.mem_of_reprs hb)) : a = b := by
+    (hc : P.part a = P.part b) : a = b := by
+  have ma : a ∈ s := mem_of_subset P.reprs_subset ha
+  have mb : b ∈ s := mem_of_subset P.reprs_subset hb
   rw [reprs, mem_map] at ha hb
   obtain ⟨⟨_, am⟩, _, ha'⟩ := ha
   obtain ⟨⟨_, bm⟩, _, hb'⟩ := hb
-  rw [P.eq_of_mem_parts (P.part_mem _) am (P.mem_part _)
+  rw [P.eq_of_mem_parts (P.part_mem ma) am (P.mem_part ma)
     (ha' ▸ (P.nonempty_of_mem_parts am).choose_spec),
-      P.eq_of_mem_parts (P.part_mem _) bm (P.mem_part _)
+      P.eq_of_mem_parts (P.part_mem mb) bm (P.mem_part mb)
     (hb' ▸ (P.nonempty_of_mem_parts bm).choose_spec)] at hc
   simp_rw [hc] at ha'
   exact ha' ▸ hb'
