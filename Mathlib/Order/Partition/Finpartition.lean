@@ -679,6 +679,8 @@ end Atomise
 
 section Representatives
 
+open Set
+
 /-- Choose representatives from each part of a finpartition, collecting them into a finset. -/
 noncomputable def reprs : Finset α :=
   P.parts.attach.map ⟨fun p => (P.nonempty_of_mem_parts p.2).choose, by
@@ -709,6 +711,22 @@ theorem reprs_injective {b : α} (ha : a ∈ P.reprs) (hb : b ∈ P.reprs)
     (hb' ▸ (P.nonempty_of_mem_parts bm).choose_spec)] at hc
   simp_rw [hc] at ha'
   exact ha' ▸ hb'
+
+theorem surjOn_part : SurjOn P.part s P.parts := fun p hp ↦ by
+  obtain ⟨x, hx⟩ := P.nonempty_of_mem_parts hp
+  have hx' := mem_of_subset ((le_sup hp).trans P.sup_parts.le) hx
+  use x, hx', (P.existsUnique_mem hx').unique ⟨P.part_mem hx', P.mem_part hx'⟩ ⟨hp, hx⟩
+
+theorem exists_bijOn_part : ∃ r ⊆ s, BijOn P.part r P.parts := by
+  have su := P.surjOn_part
+  rw [surjOn_iff_exists_bijOn_subset] at su
+  obtain ⟨r, ⟨hr, hb⟩⟩ := su
+  classical letI := fintypeSubset ↑s hr
+  let f := r.toFinset
+  have rf : r = f := by rw [coe_toFinset]
+  rw [rf, Finset.coe_subset] at hr
+  use f, hr
+  rwa [coe_toFinset]
 
 end Representatives
 
