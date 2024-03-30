@@ -105,7 +105,7 @@ def ofMultiset (l : Multiset ℕ) : Partition l.sum := ofSums _ l rfl
 
 /-- An element `s` of `Sym σ n` induces a partition given by its multiplicities. -/
 def ofSym {n : ℕ} {σ : Type*} (s : Sym σ n) [DecidableEq σ] : n.Partition where
-  parts := (s.1.toFinset).val.map s.1.count
+  parts := s.1.dedup.map s.1.count
   parts_pos := by simp [Multiset.count_pos]
   parts_sum := by
     have : sum (map (fun a ↦ count a s.1) (toFinset s.1).val) =
