@@ -194,7 +194,7 @@ def scott (α : Type*) [Preorder α] : TopologicalSpace α := upperSet α ⊔ sc
 
 lemma upperSet_le_scott : upperSet α ≤ scott α := le_sup_left
 
-lemma scottHausdorff_le_scott : @scottHausdorff α ≤ @scott α := le_sup_right
+lemma scottHausdorff_le_scott : scottHausdorff α ≤ scott α := le_sup_right
 
 variable (α) [TopologicalSpace α]
 
