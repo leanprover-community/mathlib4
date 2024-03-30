@@ -12,7 +12,7 @@ import Mathlib.Analysis.Fourier.FourierTransform
 
 In this file we compute the Fréchet derivative of the Fourier transform of `f`, where `f` is a
 function such that both `f` and `v ↦ ‖v‖ * ‖f v‖` are integrable. Here the Fourier transform is
-understood as an  operator `(V → E) → (W → E)`, where `V` and `W` are normed `ℝ`-vector spaces
+understood as an operator `(V → E) → (W → E)`, where `V` and `W` are normed `ℝ`-vector spaces
 and the Fourier transform is taken with respect to a continuous `ℝ`-bilinear
 pairing `L : V × W → ℝ` and a given reference measure `μ`.
 
@@ -31,13 +31,13 @@ We introduce one handy definition:
   that the fourier integral of `fourierSMulRight L f` is the derivative of the Fourier
   integral of `f`.
 
-With this definition, the statements read as follow, first in a general context
+With this definition, the statements read as follows, first in a general context
 (arbitrary `L` and `μ`):
 
 * `VectorFourier.hasFDerivAt_fourierIntegral`: the Fourier integral of `f` is differentiable, with
     derivative the Fourier integral of `fourierSMulRight L f`.
 * `VectorFourier.differentiable_fourierIntegral`: the Fourier integral of `f` is differentiable.
-* `VectorFourier.deriv_fourierIntegral`: formula for the derivative of the Fourier integral of `f`.
+* `VectorFourier.fderiv_fourierIntegral`: formula for the derivative of the Fourier integral of `f`.
 
 These statements are then specialized to the case of the usual Fourier transform on
 finite-dimensional inner product spaces with their canonical Lebesgue measure (covering in
