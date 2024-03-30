@@ -513,7 +513,7 @@ theorem rename_msymm {n : ℕ} (μ : n.Partition) (e : σ ≃ τ) :
     Function.comp_apply, rename_X, f]
 
 theorem msymm_isSymmetric {n : ℕ} (μ : n.Partition) : IsSymmetric (msymm σ R μ) :=
- rename_msymm _ _ μ
+  rename_msymm _ _ μ
 
 end MonomialSymmetric
 
