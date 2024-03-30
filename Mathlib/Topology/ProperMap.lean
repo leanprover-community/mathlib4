@@ -265,7 +265,7 @@ lemma isProperMap_of_isClosedMap_of_inj (f_cont : Continuous f) (f_inj : f.Injec
     (f_closed : IsClosedMap f) : IsProperMap f :=
   (isProperMap_iff_isClosedMap_of_inj f_cont f_inj).2 f_closed
 
-/-- An homeomorphism is proper. -/
+/-- A homeomorphism is proper. -/
 @[simp] lemma Homeomorph.isProperMap (e : X ≃ₜ Y) : IsProperMap e :=
   isProperMap_of_isClosedMap_of_inj e.continuous e.injective e.isClosedMap
 
