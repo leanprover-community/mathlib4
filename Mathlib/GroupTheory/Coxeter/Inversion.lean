@@ -211,7 +211,7 @@ theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
       rw [(by simp : 1 = ⇑(MulAut.conj (simpleReflection cs i)) 1)]
       rw [getD_map]
       rw [ih j']
-      simp [← mul_assoc]
+      simp [← mul_assoc, wordProd_cons]
 
 theorem getD_rightInvSeq_mul_self (ω : List B) (j : ℕ) :
     ((ris ω).getD j 1) * ((ris ω).getD j 1) = 1 := by
@@ -270,11 +270,9 @@ theorem wordProd_mul_getD_rightInvSeq (ω : List B) (j : ℕ) :
   rw [getD_rightInvSeq, eraseIdx_eq_take_drop_succ]
   nth_rw 1 [← take_append_drop (j + 1) ω]
   rw [take_succ]
-  simp [mul_assoc]
-  simp [← mul_assoc]
   rcases em (j < ω.length) with hj | nhj
   · rw [get?_eq_get hj]
-    simp
+    simp [wordProd_append, wordProd_cons, mul_assoc]
   · rw [get?_eq_none.mpr (by linarith)]
     simp
 
@@ -283,18 +281,16 @@ theorem getD_leftInvSeq_mul_wordProd (ω : List B) (j : ℕ) :
   rw [getD_leftInvSeq, eraseIdx_eq_take_drop_succ]
   nth_rw 4 [← take_append_drop (j + 1) ω]
   rw [take_succ]
-  simp [mul_assoc]
-  simp [← mul_assoc]
   rcases em (j < ω.length) with hj | nhj
   · rw [get?_eq_get hj]
-    simp
+    simp [wordProd_append, wordProd_cons, mul_assoc]
   · rw [get?_eq_none.mpr (by linarith)]
     simp
 
 theorem prod_rightInvSeq (ω : List B) : prod (ris ω) = (π ω)⁻¹ := by
   induction' ω with i ω ih
   · simp
-  · simp [rightInvSeq, ih]
+  · simp [rightInvSeq, ih, wordProd_cons]
 
 theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
   simp [leftInvSeq_eq_reverse_rightInvSeq_reverse, prod_reverse_noncomm]
