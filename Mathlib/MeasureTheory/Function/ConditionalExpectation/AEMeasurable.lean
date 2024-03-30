@@ -98,7 +98,7 @@ theorem const_smul [SMul 𝕜 β] [ContinuousConstSMul 𝕜 β] (c : 𝕜) (hf :
   exact EventuallyEq.fun_comp hff' fun x => c • x
 #align measure_theory.ae_strongly_measurable'.const_smul MeasureTheory.AEStronglyMeasurable'.const_smul
 
-theorem const_inner {𝕜 β} [IsROrC 𝕜] [NormedAddCommGroup β] [InnerProductSpace 𝕜 β] {f : α → β}
+theorem const_inner {𝕜 β} [RCLike 𝕜] [NormedAddCommGroup β] [InnerProductSpace 𝕜 β] {f : α → β}
     (hfm : AEStronglyMeasurable' m f μ) (c : β) :
     AEStronglyMeasurable' m (fun x => (inner c (f x) : 𝕜)) μ := by
   rcases hfm with ⟨f', hf'_meas, hf_ae⟩
@@ -187,7 +187,7 @@ theorem AEStronglyMeasurable'.aeStronglyMeasurable'_of_measurableSpace_le_on {α
       Set.indicator_of_not_mem hxs _
 #align measure_theory.ae_strongly_measurable'.ae_strongly_measurable'_of_measurable_space_le_on MeasureTheory.AEStronglyMeasurable'.aeStronglyMeasurable'_of_measurableSpace_le_on
 
-variable {α E' F F' 𝕜 : Type*} {p : ℝ≥0∞} [IsROrC 𝕜]
+variable {α E' F F' 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- E' for an inner product space on which we compute integrals
   [NormedAddCommGroup E']
@@ -406,7 +406,7 @@ theorem lpMeasSubgroupToLpTrim_add (hm : m ≤ m0) (f g : lpMeasSubgroup F m p �
         (lpMeasSubgroupToLpTrim_ae_eq hm g).symm)
   refine' (Lp.coeFn_add _ _).trans _
   simp_rw [lpMeasSubgroup_coe]
-  exact eventually_of_forall fun x => by rfl
+  filter_upwards with x using rfl
 #align measure_theory.Lp_meas_subgroup_to_Lp_trim_add MeasureTheory.lpMeasSubgroupToLpTrim_add
 
 theorem lpMeasSubgroupToLpTrim_neg (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ) :
@@ -495,7 +495,7 @@ instance [hm : Fact (m ≤ m0)] [CompleteSpace F] [hp : Fact (1 ≤ p)] :
   rw [(lpMeasSubgroupToLpTrimIso F p μ hm.elim).completeSpace_iff]; infer_instance
 
 -- For now just no-lint this; lean4's tree-based logging will make this easier to debug.
--- One possible change might be to generalize `𝕜` from `IsROrC` to `NormedField`, as this
+-- One possible change might be to generalize `𝕜` from `RCLike` to `NormedField`, as this
 -- result may well hold there.
 -- Porting note: removed @[nolint fails_quickly]
 instance [hm : Fact (m ≤ m0)] [CompleteSpace F] [hp : Fact (1 ≤ p)] :

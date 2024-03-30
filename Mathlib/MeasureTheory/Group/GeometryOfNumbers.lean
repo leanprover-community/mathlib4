@@ -120,7 +120,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
     · rw [sdiff_eq_sdiff_iff_inf_eq_inf (z := U).mpr (by simp [Set.inter_comm .. ▸ hU.2, zero_mem])]
       exact AddSubgroup.isClosed_of_discrete.sdiff hU.1
     exact isOpen_inter_eq_singleton_of_mem_discrete (zero_mem L)
-  refine IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed Z (fun n => ?_)
+  refine IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed Z (fun n => ?_)
     (fun n => ?_) ((S 0).isCompact.inter_right h_clos) (fun n => (S n).isClosed.inter h_clos)
   · refine Set.inter_subset_inter_left _ (SetLike.coe_subset_coe.mpr ?_)
     refine ConvexBody.smul_le_of_le K h_zero ?_

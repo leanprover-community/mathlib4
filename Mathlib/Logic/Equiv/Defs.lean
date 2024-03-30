@@ -3,7 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Std.Tactic.CoeExt
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
 import Mathlib.Init.Data.Bool.Lemmas
@@ -190,7 +189,7 @@ protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
 instance : Trans Equiv Equiv Equiv where
   trans := Equiv.trans
 
--- porting note: this is not a syntactic tautology any more because
+-- Porting note: this is not a syntactic tautology any more because
 -- the coercion from `e` to a function is now `DFunLike.coe` not `e.toFun`
 @[simp, mfld_simps] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
 #align equiv.to_fun_as_coe Equiv.toFun_as_coe
@@ -268,7 +267,7 @@ theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e 
   rw [Perm.subsingleton_eq_refl e, coe_refl]
 #align equiv.perm.coe_subsingleton Equiv.Perm.coe_subsingleton
 
--- porting note: marking this as `@[simp]` because `simp` doesn't fire on `coe_refl`
+-- Porting note: marking this as `@[simp]` because `simp` doesn't fire on `coe_refl`
 -- in an expression such as `Equiv.refl a x`
 @[simp] theorem refl_apply (x : α) : Equiv.refl α x = x := rfl
 #align equiv.refl_apply Equiv.refl_apply
@@ -276,7 +275,7 @@ theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e 
 @[simp] theorem coe_trans (f : α ≃ β) (g : β ≃ γ) : (f.trans g : α → γ) = g ∘ f := rfl
 #align equiv.coe_trans Equiv.coe_trans
 
--- porting note: marking this as `@[simp]` because `simp` doesn't fire on `coe_trans`
+-- Porting note: marking this as `@[simp]` because `simp` doesn't fire on `coe_trans`
 -- in an expression such as `Equiv.trans f g x`
 @[simp] theorem trans_apply (f : α ≃ β) (g : β ≃ γ) (a : α) : (f.trans g) a = g (f a) := rfl
 #align equiv.trans_apply Equiv.trans_apply
@@ -530,7 +529,7 @@ def ofIff {P Q : Prop} (h : P ↔ Q) : P ≃ Q := ⟨h.mp, h.mpr, fun _ => rfl, 
 
 /-- If `α₁` is equivalent to `α₂` and `β₁` is equivalent to `β₂`, then the type of maps `α₁ → β₁`
 is equivalent to the type of maps `α₂ → β₂`. -/
--- porting note: removing `congr` attribute
+-- Porting note: removing `congr` attribute
 @[simps apply]
 def arrowCongr {α₁ β₁ α₂ β₂ : Sort*} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) : (α₁ → β₁) ≃ (α₂ → β₂) where
   toFun f := e₂ ∘ f ∘ e₁.symm
@@ -563,7 +562,7 @@ theorem arrowCongr_comp {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort*} (ea : α�
 The `equiv_rw` tactic is not able to use the default `Sort` level `Equiv.arrowCongr`,
 because Lean's universe rules will not unify `?l_1` with `imax (1 ?m_1)`.
 -/
--- porting note: removing `congr` attribute
+-- Porting note: removing `congr` attribute
 @[simps! apply]
 def arrowCongr' {α₁ β₁ α₂ β₂ : Type*} (hα : α₁ ≃ α₂) (hβ : β₁ ≃ β₂) : (α₁ → β₁) ≃ (α₂ → β₂) :=
   Equiv.arrowCongr hα hβ
@@ -818,7 +817,7 @@ end Perm
     (Σ a : α₁, β (e a)) ≃ Σ a : α₂, β a where
   toFun a := ⟨e a.1, a.2⟩
   invFun a := ⟨e.symm a.1, (e.right_inv' a.1).symm ▸ a.2⟩
-  -- porting note: this was a pretty gnarly match already, and it got worse after porting
+  -- Porting note: this was a pretty gnarly match already, and it got worse after porting
   left_inv := fun ⟨a, b⟩ =>
     match (motive := ∀ a' (h : a' = a), Sigma.mk _ (congr_arg e h.symm ▸ b) = ⟨a, b⟩)
       e.symm (e a), e.left_inv a with
@@ -887,8 +886,8 @@ protected theorem exists_unique_congr_left {p : β → Prop} (f : α ≃ β) :
 protected theorem forall_congr {p : α → Prop} {q : β → Prop} (f : α ≃ β)
     (h : ∀ {x}, p x ↔ q (f x)) : (∀ x, p x) ↔ (∀ y, q y) := by
   constructor <;> intro h₂ x
-  · rw [← f.right_inv x]; apply h.mp; apply h₂
-  · apply h.mpr; apply h₂
+  · rw [← f.right_inv x]; exact h.mp (h₂ _)
+  · exact h.mpr (h₂ _)
 #align equiv.forall_congr Equiv.forall_congr
 
 protected theorem forall_congr' {p : α → Prop} {q : β → Prop} (f : α ≃ β)

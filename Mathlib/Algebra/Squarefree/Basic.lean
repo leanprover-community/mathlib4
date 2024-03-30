@@ -120,6 +120,7 @@ theorem squarefree_iff_multiplicity_le_one (r : R) :
     Squarefree r ↔ ∀ x : R, multiplicity x r ≤ 1 ∨ IsUnit x := by
   refine' forall_congr' fun a => _
   rw [← sq, pow_dvd_iff_le_multiplicity, or_iff_not_imp_left, not_le, imp_congr _ Iff.rfl]
+  norm_cast
   rw [← one_add_one_eq_two]
   simpa using PartENat.add_one_le_iff_lt (PartENat.natCast_ne_top 1)
 #align multiplicity.squarefree_iff_multiplicity_le_one multiplicity.squarefree_iff_multiplicity_le_one
@@ -130,23 +131,8 @@ section CancelCommMonoidWithZero
 
 variable [CancelCommMonoidWithZero R] [WfDvdMonoid R]
 
-theorem finite_prime_left {a b : R} (ha : Prime a) (hb : b ≠ 0) : multiplicity.Finite a b := by
-  classical
-    revert hb
-    refine'
-      WfDvdMonoid.induction_on_irreducible b (fun c => c.irrefl.elim) (fun u hu _ => _)
-        fun b p hb hp ih _ => _
-    · rw [multiplicity.finite_iff_dom, multiplicity.isUnit_right ha.not_unit hu]
-      exact PartENat.dom_natCast 0
-    · refine'
-        multiplicity.finite_mul ha
-          (multiplicity.finite_iff_dom.mpr
-            (PartENat.dom_of_le_natCast (show multiplicity a p ≤ ↑1 from _)))
-          (ih hb)
-      norm_cast
-      exact
-        ((multiplicity.squarefree_iff_multiplicity_le_one p).mp hp.squarefree a).resolve_right
-          ha.not_unit
+theorem finite_prime_left {a b : R} (ha : Prime a) (hb : b ≠ 0) : multiplicity.Finite a b :=
+  finite_of_not_isUnit ha.not_unit hb
 #align multiplicity.finite_prime_left multiplicity.finite_prime_left
 
 end CancelCommMonoidWithZero
@@ -226,7 +212,7 @@ theorem pow_dvd_of_squarefree_of_pow_succ_dvd_mul_right {k : ℕ}
   · obtain ⟨x', rfl⟩ := hxp
     have hx' : ¬ p ∣ x' := fun contra ↦ hp.not_unit <| hx p (mul_dvd_mul_left p contra)
     replace h : p ^ k ∣ x' * y := by
-      rw [pow_succ, mul_assoc] at h
+      rw [pow_succ', mul_assoc] at h
       exact (mul_dvd_mul_iff_left hp.ne_zero).mp h
     exact hp.pow_dvd_of_dvd_mul_left _ hx' h
   · exact (pow_dvd_pow _ k.le_succ).trans (hp.pow_dvd_of_dvd_mul_left _ hxp h)
@@ -288,14 +274,14 @@ lemma _root_.exists_squarefree_dvd_pow_of_ne_zero {x : R} (hx : x ≠ 0) :
     · exact ⟨p, 1, hp.squarefree, dvd_mul_right p z, by simp [isUnit_of_dvd_one (pow_zero y ▸ hy')]⟩
     by_cases hp' : p ∣ y
     · exact ⟨y, n + 1, hy, dvd_mul_of_dvd_right hyx _,
-        mul_comm p z ▸ pow_succ' y n ▸ mul_dvd_mul hy' hp'⟩
+        mul_comm p z ▸ pow_succ y n ▸ mul_dvd_mul hy' hp'⟩
     · suffices Squarefree (p * y) from ⟨p * y, n, this,
         mul_dvd_mul_left p hyx, mul_pow p y n ▸ mul_dvd_mul (dvd_pow_self p hn.ne') hy'⟩
       exact squarefree_mul_iff.mpr ⟨hp.isRelPrime_iff_not_dvd.mpr hp', hp.squarefree, hy⟩
 
-theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] [DecidableEq R] {x : R}
+theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
     (x0 : x ≠ 0) : Squarefree x ↔ Multiset.Nodup (normalizedFactors x) := by
-  have drel : DecidableRel (Dvd.dvd : R → R → Prop) := by classical infer_instance
+  classical
   rw [multiplicity.squarefree_iff_multiplicity_le_one, Multiset.nodup_iff_count_le_one]
   haveI := nontrivial_of_ne x 0 x0
   constructor <;> intro h a
@@ -310,13 +296,12 @@ theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] [Decidabl
     · simp [Multiset.count_eq_zero_of_not_mem hmem]
   · rw [or_iff_not_imp_right]
     intro hu
-    by_cases h0 : a = 0
-    · simp [h0, x0]
+    rcases eq_or_ne a 0 with rfl | h0
+    · simp [x0]
     rcases WfDvdMonoid.exists_irreducible_factor hu h0 with ⟨b, hib, hdvd⟩
     apply le_trans (multiplicity.multiplicity_le_multiplicity_of_dvd_left hdvd)
     rw [multiplicity_eq_count_normalizedFactors hib x0]
-    specialize h (normalize b)
-    assumption_mod_cast
+    exact_mod_cast h (normalize b)
 #align unique_factorization_monoid.squarefree_iff_nodup_normalized_factors UniqueFactorizationMonoid.squarefree_iff_nodup_normalizedFactors
 
 end UniqueFactorizationMonoid

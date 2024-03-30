@@ -60,9 +60,9 @@ theorem const_succ_apply (α : Type u) {β : Type u} (b : β) (n : ℕ) (x : α)
     const α b n.succ x = const _ b n := FromTypes.const_succ_apply _ b x
 #align arity.const_succ_apply Function.OfArity.const_succ_apply
 
-instance OfArity.inhabited {α β n} [Inhabited β] : Inhabited (OfArity α β n) :=
+instance inhabited {α β n} [Inhabited β] : Inhabited (OfArity α β n) :=
   inferInstanceAs (Inhabited (FromTypes (fun _ => α) β))
-#align arity.arity.inhabited Function.OfArity.OfArity.inhabited
+#align arity.arity.inhabited Function.OfArity.inhabited
 
 end OfArity
 

@@ -101,7 +101,7 @@ theorem norm_dslope_le_div_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c R
   have hg₀ : ‖g‖₊ ≠ 0 := by simpa only [hg'] using one_ne_zero
   calc
     ‖dslope f c z‖ = ‖dslope (g ∘ f) c z‖ := by
-      rw [g.dslope_comp, hgf, IsROrC.norm_ofReal, abs_norm]
+      rw [g.dslope_comp, hgf, RCLike.norm_ofReal, abs_norm]
       exact fun _ => hd.differentiableAt (ball_mem_nhds _ hR₁)
     _ ≤ R₂ / R₁ := by
       refine' schwarz_aux (g.differentiable.comp_differentiableOn hd) (MapsTo.comp _ h_maps) hz
@@ -185,7 +185,7 @@ disk to itself, then for any point `z` of this disk we have `dist (f z) c ≤ di
 theorem dist_le_dist_of_mapsTo_ball_self (hd : DifferentiableOn ℂ f (ball c R))
     (h_maps : MapsTo f (ball c R) (ball c R)) (hc : f c = c) (hz : z ∈ ball c R) :
     dist (f z) c ≤ dist z c := by
-  -- porting note: `simp` was failing to use `div_self`
+  -- Porting note: `simp` was failing to use `div_self`
   have := dist_le_div_mul_dist_of_mapsTo_ball hd (by rwa [hc]) hz
   rwa [hc, div_self, one_mul] at this
   exact (nonempty_ball.1 ⟨z, hz⟩).ne'

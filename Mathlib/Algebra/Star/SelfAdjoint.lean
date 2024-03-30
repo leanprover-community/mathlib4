@@ -115,7 +115,6 @@ theorem _root_.isSelfAdjoint_starHom_apply {F R S : Type*} [Star R] [Star S] [Fu
 section AddMonoid
 
 variable [AddMonoid R] [StarAddMonoid R]
-
 variable (R)
 
 @[simp] theorem _root_.isSelfAdjoint_zero : IsSelfAdjoint (0 : R) := star_zero R
@@ -184,7 +183,6 @@ end Semigroup
 section MulOneClass
 
 variable [MulOneClass R] [StarMul R]
-
 variable (R)
 
 @[simp] theorem _root_.isSelfAdjoint_one : IsSelfAdjoint (1 : R) :=

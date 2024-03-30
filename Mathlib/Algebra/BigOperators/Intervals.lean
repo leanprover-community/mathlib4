@@ -72,6 +72,22 @@ lemma prod_Iio_mul_eq_prod_Iic (a : α) : (∏ x in Iio a, f x) * f a = ∏ x in
 end LocallyFiniteOrderBot
 end PartialOrder
 
+section LinearOrder
+variable [Fintype α] [LinearOrder α] [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
+  [CommMonoid M]
+
+@[to_additive]
+lemma prod_prod_Ioi_mul_eq_prod_prod_off_diag (f : α → α → M) :
+    ∏ i, ∏ j in Ioi i, f j i * f i j = ∏ i, ∏ j in {i}ᶜ, f j i := by
+  simp_rw [← Ioi_disjUnion_Iio, prod_disjUnion, prod_mul_distrib]
+  congr 1
+  rw [prod_sigma', prod_sigma']
+  refine' prod_nbij' (fun i ↦ ⟨i.2, i.1⟩) (fun i ↦ ⟨i.2, i.1⟩) _ _ _ _ _ <;> simp
+#align finset.prod_prod_Ioi_mul_eq_prod_prod_off_diag Finset.prod_prod_Ioi_mul_eq_prod_prod_off_diag
+#align finset.sum_sum_Ioi_add_eq_sum_sum_off_diag Finset.sum_sum_Ioi_add_eq_sum_sum_off_diag
+
+end LinearOrder
+
 section Generic
 variable [CommMonoid M] {s₂ s₁ s : Finset α} {a : α} {g f : α → M}
 
@@ -163,7 +179,7 @@ theorem prod_range_div_prod_range {α : Type*} [CommGroup α] {f : ℕ → α} {
 #align finset.prod_range_sub_prod_range Finset.prod_range_div_prod_range
 #align finset.sum_range_sub_sum_range Finset.sum_range_sub_sum_range
 
-/-- The two ways of summing over `(i,j)` in the range `a<=i<=j<b` are equal. -/
+/-- The two ways of summing over `(i, j)` in the range `a ≤ i ≤ j < b` are equal. -/
 theorem sum_Ico_Ico_comm {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → ℕ → M) :
     (∑ i in Finset.Ico a b, ∑ j in Finset.Ico i b, f i j) =
       ∑ j in Finset.Ico a b, ∑ i in Finset.Ico a (j + 1), f i j := by
@@ -173,8 +189,20 @@ theorem sum_Ico_Ico_comm {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → 
   simp only [Finset.mem_Ico, Sigma.forall, Finset.mem_sigma] <;>
   rintro a b ⟨⟨h₁, h₂⟩, ⟨h₃, h₄⟩⟩ <;>
   refine' ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;>
-  linarith
+  omega
 #align finset.sum_Ico_Ico_comm Finset.sum_Ico_Ico_comm
+
+/-- The two ways of summing over `(i, j)` in the range `a ≤ i < j < b` are equal. -/
+theorem sum_Ico_Ico_comm' {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → ℕ → M) :
+    (∑ i in Finset.Ico a b, ∑ j in Finset.Ico (i + 1) b, f i j) =
+      ∑ j in Finset.Ico a b, ∑ i in Finset.Ico a j, f i j := by
+  rw [Finset.sum_sigma', Finset.sum_sigma']
+  refine' sum_nbij' (fun x ↦ ⟨x.2, x.1⟩) (fun x ↦ ⟨x.2, x.1⟩) _ _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) <;>
+  simp only [Finset.mem_Ico, Sigma.forall, Finset.mem_sigma] <;>
+  rintro a b ⟨⟨h₁, h₂⟩, ⟨h₃, h₄⟩⟩ <;>
+  refine' ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;>
+  omega
 
 @[to_additive]
 theorem prod_Ico_eq_prod_range (f : ℕ → M) (m n : ℕ) :
@@ -275,7 +303,6 @@ end Generic
 section Nat
 
 variable {M : Type*}
-
 variable (f g : ℕ → M) {m n : ℕ}
 
 section Group

@@ -94,7 +94,7 @@ theorem normUnit_one : normUnit (1 : α) = 1 :=
   normUnit_coe_units 1
 #align norm_unit_one normUnit_one
 
--- Porting note: quite slow. Improve performance?
+-- Porting note (#11083): quite slow. Improve performance?
 /-- Chooses an element of each associate class, by multiplying by `normUnit` -/
 def normalize : α →*₀ α where
   toFun x := x * normUnit x
@@ -157,7 +157,7 @@ theorem normalize_eq_one {x : α} : normalize x = 1 ↔ IsUnit x :=
   ⟨fun hx => isUnit_iff_exists_inv.2 ⟨_, hx⟩, fun ⟨u, hu⟩ => hu ▸ normalize_coe_units u⟩
 #align normalize_eq_one normalize_eq_one
 
--- Porting note: quite slow. Improve performance?
+-- Porting note (#11083): quite slow. Improve performance?
 @[simp]
 theorem normUnit_mul_normUnit (a : α) : normUnit (a * normUnit a) = 1 := by
   nontriviality α using Subsingleton.elim a 0
@@ -576,7 +576,7 @@ theorem gcd_pow_right_dvd_pow_gcd [GCDMonoid α] {a b : α} {k : ℕ} :
   · induction' k with k hk
     · rw [pow_zero, pow_zero]
       exact (gcd_one_right' a).dvd
-    rw [pow_succ, pow_succ]
+    rw [pow_succ', pow_succ']
     trans gcd a b * gcd a (b ^ k)
     · exact gcd_mul_dvd_mul_gcd a b (b ^ k)
     · exact (mul_dvd_mul_iff_left hg).mpr hk
@@ -988,7 +988,7 @@ theorem gcd_eq_of_dvd_sub_right {a b c : α} (h : a ∣ b - c) : gcd a b = gcd a
     rcases gcd_dvd_right a c with ⟨e, he⟩
     rcases gcd_dvd_left a c with ⟨f, hf⟩
     use e + f * d
-    rw [mul_add, ← he, ← mul_assoc, ← hf, ← hd, ← add_sub_assoc, add_comm c b, add_sub_cancel]
+    rw [mul_add, ← he, ← mul_assoc, ← hf, ← hd, ← add_sub_assoc, add_comm c b, add_sub_cancel_right]
 #align gcd_eq_of_dvd_sub_right gcd_eq_of_dvd_sub_right
 
 theorem gcd_eq_of_dvd_sub_left {a b c : α} (h : a ∣ b - c) : gcd b a = gcd c a := by
@@ -1206,7 +1206,7 @@ noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
       apply ac }
 #align gcd_monoid_of_lcm gcdMonoidOfLCM
 
--- Porting note: very slow; improve performance?
+-- Porting note (#11083): very slow; improve performance?
 /-- Define `NormalizedGCDMonoid` on a structure just from the `lcm` and its properties. -/
 noncomputable def normalizedGCDMonoidOfLCM [NormalizationMonoid α] [DecidableEq α] (lcm : α → α → α)
     (dvd_lcm_left : ∀ a b, a ∣ lcm a b) (dvd_lcm_right : ∀ a b, b ∣ lcm a b)
@@ -1351,7 +1351,7 @@ namespace CommGroupWithZero
 
 variable (G₀ : Type*) [CommGroupWithZero G₀] [DecidableEq G₀]
 
--- Porting note: very slow; improve performance?
+-- Porting note (#11083): very slow; improve performance?
 -- see Note [lower instance priority]
 instance (priority := 100) : NormalizedGCDMonoid G₀ where
   normUnit x := if h : x = 0 then 1 else (Units.mk0 x h)⁻¹
