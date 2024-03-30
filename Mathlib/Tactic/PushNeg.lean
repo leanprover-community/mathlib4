@@ -182,7 +182,7 @@ def pushNegTarget : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let tgt ← instantiateMVars (← goal.getType)
   let newGoal ← applySimpResultToTarget goal tgt (← pushNegCore tgt)
-  if newGoal == goal then throwError "push neg made no progress"
+  if newGoal == goal then throwError "push_neg made no progress"
   replaceMainGoal [newGoal]
 
 
