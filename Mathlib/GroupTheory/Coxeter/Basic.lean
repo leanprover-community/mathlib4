@@ -651,7 +651,8 @@ theorem ext_simple {G : Type*} [Monoid G] {φ₁ φ₂ : W →* G} (h : ∀ i : 
 
 /-- If two Coxeter systems on the same group `W` have the same Coxeter matrix `M : Matrix B B ℕ`
 and the same simple reflection map `B → W`, then they are identical. -/
-theorem simpleReflection_injective : Injective (simpleReflection : CoxeterSystem M W → B → W) := by
+theorem simpleReflection_determines_coxeterSystem :
+    Injective (simpleReflection : CoxeterSystem M W → B → W) := by
   intro cs1 cs2 h
   apply CoxeterSystem.ext
   apply MulEquiv.toMonoidHom_injective
