@@ -3,7 +3,8 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions
+import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrowsTwo
+import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Shift.Localization
 
@@ -12,10 +13,7 @@ import Mathlib.CategoryTheory.Shift.Localization
 If `L : C ⥤ D` is a localization functor for a class of morphisms `W` that is compatible
 with the triangulation on the category `C` and admits left and right calculus of fractions,
 it is shown in this file that `D` can be equipped with a pretriangulated category structure,
-and that it is triangulated (TODO).
-
-## TODO
-* obtain (pre)triangulated instances on `W.Localization` and `W.Localization'`.
+and that it is triangulated.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
@@ -196,6 +194,30 @@ lemma isTriangulated_functor :
 
 lemma essSurj_mapArrow : EssSurj L.mapArrow :=
   essSurj_mapArrow_of_hasLeftCalculusofFractions L W
+
+lemma isTriangulated [W.HasRightCalculusOfFractions] [Pretriangulated D]
+    [L.IsTriangulated] [IsTriangulated C] :
+    IsTriangulated D := by
+  have := essSurj_mapComposableArrows_two L W
+  exact isTriangulated_of_essSurj_mapComposableArrows_two L
+
+instance (n : ℤ) : (shiftFunctor (W.Localization) n).Additive := by
+  rw [Localization.functor_additive_iff W.Q W]
+  exact Functor.additive_of_iso (W.Q.commShiftIso n)
+
+instance : Pretriangulated W.Localization := pretriangulated W.Q W
+
+section
+
+variable [W.HasLocalization]
+
+instance (n : ℤ) : (shiftFunctor (W.Localization') n).Additive := by
+  rw [Localization.functor_additive_iff W.Q' W]
+  exact Functor.additive_of_iso (W.Q'.commShiftIso n)
+
+instance : Pretriangulated W.Localization' := pretriangulated W.Q' W
+
+end
 
 end Localization
 
