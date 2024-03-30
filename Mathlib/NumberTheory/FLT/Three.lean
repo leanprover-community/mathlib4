@@ -23,10 +23,20 @@ section case1
 
 open ZMod
 
+/--
+  Let `n` be an element of the ring of integers modulo 9 `ZMod 9`. If the canonical ring homomorphism
+  `castHom` from `ZMod 9` to `ZMod 3` does not map `n` to `0`, then the cube of `n` is either `1`
+  or `8` in `ZMod 9`.
+-/
 private lemma cube_of_castHom_ne_zero {n : ZMod 9} :
     castHom (show 3 ∣ 9 by norm_num) (ZMod 3) n ≠ 0 → n ^ 3 = 1 ∨ n ^ 3 = 8 := by
   fin_cases n <;> decide
 
+/--
+  Let `n` be an element of the natural numbers `ℕ`, if `3` does not divide `n`, then casting `n`
+  to the ring of integers modulo 9 `ZMod 9` and taking its cube results in either `1`
+  or `8` in `ZMod 9`.
+-/
 private lemma cube_of_not_dvd {n : ℕ} (h : ¬ 3 ∣ n) :
     (n : ZMod 9) ^ 3 = 1 ∨ (n : ZMod 9) ^ 3 = 8 := by
   apply cube_of_castHom_ne_zero
