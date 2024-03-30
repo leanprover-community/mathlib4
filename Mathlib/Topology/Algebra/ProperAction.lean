@@ -269,14 +269,12 @@ theorem naiveProper_of_ProperSMul_T2_FirstCountable
 lemma map_factor {A B C:Type*} {U : Set A} {f : A → B} {s : C → B}
     (h: ∀ c : C, s c ∈ f '' U):
     ∃ s' : C → A, ( s = f ∘ s' ∧ ∀ c : C, s' c ∈ U) := by
-  set s' : C → A := by
-    intro c
-    choose a ha using (h c)
-    exact a
+  choose s' hs' using h
   use s'
-  constructor
-  rw [Function.comp]
-  sorry
+  refine ⟨?_, fun c ↦ (hs' c).1⟩
+  ext c
+  rw [← (hs' c).2]
+  rfl
 
 -- should be somewhere ?
 lemma isCompact_seq_lim {y:Y} {seq : ℕ → Y}
