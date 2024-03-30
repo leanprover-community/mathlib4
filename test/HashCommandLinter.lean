@@ -1,6 +1,5 @@
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.HashCommandLinter
-import Mathlib.Tactic.RunCmd
 import Std.Tactic.GuardMsgs
 
 section inactive_hash_linter
