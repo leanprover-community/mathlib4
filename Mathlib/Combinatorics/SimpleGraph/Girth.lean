@@ -46,7 +46,7 @@ lemma three_le_girth : 3 ≤ G.girth := by
     rw [h]
     apply le_top
   · rw [← exists_girth_eq_length] at h
-    have ⟨_, ⟨_, _⟩⟩ := h
+    have ⟨_, _, _⟩ := h
     simp_all only [Nat.cast_inj, Nat.ofNat_le_cast, Walk.IsCycle.three_le_length]
 
 @[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = ⊤ := by simp
