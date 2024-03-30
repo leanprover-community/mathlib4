@@ -463,14 +463,8 @@ open BoundedContinuousFunction TopologicalSpace
 
 variable {ι : Type*} {Ω : Type*} [MeasurableSpace Ω]
 
--- TODO: Add to mathlib
-lemma DenseRange.iUnion_uniformity_ball {X ι : Type*} [UniformSpace X] {xs : ι → X}
-    (xs_dense : DenseRange xs) {U : Set (X × X)} (hU : U ∈ uniformity X) :
-    ⋃ i, UniformSpace.ball (xs i) U = univ := by
-  rw [← biUnion_range (f := xs) (g := fun x ↦ UniformSpace.ball x U)]
-  exact Dense.biUnion_uniformity_ball xs_dense hU
-
--- TODO: Add in...
+/-- In a separable pseudometric space, for any ε > 0 there exists a countable collection of
+disjoint Borel measurable subsets of diameter at most ε that cover the whole space. -/
 lemma SeparableSpace.exists_measurable_partition_diam_le
     (X : Type*) [PseudoMetricSpace X] [SeparableSpace X]
     [MeasurableSpace X] [OpensMeasurableSpace X] {ε : ℝ} (ε_pos : 0 < ε) :

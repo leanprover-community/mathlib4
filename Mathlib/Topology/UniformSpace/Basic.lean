@@ -1009,6 +1009,13 @@ theorem Dense.biUnion_uniformity_ball {s : Set α} {U : Set (α × α)} (hs : De
   exact ⟨x, hxs, hxy⟩
 #align dense.bUnion_uniformity_ball Dense.biUnion_uniformity_ball
 
+/-- The uniform neighborhoods of all points of a dense indexed collection cover the whole space. -/
+lemma DenseRange.iUnion_uniformity_ball {ι : Type*} {xs : ι → α}
+    (xs_dense : DenseRange xs) {U : Set (α × α)} (hU : U ∈ uniformity α) :
+    ⋃ i, UniformSpace.ball (xs i) U = univ := by
+  rw [← biUnion_range (f := xs) (g := fun x ↦ UniformSpace.ball x U)]
+  exact Dense.biUnion_uniformity_ball xs_dense hU
+
 /-!
 ### Uniformity bases
 -/
