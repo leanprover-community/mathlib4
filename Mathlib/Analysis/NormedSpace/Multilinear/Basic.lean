@@ -940,7 +940,7 @@ def smulRightL : ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] Co
           map_smul' := fun c x ↦ by ext; simp [smul_smul, mul_comm] }
       map_add' := fun f g ↦ by ext; simp [add_smul]
       map_smul' := fun c f ↦ by ext; simp [smul_smul] }
-  1 (fun f z ↦ by simp [norm_smulRight])
+    1 (fun f z ↦ by simp [norm_smulRight])
 
 @[simp] lemma smulRightL_apply (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
   smulRightL 𝕜 E G f z = f.smulRight z := rfl
@@ -1236,8 +1236,7 @@ def compContinuousLinearMapLRight (g : ContinuousMultilinearMap 𝕜 E₁ G) :
       map_add' := by
         intro h f i f₁ f₂
         ext x
-        change (g fun j ↦ update f i (f₁ + f₂) j <| x j) =
-            (g fun j ↦ update f i f₁ j <| x j) + g fun j ↦ update f i f₂ j (x j)
+        simp only [compContinuousLinearMap_apply, add_apply]
         convert g.map_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
           exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
       map_smul' := by
@@ -1246,7 +1245,7 @@ def compContinuousLinearMapLRight (g : ContinuousMultilinearMap 𝕜 E₁ G) :
         change (g fun j ↦ update f i (a • f₀) j <| x j) = a • g fun j ↦ update f i f₀ j (x j)
         convert g.map_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
           exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _ }
-  (‖g‖) (fun f ↦ by simp [norm_compContinuousLinearMap_le])
+    (‖g‖) (fun f ↦ by simp [norm_compContinuousLinearMap_le])
 
 @[simp]
 theorem compContinuousLinearMapLRight_apply (g : ContinuousMultilinearMap 𝕜 E₁ G)
