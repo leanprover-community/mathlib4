@@ -253,6 +253,8 @@ abbrev specialOrthogonalGroup := specialUnitaryGroup n β
 theorem mem_specialOrthogonalGroup_iff  (h : A ∈ orthogonalGroup n β):
     ⟨A,h⟩ ∈ specialOrthogonalGroup n β ↔ A.det = 1 := by rfl
 
+/-- Given an orthogonal Matrix with the determinant 1, we get an instance of
+`specialOrthogonalGroup n β` -/
 def specialOrthogonalGroup.mkOfDetEqOne (h1 : star A * A = 1) (h2 : A.det = 1) :
     specialOrthogonalGroup n β := ⟨⟨A,(by exact (mem_orthogonalGroup_iff' n β).mpr h1)⟩,h2⟩
 
