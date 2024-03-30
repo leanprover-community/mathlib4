@@ -34,9 +34,9 @@ open Lean Elab
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.hashCommand o
 
 open Command in
-/-- Exactly like `withSetOptionIn`, but recursively discards any other use of `in`.
-Intended to be used in the hashCommand linter,
-where we don't need to handle non-`set_option` `in` commands. -/
+/-- Exactly like `withSetOptionIn`, but recursively discards nested uses of `in`.
+Intended to be used in the `hashCommand` linter, where we want to enter `set_option` `in` commands.
+-/
 private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun stx => do
   if stx.getKind == ``Lean.Parser.Command.in then
     if stx[0].getKind == ``Lean.Parser.Command.set_option then
@@ -67,7 +67,7 @@ def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
     match stx.getHead? with
       | some sa =>
         let a := sa.getAtomVal
-        if ("#".isPrefixOf a && ! whitelist.contains a) then
+        if (a.get ⟨0⟩ == '#' && ! whitelist.contains a) then
           Linter.logLint linter.hashCommand sa
             m!"`#`-commands, such as '{a}', are not allowed in 'Mathlib'"
       | none => return
