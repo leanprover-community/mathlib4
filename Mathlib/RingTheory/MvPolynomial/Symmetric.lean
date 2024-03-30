@@ -206,7 +206,7 @@ theorem muProduct_indiscrete_zero (f : ℕ → MvPolynomial σ R) :
   simp only [muProduct, Nat.Partition.partition_zero_parts, Multiset.map_zero, Multiset.prod_zero]
 
 @[simp]
-theorem muProduct_onePart (n : ℕ) (f : ℕ → MvPolynomial σ R) (npos : n > 0) :
+theorem muProduct_indiscrete_of_pos (n : ℕ) (f : ℕ → MvPolynomial σ R) (npos : n > 0) :
     muProduct σ R f (Nat.Partition.indiscrete n) = f n := by
   rw [muProduct, Nat.Partition.indiscrete_parts, Multiset.map_singleton, Multiset.prod_singleton]
   linarith
