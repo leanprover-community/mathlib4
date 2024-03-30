@@ -175,12 +175,6 @@ lemma even_card_of_isPerfectMatching {M : Subgraph G} (c : ConnectedComponent G)
     simp only [ConnectedComponent.mem_supp_iff, Finset.mem_univ, forall_true_left]
     exact Set.filter_mem_univ_eq_toFinset fun x => connectedComponentMk G x = c
 
-/--
-  Local instance of Fintype for sets in a Fintype.
-  Chosen as local because it is noncomputable.
--/
-noncomputable local instance (u : Set V) : Fintype u := Fintype.ofFinite ↑u
-
 
 theorem mem_supp_of_adj {u : Set V} {v w : V}
     {c : ConnectedComponent ((⊤ : Subgraph G).deleteVerts u).coe}
@@ -231,10 +225,12 @@ lemma odd_matches_node_outside {M : Subgraph G} {u : Set V}
         exact hy.2.2
 
     apply Nat.odd_iff_not_even.mp codd
+    haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c)).verts := Fintype.ofFinite _
     have h'' := Subgraph.IsMatching.even_card h'
     simp only [Subgraph.induce_verts, Subgraph.verts_top] at h''
 
     rw [Nat.even_iff] at h'' ⊢
+    haveI : Fintype (c.supp) := Fintype.ofFinite _
     rw [← h'', Set.toFinset_image, Finset.card_image_of_injective _ (Subtype.val_injective)]
     simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_card]
     rw [Fintype.card_eq_nat_card]
