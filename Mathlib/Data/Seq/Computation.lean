@@ -17,9 +17,6 @@ This file provides a `Computation` type where `Computation α` is the type of
 unbounded computations returning `α`.
 -/
 
-set_option autoImplicit true
-
-
 open Function
 
 universe u v w
@@ -1237,14 +1234,17 @@ def LiftRelAux (R : α → β → Prop) (C : Computation α → Computation β �
   | Sum.inr ca, Sum.inr cb => C ca cb
 #align computation.lift_rel_aux Computation.LiftRelAux
 
+variable {R : α → β → Prop} {C : Computation α → Computation β → Prop}
+
 -- Porting note: was attribute [simp] LiftRelAux
 -- but right now `simp` on defs is a Lean 4 catastrophe
 -- Instead we add the equation lemmas and tag them @[simp]
-@[simp] lemma liftRelAux_inl_inl : LiftRelAux R C (Sum.inl a) (Sum.inl b) = R a b := rfl
-@[simp] lemma liftRelAux_inl_inr {cb} :
+@[simp] lemma liftRelAux_inl_inl {a : α} {b : β} :
+  LiftRelAux R C (Sum.inl a) (Sum.inl b) = R a b := rfl
+@[simp] lemma liftRelAux_inl_inr {a : α} {cb} :
     LiftRelAux R C (Sum.inl a) (Sum.inr cb) = ∃ b, b ∈ cb ∧ R a b :=
   rfl
-@[simp] lemma liftRelAux_inr_inl {ca} :
+@[simp] lemma liftRelAux_inr_inl {b : β} {ca} :
     LiftRelAux R C (Sum.inr ca) (Sum.inl b) = ∃ a, a ∈ ca ∧ R a b :=
   rfl
 @[simp] lemma liftRelAux_inr_inr {ca cb} :
