@@ -280,9 +280,9 @@ theorem condexp_bot [IsProbabilityMeasure μ] (f : α → F') : μ[f|⊥] = fun 
 theorem condexp_add (hf : Integrable f μ) (hg : Integrable g μ) :
     μ[f + g|m] =ᵐ[μ] μ[f|m] + μ[g|m] := by
   by_cases hm : m ≤ m0
-  swap; · simp_rw [condexp_of_not_le hm]; simp; rfl
+  swap; · simp_rw [condexp_of_not_le hm]; simp
   by_cases hμm : SigmaFinite (μ.trim hm)
-  swap; · simp_rw [condexp_of_not_sigmaFinite hm hμm]; simp; rfl
+  swap; · simp_rw [condexp_of_not_sigmaFinite hm hμm]; simp
   haveI : SigmaFinite (μ.trim hm) := hμm
   refine' (condexp_ae_eq_condexpL1 hm _).trans _
   rw [condexpL1_add hf hg]
@@ -302,9 +302,9 @@ theorem condexp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → F'}
 
 theorem condexp_smul (c : 𝕜) (f : α → F') : μ[c • f|m] =ᵐ[μ] c • μ[f|m] := by
   by_cases hm : m ≤ m0
-  swap; · simp_rw [condexp_of_not_le hm]; simp; rfl
+  swap; · simp_rw [condexp_of_not_le hm]; simp
   by_cases hμm : SigmaFinite (μ.trim hm)
-  swap; · simp_rw [condexp_of_not_sigmaFinite hm hμm]; simp; rfl
+  swap; · simp_rw [condexp_of_not_sigmaFinite hm hμm]; simp
   haveI : SigmaFinite (μ.trim hm) := hμm
   refine' (condexp_ae_eq_condexpL1 hm _).trans _
   rw [condexpL1_smul c f]

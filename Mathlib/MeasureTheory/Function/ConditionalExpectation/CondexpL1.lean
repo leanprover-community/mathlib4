@@ -275,7 +275,7 @@ theorem condexpInd_ae_eq_condexpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
     condexpInd G hm μ s x =ᵐ[μ] condexpIndSMul hm hs hμs x := by
   refine' EventuallyEq.trans _ (condexpIndL1Fin_ae_eq_condexpIndSMul hm hs hμs x)
-  simp [condexpInd, condexpIndL1, hs, hμs]; rfl
+  simp [condexpInd, condexpIndL1, hs, hμs]
 #align measure_theory.condexp_ind_ae_eq_condexp_ind_smul MeasureTheory.condexpInd_ae_eq_condexpIndSMul
 
 variable {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
