@@ -1363,9 +1363,6 @@ theorem biUnion_iUnion (s : ι → Set α) (t : α → Set β) :
     ⋃ x ∈ ⋃ i, s i, t x = ⋃ (i) (x ∈ s i), t x := by simp [@iUnion_comm _ ι]
 #align set.bUnion_Union Set.biUnion_iUnion
 
-lemma iUnion_biUnion {ι κ : Type*} (s : ι → Set α) {j : κ → Set ι} :
-    ⋃ k, ⋃ i ∈ j k, s i = ⋃ i ∈ (⋃ k, j k), s i := (biUnion_iUnion (fun k ↦ j k) fun i ↦ s i).symm
-
 theorem biInter_iUnion (s : ι → Set α) (t : α → Set β) :
     ⋂ x ∈ ⋃ i, s i, t x = ⋂ (i) (x ∈ s i), t x := by simp [@iInter_comm _ ι]
 #align set.bInter_Union Set.biInter_iUnion
