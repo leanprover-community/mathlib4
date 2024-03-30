@@ -69,12 +69,12 @@ and both counts are equal at the end. -/
 def IsBalanced : Prop :=
   p.count U = p.count D ∧ ∀ i, (p.take i).count D ≤ (p.take i).count U
 
-instance : DecidablePred IsBalanced := fun _ ↦
+instance : DecidablePred IsBalanced := fun q ↦
   decidable_of_iff
-    (p.count U = p.count D ∧ ∀ i < p.length, (p.take i).count D ≤ (p.take i).count U) $ by
+    (q.count U = q.count D ∧ ∀ i < q.length, (q.take i).count D ≤ (q.take i).count U) <| by
     constructor <;> (intro ⟨h1, h2⟩; refine' ⟨h1, _⟩)
     · intro i
-      cases' lt_or_ge i p.length with hi hi
+      cases' lt_or_ge i q.length with hi hi
       · exact h2 i hi
       · rw [take_all_of_le hi]; exact h1.symm.le
     · intro i _; exact h2 i
@@ -151,9 +151,9 @@ private lemma denest_aux : p.take 1 = [p.head np] ∧ p.dropLast.take 1 = [p.hea
     · rw [dropLast_cons₂, take_cons, take_zero, head_cons]
     · rfl
 
-lemma cons_tail_dropLast_concat : U :: tail (dropLast p) ++ [D] = p := by
+lemma concat_tail_dropLast_concat : p = [U] ++ tail (dropLast p) ++ [D] := by
   nth_rw 1 [← p.dropLast_append_getLast np, ← p.dropLast.take_append_drop 1]
-  rw [bp.getLast_D, drop_one, (denest_aux bp np).2.1, bp.head_U]
+  rw [bp.getLast_eq_D, drop_one, (denest_aux bp np).2.1, bp.head_eq_U]
 
 /-- If the inequality part of `IsBalanced` is strict in the interior of a nonempty
 balanced Dyck path, the interior is itself balanced. -/
@@ -162,7 +162,7 @@ lemma IsBalanced.denest
     IsBalanced p.dropLast.tail := by
   obtain ⟨l1, _, l3⟩ := denest_aux bp np
   constructor
-  · replace bp := (append_tail_dropLast_append bp np) ▸ bp.1
+  · replace bp := (concat_tail_dropLast_concat bp np) ▸ bp.1
     simp_rw [count_append, count_singleton', ite_true, ite_false] at bp; omega
   · intro i
     rw [← drop_one, ← drop_take, dropLast_eq_take, take_take]
@@ -173,7 +173,7 @@ lemma IsBalanced.denest
     have eq := h _ ⟨lb, ub⟩
     set j := min (1 + i) p.length.pred
     rw [← (p.take j).take_append_drop 1, count_append, count_append, take_take,
-      min_eq_left (by omega), l1, bp.head_U] at eq
+      min_eq_left (by omega), l1, bp.head_eq_U] at eq
     simp only [count_singleton', ite_true, ite_false] at eq; omega
 
 end Lemmas
@@ -197,7 +197,7 @@ lemma firstReturn_lt_length : p.firstReturn < p.length := by
 lemma take_firstReturn_isBalanced : IsBalanced (p.take (p.firstReturn + 1)) := by
   have := findIdx_get (w := (length_range p.length).symm ▸ firstReturn_lt_length bp np)
   simp only [get_range, decide_eq_true_eq] at this
-  exact bp.from_take this
+  exact bp.take this
 
 lemma firstReturn_pos : 0 < p.firstReturn := by
   have lp := length_pos_of_ne_nil np
@@ -236,7 +236,7 @@ lemma count_U_eq_count_D_of_firstReturn :
 theorem leftPart_isBalanced : p.leftPart.IsBalanced := by
   have := firstReturn_lt_length bp np
   rw [leftPart, take_firstReturn_eq_dropLast bp np]
-  apply (bp.from_take (count_U_eq_count_D_of_firstReturn bp np)).denest
+  apply (bp.take (count_U_eq_count_D_of_firstReturn bp np)).denest
     (take_firstReturn_ne_nil np)
   intro i hi
   rw [length_take, min_eq_left (by omega)] at hi
@@ -246,12 +246,12 @@ theorem leftPart_isBalanced : p.leftPart.IsBalanced := by
   exact lt_of_le_of_ne (bp.2 i) ne.symm
 
 theorem rightPart_isBalanced : p.rightPart.IsBalanced :=
-  (bp.split _).mp <| bp.from_take (count_U_eq_count_D_of_firstReturn bp np)
+  (bp.split _).mp <| bp.take (count_U_eq_count_D_of_firstReturn bp np)
 
 theorem eq_U_leftPart_D_rightPart : p = ↑[U] ++ p.leftPart ++ ↑[D] ++ p.rightPart := by
   nth_rw 1 [← p.take_append_drop (p.firstReturn + 1)]; congr
   rw [leftPart, take_firstReturn_eq_dropLast bp np]
-  exact append_tail_dropLast_append (take_firstReturn_isBalanced bp np) (take_firstReturn_ne_nil np)
+  exact concat_tail_dropLast_concat (take_firstReturn_isBalanced bp np) (take_firstReturn_ne_nil np)
 
 theorem leftPart_length_lt : p.leftPart.length < p.length := by
   conv_rhs => rw [eq_U_leftPart_D_rightPart bp np]
