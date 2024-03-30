@@ -192,10 +192,8 @@ variable (σ R : Type*) [CommSemiring R] [CommSemiring S] [Fintype σ] [Fintype 
 
 /-! ### Multiplicativity on partitions -/
 
-/--
-  Given a sequence of `MvPolynomial` functions `f` and a partition `μ` of size `n`,
-  `muProduct` computes the product of applying each function in `f` to the parts of `μ`.
--/
+/-- Given a sequence of `MvPolynomial` functions `f` and a partition `μ` of size `n`,
+`muProduct` computes the product of applying each function in `f` to the parts of `μ`. -/
 def muProduct {n : ℕ} (f : ℕ → MvPolynomial σ R) (μ : n.Partition) : MvPolynomial σ R :=
   Multiset.prod (μ.parts.map f)
 
