@@ -17,7 +17,7 @@ in `MeasureTheory.integral_fintype_prod_eq_prod`.
 
 open BigOperators Fintype MeasureTheory MeasureTheory.Measure
 
-variable {𝕜 : Type*} [IsROrC 𝕜]
+variable {𝕜 : Type*} [RCLike 𝕜]
 
 namespace MeasureTheory
 

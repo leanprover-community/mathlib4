@@ -36,13 +36,13 @@ Positive operator
 -/
 
 
-open InnerProductSpace IsROrC ContinuousLinearMap
+open InnerProductSpace RCLike ContinuousLinearMap
 
 open scoped InnerProduct ComplexConjugate
 
 namespace ContinuousLinearMap
 
-variable {𝕜 E F : Type*} [IsROrC 𝕜]
+variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 F]
 variable [CompleteSpace E] [CompleteSpace F]
