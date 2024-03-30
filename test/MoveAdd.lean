@@ -119,18 +119,22 @@ example (k : ℕ) (h0 : 0 + 2 = 9 + 0) (h9 : k + 2 = k + 9) : k + 2 = 9 + k := b
 section tactic
 open Mathlib.MoveAdd
 
-#guard (uniquify [ 0,      1,      0,      1,      0,      3] =
-                 [(0, 0), (1, 0), (0, 1), (1, 1), (0, 2), (3, 0)])
+run_cmd do Lean.Elab.Command.liftCoreM do Lean.Meta.MetaM.run do
+  guard <| uniquify [ 0,      1,      0,      1,      0,      3] =
+                    [(0, 0), (1, 0), (0, 1), (1, 1), (0, 2), (3, 0)]
 
-#guard
-  (let dat := [(0, true), (1, false), (2, true)]
-   #[0, 1, 2, 3, 4].qsort (weight dat · ≤ weight dat ·) = #[0, 2, 3, 4, 1])
+run_cmd do Lean.Elab.Command.liftCoreM do Lean.Meta.MetaM.run do
+  guard <| let dat := [(0, true), (1, false), (2, true)]
+    #[0, 1, 2, 3, 4].qsort (weight dat · ≤ weight dat ·) = #[0, 2, 3, 4, 1]
 
-#guard false = ( reorderUsing [0, 1, 2] [(0, false)] = [1, 2, 0] &&
-                 reorderUsing [0, 1, 2] [(1, true)] = [1, 0, 2] &&
-                 reorderUsing [0, 1, 2] [(1, true), (0, false)] != [1, 2, 0])
+run_cmd do Lean.Elab.Command.liftCoreM do Lean.Meta.MetaM.run do
+  guard <|
+    false = ( reorderUsing [0, 1, 2] [(0, false)] = [1, 2, 0] &&
+              reorderUsing [0, 1, 2] [(1, true)] = [1, 0, 2] &&
+              reorderUsing [0, 1, 2] [(1, true), (0, false)] != [1, 2, 0])
 
-#guard reorderUsing [1, 5, 4, 3, 2, 1] [(3, true), (2, false), (1, false)] =
+run_cmd do Lean.Elab.Command.liftCoreM do Lean.Meta.MetaM.run do
+  guard <| reorderUsing [1, 5, 4, 3, 2, 1] [(3, true), (2, false), (1, false)] =
                         [3, 5, 4, 1, 2, 1]
 
 end tactic
