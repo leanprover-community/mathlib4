@@ -522,6 +522,7 @@ section UniformGroup -- results which depend on completeness
 
 variable [UniformSpace G] [UniformGroup G] [CompleteSpace G]
 
+/-- "iff" version of `Multipliable.of_nat_of_neg_add_one`. -/
 @[to_additive "\"iff\" version of `Summable.of_nat_of_neg_add_one`."]
 lemma multipliable_int_iff_multipliable_nat_and_neg_add_one {f : ℤ → G} : Multipliable f ↔
     (Multipliable fun n : ℕ ↦ f n) ∧ (Multipliable fun n : ℕ ↦ f (-(n + 1))) := by
@@ -529,7 +530,8 @@ lemma multipliable_int_iff_multipliable_nat_and_neg_add_one {f : ℤ → G} : Mu
   apply p.comp_injective
   exacts [Nat.cast_injective, @Int.negSucc.inj]
 
-@[to_additive "\"iff\" version of `Summable.of_natCast_neg_natCast`."]
+/-- "iff" version of `Multipliable.of_nat_of_neg`. -/
+@[to_additive "\"iff\" version of `Summable.of_nat_of_neg`."]
 lemma multipliable_int_iff_multipliable_nat_and_neg {f : ℤ → G} :
     Multipliable f ↔ (Multipliable fun n : ℕ ↦ f n) ∧ (Multipliable fun n : ℕ ↦ f (-n)) := by
   refine ⟨fun p ↦ ⟨?_, ?_⟩, fun ⟨hf₁, hf₂⟩ ↦ Multipliable.of_nat_of_neg hf₁ hf₂⟩ <;>
