@@ -102,7 +102,7 @@ theorem length_mul_le (w₁ w₂ : W) :
   rcases cs.exists_reduced_word w₁ with ⟨ω₁, hω₁, rfl⟩
   rcases cs.exists_reduced_word w₂ with ⟨ω₂, hω₂, rfl⟩
   have := cs.length_wordProd_le (ω₁ ++ ω₂)
-  simpa [hω₁, hω₂] using this
+  simpa [hω₁, hω₂, wordProd_append] using this
 
 theorem length_mul_ge (w₁ w₂ : W) :
     ℓ (w₁ * w₂) ≥ max (ℓ w₁ - ℓ w₂) (ℓ w₂ - ℓ w₁) := by
