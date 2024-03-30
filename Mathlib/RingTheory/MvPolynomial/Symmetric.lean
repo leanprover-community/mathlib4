@@ -190,7 +190,7 @@ def renameSymmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :
 
 variable (σ R : Type*) [CommSemiring R] [CommSemiring S] [Fintype σ] [Fintype τ]
 
-/- Multiplicativity on partitions -/
+/-! ### Multiplicativity on partitions -/
 
 /--
   Given a sequence of `MvPolynomial` functions `f` and a partition `μ` of size `n`,
