@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Lean.Linter.Util
-import Std.Lean.Command
+import Lean.Elab.Command
 
 /-!
 #  `#`-command linter
