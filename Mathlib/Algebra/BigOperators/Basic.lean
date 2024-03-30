@@ -2394,19 +2394,23 @@ variable [DecidableEq ι]
 
 /-- See also `Finset.prod_dite_eq`. -/
 @[to_additive "See also `Finset.sum_dite_eq`."] lemma prod_dite_eq (i : ι) (f : ∀ j, i = j → α) :
-    ∏ j, (if h : i = j then f j h else 1) = f i rfl := by simp
+    ∏ j, (if h : i = j then f j h else 1) = f i rfl := by
+  rw [Finset.prod_dite_eq, if_pos (mem_univ _)]
 
 /-- See also `Finset.prod_dite_eq'`. -/
 @[to_additive "See also `Finset.sum_dite_eq'`."] lemma prod_dite_eq' (i : ι) (f : ∀ j, j = i → α) :
-    ∏ j, (if h : j = i then f j h else 1) = f i rfl := by simp
+    ∏ j, (if h : j = i then f j h else 1) = f i rfl := by
+  rw [Finset.prod_dite_eq', if_pos (mem_univ _)]
 
 /-- See also `Finset.prod_ite_eq`. -/
 @[to_additive "See also `Finset.sum_ite_eq`."]
-lemma prod_ite_eq (i : ι) (f : ι → α) : ∏ j, (if i = j then f j else 1) = f i := by simp
+lemma prod_ite_eq (i : ι) (f : ι → α) : ∏ j, (if i = j then f j else 1) = f i := by
+  rw [Finset.prod_ite_eq, if_pos (mem_univ _)]
 
 /-- See also `Finset.prod_ite_eq'`. -/
 @[to_additive "See also `Finset.sum_ite_eq'`."]
-lemma prod_ite_eq' (i : ι) (f : ι → α) : ∏ j, (if j = i then f j else 1) = f i := by simp
+lemma prod_ite_eq' (i : ι) (f : ι → α) : ∏ j, (if j = i then f j else 1) = f i := by
+  rw [Finset.prod_ite_eq', if_pos (mem_univ _)]
 
 /-- See also `Finset.prod_pi_mulSingle`. -/
 @[to_additive "See also `Finset.sum_pi_single`."]
