@@ -42,4 +42,6 @@ unsafe def elabEvalExpr : Lean.Elab.Term.TermElab
   Lean.Meta.evalExpr Expr q(Expr) ee (safety := .unsafe)
 | _ => fun _ => Elab.throwUnsupportedSyntax
 
+#eval show MetaM _ from guard true
+
 end Mathlib.Meta
