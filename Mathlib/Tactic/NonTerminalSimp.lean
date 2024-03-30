@@ -191,7 +191,7 @@ def ignored : HashSet Name := HashSet.empty
   |>.insert `«;»
   |>.insert ``cdotTk
   |>.insert ``cdot
-  -- followers: `rfl, omega, abel, ring, linarith, linarith, norm_cast`
+  -- followers: `rfl, omega, abel, ring, linarith, linarith, norm_cast, aesop, tauto`
   |>.insert ``Lean.Parser.Tactic.tacticRfl
   |>.insert ``Lean.Parser.Tactic.omega
   |>.insert `Mathlib.Tactic.Abel.abel
@@ -199,6 +199,8 @@ def ignored : HashSet Name := HashSet.empty
   |>.insert `linarith
   |>.insert `nlinarith
   |>.insert ``Lean.Parser.Tactic.tacticNorm_cast_
+  |>.insert `Aesop.Frontend.Parser.aesopTactic
+  |>.insert `Mathlib.Tactic.Tauto.tauto
 
 /-
 simp_all only
