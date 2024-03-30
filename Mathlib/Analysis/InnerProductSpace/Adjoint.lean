@@ -42,11 +42,11 @@ adjoint
 
 noncomputable section
 
-open IsROrC
+open RCLike
 
 open scoped ComplexConjugate
 
-variable {𝕜 E F G : Type*} [IsROrC 𝕜]
+variable {𝕜 E F G : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 F] [InnerProductSpace 𝕜 G]
 

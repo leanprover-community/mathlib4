@@ -636,6 +636,12 @@ lemma div_eq_sub_mod_div : m / n = (m - m % n) / n := by
     rw [this, mul_div_right _ hn]
 #align nat.div_eq_sub_mod_div Nat.div_eq_sub_mod_div
 
+protected lemma eq_div_of_mul_eq_left (hc : c ≠ 0) (h : a * c = b) : a = b / c := by
+  rw [← h, Nat.mul_div_cancel _ (Nat.pos_iff_ne_zero.2 hc)]
+
+protected lemma eq_div_of_mul_eq_right (hc : c ≠ 0) (h : c * a = b) : a = b / c := by
+  rw [← h, Nat.mul_div_cancel_left _ (Nat.pos_iff_ne_zero.2 hc)]
+
 /-!
 ### `pow`
 
@@ -992,6 +998,8 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
 #align nat.pow_dvd_pow_iff_le_right' Nat.pow_dvd_pow_iff_le_right'
 #align nat.mod_mul_right_div_self Nat.mod_mul_right_div_self
 #align nat.mod_mul_left_div_self Nat.mod_mul_left_div_self
+
+attribute [simp] Nat.dvd_zero
 
 lemma mul_div_mul_comm_of_dvd_dvd (hba : b ∣ a) (hdc : d ∣ c) :
     a * c / (b * d) = a / b * (c / d) := by
