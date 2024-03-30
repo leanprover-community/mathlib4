@@ -160,3 +160,7 @@ theorem IsKLindelof.elim_cardinal_subcover {ι : Type u} (hreg : Cardinal.IsRegu
     simp only [mem_singleton_iff, iUnion_iUnion_eq_left]
     exact subset_rfl
   exact hs.induction_on hmono hcardinal_union h_nhds -/
+
+example (hs : IsKLindelof k s) {f : Filter X}
+    [CardinalInterFilter f k] (hf : ∀ x ∈ s, sᶜ ∈ 𝓝 x ⊓ f) : sᶜ ∈ f := by
+  exact hs.compl_mem_sets hf
