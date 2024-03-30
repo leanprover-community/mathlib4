@@ -270,8 +270,7 @@ lemma map_factor {A B C:Type*} {U : Set A} {f : A → B} {s : C → B}
     (h: ∀ c : C, s c ∈ f '' U):
     ∃ s' : C → A, ( s = f ∘ s' ∧ ∀ c : C, s' c ∈ U) := by
   choose s' hs' using h
-  use s'
-  refine ⟨?_, fun c ↦ (hs' c).1⟩
+  refine ⟨s', ?_, fun c ↦ (hs' c).1⟩
   ext c
   rw [← (hs' c).2]
   rfl
