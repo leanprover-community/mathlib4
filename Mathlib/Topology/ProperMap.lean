@@ -253,7 +253,7 @@ theorem isProperMap_iff_isClosedMap_and_compact_fibers :
     rw [← clusterPt_lift'_closure_iff]
     exact hx.mono inf_le_left
 
-/-- An injective and continuous function is proper if and only if it is close. -/
+/-- An injective and continuous function is proper if and only if it is closed. -/
 lemma isProperMap_iff_isClosedMap_of_inj (f_cont : Continuous f) (f_inj : f.Injective) :
     IsProperMap f ↔ IsClosedMap f := by
   refine ⟨fun h ↦ h.isClosedMap, fun h ↦ ?_⟩
