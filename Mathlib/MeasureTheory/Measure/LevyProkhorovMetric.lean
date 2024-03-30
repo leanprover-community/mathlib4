@@ -477,7 +477,7 @@ lemma SeparableSpace.exists_measurable_partition_diam_le
     · intro n
       simpa only [diam_empty] using LT.lt.le ε_pos
     · simp only [iUnion_empty]
-      apply Eq.symm (b := ∅)
+      apply Eq.symm
       simp only [univ_eq_empty_iff, X_emp]
   rw [not_isEmpty_iff] at X_emp
   obtain ⟨xs, xs_dense⟩ := exists_dense_seq X
