@@ -87,12 +87,12 @@ def homologicalKernel [F.IsHomological] :
     (Triangle.shift_distinguished T hT n)).isZero_of_both_zeros
       (IsZero.eq_of_src (h₁ n) _ _) (IsZero.eq_of_tgt (h₃ n) _ _))
 
-instance [F.IsHomological] : F.homologicalKernel.set.RespectsIso := by
+instance [F.IsHomological] : ClosedUnderIsomorphisms F.homologicalKernel.P := by
   dsimp only [homologicalKernel]
   infer_instance
 
 lemma mem_homologicalKernel_iff [F.IsHomological] [F.ShiftSequence ℤ] (X : C) :
-    X ∈ F.homologicalKernel.set ↔ ∀ (n : ℤ), IsZero ((F.shift n).obj X) := by
+    F.homologicalKernel.P X ↔ ∀ (n : ℤ), IsZero ((F.shift n).obj X) := by
   simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X)]
   rfl
 
