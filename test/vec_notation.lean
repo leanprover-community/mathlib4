@@ -25,6 +25,7 @@ run_cmd Elab.Command.liftTermElabM do
 
 /-! These tests are testing `PiFin.repr` -/
 
+set_option linter.hashCommand false
 #guard (toString (repr (![] : _ → ℕ)) = "![]")
 #guard (toString (repr ![1, 2, 3]) = "![1, 2, 3]")
 #guard (toString (repr ![![1, 2], ![3, 4]]) = "![![1, 2], ![3, 4]]")
