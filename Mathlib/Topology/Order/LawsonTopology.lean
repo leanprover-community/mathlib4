@@ -192,10 +192,14 @@ instance : IsLawson (WithLawson α) := ⟨rfl⟩
 def withLawsonTopologyHomeomorph [TopologicalSpace α] [IsLawson α]  : WithLawson α ≃ₜ α :=
   WithLawson.ofLawson.toHomeomorphOfInducing ⟨by erw [IsLawson.topology_eq α, induced_id]; rfl⟩
 
-
 theorem isOpen_preimage_ofLawson (S : Set α) :
     IsOpen (Topology.WithLawson.ofLawson ⁻¹' S) ↔
       (lawson α).IsOpen S :=
+  Iff.rfl
+
+theorem isClosed_preimage_ofLawson (S : Set α) :
+    IsClosed (Topology.WithLawson.ofLawson ⁻¹' S) ↔
+      @IsClosed (WithLawson α) _ S :=
   Iff.rfl
 
 theorem isOpen_def (T : Set (Topology.WithLawson α)) :
@@ -256,9 +260,22 @@ lemma ScottOpen_implies_LawsonOpen (s : Set α) :
     IsOpen (Topology.WithScott.ofScott ⁻¹' s) → IsOpen (Topology.WithLawson.ofLawson ⁻¹' s) :=
   Lawson_le_Scott' _
 
+lemma ScottClosed_implies_LawsonClosed (s : Set α) :
+    IsClosed (Topology.WithScott.ofScott ⁻¹' s) →
+    IsClosed (Topology.WithLawson.ofLawson ⁻¹' s) := by
+  rw [← isOpen_compl_iff, ← isOpen_compl_iff]
+  apply Lawson_le_Scott' _
+
+
 lemma LowerOpen_implies_LawsonOpen (s : Set α) :
     IsOpen (Topology.WithLower.ofLower ⁻¹' s) → IsOpen (Topology.WithLawson.ofLawson ⁻¹' s) :=
   Lawson_le_Lower' _
+
+lemma LowerClosed_implies_LawsonClosed (s : Set α) :
+    IsClosed (Topology.WithLower.ofLower ⁻¹' s) →
+    IsClosed (Topology.WithLawson.ofLawson ⁻¹' s) := by
+  rw [← isOpen_compl_iff, ← isOpen_compl_iff]
+  exact Lawson_le_Lower' _
 
 end ts
 
@@ -333,17 +350,15 @@ lemma LawsonOpen_implies_ScottHausdorffOpen' (s : Set α) :
 
 end csh
 
--- Can we say something without CL?
-section CompleteLattice
-
--- Scott open iff UpperSet and STopology open
+section Preorder
 
 open Topology
 
-variable [CompleteLattice α]
+variable [Preorder α]
   (S :TopologicalSpace α) (l : TopologicalSpace α) (L : TopologicalSpace α)
   [@IsScott α _ S]  [@IsLawson α _ L] [@IsLower α l _]
 
+-- Scott open iff UpperSet and STopology open
 lemma LawsonOpen_iff_ScottOpen (s : Set α) (h : IsUpperSet s) :
     IsOpen[L] s ↔ IsOpen[S] s := by
   constructor
@@ -357,5 +372,41 @@ lemma LawsonOpen_iff_ScottOpen (s : Set α) (h : IsUpperSet s) :
       exact α
       exact α
   · apply TopologicalSpace.le_def.mp (Scott_le_Lawson _ _)
+
+end Preorder
+
+section CompleteLattice
+
+variable [CompleteLattice α] [TopologicalSpace α] [IsLawson α]
+
+theorem isClosed_preimage_ofLawson (S : Set α) :
+    IsClosed (Topology.WithLawson.ofLawson ⁻¹' S) ↔
+      IsClosed S := by
+  rw [← isOpen_compl_iff]
+  rw [← preimage_compl]
+  rw [Topology.WithLawson.isOpen_preimage_ofLawson]
+  rw [← isOpen_compl_iff]
+  rw [← IsLawson.topology_eq]
+  exact Eq.to_iff rfl
+
+lemma singletonUpperLower (a : α) : ↑(upperClosure {a}) ∩ ↑(lowerClosure {a}) = ({a} : Set α) :=
+  Set.OrdConnected.upperClosure_inter_lowerClosure ordConnected_singleton
+
+lemma singletonIsClosed (a : α) : IsClosed ({a} : Set α) := by
+  rw [← singletonUpperLower]
+  apply IsClosed.inter
+  · rw [← isClosed_preimage_ofLawson]
+    apply LowerClosed_implies_LawsonClosed
+    apply IsLower.isClosed_upperClosure
+    exact finite_singleton a
+  · rw [← isClosed_preimage_ofLawson]
+    apply ScottClosed_implies_LawsonClosed
+    simp only [lowerClosure_singleton, LowerSet.coe_Iic]
+    exact Topology.IsScott.isClosed_Iic
+
+/-
+instance (priority := 90) t0Space : T0Space α where
+  t0 := sorry
+-/
 
 end CompleteLattice
