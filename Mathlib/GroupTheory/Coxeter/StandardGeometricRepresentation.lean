@@ -682,7 +682,7 @@ private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬ cs.IsRigh
       rw [haw]
       dsimp
       rw [alternatingWord_succ', wordProd_cons, mul_inv_rev, mul_assoc, inv_simple,
-        simple_mul_self, mul_one]
+        simple_mul_simple_self, mul_one]
 
     have h₁₀ : ¬ cs.IsRightDescent (w * (aw m)⁻¹) j' := by
       intro h'
