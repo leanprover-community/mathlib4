@@ -134,12 +134,11 @@ theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x 
 set_option linter.uppercaseLean3 false in
 #align SemiRing.of_hom_apply SemiRingCat.ofHom_apply
 
-set_option autoImplicit true in
 /--
 Ring equivalence are isomorphisms in category of semirings
 -/
 @[simps]
-def _root_.RingEquiv.toSemiRingCatIso [Semiring X] [Semiring Y] (e : X ≃+* Y) :
+def _root_.RingEquiv.toSemiRingCatIso {X Y : Type u} [Semiring X] [Semiring Y] (e : X ≃+* Y) :
     SemiRingCat.of X ≅ SemiRingCat.of Y where
   hom := e.toRingHom
   inv := e.symm.toRingHom

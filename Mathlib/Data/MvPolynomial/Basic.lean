@@ -70,8 +70,6 @@ polynomial, multivariate polynomial, multivariable polynomial
 
 -/
 
-set_option autoImplicit true
-
 noncomputable section
 
 open Set Function Finsupp AddMonoidAlgebra
@@ -505,7 +503,8 @@ theorem algHom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : MvPolynomial σ
 #align mv_polynomial.alg_hom_ext MvPolynomial.algHom_ext
 
 @[simp]
-theorem algHom_C (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R) (r : R) : f (C r) = C r :=
+theorem algHom_C {τ : Type*} (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R) (r : R) :
+    f (C r) = C r :=
   f.commutes r
 #align mv_polynomial.alg_hom_C MvPolynomial.algHom_C
 
@@ -1207,11 +1206,11 @@ theorem eval_assoc {τ} (f : σ → MvPolynomial τ R) (g : τ → R) (p : MvPol
 #align mv_polynomial.eval_assoc MvPolynomial.eval_assoc
 
 @[simp]
-theorem eval₂_id (p : MvPolynomial σ R) : eval₂ (RingHom.id _) g p = eval g p :=
+theorem eval₂_id {g : σ → R} (p : MvPolynomial σ R) : eval₂ (RingHom.id _) g p = eval g p :=
   rfl
 #align mv_polynomial.eval₂_id MvPolynomial.eval₂_id
 
-theorem eval_eval₂ [CommSemiring R] [CommSemiring S]
+theorem eval_eval₂ {S τ : Type*} {x : τ → S} [CommSemiring R] [CommSemiring S]
     (f : R →+* MvPolynomial τ S) (g : σ → MvPolynomial τ S) (p : MvPolynomial σ R) :
     eval x (eval₂ f g p) = eval₂ ((eval x).comp f) (fun s => eval x (g s)) p := by
   apply induction_on p

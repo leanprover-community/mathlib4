@@ -12,15 +12,13 @@ import Mathlib.Order.Hom.Set
 # Lemmas about images of intervals under order isomorphisms.
 -/
 
-set_option autoImplicit true
-
 open Set
 
 namespace OrderIso
 
 section Preorder
 
-variable [Preorder α] [Preorder β]
+variable {α β : Type*} [Preorder α] [Preorder β]
 
 @[simp]
 theorem preimage_Iic (e : α ≃o β) (b : β) : e ⁻¹' Iic b = Iic (e.symm b) := by
@@ -109,13 +107,13 @@ theorem image_Icc (e : α ≃o β) (a b : α) : e '' Icc a b = Icc (e a) (e b) :
 end Preorder
 
 /-- Order isomorphism between `Iic (⊤ : α)` and `α` when `α` has a top element -/
-def IicTop [Preorder α] [OrderTop α] : Iic (⊤ : α) ≃o α :=
+def IicTop {α : Type*} [Preorder α] [OrderTop α] : Iic (⊤ : α) ≃o α :=
   { @Equiv.subtypeUnivEquiv α (Iic (⊤ : α)) fun x => le_top with
     map_rel_iff' := @fun x y => by rfl }
 #align order_iso.Iic_top OrderIso.IicTop
 
 /-- Order isomorphism between `Ici (⊥ : α)` and `α` when `α` has a bottom element -/
-def IciBot [Preorder α] [OrderBot α] : Ici (⊥ : α) ≃o α :=
+def IciBot {α : Type*} [Preorder α] [OrderBot α] : Ici (⊥ : α) ≃o α :=
   { @Equiv.subtypeUnivEquiv α (Ici (⊥ : α)) fun x => bot_le with
     map_rel_iff' := @fun x y => by rfl }
 #align order_iso.Ici_bot OrderIso.IciBot
