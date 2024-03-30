@@ -194,7 +194,7 @@ def pushNegLocalDecl (fvarId : FVarId) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let myres ← pushNegCore tgt
   let some (_, newGoal) ← applySimpResultToLocalDecl goal fvarId myres False | failure
-  if newGoal == goal then throwError "push neg made no progress"
+  if newGoal == goal then throwError "push_neg made no progress"
   replaceMainGoal [newGoal]
 
 /--
