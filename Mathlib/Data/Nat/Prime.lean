@@ -465,10 +465,10 @@ theorem not_prime_of_dvd2 (h : ∃ m, m ∣ n ∧ 2 ≤ m ∧ m < n) : ¬Prime n
   exact not_prime_of_dvd ⟨m, dvd, ne_of_gt hm2, ne_of_lt hm⟩
 
 theorem exists_dvd_iff_not_prime {n : ℕ} (n2 : 2 ≤ n) : (¬Prime n) ↔ ∃ m, m ∣ n ∧ m ≠ 1 ∧ m ≠ n :=
-  ⟨exists_dvd_of_not_prime n2, not_prime_of_dvd n2⟩
+  ⟨exists_dvd_of_not_prime n2, not_prime_of_dvd⟩
 
 theorem exists_dvd_iff_not_prime2 {n : ℕ} (n2 : 2 ≤ n) : (¬Prime n) ↔ ∃ m, m ∣ n ∧ 2 ≤ m ∧ m < n :=
-  ⟨exists_dvd_of_not_prime2 n2, not_prime_of_dvd2 n2⟩
+  ⟨exists_dvd_of_not_prime2 n2, not_prime_of_dvd2⟩
 
 theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) : ∃ p, Prime p ∧ p ∣ n :=
   ⟨minFac n, minFac_prime hn, minFac_dvd _⟩
