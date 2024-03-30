@@ -4,57 +4,61 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Iso
-import Mathlib.Data.Set.Basic
+import Mathlib.Order.Basic
 
-/-! # Sets of objects which respects isomorphisms
+/-! # Predicates on objects which are closed under isomorphisms
 
-This file introduces the type class `S.RespectsIso` for `S : Set C`
-with `C` is category.
+This file introduces the type class `ClosedUnderIsomorphisms P` for predicates
+`P : C → Prop` on the objects of a category `C`.
 
 -/
 
-open CategoryTheory
+namespace CategoryTheory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category C] (P Q : C → Prop)
 
-namespace Set
+/-- A predicate `C → Prop` on the objects of a category is closed under isomorphisms
+if whenever `P X`, then all the objects `Y` that are isomorphic to `X` also satisfy `P Y`. -/
+class ClosedUnderIsomorphisms : Prop where
+  mem_of_iso {X Y : C} (_ : X ≅ Y) (_ : P X) : P Y
 
-variable (S T : Set C)
+lemma mem_of_iso [ClosedUnderIsomorphisms P] {X Y : C} (e : X ≅ Y) (hX : P X) : P Y :=
+  ClosedUnderIsomorphisms.mem_of_iso e hX
 
-/-- A set `S : Set C` respects isomorphisms if whenever `X ∈ S`, then all the
-objects that are isomorphic to `X` also belong to `S`.  -/
-class RespectsIso : Prop where
-  condition {X Y : C} (_ : X ≅ Y) (_ : X ∈ S) : Y ∈ S
+lemma mem_iff_of_iso [ClosedUnderIsomorphisms P] {X Y : C} (e : X ≅ Y) : P X ↔ P Y :=
+  ⟨mem_of_iso P e, mem_of_iso P e.symm⟩
 
-lemma mem_of_iso [S.RespectsIso] {X Y : C} (e : X ≅ Y) (hX : X ∈ S) : Y ∈ S :=
-  RespectsIso.condition e hX
+/-- The closure by isomorphisms of a predicate on objects in a category. -/
+def isoClosure (X : C) : Prop := ∃ (Y : C) (_ : P Y), Nonempty (X ≅ Y)
 
-lemma mem_iff_of_iso [S.RespectsIso] {X Y : C} (e : X ≅ Y) : X ∈ S ↔ Y ∈ S :=
-  ⟨S.mem_of_iso e, S.mem_of_iso e.symm⟩
+lemma mem_isoClosure_iff (X : C) :
+  isoClosure P X ↔ ∃ (Y : C) (_ : P Y), Nonempty (X ≅ Y) := by rfl
 
-/-- The closure by isomorphisms of a set of objects in a category. -/
-def isoClosure : Set C := fun X => ∃ (Y : C) (_ : Y ∈ S), Nonempty (X ≅ Y)
+variable {P} in
+lemma mem_isoClosure {X Y : C} (h : P X) (e : X ⟶ Y) [IsIso e] : isoClosure P Y :=
+  ⟨X, h, ⟨(asIso e).symm⟩⟩
 
-lemma subset_isoClosure : S ⊆ S.isoClosure := fun X hX => ⟨X, hX, ⟨Iso.refl X⟩⟩
+lemma subset_isoClosure : P ≤ isoClosure P :=
+  fun X hX => ⟨X, hX, ⟨Iso.refl X⟩⟩
 
-variable {S T} in
-lemma monotone_isoClosure (h : S ⊆ T) : S.isoClosure ⊆ T.isoClosure := by
+variable {P Q} in
+lemma monotone_isoClosure (h : P ≤ Q) : isoClosure P ≤ isoClosure Q := by
   rintro X ⟨X', hX', ⟨e⟩⟩
-  exact ⟨X', h hX', ⟨e⟩⟩
+  exact ⟨X', h _ hX', ⟨e⟩⟩
 
-lemma isoClosure_eq_self [S.RespectsIso] : S.isoClosure = S := by
-  apply subset_antisymm
+lemma isoClosure_eq_self [ClosedUnderIsomorphisms P] : isoClosure P = P := by
+  apply le_antisymm
   · intro X ⟨Y, hY, ⟨e⟩⟩
-    exact S.mem_of_iso e.symm hY
-  · exact S.subset_isoClosure
+    exact mem_of_iso P e.symm hY
+  · exact subset_isoClosure P
 
-lemma isoClosure_subset_iff [T.RespectsIso] : S.isoClosure ⊆ T ↔ S ⊆ T :=
-  ⟨(subset_isoClosure S).trans,
+lemma isoClosure_subset_iff [ClosedUnderIsomorphisms Q] : isoClosure P ≤ Q ↔ P ≤ Q :=
+  ⟨(subset_isoClosure P).trans,
     fun h => (monotone_isoClosure h).trans (by rw [isoClosure_eq_self])⟩
 
-instance (S : Set C) : S.isoClosure.RespectsIso where
-  condition := by
+instance : ClosedUnderIsomorphisms (isoClosure P) where
+  mem_of_iso := by
     rintro X Y e ⟨Z, hZ, ⟨f⟩⟩
     exact ⟨Z, hZ, ⟨e.symm.trans f⟩⟩
 
-end Set
+end CategoryTheory
