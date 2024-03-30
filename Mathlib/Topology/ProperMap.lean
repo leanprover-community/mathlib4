@@ -130,17 +130,18 @@ lemma IsProperMap.ultrafilter_le_nhds_of_tendsto (h : IsProperMap f) ⦃𝒰 : U
 lemma IsProperMap.comp (hf : IsProperMap f) (hg : IsProperMap g) :
     IsProperMap (g ∘ f) := by
   refine ⟨by continuity, fun ℱ z h ↦ ?_⟩
-  rw [MapClusterPt, ← map_map] at h
+  rw [mapClusterPt_comp] at h
   rcases hg.clusterPt_of_mapClusterPt h with ⟨y, rfl, hy⟩
   rcases hf.clusterPt_of_mapClusterPt hy with ⟨x, rfl, hx⟩
   use x, rfl
+
 
 /-- If the composition of two continuous functions `g ∘ f` is proper and `f` is surjective,
 then `g` is proper. -/
 lemma isProperMap_of_comp_of_surj (hf : Continuous f)
     (hg : Continuous g) (hgf : IsProperMap (g ∘ f)) (f_surj : f.Surjective) : IsProperMap g := by
   refine ⟨hg, fun ℱ z h ↦ ?_⟩
-  rw [← ℱ.map_comap_of_surjective f_surj, MapClusterPt, map_map, ← MapClusterPt] at h
+  rw [← ℱ.map_comap_of_surjective f_surj, ← mapClusterPt_comp] at h
   rcases hgf.clusterPt_of_mapClusterPt h with ⟨x, rfl, hx⟩
   rw [← ℱ.map_comap_of_surjective f_surj]
   exact ⟨f x, rfl, hx.map hf.continuousAt tendsto_map⟩
