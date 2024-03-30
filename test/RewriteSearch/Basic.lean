@@ -16,6 +16,7 @@ example (xs ys : List α) : (xs ++ ys).length = ys.length + xs.length := by
 /-
 info: Try this: rw [← @add_assoc, @add_right_comm, @add_assoc, @add_add_add_comm, ← @add_assoc, @add_right_comm]
 -/
+set_option linter.hashCommand false in
 #guard_msgs (drop info) in
 example [AddCommMonoid α] {a b c d : α} : (a + b) + (c + d) = a + d + c + b := by
   rw_search
@@ -29,6 +30,7 @@ example (xs ys : List α) :
 /-
 info: Try this: rw [@List.length_append, @List.length_append, Nat.two_mul, Nat.add_assoc, Nat.add_left_comm, Nat.add_right_comm, Nat.add_assoc]
 -/
+set_option linter.hashCommand false in
 #guard_msgs (drop info) in
 example (xs ys : List α) :
     (xs ++ ys ++ ys).length = 2 * ys.length + xs.length := by
@@ -37,6 +39,7 @@ example (xs ys : List α) :
 /-
 info: Try this: rw [Int.add_right_comm, @add_right_cancel_iff, @add_sub_left_comm, @add_sub, Int.add_sub_cancel]
 -/
+set_option linter.hashCommand false in
 #guard_msgs (drop info) in
 example {a b c : Int} : a + b = c + b + (a - c) := by
   rw_search
