@@ -250,7 +250,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
       convert (@one_mul R _ _).symm
       dsimp only
       convert @Nat.cast_one R _
-    · rw [_root_.pow_succ, zero_mul]
+    · rw [_root_.pow_succ, mul_zero]
       -- Porting note: Lean cannot infer this instance by itself
       haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
       apply (Fintype.sum_empty _).symm

@@ -1065,7 +1065,7 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
     · use Path.refl (p' 0)
       · constructor
         · rintro i hi
-          rw [le_zero_iff.mp hi]
+          rw [Nat.le_zero.mp hi]
           exact ⟨0, rfl⟩
         · rw [range_subset_iff]
           rintro _x
