@@ -25,7 +25,13 @@ def distribNotOnceAt (hypFVar : Expr) (g : MVarId) : MetaM AssertAfterResult := 
   let .fvar fvarId := hypFVar | throwError "not fvar {hypFVar}"
   let h ← fvarId.getDecl
   let e : Q(Prop) ← (do guard <| ← Meta.isProp h.type; pure h.type)
-  let replace (p : Expr) := g.replace h.fvarId p
+  let replace (p : Expr) : MetaM AssertAfterResult := do
+     let result ← g.replace h.fvarId p
+     result.mvarId.withContext do
+     if (← getLCtx).contains h.fvarId
+     then throwError "'replace' did not remove the existing hypothesis"
+     pure result
+
   match e with
   | ~q(¬ ($a : Prop) = $b) => do
     let h' : Q(¬$a = $b) := h.toExpr
