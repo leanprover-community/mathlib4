@@ -241,8 +241,8 @@ instance (n : M) : (F.shift n).PreservesZeroMorphisms :=
 
 @[simp]
 lemma shiftMap_zero (X Y : C) (n a a' : M) (ha' : n + a = a') :
-  F.shiftMap (0 : X ⟶ Y⟦n⟧) a a' ha' = 0 := by
-    simp [shiftMap]
+    F.shiftMap (0 : X ⟶ Y⟦n⟧) a a' ha' = 0 := by
+  simp [shiftMap]
 
 end
 
