@@ -156,7 +156,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ P.parts.card)
         rw [← sum_biUnion pairwiseDisjoint_distinctPairs]
         exact sum_le_sum_of_subset_of_nonneg distinctPairs_increment fun i _ _ ↦ sq_nonneg _
   gcongr
-  rw [Finpartition.IsUniform, not_le, mul_tsub, mul_one, ← offDiag_card] at hPG
+  rw [Finpartition.IsUniform, not_le, mul_tsub, mul_one, ← card_offDiag] at hPG
   calc
     _ ≤ ∑ x in P.parts.offDiag, (edgeDensity G x.1 x.2 : ℝ) ^ 2 +
         ((nonUniforms P G ε).card * (ε ^ 4 / 3) - P.parts.offDiag.card * (ε ^ 5 / 25)) :=
@@ -172,7 +172,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ P.parts.card)
     _ = (6/7 * P.parts.card ^ 2) * ε ^ 5 * (7 / 24) := by ring
     _ ≤ P.parts.offDiag.card * ε ^ 5 * (22 / 75) := by
         gcongr ?_ * _ * ?_
-        · rw [← mul_div_right_comm, div_le_iff (by norm_num), offDiag_card]
+        · rw [← mul_div_right_comm, div_le_iff (by norm_num), card_offDiag]
           norm_cast
           rw [tsub_mul]
           refine le_tsub_of_add_le_left ?_

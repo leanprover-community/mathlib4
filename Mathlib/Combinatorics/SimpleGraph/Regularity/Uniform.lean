@@ -240,7 +240,7 @@ theorem isUniformOne : P.IsUniform G (1 : 𝕜) := by
   rw [IsUniform, mul_one, Nat.cast_le]
   refine' (card_filter_le _
     (fun uv => ¬SimpleGraph.IsUniform G 1 (Prod.fst uv) (Prod.snd uv))).trans _
-  rw [offDiag_card, Nat.mul_sub_left_distrib, mul_one]
+  rw [card_offDiag, Nat.mul_sub_left_distrib, mul_one]
 #align finpartition.is_uniform_one Finpartition.isUniformOne
 
 variable {P G}

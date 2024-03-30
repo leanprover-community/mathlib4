@@ -770,9 +770,9 @@ lemma prod_univ_pi [DecidableEq ι] [Fintype ι] {κ : ι → Type*} (t : ∀ i,
 #align finset.sum_univ_pi Finset.sum_univ_pi
 
 @[to_additive (attr := simp)]
-lemma prod_diag [DecidableEq α] (s : Finset α) (f : α × α → β) :
-    ∏ i in s.diag, f i = ∏ i in s, f (i, i) := by
-  apply prod_nbij' Prod.fst (fun i ↦ (i, i)) <;> simp
+lemma prod_diag (s : Finset α) (f : α × α → β) :
+    ∏ i in s.diag, f i = ∏ i in s, f (i, i) :=
+  prod_map ..
 
 @[to_additive]
 theorem prod_finset_product (r : Finset (γ × α)) (s : Finset γ) (t : γ → Finset α)
