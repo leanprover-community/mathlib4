@@ -3,9 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.ClosedUnderIsomorphisms
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 import Mathlib.CategoryTheory.Triangulated.Triangulated
-import Mathlib.CategoryTheory.RespectsIso
 
 /-! # Triangulated subcategories
 
@@ -23,8 +23,8 @@ is a pretriangulated category.
 
 ## Implementation notes
 
-In the definition of `Triangulated.Subcategory`, we do not assume that the set of
-objects is closed under isomorphisms (i.e. that the subcategory is "strictly full").
+In the definition of `Triangulated.Subcategory`, we do not assume that the predicate
+on objects is closed under isomorphisms (i.e. that the subcategory is "strictly full").
 Part of the theory would be more convenient under this stronger assumption
 (e.g. `Subcategory C` would be a lattice), but some applications require this:
 for example, the subcategory of bounded below complexes in the homotopy category
@@ -47,29 +47,28 @@ variable (C : Type*) [Category C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
 /-- A triangulated subcategory of a pretriangulated category `C` consists of
-`set : Set C` which contains a zero object, is stable by shifts, and such that
-if `X₁ ⟶ X₂ ⟶ X₃ ⟶ X₁⟦1⟧` is a distinguished triangle such that if `X₁` and `X₃` are
-in `set`, then `X₂` is isomorphic to an object in `set`. -/
+a predicate `P : C → Prop` which contains a zero object, is stable by shifts, and such that
+if `X₁ ⟶ X₂ ⟶ X₃ ⟶ X₁⟦1⟧` is a distinguished triangle such that if `X₁` and `X₃` satisfy
+`P` then `X₂` is isomorphic to an object satisfying `P`. -/
 structure Subcategory where
-  /-- the underlying set of objects of a triangulated subcategory -/
-  set : Set C
-  zero' : ∃ (Z : C) (_ : IsZero Z), Z ∈ set
-  shift (X : C) (n : ℤ) (_ : X ∈ set) : X⟦n⟧ ∈ set
-  ext₂' (T : Triangle C) (_ : T ∈ distTriang C) :
-    T.obj₁ ∈ set → T.obj₃ ∈ set → T.obj₂ ∈ set.isoClosure
+  /-- the underlying predicate on objects of a triangulated subcategory -/
+  P : C → Prop
+  zero' : ∃ (Z : C) (_ : IsZero Z), P Z
+  shift (X : C) (n : ℤ) : P X → P (X⟦n⟧)
+  ext₂' (T : Triangle C) (_ : T ∈ distTriang C) : P T.obj₁ → P T.obj₃ → isoClosure P T.obj₂
 
 namespace Subcategory
 
 variable {C}
 variable (S : Subcategory C)
 
-lemma zero [S.set.RespectsIso] : 0 ∈ S.set := by
+lemma zero [ClosedUnderIsomorphisms S.P] : S.P 0 := by
   obtain ⟨X, hX, mem⟩ := S.zero'
-  exact Set.mem_of_iso _ hX.isoZero mem
+  exact mem_of_iso _ hX.isoZero mem
 
-/-- The closure of a triangulated subcategory  -/
+/-- The closure under isomorphisms of a triangulated subcategory. -/
 def isoClosure : Subcategory C where
-  set := S.set.isoClosure
+  P := CategoryTheory.isoClosure S.P
   zero' := by
     obtain ⟨Z, hZ, hZ'⟩ := S.zero'
     exact ⟨Z, hZ, Z, hZ', ⟨Iso.refl _⟩⟩
@@ -78,7 +77,7 @@ def isoClosure : Subcategory C where
     exact ⟨Y⟦n⟧, S.shift Y n hY, ⟨(shiftFunctor C n).mapIso e⟩⟩
   ext₂' := by
     rintro T hT ⟨X₁, h₁, ⟨e₁⟩⟩ ⟨X₃, h₃, ⟨e₃⟩⟩
-    exact Set.subset_isoClosure _
+    exact subset_isoClosure _ _
       (S.ext₂' (Triangle.mk (e₁.inv ≫ T.mor₁) (T.mor₂ ≫ e₃.hom) (e₃.inv ≫ T.mor₃ ≫ e₁.hom⟦1⟧'))
       (isomorphic_distinguished _ hT _
         (Triangle.isoMk _ _ e₁.symm (Iso.refl _) e₃.symm (by aesop_cat) (by aesop_cat) (by
@@ -86,48 +85,48 @@ def isoClosure : Subcategory C where
           simp only [assoc, Iso.cancel_iso_inv_left, ← Functor.map_comp, e₁.hom_inv_id,
             Functor.map_id, comp_id]))) h₁ h₃)
 
-instance : S.isoClosure.set.RespectsIso := by
+instance : ClosedUnderIsomorphisms S.isoClosure.P := by
   dsimp only [isoClosure]
   infer_instance
 
 section
 
-variable (set : Set C) (zero : 0 ∈ set)
-  (shift : ∀ (X : C) (n : ℤ) (_ : X ∈ set), X⟦n⟧ ∈ set)
-  (ext₂ : ∀ (T : Triangle C) (_ : T ∈ distTriang C), T.obj₁ ∈ set → T.obj₃ ∈ set → T.obj₂ ∈ set)
+variable (P : C → Prop) (zero : P 0)
+  (shift : ∀ (X : C) (n : ℤ), P X → P (X⟦n⟧))
+  (ext₂ : ∀ (T : Triangle C) (_ : T ∈ distTriang C), P T.obj₁ → P T.obj₃ → P T.obj₂)
 
 /-- An alternative constructor for "strictly full" triangulated subcategory. -/
 def mk' : Subcategory C where
-  set := set
+  P := P
   zero' := ⟨0, isZero_zero _, zero⟩
   shift := shift
-  ext₂' T hT h₁ h₃ := set.subset_isoClosure (ext₂ T hT h₁ h₃)
+  ext₂' T hT h₁ h₃ := subset_isoClosure P _ (ext₂ T hT h₁ h₃)
 
-instance : (mk' set zero shift ext₂).set.RespectsIso where
-  condition {X Y} e hX := by
+instance : ClosedUnderIsomorphisms (mk' P zero shift ext₂).P where
+  mem_of_iso {X Y} e hX := by
     refine' ext₂ (Triangle.mk e.hom (0 : Y ⟶ 0) 0) _ hX zero
     refine' isomorphic_distinguished _ (contractible_distinguished X) _ _
     exact Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _)
 
 end
 
-lemma ext₂ [S.set.RespectsIso]
-    (T : Triangle C) (hT : T ∈ distTriang C) (h₁ : T.obj₁ ∈ S.set)
-    (h₃ : T.obj₃ ∈ S.set) : T.obj₂ ∈ S.set := by
-  simpa only [S.set.isoClosure_eq_self] using S.ext₂' T hT h₁ h₃
+lemma ext₂ [ClosedUnderIsomorphisms S.P]
+    (T : Triangle C) (hT : T ∈ distTriang C) (h₁ : S.P T.obj₁)
+    (h₃ : S.P T.obj₃) : S.P T.obj₂ := by
+  simpa only [isoClosure_eq_self] using S.ext₂' T hT h₁ h₃
 
 /-- Given `S : Triangulated.Subcategory C`, this is the class of morphisms on `C` which
-consists of morphisms whose cone is in `S.set`. -/
+consists of morphisms whose cone satisfies `S.P`. -/
 def W : MorphismProperty C := fun X Y f => ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧)
-  (_ : Triangle.mk f g h ∈ distTriang C), Z ∈ S.set
+  (_ : Triangle.mk f g h ∈ distTriang C), S.P Z
 
 lemma W_iff {X Y : C} (f : X ⟶ Y) :
     S.W f ↔ ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧)
-      (_ : Triangle.mk f g h ∈ distTriang C), Z ∈ S.set := by rfl
+      (_ : Triangle.mk f g h ∈ distTriang C), S.P Z := by rfl
 
 lemma W_iff' {Y Z : C} (g : Y ⟶ Z) :
     S.W g ↔ ∃ (X : C) (f : X ⟶ Y) (h : Z ⟶ X⟦(1 : ℤ)⟧)
-      (_ : Triangle.mk f g h ∈ distTriang C), X ∈ S.set := by
+      (_ : Triangle.mk f g h ∈ distTriang C), S.P X := by
   rw [S.W_iff]
   constructor
   · rintro ⟨Z, g, h, H, mem⟩
@@ -135,10 +134,10 @@ lemma W_iff' {Y Z : C} (g : Y ⟶ Z) :
   · rintro ⟨Z, g, h, H, mem⟩
     exact ⟨_, _, _, rot_of_distTriang _ H, S.shift _ 1 mem⟩
 
-lemma W.mk {T : Triangle C} (hT : T ∈ distTriang C) (h : T.obj₃ ∈ S.set) : S.W T.mor₁ :=
+lemma W.mk {T : Triangle C} (hT : T ∈ distTriang C) (h : S.P T.obj₃) : S.W T.mor₁ :=
   ⟨_, _, _, hT, h⟩
 
-lemma W.mk' {T : Triangle C} (hT : T ∈ distTriang C) (h : T.obj₁ ∈ S.set) : S.W T.mor₂ := by
+lemma W.mk' {T : Triangle C} (hT : T ∈ distTriang C) (h : S.P T.obj₁) : S.W T.mor₂ := by
   rw [W_iff']
   exact ⟨_, _, _, hT, h⟩
 
@@ -149,7 +148,7 @@ lemma isoClosure_W : S.isoClosure.W = S.W := by
     refine' ⟨Z', g ≫ e.hom, e.inv ≫ h, isomorphic_distinguished _ mem _ _, hZ'⟩
     exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm
   · rintro ⟨Z, g, h, mem, hZ⟩
-    exact ⟨Z, g, h, mem, Set.subset_isoClosure _ hZ⟩
+    exact ⟨Z, g, h, mem, subset_isoClosure _ _ hZ⟩
 
 lemma respectsIso_W : S.W.RespectsIso where
   left := by
@@ -195,12 +194,13 @@ instance [IsTriangulated C] : S.W.IsMultiplicative where
 
 variable (S)
 
-lemma mem_W_iff_of_distinguished [S.set.RespectsIso] (T : Triangle C) (hT : T ∈ distTriang C) :
-    S.W T.mor₁ ↔ T.obj₃ ∈ S.set := by
+lemma mem_W_iff_of_distinguished
+    [ClosedUnderIsomorphisms S.P] (T : Triangle C) (hT : T ∈ distTriang C) :
+    S.W T.mor₁ ↔ S.P T.obj₃ := by
   constructor
   · rintro ⟨Z, g, h, hT', mem⟩
     obtain ⟨e, _⟩ := exists_iso_of_arrow_iso _ _ hT' hT (Iso.refl _)
-    exact S.set.mem_of_iso (Triangle.π₃.mapIso e) mem
+    exact mem_of_iso S.P (Triangle.π₃.mapIso e) mem
   · intro h
     exact ⟨_, _, _, hT, h⟩
 
@@ -245,20 +245,20 @@ section
 
 variable (T : Triangle C) (hT : T ∈ distTriang C)
 
-lemma ext₁ [S.set.RespectsIso] (h₂ : T.obj₂ ∈ S.set) (h₃ : T.obj₃ ∈ S.set) :
-    T.obj₁ ∈ S.set :=
+lemma ext₁ [ClosedUnderIsomorphisms S.P] (h₂ : S.P T.obj₂) (h₃ : S.P T.obj₃) :
+    S.P T.obj₁ :=
   S.ext₂ _ (inv_rot_of_distTriang _ hT) (S.shift _ _ h₃) h₂
 
-lemma ext₃ [S.set.RespectsIso] (h₁ : T.obj₁ ∈ S.set) (h₂ : T.obj₂ ∈ S.set) :
-    T.obj₃ ∈ S.set :=
+lemma ext₃ [ClosedUnderIsomorphisms S.P] (h₁ : S.P T.obj₁) (h₂ : S.P T.obj₂) :
+    S.P T.obj₃ :=
   S.ext₂ _ (rot_of_distTriang _ hT) h₂ (S.shift _ _ h₁)
 
-lemma ext₁' (h₂ : T.obj₂ ∈ S.set) (h₃ : T.obj₃ ∈ S.set) :
-    T.obj₁ ∈ S.set.isoClosure :=
+lemma ext₁' (h₂ : S.P T.obj₂) (h₃ : S.P T.obj₃) :
+    CategoryTheory.isoClosure S.P T.obj₁ :=
   S.ext₂' _ (inv_rot_of_distTriang _ hT) (S.shift _ _ h₃) h₂
 
-lemma ext₃' (h₁ : T.obj₁ ∈ S.set) (h₂ : T.obj₂ ∈ S.set) :
-    T.obj₃ ∈ S.set.isoClosure :=
+lemma ext₃' (h₁ : S.P T.obj₁) (h₂ : S.P T.obj₂) :
+    CategoryTheory.isoClosure S.P T.obj₃ :=
   S.ext₂' _ (rot_of_distTriang _ hT) h₂ (S.shift _ _ h₁)
 
 end
