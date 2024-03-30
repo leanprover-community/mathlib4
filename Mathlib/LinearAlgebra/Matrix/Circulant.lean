@@ -144,7 +144,8 @@ theorem circulant_mul_comm [CommSemigroup α] [AddCommMonoid α] [Fintype n] [Ad
   simp only [mul_apply, circulant_apply, mul_comm]
   refine' Fintype.sum_equiv ((Equiv.subLeft i).trans (Equiv.addRight j)) _ _ _
   intro x
-  simp only [Equiv.trans_apply, Equiv.subLeft_apply, Equiv.coe_addRight, add_sub_cancel, mul_comm]
+  simp only [Equiv.trans_apply, Equiv.subLeft_apply, Equiv.coe_addRight, add_sub_cancel_right,
+    mul_comm]
   congr 2
   abel
 #align matrix.circulant_mul_comm Matrix.circulant_mul_comm

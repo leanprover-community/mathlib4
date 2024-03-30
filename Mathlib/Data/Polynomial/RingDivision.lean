@@ -490,8 +490,8 @@ theorem eval_divByMonic_eq_trailingCoeff_comp {p : R[X]} {t : R} :
   have : (g.comp (X + C t)).coeff 0 = g.eval t := by
     rw [coeff_zero_eq_eval_zero, eval_comp, eval_add, eval_X, eval_C, zero_add]
   rw [← congr_arg (comp · <| X + C t) mul_eq, mul_comp, pow_comp, sub_comp, X_comp, C_comp,
-    add_sub_cancel, ← reverse_leadingCoeff, reverse_X_pow_mul, reverse_leadingCoeff, trailingCoeff,
-    Nat.le_zero.mp (natTrailingDegree_le_of_ne_zero <|
+    add_sub_cancel_right, ← reverse_leadingCoeff, reverse_X_pow_mul, reverse_leadingCoeff,
+    trailingCoeff, Nat.le_zero.1 (natTrailingDegree_le_of_ne_zero <|
       this ▸ eval_divByMonic_pow_rootMultiplicity_ne_zero t hp), this]
 
 section nonZeroDivisors
@@ -864,7 +864,7 @@ theorem roots_pow (p : R[X]) (n : ℕ) : (p ^ n).roots = n • p.roots := by
   · rw [pow_zero, roots_one, Nat.zero_eq, zero_smul, empty_eq_zero]
   · rcases eq_or_ne p 0 with (rfl | hp)
     · rw [zero_pow n.succ_ne_zero, roots_zero, smul_zero]
-    · rw [pow_succ', roots_mul (mul_ne_zero (pow_ne_zero _ hp) hp), ihn, Nat.succ_eq_add_one,
+    · rw [pow_succ, roots_mul (mul_ne_zero (pow_ne_zero _ hp) hp), ihn, Nat.succ_eq_add_one,
         add_smul, one_smul]
 #align polynomial.roots_pow Polynomial.roots_pow
 

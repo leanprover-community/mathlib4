@@ -308,10 +308,9 @@ theorem MeasureTheory.Integrable.convolution_integrand (hf : Integrable f ν) (h
   · simp only [integral_sub_right_eq_self (‖g ·‖)]
     exact (hf.norm.const_mul _).mul_const _
   · simp_rw [← integral_mul_left]
-    rw [Real.norm_of_nonneg]
-    · exact integral_mono_of_nonneg (eventually_of_forall fun t => norm_nonneg _)
-        ((hg.comp_sub_right t).norm.const_mul _) (eventually_of_forall fun t => L.le_opNorm₂ _ _)
-    exact integral_nonneg fun x => norm_nonneg _
+    rw [Real.norm_of_nonneg (by positivity)]
+    exact integral_mono_of_nonneg (eventually_of_forall fun t => norm_nonneg _)
+      ((hg.comp_sub_right t).norm.const_mul _) (eventually_of_forall fun t => L.le_opNorm₂ _ _)
 #align measure_theory.integrable.convolution_integrand MeasureTheory.Integrable.convolution_integrand
 
 theorem MeasureTheory.Integrable.ae_convolution_exists (hf : Integrable f ν) (hg : Integrable g μ) :
@@ -900,9 +899,8 @@ end NontriviallyNormedField
 
 open scoped Convolution
 
-section IsROrC
-
-variable [IsROrC 𝕜]
+section RCLike
+variable [RCLike 𝕜]
 variable [NormedSpace 𝕜 E]
 variable [NormedSpace 𝕜 E']
 variable [NormedSpace 𝕜 E'']
@@ -1000,12 +998,11 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
   refine' (hfgk.const_mul (‖L₃‖ * ‖L₄‖)).mono' h2_meas
     (((quasiMeasurePreserving_sub_left_of_right_invariant ν x₀).ae hgk).mono fun t ht => _)
   · simp_rw [convolution_def, mul_apply', mul_mul_mul_comm ‖L₃‖ ‖L₄‖, ← integral_mul_left]
-    rw [Real.norm_of_nonneg]
-    · refine' integral_mono_of_nonneg (eventually_of_forall fun t => norm_nonneg _)
-        ((ht.const_mul _).const_mul _) (eventually_of_forall fun s => _)
-      simp only [← mul_assoc ‖L₄‖]
-      apply_rules [ContinuousLinearMap.le_of_opNorm₂_le_of_le, le_rfl]
-    exact integral_nonneg fun x => norm_nonneg _
+    rw [Real.norm_of_nonneg (by positivity)]
+    refine' integral_mono_of_nonneg (eventually_of_forall fun t => norm_nonneg _)
+      ((ht.const_mul _).const_mul _) (eventually_of_forall fun s => _)
+    simp only [← mul_assoc ‖L₄‖]
+    apply_rules [ContinuousLinearMap.le_of_opNorm₂_le_of_le, le_rfl]
 #align convolution_assoc convolution_assoc
 
 end Assoc
@@ -1033,7 +1030,7 @@ theorem HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompactSupport
   · have : fderiv 𝕜 (0 : G → E') = 0 := fderiv_const (0 : E')
     simp only [this, convolution_zero, Pi.zero_apply]
     exact hasFDerivAt_const (0 : F) x₀
-  have : ProperSpace G := FiniteDimensional.proper_isROrC 𝕜 G
+  have : ProperSpace G := FiniteDimensional.proper_rclike 𝕜 G
   set L' := L.precompR G
   have h1 : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (fun t => L (f t) (g (x - t))) μ :=
     eventually_of_forall
@@ -1067,12 +1064,13 @@ theorem HasCompactSupport.hasFDerivAt_convolution_left [IsNegInvariant μ]
   exact hcf.hasFDerivAt_convolution_right L.flip hg hf x₀
 #align has_compact_support.has_fderiv_at_convolution_left HasCompactSupport.hasFDerivAt_convolution_left
 
-end IsROrC
+end RCLike
 
 section Real
 
 /-! The one-variable case -/
-variable [IsROrC 𝕜]
+
+variable [RCLike 𝕜]
 variable [NormedSpace 𝕜 E]
 variable [NormedSpace 𝕜 E']
 variable [NormedSpace ℝ F] [NormedSpace 𝕜 F]
@@ -1102,7 +1100,7 @@ end Real
 
 section WithParam
 
-variable [IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace 𝕜 E''] [NormedSpace ℝ F]
+variable [RCLike 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace 𝕜 E''] [NormedSpace ℝ F]
   [NormedSpace 𝕜 F] [CompleteSpace F] [MeasurableSpace G] [NormedAddCommGroup G] [BorelSpace G]
   [NormedSpace 𝕜 G] [NormedAddCommGroup P] [NormedSpace 𝕜 P] {μ : MeasureTheory.Measure G}
   (L : E →L[𝕜] E' →L[𝕜] F)

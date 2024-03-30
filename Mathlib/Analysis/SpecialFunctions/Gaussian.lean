@@ -106,7 +106,7 @@ theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hs : -1 < s) (hp : 1 ≤
         rw [neg_mul, one_mul]
   · simp_rw [← hp, Real.rpow_one]
     convert Real.GammaIntegral_convergent (by linarith : 0 < s + 1) using 2
-    rw [add_sub_cancel, mul_comm]
+    rw [add_sub_cancel_right, mul_comm]
 
 theorem integrableOn_rpow_mul_exp_neg_mul_rpow {p s b : ℝ} (hs : -1 < s) (hp : 1 ≤ p) (hb : 0 < b) :
     IntegrableOn (fun x : ℝ => x ^ s * exp (- b * x ^ p)) (Ioi 0) := by
@@ -118,7 +118,7 @@ theorem integrableOn_rpow_mul_exp_neg_mul_rpow {p s b : ℝ} (hs : -1 < s) (hp :
       rpow_neg_one, mul_inv_cancel_left₀]
     all_goals linarith [mem_Ioi.mp hx]
   refine Integrable.const_mul ?_ _
-  rw [← integrableOn_def]
+  rw [← IntegrableOn]
   exact integrableOn_rpow_mul_exp_neg_rpow hs hp
 
 theorem integrableOn_rpow_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {s : ℝ} (hs : -1 < s) :
@@ -261,10 +261,9 @@ theorem integral_gaussian (b : ℝ) : ∫ x : ℝ, exp (-b * x ^ 2) = sqrt (π /
     · exact div_nonpos_of_nonneg_of_nonpos pi_pos.le hb
     · simpa only [not_lt, integrable_exp_neg_mul_sq_iff] using hb
   -- Assume now `b > 0`. Then both sides are non-negative and their squares agree.
-  refine' (sq_eq_sq _ (sqrt_nonneg _)).1 _
-  · exact integral_nonneg fun x => (exp_pos _).le
-  rw [← ofReal_inj, ofReal_pow, ← coe_algebraMap, IsROrC.algebraMap_eq_ofReal, ← integral_ofReal,
-    sq_sqrt (div_pos pi_pos hb).le, ← IsROrC.algebraMap_eq_ofReal, coe_algebraMap, ofReal_div]
+  refine' (sq_eq_sq (by positivity) (by positivity)).1 _
+  rw [← ofReal_inj, ofReal_pow, ← coe_algebraMap, RCLike.algebraMap_eq_ofReal, ← integral_ofReal,
+    sq_sqrt (div_pos pi_pos hb).le, ← RCLike.algebraMap_eq_ofReal, coe_algebraMap, ofReal_div]
   convert integral_gaussian_sq_complex (by rwa [ofReal_re] : 0 < (b : ℂ).re) with _ x
   rw [ofReal_exp, ofReal_mul, ofReal_pow, ofReal_neg]
 #align integral_gaussian integral_gaussian
@@ -307,8 +306,8 @@ theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
     have : ∀ x : ℝ, cexp (-(1 : ℂ) * (x : ℂ) ^ 2) = exp (-(1 : ℝ) * x ^ 2) := by
       intro x
       simp only [ofReal_exp, neg_mul, one_mul, ofReal_neg, ofReal_pow]
-    simp_rw [this, ← coe_algebraMap, IsROrC.algebraMap_eq_ofReal, integral_ofReal,
-      ← IsROrC.algebraMap_eq_ofReal, coe_algebraMap]
+    simp_rw [this, ← coe_algebraMap, RCLike.algebraMap_eq_ofReal, integral_ofReal,
+      ← RCLike.algebraMap_eq_ofReal, coe_algebraMap]
     conv_rhs =>
       congr
       · rw [← ofReal_one, ← ofReal_div]
@@ -361,7 +360,7 @@ theorem integral_gaussian_Ioi (b : ℝ) :
   · rw [integral_undef, sqrt_eq_zero_of_nonpos, zero_div]
     exact div_nonpos_of_nonneg_of_nonpos pi_pos.le hb
     rwa [← IntegrableOn, integrableOn_Ioi_exp_neg_mul_sq_iff, not_lt]
-  rw [← IsROrC.ofReal_inj (K := ℂ), ← integral_ofReal, ← IsROrC.algebraMap_eq_ofReal,
+  rw [← RCLike.ofReal_inj (K := ℂ), ← integral_ofReal, ← RCLike.algebraMap_eq_ofReal,
     coe_algebraMap]
   convert integral_gaussian_complex_Ioi (by rwa [ofReal_re] : 0 < (b : ℂ).re)
   · simp
@@ -384,7 +383,7 @@ theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = sqrt π := by
     rw [smul_eq_mul, this]
     field_simp [(ne_of_lt (show 0 < x from hx)).symm]
     norm_num; ring
-  · rw [div_one, ← mul_div_assoc, mul_comm, mul_div_cancel _ (two_ne_zero' ℝ)]
+  · rw [div_one, ← mul_div_assoc, mul_comm, mul_div_cancel_right₀ _ (two_ne_zero' ℝ)]
 set_option linter.uppercaseLean3 false in
 #align real.Gamma_one_half_eq Real.Gamma_one_half_eq
 
@@ -655,7 +654,7 @@ theorem integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
   convert integrable_cexp_neg_mul_sum_add hb (fun i ↦ c * w i) using 3 with v
   simp only [EuclideanSpace.measurableEquiv, MeasurableEquiv.symm_mk, MeasurableEquiv.coe_mk,
     EuclideanSpace.norm_eq, WithLp.equiv_symm_pi_apply, Real.norm_eq_abs, sq_abs, PiLp.inner_apply,
-    IsROrC.inner_apply, conj_trivial, ofReal_sum, ofReal_mul, Finset.mul_sum, neg_mul,
+    RCLike.inner_apply, conj_trivial, ofReal_sum, ofReal_mul, Finset.mul_sum, neg_mul,
     Finset.sum_neg_distrib, mul_assoc, add_left_inj, neg_inj]
   norm_cast
   rw [sq_sqrt]

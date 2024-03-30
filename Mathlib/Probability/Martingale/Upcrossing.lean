@@ -563,7 +563,7 @@ theorem upcrossingsBefore_lt_of_exists_upcrossing (hab : a < b) {N₁ N₂ : ℕ
       rw [upperCrossingTime_eq_upperCrossingTime_of_lt (hN₁.trans (hN₂.trans <| Nat.le_succ _))
         this]
       exact this.le
-    · rw [not_lt, le_zero_iff] at hN
+    · rw [not_lt, Nat.le_zero] at hN
       rw [hN, upcrossingsBefore_zero, upperCrossingTime_zero]
       rfl
 #align measure_theory.upcrossings_before_lt_of_exists_upcrossing MeasureTheory.upcrossingsBefore_lt_of_exists_upcrossing
@@ -679,7 +679,10 @@ theorem crossing_pos_eq (hab : a < b) :
   have hf' (ω i) : (f i ω - a)⁺ ≤ 0 ↔ f i ω ≤ a := by rw [posPart_nonpos, sub_nonpos]
   induction' n with k ih
   · refine' ⟨rfl, _⟩
-    simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting,
+    -- Adaptation note: nightly-2024-03-16: simp was
+    -- simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting,
+    --   Set.mem_Icc, Set.mem_Iic, Nat.zero_eq]
+    simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting_def,
       Set.mem_Icc, Set.mem_Iic, Nat.zero_eq]
     ext ω
     split_ifs with h₁ h₂ h₂
@@ -738,7 +741,7 @@ theorem Submartingale.mul_integral_upcrossingsBefore_le_integral_pos_part [IsFin
   by_cases hab : a < b
   · exact mul_integral_upcrossingsBefore_le_integral_pos_part_aux hf hab
   · rw [not_lt, ← sub_nonpos] at hab
-    exact le_trans (mul_nonpos_of_nonpos_of_nonneg hab (integral_nonneg fun ω => Nat.cast_nonneg _))
+    exact le_trans (mul_nonpos_of_nonpos_of_nonneg hab (by positivity))
       (integral_nonneg fun ω => posPart_nonneg _)
 #align measure_theory.submartingale.mul_integral_upcrossings_before_le_integral_pos_part MeasureTheory.Submartingale.mul_integral_upcrossingsBefore_le_integral_pos_part
 
