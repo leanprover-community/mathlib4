@@ -40,9 +40,6 @@ their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter
 A few lemmas requiring heavier imports are in `Mathlib/Data/RCLike/Lemmas.lean`.
 -/
 
-set_option autoImplicit true
-
-
 open BigOperators
 
 section
@@ -51,6 +48,7 @@ local notation "𝓚" => algebraMap ℝ _
 
 open ComplexConjugate
 
+set_option autoImplicit true in
 /--
 This typeclass captures properties shared by ℝ and ℂ, with an API that closely matches that of ℂ.
 -/

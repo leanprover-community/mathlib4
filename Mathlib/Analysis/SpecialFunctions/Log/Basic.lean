@@ -509,16 +509,14 @@ lemma log_pos_of_isNegNat {n : ℕ} (h : NormNum.IsInt e (.negOfNat n)) (w : Nat
   apply Real.log_pos
   simpa using w
 
-set_option autoImplicit true in
-lemma log_pos_of_isRat :
+lemma log_pos_of_isRat {n : ℤ} :
     (NormNum.IsRat e n d) → (decide ((1 : ℚ) < n / d)) → (0 < Real.log (e : ℝ))
   | ⟨inv, eq⟩, h => by
     rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
     have : 1 < (n : ℝ) / d := by exact_mod_cast of_decide_eq_true h
     exact Real.log_pos this
 
-set_option autoImplicit true in
-lemma log_pos_of_isRat_neg :
+lemma log_pos_of_isRat_neg {n : ℤ} :
     (NormNum.IsRat e n d) → (decide (n / d < (-1 : ℚ))) → (0 < Real.log (e : ℝ))
   | ⟨inv, eq⟩, h => by
     rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
