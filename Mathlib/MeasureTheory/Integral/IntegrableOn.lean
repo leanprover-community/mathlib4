@@ -537,6 +537,13 @@ theorem integrable_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (s
   · rw [← indicator_add_eq_right h]; exact hfg.indicator hg.measurableSet_support
 #align measure_theory.integrable_add_of_disjoint MeasureTheory.integrable_add_of_disjoint
 
+/-- If a function converges along a filter to a limit `a`, is integrable along this filter, and
+all elements of the filter have infinite measure, then the limit has to vanish. -/
+lemma IntegrableAtFilter.eq_zero_of_tendsto
+    (h : IntegrableAtFilter f l μ) (h' : ∀ s ∈ l, μ s = ∞) {a : E}
+    (hf : Tendsto f l (𝓝 a)) : a = 0 := by
+sorry
+
 end NormedAddCommGroup
 
 end MeasureTheory

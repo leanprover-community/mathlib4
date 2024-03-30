@@ -682,25 +682,58 @@ section IoiFTC
 variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E] [CompleteSpace E]
 
-theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn
+/-- If the derivative of a function defined on the real line is integrable close to infinity, then
+the function has a limit at infinity. -/
+theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi
     (hderiv : ∀ x ∈ Ioi a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Ioi a)) :
     Tendsto f atTop (𝓝 (limUnder atTop f)) := by
   suffices ∃ a, Tendsto f atTop (𝓝 a) from tendsto_nhds_limUnder this
   suffices CauchySeq f from cauchySeq_tendsto_of_complete this
   apply Metric.cauchySeq_iff'.2 (fun ε εpos ↦ ?_)
-  have : Tendsto (fun t ↦ ∫ x in Ioi t, ‖f' t‖) atTop (𝓝 0) := by
-    have Z := tendsto_set_integral
-
-
-
-
-
-#exit
+  have A : ∀ᶠ (n : ℕ) in atTop, ∫ (x : ℝ) in Ici ↑n, ‖f' x‖ < ε := by
+    have L : Tendsto (fun (n : ℕ) ↦ ∫ x in Ici (n : ℝ), ‖f' x‖) atTop
+        (𝓝 (∫ x in ⋂ (n : ℕ), Ici (n : ℝ), ‖f' x‖)) := by
+      apply tendsto_set_integral_of_antitone (fun n ↦ measurableSet_Ici)
+      · intro m n hmn
+        exact Ici_subset_Ici.2 (Nat.cast_le.mpr hmn)
+      · rcases exists_nat_gt a with ⟨n, hn⟩
+        exact ⟨n, IntegrableOn.mono_set f'int.norm (Ici_subset_Ioi.2 hn)⟩
+    have B : ⋂ (n : ℕ), Ici (n : ℝ) = ∅ := by
+      apply eq_empty_of_forall_not_mem (fun x ↦ ?_)
+      simpa only [mem_iInter, mem_Ici, not_forall, not_le] using exists_nat_gt x
+    simp only [B, Measure.restrict_empty, integral_zero_measure] at L
+    exact (tendsto_order.1 L).2 _ εpos
+  have B : ∀ᶠ (n : ℕ) in atTop, a < n := by
+    rcases exists_nat_gt a with ⟨n, hn⟩
+    filter_upwards [Ioi_mem_atTop n] with m (hm : n < m) using hn.trans (Nat.cast_lt.mpr hm)
+  rcases (A.and B).exists with ⟨N, hN, h'N⟩
+  refine ⟨N, fun x hx ↦ ?_⟩
+  calc
+  dist (f x) (f ↑N)
+    = ‖f x - f N‖ := dist_eq_norm _ _
+  _ = ‖∫ t in Ioc ↑N x, f' t‖ := by
+      rw [← intervalIntegral.integral_of_le hx, intervalIntegral.integral_eq_sub_of_hasDerivAt]
+      · intro y hy
+        simp only [hx, uIcc_of_le, mem_Icc] at hy
+        exact hderiv _ (h'N.trans_le hy.1)
+      · rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hx]
+        exact f'int.mono_set (Ioc_subset_Ioi_self.trans (Ioi_subset_Ioi h'N.le))
+  _ ≤ ∫ t in Ioc ↑N x, ‖f' t‖ := norm_integral_le_integral_norm fun a ↦ f' a
+  _ ≤ ∫ t in Ici ↑N, ‖f' t‖ := by
+      apply set_integral_mono_set
+      · apply IntegrableOn.mono_set f'int.norm (Ici_subset_Ioi.2 h'N)
+      · filter_upwards with x using norm_nonneg _
+      · have : Ioc (↑N) x ⊆ Ici ↑N := Ioc_subset_Ioi_self.trans Ioi_subset_Ici_self
+        exact this.eventuallyLE
+  _ < ε := hN
 
 /-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(a, +∞)`.
 When a function has a limit at infinity `m`, and its derivative is integrable, then the
 integral of the derivative on `(a, +∞)` is `m - f a`. Version assuming differentiability
-on `(a, +∞)` and continuity at `a⁺`.-/
+on `(a, +∞)` and continuity at `a⁺`.
+
+Note that such a function always has a limit at infinity,
+see `tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi`. -/
 theorem integral_Ioi_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Ici a) a)
     (hderiv : ∀ x ∈ Ioi a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Ioi a))
     (hf : Tendsto f atTop (𝓝 m)) : ∫ x in Ioi a, f' x = m - f a := by
@@ -724,7 +757,10 @@ theorem integral_Ioi_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Ici
 /-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(a, +∞)`.
 When a function has a limit at infinity `m`, and its derivative is integrable, then the
 integral of the derivative on `(a, +∞)` is `m - f a`. Version assuming differentiability
-on `[a, +∞)`. -/
+on `[a, +∞)`.
+
+Note that such a function always has a limit at infinity,
+see `tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi`. -/
 theorem integral_Ioi_of_hasDerivAt_of_tendsto' (hderiv : ∀ x ∈ Ici a, HasDerivAt f (f' x) x)
     (f'int : IntegrableOn f' (Ioi a)) (hf : Tendsto f atTop (𝓝 m)) :
     ∫ x in Ioi a, f' x = m - f a := by
@@ -851,6 +887,7 @@ section IicFTC
 
 variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E] [CompleteSpace E]
+
 /-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a)`.
 When a function has a limit `m` at `-∞`, and its derivative is integrable, then the
 integral of the derivative on `(-∞, a)` is `f a - m`. Version assuming differentiability
