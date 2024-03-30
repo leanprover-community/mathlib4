@@ -201,20 +201,15 @@ end UnitaryGroup
 
 section specialUnitaryGroup
 
-variable (n) (α) (A)
+variable (n) (α)
 
 /--`Matrix.specialUnitaryGroup` is the group of unitary `n` by `n` matrices where the determinant
-is 1--/
-abbrev specialUnitaryGroup := MonoidHom.ker (MonoidHom.restrict Matrix.detMonoidHom
-                                                (Matrix.unitaryGroup n α))
+is 1-/
+abbrev specialUnitaryGroup := (MonoidHom.restrict detMonoidHom (unitaryGroup n α)).ker
 
-instance coeMatrix : Coe (Matrix.specialUnitaryGroup n α) (Matrix n n α) := by
-  refine { coe := ?coe }
-  aesop -- just a quick temporary proof
-
-theorem mem_specialUnitaryGroup_iff :
-    A ∈ Matrix.specialUnitaryGroup n α ↔ A * star A = 1 ∧ A.det = 1 := by sorry
-
+theorem mem_specialUnitaryGroup_iff  (h : A ∈ unitaryGroup n α):
+    {val:=A,property:=h} ∈ specialUnitaryGroup n α ↔ A.det = 1 := by
+  exact Eq.to_iff rfl
 
 end specialUnitaryGroup
 
@@ -244,8 +239,22 @@ theorem mem_orthogonalGroup_iff' {A : Matrix n n β} :
   rwa [mul_eq_one_comm] at hA
 #align matrix.mem_orthogonal_group_iff' Matrix.mem_orthogonalGroup_iff'
 
-
-
 end OrthogonalGroup
+
+section specialOrthogonalGroup
+
+variable (n) (β : Type v) [CommRing β]
+
+attribute [local instance] starRingOfComm
+
+/-- `Matrix.specialOrthogonalGroup n` is the group of orthogonal `n` by `n` where the determinant
+is one. -/
+abbrev specialOrthogonalGroup := specialUnitaryGroup n β
+
+theorem mem_specialOrthogonalGroup_iff  (h : A ∈ orthogonalGroup n α):
+    {val:=A,property:=h} ∈ specialOrthogonalGroup n α ↔ A.det = 1 := by
+  exact Eq.to_iff rfl
+
+end specialOrthogonalGroup
 
 end Matrix
