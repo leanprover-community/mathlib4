@@ -263,13 +263,13 @@ theorem esymm_one : esymm σ R 1 = ∑ i, X i := by
   simp only [esymm, powersetCard_one, sum_map, Function.Embedding.coeFn_mk, prod_singleton]
 
 theorem esymmMu_zero : esymmMu σ R (Nat.Partition.indiscrete 0) = 1 := by
-  simp only [esymmMu, esymm_zero, muProduct_zero]
+  simp only [esymmMu, esymm_zero, muProduct_indiscrete_zero]
 
 @[simp]
 theorem esymmMu_onePart (n : ℕ) : esymmMu σ R (Nat.Partition.indiscrete n) = esymm σ R n := by
   cases n
-  · simp only [esymmMu, esymm_zero, muProduct_zero]
-  · simp only [esymmMu, gt_iff_lt, Nat.zero_lt_succ, muProduct_onePart]
+  · simp only [esymmMu, esymm_zero, muProduct_indiscrete_zero]
+  · simp only [esymmMu, gt_iff_lt, Nat.zero_lt_succ, muProduct_indiscrete_of_pos]
 
 theorem map_esymm (n : ℕ) (f : R →+* S) : map f (esymm σ R n) = esymm σ S n := by
   simp_rw [esymm, map_sum, map_prod, map_X]
@@ -390,13 +390,13 @@ theorem hsymm_one : hsymm σ R 1 = ∑ i, X i := by
   simp only [oneEquiv_apply, Multiset.map_singleton, Multiset.prod_singleton]
 
 theorem hsymmMu_zero : hsymmMu σ R (Nat.Partition.indiscrete 0) = 1 := by
-  simp only [hsymmMu, hsymm_zero, muProduct_zero]
+  simp only [hsymmMu, hsymm_zero, muProduct_indiscrete_zero]
 
 @[simp]
 theorem hsymmMu_onePart (n : ℕ) : hsymmMu σ R (Nat.Partition.indiscrete n) = hsymm σ R n := by
   cases n
-  · simp only [hsymmMu, hsymm_zero, muProduct_zero]
-  · simp only [hsymmMu, gt_iff_lt, Nat.zero_lt_succ, muProduct_onePart]
+  · simp only [hsymmMu, hsymm_zero, muProduct_indiscrete_zero]
+  · simp only [hsymmMu, gt_iff_lt, Nat.zero_lt_succ, muProduct_indiscrete_of_pos]
 
 theorem map_hsymm (n : ℕ) (f : R →+* S) : map f (hsymm σ R n) = hsymm σ S n := by
   simp_rw [hsymm, map_sum, ← Multiset.prod_hom']
@@ -442,12 +442,12 @@ theorem psum_one : psum σ R 1 = ∑ i, X i := by
 
 @[simp]
 theorem psumMu_zero : psumMu σ R (Nat.Partition.indiscrete 0) = 1 := by
-  simp only [psumMu, muProduct_zero]
+  simp only [psumMu, muProduct_indiscrete_zero]
 
 @[simp]
 theorem psumMu_onePart (n : ℕ) (npos : n > 0) :
     psumMu σ R (Nat.Partition.indiscrete n) = psum σ R n := by
-  simp only [psumMu, npos, muProduct_onePart]
+  simp only [psumMu, npos, muProduct_indiscrete_of_pos]
 
 @[simp]
 theorem rename_psum (n : ℕ) (e : σ ≃ τ) : rename e (psum σ R n) = psum τ R n := by
@@ -499,9 +499,9 @@ theorem rename_msymm {n : ℕ} (μ : n.Partition) (e : σ ≃ τ) :
   let f : {a : Sym σ n // Nat.Partition.ofSym a = μ} ≃ {a : Sym τ n // Nat.Partition.ofSym a = μ} :=
   {
     toFun := fun a => ⟨Sym.equivCongr e a, by
-      simp only [Sym.equivCongr_apply, Nat.Partition.ofSymEquiv, a.2]⟩
+      simp only [Sym.equivCongr_apply, Nat.Partition.ofSym_map, a.2]⟩
     invFun := fun a => ⟨Sym.equivCongr e.symm a, by
-      simp only [Sym.equivCongr_apply, Nat.Partition.ofSymEquiv, a.2]⟩
+      simp only [Sym.equivCongr_apply, Nat.Partition.ofSym_map, a.2]⟩
     left_inv := by intro a; simp
     right_inv := by intro a; simp
   }
