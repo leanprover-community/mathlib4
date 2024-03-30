@@ -96,6 +96,13 @@ def updateDiscrTree (name : Name) (cinfo : ConstantInfo) (d : RefinedDiscrTree R
     return d
   let (vars, _, eqn) ← forallMetaTelescope cinfo.type
   let some (lhs, rhs) := matchEqn? eqn | return d
+  -- don't index lemmas of the form `a = ?b` where `?b` is a variable not appearing in `a`?
+  if let .mvar mvarId := lhs then
+    if (rhs.findMVar? (· == mvarId)).isNone then
+      return d
+  if let .mvar mvarId := rhs then
+    if (lhs.findMVar? (· == mvarId)).isNone then
+      return d
   d.insertEqn lhs rhs
     { name, symm := false, numParams := vars.size }
     { name, symm := true,  numParams := vars.size }
