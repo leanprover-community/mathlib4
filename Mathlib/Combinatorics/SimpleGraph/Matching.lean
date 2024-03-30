@@ -130,7 +130,7 @@ theorem IsPerfectMatching.even_card {M : Subgraph G} [Fintype V] (h : M.IsPerfec
   simpa only [h.2.card_verts] using IsMatching.even_card h.1
 #align simple_graph.subgraph.is_perfect_matching.even_card SimpleGraph.Subgraph.IsPerfectMatching.even_card
 
-lemma isPerfectMatching_induce_supp_isMatching {M : Subgraph G} (h : Subgraph.IsPerfectMatching M)
+lemma isPerfectMatching_induce_supp_isMatching {M : Subgraph G} (h : M.IsPerfectMatching)
     (c : ConnectedComponent G) : (M.induce c.supp).IsMatching  := by
     intro v hv
     obtain ⟨ w, hw ⟩ := h.1 (h.2 _)
@@ -165,8 +165,8 @@ instance (c : G.ConnectedComponent) (v : V) : Decidable (v ∈ c.supp) :=
     (fun w => by simp only [ConnectedComponent.mem_supp_iff, ConnectedComponent.eq]; infer_instance)
     (fun _ _ _ _ => Subsingleton.elim _ _)
 
-lemma even_if_perfect_matching {M : Subgraph G} (c : ConnectedComponent G)
-    (hM : Subgraph.IsPerfectMatching M) : Even (Fintype.card ↑(ConnectedComponent.supp c)) := by
+lemma even_card_of_isPerfectMatching {M : Subgraph G} (c : ConnectedComponent G)
+    (hM : M.IsPerfectMatching) : Even (Fintype.card c.supp) := by
     classical
     obtain ⟨ k , hk ⟩ := (M.isPerfectMatching_induce_supp_isMatching hM c).even_card
     use k
@@ -186,26 +186,19 @@ theorem mem_supp_of_adj {u : Set V} {v w : V}
     {c : ConnectedComponent ((⊤ : Subgraph G).deleteVerts u).coe}
     (hv : v ∈ Subtype.val '' c.supp) (hw : w ∈ ((⊤ : Subgraph G).deleteVerts  u).verts)
     (hadj : G.Adj v w) : w ∈ Subtype.val '' c.supp := by
-    rw [Set.mem_image]
-    obtain ⟨ v' , hv' ⟩ := hv
+  rw [Set.mem_image]
+  obtain ⟨v' , hv'⟩ := hv
     use ⟨ w , ⟨ by trivial , by refine Set.not_mem_of_mem_diff hw ⟩ ⟩
     rw [ConnectedComponent.mem_supp_iff]
-    constructor
-    · rw [← (ConnectedComponent.mem_supp_iff _ _).mp hv'.1]
-      apply ConnectedComponent.connectedComponentMk_eq_of_adj
+    refine ⟨?_, rfl⟩
+    rw [← (ConnectedComponent.mem_supp_iff _ _).mp hv'.1]
+    apply ConnectedComponent.connectedComponentMk_eq_of_adj
       apply SimpleGraph.Subgraph.Adj.coe
       rw [Subgraph.deleteVerts_adj]
-      constructor
-      · trivial
-      · constructor
-        · exact Set.not_mem_of_mem_diff hw
-        · constructor
-          · trivial
-          · constructor
-            · exact v'.prop.2
-            · rw [Subgraph.top_adj]
-              rw [hv'.2]
-              exact adj_symm G hadj
+      refine ⟨by trivial, Set.not_mem_of_mem_diff hw, by trivial, v'.prop.2, ?_⟩
+      rw [Subgraph.top_adj]
+      rw [hv'.2]
+      exact adj_symm G hadj
     · rfl
 
 lemma odd_matches_node_outside {M : Subgraph G} {u : Set V}
@@ -246,10 +239,6 @@ lemma odd_matches_node_outside {M : Subgraph G} {u : Set V}
     rw [← h'', Set.toFinset_image, Finset.card_image_of_injective _ (Subtype.val_injective)]
     simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_card]
 
-
 end Finite
-
 end ConnectedComponent
-
-
 end SimpleGraph
