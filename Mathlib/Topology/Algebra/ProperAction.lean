@@ -260,35 +260,18 @@ then the naive definition
 of proper action is equivalent to the good definition
 (Kapovich Th 11)
 -/
-theorem naiveProper_of_ProperSMul_T2_FirstCountable
+theorem naiveProper_iff_ProperSMul_T2_FirstCountable
     [T2Space X] [FirstCountableTopology X] :
     ProperlyDiscontinuousSMul G X ↔ ProperSMul G X
     := by sorry
 
-
-lemma map_factor {A B C:Type*} {U : Set A} {f : A → B} {s : C → B}
-    (h: ∀ c : C, s c ∈ f '' U):
-    ∃ s' : C → A, ( s = f ∘ s' ∧ ∀ c : C, s' c ∈ U) := by
-  set s' : C → A := by
-    intro c
-    choose a ha using (h c)
-    exact a
-  use s'
-  constructor
-  rw [Function.comp]
-  sorry
-
--- should be somewhere ?
-lemma isCompact_seq_lim {y:Y} {seq : ℕ → Y}
-    (hconv: Tendsto seq atTop (𝓝 y)):
-    IsCompact (Set.range seq ∪ {y}) := by
-  sorry
-
-lemma tendsto_map_cont {lx: Filter X} {f : X → Y} {g : Y → Z}  {y : Y}
+lemma tendsTo_comp_continuous
+    {lx: Filter X} {f : X → Y} {g : Y → Z} {y : Y}
     (H : Tendsto f lx (𝓝 y)) (hg: Continuous g) :
     Tendsto (g ∘ f) lx (𝓝 (g y)) := by
   apply Filter.Tendsto.comp _ H
   exact hg.tendsto y
+
 /-
 If `X` and `Y` are T2 and first countable,
 then the naive definition
@@ -306,53 +289,53 @@ theorem properMap_of_naiveProper_T2_FirstCountable
   rw [isProperMap_iff_isClosedMap_and_compact_fibers]
   refine ⟨(by assumption), ?_, ?_ ⟩
   · rw [IsClosedMap]
-    intro U hU
+    intro U closed_U
     -- in a first countable space, a set is closed iff sequentially closed
     apply IsSeqClosed.isClosed
-    -- introduce a converging sequence in the image
-    intro seq y hy hconv
+    -- introduce a converging sequence in the image f(U)
+    intro seq y seq_in_image seq_conv
     -- pullback this sequence to a sequence in U
-    replace hy := map_factor hy
-    choose s' hs using hy
-    obtain ⟨hs1, hs2⟩ := hs
-    change seq = f ∘ s' at hs1
+    choose s' hs using seq_in_image
+    have s'_in_U := fun n ↦ (hs n).1
+    have seq_factor : seq = f ∘ s' := by
+      ext n
+      simp
+      rw [<-(hs n).2]
     -- the sequence and its limit is compact, so is its preimage by properness
-    set im := Set.range seq ∪ {y}
-    have preim_comp := h im (isCompact_seq_lim hconv)
-    have s'_im : ∀ n, s' n ∈ (Set.preimage f im) := by
+    set cluster_seq := (insert y (Set.range seq))
+    have preim_comp := h cluster_seq (Tendsto.isCompact_insert_range seq_conv)
+    have s'_im : ∀ n, s' n ∈ (Set.preimage f cluster_seq) := by
       intro n
       simp
-      change (f ∘ s') n ∈ im
-      rw [<-hs1]
-      left
+      change (f ∘ s') n ∈ cluster_seq
+      rw [<-seq_factor]
+      right
       simp
     -- by compactness we have a converging subsequence
-    have subseq := IsCompact.tendsto_subseq preim_comp s'_im
-    obtain ⟨a, _, φ, hstrict, htendsto ⟩ := subseq
+    obtain ⟨a, _, φ, hstrict, htendsto ⟩ := IsCompact.tendsto_subseq preim_comp s'_im
     -- tedious rewriting
-    have hftendsto := tendsto_map_cont htendsto hcont
-    simp at hftendsto
-    change Tendsto ((f ∘ s') ∘ φ) _ _ at hftendsto
-    rw [<- hs1] at hftendsto
+    have fs'_tendsto := tendsTo_comp_continuous htendsto hcont
+    simp at fs'_tendsto
+    change Tendsto ((f ∘ s') ∘ φ) _ _ at fs'_tendsto
+    rw [<- seq_factor] at fs'_tendsto
     -- subsequence still converges
-    replace hconv := hconv.comp (StrictMono.tendsto_atTop hstrict)
-    -- by uniqueness of limits, y=f(a)
-    have yfa := tendsto_nhds_unique hconv hftendsto
+    replace hconv := seq_conv.comp (StrictMono.tendsto_atTop hstrict)
     have aU : a ∈ U := by
       -- a closed set is sequencially closed
-      have hUseq := IsClosed.isSeqClosed hU
+      have hUseq := IsClosed.isSeqClosed closed_U
       have hs3 : ∀ c, (s' ∘ φ) c ∈ U := by
         intro c
         simp
-        specialize hs2 (φ c)
+        specialize s'_in_U (φ c)
         assumption
       -- the limit of s' ∘ φ is still in U
       specialize hUseq hs3 htendsto
       assumption
     use a
     constructor
-    assumption
-    rw [yfa]
+    · assumption
+    -- by uniqueness of limits, y=f(a)
+    · rw [tendsto_nhds_unique hconv fs'_tendsto]
   · intro y
     specialize h {y}
     apply h
