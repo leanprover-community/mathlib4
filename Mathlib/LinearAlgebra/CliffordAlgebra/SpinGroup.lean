@@ -30,9 +30,9 @@ $\{ x \in \mathop{\mathcal{C}\ell} | x \text{ is invertible and } x v x^{-1} ∈
 
 But they presumably form a group only in finite dimensions. So we define `lipschitzGroup` with
 closure of all the invertible elements in the form of `ι Q m`, and we show this definition is
-at least as large as the other definition (See `lipschitzGroup.mem_conjAct_le` and
-`lipschitzGroup.mem_involute_le`). The reverse statement presumably being true only in finite
-dimensions.
+at least as large as the other definition (See `lipschitzGroup.conjAct_smul_range_ι` and
+`lipschitzGroup.involute_act_ι_mem_range_ι`).
+The reverse statement presumably is true only in finite dimensions.
 
 Here are some discussions about the latent ambiguity of definition :
 https://mathoverflow.net/q/427881/172242 and https://mathoverflow.net/q/251288/172242
@@ -62,10 +62,19 @@ def lipschitzGroup (Q : QuadraticForm R M) : Subgroup (CliffordAlgebra Q)ˣ :=
 namespace lipschitzGroup
 
 /-- If x is in `lipschitzGroup Q`, then `(ι Q).range` is closed under twisted conjugation.
-The reverse statement presumably being true only in finite dimensions.-/
-theorem mem_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzGroup Q)
+The reverse statement presumably is true only in finite dimensions.-/
+theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzGroup Q)
     [Invertible (2 : R)] :
-    ConjAct.toConjAct x • LinearMap.range (ι Q) ≤ LinearMap.range (ι Q) := by
+    ConjAct.toConjAct x • LinearMap.range (ι Q) = LinearMap.range (ι Q) := by
+  suffices ∀ x ∈ lipschitzGroup Q,
+      ConjAct.toConjAct x • LinearMap.range (ι Q) ≤ LinearMap.range (ι Q) by
+    apply le_antisymm
+    · exact this _ hx
+    · have := Submodule.pointwise_smul_mono (ConjAct.toConjAct x) <| this _ (inv_mem hx)
+      refine Eq.trans_le ?_ this
+      simp only [map_inv, smul_inv_smul]
+  -- TODO: is the preimage version easier to prove?
+  intro x hx
   unfold lipschitzGroup at hx
   induction hx using Subgroup.closure_induction'' with
   | mem x hx =>
@@ -113,8 +122,8 @@ theorem mem_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzGroup Q)
     specialize hx1 hx2
     rwa [hb] at hx1
 
-/-- This is another version of `lipschitzGroup.mem_conj_act_le` which uses `involute`.-/
-theorem mem_involute_le [Invertible (2 : R)]
+/-- This is another version of `lipschitzGroup.conjAct_smul_range_ι` which uses `involute`.-/
+theorem involute_act_ι_mem_range_ι [Invertible (2 : R)]
     {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzGroup Q) (b : M) :
       involute (Q := Q) ↑x * ι Q b * ↑x⁻¹ ∈ LinearMap.range (ι Q) := by
   unfold lipschitzGroup at hx
@@ -194,14 +203,14 @@ theorem units_mem_lipschitzGroup {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ pinG
 
 /-- If x is in `pinGroup Q`, then `(ι Q).range` is closed under twisted conjugation. The reverse
 statement presumably being true only in finite dimensions.-/
-theorem units_mem_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ pinGroup Q)
-    [Invertible (2 : R)] : ConjAct.toConjAct x • LinearMap.range (ι Q) ≤ LinearMap.range (ι Q) :=
-  lipschitzGroup.mem_conjAct_le (units_mem_lipschitzGroup hx)
+theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ pinGroup Q)
+    [Invertible (2 : R)] : ConjAct.toConjAct x • LinearMap.range (ι Q) = LinearMap.range (ι Q) :=
+  lipschitzGroup.conjAct_smul_range_ι (units_mem_lipschitzGroup hx)
 
-/-- This is another version of `units_mem_conjAct_le` which uses `involute`. -/
-theorem units_mem_involute_act_le {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ pinGroup Q)
+/-- This is another version of `conjAct_smul_range_ι` which uses `involute`. -/
+theorem involute_act_ι_mem_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ pinGroup Q)
     [Invertible (2 : R)] (y : M) : involute (Q := Q) ↑x * ι Q y * ↑x⁻¹ ∈ LinearMap.range (ι Q) :=
-  lipschitzGroup.mem_involute_le (units_mem_lipschitzGroup hx) y
+  lipschitzGroup.involute_act_ι_mem_range_ι (units_mem_lipschitzGroup hx) y
 
 @[simp]
 theorem star_mul_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : star x * x = 1 :=
@@ -319,23 +328,23 @@ theorem units_mem_lipschitzGroup {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spin
   pinGroup.units_mem_lipschitzGroup (mem_pin hx)
 
 /-- If x is in `spinGroup Q`, then `involute x` is equal to x.-/
-theorem mem_involute_eq {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : involute x = x :=
+theorem involute_eq {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : involute x = x :=
   involute_eq_of_mem_even (mem_even hx)
 
 theorem units_involute_act_eq_conjAct {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q) (y : M) :
     involute (Q := Q) ↑x * ι Q y * ↑x⁻¹ = ConjAct.toConjAct x • (ι Q y) := by
-  rw [mem_involute_eq hx, @ConjAct.units_smul_def, @ConjAct.ofConjAct_toConjAct]
+  rw [involute_eq hx, @ConjAct.units_smul_def, @ConjAct.ofConjAct_toConjAct]
 
 /- If x is in `spinGroup Q`, then `(ι Q).range` is closed under twisted conjugation. The reverse
 statement presumably being true only in finite dimensions.-/
-theorem units_mem_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q)
-    [Invertible (2 : R)] : ConjAct.toConjAct x • LinearMap.range (ι Q) ≤ LinearMap.range (ι Q) :=
-  lipschitzGroup.mem_conjAct_le (units_mem_lipschitzGroup hx)
+theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q)
+    [Invertible (2 : R)] : ConjAct.toConjAct x • LinearMap.range (ι Q) = LinearMap.range (ι Q) :=
+  lipschitzGroup.conjAct_smul_range_ι (units_mem_lipschitzGroup hx)
 
-/- This is another version of `units_mem_conjAct_le` which uses `involute`.-/
-theorem units_mem_involute_act_le {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q)
+/- This is another version of `conjAct_smul_range_ι` which uses `involute`.-/
+theorem involute_act_ι_mem_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q)
     [Invertible (2 : R)] (y : M) : involute (Q := Q) ↑x * ι Q y * ↑x⁻¹ ∈ LinearMap.range (ι Q) :=
-  lipschitzGroup.mem_involute_le (units_mem_lipschitzGroup hx) y
+  lipschitzGroup.involute_act_ι_mem_range_ι (units_mem_lipschitzGroup hx) y
 
 @[simp]
 theorem star_mul_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : star x * x = 1 :=
