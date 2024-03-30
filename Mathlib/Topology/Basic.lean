@@ -1088,9 +1088,6 @@ theorem clusterPt_iff_ultrafilter {f : Filter X} : ClusterPt x f ↔
 theorem mapClusterPt_def {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
     MapClusterPt x F u ↔ ClusterPt x (map u F) := Iff.rfl
 
-theorem mapClusterPt_comp {X α β : Type*} {x : X} [TopologicalSpace X] {F : Filter α} {φ : α → β}
-    {u : β → X} : MapClusterPt x F (u ∘ φ) ↔ MapClusterPt x (map φ F) u := Iff.rfl
-
 theorem mapClusterPt_iff {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
     MapClusterPt x F u ↔ ∀ s ∈ 𝓝 x, ∃ᶠ a in F, u a ∈ s := by
   simp_rw [MapClusterPt, ClusterPt, inf_neBot_iff_frequently_left, frequently_map]
@@ -1101,6 +1098,9 @@ theorem mapClusterPt_iff_ultrafilter {ι : Type*} (x : X) (F : Filter ι) (u : �
     MapClusterPt x F u ↔ ∃ U : Ultrafilter ι, U ≤ F ∧ Tendsto u U (𝓝 x) := by
   simp_rw [MapClusterPt, ClusterPt, ← Filter.push_pull', map_neBot_iff, tendsto_iff_comap,
     ← le_inf_iff, exists_ultrafilter_iff, inf_comm]
+
+theorem mapClusterPt_comp {X α β : Type*} {x : X} [TopologicalSpace X] {F : Filter α} {φ : α → β}
+    {u : β → X} : MapClusterPt x F (u ∘ φ) ↔ MapClusterPt x (map φ F) u := Iff.rfl
 
 theorem mapClusterPt_of_comp {F : Filter α} {φ : β → α} {p : Filter β}
     {u : α → X} [NeBot p] (h : Tendsto φ p F) (H : Tendsto (u ∘ φ) p (𝓝 x)) :
