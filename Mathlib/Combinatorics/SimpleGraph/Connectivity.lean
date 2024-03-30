@@ -2295,17 +2295,6 @@ def isoEquivSupp (φ : G ≃g G') (C : G.ConnectedComponent) :
   right_inv v := Subtype.ext_val (φ.toEquiv.right_inv ↑v)
 #align simple_graph.connected_component.iso_equiv_supp SimpleGraph.ConnectedComponent.isoEquivSupp
 
-/-- A connected component is *odd* if it has an add number of vertices
-in its support. Note that `Nat.card` is 0 in the case of an infinite component, so they are
-not odd. -/
-def isOdd (c : G.ConnectedComponent) : Prop :=
-  Odd (Nat.card c.supp)
-
-
-lemma isOdd_iff (c : G.ConnectedComponent) [Fintype c.supp] :
-    c.isOdd ↔ Odd (Fintype.card c.supp) := by
-  rw [isOdd, Nat.card_eq_fintype_card]
-
 end ConnectedComponent
 
 theorem Preconnected.set_univ_walk_nonempty (hconn : G.Preconnected) (u v : V) :

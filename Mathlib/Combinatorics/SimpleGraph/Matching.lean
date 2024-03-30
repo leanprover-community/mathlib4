@@ -188,25 +188,24 @@ theorem mem_supp_of_adj {u : Set V} {v w : V}
     (hadj : G.Adj v w) : w ∈ Subtype.val '' c.supp := by
   rw [Set.mem_image]
   obtain ⟨v' , hv'⟩ := hv
-    use ⟨ w , ⟨ by trivial , by refine Set.not_mem_of_mem_diff hw ⟩ ⟩
-    rw [ConnectedComponent.mem_supp_iff]
-    refine ⟨?_, rfl⟩
-    rw [← (ConnectedComponent.mem_supp_iff _ _).mp hv'.1]
-    apply ConnectedComponent.connectedComponentMk_eq_of_adj
-      apply SimpleGraph.Subgraph.Adj.coe
-      rw [Subgraph.deleteVerts_adj]
-      refine ⟨by trivial, Set.not_mem_of_mem_diff hw, by trivial, v'.prop.2, ?_⟩
-      rw [Subgraph.top_adj]
-      rw [hv'.2]
-      exact adj_symm G hadj
-    · rfl
+  use ⟨ w , ⟨ by trivial , by refine Set.not_mem_of_mem_diff hw ⟩ ⟩
+  rw [ConnectedComponent.mem_supp_iff]
+  refine ⟨?_, rfl⟩
+  rw [← (ConnectedComponent.mem_supp_iff _ _).mp hv'.1]
+  apply ConnectedComponent.connectedComponentMk_eq_of_adj
+  apply SimpleGraph.Subgraph.Adj.coe
+  rw [Subgraph.deleteVerts_adj]
+  refine ⟨by trivial, Set.not_mem_of_mem_diff hw, by trivial, v'.prop.2, ?_⟩
+  rw [Subgraph.top_adj]
+  rw [hv'.2]
+  exact adj_symm G hadj
+
 
 lemma odd_matches_node_outside {M : Subgraph G} {u : Set V}
     {c : ConnectedComponent ((⊤ : Subgraph G).deleteVerts u).coe}
     (hM : Subgraph.IsPerfectMatching M)
-    (codd : c.isOdd) : ∃ (w : u.Elem) (v : ((⊤ : G.Subgraph).deleteVerts u).verts.Elem),
+    (codd : Odd (Nat.card c.supp)) : ∃ (w : u.Elem) (v : ((⊤ : G.Subgraph).deleteVerts u).verts.Elem),
         M.Adj v w ∧ v ∈ c.supp := by
-    rw [ConnectedComponent.isOdd_iff] at codd
     by_contra! h
     have h' : (M.induce c.supp).IsMatching := by
       intro v hv
@@ -238,6 +237,7 @@ lemma odd_matches_node_outside {M : Subgraph G} {u : Set V}
     rw [Nat.even_iff] at h'' ⊢
     rw [← h'', Set.toFinset_image, Finset.card_image_of_injective _ (Subtype.val_injective)]
     simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_card]
+    rw [Fintype.card_eq_nat_card]
 
 end Finite
 end ConnectedComponent
