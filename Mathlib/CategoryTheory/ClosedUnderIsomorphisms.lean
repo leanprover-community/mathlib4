@@ -32,7 +32,7 @@ lemma mem_iff_of_iso [ClosedUnderIsomorphisms P] {X Y : C} (e : X ≅ Y) : P X �
 def isoClosure (X : C) : Prop := ∃ (Y : C) (_ : P Y), Nonempty (X ≅ Y)
 
 lemma mem_isoClosure_iff (X : C) :
-  isoClosure P X ↔ ∃ (Y : C) (_ : P Y), Nonempty (X ≅ Y) := by rfl
+    isoClosure P X ↔ ∃ (Y : C) (_ : P Y), Nonempty (X ≅ Y) := by rfl
 
 variable {P} in
 lemma mem_isoClosure {X Y : C} (h : P X) (e : X ⟶ Y) [IsIso e] : isoClosure P Y :=
