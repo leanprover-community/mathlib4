@@ -238,7 +238,6 @@ theorem IsLindelof.elim_countable_subcover_image {b : Set ι} {c : ι → Set X}
   rw [biUnion_image]
   exact hd.2
 
-
 /-- A set `s` is Lindelöf if for every open cover of `s`, there exists a countable subcover. -/
 theorem isLindelof_of_countable_subcover
     (h : ∀ {ι : Type u} (U : ι → Set X), (∀ i, IsOpen (U i)) → (s ⊆ ⋃ i, U i) →
