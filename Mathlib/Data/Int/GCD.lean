@@ -30,9 +30,6 @@ import Mathlib.Order.Bounds.Basic
 Bézout's lemma, Bezout's lemma
 -/
 
-set_option autoImplicit true
-
-
 /-! ### Extended Euclidean algorithm -/
 
 
@@ -49,9 +46,9 @@ def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ
 
 -- Porting note: these are not in mathlib3; these equation lemmas are to fix
 -- complaints by the Lean 4 `unusedHavesSuffices` linter obtained when `simp [xgcdAux]` is used.
-theorem xgcdAux_zero : xgcdAux 0 s t r' s' t' = (r', s', t') := rfl
+theorem xgcdAux_zero {s t : ℤ} {r' : ℕ} {s' t' : ℤ} : xgcdAux 0 s t r' s' t' = (r', s', t') := rfl
 
-theorem xgcdAux_succ : xgcdAux (succ k) s t r' s' t' =
+theorem xgcdAux_succ {k : ℕ} {s t : ℤ} {r' : ℕ} {s' t' : ℤ} : xgcdAux (succ k) s t r' s' t' =
     xgcdAux (r' % succ k) (s' - (r' / succ k) * s) (t' - (r' / succ k) * t) (succ k) s t := rfl
 
 @[simp]

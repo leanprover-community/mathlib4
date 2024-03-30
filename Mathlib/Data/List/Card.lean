@@ -9,9 +9,9 @@ It might make sense to remove this when we have a proper theory of finite sets.
 -/
 import Mathlib.Data.Nat.Order.Basic
 
-set_option autoImplicit true
-
 namespace List
+
+variable {α β : Type*}
 
 def inj_on (f : α → β) (as : List α) := ∀ {x y}, x ∈ as → y ∈ as → f x = f y → x = y
 

@@ -15,12 +15,9 @@ elements of a list satisfying a predicate and equal to a given element respectiv
 definitions can be found in `Std.Data.List.Basic`.
 -/
 
-set_option autoImplicit true
-
-
 open Nat
 
-variable {l : List α}
+variable {α : Type*} {l : List α}
 
 namespace List
 
@@ -172,7 +169,7 @@ theorem count_map_of_injective {α β} [DecidableEq α] [DecidableEq β] (l : Li
 #align list.count_erase_of_ne List.count_erase_of_ne
 
 @[to_additive]
-theorem prod_map_eq_pow_single [Monoid β] (a : α) (f : α → β)
+theorem prod_map_eq_pow_single {β : Type*} [Monoid β] (a : α) (f : α → β)
     (hf : ∀ a', a' ≠ a → a' ∈ l → f a' = 1) : (l.map f).prod = f a ^ l.count a := by
   induction' l with a' as h generalizing a
   · rw [map_nil, prod_nil, count_nil, _root_.pow_zero]

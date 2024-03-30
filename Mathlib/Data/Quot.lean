@@ -17,9 +17,6 @@ This module extends the core library's treatment of quotient types (`Init.Core`)
 quotient
 -/
 
-set_option autoImplicit true
-
-
 variable {α : Sort*} {β : Sort*}
 
 namespace Setoid
@@ -39,6 +36,7 @@ end Setoid
 namespace Quot
 
 variable {ra : α → α → Prop} {rb : β → β → Prop} {φ : Quot ra → Quot rb → Sort*}
+universe u
 
 -- mathport name: mk
 @[inherit_doc Quot.mk]
