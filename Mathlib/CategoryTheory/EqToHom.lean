@@ -26,9 +26,6 @@ This file introduces various `simp` lemmas which in favourable circumstances
 result in the various `eqToHom` morphisms to drop out at the appropriate moment!
 -/
 
-set_option autoImplicit true
-
-
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
@@ -75,7 +72,7 @@ theorem eqToHom_comp_iff {X X' Y : C} (p : X = X') (f : X ⟶ Y) (g : X' ⟶ Y) 
 -- The simpNF linter incorrectly claims that this will never apply.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
 @[reassoc (attr := simp, nolint simpNF)]
-theorem eqToHom_naturality {f g : β → C} (z : ∀ b, f b ⟶ g b) {j j' : β} (w : j = j') :
+theorem eqToHom_naturality {β : Sort*} {f g : β → C} (z : ∀ b, f b ⟶ g b) {j j' : β} (w : j = j') :
     z j ≫ eqToHom (by simp [w]) = eqToHom (by simp [w]) ≫ z j' := by
   cases w
   simp
@@ -84,7 +81,7 @@ theorem eqToHom_naturality {f g : β → C} (z : ∀ b, f b ⟶ g b) {j j' : β}
 -- The simpNF linter incorrectly claims that this will never apply.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
 @[reassoc (attr := simp, nolint simpNF)]
-theorem eqToHom_iso_hom_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j j' : β} (w : j = j') :
+theorem eqToHom_iso_hom_naturality {β : Sort*} {f g : β → C} (z : ∀ b, f b ≅ g b) {j j' : β} (w : j = j') :
     (z j).hom ≫ eqToHom (by simp [w]) = eqToHom (by simp [w]) ≫ (z j').hom := by
   cases w
   simp
@@ -93,7 +90,7 @@ theorem eqToHom_iso_hom_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j 
 -- The simpNF linter incorrectly claims that this will never apply.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
 @[reassoc (attr := simp, nolint simpNF)]
-theorem eqToHom_iso_inv_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j j' : β} (w : j = j') :
+theorem eqToHom_iso_inv_naturality {β : Sort*} {f g : β → C} (z : ∀ b, f b ≅ g b) {j j' : β} (w : j = j') :
     (z j).inv ≫ eqToHom (by simp [w]) = eqToHom (by simp [w]) ≫ (z j').inv := by
   cases w
   simp

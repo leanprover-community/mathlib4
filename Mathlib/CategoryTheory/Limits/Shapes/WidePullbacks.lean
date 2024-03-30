@@ -26,10 +26,7 @@ Typeclasses `HasWidePullbacks` and `HasFiniteWidePullbacks` assert the existence
 pullbacks and finite wide pullbacks.
 -/
 
-set_option autoImplicit true
-
-
-universe w w' v u
+universe w w' v u v₂
 
 open CategoryTheory CategoryTheory.Limits Opposite
 

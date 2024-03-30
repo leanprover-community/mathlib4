@@ -21,9 +21,6 @@ Also the Yoneda lemma, `yonedaLemma : (yoneda_pairing C) ≅ (yoneda_evaluation 
 * [Stacks: Opposite Categories and the Yoneda Lemma](https://stacks.math.columbia.edu/tag/001L)
 -/
 
-set_option autoImplicit true
-
-
 namespace CategoryTheory
 
 open Opposite
@@ -326,7 +323,8 @@ def yonedaPairing : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁) ⥤ Type max u₁ v₁ :=
 -- as `ext` will not look through the definition.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
-lemma yonedaPairingExt {x y : (yonedaPairing C).obj X} (w : ∀ Y, x.app Y = y.app Y) : x = y :=
+lemma yonedaPairingExt {X : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)} {x y : (yonedaPairing C).obj X}
+    (w : ∀ Y, x.app Y = y.app Y) : x = y :=
   NatTrans.ext _ _ (funext w)
 
 @[simp]
@@ -335,6 +333,7 @@ theorem yonedaPairing_map (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶
   rfl
 #align category_theory.yoneda_pairing_map CategoryTheory.yonedaPairing_map
 
+universe w in
 variable {C} in
 /-- A bijection `(yoneda.obj X ⋙ uliftFunctor ⟶ F) ≃ F.obj (op X)` which is a variant
 of `yonedaEquiv` with heterogeneous universes. -/

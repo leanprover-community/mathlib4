@@ -27,12 +27,9 @@ and the type `lim Hom(F·, X)`.
 
 -/
 
-set_option autoImplicit true
-
-
 open CategoryTheory CategoryTheory.Limits
 
-universe v u w
+universe v u w w'
 
 namespace CategoryTheory.Limits
 

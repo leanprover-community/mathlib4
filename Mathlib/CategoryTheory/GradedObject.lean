@@ -33,8 +33,6 @@ have a functor `map : GradedObject I C ⥤ GradedObject J C`.
 
 -/
 
-set_option autoImplicit true
-
 namespace CategoryTheory
 
 open Category Limits
@@ -72,7 +70,7 @@ instance categoryOfGradedObjects (β : Type w) : Category.{max w v} (GradedObjec
 
 -- Porting note (#10688): added to ease automation
 @[ext]
-lemma hom_ext {X Y : GradedObject β C} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
+lemma hom_ext {β : Type*} {X Y : GradedObject β C} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
   funext
   apply h
 
@@ -128,7 +126,7 @@ abbrev comap {I J : Type*} (h : J → I) : GradedObject I C ⥤ GradedObject J C
 
 -- Porting note: added to ease the port, this is a special case of `Functor.eqToHom_proj`
 @[simp]
-theorem eqToHom_proj {x x' : GradedObject I C} (h : x = x') (i : I) :
+theorem eqToHom_proj {I : Type*} {x x' : GradedObject I C} (h : x = x') (i : I) :
     (eqToHom h : x ⟶ x') i = eqToHom (Function.funext_iff.mp h i) := by
   subst h
   rfl

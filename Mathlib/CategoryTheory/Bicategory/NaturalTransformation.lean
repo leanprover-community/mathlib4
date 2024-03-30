@@ -24,9 +24,6 @@ transformations.
   between `F` and `G`
 -/
 
-set_option autoImplicit true
-
-
 namespace CategoryTheory
 
 open Category Bicategory
@@ -290,12 +287,13 @@ lemma ext {F G : OplaxFunctor B C} {α β : F ⟶ G} {m n : α ⟶ β} (w : ∀ 
   apply w
 
 @[simp]
-lemma Modification.id_app' {F G : OplaxFunctor B C} (α : F ⟶ G) :
+lemma Modification.id_app' {X : B} {F G : OplaxFunctor B C} (α : F ⟶ G) :
     Modification.app (𝟙 α) X = 𝟙 (α.app X) := rfl
 
 @[simp]
-lemma Modification.comp_app' {F G : OplaxFunctor B C} {α β γ : F ⟶ G} (m : α ⟶ β) (n : β ⟶ γ) :
-    (m ≫ n).app X = m.app X ≫ n.app X := rfl
+lemma Modification.comp_app' {X : B} {F G : OplaxFunctor B C} {α β γ : F ⟶ G}
+    (m : α ⟶ β) (n : β ⟶ γ) : (m ≫ n).app X = m.app X ≫ n.app X :=
+  rfl
 
 /-- Construct a modification isomorphism between oplax natural transformations
 by giving object level isomorphisms, and checking naturality only in the forward direction.
