@@ -56,13 +56,13 @@ lemma ne_one : n ≠ 1 := Nat.ne_of_gt one_lt
 
 end Nat.AtLeastTwo
 
-set_option autoImplicit true in
 /-- Recognize numeric literals which are at least `2` as terms of `R` via `Nat.cast`. This
 instance is what makes things like `37 : R` type check.  Note that `0` and `1` are not needed
 because they are recognized as terms of `R` (at least when `R` is an `AddMonoidWithOne`) through
 `Zero` and `One`, respectively. -/
 @[nolint unusedArguments]
-instance (priority := 100) instOfNatAtLeastTwo [NatCast R] [Nat.AtLeastTwo n] : OfNat R n where
+instance (priority := 100) instOfNatAtLeastTwo {R : Type*} {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
+    OfNat R n where
   ofNat := n.cast
 
 library_note "no_index around OfNat.ofNat"

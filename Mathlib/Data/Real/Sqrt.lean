@@ -35,8 +35,6 @@ this sequence actually converges to `Real.sqrt (mk f)`.
 square root
 -/
 
-set_option autoImplicit true
-
 open Set Filter
 open scoped BigOperators Filter NNReal Topology
 
@@ -397,7 +395,7 @@ end Mathlib.Meta.Positivity
 namespace Real
 
 @[simp]
-theorem sqrt_mul (hx : 0 ≤ x) (y : ℝ) : sqrt (x * y) = sqrt x * sqrt y := by
+theorem sqrt_mul {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : sqrt (x * y) = sqrt x * sqrt y := by
   simp_rw [sqrt, ← NNReal.coe_mul, NNReal.coe_inj, Real.toNNReal_mul hx, NNReal.sqrt_mul]
 #align real.sqrt_mul Real.sqrt_mul
 
@@ -412,7 +410,7 @@ theorem sqrt_inv (x : ℝ) : sqrt x⁻¹ = (sqrt x)⁻¹ := by
 #align real.sqrt_inv Real.sqrt_inv
 
 @[simp]
-theorem sqrt_div (hx : 0 ≤ x) (y : ℝ) : sqrt (x / y) = sqrt x / sqrt y := by
+theorem sqrt_div {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : sqrt (x / y) = sqrt x / sqrt y := by
   rw [division_def, sqrt_mul hx, sqrt_inv, division_def]
 #align real.sqrt_div Real.sqrt_div
 
@@ -420,6 +418,8 @@ theorem sqrt_div (hx : 0 ≤ x) (y : ℝ) : sqrt (x / y) = sqrt x / sqrt y := by
 theorem sqrt_div' (x) {y : ℝ} (hy : 0 ≤ y) : sqrt (x / y) = sqrt x / sqrt y := by
   rw [division_def, sqrt_mul' x (inv_nonneg.2 hy), sqrt_inv, division_def]
 #align real.sqrt_div' Real.sqrt_div'
+
+variable {x y : ℝ}
 
 @[simp]
 theorem div_sqrt : x / sqrt x = sqrt x := by
@@ -450,7 +450,7 @@ theorem lt_sqrt_of_sq_lt (h : x ^ 2 < y) : x < sqrt y :=
   (sq_lt.mp h).2
 #align real.lt_sqrt_of_sq_lt Real.lt_sqrt_of_sq_lt
 
-theorem lt_sq_of_sqrt_lt {x y : ℝ} (h : sqrt x < y) : x < y ^ 2 := by
+theorem lt_sq_of_sqrt_lt (h : sqrt x < y) : x < y ^ 2 := by
   have hy := x.sqrt_nonneg.trans_lt h
   rwa [← sqrt_lt_sqrt_iff_of_pos (sq_pos_of_pos hy), sqrt_sq hy.le]
 #align real.lt_sq_of_sqrt_lt Real.lt_sq_of_sqrt_lt
