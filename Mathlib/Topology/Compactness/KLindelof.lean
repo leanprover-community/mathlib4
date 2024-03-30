@@ -3,10 +3,8 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-import Mathlib.Topology.Bases
 import Mathlib.Order.Filter.CardinalInter
-import Mathlib.Topology.Compactness.SigmaCompact
-import Mathlib.Topology.Metrizable.Basic
+import Mathlib.Topology.ContinuousOn
 /-!
 # K-Lindelöf sets and k-Lindelöf spaces
 
