@@ -133,10 +133,8 @@ theorem involute_act_ι_mem_range_ι [Invertible (2 : R)]
     letI := x.invertible
     letI : Invertible (ι Q a) := by rwa [ha]
     letI : Invertible (Q a) := invertibleOfInvertibleι Q a
-    rw [LinearMap.mem_range, ← invOf_units x]
-    simp_rw [← ha, involute_ι]
-    refine ⟨-((⅟ (Q a) * QuadraticForm.polar Q a b) • a - b), ?_⟩
-    simp only [map_neg, neg_mul, ι_mul_ι_mul_invOf_ι Q a b]
+    simp_rw [← invOf_units x, ← ha, involute_ι, neg_mul, ι_mul_ι_mul_invOf_ι Q a b, ←map_neg,
+      LinearMap.mem_range_self]
   | inv_mem x hx =>
     obtain ⟨a, ha⟩ := hx
     letI := x.invertible
@@ -144,23 +142,16 @@ theorem involute_act_ι_mem_range_ι [Invertible (2 : R)]
     letI : Invertible (Q a) := invertibleOfInvertibleι Q a
     letI := invertibleNeg (ι Q a)
     letI := Invertible.map (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q) (ι Q a)
-    rw [LinearMap.mem_range, ← invOf_units x, inv_inv]
-    simp_rw [← ha, map_invOf, involute_ι, invOf_neg]
-    refine ⟨-((⅟ (Q a) * QuadraticForm.polar Q a b) • a - b), ?_⟩
-    simp only [map_neg, neg_mul, invOf_ι_mul_ι_mul_ι Q a b]
-  | one => simp only [Units.val_one, map_one, one_mul, inv_one, mul_one, LinearMap.mem_range,
-      exists_apply_eq_apply, forall_const]
+    simp_rw [← invOf_units x, inv_inv, ← ha, map_invOf, involute_ι, invOf_neg, neg_mul,
+      invOf_ι_mul_ι_mul_ι, ←map_neg, LinearMap.mem_range_self]
+  | one => simp_rw [inv_one, Units.val_one, map_one, one_mul, mul_one, LinearMap.mem_range_self]
   | mul y z _ _ hy hz =>
-    simp only [Units.val_mul, map_mul, mul_inv_rev, LinearMap.mem_range]
-    let ⟨z', hz'⟩ := hz b
-    let ⟨y', hy'⟩ := hy z'
-    suffices
-        ∃ c : M, (ι Q) c = involute (Q := Q) ↑y * (involute (Q := Q) ↑z * (ι Q) b * ↑z⁻¹) * ↑y⁻¹ by
-      obtain ⟨p, hp⟩ := this
-      refine' ⟨p, by simp only [hp, mul_assoc]⟩
-    rw [← hz']
-    use y'
-
+    simp_rw [mul_inv_rev, Units.val_mul, map_mul]
+    suffices involute (Q := Q) ↑y * (involute (Q := Q) ↑z * ι Q b * ↑z⁻¹) * ↑y⁻¹ ∈ _ by
+      simpa only [mul_assoc] using this
+    obtain ⟨z', hz'⟩ := hz b
+    obtain ⟨y', hy'⟩ := hy z'
+    simp_rw [← hz', ← hy', LinearMap.mem_range_self]
 
 theorem coe_mem_iff_mem {x : (CliffordAlgebra Q)ˣ} :
     ↑x ∈ (lipschitzGroup Q).toSubmonoid.map (Units.coeHom <| CliffordAlgebra Q) ↔
