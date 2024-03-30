@@ -93,17 +93,6 @@ add_decl_doc isProperMap_iff_clusterPt
 @[continuity, fun_prop]
 lemma IsProperMap.continuous (h : IsProperMap f) : Continuous f := h.toContinuous
 
-/-- An homeomorphism is proper. -/
-@[simp] lemma Homeomorph.isProperMap (e : X ≃ₜ Y) : IsProperMap e := by
-  rw [isProperMap_iff_clusterPt]
-  refine ⟨e.continuous, fun ℱ y ↦ ?_⟩
-  simp_rw [MapClusterPt, ClusterPt, ← Filter.push_pull', map_neBot_iff, e.comap_nhds_eq,
-    ← e.coe_toEquiv, ← e.eq_symm_apply, exists_eq_left]
-  exact id
-
-/-- The identity is proper. -/
-@[simp] lemma isProperMap_id : IsProperMap (id : X → X) := (Homeomorph.refl X).isProperMap
-
 /-- A proper map is closed. -/
 lemma IsProperMap.isClosedMap (h : IsProperMap f) : IsClosedMap f := by
   rw [isClosedMap_iff_clusterPt]
@@ -141,42 +130,28 @@ lemma IsProperMap.ultrafilter_le_nhds_of_tendsto (h : IsProperMap f) ⦃𝒰 : U
 lemma IsProperMap.comp (hf : IsProperMap f) (hg : IsProperMap g) :
     IsProperMap (g ∘ f) := by
   refine ⟨by continuity, fun ℱ z h ↦ ?_⟩
-  rw [MapClusterPt, ← Filter.map_map] at h
-  rcases hg.clusterPt_of_mapClusterPt h with ⟨y, hy1, hy2⟩
-  rcases hf.clusterPt_of_mapClusterPt hy2 with ⟨x, hx1, hx2⟩
-  use x
-  rw [← hy1, ← hx1]
-  exact ⟨rfl, by assumption⟩
+  rw [mapClusterPt_comp] at h
+  rcases hg.clusterPt_of_mapClusterPt h with ⟨y, rfl, hy⟩
+  rcases hf.clusterPt_of_mapClusterPt hy with ⟨x, rfl, hx⟩
+  use x, rfl
+
 
 /-- If the composition of two continuous functions `g ∘ f` is proper and `f` is surjective,
 then `g` is proper. -/
-lemma isProperMap_of_comp_of_surj {f : X → Y} {g : Y → Z} (hf : Continuous f)
+lemma isProperMap_of_comp_of_surj (hf : Continuous f)
     (hg : Continuous g) (hgf : IsProperMap (g ∘ f)) (f_surj : f.Surjective) : IsProperMap g := by
   refine ⟨hg, fun ℱ z h ↦ ?_⟩
-  rcases hgf with ⟨_, h'⟩
-  rw [← inf_top_eq ℱ, ← Filter.principal_univ, ← f_surj.range_eq, ← ℱ.map_comap f, MapClusterPt,
-  Filter.map_map, ← MapClusterPt] at h
-  rcases h' h with ⟨x, hx1, hx2⟩
-  use f x
-  refine ⟨hx1, ?_⟩
-  apply neBot_of_comap
-  apply NeBot.mono hx2
-  calc
-    nhds x ⊓ comap f ℱ
-      ≤ comap f (nhds (f x)) ⊓ comap f ℱ := inf_le_inf_right (comap f ℱ) (hf.tendsto x).le_comap
-    _ = comap f (nhds (f x) ⊓ ℱ) := by rw [← comap_inf]
+  rw [← ℱ.map_comap_of_surjective f_surj, ← mapClusterPt_comp] at h
+  rcases hgf.clusterPt_of_mapClusterPt h with ⟨x, rfl, hx⟩
+  rw [← ℱ.map_comap_of_surjective f_surj]
+  exact ⟨f x, rfl, hx.map hf.continuousAt tendsto_map⟩
 
 /-- If the composition of two continuous functions `g ∘ f` is proper and `g` is injective,
 then `f` is proper. -/
 lemma isProperMap_of_comp_of_inj {f : X → Y} {g : Y → Z} (hf : Continuous f) (hg : Continuous g)
     (hgf : IsProperMap (g ∘ f)) (g_inj : g.Injective) : IsProperMap f := by
   refine ⟨hf, fun ℱ y h ↦ ?_⟩
-  rcases hgf with ⟨_, h'⟩
-  have : MapClusterPt (g y) ℱ (g ∘ f) := by
-    apply ClusterPt.map h
-    exact hg.tendsto y
-    rw [← map_map, Tendsto]
-  rcases h' this with ⟨x, hx1, hx2⟩
+  rcases hgf.clusterPt_of_mapClusterPt (h.map hg.continuousAt tendsto_map) with ⟨x, hx1, hx2⟩
   exact ⟨x, g_inj hx1, hx2⟩
 
 /-- If the composition of two continuous functions `f : X → Y` and `g : Y → Z` is proper
@@ -186,13 +161,7 @@ lemma isProperMap_of_comp_of_t2 [T2Space Y] (hf : Continuous f) (hg : Continuous
   rw [isProperMap_iff_ultrafilter_of_t2]
   refine ⟨hf, fun 𝒰 y h ↦ ?_⟩
   rw [isProperMap_iff_ultrafilter] at hgf
-  rcases hgf with ⟨_, h'⟩
-  have : Tendsto (g ∘ f) ↑𝒰 (nhds (g y)) := by
-    rw [Tendsto, ← map_map]
-    calc
-      map g (map f ↑𝒰) ≤ map g (nhds y) := map_mono h
-      _                ≤ nhds (g y) := hg.tendsto y
-  rcases h' this with ⟨x, _, hx⟩
+  rcases hgf.2 ((hg.tendsto y).comp h) with ⟨x, -, hx⟩
   exact ⟨x, hx⟩
 
 /-- A binary product of proper maps is proper. -/
@@ -285,36 +254,37 @@ theorem isProperMap_iff_isClosedMap_and_compact_fibers :
     rw [← clusterPt_lift'_closure_iff]
     exact hx.mono inf_le_left
 
-/-- An injective and continuous function is proper if and only if it is close. -/
+/-- An injective and continuous function is proper if and only if it is closed. -/
 lemma isProperMap_iff_isClosedMap_of_inj (f_cont : Continuous f) (f_inj : f.Injective) :
     IsProperMap f ↔ IsClosedMap f := by
-  constructor
-  exact fun h ↦ h.isClosedMap
-  intro h
+  refine ⟨fun h ↦ h.isClosedMap, fun h ↦ ?_⟩
   rw [isProperMap_iff_isClosedMap_and_compact_fibers]
-  refine ⟨f_cont, h, ?_⟩
-  intro y
-  apply Set.Subsingleton.isCompact
-  apply Set.Subsingleton.preimage subsingleton_singleton f_inj
+  exact ⟨f_cont, h, fun y ↦ (subsingleton_singleton.preimage f_inj).isCompact⟩
 
 /-- A injective continuous and closed map is proper. -/
 lemma isProperMap_of_isClosedMap_of_inj (f_cont : Continuous f) (f_inj : f.Injective)
     (f_closed : IsClosedMap f) : IsProperMap f :=
   (isProperMap_iff_isClosedMap_of_inj f_cont f_inj).2 f_closed
 
+/-- A homeomorphism is proper. -/
+@[simp] lemma Homeomorph.isProperMap (e : X ≃ₜ Y) : IsProperMap e :=
+  isProperMap_of_isClosedMap_of_inj e.continuous e.injective e.isClosedMap
+
+/-- The identity is proper. -/
+@[simp] lemma isProperMap_id : IsProperMap (id : X → X) := (Homeomorph.refl X).isProperMap
+
+/-- A closed embedding is proper. -/
+lemma isProperMap_of_closedEmbedding (hf : ClosedEmbedding f) : IsProperMap f :=
+  isProperMap_of_isClosedMap_of_inj hf.continuous hf.inj hf.isClosedMap
+
 /-- The coercion from a closed subset is proper. -/
 lemma isProperMap_subtype_val_of_closed {U : Set X} (hU : IsClosed U) : IsProperMap ((↑) : U → X) :=
-  isProperMap_of_isClosedMap_of_inj continuous_subtype_val Subtype.val_injective
-  hU.closedEmbedding_subtype_val.isClosedMap
+  isProperMap_of_closedEmbedding hU.closedEmbedding_subtype_val
 
 /-- The restriction of a proper map to a closed subset is proper. -/
 lemma isProperMap_restr_of_proper_of_closed {U : Set X} (hf : IsProperMap f) (hU : IsClosed U) :
     IsProperMap (fun x : U ↦ f x) :=
   IsProperMap.comp (isProperMap_subtype_val_of_closed hU) hf
-
-/-- A closed embedding is proper. -/
-lemma isProperMap_of_closedEmbedding (hf : ClosedEmbedding f) : IsProperMap f :=
-  isProperMap_of_isClosedMap_of_inj hf.continuous hf.inj hf.isClosedMap
 
 /-- The range of a proper map is closed. -/
 lemma IsProperMap.closed_range (hf : IsProperMap f) : IsClosed (range f) :=
