@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Data.List.BigOperators.Defs
+import Mathlib.Algebra.BigOperators.List.Defs
 import Mathlib.Data.List.Forall2
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Ring.Commute
@@ -17,7 +17,7 @@ import Mathlib.Data.Int.Basic
 
 This file provides basic results about `List.prod`, `List.sum`, which calculate the product and sum
 of elements of a list and `List.alternatingProd`, `List.alternatingSum`, their alternating
-counterparts. These are defined in [`Data.List.BigOperators.Defs`](./Defs).
+counterparts. These are defined in [`Algebra.BigOperators.List.Defs`](./Defs).
 -/
 
 variable {ι α M N P M₀ G R : Type*}
@@ -107,7 +107,7 @@ theorem prod_replicate (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
   induction' n with n ih
   · rw [pow_zero]
     rfl
-  · rw [replicate_succ, prod_cons, ih, pow_succ]
+  · rw [replicate_succ, prod_cons, ih, pow_succ']
 #align list.prod_replicate List.prod_replicate
 #align list.sum_replicate List.sum_replicate
 

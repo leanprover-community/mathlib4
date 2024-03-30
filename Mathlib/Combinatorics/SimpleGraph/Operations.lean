@@ -157,6 +157,7 @@ instance : Fintype (edge s t).edgeSet := by rw [edge]; infer_instance
 
 theorem edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.Adj s t) (h : s ≠ t) :
     (G ⊔ edge s t).edgeFinset = G.edgeFinset.cons s(s, t) (by simp_all) := by
+  letI := Classical.decEq V
   rw [edgeFinset_sup, cons_eq_insert, insert_eq, union_comm]
   simp_rw [edgeFinset, edge_edgeSet_of_ne h]; rfl
 

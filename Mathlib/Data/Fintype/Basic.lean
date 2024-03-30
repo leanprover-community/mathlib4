@@ -302,26 +302,6 @@ theorem map_univ_equiv [Fintype β] (f : β ≃ α) : univ.map f.toEmbedding = u
   map_univ_of_surjective f.surjective
 #align finset.map_univ_equiv Finset.map_univ_equiv
 
-@[simp]
-theorem piecewise_univ [∀ i : α, Decidable (i ∈ (univ : Finset α))] {δ : α → Sort*}
-    (f g : ∀ i, δ i) : univ.piecewise f g = f := by
-  ext i
-  simp [piecewise]
-#align finset.piecewise_univ Finset.piecewise_univ
-
-theorem piecewise_compl [DecidableEq α] (s : Finset α) [∀ i : α, Decidable (i ∈ s)]
-    [∀ i : α, Decidable (i ∈ sᶜ)] {δ : α → Sort*} (f g : ∀ i, δ i) :
-    sᶜ.piecewise f g = s.piecewise g f := by
-  ext i
-  simp [piecewise]
-#align finset.piecewise_compl Finset.piecewise_compl
-
-@[simp]
-theorem piecewise_erase_univ {δ : α → Sort*} [DecidableEq α] (a : α) (f g : ∀ a, δ a) :
-    (Finset.univ.erase a).piecewise f g = Function.update f a (g a) := by
-  rw [← compl_singleton, piecewise_compl, piecewise_singleton]
-#align finset.piecewise_erase_univ Finset.piecewise_erase_univ
-
 theorem univ_map_equiv_to_embedding {α β : Type*} [Fintype α] [Fintype β] (e : α ≃ β) :
     univ.map e.toEmbedding = univ :=
   eq_univ_iff_forall.mpr fun b => mem_map.mpr ⟨e.symm b, mem_univ _, by simp⟩
