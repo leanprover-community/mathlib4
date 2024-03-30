@@ -151,7 +151,7 @@ protected theorem of_zsmul : a ≡ b [PMOD z • p] → a ≡ b [PMOD p] := fun 
 #align add_comm_group.modeq.of_zsmul AddCommGroup.ModEq.of_zsmul
 
 protected theorem of_nsmul : a ≡ b [PMOD n • p] → a ≡ b [PMOD p] := fun ⟨m, hm⟩ =>
-  ⟨m * n, by rwa [mul_smul, coe_nat_zsmul]⟩
+  ⟨m * n, by rwa [mul_smul, natCast_zsmul]⟩
 #align add_comm_group.modeq.of_nsmul AddCommGroup.ModEq.of_nsmul
 
 protected theorem zsmul : a ≡ b [PMOD p] → z • a ≡ z • b [PMOD z • p] :=

@@ -546,7 +546,7 @@ theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
 theorem cast_neg_one {R : Type*} [Ring R] (n : ℕ) : cast (-1 : ZMod n) = (n - 1 : R) := by
   cases' n with n
   · dsimp [ZMod, ZMod.cast]; simp
-  · rw [← nat_cast_val, val_neg_one, Nat.cast_succ, add_sub_cancel]
+  · rw [← nat_cast_val, val_neg_one, Nat.cast_succ, add_sub_cancel_right]
 #align zmod.cast_neg_one ZMod.cast_neg_one
 
 theorem cast_sub_one {R : Type*} [Ring R] {n : ℕ} (k : ZMod n) :
@@ -988,7 +988,7 @@ theorem neg_val {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = if a = 0 then 0 e
   apply Nat.mod_eq_of_lt
   apply Nat.sub_lt (NeZero.pos n)
   contrapose! h
-  rwa [le_zero_iff, val_eq_zero] at h
+  rwa [Nat.le_zero, val_eq_zero] at h
 #align zmod.neg_val ZMod.neg_val
 
 theorem val_neg_of_ne_zero {n : ℕ} [nz : NeZero n] (a : ZMod n) [na : NeZero a] :
@@ -1221,7 +1221,7 @@ theorem natAbs_min_of_le_div_two (n : ℕ) (x y : ℤ) (he : (x : ZMod n) = y) (
   apply hl.trans
   rw [← add_le_add_iff_right x.natAbs]
   refine' le_trans (le_trans ((add_le_add_iff_left _).2 hl) _) (Int.natAbs_sub_le _ _)
-  rw [add_sub_cancel, Int.natAbs_mul, Int.natAbs_ofNat]
+  rw [add_sub_cancel_right, Int.natAbs_mul, Int.natAbs_ofNat]
   refine' le_trans _ (Nat.le_mul_of_pos_right _ <| Int.natAbs_pos.2 hm)
   rw [← mul_two]; apply Nat.div_mul_le_self
 #align zmod.nat_abs_min_of_le_div_two ZMod.natAbs_min_of_le_div_two
@@ -1248,7 +1248,8 @@ instance : Field (ZMod p) :=
   { inferInstanceAs (CommRing (ZMod p)), inferInstanceAs (Inv (ZMod p)),
     ZMod.nontrivial p with
     mul_inv_cancel := mul_inv_cancel_aux p
-    inv_zero := inv_zero p }
+    inv_zero := inv_zero p
+    qsmul := qsmulRec _ }
 
 /-- `ZMod p` is an integral domain when `p` is prime. -/
 instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by

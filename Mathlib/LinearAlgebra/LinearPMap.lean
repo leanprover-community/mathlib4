@@ -394,7 +394,6 @@ end Zero
 section SMul
 
 variable {M N : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass R M F]
-
 variable [Monoid N] [DistribMulAction N F] [SMulCommClass R N F]
 
 instance instSMul : SMul M (E →ₗ.[R] F) :=
@@ -487,6 +486,7 @@ instance instAddMonoid : AddMonoid (E →ₗ.[R] F) where
     simp
   add_zero := by
     simp
+  nsmul := nsmulRec
 
 instance instAddCommMonoid : AddCommMonoid (E →ₗ.[R] F) :=
   ⟨fun f g => by
@@ -567,6 +567,7 @@ instance instSubtractionCommMonoid : SubtractionCommMonoid (E →ₗ.[R] F) wher
     simp only [inf_coe, neg_domain, Eq.ndrec, Int.ofNat_eq_coe, add_apply, Subtype.coe_eta,
       ← neg_eq_iff_add_eq_zero] at h'
     rw [h', h]
+  zsmul := zsmulRec
 
 end Sub
 

@@ -89,6 +89,10 @@ def equivToOpposite : α ≃ αᵒᵖ where
   right_inv := op_unop
 #align opposite.equiv_to_opposite Opposite.equivToOpposite
 
+theorem op_surjective : Function.Surjective (op : α → αᵒᵖ) := equivToOpposite.surjective
+
+theorem unop_surjective : Function.Surjective (unop : αᵒᵖ → α) := equivToOpposite.symm.surjective
+
 @[simp]
 theorem equivToOpposite_coe : (equivToOpposite : α → αᵒᵖ) = op :=
   rfl

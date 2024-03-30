@@ -128,7 +128,7 @@ protected theorem le_iff_Nonneg (a b : ℚ) : a ≤ b ↔ Rat.Nonneg (b - a) :=
           apply mul_pos <;> rwa [pos_iff_ne_zero]
       · simp only [divInt_ofNat, ← zero_iff_num_zero, mkRat_eq_zero hb] at h'
         simp [h', Rat.Nonneg]
-      · simp [Rat.Nonneg, Rat.sub_def, normalize_eq]
+      · simp only [Rat.Nonneg, sub_def, normalize_eq]
         refine ⟨fun H => ?_, fun H _ => ?_⟩
         · refine Int.ediv_nonneg ?_ (Nat.cast_nonneg _)
           rw [sub_nonneg]
@@ -316,6 +316,3 @@ assert_not_exists Fintype
 assert_not_exists Set.Icc
 
 assert_not_exists GaloisConnection
-
--- These are less significant, but should not be relaxed until at least after port to Lean 4.
-assert_not_exists LinearOrderedCommGroupWithZero

@@ -6,7 +6,7 @@ Authors: Jireh Loreaux
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.ContinuousFunction.Compact
 import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Data.IsROrC.Basic
+import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Topology.Algebra.Module.CharacterSpace
 
@@ -22,7 +22,7 @@ For a topological semiring `R` and a topological space `X` there is a Galois con
 `ContinuousMap.idealOfSet`. As long as `R` is Hausdorff, `ContinuousMap.setOfIdeal I` is open,
 and if, in addition, `X` is locally compact, then `ContinuousMap.setOfIdeal s` is closed.
 
-When `R = 𝕜` with `IsROrC 𝕜` and `X` is compact Hausdorff, then this Galois connection can be
+When `R = 𝕜` with `RCLike 𝕜` and `X` is compact Hausdorff, then this Galois connection can be
 improved to a true Galois correspondence (i.e., order isomorphism) between the type `opens X` and
 the subtype of closed ideals of `C(X, 𝕜)`. Because we do not have a bundled type of closed ideals,
 we simply register this as a Galois insertion between `Ideal C(X, 𝕜)` and `opens X`, which is
@@ -32,7 +32,7 @@ ideals corresponding to (complements of) singletons in `X`.
 In addition, when `X` is locally compact and `𝕜` is a nontrivial topological integral domain, then
 there is a natural continuous map from `X` to `WeakDual.characterSpace 𝕜 C(X, 𝕜)` given by point
 evaluation, which is herein called `WeakDual.CharacterSpace.continuousMapEval`. Again, when `X` is
-compact Hausdorff and `IsROrC 𝕜`, more can be obtained. In particular, in that context this map is
+compact Hausdorff and `RCLike 𝕜`, more can be obtained. In particular, in that context this map is
 bijective, and since the domain is compact and the codomain is Hausdorff, it is a homeomorphism,
 herein called `WeakDual.CharacterSpace.homeoEval`.
 
@@ -47,15 +47,15 @@ herein called `WeakDual.CharacterSpace.homeoEval`.
   topological space `X` to the `WeakDual.characterSpace 𝕜 C(X, 𝕜)` which sends `x : X` to point
   evaluation at `x`, with modest hypothesis on `𝕜`.
 * `WeakDual.CharacterSpace.homeoEval`: this is `WeakDual.CharacterSpace.continuousMapEval`
-  upgraded to a homeomorphism when `X` is compact Hausdorff and `IsROrC 𝕜`.
+  upgraded to a homeomorphism when `X` is compact Hausdorff and `RCLike 𝕜`.
 
 ## Main statements
 
 * `ContinuousMap.idealOfSet_ofIdeal_eq_closure`: when `X` is compact Hausdorff and
-  `IsROrC 𝕜`, `idealOfSet 𝕜 (setOfIdeal I) = I.closure` for any ideal `I : Ideal C(X, 𝕜)`.
-* `ContinuousMap.setOfIdeal_ofSet_eq_interior`: when `X` is compact Hausdorff and `IsROrC 𝕜`,
+  `RCLike 𝕜`, `idealOfSet 𝕜 (setOfIdeal I) = I.closure` for any ideal `I : Ideal C(X, 𝕜)`.
+* `ContinuousMap.setOfIdeal_ofSet_eq_interior`: when `X` is compact Hausdorff and `RCLike 𝕜`,
   `setOfIdeal (idealOfSet 𝕜 s) = interior s` for any `s : Set X`.
-* `ContinuousMap.ideal_isMaximal_iff`: when `X` is compact Hausdorff and `IsROrC 𝕜`, a closed
+* `ContinuousMap.ideal_isMaximal_iff`: when `X` is compact Hausdorff and `RCLike 𝕜`, a closed
   ideal of `C(X, 𝕜)` is maximal if and only if it is `idealOfSet 𝕜 {x}ᶜ` for some `x : X`.
 
 ## Implementation details
@@ -79,9 +79,7 @@ open TopologicalSpace
 section TopologicalRing
 
 variable {X R : Type*} [TopologicalSpace X] [Semiring R]
-
 variable [TopologicalSpace R] [TopologicalSemiring R]
-
 variable (R)
 
 /-- Given a topological ring `R` and `s : Set X`, construct the ideal in `C(X, R)` of functions
@@ -172,11 +170,11 @@ theorem ideal_gc : GaloisConnection (setOfIdeal : Ideal C(X, R) → Set X) (idea
 
 end TopologicalRing
 
-section IsROrC
+section RCLike
 
-open IsROrC
+open RCLike
 
-variable {X 𝕜 : Type*} [IsROrC 𝕜] [TopologicalSpace X]
+variable {X 𝕜 : Type*} [RCLike 𝕜] [TopologicalSpace X]
 
 /-- An auxiliary lemma used in the proof of `ContinuousMap.idealOfSet_ofIdeal_eq_closure` which may
 be useful on its own. -/
@@ -285,7 +283,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
       ext
       simp only [comp_apply, ContinuousMap.coe_coe, coe_mk, algebraMapCLM_toFun, map_pow,
         mul_apply, star_apply, star_def]
-      simp only [normSq_eq_def', IsROrC.conj_mul, ofReal_pow]
+      simp only [normSq_eq_def', RCLike.conj_mul, ofReal_pow]
       rfl
   /- Get the function `g'` which is guaranteed to exist above. By the extreme value theorem and
     compactness of `t`, there is some `0 < c` such that `c ≤ g' x` for all `x ∈ t`. Then by
@@ -329,7 +327,7 @@ theorem setOfIdeal_ofSet_eq_interior (s : Set X) : setOfIdeal (idealOfSet 𝕜 s
   exact
     ⟨⟨fun x => g x, continuous_ofReal.comp (map_continuous g)⟩, by
       simpa only [coe_mk, ofReal_eq_zero] using fun x hx => hgs (subset_closure hx), by
-      simpa only [coe_mk, hgx (Set.mem_singleton x), Pi.one_apply, IsROrC.ofReal_one] using
+      simpa only [coe_mk, hgx (Set.mem_singleton x), Pi.one_apply, RCLike.ofReal_one] using
         one_ne_zero⟩
 #align continuous_map.set_of_ideal_of_set_eq_interior ContinuousMap.setOfIdeal_ofSet_eq_interior
 
@@ -393,7 +391,7 @@ theorem ideal_isMaximal_iff (I : Ideal C(X, 𝕜)) [hI : IsClosed (I : Set C(X, 
         congr_arg (idealOfSet 𝕜) hx.symm⟩
 #align continuous_map.ideal_is_maximal_iff ContinuousMap.ideal_isMaximal_iff
 
-end IsROrC
+end RCLike
 
 end ContinuousMap
 
@@ -408,7 +406,6 @@ variable (X 𝕜 : Type*) [TopologicalSpace X]
 section ContinuousMapEval
 
 variable [LocallyCompactSpace X] [CommRing 𝕜] [TopologicalSpace 𝕜] [TopologicalRing 𝕜]
-
 variable [Nontrivial 𝕜] [NoZeroDivisors 𝕜]
 
 /-- The natural continuous map from a locally compact topological space `X` to the
@@ -430,7 +427,7 @@ theorem continuousMapEval_apply_apply (x : X) (f : C(X, 𝕜)) : continuousMapEv
 
 end ContinuousMapEval
 
-variable [CompactSpace X] [T2Space X] [IsROrC 𝕜]
+variable [CompactSpace X] [T2Space X] [RCLike 𝕜]
 
 theorem continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) := by
   refine' ⟨fun x y hxy => _, fun φ => _⟩
@@ -439,9 +436,9 @@ theorem continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) := by
         (isClosed_singleton : _root_.IsClosed {y}) (Set.disjoint_singleton.mpr hxy) with
       ⟨f, fx, fy, -⟩
     rw [DFunLike.ne_iff]
-    use (⟨fun (x : ℝ) => (x : 𝕜), IsROrC.continuous_ofReal⟩ : C(ℝ, 𝕜)).comp f
+    use (⟨fun (x : ℝ) => (x : 𝕜), RCLike.continuous_ofReal⟩ : C(ℝ, 𝕜)).comp f
     simpa only [continuousMapEval_apply_apply, ContinuousMap.comp_apply, coe_mk, Ne.def,
-      IsROrC.ofReal_inj] using
+      RCLike.ofReal_inj] using
       ((fx (Set.mem_singleton x)).symm ▸ (fy (Set.mem_singleton y)).symm ▸ zero_ne_one : f x ≠ f y)
   · obtain ⟨x, hx⟩ := (ideal_isMaximal_iff (RingHom.ker φ)).mp inferInstance
     refine' ⟨x, CharacterSpace.ext_ker <| Ideal.ext fun f => _⟩

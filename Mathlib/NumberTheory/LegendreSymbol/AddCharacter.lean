@@ -5,25 +5,20 @@ Authors: Michael Stoll
 -/
 import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 import Mathlib.FieldTheory.Finite.Trace
+import Mathlib.Algebra.Group.AddChar
 
 #align_import number_theory.legendre_symbol.add_character from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
 /-!
 # Additive characters of finite rings and fields
 
-Let `R` be a finite commutative ring. An *additive character* of `R` with values
-in another commutative ring `R'` is simply a morphism from the additive group
-of `R` into the multiplicative monoid of `R'`.
-
-The additive characters on `R` with values in `R'` form a commutative group.
-
-We use the namespace `AddChar`.
+This file collects some results on additive characters whose domain is (the additive group of)
+a finite ring or field.
 
 ## Main definitions and results
 
-We define `mulShift ψ a`, where `ψ : AddChar R R'` and `a : R`, to be the
-character defined by `x ↦ ψ (a * x)`. An additive character `ψ` is *primitive*
-if `mulShift ψ a` is trivial only when `a = 0`.
+We define an additive character `ψ` to be *primitive* if `mulShift ψ a` is trivial only when
+`a = 0`.
 
 We show that when `ψ` is primitive, then the map `a ↦ mulShift ψ a` is injective
 (`AddChar.to_mulShift_inj_of_isPrimitive`) and that `ψ` is primitive when `R` is a field
@@ -44,203 +39,12 @@ additive character
 
 universe u v
 
-/-!
-### Definitions related to and results on additive characters
--/
-
-
-section AddCharDef
-
--- The domain of our additive characters
-variable (R : Type u) [AddMonoid R]
-
--- The target
-variable (R' : Type v) [CommMonoid R']
-
-/-- Define `AddChar R R'` as `(Multiplicative R) →* R'`.
-The definition works for an additive monoid `R` and a monoid `R'`,
-but we will restrict to the case that both are commutative rings below.
-We assume right away that `R'` is commutative, so that `AddChar R R'` carries
-a structure of commutative monoid.
-The trivial additive character (sending everything to `1`) is `(1 : AddChar R R').` -/
-def AddChar : Type max u v :=
-  Multiplicative R →* R'
-#align add_char AddChar
-
-end AddCharDef
-
 namespace AddChar
-
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): added
-section DerivedInstances
-
-variable (R : Type u) [AddMonoid R] (R' : Type v) [CommMonoid R']
-
-instance : CommMonoid (AddChar R R') :=
-  inferInstanceAs (CommMonoid (Multiplicative R →* R'))
-
-instance : Inhabited (AddChar R R') :=
-  inferInstanceAs (Inhabited (Multiplicative R →* R'))
-
-end DerivedInstances
-
-section CoeToFun
-
-variable {R : Type u} [AddMonoid R] {R' : Type v} [CommMonoid R']
-
-/-- Interpret an additive character as a monoid homomorphism. -/
-def toMonoidHom : AddChar R R' → Multiplicative R →* R' :=
-  id
-#align add_char.to_monoid_hom AddChar.toMonoidHom
-
-open Multiplicative
-
-/-- Define coercion to a function so that it includes the move from `R` to `Multiplicative R`.
-After we have proved the API lemmas below, we don't need to worry about writing `ofAdd a`
-when we want to apply an additive character. -/
-instance instFunLike : FunLike (AddChar R R') R R' :=
-  inferInstanceAs (FunLike (Multiplicative R →* R') R R')
-#noalign add_char.has_coe_to_fun
-
-theorem coe_to_fun_apply (ψ : AddChar R R') (a : R) : ψ a = ψ.toMonoidHom (ofAdd a) :=
-  rfl
-#align add_char.coe_to_fun_apply AddChar.coe_to_fun_apply
-
--- Porting note: added
-theorem mul_apply (ψ φ : AddChar R R') (a : R) : (ψ * φ) a = ψ a * φ a :=
-  rfl
-
--- Porting note: added
-@[simp]
-theorem one_apply (a : R) : (1 : AddChar R R') a = 1 := rfl
-
--- this instance was a bad idea and conflicted with `instFunLike` above
-#noalign add_char.monoid_hom_class
-
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5229): added.
-@[ext]
-theorem ext (f g : AddChar R R') (h : ∀ x : R, f x = g x) : f = g :=
-  MonoidHom.ext h
-
-/-- An additive character maps `0` to `1`. -/
-@[simp]
-theorem map_zero_one (ψ : AddChar R R') : ψ 0 = 1 := by rw [coe_to_fun_apply, ofAdd_zero, map_one]
-#align add_char.map_zero_one AddChar.map_zero_one
-
-/-- An additive character maps sums to products. -/
-@[simp]
-theorem map_add_mul (ψ : AddChar R R') (x y : R) : ψ (x + y) = ψ x * ψ y := by
-  rw [coe_to_fun_apply, coe_to_fun_apply _ x, coe_to_fun_apply _ y, ofAdd_add, map_mul]
-#align add_char.map_add_mul AddChar.map_add_mul
-
-/-- An additive character maps multiples by natural numbers to powers. -/
-@[simp]
-theorem map_nsmul_pow (ψ : AddChar R R') (n : ℕ) (x : R) : ψ (n • x) = ψ x ^ n := by
-  rw [coe_to_fun_apply, coe_to_fun_apply _ x, ofAdd_nsmul, map_pow]
-#align add_char.map_nsmul_pow AddChar.map_nsmul_pow
-
-end CoeToFun
-
-section GroupStructure
-
-open Multiplicative
-
-variable {R : Type u} [AddCommGroup R] {R' : Type v} [CommMonoid R']
-
-/-- An additive character on a commutative additive group has an inverse.
-
-Note that this is a different inverse to the one provided by `MonoidHom.inv`,
-as it acts on the domain instead of the codomain. -/
-instance hasInv : Inv (AddChar R R') :=
-  ⟨fun ψ => ψ.comp invMonoidHom⟩
-#align add_char.has_inv AddChar.hasInv
-
-theorem inv_apply (ψ : AddChar R R') (x : R) : ψ⁻¹ x = ψ (-x) :=
-  rfl
-#align add_char.inv_apply AddChar.inv_apply
-
-/-- An additive character maps multiples by integers to powers. -/
-@[simp]
-theorem map_zsmul_zpow {R' : Type v} [CommGroup R'] (ψ : AddChar R R') (n : ℤ) (x : R) :
-    ψ (n • x) = ψ x ^ n := by rw [coe_to_fun_apply, coe_to_fun_apply _ x, ofAdd_zsmul, map_zpow]
-#align add_char.map_zsmul_zpow AddChar.map_zsmul_zpow
-
-/-- The additive characters on a commutative additive group form a commutative group. -/
-instance commGroup : CommGroup (AddChar R R') :=
-  { MonoidHom.commMonoid with
-    inv := Inv.inv
-    mul_left_inv := fun ψ => by
-      ext x
-      rw [AddChar.mul_apply, AddChar.one_apply, inv_apply, ← map_add_mul, add_left_neg,
-        map_zero_one] }
-#align add_char.comm_group AddChar.commGroup
-
-end GroupStructure
-
-section nontrivial
-
-variable {R : Type u} [AddMonoid R] {R' : Type v} [CommMonoid R']
-
-/-- An additive character is *nontrivial* if it takes a value `≠ 1`. -/
-def IsNontrivial (ψ : AddChar R R') : Prop :=
-  ∃ a : R, ψ a ≠ 1
-#align add_char.is_nontrivial AddChar.IsNontrivial
-
-/-- An additive character is nontrivial iff it is not the trivial character. -/
-theorem isNontrivial_iff_ne_trivial (ψ : AddChar R R') : IsNontrivial ψ ↔ ψ ≠ 1 := by
-  refine' not_forall.symm.trans (Iff.not _)
-  rw [DFunLike.ext_iff]
-  rfl
-#align add_char.is_nontrivial_iff_ne_trivial AddChar.isNontrivial_iff_ne_trivial
-
-end nontrivial
 
 section Additive
 
 -- The domain and target of our additive characters. Now we restrict to a ring in the domain.
 variable {R : Type u} [CommRing R] {R' : Type v} [CommMonoid R']
-
-/-- Define the multiplicative shift of an additive character.
-This satisfies `mulShift ψ a x = ψ (a * x)`. -/
-def mulShift (ψ : AddChar R R') (a : R) : AddChar R R' :=
-  ψ.comp (AddMonoidHom.toMultiplicative (AddMonoidHom.mulLeft a))
-#align add_char.mul_shift AddChar.mulShift
-
-@[simp]
-theorem mulShift_apply {ψ : AddChar R R'} {a : R} {x : R} : mulShift ψ a x = ψ (a * x) :=
-  rfl
-#align add_char.mul_shift_apply AddChar.mulShift_apply
-
-/-- `ψ⁻¹ = mulShift ψ (-1))`. -/
-theorem inv_mulShift (ψ : AddChar R R') : ψ⁻¹ = mulShift ψ (-1) := by
-  ext
-  rw [inv_apply, mulShift_apply, neg_mul, one_mul]
-#align add_char.inv_mul_shift AddChar.inv_mulShift
-
-/-- If `n` is a natural number, then `mulShift ψ n x = (ψ x) ^ n`. -/
-theorem mulShift_spec' (ψ : AddChar R R') (n : ℕ) (x : R) : mulShift ψ n x = ψ x ^ n := by
-  rw [mulShift_apply, ← nsmul_eq_mul, map_nsmul_pow]
-#align add_char.mul_shift_spec' AddChar.mulShift_spec'
-
-/-- If `n` is a natural number, then `ψ ^ n = mulShift ψ n`. -/
-theorem pow_mulShift (ψ : AddChar R R') (n : ℕ) : ψ ^ n = mulShift ψ n := by
-  ext x
-  rw [show (ψ ^ n) x = ψ x ^ n from rfl, ← mulShift_spec']
-#align add_char.pow_mul_shift AddChar.pow_mulShift
-
-/-- The product of `mulShift ψ a` and `mulShift ψ b` is `mulShift ψ (a + b)`. -/
-theorem mulShift_mul (ψ : AddChar R R') (a b : R) :
-    mulShift ψ a * mulShift ψ b = mulShift ψ (a + b) := by
-  ext
-  rw [mulShift_apply, right_distrib, map_add_mul]; norm_cast
-#align add_char.mul_shift_mul AddChar.mulShift_mul
-
-/-- `mulShift ψ 0` is the trivial character. -/
-@[simp]
-theorem mulShift_zero (ψ : AddChar R R') : mulShift ψ 0 = 1 := by
-  ext
-  rw [mulShift_apply, zero_mul, map_zero_one]; norm_cast
-#align add_char.mul_shift_zero AddChar.mulShift_zero
 
 /-- An additive character is *primitive* iff all its multiplicative shifts by nonzero
 elements are nontrivial. -/
@@ -311,16 +115,12 @@ variable {C : Type v} [CommMonoid C]
 
 section ZModCharDef
 
-open Multiplicative
--- so we can write simply `toAdd`, which we need here again
 
 /-- We can define an additive character on `ZMod n` when we have an `n`th root of unity `ζ : C`. -/
 def zmodChar (n : ℕ+) {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) : AddChar (ZMod n) C where
-  toFun := fun a : Multiplicative (ZMod n) => ζ ^ a.toAdd.val
-  map_one' := by simp only [toAdd_one, ZMod.val_zero, pow_zero]
-  map_mul' x y := by
-    dsimp only
-    rw [toAdd_mul, ← pow_add, ZMod.val_add (toAdd x) (toAdd y), ← pow_eq_pow_mod _ hζ]
+  toFun a := ζ ^ a.val
+  map_zero_one' := by simp only [ZMod.val_zero, pow_zero]
+  map_add_mul' x y := by simp only [ZMod.val_add, ← pow_eq_pow_mod _ hζ, ← pow_add]
 #align add_char.zmod_char AddChar.zmodChar
 
 /-- The additive character on `ZMod n` defined using `ζ` sends `a` to `ζ^a`. -/
@@ -393,12 +193,11 @@ end Additive
 ### Existence of a primitive additive character on a finite field
 -/
 
-
 /-- There is a primitive additive character on the finite field `F` if the characteristic
 of the target is different from that of `F`.
 We obtain it as the composition of the trace from `F` to `ZMod p` with a primitive
 additive character on `ZMod p`, where `p` is the characteristic of `F`. -/
-noncomputable def primitiveCharFiniteField (F F' : Type*) [Field F] [Fintype F] [Field F']
+noncomputable def primitiveCharFiniteField (F F' : Type*) [Field F] [Finite F] [Field F']
     (h : ringChar F' ≠ ringChar F) : PrimitiveAddChar F F' := by
   let p := ringChar F
   haveI hp : Fact p.Prime := ⟨CharP.char_is_prime F _⟩
@@ -410,7 +209,7 @@ noncomputable def primitiveCharFiniteField (F F' : Type*) [Field F] [Fintype F] 
       exact fun hf => Nat.Prime.ne_zero hp.1 (zero_dvd_iff.mp hf)
   let ψ := primitiveZModChar pp F' (neZero_iff.mp (NeZero.of_not_dvd F' hp₂))
   letI : Algebra (ZMod p) F := ZMod.algebra _ _
-  let ψ' := ψ.char.comp (AddMonoidHom.toMultiplicative (Algebra.trace (ZMod p) F).toAddMonoidHom)
+  let ψ' := ψ.char.compAddMonoidHom (Algebra.trace (ZMod p) F).toAddMonoidHom
   have hψ' : IsNontrivial ψ' := by
     obtain ⟨a, ha⟩ := FiniteField.trace_to_zmod_nondegenerate F one_ne_zero
     rw [one_mul] at ha

@@ -27,7 +27,7 @@ open scoped BigOperators Topology
 
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by `N` times the sum
 of `1/p` over the primes `k ≤ p ≤ N`. -/
--- This needs `Mathlib.Data.IsROrC.Basic`, so we put it here
+-- This needs `Mathlib.Analysis.RCLike.Basic`, so we put it here
 -- instead of in `Mathlib.NumberTheory.SmoothNumbers`.
 lemma Nat.roughNumbersUpTo_card_le' (N k : ℕ) :
     (roughNumbersUpTo N k).card ≤

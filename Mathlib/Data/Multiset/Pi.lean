@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Multiset.Nodup
+import Mathlib.Data.Multiset.Bind
 
 #align_import data.multiset.pi from "leanprover-community/mathlib"@"b2c89893177f66a48daf993b7ba5ef7cddeff8c9"
 
@@ -88,7 +88,7 @@ def pi (m : Multiset α) (t : ∀ a, Multiset (β a)) : Multiset (∀ a ∈ m, �
       intro a a' m n
       by_cases eq : a = a'
       · subst eq; rfl
-      · simp [map_bind, bind_bind (t a') (t a)]
+      · simp only [map_bind, map_map, comp_apply, bind_bind (t a') (t a)]
         apply bind_hcongr
         · rw [cons_swap a a']
         intro b _
@@ -122,8 +122,8 @@ protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
   Multiset.induction_on s (fun _ _ => nodup_singleton _)
     (by
       intro a s ih hs ht
-      have has : a ∉ s := by simp at hs; exact hs.1
-      have hs : Nodup s := by simp at hs; exact hs.2
+      have has : a ∉ s := by simp only [nodup_cons] at hs; exact hs.1
+      have hs : Nodup s := by simp only [nodup_cons] at hs; exact hs.2
       simp only [pi_cons, nodup_bind]
       refine'
         ⟨fun b _ => ((ih hs) fun a' h' => ht a' <| mem_cons_of_mem h').map (Pi.cons_injective has),

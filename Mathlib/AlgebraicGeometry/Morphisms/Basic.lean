@@ -174,7 +174,7 @@ theorem targetAffineLocallyOfOpenCover {P : AffineTargetMorphismProperty} (hP : 
     (h𝒰 : ∀ i, P (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i)) :
     targetAffineLocally P f := by
   classical
-  let S i := (⟨⟨Set.range (𝒰.map i).1.base, (𝒰.IsOpen i).base_open.open_range⟩,
+  let S i := (⟨⟨Set.range (𝒰.map i).1.base, (𝒰.IsOpen i).base_open.isOpen_range⟩,
     rangeIsAffineOpenOfOpenImmersion (𝒰.map i)⟩ : Y.affineOpens)
   intro U
   apply of_affine_open_cover (P := _) U (Set.range S)
@@ -248,7 +248,7 @@ theorem AffineTargetMorphismProperty.IsLocal.affine_openCover_TFAE
   tfae_have 1 → 4
   | H, U, g, h₁, h₂ => by
     -- Porting note: I need to add `i1` manually, so to save some typing, named this variable
-    set U' : Opens _ := ⟨_, h₂.base_open.open_range⟩
+    set U' : Opens _ := ⟨_, h₂.base_open.isOpen_range⟩
     replace H := H ⟨U', rangeIsAffineOpenOfOpenImmersion g⟩
     haveI i1 : IsAffine (Y.restrict U'.openEmbedding) := rangeIsAffineOpenOfOpenImmersion g
     rw [← P.toProperty_apply] at H ⊢

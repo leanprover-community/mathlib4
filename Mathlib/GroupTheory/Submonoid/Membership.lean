@@ -58,7 +58,7 @@ theorem coe_multiset_prod {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] 
 #align submonoid_class.coe_multiset_prod SubmonoidClass.coe_multiset_prod
 #align add_submonoid_class.coe_multiset_sum AddSubmonoidClass.coe_multiset_sum
 
-@[to_additive (attr := norm_cast)] -- Porting note: removed `simp`, `simp` can prove it
+@[to_additive (attr := norm_cast)] -- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem coe_finset_prod {ι M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] (f : ι → S)
     (s : Finset ι) : ↑(∏ i in s, f i) = (∏ i in s, f i : M) :=
   map_prod (SubmonoidClass.subtype S) f s
@@ -107,13 +107,13 @@ namespace Submonoid
 
 variable (s : Submonoid M)
 
-@[to_additive (attr := norm_cast)] -- Porting note: removed `simp`, `simp` can prove it
+@[to_additive (attr := norm_cast)] -- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem coe_list_prod (l : List s) : (l.prod : M) = (l.map (↑)).prod :=
   s.subtype.map_list_prod l
 #align submonoid.coe_list_prod Submonoid.coe_list_prod
 #align add_submonoid.coe_list_sum AddSubmonoid.coe_list_sum
 
-@[to_additive (attr := norm_cast)] -- Porting note: removed `simp`, `simp` can prove it
+@[to_additive (attr := norm_cast)] -- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem coe_multiset_prod {M} [CommMonoid M] (S : Submonoid M) (m : Multiset S) :
     (m.prod : M) = (m.map (↑)).prod :=
   S.subtype.map_multiset_prod m
@@ -275,26 +275,26 @@ then it holds for all elements of the supremum of `S`. -/
       If `C` holds for `0` and all elements of `S i` for all `i`, and is preserved under addition,
       then it holds for all elements of the supremum of `S`. "]
 theorem iSup_induction {ι : Sort*} (S : ι → Submonoid M) {C : M → Prop} {x : M} (hx : x ∈ ⨆ i, S i)
-    (hp : ∀ (i), ∀ x ∈ S i, C x) (h1 : C 1) (hmul : ∀ x y, C x → C y → C (x * y)) : C x := by
+    (mem : ∀ (i), ∀ x ∈ S i, C x) (one : C 1) (mul : ∀ x y, C x → C y → C (x * y)) : C x := by
   rw [iSup_eq_closure] at hx
-  refine closure_induction hx (fun x hx => ?_) h1 hmul
+  refine closure_induction hx (fun x hx => ?_) one mul
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx
-  exact hp _ _ hi
+  exact mem _ _ hi
 #align submonoid.supr_induction Submonoid.iSup_induction
 #align add_submonoid.supr_induction AddSubmonoid.iSup_induction
 
 /-- A dependent version of `Submonoid.iSup_induction`. -/
 @[to_additive (attr := elab_as_elim) "A dependent version of `AddSubmonoid.iSup_induction`. "]
 theorem iSup_induction' {ι : Sort*} (S : ι → Submonoid M) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
-    (hp : ∀ (i), ∀ (x) (hxS : x ∈ S i), C x (mem_iSup_of_mem i hxS)) (h1 : C 1 (one_mem _))
-    (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : M}
+    (mem : ∀ (i), ∀ (x) (hxS : x ∈ S i), C x (mem_iSup_of_mem i hxS)) (one : C 1 (one_mem _))
+    (mul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : M}
     (hx : x ∈ ⨆ i, S i) : C x hx := by
   refine' Exists.elim (_ : ∃ Hx, C x Hx) fun (hx : x ∈ ⨆ i, S i) (hc : C x hx) => hc
   refine' @iSup_induction _ _ ι S (fun m => ∃ hm, C m hm) _ hx (fun i x hx => _) _ fun x y => _
-  · exact ⟨_, hp _ _ hx⟩
-  · exact ⟨_, h1⟩
+  · exact ⟨_, mem _ _ hx⟩
+  · exact ⟨_, one⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
-    exact ⟨_, hmul _ _ _ _ Cx Cy⟩
+    exact ⟨_, mul _ _ _ _ Cx Cy⟩
 #align submonoid.supr_induction' Submonoid.iSup_induction'
 #align add_submonoid.supr_induction' AddSubmonoid.iSup_induction'
 
@@ -430,11 +430,11 @@ theorem closure_induction_left {s : Set M} {p : (m : M) → m ∈ closure s → 
 
 @[to_additive (attr := elab_as_elim)]
 theorem induction_of_closure_eq_top_left {s : Set M} {p : M → Prop} (hs : closure s = ⊤) (x : M)
-    (H1 : p 1) (Hmul : ∀ x ∈ s, ∀ (y), p y → p (x * y)) : p x := by
+    (one : p 1) (mul : ∀ x ∈ s, ∀ (y), p y → p (x * y)) : p x := by
   have : x ∈ closure s := by simp [hs]
   induction this using closure_induction_left with
-  | one => exact H1
-  | mul_left x hx y _ ih => exact Hmul x hx y ih
+  | one => exact one
+  | mul_left x hx y _ ih => exact mul x hx y ih
 #align submonoid.induction_of_closure_eq_top_left Submonoid.induction_of_closure_eq_top_left
 #align add_submonoid.induction_of_closure_eq_top_left AddSubmonoid.induction_of_closure_eq_top_left
 
@@ -505,7 +505,7 @@ abbrev groupPowers {x : M} {n : ℕ} (hpos : 0 < n) (hx : x ^ n = 1) : Group (po
   mul_left_inv y := Subtype.ext <| by
     obtain ⟨_, k, rfl⟩ := y
     simp only [coe_one, coe_mul, SubmonoidClass.coe_pow]
-    rw [← pow_succ', Nat.sub_add_cancel hpos, ← pow_mul, mul_comm, pow_mul, hx, one_pow]
+    rw [← pow_succ, Nat.sub_add_cancel hpos, ← pow_mul, mul_comm, pow_mul, hx, one_pow]
   zpow z x := x ^ z.natMod n
   zpow_zero' z := by simp only [Int.natMod, Int.zero_emod, Int.toNat_zero, pow_zero]
   zpow_neg' m x := Subtype.ext <| by

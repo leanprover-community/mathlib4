@@ -119,7 +119,7 @@ theorem cyclotomic_pos_and_nonneg (n : ℕ) {R} [LinearOrderedCommRing R] (x : R
     simp [cyclotomic_zero, cyclotomic_one, cyclotomic_two, succ_eq_add_one, eval_X, eval_one,
       eval_add, eval_sub, sub_nonneg, sub_pos, zero_lt_one, zero_le_one, imp_true_iff, imp_self,
       and_self_iff]
-  · constructor <;> intro <;> set_option tactic.skipAssignedInstances false in norm_num; linarith
+  · constructor <;> intro <;> linarith
   · have : 2 < n + 3 := by linarith
     constructor <;> intro <;> [skip; apply le_of_lt] <;> apply cyclotomic_pos this
 #align polynomial.cyclotomic_pos_and_nonneg Polynomial.cyclotomic_pos_and_nonneg
@@ -165,7 +165,7 @@ theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
   obtain ⟨t, ht⟩ := hpe
   rw [Finset.prod_singleton, ht, mul_left_comm, mul_comm, ← mul_assoc, mul_assoc] at this
   have : (p : ℤ) ^ padicValNat p n * p ∣ n := ⟨_, this⟩
-  simp only [← _root_.pow_succ', ← Int.natAbs_dvd_natAbs, Int.natAbs_ofNat, Int.natAbs_pow] at this
+  simp only [← _root_.pow_succ, ← Int.natAbs_dvd_natAbs, Int.natAbs_ofNat, Int.natAbs_pow] at this
   exact pow_succ_padicValNat_not_dvd hn'.ne' this
   · rintro x - y - hxy
     apply Nat.succ_injective

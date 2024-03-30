@@ -104,7 +104,7 @@ theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P
 theorem StableUnderBaseChange.Γ_pullback_fst (hP : StableUnderBaseChange @P) (hP' : RespectsIso @P)
     {X Y S : Scheme} [IsAffine X] [IsAffine Y] [IsAffine S] (f : X ⟶ S) (g : Y ⟶ S)
     (H : P (Scheme.Γ.map g.op)) : P (Scheme.Γ.map (pullback.fst : pullback f g ⟶ _).op) := by
-  -- Porting note: change `rw` to `erw`
+  -- Porting note (#11224): change `rw` to `erw`
   erw [← PreservesPullback.iso_inv_fst AffineScheme.forgetToScheme (AffineScheme.ofHom f)
       (AffineScheme.ofHom g)]
   rw [op_comp, Functor.map_comp, hP'.cancel_right_isIso, AffineScheme.forgetToScheme_map]
@@ -227,7 +227,6 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso @P)
   · introv H U
     apply scheme_restrict_basicOpen_of_localizationPreserves h₁ h₂; assumption
   · introv hs hs' U
-    skip
     apply h₃ _ _ hs
     intro r
     have := hs' r ⟨(Opens.map (X.ofRestrict _).1.base).obj U.1, ?_⟩
@@ -288,7 +287,7 @@ variable {P} (hP : RingHom.PropertyIsLocal @P)
 theorem sourceAffineLocally_of_source_openCover {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y]
     (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.obj i)] (H : ∀ i, P (Scheme.Γ.map (𝒰.map i ≫ f).op)) :
     sourceAffineLocally (@P) f := by
-  let S i := (⟨⟨Set.range (𝒰.map i).1.base, (𝒰.IsOpen i).base_open.open_range⟩,
+  let S i := (⟨⟨Set.range (𝒰.map i).1.base, (𝒰.IsOpen i).base_open.isOpen_range⟩,
     rangeIsAffineOpenOfOpenImmersion (𝒰.map i)⟩ : X.affineOpens)
   intro U
   -- Porting note: here is what we are eliminating into Lean
@@ -357,15 +356,14 @@ theorem affine_openCover_TFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
           P (Scheme.Γ.map (g ≫ f).op)] := by
   tfae_have 1 → 4
   | H, U, g, _, hg => by
-    skip
-    specialize H ⟨⟨_, hg.base_open.open_range⟩, rangeIsAffineOpenOfOpenImmersion g⟩
+    specialize H ⟨⟨_, hg.base_open.isOpen_range⟩, rangeIsAffineOpenOfOpenImmersion g⟩
     rw [← hP.respectsIso.cancel_right_isIso _ (Scheme.Γ.map (IsOpenImmersion.isoOfRangeEq g
-      (X.ofRestrict (Opens.openEmbedding ⟨_, hg.base_open.open_range⟩))
+      (X.ofRestrict (Opens.openEmbedding ⟨_, hg.base_open.isOpen_range⟩))
       Subtype.range_coe.symm).hom.op),
       ← Scheme.Γ.map_comp, ← op_comp, IsOpenImmersion.isoOfRangeEq_hom_fac_assoc] at H
     exact H
   tfae_have 4 → 3
-  | H, 𝒰, _, i => by skip; apply H
+  | H, 𝒰, _, i => by apply H
   tfae_have 3 → 2
   | H => by refine' ⟨X.affineCover, inferInstance, H _⟩
   tfae_have 2 → 1 := by
@@ -382,7 +380,6 @@ theorem openCover_TFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
         ∀ {U : Scheme} (g : U ⟶ X) [IsOpenImmersion g], sourceAffineLocally (@P) (g ≫ f)] := by
   tfae_have 1 → 4
   | H, U, g, hg, V => by
-    skip
     -- Porting note: this has metavariable if I put it directly into rw
     have := (hP.affine_openCover_TFAE f).out 0 3
     rw [this] at H
@@ -393,7 +390,7 @@ theorem openCover_TFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
       LocallyRingedSpace.IsOpenImmersion.comp _ _
     apply H
   tfae_have 4 → 3
-  | H, 𝒰, _, i => by skip; apply H
+  | H, 𝒰, _, i => by apply H
   tfae_have 3 → 2
   | H => by refine' ⟨X.affineCover, H _⟩
   tfae_have 2 → 1 := by

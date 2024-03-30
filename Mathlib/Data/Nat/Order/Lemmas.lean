@@ -36,7 +36,7 @@ instance Subtype.orderBot (s : Set ℕ) [DecidablePred (· ∈ s)] [h : Nonempty
 #align nat.subtype.order_bot Nat.Subtype.orderBot
 
 instance Subtype.semilatticeSup (s : Set ℕ) : SemilatticeSup s :=
-  { Subtype.linearOrder s, LinearOrder.toLattice with }
+  { Subtype.instLinearOrder s, LinearOrder.toLattice with }
 #align nat.subtype.semilattice_sup Nat.Subtype.semilatticeSup
 
 theorem Subtype.coe_bot {s : Set ℕ} [DecidablePred (· ∈ s)] [h : Nonempty s] :
