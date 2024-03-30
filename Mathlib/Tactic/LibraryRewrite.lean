@@ -165,7 +165,7 @@ structure Rewrite extends RewriteLemma where
 
 /-- If `rwLemma` can be used to rewrite `e`, return the rewrite. -/
 def checkLemma (rwLemma : RewriteLemma) (e : Expr) : MetaM (Option Rewrite) := do
-  let thm ← try mkConstWithFreshMVarLevels rwLemma.name catch _ => return none
+  let thm ← mkConstWithFreshMVarLevels rwLemma.name
   let (mvars, binderInfos, eqn) ← forallMetaTelescope (← inferType thm)
   let some (lhs, rhs) := matchEqn? eqn | return none
   let (lhs, rhs) := if rwLemma.symm then (rhs, lhs) else (lhs, rhs)
@@ -187,14 +187,22 @@ def checkLemma (rwLemma : RewriteLemma) (e : Expr) : MetaM (Option Rewrite) := d
   return some { rwLemma with proof, replacement, extraGoals }
 
 /-- Return all applicable library rewrites of `e`.
-The boolean flag indicates whether the lemmata are from the current file. -/
+The boolean flag indicates whether the lemmata are from the current file.
+Note that duplicate rewrites have not been filtered out. -/
 def getRewrites (e : Expr) : MetaM (Array (Array Rewrite × Bool)) := do
   let candidates ← getCandidates e
   candidates.filterMapM fun (candidates, isLocal) => do
-    let rewrites ← candidates.filterMapM (checkLemma · e)
+    let rewrites ← candidates.filterMapM fun cand =>
+      withCatchingRuntimeEx do
+      try withoutCatchingRuntimeEx <| checkLemma cand e
+      catch _ => return none
     unless rewrites.isEmpty do
       return (rewrites, isLocal)
     return none
+
+
+
+/-! ### User interface code -/
 
 open PrettyPrinter Delaborator SubExpr in
 /-- if `e` is an application of a rewrite lemma,
@@ -309,12 +317,12 @@ def getRewriteInterfaces (e : Expr) (occ : Option Nat) (loc : Option Name)
 
 /-- Render the matching side of the rewrite lemma.
 This is shown at the header of each section of rewrite results. -/
-def RewriteLemma.pattern (rwLemma : RewriteLemma) : MetaM Html := do
+def RewriteLemma.pattern {α} (rwLemma : RewriteLemma) (k : Expr → MetaM α) : MetaM α := do
   let cinfo ← getConstInfo rwLemma.name
   forallTelescope cinfo.type fun _ e => do
     let some (lhs, rhs) := matchEqn? e | throwError "Expected equation, not {indentExpr e}"
     let side := if rwLemma.symm then rhs else lhs
-    return <InteractiveCode fmt={← ppExprTagged side}/>
+    k side
 
 /-- Render the given rewrite results. -/
 def renderRewrites (results : Array (Array RewriteInterface × Bool)) (init : Option Html)
@@ -330,11 +338,11 @@ def renderRewrites (results : Array (Array RewriteInterface × Bool)) (init : Op
 where
   /-- Render one section of rewrite results. -/
   renderSection (showNames : Bool) (sec : Array RewriteInterface × Bool) : MetaM (Option Html) := do
-    let some first := sec.1[0]? | return none
+    let some head := sec.1[0]? | return none
     return <details «open»={true}>
       <summary className="mv2 pointer">
         Pattern
-        {← first.pattern}
+        {← head.pattern (return <InteractiveCode fmt={← ppExprTagged ·}/>)}
         {.text (if sec.2 then "(local results)" else "")}
       </summary>
       {renderSectionCore showNames sec.1}
@@ -425,3 +433,34 @@ elab stx:"rw??" : tactic => do
   let some range := (← getFileMap).rangeOfStx? stx | return
   Widget.savePanelWidgetInfo (hash LibraryRewriteComponent.javascript)
     (pure $ json% { replaceRange : $range }) stx
+
+
+def Rewrite.toMessageData (rw : Rewrite) : MetaM MessageData := do
+  let extraGoals ← rw.extraGoals.filterMapM fun (mvarId, bi) => do
+    if bi.isExplicit then
+      return some m! "⊢ {← mvarId.getType}"
+    return none
+  let list := [m! "{rw.replacement}"]
+      ++ extraGoals.toList
+      ++ [m! "{← mkConstWithLevelParams rw.name}"]
+  return .group <| .nest 2 <| "· " ++ .joinSep list "\n"
+
+def SectionToMessageData (sec : Array Rewrite × Bool) : MetaM (Option MessageData) := do
+  let rewrites ← sec.1.toList.mapM (·.toMessageData)
+  let rewrites : MessageData := .group (.joinSep rewrites "\n")
+  let some head := sec.1[0]? | return ""
+  let head ← head.pattern (do
+    let ctx : MessageDataContext :=
+      { env := ← getEnv, mctx := ← getMCtx, lctx := ← getLCtx, opts := ← getOptions}
+    return .withContext ctx m! "{·}")
+  return some $ "Pattern " ++ head ++ "\n" ++ rewrites
+
+syntax (name := rw??Command) "#rw??" term : command
+
+@[command_elab rw??Command]
+def elabrw??Command : Elab.Command.CommandElab := fun stx =>
+  withoutModifyingEnv <| Elab.Command.runTermElabM fun _ => do
+  let e ← Elab.Term.elabTerm stx[1] none
+  let rewrites ← getRewrites e
+  let sections ← liftMetaM $ rewrites.filterMapM SectionToMessageData
+  logInfo (m! "Rewrite suggestions for {e}:\n" ++ .joinSep (sections.toList) "\n\n")
