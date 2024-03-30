@@ -119,7 +119,7 @@ theorem IsKLindelof.image {f : X → Y} (hs : IsKLindelof k s) (hf : Continuous 
 
 -- A filter with the countable intersection property that is finer than the principal filter on
 -- a k-Lindelöf set `s` contains any open set that contains all clusterpoints of `s`.
-theorem IsLindelof.adherence_nhdset {f : Filter X} [CardinalInterFilter f k] (hs : IsKLindelof k s)
+theorem IsKLindelof.adherence_nhdset {f : Filter X} [CardinalInterFilter f k] (hs : IsKLindelof k s)
     (hf₂ : f ≤ 𝓟 s) (ht₁ : IsOpen t) (ht₂ : ∀ x ∈ s, ClusterPt x f → x ∈ t) : t ∈ f :=
   (eq_or_neBot _).casesOn mem_of_eq_bot fun _ ↦
     let ⟨x, hx, hfx⟩ := @hs (f ⊓ 𝓟 tᶜ) _ _ <| inf_le_of_left_le hf₂
