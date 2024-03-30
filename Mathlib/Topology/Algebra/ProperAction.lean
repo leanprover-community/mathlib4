@@ -87,7 +87,7 @@ instance continuousSmul_of_properSMul [ProperSMul G X] : ContinuousSMul G X wher
   continuous_smul := (isProperMap_smul_pair G X).continuous.fst
 
 /-- A group acts `G` properly on a topological space `X` if and only if for all ultrafilters
-`𝒰` on `X`, if `𝒰` converges to `(x₁, x₂)` along the map `(g, x) ↦ (g • x, x)`,
+`𝒰` on `X × G`, if `𝒰` converges to `(x₁, x₂)` along the map `(g, x) ↦ (g • x, x)`,
 then there exists `g : G` such that `g • x₂ = x₁` and `𝒰.fst` converges to `g`. -/
 @[to_additive "A group acts `G` properly on a topological space `X` if and only if
 for all ultrafilters `𝒰` on `X`, if `𝒰` converges to `(x₁, x₂)`
@@ -126,7 +126,7 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto : ProperSMul G X ↔ C
     assumption
 
 /-- A group acts `G` properly on a T2 topological space `X` if and only if for all ultrafilters
-`𝒰` on `X`, if `𝒰` converges to `(x₁, x₂)` along the map `(g, x) ↦ (g • x, x)`,
+`𝒰` on `X × G`, if `𝒰` converges to `(x₁, x₂)` along the map `(g, x) ↦ (g • x, x)`,
 then there exists `g : G` such that `𝒰.fst` converges to `g`. -/
 theorem properSMul_iff_continuousSMul_ultrafilter_tendsto_t2 [T2Space X] : ProperSMul G X ↔
     ContinuousSMul G X ∧
@@ -247,3 +247,33 @@ instance {H : Subgroup G} [ProperSMul G X] [H_closed : IsClosed (H : Set G)] : P
         (fun hx : H × X ↦ ((hx.1, hx.2) : G × X)))
       exact this.comp (isProperMap_smul_pair G X)
     assumption
+
+/-
+Some suggestions of things to prove,
+taken from Kapovich
+-/
+
+/-
+If `X` is T2 and first countable,
+then the naive definition
+of proper action is equivalent to the good definition
+(Kapovich Th 11)
+-/
+theorem naiveProper_of_ProperSMul_T2_FirstCountable
+    [T2Space X] [FirstCountableTopology X] :
+    ProperlyDiscontinuousSMul G X ↔ ProperSMul G X
+    := by sorry
+
+/-
+If `X` and `Y` are T2 and first countable,
+then the naive definition
+of proper map is equivalent to the good definition
+-/
+theorem properMap_of_naiveProper_T2_FirstCountable
+    [T2Space X] [FirstCountableTopology X]
+    [T2Space Y] [FirstCountableTopology Y]
+    (f : X → Y):
+    ∀ (K : Set Y), (IsCompact K → IsCompact (f ⁻¹' K))
+    → IsProperMap f
+    := by
+  sorry
