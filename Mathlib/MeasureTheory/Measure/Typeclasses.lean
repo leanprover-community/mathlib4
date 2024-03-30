@@ -148,7 +148,7 @@ theorem measureUnivNNReal_eq_zero [IsFiniteMeasure μ] : measureUnivNNReal μ = 
 
 theorem measureUnivNNReal_pos [IsFiniteMeasure μ] (hμ : μ ≠ 0) : 0 < measureUnivNNReal μ := by
   contrapose! hμ
-  simpa [measureUnivNNReal_eq_zero, le_zero_iff] using hμ
+  simpa [measureUnivNNReal_eq_zero, Nat.le_zero] using hμ
 #align measure_theory.measure_univ_nnreal_pos MeasureTheory.measureUnivNNReal_pos
 
 /-- `le_of_add_le_add_left` is normally applicable to `OrderedCancelAddCommMonoid`,
@@ -313,11 +313,10 @@ protected lemma _root_.MeasurableEmbedding.isProbabilityMeasure_comap (hf : Meas
     (hf' : ∀ᵐ a ∂μ, a ∈ range f) : IsProbabilityMeasure (μ.comap f) :=
   isProbabilityMeasure_comap hf.injective hf' hf.measurableSet_image'
 
-instance isProbabilityMeasure_map_up [IsProbabilityMeasure μ] :
+instance isProbabilityMeasure_map_up :
     IsProbabilityMeasure (μ.map ULift.up) := isProbabilityMeasure_map measurable_up.aemeasurable
 
-instance isProbabilityMeasure_comap_down [IsProbabilityMeasure μ] :
-    IsProbabilityMeasure (μ.comap ULift.down) :=
+instance isProbabilityMeasure_comap_down : IsProbabilityMeasure (μ.comap ULift.down) :=
   MeasurableEquiv.ulift.measurableEmbedding.isProbabilityMeasure_comap <| ae_of_all _ <| by
     simp [Function.Surjective.range_eq <| EquivLike.surjective _]
 

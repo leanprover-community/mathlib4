@@ -80,7 +80,7 @@ theorem invOf_neg [Monoid α] [HasDistribNeg α] (a : α) [Invertible a] [Invert
 @[simp]
 theorem one_sub_invOf_two [Ring α] [Invertible (2 : α)] : 1 - (⅟ 2 : α) = ⅟ 2 :=
   (isUnit_of_invertible (2 : α)).mul_right_inj.1 <| by
-    rw [mul_sub, mul_invOf_self, mul_one, ← one_add_one_eq_two, add_sub_cancel]
+    rw [mul_sub, mul_invOf_self, mul_one, ← one_add_one_eq_two, add_sub_cancel_right]
 #align one_sub_inv_of_two one_sub_invOf_two
 
 @[simp]
@@ -194,12 +194,12 @@ variable [GroupWithZero α]
 
 @[simp]
 theorem div_mul_cancel_of_invertible (a b : α) [Invertible b] : a / b * b = a :=
-  div_mul_cancel a (nonzero_of_invertible b)
+  div_mul_cancel₀ a (nonzero_of_invertible b)
 #align div_mul_cancel_of_invertible div_mul_cancel_of_invertible
 
 @[simp]
 theorem mul_div_cancel_of_invertible (a b : α) [Invertible b] : a * b / b = a :=
-  mul_div_cancel a (nonzero_of_invertible b)
+  mul_div_cancel_right₀ a (nonzero_of_invertible b)
 #align mul_div_cancel_of_invertible mul_div_cancel_of_invertible
 
 @[simp]
@@ -212,7 +212,7 @@ def invertibleDiv (a b : α) [Invertible a] [Invertible b] : Invertible (a / b) 
   ⟨b / a, by simp [← mul_div_assoc], by simp [← mul_div_assoc]⟩
 #align invertible_div invertibleDiv
 
--- Porting note (#11119): removed `simp` attribute as `simp` can prove it
+-- Porting note (#10618): removed `simp` attribute as `simp` can prove it
 theorem invOf_div (a b : α) [Invertible a] [Invertible b] [Invertible (a / b)] :
     ⅟ (a / b) = b / a :=
   invOf_eq_right_inv (by simp [← mul_div_assoc])

@@ -66,9 +66,9 @@ theorem norm_exp_mul_sq_le {τ : ℂ} (hτ : 0 < τ.im) (n : ℤ) :
         re_ofReal_mul, mul_I_re]
       ring
     obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (sq_nonneg n)
-    rw [this, exp_mul, ← Int.cast_pow, rpow_int_cast, hm, zpow_coe_nat]
+    rw [this, exp_mul, ← Int.cast_pow, rpow_int_cast, hm, zpow_natCast]
   · have : n ^ 2 = (n.natAbs ^ 2 :) := by rw [Nat.cast_pow, Int.natAbs_sq]
-    rw [this, zpow_coe_nat]
+    rw [this, zpow_natCast]
     exact pow_le_pow_of_le_one (exp_pos _).le h.le ((sq n.natAbs).symm ▸ n.natAbs.le_mul_self)
 #align norm_exp_mul_sq_le norm_exp_mul_sq_le
 
@@ -102,13 +102,13 @@ theorem hasSum_nat_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
     Complex.exp_zero, add_sub_assoc, (by norm_num : (1 : ℂ) - 1 * 2 = -1), ← sub_eq_add_neg,
     Nat.cast_add, Nat.cast_one] at this
   convert this.div_const 2 using 1
-  simp_rw [mul_div_cancel (G₀ := ℂ) _ two_ne_zero]
+  simp_rw [mul_div_cancel_right₀ (G₀ := ℂ) _ two_ne_zero]
 #align has_sum_nat_jacobi_theta hasSum_nat_jacobiTheta
 
 theorem jacobiTheta_eq_tsum_nat {τ : ℂ} (hτ : 0 < im τ) :
     jacobiTheta τ = ↑1 + ↑2 * ∑' n : ℕ, cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ) := by
-  rw [(hasSum_nat_jacobiTheta hτ).tsum_eq, mul_div_cancel' _ (two_ne_zero' ℂ), ← add_sub_assoc,
-    add_sub_cancel']
+  rw [(hasSum_nat_jacobiTheta hτ).tsum_eq, mul_div_cancel₀ _ (two_ne_zero' ℂ), ← add_sub_assoc,
+    add_sub_cancel_left]
 #align jacobi_theta_eq_tsum_nat jacobiTheta_eq_tsum_nat
 
 /-- An explicit upper bound for `‖jacobiTheta τ - 1‖`. -/
@@ -127,7 +127,7 @@ theorem norm_jacobiTheta_sub_one_le {τ : ℂ} (hτ : 0 < im τ) :
     simpa only [Int.cast_add, Int.cast_one] using norm_exp_mul_sq_le hτ (n + 1)
   have s : HasSum (fun n : ℕ =>
       rexp (-π * τ.im) ^ (n + 1)) (rexp (-π * τ.im) / (1 - rexp (-π * τ.im))) := by
-    simp_rw [pow_succ, div_eq_mul_inv, hasSum_mul_left_iff (Real.exp_ne_zero _)]
+    simp_rw [pow_succ', div_eq_mul_inv, hasSum_mul_left_iff (Real.exp_ne_zero _)]
     exact hasSum_geometric_of_lt_one (exp_pos (-π * τ.im)).le
       (exp_lt_one_iff.mpr <| mul_neg_of_neg_of_pos (neg_lt_zero.mpr pi_pos) hτ)
   have aux : Summable fun n : ℕ => ‖cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)‖ :=

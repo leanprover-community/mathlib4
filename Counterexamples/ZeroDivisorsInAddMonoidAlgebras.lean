@@ -64,7 +64,7 @@ theorem zero_divisors_of_periodic {R A} [Nontrivial R] [Ring R] [AddMonoid A] {n
   refine' ⟨single a 1, single ((n - 1) • a) 1 - single 0 1, by simp, _, _⟩
   · exact sub_ne_zero.mpr (by simpa [single, AddMonoidAlgebra, single_eq_single_iff])
   · rw [mul_sub, AddMonoidAlgebra.single_mul_single, AddMonoidAlgebra.single_mul_single,
-      sub_eq_zero, add_zero, ← succ_nsmul, Nat.sub_add_cancel (one_le_two.trans n2), na]
+      sub_eq_zero, add_zero, ← succ_nsmul', Nat.sub_add_cancel (one_le_two.trans n2), na]
 #align counterexample.zero_divisors_of_periodic Counterexample.zero_divisors_of_periodic
 
 theorem single_zero_one {R A} [Semiring R] [Zero A] :
@@ -92,7 +92,7 @@ theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a 
     · intro b hb b0
       rw [single_pow, one_pow, single_eq_of_ne]
       exact nsmul_ne_zero_of_lt_addOrderOf' b0 (Finset.mem_range.mp hb)
-    · simp only [(zero_lt_two.trans_le o2).ne', Finset.mem_range, not_lt, le_zero_iff,
+    · simp only [(zero_lt_two.trans_le o2).ne', Finset.mem_range, not_lt, Nat.le_zero,
         false_imp_iff]
     · rw [single_pow, one_pow, zero_smul, single_eq_same]
   · apply_fun fun x : R[A] => x 0

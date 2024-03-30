@@ -1543,7 +1543,7 @@ theorem contDiff_prod {t : Finset ι} {f : ι → E → 𝔸'} (h : ∀ i ∈ t,
 
 theorem ContDiff.pow {f : E → 𝔸} (hf : ContDiff 𝕜 n f) : ∀ m : ℕ, ContDiff 𝕜 n fun x => f x ^ m
   | 0 => by simpa using contDiff_const
-  | m + 1 => by simpa [pow_succ] using hf.mul (hf.pow m)
+  | m + 1 => by simpa [pow_succ] using (hf.pow m).mul hf
 #align cont_diff.pow ContDiff.pow
 
 theorem ContDiffWithinAt.pow {f : E → 𝔸} (hf : ContDiffWithinAt 𝕜 n f s x) (m : ℕ) :
@@ -1765,7 +1765,7 @@ theorem contDiffAt_ring_inverse [CompleteSpace R] (x : Rˣ) :
       · rintro _ ⟨x', rfl⟩
         exact (inverse_continuousAt x').continuousWithinAt
       · simp [ftaylorSeriesWithin]
-  · apply contDiffAt_succ_iff_hasFDerivAt.mpr
+  · rw [contDiffAt_succ_iff_hasFDerivAt]
     refine' ⟨fun x : R => -mulLeftRight 𝕜 R (inverse x) (inverse x), _, _⟩
     · refine' ⟨{ y : R | IsUnit y }, x.nhds, _⟩
       rintro _ ⟨y, rfl⟩
@@ -1883,7 +1883,7 @@ theorem PartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomor
   · rw [contDiffAt_zero]
     exact ⟨f.target, IsOpen.mem_nhds f.open_target ha, f.continuousOn_invFun⟩
   · obtain ⟨f', ⟨u, hu, hff'⟩, hf'⟩ := contDiffAt_succ_iff_hasFDerivAt.mp hf
-    apply contDiffAt_succ_iff_hasFDerivAt.mpr
+    rw [contDiffAt_succ_iff_hasFDerivAt]
     -- For showing `n.succ` times continuous differentiability (the main inductive step), it
     -- suffices to produce the derivative and show that it is `n` times continuously differentiable
     have eq_f₀' : f' (f.symm a) = f₀' := (hff' (f.symm a) (mem_of_mem_nhds hu)).unique hf₀'

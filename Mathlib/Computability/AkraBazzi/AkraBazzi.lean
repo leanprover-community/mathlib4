@@ -6,7 +6,6 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Computability.AkraBazzi.GrowsPolynomially
 import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
@@ -152,7 +151,7 @@ lemma eventually_b_le_r : ∀ᶠ (n:ℕ) in atTop, ∀ i, (b i : ℝ) * n - (n /
   have h₁ : 0 ≤ b i := le_of_lt <| R.b_pos _
   rw [sub_le_iff_le_add, add_comm, ← sub_le_iff_le_add]
   calc (b i : ℝ) * n - r i n = ‖b i * n‖ - ‖(r i n : ℝ)‖ := by
-                            simp only [norm_mul, IsROrC.norm_natCast, sub_left_inj,
+                            simp only [norm_mul, RCLike.norm_natCast, sub_left_inj,
                                        Nat.cast_eq_zero, Real.norm_of_nonneg h₁]
                          _ ≤ ‖(b i * n : ℝ) - r i n‖ := norm_sub_norm_le _ _
                          _ = ‖(r i n : ℝ) - b i * n‖ := norm_sub_rev _ _
@@ -204,7 +203,7 @@ lemma eventually_r_ge (C : ℝ) : ∀ᶠ (n:ℕ) in atTop, ∀ i, C ≤ r i n :=
   intro i
   calc C = c * (C / c) := by
             rw [← mul_div_assoc]
-            exact (mul_div_cancel_left _ (by positivity)).symm
+            exact (mul_div_cancel_left₀ _ (by positivity)).symm
        _ ≤ c * ⌈C / c⌉₊ := by gcongr; simp [Nat.le_ceil]
        _ ≤ c * n := by gcongr
        _ ≤ r i n := hn₂ i
