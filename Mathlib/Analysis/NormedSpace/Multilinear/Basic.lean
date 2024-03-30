@@ -940,7 +940,7 @@ def smulRightL : ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] Co
           map_smul' := fun c x ↦ by ext; simp [smul_smul, mul_comm] }
       map_add' := fun f g ↦ by ext; simp [add_smul]
       map_smul' := fun c f ↦ by ext; simp [smul_smul] }
-  1 (fun f z ↦ by simp [norm_smulRight])
+    1 (fun f z ↦ by simp [norm_smulRight])
 
 @[simp] lemma smulRightL_apply (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
   smulRightL 𝕜 E G f z = f.smulRight z := rfl
