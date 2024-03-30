@@ -5,6 +5,7 @@ import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Real.Basic
 
 set_option autoImplicit true
+set_option linter.hashCommand false
 
 -- Enable this option for tracing:
 -- set_option trace.Tactic.librarySearch true
