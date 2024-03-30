@@ -2,8 +2,10 @@ import Mathlib.Tactic.Eval
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Sort
 
+set_option linter.hashCommand false in
 #guard_expr eval% 2^10 =ₛ 1024
 
+set_option linter.hashCommand false in
 #guard_expr (eval% 2^10 : Int) =ₛ .ofNat 1024
 
 -- https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/How.20to.20simplify.20this.20proof.20without.20using.20a.20have.20statement.3F/near/422294189
@@ -44,6 +46,7 @@ unsafe nonrec instance Finset.toExpr
       | [] => q(∅)
       | x0 :: xs => List.foldl (fun s x => q(insert $x $s)) q({$x0}) xs }
 
+set_option linter.hashCommand false in
 #guard_expr
   (eval% Finset.powerset ({1, 2, 3} : Finset ℕ)) =
     {∅, {1}, {2}, {1, 2}, {3}, {1, 3}, {2, 3}, {1, 2, 3}}
