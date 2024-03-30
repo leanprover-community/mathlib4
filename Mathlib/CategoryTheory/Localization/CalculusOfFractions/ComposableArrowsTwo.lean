@@ -29,8 +29,10 @@ lemma essSurj_mapComposableArrows_two : EssSurj (L.mapComposableArrows 2) where
   mem_essImage Y := by
     obtain ⟨Y₀, Y₁, Y₂, f, g, rfl⟩ := ComposableArrows.mk₂_surjective Y
     have := essSurj L W
-    obtain ⟨f', hf'⟩ := exists_rightFraction L W ((L.objObjPreimageIso Y₀).hom ≫ f ≫ (L.objObjPreimageIso Y₁).inv)
-    obtain ⟨g', hg'⟩ := exists_leftFraction L W ((L.objObjPreimageIso Y₁).hom ≫ g ≫ (L.objObjPreimageIso Y₂).inv)
+    obtain ⟨f', hf'⟩ := exists_rightFraction L W
+      ((L.objObjPreimageIso Y₀).hom ≫ f ≫ (L.objObjPreimageIso Y₁).inv)
+    obtain ⟨g', hg'⟩ := exists_leftFraction L W
+      ((L.objObjPreimageIso Y₁).hom ≫ g ≫ (L.objObjPreimageIso Y₂).inv)
     refine' ⟨ComposableArrows.mk₂ f'.f g'.f,
       ⟨ComposableArrows.isoMk₂
         (Localization.isoOfHom L W f'.s f'.hs ≪≫ L.objObjPreimageIso Y₀)
