@@ -1,6 +1,6 @@
+import Lean.Elab.GuardMsgs
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.HashCommandLinter
-import Lean.Elab.GuardMsgs
 
 section inactive_hash_linter
 
