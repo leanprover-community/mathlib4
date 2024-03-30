@@ -3,7 +3,7 @@ Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Simon Hudon
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided
+import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
 
 #align_import category_theory.monoidal.of_chosen_finite_products.symmetric from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
@@ -22,8 +22,7 @@ variable {C : Type u} [Category.{v} C] {X Y : C}
 
 open CategoryTheory.Limits
 
-variable (𝒯 : LimitCone (Functor.empty.{v} C))
-
+variable (𝒯 : LimitCone (Functor.empty.{0} C))
 variable (ℬ : ∀ X Y : C, LimitCone (pair X Y))
 
 open MonoidalOfChosenFiniteProducts

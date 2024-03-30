@@ -72,7 +72,7 @@ open Rat
 open multiplicity
 
 /-- For `p ≠ 1`, the `p`-adic valuation of a natural `n ≠ 0` is the largest natural number `k` such
-that `p^k` divides `z`. If `n = 0` or `p = 1`, then `padicValNat p q` defaults to `0`. -/
+that `p^k` divides `n`. If `n = 0` or `p = 1`, then `padicValNat p q` defaults to `0`. -/
 def padicValNat (p : ℕ) (n : ℕ) : ℕ :=
   if h : p ≠ 1 ∧ 0 < n then (multiplicity p n).get (multiplicity.finite_nat_iff.2 h) else 0
 #align padic_val_nat padicValNat
@@ -136,7 +136,7 @@ theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
   by_cases h : 1 < p ∧ 0 < n
   · dsimp [padicValNat]
     rw [dif_pos ⟨Nat.ne_of_gt h.1,h.2⟩, maxPowDiv_eq_multiplicity_get h.1 h.2]
-  · simp only [not_and_or,not_gt_eq,le_zero_iff] at h
+  · simp only [not_and_or,not_gt_eq,Nat.le_zero] at h
     apply h.elim
     · intro h
       interval_cases p
@@ -357,7 +357,7 @@ protected theorem mul {q r : ℚ} (hq : q ≠ 0) (hr : r ≠ 0) :
 /-- A rewrite lemma for `padicValRat p (q^k)` with condition `q ≠ 0`. -/
 protected theorem pow {q : ℚ} (hq : q ≠ 0) {k : ℕ} : padicValRat p (q ^ k) = k * padicValRat p q :=
   by induction k <;>
-    simp [*, padicValRat.mul hq (pow_ne_zero _ hq), _root_.pow_succ, add_mul, add_comm]
+    simp [*, padicValRat.mul hq (pow_ne_zero _ hq), _root_.pow_succ', add_mul, add_comm]
 #align padic_val_rat.pow padicValRat.pow
 
 /-- A rewrite lemma for `padicValRat p (q⁻¹)` with condition `q ≠ 0`. -/
@@ -598,14 +598,14 @@ lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
     `n` is less than `p` raised to one plus the p-adic valuation of `n`. -/
 lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : 0 < n) :
     Nat.log p n = padicValNat p n ↔ n < p ^ (padicValNat p n + 1) := by
-  rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by linarith⟩), and_iff_right_iff_imp]
+  rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by omega⟩), and_iff_right_iff_imp]
   exact (fun _ => Nat.le_of_dvd hn pow_padicValNat_dvd)
 
 lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicValNat 2 (n + 1) := by
   rw [Ne, log_eq_iff (by simp [hn])]
   rintro ⟨h1, h2⟩
   rw [← lt_add_one_iff, ← mul_one (2 ^ _)] at h1
-  rw [← add_one_le_iff, pow_succ] at h2
+  rw [← add_one_le_iff, Nat.pow_succ] at h2
   refine' not_dvd_of_between_consec_multiples h1 (lt_of_le_of_ne' h2 _) pow_padicValNat_dvd
   -- TODO(kmill): Why is this `p := 2` necessary?
   exact pow_succ_padicValNat_not_dvd (p := 2) n.succ_ne_zero ∘ dvd_of_eq
@@ -628,7 +628,7 @@ theorem range_pow_padicValNat_subset_divisors {n : ℕ} (hn : n ≠ 0) :
   simp only [exists_prop, Finset.mem_image, Finset.mem_range] at ht
   obtain ⟨k, hk, rfl⟩ := ht
   rw [Nat.mem_divisors]
-  exact ⟨(pow_dvd_pow p <| by linarith).trans pow_padicValNat_dvd, hn⟩
+  exact ⟨(pow_dvd_pow p <| by omega).trans pow_padicValNat_dvd, hn⟩
 #align range_pow_padic_val_nat_subset_divisors range_pow_padicValNat_subset_divisors
 
 theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
@@ -640,7 +640,7 @@ theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
   obtain ⟨k, hk, rfl⟩ := ht
   rw [Finset.mem_erase, Nat.mem_divisors]
   refine' ⟨_, (pow_dvd_pow p <| succ_le_iff.2 hk).trans pow_padicValNat_dvd, hn⟩
-  exact (Nat.one_lt_pow _ _ k.succ_ne_zero hp.out.one_lt).ne'
+  exact (Nat.one_lt_pow k.succ_ne_zero hp.out.one_lt).ne'
 #align range_pow_padic_val_nat_subset_divisors' range_pow_padicValNat_subset_divisors'
 
 /-- The `p`-adic valuation of `(p * n)!` is `n` more than that of `n!`. -/

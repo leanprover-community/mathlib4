@@ -230,7 +230,7 @@ def mkTFAEId : TSyntax ``tfaeType → MacroM Name
     | `(impArrow| → ) => pure "to"
     | `(impArrow| ↔ ) => pure "iff"
     | _ => Macro.throwUnsupported
-    return String.intercalate "_" ["tfae", s!"{i.getNat}", arr, s!"{j.getNat}"]
+    return .mkSimple <| String.intercalate "_" ["tfae", s!"{i.getNat}", arr, s!"{j.getNat}"]
   | _ => Macro.throwUnsupported
 
 /-- Turn syntax for a given index into a natural number, as long as it lies between `1` and

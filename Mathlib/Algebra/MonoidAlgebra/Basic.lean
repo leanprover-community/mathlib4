@@ -92,7 +92,7 @@ instance MonoidAlgebra.instIsCancelAdd [IsCancelAdd k] : IsCancelAdd (MonoidAlge
   inferInstanceAs (IsCancelAdd (G →₀ k))
 
 instance MonoidAlgebra.coeFun : CoeFun (MonoidAlgebra k G) fun _ => G → k :=
-  Finsupp.coeFun
+  Finsupp.instCoeFun
 #align monoid_algebra.has_coe_to_fun MonoidAlgebra.coeFun
 
 end
@@ -174,7 +174,7 @@ theorem mul_def {f g : MonoidAlgebra k G} :
 #align monoid_algebra.mul_def MonoidAlgebra.mul_def
 
 instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (MonoidAlgebra k G) :=
-  { Finsupp.addCommMonoid with
+  { Finsupp.instAddCommMonoid with
     -- Porting note: `refine` & `exact` are required because `simp` behaves differently.
     left_distrib := fun f g h => by
       haveI := Classical.decEq G
@@ -307,7 +307,7 @@ instance nonUnitalCommSemiring [CommSemiring k] [CommSemigroup G] :
 #align monoid_algebra.non_unital_comm_semiring MonoidAlgebra.nonUnitalCommSemiring
 
 instance nontrivial [Semiring k] [Nontrivial k] [Nonempty G] : Nontrivial (MonoidAlgebra k G) :=
-  Finsupp.nontrivial
+  Finsupp.instNontrivial
 #align monoid_algebra.nontrivial MonoidAlgebra.nontrivial
 
 /-! #### Derived instances -/
@@ -324,7 +324,7 @@ instance unique [Semiring k] [Subsingleton k] : Unique (MonoidAlgebra k G) :=
 #align monoid_algebra.unique MonoidAlgebra.unique
 
 instance addCommGroup [Ring k] : AddCommGroup (MonoidAlgebra k G) :=
-  Finsupp.addCommGroup
+  Finsupp.instAddCommGroup
 #align monoid_algebra.add_comm_group MonoidAlgebra.addCommGroup
 
 instance nonUnitalNonAssocRing [Ring k] [Mul G] : NonUnitalNonAssocRing (MonoidAlgebra k G) :=
@@ -856,7 +856,6 @@ end Algebra
 section lift
 
 variable [CommSemiring k] [Monoid G] [Monoid H]
-
 variable {A : Type u₃} [Semiring A] [Algebra k A] {B : Type*} [Semiring B] [Algebra k B]
 
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
@@ -1027,7 +1026,6 @@ theorem GroupSMul.linearMap_apply [Monoid G] [CommSemiring k] (V : Type u₃) [A
 section
 
 variable {k}
-
 variable [Monoid G] [CommSemiring k] {V : Type u₃} {W : Type u₄} [AddCommMonoid V] [Module k V]
   [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] [AddCommMonoid W]
   [Module k W] [Module (MonoidAlgebra k G) W] [IsScalarTower k (MonoidAlgebra k G) W]
@@ -1166,9 +1164,7 @@ end Opposite
 section Submodule
 
 variable [CommSemiring k] [Monoid G]
-
 variable {V : Type*} [AddCommMonoid V]
-
 variable [Module k V] [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V]
 
 /-- A submodule over `k` which is stable under scalar multiplication by elements of `G` is a
@@ -1223,7 +1219,7 @@ instance instIsCancelAdd [IsCancelAdd k] : IsCancelAdd (AddMonoidAlgebra k G) :=
   inferInstanceAs (IsCancelAdd (G →₀ k))
 
 instance coeFun : CoeFun k[G] fun _ => G → k :=
-  Finsupp.coeFun
+  Finsupp.instCoeFun
 #align add_monoid_algebra.has_coe_to_fun AddMonoidAlgebra.coeFun
 
 end AddMonoidAlgebra
@@ -1312,7 +1308,7 @@ theorem mul_def {f g : k[G]} :
 #align add_monoid_algebra.mul_def AddMonoidAlgebra.mul_def
 
 instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring k[G] :=
-  { Finsupp.addCommMonoid with
+  { Finsupp.instAddCommMonoid with
     -- Porting note: `refine` & `exact` are required because `simp` behaves differently.
     left_distrib := fun f g h => by
       haveI := Classical.decEq G
@@ -1339,8 +1335,6 @@ instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring k[G] :=
     nsmul_succ := by
       intros
       refine Finsupp.ext fun _ => ?_
-      -- Porting note: The definition of `nsmul_succ` is different, so next line is required.
-      simp only [fun n => Nat.add_comm n 1]
       simp [-nsmul_eq_mul, add_smul] }
 #align add_monoid_algebra.non_unital_non_assoc_semiring AddMonoidAlgebra.nonUnitalNonAssocSemiring
 
@@ -1456,7 +1450,7 @@ instance nonUnitalCommSemiring [CommSemiring k] [AddCommSemigroup G] :
 #align add_monoid_algebra.non_unital_comm_semiring AddMonoidAlgebra.nonUnitalCommSemiring
 
 instance nontrivial [Semiring k] [Nontrivial k] [Nonempty G] : Nontrivial k[G] :=
-  Finsupp.nontrivial
+  Finsupp.instNontrivial
 #align add_monoid_algebra.nontrivial AddMonoidAlgebra.nontrivial
 
 /-! #### Derived instances -/
@@ -1473,7 +1467,7 @@ instance unique [Semiring k] [Subsingleton k] : Unique k[G] :=
 #align add_monoid_algebra.unique AddMonoidAlgebra.unique
 
 instance addCommGroup [Ring k] : AddCommGroup k[G] :=
-  Finsupp.addCommGroup
+  Finsupp.instAddCommGroup
 #align add_monoid_algebra.add_comm_group AddMonoidAlgebra.addCommGroup
 
 instance nonUnitalNonAssocRing [Ring k] [Add G] : NonUnitalNonAssocRing k[G] :=
@@ -1584,7 +1578,7 @@ theorem single_pow [AddMonoid G] {a : G} {b : k} : ∀ n : ℕ, single a b ^ n =
     simp only [pow_zero, zero_nsmul]
     rfl
   | n + 1 => by
-    rw [pow_succ, pow_succ, single_pow n, single_mul_single, add_comm, add_nsmul, one_nsmul]
+    rw [pow_succ, pow_succ, single_pow n, single_mul_single, add_nsmul, one_nsmul]
 #align add_monoid_algebra.single_pow AddMonoidAlgebra.single_pow
 
 /-- Like `Finsupp.mapDomain_zero`, but for the `1` we define in this file -/
@@ -1969,7 +1963,6 @@ end Algebra
 section lift
 
 variable [CommSemiring k] [AddMonoid G]
-
 variable {A : Type u₃} [Semiring A] [Algebra k A] {B : Type*} [Semiring B] [Algebra k B]
 
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
@@ -2110,7 +2103,6 @@ def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] [A
 #align add_monoid_algebra.map_domain_alg_hom_apply AddMonoidAlgebra.mapDomainAlgHom_apply
 
 variable (k A)
-
 variable [CommSemiring k] [AddMonoid G] [AddMonoid H] [Semiring A] [Algebra k A]
 
 

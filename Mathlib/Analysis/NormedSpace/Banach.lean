@@ -3,7 +3,8 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Baire
+import Mathlib.Topology.Baire.Lemmas
+import Mathlib.Topology.Baire.CompleteMetrizable
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
 import Mathlib.Analysis.NormedSpace.AffineIsometry
 import Mathlib.Analysis.Normed.Group.InfiniteSum
@@ -17,7 +18,8 @@ This file contains the Banach open mapping theorem, i.e., the fact that a biject
 bounded linear map between Banach spaces has a bounded inverse.
 -/
 
-open Function Metric Set Filter Finset Classical Topology BigOperators NNReal
+open scoped Classical
+open Function Metric Set Filter Finset Topology BigOperators NNReal
 
 open LinearMap (range ker)
 
@@ -175,7 +177,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
     · simp only [one_div, Nat.zero_eq, one_mul, iterate_zero_apply, pow_zero, le_rfl]
     · rw [iterate_succ']
       apply le_trans (hle _) _
-      rw [pow_succ, mul_assoc]
+      rw [pow_succ', mul_assoc]
       gcongr
   let u n := g (h^[n] y)
   have ule : ∀ n, ‖u n‖ ≤ (1 / 2) ^ n * (C * ‖y‖) := fun n ↦ by
@@ -228,7 +230,7 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
   rcases isOpen_iff.1 hs x xs with ⟨ε, εpos, hε⟩
   refine' ⟨ε / C, div_pos εpos Cpos, fun z hz => _⟩
   rcases hC (z - y) with ⟨w, wim, wnorm⟩
-  have : f (x + w) = z := by rw [f.map_add, wim, fxy, add_sub_cancel'_right]
+  have : f (x + w) = z := by rw [f.map_add, wim, fxy, add_sub_cancel]
   rw [← this]
   have : x + w ∈ ball x ε :=
     calc
@@ -239,7 +241,7 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
       _ < C * (ε / C) := by
         apply mul_lt_mul_of_pos_left _ Cpos
         rwa [mem_ball, dist_eq_norm] at hz
-      _ = ε := mul_div_cancel' _ (ne_of_gt Cpos)
+      _ = ε := mul_div_cancel₀ _ (ne_of_gt Cpos)
 
   exact Set.mem_image_of_mem _ (hε this)
 #align continuous_linear_map.is_open_map ContinuousLinearMap.isOpenMap

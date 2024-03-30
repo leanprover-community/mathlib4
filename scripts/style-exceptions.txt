@@ -10,7 +10,6 @@ Mathlib/Analysis/Calculus/ContDiff/Defs.lean : line 1 : ERR_NUM_LIN : 1900 file 
 Mathlib/Analysis/Convolution.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1545 lines, try to split it up
 Mathlib/Analysis/InnerProductSpace/Basic.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2358 lines, try to split it up
 Mathlib/Analysis/Normed/Group/Basic.lean : line 1 : ERR_NUM_LIN : 3000 file contains 2815 lines, try to split it up
-Mathlib/Analysis/NormedSpace/OperatorNorm.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2278 lines, try to split it up
 Mathlib/CategoryTheory/Limits/Shapes/Biproducts.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2118 lines, try to split it up
 Mathlib/CategoryTheory/Limits/Shapes/Pullbacks.lean : line 1 : ERR_NUM_LIN : 2900 file contains 2728 lines, try to split it up
 Mathlib/Combinatorics/SimpleGraph/Connectivity.lean : line 1 : ERR_NUM_LIN : 2800 file contains 2653 lines, try to split it up
@@ -90,9 +89,9 @@ Mathlib/MeasureTheory/Constructions/BorelSpace/Basic.lean : line 1 : ERR_NUM_LIN
 Mathlib/MeasureTheory/Function/L1Space.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1549 lines, try to split it up
 Mathlib/MeasureTheory/Function/LpSpace.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1956 lines, try to split it up
 Mathlib/MeasureTheory/Function/StronglyMeasurable/Basic.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2148 lines, try to split it up
-Mathlib/MeasureTheory/Integral/Bochner.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2010 lines, try to split it up
+Mathlib/MeasureTheory/Integral/Bochner.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2104 lines, try to split it up
 Mathlib/MeasureTheory/Integral/FundThmCalculus.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1550 lines, try to split it up
-Mathlib/MeasureTheory/Integral/Lebesgue.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1851 lines, try to split it up
+Mathlib/MeasureTheory/Integral/Lebesgue.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2041 lines, try to split it up
 Mathlib/MeasureTheory/Integral/SetToL1.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1817 lines, try to split it up
 Mathlib/MeasureTheory/MeasurableSpace/Basic.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2250 lines, try to split it up
 Mathlib/MeasureTheory/Measure/MeasureSpace.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2191 lines, try to split it up
@@ -112,7 +111,6 @@ Mathlib/Order/SuccPred/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 15
 Mathlib/Order/UpperLower/Basic.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2019 lines, try to split it up
 Mathlib/RingTheory/DedekindDomain/Ideal.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1542 lines, try to split it up
 Mathlib/RingTheory/Ideal/Operations.lean : line 1 : ERR_NUM_LIN : 2600 file contains 2414 lines, try to split it up
-Mathlib/RingTheory/PowerSeries/Basic.lean : line 1 : ERR_NUM_LIN : 3000 file contains 2865 lines, try to split it up
 Mathlib/RingTheory/Subring/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1546 lines, try to split it up
 Mathlib/RingTheory/UniqueFactorizationDomain.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2066 lines, try to split it up
 Mathlib/SetTheory/Cardinal/Basic.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2238 lines, try to split it up
@@ -145,7 +143,6 @@ Mathlib/Tactic/TypeCheck.lean : line 1 : ERR_COP : Malformed or missing copyrigh
 Mathlib/Tactic/TypeCheck.lean : line 3 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/TypeCheck.lean : line 3 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Topology/Algebra/Group/Basic.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2231 lines, try to split it up
-Mathlib/Topology/Algebra/InfiniteSum/Basic.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1665 lines, try to split it up
 Mathlib/Topology/Algebra/Module/Basic.lean : line 1 : ERR_NUM_LIN : 2900 file contains 2768 lines, try to split it up
 Mathlib/Topology/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1956 lines, try to split it up
 Mathlib/Topology/Category/Profinite/Nobeling.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1831 lines, try to split it up

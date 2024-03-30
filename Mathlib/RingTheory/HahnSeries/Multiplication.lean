@@ -30,7 +30,8 @@ set_option linter.uppercaseLean3 false
 
 open Finset Function
 
-open BigOperators Classical Pointwise
+open scoped Classical
+open BigOperators Pointwise
 
 noncomputable section
 
@@ -419,7 +420,7 @@ theorem order_pow {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Semiring R] [NoZer
   · simp
   rcases eq_or_ne x 0 with (rfl | hx)
   · simp
-  rw [pow_succ', order_mul (pow_ne_zero _ hx) hx, succ_nsmul', IH]
+  rw [pow_succ, order_mul (pow_ne_zero _ hx) hx, succ_nsmul, IH]
 #align hahn_series.order_pow HahnSeries.order_pow
 
 section NonUnitalNonAssocSemiring

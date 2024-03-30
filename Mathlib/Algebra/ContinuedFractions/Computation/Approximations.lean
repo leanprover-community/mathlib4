@@ -199,7 +199,7 @@ theorem fib_le_of_continuantsAux_b :
       · simp [fib_add_two, continuantsAux] -- case n = 0
       · simp [fib_add_two, continuantsAux] -- case n = 1
       · let g := of v -- case 2 ≤ n
-        have : ¬n + 2 ≤ 1 := by linarith
+        have : ¬n + 2 ≤ 1 := by omega
         have not_terminated_at_n : ¬g.TerminatedAt n := Or.resolve_left hyp this
         obtain ⟨gp, s_ppred_nth_eq⟩ : ∃ gp, g.s.get? n = some gp :=
           Option.ne_none_iff_exists'.mp not_terminated_at_n
@@ -349,7 +349,7 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
       _ = pA * ppB - pB * ppA := by ring
       _ = (-1) ^ (n + 1) := by assumption
     suffices ppA * pB - ppB * pA = (-1) ^ n by
-      have pow_succ_n : (-1 : K) ^ (n + 1) = -1 * (-1) ^ n := pow_succ (-1) n
+      have pow_succ_n : (-1 : K) ^ (n + 1) = -1 * (-1) ^ n := pow_succ' (-1) n
       rw [pow_succ_n, ← this]
       ring
     exact IH <| Or.inr <| mt (terminated_stable <| n.sub_le 1) not_terminated_at_n
@@ -514,7 +514,7 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
         positivity
       rw [abs_of_pos this]
     rwa [this]
-  suffices 0 < denom ∧ denom ≤ denom' from div_le_div_of_le_left zero_le_one this.left this.right
+  suffices 0 < denom ∧ denom ≤ denom' from div_le_div_of_nonneg_left zero_le_one this.1 this.2
   constructor
   · have : 0 < pred_conts.b + gp.b * conts.b :=
       nextConts_b_ineq.trans_lt' <| mod_cast fib_pos.2 <| succ_pos _
@@ -526,7 +526,7 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
     have : (ifp_succ_n.b : K) ≤ ifp_n.fr⁻¹ :=
       IntFractPair.succ_nth_stream_b_le_nth_stream_fr_inv stream_nth_eq succ_nth_stream_eq
     have : 0 ≤ conts.b := le_of_lt zero_lt_conts_b
-    -- porting note: was `mono`
+    -- Porting note: was `mono`
     refine' mul_le_mul_of_nonneg_right _ _ <;> assumption
 #align generalized_continued_fraction.abs_sub_convergents_le GeneralizedContinuedFraction.abs_sub_convergents_le
 
