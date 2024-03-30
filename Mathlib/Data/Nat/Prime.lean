@@ -455,22 +455,14 @@ theorem exists_dvd_of_not_prime2 {n : ℕ} (n2 : 2 ≤ n) (np : ¬Prime n) :
     (not_prime_iff_minFac_lt n2).1 np⟩
 #align nat.exists_dvd_of_not_prime2 Nat.exists_dvd_of_not_prime2
 
-theorem not_prime_of_dvd (n2 : 2 ≤ n) : (∃ m, m ∣ n ∧ m ≠ 1 ∧ m ≠ n) → ¬Prime n := by
-  intro ⟨m, dvd, hne1, hneq⟩
-  have n0 : 0 < n := lt_of_succ_le (le_of_succ_le n2)
-  have mn : m < n := lt_of_le_of_ne (le_of_dvd n0 dvd) hneq
-  refine' (not_prime_iff_minFac_lt n2).mpr _
-  refine' lt_of_le_of_lt (minFac_le_of_dvd _ dvd) mn
-  match m with
-  | 0 => refine False.elim (hneq (Nat.zero_dvd.mp dvd).symm)
-  | 1 => contradiction
-  | m + 2 => simp only [le_add_iff_nonneg_left, _root_.zero_le]
+theorem not_prime_of_dvd (h : ∃ m, m ∣ n ∧ m ≠ 1 ∧ m ≠ n) : ¬Prime n := by
+  contrapose! h
+  simp only [← or_iff_not_imp_left]
+  exact h.eq_one_or_self_of_dvd
 
-theorem not_prime_of_dvd2 (n2 : 2 ≤ n) : (∃ m, m ∣ n ∧ 2 ≤ m ∧ m < n) → ¬Prime n := by
-  intro ⟨m, dvd, hm2, hm⟩
-  refine' not_prime_of_dvd n2 ⟨m, ⟨dvd, ⟨_, _⟩⟩⟩
-  · exact ne_of_gt (lt_of_succ_le hm2)
-  · exact ne_of_lt hm
+theorem not_prime_of_dvd2 (h : ∃ m, m ∣ n ∧ 2 ≤ m ∧ m < n) : ¬Prime n := by
+  obtain ⟨m, dvd, hm2, hm⟩ := h
+  exact not_prime_of_dvd ⟨m, dvd, ne_of_gt hm2, ne_of_lt hm⟩
 
 theorem exists_dvd_iff_not_prime {n : ℕ} (n2 : 2 ≤ n) : (¬Prime n) ↔ ∃ m, m ∣ n ∧ m ≠ 1 ∧ m ≠ n :=
   ⟨exists_dvd_of_not_prime n2, not_prime_of_dvd n2⟩
