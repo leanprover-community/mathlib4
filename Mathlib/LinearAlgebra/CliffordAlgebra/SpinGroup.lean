@@ -131,7 +131,7 @@ theorem involute_act_ι_mem_range_ι [Invertible (2 : R)]
     letI := x.invertible
     letI : Invertible (ι Q a) := by rwa [ha]
     letI : Invertible (Q a) := invertibleOfInvertibleι Q a
-    simp_rw [← invOf_units x, ← ha, involute_ι, neg_mul, ι_mul_ι_mul_invOf_ι Q a b, ←map_neg,
+    simp_rw [← invOf_units x, ← ha, involute_ι, neg_mul, ι_mul_ι_mul_invOf_ι Q a b, ← map_neg,
       LinearMap.mem_range_self]
   | inv_mem x hx =>
     obtain ⟨a, ha⟩ := hx
@@ -141,7 +141,7 @@ theorem involute_act_ι_mem_range_ι [Invertible (2 : R)]
     letI := invertibleNeg (ι Q a)
     letI := Invertible.map (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q) (ι Q a)
     simp_rw [← invOf_units x, inv_inv, ← ha, map_invOf, involute_ι, invOf_neg, neg_mul,
-      invOf_ι_mul_ι_mul_ι, ←map_neg, LinearMap.mem_range_self]
+      invOf_ι_mul_ι_mul_ι, ← map_neg, LinearMap.mem_range_self]
   | one => simp_rw [inv_one, Units.val_one, map_one, one_mul, mul_one, LinearMap.mem_range_self]
   | mul y z _ _ hy hz =>
     simp_rw [mul_inv_rev, Units.val_mul, map_mul]
