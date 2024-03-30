@@ -1126,11 +1126,11 @@ def rTensor (f : N →ₗ[R] P) : N ⊗[R] M →ₗ[R] P ⊗[R] M :=
 #align linear_map.rtensor LinearMap.rTensor
 
 theorem _root_.TensorProduct.coe_congr_left_refl (f : N ≃ₗ[R] P) :
-    (TensorProduct.congr (LinearEquiv.refl R M) f).toLinearMap = lTensor M f :=
+    TensorProduct.congr (.refl R M) f = lTensor M (f : N →ₗ[R] P) :=
   rfl
 
 theorem _root_.TensorProduct.coe_congr_right_refl (f : N ≃ₗ[R] P) :
-    (TensorProduct.congr f (LinearEquiv.refl R M)).toLinearMap = rTensor M f :=
+    TensorProduct.congr f (.refl R M) = rTensor M (f : N →ₗ[R] P) :=
   rfl
 
 variable (g : P →ₗ[R] Q) (f : N →ₗ[R] P)
