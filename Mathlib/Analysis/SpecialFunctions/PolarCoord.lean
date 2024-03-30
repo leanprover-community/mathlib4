@@ -100,7 +100,7 @@ theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
   convert HasFDerivAt.prod (𝕜 := ℝ)
     (hasFDerivAt_fst.mul ((hasDerivAt_cos p.2).comp_hasFDerivAt p hasFDerivAt_snd))
     (hasFDerivAt_fst.mul ((hasDerivAt_sin p.2).comp_hasFDerivAt p hasFDerivAt_snd)) using 2 <;>
-  simp [smul_smul, add_comm, neg_mul, neg_smul, smul_neg]
+  simp [smul_smul, add_comm, neg_mul, smul_neg, neg_smul _ (ContinuousLinearMap.snd ℝ ℝ ℝ)]
 #align has_fderiv_at_polar_coord_symm hasFDerivAt_polarCoord_symm
 
 -- Porting note: this instance is needed but not automatically synthesised
@@ -134,7 +134,7 @@ theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [Normed
   have B_det : ∀ p, (B p).det = p.1 := by
     intro p
     conv_rhs => rw [← one_mul p.1, ← cos_sq_add_sin_sq p.2]
-    simp only [neg_mul, LinearMap.det_toContinuousLinearMap, LinearMap.det_toLin,
+    simp only [B, neg_mul, LinearMap.det_toContinuousLinearMap, LinearMap.det_toLin,
       Matrix.det_fin_two_of, sub_neg_eq_add]
     ring
   symm

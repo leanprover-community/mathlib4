@@ -9,6 +9,7 @@ import Mathlib.NumberTheory.Divisors
 import Mathlib.Data.Nat.Squarefree
 import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Tactic.ArithMult
 
 #align_import number_theory.arithmetic_function from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -158,7 +159,7 @@ end Zero
 
 /-- Coerce an arithmetic function with values in `ℕ` to one with values in `R`. We cannot inline
 this in `natCoe` because it gets unfolded too much. -/
-@[coe]  -- porting note: added `coe` tag.
+@[coe]  -- Porting note: added `coe` tag.
 def natToArithmeticFunction [AddMonoidWithOne R] :
     (ArithmeticFunction ℕ) → (ArithmeticFunction R) :=
   fun f => ⟨fun n => ↑(f n), by simp⟩
@@ -237,7 +238,8 @@ instance instAddMonoid : AddMonoid (ArithmeticFunction R) :=
     ArithmeticFunction.add with
     add_assoc := fun _ _ _ => ext fun _ => add_assoc _ _ _
     zero_add := fun _ => ext fun _ => zero_add _
-    add_zero := fun _ => ext fun _ => add_zero _ }
+    add_zero := fun _ => ext fun _ => add_zero _
+    nsmul := nsmulRec }
 #align nat.arithmetic_function.add_monoid ArithmeticFunction.instAddMonoid
 
 end AddMonoid
@@ -253,10 +255,13 @@ instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (Arithmeti
 instance instAddCommMonoid [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction R) :=
   { ArithmeticFunction.instAddMonoid with add_comm := fun _ _ => ext fun _ => add_comm _ _ }
 
+instance [NegZeroClass R] : Neg (ArithmeticFunction R) where
+  neg f := ⟨fun n => -f n, by simp⟩
+
 instance [AddGroup R] : AddGroup (ArithmeticFunction R) :=
   { ArithmeticFunction.instAddMonoid with
-    neg := fun f => ⟨fun n => -f n, by simp⟩
-    add_left_neg := fun _ => ext fun _ => add_left_neg _ }
+    add_left_neg := fun _ => ext fun _ => add_left_neg _
+    zsmul := zsmulRec }
 
 instance [AddCommGroup R] : AddCommGroup (ArithmeticFunction R) :=
   { show AddGroup (ArithmeticFunction R) by infer_instance with
@@ -332,7 +337,7 @@ theorem one_smul' (b : ArithmeticFunction M) : (1 : ArithmeticFunction R) • b 
     intro con
     simp only [Con, mem_divisorsAntidiagonal, one_mul, Ne.def] at ymem
     simp only [mem_singleton, Prod.ext_iff] at ynmem
-    -- porting note: `tauto` worked from here.
+    -- Porting note: `tauto` worked from here.
     cases y
     subst con
     simp only [true_and, one_mul, x0, not_false_eq_true, and_true] at ynmem ymem
@@ -362,7 +367,7 @@ instance instMonoid : Monoid (ArithmeticFunction R) :=
       intro y ymem ynmem
       have y2ne : y.snd ≠ 1 := by
         intro con
-        cases y; subst con -- porting note: added
+        cases y; subst con -- Porting note: added
         simp only [Con, mem_divisorsAntidiagonal, mul_one, Ne.def] at ymem
         simp only [mem_singleton, Prod.ext_iff] at ynmem
         tauto
@@ -371,7 +376,7 @@ instance instMonoid : Monoid (ArithmeticFunction R) :=
 #align nat.arithmetic_function.monoid ArithmeticFunction.instMonoid
 
 instance instSemiring : Semiring (ArithmeticFunction R) :=
-  -- porting note: I reorganized this instance
+  -- Porting note: I reorganized this instance
   { ArithmeticFunction.instAddMonoidWithOne,
     ArithmeticFunction.instMonoid,
     ArithmeticFunction.instAddCommMonoid with
@@ -401,7 +406,8 @@ instance [CommSemiring R] : CommSemiring (ArithmeticFunction R) :=
 instance [CommRing R] : CommRing (ArithmeticFunction R) :=
   { ArithmeticFunction.instSemiring with
     add_left_neg := add_left_neg
-    mul_comm := mul_comm }
+    mul_comm := mul_comm
+    zsmul := (· • ·) }
 
 instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     Module (ArithmeticFunction R) (ArithmeticFunction M) where
@@ -473,12 +479,12 @@ theorem coe_mul_zeta_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
 
 theorem zeta_mul_apply {f : ArithmeticFunction ℕ} {x : ℕ} : (ζ * f) x = ∑ i in divisors x, f i :=
   coe_zeta_mul_apply
-  --porting note: was `by rw [← nat_coe_nat ζ, coe_zeta_mul_apply]`.  Is this `theorem` obsolete?
+  -- Porting note: was `by rw [← nat_coe_nat ζ, coe_zeta_mul_apply]`.  Is this `theorem` obsolete?
 #align nat.arithmetic_function.zeta_mul_apply ArithmeticFunction.zeta_mul_apply
 
 theorem mul_zeta_apply {f : ArithmeticFunction ℕ} {x : ℕ} : (f * ζ) x = ∑ i in divisors x, f i :=
   coe_mul_zeta_apply
-  --porting note: was `by rw [← natCoe_nat ζ, coe_mul_zeta_apply]`.  Is this `theorem` obsolete=
+  -- Porting note: was `by rw [← natCoe_nat ζ, coe_mul_zeta_apply]`.  Is this `theorem` obsolete=
 #align nat.arithmetic_function.mul_zeta_apply ArithmeticFunction.mul_zeta_apply
 
 end Zeta
@@ -542,18 +548,18 @@ theorem ppow_apply {f : ArithmeticFunction R} {k x : ℕ} (kpos : 0 < k) : f.ppo
   rfl
 #align nat.arithmetic_function.ppow_apply ArithmeticFunction.ppow_apply
 
-theorem ppow_succ {f : ArithmeticFunction R} {k : ℕ} : f.ppow (k + 1) = f.pmul (f.ppow k) := by
-  ext x
-  rw [ppow_apply (Nat.succ_pos k), _root_.pow_succ]
-  induction k <;> simp
-#align nat.arithmetic_function.ppow_succ ArithmeticFunction.ppow_succ
-
-theorem ppow_succ' {f : ArithmeticFunction R} {k : ℕ} {kpos : 0 < k} :
-    f.ppow (k + 1) = (f.ppow k).pmul f := by
+theorem ppow_succ' {f : ArithmeticFunction R} {k : ℕ} : f.ppow (k + 1) = f.pmul (f.ppow k) := by
   ext x
   rw [ppow_apply (Nat.succ_pos k), _root_.pow_succ']
   induction k <;> simp
-#align nat.arithmetic_function.ppow_succ' ArithmeticFunction.ppow_succ'
+#align nat.arithmetic_function.ppow_succ ArithmeticFunction.ppow_succ'
+
+theorem ppow_succ {f : ArithmeticFunction R} {k : ℕ} {kpos : 0 < k} :
+    f.ppow (k + 1) = (f.ppow k).pmul f := by
+  ext x
+  rw [ppow_apply (Nat.succ_pos k), _root_.pow_succ]
+  induction k <;> simp
+#align nat.arithmetic_function.ppow_succ' ArithmeticFunction.ppow_succ
 
 end Pmul
 
@@ -609,7 +615,7 @@ section MonoidWithZero
 
 variable [MonoidWithZero R]
 
-@[simp]
+@[simp, arith_mult]
 theorem map_one {f : ArithmeticFunction R} (h : f.IsMultiplicative) : f 1 = 1 :=
   h.1
 #align nat.arithmetic_function.is_multiplicative.map_one ArithmeticFunction.IsMultiplicative.map_one
@@ -645,18 +651,21 @@ theorem map_prod_of_subset_primeFactors [CommSemiring R] {f : ArithmeticFunction
     f (∏ a in t, a) = ∏ a : ℕ in t, f a :=
   map_prod_of_prime h_mult t fun _ a => prime_of_mem_primeFactors (ht a)
 
+@[arith_mult]
 theorem nat_cast {f : ArithmeticFunction ℕ} [Semiring R] (h : f.IsMultiplicative) :
     IsMultiplicative (f : ArithmeticFunction R) :=
-                                 -- porting note: was `by simp [cop, h]`
+                                 -- Porting note: was `by simp [cop, h]`
   ⟨by simp [h], fun {m n} cop => by simp [h.2 cop]⟩
 #align nat.arithmetic_function.is_multiplicative.nat_cast ArithmeticFunction.IsMultiplicative.nat_cast
 
+@[arith_mult]
 theorem int_cast {f : ArithmeticFunction ℤ} [Ring R] (h : f.IsMultiplicative) :
     IsMultiplicative (f : ArithmeticFunction R) :=
-                                 -- porting note: was `by simp [cop, h]`
+                                 -- Porting note: was `by simp [cop, h]`
   ⟨by simp [h], fun {m n} cop => by simp [h.2 cop]⟩
 #align nat.arithmetic_function.is_multiplicative.int_cast ArithmeticFunction.IsMultiplicative.int_cast
 
+@[arith_mult]
 theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)
     (hg : g.IsMultiplicative) : IsMultiplicative (f * g) := by
   refine ⟨by simp [hf.1, hg.1], ?_⟩
@@ -718,6 +727,7 @@ theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicati
     ring
 #align nat.arithmetic_function.is_multiplicative.mul ArithmeticFunction.IsMultiplicative.mul
 
+@[arith_mult]
 theorem pmul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)
     (hg : g.IsMultiplicative) : IsMultiplicative (f.pmul g) :=
   ⟨by simp [hf, hg], fun {m n} cop => by
@@ -725,6 +735,7 @@ theorem pmul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicat
     ring⟩
 #align nat.arithmetic_function.is_multiplicative.pmul ArithmeticFunction.IsMultiplicative.pmul
 
+@[arith_mult]
 theorem pdiv [CommGroupWithZero R] {f g : ArithmeticFunction R} (hf : IsMultiplicative f)
     (hg : IsMultiplicative g) : IsMultiplicative (pdiv f g) :=
   ⟨ by simp [hf, hg], fun {m n} cop => by
@@ -734,7 +745,7 @@ theorem pdiv [CommGroupWithZero R] {f g : ArithmeticFunction R} (hf : IsMultipli
 
 /-- For any multiplicative function `f` and any `n > 0`,
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/
-nonrec  -- porting note: added
+nonrec  -- Porting note: added
 theorem multiplicative_factorization [CommMonoidWithZero R] (f : ArithmeticFunction R)
     (hf : f.IsMultiplicative) {n : ℕ} (hn : n ≠ 0) :
     f n = n.factorization.prod fun p k => f (p ^ k) :=
@@ -769,6 +780,7 @@ theorem eq_iff_eq_on_prime_powers [CommMonoidWithZero R] (f : ArithmeticFunction
   exact Finset.prod_congr rfl fun p hp ↦ h p _ (Nat.prime_of_mem_primeFactors hp)
 #align nat.arithmetic_function.is_multiplicative.eq_iff_eq_on_prime_powers ArithmeticFunction.IsMultiplicative.eq_iff_eq_on_prime_powers
 
+@[arith_mult]
 theorem prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) :
     IsMultiplicative (prodPrimeFactors f) := by
   rw [iff_ne_zero]
@@ -802,8 +814,8 @@ theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R
   · simp only [hy, f.map_zero, mul_zero, Nat.lcm_zero_right, Nat.gcd_zero_right, zero_mul]
   have hgcd_ne_zero : x.gcd y ≠ 0 := gcd_ne_zero_left hx
   have hlcm_ne_zero : x.lcm y ≠ 0 := lcm_ne_zero hx hy
-  have hfi_zero : ∀ {i}, f (i ^ 0) = 1
-  · intro i; rw [Nat.pow_zero, hf.1]
+  have hfi_zero : ∀ {i}, f (i ^ 0) = 1 := by
+    intro i; rw [Nat.pow_zero, hf.1]
   iterate 4 rw [hf.multiplicative_factorization f (by assumption),
     Finsupp.prod_of_support_subset _ _ _ (fun _ _ => hfi_zero)
       (s := (x.primeFactors ⊔ y.primeFactors))]
@@ -825,7 +837,7 @@ end IsMultiplicative
 section SpecialFunctions
 
 /-- The identity on `ℕ` as an `ArithmeticFunction`.  -/
-nonrec  -- porting note: added
+nonrec  -- Porting note (#11445): added
 def id : ArithmeticFunction ℕ :=
   ⟨id, rfl⟩
 #align nat.arithmetic_function.id ArithmeticFunction.id
@@ -844,7 +856,7 @@ def pow (k : ℕ) : ArithmeticFunction ℕ :=
 theorem pow_apply {k n : ℕ} : pow k n = if k = 0 ∧ n = 0 then 0 else n ^ k := by
   cases k
   · simp [pow]
-  rename_i k  -- porting note: added
+  rename_i k  -- Porting note: added
   simp [pow, k.succ_pos.ne']
 #align nat.arithmetic_function.pow_apply ArithmeticFunction.pow_apply
 
@@ -888,6 +900,7 @@ theorem zeta_mul_pow_eq_sigma {k : ℕ} : ζ * pow k = σ k := by
   simp [hx]
 #align nat.arithmetic_function.zeta_mul_pow_eq_sigma ArithmeticFunction.zeta_mul_pow_eq_sigma
 
+@[arith_mult]
 theorem isMultiplicative_one [MonoidWithZero R] : IsMultiplicative (1 : ArithmeticFunction R) :=
   IsMultiplicative.iff_ne_zero.2
     ⟨by simp, by
@@ -899,26 +912,31 @@ theorem isMultiplicative_one [MonoidWithZero R] : IsMultiplicative (1 : Arithmet
       exact Or.inl hm'⟩
 #align nat.arithmetic_function.is_multiplicative_one ArithmeticFunction.isMultiplicative_one
 
+@[arith_mult]
 theorem isMultiplicative_zeta : IsMultiplicative ζ :=
   IsMultiplicative.iff_ne_zero.2 ⟨by simp, by simp (config := { contextual := true })⟩
 #align nat.arithmetic_function.is_multiplicative_zeta ArithmeticFunction.isMultiplicative_zeta
 
+@[arith_mult]
 theorem isMultiplicative_id : IsMultiplicative ArithmeticFunction.id :=
   ⟨rfl, fun {_ _} _ => rfl⟩
 #align nat.arithmetic_function.is_multiplicative_id ArithmeticFunction.isMultiplicative_id
 
+@[arith_mult]
 theorem IsMultiplicative.ppow [CommSemiring R] {f : ArithmeticFunction R} (hf : f.IsMultiplicative)
     {k : ℕ} : IsMultiplicative (f.ppow k) := by
   induction' k with k hi
   · exact isMultiplicative_zeta.nat_cast
-  · rw [ppow_succ]
+  · rw [ppow_succ']
     apply hf.pmul hi
 #align nat.arithmetic_function.is_multiplicative.ppow ArithmeticFunction.IsMultiplicative.ppow
 
+@[arith_mult]
 theorem isMultiplicative_pow {k : ℕ} : IsMultiplicative (pow k) :=
   isMultiplicative_id.ppow
 #align nat.arithmetic_function.is_multiplicative_pow ArithmeticFunction.isMultiplicative_pow
 
+@[arith_mult]
 theorem isMultiplicative_sigma {k : ℕ} : IsMultiplicative (σ k) := by
   rw [← zeta_mul_pow_eq_sigma]
   apply isMultiplicative_zeta.mul isMultiplicative_pow
@@ -949,8 +967,7 @@ lemma cardFactors_zero : Ω 0 = 0 := rfl
 theorem cardFactors_eq_one_iff_prime {n : ℕ} : Ω n = 1 ↔ n.Prime := by
   refine' ⟨fun h => _, fun h => List.length_eq_one.2 ⟨n, factors_prime h⟩⟩
   cases' n with n
-  · contrapose! h
-    simp
+  · simp at h
   rcases List.length_eq_one.1 h with ⟨x, hx⟩
   rw [← prod_factors n.succ_ne_zero, hx, List.prod_singleton]
   apply prime_of_mem_factors
@@ -1064,6 +1081,25 @@ theorem moebius_ne_zero_iff_eq_or {n : ℕ} : μ n ≠ 0 ↔ μ n = 1 ∨ μ n =
   · rcases h with (h | h) <;> simp [h]
 #align nat.arithmetic_function.moebius_ne_zero_iff_eq_or ArithmeticFunction.moebius_ne_zero_iff_eq_or
 
+theorem moebius_sq_eq_one_of_squarefree {l : ℕ} (hl : Squarefree l) : μ l ^ 2 = 1 := by
+  rw [moebius_apply_of_squarefree hl, ← pow_mul, mul_comm, pow_mul, neg_one_sq, one_pow]
+
+theorem abs_moebius_eq_one_of_squarefree {l : ℕ} (hl : Squarefree l) : |μ l| = 1 := by
+  simp only [moebius_apply_of_squarefree hl, abs_pow, abs_neg, abs_one, one_pow]
+
+theorem moebius_sq {n : ℕ} :
+    μ n ^ 2 = if Squarefree n then 1 else 0 := by
+  split_ifs with h
+  · exact moebius_sq_eq_one_of_squarefree h
+  · simp only [pow_eq_zero_iff, moebius_eq_zero_of_not_squarefree h,
+    zero_pow (show 2 ≠ 0 by norm_num)]
+
+theorem abs_moebius {n : ℕ} :
+    |μ n| = if Squarefree n then 1 else 0 := by
+  split_ifs with h
+  · exact abs_moebius_eq_one_of_squarefree h
+  · simp only [moebius_eq_zero_of_not_squarefree h, abs_zero]
+
 theorem moebius_apply_prime {p : ℕ} (hp : p.Prime) : μ p = -1 := by
   rw [moebius_apply_of_squarefree hp.squarefree, cardFactors_apply_prime hp, pow_one]
 #align nat.arithmetic_function.moebius_apply_prime ArithmeticFunction.moebius_apply_prime
@@ -1085,6 +1121,7 @@ theorem moebius_apply_isPrimePow_not_prime {n : ℕ} (hn : IsPrimePow n) (hn' : 
   exact hn' (by simpa)
 #align nat.arithmetic_function.moebius_apply_is_prime_pow_not_prime ArithmeticFunction.moebius_apply_isPrimePow_not_prime
 
+@[arith_mult]
 theorem isMultiplicative_moebius : IsMultiplicative μ := by
   rw [IsMultiplicative.iff_ne_zero]
   refine' ⟨by simp, fun {n m} hn hm hnm => _⟩
@@ -1193,7 +1230,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
     | succ n =>
       rw [coe_zeta_smul_apply]
       simp only [n.succ_ne_zero, forall_prop_of_true, succ_pos', if_false, ZeroHom.coe_mk]
-      simp only [coe_mk, succ_ne_zero, ite_false]
+      simp only [f', g', coe_mk, succ_ne_zero, ite_false]
       rw [sum_congr rfl fun x hx => ?_]
       rw [if_neg (Nat.pos_of_mem_divisors hx).ne']
   trans μ • g' = f'
@@ -1208,8 +1245,8 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
     | succ n =>
       simp only [n.succ_ne_zero, forall_prop_of_true, succ_pos', smul_apply, if_false,
         ZeroHom.coe_mk]
-      -- porting note: added following `simp only`
-      simp only [Nat.isUnit_iff, coe_mk, ZeroHom.toFun_eq_coe, succ_ne_zero, ite_false]
+      -- Porting note: added following `simp only`
+      simp only [f', g', Nat.isUnit_iff, coe_mk, ZeroHom.toFun_eq_coe, succ_ne_zero, ite_false]
       rw [sum_congr rfl fun x hx => ?_]
       rw [if_neg (Nat.pos_of_mem_divisors (snd_mem_divisors_of_mem_antidiagonal hx)).ne']
 #align nat.arithmetic_function.sum_eq_iff_sum_smul_moebius_eq ArithmeticFunction.sum_eq_iff_sum_smul_moebius_eq

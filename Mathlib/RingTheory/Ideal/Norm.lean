@@ -82,7 +82,7 @@ theorem cardQuot_bot [Infinite M] : cardQuot (⊥ : Submodule R M) = 0 :=
   AddSubgroup.index_bot.trans Nat.card_eq_zero_of_infinite
 #align submodule.card_quot_bot Submodule.cardQuot_bot
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem cardQuot_top : cardQuot (⊤ : Submodule R M) = 1 :=
   AddSubgroup.index_top
 #align submodule.card_quot_top Submodule.cardQuot_top
@@ -137,7 +137,8 @@ theorem Ideal.mul_add_mem_pow_succ_inj (P : Ideal S) {i : ℕ} (a d d' e e' : S)
     (e_mem : e ∈ P ^ (i + 1)) (e'_mem : e' ∈ P ^ (i + 1)) (h : d - d' ∈ P) :
     a * d + e - (a * d' + e') ∈ P ^ (i + 1) := by
   have : a * d - a * d' ∈ P ^ (i + 1) := by
-    convert Ideal.mul_mem_mul a_mem h using 1 <;> simp [mul_sub, pow_succ, mul_comm]
+    simp only [← mul_sub]
+    exact Ideal.mul_mem_mul a_mem h
   convert Ideal.add_mem _ this (Ideal.sub_mem _ e_mem e'_mem) using 1
   ring
 #align ideal.mul_add_mem_pow_succ_inj Ideal.mul_add_mem_pow_succ_inj
@@ -152,8 +153,8 @@ Inspired by [Neukirch], proposition 6.1 -/
 theorem Ideal.exists_mul_add_mem_pow_succ [IsDedekindDomain S] {i : ℕ} (a c : S) (a_mem : a ∈ P ^ i)
     (a_not_mem : a ∉ P ^ (i + 1)) (c_mem : c ∈ P ^ i) :
     ∃ d : S, ∃ e ∈ P ^ (i + 1), a * d + e = c := by
-  suffices eq_b : P ^ i = Ideal.span {a} ⊔ P ^ (i + 1)
-  · rw [eq_b] at c_mem
+  suffices eq_b : P ^ i = Ideal.span {a} ⊔ P ^ (i + 1) by
+    rw [eq_b] at c_mem
     simp only [mul_comm a]
     exact Ideal.mem_span_singleton_sup.mp c_mem
   refine (Ideal.eq_prime_pow_of_succ_lt_of_le hP (lt_of_le_of_ne le_sup_right ?_)
@@ -194,8 +195,8 @@ theorem cardQuot_pow_of_prime [IsDedekindDomain S] [Module.Finite ℤ S] [Module
   letI := Ideal.fintypeQuotientOfFreeOfNeBot (P ^ i) (pow_ne_zero _ hP)
   letI := Ideal.fintypeQuotientOfFreeOfNeBot P hP
   have : P ^ (i + 1) < P ^ i := Ideal.pow_succ_lt_pow hP i
-  suffices hquot : map (P ^ i.succ).mkQ (P ^ i) ≃ S ⧸ P
-  · rw [pow_succ (cardQuot P), ← ih, cardQuot_apply (P ^ i.succ), ←
+  suffices hquot : map (P ^ i.succ).mkQ (P ^ i) ≃ S ⧸ P by
+    rw [pow_succ' (cardQuot P), ← ih, cardQuot_apply (P ^ i.succ), ←
       card_quotient_mul_card_quotient (P ^ i) (P ^ i.succ) this.le, cardQuot_apply (P ^ i),
       cardQuot_apply P]
     congr 1
@@ -614,7 +615,6 @@ theorem spanNorm_mul_of_field {K : Type*} [Field K] [Algebra K S] [IsDomain S] [
 #align ideal.span_norm_mul_of_field Ideal.spanNorm_mul_of_field
 
 variable [IsDomain R] [IsDomain S] [IsDedekindDomain R] [IsDedekindDomain S]
-
 variable [Module.Finite R S] [Module.Free R S]
 
 /-- Multiplicativity of `Ideal.spanNorm`. simp-normal form is `map_mul (Ideal.relNorm R)`. -/

@@ -3,7 +3,9 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Ring.Pi
 
 #align_import algebra.big_operators.pi from "leanprover-community/mathlib"@"fa2309577c7009ea243cffdf990cd6c84f0ad497"
@@ -76,7 +78,6 @@ theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [S
 section MulSingle
 
 variable {I : Type*} [DecidableEq I] {Z : I → Type*}
-
 variable [∀ i, CommMonoid (Z i)]
 
 @[to_additive]
@@ -115,7 +116,6 @@ section RingHom
 open Pi
 
 variable {I : Type*} [DecidableEq I] {f : I → Type*}
-
 variable [∀ i, NonAssocSemiring (f i)]
 
 @[ext]
@@ -144,57 +144,3 @@ theorem snd_prod : (∏ c in s, f c).2 = ∏ c in s, (f c).2 :=
 #align prod.snd_sum Prod.snd_sum
 
 end Prod
-
-open Finset
-
-namespace Fintype
-variable {ι κ : Type*} {α : ι → Type*} [DecidableEq ι] [Fintype ι] [DecidableEq κ]
-  [∀ i, DecidableEq (α i)]
-
-lemma card_filter_piFinset_eq_of_mem [∀ a, DecidableEq (α a)] (s : ∀ i, Finset (α i)) (i : ι)
-    {a : α i} (ha : a ∈ s i) :
-    ((piFinset s).filter fun f ↦ f i = a).card = ∏ j in univ.erase i, (s j).card := by
-  let t : ∀ i, Finset (α i) := fun j ↦ if h : i = j then {(@Eq.ndrec _ _ α a _ h : α j)} else s j
-  have : (t i).card = 1 := by simp
-  have h₁ : ∏ j in univ.erase i, (s j).card = ∏ j, (t j).card := by
-    rw [← @prod_erase ℕ ι _ _ univ (fun j ↦ (t j).card) i this]
-    refine Finset.prod_congr rfl fun b hb ↦ ?_
-    simp only [mem_erase, Ne.def, mem_univ, and_true_iff] at hb
-    simp only [dif_neg (Ne.symm hb)]
-  have h₂ : ∏ j, (t j).card = ∏ j, ∑ a in t j, 1 := by simp
-  rw [h₁, h₂, prod_univ_sum]
-  simp only [prod_const_one, ← Finset.card_eq_sum_ones]
-  congr 1
-  ext f
-  simp only [mem_filter, mem_piFinset]
-  refine ⟨?_, fun h ↦ ?_⟩
-  · rintro ⟨hf, rfl⟩ b
-    split_ifs with h₁
-    · cases h₁
-      simp
-    · exact hf _
-  obtain rfl : f i = a := by simpa using h i
-  refine ⟨fun j ↦ ?_, rfl⟩
-  obtain rfl | hab := eq_or_ne i j
-  · exact ha
-  · simpa [dif_neg hab] using h j
-
-lemma card_filter_piFinset_const_eq_of_mem (s : Finset κ) (i : ι) {x : κ} (hx : x ∈ s) :
-    ((piFinset fun _ ↦ s).filter fun f ↦ f i = x).card = s.card ^ (card ι - 1) :=
-  (card_filter_piFinset_eq_of_mem _ _ hx).trans $ by
-    rw [prod_const s.card, card_erase_of_mem (mem_univ _), card_univ]
-
-lemma card_filter_piFinset_eq (s : ∀ i, Finset (α i)) (i : ι) (a : α i) :
-    ((piFinset s).filter fun f ↦ f i = a).card =
-      if a ∈ s i then ∏ b in univ.erase i, (s b).card else 0 := by
-  split_ifs with h
-  · rw [card_filter_piFinset_eq_of_mem _ _ h]
-  · rw [filter_piFinset_of_not_mem _ _ _ h, Finset.card_empty]
-
-lemma filter_piFinset_const_card (s : Finset κ) (i : ι) (x : κ) :
-    ((piFinset fun _ ↦ s).filter fun f ↦ f i = x).card =
-      if x ∈ s then s.card ^ (card ι - 1) else 0 :=
-  (card_filter_piFinset_eq _ _ _).trans $ by
-    rw [prod_const s.card, card_erase_of_mem (mem_univ _), card_univ]
-
-end Fintype
