@@ -494,6 +494,10 @@ theorem exists_mem (ha : a ∈ s) : ∃ t ∈ P.parts, a ∈ t := by
   exact mem_sup.1 ha
 #align finpartition.exists_mem Finpartition.exists_mem
 
+theorem biUnion_parts : P.parts.biUnion id = s :=
+  (sup_eq_biUnion _ _).symm.trans P.sup_parts
+#align finpartition.bUnion_parts Finpartition.biUnion_parts
+
 theorem existsUnique_mem (ha : a ∈ s) : ∃! t, t ∈ P.parts ∧ a ∈ t := by
   obtain ⟨t, ht, ht'⟩ := P.exists_mem ha
   refine' ⟨t, ⟨ht, ht'⟩, _⟩
@@ -506,10 +510,6 @@ def part (a : α) : Finset α := if ha : a ∈ s then choose (hp := P.existsUniq
 theorem part_mem (ha : a ∈ s) : P.part a ∈ P.parts := by simp [part, ha, choose_mem]
 
 theorem mem_part (ha : a ∈ s) : a ∈ P.part a := by simp [part, ha, choose_property]
-
-theorem biUnion_parts : P.parts.biUnion id = s :=
-  (sup_eq_biUnion _ _).symm.trans P.sup_parts
-#align finpartition.bUnion_parts Finpartition.biUnion_parts
 
 theorem sum_card_parts : ∑ i in P.parts, i.card = s.card := by
   convert congr_arg Finset.card P.biUnion_parts
