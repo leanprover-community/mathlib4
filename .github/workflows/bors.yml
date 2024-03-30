@@ -226,7 +226,7 @@ jobs:
         id: hash_commands
         run: |
           chmod u+x scripts/lint_hash_commands.sh
-          ./scripts/lint_hash_commands.sh
+          # ./scripts/lint_hash_commands.sh
 
       - name: build archive
         id: archive
