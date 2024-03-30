@@ -25,7 +25,7 @@ We provide the following results:
 -/
 
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
@@ -36,10 +36,11 @@ open CategoryTheory.Limits
 namespace CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+    {E : Type u₃} [Category.{v₃} E]
 
 section ZeroMorphisms
 
-variable [HasZeroMorphisms C] [HasZeroMorphisms D]
+variable [HasZeroMorphisms C] [HasZeroMorphisms D] [HasZeroMorphisms E]
 
 /-- A functor preserves zero morphisms if it sends zero morphisms to zero morphisms. -/
 class PreservesZeroMorphisms (F : C ⥤ D) : Prop where
@@ -104,6 +105,15 @@ instance (priority := 100) preservesZeroMorphisms_of_full (F : C ⥤ D) [Full F]
       F.map (0 : X ⟶ Y) = F.map (0 ≫ F.preimage (0 : F.obj Y ⟶ F.obj Y)) := by rw [zero_comp]
       _ = 0 := by rw [F.map_comp, F.image_preimage, comp_zero]
 #align category_theory.functor.preserves_zero_morphisms_of_full CategoryTheory.Functor.preservesZeroMorphisms_of_full
+
+instance preservesZeroMorphisms_comp (F : C ⥤ D) (G : D ⥤ E)
+    [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] :
+    (F ⋙ G).PreservesZeroMorphisms := ⟨by simp⟩
+
+lemma preservesZeroMorphisms_of_iso {F₁ F₂ : C ⥤ D} [F₁.PreservesZeroMorphisms] (e : F₁ ≅ F₂) :
+    F₂.PreservesZeroMorphisms where
+  map_zero X Y := by simp only [← cancel_epi (e.hom.app X), ← e.hom.naturality,
+    F₁.map_zero, zero_comp, comp_zero]
 
 instance preservesZeroMorphisms_evaluation_obj (j : D) :
     PreservesZeroMorphisms ((evaluation D C).obj j) where

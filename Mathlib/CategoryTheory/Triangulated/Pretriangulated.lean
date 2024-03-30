@@ -3,8 +3,9 @@ Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw, Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.TriangleShift
+import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+import Mathlib.CategoryTheory.Triangulated.TriangleShift
 
 #align_import category_theory.triangulated.pretriangulated from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
@@ -157,6 +158,19 @@ theorem comp_distTriang_mor_zero₃₁ (T : Triangle C) (H : T ∈ distTriang C)
   have H₂ := rot_of_distTriang T.rotate (rot_of_distTriang T H)
   simpa using comp_distTriang_mor_zero₁₂ T.rotate.rotate H₂
 #align category_theory.pretriangulated.comp_dist_triangle_mor_zero₃₁ CategoryTheory.Pretriangulated.comp_distTriang_mor_zero₃₁
+
+/-- The short complex `T.obj₁ ⟶ T.obj₂ ⟶ T.obj₃` attached to a distinguished triangle. -/
+@[simps]
+def shortComplexOfDistTriangle (T : Triangle C) (hT : T ∈ distTriang C) : ShortComplex C :=
+  ShortComplex.mk T.mor₁ T.mor₂ (comp_distTriang_mor_zero₁₂ _ hT)
+
+/-- The isomorphism between the short complex attached to
+two isomorphic distinguished triangles. -/
+@[simps!]
+def shortComplexOfDistTriangleIsoOfIso {T T' : Triangle C} (e : T ≅ T') (hT : T ∈ distTriang C) :
+    shortComplexOfDistTriangle T hT ≅ shortComplexOfDistTriangle T'
+      (isomorphic_distinguished _ hT _ e.symm) :=
+  ShortComplex.isoMk (Triangle.π₁.mapIso e) (Triangle.π₂.mapIso e) (Triangle.π₃.mapIso e)
 
 /-- Any morphism `Y ⟶ Z` is part of a distinguished triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` -/
 lemma distinguished_cocone_triangle₁ {Y Z : C} (g : Y ⟶ Z) :
