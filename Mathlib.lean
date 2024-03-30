@@ -2230,6 +2230,7 @@ import Mathlib.FieldTheory.IsSepClosed
 import Mathlib.FieldTheory.KrullTopology
 import Mathlib.FieldTheory.KummerExtension
 import Mathlib.FieldTheory.Laurent
+import Mathlib.FieldTheory.LinearDisjoint
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
@@ -3346,6 +3347,7 @@ import Mathlib.RingTheory.Jacobson
 import Mathlib.RingTheory.JacobsonIdeal
 import Mathlib.RingTheory.Kaehler
 import Mathlib.RingTheory.LaurentSeries
+import Mathlib.RingTheory.LinearDisjoint
 import Mathlib.RingTheory.LittleWedderburn
 import Mathlib.RingTheory.LocalProperties
 import Mathlib.RingTheory.Localization.AsSubring

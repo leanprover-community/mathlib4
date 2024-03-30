@@ -3,62 +3,105 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.Adjoin
+import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.Data.Fin.Tuple.Reflection
 
 /-!
 
-# Linearly disjoint
+# Linearly disjoint of submodules
 
-This file contains basics about the linearly disjoint of fields.
+This file contains basics about the linearly disjoint of submodules.
 
 ## Mathematical background
 
-(<https://en.wikipedia.org/wiki/Linearly_disjoint>) Subalgebras `A`, `B` over a field
-`F` inside some field extension `E` of `F` are said to be linearly disjoint over `F` if the
-following equivalent conditions are met:
+We adapt the definitions in <https://en.wikipedia.org/wiki/Linearly_disjoint>.
+Let `R` be a commutative ring, `S` be an `R`-algebra (not necessarily commutative).
+Let `M` and `N` be `R`-submodules in `S` (`Submodule R S`).
 
-- The map `A ⊗[F] B → A ⊔ B`, `x ⊗ₜ[F] y ↦ x * y` is injective.
+- `M` and `N` are linearly disjoint (`Submodule.LinearDisjoint M N` or simply
+  `M.LinearDisjoint N`), if the natural `R`-linear map `M ⊗[R] N →ₗ[R] S`
+  (`Submodule.mulMap M N`) induced by the multiplication in `S` is injective.
 
-- Any `F`-basis of `A` remains linearly independent over `B`.
+The following is the first equivalent characterization of linearly disjointness:
 
-- If `{ u_i }`, `{ v_j }` are `F`-bases for `A`, `B`, then the products `{ u_i * v_j }` are
-  linearly independent over `F`.
+- `Submodule.LinearDisjoint.map_linearIndependent_left_of_flat`:
+  if `M` and `N` are linearly disjoint, if `N` is a flat `R`-module, then for any family of
+  `R`-linearly independent elements `{ m_i }` of `M`, they are also `N`-linearly independent,
+  in the sense that the `R`-linear map from `ι →₀ N` to `S` which maps `{ n_i }`
+  to the sum of `m_i * n_i` (`Submodule.LinearDisjoint.mulLeftMap N m`) is injective.
 
-Our definition `IntermediateField.LinearDisjoint` is very closed to the second equivalent
-definition in the above.
+- `Submodule.LinearDisjoint.of_map_linearIndependent_left`:
+  conversely, if `{ m_i }` is an `R`-basis of `M`, which is also `N`-linearly independent,
+  then `M` and `N` are linearly disjoint.
 
-(<https://mathoverflow.net/questions/8324>) For two abstract fields `E` and `K` over `F`, they are
-called linearly disjoint over `F` (`LinearDisjoint F E K`), if `E ⊗[F] K` is a field.
-In this case, it can be shown that at least one of `E / F` and `K / F` are algebraic, and if this
-holds, then it is equivalent to the above `IntermediateField.LinearDisjoint`.
+Dually, we have:
 
-The advantage of `LinearDisjoint` is that it is preserved under algebra isomorphisms, while for
-`IntermediateField.LinearDisjoint` this is not so easy to prove, in fact it's wrong if both of the
-extensions are not algebraic.
+- `Submodule.LinearDisjoint.map_linearIndependent_right_of_flat`:
+  if `M` and `N` are linearly disjoint, if `M` is a flat `R`-module, then for any family of
+  `R`-linearly independent elements `{ n_i }` of `N`, they are also `M`-linearly independent,
+  in the sense that the `R`-linear map from `ι →₀ M` to `S` which maps `{ m_i }`
+  to the sum of `m_i * n_i` (`Submodule.LinearDisjoint.mulRightMap M n`) is injective.
 
-## Main definitions
+- `Submodule.LinearDisjoint.of_map_linearIndependent_right`:
+  conversely, if `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent,
+  then `M` and `N` are linearly disjoint.
 
-- ...
+The following is the second equivalent characterization of linearly disjointness:
 
-## Main results
+- `Submodule.LinearDisjoint.map_linearIndependent_mul_of_flat`:
+  if `M` and `N` are linearly disjoint, if one of `M` and `N` is flat, then for any family of
+  `R`-linearly independent elements `{ m_i }` of `M`, and any family of
+  `R`-linearly independent elements `{ n_j }` of `N`, the family `{ m_i * n_j }` in `S` is
+  also `R`-linearly independent.
 
-- ...
+- `Submodule.LinearDisjoint.of_map_linearIndependent_mul`:
+  conversely, if `{ m_i }` is an `R`-basis of `M`, if `{ n_i }` is an `R`-basis of `N`,
+  such that the family `{ m_i * n_j }` in `S` is `R`-linearly independent,
+  then `M` and `N` are linearly disjoint.
+
+## Other main results
+
+- `Submodule.LinearDisjoint.symm_of_commute`, `Submodule.linearDisjoint_symm_of_commute`:
+  linearly disjoint is symmetric under some commutative conditions.
+
+- `Submodule.LinearDisjoint.of_le_left_of_flat`, `Submodule.LinearDisjoint.of_le_right_of_flat`,
+  `Submodule.LinearDisjoint.of_le_of_flat_left`, `Submodule.LinearDisjoint.of_le_of_flat_right`:
+  linearly disjoint is preserved by taking submodules under some flatness conditions.
+
+- `Submodule.LinearDisjoint.of_bot_left`, `Submodule.LinearDisjoint.of_bot_right`:
+  the zero module is linearly disjoint with any other submodules.
+
+- `Submodule.LinearDisjoint.of_self_left`, `Submodule.LinearDisjoint.of_self_right`:
+  the image of `R` in `S` is linearly disjoint with any other submodules.
+
+- `Submodule.LinearDisjoint.of_left_le_self_of_flat`,
+  `Submodule.LinearDisjoint.of_right_le_self_of_flat`:
+  if a submodule is contained in the image of `R` in `S`, then is linearly disjoint with any other
+  submodules, under some flatness conditions.
+
+- `Submodule.LinearDisjoint.not_linearIndependent_pair_of_commute_of_flat`,
+  `Submodule.LinearDisjoint.rank_inf_le_one_of_commute_of_flat`:
+  if `M` and `N` are linearly disjoint, if one of `M` and `N` is flat, then any two commutative
+  elements contained in the intersection of `M` and `N` are not `R`-linearly independent (namely,
+  their span is not the two copies of `R`). In particular, if any two elements of `M` and `N`
+  are commutative, then the rank of the intersection of `M` and `N` is at most one.
+
+- `Submodule.LinearDisjoint.rank_le_one_of_commute_of_flat_of_self`:
+  if `M` and itself are linearly disjoint, if `M` is flat, if any two elements in `M`
+  are commutative, then the rank of `M` is at most one.
+
+The results with name containing "of_commute" also have corresponding specified versions
+assuming `R` is commutative.
 
 ## Tags
 
 linearly disjoint, linearly independent, tensor product
 
-## TODO
-
-- ...
-
 -/
 
-open scoped Classical Polynomial TensorProduct
-
-open FiniteDimensional Polynomial IntermediateField
+open scoped Classical TensorProduct
 
 noncomputable section
 
@@ -272,27 +315,27 @@ theorem map_linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat
   rw [LinearIndependent, LinearMap.ker_eq_bot] at hm
   exact H.injective.comp (Module.Flat.preserves_injective_linearMap (M := N) _ hm)
 
--- TODO: move to suitable file ?
+-- TODO: remove once #11731 is merged
 lemma _root_.TensorProduct.coe_congr_right_refl {R : Type*} [CommSemiring R] {M N P : Type*}
     [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
     [Module R M] [Module R N] [Module R P] (f : M ≃ₗ[R] P) :
     (TensorProduct.congr f (LinearEquiv.refl R N)).toLinearMap = LinearMap.rTensor N f :=
-  TensorProduct.ext' fun _ _ ↦ by simp
+  rfl
 
--- TODO: move to suitable file ?
+-- TODO: remove once #11731 is merged
 lemma _root_.TensorProduct.coe_congr_left_refl {R : Type*} [CommSemiring R] {M N Q : Type*}
     [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid Q]
     [Module R M] [Module R N] [Module R Q] (g : N ≃ₗ[R] Q) :
     (TensorProduct.congr (LinearEquiv.refl R M) g).toLinearMap = LinearMap.lTensor M g :=
-  TensorProduct.ext' fun _ _ ↦ by simp
+  rfl
 
 -- unused
--- TODO: move to suitable file ?
+-- TODO: remove once #11731 is merged
 lemma _root_.TensorProduct.congr_symm {R : Type*} [CommSemiring R] {M N P Q : Type*}
     [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
     [Module R M] [Module R N] [Module R P] [Module R Q] (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) :
     (TensorProduct.congr f g).symm = TensorProduct.congr f.symm g.symm :=
-  LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun _ _ ↦ by simp
+  rfl
 
 theorem of_map_linearIndependent_left {ι : Type*} (m : Basis ι R M)
     (H : LinearMap.ker (mulLeftMap N m) = ⊥) : M.LinearDisjoint N := by
@@ -332,6 +375,7 @@ theorem _root_.Module.Flat.preserves_injective_linearMap'
     {N : Type w} [AddCommGroup N] [Module R N] {M' : Type*} [AddCommGroup M'] [Module R M']
     [Module.Flat R N] (L : M →ₗ[R] M') (hL : Function.Injective L) :
     Function.Injective (LinearMap.lTensor N L) := by
+  -- rw [Module.Flat.lTensor_inj_iff_rTensor_inj]
   simp_rw [← LinearMap.comm_comp_rTensor_comp_comm_eq, LinearMap.coe_comp, LinearEquiv.coe_coe,
     EmbeddingLike.comp_injective, EquivLike.injective_comp]
   exact Module.Flat.preserves_injective_linearMap L hL
@@ -587,287 +631,62 @@ end LinearDisjoint
 
 end Ring
 
+section CommRing
+
+namespace LinearDisjoint
+
+variable [CommRing R] [CommRing S] [Algebra R S]
+
+variable (M N : Submodule R S)
+
+section not_linearIndependent_pair
+
+variable {M N}
+
+variable [Nontrivial R] (H : M.LinearDisjoint N)
+
+theorem not_linearIndependent_pair_of_flat_left [Module.Flat R M]
+    (a b : ↥(M ⊓ N)) : ¬LinearIndependent R ![a, b] :=
+  H.not_linearIndependent_pair_of_commute_of_flat_left a b (mul_comm _ _)
+
+theorem not_linearIndependent_pair_of_flat_right [Module.Flat R N]
+    (a b : ↥(M ⊓ N)) : ¬LinearIndependent R ![a, b] :=
+  H.not_linearIndependent_pair_of_commute_of_flat_right a b (mul_comm _ _)
+
+theorem not_linearIndependent_pair_of_flat (hf : Module.Flat R M ∨ Module.Flat R N)
+    (a b : ↥(M ⊓ N)) : ¬LinearIndependent R ![a, b] :=
+  H.not_linearIndependent_pair_of_commute_of_flat hf a b (mul_comm _ _)
+
+theorem not_linearIndependent_pair_of_flat' (hf : Module.Flat R M ∨ Module.Flat R N)
+    {a b : S} (ha : a ∈ M ⊓ N) (hb : b ∈ M ⊓ N) : ¬LinearIndependent R ![a, b] :=
+  H.not_linearIndependent_pair_of_commute_of_flat' hf ha hb (mul_comm _ _)
+
+theorem not_linearIndependent_pair_of_flat_left' [Module.Flat R M]
+    {a b : S} (ha : a ∈ M ⊓ N) (hb : b ∈ M ⊓ N) : ¬LinearIndependent R ![a, b] :=
+  H.not_linearIndependent_pair_of_commute_of_flat_left' ha hb (mul_comm _ _)
+
+theorem not_linearIndependent_pair_of_flat_right' [Module.Flat R N]
+    {a b : S} (ha : a ∈ M ⊓ N) (hb : b ∈ M ⊓ N) : ¬LinearIndependent R ![a, b] :=
+  H.not_linearIndependent_pair_of_commute_of_flat_right' ha hb (mul_comm _ _)
+
+theorem rank_inf_le_one_of_flat (hf : Module.Flat R M ∨ Module.Flat R N) :
+    Module.rank R ↥(M ⊓ N) ≤ 1 :=
+  H.rank_inf_le_one_of_commute_of_flat hf fun _ _ ↦ mul_comm _ _
+
+theorem rank_inf_le_one_of_flat_left [Module.Flat R M] : Module.rank R ↥(M ⊓ N) ≤ 1 :=
+  H.rank_inf_le_one_of_commute_of_flat_left fun _ _ ↦ mul_comm _ _
+
+theorem rank_inf_le_one_of_flat_right [Module.Flat R N] : Module.rank R ↥(M ⊓ N) ≤ 1 :=
+  H.rank_inf_le_one_of_commute_of_flat_right fun _ _ ↦ mul_comm _ _
+
+theorem rank_le_one_of_flat_of_self (H : M.LinearDisjoint M) [Module.Flat R M] :
+    Module.rank R M ≤ 1 :=
+  H.rank_le_one_of_commute_of_flat_of_self fun _ _ ↦ mul_comm _ _
+
+end not_linearIndependent_pair
+
+end LinearDisjoint
+
+end CommRing
+
 end Submodule
-
--- We skip `Subalgebra.LinearDisjoint` since it seems less useful (???)
-
-namespace IntermediateField
-
-variable {F : Type u} {E : Type v} [Field F] [Field E] [Algebra F E]
-
-variable (A B : IntermediateField F E)
-
-variable (L : Type w) [Field L] [Algebra F L] [Algebra L E] [IsScalarTower F L E]
-
-/-- If `A` is an intermediate field of `E / F`, and `E / L / F` is a field extension tower,
-then `A` and `L` are linearly disjoint, if they are linearly disjoint as submodules of `E`. -/
-protected def LinearDisjoint : Prop :=
-  (Subalgebra.toSubmodule A.toSubalgebra).LinearDisjoint
-    (Subalgebra.toSubmodule (IsScalarTower.toAlgHom F L E).range)
-
-variable {A B L}
-
-theorem linearDisjoint_def' :
-    A.LinearDisjoint B ↔ (Subalgebra.toSubmodule A.toSubalgebra).LinearDisjoint
-      (Subalgebra.toSubmodule B.toSubalgebra) := by
-  rw [IntermediateField.LinearDisjoint]
-  congr!
-  ext; simp
-
-/-- Linearly disjoint is symmetric. -/
-theorem LinearDisjoint.symm (H : A.LinearDisjoint B) : B.LinearDisjoint A :=
-  linearDisjoint_def'.2 (linearDisjoint_def'.1 H).symm
-
-/-- Linearly disjoint is symmetric. -/
-theorem linearDisjoint_symm : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
-  ⟨LinearDisjoint.symm, LinearDisjoint.symm⟩
-
--- theorem linearDisjoint_iff :
---     A.LinearDisjoint B ↔ ∀ {a : Set A}, LinearIndependent F (fun x : a ↦ x.1) →
---       LinearIndependent B (fun x : a ↦ x.1.1) := Iff.rfl
-
--- /-- In the definition of linearly disjoint, linearly independent subset of `A` can be replaced
--- by its embedding into `E`. -/
--- theorem linearDisjoint_iff' :
---     A.LinearDisjoint B ↔ ∀ {a : Set A}, LinearIndependent F (fun x : a ↦ x.1.1) →
---       LinearIndependent B (fun x : a ↦ x.1.1) := by
---   have h {a : Set A} : LinearIndependent F (fun x : a ↦ x.1) ↔
---       LinearIndependent F (fun x : a ↦ x.1.1) :=
---     ⟨fun H ↦ H.map' A.val.toLinearMap (LinearMap.ker_eq_bot_of_injective A.val.injective),
---       fun H ↦ H.of_comp A.val.toLinearMap⟩
---   simp_rw [linearDisjoint_iff, h]
-
--- /-- If `A` and `B` are linearly disjoint, then any `F`-linearly independent family on `A` remains
--- linearly independent over `B`. -/
--- theorem LinearDisjoint.linearIndependent_map (H : A.LinearDisjoint B)
---     {ιA : Type*} {vA : ιA → A} (hA : LinearIndependent F vA) :
---     LinearIndependent B (A.val ∘ vA) :=
---   (H hA.coe_range).comp (Set.rangeFactorization vA)
---     (fun _ _ h ↦ hA.injective (congr_arg Subtype.val h))
-
--- /-- If `A` and `B` are linearly disjoint, then for a family on `A` which is
--- `F`-linearly independent when embedded into `E`, it remains linearly independent over `B`. -/
--- theorem LinearDisjoint.linearIndependent_map' (H : A.LinearDisjoint B)
---     {ιA : Type*} {vA : ιA → A} (hA : LinearIndependent F (A.val ∘ vA)) :
---     LinearIndependent B (A.val ∘ vA) :=
---   H.linearIndependent_map (hA.of_comp A.val.toLinearMap)
-
--- private lemma test1 {ιA ιB : Type*} (vA : ιA → A) (vB : ιB → B)
---     (l : ιA × ιB →₀ F) (L : ιA →₀ B)
---     {h0 : Finsupp.total ιB B F vB 0 = 0}
---     (h : L = l.curry.mapRange (Finsupp.total ιB B F vB) h0) :
---     Finsupp.total (ιA × ιB) E F (fun x : ιA × ιB ↦ (vA x.1).1 * (vB x.2).1) l =
---       Finsupp.total ιA E B (fun x : ιA ↦ (vA x).1) L := by
---   let g (x : ιA) (y : ιB) (z : F) := z • ((vA x).1 * (vB y).1)
---   rw [Finsupp.total_apply, Finsupp.total_apply, h,
---     Finsupp.sum_mapRange_index (by exact fun _ ↦ zero_smul B _),
---     ← l.sum_curry_index g (fun _ _ ↦ zero_smul F _) (fun _ _ _ _ ↦ add_smul _ _ _),
---     Finsupp.sum]
---   congr
---   ext x
---   simp_rw [Finsupp.total_apply, Finsupp.sum, Finset.sum_smul]
---   congr
---   ext y
---   simp_rw [Algebra.smul_def, map_mul, mul_comm (vA x).1 (vB y).1, ← mul_assoc]
---   rfl
-
--- variable (E) in
--- private lemma _root_.LinearIndependent.mapRange {a b : Type*} {v : a → b →₀ F}
---     (H : LinearIndependent F v) :
---     LinearIndependent E fun x : a ↦ (v x).mapRange (algebraMap F E) (map_zero _) := by
---   let f := Finsupp.total a _ F v
---   obtain ⟨g, hg : g.comp f =  _⟩ := LinearMap.exists_leftInverse_of_injective _ H
---   let f' := f.baseChange E
---   let g' := g.baseChange E
---   have hg' : g'.comp f' = LinearMap.id := by
---     convert (LinearMap.baseChange_comp (A := E) f g).symm
---     rw [hg]
---     refine TensorProduct.AlgebraTensorModule.ext fun x y ↦ ?_
---     rw [LinearMap.baseChange_tmul]
---     rfl
---   let ba := Algebra.TensorProduct.basis E
---     (Basis.ofRepr (LinearEquiv.refl (R := F) (M := a →₀ F)))
---   let bb := Algebra.TensorProduct.basis E
---     (Basis.ofRepr (LinearEquiv.refl (R := F) (M := b →₀ F)))
---   let f'' := (bb.repr.toLinearMap.comp f').comp ba.repr.symm.toLinearMap
---   let g'' := (ba.repr.toLinearMap.comp g').comp bb.repr.symm.toLinearMap
---   have hg'' : g''.comp f'' = LinearMap.id := by
---     change ba.repr ∘ₗ (g' ∘ₗ (bb.repr.symm.toLinearMap ∘ₗ bb.repr.toLinearMap) ∘ₗ f') ∘ₗ
---         ba.repr.symm.toLinearMap = LinearMap.id
---     rw [← LinearEquiv.coe_trans, LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap,
---       LinearMap.id_comp, hg', LinearMap.id_comp, ← LinearEquiv.coe_trans,
---       LinearEquiv.symm_trans_self, LinearEquiv.refl_toLinearMap]
---   rw [LinearIndependent]
---   convert LinearMap.ker_eq_bot_of_inverse hg''
---   refine (Basis.ofRepr (LinearEquiv.refl (R := E) (M := a →₀ E))).ext fun x ↦ ?_
---   simp only [Basis.coe_ofRepr, LinearEquiv.refl_symm, LinearEquiv.refl_apply,
---     Finsupp.total_single,
---     one_smul, Basis.coe_repr_symm, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
---     Algebra.TensorProduct.basis_apply, LinearMap.baseChange_tmul,
---     Algebra.TensorProduct.basis_repr_tmul]
-
--- /-- If there exists an `F`-basis of `A` which remains linearly independent over `B`, then
--- `A` and `B` are linearly disjoint. -/
--- theorem LinearDisjoint.of_basis_map {ιA : Type*} (bA : Basis ιA F A)
---     (H : LinearIndependent B (A.val ∘ bA)) : A.LinearDisjoint B := fun a ha ↦ by
---   replace ha := ha.map' bA.repr.toLinearMap (LinearMap.ker_eq_bot_of_injective bA.repr.injective)
---     |>.mapRange B
---   letI : Algebra B B := Algebra.id B
---   letI : Module B B := Algebra.toModule
---   letI : Module B (ιA →₀ B) := Finsupp.module ιA B
---   rw [linearIndependent_iff] at H ha ⊢
---   intro l hl
---   let L := Finsupp.total a (ιA →₀ B) B
---     (fun x ↦ Finsupp.mapRange (algebraMap F B) (map_zero _) (bA.repr x.1)) l
---   have key : Finsupp.total a E B (fun x ↦ x.1.1) l = Finsupp.total ιA E B (A.val ∘ bA) L := by
---     simp_rw [Finsupp.total_apply]
---     rw [Finsupp.sum_sum_index (fun _ ↦ by exact zero_smul B _)
---       (fun _ _ _ ↦ by exact add_smul _ _ _)]
---     congr
---     ext x y
---     rw [Finsupp.sum_smul_index fun _ ↦ by exact zero_smul _ _,
---       Finsupp.sum_mapRange_index fun _ ↦ by rw [mul_zero, zero_smul], Finsupp.sum]
---     have (z : ιA) : (y * (algebraMap F B) (bA.repr x z)) • (A.val ∘ bA) z =
---         y • A.val (bA.repr x z • bA z) := by
---       simp_rw [Algebra.smul_def, map_mul (algebraMap B E), map_mul A.val, ← mul_assoc]
---       rfl
---     simp_rw [this]
---     rw [← Finset.smul_sum, ← map_sum]
---     congr
---     change _ = Finsupp.sum (bA.repr x) fun a b ↦ b • bA a
---     rw [← Finsupp.total_apply, bA.total_repr]
---   exact ha l (H L (key ▸ hl))
-
--- /-- If `A` and `B` are linearly disjoint, then for any `F`-linearly independent families
--- `{ u_i }`, `{ v_j }` of `A`, `B`, the products `{ u_i * v_j }`
--- are linearly independent over `F`. -/
--- theorem LinearDisjoint.linearIndependent_mul (H : A.LinearDisjoint B)
---     {ιA ιB : Type*} {vA : ιA → A} {vB : ιB → B}
---     (hA : LinearIndependent F vA)
---     (hB : LinearIndependent F vB) :
---     LinearIndependent F (fun x : ιA × ιB ↦ (vA x.1).1 * (vB x.2).1) := by
---   replace H := H.linearIndependent_map hA
---   rw [linearIndependent_iff] at H hB ⊢
---   intro l hl
---   let L := l.curry.mapRange (Finsupp.total ιB B F vB) (map_zero _)
---   ext ⟨x, y⟩
---   have := hB (l.curry x) <| by simpa only [Finsupp.onFinset_apply,
---     Finsupp.zero_apply] using congr($(H _ (test1 vA vB l L rfl ▸ hl)) x)
---   rw [Finsupp.zero_apply, ← Finsupp.curry_apply, this, Finsupp.zero_apply]
-
--- /-- If there are `F`-bases `{ u_i }`, `{ v_j }` of `A`, `B`, such that the products
--- `{ u_i * v_j }` are linearly independent over `F`, then `A` and `B` are linearly disjoint. -/
--- theorem LinearDisjoint.of_basis_mul {ιA ιB : Type*} (bA : Basis ιA F A) (bB : Basis ιB F B)
---     (H : LinearIndependent F (fun x : ιA × ιB ↦ (bA x.1).1 * (bB x.2).1)) :
---     A.LinearDisjoint B := by
---   refine of_basis_map bA ?_
---   rw [linearIndependent_iff] at H ⊢
---   intro l hl
---   have h0 := bB.repr.map_zero
---   let L := Finsupp.finsuppProdEquiv.symm (l.mapRange bB.repr h0)
---   have key : l = (Finsupp.finsuppProdEquiv L).mapRange
---       (Finsupp.total ιB B F bB) (map_zero _) := by
---     rw [Finsupp.finsuppProdEquiv.apply_symm_apply,
---       ← Finsupp.mapRange_comp _ rfl _ h0 (by rw [Function.comp_apply, h0]; rfl)]
---     convert l.mapRange_id.symm
---     ext y
---     exact congr_arg Subtype.val (bB.total_repr y)
---   have : _ = Finsupp.total ιA E B (A.val ∘ bA) l := test1 bA bB L l key
---   rwa [H L (this.symm ▸ hl), show Finsupp.finsuppProdEquiv 0 = 0 from rfl,
---     Finsupp.mapRange_zero] at key
-
--- private lemma test3' (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
---     (x : Basis.ofVectorSpaceIndex K V) : (Basis.ofVectorSpace K V) x = x.1 :=
---   Basis.extend_apply_self _ _
-
--- private lemma test3 (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V] :
---     LinearIndependent K (fun x : Basis.ofVectorSpaceIndex K V ↦ x.1) := by
---   convert (Basis.ofVectorSpace K V).linearIndependent
---   ext _
---   exact (test3' K V _).symm
-
--- /-- `A` and `B` are linearly disjoint if and only if for any `F`-linearly independent subsets
--- `{ u_i }`, `{ v_j }` of `A`, `B`, the products `{ u_i * v_j }`
--- are linearly independent over `F`. -/
--- theorem linearDisjoint_iff_linearIndependent_mul_of_set :
---     A.LinearDisjoint B ↔ ∀ {a : Set A} {b : Set B}, LinearIndependent F (fun x : a ↦ x.1) →
---       LinearIndependent F (fun y : b ↦ y.1) →
---       LinearIndependent F (fun x : a × b ↦ x.1.1.1 * x.2.1.1) := by
---   refine ⟨fun H _ _ hA hB ↦ H.linearIndependent_mul hA hB,
---     fun H ↦ LinearDisjoint.of_basis_mul (Basis.ofVectorSpace F A) (Basis.ofVectorSpace F B) ?_⟩
---   simpa only [test3'] using H (test3 F A) (test3 F B)
-
-variable (A) in
-theorem LinearDisjoint.of_self_right : A.LinearDisjoint F :=
-  Submodule.LinearDisjoint.of_self_right _
-
-variable (A) in
-theorem LinearDisjoint.of_bot_right : A.LinearDisjoint (⊥ : IntermediateField F E) :=
-  linearDisjoint_def'.2 (Submodule.LinearDisjoint.of_self_right _)
-
-variable (F E L) in
-theorem LinearDisjoint.of_bot_left : (⊥ : IntermediateField F E).LinearDisjoint L :=
-  Submodule.LinearDisjoint.of_self_left _
-
--- theorem LinearDisjoint.of_le_right {B' : IntermediateField F E} (H : A.LinearDisjoint B)
---     (h : B' ≤ B) : A.LinearDisjoint B' := fun a ha ↦
---   (H ha).map_of_injective_injective (M' := E) (inclusion h)
---     (AddMonoidHom.id E) (fun _ _ ↦ (inclusion h).injective (by rwa [map_zero]))
---     (fun _ ↦ id) (fun _ _ ↦ rfl)
-
--- theorem LinearDisjoint.of_le_left {A' : IntermediateField F E} (H : A.LinearDisjoint B)
---     (h : A' ≤ A) : A'.LinearDisjoint B := H.symm.of_le_right h |>.symm
-
--- /-- If `A` and `B` are linearly disjoint, `A'` and `B'` are contained in `A` and `B`,
--- respectively, then `A'` and `B'` are also linearly disjoint. -/
--- theorem LinearDisjoint.of_le {A' B' : IntermediateField F E} (H : A.LinearDisjoint B)
---     (hA : A' ≤ A) (hB : B' ≤ B) : A'.LinearDisjoint B' :=
---   H.of_le_left hA |>.of_le_right hB
-
--- /-- If `A` and `B` are linearly disjoint over `F`, then their intersection is equal to `F`. -/
--- theorem LinearDisjoint.inf_eq_bot (H : A.LinearDisjoint B) :
---     A ⊓ B = ⊥ := bot_unique fun x hx ↦ by
---   have hxA := inf_le_left (a := A) (b := B) hx
---   replace H := not_imp_not.2 (H.linearIndependent_map (vA := ![1, ⟨x, hxA⟩]))
---   have : A.val ∘ ![1, ⟨x, hxA⟩] = ![1, x] := by ext i; fin_cases i <;> rfl
---   simp_rw [this, LinearIndependent.pair_iff, not_forall] at H
---   obtain ⟨s, t, h1, h2⟩ := H ⟨⟨-x, neg_mem <| inf_le_right (a := A) (b := B) hx⟩, 1,
---     by rw [one_smul, Algebra.smul_def, mul_one]; exact add_left_neg x, by simp⟩
---   apply_fun algebraMap A E at h1
---   simp_rw [Algebra.smul_def, mul_one, map_add, map_mul, map_zero] at h1
---   change algebraMap F E s + algebraMap F E t * x = 0 at h1
---   have : algebraMap F E t ≠ 0 := (_root_.map_ne_zero _).2 fun h ↦ h2
---     ⟨(algebraMap F E).injective (by rw [map_zero, ← h1, h, map_zero, zero_mul, add_zero]), h⟩
---   use -s / t
---   change algebraMap F E (-s / t) = _
---   rwa [map_div₀, map_neg, div_eq_iff this, neg_eq_iff_add_eq_zero, mul_comm]
-
--- /-- If `A` and `A` itself are linearly disjoint over `F`, then it is equal to `F`. -/
--- theorem LinearDisjoint.eq_bot_of_self (H : A.LinearDisjoint A) : A = ⊥ :=
---   inf_of_le_left (le_refl A) ▸ H.inf_eq_bot
-
--- -- /-- If `A` and `B` have coprime degree over `F`, then they are linearly disjoint. -/
--- -- theorem LinearDisjoint.of_finrank_coprime (H : (finrank F A).Coprime (finrank F B)) :
--- --     A.LinearDisjoint B := by
--- --   sorry
-
-end IntermediateField
-
--- section Absolute
-
--- variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
-
--- variable (K : Type w) [Field K] [Algebra F K]
-
--- /-- Two abstract fields `E` and `K` over `F` are called linearly disjoint, if their
--- tensor product over `F` is a field. -/
--- def LinearDisjoint := IsField (E ⊗[F] K)
-
--- set_option linter.unusedVariables false in
--- variable {F E K} in
--- /-- If two abstract fields `E` and `K` over `F` are linearly disjoint, then at least one of
--- `E / F` and `K / F` are algebraic. -/
--- proof_wanted LinearDisjoint.isAlgebraic (H : LinearDisjoint F E K) :
---     Algebra.IsAlgebraic F E ∨ Algebra.IsAlgebraic F K
-
--- end Absolute
