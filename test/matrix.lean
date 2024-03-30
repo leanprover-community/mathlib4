@@ -38,6 +38,8 @@ elab "dims% " e:term : term => do
 
 end elaborators
 
+section noisy
+set_option linter.hashCommand false
 -- we test equality of expressions here to ensure that we have `2` and not `1.succ` in the type
 #guard_expr dims% !![]        =ₛ (0, 0)
 #guard_expr dims% !![;]       =ₛ (1, 0)
@@ -48,6 +50,7 @@ end elaborators
 #guard_expr dims% !![1,]      =ₛ (1, 1)
 #guard_expr dims% !![1;]      =ₛ (1, 1)
 #guard_expr dims% !![1,2;3,4] =ₛ (2, 2)
+end noisy
 
 end dimensions
 
@@ -72,11 +75,14 @@ run_cmd liftTermElabM do
 
 end safety
 
+section noisy
+set_option linter.hashCommand false
 #guard !![1;2]       = of ![![1], ![2]]
 #guard !![1,3]       = of ![![1,3]]
 #guard !![1,2;3,4]   = of ![![1,2], ![3,4]]
 #guard !![1,2;3,4;]  = of ![![1,2], ![3,4]]
 #guard !![1,2,;3,4,] = of ![![1,2], ![3,4]]
+end noisy
 
 example {a a' b b' c c' d d' : α} :
   !![a, b; c, d] + !![a', b'; c', d'] = !![a + a', b + b'; c + c', d + d'] :=
