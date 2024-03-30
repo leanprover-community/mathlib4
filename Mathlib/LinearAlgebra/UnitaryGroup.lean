@@ -208,8 +208,7 @@ is 1-/
 abbrev specialUnitaryGroup := (MonoidHom.restrict detMonoidHom (unitaryGroup n α)).ker
 
 theorem mem_specialUnitaryGroup_iff  (h : A ∈ unitaryGroup n α):
-    {val:=A,property:=h} ∈ specialUnitaryGroup n α ↔ A.det = 1 := by
-  exact Eq.to_iff rfl
+    ⟨A, h⟩ ∈ specialUnitaryGroup n α ↔ A.det = 1 := by rfl
 
 end specialUnitaryGroup
 
@@ -243,7 +242,7 @@ end OrthogonalGroup
 
 section specialOrthogonalGroup
 
-variable (n) (β : Type v) [CommRing β]
+variable (n) (β : Type v) [CommRing β] (A : Matrix n n β)
 
 attribute [local instance] starRingOfComm
 
@@ -251,9 +250,11 @@ attribute [local instance] starRingOfComm
 is one. -/
 abbrev specialOrthogonalGroup := specialUnitaryGroup n β
 
-theorem mem_specialOrthogonalGroup_iff  (h : A ∈ orthogonalGroup n α):
-    {val:=A,property:=h} ∈ specialOrthogonalGroup n α ↔ A.det = 1 := by
-  exact Eq.to_iff rfl
+theorem mem_specialOrthogonalGroup_iff  (h : A ∈ orthogonalGroup n β):
+    ⟨A,h⟩ ∈ specialOrthogonalGroup n β ↔ A.det = 1 := by rfl
+
+theorem specialOrthogonalGroup.mkOfDetEqOne (h1 : star A * A = 1) (h2 : A.det = 1) :
+    specialOrthogonalGroup n β := ⟨⟨A,(by exact (mem_orthogonalGroup_iff' n β).mpr h1)⟩,h2⟩
 
 end specialOrthogonalGroup
 
