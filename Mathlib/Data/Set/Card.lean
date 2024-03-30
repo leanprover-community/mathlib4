@@ -348,7 +348,7 @@ theorem Finite.eq_insert_of_subset_of_encard_eq_succ (hs : s.Finite) (h : s ⊆ 
     WithTop.add_left_cancel_iff hs.encard_lt_top.ne, encard_eq_one] at hst
   obtain ⟨x, hx⟩ := hst; use x; rw [← diff_union_of_subset h, hx, singleton_union]
 
-theorem exists_subset_encard_eq {k : ℕ∞}(hk : k ≤ s.encard) : ∃ t, t ⊆ s ∧ t.encard = k := by
+theorem exists_subset_encard_eq {k : ℕ∞} (hk : k ≤ s.encard) : ∃ t, t ⊆ s ∧ t.encard = k := by
   revert hk
   refine' ENat.nat_induction k (fun _ ↦ ⟨∅, empty_subset _, by simp⟩) (fun n IH hle ↦ _) _
   · obtain ⟨t₀, ht₀s, ht₀⟩ := IH (le_trans (by simp) hle)
@@ -360,7 +360,8 @@ theorem exists_subset_encard_eq {k : ℕ∞}(hk : k ≤ s.encard) : ∃ t, t ⊆
   simp only [top_le_iff, encard_eq_top_iff]
   exact fun _ hi ↦ ⟨s, Subset.rfl, hi⟩
 
-theorem exists_superset_subset_encard_eq {k : ℕ∞} (hst : s ⊆ t) (hsk : s.encard ≤ k) (hkt : k ≤ t.encard) :
+theorem exists_superset_subset_encard_eq {k : ℕ∞}
+    (hst : s ⊆ t) (hsk : s.encard ≤ k) (hkt : k ≤ t.encard) :
     ∃ r, s ⊆ r ∧ r ⊆ t ∧ r.encard = k := by
   obtain (hs | hs) := eq_or_ne s.encard ⊤
   · rw [hs, top_le_iff] at hsk; subst hsk; exact ⟨s, Subset.rfl, hst, hs⟩

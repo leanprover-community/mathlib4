@@ -77,7 +77,8 @@ Some discussion is [on Zulip here](https://leanprover.zulipchat.com/#narrow/stre
   (Nat.cast (no_index (OfNat.ofNat n)) : R) = OfNat.ofNat n := rfl
 
 theorem Nat.cast_eq_ofNat {R : Type*} {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
-  (Nat.cast n : R) = OfNat.ofNat n := rfl
+    (Nat.cast n : R) = OfNat.ofNat n :=
+  rfl
 
 /-! ### Additive monoids with one -/
 

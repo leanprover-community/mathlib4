@@ -94,7 +94,8 @@ def comp (r : Rel α β) (s : Rel β γ) : Rel α γ := fun x z => ∃ y, r x y 
 /-- Local syntax for composition of relations. -/
 local infixr:90 " • " => Rel.comp
 
-theorem comp_assoc {δ : Type*} (r : Rel α β) (s : Rel β γ) (t : Rel γ δ) : (r • s) • t = r • (s • t) := by
+theorem comp_assoc {δ : Type*} (r : Rel α β) (s : Rel β γ) (t : Rel γ δ) :
+    (r • s) • t = r • (s • t) := by
   unfold comp; ext (x w); constructor
   · rintro ⟨z, ⟨y, rxy, syz⟩, tzw⟩; exact ⟨y, rxy, z, syz, tzw⟩
   · rintro ⟨y, rxy, z, syz, tzw⟩; exact ⟨z, ⟨y, rxy, syz⟩, tzw⟩

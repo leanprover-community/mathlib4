@@ -2000,8 +2000,9 @@ protected theorem Reachable.map {u v : V} {G : SimpleGraph V} {G' : SimpleGraph 
 #align simple_graph.reachable.map SimpleGraph.Reachable.map
 
 @[mono]
-protected lemma Reachable.mono {u v : V} {G G' : SimpleGraph V} (h : G ≤ G') (Guv : G.Reachable u v) :
-    G'.Reachable u v := Guv.map (SimpleGraph.Hom.mapSpanningSubgraphs h)
+protected lemma Reachable.mono {u v : V} {G G' : SimpleGraph V}
+    (h : G ≤ G') (Guv : G.Reachable u v) : G'.Reachable u v :=
+  Guv.map (SimpleGraph.Hom.mapSpanningSubgraphs h)
 
 theorem Iso.reachable_iff {G : SimpleGraph V} {G' : SimpleGraph V'} {φ : G ≃g G'} {u v : V} :
     G'.Reachable (φ u) (φ v) ↔ G.Reachable u v :=

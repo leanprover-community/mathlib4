@@ -302,7 +302,8 @@ instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨coe'⟩
 
 @[simp]
-theorem coe'_apply_complex {g : SL(2, ℤ)} {i j : Fin 2} : (Units.val <| Subtype.val <| coe' g) i j = (Subtype.val g i j : ℂ) :=
+theorem coe'_apply_complex {g : SL(2, ℤ)} {i j : Fin 2} :
+    (Units.val <| Subtype.val <| coe' g) i j = (Subtype.val g i j : ℂ) :=
   rfl
 
 @[simp]

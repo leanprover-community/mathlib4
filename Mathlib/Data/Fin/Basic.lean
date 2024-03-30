@@ -1295,12 +1295,12 @@ theorem castPred_le_castPred_iff {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j
 theorem castPred_lt_castPred_iff {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j ≠ last n} :
     castPred i hi < castPred j hj ↔ i < j := Iff.rfl
 
-theorem strictMono_castPred_comp {α : Type*} [Preorder α] {f : α → Fin (n + 1)} (hf : ∀ a, f a ≠ last n)
-    (hf₂ : StrictMono f) : StrictMono (fun a => castPred (f a) (hf a)) :=
+theorem strictMono_castPred_comp {α : Type*} [Preorder α] {f : α → Fin (n + 1)}
+    (hf : ∀ a, f a ≠ last n) (hf₂ : StrictMono f) : StrictMono (fun a => castPred (f a) (hf a)) :=
     fun _ _ h => castPred_lt_castPred_iff.2 (hf₂ h)
 
-theorem monotone_castPred_comp {α : Type*} [Preorder α] {f : α → Fin (n + 1)} (hf : ∀ a, f a ≠ last n)
-    (hf₂ : Monotone f) : Monotone (fun a => castPred (f a) (hf a)) :=
+theorem monotone_castPred_comp {α : Type*} [Preorder α] {f : α → Fin (n + 1)}
+    (hf : ∀ a, f a ≠ last n) (hf₂ : Monotone f) : Monotone (fun a => castPred (f a) (hf a)) :=
     fun _ _ h => castPred_le_castPred_iff.2 (hf₂ h)
 
 theorem castPred_lt_iff {j : Fin n} {i : Fin (n + 1)} (hi : i ≠ last n) :
@@ -1341,7 +1341,8 @@ theorem rev_pred {i : Fin (n + 1)} (h : i ≠ 0) (h' := rev_ne_iff.mpr ((rev_las
     rev (pred i h) = castPred (rev i) h' := by
   rw [← castSucc_inj, castSucc_castPred, ← rev_succ, succ_pred]
 
-theorem rev_castPred {i : Fin (n + 1)} (h : i ≠ last n) (h' := rev_ne_iff.mpr ((rev_zero _).symm ▸ h)) :
+theorem rev_castPred {i : Fin (n + 1)}
+    (h : i ≠ last n) (h' := rev_ne_iff.mpr ((rev_zero _).symm ▸ h)) :
     rev (castPred i h) = pred (rev i) h' := by
   rw [← succ_inj, succ_pred, ← rev_castSucc, castSucc_castPred]
 
