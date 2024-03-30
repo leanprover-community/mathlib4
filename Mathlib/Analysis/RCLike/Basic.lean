@@ -180,28 +180,12 @@ theorem ofReal_inj {z w : ℝ} : (z : K) = (w : K) ↔ z = w :=
   algebraMap.coe_inj
 #align is_R_or_C.of_real_inj RCLike.ofReal_inj
 
-set_option linter.deprecated false in
-@[deprecated, rclike_simps] -- Porting note (#10618): was `simp` but `simp` can prove it
-theorem bit0_re (z : K) : re (bit0 z) = bit0 (re z) :=
-  map_bit0 _ _
-#align is_R_or_C.bit0_re RCLike.bit0_re
-
-set_option linter.deprecated false in
-@[deprecated, simp, rclike_simps]
-theorem bit1_re (z : K) : re (bit1 z) = bit1 (re z) := by simp only [bit1, map_add, bit0_re, one_re]
-#align is_R_or_C.bit1_re RCLike.bit1_re
-
-set_option linter.deprecated false in
-@[deprecated, rclike_simps] -- Porting note (#10618): was `simp` but `simp` can prove it
-theorem bit0_im (z : K) : im (bit0 z) = bit0 (im z) :=
-  map_bit0 _ _
-#align is_R_or_C.bit0_im RCLike.bit0_im
-
-set_option linter.deprecated false in
-@[deprecated, simp, rclike_simps]
-theorem bit1_im (z : K) : im (bit1 z) = bit0 (im z) := by
-  simp only [bit1, map_add, bit0_im, one_im, add_zero]
-#align is_R_or_C.bit1_im RCLike.bit1_im
+-- replaced by `RCLike.ofNat_re`
+#noalign is_R_or_C.bit0_re
+#noalign is_R_or_C.bit1_re
+-- replaced by `RCLike.ofNat_im`
+#noalign is_R_or_C.bit0_im
+#noalign is_R_or_C.bit1_im
 
 theorem ofReal_eq_zero {x : ℝ} : (x : K) = 0 ↔ x = 0 :=
   algebraMap.lift_map_eq_zero_iff x
@@ -216,17 +200,9 @@ theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : K) = r + s :=
   algebraMap.coe_add _ _
 #align is_R_or_C.of_real_add RCLike.ofReal_add
 
-set_option linter.deprecated false in
-@[deprecated, simp, rclike_simps, norm_cast]
-theorem ofReal_bit0 (r : ℝ) : ((bit0 r : ℝ) : K) = bit0 (r : K) :=
-  ofReal_add _ _
-#align is_R_or_C.of_real_bit0 RCLike.ofReal_bit0
-
-set_option linter.deprecated false in
-@[deprecated, simp, rclike_simps, norm_cast]
-theorem ofReal_bit1 (r : ℝ) : ((bit1 r : ℝ) : K) = bit1 (r : K) :=
-  map_bit1 (algebraMap ℝ K) r
-#align is_R_or_C.of_real_bit1 RCLike.ofReal_bit1
+-- replaced by `RCLike.ofReal_ofNat`
+#noalign is_R_or_C.of_real_bit0
+#noalign is_R_or_C.of_real_bit1
 
 @[simp, norm_cast, rclike_simps]
 theorem ofReal_neg (r : ℝ) : ((-r : ℝ) : K) = -r :=
@@ -368,17 +344,15 @@ theorem conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
   simp only [ofReal_im, conj_im, eq_self_iff_true, conj_re, and_self_iff, neg_zero]
 #align is_R_or_C.conj_of_real RCLike.conj_ofReal
 
-set_option linter.deprecated false in
-@[deprecated, rclike_simps] -- Porting note (#10618): was `simp` but `simp` can prove it
-theorem conj_bit0 (z : K) : conj (bit0 z) = bit0 (conj z) :=
-  map_bit0 _ _
-#align is_R_or_C.conj_bit0 RCLike.conj_bit0
+-- replaced by `RCLike.conj_ofNat`
+#noalign is_R_or_C.conj_bit0
+#noalign is_R_or_C.conj_bit1
 
-set_option linter.deprecated false in
-@[deprecated, rclike_simps] -- Porting note (#10618): was `simp` but `simp` can prove it
-theorem conj_bit1 (z : K) : conj (bit1 z) = bit1 (conj z) :=
-  map_bit1 _ _
-#align is_R_or_C.conj_bit1 RCLike.conj_bit1
+theorem conj_nat_cast (n : ℕ) : conj (n : K) = n := map_natCast _ _
+
+-- See note [no_index around OfNat.ofNat]
+theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : K)) = OfNat.ofNat n :=
+  map_ofNat _ _
 
 @[rclike_simps] -- Porting note (#10618): was a `simp` but `simp` can prove it
 theorem conj_neg_I : conj (-I) = (I : K) := by rw [map_neg, conj_I, neg_neg]
