@@ -175,6 +175,25 @@ lemma differentiable_fourierIntegral [MeasurableSpace V] [BorelSpace V] [SecondC
     Differentiable ℝ (fourierIntegral 𝐞 μ L.toLinearMap₂ f) :=
   fun w ↦ (hasFDerivAt_fourierIntegral L hf hf' w).differentiableAt
 
+lemma glou [MeasurableSpace V] [BorelSpace V] [SecondCountableTopology V]
+    {μ : Measure V}
+    (hf : Integrable f μ) (h'f : Differentiable ℝ f) (hf' : Integrable (fderiv ℝ f) μ) (w : W) :
+    fourierIntegral 𝐞 μ L.toLinearMap₂ (fderiv ℝ f) w
+      = fourierSMulRight L.flip (fourierIntegral 𝐞 μ L.toLinearMap₂ f) w := by
+  ext y
+  have J : Integrable (fun v ↦ 𝐞 (-(L v) w) • fderiv ℝ f v) μ := by simpa using hf'
+  suffices ∫ (x : V), 𝐞 (-(L x) w) • fderiv ℝ f x y ∂μ
+      = ∫ (a : V), -((2 * ↑π * I) • (L y) w • 𝐞 (-(L a) w) • f a) ∂μ by
+    simpa only [fourierIntegral, ContinuousLinearMap.toLinearMap₂_apply, fourierSMulRight_apply,
+      ContinuousLinearMap.flip_apply, neg_smul, ContinuousLinearMap.integral_apply J,
+      ← integral_smul, ContinuousLinearMap.coe_smul', Pi.smul_apply]
+
+
+
+
+
+#exit
+
 /-- The formal multilinear series whose `n`-th term is
 `(w₁, ..., wₙ) ↦ (-2Iπ)^n * L v w₁ * ... * L v wₙ • f v`, as a continuous multilinear map in
 the space `W [×n]→L[ℝ] E`.

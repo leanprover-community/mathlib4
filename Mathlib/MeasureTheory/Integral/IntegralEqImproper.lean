@@ -682,6 +682,21 @@ section IoiFTC
 variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E] [CompleteSpace E]
 
+theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn
+    (hderiv : ∀ x ∈ Ioi a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Ioi a)) :
+    Tendsto f atTop (𝓝 (limUnder atTop f)) := by
+  suffices ∃ a, Tendsto f atTop (𝓝 a) from tendsto_nhds_limUnder this
+  suffices CauchySeq f from cauchySeq_tendsto_of_complete this
+  apply Metric.cauchySeq_iff'.2 (fun ε εpos ↦ ?_)
+  have : Tendsto (fun t ↦ ∫ x in Ioi t, ‖f' t‖) atTop (𝓝 0) := by
+    have Z := tendsto_set_integral
+
+
+
+
+
+#exit
+
 /-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(a, +∞)`.
 When a function has a limit at infinity `m`, and its derivative is integrable, then the
 integral of the derivative on `(a, +∞)` is `m - f a`. Version assuming differentiability
