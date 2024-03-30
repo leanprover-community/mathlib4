@@ -28,6 +28,12 @@ lemma mem_of_iso [ClosedUnderIsomorphisms P] {X Y : C} (e : X ≅ Y) (hX : P X) 
 lemma mem_iff_of_iso [ClosedUnderIsomorphisms P] {X Y : C} (e : X ≅ Y) : P X ↔ P Y :=
   ⟨mem_of_iso P e, mem_of_iso P e.symm⟩
 
+lemma mem_of_isIso [ClosedUnderIsomorphisms P] {X Y : C} (f : X ⟶ Y) [IsIso f] (hX : P X) : P Y :=
+  mem_of_iso P (asIso f) hX
+
+lemma mem_iff_of_isIso [ClosedUnderIsomorphisms P] {X Y : C} (f : X ⟶ Y) [IsIso f] : P X ↔ P Y :=
+  mem_iff_of_iso P (asIso f)
+
 /-- The closure by isomorphisms of a predicate on objects in a category. -/
 def isoClosure (X : C) : Prop := ∃ (Y : C) (_ : P Y), Nonempty (X ≅ Y)
 
