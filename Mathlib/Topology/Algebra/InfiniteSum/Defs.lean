@@ -42,7 +42,7 @@ rather than in `ℝ`.
 -/
 
 /- **NOTE**. This file is intended to be kept short, just enough to state the basic definitions and
-three key lemmas relating them together, namely `Summable.hasSum`, `Multipliable.hasProd`,
+six key lemmas relating them together, namely `Summable.hasSum`, `Multipliable.hasProd`,
 `HasSum.tsum_eq`, `HasProd.tprod_eq`, `Summable.hasSum_iff`, and `Multipliable.hasProd_iff`.
 
 Do not add further lemmas here -- add them to `InfiniteSum.Basic` or (preferably) another, more
@@ -62,6 +62,12 @@ variable [CommMonoid α] [TopologicalSpace α]
 
 /-- Infinite product on a topological monoid
 
+The `atTop` filter on `Finset β` is the limit of all finite sets towards the entire type. So we take
+the product over bigger and bigger sets. This product operation is invariant under reordering.
+
+For the definition and many statements, `α` does not need to be a topological monoid. We only add
+this assumption later, for the lemmas where it is relevant.
+
 These are defined in an identical way to infinite sums (`HasSum`). For example, we say that
 the function `ℕ → ℝ` sending `n` to `1 / 2` has a product of `0`, rather than saying that it does
 not converge as some authors would. -/
@@ -75,7 +81,7 @@ sum for this definition, but a series which is absolutely convergent will have t
 This is based on Mario Carneiro's
 [infinite sum `df-tsms` in Metamath](http://us.metamath.org/mpeuni/df-tsms.html).
 
-For the definition or many statements, `α` does not need to be a topological monoid. We only add
+For the definition and many statements, `α` does not need to be a topological monoid. We only add
 this assumption later, for the lemmas where it is relevant."]
 def HasProd (f : β → α) (a : α) : Prop :=
   Tendsto (fun s : Finset β ↦ ∏ b in s, f b) atTop (𝓝 a)
@@ -92,9 +98,10 @@ open scoped Classical in
 @[to_additive "`∑' i, f i` is the sum of `f` it exists, or 0 otherwise."]
 noncomputable irreducible_def tprod {β} (f : β → α) :=
   if h : Multipliable f then
-  /- Note that the sum might not be uniquely defined if the topology is not separated.
-  When the support of `f` is finite, we make the most reasonable choice to use the finite sum over
-  the support. Otherwise, we choose arbitrarily an `a` satisfying `HasSum f a`. -/
+  /- Note that the product might not be uniquely defined if the topology is not separated.
+  When the multiplicative support of `f` is finite, we make the most reasonable choice to use the
+  product over the multiplicative support. Otherwise, we choose arbitrarily an `a` satisfying
+  `HasProd f a`. -/
     if (mulSupport f).Finite then finprod f
     else h.choose
   else 1

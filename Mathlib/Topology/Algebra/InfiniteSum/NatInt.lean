@@ -77,7 +77,7 @@ end HasProd
 namespace Multipliable
 
 @[to_additive]
-theorem hasSum_iff_tendsto_nat [T2Space M] {f : ℕ → M} (hf : Multipliable f) :
+theorem hasProd_iff_tendsto_nat [T2Space M] {f : ℕ → M} (hf : Multipliable f) :
     HasProd f m ↔ Tendsto (fun n : ℕ ↦ ∏ i in range n, f i) atTop (𝓝 m) := by
   refine ⟨fun h ↦ h.tendsto_prod_nat, fun h ↦ ?_⟩
   rw [tendsto_nhds_unique h hf.hasProd.tendsto_prod_nat]
@@ -240,7 +240,7 @@ theorem tprod_eq_zero_mul [T2Space G] {f : ℕ → G} (hf : Multipliable f) :
 #align tsum_eq_zero_add tsum_eq_zero_add
 
 /-- For `f : ℕ → G`, the product `∏' k, f (k + i)` tends to one. This does not require a
-multipliability assumption on `f`, as otherwise all such sums are one. -/
+multipliability assumption on `f`, as otherwise all such products are one. -/
 @[to_additive "For `f : ℕ → G`, the sum `∑' k, f (k + i)` tends to zero. This does not require a
 summability assumption on `f`, as otherwise all such sums are zero."]
 theorem tendsto_prod_nat_add [T2Space G] (f : ℕ → G) :
