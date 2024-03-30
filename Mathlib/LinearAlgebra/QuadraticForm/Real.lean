@@ -58,10 +58,10 @@ noncomputable def isometryEquivSignWeightedSumSquares (w : ι → ℝ) :
     intro hj'; exact False.elim (hj' hj)
   simp_rw [Basis.unitsSMul_apply]
   erw [hsum]
-  simp only [Function.comp, smul_eq_mul]
+  simp only [u, Function.comp, smul_eq_mul]
   split_ifs with h
   · simp only [h, zero_smul, zero_mul, Real.sign_zero]
-  have hwu : w j = u j := by simp only [dif_neg h, Units.val_mk0]
+  have hwu : w j = u j := by simp only [u, dif_neg h, Units.val_mk0]
   simp only [Units.val_mk0]
   rw [hwu]
   suffices (u j : ℝ).sign * v j * v j =

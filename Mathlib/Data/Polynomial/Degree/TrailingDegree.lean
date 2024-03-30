@@ -67,9 +67,11 @@ def TrailingMonic (p : R[X]) :=
   trailingCoeff p = (1 : R)
 #align polynomial.trailing_monic Polynomial.TrailingMonic
 
-theorem TrailingMonic.def : TrailingMonic p ↔ trailingCoeff p = 1 :=
+-- Adaptation note: 2024-03-15: this was called `def`.
+-- Should lean be changed to allow that as a name again?
+theorem TrailingMonic.definition : TrailingMonic p ↔ trailingCoeff p = 1 :=
   Iff.rfl
-#align polynomial.trailing_monic.def Polynomial.TrailingMonic.def
+#align polynomial.trailing_monic.def Polynomial.TrailingMonic.definition
 
 instance TrailingMonic.decidable [DecidableEq R] : Decidable (TrailingMonic p) :=
   inferInstanceAs <| Decidable (trailingCoeff p = (1 : R))
@@ -151,26 +153,60 @@ theorem natTrailingDegree_eq_of_trailingDegree_eq [Semiring S] {q : S[X]}
   rw [h]
 #align polynomial.nat_trailing_degree_eq_of_trailing_degree_eq Polynomial.natTrailingDegree_eq_of_trailingDegree_eq
 
-theorem le_trailingDegree_of_ne_zero (h : coeff p n ≠ 0) : trailingDegree p ≤ n :=
+theorem trailingDegree_le_of_ne_zero (h : coeff p n ≠ 0) : trailingDegree p ≤ n :=
   show @LE.le ℕ∞ _ p.support.min n from min_le (mem_support_iff.2 h)
-#align polynomial.le_trailing_degree_of_ne_zero Polynomial.le_trailingDegree_of_ne_zero
+#align polynomial.le_trailing_degree_of_ne_zero Polynomial.trailingDegree_le_of_ne_zero
 
 theorem natTrailingDegree_le_of_ne_zero (h : coeff p n ≠ 0) : natTrailingDegree p ≤ n := by
   have : WithTop.some (natTrailingDegree p) = Nat.cast (natTrailingDegree p) := rfl
   rw [← WithTop.coe_le_coe, this, ← trailingDegree_eq_natTrailingDegree]
-  · exact le_trailingDegree_of_ne_zero h
+  · exact trailingDegree_le_of_ne_zero h
   · intro h
     subst h
     exact h rfl
 #align polynomial.nat_trailing_degree_le_of_ne_zero Polynomial.natTrailingDegree_le_of_ne_zero
 
-theorem trailingDegree_le_trailingDegree (h : coeff q (natTrailingDegree p) ≠ 0) :
+@[simp] lemma coeff_natTrailingDegree_eq_zero : coeff p p.natTrailingDegree = 0 ↔ p = 0 := by
+  constructor
+  · rintro h
+    by_contra hp
+    obtain ⟨n, hpn, hn⟩ := by simpa using min_mem_image_coe $ support_nonempty.2 hp
+    obtain rfl := (trailingDegree_eq_iff_natTrailingDegree_eq hp).1 hn.symm
+    exact hpn h
+  · rintro rfl
+    simp
+
+lemma coeff_natTrailingDegree_ne_zero : coeff p p.natTrailingDegree ≠ 0 ↔ p ≠ 0 :=
+  coeff_natTrailingDegree_eq_zero.not
+
+@[simp] lemma natTrailingDegree_eq_zero : natTrailingDegree p = 0 ↔ p = 0 ∨ coeff p 0 ≠ 0 := by
+  constructor
+  · rw [or_iff_not_imp_left]
+    rintro h hp
+    rwa [← h, coeff_natTrailingDegree_ne_zero]
+  · rintro (rfl | h)
+    · simp
+    · exact nonpos_iff_eq_zero.1 $ natTrailingDegree_le_of_ne_zero h
+
+lemma trailingDegree_eq_zero : trailingDegree p = 0 ↔ coeff p 0 ≠ 0 := by
+  obtain rfl | hp := eq_or_ne p 0
+  · simp [WithTop.top_ne_zero (α := ℕ)]
+  · exact (trailingDegree_eq_iff_natTrailingDegree_eq hp).trans $
+      natTrailingDegree_eq_zero.trans $ or_iff_right hp
+
+lemma natTrailingDegree_ne_zero : natTrailingDegree p ≠ 0 ↔ p ≠ 0 ∧ coeff p 0 = 0 :=
+  natTrailingDegree_eq_zero.not.trans $ by rw [not_or, not_ne_iff]
+
+lemma trailingDegree_ne_zero : trailingDegree p ≠ 0 ↔ coeff p 0 = 0 :=
+  trailingDegree_eq_zero.not_left
+
+@[simp] theorem trailingDegree_le_trailingDegree (h : coeff q (natTrailingDegree p) ≠ 0) :
     trailingDegree q ≤ trailingDegree p := by
   by_cases hp : p = 0
   · rw [hp]
     exact le_top
   · rw [trailingDegree_eq_natTrailingDegree hp]
-    exact le_trailingDegree_of_ne_zero h
+    exact trailingDegree_le_of_ne_zero h
 #align polynomial.trailing_degree_le_trailing_degree Polynomial.trailingDegree_le_trailingDegree
 
 theorem trailingDegree_ne_of_natTrailingDegree_ne {n : ℕ} :
@@ -261,13 +297,13 @@ theorem le_trailingDegree_C_mul_X_pow (n : ℕ) (a : R) :
 set_option linter.uppercaseLean3 false in
 #align polynomial.le_trailing_degree_C_mul_X_pow Polynomial.le_trailingDegree_C_mul_X_pow
 
-theorem coeff_eq_zero_of_trailingDegree_lt (h : (n : ℕ∞) < trailingDegree p) : coeff p n = 0 :=
-  Classical.not_not.1 (mt le_trailingDegree_of_ne_zero (not_le_of_gt h))
-#align polynomial.coeff_eq_zero_of_trailing_degree_lt Polynomial.coeff_eq_zero_of_trailingDegree_lt
+theorem coeff_eq_zero_of_lt_trailingDegree (h : (n : ℕ∞) < trailingDegree p) : coeff p n = 0 :=
+  Classical.not_not.1 (mt trailingDegree_le_of_ne_zero (not_le_of_gt h))
+#align polynomial.coeff_eq_zero_of_trailing_degree_lt Polynomial.coeff_eq_zero_of_lt_trailingDegree
 
 theorem coeff_eq_zero_of_lt_natTrailingDegree {p : R[X]} {n : ℕ} (h : n < p.natTrailingDegree) :
     p.coeff n = 0 := by
-  apply coeff_eq_zero_of_trailingDegree_lt
+  apply coeff_eq_zero_of_lt_trailingDegree
   by_cases hp : p = 0
   · rw [hp, trailingDegree_zero]
     exact WithTop.coe_lt_top n
@@ -403,7 +439,7 @@ theorem trailingDegree_mul' (h : p.trailingCoeff * q.trailingCoeff ≠ 0) :
   refine' le_antisymm _ le_trailingDegree_mul
   rw [trailingDegree_eq_natTrailingDegree hp, trailingDegree_eq_natTrailingDegree hq, ←
     ENat.coe_add]
-  apply le_trailingDegree_of_ne_zero
+  apply trailingDegree_le_of_ne_zero
   rwa [coeff_mul_natTrailingDegree_add_natTrailingDegree]
 #align polynomial.trailing_degree_mul' Polynomial.trailingDegree_mul'
 
@@ -493,6 +529,8 @@ def nextCoeffUp (p : R[X]) : R :=
   if p.natTrailingDegree = 0 then 0 else p.coeff (p.natTrailingDegree + 1)
 #align polynomial.next_coeff_up Polynomial.nextCoeffUp
 
+@[simp] lemma nextCoeffUp_zero : nextCoeffUp (0 : R[X]) = 0 := by simp [nextCoeffUp]
+
 @[simp]
 theorem nextCoeffUp_C_eq_zero (c : R) : nextCoeffUp (C c) = 0 := by
   rw [nextCoeffUp]
@@ -500,12 +538,12 @@ theorem nextCoeffUp_C_eq_zero (c : R) : nextCoeffUp (C c) = 0 := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.next_coeff_up_C_eq_zero Polynomial.nextCoeffUp_C_eq_zero
 
-theorem nextCoeffUp_of_pos_natTrailingDegree (p : R[X]) (hp : 0 < p.natTrailingDegree) :
+theorem nextCoeffUp_of_constantCoeff_eq_zero (p : R[X]) (hp : coeff p 0 = 0) :
     nextCoeffUp p = p.coeff (p.natTrailingDegree + 1) := by
-  rw [nextCoeffUp, if_neg]
-  contrapose! hp
-  simpa
-#align polynomial.next_coeff_up_of_pos_nat_trailing_degree Polynomial.nextCoeffUp_of_pos_natTrailingDegree
+  obtain rfl | hp₀ := eq_or_ne p 0
+  · simp
+  · rw [nextCoeffUp, if_neg (natTrailingDegree_ne_zero.2 ⟨hp₀, hp⟩)]
+#align polynomial.next_coeff_up_of_pos_nat_trailing_degree Polynomial.nextCoeffUp_of_constantCoeff_eq_zero
 
 end Semiring
 
@@ -515,7 +553,7 @@ variable [Semiring R] {p q : R[X]}
 
 theorem coeff_natTrailingDegree_eq_zero_of_trailingDegree_lt
     (h : trailingDegree p < trailingDegree q) : coeff q (natTrailingDegree p) = 0 :=
-  coeff_eq_zero_of_trailingDegree_lt <| natTrailingDegree_le_trailingDegree.trans_lt h
+  coeff_eq_zero_of_lt_trailingDegree <| natTrailingDegree_le_trailingDegree.trans_lt h
 #align polynomial.coeff_nat_trailing_degree_eq_zero_of_trailing_degree_lt Polynomial.coeff_natTrailingDegree_eq_zero_of_trailingDegree_lt
 
 theorem ne_zero_of_trailingDegree_lt {n : ℕ∞} (h : trailingDegree p < n) : p ≠ 0 := fun h₀ =>

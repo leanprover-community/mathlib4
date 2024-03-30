@@ -48,7 +48,7 @@ variable [∀ i, DecidableEq (α i)]
 theorem mem_dfinsupp_iff : f ∈ s.dfinsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ s, f i ∈ t i := by
   refine' mem_map.trans ⟨_, _⟩
   · rintro ⟨f, hf, rfl⟩
-    rw [Function.Embedding.coeFn_mk] -- porting note: added to avoid heartbeat timeout
+    rw [Function.Embedding.coeFn_mk] -- Porting note: added to avoid heartbeat timeout
     refine' ⟨support_mk_subset, fun i hi => _⟩
     convert mem_pi.1 hf i hi
     exact mk_of_mem hi
@@ -110,7 +110,7 @@ def rangeIcc (f g : Π₀ i, α i) : Π₀ i, Finset (α i) where
             (Multiset.not_mem_mono (Multiset.Le.subset <| Multiset.le_add_right _ _) h)
         have hg : g i = 0 := (gs.prop i).resolve_left
             (Multiset.not_mem_mono (Multiset.Le.subset <| Multiset.le_add_left _ _) h)
-        -- porting note: was rw, but was rewriting under lambda, so changed to simp_rw
+        -- Porting note: was rw, but was rewriting under lambda, so changed to simp_rw
         simp_rw [hf, hg]
         exact Icc_self _⟩
 #align dfinsupp.range_Icc DFinsupp.rangeIcc
@@ -159,10 +159,9 @@ end Pi
 section PartialOrder
 
 variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
-
 variable [∀ i, PartialOrder (α i)] [∀ i, Zero (α i)] [∀ i, LocallyFiniteOrder (α i)]
 
-instance : LocallyFiniteOrder (Π₀ i, α i) :=
+instance instLocallyFiniteOrder : LocallyFiniteOrder (Π₀ i, α i) :=
   LocallyFiniteOrder.ofIcc (Π₀ i, α i)
     (fun f g => (f.support ∪ g.support).dfinsupp <| f.rangeIcc g)
     (fun f g x => by
@@ -206,9 +205,7 @@ end Lattice
 section CanonicallyOrdered
 
 variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
-
 variable [∀ i, CanonicallyOrderedAddCommMonoid (α i)] [∀ i, LocallyFiniteOrder (α i)]
-
 variable (f : Π₀ i, α i)
 
 theorem card_Iic : (Iic f).card = ∏ i in f.support, (Iic (f i)).card := by

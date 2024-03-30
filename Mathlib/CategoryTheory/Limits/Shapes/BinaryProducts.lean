@@ -808,19 +808,19 @@ instance prod.map_mono {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g :
       simpa using congr_arg (fun f => f ≫ prod.snd) h⟩
 #align category_theory.limits.prod.map_mono CategoryTheory.Limits.prod.map_mono
 
-@[reassoc] -- Porting note: simp can prove these
+@[reassoc] -- Porting note (#10618): simp can prove these
 theorem prod.diag_map {X Y : C} (f : X ⟶ Y) [HasBinaryProduct X X] [HasBinaryProduct Y Y] :
     diag X ≫ prod.map f f = f ≫ diag Y := by simp
 #align category_theory.limits.prod.diag_map CategoryTheory.Limits.prod.diag_map
 #align category_theory.limits.prod.diag_map_assoc CategoryTheory.Limits.prod.diag_map_assoc
 
-@[reassoc] -- Porting note: simp can prove these
+@[reassoc] -- Porting note (#10618): simp can prove these
 theorem prod.diag_map_fst_snd {X Y : C} [HasBinaryProduct X Y] [HasBinaryProduct (X ⨯ Y) (X ⨯ Y)] :
     diag (X ⨯ Y) ≫ prod.map prod.fst prod.snd = 𝟙 (X ⨯ Y) := by simp
 #align category_theory.limits.prod.diag_map_fst_snd CategoryTheory.Limits.prod.diag_map_fst_snd
 #align category_theory.limits.prod.diag_map_fst_snd_assoc CategoryTheory.Limits.prod.diag_map_fst_snd_assoc
 
-@[reassoc] -- Porting note: simp can prove these
+@[reassoc] -- Porting note (#10618): simp can prove these
 theorem prod.diag_map_fst_snd_comp [HasLimitsOfShape (Discrete WalkingPair) C] {X X' Y Y' : C}
     (g : X ⟶ Y) (g' : X' ⟶ Y') :
     diag (X ⨯ X') ≫ prod.map (prod.fst ≫ g) (prod.snd ≫ g') = prod.map g g' := by simp
@@ -1244,11 +1244,8 @@ section ProdComparison
 universe w
 
 variable {C} {D : Type u₂} [Category.{w} D]
-
 variable (F : C ⥤ D) {A A' B B' : C}
-
 variable [HasBinaryProduct A B] [HasBinaryProduct A' B']
-
 variable [HasBinaryProduct (F.obj A) (F.obj B)] [HasBinaryProduct (F.obj A') (F.obj B')]
 
 /-- The product comparison morphism.
@@ -1338,11 +1335,8 @@ section CoprodComparison
 universe w
 
 variable {C} {D : Type u₂} [Category.{w} D]
-
 variable (F : C ⥤ D) {A A' B B' : C}
-
 variable [HasBinaryCoproduct A B] [HasBinaryCoproduct A' B']
-
 variable [HasBinaryCoproduct (F.obj A) (F.obj B)] [HasBinaryCoproduct (F.obj A') (F.obj B')]
 
 /-- The coproduct comparison morphism.

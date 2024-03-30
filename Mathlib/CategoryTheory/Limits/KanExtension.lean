@@ -40,9 +40,7 @@ open Limits
 universe v v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {S : Type u₁} {L : Type u₂} {D : Type u₃}
-
 variable [Category.{v₁} S] [Category.{v₂} L] [Category.{v₃} D]
-
 variable (ι : S ⥤ L)
 
 namespace Ran
@@ -161,7 +159,7 @@ end Ran
 @[simps!]
 def ran [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] : (S ⥤ D) ⥤ L ⥤ D :=
   Adjunction.rightAdjointOfEquiv (fun F G => (Ran.equiv ι G F).symm) (by {
-    -- Porting note: was `tidy`
+    -- Porting note (#10936): was `tidy`
     intros X' X Y f g
     ext t
     apply limit.hom_ext
@@ -285,14 +283,14 @@ def equiv (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] (G : L ⥤ D) :
         erw [colimit.ι_pre (diagram ι F (ι.obj y)) fff (CostructuredArrow.mk (𝟙 _))]
         let xx : CostructuredArrow ι (ι.obj y) := CostructuredArrow.mk (ι.map ff)
         let yy : CostructuredArrow ι (ι.obj y) := CostructuredArrow.mk (𝟙 _)
-        let fff : xx ⟶ yy :=
+        let fff' : xx ⟶ yy :=
           CostructuredArrow.homMk ff
             (by
-              simp only [CostructuredArrow.mk_hom_eq_self]
+              simp only [xx, CostructuredArrow.mk_hom_eq_self]
               erw [Category.comp_id])
-        erw [colimit.w (diagram ι F (ι.obj y)) fff]
+        erw [colimit.w (diagram ι F (ι.obj y)) fff']
         congr
-        simp }
+        simp [fff] }
   invFun f :=
     { app := fun x => colimit.desc (diagram ι F x) (cocone _ f)
       naturality := by

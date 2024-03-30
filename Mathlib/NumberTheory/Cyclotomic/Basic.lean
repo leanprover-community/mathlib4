@@ -42,7 +42,7 @@ primitive roots of unity, for all `n ∈ S`.
   `B` is a finite `A`-algebra.
 * `IsCyclotomicExtension.numberField` : a finite cyclotomic extension of a number field is a
   number field.
-* `IsCyclotomicExtension.splitting_field_X_pow_sub_one` : if `IsCyclotomicExtension {n} K L`,
+* `IsCyclotomicExtension.isSplittingField_X_pow_sub_one` : if `IsCyclotomicExtension {n} K L`,
   then `L` is the splitting field of `X ^ n - 1`.
 * `IsCyclotomicExtension.splitting_field_cyclotomic` : if `IsCyclotomicExtension {n} K L`,
   then `L` is the splitting field of `cyclotomic n K`.
@@ -68,9 +68,7 @@ open scoped BigOperators
 universe u v w z
 
 variable (n : ℕ+) (S T : Set ℕ+) (A : Type u) (B : Type v) (K : Type w) (L : Type z)
-
 variable [CommRing A] [CommRing B] [Algebra A B]
-
 variable [Field K] [Field L] [Algebra K L]
 
 noncomputable section
@@ -377,7 +375,7 @@ theorem adjoin_roots_cyclotomic_eq_adjoin_nth_roots [IsDomain B] {ζ : B} {n : �
     simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq]
     rw [isRoot_of_unity_iff n.pos]
     refine' ⟨n, Nat.mem_divisors_self n n.ne_zero, _⟩
-    rw [IsRoot.def, ← map_cyclotomic n (algebraMap A B), eval_map, ← aeval_def]
+    rw [IsRoot.definition, ← map_cyclotomic n (algebraMap A B), eval_map, ← aeval_def]
     exact hx.2
   · simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq] at hx
     obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx n.pos
@@ -524,15 +522,15 @@ def CyclotomicField : Type w :=
 
 namespace CyclotomicField
 
---Porting note: could not be derived
+-- Porting note: could not be derived
 instance : Field (CyclotomicField n K) := by
   delta CyclotomicField; infer_instance
 
---Porting note: could not be derived
+-- Porting note: could not be derived
 instance algebra : Algebra K (CyclotomicField n K) := by
   delta CyclotomicField; infer_instance
 
---Porting note: could not be derived
+-- Porting note: could not be derived
 instance : Inhabited (CyclotomicField n K) := by
   delta CyclotomicField; infer_instance
 
@@ -547,7 +545,7 @@ instance isCyclotomicExtension [NeZero ((n : ℕ) : K)] :
   obtain ⟨ζ, hζ⟩ :=
     exists_root_of_splits (algebraMap K (CyclotomicField n K)) (SplittingField.splits _)
       (degree_cyclotomic_pos n K n.pos).ne'
-  rw [← eval_map, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff] at hζ
+  rw [← eval_map, ← IsRoot.definition, map_cyclotomic, isRoot_cyclotomic_iff] at hζ
 -- Porting note: the first `?_` was `forall_eq.2 ⟨ζ, hζ⟩` that now fails.
   refine ⟨?_, ?_⟩
   · simp only [mem_singleton_iff, forall_eq]
@@ -603,15 +601,15 @@ def CyclotomicRing : Type w :=
 
 namespace CyclotomicRing
 
---Porting note: could not be derived
+-- Porting note: could not be derived
 instance : CommRing (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
---Porting note: could not be derived
+-- Porting note: could not be derived
 instance : IsDomain (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
---Porting note: could not be derived
+-- Porting note: could not be derived
 instance : Inhabited (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
@@ -733,7 +731,7 @@ theorem IsAlgClosed.isCyclotomicExtension (h : ∀ a ∈ S, NeZero ((a : ℕ) : 
   obtain ⟨r, hr⟩ := IsAlgClosed.exists_aeval_eq_zero K _ (degree_cyclotomic_pos a K a.pos).ne'
   refine' ⟨r, _⟩
   haveI := h a ha
-  rwa [coe_aeval_eq_eval, ← IsRoot.def, isRoot_cyclotomic_iff] at hr
+  rwa [coe_aeval_eq_eval, ← IsRoot.definition, isRoot_cyclotomic_iff] at hr
 #align is_alg_closed.is_cyclotomic_extension IsAlgClosed.isCyclotomicExtension
 
 instance IsAlgClosedOfCharZero.isCyclotomicExtension [CharZero K] :

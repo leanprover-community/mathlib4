@@ -749,7 +749,7 @@ theorem ncard_congr {t : Set β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha 
   have hbij : f'.Bijective := by
     constructor
     · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
-      simp only [Subtype.mk.injEq] at hxy ⊢
+      simp only [f', Subtype.mk.injEq] at hxy ⊢
       exact h₂ _ _ hx hy hxy
     rintro ⟨y, hy⟩
     obtain ⟨a, ha, rfl⟩ := h₃ y hy
@@ -789,7 +789,7 @@ theorem surj_on_of_inj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
   set f' : s → t := fun x ↦ ⟨f x.1 x.2, hf _ _⟩
   have finj : f'.Injective := by
     rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
-    simp only [Subtype.mk.injEq] at hxy ⊢
+    simp only [f', Subtype.mk.injEq] at hxy ⊢
     apply hinj _ _ hx hy hxy
   have hft := ht.fintype
   have hft' := Fintype.ofInjective f' finj

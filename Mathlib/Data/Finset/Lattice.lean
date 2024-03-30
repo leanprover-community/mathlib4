@@ -8,6 +8,7 @@ import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Multiset.Lattice
+import Mathlib.Data.Set.Lattice
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Hom.Lattice
 
@@ -16,9 +17,6 @@ import Mathlib.Order.Hom.Lattice
 /-!
 # Lattice operations on finsets
 -/
-
-set_option autoImplicit true
-
 
 variable {F α β γ ι κ : Type*}
 
@@ -148,6 +146,7 @@ theorem sup_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ≤ g b) : s.sup f �
   Finset.sup_le fun b hb => le_trans (h b hb) (le_sup hb)
 #align finset.sup_mono_fun Finset.sup_mono_fun
 
+@[gcongr]
 theorem sup_mono (h : s₁ ⊆ s₂) : s₁.sup f ≤ s₂.sup f :=
   Finset.sup_le (fun _ hb => le_sup (h hb))
 #align finset.sup_mono Finset.sup_mono
@@ -418,6 +417,7 @@ theorem inf_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ≤ g b) : s.inf f �
   Finset.le_inf fun b hb => le_trans (inf_le hb) (h b hb)
 #align finset.inf_mono_fun Finset.inf_mono_fun
 
+@[gcongr]
 theorem inf_mono (h : s₁ ⊆ s₂) : s₂.inf f ≤ s₁.inf f :=
   Finset.le_inf (fun _ hb => inf_le (h hb))
 #align finset.inf_mono Finset.inf_mono
@@ -605,7 +605,7 @@ theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (
       fun h a g ha hg => _⟩
   -- TODO: This `have` must be named to prevent it being shadowed by the internal `this` in `simpa`
   have aux : ∀ j : { x // x ∈ s }, ↑j ≠ i := fun j : s => ne_of_mem_of_not_mem j.2 hi
-  -- porting note: `simpa` doesn't support placeholders in proof terms
+  -- Porting note: `simpa` doesn't support placeholders in proof terms
   have := h (fun j hj => if hji : j = i then cast (congr_arg κ hji.symm) a
       else g _ <| mem_of_mem_insert_of_ne hj hji) (fun j hj => ?_)
   simpa only [cast_eq, dif_pos, Function.comp, Subtype.coe_mk, dif_neg, aux] using this
@@ -964,6 +964,14 @@ theorem sup'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonem
     s₁.sup' h₁ f ≤ s₂.sup' (h₁.mono h) f :=
   Finset.sup'_le h₁ _ (fun _ hb => le_sup' _ (h hb))
 
+/-- A version of `Finset.sup'_mono` acceptable for `@[gcongr]`.
+Instead of deducing `s₂.Nonempty` from `s₁.Nonempty` and `s₁ ⊆ s₂`,
+this version takes it as an argument. -/
+@[gcongr]
+lemma _root_.GCongr.finset_sup'_le {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂)
+    {h₁ : s₁.Nonempty} {h₂ : s₂.Nonempty} : s₁.sup' h₁ f ≤ s₂.sup' h₂ f :=
+  sup'_mono f h h₁
+
 end Sup'
 
 section Inf'
@@ -1019,7 +1027,8 @@ theorem inf'_le {b : β} (h : b ∈ s) : s.inf' ⟨b, h⟩ f ≤ f b :=
   le_sup' (α := αᵒᵈ) f h
 #align finset.inf'_le Finset.inf'_le
 
-theorem inf'_le_of_le (hb : b ∈ s) (h : f b ≤ a) : s.inf' ⟨b, hb⟩ f ≤ a := (inf'_le _ hb).trans h
+theorem inf'_le_of_le {a : α} {b : β} (hb : b ∈ s) (h : f b ≤ a) :
+    s.inf' ⟨b, hb⟩ f ≤ a := (inf'_le _ hb).trans h
 #align finset.inf'_le_of_le Finset.inf'_le_of_le
 
 @[simp]
@@ -1135,6 +1144,14 @@ theorem inf'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonem
     s₂.inf' (h₁.mono h) f ≤ s₁.inf' h₁ f :=
   Finset.le_inf' h₁ _ (fun _ hb => inf'_le _ (h hb))
 
+/-- A version of `Finset.inf'_mono` acceptable for `@[gcongr]`.
+Instead of deducing `s₂.Nonempty` from `s₁.Nonempty` and `s₁ ⊆ s₂`,
+this version takes it as an argument. -/
+@[gcongr]
+lemma _root_.GCongr.finset_inf'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂)
+    {h₁ : s₁.Nonempty} {h₂ : s₂.Nonempty} : s₂.inf' h₂ f ≤ s₁.inf' h₁ f :=
+  inf'_mono f h h₁
+
 end Inf'
 
 section Sup
@@ -1222,8 +1239,9 @@ section DistribLattice
 variable [DistribLattice α] {s : Finset ι} {t : Finset κ} (hs : s.Nonempty) (ht : t.Nonempty)
   {f : ι → α} {g : κ → α} {a : α}
 
-theorem sup'_inf_distrib_left (f : ι → α) (a : α) : a ⊓ s.sup' hs f = s.sup' hs λ i => a ⊓ f i := by
-  refine' hs.cons_induction (fun i => _) fun i s hi hs ih => _
+theorem sup'_inf_distrib_left (f : ι → α) (a : α) :
+    a ⊓ s.sup' hs f = s.sup' hs fun i ↦ a ⊓ f i := by
+  refine' hs.cons_induction (fun i ↦ ?_) fun i s hi hs ih ↦ ?_
   · simp
   · simp_rw [sup'_cons hs, inf_sup_left]
     rw [ih]
@@ -1367,7 +1385,7 @@ theorem max_of_nonempty {s : Finset α} (h : s.Nonempty) : ∃ a : α, s.max = a
 theorem max_eq_bot {s : Finset α} : s.max = ⊥ ↔ s = ∅ :=
   ⟨fun h ↦ s.eq_empty_or_nonempty.elim id fun H ↦ by
       obtain ⟨a, ha⟩ := max_of_nonempty H
-      rw [h] at ha; cases ha; done, -- Porting note: error without `done`
+      rw [h] at ha; cases ha; , -- the `;` is needed since the `cases` syntax allows `cases a, b`
     fun h ↦ h.symm ▸ max_empty⟩
 #align finset.max_eq_bot Finset.max_eq_bot
 
@@ -1400,6 +1418,7 @@ theorem not_mem_of_max_lt {s : Finset α} {a b : α} (h₁ : b < a) (h₂ : s.ma
   Finset.not_mem_of_max_lt_coe <| h₂.trans_lt <| WithBot.coe_lt_coe.mpr h₁
 #align finset.not_mem_of_max_lt Finset.not_mem_of_max_lt
 
+@[gcongr]
 theorem max_mono {s t : Finset α} (st : s ⊆ t) : s.max ≤ t.max :=
   sup_mono st
 #align finset.max_mono Finset.max_mono
@@ -1450,7 +1469,7 @@ theorem min_eq_top {s : Finset α} : s.min = ⊤ ↔ s = ∅ :=
   ⟨fun h =>
     s.eq_empty_or_nonempty.elim id fun H => by
       let ⟨a, ha⟩ := min_of_nonempty H
-      rw [h] at ha; cases ha; done, -- Porting note: error without `done`
+      rw [h] at ha; cases ha; , -- Porting note: error without `done`
     fun h => h.symm ▸ min_empty⟩
 #align finset.min_eq_top Finset.min_eq_top
 
@@ -1474,6 +1493,7 @@ theorem not_mem_of_lt_min {s : Finset α} {a b : α} (h₁ : a < b) (h₂ : s.mi
   Finset.not_mem_of_coe_lt_min <| (WithTop.coe_lt_coe.mpr h₁).trans_eq h₂.symm
 #align finset.not_mem_of_lt_min Finset.not_mem_of_lt_min
 
+@[gcongr]
 theorem min_mono {s t : Finset α} (st : s ⊆ t) : t.min ≤ s.min :=
   inf_mono st
 #align finset.min_mono Finset.min_mono
@@ -1746,7 +1766,7 @@ theorem max_erase_ne_self {s : Finset α} : (s.erase x).max ≠ x := by
 theorem min_erase_ne_self {s : Finset α} : (s.erase x).min ≠ x := by
   -- Porting note: old proof `convert @max_erase_ne_self αᵒᵈ _ _ _`
   convert @max_erase_ne_self αᵒᵈ _ (toDual x) (s.map toDual.toEmbedding) using 1
-  apply congr_arg -- porting note: forces unfolding to see `Finset.min` is `Finset.max`
+  apply congr_arg -- Porting note: forces unfolding to see `Finset.min` is `Finset.max`
   congr!
   · ext; simp only [mem_map_equiv]; exact Iff.rfl
 #align finset.min_erase_ne_self Finset.min_erase_ne_self
