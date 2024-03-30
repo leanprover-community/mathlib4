@@ -33,11 +33,11 @@ filter, cardinal
 open Set Filter Cardinal
 
 universe u
-variable {ι : Type u} {α β : Type u} {c : Cardinal.{u}}
+variable {ι : Type u} {α β : Type u} {c : Cardinal}
 
 /-- A filter `l` has the cardinal `c` intersection property if for any collection
 of less than `c` sets `s ∈ l`, their intersection belongs to `l` as well. -/
-class CardinalInterFilter (l : Filter α) (c : Cardinal.{u}) : Prop where
+class CardinalInterFilter (l : Filter α) (c : Cardinal) : Prop where
   /-- For a collection of sets `s ∈ l` with cardinality below c,
   their intersection belongs to `l` as well. -/
   cardinal_sInter_mem : ∀ S : Set (Set α), (#S < c) → (∀ s ∈ S, s ∈ l) → ⋂₀ S ∈ l
@@ -76,13 +76,13 @@ theorem cardinalInterFilter_aleph_one_iff :
 
 /-- Every CardinalInterFilter for some c also is a CardinalInterFilter for some a ≤ c -/
 theorem CardinalInterFilter.of_CardinalInterFilter_of_le (l : Filter α) [CardinalInterFilter l c]
-    {a : Cardinal.{u}} (hac : a ≤ c) :
+    {a : Cardinal} (hac : a ≤ c) :
   CardinalInterFilter l a where
     cardinal_sInter_mem :=
       fun S hS a ↦ CardinalInterFilter.cardinal_sInter_mem S (lt_of_lt_of_le hS hac) a
 
 theorem CardinalInterFilter.of_CardinalInterFilter_of_lt (l : Filter α) [CardinalInterFilter l c]
-    {a : Cardinal.{u}} (hac : a < c) : CardinalInterFilter l a :=
+    {a : Cardinal} (hac : a < c) : CardinalInterFilter l a :=
   CardinalInterFilter.of_CardinalInterFilter_of_le l (hac.le)
 
 namespace Filter
@@ -250,7 +250,7 @@ instance cardinalInterFilter_inf_eq (l₁ l₂ : Filter α) [CardinalInterFilter
   rw [hst i hi]
   apply inter_subset_inter <;> exact iInter_subset_of_subset i (iInter_subset _ _)
 
-instance cardinalInterFilter_inf (l₁ l₂ : Filter α) {c₁ c₂ : Cardinal.{u}}
+instance cardinalInterFilter_inf (l₁ l₂ : Filter α) {c₁ c₂ : Cardinal}
     [CardinalInterFilter l₁ c₁] [CardinalInterFilter l₂ c₂] : CardinalInterFilter (l₁ ⊓ l₂)
     (c₁ ⊓ c₂) := by
   have : CardinalInterFilter l₁ (c₁ ⊓ c₂) :=
@@ -265,7 +265,7 @@ instance cardinalInterFilter_sup_eq (l₁ l₂ : Filter α) [CardinalInterFilter
   refine' ⟨fun S hSc hS => ⟨_, _⟩⟩ <;> refine' (cardinal_sInter_mem hSc).2 fun s hs => _
   exacts [(hS s hs).1, (hS s hs).2]
 
-instance cardinalInterFilter_sup (l₁ l₂ : Filter α) {c₁ c₂ : Cardinal.{u}}
+instance cardinalInterFilter_sup (l₁ l₂ : Filter α) {c₁ c₂ : Cardinal}
     [CardinalInterFilter l₁ c₁] [CardinalInterFilter l₂ c₂] :
     CardinalInterFilter (l₁ ⊔ l₂) (c₁ ⊓ c₂) := by
   have : CardinalInterFilter l₁ (c₁ ⊓ c₂) :=
