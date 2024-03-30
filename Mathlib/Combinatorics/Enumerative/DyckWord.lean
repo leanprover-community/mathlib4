@@ -69,20 +69,15 @@ and both counts are equal at the end. -/
 def IsBalanced : Prop :=
   p.count U = p.count D ∧ ∀ i, (p.take i).count D ≤ (p.take i).count U
 
-/-- Decidable version of `IsBalanced`. -/
-def IsBalanced' : Prop :=
-  p.count U = p.count D ∧ ∀ i < p.length, (p.take i).count D ≤ (p.take i).count U
-
-lemma isBalanced_iff_isBalanced' : p.IsBalanced ↔ p.IsBalanced' := by
-  constructor <;> (intro ⟨h1, h2⟩; refine' ⟨h1, _⟩)
-  · intro i _; exact h2 i
-  · intro i
-    cases' lt_or_ge i p.length with hi hi
-    · exact h2 i hi
-    · rw [take_all_of_le hi]; exact h1.symm.le
-
 instance : DecidablePred IsBalanced := fun _ ↦
-  decidable_of_iff (_ ∧ _) (isBalanced_iff_isBalanced' _).symm
+  decidable_of_iff
+    (p.count U = p.count D ∧ ∀ i < p.length, (p.take i).count D ≤ (p.take i).count U) $ by
+    constructor <;> (intro ⟨h1, h2⟩; refine' ⟨h1, _⟩)
+    · intro i
+      cases' lt_or_ge i p.length with hi hi
+      · exact h2 i hi
+      · rw [take_all_of_le hi]; exact h1.symm.le
+    · intro i _; exact h2 i
 
 end Defs
 
@@ -129,18 +124,18 @@ lemma IsBalanced.split (i : ℕ) : IsBalanced (p.take i) ↔ IsBalanced (p.drop 
 
 /-- If `p.take i` satisfies the equality part of `IsBalanced`, it also satisfies the other part
 and is balanced itself. -/
-lemma IsBalanced.from_take {i : ℕ} (h : (p.take i).count U = (p.take i).count D) :
+lemma IsBalanced.take {i : ℕ} (h : (p.take i).count U = (p.take i).count D) :
     IsBalanced (p.take i) := ⟨h, fun j ↦ by rw [take_take]; apply bp.2⟩
 
 variable (np : p ≠ [])
 
 /-- The first element of a nonempty balanced Dyck path is `U`. -/
-lemma IsBalanced.head_U : p.head np = U := by
+lemma IsBalanced.head_eq_U : p.head np = U := by
   cases' p with h _; · tauto
   by_contra f; simpa [(step_cases h).resolve_left f] using bp.2 1
 
 /-- The last element of a nonempty balanced Dyck path is `D`. -/
-lemma IsBalanced.getLast_D : p.getLast np = D := by
+lemma IsBalanced.getLast_eq_D : p.getLast np = D := by
   by_contra f; have s := bp.1
   rw [← dropLast_append_getLast np, (step_cases _).resolve_right f] at s
   simp_rw [dropLast_eq_take, count_append, count_singleton', ite_true, ite_false] at s
@@ -156,7 +151,7 @@ private lemma denest_aux : p.take 1 = [p.head np] ∧ p.dropLast.take 1 = [p.hea
     · rw [dropLast_cons₂, take_cons, take_zero, head_cons]
     · rfl
 
-lemma append_tail_dropLast_append : p = [U] ++ tail (dropLast p) ++ [D] := by
+lemma cons_tail_dropLast_concat : U :: tail (dropLast p) ++ [D] = p := by
   nth_rw 1 [← p.dropLast_append_getLast np, ← p.dropLast.take_append_drop 1]
   rw [bp.getLast_D, drop_one, (denest_aux bp np).2.1, bp.head_U]
 
@@ -418,7 +413,7 @@ instance instFintypeDyckWords {n : ℕ} :
   Fintype.ofEquiv _ (finiteTreeEquiv n).symm
 
 /-- There are `catalan n` Dyck words of length `2 * n`. -/
-theorem dyckPath_isBalanced_card_eq_catalan (n : ℕ) :
+theorem card_dyckPath_isBalanced_eq_catalan (n : ℕ) :
     Fintype.card { p : DyckPath // p.IsBalanced ∧ p.length = 2 * n } = catalan n := by
   rw [← Fintype.ofEquiv_card (finiteTreeEquiv n), ← treesOfNumNodesEq_card_eq_catalan]
   convert Fintype.card_coe _
