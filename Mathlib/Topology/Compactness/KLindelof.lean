@@ -49,16 +49,16 @@ section KLindelof
 def IsKLindelof (k : Cardinal) (s : Set X) :=
   ∀ ⦃f⦄ [NeBot f] [CardinalInterFilter f k], f ≤ 𝓟 s → ∃ x ∈ s, ClusterPt x f
 
-/-- The complement to a `k`-Lindelöf set belongs to a `CardinalInterFilter f k` if it belongs to each
-filter `𝓝 x ⊓ f`, `x ∈ s`. -/
+/-- The complement to a `k`-Lindelöf set belongs to a `CardinalInterFilter f k` if it belongs to
+each filter `𝓝 x ⊓ f`, `x ∈ s`. -/
 theorem IsKLindelof.compl_mem_sets (hs : IsKLindelof k s) {f : Filter X}
     [CardinalInterFilter f k] (hf : ∀ x ∈ s, sᶜ ∈ 𝓝 x ⊓ f) : sᶜ ∈ f := by
   contrapose! hf
   simp only [not_mem_iff_inf_principal_compl, compl_compl, inf_assoc] at hf ⊢
   exact hs inf_le_right
 
-/-- The complement to a `k`-Lindelöf set belongs to a `CardinalInterFilter f k` if each `x ∈ s` has a
-neighborhood `t` within `s` such that `tᶜ` belongs to `f`. -/
+/-- The complement to a `k`-Lindelöf set belongs to a `CardinalInterFilter f k` if each `x ∈ s` has
+a neighborhood `t` within `s` such that `tᶜ` belongs to `f`. -/
 theorem IsKLindelof.compl_mem_sets_of_nhdsWithin (hs : IsKLindelof k s)
     {f : Filter X} [CardinalInterFilter f k] (hf : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, tᶜ ∈ f) : sᶜ ∈ f := by
   refine hs.compl_mem_sets fun x hx ↦ ?_
@@ -186,23 +186,24 @@ theorem IsKLindelof.elim_nhds_subcover (hreg : Cardinal.IsRegular k) (hs : IsKLi
   · have : ⋃ x ∈ t, U ↑x = ⋃ x ∈ Subtype.val '' t, U x := biUnion_image.symm
     rwa [← this]
 
-/-- The neighborhood filter of a `k`-Lindelöf set is disjoint with a `CardinalInterFilter l k` filter
-if and only if the neighborhood filter of each point of this set is disjoint with `l`. -/
+/-- The neighborhood filter of a `k`-Lindelöf set is disjoint with a `CardinalInterFilter l k`
+filter if and only if the neighborhood filter of each point of this set is disjoint with `l`. -/
 theorem IsKLindelof.disjoint_nhdsSet_left (hreg : Cardinal.IsRegular k) {l : Filter X}
     [CardinalInterFilter l k] (hs : IsKLindelof k s) :
     Disjoint (𝓝ˢ s) l ↔ ∀ x ∈ s, Disjoint (𝓝 x) l := by
   refine ⟨fun h x hx ↦ h.mono_left <| nhds_le_nhdsSet hx, fun H ↦ ?_⟩
   choose! U hxU hUl using fun x hx ↦ (nhds_basis_opens x).disjoint_iff_left.1 (H x hx)
   choose hxU hUo using hxU
-  rcases hs.elim_nhds_subcover hreg U fun x hx ↦ (hUo x hx).mem_nhds (hxU x hx) with ⟨t, htc, hts, hst⟩
+  rcases hs.elim_nhds_subcover hreg U fun x hx ↦ (hUo x hx).mem_nhds (hxU x hx)
+    with ⟨t, htc, hts, hst⟩
   refine (hasBasis_nhdsSet _).disjoint_iff_left.2
     ⟨⋃ x ∈ t, U x, ⟨isOpen_biUnion fun x hx ↦ hUo x (hts x hx), hst⟩, ?_⟩
   rw [compl_iUnion₂]
   exact (cardinal_bInter_mem htc).mpr (fun i hi ↦ hUl _ (hts _ hi))
 
 /-- A `CardinalInterFilter l k` filter is disjoint with the neighborhood
-filter of a `k`-Lindelöf set if and only if it is disjoint with the neighborhood filter of each point
-of this set. -/
+filter of a `k`-Lindelöf set if and only if it is disjoint with the neighborhood filter of each
+point of this set. -/
 theorem IsKLindelof.disjoint_nhdsSet_right (hreg : Cardinal.IsRegular k) {l : Filter X}
     [CardinalInterFilter l k] (hs : IsKLindelof k s) :
     Disjoint l (𝓝ˢ s) ↔ ∀ x ∈ s, Disjoint l (𝓝 x) := by
