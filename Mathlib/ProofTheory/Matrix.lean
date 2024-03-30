@@ -30,10 +30,12 @@ variable {n : ℕ} {α β: Type u}
 section delab
 open Lean PrettyPrinter Delaborator SubExpr
 
+/-- `unexpandVecEmpty` -/
 @[app_unexpander Matrix.vecEmpty]
 def unexpandVecEmpty : Unexpander
   | `($(_)) => `(![])
 
+/-- `unexpandVecCons` -/
 @[app_unexpander Matrix.vecCons]
 def unexpandVecCons : Unexpander
   | `($(_) $a ![])      => `(![$a])
@@ -64,6 +66,7 @@ lemma vecCons_assoc (a b : α) (s : Fin n → α) :
   funext x; cases' x using Fin.cases with x <;> simp; cases x using Fin.lastCases <;>
   simp[Fin.succ_castSucc]
 
+/-- Decidable vector equality -/
 def decVec {α : Type _} : {n : ℕ} → (v w : Fin n → α) → (∀ i, Decidable (v i = w i)) →
     Decidable (v = w)
   | 0,     _, _, _ => by simp[Matrix.empty_eq]; exact isTrue trivial
@@ -118,6 +121,7 @@ end
 
 variable {α : Type _} {n : ℕ}
 
+/-- Translate `Vector` to `List` -/
 def toList : {n : ℕ} → (Fin n → α) → List α
   | 0,     _ => []
   | _ + 1, v => v 0 :: toList (v ∘ Fin.succ)
@@ -141,6 +145,7 @@ def toList : {n : ℕ} → (Fin n → α) → List α
   constructor;
   { rintro (rfl | ⟨i, rfl⟩) <;> simp }; { rintro ⟨i, rfl⟩; cases i using Fin.cases <;> simp }
 
+/-- Convert to option vector -/
 def toOptionVec : {n : ℕ} → (Fin n → Option α) → Option (Fin n → α)
   | 0,     _ => some vecEmpty
   | _ + 1, v => (toOptionVec (v ∘ Fin.succ)).bind (fun vs => (v 0).map (fun z => z :> vs))
@@ -184,6 +189,7 @@ def toOptionVec : {n : ℕ} → (Fin n → Option α) → Option (Fin n → α)
           by funext i; cases i using Fin.cases <;> simp[hz, this]
         simp[this, ← comp_vecCons', Iff.symm Function.funext_iff ] } }
 
+/-- Convert Vector to Nat -/
 def vecToNat : {n : ℕ} → (Fin n → ℕ) → ℕ
   | 0,     _ => 0
   | _ + 1, v => Nat.pair (v 0) (vecToNat $ v ∘ Fin.succ)
