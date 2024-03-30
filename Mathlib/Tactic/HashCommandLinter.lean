@@ -4,24 +4,25 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Lean.Linter.Util
 import Lean.Elab.Command
-import Std.Data.Array.Basic
+import Lean.Linter.Util
 
 /-!
 #  `#`-command linter
 
-The `#`-command linter produces a warning when a command starting with `#` is used.
+The `#`-command linter produces a warning when a command starting with `#` is used *and*
+the command emits no message.
 -/
 
 namespace Mathlib.Linter
 
 /--
-Setting to `true` enables the '`#`-command' linter.  When `true`, Lean warns on any command
-beginning with `#`.  For example, `#eval`, `#guard`, `#guard_msgs` all trigger a message.
+The linter emits a warning on any command beginning with `#` that itself emits no message.
+For example, `#guard true` and `#check_tactic True ~> True by skip` trigger a message.
+There is a `whitelist` of silent `#`-command that are allowed.
 -/
 register_option linter.hashCommand : Bool := {
-  defValue := false
+  defValue := true
   descr := "enable the `#`-command linter"
 }
 
@@ -48,18 +49,25 @@ private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun st
     cmd stx
 
 /-- `whitelist` is the array of `#`-commands that are allowed in 'Mathlib'. -/
-private abbrev whitelist : Array String := #["#align", "#align_import", "#noalign"]
+private abbrev whitelist : HashSet String := HashSet.empty
+  |>.insert "#align"
+  |>.insert "#align_import"
+  |>.insert "#noalign"
 
-/-- Checks that no command beginning with `#` is present in 'Mathlib', except for the ones in
-`whitelist`. -/
+/-- Checks that no command beginning with `#` is present in 'Mathlib', except for
+* the ones in `whitelist`;
+* the ones that already emit a message.
+
+This means that CI will fail on `#`-commands whether they themselves emit a message or not.
+-/
 def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
-  let currentModule := (← getEnv).mainModule
-  if getLinterHash (← getOptions) &&
-     (currentModule.getRoot == `Mathlib || currentModule == `test.HashCommandLinter) then
+--  dbg_trace (← get).messages.msgs.size
+  if getLinterHash (← getOptions) && (← get).messages.msgs.size == 0 then
+--    dbg_trace "linting"
     match stx.getHead? with
       | some sa =>
         let a := sa.getAtomVal
-        if ("#".isPrefixOf a && whitelist.all (· != a)) then
+        if ("#".isPrefixOf a && ! whitelist.contains a) then
           Linter.logLint linter.hashCommand sa
             m!"`#`-commands, such as '{a}', are not allowed in 'Mathlib'"
       | none => return
