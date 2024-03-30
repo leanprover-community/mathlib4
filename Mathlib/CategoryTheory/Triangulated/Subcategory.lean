@@ -3,18 +3,23 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.Pretriangulated
+import Mathlib.CategoryTheory.Localization.CalculusOfFractions
+import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.RespectsIso
 
 /-! # Triangulated subcategories
 
 In this file, we introduce the notion of triangulated subcategory of
-a pretriangulated category.
+a pretriangulated category `C`. If `S : Subcategory W`, we define the
+class of morphisms `S.W : MorphismProperty C` consisting of morphisms
+whose "cone" belongs to `S` (up to isomorphisms). We show that `S.W`
+has both calculus of left and right fractions.
 
 ## TODO
 
-* define the class of morphisms whose "cone" belong to a subcategory
-* obtain (pre)triangulated instances on the corresponding localized categories
+* obtain (pre)triangulated instances on the localized category with respect to `S.W`
+* define the type `S.category` as `Fullsubcategory S.set` and show that it
+is a pretriangulated category.
 
 ## Implementation notes
 
@@ -58,6 +63,10 @@ namespace Subcategory
 variable {C}
 variable (S : Subcategory C)
 
+lemma zero [S.set.RespectsIso] : 0 ∈ S.set := by
+  obtain ⟨X, hX, mem⟩ := S.zero'
+  exact Set.mem_of_iso _ hX.isoZero mem
+
 /-- The closure of a triangulated subcategory  -/
 def isoClosure : Subcategory C where
   set := S.set.isoClosure
@@ -99,7 +108,6 @@ instance : (mk' set zero shift ext₂).set.RespectsIso where
     refine' ext₂ (Triangle.mk e.hom (0 : Y ⟶ 0) 0) _ hX zero
     refine' isomorphic_distinguished _ (contractible_distinguished X) _ _
     exact Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _)
-      (by aesop_cat) (by aesop_cat) (by aesop_cat)
 
 end
 
@@ -107,6 +115,153 @@ lemma ext₂ [S.set.RespectsIso]
     (T : Triangle C) (hT : T ∈ distTriang C) (h₁ : T.obj₁ ∈ S.set)
     (h₃ : T.obj₃ ∈ S.set) : T.obj₂ ∈ S.set := by
   simpa only [S.set.isoClosure_eq_self] using S.ext₂' T hT h₁ h₃
+
+/-- Given `S : Triangulated.Subcategory C`, this is the class of morphisms on `C` which
+consists of morphisms whose cone is in `S.set`. -/
+def W : MorphismProperty C := fun X Y f => ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧)
+  (_ : Triangle.mk f g h ∈ distTriang C), Z ∈ S.set
+
+lemma W_iff {X Y : C} (f : X ⟶ Y) :
+    S.W f ↔ ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧)
+      (_ : Triangle.mk f g h ∈ distTriang C), Z ∈ S.set := by rfl
+
+lemma W_iff' {Y Z : C} (g : Y ⟶ Z) :
+    S.W g ↔ ∃ (X : C) (f : X ⟶ Y) (h : Z ⟶ X⟦(1 : ℤ)⟧)
+      (_ : Triangle.mk f g h ∈ distTriang C), X ∈ S.set := by
+  rw [S.W_iff]
+  constructor
+  · rintro ⟨Z, g, h, H, mem⟩
+    exact ⟨_, _, _, inv_rot_of_distTriang _ H, S.shift _ (-1) mem⟩
+  · rintro ⟨Z, g, h, H, mem⟩
+    exact ⟨_, _, _, rot_of_distTriang _ H, S.shift _ 1 mem⟩
+
+lemma W.mk {T : Triangle C} (hT : T ∈ distTriang C) (h : T.obj₃ ∈ S.set) : S.W T.mor₁ :=
+  ⟨_, _, _, hT, h⟩
+
+lemma W.mk' {T : Triangle C} (hT : T ∈ distTriang C) (h : T.obj₁ ∈ S.set) : S.W T.mor₂ := by
+  rw [W_iff']
+  exact ⟨_, _, _, hT, h⟩
+
+lemma isoClosure_W : S.isoClosure.W = S.W := by
+  ext X Y f
+  constructor
+  · rintro ⟨Z, g, h, mem, ⟨Z', hZ', ⟨e⟩⟩⟩
+    refine' ⟨Z', g ≫ e.hom, e.inv ≫ h, isomorphic_distinguished _ mem _ _, hZ'⟩
+    exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm
+  · rintro ⟨Z, g, h, mem, hZ⟩
+    exact ⟨Z, g, h, mem, Set.subset_isoClosure _ hZ⟩
+
+lemma respectsIso_W : S.W.RespectsIso where
+  left := by
+    rintro X' X Y e f ⟨Z, g, h, mem, mem'⟩
+    refine' ⟨Z, g, h ≫ e.inv⟦(1 : ℤ)⟧', isomorphic_distinguished _ mem _ _, mem'⟩
+    refine' Triangle.isoMk _ _ e (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat) _
+    dsimp
+    simp only [assoc, ← Functor.map_comp, e.inv_hom_id, Functor.map_id, comp_id, id_comp]
+  right := by
+    rintro X Y Y' e f ⟨Z, g, h, mem, mem'⟩
+    refine' ⟨Z, e.inv ≫ g, h, isomorphic_distinguished _ mem _ _, mem'⟩
+    exact Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _)
+
+instance : S.W.ContainsIdentities := by
+  rw [← isoClosure_W]
+  exact ⟨fun X => ⟨_, _, _, contractible_distinguished X, zero _⟩⟩
+
+lemma W_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : S.W f := by
+  refine (S.respectsIso_W.arrow_mk_iso_iff ?_).1 (MorphismProperty.id_mem _ X)
+  exact Arrow.isoMk (Iso.refl _) (asIso f)
+
+lemma smul_mem_W_iff {X Y : C} (f : X ⟶ Y) (n : ℤˣ) :
+    S.W (n • f) ↔ S.W f :=
+  S.respectsIso_W.arrow_mk_iso_iff (Arrow.isoMk (n • (Iso.refl _)) (Iso.refl _))
+
+variable {S}
+
+lemma W.shift {X₁ X₂ : C} {f : X₁ ⟶ X₂} (hf : S.W f) (n : ℤ) : S.W (f⟦n⟧') := by
+  rw [← smul_mem_W_iff _ _ (n.negOnePow)]
+  obtain ⟨X₃, g, h, hT, mem⟩ := hf
+  exact ⟨_, _, _, Pretriangulated.Triangle.shift_distinguished _ hT n, S.shift _ _ mem⟩
+
+lemma W.unshift {X₁ X₂ : C} {f : X₁ ⟶ X₂} {n : ℤ} (hf : S.W (f⟦n⟧')) : S.W f :=
+  (S.respectsIso_W.arrow_mk_iso_iff
+     (Arrow.isoOfNatIso (shiftEquiv C n).unitIso (Arrow.mk f))).2 (hf.shift (-n))
+
+instance [IsTriangulated C] : S.W.IsMultiplicative where
+  stableUnderComposition := by
+    rw [← isoClosure_W]
+    rintro X₁ X₂ X₃ u₁₂ u₂₃ ⟨Z₁₂, v₁₂, w₁₂, H₁₂, mem₁₂⟩ ⟨Z₂₃, v₂₃, w₂₃, H₂₃, mem₂₃⟩
+    obtain ⟨Z₁₃, v₁₃, w₁₂, H₁₃⟩ := distinguished_cocone_triangle (u₁₂ ≫ u₂₃)
+    exact ⟨_, _, _, H₁₃, S.isoClosure.ext₂ _ (someOctahedron rfl H₁₂ H₂₃ H₁₃).mem mem₁₂ mem₂₃⟩
+
+variable (S)
+
+lemma mem_W_iff_of_distinguished [S.set.RespectsIso] (T : Triangle C) (hT : T ∈ distTriang C) :
+    S.W T.mor₁ ↔ T.obj₃ ∈ S.set := by
+  constructor
+  · rintro ⟨Z, g, h, hT', mem⟩
+    obtain ⟨e, _⟩ := exists_iso_of_arrow_iso _ _ hT' hT (Iso.refl _)
+    exact S.set.mem_of_iso (Triangle.π₃.mapIso e) mem
+  · intro h
+    exact ⟨_, _, _, hT, h⟩
+
+instance [IsTriangulated C] : S.W.HasLeftCalculusOfFractions where
+  exists_leftFraction X Y φ := by
+    obtain ⟨Z, f, g, H, mem⟩ := φ.hs
+    obtain ⟨Y', s', f', mem'⟩ := distinguished_cocone_triangle₂ (g ≫ φ.f⟦1⟧')
+    obtain ⟨b, ⟨hb₁, _⟩⟩ :=
+      complete_distinguished_triangle_morphism₂ _ _ H mem' φ.f (𝟙 Z) (by simp)
+    exact ⟨MorphismProperty.LeftFraction.mk b s' ⟨_, _, _, mem', mem⟩, hb₁.symm⟩
+  ext := by
+    rintro X' X Y f₁ f₂ s ⟨Z, g, h, H, mem⟩ hf₁
+    have hf₂ : s ≫ (f₁ - f₂) = 0 := by rw [comp_sub, hf₁, sub_self]
+    obtain ⟨q, hq⟩ := Triangle.yoneda_exact₂ _ H _ hf₂
+    obtain ⟨Y', r, t, mem'⟩ := distinguished_cocone_triangle q
+    refine' ⟨Y', r, _, _⟩
+    · exact ⟨_, _, _, rot_of_distTriang _ mem', S.shift _ _ mem⟩
+    · have eq := comp_distTriang_mor_zero₁₂ _ mem'
+      dsimp at eq
+      rw [← sub_eq_zero, ← sub_comp, hq, assoc, eq, comp_zero]
+
+instance [IsTriangulated C] : S.W.HasRightCalculusOfFractions where
+  exists_rightFraction X Y φ := by
+    obtain ⟨Z, f, g, H, mem⟩ := φ.hs
+    obtain ⟨X', f', h', mem'⟩ := distinguished_cocone_triangle₁ (φ.f ≫ f)
+    obtain ⟨a, ⟨ha₁, _⟩⟩ := complete_distinguished_triangle_morphism₁ _ _
+      mem' H φ.f (𝟙 Z) (by simp)
+    exact ⟨MorphismProperty.RightFraction.mk f' ⟨_, _, _, mem', mem⟩ a, ha₁⟩
+  ext Y Z Z' f₁ f₂ s hs hf₁ := by
+    rw [S.W_iff'] at hs
+    obtain ⟨Z, g, h, H, mem⟩ := hs
+    have hf₂ : (f₁ - f₂) ≫ s = 0 := by rw [sub_comp, hf₁, sub_self]
+    obtain ⟨q, hq⟩ := Triangle.coyoneda_exact₂ _ H _ hf₂
+    obtain ⟨Y', r, t, mem'⟩ := distinguished_cocone_triangle₁ q
+    refine' ⟨Y', r, _, _⟩
+    · exact ⟨_, _, _, mem', mem⟩
+    · have eq := comp_distTriang_mor_zero₁₂ _ mem'
+      dsimp at eq
+      rw [← sub_eq_zero, ← comp_sub, hq, reassoc_of% eq, zero_comp]
+
+section
+
+variable (T : Triangle C) (hT : T ∈ distTriang C)
+
+lemma ext₁ [S.set.RespectsIso] (h₂ : T.obj₂ ∈ S.set) (h₃ : T.obj₃ ∈ S.set) :
+    T.obj₁ ∈ S.set :=
+  S.ext₂ _ (inv_rot_of_distTriang _ hT) (S.shift _ _ h₃) h₂
+
+lemma ext₃ [S.set.RespectsIso] (h₁ : T.obj₁ ∈ S.set) (h₂ : T.obj₂ ∈ S.set) :
+    T.obj₃ ∈ S.set :=
+  S.ext₂ _ (rot_of_distTriang _ hT) h₂ (S.shift _ _ h₁)
+
+lemma ext₁' (h₂ : T.obj₂ ∈ S.set) (h₃ : T.obj₃ ∈ S.set) :
+    T.obj₁ ∈ S.set.isoClosure :=
+  S.ext₂' _ (inv_rot_of_distTriang _ hT) (S.shift _ _ h₃) h₂
+
+lemma ext₃' (h₁ : T.obj₁ ∈ S.set) (h₂ : T.obj₂ ∈ S.set) :
+    T.obj₃ ∈ S.set.isoClosure :=
+  S.ext₂' _ (rot_of_distTriang _ hT) h₂ (S.shift _ _ h₁)
+
+end
 
 end Subcategory
 
