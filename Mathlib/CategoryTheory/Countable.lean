@@ -60,7 +60,7 @@ def HomAsType := ShrinkHoms (ObjAsType α)
 instance : LocallySmall.{0} (ObjAsType α) where
   hom_small _ _ := inferInstance
 
-instance : SmallCategory (HomAsType α) := ShrinkHoms.instCategoryShrinkHoms.{0} _
+instance : SmallCategory (HomAsType α) := inferInstanceAs <| SmallCategory (ShrinkHoms _)
 
 instance : Countable (HomAsType α) := Countable.of_equiv α (equivShrink.{0} α)
 

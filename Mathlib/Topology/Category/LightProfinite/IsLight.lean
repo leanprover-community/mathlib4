@@ -67,7 +67,7 @@ instance (S : LightProfinite.{u}) : S.toProfinite.IsLight where
     refine @Countable.of_equiv _ _ ?_ (LocallyConstant.equivClopens (X := S.toProfinite))
     refine @Function.Surjective.countable
       (Σ (n : ℕ), LocallyConstant ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩) (Fin 2)) _ ?_ ?_ ?_
-    · apply @instCountableSigma _ _ _ ?_
+    · apply @instCountableSigma_mathlib _ _ _ ?_
       intro n
       refine @Finite.to_countable _ ?_
       refine @Finite.of_injective _ ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩ → (Fin 2)) ?_ _

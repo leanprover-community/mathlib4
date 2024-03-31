@@ -1040,7 +1040,7 @@ def evalRPow : NormNumExt where eval {u α} e := do
       assumeInstancesCommute
       return .isNat sα' ne' q(isNat_rpow_neg $pb $pe')
     | .isNegNat sα' ne' pe' =>
-      let _ := q(instRingReal)
+      let _ := q(Real.instRing)
       assumeInstancesCommute
       return .isNegNat sα' ne' q(isInt_rpow_neg $pb $pe')
     | .isRat sα' qe' nume' dene' pe' =>

@@ -313,7 +313,7 @@ lemma Gleason (X : CompHaus.{u}) :
   · intro h
     let X' : Stonean := ⟨X⟩
     show Projective X'.compHaus
-    apply Stonean.instProjectiveCompHausCategoryCompHaus
+    apply Stonean.instProjectiveCompHausCompHaus
 
 end CompHaus
 
