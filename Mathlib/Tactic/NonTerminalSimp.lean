@@ -8,6 +8,7 @@ import Lean.Linter.Util
 import Std.Data.Array.Basic
 import Std.Data.List.Basic
 import Std.Data.Array.Merge
+import Std.Lean.HashSet
 
 /-!
 #  The non-terminal `simp` linter
@@ -45,6 +46,64 @@ namespace nonTerminalSimp
 def onlyOrNotSimp : Syntax → Bool
   | .node _info `Lean.Parser.Tactic.simp #[_, _, _, only?, _, _] => only?[0].getAtomVal == "only"
   | _ => true
+
+/-
+|-node Lean.Parser.Tactic.simp, none
+|   |-atom original: ⟨⟩⟨ ⟩-- 'simp'
+|   |-node null, none
+|   |-node null, none
+|   |-node null, none
+|   |   |-atom original: ⟨⟩⟨\n  ⟩-- 'only'
+|   |-node null, none
+|   |-node null, none
+
+
+|-node Lean.Parser.Tactic.simpAll, none
+|   |-atom original: ⟨⟩⟨ ⟩-- 'simp_all'
+|   |-node null, none
+|   |-node null, none
+|   |-node null, none
+|   |   |-atom original: ⟨⟩⟨\n  ⟩-- 'only'
+|   |-node null, none
+-/
+
+/-- `stainer? stx` is `true` on syntax that stains. -/
+def stainer? : Syntax → Bool
+  | .node _info ``Lean.Parser.Tactic.simp #[_, _, _, only?, _, _] => only?[0].getAtomVal != "only"
+  | .node _info ``Lean.Parser.Tactic.simpAll #[_, _, _, only?, _] => only?[0].getAtomVal != "only"
+  | _ => false
+
+/-- `stains? tac` returns `true` if the tactic stains, `false` otherwise. -/
+elab "stains? " tac:tactic : command => do
+  match stainer? tac with
+    | true  => logWarningAt tac m!"{stainer? tac}"
+    | false => logInfoAt tac m!"{stainer? tac}"
+
+/-- info: false -/#guard_msgs in
+stains? done
+/-- info: false -/#guard_msgs in
+stains? simp only
+/-- info: false -/#guard_msgs in
+stains? simp_all only
+/-- warning: true -/#guard_msgs in
+stains? simp
+/-- warning: true -/#guard_msgs in
+stains? simp_all
+
+/-- info: -/ #guard_msgs in
+#eval show MetaM _ from do
+  let simp_all_only ← `(tactic| simp_all only)
+  guard <| ! stainer? simp_all_only
+
+  let simp_only ← `(tactic| simp only)
+  guard <| ! stainer? simp_only
+
+  let simp_all ← `(tactic| simp_all)
+  guard <| stainer? simp_all
+
+  let simp ← `(tactic| simp)
+  guard <| stainer? simp
+
 
 end nonTerminalSimp
 
@@ -180,46 +239,40 @@ def stained.toFVarId (lctx: LocalContext) : stained → Array FVarId
 /-- `SyntaxNodeKind`s that are mostly "formatting": mostly they are ignored
 because we do not want the linter to spend time on them.
 The nodes that they contain will be visited by the linter anyway. -/
-def ignored : HashSet Name := HashSet.empty
-  |>.insert ``Lean.Parser.Tactic.tacticSeq1Indented
-  |>.insert ``Lean.Parser.Tactic.tacticSeq
-  |>.insert ``Lean.Parser.Term.byTactic
-  |>.insert `null
-  |>.insert `by
---  |>.insert ``Lean.Parser.Tactic.rwSeq
-  -- even ignoring `try`, the linter still looks at the "tried" tactics
-  |>.insert ``Lean.Parser.Tactic.tacticTry_
-  |>.insert `«]»
-  |>.insert `Std.Tactic.«tacticOn_goal-_=>_»
-  |>.insert ``Lean.Parser.Tactic.tacticSorry
-  |>.insert ``Lean.Parser.Tactic.tacticRepeat_
-  |>.insert ``Lean.Parser.Tactic.tacticStop_
-  |>.insert ``Lean.Parser.Tactic.«tactic_<;>_»
-  |>.insert `«;»
-  |>.insert ``cdotTk
-  |>.insert ``cdot
-  -- followers: `rfl, omega, abel, ring, linarith, linarith, norm_cast, aesop, tauto`
-  |>.insert ``Lean.Parser.Tactic.tacticRfl
-  |>.insert ``Lean.Parser.Tactic.omega
-  |>.insert `Mathlib.Tactic.Abel.abel
-  |>.insert `Mathlib.Tactic.RingNF.ring
-  |>.insert `linarith
-  |>.insert `nlinarith
-  |>.insert ``Lean.Parser.Tactic.tacticNorm_cast_
-  |>.insert `Aesop.Frontend.Parser.aesopTactic
-  |>.insert `Mathlib.Tactic.Tauto.tauto
-
-/-
-simp_all only
-simp; simpa
--/
+def ignored : HashSet Name :=
+  { ``Lean.Parser.Tactic.tacticSeq1Indented,
+    ``Lean.Parser.Tactic.tacticSeq,
+    ``Lean.Parser.Term.byTactic,
+    `null,
+    `by,
+--    ``Lean.Parser.Tactic.rwSeq,
+    -- even ignoring `try`, the linter still looks at the "tried" tactics
+    ``Lean.Parser.Tactic.tacticTry_,
+    `«]»,
+    `Std.Tactic.«tacticOn_goal-_=>_»,
+    ``Lean.Parser.Tactic.tacticSorry,
+    ``Lean.Parser.Tactic.tacticRepeat_,
+    ``Lean.Parser.Tactic.tacticStop_,
+    ``Lean.Parser.Tactic.«tactic_<;>_»,
+    `«;»,
+    ``cdotTk,
+    ``cdot,
+    -- followers: `rfl, omega, abel, ring, linarith, linarith, norm_cast, aesop, tauto`
+    ``Lean.Parser.Tactic.tacticRfl,
+    ``Lean.Parser.Tactic.omega,
+    `Mathlib.Tactic.Abel.abel,
+    `Mathlib.Tactic.RingNF.ring,
+    `linarith,
+    `nlinarith,
+    ``Lean.Parser.Tactic.tacticNorm_cast_,
+    `Aesop.Frontend.Parser.aesopTactic,
+    `Mathlib.Tactic.Tauto.tauto }
 
 /-- `SyntaxNodeKind`s of tactics that stain the locations on which they act
 and that can only be followed by other `stainers`. -/
-def stainers : HashSet Name := HashSet.empty
-  |>.insert ``Lean.Parser.Tactic.simp
-  |>.insert ``Lean.Parser.Tactic.simpAll
---  |>.insert ``Lean.Parser.Tactic.rwSeq  -- remove me! `rw` is not a stainer!
+def stainers : HashSet Name :=
+  { ``Lean.Parser.Tactic.simp,
+    ``Lean.Parser.Tactic.simpAll }
 
 /-- `getIds stx` extracts the `declId` nodes from the `Syntax` `stx`.
 If `stx` is an `alias` or an `export`, then it extracts an `ident`, instead of a `declId`. -/
@@ -248,6 +301,9 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
     let skind := s.getKind
     if ignored.contains skind then /-dbg_trace "ignoring {skind}"-/ continue
     for d in getStained! s do
+      let shouldStain? := stainer? s && mvs1.length == mvs0.length
+/-
+      logInfoAt s m!"new shouldStain? '{shouldStain?}'"
       let shouldStain? :=
         match stainers.contains skind, onlyOrNotSimp s, skind, (! mvs1.length < mvs0.length) with
         | false, _, _, _ => false -- not a stainer
@@ -258,6 +314,7 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
         | true, true, ``Lean.Parser.Tactic.simpAll, _ => true -- `simp_all`
         | true, _, _, _ => true
 --      logInfoAt s m!"{shouldStain?}"
+-/
       let stained_in_syntax := getL s
 /-
       let found_stained := stained_in_syntax.filter (·.toFVarId lctx0 != default)
