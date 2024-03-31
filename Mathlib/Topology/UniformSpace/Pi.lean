@@ -121,8 +121,6 @@ lemma Pi.uniformSpace_comap_restrict_sUnion (𝔖 : Set (Set ι)) :
     ⨅ S ∈ 𝔖, UniformSpace.comap S.restrict (Pi.uniformSpace (fun i : S ↦ α i)) := by
   simp_rw [Pi.uniformSpace_comap_restrict α, iInf_sUnion]
 
-end
-
 /- An infimum of complete uniformities is complete,
 as long as the whole family is bounded by some common T2 topology. -/
 protected theorem CompleteSpace.iInf {ι X : Type*} {u : ι → UniformSpace X}
