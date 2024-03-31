@@ -13,17 +13,17 @@ attribute [local instance] HasBinaryBiproducts.of_hasBinaryProducts
 
 variable (C)
 
-def splitShortExact : Set (ShortComplex C) := fun S => Nonempty S.Splitting
+def splitShortExact : (ShortComplex C) → Prop := fun S => Nonempty S.Splitting
 
 variable {C}
 
-lemma splitShortExact_op (S : ShortComplex C) (hX : S ∈ splitShortExact C) :
-    S.op ∈ splitShortExact Cᵒᵖ := by
+lemma splitShortExact_op (S : ShortComplex C) (hX : splitShortExact C S) :
+    splitShortExact Cᵒᵖ S.op := by
   obtain ⟨h⟩ := hX
   exact ⟨h.op⟩
 
-lemma splitShortExact_unop (S : ShortComplex Cᵒᵖ) (hX : S ∈ splitShortExact Cᵒᵖ) :
-    S.unop ∈ splitShortExact C := by
+lemma splitShortExact_unop (S : ShortComplex Cᵒᵖ) (hX : splitShortExact Cᵒᵖ S) :
+    splitShortExact C S.unop:= by
   obtain ⟨h⟩ := hX
   exact ⟨h.unop⟩
 
@@ -150,7 +150,7 @@ lemma admissibleSplitMono_stableUnderCobaseChange :
         erw [comp_id]
       · dsimp
         erw [Preadditive.comp_add, reassoc_of% hψ₂, reassoc_of% hφ₂, comp_id, sq.w,
-          h.g_s_assoc, Preadditive.sub_comp, id_comp, assoc, add_sub_cancel'_right] }
+          h.g_s_assoc, Preadditive.sub_comp, id_comp, assoc, add_sub_cancel] }
 
 lemma admissibleSplitEpi_stableUnderBaseChange :
     (admissibleSplitEpi C).StableUnderBaseChange := by
@@ -159,7 +159,7 @@ lemma admissibleSplitEpi_stableUnderBaseChange :
 
 def splitExactSequences : ExactCategory C where
   shortExact' := splitShortExact C
-  respectsIso_shortExact' := ⟨fun S₁ S₂ e => by
+  respectsIso_shortExact' := ⟨fun {S₁ S₂} e => by
     rintro ⟨h₁⟩
     exact ⟨h₁.ofIso e⟩⟩
   shortExact_kernel' := by

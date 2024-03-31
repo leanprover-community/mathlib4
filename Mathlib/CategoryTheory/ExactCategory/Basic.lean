@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.RespectsIso
+import Mathlib.CategoryTheory.ClosedUnderIsomorphisms
 import Mathlib.CategoryTheory.MorphismProperty
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
@@ -30,30 +30,30 @@ variable (C : Type _) [Category C] [Preadditive C]
 namespace ShortComplex
 
 variable {C}
-variable (S : Set (ShortComplex C))
+variable (S : (ShortComplex C) → Prop)
 
 def fAdmissible : MorphismProperty C := fun _ Y f =>
-  ∃ (Z : C) (g : Y ⟶ Z) (zero : f ≫ g = 0), ShortComplex.mk f g zero ∈ S
+  ∃ (Z : C) (g : Y ⟶ Z) (zero : f ≫ g = 0), S (ShortComplex.mk f g zero)
 
-lemma fAdmissible_respectsIso [S.RespectsIso] : (fAdmissible S).RespectsIso := by
+lemma fAdmissible_respectsIso [ClosedUnderIsomorphisms S] : (fAdmissible S).RespectsIso := by
   constructor
   · intro X X' Y e f ⟨Z, g, zero, mem⟩
-    refine' ⟨Z, g, by rw [assoc, zero, comp_zero], S.mem_of_iso _ mem⟩
+    refine' ⟨Z, g, by rw [assoc, zero, comp_zero], mem_of_iso S _ mem⟩
     exact ShortComplex.isoMk e.symm (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat)
   · intro X Y Y' e f ⟨Z, g, zero, mem⟩
-    refine' ⟨Z, e.inv ≫ g, by rw [assoc, e.hom_inv_id_assoc, zero], S.mem_of_iso _ mem⟩
+    refine' ⟨Z, e.inv ≫ g, by rw [assoc, e.hom_inv_id_assoc, zero], mem_of_iso S _ mem⟩
     exact ShortComplex.isoMk (Iso.refl _) e (Iso.refl _) (by aesop_cat) (by aesop_cat)
 
 def gAdmissible : MorphismProperty C := fun Y _ g =>
-  ∃ (X : C) (f : X ⟶ Y) (zero : f ≫ g = 0), ShortComplex.mk f g zero ∈ S
+  ∃ (X : C) (f : X ⟶ Y) (zero : f ≫ g = 0), S (ShortComplex.mk f g zero)
 
-lemma gAdmissible_respectsIso [S.RespectsIso] : (gAdmissible S).RespectsIso := by
+lemma gAdmissible_respectsIso [ClosedUnderIsomorphisms S] : (gAdmissible S).RespectsIso := by
   constructor
   · intro Y Y' Z e g ⟨X, f, zero, mem⟩
-    refine' ⟨X, f ≫ e.inv, by rw [assoc, e.inv_hom_id_assoc, zero], S.mem_of_iso _ mem⟩
+    refine' ⟨X, f ≫ e.inv, by rw [assoc, e.inv_hom_id_assoc, zero], mem_of_iso S _ mem⟩
     exact ShortComplex.isoMk (Iso.refl _) e.symm (Iso.refl _) (by aesop_cat) (by aesop_cat)
   · intro Y Z Z' e g ⟨X, f, zero, mem⟩
-    refine' ⟨X, f, by rw [reassoc_of% zero, zero_comp], S.mem_of_iso _ mem⟩
+    refine' ⟨X, f, by rw [reassoc_of% zero, zero_comp], mem_of_iso S _ mem⟩
     exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _) e (by aesop_cat) (by aesop_cat)
 
 end ShortComplex
@@ -61,12 +61,12 @@ end ShortComplex
 -- see _Exact Categories_, Theo Bühler, Expo. Math 28 (2010), 1-69
 
 class ExactCategory [HasZeroObject C] [HasBinaryBiproducts C] where
-  shortExact' : Set (ShortComplex C)
-  respectsIso_shortExact' : shortExact'.RespectsIso
+  shortExact' : (ShortComplex C) → Prop
+  respectsIso_shortExact' : ClosedUnderIsomorphisms shortExact'
   shortExact_kernel' :
-    ∀ S (_ : S ∈ shortExact'), Nonempty (IsLimit (KernelFork.ofι _ S.zero))
+    ∀ S (_ : shortExact' S), Nonempty (IsLimit (KernelFork.ofι _ S.zero))
   shortExact_cokernel' :
-    ∀ S (_ : S ∈ shortExact'), Nonempty (IsColimit (CokernelCofork.ofπ _ S.zero))
+    ∀ S (_ : shortExact' S), Nonempty (IsColimit (CokernelCofork.ofπ _ S.zero))
   admissibleMono_id (X : C) : (ShortComplex.fAdmissible shortExact') (𝟙 X)
   admissibleEpi_id (X : C) : (ShortComplex.gAdmissible shortExact') (𝟙 X)
   admissibleMono_stableUnderComposition :
@@ -89,7 +89,7 @@ def ExactCategory.shortExact : Set (ShortComplex C) := ExactCategory.shortExact'
 
 open ExactCategory
 
-instance respectsIso_shortExact : (shortExact C).RespectsIso := respectsIso_shortExact'
+instance respectsIso_shortExact : ClosedUnderIsomorphisms (shortExact C) := respectsIso_shortExact'
 
 variable {C}
 
@@ -173,9 +173,9 @@ instance [AdmissibleMono f] (g : X ⟶ X') : AdmissibleMono (pushout.inr : _ ⟶
 
 lemma shortExact_of_admissibleMono_of_isColimit (S : ShortComplex C)
     (hf : AdmissibleMono S.f) (hS : IsColimit (CokernelCofork.ofπ _ S.zero)) :
-    S ∈ shortExact C := by
+    shortExact C S := by
   obtain ⟨X₃', g', zero, mem⟩ := hf.mem
-  refine' Set.mem_of_iso _ _ mem
+  refine' mem_of_iso _ _ mem
   have hg' := isColimit_cokernelCofork_of_shortExact _ mem
   refine' ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
       (IsColimit.coconePointUniqueUpToIso hg' hS) (by aesop_cat) _
@@ -185,9 +185,9 @@ lemma shortExact_of_admissibleMono_of_isColimit (S : ShortComplex C)
 
 lemma shortExact_of_admissibleEpi_of_isLimit (S : ShortComplex C)
     (hg : AdmissibleEpi S.g) (hS : IsLimit (KernelFork.ofι _ S.zero)) :
-    S ∈ shortExact C := by
+    shortExact C S := by
   obtain ⟨X₁', f', zero, mem⟩ := hg.mem
-  refine' Set.mem_of_iso _ _ mem
+  refine' mem_of_iso _ _ mem
   have hf' := isLimit_kernelFork_of_shortExact _ mem
   refine' ShortComplex.isoMk (IsLimit.conePointUniqueUpToIso hf' hS) (Iso.refl _) (Iso.refl _)
     _ (by aesop_cat)

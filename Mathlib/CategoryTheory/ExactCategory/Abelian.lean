@@ -28,10 +28,10 @@ namespace ExactCategory
 
 namespace OfAbelian
 
-def shortExact : Set (ShortComplex C) := fun S => S.ShortExact
+def shortExact : ShortComplex C → Prop := fun S => S.ShortExact
 
-lemma respectsIso_shortExact : (@shortExact C _).RespectsIso :=
-  ⟨fun _ _ e => ShortComplex.shortExact_of_iso e⟩
+lemma respectsIso_shortExact : ClosedUnderIsomorphisms (shortExact (C := C)) :=
+  ⟨fun {_ _} e => ShortComplex.shortExact_of_iso e⟩
 
 lemma fAdmissible_iff_mono {X Y : C} (f : X ⟶ Y) :
     ShortComplex.fAdmissible shortExact f ↔ Mono f := by
