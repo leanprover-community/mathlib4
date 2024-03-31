@@ -24,7 +24,6 @@ homomorphism.
 
 -/
 
-set_option autoImplicit true
 open TensorProduct Bialgebra
 
 universe u v w u₁ v₁
@@ -59,10 +58,10 @@ variable {R : Type*} {A : Type*} {B : Type*} [CommSemiring R]
 `BialgHom`. This is declared as the default coercion from `F` to `A →ₐc[R] B`. -/
 @[coe]
 def toBialgHom {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f : F) : A →ₐc[R] B :=
-  { CoalgHomClass.toCoalgHom f, AlgHomClass. with
-      toFun := f
-      counit_comp := BialgHomClass.counit_comp f
-      map_comp_comul := BialgHomClass.map_comp_comul f }
+  { CoalgHomClass.toCoalgHom f, AlgHomClass.toAlgHom f with
+    toFun := f
+    counit_comp := BialgHomClass.counit_comp f
+    map_comp_comul := BialgHomClass.map_comp_comul f }
 
 instance coeTC {F : Type*} [FunLike F A B] [BialgHomClass F R A B] : CoeTC F (A →ₐc[R] B) :=
   ⟨BialgHomClass.toBialgHom⟩
@@ -80,7 +79,6 @@ variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 variable [CoalgebraStruct R A] [CoalgebraStruct R B] [CoalgebraStruct R C] [CoalgebraStruct R D]
 
-
 instance funLike : FunLike (A →ₐc[R] B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
@@ -94,13 +92,13 @@ instance bialgHomClass : BialgHomClass (A →ₐc[R] B) R A B where
   counit_comp := fun f => f.counit_comp
   map_comp_comul := fun f => f.map_comp_comul
 
-/-
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
     [Semiring α] [Semiring β]
     [Algebra R α] [Algebra R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
     (f : α →ₐc[R] β) : α → β := f
-    -/
+
+initialize_simps_projections BialgHom (toFun → apply)
 
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f : F) :
@@ -111,7 +109,7 @@ protected theorem coe_coe {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f
 theorem toFun_eq_coe (f : A →ₐc[R] B) : f.toFun = f :=
   rfl
 
-attribute [coe] BialgHom.toLinearMap
+/-attribute [coe] BialgHom.toLinearMap
 
 instance coeOutLinearMap : CoeOut (A →ₐc[R] B) (A →ₗ[R] B) :=
   ⟨BialgHom.toLinearMap⟩
@@ -122,6 +120,7 @@ def toAddMonoidHom' (f : A →ₐc[R] B) : A →+ B := (f : A →ₗ[R] B)
 
 instance coeOutAddMonoidHom : CoeOut (A →ₐc[R] B) (A →+ B) :=
   ⟨BialgHom.toAddMonoidHom'⟩
+-/
 
 @[simp]
 theorem coe_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₐc[R] B) : A → B) = f :=
@@ -134,10 +133,6 @@ theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ ) : ⇑(⟨⟨⟨f, h₁⟩, 
 @[norm_cast]
 theorem coe_linearMap_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₐc[R] B) : A →ₗ[R] B) = f :=
   rfl
-
-/-@[simp]
-theorem toLinearMap_eq_coe (f : A →ₐc[R] B) : f.toLinearMap = f :=
-  rfl-/
 
 @[simp, norm_cast]
 theorem coe_toLinearMap (f : A →ₐc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
@@ -155,11 +150,11 @@ theorem coe_fn_injective : @Function.Injective (A →ₐc[R] B) (A → B) (↑) 
 theorem coe_fn_inj {φ₁ φ₂ : A →ₐc[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
   DFunLike.coe_fn_eq
 
-theorem coe_linearMap_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₗ[R] B) :=
+theorem coe_coalgHom_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₗc[R] B) :=
   fun φ₁ φ₂ H => coe_fn_injective <|
     show ((φ₁ : A →ₗ[R] B) : A → B) = ((φ₂ : A →ₗ[R] B) : A → B) from congr_arg _ H
 
-theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →+ B) :=
+theorem coe_algHom_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₐ[R] B) :=
   LinearMap.toAddMonoidHom_injective.comp coe_linearMap_injective
 
 protected theorem congr_fun {φ₁ φ₂ : A →ₐc[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=
@@ -192,11 +187,24 @@ theorem map_comp_comul_apply (x : A) :
     TensorProduct.map φ φ (comul x) = comul (R := R) (φ x) :=
   LinearMap.congr_fun φ.map_comp_comul _
 
+theorem counitAlgHom_comp : (φ : A →ₐ[R] B).comp (counitAlgHom R B) = counitAlgHom R A := by
+  ext; exact LinearMap.congr_fun φ.counit_comp _
+
+theorem map_comp_comulAlgHom :
+    (comulAlgHom R B).comp (Algebra.TensorProduct.map φ φ) = comulAlgHom R A := by
+  ext; exact LinearMAp.congr_fun φ.map_comp_comul _
+
 protected theorem map_add (r s : A) : φ (r + s) = φ r + φ s :=
   map_add _ _ _
 
+protected theorem map_mul (r s : A) : φ (r * s) = φ r * φ s :=
+  map_mul  _ _ _
+
 protected theorem map_zero : φ 0 = 0 :=
   map_zero _
+
+protected theorem map_one : φ 1 = 1 :=
+  map_one _
 
 protected theorem map_smul (r : R) (x : A) : φ (r • x) = r • φ x :=
   map_smul _ _ _
@@ -206,10 +214,10 @@ section
 variable (R A)
 
 /-- Identity map as a `BialgHom`. -/
-@[simps! toLinearMap] protected def id : A →ₐc[R] A :=
-{ LinearMap.id with
-  counit_comp := by ext; rfl
-  map_comp_comul := by simp only [map_id, LinearMap.id_comp, LinearMap.comp_id] }
+@[simps! toCoalgHom] protected def id : A →ₐc[R] A :=
+{ CoalgHom.id R A with
+  map_mul := fun _ _ => rfl
+  map_one := fun _ _ }
 
 @[simp]
 theorem coe_id : ⇑(BialgHom.id R A) = id :=

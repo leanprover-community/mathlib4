@@ -23,7 +23,6 @@ homomorphism.
 
 -/
 
-set_option autoImplicit true
 open TensorProduct Coalgebra
 
 universe u v w u₁ v₁
@@ -64,9 +63,9 @@ variable {R : Type*} {A : Type*} {B : Type*} [CommSemiring R]
 @[coe]
 def toCoalgHom {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (f : F) : A →ₗc[R] B :=
   { LinearMapClass.linearMap f with
-      toFun := f
-      counit_comp := CoalgHomClass.counit_comp f
-      map_comp_comul := CoalgHomClass.map_comp_comul f }
+    toFun := f
+    counit_comp := CoalgHomClass.counit_comp f
+    map_comp_comul := CoalgHomClass.map_comp_comul f }
 
 instance coeTC {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] : CoeTC F (A →ₗc[R] B) :=
   ⟨CoalgHomClass.toCoalgHom⟩
@@ -84,7 +83,6 @@ variable [CommSemiring R] [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Modu
 
 variable [CoalgebraStruct R A] [CoalgebraStruct R B] [CoalgebraStruct R C] [CoalgebraStruct R D]
 
-
 instance funLike : FunLike (A →ₗc[R] B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
@@ -98,13 +96,13 @@ instance coalgHomClass : CoalgHomClass (A →ₗc[R] B) R A B where
   counit_comp := fun f => f.counit_comp
   map_comp_comul := fun f => f.map_comp_comul
 
-/-
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
     [AddCommMonoid α] [AddCommMonoid β]
     [Module R α] [Module R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
     (f : α →ₗc[R] β) : α → β := f
-    -/
+
+initialize_simps_projections CoalgHom (toFun → apply)
 
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (f : F) :
@@ -115,17 +113,14 @@ protected theorem coe_coe {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (f
 theorem toFun_eq_coe (f : A →ₗc[R] B) : f.toFun = f :=
   rfl
 
-attribute [coe] CoalgHom.toLinearMap
-
-instance coeOutLinearMap : CoeOut (A →ₗc[R] B) (A →ₗ[R] B) :=
-  ⟨CoalgHom.toLinearMap⟩
-
+/-
 /-- The `AddMonoidHom` underlying a coalgebra homomorphism. -/
 @[coe]
 def toAddMonoidHom' (f : A →ₗc[R] B) : A →+ B := (f : A →ₗ[R] B)
 
 instance coeOutAddMonoidHom : CoeOut (A →ₗc[R] B) (A →+ B) :=
   ⟨CoalgHom.toAddMonoidHom'⟩
+-/
 
 @[simp]
 theorem coe_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₗc[R] B) : A → B) = f :=
@@ -138,10 +133,6 @@ theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ ) : ⇑(⟨⟨⟨f, h₁⟩, 
 @[norm_cast]
 theorem coe_linearMap_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₗc[R] B) : A →ₗ[R] B) = f :=
   rfl
-
-/-@[simp]
-theorem toLinearMap_eq_coe (f : A →ₗc[R] B) : f.toLinearMap = f :=
-  rfl-/
 
 @[simp, norm_cast]
 theorem coe_toLinearMap (f : A →ₗc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
@@ -215,6 +206,8 @@ variable (R A)
   counit_comp := by ext; rfl
   map_comp_comul := by simp only [map_id, LinearMap.id_comp, LinearMap.comp_id] }
 
+variable {R A}
+
 @[simp]
 theorem coe_id : ⇑(CoalgHom.id R A) = id :=
   rfl
@@ -250,14 +243,6 @@ theorem id_comp : (CoalgHom.id R B).comp φ = φ :=
 theorem comp_assoc (φ₁ : C →ₗc[R] D) (φ₂ : B →ₗc[R] C) (φ₃ : A →ₗc[R] B) :
     (φ₁.comp φ₂).comp φ₃ = φ₁.comp (φ₂.comp φ₃) :=
   ext fun _x => rfl
-
-/-theorem toLinearMap_injective :
-    Function.Injective (toLinearMap : _ → A →ₗ[R] B) := fun _φ₁ _φ₂ h =>
-  ext <| LinearMap.congr_fun h
-
-@[simp]
-theorem toLinearMap_id : toLinearMap (CoalgHom.id R A) = LinearMap.id :=
-  LinearMap.ext fun _ => rfl-/
 
 theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul A B R' R] (r : R')
     (x : A) : φ (r • x) = r • φ x :=
