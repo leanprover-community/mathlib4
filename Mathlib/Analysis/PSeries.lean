@@ -194,7 +194,7 @@ theorem summable_schlomilch_iff {C : ℕ} {u : ℕ → ℕ} {f : ℕ → ℝ≥0
     (h_pos : ∀ n, 0 < u n) (hu_strict : StrictMono u)
     (hC_nonzero : C ≠ 0) (h_succ_diff : SuccDiffBounded C u) :
     (Summable fun k : ℕ => (u (k + 1) - (u k : ℝ≥0)) * f (u k)) ↔ Summable f := by
-  simp only [← tsum_coe_ne_top_iff_summable, Ne.def, not_iff_not, ENNReal.coe_mul]
+  simp only [← tsum_coe_ne_top_iff_summable, Ne, not_iff_not, ENNReal.coe_mul]
   constructor <;> intro h
   · replace hf : ∀ m n, 1 < m → m ≤ n → (f n : ℝ≥0∞) ≤ f m := fun m n hm hmn =>
       ENNReal.coe_le_coe.2 (hf (zero_lt_one.trans hm) hmn)
@@ -435,7 +435,7 @@ theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i in Ioo k n, (i ^ 2 : α)⁻¹) �
       rw [Nat.Ico_succ_right, Nat.Icc_succ_left, Nat.cast_succ]
     _ ≤ ((k + 1 : α) ^ 2)⁻¹ + (k + 1 : α)⁻¹ := by
       refine' add_le_add le_rfl ((sum_Ioc_inv_sq_le_sub _ (le_max_left _ _)).trans _)
-      · simp only [Ne.def, Nat.succ_ne_zero, not_false_iff]
+      · simp only [Ne, Nat.succ_ne_zero, not_false_iff]
       · simp only [Nat.cast_succ, one_div, sub_le_self_iff, inv_nonneg, Nat.cast_nonneg]
     _ ≤ 1 / (k + 1) + 1 / (k + 1) := by
       have A : (1 : α) ≤ k + 1 := by simp only [le_add_iff_nonneg_left, Nat.cast_nonneg]
