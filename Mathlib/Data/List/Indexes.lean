@@ -306,9 +306,8 @@ theorem le_findIdx_of_not {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs
   by_contra! f
   exact absurd (@findIdx_get _ p xs (f.trans h)) (h2 (xs.findIdx p) f)
 
-theorem eq_findIdx_of_not {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length)
-    (h2 : ∀ (j) (hji : j < i), ¬p (xs.get ⟨j, hji.trans h⟩))
-    (h3 : p (xs.get ⟨i, h⟩)) : xs.findIdx p = i := by
+theorem findIdx_eq {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length) :
+    xs.findIdx p = i ↔ p (xs.get ⟨i, h⟩) ∧ ∀ (j) (hji : j < i), ¬p (xs.get ⟨j, hji.trans h⟩) := by
   apply Nat.le_antisymm _ (le_findIdx_of_not h h2)
   contrapose! h3
   exact not_of_lt_findIdx h3
