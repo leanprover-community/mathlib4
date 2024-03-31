@@ -3,12 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Data.List.BigOperators.Defs
+import Mathlib.Algebra.BigOperators.List.Defs
 import Mathlib.Data.List.Forall2
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Int.Basic
+import Mathlib.Data.List.Dedup
+import Mathlib.Data.List.ProdSigma
+import Mathlib.Data.List.Range
+import Mathlib.Data.List.Rotate
 
 #align_import data.list.big_operators.basic from "leanprover-community/mathlib"@"6c5f73fd6f6cc83122788a80a27cdd54663609f4"
 
@@ -17,10 +21,10 @@ import Mathlib.Data.Int.Basic
 
 This file provides basic results about `List.prod`, `List.sum`, which calculate the product and sum
 of elements of a list and `List.alternatingProd`, `List.alternatingSum`, their alternating
-counterparts. These are defined in [`Data.List.BigOperators.Defs`](./Defs).
+counterparts. These are defined in [`Algebra.BigOperators.List.Defs`](./Defs).
 -/
 
-variable {ι α M N P M₀ G R : Type*}
+variable {ι α β γ M N P M₀ G R : Type*}
 
 namespace List
 
@@ -288,6 +292,68 @@ theorem _root_.Commute.list_prod_left (l : List M) (y : M) (h : ∀ x ∈ l, Com
 #align commute.list_prod_left Commute.list_prod_left
 #align add_commute.list_sum_left AddCommute.list_sum_left
 
+@[to_additive] lemma prod_range_succ (f : ℕ → M) (n : ℕ) :
+    ((range n.succ).map f).prod = ((range n).map f).prod * f n := by
+  rw [range_succ, map_append, map_singleton, prod_append, prod_cons, prod_nil, mul_one]
+#align list.prod_range_succ List.prod_range_succ
+#align list.sum_range_succ List.sum_range_succ
+
+/-- A variant of `prod_range_succ` which pulls off the first term in the product rather than the
+last. -/
+@[to_additive
+"A variant of `sum_range_succ` which pulls off the first term in the sum rather than the last."]
+lemma prod_range_succ' (f : ℕ → M) (n : ℕ) :
+    ((range n.succ).map f).prod = f 0 * ((range n).map fun i ↦ f i.succ).prod :=
+  Nat.recOn n (show 1 * f 0 = f 0 * 1 by rw [one_mul, mul_one]) fun _ hd => by
+    rw [List.prod_range_succ, hd, mul_assoc, ← List.prod_range_succ]
+#align list.prod_range_succ' List.prod_range_succ'
+#align list.sum_range_succ' List.sum_range_succ'
+
+/-- Slightly more general version of `List.prod_eq_one_iff` for a non-ordered `Monoid` -/
+@[to_additive
+      "Slightly more general version of `List.sum_eq_zero_iff` for a non-ordered `AddMonoid`"]
+lemma prod_eq_one (hl : ∀ x ∈ l, x = 1) : l.prod = 1 := by
+  induction' l with i l hil
+  · rfl
+  rw [List.prod_cons, hil fun x hx ↦ hl _ (mem_cons_of_mem i hx), hl _ (mem_cons_self i l), one_mul]
+#align list.prod_eq_one List.prod_eq_one
+#align list.sum_eq_zero List.sum_eq_zero
+
+@[to_additive] lemma exists_mem_ne_one_of_prod_ne_one (h : l.prod ≠ 1) :
+    ∃ x ∈ l, x ≠ (1 : M) := by simpa only [not_forall, exists_prop] using mt prod_eq_one h
+#align list.exists_mem_ne_one_of_prod_ne_one List.exists_mem_ne_one_of_prod_ne_one
+#align list.exists_mem_ne_zero_of_sum_ne_zero List.exists_mem_ne_zero_of_sum_ne_zero
+
+@[to_additive]
+lemma prod_erase_of_comm [DecidableEq M] (ha : a ∈ l) (comm : ∀ x ∈ l, ∀ y ∈ l, x * y = y * x) :
+    a * (l.erase a).prod = l.prod := by
+  induction' l with b l ih; simp only [not_mem_nil] at ha
+  obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem ha
+  simp only [erase_cons_head, prod_cons]
+  rw [List.erase, beq_false_of_ne ne.symm, List.prod_cons, List.prod_cons, ← mul_assoc,
+    comm a ha b (l.mem_cons_self b), mul_assoc,
+    ih h fun x hx y hy ↦ comm _ (List.mem_cons_of_mem b hx) _ (List.mem_cons_of_mem b hy)]
+
+@[to_additive]
+lemma prod_map_eq_pow_single [DecidableEq α] {l : List α} (a : α) (f : α → M)
+    (hf : ∀ a', a' ≠ a → a' ∈ l → f a' = 1) : (l.map f).prod = f a ^ l.count a := by
+  induction' l with a' as h generalizing a
+  · rw [map_nil, prod_nil, count_nil, _root_.pow_zero]
+  · specialize h a fun a' ha' hfa' => hf a' ha' (mem_cons_of_mem _ hfa')
+    rw [List.map_cons, List.prod_cons, count_cons, h]
+    split_ifs with ha'
+    · rw [ha', _root_.pow_succ']
+    · rw [hf a' (Ne.symm ha') (List.mem_cons_self a' as), one_mul, add_zero]
+#align list.prod_map_eq_pow_single List.prod_map_eq_pow_single
+#align list.sum_map_eq_nsmul_single List.sum_map_eq_nsmul_single
+
+@[to_additive]
+lemma prod_eq_pow_single [DecidableEq M] (a : M) (h : ∀ a', a' ≠ a → a' ∈ l → a' = 1) :
+    l.prod = a ^ l.count a :=
+  _root_.trans (by rw [map_id]) (prod_map_eq_pow_single a id h)
+#align list.prod_eq_pow_single List.prod_eq_pow_single
+#align list.sum_eq_nsmul_single List.sum_eq_nsmul_single
+
 @[to_additive sum_le_sum]
 theorem Forall₂.prod_le_prod' [Preorder M] [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)]
     [CovariantClass M M (· * ·) (· ≤ ·)] {l₁ l₂ : List M} (h : Forall₂ (· ≤ ·) l₁ l₂) :
@@ -402,6 +468,53 @@ theorem one_le_prod_of_one_le [Preorder M] [CovariantClass M M (· * ·) (· ≤
 
 end Monoid
 
+section CommMonoid
+variable [CommMonoid M] {a : M} {l : List M}
+
+@[to_additive (attr := simp)]
+lemma prod_erase [DecidableEq M] (ha : a ∈ l) : a * (l.erase a).prod = l.prod :=
+  prod_erase_of_comm ha fun x _ y _ ↦ mul_comm x y
+#align list.prod_erase List.prod_erase
+#align list.sum_erase List.sum_erase
+
+@[to_additive (attr := simp)]
+lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
+    ∀ {l : List α}, a ∈ l → f a * ((l.erase a).map f).prod = (l.map f).prod
+  | b :: l, h => by
+    obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem h
+    · simp only [map, erase_cons_head, prod_cons]
+    · simp only [map, erase_cons_tail _ (not_beq_of_ne ne.symm), prod_cons, prod_map_erase _ h,
+        mul_left_comm (f a) (f b)]
+#align list.prod_map_erase List.prod_map_erase
+#align list.sum_map_erase List.sum_map_erase
+
+@[to_additive]
+lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
+    ∀ l l' : List M,
+      l.prod * l'.prod =
+        (zipWith (· * ·) l l').prod * (l.drop l'.length).prod * (l'.drop l.length).prod
+  | [], ys => by simp [Nat.zero_le]
+  | xs, [] => by simp [Nat.zero_le]
+  | x :: xs, y :: ys => by
+    simp only [drop, length, zipWith_cons_cons, prod_cons]
+    conv =>
+      lhs; rw [mul_assoc]; right; rw [mul_comm, mul_assoc]; right
+      rw [mul_comm, prod_mul_prod_eq_prod_zipWith_mul_prod_drop xs ys]
+    simp only [Nat.add_eq, add_zero]
+    ac_rfl
+#align list.prod_mul_prod_eq_prod_zip_with_mul_prod_drop List.prod_mul_prod_eq_prod_zipWith_mul_prod_drop
+#align list.sum_add_sum_eq_sum_zip_with_add_sum_drop List.sum_add_sum_eq_sum_zipWith_add_sum_drop
+
+@[to_additive]
+lemma prod_mul_prod_eq_prod_zipWith_of_length_eq (l l' : List M) (h : l.length = l'.length) :
+    l.prod * l'.prod = (zipWith (· * ·) l l').prod := by
+  apply (prod_mul_prod_eq_prod_zipWith_mul_prod_drop l l').trans
+  rw [← h, drop_length, h, drop_length, prod_nil, mul_one, mul_one]
+#align list.prod_mul_prod_eq_prod_zip_with_of_length_eq List.prod_mul_prod_eq_prod_zipWith_of_length_eq
+#align list.sum_add_sum_eq_sum_zip_with_of_length_eq List.sum_add_sum_eq_sum_zipWith_of_length_eq
+
+end CommMonoid
+
 section MonoidWithZero
 
 variable [MonoidWithZero M₀]
@@ -472,6 +585,16 @@ theorem prod_range_div' (n : ℕ) (f : ℕ → G) :
   · exact (div_self' (f 0)).symm
   · rw [range_succ, map_append, map_singleton, prod_append, prod_singleton, h, div_mul_div_cancel']
 
+lemma prod_rotate_eq_one_of_prod_eq_one :
+    ∀ {l : List G} (_ : l.prod = 1) (n : ℕ), (l.rotate n).prod = 1
+  | [], _, _ => by simp
+  | a :: l, hl, n => by
+    have : n % List.length (a :: l) ≤ List.length (a :: l) := le_of_lt (Nat.mod_lt _ (by simp))
+    rw [← List.take_append_drop (n % List.length (a :: l)) (a :: l)] at hl;
+      rw [← rotate_mod, rotate_eq_drop_append_take this, List.prod_append, mul_eq_one_iff_inv_eq, ←
+        one_mul (List.prod _)⁻¹, ← hl, List.prod_append, mul_assoc, mul_inv_self, mul_one]
+#align list.prod_rotate_eq_one_of_prod_eq_one List.prod_rotate_eq_one_of_prod_eq_one
+
 end Group
 
 section CommGroup
@@ -507,6 +630,16 @@ theorem prod_set' (L : List G) (n : ℕ) (a : G) :
 #align list.sum_update_nth' List.sum_set'
 
 end CommGroup
+
+@[simp]
+theorem sum_zipWith_distrib_left [Semiring γ] (f : α → β → γ) (n : γ) (l : List α) (l' : List β) :
+    (l.zipWith (fun x y => n * f x y) l').sum = n * (l.zipWith f l').sum := by
+  induction' l with hd tl hl generalizing f n l'
+  · simp
+  · cases' l' with hd' tl'
+    · simp
+    · simp [hl, mul_add]
+#align list.sum_zip_with_distrib_left List.sum_zipWith_distrib_left
 
 @[to_additive]
 theorem eq_of_prod_take_eq [LeftCancelMonoid M] {L L' : List M} (h : L.length = L'.length)
@@ -564,23 +697,6 @@ theorem all_one_of_le_one_le_of_prod_eq_one [OrderedCommMonoid M] {l : List M}
 #align list.all_one_of_le_one_le_of_prod_eq_one List.all_one_of_le_one_le_of_prod_eq_one
 #align list.all_zero_of_le_zero_le_of_sum_eq_zero List.all_zero_of_le_zero_le_of_sum_eq_zero
 
-/-- Slightly more general version of `List.prod_eq_one_iff` for a non-ordered `Monoid` -/
-@[to_additive
-      "Slightly more general version of `List.sum_eq_zero_iff` for a non-ordered `AddMonoid`"]
-theorem prod_eq_one [Monoid M] {l : List M} (hl : ∀ x ∈ l, x = (1 : M)) : l.prod = 1 := by
-  induction' l with i l hil
-  · rfl
-  rw [List.prod_cons, hil fun x hx => hl _ (mem_cons_of_mem i hx), hl _ (mem_cons_self i l),
-    one_mul]
-#align list.prod_eq_one List.prod_eq_one
-#align list.sum_eq_zero List.sum_eq_zero
-
-@[to_additive]
-theorem exists_mem_ne_one_of_prod_ne_one [Monoid M] {l : List M} (h : l.prod ≠ 1) :
-    ∃ x ∈ l, x ≠ (1 : M) := by simpa only [not_forall, exists_prop] using mt prod_eq_one h
-#align list.exists_mem_ne_one_of_prod_ne_one List.exists_mem_ne_one_of_prod_ne_one
-#align list.exists_mem_ne_zero_of_sum_ne_zero List.exists_mem_ne_zero_of_sum_ne_zero
-
 -- TODO: develop theory of tropical rings
 theorem sum_le_foldr_max [AddMonoid M] [AddMonoid N] [LinearOrder N] (f : M → N) (h0 : f 0 ≤ 0)
     (hadd : ∀ x y, f (x + y) ≤ max (f x) (f y)) (l : List M) : f l.sum ≤ (l.map f).foldr max 0 := by
@@ -589,35 +705,6 @@ theorem sum_le_foldr_max [AddMonoid M] [AddMonoid N] [LinearOrder N] (f : M → 
   simp only [List.sum_cons, List.foldr_map, List.foldr] at IH ⊢
   exact (hadd _ _).trans (max_le_max le_rfl IH)
 #align list.sum_le_foldr_max List.sum_le_foldr_max
-
-@[to_additive]
-theorem prod_erase_of_comm [DecidableEq M] [Monoid M] {a} {l : List M} (ha : a ∈ l)
-    (comm : ∀ x ∈ l, ∀ y ∈ l, x * y = y * x) :
-    a * (l.erase a).prod = l.prod := by
-  induction' l with b l ih; simp only [not_mem_nil] at ha
-  obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem ha
-  simp only [erase_cons_head, prod_cons]
-  rw [List.erase, beq_false_of_ne ne.symm, List.prod_cons, List.prod_cons, ← mul_assoc,
-    comm a ha b (l.mem_cons_self b), mul_assoc,
-    ih h fun x hx y hy ↦ comm _ (List.mem_cons_of_mem b hx) _ (List.mem_cons_of_mem b hy)]
-
-@[to_additive (attr := simp)]
-theorem prod_erase [DecidableEq M] [CommMonoid M] {a} {l : List M} (ha : a ∈ l) :
-    a * (l.erase a).prod = l.prod :=
-  prod_erase_of_comm ha fun x _ y _ ↦ mul_comm x y
-#align list.prod_erase List.prod_erase
-#align list.sum_erase List.sum_erase
-
-@[to_additive (attr := simp)]
-theorem prod_map_erase [DecidableEq ι] [CommMonoid M] (f : ι → M) {a} :
-    ∀ {l : List ι}, a ∈ l → f a * ((l.erase a).map f).prod = (l.map f).prod
-  | b :: l, h => by
-    obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem h
-    · simp only [map, erase_cons_head, prod_cons]
-    · simp only [map, erase_cons_tail _ (not_beq_of_ne ne.symm), prod_cons, prod_map_erase _ h,
-        mul_left_comm (f a) (f b)]
-#align list.prod_map_erase List.prod_map_erase
-#align list.sum_map_erase List.sum_map_erase
 
 theorem sum_const_nat (m n : ℕ) : sum (replicate m n) = m * n :=
   sum_replicate m n
@@ -733,6 +820,38 @@ lemma prod_int_mod (l : List ℤ) (n : ℤ) : l.prod % n = (l.map (· % n)).prod
   induction l <;> simp [Int.mul_emod, *]
 #align list.prod_int_mod List.prod_int_mod
 
+variable [DecidableEq α]
+
+/-- Summing the count of `x` over a list filtered by some `p` is just `countP` applied to `p` -/
+theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
+    ((l.dedup.filter p).map fun x => l.count x).sum = l.countP p := by
+  induction' l with a as h
+  · simp
+  · simp_rw [List.countP_cons, List.count_cons, List.sum_map_add]
+    congr 1
+    · refine' _root_.trans _ h
+      by_cases ha : a ∈ as
+      · simp [dedup_cons_of_mem ha]
+      · simp only [dedup_cons_of_not_mem ha, List.filter]
+        match p a with
+        | true => simp only [List.map_cons, List.sum_cons, List.count_eq_zero.2 ha, zero_add]
+        | false => simp only
+    · by_cases hp : p a
+      · refine' _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h]) _
+        simp [hp, count_dedup]
+      · refine' _root_.trans (List.sum_eq_zero fun n hn => _) (by simp [hp])
+        obtain ⟨a', ha'⟩ := List.mem_map.1 hn
+        split_ifs at ha' with ha
+        · simp only [ha, mem_filter, mem_dedup, find?, mem_cons, true_or, hp,
+            and_false, false_and] at ha'
+        · exact ha'.2.symm
+#align list.sum_map_count_dedup_filter_eq_countp List.sum_map_count_dedup_filter_eq_countP
+
+theorem sum_map_count_dedup_eq_length (l : List α) :
+    (l.dedup.map fun x => l.count x).sum = l.length := by
+  simpa using sum_map_count_dedup_filter_eq_countP (fun _ => True) l
+#align list.sum_map_count_dedup_eq_length List.sum_map_count_dedup_eq_length
+
 end List
 
 section MonoidHom
@@ -758,3 +877,20 @@ protected theorem map_list_prod (f : M →* N) (l : List M) : f l.prod = (l.map 
 end MonoidHom
 
 end MonoidHom
+
+@[simp] lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum :=
+  (List.foldl_eq_foldr Nat.add_comm Nat.add_assoc _ _).symm
+
+namespace List
+
+lemma length_sigma {σ : α → Type*} (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
+    length (l₁.sigma l₂) = (l₁.map fun a ↦ length (l₂ a)).sum := by simp [length_sigma']
+#align list.length_sigma List.length_sigma
+
+lemma ranges_join (l : List ℕ) : l.ranges.join = range l.sum := by simp [ranges_join']
+
+/-- Any entry of any member of `l.ranges` is strictly smaller than `l.sum`. -/
+lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
+    (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by simp [mem_mem_ranges_iff_lt_natSum]
+
+end List
