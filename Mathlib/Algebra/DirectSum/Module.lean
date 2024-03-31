@@ -292,7 +292,6 @@ noncomputable def lequivProdDirectSum : (⨁ i, α i) ≃ₗ[R] α none × ⨁ i
 end Option
 section Sum
 
-variable (R)
 variable {ια ιβ : Type*} [DecidableEq ια] [DecidableEq ιβ] (α : (i : ια) → Type u)
   (β : (i : ιβ) → Type u) [∀ i : ια, AddCommMonoid (α i)] [∀ i : ιβ, AddCommMonoid (β i)]
   [∀ i : ια, Module R (α i)] [∀ i : ιβ, Module R (β i)]

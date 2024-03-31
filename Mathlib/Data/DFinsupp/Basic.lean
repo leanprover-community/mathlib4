@@ -1718,18 +1718,18 @@ theorem equivProdDFinsupp_smul [Monoid γ] [∀ i, AddMonoid (α i)] [∀ i, Dis
 end Equiv
 section Sum
 
-variable {ια ιβ : Type*} [DecidableEq ια] [DecidableEq ιβ] {α : (i : ια) → Type u}
-  {β : (i : ιβ) → Type u}
+variable {ι₁ ι₂ : Type*} [DecidableEq ι₁] [DecidableEq ι₂] {α₁ : (i : ι₁) → Type u}
+  {α₂ : (i : ι₂) → Type u}
 
 section
 
-variable [∀ i : ια, Zero (α i)] [∀ i : ιβ, Zero (β i)]
-  [(i : ια) → (x : α i) → Decidable (x ≠ 0)] [(i : ιβ) → (x : β i) → Decidable (x ≠ 0)]
+variable [∀ i : ι₁, Zero (α₁ i)] [∀ i : ι₂, Zero (α₂ i)]
+  [(i : ι₁) → (x : α₁ i) → Decidable (x ≠ 0)] [(i : ι₂) → (x : α₂ i) → Decidable (x ≠ 0)]
 
-/-- The `DFinsupp` indexed by `ια ⊕ ιβ` induced by a pair of `DFinsupp`s indexed by `ια` and
-`ιβ` respectively. -/
-def sumElim (f : Π₀ i, α i) (g : Π₀ i, β i) :
-    Π₀ (i : ια ⊕ ιβ), Sum.elim α β i :=
+/-- The `DFinsupp` indexed by `ι₁ ⊕ ι₂` induced by a pair of `DFinsupp`s indexed by `ι₁`
+and `ι₂` respectively. -/
+def sumElim (f : Π₀ i, α₁ i) (g : Π₀ i, α₂ i) :
+    Π₀ (i : ι₁ ⊕ ι₂), Sum.elim α₁ α₂ i :=
   onFinset (Finset.disjSum (support f) (support g))
     (fun i => match i with
     | Sum.inl i => f i
@@ -1738,67 +1738,44 @@ def sumElim (f : Π₀ i, α i) (g : Π₀ i, β i) :
     | Sum.inl i => fun h => by simp_all
     | Sum.inr i => fun h => by simp_all
 
-@[simp, norm_cast]
-theorem coe_sumElim (f : Π₀ i, α i) (g : Π₀ i, β i) :
-    ⇑(sumElim f g) = Sum.elim f g :=
-  rfl
-
-theorem sumElim_apply (f : Π₀ i, α i) (g : Π₀ i, β i) (x : ια ⊕ ιβ) :
-    sumElim f g x = Sum.elim f g x :=
-  rfl
-
-theorem sumElim_inl (f : Π₀ i, α i) (g : Π₀ i, β i) (x : ια) :
+@[simp] theorem sumElim_inl (f : Π₀ i, α₁ i) (g : Π₀ i, α₂ i) (x : ι₁) :
     sumElim f g (Sum.inl x) = f x :=
   rfl
 
-theorem sumElim_inr (f : Π₀ i, α i) (g : Π₀ i, β i) (x : ιβ) :
+@[simp] theorem sumElim_inr (f : Π₀ i, α₁ i) (g : Π₀ i, α₂ i) (x : ι₂) :
     sumElim f g (Sum.inr x) = g x :=
   rfl
 
-variable (α β)
+variable (α₁ α₂)
 
-/-- Given families of types `αᵢ, βᵢ` indexed by `ια, ιβ` respectively, this is the natural
-equivalence between `DFinsupps` on the induced family indexed by `ια ⊕ ιβ`, and the product
-of the `DFinsupp`s on `αᵢ` and on `βᵢ`. -/
-noncomputable def sumDFinsuppEquivProdDFinsupp :
-    (Π₀ i : ια ⊕ ιβ, Sum.elim α β i) ≃ (Π₀ i : ια, α i) × (Π₀ i : ιβ, β i) where
+/-- Given families of types `α₁ᵢ, α₂ᵢ` indexed by `ι₁, ι₂` respectively, this is the natural
+equivalence between `DFinsupps` on the induced family indexed by `ι₁ ⊕ ι₂`, and the product
+of the `DFinsupp`s on `α₁ᵢ` and on `α₂ᵢ`. -/
+@[simps] noncomputable def sumDFinsuppEquivProdDFinsupp :
+    (Π₀ i : ι₁ ⊕ ι₂, Sum.elim α₁ α₂ i) ≃ (Π₀ i : ι₁, α₁ i) × (Π₀ i : ι₂, α₂ i) where
   toFun := fun f => ⟨comapDomain Sum.inl Sum.inl_injective f,
     comapDomain Sum.inr Sum.inr_injective f⟩
-  invFun := fun ⟨f, g⟩ => sumElim f g
+  invFun := fun x => sumElim x.1 x.2
   left_inv := fun _ => ext fun j => match j with
-    | Sum.inl _ => rfl
-    | Sum.inr _ => rfl
+  | Sum.inl _ => rfl
+  | Sum.inr _ => rfl
   right_inv := fun ⟨_, _⟩ => Prod.ext (ext fun _ => rfl) (ext fun _ => rfl)
-
-variable {α β}
-
-@[simp, norm_cast] lemma coe_sumDFinsuppEquivProdDFinsupp_fst
-    (x : Π₀ i : ια ⊕ ιβ, Sum.elim α β i) :
-    ⇑(sumDFinsuppEquivProdDFinsupp α β x).1 = comapDomain Sum.inl Sum.inl_injective f := rfl
-
-@[simp, norm_cast] lemma coe_sumDFinsuppEquivProdDFinsupp_snd
-    (x : Π₀ i : ια ⊕ ιβ, Sum.elim α β i) :
-    ⇑(sumDFinsuppEquivProdDFinsupp α β x).2 = comapDomain Sum.inr Sum.inr_injective f := rfl
-
-@[simp, norm_cast] lemma coe_sumDFinsuppEquivProdDFinsupp_symm
-    (f : Π₀ i : ια, α i) (g : Π₀ : i : ιβ, β i) :
-    ⇑((sumDFinsuppEquivProdDFinsupp α β).symm (f, g)) = sumElim f g := rfl
 
 end
 section
 
-variable (α β)
-variable [∀ i : ια, AddZeroClass (α i)] [∀ i : ιβ, AddZeroClass (β i)]
-  [(i : ια) → (x : α i) → Decidable (x ≠ 0)] [(i : ιβ) → (x : β i) → Decidable (x ≠ 0)]
+variable (α₁ α₂)
+variable [∀ i : ι₁, AddZeroClass (α₁ i)] [∀ i : ι₂, AddZeroClass (α₂ i)]
+  [(i : ι₁) → (x : α₁ i) → Decidable (x ≠ 0)] [(i : ι₂) → (x : α₂ i) → Decidable (x ≠ 0)]
 
-/-- Given families of types `αᵢ, βᵢ` indexed by `ια, ιβ` respectively, this is the natural
-additive equivalence between `DFinsupps` on the induced family indexed by `ια ⊕ ιβ`, and the
-product of the `DFinsupp`s on `αᵢ` and on `βᵢ`. -/
+/-- Given families of types `α₁ᵢ, α₂ᵢ` indexed by `ι₁, ι₂` respectively, this is the natural
+additive equivalence between `DFinsupps` on the induced family indexed by `ι₁ ⊕ ι₂`, and the
+product of the `DFinsupp`s on `α₁ᵢ` and on `α₂ᵢ`. -/
 @[simps! apply symm_apply]
 noncomputable def sumDFinsuppAddEquivProdDFinsupp :
-    (Π₀ (i : ια ⊕ ιβ), Sum.elim α β i) ≃+ (Π₀ i : ια, α i) × (Π₀ i : ιβ, β i) :=
-  { DFinsupp.sumFinsuppEquivProdFinsupp α β with
-    map_add' := fun _ _ => Prod.ext (DFinsupp.ext fun _ => rfl) (DFinsupp.ext fun _ => rfl) }
+    (Π₀ (i : ι₁ ⊕ ι₂), Sum.elim α₁ α₂ i) ≃+ (Π₀ i : ι₁, α₁ i) × (Π₀ i : ι₂, α₂ i) :=
+  { sumDFinsuppEquivProdDFinsupp α₁ α₂ with
+    map_add' := fun _ _ => Prod.ext (ext fun _ => rfl) (ext fun _ => rfl) }
 
 end
 end Sum
