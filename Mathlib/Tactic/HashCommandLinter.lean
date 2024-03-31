@@ -12,7 +12,8 @@ import Std.Lean.HashSet
 #  `#`-command linter
 
 The `#`-command linter produces a warning when a command starting with `#` is used *and*
-the command emits no message.
+* either the command emits no message;
+* or `warningAsError` is set to `true`.
 -/
 
 namespace Mathlib.Linter
@@ -31,11 +32,8 @@ namespace HashCommandLinter
 
 open Lean Elab
 
-/-- Gets the value of the `linter.hashCommand` option, also checking whether `warningAsError`
-is true.
-This allows the linter to emit better messages during CI, but does not clutter local usage. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.hashCommand o &&
-  warningAsError.get o
+/-- Gets the value of the `linter.hashCommand` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.hashCommand o
 
 open Command in
 /-- Exactly like `withSetOptionIn`, but recursively discards nested uses of `in`.
@@ -61,9 +59,13 @@ private abbrev whitelist : HashSet String :=
 * the ones that already emit a message.
 
 This means that CI will fail on `#`-commands whether they themselves emit a message or not.
+
+If `warningAsError` is `true`, then the linter emits a warning
+also on silent `#`-commands.
+This allows the linter to emit better messages during CI, but does not clutter local usage
 -/
 def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
-  if getLinterHash (← getOptions) && (← get).messages.msgs.size == 0 then
+  if getLinterHash (← getOptions) && ((← get).messages.msgs.size == 0 || warningAsError.get (← getOptions)) then
     match stx.getHead? with
     | some sa =>
       let a := sa.getAtomVal
