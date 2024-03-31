@@ -151,9 +151,10 @@ private lemma denest_aux : p.take 1 = [p.head np] ∧ p.dropLast.take 1 = [p.hea
     · rw [dropLast_cons₂, take_cons, take_zero, head_cons]
     · rfl
 
-lemma concat_tail_dropLast_concat : p = [U] ++ tail (dropLast p) ++ [D] := by
-  nth_rw 1 [← p.dropLast_append_getLast np, ← p.dropLast.take_append_drop 1]
+lemma cons_tail_dropLast_concat : U :: tail (dropLast p) ++ [D] = p := by
+  conv_rhs => rw [← p.dropLast_append_getLast np, ← p.dropLast.take_append_drop 1]
   rw [bp.getLast_eq_D, drop_one, (denest_aux bp np).2.1, bp.head_eq_U]
+  rfl
 
 /-- If the inequality part of `IsBalanced` is strict in the interior of a nonempty
 balanced Dyck path, the interior is itself balanced. -/
@@ -162,8 +163,8 @@ lemma IsBalanced.denest
     IsBalanced p.dropLast.tail := by
   obtain ⟨l1, _, l3⟩ := denest_aux bp np
   constructor
-  · replace bp := (concat_tail_dropLast_concat bp np) ▸ bp.1
-    simp_rw [count_append, count_singleton', ite_true, ite_false] at bp; omega
+  · replace bp := (cons_tail_dropLast_concat bp np).symm ▸ bp.1
+    simp_rw [count_append, count_cons, count_nil, ite_true, ite_false] at bp; omega
   · intro i
     rw [← drop_one, ← drop_take, dropLast_eq_take, take_take]
     have ub : min (1 + i) p.length.pred < p.length :=
@@ -251,7 +252,8 @@ theorem rightPart_isBalanced : p.rightPart.IsBalanced :=
 theorem eq_U_leftPart_D_rightPart : p = ↑[U] ++ p.leftPart ++ ↑[D] ++ p.rightPart := by
   nth_rw 1 [← p.take_append_drop (p.firstReturn + 1)]; congr
   rw [leftPart, take_firstReturn_eq_dropLast bp np]
-  exact concat_tail_dropLast_concat (take_firstReturn_isBalanced bp np) (take_firstReturn_ne_nil np)
+  exact (cons_tail_dropLast_concat
+    (take_firstReturn_isBalanced bp np) (take_firstReturn_ne_nil np)).symm
 
 theorem leftPart_length_lt : p.leftPart.length < p.length := by
   conv_rhs => rw [eq_U_leftPart_D_rightPart bp np]
