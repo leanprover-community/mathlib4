@@ -843,7 +843,7 @@ theorem smul_mem_pointwise_smul (g : G) (x : K) (S : ValuationSubring K) : x ∈
 
 theorem pointwise_smul_mono_right (g : G) :
     Monotone (HSMul.hSMul g : ValuationSubring K → ValuationSubring K) :=
-  fun _ _ => image_subset _
+  fun _ _ => Set.image_subset _
 
 theorem mem_smul_pointwise_iff_exists (g : G) (x : K) (S : ValuationSubring K) :
     x ∈ g • S ↔ ∃ s : K, s ∈ S ∧ g • s = x :=
