@@ -3,13 +3,6 @@ import Mathlib.Algebra.Homology.Factorizations.Basic
 
 open CategoryTheory Limits Category Preadditive ZeroObject
 
-lemma HomologicalComplex.mono_of_mono_f {C ι : Type*} [Category C] {c : ComplexShape ι}
-    [HasZeroMorphisms C]
-    {K L : HomologicalComplex C c} (f : K ⟶ L) [hf : ∀ (n : ι), Mono (f.f n)] : Mono f where
-  right_cancellation f₁ f₂ h := by
-    ext n
-    rw [← cancel_mono (f.f n), ← comp_f, ← comp_f, h]
-
 noncomputable instance {C D : Type*} [Category C] [Category D] (F : C ⥤ D) [HasZeroMorphisms C]
     [HasZeroMorphisms D] [F.PreservesZeroMorphisms] [PreservesFiniteBiproducts F] :
     PreservesBinaryBiproducts F where
@@ -70,7 +63,7 @@ lemma i_f_comp (n : ℤ) : (i f).f n ≫
 
 instance (n : ℤ) : Mono ((i f).f n) :=  mono_of_mono_fac (i_f_comp f n)
 
-instance : Mono (i f) := HomologicalComplex.mono_of_mono_f _
+instance : Mono (i f) := HomologicalComplex.mono_of_mono_f (i f) inferInstance
 
 @[reassoc (attr := simp)]
 lemma fac : i f ≫ p K L = f := by simp [i, p]

@@ -169,7 +169,7 @@ noncomputable instance : HasShift (DerivedCategory C) ℤ :=
 noncomputable instance : (Qh (C := C)).CommShift ℤ :=
   Functor.CommShift.localized Qh (HomotopyCategory.subcategoryAcyclic C).W ℤ
 
-instance (n : ℤ) : (shiftFunctor (DerivedCategory C) n).Additive := by
+instance shiftFunctor_additive (n : ℤ) : (shiftFunctor (DerivedCategory C) n).Additive := by
   rw [Localization.functor_additive_iff
     Qh (HomotopyCategory.subcategoryAcyclic C).W]
   exact Functor.additive_of_iso (Qh.commShiftIso n)
@@ -186,10 +186,10 @@ noncomputable instance : IsTriangulated (DerivedCategory C) :=
   Triangulated.Localization.isTriangulated
     Qh (HomotopyCategory.subcategoryAcyclic C).W
 
-/-noncomputable instance (n : ℤ) :
+noncomputable instance (n : ℤ) :
   Localization.Lifting Qh (HomotopyCategory.subcategoryAcyclic C).W
     (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n ⋙ Qh)
-    (shiftFunctor (DerivedCategory C) n) := ⟨(Qh.commShiftIso n).symm⟩-/
+    (shiftFunctor (DerivedCategory C) n) := ⟨(Qh.commShiftIso n).symm⟩
 
 instance : EssSurj (Qh : _ ⥤ DerivedCategory C).mapArrow :=
   Triangulated.Localization.essSurj_mapArrow

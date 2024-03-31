@@ -32,7 +32,7 @@ def closedUnderLimitsOfShapeDiscrete (J : Type*) :
   exact Injective.of_iso e' inferInstance
 
 instance : HasFiniteProducts (Injectives C) :=
-  ⟨fun _ => hasLimitsOfShape_of_closed_under_limits (closedUnderLimitsOfShapeDiscrete _ _)⟩
+  ⟨fun _ => hasLimitsOfShape_of_closedUnderLimits (closedUnderLimitsOfShapeDiscrete _ _)⟩
 
 instance : HasFiniteBiproducts (Injectives C) := HasFiniteBiproducts.of_hasFiniteProducts
 

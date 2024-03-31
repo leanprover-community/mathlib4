@@ -11,7 +11,7 @@ variable (C : Type _) [Category C] [Preadditive C] [HasZeroObject C] [HasBinaryB
 namespace HomotopyCategory
 
 def subcategoryPlus : Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) where
-  set K := ∃ (n : ℤ), CochainComplex.IsStrictlyGE K.1 n
+  P K := ∃ (n : ℤ), CochainComplex.IsStrictlyGE K.1 n
   zero' := by
     refine' ⟨⟨0⟩, _, ⟨0, _⟩⟩
     · change IsZero ((quotient _ _).obj 0)

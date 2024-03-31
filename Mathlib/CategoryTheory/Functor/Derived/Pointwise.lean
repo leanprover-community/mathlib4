@@ -1,7 +1,7 @@
 import Mathlib.CategoryTheory.Functor.Derived.RightDerived
 import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 import Mathlib.CategoryTheory.Localization.Opposite
-import Mathlib.CategoryTheory.RespectsIso
+import Mathlib.CategoryTheory.ClosedUnderIsomorphisms
 
 namespace CategoryTheory
 

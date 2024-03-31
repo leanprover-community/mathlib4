@@ -16,7 +16,7 @@ namespace Localization
 
 variable {C D E : Type _} [Category C] [Category D] [Category E]
 
-section
+/-section
 
 variable
   [HasFiniteProducts C]
@@ -49,7 +49,7 @@ variable [HasFiniteProducts W.Localization] [PreservesFiniteProducts W.Q]
 
 noncomputable instance : Preadditive W.Localization := preadditive W.Q W
 
-noncomputable instance : W.Q.Additive := Functor.additive_of_preserves_finite_products _
+noncomputable instance : W.Q.Additive := Functor.additive_of_preserves_finite_products
 
 end
 
@@ -63,7 +63,7 @@ noncomputable instance : W.Q'.Additive := Functor.additive_of_preserves_finite_p
 
 end
 
-end
+end-/
 
 section
 
@@ -111,7 +111,7 @@ lemma preservesFiniteProductsOfComp (F : C ⥤ D) (G : D ⥤ E) [EssSurj F] [Has
 
 end
 
-section
+/-section
 
 variable (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
   [Preadditive C] [Preadditive D] [Preadditive E]
@@ -133,7 +133,7 @@ lemma functor_additive_iff (F : C ⥤ E) (G : D ⥤ E) [Lifting L W F G] :
   · intro
     exact Functor.additive_of_iso (Lifting.iso L W F G)
 
-end
+end-/
 
 end Localization
 

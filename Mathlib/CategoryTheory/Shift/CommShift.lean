@@ -474,7 +474,7 @@ end CommShift
 variable {C D : Type*} [Category C] [Category D]
   (F : C ⥤ D)
   {A B : Type*} [AddCommMonoid B] [HasShift C B] [HasShift D B]
-  [AddCommMonoid A] [HasShift C A] [HasShift D A]
+  [AddMonoid A] [HasShift C A] [HasShift D A]
 
 lemma map_shiftFunctorComm_hom_app [F.CommShift B] (X : C) (a b : B) :
     F.map ((shiftFunctorComm C a b).hom.app X) = (F.commShiftIso b).hom.app (X⟦a⟧) ≫

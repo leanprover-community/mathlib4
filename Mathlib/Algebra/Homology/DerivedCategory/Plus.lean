@@ -94,14 +94,14 @@ noncomputable def fac : LocQ ⋙ π C ≅ Qh :=
 variable {C}
 
 noncomputable def QhObjIso (K : HomotopyCategory C (ComplexShape.up ℤ))
-    (hK : K ∈ (HomotopyCategory.subcategoryPlus C).set) :
+    (hK : (HomotopyCategory.subcategoryPlus C).P K) :
     Plus.ι.obj ((π C).obj (LocQ.obj ⟨K, hK⟩)) ≅ DerivedCategory.Qh.obj K :=
   Plus.ι.mapIso ((fac C).app ⟨K, hK⟩)
 
 lemma ι_π_LocQ_map_eq {K L : HomotopyCategory C (ComplexShape.up ℤ)}
     (f : K ⟶ L)
-    (hK : K ∈ (HomotopyCategory.subcategoryPlus C).set)
-    (hL : L ∈ (HomotopyCategory.subcategoryPlus C).set) :
+    (hK : (HomotopyCategory.subcategoryPlus C).P K)
+    (hL : (HomotopyCategory.subcategoryPlus C).P L) :
     ι.map ((π C).map (LocQ.map (f : ⟨K, hK⟩ ⟶ ⟨L, hL⟩))) = (QhObjIso K hK).hom ≫
       DerivedCategory.Qh.map f ≫ (QhObjIso L hL).inv:= by
   dsimp [QhObjIso]
@@ -114,10 +114,10 @@ lemma ι_π_LocQ_map_eq {K L : HomotopyCategory C (ComplexShape.up ℤ)}
 
 -- see Verdier II 2.3.5 (a), which should be formalized more generally
 lemma right_localizing {K K' : HomotopyCategory C (ComplexShape.up ℤ)} (φ : K ⟶ K')
-    (hK : K ∈ (HomotopyCategory.subcategoryPlus C).set)
+    (hK : (HomotopyCategory.subcategoryPlus C).P K)
     (hφ : IsIso (DerivedCategory.Qh.map φ)) :
     ∃ (K'' : HomotopyCategory C (ComplexShape.up ℤ))
-    (hK'' : K'' ∈ (HomotopyCategory.subcategoryPlus C).set) (f : K' ⟶ K''),
+    (hK'' : (HomotopyCategory.subcategoryPlus C).P K'') (f : K' ⟶ K''),
     IsIso (DerivedCategory.Qh.map f) := by
   obtain ⟨K : CochainComplex C ℤ⟩ := K
   obtain ⟨n, (hn : K.IsStrictlyGE n)⟩ := hK
@@ -175,7 +175,7 @@ noncomputable instance : Full (π C) := Functor.fullOfSurjective _ (fun K L => b
 instance : (π C ⋙ Plus.ι).Additive := by
   have : Localization.Lifting LocQ (Subcategory.W (HomotopyCategory.Plus.subcategoryAcyclic C))
     (Qh ⋙ ι) (π C ⋙ ι) := ⟨isoWhiskerRight (fac C) ι⟩
-  rw [← Localization.functor_additive_iff LocQ
+  rw [Localization.functor_additive_iff' LocQ
     (HomotopyCategory.Plus.subcategoryAcyclic C).W
     (Qh ⋙ Plus.ι)
     (π C ⋙ Plus.ι)]

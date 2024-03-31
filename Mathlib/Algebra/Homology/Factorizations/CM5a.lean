@@ -728,8 +728,9 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
             exact Limits.isZero_zero C
           rw [← cancel_mono (M.iCycles n), zero_comp, cyclesMap_i, this, comp_zero]
         symm
+        dsimp [p, σ]
         rw [← homologyMap_comp, ← homologyMap_id, ← sub_eq_zero, ← homologyMap_sub,
-          ← biprod.total, add_sub_cancel, ← cancel_epi (M.homologyπ n),
+          ← biprod.total, add_sub_cancel_right, ← cancel_epi (M.homologyπ n),
           homologyπ_naturality, comp_zero, cyclesMap_comp, this, comp_zero, zero_comp]
       · rw [← homologyMap_comp, σp, homologyMap_id]
   have hi : ∀ (n : ℤ) (_ : n ≤ n₀), QuasiIsoAt i n := fun n hn => by

@@ -88,7 +88,7 @@ lemma isTriangulated_rightAdjoint : F.IsTriangulated where
           obtain ⟨β, hβ⟩ := this
           refine' ⟨ψ + β, _⟩
           dsimp
-          rw [add_comp, hβ, hα, add_sub_cancel'_right]
+          rw [add_comp, hβ, hα, add_sub_cancel]
         obtain ⟨β, hβ⟩ := T.coyoneda_exact₃ hT ((adj.homEquiv _ _).symm α)
           ((adj.homEquiv _ _).injective (by simpa using hα₀))
         refine' ⟨adj.homEquiv _ _ β ≫ f, _⟩

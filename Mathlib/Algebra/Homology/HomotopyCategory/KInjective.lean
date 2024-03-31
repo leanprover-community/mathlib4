@@ -25,16 +25,15 @@ variable (L)
 
 lemma isKInjective_iff_mem_rightOrthogonal :
     L.IsKInjective ↔
-      (HomotopyCategory.quotient _ _).obj L ∈
-        (HomotopyCategory.subcategoryAcyclic C).rightOrthogonal.set := by
+      (HomotopyCategory.subcategoryAcyclic C).rightOrthogonal.P ((HomotopyCategory.quotient _ _).obj L) := by
   constructor
   · intro _ ⟨(K : CochainComplex C ℤ)⟩ f hK
     obtain ⟨f, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f
-    erw [HomotopyCategory.mem_subcategoryAcyclic_iff_exactAt] at hK
+    erw [HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_exactAt] at hK
     rw [HomotopyCategory.eq_of_homotopy f 0 (homotopyZero f hK), Functor.map_zero]
   · intro hL
     refine' ⟨fun K hK f => _⟩
-    rw [← HomotopyCategory.mem_subcategoryAcyclic_iff_exactAt] at hK
+    erw [← HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_exactAt] at hK
     refine' ⟨HomotopyCategory.homotopyOfEq _ _ _⟩
     rw [hL ((HomotopyCategory.quotient _ _).map f) hK, Functor.map_zero]
 
@@ -43,7 +42,7 @@ variable {L}
 lemma isKInjective_iff_of_iso (e : K ≅ L) :
     K.IsKInjective ↔ L.IsKInjective := by
   simp only [isKInjective_iff_mem_rightOrthogonal]
-  exact Set.mem_iff_of_iso _ ((HomotopyCategory.quotient _ _).mapIso e)
+  exact mem_iff_of_iso _ ((HomotopyCategory.quotient _ _).mapIso e)
 
 lemma isKInjective_of_iso (e : K ≅ L) [K.IsKInjective] : L.IsKInjective := by
   rw [← isKInjective_iff_of_iso e]
@@ -53,8 +52,8 @@ variable (K)
 
 instance isKInjective_shift [hK : K.IsKInjective] (n : ℤ) : K⟦n⟧.IsKInjective := by
   simp only [isKInjective_iff_mem_rightOrthogonal] at hK ⊢
-  erw [Set.mem_iff_of_iso _ ((((HomotopyCategory.quotient C
-    (ComplexShape.up ℤ))).commShiftIso n).app K)]
+  erw [mem_iff_of_iso ((HomotopyCategory.subcategoryAcyclic C)).rightOrthogonal.P
+    ((((HomotopyCategory.quotient C (ComplexShape.up ℤ))).commShiftIso n).app K)]
   exact Triangulated.Subcategory.shift _ _ n hK
 
 lemma isKInjective_shift_iff (n : ℤ) :

@@ -98,10 +98,10 @@ noncomputable def localizationsEquivHom :
       ((Localization.compUniqFunctor L L' W).app Y))
 
 noncomputable def localizationsAddEquivHom [Preadditive C] [Preadditive D] [Preadditive D']
-    [L.Additive] [L'.Additive] [HasFiniteProducts C] [HasFiniteProducts D] :
+    [L.Additive] [L'.Additive] [W.HasLeftCalculusOfFractions] :
     (L.obj X ⟶ L.obj Y) ≃+ (L'.obj X ⟶ L'.obj Y) := by
   have : (Localization.uniq L L' W).functor.Additive := by
-    rw [← Localization.functor_additive_iff L W L' (Localization.uniq L L' W).functor]
+    rw [Localization.functor_additive_iff' L W L' (Localization.uniq L L' W).functor]
     infer_instance
   exact ((Localization.uniq L L' W).functor.addEquivHomOfFullOfFaithful (L.obj X) (L.obj Y)).trans
     (addEquivHomOfIsos ((Localization.compUniqFunctor L L' W).app X)
@@ -135,8 +135,10 @@ noncomputable abbrev uniq : DerivedCategory.{w} C ≌ DerivedCategory.{w'} C :=
   (Localization.uniq DerivedCategory.Q DerivedCategory.Q
     (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)))
 
-instance : (uniq.{w, w'} C).functor.Additive :=
-  Functor.additive_of_preserves_binary_products _
+instance : (uniq.{w, w'} C).functor.Additive := by
+  -- why is this necessary?
+  have : ∀ (n : ℤ), (shiftFunctor (DerivedCategory.{w} C) n).Additive := shiftFunctor_additive
+  exact Functor.additive_of_preserves_binary_products _
 
 noncomputable instance : (uniq.{w, w'} C).functor.CommShift ℤ :=
   Functor.CommShift.localized' (uniq.{w, w'} C).functor DerivedCategory.Q
