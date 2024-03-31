@@ -185,6 +185,13 @@ open LinearMap
 
 section Fintype
 
+/-- A generalization of `LinearMap.toMatrix_id`. -/
+@[simp]
+theorem LinearMap.toMatrix_id_eq_basis_toMatrix [Fintype ι] [DecidableEq ι] [Finite ι'] :
+    LinearMap.toMatrix b b' id = b'.toMatrix b := by
+  ext i
+  apply LinearMap.toMatrix_apply
+#align linear_map.to_matrix_id_eq_basis_to_matrix LinearMap.toMatrix_id_eq_basis_toMatrix
 
 variable [Fintype ι']
 
@@ -202,14 +209,6 @@ theorem basis_toMatrix_mul [Fintype κ] [Finite ι] [DecidableEq κ]
   have := basis_toMatrix_mul_linearMap_toMatrix b₃ b₁ b₂ (Matrix.toLin b₃ b₂ A)
   rwa [LinearMap.toMatrix_toLin] at this
 #align basis_to_matrix_mul basis_toMatrix_mul
-
-/-- A generalization of `LinearMap.toMatrix_id`. -/
-@[simp]
-theorem LinearMap.toMatrix_id_eq_basis_toMatrix [Finite ι] [DecidableEq ι'] :
-    LinearMap.toMatrix b' b id = b.toMatrix b' := by
-  ext i
-  apply LinearMap.toMatrix_apply
-#align linear_map.to_matrix_id_eq_basis_to_matrix LinearMap.toMatrix_id_eq_basis_toMatrix
 
 variable [Finite κ] [Fintype ι]
 
