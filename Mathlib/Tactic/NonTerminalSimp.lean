@@ -103,6 +103,8 @@ def extractRealGoalsCtx' : InfoTree →
   | .context _ t => extractRealGoalsCtx' t
   | _ => default
 
+/-- returns the array of `Syntax` that represent "locations", typically, everything that happens
+in `locs` in `tac at locs`. -/
 partial
 def getLocs (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : Array Syntax :=
   match stx with
@@ -163,6 +165,13 @@ def getStained! (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : Arr
 /-- Gets the value of the `linter.nonTerminalSimp` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.nonTerminalSimp o
 
+/-- `stained.toFVarId lctx st` takes a local context `lctx` and a `stained` `st` and returns
+the array of `FVarId`s that `lctx` assigns to `st`:
+* if `st` "is" a `Name`, returns the singleton of the `FVarId` with the name carried by `st`,
+* if `st` is `.goal`, returns the singleton `#[default]`,
+* if `st` is `.wildcard`, returns the array of all the `FVarId`s in `lctx` with also `default`
+  (to keep track of the `goal`).
+-/
 def stained.toFVarId (lctx: LocalContext) : stained → Array FVarId
   | name n   => #[((lctx.findFromUserName? n).getD default).fvarId]
   | goal     => #[default]
