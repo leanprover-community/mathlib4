@@ -47,8 +47,8 @@ theorem cauchy_partial_prod_of_tendsto_cofinite_one {α G : Type*} [CommGroup G]
   intro t ht
   apply hV
   apply Subgroup.prod_mem
-  intro a ha
-  simpa using Finset.disjoint_left.mp ht ha
+  intro i hi
+  simpa using Finset.disjoint_left.mp ht hi
 
 /-- Let `G` be a complete nonarchimedean multiplicative abelian group, and let `f : α → G` be a
 function that tends to one on the filter of cofinite sets. Then `f` is unconditionally
