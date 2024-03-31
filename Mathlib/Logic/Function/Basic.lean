@@ -13,8 +13,6 @@ import Mathlib.Logic.Basic
 # Miscellaneous function constructions and lemmas
 -/
 
-set_option autoImplicit true
-
 open Function
 
 universe u v w
@@ -448,6 +446,7 @@ theorem invFun_eq (h : ∃ a, f a = b) : f (invFun f b) = b :=
   by simp only [invFun, dif_pos h, h.choose_spec]
 #align function.inv_fun_eq Function.invFun_eq
 
+set_option autoImplicit true in
 theorem apply_invFun_apply {α : Type u₁} {β : Type u₂} {f : α → β} {a : α} :
     f (@invFun _ _ ⟨a⟩ f (f a)) = f a :=
   @invFun_eq _ _ ⟨a⟩ _ _ ⟨_, rfl⟩
@@ -807,12 +806,15 @@ end Extend
 
 namespace FactorsThrough
 
+set_option autoImplicit true in
 protected theorem rfl {f : α → β} : FactorsThrough f f := fun _ _ ↦ id
 
-theorem comp_left {f : α → β} {g : α → γ} (h : FactorsThrough g f) (g' : γ → δ) :
+set_option autoImplicit true in
+theorem comp_left {f : α → β} {g : α → γ}  (h : FactorsThrough g f) (g' : γ → δ) :
     FactorsThrough (g' ∘ g) f := fun _x _y hxy ↦
   congr_arg g' (h hxy)
 
+set_option autoImplicit true in
 theorem comp_right {f : α → β} {g : α → γ} (h : FactorsThrough g f) (g' : δ → α) :
     FactorsThrough (g ∘ g') (f ∘ g') := fun _x _y hxy ↦
   h hxy
@@ -935,6 +937,7 @@ lemma not_injective : Injective Not := not_involutive.injective
 lemma not_surjective : Surjective Not := not_involutive.surjective
 lemma not_bijective : Bijective Not := not_involutive.bijective
 
+set_option autoImplicit true in
 @[simp]
 lemma symmetric_apply_eq_iff {f : α → α} : Symmetric (f · = ·) ↔ Involutive f := by
   simp [Symmetric, Involutive]
@@ -1011,7 +1014,7 @@ end Function
 /-- A relation `r : α → β → Prop` is "function-like"
 (for each `a` there exists a unique `b` such that `r a b`)
 if and only if it is `(f · = ·)` for some function `f`. -/
-lemma forall_existsUnique_iff {r : α → β → Prop} :
+lemma forall_existsUnique_iff {α β : Sort*} {r : α → β → Prop} :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → β, ∀ {a b}, r a b ↔ f a = b := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · refine ⟨fun a ↦ (h a).choose, fun hr ↦ ?_, fun h' ↦ h' ▸ ?_⟩
@@ -1022,14 +1025,14 @@ lemma forall_existsUnique_iff {r : α → β → Prop} :
 /-- A relation `r : α → β → Prop` is "function-like"
 (for each `a` there exists a unique `b` such that `r a b`)
 if and only if it is `(f · = ·)` for some function `f`. -/
-lemma forall_existsUnique_iff' {r : α → β → Prop} :
+lemma forall_existsUnique_iff' {α β : Sort*} {r : α → β → Prop} :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → β, r = (f · = ·) := by
   simp [forall_existsUnique_iff, Function.funext_iff]
 
 /-- A symmetric relation `r : α → α → Prop` is "function-like"
 (for each `a` there exists a unique `b` such that `r a b`)
 if and only if it is `(f · = ·)` for some involutive function `f`. -/
-protected lemma Symmetric.forall_existsUnique_iff' {r : α → α → Prop} (hr : Symmetric r) :
+protected lemma Symmetric.forall_existsUnique_iff' {α : Sort*} {r : α → α → Prop} (hr : Symmetric r) :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → α, Involutive f ∧ r = (f · = ·) := by
   refine ⟨fun h ↦ ?_, fun ⟨f, _, hf⟩ ↦ forall_existsUnique_iff'.2 ⟨f, hf⟩⟩
   rcases forall_existsUnique_iff'.1 h with ⟨f, rfl : r = _⟩
@@ -1038,7 +1041,7 @@ protected lemma Symmetric.forall_existsUnique_iff' {r : α → α → Prop} (hr 
 /-- A symmetric relation `r : α → α → Prop` is "function-like"
 (for each `a` there exists a unique `b` such that `r a b`)
 if and only if it is `(f · = ·)` for some involutive function `f`. -/
-protected lemma Symmetric.forall_existsUnique_iff {r : α → α → Prop} (hr : Symmetric r) :
+protected lemma Symmetric.forall_existsUnique_iff {α : Sort*} {r : α → α → Prop} (hr : Symmetric r) :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → α, Involutive f ∧ ∀ {a b}, r a b ↔ f a = b := by
   simp [hr.forall_existsUnique_iff', funext_iff]
 

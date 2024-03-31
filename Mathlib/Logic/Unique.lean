@@ -42,8 +42,6 @@ for good definitional properties of the default term.
 
 -/
 
-set_option autoImplicit true
-
 universe u v w
 
 /-- `Unique α` expresses that `α` is a type with a unique term `default`.
@@ -115,7 +113,7 @@ open Function
 
 section
 
-variable [Unique α]
+variable {α : Sort*} [Unique α]
 
 -- see Note [lower instance priority]
 instance (priority := 100) : Inhabited α :=
@@ -143,6 +141,8 @@ theorem exists_iff {p : α → Prop} : Exists p ↔ p default :=
 
 end
 
+variable {α : Sort*}
+
 @[ext]
 protected theorem subsingleton_unique' : ∀ h₁ h₂ : Unique α, h₁ = h₂
   | ⟨⟨x⟩, h⟩, ⟨⟨y⟩, _⟩ => by congr; rw [h x, h y]
@@ -166,6 +166,8 @@ theorem unique_iff_subsingleton_and_nonempty (α : Sort u) :
    fun ⟨hs, hn⟩ ↦ ⟨by inhabit α; exact Unique.mk' α⟩⟩
 #align unique_iff_subsingleton_and_nonempty unique_iff_subsingleton_and_nonempty
 
+variable {α : Sort*}
+
 @[simp]
 theorem Pi.default_def {β : α → Sort v} [∀ a, Inhabited (β a)] :
     @default (∀ a, β a) _ = fun a : α ↦ @default (β a) _ :=
@@ -185,11 +187,11 @@ instance Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, �
   default := isEmptyElim
   uniq _ := funext isEmptyElim
 
-theorem eq_const_of_subsingleton [Subsingleton α] (f : α → β) (a : α) :
+theorem eq_const_of_subsingleton {β : Sort*} [Subsingleton α] (f : α → β) (a : α) :
     f = Function.const α (f a) :=
   funext fun x ↦ Subsingleton.elim x a ▸ rfl
 
-theorem eq_const_of_unique [Unique α] (f : α → β) : f = Function.const α (f default) :=
+theorem eq_const_of_unique {β : Sort*} [Unique α] (f : α → β) : f = Function.const α (f default) :=
   eq_const_of_subsingleton ..
 #align eq_const_of_unique eq_const_of_unique
 
@@ -200,7 +202,7 @@ theorem heq_const_of_unique [Unique α] {β : α → Sort v} (f : ∀ a, β a) :
 
 namespace Function
 
-variable {f : α → β}
+variable {β : Sort*} {f : α → β}
 
 /-- If the codomain of an injective function is a subsingleton, then the domain
 is a subsingleton as well. -/
@@ -216,7 +218,7 @@ protected theorem Surjective.subsingleton [Subsingleton α] (hf : Surjective f) 
 
 /-- If the domain of a surjective function is a singleton,
 then the codomain is a singleton as well. -/
-protected def Surjective.unique (f : α → β) (hf : Surjective f) [Unique.{u} α] : Unique β :=
+protected def Surjective.unique {α : Sort u} (f : α → β) (hf : Surjective f) [Unique.{u} α] : Unique β :=
   @Unique.mk' _ ⟨f default⟩ hf.subsingleton
 #align function.surjective.unique Function.Surjective.unique
 
@@ -246,7 +248,7 @@ theorem uniqueElim_default {_ : Unique ι} (x : α (default : ι)) : uniqueElim 
   rfl
 
 @[simp]
-theorem uniqueElim_const {_ : Unique ι} (x : β) (i : ι) : uniqueElim (α := fun _ ↦ β) x i = x :=
+theorem uniqueElim_const {ι β : Sort*} {_ : Unique ι} (x : β) (i : ι) : uniqueElim (α := fun _ ↦ β) x i = x :=
   rfl
 
 end Pi

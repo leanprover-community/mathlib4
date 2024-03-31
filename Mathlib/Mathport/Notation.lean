@@ -25,8 +25,6 @@ initialize registerTraceClass `notation3
 
 /-! ### Syntaxes supporting `notation3` -/
 
-set_option autoImplicit true
-
 /--
 Expands binders into nested combinators.
 For example, the familiar exists is given by:
@@ -116,6 +114,7 @@ def MatchState.empty : MatchState where
   scopeState := none
   foldState := {}
 
+set_option autoImplicit true in
 /-- Evaluate `f` with the given variable's value as the `SubExpr` and within that subexpression's
 saved context. Fails if the variable has no value. -/
 def MatchState.withVar (s : MatchState) (name : Name)
