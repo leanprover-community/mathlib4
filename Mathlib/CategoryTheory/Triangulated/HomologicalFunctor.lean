@@ -229,6 +229,28 @@ lemma homologySequence_mono_shift_map_mor₂_iff :
     Mono ((F.shift n₀).map T.mor₂) ↔ (F.shift n₀).map T.mor₁ = 0 :=
   (F.homologySequence_exact₂ T hT n₀).mono_g_iff
 
+lemma homologySequence_isIso_shift_map_mor₁_iff :
+    IsIso ((F.shift n₁).map T.mor₁) ↔
+      F.homologySequenceδ T n₀ n₁ h = 0 ∧ (F.shift n₁).map T.mor₂ = 0 := by
+  rw [← F.homologySequence_mono_shift_map_mor₁_iff T hT n₀ n₁ h,
+    ← F.homologySequence_epi_shift_map_mor₁_iff T hT n₁]
+  constructor
+  · intro
+    constructor <;> infer_instance
+  · rintro ⟨_, _⟩
+    apply isIso_of_mono_of_epi
+
+lemma homologySequence_isIso_shift_map_mor₂_iff :
+    IsIso ((F.shift n₀).map T.mor₂) ↔
+      F.homologySequenceδ T n₀ n₁ h = 0 ∧ (F.shift n₀).map T.mor₁ = 0 := by
+  rw [← F.homologySequence_mono_shift_map_mor₂_iff T hT n₀,
+    ← F.homologySequence_epi_shift_map_mor₂_iff T hT n₀ n₁ h]
+  constructor
+  · intro
+    constructor <;> infer_instance
+  · rintro ⟨_, _⟩
+    apply isIso_of_mono_of_epi
+
 lemma mem_homologicalKernel_W_iff {X Y : C} (f : X ⟶ Y) :
     F.homologicalKernel.W f ↔ ∀ (n : ℤ), IsIso ((F.shift n).map f) := by
   obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle f
