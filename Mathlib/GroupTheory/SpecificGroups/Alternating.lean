@@ -318,7 +318,7 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
     by_cases h2 : ∀ n ∈ g.cycleType, n = 2
     -- If the cycle decomposition of `g` consists entirely of swaps, then the cycle type is $(2,2)$.
     -- This means that it is conjugate to $(04)(13)$, whose normal closure is $A_5$.
-    · rw [Ne.def, Subtype.ext_iff] at g1
+    · rw [Ne, Subtype.ext_iff] at g1
       exact
         (isConj_swap_mul_swap_of_cycleType_two gA g1 h2).normalClosure_eq_top_of
           normalClosure_swap_mul_swap_five
