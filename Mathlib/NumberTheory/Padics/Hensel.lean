@@ -352,15 +352,8 @@ private theorem bound' : Tendsto (fun n : ℕ => ‖F.derivative.eval a‖ * T ^
         (Nat.tendsto_pow_atTop_atTop_of_one_lt (by norm_num)))
 
 private theorem bound :
-    ∀ {ε}, ε > 0 → ∃ N : ℕ, ∀ {n}, n ≥ N → ‖F.derivative.eval a‖ * T ^ 2 ^ n < ε := by
-  have := bound' hnorm
-  simp? [Tendsto, nhds] at this says
-    simp only [Tendsto, nhds_def, Set.mem_setOf_eq, le_iInf_iff, le_principal_iff, mem_map,
-      mem_atTop_sets, ge_iff_le, Set.mem_preimage, and_imp] at this
-  intro ε hε
-  cases' this (ball 0 ε) (mem_ball_self hε) isOpen_ball with N hN
-  exists N; intro n hn
-  simpa [abs_of_nonneg T_nonneg] using hN _ hn
+    ∀ {ε}, ε > 0 → ∃ N : ℕ, ∀ {n}, n ≥ N → ‖F.derivative.eval a‖ * T ^ 2 ^ n < ε := fun hε ↦
+  eventually_atTop.1 <| (bound' hnorm).eventually <| gt_mem_nhds hε
 
 private theorem bound'_sq :
     Tendsto (fun n : ℕ => ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ n) atTop (𝓝 0) := by
