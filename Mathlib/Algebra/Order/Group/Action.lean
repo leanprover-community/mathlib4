@@ -1,9 +1,16 @@
+/-
+Copyright (c) 2024 Eric Wieser. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Wieser
+-/
 import Mathlib.GroupTheory.GroupAction.Basic
 
 /-!
 # Results about `CovariantClass G α HSMul.hSMul LE.le`
 
 When working with group actions rather than modules, we drop the `0 < c` condition.
+
+Notably these are relevant for pointwise actions on set-like objects.
 -/
 
 variable {ι : Sort*} {M α : Type*}
