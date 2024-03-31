@@ -260,20 +260,25 @@ theorem findIdx_eq_length {p : α → Bool} {xs : List α} :
   induction xs with
   | nil => simp_all
   | cons x xs ih =>
-    simp_rw [findIdx_cons, h x (mem_cons_self x xs), cond_false, length_cons, Nat.succ.injEq]
-    apply ih; intro y hy; exact h y <| mem_cons.mpr (Or.inr hy)
+    rw [findIdx_cons, length_cons]
+    constructor <;> intro h
+    · have : ¬p x := by contrapose h; simp_all
+      simp_all
+    · simp_rw [h x (mem_cons_self x xs), cond_false, Nat.succ.injEq, ih]
+      exact fun y hy ↦ h y <| mem_cons.mpr (Or.inr hy)
 
 theorem findIdx_le_length (p : α → Bool) {xs : List α} : xs.findIdx p ≤ xs.length := by
   by_cases e : ∃ x ∈ xs, p x
   · exact (findIdx_lt_length_of_exists e).le
-  · push_neg at e; exact (findIdx_eq_length_of_not_exists e).le
+  · push_neg at e; exact (findIdx_eq_length.mpr e).le
 
 theorem findIdx_lt_length {p : α → Bool} {xs : List α} :
     xs.findIdx p < xs.length ↔ ∃ x ∈ xs, p x := by
-  constructor <;> intro h
-  · exact findIdx_lt_length_of_exists h
-  · use xs.get ⟨xs.findIdx p, h⟩
-    exact ⟨xs.get_mem _ _, findIdx_get⟩
+  rw [← not_iff_not, not_lt]
+  have := @le_antisymm_iff _ _ (xs.findIdx p) xs.length
+  simp only [findIdx_le_length, true_and] at this
+  rw [← this, findIdx_eq_length, not_exists]
+  simp only [Bool.not_eq_true, not_and]
 
 /-- If `xs.findIdx p = i` then `p` does not hold for elements with indices less than `i`. -/
 theorem not_of_lt_findIdx {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.findIdx p) :
