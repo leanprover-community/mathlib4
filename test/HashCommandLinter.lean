@@ -72,8 +72,10 @@ open Nat in
 variable (n : Nat) in
 #guard true
 
--- when `warningAsError` is `true`, emit an error also on noisy `#`-commands
-set_option warningAsError true in
+section warningAsError
+
+-- if `warningAsError = true`, log an info (instead of a warning) on all `#`-commands, noisy or not
+set_option warningAsError true
 /--
 info: 0
 ---
@@ -82,13 +84,12 @@ info: `#`-commands, such as '#eval', are not allowed in 'Mathlib' [linter.hashCo
 #guard_msgs in
 #eval 0
 
--- when `warningAsError` is `true`, emit an error also on noisy `#`-commands
-set_option warningAsError true in
-
 /--
 info: `#`-commands, such as '#guard', are not allowed in 'Mathlib' [linter.hashCommand]
 -/
 #guard_msgs in
 #guard true
+
+end warningAsError
 
 end linted_commands
