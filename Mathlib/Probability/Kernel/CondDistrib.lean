@@ -125,7 +125,7 @@ theorem condDistrib_ae_eq_of_measure_eq_compProd (hX : Measurable X) (hY : Measu
     rw [Measure.map_apply hX hs, Measure.fst_apply hs, Measure.map_apply]
     exacts [rfl, Measurable.prod hX hY, measurable_fst hs]
   rw [heq, condDistrib]
-  refine Measure.eq_condKernel_of_measure_eq_compProd _ ?_
+  refine eq_condKernel_of_measure_eq_compProd _ ?_
   convert hκ
   exact heq.symm
 
