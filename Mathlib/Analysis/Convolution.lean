@@ -899,9 +899,8 @@ end NontriviallyNormedField
 
 open scoped Convolution
 
-section IsROrC
-
-variable [IsROrC 𝕜]
+section RCLike
+variable [RCLike 𝕜]
 variable [NormedSpace 𝕜 E]
 variable [NormedSpace 𝕜 E']
 variable [NormedSpace 𝕜 E'']
@@ -1031,7 +1030,7 @@ theorem HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompactSupport
   · have : fderiv 𝕜 (0 : G → E') = 0 := fderiv_const (0 : E')
     simp only [this, convolution_zero, Pi.zero_apply]
     exact hasFDerivAt_const (0 : F) x₀
-  have : ProperSpace G := FiniteDimensional.proper_isROrC 𝕜 G
+  have : ProperSpace G := FiniteDimensional.proper_rclike 𝕜 G
   set L' := L.precompR G
   have h1 : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (fun t => L (f t) (g (x - t))) μ :=
     eventually_of_forall
@@ -1065,12 +1064,13 @@ theorem HasCompactSupport.hasFDerivAt_convolution_left [IsNegInvariant μ]
   exact hcf.hasFDerivAt_convolution_right L.flip hg hf x₀
 #align has_compact_support.has_fderiv_at_convolution_left HasCompactSupport.hasFDerivAt_convolution_left
 
-end IsROrC
+end RCLike
 
 section Real
 
 /-! The one-variable case -/
-variable [IsROrC 𝕜]
+
+variable [RCLike 𝕜]
 variable [NormedSpace 𝕜 E]
 variable [NormedSpace 𝕜 E']
 variable [NormedSpace ℝ F] [NormedSpace 𝕜 F]
@@ -1100,7 +1100,7 @@ end Real
 
 section WithParam
 
-variable [IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace 𝕜 E''] [NormedSpace ℝ F]
+variable [RCLike 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace 𝕜 E''] [NormedSpace ℝ F]
   [NormedSpace 𝕜 F] [CompleteSpace F] [MeasurableSpace G] [NormedAddCommGroup G] [BorelSpace G]
   [NormedSpace 𝕜 G] [NormedAddCommGroup P] [NormedSpace 𝕜 P] {μ : MeasureTheory.Measure G}
   (L : E →L[𝕜] E' →L[𝕜] F)

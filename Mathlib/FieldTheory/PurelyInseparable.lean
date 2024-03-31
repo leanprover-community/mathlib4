@@ -384,7 +384,7 @@ instance perfectClosure.perfectRing (p : ℕ) [ExpChar E p]
   obtain ⟨x', hx⟩ := surjective_frobenius E p x.1
   obtain ⟨n, y, hy⟩ := (mem_perfectClosure_iff_pow_mem p).1 x.2
   rw [frobenius_def] at hx
-  rw [← hx, ← pow_mul, ← pow_succ] at hy
+  rw [← hx, ← pow_mul, ← pow_succ'] at hy
   exact ⟨⟨x', (mem_perfectClosure_iff_pow_mem p).2 ⟨n + 1, y, hy⟩⟩, by
     simp_rw [frobenius_def, SubmonoidClass.mk_pow, hx]⟩
 

@@ -132,7 +132,7 @@ theorem GammaIntegral_conj (s : ℂ) : GammaIntegral (conj s) = conj (GammaInteg
 
 theorem GammaIntegral_ofReal (s : ℝ) :
     GammaIntegral ↑s = ↑(∫ x : ℝ in Ioi 0, Real.exp (-x) * x ^ (s - 1)) := by
-  have : ∀ r : ℝ, Complex.ofReal' r = @IsROrC.ofReal ℂ _ r := fun r => rfl
+  have : ∀ r : ℝ, Complex.ofReal' r = @RCLike.ofReal ℂ _ r := fun r => rfl
   rw [GammaIntegral]
   conv_rhs => rw [this, ← _root_.integral_ofReal]
   refine' set_integral_congr measurableSet_Ioi _
@@ -489,7 +489,7 @@ theorem tendsto_self_mul_Gamma_nhds_zero : Tendsto (fun z : ℂ => z * Gamma z) 
     (eventuallyEq_of_mem self_mem_nhdsWithin Complex.Gamma_add_one)
   refine' ContinuousAt.comp (g := Gamma) _ (continuous_id.add continuous_const).continuousAt
   refine' (Complex.differentiableAt_Gamma _ fun m => _).continuousAt
-  rw [zero_add, ← ofReal_nat_cast, ← ofReal_neg, ← ofReal_one, Ne.def, ofReal_inj]
+  rw [zero_add, ← ofReal_nat_cast, ← ofReal_neg, ← ofReal_one, Ne, ofReal_inj]
   refine' (lt_of_le_of_lt _ zero_lt_one).ne'
   exact neg_nonpos.mpr (Nat.cast_nonneg _)
 #align complex.tendsto_self_mul_Gamma_nhds_zero Complex.tendsto_self_mul_Gamma_nhds_zero
@@ -511,7 +511,7 @@ theorem Gamma_eq_integral {s : ℝ} (hs : 0 < s) :
   simp_rw [← Complex.ofReal_one, ← Complex.ofReal_sub]
   suffices ∫ x : ℝ in Ioi 0, ↑(exp (-x)) * (x : ℂ) ^ ((s - 1 : ℝ) : ℂ) =
       ∫ x : ℝ in Ioi 0, ((exp (-x) * x ^ (s - 1) : ℝ) : ℂ) by
-    have cc : ∀ r : ℝ, Complex.ofReal' r = @IsROrC.ofReal ℂ _ r := fun r => rfl
+    have cc : ∀ r : ℝ, Complex.ofReal' r = @RCLike.ofReal ℂ _ r := fun r => rfl
     conv_lhs => rw [this]; enter [1, 2, x]; rw [cc]
     rw [_root_.integral_ofReal, ← cc, Complex.ofReal_re]
   refine' set_integral_congr measurableSet_Ioi fun x hx => _
@@ -588,7 +588,7 @@ lemma integral_rpow_mul_exp_neg_mul_Ioi {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
   convert integral_cpow_mul_exp_neg_mul_Ioi (by rwa [ofReal_re] : 0 < (a : ℂ).re) hr
   refine _root_.integral_ofReal.symm.trans <| set_integral_congr measurableSet_Ioi (fun t ht ↦ ?_)
   norm_cast
-  rw [← ofReal_cpow (le_of_lt ht), IsROrC.ofReal_mul]
+  rw [← ofReal_cpow (le_of_lt ht), RCLike.ofReal_mul]
   rfl
 
 open Lean.Meta Qq Mathlib.Meta.Positivity in
@@ -643,7 +643,7 @@ theorem Gamma_eq_zero_iff (s : ℝ) : Gamma s = 0 ↔ ∃ m : ℕ, s = -m :=
 
 theorem differentiableAt_Gamma {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : DifferentiableAt ℝ Gamma s := by
   refine' (Complex.differentiableAt_Gamma _ _).hasDerivAt.real_of_complex.differentiableAt
-  simp_rw [← Complex.ofReal_nat_cast, ← Complex.ofReal_neg, Ne.def, Complex.ofReal_inj]
+  simp_rw [← Complex.ofReal_nat_cast, ← Complex.ofReal_neg, Ne, Complex.ofReal_inj]
   exact hs
 #align real.differentiable_at_Gamma Real.differentiableAt_Gamma
 
