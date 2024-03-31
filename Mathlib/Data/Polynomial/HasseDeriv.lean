@@ -199,7 +199,7 @@ theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
     simp_rw [Function.comp, natDegree_monomial]
     rw [Finset.fold_ite, Finset.fold_const]
     · simp only [ite_self, max_eq_right, zero_le', Finset.fold_max_le, true_and_iff, and_imp,
-        tsub_le_iff_right, mem_support_iff, Ne.def, Finset.mem_filter]
+        tsub_le_iff_right, mem_support_iff, Ne, Finset.mem_filter]
       intro x hx hx'
       have hxp : x ≤ p.natDegree := le_natDegree_of_ne_zero hx
       have hxn : n ≤ x := by
@@ -216,7 +216,7 @@ theorem natDegree_hasseDeriv [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
   · refine' map_natDegree_eq_sub _ _
     · exact fun h => hasseDeriv_eq_zero_of_lt_natDegree _ _
     · classical
-        simp only [ite_eq_right_iff, Ne.def, natDegree_monomial, hasseDeriv_monomial]
+        simp only [ite_eq_right_iff, Ne, natDegree_monomial, hasseDeriv_monomial]
         intro k c c0 hh
         -- this is where we use the `smul_eq_zero` from `NoZeroSMulDivisors`
         rw [← nsmul_eq_mul, smul_eq_zero, Nat.choose_eq_zero_iff] at hh

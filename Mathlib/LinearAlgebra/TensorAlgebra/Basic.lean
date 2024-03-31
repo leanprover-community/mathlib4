@@ -305,7 +305,7 @@ theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x =
 
 @[simp]
 theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by
-  rw [← (algebraMap R (TensorAlgebra R M)).map_one, Ne.def, ι_eq_algebraMap_iff]
+  rw [← (algebraMap R (TensorAlgebra R M)).map_one, Ne, ι_eq_algebraMap_iff]
   exact one_ne_zero ∘ And.right
 #align tensor_algebra.ι_ne_one TensorAlgebra.ι_ne_one
 
