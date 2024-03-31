@@ -1386,19 +1386,19 @@ theorem lTensor_pow (f : N →ₗ[R] N) (n : ℕ) : f.lTensor M ^ n = (f ^ n).lT
 
 end LinearMap
 
--- namespace LinearEquiv
+namespace LinearEquiv
 
--- variable {N}
+variable {N}
 
--- /-- `LinearEquiv.lTensor M f : M ⊗ N ≃ₗ M ⊗ P` is the natural linear equivalence
--- induced by `f : N ≃ₗ P`. -/
--- def lTensor (f : N ≃ₗ[R] P) : M ⊗[R] N ≃ₗ[R] M ⊗[R] P :=
---   TensorProduct.congr (refl R M) f
+/-- `LinearEquiv.lTensor M f : M ⊗ N ≃ₗ M ⊗ P` is the natural linear equivalence
+induced by `f : N ≃ₗ P`. -/
+def lTensor (f : N ≃ₗ[R] P) : M ⊗[R] N ≃ₗ[R] M ⊗[R] P :=
+  TensorProduct.congr (refl R M) f
 
--- /-- `LinearEquiv.rTensor M f : N₁ ⊗ M ≃ₗ N₂ ⊗ M` is the natural linear equivalence
--- induced by `f : N₁ ≃ₗ N₂`. -/
--- def rTensor (f : N ≃ₗ[R] P) : N ⊗[R] M ≃ₗ[R] P ⊗[R] M :=
---   TensorProduct.congr f (refl R M)
+/-- `LinearEquiv.rTensor M f : N₁ ⊗ M ≃ₗ N₂ ⊗ M` is the natural linear equivalence
+induced by `f : N₁ ≃ₗ N₂`. -/
+def rTensor (f : N ≃ₗ[R] P) : N ⊗[R] M ≃ₗ[R] P ⊗[R] M :=
+  TensorProduct.congr f (refl R M)
 
 -- @[simp]
 -- theorem coe_lTensor (f : N ≃ₗ[R] P) :
@@ -1532,7 +1532,7 @@ end LinearMap
 -- theorem lTensor_zpow (f : N ≃ₗ[R] N) (n : ℤ) : f.lTensor M ^ n = (f ^ n).lTensor M := by
 --   simpa only [one_zpow] using TensorProduct.congr_zpow (1 : M ≃ₗ[R] M) f n
 
--- end LinearEquiv
+end LinearEquiv
 
 end Semiring
 
