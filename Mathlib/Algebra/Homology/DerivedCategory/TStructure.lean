@@ -44,8 +44,8 @@ namespace TStructure
 def t : TStructure (DerivedCategory C) where
   setLE n := fun K => K.IsLE n
   setGE n := fun K => K.IsGE n
-  setLE_respectsIso n := ⟨fun K L e (hK : K.IsLE n) => isLE_of_iso e n⟩
-  setGE_respectsIso n := ⟨fun K L e (hK : K.IsGE n) => isGE_of_iso e n⟩
+  setLE_respectsIso n := ⟨fun {K L} e (hK : K.IsLE n) => isLE_of_iso e n⟩
+  setGE_respectsIso n := ⟨fun {K L} e (hK : K.IsGE n) => isGE_of_iso e n⟩
   shift_mem_setLE n a n' h K (hK : K.IsLE n) := K.isLE_shift n a n' h
   shift_mem_setGE n a n' h K (hK : K.IsGE n) := K.isGE_shift n a n' h
   zero' K L f (hK : K.IsLE 0) (hY : L.IsGE 1):= by
@@ -205,18 +205,18 @@ lemma singleFunctor_preimage {A B : C} {n : ℤ}
 namespace TStructure
 
 lemma singleFunctor_obj_mem_heart (X : C) :
-    (singleFunctor C 0).obj X ∈ t.heart :=
+    t.heart ((singleFunctor C 0).obj X) :=
   ⟨(inferInstance : ((singleFunctor C 0).obj X).IsLE 0),
     (inferInstance : ((singleFunctor C 0).obj X).IsGE 0)⟩
 
 @[simp]
 lemma essImage_singleFunctor_eq_heart :
-    (singleFunctor C 0).essImage = t.heart := by
+    (singleFunctor C 0).essImage = setOf t.heart := by
   ext X
   constructor
   · rintro ⟨A, ⟨e⟩⟩
-    exact t.heart.mem_of_iso e (singleFunctor_obj_mem_heart A)
-  · intro h
+    exact mem_of_iso t.heart e (singleFunctor_obj_mem_heart A)
+  · intro (h : t.heart _)
     rw [TStructure.mem_heart_iff] at h
     have : X.IsGE 0 := h.2.1
     have : X.IsLE 0 := h.1.1
@@ -318,12 +318,12 @@ instance (n : ℤ) (X : DerivedCategory C) : IsLE ((t.truncLE n).obj X) n := by
 lemma isIso_homologyFunctor_map_truncLTι_app (X : DerivedCategory C) (a n : ℤ) (hn : n < a) :
     IsIso ((homologyFunctor C n).map ((t.truncLTι a).app X)) := by
   have : Mono ((homologyFunctor C n).map ((t.truncLTι a).app X)) :=
-    ((homologyFunctor C 0).homology_sequence_mono_shift_map_mor₁_iff _
+    ((homologyFunctor C 0).homologySequence_mono_shift_map_mor₁_iff _
       (t.triangleLTGE_distinguished a X) (n-1) n (by linarith)).2 (by
       apply IsZero.eq_of_src
       exact isZero_of_isGE ((t.truncGE a).obj X) a (n-1) (by linarith))
   have : Epi ((homologyFunctor C n).map ((t.truncLTι a).app X)) :=
-    ((homologyFunctor C 0).homology_sequence_epi_shift_map_mor₁_iff _
+    ((homologyFunctor C 0).homologySequence_epi_shift_map_mor₁_iff _
       (t.triangleLTGE_distinguished a X) n).2 (by
       apply IsZero.eq_of_tgt
       exact isZero_of_isGE ((t.truncGE a).obj X) a n (by linarith))
@@ -336,12 +336,12 @@ lemma isIso_homologyFunctor_map_truncLEι_app (X : DerivedCategory C) (a n : ℤ
 lemma isIso_homologyFunctor_map_truncGEπ_app (X : DerivedCategory C) (a n : ℤ) (hn : a ≤ n) :
     IsIso ((homologyFunctor C n).map ((t.truncGEπ a).app X )) := by
   have : Mono ((homologyFunctor C n).map ((t.truncGEπ a).app X)) :=
-    ((homologyFunctor C 0).homology_sequence_mono_shift_map_mor₂_iff _
+    ((homologyFunctor C 0).homologySequence_mono_shift_map_mor₂_iff _
       (t.triangleLTGE_distinguished a X) n).2 (by
         apply IsZero.eq_of_src
         exact isZero_of_isLE ((t.truncLT a).obj X) (a-1) n (by linarith))
   have : Epi ((homologyFunctor C n).map ((t.truncGEπ a).app X)) :=
-    ((homologyFunctor C 0).homology_sequence_epi_shift_map_mor₂_iff _
+    ((homologyFunctor C 0).homologySequence_epi_shift_map_mor₂_iff _
       (t.triangleLTGE_distinguished a X) n (n+1) rfl).2 (by
         apply IsZero.eq_of_tgt
         exact isZero_of_isLE ((t.truncLT a).obj X) (a-1) (n+1) (by linarith))
