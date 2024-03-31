@@ -31,8 +31,11 @@ namespace HashCommandLinter
 
 open Lean Elab
 
-/-- Gets the value of the `linter.hashCommand` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.hashCommand o
+/-- Gets the value of the `linter.hashCommand` option, also checking whether `warningAsError`
+is true.
+This allows the linter to emit better messages during CI, but does not clutter local usage. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.hashCommand o &&
+  warningAsError.get o
 
 open Command in
 /-- Exactly like `withSetOptionIn`, but recursively discards nested uses of `in`.
