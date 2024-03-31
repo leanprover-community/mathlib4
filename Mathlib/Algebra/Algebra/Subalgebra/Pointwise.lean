@@ -110,6 +110,10 @@ theorem smul_mem_pointwise_smul (m : R') (r : A) (S : Subalgebra R A) : r ∈ S 
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set A))
 #align subalgebra.smul_mem_pointwise_smul Subalgebra.smul_mem_pointwise_smul
 
+theorem pointwise_smul_mono_right (a : R') :
+    Monotone (HSMul.hSMul a : Subalgebra R A → Subalgebra R A) :=
+  fun _ _ => map_mono
+
 end Pointwise
 
 end Subalgebra
