@@ -65,7 +65,8 @@ also on silent `#`-commands.
 This allows the linter to emit better messages during CI, but does not clutter local usage
 -/
 def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
-  if getLinterHash (← getOptions) && ((← get).messages.msgs.size == 0 || warningAsError.get (← getOptions)) then
+  if getLinterHash (← getOptions) &&
+    ((← get).messages.msgs.size == 0 || warningAsError.get (← getOptions)) then
     match stx.getHead? with
     | some sa =>
       let a := sa.getAtomVal
