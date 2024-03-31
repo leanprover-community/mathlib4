@@ -67,7 +67,7 @@ theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
 
 theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
   refine' ContinuousOn.mono continuousOn_tan fun x => _
-  simp only [and_imp, mem_Ioo, mem_setOf_eq, Ne.def]
+  simp only [and_imp, mem_Ioo, mem_setOf_eq, Ne]
   rw [cos_eq_zero_iff]
   rintro hx_gt hx_lt ⟨r, hxr_eq⟩
   rcases le_or_lt 0 r with h | h
