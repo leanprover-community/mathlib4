@@ -9,6 +9,7 @@ import Mathlib.MeasureTheory.Integral.FundThmCalculus
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.MeasureTheory.Function.Jacobian
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 #align_import measure_theory.integral.integral_eq_improper from "leanprover-community/mathlib"@"b84aee748341da06a6d78491367e2c0e9f15e8a5"
 
@@ -680,11 +681,11 @@ open scoped Interval
 section IoiFTC
 
 variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : E} [NormedAddCommGroup E]
-  [NormedSpace ℝ E] [CompleteSpace E]
+  [NormedSpace ℝ E]
 
-/-- If the derivative of a function defined on the real line is integrable close to infinity, then
-the function has a limit at infinity. -/
-theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi
+/-- If the derivative of a function defined on the real line is integrable close to `+∞`, then
+the function has a limit at `+∞`. -/
+theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi [CompleteSpace E]
     (hderiv : ∀ x ∈ Ioi a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Ioi a)) :
     Tendsto f atTop (𝓝 (limUnder atTop f)) := by
   suffices ∃ a, Tendsto f atTop (𝓝 a) from tendsto_nhds_limUnder this
@@ -726,6 +727,33 @@ theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi
       · have : Ioc (↑N) x ⊆ Ici ↑N := Ioc_subset_Ioi_self.trans Ioi_subset_Ici_self
         exact this.eventuallyLE
   _ < ε := hN
+
+open UniformSpace in
+/-- If a function and its derivative are integrable on `(a, +∞)`, then the function tends to zero
+at `+∞`. -/
+theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi
+    (hderiv : ∀ x ∈ Ioi a, HasDerivAt f (f' x) x)
+    (f'int : IntegrableOn f' (Ioi a)) (fint : IntegrableOn f (Ioi a)) :
+    Tendsto f atTop (𝓝 0) := by
+  let F : E →L[ℝ] Completion E := Completion.toComplL
+  have Fderiv : ∀ x ∈ Ioi a, HasDerivAt (F ∘ f) (F (f' x)) x :=
+    fun x hx ↦ F.hasFDerivAt.comp_hasDerivAt _ (hderiv x hx)
+  have Fint : IntegrableOn (F ∘ f) (Ioi a) := by apply F.integrable_comp fint
+  have F'int : IntegrableOn (F ∘ f') (Ioi a) := by apply F.integrable_comp f'int
+  have A : Tendsto (F ∘ f) atTop (𝓝 (limUnder atTop (F ∘ f))) := by
+    apply tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi Fderiv F'int
+  have B : limUnder atTop (F ∘ f) = F 0 := by
+    have : IntegrableAtFilter (F ∘ f) atTop := by exact ⟨Ioi a, Ioi_mem_atTop _, Fint⟩
+    apply IntegrableAtFilter.eq_zero_of_tendsto this ?_ A
+    intro s hs
+    rcases mem_atTop_sets.1 hs with ⟨b, hb⟩
+    apply le_antisymm (le_top)
+    rw [← volume_Ici (a := b)]
+    exact measure_mono hb
+  rwa [B, ← Embedding.tendsto_nhds_iff] at A
+  exact (Completion.uniformEmbedding_coe E).embedding
+
+variable [CompleteSpace E]
 
 /-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(a, +∞)`.
 When a function has a limit at infinity `m`, and its derivative is integrable, then the
@@ -886,7 +914,28 @@ end IoiFTC
 section IicFTC
 
 variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : E} [NormedAddCommGroup E]
-  [NormedSpace ℝ E] [CompleteSpace E]
+  [NormedSpace ℝ E]
+
+/-- If the derivative of a function defined on the real line is integrable close to `+∞`, then
+the function has a limit at `+∞`. -/
+theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn_Iic [CompleteSpace E]
+    (hderiv : ∀ x ∈ Iic a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Iic a)) :
+    Tendsto f atBot (𝓝 (limUnder atBot f)) := by
+  suffices ∃ a, Tendsto f atBot (𝓝 a) from tendsto_nhds_limUnder this
+  let g := f ∘ (fun x ↦ -x)
+  have : ∀ x ∈ Ioi (-a), HasDerivAt g (-f' (-x)) x := by
+    intro x (hx : -a < x)
+    have A : -x ∈ Iic a := by simp; linarith
+    simpa using HasDerivAt.scomp x (hderiv (-x) A) (hasDerivAt_neg' x)
+  have : IntegrableOn (fun x ↦ -f' (-x)) (Ioi (-a)) := by
+    have : MeasurePreserving (fun (x : ℝ) ↦ -x) volume volume :=
+      MeasureTheory.Measure.measurePreserving_neg _
+    have Z := MeasurePreserving.integrableOn_comp_preimage
+    have Z := f'int.neg
+
+#exit
+
+variable [CompleteSpace E]
 
 /-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a)`.
 When a function has a limit `m` at `-∞`, and its derivative is integrable, then the

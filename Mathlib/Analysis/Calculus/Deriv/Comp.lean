@@ -164,7 +164,10 @@ theorem HasDerivWithinAt.comp (hh₂ : HasDerivWithinAt h₂ h₂' s' (h x))
   exact hh₂.scomp x hh hst
 #align has_deriv_within_at.comp HasDerivWithinAt.comp
 
-/-- The chain rule. -/
+/-- The chain rule.
+
+Note that the function `h₂` is a function on an algebra. If you are looking for the chain rule
+with `h₂` taking values in a vector space, use `HAsDerivAt.scomp`. -/
 nonrec theorem HasDerivAt.comp (hh₂ : HasDerivAt h₂ h₂' (h x)) (hh : HasDerivAt h h' x) :
     HasDerivAt (h₂ ∘ h) (h₂' * h') x :=
   hh₂.comp x hh hh.continuousAt
