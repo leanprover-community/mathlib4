@@ -138,12 +138,12 @@ theorem mulMap_comm_of_commute (hc : ∀ (m : M) (n : N), Commute m.1 n.1) :
   simp_rw [LinearMap.comp_apply, LinearEquiv.coe_coe, TensorProduct.comm_tmul, mulMap_tmul]
   exact (hc m n).symm
 
-theorem mulMap_comp_inclusion_left (M' : Submodule R S) (hM : M' ≤ M) :
-    mulMap M N ∘ₗ TensorProduct.map (inclusion hM) LinearMap.id = mulMap M' N :=
+theorem mulMap_comp_rTensor (M' : Submodule R S) (hM : M' ≤ M) :
+    mulMap M N ∘ₗ (inclusion hM).rTensor N = mulMap M' N :=
   TensorProduct.ext' fun _ _ ↦ rfl
 
-theorem mulMap_comp_inclusion_right (N' : Submodule R S) (hN : N' ≤ N) :
-    mulMap M N ∘ₗ TensorProduct.map LinearMap.id (inclusion hN) = mulMap M N' :=
+theorem mulMap_comp_lTensor (N' : Submodule R S) (hN : N' ≤ N) :
+    mulMap M N ∘ₗ (inclusion hN).lTensor M = mulMap M N' :=
   TensorProduct.ext' fun _ _ ↦ rfl
 
 theorem mulMap_comp_inclusion (M' N' : Submodule R S) (hM : M' ≤ M) (hN : N' ≤ N) :
@@ -418,89 +418,73 @@ private theorem test1 (R : Type*) [CommSemiring R] (M N : Type*)
     obtain ⟨Sy, hy⟩ := hy
     exact ⟨Sx + Sy, by rw [Multiset.map_add, Multiset.sum_add, hx, hy]⟩
 
--- TODO: simplify?
+-- TODO: give it a better name
+private theorem test2L {ι : Type*} [Fintype ι] (x : ι → M ⊗[R] N) :
+    ∃ (M' : Submodule R S) (x' : ι → M' ⊗[R] N) (hM : M' ≤ M), Module.Finite R M' ∧
+      ∀ (i : ι), (inclusion hM).rTensor N (x' i) = x i := by
+  choose Sx hSx using fun i ↦ test1 R M N (x i)
+  let T := ((Finset.sum Finset.univ Sx).map fun i ↦ i.1.1).toFinset
+  let M' := span R (T : Set S)
+  have hM : M' ≤ M := span_le.2 fun x hx ↦ by
+    simp only [Finset.mem_coe, Multiset.mem_toFinset, Multiset.mem_map, Prod.exists,
+      exists_and_right, Subtype.exists, exists_eq_right, T] at hx
+    obtain ⟨hx, _⟩ := hx
+    exact hx
+  let f (i : M × N) : M' ⊗[R] N :=
+    if h : i.1.1 ∈ T then ⟨i.1.1, subset_span h⟩ ⊗ₜ[R] i.2 else 0
+  let x' (i : ι) := ((Sx i).map f).sum
+  refine ⟨M', x', hM, inferInstance, fun j ↦ ?_⟩
+  simp_rw [x', hSx, map_multiset_sum, Multiset.map_map]
+  congr 1
+  refine Multiset.map_congr rfl fun i hi ↦ ?_
+  replace hi : i.1.1 ∈ T := by
+    simp only [Multiset.mem_toFinset, Multiset.mem_map, SetLike.coe_eq_coe, Prod.exists,
+      exists_and_right, Subtype.exists, exists_eq_right, T]
+    exact ⟨i.2.1, i.2.2, Multiset.mem_of_le (Finset.single_le_sum (by simp) (by simp)) hi⟩
+  simp_rw [Function.comp_apply, f, dif_pos hi]; rfl
+
+-- TODO: give it a better name
+private theorem test2Lpair (x y : M ⊗[R] N) :
+    ∃ (M' : Submodule R S) (x' y' : M' ⊗[R] N) (hM : M' ≤ M), Module.Finite R M' ∧
+      (inclusion hM).rTensor N x' = x ∧
+      (inclusion hM).rTensor N y' = y := by
+  obtain ⟨M', x', hM, hfin, hx⟩ := test2L M N ![x, y]
+  exact ⟨M', x' 0, x' 1, hM, hfin, hx 0, hx 1⟩
+
+-- TODO: give it a better name
+private theorem test2R {ι : Type*} [Fintype ι] (x : ι → M ⊗[R] N) :
+    ∃ (N' : Submodule R S) (x' : ι → M ⊗[R] N') (hN : N' ≤ N), Module.Finite R N' ∧
+      ∀ (i : ι), (inclusion hN).lTensor M (x' i) = x i := by
+  obtain ⟨N', x', hN, hfin, hx⟩ := test2L N M fun i ↦ TensorProduct.comm R M N (x i)
+  have key : (inclusion hN).lTensor M ∘ₗ TensorProduct.comm R N' M =
+      (TensorProduct.comm R M N).symm ∘ₗ (inclusion hN).rTensor M :=
+    TensorProduct.ext' fun _ _ ↦ rfl
+  refine ⟨N', fun i ↦ TensorProduct.comm R N' M (x' i), hN, hfin, fun i ↦ ?_⟩
+  replace hx := congr((TensorProduct.comm R M N).symm $(hx i))
+  rw [LinearEquiv.symm_apply_apply] at hx
+  simpa only [← hx] using congr($key (x' i))
+
+-- TODO: give it a better name
+private theorem test2Rpair (x y : M ⊗[R] N) :
+    ∃ (N' : Submodule R S) (x' y' : M ⊗[R] N') (hN : N' ≤ N), Module.Finite R N' ∧
+      (inclusion hN).lTensor M x' = x ∧
+      (inclusion hN).lTensor M y' = y := by
+  obtain ⟨M', x', hM, hfin, hx⟩ := test2R M N ![x, y]
+  exact ⟨M', x' 0, x' 1, hM, hfin, hx 0, hx 1⟩
+
 theorem of_linearDisjoint_finite_left
     (H : ∀ M' : Submodule R S, M' ≤ M → [Module.Finite R M'] → M'.LinearDisjoint N) :
     M.LinearDisjoint N := fun x y hxy ↦ by
-  obtain ⟨Sx, hx⟩ := test1 R M N x
-  obtain ⟨Sy, hy⟩ := test1 R M N y
-  let T := ((Sx + Sy).map fun i ↦ i.1.1).toFinset
-  let M' := span R (T : Set S)
-  have hM : M' ≤ M := by
-    rw [span_le]
-    intro x hx
-    simp only [Multiset.map_add, Multiset.toFinset_add, Finset.coe_union, Set.mem_union,
-      Finset.mem_coe, Multiset.mem_toFinset, Multiset.mem_map, Prod.exists, exists_and_right,
-      Subtype.exists, exists_eq_right, T] at hx
-    rcases hx with ⟨hx, _⟩ | ⟨hx, _⟩ <;> exact hx
-  let f (i : M × N) : M' ⊗[R] N :=
-    if h : i.1.1 ∈ T then ⟨i.1.1, subset_span h⟩ ⊗ₜ[R] i.2 else 0
-  let x' := (Sx.map f).sum
-  have hx' : TensorProduct.map (inclusion hM) LinearMap.id x' = x := by
-    simp_rw [x', hx, map_multiset_sum, Multiset.map_map]
-    congr 1
-    refine Multiset.map_congr rfl fun i hi ↦ ?_
-    replace hi : i.1.1 ∈ T := by
-      simp only [Multiset.map_add, Multiset.toFinset_add, Finset.mem_union, Multiset.mem_toFinset,
-        Multiset.mem_map, SetLike.coe_eq_coe, Prod.exists, exists_and_right, Subtype.exists,
-        exists_eq_right, T]
-      exact Or.inl ⟨i.2.1, i.2.2, hi⟩
-    simp_rw [Function.comp_apply, f, dif_pos hi]; rfl
-  let y' := (Sy.map f).sum
-  have hy' : TensorProduct.map (inclusion hM) LinearMap.id y' = y := by
-    simp_rw [y', hy, map_multiset_sum, Multiset.map_map]
-    congr 1
-    refine Multiset.map_congr rfl fun i hi ↦ ?_
-    replace hi : i.1.1 ∈ T := by
-      simp only [Multiset.map_add, Multiset.toFinset_add, Finset.mem_union, Multiset.mem_toFinset,
-        Multiset.mem_map, SetLike.coe_eq_coe, Prod.exists, exists_and_right, Subtype.exists,
-        exists_eq_right, T]
-      exact Or.inr ⟨i.2.1, i.2.2, hi⟩
-    simp_rw [Function.comp_apply, f, dif_pos hi]; rfl
+  obtain ⟨M', x', y', hM, _, hx', hy'⟩ := test2Lpair M N x y
   suffices x' = y' by rw [← hx', ← hy', this]
-  exact H M' hM (by simpa [← mulMap_comp_inclusion_left _ _ _ hM, hx', hy'])
+  exact H M' hM (by simpa [← mulMap_comp_rTensor _ _ _ hM, hx', hy'])
 
--- TODO: simplify?
 theorem of_linearDisjoint_finite_right
     (H : ∀ N' : Submodule R S, N' ≤ N → [Module.Finite R N'] → M.LinearDisjoint N') :
     M.LinearDisjoint N := fun x y hxy ↦ by
-  obtain ⟨Sx, hx⟩ := test1 R M N x
-  obtain ⟨Sy, hy⟩ := test1 R M N y
-  let T := ((Sx + Sy).map fun i ↦ i.2.1).toFinset
-  let N' := span R (T : Set S)
-  have hN : N' ≤ N := by
-    rw [span_le]
-    intro x hx
-    simp only [Multiset.map_add, Multiset.toFinset_add, Finset.coe_union, Set.mem_union,
-      Finset.mem_coe, Multiset.mem_toFinset, Multiset.mem_map, Prod.exists, Subtype.exists,
-      exists_and_right, exists_eq_right, T] at hx
-    rcases hx with ⟨_, _, hx, _⟩ | ⟨_, _, hx, _⟩ <;> exact hx
-  let f (i : M × N) : M ⊗[R] N' :=
-    if h : i.2.1 ∈ T then i.1 ⊗ₜ[R] ⟨i.2.1, subset_span h⟩ else 0
-  let x' := (Sx.map f).sum
-  have hx' : TensorProduct.map LinearMap.id (inclusion hN) x' = x := by
-    simp_rw [x', hx, map_multiset_sum, Multiset.map_map]
-    congr 1
-    refine Multiset.map_congr rfl fun i hi ↦ ?_
-    replace hi : i.2.1 ∈ T := by
-      simp only [Multiset.map_add, Multiset.toFinset_add, Finset.mem_union, Multiset.mem_toFinset,
-        Multiset.mem_map, SetLike.coe_eq_coe, Prod.exists, exists_and_right, Subtype.exists,
-        exists_eq_right, T]
-      exact Or.inl ⟨i.1.1, i.1.2, hi⟩
-    simp_rw [Function.comp_apply, f, dif_pos hi]; rfl
-  let y' := (Sy.map f).sum
-  have hy' : TensorProduct.map LinearMap.id (inclusion hN) y' = y := by
-    simp_rw [y', hy, map_multiset_sum, Multiset.map_map]
-    congr 1
-    refine Multiset.map_congr rfl fun i hi ↦ ?_
-    replace hi : i.2.1 ∈ T := by
-      simp only [Multiset.map_add, Multiset.toFinset_add, Finset.mem_union, Multiset.mem_toFinset,
-        Multiset.mem_map, SetLike.coe_eq_coe, Prod.exists, exists_and_right, Subtype.exists,
-        exists_eq_right, T]
-      exact Or.inr ⟨i.1.1, i.1.2, hi⟩
-    simp_rw [Function.comp_apply, f, dif_pos hi]; rfl
+  obtain ⟨N', x', y', hN, _, hx', hy'⟩ := test2Rpair M N x y
   suffices x' = y' by rw [← hx', ← hy', this]
-  exact H N' hN (by simpa [← mulMap_comp_inclusion_right _ _ _ hN, hx', hy'])
+  exact H N' hN (by simpa [← mulMap_comp_lTensor _ _ _ hN, hx', hy'])
 
 theorem of_linearDisjoint_finite
     (H : ∀ (M' N' : Submodule R S), M' ≤ M → N' ≤ N →
