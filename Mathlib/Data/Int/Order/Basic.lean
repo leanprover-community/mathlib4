@@ -418,7 +418,7 @@ theorem exists_lt_and_lt_iff_not_dvd (m : ℤ) {n : ℤ} (hn : 0 < n) :
     rw [lt_add_one_iff, ← not_lt] at h2k
     exact h2k h1k
   · intro h
-    rw [dvd_iff_emod_eq_zero, ← Ne.def] at h
+    rw [dvd_iff_emod_eq_zero, ← Ne] at h
     have := (emod_nonneg m hn.ne.symm).lt_of_ne h.symm
     rw [← emod_add_ediv m n]
     refine' ⟨m / n, lt_add_of_pos_left _ this, _⟩

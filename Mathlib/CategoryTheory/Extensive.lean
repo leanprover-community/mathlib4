@@ -340,7 +340,7 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
         change f x ≠ Sum.inl PUnit.unit ↔ f x ∈ Set.range Sum.inr
         trans f x = Sum.inr PUnit.unit
         · rcases f x with (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;>
-            simp only [iff_self_iff, eq_self_iff_true, not_true, Ne.def, not_false_iff]
+            simp only [iff_self_iff, eq_self_iff_true, not_true, Ne, not_false_iff]
         · exact ⟨fun h => ⟨_, h.symm⟩,
             fun ⟨e, h⟩ => h.symm.trans (congr_arg Sum.inr <| Subsingleton.elim _ _)⟩
   · intro s
