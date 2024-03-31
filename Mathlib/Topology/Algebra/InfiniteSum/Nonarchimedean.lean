@@ -7,86 +7,67 @@ import Mathlib.Topology.Algebra.InfiniteSum.Group
 import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 
 /-!
-# Infinite sums in nonarchimedean abelian groups
+# Infinite sums and products in nonarchimedean abelian groups
 
 Let `G` be a complete nonarchimedean abelian group and let `f : α → G` be a function. We prove that
 `f` is unconditionally summable if and only if `f a` tends to zero on the cofinite filter on `α`.
+We also prove the analogous result in the multiplicative setting.
 -/
 
-open Filter Topology
+open Filter Topology BigOperators
 
-namespace NonarchimedeanAddGroup
+namespace NonarchimedeanGroup
 
 open scoped Pointwise
 
-/-- Let `G` be a nonarchimedean abelian group, and let `f : α → G` be a function that tends to
-zero on the filter of cofinite sets. For each finite subset of `α`, consider the partial sum of `f`
-on that subset. These partial sums form a Cauchy filter. -/
-theorem cauchy_partial_sums_of_tendsto_cofinite_zero {α G : Type*} [AddCommGroup G] [UniformSpace G]
-    [UniformAddGroup G] [NonarchimedeanAddGroup G] {f : α → G}
-    (hf : Tendsto f cofinite (𝓝 0)) : Cauchy (map (fun S ↦ Finset.sum S f) atTop) := by
-  classical
-  constructor
-  · exact map_neBot
-  · /- Let `U` be an entourage of `G`. We wish to show that if we take the partial sum of `f` on two
-    finite subsets `S₁, S₂` of `α`, the two results (taken together as an element of `G × G`)
-    eventually lie in `U`. -/
-    intro U hU
+/--Let `G` be a nonarchimedean multiplicative abelian group, and let `f : α → G` be a function that
+tends to one on the filter of cofinite sets. For each finite subset of `α`, consider the partial
+product of `f` on that subset. These partial products form a Cauchy filter.
+-/
+@[to_additive "Let `G` be a nonarchimedean additive abelian group, and let `f : α → G` be a function
+that tends to zero on the filter of cofinite sets. For each finite subset of `α`, consider the
+partial sum of `f` on that subset. These partial sums form a Cauchy filter."]
+theorem cauchy_partial_prod_of_tendsto_cofinite_one {α G : Type*} [CommGroup G] [UniformSpace G]
+    [UniformGroup G] [NonarchimedeanGroup G] {f : α → G}
+    (hf : Tendsto f cofinite (𝓝 1)) : Cauchy (map (fun s ↦ ∏ i in s, f i) atTop) := by
+  /- Let `U` be a neighborhood of `1`. It suffices to show that there exists `s : Finset α` such
+  that for any `t : Finset α` disjoint from `s`, we have `∏ i in t, f i ∈ U`. -/
+  apply cauchySeq_finset_iff_prod_vanishing.mpr
+  intro U hU
 
-    /- Since `G` is nonarchimedean, there exists an open subgroup `H` of `G` such that
-    `U` contains every pair of elements whose difference is in `H`. -/
-    rcases uniformity_eq_comap_nhds_zero G ▸ hU with ⟨T, hT, hT'⟩
-    rcases is_nonarchimedean T hT with ⟨H, hH⟩
+  -- Since `G` is nonarchimedean, `U` contains an open subgroup `V`.
+  rcases is_nonarchimedean U hU with ⟨V, hV⟩
 
-    -- By our assumption `hf`, we have `f a ∈ H` for all `a` outside of some finite set `S`.
-    let S : Finset α :=
-        (mem_cofinite.mp <| mem_map.mp <| hf <| IsOpen.mem_nhds H.isOpen' H.zero_mem').toFinset
-    have hS : ∀ a ∉ S, f a ∈ H := by simp [S]
+  /- Let `s` be the set of all indices `i : α` such that `f i ∉ V`. By our assumption `hf`, this is
+  finite. -/
+  use (tendsto_def.mp hf V (OpenSubgroup.mem_nhds_one V)).toFinset
 
-    -- Let `V` be the coset of `H` that contains the sum of `f` over the set `S`.
-    let V : Set G := Finset.sum S f +ᵥ (H : Set G)
+  /- For any `t : Finset α` disjoint from `s`, the product `∏ i in t, f i` is a product of elements
+  of `V`, so it is an element of `V` too. Thus, `∏ i in t, f i ∈ U`, as desired. -/
+  intro t ht
+  apply hV
+  apply Subgroup.prod_mem
+  intro a ha
+  simpa using Finset.disjoint_left.mp ht ha
 
-    -- The partial sum of `f` on a subset eventually lies in `V`.
-    have hV : V ∈ map (fun s ↦ Finset.sum s f) atTop := by
-      /- We will, in fact, show that for all finite supersets `S'` of `S`, the partial sum of `f` on
-      `S'` is in `V`. -/
-      apply mem_of_superset <| mem_atTop S
-      intro S' hS'
+/-- Let `G` be a complete nonarchimedean multiplicative abelian group, and let `f : α → G` be a
+function that tends to one on the filter of cofinite sets. Then `f` is unconditionally
+multipliable. -/
+@[to_additive "Let `G` be a complete nonarchimedean additive abelian group, and let `f : α → G` be a
+function that tends to zero on the filter of cofinite sets. Then `f` is unconditionally summable."]
+theorem multipliable_of_tendsto_cofinite_one {α G : Type*} [CommGroup G] [UniformSpace G]
+    [UniformGroup G] [CompleteSpace G] [NonarchimedeanGroup G] {f : α → G}
+    (hf : Tendsto f cofinite (𝓝 1)) : Multipliable f :=
+  CompleteSpace.complete (cauchy_partial_prod_of_tendsto_cofinite_one hf)
 
-      /- Break the partial sum of `f` on `S'` into a sum on `S` and on `S' \ S`. The latter is a sum
-      of elements of `H`, so it is in `H`. Therefore, the sum of `f` on `S'` is in the coset `V`,
-      as desired. -/
-      use Finset.sum (S' \ S) f
-      constructor
-      · apply AddSubgroup.sum_mem
-        intro a ha
-        exact hS a (Finset.mem_sdiff.mp ha).right
-      · dsimp only [vadd_eq_add]
-        rw [add_comm]
-        exact Finset.sum_sdiff hS'
+/-- Let `G` be a complete nonarchimedean multiplicative abelian group. Then a function `f : α → G`
+is unconditionally multipliable if and only if it tends to one on the filter of cofinite sets. -/
+@[to_additive "Let `G` be a complete nonarchimedean additive abelian group. Then a function
+`f : α → G` is unconditionally summable if and only if it tends to zero on the filter of cofinite
+sets."]
+theorem multipliable_iff_tendsto_cofinite_one {α G : Type*} [CommGroup G] [UniformSpace G]
+    [UniformGroup G] [CompleteSpace G] [NonarchimedeanGroup G] (f : α → G) :
+    Multipliable f ↔ Tendsto f cofinite (𝓝 1) :=
+  ⟨Multipliable.tendsto_cofinite_one, multipliable_of_tendsto_cofinite_one⟩
 
-    -- By the above, it remains to show that `V ×ˢ V` is a subset of `U`.
-    apply mem_prod_iff.mpr
-    use V, hV, V, hV
-
-    -- This follows from the fact that the difference of two elements of `V` lies in `H`.
-    rintro ⟨_, _⟩ ⟨⟨x, hx, rfl⟩, ⟨y, hy, rfl⟩⟩
-    apply hT'
-    apply hH
-    simpa using (AddSubgroup.sub_mem _ hy hx)
-
-/-- Let `G` be a complete nonarchimedean abelian group, and let `f : α → G` be a function that tends
-to zero on the filter of cofinite sets. Then `f` is unconditionally summable. -/
-theorem summable_of_tendsto_cofinite_zero {α G : Type*} [AddCommGroup G] [UniformSpace G]
-    [UniformAddGroup G] [CompleteSpace G] [NonarchimedeanAddGroup G] {f : α → G}
-    (hf : Tendsto f cofinite (𝓝 0)) : Summable f :=
-  CompleteSpace.complete (cauchy_partial_sums_of_tendsto_cofinite_zero hf)
-
-/-- Let `G` be a complete nonarchimedean abelian group. Then a function `f : α → G` is
-unconditionally summable if and only if it tends to zero on the filter of cofinite sets. -/
-theorem summable_iff_tendsto_cofinite_zero {α G : Type*} [AddCommGroup G] [UniformSpace G]
-    [UniformAddGroup G] [CompleteSpace G] [NonarchimedeanAddGroup G]
-    (f : α → G) : Summable f ↔ Tendsto f cofinite (𝓝 0) :=
-  ⟨Summable.tendsto_cofinite_zero, summable_of_tendsto_cofinite_zero⟩
-
-end NonarchimedeanAddGroup
+end NonarchimedeanGroup
