@@ -28,6 +28,6 @@ theorem smul_iInf_le [SMul M α] [CompleteLattice α] [CovariantClass M α HSMul
     m • iInf t ≤ ⨅ i, m • t i :=
   le_iInf fun _ => smul_mono_right _ (iInf_le _ _)
 
-theorem smul_strict_mono_right [SMul M α] [Preorder α] [CovariantClass M α HSMul.hSMul LT.lt]
+theorem smul_strictMono_right [SMul M α] [Preorder α] [CovariantClass M α HSMul.hSMul LT.lt]
     (m : M) : StrictMono (HSMul.hSMul m : α → α) :=
   fun _ _ => CovariantClass.elim _
