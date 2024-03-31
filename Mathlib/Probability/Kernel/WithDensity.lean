@@ -38,7 +38,6 @@ open scoped MeasureTheory ENNReal NNReal BigOperators
 namespace ProbabilityTheory.kernel
 
 variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
-
 variable {κ : kernel α β} {f : α → β → ℝ≥0∞}
 
 /-- Kernel with image `(κ a).withDensity (f a)` if `Function.uncurry f` is measurable, and
@@ -150,7 +149,7 @@ lemma withDensity_add_right [IsSFiniteKernel κ] {f g : α → β → ℝ≥0∞
     withDensity κ (f + g) = withDensity κ f + withDensity κ g := by
   ext a
   rw [coeFn_add, Pi.add_apply, kernel.withDensity_apply _ hf, kernel.withDensity_apply _ hg,
-    kernel.withDensity_apply,Pi.add_apply, MeasureTheory.withDensity_add_right]
+    kernel.withDensity_apply, Pi.add_apply, MeasureTheory.withDensity_add_right]
   · exact hg.comp measurable_prod_mk_left
   · exact hf.add hg
 

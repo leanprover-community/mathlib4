@@ -54,7 +54,7 @@ assert_not_exists InnerProductSpace
 
 noncomputable section
 
-open Set Filter TopologicalSpace MeasureTheory Function
+open Set Filter TopologicalSpace MeasureTheory Function RCLike
 
 open scoped Classical Topology BigOperators ENNReal NNReal
 
@@ -1058,7 +1058,7 @@ as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 
 open scoped ComplexConjugate
 
-variable {μ : Measure X} {𝕜 : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {μ : Measure X} {𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {p : ENNReal}
 
 namespace ContinuousLinearMap
@@ -1153,41 +1153,41 @@ end ContinuousLinearEquiv
 
 @[norm_cast]
 theorem integral_ofReal {f : X → ℝ} : ∫ x, (f x : 𝕜) ∂μ = ↑(∫ x, f x ∂μ) :=
-  (@IsROrC.ofRealLI 𝕜 _).integral_comp_comm f
+  (@RCLike.ofRealLI 𝕜 _).integral_comp_comm f
 #align integral_of_real integral_ofReal
 
 theorem integral_re {f : X → 𝕜} (hf : Integrable f μ) :
-    ∫ x, IsROrC.re (f x) ∂μ = IsROrC.re (∫ x, f x ∂μ) :=
-  (@IsROrC.reCLM 𝕜 _).integral_comp_comm hf
+    ∫ x, RCLike.re (f x) ∂μ = RCLike.re (∫ x, f x ∂μ) :=
+  (@RCLike.reCLM 𝕜 _).integral_comp_comm hf
 #align integral_re integral_re
 
 theorem integral_im {f : X → 𝕜} (hf : Integrable f μ) :
-    ∫ x, IsROrC.im (f x) ∂μ = IsROrC.im (∫ x, f x ∂μ) :=
-  (@IsROrC.imCLM 𝕜 _).integral_comp_comm hf
+    ∫ x, RCLike.im (f x) ∂μ = RCLike.im (∫ x, f x ∂μ) :=
+  (@RCLike.imCLM 𝕜 _).integral_comp_comm hf
 #align integral_im integral_im
 
 theorem integral_conj {f : X → 𝕜} : ∫ x, conj (f x) ∂μ = conj (∫ x, f x ∂μ) :=
-  (@IsROrC.conjLIE 𝕜 _).toLinearIsometry.integral_comp_comm f
+  (@RCLike.conjLIE 𝕜 _).toLinearIsometry.integral_comp_comm f
 #align integral_conj integral_conj
 
 theorem integral_coe_re_add_coe_im {f : X → 𝕜} (hf : Integrable f μ) :
-    ∫ x, (IsROrC.re (f x) : 𝕜) ∂μ + (∫ x, (IsROrC.im (f x) : 𝕜) ∂μ) * IsROrC.I = ∫ x, f x ∂μ := by
+    ∫ x, (re (f x) : 𝕜) ∂μ + (∫ x, (im (f x) : 𝕜) ∂μ) * RCLike.I = ∫ x, f x ∂μ := by
   rw [mul_comm, ← smul_eq_mul, ← integral_smul, ← integral_add]
   · congr
     ext1 x
-    rw [smul_eq_mul, mul_comm, IsROrC.re_add_im]
+    rw [smul_eq_mul, mul_comm, RCLike.re_add_im]
   · exact hf.re.ofReal
-  · exact hf.im.ofReal.smul (𝕜 := 𝕜) (β := 𝕜) IsROrC.I
+  · exact hf.im.ofReal.smul (𝕜 := 𝕜) (β := 𝕜) RCLike.I
 #align integral_coe_re_add_coe_im integral_coe_re_add_coe_im
 
 theorem integral_re_add_im {f : X → 𝕜} (hf : Integrable f μ) :
-    ((∫ x, IsROrC.re (f x) ∂μ : ℝ) : 𝕜) + (∫ x, IsROrC.im (f x) ∂μ : ℝ) * IsROrC.I =
+    ((∫ x, RCLike.re (f x) ∂μ : ℝ) : 𝕜) + (∫ x, RCLike.im (f x) ∂μ : ℝ) * RCLike.I =
       ∫ x, f x ∂μ := by
   rw [← integral_ofReal, ← integral_ofReal, integral_coe_re_add_coe_im hf]
 #align integral_re_add_im integral_re_add_im
 
 theorem set_integral_re_add_im {f : X → 𝕜} {i : Set X} (hf : IntegrableOn f i μ) :
-    ((∫ x in i, IsROrC.re (f x) ∂μ : ℝ) : 𝕜) + (∫ x in i, IsROrC.im (f x) ∂μ : ℝ) * IsROrC.I =
+    ((∫ x in i, RCLike.re (f x) ∂μ : ℝ) : 𝕜) + (∫ x in i, RCLike.im (f x) ∂μ : ℝ) * RCLike.I =
       ∫ x in i, f x ∂μ :=
   integral_re_add_im hf
 #align set_integral_re_add_im set_integral_re_add_im
@@ -1218,7 +1218,7 @@ theorem integral_pair [CompleteSpace E] [CompleteSpace F] {f : X → E} {g : X �
   Prod.ext (fst_integral this) (snd_integral this)
 #align integral_pair integral_pair
 
-theorem integral_smul_const {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [CompleteSpace E]
+theorem integral_smul_const {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [CompleteSpace E]
     (f : X → 𝕜) (c : E) :
     ∫ x, f x • c ∂μ = (∫ x, f x ∂μ) • c := by
   by_cases hf : Integrable f μ
@@ -1372,22 +1372,42 @@ end BilinearMap
 
 section ParametricIntegral
 
-variable {X Y F G 𝕜 : Type*} [TopologicalSpace X]
+variable {G 𝕜 : Type*} [TopologicalSpace X]
   [TopologicalSpace Y] [MeasurableSpace Y] [OpensMeasurableSpace Y] {μ : Measure Y}
   [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 open Metric ContinuousLinearMap
 
-/-- Consider a parameterized integral `a ↦ ∫ x, L (g x) (f a x)` where `L` is bilinear,
+/-- The parametric integral over a continuous function on a compact set is continuous,
+  under mild assumptions on the topologies involved. -/
+theorem continuous_parametric_integral_of_continuous
+    [FirstCountableTopology X] [LocallyCompactSpace X]
+    [OpensMeasurableSpace Y] [SecondCountableTopologyEither Y E] [IsLocallyFiniteMeasure μ]
+    {f : X → Y → E} (hf : Continuous f.uncurry) {s : Set Y} (hs : IsCompact s) :
+    Continuous (∫ y in s, f · y ∂μ) := by
+  rw [continuous_iff_continuousAt]
+  intro x₀
+  rcases exists_compact_mem_nhds x₀ with ⟨U, U_cpct, U_nhds⟩
+  rcases (U_cpct.prod hs).bddAbove_image hf.norm.continuousOn with ⟨M, hM⟩
+  apply continuousAt_of_dominated
+  · filter_upwards with x using Continuous.aestronglyMeasurable (by fun_prop)
+  · filter_upwards [U_nhds] with x x_in
+    rw [ae_restrict_iff]
+    · filter_upwards with t t_in using hM (mem_image_of_mem _ <| mk_mem_prod x_in t_in)
+    · exact (isClosed_le (by fun_prop) (by fun_prop)).measurableSet
+  · exact integrableOn_const.mpr (Or.inr hs.measure_lt_top)
+  · filter_upwards using (by fun_prop)
+
+/-- Consider a parameterized integral `x ↦ ∫ y, L (g y) (f x y)` where `L` is bilinear,
 `g` is locally integrable and `f` is continuous and uniformly compactly supported. Then the
-integral depends continuously on `a`. -/
+integral depends continuously on `x`. -/
 lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
     [NormedSpace 𝕜 E] (L : F →L[𝕜] G →L[𝕜] E)
     {f : X → Y → G} {s : Set X} {k : Set Y} {g : Y → F}
     (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ univ))
     (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) (hg : IntegrableOn g k μ) :
-    ContinuousOn (fun a ↦ ∫ x, L (g x) (f a x) ∂μ) s := by
+    ContinuousOn (fun x ↦ ∫ y, L (g y) (f x y) ∂μ) s := by
   have A : ∀ p ∈ s, Continuous (f p) := fun p hp ↦ by
     refine hf.comp_continuous (continuous_const.prod_mk continuous_id') fun y => ?_
     simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true] using hp
@@ -1403,7 +1423,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
     intro p hp
     obtain ⟨C, hC⟩ : ∃ C, ∀ y, ‖f p y‖ ≤ C := by
       have : ContinuousOn (f p) k := by
-        have : ContinuousOn (fun y ↦ (p, y)) k := (Continuous.Prod.mk p).continuousOn
+        have : ContinuousOn (fun y ↦ (p, y)) k := by fun_prop
         exact hf.comp this (by simp [MapsTo, hp])
       rcases IsCompact.exists_bound_of_continuousOn hk this with ⟨C, hC⟩
       refine ⟨max C 0, fun y ↦ ?_⟩
@@ -1435,7 +1455,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
   _ ≤ ∫ x in k, ‖L‖ * ‖g x‖ * δ ∂μ := by
       apply integral_mono_of_nonneg (eventually_of_forall (fun y ↦ by positivity))
       · exact (hg.norm.const_mul _).mul_const _
-      · apply eventually_of_forall (fun y ↦ ?_)
+      · filter_upwards with y
         by_cases hy : y ∈ k
         · dsimp only
           specialize hv p hp y hy
@@ -1448,13 +1468,13 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
           positivity
   _ < ε := hδ
 
-/-- Consider a parameterized integral `a ↦ ∫ x, f a x` where `f` is continuous and uniformly
-compactly supported. Then the integral depends continuously on `a`. -/
+/-- Consider a parameterized integral `x ↦ ∫ y, f x y` where `f` is continuous and uniformly
+compactly supported. Then the integral depends continuously on `x`. -/
 lemma continuousOn_integral_of_compact_support
     {f : X → Y → E} {s : Set X} {k : Set Y} [IsFiniteMeasureOnCompacts μ]
     (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ univ))
     (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) :
-    ContinuousOn (fun a ↦ ∫ x, f a x ∂μ) s := by
+    ContinuousOn (fun x ↦ ∫ y, f x y ∂μ) s := by
   simpa using continuousOn_integral_bilinear_of_locally_integrable_of_compact_support (lsmul ℝ ℝ)
     hk hf hfs (integrableOn_const.2 (Or.inr hk.measure_lt_top)) (μ := μ) (g := fun _ ↦ 1)
 

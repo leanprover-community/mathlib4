@@ -32,11 +32,8 @@ open BigOperators
 section StrictOrderedCommSemiring
 
 variable (R : Type*) [StrictOrderedCommSemiring R]
-
 variable {M : Type*} [AddCommMonoid M] [Module R M]
-
 variable {N : Type*} [AddCommMonoid N] [Module R N]
-
 variable (ι : Type*) [DecidableEq ι]
 
 /-- Two vectors are in the same ray if either one of them is zero or some positive multiples of them
@@ -394,7 +391,6 @@ end StrictOrderedCommSemiring
 section StrictOrderedCommRing
 
 variable {R : Type*} [StrictOrderedCommRing R]
-
 variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] {x y : M}
 
 /-- `SameRay.neg` as an `iff`. -/
@@ -480,7 +476,7 @@ instance : InvolutiveNeg (Module.Ray R M)
 /-- A ray does not equal its own negation. -/
 theorem ne_neg_self [NoZeroSMulDivisors R M] (x : Module.Ray R M) : x ≠ -x := by
   induction' x using Module.Ray.ind with x hx
-  rw [neg_rayOfNeZero, Ne.def, ray_eq_iff]
+  rw [neg_rayOfNeZero, Ne, ray_eq_iff]
   exact mt eq_zero_of_sameRay_self_neg hx
 #align module.ray.ne_neg_self Module.Ray.ne_neg_self
 
@@ -509,7 +505,6 @@ end StrictOrderedCommRing
 section LinearOrderedCommRing
 
 variable {R : Type*} [LinearOrderedCommRing R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M]
 
 -- Porting note: Needed to add coercion ↥ below
@@ -652,7 +647,6 @@ end LinearOrderedCommRing
 namespace SameRay
 
 variable {R : Type*} [LinearOrderedField R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M] {x y v₁ v₂ : M}
 
 theorem exists_pos_left (h : SameRay R x y) (hx : x ≠ 0) (hy : y ≠ 0) :
@@ -709,7 +703,6 @@ end SameRay
 section LinearOrderedField
 
 variable {R : Type*} [LinearOrderedField R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M] {x y : M}
 
 theorem exists_pos_left_iff_sameRay (hx : x ≠ 0) (hy : y ≠ 0) :

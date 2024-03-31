@@ -121,7 +121,6 @@ theorem mapEquiv_trans [CommSemiring S₁] [CommSemiring S₂] [CommSemiring S�
 #align mv_polynomial.map_equiv_trans MvPolynomial.mapEquiv_trans
 
 variable {A₁ A₂ A₃ : Type*} [CommSemiring A₁] [CommSemiring A₂] [CommSemiring A₃]
-
 variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 
 /-- If `e : A ≃ₐ[R] B` is an isomorphism of `R`-algebras, then so is `map e`. -/
@@ -468,7 +467,7 @@ theorem finSuccEquiv_support' {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} :
   conv_lhs =>
     congr
     ext
-    rw [mem_support_iff, finSuccEquiv_coeff_coeff, Ne.def]
+    rw [mem_support_iff, finSuccEquiv_coeff_coeff, Ne]
   constructor
   · rintro ⟨m', ⟨h, hm'⟩⟩
     simp only [← hm']
@@ -508,7 +507,7 @@ theorem natDegree_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
     (finSuccEquiv R n f).natDegree = degreeOf 0 f := by
   by_cases c : f = 0
   · rw [c, (finSuccEquiv R n).map_zero, Polynomial.natDegree_zero, degreeOf_zero]
-  · rw [Polynomial.natDegree, degree_finSuccEquiv (by simpa only [Ne.def] )]
+  · rw [Polynomial.natDegree, degree_finSuccEquiv (by simpa only [Ne] )]
     erw [WithBot.unbot'_coe]
     simp
 #align mv_polynomial.nat_degree_fin_succ_equiv MvPolynomial.natDegree_finSuccEquiv

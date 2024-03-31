@@ -30,7 +30,7 @@ https://ncatlab.org/nlab/show/commutativity+of+limits+and+colimits#preservation_
 -/
 
 
-universe v₁ v₂ u u₂
+universe w w' v₁ v₂ u u₂
 
 noncomputable section
 
@@ -39,9 +39,7 @@ namespace CategoryTheory
 open Category Limits
 
 variable {C : Type u} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{u} D]
-
 variable {E : Type u} [Category.{v₂} E]
 
 /-- If `X × -` preserves colimits in `D` for any `X : D`, then the product functor `F ⨯ -` for
@@ -86,8 +84,8 @@ instance whiskeringLeftPreservesLimits [HasLimits D] (F : C ⥤ E) :
         exact PreservesLimit.preserves hc⟩⟩⟩
 #align category_theory.whiskering_left_preserves_limits CategoryTheory.whiskeringLeftPreservesLimits
 
-instance whiskeringRightPreservesLimitsOfShape {C : Type u} [Category C] {D : Type*}
-    [Category.{u} D] {E : Type*} [Category.{u} E] {J : Type u} [SmallCategory J]
+instance whiskeringRightPreservesLimitsOfShape {C : Type*} [Category C] {D : Type*}
+    [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
     [HasLimitsOfShape J D] (F : D ⥤ E) [PreservesLimitsOfShape J F] :
     PreservesLimitsOfShape J ((whiskeringRight C D E).obj F) :=
   ⟨fun {K} =>
@@ -97,9 +95,10 @@ instance whiskeringRightPreservesLimitsOfShape {C : Type u} [Category C] {D : Ty
       exact PreservesLimit.preserves hc⟩⟩
 #align category_theory.whiskering_right_preserves_limits_of_shape CategoryTheory.whiskeringRightPreservesLimitsOfShape
 
-instance whiskeringRightPreservesLimits {C : Type u} [Category C] {D : Type*} [Category.{u} D]
-    {E : Type*} [Category.{u} E] (F : D ⥤ E) [HasLimits D] [PreservesLimits F] :
-    PreservesLimits ((whiskeringRight C D E).obj F) :=
+instance whiskeringRightPreservesLimits {C : Type*} [Category C] {D : Type*} [Category D]
+    {E : Type*} [Category E] (F : D ⥤ E) [HasLimitsOfSize.{w, w'} D]
+    [PreservesLimitsOfSize.{w, w'} F] :
+    PreservesLimitsOfSize.{w, w'} ((whiskeringRight C D E).obj F) :=
   ⟨inferInstance⟩
 #align category_theory.whiskering_right_preserves_limits CategoryTheory.whiskeringRightPreservesLimits
 

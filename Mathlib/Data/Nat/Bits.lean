@@ -7,6 +7,7 @@ import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Defs
 import Mathlib.Tactic.Convert
 
 #align_import data.nat.bits from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
@@ -28,10 +29,8 @@ and `Nat.digits`.
 set_option linter.deprecated false
 
 namespace Nat
-
 universe u
-
-variable {n : ℕ}
+variable {m n : ℕ}
 
 /-! ### `boddDiv2_eq` and `bodd` -/
 
@@ -159,6 +158,96 @@ theorem bit_eq_zero_iff {n : ℕ} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = fal
   · rintro ⟨rfl, rfl⟩
     rfl
 #align nat.bit_eq_zero_iff Nat.bit_eq_zero_iff
+
+protected lemma bit0_le (h : n ≤ m) : bit0 n ≤ bit0 m :=
+  add_le_add h h
+#align nat.bit0_le Nat.bit0_le
+
+protected lemma bit1_le {n m : ℕ} (h : n ≤ m) : bit1 n ≤ bit1 m :=
+  succ_le_succ (add_le_add h h)
+#align nat.bit1_le Nat.bit1_le
+
+lemma bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
+  | true, _, _, h => Nat.bit1_le h
+  | false, _, _, h => Nat.bit0_le h
+#align nat.bit_le Nat.bit_le
+
+lemma bit0_le_bit : ∀ (b) {m n : ℕ}, m ≤ n → bit0 m ≤ bit b n
+  | true, _, _, h => le_of_lt <| Nat.bit0_lt_bit1 h
+  | false, _, _, h => Nat.bit0_le h
+#align nat.bit0_le_bit Nat.bit0_le_bit
+
+lemma bit_le_bit1 : ∀ (b) {m n : ℕ}, m ≤ n → bit b m ≤ bit1 n
+  | false, _, _, h => le_of_lt <| Nat.bit0_lt_bit1 h
+  | true, _, _, h => Nat.bit1_le h
+#align nat.bit_le_bit1 Nat.bit_le_bit1
+
+lemma bit_lt_bit0 : ∀ (b) {m n : ℕ}, m < n → bit b m < bit0 n
+  | true, _, _, h => Nat.bit1_lt_bit0 h
+  | false, _, _, h => Nat.bit0_lt h
+#align nat.bit_lt_bit0 Nat.bit_lt_bit0
+
+protected lemma bit0_lt_bit0 : bit0 m < bit0 n ↔ m < n := by unfold bit0; omega
+
+lemma bit_lt_bit (a b) (h : m < n) : bit a m < bit b n :=
+  lt_of_lt_of_le (bit_lt_bit0 _ h) (bit0_le_bit _ (le_refl _))
+#align nat.bit_lt_bit Nat.bit_lt_bit
+
+@[simp]
+lemma bit0_le_bit1_iff : bit0 m ≤ bit1 n ↔ m ≤ n := by
+  refine ⟨fun h ↦ ?_, fun h ↦ le_of_lt (Nat.bit0_lt_bit1 h)⟩
+  rwa [← Nat.lt_succ_iff, n.bit1_eq_succ_bit0, ← n.bit0_succ_eq, Nat.bit0_lt_bit0, Nat.lt_succ_iff]
+    at h
+#align nat.bit0_le_bit1_iff Nat.bit0_le_bit1_iff
+
+@[simp]
+lemma bit0_lt_bit1_iff : bit0 m < bit1 n ↔ m ≤ n :=
+  ⟨fun h => bit0_le_bit1_iff.1 (le_of_lt h), Nat.bit0_lt_bit1⟩
+#align nat.bit0_lt_bit1_iff Nat.bit0_lt_bit1_iff
+
+@[simp]
+lemma bit1_le_bit0_iff : bit1 m ≤ bit0 n ↔ m < n :=
+  ⟨fun h ↦ by rwa [m.bit1_eq_succ_bit0, Nat.succ_le_iff, Nat.bit0_lt_bit0] at h,
+     fun h ↦ le_of_lt (Nat.bit1_lt_bit0 h)⟩
+#align nat.bit1_le_bit0_iff Nat.bit1_le_bit0_iff
+
+@[simp]
+lemma bit1_lt_bit0_iff : bit1 m < bit0 n ↔ m < n :=
+  ⟨fun h ↦ bit1_le_bit0_iff.1 (le_of_lt h), Nat.bit1_lt_bit0⟩
+#align nat.bit1_lt_bit0_iff Nat.bit1_lt_bit0_iff
+
+-- Porting note: temporarily porting only needed portions
+/-
+@[simp]
+theorem one_le_bit0_iff : 1 ≤ bit0 n ↔ 0 < n := by
+  convert bit1_le_bit0_iff
+  rfl
+#align nat.one_le_bit0_iff Nat.one_le_bit0_iff
+
+@[simp]
+theorem one_lt_bit0_iff : 1 < bit0 n ↔ 1 ≤ n := by
+  convert bit1_lt_bit0_iff
+  rfl
+#align nat.one_lt_bit0_iff Nat.one_lt_bit0_iff
+
+@[simp]
+theorem bit_le_bit_iff : ∀ {b : Bool}, bit b m ≤ bit b n ↔ m ≤ n
+  | false => bit0_le_bit0
+  | true => bit1_le_bit1
+#align nat.bit_le_bit_iff Nat.bit_le_bit_iff
+
+@[simp]
+theorem bit_lt_bit_iff : ∀ {b : Bool}, bit b m < bit b n ↔ m < n
+  | false => bit0_lt_bit0
+  | true => bit1_lt_bit1
+#align nat.bit_lt_bit_iff Nat.bit_lt_bit_iff
+
+@[simp]
+theorem bit_le_bit1_iff : ∀ {b : Bool}, bit b m ≤ bit1 n ↔ m ≤ n
+  | false => bit0_le_bit1_iff
+  | true => bit1_le_bit1
+#align nat.bit_le_bit1_iff Nat.bit_le_bit1_iff
+-/
 
 /--
 The same as `binaryRec_eq`,
