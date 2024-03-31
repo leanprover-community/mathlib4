@@ -63,9 +63,7 @@ private abbrev whitelist : HashSet String :=
 This means that CI will fail on `#`-commands whether they themselves emit a message or not.
 -/
 def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
---  dbg_trace (← get).messages.msgs.size
   if getLinterHash (← getOptions) && (← get).messages.msgs.size == 0 then
---    dbg_trace "linting"
     match stx.getHead? with
       | some sa =>
         let a := sa.getAtomVal
