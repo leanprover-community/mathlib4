@@ -90,6 +90,7 @@ theorem isLimitEquivSections_symm_apply {c : Cone F} (t : IsLimit c)
     (x : F.sections) (j : J) :
     c.π.app j ((isLimitEquivSections t).symm x) = (x : ∀ j, F.obj j) j := by
   conv_rhs => rw [← (isLimitEquivSections t).right_inv x]
+  rfl
 #align category_theory.limits.types.is_limit_equiv_sections_symm_apply CategoryTheory.Limits.Types.isLimitEquivSections_symm_apply
 
 end limit_characterization

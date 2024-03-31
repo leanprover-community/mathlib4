@@ -224,6 +224,7 @@ protected def mfderiv {x : M} (hx : x ∈ e.source) : TangentSpace I x ≃L[𝕜
     left_inv := fun y => by
       have : (ContinuousLinearMap.id _ _ : TangentSpace I x →L[𝕜] TangentSpace I x) y = y := rfl
       conv_rhs => rw [← this, ← he.symm_comp_deriv hx]
+      rfl
     right_inv := fun y => by
       have :
         (ContinuousLinearMap.id 𝕜 _ : TangentSpace I' (e x) →L[𝕜] TangentSpace I' (e x)) y = y :=

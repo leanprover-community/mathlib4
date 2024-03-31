@@ -398,7 +398,7 @@ theorem toList_eq_self {xs : List α} : toList xs = xs := by
   simp only [toList_spec, foldMap, traverse]
   induction xs with
   | nil => rfl
-  | cons _ _ ih => conv_rhs => rw [← ih]; rfl
+  | cons _ _ ih => (conv_rhs => rw [← ih]); rfl
 #align traversable.to_list_eq_self Traversable.toList_eq_self
 
 theorem length_toList {xs : t α} : length xs = List.length (toList xs) := by

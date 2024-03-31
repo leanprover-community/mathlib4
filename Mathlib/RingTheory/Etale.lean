@@ -365,6 +365,7 @@ theorem FormallySmooth.iff_split_surjection [FormallySmooth R P] :
     -- rw [AlgEquiv.apply_symm_apply] at this
     erw [AlgEquiv.apply_symm_apply] at this
     conv_rhs => rw [← this, AlgHom.id_apply]
+    rfl
     -- Porting note: lean3 was not finished here:
     -- obtain ⟨y, e⟩ :=
     --   Ideal.Quotient.mk_surjective

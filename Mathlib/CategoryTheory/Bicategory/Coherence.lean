@@ -224,9 +224,8 @@ def normalizeEquiv (a b : B) : Hom a b ≌ Discrete (Path.{v + 1} a b) :=
       · rfl
       · ext1
         injection ih with ih
-        conv =>
-          rhs
-          rw [← ih]))
+        conv_rhs => rw [← ih]
+        rfl))
 #align category_theory.free_bicategory.normalize_equiv CategoryTheory.FreeBicategory.normalizeEquiv
 
 /-- The coherence theorem for bicategories. -/

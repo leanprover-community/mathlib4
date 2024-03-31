@@ -208,6 +208,7 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
         dsimp
         conv_rhs => rw [Nat.add_comm p.length 1, add_assoc,
           Nat.add_sub_cancel' <| le_of_lt (show p.length < i.1 from hi), add_comm]
+        rfl
       rw [hx, Fin.append_right, hy, Fin.append_right]
       convert q.step ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
         by convert i.2 using 1; abel⟩

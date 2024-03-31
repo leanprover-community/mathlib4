@@ -193,6 +193,7 @@ lemma restrict_commute {f g : M →ₗ[R] M} (h : Commute f g) {p : Submodule R 
     Commute (f.restrict hf) (g.restrict hg) := by
   change _ * _ = _ * _
   conv_lhs => rw [mul_eq_comp, ← restrict_comp]; congr; rw [← mul_eq_comp, h.eq]
+  rfl
 
 theorem subtype_comp_restrict {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule R M₁}
     (hf : ∀ x ∈ p, f x ∈ q) : q.subtype.comp (f.restrict hf) = f.domRestrict p :=
