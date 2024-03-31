@@ -351,9 +351,9 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
   have hr : r + 1 ≠ 0 := by
     cases' h with h h
     · apply_fun Complex.re
-      rw [Complex.add_re, Complex.one_re, Complex.zero_re, Ne.def, add_eq_zero_iff_eq_neg]
+      rw [Complex.add_re, Complex.one_re, Complex.zero_re, Ne, add_eq_zero_iff_eq_neg]
       exact h.ne'
-    · rw [Ne.def, ← add_eq_zero_iff_eq_neg] at h; exact h.1
+    · rw [Ne, ← add_eq_zero_iff_eq_neg] at h; exact h.1
   by_cases hab : (0 : ℝ) ∉ [[a, b]]
   · apply integral_eq_sub_of_hasDerivAt (fun x hx => ?_)
       (intervalIntegrable_cpow (r := r) <| Or.inr hab)
@@ -382,7 +382,7 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
   have h' : -1 < (r : ℂ).re ∨ (r : ℂ) ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]] := by
     cases h
     · left; rwa [Complex.ofReal_re]
-    · right; rwa [← Complex.ofReal_one, ← Complex.ofReal_neg, Ne.def, Complex.ofReal_inj]
+    · right; rwa [← Complex.ofReal_one, ← Complex.ofReal_neg, Ne, Complex.ofReal_inj]
   have :
     (∫ x in a..b, (x : ℂ) ^ (r : ℂ)) = ((b : ℂ) ^ (r + 1 : ℂ) - (a : ℂ) ^ (r + 1 : ℂ)) / (r + 1) :=
     integral_cpow h'
@@ -629,7 +629,7 @@ theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :
     rw [ofReal_mul, this x t]
   · simp_rw [ofReal_sub, ofReal_div, this a (t + 1), this b (t + 1)]
     push_cast; rfl
-  · rw [← ofReal_one, ← ofReal_neg, Ne.def, ofReal_inj]
+  · rw [← ofReal_one, ← ofReal_neg, Ne, ofReal_inj]
     exact ht
 #align integral_mul_rpow_one_add_sq integral_mul_rpow_one_add_sq
 
