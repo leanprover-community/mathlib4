@@ -3,8 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
-import Mathlib.Algebra.BigOperators.List.Basic
-import Mathlib.Algebra.Order.Monoid.MinMax
+import Mathlib.Data.List.Forall2
+import Mathlib.Order.MinMax
 
 #align_import data.list.zip from "leanprover-community/mathlib"@"134625f523e737f650a6ea7f0c82a6177e45e622"
 
@@ -349,16 +349,6 @@ theorem map_uncurry_zip_eq_zipWith (f : α → β → γ) (l : List α) (l' : Li
     · simp [hl]
 #align list.map_uncurry_zip_eq_zip_with List.map_uncurry_zip_eq_zipWith
 
-@[simp]
-theorem sum_zipWith_distrib_left {γ : Type*} [Semiring γ] (f : α → β → γ) (n : γ) (l : List α)
-    (l' : List β) : (l.zipWith (fun x y => n * f x y) l').sum = n * (l.zipWith f l').sum := by
-  induction' l with hd tl hl generalizing f n l'
-  · simp
-  · cases' l' with hd' tl'
-    · simp
-    · simp [hl, mul_add]
-#align list.sum_zip_with_distrib_left List.sum_zipWith_distrib_left
-
 section Distrib
 
 /-! ### Operations that can be applied before or after a `zip_with` -/
@@ -377,7 +367,7 @@ theorem zipWith_distrib_reverse (h : l.length = l'.length) :
   · simp
   · cases' l' with hd' tl'
     · simp
-    · simp only [add_left_inj, length] at h
+    · simp only [Nat.add_left_inj, length] at h
       have : tl.reverse.length = tl'.reverse.length := by simp [h]
       simp [hl _ h, zipWith_append _ _ _ _ _ this]
 #align list.zip_with_distrib_reverse List.zipWith_distrib_reverse

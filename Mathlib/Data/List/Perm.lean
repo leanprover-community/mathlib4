@@ -9,6 +9,7 @@ import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.InsertNth
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.List.Count
 
 #align_import data.list.perm from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
