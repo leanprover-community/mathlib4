@@ -35,7 +35,7 @@ instance : Mono S.ι := by
   infer_instance
 
 @[simps]
-def prod : (X ⊗ Y).Subobject where
+noncomputable def prod : (X ⊗ Y).Subobject where
   obj Δ := (S.obj Δ).prod (T.obj Δ)
   map i _ hx := ⟨S.map i hx.1, T.map i hx.2⟩
 
@@ -63,7 +63,7 @@ instance : Mono (homOfLE h) := mono_of_mono_fac (homOfLE_ι h)
 
 end
 
-def unionProd : (X ⊗ Y).Subobject := ((⊤ : Subobject X).prod T) ⊔ (S.prod ⊤)
+noncomputable def unionProd : (X ⊗ Y).Subobject := ((⊤ : Subobject X).prod T) ⊔ (S.prod ⊤)
 
 lemma top_prod_le_unionProd : (⊤ : Subobject X).prod T ≤ S.unionProd T := le_sup_left
 
