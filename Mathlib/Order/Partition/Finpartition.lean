@@ -516,7 +516,7 @@ theorem part_surjOn : Set.SurjOn P.part s P.parts := fun p hp ↦ by
   have hx' := mem_of_subset ((le_sup hp).trans P.sup_parts.le) hx
   use x, hx', (P.existsUnique_mem hx').unique ⟨P.part_mem hx', P.mem_part hx'⟩ ⟨hp, hx⟩
 
-theorem exists_part_bijOn : ∃ r ⊆ s, Set.BijOn P.part r P.parts := by
+theorem exists_subset_part_bijOn : ∃ r ⊆ s, Set.BijOn P.part r P.parts := by
   obtain ⟨r, hrs, hr⟩ := P.part_surjOn.exists_bijOn_subset
   lift r to Finset α using s.finite_toSet.subset hrs
   exact ⟨r, mod_cast hrs, hr⟩
