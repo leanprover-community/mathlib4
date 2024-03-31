@@ -22,7 +22,7 @@ equivalent to taking the Kronecker product of their matrix representations.
 
 variable {R : Type*} {M N P M' N' : Type*} {ι κ τ ι' κ' : Type*}
 variable [DecidableEq ι] [DecidableEq κ] [DecidableEq τ]
-variable [Fintype ι] [Fintype κ] [Fintype τ] [Fintype ι'] [Fintype κ']
+variable [Fintype ι] [Fintype κ] [Fintype τ] [Finite ι'] [Finite κ']
 variable [CommRing R]
 variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
 variable [AddCommGroup M'] [AddCommGroup N']
