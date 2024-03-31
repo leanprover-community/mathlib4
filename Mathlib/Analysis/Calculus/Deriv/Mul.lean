@@ -36,11 +36,26 @@ open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 variable {f f₀ f₁ g : 𝕜 → F}
 variable {f' f₀' f₁' g' : F}
 variable {x : 𝕜}
 variable {s t : Set 𝕜}
 variable {L L₁ L₂ : Filter 𝕜}
+
+/-! ### Derivative of bilinear maps -/
+
+section Bilinear
+
+variable {B : E →L[𝕜] F →L[𝕜] G} {u : 𝕜 → E} {v : 𝕜 → F} {u' : E} {v' : F}
+
+theorem glou (hu : HasDerivWithinAt u u' s x) (hv : HasDerivWithinAt v v' s x) :
+    HasDerivWithinAt (fun x ↦ B (u x) (v x)) (B u' (v x) + B (u x) v') s x := by
+  convert (B.hasFDerivWithinAt_of_bilinear hu.hasFDerivWithinAt hv.hasFDerivWithinAt).hasDerivWithinAt
+  simp
+
+end Bilinear
+
 
 section SMul
 

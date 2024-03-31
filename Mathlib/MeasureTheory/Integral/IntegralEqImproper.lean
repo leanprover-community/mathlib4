@@ -69,6 +69,12 @@ in analysis. In particular,
   in `MeasureTheory.integrableOn_Ioi_deriv_of_nonneg`.
 - `MeasureTheory.integral_comp_smul_deriv_Ioi` is a version of the change of variables formula
   on semi-infinite intervals.
+- `MeasureTheory.tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi` shows that a function whose
+  derivative is integrable on `(a, +∞)` has a limit at `+∞`.
+- `MeasureTheory.tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi` shows that an integrable function
+  whose derivative is integrable on `(a, +∞)` tends to `0` at `+∞`.
+
+Versions of these results are also given on the intervals `(-∞, a]` and `(-∞, +∞)`.
 -/
 
 open MeasureTheory Filter Set TopologicalSpace
@@ -916,31 +922,59 @@ section IicFTC
 variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
-/-- If the derivative of a function defined on the real line is integrable close to `+∞`, then
-the function has a limit at `+∞`. -/
+/-- If the derivative of a function defined on the real line is integrable close to `-∞`, then
+the function has a limit at `-∞`. -/
 theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn_Iic [CompleteSpace E]
     (hderiv : ∀ x ∈ Iic a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Iic a)) :
     Tendsto f atBot (𝓝 (limUnder atBot f)) := by
   suffices ∃ a, Tendsto f atBot (𝓝 a) from tendsto_nhds_limUnder this
   let g := f ∘ (fun x ↦ -x)
-  have : ∀ x ∈ Ioi (-a), HasDerivAt g (-f' (-x)) x := by
+  have hdg : ∀ x ∈ Ioi (-a), HasDerivAt g (-f' (-x)) x := by
     intro x (hx : -a < x)
-    have A : -x ∈ Iic a := by simp; linarith
-    simpa using HasDerivAt.scomp x (hderiv (-x) A) (hasDerivAt_neg' x)
-  have : IntegrableOn (fun x ↦ -f' (-x)) (Ioi (-a)) := by
-    have : MeasurePreserving (fun (x : ℝ) ↦ -x) volume volume :=
-      MeasureTheory.Measure.measurePreserving_neg _
-    have Z := MeasurePreserving.integrableOn_comp_preimage
-    have Z := f'int.neg
+    have : -x ∈ Iic a := by simp; linarith
+    simpa using HasDerivAt.scomp x (hderiv (-x) this) (hasDerivAt_neg' x)
+  have L : Tendsto g atTop (𝓝 (limUnder atTop g)) := by
+    apply tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi hdg
+    exact ((MeasurePreserving.integrableOn_comp_preimage (Measure.measurePreserving_neg _)
+      (Homeomorph.neg ℝ).measurableEmbedding).2 f'int.neg).mono_set (by simp)
+  refine ⟨limUnder atTop g, ?_⟩
+  have : Tendsto (fun x ↦ g (-x)) atBot (𝓝 (limUnder atTop g)) := L.comp tendsto_neg_atBot_atTop
+  simpa [g] using this
 
-#exit
+open UniformSpace in
+/-- If a function and its derivative are integrable on `(-∞, a]`, then the function tends to zero
+at `-∞`. -/
+theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Iic
+    (hderiv : ∀ x ∈ Iic a, HasDerivAt f (f' x) x)
+    (f'int : IntegrableOn f' (Iic a)) (fint : IntegrableOn f (Iic a)) :
+    Tendsto f atBot (𝓝 0) := by
+  let F : E →L[ℝ] Completion E := Completion.toComplL
+  have Fderiv : ∀ x ∈ Iic a, HasDerivAt (F ∘ f) (F (f' x)) x :=
+    fun x hx ↦ F.hasFDerivAt.comp_hasDerivAt _ (hderiv x hx)
+  have Fint : IntegrableOn (F ∘ f) (Iic a) := by apply F.integrable_comp fint
+  have F'int : IntegrableOn (F ∘ f') (Iic a) := by apply F.integrable_comp f'int
+  have A : Tendsto (F ∘ f) atBot (𝓝 (limUnder atBot (F ∘ f))) := by
+    apply tendsto_limUnder_of_hasDerivAt_of_integrableOn_Iic Fderiv F'int
+  have B : limUnder atBot (F ∘ f) = F 0 := by
+    have : IntegrableAtFilter (F ∘ f) atBot := by exact ⟨Iic a, Iic_mem_atBot _, Fint⟩
+    apply IntegrableAtFilter.eq_zero_of_tendsto this ?_ A
+    intro s hs
+    rcases mem_atBot_sets.1 hs with ⟨b, hb⟩
+    apply le_antisymm (le_top)
+    rw [← volume_Iic (a := b)]
+    exact measure_mono hb
+  rwa [B, ← Embedding.tendsto_nhds_iff] at A
+  exact (Completion.uniformEmbedding_coe E).embedding
 
 variable [CompleteSpace E]
 
 /-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a)`.
 When a function has a limit `m` at `-∞`, and its derivative is integrable, then the
 integral of the derivative on `(-∞, a)` is `f a - m`. Version assuming differentiability
-on `(-∞, a)` and continuity at `a⁻`. -/
+on `(-∞, a)` and continuity at `a⁻`.
+
+Note that such a function always has a limit at minus infinity,
+see `tendsto_limUnder_of_hasDerivAt_of_integrableOn_Iic`. -/
 theorem integral_Iic_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Iic a) a)
     (hderiv : ∀ x ∈ Iio a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Iic a))
     (hf : Tendsto f atBot (𝓝 m)) : ∫ x in Iic a, f' x = f a - m := by
@@ -961,7 +995,10 @@ theorem integral_Iic_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Iic
 /-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a)`.
 When a function has a limit `m` at `-∞`, and its derivative is integrable, then the
 integral of the derivative on `(-∞, a)` is `f a - m`. Version assuming differentiability
-on `(-∞, a]`. -/
+on `(-∞, a]`.
+
+Note that such a function always has a limit at minus infinity,
+see `tendsto_limUnder_of_hasDerivAt_of_integrableOn_Iic`. -/
 theorem integral_Iic_of_hasDerivAt_of_tendsto'
     (hderiv : ∀ x ∈ Iic a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Iic a))
     (hf : Tendsto f atBot (𝓝 m)) : ∫ x in Iic a, f' x = f a - m := by
@@ -984,9 +1021,16 @@ end IicFTC
 section UnivFTC
 
 variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m n : E} [NormedAddCommGroup E]
-  [NormedSpace ℝ E] [CompleteSpace E]
+  [NormedSpace ℝ E]
 
-theorem integral_of_hasDerivAt_of_tendsto
+/-- **Fundamental theorem of calculus-2**, on the whole real line
+When a function has a limit `m` at `-∞` and `n` at `+∞`, and its derivative is integrable, then the
+integral of the derivative is `n - m`.
+
+Note that such a function always has a limit at `-∞` and `+∞`,
+see `tendsto_limUnder_of_hasDerivAt_of_integrableOn_Iic` and
+`tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi`. -/
+theorem integral_of_hasDerivAt_of_tendsto [CompleteSpace E]
     (hderiv : ∀ x, HasDerivAt f (f' x) x) (hf' : Integrable f')
     (hbot : Tendsto f atBot (𝓝 m)) (htop : Tendsto f atTop (𝓝 n)) : ∫ x, f' x = n - m := by
   rw [← integral_univ, ← Set.Iic_union_Ioi (a := 0),
@@ -994,6 +1038,21 @@ theorem integral_of_hasDerivAt_of_tendsto
     integral_Iic_of_hasDerivAt_of_tendsto' (fun x _ ↦ hderiv x) hf'.integrableOn hbot,
     integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ ↦ hderiv x) hf'.integrableOn htop]
   abel
+
+/-- If a function and its derivative are integrable on the real line, then the integral of the
+derivative is zero. -/
+theorem integral_eq_zero_of_hasDerivAt_of_integrable
+    (hderiv : ∀ x, HasDerivAt f (f' x) x) (hf' : Integrable f') (hf : Integrable f) :
+    ∫ x, f' x = 0 := by
+  by_cases hE : CompleteSpace E; swap
+  · simp [integral, hE]
+  have A : Tendsto f atBot (𝓝 0) :=
+    tendsto_zero_of_hasDerivAt_of_integrableOn_Iic (a := 0) (fun x _hx ↦ hderiv x)
+      hf'.integrableOn hf.integrableOn
+  have B : Tendsto f atTop (𝓝 0) :=
+    tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi (a := 0) (fun x _hx ↦ hderiv x)
+      hf'.integrableOn hf.integrableOn
+  simpa using integral_of_hasDerivAt_of_tendsto hderiv hf' A B
 
 end UnivFTC
 
@@ -1158,8 +1217,107 @@ end IoiIntegrability
 /-!
 ## Integration by parts
 -/
-
 section IntegrationByParts
+
+variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedAddCommGroup G] [NormedSpace ℝ G]
+  (L : E →L[ℝ] F →L[ℝ] G) {u : ℝ → E} {v : ℝ → F} {u' : ℝ → E} {v' : ℝ → F}
+  {m n : G}
+
+/-- For finite intervals, see: `intervalIntegral.integral_deriv_mul_eq_sub`. -/
+theorem integral_deriv_mul_eq_sub [CompleteSpace G]
+    (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
+    (huv : Integrable (fun x ↦ L (u' x) (v x) + L (u x) (v' x)))
+    (h_bot : Tendsto (fun x ↦ L (u x) (v x)) atBot (𝓝 m))
+    (h_top : Tendsto (fun x ↦ L (u x) (v x)) atTop (𝓝 n)) :
+    ∫ (x : ℝ), L (u' x) (v x) + L (u x) (v' x) = n - m := by
+  apply integral_of_hasDerivAt_of_tendsto (fun x ↦ ?_) huv h_bot h_top
+  have Z := (hu x).prod (hv x)
+  apply (L.isBoundedBilinearMap.hasFDerivAt (u x, v x)).comp_hasDerivAt
+
+
+#exit
+
+/-- **Integration by parts on (-∞, ∞).**
+For finite intervals, see: `intervalIntegral.integral_mul_deriv_eq_deriv_mul`. -/
+theorem integral_mul_deriv_eq_deriv_mul
+    (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
+    (huv' : Integrable (u * v')) (hu'v : Integrable (u' * v))
+    (h_bot : Tendsto (u * v) atBot (𝓝 a')) (h_top : Tendsto (u * v) atTop (𝓝 b')) :
+    ∫ (x : ℝ), u x * v' x = b' - a' - ∫ (x : ℝ), u' x * v x := by
+  rw [Pi.mul_def] at huv' hu'v
+  rw [eq_sub_iff_add_eq, ← integral_add huv' hu'v]
+  simpa only [add_comm] using integral_deriv_mul_eq_sub hu hv (hu'v.add huv') h_bot h_top
+
+-- TODO: also apply `Tendsto _ (𝓝[>] a) (𝓝 a')` generalization to
+-- `integral_Ioi_of_hasDerivAt_of_tendsto` and `integral_Iic_of_hasDerivAt_of_tendsto`
+/-- For finite intervals, see: `intervalIntegral.integral_deriv_mul_eq_sub`. -/
+theorem integral_Ioi_deriv_mul_eq_sub
+    (hu : ∀ x ∈ Ioi a, HasDerivAt u (u' x) x) (hv : ∀ x ∈ Ioi a, HasDerivAt v (v' x) x)
+    (huv : IntegrableOn (u' * v + u * v') (Ioi a))
+    (h_zero : Tendsto (u * v) (𝓝[>] a) (𝓝 a')) (h_infty : Tendsto (u * v) atTop (𝓝 b')) :
+    ∫ (x : ℝ) in Ioi a, u' x * v x + u x * v' x = b' - a' := by
+  rw [← Ici_diff_left] at h_zero
+  let f := Function.update (u * v) a a'
+  have hderiv : ∀ x ∈ Ioi a, HasDerivAt f (u' x * v x + u x * v' x) x := by
+    intro x (hx : a < x)
+    apply ((hu x hx).mul (hv x hx)).congr_of_eventuallyEq
+    filter_upwards [eventually_ne_nhds hx.ne.symm] with y hy
+    exact Function.update_noteq hy a' (u * v)
+  have htendsto : Tendsto f atTop (𝓝 b') := by
+    apply h_infty.congr'
+    filter_upwards [eventually_ne_atTop a] with x hx
+    exact (Function.update_noteq hx a' (u * v)).symm
+  simpa using integral_Ioi_of_hasDerivAt_of_tendsto
+    (continuousWithinAt_update_same.mpr h_zero) hderiv huv htendsto
+
+/-- **Integration by parts on (a, ∞).**
+For finite intervals, see: `intervalIntegral.integral_mul_deriv_eq_deriv_mul`. -/
+theorem integral_Ioi_mul_deriv_eq_deriv_mul
+    (hu : ∀ x ∈ Ioi a, HasDerivAt u (u' x) x) (hv : ∀ x ∈ Ioi a, HasDerivAt v (v' x) x)
+    (huv' : IntegrableOn (u * v') (Ioi a)) (hu'v : IntegrableOn (u' * v) (Ioi a))
+    (h_zero : Tendsto (u * v) (𝓝[>] a) (𝓝 a')) (h_infty : Tendsto (u * v) atTop (𝓝 b')) :
+    ∫ (x : ℝ) in Ioi a, u x * v' x = b' - a' - ∫ (x : ℝ) in Ioi a, u' x * v x := by
+  rw [Pi.mul_def] at huv' hu'v
+  rw [eq_sub_iff_add_eq, ← integral_add huv' hu'v]
+  simpa only [add_comm] using integral_Ioi_deriv_mul_eq_sub hu hv (hu'v.add huv') h_zero h_infty
+
+/-- For finite intervals, see: `intervalIntegral.integral_deriv_mul_eq_sub`. -/
+theorem integral_Iic_deriv_mul_eq_sub
+    (hu : ∀ x ∈ Iio a, HasDerivAt u (u' x) x) (hv : ∀ x ∈ Iio a, HasDerivAt v (v' x) x)
+    (huv : IntegrableOn (u' * v + u * v') (Iic a))
+    (h_zero : Tendsto (u * v) (𝓝[<] a) (𝓝 a')) (h_infty : Tendsto (u * v) atBot (𝓝 b')) :
+    ∫ (x : ℝ) in Iic a, u' x * v x + u x * v' x = a' - b' := by
+  rw [← Iic_diff_right] at h_zero
+  let f := Function.update (u * v) a a'
+  have hderiv : ∀ x ∈ Iio a, HasDerivAt f (u' x * v x + u x * v' x) x := by
+    intro x hx
+    apply ((hu x hx).mul (hv x hx)).congr_of_eventuallyEq
+    filter_upwards [Iio_mem_nhds hx] with x (hx : x < a)
+    exact Function.update_noteq (ne_of_lt hx) a' (u * v)
+  have htendsto : Tendsto f atBot (𝓝 b') := by
+    apply h_infty.congr'
+    filter_upwards [Iio_mem_atBot a] with x (hx : x < a)
+    exact (Function.update_noteq (ne_of_lt hx) a' (u * v)).symm
+  simpa using integral_Iic_of_hasDerivAt_of_tendsto
+    (continuousWithinAt_update_same.mpr h_zero) hderiv huv htendsto
+
+/-- **Integration by parts on (∞, a].**
+For finite intervals, see: `intervalIntegral.integral_mul_deriv_eq_deriv_mul`. -/
+theorem integral_Iic_mul_deriv_eq_deriv_mul
+    (hu : ∀ x ∈ Iio a, HasDerivAt u (u' x) x) (hv : ∀ x ∈ Iio a, HasDerivAt v (v' x) x)
+    (huv' : IntegrableOn (u * v') (Iic a)) (hu'v : IntegrableOn (u' * v) (Iic a))
+    (h_zero : Tendsto (u * v) (𝓝[<] a) (𝓝 a')) (h_infty : Tendsto (u * v) atBot (𝓝 b')) :
+    ∫ (x : ℝ) in Iic a, u x * v' x = a' - b' - ∫ (x : ℝ) in Iic a, u' x * v x := by
+  rw [Pi.mul_def] at huv' hu'v
+  rw [eq_sub_iff_add_eq, ← integral_add huv' hu'v]
+  simpa only [add_comm] using integral_Iic_deriv_mul_eq_sub hu hv (hu'v.add huv') h_zero h_infty
+
+
+end IntegrationByParts
+
+
+section IntegrationByPartsAlgebra
 
 variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
   {a b : ℝ} {a' b' : A} {u : ℝ → A} {v : ℝ → A} {u' : ℝ → A} {v' : ℝ → A}
@@ -1247,6 +1405,6 @@ theorem integral_Iic_mul_deriv_eq_deriv_mul
   rw [eq_sub_iff_add_eq, ← integral_add huv' hu'v]
   simpa only [add_comm] using integral_Iic_deriv_mul_eq_sub hu hv (hu'v.add huv') h_zero h_infty
 
-end IntegrationByParts
+end IntegrationByPartsAlgebra
 
 end MeasureTheory
