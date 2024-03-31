@@ -1,54 +1,56 @@
 import Mathlib.CategoryTheory.Triangulated.Subcategory
-import Mathlib.CategoryTheory.RespectsIso
+import Mathlib.CategoryTheory.ClosedUnderIsomorphisms
 import Mathlib.Tactic.Linarith
 
 open CategoryTheory Category Limits
 
-namespace Set
+namespace CategoryTheory
 
-variable {C : Type _} [Category C] (S : Set C)
+section
+
+variable {C : Type _} [Category C] (S : C → Prop)
 
 variable {A : Type _} [AddMonoid A] [HasShift C A]
 
-def shift (a : A) : Set C := fun X => (X⟦a⟧ ∈ S)
+def predicateShift (a : A) : C → Prop := fun X => S (X⟦a⟧)
 
-lemma mem_shift_iff (a : A) (X : C) : X ∈ S.shift a ↔ X⟦a⟧ ∈ S := by rfl
+lemma mem_predicateShift_iff (a : A) (X : C) : predicateShift S a X ↔ S (X⟦a⟧) := by rfl
 
-lemma shift_respectsIso (a : A) [S.RespectsIso] : (S.shift a).RespectsIso where
-  condition {X Y} e hX := by
-    simp only [mem_shift_iff] at hX ⊢
+instance predicateShift_closedUnderIsomorphisms (a : A) [ClosedUnderIsomorphisms S] :
+    ClosedUnderIsomorphisms (predicateShift S a) where
+  mem_of_iso {X Y} e hX := by
+    simp only [mem_predicateShift_iff] at hX ⊢
     exact mem_of_iso S ((shiftFunctor C a).mapIso e) hX
 
 variable (A)
 
 @[simp]
-lemma shift_zero [S.RespectsIso] : S.shift (0 : A) = S := by
+lemma predicateShift_zero [ClosedUnderIsomorphisms S] : predicateShift S (0 : A) = S := by
   ext X
-  simp only [mem_shift_iff]
+  simp only [mem_predicateShift_iff]
   exact mem_iff_of_iso S ((shiftFunctorZero C A).app X)
 
 variable {A}
 
-lemma shift_shift (a b c : A) (h : a + b = c) [S.RespectsIso] :
-    (S.shift b).shift a = S.shift c := by
+lemma predicateShift_predicateShift (a b c : A) (h : a + b = c) [ClosedUnderIsomorphisms S] :
+    predicateShift (predicateShift S b) a = predicateShift S c := by
   ext X
-  simp only [mem_shift_iff]
+  simp only [mem_predicateShift_iff]
   exact mem_iff_of_iso _ ((shiftFunctorAdd' C a b c h).symm.app X)
 
-end Set
-
-namespace CategoryTheory
-
 @[simp]
-lemma essImageFullSubcategoryInclusion {C : Type*} [Category C] (S : Set C) [S.RespectsIso] :
-    (fullSubcategoryInclusion S).essImage = S := by
+lemma essImageFullSubcategoryInclusion [ClosedUnderIsomorphisms S] :
+    (fullSubcategoryInclusion S).essImage = setOf S := by
   ext X
   constructor
   · rintro ⟨Y, ⟨e⟩⟩
-    rw [← S.mem_iff_of_iso e]
+    dsimp
+    rw [← mem_iff_of_iso S e]
     exact Y.2
   · intro hX
     exact ⟨⟨X, hX⟩, ⟨Iso.refl _⟩⟩
+
+end
 
 variable (C : Type _) [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
@@ -58,51 +60,50 @@ open Pretriangulated
 namespace Triangulated
 
 structure TStructure where
-  setLE (n : ℤ) : Set C
-  setGE (n : ℤ) : Set C
-  setLE_respectsIso (n : ℤ) : (setLE n).RespectsIso
-  setGE_respectsIso (n : ℤ) : (setGE n).RespectsIso
-  shift_mem_setLE (n a n' : ℤ) (h : a + n' = n) (X : C) (hX : X ∈ setLE n) : X⟦a⟧ ∈ setLE n'
-  shift_mem_setGE (n a n' : ℤ) (h : a + n' = n) (X : C) (hX : X ∈ setGE n) : X⟦a⟧ ∈ setGE n'
-  zero' ⦃X Y : C⦄ (f : X ⟶ Y) (hX : X ∈ setLE 0) (hY : Y ∈ setGE 1) : f = 0
-  setLE_zero_subset : setLE 0 ⊆ setLE 1
-  setGE_one_subset : setGE 1 ⊆ setGE 0
-  exists_triangle_zero_one (A : C) : ∃ (X Y : C) (_ : X ∈ setLE 0) (_ : Y ∈ setGE 1)
+  setLE (n : ℤ) : C → Prop
+  setGE (n : ℤ) : C → Prop
+  setLE_respectsIso (n : ℤ) : ClosedUnderIsomorphisms (setLE n) := by infer_instance
+  setGE_respectsIso (n : ℤ) : ClosedUnderIsomorphisms (setGE n) := by infer_instance
+  shift_mem_setLE (n a n' : ℤ) (h : a + n' = n) (X : C) (hX : setLE n X) : setLE n' (X⟦a⟧)
+  shift_mem_setGE (n a n' : ℤ) (h : a + n' = n) (X : C) (hX : setGE n X) : setGE n' (X⟦a⟧)
+  zero' ⦃X Y : C⦄ (f : X ⟶ Y) (hX : setLE 0 X) (hY : setGE 1 Y) : f = 0
+  setLE_zero_subset : setLE 0 ≤ setLE 1
+  setGE_one_subset : setGE 1 ≤ setGE 0
+  exists_triangle_zero_one (A : C) : ∃ (X Y : C) (_ : setLE 0 X) (_ : setGE 1 Y)
     (f : X ⟶ A) (g : A ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧), Triangle.mk f g h ∈ distTriang C
 
 namespace TStructure
 
 attribute [instance] setLE_respectsIso setGE_respectsIso
 
-noncomputable def mk' (setLEZero : Set C) (setGEZero : Set C)
-    [setLEZero.RespectsIso] [setGEZero.RespectsIso]
-    (zero : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), X ∈ setLEZero → Y⟦(1 : ℤ)⟧ ∈ setGEZero → f = 0)
-    (setLE_zero_subset' : setLEZero ⊆ setLEZero.shift (1 : ℤ))
-    (setGE_zero_subset' : setGEZero.shift (1 : ℤ) ⊆ setGEZero)
-    (exists_triangle_zero_one' : ∀ (A : C), ∃ (X Y : C) (_ : X ∈ setLEZero)
-      (_ : Y⟦(1 : ℤ)⟧ ∈ setGEZero) (f : X ⟶ A) (g : A ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧),
+variable {C}
+
+noncomputable def mk' (setLEZero : C → Prop) (setGEZero : C → Prop)
+    [ClosedUnderIsomorphisms setLEZero] [ClosedUnderIsomorphisms setGEZero]
+    (zero : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), setLEZero X → setGEZero (Y⟦(1 : ℤ)⟧) → f = 0)
+    (setLE_zero_subset' : setLEZero ≤ predicateShift setLEZero (1 : ℤ))
+    (setGE_zero_subset' : predicateShift setGEZero (1 : ℤ) ≤ setGEZero)
+    (exists_triangle_zero_one' : ∀ (A : C), ∃ (X Y : C) (_ : setLEZero X)
+      (_ : setGEZero (Y⟦(1 : ℤ)⟧)) (f : X ⟶ A) (g : A ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧),
         Triangle.mk f g h ∈ distTriang C) :
     TStructure C where
-  setLE n := setLEZero.shift n
-  setGE n := setGEZero.shift n
-  setLE_respectsIso n := Set.shift_respectsIso _ _
-  setGE_respectsIso n := Set.shift_respectsIso _ _
+  setLE n := predicateShift setLEZero n
+  setGE n := predicateShift setGEZero n
   shift_mem_setLE := by
     rintro n a n' h X hX
-    simpa only [← setLEZero.shift_shift _ _ _ h] using hX
+    simpa only [← predicateShift_predicateShift setLEZero _ _ _ h] using hX
   shift_mem_setGE := by
     rintro n a n' h X hX
-    simpa only [← setGEZero.shift_shift _ _ _ h] using hX
-  zero' := fun X Y f hX hY => zero f (by simpa only [Set.shift_zero] using hX) hY
-  setLE_zero_subset := by simpa only [Set.shift_zero] using setLE_zero_subset'
-  setGE_one_subset := by simpa only [Set.shift_zero] using setGE_zero_subset'
-  exists_triangle_zero_one := by simpa only [Set.shift_zero] using exists_triangle_zero_one'
+    simpa only [← predicateShift_predicateShift setGEZero _ _ _ h] using hX
+  zero' := fun X Y f hX hY => zero f (by simpa only [predicateShift_zero] using hX) hY
+  setLE_zero_subset := by simpa only [predicateShift_zero] using setLE_zero_subset'
+  setGE_one_subset := by simpa only [predicateShift_zero] using setGE_zero_subset'
+  exists_triangle_zero_one := by simpa only [predicateShift_zero] using exists_triangle_zero_one'
 
-variable {C}
 variable (t : TStructure C)
 
 lemma exists_triangle (A : C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
-    ∃ (X Y : C) (_ : X ∈ t.setLE n₀) (_ : Y ∈ t.setGE n₁) (f : X ⟶ A) (g : A ⟶ Y)
+    ∃ (X Y : C) (_ : t.setLE n₀ X) (_ : t.setGE n₁ Y) (f : X ⟶ A) (g : A ⟶ Y)
       (h : Y ⟶ X⟦(1 : ℤ)⟧), Triangle.mk f g h ∈ distTriang C := by
   obtain ⟨X, Y, hX, hY, f, g, h, mem⟩ := t.exists_triangle_zero_one (A⟦n₀⟧)
   let T := (Triangle.shiftFunctor C (-n₀)).obj (Triangle.mk f g h)
@@ -114,28 +115,28 @@ lemma exists_triangle (A : C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
   exact ⟨_, _, t.shift_mem_setLE _ _ _ (neg_add_self n₀) _ hX,
     t.shift_mem_setGE _ _ _ (by linarith) _ hY, _, _, _, hT'⟩
 
-lemma shift_setLE (a n n' : ℤ) (hn' : a + n = n'): ((t.setLE n).shift a) = t.setLE n' := by
+lemma shift_setLE (a n n' : ℤ) (hn' : a + n = n'): (predicateShift (t.setLE n) a) = t.setLE n' := by
   ext X
   constructor
   · intro hX
-    rw [Set.mem_shift_iff] at hX
-    apply ((setLE t n').mem_iff_of_iso ((shiftEquiv C a).unitIso.symm.app X)).1
+    rw [mem_predicateShift_iff] at hX
+    apply (mem_iff_of_iso (setLE t n') ((shiftEquiv C a).unitIso.symm.app X)).1
       (t.shift_mem_setLE n (-a) n' (by linarith) _ hX)
   · intro hX
     exact t.shift_mem_setLE _ _ _ hn' X hX
 
-lemma shift_setGE (a n n' : ℤ) (hn' : a + n = n'): ((t.setGE n).shift a) = t.setGE n' := by
+lemma shift_setGE (a n n' : ℤ) (hn' : a + n = n'): (predicateShift (t.setGE n) a) = t.setGE n' := by
   ext X
   constructor
   · intro hX
-    rw [Set.mem_shift_iff] at hX
-    apply ((setGE t n').mem_iff_of_iso ((shiftEquiv C a).unitIso.symm.app X)).1
+    rw [mem_predicateShift_iff] at hX
+    apply (mem_iff_of_iso (setGE t n') ((shiftEquiv C a).unitIso.symm.app X)).1
       (t.shift_mem_setGE n (-a) n' (by linarith) _ hX)
   · intro hX
     exact t.shift_mem_setGE _ _ _ hn' X hX
 
-lemma setLE_monotone (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) : t.setLE n₀ ⊆ t.setLE n₁ := by
-  let H := fun (a : ℕ) => ∀ (n : ℤ), t.setLE n ⊆ t.setLE (n + a)
+lemma setLE_monotone (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) : t.setLE n₀ ≤ t.setLE n₁ := by
+  let H := fun (a : ℕ) => ∀ (n : ℤ), t.setLE n ≤ t.setLE (n + a)
   suffices ∀ (a : ℕ), H a by
     obtain ⟨a, ha⟩ := Int.nonneg_def.1 h
     obtain rfl : n₁ = n₀ + a := by linarith
@@ -145,9 +146,9 @@ lemma setLE_monotone (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) : t.setLE n₀ ⊆ t.
     simp only [Nat.cast_zero, add_zero]
     rfl
   have H_one : H 1 := fun n X hX => by
-    rw [← t.shift_setLE n 1 (n+(1 : ℕ)) rfl, Set.mem_shift_iff]
-    rw [← t.shift_setLE n 0 n (add_zero n), Set.mem_shift_iff] at hX
-    exact t.setLE_zero_subset hX
+    rw [← t.shift_setLE n 1 (n+(1 : ℕ)) rfl, mem_predicateShift_iff]
+    rw [← t.shift_setLE n 0 n (add_zero n), mem_predicateShift_iff] at hX
+    exact t.setLE_zero_subset _ hX
   have H_add : ∀ (a b c : ℕ) (_ : a + b = c) (_ : H a) (_ : H b), H c := by
     intro a b c h ha hb n
     rw [← h, Nat.cast_add, ← add_assoc]
@@ -157,8 +158,8 @@ lemma setLE_monotone (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) : t.setLE n₀ ⊆ t.
   · exact H_zero
   · exact H_add a 1 _ rfl ha H_one
 
-lemma setGE_antitone (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) : t.setGE n₁ ⊆ t.setGE n₀ := by
-  let H := fun (a : ℕ) => ∀ (n : ℤ), t.setGE (n + a) ⊆ t.setGE n
+lemma setGE_antitone (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) : t.setGE n₁ ≤ t.setGE n₀ := by
+  let H := fun (a : ℕ) => ∀ (n : ℤ), t.setGE (n + a) ≤ t.setGE n
   suffices ∀ (a : ℕ), H a by
     obtain ⟨a, ha⟩ := Int.nonneg_def.1 h
     obtain rfl : n₁ = n₀ + a := by linarith
@@ -168,9 +169,9 @@ lemma setGE_antitone (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) : t.setGE n₁ ⊆ t.
     simp only [Nat.cast_zero, add_zero]
     rfl
   have H_one : H 1 := fun n X hX => by
-    rw [← t.shift_setGE n 1 (n + (1 : ℕ)) (by simp), Set.mem_shift_iff] at hX
+    rw [← t.shift_setGE n 1 (n + (1 : ℕ)) (by simp), mem_predicateShift_iff] at hX
     rw [← t.shift_setGE n 0 n (add_zero n)]
-    exact t.setGE_one_subset hX
+    exact t.setGE_one_subset _ hX
   have H_add : ∀ (a b c : ℕ) (_ : a + b = c) (_ : H a) (_ : H b), H c := by
     intro a b c h ha hb n
     rw [← h, Nat.cast_add, ← add_assoc ]
@@ -181,26 +182,26 @@ lemma setGE_antitone (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) : t.setGE n₁ ⊆ t.
   · exact H_add a 1 _ rfl ha H_one
 
 class IsLE (X : C) (n : ℤ) : Prop where
-  mem : X ∈ t.setLE n
+  mem : t.setLE n X
 
-lemma mem_of_isLE (X : C) (n : ℤ) [t.IsLE X n] : X ∈ t.setLE n := IsLE.mem
+lemma mem_of_isLE (X : C) (n : ℤ) [t.IsLE X n] : t.setLE n X := IsLE.mem
 
 class IsGE (X : C) (n : ℤ) : Prop where
-  mem : X ∈ t.setGE n
+  mem : t.setGE n X
 
-lemma mem_of_isGE (X : C) (n : ℤ) [t.IsGE X n] : X ∈ t.setGE n := IsGE.mem
+lemma mem_of_isGE (X : C) (n : ℤ) [t.IsGE X n] : t.setGE n X := IsGE.mem
 
 lemma isLE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [t.IsLE X n] : t.IsLE Y n where
-  mem := (t.setLE n).mem_of_iso e (t.mem_of_isLE X n)
+  mem := mem_of_iso (t.setLE n) e (t.mem_of_isLE X n)
 
 lemma isGE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [t.IsGE X n] : t.IsGE Y n where
-  mem := (t.setGE n).mem_of_iso e (t.mem_of_isGE X n)
+  mem := mem_of_iso (t.setGE n) e (t.mem_of_isGE X n)
 
 lemma isLE_of_LE (X : C) (p q : ℤ) (hpq : p ≤ q) [t.IsLE X p] : t.IsLE X q where
-  mem := setLE_monotone t p q hpq (t.mem_of_isLE X p)
+  mem := setLE_monotone t p q hpq _ (t.mem_of_isLE X p)
 
 lemma isGE_of_GE (X : C) (p q : ℤ) (hpq : p ≤ q) [t.IsGE X q] : t.IsGE X p where
-  mem := setGE_antitone t p q hpq (t.mem_of_isGE X q)
+  mem := setGE_antitone t p q hpq _ (t.mem_of_isGE X q)
 
 lemma isLE_shift (X : C) (n a n' : ℤ) (hn' : a + n' = n) [t.IsLE X n] :
     t.IsLE (X⟦a⟧) n' :=
@@ -256,18 +257,18 @@ lemma isZero (X : C) (n₀ n₁ : ℤ) (h : n₀ < n₁)
   rw [IsZero.iff_id_eq_zero]
   exact t.zero _ n₀ n₁ h
 
-def heart : Set C := t.setLE 0 ∩ t.setGE 0
+def heart (X : C) : Prop := t.setLE 0 X ∧ t.setGE 0 X
 
 lemma mem_heart_iff (X : C) :
-    X ∈ t.heart ↔ t.IsLE X 0 ∧ t.IsGE X 0 := by
+    t.heart X ↔ t.IsLE X 0 ∧ t.IsGE X 0 := by
   constructor
   · rintro ⟨h₁, h₂⟩
     exact ⟨⟨h₁⟩, ⟨h₂⟩⟩
   · rintro ⟨h₁, h₂⟩
     exact ⟨t.mem_of_isLE _ _, t.mem_of_isGE _ _⟩
 
-instance : t.heart.RespectsIso where
-  condition X Y e hX := by
+instance : ClosedUnderIsomorphisms t.heart where
+  mem_of_iso {X Y} e hX := by
     rw [mem_heart_iff] at hX ⊢
     have := hX.1
     have := hX.2
@@ -288,8 +289,7 @@ instance (X : t.Heart') : t.IsGE (t.ιHeart'.obj X) 0 := ⟨X.2.2⟩
 instance (X : t.Heart') : t.IsLE X.1 0 := ⟨X.2.1⟩
 instance (X : t.Heart') : t.IsGE X.1 0 := ⟨X.2.2⟩
 
-
-lemma ιHeart_obj_mem_heart (X : t.Heart') : t.ιHeart'.obj X ∈ t.heart := X.2
+lemma ιHeart_obj_mem_heart (X : t.Heart') : t.heart (t.ιHeart'.obj X) := X.2
 
 def ιHeartDegree (n : ℤ) : t.Heart' ⥤ C :=
   t.ιHeart' ⋙ shiftFunctor C (-n)
@@ -307,7 +307,7 @@ class HasHeart where
   additive_ι : ι.Additive := by infer_instance
   fullι : Full ι := by infer_instance
   faithful_ι : Faithful ι := by infer_instance
-  hι : ι.essImage = t.heart := by simp
+  hι : ι.essImage = setOf t.heart := by simp
 
 def hasHeartFullSubcategory : t.HasHeart where
   H := FullSubcategory t.heart
@@ -326,7 +326,8 @@ instance : Full t.ιHeart := ht.fullι
 instance : Faithful t.ιHeart := ht.faithful_ι
 instance : t.ιHeart.Additive := ht.additive_ι
 
-lemma ιHeart_obj_mem (X : t.Heart) : t.ιHeart.obj X ∈ t.heart := by
+lemma ιHeart_obj_mem (X : t.Heart) : t.heart (t.ιHeart.obj X) := by
+  change (t.ιHeart.obj X) ∈ setOf t.heart
   rw [← ht.hι]
   exact t.ιHeart.obj_mem_essImage X
 
@@ -337,20 +338,20 @@ instance (X : t.Heart) : t.IsGE (t.ιHeart.obj X) 0 :=
   ⟨(t.ιHeart_obj_mem X).2⟩
 
 lemma mem_essImage_ιHeart_iff (X : C) :
-    X ∈ t.ιHeart.essImage ↔ X ∈ t.heart := by
+    X ∈ t.ιHeart.essImage ↔ t.heart X := by
   dsimp [ιHeart]
-  rw [ht.hι]
+  rw [ht.hι, Set.mem_setOf_eq]
 
-noncomputable def heartMk (X : C) (hX : X ∈ t.heart) : t.Heart :=
+noncomputable def heartMk (X : C) (hX : t.heart X) : t.Heart :=
   Functor.essImage.witness ((t.mem_essImage_ιHeart_iff X).2 hX)
 
-noncomputable def ιHeartObjHeartMkIso (X : C) (hX : X ∈ t.heart) :
+noncomputable def ιHeartObjHeartMkIso (X : C) (hX : t.heart X) :
     t.ιHeart.obj (t.heartMk X hX) ≅ X :=
   Functor.essImage.getIso ((t.mem_essImage_ιHeart_iff X).2 hX)
 
 @[simps obj]
 noncomputable def liftHeart {D : Type*} [Category D]
-    (F : D ⥤ C) (hF : ∀ (X : D), F.obj X ∈ t.heart) :
+    (F : D ⥤ C) (hF : ∀ (X : D), t.heart (F.obj X)) :
     D ⥤ t.Heart where
   obj X := t.heartMk (F.obj X) (hF X)
   map {X Y} f := t.ιHeart.preimage ((t.ιHeartObjHeartMkIso _ (hF X)).hom ≫ F.map f ≫
@@ -360,14 +361,14 @@ noncomputable def liftHeart {D : Type*} [Category D]
 
 @[simp, reassoc]
 lemma ιHeart_map_liftHeart_map {D : Type*} [Category D]
-    (F : D ⥤ C) (hF : ∀ (X : D), F.obj X ∈ t.heart) {X Y : D} (f : X ⟶ Y) :
+    (F : D ⥤ C) (hF : ∀ (X : D), t.heart (F.obj X)) {X Y : D} (f : X ⟶ Y) :
     t.ιHeart.map ((t.liftHeart F hF).map f) =
       (t.ιHeartObjHeartMkIso _ (hF X)).hom ≫ F.map f ≫
         (t.ιHeartObjHeartMkIso _ (hF Y)).inv := by
   simp [liftHeart]
 
 noncomputable def liftHeartιHeart {D : Type*} [Category D]
-    (F : D ⥤ C) (hF : ∀ (X : D), F.obj X ∈ t.heart) :
+    (F : D ⥤ C) (hF : ∀ (X : D), t.heart (F.obj X)) :
     t.liftHeart F hF ⋙ t.ιHeart ≅ F :=
   NatIso.ofComponents (fun X => t.ιHeartObjHeartMkIso _ (hF X)) (by aesop_cat)
 
@@ -379,8 +380,8 @@ variable {C}
 variable (S : Subcategory C) (t : TStructure C)
 
 class HasInducedTStructure : Prop :=
-  exists_triangle_zero_one (A : C) (hA : A ∈ S.set) :
-    ∃ (X Y : C) (_ : X ∈ t.setLE 0) (_ : Y ∈ t.setGE 1)
+  exists_triangle_zero_one (A : C) (hA : S.P A) :
+    ∃ (X Y : C) (_ : t.setLE 0 X) (_ : t.setGE 1 Y)
       (f : X ⟶ A) (g : A ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧) (_ : Triangle.mk f g h ∈ distTriang C),
     X ∈ S.ι.essImage ∧ Y ∈ S.ι.essImage
 
@@ -389,21 +390,21 @@ variable [h : S.HasInducedTStructure t]
 def tStructure : TStructure S.category where
   setLE n X := t.setLE n (S.ι.obj X)
   setGE n X := t.setGE n (S.ι.obj X)
-  setLE_respectsIso n := ⟨fun X Y e hX => (t.setLE n).mem_of_iso (S.ι.mapIso e) hX⟩
-  setGE_respectsIso n := ⟨fun X Y e hX => (t.setGE n).mem_of_iso (S.ι.mapIso e) hX⟩
-  shift_mem_setLE n a n' h X hX := (t.setLE n').mem_of_iso ((S.ι.commShiftIso a).symm.app X)
+  setLE_respectsIso n := ⟨fun {X Y} e hX => mem_of_iso (t.setLE n) (S.ι.mapIso e) hX⟩
+  setGE_respectsIso n := ⟨fun {X Y} e hX => mem_of_iso (t.setGE n) (S.ι.mapIso e) hX⟩
+  shift_mem_setLE n a n' h X hX := mem_of_iso (t.setLE n') ((S.ι.commShiftIso a).symm.app X)
     (t.shift_mem_setLE n a n' h (S.ι.obj X) hX)
-  shift_mem_setGE n a n' h X hX := (t.setGE n').mem_of_iso ((S.ι.commShiftIso a).symm.app X)
+  shift_mem_setGE n a n' h X hX := mem_of_iso (t.setGE n') ((S.ι.commShiftIso a).symm.app X)
     (t.shift_mem_setGE n a n' h (S.ι.obj X) hX)
   zero' {X Y} f hX hY := S.ι.map_injective (by
     rw [Functor.map_zero]
     exact t.zero' (S.ι.map f) hX hY)
-  setLE_zero_subset X hX := t.setLE_zero_subset hX
-  setGE_one_subset X hX := t.setGE_one_subset hX
+  setLE_zero_subset X hX := t.setLE_zero_subset _ hX
+  setGE_one_subset X hX := t.setGE_one_subset _ hX
   exists_triangle_zero_one A := by
     obtain ⟨X, Y, hX, hY, f, g, h, hT, ⟨X', ⟨e⟩⟩, ⟨Y', ⟨e'⟩⟩⟩ :=
       h.exists_triangle_zero_one A.1 A.2
-    refine' ⟨X', Y', (t.setLE 0).mem_of_iso e.symm hX, (t.setGE 1).mem_of_iso e'.symm hY,
+    refine' ⟨X', Y', mem_of_iso (t.setLE 0) e.symm hX, mem_of_iso (t.setGE 1) e'.symm hY,
       S.ι.preimage (e.hom ≫ f), S.ι.preimage (g ≫ e'.inv),
       S.ι.preimage (e'.hom ≫ h ≫ e.inv⟦(1 : ℤ)⟧' ≫ (S.ι.commShiftIso (1 : ℤ)).inv.app X'),
       isomorphic_distinguished _ hT _ _⟩
@@ -419,7 +420,7 @@ def tStructure : TStructure S.category where
 
 @[simp]
 lemma mem_tStructure_heart_iff (X : S.category) :
-    X ∈ (S.tStructure t).heart ↔ X.1 ∈ t.heart := by
+    (S.tStructure t).heart X ↔ t.heart X.1 := by
   rfl
 
 end Subcategory

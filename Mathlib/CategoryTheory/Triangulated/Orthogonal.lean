@@ -14,7 +14,7 @@ variable (S : Subcategory C)
 namespace Subcategory
 
 def rightOrthogonal : Subcategory C := Subcategory.mk'
-  (fun Y => ∀ ⦃X : C⦄ (f : X ⟶ Y), X ∈ S.set → f = 0)
+  (fun Y => ∀ ⦃X : C⦄ (f : X ⟶ Y), S.P X → f = 0)
   (by aesop_cat)
   (fun Y n hY X f hX => by
     have : f⟦-n⟧' ≫ (shiftEquiv C n).unitIso.inv.app Y = 0 := hY _ (S.shift _ _ hX)
@@ -25,13 +25,13 @@ def rightOrthogonal : Subcategory C := Subcategory.mk'
     obtain ⟨f₁, rfl⟩ := T.coyoneda_exact₂ hT f₂ (h₃ _ hX)
     rw [h₁ f₁ hX, zero_comp])
 
-instance : S.rightOrthogonal.set.RespectsIso := by
+instance : ClosedUnderIsomorphisms S.rightOrthogonal.P := by
   dsimp only [rightOrthogonal]
   infer_instance
 
 section
 
-lemma rightOrthogonal_precomp_W_bijective (Z : C) (hZ : Z ∈ S.rightOrthogonal.set)
+lemma rightOrthogonal_precomp_W_bijective (Z : C) (hZ : S.rightOrthogonal.P Z)
     {X Y : C} (w : X ⟶ Y) (hw : S.W w) :
     Function.Bijective (fun (f : Y ⟶ Z) => w ≫ f) := by
   constructor
@@ -45,14 +45,14 @@ lemma rightOrthogonal_precomp_W_bijective (Z : C) (hZ : Z ∈ S.rightOrthogonal.
     obtain ⟨u, hu⟩ := Triangle.yoneda_exact₂ _ H y (by dsimp; rw [comp_sub, hy, sub_self])
     rw [hu, hZ u mem, comp_zero]
   · intro z
-    rw [W_eq_W'] at hw
+    rw [W_iff'] at hw
     obtain ⟨U, f, g, H, mem⟩ := hw
     obtain ⟨u, hu⟩ := Triangle.yoneda_exact₂ _ H z (hZ _ mem)
     exact ⟨u, hu.symm⟩
 
 variable [IsTriangulated C] {D : Type*} [Category D] (L : C ⥤ D) [L.IsLocalization S.W]
 
-lemma map_bijective_of_rightOrthogonal (X Y : C) (hY : Y ∈ S.rightOrthogonal.set) :
+lemma map_bijective_of_rightOrthogonal (X Y : C) (hY : S.rightOrthogonal.P Y) :
     Function.Bijective (L.map : (X ⟶ Y) → _) := by
   constructor
   · intros f₁ f₂ hf
