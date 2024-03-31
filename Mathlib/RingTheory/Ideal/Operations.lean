@@ -13,6 +13,7 @@ import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.Quotient
+import Mathlib.Algebra.Order.Group.Action
 
 #align_import ring_theory.ideal.operations from "leanprover-community/mathlib"@"e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74"
 
@@ -187,9 +188,9 @@ theorem smul_mono_left (h : I ≤ J) : I • N ≤ J • N :=
   map₂_le_map₂_left h
 #align submodule.smul_mono_left Submodule.smul_mono_left
 
-theorem smul_mono_right (h : N ≤ P) : I • N ≤ I • P :=
-  map₂_le_map₂_right h
-#align submodule.smul_mono_right Submodule.smul_mono_right
+instance : CovariantClass (Ideal R) (Submodule R M) HSMul.hSMul LE.le :=
+  ⟨fun _ _ => map₂_le_map₂_right⟩
+#align submodule.smul_mono_right smul_mono_right
 
 theorem map_le_smul_top (I : Ideal R) (f : R →ₗ[R] M) :
     Submodule.map f I ≤ I • (⊤ : Submodule R M) := by

@@ -239,9 +239,8 @@ theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submonoid M) : m ∈ S →
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))
 #align submonoid.smul_mem_pointwise_smul Submonoid.smul_mem_pointwise_smul
 
-theorem pointwise_smul_mono_right (a : α) :
-    Monotone (HSMul.hSMul a : Submonoid M → Submonoid M) :=
-  fun _ _ => image_subset _
+instance : CovariantClass α (Submonoid M) HSMul.hSMul LE.le :=
+  ⟨fun _ _ => image_subset _⟩
 
 theorem mem_smul_pointwise_iff_exists (m : M) (a : α) (S : Submonoid M) :
     m ∈ a • S ↔ ∃ s : M, s ∈ S ∧ a • s = m :=
