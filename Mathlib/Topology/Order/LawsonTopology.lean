@@ -404,9 +404,11 @@ lemma singletonIsClosed (a : α) : IsClosed ({a} : Set α) := by
     simp only [lowerClosure_singleton, LowerSet.coe_Iic]
     exact Topology.IsScott.isClosed_Iic
 
-/-
 instance (priority := 90) t0Space : T0Space α where
-  t0 := sorry
--/
+  t0 := by
+    intros a b h
+    rw [inseparable_iff_closure_eq, closure_eq_iff_isClosed.mpr (singletonIsClosed a),
+      closure_eq_iff_isClosed.mpr (singletonIsClosed b), singleton_eq_singleton_iff] at h
+    exact h
 
 end CompleteLattice
