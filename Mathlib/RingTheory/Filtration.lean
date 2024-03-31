@@ -67,12 +67,12 @@ theorem pow_smul_le (i j : ℕ) : I ^ i • F.N j ≤ F.N (i + j) := by
   induction' i with _ ih
   · simp
   · rw [pow_succ', mul_smul, Nat.succ_eq_add_one, add_assoc, add_comm 1, ← add_assoc]
-    exact (Submodule.smul_mono_right ih).trans (F.smul_le _)
+    exact (smul_mono_right _ ih).trans (F.smul_le _)
 #align ideal.filtration.pow_smul_le Ideal.Filtration.pow_smul_le
 
 theorem pow_smul_le_pow_smul (i j k : ℕ) : I ^ (i + k) • F.N j ≤ I ^ k • F.N (i + j) := by
   rw [add_comm, pow_add, mul_smul]
-  exact Submodule.smul_mono_right (F.pow_smul_le i j)
+  exact smul_mono_right _ (F.pow_smul_le i j)
 #align ideal.filtration.pow_smul_le_pow_smul Ideal.Filtration.pow_smul_le_pow_smul
 
 protected theorem antitone : Antitone F.N :=
@@ -245,7 +245,7 @@ theorem Stable.exists_forall_le (h : F.Stable) (e : F.N 0 ≤ F'.N 0) :
   induction' n with n hn
   · refine' (F.antitone _).trans e; simp
   · rw [Nat.succ_eq_one_add, add_assoc, add_comm, add_comm 1 n, ← hF]
-    exact (Submodule.smul_mono_right hn).trans (F'.smul_le _)
+    exact (smul_mono_right _ hn).trans (F'.smul_le _)
     simp
 #align ideal.filtration.stable.exists_forall_le Ideal.Filtration.Stable.exists_forall_le
 
