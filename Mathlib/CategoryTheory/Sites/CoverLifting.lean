@@ -64,10 +64,6 @@ variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category
   (G' : D ⥤ E)
 
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-<<<<<<< HEAD
-=======
-variable {L : GrothendieckTopology E}
->>>>>>> origin/derived-category
 
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is called cocontinuous (SGA 4 III 2.1)
 if for all covering sieves `R` in `D`, `R.pullback G` is a covering sieve in `C`.

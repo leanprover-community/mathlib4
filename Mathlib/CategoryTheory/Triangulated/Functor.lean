@@ -4,11 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Triangulated.Triangulated
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Preadditive.Basic
-=======
 import Mathlib.CategoryTheory.ComposableArrows
->>>>>>> origin/derived-category
 import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
 import Mathlib.CategoryTheory.Linear.LinearFunctor
@@ -111,10 +107,7 @@ def mapTriangleRotateIso :
       ((F.commShiftIso (1 : ℤ)).symm.app _)
       (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
 
-<<<<<<< HEAD
-=======
 /-- `F.mapTriangle` commutes with the inverse of the rotation of triangles. -/
->>>>>>> origin/derived-category
 @[simps!]
 noncomputable def mapTriangleInvRotateIso [F.Additive] :
     F.mapTriangle ⋙ Pretriangulated.invRotate D ≅
@@ -123,13 +116,10 @@ noncomputable def mapTriangleInvRotateIso [F.Additive] :
     (fun T => Triangle.isoMk _ _ ((F.commShiftIso (-1 : ℤ)).symm.app _) (Iso.refl _) (Iso.refl _)
       (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
 
-<<<<<<< HEAD
 @[simps!]
 def mapTriangleCompIso : (F ⋙ G).mapTriangle ≅ F.mapTriangle ⋙ G.mapTriangle :=
   NatIso.ofComponents (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _))
 
-=======
->>>>>>> origin/derived-category
 end Additive
 
 variable [HasZeroObject C] [HasZeroObject D] [HasZeroObject E]
@@ -153,22 +143,16 @@ open ZeroObject
 
 variable [F.IsTriangulated]
 
-<<<<<<< HEAD
-noncomputable def mapZeroObject : F.obj 0 ≅ 0 := by
-  apply IsZero.isoZero
-  apply Triangle.isZero₃_of_isIso₁ _ (F.map_distinguished _ (contractible_distinguished (0 : C)))
-  dsimp
-  infer_instance
-
-instance : PreservesZeroMorphisms F := by
-  have h : 𝟙 (F.obj 0) = 0 := by
-    rw [← IsZero.iff_id_eq_zero]
-    apply Triangle.isZero₃_of_isIso₁ _ (F.map_distinguished _ (contractible_distinguished (0 : C)))
-    dsimp
-    infer_instance
-  refine' ⟨fun X Y => _⟩
-  have : (0 : X ⟶ Y) = 0 ≫ 𝟙 0 ≫ 0 := by simp
-  rw [this, F.map_comp, F.map_comp, F.map_id, h, zero_comp, comp_zero]
+instance : PreservesZeroMorphisms F where
+  map_zero X Y := by
+    have h₁ : (0 : X ⟶ Y) = 0 ≫ 𝟙 0 ≫ 0 := by simp
+    have h₂ : 𝟙 (F.obj 0) = 0 := by
+      rw [← IsZero.iff_id_eq_zero]
+      apply Triangle.isZero₃_of_isIso₁ _
+        (F.map_distinguished _ (contractible_distinguished (0 : C)))
+      dsimp
+      infer_instance
+    rw [h₁, F.map_comp, F.map_comp, F.map_id, h₂, zero_comp, comp_zero]
 
 noncomputable instance : PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₃ : C), IsIso (prodComparison F X₁ X₃) by
@@ -256,56 +240,6 @@ lemma isTriangulated_iff_comp_right {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e
 
 end Functor
 
-section
-
-variable {C D : Type _} [Category C] [Category D]
-  [HasShift C ℤ] [HasShift D ℤ] [HasZeroObject C] [HasZeroObject D]
-  [Preadditive C] [Preadditive D]
-  [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
-  [Pretriangulated C] [Pretriangulated D]
-  (F : C ⥤ D) [F.CommShift ℤ]
-
-lemma IsTriangulated.of_fully_faithful_triangulated_functor
-    [F.IsTriangulated] [Full F] [Faithful F] [IsTriangulated D] :
-    IsTriangulated C where
-  octahedron_axiom {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ u₁₂ u₂₃ u₁₃} comm
-    {v₁₂ w₁₂} h₁₂ {v₂₃ w₂₃} h₂₃ {v₁₃ w₁₃} h₁₃ := by
-    have comm' : F.map u₁₂ ≫ F.map u₂₃ = F.map u₁₃ := by rw [← comm, F.map_comp]
-    have H := Triangulated.someOctahedron comm' (F.map_distinguished _ h₁₂)
-      (F.map_distinguished _ h₂₃) (F.map_distinguished _ h₁₃)
-    exact
-      ⟨{
-        m₁ := F.preimage H.m₁
-        m₃ := F.preimage H.m₃
-        comm₁ := F.map_injective (by simpa using H.comm₁)
-        comm₂ := F.map_injective (by
-          rw [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app X₁)]
-          simpa using H.comm₂)
-        comm₃ := F.map_injective (by simpa using H.comm₃)
-        comm₄ := F.map_injective (by
-          rw [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app X₂)]
-          simpa using H.comm₄)
-        mem := by
-          rw [← F.map_distinguished_iff]
-          simpa using H.mem }⟩
-
-end
-=======
-instance : PreservesZeroMorphisms F where
-  map_zero X Y := by
-    have h₁ : (0 : X ⟶ Y) = 0 ≫ 𝟙 0 ≫ 0 := by simp
-    have h₂ : 𝟙 (F.obj 0) = 0 := by
-      rw [← IsZero.iff_id_eq_zero]
-      apply Triangle.isZero₃_of_isIso₁ _
-        (F.map_distinguished _ (contractible_distinguished (0 : C)))
-      dsimp
-      infer_instance
-    rw [h₁, F.map_comp, F.map_comp, F.map_id, h₂, zero_comp, comp_zero]
-
-end IsTriangulated
-
-end Functor
-
 variable {C D : Type*} [Category C] [Category D] [HasShift C ℤ] [HasShift D ℤ]
   [HasZeroObject C] [HasZeroObject D] [Preadditive C] [Preadditive D]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
@@ -361,6 +295,40 @@ lemma isTriangulated_of_essSurj_mapComposableArrows_two
     (comm₁₂ := ComposableArrows.naturality' e.inv 0 1)
     (comm₂₃ := ComposableArrows.naturality' e.inv 1 2)
     (H := (someOctahedron rfl h₁₂' h₂₃' h₁₃').map F) _ _ _ _ _⟩
->>>>>>> origin/derived-category
+
+section
+
+variable {C D : Type _} [Category C] [Category D]
+  [HasShift C ℤ] [HasShift D ℤ] [HasZeroObject C] [HasZeroObject D]
+  [Preadditive C] [Preadditive D]
+  [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
+  [Pretriangulated C] [Pretriangulated D]
+  (F : C ⥤ D) [F.CommShift ℤ]
+
+lemma IsTriangulated.of_fully_faithful_triangulated_functor
+    [F.IsTriangulated] [Full F] [Faithful F] [IsTriangulated D] :
+    IsTriangulated C where
+  octahedron_axiom {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ u₁₂ u₂₃ u₁₃} comm
+    {v₁₂ w₁₂} h₁₂ {v₂₃ w₂₃} h₂₃ {v₁₃ w₁₃} h₁₃ := by
+    have comm' : F.map u₁₂ ≫ F.map u₂₃ = F.map u₁₃ := by rw [← comm, F.map_comp]
+    have H := Triangulated.someOctahedron comm' (F.map_distinguished _ h₁₂)
+      (F.map_distinguished _ h₂₃) (F.map_distinguished _ h₁₃)
+    exact
+      ⟨{
+        m₁ := F.preimage H.m₁
+        m₃ := F.preimage H.m₃
+        comm₁ := F.map_injective (by simpa using H.comm₁)
+        comm₂ := F.map_injective (by
+          rw [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app X₁)]
+          simpa using H.comm₂)
+        comm₃ := F.map_injective (by simpa using H.comm₃)
+        comm₄ := F.map_injective (by
+          rw [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app X₂)]
+          simpa using H.comm₄)
+        mem := by
+          rw [← F.map_distinguished_iff]
+          simpa using H.mem }⟩
+
+end
 
 end CategoryTheory

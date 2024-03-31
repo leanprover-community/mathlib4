@@ -4,10 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Shift.Induced
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Localization.Predicate
-=======
->>>>>>> origin/derived-category
 import Mathlib.CategoryTheory.Localization.HasLocalization
 
 /-!
@@ -91,17 +87,17 @@ attribute [irreducible] HasShift.localization MorphismProperty.commShift_Q
 
 variable [W.HasLocalization]
 
-<<<<<<< HEAD
-noncomputable instance HasShift.localization' [W.IsCompatibleWithShift A] :
+/-- The localized category `W.Localization'` is endowed with the induced shift.  -/
+noncomputable instance HasShift.localization' :
     HasShift W.Localization' A :=
   HasShift.localized W.Q' W A
 
-noncomputable instance MorphismProperty.commShift_Q'
-    [W.IsCompatibleWithShift A] :
+/-- The localization functor `W.Q' : C ⥤ W.Localization'` is compatible with the shift. -/
+noncomputable instance MorphismProperty.commShift_Q' :
     W.Q'.CommShift A :=
   Functor.CommShift.localized W.Q' W A
 
-attribute [irreducible] HasShift.localization MorphismProperty.commShift_Q'
+attribute [irreducible] HasShift.localization' MorphismProperty.commShift_Q'
 
 noncomputable def Functor.CommShift.localized' (F' : C ⥤ E) [HasShift D A] [F'.CommShift A]
     [Localization.Lifting L W F' F] [L.CommShift A] :
@@ -115,18 +111,5 @@ lemma Functor.CommShift.localized'_compatibility (F' : C ⥤ E) [HasShift D A] [
     letI := Functor.CommShift.localized' F L W A F'
     NatTrans.CommShift (Localization.Lifting.iso L W F' F).hom A := by
   apply Functor.CommShift.induced_compatibility
-=======
-/-- The localized category `W.Localization'` is endowed with the induced shift.  -/
-noncomputable instance HasShift.localization' :
-    HasShift W.Localization' A :=
-  HasShift.localized W.Q' W A
-
-/-- The localization functor `W.Q' : C ⥤ W.Localization'` is compatible with the shift. -/
-noncomputable instance MorphismProperty.commShift_Q' :
-    W.Q'.CommShift A :=
-  Functor.CommShift.localized W.Q' W A
-
-attribute [irreducible] HasShift.localization' MorphismProperty.commShift_Q'
->>>>>>> origin/derived-category
 
 end CategoryTheory

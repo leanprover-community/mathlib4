@@ -3,18 +3,9 @@ Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw, Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.CategoryTheory.Triangulated.TriangleShift
-import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.Algebra.Homology.ShortComplex.Basic
-=======
 import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
->>>>>>> origin/derived-category
 
 #align_import category_theory.triangulated.pretriangulated from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
@@ -175,17 +166,6 @@ theorem comp_distTriang_mor_zero₁₂ (T) (H : T ∈ (distTriang C)) : T.mor₁
       T.mor₁ rfl
   simpa only [contractibleTriangle_mor₂, zero_comp] using hc.left.symm
 #align category_theory.pretriangulated.comp_dist_triangle_mor_zero₁₂ CategoryTheory.Pretriangulated.comp_distTriang_mor_zero₁₂
-
-@[simps]
-def shortComplexOfDistTriangle (T : Triangle C) (hT : T ∈ distTriang C) : ShortComplex C :=
-  ShortComplex.mk T.mor₁ T.mor₂ (comp_distTriang_mor_zero₁₂ _ hT)
-
-@[simps!]
-def shortComplexOfDistTriangleIsoOfIso {T T' : Triangle C} (e : T ≅ T') (hT : T ∈ distTriang C) :
-  shortComplexOfDistTriangle T hT ≅ shortComplexOfDistTriangle T'
-    (isomorphic_distinguished _ hT _ e.symm) :=
-  ShortComplex.isoMk (Triangle.π₁.mapIso e) (Triangle.π₂.mapIso e) (Triangle.π₃.mapIso e)
-    (by aesop_cat) (by aesop_cat)
 
 /-- Given any distinguished triangle
 ```

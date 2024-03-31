@@ -43,8 +43,8 @@ lemma essSurj_mapComposableArrows_two : EssSurj (L.mapComposableArrows 2) where
         Iso.hom_inv_id, comp_id, MorphismProperty.RightFraction.map_s_comp_map]
     · dsimp
       rw [← cancel_mono (L.objObjPreimageIso Y₂).inv, assoc, assoc, assoc, hg',
-        Iso.hom_inv_id, comp_id, IsIso.comp_inv_eq,
-        MorphismProperty.LeftFraction.map_comp_map_s]
+        Iso.hom_inv_id, comp_id]
+      rfl
 
 end Localization
 
