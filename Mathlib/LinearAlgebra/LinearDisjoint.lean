@@ -70,6 +70,12 @@ The following is the second equivalent characterization of linearly disjointness
   `Submodule.LinearDisjoint.of_le_of_flat_left`, `Submodule.LinearDisjoint.of_le_of_flat_right`:
   linearly disjoint is preserved by taking submodules under some flatness conditions.
 
+- `Submodule.LinearDisjoint.of_linearDisjoint_finite_left`,
+  `Submodule.LinearDisjoint.of_linearDisjoint_finite_right`,
+  `Submodule.LinearDisjoint.of_linearDisjoint_finite`:
+  conversely, if any finitely generated submodules of `M` and `N` are linearly disjoint,
+  then `M` and `N` themselves are linearly disjoint.
+
 - `Submodule.LinearDisjoint.of_bot_left`, `Submodule.LinearDisjoint.of_bot_right`:
   the zero module is linearly disjoint with any other submodules.
 
@@ -127,10 +133,22 @@ def mulMap := TensorProduct.lift <| ((LinearMap.domRestrict' N).comp <| .mul R S
 theorem mulMap_tmul (m : M) (n : N) : mulMap M N (m ⊗ₜ[R] n) = m.1 * n.1 := rfl
 
 theorem mulMap_comm_of_commute (hc : ∀ (m : M) (n : N), Commute m.1 n.1) :
-    mulMap N M = (mulMap M N).comp (TensorProduct.comm R N M).toLinearMap := by
+    mulMap N M = mulMap M N ∘ₗ TensorProduct.comm R N M := by
   refine TensorProduct.ext' fun n m ↦ ?_
   simp_rw [LinearMap.comp_apply, LinearEquiv.coe_coe, TensorProduct.comm_tmul, mulMap_tmul]
   exact (hc m n).symm
+
+theorem mulMap_comp_inclusion_left (M' : Submodule R S) (hM : M' ≤ M) :
+    mulMap M N ∘ₗ TensorProduct.map (inclusion hM) LinearMap.id = mulMap M' N :=
+  TensorProduct.ext' fun _ _ ↦ rfl
+
+theorem mulMap_comp_inclusion_right (N' : Submodule R S) (hN : N' ≤ N) :
+    mulMap M N ∘ₗ TensorProduct.map LinearMap.id (inclusion hN) = mulMap M N' :=
+  TensorProduct.ext' fun _ _ ↦ rfl
+
+theorem mulMap_comp_inclusion (M' N' : Submodule R S) (hM : M' ≤ M) (hN : N' ≤ N) :
+    mulMap M N ∘ₗ TensorProduct.map (inclusion hM) (inclusion hN) = mulMap M' N' :=
+  TensorProduct.ext' fun _ _ ↦ rfl
 
 /-- If `N` is a submodule in an algebra `S` over `R`, there is the natural map
 `i(R) ⊗[R] N →ₗ[R] N` induced by multiplication in `S`, here `i : R → S` is the structure map. -/
@@ -291,6 +309,13 @@ variable {M N}
 
 theorem LinearDisjoint.injective (H : M.LinearDisjoint N) : Function.Injective (mulMap M N) := H
 
+-- -- TODO:
+-- theorem LinearDisjoint.op (H : M.LinearDisjoint N) :
+--     (equivOpposite.symm (MulOpposite.op N)).LinearDisjoint
+--       (equivOpposite.symm (MulOpposite.op M)) := by
+--   -- no idea
+--   sorry
+
 /-- Linearly disjoint is symmetric if elements in the module commute. -/
 theorem LinearDisjoint.symm_of_commute (H : M.LinearDisjoint N)
     (hc : ∀ (m : M) (n : N), Commute m.1 n.1) : N.LinearDisjoint M := by
@@ -380,6 +405,109 @@ theorem of_self_right :
   have h : Function.Injective (M.subtype ∘ₗ M.rTensorAlgebraMap.toLinearMap) :=
     M.injective_subtype.comp M.rTensorAlgebraMap.injective
   rwa [this] at h
+
+-- TODO: give it a better name
+private theorem test1 (R : Type*) [CommSemiring R] (M N : Type*)
+    [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] (x : M ⊗[R] N) :
+    ∃ S : Multiset (M × N), x = (S.map fun i ↦ i.1 ⊗ₜ[R] i.2).sum := by
+  induction x using TensorProduct.induction_on with
+  | zero => exact ⟨0, by simp⟩
+  | tmul x y => exact ⟨{(x, y)}, by simp⟩
+  | add x y hx hy =>
+    obtain ⟨Sx, hx⟩ := hx
+    obtain ⟨Sy, hy⟩ := hy
+    exact ⟨Sx + Sy, by rw [Multiset.map_add, Multiset.sum_add, hx, hy]⟩
+
+-- TODO: simplify?
+theorem of_linearDisjoint_finite_left
+    (H : ∀ M' : Submodule R S, M' ≤ M → [Module.Finite R M'] → M'.LinearDisjoint N) :
+    M.LinearDisjoint N := fun x y hxy ↦ by
+  obtain ⟨Sx, hx⟩ := test1 R M N x
+  obtain ⟨Sy, hy⟩ := test1 R M N y
+  let T := ((Sx + Sy).map fun i ↦ i.1.1).toFinset
+  let M' := span R (T : Set S)
+  have hM : M' ≤ M := by
+    rw [span_le]
+    intro x hx
+    simp only [Multiset.map_add, Multiset.toFinset_add, Finset.coe_union, Set.mem_union,
+      Finset.mem_coe, Multiset.mem_toFinset, Multiset.mem_map, Prod.exists, exists_and_right,
+      Subtype.exists, exists_eq_right, T] at hx
+    rcases hx with ⟨hx, _⟩ | ⟨hx, _⟩ <;> exact hx
+  let f (i : M × N) : M' ⊗[R] N :=
+    if h : i.1.1 ∈ T then ⟨i.1.1, subset_span h⟩ ⊗ₜ[R] i.2 else 0
+  let x' := (Sx.map f).sum
+  have hx' : TensorProduct.map (inclusion hM) LinearMap.id x' = x := by
+    simp_rw [x', hx, map_multiset_sum, Multiset.map_map]
+    congr 1
+    refine Multiset.map_congr rfl fun i hi ↦ ?_
+    replace hi : i.1.1 ∈ T := by
+      simp only [Multiset.map_add, Multiset.toFinset_add, Finset.mem_union, Multiset.mem_toFinset,
+        Multiset.mem_map, SetLike.coe_eq_coe, Prod.exists, exists_and_right, Subtype.exists,
+        exists_eq_right, T]
+      exact Or.inl ⟨i.2.1, i.2.2, hi⟩
+    simp_rw [Function.comp_apply, f, dif_pos hi]; rfl
+  let y' := (Sy.map f).sum
+  have hy' : TensorProduct.map (inclusion hM) LinearMap.id y' = y := by
+    simp_rw [y', hy, map_multiset_sum, Multiset.map_map]
+    congr 1
+    refine Multiset.map_congr rfl fun i hi ↦ ?_
+    replace hi : i.1.1 ∈ T := by
+      simp only [Multiset.map_add, Multiset.toFinset_add, Finset.mem_union, Multiset.mem_toFinset,
+        Multiset.mem_map, SetLike.coe_eq_coe, Prod.exists, exists_and_right, Subtype.exists,
+        exists_eq_right, T]
+      exact Or.inr ⟨i.2.1, i.2.2, hi⟩
+    simp_rw [Function.comp_apply, f, dif_pos hi]; rfl
+  suffices x' = y' by rw [← hx', ← hy', this]
+  exact H M' hM (by simpa [← mulMap_comp_inclusion_left _ _ _ hM, hx', hy'])
+
+-- TODO: simplify?
+theorem of_linearDisjoint_finite_right
+    (H : ∀ N' : Submodule R S, N' ≤ N → [Module.Finite R N'] → M.LinearDisjoint N') :
+    M.LinearDisjoint N := fun x y hxy ↦ by
+  obtain ⟨Sx, hx⟩ := test1 R M N x
+  obtain ⟨Sy, hy⟩ := test1 R M N y
+  let T := ((Sx + Sy).map fun i ↦ i.2.1).toFinset
+  let N' := span R (T : Set S)
+  have hN : N' ≤ N := by
+    rw [span_le]
+    intro x hx
+    simp only [Multiset.map_add, Multiset.toFinset_add, Finset.coe_union, Set.mem_union,
+      Finset.mem_coe, Multiset.mem_toFinset, Multiset.mem_map, Prod.exists, Subtype.exists,
+      exists_and_right, exists_eq_right, T] at hx
+    rcases hx with ⟨_, _, hx, _⟩ | ⟨_, _, hx, _⟩ <;> exact hx
+  let f (i : M × N) : M ⊗[R] N' :=
+    if h : i.2.1 ∈ T then i.1 ⊗ₜ[R] ⟨i.2.1, subset_span h⟩ else 0
+  let x' := (Sx.map f).sum
+  have hx' : TensorProduct.map LinearMap.id (inclusion hN) x' = x := by
+    simp_rw [x', hx, map_multiset_sum, Multiset.map_map]
+    congr 1
+    refine Multiset.map_congr rfl fun i hi ↦ ?_
+    replace hi : i.2.1 ∈ T := by
+      simp only [Multiset.map_add, Multiset.toFinset_add, Finset.mem_union, Multiset.mem_toFinset,
+        Multiset.mem_map, SetLike.coe_eq_coe, Prod.exists, exists_and_right, Subtype.exists,
+        exists_eq_right, T]
+      exact Or.inl ⟨i.1.1, i.1.2, hi⟩
+    simp_rw [Function.comp_apply, f, dif_pos hi]; rfl
+  let y' := (Sy.map f).sum
+  have hy' : TensorProduct.map LinearMap.id (inclusion hN) y' = y := by
+    simp_rw [y', hy, map_multiset_sum, Multiset.map_map]
+    congr 1
+    refine Multiset.map_congr rfl fun i hi ↦ ?_
+    replace hi : i.2.1 ∈ T := by
+      simp only [Multiset.map_add, Multiset.toFinset_add, Finset.mem_union, Multiset.mem_toFinset,
+        Multiset.mem_map, SetLike.coe_eq_coe, Prod.exists, exists_and_right, Subtype.exists,
+        exists_eq_right, T]
+      exact Or.inr ⟨i.1.1, i.1.2, hi⟩
+    simp_rw [Function.comp_apply, f, dif_pos hi]; rfl
+  suffices x' = y' by rw [← hx', ← hy', this]
+  exact H N' hN (by simpa [← mulMap_comp_inclusion_right _ _ _ hN, hx', hy'])
+
+theorem of_linearDisjoint_finite
+    (H : ∀ (M' N' : Submodule R S), M' ≤ M → N' ≤ N →
+      [Module.Finite R M'] → [Module.Finite R N'] → M'.LinearDisjoint N') :
+    M.LinearDisjoint N :=
+  of_linearDisjoint_finite_left _ _ fun _ hM _ ↦
+    of_linearDisjoint_finite_right _ _ fun _ hN _ ↦ H _ _ hM hN
 
 end LinearDisjoint
 
