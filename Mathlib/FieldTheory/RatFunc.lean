@@ -117,7 +117,6 @@ namespace RatFunc
 section CommRing
 
 variable {K}
-
 variable [CommRing K]
 
 section Rec
@@ -463,9 +462,7 @@ set_option linter.uppercaseLean3 false in
 section IsDomain
 
 variable [IsDomain K]
-
 variable [Monoid R] [DistribMulAction R K[X]]
-
 variable [IsScalarTower R K[X] K[X]]
 
 theorem mk_smul (c : R) (p q : K[X]) : RatFunc.mk (c • p) q = c • RatFunc.mk p q := by
@@ -1167,7 +1164,7 @@ theorem num_div_dvd (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
     num (algebraMap _ _ p / algebraMap _ _ q) ∣ p := by
   rw [num_div _ q, C_mul_dvd]
   · exact EuclideanDomain.div_dvd_of_dvd (gcd_dvd_left p q)
-  · simpa only [Ne.def, inv_eq_zero, Polynomial.leadingCoeff_eq_zero] using right_div_gcd_ne_zero hq
+  · simpa only [Ne, inv_eq_zero, Polynomial.leadingCoeff_eq_zero] using right_div_gcd_ne_zero hq
 #align ratfunc.num_div_dvd RatFunc.num_div_dvd
 
 /-- A version of `num_div_dvd` with the LHS in simp normal form -/
@@ -1221,7 +1218,7 @@ theorem denom_div_dvd (p q : K[X]) : denom (algebraMap _ _ p / algebraMap _ _ q)
   · simp [hq]
   rw [denom_div _ hq, C_mul_dvd]
   · exact EuclideanDomain.div_dvd_of_dvd (gcd_dvd_right p q)
-  · simpa only [Ne.def, inv_eq_zero, Polynomial.leadingCoeff_eq_zero] using right_div_gcd_ne_zero hq
+  · simpa only [Ne, inv_eq_zero, Polynomial.leadingCoeff_eq_zero] using right_div_gcd_ne_zero hq
 #align ratfunc.denom_div_dvd RatFunc.denom_div_dvd
 
 @[simp]

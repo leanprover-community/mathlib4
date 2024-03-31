@@ -61,8 +61,8 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
 @[simp, norm_cast] lemma coe_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm
 #align int.coe_nat_abs Int.coe_natAbs
 
-lemma _root_.Nat.cast_natAbs {α : Type*} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| :=
-  by rw [← coe_natAbs, Int.cast_ofNat]
+lemma _root_.Nat.cast_natAbs {α : Type*} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| := by
+  rw [← coe_natAbs, Int.cast_ofNat]
 #align nat.cast_nat_abs Nat.cast_natAbs
 
 theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; rfl
@@ -418,7 +418,7 @@ theorem exists_lt_and_lt_iff_not_dvd (m : ℤ) {n : ℤ} (hn : 0 < n) :
     rw [lt_add_one_iff, ← not_lt] at h2k
     exact h2k h1k
   · intro h
-    rw [dvd_iff_emod_eq_zero, ← Ne.def] at h
+    rw [dvd_iff_emod_eq_zero, ← Ne] at h
     have := (emod_nonneg m hn.ne.symm).lt_of_ne h.symm
     rw [← emod_add_ediv m n]
     refine' ⟨m / n, lt_add_of_pos_left _ this, _⟩
@@ -537,7 +537,7 @@ variable {G : Type*} [Group G]
 
 @[to_additive (attr := simp) abs_zsmul_eq_zero]
 lemma zpow_abs_eq_one (a : G) (n : ℤ) : a ^ |n| = 1 ↔ a ^ n = 1 := by
-  rw [← Int.coe_natAbs, zpow_coe_nat, pow_natAbs_eq_one]
+  rw [← Int.coe_natAbs, zpow_natCast, pow_natAbs_eq_one]
 
 end Group
 
@@ -566,7 +566,7 @@ variable [NonAssocRing R] (n r : R)
 lemma bit1_mul : bit1 n * r = (2 : ℤ) • (n * r) + r := by rw [bit1, add_mul, bit0_mul, one_mul]
 #align bit1_mul bit1_mul
 
-lemma mul_bit1 [NonAssocRing R] {n r : R} : r * bit1 n = (2 : ℤ) • (r * n) + r := by
+lemma mul_bit1 {n r : R} : r * bit1 n = (2 : ℤ) • (r * n) + r := by
   rw [bit1, mul_add, mul_bit0, mul_one]
 #align mul_bit1 mul_bit1
 

@@ -3,7 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+<<<<<<< HEAD
 import Mathlib.CategoryTheory.MorphismProperty
+=======
+>>>>>>> origin/derived-category
 import Mathlib.CategoryTheory.Localization.Opposite
 
 /-!
@@ -18,6 +21,8 @@ there exists an auxiliary object `Y' : C` and morphisms `g : X ⟶ Y'` and `s : 
 with `W s`, such that the given morphism is a sort of fraction `g / s`,
 or more precisely of the form `L.map g ≫ (Localization.isoOfHom L W s hs).inv`.
 We also show that the functor `L.mapArrow : Arrow C ⥤ Arrow D` is essentially surjective.
+
+Similar results are obtained when `W` has a right calculus of fractions.
 
 ## References
 
@@ -125,7 +130,6 @@ structure RightFraction (W : MorphismProperty C) (X Y : C) where
 namespace RightFraction
 
 variable (W : MorphismProperty C)
-
 variable {X Y : C}
 
 /-- The right fraction from `X` to `Y` given by a morphism `f : X ⟶ Y`. -/
@@ -700,6 +704,21 @@ lemma map_eq_of_map_eq {X Y : C}
   apply (Localization.uniq L₂ L₁ W).functor.map_injective
   rw [map_compatibility φ₁ L₂ L₁, map_compatibility φ₂ L₂ L₁, h]
 
+lemma map_comp_map_eq_map {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z)
+    (z₃ : W.LeftFraction z₁.Y' z₂.Y') (h₃ : z₂.f ≫ z₃.s = z₁.s ≫ z₃.f)
+    (L : C ⥤ D) [L.IsLocalization W] :
+    z₁.map L (Localization.inverts L W) ≫ z₂.map L (Localization.inverts L W) =
+      (z₁.comp₀ z₂ z₃).map L (Localization.inverts L W) := by
+  have := Localization.inverts L W _ z₂.hs
+  have := Localization.inverts L W _ z₃.hs
+  have : IsIso (L.map (z₂.s ≫ z₃.s)) := by
+    rw [L.map_comp]
+    infer_instance
+  dsimp [LeftFraction.comp₀]
+  rw [← cancel_mono (L.map (z₂.s ≫ z₃.s)), map_comp_map_s,
+    L.map_comp, assoc, map_comp_map_s_assoc, ← L.map_comp, h₃,
+    L.map_comp, map_comp_map_s_assoc, L.map_comp]
+
 end
 
 end LeftFraction
@@ -773,10 +792,18 @@ lemma Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions :
 
 end
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/derived-category
 namespace MorphismProperty
 
 variable {W}
 
+<<<<<<< HEAD
+=======
+/-- The right fraction in the opposite category corresponding to a left fraction. -/
+>>>>>>> origin/derived-category
 @[simps]
 def LeftFraction.op {X Y : C} (φ : W.LeftFraction X Y) :
     W.op.RightFraction (Opposite.op Y) (Opposite.op X) where
@@ -785,6 +812,10 @@ def LeftFraction.op {X Y : C} (φ : W.LeftFraction X Y) :
   hs := φ.hs
   f := φ.f.op
 
+<<<<<<< HEAD
+=======
+/-- The left fraction in the opposite category corresponding to a right fraction. -/
+>>>>>>> origin/derived-category
 @[simps]
 def RightFraction.op {X Y : C} (φ : W.RightFraction X Y) :
     W.op.LeftFraction (Opposite.op Y) (Opposite.op X) where
@@ -793,6 +824,10 @@ def RightFraction.op {X Y : C} (φ : W.RightFraction X Y) :
   hs := φ.hs
   f := φ.f.op
 
+<<<<<<< HEAD
+=======
+/-- The right fraction corresponding to a left fraction in the opposite category. -/
+>>>>>>> origin/derived-category
 @[simps]
 def LeftFraction.unop {W : MorphismProperty Cᵒᵖ}
     {X Y : Cᵒᵖ} (φ : W.LeftFraction X Y) :
@@ -802,6 +837,10 @@ def LeftFraction.unop {W : MorphismProperty Cᵒᵖ}
   hs := φ.hs
   f := φ.f.unop
 
+<<<<<<< HEAD
+=======
+/-- The left fraction corresponding to a right fraction in the opposite category. -/
+>>>>>>> origin/derived-category
 @[simps]
 def RightFraction.unop {W : MorphismProperty Cᵒᵖ}
     {X Y : Cᵒᵖ} (φ : W.RightFraction X Y) :
@@ -814,14 +853,20 @@ def RightFraction.unop {W : MorphismProperty Cᵒᵖ}
 lemma RightFraction.op_map
     {X Y : C} (φ : W.RightFraction X Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     (φ.map L hL).op = φ.op.map L.op hL.op := by
+<<<<<<< HEAD
   have := hL φ.s φ.hs
+=======
+>>>>>>> origin/derived-category
   dsimp [map, LeftFraction.map]
   rw [op_inv]
 
 lemma LeftFraction.op_map
     {X Y : C} (φ : W.LeftFraction X Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     (φ.map L hL).op = φ.op.map L.op hL.op := by
+<<<<<<< HEAD
   have := hL φ.s φ.hs
+=======
+>>>>>>> origin/derived-category
   dsimp [map, RightFraction.map]
   rw [op_inv]
 
@@ -859,6 +904,10 @@ instance (W : MorphismProperty Cᵒᵖ) [h : W.HasRightCalculusOfFractions] :
     obtain ⟨Y', t, ht, fac⟩ := h.ext f₁.op f₂.op s.op hs (Quiver.Hom.unop_inj eq)
     exact ⟨Opposite.unop Y', t.unop, ht, Quiver.Hom.op_inj fac⟩
 
+<<<<<<< HEAD
+=======
+/-- The equivalence relation on right fractions for a morphism property `W`. -/
+>>>>>>> origin/derived-category
 def RightFractionRel {X Y : C} (z₁ z₂ : W.RightFraction X Y) : Prop :=
   ∃ (Z : C)  (t₁ : Z ⟶ z₁.X') (t₂ : Z ⟶ z₂.X') (_ : t₁ ≫ z₁.s = t₂ ≫ z₂.s)
     (_ : t₁ ≫ z₁.f = t₂ ≫ z₂.f), W (t₁ ≫ z₁.s)
@@ -916,8 +965,12 @@ lemma trans {X Y : C} {z₁ z₂ z₃ : W.RightFraction X Y}
 
 end RightFractionRel
 
+<<<<<<< HEAD
 instance equivalenceRightFractionRel (X Y : C)
     [HasRightCalculusOfFractions W] :
+=======
+lemma equivalenceRightFractionRel (X Y : C) [HasRightCalculusOfFractions W] :
+>>>>>>> origin/derived-category
     @_root_.Equivalence (W.RightFraction X Y) RightFractionRel where
   refl := RightFractionRel.refl
   symm := RightFractionRel.symm

@@ -585,4 +585,49 @@ lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
 
 end
 
+<<<<<<< HEAD
+=======
+variable (C) in
+/-- The functor `C ⥤ Triangle C` which sends `X` to `contractibleTriangle X`. -/
+@[simps]
+def contractibleTriangleFunctor [HasZeroObject C] [HasZeroMorphisms C] : C ⥤ Triangle C where
+  obj X := contractibleTriangle X
+  map f :=
+    { hom₁ := f
+      hom₂ := f
+      hom₃ := 0 }
+
+namespace Triangle
+
+/-- The first projection `Triangle C ⥤ C`. -/
+@[simps]
+def π₁ : Triangle C ⥤ C where
+  obj T := T.obj₁
+  map f := f.hom₁
+
+/-- The second projection `Triangle C ⥤ C`. -/
+@[simps]
+def π₂ : Triangle C ⥤ C where
+  obj T := T.obj₂
+  map f := f.hom₂
+
+/-- The third projection `Triangle C ⥤ C`. -/
+@[simps]
+def π₃ : Triangle C ⥤ C where
+  obj T := T.obj₃
+  map f := f.hom₃
+
+section
+
+variable {A B : Triangle C} (φ : A ⟶ B) [IsIso φ]
+
+instance : IsIso φ.hom₁ := (inferInstance : IsIso (π₁.map φ))
+instance : IsIso φ.hom₂ := (inferInstance : IsIso (π₂.map φ))
+instance : IsIso φ.hom₃ := (inferInstance : IsIso (π₃.map φ))
+
+end
+
+end Triangle
+
+>>>>>>> origin/derived-category
 end CategoryTheory.Pretriangulated

@@ -49,6 +49,7 @@ attribute [inherit_doc NormedSpace] NormedSpace.norm_smul_le
 end Prio
 
 variable [NormedField 𝕜] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
+variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 
 -- see Note [lower instance priority]
 instance (priority := 100) NormedSpace.boundedSMul [NormedSpace 𝕜 E] : BoundedSMul 𝕜 E :=
@@ -67,9 +68,6 @@ variable (𝕜) in
 theorem norm_zsmul [NormedSpace 𝕜 E] (n : ℤ) (x : E) : ‖n • x‖ = ‖(n : 𝕜)‖ * ‖x‖ := by
   rw [← norm_smul, ← Int.smul_one_eq_coe, smul_assoc, one_smul]
 #align norm_zsmul norm_zsmul
-
-variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 theorem eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < ε) :
     ∀ᶠ y in 𝓝 x, ‖c • (y - x)‖ < ε :=
@@ -205,7 +203,7 @@ protected theorem NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set
 #align normed_space.unbounded_univ NormedSpace.unbounded_univ
 
 protected lemma NormedSpace.cobounded_neBot : NeBot (cobounded E) := by
-  rw [neBot_iff, Ne.def, cobounded_eq_bot_iff, ← isBounded_univ]
+  rw [neBot_iff, Ne, cobounded_eq_bot_iff, ← isBounded_univ]
   exact NormedSpace.unbounded_univ 𝕜 E
 
 instance (priority := 100) NontriviallyNormedField.cobounded_neBot : NeBot (cobounded 𝕜) :=

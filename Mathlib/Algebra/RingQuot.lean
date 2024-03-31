@@ -26,10 +26,8 @@ Since everything runs in parallel for quotients of `R`-algebras, we do that case
 universe uR uS uT uA u₄
 
 variable {R : Type uR} [Semiring R]
-
 variable {S : Type uS} [CommSemiring S]
 variable {T : Type uT}
-
 variable {A : Type uA} [Semiring A] [Algebra S A]
 
 namespace RingCon
@@ -190,7 +188,7 @@ private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
             -- Porting note:
             -- `simpa [mul_def] using congr_arg₂ (fun x y ↦ mul r ⟨x⟩ ⟨y⟩) (Quot.sound h) ih`
             -- mysteriously doesn't work
-            have := congr_arg₂ (fun x y ↦ mul r ⟨x⟩ ⟨y⟩) (Quot.sound h) ih
+            have := congr_arg₂ (fun x y ↦ mul r ⟨x⟩ ⟨y⟩) ih (Quot.sound h)
             dsimp only at this
             simp? [mul_def] at this says simp only [mul_def, Quot.map₂_mk, mk.injEq] at this
             exact this)

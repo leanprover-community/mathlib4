@@ -34,7 +34,6 @@ Submonoid, Submonoids, IsSubmonoid
 open BigOperators
 
 variable {M : Type*} [Monoid M] {s : Set M}
-
 variable {A : Type*} [AddMonoid A] {t : Set A}
 
 /-- `s` is an additive submonoid: a set containing 0 and closed under addition.
@@ -211,7 +210,7 @@ theorem IsSubmonoid.pow_mem {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : ∀ {n 
     exact hs.one_mem
   | n + 1 => by
     rw [pow_succ]
-    exact hs.mul_mem h (IsSubmonoid.pow_mem hs h)
+    exact hs.mul_mem (IsSubmonoid.pow_mem hs h) h
 #align is_submonoid.pow_mem IsSubmonoid.pow_mem
 
 /-- The set of natural number powers of an element of a `Submonoid` is a subset of the

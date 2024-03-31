@@ -333,7 +333,6 @@ namespace Functor
 section
 
 variable {D : Type u₂} [Category.{v₂} D] [Abelian D]
-
 variable (F : C ⥤ D) [PreservesZeroMorphisms F]
 
 instance (priority := 100) reflectsExactSequences'OfPreservesZeroMorphismsOfFaithful [Faithful F] :
@@ -359,9 +358,7 @@ namespace Functor
 open Limits Abelian
 
 variable {A : Type u₁} {B : Type u₂} [Category.{v₁} A] [Category.{v₂} B]
-
 variable [Abelian A] [Abelian B]
-
 variable (L : A ⥤ B)
 
 section

@@ -105,12 +105,12 @@ theorem volume_univ : volume (univ : Set ℝ) = ∞ :=
 
 @[simp]
 theorem volume_ball (a r : ℝ) : volume (Metric.ball a r) = ofReal (2 * r) := by
-  rw [ball_eq_Ioo, volume_Ioo, ← sub_add, add_sub_cancel', two_mul]
+  rw [ball_eq_Ioo, volume_Ioo, ← sub_add, add_sub_cancel_left, two_mul]
 #align real.volume_ball Real.volume_ball
 
 @[simp]
 theorem volume_closedBall (a r : ℝ) : volume (Metric.closedBall a r) = ofReal (2 * r) := by
-  rw [closedBall_eq_Icc, volume_Icc, ← sub_add, add_sub_cancel', two_mul]
+  rw [closedBall_eq_Icc, volume_Icc, ← sub_add, add_sub_cancel_left, two_mul]
 #align real.volume_closed_ball Real.volume_closedBall
 
 @[simp]
@@ -298,10 +298,10 @@ theorem smul_map_volume_mul_left {a : ℝ} (h : a ≠ 0) :
   · simp only [Real.volume_Ioo, Measure.smul_apply, ← ENNReal.ofReal_mul (le_of_lt <| neg_pos.2 h),
       Measure.map_apply (measurable_const_mul a) measurableSet_Ioo, neg_sub_neg, neg_mul,
       preimage_const_mul_Ioo_of_neg _ _ h, abs_of_neg h, mul_sub, smul_eq_mul,
-      mul_div_cancel' _ (ne_of_lt h)]
+      mul_div_cancel₀ _ (ne_of_lt h)]
   · simp only [Real.volume_Ioo, Measure.smul_apply, ← ENNReal.ofReal_mul (le_of_lt h),
       Measure.map_apply (measurable_const_mul a) measurableSet_Ioo, preimage_const_mul_Ioo _ _ h,
-      abs_of_pos h, mul_sub, mul_div_cancel' _ (ne_of_gt h), smul_eq_mul]
+      abs_of_pos h, mul_sub, mul_div_cancel₀ _ (ne_of_gt h), smul_eq_mul]
 #align real.smul_map_volume_mul_left Real.smul_map_volume_mul_left
 
 theorem map_volume_mul_left {a : ℝ} (h : a ≠ 0) :

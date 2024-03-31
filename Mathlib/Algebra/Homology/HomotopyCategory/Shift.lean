@@ -30,8 +30,6 @@ namespace CochainComplex
 
 open HomologicalComplex
 
-attribute [local simp] XIsoOfEq_hom_naturality
-
 /-- The shift functor by `n : ℤ` on `CochainComplex C ℤ` which sends a cochain
 complex `K` to the complex which is `K.X (i + n)` in degree `i`, and which
 multiplies the differentials by `(-1)^n`. -/
@@ -68,7 +66,11 @@ variable {C}
 def shiftFunctorObjXIso (K : CochainComplex C ℤ) (n i m : ℤ) (hm : m = i + n) :
     ((shiftFunctor C n).obj K).X i ≅ K.X m := K.XIsoOfEq hm.symm
 
+section
+
 variable (C)
+
+attribute [local simp] XIsoOfEq_hom_naturality
 
 /-- The shift functor by `n` on `CochainComplex C ℤ` identifies to the identity
 functor when `n = 0`. -/
@@ -104,10 +106,14 @@ instance (n : ℤ) :
     (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).Additive :=
   (inferInstance : (CochainComplex.shiftFunctor C n).Additive)
 
+<<<<<<< HEAD
 instance {R : Type _} [Ring R] [CategoryTheory.Linear R C] (n : ℤ) :
     (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).Linear R where
 
 variable {C}
+=======
+end
+>>>>>>> origin/derived-category
 
 @[simp]
 lemma shiftFunctor_obj_X' (K : CochainComplex C ℤ) (n p : ℤ) :
@@ -323,6 +329,19 @@ lemma singleShiftIso_add'_inv_app (X : C) :
 end
 
 end-/
+
+variable (C)
+
+attribute [local simp] XIsoOfEq_hom_naturality
+
+/-- Shifting cochain complexes by `n` and evaluating in a degree `i` identifies
+to the evaluation in degree `i'` when `n + i = i'`. -/
+@[simps!]
+def shiftEval (n i i' : ℤ) (hi : n + i = i') :
+    (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n) ⋙
+      HomologicalComplex.eval C (ComplexShape.up ℤ) i ≅
+      HomologicalComplex.eval C (ComplexShape.up ℤ) i' :=
+  NatIso.ofComponents (fun K => K.XIsoOfEq (by dsimp; rw [← hi, add_comm i]))
 
 end CochainComplex
 

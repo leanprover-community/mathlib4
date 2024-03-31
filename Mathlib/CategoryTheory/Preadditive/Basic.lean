@@ -478,7 +478,7 @@ instance : SMul (Units ℤ) (X ≅ Y) where
 lemma smul_iso_hom (a : Units ℤ) (e : X ≅ Y) : (a • e).hom = a • e.hom := rfl
 
 @[simp]
-lemma smul_iso_inv (a : Units ℤ) (e : X ≅ Y) : (a • e).inv = (a⁻¹ : Units ℤ) • e.inv := rfl
+lemma smul_iso_inv (a : Units ℤ) (e : X ≅ Y) : (a • e).inv = a⁻¹ • e.inv := rfl
 
 instance : Neg (X ≅ Y) where
   neg e :=

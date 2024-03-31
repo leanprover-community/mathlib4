@@ -4,19 +4,32 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Jack McKoen
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet
+<<<<<<< HEAD
 import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.FunctorToTypes
+=======
+import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
+import Mathlib.CategoryTheory.Monoidal.Types.Basic
+>>>>>>> origin/derived-category
 
 /-!
 # The monoidal category structure on simplicial sets
 
 This file defines an instance of chosen finite products
+<<<<<<< HEAD
 for the category `SSet` using the explicit terminal object
 and binary products from the file
 `Mathlib.CategoryTheory.Limits.Shapes.FunctorToTypes`.
 As a result, these constructions give the unit object
 and the tensor product for the monoidal category structure
 on `SSet`.
+=======
+for the category `SSet`. It follows from the fact
+the `SSet` if a category of functors to the category
+of types and that the category of types have chosen
+finite products. As a result, we obtain a monoidal
+category structure on `SSet`.
+>>>>>>> origin/derived-category
 
 -/
 
@@ -26,9 +39,14 @@ open Simplicial CategoryTheory MonoidalCategory
 
 namespace SSet
 
+<<<<<<< HEAD
 instance : ChosenFiniteProducts SSet.{u} where
   terminal := FunctorToTypes.functorEmptyLimitCone _
   product := FunctorToTypes.binaryProductLimitCone
+=======
+noncomputable instance : ChosenFiniteProducts SSet.{u} :=
+  (inferInstance : ChosenFiniteProducts (SimplexCategoryᵒᵖ ⥤ Type u))
+>>>>>>> origin/derived-category
 
 @[simp]
 lemma leftUnitor_hom_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x : (𝟙_ _ ⊗ K).obj Δ) :
@@ -88,5 +106,8 @@ def unitHomEquiv (K : SSet.{u}) : (𝟙_ _ ⟶ K) ≃ K _[0] where
     rfl
   right_inv x := by simp
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/derived-category
 end SSet

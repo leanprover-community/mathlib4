@@ -571,7 +571,6 @@ end AddGroup
 section AddCommMonoid
 
 variable [AddCommMonoid A] [HasShift C A]
-
 variable (C)
 
 /-- When shifts are indexed by an additive commutative monoid, then shifts commute. -/
@@ -603,7 +602,6 @@ lemma shiftFunctorComm_symm (i j : A) :
 #align category_theory.shift_functor_comm_symm CategoryTheory.shiftFunctorComm_symm
 
 variable {C}
-
 variable (X Y : C) (f : X ⟶ Y)
 
 /-- When shifts are indexed by an additive commutative monoid, then shifts commute. -/
@@ -704,7 +702,6 @@ lemma shiftFunctorComm_inv_app_of_add_eq_zero (m n : A) (hmn : m + n = 0) (X : C
 end AddCommMonoid
 
 variable {D : Type*} [Category D] [AddMonoid A] [HasShift D A]
-
 variable (F : C ⥤ D) [Full F] [Faithful F]
 
 section

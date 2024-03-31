@@ -33,9 +33,7 @@ commutative ring, field of fractions
 
 
 variable (R : Type*) [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
-
 variable [Algebra R S] {P : Type*} [CommRing P]
-
 variable {A : Type*} [CommRing A] [IsDomain A] (K : Type*)
 
 -- TODO: should this extend `Algebra` instead of assuming it?
@@ -160,7 +158,7 @@ variable {B : Type*} [CommRing B] [IsDomain B] [Field K] {L : Type*} [Field L] [
 theorem mk'_mk_eq_div {r s} (hs : s ∈ nonZeroDivisors A) :
     mk' K r ⟨s, hs⟩ = algebraMap A K r / algebraMap A K s :=
   mk'_eq_iff_eq_mul.2 <|
-    (div_mul_cancel (algebraMap A K r)
+    (div_mul_cancel₀ (algebraMap A K r)
         (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hs)).symm
 #align is_fraction_ring.mk'_mk_eq_div IsFractionRing.mk'_mk_eq_div
 

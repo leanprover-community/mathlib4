@@ -96,7 +96,7 @@ private theorem distinctPairs_increment :
   rintro ⟨Ui, Vj⟩
   simp only [distinctPairs, increment, mem_offDiag, bind_parts, mem_biUnion, Prod.exists,
     exists_and_left, exists_prop, mem_product, mem_attach, true_and_iff, Subtype.exists, and_imp,
-    mem_offDiag, forall_exists_index, bex_imp, Ne.def]
+    mem_offDiag, forall_exists_index, bex_imp, Ne]
   refine' fun U V hUV hUi hVj => ⟨⟨_, hUV.1, hUi⟩, ⟨_, hUV.2.1, hVj⟩, _⟩
   rintro rfl
   obtain ⟨i, hi⟩ := nonempty_of_mem_parts _ hUi
@@ -143,7 +143,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ P.parts.card)
   calc
     _ = (∑ x in P.parts.offDiag, (G.edgeDensity x.1 x.2 : ℝ) ^ 2 +
           P.parts.card ^ 2 * (ε ^ 5 / 4) : ℝ) / P.parts.card ^ 2 := by
-        rw [coe_energy, add_div, mul_div_cancel_left]; positivity
+        rw [coe_energy, add_div, mul_div_cancel_left₀]; positivity
     _ ≤ (∑ x in P.parts.offDiag.attach, (∑ i in distinctPairs G ε hP x,
           G.edgeDensity i.1 i.2 ^ 2 : ℝ) / 16 ^ P.parts.card) / P.parts.card ^ 2 := ?_
     _ = (∑ x in P.parts.offDiag.attach, ∑ i in distinctPairs G ε hP x,

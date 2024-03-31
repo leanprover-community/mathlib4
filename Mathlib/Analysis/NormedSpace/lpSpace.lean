@@ -215,7 +215,7 @@ theorem add {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (
   rcases p.trichotomy with (rfl | rfl | hp)
   · apply memℓp_zero
     refine' (hf.finite_dsupport.union hg.finite_dsupport).subset fun i => _
-    simp only [Pi.add_apply, Ne.def, Set.mem_union, Set.mem_setOf_eq]
+    simp only [Pi.add_apply, Ne, Set.mem_union, Set.mem_setOf_eq]
     contrapose!
     rintro ⟨hf', hg'⟩
     simp [hf', hg']
@@ -602,9 +602,7 @@ end ComparePointwise
 section BoundedSMul
 
 variable {𝕜 : Type*} {𝕜' : Type*}
-
 variable [NormedRing 𝕜] [NormedRing 𝕜']
-
 variable [∀ i, Module 𝕜 (E i)] [∀ i, Module 𝕜' (E i)]
 
 instance : Module 𝕜 (PreLp E) :=
@@ -698,7 +696,6 @@ end BoundedSMul
 section DivisionRing
 
 variable {𝕜 : Type*}
-
 variable [NormedDivisionRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
 
 theorem norm_const_smul (hp : p ≠ 0) {c : 𝕜} (f : lp E p) : ‖c • f‖ = ‖c‖ * ‖f‖ := by
@@ -768,7 +765,6 @@ instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
     · simp only [lp.norm_eq_tsum_rpow h, lp.star_apply, norm_star]
 
 variable {𝕜 : Type*} [Star 𝕜] [NormedRing 𝕜]
-
 variable [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)] [∀ i, StarModule 𝕜 (E i)]
 
 instance : StarModule 𝕜 (lp E p) where
@@ -944,7 +940,6 @@ end NormedCommRing
 section Algebra
 
 variable {I : Type*} {𝕜 : Type*} {B : I → Type*}
-
 variable [NormedField 𝕜] [∀ i, NormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
 
 /-- A variant of `Pi.algebra` that lean can't find otherwise. -/
@@ -984,7 +979,6 @@ end Algebra
 section Single
 
 variable {𝕜 : Type*} [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
-
 variable [DecidableEq α]
 
 /-- The element of `lp E p` which is `a : E i` at the index `i`, and zero elsewhere. -/
@@ -993,7 +987,7 @@ protected def single (p) (i : α) (a : E i) : lp E p :=
     refine' (memℓp_zero _).of_exponent_ge (zero_le p)
     refine' (Set.finite_singleton i).subset _
     intro j
-    simp only [forall_exists_index, Set.mem_singleton_iff, Ne.def, dite_eq_right_iff,
+    simp only [forall_exists_index, Set.mem_singleton_iff, Ne, dite_eq_right_iff,
       Set.mem_setOf_eq, not_forall]
     rintro rfl
     simp⟩

@@ -25,7 +25,7 @@ We provide the following results:
 -/
 
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
@@ -36,7 +36,7 @@ open CategoryTheory.Limits
 namespace CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-  {E : Type _} [Category E]
+    {E : Type u₃} [Category.{v₃} E]
 
 section ZeroMorphisms
 
@@ -106,12 +106,14 @@ instance (priority := 100) preservesZeroMorphisms_of_full (F : C ⥤ D) [Full F]
       _ = 0 := by rw [F.map_comp, F.image_preimage, comp_zero]
 #align category_theory.functor.preserves_zero_morphisms_of_full CategoryTheory.Functor.preservesZeroMorphisms_of_full
 
-instance (F : C ⥤ D) (G : D ⥤ E) [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] :
+instance preservesZeroMorphisms_comp (F : C ⥤ D) (G : D ⥤ E)
+    [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] :
     (F ⋙ G).PreservesZeroMorphisms := ⟨by simp⟩
 
 lemma preservesZeroMorphisms_of_iso {F₁ F₂ : C ⥤ D} [F₁.PreservesZeroMorphisms] (e : F₁ ≅ F₂) :
-    F₂.PreservesZeroMorphisms := ⟨fun X Y => by
-  simp only [← cancel_epi (e.hom.app X), ← e.hom.naturality, F₁.map_zero, zero_comp, comp_zero]⟩
+    F₂.PreservesZeroMorphisms where
+  map_zero X Y := by simp only [← cancel_epi (e.hom.app X), ← e.hom.naturality,
+    F₁.map_zero, zero_comp, comp_zero]
 
 open ZeroObject
 

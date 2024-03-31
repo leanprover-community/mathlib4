@@ -3,13 +3,13 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Order.Partition.Finpartition
 import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.NormNum
+import Mathlib.Order.Partition.Finpartition
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Ring
 
 #align_import combinatorics.simple_graph.density from "leanprover-community/mathlib"@"a4ec43f53b0bd44c697bcc3f5a62edd56f269ef1"
 
@@ -206,8 +206,8 @@ theorem abs_edgeDensity_sub_edgeDensity_le_one_sub_mul (hs : s₂ ⊆ s₁) (ht 
     (hs₂ : s₂.Nonempty) (ht₂ : t₂.Nonempty) :
     |edgeDensity r s₂ t₂ - edgeDensity r s₁ t₁| ≤ 1 - s₂.card / s₁.card * (t₂.card / t₁.card) := by
   refine' abs_sub_le_iff.2 ⟨edgeDensity_sub_edgeDensity_le_one_sub_mul r hs ht hs₂ ht₂, _⟩
-  rw [← add_sub_cancel (edgeDensity r s₁ t₁) (edgeDensity (fun x y ↦ ¬r x y) s₁ t₁),
-    ← add_sub_cancel (edgeDensity r s₂ t₂) (edgeDensity (fun x y ↦ ¬r x y) s₂ t₂),
+  rw [← add_sub_cancel_right (edgeDensity r s₁ t₁) (edgeDensity (fun x y ↦ ¬r x y) s₁ t₁),
+    ← add_sub_cancel_right (edgeDensity r s₂ t₂) (edgeDensity (fun x y ↦ ¬r x y) s₂ t₂),
     edgeDensity_add_edgeDensity_compl _ (hs₂.mono hs) (ht₂.mono ht),
     edgeDensity_add_edgeDensity_compl _ hs₂ ht₂, sub_sub_sub_cancel_left]
   exact edgeDensity_sub_edgeDensity_le_one_sub_mul _ hs ht hs₂ ht₂
@@ -263,7 +263,6 @@ end Asymmetric
 section Symmetric
 
 variable (r : α → α → Prop) [DecidableRel r] {s s₁ s₂ t t₁ t₂ : Finset α} {a b : α}
-
 variable {r} (hr : Symmetric r)
 
 @[simp]
