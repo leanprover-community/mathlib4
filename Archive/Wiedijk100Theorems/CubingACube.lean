@@ -307,7 +307,7 @@ theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   have h2i : i ∈ bcubes cs c :=
     ⟨hi.1.symm, v.2.1 i hi.1.symm ⟨tail c.b, hi.2, fun j => c.b_mem_side j.succ⟩⟩
   let j : Fin (n + 1) := ⟨2, h.three_le⟩
-  have hj : 0 ≠ j := by simp only [Fin.ext_iff, Ne.def]; norm_num
+  have hj : 0 ≠ j := by simp only [Fin.ext_iff, Ne]; norm_num
   let p : Fin (n + 1) → ℝ := fun j' => if j' = j then c.b j + (cs i).w else c.b j'
   have hp : p ∈ c.bottom := by
     constructor
