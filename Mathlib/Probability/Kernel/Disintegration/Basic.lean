@@ -58,7 +58,6 @@ The conditional kernel is unique (almost everywhere w.r.t. `fst κ`): this is pr
 
 * `ProbabilityTheory.kernel.compProd_fst_condKernel`: `fst κ ⊗ₖ condKernel κ = κ`
 * `MeasureTheory.Measure.compProd_fst_condKernel`: `ρ.fst ⊗ₘ ρ.condKernel = ρ`
-
 -/
 
 #align_import probability.kernel.disintegration from "leanprover-community/mathlib"@"6315581f5650ffa2fbdbbbedc41243c8d7070981"
