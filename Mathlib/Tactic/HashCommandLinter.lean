@@ -65,11 +65,11 @@ This means that CI will fail on `#`-commands whether they themselves emit a mess
 def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
   if getLinterHash (← getOptions) && (← get).messages.msgs.size == 0 then
     match stx.getHead? with
-      | some sa =>
-        let a := sa.getAtomVal
-        if (a.get ⟨0⟩ == '#' && ! whitelist.contains a) then
-          Linter.logLint linter.hashCommand sa
-            m!"`#`-commands, such as '{a}', are not allowed in 'Mathlib'"
-      | none => return
+    | some sa =>
+      let a := sa.getAtomVal
+      if (a.get ⟨0⟩ == '#' && ! whitelist.contains a) then
+        Linter.logLint linter.hashCommand sa
+          m!"`#`-commands, such as '{a}', are not allowed in 'Mathlib'"
+    | none => return
 
 initialize addLinter hashCommandLinter
