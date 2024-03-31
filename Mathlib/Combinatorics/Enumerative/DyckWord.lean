@@ -22,14 +22,14 @@ one consequence being that the number of Dyck words with length `2n` is `catalan
 ## Main definitions
 
 * `DyckPath`: a list of `U` and `D` steps without any restrictions.
-* `IsBalanced`: the property defining Dyck words.
+* `DyckPath.IsBalanced`: the property defining Dyck words.
 
 ## Main results
 
-* `treeEquiv`: equivalence between Dyck words and rooted binary trees.
-* `finiteTreeEquiv`: equivalence between Dyck words of length `2 * n` and rooted binary trees
+* `DyckPath.treeEquiv`: equivalence between Dyck words and rooted binary trees.
+* `DyckPath.finiteTreeEquiv`: equivalence between Dyck words of length `2 * n` and rooted binary trees
   with `n` internal nodes.
-* `dyckPath_isBalanced_card_eq_catalan`: there are `catalan n` Dyck words of length `2 * n`.
+* `DyckPath.card_isBalanced_eq_catalan `: there are `catalan n` Dyck words of length `2 * n`.
 
 ## Implementation notes
 
@@ -415,7 +415,7 @@ instance instFintypeDyckWords {n : ℕ} :
   Fintype.ofEquiv _ (finiteTreeEquiv n).symm
 
 /-- There are `catalan n` Dyck words of length `2 * n`. -/
-theorem card_dyckPath_isBalanced_eq_catalan (n : ℕ) :
+theorem card_isBalanced_eq_catalan (n : ℕ) :
     Fintype.card { p : DyckPath // p.IsBalanced ∧ p.length = 2 * n } = catalan n := by
   rw [← Fintype.ofEquiv_card (finiteTreeEquiv n), ← treesOfNumNodesEq_card_eq_catalan]
   convert Fintype.card_coe _

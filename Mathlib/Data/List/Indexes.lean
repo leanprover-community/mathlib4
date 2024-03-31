@@ -255,8 +255,8 @@ theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : 
 
 section FindIdx -- TODO: upstream to Std
 
-theorem findIdx_eq_length_of_not_exists {p : α → Bool} {xs : List α} (h : ∀ x ∈ xs, ¬p x) :
-    xs.findIdx p = xs.length := by
+theorem findIdx_eq_length {p : α → Bool} {xs : List α} :
+    xs.findIdx p = xs.length ↔ ∀ x ∈ xs, ¬p x := by
   induction xs with
   | nil => simp_all
   | cons x xs ih =>
@@ -268,8 +268,8 @@ theorem findIdx_le_length (p : α → Bool) {xs : List α} : xs.findIdx p ≤ xs
   · exact (findIdx_lt_length_of_exists e).le
   · push_neg at e; exact (findIdx_eq_length_of_not_exists e).le
 
-theorem findIdx_lt_length_iff_exists {p : α → Bool} {xs : List α} :
-    (∃ x ∈ xs, p x) ↔ xs.findIdx p < xs.length := by
+theorem findIdx_lt_length {p : α → Bool} {xs : List α} :
+    xs.findIdx p < xs.length ↔ ∃ x ∈ xs, p x := by
   constructor <;> intro h
   · exact findIdx_lt_length_of_exists h
   · use xs.get ⟨xs.findIdx p, h⟩
