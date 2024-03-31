@@ -72,4 +72,14 @@ open Nat in
 variable (n : Nat) in
 #guard true
 
+-- when `warningAsError` is `true`, emit an error also on noisy `#`-commands
+set_option warningAsError true in
+/--
+info: 0
+---
+error: `#`-commands, such as '#eval', are not allowed in 'Mathlib' [linter.hashCommand]
+-/
+#guard_msgs in
+#eval 0
+
 end linted_commands
