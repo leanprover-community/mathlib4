@@ -176,6 +176,8 @@ theorem isNClique_one : G.IsNClique 1 s ↔ ∃ a, s = {a} := by
   simp only [isNClique_iff, card_eq_one, and_iff_right_iff_imp]; rintro ⟨a, rfl⟩; simp
 #align simple_graph.is_n_clique_one SimpleGraph.isNClique_one
 
+section DecidableEq
+
 variable [DecidableEq α]
 
 theorem IsNClique.insert (hs : G.IsNClique n s) (h : ∀ b ∈ s, G.Adj a b) :
@@ -202,8 +204,11 @@ theorem is3Clique_iff :
     exact is3Clique_triple_iff.2 ⟨hab, hbc, hca⟩
 #align simple_graph.is_3_clique_iff SimpleGraph.is3Clique_iff
 
+end DecidableEq
+
 theorem is3Clique_iff_exists_cycle_length_three :
     (∃ s : Finset α, G.IsNClique 3 s) ↔ ∃ (u : α) (w : G.Walk u u), w.IsCycle ∧ w.length = 3 := by
+  classical
   simp_rw [is3Clique_iff, isCycle_def]
   exact
     ⟨(fun ⟨_, a, _, _, hab, hac, hbc, _⟩ => ⟨a, cons hab (cons hbc (cons hac.symm nil)), by aesop⟩),
