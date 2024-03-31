@@ -94,58 +94,6 @@ private lemma Polynomial.Chebyshev.U_real_neg_cos_eq {m : ℕ} (n : ℕ) (hm : m
   rw [← USubOne_add_one, USubOne_real_neg_cos_eq _ hm, pow_succ']
   simp [neg_mul, neg_div]
 
-namespace Finsupp
-
-variable {B : Type*} [DecidableEq B]
-
-/-- The proposition that all the coordinates of `v` in the standard basis are nonnegative. -/
-def IsNonnegative (v : B →₀ ℝ) := ∀ i : B, v i ≥ 0
-/-- The proposition that all the coordinates of `v` in the standard basis are nonpositive. -/
-def IsNonpositive (v : B →₀ ℝ) := ∀ i : B, v i ≤ 0
-
-@[simp] theorem neg_isNonnegative_iff_isNonpositive (v : B →₀ ℝ) :
-    (-v).IsNonnegative ↔ v.IsNonpositive := by simp [IsNonnegative, IsNonpositive]
-
-@[simp] theorem neg_isNonpositive_iff_isNonnegative (v : B →₀ ℝ) :
-    (-v).IsNonpositive ↔ v.IsNonnegative := by simp [IsNonnegative, IsNonpositive]
-
-theorem isNonnegative_single (i : B) : (Finsupp.single i 1).IsNonnegative := by
-  intro i'
-  rw [single_apply, apply_ite (· ≥ 0)]
-  simp
-
-theorem isNonnegative_add {v v' : B →₀ ℝ} (hv : v.IsNonnegative) (hv' : v'.IsNonnegative) :
-    (v + v').IsNonnegative := fun i ↦ add_nonneg (hv i) (hv' i)
-
-theorem isNonnegative_smul {μ : ℝ} (hμ : μ ≥ 0) {v : B →₀ ℝ} (hv : v.IsNonnegative) :
-    (μ • v).IsNonnegative := fun i ↦ mul_nonneg hμ (hv i)
-
-/-- The proposition that all the coordinates of `v` in the standard basis are nonnegative and
-`v` is nonzero.-/
-def IsPositive (v : B →₀ ℝ) := v.IsNonnegative ∧ v ≠ 0
-/-- The proposition that all the coordinates of `v` in the standard basis are nonpositive and
-`v` is nonzero.-/
-def IsNegative (v : B →₀ ℝ) := v.IsNonpositive ∧ v ≠ 0
-
-@[simp] theorem neg_isNegative_iff_isPositive (v : B →₀ ℝ) :
-    (-v).IsNegative ↔ v.IsPositive := by simp [IsPositive, IsNegative]
-
-@[simp] theorem neg_isPositive_iff_isNegative (v : B →₀ ℝ) :
-    (-v).IsPositive ↔ v.IsNegative := by simp [IsPositive, IsNegative]
-
-theorem isPositive_single (i : B) : (Finsupp.single i 1).IsPositive :=
-  ⟨isNonnegative_single i, by simp⟩
-
-theorem isPositive_imp_not_isNegative {v : B →₀ ℝ} (hv : IsPositive v) : ¬ IsNegative v := by
-  intro hv'
-  exact hv.2 (ext (fun i ↦ _root_.le_antisymm (hv'.1 i) (hv.1 i)))
-
-theorem isNegative_imp_not_isPositive {v : B →₀ ℝ} (hv : IsNegative v) : ¬ IsPositive v := by
-  intro hv'
-  exact hv.2 (ext (fun i ↦ _root_.le_antisymm (hv.1 i) (hv'.1 i)))
-
-end Finsupp
-
 /-! ### The standard geometric representation
 Given a Coxeter group `W` whose simple reflections are indexed by a set `B`, we define
 the standard geometric representation of `W`, which is a representation of `W` with underlying
@@ -158,7 +106,8 @@ variable {M : Matrix B B ℕ}
 variable (hM : IsCoxeter M)
 
 local notation "V" => B →₀ ℝ
-instance : AddCommMonoid V := Finsupp.instAddCommMonoid
+
+local instance : AddCommMonoid V := Finsupp.instAddCommMonoid
 
 /-- The simple root at index `i`. That is, the standard basis vector of `B →₀ ℝ` at index `i`. -/
 def simpleRoot (i : B) : V := Finsupp.single i 1
@@ -435,6 +384,10 @@ local notation:max "⟪"  a  ","  b  "⟫" => Matrix.standardBilinForm M a b
 local notation:100 "σ" i => Matrix.simpleOrthoReflection (cs.isCoxeter) i
 local notation "V" => B →₀ ℝ
 
+scoped instance : AddCommMonoid V := Finsupp.instAddCommMonoid
+scoped instance : OrderedCancelAddCommMonoid V := Finsupp.orderedCancelAddCommMonoid
+scoped instance : SMulPosMono ℝ V := Finsupp.instSMulPosMono
+
 /-- The standard geometric representation on `B →₀ ℝ`. For `i : B`, the simple reflection `sᵢ`
 acts by `sᵢ v = v - 2 ⟪αᵢ, v⟫ * αᵢ`, where {αᵢ} is the standard basis of `B →₀ ℝ`.
 -/
@@ -613,14 +566,17 @@ theorem SGR_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul
       use m, m + 1, by linarith, by linarith
 
 private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬ cs.IsRightDescent w i) :
-    ((ρ w) (α i)).IsNonnegative := by
+    (ρ w) (α i) ≥ 0 := by
   -- We use induction on the length of `w`.
   generalize hn : ℓ w = n
   induction' n using Nat.strong_induction_on with n ih generalizing w i
 
   rcases em (w = 1) with rfl | w_ne_one
   · -- If `w = 1`, then the statement is trivial.
-    simpa only [map_one, one_apply] using Finsupp.isNonnegative_single i
+    simp only [map_one, one_apply]
+    intro i'
+    rw [Matrix.simpleRoot, Finsupp.single_apply, Finsupp.zero_apply, apply_ite (0 ≤ ·)]
+    simp
   · -- Otherwise, `w ≠ 1`. Let `i'` be a right descent of `w`.
     have h₁ : 1 ≤ ℓ w := Nat.one_le_iff_ne_zero.mpr (cs.length_eq_zero_iff.mp.mt w_ne_one)
     rcases cs.exists_rightDescent_of_ne_one w_ne_one with ⟨i', hwi'⟩
@@ -804,47 +760,47 @@ private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬ cs.IsRigh
     /- Now, we write `((ρ (aw m)) (α i))` as a nonnegative linear combination of `α i` and `α i'`.
     Then expand everything out and use `h₁₆`, `h₁₇`. -/
     rcases cs.SGR_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul i i' m h₂₂ with
-      ⟨μ, μ', μpos, μ'pos, h₂₃⟩
+      ⟨μ, μ', μ_nonneg, μ'_nonneg, h₂₃⟩
     nth_rw 2 [haw]
     dsimp only
     rw [h₂₃, map_add, map_smul, map_smul]
-    exact Finsupp.isNonnegative_add (Finsupp.isNonnegative_smul μpos h₁₆)
-      (Finsupp.isNonnegative_smul μ'pos h₁₇)
+    exact add_nonneg (smul_nonneg μ_nonneg h₁₆) (smul_nonneg μ'_nonneg h₁₇)
 
 /-- If $i$ is not a right descent of $w$, then $\rho(w) \alpha_i$ is positive; that is, it has all
 nonnegative coordinates and it is nonzero. -/
 theorem SGR_apply_simpleRoot_pos_of {w : W} {i : B} (h : ¬ cs.IsRightDescent w i) :
-    ((ρ w) (α i)).IsPositive := by
-  constructor
+    (ρ w) (α i) > 0 := by
+  apply lt_of_le_of_ne
   · exact cs.SGR_apply_simpleRoot_nonneg_of h
   · intro h'
     have := congrArg (ρ (w⁻¹)) h'
     rw [← mul_apply, ← map_mul, inv_mul_self, map_one, one_apply, map_zero] at this
-    simp [Matrix.simpleRoot] at this
+    exact one_ne_zero (Finsupp.single_eq_zero.mp this.symm)
 
 /-- If $i$ is not a right descent of $w$, then $\rho(w) \alpha_i$ is negative; that is, it has all
 nonpositive coordinates and it is nonzero. -/
 theorem SGR_apply_simpleRoot_neg_of {w : W} {i : B} (h : cs.IsRightDescent w i) :
-    ((ρ w) (α i)).IsNegative := by
+    (ρ w) (α i) < 0 := by
   apply (cs.isRightDescent_iff_not_isRightDescent_mul _ _).mp at h
   apply SGR_apply_simpleRoot_pos_of at h
-  rwa [map_mul, mul_apply, SGR_simple, Matrix.simpleOrthoReflection_simpleRoot_self,
-    map_neg, Finsupp.neg_isPositive_iff_isNegative] at h
+  rw [map_mul, mul_apply, SGR_simple, Matrix.simpleOrthoReflection_simpleRoot_self,
+    map_neg] at h
+  exact neg_pos.mp h
 
 theorem SGR_apply_simpleRoot_pos_iff (w : W) (i : B) :
-    ((ρ w) (α i)).IsPositive ↔ ¬ cs.IsRightDescent w i := by
+    (ρ w) (α i) > 0 ↔ ¬ cs.IsRightDescent w i := by
   constructor
   · intro h h'
-    exact Finsupp.isNegative_imp_not_isPositive (cs.SGR_apply_simpleRoot_neg_of h') h
+    exact lt_asymm (cs.SGR_apply_simpleRoot_neg_of h') h
   · intro h
     exact cs.SGR_apply_simpleRoot_pos_of h
 
 theorem SGR_apply_simpleRoot_neg_iff (w : W) (i : B) :
-    ((ρ w) (α i)).IsNegative ↔ cs.IsRightDescent w i := by
+    (ρ w) (α i) < 0 ↔ cs.IsRightDescent w i := by
   constructor
   · intro h
     by_contra h'
-    exact Finsupp.isPositive_imp_not_isNegative (cs.SGR_apply_simpleRoot_pos_of h') h
+    exact lt_asymm (cs.SGR_apply_simpleRoot_pos_of h') h
   · intro h
     exact cs.SGR_apply_simpleRoot_neg_of h
 
@@ -855,7 +811,9 @@ theorem injective_SGR : Function.Injective cs.SGR := by
   rcases cs.exists_rightDescent_of_ne_one w_ne_one with ⟨i, hi⟩
   have := cs.SGR_apply_simpleRoot_neg_of hi
   rw [hw, one_apply] at this
-  exact Finsupp.isPositive_imp_not_isNegative (Finsupp.isPositive_single i) this
+  have := Finsupp.le_def.mp (le_of_lt this) i
+  rw [Finsupp.zero_apply, Matrix.simpleRoot, Finsupp.single_apply, if_pos (rfl : i = i)] at this
+  norm_num at this
 
 alias faithful_SGR := injective_SGR
 
