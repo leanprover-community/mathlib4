@@ -77,9 +77,18 @@ set_option warningAsError true in
 /--
 info: 0
 ---
-error: `#`-commands, such as '#eval', are not allowed in 'Mathlib' [linter.hashCommand]
+info: `#`-commands, such as '#eval', are not allowed in 'Mathlib' [linter.hashCommand]
 -/
 #guard_msgs in
 #eval 0
+
+-- when `warningAsError` is `true`, emit an error also on noisy `#`-commands
+set_option warningAsError true in
+
+/--
+info: `#`-commands, such as '#guard', are not allowed in 'Mathlib' [linter.hashCommand]
+-/
+#guard_msgs in
+#guard true
 
 end linted_commands

@@ -43,7 +43,7 @@ private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun st
   if stx.getKind == ``Lean.Parser.Command.in then
     if stx[0].getKind == ``Lean.Parser.Command.set_option then
       let opts ← Elab.elabSetOption stx[0][1] stx[0][2]
-      Command.withScope (fun scope => { scope with opts }) do
+      withScope (fun scope => { scope with opts }) do
         withSetOptionIn' cmd stx[2]
     else
       withSetOptionIn' cmd stx[2]
@@ -54,16 +54,14 @@ private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun st
 private abbrev whitelist : HashSet String :=
   { "#align", "#align_import", "#noalign" }
 
-/-- Checks that no command beginning with `#` is present in 'Mathlib', except for
-* the ones in `whitelist`;
-* the ones that already emit a message.
+/-- Checks that no command beginning with `#` is present in 'Mathlib',
+except for the ones in `whitelist`.
 
-This means that CI will fail on `#`-commands whether they themselves emit a message or not.
+If `warningAsError` is `true`, then the linter logs an info (rather than a warning).
+This means that CI will eventually fail on `#`-commands, but not stop it from continuing.
 
-If `warningAsError` is `true`, then the linter emits a warning
-also on silent `#`-commands.
-This allows the linter to emit better messages during CI, but does not clutter local usage
--/
+However, in order to avoid local clutter, when `warningAsError` is `false`, the linter
+logs a warning only for the `#`-commands that do not already emit a message. -/
 def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
   if getLinterHash (← getOptions) &&
     ((← get).messages.msgs.size == 0 || warningAsError.get (← getOptions)) then
@@ -71,8 +69,10 @@ def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
     | some sa =>
       let a := sa.getAtomVal
       if (a.get ⟨0⟩ == '#' && ! whitelist.contains a) then
-        Linter.logLint linter.hashCommand sa
-          m!"`#`-commands, such as '{a}', are not allowed in 'Mathlib'"
+        let msg := m!"`#`-commands, such as '{a}', are not allowed in 'Mathlib'"
+        if warningAsError.get (← getOptions) then
+          logInfoAt sa (msg ++ " [linter.hashCommand]")
+        else Linter.logLint linter.hashCommand sa msg
     | none => return
 
 initialize addLinter hashCommandLinter
