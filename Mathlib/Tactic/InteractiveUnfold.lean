@@ -28,22 +28,21 @@ def unfold? (e : Expr) : MetaM (Option Expr) := do
       return e
   return none
 
-
-
-/-- Unfold a class projection when the instance is tagged with `@[default_instance]`. -/
+/-- Unfold a class projection when the instance is tagged with `@[default_instance]`.
+similar to `Lean.Meta.unfoldProjInst?`. -/
 def unfoldProjDefaultInst? (e : Expr) : MetaM (Option Expr) := do
   match e.getAppFn with
   | .const declName .. =>
     match ← getProjectionFnInfo? declName with
     | some { fromClass := true, ctorName, .. } => do
+      -- get the list of default instances of the class
       let some (ConstantInfo.ctorInfo c) := (← getEnv).find? ctorName | return none
-
       let defaults ← getDefaultInstances c.induct
       if defaults.isEmpty then return none
 
       let some e ← withDefault <| unfoldDefinition? e | return none
       let .proj _ i c := e.getAppFn | return none
-
+      -- check that the structure `c` comes from one of the default instances
       let .const inst _ := c.getAppFn | return none
       unless defaults.any (·.1 == inst) do return none
 
@@ -63,9 +62,9 @@ where
     try
       withoutCatchingRuntimeEx do withIncRecDepth do
       if let some e ← reduceNat? e then
-        return #[e]
+        return acc.push e
       if let some e ← reduceNative? e then
-        return #[e]
+        return acc.push e
       if let some e ← unfoldProjDefaultInst? e then
         let e ← whnfCore e
         return ← go e acc
@@ -109,33 +108,26 @@ def PasteString (e : Expr) : MetaM String :=
 
 namespace InteractiveUnfold
 
-/-- Return the unfolds from `unfolds` together with the tactic strings that do the unfoldings. -/
-def unfoldsWithTacticString (e : Expr) (occ : Option Nat) (loc : Option Name) :
-    MetaM (Array (Expr × String)) := do
-  let replacements ← filteredUnfolds e
-  let mut results := #[]
-  let mut forbidden := HashSet.empty.insert s! "show {← PasteString (← mkEq e e)} from rfl"
-  for replacement in replacements do
-    let rfl := s! "show {← PasteString (← mkEq e replacement)} from rfl"
-    unless forbidden.contains rfl do
-      forbidden := forbidden.insert rfl
-      results := results.push (replacement, mkRewrite occ false rfl loc)
-  return results
+/-- Return the tactic string that does the unfolding. -/
+def tacticString (e unfold : Expr) (occ : Option Nat) (loc : Option Name) : MetaM String := do
+  let rfl := s! "show {← PasteString (← mkEq e unfold)} from rfl"
+  return mkRewrite occ false rfl loc
 
 /-- Render the unfolds of `e` as given by `filteredUnfolds`, with buttons at each suggestion
 for pasting the rewrite tactic. -/
 def renderDefinitions (e : Expr) (occ : Option Nat) (loc : Option Name) (range : Lsp.Range)
     (doc : FileWorker.EditableDocument) : MetaM (Option Html) := do
-  let results ← unfoldsWithTacticString e occ loc
+  let results ← unfolds e
   if results.isEmpty then
     return none
-  let core ← results.mapM fun (replacement, tactic) => do
+  let core ← results.mapM fun unfold => do
+    let tactic ← tacticString e unfold occ loc
     return <li> {
       .element "p" #[] <|
         #[<span className="font-code" style={json% { "white-space" : "pre-wrap" }}> {
           Html.ofComponent MakeEditLink
             (.ofReplaceRange doc.meta range tactic)
-            #[.text $ Format.pretty $ (← Meta.ppExpr replacement)] }
+            #[.text $ Format.pretty $ (← Meta.ppExpr unfold)] }
         </span>]
       } </li>
   return <details «open»={true}>
@@ -182,7 +174,7 @@ def UnfoldComponent : Component SelectInsertParams :=
 - Explicit natural number expressions are evaluated.
 - The results of class projections of instances marked with `@[default_instance]` are not shown.
   This is relevant for notational type classes like `+`: we don't want to suggest `Add.add a b`
-  as an unfolding of `a + b`.
+  as an unfolding of `a + b`. Similarly for `OfNat n : Nat` which unfolds into `n : Nat`.
 
 To use `unfold?`, shift-click an expression in the tactic state.
 This gives a list of rewrite suggestions for the selected expression.
@@ -192,3 +184,20 @@ elab stx:"unfold?" : tactic => do
   let some range := (← getFileMap).rangeOfStx? stx | return
   Widget.savePanelWidgetInfo (hash UnfoldComponent.javascript)
     (pure $ json% { replaceRange : $range }) stx
+
+/-- `#unfold? e` gives all unfolds of `e`.
+In tactic mode, use `unfold?` instead. -/
+syntax (name := unfoldCommand) "#unfold?" term : command
+
+open Elab
+/-- Elaborate a `#unfold?` command. -/
+@[command_elab unfoldCommand]
+def elabUnfoldCommand : Command.CommandElab := fun stx =>
+  withoutModifyingEnv <| Command.runTermElabM fun _ => Term.withDeclName `_unfold do
+    let e ← Term.elabTerm stx[1] none
+    Term.synthesizeSyntheticMVarsNoPostponing
+    let e ← Term.levelMVarToParam (← instantiateMVars e)  let e ← instantiateMVars e
+    let unfolds ← unfolds e
+    let unfolds := unfolds.toList.map (m! "· {·}")
+    logInfo (m! "Unfolds for {e}:\n"
+      ++ .joinSep unfolds "\n")
