@@ -15,12 +15,13 @@ elements of a list satisfying a predicate and equal to a given element respectiv
 definitions can be found in `Std.Data.List.Basic`.
 -/
 
-set_option autoImplicit true
-
+assert_not_exists Set.range
+assert_not_exists GroupWithZero
+assert_not_exists Ring
 
 open Nat
 
-variable {l : List α}
+variable {α : Type*} {l : List α}
 
 namespace List
 
@@ -43,11 +44,6 @@ variable (p q : α → Bool)
 #align list.countp_le_length List.countP_le_length
 
 #align list.countp_append List.countP_append
-
-theorem countP_join : ∀ l : List (List α), countP p l.join = Nat.sum (l.map (countP p))
-  | [] => rfl
-  | a :: l => by rw [join, countP_append, map_cons, sum_cons, countP_join l]
-#align list.countp_join List.countP_join
 
 #align list.countp_pos List.countP_pos
 
@@ -116,10 +112,6 @@ variable [DecidableEq α]
 
 #align list.count_append List.count_append
 
-theorem count_join (l : List (List α)) (a : α) : l.join.count a = Nat.sum (l.map (count a)) :=
-  countP_join _ _
-#align list.count_join List.count_join
-
 #align list.count_concat List.count_concat
 
 #align list.count_pos List.count_pos_iff_mem
@@ -147,10 +139,6 @@ theorem count_join (l : List (List α)) (a : α) : l.join.count a = Nat.sum (l.m
 #align list.replicate_count_eq_of_count_eq_length List.replicate_count_eq_of_count_eq_length
 
 #align list.count_filter List.count_filter
-
-theorem count_bind {α β} [DecidableEq β] (l : List α) (f : α → List β) (x : β) :
-    count x (l.bind f) = Nat.sum (map (count x ∘ f) l) := by rw [List.bind, count_join, map_map]
-#align list.count_bind List.count_bind
 
 @[simp]
 lemma count_attach (a : {x // x ∈ l}) : l.attach.count a = l.count ↑a :=

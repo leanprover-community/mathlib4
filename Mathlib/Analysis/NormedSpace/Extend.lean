@@ -5,7 +5,7 @@ Authors: Ruben Van de Velde
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
-import Mathlib.Data.RCLike.Basic
+import Mathlib.Analysis.RCLike.Basic
 
 #align_import analysis.normed_space.extend from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 

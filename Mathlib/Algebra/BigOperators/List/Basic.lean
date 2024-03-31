@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.List.Dedup
-import Mathlib.Data.List.Forall2
+import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rotate
 import Mathlib.Data.Nat.Basic
@@ -340,11 +340,10 @@ lemma prod_range_succ' (f : ℕ → M) (n : ℕ) :
 #align list.prod_range_succ' List.prod_range_succ'
 #align list.sum_range_succ' List.sum_range_succ'
 
-@[to_additive] lemma prod_eq_one (hl : ∀ x ∈ l, x = (1 : M)) : l.prod = 1 := by
+@[to_additive] lemma prod_eq_one (hl : ∀ x ∈ l, x = 1) : l.prod = 1 := by
   induction' l with i l hil
   · rfl
-  rw [List.prod_cons, hil fun x hx => hl _ (mem_cons_of_mem i hx), hl _ (mem_cons_self i l),
-    one_mul]
+  rw [List.prod_cons, hil fun x hx ↦ hl _ (mem_cons_of_mem i hx), hl _ (mem_cons_self i l), one_mul]
 #align list.prod_eq_one List.prod_eq_one
 #align list.sum_eq_zero List.sum_eq_zero
 
@@ -388,31 +387,6 @@ end Monoid
 section CommMonoid
 variable [CommMonoid M] {a : M} {l : List M}
 
-@[to_additive]
-lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
-    ∀ L L' : List M,
-      L.prod * L'.prod =
-        (zipWith (· * ·) L L').prod * (L.drop L'.length).prod * (L'.drop L.length).prod
-  | [], ys => by simp [Nat.zero_le]
-  | xs, [] => by simp [Nat.zero_le]
-  | x :: xs, y :: ys => by
-    simp only [drop, length, zipWith_cons_cons, prod_cons]
-    conv =>
-      lhs; rw [mul_assoc]; right; rw [mul_comm, mul_assoc]; right
-      rw [mul_comm, prod_mul_prod_eq_prod_zipWith_mul_prod_drop xs ys]
-    simp only [Nat.add_eq, add_zero]
-    ac_rfl
-#align list.prod_mul_prod_eq_prod_zip_with_mul_prod_drop List.prod_mul_prod_eq_prod_zipWith_mul_prod_drop
-#align list.sum_add_sum_eq_sum_zip_with_add_sum_drop List.sum_add_sum_eq_sum_zipWith_add_sum_drop
-
-@[to_additive]
-lemma prod_mul_prod_eq_prod_zipWith_of_length_eq (L L' : List M) (h : L.length = L'.length) :
-    L.prod * L'.prod = (zipWith (· * ·) L L').prod := by
-  apply (prod_mul_prod_eq_prod_zipWith_mul_prod_drop L L').trans
-  rw [← h, drop_length, h, drop_length, prod_nil, mul_one, mul_one]
-#align list.prod_mul_prod_eq_prod_zip_with_of_length_eq List.prod_mul_prod_eq_prod_zipWith_of_length_eq
-#align list.sum_add_sum_eq_sum_zip_with_of_length_eq List.sum_add_sum_eq_sum_zipWith_of_length_eq
-
 @[to_additive (attr := simp)]
 lemma prod_erase [DecidableEq M] (ha : a ∈ l) : a * (l.erase a).prod = l.prod :=
   prod_erase_of_comm ha fun x _ y _ ↦ mul_comm x y
@@ -429,6 +403,31 @@ lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
         mul_left_comm (f a) (f b)]
 #align list.prod_map_erase List.prod_map_erase
 #align list.sum_map_erase List.sum_map_erase
+
+@[to_additive]
+lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
+    ∀ l l' : List M,
+      l.prod * l'.prod =
+        (zipWith (· * ·) l l').prod * (l.drop l'.length).prod * (l'.drop l.length).prod
+  | [], ys => by simp [Nat.zero_le]
+  | xs, [] => by simp [Nat.zero_le]
+  | x :: xs, y :: ys => by
+    simp only [drop, length, zipWith_cons_cons, prod_cons]
+    conv =>
+      lhs; rw [mul_assoc]; right; rw [mul_comm, mul_assoc]; right
+      rw [mul_comm, prod_mul_prod_eq_prod_zipWith_mul_prod_drop xs ys]
+    simp only [Nat.add_eq, add_zero]
+    ac_rfl
+#align list.prod_mul_prod_eq_prod_zip_with_mul_prod_drop List.prod_mul_prod_eq_prod_zipWith_mul_prod_drop
+#align list.sum_add_sum_eq_sum_zip_with_add_sum_drop List.sum_add_sum_eq_sum_zipWith_add_sum_drop
+
+@[to_additive]
+lemma prod_mul_prod_eq_prod_zipWith_of_length_eq (l l' : List M) (h : l.length = l'.length) :
+    l.prod * l'.prod = (zipWith (· * ·) l l').prod := by
+  apply (prod_mul_prod_eq_prod_zipWith_mul_prod_drop l l').trans
+  rw [← h, drop_length, h, drop_length, prod_nil, mul_one, mul_one]
+#align list.prod_mul_prod_eq_prod_zip_with_of_length_eq List.prod_mul_prod_eq_prod_zipWith_of_length_eq
+#align list.sum_add_sum_eq_sum_zip_with_of_length_eq List.sum_add_sum_eq_sum_zipWith_of_length_eq
 
 end CommMonoid
 
@@ -527,13 +526,13 @@ theorem prod_set' (L : List G) (n : ℕ) (a : G) :
 end CommGroup
 
 @[simp]
-lemma sum_zipWith_distrib_left [Semiring γ] (f : α → β → γ) (n : γ) (l : List α) (l' : List β) :
-    (l.zipWith (n * f · ·) l').sum = n * (l.zipWith f l').sum := by
+theorem sum_zipWith_distrib_left [Semiring γ] (f : α → β → γ) (n : γ) (l : List α) (l' : List β) :
+    (l.zipWith (fun x y => n * f x y) l').sum = n * (l.zipWith f l').sum := by
   induction' l with hd tl hl generalizing f n l'
   · simp
-  cases' l' with hd' tl'
-  · simp
-  · simp [hl, mul_add]
+  · cases' l' with hd' tl'
+    · simp
+    · simp [hl, mul_add]
 #align list.sum_zip_with_distrib_left List.sum_zipWith_distrib_left
 
 theorem sum_const_nat (m n : ℕ) : sum (replicate m n) = m * n :=
@@ -697,6 +696,10 @@ end MonoidHom
   (List.foldl_eq_foldr Nat.add_comm Nat.add_assoc _ _).symm
 
 namespace List
+
+lemma length_sigma {σ : α → Type*} (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
+    length (l₁.sigma l₂) = (l₁.map fun a ↦ length (l₂ a)).sum := by simp [length_sigma']
+#align list.length_sigma List.length_sigma
 
 lemma ranges_join (l : List ℕ) : l.ranges.join = range l.sum := by simp [ranges_join']
 

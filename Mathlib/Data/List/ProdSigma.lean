@@ -85,11 +85,11 @@ theorem mem_sigma {l₁ : List α} {l₂ : ∀ a, List (σ a)} {a : α} {b : σ 
     exists_eq_left, heq_iff_eq, exists_eq_right]
 #align list.mem_sigma List.mem_sigma
 
-theorem length_sigma (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
+/-- See `List.length_sigma` for the corresponding statement using `List.sum`. -/
+theorem length_sigma' (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
     length (l₁.sigma l₂) = Nat.sum (l₁.map fun a ↦ length (l₂ a)) := by
   induction' l₁ with x l₁ IH
   · rfl
   · simp only [map, sigma_cons, length_append, length_map, IH, Nat.sum_cons]
-#align list.length_sigma List.length_sigma
 
 end List
