@@ -106,14 +106,12 @@ instance (n : ℤ) :
     (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).Additive :=
   (inferInstance : (CochainComplex.shiftFunctor C n).Additive)
 
-<<<<<<< HEAD
 instance {R : Type _} [Ring R] [CategoryTheory.Linear R C] (n : ℤ) :
     (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).Linear R where
 
 variable {C}
-=======
+
 end
->>>>>>> origin/derived-category
 
 @[simp]
 lemma shiftFunctor_obj_X' (K : CochainComplex C ℤ) (n p : ℤ) :
