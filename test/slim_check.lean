@@ -381,7 +381,7 @@ issue: true ≠ true does not hold
   trivial
 
 -- TODO: fails without this line!
-attribute [-instance] Finsupp.instReprFinsupp in
+attribute [-instance] Finsupp.instRepr_mathlib in
 
 example (f : ℕ →₀ ℕ) : true := by
   have : f = 0 := by
