@@ -963,7 +963,7 @@ def minus : Triangulated.Subcategory C := Triangulated.Subcategory.mk'
     exact ⟨max i₁ i₃, t.isLE₂ T hT _ (t.isLE_of_LE _ _ _ (le_max_left i₁ i₃))
       (t.isLE_of_LE _ _ _ (le_max_right i₁ i₃))⟩)
 
-instance : t.minus.set.RespectsIso := by
+instance : ClosedUnderIsomorphisms t.minus.P := by
   dsimp only [minus]
   infer_instance
 
@@ -978,7 +978,7 @@ def plus : Triangulated.Subcategory C := Triangulated.Subcategory.mk'
     exact ⟨min i₁ i₃, t.isGE₂ T hT _ (t.isGE_of_GE _ _ _ (min_le_left i₁ i₃))
       (t.isGE_of_GE _ _ _ (min_le_right i₁ i₃))⟩)
 
-instance : t.plus.set.RespectsIso := by
+instance : ClosedUnderIsomorphisms t.plus.P := by
   dsimp only [plus]
   infer_instance
 
@@ -1271,7 +1271,7 @@ instance (X : C) (n : ℤ) : t.IsLE ((t.homology'' n).obj X) 0 :=
 instance (X : C) (n : ℤ) : t.IsGE ((t.homology'' n).obj X) 0 :=
   t.isGE_shift _ n n 0 (add_zero n)
 
-lemma homology''_obj_mem_heart (n : ℤ) (X : C) : (t.homology'' n).obj X ∈ t.heart := by
+lemma homology''_obj_mem_heart (n : ℤ) (X : C) : t.heart ((t.homology'' n).obj X) := by
   rw [mem_heart_iff]
   exact ⟨inferInstance, inferInstance⟩
 
@@ -1615,8 +1615,8 @@ end TStructure
 namespace Subcategory
 
 lemma HasInducedTStructure.mk' (S : Subcategory C) (t : TStructure C)
-    (h : ∀ (X : C) (_ : X ∈ S.set) (n : ℤ), (t.truncLE n).obj X ∈ S.set ∧
-      (t.truncGE n).obj X ∈ S.set) :
+    (h : ∀ (X : C) (_ : S.P X) (n : ℤ), S.P ((t.truncLE n).obj X) ∧
+      (S.P ((t.truncGE n).obj X))) :
     S.HasInducedTStructure t where
   exists_triangle_zero_one X hX := by
     refine' ⟨_, _, _, _, _, _, _,

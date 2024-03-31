@@ -191,7 +191,7 @@ class HasHomology₀ where
 variable [IsTriangulated C]
 
 lemma truncLE₀GE₀_mem_heart (X : C) :
-    (t.truncLEGE 0 0).obj X ∈ t.heart := by
+    t.heart ((t.truncLEGE 0 0).obj X) := by
   rw [t.mem_heart_iff]
   dsimp [truncLEGE]
   constructor
@@ -199,7 +199,7 @@ lemma truncLE₀GE₀_mem_heart (X : C) :
   · infer_instance
 
 lemma truncGE₀LE₀_mem_heart (X : C) :
-    (t.truncGELE 0 0).obj X ∈ t.heart := by
+    t.heart ((t.truncGELE 0 0).obj X) := by
   rw [t.mem_heart_iff]
   constructor <;> infer_instance
 
@@ -225,13 +225,13 @@ instance : S.ι.TExact (S.tStructure t) t where
   leftTExact := ⟨fun _ _ ⟨hX⟩ => ⟨hX⟩⟩
 
 class ContainsHeart : Prop where
-  subset : t.heart ⊆ S.set
+  subset : t.heart ≤ S.P
 
 variable [hS : S.ContainsHeart t]
 
 instance : (S.tStructure t).HasHeart where
   H := t.Heart
-  ι := FullSubcategory.lift _ t.ιHeart (fun X => hS.subset (t.ιHeart_obj_mem X))
+  ι := FullSubcategory.lift _ t.ιHeart (fun X => hS.subset _ (t.ιHeart_obj_mem X))
   additive_ι := ⟨fun {X Y f g} => S.ι.map_injective (by simp)⟩
   fullι := { preimage := fun f => t.ιHeart.preimage f }
   faithful_ι := ⟨fun {X Y} f g h => t.ιHeart.map_injective h⟩
@@ -239,7 +239,7 @@ instance : (S.tStructure t).HasHeart where
     ext X
     constructor
     · rintro ⟨Y, ⟨e⟩⟩
-      exact t.heart.mem_of_iso ((fullSubcategoryInclusion _).mapIso e)
+      exact mem_of_iso t.heart ((fullSubcategoryInclusion _).mapIso e)
         (t.ιHeart_obj_mem Y)
     · intro hX
       exact ⟨_, ⟨(fullSubcategoryInclusion _).preimageIso (t.ιHeartObjHeartMkIso _ hX)⟩⟩
@@ -275,12 +275,12 @@ abbrev tMinus := t.minus.tStructure t
 
 section
 
-lemma zero_mem_heart : 0 ∈ t.heart := by
+lemma zero_mem_heart : t.heart 0 := by
   rw [t.mem_heart_iff]
   constructor <;> infer_instance
 
-lemma prod_mem_heart (X₁ X₂ : C) (hX₁ : X₁ ∈ t.heart) (hX₂ : X₂ ∈ t.heart) :
-    (X₁ ⨯ X₂) ∈ t.heart := by
+lemma prod_mem_heart (X₁ X₂ : C) (hX₁ : t.heart X₁) (hX₂ : t.heart X₂) :
+    t.heart (X₁ ⨯ X₂) := by
   rw [t.mem_heart_iff]
   constructor
   · exact t.isLE₂ _ (binaryProductTriangle_distinguished X₁ X₂) 0 ⟨hX₁.1⟩ ⟨hX₂.1⟩
@@ -294,9 +294,9 @@ instance : HasTerminal (FullSubcategory t.heart) := by
   exact hasTerminal_of_unique Z
 
 instance : HasBinaryProducts (FullSubcategory t.heart) := by
-  apply hasLimitsOfShape_of_closed_under_limits
+  apply hasLimitsOfShape_of_closedUnderLimits
   intro F c hc H
-  exact t.heart.mem_of_iso
+  exact mem_of_iso t.heart
     (limit.isoLimitCone ⟨_, (IsLimit.postcomposeHomEquiv (diagramIsoPair F) _).symm hc⟩)
     (prod_mem_heart t _ _ (H _) (H _))
 
@@ -308,7 +308,8 @@ noncomputable def heartEquivalenceFullsubcategory :
     t.Heart ≌ FullSubcategory t.heart :=
   have := t.ιHeart.isEquivalenceFullSubcategoryLift t.heart (by
     ext X
-    rw [t.mem_essImage_ιHeart_iff])
+    rw [t.mem_essImage_ιHeart_iff]
+    rfl)
   @Functor.asEquivalence _ _ _ _ _ this
 
 instance : HasFiniteProducts t.Heart where
@@ -367,10 +368,10 @@ lemma exists_distinguished_triangle_of_isLE_zero_of_isGE_neg_one
     ∃ (K Q : t.Heart) (α : (t.ιHeart.obj K)⟦(1 : ℤ)⟧ ⟶ X) (β : X ⟶ t.ιHeart.obj Q)
       (γ : t.ιHeart.obj Q ⟶ (t.ιHeart.obj K)⟦(1 : ℤ)⟧⟦(1 : ℤ)⟧),
       Triangle.mk α β γ ∈ distTriang C := by
-  have hK : ((t.truncLE (-1)).obj X)⟦(-1 : ℤ)⟧ ∈ t.heart := by
+  have hK : t.heart (((t.truncLE (-1)).obj X)⟦(-1 : ℤ)⟧) := by
     rw [t.mem_heart_iff]
     constructor <;> dsimp <;> infer_instance
-  have hQ : (t.truncGE 0).obj X ∈ t.heart := by
+  have hQ : t.heart ((t.truncGE 0).obj X) := by
     rw [t.mem_heart_iff]
     constructor <;> infer_instance
   have e₁ := (shiftFunctor C (1 : ℤ)).mapIso (t.ιHeartObjHeartMkIso _ hK) ≪≫
@@ -799,24 +800,24 @@ def homologyδ : (t.homology n₀).obj T.obj₃ ⟶ (t.homology n₁).obj T.obj�
 
 @[reassoc (attr := simp)]
 lemma homologyδ_comp : t.homologyδ T n₀ n₁ h ≫ (t.homology n₁).map T.mor₁ = 0 :=
-  t.homology₀.homology_sequence_δ_comp _ hT _ _ h
+  t.homology₀.homologySequenceδ_comp _ hT _ _ h
 
 @[reassoc (attr := simp)]
 lemma comp_homologyδ : (t.homology n₀).map T.mor₂ ≫ t.homologyδ T n₀ n₁ h = 0 :=
-  t.homology₀.comp_homology_sequence_δ _ hT _ _ h
+  t.homology₀.comp_homologySequenceδ _ hT _ _ h
 
 lemma homology_exact₁ :
     (ShortComplex.mk _ _ (t.homologyδ_comp T hT n₀ n₁ h)).Exact :=
-  t.homology₀.homology_sequence_exact₁ _ hT _ _ h
+  t.homology₀.homologySequence_exact₁ _ hT _ _ h
 
 lemma homology_exact₂ (n : ℤ) :
     (ShortComplex.mk ((t.homology n).map T.mor₁) ((t.homology n).map T.mor₂)
       (by rw [← Functor.map_comp, comp_distTriang_mor_zero₁₂ _ hT, Functor.map_zero])).Exact :=
-  t.homology₀.homology_sequence_exact₂ _ hT _
+  t.homology₀.homologySequence_exact₂ _ hT _
 
 lemma homology_exact₃ :
     (ShortComplex.mk _ _ (t.comp_homologyδ T hT n₀ n₁ h)).Exact :=
-  t.homology₀.homology_sequence_exact₃ _ hT _ _ h
+  t.homology₀.homologySequence_exact₃ _ hT _ _ h
 
 lemma isZero_homology₀_of_isGE_one (X : C) [t.IsGE X 1] :
     IsZero ((t.homology₀).obj X) := by
@@ -1002,7 +1003,7 @@ lemma exists_distTriang_of_shortExact :
         have := hS.mono_f
         dsimp
         infer_instance
-  have hZ : Z ∈ t.heart := by
+  have hZ : t.heart Z := by
     rw [mem_heart_iff]
     constructor <;> infer_instance
   let Y := t.heartMk _ hZ
