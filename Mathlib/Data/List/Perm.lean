@@ -359,9 +359,9 @@ alias ⟨subperm.of_cons, subperm.cons⟩ := subperm_cons
 theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (d₁ : Nodup l₁) (h₁ : a ∉ l₁) (h₂ : a ∈ l₂)
     (s : l₁ <+~ l₂) : a :: l₁ <+~ l₂ := by
   rcases s with ⟨l, p, s⟩
-  induction s generalizing l₁
-  case slnil => cases h₂
-  case cons r₁ r₂ b s' ih =>
+  induction s generalizing l₁ with
+  | slnil => cases h₂
+  | @cons r₁ r₂ b s' ih =>
     simp? at h₂ says simp only [mem_cons] at h₂
     cases' h₂ with e m
     · subst b
