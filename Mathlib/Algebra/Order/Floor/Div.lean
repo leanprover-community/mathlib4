@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Data.Finsupp.Order
-import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Order.GaloisConnection
 
 /-!

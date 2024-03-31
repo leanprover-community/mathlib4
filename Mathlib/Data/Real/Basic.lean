@@ -570,7 +570,7 @@ noncomputable instance instLinearOrderedField : LinearOrderedField ℝ where
     rintro ⟨a⟩ h
     rw [mul_comm]
     simp only [← ofCauchy_inv, ← ofCauchy_mul, ← ofCauchy_one, ← ofCauchy_zero,
-      Ne.def, ofCauchy.injEq] at *
+      Ne, ofCauchy.injEq] at *
     exact CauSeq.Completion.inv_mul_cancel h
   inv_zero := by simp [← ofCauchy_zero, ← ofCauchy_inv]
   ratCast_def q := by
