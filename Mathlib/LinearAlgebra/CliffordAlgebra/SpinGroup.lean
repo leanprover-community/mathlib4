@@ -249,7 +249,6 @@ theorem mul_star_self (x : pinGroup Q) : x * star x = 1 :=
 
 /-- `pinGroup Q` forms a group where the inverse is `star`. -/
 instance : Group (pinGroup Q) where
-  __ : Monoid (pinGroup Q) := inferInstance
   inv := star
   mul_left_inv := star_mul_self
 
