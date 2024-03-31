@@ -1,6 +1,7 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.f)Authors: Johannes Hölzl, Mitchell Lee
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Mitchell Lee
 -/
 import Mathlib.Topology.Algebra.InfiniteSum.Defs
 import Mathlib.Data.Fintype.BigOperators
