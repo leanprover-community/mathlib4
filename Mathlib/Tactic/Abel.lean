@@ -272,7 +272,7 @@ lemma subst_into_smulg {α} [AddCommGroup α]
 lemma subst_into_smul_upcast {α} [AddCommGroup α]
     (l r tl zl tr t) (prl₁ : l = tl) (prl₂ : ↑tl = zl) (prr : r = tr)
     (prt : @smulg α _ zl tr = t) : smul l r = t := by
-  simp [← prt, prl₁, ← prl₂, prr, smul, smulg, coe_nat_zsmul]
+  simp [← prt, prl₁, ← prl₂, prr, smul, smulg, natCast_zsmul]
 
 lemma subst_into_add {α} [AddCommMonoid α] (l r tl tr t)
     (prl : (l : α) = tl) (prr : r = tr) (prt : tl + tr = t) : l + r = t := by

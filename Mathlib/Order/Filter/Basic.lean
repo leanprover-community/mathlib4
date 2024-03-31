@@ -394,7 +394,7 @@ theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
 #align filter.mem_generate_iff Filter.mem_generate_iff
 
 @[simp] lemma generate_singleton (s : Set α) : generate {s} = 𝓟 s :=
-  le_antisymm (λ _t ht ↦ mem_of_superset (mem_generate_of_mem <| mem_singleton _) ht) <|
+  le_antisymm (fun _t ht ↦ mem_of_superset (mem_generate_of_mem <| mem_singleton _) ht) <|
     le_generate_iff.2 <| singleton_subset_iff.2 Subset.rfl
 
 /-- `mk_of_closure s hs` constructs a filter on `α` whose elements set is exactly
@@ -1509,7 +1509,7 @@ theorem EventuallyEq.filter_mono {l l' : Filter α} {f g : α → β} (h₁ : f 
   h₂ h₁
 #align filter.eventually_eq.filter_mono Filter.EventuallyEq.filter_mono
 
-@[refl]
+@[refl, simp]
 theorem EventuallyEq.refl (l : Filter α) (f : α → β) : f =ᶠ[l] f :=
   eventually_of_forall fun _ => rfl
 #align filter.eventually_eq.refl Filter.EventuallyEq.refl

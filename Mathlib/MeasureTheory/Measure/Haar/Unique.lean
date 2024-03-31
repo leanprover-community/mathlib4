@@ -454,7 +454,7 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
         rw [thickenedIndicator_zero]
         · simp
         · simpa [image_eq_zero_of_nmem_tsupport hx] using (u_mem n).2.le
-    · refine eventually_of_forall (fun x ↦ ?_)
+    · filter_upwards with x
       have T := tendsto_pi_nhds.1 (thickenedIndicator_tendsto_indicator_closure
         (fun n ↦ (u_mem n).1) u_lim ({1} : Set ℝ)) (f x)
       simp only [thickenedIndicator_toFun, closure_singleton] at T

@@ -328,6 +328,13 @@ def FreeAddMagma.length {α : Type u} : FreeAddMagma α → ℕ
 
 attribute [to_additive existing (attr := simp)] FreeMagma.length
 
+/-- The length of an element of a free magma is positive. -/
+@[to_additive "The length of an element of a free additive magma is positive."]
+lemma FreeMagma.length_pos {α : Type u} (x : FreeMagma α) : 0 < x.length :=
+  match x with
+  | FreeMagma.of _ => Nat.succ_pos 0
+  | mul y z => Nat.add_pos_left (length_pos y) z.length
+
 /-- Associativity relations for an additive magma. -/
 inductive AddMagma.AssocRel (α : Type u) [Add α] : α → α → Prop
   | intro : ∀ x y z, AddMagma.AssocRel α (x + y + z) (x + (y + z))
@@ -498,7 +505,7 @@ def length (x : FreeSemigroup α) : ℕ := x.tail.length + 1
 
 @[to_additive (attr := simp)]
 theorem length_mul (x y : FreeSemigroup α) : (x * y).length = x.length + y.length := by
-  simp [length, ← add_assoc, add_right_comm, List.length, List.length_append]
+  simp [length, Nat.add_right_comm, List.length, List.length_append]
 #align free_semigroup.length_mul FreeSemigroup.length_mul
 
 @[to_additive (attr := simp)]

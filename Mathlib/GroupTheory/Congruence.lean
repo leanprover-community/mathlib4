@@ -686,7 +686,8 @@ the additive congruence relations on the quotient of `M` by `c`."]
 def correspondence : { d // c ≤ d } ≃o Con c.Quotient
     where
   toFun d :=
-    d.1.mapOfSurjective (↑) _ (by rw [mul_ker_mk_eq]; exact d.2) <| @exists_rep _ c.toSetoid
+    d.1.mapOfSurjective (↑) _ (by rw [mul_ker_mk_eq]; exact d.2) <|
+      @Quotient.exists_rep _ c.toSetoid
   invFun d :=
     ⟨comap ((↑) : M → c.Quotient) (fun x y => rfl) d, fun x y h =>
       show d x y by rw [c.eq.2 h]; exact d.refl _⟩
@@ -711,7 +712,8 @@ def correspondence : { d // c ≤ d } ≃o Con c.Quotient
     constructor
     · intros h x y hs
       rcases h ⟨x, y, rfl, rfl, hs⟩ with ⟨a, b, hx, hy, ht⟩
-      exact t.1.trans (t.1.symm <| t.2 <| eq_rel.1 hx) (t.1.trans ht (t.2 <| eq_rel.1 hy))
+      exact t.1.trans (t.1.symm <| t.2 <| Quotient.eq_rel.1 hx)
+        (t.1.trans ht (t.2 <| Quotient.eq_rel.1 hy))
     · intros h _ _ hs
       rcases hs with ⟨a, b, hx, hy, Hs⟩
       exact ⟨a, b, hx, hy, h Hs⟩
@@ -1138,7 +1140,7 @@ section Monoids
 protected theorem pow {M : Type*} [Monoid M] (c : Con M) :
     ∀ (n : ℕ) {w x}, c w x → c (w ^ n) (x ^ n)
   | 0, w, x, _ => by simpa using c.refl _
-  | Nat.succ n, w, x, h => by simpa [pow_succ] using c.mul h (Con.pow c n h)
+  | Nat.succ n, w, x, h => by simpa [pow_succ] using c.mul (Con.pow c n h) h
 #align con.pow Con.pow
 #align add_con.nsmul AddCon.nsmul
 
@@ -1265,7 +1267,7 @@ protected theorem div : ∀ {w x y z}, c w x → c y z → c (w / y) (x / z) := 
 /-- Multiplicative congruence relations preserve integer powers. -/
 @[to_additive "Additive congruence relations preserve integer scaling."]
 protected theorem zpow : ∀ (n : ℤ) {w x}, c w x → c (w ^ n) (x ^ n)
-  | Int.ofNat n, w, x, h => by simpa only [zpow_coe_nat, Int.ofNat_eq_coe] using c.pow n h
+  | Int.ofNat n, w, x, h => by simpa only [zpow_natCast, Int.ofNat_eq_coe] using c.pow n h
   | Int.negSucc n, w, x, h => by simpa only [zpow_negSucc] using c.inv (c.pow _ h)
 #align con.zpow Con.zpow
 #align add_con.zsmul AddCon.zsmul

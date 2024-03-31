@@ -46,7 +46,7 @@ def toFinsupp : ℕ →₀ M where
   toFun i := getD l i 0
   support := (Finset.range l.length).filter fun i => getD l i 0 ≠ 0
   mem_support_toFun n := by
-    simp only [Ne.def, Finset.mem_filter, Finset.mem_range, and_iff_right_iff_imp]
+    simp only [Ne, Finset.mem_filter, Finset.mem_range, and_iff_right_iff_imp]
     contrapose!
     exact getD_eq_default _ _
 #align list.to_finsupp List.toFinsupp
@@ -107,7 +107,7 @@ theorem toFinsupp_cons_apply_succ (x : M) (xs : List M) (n : ℕ)
   rfl
 #align list.to_finsupp_cons_apply_succ List.toFinsupp_cons_apply_succ
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
     [DecidablePred (getD (l₁ ++ l₂) · 0 ≠ 0)] [DecidablePred (getD l₁ · 0 ≠ 0)]
     [DecidablePred (getD l₂ · 0 ≠ 0)] :
@@ -151,8 +151,8 @@ theorem toFinsupp_eq_sum_map_enum_single {R : Type*} [AddMonoid R] (l : List R)
   `[DecidablePred (getD l · 0 ≠ 0)]`, so we manually do some `revert`/`intro` as a workaround -/
   revert l; intro l
   induction l using List.reverseRecOn with
-  | H0 => exact toFinsupp_nil
-  | H1 x xs ih =>
+  | nil => exact toFinsupp_nil
+  | append_singleton x xs ih =>
     classical simp [toFinsupp_concat_eq_toFinsupp_add_single, enum_append, ih]
 #align list.to_finsupp_eq_sum_map_enum_single List.toFinsupp_eq_sum_map_enum_single
 

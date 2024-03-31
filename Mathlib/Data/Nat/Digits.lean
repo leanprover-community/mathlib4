@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Shing Tak Lam, Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.BigOperators.List.Lemmas
 import Mathlib.Algebra.Parity
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Log
-import Mathlib.Data.List.BigOperators.Lemmas
 import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Palindrome
 import Mathlib.Tactic.IntervalCases
@@ -270,7 +270,7 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
   · cases' b with b
     · induction' n with n ih
       · rfl
-      · rw[show succ zero = 1 by rfl] at ih ⊢
+      · rw [show succ zero = 1 by rfl] at ih ⊢
         simp only [ih, add_comm 1, ofDigits_one_cons, Nat.cast_id, digits_one_succ]
     · apply Nat.strongInductionOn n _
       clear n
@@ -407,7 +407,6 @@ theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l,
       mul_le_mul (IH fun x hx => hl _ (List.mem_cons_of_mem _ hx)) (by rfl) (by simp only [zero_le])
         (Nat.zero_le _)
     suffices ↑hd < b + 2 by linarith
-    norm_cast
     exact hl hd (List.mem_cons_self _ _)
 #align nat.of_digits_lt_base_pow_length' Nat.ofDigits_lt_base_pow_length'
 
@@ -737,7 +736,7 @@ theorem eleven_dvd_of_palindrome (p : (digits 10 n).Palindrome) (h : Even (digit
   replace h : Even dig.length := by rwa [List.length_map]
   refine' eleven_dvd_iff.2 ⟨0, (_ : dig.alternatingSum = 0)⟩
   have := dig.alternatingSum_reverse
-  rw [(p.map _).reverse_eq, _root_.pow_succ, h.neg_one_pow, mul_one, neg_one_zsmul] at this
+  rw [(p.map _).reverse_eq, _root_.pow_succ', h.neg_one_pow, mul_one, neg_one_zsmul] at this
   exact eq_zero_of_neg_eq this.symm
 #align nat.eleven_dvd_of_palindrome Nat.eleven_dvd_of_palindrome
 

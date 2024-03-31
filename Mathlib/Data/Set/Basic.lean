@@ -162,12 +162,12 @@ theorem Set.coe_setOf (p : α → Prop) : ↥{ x | p x } = { x // p x } :=
   rfl
 #align set.coe_set_of Set.coe_setOf
 
--- Porting note: removed `simp` because `simp` can prove it
+-- Porting note (#10618): removed `simp` because `simp` can prove it
 theorem SetCoe.forall {s : Set α} {p : s → Prop} : (∀ x : s, p x) ↔ ∀ (x) (h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.forall
 #align set_coe.forall SetCoe.forall
 
--- Porting note: removed `simp` because `simp` can prove it
+-- Porting note (#10618): removed `simp` because `simp` can prove it
 theorem SetCoe.exists {s : Set α} {p : s → Prop} :
     (∃ x : s, p x) ↔ ∃ (x : _) (h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.exists
@@ -407,7 +407,7 @@ theorem not_mem_empty (x : α) : ¬x ∈ (∅ : Set α) :=
   id
 #align set.not_mem_empty Set.not_mem_empty
 
--- Porting note: removed `simp` because `simp` can prove it
+-- Porting note (#10618): removed `simp` because `simp` can prove it
 theorem not_not_mem : ¬a ∉ s ↔ a ∈ s :=
   not_not
 #align set.not_not_mem Set.not_not_mem
@@ -1021,38 +1021,27 @@ theorem setOf_inter_eq_sep (p : α → Prop) (s : Set α) : {a | p a} ∩ s = {a
 
 /-! ### Distributivity laws -/
 
-
-theorem inter_distrib_left (s t u : Set α) : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
+theorem inter_union_distrib_left (s t u : Set α) : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
   inf_sup_left _ _ _
-#align set.inter_distrib_left Set.inter_distrib_left
+#align set.inter_distrib_left Set.inter_union_distrib_left
 
-theorem inter_union_distrib_left {s t u : Set α} : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
-  inf_sup_left _ _ _
-#align set.inter_union_distrib_left Set.inter_union_distrib_left
-
-theorem inter_distrib_right (s t u : Set α) : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
+theorem union_inter_distrib_right (s t u : Set α) : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
   inf_sup_right _ _ _
-#align set.inter_distrib_right Set.inter_distrib_right
+#align set.inter_distrib_right Set.union_inter_distrib_right
 
-theorem union_inter_distrib_right {s t u : Set α} : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
-  inf_sup_right _ _ _
-#align set.union_inter_distrib_right Set.union_inter_distrib_right
-
-theorem union_distrib_left (s t u : Set α) : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
+theorem union_inter_distrib_left (s t u : Set α) : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
   sup_inf_left _ _ _
-#align set.union_distrib_left Set.union_distrib_left
+#align set.union_distrib_left Set.union_inter_distrib_left
 
-theorem union_inter_distrib_left {s t u : Set α} : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
-  sup_inf_left _ _ _
-#align set.union_inter_distrib_left Set.union_inter_distrib_left
-
-theorem union_distrib_right (s t u : Set α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
+theorem inter_union_distrib_right (s t u : Set α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
   sup_inf_right _ _ _
-#align set.union_distrib_right Set.union_distrib_right
+#align set.union_distrib_right Set.inter_union_distrib_right
 
-theorem inter_union_distrib_right {s t u : Set α} : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
-  sup_inf_right _ _ _
-#align set.inter_union_distrib_right Set.inter_union_distrib_right
+-- 2024-03-22
+@[deprecated] alias inter_distrib_left := inter_union_distrib_left
+@[deprecated] alias inter_distrib_right := union_inter_distrib_right
+@[deprecated] alias union_distrib_left := union_inter_distrib_left
+@[deprecated] alias union_distrib_right := inter_union_distrib_right
 
 theorem union_union_distrib_left (s t u : Set α) : s ∪ (t ∪ u) = s ∪ t ∪ (s ∪ u) :=
   sup_sup_distrib_left _ _ _
@@ -1169,7 +1158,7 @@ theorem insert_comm (a b : α) (s : Set α) : insert a (insert b s) = insert b (
   ext fun _ => or_left_comm
 #align set.insert_comm Set.insert_comm
 
--- Porting note: removing `simp` attribute because `simp` can prove it
+-- Porting note (#10618): removing `simp` attribute because `simp` can prove it
 theorem insert_idem (a : α) (s : Set α) : insert a (insert a s) = insert a s :=
   insert_eq_of_mem <| mem_insert _ _
 #align set.insert_idem Set.insert_idem
@@ -1291,7 +1280,7 @@ theorem singleton_ne_empty (a : α) : ({a} : Set α) ≠ ∅ :=
   (singleton_nonempty _).ne_empty
 #align set.singleton_ne_empty Set.singleton_ne_empty
 
---Porting note (#11119): removed `simp` attribute because `simp` can prove it
+--Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem empty_ssubset_singleton : (∅ : Set α) ⊂ {a} :=
   (singleton_nonempty _).empty_ssubset
 #align set.empty_ssubset_singleton Set.empty_ssubset_singleton
@@ -1364,7 +1353,7 @@ theorem default_coe_singleton (x : α) : (default : ({x} : Set α)) = ⟨x, rfl�
 /-! ### Lemmas about pairs -/
 
 
---Porting note (#11119): removed `simp` attribute because `simp` can prove it
+--Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem pair_eq_singleton (a : α) : ({a, a} : Set α) = {a} :=
   union_self _
 #align set.pair_eq_singleton Set.pair_eq_singleton
@@ -1373,14 +1362,9 @@ theorem pair_comm (a b : α) : ({a, b} : Set α) = {b, a} :=
   union_comm _ _
 #align set.pair_comm Set.pair_comm
 
--- Porting note: first branch after `constructor` used to be by `tauto!`.
 theorem pair_eq_pair_iff {x y z w : α} :
     ({x, y} : Set α) = {z, w} ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
-  simp only [Set.Subset.antisymm_iff, Set.insert_subset_iff, Set.mem_insert_iff,
-    Set.mem_singleton_iff, Set.singleton_subset_iff]
-  constructor
-  · rintro ⟨⟨rfl | rfl, rfl | rfl⟩, ⟨h₁, h₂⟩⟩ <;> simp [h₁, h₂] at * <;> simp [h₁, h₂]
-  · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> simp
+  simp [subset_antisymm_iff, insert_subset_iff]; aesop
 #align set.pair_eq_pair_iff Set.pair_eq_pair_iff
 
 /-! ### Lemmas about sets defined as `{x ∈ s | p x}`. -/
@@ -1426,29 +1410,29 @@ theorem sep_eq_empty_iff_mem_false : { x ∈ s | p x } = ∅ ↔ ∀ x ∈ s, ¬
   simp_rw [ext_iff, mem_sep_iff, mem_empty_iff_false, iff_false_iff, not_and]
 #align set.sep_eq_empty_iff_mem_false Set.sep_eq_empty_iff_mem_false
 
---Porting note (#11119): removed `simp` attribute because `simp` can prove it
+--Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem sep_true : { x ∈ s | True } = s :=
   inter_univ s
 #align set.sep_true Set.sep_true
 
---Porting note (#11119): removed `simp` attribute because `simp` can prove it
+--Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem sep_false : { x ∈ s | False } = ∅ :=
   inter_empty s
 #align set.sep_false Set.sep_false
 
---Porting note (#11119): removed `simp` attribute because `simp` can prove it
+--Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem sep_empty (p : α → Prop) : { x ∈ (∅ : Set α) | p x } = ∅ :=
   empty_inter p
 #align set.sep_empty Set.sep_empty
 
---Porting note (#11119): removed `simp` attribute because `simp` can prove it
+--Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem sep_univ : { x ∈ (univ : Set α) | p x } = { x | p x } :=
   univ_inter p
 #align set.sep_univ Set.sep_univ
 
 @[simp]
 theorem sep_union : { x | (x ∈ s ∨ x ∈ t) ∧ p x } = { x ∈ s | p x } ∪ { x ∈ t | p x } :=
-  union_inter_distrib_right
+  union_inter_distrib_right { x | x ∈ s } { x | x ∈ t } p
 #align set.sep_union Set.sep_union
 
 @[simp]
@@ -1463,7 +1447,7 @@ theorem sep_and : { x ∈ s | p x ∧ q x } = { x ∈ s | p x } ∩ { x ∈ s | 
 
 @[simp]
 theorem sep_or : { x ∈ s | p x ∨ q x } = { x ∈ s | p x } ∪ { x ∈ s | q x } :=
-  inter_union_distrib_left
+  inter_union_distrib_left s p q
 #align set.sep_or Set.sep_or
 
 @[simp]
@@ -1549,7 +1533,7 @@ lemma disjoint_or_nonempty_inter (s t : Set α) : Disjoint s t ∨ (s ∩ t).Non
 #align set.disjoint_or_nonempty_inter Set.disjoint_or_nonempty_inter
 
 lemma disjoint_iff_forall_ne : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ t → a ≠ b := by
-  simp only [Ne.def, disjoint_left, @imp_not_comm _ (_ = _), forall_eq']
+  simp only [Ne, disjoint_left, @imp_not_comm _ (_ = _), forall_eq']
 #align set.disjoint_iff_forall_ne Set.disjoint_iff_forall_ne
 
 alias ⟨_root_.Disjoint.ne_of_mem, _⟩ := disjoint_iff_forall_ne
@@ -2055,7 +2039,7 @@ theorem insert_diff_singleton_comm (hab : a ≠ b) (s : Set α) :
     diff_singleton_eq_self (mem_singleton_iff.not.2 hab.symm)]
 #align set.insert_diff_singleton_comm Set.insert_diff_singleton_comm
 
---Porting note (#11119): removed `simp` attribute because `simp` can prove it
+--Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem diff_self {s : Set α} : s \ s = ∅ :=
   sdiff_self
 #align set.diff_self Set.diff_self

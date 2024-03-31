@@ -835,7 +835,7 @@ theorem ppred_to_nat : ∀ n : Num, (↑) <$> ppred n = Nat.ppred n
 #align num.ppred_to_nat Num.ppred_to_nat
 
 theorem cmp_swap (m n) : (cmp m n).swap = cmp n m := by
-  cases m <;> cases n <;> try { unfold cmp } <;> try { rfl }; apply PosNum.cmp_swap
+  cases m <;> cases n <;> try { rfl }; apply PosNum.cmp_swap
 #align num.cmp_swap Num.cmp_swap
 
 theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
@@ -1654,7 +1654,7 @@ theorem gcd_to_nat_aux :
       exact le_of_lt (Nat.mod_lt _ (PosNum.cast_pos _))
     rw [natSize_to_nat, mul_to_nat, Nat.size_le] at h ⊢
     rw [mod_to_nat, mul_comm]
-    rw [pow_succ', ← Nat.mod_add_div b (pos a)] at h
+    rw [pow_succ, ← Nat.mod_add_div b (pos a)] at h
     refine' lt_of_mul_lt_mul_right (lt_of_le_of_lt _ h) (Nat.zero_le 2)
     rw [mul_two, mul_add]
     refine'

@@ -113,7 +113,7 @@ lemma unitary_iff_isStarNormal_and_spectrum_subset_circle {u : A} :
     constructor
     all_goals
       apply cfc_congr _ (fun x hx ↦ ?_)
-      simp only [IsROrC.star_def, mul_comm x]
+      simp only [RCLike.star_def, mul_comm x]
       apply hu at hx
       rwa [SetLike.mem_coe, mem_circle_iff_normSq, ← Complex.ofReal_injective.eq_iff,
         Complex.normSq_eq_conj_mul_self] at hx
@@ -206,7 +206,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
     ext x
     by_cases hx : x ≤ 0
     · rw [← neg_nonneg] at hx
-      simp [sup_eq_left.mpr hx, pow_succ']
+      simp [sup_eq_left.mpr hx, pow_succ]
     · rw [not_le, ← neg_neg_iff_pos] at hx
       simp [sup_eq_right.mpr hx.le]
   have h_c_spec₀ : SpectrumRestricts (- (star c * c)) (ContinuousMap.realToNNReal ·) := by
@@ -257,13 +257,13 @@ lemma nonneg_iff_isSelfAdjoint_and_spectrumRestricts {a : A} :
   refine ⟨fun ha ↦ ?_, ?_⟩
   · rw [StarOrderedRing.nonneg_iff] at ha
     induction ha using AddSubmonoid.closure_induction' with
-    | Hs x hx =>
+    | mem x hx =>
       obtain ⟨b, rfl⟩ := hx
       exact ⟨IsSelfAdjoint.star_mul_self b, spectrum_star_mul_self_nonneg⟩
-    | H1 =>
+    | one =>
       nontriviality A
       simp
-    | Hmul x _ y _ hx hy =>
+    | mul x _ y _ hx hy =>
       rw [← SpectrumRestricts.nnreal_iff] at hx hy ⊢
       exact ⟨hx.1.add hy.1, hx.2.nnreal_add hx.1 hy.1 hy.2⟩
   · rintro ⟨ha₁, ha₂⟩
