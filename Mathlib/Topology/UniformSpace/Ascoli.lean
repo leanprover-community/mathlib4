@@ -448,7 +448,7 @@ theorem ArzelaAscoli.compactSpace_of_closedEmbedding [TopologicalSpace ι] {𝔖
     (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K)
     (F_pointwiseCompact : ∀ K ∈ 𝔖, ∀ x ∈ K, ∃ Q, IsCompact Q ∧ ∀ i, F i x ∈ Q) :
     CompactSpace ι :=
-  compactSpace_of_closed_inducing' 𝔖_compact F_clemb.toInducing F_clemb.closed_range
+  compactSpace_of_closed_inducing' 𝔖_compact F_clemb.toInducing F_clemb.isClosed_range
     F_eqcont F_pointwiseCompact
 
 /-- A version of the **Arzela-Ascoli theorem**.
