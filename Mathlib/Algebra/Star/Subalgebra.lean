@@ -498,7 +498,7 @@ theorem adjoin_induction {s : Set A} {p : A → Prop} {a : A} (h : a ∈ adjoin 
   Algebra.adjoin_induction h
     (fun x hx => hx.elim (fun hx => mem x hx) fun hx => star_star x ▸ star _ (mem _ hx))
     algebraMap add mul
-#align star_subalgebra.adjoin_induction StarSubalgebra.adjoin_induction
+#align star_subalgebra.adjoin_induction StarAlgebra.adjoin_induction
 
 @[elab_as_elim]
 theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a ∈ adjoin R s)
@@ -543,7 +543,7 @@ theorem adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
       fun x y hx hy =>
       Exists.elim hx fun hx' hx => Exists.elim hy fun hy' hy => ⟨mul_mem hx' hy', mul _ _ hx hy⟩,
       fun x hx => Exists.elim hx fun hx' hx => ⟨star_mem hx', star _ hx⟩]
-#align star_subalgebra.adjoin_induction' StarSubalgebra.adjoin_induction'
+#align star_subalgebra.adjoin_induction' StarAlgebra.adjoin_induction'
 
 variable (R)
 
