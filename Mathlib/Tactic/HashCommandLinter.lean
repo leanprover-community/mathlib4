@@ -6,6 +6,7 @@ Authors: Damiano Testa
 
 import Lean.Elab.Command
 import Lean.Linter.Util
+import Std.Lean.HashSet
 
 /-!
 #  `#`-command linter
@@ -49,10 +50,8 @@ private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun st
     cmd stx
 
 /-- `whitelist` is the array of `#`-commands that are allowed in 'Mathlib'. -/
-private abbrev whitelist : HashSet String := HashSet.empty
-  |>.insert "#align"
-  |>.insert "#align_import"
-  |>.insert "#noalign"
+private abbrev whitelist : HashSet String :=
+  { "#align", "#align_import", "#noalign" }
 
 /-- Checks that no command beginning with `#` is present in 'Mathlib', except for
 * the ones in `whitelist`;
