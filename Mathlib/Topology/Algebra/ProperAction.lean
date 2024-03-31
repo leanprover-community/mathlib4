@@ -100,7 +100,7 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto : ProperSMul G X ↔ C
     ∃ g : G, g • x₂ = x₁ ∧ Tendsto Prod.fst (𝒰 : Filter (G × X)) (𝓝 g)) := by
   constructor
   · intro h
-    refine ⟨continuousSmul_of_properSMul, fun 𝒰 x₁ x₂ h' ↦ ?_⟩
+    refine ⟨by infer_instance, fun 𝒰 x₁ x₂ h' ↦ ?_⟩
     rw [properSMul_iff, isProperMap_iff_ultrafilter] at h
     have ⟨(g, x), hgx1, hgx2⟩ := h.2 h'
     use g
@@ -157,7 +157,6 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto_t2 [T2Space X] : Prope
 @[to_additive "If `G` acts properly on `X`, then the quotient space is Hausdorff (T2)."]
 theorem t2Space_of_ProperSMul (hproper:ProperSMul G X) :
     T2Space (Quotient (MulAction.orbitRel G X)) := by
-  let _ : ContinuousSMul G X := continuousSmul_of_properSMul
   rw [t2_iff_isClosed_diagonal] -- T2 if the diagonal is closed
   set R := MulAction.orbitRel G X -- the orbit relation
   set XmodG := Quotient R -- the quotient
@@ -239,7 +238,7 @@ lemma properSMul_of_closed_embedding {H : Type*} [Group H] [MulAction H X] [Topo
 
 /-- If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`. -/
 @[to_additive "If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`."]
-theorem foo_mul {H : Subgroup G} [ProperSMul G X] [H_closed : IsClosed (H : Set G)] : ProperSMul H X where
+instance {H : Subgroup G} [ProperSMul G X] [H_closed : IsClosed (H : Set G)] : ProperSMul H X where
   isProperMap_smul_pair' := by
     have : IsProperMap (fun hx : H × X ↦ ((hx.1, hx.2) : G × X)) := by
       change IsProperMap (Prod.map ((↑) : H → G) (fun x ↦ x))
