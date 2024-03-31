@@ -203,7 +203,7 @@ protected theorem NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set
 #align normed_space.unbounded_univ NormedSpace.unbounded_univ
 
 protected lemma NormedSpace.cobounded_neBot : NeBot (cobounded E) := by
-  rw [neBot_iff, Ne.def, cobounded_eq_bot_iff, ← isBounded_univ]
+  rw [neBot_iff, Ne, cobounded_eq_bot_iff, ← isBounded_univ]
   exact NormedSpace.unbounded_univ 𝕜 E
 
 instance (priority := 100) NontriviallyNormedField.cobounded_neBot : NeBot (cobounded 𝕜) :=

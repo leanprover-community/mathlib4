@@ -1191,7 +1191,7 @@ theorem finprod_prod_comm (s : Finset β) (f : α → β → M)
       (s.finite_toSet.biUnion fun b hb => h b (Finset.mem_coe.1 hb)).toFinset := by
     rw [Finite.coe_toFinset]
     intro x hx
-    simp only [exists_prop, mem_iUnion, Ne.def, mem_mulSupport, Finset.mem_coe]
+    simp only [exists_prop, mem_iUnion, Ne, mem_mulSupport, Finset.mem_coe]
     contrapose! hx
     rw [mem_mulSupport, not_not, Finset.prod_congr rfl hx, Finset.prod_const_one]
   rw [finprod_eq_prod_of_mulSupport_subset _ hU, Finset.prod_comm]

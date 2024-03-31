@@ -604,7 +604,7 @@ theorem smul_eq_zero : c • x = 0 ↔ c = 0 ∨ x = 0 :=
     h.elim (fun h => h.symm ▸ zero_smul R x) fun h => h.symm ▸ smul_zero c⟩
 #align smul_eq_zero smul_eq_zero
 
-theorem smul_ne_zero_iff : c • x ≠ 0 ↔ c ≠ 0 ∧ x ≠ 0 := by rw [Ne.def, smul_eq_zero, not_or]
+theorem smul_ne_zero_iff : c • x ≠ 0 ↔ c ≠ 0 ∧ x ≠ 0 := by rw [Ne, smul_eq_zero, not_or]
 #align smul_ne_zero_iff smul_ne_zero_iff
 
 lemma smul_eq_zero_iff_left (hx : x ≠ 0) : c • x = 0 ↔ c = 0 := by simp [hx]
@@ -788,7 +788,7 @@ lemma support_smul_subset_right [Zero M] [SMulZeroClass R M] (f : α → R) (g :
 
 lemma support_const_smul_of_ne_zero [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M]
     (c : R) (g : α → M) (hc : c ≠ 0) : support (c • g) = support g :=
-  ext fun x ↦ by simp only [hc, mem_support, Pi.smul_apply, Ne.def, smul_eq_zero, false_or_iff]
+  ext fun x ↦ by simp only [hc, mem_support, Pi.smul_apply, Ne, smul_eq_zero, false_or_iff]
 #align function.support_const_smul_of_ne_zero Function.support_const_smul_of_ne_zero
 
 lemma support_smul [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] (f : α → R)
