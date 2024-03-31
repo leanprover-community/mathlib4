@@ -67,42 +67,46 @@ def onlyOrNotSimp : Syntax → Bool
 |   |-node null, none
 -/
 
-/-- `stainer? stx` is `true` on syntax that stains. -/
-def stainer? : Syntax → Bool
-  | .node _info ``Lean.Parser.Tactic.simp #[_, _, _, only?, _, _] => only?[0].getAtomVal != "only"
-  | .node _info ``Lean.Parser.Tactic.simpAll #[_, _, _, only?, _] => only?[0].getAtomVal != "only"
+/-- `flexible? stx` is `true` on syntax that takes a "wide" variety of inputs and modifies
+them in possibly unpredictable ways.
+
+The prototypical flexible tactic is `simp`
+The prototypical non-flexible tactic `rw`.  `simp only` is also non-flexible. -/
+def flexible? : Syntax → Bool
+  | .node _ ``Lean.Parser.Tactic.simp #[_, _, _, only?, _, _] => only?[0].getAtomVal != "only"
+  | .node _ ``Lean.Parser.Tactic.simpAll #[_, _, _, only?, _] => only?[0].getAtomVal != "only"
   | _ => false
 
-/-- `stains? tac` returns `true` if the tactic stains, `false` otherwise. -/
-elab "stains? " tac:tactic : command => do
-  match stainer? tac with
-    | true  => logWarningAt tac m!"{stainer? tac}"
-    | false => logInfoAt tac m!"{stainer? tac}"
+/-- `flex? tac` logs an info `true` if the tactic is flexible, logs a warning `false` otherwise. -/
+elab "flex? " tac:tactic : command => do
+  match flexible? tac with
+    | true  => logWarningAt tac m!"{flexible? tac}"
+    | false => logInfoAt tac m!"{flexible? tac}"
 
 /-- info: false -/#guard_msgs in
-stains? done
+flex? done
 /-- info: false -/#guard_msgs in
-stains? simp only
+flex? simp only
 /-- info: false -/#guard_msgs in
-stains? simp_all only
+flex? simp_all only
 /-- warning: true -/#guard_msgs in
-stains? simp
+flex? simp
 /-- warning: true -/#guard_msgs in
-stains? simp_all
+flex? simp_all
 
 /-- info: -/ #guard_msgs in
 #eval show MetaM _ from do
   let simp_all_only ← `(tactic| simp_all only)
-  guard <| ! stainer? simp_all_only
+  guard <| ! flexible? simp_all_only
 
   let simp_only ← `(tactic| simp only)
-  guard <| ! stainer? simp_only
+  guard <| ! flexible? simp_only
 
   let simp_all ← `(tactic| simp_all)
-  guard <| stainer? simp_all
+  guard <| flexible? simp_all
 
   let simp ← `(tactic| simp)
-  guard <| stainer? simp
+  guard <| flexible? simp
 
 
 end nonTerminalSimp
@@ -203,6 +207,8 @@ def getL : Syntax → Array stained
                   | _ => default
   | _ => default
 
+/-- info: #[h] -/ #guard_msgs in
+#eval show CoreM _ from do IO.println s!"{getL (← `(tactic| cases $(⟨mkIdent `h /-`-/⟩)))}"
 /-- `getStained stx` expects `stx` to be an argument of a node of `SyntaxNodeKind`
 `Lean.Parser.Tactic.location`.
 Typically, we apply `getStained` to the output of `getLocs`. -/
@@ -256,8 +262,16 @@ def ignored : HashSet Name :=
     ``Lean.Parser.Tactic.«tactic_<;>_»,
     `«;»,
     ``cdotTk,
-    ``cdot,
-    -- followers: `rfl, omega, abel, ring, linarith, linarith, norm_cast, aesop, tauto`
+    ``cdot }
+
+/-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
+  `simp`, `simp_all`, `simp_a`, `rfl`, `omega`, `abel`, `ring`, `linarith`, `nlinarith`,
+  `norm_cast`, `aesop`, `tauto`.
+-/
+def followers : HashSet Name :=
+  { ``Lean.Parser.Tactic.simp,
+    ``Lean.Parser.Tactic.simpAll,
+    ``Lean.Parser.Tactic.simpa,
     ``Lean.Parser.Tactic.tacticRfl,
     ``Lean.Parser.Tactic.omega,
     `Mathlib.Tactic.Abel.abel,
@@ -282,6 +296,23 @@ def getIds : Syntax → Array Name
   | .ident _ _ name _ => #[name]
   | _ => default
 
+/-- `getFVarIdCandidates fv name lctx` takes an input an `FVarId`, a `Name` and a `LocalContext`.
+It returns an array of guesses for a "best fit" `FVarId` in the given `LocalContext`.
+The first entry of the array is the input `FVarId` `fv`, if it is present.
+The next entry of the array is the `FVarId` with the given `Name `, if present.
+
+Usually, the first entry of the returned array is "the best approximation" to `(fv, name)`. -/
+def getFVarIdCandidates (fv : FVarId) (name : Name) (lctx : LocalContext) : Array FVarId :=
+  #[lctx.find? fv, lctx.findFromUserName? name].reduceOption.map (·.fvarId)
+
+#check NameGenerator
+
+def persistFVars (fv : FVarId) (before after : LocalContext) : FVarId :=
+  let ldecl := (before.find? fv).getD default
+  let name := ldecl.userName
+  (getFVarIdCandidates fv name after).getD 0 default
+
+
 /-- The main entry point to the unreachable tactic linter. -/
 def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
   unless getLinterHash (← getOptions) && (← getInfoState).enabled do
@@ -296,12 +327,16 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
   -- * `mvar` is the metavariable containing the modified location
   let mut stains : HashMap (FVarId × MVarId) SyntaxNodeKind := .empty
   for d in x do for (s, ctx0, ctx1, mvs0, mvs1) in d do
-    if ! ignored.contains s.getKind then
+--    if ! ignored.contains s.getKind then
 --      logInfoAt s[0] m!"{mvs0.map (·.name)} ⊆ -- '{s}'\n{mvs1.map (·.name)}"
+--    logInfoAt s m!"{stains.toArray.map fun ((fv, mv), xx) => ((fv.name, mv.name), xx)}"
+
     let skind := s.getKind
     if ignored.contains skind then /-dbg_trace "ignoring {skind}"-/ continue
+--    logInfoAt s m!"acting on: {getStained! s}"
     for d in getStained! s do
-      let shouldStain? := stainer? s && mvs1.length == mvs0.length
+--      logInfoAt s m!"(flex, solves?) = {(flexible? s, (mvs1.length < mvs0.length : Bool))}"
+      let shouldStain? := flexible? s && mvs1.length == mvs0.length
 /-
       logInfoAt s m!"new shouldStain? '{shouldStain?}'"
       let shouldStain? :=
@@ -316,6 +351,24 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 --      logInfoAt s m!"{shouldStain?}"
 -/
       let stained_in_syntax := getL s
+      let lctx0 := (mvs0.map ctx0.decls.find?).reduceOption.map (·.lctx)
+      let lctx1 := (mvs1.map ctx1.decls.find?).reduceOption.map (·.lctx)
+      for lctx in lctx0 do
+        let fvars := lctx.getFVarIds
+        for lcn in lctx1 do for fv in fvars do
+          let cand_fv := persistFVars fv lctx lcn
+          let olds := stains.toArray.filter fun ((a, _), _) => a == fv
+          for ((_, mv), k) in olds do
+            stains := stains.insert (cand_fv, mv) k
+          logInfoAt s m!"candidate: {cand_fv.name}"
+        let ldecls := fvars.map fun d => (lctx.get! d|>.userName, d.name)
+        logInfoAt s m!"before '{s}' (username, fvarid):\n{ldecls}"
+      for lctx in lctx1 do
+        let fvars := lctx.getFVarIds
+        let ldecls := fvars.map fun d => (lctx.get! d|>.userName, d.name)
+        logInfoAt s m!"after '{s}' (username, fvarid):\n{ldecls}"
+
+
 /-
       let found_stained := stained_in_syntax.filter (·.toFVarId lctx0 != default)
       let stained_in_syntax := stained_in_syntax.filter
@@ -330,23 +383,51 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
           (((lctx0.fvarIdToDecl.find? d).getD default).userName, d.name)}"
 -/
       if shouldStain? then
+--        logInfoAt s "inside shouldStain?"
+        --if followers.contains skind then continue
 --      if stainers.contains skind &&
 --        !onlyOrNotSimp s &&
 --        (! mvs1.length < mvs0.length) then
         for currMVar1 in mvs1 do--.getD 0 default
           let lctx1 := ((ctx1.decls.find? currMVar1).getD default).lctx
           let locsAfter := d.toFVarId lctx1
+
           for l in locsAfter do
-            trace[flexible]
-              m!"{s} is staining {(((lctx1.fvarIdToDecl.find? l).getD default).userName, l.name)}"
+            logInfoAt s --trace[flexible]
+              m!"{s} is staining {(((lctx1.fvarIdToDecl.find? l).getD default).userName, l.name)} ({l == default}, {currMVar1.name})"
             stains := stains.insert (l, currMVar1) skind
+
       else
-        for currMVar0 in mvs0 do --.getD 0 default
-          let lctx0 := ((ctx0.decls.find? currMVar0).getD default).lctx
-          let found_fvs := (stained_in_syntax.map (·.toFVarId lctx0)).flatten.filter (· != default)
-          let locsBefore := d.toFVarId lctx0 ++ found_fvs
-          for l in locsBefore do
-            if let some kind := stains.find? (l, currMVar0) then
-              Linter.logLint linter.nonTerminalSimp s m!"{kind} stained '{d}' at '{s}'"
+        if !followers.contains skind then
+          for currMVar0 in mvs0 do --.getD 0 default
+            let lctx0 := ((ctx0.decls.find? currMVar0).getD default).lctx
+            let found_fvs := (stained_in_syntax.map (·.toFVarId lctx0)).flatten.filter (· != default)
+            -- we collect all the references to potential locations:
+            -- * in `at`-clauses via `d.toFVarId`, e.g. the `h` in `rw at h`;
+            -- * inside the syntax of the tactic `d`, e.g. the `h` in `rw [h]`.
+            let locsBefore := d.toFVarId lctx0 ++ found_fvs
+            for l in locsBefore do
+              if let some kind := stains.find? (l, currMVar0) then
+                Linter.logLint linter.nonTerminalSimp s m!"l: {locsBefore.size}, mvs0: {mvs0.length}\n\
+                  {kind} stained '{d}' at '{s}'"
+
+        -- since tactic applications often change the name of the current `MVarId`, we
+        -- migrate the `FvarId`s in the "old" `mvars` to the "same" `FVarId` in the "new" `mvars`
+--          for mv in mvs1 do
+--            for ((fv, mvOld), kd) in stains.toArray do
+--              logInfoAt s m!"inserting {mv.name} at {fv.name}"
+--              stains := stains.insert (fv, mv) kd
+--              stains := stains.erase (fv, mvOld)
+      let mut new : HashMap (FVarId × MVarId) SyntaxNodeKind := .empty
+      logInfoAt s m!"following goals: {mvs1.length}"
+      for currMVar1 in mvs1 do
+        for ((fv, mvOld), kd) in stains.toArray do
+          logInfoAt s m!"persisting {fv.name} in {mvOld.name} --> {currMVar1.name}"
+          new := new.insert (fv, currMVar1) kd
+--          stains := stains.erase (fv, mvOld)
+--          stains := stains.insert (fv, currMVar1) kd
+      stains := new
+
+
 
 initialize addLinter nonTerminalSimpLinter
