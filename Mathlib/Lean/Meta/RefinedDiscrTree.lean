@@ -73,12 +73,12 @@ I document here what features are not in the original:
   - Any combination of `ofNat`, `Nat.zero`, `Nat.succ` and number literals
     is stored as just a number literal.
   - The expression `fun a : α => a` is stored as `@id α`.
-    - This makes lemmata such as `continuous_id'` redundant, which is the same as `continuous_id`,
+    - This makes lemmas such as `continuous_id'` redundant, which is the same as `continuous_id`,
       with `id` replaced by `fun x => x`.
   - Any expressions involving `+`, `*`, `-`, `/` or `⁻¹` is normalized to not have a lambda
     in front and to always have the default amount of arguments.
     e.g. `(f + g) a` is stored as `f a + g a` and `fun x => f x + g x` is stored as `f + g`.
-    - This makes lemmata such as `MeasureTheory.integral_integral_add'` redundant, which is the
+    - This makes lemmas such as `MeasureTheory.integral_integral_add'` redundant, which is the
       same as `MeasureTheory.integral_integral_add`, with `f a + g a` replaced by `(f + g) a`
     - it also means that a lemma like `Continuous.mul` can be stated as talking about `f * g`
       instead of `fun x => f x + g x`.
@@ -422,7 +422,7 @@ def DTExpr.flatten (e : DTExpr) (initCapacity := 16) : Array Key :=
 
 
 
-/-- Return true if `e` is one of the following
+/-- Return `true` if `e` is one of the following
 - A nat literal (numeral)
 - `Nat.zero`
 - `Nat.succ x` where `isNumeral x`
@@ -485,7 +485,7 @@ private partial def DTExpr.hasLooseBVarsAux (i : Nat) : DTExpr → Bool
   | .lam b         => b.hasLooseBVarsAux (i+1)
   | _              => false
 
-/-- Return `true` if `e` contains a loose bound variable. -/
+/-- Determine whether `e` contains a loose bound variable. -/
 def DTExpr.hasLooseBVars (e : DTExpr) : Bool :=
   e.hasLooseBVarsAux 0
 
@@ -501,7 +501,7 @@ private structure Context where
   config : WhnfCoreConfig
   fvarInContext : FVarId → Bool
 
-/-- Return for each argument whether it should be ignored. -/
+/-- Determine for each argument whether it should be ignored. -/
 def getIgnores (fn : Expr) (args : Array Expr) : MetaM (Array Bool) := do
   let mut fnType ← inferType fn
   let mut result := Array.mkEmpty args.size
@@ -515,7 +515,7 @@ def getIgnores (fn : Expr) (args : Array Expr) : MetaM (Array Bool) := do
     result := result.push (← isIgnoredArg args[i]! d bi)
   return result
 where
-  /-- Return whether the argument should be ignored. -/
+  /-- Determine whether the argument should be ignored. -/
   isIgnoredArg (arg domain : Expr) (binderInfo : BinderInfo) : MetaM Bool := do
     if domain.isOutParam then
       return true
@@ -868,7 +868,7 @@ partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
 
 end MkDTExpr
 
-/-- Return `true` if the `DTExpr` has pattern `*` or `Eq(*, *, *)`. -/
+/-- Return `false` if the `DTExpr` has pattern `*` or `Eq(*, *, *)`. -/
 def DTExpr.isSpecific : DTExpr → Bool
   | .star _
   | .const ``Eq #[.star _, .star _, .star _] => false

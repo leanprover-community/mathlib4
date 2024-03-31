@@ -42,12 +42,12 @@ structure RewriteLemma where
   numParams : Nat
 deriving BEq, Inhabited
 
-/-- Return the string length of the lemma name. -/
+/-- The string length of the lemma name. -/
 def RewriteLemma.length (rwLemma : RewriteLemma) : Nat :=
   rwLemma.name.toString.length
 
 /--
-We sort lemmata by the following conditions (in order):
+We sort lemmas by the following conditions (in order):
 - number of parameters
 - left-to-right rewrites come first
 - length of the name
@@ -154,7 +154,7 @@ end Cache
 
 
 
-/-- Return all potential rewrite lemmata -/
+/-- Return all potential rewrite lemmas -/
 def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Bool)) := do
   let localResults  ← (← getLocalRewriteLemmas ).getMatchWithScore e (unify := false)
   let cachedResults ← (← getCachedRewriteLemmas).getMatchWithScore e (unify := false)
@@ -194,19 +194,60 @@ def checkLemma (rwLemma : RewriteLemma) (e : Expr) : MetaM (Option Rewrite) := d
   return some { rwLemma with proof, replacement, extraGoals }
 
 /-- Return all applicable library rewrites of `e`.
-The boolean flag indicates whether the lemmata are from the current file.
-Note that duplicate rewrites have not been filtered out. -/
+The `Bool` indicates whether the lemmas are from the current file. -/
 def getRewrites (e : Expr) : MetaM (Array (Array Rewrite × Bool)) := do
   let candidates ← getCandidates e
   candidates.filterMapM fun (candidates, isLocal) => do
     let rewrites ← candidates.filterMapM fun cand =>
       withCatchingRuntimeEx do
-      try withoutCatchingRuntimeEx <| checkLemma cand e
-      catch _ => return none
-    unless rewrites.isEmpty do
-      return (rewrites, isLocal)
-    return none
+      try withoutCatchingRuntimeEx <|
+        checkLemma cand e
+      catch _ =>
+        return none
+    if rewrites.isEmpty then
+      return none
+    return (rewrites, isLocal)
 
+/-- Get the `BinderInfo`s for the arguments of `mkAppN fn args`. -/
+def getBinderInfos (fn : Expr) (args : Array Expr) : MetaM (Array BinderInfo) := do
+  let mut fnType ← inferType fn
+  let mut result := Array.mkEmpty args.size
+  let mut j := 0
+  for i in [:args.size] do
+    unless fnType matches .forallE .. do
+      fnType ← whnfD (fnType.instantiateRevRange j i args)
+      j := i
+    let .forallE _ _ b bi := fnType | throwError m! "expected function type {indentExpr fnType}"
+    fnType := b
+    result := result.push bi
+  return result
+
+/-- Determine whether the explicit parts of two expressions are equal,
+and the implicit parts are definitionally equal. -/
+partial def isExplicitEq (t s : Expr) : MetaM Bool := do
+  if t == s then
+    return true
+  unless t.getAppNumArgs == s.getAppNumArgs && t.getAppFn == s.getAppFn do
+    return false
+  let tArgs := t.getAppArgs
+  let sArgs := s.getAppArgs
+  let bis ← getBinderInfos t.getAppFn tArgs
+  t.getAppNumArgs.allM fun i =>
+    if bis[i]!.isExplicit then
+      isExplicitEq tArgs[i]! sArgs[i]!
+    else
+      isDefEq tArgs[i]! sArgs[i]!
+
+/-- Filter out duplicate rewrites or reflexive rewrites. -/
+def filterRewrites {α} (e : Expr) (rewrites : Array α) (replacement : α → Expr) :
+    MetaM (Array α) :=
+  withNewMCtxDepth do
+  let mut filtered := #[]
+  for rw in rewrites do
+    unless (← isExplicitEq (replacement rw) e <||>
+        filtered.anyM (isExplicitEq (replacement rw) $ replacement ·)) do
+      filtered := filtered.push rw
+  return filtered
 
 
 /-! ### User interface code -/
@@ -278,6 +319,8 @@ structure RewriteInterface extends RewriteLemma where
   /-- The rewrite tactic string that performs the rewrite -/
   tactic : String
   /-- The replacement expression obtained from the rewrite -/
+  replacementExpr : Expr
+  /-- The replacement expression obtained from the rewrite -/
   replacement : String
   /-- The extra goals created by the rewrite -/
   extraGoals : Array CodeWithInfos
@@ -297,7 +340,7 @@ def Rewrite.toInterface (rw : Rewrite) (occ : Option Nat) (loc : Option Name)
   let prettyLemma : CodeWithInfos := match ← ppExprTagged (← mkConstWithLevelParams rw.name) with
     | .tag tag _ => .tag tag (.text s!"{rw.name}")
     | code => code
-  return { rw with tactic, replacement, extraGoals, prettyLemma }
+  return { rw with tactic, replacement, extraGoals, prettyLemma, replacementExpr := rw.replacement }
 
 /-- Return the Interfaces for rewriting `e`, both filtered and unfiltered. -/
 def getRewriteInterfaces (e : Expr) (occ : Option Nat) (loc : Option Name)
@@ -306,18 +349,9 @@ def getRewriteInterfaces (e : Expr) (occ : Option Nat) (loc : Option Name)
   let mut dedup := #[]
   let mut all := #[]
   for (rewrites, isLocal) in ← getRewrites e do
-    let results ← rewrites.mapM (·.toInterface occ loc initNames)
-    all := all.push (results, isLocal)
-    let duplicates : HashMap String Name := results.foldl
-      (init := HashMap.empty.insert (Format.pretty (← ppExpr e)) .anonymous) fun map rw =>
-      if rw.extraGoals.isEmpty && !map.contains rw.replacement then
-        map.insert rw.replacement rw.name
-      else
-        map
-    let filtered := results.filter fun rw =>
-        match duplicates.find? rw.replacement with
-        | some name => name == rw.name
-        | none      => true
+    let rewrites ← rewrites.mapM (·.toInterface occ loc initNames)
+    let filtered ← filterRewrites e rewrites (·.replacementExpr)
+    all := all.push (rewrites, isLocal)
     unless filtered.isEmpty do
       dedup := dedup.push (filtered, isLocal)
   return (dedup, all)
@@ -441,33 +475,42 @@ elab stx:"rw??" : tactic => do
   Widget.savePanelWidgetInfo (hash LibraryRewriteComponent.javascript)
     (pure $ json% { replaceRange : $range }) stx
 
-
-def Rewrite.toMessageData (rw : Rewrite) : MetaM MessageData := do
+/-- Represent a `Rewrite` as `MessageData`. -/
+private def Rewrite.toMessageData (rw : Rewrite) : MetaM MessageData := do
   let extraGoals ← rw.extraGoals.filterMapM fun (mvarId, bi) => do
     if bi.isExplicit then
       return some m! "⊢ {← mvarId.getType}"
     return none
   let list := [m! "{rw.replacement}"]
       ++ extraGoals.toList
-      ++ [m! "{← mkConstWithLevelParams rw.name}"]
+      ++ [m! "{rw.name}"]
   return .group <| .nest 2 <| "· " ++ .joinSep list "\n"
 
-def SectionToMessageData (sec : Array Rewrite × Bool) : MetaM (Option MessageData) := do
+/-- Represent a section of rewrites as `MessageData`. -/
+private def SectionToMessageData (sec : Array Rewrite × Bool) : MetaM (Option MessageData) := do
   let rewrites ← sec.1.toList.mapM (·.toMessageData)
   let rewrites : MessageData := .group (.joinSep rewrites "\n")
   let some head := sec.1[0]? | return ""
   let head ← head.pattern (do
     let ctx : MessageDataContext :=
-      { env := ← getEnv, mctx := ← getMCtx, lctx := ← getLCtx, opts := ← getOptions}
+      { env := ← getEnv, mctx := ← getMCtx, lctx := ← getLCtx, opts := ← getOptions }
     return .withContext ctx m! "{·}")
   return some $ "Pattern " ++ head ++ "\n" ++ rewrites
 
+/-- `#rw?? e` gives all possible rewrites of `e`.
+In tactic mode, use `rw??` instead. -/
 syntax (name := rw??Command) "#rw??" term : command
 
+open Elab
+/-- Elaborate a `#rw??` command. -/
 @[command_elab rw??Command]
-def elabrw??Command : Elab.Command.CommandElab := fun stx =>
-  withoutModifyingEnv <| Elab.Command.runTermElabM fun _ => do
-  let e ← Elab.Term.elabTerm stx[1] none
-  let rewrites ← getRewrites e
-  let sections ← liftMetaM $ rewrites.filterMapM SectionToMessageData
-  logInfo (m! "Rewrite suggestions for {e}:\n" ++ .joinSep (sections.toList) "\n\n")
+def elabrw??Command : Command.CommandElab := fun stx =>
+  withoutModifyingEnv <| Command.runTermElabM fun _ => do
+    let e ← Term.elabTerm stx[1] none
+    Term.synthesizeSyntheticMVarsNoPostponing
+    let e ← Term.levelMVarToParam (← instantiateMVars e)
+    let rewrites ← getRewrites e
+    let rewrites ← rewrites.mapM fun (rewrites, isLocal) =>
+      return (← filterRewrites e rewrites (·.replacement), isLocal)
+    let sections ← liftMetaM $ rewrites.filterMapM SectionToMessageData
+    logInfo (.joinSep (sections.toList) "\n\n")
