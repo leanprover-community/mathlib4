@@ -75,13 +75,13 @@ instance instLinearWeightsOfIsLieAbelian [IsLieAbelian L] [NoZeroSMulDivisors R 
     have h : ∀ x y, Commute (toEndomorphism R L M x) (toEndomorphism R L M y) := fun x y ↦ by
       rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, LieHom.map_zero]
     intro χ hχ x y
-    simp_rw [Ne.def, ← LieSubmodule.coe_toSubmodule_eq_iff, weightSpace, weightSpaceOf,
+    simp_rw [Ne, ← LieSubmodule.coe_toSubmodule_eq_iff, weightSpace, weightSpaceOf,
       LieSubmodule.iInf_coe_toSubmodule, LieSubmodule.bot_coeSubmodule] at hχ
     exact Module.End.map_add_of_iInf_generalizedEigenspace_ne_bot_of_commute
       (toEndomorphism R L M).toLinearMap χ hχ h x y
   { map_add := aux
     map_smul := fun χ hχ t x ↦ by
-      simp_rw [Ne.def, ← LieSubmodule.coe_toSubmodule_eq_iff, weightSpace, weightSpaceOf,
+      simp_rw [Ne, ← LieSubmodule.coe_toSubmodule_eq_iff, weightSpace, weightSpaceOf,
         LieSubmodule.iInf_coe_toSubmodule, LieSubmodule.bot_coeSubmodule] at hχ
       exact Module.End.map_smul_of_iInf_generalizedEigenspace_ne_bot
         (toEndomorphism R L M).toLinearMap χ hχ t x
