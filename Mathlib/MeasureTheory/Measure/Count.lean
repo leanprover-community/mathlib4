@@ -40,7 +40,7 @@ theorem count_apply (hs : MeasurableSet s) : count s = ∑' i : s, 1 := by
   simp only [count, sum_apply, hs, dirac_apply', ← tsum_subtype s (1 : α → ℝ≥0∞), Pi.one_apply]
 #align measure_theory.measure.count_apply MeasureTheory.Measure.count_apply
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem count_empty : count (∅ : Set α) = 0 := by rw [count_apply MeasurableSet.empty, tsum_empty]
 #align measure_theory.measure.count_empty MeasureTheory.Measure.count_empty
 
@@ -141,12 +141,12 @@ theorem count_eq_zero_iff [MeasurableSingletonClass α] : count s = 0 ↔ s = �
 #align measure_theory.measure.count_eq_zero_iff MeasureTheory.Measure.count_eq_zero_iff
 
 theorem count_ne_zero' (hs' : s.Nonempty) (s_mble : MeasurableSet s) : count s ≠ 0 := by
-  rw [Ne.def, count_eq_zero_iff' s_mble]
+  rw [Ne, count_eq_zero_iff' s_mble]
   exact hs'.ne_empty
 #align measure_theory.measure.count_ne_zero' MeasureTheory.Measure.count_ne_zero'
 
 theorem count_ne_zero [MeasurableSingletonClass α] (hs' : s.Nonempty) : count s ≠ 0 := by
-  rw [Ne.def, count_eq_zero_iff]
+  rw [Ne, count_eq_zero_iff]
   exact hs'.ne_empty
 #align measure_theory.measure.count_ne_zero MeasureTheory.Measure.count_ne_zero
 
@@ -157,7 +157,7 @@ theorem count_singleton' {a : α} (ha : MeasurableSet ({a} : Set α)) : count ({
     @Fintype.card_unique _ _ (Set.finite_singleton a).fintype]
 #align measure_theory.measure.count_singleton' MeasureTheory.Measure.count_singleton'
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem count_singleton [MeasurableSingletonClass α] (a : α) : count ({a} : Set α) = 1 :=
   count_singleton' (measurableSet_singleton a)
 #align measure_theory.measure.count_singleton MeasureTheory.Measure.count_singleton
@@ -183,7 +183,7 @@ theorem count_injective_image [MeasurableSingletonClass α] [MeasurableSingleton
   rw [count_apply_infinite hs]
 #align measure_theory.measure.count_injective_image MeasureTheory.Measure.count_injective_image
 
-instance count.isFiniteMeasure [Finite α] [MeasurableSpace α] :
+instance count.isFiniteMeasure [Finite α] :
     IsFiniteMeasure (Measure.count : Measure α) :=
   ⟨by
     cases nonempty_fintype α

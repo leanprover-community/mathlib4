@@ -18,8 +18,8 @@ attribute [simp] id_map'
 attribute [functor_norm, monad_norm] seq_assoc pure_seq pure_bind bind_assoc bind_pure map_pure
 attribute [monad_norm] seq_eq_bind_map
 
--- porting note: changed some `iff` lemmas to `eq` lemmas
-attribute [mfld_simps] id.def and_true true_and Function.comp_apply and_self eq_self not_false
+-- Porting note: changed some `iff` lemmas to `eq` lemmas
+attribute [mfld_simps] id and_true true_and Function.comp_apply and_self eq_self not_false
   true_or or_true heq_eq_eq forall_const and_imp
 
 -- Porting note: until we change the default induction principle on `Nat`:

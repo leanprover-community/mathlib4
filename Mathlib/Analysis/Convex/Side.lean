@@ -37,12 +37,11 @@ namespace AffineSubspace
 section StrictOrderedCommRing
 
 variable [StrictOrderedCommRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-
 variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 /-- The points `x` and `y` are weakly on the same side of `s`. -/
 def WSameSide (s : AffineSubspace R P) (x y : P) : Prop :=
-  ∃ (p₁ : _) (_ : p₁ ∈ s) (p₂ : _) (_ : p₂ ∈ s), SameRay R (x -ᵥ p₁) (y -ᵥ p₂)
+  ∃ᵉ (p₁ ∈ s) (p₂ ∈ s), SameRay R (x -ᵥ p₁) (y -ᵥ p₂)
 #align affine_subspace.w_same_side AffineSubspace.WSameSide
 
 /-- The points `x` and `y` are strictly on the same side of `s`. -/
@@ -52,7 +51,7 @@ def SSameSide (s : AffineSubspace R P) (x y : P) : Prop :=
 
 /-- The points `x` and `y` are weakly on opposite sides of `s`. -/
 def WOppSide (s : AffineSubspace R P) (x y : P) : Prop :=
-  ∃ (p₁ : _) (_ : p₁ ∈ s) (p₂ : _) (_ : p₂ ∈ s), SameRay R (x -ᵥ p₁) (p₂ -ᵥ y)
+  ∃ᵉ (p₁ ∈ s) (p₂ ∈ s), SameRay R (x -ᵥ p₁) (p₂ -ᵥ y)
 #align affine_subspace.w_opp_side AffineSubspace.WOppSide
 
 /-- The points `x` and `y` are strictly on opposite sides of `s`. -/
@@ -140,22 +139,22 @@ theorem _root_.AffineEquiv.sOppSide_map_iff {s : AffineSubspace R P} {x y : P} (
 
 theorem WSameSide.nonempty {s : AffineSubspace R P} {x y : P} (h : s.WSameSide x y) :
     (s : Set P).Nonempty :=
-  ⟨h.choose, h.choose_spec.choose⟩
+  ⟨h.choose, h.choose_spec.left⟩
 #align affine_subspace.w_same_side.nonempty AffineSubspace.WSameSide.nonempty
 
 theorem SSameSide.nonempty {s : AffineSubspace R P} {x y : P} (h : s.SSameSide x y) :
     (s : Set P).Nonempty :=
-  ⟨h.1.choose, h.1.choose_spec.choose⟩
+  ⟨h.1.choose, h.1.choose_spec.left⟩
 #align affine_subspace.s_same_side.nonempty AffineSubspace.SSameSide.nonempty
 
 theorem WOppSide.nonempty {s : AffineSubspace R P} {x y : P} (h : s.WOppSide x y) :
     (s : Set P).Nonempty :=
-  ⟨h.choose, h.choose_spec.choose⟩
+  ⟨h.choose, h.choose_spec.left⟩
 #align affine_subspace.w_opp_side.nonempty AffineSubspace.WOppSide.nonempty
 
 theorem SOppSide.nonempty {s : AffineSubspace R P} {x y : P} (h : s.SOppSide x y) :
     (s : Set P).Nonempty :=
-  ⟨h.1.choose, h.1.choose_spec.choose⟩
+  ⟨h.1.choose, h.1.choose_spec.left⟩
 #align affine_subspace.s_opp_side.nonempty AffineSubspace.SOppSide.nonempty
 
 theorem SSameSide.wSameSide {s : AffineSubspace R P} {x y : P} (h : s.SSameSide x y) :
@@ -416,7 +415,6 @@ end StrictOrderedCommRing
 section LinearOrderedField
 
 variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-
 variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 @[simp]
@@ -447,7 +445,7 @@ theorem wSameSide_iff_exists_left {s : AffineSubspace R P} {x y p₁ : P} (h : p
       exact SameRay.zero_right _
     · refine' Or.inr ⟨(r₁ / r₂) • (p₁ -ᵥ p₁') +ᵥ p₂', s.smul_vsub_vadd_mem _ h hp₁' hp₂',
         Or.inr (Or.inr ⟨r₁, r₂, hr₁, hr₂, _⟩)⟩
-      rw [vsub_vadd_eq_vsub_sub, smul_sub, ← hr, smul_smul, mul_div_cancel' _ hr₂.ne.symm,
+      rw [vsub_vadd_eq_vsub_sub, smul_sub, ← hr, smul_smul, mul_div_cancel₀ _ hr₂.ne.symm,
         ← smul_sub, vsub_sub_vsub_cancel_right]
   · rintro (h' | ⟨h₁, h₂, h₃⟩)
     · exact wSameSide_of_left_mem y h'
@@ -486,7 +484,7 @@ theorem wOppSide_iff_exists_left {s : AffineSubspace R P} {x y p₁ : P} (h : p�
     · refine' Or.inr ⟨(-r₁ / r₂) • (p₁ -ᵥ p₁') +ᵥ p₂', s.smul_vsub_vadd_mem _ h hp₁' hp₂',
         Or.inr (Or.inr ⟨r₁, r₂, hr₁, hr₂, _⟩)⟩
       rw [vadd_vsub_assoc, smul_add, ← hr, smul_smul, neg_div, mul_neg,
-        mul_div_cancel' _ hr₂.ne.symm, neg_smul, neg_add_eq_sub, ← smul_sub,
+        mul_div_cancel₀ _ hr₂.ne.symm, neg_smul, neg_add_eq_sub, ← smul_sub,
         vsub_sub_vsub_cancel_right]
   · rintro (h' | ⟨h₁, h₂, h₃⟩)
     · exact wOppSide_of_left_mem y h'
@@ -775,12 +773,12 @@ theorem setOf_wSameSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉
     · rw [vsub_eq_zero_iff_eq] at h
       exact False.elim (hx (h.symm ▸ hp))
     · rw [vsub_eq_zero_iff_eq] at h
-      refine' ⟨0, p₂, le_refl _, hp₂, _⟩
+      refine' ⟨0, le_rfl, p₂, hp₂, _⟩
       simp [h]
-    · refine' ⟨r₁ / r₂, p₂, (div_pos hr₁ hr₂).le, hp₂, _⟩
+    · refine' ⟨r₁ / r₂, (div_pos hr₁ hr₂).le, p₂, hp₂, _⟩
       rw [div_eq_inv_mul, ← smul_smul, h, smul_smul, inv_mul_cancel hr₂.ne.symm, one_smul,
         vsub_vadd]
-  · rintro ⟨t, p', ht, hp', rfl⟩
+  · rintro ⟨t, ht, p', hp', rfl⟩
     exact wSameSide_smul_vsub_vadd_right x hp hp' ht
 #align affine_subspace.set_of_w_same_side_eq_image2 AffineSubspace.setOf_wSameSide_eq_image2
 
@@ -795,10 +793,10 @@ theorem setOf_sSameSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉
       exact False.elim (hx (h.symm ▸ hp))
     · rw [vsub_eq_zero_iff_eq] at h
       exact False.elim (hy (h.symm ▸ hp₂))
-    · refine' ⟨r₁ / r₂, p₂, div_pos hr₁ hr₂, hp₂, _⟩
+    · refine' ⟨r₁ / r₂, div_pos hr₁ hr₂, p₂, hp₂, _⟩
       rw [div_eq_inv_mul, ← smul_smul, h, smul_smul, inv_mul_cancel hr₂.ne.symm, one_smul,
         vsub_vadd]
-  · rintro ⟨t, p', ht, hp', rfl⟩
+  · rintro ⟨t, ht, p', hp', rfl⟩
     exact sSameSide_smul_vsub_vadd_right hx hp hp' ht
 #align affine_subspace.set_of_s_same_side_eq_image2 AffineSubspace.setOf_sSameSide_eq_image2
 
@@ -812,12 +810,12 @@ theorem setOf_wOppSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉ 
     · rw [vsub_eq_zero_iff_eq] at h
       exact False.elim (hx (h.symm ▸ hp))
     · rw [vsub_eq_zero_iff_eq] at h
-      refine' ⟨0, p₂, le_refl _, hp₂, _⟩
+      refine' ⟨0, le_rfl, p₂, hp₂, _⟩
       simp [h]
-    · refine' ⟨-r₁ / r₂, p₂, (div_neg_of_neg_of_pos (Left.neg_neg_iff.2 hr₁) hr₂).le, hp₂, _⟩
+    · refine' ⟨-r₁ / r₂, (div_neg_of_neg_of_pos (Left.neg_neg_iff.2 hr₁) hr₂).le, p₂, hp₂, _⟩
       rw [div_eq_inv_mul, ← smul_smul, neg_smul, h, smul_neg, smul_smul, inv_mul_cancel hr₂.ne.symm,
         one_smul, neg_vsub_eq_vsub_rev, vsub_vadd]
-  · rintro ⟨t, p', ht, hp', rfl⟩
+  · rintro ⟨t, ht, p', hp', rfl⟩
     exact wOppSide_smul_vsub_vadd_right x hp hp' ht
 #align affine_subspace.set_of_w_opp_side_eq_image2 AffineSubspace.setOf_wOppSide_eq_image2
 
@@ -832,10 +830,10 @@ theorem setOf_sOppSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉ 
       exact False.elim (hx (h.symm ▸ hp))
     · rw [vsub_eq_zero_iff_eq] at h
       exact False.elim (hy (h ▸ hp₂))
-    · refine' ⟨-r₁ / r₂, p₂, div_neg_of_neg_of_pos (Left.neg_neg_iff.2 hr₁) hr₂, hp₂, _⟩
+    · refine' ⟨-r₁ / r₂, div_neg_of_neg_of_pos (Left.neg_neg_iff.2 hr₁) hr₂, p₂, hp₂, _⟩
       rw [div_eq_inv_mul, ← smul_smul, neg_smul, h, smul_neg, smul_smul, inv_mul_cancel hr₂.ne.symm,
         one_smul, neg_vsub_eq_vsub_rev, vsub_vadd]
-  · rintro ⟨t, p', ht, hp', rfl⟩
+  · rintro ⟨t, ht, p', hp', rfl⟩
     exact sOppSide_smul_vsub_vadd_right hx hp hp' ht
 #align affine_subspace.set_of_s_opp_side_eq_image2 AffineSubspace.setOf_sOppSide_eq_image2
 
@@ -855,7 +853,6 @@ end LinearOrderedField
 section Normed
 
 variable [SeminormedAddCommGroup V] [NormedSpace ℝ V] [PseudoMetricSpace P]
-
 variable [NormedAddTorsor V P]
 
 theorem isConnected_setOf_wSameSide {s : AffineSubspace ℝ P} (x : P) (h : (s : Set P).Nonempty) :

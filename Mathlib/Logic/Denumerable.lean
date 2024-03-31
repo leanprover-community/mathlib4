@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Lattice
+import Mathlib.Data.Fintype.Card
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Logic.Encodable.Basic
@@ -127,11 +127,11 @@ theorem ofNat_nat (n) : ofNat ℕ n = n :=
 /-- If `α` is denumerable, then so is `Option α`. -/
 instance option : Denumerable (Option α) :=
   ⟨fun n => by
-    cases n
-    case zero =>
+    cases n with
+    | zero =>
       refine' ⟨none, _, encode_none⟩
       rw [decode_option_zero, Option.mem_def]
-    case succ n =>
+    | succ n =>
       refine' ⟨some (ofNat α n), _, _⟩
       · rw [decode_option_succ, decode_eq_ofNat, Option.map_some', Option.mem_def]
       rw [encode_some, encode_ofNat]⟩
@@ -216,11 +216,11 @@ variable {s : Set ℕ} [Infinite s]
 
 section Classical
 
-open Classical
+open scoped Classical
 
 theorem exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s :=
   _root_.by_contradiction fun h =>
-    have : ∀ (a : ℕ) (_ : a ∈ s), a < succ x := fun a ha =>
+    have : ∀ (a : ℕ) (_ : a ∈ s), a < x + 1 := fun a ha =>
       lt_of_not_ge fun hax => h ⟨a - (x + 1), by rwa [add_right_comm, add_tsub_cancel_of_le hax]⟩
     Fintype.false
       ⟨(((Multiset.range (succ x)).filter (· ∈ s)).pmap

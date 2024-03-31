@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Chris Hughes, Michael Howes
 -/
 import Mathlib.Algebra.Group.Aut
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Semiconj.Defs
-import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.Group.Semiconj.Units
 
 #align_import algebra.group.conj from "leanprover-community/mathlib"@"0743cc5d9d86bcd1bba10f480e948a257d65056f"
 
@@ -115,10 +113,10 @@ theorem conj_pow {i : ℕ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻�
 theorem conj_zpow {i : ℤ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
   induction' i
   · change (a * b * a⁻¹) ^ (_ : ℤ) = a * b ^ (_ : ℤ) * a⁻¹
-    simp [zpow_ofNat]
-  · simp [zpow_negSucc, conj_pow]
+    simp [zpow_natCast]
+  · simp only [zpow_negSucc, conj_pow, mul_inv_rev, inv_inv]
     rw [mul_assoc]
--- Porting note: Added `change`, `zpow_ofNat`, and `rw`.
+-- Porting note: Added `change`, `zpow_natCast`, and `rw`.
 #align conj_zpow conj_zpow
 
 theorem conj_injective {x : α} : Function.Injective fun g : α => x * g * x⁻¹ :=
@@ -267,7 +265,7 @@ def mkEquiv : α ≃ ConjClasses α :=
   ⟨ConjClasses.mk, Quotient.lift id fun (a : α) b => isConj_iff_eq.1, Quotient.lift_mk _ _, by
     rw [Function.RightInverse, Function.LeftInverse, forall_isConj]
     intro x
-    rw [← quotient_mk_eq_mk, ← quotient_mk_eq_mk, Quotient.lift_mk, id.def]⟩
+    rw [← quotient_mk_eq_mk, ← quotient_mk_eq_mk, Quotient.lift_mk, id]⟩
 #align conj_classes.mk_equiv ConjClasses.mkEquiv
 
 end CommMonoid

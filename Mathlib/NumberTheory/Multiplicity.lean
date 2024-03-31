@@ -5,10 +5,9 @@ Authors: Tian Chen, Mantas Bakšys
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Int.Parity
-import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.Padics.PadicVal
-import Mathlib.RingTheory.Ideal.QuotientOperations
-import Mathlib.Init.Meta.WellFoundedTactics
+import Mathlib.Algebra.GroupPower.Order
+import Mathlib.RingTheory.Ideal.Quotient
 
 #align_import number_theory.multiplicity from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -185,7 +184,7 @@ theorem pow_prime_pow_sub_pow_prime_pow (a : ℕ) :
     multiplicity (↑p) (x ^ p ^ a - y ^ p ^ a) = multiplicity (↑p) (x - y) + a := by
   induction' a with a h_ind
   · rw [Nat.cast_zero, add_zero, pow_zero, pow_one, pow_one]
-  rw [← Nat.add_one, Nat.cast_add, Nat.cast_one, ← add_assoc, ← h_ind, pow_succ', pow_mul, pow_mul]
+  rw [Nat.cast_add, Nat.cast_one, ← add_assoc, ← h_ind, pow_succ', pow_mul, pow_mul]
   apply pow_prime_sub_pow_prime hp hp1
   · rw [← geom_sum₂_mul]
     exact dvd_mul_of_dvd_right hxy _
@@ -204,6 +203,7 @@ theorem Int.pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x) (
   cases' n with n
   · simp only [multiplicity.zero, add_top, pow_zero, sub_self, Nat.zero_eq]
   have h : (multiplicity _ _).Dom := finite_nat_iff.mpr ⟨hp.ne_one, n.succ_pos⟩
+  simp only [Nat.succ_eq_add_one] at h
   rcases eq_coe_iff.mp (PartENat.natCast_get h).symm with ⟨⟨k, hk⟩, hpn⟩
   conv_lhs => rw [hk, pow_mul, pow_mul]
   rw [Nat.prime_iff_prime_int] at hp
@@ -262,7 +262,7 @@ theorem pow_two_pow_sub_pow_two_pow [CommRing R] {x y : R} (n : ℕ) :
       ring
 #align pow_two_pow_sub_pow_two_pow pow_two_pow_sub_pow_two_pow
 
--- porting note: simplified proof because `fin_cases` was not available in that case
+-- Porting note: simplified proof because `fin_cases` was not available in that case
 theorem Int.sq_mod_four_eq_one_of_odd {x : ℤ} : Odd x → x ^ 2 % 4 = 1 := by
   intro hx
   unfold Odd at hx
@@ -312,6 +312,7 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   cases' n with n
   · simp only [pow_zero, sub_self, multiplicity.zero, Int.ofNat_zero, Nat.zero_eq, add_top]
   have h : (multiplicity 2 n.succ).Dom := multiplicity.finite_nat_iff.mpr ⟨by norm_num, n.succ_pos⟩
+  simp only [Nat.succ_eq_add_one] at h
   rcases multiplicity.eq_coe_iff.mp (PartENat.natCast_get h).symm with ⟨⟨k, hk⟩, hpn⟩
   rw [hk, pow_mul, pow_mul, multiplicity.pow_sub_pow_of_prime,
     Int.two_pow_two_pow_sub_pow_two_pow _ hxy hx, ← hk, PartENat.natCast_get]
@@ -387,7 +388,7 @@ theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : 
   · convert Nat.two_pow_sub_pow hxy hx hneven using 2
   · exact hn.bot_lt
   · exact Nat.sub_pos_of_lt hyx
-  · linarith
+  · omega
   · simp only [tsub_pos_iff_lt, pow_lt_pow_left hyx zero_le' hn]
 #align padic_val_nat.pow_two_sub_pow padicValNat.pow_two_sub_pow
 

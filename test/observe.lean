@@ -1,9 +1,11 @@
-import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Linarith
 import Mathlib.Data.Nat.Prime
 
 open Nat
 
+-- Adaptation note: at nightly-2024-03-27,
+-- we had to increase `maxHeartbeats` here from 8000 to 16000.
+set_option maxHeartbeats 16000 in
 theorem euclid (n : ℕ) : ∃ N, n < N ∧ N.Prime := by
   let N := n.factorial + 1
   let p := minFac N

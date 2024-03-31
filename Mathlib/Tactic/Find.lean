@@ -3,8 +3,9 @@ Copyright (c) 2021 Sebastian Ullrich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich
 -/
-import Lean
 import Std.Util.Cache
+import Lean.HeadIndex
+import Lean.Elab.Command
 
 /-!
 # The `#find` command and tactic.
@@ -43,7 +44,7 @@ private partial def matchHyps : List Expr → List Expr → List Expr → MetaM 
 -- from Lean.Server.Completion
 private def isBlackListed (declName : Name) : MetaM Bool := do
   let env ← getEnv
-  pure $ declName.isInternal
+  pure <| declName.isInternal
    || isAuxRecursor env declName
    || isNoConfusion env declName
   <||> isRec declName
@@ -57,7 +58,7 @@ initialize findDeclsPerHead : DeclCache (Lean.HashMap HeadIndex (Array Name)) �
     -- to avoid leaking metavariables.
     let (_, _, ty) ← forallMetaTelescopeReducing c.type
     let head := ty.toHeadIndex
-    pure $ headMap.insert head (headMap.findD head #[] |>.push c.name)
+    pure <| headMap.insert head (headMap.findD head #[] |>.push c.name)
 
 def findType (t : Expr) : TermElabM Unit := withReducible do
   let t ← instantiateMVars t

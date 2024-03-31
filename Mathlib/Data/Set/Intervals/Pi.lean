@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Pi.Algebra
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Intervals.UnorderedInterval
 import Mathlib.Data.Set.Lattice
@@ -18,7 +18,7 @@ In this we prove various simple lemmas about intervals in `Π i, α i`. Closed i
 usually include the corresponding products as proper subsets.
 -/
 
--- porting note: Added, since dot notation no longer works on `Function.update`
+-- Porting note: Added, since dot notation no longer works on `Function.update`
 open Function
 
 variable {ι : Type*} {α : ι → Type*}
@@ -45,7 +45,7 @@ theorem pi_univ_Icc : (pi univ fun i ↦ Icc (x i) (y i)) = Icc x y :=
 #align set.pi_univ_Icc Set.pi_univ_Icc
 
 theorem piecewise_mem_Icc {s : Set ι} [∀ j, Decidable (j ∈ s)] {f₁ f₂ g₁ g₂ : ∀ i, α i}
-    (h₁ : ∀ i ∈ s, f₁ i ∈ Icc (g₁ i) (g₂ i)) (h₂ : ∀ (i) (_ : i ∉ s), f₂ i ∈ Icc (g₁ i) (g₂ i)) :
+    (h₁ : ∀ i ∈ s, f₁ i ∈ Icc (g₁ i) (g₂ i)) (h₂ : ∀ i ∉ s, f₂ i ∈ Icc (g₁ i) (g₂ i)) :
     s.piecewise f₁ f₂ ∈ Icc g₁ g₂ :=
   ⟨le_piecewise (fun i hi ↦ (h₁ i hi).1) fun i hi ↦ (h₂ i hi).1,
     piecewise_le (fun i hi ↦ (h₁ i hi).2) fun i hi ↦ (h₂ i hi).2⟩
@@ -124,7 +124,7 @@ section PiPartialOrder
 
 variable [DecidableEq ι] [∀ i, PartialOrder (α i)]
 
--- porting note: Dot notation on `Function.update` broke
+-- Porting note: Dot notation on `Function.update` broke
 theorem image_update_Icc (f : ∀ i, α i) (i : ι) (a b : α i) :
     update f i '' Icc a b = Icc (update f i a) (update f i b) := by
   ext x

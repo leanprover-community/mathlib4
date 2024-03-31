@@ -41,7 +41,6 @@ section Splits
 section CommRing
 
 variable [CommRing K] [Field L] [Field F]
-
 variable (i : K →+* L)
 
 /-- A polynomial `Splits` iff it is zero or all of its irreducible factors have `degree` 1. -/
@@ -108,7 +107,7 @@ theorem splits_mul {f g : K[X]} (hf : Splits i f) (hg : Splits i g) : Splits i (
   if h : (f * g).map i = 0 then Or.inl h
   else
     Or.inr @fun p hp hpf =>
-      ((PrincipalIdealRing.irreducible_iff_prime.1 hp).2.2 _ _
+      ((irreducible_iff_prime.1 hp).2.2 _ _
             (show p ∣ map i f * map i g by convert hpf; rw [Polynomial.map_mul])).elim
         (hf.resolve_left (fun hf => by simp [hf] at h) hp)
         (hg.resolve_left (fun hg => by simp [hg] at h) hp)
@@ -225,7 +224,6 @@ theorem degree_eq_card_roots' {p : K[X]} {i : K →+* L} (p_ne_zero : p.map i �
 end CommRing
 
 variable [CommRing R] [Field K] [Field L] [Field F]
-
 variable (i : K →+* L)
 
 /-- This lemma is for polynomials over a field. -/

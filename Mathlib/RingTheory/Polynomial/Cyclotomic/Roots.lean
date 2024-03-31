@@ -78,7 +78,7 @@ private theorem isRoot_cyclotomic_iff' {n : ℕ} {K : Type*} [Field K] {μ : K} 
     rw [isRoot_of_unity_iff hnpos _]
     exact ⟨n, n.mem_divisors_self hnpos.ne', hμ⟩
   by_contra hnμ
-  have ho : 0 < orderOf μ := (isOfFinOrder_iff_pow_eq_one.2 $ ⟨n, hnpos, hμn⟩).orderOf_pos
+  have ho : 0 < orderOf μ := (isOfFinOrder_iff_pow_eq_one.2 <| ⟨n, hnpos, hμn⟩).orderOf_pos
   have := pow_orderOf_eq_one μ
   rw [isRoot_of_unity_iff ho] at this
   obtain ⟨i, hio, hiμ⟩ := this
@@ -95,9 +95,8 @@ private theorem isRoot_cyclotomic_iff' {n : ℕ} {K : Type*} [Field K] {μ : K} 
   rw [← Finset.prod_sdiff hni, Finset.prod_pair key.ne, hk, hj] at this
   have hn := (X_pow_sub_one_separable_iff.mpr <| NeZero.natCast_ne n K).squarefree
   rw [← this, Squarefree] at hn
-  contrapose! hn
-  refine' ⟨X - C μ, ⟨(∏ x in n.divisors \ {i, n}, cyclotomic x K) * k * j, by ring⟩, _⟩
-  simp [Polynomial.isUnit_iff_degree_eq_zero]
+  specialize hn (X - C μ) ⟨(∏ x in n.divisors \ {i, n}, cyclotomic x K) * k * j, by ring⟩
+  simp [Polynomial.isUnit_iff_degree_eq_zero] at hn
 
 theorem isRoot_cyclotomic_iff [NeZero (n : R)] {μ : R} :
     IsRoot (cyclotomic n R) μ ↔ IsPrimitiveRoot μ n := by
@@ -113,7 +112,7 @@ theorem roots_cyclotomic_nodup [NeZero (n : R)] : (cyclotomic n R).roots.Nodup :
   rw [mem_roots <| cyclotomic_ne_zero n R, isRoot_cyclotomic_iff] at hζ
   refine' Multiset.nodup_of_le
     (roots.le_of_dvd (X_pow_sub_C_ne_zero (NeZero.pos_of_neZero_natCast R) 1) <|
-      cyclotomic.dvd_X_pow_sub_one n R) hζ.nthRoots_nodup
+      cyclotomic.dvd_X_pow_sub_one n R) hζ.nthRoots_one_nodup
 #align polynomial.roots_cyclotomic_nodup Polynomial.roots_cyclotomic_nodup
 
 theorem cyclotomic.roots_to_finset_eq_primitiveRoots [NeZero (n : R)] :

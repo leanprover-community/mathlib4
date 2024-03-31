@@ -8,7 +8,7 @@ import Mathlib.Analysis.Convex.Strict
 import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.Pointwise
-import Mathlib.Analysis.NormedSpace.AffineIsometry
+import Mathlib.Analysis.NormedSpace.Ray
 
 #align_import analysis.convex.strict_convex_space from "leanprover-community/mathlib"@"a63928c34ec358b5edcda2bf7513c50052a5230f"
 
@@ -57,12 +57,7 @@ formulated only for the case `𝕜 = ℝ`.
 convex, strictly convex
 -/
 
-set_option autoImplicit true
-
-
-open Set Metric
-
-open Convex Pointwise
+open Convex Pointwise Set Metric
 
 /-- A *strictly convex space* is a normed space where the closed balls are strictly convex. We only
 require balls of positive radius with center at the origin to be strictly convex in the definition,
@@ -80,7 +75,7 @@ variable (𝕜 : Type*) {E : Type*} [NormedLinearOrderedField 𝕜] [NormedAddCo
 /-- A closed ball in a strictly convex space is strictly convex. -/
 theorem strictConvex_closedBall [StrictConvexSpace 𝕜 E] (x : E) (r : ℝ) :
     StrictConvex 𝕜 (closedBall x r) := by
-  cases' le_or_lt r 0 with hr hr
+  rcases le_or_lt r 0 with hr | hr
   · exact (subsingleton_closedBall x hr).strictConvex
   rw [← vadd_closedBall_zero]
   exact (StrictConvexSpace.strictConvex_closedBall r hr).vadd _
@@ -130,7 +125,7 @@ theorem StrictConvexSpace.of_norm_add_ne_two
   refine'
     StrictConvexSpace.of_norm_combo_ne_one fun x y hx hy hne =>
       ⟨1 / 2, 1 / 2, one_half_pos.le, one_half_pos.le, add_halves _, _⟩
-  rw [← smul_add, norm_smul, Real.norm_of_nonneg one_half_pos.le, one_div, ← div_eq_inv_mul, Ne.def,
+  rw [← smul_add, norm_smul, Real.norm_of_nonneg one_half_pos.le, one_div, ← div_eq_inv_mul, Ne,
     div_eq_one_iff_eq (two_ne_zero' ℝ)]
   exact h hx hy hne
 #align strict_convex_space.of_norm_add_ne_two StrictConvexSpace.of_norm_add_ne_two
@@ -181,7 +176,7 @@ theorem norm_combo_lt_of_ne (hx : ‖x‖ ≤ r) (hy : ‖y‖ ≤ r) (hne : x �
 /-- In a strictly convex space, if `x` and `y` are not in the same ray, then `‖x + y‖ < ‖x‖ + ‖y‖`.
 -/
 theorem norm_add_lt_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x + y‖ < ‖x‖ + ‖y‖ := by
-  simp only [sameRay_iff_inv_norm_smul_eq, not_or, ← Ne.def] at h
+  simp only [sameRay_iff_inv_norm_smul_eq, not_or, ← Ne.eq_def] at h
   rcases h with ⟨hx, hy, hne⟩
   rw [← norm_pos_iff] at hx hy
   have hxy : 0 < ‖x‖ + ‖y‖ := add_pos hx hy

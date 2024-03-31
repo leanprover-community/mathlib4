@@ -5,11 +5,10 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Init.Data.Nat.Lemmas
 import Init.WFTactics
-import Mathlib.Data.Bool.Basic
-import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.ZeroOne
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Says
+import Mathlib.Tactic.GeneralizeProofs
 
 #align_import init.data.nat.bitwise from "leanprover-community/lean"@"53e8520d8964c7632989880372d91ba0cecbaf00"
 
@@ -73,22 +72,22 @@ theorem bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
 
 @[simp]
 theorem bodd_add (m n : ℕ) : bodd (m + n) = bxor (bodd m) (bodd n) := by
-  induction n <;> simp_all [add_succ, Bool.xor_not]
+  induction n <;> simp_all [Bool.xor_not, ← Nat.add_assoc]
 #align nat.bodd_add Nat.bodd_add
 
 @[simp]
 theorem bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
   induction' n with n IH
   · simp
-  · simp [mul_succ, IH]
+  · simp only [mul_succ, bodd_add, IH, bodd_succ]
     cases bodd m <;> cases bodd n <;> rfl
 #align nat.bodd_mul Nat.bodd_mul
 
 theorem mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
   have := congr_arg bodd (mod_add_div n 2)
-  simp? [not]  at this
-       says simp only [bodd_add, bodd_mul, bodd_succ, not, bodd_zero, Bool.false_and,
-      Bool.xor_false] at this
+  simp? [not] at this says
+    simp only [bodd_add, bodd_mul, bodd_succ, not, bodd_zero, Bool.false_and,
+      Bool.bne_false] at this
   have _ : ∀ b, and false b = false := by
     intro b
     cases b <;> rfl
@@ -115,12 +114,7 @@ theorem div2_two : div2 2 = 1 :=
 @[simp]
 theorem div2_succ (n : ℕ) : div2 (succ n) = cond (bodd n) (succ (div2 n)) (div2 n) := by
   simp only [bodd, boddDiv2, div2]
-  cases' boddDiv2 n with fst snd
-  cases fst
-  case mk.false =>
-    simp
-  case mk.true =>
-    simp
+  rcases boddDiv2 n with ⟨_|_, _⟩ <;> simp
 #align nat.div2_succ Nat.div2_succ
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
@@ -131,8 +125,7 @@ theorem bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
     simp only [bodd_succ, Bool.cond_not, div2_succ, Nat.mul_comm]
     refine' Eq.trans _ (congr_arg succ (bodd_add_div2 n))
     cases bodd n <;> simp [cond, not]
-    · rw [Nat.add_comm, Nat.add_succ]
-    · rw [succ_mul, Nat.add_comm 1, Nat.add_succ]
+    rw [Nat.add_comm, Nat.right_distrib, ← Nat.add_assoc]
 #align nat.bodd_add_div2 Nat.bodd_add_div2
 
 theorem div2_val (n) : div2 n = n / 2 := by
@@ -175,9 +168,14 @@ theorem bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
 def bitCasesOn {C : Nat → Sort u} (n) (h : ∀ b n, C (bit b n)) : C n := bit_decomp n ▸ h _ _
 #align nat.bit_cases_on Nat.bitCasesOn
 
-theorem bit_zero : bit false 0 = 0 :=
+@[simp] theorem bit_false_zero : bit false 0 = 0 :=
   rfl
-#align nat.bit_zero Nat.bit_zero
+#align nat.bit_zero Nat.bit_false_zero
+
+@[deprecated] alias bit_zero := bit_false_zero
+
+@[simp] theorem bit_true_zero : bit true 0 = 1 :=
+  rfl
 
 /--`shiftLeft' b m n` performs a left shift of `m` `n` times
  and adds the bit `b` as the least significant bit each time.
@@ -192,7 +190,7 @@ theorem shiftLeft'_false : ∀ n, shiftLeft' false m n = m <<< n
   | 0 => rfl
   | n + 1 => by
     have : 2 * (m * 2^n) = 2^(n+1)*m := by
-      rw [Nat.mul_comm, Nat.mul_assoc, ← pow_succ]; simp
+      rw [Nat.mul_comm, Nat.mul_assoc, ← Nat.pow_succ]; simp
     simp [shiftLeft_eq, shiftLeft', bit_val, shiftLeft'_false, this]
 
 /-- Std4 takes the unprimed name for `Nat.shiftLeft_eq m n : m <<< n = m * 2 ^ n`. -/
@@ -295,8 +293,8 @@ theorem shiftLeft'_sub (b m) : ∀ {n k}, k ≤ n → shiftLeft' b m (n - k) = (
 theorem shiftLeft_sub : ∀ (m : Nat) {n k}, k ≤ n → m <<< (n - k) = (m <<< n) >>> k :=
   fun _ _ _ hk => by simp only [← shiftLeft'_false, shiftLeft'_sub false _ hk]
 
-@[simp]
-theorem testBit_zero (b n) : testBit (bit b n) 0 = b := by
+-- Not a `simp` lemma, as later `simp` will be able to prove this.
+theorem testBit_bit_zero (b n) : testBit (bit b n) 0 = b := by
   rw [testBit, bit]
   cases b
   · simp [bit0, ← Nat.mul_two]
@@ -312,7 +310,7 @@ theorem bodd_eq_and_one_ne_zero : ∀ n, bodd n = (n &&& 1 != 0)
   | 1 => rfl
   | n + 2 => by simpa using bodd_eq_and_one_ne_zero n
 
-theorem testBit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
+theorem testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   have : bodd (((bit b n) >>> 1) >>> m) = bodd (n >>> m) := by
     simp only [shiftRight_eq_div_pow]
     simp [← div2_val, div2_bit]
@@ -324,26 +322,20 @@ theorem testBit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
 theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
     (h : f false 0 z = z) (b n) : binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
   rw [binaryRec]
-  by_cases h : bit b n = 0
-  -- Note: this renames the original `h : f false 0 z = z` to `h'` and leaves `h : bit b n = 0`
-  case pos h' =>
-    simp only [dif_pos h]
-    generalize binaryRec z f (bit b n) = e
+  split <;> rename_i h'
+  · generalize binaryRec z f (bit b n) = e
     revert e
     have bf := bodd_bit b n
     have n0 := div2_bit b n
-    rw [h] at bf n0
+    rw [h'] at bf n0
     simp only [bodd_zero, div2_zero] at bf n0
     subst bf n0
     rw [binaryRec_zero]
     intros
-    rw [h']
+    rw [h]
     rfl
-  case neg h' =>
-    simp only [dif_neg h]
-    generalize @id (C (bit b n) = C (bit (bodd (bit b n)) (div2 (bit b n))))
-      (Eq.symm (bit_decomp (bit b n)) ▸ Eq.refl (C (bit b n))) = e
-    revert e
+  · simp only; generalize_proofs h
+    revert h
     rw [bodd_bit, div2_bit]
     intros; rfl
 #align nat.binary_rec_eq Nat.binaryRec_eq

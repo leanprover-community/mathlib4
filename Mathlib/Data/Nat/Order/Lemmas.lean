@@ -36,7 +36,7 @@ instance Subtype.orderBot (s : Set ℕ) [DecidablePred (· ∈ s)] [h : Nonempty
 #align nat.subtype.order_bot Nat.Subtype.orderBot
 
 instance Subtype.semilatticeSup (s : Set ℕ) : SemilatticeSup s :=
-  { Subtype.linearOrder s, LinearOrder.toLattice with }
+  { Subtype.instLinearOrder s, LinearOrder.toLattice with }
 #align nat.subtype.semilattice_sup Nat.Subtype.semilatticeSup
 
 theorem Subtype.coe_bot {s : Set ℕ} [DecidablePred (· ∈ s)] [h : Nonempty s] :
@@ -55,13 +55,13 @@ protected theorem lt_div_iff_mul_lt {n d : ℕ} (hnd : d ∣ n) (a : ℕ) : a < 
   rw [← mul_lt_mul_left hd0, ← Nat.eq_mul_of_div_eq_right hnd rfl]
 #align nat.lt_div_iff_mul_lt Nat.lt_div_iff_mul_lt
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem mul_div_eq_iff_dvd {n d : ℕ} : d * (n / d) = n ↔ d ∣ n :=
   calc
     d * (n / d) = n ↔ d * (n / d) = d * (n / d) + (n % d) := by rw [div_add_mod]
     _ ↔ d ∣ n := by rw [self_eq_add_right, dvd_iff_mod_eq_zero]
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem mul_div_lt_iff_not_dvd {n d : ℕ} : d * (n / d) < n ↔ ¬(d ∣ n) :=
   (mul_div_le _ _).lt_iff_ne.trans mul_div_eq_iff_dvd.not
 
@@ -115,7 +115,7 @@ protected theorem dvd_add_self_right {m n : ℕ} : m ∣ n + m ↔ m ∣ n :=
 
 -- TODO: update `Nat.dvd_sub` in core
 theorem dvd_sub' {k m n : ℕ} (h₁ : k ∣ m) (h₂ : k ∣ n) : k ∣ m - n := by
-  cases' le_total n m with H H
+  rcases le_total n m with H | H
   · exact dvd_sub H h₁ h₂
   · rw [tsub_eq_zero_iff_le.mpr H]
     exact dvd_zero k
@@ -125,7 +125,7 @@ theorem succ_div : ∀ a b : ℕ, (a + 1) / b = a / b + if b ∣ a + 1 then 1 el
   | a, 0 => by simp
   | 0, 1 => by simp
   | 0, b + 2 => by
-    have hb2 : b + 2 > 1 := by simp
+    have hb2 : b + 2 > 1 := by omega
     simp [ne_of_gt hb2, div_eq_of_lt hb2]
   | a + 1, b + 1 => by
     rw [Nat.div_eq]
@@ -138,7 +138,8 @@ theorem succ_div : ∀ a b : ℕ, (a + 1) / b = a / b + if b ∣ a + 1 then 1 el
       have h₂ : 0 < b + 1 ∧ b + 1 ≤ a + 1 := ⟨succ_pos _, (add_le_add_iff_right _).2 hb_le_a⟩
       have dvd_iff : b + 1 ∣ a - b + 1 ↔ b + 1 ∣ a + 1 + 1 := by
         rw [Nat.dvd_add_iff_left (dvd_refl (b + 1)), ← add_tsub_add_eq_tsub_right a 1 b,
-          add_comm (_ - _), add_assoc, tsub_add_cancel_of_le (succ_le_succ hb_le_a), add_comm 1]
+          add_comm (_ - _), add_assoc, tsub_add_cancel_of_le (add_le_add_right hb_le_a 1),
+          add_comm 1]
       have wf : a - b < a + 1 := lt_succ_of_le tsub_le_self
       rw [if_pos h₁, if_pos h₂, @add_tsub_add_eq_tsub_right, ← tsub_add_eq_add_tsub hb_le_a,
         have := wf
@@ -212,9 +213,9 @@ theorem eq_zero_of_dvd_of_lt {a b : ℕ} (w : a ∣ b) (h : b < a) : b = 0 :=
 
 theorem le_of_lt_add_of_dvd (h : a < b + n) : n ∣ a → n ∣ b → a ≤ b := by
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩
-  -- porting note: Needed to give an explicit argument to `mul_add_one`
+  -- Porting note: Needed to give an explicit argument to `mul_add_one`
   rw [← mul_add_one n] at h
-  exact mul_le_mul_left' (lt_succ_iff.1 <| lt_of_mul_lt_mul_left h bot_le) _
+  exact mul_le_mul_left' (Nat.lt_succ_iff.1 <| lt_of_mul_lt_mul_left h bot_le) _
 #align nat.le_of_lt_add_of_dvd Nat.le_of_lt_add_of_dvd
 
 #align nat.mod_div_self Nat.mod_div_self

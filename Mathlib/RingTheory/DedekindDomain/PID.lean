@@ -64,8 +64,7 @@ theorem Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne {P : Id
         simp only [Ideal.span_singleton_le_iff_mem, pow_one] <;>
       assumption
   by_cases hQp : IsPrime Q
-  · skip
-    refine' (Ideal.count_normalizedFactors_eq _ _).le <;>
+  · refine' (Ideal.count_normalizedFactors_eq _ _).le <;>
       -- Porting note: included `zero_add` in the simp arguments
       simp only [Ideal.span_singleton_le_iff_mem, zero_add, pow_one, pow_zero, one_eq_top,
                  Submodule.mem_top]
@@ -149,7 +148,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     refine' IsLocalization.coeSubmodule_mono _ hJM ⟨c, _, hc⟩
     have := Submodule.mul_mem_mul (ha M hM) (Submodule.mem_span_singleton_self v)
     rwa [← hc] at this
-  simp_rw [Finset.mul_sum, mul_smul_comm] at hmem
+  simp_rw [v, Finset.mul_sum, mul_smul_comm] at hmem
   rw [← s.add_sum_erase _ hM, Submodule.add_mem_iff_left] at hmem
   · refine' hm M hM _
     obtain ⟨c, hc : algebraMap R A c = a M * b M⟩ := this _ (ha M hM) _ (hb M hM)
@@ -157,8 +156,8 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     rw [Algebra.smul_def, ← _root_.map_mul] at hmem
     obtain ⟨d, hdM, he⟩ := hmem
     rw [IsLocalization.injective _ hS he] at hdM
-    exact
-      Submodule.mem_map_of_mem
+    -- Note: #8386 had to specify the value of `f`
+    exact Submodule.mem_map_of_mem (f := Algebra.linearMap _ _)
         (((hf.mem_toFinset.1 hM).isPrime.mem_or_mem hdM).resolve_left <| hum M hM)
   · refine' Submodule.sum_mem _ fun M' hM' => _
     rw [Finset.mem_erase] at hM'
@@ -166,7 +165,9 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     rw [← hc, Algebra.smul_def, ← _root_.map_mul]
     specialize hu M' hM'.2
     simp_rw [Ideal.mem_iInf, Finset.mem_erase] at hu
-    exact Submodule.mem_map_of_mem (M.mul_mem_right _ <| hu M ⟨hM'.1.symm, hM⟩)
+    -- Note: #8386 had to specify the value of `f`
+    exact Submodule.mem_map_of_mem (f := Algebra.linearMap _ _)
+      (M.mul_mem_right _ <| hu M ⟨hM'.1.symm, hM⟩)
 #align fractional_ideal.is_principal.of_finite_maximals_of_inv FractionalIdeal.isPrincipal.of_finite_maximals_of_inv
 
 /-- An invertible ideal in a commutative ring with finitely many maximal ideals is principal.
@@ -191,17 +192,11 @@ theorem IsPrincipalIdealRing.of_finite_primes [IsDomain R] [IsDedekindDomain R]
 #align is_principal_ideal_ring.of_finite_primes IsPrincipalIdealRing.of_finite_primes
 
 variable [IsDomain R] [IsDedekindDomain R]
-
 variable (S : Type*) [CommRing S] [IsDomain S]
-
 variable [Algebra R S] [Module.Free R S] [Module.Finite R S]
-
 variable (p : Ideal R) (hp0 : p ≠ ⊥) [IsPrime p]
-
 variable {Sₚ : Type*} [CommRing Sₚ] [Algebra S Sₚ]
-
 variable [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
-
 variable [Algebra R Sₚ] [IsScalarTower R S Sₚ]
 
 /- The first hypothesis below follows from properties of the localization but is needed for the
@@ -210,9 +205,8 @@ variable [IsDomain Sₚ] [IsDedekindDomain Sₚ]
 
 /-- If `p` is a prime in the Dedekind domain `R`, `S` an extension of `R` and `Sₚ` the localization
 of `S` at `p`, then all primes in `Sₚ` are factors of the image of `p` in `Sₚ`. -/
-theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [DecidableEq (Ideal Sₚ)]
-    {P : Ideal Sₚ} (hP : IsPrime P) (hP0 : P ≠ ⊥) :
-    P ∈ normalizedFactors (Ideal.map (algebraMap R Sₚ) p) := by
+theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime {P : Ideal Sₚ} (hP : IsPrime P)
+    (hP0 : P ≠ ⊥) : P ∈ normalizedFactors (Ideal.map (algebraMap R Sₚ) p) := by
   have non_zero_div : Algebra.algebraMapSubmonoid S p.primeCompl ≤ S⁰ :=
     map_le_nonZeroDivisors_of_injective _ (NoZeroSMulDivisors.algebraMap_injective _ _)
       p.primeCompl_le_nonZeroDivisors
@@ -243,7 +237,7 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [DecidableEq (
     exact mt (Ideal.eq_bot_of_comap_eq_bot (isIntegral_localization hRS)) hP0
   · exact Ideal.comap_isPrime (algebraMap (Localization.AtPrime p) Sₚ) P
   · exact (LocalRing.maximalIdeal.isMaximal _).isPrime
-  · rw [Ne.def, zero_eq_bot, Ideal.map_eq_bot_iff_of_injective]
+  · rw [Ne, zero_eq_bot, Ideal.map_eq_bot_iff_of_injective]
     · assumption
     rw [IsScalarTower.algebraMap_eq R S Sₚ]
     exact

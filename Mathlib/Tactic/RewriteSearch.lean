@@ -3,6 +3,7 @@ Copyright (c) 2023 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Lean.Meta.Tactic.Rewrites
 import Mathlib.Data.List.EditDistance.Estimator
 import Mathlib.Data.MLList.BestFirst
 import Mathlib.Data.Nat.Interval
@@ -47,7 +48,8 @@ set_option autoImplicit true
 namespace Mathlib.Tactic.RewriteSearch
 
 open Lean Meta
-open Mathlib.Tactic.Rewrites
+open Lean.Meta.Rewrites
+open Lean.Meta.LazyDiscrTree (ModuleDiscrTreeRef)
 
 initialize registerTraceClass `rw_search
 initialize registerTraceClass `rw_search.detail
@@ -143,11 +145,11 @@ def toString (n : SearchNode) : MetaM String := do
   | some (_, e, true) => do let pp ← ppExpr e; pure s!"rw [← {pp}]"
   | some (_, e, false) => do let pp ← ppExpr e; pure s!"rw [{pp}]"
   | none => pure ""
-  return s!"depth: {n.history.size}\n" ++
-    s!"history: {n.history.map fun p => hash p % 10000}\n" ++
-    tac ++ "\n" ++
-    "-- " ++ n.ppGoal ++ "\n" ++
-    s!"distance: {n.dist?.get!}+{n.history.size}, {n.ppGoal.length}"
+  return s!"depth: {n.history.size}\n\
+    history: {n.history.map fun p => hash p % 10000}\n\
+    {tac}\n\
+    -- {n.ppGoal}\n\
+    distance: {n.dist?.get!}+{n.history.size}, {n.ppGoal.length}"
 
 /-- Construct a `SearchNode`. -/
 def mk (history : Array (Nat × Expr × Bool)) (goal : MVarId) (ctx : Option MetavarContext := none) :
@@ -236,11 +238,15 @@ try rewriting the current goal in the `SearchNode` by one of them,
 returning a `MLList MetaM SearchNode`, i.e. a lazy list of next possible goals.
 -/
 def rewrites (hyps : Array (Expr × Bool × Nat))
-    (lemmas : DiscrTree (Name × Bool × Nat) × DiscrTree (Name × Bool × Nat))
+    (lemmas : ModuleDiscrTreeRef (Name × RwDirection))
     (forbidden : NameSet := ∅) (n : SearchNode) : MLList MetaM SearchNode := .squash fun _ => do
   if ← isTracingEnabledFor `rw_search then do
     trace[rw_search] "searching:\n{← toString n}"
-  return rewritesCore hyps lemmas n.mctx n.goal n.type forbidden
+  let candidates ← rewriteCandidates hyps lemmas n.type forbidden
+  -- Lift to a monadic list, so the caller can decide how much of the computation to run.
+  return MLList.ofArray candidates
+    |>.filterMapM (fun ⟨lem, symm, weight⟩ =>
+        rwLemma n.mctx n.goal n.type .solveByElim lem symm weight)
     |>.enum
     |>.filterMapM fun ⟨k, r⟩ => do n.rewrite r k
 
@@ -252,10 +258,10 @@ def search (n : SearchNode)
     (forbidden : NameSet := ∅) (maxQueued : Option Nat := none) :
     MLList MetaM SearchNode := .squash fun _ => do
   let hyps ← localHypotheses
-  let lemmas ← rewriteLemmas.get
+  let moduleRef ← createModuleTreeRef
   let search := bestFirstSearchCore (maxQueued := maxQueued)
     (β := String) (removeDuplicatesBy? := some SearchNode.ppGoal)
-    prio estimator (rewrites hyps lemmas forbidden) n
+    prio estimator (rewrites hyps moduleRef forbidden) n
   let search ←
     if ← isTracingEnabledFor `rw_search then do
       pure <| search.mapM fun n => do trace[rw_search] "{← toString n}"; pure n
@@ -272,7 +278,7 @@ def search (n : SearchNode)
 
 end SearchNode
 
-open Elab Tactic
+open Elab Tactic Lean.Parser.Tactic
 
 /--
 `rw_search` attempts to solve an equality goal
@@ -289,7 +295,9 @@ separating delimiters `(`, `)`, `[`, `]`, and `,` into their own tokens.)
 You can use `rw_search [-my_lemma, -my_theorem]`
 to prevent `rw_search` from using the names theorems.
 -/
-syntax "rw_search" (forbidden)? : tactic
+syntax "rw_search" (rewrites_forbidden)? : tactic
+
+open Lean.Meta.Tactic.TryThis
 
 elab_rules : tactic |
     `(tactic| rw_search%$tk $[[ $[-$forbidden],* ]]?) => withMainContext do

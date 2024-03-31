@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Data.Finset.Sort
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Data.Set.Basic
 
 #align_import combinatorics.composition from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
@@ -309,12 +310,12 @@ theorem coe_embedding (i : Fin c.length) (j : Fin (c.blocksFun i)) :
 /-- `index_exists` asserts there is some `i` with `j < c.size_up_to (i+1)`.
 In the next definition `index` we use `nat.find` to produce the minimal such index.
 -/
-theorem index_exists {j : ℕ} (h : j < n) : ∃ i : ℕ, j < c.sizeUpTo i.succ ∧ i < c.length := by
+theorem index_exists {j : ℕ} (h : j < n) : ∃ i : ℕ, j < c.sizeUpTo (i + 1) ∧ i < c.length := by
   have n_pos : 0 < n := lt_of_le_of_lt (zero_le j) h
   have : 0 < c.blocks.sum := by rwa [← c.blocks_sum] at n_pos
   have length_pos : 0 < c.blocks.length := length_pos_of_sum_pos (blocks c) this
-  refine' ⟨c.length.pred, _, Nat.pred_lt (ne_of_gt length_pos)⟩
-  have : c.length.pred.succ = c.length := Nat.succ_pred_eq_of_pos length_pos
+  refine' ⟨c.length - 1, _, Nat.pred_lt (ne_of_gt length_pos)⟩
+  have : c.length - 1 + 1 = c.length := Nat.succ_pred_eq_of_pos length_pos
   simp [this, h]
 #align composition.index_exists Composition.index_exists
 
@@ -337,7 +338,7 @@ theorem sizeUpTo_index_le (j : Fin n) : c.sizeUpTo (c.index j) ≤ j := by
     simp [nonpos_iff_eq_zero.1 i_pos, c.sizeUpTo_zero]
   let i₁ := (i : ℕ).pred
   have i₁_lt_i : i₁ < i := Nat.pred_lt (ne_of_gt i_pos)
-  have i₁_succ : i₁.succ = i := Nat.succ_pred_eq_of_pos i_pos
+  have i₁_succ : i₁ + 1 = i := Nat.succ_pred_eq_of_pos i_pos
   have := Nat.find_min (c.index_exists j.2) i₁_lt_i
   simp [lt_trans i₁_lt_i (c.index j).2, i₁_succ] at this
   exact Nat.lt_le_asymm H this
@@ -646,7 +647,7 @@ def splitWrtComposition (l : List α) (c : Composition n) : List (List α) :=
   splitWrtCompositionAux l c.blocks
 #align list.split_wrt_composition List.splitWrtComposition
 
--- porting note: can't refer to subeqn in Lean 4 this way, and seems to definitionally simp
+-- Porting note: can't refer to subeqn in Lean 4 this way, and seems to definitionally simp
 --attribute [local simp] splitWrtCompositionAux.equations._eqn_1
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -713,9 +714,9 @@ theorem get_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ} (hi) 
   cases' i with i
   · rw [Nat.add_zero, List.take_zero, sum_nil]
     simpa using get_zero hi
-  · simp only [splitWrtCompositionAux._eq_2, get_cons_succ, IH, take,
+  · simp only [splitWrtCompositionAux.eq_2, get_cons_succ, IH, take,
         sum_cons, Nat.add_eq, add_zero, splitAt_eq_take_drop, ← drop_take, drop_drop]
-    rw [Nat.succ_eq_add_one, add_comm i 1, add_comm]
+    rw [add_comm i 1, add_comm]
 #align list.nth_le_split_wrt_composition_aux List.get_splitWrtCompositionAux
 
 /-- The `i`-th sublist in the splitting of a list `l` along a composition `c`, is the slice of `l`
@@ -727,7 +728,7 @@ theorem get_splitWrtComposition' (l : List α) (c : Composition n) {i : ℕ}
   get_splitWrtCompositionAux _ _ _
 #align list.nth_le_split_wrt_composition List.get_splitWrtComposition'
 
--- porting note: restatement of `get_splitWrtComposition`
+-- Porting note: restatement of `get_splitWrtComposition`
 theorem get_splitWrtComposition (l : List α) (c : Composition n)
     (i : Fin (l.splitWrtComposition c).length) :
     get (l.splitWrtComposition c) i = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) :=
@@ -801,14 +802,15 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
     · simp only [or_iff_not_imp_left]
       intro i_mem i_ne_zero i_ne_last
       simp? [Fin.ext_iff] at i_ne_zero i_ne_last says
-        simp only [Fin.ext_iff, Fin.val_zero, Fin.val_last] at i_ne_zero i_ne_last
+        simp only [Nat.succ_eq_add_one, Fin.ext_iff, Fin.val_zero, Fin.val_last]
+          at i_ne_zero i_ne_last
       have A : (1 + (i - 1) : ℕ) = (i : ℕ) := by
         rw [add_comm]
         exact Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr i_ne_zero)
       refine' ⟨⟨i - 1, _⟩, _, _⟩
       · have : (i : ℕ) < n + 1 := i.2
         simp? [Nat.lt_succ_iff_lt_or_eq, i_ne_last] at this says
-          simp only [Nat.lt_succ_iff_lt_or_eq, i_ne_last, or_false] at this
+          simp only [Nat.succ_eq_add_one, Nat.lt_succ_iff_lt_or_eq, i_ne_last, or_false] at this
         exact Nat.pred_lt_pred i_ne_zero this
       · convert i_mem
         simp only [ge_iff_le]
@@ -996,14 +998,12 @@ theorem Composition.toCompositionAsSet_blocks (c : Composition n) :
     c.toCompositionAsSet.blocks = c.blocks := by
   let d := c.toCompositionAsSet
   change d.blocks = c.blocks
-  have length_eq : d.blocks.length = c.blocks.length := by
-    convert c.toCompositionAsSet_length
-    simp [CompositionAsSet.blocks]
-  suffices H : ∀ i ≤ d.blocks.length, (d.blocks.take i).sum = (c.blocks.take i).sum
-  exact eq_of_sum_take_eq length_eq H
+  have length_eq : d.blocks.length = c.blocks.length := by simp [d, blocks_length]
+  suffices H : ∀ i ≤ d.blocks.length, (d.blocks.take i).sum = (c.blocks.take i).sum from
+    eq_of_sum_take_eq length_eq H
   intro i hi
   have i_lt : i < d.boundaries.card := by
-    -- porting note: relied on `convert` unfolding definitions, switched to using a `simpa`
+    -- Porting note: relied on `convert` unfolding definitions, switched to using a `simpa`
     simpa [CompositionAsSet.blocks, length_ofFn, Nat.succ_eq_add_one,
       d.card_boundaries_eq_succ_length] using Nat.lt_succ_iff.2 hi
   have i_lt' : i < c.boundaries.card := i_lt

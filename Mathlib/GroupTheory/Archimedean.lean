@@ -5,6 +5,7 @@ Authors: Heather Macbeth, Patrick Massot
 -/
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Data.Set.Lattice
 
 #align_import group_theory.archimedean from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
@@ -65,7 +66,7 @@ theorem AddSubgroup.exists_isLeast_pos {H : AddSubgroup G} (hbot : H ≠ ⊥) {a
     lift m to ℕ
     · rw [← Int.lt_add_one_iff, ← zsmul_lt_zsmul_iff h₀, zero_zsmul]
       exact hg.trans_le hm
-    · simp only [← Nat.cast_succ, coe_nat_zsmul] at hm hm'
+    · simp only [← Nat.cast_succ, natCast_zsmul] at hm hm'
       exact ⟨m, hm', hm⟩
   have : ∃ n : ℕ, Set.Nonempty (H ∩ Ioc (n • a) ((n + 1) • a)) := by
     rcases (bot_or_exists_ne_zero H).resolve_left hbot with ⟨g, hgH, hg₀⟩

@@ -17,8 +17,8 @@ additive combinatorics.
 ## TODO
 
 It's possibly interesting to have
-`(s ×ˢ s) ×ˢ t ×ˢ t).filter (λ x : (α × α) × α × α, x.1.1 * x.2.1 = x.1.2 * x.2.2)` (whose `card`
-is `multiplicativeEnergy s t`) as a standalone definition.
+`(s ×ˢ s) ×ˢ t ×ˢ t).filter (fun x : (α × α) × α × α ↦ x.1.1 * x.2.1 = x.1.2 * x.2.2)`
+(whose `card` is `multiplicativeEnergy s t`) as a standalone definition.
 -/
 
 
@@ -48,7 +48,7 @@ def multiplicativeEnergy (s t : Finset α) : ℕ :=
 @[to_additive additiveEnergy_mono]
 theorem multiplicativeEnergy_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) :
     multiplicativeEnergy s₁ t₁ ≤ multiplicativeEnergy s₂ t₂ :=
-  card_le_of_subset <|
+  card_le_card <|
     filter_subset_filter _ <|
       product_subset_product (product_subset_product hs hs) <| product_subset_product ht ht
 #align finset.multiplicative_energy_mono Finset.multiplicativeEnergy_mono
@@ -73,9 +73,9 @@ theorem le_multiplicativeEnergy : s.card * t.card ≤ multiplicativeEnergy s t :
   rw [← card_product]
   refine'
     card_le_card_of_inj_on (@fun x => ((x.1, x.1), x.2, x.2)) (by
-    -- porting note: changed this from a `simp` proof without `only` because of a timeout
-      simp only [ ← and_imp, mem_product, and_imp, Prod.forall, mem_filter,
-        and_self, and_true, imp_self, implies_true]) fun a _ b _ => _
+    -- Porting note: changed this from a `simp` proof without `only` because of a timeout
+      simp only [← and_imp, mem_product, Prod.forall, mem_filter, and_self, and_true, imp_self,
+        implies_true]) fun a _ b _ => _
   simp only [Prod.mk.inj_iff, and_self_iff, and_imp]
   exact Prod.ext
 #align finset.le_multiplicative_energy Finset.le_multiplicativeEnergy
@@ -154,7 +154,7 @@ theorem multiplicativeEnergy_univ_left :
   congr with a
   simp only [mem_filter, mem_product, mem_univ, true_and_iff, mem_image, exists_prop,
     Prod.exists]
-  refine' ⟨fun h => ⟨a.1.1 * a.2.2⁻¹, _, _, h.1, by simp [mul_right_comm, h.2]⟩, _⟩
+  refine' ⟨fun h => ⟨a.1.1 * a.2.2⁻¹, _, _, h.1, by simp [f, mul_right_comm, h.2]⟩, _⟩
   rintro ⟨b, c, d, hcd, rfl⟩
   simpa [mul_right_comm]
 #align finset.multiplicative_energy_univ_left Finset.multiplicativeEnergy_univ_left

@@ -3,9 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Std.Tactic.NoMatch
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Mathport.Rename
+import Mathlib.Data.Fintype.Basic
 
 #align_import data.fin.fin2 from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
@@ -36,10 +36,10 @@ universe u
 
 /-- An alternate definition of `Fin n` defined as an inductive type instead of a subtype of `ℕ`. -/
 inductive Fin2 : ℕ → Type
-  /-- `0` as a member of `Fin (succ n)` (`Fin 0` is empty) -/
-  | fz {n} : Fin2 (succ n)
-  /-- `n` as a member of `Fin (succ n)` -/
-  | fs {n} : Fin2 n → Fin2 (succ n)
+  /-- `0` as a member of `Fin (n + 1)` (`Fin 0` is empty) -/
+  | fz {n} : Fin2 (n + 1)
+  /-- `n` as a member of `Fin (n + 1)` -/
+  | fs {n} : Fin2 n → Fin2 (n + 1)
 #align fin2 Fin2
 
 namespace Fin2
@@ -54,7 +54,7 @@ protected def cases' {n} {C : Fin2 (succ n) → Sort u} (H1 : C fz) (H2 : ∀ n,
 #align fin2.cases' Fin2.cases'
 
 /-- Ex falso. The dependent eliminator for the empty `Fin2 0` type. -/
-def elim0 {C : Fin2 0 → Sort u} : ∀ i : Fin2 0, C i := fun.
+def elim0 {C : Fin2 0 → Sort u} : ∀ i : Fin2 0, C i := nofun
 #align fin2.elim0 Fin2.elim0
 
 /-- Converts a `Fin2` into a natural. -/
@@ -101,8 +101,8 @@ def insertPerm : ∀ {n}, Fin2 n → Fin2 n → Fin2 n
   on the right (that is, `remapLeft f k (m + i) = n + i`). -/
 def remapLeft {m n} (f : Fin2 m → Fin2 n) : ∀ k, Fin2 (m + k) → Fin2 (n + k)
   | 0, i => f i
-  | succ _, @fz _ => fz
-  | succ _, @fs _ i => fs (remapLeft f _ i)
+  | _k + 1, @fz _ => fz
+  | _k + 1, @fs _ i => fs (remapLeft f _ i)
 #align fin2.remap_left Fin2.remapLeft
 
 /-- This is a simple type class inference prover for proof obligations
@@ -130,5 +130,12 @@ def ofNat' : ∀ {n} (m) [IsLT m n], Fin2 n
 
 instance : Inhabited (Fin2 1) :=
   ⟨fz⟩
+
+instance instFintype : ∀ n, Fintype (Fin2 n)
+  | 0   => ⟨∅, Fin2.elim0⟩
+  | n+1 =>
+    let ⟨elems, compl⟩ := instFintype n
+    { elems    := elems.map ⟨Fin2.fs, @fs.inj _⟩ |>.cons .fz (by simp)
+      complete := by rintro (_|i) <;> simp [compl] }
 
 end Fin2

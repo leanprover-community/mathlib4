@@ -50,7 +50,6 @@ section algebra
 lemmas for `Prod` will not trigger. -/
 
 variable {p 𝕜 α β}
-
 variable [Semiring 𝕜] [AddCommGroup α] [AddCommGroup β]
 variable (x y : WithLp p (α × β)) (c : 𝕜)
 
@@ -138,7 +137,7 @@ section EDist
 
 variable [EDist α] [EDist β]
 
-open Classical in
+open scoped Classical in
 /-- Endowing the space `WithLp p (α × β)` with the `L^p` edistance. We register this instance
 separate from `WithLp.instProdPseudoEMetric` since the latter requires the type class hypothesis
 `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
@@ -210,7 +209,7 @@ section Dist
 
 variable [Dist α] [Dist β]
 
-open Classical in
+open scoped Classical in
 /-- Endowing the space `WithLp p (α × β)` with the `L^p` distance. We register this instance
 separate from `WithLp.instProdPseudoMetricSpace` since the latter requires the type class hypothesis
 `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
@@ -249,7 +248,7 @@ section Norm
 
 variable [Norm α] [Norm β]
 
-open Classical in
+open scoped Classical in
 /-- Endowing the space `WithLp p (α × β)` with the `L^p` norm. We register this instance
 separate from `WithLp.instProdSeminormedAddCommGroup` since the latter requires the type class
 hypothesis `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
@@ -394,7 +393,7 @@ theorem prod_lipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace
   intro x y
   rcases p.dichotomy with (rfl | h)
   · simp [edist]
-  · have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le h).ne'
+  · have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel₀ 1 (zero_lt_one.trans_le h).ne'
     rw [prod_edist_eq_add (zero_lt_one.trans_le h)]
     simp only [edist, forall_prop_of_true, one_mul, ENNReal.coe_one, ge_iff_le, sup_le_iff]
     constructor
@@ -418,7 +417,7 @@ theorem prod_antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricS
   · simp [edist]
   · have pos : 0 < p.toReal := by positivity
     have nonneg : 0 ≤ 1 / p.toReal := by positivity
-    have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (ne_of_gt pos)
+    have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel₀ 1 (ne_of_gt pos)
     rw [prod_edist_eq_add pos, ENNReal.toReal_div 1 p]
     simp only [edist, ← one_div, ENNReal.one_toReal]
     calc
@@ -624,6 +623,18 @@ theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst�
   ext
   norm_cast
 
+@[simp] theorem prod_nnnorm_equiv (f : WithLp ∞ (α × β)) : ‖WithLp.equiv ⊤ _ f‖₊ = ‖f‖₊ := by
+  rw [prod_nnnorm_eq_sup, Prod.nnnorm_def', _root_.sup_eq_max, equiv_fst, equiv_snd]
+
+@[simp] theorem prod_nnnorm_equiv_symm (f : α × β) : ‖(WithLp.equiv ⊤ _).symm f‖₊ = ‖f‖₊ :=
+  (prod_nnnorm_equiv _).symm
+
+@[simp] theorem prod_norm_equiv (f : WithLp ∞ (α × β)) : ‖WithLp.equiv ⊤ _ f‖ = ‖f‖ :=
+  congr_arg NNReal.toReal <| prod_nnnorm_equiv f
+
+@[simp] theorem prod_norm_equiv_symm (f : α × β) : ‖(WithLp.equiv ⊤ _).symm f‖ = ‖f‖ :=
+  (prod_norm_equiv _).symm
+
 theorem prod_norm_eq_of_L2 (x : WithLp 2 (α × β)) :
     ‖x‖ = Real.sqrt (‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2) := by
   rw [prod_norm_eq_of_nat 2 (by norm_cast) _, Real.sqrt_eq_rpow]
@@ -729,25 +740,22 @@ theorem edist_equiv_symm_snd (y₁ y₂ : β) :
 
 end Single
 
-section NormedSpace
+section BoundedSMul
+variable [SeminormedRing 𝕜] [Module 𝕜 α] [Module 𝕜 β] [BoundedSMul 𝕜 α] [BoundedSMul 𝕜 β]
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpace 𝕜 β]
-
-/-- The product of two normed spaces is a normed space, with the `L^p` norm. -/
-instance instProdNormedSpace : NormedSpace 𝕜 (WithLp p (α × β)) where
-  norm_smul_le c f := by
+instance instProdBoundedSMul : BoundedSMul 𝕜 (WithLp p (α × β)) :=
+  .of_nnnorm_smul_le fun c f => by
     rcases p.dichotomy with (rfl | hp)
-    · suffices ‖c • f‖₊ = ‖c‖₊ * ‖f‖₊ from mod_cast NNReal.coe_mono this.le
-      simp only [prod_nnnorm_eq_sup, NNReal.mul_sup, ← nnnorm_smul]
-      rfl
-    · have : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le hp).ne'
-      have smul_fst : (c • f).fst = c • f.fst := rfl
-      have smul_snd : (c • f).snd = c • f.snd := rfl
-      simp only [prod_norm_eq_add (zero_lt_one.trans_le hp), norm_smul, Real.mul_rpow,
-        norm_nonneg, smul_fst, smul_snd]
-      rw [← mul_add, mul_rpow (rpow_nonneg_of_nonneg (norm_nonneg _) _),
-        ← rpow_mul (norm_nonneg _), this, Real.rpow_one]
-      positivity
+    · simp only [← prod_nnnorm_equiv, WithLp.equiv_smul]
+      exact norm_smul_le _ _
+    · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
+      have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
+      rw [prod_nnnorm_eq_add hpt, prod_nnnorm_eq_add hpt, NNReal.rpow_one_div_le_iff hp0,
+        NNReal.mul_rpow, ← NNReal.rpow_mul, div_mul_cancel₀ 1 hp0.ne', NNReal.rpow_one, mul_add,
+        ← NNReal.mul_rpow, ← NNReal.mul_rpow]
+      exact add_le_add
+        (NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le)
+        (NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le)
 
 variable {𝕜 p α β}
 
@@ -755,9 +763,18 @@ variable {𝕜 p α β}
 equivalence. -/
 def prodEquivₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β where
   __ := WithLp.equiv ∞ (α × β)
-  map_add' f g := rfl
-  map_smul' c f := rfl
-  norm_map' f := by simp [Norm.norm]
+  map_add' _f _g := rfl
+  map_smul' _c _f := rfl
+  norm_map' := prod_norm_equiv
+
+end BoundedSMul
+
+section NormedSpace
+
+/-- The product of two normed spaces is a normed space, with the `L^p` norm. -/
+instance instProdNormedSpace [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpace 𝕜 β] :
+    NormedSpace 𝕜 (WithLp p (α × β)) where
+  norm_smul_le := norm_smul_le
 
 end NormedSpace
 

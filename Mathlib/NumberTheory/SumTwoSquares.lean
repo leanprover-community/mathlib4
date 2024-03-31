@@ -3,6 +3,7 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Michael Stoll
 -/
+import Mathlib.Data.Nat.Squarefree
 import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
 import Mathlib.Tactic.LinearCombination
 
@@ -32,7 +33,7 @@ of two squares. Also known as **Fermat's Christmas theorem**. -/
 theorem Nat.Prime.sq_add_sq {p : ℕ} [Fact p.Prime] (hp : p % 4 ≠ 3) :
     ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := by
   apply sq_add_sq_of_nat_prime_of_not_irreducible p
-  rwa [PrincipalIdealRing.irreducible_iff_prime, prime_iff_mod_four_eq_three_of_nat_prime p]
+  rwa [_root_.irreducible_iff_prime, prime_iff_mod_four_eq_three_of_nat_prime p]
 #align nat.prime.sq_add_sq Nat.Prime.sq_add_sq
 
 end Fermat
@@ -132,7 +133,7 @@ theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
   · exact fun _ => by norm_num
   · replace hp := H hp (dvd_of_mul_right_dvd hpq)
     replace hq := hq (dvd_of_mul_left_dvd hpq)
-    rw [show 3 = 3 % 4 by norm_num, Ne.def, ← ZMod.nat_cast_eq_nat_cast_iff'] at hp hq ⊢
+    rw [show 3 = 3 % 4 by norm_num, Ne, ← ZMod.nat_cast_eq_nat_cast_iff'] at hp hq ⊢
     rw [Nat.cast_mul]
     exact help p q hp hq
 #align zmod.is_square_neg_one_iff' ZMod.isSquare_neg_one_iff'
@@ -186,7 +187,7 @@ theorem Nat.eq_sq_add_sq_iff_eq_sq_mul {n : ℕ} :
   constructor
   · rintro ⟨x, y, h⟩
     by_cases hxy : x = 0 ∧ y = 0
-    · exact ⟨0, 1, by rw [h, hxy.1, hxy.2, zero_pow zero_lt_two, add_zero, zero_mul],
+    · exact ⟨0, 1, by rw [h, hxy.1, hxy.2, zero_pow two_ne_zero, add_zero, zero_mul],
         ⟨0, by rw [zero_mul, neg_eq_zero, Fin.one_eq_zero_iff]⟩⟩
     · have hg := Nat.pos_of_ne_zero (mt Nat.gcd_eq_zero_iff.mp hxy)
       obtain ⟨g, x₁, y₁, _, h₂, h₃, h₄⟩ := Nat.exists_coprime' hg

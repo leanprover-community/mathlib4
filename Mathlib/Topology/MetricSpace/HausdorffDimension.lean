@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Calculus.ContDiff.IsROrC
 import Mathlib.MeasureTheory.Measure.Hausdorff
 
 #align_import topology.metric_space.hausdorff_dimension from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
@@ -196,7 +196,8 @@ set_option linter.uppercaseLean3 false in
 #align dimH_singleton dimH_singleton
 
 @[simp]
-theorem dimH_iUnion [Encodable ι] (s : ι → Set X) : dimH (⋃ i, s i) = ⨆ i, dimH (s i) := by
+theorem dimH_iUnion {ι : Sort*} [Countable ι] (s : ι → Set X) :
+    dimH (⋃ i, s i) = ⨆ i, dimH (s i) := by
   borelize X
   refine le_antisymm (dimH_le fun d hd => ?_) (iSup_le fun i => dimH_mono <| subset_iUnion _ _)
   contrapose! hd

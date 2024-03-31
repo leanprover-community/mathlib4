@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.GroupTheory.Subsemigroup.Operations
 import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Logic.Basic
 
 #align_import group_theory.subsemigroup.center from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 
@@ -56,21 +57,19 @@ structure IsMulCentral [Mul M] (z : M) : Prop where
   /-- associative property for right multiplication -/
   right_assoc (a b : M) : (a * b) * z = a * (b * z)
 
--- TODO: these should have explicit arguments (mathlib4#9129)
-attribute [mk_iff isMulCentral_iff] IsMulCentral
-attribute [mk_iff isAddCentral_iff] IsAddCentral
+attribute [mk_iff] IsMulCentral IsAddCentral
 attribute [to_additive existing] isMulCentral_iff
 
 namespace IsMulCentral
 
 variable {a b c : M} [Mul M]
 
--- c.f. Commute.left_comm
+-- cf. `Commute.left_comm`
 @[to_additive]
 protected theorem left_comm (h : IsMulCentral a) (b c) : a * (b * c) = b * (a * c) := by
   simp only [h.comm, h.right_assoc]
 
--- c.f. Commute.right_comm
+-- cf. `Commute.right_comm`
 @[to_additive]
 protected theorem right_comm (h : IsMulCentral c) (a b) : a * b * c = a * c * b := by
   simp only [h.right_assoc, h.mid_assoc, h.comm]
@@ -89,7 +88,7 @@ def center : Set M :=
 #align set.center Set.center
 #align set.add_center Set.addCenter
 
--- porting note: The `to_additive` version used to be `mem_addCenter` without the iff
+-- Porting note: The `to_additive` version used to be `mem_addCenter` without the iff
 @[to_additive mem_addCenter_iff]
 theorem mem_center_iff {z : M} : z ∈ center M ↔ IsMulCentral z :=
   Iff.rfl
@@ -179,15 +178,15 @@ theorem natCast_mem_center [NonAssocSemiring M] (n : ℕ) : (n : M) ∈ Set.cent
   comm _:= by rw [Nat.commute_cast]
   left_assoc _ _ := by
     induction n with
-    | zero => rw [Nat.zero_eq, Nat.cast_zero, zero_mul, zero_mul, zero_mul]
+    | zero => rw [Nat.cast_zero, zero_mul, zero_mul, zero_mul]
     | succ n ihn => rw [Nat.cast_succ, add_mul, one_mul, ihn, add_mul, add_mul, one_mul]
   mid_assoc _ _ := by
     induction n with
-    | zero => rw [Nat.zero_eq, Nat.cast_zero, zero_mul, mul_zero, zero_mul]
+    | zero => rw [Nat.cast_zero, zero_mul, mul_zero, zero_mul]
     | succ n ihn => rw [Nat.cast_succ, add_mul, mul_add, add_mul, ihn, mul_add, one_mul, mul_one]
   right_assoc _ _ := by
     induction n with
-    | zero => rw [Nat.zero_eq, Nat.cast_zero, mul_zero, mul_zero, mul_zero]
+    | zero => rw [Nat.cast_zero, mul_zero, mul_zero, mul_zero]
     | succ n ihn => rw [Nat.cast_succ, mul_add, ihn, mul_add, mul_add, mul_one, mul_one]
 
 -- See note [no_index around OfNat.ofNat]
@@ -325,7 +324,7 @@ def center : Subsemigroup M where
 #align subsemigroup.center Subsemigroup.center
 #align add_subsemigroup.center AddSubsemigroup.center
 
--- porting note: `coe_center` is now redundant
+-- Porting note: `coe_center` is now redundant
 #noalign subsemigroup.coe_center
 #noalign add_subsemigroup.coe_center
 

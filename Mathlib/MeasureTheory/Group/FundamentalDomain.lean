@@ -110,7 +110,7 @@ sufficiently large. -/
   to check that its translates `g +ᵥ s` are (almost) disjoint and that the sum `∑' g, μ (g +ᵥ s)` is
   sufficiently large."]
 theorem mk_of_measure_univ_le [IsFiniteMeasure μ] [Countable G] (h_meas : NullMeasurableSet s μ)
-    (h_ae_disjoint : ∀ (g) (_ : g ≠ (1 : G)), AEDisjoint μ (g • s) s)
+    (h_ae_disjoint : ∀ g ≠ (1 : G), AEDisjoint μ (g • s) s)
     (h_qmp : ∀ g : G, QuasiMeasurePreserving (g • · : α → α) μ μ)
     (h_measure_univ_le : μ (univ : Set α) ≤ ∑' g : G, μ (g • s)) : IsFundamentalDomain G s μ :=
   have aedisjoint : Pairwise (AEDisjoint μ on fun g : G => g • s) :=
@@ -613,7 +613,7 @@ theorem fundamentalFrontier_union_fundamentalInterior :
     fundamentalFrontier G s ∪ fundamentalInterior G s = s :=
   inter_union_diff _ _
 #align measure_theory.fundamental_frontier_union_fundamental_interior MeasureTheory.fundamentalFrontier_union_fundamentalInterior
--- porting note: there is a typo in `to_additive` in mathlib3, so there is no additive version
+-- Porting note: there is a typo in `to_additive` in mathlib3, so there is no additive version
 
 @[to_additive (attr := simp) MeasureTheory.sdiff_addFundamentalInterior]
 theorem sdiff_fundamentalInterior : s \ fundamentalInterior G s = fundamentalFrontier G s :=
@@ -648,7 +648,7 @@ theorem pairwise_disjoint_fundamentalInterior :
   rintro _ ⟨x, hx, rfl⟩ ⟨y, hy, hxy⟩
   rw [mem_fundamentalInterior] at hx hy
   refine' hx.2 (a⁻¹ * b) _ _
-  rwa [Ne.def, inv_mul_eq_iff_eq_mul, mul_one, eq_comm]
+  rwa [Ne, inv_mul_eq_iff_eq_mul, mul_one, eq_comm]
   simpa [mul_smul, ← hxy, mem_inv_smul_set_iff] using hy.1
 #align measure_theory.pairwise_disjoint_fundamental_interior MeasureTheory.pairwise_disjoint_fundamentalInterior
 #align measure_theory.pairwise_disjoint_add_fundamental_interior MeasureTheory.pairwise_disjoint_addFundamentalInterior
@@ -680,10 +680,17 @@ variable [Countable G] [Group G] [MulAction G α] [MeasurableSpace α] {μ : Mea
   (hs : IsFundamentalDomain G s μ)
 
 @[to_additive MeasureTheory.IsAddFundamentalDomain.measure_addFundamentalFrontier]
-theorem measure_fundamentalFrontier : μ (fundamentalFrontier G s) = 0 := by
-  simpa only [fundamentalFrontier, iUnion₂_inter, measure_iUnion_null_iff', one_smul,
-    measure_iUnion_null_iff, inter_comm s, Function.onFun] using fun g (hg : g ≠ 1) =>
-    hs.aedisjoint hg
+theorem measure_fundamentalFrontier (hs : IsFundamentalDomain G s μ) :
+    μ (fundamentalFrontier G s) = 0 := by
+  -- FIXME nightly-testing
+  -- simpa only [fundamentalFrontier, iUnion₂_inter, one_smul, measure_iUnion_null_iff,
+  --   inter_comm s, Function.onFun] using fun g (hg : g ≠ 1) => hs.aedisjoint hg
+  have (g) (hg : g ≠ 1) := hs.aedisjoint hg
+  simp only [fundamentalFrontier, iUnion₂_inter, one_smul, measure_iUnion_null_iff,
+    inter_comm s, Function.onFun] at this
+  unfold Function.onFun at this
+  simpa only [fundamentalFrontier, iUnion₂_inter, one_smul, measure_iUnion_null_iff,
+    inter_comm s, Function.onFun]
 #align measure_theory.is_fundamental_domain.measure_fundamental_frontier MeasureTheory.IsFundamentalDomain.measure_fundamentalFrontier
 #align measure_theory.is_add_fundamental_domain.measure_add_fundamental_frontier MeasureTheory.IsAddFundamentalDomain.measure_addFundamentalFrontier
 

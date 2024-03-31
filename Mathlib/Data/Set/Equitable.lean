@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Set.Basic
 
 #align_import data.set.equitable from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
@@ -69,7 +70,7 @@ variable [LinearOrder β] [Add β] [One β] {s : Set α} {f : α → β}
 
 @[simp]
 lemma not_equitableOn : ¬s.EquitableOn f ↔ ∃ a ∈ s, ∃ b ∈ s, f b + 1 < f a := by
-  simp [EquitableOn]; aesop
+  simp [EquitableOn]
 
 end LinearOrder
 

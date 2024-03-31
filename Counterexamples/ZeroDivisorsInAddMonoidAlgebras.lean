@@ -100,7 +100,7 @@ theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a 
     · have a0 : a ≠ 0 :=
         ne_of_eq_of_ne (one_nsmul a).symm
           (nsmul_ne_zero_of_lt_addOrderOf' one_ne_zero (Nat.succ_le_iff.mp o2))
-      simp only [a0, single_eq_of_ne, Ne.def, not_false_iff]
+      simp only [a0, single_eq_of_ne, Ne, not_false_iff]
     · simpa only [single_eq_same] using zero_ne_one
   · convert Commute.geom_sum₂_mul (α := AddMonoidAlgebra R A) _ (addOrderOf a) using 3
     · rw [single_zero_one, one_pow, mul_one]
@@ -131,7 +131,7 @@ def List.dropUntil {α} [DecidableEq α] : List α → List α → List α
   | l, a :: as => ((a::as).getRest l).getD (dropUntil l as)
 #align counterexample.list.drop_until Counterexample.List.dropUntil
 
-open Lean Elab in
+open Lean Elab Command in
 /-- `guard_decl na mod` makes sure that the declaration with name `na` is in the module `mod`.
 ```lean
 guard_decl Nat.nontrivial Mathlib.Data.Nat.Basic -- does nothing
@@ -143,7 +143,7 @@ guard_decl Nat.nontrivial Not.In.Here
 This test makes sure that the comment referring to this example is in the file claimed in the
 doc-module to this counterexample. -/
 elab "guard_decl" na:ident mod:ident : command => do
-  let dcl ← resolveGlobalConstNoOverloadWithInfo na
+  let dcl ← liftCoreM <| realizeGlobalConstNoOverloadWithInfo na
   let mdn := mod.getId
   let env ← getEnv
   let .some dcli := env.getModuleIdxFor? dcl | unreachable!
@@ -180,14 +180,17 @@ instance : LinearOrder F :=
 theorem z01 : (0 : F) < 1 := by decide
 #align counterexample.F.z01 Counterexample.F.z01
 
+instance : Add F where
+  add := max
+
 /-- `F` would be a `CommSemiring`, using `min` as multiplication.  Again, we do not need this. -/
 instance : AddCommMonoid F where
-  add := max
   add_assoc := by boom
   zero := 0
   zero_add := by boom
   add_zero := by boom
   add_comm := by boom
+  nsmul := nsmulRec
 
 /-- The `CovariantClass`es asserting monotonicity of addition hold for `F`. -/
 instance covariantClass_add_le : CovariantClass F F (· + ·) (· ≤ ·) :=
@@ -247,7 +250,7 @@ example {α} [Ring α] [Nontrivial α] : ∃ f g : AddMonoidAlgebra α F, f ≠ 
 
 example {α} [Zero α] :
     2 • (Finsupp.single 0 1 : α →₀ F) = Finsupp.single 0 1 ∧ (Finsupp.single 0 1 : α →₀ F) ≠ 0 :=
-  ⟨smul_single _ _ _, by simp [Ne.def, Finsupp.single_eq_zero, z01.ne]⟩
+  ⟨smul_single _ _ _, by simp [Ne, Finsupp.single_eq_zero, z01.ne]⟩
 
 end F
 
@@ -256,7 +259,6 @@ example : ¬UniqueProds ℕ := by
   rintro ⟨h⟩
   refine' not_not.mpr (h (Finset.singleton_nonempty 0) (Finset.insert_nonempty 0 {1})) _
   simp [UniqueMul, not_or]
-  exact ⟨⟨0, 1, by simp⟩, ⟨0, 0, by simp⟩⟩
 
 /-- Some Types that do not have `UniqueSums`. -/
 example (n : ℕ) (n2 : 2 ≤ n) : ¬UniqueSums (ZMod n) := by

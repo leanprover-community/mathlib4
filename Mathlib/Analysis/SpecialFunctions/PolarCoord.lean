@@ -5,13 +5,14 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Function.Jacobian
 import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 #align_import analysis.special_functions.polar_coord from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
 
 /-!
 # Polar coordinates
 
-We define polar coordinates, as a local homeomorphism in `ℝ^2` between `ℝ^2 - (-∞, 0]` and
+We define polar coordinates, as a partial homeomorphism in `ℝ^2` between `ℝ^2 - (-∞, 0]` and
 `(0, +∞) × (-π, π)`. Its inverse is given by `(r, θ) ↦ (r cos θ, r sin θ)`.
 
 It satisfies the following change of variables formula (see `integral_comp_polarCoord_symm`):
@@ -25,7 +26,7 @@ open Real Set MeasureTheory
 
 open scoped Real Topology
 
-/-- The polar coordinates local homeomorphism in `ℝ^2`, mapping `(r cos θ, r sin θ)` to `(r, θ)`.
+/-- The polar coordinates partial homeomorphism in `ℝ^2`, mapping `(r cos θ, r sin θ)` to `(r, θ)`.
 It is a homeomorphism between `ℝ^2 - (-∞, 0]` and `(0, +∞) × (-π, π)`. -/
 @[simps]
 def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
@@ -40,7 +41,7 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · simpa using hr
     · right
       simp at hr
-      simpa only [ne_of_gt hr, Ne.def, mem_setOf_eq, mul_eq_zero, false_or_iff,
+      simpa only [ne_of_gt hr, Ne, mem_setOf_eq, mul_eq_zero, false_or_iff,
         sin_eq_zero_iff_of_lt_of_lt hθ.1 hθ.2] using h'θ
   map_source' := by
     rintro ⟨x, y⟩ hxy
@@ -83,12 +84,12 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
   continuousOn_toFun := by
     apply ((continuous_fst.pow 2).add (continuous_snd.pow 2)).sqrt.continuousOn.prod
     have A : MapsTo Complex.equivRealProd.symm ({q : ℝ × ℝ | 0 < q.1} ∪ {q : ℝ × ℝ | q.2 ≠ 0})
-        {z | 0 < z.re ∨ z.im ≠ 0} := by
+        Complex.slitPlane := by
       rintro ⟨x, y⟩ hxy; simpa only using hxy
     refine' ContinuousOn.comp (f := Complex.equivRealProd.symm)
       (g := Complex.arg) (fun z hz => _) _ A
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
-    · exact Complex.equivRealProdClm.symm.continuous.continuousOn
+    · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
 #align polar_coord polarCoord
 
 theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
@@ -114,7 +115,7 @@ theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by
     exact hx.2
   have B : volume (LinearMap.ker (LinearMap.snd ℝ ℝ ℝ) : Set (ℝ × ℝ)) = 0 := by
     apply Measure.addHaar_submodule
-    rw [Ne.def, LinearMap.ker_eq_top]
+    rw [Ne, LinearMap.ker_eq_top]
     intro h
     have : (LinearMap.snd ℝ ℝ ℝ) (0, 1) = (0 : ℝ × ℝ →ₗ[ℝ] ℝ) (0, 1) := by rw [h]
     simp at this
@@ -133,7 +134,7 @@ theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [Normed
   have B_det : ∀ p, (B p).det = p.1 := by
     intro p
     conv_rhs => rw [← one_mul p.1, ← cos_sq_add_sin_sq p.2]
-    simp only [neg_mul, LinearMap.det_toContinuousLinearMap, LinearMap.det_toLin,
+    simp only [B, neg_mul, LinearMap.det_toContinuousLinearMap, LinearMap.det_toLin,
       Matrix.det_fin_two_of, sub_neg_eq_add]
     ring
   symm
@@ -158,26 +159,25 @@ namespace Complex
 
 open scoped Real
 
-/-- The polar coordinates local homeomorphism in `ℂ`, mapping `r (cos θ + I * sin θ)` to `(r, θ)`.
+/-- The polar coordinates partial homeomorphism in `ℂ`, mapping `r (cos θ + I * sin θ)` to `(r, θ)`.
 It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
 protected noncomputable def polarCoord : PartialHomeomorph ℂ (ℝ × ℝ) :=
-  equivRealProdClm.toHomeomorph.toPartialHomeomorph.trans polarCoord
+  equivRealProdCLM.toHomeomorph.transPartialHomeomorph polarCoord
 
 protected theorem polarCoord_apply (a : ℂ) :
     Complex.polarCoord a = (Complex.abs a, Complex.arg a) := by
   simp_rw [Complex.abs_def, Complex.normSq_apply, ← pow_two]
   rfl
 
-protected theorem polarCoord_source :
-    Complex.polarCoord.source = {a | 0 < a.re} ∪ {a | a.im ≠ 0} := by simp [Complex.polarCoord]
+protected theorem polarCoord_source : Complex.polarCoord.source = slitPlane := rfl
 
 protected theorem polarCoord_target :
-    Complex.polarCoord.target = Set.Ioi (0 : ℝ) ×ˢ Set.Ioo (-π) π := by simp [Complex.polarCoord]
+    Complex.polarCoord.target = Set.Ioi (0 : ℝ) ×ˢ Set.Ioo (-π) π := rfl
 
 @[simp]
 protected theorem polarCoord_symm_apply (p : ℝ × ℝ) :
     Complex.polarCoord.symm p = p.1 * (Real.cos p.2 + Real.sin p.2 * Complex.I) := by
-  simp [Complex.polarCoord, equivRealProdClm_symm_apply, mul_add, mul_assoc]
+  simp [Complex.polarCoord, equivRealProdCLM_symm_apply, mul_add, mul_assoc]
 
 theorem polardCoord_symm_abs (p : ℝ × ℝ) :
     Complex.abs (Complex.polarCoord.symm p) = |p.1| := by simp

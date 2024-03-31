@@ -121,16 +121,15 @@ instance (priority := 100) Field.henselian (K : Type*) [Field K] : HenselianLoca
 theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
     TFAE
       [HenselianLocalRing R,
-        ∀ (f : R[X]) (_ : f.Monic) (a₀ : ResidueField R) (_ : aeval a₀ f = 0)
-          (_ : aeval a₀ (derivative f) ≠ 0), ∃ a : R, f.IsRoot a ∧ residue R a = a₀,
+        ∀ f : R[X], f.Monic → ∀ a₀ : ResidueField R, aeval a₀ f = 0 →
+          aeval a₀ (derivative f) ≠ 0 → ∃ a : R, f.IsRoot a ∧ residue R a = a₀,
         ∀ {K : Type u} [Field K],
-          ∀ (φ : R →+* K) (_ : Surjective φ) (f : R[X]) (_ : f.Monic) (a₀ : K)
-            (_ : f.eval₂ φ a₀ = 0) (_ : f.derivative.eval₂ φ a₀ ≠ 0),
-            ∃ a : R, f.IsRoot a ∧ φ a = a₀] := by
-  tfae_have _3_2 : 3 → 2;
+          ∀ (φ : R →+* K), Surjective φ → ∀ f : R[X], f.Monic → ∀ a₀ : K,
+            f.eval₂ φ a₀ = 0 → f.derivative.eval₂ φ a₀ ≠ 0 → ∃ a : R, f.IsRoot a ∧ φ a = a₀] := by
+  tfae_have 3 → 2
   · intro H
     exact H (residue R) Ideal.Quotient.mk_surjective
-  tfae_have _2_1 : 2 → 1
+  tfae_have 2 → 1
   · intro H
     constructor
     intro f hf a₀ h₁ h₂
@@ -142,7 +141,7 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
     refine' ⟨a, ha₁, _⟩
     rw [← Ideal.Quotient.eq_zero_iff_mem]
     rwa [← sub_eq_zero, ← RingHom.map_sub] at ha₂
-  tfae_have _1_3 : 1 → 3
+  tfae_have 1 → 3
   · intro hR K _K φ hφ f hf a₀ h₁ h₂
     obtain ⟨a₀, rfl⟩ := hφ a₀
     have H := HenselianLocalRing.is_henselian f hf a₀
@@ -185,7 +184,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
       let c : ℕ → R := fun n => Nat.recOn n a₀ fun _ b => b - f.eval b * Ring.inverse (f'.eval b)
       have hc : ∀ n, c (n + 1) = c n - f.eval (c n) * Ring.inverse (f'.eval (c n)) := by
         intro n
-        simp only [Nat.rec_add_one]
+        simp only [c, Nat.rec_add_one]
       -- we now spend some time determining properties of the sequence `c : ℕ → R`
       -- `hc_mod`: for every `n`, we have `c n ≡ a₀ [SMOD I]`
       -- `hf'c`  : for every `n`, `f'.eval (c n)` is a unit
@@ -194,7 +193,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         intro n
         induction' n with n ih
         · rfl
-        rw [Nat.succ_eq_add_one, hc, sub_eq_add_neg, ← add_zero a₀]
+        rw [hc, sub_eq_add_neg, ← add_zero a₀]
         refine' ih.add _
         rw [SModEq.zero, Ideal.neg_mem_iff]
         refine' I.mul_mem_right _ _
@@ -210,7 +209,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         intro n
         induction' n with n ih
         · simpa only [Nat.zero_eq, Nat.rec_zero, zero_add, pow_one] using h₁
-        rw [Nat.succ_eq_add_one, ← taylor_eval_sub (c n), hc, sub_eq_add_neg, sub_eq_add_neg,
+        rw [← taylor_eval_sub (c n), hc, sub_eq_add_neg, sub_eq_add_neg,
           add_neg_cancel_comm]
         rw [eval_eq_sum, sum_over_range' _ _ _ (lt_add_of_pos_right _ zero_lt_two), ←
           Finset.sum_range_add_sum_Ico _ (Nat.le_add_left _ _)]
@@ -229,7 +228,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
           have aux : n + 2 ≤ i * (n + 1) := by trans 2 * (n + 1) <;> nlinarith only [h2i]
           refine' Ideal.mul_mem_left _ _ (Ideal.pow_le_pow_right aux _)
           rw [pow_mul']
-          refine' Ideal.pow_mem_pow ((Ideal.neg_mem_iff _).2 <| Ideal.mul_mem_right _ _ ih) _
+          exact Ideal.pow_mem_pow ((Ideal.neg_mem_iff _).2 <| Ideal.mul_mem_right _ _ ih) _
       -- we are now in the position to show that `c : ℕ → R` is a Cauchy sequence
       have aux : ∀ m n, m ≤ n → c m ≡ c n [SMOD (I ^ m • ⊤ : Ideal R)] := by
         intro m n hmn
@@ -237,8 +236,14 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
         clear hmn
         induction' k with k ih
-        · rw [Nat.zero_eq, add_zero]
-        rw [Nat.succ_eq_add_one, ← add_assoc, hc, ← add_zero (c m), sub_eq_add_neg]
+        · rw [add_zero]
+        rw [← add_assoc]
+        -- Adaptation note: nightly-2024-03-11
+        -- I'm not sure why the `erw` is now needed here. It looks like it should work.
+        -- It looks like a diamond between `instHAdd` on `Nat` and `AddSemigroup.toAdd` which is
+        -- used by `instHAdd`
+        erw [hc]
+        rw [← add_zero (c m), sub_eq_add_neg]
         refine' ih.add _
         symm
         rw [SModEq.zero, Ideal.neg_mem_iff]
@@ -257,7 +262,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         rw [SModEq.zero]
         exact Ideal.pow_le_pow_right le_self_add (hfcI _)
       · show a - a₀ ∈ I
-        specialize ha 1
+        specialize ha (0 + 1)
         rw [hc, pow_one, ← Ideal.one_eq_top, Ideal.smul_eq_mul, mul_one, sub_eq_add_neg] at ha
         rw [← SModEq.sub_mem, ← add_zero a₀]
         refine' ha.symm.trans (SModEq.rfl.add _)

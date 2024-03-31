@@ -90,6 +90,28 @@ theorem conductor_eq_top_of_powerBasis (pb : PowerBasis R S) : conductor R pb.ge
   conductor_eq_top_of_adjoin_eq_top pb.adjoin_gen_eq_top
 #align conductor_eq_top_of_power_basis conductor_eq_top_of_powerBasis
 
+open IsLocalization in
+lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]
+    [IsScalarTower R S L] [NoZeroSMulDivisors S L] {x : S} {y : L} :
+    y ∈ coeSubmodule L (conductor R x) ↔ ∀ z : S,
+      y * (algebraMap S L) z ∈ Algebra.adjoin R {algebraMap S L x} := by
+  cases subsingleton_or_nontrivial L
+  · rw [Subsingleton.elim (coeSubmodule L _) ⊤, Subsingleton.elim (Algebra.adjoin R _) ⊤]; simp
+  trans ∀ z, y * (algebraMap S L) z ∈ (Algebra.adjoin R {x}).map (IsScalarTower.toAlgHom R S L)
+  · simp only [coeSubmodule, Submodule.mem_map, Algebra.linearMap_apply, Subalgebra.mem_map,
+      IsScalarTower.coe_toAlgHom']
+    constructor
+    · rintro ⟨y, hy, rfl⟩ z
+      exact ⟨_, hy z, map_mul _ _ _⟩
+    · intro H
+      obtain ⟨y, _, e⟩ := H 1
+      rw [_root_.map_one, mul_one] at e
+      subst e
+      simp only [← _root_.map_mul, (NoZeroSMulDivisors.algebraMap_injective S L).eq_iff,
+        exists_eq_right] at H
+      exact ⟨_, H, rfl⟩
+  · rw [AlgHom.map_adjoin, Set.image_singleton]; rfl
+
 variable {I : Ideal R}
 
 /-- This technical lemma tell us that if `C` is the conductor of `R<x>` and `I` is an ideal of `R`
@@ -216,9 +238,7 @@ namespace KummerDedekind
 open scoped BigOperators Polynomial Classical
 
 variable [IsDomain R] [IsIntegrallyClosed R]
-
 variable [IsDomain S] [IsDedekindDomain S]
-
 variable [NoZeroSMulDivisors R S]
 
 attribute [local instance] Ideal.Quotient.field
@@ -241,8 +261,8 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
     · exact NoZeroSMulDivisors.algebraMap_injective (Algebra.adjoin R {x}) S
     · rw [Algebra.adjoin.powerBasis'_minpoly_gen hx']
   refine (normalizedFactorsEquivOfQuotEquiv f ?_ ?_).trans ?_
-  · rwa [Ne.def, map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S),
-      ← Ne.def]
+  · rwa [Ne, map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S),
+      ← Ne.eq_def]
   · by_contra h
     exact (show Polynomial.map (Ideal.Quotient.mk I) (minpoly R x) ≠ 0 from
       Polynomial.map_monic_ne_zero (minpoly.monic hx')) (span_singleton_eq_bot.mp h)
@@ -304,7 +324,7 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
         (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx' _).prop
   · exact Polynomial.map_monic_ne_zero (minpoly.monic hx')
   · exact irreducible_of_normalized_factor _ hJ
-  · rwa [← bot_eq_zero, Ne.def,
+  · rwa [← bot_eq_zero, Ne,
       map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S)]
 #align kummer_dedekind.normalized_factors_ideal_map_eq_normalized_factors_min_poly_mk_map KummerDedekind.normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map
 
@@ -318,7 +338,7 @@ theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I
   suffices ∃ y, normalizedFactors (I.map (algebraMap R S)) = {y} by
     obtain ⟨y, hy⟩ := this
     have h := normalizedFactors_prod (show I.map (algebraMap R S) ≠ 0 by
-          rwa [← bot_eq_zero, Ne.def,
+          rwa [← bot_eq_zero, Ne,
             map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S)])
     rw [associated_iff_eq, hy, Multiset.prod_singleton] at h
     rw [← h]

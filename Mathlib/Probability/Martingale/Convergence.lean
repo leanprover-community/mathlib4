@@ -51,7 +51,6 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators Topology
 namespace MeasureTheory
 
 variable {Ω ι : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0}
-
 variable {a b : ℝ} {f : ℕ → Ω → ℝ} {ω : Ω} {R : ℝ≥0}
 
 section AeConvergence
@@ -111,8 +110,8 @@ then it does not frequently visit both below `a` and above `b`. -/
 theorem not_frequently_of_upcrossings_lt_top (hab : a < b) (hω : upcrossings a b f ω ≠ ∞) :
     ¬((∃ᶠ n in atTop, f n ω < a) ∧ ∃ᶠ n in atTop, b < f n ω) := by
   rw [← lt_top_iff_ne_top, upcrossings_lt_top_iff] at hω
-  replace hω : ∃ k, ∀ N, upcrossingsBefore a b f N ω < k
-  · obtain ⟨k, hk⟩ := hω
+  replace hω : ∃ k, ∀ N, upcrossingsBefore a b f N ω < k := by
+    obtain ⟨k, hk⟩ := hω
     exact ⟨k + 1, fun N => lt_of_le_of_lt (hk N) k.lt_succ_self⟩
   rintro ⟨h₁, h₂⟩
   rw [frequently_atTop] at h₁ h₂
@@ -175,14 +174,13 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
       refine' lintegral_mono fun ω => _
       rw [ENNReal.ofReal_le_iff_le_toReal, ENNReal.coe_toReal, coe_nnnorm]
       by_cases hnonneg : 0 ≤ f n ω - a
-      · rw [LatticeOrderedGroup.pos_of_nonneg _ hnonneg, Real.norm_eq_abs,
-          abs_of_nonneg hnonneg]
-      · rw [LatticeOrderedGroup.pos_of_nonpos _ (not_le.1 hnonneg).le]
+      · rw [posPart_eq_self.2 hnonneg, Real.norm_eq_abs, abs_of_nonneg hnonneg]
+      · rw [posPart_eq_zero.2 (not_le.1 hnonneg).le]
         exact norm_nonneg _
-      · simp only [Ne.def, ENNReal.coe_ne_top, not_false_iff]
-    · simp only [hab, Ne.def, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
-  · simp only [hab, Ne.def, ENNReal.ofReal_eq_zero, sub_nonpos, not_le, true_or_iff]
-  · simp only [Ne.def, ENNReal.ofReal_ne_top, not_false_iff, true_or_iff]
+      · simp only [Ne, ENNReal.coe_ne_top, not_false_iff]
+    · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
+  · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le, true_or_iff]
+  · simp only [Ne, ENNReal.ofReal_ne_top, not_false_iff, true_or_iff]
 #align measure_theory.submartingale.upcrossings_ae_lt_top' MeasureTheory.Submartingale.upcrossings_ae_lt_top'
 
 theorem Submartingale.upcrossings_ae_lt_top [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
@@ -207,7 +205,7 @@ theorem Submartingale.exists_ae_trim_tendsto_of_bdd [IsFiniteMeasure μ] (hf : S
   letI := (⨆ n, ℱ n)
   rw [ae_iff, trim_measurableSet_eq]
   · exact hf.exists_ae_tendsto_of_bdd hbdd
-  · exact MeasurableSet.compl $ measurableSet_exists_tendsto
+  · exact MeasurableSet.compl <| measurableSet_exists_tendsto
       fun n => (hf.stronglyMeasurable n).measurable.mono (le_sSup ⟨n, rfl⟩) le_rfl
 #align measure_theory.submartingale.exists_ae_trim_tendsto_of_bdd MeasureTheory.Submartingale.exists_ae_trim_tendsto_of_bdd
 
@@ -225,7 +223,7 @@ theorem Submartingale.ae_tendsto_limitProcess [IsFiniteMeasure μ] (hf : Submart
   have hle : ⨆ n, ℱ n ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
   have hg' : ∀ᵐ ω ∂μ.trim hle, Tendsto (fun n => f n ω) atTop (𝓝 (g' ω)) := by
     filter_upwards [hf.exists_ae_trim_tendsto_of_bdd hbdd] with ω hω
-    simp_rw [dif_pos hω]
+    simp_rw [g', dif_pos hω]
     exact hω.choose_spec
   have hg'm : @AEStronglyMeasurable _ _ _ (⨆ n, ℱ n) g' (μ.trim hle) :=
     (@aemeasurable_of_tendsto_metrizable_ae' _ _ (⨆ n, ℱ n) _ _ _ _ _ _ _
@@ -324,7 +322,7 @@ theorem Submartingale.tendsto_snorm_one_limitProcess (hf : Submartingale f ℱ �
   obtain ⟨R, hR⟩ := hunif.2.2
   have hmeas : ∀ n, AEStronglyMeasurable (f n) μ := fun n =>
     ((hf.stronglyMeasurable n).mono (ℱ.le _)).aestronglyMeasurable
-  exact tendsto_Lp_of_tendstoInMeasure _ le_rfl ENNReal.one_ne_top hmeas
+  exact tendsto_Lp_of_tendstoInMeasure le_rfl ENNReal.one_ne_top hmeas
     (memℒp_limitProcess_of_snorm_bdd hmeas hR) hunif.2.1
     (tendstoInMeasure_of_tendsto_ae hmeas <| hf.ae_tendsto_limitProcess hR)
 #align measure_theory.submartingale.tendsto_snorm_one_limit_process MeasureTheory.Submartingale.tendsto_snorm_one_limitProcess
@@ -429,7 +427,7 @@ This martingale also converges to `g` almost everywhere and this result is provi
 theorem Integrable.tendsto_snorm_condexp (hg : Integrable g μ)
     (hgmeas : StronglyMeasurable[⨆ n, ℱ n] g) :
     Tendsto (fun n => snorm (μ[g|ℱ n] - g) 1 μ) atTop (𝓝 0) :=
-  tendsto_Lp_of_tendstoInMeasure _ le_rfl ENNReal.one_ne_top
+  tendsto_Lp_of_tendstoInMeasure le_rfl ENNReal.one_ne_top
     (fun n => (stronglyMeasurable_condexp.mono (ℱ.le n)).aestronglyMeasurable)
     (memℒp_one_iff_integrable.2 hg) hg.uniformIntegrable_condexp_filtration.2.1
     (tendstoInMeasure_of_tendsto_ae

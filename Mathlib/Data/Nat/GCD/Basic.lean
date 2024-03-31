@@ -243,7 +243,7 @@ theorem coprime_self_sub_right {m n : ℕ} (h : m ≤ n) : Coprime n (n - m) ↔
 theorem coprime_pow_left_iff {n : ℕ} (hn : 0 < n) (a b : ℕ) :
     Nat.Coprime (a ^ n) b ↔ Nat.Coprime a b := by
   obtain ⟨n, rfl⟩ := exists_eq_succ_of_ne_zero hn.ne'
-  rw [pow_succ, Nat.coprime_mul_iff_left]
+  rw [Nat.pow_succ, Nat.coprime_mul_iff_left]
   exact ⟨And.right, fun hab => ⟨hab.pow_left _, hab⟩⟩
 #align nat.coprime_pow_left_iff Nat.coprime_pow_left_iff
 
@@ -283,12 +283,12 @@ See `exists_dvd_and_dvd_of_dvd_mul` for the more general but less constructive v
 `GCDMonoid`s. -/
 def prodDvdAndDvdOfDvdProd {m n k : ℕ} (H : k ∣ m * n) :
     { d : { m' // m' ∣ m } × { n' // n' ∣ n } // k = d.1 * d.2 } := by
-  cases h0 : gcd k m
-  case zero =>
+  cases h0 : gcd k m with
+  | zero =>
     obtain rfl : k = 0 := eq_zero_of_gcd_eq_zero_left h0
     obtain rfl : m = 0 := eq_zero_of_gcd_eq_zero_right h0
     exact ⟨⟨⟨0, dvd_refl 0⟩, ⟨n, dvd_refl n⟩⟩, (zero_mul n).symm⟩
-  case succ tmp =>
+  | succ tmp =>
     have hpos : 0 < gcd k m := h0.symm ▸ Nat.zero_lt_succ _; clear h0 tmp
     have hd : gcd k m * (k / gcd k m) = k := Nat.mul_div_cancel' (gcd_dvd_left k m)
     refine' ⟨⟨⟨gcd k m, gcd_dvd_right k m⟩, ⟨k / gcd k m, _⟩⟩, hd.symm⟩
@@ -308,7 +308,7 @@ theorem dvd_mul {x m n : ℕ} : x ∣ m * n ↔ ∃ y z, y ∣ m ∧ z ∣ n ∧
 
 theorem pow_dvd_pow_iff {a b n : ℕ} (n0 : 0 < n) : a ^ n ∣ b ^ n ↔ a ∣ b := by
   refine' ⟨fun h => _, fun h => pow_dvd_pow_of_dvd h _⟩
-  cases' Nat.eq_zero_or_pos (gcd a b) with g0 g0
+  rcases Nat.eq_zero_or_pos (gcd a b) with g0 | g0
   · simp [eq_zero_of_gcd_eq_zero_right g0]
   rcases exists_coprime' g0 with ⟨g, a', b', g0', co, rfl, rfl⟩
   rw [mul_pow, mul_pow] at h
@@ -318,13 +318,14 @@ theorem pow_dvd_pow_iff {a b n : ℕ} (n0 : 0 < n) : a ^ n ∣ b ^ n ↔ a ∣ b
   simp [eq_one_of_dvd_one this]
 #align nat.pow_dvd_pow_iff Nat.pow_dvd_pow_iff
 
+theorem coprime_iff_isRelPrime {m n : ℕ} : m.Coprime n ↔ IsRelPrime m n := by
+  simp_rw [coprime_iff_gcd_eq_one, IsRelPrime, ← and_imp, ← dvd_gcd_iff, isUnit_iff_dvd_one]
+  exact ⟨fun h _ ↦ (h ▸ ·), (dvd_one.mp <| · dvd_rfl)⟩
+
 /-- If `k:ℕ` divides coprime `a` and `b` then `k = 1` -/
 theorem eq_one_of_dvd_coprimes {a b k : ℕ} (h_ab_coprime : Coprime a b) (hka : k ∣ a)
-    (hkb : k ∣ b) : k = 1 := by
-  rw [coprime_iff_gcd_eq_one] at h_ab_coprime
-  have h1 := dvd_gcd hka hkb
-  rw [h_ab_coprime] at h1
-  exact Nat.dvd_one.mp h1
+    (hkb : k ∣ b) : k = 1 :=
+  dvd_one.mp (isUnit_iff_dvd_one.mp <| coprime_iff_isRelPrime.mp h_ab_coprime hka hkb)
 #align nat.eq_one_of_dvd_coprimes Nat.eq_one_of_dvd_coprimes
 
 theorem Coprime.mul_add_mul_ne_mul {m n a b : ℕ} (cop : Coprime m n) (ha : a ≠ 0) (hb : b ≠ 0) :

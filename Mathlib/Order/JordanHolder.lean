@@ -157,7 +157,7 @@ theorem step (s : CompositionSeries X) :
   s.step'
 #align composition_series.step CompositionSeries.step
 
--- @[simp] -- Porting note: dsimp can prove this
+-- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem coeFn_mk (length : ℕ) (series step) :
     (@CompositionSeries.mk X _ _ length series step : Fin length.succ → X) = series :=
   rfl
@@ -427,7 +427,7 @@ theorem mem_eraseTop {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
     have hi : (i : ℕ) < s.length := by
       conv_rhs => rw [← Nat.add_one_sub_one s.length, Nat.succ_sub h]
       exact i.2
-    -- Porting note: Was `simp [top, Fin.ext_iff, ne_of_lt hi]`.
+    -- porting note (#10745): was `simp [top, Fin.ext_iff, ne_of_lt hi]`.
     simp [top, Fin.ext_iff, ne_of_lt hi, -Set.mem_range, Set.mem_range_self]
   · intro h
     exact mem_eraseTop_of_ne_of_mem h.1 h.2
@@ -653,9 +653,9 @@ theorem append {s₁ s₂ t₁ t₂ : CompositionSeries X} (hs : s₁.top = s₂
     intro i
     refine' Fin.addCases _ _ i
     · intro i
-      simpa [top, bot] using h₁.choose_spec i
+      simpa [e, top, bot] using h₁.choose_spec i
     · intro i
-      simpa [top, bot] using h₂.choose_spec i⟩
+      simpa [e, top, bot] using h₂.choose_spec i⟩
 #align composition_series.equivalent.append CompositionSeries.Equivalent.append
 
 protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat₁ : IsMaximal s₁.top x₁}
@@ -669,9 +669,9 @@ protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat�
 
   ⟨e, fun i => by
     refine' Fin.lastCases _ _ i
-    · simpa [top] using htop
+    · simpa [e, top] using htop
     · intro i
-      simpa [Fin.succ_castSucc] using hequiv.choose_spec i⟩
+      simpa [e, Fin.succ_castSucc] using hequiv.choose_spec i⟩
 #align composition_series.equivalent.snoc CompositionSeries.Equivalent.snoc
 
 theorem length_eq {s₁ s₂ : CompositionSeries X} (h : Equivalent s₁ s₂) : s₁.length = s₂.length := by
@@ -693,7 +693,7 @@ theorem snoc_snoc_swap {s : CompositionSeries X} {x₁ x₂ y₁ y₂ : X} {hsat
     ne_of_lt (by simp [Fin.castSucc_lt_last])
   ⟨e, by
     intro i
-    dsimp only []
+    dsimp only [e]
     refine' Fin.lastCases _ (fun i => _) i
     · erw [Equiv.swap_apply_left, snoc_castSucc, snoc_last, Fin.succ_last, snoc_last,
         snoc_castSucc, snoc_castSucc, Fin.succ_castSucc, snoc_castSucc, Fin.succ_last,
@@ -726,7 +726,7 @@ theorem length_pos_of_bot_eq_bot_of_top_eq_top_of_length_pos {s₁ s₂ : Compos
     (hb : s₁.bot = s₂.bot) (ht : s₁.top = s₂.top) : 0 < s₁.length → 0 < s₂.length :=
   not_imp_not.1
     (by
-      simp only [pos_iff_ne_zero, Ne.def, not_iff_not, Classical.not_not]
+      simp only [pos_iff_ne_zero, Ne, not_iff_not, Classical.not_not]
       exact length_eq_zero_of_bot_eq_bot_of_top_eq_top_of_length_eq_zero hb.symm ht.symm)
 #align composition_series.length_pos_of_bot_eq_bot_of_top_eq_top_of_length_pos CompositionSeries.length_pos_of_bot_eq_bot_of_top_eq_top_of_length_pos
 

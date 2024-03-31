@@ -74,7 +74,7 @@ def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
   map_comp f g := by apply Submodule.linearMap_qext; rfl
 #align local_cohomology.ring_mod_ideals localCohomology.ringModIdeals
 
--- Porting note: TODO:  Once this file is ported, move this instance to the right location.
+-- Porting note (#11215): TODO:  Once this file is ported, move this instance to the right location.
 instance moduleCat_enoughProjectives' : EnoughProjectives (ModuleCat.{u} R) :=
   ModuleCat.moduleCat_enoughProjectives.{u}
 set_option linter.uppercaseLean3 false in
@@ -119,7 +119,6 @@ end
 section
 
 variable {R : Type max u v v'} [CommRing R] {D : Type v} [SmallCategory D]
-
 variable {E : Type v'} [SmallCategory E] (I' : E ⥤ D) (I : D ⥤ Ideal R)
 
 /-- Local cohomology along a composition of diagrams. -/
@@ -219,7 +218,7 @@ def idealPowersToSelfLERadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLERadical J :=
     change _ ≤ (J ^ unop k).radical
     cases' unop k with n
     · simp [Ideal.radical_top, pow_zero, Ideal.one_eq_top, le_top, Nat.zero_eq]
-    · simp only [J.radical_pow _ n.succ_pos, Ideal.le_radical]
+    · simp only [J.radical_pow n.succ_ne_zero, Ideal.le_radical]
 #align local_cohomology.ideal_powers_to_self_le_radical localCohomology.idealPowersToSelfLERadical
 
 variable {I J K : Ideal R}
@@ -250,7 +249,7 @@ instance ideal_powers_initial [hR : IsNoetherian R R] :
       apply Relation.ReflTransGen.single
       -- The inclusions `J^n1 ≤ J'` and `J^n2 ≤ J'` always form a triangle, based on
       -- which exponent is larger.
-      cases' le_total (unop j1.left) (unop j2.left) with h h
+      rcases le_total (unop j1.left) (unop j2.left) with h | h
       right; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
       left; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
 #align local_cohomology.ideal_powers_initial localCohomology.ideal_powers_initial

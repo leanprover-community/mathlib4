@@ -13,7 +13,7 @@ import Mathlib.Order.Hom.Lattice
 
 This file defines frame homomorphisms and complete lattice homomorphisms.
 
-We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
+We use the `DFunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 
 ## Types of morphisms
@@ -83,8 +83,7 @@ section
 /-- `sSupHomClass F α β` states that `F` is a type of `⨆`-preserving morphisms.
 
 You should extend this class when you extend `sSupHom`. -/
-class sSupHomClass (F : Type*) (α β : outParam <| Type*) [SupSet α] [SupSet β] extends
-  FunLike F α fun _ => β where
+class sSupHomClass (F α β : Type*) [SupSet α] [SupSet β] [FunLike F α β] : Prop where
   /-- The proposition that members of `sSupHomClass`s commute with arbitrary suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
 #align Sup_hom_class sSupHomClass
@@ -92,8 +91,7 @@ class sSupHomClass (F : Type*) (α β : outParam <| Type*) [SupSet α] [SupSet �
 /-- `sInfHomClass F α β` states that `F` is a type of `⨅`-preserving morphisms.
 
 You should extend this class when you extend `sInfHom`. -/
-class sInfHomClass (F : Type*) (α β : outParam <| Type*) [InfSet α] [InfSet β] extends
-  FunLike F α fun _ => β where
+class sInfHomClass (F α β : Type*) [InfSet α] [InfSet β] [FunLike F α β] : Prop where
   /-- The proposition that members of `sInfHomClass`s commute with arbitrary infima/meets. -/
   map_sInf (f : F) (s : Set α) : f (sInf s) = sInf (f '' s)
 #align Inf_hom_class sInfHomClass
@@ -101,8 +99,8 @@ class sInfHomClass (F : Type*) (α β : outParam <| Type*) [InfSet α] [InfSet �
 /-- `FrameHomClass F α β` states that `F` is a type of frame morphisms. They preserve `⊓` and `⨆`.
 
 You should extend this class when you extend `FrameHom`. -/
-class FrameHomClass (F : Type*) (α β : outParam <| Type*) [CompleteLattice α]
-  [CompleteLattice β] extends InfTopHomClass F α β where
+class FrameHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
+  extends InfTopHomClass F α β : Prop where
   /-- The proposition that members of `FrameHomClass` commute with arbitrary suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
 #align frame_hom_class FrameHomClass
@@ -110,8 +108,8 @@ class FrameHomClass (F : Type*) (α β : outParam <| Type*) [CompleteLattice α]
 /-- `CompleteLatticeHomClass F α β` states that `F` is a type of complete lattice morphisms.
 
 You should extend this class when you extend `CompleteLatticeHom`. -/
-class CompleteLatticeHomClass (F : Type*) (α β : outParam <| Type*) [CompleteLattice α]
-  [CompleteLattice β] extends sInfHomClass F α β where
+class CompleteLatticeHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β]
+  [FunLike F α β] extends sInfHomClass F α β : Prop where
   /-- The proposition that members of `CompleteLatticeHomClass` commute with arbitrary
   suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
@@ -124,6 +122,10 @@ export sSupHomClass (map_sSup)
 export sInfHomClass (map_sInf)
 
 attribute [simp] map_sSup map_sInf
+
+section Hom
+
+variable [FunLike F α β]
 
 @[simp] theorem map_iSup [SupSet α] [SupSet β] [sSupHomClass F α β] (f : F) (g : ι → α) :
     f (⨆ i, g i) = ⨆ i, f (g i) := by simp [iSup, ← Set.range_comp, Function.comp]
@@ -191,13 +193,19 @@ instance (priority := 100) CompleteLatticeHomClass.toBoundedLatticeHomClass [Com
   { sSupHomClass.toSupBotHomClass, sInfHomClass.toInfTopHomClass with }
 #align complete_lattice_hom_class.to_bounded_lattice_hom_class CompleteLatticeHomClass.toBoundedLatticeHomClass
 
+end Hom
+
+section Equiv
+
+variable [EquivLike F α β]
+
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.tosSupHomClass [CompleteLattice α]
     [CompleteLattice β] [OrderIsoClass F α β] : sSupHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
     map_sSup := fun f s =>
       eq_of_forall_ge_iff fun c => by
-        simp only [← le_map_inv_iff, sSup_le_iff, Set.ball_image_iff] }
+        simp only [← le_map_inv_iff, sSup_le_iff, Set.forall_mem_image] }
 #align order_iso_class.to_Sup_hom_class OrderIsoClass.tosSupHomClass
 
 -- See note [lower instance priority]
@@ -206,7 +214,7 @@ instance (priority := 100) OrderIsoClass.tosInfHomClass [CompleteLattice α]
   { show OrderHomClass F α β from inferInstance with
     map_sInf := fun f s =>
       eq_of_forall_le_iff fun c => by
-        simp only [← map_inv_le_iff, le_sInf_iff, Set.ball_image_iff] }
+        simp only [← map_inv_le_iff, le_sInf_iff, Set.forall_mem_image] }
 #align order_iso_class.to_Inf_hom_class OrderIsoClass.tosInfHomClass
 
 -- See note [lower instance priority]
@@ -217,6 +225,17 @@ instance (priority := 100) OrderIsoClass.toCompleteLatticeHomClass [CompleteLatt
     -- show sInfHomClass F α β from inferInstance with }
   { OrderIsoClass.tosSupHomClass, OrderIsoClass.tosInfHomClass with }
 #align order_iso_class.to_complete_lattice_hom_class OrderIsoClass.toCompleteLatticeHomClass
+
+end Equiv
+
+variable [FunLike F α β]
+
+/-- Reinterpret an order isomorphism as a morphism of complete lattices. -/
+@[simps] def OrderIso.toCompleteLatticeHom [CompleteLattice α] [CompleteLattice β]
+    (f : OrderIso α β) : CompleteLatticeHom α β where
+  toFun := f
+  map_sInf' := sInfHomClass.map_sInf f
+  map_sSup' := sSupHomClass.map_sSup f
 
 instance [SupSet α] [SupSet β] [sSupHomClass F α β] : CoeTC F (sSupHom α β) :=
   ⟨fun f => ⟨f, map_sSup f⟩⟩
@@ -242,17 +261,12 @@ section SupSet
 
 variable [SupSet β] [SupSet γ] [SupSet δ]
 
-instance : sSupHomClass (sSupHom α β) α β
-    where
+instance : FunLike (sSupHom α β) α β where
   coe := sSupHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
-  map_sSup := sSupHom.map_sSup'
 
--- Porting note: We do not want CoeFun for this in lean 4
--- /-- Helper instance for when there's too many metavariables to apply `funLike.has_coe_toFun`
--- directly. -/
--- instance : CoeFun (sSupHom α β) fun _ => α → β :=
---   FunLike.hasCoeToFun
+instance : sSupHomClass (sSupHom α β) α β where
+  map_sSup := sSupHom.map_sSup'
 
 @[simp] lemma toFun_eq_coe (f : sSupHom α β) : f.toFun = f := rfl
 #align Sup_hom.to_fun_eq_coe sSupHom.toFun_eq_coe
@@ -261,7 +275,7 @@ instance : sSupHomClass (sSupHom α β) α β
 
 @[ext]
 theorem ext {f g : sSupHom α β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align Sup_hom.ext sSupHom.ext
 
 /-- Copy of a `sSupHom` with a new `toFun` equal to the old one. Useful to fix definitional
@@ -278,7 +292,7 @@ theorem coe_copy (f : sSupHom α β) (f' : α → β) (h : f' = f) : ⇑(f.copy 
 #align Sup_hom.coe_copy sSupHom.coe_copy
 
 theorem copy_eq (f : sSupHom α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align Sup_hom.copy_eq sSupHom.copy_eq
 
 variable (α)
@@ -339,7 +353,7 @@ theorem id_comp (f : sSupHom α β) : (sSupHom.id β).comp f = f :=
 @[simp]
 theorem cancel_right {g₁ g₂ : sSupHom β γ} {f : sSupHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align Sup_hom.cancel_right sSupHom.cancel_right
 
 @[simp]
@@ -353,7 +367,7 @@ end SupSet
 variable { _ : CompleteLattice β}
 
 instance : PartialOrder (sSupHom α β) :=
-  PartialOrder.lift _ FunLike.coe_injective
+  PartialOrder.lift _ DFunLike.coe_injective
 
 instance : Bot (sSupHom α β) :=
   ⟨⟨fun _ => ⊥, fun s => by
@@ -388,17 +402,12 @@ section InfSet
 
 variable [InfSet β] [InfSet γ] [InfSet δ]
 
-instance : sInfHomClass (sInfHom α β) α β
-    where
+instance : FunLike (sInfHom α β) α β where
   coe := sInfHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
-  map_sInf := sInfHom.map_sInf'
 
--- Porting note: Do not want these CoeFun instances in lean4
--- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`
--- directly. -/
--- instance : CoeFun (sInfHom α β) fun _ => α → β :=
---   FunLike.hasCoeToFun
+instance : sInfHomClass (sInfHom α β) α β where
+  map_sInf := sInfHom.map_sInf'
 
 @[simp] lemma toFun_eq_coe (f : sInfHom α β) : f.toFun = f := rfl
 #align Inf_hom.to_fun_eq_coe sInfHom.toFun_eq_coe
@@ -407,7 +416,7 @@ instance : sInfHomClass (sInfHom α β) α β
 
 @[ext]
 theorem ext {f g : sInfHom α β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align Inf_hom.ext sInfHom.ext
 
 /-- Copy of a `sInfHom` with a new `toFun` equal to the old one. Useful to fix definitional
@@ -424,7 +433,7 @@ theorem coe_copy (f : sInfHom α β) (f' : α → β) (h : f' = f) : ⇑(f.copy 
 #align Inf_hom.coe_copy sInfHom.coe_copy
 
 theorem copy_eq (f : sInfHom α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align Inf_hom.copy_eq sInfHom.copy_eq
 
 variable (α)
@@ -485,7 +494,7 @@ theorem id_comp (f : sInfHom α β) : (sInfHom.id β).comp f = f :=
 @[simp]
 theorem cancel_right {g₁ g₂ : sInfHom β γ} {f : sInfHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align Inf_hom.cancel_right sInfHom.cancel_right
 
 @[simp]
@@ -499,7 +508,7 @@ end InfSet
 variable [CompleteLattice β]
 
 instance : PartialOrder (sInfHom α β) :=
-  PartialOrder.lift _ FunLike.coe_injective
+  PartialOrder.lift _ DFunLike.coe_injective
 
 instance : Top (sInfHom α β) :=
   ⟨⟨fun _ => ⊤, fun s => by
@@ -530,22 +539,19 @@ namespace FrameHom
 
 variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] [CompleteLattice δ]
 
-instance : FrameHomClass (FrameHom α β) α β
+instance : FunLike (FrameHom α β) α β
     where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
     congr
+
+instance : FrameHomClass (FrameHom α β) α β
+    where
   map_sSup f := f.map_sSup'
   map_inf f := f.map_inf'
   map_top f := f.map_top'
-
--- Porting note: We do not want CoeFun for this in lean 4
--- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`
--- directly. -/
--- instance : CoeFun (FrameHom α β) fun _ => α → β :=
---   FunLike.hasCoeToFun
 
 /-- Reinterpret a `FrameHom` as a `LatticeHom`. -/
 def toLatticeHom (f : FrameHom α β) : LatticeHom α β :=
@@ -561,7 +567,7 @@ lemma toFun_eq_coe (f : FrameHom α β) : f.toFun = f := rfl
 
 @[ext]
 theorem ext {f g : FrameHom α β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align frame_hom.ext FrameHom.ext
 
 /-- Copy of a `FrameHom` with a new `toFun` equal to the old one. Useful to fix definitional
@@ -576,7 +582,7 @@ theorem coe_copy (f : FrameHom α β) (f' : α → β) (h : f' = f) : ⇑(f.copy
 #align frame_hom.coe_copy FrameHom.coe_copy
 
 theorem copy_eq (f : FrameHom α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align frame_hom.copy_eq FrameHom.copy_eq
 
 variable (α)
@@ -636,7 +642,7 @@ theorem id_comp (f : FrameHom α β) : (FrameHom.id β).comp f = f :=
 @[simp]
 theorem cancel_right {g₁ g₂ : FrameHom β γ} {f : FrameHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align frame_hom.cancel_right FrameHom.cancel_right
 
 @[simp]
@@ -646,21 +652,21 @@ theorem cancel_left {g : FrameHom β γ} {f₁ f₂ : FrameHom α β} (hg : Inje
 #align frame_hom.cancel_left FrameHom.cancel_left
 
 instance : PartialOrder (FrameHom α β) :=
-  PartialOrder.lift _ FunLike.coe_injective
+  PartialOrder.lift _ DFunLike.coe_injective
 
 end FrameHom
 
 /-! ### Complete lattice homomorphisms -/
 
-
 namespace CompleteLatticeHom
 
 variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] [CompleteLattice δ]
 
-instance : CompleteLatticeHomClass (CompleteLatticeHom α β) α β
-    where
+instance : FunLike (CompleteLatticeHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+
+instance : CompleteLatticeHomClass (CompleteLatticeHom α β) α β where
   map_sSup f := f.map_sSup'
   map_sInf f := f.map_sInf'
 
@@ -678,7 +684,7 @@ def toBoundedLatticeHom (f : CompleteLatticeHom α β) : BoundedLatticeHom α β
 -- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`
 -- directly. -/
 -- instance : CoeFun (CompleteLatticeHom α β) fun _ => α → β :=
---   FunLike.hasCoeToFun
+--   DFunLike.hasCoeToFun
 
 lemma toFun_eq_coe (f : CompleteLatticeHom α β) : f.toFun = f := rfl
 #align complete_lattice_hom.to_fun_eq_coe CompleteLatticeHom.toFun_eq_coe
@@ -691,7 +697,7 @@ rfl
 
 @[ext]
 theorem ext {f g : CompleteLatticeHom α β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align complete_lattice_hom.ext CompleteLatticeHom.ext
 
 /-- Copy of a `CompleteLatticeHom` with a new `toFun` equal to the old one. Useful to fix
@@ -707,7 +713,7 @@ theorem coe_copy (f : CompleteLatticeHom α β) (f' : α → β) (h : f' = f) : 
 #align complete_lattice_hom.coe_copy CompleteLatticeHom.coe_copy
 
 theorem copy_eq (f : CompleteLatticeHom α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align complete_lattice_hom.copy_eq CompleteLatticeHom.copy_eq
 
 variable (α)
@@ -766,7 +772,7 @@ theorem id_comp (f : CompleteLatticeHom α β) : (CompleteLatticeHom.id β).comp
 @[simp]
 theorem cancel_right {g₁ g₂ : CompleteLatticeHom β γ} {f : CompleteLatticeHom α β}
     (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align complete_lattice_hom.cancel_right CompleteLatticeHom.cancel_right
 
 @[simp]
@@ -967,8 +973,8 @@ def Equiv.toOrderIsoSet (e : α ≃ β) : Set α ≃o Set β
     where
   toFun s := e '' s
   invFun s := e.symm '' s
-  left_inv s := by simp only [← image_comp, Equiv.symm_comp_self, id.def, image_id']
-  right_inv s := by simp only [← image_comp, Equiv.self_comp_symm, id.def, image_id']
+  left_inv s := by simp only [← image_comp, Equiv.symm_comp_self, id, image_id']
+  right_inv s := by simp only [← image_comp, Equiv.self_comp_symm, id, image_id']
   map_rel_iff' :=
     ⟨fun h => by simpa using @monotone_image _ _ e.symm _ _ h, fun h => monotone_image h⟩
 #align equiv.to_order_iso_set Equiv.toOrderIsoSet

@@ -45,20 +45,23 @@ class Nat.AtLeastTwo (n : ℕ) : Prop where
   prop : n ≥ 2
 
 instance instNatAtLeastTwo : Nat.AtLeastTwo (n + 2) where
-  prop := Nat.succ_le_succ $ Nat.succ_le_succ $ Nat.zero_le _
+  prop := Nat.succ_le_succ <| Nat.succ_le_succ <| Nat.zero_le _
 
-lemma Nat.AtLeastTwo.ne_zero (n : ℕ) [h : n.AtLeastTwo] : n ≠ 0 := by
-  rintro rfl; exact absurd h.1 (by decide)
+namespace Nat.AtLeastTwo
 
-lemma Nat.AtLeastTwo.ne_one (n : ℕ) [h : n.AtLeastTwo] : n ≠ 1 := by
-  rintro rfl; exact absurd h.1 (by decide)
+variable {n : ℕ} [n.AtLeastTwo]
+
+lemma one_lt : 1 < n := prop
+lemma ne_one : n ≠ 1 := Nat.ne_of_gt one_lt
+
+end Nat.AtLeastTwo
 
 /-- Recognize numeric literals which are at least `2` as terms of `R` via `Nat.cast`. This
 instance is what makes things like `37 : R` type check.  Note that `0` and `1` are not needed
 because they are recognized as terms of `R` (at least when `R` is an `AddMonoidWithOne`) through
 `Zero` and `One`, respectively. -/
 @[nolint unusedArguments]
-instance instOfNat [NatCast R] [Nat.AtLeastTwo n] : OfNat R n where
+instance (priority := 100) instOfNatAtLeastTwo [NatCast R] [Nat.AtLeastTwo n] : OfNat R n where
   ofNat := n.cast
 
 library_note "no_index around OfNat.ofNat"
@@ -124,7 +127,7 @@ theorem cast_zero : ((0 : ℕ) : R) = 0 :=
 -- Lemmas about `Nat.succ` need to get a low priority, so that they are tried last.
 -- This is because `Nat.succ _` matches `1`, `3`, `x+1`, etc.
 -- Rewriting would then produce really wrong terms.
-@[simp 500, norm_cast 500]
+@[norm_cast 500]
 theorem cast_succ (n : ℕ) : ((succ n : ℕ) : R) = n + 1 :=
   AddMonoidWithOne.natCast_succ _
 #align nat.cast_succ Nat.cast_succ
@@ -150,7 +153,9 @@ theorem cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by
 
 @[simp, norm_cast]
 theorem cast_add [AddMonoidWithOne R] (m n : ℕ) : ((m + n : ℕ) : R) = m + n := by
-  induction n <;> simp [add_succ, add_assoc, Nat.add_zero, Nat.cast_one, Nat.cast_zero, *]
+  induction n with
+  | zero => simp
+  | succ n ih => rw [add_succ, cast_succ, ih, cast_succ, add_assoc]
 #align nat.cast_add Nat.cast_addₓ
 
 /-- Computationally friendlier cast than `Nat.unaryCast`, using binary representation. -/
@@ -159,7 +164,6 @@ protected def binCast [Zero R] [One R] [Add R] : ℕ → R
   | n + 1 => if (n + 1) % 2 = 0
     then (Nat.binCast ((n + 1) / 2)) + (Nat.binCast ((n + 1) / 2))
     else (Nat.binCast ((n + 1) / 2)) + (Nat.binCast ((n + 1) / 2)) + 1
-decreasing_by (exact Nat.div_lt_self (Nat.succ_pos n) (Nat.le_refl 2))
 #align nat.bin_cast Nat.binCast
 
 @[simp]
@@ -171,11 +175,11 @@ theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) : (Nat.binCast n : R) = ((n : 
   | succ k =>
       rw [Nat.binCast]
       by_cases h : (k + 1) % 2 = 0
-      · rw [← Nat.mod_add_div (succ k) 2]
-        rw [if_pos h, hk _ $ Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
-        rw [Nat.succ_eq_add_one, h, Nat.zero_add, Nat.succ_mul, Nat.one_mul]
-      · rw [← Nat.mod_add_div (succ k) 2]
-        rw [if_neg h, hk _ $ Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
+      · conv => rhs; rw [← Nat.mod_add_div (k+1) 2]
+        rw [if_pos h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
+        rw [h, Nat.zero_add, Nat.succ_mul, Nat.one_mul]
+      · conv => rhs; rw [← Nat.mod_add_div (k+1) 2]
+        rw [if_neg h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
         have h1 := Or.resolve_left (Nat.mod_two_eq_zero_or_one (succ k)) h
         rw [h1, Nat.add_comm 1, Nat.succ_mul, Nat.one_mul]
         simp only [Nat.cast_add, Nat.cast_one]

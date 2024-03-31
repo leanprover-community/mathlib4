@@ -3,17 +3,10 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
-import Std.Tactic.Ext
-import Std.Tactic.Lint.Basic
-import Std.Tactic.Relation.Rfl
-import Std.Logic
-import Std.WF
-import Mathlib.Tactic.Basic
-import Mathlib.Tactic.Relation.Symm
+import Mathlib.Tactic.Lemma
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Relation.Trans
-import Mathlib.Util.Imports
 import Mathlib.Tactic.ProjectionNotation
 
 set_option autoImplicit true
@@ -38,10 +31,6 @@ set_option autoImplicit true
 
 /- Eq -/
 
-alias proof_irrel := proofIrrel
-alias congr_fun := congrFun
-alias congr_arg := congrArg
-
 @[deprecated] theorem trans_rel_left {α : Sort u} {a b c : α}
     (r : α → α → Prop) (h₁ : r a b) (h₂ : b = c) : r a c := h₂ ▸ h₁
 
@@ -55,8 +44,6 @@ theorem cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h�
 attribute [symm] Eq.symm
 
 /- Ne -/
-
-theorem Ne.def {α : Sort u} (a b : α) : (a ≠ b) = ¬ (a = b) := rfl
 
 attribute [symm] Ne.symm
 
@@ -240,11 +227,11 @@ theorem ExistsUnique.intro {p : α → Prop} (w : α)
 
 theorem ExistsUnique.elim {α : Sort u} {p : α → Prop} {b : Prop}
     (h₂ : ∃! x, p x) (h₁ : ∀ x, p x → (∀ y, p y → y = x) → b) : b :=
-  Exists.elim h₂ (λ w hw => h₁ w (And.left hw) (And.right hw))
+  Exists.elim h₂ (fun w hw ↦ h₁ w (And.left hw) (And.right hw))
 
 theorem exists_unique_of_exists_of_unique {α : Sort u} {p : α → Prop}
     (hex : ∃ x, p x) (hunique : ∀ y₁ y₂, p y₁ → p y₂ → y₁ = y₂) : ∃! x, p x :=
-  Exists.elim hex (λ x px => ExistsUnique.intro x px (λ y (h : p y) => hunique y x h px))
+  Exists.elim hex (fun x px ↦ ExistsUnique.intro x px (fun y (h : p y) ↦ hunique y x h px))
 
 theorem ExistsUnique.exists {p : α → Prop} : (∃! x, p x) → ∃ x, p x | ⟨x, h, _⟩ => ⟨x, h⟩
 #align exists_of_exists_unique ExistsUnique.exists
@@ -268,7 +255,7 @@ theorem ExistsUnique.unique {α : Sort u} {p : α → Prop}
 
 -- @[congr]
 theorem exists_unique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃! a, p a) ↔ ∃! a, q a :=
-  exists_congr fun _ ↦ and_congr (h _) $ forall_congr' fun _ ↦ imp_congr_left (h _)
+  exists_congr fun _ ↦ and_congr (h _) <| forall_congr' fun _ ↦ imp_congr_left (h _)
 
 /- decidable -/
 
@@ -328,7 +315,7 @@ def decidableEq_of_bool_pred {α : Sort u} {p : α → α → Bool} (h₁ : IsDe
     (h₂ : IsDecRefl p) : DecidableEq α
   | x, y =>
     if hp : p x y = true then isTrue (h₁ hp)
-    else isFalse (λ hxy : x = y => absurd (h₂ y) (by rwa [hxy] at hp))
+    else isFalse (fun hxy : x = y ↦ absurd (h₂ y) (by rwa [hxy] at hp))
 #align decidable_eq_of_bool_pred decidableEq_of_bool_pred
 
 theorem decidableEq_inl_refl {α : Sort u} [h : DecidableEq α] (a : α) :
@@ -375,7 +362,7 @@ theorem if_ctx_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : D
 
 theorem if_congr {α : Sort u} {b c : Prop} [Decidable b] [Decidable c]
     {x y u v : α} (h_c : b ↔ c) (h_t : x = u) (h_e : y = v) : ite b x y = ite c u v :=
-  if_ctx_congr h_c (λ _ => h_t) (λ _ => h_e)
+  if_ctx_congr h_c (fun _ ↦ h_t) (fun _ ↦ h_e)
 
 theorem if_ctx_congr_prop {b c x y u v : Prop} [dec_b : Decidable b] [dec_c : Decidable c]
     (h_c : b ↔ c) (h_t : c → (x ↔ u)) (h_e : ¬c → (y ↔ v)) : ite b x y ↔ ite c u v :=
@@ -388,7 +375,7 @@ theorem if_ctx_congr_prop {b c x y u v : Prop} [dec_b : Decidable b] [dec_c : De
 -- @[congr]
 theorem if_congr_prop {b c x y u v : Prop} [Decidable b] [Decidable c] (h_c : b ↔ c) (h_t : x ↔ u)
     (h_e : y ↔ v) : ite b x y ↔ ite c u v :=
-  if_ctx_congr_prop h_c (λ _ => h_t) (λ _ => h_e)
+  if_ctx_congr_prop h_c (fun _ ↦ h_t) (fun _ ↦ h_e)
 
 theorem if_ctx_simp_congr_prop {b c x y u v : Prop} [Decidable b] (h_c : b ↔ c) (h_t : c → (x ↔ u))
     -- FIXME: after https://github.com/leanprover/lean4/issues/1867 is fixed,
@@ -402,7 +389,7 @@ theorem if_simp_congr_prop {b c x y u v : Prop} [Decidable b] (h_c : b ↔ c) (h
     -- this should be changed back to:
     -- (h_e : y ↔ v) : ite b x y ↔ (ite c (h := decidable_of_decidable_of_iff h_c) u v) :=
     (h_e : y ↔ v) : ite b x y ↔ (@ite _ c (decidable_of_decidable_of_iff h_c) u v) :=
-  if_ctx_simp_congr_prop h_c (λ _ => h_t) (λ _ => h_e)
+  if_ctx_simp_congr_prop h_c (fun _ ↦ h_t) (fun _ ↦ h_e)
 
 -- @[congr]
 theorem dif_ctx_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : Decidable c]
@@ -477,10 +464,10 @@ def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
 
 lemma Equivalence.reflexive {r : β → β → Prop} (h : Equivalence r) : Reflexive r := h.refl
 
-lemma Equivalence.symmetric {r : β → β → Prop} (h : Equivalence r) : Symmetric r := λ _ _ => h.symm
+lemma Equivalence.symmetric {r : β → β → Prop} (h : Equivalence r) : Symmetric r := fun _ _ ↦ h.symm
 
-lemma Equivalence.transitive {r : β → β → Prop}(h : Equivalence r) : Transitive r :=
-  λ _ _ _ => h.trans
+lemma Equivalence.transitive {r : β → β → Prop} (h : Equivalence r) : Transitive r :=
+  fun _ _ _ ↦ h.trans
 
 /-- A relation is total if for all `x` and `y`, either `x ≺ y` or `y ≺ x`. -/
 def Total := ∀ x y, x ≺ y ∨ y ≺ x
@@ -495,7 +482,7 @@ def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
 
 /-- An empty relation does not relate any elements. -/
 @[nolint unusedArguments]
-def EmptyRelation := λ _ _ : α => False
+def EmptyRelation := fun _ _ : α ↦ False
 
 theorem InvImage.trans (f : α → β) (h : Transitive r) : Transitive (InvImage r f) :=
   fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) ↦ h h₁ h₂
@@ -636,7 +623,7 @@ end Binary
 #align decidable.not_imp_not Decidable.not_imp_not
 #align decidable.not_or_of_imp Decidable.not_or_of_imp
 #align decidable.imp_iff_not_or Decidable.imp_iff_not_or
-#align decidable.not_imp Decidable.not_imp
+#align decidable.not_imp Decidable.not_imp_iff_and_not
 #align decidable.peirce Decidable.peirce
 #align peirce' peirce'
 #align decidable.not_iff_not Decidable.not_iff_not
@@ -668,4 +655,4 @@ end Binary
 #align false_ne_true false_ne_true
 #align ne_comm ne_comm
 
-attribute [pp_dot] Iff.mp Iff.mpr False.elim Eq.symm Eq.trans
+attribute [pp_dot] False.elim Eq.symm Eq.trans

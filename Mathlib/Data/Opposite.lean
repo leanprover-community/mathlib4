@@ -22,7 +22,7 @@ universe v u
 -- morphism levels before object levels. See note [CategoryTheory universes].
 variable (α : Sort u)
 
--- porting note: in mathlib, `opposite α` was a type synonym for `α`, but if we did
+-- Porting note: in mathlib, `opposite α` was a type synonym for `α`, but if we did
 -- the same in Lean4, one could write problematic definitions like:
 -- example (X : C) : Cᵒᵖ := X
 -- example {X Y : C} (f : X ⟶ Y): op Y ⟶ op X := f
@@ -89,6 +89,10 @@ def equivToOpposite : α ≃ αᵒᵖ where
   right_inv := op_unop
 #align opposite.equiv_to_opposite Opposite.equivToOpposite
 
+theorem op_surjective : Function.Surjective (op : α → αᵒᵖ) := equivToOpposite.surjective
+
+theorem unop_surjective : Function.Surjective (unop : αᵒᵖ → α) := equivToOpposite.symm.surjective
+
 @[simp]
 theorem equivToOpposite_coe : (equivToOpposite : α → αᵒᵖ) = op :=
   rfl
@@ -115,9 +119,9 @@ instance [Nonempty α] : Nonempty αᵒᵖ := Nonempty.map op ‹_›
 instance [Subsingleton α] : Subsingleton αᵒᵖ := unop_injective.subsingleton
 
 /-- A recursor for `Opposite`.
-The `@[eliminator]` attribute makes it the default induction principle for `Opposite`
+The `@[induction_eliminator]` attribute makes it the default induction principle for `Opposite`
 so you don't need to use `induction x using Opposite.rec'`. -/
-@[simp, eliminator]
+@[simp, induction_eliminator]
 protected def rec' {F : αᵒᵖ → Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
 #align opposite.rec Opposite.rec'
 
