@@ -355,7 +355,6 @@ theorem measure_Ioc (a b : ℝ) : f.measure (Ioc a b) = ofReal (f b - f a) := by
   exact f.outer_Ioc a b
 #align stieltjes_function.measure_Ioc StieltjesFunction.measure_Ioc
 
-set_option synthInstance.maxHeartbeats 25000 in
 @[simp]
 theorem measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a) := by
   obtain ⟨u, u_mono, u_lt_a, u_lim⟩ :
