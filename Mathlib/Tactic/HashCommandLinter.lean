@@ -6,12 +6,14 @@ Authors: Damiano Testa
 
 import Lean.Elab.Command
 import Lean.Linter.Util
+import Std.Lean.HashSet
 
 /-!
 #  `#`-command linter
 
 The `#`-command linter produces a warning when a command starting with `#` is used *and*
-the command emits no message.
+* either the command emits no message;
+* or `warningAsError` is set to `true`.
 -/
 
 namespace Mathlib.Linter
@@ -49,27 +51,28 @@ private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun st
     cmd stx
 
 /-- `whitelist` is the array of `#`-commands that are allowed in 'Mathlib'. -/
-private abbrev whitelist : HashSet String := HashSet.empty
-  |>.insert "#align"
-  |>.insert "#align_import"
-  |>.insert "#noalign"
+private abbrev whitelist : HashSet String :=
+  { "#align", "#align_import", "#noalign" }
 
 /-- Checks that no command beginning with `#` is present in 'Mathlib', except for
 * the ones in `whitelist`;
 * the ones that already emit a message.
 
 This means that CI will fail on `#`-commands whether they themselves emit a message or not.
+
+If `warningAsError` is `true`, then the linter emits a warning
+also on silent `#`-commands.
+This allows the linter to emit better messages during CI, but does not clutter local usage
 -/
 def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
---  dbg_trace (← get).messages.msgs.size
-  if getLinterHash (← getOptions) && (← get).messages.msgs.size == 0 then
---    dbg_trace "linting"
+  if getLinterHash (← getOptions) &&
+    ((← get).messages.msgs.size == 0 || warningAsError.get (← getOptions)) then
     match stx.getHead? with
-      | some sa =>
-        let a := sa.getAtomVal
-        if (a.get ⟨0⟩ == '#' && ! whitelist.contains a) then
-          Linter.logLint linter.hashCommand sa
-            m!"`#`-commands, such as '{a}', are not allowed in 'Mathlib'"
-      | none => return
+    | some sa =>
+      let a := sa.getAtomVal
+      if (a.get ⟨0⟩ == '#' && ! whitelist.contains a) then
+        Linter.logLint linter.hashCommand sa
+          m!"`#`-commands, such as '{a}', are not allowed in 'Mathlib'"
+    | none => return
 
 initialize addLinter hashCommandLinter

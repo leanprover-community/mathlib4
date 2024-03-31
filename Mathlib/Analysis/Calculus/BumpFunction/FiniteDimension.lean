@@ -54,7 +54,7 @@ theorem exists_smooth_tsupport_subset {s : Set E} {x : E} (hs : s ∈ 𝓝 x) :
   have f_supp : f.support ⊆ Euclidean.ball x d := by
     intro y hy
     have : toEuclidean y ∈ Function.support c := by
-      simpa only [Function.mem_support, Function.comp_apply, Ne.def] using hy
+      simpa only [Function.mem_support, Function.comp_apply, Ne] using hy
     rwa [c.support_eq] at this
   have f_tsupp : tsupport f ⊆ Euclidean.closedBall x d := by
     rw [tsupport, ← Euclidean.closure_ball _ d_pos.ne']
@@ -96,7 +96,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       rcases exists_smooth_tsupport_subset (hs.mem_nhds hx) with ⟨f, hf⟩
       let g : ι := ⟨f, (subset_tsupport f).trans hf.1, hf.2.1, hf.2.2.1, hf.2.2.2.1⟩
       have : x ∈ support (g : E → ℝ) := by
-        simp only [hf.2.2.2.2, Subtype.coe_mk, mem_support, Ne.def, one_ne_zero, not_false_iff]
+        simp only [hf.2.2.2.2, Subtype.coe_mk, mem_support, Ne, one_ne_zero, not_false_iff]
       exact mem_iUnion_of_mem _ this
     simp_rw [← this]
     apply isOpen_iUnion_countable
@@ -164,7 +164,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
   refine' ⟨fun x => ∑' n, (r n • g n) x, _, _, _⟩
   · apply Subset.antisymm
     · intro x hx
-      simp only [Pi.smul_apply, Algebra.id.smul_eq_mul, mem_support, Ne.def] at hx
+      simp only [Pi.smul_apply, Algebra.id.smul_eq_mul, mem_support, Ne] at hx
       contrapose! hx
       have : ∀ n, g n x = 0 := by
         intro n
@@ -435,7 +435,7 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
     have C : ball z (D * (1 + D - ‖x‖) / (1 + D)) ⊆ support fun y : E => w D y * φ (x - y) := by
       intro y hy
       simp only [support_mul, w_support E Dpos]
-      simp only [φ, mem_inter_iff, mem_support, Ne.def, indicator_apply_eq_zero,
+      simp only [φ, mem_inter_iff, mem_support, Ne, indicator_apply_eq_zero,
         mem_closedBall_zero_iff, one_ne_zero, not_forall, not_false_iff, exists_prop, and_true_iff]
       constructor
       · apply ball_subset_ball' _ hy
@@ -446,9 +446,9 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
         rfl
       · have ID : ‖D / (1 + D) - 1‖ = 1 / (1 + D) := by
           rw [Real.norm_of_nonpos]
-          · simp only [B.ne', Ne.def, not_false_iff, mul_one, neg_sub, add_tsub_cancel_right,
+          · simp only [B.ne', Ne, not_false_iff, mul_one, neg_sub, add_tsub_cancel_right,
               field_simps]
-          · simp only [B.ne', Ne.def, not_false_iff, mul_one, field_simps]
+          · simp only [B.ne', Ne, not_false_iff, mul_one, field_simps]
             apply div_nonpos_of_nonpos_of_nonneg _ B.le
             linarith only
         rw [← mem_closedBall_iff_norm']

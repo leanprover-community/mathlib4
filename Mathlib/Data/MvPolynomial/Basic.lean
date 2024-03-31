@@ -761,7 +761,7 @@ theorem support_smul_eq {S₁ : Type*} [Semiring S₁] [Module S₁ R] [NoZeroSM
 theorem support_sdiff_support_subset_support_add [DecidableEq σ] (p q : MvPolynomial σ R) :
     p.support \ q.support ⊆ (p + q).support := by
   intro m hm
-  simp only [Classical.not_not, mem_support_iff, Finset.mem_sdiff, Ne.def] at hm
+  simp only [Classical.not_not, mem_support_iff, Finset.mem_sdiff, Ne] at hm
   simp [hm.2, hm.1]
 #align mv_polynomial.support_sdiff_support_subset_support_add MvPolynomial.support_sdiff_support_subset_support_add
 
@@ -817,7 +817,7 @@ theorem eq_zero_iff {p : MvPolynomial σ R} : p = 0 ↔ ∀ d, coeff d p = 0 := 
 #align mv_polynomial.eq_zero_iff MvPolynomial.eq_zero_iff
 
 theorem ne_zero_iff {p : MvPolynomial σ R} : p ≠ 0 ↔ ∃ d, coeff d p ≠ 0 := by
-  rw [Ne.def, eq_zero_iff]
+  rw [Ne, eq_zero_iff]
   push_neg
   rfl
 #align mv_polynomial.ne_zero_iff MvPolynomial.ne_zero_iff

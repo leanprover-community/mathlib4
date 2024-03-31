@@ -287,7 +287,7 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
     · rintro ⟨s, hs, rfl⟩
       rw [Finset.mem_powerset, ← Finset.val_le_iff, Multiset.toFinset_val] at hs
       have hs0 : s.val.prod ≠ 0 := by
-        rw [Ne.def, Multiset.prod_eq_zero_iff]
+        rw [Ne, Multiset.prod_eq_zero_iff]
         intro con
         apply
           not_irreducible_zero
