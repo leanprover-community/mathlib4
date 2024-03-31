@@ -217,7 +217,8 @@ lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace Ω] {x : Ω}
   refine ⟨Ioi 0, Ioi_mem_nhds (by simp only [ENNReal.coe_one, zero_lt_one]),
           hU.mp (eventually_of_forall ?_)⟩
   intro x x_notin_U
-  rw [f_vanishes_outside x (compl_subset_compl.mpr (show interior U ⊆ U from interior_subset) x_notin_U)]
+  rw [f_vanishes_outside x
+      (compl_subset_compl.mpr (show interior U ⊆ U from interior_subset) x_notin_U)]
   simp only [ENNReal.coe_zero, mem_Ioi, lt_self_iff_false, not_false_eq_true]
 
 lemma tendsto_diracProba_iff_tendsto [CompletelyRegularSpace Ω] {x : Ω} (L : Filter Ω) :
@@ -255,7 +256,8 @@ noncomputable def diracProbaEquiv [T0Space Ω] : Ω ≃ range (diracProba (Ω :=
 
 /-- The composition of `diracProbaEquiv.symm` and `diracProba` is the subtype inclusion. -/
 lemma diracProba_comp_diracProbaEquiv_symm_eq_val [T0Space Ω] :
-    diracProba ∘ (diracProbaEquiv (Ω := Ω)).symm = fun μ ↦ μ.val := by funext μ; simp [diracProbaEquiv]
+    diracProba ∘ (diracProbaEquiv (Ω := Ω)).symm = fun μ ↦ μ.val := by
+  funext μ; simp [diracProbaEquiv]
 
 lemma tendsto_diracProbaEquivSymm_iff_tendsto [T0Space Ω] [CompletelyRegularSpace Ω]
     {μ : range (diracProba (Ω := Ω))} (F : Filter (range (diracProba (Ω := Ω)))) :
@@ -287,45 +289,11 @@ noncomputable def homeomorph_diracProba [T0Space Ω] [CompletelyRegularSpace Ω]
     [MeasurableSpace Ω] [OpensMeasurableSpace Ω] : Ω ≃ₜ range (diracProba (Ω := Ω)) :=
   @Homeomorph.mk Ω _ _ _ diracProbaEquiv continuous_diracProbaEquiv continuous_diracProbaEquivSymm
 
-/-- If `X` is a completely regular T0 space with its Borel sigma algebra, then the mapping that takes
-a point `x : X` to the delta-measure `diracProba x` is an embedding `X → ProbabilityMeasure X`. -/
+/-- If `X` is a completely regular T0 space with its Borel sigma algebra, then the mapping
+that takes a point `x : X` to the delta-measure `diracProba x` is an embedding
+`X → ProbabilityMeasure X`. -/
 theorem embedding_diracProba [T0Space Ω] [CompletelyRegularSpace Ω]
     [MeasurableSpace Ω] [OpensMeasurableSpace Ω] : Embedding (fun (x : Ω) ↦ diracProba x) :=
   embedding_subtype_val.comp homeomorph_diracProba.embedding
 
 end embed_to_probabilityMeasure
-
-section counterexamples
-
-variable {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
-variable [T0Space Ω] [CompletelyRegularSpace Ω]
-
-open TopologicalSpace
-
-example :
-    ¬ MetrizableSpace Ω → ¬ MetrizableSpace (ProbabilityMeasure Ω) := by
-  intro badSpace goodProba
-  exact badSpace embedding_diracProba.metrizableSpace
-
-example :
-    ¬ PseudoMetrizableSpace Ω → ¬ PseudoMetrizableSpace (ProbabilityMeasure Ω) := by
-  intro badSpace goodProba
-  exact badSpace embedding_diracProba.pseudoMetrizableSpace
-
-/-
--- TODO: Is this missing?
---#check Subtype.firstCountableTopology
-example :
-    ¬ FirstCountableTopology Ω → ¬ FirstCountableTopology (ProbabilityMeasure Ω) := by
-  intro badSpace goodProba
-  apply badSpace
-  sorry
-
-#check Subtype.secondCountableTopology -- ∃
-example :
-    ¬ SecondCountableTopology Ω → ¬ SecondCountableTopology (ProbabilityMeasure Ω) := by
-  intro badSpace goodProba
-  exact badSpace embedding_diracProba.secondCountableTopology
- -/
-
-end counterexamples
