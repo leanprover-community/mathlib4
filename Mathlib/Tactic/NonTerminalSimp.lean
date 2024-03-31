@@ -323,13 +323,14 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
   -- `stains` records pairs `(location, mvar)`, where
   -- * `location` is either a hypothesis or the main goal modified by a flexible tactic and
   -- * `mvar` is the metavariable containing the modified location
-  let mut stains : HashMap (FVarId × MVarId) SyntaxNodeKind := .empty
+  let mut stains : HashMap FVarId (MVarId × SyntaxNodeKind) := .empty
   let mut msgs : Array (Syntax × SyntaxNodeKind × stained) := #[]
   for d in x do for (s, ctx0, ctx1, mvs0, mvs1) in d do
 --    if ! ignored.contains s.getKind then
 --      logInfoAt s[0] m!"{mvs0.map (·.name)} ⊆ -- '{s}'\n{mvs1.map (·.name)}"
 --    logInfoAt s m!"{stains.toArray.map fun ((fv, mv), xx) => ((fv.name, mv.name), xx)}"
 
+    logInfoAt s m!"stains before:\n* {stains.toArray.map fun (a, b, c) => (a.name, b.name, c)}"
     let skind := s.getKind
     if ignored.contains skind then /-dbg_trace "ignoring {skind}"-/ continue
 --    logInfoAt s m!"acting on: {getStained! s}"
@@ -356,16 +357,16 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
         let fvars := lctx.getFVarIds
         for lcn in lctx1 do for fv in fvars do
           let cand_fv := persistFVars fv lctx lcn
-          let olds := stains.toArray.filter fun ((a, _), _) => a == fv
-          for ((_, mv), k) in olds do
-            stains := stains.insert (cand_fv, mv) k
---          logInfoAt s m!"candidate: {cand_fv.name}"
---        let ldecls := fvars.map fun d => (lctx.get! d|>.userName, d.name)
---        logInfoAt s m!"before '{s}' (username, fvarid):\n{ldecls}"
---      for lctx in lctx1 do
---        let fvars := lctx.getFVarIds
---        let ldecls := fvars.map fun d => (lctx.get! d|>.userName, d.name)
---        logInfoAt s m!"after '{s}' (username, fvarid):\n{ldecls}"
+          let olds := stains.toArray.filter fun (a, _) => a == fv
+          for (_, mv, k) in olds do
+            stains := stains.insert cand_fv (mv, k)
+          logInfoAt s m!"candidate: {fv.name} --> {cand_fv.name}"
+        let ldecls := fvars.map fun d => (lctx.get! d|>.userName, d.name)
+        logInfoAt s m!"before '{s}' (username, fvarid):\n{ldecls}"
+      for lctx in lctx1 do
+        let fvars := lctx.getFVarIds
+        let ldecls := fvars.map fun d => (lctx.get! d|>.userName, d.name)
+        logInfoAt s m!"after '{s}' (username, fvarid):\n{ldecls}"
 
 
 /-
@@ -395,7 +396,7 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 --            logInfoAt s --trace[flexible]
 --              m!"{s} is staining {(((lctx1.fvarIdToDecl.find? l).getD default).userName, l.name)}\
 --                ({l == default}, {currMVar1.name})"
-            stains := stains.insert (l, currMVar1) skind
+            stains := stains.insert l (currMVar1, skind)
 
       else
         if !followers.contains skind then
@@ -407,7 +408,7 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
             -- * inside the syntax of the tactic `d`, e.g. the `h` in `rw [h]`.
             let locsBefore := d.toFVarId lctx0 ++ foundFvs
             for l in locsBefore do
-              if let some kind := stains.find? (l, currMVar0) then
+              if let some (currMVar0, kind) := stains.find? l then
                 --logInfoAt s m!"l: {locsBefore.size}, mvs0: {mvs0.length}"
                 if !msgs.contains (s, kind, d) then msgs := msgs.push (s, kind, d)
 --                Linter.logLint linter.nonTerminalSimp s m!"{kind} stained '{d}' at '{s}'"
@@ -419,18 +420,21 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 --              logInfoAt s m!"inserting {mv.name} at {fv.name}"
 --              stains := stains.insert (fv, mv) kd
 --              stains := stains.erase (fv, mvOld)
-      let mut new : HashMap (FVarId × MVarId) SyntaxNodeKind := .empty
+      let mut new : HashMap FVarId (MVarId × SyntaxNodeKind) := .empty
 --      logInfoAt s m!"following goals: {mvs1.length}"
       for currMVar1 in mvs1 do
-        for ((fv, _mvOld), kd) in stains.toArray do
---          logInfoAt s m!"persisting {fv.name} in {mvOld.name} --> {currMVar1.name}"
-          new := new.insert (fv, currMVar1) kd
+        for (fv, (mvOld, kd)) in stains.toArray do
+--          if mvs0.contains mvOld then
+            logInfoAt s m!"persisting {fv.name} in {mvOld.name} --> {currMVar1.name}"
+            new := new.insert fv (currMVar1, kd)
+--          else
+--            new := new.insert fv (mvOld, kd)
 --          stains := stains.erase (fv, mvOld)
 --          stains := stains.insert (fv, currMVar1) kd
       stains := new
+    logInfoAt s m!"stains after:\n* {stains.toArray.map fun (a, b, c) => (a.name, b.name, c)}"
   for (s, kind, d) in msgs do
     Linter.logLint linter.nonTerminalSimp s m!"{kind} stained '{d}' at '{s}'"
-
 
 
 
