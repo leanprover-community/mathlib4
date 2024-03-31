@@ -240,7 +240,8 @@ theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submodule R M) : m ∈ S �
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))
 #align submodule.smul_mem_pointwise_smul Submodule.smul_mem_pointwise_smul
 
-theorem pointwise_smul_mono (a : α) : Monotone (HSMul.hSMul a : Submodule R M → Submodule R M) :=
+theorem pointwise_smul_mono_right (a : α) :
+    Monotone (HSMul.hSMul a : Submodule R M → Submodule R M) :=
   fun _ _ => map_mono
 
 /-- See also `Submodule.smul_bot`. -/
