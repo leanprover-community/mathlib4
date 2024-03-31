@@ -329,7 +329,7 @@ theorem natDegree_multiset_prod (h : (0 : R[X]) ∉ t) :
     natDegree t.prod = (t.map natDegree).sum := by
   nontriviality R
   rw [natDegree_multiset_prod']
-  simp_rw [Ne.def, Multiset.prod_eq_zero_iff, Multiset.mem_map, leadingCoeff_eq_zero]
+  simp_rw [Ne, Multiset.prod_eq_zero_iff, Multiset.mem_map, leadingCoeff_eq_zero]
   rintro ⟨_, h, rfl⟩
   contradiction
 #align polynomial.nat_degree_multiset_prod Polynomial.natDegree_multiset_prod

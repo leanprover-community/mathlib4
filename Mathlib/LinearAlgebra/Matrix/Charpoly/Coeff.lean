@@ -272,7 +272,7 @@ theorem matPolyEquiv_eq_X_pow_sub_C {K : Type*} (k : ℕ) [Field K] (M : Matrix 
   · rw [charmatrix_apply_ne _ _ _ hij, AlgHom.map_neg, expand_C, coeff_neg, coeff_C]
     split_ifs with m0 mp <;>
       -- Porting note: again, the first `Matrix.` that was `DMatrix.`
-      simp only [hij, zero_sub, Matrix.zero_apply, sub_zero, neg_zero, Matrix.one_apply_ne, Ne.def,
+      simp only [hij, zero_sub, Matrix.zero_apply, sub_zero, neg_zero, Matrix.one_apply_ne, Ne,
         not_false_iff]
 set_option linter.uppercaseLean3 false in
 #align mat_poly_equiv_eq_X_pow_sub_C matPolyEquiv_eq_X_pow_sub_C

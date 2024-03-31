@@ -136,7 +136,7 @@ theorem degree_divX_lt (hp0 : p ≠ 0) : (divX p).degree < p.degree := by
             _ ≤ degree (divX p * X) := by
               rw [← zero_add (degree X), degree_mul' this]
               exact add_le_add
-                (by rw [zero_le_degree_iff, Ne.def, divX_eq_zero_iff]
+                (by rw [zero_le_degree_iff, Ne, divX_eq_zero_iff]
                     exact fun h0 => h (h0.symm ▸ degree_C_le))
                     le_rfl
         rw [degree_add_eq_left_of_degree_lt this]; exact degree_lt_degree_mul_X hXp0

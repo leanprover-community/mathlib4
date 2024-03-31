@@ -46,7 +46,7 @@ theorem cardinal_mk_le_sigma_polynomial :
       ⟨p.1, x, by
         dsimp
         have h : p.1.map (algebraMap R L) ≠ 0 := by
-          rw [Ne.def, ← Polynomial.degree_eq_bot,
+          rw [Ne, ← Polynomial.degree_eq_bot,
             Polynomial.degree_map_eq_of_injective (NoZeroSMulDivisors.algebraMap_injective R L),
             Polynomial.degree_eq_bot]
           exact p.2.1

@@ -927,6 +927,11 @@ protected theorem eq_iff {x y : α} : f x = y ↔ x = f y :=
 
 end Involutive
 
+lemma not_involutive : Involutive Not := fun _ ↦ propext not_not
+lemma not_injective : Injective Not := not_involutive.injective
+lemma not_surjective : Surjective Not := not_involutive.surjective
+lemma not_bijective : Bijective Not := not_involutive.bijective
+
 @[simp]
 lemma symmetric_apply_eq_iff {f : α → α} : Symmetric (f · = ·) ↔ Involutive f := by
   simp [Symmetric, Involutive]
