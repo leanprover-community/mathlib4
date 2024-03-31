@@ -305,8 +305,6 @@ Usually, the first entry of the returned array is "the best approximation" to `(
 def getFVarIdCandidates (fv : FVarId) (name : Name) (lctx : LocalContext) : Array FVarId :=
   #[lctx.find? fv, lctx.findFromUserName? name].reduceOption.map (·.fvarId)
 
-#check NameGenerator
-
 def persistFVars (fv : FVarId) (before after : LocalContext) : FVarId :=
   let ldecl := (before.find? fv).getD default
   let name := ldecl.userName
@@ -326,6 +324,7 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
   -- * `location` is either a hypothesis or the main goal modified by a flexible tactic and
   -- * `mvar` is the metavariable containing the modified location
   let mut stains : HashMap (FVarId × MVarId) SyntaxNodeKind := .empty
+  let mut msgs : Array (Syntax × SyntaxNodeKind × stained) := #[]
   for d in x do for (s, ctx0, ctx1, mvs0, mvs1) in d do
 --    if ! ignored.contains s.getKind then
 --      logInfoAt s[0] m!"{mvs0.map (·.name)} ⊆ -- '{s}'\n{mvs1.map (·.name)}"
@@ -360,13 +359,13 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
           let olds := stains.toArray.filter fun ((a, _), _) => a == fv
           for ((_, mv), k) in olds do
             stains := stains.insert (cand_fv, mv) k
-          logInfoAt s m!"candidate: {cand_fv.name}"
-        let ldecls := fvars.map fun d => (lctx.get! d|>.userName, d.name)
-        logInfoAt s m!"before '{s}' (username, fvarid):\n{ldecls}"
-      for lctx in lctx1 do
-        let fvars := lctx.getFVarIds
-        let ldecls := fvars.map fun d => (lctx.get! d|>.userName, d.name)
-        logInfoAt s m!"after '{s}' (username, fvarid):\n{ldecls}"
+--          logInfoAt s m!"candidate: {cand_fv.name}"
+--        let ldecls := fvars.map fun d => (lctx.get! d|>.userName, d.name)
+--        logInfoAt s m!"before '{s}' (username, fvarid):\n{ldecls}"
+--      for lctx in lctx1 do
+--        let fvars := lctx.getFVarIds
+--        let ldecls := fvars.map fun d => (lctx.get! d|>.userName, d.name)
+--        logInfoAt s m!"after '{s}' (username, fvarid):\n{ldecls}"
 
 
 /-
@@ -393,23 +392,25 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
           let locsAfter := d.toFVarId lctx1
 
           for l in locsAfter do
-            logInfoAt s --trace[flexible]
-              m!"{s} is staining {(((lctx1.fvarIdToDecl.find? l).getD default).userName, l.name)} ({l == default}, {currMVar1.name})"
+--            logInfoAt s --trace[flexible]
+--              m!"{s} is staining {(((lctx1.fvarIdToDecl.find? l).getD default).userName, l.name)}\
+--                ({l == default}, {currMVar1.name})"
             stains := stains.insert (l, currMVar1) skind
 
       else
         if !followers.contains skind then
           for currMVar0 in mvs0 do --.getD 0 default
             let lctx0 := ((ctx0.decls.find? currMVar0).getD default).lctx
-            let found_fvs := (stained_in_syntax.map (·.toFVarId lctx0)).flatten.filter (· != default)
+            let foundFvs := (stained_in_syntax.map (·.toFVarId lctx0)).flatten.filter (· != default)
             -- we collect all the references to potential locations:
             -- * in `at`-clauses via `d.toFVarId`, e.g. the `h` in `rw at h`;
             -- * inside the syntax of the tactic `d`, e.g. the `h` in `rw [h]`.
-            let locsBefore := d.toFVarId lctx0 ++ found_fvs
+            let locsBefore := d.toFVarId lctx0 ++ foundFvs
             for l in locsBefore do
               if let some kind := stains.find? (l, currMVar0) then
-                Linter.logLint linter.nonTerminalSimp s m!"l: {locsBefore.size}, mvs0: {mvs0.length}\n\
-                  {kind} stained '{d}' at '{s}'"
+                --logInfoAt s m!"l: {locsBefore.size}, mvs0: {mvs0.length}"
+                if !msgs.contains (s, kind, d) then msgs := msgs.push (s, kind, d)
+--                Linter.logLint linter.nonTerminalSimp s m!"{kind} stained '{d}' at '{s}'"
 
         -- since tactic applications often change the name of the current `MVarId`, we
         -- migrate the `FvarId`s in the "old" `mvars` to the "same" `FVarId` in the "new" `mvars`
@@ -419,14 +420,17 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 --              stains := stains.insert (fv, mv) kd
 --              stains := stains.erase (fv, mvOld)
       let mut new : HashMap (FVarId × MVarId) SyntaxNodeKind := .empty
-      logInfoAt s m!"following goals: {mvs1.length}"
+--      logInfoAt s m!"following goals: {mvs1.length}"
       for currMVar1 in mvs1 do
-        for ((fv, mvOld), kd) in stains.toArray do
-          logInfoAt s m!"persisting {fv.name} in {mvOld.name} --> {currMVar1.name}"
+        for ((fv, _mvOld), kd) in stains.toArray do
+--          logInfoAt s m!"persisting {fv.name} in {mvOld.name} --> {currMVar1.name}"
           new := new.insert (fv, currMVar1) kd
 --          stains := stains.erase (fv, mvOld)
 --          stains := stains.insert (fv, currMVar1) kd
       stains := new
+  for (s, kind, d) in msgs do
+    Linter.logLint linter.nonTerminalSimp s m!"{kind} stained '{d}' at '{s}'"
+
 
 
 
