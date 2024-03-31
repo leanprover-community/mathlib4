@@ -280,7 +280,7 @@ theorem findIdx_lt_length {p : α → Bool} {xs : List α} :
   rw [← this, findIdx_eq_length, not_exists]
   simp only [Bool.not_eq_true, not_and]
 
-/-- If `xs.findIdx p = i` then `p` does not hold for elements with indices less than `i`. -/
+/-- `p` does not hold for elements with indices less than `xs.findIdx p`. -/
 theorem not_of_lt_findIdx {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.findIdx p) :
     ¬p (xs.get ⟨i, h.trans_le (findIdx_le_length p)⟩) := by
   revert i
@@ -301,16 +301,17 @@ theorem not_of_lt_findIdx {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs
       exact ih h
 
 theorem le_findIdx_of_not {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length)
-    (h2 : ∀ (j) (hji : j < i), ¬p (xs.get ⟨j, hji.trans h⟩)) :
-    i ≤ xs.findIdx p := by
+    (h2 : ∀ j (hji : j < i), ¬p (xs.get ⟨j, hji.trans h⟩)) : i ≤ xs.findIdx p := by
   by_contra! f
   exact absurd (@findIdx_get _ p xs (f.trans h)) (h2 (xs.findIdx p) f)
 
 theorem findIdx_eq {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length) :
-    xs.findIdx p = i ↔ p (xs.get ⟨i, h⟩) ∧ ∀ (j) (hji : j < i), ¬p (xs.get ⟨j, hji.trans h⟩) := by
+    xs.findIdx p = i ↔ p (xs.get ⟨i, h⟩) ∧ ∀ j (hji : j < i), ¬p (xs.get ⟨j, hji.trans h⟩) := by
+  refine' ⟨fun f ↦ ⟨f ▸ (@findIdx_get _ p xs (f ▸ h)), fun _ hji ↦ not_of_lt_findIdx (f ▸ hji)⟩,
+    fun ⟨h1, h2⟩ ↦ _⟩
   apply Nat.le_antisymm _ (le_findIdx_of_not h h2)
-  contrapose! h3
-  exact not_of_lt_findIdx h3
+  contrapose! h1
+  exact not_of_lt_findIdx h1
 
 end FindIdx
 
