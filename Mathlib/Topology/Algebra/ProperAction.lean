@@ -85,7 +85,7 @@ variable [TopologicalSpace G] [TopologicalSpace X] [TopologicalSpace Y]
 variable [TopologicalSpace Z] [TopologicalSpace W]
 
 @[to_additive]
-theorem continuousSmul_of_properSMul [ProperSMul G X] : ContinuousSMul G X where
+instance continuousSmul_of_properSMul [ProperSMul G X] : ContinuousSMul G X where
   continuous_smul := (isProperMap_smul_pair G X).continuous.fst
 
 /-- A group `G` acts properly on a topological space `X` if and only if for all ultrafilters`𝒰` on `X × G`, if `𝒰` converges to `(x₁, x₂)` along the map `(g, x) ↦ (g • x, x)`,
@@ -279,7 +279,7 @@ then the naive definition
 of proper map is equivalent to the good definition
 -/
 theorem properMap_of_naiveProper_T2_FirstCountable
-    [FirstCountableTopology X]
+    [T2Space X] [FirstCountableTopology X]
     [T2Space Y] [FirstCountableTopology Y]
     (f : X → Y) (hcont: Continuous f):
     (∀ (K : Set Y), (IsCompact K → IsCompact (f ⁻¹' K)))
