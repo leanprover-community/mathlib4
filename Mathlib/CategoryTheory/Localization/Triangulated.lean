@@ -208,6 +208,9 @@ instance (n : ℤ) : (shiftFunctor (W.Localization) n).Additive := by
   exact Functor.additive_of_iso (W.Q.commShiftIso n)
 
 instance : Pretriangulated W.Localization := pretriangulated W.Q W
+instance : W.Q.IsTriangulated := isTriangulated_functor W.Q W
+instance [W.HasRightCalculusOfFractions] [IsTriangulated C] :
+  IsTriangulated W.Localization := isTriangulated W.Q W
 
 section
 
@@ -218,6 +221,9 @@ instance (n : ℤ) : (shiftFunctor (W.Localization') n).Additive := by
   exact Functor.additive_of_iso (W.Q'.commShiftIso n)
 
 instance : Pretriangulated W.Localization' := pretriangulated W.Q' W
+instance : W.Q'.IsTriangulated := isTriangulated_functor W.Q' W
+instance [W.HasRightCalculusOfFractions] [IsTriangulated C] :
+  IsTriangulated W.Localization' := isTriangulated W.Q' W
 
 end
 

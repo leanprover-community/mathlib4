@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Localization.Triangulated
-import Mathlib.CategoryTheory.RespectsIso
-=======
 /-
 Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -39,13 +35,11 @@ of an additive category is not closed under isomorphisms.
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
 -/
->>>>>>> origin/derived-category
 
 namespace CategoryTheory
 
 open Category Limits Preadditive ZeroObject
 
-<<<<<<< HEAD
 namespace Limits
 
 variable {C J₁ J₂ : Type _} [Category C]
@@ -95,41 +89,10 @@ noncomputable def productOptionIso {C J : Type _} [Category C]
 
 end Limits
 
-namespace Arrow
-
--- should be moved to Arrow.lean
-
-variable {C D : Type _} [Category C] [Category D]
-
-@[simps]
-def mapArrowNatTransOfNatTrans {F G : C ⥤ D} (τ : F ⟶ G) : F.mapArrow ⟶ G.mapArrow where
-  app f :=
-    { left := τ.app _
-      right := τ.app _}
-
-@[simps]
-def mapArrowNatIsoOfNatIso {F G : C ⥤ D} (e : F ≅ G) : F.mapArrow ≅ G.mapArrow where
-  hom := mapArrowNatTransOfNatTrans e.hom
-  inv := mapArrowNatTransOfNatTrans e.inv
-
-end Arrow
-
-=======
->>>>>>> origin/derived-category
 namespace Triangulated
 
 open Pretriangulated
 
-<<<<<<< HEAD
-variable (C : Type _) [Category C] [HasZeroObject C] [HasShift C ℤ]
-  [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
-
-structure Subcategory where
-  set : Set C
-  zero' : ∃ (Z : C) (_ : IsZero Z), Z ∈ set
-  shift : ∀ (X : C) (n : ℤ) (_ : X ∈ set), X⟦n⟧ ∈ set
-  ext₂' : ∀ (T : Triangle C) (_ : T ∈ distTriang C), T.obj₁ ∈ set → T.obj₃ ∈ set → T.obj₂ ∈ set.isoClosure
-=======
 variable (C : Type*) [Category C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
@@ -143,16 +106,10 @@ structure Subcategory where
   zero' : ∃ (Z : C) (_ : IsZero Z), P Z
   shift (X : C) (n : ℤ) : P X → P (X⟦n⟧)
   ext₂' (T : Triangle C) (_ : T ∈ distTriang C) : P T.obj₁ → P T.obj₃ → isoClosure P T.obj₂
->>>>>>> origin/derived-category
 
 namespace Subcategory
 
 variable {C}
-<<<<<<< HEAD
-
-def isoClosure (S : Subcategory C) : Subcategory C where
-  set := S.set.isoClosure
-=======
 variable (S : Subcategory C)
 
 lemma zero [ClosedUnderIsomorphisms S.P] : S.P 0 := by
@@ -162,7 +119,6 @@ lemma zero [ClosedUnderIsomorphisms S.P] : S.P 0 := by
 /-- The closure under isomorphisms of a triangulated subcategory. -/
 def isoClosure : Subcategory C where
   P := CategoryTheory.isoClosure S.P
->>>>>>> origin/derived-category
   zero' := by
     obtain ⟨Z, hZ, hZ'⟩ := S.zero'
     exact ⟨Z, hZ, Z, hZ', ⟨Iso.refl _⟩⟩
@@ -170,18 +126,6 @@ def isoClosure : Subcategory C where
     rintro ⟨Y, hY, ⟨e⟩⟩
     exact ⟨Y⟦n⟧, S.shift Y n hY, ⟨(shiftFunctor C n).mapIso e⟩⟩
   ext₂' := by
-<<<<<<< HEAD
-    intro T hT
-    rintro ⟨X₁, h₁, ⟨e₁⟩⟩ ⟨X₃, h₃, ⟨e₃⟩⟩
-    let T' := Triangle.mk (e₁.inv ≫ T.mor₁) (T.mor₂ ≫ e₃.hom) (e₃.inv ≫ T.mor₃ ≫ e₁.hom⟦1⟧')
-    have hT' : T' ∈ distTriang C := isomorphic_distinguished _ hT _ (by
-      refine' Triangle.isoMk _ _ e₁.symm (Iso.refl _) e₃.symm (by aesop_cat) (by aesop_cat) _
-      dsimp [T']
-      simp only [assoc, ← Functor.map_comp, e₁.hom_inv_id, Functor.map_id, comp_id])
-    exact Set.subset_isoClosure _ (S.ext₂' T' hT' h₁ h₃)
-
-instance (S : Subcategory C) : S.isoClosure.set.RespectsIso := by
-=======
     rintro T hT ⟨X₁, h₁, ⟨e₁⟩⟩ ⟨X₃, h₃, ⟨e₃⟩⟩
     exact subset_isoClosure _ _
       (S.ext₂' (Triangle.mk (e₁.inv ≫ T.mor₁) (T.mor₂ ≫ e₃.hom) (e₃.inv ≫ T.mor₃ ≫ e₁.hom⟦1⟧'))
@@ -192,92 +136,11 @@ instance (S : Subcategory C) : S.isoClosure.set.RespectsIso := by
             Functor.map_id, comp_id]))) h₁ h₃)
 
 instance : ClosedUnderIsomorphisms S.isoClosure.P := by
->>>>>>> origin/derived-category
   dsimp only [isoClosure]
   infer_instance
 
 section
 
-<<<<<<< HEAD
-variable (set : Set C) (zero : 0 ∈ set)
-  (shift : ∀ (X : C) (n : ℤ) (_ : X ∈ set), X⟦n⟧ ∈ set)
-  (ext₂ : ∀ (T : Triangle C) (_ : T ∈ distTriang C), T.obj₁ ∈ set → T.obj₃ ∈ set → T.obj₂ ∈ set)
-
-def mk' : Subcategory C where
-  set := set
-  zero' := ⟨0, isZero_zero _, zero⟩
-  shift := shift
-  ext₂' T hT h₁ h₃ := set.subset_isoClosure (ext₂ T hT h₁ h₃)
-
-instance : (mk' set zero shift ext₂).set.RespectsIso := ⟨fun X Y e hX => by
-  refine' ext₂ (Triangle.mk e.hom (0 : Y ⟶ 0) 0) _ hX zero
-  refine' isomorphic_distinguished _ (contractible_distinguished X) _ _
-  exact Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _)
-    (by aesop_cat) (by aesop_cat) (by aesop_cat)⟩
-
-end
-
-variable (S : Subcategory C)
-
-variable {S}
-
-lemma ext₂ [S.set.RespectsIso] (T : Triangle C) (hT : T ∈ distTriang C) (h₁ : T.obj₁ ∈ S.set)
-    (h₃ : T.obj₃ ∈ S.set) : T.obj₂ ∈ S.set := by
-  simpa only [S.set.isoClosure_eq_self] using S.ext₂' T hT h₁ h₃
-
-variable (S)
-
-noncomputable def zeroObject : C := S.zero'.choose
-
-lemma isZero_zeroObject : IsZero S.zeroObject := S.zero'.choose_spec.choose
-
-lemma zeroObject_mem : S.zeroObject ∈ S.set := S.zero'.choose_spec.choose_spec
-
-lemma zero'' [S.set.RespectsIso] (X : C) (hX : IsZero X) : X ∈ S.set :=
-  S.set.mem_of_iso (S.isZero_zeroObject.isoZero.trans hX.isoZero.symm) S.zeroObject_mem
-
-lemma zero [S.set.RespectsIso] : 0 ∈ S.set := S.zero'' _ (isZero_zero _)
-
-def W : MorphismProperty C := fun X Y f => ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧)
-  (_ : Triangle.mk f g h ∈ distTriang C), Z ∈ S.set
-
-def W' : MorphismProperty C := fun Y Z g => ∃ (X : C) (f : X ⟶ Y) (h : Z ⟶ X⟦(1 : ℤ)⟧)
-  (_ : Triangle.mk f g h ∈ distTriang C), X ∈ S.set
-
-variable {S}
-
-lemma W.mk {T : Triangle C} (hT : T ∈ distTriang C) (h : T.obj₃ ∈ S.set) : S.W T.mor₁ :=
-  ⟨T.obj₃, T.mor₂, T.mor₃, hT, h⟩
-
-lemma W'.mk {T : Triangle C} (hT : T ∈ distTriang C) (h : T.obj₁ ∈ S.set) : S.W' T.mor₂ :=
-  ⟨T.obj₁, T.mor₁, T.mor₃, hT, h⟩
-
-noncomputable def W.triangle {X Y : C} (f : X ⟶ Y) (hf : S.W f) : Triangle C :=
-  Triangle.mk f hf.choose_spec.choose hf.choose_spec.choose_spec.choose
-
-lemma W.triangle_distinguished {X Y : C} (f : X ⟶ Y) (hf : S.W f) :
-   (W.triangle f hf) ∈ distTriang C :=
-  hf.choose_spec.choose_spec.choose_spec.choose
-
-lemma W.triangle_obj₃_mem {X Y : C} (f : X ⟶ Y) (hf : S.W f) :
-  (W.triangle f hf).obj₃ ∈ S.set :=
-  hf.choose_spec.choose_spec.choose_spec.choose_spec
-
-variable (S)
-
-lemma mem_W_iff_of_distinguished [S.set.RespectsIso] (T : Triangle C) (hT : T ∈ distTriang C) :
-    S.W T.mor₁ ↔ T.obj₃ ∈ S.set := by
-  constructor
-  · intro hf
-    obtain ⟨e, _⟩ := exists_iso_of_arrow_iso _ _ (W.triangle_distinguished _ hf) hT (Iso.refl _)
-    exact S.set.mem_of_iso (Triangle.π₃.mapIso e) (W.triangle_obj₃_mem _ hf)
-  · intro h
-    exact ⟨_, _, _, hT, h⟩
-
-lemma W_eq_W' : S.W = S.W' := by
-  apply MorphismProperty.ext
-  intro X Y f
-=======
 variable (P : C → Prop) (zero : P 0)
   (shift : ∀ (X : C) (n : ℤ), P X → P (X⟦n⟧))
   (ext₂ : ∀ (T : Triangle C) (_ : T ∈ distTriang C), P T.obj₁ → P T.obj₃ → P T.obj₂)
@@ -315,28 +178,18 @@ lemma W_iff' {Y Z : C} (g : Y ⟶ Z) :
     S.W g ↔ ∃ (X : C) (f : X ⟶ Y) (h : Z ⟶ X⟦(1 : ℤ)⟧)
       (_ : Triangle.mk f g h ∈ distTriang C), S.P X := by
   rw [S.W_iff]
->>>>>>> origin/derived-category
   constructor
   · rintro ⟨Z, g, h, H, mem⟩
     exact ⟨_, _, _, inv_rot_of_distTriang _ H, S.shift _ (-1) mem⟩
   · rintro ⟨Z, g, h, H, mem⟩
     exact ⟨_, _, _, rot_of_distTriang _ H, S.shift _ 1 mem⟩
 
-<<<<<<< HEAD
-variable {S}
-
-lemma W.mk' {T : Triangle C} (hT : T ∈ distTriang C) (h : T.obj₁ ∈ S.set) : S.W T.mor₂ := by
-  simpa only [W_eq_W'] using W'.mk hT h
-
-variable (S)
-=======
 lemma W.mk {T : Triangle C} (hT : T ∈ distTriang C) (h : S.P T.obj₃) : S.W T.mor₁ :=
   ⟨_, _, _, hT, h⟩
 
 lemma W.mk' {T : Triangle C} (hT : T ∈ distTriang C) (h : S.P T.obj₁) : S.W T.mor₂ := by
   rw [W_iff']
   exact ⟨_, _, _, hT, h⟩
->>>>>>> origin/derived-category
 
 lemma isoClosure_W : S.isoClosure.W = S.W := by
   ext X Y f
@@ -344,31 +197,10 @@ lemma isoClosure_W : S.isoClosure.W = S.W := by
   · rintro ⟨Z, g, h, mem, ⟨Z', hZ', ⟨e⟩⟩⟩
     refine' ⟨Z', g ≫ e.hom, e.inv ≫ h, isomorphic_distinguished _ mem _ _, hZ'⟩
     exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm
-<<<<<<< HEAD
-      (by aesop_cat) (by aesop_cat) (by aesop_cat)
-  · rintro ⟨Z, g, h, mem, hZ⟩
-    exact ⟨Z, g, h, mem, Set.subset_isoClosure _ hZ⟩
-
-instance instContainsIdentitiesW : S.W.ContainsIdentities := by
-  rw [← isoClosure_W]
-  exact ⟨fun X => ⟨_, _, _, contractible_distinguished X, S.isoClosure.zero⟩⟩
-
-lemma stableUnderCompositionW [IsTriangulated C] : (W S).StableUnderComposition := by
-  rw [← isoClosure_W]
-  rintro X₁ X₂ X₃ u₁₂ u₂₃ ⟨Z₁₂, v₁₂, w₁₂, H₁₂, mem₁₂⟩ ⟨Z₂₃, v₂₃, w₂₃, H₂₃, mem₂₃⟩
-  obtain ⟨Z₁₃, v₁₃, w₁₂, H₁₃⟩ := distinguished_cocone_triangle (u₁₂ ≫ u₂₃)
-  refine' ⟨_, _, _, H₁₃, S.isoClosure.ext₂ _ (someOctahedron rfl H₁₂ H₂₃ H₁₃).mem mem₁₂ mem₂₃⟩
-
-instance multiplicativeW [IsTriangulated C] : S.W.IsMultiplicative where
-  stableUnderComposition := S.stableUnderCompositionW
-
-lemma respectsIsoW : S.W.RespectsIso where
-=======
   · rintro ⟨Z, g, h, mem, hZ⟩
     exact ⟨Z, g, h, mem, subset_isoClosure _ _ hZ⟩
 
 lemma respectsIso_W : S.W.RespectsIso where
->>>>>>> origin/derived-category
   left := by
     rintro X' X Y e f ⟨Z, g, h, mem, mem'⟩
     refine' ⟨Z, g, h ≫ e.inv⟦(1 : ℤ)⟧', isomorphic_distinguished _ mem _ _, mem'⟩
@@ -379,14 +211,6 @@ lemma respectsIso_W : S.W.RespectsIso where
     rintro X Y Y' e f ⟨Z, g, h, mem, mem'⟩
     refine' ⟨Z, e.inv ≫ g, h, isomorphic_distinguished _ mem _ _, mem'⟩
     exact Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _)
-<<<<<<< HEAD
-      (by aesop_cat) (by aesop_cat) (by aesop_cat)
-
-
-instance [IsTriangulated C] : S.W.HasLeftCalculusOfFractions where
-  exists_leftFraction := by
-    rintro X Y φ
-=======
 
 instance : S.W.ContainsIdentities := by
   rw [← isoClosure_W]
@@ -437,7 +261,6 @@ lemma mem_W_iff_of_distinguished
 
 instance [IsTriangulated C] : S.W.HasLeftCalculusOfFractions where
   exists_leftFraction X Y φ := by
->>>>>>> origin/derived-category
     obtain ⟨Z, f, g, H, mem⟩ := φ.hs
     obtain ⟨Y', s', f', mem'⟩ := distinguished_cocone_triangle₂ (g ≫ φ.f⟦1⟧')
     obtain ⟨b, ⟨hb₁, _⟩⟩ :=
@@ -455,29 +278,16 @@ instance [IsTriangulated C] : S.W.HasLeftCalculusOfFractions where
       rw [← sub_eq_zero, ← sub_comp, hq, assoc, eq, comp_zero]
 
 instance [IsTriangulated C] : S.W.HasRightCalculusOfFractions where
-<<<<<<< HEAD
-  exists_rightFraction := by
-    rintro X Y φ
-=======
   exists_rightFraction X Y φ := by
->>>>>>> origin/derived-category
     obtain ⟨Z, f, g, H, mem⟩ := φ.hs
     obtain ⟨X', f', h', mem'⟩ := distinguished_cocone_triangle₁ (φ.f ≫ f)
     obtain ⟨a, ⟨ha₁, _⟩⟩ := complete_distinguished_triangle_morphism₁ _ _
       mem' H φ.f (𝟙 Z) (by simp)
     exact ⟨MorphismProperty.RightFraction.mk f' ⟨_, _, _, mem', mem⟩ a, ha₁⟩
-<<<<<<< HEAD
-  ext := by
-    rintro Y Z Z' f₁ f₂ s hs hf₁
-    have hf₂ : (f₁ - f₂) ≫ s = 0 := by rw [sub_comp, hf₁, sub_self]
-    rw [W_eq_W'] at hs
-    obtain ⟨Z, g, h, H, mem⟩ := hs
-=======
   ext Y Z Z' f₁ f₂ s hs hf₁ := by
     rw [S.W_iff'] at hs
     obtain ⟨Z, g, h, H, mem⟩ := hs
     have hf₂ : (f₁ - f₂) ≫ s = 0 := by rw [sub_comp, hf₁, sub_self]
->>>>>>> origin/derived-category
     obtain ⟨q, hq⟩ := Triangle.coyoneda_exact₂ _ H _ hf₂
     obtain ⟨Y', r, t, mem'⟩ := distinguished_cocone_triangle₁ q
     refine' ⟨Y', r, _, _⟩
@@ -486,108 +296,78 @@ instance [IsTriangulated C] : S.W.HasRightCalculusOfFractions where
       dsimp at eq
       rw [← sub_eq_zero, ← comp_sub, hq, reassoc_of% eq, zero_comp]
 
-<<<<<<< HEAD
-lemma W_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : S.W f := by
-  rw [← isoClosure_W]
-  refine' ⟨0, 0, 0, isomorphic_distinguished _ (contractible_distinguished Y) _ _, S.isoClosure.zero⟩
-  exact Triangle.isoMk _ _ (asIso f) (Iso.refl _) (Iso.refl _)
-    (by aesop_cat) (by aesop_cat) (by aesop_cat)
-
-lemma mul_mem_W_iff {X Y : C} (f : X ⟶ Y) (n : ℤˣ) :
-    S.W (n • f) ↔ S.W f :=
-  S.respectsIsoW.arrow_mk_iso_iff
-    (Arrow.isoMk (n • (Iso.refl _)) (Iso.refl _))
-
-instance WIsCompatibleWithShift : S.W.IsCompatibleWithShift ℤ := ⟨by
-  have : ∀ {X Y : C} (f : X ⟶ Y) (hf : S.W f) (n : ℤ), S.W (f⟦n⟧') := by
-    rintro X Y f ⟨Z, g, h, H, mem⟩ n
-    rw [← mul_mem_W_iff S _ n.negOnePow]
-    exact ⟨_, _, _, Triangle.shift_distinguished _ H n, S.shift _ n mem⟩
-  intro n
-  apply MorphismProperty.ext
-  intro X Y f
-  constructor
-  · intro hf
-    have H := S.respectsIsoW.arrow_mk_iso_iff
-     ((Arrow.mapArrowNatIsoOfNatIso (shiftEquiv C n).unitIso).app (Arrow.mk f))
-    dsimp at H
-    rw [H]
-    exact this _ hf (-n)
-  · intro hf
-    exact this _ hf n⟩
-
-variable {S}
-
-lemma W.shift {X₁ X₂ : C} {f : X₁ ⟶ X₂} (hf : S.W f) (n : ℤ) : S.W (f⟦n⟧') := by
-  simpa only [MorphismProperty.IsCompatibleWithShift.iff S.W f n] using hf
-
-lemma W.unshift {X₁ X₂ : C} {f : X₁ ⟶ X₂} {n : ℤ} (hf : S.W (f⟦n⟧')) : S.W f := by
-  simpa only [← MorphismProperty.IsCompatibleWithShift.iff S.W f n] using hf
-
-variable (S)
-
-lemma binary_product_stable [S.set.RespectsIso] (X₁ X₂ : C) (hX₁ : X₁ ∈ S.set) (hX₂ : X₂ ∈ S.set) :
-    (X₁ ⨯ X₂) ∈ S.set :=
-  S.ext₂ _ (binaryProductTriangle_distinguished X₁ X₂) hX₁ hX₂
-
-lemma pi_finite_stable [S.set.RespectsIso] {J : Type} [Finite J] (X : J → C) (hX : ∀ j, X j ∈ S.set) :
-    (∏ X) ∈ S.set := by
-  revert hX X
-  let P : Type → Prop := fun J =>
-    ∀ [hJ : Finite J] (X : J → C) (_ : ∀ j, X j ∈ S.set), (∏ X) ∈ S.set
-  change P J
-  apply @Finite.induction_empty_option
-  · intro J₁ J₂ e hJ₁ _ X hX
-    have : Finite J₁ := Finite.of_equiv _ e.symm
-    exact Set.mem_of_iso _ (productIsoOfEquiv X e) (hJ₁ (fun j₁ => X (e j₁)) (fun j₁ => hX _))
-  · intro _ X _
-    refine' Set.mem_of_iso _ (IsZero.isoZero _).symm S.zero
-    rw [IsZero.iff_id_eq_zero]
-    ext ⟨⟩
-  · intro J _ hJ _ X hX
-    exact Set.mem_of_iso _ (productOptionIso  X).symm
-      (S.binary_product_stable _ _ (hJ (fun j => X (some j)) (fun j => hX _)) (hX none))
-
-instance : S.W.IsStableUnderFiniteProducts := by
-  rw [← isoClosure_W]
-  exact ⟨fun J _ => by
-    refine' MorphismProperty.IsStableUnderProductsOfShape.mk _ _ (S.isoClosure.respectsIsoW) _
-    intro X₁ X₂ f hf
-    exact W.mk (productTriangle_distinguished _ (fun j => W.triangle_distinguished _ (hf j)))
-      (pi_finite_stable _ _ (fun j => W.triangle_obj₃_mem _ _))⟩
-
-=======
->>>>>>> origin/derived-category
 instance [IsTriangulated C] : S.W.IsCompatibleWithTriangulation := ⟨by
   rintro T₁ T₃ mem₁ mem₃ a b ⟨Z₅, g₅, h₅, mem₅, mem₅'⟩ ⟨Z₄, g₄, h₄, mem₄, mem₄'⟩ comm
   obtain ⟨Z₂, g₂, h₂, mem₂⟩ := distinguished_cocone_triangle (T₁.mor₁ ≫ b)
   have H := someOctahedron rfl mem₁ mem₄ mem₂
   have H' := someOctahedron comm.symm mem₅ mem₃ mem₂
   let φ : T₁ ⟶ T₃ := H.triangleMorphism₁ ≫ H'.triangleMorphism₂
-<<<<<<< HEAD
-  exact ⟨φ.hom₃,
-    S.W.comp_mem _ _ (W.mk H.mem mem₄') (W.mk' H'.mem mem₅'),
-    ⟨by simpa [φ] using φ.comm₂, by simpa [φ] using φ.comm₃⟩⟩⟩
+  exact ⟨φ.hom₃, S.W.comp_mem _ _ (W.mk S H.mem mem₄') (W.mk' S H'.mem mem₅'),
+    by simpa [φ] using φ.comm₂, by simpa [φ] using φ.comm₃⟩⟩
 
-lemma ext₁ [S.set.RespectsIso] (T : Triangle C) (hT : T ∈ distTriang C) (h₂ : T.obj₂ ∈ S.set)
-    (h₃ : T.obj₃ ∈ S.set) : T.obj₁ ∈ S.set :=
+section
+
+variable (T : Triangle C) (hT : T ∈ distTriang C)
+
+lemma ext₁ [ClosedUnderIsomorphisms S.P] (h₂ : S.P T.obj₂) (h₃ : S.P T.obj₃) :
+    S.P T.obj₁ :=
   S.ext₂ _ (inv_rot_of_distTriang _ hT) (S.shift _ _ h₃) h₂
 
-lemma ext₃ [S.set.RespectsIso] (T : Triangle C) (hT : T ∈ distTriang C) (h₁ : T.obj₁ ∈ S.set)
-    (h₂ : T.obj₂ ∈ S.set) : T.obj₃ ∈ S.set :=
+lemma ext₃ [ClosedUnderIsomorphisms S.P] (h₁ : S.P T.obj₁) (h₂ : S.P T.obj₂) :
+    S.P T.obj₃ :=
   S.ext₂ _ (rot_of_distTriang _ hT) h₂ (S.shift _ _ h₁)
 
-lemma ext₁' (T : Triangle C) (hT : T ∈ distTriang C) (h₂ : T.obj₂ ∈ S.set)
-    (h₃ : T.obj₃ ∈ S.set) : T.obj₁ ∈ S.set.isoClosure :=
+lemma ext₁' (h₂ : S.P T.obj₂) (h₃ : S.P T.obj₃) :
+    CategoryTheory.isoClosure S.P T.obj₁ :=
   S.ext₂' _ (inv_rot_of_distTriang _ hT) (S.shift _ _ h₃) h₂
 
-lemma ext₃' (T : Triangle C) (hT : T ∈ distTriang C) (h₁ : T.obj₁ ∈ S.set)
-    (h₂ : T.obj₂ ∈ S.set) : T.obj₃ ∈ S.set.isoClosure :=
+lemma ext₃' (h₁ : S.P T.obj₁) (h₂ : S.P T.obj₂) :
+    CategoryTheory.isoClosure S.P T.obj₃ :=
   S.ext₂' _ (rot_of_distTriang _ hT) h₂ (S.shift _ _ h₁)
 
-noncomputable example [IsTriangulated C] : Pretriangulated (S.W.Localization) := inferInstance
+lemma binary_product_stable [ClosedUnderIsomorphisms S.P] (X₁ X₂ : C) (hX₁ : S.P X₁) (hX₂ : S.P X₂) :
+    S.P (X₁ ⨯ X₂)  :=
+  S.ext₂ _ (binaryProductTriangle_distinguished X₁ X₂) hX₁ hX₂
 
-def category := FullSubcategory S.set
+lemma pi_finite_stable [ClosedUnderIsomorphisms S.P] {J : Type} [Finite J] (X : J → C) (hX : ∀ j, S.P (X j)) :
+    S.P (∏ X) := by
+  revert hX X
+  let P : Type → Prop := fun J =>
+    ∀ [hJ : Finite J] (X : J → C) (_ : ∀ j, S.P (X j)), S.P (∏ X)
+  change P J
+  apply @Finite.induction_empty_option
+  · intro J₁ J₂ e hJ₁ _ X hX
+    have : Finite J₁ := Finite.of_equiv _ e.symm
+    exact mem_of_iso _ (productIsoOfEquiv X e) (hJ₁ (fun j₁ => X (e j₁)) (fun j₁ => hX _))
+  · intro _ X _
+    refine' mem_of_iso _ (IsZero.isoZero _).symm S.zero
+    rw [IsZero.iff_id_eq_zero]
+    ext ⟨⟩
+  · intro J _ hJ _ X hX
+    exact mem_of_iso _ (productOptionIso  X).symm
+      (S.binary_product_stable _ _ (hJ (fun j => X (some j)) (fun j => hX _)) (hX none))
+
+instance : S.W.IsStableUnderFiniteProducts := by
+  rw [← isoClosure_W]
+  exact ⟨fun J _ => by
+    refine' MorphismProperty.IsStableUnderProductsOfShape.mk _ _ (S.isoClosure.respectsIso_W) _
+    intro X₁ X₂ f hf
+    exact W.mk _ (productTriangle_distinguished _
+      (fun j => (hf j).choose_spec.choose_spec.choose_spec.choose))
+      (pi_finite_stable _ _ (fun j => (hf j).choose_spec.choose_spec.choose_spec.choose_spec))⟩
+
+section
+
+variable [IsTriangulated C]
+example : Pretriangulated (S.W.Localization) := inferInstance
+example : IsTriangulated (S.W.Localization) := inferInstance
+example : S.W.Q.IsTriangulated := inferInstance
+
+end
+
+end
+
+def category := FullSubcategory S.P
 
 instance : Category S.category := FullSubcategory.category _
 
@@ -620,11 +400,10 @@ instance (n : ℤ) : (shiftFunctor S.category n).Additive := by
 
 instance : HasZeroObject S.category where
   zero := by
-    refine' ⟨⟨S.zeroObject, S.zeroObject_mem⟩, _⟩
+    obtain ⟨Z, hZ, mem⟩ := S.zero'
+    refine' ⟨⟨Z, mem⟩, _⟩
     rw [IsZero.iff_id_eq_zero]
-    apply S.ι.map_injective
-    change 𝟙 (S.zeroObject) = 0
-    apply S.isZero_zeroObject.eq_of_tgt
+    apply hZ.eq_of_src
 
 instance : Pretriangulated S.category where
   distinguishedTriangles := fun T => S.ι.mapTriangle.obj T ∈ distTriang C
@@ -664,160 +443,6 @@ instance : S.ι.IsTriangulated := ⟨fun _ hT => hT⟩
 instance [IsTriangulated C] : IsTriangulated S.category :=
   IsTriangulated.of_fully_faithful_triangulated_functor S.ι
 
-/-inductive setSpan (S : Set C) : C → Prop
-  | subset (X : C) (hX : X ∈ S) : setSpan S X
-  | zero : setSpan S 0
-  | shift (X : C) (n : ℤ) (hX : setSpan S X) : setSpan S (X⟦n⟧)
-  | ext₂ (T : Triangle C) (hT : T ∈ distTriang C) (h₁ : setSpan S T.obj₁) (h₃ : setSpan S T.obj₃) :
-      setSpan S T.obj₂
-
-def span (S : Set C) : Subcategory C where
-  set := setSpan S
-  zero := setSpan.zero
-  shift X n hX := setSpan.shift X n hX
-  ext₂ T hT h₁ h₃ := setSpan.ext₂ T hT h₁ h₃
-
-lemma subset_span_set (S : Set C) : S ⊆ (span S).set :=
-  setSpan.subset
-
-instance : PartialOrder (Subcategory C) where
-  le S₁ S₂ := S₁.set ⊆ S₂.set
-  le_refl S := (by rfl : S.set ⊆ S.set)
-  le_trans := by
-    intro S₁ S₂ S₃ (h₁₂ : S₁.set ⊆ S₂.set) (h₂₃ : S₂.set ⊆ S₃.set)
-    exact h₁₂.trans h₂₃
-  le_antisymm := by
-    rintro S₁ S₂ (h₁₂ : S₁.set ⊆ S₂.set) (h₂₁ : S₂.set ⊆ S₁.set)
-    have := le_antisymm h₁₂ h₂₁
-    cases S₁
-    cases S₂
-    congr
-
-lemma span_LE (S : Set C) (A : Subcategory C) (hA : S ⊆ A.set ) :
-    span S ≤ A := by
-  intro X (hX : setSpan S X)
-  induction' hX with Y hY Y n _ hY T hT _ _ h₁ h₃
-  · exact hA hY
-  · exact A.zero
-  · exact A.shift Y n hY
-  · exact A.ext₂ T hT h₁ h₃
-
-def iInf {ι : Type _} (S : ι → Subcategory C) : Subcategory C where
-  set := Set.iInter (fun i => (S i).set)
-  zero := by
-    rw [Set.mem_iInter]
-    intro i
-    exact (S i).zero
-  shift X n hX := by
-    simp only [Set.mem_iInter] at hX ⊢
-    intro i
-    exact (S i).shift X n (hX i)
-  ext₂ T hT h₁ h₃ := by
-    simp only [Set.mem_iInter] at h₁ h₃ ⊢
-    intro i
-    exact (S i).ext₂ T hT (h₁ i) (h₃ i)
-
-lemma mem_iInf_set_iff {ι : Type _} (S : ι → Subcategory C) (X : C) :
-    X ∈ (iInf S).set ↔ ∀ (i : ι), X ∈ (S i).set := by
-  dsimp [iInf]
-  rw [Set.mem_iInter]
-
-def sInf (S : Set (Subcategory C)) : Subcategory C :=
-  iInf (Subtype.val : S → _)
-
-lemma mem_sInf_set_iff (S : Set (Subcategory C)) (X : C) :
-    X ∈ (sInf S).set ↔ ∀ (A : Subcategory C) (_ : A ∈ S), X ∈ A.set := by
-  dsimp [sInf]
-  rw [mem_iInf_set_iff]
-  constructor
-  · intro hX A hA
-    exact hX ⟨_, hA⟩
-  · intro hX A
-    exact hX A.1 A.2
-
-instance : InfSet (Subcategory C) where
-  sInf := sInf
-
-instance : CompleteSemilatticeInf (Subcategory C) where
-  sInf_le := by
-    intro S A hA X hX
-    erw [mem_sInf_set_iff] at hX
-    exact hX _ hA
-  le_sInf := by
-    intro B A hA X hX
-    erw [mem_sInf_set_iff]
-    intro A' hA'
-    exact hA _ hA' hX
-
-instance : SupSet (Subcategory C) where
-  sSup S := span (sSup (Subcategory.set '' S))
-
-instance : CompleteSemilatticeSup (Subcategory C) where
-  le_sSup := by
-    intro S A hA X hX
-    refine' subset_span_set _ _
-    simp only [Set.sSup_eq_sUnion, Set.sUnion_image,
-      Set.mem_iUnion, exists_prop]
-    exact ⟨A, hA, hX⟩
-  sSup_le := by
-    intro S A hA
-    apply span_LE
-    rintro X ⟨_, ⟨B, hB, rfl⟩, hX⟩
-    exact hA B hB hX
-
-instance : Lattice (Subcategory C) where
-  sup S₁ S₂ := sSup {S₁, S₂}
-  le_sup_left S₁ S₂ := le_sSup (Set.mem_insert _ _ )
-  le_sup_right S₁ S₂ := le_sSup (Set.mem_insert_of_mem _ rfl)
-  sup_le := by
-    rintro S₁ S₂ S₃ (h₁₃ : S₁.set ⊆ S₃.set) (h₂₃ : S₂.set ⊆ S₃.set)
-    apply span_LE
-    rintro X ⟨_, ⟨B, hB, rfl⟩, hX⟩
-    simp only [Set.mem_singleton_iff, Set.mem_insert_iff] at hB
-    obtain (rfl|rfl) := hB
-    · exact h₁₃ hX
-    · exact h₂₃ hX
-  inf S₁ S₂ :=
-    { set := S₁.set ∩ S₂.set
-      zero := ⟨S₁.zero, S₂.zero⟩
-      shift := fun X n hX => ⟨S₁.shift X n hX.1, S₂.shift X n hX.2⟩
-      ext₂ := fun T hT h₁ h₃ => ⟨S₁.ext₂ T hT h₁.1 h₃.1,
-        S₂.ext₂ T hT h₁.2 h₃.2⟩ }
-  inf_le_left := fun S₁ S₂ X hX => hX.1
-  inf_le_right := fun S₁ S₂ X hX => hX.2
-  le_inf := fun S₁ S₂ S₃ h₁₂ h₂₃ X hX => ⟨h₁₂ hX, h₂₃ hX⟩
-
-variable (C)
-
-def top : Subcategory C where
-  set := ⊤
-  zero := by tauto
-  shift := by tauto
-  ext₂ := by tauto
-
-
-variable {C}
-
-instance : CompleteLattice (Subcategory C) where
-  le_sSup := CompleteSemilatticeSup.le_sSup
-  sSup_le := CompleteSemilatticeSup.sSup_le
-  le_sInf := CompleteSemilatticeInf.le_sInf
-  sInf_le := CompleteSemilatticeInf.sInf_le
-  top :=
-    { set := ⊤
-      zero := by tauto
-      shift := by tauto
-      ext₂ := by tauto }
-  bot :=
-    { set := IsZero
-      zero := isZero_zero _
-      shift := fun X n (hX : IsZero X) => by
-        change IsZero _
-        simp only [IsZero.iff_id_eq_zero] at hX ⊢
-        rw [← (shiftFunctor C n).map_id, hX, Functor.map_zero]
-      ext₂ := fun T hT h₁ h₃ => T.isZero₂_of_isZero₁₃ hT h₁ h₃ }
-  le_top _ _ _ := Set.mem_univ _
-  bot_le := fun A X (hX : IsZero X) => A.zero' _ hX-/
 
 section
 
@@ -842,7 +467,7 @@ def essImage : Subcategory D :=
             comp_id, Iso.cancel_iso_hom_left, ← Functor.map_comp,
             Iso.inv_hom_id, Functor.map_id]))⟩⟩)
 
-instance : (essImage F).set.RespectsIso := by
+instance : ClosedUnderIsomorphisms (essImage F).P  := by
   dsimp only [essImage]
   infer_instance
 
@@ -850,9 +475,9 @@ end
 
 section
 
-variable {D : Type*} [Category D] (F : D ⥤ C) (hF : ∀ (X : D), F.obj X ∈ S.set)
+variable {D : Type*} [Category D] (F : D ⥤ C) (hF : ∀ (X : D), S.P (F.obj X))
 
-def lift : D ⥤ S.category := FullSubcategory.lift S.set F hF
+def lift : D ⥤ S.category := FullSubcategory.lift S.P F hF
 
 lemma lift_comp_inclusion_eq : S.lift F hF ⋙ S.ι = F :=
   FullSubcategory.lift_comp_inclusion_eq _ _ _
@@ -891,47 +516,22 @@ section
 variable {D : Type*} [Category D] [Preadditive D] [HasZeroObject D] [HasShift D ℤ]
   [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
   (F : D ⥤ C) [F.CommShift ℤ] [F.IsTriangulated]
-  [S.set.RespectsIso]
+  [ClosedUnderIsomorphisms S.P]
 
 def inverseImage : Subcategory D :=
-  Subcategory.mk' (fun X => F.obj X ∈ S.set)
-    (S.set.mem_of_iso F.mapZeroObject.symm S.zero)
-    (fun X n hX => S.set.mem_of_iso ((F.commShiftIso n).symm.app X) (S.shift _ n hX))
+  Subcategory.mk' (fun X => S.P (F.obj X))
+    (mem_of_iso _ F.mapZeroObject.symm S.zero)
+    (fun X n hX => mem_of_iso _ ((F.commShiftIso n).symm.app X) (S.shift _ n hX))
     (fun _ hT h₁ h₃ => S.ext₂ _ (F.map_distinguished _ hT) h₁ h₃)
 
 lemma mem_inverseImage_iff (X : D) :
-    X ∈ (S.inverseImage F).set ↔ F.obj X ∈ S.set := by rfl
+    (S.inverseImage F).P X ↔ S.P (F.obj X) := by rfl
 
-instance : (S.inverseImage F).set.RespectsIso where
-  condition X Y e hX := by
+instance : ClosedUnderIsomorphisms (S.inverseImage F).P where
+  mem_of_iso {X Y} e hX := by
     rw [mem_inverseImage_iff] at hX ⊢
-    exact S.set.mem_of_iso (F.mapIso e) hX
+    exact mem_of_iso _ (F.mapIso e) hX
 
-=======
-  exact ⟨φ.hom₃, S.W.comp_mem _ _ (W.mk S H.mem mem₄') (W.mk' S H'.mem mem₅'),
-    by simpa [φ] using φ.comm₂, by simpa [φ] using φ.comm₃⟩⟩
-
-section
-
-variable (T : Triangle C) (hT : T ∈ distTriang C)
-
-lemma ext₁ [ClosedUnderIsomorphisms S.P] (h₂ : S.P T.obj₂) (h₃ : S.P T.obj₃) :
-    S.P T.obj₁ :=
-  S.ext₂ _ (inv_rot_of_distTriang _ hT) (S.shift _ _ h₃) h₂
-
-lemma ext₃ [ClosedUnderIsomorphisms S.P] (h₁ : S.P T.obj₁) (h₂ : S.P T.obj₂) :
-    S.P T.obj₃ :=
-  S.ext₂ _ (rot_of_distTriang _ hT) h₂ (S.shift _ _ h₁)
-
-lemma ext₁' (h₂ : S.P T.obj₂) (h₃ : S.P T.obj₃) :
-    CategoryTheory.isoClosure S.P T.obj₁ :=
-  S.ext₂' _ (inv_rot_of_distTriang _ hT) (S.shift _ _ h₃) h₂
-
-lemma ext₃' (h₁ : S.P T.obj₁) (h₂ : S.P T.obj₂) :
-    CategoryTheory.isoClosure S.P T.obj₃ :=
-  S.ext₂' _ (rot_of_distTriang _ hT) h₂ (S.shift _ _ h₁)
-
->>>>>>> origin/derived-category
 end
 
 end Subcategory
@@ -939,20 +539,3 @@ end Subcategory
 end Triangulated
 
 end CategoryTheory
-<<<<<<< HEAD
-
-namespace CategoryTheory
-
-open Category Limits
-
-variable {C : Type _} [Category C] [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
-  [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C] [IsTriangulated C]
-  (S : Triangulated.Subcategory C)
-
-noncomputable example : Pretriangulated S.W.Localization := inferInstance
-noncomputable example : IsTriangulated S.W.Localization := inferInstance
-noncomputable example : S.W.Q.IsTriangulated := inferInstance
-
-end CategoryTheory
-=======
->>>>>>> origin/derived-category
