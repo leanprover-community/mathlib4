@@ -511,6 +511,16 @@ theorem part_mem (ha : a ∈ s) : P.part a ∈ P.parts := by simp [part, ha, cho
 
 theorem mem_part (ha : a ∈ s) : a ∈ P.part a := by simp [part, ha, choose_property]
 
+theorem part_surjOn : Set.SurjOn P.part s P.parts := fun p hp ↦ by
+  obtain ⟨x, hx⟩ := P.nonempty_of_mem_parts hp
+  have hx' := mem_of_subset ((le_sup hp).trans P.sup_parts.le) hx
+  use x, hx', (P.existsUnique_mem hx').unique ⟨P.part_mem hx', P.mem_part hx'⟩ ⟨hp, hx⟩
+
+theorem exists_part_bijOn : ∃ r ⊆ s, Set.BijOn P.part r P.parts := by
+  obtain ⟨r, hrs, hr⟩ := P.part_surjOn.exists_bijOn_subset
+  lift r to Finset α using s.finite_toSet.subset hrs
+  exact ⟨r, mod_cast hrs, hr⟩
+
 theorem sum_card_parts : ∑ i in P.parts, i.card = s.card := by
   convert congr_arg Finset.card P.biUnion_parts
   rw [card_biUnion P.supIndep.pairwiseDisjoint]
@@ -676,58 +686,5 @@ theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
 #align finpartition.card_filter_atomise_le_two_pow Finpartition.card_filter_atomise_le_two_pow
 
 end Atomise
-
-section Representatives
-
-open Set
-
-/-- Choose representatives from each part of a finpartition, collecting them into a finset. -/
-noncomputable def reprs : Finset α :=
-  P.parts.attach.map ⟨fun p => (P.nonempty_of_mem_parts p.2).choose, by
-    rw [Injective]
-    intro ⟨v1, p1⟩ ⟨v2, p2⟩ eq
-    rw [Subtype.mk.injEq]
-    exact P.eq_of_mem_parts p1 p2 (eq ▸ (P.nonempty_of_mem_parts p1).choose_spec)
-      (P.nonempty_of_mem_parts p2).choose_spec⟩
-
-theorem card_reprs : P.reprs.card = P.parts.card := by simp [reprs]
-
-theorem reprs_subset : P.reprs ⊆ s := fun _ h ↦ by
-  simp_rw [reprs, mem_map, mem_attach, true_and] at h
-  obtain ⟨p, rfl⟩ := h
-  exact mem_of_subset ((le_sup p.2).trans P.sup_parts.le) (P.nonempty_of_mem_parts p.2).choose_spec
-
-/-- Two representatives coming from the same part are equal. -/
-theorem reprs_injective {b : α} (ha : a ∈ P.reprs) (hb : b ∈ P.reprs)
-    (hc : P.part a = P.part b) : a = b := by
-  have ma : a ∈ s := mem_of_subset P.reprs_subset ha
-  have mb : b ∈ s := mem_of_subset P.reprs_subset hb
-  rw [reprs, mem_map] at ha hb
-  obtain ⟨⟨_, am⟩, _, ha'⟩ := ha
-  obtain ⟨⟨_, bm⟩, _, hb'⟩ := hb
-  rw [P.eq_of_mem_parts (P.part_mem ma) am (P.mem_part ma)
-    (ha' ▸ (P.nonempty_of_mem_parts am).choose_spec),
-      P.eq_of_mem_parts (P.part_mem mb) bm (P.mem_part mb)
-    (hb' ▸ (P.nonempty_of_mem_parts bm).choose_spec)] at hc
-  simp_rw [hc] at ha'
-  exact ha' ▸ hb'
-
-theorem surjOn_part : SurjOn P.part s P.parts := fun p hp ↦ by
-  obtain ⟨x, hx⟩ := P.nonempty_of_mem_parts hp
-  have hx' := mem_of_subset ((le_sup hp).trans P.sup_parts.le) hx
-  use x, hx', (P.existsUnique_mem hx').unique ⟨P.part_mem hx', P.mem_part hx'⟩ ⟨hp, hx⟩
-
-theorem exists_bijOn_part : ∃ r ⊆ s, BijOn P.part r P.parts := by
-  have su := P.surjOn_part
-  rw [surjOn_iff_exists_bijOn_subset] at su
-  obtain ⟨r, ⟨hr, hb⟩⟩ := su
-  classical letI := fintypeSubset ↑s hr
-  let f := r.toFinset
-  have rf : r = f := by rw [coe_toFinset]
-  rw [rf, Finset.coe_subset] at hr
-  use f, hr
-  rwa [coe_toFinset]
-
-end Representatives
 
 end Finpartition
