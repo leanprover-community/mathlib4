@@ -747,7 +747,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
     have diff_pos : 0 < firstDiff x.1 y.1 := by
       by_contra! h
       apply apply_firstDiff_ne hne'
-      rw [le_zero_iff.1 h]
+      rw [Nat.le_zero.1 h]
       apply apply_eq_of_dist_lt _ le_rfl
       rw [pow_zero]
       exact hxy

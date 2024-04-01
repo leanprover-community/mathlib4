@@ -9,6 +9,7 @@ import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.InsertNth
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.List.Count
 
 #align_import data.list.perm from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
@@ -615,9 +616,8 @@ theorem Perm.drop_inter {α} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : x
     xs.drop n ~ ys.inter (xs.drop n) := by
   by_cases h'' : n ≤ xs.length
   · let n' := xs.length - n
-    have h₀ : n = xs.length - n' := by
-      rwa [tsub_tsub_cancel_of_le]
-    have h₁ : n' ≤ xs.length := by apply tsub_le_self
+    have h₀ : n = xs.length - n' := by rwa [Nat.sub_sub_self]
+    have h₁ : n' ≤ xs.length := Nat.sub_le ..
     have h₂ : xs.drop n = (xs.reverse.take n').reverse := by
       rw [reverse_take _ h₁, h₀, reverse_reverse]
     rw [h₂]
@@ -627,7 +627,7 @@ theorem Perm.drop_inter {α} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : x
     apply (reverse_perm _).trans; assumption
   · have : drop n xs = [] := by
       apply eq_nil_of_length_eq_zero
-      rw [length_drop, tsub_eq_zero_iff_le]
+      rw [length_drop, Nat.sub_eq_zero_iff_le]
       apply le_of_not_ge h''
     simp [this, List.inter]
 #align list.perm.drop_inter List.Perm.drop_inter
@@ -802,7 +802,7 @@ theorem nthLe_permutations'Aux (s : List α) (x : α) (n : ℕ)
     (hn : n < length (permutations'Aux x s)) :
     (permutations'Aux x s).nthLe n hn = s.insertNth n x := by
   induction' s with y s IH generalizing n
-  · simp only [length, zero_add, lt_one_iff] at hn
+  · simp only [length, zero_add, Nat.lt_one_iff] at hn
     simp [hn]
   · cases n
     · simp [nthLe]
@@ -864,8 +864,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
   intro H
   obtain ⟨k, hk, hk'⟩ := nthLe_of_mem H
   rw [nodup_iff_nthLe_inj] at h
-  suffices k = k + 1 by simp at this
-  refine' h k (k + 1) _ _ _
+  refine k.succ_ne_self.symm $ h k (k + 1) ?_ ?_ ?_
   · simpa [Nat.lt_succ_iff] using hk.le
   · simpa using hk
   rw [nthLe_permutations'Aux, nthLe_permutations'Aux]
