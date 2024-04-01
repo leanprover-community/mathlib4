@@ -439,6 +439,11 @@ theorem generate_sieve (S : Sieve X) : generate S = S :=
   giGenerate.l_u_eq S
 #align category_theory.sieve.generate_sieve CategoryTheory.Sieve.generate_sieve
 
+@[simp]
+lemma generate_le_iff (R : Presieve X) (S : Sieve X) :
+    generate R ≤ S ↔ R ≤ S :=
+  (giGenerate (X := X)).gc _ _
+
 /-- If the identity arrow is in a sieve, the sieve is maximal. -/
 theorem id_mem_iff_eq_top : S (𝟙 X) ↔ S = ⊤ :=
   ⟨fun h => top_unique fun Y f _ => by simpa using downward_closed _ h f, fun h => h.symm ▸ trivial⟩

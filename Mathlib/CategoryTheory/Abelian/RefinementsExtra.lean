@@ -1,5 +1,7 @@
 import Mathlib.CategoryTheory.Abelian.Refinements
-import Mathlib.CategoryTheory.Sites.Canonical
+import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
+import Mathlib.CategoryTheory.Sites.Coherent.Comparison
+import Mathlib.CategoryTheory.Sites.Balanced
 import Mathlib.CategoryTheory.Sites.Limits
 
 universe w v u
@@ -8,11 +10,122 @@ namespace CategoryTheory
 
 open Opposite Limits Category
 
+namespace Limits
+
+variable {C : Type u} [Category.{v} C] [Preadditive C]
+
+namespace PushoutCocone
+
+variable {Z X₁ X₂ : C} {f₁ : Z ⟶ X₁} {f₂ : Z ⟶ X₂} (c : PushoutCocone f₁ f₂)
+  [HasBinaryBiproduct X₁ X₂]
+
+@[simps]
+noncomputable def shortComplex : ShortComplex C where
+  X₁ := Z
+  X₂ := X₁ ⊞ X₂
+  X₃ := c.pt
+  f := biprod.lift f₁ (-f₂)
+  g := biprod.desc c.inl c.inr
+  zero := by simp [c.condition]
+
+noncomputable def isColimitOfExactShortComplex [Balanced C]
+    (hc : c.shortComplex.Exact) (hc' : Epi c.shortComplex.g) :
+    IsColimit c :=
+  PushoutCocone.isColimitAux _
+    (fun s => hc.desc (biprod.desc s.inl s.inr) (by simp [s.condition]))
+    (fun s => by simpa using biprod.inl ≫= hc.g_desc (biprod.desc s.inl s.inr) _)
+    (fun s => by simpa using biprod.inr ≫= hc.g_desc (biprod.desc s.inl s.inr) _)
+    (fun s m hm => by
+      rw [← cancel_epi (PushoutCocone.shortComplex c).g, hc.g_desc]
+      aesop_cat)
+
+
+end PushoutCocone
+
+namespace PullbackCone
+
+variable {X₁ X₂ Y : C} {f₁ : X₁ ⟶ Y} {f₂ : X₂ ⟶ Y} (c : PullbackCone f₁ f₂)
+  [HasBinaryBiproduct X₁ X₂]
+
+
+@[simps]
+noncomputable def shortComplex : ShortComplex C where
+  X₁ := c.pt
+  X₂ := X₁ ⊞ X₂
+  X₃ := Y
+  f := biprod.lift c.fst c.snd
+  g := biprod.desc f₁ (-f₂)
+  zero := by simp [c.condition]
+
+lemma exact_shortComplex_of_isLimit (hc : IsLimit c)
+    [(shortComplex c).HasHomology] : c.shortComplex.Exact := by
+  apply ShortComplex.exact_of_f_is_kernel
+  let pullbackCone : ∀ {W : C} (φ : W ⟶ X₁ ⊞ X₂), φ ≫ biprod.desc f₁ (-f₂) = 0 →
+        PullbackCone f₁ f₂ := fun {W} φ hφ =>
+    PullbackCone.mk (φ ≫ biprod.fst) (φ ≫ biprod.snd) (by
+      rw [← sub_eq_zero, assoc, assoc, ← Preadditive.comp_sub]
+      convert hφ
+      aesop_cat)
+  exact KernelFork.IsLimit.ofι _ _
+    (fun f hf => hc.lift (pullbackCone f hf))
+    (fun f hf => by
+      dsimp
+      ext <;> simp [pullbackCone])
+    (fun f hf m hm => by
+      have hm₁ := hm =≫ biprod.fst
+      have hm₂ := hm =≫ biprod.snd
+      dsimp at hm₁ hm₂
+      simp only [assoc, biprod.lift_fst, biprod.lift_snd] at hm₁ hm₂
+      apply PullbackCone.IsLimit.hom_ext hc
+      · simp [hm₁, pullbackCone]
+      · simp [hm₂, pullbackCone])
+
+end PullbackCone
+
+end Limits
+
 namespace Abelian
 
-variable (C : Type u) [Category.{v} C] [Abelian C]
+section
 
-def refinementsTopology : GrothendieckTopology C where
+variable {C : Type u} [Category.{v} C] [Abelian C]
+
+section
+
+variable {X Y Z : C} {f : X ⟶ Y} [Epi f] {π₁ π₂ : Z ⟶ X}
+
+noncomputable def effectiveEpiStructOfEpiOfIsPushout (hc : IsPushout π₁ π₂ f f) :
+    EffectiveEpiStruct f where
+  desc {W} φ h := PushoutCocone.IsColimit.desc hc.isColimit φ φ (h _ _ hc.w)
+  fac {W} φ h := PushoutCocone.IsColimit.inl_desc hc.isColimit _ _ _
+  uniq {W} φ h m hm := by
+    rw [← cancel_epi f, hm]
+    symm
+    apply PushoutCocone.IsColimit.inl_desc hc.isColimit
+
+lemma isPushout_of_isPullback_of_epi (hc : IsPullback π₁ π₂ f f) :
+    IsPushout π₁ π₂ f f := by
+  have hc' : IsColimit (PushoutCocone.mk _ _ hc.w) := by
+    apply PushoutCocone.isColimitOfExactShortComplex
+    · refine' ShortComplex.exact_of_iso _ (PullbackCone.exact_shortComplex_of_isLimit _ hc.isLimit)
+      refine' ShortComplex.isoMk (Iso.refl _)
+        { hom := biprod.desc biprod.inl (-biprod.inr)
+          inv := biprod.desc biprod.inl (-biprod.inr) }
+        (Iso.refl _) (by aesop_cat) (by aesop_cat)
+    · dsimp; infer_instance
+  exact IsPushout.of_isColimit hc'
+
+end
+
+lemma effective_epi_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] :
+    EffectiveEpi f where
+  effectiveEpi := ⟨effectiveEpiStructOfEpiOfIsPushout
+    (isPushout_of_isPullback_of_epi (IsPullback.of_isLimit (pullbackIsPullback f f)))⟩
+
+variable (C)
+
+def refinementsTopology :
+    GrothendieckTopology C where
   sieves X S := ∃ (T : C) (p : T ⟶ X) (_ : Epi p), S p
   top_mem' X := ⟨X, 𝟙 X, inferInstance, by simp⟩
   pullback_stable' X Y S f hS := by
@@ -26,154 +139,53 @@ def refinementsTopology : GrothendieckTopology C where
     obtain ⟨U, q, hq, h'⟩ := hR h
     exact ⟨_, q ≫ p, epi_comp _ _, h'⟩
 
-end Abelian
+instance : Preregular C where
+  exists_fac {X Y Z} f g _ := by
+    obtain ⟨A, π, hπ, i, fac⟩ := surjective_up_to_refinements_of_epi g f
+    exact ⟨A, π, effective_epi_of_epi π, i, fac.symm⟩
 
-namespace Sheaf
+lemma refinementsTopology_eq_regularTopology :
+    refinementsTopology C = regularTopology C := by
+  apply le_antisymm
+  · rintro X S ⟨T, p, _, hp⟩
+    refine (regularTopology C).superset_covering ?_
+      (Coverage.saturate.of X _ ⟨_, p, rfl, effective_epi_of_epi p⟩)
+    rw [Sieve.generate_le_iff]
+    rintro _ _ ⟨⟨⟩⟩
+    exact hp
+  · apply ((Coverage.gi C).gc _ _).2
+    rintro X S ⟨Y, s, rfl, _⟩
+    exact ⟨_, s, inferInstance, _, 𝟙 _, s, ⟨Unit.unit⟩, by simp⟩
 
-variable {C : Type u} [Category.{u} C] {J : GrothendieckTopology C}
-  {F G : Sheaf J (Type u)} (φ : F ⟶ G)
+lemma refinementsTopology_subcanonical :
+    Sheaf.Subcanonical (refinementsTopology C) := by
+  rw [refinementsTopology_eq_regularTopology]
+  exact regularCoverage.subcanonical
 
-lemma mono_of_injective
-    (hφ : ∀ (X : Cᵒᵖ), Function.Injective (fun (x : F.1.obj X) => φ.1.app _ x)) : Mono φ where
-  right_cancellation := by
-    intro H f₁ f₂ h
-    ext Z x
-    exact hφ Z (congr_fun (congr_app (congr_arg Sheaf.Hom.val h) Z) x)
+end
 
-lemma mono_iff_injective :
-    Mono φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (fun (x : F.1.obj X) => φ.1.app _ x) := by
+section EpiIffLocallySurjective
+
+variable {C : Type u} [SmallCategory C] [Abelian C]
+  {X Y : C} (f : X ⟶ Y)
+
+lemma epi_iff_isLocallySurjective_yoneda_map :
+    Epi f ↔ Sheaf.IsLocallySurjective ((refinementsTopology_subcanonical C).yoneda.map f) := by
+  rw [epi_iff_surjective_up_to_refinements f]
   constructor
-  · intro hφ X
-    simp only [← CategoryTheory.mono_iff_injective]
-    change Mono (((evaluation _ _).obj X).map ((sheafToPresheaf _ _).map φ))
-    infer_instance
-  · intro hφ
-    exact mono_of_injective φ hφ
-
-lemma epi_of_locally_surjective (hφ : ∀ (X : Cᵒᵖ) (x : G.1.obj X),
-    ∃ (S : Sieve X.unop) (_ : S ∈ J X.unop),
-    ∀ (Y : C) (f : Y ⟶ X.unop) (_ : S f), ∃ (y : F.1.obj (op Y)),
-    φ.1.app _ y = G.1.map f.op x) : Epi φ where
-  left_cancellation := by
-    intro H f₁ f₂ h
-    ext X x
-    obtain ⟨S, hS, hS'⟩ := hφ _ x
-    apply ((Presieve.isSeparated_of_isSheaf _ _
-      ((isSheaf_iff_isSheaf_of_type _ _).1 H.2)) S hS).ext
-    intro Y f hf
-    obtain ⟨y, hy⟩ := hS' Y f hf
-    have h₁ := congr_fun (f₁.1.naturality f.op) x
-    have h₂ := congr_fun (f₂.1.naturality f.op) x
-    dsimp at h₁ h₂
-    simp only [← h₁, ← h₂, ← hy]
-    exact congr_fun (congr_app (congr_arg Sheaf.Hom.val h) (op Y)) y
-
-namespace EpiMonoFactorization
-
-@[simps]
-def presheafI : Cᵒᵖ ⥤ Type u where
-  obj X := { x : G.1.obj X | ∃ (S : Sieve X.unop) (_ : S ∈ J X.unop),
-    ∀ (Y : C) (f : Y ⟶ X.unop) (_ : S f), ∃ (y : F.1.obj (op Y)),
-      φ.1.app _ y = G.1.map f.op x }
-  map {X X'} g a := ⟨G.1.map g a.1, by
-    obtain ⟨S, hS, h⟩ := a.2
-    refine' ⟨S.pullback g.unop, J.pullback_stable _ hS, fun Y f hf => _⟩
-    obtain ⟨y, hy⟩ := h Y (f ≫ g.unop) hf
-    exact ⟨y, by simp [hy]⟩⟩
-
-@[simps]
-def presheafι : presheafI φ ⟶ G.1 where
-  app _ x := x.1
-  naturality _ _ _ := rfl
-
-@[simps]
-def I : Sheaf J (Type u) := ⟨presheafI φ, by
-  rw [isSheaf_iff_isSheaf_of_type]
-  intro X S hS α hα
-  have hS' := (((isSheaf_iff_isSheaf_of_type _ _).1 G.2) _ hS)
-  refine' ⟨⟨hS'.amalgamate _
-    (hα.compPresheafMap (presheafι φ)), _⟩, _, _⟩
-  · let U := fun ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : S.arrows f) => (α f hf).2.choose
-    have hU : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : S.arrows f), U hf ∈ J _:= fun Y f hf =>
-        (α f hf).2.choose_spec.choose
-    refine' ⟨_, J.bind_covering hS hU, fun Y f hf => _⟩
-    obtain ⟨T, a, b, hb, ha : U hb a, fac⟩ := hf
-    obtain ⟨y, hy⟩ := (α _ hb).2.choose_spec.choose_spec _ a ha
-    refine' ⟨y, _⟩
-    have hf : S.arrows f := by
-      rw [← fac]
-      apply S.downward_closed hb
-    rw [hy, Presieve.IsSheafFor.valid_glue hS' (hα.compPresheafMap (presheafι φ)) f hf]
-    simpa using (hα.compPresheafMap (presheafι φ)) a (𝟙 _) hb hf (by simpa using fac)
-  · intro Y f hf
-    apply Subtype.ext
-    apply Presieve.IsSheafFor.valid_glue hS' (hα.compPresheafMap (presheafι φ))
-  · rintro ⟨y, _⟩ hy
-    apply Subtype.ext
-    apply ((Presieve.isSeparated_of_isSheaf _ _
-      ((isSheaf_iff_isSheaf_of_type _ _).1 G.2)) S hS).ext
-    intro Y f hf
+  · intro hf
+    refine' ⟨fun {U} (y : U.unop ⟶ Y) => _⟩
+    obtain ⟨A', π, hπ, x, fac⟩ := hf y
     dsimp
-    replace hy := hy f hf
-    rw [Subtype.ext_iff] at hy
-    dsimp at hy
-    rw [hy]
-    symm
-    apply Presieve.IsSheafFor.valid_glue⟩
+    exact ⟨A', π, hπ, x, fac.symm⟩
+  · intro hf
+    intro A y
+    obtain ⟨A', π, hπ, x, fac⟩ := Presheaf.imageSieve_mem (refinementsTopology C)
+      ((refinementsTopology_subcanonical C).yoneda.map f).val y
+    exact ⟨A', π, hπ, x, fac.symm⟩
 
-@[simps]
-def ι : I φ ⟶ G := Sheaf.Hom.mk (presheafι φ)
+end EpiIffLocallySurjective
 
-@[simps]
-def π : F ⟶ I φ where
-  val :=
-    { app := fun X x => ⟨φ.1.app X x, ⟨⊤, J.top_mem X.unop, fun Y f _ =>
-        ⟨F.1.map f.op x, congr_fun (φ.val.naturality f.op) x⟩⟩⟩
-      naturality := fun X X' g => by
-        ext x
-        exact Subtype.ext (congr_fun (φ.val.naturality g) x) }
-
-instance : Epi (π φ) := by
-  apply epi_of_locally_surjective
-  intro X x
-  obtain ⟨S, hS, hS'⟩ := x.2
-  refine' ⟨S, hS, fun Y f hf => _⟩
-  obtain ⟨y, hy⟩ := hS' Y f hf
-  exact ⟨y, Subtype.ext hy⟩
-
-instance : Mono (ι φ) := by
-  apply mono_of_injective
-  intro X x₁ x₂ h
-  exact Subtype.ext h
-
-@[reassoc (attr := simp)]
-lemma π_ι : π φ ≫ ι φ = φ := rfl
-
-instance [Epi φ] : Epi (ι φ) := epi_of_epi_fac (π_ι φ)
-
-end EpiMonoFactorization
-
-/-lemma isIso_of_mono_of_epi (φ : F ⟶ G) [Mono φ] [Epi φ] : IsIso φ := by
-  sorry
-
-lemma epi_iff_locally_surjective :
-    Epi φ ↔ (∀ (X : Cᵒᵖ) (x : G.1.obj X),
-    ∃ (S : Sieve X.unop) (_ : S ∈ J X.unop),
-    ∀ (Y : C) (f : Y ⟶ X.unop) (_ : S f), ∃ (y : F.1.obj (op Y)),
-    φ.1.app _ y = G.1.map f.op x) := by
-  constructor
-  · intro hφ
-    have : IsIso (EpiMonoFactorization.ι φ) := isIso_of_mono_of_epi _
-    intro X x
-    have : Function.Bijective ((EpiMonoFactorization.ι φ).1.app X) := by
-      rw [← isIso_iff_bijective]
-      change IsIso ((sheafToPresheaf _ _ ⋙ (evaluation _ _).obj X).map (EpiMonoFactorization.ι φ))
-      infer_instance
-    obtain ⟨⟨y, hy⟩, rfl⟩ := this.2 x
-    exact hy
-  · intro hφ
-    exact epi_of_locally_surjective φ hφ-/
-
-end Sheaf
+end Abelian
 
 end CategoryTheory
