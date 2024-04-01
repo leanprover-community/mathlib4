@@ -1,7 +1,7 @@
 /-
-Copyright © 2020 Frédéric Marbach. All rights reserved.
+Copyright © 2024 Frédéric Marbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nicolò Cavalleri, Frédéric Marbach, Andrew Yang
+Authors: Frédéric Marbach
 -/
 import Mathlib.Algebra.Lie.Basic
 import Mathlib.Algebra.Lie.Subalgebra
@@ -10,7 +10,7 @@ import Mathlib.Tactic.NoncommRing
 /-!
 # Lie derivations
 
-This file defines *Lie derivations* and proves elementary properties about these.
+This file defines *Lie derivations* and establishes some basic properties.
 
 ## Main definitions
 
@@ -57,13 +57,11 @@ instance : FunLike (LieDerivation R L M) L M where
   coe D := D.toFun
   coe_injective' D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
 
-instance : AddMonoidHomClass (LieDerivation R L M) L M where
+instance instLinearMapClass : LinearMapClass (LieDerivation R L M) R L M where
   map_add D := D.toLinearMap.map_add'
-  map_zero D := D.toLinearMap.map_zero
+  map_smulₛₗ D := D.toLinearMap.map_smul
 
--- Not a simp lemma because it can be proved via `coeFn_coe` + `toLinearMap_eq_coe`
-theorem toFun_eq_coe : D.toFun = ⇑D :=
-  rfl
+theorem toFun_eq_coe : D.toFun = ⇑D := rfl
 
 /-- See Note [custom simps projection] -/
 def Simps.apply (D : LieDerivation R L M) : L → M := D
@@ -72,10 +70,8 @@ initialize_simps_projections LieDerivation (toFun → apply)
 
 attribute [coe] toLinearMap
 
-instance hasCoeToLinearMap : Coe (LieDerivation R L M) (L →ₗ[R] M) :=
+instance instCoeToLinearMap : Coe (LieDerivation R L M) (L →ₗ[R] M) :=
   ⟨fun D => D.toLinearMap⟩
-
-#noalign derivation.to_linear_map_eq_coe -- Porting note: not needed anymore
 
 @[simp]
 theorem mk_coe (f : L →ₗ[R] M) (h₁) : ((⟨f, h₁⟩ : LieDerivation R L M) : L → M) = f :=
@@ -95,16 +91,6 @@ theorem ext (H : ∀ a, D1 a = D2 a) : D1 = D2 :=
 theorem congr_fun (h : D1 = D2) (a : L) : D1 a = D2 a :=
   DFunLike.congr_fun h a
 
-protected theorem map_add : D (a + b) = D a + D b :=
-  map_add D a b
-
-protected theorem map_zero : D 0 = 0 :=
-  map_zero D
-
-@[simp]
-theorem map_smul : D (r • a) = r • D a :=
-  D.toLinearMap.map_smul r a
-
 @[simp]
 lemma apply_lie_eq_sub (D : LieDerivation R L M) (a b : L) :
     D ⁅a, b⁆ = ⁅a, D b⁆ - ⁅b, D a⁆ :=
@@ -118,11 +104,6 @@ lemma apply_lie_eq_add (D : LieDerivation R L L) (a b : L) :
 nonrec theorem map_sum {ι : Type*} (s : Finset ι) (f : ι → L) :
     D (∑ i in s, f i) = ∑ i in s, D (f i) :=
   map_sum D _ _
-
-@[simp]
-theorem map_smul_of_tower {S : Type*} [SMul S L] [SMul S M] [LinearMap.CompatibleSMul L M S R]
-    (D : LieDerivation R L M) (r : S) (a : L) : D (r • a) = r • D a :=
-  D.toLinearMap.map_smul_of_tower r a
 
 /-- Two Lie derivations equal on a set are equal on its Lie span. -/
 theorem eqOn_lieSpan {s : Set L} (h : Set.EqOn D1 D2 s) :
@@ -144,10 +125,10 @@ theorem ext_of_lieSpan_eq_top (s : Set L) (hs : LieSubalgebra.lieSpan R L s = �
     (h : Set.EqOn D1 D2 s) : D1 = D2 :=
   ext fun _ => eqOn_lieSpan h <| hs.symm ▸ trivial
 
--- Data typeclasses
-instance : Zero (LieDerivation R L M) :=
-  ⟨{  toLinearMap := 0
-      leibniz' := fun a b => by simp only [LinearMap.zero_apply, lie_zero, sub_self] }⟩
+instance instZero : Zero (LieDerivation R L M) where
+  zero :=
+    { toLinearMap := 0
+      leibniz' := fun a b => by simp only [LinearMap.zero_apply, lie_zero, sub_self] }
 
 @[simp]
 theorem coe_zero : ⇑(0 : LieDerivation R L M) = 0 :=
@@ -160,11 +141,11 @@ theorem coe_zero_linearMap : ↑(0 : LieDerivation R L M) = (0 : L →ₗ[R] M) 
 theorem zero_apply (a : L) : (0 : LieDerivation R L M) a = 0 :=
   rfl
 
-instance : Add (LieDerivation R L M) :=
-  ⟨fun D1 D2 =>
+instance instAdd : Add (LieDerivation R L M) where
+  add D1 D2 :=
     { toLinearMap := D1 + D2
-      leibniz' := fun a b => by
-        simp only [LinearMap.add_apply, coeFn_coe, apply_lie_eq_sub, lie_add, add_sub_add_comm]; }⟩
+      leibniz' := fun a b ↦ by
+        simp only [LinearMap.add_apply, coeFn_coe, apply_lie_eq_sub, lie_add, add_sub_add_comm] }
 
 @[simp]
 theorem coe_add (D1 D2 : LieDerivation R L M) : ⇑(D1 + D2) = D1 + D2 :=
