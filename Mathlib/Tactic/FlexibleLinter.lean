@@ -25,7 +25,6 @@ Otherwise, the linter will complain.
 ## TODO
 The example
 ```lean
-#guard_msgs in
 example (h : 0 = 0) : True := by
   simp at h
   assumption
@@ -55,10 +54,10 @@ open Lean Elab
 
 namespace Mathlib.Linter
 
-/-- The non-terminal `simp` linter makes sure that `simp` is not used as a finishing tactic. -/
+/-- The flexible linter makes sure that "rigid" tactics do not follow "flexible" tactics. -/
 register_option linter.flexible : Bool := {
   defValue := true
-  descr := "enable the 'non-terminal `simp`' linter"
+  descr := "enable the flexible linter"
 }
 
 namespace flexible
@@ -83,15 +82,10 @@ variable (t : TacticInfo)
 /-!
 ###  Heuristics for determining active and inactive goals
 
-The three definitions `inertGoals`, `activeGoalsBefore`, `activeGoalsAfter` extract a list of
+The two definitions `activeGoalsBefore`, `activeGoalsAfter` extract a list of
 `MVarId`s attempting to determine which on which goals the tactic `t` is acting.
 This is mostly based on the heuristic that the tactic with "change" an `MVarId`.
 -/
-
-/-- `inertGoals t` are the goals that appear before and after the `TacticInfo` `t`.
-They should correspond to the goals that are unmodified by `t`. -/
-def inertGoals : List MVarId :=
-  t.goalsBefore.filter (·.name ∈ t.goalsAfter.map (·.name))
 
 /-- `activeGoalsBefore t` are the `MVarId`s before the `TacticInfo` `t` that "disappear" after it.
 They should correspond to the goals in which the tactic `t` performs some action. -/
@@ -197,7 +191,7 @@ def getStained! (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : Arr
     | #[] => #[.goal]
     | out => out
 
-/-- Gets the value of the `linter.nonTerminalSimp` option. -/
+/-- Gets the value of the `linter.flexible` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.flexible o
 
 /-- `Stained.toFMVarId mv lctx st` takes a metavariable `mv`, a local context `lctx` and
