@@ -1113,28 +1113,19 @@ theorem sum_mul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f g : ι → α) :
 
 end Finset
 
+namespace Equiv.Perm
+
 theorem subtypePerm_apply_pow_of_mem {g : Perm α} {s : Finset α}
     (hs : ∀ x : α, x ∈ s ↔ g x ∈ s) {n : ℕ} {x : α} (hx : x ∈ s) :
     ((g.subtypePerm hs ^ n) (⟨x, hx⟩ : s) : α) = (g ^ n) x := by
-  induction n generalizing x with
-  | zero => simp only [pow_zero, coe_one, id.def, Subtype.coe_mk]
-  | succ n hrec =>
-    simp only [pow_succ', coe_mul, Function.comp_apply]
-    apply hrec
+  simp only [subtypePerm_pow, subtypePerm_apply]
 
 theorem subtypePerm_apply_zpow_of_mem {g : Perm α} {s : Finset α}
     (hs : ∀ x : α, x ∈ s ↔ g x ∈ s) {i : ℤ} {x : α} (hx : x ∈ s) :
     ((g.subtypePerm hs ^ i) (⟨x, hx⟩ : s) : α) = (g ^ i) x := by
-  cases i with
-  | ofNat i => apply subtypePerm_apply_pow_of_mem
-  | negSucc i =>
-    simp only [zpow_negSucc]
-    apply Equiv.injective (g ^ (i + 1))
-    simp only [apply_inv_self]
-    rw [← subtypePerm_apply_pow_of_mem hs, Finset.mk_coe, apply_inv_self, Subtype.coe_mk]
-    apply Finset.coe_mem
+  simp only [subtypePerm_zpow, subtypePerm_apply]
 
-variable [Fintype α]
+variable [Fintype α] [DecidableEq α]
 
 /-- Restrict a permutation to its support -/
 def subtypePermOfSupport (c : Perm α) : Perm c.support :=
@@ -1252,39 +1243,6 @@ theorem IsCycle.commute_iff {g c : Perm α} (hc : c.IsCycle) :
       exact ha
     exact fun b ↦ (ha b).elim
 
-theorem IsCycle.forall_commute_iff (g z : Perm α) :
-    (∀ c ∈ g.cycleFactorsFinset, Commute z c) ↔
-      ∀ c ∈ g.cycleFactorsFinset,
-      ∃ (hc : ∀ x : α, x ∈ c.support ↔ z x ∈ c.support),
-        ofSubtype (subtypePerm z hc) ∈ Subgroup.zpowers c := by
-  apply forall_congr'
-  intro c
-  apply imp_congr_right
-  intro hc
-  exact IsCycle.commute_iff (mem_cycleFactorsFinset_iff.mp hc).1
-
-/-- A permutation restricted to the support of a cycle factor is that cycle factor -/
-theorem subtypePerm_on_cycleFactorsFinset {g c : Perm α}
-    (hc : c ∈ g.cycleFactorsFinset) :
-    g.subtypePerm (mem_cycleFactorsFinset_support hc) = c.subtypePermOfSupport := by
-  ext ⟨x, hx⟩
-  simp only [subtypePerm_apply, Subtype.coe_mk, subtypePermOfSupport]
-  exact ((mem_cycleFactorsFinset_iff.mp hc).2 x hx).symm
-
-theorem commute_iff_of_mem_cycleFactorsFinset {g k c : Equiv.Perm α}
-    (hc : c ∈ g.cycleFactorsFinset) :
-    Commute k c ↔
-      ∃ hc' : ∀ x : α, x ∈ c.support ↔ k x ∈ c.support,
-        k.subtypePerm hc' ∈ Subgroup.zpowers
-          (g.subtypePerm (mem_cycleFactorsFinset_support hc)) := by
-  rw [IsCycle.commute_iff' (mem_cycleFactorsFinset_iff.mp hc).1]
-  apply exists_congr
-  intro hc'
-  simp only [Subgroup.mem_zpowers_iff]
-  apply exists_congr
-  intro n
-  rw [Equiv.Perm.subtypePerm_on_cycleFactorsFinset hc]
-
 theorem zpow_eq_ofSubtype_subtypePerm_iff
     {g c : Equiv.Perm α} {s : Finset α}
     (hg : ∀ x, x ∈ s ↔ g x ∈ s) (hc : c.support ⊆ s) (n : ℤ) :
@@ -1308,8 +1266,8 @@ theorem zpow_eq_ofSubtype_subtypePerm_iff
 theorem cycle_zpow_mem_support_iff {g : Perm α}
     (hg : g.IsCycle) {n : ℤ} {x : α} (hx : g x ≠ x) :
     (g ^ n) x = x ↔ n % g.support.card = 0 := by
-  let q := n / g.support.card; let r := n % g.support.card
-  change _ ↔ r = 0
+  set q := n / g.support.card
+  set r := n % g.support.card
   have div_euc : r + g.support.card * q = n ∧ 0 ≤ r ∧ r < g.support.card := by
     rw [← Int.ediv_emod_unique _]
     · exact ⟨rfl, rfl⟩
@@ -1317,31 +1275,18 @@ theorem cycle_zpow_mem_support_iff {g : Perm α}
     apply lt_of_lt_of_le _ (IsCycle.two_le_card_support hg); norm_num
   simp only [← hg.orderOf] at div_euc
   obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le div_euc.2.1
-  simp only [hm, Nat.cast_nonneg, Nat.cast_lt, true_and_iff] at div_euc
-  simp only [hm, Nat.cast_eq_zero]
-  rw [← div_euc.1, zpow_add g, zpow_mul, zpow_ofNat]
-  simp only [pow_orderOf_eq_one, zpow_ofNat, one_zpow, mul_one]
+  simp only [hm, Nat.cast_nonneg, Nat.cast_lt, true_and] at div_euc
+  rw [← div_euc.1, zpow_add g]
+  simp only [hm, Nat.cast_eq_zero, zpow_natCast, coe_mul, comp_apply,zpow_mul,
+    pow_orderOf_eq_one, one_zpow, coe_one, id_eq]
   have : (g ^ m) x = x ↔ g ^ m = 1 := by
     constructor
     · intro hgm
       simp only [IsCycle.pow_eq_one_iff hg]
       use x
     · intro hgm; rw [hgm]; simp only [coe_one, id.def]
-  rw [this, div_euc.1, ← hg.orderOf, hm]
+  rw [this]
   by_cases hm0 : m = 0
   · simp only [hm0, pow_zero, Nat.cast_zero]
   · simp only [Nat.cast_eq_zero, hm0, iff_false]
     exact pow_ne_one_of_lt_orderOf' hm0 div_euc.2
-
-theorem zpow_eq_zpow_on_iff (g : Perm α)
-    (m n : ℤ) (x : α) (hx : g x ≠ x) :
-    (g ^ m) x = (g ^ n) x ↔
-      m % (g.cycleOf x).support.card = n % (g.cycleOf x).support.card := by
-  rw [Int.emod_eq_emod_iff_emod_sub_eq_zero]
-  conv_lhs => rw [← Int.sub_add_cancel m n, Int.add_comm, zpow_add]
-  simp only [coe_mul, Function.comp_apply, EmbeddingLike.apply_eq_iff_eq]
-  rw [← Int.dvd_iff_emod_eq_zero]
-  rw [← cycleOf_zpow_apply_self g x, cycle_zpow_mem_support_iff]
-  · rw [← Int.dvd_iff_emod_eq_zero]
-  · exact isCycle_cycleOf g hx
-  · simp only [mem_support, cycleOf_apply_self]; exact hx
