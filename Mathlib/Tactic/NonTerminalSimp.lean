@@ -239,7 +239,9 @@ a `stained` `st` and returns the array of pairs `(FVarId, mv)`s that `lctx` assi
   (to keep track of the `goal`).
 -/
 def stained.toFMVarId (mv : MVarId) (lctx: LocalContext) : stained → Array (FVarId × MVarId)
-  | name n   => #[(((lctx.findFromUserName? n).getD default).fvarId, mv)]
+  | name n   => match lctx.findFromUserName? n with
+                  | none => #[]
+                  | some decl => #[(decl.fvarId, mv)]
   | goal     => #[(default, mv)]
   | wildcard => (lctx.getFVarIds.push default).map (·, mv)
 
