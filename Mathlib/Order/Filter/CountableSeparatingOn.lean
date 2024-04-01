@@ -86,6 +86,8 @@ class HasCountableSeparatingOn (α : Type*) (p : Set α → Prop) (t : Set α) :
   exists_countable_separating : ∃ S : Set (Set α), S.Countable ∧ (∀ s ∈ S, p s) ∧
     ∀ x ∈ t, ∀ y ∈ t, (∀ s ∈ S, x ∈ s ↔ y ∈ s) → x = y
 
+/-- A set of sets witnessing the property `HasCountableSeparatingOn α p t`: this set is countable,
+all elements satisfy `p` and the set is separating. -/
 def countableSeparatingSet (p : Set α → Prop) (t : Set α) [h : HasCountableSeparatingOn α p t] :
     Set (Set α) :=
   h.exists_countable_separating.choose
