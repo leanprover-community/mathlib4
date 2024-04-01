@@ -66,6 +66,9 @@ The following is the second equivalent characterization of linearly disjointness
 - `Submodule.LinearDisjoint.symm_of_commute`, `Submodule.linearDisjoint_symm_of_commute`:
   linearly disjoint is symmetric under some commutative conditions.
 
+- `Submodule.linearDisjoint_op`:
+  linearly disjoint is preserved by taking multiplicative opposite.
+
 - `Submodule.LinearDisjoint.of_le_left_of_flat`, `Submodule.LinearDisjoint.of_le_right_of_flat`,
   `Submodule.LinearDisjoint.of_le_of_flat_left`, `Submodule.LinearDisjoint.of_le_of_flat_right`:
   linearly disjoint is preserved by taking submodules under some flatness conditions.
@@ -84,14 +87,14 @@ The following is the second equivalent characterization of linearly disjointness
 
 - `Submodule.LinearDisjoint.of_left_le_self_of_flat`,
   `Submodule.LinearDisjoint.of_right_le_self_of_flat`:
-  if a submodule is contained in the image of `R` in `S`, then is linearly disjoint with any other
-  submodules, under some flatness conditions.
+  if a submodule is contained in the image of `R` in `S`, then it is linearly disjoint with
+  any other submodules, under some flatness conditions.
 
 - `Submodule.LinearDisjoint.not_linearIndependent_pair_of_commute_of_flat`,
   `Submodule.LinearDisjoint.rank_inf_le_one_of_commute_of_flat`:
   if `M` and `N` are linearly disjoint, if one of `M` and `N` is flat, then any two commutative
   elements contained in the intersection of `M` and `N` are not `R`-linearly independent (namely,
-  their span is not the two copies of `R`). In particular, if any two elements of `M` and `N`
+  their span is not `R ^ 2`). In particular, if any two elements in the intersection of `M` and `N`
   are commutative, then the rank of the intersection of `M` and `N` is at most one.
 
 - `Submodule.LinearDisjoint.rank_le_one_of_commute_of_flat_of_self`:
@@ -99,7 +102,7 @@ The following is the second equivalent characterization of linearly disjointness
   are commutative, then the rank of `M` is at most one.
 
 The results with name containing "of_commute" also have corresponding specified versions
-assuming `R` is commutative.
+assuming `S` is commutative.
 
 ## Tags
 
@@ -131,6 +134,15 @@ def mulMap := TensorProduct.lift <| ((LinearMap.domRestrict' N).comp <| .mul R S
 
 @[simp]
 theorem mulMap_tmul (m : M) (n : N) : mulMap M N (m ⊗ₜ[R] n) = m.1 * n.1 := rfl
+
+theorem mulMap_op :
+    mulMap (equivOpposite.symm (MulOpposite.op M)) (equivOpposite.symm (MulOpposite.op N)) =
+    (MulOpposite.opLinearEquiv R).toLinearMap ∘ₗ mulMap N M ∘ₗ
+    (TensorProduct.congr
+      (LinearEquiv.ofSubmodule' (MulOpposite.opLinearEquiv R).symm M)
+      (LinearEquiv.ofSubmodule' (MulOpposite.opLinearEquiv R).symm N) ≪≫ₗ
+    TensorProduct.comm R M N).toLinearMap :=
+  TensorProduct.ext' fun _ _ ↦ rfl
 
 theorem mulMap_comm_of_commute (hc : ∀ (m : M) (n : N), Commute m.1 n.1) :
     mulMap N M = mulMap M N ∘ₗ TensorProduct.comm R N M := by
@@ -167,9 +179,8 @@ def lTensorAlgebraMap' :
 
 theorem lTensorAlgebraMap'_apply
     (y : R) {hy : algebraMap R S y ∈ Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range}
-    (n : N) : N.lTensorAlgebraMap' (⟨algebraMap R S y, hy⟩ ⊗ₜ[R] n) = y • n := by
-  apply Subtype.val_injective
-  simp [lTensorAlgebraMap', Algebra.smul_def]
+    (n : N) : N.lTensorAlgebraMap' (⟨algebraMap R S y, hy⟩ ⊗ₜ[R] n) = y • n :=
+  Subtype.val_injective <| by simp [lTensorAlgebraMap', Algebra.smul_def]
 
 /-- If `N` is a submodule in an algebra `S` over `R`, there is the natural isomorphism between
 `i(R) ⊗[R] N` and `N` induced by multiplication in `S`, here `i : R → S` is the structure map.
@@ -188,8 +199,7 @@ def lTensorAlgebraMap :
       TensorProduct.mk_apply, LinearMap.id_coe, id_eq, lTensorAlgebraMap'_apply]
     rw [← TensorProduct.smul_tmul]
     congr 1
-    apply Subtype.val_injective
-    simp [Algebra.smul_def]
+    exact Subtype.val_injective <| by simp [Algebra.smul_def]
 
 theorem lTensorAlgebraMap_apply
     (y : R) {hy : algebraMap R S y ∈ Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range}
@@ -216,9 +226,8 @@ def rTensorAlgebraMap' :
 
 theorem rTensorAlgebraMap'_apply
     (y : R) {hy : algebraMap R S y ∈ Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range}
-    (m : M) : M.rTensorAlgebraMap' (m ⊗ₜ[R] ⟨algebraMap R S y, hy⟩) = y • m := by
-  apply Subtype.val_injective
-  simp [rTensorAlgebraMap', Algebra.smul_def,
+    (m : M) : M.rTensorAlgebraMap' (m ⊗ₜ[R] ⟨algebraMap R S y, hy⟩) = y • m :=
+  Subtype.val_injective <| by simp [rTensorAlgebraMap', Algebra.smul_def,
     show _ * _ = _ * _ from Algebra.commute_algebraMap_left y m.1]
 
 /-- If `M` is a submodule in an algebra `S` over `R`, there is the natural isomorphism between
@@ -238,8 +247,7 @@ def rTensorAlgebraMap :
       TensorProduct.comm_tmul, LinearMap.id_coe, id_eq, rTensorAlgebraMap'_apply]
     rw [TensorProduct.smul_tmul]
     congr 1
-    apply Subtype.val_injective
-    simp [Algebra.smul_def]
+    exact Subtype.val_injective <| by simp [Algebra.smul_def]
 
 theorem rTensorAlgebraMap_apply
     (y : R) {hy : algebraMap R S y ∈ Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range}
@@ -309,12 +317,14 @@ variable {M N}
 
 theorem LinearDisjoint.injective (H : M.LinearDisjoint N) : Function.Injective (mulMap M N) := H
 
--- -- TODO:
--- theorem LinearDisjoint.op (H : M.LinearDisjoint N) :
---     (equivOpposite.symm (MulOpposite.op N)).LinearDisjoint
---       (equivOpposite.symm (MulOpposite.op M)) := by
---   -- no idea
---   sorry
+/-- Linearly disjoint is preserved by taking multiplicative opposite. -/
+theorem linearDisjoint_op :
+    M.LinearDisjoint N ↔ (equivOpposite.symm (MulOpposite.op N)).LinearDisjoint
+      (equivOpposite.symm (MulOpposite.op M)) := by
+  simp only [Submodule.LinearDisjoint, mulMap_op, LinearMap.coe_comp,
+    LinearEquiv.coe_coe, EquivLike.comp_injective, EquivLike.injective_comp]
+
+alias ⟨LinearDisjoint.op, LinearDisjoint.of_op⟩ := linearDisjoint_op
 
 /-- Linearly disjoint is symmetric if elements in the module commute. -/
 theorem LinearDisjoint.symm_of_commute (H : M.LinearDisjoint N)
@@ -406,7 +416,7 @@ theorem of_self_right :
     M.injective_subtype.comp M.rTensorAlgebraMap.injective
   rwa [this] at h
 
--- TODO: give it a better name
+-- TODO: move to suitable file and give it a better name
 private theorem test1 (R : Type*) [CommSemiring R] (M N : Type*)
     [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] (x : M ⊗[R] N) :
     ∃ S : Multiset (M × N), x = (S.map fun i ↦ i.1 ⊗ₜ[R] i.2).sum := by
@@ -418,7 +428,7 @@ private theorem test1 (R : Type*) [CommSemiring R] (M N : Type*)
     obtain ⟨Sy, hy⟩ := hy
     exact ⟨Sx + Sy, by rw [Multiset.map_add, Multiset.sum_add, hx, hy]⟩
 
--- TODO: give it a better name
+-- TODO: move to suitable file and give it a better name
 private theorem test2L {ι : Type*} [Fintype ι] (x : ι → M ⊗[R] N) :
     ∃ (M' : Submodule R S) (x' : ι → M' ⊗[R] N) (hM : M' ≤ M), Module.Finite R M' ∧
       ∀ (i : ι), (inclusion hM).rTensor N (x' i) = x i := by
@@ -443,15 +453,14 @@ private theorem test2L {ι : Type*} [Fintype ι] (x : ι → M ⊗[R] N) :
     exact ⟨i.2.1, i.2.2, Multiset.mem_of_le (Finset.single_le_sum (by simp) (by simp)) hi⟩
   simp_rw [Function.comp_apply, f, dif_pos hi]; rfl
 
--- TODO: give it a better name
+-- TODO: move to suitable file and give it a better name
 private theorem test2Lpair (x y : M ⊗[R] N) :
     ∃ (M' : Submodule R S) (x' y' : M' ⊗[R] N) (hM : M' ≤ M), Module.Finite R M' ∧
-      (inclusion hM).rTensor N x' = x ∧
-      (inclusion hM).rTensor N y' = y := by
+      (inclusion hM).rTensor N x' = x ∧ (inclusion hM).rTensor N y' = y := by
   obtain ⟨M', x', hM, hfin, hx⟩ := test2L M N ![x, y]
   exact ⟨M', x' 0, x' 1, hM, hfin, hx 0, hx 1⟩
 
--- TODO: give it a better name
+-- TODO: move to suitable file and give it a better name
 private theorem test2R {ι : Type*} [Fintype ι] (x : ι → M ⊗[R] N) :
     ∃ (N' : Submodule R S) (x' : ι → M ⊗[R] N') (hN : N' ≤ N), Module.Finite R N' ∧
       ∀ (i : ι), (inclusion hN).lTensor M (x' i) = x i := by
@@ -464,11 +473,10 @@ private theorem test2R {ι : Type*} [Fintype ι] (x : ι → M ⊗[R] N) :
   rw [LinearEquiv.symm_apply_apply] at hx
   simpa only [← hx] using congr($key (x' i))
 
--- TODO: give it a better name
+-- TODO: move to suitable file and give it a better name
 private theorem test2Rpair (x y : M ⊗[R] N) :
     ∃ (N' : Submodule R S) (x' y' : M ⊗[R] N') (hN : N' ≤ N), Module.Finite R N' ∧
-      (inclusion hN).lTensor M x' = x ∧
-      (inclusion hN).lTensor M y' = y := by
+      (inclusion hN).lTensor M x' = x ∧ (inclusion hN).lTensor M y' = y := by
   obtain ⟨M', x', hM, hfin, hx⟩ := test2R M N ![x, y]
   exact ⟨M', x' 0, x' 1, hM, hfin, hx 0, hx 1⟩
 
