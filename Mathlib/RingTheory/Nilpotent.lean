@@ -326,7 +326,7 @@ theorem add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero {m n k : ℕ}
 theorem add_pow_add_eq_zero_of_pow_eq_zero {m n : ℕ}
     (hx : x ^ m = 0) (hy : y ^ n = 0) :
     (x + y) ^ (m + n - 1) = 0 :=
-  h_comm.add_pow_of_add_le_succ_eq_zero_of_pow_eq_zero hx hy <| by rw [← Nat.sub_le_iff_le_add]
+  h_comm.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero hx hy <| by rw [← Nat.sub_le_iff_le_add]
 
 theorem isNilpotent_add (hx : IsNilpotent x) (hy : IsNilpotent y) : IsNilpotent (x + y) := by
   obtain ⟨n, hn⟩ := hx
