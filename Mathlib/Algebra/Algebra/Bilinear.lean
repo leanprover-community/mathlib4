@@ -6,7 +6,7 @@ Authors: Kenny Lau, Yury Kudryashov
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.GroupPower.IterateHom
-import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 #align_import algebra.algebra.bilinear from "leanprover-community/mathlib"@"657df4339ae6ceada048c8a2980fb10e393143ec"
 
@@ -21,26 +21,6 @@ in order to avoid importing `LinearAlgebra.BilinearMap` and
 open TensorProduct Module
 
 namespace LinearMap
-
-section RestrictScalars
-
-variable
-  (R : Type*) {A M N P : Type*}
-  [CommSemiring R] [CommSemiring A]
-  [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-  [Algebra R A]
-  [Module R M] [Module R N] [Module R P]
-  [Module A M] [Module A N] [Module A P]
-  [IsScalarTower R A M] [IsScalarTower R A N] [IsScalarTower R A P]
-
-/-- A version of `LinearMap.restrictScalars` for bilinear maps.
-
-The double subscript in the name is to match `LinearMap.compl₁₂`. -/
-@[simps!]
-def restrictScalars₁₂ (f : M →ₗ[A] N →ₗ[A] P) : M →ₗ[R] N →ₗ[R] P :=
-  (f.flip.restrictScalars _).flip.restrictScalars _
-
-end RestrictScalars
 
 section NonUnitalNonAssoc
 

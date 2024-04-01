@@ -452,7 +452,6 @@ end LinearMap
 namespace Module.End
 
 variable {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
-
 variable {f : Module.End R M} {p : Submodule R M} (hp : p ≤ p.comap f)
 
 theorem IsNilpotent.mapQ (hnp : IsNilpotent f) : IsNilpotent (p.mapQ p f hp) := by
@@ -472,7 +471,7 @@ lemma NoZeroSMulDivisors.isReduced (R M : Type*)
     exact eq_zero_of_zero_eq_one hk.symm x
   · obtain ⟨m : M, hm : m ≠ 0⟩ := exists_ne (0 : M)
     have : x ^ (k + 1) • m = 0 := by simp only [hk, zero_smul]
-    rw [pow_succ, mul_smul] at this
+    rw [pow_succ', mul_smul] at this
     rcases eq_zero_or_eq_zero_of_smul_eq_zero this with rfl | hx
     · rfl
     · exact ih <| (eq_zero_or_eq_zero_of_smul_eq_zero hx).resolve_right hm

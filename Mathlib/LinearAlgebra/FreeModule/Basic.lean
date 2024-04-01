@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.Data.Finsupp.Fintype
-import Mathlib.LinearAlgebra.TensorProductBasis
+import Mathlib.LinearAlgebra.TensorProduct.Basis
 
 #align_import linear_algebra.free_module.basic from "leanprover-community/mathlib"@"4e7e7009099d4a88a750de710909b95487bf0124"
 
@@ -68,7 +68,6 @@ namespace Module.Free
 section Semiring
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
-
 variable [AddCommMonoid N] [Module R N]
 
 /-- If `Module.Free R M` then `ChooseBasisIndex R M` is the `ι` which indexes the basis

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin H. Wilson
 -/
 import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.Analysis.NormedSpace.IsROrC
+import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Order.Filter.Curry
 
 #align_import analysis.calculus.uniform_limits_deriv from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
@@ -101,7 +101,7 @@ open scoped uniformity Filter Topology
 
 section LimitsOfDerivatives
 
-variable {ι : Type*} {l : Filter ι} {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*} [IsROrC 𝕜]
+variable {ι : Type*} {l : Filter ι} {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*} [RCLike 𝕜]
   [NormedSpace 𝕜 E] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
   {g : E → G} {f' : ι → E → E →L[𝕜] G} {g' : E → E →L[𝕜] G} {x : E}
 
@@ -189,10 +189,8 @@ theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f'
         (l ×ˢ l) (Metric.ball x r) by
     have := this.1.add this.2
     rw [add_zero] at this
-    refine' this.congr _
-    apply eventually_of_forall
-    intro n z _
-    simp
+    refine this.congr ?_
+    filter_upwards with n z _ using (by simp)
   constructor
   · -- This inequality follows from the mean value theorem
     rw [Metric.tendstoUniformlyOn_iff] at hf' ⊢
@@ -285,7 +283,7 @@ theorem difference_quotients_converge_uniformly (hf' : TendstoUniformlyOnFilter 
     ⟨_, b, fun e : E => Metric.ball x r e,
       eventually_mem_set.mpr (Metric.nhds_basis_ball.mem_of_mem hr), fun {n} hn {y} hy => _⟩
   simp only [Pi.zero_apply, dist_zero_left]
-  rw [← smul_sub, norm_smul, norm_inv, IsROrC.norm_coe_norm]
+  rw [← smul_sub, norm_smul, norm_inv, RCLike.norm_coe_norm]
   refine' lt_of_le_of_lt _ hqε
   by_cases hyz' : x = y; · simp [hyz', hqpos.le]
   have hyz : 0 < ‖y - x‖ := by rw [norm_pos_iff]; intro hy'; exact hyz' (eq_of_sub_eq_zero hy').symm
@@ -336,7 +334,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
   conv =>
     congr
     ext
-    rw [← abs_norm, ← abs_inv, ← @IsROrC.norm_ofReal 𝕜 _ _, IsROrC.ofReal_inv, ← norm_smul]
+    rw [← abs_norm, ← abs_inv, ← @RCLike.norm_ofReal 𝕜 _ _, RCLike.ofReal_inv, ← norm_smul]
   rw [← tendsto_zero_iff_norm_tendsto_zero]
   have :
     (fun a : ι × E => (‖a.2 - x‖⁻¹ : 𝕜) • (g a.2 - g x - (g' x) (a.2 - x))) =
@@ -372,7 +370,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     refine' (this ε hε).mono fun y hy => _
     rw [dist_eq_norm] at hy ⊢
     simp only [sub_zero, map_sub, norm_mul, norm_inv, norm_norm] at hy ⊢
-    rw [norm_smul, norm_inv, IsROrC.norm_coe_norm]
+    rw [norm_smul, norm_inv, RCLike.norm_coe_norm]
     exact hy
   · -- hfg' after specializing to `x` and applying the definition of the operator norm
     refine' Tendsto.mono_left _ curry_le_prod
@@ -385,7 +383,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     refine' squeeze_zero_norm _
       (tendsto_zero_iff_norm_tendsto_zero.mp (tendsto_fst.comp (h2.prod_map tendsto_id)))
     intro n
-    simp_rw [norm_smul, norm_inv, IsROrC.norm_coe_norm]
+    simp_rw [norm_smul, norm_inv, RCLike.norm_coe_norm]
     by_cases hx : x = n.2; · simp [hx]
     have hnx : 0 < ‖n.2 - x‖ := by
       rw [norm_pos_iff]; intro hx'; exact hx (eq_of_sub_eq_zero hx').symm
@@ -450,7 +448,7 @@ In this section, we provide `deriv` equivalents of the `fderiv` lemmas in the pr
 -/
 
 
-variable {ι : Type*} {l : Filter ι} {𝕜 : Type*} [IsROrC 𝕜] {G : Type*} [NormedAddCommGroup G]
+variable {ι : Type*} {l : Filter ι} {𝕜 : Type*} [RCLike 𝕜] {G : Type*} [NormedAddCommGroup G]
   [NormedSpace 𝕜 G] {f : ι → 𝕜 → G} {g : 𝕜 → G} {f' : ι → 𝕜 → G} {g' : 𝕜 → G} {x : 𝕜}
 
 /-- If our derivatives converge uniformly, then the Fréchet derivatives converge uniformly -/

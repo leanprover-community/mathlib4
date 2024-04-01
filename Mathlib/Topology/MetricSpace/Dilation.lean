@@ -265,9 +265,7 @@ end Setup
 section PseudoEmetricDilation
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-
 variable [FunLike F α β] [DilationClass F α β] [FunLike G β γ] [DilationClass G β γ]
-
 variable (f : F) (g : G) {x y z : α} {s : Set α}
 
 /-- Every isometry is a dilation of ratio `1`. -/

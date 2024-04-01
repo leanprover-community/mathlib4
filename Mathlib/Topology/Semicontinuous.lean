@@ -31,12 +31,13 @@ We introduce 4 definitions related to lower semicontinuity:
 
 We build a basic API using dot notation around these notions, and we prove that
 * constant functions are lower semicontinuous;
-* `indicator s (λ _, y)` is lower semicontinuous when `s` is open and `0 ≤ y`, or when `s` is closed
-  and `y ≤ 0`;
+* `indicator s (fun _ ↦ y)` is lower semicontinuous when `s` is open and `0 ≤ y`,
+  or when `s` is closed and `y ≤ 0`;
 * continuous functions are lower semicontinuous;
-* composition with a continuous monotone functions maps lower semicontinuous functions to lower
+* left composition with a continuous monotone functions maps lower semicontinuous functions to lower
   semicontinuous functions. If the function is anti-monotone, it instead maps lower semicontinuous
   functions to upper semicontinuous functions;
+* right composition with continuous functions preserves lower and upper semicontinuity;
 * a sum of two (or finitely many) lower semicontinuous functions is lower semicontinuous;
 * a supremum of a family of lower semicontinuous functions is lower semicontinuous;
 * An infinite sum of `ℝ≥0∞`-valued lower semicontinuous functions is lower semicontinuous.
@@ -378,8 +379,8 @@ end
 section
 
 variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
-
 variable {δ : Type*} [LinearOrder δ] [TopologicalSpace δ] [OrderTopology δ]
+variable {ι : Type*} [TopologicalSpace ι]
 
 theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α → γ}
     (hg : ContinuousAt g (f x)) (hf : LowerSemicontinuousWithinAt f s x) (gmon : Monotone g) :
@@ -434,6 +435,21 @@ theorem Continuous.comp_lowerSemicontinuous_antitone {g : γ → δ} {f : α →
     (hf : LowerSemicontinuous f) (gmon : Antitone g) : UpperSemicontinuous (g ∘ f) := fun x =>
   hg.continuousAt.comp_lowerSemicontinuousAt_antitone (hf x) gmon
 #align continuous.comp_lower_semicontinuous_antitone Continuous.comp_lowerSemicontinuous_antitone
+
+theorem LowerSemicontinuousAt.comp_continuousAt {f : α → β} {g : ι → α} {x : ι}
+    (hf : LowerSemicontinuousAt f (g x)) (hg : ContinuousAt g x) :
+    LowerSemicontinuousAt (fun x ↦ f (g x)) x :=
+  fun _ lt ↦ hg.eventually (hf _ lt)
+
+theorem LowerSemicontinuousAt.comp_continuousAt_of_eq {f : α → β} {g : ι → α} {y : α} {x : ι}
+    (hf : LowerSemicontinuousAt f y) (hg : ContinuousAt g x) (hy : g x = y) :
+    LowerSemicontinuousAt (fun x ↦ f (g x)) x := by
+  rw [← hy] at hf
+  exact comp_continuousAt hf hg
+
+theorem LowerSemicontinuous.comp_continuous {f : α → β} {g : ι → α}
+    (hf : LowerSemicontinuous f) (hg : Continuous g) : LowerSemicontinuous fun x ↦ f (g x) :=
+  fun x ↦ (hf (g x)).comp_continuousAt hg.continuousAt
 
 end
 
@@ -943,8 +959,8 @@ end
 section
 
 variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
-
 variable {δ : Type*} [LinearOrder δ] [TopologicalSpace δ] [OrderTopology δ]
+variable {ι : Type*} [TopologicalSpace ι]
 
 theorem ContinuousAt.comp_upperSemicontinuousWithinAt {g : γ → δ} {f : α → γ}
     (hg : ContinuousAt g (f x)) (hf : UpperSemicontinuousWithinAt f s x) (gmon : Monotone g) :
@@ -988,6 +1004,21 @@ theorem Continuous.comp_upperSemicontinuous_antitone {g : γ → δ} {f : α →
     (hf : UpperSemicontinuous f) (gmon : Antitone g) : LowerSemicontinuous (g ∘ f) := fun x =>
   hg.continuousAt.comp_upperSemicontinuousAt_antitone (hf x) gmon
 #align continuous.comp_upper_semicontinuous_antitone Continuous.comp_upperSemicontinuous_antitone
+
+theorem UpperSemicontinuousAt.comp_continuousAt {f : α → β} {g : ι → α} {x : ι}
+    (hf : UpperSemicontinuousAt f (g x)) (hg : ContinuousAt g x) :
+    UpperSemicontinuousAt (fun x ↦ f (g x)) x :=
+  fun _ lt ↦ hg.eventually (hf _ lt)
+
+theorem UpperSemicontinuousAt.comp_continuousAt_of_eq {f : α → β} {g : ι → α} {y : α} {x : ι}
+    (hf : UpperSemicontinuousAt f y) (hg : ContinuousAt g x) (hy : g x = y) :
+    UpperSemicontinuousAt (fun x ↦ f (g x)) x := by
+  rw [← hy] at hf
+  exact comp_continuousAt hf hg
+
+theorem UpperSemicontinuous.comp_continuous {f : α → β} {g : ι → α}
+    (hf : UpperSemicontinuous f) (hg : Continuous g) : UpperSemicontinuous fun x ↦ f (g x) :=
+  fun x ↦ (hf (g x)).comp_continuousAt hg.continuousAt
 
 end
 

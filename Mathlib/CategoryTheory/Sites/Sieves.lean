@@ -34,7 +34,6 @@ namespace CategoryTheory
 open Category Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
-
 variable {X Y Z : C} (f : Y ⟶ X)
 
 /-- A set of arrows all with codomain `X`. -/
@@ -265,8 +264,6 @@ structure Sieve {C : Type u₁} [Category.{v₁} C] (X : C) where
   /-- stability by precomposition -/
   downward_closed : ∀ {Y Z f} (_ : arrows f) (g : Z ⟶ Y), arrows (g ≫ f)
 #align category_theory.sieve CategoryTheory.Sieve
-
-attribute [pp_dot] Sieve.arrows
 
 namespace Sieve
 

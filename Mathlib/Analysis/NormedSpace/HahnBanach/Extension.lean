@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
 -/
 import Mathlib.Analysis.Convex.Cone.Extension
-import Mathlib.Analysis.NormedSpace.IsROrC
+import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Analysis.NormedSpace.Extend
-import Mathlib.Data.IsROrC.Lemmas
+import Mathlib.Analysis.RCLike.Lemmas
 
 #align_import analysis.normed_space.hahn_banach.extension from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
 
@@ -23,7 +23,7 @@ We prove
   over `ℝ` or `ℂ`.
 
 In order to state and prove the corollaries uniformly, we prove the statements for a field `𝕜`
-satisfying `IsROrC 𝕜`.
+satisfying `RCLike 𝕜`.
 
 In this setting, `exists_dual_vector` states that, for any nonzero `x`, there exists a continuous
 linear form `g` of norm `1` with `g x = ‖x‖` (where the norm has to be interpreted as an element
@@ -61,15 +61,15 @@ theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : p →L[ℝ] ℝ) :
 
 end Real
 
-section IsROrC
+section RCLike
 
-open IsROrC
+open RCLike
 
-variable {𝕜 : Type*} [IsROrC 𝕜] {E F : Type*}
+variable {𝕜 : Type*} [RCLike 𝕜] {E F : Type*}
   [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-/-- **Hahn-Banach theorem** for continuous linear functions over `𝕜` satisfying `IsROrC 𝕜`. -/
+/-- **Hahn-Banach theorem** for continuous linear functions over `𝕜` satisfying `RCLike 𝕜`. -/
 theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
     ∃ g : E →L[𝕜] 𝕜, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   letI : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
@@ -136,20 +136,19 @@ lemma Submodule.ClosedComplemented.of_finiteDimensional (p : Submodule 𝕜 F)
   let ⟨g, hg⟩ := (ContinuousLinearMap.id 𝕜 p).exist_extension_of_finiteDimensional_range
   ⟨g, DFunLike.congr_fun hg.symm⟩
 
-end IsROrC
+end RCLike
 
 section DualVector
 
-variable (𝕜 : Type v) [IsROrC 𝕜]
-
+variable (𝕜 : Type v) [RCLike 𝕜]
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 open ContinuousLinearEquiv Submodule
 
-open Classical
+open scoped Classical
 
 theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x h‖ = 1 := by
-  rw [norm_smul (x := coord 𝕜 x h), IsROrC.norm_coe_norm, coord_norm,
+  rw [norm_smul (α := 𝕜) (x := coord 𝕜 x h), RCLike.norm_coe_norm, coord_norm,
     mul_inv_cancel (mt norm_eq_zero.mp h)]
 #align coord_norm' coord_norm'
 

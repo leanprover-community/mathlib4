@@ -3,7 +3,7 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.List.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.List.Basic
 
 #align_import data.list.count from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
@@ -179,7 +179,7 @@ theorem prod_map_eq_pow_single [Monoid β] (a : α) (f : α → β)
   · specialize h a fun a' ha' hfa' => hf a' ha' (mem_cons_of_mem _ hfa')
     rw [List.map_cons, List.prod_cons, count_cons, h]
     split_ifs with ha'
-    · rw [ha', _root_.pow_succ]
+    · rw [ha', _root_.pow_succ']
     · rw [hf a' (Ne.symm ha') (List.mem_cons_self a' as), one_mul, add_zero]
 #align list.prod_map_eq_pow_single List.prod_map_eq_pow_single
 #align list.sum_map_eq_nsmul_single List.sum_map_eq_nsmul_single
