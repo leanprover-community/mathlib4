@@ -29,7 +29,7 @@ open Complex LSeries
 ### Dirichlet convolution of two functions
 -/
 
-open BigOperators
+open BigOperators Nat
 
 /-- We turn any function `ℕ → R` into an `ArithmeticFunction R` by setting its value at `0`
 to be zero. -/
@@ -41,8 +41,8 @@ lemma toArithmeticFunction_congr {R : Type*} [Zero R] {f f' : ℕ → R}
     (h : ∀ {n} (_ : n ≠ 0), f n = f' n) :
     toArithmeticFunction f = toArithmeticFunction f' := by
   ext ⟨- | _⟩
-  · simp only [Nat.zero_eq, ArithmeticFunction.map_zero]
-  · simp only [toArithmeticFunction, ArithmeticFunction.coe_mk, Nat.succ_ne_zero, ↓reduceIte,
+  · simp only [zero_eq, ArithmeticFunction.map_zero]
+  · simp only [toArithmeticFunction, ArithmeticFunction.coe_mk, succ_ne_zero, ↓reduceIte,
       ne_eq, not_false_eq_true, h]
 
 /-- If we consider an arithmetic function just as a function and turn it back into an
@@ -82,29 +82,28 @@ lemma convolution_def {R : Type*} [Semiring R] (f g : ℕ → R) :
   simp only [convolution, toArithmeticFunction, ArithmeticFunction.mul_apply,
     ArithmeticFunction.coe_mk, mul_ite, mul_zero, ite_mul, zero_mul]
   refine Finset.sum_congr rfl fun p hp ↦ ?_
-  obtain ⟨h₁, h₂⟩ := Nat.ne_zero_of_mem_divisorsAntidiagonal hp
+  obtain ⟨h₁, h₂⟩ := ne_zero_of_mem_divisorsAntidiagonal hp
   simp only [h₂, ↓reduceIte, h₁]
 
 @[simp]
 lemma convolution_map_zero {R : Type*} [Semiring R] (f g : ℕ → R) : (f ⍟ g) 0 = 0 := by
-  simp only [convolution_def, Nat.divisorsAntidiagonal_zero, Finset.sum_empty]
+  simp only [convolution_def, divisorsAntidiagonal_zero, Finset.sum_empty]
 
 
 /-!
 ### Multiplication of L-series
 -/
 
-open Nat in
 /-- We give an expression of the `LSeries.term` of the convolution of two functions
 in terms of a sum over `Nat.divisorsAntidiagonal`. -/
 lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     term (f ⍟ g) s n = ∑ p in n.divisorsAntidiagonal, term f s p.1 * term g s p.2 := by
   rcases eq_or_ne n 0 with rfl | hn
-  · simp only [term_zero, Nat.divisorsAntidiagonal_zero, Finset.sum_empty]
+  · simp only [term_zero, divisorsAntidiagonal_zero, Finset.sum_empty]
   -- now `n ≠ 0`
   rw [term_of_ne_zero hn, convolution_def, Finset.sum_div]
   refine Finset.sum_congr rfl fun p hp ↦ ?_
-  have ⟨hp₁, hp₂⟩ := Nat.ne_zero_of_mem_divisorsAntidiagonal hp
+  have ⟨hp₁, hp₂⟩ := ne_zero_of_mem_divisorsAntidiagonal hp
   rw [term_of_ne_zero hp₁ f s, term_of_ne_zero hp₂ g s, mul_comm_div, div_div, ← mul_div_assoc,
     ← natCast_mul_natCast_cpow, ← cast_mul, mul_comm p.2, (mem_divisorsAntidiagonal.mp hp).1]
 
@@ -123,7 +122,7 @@ lemma term_convolution' (f g : ℕ → ℂ) (s : ℂ) :
     -- the right hand sum is over the union below, but in each term, one factor is always zero
     have hS : (fun p ↦ p.1 * p.2) ⁻¹' {0} = {0} ×ˢ univ ∪ univ ×ˢ {0} := by
       ext
-      simp only [mem_preimage, mem_singleton_iff, mul_eq_zero, mem_union, mem_prod, mem_univ,
+      simp only [mem_preimage, mem_singleton_iff, Nat.mul_eq_zero, mem_union, mem_prod, mem_univ,
         and_true, true_and]
     have : ∀ p : (fun p : ℕ × ℕ ↦ p.1 * p.2) ⁻¹' {0}, term f s p.val.1 * term g s p.val.2 = 0 := by
       rintro ⟨⟨p₁, p₂⟩, hp⟩
