@@ -1285,7 +1285,7 @@ theorem rTensor_id : (id : N →ₗ[R] N).rTensor M = id :=
 
 -- `simp` can prove this.
 theorem rTensor_id_apply (x : N ⊗[R] M) : (LinearMap.id : N →ₗ[R] N).rTensor M x = x := by
-  rw [rTensor_id, id_coe, id.eq_def]
+  rw [rTensor_id, id_coe, _root_.id]
 #align linear_map.rtensor_id_apply LinearMap.rTensor_id_apply
 
 variable {N}

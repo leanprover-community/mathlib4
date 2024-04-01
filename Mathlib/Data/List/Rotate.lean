@@ -79,7 +79,7 @@ theorem rotate'_rotate' : ∀ (l : List α) (n m : ℕ), (l.rotate' n).rotate' m
   | a :: l, 0, m => by simp
   | [], n, m => by simp
   | a :: l, n + 1, m => by
-    rw [rotate'_cons_succ, rotate'_rotate' _ n, add_right_comm, ← rotate'_cons_succ,
+    rw [rotate'_cons_succ, rotate'_rotate' _ n, Nat.add_right_comm, ← rotate'_cons_succ,
       Nat.succ_eq_add_one]
 #align list.rotate'_rotate' List.rotate'_rotate'
 

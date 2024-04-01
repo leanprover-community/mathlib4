@@ -604,7 +604,7 @@ protected theorem pow' {p a : α} (hp : Prime p) (ha : Finite p a) :
   intro k
   induction' k with k hk
   · simp [one_right hp.not_unit]
-  · have : multiplicity p (a ^ (k + 1)) = multiplicity p (a * a ^ k) := by rw [_root_.pow_succ]
+  · have : multiplicity p (a ^ (k + 1)) = multiplicity p (a * a ^ k) := by rw [_root_.pow_succ']
     rw [get_eq_get_of_eq _ _ this,
       multiplicity.mul' hp, hk, add_mul, one_mul, add_comm]
 #align multiplicity.pow' multiplicity.pow'

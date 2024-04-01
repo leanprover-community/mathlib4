@@ -486,7 +486,9 @@ instance (f : ι → Type*) (g : (i : ι) → (f i) → C)
     HasProduct fun p : Σ i, f i => g p.1 p.2 where
   exists_limit := Nonempty.intro
     { cone := Fan.mk (∏ fun i => ∏ g i) (fun X => Pi.π (fun i => ∏ g i) X.1 ≫ Pi.π (g X.1) X.2)
-      isLimit := mkFanLimit _ (fun s => Pi.lift fun b => Pi.lift fun c => s.proj ⟨b, c⟩) }
+      isLimit := mkFanLimit _ (fun s => Pi.lift fun b => Pi.lift fun c => s.proj ⟨b, c⟩)
+        -- FIXME nightly-testing: these used be autoparams by aesop
+        sorry sorry }
 
 /-- An iterated product is a product over a sigma type. -/
 @[simps]

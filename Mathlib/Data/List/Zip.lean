@@ -373,35 +373,4 @@ theorem zipWith_distrib_reverse (h : l.length = l'.length) :
 #align list.zip_with_distrib_reverse List.zipWith_distrib_reverse
 
 end Distrib
-
-section CommMonoid
-
-variable [CommMonoid α]
-
-@[to_additive]
-theorem prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
-    ∀ L L' : List α,
-      L.prod * L'.prod =
-        (zipWith (· * ·) L L').prod * (L.drop L'.length).prod * (L'.drop L.length).prod
-  | [], ys => by simp [Nat.zero_le]
-  | xs, [] => by simp [Nat.zero_le]
-  | x :: xs, y :: ys => by
-    simp only [drop, length, zipWith_cons_cons, prod_cons]
-    conv =>
-      lhs; rw [mul_assoc]; right; rw [mul_comm, mul_assoc]; right
-      rw [mul_comm, prod_mul_prod_eq_prod_zipWith_mul_prod_drop xs ys]
-    simp only [mul_assoc]
-#align list.prod_mul_prod_eq_prod_zip_with_mul_prod_drop List.prod_mul_prod_eq_prod_zipWith_mul_prod_drop
-#align list.sum_add_sum_eq_sum_zip_with_add_sum_drop List.sum_add_sum_eq_sum_zipWith_add_sum_drop
-
-@[to_additive]
-theorem prod_mul_prod_eq_prod_zipWith_of_length_eq (L L' : List α) (h : L.length = L'.length) :
-    L.prod * L'.prod = (zipWith (· * ·) L L').prod := by
-  apply (prod_mul_prod_eq_prod_zipWith_mul_prod_drop L L').trans
-  rw [← h, drop_length, h, drop_length, prod_nil, mul_one, mul_one]
-#align list.prod_mul_prod_eq_prod_zip_with_of_length_eq List.prod_mul_prod_eq_prod_zipWith_of_length_eq
-#align list.sum_add_sum_eq_sum_zip_with_of_length_eq List.sum_add_sum_eq_sum_zipWith_of_length_eq
-
-end CommMonoid
-
 end List
