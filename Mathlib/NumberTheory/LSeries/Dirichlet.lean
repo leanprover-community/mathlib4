@@ -331,10 +331,8 @@ lemma convolution_vonMangoldt_const_one : ↗Λ ⍟ 1 = ↗Complex.log :=
 
 /-- The L-series of the von Mangoldt function `Λ` converges at `s` when `re s > 1`. -/
 lemma LSeriesSummable_vonMangoldt {s : ℂ} (hs : 1 < s.re) : LSeriesSummable ↗Λ s := by
-  have hs' : abscissaOfAbsConv 1 < s.re := by
-    rw [abscissaOfAbsConv_one]
-    exact_mod_cast hs
-  have hf := LSeriesSummable_logMul_of_lt_re hs'
+  have hf := LSeriesSummable_logMul_of_lt_re
+    (show abscissaOfAbsConv 1 < s.re by rw [abscissaOfAbsConv_one]; exact_mod_cast hs)
   rw [LSeriesSummable, ← summable_norm_iff] at hf ⊢
   refine Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun n ↦ norm_term_le s ?_) hf
   have hΛ : ‖↗Λ n‖ ≤ ‖Complex.log n‖ := by
