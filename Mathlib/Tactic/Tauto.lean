@@ -26,11 +26,19 @@ def distribNotOnceAt (hypFVar : Expr) (g : MVarId) : MetaM AssertAfterResult := 
   let h ← fvarId.getDecl
   let e : Q(Prop) ← (do guard <| ← Meta.isProp h.type; pure h.type)
   let replace (p : Expr) : MetaM AssertAfterResult := do
-     let result ← g.replace h.fvarId p
-     result.mvarId.withContext do
-     if (← getLCtx).contains h.fvarId
-     then throwError "'replace' did not remove the existing hypothesis"
-     pure result
+    let s ← saveState
+    let result ← g.replace h.fvarId p
+    result.mvarId.withContext do
+    if (← getLCtx).contains h.fvarId
+    then
+      /-
+      If the goal still contains the hypothesis then we throw an error
+      and terminate early to avoid an infinite loop where we repeatedly
+      attempt to replace the same hypothesis: https://github.com/leanprover-community/mathlib4/issues/10590
+      -/
+      s.restore
+      throwError "'replace' did not remove the existing hypothesis"
+    pure result
 
   match e with
   | ~q(¬ ($a : Prop) = $b) => do
