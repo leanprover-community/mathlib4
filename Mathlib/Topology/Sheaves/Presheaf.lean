@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.Topology.Sheaves.Init
-Mathlib.Data.Set.Subsingleton
+import Mathlib.Data.Set.Subsingleton
 
 #align_import topology.sheaves.presheaf from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 

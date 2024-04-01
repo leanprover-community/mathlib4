@@ -1,7 +1,7 @@
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Nat.Basic
--- Mathlib.Data.Set.Subsingleton
+-- import Mathlib.Data.Set.Subsingleton
 
 private axiom test_sorry : ∀ {α}, α
 /-! ### Test `nontriviality` with inequality hypotheses -/

@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson, Junyan Xu
 -/
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Types
-Mathlib.Data.Set.Subsingleton
+import Mathlib.Data.Set.Subsingleton
 
 /-!
 # `ULift` creates small (co)limits

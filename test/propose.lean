@@ -2,7 +2,7 @@ import Std.Data.List.Basic
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Algebra.Associated
-Mathlib.Data.Set.Subsingleton
+import Mathlib.Data.Set.Subsingleton
 
 -- For debugging, you may find these options useful:
 -- set_option trace.Tactic.propose true

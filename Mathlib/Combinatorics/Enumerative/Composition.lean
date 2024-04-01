@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Data.Finset.Sort
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Fin
-Mathlib.Data.Set.Subsingleton
+import Mathlib.Data.Set.Subsingleton
 
 #align_import combinatorics.composition from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 

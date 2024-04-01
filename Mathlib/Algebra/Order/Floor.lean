@@ -12,7 +12,7 @@ import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
-Mathlib.Data.Set.Subsingleton
+import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.GaloisConnection
 
 #align_import algebra.order.floor from "leanprover-community/mathlib"@"afdb43429311b885a7988ea15d0bac2aac80f69c"
