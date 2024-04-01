@@ -57,6 +57,10 @@ info: Unfolds for n ∈ A ∪ B:
 
 
 /--
+info: discrimination tree lookup took 3ms
+---
+info: checking the candidates took 131ms
+---
 info: Pattern n + 1
 · Nat.succ n
   Nat.add_one
@@ -143,6 +147,10 @@ Pattern a + b
 #rw?? n+1
 
 /--
+info: discrimination tree lookup took 4ms
+---
+info: checking the candidates took 98ms
+---
 info: Pattern n / 2
 · Nat.div2 n
   Nat.div2_val

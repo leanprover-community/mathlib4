@@ -452,7 +452,7 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
         let location ← loc.location
 
         let unfoldsHtml ←
-          InteractiveUnfold.renderDefinitions subExpr occ location props.replaceRange doc
+          InteractiveUnfold.renderUnfolds subExpr occ location props.replaceRange doc
 
         let (filtered, all) ← getRewriteInterfaces subExpr occ location initNames
         let filtered ← renderRewrites subExpr filtered unfoldsHtml props.replaceRange doc false
@@ -513,7 +513,13 @@ def elabrw??Command : Command.CommandElab := fun stx =>
     let e ← Term.elabTerm stx[1] none
     Term.synthesizeSyntheticMVarsNoPostponing
     let e ← Term.levelMVarToParam (← instantiateMVars e)
+    let t0 ← IO.monoMsNow
+    _ ← getCandidates e
+    let t1 ← IO.monoMsNow
+    logInfo m! "discrimination tree lookup took {t1-t0}ms"
     let rewrites ← getRewrites e
+    let t2 ← IO.monoMsNow
+    logInfo m! "checking the candidates took {t2 + t0 - 2*t1}ms"
     let rewrites ← rewrites.mapM fun (rewrites, isLocal) =>
       return (← filterRewrites e rewrites (·.replacement), isLocal)
     let sections ← liftMetaM $ rewrites.filterMapM SectionToMessageData
