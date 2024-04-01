@@ -24,8 +24,10 @@ macro "commutativity" : attr =>
 The tactic `commutativity` solves goals of the form `Commute a b`
 by applying lemmas tagged with the `commutativity` user attribute. -/
 macro "commutativity" (config)? : tactic =>
-  `(tactic| aesop (config := { terminal := true })
-    (rule_sets := [$(Lean.mkIdent `Commute):ident]))
+  `(tactic| first | aesop? (config := { terminal := true })
+    (rule_sets := [$(Lean.mkIdent `Commute):ident]) |
+    fail "tactic 'commutativity' failed to find a proof.
+    You may provide a proof or tag more results with `@[aesop]`.")
 
 /--
 The tactic `commutativity?` solves goals of the form `Commute a b`
@@ -33,8 +35,10 @@ by applying lemmas tagged with the `commutativity` user attribute,
 and suggests a faster proof script that can be substituted
 for the tactic call in case of success. -/
 macro "commutativity?" (config)? : tactic =>
-  `(tactic| aesop? (config := { terminal := true })
-    (rule_sets := [$(Lean.mkIdent `Commute):ident]))
+  `(tactic| first | aesop? (config := { terminal := true })
+    (rule_sets := [$(Lean.mkIdent `Commute):ident]) |
+    fail "tactic 'commutativity' failed to find a proof.
+    You may provide a proof or tag more results with `@[aesop]`.")
 
 -- Todo: implement `commutativity!` and `commutativity!?` and add configuration,
 -- original syntax was (same for the missing `commutativity` variants):
