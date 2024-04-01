@@ -22,13 +22,13 @@ terms, as the Fourier transform of `x * f x`.
 
 ## Main definitions and results
 
-We introduce one handy definition:
+We introduce one convenience definition:
 
 * `VectorFourier.fourierSMulRight L f`: given `f : V → E` and `L` a bilinear pairing
   between `V` and `W`, then this is the function `fun v ↦ -(2 * π * I) (L v ⬝) • f v`,
   from `V` to `Hom (W, E)`.
   This is essentially `ContinousLinearMap.smulRight`, up to the factor `- 2πI` designed to make sure
-  that the fourier integral of `fourierSMulRight L f` is the derivative of the Fourier
+  that the Fourier integral of `fourierSMulRight L f` is the derivative of the Fourier
   integral of `f`.
 
 With this definition, the statements read as follows, first in a general context
