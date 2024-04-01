@@ -439,17 +439,20 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
             --nowlogInfoAt s m!"inserting {((l.1.name, l.2.name), d, skind)}"
 
       else
-        --let stained_in_syntax := getL s
+        let stained_in_syntax := getL s
         --logInfoAt s m!"stained_in_syntax: {stained_in_syntax}"
         if !followers.contains skind then
           for currMVar0 in mvs0 do --.getD 0 default
             let lctx0 := ((ctx0.decls.find? currMVar0).getD default).lctx
-            --let foundFvs := (stained_in_syntax.map (·.toFMVarId currMVar0 lctx0)).flatten --.filter (· != default)
+            let foundFvs := (stained_in_syntax.map (·.toFMVarId currMVar0 lctx0)).flatten --.filter (· != default)
             -- we collect all the references to potential locations:
             -- * in `at`-clauses via `d.toFVarId`, e.g. the `h` in `rw at h`;
             -- * inside the syntax of the tactic `d`, e.g. the `h` in `rw [h]`.
             --logInfoAt s m!"foundFvs.names: {foundFvs.map fun (a, b) => (a.name, b.name)}"
-            let locsBefore := d.toFMVarId currMVar0 lctx0 --++ foundFvs
+--            let _ : Ord (FVarId × MVarId) := ⟨fun (f, m) (g, n) => ⟩
+--            let _ : Ord (FVarId × MVarId) := ⟨fun (f, m) (g, n) => compare m.name.toString n.name.toString⟩
+            --let locsBefore := (d.toFMVarId currMVar0 lctx0 ++ foundFvs).sortAndDeduplicate
+            let locsBefore := foundFvs ++ (d.toFMVarId currMVar0 lctx0).filter (!foundFvs.contains ·)
             for l in locsBefore do
               if let some (stdLoc, kind) := stains.find? l then
                 msgs := msgs.push (s, kind, stdLoc)
