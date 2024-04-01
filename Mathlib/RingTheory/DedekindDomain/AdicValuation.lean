@@ -129,7 +129,7 @@ theorem int_valuation_lt_one_iff_dvd (r : R) :
   · rw [← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_lt_coe, ofAdd_lt, neg_lt_zero, ←
       Int.ofNat_zero, Int.ofNat_lt, zero_lt_iff]
     have h : (Ideal.span {r} : Ideal R) ≠ 0 := by
-      rw [Ne.def, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
+      rw [Ne, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
       exact hr
     apply Associates.count_ne_zero_iff_dvd h (by apply v.irreducible)
 #align is_dedekind_domain.height_one_spectrum.int_valuation_lt_one_iff_dvd IsDedekindDomain.HeightOneSpectrum.int_valuation_lt_one_iff_dvd

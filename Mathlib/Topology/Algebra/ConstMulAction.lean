@@ -531,7 +531,7 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
   by_cases H : γ ∈ bad_Γ_set
   · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_iInter₂.mp x_in_U₀₀ γ H, mem_iInter₂.mp h.1 γ H⟩
   · rintro ⟨-, h'⟩
-    simp only [bad_Γ_set, image_smul, Classical.not_not, mem_setOf_eq, Ne.def] at H
+    simp only [bad_Γ_set, image_smul, Classical.not_not, mem_setOf_eq, Ne] at H
     exact eq_empty_iff_forall_not_mem.mp H (γ • x) ⟨mem_image_of_mem _ x_in_K₀, h'⟩
 #align t2_space_of_properly_discontinuous_smul_of_t2_space t2Space_of_properlyDiscontinuousSMul_of_t2Space
 #align t2_space_of_properly_discontinuous_vadd_of_t2_space t2Space_of_properlyDiscontinuousVAdd_of_t2Space

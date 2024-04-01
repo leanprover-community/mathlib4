@@ -419,7 +419,7 @@ private theorem isJacobson_polynomial_of_domain (R : Type*) [CommRing R] [IsDoma
     haveI hR' : IsJacobson (R ⧸ P') := by infer_instance
     obtain ⟨p, pP, p0⟩ := exists_nonzero_mem_of_ne_bot Pb hP
     let x := (Polynomial.map (Quotient.mk P') p).leadingCoeff
-    have hx : x ≠ 0 := by rwa [Ne.def, leadingCoeff_eq_zero]
+    have hx : x ≠ 0 := by rwa [Ne, leadingCoeff_eq_zero]
     let φ : R ⧸ P' →+* R[X] ⧸ P := Ideal.quotientMap P (C : R →+* R[X]) le_rfl
     let hφ : Function.Injective ↑φ := quotientMap_injective
     let Rₘ := Localization.Away x

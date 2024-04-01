@@ -1899,7 +1899,7 @@ theorem _root_.aestronglyMeasurable_withDensity_iff {E : Type*} [NormedAddCommGr
     · rw [EventuallyEq, ae_withDensity_iff hf.coe_nnreal_ennreal] at hg'
       rw [ae_restrict_iff' A]
       filter_upwards [hg'] with a ha h'a
-      have : (f a : ℝ≥0∞) ≠ 0 := by simpa only [Ne.def, ENNReal.coe_eq_zero] using h'a
+      have : (f a : ℝ≥0∞) ≠ 0 := by simpa only [Ne, ENNReal.coe_eq_zero] using h'a
       rw [ha this]
     · filter_upwards [ae_restrict_mem A.compl] with x hx
       simp only [Classical.not_not, mem_setOf_eq, mem_compl_iff] at hx
@@ -1909,8 +1909,8 @@ theorem _root_.aestronglyMeasurable_withDensity_iff {E : Type*} [NormedAddCommGr
     rw [EventuallyEq, ae_withDensity_iff hf.coe_nnreal_ennreal]
     filter_upwards [hg'] with x hx h'x
     rw [← hx, smul_smul, _root_.inv_mul_cancel, one_smul]
-    simp only [Ne.def, ENNReal.coe_eq_zero] at h'x
-    simpa only [NNReal.coe_eq_zero, Ne.def] using h'x
+    simp only [Ne, ENNReal.coe_eq_zero] at h'x
+    simpa only [NNReal.coe_eq_zero, Ne] using h'x
 #align ae_strongly_measurable_with_density_iff aestronglyMeasurable_withDensity_iff
 
 end AEStronglyMeasurable

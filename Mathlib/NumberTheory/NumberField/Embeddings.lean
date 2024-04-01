@@ -465,7 +465,7 @@ theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) :
   · rw [ComplexEmbedding.isReal_iff.mp (isReal_iff.mp hw), Finset.union_idempotent,
       Finset.card_singleton]
   · refine Finset.card_pair ?_
-    rwa [Ne.def, eq_comm, ← ComplexEmbedding.isReal_iff, ← isReal_iff]
+    rwa [Ne, eq_comm, ← ComplexEmbedding.isReal_iff, ← isReal_iff]
 
 open scoped BigOperators
 
