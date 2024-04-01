@@ -205,11 +205,11 @@ variable {S T : Type*}
 variable [Monoid S] [DistribMulAction S M] [SMulCommClass R S M] [SMulBracketCommClass S L M]
 variable [Monoid T] [DistribMulAction T M] [SMulCommClass R T M] [SMulBracketCommClass T L M]
 
-instance : SMul S (LieDerivation R L M) :=
-  ⟨fun r D =>
+instance instSMul : SMul S (LieDerivation R L M) where
+  smul r D :=
     { toLinearMap := r • D
       leibniz' := fun a b => by simp only [LinearMap.smul_apply, coeFn_coe, apply_lie_eq_sub,
-        smul_sub, SMulBracketCommClass.smul_bracket_comm] }⟩
+        smul_sub, SMulBracketCommClass.smul_bracket_comm] }
 
 @[simp]
 theorem coe_smul (r : S) (D : LieDerivation R L M) : ⇑(r • D) = r • ⇑D :=
@@ -250,21 +250,6 @@ instance instModule {S : Type*} [Semiring S] [Module S M] [SMulCommClass R S M]
     [SMulBracketCommClass S L M] : Module S (LieDerivation R L M) :=
   Function.Injective.module S coeFnAddMonoidHom coe_injective coe_smul
 
-section RestrictScalars
-
-variable {S : Type*} [CommRing S]
-variable [LieAlgebra S L] [Module S M] [LieModule S L M]
-variable [LinearMap.CompatibleSMul L M R S]
-variable (R)
-
-/-- If `L` is both a Lie `R`-algebra and a Lie `S`-algebra, `M` is both an `R`-module and an
-`S`-module, then a Lie `S`-derivation `L → M`, which is `R`-linear is also a Lie `R`-derivation. -/
-protected def restrictScalars (d : LieDerivation S L M) : LieDerivation R L M where
-  leibniz' := d.leibniz'
-  toLinearMap := d.toLinearMap.restrictScalars R
-
-end RestrictScalars
-
 end
 
 section
@@ -272,12 +257,11 @@ section
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
 
 /-- The commutator of two Lie derivations on a Lie algebra is a Lie derivation. -/
-instance : Bracket (LieDerivation R L L) (LieDerivation R L L) :=
-  ⟨fun D1 D2 =>
-    LieDerivation.mk ⁅(D1 : Module.End R L), (D2 : Module.End R L)⁆ (fun a b => by
-      simp only [Ring.lie_def, apply_lie_eq_add, coeFn_coe,
-        LinearMap.sub_apply, LinearMap.mul_apply, map_add, sub_lie, lie_sub, ← lie_skew b]
-      abel)⟩
+instance instBracket : Bracket (LieDerivation R L L) (LieDerivation R L L) where
+  bracket D1 D2 := LieDerivation.mk ⁅(D1 : Module.End R L), (D2 : Module.End R L)⁆ (fun a b => by
+    simp only [Ring.lie_def, apply_lie_eq_add, coeFn_coe,
+      LinearMap.sub_apply, LinearMap.mul_apply, map_add, sub_lie, lie_sub, ← lie_skew b]
+    abel)
 
 variable (D : LieDerivation R L L) {D1 D2 : LieDerivation R L L}
 
@@ -301,10 +285,8 @@ instance : LieRing (LieDerivation R L L) where
 instance : SMulBracketCommClass R L L := ⟨fun s x y => (lie_smul s x y).symm⟩
 
 /-- The set of Lie derivations from a Lie algebra `L` to itself is a Lie algebra. -/
-instance : LieAlgebra R (LieDerivation R L L) := {
-  LieDerivation.instModule with
+instance instLieAlgebra : LieAlgebra R (LieDerivation R L L) where
   lie_smul := fun r d e => by ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply]
-}
 
 end
 
