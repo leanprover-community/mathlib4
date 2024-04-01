@@ -593,10 +593,11 @@ theorem add_pow_mem_of_pow_mem_of_le {m n k : ℕ}
   · exact I.mul_mem_right _ (I.pow_mem_of_pow_mem ha h)
   · refine I.mul_mem_left _ (I.pow_mem_of_pow_mem hb ?_)
     simp only [not_le, Nat.lt_iff_add_one_le] at h
-    rw [Nat.le_sub_iff_add_le, ← add_le_add_iff_right 1]
+    have hck : c ≤ k := by
+      rw [← add_le_add_iff_right 1]
+      exact le_trans h (le_trans (Nat.le_add_right _ _) hk)
+    rw [Nat.le_sub_iff_add_le hck, ← add_le_add_iff_right 1]
     exact le_trans (by rwa [add_comm _ n, add_assoc, add_le_add_iff_left]) hk
-    rw [← add_le_add_iff_right 1]
-    exact le_trans h (le_trans (Nat.le_add_right _ _) hk)
 
 theorem add_pow_add_pred_mem_of_pow_mem  {m n : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) :
