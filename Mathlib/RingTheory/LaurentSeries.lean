@@ -208,7 +208,7 @@ theorem coeff_coe (i : ℤ) :
       Int.natAbs_ofNat]
   · rw [ofPowerSeries_apply, embDomain_notin_image_support, if_pos (Int.negSucc_lt_zero _)]
     simp only [not_exists, RelEmbedding.coe_mk, Set.mem_image, not_and, Function.Embedding.coeFn_mk,
-      Ne.def, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
+      Ne, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
       not_false_iff]
 #align power_series.coeff_coe PowerSeries.coeff_coe
 
