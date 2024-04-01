@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Topology.Baire.Lemmas
 import Mathlib.Topology.Baire.CompleteMetrizable
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Analysis.NormedSpace.AffineIsometry
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 
