@@ -247,7 +247,7 @@ theorem exists_goodδ :
     · simp only [pi_norm_le_iff_of_nonneg zero_le_two, mem_closedBall, dist_zero_right] at fmem
       exact fmem i
     · have A : Tendsto (fun n => ‖F (u (φ n)) i - F (u (φ n)) j‖) atTop (𝓝 ‖f i - f j‖) :=
-        ((hf.apply i).sub (hf.apply j)).norm
+        ((hf.apply_nhds i).sub (hf.apply_nhds j)).norm
       have B : Tendsto (fun n => 1 - u (φ n)) atTop (𝓝 (1 - 0)) :=
         tendsto_const_nhds.sub (hu.comp φ_mono.tendsto_atTop)
       rw [sub_zero] at B
