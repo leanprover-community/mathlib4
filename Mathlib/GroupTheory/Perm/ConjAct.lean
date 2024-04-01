@@ -7,6 +7,7 @@ import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.Data.Finset.Pointwise
+import Mathlib.GroupTheory.Perm.Cycle.Factors
 
 /-! # Some lemmas pertaining to the action of `ConjAct (Perm α)` on `Perm α`
 
@@ -37,11 +38,11 @@ theorem conj_support_eq (k : ConjAct (Perm α)) (g : Perm α) (a : α) :
   apply Equiv.apply_eq_iff_eq_symm_apply
 
 theorem cycleFactorsFinset_conj (g k : Perm α) :
-    (ConjAct.toConjAct k • g).cycleFactorsFinset =
+    (ConjAct.toConjAct k • g).cycleFactorsFinset  =
       Finset.map (MulAut.conj k).toEquiv.toEmbedding g.cycleFactorsFinset := by
   ext c
   rw [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct]
-  rw [Finset.mem_map_equiv, ← mem_cycleFactorsFinset_conj_iff k⁻¹]
+  rw [Finset.mem_map_equiv, ← mem_cycleFactorsFinset_conj g k]
   simp only [MulEquiv.toEquiv_eq_coe, MulEquiv.coe_toEquiv_symm, MulAut.conj_symm_apply]
   group
 
@@ -51,7 +52,7 @@ theorem mem_cycleFactorsFinset_conj'
     (k : ConjAct (Perm α)) (g c : Perm α) :
     k • c ∈ (k • g).cycleFactorsFinset ↔ c ∈ g.cycleFactorsFinset := by
   simp only [ConjAct.smul_def]
-  exact mem_cycleFactorsFinset_conj_iff k
+  apply mem_cycleFactorsFinset_conj g k
 
 theorem cycleFactorsFinset_conj_eq
     (k : ConjAct (Perm α)) (g : Perm α) :
