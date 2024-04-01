@@ -180,7 +180,7 @@ def unitarySubgroup : Subgroup G where
   inv_mem' := unitary.inv_mem
 
 @[simp]
-def unitarySubgroup_toSubmonoid : (unitarySubgroup G).toSubmonoid = unitary G := rfl
+theorem unitarySubgroup_toSubmonoid : (unitarySubgroup G).toSubmonoid = unitary G := rfl
 
 @[simp]
 theorem mem_unitarySubgroup_iff {U : G} : U ∈ unitarySubgroup G ↔ U ∈ unitary G :=
