@@ -237,10 +237,10 @@ the array of `FVarId`s that `lctx` assigns to `st`:
 * if `st` is `.wildcard`, returns the array of all the `FVarId`s in `lctx` with also `default`
   (to keep track of the `goal`).
 -/
-def stained.toFVarId (lctx: LocalContext) : stained → Array FVarId
-  | name n   => #[((lctx.findFromUserName? n).getD default).fvarId]
+def stained.toFVarId (lctx: LocalContext) : stained → Array (FVarId × MVarId)
+  | name n   => #[(((lctx.findFromUserName? n).getD default).fvarId, default)]
   | goal     => #[default]
-  | wildcard => lctx.getFVarIds.push default
+  | wildcard => (lctx.getFVarIds.push default).map (·, default)
 
 /-- `SyntaxNodeKind`s that are mostly "formatting": mostly they are ignored
 because we do not want the linter to spend time on them.
@@ -310,6 +310,28 @@ def persistFVars (fv : FVarId) (before after : LocalContext) : FVarId :=
   let name := ldecl.userName
   (getFVarIdCandidates fv name after).getD 0 default
 
+def reallyPersist (fvars : Array (FVarId × MVarId)) (mvs0 mvs1 : List MVarId) (ctx0 ctx1 : MetavarContext) :
+    Array (FVarId × MVarId) := Id.run do
+  let (active, inert) := fvars.partition fun (_, mv) => mvs0.contains mv
+  let mut new := #[]
+  let lctx0 := (mvs0.map ctx0.decls.find?).reduceOption.map (·.lctx)
+  let lctx1 := (mvs1.map ctx1.decls.find?).reduceOption.map (·.lctx)
+  for (fv, _mv) in active do       -- for each `fvar`
+    for lc0 in lctx0 do    -- for each "before" `LocalContext`
+      for lc1 in lctx1 do  -- for each "after"  `LocalContext`
+        let persisted_fv := persistFVars fv lc0 lc1  -- persist `fv`
+        for mv1 in mvs1 do
+          new := new.push (persisted_fv, mv1)
+--        let olds := fvars.filter (· == fv)
+--        for (_) in olds do
+--          dbg_trace (cand_fv)
+  return inert ++ new
+        --stains := stains.insert cand_fv (mv, k)  default
+universe u v in
+instance {A : Type u} {B : Type v} [Hashable A] [Hashable B] : Hashable (A ⊕ B) where
+  hash ab := by cases ab with
+    | inl a => sorry
+    | inr b => sorry
 
 /-- The main entry point to the unreachable tactic linter. -/
 def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
@@ -323,14 +345,16 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
   -- `stains` records pairs `(location, mvar)`, where
   -- * `location` is either a hypothesis or the main goal modified by a flexible tactic and
   -- * `mvar` is the metavariable containing the modified location
-  let mut stains : HashMap FVarId (stained × SyntaxNodeKind) := .empty
+  let mut stains : HashMap (FVarId × MVarId) (stained × SyntaxNodeKind) := .empty
   let mut msgs : Array (Syntax × SyntaxNodeKind × stained) := #[]
   for d in x do for (s, ctx0, ctx1, mvs0, mvs1) in d do
 --    if ! ignored.contains s.getKind then
 --      logInfoAt s[0] m!"{mvs0.map (·.name)} ⊆ -- '{s}'\n{mvs1.map (·.name)}"
 --    logInfoAt s m!"{stains.toArray.map fun ((fv, mv), xx) => ((fv.name, mv.name), xx)}"
 
-    logInfoAt s m!"stains before:\n* {stains.toArray.map fun (a, b, c) => (a.name, b, c)}"
+    logInfoAt s m!"stains before:\n* {stains.toArray.map fun (a, b, c) => ((a.1.name, a.2.name), b, c)}"
+    let persisted := reallyPersist (stains.toArray.map Prod.fst) mvs0 mvs1 ctx0 ctx1
+    logInfoAt s m!"pers {persisted.map fun (fv, mv) => (fv.name, mv.name)}"
     let skind := s.getKind
     if ignored.contains skind then /-dbg_trace "ignoring {skind}"-/ continue
 --    logInfoAt s m!"acting on: {getStained! s}"
@@ -357,17 +381,17 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
         let fvars := lc0.getFVarIds
         let fvars := stains.toArray.map Prod.fst
         for lc1 in lctx1 do for fv in fvars do
-          let cand_fv := persistFVars fv lc0 lc1
+          let cand_fv := persistFVars fv.1 lc0 lc1
           let olds := stains.toArray.filter fun (a, _) => a == fv
           for (_, mv, k) in olds do
-            stains := stains.insert cand_fv (mv, k)
-          logInfoAt s m!"candidate: {fv.name} --> {cand_fv.name}"
-        let ldecls := fvars.map fun d => (lc0.get! d|>.userName, d.name)
-        logInfoAt s m!"before '{s}' (username, fvarid):\n{ldecls}"
+            stains := stains.insert (cand_fv, default) (mv, k)
+          logInfoAt s m!"candidate: {(fv.1.name, fv.2.name)} --> {cand_fv.name}"
+        let ldecls := fvars.map fun (d, _) => (lc0.get! d|>.userName, d.name)
+        logInfoAt s m!"ldecls before '{s}' (username, fvarid):\n{ldecls}"
       for lctx in lctx1 do
         let fvars := lctx.getFVarIds
         let ldecls := fvars.map fun d => (lctx.get! d|>.userName, d.name)
-        logInfoAt s m!"after '{s}' (username, fvarid):\n{ldecls}"
+        logInfoAt s m!"ldecls after '{s}' (username, fvarid):\n{ldecls}"
 
 
 /-
@@ -398,7 +422,7 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 --              m!"{s} is staining {(((lctx1.fvarIdToDecl.find? l).getD default).userName, l.name)}\
 --                ({l == default}, {currMVar1.name})"
             stains := stains.insert l (d, skind)
-            logInfoAt s m!"inserting {(l.name, d, skind)}"
+            logInfoAt s m!"inserting {((l.1.name, l.2.name), d, skind)}"
 
       else
         if !followers.contains skind then
@@ -414,7 +438,7 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
                 --logInfoAt s m!"l: {locsBefore.size}, mvs0: {mvs0.length}"
                 if !msgs.contains (s, kind, stdLoc) then
                   logInfoAt s m!"messaging {stdLoc}"
-                  msgs := msgs.push (s, kind, stdLoc)
+                msgs := msgs.push (s, kind, stdLoc)
 --                Linter.logLint linter.nonTerminalSimp s m!"{kind} stained '{d}' at '{s}'"
 
         -- since tactic applications often change the name of the current `MVarId`, we
@@ -424,19 +448,36 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 --              logInfoAt s m!"inserting {mv.name} at {fv.name}"
 --              stains := stains.insert (fv, mv) kd
 --              stains := stains.erase (fv, mvOld)
-      let mut new : HashMap FVarId (stained × SyntaxNodeKind) := .empty
+
+      let persisted := reallyPersist (stains.toArray.map Prod.fst) mvs0 mvs1 ctx0 ctx1
+      logInfoAt s m!"pers2 {stains.toArray.map fun ((fv, mv), _) =>
+        (fv.name, mv.name)} {persisted.map fun (fv, mv) => (fv.name, mv.name)}"
+
+
+      let mut new : HashMap (FVarId × MVarId) (stained × SyntaxNodeKind) := .empty
 --      logInfoAt s m!"following goals: {mvs1.length}"
-      for currMVar1 in mvs1 do
-        for (fv, (stLoc, kd)) in stains.toArray do
+--      for currMVar1 in mvs1 do
+--        for (fv, (stLoc, kd)) in stains.toArray do
 --          if mvs0.contains stLoc then
-            logInfoAt s m!"persisting {fv.name} in {stLoc} --> {currMVar1.name}"
-            new := new.insert fv (stLoc, kd)
+--            logInfoAt s m!"persisting {fv.name} in {stLoc} --> {currMVar1.name}"
+--            new := new.insert fv (stLoc, kd)
 --          else
 --            new := new.insert fv (stLoc, kd)
 --          stains := stains.erase (fv, stLoc)
 --          stains := stains.insert (fv, currMVar1) kd
+
+      for (fv, (stLoc, kd)) in stains.toArray do
+        let psisted := reallyPersist #[fv] mvs0 mvs1 ctx0 ctx1
+        if psisted == #[] && mvs1 != [] then
+          new := new.insert fv (stLoc, kd)
+          dbg_trace "lost {((fv.1.name, fv.2.name), stLoc, kd)}"
+        for p in psisted do new := new.insert p (stLoc, kd)
+--        logInfoAt s m!"persisting {fv.name} in {stLoc} --> {currMVar1.name}"
+--        new := new.insert fv (stLoc, kd)
+
+
       stains := new
-    logInfoAt s m!"stains after:\n* {stains.toArray.map fun (a, b, c) => (a.name, b, c)}"
+    logInfoAt s m!"stains after:\n* {stains.toArray.map fun (a, b, c) => ((a.1.name, a.2.name), b, c)}"
   for (s, kind, d) in msgs do
     Linter.logLint linter.nonTerminalSimp s m!"{kind} stained '{d}' at '{s}'"
 
