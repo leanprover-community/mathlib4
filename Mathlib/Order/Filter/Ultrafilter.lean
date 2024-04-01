@@ -113,7 +113,7 @@ theorem inf_neBot_iff {f : Ultrafilter α} {g : Filter α} : NeBot (↑f ⊓ g) 
 #align ultrafilter.inf_ne_bot_iff Ultrafilter.inf_neBot_iff
 
 theorem disjoint_iff_not_le {f : Ultrafilter α} {g : Filter α} : Disjoint (↑f) g ↔ ¬↑f ≤ g := by
-  rw [← inf_neBot_iff, neBot_iff, Ne.def, not_not, disjoint_iff]
+  rw [← inf_neBot_iff, neBot_iff, Ne, not_not, disjoint_iff]
 #align ultrafilter.disjoint_iff_not_le Ultrafilter.disjoint_iff_not_le
 
 @[simp]
