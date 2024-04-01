@@ -8,7 +8,6 @@ import Mathlib.Data.Set.Basic
 /-!
 # Subsingleton
 
-
 Defines the predicate `Subsingleton s : Prop`, saying that `s` has at most one element.
 
 -/
