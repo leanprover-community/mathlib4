@@ -46,7 +46,7 @@ instance [One α] : One (Completion α) :=
   ⟨(1 : α)⟩
 
 @[to_additive]
-noncomputable instance [Inv α] : Inv (Completion α) :=
+noncomputable instance [Group α] : Inv (Completion α) :=
   ⟨Completion.map (fun a ↦ a⁻¹ : α → α)⟩
 
 @[to_additive]
@@ -54,7 +54,7 @@ noncomputable instance [Mul α] : Mul (Completion α) :=
   ⟨Completion.map₂ (· * ·)⟩
 
 @[to_additive]
-noncomputable instance [Div α] : Div (Completion α) :=
+noncomputable instance [Group α] : Div (Completion α) :=
   ⟨Completion.map₂ Div.div⟩
 
 @[to_additive (attr := norm_cast) coe_zero]
@@ -84,8 +84,8 @@ section UniformGroup
 
 variable [UniformSpace α] [Group α] [UniformGroup α]
 
-@[to_additive (attr := norm_cast)]
-theorem coe_inv (a : α) : ((a⁻¹ : α) : Completion α) = (a : Completion α)⁻¹ :=
+@[to_additive (attr := norm_cast) coe_neg]
+theorem coe_inv' (a : α) : ((a⁻¹ : α) : Completion α) = (a : Completion α)⁻¹ :=
   (map_coe uniformContinuous_inv a).symm
 #align uniform_space.completion.coe_neg UniformSpace.Completion.coe_neg
 
