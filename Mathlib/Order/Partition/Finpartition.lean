@@ -120,7 +120,7 @@ def copy {a b : α} (P : Finpartition a) (h : a = b) : Finpartition b
 #align finpartition.copy Finpartition.copy
 
 /-- Transfer a finpartition over an order isomorphism. -/
-def map {β : Type*} [Lattice β] [OrderBot β] {a : α} (P : Finpartition a) (e : α ≃o β) :
+def map {β : Type*} [Lattice β] [OrderBot β] {a : α} (e : α ≃o β) (P : Finpartition a) :
     Finpartition (e a) where
   parts := P.parts.map e
   supIndep u hu _ hb hbu _ hx hxu := by
@@ -206,7 +206,7 @@ theorem parts_nonempty (P : Finpartition a) (ha : a ≠ ⊥) : P.parts.Nonempty 
 #align finpartition.parts_nonempty Finpartition.parts_nonempty
 
 @[simp]
-theorem parts_equiv {β : Type*} [Lattice β] [OrderBot β] {e : α ≃o β} :
+theorem parts_map {β : Type*} [Lattice β] [OrderBot β] {e : α ≃o β} :
     (P.map e).parts = P.parts.map e := rfl
 
 instance : Unique (Finpartition (⊥ : α)) :=
