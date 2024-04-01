@@ -33,6 +33,13 @@ def withLocalCategory {α : Type} (n v u : Name) (k : CategoryInformation → Me
       let quiverC := mkAppN (.const ``CategoryStruct.toQuiver [v, u]) #[C, categoryStructC]
       k ⟨u, v, C, instCategoryC, quiverC⟩
 
+def functorType (C D : CategoryInformation) : Expr :=
+ mkAppN (.const ``CategoryTheory.Functor [C.v, D.v, C.u, D.u]) #[C.T, C.cat, D.T, D.cat]
+
+def withLocalFunctor {α : Type} (F : Name) (C D : CategoryInformation) (k : Expr → MetaM α) :
+    MetaM α := do
+  withLocalDecl F .default (functorType C D) k
+
 def addOneEqualsOne : MetaM Unit := do
   withLocalCategory `C `v `u fun C => do
     withLocalDecl `X .implicit C.T fun X => do
@@ -40,9 +47,9 @@ def addOneEqualsOne : MetaM Unit := do
         let homType := mkApp4 (.const ``Quiver.Hom [.succ C.v, C.u]) C.T C.quiv X Y
         withLocalDecl `f .default homType fun f => do
           let fEqf ← mkAppM ``Eq #[f, f]
-          let rfl ← mkAppM ``Eq.refl #[f]
+          -- let rfl ← mkAppM ``Eq.refl #[f]
           let statement ← mkForallFVars #[C.T, C.cat, X, Y, f] fEqf
-          let proof ← mkLambdaFVars #[C.T, C.cat, X, Y, f] rfl
+          let proof ← mkSorry statement false
           addDecl <| .thmDecl {
             name := `one_equals_one
             levelParams := [`v, `u]
@@ -53,6 +60,8 @@ elab "add_one_equals_one" : command =>
   liftCoreM <| MetaM.run' addOneEqualsOne
 
 add_one_equals_one
+
+#print one_equals_one
 
 #check one_equals_one
 
