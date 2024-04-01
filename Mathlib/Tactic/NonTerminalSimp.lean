@@ -449,48 +449,25 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
             let locsBefore := d.toFMVarId currMVar0 lctx0 ++ foundFvs
             for l in locsBefore do
               if let some (stdLoc, kind) := stains.find? l then
-                --logInfoAt s m!"l: {locsBefore.size}, mvs0: {mvs0.length}"
-                --nowif !msgs.contains (s, kind, stdLoc) then
-                  --nowlogInfoAt s m!"messaging {stdLoc}"
                 msgs := msgs.push (s, kind, stdLoc)
 --                Linter.logLint linter.nonTerminalSimp s m!"{kind} stained '{d}' at '{s}'"
 
-        -- since tactic applications often change the name of the current `MVarId`, we
-        -- migrate the `FvarId`s in the "old" `mvars` to the "same" `FVarId` in the "new" `mvars`
---          for mv in mvs1 do
---            for ((fv, mvOld), kd) in stains.toArray do
---              logInfoAt s m!"inserting {mv.name} at {fv.name}"
---              stains := stains.insert (fv, mv) kd
---              stains := stains.erase (fv, mvOld)
-
+        -- tactics often change the name of the current `MVarId`, so we migrate the `FvarId`s
+        -- in the "old" `mvars` to the "same" `FVarId` in the "new" `mvars`
       --nowlet persisted := reallyPersist (stains.toArray.map Prod.fst) mvs0 mvs1 ctx0 ctx1
       --nowlogInfoAt s m!"pers2 {stains.toArray.map fun ((fv, mv), _) =>
       --now  (fv.name, mv.name)} {persisted.map fun (fv, mv) => (fv.name, mv.name)}"
 
 
       let mut new : HashMap (FVarId × MVarId) (stained × SyntaxNodeKind) := .empty
---      logInfoAt s m!"following goals: {mvs1.length}"
---      for currMVar1 in mvs1 do
---        for (fv, (stLoc, kd)) in stains.toArray do
---          if mvs0.contains stLoc then
---            logInfoAt s m!"persisting {fv.name} in {stLoc} --> {currMVar1.name}"
---            new := new.insert fv (stLoc, kd)
---          else
---            new := new.insert fv (stLoc, kd)
---          stains := stains.erase (fv, stLoc)
---          stains := stains.insert (fv, currMVar1) kd
-
       for (fv, (stLoc, kd)) in stains.toArray do
         let psisted := reallyPersist #[fv] mvs0 mvs1 ctx0 ctx1
         if psisted == #[] && mvs1 != [] then
           new := new.insert fv (stLoc, kd)
           dbg_trace "lost {((fv.1.name, fv.2.name), stLoc, kd)}"
         for p in psisted do new := new.insert p (stLoc, kd)
---        logInfoAt s m!"persisting {fv.name} in {stLoc} --> {currMVar1.name}"
---        new := new.insert fv (stLoc, kd)
-
-
       stains := new
+
     --nowlogInfoAt s m!"stains after:\n* {stains.toArray.map fun (a, b, c) => ((a.1.name, a.2.name), b, c)}"
   for (s, kind, d) in msgs do
     Linter.logLint linter.nonTerminalSimp s m!"{kind} stained '{d}' at '{s}'"
