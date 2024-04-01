@@ -310,23 +310,34 @@ def persistFVars (fv : FVarId) (before after : LocalContext) : FVarId :=
   let name := ldecl.userName
   (getFVarIdCandidates fv name after).getD 0 default
 
-def reallyPersist (fvars : Array (FVarId × MVarId)) (mvs0 mvs1 : List MVarId) (ctx0 ctx1 : MetavarContext) :
+def reallyPersist (fmvars : Array (FVarId × MVarId)) (mvs0 mvs1 : List MVarId) (ctx0 ctx1 : MetavarContext) :
     Array (FVarId × MVarId) := Id.run do
-  let (active, inert) := fvars.partition fun (_, mv) => mvs0.contains mv
+  -- split the input `fmvars` into
+  -- * the `active` ones, whose `mvar` appears in `mvs0` and
+  -- * the `inert` ones, the rest.
+  -- `inert` gets copied unchanged, while we transform `active`
+  let (active, inert) := fmvars.partition fun (_, mv) => mvs0.contains mv
   let mut new := #[]
-  let lctx0 := (mvs0.map ctx0.decls.find?).reduceOption.map (·.lctx)
-  let lctx1 := (mvs1.map ctx1.decls.find?).reduceOption.map (·.lctx)
-  for (fv, _mv) in active do       -- for each `fvar`
+  for (fvar, mvar) in active do       -- for each `active` pair `(fvar, mvar)`
+    match ctx0.decls.find? mvar with  -- check if `mvar` is managed by `ctx0` (it should be)
+      | none => -- the `mvar` is not managed by `ctx0`: no change
+        new := new.push (fvar, mvar)
+      | some mvDecl0 => -- the `mvar` *is* managed by `ctx0`: push the pair `(fvar, mvar)` through
+        for mv1 in mvs1 do  -- for each new `MVarId` in `mvs1`
+          match ctx1.decls.find? mv1 with  -- check if `mv1` is managed by `ctx1` (it should be)
+            | none => dbg_trace "'really_persist' coud this happen?" default -- ??? maybe `.push`?
+            | some mvDecl1 =>  -- we found a "new" declaration
+              let persisted_fv := persistFVars fvar mvDecl0.lctx mvDecl1.lctx  -- persist `fv`
+              new := new.push (persisted_fv, mv1)
+/-
     for lc0 in lctx0 do    -- for each "before" `LocalContext`
       for lc1 in lctx1 do  -- for each "after"  `LocalContext`
         let persisted_fv := persistFVars fv lc0 lc1  -- persist `fv`
         for mv1 in mvs1 do
           new := new.push (persisted_fv, mv1)
---        let olds := fvars.filter (· == fv)
---        for (_) in olds do
---          dbg_trace (cand_fv)
+-/
   return inert ++ new
-        --stains := stains.insert cand_fv (mv, k)  default
+
 universe u v in
 instance {A : Type u} {B : Type v} [Hashable A] [Hashable B] : Hashable (A ⊕ B) where
   hash ab := by cases ab with
