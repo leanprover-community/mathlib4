@@ -77,8 +77,8 @@ end flexible
 end Mathlib.Linter
 
 section goals_heuristic
-namespace Lean namespace Elab namespace TacticInfo
-variable (t : TacticInfo)
+namespace Lean.Elab.TacticInfo
+
 /-!
 ###  Heuristics for determining active and inactive goals
 
@@ -89,19 +89,18 @@ This is mostly based on the heuristic that the tactic with "change" an `MVarId`.
 
 /-- `activeGoalsBefore t` are the `MVarId`s before the `TacticInfo` `t` that "disappear" after it.
 They should correspond to the goals in which the tactic `t` performs some action. -/
-def activeGoalsBefore : List MVarId :=
+def activeGoalsBefore (t : TacticInfo) : List MVarId :=
   t.goalsBefore.filter (·.name ∉ t.goalsAfter.map (·.name))
 
 /-- `activeGoalsAfter t` are the `MVarId`s after the `TacticInfo` `t` that were not present before.
 They should correspond to the goals changed by the tactic `t`. -/
-def activeGoalsAfter : List MVarId :=
+def activeGoalsAfter (t : TacticInfo) : List MVarId :=
   t.goalsAfter.filter (·.name ∉ t.goalsBefore.map (·.name))
 
-end TacticInfo end Elab end Lean
+end Lean.Elab.TacticInfo
 end goals_heuristic
 
 namespace Mathlib.Linter.flexible
-open Lean Elab TacticInfo
 
 variable (take? : Syntax → Bool) in
 -- also returns the preceding goals that change.  is there only one always?
