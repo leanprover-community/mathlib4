@@ -7,6 +7,7 @@ import Lean
 import Std
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.ExtendDoc
+import Mathlib.Tactic.FlexibleLinter
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 
