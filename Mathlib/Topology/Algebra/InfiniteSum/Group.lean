@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl
+Authors: Johannes Hölzl, Mitchell Lee
 -/
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Topology.Algebra.GroupCompletion
 
 /-!
 # Infinite sums and products in topological groups
@@ -317,6 +318,49 @@ theorem prod_mul_tprod_subtype_compl [T2Space α] {f : β → α} (hf : Multipli
 #align sum_add_tsum_subtype_compl sum_add_tsum_subtype_compl
 
 end UniformGroup
+
+section UniformAddGroup
+
+open UniformSpace.Completion
+
+variable [AddCommGroup α] [UniformSpace α] [UniformAddGroup α]
+
+/-- A function `f` has a sum in an uniform additive group `α` if and only if it has that sum in the
+completion of `α`. -/
+theorem hasSum_iff_hasSum_compl (f : β → α) (a : α):
+    HasSum f a ↔ HasSum (toCompl ∘ f) a := (denseInducing_toCompl α).hasSum_iff f a
+
+/-- A function `f` is summable in a uniform additive group `α` if and only if it is summable in
+`Completion α` and its sum in `Completion α` lies in the image of `toCompl : α →+ Completion α`. -/
+theorem summable_iff_summable_compl_and_tsum_mem (f : β → α) :
+    Summable f ↔ Summable (toCompl ∘ f) ∧ ∑' i, toCompl (f i) ∈ Set.range toCompl :=
+  (denseInducing_toCompl α).summable_iff_tsum_comp_mem_image f
+
+/-- A function `f` is summable in a uniform additive group `α` if and only if the net of its partial
+sums is Cauchy and its sum in `Completion α` lies in the image of `toCompl : α →+ Completion α`.
+(The condition that the net of partial sums is Cauchy can be checked using
+`cauchySeq_finset_iff_sum_vanishing` or `cauchySeq_finset_iff_tsum_vanishing`.) -/
+theorem summable_iff_cauchySeq_finset_and_tsum_mem (f : β → α) :
+    Summable f ↔ CauchySeq (fun s : Finset β ↦ ∑ b in s, f b) ∧
+      ∑' i, toCompl (f i) ∈ Set.range toCompl := by
+  classical
+  constructor
+  · rintro ⟨a, ha⟩
+    exact ⟨ha.cauchySeq, ((summable_iff_summable_compl_and_tsum_mem f).mp ⟨a, ha⟩).2⟩
+  · rintro ⟨h_cauchy, h_tsum⟩
+    apply (summable_iff_summable_compl_and_tsum_mem f).mpr
+    constructor
+    · apply summable_iff_cauchySeq_finset.mpr
+      simp_rw [comp_apply, ← map_sum]
+      exact h_cauchy.map (uniformContinuous_coe α)
+    · exact h_tsum
+
+/-- If a function `f` is summable in a uniform additive group `α`, then its sum in `α` is the same
+as its sum in `Completion α`. -/
+theorem Summable.toCompl_tsum {f : β → α} (hf : Summable f) : ∑' i, f i = ∑' i, toCompl (f i) :=
+  hf.map_tsum toCompl (continuous_coe α)
+
+end UniformAddGroup
 
 section TopologicalGroup
 
