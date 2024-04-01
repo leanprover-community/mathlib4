@@ -129,7 +129,7 @@ theorem mul_polyOfInterest_aux1 (n : ℕ) :
     congr 1
     have hsupp : (Finsupp.single i (p ^ (n - i))).support = {i} := by
       rw [Finsupp.support_eq_singleton]
-      simp only [and_true_iff, Finsupp.single_eq_same, eq_self_iff_true, Ne.def]
+      simp only [and_true_iff, Finsupp.single_eq_same, eq_self_iff_true, Ne]
       exact pow_ne_zero _ hp.out.ne_zero
     simp only [bind₁_monomial, hsupp, Int.cast_ofNat, prod_singleton, eq_intCast,
       Finsupp.single_eq_same, C_pow, mul_eq_mul_left_iff, true_or_iff, eq_self_iff_true,
