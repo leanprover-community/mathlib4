@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Dart
+import Mathlib.Data.FunLike.Fintype
 
 /-!
 # Maps between graphs
@@ -272,6 +273,8 @@ instance instFintype [DecidableEq V] [Fintype V] [Fintype W] [DecidableRel G.Adj
   Fintype.ofEquiv {f : V → W // ∀ {a b}, G.Adj a b → H.Adj (f a) (f b)}
     { toFun := fun f ↦ ⟨f.1, f.2⟩, invFun := fun f ↦ ⟨f.1, f.2⟩,
       left_inv := fun _ ↦ rfl, right_inv := fun _ ↦ rfl }
+
+instance [Finite V] [Finite W] : Finite (G →g H) := DFunLike.finite _
 
 theorem map_adj {v w : V} (h : G.Adj v w) : G'.Adj (f v) (f w) :=
   f.map_rel' h
