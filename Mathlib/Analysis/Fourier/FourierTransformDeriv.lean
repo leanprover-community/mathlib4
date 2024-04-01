@@ -54,7 +54,10 @@ open Real Complex MeasureTheory Filter TopologicalSpace
 
 open scoped FourierTransform Topology BigOperators
 
-attribute [local instance 2000] secondCountableTopologyEither_of_left
+-- without this local instance, Lean tries first the instance
+-- `secondCountableTopologyEither_of_right` (whose priority is 100) and takes a very long time to
+-- fail. Since we only use the left instance in this file, we make sure it is tried first.
+attribute [local instance 101] secondCountableTopologyEither_of_left
 
 lemma Real.hasDerivAt_fourierChar (x : ℝ) : HasDerivAt (𝐞 · : ℝ → ℂ) (2 * π * I * 𝐞 x) x := by
   have h1 (y : ℝ) : 𝐞 y = fourier 1 (y : UnitAddCircle) := by
