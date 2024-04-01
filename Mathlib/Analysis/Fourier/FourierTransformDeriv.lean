@@ -77,7 +77,7 @@ variable {f}
 /-- Main theorem of this section: if both `f` and `x ↦ ‖x‖ * ‖f x‖` are integrable, then the
 Fourier transform of `f` has a Fréchet derivative (everywhere in its domain) and its derivative is
 the Fourier transform of `mul_L L f`. -/
-theorem hasFDerivAt_fourier [CompleteSpace E] [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
+theorem hasFDerivAt_fourier [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
     [SecondCountableTopologyEither V (W →L[ℝ] ℝ)]
     (hf : Integrable f μ) (hf' : Integrable (fun v : V ↦ ‖v‖ * ‖f v‖) μ) (w : W) :
     HasFDerivAt (VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ f)
@@ -111,7 +111,7 @@ theorem hasFDerivAt_fourier [CompleteSpace E] [MeasurableSpace V] [BorelSpace V]
 section inner
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [SecondCountableTopology V]
-  [MeasurableSpace V] [BorelSpace V] [CompleteSpace E]
+  [MeasurableSpace V] [BorelSpace V]
 
 /-- Notation for the Fourier transform on a real inner product space -/
 abbrev integralFourier (f : V → E) (μ : Measure V := by volume_tac) :=
@@ -132,7 +132,7 @@ end VectorFourier
 
 open VectorFourier
 
-lemma hasDerivAt_fourierIntegral [CompleteSpace E]
+lemma hasDerivAt_fourierIntegral
     {f : ℝ → E} (hf : Integrable f) (hf' : Integrable (fun x : ℝ ↦ x • f x)) (w : ℝ) :
     HasDerivAt (𝓕 f) (𝓕 (fun x : ℝ ↦ (-2 * ↑π * I * x) • f x) w) w := by
   have hf'' : Integrable (fun v : ℝ ↦ ‖v‖ * ‖f v‖) := by simpa only [norm_smul] using hf'.norm
