@@ -5,7 +5,6 @@ Authors: Frédéric Marbach
 -/
 import Mathlib.Algebra.Lie.Basic
 import Mathlib.Algebra.Lie.Subalgebra
-import Mathlib.Tactic.NoncommRing
 
 /-!
 # Lie derivations
@@ -49,7 +48,7 @@ section
 variable {R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
     [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
-variable (D : LieDerivation R L M) {D1 D2 : LieDerivation R L M} (r : R) (a b : L)
+variable (D : LieDerivation R L M) {D1 D2 : LieDerivation R L M} (a b : L)
 
 instance : FunLike (LieDerivation R L M) L M where
   coe D := D.toFun
@@ -135,6 +134,9 @@ theorem coe_zero_linearMap : ↑(0 : LieDerivation R L M) = (0 : L →ₗ[R] M) 
 theorem zero_apply (a : L) : (0 : LieDerivation R L M) a = 0 :=
   rfl
 
+instance : Inhabited (LieDerivation R L M) :=
+  ⟨0⟩
+
 instance instAdd : Add (LieDerivation R L M) where
   add D1 D2 :=
     { toLinearMap := D1 + D2
@@ -152,8 +154,44 @@ theorem coe_add_linearMap (D1 D2 : LieDerivation R L M) : ↑(D1 + D2) = (D1 + D
 theorem add_apply : (D1 + D2) a = D1 a + D2 a :=
   rfl
 
-instance : Inhabited (LieDerivation R L M) :=
-  ⟨0⟩
+protected theorem map_neg : D (-a) = -D a :=
+  map_neg D a
+
+protected theorem map_sub : D (a - b) = D a - D b :=
+  map_sub D a b
+
+instance instNeg : Neg (LieDerivation R L M) :=
+  ⟨fun D =>
+    mk (-D) fun a b => by
+      simp only [LinearMap.neg_apply, coeFn_coe, apply_lie_eq_sub,
+        neg_sub, lie_neg, sub_neg_eq_add, add_comm, ← sub_eq_add_neg] ⟩
+
+@[simp]
+theorem coe_neg (D : LieDerivation R L M) : ⇑(-D) = -D :=
+  rfl
+
+@[simp]
+theorem coe_neg_linearMap (D : LieDerivation R L M) : ↑(-D) = (-D : L →ₗ[R] M) :=
+  rfl
+
+theorem neg_apply : (-D) a = -D a :=
+  rfl
+
+instance instSub : Sub (LieDerivation R L M) :=
+  ⟨fun D1 D2 =>
+    mk (D1 - D2 : L →ₗ[R] M) fun a b => by
+      simp only [LinearMap.sub_apply, coeFn_coe, apply_lie_eq_sub, lie_sub, sub_sub_sub_comm]⟩
+
+@[simp]
+theorem coe_sub (D1 D2 : LieDerivation R L M) : ⇑(D1 - D2) = D1 - D2 :=
+  rfl
+
+@[simp]
+theorem coe_sub_linearMap (D1 D2 : LieDerivation R L M) : ↑(D1 - D2) = (D1 - D2 : L →ₗ[R] M) :=
+  rfl
+
+theorem sub_apply {D1 D2 : LieDerivation R L M} : (D1 - D2) a = D1 a - D2 a :=
+  rfl
 
 section Scalar
 
@@ -184,12 +222,12 @@ theorem coe_smul_linearMap (r : S) (D : LieDerivation R L M) : ↑(r • D) = r 
 theorem smul_apply (r : S) (D : LieDerivation R L M) : (r • D) a = r • D a :=
   rfl
 
-instance : SMulBracketCommClass ℕ L M := ⟨fun s l a => (lie_nsmul l a s).symm⟩
+instance instSMulNat : SMulBracketCommClass ℕ L M := ⟨fun s l a => (lie_nsmul l a s).symm⟩
 
-instance : SMulBracketCommClass ℤ L M := ⟨fun s l a => (lie_zsmul l a s).symm⟩
+instance instSMulInt : SMulBracketCommClass ℤ L M := ⟨fun s l a => (lie_zsmul l a s).symm⟩
 
-instance : AddCommMonoid (LieDerivation R L M) :=
-  coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
+instance instAddCommGroup : AddCommGroup (LieDerivation R L M) :=
+  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
 
 /-- `coe_fn` as an `AddMonoidHom`. -/
 def coeFnAddMonoidHom : LieDerivation R L M →+ L → M where
@@ -231,57 +269,6 @@ end
 
 section
 
-variable {R : Type*} [CommRing R]
-variable {L : Type*} [LieRing L] [LieAlgebra R L]
-variable {M : Type*} [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-variable (D : LieDerivation R L M) (a b : L)
-
-protected theorem map_neg : D (-a) = -D a :=
-  map_neg D a
-
-protected theorem map_sub : D (a - b) = D a - D b :=
-  map_sub D a b
-
-instance : Neg (LieDerivation R L M) :=
-  ⟨fun D =>
-    mk (-D) fun a b => by
-      simp only [LinearMap.neg_apply, coeFn_coe, apply_lie_eq_sub,
-        neg_sub, lie_neg, sub_neg_eq_add, add_comm, ← sub_eq_add_neg] ⟩
-
-@[simp]
-theorem coe_neg (D : LieDerivation R L M) : ⇑(-D) = -D :=
-  rfl
-
-@[simp]
-theorem coe_neg_linearMap (D : LieDerivation R L M) : ↑(-D) = (-D : L →ₗ[R] M) :=
-  rfl
-
-theorem neg_apply : (-D) a = -D a :=
-  rfl
-
-instance : Sub (LieDerivation R L M) :=
-  ⟨fun D1 D2 =>
-    mk (D1 - D2 : L →ₗ[R] M) fun a b => by
-      simp only [LinearMap.sub_apply, coeFn_coe, apply_lie_eq_sub, lie_sub, sub_sub_sub_comm]⟩
-
-@[simp]
-theorem coe_sub (D1 D2 : LieDerivation R L M) : ⇑(D1 - D2) = D1 - D2 :=
-  rfl
-
-@[simp]
-theorem coe_sub_linearMap (D1 D2 : LieDerivation R L M) : ↑(D1 - D2) = (D1 - D2 : L →ₗ[R] M) :=
-  rfl
-
-theorem sub_apply {D1 D2 : LieDerivation R L M} : (D1 - D2) a = D1 a - D2 a :=
-  rfl
-
-instance : AddCommGroup (LieDerivation R L M) :=
-  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
-
-end
-
-section
-
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
 
 /-- The commutator of two Lie derivations on a Lie algebra is a Lie derivation. -/
@@ -290,7 +277,7 @@ instance : Bracket (LieDerivation R L L) (LieDerivation R L L) :=
     LieDerivation.mk ⁅(D1 : Module.End R L), (D2 : Module.End R L)⁆ (fun a b => by
       simp only [Ring.lie_def, apply_lie_eq_add, coeFn_coe,
         LinearMap.sub_apply, LinearMap.mul_apply, map_add, sub_lie, lie_sub, ← lie_skew b]
-      noncomm_ring)⟩
+      abel)⟩
 
 variable (D : LieDerivation R L L) {D1 D2 : LieDerivation R L L}
 
@@ -303,13 +290,13 @@ lemma commutator_apply (a : L) : ⁅D1, D2⁆ a = D1 (D2 a) - D2 (D1 a) :=
 
 instance : LieRing (LieDerivation R L L) where
   add_lie d e f := by
-    ext a; simp only [commutator_apply, add_apply, map_add]; noncomm_ring
+    ext a; simp only [commutator_apply, add_apply, map_add]; abel
   lie_add d e f := by
-    ext a; simp only [commutator_apply, add_apply, map_add]; noncomm_ring
+    ext a; simp only [commutator_apply, add_apply, map_add]; abel
   lie_self d := by
-    ext a; simp only [commutator_apply, add_apply, map_add]; noncomm_ring; simp
+    ext a; simp only [commutator_apply, add_apply, map_add, zero_apply]; abel
   leibniz_lie d e f := by
-    ext a; simp only [commutator_apply, add_apply, sub_apply, map_sub]; noncomm_ring
+    ext a; simp only [commutator_apply, add_apply, sub_apply, map_sub]; abel
 
 instance : SMulBracketCommClass R L L := ⟨fun s x y => (lie_smul s x y).symm⟩
 
