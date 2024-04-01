@@ -868,7 +868,7 @@ end SMul
 
 instance instNoZeroSMulDivisors [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     [NoZeroSMulDivisors R ℝ≥0∞] : NoZeroSMulDivisors R (Measure α) where
-  eq_zero_or_eq_zero_of_smul_eq_zero h := by simpa [Ne.def, ext_iff', forall_or_left] using h
+  eq_zero_or_eq_zero_of_smul_eq_zero h := by simpa [Ne, ext_iff', forall_or_left] using h
 
 instance instMulAction [Monoid R] [MulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     [MeasurableSpace α] : MulAction R (Measure α) :=
@@ -936,7 +936,7 @@ theorem measure_eq_left_of_subset_of_measure_add_eq {s t : Set α} (h : (μ + ν
       μ t + ν t = μ s + ν s := h''.symm
       _ ≤ μ s + ν t := add_le_add le_rfl (measure_mono h')
   apply ENNReal.le_of_add_le_add_right _ this
-  simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne.def, coe_add] at h
+  simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne, coe_add] at h
   exact h.2
 #align measure_theory.measure.measure_eq_left_of_subset_of_measure_add_eq MeasureTheory.Measure.measure_eq_left_of_subset_of_measure_add_eq
 
@@ -953,7 +953,7 @@ theorem measure_toMeasurable_add_inter_left {s t : Set α} (hs : MeasurableSet s
       measure_eq_left_of_subset_of_measure_add_eq _ (subset_toMeasurable _ _)
         (measure_toMeasurable t).symm
     rwa [measure_toMeasurable t]
-  · simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne.def, coe_add] at ht
+  · simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne, coe_add] at ht
     exact ht.1
 #align measure_theory.measure.measure_to_measurable_add_inter_left MeasureTheory.Measure.measure_toMeasurable_add_inter_left
 
@@ -1866,7 +1866,7 @@ theorem pairwise_aedisjoint_of_aedisjoint_forall_ne_one {G α : Type*} [Group G]
   intro g₁ g₂ hg
   let g := g₂⁻¹ * g₁
   replace hg : g ≠ 1 := by
-    rw [Ne.def, inv_mul_eq_one]
+    rw [Ne, inv_mul_eq_one]
     exact hg.symm
   have : (g₂⁻¹ • ·) ⁻¹' (g • s ∩ s) = g₁ • s ∩ g₂ • s := by
     rw [preimage_eq_iff_eq_image (MulAction.bijective g₂⁻¹), image_smul, smul_set_inter, smul_smul,
