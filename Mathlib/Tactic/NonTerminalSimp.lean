@@ -361,8 +361,8 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
   -- `stains` records pairs `(location, mvar)`, where
   -- * `location` is either a hypothesis or the main goal modified by a flexible tactic and
   -- * `mvar` is the metavariable containing the modified location
-  let mut stains : HashMap (FVarId × MVarId) (stained × SyntaxNodeKind) := .empty
-  let mut msgs : Array (Syntax × SyntaxNodeKind × stained) := #[]
+  let mut stains : Array ((FVarId × MVarId) × (stained × Syntax)) := .empty
+  let mut msgs : Array (Syntax × Syntax × stained) := #[]
   for d in x do for (s, ctx0, ctx1, mvs0, mvs1) in d do
 --    if ! ignored.contains s.getKind then
 --      logInfoAt s[0] m!"{mvs0.map (·.name)} ⊆ -- '{s}'\n{mvs1.map (·.name)}"
@@ -435,7 +435,7 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 --            logInfoAt s --trace[flexible]
 --              m!"{s} is staining {(((lctx1.fvarIdToDecl.find? l).getD default).userName, l.name)}\
 --                ({l == default}, {currMVar1.name})"
-            stains := stains.insert l (d, skind)
+            stains := stains.push (l, (d, s))
             --nowlogInfoAt s m!"inserting {((l.1.name, l.2.name), d, skind)}"
 
       else
@@ -454,8 +454,8 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
             --let locsBefore := (d.toFMVarId currMVar0 lctx0 ++ foundFvs).sortAndDeduplicate
             let locsBefore := foundFvs ++ (d.toFMVarId currMVar0 lctx0).filter (!foundFvs.contains ·)
             for l in locsBefore do
-              if let some (stdLoc, kind) := stains.find? l then
-                msgs := msgs.push (s, kind, stdLoc)
+              if let some (_stdLoc, (st, kind)) := stains.find? (Prod.fst · == l) then
+                msgs := msgs.push (s, kind, st)
 --                Linter.logLint linter.nonTerminalSimp s m!"{kind} stained '{d}' at '{s}'"
 
         -- tactics often change the name of the current `MVarId`, so we migrate the `FvarId`s
@@ -465,18 +465,19 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
       --now  (fv.name, mv.name)} {persisted.map fun (fv, mv) => (fv.name, mv.name)}"
 
 
-      let mut new : HashMap (FVarId × MVarId) (stained × SyntaxNodeKind) := .empty
-      for (fv, (stLoc, kd)) in stains.toArray do
+      let mut new : Array ((FVarId × MVarId) × (stained × Syntax)) := .empty
+      for (fv, (stLoc, kd)) in stains do
         let psisted := reallyPersist #[fv] mvs0 mvs1 ctx0 ctx1
         if psisted == #[] && mvs1 != [] then
-          new := new.insert fv (stLoc, kd)
+          new := new.push (fv, (stLoc, kd))
           dbg_trace "lost {((fv.1.name, fv.2.name), stLoc, kd)}"
-        for p in psisted do new := new.insert p (stLoc, kd)
+        for p in psisted do new := new.push (p, (stLoc, kd))
       stains := new
 
     --nowlogInfoAt s m!"stains after:\n* {stains.toArray.map fun (a, b, c) => ((a.1.name, a.2.name), b, c)}"
-  for (s, kind, d) in msgs do
-    Linter.logLint linter.nonTerminalSimp s m!"{kind} stained '{d}' at '{s}'"
+  for (s, stainStx, d) in msgs do
+    Linter.logLint linter.nonTerminalSimp stainStx m!"'{stainStx}' stains '{d}'..."
+    logInfoAt s m!"... and '{s}' uses '{d}'!"
 
 
 
