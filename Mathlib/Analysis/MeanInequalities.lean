@@ -122,7 +122,7 @@ theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0
       exact zero_rpow hwi
   -- If all numbers `z i` with non-zero weight are positive, then we apply Jensen's inequality
   -- for `exp` and numbers `log (z i)` with weights `w i`.
-  · simp only [not_exists, not_and, Ne.def, Classical.not_not] at A
+  · simp only [not_exists, not_and, Ne, Classical.not_not] at A
     have := convexOn_exp.map_sum_le hw hw' fun i _ => Set.mem_univ <| log (z i)
     simp only [exp_sum, (· ∘ ·), smul_eq_mul, mul_comm (w _) (log _)] at this
     convert this using 1 <;> [apply prod_congr rfl;apply sum_congr rfl] <;> intro i hi
@@ -338,15 +338,15 @@ private theorem inner_le_Lp_mul_Lp_of_norm_le_one (f g : ι → ℝ≥0) {p q : 
       rw [sum_add_distrib, sum_div, sum_div]
     _ ≤ 1 / Real.toNNReal p + 1 / Real.toNNReal q := by
       refine' add_le_add _ _
-      · rwa [div_le_iff hp_ne_zero, div_mul_cancel _ hp_ne_zero]
-      · rwa [div_le_iff hq_ne_zero, div_mul_cancel _ hq_ne_zero]
+      · rwa [div_le_iff hp_ne_zero, div_mul_cancel₀ _ hp_ne_zero]
+      · rwa [div_le_iff hq_ne_zero, div_mul_cancel₀ _ hq_ne_zero]
     _ = 1 := by simp_rw [one_div, hpq.toNNReal.inv_add_inv_conj]
 
 private theorem inner_le_Lp_mul_Lp_of_norm_eq_zero (f g : ι → ℝ≥0) {p q : ℝ}
     (hpq : p.IsConjExponent q) (hf : ∑ i in s, f i ^ p = 0) :
     ∑ i in s, f i * g i ≤ (∑ i in s, f i ^ p) ^ (1 / p) * (∑ i in s, g i ^ q) ^ (1 / q) := by
   simp only [hf, hpq.ne_zero, one_div, sum_eq_zero_iff, zero_rpow, zero_mul,
-    inv_eq_zero, Ne.def, not_false_iff, le_zero_iff, mul_eq_zero]
+    inv_eq_zero, Ne, not_false_iff, le_zero_iff, mul_eq_zero]
   intro i his
   left
   rw [sum_eq_zero_iff] at hf
@@ -373,9 +373,9 @@ theorem inner_le_Lp_mul_Lq (f g : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjExp
     simp_rw [f', g', div_mul_div_comm, ← sum_div] at this
     rwa [div_le_iff, one_mul] at this
     refine' mul_ne_zero _ _
-    · rw [Ne.def, rpow_eq_zero_iff, not_and_or]
+    · rw [Ne, rpow_eq_zero_iff, not_and_or]
       exact Or.inl hF_zero
-    · rw [Ne.def, rpow_eq_zero_iff, not_and_or]
+    · rw [Ne, rpow_eq_zero_iff, not_and_or]
       exact Or.inl hG_zero
   refine' inner_le_Lp_mul_Lp_of_norm_le_one s f' g' hpq (le_of_eq _) (le_of_eq _)
   · simp_rw [f', div_rpow, ← sum_div, ← rpow_mul, one_div, inv_mul_cancel hpq.ne_zero, rpow_one,
@@ -486,8 +486,8 @@ theorem isGreatest_Lp (f : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjExponent q
         refine' fun y => mul_div_cancel_left_of_imp fun h => _
         simp [h, hpq.ne_zero]
       simp only [Set.mem_setOf_eq, div_rpow, ← sum_div, ← rpow_mul,
-        div_mul_cancel _ hpq.symm.ne_zero, rpow_one, div_le_iff hf, one_mul, hpq.mul_eq_add, ←
-        rpow_sub' _ A, _root_.add_sub_cancel, le_refl, true_and_iff, ← mul_div_assoc, B]
+        div_mul_cancel₀ _ hpq.symm.ne_zero, rpow_one, div_le_iff hf, one_mul, hpq.mul_eq_add, ←
+        rpow_sub' _ A, add_sub_cancel_right, le_refl, true_and_iff, ← mul_div_assoc, B]
       rw [div_eq_iff, ← rpow_add hf, one_div, one_div, hpq.inv_add_inv_conj, rpow_one]
       simpa [hpq.symm.ne_zero] using hf
   · rintro _ ⟨g, hg, rfl⟩

@@ -137,7 +137,7 @@ theorem vars_pow (φ : MvPolynomial σ R) (n : ℕ) : (φ ^ n).vars ⊆ φ.vars 
   classical
   induction' n with n ih
   · simp
-  · rw [pow_succ]
+  · rw [pow_succ']
     apply Finset.Subset.trans (vars_mul _ _)
     exact Finset.union_subset (Finset.Subset.refl _) ih
 #align mv_polynomial.vars_pow MvPolynomial.vars_pow
@@ -214,7 +214,6 @@ end Sum
 section Map
 
 variable [CommSemiring S] (f : R →+* S)
-
 variable (p)
 
 theorem vars_map : (map f p).vars ⊆ p.vars := by classical simp [vars_def, degrees_map]
@@ -268,7 +267,7 @@ theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : 
   repeat'
     obtain ⟨i, hi⟩ : Finset.Nonempty (Finsupp.support d) := by
       rw [constantCoeff_eq, coeff, ← Finsupp.not_mem_support_iff] at h0
-      rw [Finset.nonempty_iff_ne_empty, Ne.def, Finsupp.support_eq_empty]
+      rw [Finset.nonempty_iff_ne_empty, Ne, Finsupp.support_eq_empty]
       rintro rfl
       contradiction
     rw [Finsupp.prod, Finset.prod_eq_zero hi, mul_zero]

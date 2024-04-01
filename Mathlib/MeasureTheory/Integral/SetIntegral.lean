@@ -54,7 +54,7 @@ assert_not_exists InnerProductSpace
 
 noncomputable section
 
-open Set Filter TopologicalSpace MeasureTheory Function
+open Set Filter TopologicalSpace MeasureTheory Function RCLike
 
 open scoped Classical Topology BigOperators ENNReal NNReal
 
@@ -1058,7 +1058,7 @@ as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 
 open scoped ComplexConjugate
 
-variable {μ : Measure X} {𝕜 : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {μ : Measure X} {𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {p : ENNReal}
 
 namespace ContinuousLinearMap
@@ -1153,41 +1153,41 @@ end ContinuousLinearEquiv
 
 @[norm_cast]
 theorem integral_ofReal {f : X → ℝ} : ∫ x, (f x : 𝕜) ∂μ = ↑(∫ x, f x ∂μ) :=
-  (@IsROrC.ofRealLI 𝕜 _).integral_comp_comm f
+  (@RCLike.ofRealLI 𝕜 _).integral_comp_comm f
 #align integral_of_real integral_ofReal
 
 theorem integral_re {f : X → 𝕜} (hf : Integrable f μ) :
-    ∫ x, IsROrC.re (f x) ∂μ = IsROrC.re (∫ x, f x ∂μ) :=
-  (@IsROrC.reCLM 𝕜 _).integral_comp_comm hf
+    ∫ x, RCLike.re (f x) ∂μ = RCLike.re (∫ x, f x ∂μ) :=
+  (@RCLike.reCLM 𝕜 _).integral_comp_comm hf
 #align integral_re integral_re
 
 theorem integral_im {f : X → 𝕜} (hf : Integrable f μ) :
-    ∫ x, IsROrC.im (f x) ∂μ = IsROrC.im (∫ x, f x ∂μ) :=
-  (@IsROrC.imCLM 𝕜 _).integral_comp_comm hf
+    ∫ x, RCLike.im (f x) ∂μ = RCLike.im (∫ x, f x ∂μ) :=
+  (@RCLike.imCLM 𝕜 _).integral_comp_comm hf
 #align integral_im integral_im
 
 theorem integral_conj {f : X → 𝕜} : ∫ x, conj (f x) ∂μ = conj (∫ x, f x ∂μ) :=
-  (@IsROrC.conjLIE 𝕜 _).toLinearIsometry.integral_comp_comm f
+  (@RCLike.conjLIE 𝕜 _).toLinearIsometry.integral_comp_comm f
 #align integral_conj integral_conj
 
 theorem integral_coe_re_add_coe_im {f : X → 𝕜} (hf : Integrable f μ) :
-    ∫ x, (IsROrC.re (f x) : 𝕜) ∂μ + (∫ x, (IsROrC.im (f x) : 𝕜) ∂μ) * IsROrC.I = ∫ x, f x ∂μ := by
+    ∫ x, (re (f x) : 𝕜) ∂μ + (∫ x, (im (f x) : 𝕜) ∂μ) * RCLike.I = ∫ x, f x ∂μ := by
   rw [mul_comm, ← smul_eq_mul, ← integral_smul, ← integral_add]
   · congr
     ext1 x
-    rw [smul_eq_mul, mul_comm, IsROrC.re_add_im]
+    rw [smul_eq_mul, mul_comm, RCLike.re_add_im]
   · exact hf.re.ofReal
-  · exact hf.im.ofReal.smul (𝕜 := 𝕜) (β := 𝕜) IsROrC.I
+  · exact hf.im.ofReal.smul (𝕜 := 𝕜) (β := 𝕜) RCLike.I
 #align integral_coe_re_add_coe_im integral_coe_re_add_coe_im
 
 theorem integral_re_add_im {f : X → 𝕜} (hf : Integrable f μ) :
-    ((∫ x, IsROrC.re (f x) ∂μ : ℝ) : 𝕜) + (∫ x, IsROrC.im (f x) ∂μ : ℝ) * IsROrC.I =
+    ((∫ x, RCLike.re (f x) ∂μ : ℝ) : 𝕜) + (∫ x, RCLike.im (f x) ∂μ : ℝ) * RCLike.I =
       ∫ x, f x ∂μ := by
   rw [← integral_ofReal, ← integral_ofReal, integral_coe_re_add_coe_im hf]
 #align integral_re_add_im integral_re_add_im
 
 theorem set_integral_re_add_im {f : X → 𝕜} {i : Set X} (hf : IntegrableOn f i μ) :
-    ((∫ x in i, IsROrC.re (f x) ∂μ : ℝ) : 𝕜) + (∫ x in i, IsROrC.im (f x) ∂μ : ℝ) * IsROrC.I =
+    ((∫ x in i, RCLike.re (f x) ∂μ : ℝ) : 𝕜) + (∫ x in i, RCLike.im (f x) ∂μ : ℝ) * RCLike.I =
       ∫ x in i, f x ∂μ :=
   integral_re_add_im hf
 #align set_integral_re_add_im set_integral_re_add_im
@@ -1218,7 +1218,7 @@ theorem integral_pair [CompleteSpace E] [CompleteSpace F] {f : X → E} {g : X �
   Prod.ext (fst_integral this) (snd_integral this)
 #align integral_pair integral_pair
 
-theorem integral_smul_const {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [CompleteSpace E]
+theorem integral_smul_const {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [CompleteSpace E]
     (f : X → 𝕜) (c : E) :
     ∫ x, f x • c ∂μ = (∫ x, f x ∂μ) • c := by
   by_cases hf : Integrable f μ
@@ -1455,7 +1455,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
   _ ≤ ∫ x in k, ‖L‖ * ‖g x‖ * δ ∂μ := by
       apply integral_mono_of_nonneg (eventually_of_forall (fun y ↦ by positivity))
       · exact (hg.norm.const_mul _).mul_const _
-      · apply eventually_of_forall (fun y ↦ ?_)
+      · filter_upwards with y
         by_cases hy : y ∈ k
         · dsimp only
           specialize hv p hp y hy

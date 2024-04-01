@@ -259,18 +259,18 @@ section Monoid
 variable {M : Type*} [Monoid M] {n : ℕ}
 
 @[to_additive succ_nsmul']
-lemma pow_succ' (a : M) (n : ℕ) : a ^ (n + 1) = a ^ n * a :=
-  (pow_succ a n).trans (Commute.self_pow _ _)
-#align pow_succ' pow_succ'
-#align succ_nsmul' succ_nsmul'
+lemma pow_succ' (a : M) (n : ℕ) : a ^ (n + 1) = a * a ^ n :=
+  (pow_succ a n).trans (Commute.self_pow _ _).symm
+#align pow_succ pow_succ'
+#align succ_nsmul succ_nsmul'
 
 @[to_additive]
 lemma mul_pow_sub_one (hn : n ≠ 0) (a : M) : a * a ^ (n - 1) = a ^ n := by
-  rw [← pow_succ, Nat.sub_add_cancel $ Nat.one_le_iff_ne_zero.2 hn]
+  rw [← pow_succ', Nat.sub_add_cancel $ Nat.one_le_iff_ne_zero.2 hn]
 
 @[to_additive]
 lemma pow_sub_one_mul (hn : n ≠ 0) (a : M) : a ^ (n - 1) * a = a ^ n := by
-  rw [← pow_succ', Nat.sub_add_cancel $ Nat.one_le_iff_ne_zero.2 hn]
+  rw [← pow_succ, Nat.sub_add_cancel $ Nat.one_le_iff_ne_zero.2 hn]
 
 end Monoid
 

@@ -118,7 +118,6 @@ theorem borel_eq_generateFrom_isClosed [TopologicalSpace α] :
 section OrderTopology
 
 variable (α)
-
 variable [TopologicalSpace α] [SecondCountableTopology α] [LinearOrder α] [OrderTopology α]
 
 theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
@@ -1146,7 +1145,7 @@ lemma MeasurableEmbedding.borelSpace {α β : Type*} [MeasurableSpace α] [Topol
   have : MeasurableSpace.comap e (borel β) = ‹_› := by simpa [hβ.measurable_eq] using h'e.comap_eq
   rw [← this, ← borel_comap, h''e.induced]
 
-instance _root_.ULift.instBorelSpace [BorelSpace α] : BorelSpace (ULift α) :=
+instance _root_.ULift.instBorelSpace : BorelSpace (ULift α) :=
   MeasurableEquiv.ulift.measurableEmbedding.borelSpace Homeomorph.ulift.inducing
 
 instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
@@ -1162,12 +1161,12 @@ protected theorem Embedding.measurableEmbedding {f : α → β} (h₁ : Embeddin
 
 protected theorem ClosedEmbedding.measurableEmbedding {f : α → β} (h : ClosedEmbedding f) :
     MeasurableEmbedding f :=
-  h.toEmbedding.measurableEmbedding h.closed_range.measurableSet
+  h.toEmbedding.measurableEmbedding h.isClosed_range.measurableSet
 #align closed_embedding.measurable_embedding ClosedEmbedding.measurableEmbedding
 
 protected theorem OpenEmbedding.measurableEmbedding {f : α → β} (h : OpenEmbedding f) :
     MeasurableEmbedding f :=
-  h.toEmbedding.measurableEmbedding h.open_range.measurableSet
+  h.toEmbedding.measurableEmbedding h.isOpen_range.measurableSet
 #align open_embedding.measurable_embedding OpenEmbedding.measurableEmbedding
 
 section LinearOrder
@@ -1637,7 +1636,7 @@ instance Rat.borelSpace : BorelSpace ℚ :=
   ⟨borel_eq_top_of_countable.symm⟩
 #align rat.borel_space Rat.borelSpace
 
-/- Instances on `Real` and `Complex` are special cases of `IsROrC` but without these instances,
+/- Instances on `Real` and `Complex` are special cases of `RCLike` but without these instances,
 Lean fails to prove `BorelSpace (ι → ℝ)`, so we leave them here. -/
 instance Real.measurableSpace : MeasurableSpace ℝ :=
   borel ℝ
@@ -1681,8 +1680,8 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow [MeasurableSpace �
       ∑' n : ℤ, μ (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) := by
   have A : μ s = μ (s ∩ f ⁻¹' {0}) + μ (s ∩ f ⁻¹' Ioi 0) := by
     rw [← measure_union]
-    · rw [← inter_distrib_left, ← preimage_union, singleton_union, Ioi_insert, ← _root_.bot_eq_zero,
-        Ici_bot, preimage_univ, inter_univ]
+    · rw [← inter_union_distrib_left, ← preimage_union, singleton_union, Ioi_insert,
+        ← _root_.bot_eq_zero, Ici_bot, preimage_univ, inter_univ]
     · exact disjoint_singleton_left.mpr not_mem_Ioi_self
         |>.preimage f |>.inter_right' s |>.inter_left' s
     · exact hs.inter (hf measurableSet_Ioi)
@@ -1704,9 +1703,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow [MeasurableSpace �
     rw [← measure_iUnion,
       ENNReal.Ioo_zero_top_eq_iUnion_Ico_zpow (ENNReal.one_lt_coe_iff.2 ht) ENNReal.coe_ne_top,
       preimage_iUnion, inter_iUnion]
-    · intro i j
-      simp only [Function.onFun]
-      intro hij
+    · intro i j hij
       wlog h : i < j generalizing i j
       · exact (this hij.symm (hij.lt_or_lt.resolve_left h)).symm
       refine disjoint_left.2 fun x hx h'x => lt_irrefl (f x) ?_
@@ -1722,7 +1719,6 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow [MeasurableSpace �
 section PseudoMetricSpace
 
 variable [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
-
 variable [MeasurableSpace β] {x : α} {ε : ℝ}
 
 open Metric
@@ -1792,7 +1788,6 @@ end PseudoMetricSpace
 section PseudoEMetricSpace
 
 variable [PseudoEMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
-
 variable [MeasurableSpace β] {x : α} {ε : ℝ≥0∞}
 
 open EMetric
@@ -2079,6 +2074,9 @@ theorem aemeasurable_coe_nnreal_real_iff {f : α → ℝ≥0} {μ : Measure α} 
     AEMeasurable (fun x => f x : α → ℝ) μ ↔ AEMeasurable f μ :=
   ⟨fun h => by simpa only [Real.toNNReal_coe] using h.real_toNNReal, AEMeasurable.coe_nnreal_real⟩
 #align ae_measurable_coe_nnreal_real_iff aemeasurable_coe_nnreal_real_iff
+
+@[deprecated] -- 2024-03-02
+alias aEMeasurable_coe_nnreal_real_iff := aemeasurable_coe_nnreal_real_iff
 
 /-- The set of finite `ℝ≥0∞` numbers is `MeasurableEquiv` to `ℝ≥0`. -/
 def MeasurableEquiv.ennrealEquivNNReal : { r : ℝ≥0∞ | r ≠ ∞ } ≃ᵐ ℝ≥0 :=

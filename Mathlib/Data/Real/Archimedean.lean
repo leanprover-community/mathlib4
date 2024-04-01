@@ -3,10 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Set.Image
-import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Bounds
+import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Data.Real.Basic
+import Mathlib.Data.Set.Intervals.Disjoint
 
 #align_import data.real.basic from "leanprover-community/mathlib"@"cb42593171ba005beaaf4549fcfe0dece9ada4c9"
 
@@ -73,7 +73,7 @@ theorem exists_isLUB (S : Set ℝ) (hne : S.Nonempty) (hbdd : BddAbove S) : ∃ 
   have hf₂ : ∀ n > 0, ∀ y ∈ S, (y - ((n : ℕ) : ℝ)⁻¹) < (f n / n : ℚ) := by
     intro n n0 y yS
     have := (Int.sub_one_lt_floor _).trans_le (Int.cast_le.2 <| (hf n).2 _ ⟨y, yS, Int.floor_le _⟩)
-    simp only [Rat.cast_div, Rat.cast_coe_int, Rat.cast_coe_nat, gt_iff_lt]
+    simp only [Rat.cast_div, Rat.cast_intCast, Rat.cast_natCast, gt_iff_lt]
     rwa [lt_div_iff (Nat.cast_pos.2 n0 : (_ : ℝ) < _), sub_mul, _root_.inv_mul_cancel]
     exact ne_of_gt (Nat.cast_pos.2 n0)
   have hg : IsCauSeq abs (fun n => f n / n : ℕ → ℚ) := by
@@ -345,5 +345,25 @@ theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f ''
     · refine' hf_mono (le_trans _ hyq.le)
       norm_cast
 #align infi_Ioi_eq_infi_rat_gt Real.iInf_Ioi_eq_iInf_rat_gt
+
+theorem not_bddAbove_coe : ¬ (BddAbove <| range (fun (x : ℚ) ↦ (x : ℝ))) := by
+  dsimp only [BddAbove, upperBounds]
+  rw [Set.not_nonempty_iff_eq_empty]
+  ext
+  simpa using exists_rat_gt _
+
+theorem not_bddBelow_coe : ¬ (BddBelow <| range (fun (x : ℚ) ↦ (x : ℝ))) := by
+  dsimp only [BddBelow, lowerBounds]
+  rw [Set.not_nonempty_iff_eq_empty]
+  ext
+  simpa using exists_rat_lt _
+
+theorem iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
+  exact iUnion_Iic_of_not_bddAbove_range not_bddAbove_coe
+#align real.Union_Iic_rat Real.iUnion_Iic_rat
+
+theorem iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
+  exact iInter_Iic_eq_empty_iff.mpr not_bddBelow_coe
+#align real.Inter_Iic_rat Real.iInter_Iic_rat
 
 end Real

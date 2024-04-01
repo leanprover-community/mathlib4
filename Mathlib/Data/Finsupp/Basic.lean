@@ -566,12 +566,12 @@ theorem mapDomain_support_of_injOn [DecidableEq β] {f : α → β} (s : α →�
     (hf : Set.InjOn f s.support) : (mapDomain f s).support = Finset.image f s.support :=
   Finset.Subset.antisymm mapDomain_support <| by
     intro x hx
-    simp only [mem_image, exists_prop, mem_support_iff, Ne.def] at hx
+    simp only [mem_image, exists_prop, mem_support_iff, Ne] at hx
     rcases hx with ⟨hx_w, hx_h_left, rfl⟩
-    simp only [mem_support_iff, Ne.def]
+    simp only [mem_support_iff, Ne]
     rw [mapDomain_apply' (↑s.support : Set _) _ _ hf]
     · exact hx_h_left
-    · simp only [mem_coe, mem_support_iff, Ne.def]
+    · simp only [mem_coe, mem_support_iff, Ne]
       exact hx_h_left
     · exact Subset.refl _
 #align finsupp.map_domain_support_of_inj_on Finsupp.mapDomain_support_of_injOn
@@ -1553,7 +1553,7 @@ variable {α M}
 
 theorem support_smul [AddMonoid M] [SMulZeroClass R M] {b : R} {g : α →₀ M} :
     (b • g).support ⊆ g.support := fun a => by
-  simp only [smul_apply, mem_support_iff, Ne.def]
+  simp only [smul_apply, mem_support_iff, Ne]
   exact mt fun h => h.symm ▸ smul_zero _
 #align finsupp.support_smul Finsupp.support_smul
 
@@ -1652,7 +1652,6 @@ instance noZeroSMulDivisors [Semiring R] [AddCommMonoid M] [Module R M] {ι : Ty
 section DistribMulActionHom
 
 variable [Semiring R]
-
 variable [AddCommMonoid M] [AddCommMonoid N] [DistribMulAction R M] [DistribMulAction R N]
 
 /-- `Finsupp.single` as a `DistribMulActionHom`.

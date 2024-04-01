@@ -23,7 +23,6 @@ open scoped Manifold Topology
 
 
 variable {𝕜 B F : Type*} [TopologicalSpace B]
-
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 namespace FiberwiseLinear

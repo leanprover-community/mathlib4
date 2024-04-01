@@ -38,7 +38,6 @@ open scoped MeasureTheory ENNReal NNReal BigOperators
 namespace ProbabilityTheory.kernel
 
 variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
-
 variable {κ : kernel α β} {f : α → β → ℝ≥0∞}
 
 /-- Kernel with image `(κ a).withDensity (f a)` if `Function.uncurry f` is measurable, and

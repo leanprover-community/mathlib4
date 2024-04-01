@@ -165,7 +165,7 @@ theorem sublists_append (l₁ l₂ : List α) :
     simp [List.bind, join_join, Function.comp]
 #align list.sublists_append List.sublists_append
 
--- Porting note: New theorem
+-- Porting note (#10756): new theorem
 theorem sublists_cons (a : α) (l : List α) :
     sublists (a :: l) = sublists l >>= (fun x => [x, a :: x]) :=
   show sublists ([a] ++ l) = _ by
@@ -210,17 +210,20 @@ theorem length_sublists (l : List α) : length (sublists l) = 2 ^ length l := by
   simp only [sublists_eq_sublists', length_map, length_sublists', length_reverse]
 #align list.length_sublists List.length_sublists
 
-theorem map_ret_sublist_sublists (l : List α) : map List.ret l <+ sublists l := by
-  induction' l using reverseRecOn with l a ih <;>
-  simp only [map, map_append, sublists_concat]
+theorem map_pure_sublist_sublists (l : List α) : map pure l <+ sublists l := by
+  induction' l using reverseRecOn with l a ih <;> simp only [map, map_append, sublists_concat]
   · simp only [sublists_nil, sublist_cons]
   exact ((append_sublist_append_left _).2 <|
               singleton_sublist.2 <| mem_map.2 ⟨[], mem_sublists.2 (nil_sublist _), by rfl⟩).trans
           ((append_sublist_append_right _).2 ih)
-#align list.map_ret_sublist_sublists List.map_ret_sublist_sublists
+#align list.map_ret_sublist_sublists List.map_pure_sublist_sublists
+
+set_option linter.deprecated false in
+@[deprecated map_pure_sublist_sublists] -- 2024-03-24
+theorem map_ret_sublist_sublists (l : List α) : map List.ret l <+ sublists l :=
+  map_pure_sublist_sublists l
 
 /-! ### sublistsLen -/
-
 
 /-- Auxiliary function to construct the list of all sublists of a given length. Given an
 integer `n`, a list `l`, a function `f` and an auxiliary list `L`, it returns the list made of
@@ -373,7 +376,7 @@ theorem pairwise_sublists {R} {l : List α} (H : Pairwise R l) :
 
 @[simp]
 theorem nodup_sublists {l : List α} : Nodup (sublists l) ↔ Nodup l :=
-  ⟨fun h => (h.sublist (map_ret_sublist_sublists _)).of_map _, fun h =>
+  ⟨fun h => (h.sublist (map_pure_sublist_sublists _)).of_map _, fun h =>
     (pairwise_sublists h).imp @fun l₁ l₂ h => by simpa using h.to_ne⟩
 #align list.nodup_sublists List.nodup_sublists
 
@@ -399,7 +402,7 @@ theorem nodup_sublistsLen (n : ℕ) {l : List α} (h : Nodup l) : (sublistsLen n
   exact this.sublist (sublistsLen_sublist_sublists' _ _)
 #align list.nodup_sublists_len List.nodup_sublistsLen
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem sublists_map (f : α → β) : ∀ (l : List α),
     sublists (map f l) = map (map f) (sublists l)
   | [] => by simp
@@ -408,7 +411,7 @@ theorem sublists_map (f : α → β) : ∀ (l : List α),
       bind_eq_bind, map_eq_bind, map_eq_bind]
     induction sublists l <;> simp [*]
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem sublists'_map (f : α → β) : ∀ (l : List α),
     sublists' (map f l) = map (map f) (sublists' l)
   | [] => by simp
