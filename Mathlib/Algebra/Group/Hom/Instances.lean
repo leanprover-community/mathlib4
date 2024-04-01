@@ -70,10 +70,9 @@ instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M 
       ext x
       -- Adaptation note: nightly-2024-03-13
       -- https://github.com/leanprover-community/mathlib4/issues/11357
-      -- If we combine these two `simp`s we reveal a bug: "unexpected bound variable #0"
+      -- If add `mul_comm` to the simp call we reveal a bug: "unexpected bound variable #0"
       -- Hopefully we can minimize this.
-      simp [zpow_add_one]
-      simp [mul_comm],
+      simp [zpow_add_one],
     zpow_neg' := fun n f => by
       ext x
       simp [Nat.succ_eq_add_one, zpow_natCast, -Int.natCast_add] }

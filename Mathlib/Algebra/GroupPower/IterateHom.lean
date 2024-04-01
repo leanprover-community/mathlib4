@@ -118,7 +118,7 @@ variable [Monoid G] (a : G) (n : ℕ)
 theorem smul_iterate [MulAction G H] : (a • · : H → H)^[n] = (a ^ n • ·) :=
   funext fun b =>
     Nat.recOn n (by rw [iterate_zero, id, pow_zero, one_smul])
-    fun n ih => by rw [iterate_succ', comp_apply, ih, pow_succ, mul_smul]
+    fun n ih => by rw [iterate_succ', comp_apply, ih, pow_succ', mul_smul]
 #align smul_iterate smul_iterate
 #align vadd_iterate vadd_iterate
 
