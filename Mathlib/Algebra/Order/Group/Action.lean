@@ -21,7 +21,7 @@ theorem smul_mono_right [SMul M α] [Preorder α] [CovariantClass M α HSMul.hSM
 
 theorem smul_inf_le [SMul M α] [SemilatticeInf α] [CovariantClass M α HSMul.hSMul LE.le]
     (m : M) (a₁ a₂ : α) : m • (a₁ ⊓ a₂) ≤ m • a₁ ⊓ m • a₂ :=
-  le_inf (smul_mono_right _ inf_le_left) (smul_mono_right _ inf_le_right)
+  (smul_mono_right _).map_inf_le _ _
 
 theorem smul_iInf_le [SMul M α] [CompleteLattice α] [CovariantClass M α HSMul.hSMul LE.le]
     {m : M} {t : ι → α} :
