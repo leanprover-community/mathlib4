@@ -94,7 +94,7 @@ lemma negOnePow_eq_iff (n₁ n₂ : ℤ) :
 lemma negOnePow_mul_self (n : ℤ) : (n * n).negOnePow = n.negOnePow := by
   simpa [mul_sub, negOnePow_eq_iff] using n.even_mul_pred_self
 
-lemma coe_negOnePow (n : ℤ) (K : Type*) [Field K]: n.negOnePow = (-1 : K) ^ n := by
+lemma coe_negOnePow (K : Type*) (n : ℤ) [Field K] : n.negOnePow = (-1 : K) ^ n := by
   rcases even_or_odd' n with ⟨k, rfl | rfl⟩
   · rw [zpow_mul, zpow_ofNat]
     simp
