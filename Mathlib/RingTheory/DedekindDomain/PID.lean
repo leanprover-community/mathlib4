@@ -238,7 +238,7 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
     exact mt (Ideal.eq_bot_of_comap_eq_bot (isIntegral_localization hRS)) hP0
   · exact Ideal.comap_isPrime (algebraMap (Localization.AtPrime p) Sₚ) P
   · exact (LocalRing.maximalIdeal.isMaximal _).isPrime
-  · rw [Ne.def, zero_eq_bot, Ideal.map_eq_bot_iff_of_injective]
+  · rw [Ne, zero_eq_bot, Ideal.map_eq_bot_iff_of_injective]
     · assumption
     rw [IsScalarTower.algebraMap_eq R S Sₚ]
     exact

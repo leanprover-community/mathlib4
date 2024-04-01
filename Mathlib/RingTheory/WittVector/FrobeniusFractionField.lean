@@ -259,7 +259,7 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
     refine' (Eq.trans _ H).trans _ <;> ring
   have hq'' : algebraMap (𝕎 k) (FractionRing (𝕎 k)) q' ≠ 0 := by
     have hq''' : q' ≠ 0 := fun h => hq' (by simp [h])
-    simpa only [Ne.def, map_zero] using
+    simpa only [Ne, map_zero] using
       (IsFractionRing.injective (𝕎 k) (FractionRing (𝕎 k))).ne hq'''
   rw [zpow_sub₀ (FractionRing.p_nonzero p k)]
   field_simp [FractionRing.p_nonzero p k]

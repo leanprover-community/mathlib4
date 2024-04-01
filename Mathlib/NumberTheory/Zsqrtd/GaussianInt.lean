@@ -167,7 +167,7 @@ theorem norm_eq_zero {x : ℤ[i]} : norm x = 0 ↔ x = 0 := by rw [← @Int.cast
 #align gaussian_int.norm_eq_zero GaussianInt.norm_eq_zero
 
 theorem norm_pos {x : ℤ[i]} : 0 < norm x ↔ x ≠ 0 := by
-  rw [lt_iff_le_and_ne, Ne.def, eq_comm, norm_eq_zero]; simp [norm_nonneg]
+  rw [lt_iff_le_and_ne, Ne, eq_comm, norm_eq_zero]; simp [norm_nonneg]
 #align gaussian_int.norm_pos GaussianInt.norm_pos
 
 theorem abs_coe_nat_norm (x : ℤ[i]) : (x.norm.natAbs : ℤ) = x.norm :=
@@ -238,7 +238,7 @@ theorem mod_def (x y : ℤ[i]) : x % y = x - y * (x / y) :=
 #align gaussian_int.mod_def GaussianInt.mod_def
 
 theorem norm_mod_lt (x : ℤ[i]) {y : ℤ[i]} (hy : y ≠ 0) : (x % y).norm < y.norm :=
-  have : (y : ℂ) ≠ 0 := by rwa [Ne.def, ← toComplex_zero, toComplex_inj]
+  have : (y : ℂ) ≠ 0 := by rwa [Ne, ← toComplex_zero, toComplex_inj]
   (@Int.cast_lt ℝ _ _ _ _).1 <|
     calc
       ↑(Zsqrtd.norm (x % y)) = Complex.normSq (x - y * (x / y : ℤ[i]) : ℂ) := by simp [mod_def]
