@@ -383,7 +383,7 @@ instance : CovariantClass (Set S) (Submodule R M) HSMul.hSMul LE.le :=
     (mem2 := le hm)⟩
 
 -- 2024-03-31
-@[deprecated smul_mono_right] abbrev set_smul_mono_right {p q : Submodule R M} (le : p ≤ q) :
+@[deprecated smul_mono_right] theorem set_smul_mono_right {p q : Submodule R M} (le : p ≤ q) :
     s • p ≤ s • q :=
   smul_mono_right s le
 
