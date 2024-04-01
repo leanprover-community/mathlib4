@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Loeffler
+Authors: David Loeffler, Yaël Dillies
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
 
@@ -30,17 +30,13 @@ Here we prove the following:
 sin, cos, tan, angle
 -/
 
-
-noncomputable section
-
 open Set
 
 namespace Real
-
-open scoped Real
+variable {x : ℝ}
 
 /-- For 0 < x, we have sin x < x. -/
-theorem sin_lt {x : ℝ} (h : 0 < x) : sin x < x := by
+theorem sin_lt (h : 0 < x) : sin x < x := by
   cases' lt_or_le 1 x with h' h'
   · exact (sin_le_one x).trans_lt h'
   have hx : |x| = x := abs_of_nonneg h.le
@@ -52,6 +48,87 @@ theorem sin_lt {x : ℝ} (h : 0 < x) : sin x < x := by
   apply pow_le_pow_of_le_one h.le h'
   norm_num
 #align real.sin_lt Real.sin_lt
+
+lemma sin_le (hx : 0 ≤ x) : sin x ≤ x := by
+  obtain rfl | hx := hx.eq_or_lt
+  · simp
+  · exact (sin_lt hx).le
+
+lemma lt_sin (hx : x < 0) : x < sin x := by simpa using sin_lt <| neg_pos.2 hx
+lemma le_sin (hx : x ≤ 0) : x ≤ sin x := by simpa using sin_le <| neg_nonneg.2 hx
+
+lemma one_sub_sq_div_two_le_cos : 1 - x ^ 2 / 2 ≤ cos x := by
+  wlog hx₀ : 0 ≤ x
+  · simpa using this $ neg_nonneg.2 $ le_of_not_le hx₀
+  suffices MonotoneOn (fun x ↦ cos x + x ^ 2 / 2) (Ici 0) by
+    simpa using this left_mem_Ici hx₀ hx₀
+  refine monotoneOn_of_hasDerivWithinAt_nonneg
+    (convex_Ici _)
+    (Continuous.continuousOn <| by continuity)
+    (fun x _ ↦ ((hasDerivAt_cos ..).add <| (hasDerivAt_pow ..).div_const _).hasDerivWithinAt)
+    fun x hx ↦ ?_
+  simpa [mul_div_cancel_left₀] using sin_le <| interior_subset hx
+
+/-- **Jordan's inequality**. -/
+lemma two_div_pi_mul_le_sin (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 2 / π * x ≤ sin x := by
+  rw [← sub_nonneg]
+  suffices ConcaveOn ℝ (Icc 0 (π / 2)) (fun x ↦ sin x - 2 / π * x) by
+    refine (le_min ?_ ?_).trans $ this.min_le_of_mem_Icc ⟨hx₀, hx⟩ <;> field_simp
+  exact concaveOn_of_hasDerivWithinAt2_nonpos (convex_Icc ..)
+    (Continuous.continuousOn $ by continuity)
+    (fun x _ ↦ ((hasDerivAt_sin ..).sub $ (hasDerivAt_id ..).const_mul (2 / π)).hasDerivWithinAt)
+    (fun x _ ↦ (hasDerivAt_cos ..).hasDerivWithinAt.sub_const _)
+    fun x hx ↦ neg_nonpos.2 $ sin_nonneg_of_mem_Icc $ Icc_subset_Icc_right (by linarith) $
+    interior_subset hx
+
+/-- **Jordan's inequality** for negative values. -/
+lemma sin_le_two_div_pi_mul (hx : -(π / 2) ≤ x) (hx₀ : x ≤ 0) : sin x ≤ 2 / π * x := by
+  simpa using two_div_pi_mul_le_sin (neg_nonneg.2 hx₀) (neg_le.2 hx)
+
+/-- **Jordan's inequality** for `cos`. -/
+lemma one_sub_two_div_pi_mul_le_cos (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 1 - 2 / π * x ≤ cos x := by
+  simpa [sin_pi_div_two_sub, mul_sub, div_mul_div_comm, mul_comm π, div_self two_pi_pos.ne']
+    using two_div_pi_mul_le_sin (x := π / 2 - x) (by simpa) (by simpa)
+
+lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x ^ 2 := by
+  wlog hx₀ : 0 ≤ x
+  · simpa using this (by rwa [abs_neg]) $ neg_nonneg.2 $ le_of_not_le hx₀
+  rw [abs_of_nonneg hx₀] at hx
+  -- TODO: `compute_deriv` tactic?
+  have hderiv (x) : HasDerivAt (fun x ↦ 1 - 2 / π ^ 2 * x ^ 2 - cos x) _ x :=
+    (((hasDerivAt_pow ..).const_mul _).const_sub _).sub $ hasDerivAt_cos _
+  simp only [Nat.cast_ofNat, Nat.succ_sub_succ_eq_sub, tsub_zero, pow_one, ← neg_sub', neg_sub,
+    ← mul_assoc] at hderiv
+  have hmono : MonotoneOn (fun x ↦ 1 - 2 / π ^ 2 * x ^ 2 - cos x) (Icc 0 (π / 2)) := by
+    refine monotoneOn_of_hasDerivWithinAt_nonneg
+      (convex_Icc ..)
+      (Continuous.continuousOn $ by continuity)
+      (fun x _ ↦ (hderiv _).hasDerivWithinAt)
+      fun x hx ↦ sub_nonneg.2 ?_
+    have ⟨hx₀, hx⟩ := interior_subset hx
+    calc 2 / π ^ 2 * 2 * x
+        = 2 / π * (2 / π * x) := by ring
+      _ ≤ 1 * sin x := by
+          gcongr; exacts [div_le_one_of_le two_le_pi (by positivity), two_div_pi_mul_le_sin hx₀ hx]
+      _ = sin x := one_mul _
+  have hconc : ConcaveOn ℝ (Icc (π / 2) π) (fun x ↦ 1 - 2 / π ^ 2 * x ^ 2 - cos x) := by
+    set_option tactic.skipAssignedInstances false in
+    refine concaveOn_of_hasDerivWithinAt2_nonpos (convex_Icc ..)
+      (Continuous.continuousOn $ by continuity) (fun x _ ↦ (hderiv _).hasDerivWithinAt)
+      (fun x _ ↦ ((hasDerivAt_sin ..).sub $ (hasDerivAt_id ..).const_mul _).hasDerivWithinAt)
+      fun x hx ↦ ?_
+    have ⟨hx, hx'⟩ := interior_subset hx
+    calc
+      _ ≤ (0 : ℝ) - 0 := by
+          gcongr
+          · exact cos_nonpos_of_pi_div_two_le_of_le hx $ hx'.trans $ by linarith
+          · positivity
+      _ = 0 := sub_zero _
+  rw [← sub_nonneg]
+  obtain hx' | hx' := le_total x (π / 2)
+  · simpa using hmono (left_mem_Icc.2 $ by positivity) ⟨hx₀, hx'⟩ hx₀
+  · set_option tactic.skipAssignedInstances false in
+    refine (le_min ?_ ?_).trans $ hconc.min_le_of_mem_Icc ⟨hx', hx⟩ <;> field_simp <;> norm_num
 
 /-- For 0 < x ≤ 1 we have x - x ^ 3 / 4 < sin x.
 
@@ -105,7 +182,7 @@ theorem lt_tan {x : ℝ} (h1 : 0 < x) (h2 : x < π / 2) : x < tan x := by
     have bd2 : cos y ^ 2 < 1 := by
       apply lt_of_le_of_ne y.cos_sq_le_one
       rw [cos_sq']
-      simpa only [Ne.def, sub_eq_self, sq_eq_zero_iff] using (sin_pos hy).ne'
+      simpa only [Ne, sub_eq_self, sq_eq_zero_iff] using (sin_pos hy).ne'
     rwa [lt_inv, inv_one]
     · exact zero_lt_one
     simpa only [sq, mul_self_pos] using this.ne'

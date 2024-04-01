@@ -40,7 +40,8 @@ rectangular box, partition, hyperplane
 
 noncomputable section
 
-open Classical BigOperators Filter
+open scoped Classical
+open BigOperators Filter
 
 open Function Set Filter
 
@@ -149,7 +150,7 @@ theorem splitLower_ne_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
   · rw [splitUpper_eq_self.2 h, splitLower_eq_bot.2 h]
     exact WithBot.bot_ne_coe
   · refine' (disjoint_splitLower_splitUpper I i x).ne _
-    rwa [Ne.def, splitLower_eq_bot, not_le]
+    rwa [Ne, splitLower_eq_bot, not_le]
 #align box_integral.box.split_lower_ne_split_upper BoxIntegral.Box.splitLower_ne_splitUpper
 
 end Box

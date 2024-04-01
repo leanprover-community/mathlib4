@@ -4,5 +4,4 @@ import Mathlib.Analysis.Complex.Basic
 example :
     (NonUnitalNormedRing.toNormedAddCommGroup : NormedAddCommGroup ℂ) =
       Complex.instNormedAddCommGroupComplex := by
-  with_reducible_and_instances
-    rfl
+  with_reducible_and_instances rfl

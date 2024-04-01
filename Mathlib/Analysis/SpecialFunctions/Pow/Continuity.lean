@@ -17,7 +17,8 @@ This file contains lemmas about continuity of the power functions on `ℂ`, `ℝ
 
 noncomputable section
 
-open Classical Real Topology NNReal ENNReal Filter BigOperators ComplexConjugate
+open scoped Classical
+open Real Topology NNReal ENNReal Filter BigOperators ComplexConjugate
 
 open Filter Finset Set
 
@@ -356,7 +357,7 @@ assumptions about `p.2`. -/
 theorem continuousAt_cpow_of_re_pos {p : ℂ × ℂ} (h₁ : 0 ≤ p.1.re ∨ p.1.im ≠ 0) (h₂ : 0 < p.2.re) :
     ContinuousAt (fun x : ℂ × ℂ => x.1 ^ x.2) p := by
   cases' p with z w
-  rw [← not_lt_zero_iff, lt_iff_le_and_ne, not_and_or, Ne.def, Classical.not_not,
+  rw [← not_lt_zero_iff, lt_iff_le_and_ne, not_and_or, Ne, Classical.not_not,
     not_le_zero_iff] at h₁
   rcases h₁ with (h₁ | (rfl : z = 0))
   exacts [continuousAt_cpow h₁, continuousAt_cpow_zero_of_re_pos h₂]

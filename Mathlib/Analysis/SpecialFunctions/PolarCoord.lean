@@ -41,7 +41,7 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · simpa using hr
     · right
       simp at hr
-      simpa only [ne_of_gt hr, Ne.def, mem_setOf_eq, mul_eq_zero, false_or_iff,
+      simpa only [ne_of_gt hr, Ne, mem_setOf_eq, mul_eq_zero, false_or_iff,
         sin_eq_zero_iff_of_lt_of_lt hθ.1 hθ.2] using h'θ
   map_source' := by
     rintro ⟨x, y⟩ hxy
@@ -100,7 +100,7 @@ theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
   convert HasFDerivAt.prod (𝕜 := ℝ)
     (hasFDerivAt_fst.mul ((hasDerivAt_cos p.2).comp_hasFDerivAt p hasFDerivAt_snd))
     (hasFDerivAt_fst.mul ((hasDerivAt_sin p.2).comp_hasFDerivAt p hasFDerivAt_snd)) using 2 <;>
-  simp [smul_smul, add_comm, neg_mul, neg_smul, smul_neg]
+  simp [smul_smul, add_comm, neg_mul, smul_neg, neg_smul _ (ContinuousLinearMap.snd ℝ ℝ ℝ)]
 #align has_fderiv_at_polar_coord_symm hasFDerivAt_polarCoord_symm
 
 -- Porting note: this instance is needed but not automatically synthesised
@@ -115,7 +115,7 @@ theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by
     exact hx.2
   have B : volume (LinearMap.ker (LinearMap.snd ℝ ℝ ℝ) : Set (ℝ × ℝ)) = 0 := by
     apply Measure.addHaar_submodule
-    rw [Ne.def, LinearMap.ker_eq_top]
+    rw [Ne, LinearMap.ker_eq_top]
     intro h
     have : (LinearMap.snd ℝ ℝ ℝ) (0, 1) = (0 : ℝ × ℝ →ₗ[ℝ] ℝ) (0, 1) := by rw [h]
     simp at this
@@ -134,7 +134,7 @@ theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [Normed
   have B_det : ∀ p, (B p).det = p.1 := by
     intro p
     conv_rhs => rw [← one_mul p.1, ← cos_sq_add_sin_sq p.2]
-    simp only [neg_mul, LinearMap.det_toContinuousLinearMap, LinearMap.det_toLin,
+    simp only [B, neg_mul, LinearMap.det_toContinuousLinearMap, LinearMap.det_toLin,
       Matrix.det_fin_two_of, sub_neg_eq_add]
     ring
   symm

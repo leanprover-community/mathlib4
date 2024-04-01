@@ -99,8 +99,8 @@ noncomputable def stalk (X : LocallyRingedSpace) (x : X) : CommRingCat :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.stalk AlgebraicGeometry.LocallyRingedSpace.stalk
 
--- Porting note: added this instance to help Lean realize stalks are local (so that `0 ≠ 1`
--- works below)
+-- Porting note (#10754): added this instance to help Lean realize stalks are local
+-- (so that `0 ≠ 1` works below)
 instance stalkLocal (x : X) : LocalRing <| X.stalk x := X.localRing x
 
 /-- A morphism of locally ringed spaces `f : X ⟶ Y` induces

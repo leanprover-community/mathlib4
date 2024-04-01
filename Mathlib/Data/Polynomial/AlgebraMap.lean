@@ -107,7 +107,7 @@ variable {R}
 
 instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
   ⟨⟨⊥, ⊤, by
-      rw [Ne.def, SetLike.ext_iff, not_forall]
+      rw [Ne, SetLike.ext_iff, not_forall]
       refine' ⟨X, _⟩
       simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top,
         algebraMap_apply, not_forall]
@@ -172,7 +172,7 @@ def aeval : R[X] →ₐ[R] A :=
   eval₂AlgHom' (Algebra.ofId _ _) x (Algebra.commutes · _)
 #align polynomial.aeval Polynomial.aeval
 
--- porting note: removed `variable` due to redundant binder annotation update
+-- Porting note: removed `variable` due to redundant binder annotation update
 
 @[simp]
 theorem adjoin_X : Algebra.adjoin R ({X} : Set R[X]) = ⊤ := by
@@ -193,7 +193,7 @@ theorem aeval_def (p : R[X]) : aeval x p = eval₂ (algebraMap R A) x p :=
   rfl
 #align polynomial.aeval_def Polynomial.aeval_def
 
--- porting note: removed `@[simp]` because `simp` can prove this
+-- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_zero : aeval x (0 : R[X]) = 0 :=
   AlgHom.map_zero (aeval x)
 #align polynomial.aeval_zero Polynomial.aeval_zero
@@ -215,18 +215,18 @@ theorem aeval_monomial {n : ℕ} {r : R} : aeval x (monomial n r) = algebraMap _
   eval₂_monomial _ _
 #align polynomial.aeval_monomial Polynomial.aeval_monomial
 
--- porting note: removed `@[simp]` because `simp` can prove this
+-- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_X_pow {n : ℕ} : aeval x ((X : R[X]) ^ n) = x ^ n :=
   eval₂_X_pow _ _
 set_option linter.uppercaseLean3 false in
 #align polynomial.aeval_X_pow Polynomial.aeval_X_pow
 
--- porting note: removed `@[simp]` because `simp` can prove this
+-- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_add : aeval x (p + q) = aeval x p + aeval x q :=
   AlgHom.map_add _ _ _
 #align polynomial.aeval_add Polynomial.aeval_add
 
--- porting note: removed `@[simp]` because `simp` can prove this
+-- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_one : aeval x (1 : R[X]) = 1 :=
   AlgHom.map_one _
 #align polynomial.aeval_one Polynomial.aeval_one
@@ -234,13 +234,13 @@ theorem aeval_one : aeval x (1 : R[X]) = 1 :=
 section deprecated
 set_option linter.deprecated false
 
--- porting note: removed `@[simp]` because `simp` can prove this
+-- Porting note: removed `@[simp]` because `simp` can prove this
 @[deprecated]
 theorem aeval_bit0 : aeval x (bit0 p) = bit0 (aeval x p) :=
   AlgHom.map_bit0 _ _
 #align polynomial.aeval_bit0 Polynomial.aeval_bit0
 
--- porting note: removed `@[simp]` because `simp` can prove this
+-- Porting note: removed `@[simp]` because `simp` can prove this
 @[deprecated]
 theorem aeval_bit1 : aeval x (bit1 p) = bit1 (aeval x p) :=
   AlgHom.map_bit1 _ _
@@ -248,7 +248,7 @@ theorem aeval_bit1 : aeval x (bit1 p) = bit1 (aeval x p) :=
 
 end deprecated
 
--- porting note: removed `@[simp]` because `simp` can prove this
+-- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_nat_cast (n : ℕ) : aeval x (n : R[X]) = n :=
   map_natCast _ _
 #align polynomial.aeval_nat_cast Polynomial.aeval_nat_cast
@@ -538,7 +538,7 @@ theorem eval_mul_X_sub_C {p : R[X]} (r : R) : (p * (X - C r)).eval r = 0 := by
   conv_lhs =>
     congr
     arg 2
-    simp [coeff_mul_X_sub_C, sub_mul, mul_assoc, ← pow_succ]
+    simp [coeff_mul_X_sub_C, sub_mul, mul_assoc, ← pow_succ']
   rw [sum_range_sub']
   simp [coeff_monomial]
 set_option linter.uppercaseLean3 false in
@@ -571,7 +571,7 @@ lemma aeval_apply_smul_mem_of_le_comap'
   · simp_rw [map_add, add_smul]
     exact Submodule.add_mem q h₁ h₂
   · dsimp only at hmq ⊢
-    rw [pow_succ, mul_left_comm, map_mul, aeval_X, mul_smul]
+    rw [pow_succ', mul_left_comm, map_mul, aeval_X, mul_smul]
     rw [← q.map_le_iff_le_comap] at hq
     exact hq ⟨_, hmq, rfl⟩
 

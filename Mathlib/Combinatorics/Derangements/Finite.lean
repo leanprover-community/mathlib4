@@ -36,7 +36,7 @@ variable {α : Type*} [DecidableEq α] [Fintype α]
 
 instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFintype
 
--- porting note: used to use the tactic delta_instance
+-- Porting note: used to use the tactic delta_instance
 instance : Fintype (derangements α) := Subtype.fintype (fun (_ : Perm α) => ∀ (x_1 : α), ¬_ = x_1)
 
 theorem card_derangements_invariant {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β]
@@ -98,7 +98,7 @@ theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
     card (derangements (Fin n)) = numDerangements n := by
   induction' n using Nat.strong_induction_on with n hyp
   rcases n with _ | _ | n
-  -- porting note: the two `convert_to` weren't necessary before.
+  -- Porting note: the two `convert_to` weren't necessary before.
   · convert_to card ↑{ f : Perm (Fin 0) | ∀ (x : Fin 0), f x ≠ x } = _ using 2; rfl
   · convert_to card ↑{ f : Perm (Fin 1) | ∀ (x : Fin 1), f x ≠ x } = _ using 2; rfl
   -- knock out cases 0 and 1
@@ -119,7 +119,7 @@ theorem numDerangements_sum (n : ℕ) :
       ∑ k in Finset.range (n + 1), (-1 : ℤ) ^ k * Nat.ascFactorial (k + 1) (n - k) := by
   induction' n with n hn; · rfl
   rw [Finset.sum_range_succ, numDerangements_succ, hn, Finset.mul_sum, tsub_self,
-    Nat.ascFactorial_zero, Int.ofNat_one, mul_one, pow_succ, neg_one_mul, sub_eq_add_neg,
+    Nat.ascFactorial_zero, Int.ofNat_one, mul_one, pow_succ', neg_one_mul, sub_eq_add_neg,
     add_left_inj, Finset.sum_congr rfl]
   -- show that (n + 1) * (-1)^x * asc_fac x (n - x) = (-1)^x * asc_fac x (n.succ - x)
   intro x hx

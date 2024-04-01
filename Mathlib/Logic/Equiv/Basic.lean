@@ -68,7 +68,7 @@ def pprodEquivProd : PProd α β ≃ α × β where
 
 /-- Product of two equivalences, in terms of `PProd`. If `α ≃ β` and `γ ≃ δ`, then
 `PProd α γ ≃ PProd β δ`. -/
--- porting note: in Lean 3 this had `@[congr]`
+-- Porting note: in Lean 3 this had `@[congr]`
 @[simps apply]
 def pprodCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PProd α γ ≃ PProd β δ where
   toFun x := ⟨e₁ x.1, e₂ x.2⟩
@@ -106,7 +106,7 @@ def pprodEquivProdPLift : PProd α β ≃ PLift α × PLift β :=
 
 /-- Product of two equivalences. If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then `α₁ × β₁ ≃ α₂ × β₂`. This is
 `Prod.map` as an equivalence. -/
--- porting note: in Lean 3 there was also a @[congr] tag
+-- Porting note: in Lean 3 there was also a @[congr] tag
 @[simps (config := .asFn) apply]
 def prodCongr (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) : α₁ × β₁ ≃ α₂ × β₂ :=
   ⟨Prod.map e₁ e₂, Prod.map e₁.symm e₂.symm, fun ⟨a, b⟩ => by simp, fun ⟨a, b⟩ => by simp⟩
@@ -364,7 +364,7 @@ theorem sumCongr_apply (ea : Equiv.Perm α) (eb : Equiv.Perm β) (x : Sum α β)
   Equiv.sumCongr_apply ea eb x
 #align equiv.perm.sum_congr_apply Equiv.Perm.sumCongr_apply
 
--- porting note: it seems the general theorem about `Equiv` is now applied, so there's no need
+-- Porting note: it seems the general theorem about `Equiv` is now applied, so there's no need
 -- to have this version also have `@[simp]`. Similarly for below.
 theorem sumCongr_trans (e : Equiv.Perm α) (f : Equiv.Perm β) (g : Equiv.Perm α)
     (h : Equiv.Perm β) : (sumCongr e f).trans (sumCongr g h) = sumCongr (e.trans g) (f.trans h) :=
@@ -616,7 +616,6 @@ def subtypeCongr {p q : α → Prop} [DecidablePred p] [DecidablePred q]
 #align equiv.subtype_congr Equiv.subtypeCongr
 
 variable {p : ε → Prop} [DecidablePred p]
-
 variable (ep ep' : Perm { a // p a }) (en en' : Perm { a // ¬p a })
 
 /-- Combining permutations on `ε` that permute only inside or outside the subtype
@@ -2057,7 +2056,7 @@ theorem update_apply_equiv_apply [DecidableEq α'] [DecidableEq α] (f : α → 
   congr_fun (update_comp_equiv f g a v) a'
 #align function.update_apply_equiv_apply Function.update_apply_equiv_apply
 
--- porting note: EmbeddingLike.apply_eq_iff_eq broken here too
+-- Porting note: EmbeddingLike.apply_eq_iff_eq broken here too
 theorem piCongrLeft'_update [DecidableEq α] [DecidableEq β] (P : α → Sort*) (e : α ≃ β)
     (f : ∀ a, P a) (b : β) (x : P (e.symm b)) :
     e.piCongrLeft' P (update f (e.symm b) x) = update (e.piCongrLeft' P f) b x := by

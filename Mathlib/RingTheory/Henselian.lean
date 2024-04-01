@@ -184,7 +184,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
       let c : ℕ → R := fun n => Nat.recOn n a₀ fun _ b => b - f.eval b * Ring.inverse (f'.eval b)
       have hc : ∀ n, c (n + 1) = c n - f.eval (c n) * Ring.inverse (f'.eval (c n)) := by
         intro n
-        simp only [Nat.rec_add_one]
+        simp only [c, Nat.rec_add_one]
       -- we now spend some time determining properties of the sequence `c : ℕ → R`
       -- `hc_mod`: for every `n`, we have `c n ≡ a₀ [SMOD I]`
       -- `hf'c`  : for every `n`, `f'.eval (c n)` is a unit
@@ -204,7 +204,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         haveI := isLocalRingHom_of_le_jacobson_bot I (IsAdicComplete.le_jacobson_bot I)
         apply isUnit_of_map_unit (Ideal.Quotient.mk I)
         convert h₂ using 1
-        exact SModEq.def.mp ((hc_mod n).eval _)
+        exact SModEq.def'.mp ((hc_mod n).eval _)
       have hfcI : ∀ n, f.eval (c n) ∈ I ^ (n + 1) := by
         intro n
         induction' n with n ih

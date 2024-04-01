@@ -456,6 +456,38 @@ def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
           rw [Fin.coe_cast, Fin.val_add, Fin.val_add, Fin.coe_cast, Fin.coe_cast, ← h] }
 #align zmod.ring_equiv_congr ZMod.ringEquivCongr
 
+@[simp] lemma ringEquivCongr_refl (a : ℕ) : ringEquivCongr (rfl : a = a) = .refl _ := by
+  cases a <;> rfl
+
+lemma ringEquivCongr_refl_apply {a : ℕ} (x : ZMod a) : ringEquivCongr rfl x = x := by
+  rw [ringEquivCongr_refl]
+  rfl
+
+lemma ringEquivCongr_symm {a b : ℕ} (hab : a = b) :
+    (ringEquivCongr hab).symm = ringEquivCongr hab.symm := by
+  subst hab
+  cases a <;> rfl
+
+lemma ringEquivCongr_trans {a b c : ℕ} (hab : a = b) (hbc : b = c) :
+    (ringEquivCongr hab).trans (ringEquivCongr hbc) = ringEquivCongr (hab.trans hbc) := by
+  subst hab hbc
+  cases a <;> rfl
+
+lemma ringEquivCongr_ringEquivCongr_apply {a b c : ℕ} (hab : a = b) (hbc : b = c) (x : ZMod a) :
+    ringEquivCongr hbc (ringEquivCongr hab x) = ringEquivCongr (hab.trans hbc) x := by
+  rw [← ringEquivCongr_trans hab hbc]
+  rfl
+
+lemma ringEquivCongr_val {a b : ℕ} (h : a = b) (x : ZMod a) :
+    ZMod.val ((ZMod.ringEquivCongr h) x) = ZMod.val x := by
+  subst h
+  cases a <;> rfl
+
+lemma int_coe_ringEquivCongr {a b : ℕ} (h : a = b) (z : ℤ) :
+    ZMod.ringEquivCongr h z = z := by
+  subst h
+  cases a <;> rfl
+
 end CharEq
 
 end UniversalProperty
@@ -514,7 +546,7 @@ theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
 theorem cast_neg_one {R : Type*} [Ring R] (n : ℕ) : cast (-1 : ZMod n) = (n - 1 : R) := by
   cases' n with n
   · dsimp [ZMod, ZMod.cast]; simp
-  · rw [← nat_cast_val, val_neg_one, Nat.cast_succ, add_sub_cancel]
+  · rw [← nat_cast_val, val_neg_one, Nat.cast_succ, add_sub_cancel_right]
 #align zmod.cast_neg_one ZMod.cast_neg_one
 
 theorem cast_sub_one {R : Type*} [Ring R] {n : ℕ} (k : ZMod n) :
@@ -588,7 +620,7 @@ theorem cast_zmod_eq_zero_iff_of_le {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ZM
   rw [← ZMod.cast_zero (n := m)]
   exact Injective.eq_iff' (cast_injective_of_le h) rfl
 
---Porting note: commented
+-- Porting note: commented
 -- attribute [local semireducible] Int.NonNeg
 
 @[simp]
@@ -824,19 +856,19 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
         · intro x; rfl
         · rintro ⟨x, y⟩
           fin_cases y
-          simp [castHom, Prod.ext_iff, eq_iff_true_of_subsingleton]
+          simp [to_fun, inv_fun, castHom, Prod.ext_iff, eq_iff_true_of_subsingleton]
       · constructor
         · intro x; rfl
         · rintro ⟨x, y⟩
           fin_cases x
-          simp [castHom, Prod.ext_iff, eq_iff_true_of_subsingleton]
+          simp [to_fun, inv_fun, castHom, Prod.ext_iff, eq_iff_true_of_subsingleton]
     else by
       haveI : NeZero (m * n) := ⟨hmn0⟩
       haveI : NeZero m := ⟨left_ne_zero_of_mul hmn0⟩
       haveI : NeZero n := ⟨right_ne_zero_of_mul hmn0⟩
       have left_inv : Function.LeftInverse inv_fun to_fun := by
         intro x
-        dsimp only [ZMod.castHom_apply]
+        dsimp only [to_fun, inv_fun, ZMod.castHom_apply]
         conv_rhs => rw [← ZMod.nat_cast_zmod_val x]
         rw [if_neg hmn0, ZMod.eq_iff_modEq_nat, ← Nat.modEq_and_modEq_iff_modEq_mul h,
           Prod.fst_zmod_cast, Prod.snd_zmod_cast]
@@ -956,7 +988,7 @@ theorem neg_val {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = if a = 0 then 0 e
   apply Nat.mod_eq_of_lt
   apply Nat.sub_lt (NeZero.pos n)
   contrapose! h
-  rwa [le_zero_iff, val_eq_zero] at h
+  rwa [Nat.le_zero, val_eq_zero] at h
 #align zmod.neg_val ZMod.neg_val
 
 theorem val_neg_of_ne_zero {n : ℕ} [nz : NeZero n] (a : ZMod n) [na : NeZero a] :
@@ -1131,7 +1163,7 @@ theorem val_eq_ite_valMinAbs {n : ℕ} [NeZero n] (a : ZMod n) :
 
 theorem prime_ne_zero (p q : ℕ) [hp : Fact p.Prime] [hq : Fact q.Prime] (hpq : p ≠ q) :
     (q : ZMod p) ≠ 0 := by
-  rwa [← Nat.cast_zero, Ne.def, eq_iff_modEq_nat, Nat.modEq_zero_iff_dvd, ←
+  rwa [← Nat.cast_zero, Ne, eq_iff_modEq_nat, Nat.modEq_zero_iff_dvd, ←
     hp.1.coprime_iff_not_dvd, Nat.coprime_primes hp.1 hq.1]
 #align zmod.prime_ne_zero ZMod.prime_ne_zero
 
@@ -1170,7 +1202,7 @@ theorem valMinAbs_natCast_of_half_lt (ha : n / 2 < a) (ha' : a < n) :
   · simp [valMinAbs_def_pos, val_nat_cast, Nat.mod_eq_of_lt ha', ha.not_le]
 #align zmod.val_min_abs_nat_cast_of_half_lt ZMod.valMinAbs_natCast_of_half_lt
 
--- porting note: There was an extraneous `nat_` in the mathlib3 name
+-- Porting note: There was an extraneous `nat_` in the mathlib3 name
 @[simp]
 theorem valMinAbs_natCast_eq_self [NeZero n] : (a : ZMod n).valMinAbs = a ↔ a ≤ n / 2 := by
   refine' ⟨fun ha => _, valMinAbs_natCast_of_le_half⟩
@@ -1189,7 +1221,7 @@ theorem natAbs_min_of_le_div_two (n : ℕ) (x y : ℤ) (he : (x : ZMod n) = y) (
   apply hl.trans
   rw [← add_le_add_iff_right x.natAbs]
   refine' le_trans (le_trans ((add_le_add_iff_left _).2 hl) _) (Int.natAbs_sub_le _ _)
-  rw [add_sub_cancel, Int.natAbs_mul, Int.natAbs_ofNat]
+  rw [add_sub_cancel_right, Int.natAbs_mul, Int.natAbs_ofNat]
   refine' le_trans _ (Nat.le_mul_of_pos_right _ <| Int.natAbs_pos.2 hm)
   rw [← mul_two]; apply Nat.div_mul_le_self
 #align zmod.nat_abs_min_of_le_div_two ZMod.natAbs_min_of_le_div_two
@@ -1216,7 +1248,8 @@ instance : Field (ZMod p) :=
   { inferInstanceAs (CommRing (ZMod p)), inferInstanceAs (Inv (ZMod p)),
     ZMod.nontrivial p with
     mul_inv_cancel := mul_inv_cancel_aux p
-    inv_zero := inv_zero p }
+    inv_zero := inv_zero p
+    qsmul := qsmulRec _ }
 
 /-- `ZMod p` is an integral domain when `p` is prime. -/
 instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by
@@ -1288,7 +1321,7 @@ section lift
 variable (n) {A : Type*} [AddGroup A]
 
 /-- The map from `ZMod n` induced by `f : ℤ →+ A` that maps `n` to `0`. -/
---@[simps] --Porting note: removed, simplified LHS of `lift_coe` to something worse.
+--@[simps] -- Porting note: removed, simplified LHS of `lift_coe` to something worse.
 def lift : { f : ℤ →+ A // f n = 0 } ≃ (ZMod n →+ A) :=
   (Equiv.subtypeEquivRight <| by
         intro f
@@ -1325,3 +1358,17 @@ theorem lift_comp_castAddHom : (ZMod.lift n f).comp (Int.castAddHom (ZMod n)) = 
 end lift
 
 end ZMod
+
+/-- The range of `(m * · + k)` on natural numbers is the set of elements `≥ k` in the
+residue class of `k` mod `m`. -/
+lemma Nat.range_mul_add (m k : ℕ) :
+    Set.range (fun n : ℕ ↦ m * n + k) = {n : ℕ | (n : ZMod m) = k ∧ k ≤ n} := by
+  ext n
+  simp only [Set.mem_range, Set.mem_setOf_eq]
+  conv => enter [1, 1, y]; rw [add_comm, eq_comm]
+  refine ⟨fun ⟨a, ha⟩ ↦ ⟨?_, le_iff_exists_add.mpr ⟨_, ha⟩⟩, fun ⟨H₁, H₂⟩ ↦ ?_⟩
+  · simpa using congr_arg ((↑) : ℕ → ZMod m) ha
+  · obtain ⟨a, ha⟩ := le_iff_exists_add.mp H₂
+    simp only [ha, Nat.cast_add, add_right_eq_self, ZMod.nat_cast_zmod_eq_zero_iff_dvd] at H₁
+    obtain ⟨b, rfl⟩ := H₁
+    exact ⟨b, ha⟩

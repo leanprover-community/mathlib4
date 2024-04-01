@@ -52,7 +52,7 @@ namespace MeasureTheory
 
 section AeEqOfForall
 
-variable {α E 𝕜 : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsROrC 𝕜]
+variable {α E 𝕜 : Type*} {m : MeasurableSpace α} {μ : Measure α} [RCLike 𝕜]
 
 theorem ae_eq_zero_of_forall_inner [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
     [SecondCountableTopology E] {f : α → E} (hf : ∀ c : E, (fun x => (inner c (f x) : 𝕜)) =ᵐ[μ] 0) :
@@ -100,7 +100,7 @@ theorem ae_eq_zero_of_forall_dual_of_isSeparable [NormedAddCommGroup E] [NormedS
       _ ≤ 1 * ‖(x : E) - a‖ := (ContinuousLinearMap.le_of_opNorm_le _ (hs x).1 _)
       _ < ‖a‖ / 2 := by rw [one_mul]; rwa [dist_eq_norm'] at hx
       _ < ‖(x : E)‖ := I
-      _ = ‖s x x‖ := by rw [(hs x).2, IsROrC.norm_coe_norm]
+      _ = ‖s x x‖ := by rw [(hs x).2, RCLike.norm_coe_norm]
   have hfs : ∀ y : d, ∀ᵐ x ∂μ, ⟪f x, s y⟫ = (0 : 𝕜) := fun y => hf (s y)
   have hf' : ∀ᵐ x ∂μ, ∀ y : d, ⟪f x, s y⟫ = (0 : 𝕜) := by rwa [ae_all_iff]
   filter_upwards [hf', h't] with x hx h'x
@@ -268,13 +268,13 @@ theorem ae_nonneg_of_forall_set_integral_nonneg_of_stronglyMeasurable (hfm : Str
   have hs : MeasurableSet s := hfm.measurableSet_le stronglyMeasurable_const
   have mus : μ s < ∞ := by
     let c : ℝ≥0 := ⟨|b|, abs_nonneg _⟩
-    have c_pos : (c : ℝ≥0∞) ≠ 0 := by simpa [← NNReal.coe_eq_zero] using hb_neg.ne
+    have c_pos : (c : ℝ≥0∞) ≠ 0 := by simpa [c, ← NNReal.coe_eq_zero] using hb_neg.ne
     calc
       μ s ≤ μ {x | (c : ℝ≥0∞) ≤ ‖f x‖₊} := by
         apply measure_mono
         intro x hx
-        simp only [Set.mem_setOf_eq] at hx
-        simpa only [nnnorm, abs_of_neg hb_neg, abs_of_neg (hx.trans_lt hb_neg), Real.norm_eq_abs,
+        simp only [s, Set.mem_setOf_eq] at hx
+        simpa only [c, nnnorm, abs_of_neg hb_neg, abs_of_neg (hx.trans_lt hb_neg), Real.norm_eq_abs,
           Subtype.mk_le_mk, neg_le_neg_iff, Set.mem_setOf_eq, ENNReal.coe_le_coe, NNReal] using hx
       _ ≤ (∫⁻ x, ‖f x‖₊ ∂μ) / c :=
         (meas_ge_le_lintegral_div hfm.aemeasurable.ennnorm c_pos ENNReal.coe_ne_top)

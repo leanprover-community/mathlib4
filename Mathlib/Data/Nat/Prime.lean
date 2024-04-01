@@ -43,7 +43,7 @@ variable {n : ℕ}
 
 /-- `Nat.Prime p` means that `p` is a prime number, that is, a natural number
   at least 2 whose only divisors are `p` and `1`. -/
--- Porting note: removed @[pp_nodot]
+-- Porting note (#11180): removed @[pp_nodot]
 def Prime (p : ℕ) :=
   Irreducible p
 #align nat.prime Nat.Prime
@@ -175,11 +175,13 @@ theorem prime_two : Prime 2 := by decide
 theorem prime_three : Prime 3 := by decide
 #align nat.prime_three Nat.prime_three
 
+theorem prime_five : Prime 5 := by decide
+
 theorem Prime.five_le_of_ne_two_of_ne_three {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2)
     (h_three : p ≠ 3) : 5 ≤ p := by
   by_contra! h
   revert h_two h_three hp
-  -- Porting note: was `decide!`
+  -- Porting note (#11043): was `decide!`
   match p with
   | 0 => decide
   | 1 => decide
@@ -293,7 +295,7 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     · exact ⟨k2, dk, a⟩
     · refine'
         have := minFac_lemma n k h
-        minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [e, left_distrib]) fun m m2 d => _
+        minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [k, e, left_distrib]) fun m m2 d => _
       rcases Nat.eq_or_lt_of_le (a m m2 d) with me | ml
       · subst me
         contradiction
@@ -711,7 +713,7 @@ theorem ne_one_iff_exists_prime_dvd : ∀ {n}, n ≠ 1 ↔ ∃ p : ℕ, p.Prime 
   | n + 2 => by
     let a := n + 2
     let ha : a ≠ 1 := Nat.succ_succ_ne_one n
-    simp only [true_iff_iff, Ne.def, not_false_iff, ha]
+    simp only [true_iff_iff, Ne, not_false_iff, ha]
     exact ⟨a.minFac, Nat.minFac_prime ha, a.minFac_dvd⟩
 #align nat.ne_one_iff_exists_prime_dvd Nat.ne_one_iff_exists_prime_dvd
 
@@ -730,7 +732,7 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul {p : ℕ} (p_prime : Prime p) {
   have hpd4 : p ∣ m / p ^ k * (n / p ^ l) := by simpa [Nat.div_mul_div_comm hpm hpn] using hpd3
   have hpd5 : p ∣ m / p ^ k ∨ p ∣ n / p ^ l :=
     (Prime.dvd_mul p_prime).1 hpd4
-  suffices p ^ k * p ∣ m ∨ p ^ l * p ∣ n by rwa [_root_.pow_succ', _root_.pow_succ']
+  suffices p ^ k * p ∣ m ∨ p ^ l * p ∣ n by rwa [_root_.pow_succ, _root_.pow_succ]
   exact hpd5.elim (fun h : p ∣ m / p ^ k => Or.inl <| mul_dvd_of_dvd_div hpm h)
     fun h : p ∣ n / p ^ l => Or.inr <| mul_dvd_of_dvd_div hpn h
 #align nat.succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul Nat.succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul

@@ -77,7 +77,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
         (tendsto_nat_cast_atTop_iff.mpr hu₂).const_mul_atTop (by positivity : 0 < T⁻¹ * 2)
       convert hu₂.inv_tendsto_atTop
       ext j
-      simp only [Pi.inv_apply, mul_inv_rev, inv_inv, div_eq_inv_mul, ← mul_assoc]
+      simp only [δ, Pi.inv_apply, mul_inv_rev, inv_inv, div_eq_inv_mul, ← mul_assoc]
     have hw : ∀ᶠ j in l, d ∈ closedBall d (1 * δ j) := hδ₀.mono fun j hj => by
       simp only [comp_apply, one_mul, mem_closedBall, dist_self]
       apply hj.le
@@ -94,7 +94,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
   have hI₂ : μ (I j) * ↑(n j) = ENNReal.ofReal T := by
     rw [volume_closedBall, mul_div, mul_div_mul_left T _ two_ne_zero,
       min_eq_right (div_le_self hT₀.le huj'), mul_comm, ← nsmul_eq_mul, ← ENNReal.ofReal_nsmul,
-      nsmul_eq_mul, mul_div_cancel']
+      nsmul_eq_mul, mul_div_cancel₀]
     exact Nat.cast_ne_zero.mpr hj.ne'
   rw [ENNReal.div_eq_div_iff hT₁ ENNReal.ofReal_ne_top hI₀ hI₁,
     volume_of_add_preimage_eq s _ (u j) d huj (hu₁ j) closedBall_ae_eq_ball, nsmul_eq_mul, ←
@@ -137,8 +137,8 @@ theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fu
     conv_rhs => congr; rw [← DivisibleBy.div_cancel x h]
     rw [sub_smul, one_smul, sub_add_cancel]
   ext y
-  simp only [hnx, MeasurableEquiv.coe_addLeft, MeasurableEquiv.symm_addLeft, comp_apply, smul_add,
-    zsmul_neg', neg_smul, neg_add_rev]
+  simp only [f, e, hnx, MeasurableEquiv.coe_addLeft, MeasurableEquiv.symm_addLeft, comp_apply,
+    smul_add, zsmul_neg', neg_smul, neg_add_rev]
   abel
 #align add_circle.ergodic_zsmul_add AddCircle.ergodic_zsmul_add
 

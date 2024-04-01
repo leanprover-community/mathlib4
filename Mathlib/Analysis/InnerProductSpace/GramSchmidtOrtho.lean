@@ -41,8 +41,7 @@ open scoped BigOperators
 
 open Finset Submodule FiniteDimensional
 
-variable (𝕜 : Type*) {E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
+variable (𝕜 : Type*) {E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [IsWellOrder ι (· < ·)]
 
 attribute [local instance] IsWellOrder.toHasWellFounded
@@ -72,7 +71,7 @@ theorem gramSchmidt_def'' (f : ι → E) (n : ι) :
     f n = gramSchmidt 𝕜 f n + ∑ i in Iio n,
       (⟪gramSchmidt 𝕜 f i, f n⟫ / (‖gramSchmidt 𝕜 f i‖ : 𝕜) ^ 2) • gramSchmidt 𝕜 f i := by
   convert gramSchmidt_def' 𝕜 f n
-  rw [orthogonalProjection_singleton, IsROrC.ofReal_pow]
+  rw [orthogonalProjection_singleton, RCLike.ofReal_pow]
 #align gram_schmidt_def'' gramSchmidt_def''
 
 @[simp]
@@ -100,7 +99,7 @@ theorem gramSchmidt_orthogonal (f : ι → E) {a b : ι} (h₀ : a ≠ b) :
   rw [Finset.sum_eq_single_of_mem a (Finset.mem_Iio.mpr h₀)]
   · by_cases h : gramSchmidt 𝕜 f a = 0
     · simp only [h, inner_zero_left, zero_div, zero_mul, sub_zero]
-    · rw [IsROrC.ofReal_pow, ← inner_self_eq_norm_sq_to_K, div_mul_cancel, sub_self]
+    · rw [RCLike.ofReal_pow, ← inner_self_eq_norm_sq_to_K, div_mul_cancel₀, sub_self]
       rwa [inner_self_ne_zero]
   intro i hi hia
   simp only [mul_eq_zero, div_eq_zero_iff, inner_self_eq_zero]
@@ -153,7 +152,6 @@ theorem gramSchmidt_mem_span (f : ι → E) :
   exact smul_mem _ _
     (span_mono (image_subset f <| Iic_subset_Iic.2 hkj.le) <| gramSchmidt_mem_span _ le_rfl)
 termination_by j => j
-decreasing_by exact hkj
 #align gram_schmidt_mem_span gramSchmidt_mem_span
 
 theorem span_gramSchmidt_Iic (f : ι → E) (c : ι) :
@@ -267,7 +265,7 @@ variable {𝕜}
 
 theorem gramSchmidtNormed_unit_length_coe {f : ι → E} (n : ι)
     (h₀ : LinearIndependent 𝕜 (f ∘ ((↑) : Set.Iic n → ι))) : ‖gramSchmidtNormed 𝕜 f n‖ = 1 := by
-  simp only [gramSchmidt_ne_zero_coe n h₀, gramSchmidtNormed, norm_smul_inv_norm, Ne.def,
+  simp only [gramSchmidt_ne_zero_coe n h₀, gramSchmidtNormed, norm_smul_inv_norm, Ne,
     not_false_iff]
 #align gram_schmidt_normed_unit_length_coe gramSchmidtNormed_unit_length_coe
 
@@ -292,8 +290,8 @@ theorem gramSchmidt_orthonormal {f : ι → E} (h₀ : LinearIndependent 𝕜 f)
   constructor
   · simp only [gramSchmidtNormed_unit_length, h₀, eq_self_iff_true, imp_true_iff]
   · intro i j hij
-    simp only [gramSchmidtNormed, inner_smul_left, inner_smul_right, IsROrC.conj_inv,
-      IsROrC.conj_ofReal, mul_eq_zero, inv_eq_zero, IsROrC.ofReal_eq_zero, norm_eq_zero]
+    simp only [gramSchmidtNormed, inner_smul_left, inner_smul_right, RCLike.conj_inv,
+      RCLike.conj_ofReal, mul_eq_zero, inv_eq_zero, RCLike.ofReal_eq_zero, norm_eq_zero]
     repeat' right
     exact gramSchmidt_orthogonal 𝕜 f hij
 #align gram_schmidt_orthonormal gramSchmidt_orthonormal

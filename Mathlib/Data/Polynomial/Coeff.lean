@@ -32,7 +32,6 @@ namespace Polynomial
 universe u v
 
 variable {R : Type u} {S : Type v} {a b : R} {n m : ℕ}
-
 variable [Semiring R] {p q r : R[X]}
 
 section Coeff
@@ -221,7 +220,7 @@ theorem support_binomial {k m : ℕ} (hkm : k ≠ m) {x y : R} (hx : x ≠ 0) (h
   apply subset_antisymm (support_binomial' k m x y)
   simp_rw [insert_subset_iff, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
     coeff_X_pow_self, mul_one, coeff_X_pow, if_neg hkm, if_neg hkm.symm, mul_zero, zero_add,
-    add_zero, Ne.def, hx, hy, not_false_eq_true, and_true]
+    add_zero, Ne, hx, hy, not_false_eq_true, and_true]
 #align polynomial.support_binomial Polynomial.support_binomial
 
 theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} (hx : x ≠ 0)
@@ -231,7 +230,7 @@ theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} 
   simp_rw [insert_subset_iff, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
     coeff_X_pow_self, mul_one, coeff_X_pow, if_neg hkm.ne, if_neg hkm.ne', if_neg hmn.ne,
     if_neg hmn.ne', if_neg (hkm.trans hmn).ne, if_neg (hkm.trans hmn).ne', mul_zero, add_zero,
-    zero_add, Ne.def, hx, hy, hz, not_false_eq_true, and_true]
+    zero_add, Ne, hx, hy, hz, not_false_eq_true, and_true]
 #align polynomial.support_trinomial Polynomial.support_trinomial
 
 theorem card_support_binomial {k m : ℕ} (h : k ≠ m) {x y : R} (hx : x ≠ 0) (hy : y ≠ 0) :
@@ -359,7 +358,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ
       let ψ : R[X] := ∑ i in φ.support, monomial i (c' i)
       use ψ
       ext i
-      simp only [coeff_C_mul, mem_support_iff, coeff_monomial, finset_sum_coeff,
+      simp only [c', ψ, coeff_C_mul, mem_support_iff, coeff_monomial, finset_sum_coeff,
         Finset.sum_ite_eq']
       split_ifs with hi
       · rw [hc]

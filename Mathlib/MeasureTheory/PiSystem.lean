@@ -58,7 +58,8 @@ import Mathlib.MeasureTheory.MeasurableSpace.Defs
 
 open MeasurableSpace Set
 
-open Classical MeasureTheory
+open scoped Classical
+open MeasureTheory
 
 /-- A π-system is a collection of subsets of `α` that is closed under binary intersection of
   non-disjoint sets. Usually it is also required that the collection is nonempty, but we don't do
@@ -435,7 +436,7 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
     rw [ht1_eq, ht2_eq]
     simp_rw [← Set.inf_eq_inter]
     ext1 x
-    simp only [inf_eq_inter, mem_inter_iff, mem_iInter, Finset.mem_union]
+    simp only [g, inf_eq_inter, mem_inter_iff, mem_iInter, Finset.mem_union]
     refine' ⟨fun h i _ => _, fun h => ⟨fun i hi1 => _, fun i hi2 => _⟩⟩
     · split_ifs with h_1 h_2 h_2
       exacts [⟨h.1 i h_1, h.2 i h_2⟩, ⟨h.1 i h_1, Set.mem_univ _⟩, ⟨Set.mem_univ _, h.2 i h_2⟩,
@@ -447,7 +448,7 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
       rw [if_pos hi2] at h
       exact h.2
   refine' ⟨fun n hn => _, h_inter_eq⟩
-  simp only []
+  simp only [g]
   split_ifs with hn1 hn2 h
   · refine' hpi n (f1 n) (hf1m n hn1) (f2 n) (hf2m n hn2) (Set.nonempty_iff_ne_empty.2 fun h => _)
     rw [h_inter_eq] at h_nonempty
@@ -455,7 +456,7 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
       (Set.not_nonempty_iff_eq_empty.mpr h_empty) h_nonempty
     refine' le_antisymm (Set.iInter_subset_of_subset n _) (Set.empty_subset _)
     refine' Set.iInter_subset_of_subset hn _
-    simp_rw [if_pos hn1, if_pos hn2]
+    simp_rw [g, if_pos hn1, if_pos hn2]
     exact h.subset
   · simp [hf1m n hn1]
   · simp [hf2m n h]

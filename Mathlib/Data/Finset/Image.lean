@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Embedding
 import Mathlib.Data.Fin.Basic
-import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Union
 import Mathlib.Data.Int.Order.Basic
 
 #align_import data.finset.image from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
@@ -69,7 +69,7 @@ theorem mem_map {b : β} : b ∈ s.map f ↔ ∃ a ∈ s, f a = b :=
   Multiset.mem_map
 #align finset.mem_map Finset.mem_map
 
---Porting note: Higher priority to apply before `mem_map`.
+-- Porting note: Higher priority to apply before `mem_map`.
 @[simp 1100]
 theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f.symm b ∈ s := by
   rw [mem_map]
@@ -276,9 +276,9 @@ theorem map_eq_empty : s.map f = ∅ ↔ s = ∅ :=
     e.symm ▸ rfl⟩
 #align finset.map_eq_empty Finset.map_eq_empty
 
-@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem map_nonempty : (s.map f).Nonempty ↔ s.Nonempty := by
-  rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne.def, map_eq_empty]
+  rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne, map_eq_empty]
 #align finset.map_nonempty Finset.map_nonempty
 
 alias ⟨_, Nonempty.map⟩ := map_nonempty
@@ -424,7 +424,7 @@ theorem coe_image : ↑(s.image f) = f '' ↑s :=
   Set.ext <| by simp only [mem_coe, mem_image, Set.mem_image, implies_true]
 #align finset.coe_image Finset.coe_image
 
-@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma image_nonempty : (s.image f).Nonempty ↔ s.Nonempty := by
   exact_mod_cast Set.image_nonempty (f := f) (s := (s : Set α))
 #align finset.nonempty.image_iff Finset.image_nonempty
@@ -514,7 +514,7 @@ theorem coe_image_subset_range : ↑(s.image f) ⊆ Set.range f :=
 #align finset.coe_image_subset_range Finset.coe_image_subset_range
 
 theorem filter_image {p : β → Prop} [DecidablePred p] :
-    (s.image f).filter p = (s.filter λ a ↦ p (f a)).image f :=
+    (s.image f).filter p = (s.filter fun a ↦ p (f a)).image f :=
   ext fun b => by
     simp only [mem_filter, mem_image, exists_prop]
     exact

@@ -136,7 +136,7 @@ def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' �
   have rel₁₃ := H.triangleMorphism₁.comm₃
   have rel₂₂ := H.triangleMorphism₂.comm₂
   have rel₂₃ := H.triangleMorphism₂.comm₃
-  dsimp at eq₁₂ eq₁₂' eq₁₃ eq₁₃' eq₂₃ eq₂₃' rel₁₂ rel₁₃ rel₂₂ rel₂₃
+  dsimp [iso₁₂, iso₂₃, iso₁₃] at eq₁₂ eq₁₂' eq₁₃ eq₁₃' eq₂₃ eq₂₃' rel₁₂ rel₁₃ rel₂₂ rel₂₃
   rw [Functor.map_id, comp_id] at rel₁₃
   rw [id_comp] at rel₂₂
   refine' ⟨iso₁₂.hom.hom₃ ≫ H.m₁ ≫ iso₁₃.inv.hom₃,
@@ -182,7 +182,6 @@ class IsTriangulated : Prop where
 namespace Triangulated
 
 variable {C}
-
 variable {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
   {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
   {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦(1 : ℤ)⟧} {h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C}

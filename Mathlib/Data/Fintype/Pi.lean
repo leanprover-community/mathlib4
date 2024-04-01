@@ -59,7 +59,7 @@ theorem piFinset_empty [Nonempty α] : piFinset (fun _ => ∅ : ∀ i, Finset (�
   eq_empty_of_forall_not_mem fun _ => by simp
 #align fintype.pi_finset_empty Fintype.piFinset_empty
 
-@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma piFinset_nonempty : (piFinset s).Nonempty ↔ ∀ a, (s a).Nonempty := by
   simp [Finset.Nonempty, Classical.skolem]
 
@@ -119,7 +119,7 @@ theorem Fintype.piFinset_univ {α : Type*} {β : α → Type*} [DecidableEq α] 
   rfl
 #align fintype.pi_finset_univ Fintype.piFinset_univ
 
--- porting note: this instance used to be computable in Lean3 and used `decidable_eq`, but
+-- Porting note: this instance used to be computable in Lean3 and used `decidable_eq`, but
 -- it makes things a lot harder to work with here. in some ways that was because in Lean3
 -- we could make this instance irreducible when needed and in the worst case use `congr/convert`,
 -- but those don't work with subsingletons in lean4 as-is so we cannot do this here.

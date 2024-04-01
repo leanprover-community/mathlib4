@@ -92,7 +92,8 @@ less than or equal to the sum of the maximum values of the summands.
 
 universe u v
 
-open Finset Classical BigOperators NNReal ENNReal
+open scoped Classical
+open Finset BigOperators NNReal ENNReal
 
 set_option linter.uppercaseLean3 false
 
@@ -107,7 +108,7 @@ section GeomMeanLEArithMean
 
 namespace Real
 
-/-- AM-GM inequality: the **geometric mean is less than or equal to the arithmetic mean**, weighted
+/-- **AM-GM inequality**: The geometric mean is less than or equal to the arithmetic mean, weighted
 version for real-valued nonnegative functions. -/
 theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i in s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
@@ -121,7 +122,7 @@ theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0
       exact zero_rpow hwi
   -- If all numbers `z i` with non-zero weight are positive, then we apply Jensen's inequality
   -- for `exp` and numbers `log (z i)` with weights `w i`.
-  · simp only [not_exists, not_and, Ne.def, Classical.not_not] at A
+  · simp only [not_exists, not_and, Ne, Classical.not_not] at A
     have := convexOn_exp.map_sum_le hw hw' fun i _ => Set.mem_univ <| log (z i)
     simp only [exp_sum, (· ∘ ·), smul_eq_mul, mul_comm (w _) (log _)] at this
     convert this using 1 <;> [apply prod_congr rfl;apply sum_congr rfl] <;> intro i hi
@@ -133,7 +134,7 @@ theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0
       · rw [exp_log hz]
 #align real.geom_mean_le_arith_mean_weighted Real.geom_mean_le_arith_mean_weighted
 
-/-- AM-GM inequality: the **geometric mean is less than or equal to the arithmetic mean**. --/
+/-- **AM-GM inequality**: The **geometric mean is less than or equal to the arithmetic mean. --/
 theorem geom_mean_le_arith_mean {ι : Type*} (s : Finset ι) (w : ι → ℝ) (z : ι → ℝ)
     (hw : ∀ i ∈ s, 0 ≤ w i) (hw' : 0 < ∑ i in s, w i) (hz : ∀ i ∈ s, 0 ≤ z i) :
     (∏ i in s, z i ^ w i) ^ (∑ i in s, w i)⁻¹  ≤  (∑ i in s, w i * z i) / (∑ i in s, w i) := by
@@ -186,8 +187,8 @@ end Real
 
 namespace NNReal
 
-/-- The geometric mean is less than or equal to the arithmetic mean, weighted version
-for `NNReal`-valued functions. -/
+/-- **AM-GM inequality**: The geometric mean is less than or equal to the arithmetic mean, weighted
+version for `NNReal`-valued functions. -/
 theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ≥0) (hw' : ∑ i in s, w i = 1) :
     (∏ i in s, z i ^ (w i : ℝ)) ≤ ∑ i in s, w i * z i :=
   mod_cast
@@ -195,8 +196,8 @@ theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ≥0) (hw' : ∑ i in 
       (by assumption_mod_cast) fun i _ => (z i).coe_nonneg
 #align nnreal.geom_mean_le_arith_mean_weighted NNReal.geom_mean_le_arith_mean_weighted
 
-/-- The geometric mean is less than or equal to the arithmetic mean, weighted version
-for two `NNReal` numbers. -/
+/-- **AM-GM inequality**: The geometric mean is less than or equal to the arithmetic mean, weighted
+version for two `NNReal` numbers. -/
 theorem geom_mean_le_arith_mean2_weighted (w₁ w₂ p₁ p₂ : ℝ≥0) :
     w₁ + w₂ = 1 → p₁ ^ (w₁ : ℝ) * p₂ ^ (w₂ : ℝ) ≤ w₁ * p₁ + w₂ * p₂ := by
   simpa only [Fin.prod_univ_succ, Fin.sum_univ_succ, Finset.prod_empty, Finset.sum_empty,
@@ -259,7 +260,7 @@ section Young
 
 namespace Real
 
-/-- Young's inequality, a version for nonnegative real numbers. -/
+/-- **Young's inequality**, a version for nonnegative real numbers. -/
 theorem young_inequality_of_nonneg {a b p q : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b)
     (hpq : p.IsConjExponent q) : a * b ≤ a ^ p / p + b ^ q / q := by
   simpa [← rpow_mul, ha, hb, hpq.ne_zero, hpq.symm.ne_zero, _root_.div_eq_inv_mul] using
@@ -267,7 +268,7 @@ theorem young_inequality_of_nonneg {a b p q : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b)
       (rpow_nonneg ha p) (rpow_nonneg hb q) hpq.inv_add_inv_conj
 #align real.young_inequality_of_nonneg Real.young_inequality_of_nonneg
 
-/-- Young's inequality, a version for arbitrary real numbers. -/
+/-- **Young's inequality**, a version for arbitrary real numbers. -/
 theorem young_inequality (a b : ℝ) {p q : ℝ} (hpq : p.IsConjExponent q) :
     a * b ≤ |a| ^ p / p + |b| ^ q / q :=
   calc
@@ -281,14 +282,14 @@ end Real
 
 namespace NNReal
 
-/-- Young's inequality, `ℝ≥0` version. We use `{p q : ℝ≥0}` in order to avoid constructing
+/-- **Young's inequality**, `ℝ≥0` version. We use `{p q : ℝ≥0}` in order to avoid constructing
 witnesses of `0 ≤ p` and `0 ≤ q` for the denominators.  -/
 theorem young_inequality (a b : ℝ≥0) {p q : ℝ≥0} (hpq : p.IsConjExponent q) :
     a * b ≤ a ^ (p : ℝ) / p + b ^ (q : ℝ) / q :=
   Real.young_inequality_of_nonneg a.coe_nonneg b.coe_nonneg hpq.coe
 #align nnreal.young_inequality NNReal.young_inequality
 
-/-- Young's inequality, `ℝ≥0` version with real conjugate exponents. -/
+/-- **Young's inequality**, `ℝ≥0` version with real conjugate exponents. -/
 theorem young_inequality_real (a b : ℝ≥0) {p q : ℝ} (hpq : p.IsConjExponent q) :
     a * b ≤ a ^ p / Real.toNNReal p + b ^ q / Real.toNNReal q := by
   simpa [Real.coe_toNNReal, hpq.nonneg, hpq.symm.nonneg] using young_inequality a b hpq.toNNReal
@@ -298,7 +299,7 @@ end NNReal
 
 namespace ENNReal
 
-/-- Young's inequality, `ℝ≥0∞` version with real conjugate exponents. -/
+/-- **Young's inequality**, `ℝ≥0∞` version with real conjugate exponents. -/
 theorem young_inequality (a b : ℝ≥0∞) {p q : ℝ} (hpq : p.IsConjExponent q) :
     a * b ≤ a ^ p / ENNReal.ofReal p + b ^ q / ENNReal.ofReal q := by
   by_cases h : a = ⊤ ∨ b = ⊤
@@ -318,7 +319,7 @@ end ENNReal
 
 end Young
 
-section HolderMinkowski
+section HoelderMinkowski
 
 /-! ### Hölder's and Minkowski's inequalities -/
 
@@ -337,21 +338,21 @@ private theorem inner_le_Lp_mul_Lp_of_norm_le_one (f g : ι → ℝ≥0) {p q : 
       rw [sum_add_distrib, sum_div, sum_div]
     _ ≤ 1 / Real.toNNReal p + 1 / Real.toNNReal q := by
       refine' add_le_add _ _
-      · rwa [div_le_iff hp_ne_zero, div_mul_cancel _ hp_ne_zero]
-      · rwa [div_le_iff hq_ne_zero, div_mul_cancel _ hq_ne_zero]
+      · rwa [div_le_iff hp_ne_zero, div_mul_cancel₀ _ hp_ne_zero]
+      · rwa [div_le_iff hq_ne_zero, div_mul_cancel₀ _ hq_ne_zero]
     _ = 1 := by simp_rw [one_div, hpq.toNNReal.inv_add_inv_conj]
 
 private theorem inner_le_Lp_mul_Lp_of_norm_eq_zero (f g : ι → ℝ≥0) {p q : ℝ}
     (hpq : p.IsConjExponent q) (hf : ∑ i in s, f i ^ p = 0) :
     ∑ i in s, f i * g i ≤ (∑ i in s, f i ^ p) ^ (1 / p) * (∑ i in s, g i ^ q) ^ (1 / q) := by
   simp only [hf, hpq.ne_zero, one_div, sum_eq_zero_iff, zero_rpow, zero_mul,
-    inv_eq_zero, Ne.def, not_false_iff, le_zero_iff, mul_eq_zero]
+    inv_eq_zero, Ne, not_false_iff, le_zero_iff, mul_eq_zero]
   intro i his
   left
   rw [sum_eq_zero_iff] at hf
   exact (rpow_eq_zero_iff.mp (hf i his)).left
 
-/-- Hölder inequality: the scalar product of two functions is bounded by the product of their
+/-- **Hölder inequality**: The scalar product of two functions is bounded by the product of their
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. Version for sums over finite sets,
 with `ℝ≥0`-valued functions. -/
 theorem inner_le_Lp_mul_Lq (f g : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjExponent q) :
@@ -369,21 +370,39 @@ theorem inner_le_Lp_mul_Lq (f g : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjExp
   let f' i := f i / (∑ i in s, f i ^ p) ^ (1 / p)
   let g' i := g i / (∑ i in s, g i ^ q) ^ (1 / q)
   suffices (∑ i in s, f' i * g' i) ≤ 1 by
-    simp_rw [div_mul_div_comm, ← sum_div] at this
+    simp_rw [f', g', div_mul_div_comm, ← sum_div] at this
     rwa [div_le_iff, one_mul] at this
     refine' mul_ne_zero _ _
-    · rw [Ne.def, rpow_eq_zero_iff, not_and_or]
+    · rw [Ne, rpow_eq_zero_iff, not_and_or]
       exact Or.inl hF_zero
-    · rw [Ne.def, rpow_eq_zero_iff, not_and_or]
+    · rw [Ne, rpow_eq_zero_iff, not_and_or]
       exact Or.inl hG_zero
   refine' inner_le_Lp_mul_Lp_of_norm_le_one s f' g' hpq (le_of_eq _) (le_of_eq _)
-  · simp_rw [div_rpow, ← sum_div, ← rpow_mul, one_div, inv_mul_cancel hpq.ne_zero, rpow_one,
+  · simp_rw [f', div_rpow, ← sum_div, ← rpow_mul, one_div, inv_mul_cancel hpq.ne_zero, rpow_one,
       div_self hF_zero]
-  · simp_rw [div_rpow, ← sum_div, ← rpow_mul, one_div, inv_mul_cancel hpq.symm.ne_zero,
+  · simp_rw [g', div_rpow, ← sum_div, ← rpow_mul, one_div, inv_mul_cancel hpq.symm.ne_zero,
       rpow_one, div_self hG_zero]
 #align nnreal.inner_le_Lp_mul_Lq NNReal.inner_le_Lp_mul_Lq
 
-/-- Hölder inequality: the scalar product of two functions is bounded by the product of their
+/-- **Weighted Hölder inequality**. -/
+lemma inner_le_weight_mul_Lp (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) (w f : ι → ℝ≥0) :
+    ∑ i in s, w i * f i ≤ (∑ i in s, w i) ^ (1 - p⁻¹) * (∑ i in s, w i * f i ^ p) ^ p⁻¹ := by
+  obtain rfl | hp := hp.eq_or_lt
+  · simp
+  calc
+    _ = ∑ i in s, w i ^ (1 - p⁻¹) * (w i ^ p⁻¹ * f i) := ?_
+    _ ≤ (∑ i in s, (w i ^ (1 - p⁻¹)) ^ (1 - p⁻¹)⁻¹) ^ (1 / (1 - p⁻¹)⁻¹) *
+          (∑ i in s, (w i ^ p⁻¹ * f i) ^ p) ^ (1 / p) :=
+        inner_le_Lp_mul_Lq _ _ _ (.symm ⟨hp, by simp⟩)
+    _ = _ := ?_
+  · congr with i
+    rw [← mul_assoc, ← rpow_of_add_eq _ one_ne_zero, rpow_one]
+    simp
+  · have hp₀ : p ≠ 0 := by positivity
+    have hp₁ : 1 - p⁻¹ ≠ 0 := by simp [sub_eq_zero, hp.ne']
+    simp [mul_rpow, div_inv_eq_mul, one_mul, one_div, hp₀, hp₁]
+
+/-- **Hölder inequality**: the scalar product of two functions is bounded by the product of their
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. A version for `NNReal`-valued
 functions. For an alternative version, convenient if the infinite sums are already expressed as
 `p`-th powers, see `inner_le_Lp_mul_Lq_hasSum`. -/
@@ -419,7 +438,7 @@ theorem inner_le_Lp_mul_Lq_tsum' {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.IsC
   (inner_le_Lp_mul_Lq_tsum hpq hf hg).2
 #align nnreal.inner_le_Lp_mul_Lq_tsum' NNReal.inner_le_Lp_mul_Lq_tsum'
 
-/-- Hölder inequality: the scalar product of two functions is bounded by the product of their
+/-- **Hölder inequality**: the scalar product of two functions is bounded by the product of their
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. A version for `NNReal`-valued
 functions. For an alternative version, convenient if the infinite sums are not already expressed as
 `p`-th powers, see `inner_le_Lp_mul_Lq_tsum`.  -/
@@ -467,8 +486,8 @@ theorem isGreatest_Lp (f : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjExponent q
         refine' fun y => mul_div_cancel_left_of_imp fun h => _
         simp [h, hpq.ne_zero]
       simp only [Set.mem_setOf_eq, div_rpow, ← sum_div, ← rpow_mul,
-        div_mul_cancel _ hpq.symm.ne_zero, rpow_one, div_le_iff hf, one_mul, hpq.mul_eq_add, ←
-        rpow_sub' _ A, _root_.add_sub_cancel, le_refl, true_and_iff, ← mul_div_assoc, B]
+        div_mul_cancel₀ _ hpq.symm.ne_zero, rpow_one, div_le_iff hf, one_mul, hpq.mul_eq_add, ←
+        rpow_sub' _ A, add_sub_cancel_right, le_refl, true_and_iff, ← mul_div_assoc, B]
       rw [div_eq_iff, ← rpow_add hf, one_div, one_div, hpq.inv_add_inv_conj, rpow_one]
       simpa [hpq.symm.ne_zero] using hf
   · rintro _ ⟨g, hg, rfl⟩
@@ -477,7 +496,7 @@ theorem isGreatest_Lp (f : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjExponent q
       mul_le_mul_left' (NNReal.rpow_le_one hg (le_of_lt hpq.symm.one_div_pos)) _
 #align nnreal.is_greatest_Lp NNReal.isGreatest_Lp
 
-/-- Minkowski inequality: the `L_p` seminorm of the sum of two vectors is less than or equal
+/-- **Minkowski inequality**: the `L_p` seminorm of the sum of two vectors is less than or equal
 to the sum of the `L_p`-seminorms of the summands. A version for `NNReal`-valued functions. -/
 theorem Lp_add_le (f g : ι → ℝ≥0) {p : ℝ} (hp : 1 ≤ p) :
     (∑ i in s, (f i + g i) ^ p) ^ (1 / p) ≤
@@ -494,7 +513,7 @@ theorem Lp_add_le (f g : ι → ℝ≥0) {p : ℝ} (hp : 1 ≤ p) :
     add_le_add ((isGreatest_Lp s f hpq).2 ⟨φ, hφ, rfl⟩) ((isGreatest_Lp s g hpq).2 ⟨φ, hφ, rfl⟩)
 #align nnreal.Lp_add_le NNReal.Lp_add_le
 
-/-- Minkowski inequality: the `L_p` seminorm of the infinite sum of two vectors is less than or
+/-- **Minkowski inequality**: the `L_p` seminorm of the infinite sum of two vectors is less than or
 equal to the infinite sum of the `L_p`-seminorms of the summands, if these infinite sums both
 exist. A version for `NNReal`-valued functions. For an alternative version, convenient if the
 infinite sums are already expressed as `p`-th powers, see `Lp_add_le_hasSum_of_nonneg`. -/
@@ -534,7 +553,7 @@ theorem Lp_add_le_tsum' {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Su
   (Lp_add_le_tsum hp hf hg).2
 #align nnreal.Lp_add_le_tsum' NNReal.Lp_add_le_tsum'
 
-/-- Minkowski inequality: the `L_p` seminorm of the infinite sum of two vectors is less than or
+/-- **Minkowski inequality**: the `L_p` seminorm of the infinite sum of two vectors is less than or
 equal to the infinite sum of the `L_p`-seminorms of the summands, if these infinite sums both
 exist. A version for `NNReal`-valued functions. For an alternative version, convenient if the
 infinite sums are not already expressed as `p`-th powers, see `Lp_add_le_tsum_of_nonneg`.  -/
@@ -556,7 +575,7 @@ namespace Real
 
 variable (f g : ι → ℝ) {p q : ℝ}
 
-/-- Hölder inequality: the scalar product of two functions is bounded by the product of their
+/-- **Hölder inequality**: the scalar product of two functions is bounded by the product of their
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. Version for sums over finite sets,
 with real-valued functions. -/
 theorem inner_le_Lp_mul_Lq (hpq : IsConjExponent p q) :
@@ -582,7 +601,7 @@ theorem rpow_sum_le_const_mul_sum_rpow (hp : 1 ≤ p) :
 #align real.rpow_sum_le_const_mul_sum_rpow Real.rpow_sum_le_const_mul_sum_rpow
 
 -- for some reason `exact_mod_cast` can't replace this argument
-/-- Minkowski inequality: the `L_p` seminorm of the sum of two vectors is less than or equal
+/-- **Minkowski inequality**: the `L_p` seminorm of the sum of two vectors is less than or equal
 to the sum of the `L_p`-seminorms of the summands. A version for `Real`-valued functions. -/
 theorem Lp_add_le (hp : 1 ≤ p) :
     (∑ i in s, |f i + g i| ^ p) ^ (1 / p) ≤
@@ -598,7 +617,7 @@ theorem Lp_add_le (hp : 1 ≤ p) :
 
 variable {f g}
 
-/-- Hölder inequality: the scalar product of two functions is bounded by the product of their
+/-- **Hölder inequality**: the scalar product of two functions is bounded by the product of their
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. Version for sums over finite sets,
 with real-valued nonnegative functions. -/
 theorem inner_le_Lp_mul_Lq_of_nonneg (hpq : IsConjExponent p q) (hf : ∀ i ∈ s, 0 ≤ f i)
@@ -608,7 +627,17 @@ theorem inner_le_Lp_mul_Lq_of_nonneg (hpq : IsConjExponent p q) (hf : ∀ i ∈ 
     simp only [abs_of_nonneg, hf i hi, hg i hi]
 #align real.inner_le_Lp_mul_Lq_of_nonneg Real.inner_le_Lp_mul_Lq_of_nonneg
 
-/-- Hölder inequality: the scalar product of two functions is bounded by the product of their
+/-- **Weighted Hölder inequality**. -/
+lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) (w f : ι → ℝ)
+    (hw : ∀ i, 0 ≤ w i) (hf : ∀ i, 0 ≤ f i) :
+    ∑ i in s, w i * f i ≤ (∑ i in s, w i) ^ (1 - p⁻¹) * (∑ i in s, w i * f i ^ p) ^ p⁻¹ := by
+  lift w to ι → ℝ≥0 using hw
+  lift f to ι → ℝ≥0 using hf
+  beta_reduce at *
+  norm_cast at *
+  exact NNReal.inner_le_weight_mul_Lp _ hp _ _
+
+/-- **Hölder inequality**: the scalar product of two functions is bounded by the product of their
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. A version for `ℝ`-valued functions.
 For an alternative version, convenient if the infinite sums are already expressed as `p`-th powers,
 see `inner_le_Lp_mul_Lq_hasSum_of_nonneg`. -/
@@ -636,7 +665,7 @@ theorem inner_le_Lp_mul_Lq_tsum_of_nonneg' (hpq : p.IsConjExponent q) (hf : ∀ 
   (inner_le_Lp_mul_Lq_tsum_of_nonneg hpq hf hg hf_sum hg_sum).2
 #align real.inner_le_Lp_mul_Lq_tsum_of_nonneg' Real.inner_le_Lp_mul_Lq_tsum_of_nonneg'
 
-/-- Hölder inequality: the scalar product of two functions is bounded by the product of their
+/-- **Hölder inequality**: the scalar product of two functions is bounded by the product of their
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. A version for `NNReal`-valued
 functions. For an alternative version, convenient if the infinite sums are not already expressed as
 `p`-th powers, see `inner_le_Lp_mul_Lq_tsum_of_nonneg`.  -/
@@ -665,7 +694,7 @@ theorem rpow_sum_le_const_mul_sum_rpow_of_nonneg (hp : 1 ≤ p) (hf : ∀ i ∈ 
     simp only [abs_of_nonneg, hf i hi]
 #align real.rpow_sum_le_const_mul_sum_rpow_of_nonneg Real.rpow_sum_le_const_mul_sum_rpow_of_nonneg
 
-/-- Minkowski inequality: the `L_p` seminorm of the sum of two vectors is less than or equal
+/-- **Minkowski inequality**: the `L_p` seminorm of the sum of two vectors is less than or equal
 to the sum of the `L_p`-seminorms of the summands. A version for `ℝ`-valued nonnegative
 functions. -/
 theorem Lp_add_le_of_nonneg (hp : 1 ≤ p) (hf : ∀ i ∈ s, 0 ≤ f i) (hg : ∀ i ∈ s, 0 ≤ g i) :
@@ -676,7 +705,7 @@ theorem Lp_add_le_of_nonneg (hp : 1 ≤ p) (hf : ∀ i ∈ s, 0 ≤ f i) (hg : �
     simp only [abs_of_nonneg, hf i hi, hg i hi, add_nonneg]
 #align real.Lp_add_le_of_nonneg Real.Lp_add_le_of_nonneg
 
-/-- Minkowski inequality: the `L_p` seminorm of the infinite sum of two vectors is less than or
+/-- **Minkowski inequality**: the `L_p` seminorm of the infinite sum of two vectors is less than or
 equal to the infinite sum of the `L_p`-seminorms of the summands, if these infinite sums both
 exist. A version for `ℝ`-valued functions. For an alternative version, convenient if the infinite
 sums are already expressed as `p`-th powers, see `Lp_add_le_hasSum_of_nonneg`. -/
@@ -705,7 +734,7 @@ theorem Lp_add_le_tsum_of_nonneg' (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : �
   (Lp_add_le_tsum_of_nonneg hp hf hg hf_sum hg_sum).2
 #align real.Lp_add_le_tsum_of_nonneg' Real.Lp_add_le_tsum_of_nonneg'
 
-/-- Minkowski inequality: the `L_p` seminorm of the infinite sum of two vectors is less than or
+/-- **Minkowski inequality**: the `L_p` seminorm of the infinite sum of two vectors is less than or
 equal to the infinite sum of the `L_p`-seminorms of the summands, if these infinite sums both
 exist. A version for `ℝ`-valued functions. For an alternative version, convenient if the infinite
 sums are not already expressed as `p`-th powers, see `Lp_add_le_tsum_of_nonneg`. -/
@@ -734,7 +763,7 @@ namespace ENNReal
 
 variable (f g : ι → ℝ≥0∞) {p q : ℝ}
 
-/-- Hölder inequality: the scalar product of two functions is bounded by the product of their
+/-- **Hölder inequality**: the scalar product of two functions is bounded by the product of their
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. Version for sums over finite sets,
 with `ℝ≥0∞`-valued functions. -/
 theorem inner_le_Lp_mul_Lq (hpq : p.IsConjExponent q) :
@@ -744,8 +773,7 @@ theorem inner_le_Lp_mul_Lq (hpq : p.IsConjExponent q) :
       simpa [ENNReal.rpow_eq_zero_iff, hpq.pos, hpq.symm.pos, asymm hpq.pos, asymm hpq.symm.pos,
         sum_eq_zero_iff_of_nonneg] using H
     have : ∀ i ∈ s, f i * g i = 0 := fun i hi => by cases' H with H H <;> simp [H i hi]
-    have : ∑ i in s, f i * g i = ∑ i in s, 0 := sum_congr rfl this
-    simp [this]
+    simp [sum_eq_zero this]
   push_neg at H
   by_cases H' : (∑ i in s, f i ^ p) ^ (1 / p) = ⊤ ∨ (∑ i in s, g i ^ q) ^ (1 / q) = ⊤
   · cases' H' with H' H' <;> simp [H', -one_div, -sum_eq_zero_iff, -rpow_eq_zero_iff, H]
@@ -760,6 +788,37 @@ theorem inner_le_Lp_mul_Lq (hpq : p.IsConjExponent q) :
     · refine Finset.sum_congr rfl fun i hi => ?_
       simp [H'.1 i hi, H'.2 i hi, -WithZero.coe_mul]
 #align ennreal.inner_le_Lp_mul_Lq ENNReal.inner_le_Lp_mul_Lq
+
+/-- **Weighted Hölder inequality**. -/
+lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) (w f : ι → ℝ≥0∞) :
+    ∑ i in s, w i * f i ≤ (∑ i in s, w i) ^ (1 - p⁻¹) * (∑ i in s, w i * f i ^ p) ^ p⁻¹ := by
+  obtain rfl | hp := hp.eq_or_lt
+  · simp
+  have hp₀ : 0 < p := by positivity
+  have hp₁ : p⁻¹ < 1 := inv_lt_one hp
+  by_cases H : (∑ i in s, w i) ^ (1 - p⁻¹) = 0 ∨ (∑ i in s, w i * f i ^ p) ^ p⁻¹ = 0
+  · replace H : (∀ i ∈ s, w i = 0) ∨ ∀ i ∈ s, w i = 0 ∨ f i = 0 := by
+      simpa [hp₀, hp₁, hp₀.not_lt, hp₁.not_lt, sum_eq_zero_iff_of_nonneg] using H
+    have (i) (hi : i ∈ s) : w i * f i = 0 := by cases' H with H H <;> simp [H i hi]
+    simp [sum_eq_zero this]
+  push_neg at H
+  by_cases H' : (∑ i in s, w i) ^ (1 - p⁻¹) = ⊤ ∨ (∑ i in s, w i * f i ^ p) ^ p⁻¹ = ⊤
+  · cases' H' with H' H' <;> simp [H', -one_div, -sum_eq_zero_iff, -rpow_eq_zero_iff, H]
+  replace H' : (∀ i ∈ s, w i ≠ ⊤) ∧ ∀ i ∈ s, w i * f i ^ p ≠ ⊤ := by
+    simpa [rpow_eq_top_iff,hp₀, hp₁, hp₀.not_lt, hp₁.not_lt, sum_eq_top_iff, not_or] using H'
+  have := coe_le_coe.2 $ NNReal.inner_le_weight_mul_Lp s hp.le (fun i ↦ ENNReal.toNNReal (w i))
+    fun i ↦ ENNReal.toNNReal (f i)
+  rw [coe_mul] at this
+  simp_rw [← coe_rpow_of_nonneg _ $ inv_nonneg.2 hp₀.le, coe_finset_sum, ENNReal.toNNReal_rpow,
+    ← ENNReal.toNNReal_mul, sum_congr rfl fun i hi ↦ coe_toNNReal (H'.2 i hi)] at this
+  simp [← ENNReal.coe_rpow_of_nonneg, hp₀.le, hp₁.le] at this
+  convert this using 2 with i hi
+  · obtain hw | hw := eq_or_ne (w i) 0
+    · simp [hw]
+    rw [coe_toNNReal (H'.1 _ hi), coe_toNNReal]
+    simpa [mul_eq_top, hw, hp₀, hp₀.not_lt, H'.1 _ hi] using H'.2 _ hi
+  · convert rfl with i hi
+    exact coe_toNNReal (H'.1 _ hi)
 
 /-- For `1 ≤ p`, the `p`-th power of the sum of `f i` is bounded above by a constant times the
 sum of the `p`-th powers of `f i`. Version for sums over finite sets, with `ℝ≥0∞`-valued functions.
@@ -779,7 +838,7 @@ theorem rpow_sum_le_const_mul_sum_rpow (hp : 1 ≤ p) :
     ENNReal.rpow_le_rpow (inner_le_Lp_mul_Lq s 1 f hpq.symm) hpq.nonneg
 #align ennreal.rpow_sum_le_const_mul_sum_rpow ENNReal.rpow_sum_le_const_mul_sum_rpow
 
-/-- Minkowski inequality: the `L_p` seminorm of the sum of two vectors is less than or equal
+/-- **Minkowski inequality**: the `L_p` seminorm of the sum of two vectors is less than or equal
 to the sum of the `L_p`-seminorms of the summands. A version for `ℝ≥0∞` valued nonnegative
 functions. -/
 theorem Lp_add_le (hp : 1 ≤ p) :
@@ -802,4 +861,4 @@ theorem Lp_add_le (hp : 1 ≤ p) :
 
 end ENNReal
 
-end HolderMinkowski
+end HoelderMinkowski
