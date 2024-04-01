@@ -17,6 +17,7 @@ This file provides a `Seq α` type representing possibly infinite lists (referre
   `f m = none` for all `m ≥ n`.
 -/
 
+set_option linter.flexible false
 namespace Stream'
 
 universe u v w

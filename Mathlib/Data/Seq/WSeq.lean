@@ -16,6 +16,7 @@ This file provides a `WSeq α` type representing partially defined possibly infi
 (referred here as weak sequences).
 -/
 
+set_option linter.flexible false
 namespace Stream'
 
 open Function
