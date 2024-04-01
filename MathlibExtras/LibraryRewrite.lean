@@ -19,4 +19,4 @@ open Mathlib.Tactic.LibraryRewrite
 run_cmd liftTermElabM do
   let path ← cachePath
   _ ← path.parent.mapM fun p => IO.FS.createDirAll p
-  pickle path (← (← RewriteCache.mk).get) `LibraryRewrites
+  pickle path (← (← RewriteCache.mk).get) `LibraryRewrite

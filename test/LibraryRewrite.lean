@@ -1,8 +1,61 @@
 import Mathlib
 
+/-- info: No unfolds found for 42 -/
+#guard_msgs in
+#unfold? 42
+
+/--
+info: Unfolds for -42:
+· Int.negOfNat 42
+· Int.negSucc 41
+-/
+#guard_msgs in
+#unfold? -42
+
+-- Rat.mk is private, so it doesn't show up here
+/--
+info: Unfolds for 42:
+· ↑42
+· NatCast.natCast 42
+· Rat.ofInt ↑42
+-/
+#guard_msgs in
+#unfold? (42 : Rat)
+
+/--
+info: Unfolds for 42:
+· ↑42
+· NatCast.natCast 42
+· { cauchy := ↑42 }
+-/
+#guard_msgs in
+#unfold? (42 : Real)
+
 variable (n : Nat)
-set_option profiler true
-set_option profiler.threshold 40
+
+/--
+info: Unfolds for n ∈ {n}:
+· Set.Mem n {n}
+· {n} n
+· Set.singleton n n
+· {b | b = n} n
+· n = n
+-/
+#guard_msgs in
+#unfold? n ∈ ({n} : Set Nat)
+variable (A B : Set Nat)
+/--
+info: Unfolds for n ∈ A ∪ B:
+· Set.Mem n (A ∪ B)
+· (A ∪ B) n
+· Set.union A B n
+· {a | a ∈ A ∨ a ∈ B} n
+· n ∈ A ∨ n ∈ B
+-/
+#guard_msgs in
+#unfold? n ∈ A ∪ B
+
+
 /--
 info: Pattern n + 1
 · Nat.succ n

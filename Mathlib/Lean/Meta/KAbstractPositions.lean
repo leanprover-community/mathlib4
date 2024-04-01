@@ -49,7 +49,7 @@ that allows the expression to be found by `kabstract`.
 Return `none` when the subexpression contains loose bound variables. -/
 def viewKAbstractSubExpr (e : Expr) (pos : SubExpr.Pos) : MetaM (Option (Expr × Option Nat)) := do
   let subExpr ← Core.viewSubexpr pos e
-  if e.hasLooseBVars then
+  if subExpr.hasLooseBVars then
     return none
   let positions ← kabstractPositions subExpr e
   let some n := positions.getIdx? pos | unreachable!

@@ -1,2 +1,2 @@
-import MathlibExtras.LibraryRewrites
+import MathlibExtras.LibraryRewrite
 import MathlibExtras.Rewrites

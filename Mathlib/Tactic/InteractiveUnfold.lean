@@ -76,7 +76,7 @@ where
     catch _ =>
       return acc
 
-/-- Return `true` if `e` doesn't contain any internal functions. -/
+/-- Determine whether `e` contains no internal names. -/
 def isUserFriendly (e : Expr) : Bool :=
   !e.foldConsts (init := false) (fun name => (· || name.isInternalDetail))
 
@@ -114,10 +114,10 @@ def tacticString (e unfold : Expr) (occ : Option Nat) (loc : Option Name) : Meta
   return mkRewrite occ false rfl loc
 
 /-- Render the unfolds of `e` as given by `filteredUnfolds`, with buttons at each suggestion
-for pasting the rewrite tactic. -/
-def renderDefinitions (e : Expr) (occ : Option Nat) (loc : Option Name) (range : Lsp.Range)
+for pasting the rewrite tactic. Return `none` when there are no unfolds. -/
+def renderUnfolds (e : Expr) (occ : Option Nat) (loc : Option Name) (range : Lsp.Range)
     (doc : FileWorker.EditableDocument) : MetaM (Option Html) := do
-  let results ← unfolds e
+  let results ← filteredUnfolds e
   if results.isEmpty then
     return none
   let core ← results.mapM fun unfold => do
@@ -156,11 +156,11 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
     Meta.withLCtx lctx md.localInstances do
 
       let some (subExpr, occ) ← viewKAbstractSubExpr (← loc.rootExpr) loc.pos |
-        return .text "rw doesn't work on expressions with bound variables."
-      let html ← renderDefinitions subExpr occ (← loc.location) props.replaceRange doc
+        return .text "expressions with bound variables are not supported"
+      let html ← renderUnfolds subExpr occ (← loc.location) props.replaceRange doc
       return html.getD
         <span>
-          could not find a definition for {<InteractiveCode fmt={← ppExprTagged subExpr}/>}
+          No unfolds found for {<InteractiveCode fmt={← ppExprTagged subExpr}/>}
         </span>
 
 /-- The component called by the `unfold?` tactic -/
@@ -197,7 +197,10 @@ def elabUnfoldCommand : Command.CommandElab := fun stx =>
     let e ← Term.elabTerm stx[1] none
     Term.synthesizeSyntheticMVarsNoPostponing
     let e ← Term.levelMVarToParam (← instantiateMVars e)  let e ← instantiateMVars e
-    let unfolds ← unfolds e
-    let unfolds := unfolds.toList.map (m! "· {·}")
-    logInfo (m! "Unfolds for {e}:\n"
-      ++ .joinSep unfolds "\n")
+    let unfolds ← filteredUnfolds e
+    if unfolds.isEmpty then
+      logInfo m! "No unfolds found for {e}"
+    else
+      let unfolds := unfolds.toList.map (m! "· {·}")
+      logInfo (m! "Unfolds for {e}:\n"
+        ++ .joinSep unfolds "\n")

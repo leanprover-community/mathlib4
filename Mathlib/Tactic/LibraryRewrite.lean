@@ -15,17 +15,20 @@ This file defines `rw??`, an interactive tactic that suggests rewrites for any e
 by the user.
 
 We use a cached `RefinedDiscrTree` to lookup a list of candidate rewrite lemmas. The cache
-excludes lemmas defined in the `Mathlib/Tactic` folder, since these lemmas aren't
+excludes lemmas defined in `Mathlib/Tactic/**` and `Init/Omega/**`, since these lemmas aren't
 supposed to ever be used directly.
 
 After this, each lemma is checked one by one to see whether it is applicable.
 
 The `RefinedDiscrTree` lookup groups the results by match pattern and gives a score to each pattern.
-This is used to display the results in sections, ordered by the score of the pattern.
+This is used to display the results in sections. The sections are ordered by this score.
+Within each section, the lemmas are sorted by `RewriteLemma.lt`.
 
-When a rewrite lemma intoduces new goals, these are shown with a `⊢`.
+The lemmas are optionally filtered to avoid duplicate rewrites, or trivial rewrites. This
+is controlled by the filter button on the top right of the results.
 
-The filter icon can be used to switch to an unfiltered view that also gives the lemma names.
+When a rewrite lemma introduces new goals, these are shown after a `⊢`.
+
 -/
 
 namespace Mathlib.Tactic.LibraryRewrite
@@ -65,7 +68,7 @@ instance (a b : RewriteLemma) : Decidable (a < b) :=
 
 /-- Return whether the definitions in this module should be ignored. -/
 def isBadModule (name : Name) : Bool :=
-  (`Mathlib.Tactic).isPrefixOf name
+  (`Mathlib.Tactic).isPrefixOf name || (`Init.Omega).isPrefixOf name
 
 /-- Similar to `Name.isBlackListed`. -/
 def isBadDecl (name : Name) (cinfo : ConstantInfo) (env : Environment) : Bool :=
@@ -96,7 +99,7 @@ def updateDiscrTree (name : Name) (cinfo : ConstantInfo) (d : RefinedDiscrTree R
     return d
   let (vars, _, eqn) ← forallMetaTelescope cinfo.type
   let some (lhs, rhs) := matchEqn? eqn | return d
-  -- don't index lemmas of the form `a = ?b` where `?b` is a variable not appearing in `a`?
+  -- don't index lemmas of the form `a = ?b` where `?b` is a variable not appearing in `a`
   if let .mvar mvarId := lhs then
     if (rhs.findMVar? (· == mvarId)).isNone then
       return d
@@ -130,9 +133,9 @@ def RewriteCache.mk : IO RewriteCache :=
 /-- The file path of the pre-build `RewriteCache` cache -/
 def cachePath : IO System.FilePath := do
   try
-    return (← findOLean `MathlibExtras.LibraryRewrites).withExtension "extra"
+    return (← findOLean `MathlibExtras.LibraryRewrite).withExtension "extra"
   catch _ =>
-    return ".lake" / "build" / "lib" / "MathlibExtras" / "LibraryRewrites.extra"
+    return ".lake" / "build" / "lib" / "MathlibExtras" / "LibraryRewrite.extra"
 
 private initialize cachedData : RewriteCache ← unsafe do
   let path ← cachePath
@@ -154,7 +157,7 @@ end Cache
 
 
 
-/-- Return all potential rewrite lemmas -/
+/-- Get all potential rewrite lemmas from the dicrimination tree. -/
 def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Bool)) := do
   let localResults  ← (← getLocalRewriteLemmas ).getMatchWithScore e (unify := false)
   let cachedResults ← (← getCachedRewriteLemmas).getMatchWithScore e (unify := false)
@@ -194,7 +197,8 @@ def checkLemma (rwLemma : RewriteLemma) (e : Expr) : MetaM (Option Rewrite) := d
   return some { rwLemma with proof, replacement, extraGoals }
 
 /-- Return all applicable library rewrites of `e`.
-The `Bool` indicates whether the lemmas are from the current file. -/
+The `Bool` indicates whether the lemmas are from the current file.
+Note that the result may contain duplicate rewrites. These can be removed with `filterRewrites`. -/
 def getRewrites (e : Expr) : MetaM (Array (Array Rewrite × Bool)) := do
   let candidates ← getCandidates e
   candidates.filterMapM fun (candidates, isLocal) => do
@@ -250,7 +254,7 @@ def filterRewrites {α} (e : Expr) (rewrites : Array α) (replacement : α → E
   return filtered
 
 
-/-! ### User interface code -/
+/-! ### User interface -/
 
 open PrettyPrinter Delaborator SubExpr in
 /-- if `e` is an application of a rewrite lemma,
@@ -319,9 +323,9 @@ structure RewriteInterface extends RewriteLemma where
   /-- The rewrite tactic string that performs the rewrite -/
   tactic : String
   /-- The replacement expression obtained from the rewrite -/
-  replacementExpr : Expr
+  replacement : Expr
   /-- The replacement expression obtained from the rewrite -/
-  replacement : String
+  replacementString : String
   /-- The extra goals created by the rewrite -/
   extraGoals : Array CodeWithInfos
   /-- The lemma name with hover information -/
@@ -331,7 +335,7 @@ structure RewriteInterface extends RewriteLemma where
 def Rewrite.toInterface (rw : Rewrite) (occ : Option Nat) (loc : Option Name)
     (initNames : PersistentHashMap Name MVarId) : MetaM RewriteInterface := do
   let tactic ← tacticString rw occ loc initNames
-  let replacement := Format.pretty (← ppExpr rw.replacement)
+  let replacementString := Format.pretty (← ppExpr rw.replacement)
   let mut extraGoals := #[]
   for (mvarId, bi) in rw.extraGoals do
     if bi.isExplicit then
@@ -340,7 +344,7 @@ def Rewrite.toInterface (rw : Rewrite) (occ : Option Nat) (loc : Option Name)
   let prettyLemma : CodeWithInfos := match ← ppExprTagged (← mkConstWithLevelParams rw.name) with
     | .tag tag _ => .tag tag (.text s!"{rw.name}")
     | code => code
-  return { rw with tactic, replacement, extraGoals, prettyLemma, replacementExpr := rw.replacement }
+  return { rw with tactic, replacementString, extraGoals, prettyLemma }
 
 /-- Return the Interfaces for rewriting `e`, both filtered and unfiltered. -/
 def getRewriteInterfaces (e : Expr) (occ : Option Nat) (loc : Option Name)
@@ -350,8 +354,8 @@ def getRewriteInterfaces (e : Expr) (occ : Option Nat) (loc : Option Name)
   let mut all := #[]
   for (rewrites, isLocal) in ← getRewrites e do
     let rewrites ← rewrites.mapM (·.toInterface occ loc initNames)
-    let filtered ← filterRewrites e rewrites (·.replacementExpr)
     all := all.push (rewrites, isLocal)
+    let filtered ← filterRewrites e rewrites (·.replacement)
     unless filtered.isEmpty do
       dedup := dedup.push (filtered, isLocal)
   return (dedup, all)
@@ -366,14 +370,14 @@ def RewriteLemma.pattern {α} (rwLemma : RewriteLemma) (k : Expr → MetaM α) :
     k side
 
 /-- Render the given rewrite results. -/
-def renderRewrites (results : Array (Array RewriteInterface × Bool)) (init : Option Html)
+def renderRewrites (e : Expr) (results : Array (Array RewriteInterface × Bool)) (init : Option Html)
     (range : Lsp.Range) (doc : FileWorker.EditableDocument) (showNames : Bool) : MetaM Html := do
   let htmls ← results.filterMapM (renderSection showNames)
   let htmls := match init with
       | some html => #[html] ++ htmls
       | none => htmls
   if htmls.isEmpty then
-    return .text "No rewrites found."
+    return <p> No rewrites found for <InteractiveCode fmt={← ppExprTagged e}/> </p>
   else
     return .element "div" #[("style", json% {"marginLeft" : "4px"})] htmls
 where
@@ -398,7 +402,7 @@ where
           <span className="font-code"> {
             Html.ofComponent MakeEditLink
               (.ofReplaceRange doc.meta range rw.tactic)
-              #[.text rw.replacement] }
+              #[.text rw.replacementString] }
           </span>
         let extraGoals := rw.extraGoals.concatMap fun extraGoal =>
           #[<br/>, <strong className="goal-vdash">⊢ </strong>, <InteractiveCode fmt={extraGoal}/>]
@@ -444,15 +448,15 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
 
         let { userNames := initNames, .. } ← getMCtx
         let some (subExpr, occ) ← viewKAbstractSubExpr (← loc.rootExpr) loc.pos |
-          return .text "rw doesn't work on expressions with bound variables."
+          return .text "expressions with bound variables are not supported"
         let location ← loc.location
 
         let unfoldsHtml ←
           InteractiveUnfold.renderDefinitions subExpr occ location props.replaceRange doc
 
         let (filtered, all) ← getRewriteInterfaces subExpr occ location initNames
-        let filtered ← renderRewrites filtered unfoldsHtml props.replaceRange doc false
-        let all      ← renderRewrites all      unfoldsHtml props.replaceRange doc true
+        let filtered ← renderRewrites subExpr filtered unfoldsHtml props.replaceRange doc false
+        let all      ← renderRewrites subExpr all      unfoldsHtml props.replaceRange doc true
         return <FilterDetails
           message={"Rewrite suggestions:"}
           all={all}
@@ -468,7 +472,7 @@ def LibraryRewriteComponent : Component SelectInsertParams :=
 To use `rw??`, shift-click an expression in the tactic state.
 This gives a list of rewrite suggestions for the selected expression.
 Click on a suggestion to replace `rw??` by a tactic that performs this rewrite.
-Click on the filter icon to switch to an unfiltered view that also shows the lemma names.
+Click on the filter icon (top right) to switch to an unfiltered view that also shows lemma names.
 -/
 elab stx:"rw??" : tactic => do
   let some range := (← getFileMap).rangeOfStx? stx | return
@@ -490,7 +494,7 @@ private def Rewrite.toMessageData (rw : Rewrite) : MetaM MessageData := do
 private def SectionToMessageData (sec : Array Rewrite × Bool) : MetaM (Option MessageData) := do
   let rewrites ← sec.1.toList.mapM (·.toMessageData)
   let rewrites : MessageData := .group (.joinSep rewrites "\n")
-  let some head := sec.1[0]? | return ""
+  let some head := sec.1[0]? | return none
   let head ← head.pattern (do
     let ctx : MessageDataContext :=
       { env := ← getEnv, mctx := ← getMCtx, lctx := ← getLCtx, opts := ← getOptions }
@@ -513,4 +517,7 @@ def elabrw??Command : Command.CommandElab := fun stx =>
     let rewrites ← rewrites.mapM fun (rewrites, isLocal) =>
       return (← filterRewrites e rewrites (·.replacement), isLocal)
     let sections ← liftMetaM $ rewrites.filterMapM SectionToMessageData
-    logInfo (.joinSep (sections.toList) "\n\n")
+    if sections.isEmpty then
+      logInfo m! "No rewrites found for {e}"
+    else
+      logInfo (.joinSep (sections.toList) "\n\n")
