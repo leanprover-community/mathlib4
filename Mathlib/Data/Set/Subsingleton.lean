@@ -125,8 +125,6 @@ end Subsingleton
 
 section Nontrivial
 
-
-
 variable {α : Type u} {a : α} {s t : Set α}
 
 @[simp]
@@ -168,7 +166,6 @@ theorem univ_eq_true_false : univ = ({True, False} : Set Prop) :=
 #align set.univ_eq_true_false Set.univ_eq_true_false
 
 end Nontrivial
-
 section Monotonicity
 
 /-! ### Monotonicity on singletons -/
