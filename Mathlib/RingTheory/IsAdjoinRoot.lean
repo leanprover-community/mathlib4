@@ -421,7 +421,7 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         intro i hi
         refine Set.mem_range.mpr ⟨⟨i, ?_⟩, rfl⟩
         contrapose! hi
-        simp only [Polynomial.toFinsupp_apply, Classical.not_not, Finsupp.mem_support_iff, Ne.def,
+        simp only [Polynomial.toFinsupp_apply, Classical.not_not, Finsupp.mem_support_iff, Ne,
           modByMonicHom, LinearMap.coe_mk, Finset.mem_coe]
         by_cases hx : h.toIsAdjoinRoot.repr x %ₘ f = 0
         · simp [hx]
