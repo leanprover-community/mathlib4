@@ -322,11 +322,9 @@ namespace ArithmeticFunction
 to an equality of complex sequences. -/
 lemma convolution_vonMangoldt_zeta : ↗Λ ⍟ ↗ζ = ↗Complex.log := by
   ext n
-  simp only [zeta_apply, cast_ite, cast_zero, cast_one, LSeries.convolution_def, mul_ite,
-    mul_zero, mul_one]
-  simp_rw [← ofReal_zero, ← apply_ite, ← ofReal_sum]
-  norm_cast
-  simpa [-vonMangoldt_mul_zeta] using congr_arg (· n) vonMangoldt_mul_zeta
+  simpa only [zeta_apply, apply_ite, cast_zero, cast_one, LSeries.convolution_def, mul_zero,
+    mul_one, mul_apply, natCoe_apply, ofReal_sum, ofReal_zero, log_apply, ofReal_log n.cast_nonneg]
+    using congr_arg (ofReal' <| · n) vonMangoldt_mul_zeta
 
 lemma convolution_vonMangoldt_const_one : ↗Λ ⍟ 1 = ↗Complex.log :=
   (convolution_one_eq_convolution_zeta _).trans convolution_vonMangoldt_zeta
@@ -352,8 +350,7 @@ namespace DirichletCharacter
 /-- A twisted version of the relation `Λ * ↑ζ = log` in terms of complex sequences. -/
 lemma convolution_twist_vonMangoldt {N : ℕ} (χ : DirichletCharacter ℂ N) :
     (↗χ * ↗Λ) ⍟ ↗χ = ↗χ * ↗Complex.log := by
-  nth_rewrite 2 [← mul_one ↗χ]
-  rw [DirichletCharacter.mul_convolution_distrib, convolution_vonMangoldt_const_one]
+  rw [← convolution_vonMangoldt_const_one, ← χ.mul_convolution_distrib, mul_one]
 
 /-- The L-series of the twist of the von Mangoldt function `Λ` by a Dirichlet character `χ`
 converges at `s` when `re s > 1`. -/
@@ -367,9 +364,9 @@ equals the negative logarithmtic derivative of the L-series of `χ` when `re s >
 lemma LSeries_twist_vonMangoldt_eq {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 < s.re) :
     L (↗χ * ↗Λ) s = - deriv (L ↗χ) s / L ↗χ s := by
   rcases eq_or_ne N 0 with rfl | hN
-  · simp only [modZero_eq_delta, delta_mul_eq_smul_delta, vonMangoldt_apply_one, ofReal_zero,
+  · simpa only [modZero_eq_delta, delta_mul_eq_smul_delta, vonMangoldt_apply_one, ofReal_zero,
       zero_smul, LSeries_zero, Pi.zero_apply, LSeries_delta, Pi.one_apply, div_one, zero_eq_neg]
-    exact deriv_const s 1
+      using deriv_const s 1
   -- now `N ≠ 0`
   have hχ : LSeriesSummable ↗χ s := (LSeriesSummable_iff hN χ).mpr hs
   have hs' : abscissaOfAbsConv ↗χ < s.re := by
@@ -395,8 +392,8 @@ lemma LSeries_vonMangoldt_eq {s : ℂ} (hs : 1 < s.re) : L ↗Λ s = - deriv (L 
 of the Riemann zeta function on its domain of convergence `re s > 1`. -/
 lemma LSeries_vonMangoldt_eq_deriv_riemannZeta_div {s : ℂ} (hs : 1 < s.re) :
     L ↗Λ s = - deriv riemannZeta s / riemannZeta s := by
-  convert LSeries_vonMangoldt_eq hs using 2
-  · refine neg_inj.mpr <| Filter.EventuallyEq.deriv_eq <| Filter.eventuallyEq_iff_exists_mem.mpr ?_
-    exact ⟨{z | 1 < z.re}, (isOpen_lt continuous_const continuous_re).mem_nhds hs,
-      fun _ hz ↦ (LSeries_one_eq_riemannZeta hz).symm⟩
-  · exact (LSeries_one_eq_riemannZeta hs).symm
+  suffices deriv (L 1) s = deriv riemannZeta s by
+    rw [LSeries_vonMangoldt_eq hs, ← LSeries_one_eq_riemannZeta hs, this]
+  refine Filter.EventuallyEq.deriv_eq <| Filter.eventuallyEq_iff_exists_mem.mpr ?_
+  exact ⟨{z | 1 < z.re}, (isOpen_lt continuous_const continuous_re).mem_nhds hs,
+    fun _ ↦ LSeries_one_eq_riemannZeta⟩
