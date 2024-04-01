@@ -3,9 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.Star.Basic
-import Mathlib.Data.Real.CauSeqCompletion
+import Mathlib.Algebra.Order.CauSeq.Completion
 
 #align_import data.real.basic from "leanprover-community/mathlib"@"cb42593171ba005beaaf4549fcfe0dece9ada4c9"
 
@@ -27,8 +26,6 @@ assert_not_exists Finset
 assert_not_exists Module
 assert_not_exists Submonoid
 assert_not_exists FloorRing
-
-open Pointwise
 
 /-- The type `ℝ` of real numbers constructed as equivalence classes of Cauchy sequences of rational
 numbers. -/
@@ -358,7 +355,8 @@ private theorem le_def' {x y : ℝ} : x ≤ y ↔ x < y ∨ x = y :=
   show le _ _ ↔ _ by rw [le_def]
 
 @[simp]
-theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by simp [le_def', mk_eq]; rfl
+theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by
+  simp only [le_def', mk_lt, mk_eq]; rfl
 #align real.mk_le Real.mk_le
 
 @[elab_as_elim]
@@ -552,7 +550,7 @@ instance : SemilatticeInf ℝ :=
 instance : SemilatticeSup ℝ :=
   inferInstance
 
-open Classical
+open scoped Classical
 
 instance : IsTotal ℝ (· ≤ ·) :=
   ⟨by
@@ -581,14 +579,15 @@ noncomputable instance : LinearOrderedField ℝ :=
     mul_inv_cancel := by
       rintro ⟨a⟩ h
       rw [mul_comm]
-      simp only [← ofCauchy_inv, ← ofCauchy_mul, ← ofCauchy_one, ← ofCauchy_zero,
-        Ne.def, ofCauchy.injEq] at *
+      simp only [← ofCauchy_inv, ← ofCauchy_mul, ← ofCauchy_one, ← ofCauchy_zero, Ne,
+        ofCauchy.injEq] at *
       exact CauSeq.Completion.inv_mul_cancel h
     inv_zero := by simp [← ofCauchy_zero, ← ofCauchy_inv]
     ratCast := (↑)
     ratCast_mk := fun n d hd h2 => by
       rw [← ofCauchy_ratCast, Rat.cast_mk', ofCauchy_mul, ofCauchy_inv, ofCauchy_natCast,
-        ofCauchy_intCast] }
+        ofCauchy_intCast]
+    qsmul := qsmulRec _ }
 
 -- Extra instances to short-circuit type class resolution
 noncomputable instance : LinearOrderedAddCommGroup ℝ := by infer_instance

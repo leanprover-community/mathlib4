@@ -125,7 +125,7 @@ The preferred way of setting this up is
 -/
 instance RestrictScalars.opModule [Module Sᵐᵒᵖ M] : Module Rᵐᵒᵖ (RestrictScalars R S M) :=
   letI : Module Sᵐᵒᵖ (RestrictScalars R S M) := ‹Module Sᵐᵒᵖ M›
-  Module.compHom M (RingHom.op $ algebraMap R S)
+  Module.compHom M (RingHom.op <| algebraMap R S)
 #align restrict_scalars.op_module RestrictScalars.opModule
 
 instance RestrictScalars.isCentralScalar [Module S M] [Module Sᵐᵒᵖ M] [IsCentralScalar S M] :

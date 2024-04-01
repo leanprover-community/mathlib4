@@ -136,7 +136,7 @@ theorem degree_divX_lt (hp0 : p ≠ 0) : (divX p).degree < p.degree := by
             _ ≤ degree (divX p * X) := by
               rw [← zero_add (degree X), degree_mul' this]
               exact add_le_add
-                (by rw [zero_le_degree_iff, Ne.def, divX_eq_zero_iff]
+                (by rw [zero_le_degree_iff, Ne, divX_eq_zero_iff]
                     exact fun h0 => h (h0.symm ▸ degree_C_le))
                     le_rfl
         rw [degree_add_eq_left_of_degree_lt this]; exact degree_lt_degree_mul_X hXp0
@@ -163,7 +163,7 @@ noncomputable def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
         MC _ _ (coeff_mul_X_zero _) hcp0
           (if hpX0 : divX p = 0 then show M (divX p * X) by rw [hpX0, zero_mul]; exact M0
           else MX (divX p) hpX0 (recOnHorner _ M0 MC MX))
-termination_by _ => p.degree
+termination_by p.degree
 #align polynomial.rec_on_horner Polynomial.recOnHorner
 
 /-- A property holds for all polynomials of positive `degree` with coefficients in a semiring `R`

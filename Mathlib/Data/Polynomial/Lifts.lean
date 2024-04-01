@@ -133,7 +133,7 @@ theorem erase_mem_lifts {p : S[X]} (n : ℕ) (h : p ∈ lifts f) : p.erase n ∈
     simp only [hk, RingHom.map_zero, erase_same]
   obtain ⟨i, hi⟩ := h k
   use i
-  simp only [hi, hk, erase_ne, Ne.def, not_false_iff]
+  simp only [hi, hk, erase_ne, Ne, not_false_iff]
 #align polynomial.erase_mem_lifts Polynomial.erase_mem_lifts
 
 section LiftDeg
@@ -148,8 +148,7 @@ theorem monomial_mem_lifts_and_degree_eq {s : S} {n : ℕ} (hl : monomial n s �
   obtain ⟨q, hq⟩ := hl
   replace hq := (ext_iff.1 hq) n
   have hcoeff : f (q.coeff n) = s := by
-    simp? [coeff_monomial] at hq says
-      simp only [coeff_map, coeff_monomial, ite_true] at hq
+    simp? [coeff_monomial] at hq says simp only [coeff_map, coeff_monomial, ↓reduceIte] at hq
     exact hq
   use monomial n (q.coeff n)
   constructor
@@ -160,7 +159,7 @@ theorem monomial_mem_lifts_and_degree_eq {s : S} {n : ℕ} (hl : monomial n s �
     exact hzero hcoeff.symm
   rw [← C_mul_X_pow_eq_monomial]
   rw [← C_mul_X_pow_eq_monomial]
-  simp only [hzero, hqzero, Ne.def, not_false_iff, degree_C_mul_X_pow]
+  simp only [hzero, hqzero, Ne, not_false_iff, degree_C_mul_X_pow]
 #align polynomial.monomial_mem_lifts_and_degree_eq Polynomial.monomial_mem_lifts_and_degree_eq
 
 /-- A polynomial lifts if and only if it can be lifted to a polynomial of the same degree. -/
@@ -182,7 +181,7 @@ theorem mem_lifts_and_degree_eq {p : S[X]} (hlifts : p ∈ lifts f) :
     rw [habs, eraseLead_zero, eq_self_iff_true, not_true] at erase_zero
     exact erase_zero
   have lead_zero : p.coeff p.natDegree ≠ 0 := by
-    rw [← leadingCoeff, Ne.def, leadingCoeff_eq_zero]; exact pzero
+    rw [← leadingCoeff, Ne, leadingCoeff_eq_zero]; exact pzero
   obtain ⟨lead, hlead⟩ :=
     monomial_mem_lifts_and_degree_eq
       (monomial_mem_lifts p.natDegree ((lifts_iff_coeff_lifts p).1 hlifts p.natDegree))
@@ -235,7 +234,7 @@ theorem lifts_and_natDegree_eq_and_monic {p : S[X]} (hlifts : p ∈ lifts f) (hp
     ∃ q : R[X], map f q = p ∧ q.natDegree = p.natDegree ∧ q.Monic := by
   cases' subsingleton_or_nontrivial S with hR hR
   · obtain rfl : p = 1 := Subsingleton.elim _ _
-    refine' ⟨1, Subsingleton.elim _ _, by simp, by simp⟩
+    exact ⟨1, Subsingleton.elim _ _, by simp, by simp⟩
   obtain ⟨p', h₁, h₂, h₃⟩ := lifts_and_degree_eq_and_monic hlifts hp
   exact ⟨p', h₁, natDegree_eq_of_degree_eq h₂, h₃⟩
 #align polynomial.lifts_and_nat_degree_eq_and_monic Polynomial.lifts_and_natDegree_eq_and_monic

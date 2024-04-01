@@ -29,7 +29,7 @@ def a (n : ℕ) : ℤ :=
 theorem find_specified_factor {p : ℕ} (hp : Nat.Prime p) (hp2 : p ≠ 2) (hp3 : p ≠ 3) :
     ↑p ∣ a (p - 2) := by
   -- Since `p` is neither `2` nor `3`, it is coprime with `2`, `3`, and `6`
-  rw [Ne.def, ← Nat.prime_dvd_prime_iff_eq hp (by decide), ← Nat.Prime.coprime_iff_not_dvd hp]
+  rw [Ne, ← Nat.prime_dvd_prime_iff_eq hp (by decide), ← Nat.Prime.coprime_iff_not_dvd hp]
     at hp2 hp3
   have : Int.gcd p 6 = 1 := Nat.coprime_mul_iff_right.2 ⟨hp2, hp3⟩
   -- Nat arithmetic needed to deal with powers
@@ -79,5 +79,5 @@ theorem imo2005_q4 {k : ℕ} (hk : 0 < k) : (∀ n : ℕ, 1 ≤ n → IsCoprime 
   refine h (p - 2) ?_ (find_specified_factor hp hp2 hp3)
   calc
     1 = 3 - 2 := by norm_num
-    _ ≤ p - 2 := tsub_le_tsub_right (Nat.succ_le_of_lt $ hp.two_le.lt_of_ne' hp2) _
+    _ ≤ p - 2 := tsub_le_tsub_right (Nat.succ_le_of_lt <| hp.two_le.lt_of_ne' hp2) _
 #align imo2005_q4 imo2005_q4

@@ -7,6 +7,7 @@ import Mathlib.Mathport.Rename
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.TypeStar
 
 #align_import init.algebra.order from "leanprover-community/lean"@"c2bcdbcbe741ed37c361a30d38e179182b989f76"
 
@@ -15,13 +16,6 @@ import Mathlib.Tactic.SplitIfs
 
 Defines classes for preorders, partial orders, and linear orders
 and proves some basic lemmas about them.
--/
-
-/-
-TODO: Does Lean4 have an equivalent for this:
-  Make sure instances defined in this file have lower priority than the ones
-  defined for concrete structures
-set_option default_priority 100
 -/
 
 universe u
@@ -50,6 +44,11 @@ variable [Preorder α]
 theorem le_refl : ∀ a : α, a ≤ a :=
   Preorder.le_refl
 #align le_refl le_refl
+
+/-- A version of `le_refl` where the argument is implicit -/
+theorem le_rfl {a : α} : a ≤ a :=
+  le_refl a
+#align le_rfl le_rfl
 
 /-- The relation `≤` on a preorder is transitive. -/
 @[trans]
@@ -135,15 +134,15 @@ theorem gt_of_ge_of_gt {a b c : α} (h₁ : a ≥ b) (h₂ : b > c) : a > c :=
   lt_of_lt_of_le h₂ h₁
 #align gt_of_ge_of_gt gt_of_ge_of_gt
 
--- porting note: new
-instance : @Trans α α α LE.le LE.le LE.le := ⟨le_trans⟩
-instance : @Trans α α α LT.lt LT.lt LT.lt := ⟨lt_trans⟩
-instance : @Trans α α α LT.lt LE.le LT.lt := ⟨lt_of_lt_of_le⟩
-instance : @Trans α α α LE.le LT.lt LT.lt := ⟨lt_of_le_of_lt⟩
-instance : @Trans α α α GE.ge GE.ge GE.ge := ⟨ge_trans⟩
-instance : @Trans α α α GT.gt GT.gt GT.gt := ⟨gt_trans⟩
-instance : @Trans α α α GT.gt GE.ge GT.gt := ⟨gt_of_gt_of_ge⟩
-instance : @Trans α α α GE.ge GT.gt GT.gt := ⟨gt_of_ge_of_gt⟩
+-- Porting note (#10754): new instance
+instance (priority := 900) : @Trans α α α LE.le LE.le LE.le := ⟨le_trans⟩
+instance (priority := 900) : @Trans α α α LT.lt LT.lt LT.lt := ⟨lt_trans⟩
+instance (priority := 900) : @Trans α α α LT.lt LE.le LT.lt := ⟨lt_of_lt_of_le⟩
+instance (priority := 900) : @Trans α α α LE.le LT.lt LT.lt := ⟨lt_of_le_of_lt⟩
+instance (priority := 900) : @Trans α α α GE.ge GE.ge GE.ge := ⟨ge_trans⟩
+instance (priority := 900) : @Trans α α α GT.gt GT.gt GT.gt := ⟨gt_trans⟩
+instance (priority := 900) : @Trans α α α GT.gt GE.ge GT.gt := ⟨gt_of_gt_of_ge⟩
+instance (priority := 900) : @Trans α α α GE.ge GT.gt GT.gt := ⟨gt_of_ge_of_gt⟩
 
 theorem not_le_of_gt {a b : α} (h : a > b) : ¬a ≤ b :=
   (le_not_le_of_lt h).right
@@ -374,13 +373,13 @@ theorem not_le {a b : α} : ¬a ≤ b ↔ b < a :=
   (lt_iff_not_ge _ _).symm
 #align not_le not_le
 
-instance (a b : α) : Decidable (a < b) :=
+instance (priority := 900) (a b : α) : Decidable (a < b) :=
   LinearOrder.decidableLT a b
 
-instance (a b : α) : Decidable (a ≤ b) :=
+instance (priority := 900) (a b : α) : Decidable (a ≤ b) :=
   LinearOrder.decidableLE a b
 
-instance (a b : α) : Decidable (a = b) :=
+instance (priority := 900) (a b : α) : Decidable (a = b) :=
   LinearOrder.decidableEq a b
 
 theorem eq_or_lt_of_not_lt {a b : α} (h : ¬a < b) : a = b ∨ b < a :=
@@ -394,7 +393,7 @@ instance : IsTotalPreorder α (· ≤ ·)
 
 -- TODO(Leo): decide whether we should keep this instance or not
 instance isStrictWeakOrder_of_linearOrder : IsStrictWeakOrder α (· < ·) :=
-  have : IsTotalPreorder α (· ≤ ·) := by infer_instance -- porting note: added
+  have : IsTotalPreorder α (· ≤ ·) := by infer_instance -- Porting note: added
   isStrictWeakOrder_of_isTotalPreorder lt_iff_not_ge
 #align is_strict_weak_order_of_linear_order isStrictWeakOrder_of_linearOrder
 
@@ -414,7 +413,7 @@ theorem le_imp_le_of_lt_imp_lt {β} [Preorder α] [LinearOrder β] {a b : α} {c
   le_of_not_lt fun h' => not_le_of_gt (H h') h
 #align le_imp_le_of_lt_imp_lt le_imp_le_of_lt_imp_lt
 
--- porting note: new
+-- Porting note: new
 section Ord
 
 theorem compare_lt_iff_lt {a b : α} : (compare a b = .lt) ↔ a < b := by
@@ -430,7 +429,7 @@ theorem compare_gt_iff_gt {a b : α} : (compare a b = .gt) ↔ a > b := by
 
 theorem compare_eq_iff_eq {a b : α} : (compare a b = .eq) ↔ a = b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  split_ifs <;> try simp only []
+  split_ifs <;> try simp only
   case _ h   => exact false_iff_iff.2 <| ne_iff_lt_or_gt.2 <| .inl h
   case _ _ h => exact true_iff_iff.2 h
   case _ _ h => exact false_iff_iff.2 h

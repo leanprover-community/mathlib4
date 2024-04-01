@@ -63,7 +63,7 @@ theorem W_eq_factorial_ratio (n : ℕ) :
     W n = 2 ^ (4 * n) * n ! ^ 4 / ((2 * n)! ^ 2 * (2 * n + 1)) := by
   induction' n with n IH
   · simp only [W, prod_range_zero, Nat.factorial_zero, mul_zero, pow_zero,
-      algebraMap.coe_one, one_pow, mul_one, algebraMap.coe_zero, zero_add, div_self, Ne.def,
+      algebraMap.coe_one, one_pow, mul_one, algebraMap.coe_zero, zero_add, div_self, Ne,
       one_ne_zero, not_false_iff]
     norm_num
   · unfold W at IH ⊢
@@ -93,7 +93,7 @@ theorem le_W (k : ℕ) : ((2 : ℝ) * k + 1) / (2 * k + 2) * (π / 2) ≤ W k :=
   rw [W_eq_integral_sin_pow_div_integral_sin_pow, le_div_iff (integral_sin_pow_pos _)]
   convert integral_sin_pow_succ_le (2 * k + 1)
   rw [integral_sin_pow (2 * k)]
-  simp only [sin_zero, ne_eq, add_eq_zero, and_false, not_false_eq_true, zero_pow', cos_zero,
+  simp only [sin_zero, ne_eq, add_eq_zero, and_false, not_false_eq_true, zero_pow, cos_zero,
     mul_one, sin_pi, cos_pi, mul_neg, neg_zero, sub_self, zero_div, zero_add]
   norm_cast
 #align real.wallis.le_W Real.Wallis.le_W

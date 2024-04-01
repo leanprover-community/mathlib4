@@ -28,7 +28,6 @@ commutative ring, field of fractions
 
 
 variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
-
 variable [Algebra R S] {P : Type*} [CommRing P]
 
 open BigOperators Polynomial
@@ -41,7 +40,7 @@ open Polynomial
 
 variable [IsLocalization M S]
 
-open Classical
+open scoped Classical
 
 /-- `coeffIntegerNormalization p` gives the coefficients of the polynomial
 `integerNormalization p` -/
@@ -125,7 +124,6 @@ namespace IsFractionRing
 open IsLocalization
 
 variable {A K C : Type*} [CommRing A] [IsDomain A] [Field K] [Algebra A K] [IsFractionRing A K]
-
 variable [CommRing C]
 
 theorem integerNormalization_eq_zero_iff {p : K[X]} :
@@ -177,11 +175,8 @@ open IsLocalization
 section IsIntegral
 
 variable {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
-
 variable [Algebra R Rₘ] [IsLocalization M Rₘ]
-
 variable [Algebra S Sₘ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
-
 variable {M}
 
 open Polynomial
@@ -282,7 +277,7 @@ theorem IsLocalization.scaleRoots_commonDenom_mem_lifts (p : Rₘ[X])
 
 theorem IsIntegral.exists_multiple_integral_of_isLocalization [Algebra Rₘ S] [IsScalarTower R Rₘ S]
     (x : S) (hx : IsIntegral Rₘ x) : ∃ m : M, IsIntegral R (m • x) := by
-  cases' subsingleton_or_nontrivial Rₘ with _ nontriv <;> skip
+  cases' subsingleton_or_nontrivial Rₘ with _ nontriv
   · haveI := (_root_.algebraMap Rₘ S).codomain_trivial
     exact ⟨1, Polynomial.X, Polynomial.monic_X, Subsingleton.elim _ _⟩
   obtain ⟨p, hp₁, hp₂⟩ := hx
@@ -307,9 +302,7 @@ namespace IsIntegralClosure
 
 variable (A)
 variable {L : Type*} [Field K] [Field L] [Algebra A K] [Algebra A L] [IsFractionRing A K]
-
 variable (C : Type*) [CommRing C] [IsDomain C] [Algebra C L] [IsIntegralClosure C A L]
-
 variable [Algebra A C] [IsScalarTower A C L]
 
 open Algebra
@@ -447,14 +440,51 @@ theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [F
   have mk_yz_eq : IsLocalization.mk' L y' z' = IsLocalization.mk' L y ⟨_, hz0'⟩ := by
     rw [Algebra.smul_def, mul_comm _ y, mul_comm _ y'] at yz_eq
     exact IsLocalization.mk'_eq_of_eq (by rw [mul_comm _ y, mul_comm _ y', yz_eq])
-  suffices hy : algebraMap S L (a * y) ∈ Submodule.span K ((algebraMap S L) '' b)
-  · rw [mk_yz_eq, IsFractionRing.mk'_eq_div, ← IsScalarTower.algebraMap_apply,
+  suffices hy : algebraMap S L (a * y) ∈ Submodule.span K ((algebraMap S L) '' b) by
+    rw [mk_yz_eq, IsFractionRing.mk'_eq_div, ← IsScalarTower.algebraMap_apply,
       IsScalarTower.algebraMap_apply R K L, div_eq_mul_inv, ← mul_assoc, mul_comm, ← map_inv₀, ←
       Algebra.smul_def, ← _root_.map_mul]
     exact (Submodule.span K _).smul_mem _ hy
   refine' Submodule.span_subset_span R K _ _
   rw [Submodule.span_algebraMap_image_of_tower]
-  exact Submodule.mem_map_of_mem (h (Ideal.mem_span_singleton.mpr ⟨y, rfl⟩))
+  -- Note: #8386 had to specify the value of `f` here:
+  exact Submodule.mem_map_of_mem (f := LinearMap.restrictScalars _ _)
+    (h (Ideal.mem_span_singleton.mpr ⟨y, rfl⟩))
 #align is_fraction_ring.ideal_span_singleton_map_subset IsFractionRing.ideal_span_singleton_map_subset
 
 end IsFractionRing
+
+lemma isAlgebraic_of_isLocalization {R} [CommRing R] (M : Submonoid R) (S) [CommRing S]
+    [Nontrivial R] [Algebra R S] [IsLocalization M S] : Algebra.IsAlgebraic R S := by
+  intro x
+  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M x
+  by_cases hs : (s : R) = 0
+  · have := IsLocalization.mk'_spec S x s
+    rw [hs, map_zero, mul_zero] at this
+    exact ⟨X, X_ne_zero, by simp [IsLocalization.mk'_eq_mul_mk'_one x, ← this]⟩
+  refine ⟨s • X - C x, ?_, ?_⟩
+  · intro e; apply hs
+    simpa only [coeff_sub, coeff_smul, coeff_X_one, coeff_C_succ, sub_zero, coeff_zero,
+      ← Algebra.algebraMap_eq_smul_one, Submonoid.smul_def,
+      Algebra.id.map_eq_id, RingHom.id_apply] using congr_arg (Polynomial.coeff · 1) e
+  · simp only [map_sub, Algebra.smul_def, Submonoid.smul_def,
+      map_mul, AlgHom.commutes, aeval_X, IsLocalization.mk'_spec', aeval_C, sub_self]
+
+open nonZeroDivisors in
+lemma isAlgebraic_of_isFractionRing {R S} (K L) [CommRing R] [CommRing S] [Field K] [CommRing L]
+    [Algebra R S] [Algebra R K] [Algebra R L] [Algebra S L] [Algebra K L] [IsScalarTower R S L]
+    [IsScalarTower R K L] [IsFractionRing S L]
+    (h : Algebra.IsIntegral R S) : Algebra.IsAlgebraic K L := by
+  intro x
+  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective S⁰ x
+  apply IsIntegral.isAlgebraic
+  rw [IsLocalization.mk'_eq_mul_mk'_one]
+  apply RingHom.IsIntegralElem.mul
+  · apply IsIntegral.tower_top (R := R)
+    apply IsIntegral.map (IsScalarTower.toAlgHom R S L)
+    exact h x
+  · show IsIntegral _ _
+    rw [← isAlgebraic_iff_isIntegral, ← IsAlgebraic.invOf_iff, isAlgebraic_iff_isIntegral]
+    apply IsIntegral.tower_top (R := R)
+    apply IsIntegral.map (IsScalarTower.toAlgHom R S L)
+    exact h s
