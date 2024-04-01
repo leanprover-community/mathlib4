@@ -311,7 +311,7 @@ section Semiring
 
 variable [Semiring R] (h_comm : Commute x y)
 
-theorem add_pow_of_add_le_succ_eq_zero_of_pow_eq_zero {m n k : ℕ}
+theorem add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero {m n k : ℕ}
     (hx : x ^ m = 0) (hy : y ^ n = 0) (h : m + n ≤ k + 1) :
     (x + y) ^ k = 0 := by
   rw [h_comm.add_pow']
