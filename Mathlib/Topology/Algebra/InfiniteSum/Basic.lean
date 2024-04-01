@@ -223,9 +223,9 @@ protected theorem Multipliable.map_iff_of_leftInverse [CommMonoid γ] [Topologic
 #align summable.map_iff_of_left_inverse Summable.map_iff_of_leftInverse
 
 @[to_additive]
-theorem Multipliable.tprod_map [CommMonoid γ] [TopologicalSpace γ] [T2Space γ] (hf : Multipliable f)
+theorem Multipliable.map_tprod [CommMonoid γ] [TopologicalSpace γ] [T2Space γ] (hf : Multipliable f)
     {G} [FunLike G α γ] [MonoidHomClass G α γ] (g : G) (hg : Continuous g) :
-    ∏' i, g (f i) = g (∏' i, f i) := HasProd.tprod_eq (HasProd.map hf.hasProd g hg)
+    g (∏' i, f i) = ∏' i, g (f i) := (HasProd.tprod_eq (HasProd.map hf.hasProd g hg)).symm
 
 @[to_additive]
 theorem Inducing.multipliable_iff_tprod_comp_mem_image [CommMonoid γ] [TopologicalSpace γ]
@@ -236,7 +236,7 @@ theorem Inducing.multipliable_iff_tprod_comp_mem_image [CommMonoid γ] [Topologi
     constructor
     · exact hf.map g hg.continuous
     · use ∏' i, f i
-      exact (hf.tprod_map g hg.continuous).symm
+      exact hf.map_tprod g hg.continuous
   · rintro ⟨hgf, a, ha⟩
     use a
     have := hgf.hasProd
