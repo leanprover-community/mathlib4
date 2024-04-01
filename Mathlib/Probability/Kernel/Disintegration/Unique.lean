@@ -127,7 +127,7 @@ end Measure
 
 section KernelAndMeasure
 
-lemma kernel.apply_eq_measure_condKernel_of_compProd_eq [CountableOrCountablyGenerated α β]
+lemma kernel.apply_eq_measure_condKernel_of_compProd_eq
     {ρ : kernel α (β × Ω)} [IsFiniteKernel ρ] {κ : kernel (α × β) Ω} [IsFiniteKernel κ]
     (hκ : kernel.fst ρ ⊗ₖ κ = ρ) (a : α) :
     (fun b ↦ κ (a, b)) =ᵐ[kernel.fst ρ a] (ρ a).condKernel := by
