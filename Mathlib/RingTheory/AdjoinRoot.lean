@@ -270,13 +270,13 @@ theorem of.injective_of_degree_ne_zero [IsDomain R] (hf : f.degree ≠ 0) :
     rwa [degree_C h_contra, zero_le_degree_iff]
 #align adjoin_root.of.injective_of_degree_ne_zero AdjoinRoot.of.injective_of_degree_ne_zero
 
-/-- `commutativity` is a tactic that discharges goals of the form `Commute a b`
-in commutative semirings by using `aesop`.
+-- /-- `commutativity` is a tactic that discharges goals of the form `Commute a b`
+-- in commutative semirings by using `aesop`.
 
-It is currently only used in `AdjoinRoot.lift`. -/
-macro "commutativity" : tactic =>
-  `(tactic| first | aesop |
-    fail "tactic 'commutativity' failed to find a proof. Hint: tag more results with `@[aesop]`.")
+-- It is currently only used in `AdjoinRoot.lift`. -/
+-- macro "commutativity" : tactic =>
+--   `(tactic| first | aesop |
+--     fail "tactic 'commutativity' failed to find a proof. Hint: tag more results with `@[aesop]`.")
 
 /-- Given `x : S`, lift to `AdjoinRoot f →+* S`.
 a ring homomorphism `i : R →+* S` whose image commutes with `x`.
@@ -284,6 +284,9 @@ a ring homomorphism `i : R →+* S` whose image commutes with `x`.
 We write `(lift i x h) y` to have `commutativity` automatically fill in a proof that the image
 commutes with `x`.
 -/
+example (S : Type*) [CommRing S] ( a b : S) : Commute a b := by
+  aesop[Commute.all]
+
 def lift [Semiring S] (i : R →+* S) (x : S) (h : f.eval₂ i x = 0)
     (hcomm : ∀ r, Commute (i r) x := by commutativity) :
     AdjoinRoot f →+* S := by
@@ -588,7 +591,7 @@ theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff�
   refine' (minpoly.unique K _ f'_monic _ _).symm
   · rw [AlgHom.map_mul, aeval_eq, mk_self, zero_mul]
   intro q q_monic q_aeval
-  have commutes : (lift (algebraMap K (AdjoinRoot f)) (root f) q_aeval).comp (mk q) = mk f := by
+  have commutes : (lift (algebraMap K (AdjoinRoot f)) (root f) q_aeval (hcomm := fun r ↦ by apply Commute.all)).comp (mk q) = mk f := by
     ext
     · simp only [RingHom.comp_apply, mk_C, lift_of']
       rfl

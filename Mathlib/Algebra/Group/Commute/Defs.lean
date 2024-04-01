@@ -141,7 +141,7 @@ protected theorem mul_mul_mul_comm (hbc : Commute b c) (a d : S) :
 
 end Semigroup
 
-@[to_additive, commutativity]
+@[to_additive (attr := commutativity)]
 protected theorem all {S : Type*} [CommMagma S] (a b : S) : Commute a b :=
   mul_comm a b
 #align commute.all Commute.allₓ
