@@ -230,17 +230,18 @@ def getStained! (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : Arr
 /-- Gets the value of the `linter.nonTerminalSimp` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.nonTerminalSimp o
 
-/-- `stained.toFVarId lctx st` takes a local context `lctx` and a `stained` `st` and returns
-the array of `FVarId`s that `lctx` assigns to `st`:
+/-- `stained.toFMVarId mv lctx st` takes a metavariable `mv`, a local context `lctx` and
+a `stained` `st` and returns the array of pairs `(FVarId, mv)`s that `lctx` assigns to `st`
+(the second component is always `mv`):
 * if `st` "is" a `Name`, returns the singleton of the `FVarId` with the name carried by `st`,
 * if `st` is `.goal`, returns the singleton `#[default]`,
 * if `st` is `.wildcard`, returns the array of all the `FVarId`s in `lctx` with also `default`
   (to keep track of the `goal`).
 -/
-def stained.toFVarId (lctx: LocalContext) : stained → Array (FVarId × MVarId)
-  | name n   => #[(((lctx.findFromUserName? n).getD default).fvarId, default)]
-  | goal     => #[default]
-  | wildcard => (lctx.getFVarIds.push default).map (·, default)
+def stained.toFMVarId (mv : MVarId) (lctx: LocalContext) : stained → Array (FVarId × MVarId)
+  | name n   => #[(((lctx.findFromUserName? n).getD default).fvarId, mv)]
+  | goal     => #[(default, mv)]
+  | wildcard => (lctx.getFVarIds.push default).map (·, mv)
 
 /-- `SyntaxNodeKind`s that are mostly "formatting": mostly they are ignored
 because we do not want the linter to spend time on them.
@@ -338,11 +339,13 @@ def reallyPersist (fmvars : Array (FVarId × MVarId)) (mvs0 mvs1 : List MVarId) 
 -/
   return inert ++ new
 
+/-
 universe u v in
 instance {A : Type u} {B : Type v} [Hashable A] [Hashable B] : Hashable (A ⊕ B) where
   hash ab := by cases ab with
     | inl a => sorry
     | inr b => sorry
+-/
 
 /-- The main entry point to the unreachable tactic linter. -/
 def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
@@ -389,7 +392,7 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
       let lctx0 := (mvs0.map ctx0.decls.find?).reduceOption.map (·.lctx)
       let lctx1 := (mvs1.map ctx1.decls.find?).reduceOption.map (·.lctx)
       for lc0 in lctx0 do
-        let fvars := lc0.getFVarIds
+--        let fvars := lc0.getFVarIds
         let fvars := stains.toArray.map Prod.fst
         for lc1 in lctx1 do for fv in fvars do
           let cand_fv := persistFVars fv.1 lc0 lc1
@@ -426,7 +429,7 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 --        (! mvs1.length < mvs0.length) then
         for currMVar1 in mvs1 do--.getD 0 default
           let lctx1 := ((ctx1.decls.find? currMVar1).getD default).lctx
-          let locsAfter := d.toFVarId lctx1
+          let locsAfter := d.toFMVarId currMVar1 lctx1
 
           for l in locsAfter do
 --            logInfoAt s --trace[flexible]
@@ -439,11 +442,11 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
         if !followers.contains skind then
           for currMVar0 in mvs0 do --.getD 0 default
             let lctx0 := ((ctx0.decls.find? currMVar0).getD default).lctx
-            let foundFvs := (stained_in_syntax.map (·.toFVarId lctx0)).flatten.filter (· != default)
+            let foundFvs := (stained_in_syntax.map (·.toFMVarId currMVar0 lctx0)).flatten --.filter (· != default)
             -- we collect all the references to potential locations:
             -- * in `at`-clauses via `d.toFVarId`, e.g. the `h` in `rw at h`;
             -- * inside the syntax of the tactic `d`, e.g. the `h` in `rw [h]`.
-            let locsBefore := d.toFVarId lctx0 ++ foundFvs
+            let locsBefore := d.toFMVarId currMVar0 lctx0 ++ foundFvs
             for l in locsBefore do
               if let some (stdLoc, kind) := stains.find? l then
                 --logInfoAt s m!"l: {locsBefore.size}, mvs0: {mvs0.length}"
