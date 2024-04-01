@@ -138,6 +138,10 @@ def map {β : Type*} [Lattice β] [OrderBot β] {a : α} (e : α ≃o β) (P : F
     convert P.not_bot_mem
     exact e.symm.map_bot
 
+@[simp]
+theorem parts_map {β : Type*} [Lattice β] [OrderBot β] {e : α ≃o β} :
+    (P.map e).parts = P.parts.map e := rfl
+
 variable (α)
 
 /-- The empty finpartition. -/
@@ -204,10 +208,6 @@ theorem parts_nonempty_iff : P.parts.Nonempty ↔ a ≠ ⊥ := by
 theorem parts_nonempty (P : Finpartition a) (ha : a ≠ ⊥) : P.parts.Nonempty :=
   parts_nonempty_iff.2 ha
 #align finpartition.parts_nonempty Finpartition.parts_nonempty
-
-@[simp]
-theorem parts_map {β : Type*} [Lattice β] [OrderBot β] {e : α ≃o β} :
-    (P.map e).parts = P.parts.map e := rfl
 
 instance : Unique (Finpartition (⊥ : α)) :=
   { (inferInstance : Inhabited (Finpartition (⊥ : α))) with
