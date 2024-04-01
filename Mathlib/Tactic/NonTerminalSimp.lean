@@ -353,15 +353,15 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
       let stained_in_syntax := getL s
       let lctx0 := (mvs0.map ctx0.decls.find?).reduceOption.map (·.lctx)
       let lctx1 := (mvs1.map ctx1.decls.find?).reduceOption.map (·.lctx)
-      for lctx in lctx0 do
-        let fvars := lctx.getFVarIds
-        for lcn in lctx1 do for fv in fvars do
-          let cand_fv := persistFVars fv lctx lcn
+      for lc0 in lctx0 do
+        let fvars := lc0.getFVarIds
+        for lc1 in lctx1 do for fv in fvars do
+          let cand_fv := persistFVars fv lc0 lc1
           let olds := stains.toArray.filter fun (a, _) => a == fv
           for (_, mv, k) in olds do
             stains := stains.insert cand_fv (mv, k)
           logInfoAt s m!"candidate: {fv.name} --> {cand_fv.name}"
-        let ldecls := fvars.map fun d => (lctx.get! d|>.userName, d.name)
+        let ldecls := fvars.map fun d => (lc0.get! d|>.userName, d.name)
         logInfoAt s m!"before '{s}' (username, fvarid):\n{ldecls}"
       for lctx in lctx1 do
         let fvars := lctx.getFVarIds
