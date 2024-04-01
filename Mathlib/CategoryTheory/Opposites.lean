@@ -181,7 +181,7 @@ protected def op (F : C ⥤ D) : Cᵒᵖ ⥤ Dᵒᵖ where
 /-- Given a functor `F : Cᵒᵖ ⥤ Dᵒᵖ` we can take the "unopposite" functor `F : C ⥤ D`.
 In informal mathematics no distinction is made between these.
 -/
-@[simps]
+@[simps, pp_dot]
 protected def unop (F : Cᵒᵖ ⥤ Dᵒᵖ) : C ⥤ D where
   obj X := unop (F.obj (op X))
   map f := (F.map f.op).unop
@@ -479,7 +479,6 @@ end Iso
 namespace NatIso
 
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable {F G : C ⥤ D}
 
 /-- The natural isomorphism between opposite functors `G.op ≅ F.op` induced by a natural
@@ -596,7 +595,6 @@ def isoOpEquiv (A B : Cᵒᵖ) : (A ≅ B) ≃ (B.unop ≅ A.unop) where
 namespace Functor
 
 variable (C)
-
 variable (D : Type u₂) [Category.{v₂} D]
 
 /-- The equivalence of functor categories induced by `op` and `unop`.

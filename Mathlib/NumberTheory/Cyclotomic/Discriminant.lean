@@ -30,7 +30,6 @@ open scoped Polynomial Cyclotomic
 namespace IsPrimitiveRoot
 
 variable {n : ℕ+} {K : Type u} [Field K] [CharZero K] {ζ : K}
-
 variable [ce : IsCyclotomicExtension {n} ℚ K]
 
 /-- The discriminant of the power basis given by a primitive root of unity `ζ` is the same as the
@@ -54,7 +53,6 @@ end IsPrimitiveRoot
 namespace IsCyclotomicExtension
 
 variable {p : ℕ+} {k : ℕ} {K : Type u} {L : Type v} {ζ : L} [Field K] [Field L]
-
 variable [Algebra K L]
 
 set_option tactic.skipAssignedInstances false in
@@ -79,13 +77,13 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
   congr 1
   · rcases eq_or_ne p 2 with (rfl | hp2)
     · rcases Nat.exists_eq_succ_of_ne_zero (hp2 rfl) with ⟨k, rfl⟩
-      rw [coe_two, succ_sub_succ_eq_sub, tsub_zero, mul_one]; simp only [_root_.pow_succ]
+      rw [coe_two, succ_sub_succ_eq_sub, tsub_zero, mul_one]; simp only [_root_.pow_succ']
       rw [mul_assoc, Nat.mul_div_cancel_left _ zero_lt_two, Nat.mul_div_cancel_left _ zero_lt_two]
       cases k
       · simp
-      · norm_num; simp_rw [_root_.pow_succ, (even_two.mul_right _).neg_one_pow,
+      · norm_num; simp_rw [_root_.pow_succ', (even_two.mul_right _).neg_one_pow,
           ((even_two.mul_right _).mul_right _).neg_one_pow]
-    · replace hp2 : (p : ℕ) ≠ 2 := by rwa [Ne.def, ← coe_two, PNat.coe_inj]
+    · replace hp2 : (p : ℕ) ≠ 2 := by rwa [Ne, ← coe_two, PNat.coe_inj]
       have hpo : Odd (p : ℕ) := hp.out.odd_of_ne_two hp2
       obtain ⟨a, ha⟩ := (hp.out.even_sub_one hp2).two_dvd
       rw [ha, mul_left_comm, mul_assoc, Nat.mul_div_cancel_left _ two_pos,
@@ -120,7 +118,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
     · simp only [H, mul_comm _ (k + 1)]; norm_cast
     · -- Porting note: was `replace h := pow_eq_zero h; rw [coe_coe] at h; simpa using hne.1`
       have := hne.1
-      rw [PNat.pow_coe, Nat.cast_pow, Ne.def, pow_eq_zero_iff (by omega)] at this
+      rw [PNat.pow_coe, Nat.cast_pow, Ne, pow_eq_zero_iff (by omega)] at this
       exact absurd (pow_eq_zero h) this
 #align is_cyclotomic_extension.discr_prime_pow_ne_two IsCyclotomicExtension.discr_prime_pow_ne_two
 

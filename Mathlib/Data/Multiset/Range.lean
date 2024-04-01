@@ -49,7 +49,7 @@ theorem mem_range {m n : ℕ} : m ∈ range n ↔ m < n :=
   List.mem_range
 #align multiset.mem_range Multiset.mem_range
 
--- Porting note: removing @[simp], `simp` can prove it
+-- Porting note (#10618): removing @[simp], `simp` can prove it
 theorem not_mem_range_self {n : ℕ} : n ∉ range n :=
   List.not_mem_range_self
 #align multiset.not_mem_range_self Multiset.not_mem_range_self

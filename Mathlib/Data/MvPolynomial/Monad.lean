@@ -56,7 +56,6 @@ namespace MvPolynomial
 open Finsupp
 
 variable {σ : Type*} {τ : Type*}
-
 variable {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
 
 /--
@@ -168,9 +167,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (f : σ → MvPolynomial τ R)
 
-@[simp]
-theorem bind₁_C_right (f : σ → MvPolynomial τ R) (x) : bind₁ f (C x) = C x := by
-  simp [bind₁, algebraMap_eq]
+theorem bind₁_C_right (f : σ → MvPolynomial τ R) (x) : bind₁ f (C x) = C x := algHom_C _ _
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.bind₁_C_right MvPolynomial.bind₁_C_right
 
@@ -391,7 +388,7 @@ end
 theorem mem_vars_bind₁ (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) {j : τ}
     (h : j ∈ (bind₁ f φ).vars) : ∃ i : σ, i ∈ φ.vars ∧ j ∈ (f i).vars := by
   classical
-  simpa only [exists_prop, Finset.mem_biUnion, mem_support_iff, Ne.def] using vars_bind₁ f φ h
+  simpa only [exists_prop, Finset.mem_biUnion, mem_support_iff, Ne] using vars_bind₁ f φ h
 #align mv_polynomial.mem_vars_bind₁ MvPolynomial.mem_vars_bind₁
 
 instance monad : Monad fun σ => MvPolynomial σ R

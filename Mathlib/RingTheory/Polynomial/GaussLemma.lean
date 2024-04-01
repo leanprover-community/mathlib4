@@ -110,7 +110,6 @@ namespace Polynomial
 section
 
 variable {S : Type*} [CommRing S] [IsDomain S]
-
 variable {φ : R →+* S} (hinj : Function.Injective φ) {f : R[X]} (hf : f.IsPrimitive)
 
 theorem IsPrimitive.isUnit_iff_isUnit_map_of_injective : IsUnit f ↔ IsUnit (map φ f) := by
@@ -258,7 +257,7 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
   rw [Algebra.smul_def, algebraMap_apply, Subtype.coe_mk] at hc hd
   rw [mem_nonZeroDivisors_iff_ne_zero] at c0 d0
   have hcd0 : c * d ≠ 0 := mul_ne_zero c0 d0
-  rw [Ne.def, ← C_eq_zero] at hcd0
+  rw [Ne, ← C_eq_zero] at hcd0
   have h1 : C c * C d * p = integerNormalization R⁰ a * integerNormalization R⁰ b := by
     apply map_injective (algebraMap R K) (IsFractionRing.injective _ _) _
     rw [Polynomial.map_mul, Polynomial.map_mul, Polynomial.map_mul, hc, hd, map_C, map_C, hab]
@@ -276,7 +275,7 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
     mul_assoc (C (u : R))] at h1
   have h0 : a ≠ 0 ∧ b ≠ 0 := by
     classical
-    rw [Ne.def, Ne.def, ← not_or, ← mul_eq_zero, ← hab]
+    rw [Ne, Ne, ← not_or, ← mul_eq_zero, ← hab]
     intro con
     apply hp.ne_zero (map_injective (algebraMap R K) (IsFractionRing.injective _ _) _)
     simp [con]
@@ -307,7 +306,7 @@ theorem IsPrimitive.dvd_of_fraction_map_dvd_fraction_map {p q : R[X]} (hp : p.Is
     rw [hu]
   iterate 2
     apply mul_ne_zero hq.ne_zero
-    rw [Ne.def, C_eq_zero]
+    rw [Ne, C_eq_zero]
     contrapose! s0
     simp [s0, mem_nonZeroDivisors_iff_ne_zero]
 #align polynomial.is_primitive.dvd_of_fraction_map_dvd_fraction_map Polynomial.IsPrimitive.dvd_of_fraction_map_dvd_fraction_map

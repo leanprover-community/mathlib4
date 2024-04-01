@@ -90,22 +90,22 @@ instance refl (X : C) : MonoidalCoherence X X := ⟨𝟙 _⟩
 @[simps]
 instance whiskerLeft (X Y Z : C) [MonoidalCoherence Y Z] :
     MonoidalCoherence (X ⊗ Y) (X ⊗ Z) :=
-  ⟨𝟙 X ⊗ ⊗𝟙⟩
+  ⟨X ◁ ⊗𝟙⟩
 
 @[simps]
 instance whiskerRight (X Y Z : C) [MonoidalCoherence X Y] :
     MonoidalCoherence (X ⊗ Z) (Y ⊗ Z) :=
-  ⟨⊗𝟙 ⊗ 𝟙 Z⟩
+  ⟨⊗𝟙 ▷ Z⟩
 
 @[simps]
 instance tensor_right (X Y : C) [MonoidalCoherence (𝟙_ C) Y] :
     MonoidalCoherence X (X ⊗ Y) :=
-  ⟨(ρ_ X).inv ≫ (𝟙 X ⊗  ⊗𝟙)⟩
+  ⟨(ρ_ X).inv ≫ X ◁  ⊗𝟙⟩
 
 @[simps]
 instance tensor_right' (X Y : C) [MonoidalCoherence Y (𝟙_ C)] :
     MonoidalCoherence (X ⊗ Y) X :=
-  ⟨(𝟙 X ⊗ ⊗𝟙) ≫ (ρ_ X).hom⟩
+  ⟨X ◁ ⊗𝟙 ≫ (ρ_ X).hom⟩
 
 @[simps]
 instance left (X Y : C) [MonoidalCoherence X Y] :

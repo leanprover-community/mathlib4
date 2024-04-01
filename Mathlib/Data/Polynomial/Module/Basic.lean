@@ -97,7 +97,7 @@ def _root_.LinearMap.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N]
     (fun p q hp hq m ↦ by simp_all [add_smul]) fun n k h m ↦ by
       simp_rw [RingHom.id_apply, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
         LinearMap.comp_apply, LinearEquiv.coe_toLinearMap] at h ⊢
-      simp_rw [pow_succ', ← mul_assoc, mul_smul _ X, ← hf, ← of_symm_X_smul, ← h]
+      simp_rw [pow_succ, ← mul_assoc, mul_smul _ X, ← hf, ← of_symm_X_smul, ← h]
 
 lemma annihilator_eq_ker_aeval [FaithfulSMul A M] :
     annihilator R[X] (AEval R M a) = RingHom.ker (aeval a) := by
@@ -231,7 +231,6 @@ noncomputable instance : Inhabited (PolynomialModule R M) := Finsupp.instInhabit
 noncomputable instance : AddCommGroup (PolynomialModule R M) := Finsupp.instAddCommGroup
 
 variable {M}
-
 variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
 namespace PolynomialModule
@@ -416,7 +415,6 @@ noncomputable def equivPolynomial {S : Type*} [CommRing S] [Algebra R S] :
 #align polynomial_module.equiv_polynomial PolynomialModule.equivPolynomial
 
 variable (R' : Type*) {M' : Type*} [CommRing R'] [AddCommGroup M'] [Module R' M']
-
 variable [Algebra R R'] [Module R M'] [IsScalarTower R R' M']
 
 /-- The image of a polynomial under a linear map. -/

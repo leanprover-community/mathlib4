@@ -266,7 +266,7 @@ def precomp [TopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [RingHomSurj
     haveI : UniformAddGroup G := comm_topologicalAddGroup_is_uniform
     rw [(strongTopology.embedding_coeFn _ _ _).continuous_iff]
     -- Porting note: without this, the following doesn't work
-    change Continuous ((λ f ↦ UniformOnFun.ofFun _ (f ∘ L)) ∘ DFunLike.coe)
+    change Continuous ((fun f ↦ UniformOnFun.ofFun _ (f ∘ L)) ∘ DFunLike.coe)
     exact (UniformOnFun.precomp_uniformContinuous fun S hS => hS.image L).continuous.comp
         (strongTopology.embedding_coeFn _ _ _).continuous
 #align continuous_linear_map.precomp ContinuousLinearMap.precomp
@@ -306,6 +306,9 @@ variable {𝕜 : Type*} [NormedField 𝕜] {E F G : Type*}
 
 /-- Send a continuous bilinear map to an abstract bilinear map (forgetting continuity). -/
 def toLinearMap₂ (L : E →L[𝕜] F →L[𝕜] G) : E →ₗ[𝕜] F →ₗ[𝕜] G := (coeLM 𝕜).comp L.toLinearMap
+
+@[simp] lemma toLinearMap₂_apply (L : E →L[𝕜] F →L[𝕜] G) (v : E) (w : F) :
+    L.toLinearMap₂ v w = L v w := rfl
 
 end BilinearMaps
 
