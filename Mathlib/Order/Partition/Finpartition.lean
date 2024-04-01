@@ -139,7 +139,7 @@ def map {β : Type*} [Lattice β] [OrderBot β] {a : α} (e : α ≃o β) (P : F
     exact e.symm.map_bot
 
 @[simp]
-theorem parts_map {β : Type*} [Lattice β] [OrderBot β] {e : α ≃o β} :
+theorem parts_map {β : Type*} [Lattice β] [OrderBot β] {a : α} {e : α ≃o β} {P : Finpartition a} :
     (P.map e).parts = P.parts.map e := rfl
 
 variable (α)
