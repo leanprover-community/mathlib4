@@ -40,10 +40,10 @@ open Opposite
 
 section Limits
 
-universe w v u z z'
+universe w v' v u z z'
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-variable {D : Type w} [Category.{max v u} D]
+variable {D : Type w} [Category.{v'} D]
 variable {K : Type z} [Category.{z'} K]
 
 noncomputable section
@@ -170,10 +170,11 @@ instance [HasFiniteProducts D] : HasFiniteProducts (Sheaf J D) :=
 
 end
 
-instance createsLimits [HasLimits D] : CreatesLimits (sheafToPresheaf J D) :=
+instance createsLimitsOfSize [HasLimitsOfSize.{z', z} D] :
+    CreatesLimitsOfSize.{z', z} (sheafToPresheaf J D) :=
   ⟨createsLimitsOfShape⟩
 
-instance [HasLimits D] : HasLimits (Sheaf J D) :=
+instance [HasLimitsOfSize.{z', z} D] : HasLimitsOfSize.{z', z} (Sheaf J D) :=
   hasLimits_of_hasLimits_createsLimits (sheafToPresheaf J D)
 
 end

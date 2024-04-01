@@ -53,6 +53,12 @@ def sheafCompose : Sheaf J A ⥤ Sheaf J B where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_compose CategoryTheory.sheafCompose
 
+instance [Faithful F] : Faithful (sheafCompose J F) where
+  map_injective h := by
+    ext X
+    apply F.map_injective
+    exact (sheafToPresheaf _ _ ⋙ (evaluation _ _).obj X).congr_map h
+
 variable {F G}
 
 /--
@@ -168,5 +174,18 @@ Note: the size of the limit that `F` is required to preserve in
 instance hasSheafCompose_of_preservesLimitsOfSize [PreservesLimitsOfSize.{v₁, max u₁ v₁} F] :
     J.HasSheafCompose F where
   isSheaf _ hP := Presheaf.isSheaf_comp_of_isSheaf J _ F hP
+
+variable {J}
+
+lemma Sheaf.isSeparated [ConcreteCategory A] [J.HasSheafCompose (forget A)]
+    (F : Sheaf J A) : Presheaf.IsSeparated J F.val := by
+  rintro X S hS x y h
+  exact (Presieve.isSeparated_of_isSheaf _ _ ((isSheaf_iff_isSheaf_of_type _ _).1
+    ((sheafCompose J (forget A)).obj F).2) S hS).ext (fun _ _ hf => h _ _ hf)
+
+lemma Presheaf.IsSheaf.isSeparated {F : Cᵒᵖ ⥤ A} [ConcreteCategory A]
+    [J.HasSheafCompose (forget A)] (hF : Presheaf.IsSheaf J F) :
+    Presheaf.IsSeparated J F :=
+  Sheaf.isSeparated ⟨F, hF⟩
 
 end CategoryTheory
