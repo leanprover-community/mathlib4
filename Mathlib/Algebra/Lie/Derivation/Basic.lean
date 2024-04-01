@@ -39,8 +39,6 @@ structure LieDerivation (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L
     extends L →ₗ[R] M where
   protected leibniz' (a b : L) : toLinearMap ⁅a, b⁆ = ⁅a, toLinearMap b⁆ - ⁅b, toLinearMap a⁆
 
-open scoped BigOperators
-
 /-- The `LinearMap` underlying a `LieDerivation`. -/
 add_decl_doc LieDerivation.toLinearMap
 
@@ -100,10 +98,6 @@ lemma apply_lie_eq_sub (D : LieDerivation R L M) (a b : L) :
 lemma apply_lie_eq_add (D : LieDerivation R L L) (a b : L) :
     D ⁅a, b⁆ = ⁅a, D b⁆ + ⁅D a, b⁆ := by
   rw [LieDerivation.apply_lie_eq_sub, sub_eq_add_neg, lie_skew]
-
-nonrec theorem map_sum {ι : Type*} (s : Finset ι) (f : ι → L) :
-    D (∑ i in s, f i) = ∑ i in s, D (f i) :=
-  map_sum D _ _
 
 /-- Two Lie derivations equal on a set are equal on its Lie span. -/
 theorem eqOn_lieSpan {s : Set L} (h : Set.EqOn D1 D2 s) :
