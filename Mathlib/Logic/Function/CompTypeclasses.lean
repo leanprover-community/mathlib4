@@ -48,7 +48,7 @@ instance instId_comp {M N : Type*} {φ : M → N} {ψ : N → N} [IsId ψ] :
   comp_eq := by simp only [IsId.eq_id, Function.id_comp]
 
 /-- `φ`, `ψ` and `ψ ∘ φ` for` a `CompTriple` -/
-def comp {M N P : Type*}
+theorem comp {M N P : Type*}
     {φ : M → N} {ψ : N → P} :
     CompTriple φ ψ  (ψ.comp φ) where
   comp_eq := rfl
