@@ -388,17 +388,15 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
         | true, _, _, _ => true
 --      logInfoAt s m!"{shouldStain?}"
 -/
-      let stained_in_syntax := getL s
-      let lctx0 := (mvs0.map ctx0.decls.find?).reduceOption.map (·.lctx)
-      let lctx1 := (mvs1.map ctx1.decls.find?).reduceOption.map (·.lctx)
-      for lc0 in lctx0 do
---        let fvars := lc0.getFVarIds
-        let fvars := stains.toArray.map Prod.fst
-        for lc1 in lctx1 do for fv in fvars do
-          let cand_fv := persistFVars fv.1 lc0 lc1
-          let olds := stains.toArray.filter fun (a, _) => a == fv
-          for (_, stnd, k) in olds do
-            stains := stains.insert (cand_fv, default) (stnd, k)
+--unused?      let lctx0 := (mvs0.map ctx0.decls.find?).reduceOption.map (·.lctx)
+--unused?      let lctx1 := (mvs1.map ctx1.decls.find?).reduceOption.map (·.lctx)
+--unused?      for lc0 in lctx0 do
+--unused?        let fvars := stains.toArray.map Prod.fst
+--unused?        for lc1 in lctx1 do for fv in fvars do
+--unused?          let cand_fv := persistFVars fv.1 lc0 lc1
+--unused?          let olds := stains.toArray.filter fun (a, _) => a == fv
+--unused?          for (_, stnd, k) in olds do
+--unused?            stains := stains.insert (cand_fv, default) (stnd, k)
           --nowlogInfoAt s m!"candidate: {(fv.1.name, fv.2.name)} --> {cand_fv.name}"
         --nowlet ldecls := fvars.map fun (d, _) => (lc0.get! d|>.userName, d.name)
         --nowlogInfoAt s m!"ldecls before '{s}' (username, fvarid):\n{ldecls}"
@@ -439,6 +437,8 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
             --nowlogInfoAt s m!"inserting {((l.1.name, l.2.name), d, skind)}"
 
       else
+        let stained_in_syntax := getL s
+        logInfoAt s m!"stained_in_syntax: {stained_in_syntax}"
         if !followers.contains skind then
           for currMVar0 in mvs0 do --.getD 0 default
             let lctx0 := ((ctx0.decls.find? currMVar0).getD default).lctx
@@ -446,6 +446,7 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
             -- we collect all the references to potential locations:
             -- * in `at`-clauses via `d.toFVarId`, e.g. the `h` in `rw at h`;
             -- * inside the syntax of the tactic `d`, e.g. the `h` in `rw [h]`.
+            logInfoAt s m!"foundFvs.names: {foundFvs.map fun (a, b) => (a.name, b.name)}"
             let locsBefore := d.toFMVarId currMVar0 lctx0 ++ foundFvs
             for l in locsBefore do
               if let some (stdLoc, kind) := stains.find? l then
