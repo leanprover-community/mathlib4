@@ -389,12 +389,12 @@ lemma ofSubtype_eq_iff {g c : Equiv.Perm α} {s : Finset α}
   simp only [Equiv.ext_iff, subtypePerm_apply, Subtype.mk.injEq, Subtype.forall]
   constructor
   · intro h
-    suffices hc : support c ≤ s
-    use hc
-    intro _ a ha
-    rw [← h a, ofSubtype_apply_of_mem]
-    rfl
-    exact ha
+    suffices hc : support c ≤ s by
+      use hc
+      intro _ a ha
+      rw [← h a, ofSubtype_apply_of_mem]
+      rfl
+      exact ha
     · intro a ha
       by_contra ha'
       rw [mem_support, ← h a, ofSubtype_apply_of_not_mem] at ha
