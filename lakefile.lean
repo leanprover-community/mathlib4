@@ -72,7 +72,7 @@ and then calculates the longest pole
 (i.e. the sequence of files you would be waiting for during a infinite parallelism build).
 -/
 lean_exe pole where
-  root := `LongestPole.Main
+  root := `Utils.LongestPole.Main
   supportInterpreter := true
 
 /-!
