@@ -14,7 +14,7 @@ Defines the predicate `Subsingleton s : Prop`, saying that `s` has at most one e
 
 open Function
 
-universe u v w x
+universe u v
 
 namespace Set
 
