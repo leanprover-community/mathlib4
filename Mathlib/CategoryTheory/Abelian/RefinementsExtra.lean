@@ -164,12 +164,10 @@ lemma refinementsTopology_subcanonical :
 
 end
 
-section EpiIffLocallySurjective
+namespace refinementsTopology
 
-variable {C : Type u} [SmallCategory C] [Abelian C]
-  {X Y : C} (f : X ⟶ Y)
-
-lemma epi_iff_isLocallySurjective_yoneda_map :
+lemma epi_iff_isLocallySurjective_yoneda_map {C : Type u} [Category.{v} C] [Abelian C]
+  {X Y : C} (f : X ⟶ Y) :
     Epi f ↔ Sheaf.IsLocallySurjective ((refinementsTopology_subcanonical C).yoneda.map f) := by
   rw [epi_iff_surjective_up_to_refinements f]
   constructor
@@ -184,7 +182,11 @@ lemma epi_iff_isLocallySurjective_yoneda_map :
       ((refinementsTopology_subcanonical C).yoneda.map f).val y
     exact ⟨A', π, hπ, x, fac.symm⟩
 
-end EpiIffLocallySurjective
+lemma epi_iff_epi_yoneda_map {C : Type u} [SmallCategory C] [Abelian C] {X Y : C} (f : X ⟶ Y) :
+    Epi f ↔ Epi ((refinementsTopology_subcanonical C).yoneda.map f) := by
+  rw [epi_iff_isLocallySurjective_yoneda_map, Sheaf.epi_iff_isLocallySurjective]
+
+end refinementsTopology
 
 end Abelian
 
