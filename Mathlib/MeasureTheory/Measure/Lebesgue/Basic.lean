@@ -365,7 +365,7 @@ theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (
   have B : ∀ i, ofReal (abs (D i)) * volume ((D i * ·) ⁻¹' s i) = volume (s i) := by
     intro i
     have A : D i ≠ 0 := by
-      simp only [det_diagonal, Ne.def] at h
+      simp only [det_diagonal, Ne] at h
       exact Finset.prod_ne_zero_iff.1 h i (Finset.mem_univ i)
     rw [volume_preimage_mul_left A, ← mul_assoc, ← ENNReal.ofReal_mul (abs_nonneg _), ← abs_mul,
       mul_inv_cancel A, abs_one, ENNReal.ofReal_one, one_mul]
