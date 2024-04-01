@@ -28,9 +28,7 @@ namespace CategoryTheory.pi
 universe v₁ v₂ u₁ u₂
 
 variable {I : Type v₁} {C : I → Type u₁} [∀ i, Category.{v₁} (C i)]
-
 variable {J : Type v₁} [SmallCategory J]
-
 variable {F : J ⥤ ∀ i, C i}
 
 /-- A cone over `F : J ⥤ Π i, C i` has as its components cones over each of the `F ⋙ Pi.eval C i`.
@@ -144,7 +142,7 @@ With the addition of
 `import CategoryTheory.Limits.Shapes.Types`
 we can use:
 ```
-local attribute [instance] hasLimit_of_hasLimit_comp_eval
+attribute [local instance] hasLimit_of_hasLimit_comp_eval
 example : hasBinaryProducts (I → Type v₁) := ⟨by infer_instance⟩
 ```
 -/

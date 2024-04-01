@@ -118,7 +118,7 @@ section CommMonoid
 variable [CommMonoid α] [CommMonoid β] {s : Set α} {a : α}
 
 @[to_additive]
-theorem MulSalemSpencer.of_image [FunLike F α fun _ => β] [FreimanHomClass F s β 2] (f : F)
+theorem MulSalemSpencer.of_image [FunLike F α β] [FreimanHomClass F s β 2] (f : F)
     (hf : s.InjOn f) (h : MulSalemSpencer (f '' s)) : MulSalemSpencer s :=
   fun _ _ _ ha hb hc habc => hf ha hb <|
     h (mem_image_of_mem _ ha) (mem_image_of_mem _ hb) (mem_image_of_mem _ hc) <|
@@ -128,7 +128,7 @@ theorem MulSalemSpencer.of_image [FunLike F α fun _ => β] [FreimanHomClass F s
 
 -- TODO: Generalize to Freiman homs
 @[to_additive]
-theorem MulSalemSpencer.image [MulHomClass F α β] (f : F) (hf : (s * s).InjOn f)
+theorem MulSalemSpencer.image [FunLike F α β] [MulHomClass F α β] (f : F) (hf : (s * s).InjOn f)
     (h : MulSalemSpencer s) : MulSalemSpencer (f '' s) := by
   rintro _ _ _ ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩ ⟨c, hc, rfl⟩ habc
   rw [h ha hb hc (hf (mul_mem_mul ha hb) (mul_mem_mul hc hc) <| by rwa [map_mul, map_mul])]
@@ -338,8 +338,8 @@ theorem mulRothNumber_le : mulRothNumber s ≤ s.card := Nat.findGreatest_le s.c
 @[to_additive]
 theorem mulRothNumber_spec :
     ∃ (t : _) (_ : t ⊆ s), t.card = mulRothNumber s ∧ MulSalemSpencer (t : Set α) :=
-  @Nat.findGreatest_spec _ _
-    (fun m => ∃ (t : _) (_ : t ⊆ s), t.card = m ∧ MulSalemSpencer (t : Set α)) _ (Nat.zero_le _)
+  Nat.findGreatest_spec
+    (P := fun m => ∃ (t : _) (_ : t ⊆ s), t.card = m ∧ MulSalemSpencer (t : Set α)) (Nat.zero_le _)
     ⟨∅, empty_subset _, card_empty, by norm_cast; exact mulSalemSpencer_empty⟩
 #align mul_roth_number_spec mulRothNumber_spec
 #align add_roth_number_spec addRothNumber_spec
@@ -380,7 +380,7 @@ theorem mulRothNumber_union_le (s t : Finset α) :
   let ⟨u, hus, hcard, hu⟩ := mulRothNumber_spec (s ∪ t)
   calc
     mulRothNumber (s ∪ t) = u.card := hcard.symm
-    _ = (u ∩ s ∪ u ∩ t).card := by rw [← inter_distrib_left, inter_eq_left.2 hus]
+    _ = (u ∩ s ∪ u ∩ t).card := by rw [← inter_union_distrib_left, inter_eq_left.2 hus]
     _ ≤ (u ∩ s).card + (u ∩ t).card := (card_union_le _ _)
     _ ≤ mulRothNumber s + mulRothNumber t := _root_.add_le_add
       ((hu.mono <| inter_subset_left _ _).le_mulRothNumber <| inter_subset_right _ _)

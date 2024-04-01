@@ -110,10 +110,10 @@ theorem exists_pow_nat_eq [IsSepClosed k] (x : k) (n : ℕ) [hn : NeZero (n : k)
     rw [degree_X_pow_sub_C hn' x]
     exact (WithBot.coe_lt_coe.2 hn').ne'
   by_cases hx : x = 0
-  · exact ⟨0, by rw [hx, pow_eq_zero_iff hn']⟩
+  · exact ⟨0, by rw [hx, pow_eq_zero_iff hn'.ne']⟩
   · obtain ⟨z, hz⟩ := exists_root _ this <| separable_X_pow_sub_C x hn.out hx
     use z
-    simpa [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def, sub_eq_zero] using hz
+    simpa [eval_C, eval_X, eval_pow, eval_sub, IsRoot.definition, sub_eq_zero] using hz
 
 theorem exists_eq_mul_self [IsSepClosed k] (x : k) [h2 : NeZero (2 : k)] : ∃ z, x = z * z := by
   rcases exists_pow_nat_eq x 2 with ⟨z, rfl⟩
@@ -239,8 +239,16 @@ end IsSepClosure
 
 namespace IsSepClosed
 
-variable {K : Type u} {L : Type v} {M : Type w} [Field K] [Field L] [Algebra K L] [Field M]
-  [Algebra K M] [IsSepClosed M] [IsSeparable K L]
+variable {K : Type u} (L : Type v) {M : Type w} [Field K] [Field L] [Algebra K L] [Field M]
+  [Algebra K M] [IsSepClosed M]
+
+theorem surjective_comp_algebraMap_of_isSeparable {E : Type*}
+    [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E] [IsSeparable L E] :
+    Function.Surjective fun φ : E →ₐ[K] M ↦ φ.comp (IsScalarTower.toAlgHom K L E) :=
+  fun f ↦ IntermediateField.exists_algHom_of_splits' (E := E) f
+    fun s ↦ ⟨IsSeparable.isIntegral L s, IsSepClosed.splits_codomain _ <| IsSeparable.separable L s⟩
+
+variable [IsSeparable K L] {L}
 
 /-- A (random) homomorphism from a separable extension L of K into a separably
   closed extension M of K. -/
@@ -259,7 +267,7 @@ variable [Algebra K L] [IsSepClosure K L]
 
 /-- A (random) isomorphism between two separable closures of `K`. -/
 noncomputable def equiv : L ≃ₐ[K] M :=
-  -- Porting note: added to replace local instance above
+  -- Porting note (#10754): added to replace local instance above
   haveI : IsSepClosed L := IsSepClosure.sep_closed K
   haveI : IsSepClosed M := IsSepClosure.sep_closed K
   AlgEquiv.ofBijective _ (Normal.isAlgebraic'.algHom_bijective₂

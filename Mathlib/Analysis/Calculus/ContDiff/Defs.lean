@@ -156,7 +156,8 @@ derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor ser
 
 noncomputable section
 
-open Classical BigOperators NNReal Topology Filter
+open scoped Classical
+open BigOperators NNReal Topology Filter
 
 local notation "∞" => (⊤ : ℕ∞)
 
@@ -269,8 +270,7 @@ theorem HasFTaylorSeriesUpToOn.hasFDerivWithinAt (h : HasFTaylorSeriesUpToOn n f
   have A : ∀ y ∈ s, f y = (continuousMultilinearCurryFin0 𝕜 E F) (p y 0) := fun y hy ↦
     (h.zero_eq y hy).symm
   suffices H : HasFDerivWithinAt (continuousMultilinearCurryFin0 𝕜 E F ∘ (p · 0))
-    (continuousMultilinearCurryFin1 𝕜 E F (p x 1)) s x
-  · exact H.congr A (A x hx)
+    (continuousMultilinearCurryFin1 𝕜 E F (p x 1)) s x from H.congr A (A x hx)
   rw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff']
   have : ((0 : ℕ) : ℕ∞) < n := zero_lt_one.trans_le hn
   convert h.fderivWithin _ this x hx
@@ -343,8 +343,8 @@ theorem HasFTaylorSeriesUpToOn.shift_of_succ
   · intro x _
     rfl
   · intro m (hm : (m : ℕ∞) < n) x (hx : x ∈ s)
-    have A : (m.succ : ℕ∞) < n.succ
-    · rw [Nat.cast_lt] at hm ⊢
+    have A : (m.succ : ℕ∞) < n.succ := by
+      rw [Nat.cast_lt] at hm ⊢
       exact Nat.succ_lt_succ hm
     change HasFDerivWithinAt ((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm ∘ (p · m.succ))
       (p x m.succ.succ).curryRight.curryLeft s x
@@ -354,8 +354,8 @@ theorem HasFTaylorSeriesUpToOn.shift_of_succ
     change p x (m + 2) (snoc (cons y (init v)) (v (last _))) = p x (m + 2) (cons y v)
     rw [← cons_snoc_eq_snoc_cons, snoc_init_self]
   · intro m (hm : (m : ℕ∞) ≤ n)
-    suffices A : ContinuousOn (p · (m + 1)) s
-    · exact ((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm).continuous.comp_continuousOn A
+    suffices A : ContinuousOn (p · (m + 1)) s from
+      ((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm).continuous.comp_continuousOn A
     refine H.cont _ ?_
     rw [Nat.cast_le] at hm ⊢
     exact Nat.succ_le_succ hm
@@ -613,12 +613,12 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt' {n : ℕ} :
       fun y hy => _, _⟩
     · refine' ((huf' y <| hwu hy).mono hwu).mono_of_mem _
       refine' mem_of_superset _ (inter_subset_inter_left _ (subset_insert _ _))
-      refine' inter_mem_nhdsWithin _ (hw.mem_nhds hy.2)
+      exact inter_mem_nhdsWithin _ (hw.mem_nhds hy.2)
     · exact hf'.mono_of_mem (nhdsWithin_mono _ (subset_insert _ _) hu)
   · rw [← contDiffWithinAt_insert, contDiffWithinAt_succ_iff_hasFDerivWithinAt,
       insert_eq_of_mem (mem_insert _ _)]
     rintro ⟨u, hu, hus, f', huf', hf'⟩
-    refine' ⟨u, hu, f', fun y hy => (huf' y hy).insert'.mono hus, hf'.insert.mono hus⟩
+    exact ⟨u, hu, f', fun y hy => (huf' y hy).insert'.mono hus, hf'.insert.mono hus⟩
 #align cont_diff_within_at_succ_iff_has_fderiv_within_at' contDiffWithinAt_succ_iff_hasFDerivWithinAt'
 
 /-! ### Smooth functions within a set -/
@@ -888,19 +888,19 @@ theorem iteratedFDerivWithin_one_apply (h : UniqueDiffWithinAt 𝕜 s x) (m : Fi
   rfl
 #align iterated_fderiv_within_one_apply iteratedFDerivWithin_one_apply
 
-theorem Filter.EventuallyEq.iterated_fderiv_within' (h : f₁ =ᶠ[𝓝[s] x] f) (ht : t ⊆ s) (n : ℕ) :
+theorem Filter.EventuallyEq.iteratedFDerivWithin' (h : f₁ =ᶠ[𝓝[s] x] f) (ht : t ⊆ s) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f₁ t =ᶠ[𝓝[s] x] iteratedFDerivWithin 𝕜 n f t := by
   induction' n with n ihn
-  · exact h.mono fun y hy => FunLike.ext _ _ fun _ => hy
-  · have : fderivWithin 𝕜 _ t =ᶠ[𝓝[s] x] fderivWithin 𝕜 _ t := ihn.fderiv_within' ht
+  · exact h.mono fun y hy => DFunLike.ext _ _ fun _ => hy
+  · have : fderivWithin 𝕜 _ t =ᶠ[𝓝[s] x] fderivWithin 𝕜 _ t := ihn.fderivWithin' ht
     apply this.mono
     intro y hy
     simp only [iteratedFDerivWithin_succ_eq_comp_left, hy, (· ∘ ·)]
-#align filter.eventually_eq.iterated_fderiv_within' Filter.EventuallyEq.iterated_fderiv_within'
+#align filter.eventually_eq.iterated_fderiv_within' Filter.EventuallyEq.iteratedFDerivWithin'
 
 protected theorem Filter.EventuallyEq.iteratedFDerivWithin (h : f₁ =ᶠ[𝓝[s] x] f) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f₁ s =ᶠ[𝓝[s] x] iteratedFDerivWithin 𝕜 n f s :=
-  h.iterated_fderiv_within' Subset.rfl n
+  h.iteratedFDerivWithin' Subset.rfl n
 #align filter.eventually_eq.iterated_fderiv_within Filter.EventuallyEq.iteratedFDerivWithin
 
 /-- If two functions coincide in a neighborhood of `x` within a set `s` and at `x`, then their
@@ -908,7 +908,7 @@ iterated differentials within this set at `x` coincide. -/
 theorem Filter.EventuallyEq.iteratedFDerivWithin_eq (h : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x)
     (n : ℕ) : iteratedFDerivWithin 𝕜 n f₁ s x = iteratedFDerivWithin 𝕜 n f s x :=
   have : f₁ =ᶠ[𝓝[insert x s] x] f := by simpa [EventuallyEq, hx]
-  (this.iterated_fderiv_within' (subset_insert _ _) n).self_of_nhdsWithin (mem_insert _ _)
+  (this.iteratedFDerivWithin' (subset_insert _ _) n).self_of_nhdsWithin (mem_insert _ _)
 #align filter.eventually_eq.iterated_fderiv_within_eq Filter.EventuallyEq.iteratedFDerivWithin_eq
 
 /-- If two functions coincide on a set `s`, then their iterated differentials within this set
@@ -995,7 +995,7 @@ theorem contDiffWithinAt_zero (hx : x ∈ s) :
 
 /-- On a set with unique differentiability, any choice of iterated differential has to coincide
 with the one we have chosen in `iteratedFDerivWithin 𝕜 m f s`. -/
-theorem HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn
+theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
     (h : HasFTaylorSeriesUpToOn n f p s) {m : ℕ} (hmn : (m : ℕ∞) ≤ n) (hs : UniqueDiffOn 𝕜 s)
     (hx : x ∈ s) : p x m = iteratedFDerivWithin 𝕜 m f s x := by
   induction' m with m IH generalizing x
@@ -1008,7 +1008,10 @@ theorem HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn
         (IH (le_of_lt A) hx).symm
     rw [iteratedFDerivWithin_succ_eq_comp_left, Function.comp_apply, this.fderivWithin (hs x hx)]
     exact (ContinuousMultilinearMap.uncurry_curryLeft _).symm
-#align has_ftaylor_series_up_to_on.eq_ftaylor_series_of_unique_diff_on HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn
+#align has_ftaylor_series_up_to_on.eq_ftaylor_series_of_unique_diff_on HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
+
+@[deprecated] alias HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn :=
+  HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn -- 2024-03-28
 
 /-- When a function is `C^n` in a set `s` of unique differentiability, it admits
 `ftaylorSeriesWithin 𝕜 f s` as a Taylor series up to order `n` in `s`. -/
@@ -1147,7 +1150,7 @@ theorem contDiffOn_succ_iff_fderivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
   rwa [fderivWithin_inter (o_open.mem_nhds hy.2)] at A
 #align cont_diff_on_succ_iff_fderiv_within contDiffOn_succ_iff_fderivWithin
 
-theorem contDiffOn_succ_iff_has_fderiv_within {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
+theorem contDiffOn_succ_iff_hasFDerivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 (n + 1 : ℕ) f s ↔
       ∃ f' : E → E →L[𝕜] F, ContDiffOn 𝕜 n f' s ∧ ∀ x, x ∈ s → HasFDerivWithinAt f (f' x) s x := by
   rw [contDiffOn_succ_iff_fderivWithin hs]
@@ -1155,7 +1158,7 @@ theorem contDiffOn_succ_iff_has_fderiv_within {n : ℕ} (hs : UniqueDiffOn 𝕜 
   rcases h with ⟨f', h1, h2⟩
   refine' ⟨fun x hx => (h2 x hx).differentiableWithinAt, fun x hx => _⟩
   exact (h1 x hx).congr' (fun y hy => (h2 y hy).fderivWithin (hs y hy)) hx
-#align cont_diff_on_succ_iff_has_fderiv_within contDiffOn_succ_iff_has_fderiv_within
+#align cont_diff_on_succ_iff_has_fderiv_within contDiffOn_succ_iff_hasFDerivWithin
 
 /-- A function is `C^(n + 1)` on an open domain if and only if it is
 differentiable there, and its derivative (expressed with `fderiv`) is `C^n`. -/
@@ -1351,7 +1354,7 @@ theorem ContDiffWithinAt.contDiffAt (h : ContDiffWithinAt 𝕜 n f s x) (hx : s 
     ContDiffAt 𝕜 n f x := by rwa [ContDiffAt, ← contDiffWithinAt_inter hx, univ_inter]
 #align cont_diff_within_at.cont_diff_at ContDiffWithinAt.contDiffAt
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem ContDiffOn.contDiffAt (h : ContDiffOn 𝕜 n f s) (hx : s ∈ 𝓝 x) :
     ContDiffAt 𝕜 n f x :=
   (h _ (mem_of_mem_nhds hx)).contDiffAt hx
@@ -1502,12 +1505,12 @@ theorem contDiff_iff_forall_nat_le : ContDiff 𝕜 n f ↔ ∀ m : ℕ, ↑m ≤
 #align cont_diff_iff_forall_nat_le contDiff_iff_forall_nat_le
 
 /-- A function is `C^(n+1)` iff it has a `C^n` derivative. -/
-theorem contDiff_succ_iff_has_fderiv {n : ℕ} :
+theorem contDiff_succ_iff_hasFDerivAt {n : ℕ} :
     ContDiff 𝕜 (n + 1 : ℕ) f ↔
       ∃ f' : E → E →L[𝕜] F, ContDiff 𝕜 n f' ∧ ∀ x, HasFDerivAt f (f' x) x := by
   simp only [← contDiffOn_univ, ← hasFDerivWithinAt_univ,
-    contDiffOn_succ_iff_has_fderiv_within uniqueDiffOn_univ, Set.mem_univ, forall_true_left]
-#align cont_diff_succ_iff_has_fderiv contDiff_succ_iff_has_fderiv
+    contDiffOn_succ_iff_hasFDerivWithin uniqueDiffOn_univ, Set.mem_univ, forall_true_left]
+#align cont_diff_succ_iff_has_fderiv contDiff_succ_iff_hasFDerivAt
 
 /-! ### Iterated derivative -/
 
@@ -1520,7 +1523,7 @@ noncomputable def iteratedFDeriv (n : ℕ) (f : E → F) : E → E[×n]→L[𝕜
     ContinuousLinearMap.uncurryLeft (fderiv 𝕜 rec x)
 #align iterated_fderiv iteratedFDeriv
 
-/-- Formal Taylor series associated to a function within a set. -/
+/-- Formal Taylor series associated to a function. -/
 def ftaylorSeries (f : E → F) (x : E) : FormalMultilinearSeries 𝕜 E F := fun n =>
   iteratedFDeriv 𝕜 n f x
 #align ftaylor_series ftaylorSeries
@@ -1603,6 +1606,13 @@ theorem iteratedFDerivWithin_univ {n : ℕ} :
   · ext x m
     rw [iteratedFDeriv_succ_apply_left, iteratedFDerivWithin_succ_apply_left, IH, fderivWithin_univ]
 #align iterated_fderiv_within_univ iteratedFDerivWithin_univ
+
+theorem HasFTaylorSeriesUpTo.eq_iteratedFDeriv
+    (h : HasFTaylorSeriesUpTo n f p) {m : ℕ} (hmn : (m : ℕ∞) ≤ n) (x : E) :
+    p x m = iteratedFDeriv 𝕜 m f x := by
+  rw [← iteratedFDerivWithin_univ]
+  rw [← hasFTaylorSeriesUpToOn_univ_iff] at h
+  exact h.eq_iteratedFDerivWithin_of_uniqueDiffOn hmn uniqueDiffOn_univ (mem_univ _)
 
 /-- In an open set, the iterated derivative within this set coincides with the global iterated
 derivative. -/

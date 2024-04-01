@@ -36,9 +36,7 @@ open Pointwise
 namespace Submodule
 
 variable {ι : Sort uι} {R M N P : Type*}
-
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-
 variable [Module R M] [Module R N] [Module R P]
 
 /-- Map a pair of submodules under a bilinear map.
@@ -176,7 +174,7 @@ end Submodule
 lemma LinearMap.ker_restrictBilinear_eq_of_codisjoint
     {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
     {p q : Submodule R M} (hpq : Codisjoint p q)
-    {B : M →ₗ[R] M →ₗ[R] R} (hB : ∀ x ∈ p, ∀ y ∈ q, B x y = 0) :
+    {B : LinearMap.BilinForm R M} (hB : ∀ x ∈ p, ∀ y ∈ q, B x y = 0) :
     LinearMap.ker (p.restrictBilinear B) = (LinearMap.ker B).comap p.subtype := by
   ext ⟨z, hz⟩
   simp only [LinearMap.mem_ker, Submodule.mem_comap, Submodule.coeSubtype]

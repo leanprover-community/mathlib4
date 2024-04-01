@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Logic.Nonempty
 import Mathlib.Init.Set
+import Mathlib.Logic.Basic
 
 #align_import logic.function.basic from "leanprover-community/mathlib"@"29cb56a7b35f72758b05a30490e1f10bd62c35c1"
 
@@ -22,7 +23,7 @@ namespace Function
 
 section
 
-variable {α β γ : Sort _} {f : α → β}
+variable {α β γ : Sort*} {f : α → β}
 
 /-- Evaluate a function at an argument. Useful if you want to talk about the partially applied
   `Function.eval x : (∀ x, β x) → β x`. -/
@@ -36,16 +37,6 @@ theorem eval_apply {β : α → Sort*} (x : α) (f : ∀ x, β x) : eval x f = f
 theorem const_def {y : β} : (fun _ : α ↦ y) = const α y :=
   rfl
 #align function.const_def Function.const_def
-
-@[simp]
-theorem const_comp {f : α → β} {c : γ} : const β c ∘ f = const α c :=
-  rfl
-#align function.const_comp Function.const_comp
-
-@[simp]
-theorem comp_const {f : β → γ} {b : β} : f ∘ const α b = const α (f b) :=
-  rfl
-#align function.comp_const Function.comp_const
 
 theorem const_injective [Nonempty α] : Injective (const α : β → α → β) := fun y₁ y₂ h ↦
   let ⟨x⟩ := ‹Nonempty α›
@@ -61,7 +52,7 @@ theorem id_def : @id α = fun x ↦ x :=
   rfl
 #align function.id_def Function.id_def
 
--- porting note: `Function.onFun` is now reducible
+-- Porting note: `Function.onFun` is now reducible
 -- @[simp]
 theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f g a b = f (g a) (g b) :=
   rfl
@@ -70,9 +61,8 @@ theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f 
 lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f : ∀a, β a} {f' : ∀a, β' a}
     (hα : α = α') (h : ∀a a', HEq a a' → HEq (f a) (f' a')) : HEq f f' := by
   subst hα
-  have : ∀a, HEq (f a) (f' a) := λ a => h a a (HEq.refl a)
-  have : β = β' := by funext a
-                      exact type_eq_of_heq (this a)
+  have : ∀a, HEq (f a) (f' a) := fun a ↦ h a a (HEq.refl a)
+  have : β = β' := by funext a; exact type_eq_of_heq (this a)
   subst this
   apply heq_of_eq
   funext a
@@ -87,6 +77,12 @@ theorem ne_iff {β : α → Sort*} {f₁ f₂ : ∀ a, β a} : f₁ ≠ f₂ ↔
   funext_iff.not.trans not_forall
 #align function.ne_iff Function.ne_iff
 
+lemma funext_iff_of_subsingleton [Subsingleton α] {g : α → β} (x y : α) :
+    f x = g y ↔ f = g := by
+  refine ⟨fun h ↦ funext fun z ↦ ?_, fun h ↦ ?_⟩
+  · rwa [Subsingleton.elim x z, Subsingleton.elim y z] at h
+  · rw [h, Subsingleton.elim x y]
+
 protected theorem Bijective.injective {f : α → β} (hf : Bijective f) : Injective f := hf.1
 #align function.bijective.injective Function.Bijective.injective
 protected theorem Bijective.surjective {f : α → β} (hf : Bijective f) : Surjective f := hf.2
@@ -96,7 +92,7 @@ theorem Injective.eq_iff (I : Injective f) {a b : α} : f a = f b ↔ a = b :=
   ⟨@I _ _, congr_arg f⟩
 #align function.injective.eq_iff Function.Injective.eq_iff
 
-theorem Injective.beq_eq [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β]
+theorem Injective.beq_eq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {f : α → β}
     (I : Injective f) {a b : α} : (f a == f b) = (a == b) := by
   by_cases h : a == b <;> simp [h] <;> simpa [I.eq_iff] using h
 
@@ -162,14 +158,13 @@ lemma Injective.dite (p : α → Prop) [DecidablePred p]
     {f : {a : α // p a} → β} {f' : {a : α // ¬ p a} → β}
     (hf : Injective f) (hf' : Injective f')
     (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) :
-  Function.Injective (λ x => if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) :=
-by intros x₁ x₂ h
-   dsimp only at h
-   by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
-   · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
-   · rw [dif_pos h₁, dif_neg h₂] at h; exact (im_disj h).elim
-   · rw [dif_neg h₁, dif_pos h₂] at h; exact (im_disj h.symm).elim
-   · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h)
+    Function.Injective (fun x ↦ if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) := fun x₁ x₂ h => by
+ dsimp only at h
+ by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
+ · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
+ · rw [dif_pos h₁, dif_neg h₂] at h; exact (im_disj h).elim
+ · rw [dif_neg h₁, dif_pos h₂] at h; exact (im_disj h.symm).elim
+ · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h)
 #align function.injective.dite Function.Injective.dite
 
 theorem Surjective.of_comp {g : γ → α} (S : Surjective (f ∘ g)) : Surjective f := fun y ↦
@@ -295,7 +290,7 @@ theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f
 to `α`. -/
 theorem cantor_injective {α : Type*} (f : Set α → α) : ¬Injective f
   | i => cantor_surjective (fun a ↦ {b | ∀ U, a = f U → U b}) <|
-         RightInverse.surjective (λ U => Set.ext fun _ ↦ ⟨fun h ↦ h U rfl, fun h _ e ↦ i e ▸ h⟩)
+         RightInverse.surjective (fun U ↦ Set.ext fun _ ↦ ⟨fun h ↦ h U rfl, fun h _ e ↦ i e ▸ h⟩)
 #align function.cantor_injective Function.cantor_injective
 
 /-- There is no surjection from `α : Type u` into `Type (max u v)`. This theorem
@@ -400,8 +395,8 @@ theorem RightInverse.leftInverse_of_injective {f : α → β} {g : β → α} :
 theorem LeftInverse.eq_rightInverse {f : α → β} {g₁ g₂ : β → α} (h₁ : LeftInverse g₁ f)
     (h₂ : RightInverse g₂ f) : g₁ = g₂ :=
   calc
-    g₁ = g₁ ∘ f ∘ g₂ := by rw [h₂.comp_eq_id, comp.right_id]
-     _ = g₂ := by rw [← comp.assoc, h₁.comp_eq_id, comp.left_id]
+    g₁ = g₁ ∘ f ∘ g₂ := by rw [h₂.comp_eq_id, comp_id]
+     _ = g₂ := by rw [← comp.assoc, h₁.comp_eq_id, id_comp]
 #align function.left_inverse.eq_right_inverse Function.LeftInverse.eq_rightInverse
 
 attribute [local instance] Classical.propDecidable
@@ -601,18 +596,18 @@ lemma forall_update_iff (f : ∀a, β a) {a : α} {b : β a} (p : ∀a, β a →
 #align function.forall_update_iff Function.forall_update_iff
 
 theorem exists_update_iff (f : ∀ a, β a) {a : α} {b : β a} (p : ∀ a, β a → Prop) :
-    (∃ x, p x (update f a b x)) ↔ p a b ∨ ∃ (x : _) (_ : x ≠ a), p x (f x) := by
+    (∃ x, p x (update f a b x)) ↔ p a b ∨ ∃ x ≠ a, p x (f x) := by
   rw [← not_forall_not, forall_update_iff f fun a b ↦ ¬p a b]
   simp [-not_and, not_and_or]
 #align function.exists_update_iff Function.exists_update_iff
 
 theorem update_eq_iff {a : α} {b : β a} {f g : ∀ a, β a} :
-    update f a b = g ↔ b = g a ∧ ∀ (x) (_ : x ≠ a), f x = g x :=
+    update f a b = g ↔ b = g a ∧ ∀ x ≠ a, f x = g x :=
   funext_iff.trans <| forall_update_iff _ fun x y ↦ y = g x
 #align function.update_eq_iff Function.update_eq_iff
 
 theorem eq_update_iff {a : α} {b : β a} {f g : ∀ a, β a} :
-    g = update f a b ↔ g a = b ∧ ∀ (x) (_ : x ≠ a), g x = f x :=
+    g = update f a b ↔ g a = b ∧ ∀ x ≠ a, g x = f x :=
   funext_iff.trans <| forall_update_iff _ fun x y ↦ g x = y
 #align function.eq_update_iff Function.eq_update_iff
 
@@ -691,8 +686,8 @@ theorem update_comm {α} [DecidableEq α] {β : α → Sort*} {a b : α} (h : a 
   · rw [dif_pos h₁, dif_pos h₂]
     cases h (h₂.symm.trans h₁)
   · rw [dif_pos h₁, dif_pos h₁, dif_neg h₂]
-  · rw [dif_neg h₁, dif_neg h₁, dif_pos h₂]
-  · rw [dif_neg h₁, dif_neg h₁, dif_neg h₂]
+  · rw [dif_neg h₁, dif_neg h₁]
+  · rw [dif_neg h₁, dif_neg h₁]
 #align function.update_comm Function.update_comm
 
 @[simp]
@@ -802,10 +797,24 @@ theorem Injective.surjective_comp_right [Nonempty γ] (hf : Injective f) :
 theorem Bijective.comp_right (hf : Bijective f) : Bijective fun g : β → γ ↦ g ∘ f :=
   ⟨hf.surjective.injective_comp_right, fun g ↦
     ⟨g ∘ surjInv hf.surjective,
-     by simp only [comp.assoc g _ f, (leftInverse_surjInv hf).comp_eq_id, comp.right_id]⟩⟩
+     by simp only [comp.assoc g _ f, (leftInverse_surjInv hf).comp_eq_id, comp_id]⟩⟩
 #align function.bijective.comp_right Function.Bijective.comp_right
 
 end Extend
+
+namespace FactorsThrough
+
+protected theorem rfl {f : α → β} : FactorsThrough f f := fun _ _ ↦ id
+
+theorem comp_left {f : α → β} {g : α → γ}  (h : FactorsThrough g f) (g' : γ → δ) :
+    FactorsThrough (g' ∘ g) f := fun _x _y hxy ↦
+  congr_arg g' (h hxy)
+
+theorem comp_right {f : α → β} {g : α → γ} (h : FactorsThrough g f) (g' : δ → α) :
+    FactorsThrough (g ∘ g') (f ∘ g') := fun _x _y hxy ↦
+  h hxy
+
+end FactorsThrough
 
 theorem uncurry_def {α β γ} (f : α → β → γ) : uncurry f = fun p ↦ f p.1 p.2 :=
   rfl
@@ -864,7 +873,7 @@ class HasUncurry (α : Type*) (β : outParam (Type*)) (γ : outParam (Type*)) wh
   uncurry : α → β → γ
 #align function.has_uncurry Function.HasUncurry
 
-notation:arg "↿" x:arg => HasUncurry.uncurry x
+@[inherit_doc] notation:arg "↿" x:arg => HasUncurry.uncurry x
 
 instance hasUncurryBase : HasUncurry (α → β) α β :=
   ⟨id⟩
@@ -917,6 +926,11 @@ protected theorem eq_iff {x y : α} : f x = y ↔ x = f y :=
 #align function.involutive.eq_iff Function.Involutive.eq_iff
 
 end Involutive
+
+lemma not_involutive : Involutive Not := fun _ ↦ propext not_not
+lemma not_injective : Injective Not := not_involutive.injective
+lemma not_surjective : Surjective Not := not_involutive.surjective
+lemma not_bijective : Bijective Not := not_involutive.bijective
 
 @[simp]
 lemma symmetric_apply_eq_iff {f : α → α} : Symmetric (f · = ·) ↔ Involutive f := by
@@ -1043,17 +1057,17 @@ theorem eq_mp_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.
   -- TODO: mathlib3 uses `eq_rec_on_bijective`, difference in elaboration here
   -- due to `@[macro_inline]` possibly?
   cases h
-  refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
+  exact ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 #align eq_mp_bijective eq_mp_bijective
 
 theorem eq_mpr_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.mpr h) := by
   cases h
-  refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
+  exact ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 #align eq_mpr_bijective eq_mpr_bijective
 
 theorem cast_bijective {α β : Sort _} (h : α = β) : Function.Bijective (cast h) := by
   cases h
-  refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
+  exact ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 #align cast_bijective cast_bijective
 
 /-! Note these lemmas apply to `Type*` not `Sort*`, as the latter interferes with `simp`, and

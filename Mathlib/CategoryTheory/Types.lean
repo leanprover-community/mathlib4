@@ -5,9 +5,8 @@ Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.Logic.Equiv.Basic
-import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.PPWithUniv
+import Mathlib.Data.Set.Defs
 
 #align_import category_theory.types from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
@@ -53,7 +52,7 @@ theorem types_hom {α β : Type u} : (α ⟶ β) = (α → β) :=
   rfl
 #align category_theory.types_hom CategoryTheory.types_hom
 
--- porting note: this lemma was not here in Lean 3. Lean 3 `ext` would solve this goal
+-- porting note (#10688): this lemma was not here in Lean 3. Lean 3 `ext` would solve this goal
 -- because of its "if all else fails, apply all `ext` lemmas" policy,
 -- which apparently we want to move away from.
 @[ext] theorem types_ext {α β : Type u} (f g : α ⟶ β) (h : ∀ a : α, f a = g a) : f = g := by
@@ -117,7 +116,7 @@ variable {J : Type u} [Category.{v} J]
 
 /-- The sections of a functor `J ⥤ Type` are
 the choices of a point `u j : F.obj j` for each `j`,
-such that `F.map f (u j) = u j` for every morphism `f : j ⟶ j'`.
+such that `F.map f (u j) = u j'` for every morphism `f : j ⟶ j'`.
 
 We later use these to define limits in `Type` and in many concrete categories.
 -/
@@ -125,11 +124,14 @@ def sections (F : J ⥤ Type w) : Set (∀ j, F.obj j) :=
   { u | ∀ {j j'} (f : j ⟶ j'), F.map f (u j) = u j' }
 #align category_theory.functor.sections CategoryTheory.Functor.sections
 
--- porting note: added this simp lemma
+-- Porting note (#10756): added this simp lemma
 @[simp]
 lemma sections_property {F : J ⥤ Type w} (s : (F.sections : Type _))
     {j j' : J} (f : j ⟶ j') : F.map f (s.val j) = s.val j' :=
   s.property f
+
+lemma sections_ext_iff {F : J ⥤ Type w} {x y : F.sections} : x = y ↔ ∀ j, x.val j = y.val j :=
+  Subtype.ext_iff.trans Function.funext_iff
 
 variable (J)
 
@@ -145,7 +147,6 @@ end Functor
 namespace FunctorToTypes
 
 variable {C : Type u} [Category.{v} C] (F G H : C ⥤ Type w) {X Y Z : C}
-
 variable (σ : F ⟶ G) (τ : G ⟶ H)
 
 @[simp]
@@ -165,6 +166,11 @@ theorem naturality (f : X ⟶ Y) (x : F.obj X) : σ.app Y ((F.map f) x) = (G.map
 theorem comp (x : F.obj X) : (σ ≫ τ).app X x = τ.app X (σ.app X x) :=
   rfl
 #align category_theory.functor_to_types.comp CategoryTheory.FunctorToTypes.comp
+
+@[simp]
+theorem eqToHom_map_comp_apply (p : X = Y) (q : Y = Z) (x : F.obj X) :
+    F.map (eqToHom q) (F.map (eqToHom p) x) = F.map (eqToHom <| p.trans q) x := by
+  aesop_cat
 
 variable {D : Type u'} [𝒟 : Category.{u'} D] (I J : D ⥤ C) (ρ : I ⟶ J) {W : D}
 
@@ -251,7 +257,6 @@ See <https://stacks.math.columbia.edu/tag/003C>.
 theorem mono_iff_injective {X Y : Type u} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   constructor
   · intro H x x' h
-    skip
     rw [← homOfElement_eq_iff] at h ⊢
     exact (cancel_mono f).mp h
   · exact fun H => ⟨fun g g' h => H.comp_left h⟩
@@ -397,7 +402,7 @@ instance : SplitEpiCategory (Type u) where
 end CategoryTheory
 
 -- We prove `equivIsoIso` and then use that to sneakily construct `equivEquivIso`.
--- (In this order the proofs are handled by `obviously`.)
+-- (In this order the proofs are handled by `aesop_cat`.)
 /-- Equivalences (between types in the same universe) are the same as (isomorphic to) isomorphisms
 of types. -/
 @[simps]

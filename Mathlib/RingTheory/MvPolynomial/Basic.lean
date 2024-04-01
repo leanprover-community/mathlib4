@@ -5,8 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.MvPolynomial.CommRing
-import Mathlib.Data.MvPolynomial.Variables
+import Mathlib.Data.MvPolynomial.Degrees
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
@@ -68,7 +67,7 @@ section Homomorphism
 
 theorem mapRange_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)
     (f : R →+* S) : Finsupp.mapRange f f.map_zero p = map f p := by
-  rw [p.as_sum, Finsupp.mapRange_finset_sum, (map f).map_sum]
+  rw [p.as_sum, Finsupp.mapRange_finset_sum, map_sum (map f)]
   refine' Finset.sum_congr rfl fun n _ => _
   rw [map_monomial, ← single_eq_monomial, Finsupp.mapRange_single, single_eq_monomial]
 #align mv_polynomial.map_range_eq_map MvPolynomial.mapRange_eq_map
@@ -103,12 +102,6 @@ def restrictDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
   restrictSupport R { n | ∀ i, n i ≤ m }
 #align mv_polynomial.restrict_degree MvPolynomial.restrictDegree
 
-theorem restrictTotalDegree_le_restrictDegree (m : ℕ) :
-    restrictTotalDegree σ R m ≤ restrictDegree σ R m :=
-  restrictSupport_mono R fun n hn i ↦ (eq_or_ne (n i) 0).elim
-    (fun h ↦ h.trans_le m.zero_le) fun h ↦
-      (Finset.single_le_sum (fun _ _ ↦ Nat.zero_le _) <| Finsupp.mem_support_iff.mpr h).trans hn
-
 variable {R}
 
 theorem mem_restrictTotalDegree (p : MvPolynomial σ R) :
@@ -132,6 +125,11 @@ theorem mem_restrictDegree_iff_sup [DecidableEq σ] (p : MvPolynomial σ R) (n :
 
 variable (R)
 
+theorem restrictTotalDegree_le_restrictDegree (m : ℕ) :
+    restrictTotalDegree σ R m ≤ restrictDegree σ R m :=
+  fun p hp ↦ (mem_restrictDegree _ _ _).mpr fun s hs i ↦ (degreeOf_le_iff.mp
+    (degreeOf_le_totalDegree p i) s hs).trans ((mem_restrictTotalDegree _ _ _).mp hp)
+
 /-- The monomials form a basis on `MvPolynomial σ R`. -/
 def basisMonomials : Basis (σ →₀ ℕ) R (MvPolynomial σ R) :=
   Finsupp.basisSingleOne
@@ -151,7 +149,7 @@ set_option linter.uppercaseLean3 false in
 
 private lemma finite_setOf_bounded (α) [Finite α] (n : ℕ) : Finite {f : α →₀ ℕ | ∀ a, f a ≤ n} :=
   ((Set.Finite.pi' fun _ ↦ Set.finite_le_nat _).preimage <|
-    FunLike.coe_injective.injOn _).to_subtype
+    DFunLike.coe_injective.injOn _).to_subtype
 
 instance [Finite σ] (N : ℕ) : Module.Finite R (restrictDegree σ R N) :=
   have := finite_setOf_bounded σ N

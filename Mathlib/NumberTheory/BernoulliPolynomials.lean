@@ -80,7 +80,7 @@ theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli 
     apply sum_eq_zero fun x hx => _
     intros x hx
     have h : x < n := (mem_range.1 hx)
-    simp [h]
+    simp [tsub_eq_zero_iff_le, h]
   simp [this]
 #align polynomial.bernoulli_eval_zero Polynomial.bernoulli_eval_zero
 
@@ -108,7 +108,7 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
   conv_rhs => rw [← Nat.cast_one, ← Nat.cast_add, ← C_eq_nat_cast, C_mul_monomial, mul_comm]
   rw [mul_assoc, mul_assoc, ← Nat.cast_mul, ← Nat.cast_mul]
   congr 3
-  rw [(choose_mul_succ_eq k m).symm, mul_comm]
+  rw [(choose_mul_succ_eq k m).symm]
 #align polynomial.derivative_bernoulli_add_one Polynomial.derivative_bernoulli_add_one
 
 theorem derivative_bernoulli (k : ℕ) :
@@ -159,7 +159,7 @@ nonrec theorem sum_bernoulli (n : ℕ) :
 theorem bernoulli_eq_sub_sum (n : ℕ) :
     (n.succ : ℚ) • bernoulli n =
       monomial n (n.succ : ℚ) - ∑ k in Finset.range n, ((n + 1).choose k : ℚ) • bernoulli k := by
-  rw [Nat.cast_succ, ← sum_bernoulli n, sum_range_succ, add_sub_cancel', choose_succ_self_right,
+  rw [Nat.cast_succ, ← sum_bernoulli n, sum_range_succ, add_sub_cancel_left, choose_succ_self_right,
     Nat.cast_succ]
 #align polynomial.bernoulli_eq_sub_sum Polynomial.bernoulli_eq_sub_sum
 
@@ -167,7 +167,7 @@ theorem bernoulli_eq_sub_sum (n : ℕ) :
 theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
     ((p + 1 : ℚ) * ∑ k in range n, (k : ℚ) ^ p) = (bernoulli p.succ).eval (n : ℚ) -
     _root_.bernoulli p.succ := by
-  rw [sum_range_pow, bernoulli_def, eval_finset_sum, ← sum_div, mul_div_cancel' _ _]
+  rw [sum_range_pow, bernoulli_def, eval_finset_sum, ← sum_div, mul_div_cancel₀ _ _]
   · simp_rw [eval_monomial]
     symm
     rw [← sum_flip _, sum_range_succ]

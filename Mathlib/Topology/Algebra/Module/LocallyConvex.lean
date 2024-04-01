@@ -165,7 +165,7 @@ theorem locallyConvexSpace_iInf {ts' : ι → TopologicalSpace E}
     (h' : ∀ i, @LocallyConvexSpace 𝕜 E _ _ _ (ts' i)) :
     @LocallyConvexSpace 𝕜 E _ _ _ (⨅ i, ts' i) := by
   refine' locallyConvexSpace_sInf _
-  rwa [forall_range_iff]
+  rwa [forall_mem_range]
 #align locally_convex_space_infi locallyConvexSpace_iInf
 
 theorem locallyConvexSpace_inf {t₁ t₂ : TopologicalSpace E} (h₁ : @LocallyConvexSpace 𝕜 E _ _ _ t₁)
@@ -193,7 +193,7 @@ instance Pi.locallyConvexSpace {ι : Type*} {X : ι → Type*} [∀ i, AddCommMo
 
 instance Prod.locallyConvexSpace [TopologicalSpace E] [TopologicalSpace F] [LocallyConvexSpace 𝕜 E]
     [LocallyConvexSpace 𝕜 F] : LocallyConvexSpace 𝕜 (E × F) :=
--- Porting note : had to specify `t₁` and `t₂`
+-- Porting note: had to specify `t₁` and `t₂`
   locallyConvexSpace_inf (t₁ := induced Prod.fst _) (t₂ := induced Prod.snd _)
     (locallyConvexSpace_induced (LinearMap.fst _ _ _))
     (locallyConvexSpace_induced (LinearMap.snd _ _ _))

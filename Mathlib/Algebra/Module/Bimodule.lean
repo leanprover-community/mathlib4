@@ -3,7 +3,7 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import algebra.module.bimodule from "leanprover-community/mathlib"@"58cef51f7a819e7227224461e392dee423302f2d"
 
@@ -18,8 +18,8 @@ and `S` acting contravariantly ("on the right"). The compatibility condition is 
 
 This situation can be set up in Mathlib as:
 ```lean
-variables (R S M : Type*) [Ring R] [Ring S]
-variables [AddCommGroup M] [Module R M] [Module Sᵐᵒᵖ M] [SMulCommClass R Sᵐᵒᵖ M]
+variable (R S M : Type*) [Ring R] [Ring S]
+variable [AddCommGroup M] [Module R M] [Module Sᵐᵒᵖ M] [SMulCommClass R Sᵐᵒᵖ M]
 ```
 The key fact is:
 ```lean
@@ -65,15 +65,10 @@ namespace Subbimodule
 section Algebra
 
 variable {R A B M : Type*}
-
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
-
 variable [Semiring A] [Semiring B] [Module A M] [Module B M]
-
 variable [Algebra R A] [Algebra R B]
-
 variable [IsScalarTower R A M] [IsScalarTower R B M]
-
 variable [SMulCommClass A B M]
 
 /-- A constructor for a subbimodule which demands closure under the two sets of scalars
@@ -132,7 +127,6 @@ end Algebra
 section Ring
 
 variable (R S M : Type*) [Ring R] [Ring S]
-
 variable [AddCommGroup M] [Module R M] [Module S M] [SMulCommClass R S M]
 
 /-- A `Submodule` over `R ⊗[ℕ] S` is naturally also a `Submodule` over the canonically-isomorphic

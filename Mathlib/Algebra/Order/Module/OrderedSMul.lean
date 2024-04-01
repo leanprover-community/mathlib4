@@ -8,9 +8,7 @@ import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Pi
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Tactic.GCongr.Core
-import Mathlib.Tactic.Positivity
 
 #align_import algebra.order.smul from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
@@ -67,8 +65,7 @@ instance OrderedSMul.toPosSMulStrictMono : PosSMulStrictMono R M where
 instance OrderedSMul.toPosSMulReflectLT : PosSMulReflectLT R M :=
   PosSMulReflectLT.of_pos fun _a ha _b₁ _b₂ h ↦ OrderedSMul.lt_of_smul_lt_smul_of_pos h ha
 
-instance OrderDual.instOrderedSMul [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M]
-    [OrderedSMul R M] : OrderedSMul R Mᵒᵈ where
+instance OrderDual.instOrderedSMul : OrderedSMul R Mᵒᵈ where
   smul_lt_smul_of_pos := OrderedSMul.smul_lt_smul_of_pos (M := M)
   lt_of_smul_lt_smul_of_pos := OrderedSMul.lt_of_smul_lt_smul_of_pos (M := M)
 
@@ -89,13 +86,13 @@ instance Nat.orderedSMul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ 
     | succ n =>
       induction n with
       | zero => dsimp; rwa [one_nsmul, one_nsmul]
-      | succ n ih => simp only [succ_nsmul _ n.succ, _root_.add_lt_add hab (ih n.succ_pos)]
+      | succ n ih => simp only [succ_nsmul _ n.succ, _root_.add_lt_add (ih n.succ_pos) hab]
 #align nat.ordered_smul Nat.orderedSMul
 
 instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
   OrderedSMul.mk'' fun n hn => by
     cases n
-    · simp only [Int.ofNat_eq_coe, Int.coe_nat_pos, coe_nat_zsmul] at hn ⊢
+    · simp only [Int.ofNat_eq_coe, Int.coe_nat_pos, natCast_zsmul] at hn ⊢
       exact strictMono_smul_left_of_pos hn
     · cases (Int.negSucc_not_pos _).1 hn
 #align int.ordered_smul Int.orderedSMul
@@ -122,7 +119,7 @@ theorem OrderedSMul.mk' (h : ∀ ⦃a b : M⦄ ⦃c : 𝕜⦄, a < b → 0 < c �
     OrderedSMul 𝕜 M := by
   have hlt' : ∀ (a b : M) (c : 𝕜), a < b → 0 < c → c • a < c • b := by
     refine' fun a b c hab hc => (h hab hc).lt_of_ne _
-    rw [Ne.def, hc.ne'.isUnit.smul_left_cancel]
+    rw [Ne, hc.ne'.isUnit.smul_left_cancel]
     exact hab.ne
   refine' { smul_lt_smul_of_pos := fun {a b c} => hlt' a b c..}
   intro a b c hab hc
@@ -145,3 +142,33 @@ instance Pi.orderedSMul {M : ι → Type*} [∀ i, OrderedAddCommMonoid (M i)]
 #noalign pi.ordered_smul''
 
 end LinearOrderedSemifield
+
+section Invertible
+variable (α : Type*) {β : Type*}
+variable [Semiring α] [Invertible (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
+  [CovariantClass β β (· + ·) (· ≤ ·)]
+
+lemma inf_eq_half_smul_add_sub_abs_sub (x y : β) : x ⊓ y = (⅟2 : α) • (x + y - |y - x|) := by
+  rw [← two_nsmul_inf_eq_add_sub_abs_sub x y, two_smul, ← two_smul α,
+    smul_smul, invOf_mul_self, one_smul]
+
+lemma sup_eq_half_smul_add_add_abs_sub (x y : β) : x ⊔ y = (⅟2 : α) • (x + y + |y - x|) := by
+  rw [← two_nsmul_sup_eq_add_add_abs_sub x y, two_smul, ← two_smul α,
+    smul_smul, invOf_mul_self, one_smul]
+
+end Invertible
+
+section DivisionSemiring
+variable (α : Type*) {β : Type*}
+variable [DivisionSemiring α] [NeZero (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
+  [CovariantClass β β (· + ·) (· ≤ ·)]
+
+lemma inf_eq_half_smul_add_sub_abs_sub' (x y : β) : x ⊓ y = (2⁻¹ : α) • (x + y - |y - x|) := by
+  letI := invertibleOfNonzero (two_ne_zero' α)
+  exact inf_eq_half_smul_add_sub_abs_sub α x y
+
+lemma sup_eq_half_smul_add_add_abs_sub' (x y : β) : x ⊔ y = (2⁻¹ : α) • (x + y + |y - x|) := by
+  letI := invertibleOfNonzero (two_ne_zero' α)
+  exact sup_eq_half_smul_add_add_abs_sub α x y
+
+end DivisionSemiring

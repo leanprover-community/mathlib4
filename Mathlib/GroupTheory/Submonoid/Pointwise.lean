@@ -46,7 +46,6 @@ on `Set`s.
 open Set Pointwise
 
 variable {α : Type*} {G : Type*} {M : Type*} {R : Type*} {A : Type*}
-
 variable [Monoid M] [AddMonoid A]
 
 /-! Some lemmas about pointwise multiplication and submonoids. Ideally we put these in
@@ -546,7 +545,7 @@ protected theorem mul_induction_on {M N : AddSubmonoid R} {C : R → Prop} {r : 
 #align add_submonoid.mul_induction_on AddSubmonoid.mul_induction_on
 
 -- this proof is copied directly from `Submodule.span_mul_span`
--- porting note: proof rewritten
+-- Porting note: proof rewritten
 theorem closure_mul_closure (S T : Set R) : closure S * closure T = closure (S * T) := by
   apply le_antisymm
   · refine mul_le.2 fun a ha b hb => ?_
@@ -689,17 +688,17 @@ end Semiring
 
 end AddSubmonoid
 
-namespace Set.IsPwo
+namespace Set.IsPWO
 
 variable [OrderedCancelCommMonoid α] {s : Set α}
 
 @[to_additive]
-theorem submonoid_closure (hpos : ∀ x : α, x ∈ s → 1 ≤ x) (h : s.IsPwo) :
-    IsPwo (Submonoid.closure s : Set α) := by
+theorem submonoid_closure (hpos : ∀ x : α, x ∈ s → 1 ≤ x) (h : s.IsPWO) :
+    IsPWO (Submonoid.closure s : Set α) := by
   rw [Submonoid.closure_eq_image_prod]
   refine' (h.partiallyWellOrderedOn_sublistForall₂ (· ≤ ·)).image_of_monotone_on _
   exact fun l1 _ l2 hl2 h12 => h12.prod_le_prod' fun x hx => hpos x <| hl2 x hx
-#align set.is_pwo.submonoid_closure Set.IsPwo.submonoid_closure
-#align set.is_pwo.add_submonoid_closure Set.IsPwo.addSubmonoid_closure
+#align set.is_pwo.submonoid_closure Set.IsPWO.submonoid_closure
+#align set.is_pwo.add_submonoid_closure Set.IsPWO.addSubmonoid_closure
 
-end Set.IsPwo
+end Set.IsPWO

@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Init.Core
 import Mathlib.Init.Function
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Inhabit
@@ -226,12 +225,6 @@ theorem snd_eq_iff : ∀ {p : α × β} {x : β}, p.2 = x ↔ p = (p.1, x)
 
 variable {r : α → α → Prop} {s : β → β → Prop} {x y : α × β}
 
-theorem lex_def (r : α → α → Prop) (s : β → β → Prop) {p q : α × β} :
-    Prod.Lex r s p q ↔ r p.1 q.1 ∨ p.1 = q.1 ∧ s p.2 q.2 :=
-  ⟨fun h ↦ by cases h <;> simp [*], fun h ↦
-    match p, q, h with
-    | (a, b), (c, d), Or.inl h => Lex.left _ _ h
-    | (a, b), (c, d), Or.inr ⟨e, h⟩ => by subst e; exact Lex.right _ h⟩
 #align prod.lex_def Prod.lex_def
 
 lemma lex_iff : Prod.Lex r s x y ↔ r x.1 y.1 ∨ x.1 = y.1 ∧ s x.2 y.2 := lex_def _ _
@@ -411,32 +404,21 @@ theorem map_involutive [Nonempty α] [Nonempty β] {f : α → α} {g : β → �
   map_leftInverse
 #align prod.map_involutive Prod.map_involutive
 
-end Prod
-
 section delaborators
 open Lean PrettyPrinter Delaborator
 
-/-- Delaborator for simple product projections. -/
-@[delab app.Prod.fst, delab app.Prod.snd]
-def delabProdProjs : Delab := do
-  let #[_, _, _] := (← SubExpr.getExpr).getAppArgs | failure
-  let stx ← delabProjectionApp
-  match stx with
-  | `($(x).fst) => `($(x).1)
-  | `($(x).snd) => `($(x).2)
-  | _ => failure
+/-- Delaborator for `Prod.fst x` as `x.1`. -/
+@[delab app.Prod.fst]
+def delabProdFst : Delab := withOverApp 3 do
+  let x ← SubExpr.withAppArg delab
+  `($(x).1)
 
-/-- Delaborator for product first projection when the projection is a function
-that is then applied. -/
-@[app_unexpander Prod.fst]
-def unexpandProdFst : Lean.PrettyPrinter.Unexpander
-  | `($(_) $p $xs*) => `($p.1 $xs*)
-  | _ => throw ()
+/-- Delaborator for `Prod.snd x` as `x.2`. -/
+@[delab app.Prod.snd]
+def delabProdSnd : Delab := withOverApp 3 do
+  let x ← SubExpr.withAppArg delab
+  `($(x).2)
 
-/-- Delaborator for product second projection when the projection is a function
-that is then applied. -/
-@[app_unexpander Prod.snd]
-def unexpandProdSnd : Lean.PrettyPrinter.Unexpander
-  | `($(_) $p $xs*) => `($p.2 $xs*)
-  | _ => throw ()
 end delaborators
+
+end Prod

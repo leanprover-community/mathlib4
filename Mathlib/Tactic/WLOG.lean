@@ -3,7 +3,6 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Johan Commelin, Reid Barton, Thomas Murrills
 -/
-import Lean
 import Mathlib.Tactic.Core
 
 /-!

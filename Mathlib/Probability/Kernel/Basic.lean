@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Integral.Bochner
-import Mathlib.MeasureTheory.Constructions.Prod.Basic
+import Mathlib.MeasureTheory.Measure.GiryMonad
 
 #align_import probability.kernel.basic from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -64,11 +64,21 @@ noncomputable def kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace �
   add_mem' hf hg := Measurable.add hf hg
 #align probability_theory.kernel ProbabilityTheory.kernel
 
--- Porting note: using `FunLike` instead of `CoeFun` to use `FunLike.coe`
+-- Porting note: using `FunLike` instead of `CoeFun` to use `DFunLike.coe`
 instance {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
-    FunLike (kernel α β) α fun _ => Measure β where
+    FunLike (kernel α β) α (Measure β) where
   coe := Subtype.val
   coe_injective' := Subtype.val_injective
+
+instance kernel.instCovariantAddLE {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+    CovariantClass (kernel α β) (kernel α β) (· + ·) (· ≤ ·) :=
+  ⟨fun _ _ _ hμ a ↦ add_le_add_left (hμ a) _⟩
+
+noncomputable
+instance kernel.instOrderBot {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+    OrderBot (kernel α β) where
+  bot := 0
+  bot_le κ a := by simp only [ZeroMemClass.coe_zero, Pi.zero_apply, Measure.zero_le]
 
 variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
@@ -123,8 +133,9 @@ class IsFiniteKernel (κ : kernel α β) : Prop where
 /-- A constant `C : ℝ≥0∞` such that `C < ∞` (`ProbabilityTheory.IsFiniteKernel.bound_lt_top κ`) and
 for all `a : α` and `s : Set β`, `κ a s ≤ C` (`ProbabilityTheory.kernel.measure_le_bound κ a s`).
 
-Porting note: TODO: does it make sense to make `ProbabilityTheory.IsFiniteKernel.bound` the least
-possible bound? Should it be an `NNReal` number? -/
+Porting note (#11215): TODO: does it make sense to
+-- make `ProbabilityTheory.IsFiniteKernel.bound` the least possible bound?
+-- Should it be an `NNReal` number? -/
 noncomputable def IsFiniteKernel.bound (κ : kernel α β) [h : IsFiniteKernel κ] : ℝ≥0∞ :=
   h.exists_univ_le.choose
 #align probability_theory.is_finite_kernel.bound ProbabilityTheory.IsFiniteKernel.bound
@@ -158,6 +169,10 @@ instance IsFiniteKernel.add (κ η : kernel α β) [IsFiniteKernel κ] [IsFinite
   exact add_le_add (kernel.measure_le_bound _ _ _) (kernel.measure_le_bound _ _ _)
 #align probability_theory.is_finite_kernel.add ProbabilityTheory.IsFiniteKernel.add
 
+lemma isFiniteKernel_of_le {κ ν : kernel α β} [hν : IsFiniteKernel ν] (hκν : κ ≤ ν) :
+    IsFiniteKernel κ := by
+  refine ⟨hν.bound, hν.bound_lt_top, fun a ↦ (hκν _ _).trans (kernel.measure_le_bound ν a Set.univ)⟩
+
 variable {κ : kernel α β}
 
 instance IsMarkovKernel.is_probability_measure' [IsMarkovKernel κ] (a : α) :
@@ -177,10 +192,10 @@ instance (priority := 100) IsMarkovKernel.isFiniteKernel [IsMarkovKernel κ] :
 namespace kernel
 
 @[ext]
-theorem ext {η : kernel α β} (h : ∀ a, κ a = η a) : κ = η := FunLike.ext _ _ h
+theorem ext {η : kernel α β} (h : ∀ a, κ a = η a) : κ = η := DFunLike.ext _ _ h
 #align probability_theory.kernel.ext ProbabilityTheory.kernel.ext
 
-theorem ext_iff {η : kernel α β} : κ = η ↔ ∀ a, κ a = η a := FunLike.ext_iff
+theorem ext_iff {η : kernel α β} : κ = η ↔ ∀ a, κ a = η a := DFunLike.ext_iff
 #align probability_theory.kernel.ext_iff ProbabilityTheory.kernel.ext_iff
 
 theorem ext_iff' {η : kernel α β} :
@@ -454,6 +469,9 @@ theorem const_apply (μβ : Measure β) (a : α) : const α μβ a = μβ :=
 lemma const_zero : kernel.const α (0 : Measure β) = 0 := by
   ext x s _; simp [kernel.const_apply]
 
+lemma const_add (β : Type*) [MeasurableSpace β] (μ ν : Measure α) :
+    const β (μ + ν) = const β μ + const β ν := by ext; simp
+
 lemma sum_const [Countable ι] (μ : ι → Measure β) :
     kernel.sum (fun n ↦ const α (μ n)) = const α (Measure.sum μ) := by
   ext x s hs
@@ -597,6 +615,10 @@ theorem comapRight_apply' (κ : kernel α β) (hf : MeasurableEmbedding f) (a : 
   rw [comapRight_apply,
     Measure.comap_apply _ hf.injective (fun s => hf.measurableSet_image.mpr) _ ht]
 #align probability_theory.kernel.comap_right_apply' ProbabilityTheory.kernel.comapRight_apply'
+
+@[simp]
+lemma comapRight_id (κ : kernel α β) : comapRight κ MeasurableEmbedding.id = κ := by
+  ext _ _ hs; rw [comapRight_apply' _ _ _ hs]; simp
 
 theorem IsMarkovKernel.comapRight (κ : kernel α β) (hf : MeasurableEmbedding f)
     (hκ : ∀ a, κ a (Set.range f) = 1) : IsMarkovKernel (comapRight κ hf) := by
