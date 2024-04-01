@@ -97,7 +97,7 @@ def speedCenterRunResponse (run : String) : IO SpeedCenterRunResponse := do
         IO.Process.exit 1
       | .error _ => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{j}"
 
-def sha : IO String := return (← runCmd "git" #["rev-parse", "HEAD"]).trim
+def headSha : IO String := return (← runCmd "git" #["rev-parse", "HEAD"]).trim
 
 def speedCenterInstructions (run : String) : IO (NameMap Float) :=
   return (← speedCenterRunResponse run).instructions
@@ -142,9 +142,13 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
   let to := match args.flag? "to" with
   | some to => to.as! ModuleName
   | none => `Mathlib -- autodetect the main module from the `lakefile.lean`?
+  let sha : IO String := match args.flag? "hash" with
+  | some h => return (h.as! String)
+  | none => headSha  -- If no hash is provided, use the current HEAD.
   searchPathRef.set compile_time_search_path%
   let _ ← unsafe withImportModules #[{module := to}] {} (trustLevel := 1024) fun env => do
     let graph := env.importGraph
+    IO.eprintln s!"Analyzing {to} at {<- sha}"
     let instructions ← speedCenterInstructions (← sha)
     let cumulative := cumulativeInstructions instructions graph
     let total := totalInstructions instructions graph
@@ -178,6 +182,7 @@ def pole : Cmd := `[Cli|
 
   FLAGS:
     to : ModuleName;      "Calculate the longest pole to the specified module."
+    hash : String;         "Revision to analyze."
 ]
 
 /-- `lake exe pole` -/
