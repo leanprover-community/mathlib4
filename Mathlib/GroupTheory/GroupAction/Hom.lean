@@ -230,11 +230,11 @@ def comp (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) [κ : CompTriple φ ψ χ] :
 
 /-- Composition of two equivariant maps. -/
 def comp' (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) : X →ₑ[ψ ∘ φ] Z :=
-  g.comp f -- (κ := CompTriple.comp)
+  g.comp f (κ := CompTriple.comp)
 
 @[simp]
 lemma comp'_eq_comp (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) :
-    g.comp' f = g.comp f := rfl -- (κ := CompTriple.comp) := rfl
+    g.comp' f = g.comp f (κ := CompTriple.comp) := rfl
 
 @[simp]
 theorem comp_apply
@@ -904,11 +904,11 @@ def comp (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) [κ : MonoidHom.CompTripl
 
 /-- Composition of two equivariant additive ring homomorphisms. -/
 def comp' (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) : R →ₑ+*[ψ.comp φ] T :=
-  g.comp f -- (κ := MonoidHom.CompTriple.comp)
+  g.comp f (κ := MonoidHom.CompTriple.comp)
 #align mul_semiring_action_hom.comp MulSemiringActionHom.comp
 
 theorem comp'_eq_comp (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) :
-    g.comp' f = g.comp f := rfl -- (κ := MonoidHom.CompTriple.comp) := rfl
+    g.comp' f = g.comp f (κ := MonoidHom.CompTriple.comp) := rfl
 
 @[simp]
 theorem comp_apply (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) [MonoidHom.CompTriple φ ψ χ] (x : R) :

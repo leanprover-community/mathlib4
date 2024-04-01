@@ -82,7 +82,10 @@ instance instRootCompTriple {φ : M →* N} {ψ : N  →* P} {χ : M →* P} [κ
     _root_.CompTriple φ ψ χ where
   comp_eq := by rw [← MonoidHom.coe_comp, κ.comp_eq]
 
-instance (priority := 10) instComp {φ : M →* N} {ψ : N →* P} :
+/-- `φ`, `ψ` and `ψ.comp φ` form a `MonoidHom.CompTriple`
+
+  (to be used with care, because no simplification is done)-/
+def comp {φ : M →* N} {ψ : N →* P} :
     CompTriple φ ψ (ψ.comp φ) where
   comp_eq := rfl
 
