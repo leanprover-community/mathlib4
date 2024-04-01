@@ -5,6 +5,7 @@ Authors: Simon Hudon, David Renshaw
 -/
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.SplitIfs
+import Mathlib.Data.Part
 
 set_option autoImplicit true
 section tauto₀
@@ -170,3 +171,11 @@ https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/tauto!.20fa
 -/
 example {x y : Nat} (h : ¬x ≠ y) : x = y :=
 by tauto
+
+section goal_depends_on_hyp
+open Part
+theorem mem_restrict (p : Prop) (o : Part α) (h : p → o.Dom) (a : α) :
+    a ∈ restrict p o h ↔ p ∧ a ∈ o := by
+  dsimp [restrict, mem_eq]
+  tauto
+end goal_depends_on_hyp
