@@ -366,6 +366,10 @@ theorem ContinuousAt.fst'' {f : X → Z} {x : X × Y} (hf : ContinuousAt f x.fst
   hf.comp continuousAt_fst
 #align continuous_at.fst'' ContinuousAt.fst''
 
+theorem Filter.Tendsto.fst_nhds {l : Filter X} {f : X → Y × Z} {p : Y × Z}
+    (h : Tendsto f l (𝓝 p)) : Tendsto (fun a ↦ (f a).1) l (𝓝 <| p.1) :=
+  continuousAt_fst.tendsto.comp h
+
 @[continuity]
 theorem continuous_snd : Continuous (@Prod.snd X Y) :=
   (continuous_prod_mk.1 continuous_id).2
@@ -404,6 +408,10 @@ theorem ContinuousAt.snd'' {f : Y → Z} {x : X × Y} (hf : ContinuousAt f x.snd
     ContinuousAt (fun x : X × Y => f x.snd) x :=
   hf.comp continuousAt_snd
 #align continuous_at.snd'' ContinuousAt.snd''
+
+theorem Filter.Tendsto.snd_nhds {l : Filter X} {f : X → Y × Z} {p : Y × Z}
+    (h : Tendsto f l (𝓝 p)) : Tendsto (fun a ↦ (f a).2) l (𝓝 <| p.2) :=
+  continuousAt_snd.tendsto.comp h
 
 @[continuity, fun_prop]
 theorem Continuous.prod_mk {f : Z → X} {g : Z → Y} (hf : Continuous f) (hg : Continuous g) :
@@ -1294,10 +1302,10 @@ theorem continuousAt_apply (i : ι) (x : ∀ i, π i) : ContinuousAt (fun p : �
   (continuous_apply i).continuousAt
 #align continuous_at_apply continuousAt_apply
 
-theorem Filter.Tendsto.apply {l : Filter Y} {f : Y → ∀ i, π i} {x : ∀ i, π i}
+theorem Filter.Tendsto.apply_nhds {l : Filter Y} {f : Y → ∀ i, π i} {x : ∀ i, π i}
     (h : Tendsto f l (𝓝 x)) (i : ι) : Tendsto (fun a => f a i) l (𝓝 <| x i) :=
   (continuousAt_apply i _).tendsto.comp h
-#align filter.tendsto.apply Filter.Tendsto.apply
+#align filter.tendsto.apply Filter.Tendsto.apply_nhds
 
 theorem nhds_pi {a : ∀ i, π i} : 𝓝 a = pi fun i => 𝓝 (a i) := by
   simp only [nhds_iInf, nhds_induced, Filter.pi]
@@ -1358,7 +1366,7 @@ lemma Pi.induced_restrict (S : Set ι) :
 theorem Filter.Tendsto.update [DecidableEq ι] {l : Filter Y} {f : Y → ∀ i, π i} {x : ∀ i, π i}
     (hf : Tendsto f l (𝓝 x)) (i : ι) {g : Y → π i} {xi : π i} (hg : Tendsto g l (𝓝 xi)) :
     Tendsto (fun a => update (f a) i (g a)) l (𝓝 <| update x i xi) :=
-  tendsto_pi_nhds.2 fun j => by rcases eq_or_ne j i with (rfl | hj) <;> simp [*, hf.apply]
+  tendsto_pi_nhds.2 fun j => by rcases eq_or_ne j i with (rfl | hj) <;> simp [*, hf.apply_nhds]
 #align filter.tendsto.update Filter.Tendsto.update
 
 theorem ContinuousAt.update [DecidableEq ι] {x : X} (hf : ContinuousAt f x) (i : ι) {g : X → π i}
@@ -1534,12 +1542,9 @@ theorem pi_generateFrom_eq_finite {π : ι → Type*} {g : ∀ a, Set (Set (π a
     by_cases a ∈ i <;> simp [*]
 #align pi_generate_from_eq_finite pi_generateFrom_eq_finite
 
--- Porting note (#10756): new lemma
 theorem induced_to_pi {X : Type*} (f : X → ∀ i, π i) :
     induced f Pi.topologicalSpace = ⨅ i, induced (f · i) inferInstance := by
-  erw [induced_iInf]
-  simp only [induced_compose]
-  rfl
+  simp_rw [Pi.topologicalSpace, induced_iInf, induced_compose, Function.comp]
 
 /-- Suppose `π i` is a family of topological spaces indexed by `i : ι`, and `X` is a type
 endowed with a family of maps `f i : X → π i` for every `i : ι`, hence inducing a
@@ -1608,7 +1613,7 @@ theorem isClosedMap_sigmaMk {i : ι} : IsClosedMap (@Sigma.mk ι σ i) := by
 #align is_closed_map_sigma_mk isClosedMap_sigmaMk
 
 theorem isClosed_range_sigmaMk {i : ι} : IsClosed (Set.range (@Sigma.mk ι σ i)) :=
-  isClosedMap_sigmaMk.closed_range
+  isClosedMap_sigmaMk.isClosed_range
 #align is_closed_range_sigma_mk isClosed_range_sigmaMk
 
 theorem openEmbedding_sigmaMk {i : ι} : OpenEmbedding (@Sigma.mk ι σ i) :=
@@ -1721,9 +1726,7 @@ section ULift
 
 theorem ULift.isOpen_iff [TopologicalSpace X] {s : Set (ULift.{v} X)} :
     IsOpen s ↔ IsOpen (ULift.up ⁻¹' s) := by
-  unfold ULift.topologicalSpace
-  erw [← Equiv.ulift.coinduced_symm]
-  rfl
+  rw [ULift.topologicalSpace, ← Equiv.ulift_apply, ← Equiv.ulift.coinduced_symm, ← isOpen_coinduced]
 
 theorem ULift.isClosed_iff [TopologicalSpace X] {s : Set (ULift.{v} X)} :
     IsClosed s ↔ IsClosed (ULift.up ⁻¹' s) := by

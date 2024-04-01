@@ -321,7 +321,7 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
         -- Porting note: this `(BinaryCofan.inl s).2` was unnecessary
         have := (BinaryCofan.inl s).2
         continuity
-      · convert f.2.1 _ openEmbedding_inl.open_range
+      · convert f.2.1 _ openEmbedding_inl.isOpen_range
         rename_i x
         exact ⟨fun h => ⟨_, h.symm⟩,
           fun ⟨e, h⟩ => h.symm.trans (congr_arg Sum.inl <| Subsingleton.elim _ _)⟩
@@ -335,12 +335,12 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
         -- Porting note: this `(BinaryCofan.inr s).2` was unnecessary
         have := (BinaryCofan.inr s).2
         continuity
-      · convert f.2.1 _ openEmbedding_inr.open_range
+      · convert f.2.1 _ openEmbedding_inr.isOpen_range
         rename_i x
         change f x ≠ Sum.inl PUnit.unit ↔ f x ∈ Set.range Sum.inr
         trans f x = Sum.inr PUnit.unit
         · rcases f x with (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;>
-            simp only [iff_self_iff, eq_self_iff_true, not_true, Ne.def, not_false_iff]
+            simp only [iff_self_iff, eq_self_iff_true, not_true, Ne, not_false_iff]
         · exact ⟨fun h => ⟨_, h.symm⟩,
             fun ⟨e, h⟩ => h.symm.trans (congr_arg Sum.inr <| Subsingleton.elim _ _)⟩
   · intro s

@@ -3,7 +3,6 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark
 -/
-import Mathlib.Algebra.Order.WithZero
 import Mathlib.Data.Polynomial.Monic
 
 #align_import algebra.polynomial.big_operators from "leanprover-community/mathlib"@"47adfab39a11a072db552f47594bf8ed2cf8a722"
@@ -270,16 +269,16 @@ theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multise
     (t.map fun x => X - C x).prod.coeff ((Multiset.card t) - 1) = -t.sum := by
   nontriviality R
   convert multiset_prod_X_sub_C_nextCoeff (by assumption)
-  rw [nextCoeff]; split_ifs with h
-  · rw [natDegree_multiset_prod_of_monic] at h
+  rw [nextCoeff, if_neg]
+  swap
+  · rw [natDegree_multiset_prod_of_monic]
     swap
     · simp only [Multiset.mem_map]
       rintro _ ⟨_, _, rfl⟩
       apply monic_X_sub_C
-    simp_rw [Multiset.sum_eq_zero_iff, Multiset.mem_map] at h
-    contrapose! h
+    simp_rw [Multiset.sum_eq_zero_iff, Multiset.mem_map]
     obtain ⟨x, hx⟩ := card_pos_iff_exists_mem.mp ht
-    exact ⟨_, ⟨_, ⟨x, hx, rfl⟩, natDegree_X_sub_C _⟩, one_ne_zero⟩
+    exact fun h => one_ne_zero <| h 1 ⟨_, ⟨x, hx, rfl⟩, natDegree_X_sub_C _⟩
   congr; rw [natDegree_multiset_prod_of_monic] <;> · simp [natDegree_X_sub_C, monic_X_sub_C]
 set_option linter.uppercaseLean3 false in
 #align polynomial.multiset_prod_X_sub_C_coeff_card_pred Polynomial.multiset_prod_X_sub_C_coeff_card_pred
@@ -330,7 +329,7 @@ theorem natDegree_multiset_prod (h : (0 : R[X]) ∉ t) :
     natDegree t.prod = (t.map natDegree).sum := by
   nontriviality R
   rw [natDegree_multiset_prod']
-  simp_rw [Ne.def, Multiset.prod_eq_zero_iff, Multiset.mem_map, leadingCoeff_eq_zero]
+  simp_rw [Ne, Multiset.prod_eq_zero_iff, Multiset.mem_map, leadingCoeff_eq_zero]
   rintro ⟨_, h, rfl⟩
   contradiction
 #align polynomial.nat_degree_multiset_prod Polynomial.natDegree_multiset_prod

@@ -110,8 +110,6 @@ theorem hasFiniteIntegral_def {_ : MeasurableSpace α} (f : α → β) (μ : Mea
     HasFiniteIntegral f μ ↔ ((∫⁻ a, ‖f a‖₊ ∂μ) < ∞) :=
   Iff.rfl
 
-attribute [eqns hasFiniteIntegral_def] HasFiniteIntegral
-
 theorem hasFiniteIntegral_iff_norm (f : α → β) :
     HasFiniteIntegral f μ ↔ (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) < ∞ := by
   simp only [HasFiniteIntegral, ofReal_norm_eq_coe_nnnorm]
@@ -439,12 +437,6 @@ end NormedSpace
 def Integrable {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ
 #align measure_theory.integrable MeasureTheory.Integrable
-
-theorem integrable_def {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) :
-    Integrable f μ ↔ (AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ) :=
-  Iff.rfl
-
-attribute [eqns integrable_def] Integrable
 
 theorem memℒp_one_iff_integrable {f : α → β} : Memℒp f 1 μ ↔ Integrable f μ := by
   simp_rw [Integrable, HasFiniteIntegral, Memℒp, snorm_one_eq_lintegral_nnnorm]
@@ -1176,9 +1168,9 @@ theorem Integrable.div_const {f : α → 𝕜} (h : Integrable f μ) (c : 𝕜) 
 
 end NormedDivisionRing
 
-section IsROrC
+section RCLike
 
-variable {𝕜 : Type*} [IsROrC 𝕜] {f : α → 𝕜}
+variable {𝕜 : Type*} [RCLike 𝕜] {f : α → 𝕜}
 
 theorem Integrable.ofReal {f : α → ℝ} (hf : Integrable f μ) :
     Integrable (fun x => (f x : 𝕜)) μ := by
@@ -1187,23 +1179,23 @@ theorem Integrable.ofReal {f : α → ℝ} (hf : Integrable f μ) :
 #align measure_theory.integrable.of_real MeasureTheory.Integrable.ofReal
 
 theorem Integrable.re_im_iff :
-    Integrable (fun x => IsROrC.re (f x)) μ ∧ Integrable (fun x => IsROrC.im (f x)) μ ↔
+    Integrable (fun x => RCLike.re (f x)) μ ∧ Integrable (fun x => RCLike.im (f x)) μ ↔
       Integrable f μ := by
   simp_rw [← memℒp_one_iff_integrable]
   exact memℒp_re_im_iff
 #align measure_theory.integrable.re_im_iff MeasureTheory.Integrable.re_im_iff
 
-theorem Integrable.re (hf : Integrable f μ) : Integrable (fun x => IsROrC.re (f x)) μ := by
+theorem Integrable.re (hf : Integrable f μ) : Integrable (fun x => RCLike.re (f x)) μ := by
   rw [← memℒp_one_iff_integrable] at hf ⊢
   exact hf.re
 #align measure_theory.integrable.re MeasureTheory.Integrable.re
 
-theorem Integrable.im (hf : Integrable f μ) : Integrable (fun x => IsROrC.im (f x)) μ := by
+theorem Integrable.im (hf : Integrable f μ) : Integrable (fun x => RCLike.im (f x)) μ := by
   rw [← memℒp_one_iff_integrable] at hf ⊢
   exact hf.im
 #align measure_theory.integrable.im MeasureTheory.Integrable.im
 
-end IsROrC
+end RCLike
 
 section Trim
 

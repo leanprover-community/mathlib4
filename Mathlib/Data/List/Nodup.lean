@@ -125,10 +125,10 @@ theorem nodup_iff_get?_ne_get? {l : List α} :
   rw [Nodup, pairwise_iff_get]
   constructor
   · intro h i j hij hj
-    rw [get?_eq_get (lt_trans hij hj), get?_eq_get hj, Ne.def, Option.some_inj]
+    rw [get?_eq_get (lt_trans hij hj), get?_eq_get hj, Ne, Option.some_inj]
     exact h _ _ hij
   · intro h i j hij
-    rw [Ne.def, ← Option.some_inj, ← get?_eq_get, ← get?_eq_get]
+    rw [Ne, ← Option.some_inj, ← get?_eq_get, ← get?_eq_get]
     exact h i j hij j.2
 #align list.nodup_iff_nth_ne_nth List.nodup_iff_get?_ne_get?
 
@@ -139,7 +139,7 @@ theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
   · specialize hl h.of_cons
     by_cases hx : tl = [x]
     · simpa [hx, and_comm, and_or_left] using h
-    · rw [← Ne.def, hl] at hx
+    · rw [← Ne, hl] at hx
       rcases hx with (rfl | ⟨y, hy, hx⟩)
       · simp
       · suffices ∃ y ∈ hd :: tl, y ≠ x by simpa [ne_nil_of_mem hy]
@@ -298,7 +298,7 @@ theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := b
 
 @[simp]
 theorem nodup_reverse {l : List α} : Nodup (reverse l) ↔ Nodup l :=
-  pairwise_reverse.trans <| by simp only [Nodup, Ne.def, eq_comm]
+  pairwise_reverse.trans <| by simp only [Nodup, Ne, eq_comm]
 #align list.nodup_reverse List.nodup_reverse
 
 theorem Nodup.erase_eq_filter [DecidableEq α] {l} (d : Nodup l) (a : α) :
@@ -441,7 +441,7 @@ theorem Nodup.map_update [DecidableEq α] {l : List α} (hl : l.Nodup) (f : α �
 
 theorem Nodup.pairwise_of_forall_ne {l : List α} {r : α → α → Prop} (hl : l.Nodup)
     (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → r a b) : l.Pairwise r := by
-  apply pairwise_iff_forall_sublist.mpr
+  rw [pairwise_iff_forall_sublist]
   intro a b hab
   if heq : a = b then
     cases heq; have := nodup_iff_sublist.mp hl _ hab; contradiction

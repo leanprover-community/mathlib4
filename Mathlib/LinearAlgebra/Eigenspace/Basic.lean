@@ -426,7 +426,7 @@ theorem generalizedEigenspace_restrict (f : End R M) (p : Submodule R M) (k : �
   induction' k with k ih
   · rw [pow_zero, pow_zero, LinearMap.one_eq_id]
     apply (Submodule.ker_subtype _).symm
-  · erw [pow_succ', pow_succ', LinearMap.ker_comp, LinearMap.ker_comp, ih, ← LinearMap.ker_comp,
+  · erw [pow_succ, pow_succ, LinearMap.ker_comp, LinearMap.ker_comp, ih, ← LinearMap.ker_comp,
       LinearMap.comp_assoc]
 #align module.End.generalized_eigenspace_restrict Module.End.generalizedEigenspace_restrict
 
