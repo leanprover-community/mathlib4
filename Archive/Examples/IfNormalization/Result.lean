@@ -56,6 +56,7 @@ We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we kno
   | var _ => 1
   | .ite i t e => 2 * normSize i + max (normSize t) (normSize e) + 1
 
+set_option tactic.skipAssignedInstances false in
 /-- Normalizes the expression at the same time as assigning all variables in
 `e` to the literal booleans given by `l` -/
 def normalize (l : AList (fun _ : ℕ => Bool)) :
@@ -79,7 +80,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
       ⟨if t' = e' then t' else .ite (var v) t' e', by
         refine ⟨fun f => ?_, ?_, fun w b => ?_⟩
         · -- eval = eval
-          simp
+          simp? says simp only [apply_ite, eval_ite_var, Option.elim, ite_eq_iff']
           cases hfv : f v
           · simp_all
             congr
@@ -99,7 +100,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
           by_cases w = v <;> ◾⟩
     | some b =>
       have i' := normalize l (.ite (lit b) t e); ⟨i'.1, ◾⟩
-  termination_by normalize e => e.normSize
+  termination_by e => e.normSize
 
 /-
 We recall the statement of the if-normalization problem.

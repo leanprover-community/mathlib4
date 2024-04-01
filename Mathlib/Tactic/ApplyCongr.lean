@@ -78,7 +78,7 @@ def Lean.Elab.Tactic.applyCongr (q : Option Expr) : TacticM Unit := do
   if congrTheoremExprs == [] then
     throwError "No matching congr lemmas found"
   -- For every lemma:
-  liftMetaTactic <| fun mainGoal => congrTheoremExprs.firstM (fun congrTheoremExpr => do
+  liftMetaTactic fun mainGoal => congrTheoremExprs.firstM (fun congrTheoremExpr => do
     let newGoals ← mainGoal.apply congrTheoremExpr { newGoals := .nonDependentOnly }
     newGoals.mapM fun newGoal => Prod.snd <$> newGoal.intros)
 

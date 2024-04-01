@@ -17,7 +17,8 @@ This file contains lemmas about continuity of the power functions on `ℂ`, `ℝ
 
 noncomputable section
 
-open Classical Real Topology NNReal ENNReal Filter BigOperators ComplexConjugate
+open scoped Classical
+open Real Topology NNReal ENNReal Filter BigOperators ComplexConjugate
 
 open Filter Finset Set
 
@@ -33,9 +34,8 @@ open Complex
 variable {α : Type*}
 
 theorem zero_cpow_eq_nhds {b : ℂ} (hb : b ≠ 0) : (fun x : ℂ => (0 : ℂ) ^ x) =ᶠ[𝓝 b] 0 := by
-  suffices : ∀ᶠ x : ℂ in 𝓝 b, x ≠ 0
-  exact
-    this.mono fun x hx => by
+  suffices ∀ᶠ x : ℂ in 𝓝 b, x ≠ 0 from
+    this.mono fun x hx ↦ by
       dsimp only
       rw [zero_cpow hx, Pi.zero_apply]
   exact IsOpen.eventually_mem isOpen_ne hb
@@ -43,9 +43,8 @@ theorem zero_cpow_eq_nhds {b : ℂ} (hb : b ≠ 0) : (fun x : ℂ => (0 : ℂ) ^
 
 theorem cpow_eq_nhds {a b : ℂ} (ha : a ≠ 0) :
     (fun x => x ^ b) =ᶠ[𝓝 a] fun x => exp (log x * b) := by
-  suffices : ∀ᶠ x : ℂ in 𝓝 a, x ≠ 0
-  exact
-    this.mono fun x hx => by
+  suffices ∀ᶠ x : ℂ in 𝓝 a, x ≠ 0 from
+    this.mono fun x hx ↦ by
       dsimp only
       rw [cpow_def_of_ne_zero hx]
   exact IsOpen.eventually_mem isOpen_ne ha
@@ -53,9 +52,8 @@ theorem cpow_eq_nhds {a b : ℂ} (ha : a ≠ 0) :
 
 theorem cpow_eq_nhds' {p : ℂ × ℂ} (hp_fst : p.fst ≠ 0) :
     (fun x => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) := by
-  suffices : ∀ᶠ x : ℂ × ℂ in 𝓝 p, x.1 ≠ 0
-  exact
-    this.mono fun x hx => by
+  suffices ∀ᶠ x : ℂ × ℂ in 𝓝 p, x.1 ≠ 0 from
+    this.mono fun x hx ↦ by
       dsimp only
       rw [cpow_def_of_ne_zero hx]
   refine' IsOpen.eventually_mem _ hp_fst
@@ -191,9 +189,8 @@ theorem continuousAt_const_rpow' {a b : ℝ} (h : b ≠ 0) : ContinuousAt (rpow 
 
 theorem rpow_eq_nhds_of_neg {p : ℝ × ℝ} (hp_fst : p.fst < 0) :
     (fun x : ℝ × ℝ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) * cos (x.2 * π) := by
-  suffices : ∀ᶠ x : ℝ × ℝ in 𝓝 p, x.1 < 0
-  exact
-    this.mono fun x hx => by
+  suffices ∀ᶠ x : ℝ × ℝ in 𝓝 p, x.1 < 0 from
+    this.mono fun x hx ↦ by
       dsimp only
       rw [rpow_def_of_neg hx]
   exact IsOpen.eventually_mem (isOpen_lt continuous_fst continuous_const) hp_fst
@@ -201,9 +198,8 @@ theorem rpow_eq_nhds_of_neg {p : ℝ × ℝ} (hp_fst : p.fst < 0) :
 
 theorem rpow_eq_nhds_of_pos {p : ℝ × ℝ} (hp_fst : 0 < p.fst) :
     (fun x : ℝ × ℝ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) := by
-  suffices : ∀ᶠ x : ℝ × ℝ in 𝓝 p, 0 < x.1
-  exact
-    this.mono fun x hx => by
+  suffices ∀ᶠ x : ℝ × ℝ in 𝓝 p, 0 < x.1 from
+    this.mono fun x hx ↦ by
       dsimp only
       rw [rpow_def_of_pos hx]
   exact IsOpen.eventually_mem (isOpen_lt continuous_const continuous_fst) hp_fst
@@ -348,7 +344,7 @@ theorem continuousAt_cpow_zero_of_re_pos {z : ℂ} (hz : 0 < z.re) :
     refine' ⟨Real.exp (π * C), eventually_map.2 _⟩
     refine'
       (((continuous_im.comp continuous_snd).abs.tendsto (_, z)).eventually (gt_mem_nhds hC)).mono
-        fun z hz => Real.exp_le_exp.2 <| (neg_le_abs_self _).trans _
+        fun z hz => Real.exp_le_exp.2 <| (neg_le_abs _).trans _
     rw [_root_.abs_mul]
     exact
       mul_le_mul (abs_le.2 ⟨(neg_pi_lt_arg _).le, arg_le_pi _⟩) hz.le (_root_.abs_nonneg _)
@@ -361,7 +357,7 @@ assumptions about `p.2`. -/
 theorem continuousAt_cpow_of_re_pos {p : ℂ × ℂ} (h₁ : 0 ≤ p.1.re ∨ p.1.im ≠ 0) (h₂ : 0 < p.2.re) :
     ContinuousAt (fun x : ℂ × ℂ => x.1 ^ x.2) p := by
   cases' p with z w
-  rw [← not_lt_zero_iff, lt_iff_le_and_ne, not_and_or, Ne.def, Classical.not_not,
+  rw [← not_lt_zero_iff, lt_iff_le_and_ne, not_and_or, Ne, Classical.not_not,
     not_le_zero_iff] at h₁
   rcases h₁ with (h₁ | (rfl : z = 0))
   exacts [continuousAt_cpow h₁, continuousAt_cpow_zero_of_re_pos h₂]
@@ -390,7 +386,7 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
       tauto
     have B : ContinuousAt (fun p => ⟨↑p.1, p.2⟩ : ℝ × ℂ → ℂ × ℂ) ⟨0, y⟩ :=
       continuous_ofReal.continuousAt.prod_map continuousAt_id
-    exact ContinuousAt.comp (α := ℝ × ℂ) (f := fun p => ⟨↑p.1, p.2⟩) (x := ⟨0, y⟩) A B
+    exact A.comp_of_eq B rfl
   · -- x < 0 : difficult case
     suffices ContinuousAt (fun p => (-(p.1 : ℂ)) ^ p.2 * exp (π * I * p.2) : ℝ × ℂ → ℂ) (x, y) by
       refine' this.congr (eventually_of_mem (prod_mem_nhds (Iio_mem_nhds hx) univ_mem) _)
@@ -429,14 +425,12 @@ theorem continuousAt_rpow {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 < y) :
     (fun p : ℝ≥0 × ℝ => p.1 ^ p.2) =
       Real.toNNReal ∘ (fun p : ℝ × ℝ => p.1 ^ p.2) ∘ fun p : ℝ≥0 × ℝ => (p.1.1, p.2) := by
     ext p
-    erw [coe_rpow, Real.coe_toNNReal _ (Real.rpow_nonneg_of_nonneg p.1.2 _)]
+    erw [coe_rpow, Real.coe_toNNReal _ (Real.rpow_nonneg p.1.2 _)]
     rfl
   rw [this]
   refine' continuous_real_toNNReal.continuousAt.comp (ContinuousAt.comp _ _)
   · apply Real.continuousAt_rpow
-    simp only [Ne.def] at h
-    rw [← NNReal.coe_eq_zero x] at h
-    exact h
+    simpa using h
   · exact ((continuous_subtype_val.comp continuous_fst).prod_mk continuous_snd).continuousAt
 #align nnreal.continuous_at_rpow NNReal.continuousAt_rpow
 

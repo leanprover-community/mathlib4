@@ -3,7 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Squarefree
+import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.Data.Polynomial.Expand
 import Mathlib.Data.Polynomial.Splits
 import Mathlib.FieldTheory.Minpoly.Field
@@ -27,7 +27,8 @@ properties about separable polynomials here.
 
 universe u v w
 
-open Classical BigOperators Polynomial Finset
+open scoped Classical
+open BigOperators Polynomial Finset
 
 namespace Polynomial
 
@@ -56,6 +57,7 @@ theorem not_separable_zero [Nontrivial R] : ¬Separable (0 : R[X]) := by
 theorem Separable.ne_zero [Nontrivial R] {f : R[X]} (h : f.Separable) : f ≠ 0 :=
   (not_separable_zero <| · ▸ h)
 
+@[simp]
 theorem separable_one : (1 : R[X]).Separable :=
   isCoprime_one_left
 #align polynomial.separable_one Polynomial.separable_one
@@ -118,7 +120,7 @@ theorem Separable.of_pow' {f : R[X]} :
   | 1 => fun h => Or.inr <| Or.inl ⟨pow_one f ▸ h, rfl⟩
   | n + 2 => fun h => by
     rw [pow_succ, pow_succ] at h
-    exact Or.inl (isCoprime_self.1 h.isCoprime.of_mul_right_left)
+    exact Or.inl (isCoprime_self.1 h.isCoprime.of_mul_left_right)
 #align polynomial.separable.of_pow' Polynomial.Separable.of_pow'
 
 theorem Separable.of_pow {f : R[X]} (hf : ¬IsUnit f) {n : ℕ} (hn : n ≠ 0)
@@ -132,6 +134,28 @@ theorem Separable.map {p : R[X]} (h : p.Separable) {f : R →+* S} : (p.map f).S
     rw [derivative_map, ← Polynomial.map_mul, ← Polynomial.map_mul, ← Polynomial.map_add, H,
       Polynomial.map_one]⟩
 #align polynomial.separable.map Polynomial.Separable.map
+
+theorem _root_.Associated.separable {f g : R[X]}
+    (ha : Associated f g) (h : f.Separable) : g.Separable := by
+  obtain ⟨⟨u, v, h1, h2⟩, ha⟩ := ha
+  obtain ⟨a, b, h⟩ := h
+  refine ⟨a * v + b * derivative v, b * v, ?_⟩
+  replace h := congr($h * $(h1))
+  have h3 := congr(derivative $(h1))
+  simp only [← ha, derivative_mul, derivative_one] at h3 ⊢
+  calc
+    _ = (a * f + b * derivative f) * (u * v)
+      + (b * f) * (derivative u * v + u * derivative v) := by ring1
+    _ = 1 := by rw [h, h3]; ring1
+
+theorem _root_.Associated.separable_iff {f g : R[X]}
+    (ha : Associated f g) : f.Separable ↔ g.Separable := ⟨ha.separable, ha.symm.separable⟩
+
+theorem Separable.mul_unit {f g : R[X]} (hf : f.Separable) (hg : IsUnit g) : (f * g).Separable :=
+  (associated_mul_unit_right f g hg).separable hf
+
+theorem Separable.unit_mul {f g : R[X]} (hf : IsUnit f) (hg : g.Separable) : (f * g).Separable :=
+  (associated_unit_mul_right g f hf).separable hg
 
 theorem Separable.eval₂_derivative_ne_zero [Nontrivial S] (f : R →+* S) {p : R[X]}
     (h : p.Separable) {x : S} (hx : p.eval₂ f x = 0) :
@@ -173,6 +197,10 @@ theorem multiplicity_le_one_of_separable {p q : R[X]} (hq : ¬IsUnit q) (hsep : 
   exact h
 #align polynomial.multiplicity_le_one_of_separable Polynomial.multiplicity_le_one_of_separable
 
+/-- A separable polynomial is square-free.
+
+See `PerfectField.separable_iff_squarefree` for the converse when the coefficients are a perfect
+field. -/
 theorem Separable.squarefree {p : R[X]} (hsep : Separable p) : Squarefree p := by
   rw [multiplicity.squarefree_iff_multiplicity_le_one p]
   exact fun f => or_iff_not_imp_right.mpr fun hunit => multiplicity_le_one_of_separable hunit hsep
@@ -252,7 +280,7 @@ theorem separable_X_pow_sub_C_unit {n : ℕ} (u : Rˣ) (hn : IsUnit (n : R)) :
       simp only [C.map_mul, C_eq_nat_cast]
       ring
     _ = 1 := by
-      simp only [Units.inv_mul, hn', C.map_one, mul_one, ← pow_succ,
+      simp only [Units.inv_mul, hn', C.map_one, mul_one, ← pow_succ',
         Nat.sub_add_cancel (show 1 ≤ n from hpos), sub_add_cancel]
 set_option linter.uppercaseLean3 false in
 #align polynomial.separable_X_pow_sub_C_unit Polynomial.separable_X_pow_sub_C_unit
@@ -372,7 +400,7 @@ theorem exists_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : p 
       exact Nat.mul_lt_mul_of_pos_left hp.one_lt hg2.bot_lt
     rcases ih _ hg3 hg rfl with ⟨n, g, hg4, rfl⟩
     refine' ⟨n + 1, g, hg4, _⟩
-    rw [← hgf, expand_expand, pow_succ]
+    rw [← hgf, expand_expand, pow_succ']
 #align polynomial.exists_separable_of_irreducible Polynomial.exists_separable_of_irreducible
 
 theorem isUnit_or_eq_zero_of_separable_expand {f : F[X]} (n : ℕ) (hp : 0 < p)
@@ -380,8 +408,7 @@ theorem isUnit_or_eq_zero_of_separable_expand {f : F[X]} (n : ℕ) (hp : 0 < p)
   rw [or_iff_not_imp_right]
   rintro hn : n ≠ 0
   have hf2 : derivative (expand F (p ^ n) f) = 0 := by
-    rw [derivative_expand, Nat.cast_pow, CharP.cast_eq_zero, zero_pow hn.bot_lt,
-      zero_mul, mul_zero]
+    rw [derivative_expand, Nat.cast_pow, CharP.cast_eq_zero, zero_pow hn, zero_mul, mul_zero]
   rw [separable_def, hf2, isCoprime_zero_right, isUnit_iff] at hf
   rcases hf with ⟨r, hr, hrf⟩
   rw [eq_comm, expand_eq_C (pow_pos hp _)] at hrf
@@ -481,7 +508,7 @@ theorem eq_X_sub_C_of_separable_of_root_eq {x : F} {h : F[X]} (h_sep : h.Separab
     constructor
     · apply Finset.mem_mk.mpr
       · rw [mem_roots (show h.map i ≠ 0 from map_ne_zero h_ne_zero)]
-        rw [IsRoot.def, ← eval₂_eq_eval_map, eval₂_hom, h_root]
+        rw [IsRoot.definition, ← eval₂_eq_eval_map, eval₂_hom, h_root]
         exact RingHom.map_zero i
       · exact nodup_roots (Separable.map h_sep)
     · exact h_roots
@@ -635,8 +662,10 @@ lemma IsSeparable.of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Fie
   letI := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
   haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
     (fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
-  let e : B₁ ≃ₐ[A₂] B₂ := { e₂ with commutes' := fun r ↦ by simpa [RingHom.algebraMap_toAlgebra]
-                                                  using FunLike.congr_fun he.symm (e₁.symm r) }
+  let e : B₁ ≃ₐ[A₂] B₂ :=
+    { e₂ with
+      commutes' := fun r ↦ by
+        simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm r) }
   haveI := isSeparable_tower_top_of_isSeparable A₁ A₂ B₁
   exact IsSeparable.of_algHom _ _ e.symm.toAlgHom
 
@@ -645,9 +674,7 @@ end IsSeparableTower
 section CardAlgHom
 
 variable {R S T : Type*} [CommRing S]
-
 variable {K L F : Type*} [Field K] [Field L] [Field F]
-
 variable [Algebra K S] [Algebra K L]
 
 theorem AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : (minpoly K pb.gen).Separable)

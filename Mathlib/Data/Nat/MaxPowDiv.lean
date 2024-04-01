@@ -3,8 +3,8 @@ Copyright (c) 2023 Matthew Robert Ballard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matthew Robert Ballard
 -/
-
-import Mathlib.Data.Nat.Pow
+import Mathlib.Algebra.Divisibility.Units
+import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Tactic.Common
 
 /-!
@@ -83,7 +83,8 @@ theorem base_pow_mul {p n exp : ℕ} (hp : 1 < p) (hn : 0 < n) :
   match exp with
   | 0 => simp
   | e + 1 =>
-    rw [pow_succ, mul_assoc, mul_comm, mul_assoc, base_mul_eq_succ hp, mul_comm, base_pow_mul hp hn]
+    rw [Nat.pow_succ, mul_assoc, mul_comm, mul_assoc, base_mul_eq_succ hp, mul_comm,
+      base_pow_mul hp hn]
     · ac_rfl
     · apply Nat.mul_pos hn <| pow_pos (pos_of_gt hp) e
 

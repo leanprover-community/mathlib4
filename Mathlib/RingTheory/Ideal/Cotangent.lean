@@ -31,7 +31,6 @@ namespace Ideal
 universe u v w
 
 variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [Algebra S R]
-
 variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] (I : Ideal R)
 
 -- Porting note: instances that were derived automatically need to be proved by hand (see below)
@@ -160,7 +159,8 @@ theorem cotangentEquivIdeal_apply (x : I.Cotangent) :
 #align ideal.cotangent_equiv_ideal_apply Ideal.cotangentEquivIdeal_apply
 
 theorem cotangentEquivIdeal_symm_apply (x : R) (hx : x ∈ I) :
-    I.cotangentEquivIdeal.symm ⟨(I ^ 2).mkQ x, Submodule.mem_map_of_mem hx⟩ =
+    -- Note: #8386 had to specify `(R₂ := R)` because `I.toCotangent` suggested `R ⧸ I^2` instead
+    I.cotangentEquivIdeal.symm ⟨(I ^ 2).mkQ x, Submodule.mem_map_of_mem (R₂ := R) hx⟩ =
       I.toCotangent ⟨x, hx⟩ := by
   apply I.cotangentEquivIdeal.injective
   rw [I.cotangentEquivIdeal.apply_symm_apply]
@@ -252,8 +252,8 @@ lemma finrank_cotangentSpace_eq_zero (R) [Field R] :
 open Submodule in
 theorem finrank_cotangentSpace_le_one_iff [IsNoetherianRing R] :
     finrank (ResidueField R) (CotangentSpace R) ≤ 1 ↔ (maximalIdeal R).IsPrincipal := by
-  rw [Module.finrank_le_one_iff_top_isPrincipal, IsPrincipal_iff,
-    (maximalIdeal R).toCotangent_surjective.exists, IsPrincipal_iff]
+  rw [Module.finrank_le_one_iff_top_isPrincipal, isPrincipal_iff,
+    (maximalIdeal R).toCotangent_surjective.exists, isPrincipal_iff]
   simp_rw [← Set.image_singleton, eq_comm (a := ⊤), CotangentSpace.span_image_eq_top_iff,
     ← (map_injective_of_injective (injective_subtype _)).eq_iff, map_span, Set.image_singleton,
     Submodule.map_top, range_subtype, eq_comm (a := maximalIdeal R)]

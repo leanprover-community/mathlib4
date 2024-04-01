@@ -34,7 +34,7 @@ theorem withZero_unit_charP_zero : CharP (WithZero Unit) 0 :=
 #align counterexample.with_zero_unit_char_p_zero Counterexample.withZero_unit_charP_zero
 
 theorem withZero_unit_not_charZero : ¬CharZero (WithZero Unit) := fun ⟨h⟩ =>
-  h.ne (by simp : 1 + 1 ≠ 0 + 1) (by simp)
+  h.ne (by simp : 1 + 1 ≠ 0 + 1) (by set_option simprocs false in simp)
 #align counterexample.with_zero_unit_not_char_zero Counterexample.withZero_unit_not_charZero
 
 end Counterexample
