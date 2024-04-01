@@ -827,7 +827,7 @@ theorem mul_mono_left (h : I ≤ J) : I * K ≤ J * K :=
 #align ideal.mul_mono_left Ideal.mul_mono_left
 
 theorem mul_mono_right (h : J ≤ K) : I * J ≤ I * K :=
-  Submodule.smul_mono_right h
+  smul_mono_right _ h
 #align ideal.mul_mono_right Ideal.mul_mono_right
 
 variable (I J K)
