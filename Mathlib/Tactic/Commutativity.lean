@@ -15,7 +15,8 @@ We define the `commutativity` tactic using `aesop`. -/
 open Lean.Parser.Tactic (config)
 
 /--
-The `commutativity` attribute used to tag commutativity statements for the `commutativity` tactic. -/
+The `commutativity` attribute used to tag commutativity statements
+for the `commutativity` tactic. -/
 macro "commutativity" : attr =>
   `(attr|aesop safe apply (rule_sets := [$(Lean.mkIdent `Commute):ident]))
 
