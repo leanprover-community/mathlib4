@@ -1643,7 +1643,7 @@ theorem abs_real_inner_div_norm_mul_norm_eq_one_iff (x y : F) :
 theorem inner_eq_norm_mul_iff_div {x y : E} (h₀ : x ≠ 0) :
     ⟪x, y⟫ = (‖x‖ : 𝕜) * ‖y‖ ↔ (‖y‖ / ‖x‖ : 𝕜) • x = y := by
   have h₀' := h₀
-  rw [← norm_ne_zero_iff, Ne.def, ← @ofReal_eq_zero 𝕜] at h₀'
+  rw [← norm_ne_zero_iff, Ne, ← @ofReal_eq_zero 𝕜] at h₀'
   constructor <;> intro h
   · have : x = 0 ∨ y = (⟪x, y⟫ / ⟪x, x⟫ : 𝕜) • x :=
       ((@norm_inner_eq_norm_tfae 𝕜 _ _ _ _ x y).out 0 1).1 (by simp [h])
@@ -1662,7 +1662,7 @@ theorem inner_eq_norm_mul_iff {x y : E} :
   rcases eq_or_ne x 0 with (rfl | h₀)
   · simp
   · rw [inner_eq_norm_mul_iff_div h₀, div_eq_inv_mul, mul_smul, inv_smul_eq_iff₀]
-    rwa [Ne.def, ofReal_eq_zero, norm_eq_zero]
+    rwa [Ne, ofReal_eq_zero, norm_eq_zero]
 #align inner_eq_norm_mul_iff inner_eq_norm_mul_iff
 
 /-- If the inner product of two vectors is equal to the product of their norms (i.e.,
