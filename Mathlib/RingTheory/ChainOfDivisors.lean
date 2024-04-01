@@ -285,7 +285,7 @@ theorem map_prime_of_factor_orderIso {m p : Associates M} {n : Associates N} (hn
     Prime (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) := by
   rw [← irreducible_iff_prime]
   refine' (Associates.isAtom_iff <| ne_zero_of_dvd_ne_zero hn (d ⟨p, _⟩).prop).mp ⟨_, fun b hb => _⟩
-  · rw [Ne.def, ← Associates.isUnit_iff_eq_bot, Associates.isUnit_iff_eq_one,
+  · rw [Ne, ← Associates.isUnit_iff_eq_bot, Associates.isUnit_iff_eq_one,
       coe_factor_orderIso_map_eq_one_iff _ d]
     rintro rfl
     exact (prime_of_normalized_factor 1 hp).not_unit isUnit_one
