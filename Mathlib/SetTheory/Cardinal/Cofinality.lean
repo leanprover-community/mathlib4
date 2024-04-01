@@ -1118,16 +1118,28 @@ theorem sum_lt_of_isRegular {ι : Type u} {f : ι → Cardinal} {c : Cardinal} (
 #align cardinal.sum_lt_of_is_regular Cardinal.sum_lt_of_isRegular
 
 @[simp]
+theorem iUnion_subset_cardinal_lt {ι : Type u} {α : Type u} {t : ι → Set α} {c : Cardinal} :
+    #(⋃ i, t i) < c → ∀ i, #(t i) < c :=
+ fun h _ =>  lt_of_le_of_lt (Cardinal.mk_le_mk_of_subset <| subset_iUnion _ _) h
+
+@[simp]
 theorem iUnion_iff {ι : Type u} {α : Type u} {t : ι → Set α} {c : Cardinal}
     (hc : Cardinal.IsRegular c) (hι : #ι < c) : #(⋃ i, t i) < c ↔ ∀ i, #(t i) < c := by
   constructor
-  · exact fun h _ =>  lt_of_le_of_lt (Cardinal.mk_le_mk_of_subset <| subset_iUnion _ _) h
+  · exact iUnion_subset_cardinal_lt
   · intro h
     apply lt_of_le_of_lt (Cardinal.mk_sUnion_le _)
     apply Cardinal.mul_lt_of_lt (Cardinal.IsRegular.aleph0_le hc)
       (lt_of_le_of_lt Cardinal.mk_range_le hι)
     · apply Cardinal.iSup_lt_of_isRegular hc (lt_of_le_of_lt Cardinal.mk_range_le hι)
       simpa
+
+theorem biUnion_subset_cardinal_lt {α β : Type u} {s : Set α} {t : ∀ a ∈ s, Set β} {c : Cardinal} :
+    #(⋃ a ∈ s, t a ‹_›) < c → ∀ a (ha : a ∈ s), # (t a ha) < c := by
+  rw [biUnion_eq_iUnion]
+  intro u
+  have := iUnion_subset_cardinal_lt u
+  rwa [SetCoe.forall']
 
 theorem biUnion_iff {α β : Type u} {s : Set α} {t : ∀ a ∈ s, Set β} {c : Cardinal}
     (hc : Cardinal.IsRegular c) (hs : #s < c) :
