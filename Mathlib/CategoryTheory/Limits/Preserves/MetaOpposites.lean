@@ -15,6 +15,7 @@ structure CategoryData where
   u : Level
   /-- Universe level of morphisms. -/
   v : Level
+  name : String
   /-- The type of objects. -/
   type : Expr
   /-- The type of objects of the opposite. -/
@@ -45,7 +46,10 @@ def CategoryWithPolarity.cat : CategoryWithPolarity → Expr
 def CategoryWithPolarity.opposite : CategoryWithPolarity → CategoryWithPolarity
   | ⟨category, opposite⟩ => ⟨category, !opposite⟩
 
-def withLocalCategory {α : Type} (n v u : Name) (k : CategoryData → MetaM α) : MetaM α := do
+def CategoryWithPolarity.name : CategoryWithPolarity → String
+  | ⟨category, opposite⟩ => category.name ++ (if opposite then "ᵒᵖ" else "")
+
+def withLocalCategory {α : Type} (n : String) (v u : Name) (k : CategoryData → MetaM α) : MetaM α := do
   let u : Level := .param u
   withLocalDecl n .implicit (.sort (.succ u)) fun C => do
     let v : Level := .param v
@@ -53,7 +57,7 @@ def withLocalCategory {α : Type} (n v u : Name) (k : CategoryData → MetaM α)
     withLocalDecl instName .instImplicit (mkApp (.const ``Category [v, u]) C) fun instCategoryC =>
       let Cop := mkApp (.const ``Opposite [.succ u]) C
       let instCategoryCop := mkAppN (.const ``Category.opposite [v, u]) #[C, instCategoryC]
-      k ⟨u, v, C, Cop, instCategoryC, instCategoryCop⟩
+      k ⟨u, v, n, C, Cop, instCategoryC, instCategoryCop⟩
 
 def oppositeFunctor : CategoryWithPolarity → CategoryWithPolarity → Expr → Expr
   | ⟨C, false⟩, ⟨D, false⟩, F =>
@@ -66,26 +70,39 @@ def oppositeFunctor : CategoryWithPolarity → CategoryWithPolarity → Expr →
       mkAppN (.const ``Functor.unop [C.v, D.v, C.u, D.u]) #[C.type, C.cat, D.type, D.cat, F]
 
 def oppositeFunctorName : CategoryWithPolarity → CategoryWithPolarity → String
+  | ⟨_, false⟩, ⟨_, false⟩ => "op"
+  | ⟨_, false⟩, ⟨_, true⟩ => "leftOp"
+  | ⟨_, true⟩, ⟨_, false⟩ => "rightOp"
+  | ⟨_, true⟩, ⟨_, true⟩ => "unop"
+
+def oppositeFunctorDeclarationName : CategoryWithPolarity → CategoryWithPolarity → String
   | ⟨_, false⟩, ⟨_, false⟩ => "Op"
   | ⟨_, false⟩, ⟨_, true⟩ => "LeftOp"
   | ⟨_, true⟩, ⟨_, false⟩ => "RightOp"
   | ⟨_, true⟩, ⟨_, true⟩ => "Unop"
 
 structure FunctorData where
+  name : String
+  nameOp : String
   source : CategoryWithPolarity
   target : CategoryWithPolarity
   functor : Expr
   functorOp : Expr
 
+def FunctorData.asDocstring (F : FunctorData) : String :=
+  s!"`{F.name} : {F.source.name} ⥤ {F.target.name}`"
+
 def FunctorData.opposite : FunctorData → FunctorData
-  | ⟨source, target, functor, functorOp⟩ => ⟨source.opposite, target.opposite, functorOp, functor⟩
+  | ⟨name, nameOp, source, target, functor, functorOp⟩ =>
+      ⟨nameOp, name, source.opposite, target.opposite, functorOp, functor⟩
 
 def functorType (C D : CategoryWithPolarity) : Expr :=
  mkAppN (.const ``CategoryTheory.Functor [C.v, D.v, C.u, D.u]) #[C.type, C.cat, D.type, D.cat]
 
-def withLocalFunctor {α : Type} (n : Name) (C D : CategoryWithPolarity)
+def withLocalFunctor {α : Type} (n : String) (C D : CategoryWithPolarity)
     (k : FunctorData → MetaM α) : MetaM α := do
-  withLocalDecl n .default (functorType C D) fun F => k ⟨C, D, F, oppositeFunctor C D F⟩
+  withLocalDecl n .default (functorType C D) fun F => k ⟨n, n ++ "." ++ oppositeFunctorName C D,
+    C, D, F, oppositeFunctor C D F⟩
 
 def mkPreservesLimit (K F : FunctorData) (colimit : Bool) : Expr :=
   let name := if colimit then ``Limits.PreservesColimit else ``Limits.PreservesLimit
@@ -94,9 +111,9 @@ def mkPreservesLimit (K F : FunctorData) (colimit : Bool) : Expr :=
     K.source.type, K.source.cat, K.functor, F.functor]
 
 def addPreservesLimit (J : CategoryData) (C D : CategoryWithPolarity) (colimit backward : Bool) : MetaM Unit := do
-  withLocalFunctor `K ⟨J, false⟩ C.opposite fun K => do
+  withLocalFunctor "K" ⟨J, false⟩ C.opposite fun K => do
     let C' := if backward then C.opposite else C
-    withLocalFunctor `F C' D fun F => do
+    withLocalFunctor "F" C' D fun F => do
       let F' := if backward then F.opposite else F
       let argumentType := mkPreservesLimit K.opposite F' !colimit
       let instName ← mkFreshUserName `inst
@@ -107,7 +124,7 @@ def addPreservesLimit (J : CategoryData) (C D : CategoryWithPolarity) (colimit b
             J.type, J.cat, K.functor, F.functor, inst] targetType
         let proof ← mkSorry statement false
         let innerName := "preserves" ++ (if colimit then "Colimit" else "Limit")
-          ++ (if backward then "Of" else "") ++ oppositeFunctorName C' D
+          ++ (if backward then "Of" else "") ++ oppositeFunctorDeclarationName C' D
         let name : Name := .str (.str (.str .anonymous "CategoryTheory") "Limits") innerName
         addDecl <| .defnDecl {
           name := name
@@ -116,11 +133,15 @@ def addPreservesLimit (J : CategoryData) (C D : CategoryWithPolarity) (colimit b
           value := proof
           hints := .opaque
           safety := .safe }
+        let docstring := s!"If {F'.asDocstring} preserves {if colimit then "" else "co"}limits "
+          ++ s!"of {K.opposite.asDocstring}, then {F'.opposite.asDocstring} preserves "
+          ++ s!"{if colimit then "co" else ""}limits of {K.asDocstring}."
+        addDocString name docstring
 
 def addOppositePreservationStatements : MetaM Unit := do
-  withLocalCategory `C `v₁ `u₁ fun C => do
-    withLocalCategory `D `v₂ `u₂ fun D => do
-      withLocalCategory `J `w' `w fun J => do
+  withLocalCategory "C" `v₁ `u₁ fun C => do
+    withLocalCategory "D" `v₂ `u₂ fun D => do
+      withLocalCategory "J" `w' `w fun J => do
         for cop in [false, true] do
           for dop in [false, true] do
             for colimit in [false, true] do
