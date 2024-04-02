@@ -318,7 +318,7 @@ theorem generated_helper_3 {α : Type} {rel : List α → List α → Prop} (a b
   have Hc := Quotient.exists_rep c
   match Ha, Hb, Hc with
   | ⟨a', ha⟩, ⟨b', hb⟩, ⟨c', hc⟩ =>
-        rw [← ha, ← hb, ←hc]
+        rw [← ha, ← hb, ← hc]
         apply h
 
 -- associativity of our binary operator
