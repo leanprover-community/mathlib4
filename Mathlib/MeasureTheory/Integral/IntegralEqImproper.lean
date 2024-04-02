@@ -1226,7 +1226,7 @@ variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {L : E →L[ℝ] F →L[ℝ] G} {u : ℝ → E} {v : ℝ → F} {u' : ℝ → E} {v' : ℝ → F}
   {m n : G}
 
-theorem integral_deriv_bilinear_eq_sub [CompleteSpace G]
+theorem integral_bilinear_hasDerivAt_eq_sub [CompleteSpace G]
     (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
     (huv : Integrable (fun x ↦ L (u x) (v' x) + L (u' x) (v x)))
     (h_bot : Tendsto (fun x ↦ L (u x) (v x)) atBot (𝓝 m))
@@ -1238,19 +1238,19 @@ theorem integral_deriv_bilinear_eq_sub [CompleteSpace G]
 /-- **Integration by parts on (-∞, ∞).**
 With respect to a general bilinear form. For the specific case of multiplication, see
 `integral_mul_deriv_eq_deriv_mul`. -/
-theorem integral_bilinear_deriv_right_eq_sub [CompleteSpace G]
+theorem integral_bilinear_hasDerivAt_right_eq_sub [CompleteSpace G]
     (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
     (huv' : Integrable (fun x ↦ L (u x) (v' x))) (hu'v : Integrable (fun x ↦ L (u' x) (v x)))
     (h_bot : Tendsto (fun x ↦ L (u x) (v x)) atBot (𝓝 m))
     (h_top : Tendsto (fun x ↦ L (u x) (v x)) atTop (𝓝 n)) :
     ∫ (x : ℝ), L (u x) (v' x) = n - m - ∫ (x : ℝ), L (u' x) (v x) := by
   rw [eq_sub_iff_add_eq, ← integral_add huv' hu'v]
-  exact integral_deriv_bilinear_eq_sub hu hv (huv'.add hu'v) h_bot h_top
+  exact integral_bilinear_hasDerivAt_eq_sub hu hv (huv'.add hu'v) h_bot h_top
 
 /-- **Integration by parts on (-∞, ∞).**
 With respect to a general bilinear form, assuming moreover that the total function is integrable.
 -/
-theorem integral_bilinear_deriv_right_eq_deriv_left_of_integrable
+theorem integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable
     (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
     (huv' : Integrable (fun x ↦ L (u x) (v' x))) (hu'v : Integrable (fun x ↦ L (u' x) (v x)))
     (huv : Integrable (fun x ↦ L (u x) (v x))) :
@@ -1265,7 +1265,7 @@ theorem integral_bilinear_deriv_right_eq_deriv_left_of_integrable
     tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi (a := 0)
       (fun x _hx ↦ L.hasDerivAt_of_bilinear (hu x) (hv x))
       (huv'.add hu'v).integrableOn huv.integrableOn
-  simp [integral_bilinear_deriv_right_eq_sub hu hv huv' hu'v I J]
+  simp [integral_bilinear_hasDerivAt_right_eq_sub hu hv huv' hu'v I J]
 
 end IntegrationByPartsBilinear
 
@@ -1289,7 +1289,7 @@ theorem integral_mul_deriv_eq_deriv_mul [CompleteSpace A]
     (huv' : Integrable (u * v')) (hu'v : Integrable (u' * v))
     (h_bot : Tendsto (u * v) atBot (𝓝 a')) (h_top : Tendsto (u * v) atTop (𝓝 b')) :
     ∫ (x : ℝ), u x * v' x = b' - a' - ∫ (x : ℝ), u' x * v x :=
-  integral_bilinear_deriv_right_eq_sub (L := ContinuousLinearMap.mul ℝ A)
+  integral_bilinear_hasDerivAt_right_eq_sub  (L := ContinuousLinearMap.mul ℝ A)
     hu hv huv' hu'v h_bot h_top
 
 /-- **Integration by parts on (-∞, ∞).**
@@ -1298,7 +1298,7 @@ theorem integral_mul_deriv_eq_deriv_mul_of_integrable
     (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
     (huv' : Integrable (u * v')) (hu'v : Integrable (u' * v)) (huv : Integrable (u * v)) :
     ∫ (x : ℝ), u x * v' x = - ∫ (x : ℝ), u' x * v x :=
-  integral_bilinear_deriv_right_eq_deriv_left_of_integrable (L := ContinuousLinearMap.mul ℝ A)
+  integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable (L := ContinuousLinearMap.mul ℝ A)
     hu hv huv' hu'v huv
 
 variable [CompleteSpace A]
