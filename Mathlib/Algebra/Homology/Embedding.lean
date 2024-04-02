@@ -97,6 +97,12 @@ lemma r_eq_some {i : ι} {i' : ι'} (hi : e.f i = i') :
   dsimp [r]
   rw [dif_pos ⟨i, hi⟩, this]
 
+lemma r_eq_none (i' : ι') (hi : ∀ i, e.f i ≠ i') :
+    e.r i' = none :=
+  dif_neg (by
+    rintro ⟨i, hi'⟩
+    exact hi i hi')
+
 lemma f_eq_of_r_eq_some {i : ι} {i' : ι'} (hi : e.r i' = some i) :
     e.f i = i' := by
   by_cases h : ∃ (k : ι), e.f k = i'
@@ -150,6 +156,22 @@ lemma d_eq {i j : Option ι} {a b : ι}
   subst hi hj
   dsimp [XIso, d]
   erw [id_comp, comp_id]
+
+variable {K L}
+
+noncomputable def mapX : ∀ (i : Option ι), X K i ⟶ X L i
+  | some i => φ.f i
+  | none => 0
+
+lemma mapX_some {i : Option ι} {a : ι} (hi : i = some a) :
+    mapX φ i = (XIso K hi).hom ≫ φ.f a ≫ (XIso L hi).inv := by
+  subst hi
+  dsimp [XIso]
+  erw [id_comp, comp_id]
+  rfl
+
+lemma mapX_none {i : Option ι} (hi : i = none) :
+    mapX φ i = 0 := by subst hi; rfl
 
 end extend
 
@@ -217,6 +239,31 @@ lemma extend_d_to_eq_zero (i' j' : ι') (j : ι) (hj : e.f j = j') (hj' : ¬ c.R
     intro hij
     obtain rfl := c.prev_eq' hij
     exact hj' hij
+
+variable {K L}
+
+noncomputable def extendMap : K.extend e ⟶ L.extend e where
+  f _ := extend.mapX φ _
+  comm' i' j' _ := by
+    dsimp
+    by_cases hi : ∃ i, e.f i = i'
+    · obtain ⟨i, hi⟩ := hi
+      by_cases hj : ∃ j, e.f j = j'
+      · obtain ⟨j, hj⟩ := hj
+        rw [K.extend_d_eq e hi hj, L.extend_d_eq e hi hj,
+          extend.mapX_some φ (e.r_eq_some hi),
+          extend.mapX_some φ (e.r_eq_some hj)]
+        simp [extendXIso]
+      · have hj' := e.r_eq_none j' (fun j'' hj'' => hj ⟨j'', hj''⟩)
+        dsimp [extend]
+        rw [extend.d_none_eq_zero' _ _ _ hj', extend.d_none_eq_zero' _ _ _ hj',
+          comp_zero, zero_comp]
+    · have hi' := e.r_eq_none i' (fun i'' hi'' => hi ⟨i'', hi''⟩)
+      dsimp [extend]
+      rw [extend.d_none_eq_zero _ _ _ hi', extend.d_none_eq_zero _ _ _ hi',
+        comp_zero, zero_comp]
+
+variable (K L)
 
 namespace extend
 
@@ -377,7 +424,6 @@ lemma comp_desc_d_eq_zero_iff ⦃W : C⦄ (φ : W ⟶ cocone.pt) :
       rw [← assoc]
       exact (isColimitCokernelCofork K e hj' hi hi' cocone hcocone).fac _
         WalkingParallelPair.one) _
-
 
 noncomputable def kernelFork :
     KernelFork ((isColimitCokernelCofork K e hj' hi hi' cocone hcocone).desc
