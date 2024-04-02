@@ -64,9 +64,7 @@ lemma zero_mem_preCantorSet (n : ℕ) : 0 ∈ preCantorSet n := by
   | succ n ih =>
     exact Or.inl ⟨0, ih, by simp only [zero_div]⟩
 
-theorem zero_mem_cantorSet : 0 ∈ cantorSet := by
-  simp only [cantorSet, iInf, Set.sInf_eq_sInter, Set.sInter_range, Set.mem_iInter]
-  exact zero_mem_preCantorSet
+theorem zero_mem_cantorSet : 0 ∈ cantorSet := by simp [cantorSet, zero_mem_preCantorSet]
 
 
 /-- The ternary Cantor set is a subset of [0,1]. -/
