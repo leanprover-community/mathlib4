@@ -64,7 +64,8 @@ noncomputable def invOneSub : (PowerSeries R)ˣ where
     rw [mul_comm]; exact one_sub_inv_mul_eq_one
   inv_val := one_sub_inv_mul_eq_one
 
-theorem oneSub_inv_eq_invOneSub : (oneSub⁻¹ : (PowerSeries R)ˣ) = invOneSub := rfl
+theorem oneSub_inv_eq_invOneSub : (⟨1 - X, mk fun _ => 1, one_sub_inv_mul_eq_one, by
+    rw [mul_comm]; exact one_sub_inv_mul_eq_one⟩⁻¹ : (PowerSeries R)ˣ) = invOneSub := rfl
 
 /-- `(1 - X) ^ (d + 1)`. -/
 noncomputable def oneSubPow (d : ℕ) : (PowerSeries R)ˣ where
@@ -114,7 +115,9 @@ lemma invOneSub_pow_eq_invOneSubPow' (d : ℕ) :
   exact Units.eq_iff.mp this
 
 theorem oneSub_inv_pow_eq_invOneSubPow' (d : ℕ) :
-    oneSub⁻¹ ^ (d + 1) = (invOneSubPow' d : (PowerSeries R)ˣ) := by
+    ⟨1 - X, mk fun _ => 1, one_sub_inv_mul_eq_one, by
+    rw [mul_comm]; exact one_sub_inv_mul_eq_one⟩⁻¹ ^ (d + 1) =
+    (invOneSubPow' d : (PowerSeries R)ˣ) := by
   rw [oneSub_inv_eq_invOneSub]; exact invOneSub_pow_eq_invOneSubPow' d
 
 theorem oneSub_inv_pow_eq_oneSub_pow_inv (d : ℕ) :
@@ -129,25 +132,24 @@ theorem oneSubPow_inv_eq_invOneSubPow' (d : ℕ) :
     (oneSubPow d : (PowerSeries R)ˣ)⁻¹ = invOneSubPow' d := by
   rw [← oneSub_inv_pow_eq_oneSub_pow_inv]; exact oneSub_inv_pow_eq_invOneSubPow' d
 
-lemma oneSub_eq_toPowerSeries : 1 - PowerSeries.X =
-    ((@Polynomial.C ℤ _ 1) - Polynomial.X).ToPowerSeries := by
-  rw [PowerSeries.ext_iff]
-  exact λ i ↦ by_cases (λ (hi : i = 0) ↦ by simp only [hi, map_sub, coeff_one, ↓reduceIte,
-  coeff_zero_X, sub_zero, map_one, coeff_coe, coeff_sub, coeff_one_zero, coeff_X_zero]) (λ hi ↦ by
-    simp only [map_sub, PowerSeries.coeff_one, hi, ↓reduceIte, zero_sub, map_one, coeff_coe,
-    coeff_sub]; rw [Polynomial.coeff_one]; simp only [hi, ↓reduceIte, zero_sub, neg_inj]; rw
-    [coeff_X, Polynomial.coeff_X]; exact by_cases (λ (hi : i = 1) ↦ by simp only [hi, ↓reduceIte])
-      (λ hi ↦ by simp only [hi, ↓reduceIte]; exact Eq.symm <| if_neg <| Ne.symm hi))
-
-lemma oneSub_eq_toPowerSeries' : 1 - PowerSeries.X =
-    ((1 : ℤ[X]) - Polynomial.X).ToPowerSeries := by
-  rw [PowerSeries.ext_iff]
-  exact λ i ↦ by_cases (λ (hi : i = 0) ↦ by simp only [hi, map_sub, coeff_one, ↓reduceIte,
-  coeff_zero_X, sub_zero, map_one, coeff_coe, coeff_sub, coeff_one_zero, coeff_X_zero]) (λ hi ↦ by
-    simp only [map_sub, PowerSeries.coeff_one, hi, ↓reduceIte, zero_sub, map_one, coeff_coe,
-    coeff_sub]; rw [Polynomial.coeff_one]; simp only [hi, ↓reduceIte, zero_sub, neg_inj]; rw
-    [coeff_X, Polynomial.coeff_X]; exact by_cases (λ (hi : i = 1) ↦ by simp only [hi, ↓reduceIte])
-      (λ hi ↦ by simp only [hi, ↓reduceIte]; exact Eq.symm <| if_neg <| Ne.symm hi))
+/--
+Another version of `invOneSubPow'`.
+-/
+noncomputable def invOneSubPow'' (d : ℕ) : (PowerSeries R)ˣ where
+  val := mk fun n => Nat.choose (d + n) d
+  inv := (1 - X) ^ (d + 1)
+  val_inv := by
+    have : (mk fun n ↦ (Nat.choose (d + n) d) : PowerSeries R) = (invOneSubPow' d).val := by
+      rw [invOneSubPow']
+    rw [this, ← oneSubPow_inv_eq_invOneSubPow', oneSubPow, mul_comm]
+    exact @PowerSeries.mul_invOfUnit R _ ((1 - X) ^ (d + 1)) 1 <| by simp only [map_pow, map_sub,
+      map_one, constantCoeff_X, sub_zero, one_pow, Units.val_one]
+  inv_val := by
+    have : (mk fun n ↦ (Nat.choose (d + n) d) : PowerSeries R) = (invOneSubPow' d).val := by
+      rw [invOneSubPow']
+    rw [this, ← oneSubPow_inv_eq_invOneSubPow', oneSubPow]
+    exact @PowerSeries.mul_invOfUnit R _ ((1 - X) ^ (d + 1)) 1 <| by simp only [map_pow, map_sub,
+      map_one, constantCoeff_X, sub_zero, one_pow, Units.val_one]
 
 end PowerSeries
 
@@ -337,38 +339,47 @@ theorem additiveFunction_val_eq_hilbertPolynomial_eval
     rw [hμ, ← auxPolynomial_mul_eq 𝒜 ℳ μ S, h]; simp only [coe_zero, val_inv_poles, zero_mul]
     exact rfl
   · rw [hilbertPolynomial, hμ]; simp only [h, ↓reduceDite]
+    let one_sub : ℤ⟦X⟧ˣ := ⟨1 - PowerSeries.X, invOfUnit (1 - PowerSeries.X) 1,
+      @PowerSeries.mul_invOfUnit ℤ _ (1 - PowerSeries.X) 1 <| by
+      simp only [map_sub, map_one, constantCoeff_X, sub_zero, Units.val_one], by
+      rw [mul_comm]; exact @PowerSeries.mul_invOfUnit ℤ _ (1 - PowerSeries.X) 1 <| by
+        simp only [map_sub, map_one, constantCoeff_X, sub_zero, Units.val_one]⟩
+    have one_sub_eq : 1 - PowerSeries.X = ((1 : ℤ[X]) - Polynomial.X).ToPowerSeries := by
+      rw [PowerSeries.ext_iff]; exact λ i ↦ by_cases (λ (hi : i = 0) ↦ by
+        simp only [hi, map_sub, PowerSeries.coeff_one, ↓reduceIte, coeff_zero_X, sub_zero, map_one,
+        coeff_coe, coeff_sub, coeff_one_zero, coeff_X_zero]) (λ hi ↦ by
+        simp only [map_sub, PowerSeries.coeff_one, hi, ↓reduceIte, zero_sub, map_one, coeff_coe,
+        coeff_sub]; rw [Polynomial.coeff_one]; simp only [hi, ↓reduceIte, zero_sub, neg_inj];
+        rw [Polynomial.coeff_X, PowerSeries.coeff_X]; exact by_cases (λ (hi : i = 1) ↦ by
+        simp only [hi, ↓reduceIte]) (λ hi ↦ by
+        simp only [hi, ↓reduceIte]; exact Eq.symm (if_neg (Ne.symm hi))))
     by_cases h1 : S.toFinset.card ≤ (auxPolynomial 𝒜 ℳ μ S).rootMultiplicity 1
     · simp only [h1, ↓reduceIte, eval_zero, Int.cast_eq_zero]
       rw [← auxPolynomial_mul_eq 𝒜 ℳ μ S,
-        ← pow_rootMultiplicity_mul_auxPolynomial'_eq_auxPolynomial 𝒜 ℳ μ S h]
-      let one_sub : ℤ⟦X⟧ˣ := ⟨1 - PowerSeries.X, invOfUnit (1 - PowerSeries.X) 1,
-        @PowerSeries.mul_invOfUnit ℤ _ (1 - PowerSeries.X) 1 <| by
-          simp only [map_sub, map_one, constantCoeff_X, sub_zero, Units.val_one], by
-          rw [mul_comm]; exact @PowerSeries.mul_invOfUnit ℤ _ (1 - PowerSeries.X) 1 <| by
-            simp only [map_sub, map_one, constantCoeff_X, sub_zero, Units.val_one]⟩
-      rw [show poles S = one_sub ^ S.toFinset.card by
+        ← pow_rootMultiplicity_mul_auxPolynomial'_eq_auxPolynomial 𝒜 ℳ μ S h,
+        show poles S = one_sub ^ S.toFinset.card by
         rw [poles]; simp_rw [hS]; simp only [pow_one, Finset.prod_const, Finset.card_attach];
         exact Units.eq_iff.mp rfl, coe_mul, coe_pow, show @ToPowerSeries ℤ
         Int.instCommSemiringInt (1 - Polynomial.X) = one_sub.val by
-        simp only; rw [oneSub_eq_toPowerSeries]; simp only [map_one], ← mul_comm, ← mul_assoc,
-        ← Units.val_pow_eq_pow_val, ← Units.val_mul, mul_comm (one_sub ^ S.toFinset.card)⁻¹,
-        ← pow_sub _ h1, Units.val_pow_eq_pow_val, show one_sub.val =
-        ((@Polynomial.C ℤ _ 1) - Polynomial.X).ToPowerSeries by
-        simp only [map_one]; rw [oneSub_eq_toPowerSeries]; simp only [map_one], ← coe_pow,
-        ← coe_mul, coeff_coe]
+        simp only; rw [one_sub_eq], ← mul_comm, ← mul_assoc,
+        ← Units.val_pow_eq_pow_val, ← Units.val_mul, mul_comm
+        (one_sub ^ S.toFinset.card)⁻¹, ← pow_sub _ h1, Units.val_pow_eq_pow_val,
+        show one_sub.val = ((@Polynomial.C ℤ _ 1) - Polynomial.X).ToPowerSeries by
+        simp only [map_one]; rw [one_sub_eq], ← coe_pow, ← coe_mul, coeff_coe]
       exact Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_le_of_lt
         (natDegree_pow_mul_auxPolynomial'_le 𝒜 ℳ μ S h h1) hn)
     · simp only [h1, ↓reduceIte]
       rw [← auxPolynomial_mul_eq 𝒜 ℳ μ S, ← Polynomial.coe_inj.2 <|
         pow_rootMultiplicity_mul_auxPolynomial'_eq_auxPolynomial 𝒜 ℳ μ S h, coe_mul, coe_pow,
-        ← oneSub_eq_toPowerSeries', poles_eq_oneSubPow_of_deg_eq_one_and_card_gt_zero' 𝒜 S hS
-        (Nat.pos_of_ne_zero <| λ h ↦ by rw [h] at h1; exact h1 (Nat.zero_le (rootMultiplicity 1
-        (auxPolynomial 𝒜 ℳ μ S)))), mul_comm, ← mul_assoc, show (1 : PowerSeries ℤ) -
-        PowerSeries.X = (@PowerSeries.oneSub ℤ _ : PowerSeries ℤ) by rw [oneSub],
-        oneSubPow_eq_oneSub_pow, ← Units.val_pow_eq_pow_val, ← Units.val_mul, pow_add, mul_comm _
-        (oneSub ^ 1), mul_inv, mul_assoc (oneSub ^ 1)⁻¹, ← inv_pow_sub _ <| Nat.le_sub_one_of_lt <|
-        Nat.lt_of_not_ge h1, Nat.sub_sub, add_comm, ← Nat.sub_sub, mul_comm, mul_comm
-        (oneSub ^ 1)⁻¹, ← inv_pow, ← pow_add, oneSub_inv_pow_eq_invOneSubPow']
+        ← one_sub_eq, poles_eq_oneSubPow_of_deg_eq_one_and_card_gt_zero' 𝒜 S hS (Nat.pos_of_ne_zero
+        <| λ h ↦ by rw [h] at h1; exact h1 (Nat.zero_le (rootMultiplicity 1 (auxPolynomial
+        𝒜 ℳ μ S)))), mul_comm, ← mul_assoc, show (1 : PowerSeries ℤ) - PowerSeries.X =
+        (@PowerSeries.oneSub ℤ _ : PowerSeries ℤ) by rw [oneSub], oneSubPow_eq_oneSub_pow,
+        ← Units.val_pow_eq_pow_val, ← Units.val_mul, pow_add, mul_comm _ (oneSub ^ 1), mul_inv,
+        mul_assoc (oneSub ^ 1)⁻¹, ← inv_pow_sub _ <| Nat.le_sub_one_of_lt <| Nat.lt_of_not_ge h1,
+        Nat.sub_sub, add_comm, ← Nat.sub_sub, mul_comm, mul_comm (oneSub ^ 1)⁻¹, ← inv_pow,
+        ← pow_add]
+      erw [oneSub_inv_pow_eq_invOneSubPow']
       let m : Set.Ici (Polynomial.natDegree (auxPolynomial' 𝒜 ℳ μ S h)) := ⟨n, Nat.le_of_lt <|
         Nat.lt_of_le_of_lt (natDegree_auxPolynomial'_le 𝒜 ℳ μ S h) hn⟩
       rw [show @Nat.cast ℚ Semiring.toNatCast n = (m : ℚ) by simp only,
