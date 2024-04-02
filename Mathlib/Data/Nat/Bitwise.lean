@@ -78,6 +78,7 @@ theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n →
   dsimp only
   rw [dif_neg h, eq_mpr_eq_cast]
 
+set_option linter.flexible false in  -- split_ifs
 @[simp]
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
