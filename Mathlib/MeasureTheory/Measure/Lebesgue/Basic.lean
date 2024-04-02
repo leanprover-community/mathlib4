@@ -7,7 +7,8 @@ import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.Transvection
-import Mathlib.MeasureTheory.Constructions.Pi
+import Mathlib.MeasureTheory.Group.LIntegral
+import Mathlib.MeasureTheory.Integral.Marginal
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
@@ -377,8 +378,8 @@ theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (
 /-- A transvection preserves Lebesgue measure. -/
 theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionStruct ι ℝ) :
     MeasurePreserving (toLin' t.toMatrix) := by
-  /- We separate the coordinate along which there is a shearing from the other ones, and apply
-    Fubini. Along this coordinate (and when all the other coordinates are fixed), it acts like a
+  /- We use `lmarginal` to conveniently use Fubini's theorem.
+    Along the coordinate where there is a shearing, it acts like a
     translation, and therefore preserves Lebesgue. -/
   let p : ι → Prop := fun i => i ≠ t.i
   let α : Type _ := { x // p x }
@@ -429,8 +430,8 @@ theorem map_matrix_volume_pi_eq_smul_volume_pi [DecidableEq ι] {M : Matrix ι �
     rw [smul_smul, ← ENNReal.ofReal_mul (abs_nonneg _), ← abs_mul, inv_mul_cancel hD, abs_one,
       ENNReal.ofReal_one, one_smul]
   · intro t
-    simp only [Matrix.TransvectionStruct.det, ENNReal.ofReal_one,
-      (volume_preserving_transvectionStruct _).map_eq, one_smul, _root_.inv_one, abs_one]
+    simp_rw [Matrix.TransvectionStruct.det, _root_.inv_one, abs_one, ENNReal.ofReal_one, one_smul,
+      (volume_preserving_transvectionStruct _).map_eq]
   · intro A B _ _ IHA IHB
     rw [toLin'_mul, det_mul, LinearMap.coe_comp, ← Measure.map_map, IHB, Measure.map_smul, IHA,
       smul_smul, ← ENNReal.ofReal_mul (abs_nonneg _), ← abs_mul, mul_comm, mul_inv]
