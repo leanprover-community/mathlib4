@@ -36,10 +36,16 @@ example {n} (y : ℝ) (hy : y≠0) :
 @[fun_prop]
 theorem ContinuousOn.log' : ContinuousOn Real.log {0}ᶜ := ContinuousOn.log (by fun_prop) (by aesop)
 
+-- Adaptation note: nightly-2024-04-01
+-- This synthInstance.maxHeartbeats was not needed previously.
+set_option synthInstance.maxHeartbeats 40000 in
 -- Notice that no theorems about measuability of log are used. It is infered from continuity.
 example : Measurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) :=
   by fun_prop
 
+-- Adaptation note: nightly-2024-04-01
+-- This synthInstance.maxHeartbeats was not needed previously.
+set_option synthInstance.maxHeartbeats 40000 in
 -- Notice that no theorems about measuability of log are used. It is infered from continuity.
 example : AEMeasurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) :=
   by fun_prop
@@ -65,10 +71,16 @@ example {n}: ContDiffOn ℝ n T (Set.Icc 0 1) := by
   unfold T S
   fun_prop (disch:=(rintro x ⟨a,b⟩; nlinarith))
 
+-- Adaptation note: nightly-2024-04-01
+-- This synthInstance.maxHeartbeats was not needed previously.
+set_option synthInstance.maxHeartbeats 40000 in
 example : Measurable T := by
   unfold T S
   fun_prop
 
+-- Adaptation note: nightly-2024-04-01
+-- This synthInstance.maxHeartbeats was not needed previously.
+set_option synthInstance.maxHeartbeats 40000 in
 example : AEMeasurable T := by
   unfold T S
   fun_prop

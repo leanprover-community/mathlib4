@@ -111,7 +111,7 @@ by apply?
 example (a b : ℕ) (h : a ∣ b) (w : b > 0) : b ≥ a := by apply?
 
 -- TODO: A lemma with head symbol `¬` can be used to prove `¬ p` or `⊥`
-/-- info: Try this: exact Nat.not_lt_zero a -/
+/-- info: Try this: exact not_lt_zero' -/
 #guard_msgs in
 example (a : ℕ) : ¬ (a < 0) := by apply?
 /-- info: Try this: exact Nat.not_succ_le_zero a h -/
