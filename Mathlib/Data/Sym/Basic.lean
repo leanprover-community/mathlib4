@@ -43,7 +43,7 @@ def Sym (α : Type*) (n : ℕ) :=
   { s : Multiset α // Multiset.card s = n }
 #align sym Sym
 
---Porting note: new definition
+-- Porting note (#11445): new definition
 /-- The canonical map to `Multiset α` that forgets that `s` has length `n` -/
 @[coe] def Sym.toMultiset {α : Type*} {n : ℕ} (s : Sym α n) : Multiset α :=
   s.1
@@ -79,18 +79,18 @@ theorem coe_inj {s₁ s₂ : Sym α n} : (s₁ : Multiset α) = s₂ ↔ s₁ = 
   coe_injective.eq_iff
 #align sym.coe_inj Sym.coe_inj
 
---Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[ext] theorem ext {s₁ s₂ : Sym α n} (h : (s₁ : Multiset α) = ↑s₂) : s₁ = s₂ :=
   coe_injective h
 
---Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem val_eq_coe (s : Sym α n) : s.1 = ↑s :=
   rfl
 
 /-- Construct an element of the `n`th symmetric power from a multiset of cardinality `n`.
 -/
-@[match_pattern] --Porting note: removed `@[simps]`, generated bad lemma
+@[match_pattern] -- Porting note: removed `@[simps]`, generated bad lemma
 abbrev mk (m : Multiset α) (h : Multiset.card m = n) : Sym α n :=
   ⟨m, h⟩
 #align sym.mk Sym.mk
@@ -155,6 +155,9 @@ theorem ofVector_cons (a : α) (v : Vector α n) : ↑(Vector.cons a v) = a ::�
   cases v
   rfl
 #align sym.of_vector_cons Sym.ofVector_cons
+
+@[simp]
+theorem card_coe : Multiset.card (s : Multiset α) = n := s.prop
 
 /-- `α ∈ s` means that `a` appears as one of the factors in `s`.
 -/
@@ -365,7 +368,7 @@ instance (n : ℕ) [Nontrivial α] : Nontrivial (Sym α (n + 1)) :=
 /-- A function `α → β` induces a function `Sym α n → Sym β n` by applying it to every element of
 the underlying `n`-tuple. -/
 def map {n : ℕ} (f : α → β) (x : Sym α n) : Sym β n :=
-  ⟨x.val.map f, by simpa [Multiset.card_map] using x.property⟩
+  ⟨x.val.map f, by simp⟩
 #align sym.map Sym.map
 
 @[simp]
@@ -377,11 +380,11 @@ theorem mem_map {n : ℕ} {f : α → β} {b : β} {l : Sym α n} :
 /-- Note: `Sym.map_id` is not simp-normal, as simp ends up unfolding `id` with `Sym.map_congr` -/
 @[simp]
 theorem map_id' {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map (fun x : α => x) s = s := by
-  ext; simp [Sym.map]; rfl
+  ext; simp only [map, val_eq_coe, Multiset.map_id', coe_inj]; rfl
 #align sym.map_id' Sym.map_id'
 
 theorem map_id {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map id s = s := by
-  ext; simp [Sym.map]; rfl
+  ext; simp only [map, val_eq_coe, id_eq, Multiset.map_id', coe_inj]; rfl
 #align sym.map_id Sym.map_id
 
 @[simp]
@@ -560,7 +563,7 @@ def filterNe [DecidableEq α] (a : α) (m : Sym α n) : Σi : Fin (n + 1), Sym �
       Eq.trans
         (by
           rw [← countP_eq_card_filter, add_comm]
-          simp only [eq_comm, Ne.def, count]
+          simp only [eq_comm, Ne, count]
           rw [← card_eq_countP_add_countP _ _])
         m.2⟩
 #align sym.filter_ne Sym.filterNe
@@ -597,6 +600,17 @@ theorem filter_ne_fill [DecidableEq α] (a : α) (m : Σi : Fin (n + 1), Sym α 
         exact hb.2 hb.1.2.symm
       · exact fun a ha ha' => h <| ha'.symm ▸ ha)
 #align sym.filter_ne_fill Sym.filter_ne_fill
+
+theorem count_coe_fill_self_of_not_mem [DecidableEq α] {a : α} {i : Fin (n + 1)} {s : Sym α (n - i)}
+    (hx : a ∉ s) :
+    count a (fill a i s : Multiset α) = i := by
+  simp [coe_fill, coe_replicate, hx]
+
+theorem count_coe_fill_of_ne [DecidableEq α] {a x : α} {i : Fin (n + 1)} {s : Sym α (n - i)}
+    (hx : x ≠ a) :
+    count x (fill a i s : Multiset α) = count x s := by
+  suffices x ∉ Multiset.replicate i a by simp [coe_fill, coe_replicate, this]
+  simp [Multiset.mem_replicate, hx]
 
 end Sym
 
@@ -643,12 +657,12 @@ def decode : Sum (Sym (Option α) n) (Sym α n.succ) → Sym (Option α) n.succ
   | Sum.inr s => s.map Embedding.some
 #align sym_option_succ_equiv.decode SymOptionSuccEquiv.decode
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem decode_inl (s : Sym (Option α) n) : decode (Sum.inl s) = none ::ₛ s :=
   rfl
 
---Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem decode_inr (s : Sym α n.succ) : decode (Sum.inr s) = s.map Embedding.some :=
   rfl
@@ -673,8 +687,7 @@ theorem encode_decode [DecidableEq α] (s : Sum (Sym (Option α) n) (Sym α n.su
       exact Option.some_ne_none _ ha
     · refine' congr_arg Sum.inr _
       refine' map_injective (Option.some_injective _) _ _
-      refine' Eq.trans _ (Eq.trans (SymOptionSuccEquiv.decode (Sum.inr s)).attach_map_coe _)
-      simp; simp
+      refine' Eq.trans _ (.trans (SymOptionSuccEquiv.decode (Sum.inr s)).attach_map_coe _) <;> simp
 #align sym_option_succ_equiv.encode_decode SymOptionSuccEquiv.encode_decode
 
 end SymOptionSuccEquiv

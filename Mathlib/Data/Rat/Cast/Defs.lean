@@ -3,6 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Data.Rat.Field
 import Mathlib.Data.Rat.Lemmas
 
@@ -38,14 +39,18 @@ section WithDivRing
 variable [DivisionRing α]
 
 @[simp, norm_cast]
-theorem cast_coe_int (n : ℤ) : ((n : ℚ) : α) = n :=
+theorem cast_intCast (n : ℤ) : ((n : ℚ) : α) = n :=
   (cast_def _).trans <| show (n / (1 : ℕ) : α) = n by rw [Nat.cast_one, div_one]
-#align rat.cast_coe_int Rat.cast_coe_int
+#align rat.cast_coe_int Rat.cast_intCast
 
 @[simp, norm_cast]
-theorem cast_coe_nat (n : ℕ) : ((n : ℚ) : α) = n := by
-  rw [← Int.cast_ofNat, cast_coe_int, Int.cast_ofNat]
-#align rat.cast_coe_nat Rat.cast_coe_nat
+theorem cast_natCast (n : ℕ) : ((n : ℚ) : α) = n := by
+  rw [← Int.cast_ofNat, cast_intCast, Int.cast_ofNat]
+#align rat.cast_coe_nat Rat.cast_natCast
+
+-- 2024-03-21
+@[deprecated] alias cast_coe_int := cast_intCast
+@[deprecated] alias cast_coe_nat := cast_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast] lemma cast_ofNat (n : ℕ) [n.AtLeastTwo] :
@@ -54,12 +59,12 @@ theorem cast_coe_nat (n : ℕ) : ((n : ℚ) : α) = n := by
 
 @[simp, norm_cast]
 theorem cast_zero : ((0 : ℚ) : α) = 0 :=
-  (cast_coe_int _).trans Int.cast_zero
+  (cast_intCast _).trans Int.cast_zero
 #align rat.cast_zero Rat.cast_zero
 
 @[simp, norm_cast]
 theorem cast_one : ((1 : ℚ) : α) = 1 :=
-  (cast_coe_int _).trans Int.cast_one
+  (cast_intCast _).trans Int.cast_one
 #align rat.cast_one Rat.cast_one
 
 theorem cast_commute (r : ℚ) (a : α) : Commute (↑r) a := by

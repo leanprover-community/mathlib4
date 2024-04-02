@@ -124,7 +124,9 @@ protected def Function.Injective.module [AddCommMonoid M₂] [SMul R M₂] (f : 
     zero_smul := fun x => hf <| by simp only [smul, zero_smul, f.map_zero] }
 #align function.injective.module Function.Injective.module
 
-/-- Pushforward a `Module` structure along a surjective additive monoid homomorphism. -/
+/-- Pushforward a `Module` structure along a surjective additive monoid homomorphism.
+See note [reducible non-instances]. -/
+@[reducible]
 protected def Function.Surjective.module [AddCommMonoid M₂] [SMul R M₂] (f : M →+ M₂)
     (hf : Surjective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
   { toDistribMulAction := hf.distribMulAction f smul
@@ -201,7 +203,7 @@ theorem Module.eq_zero_of_zero_eq_one (zero_eq_one : (0 : R) = 1) : x = 0 := by
 
 @[simp]
 theorem smul_add_one_sub_smul {R : Type*} [Ring R] [Module R M] {r : R} {m : M} :
-    r • m + (1 - r) • m = m := by rw [← add_smul, add_sub_cancel'_right, one_smul]
+    r • m + (1 - r) • m = m := by rw [← add_smul, add_sub_cancel, one_smul]
 #align smul_add_one_sub_smul smul_add_one_sub_smul
 
 end AddCommMonoid
@@ -565,6 +567,7 @@ is the result `smul_eq_zero`: a scalar multiple is `0` iff either argument is `0
 
 It is a generalization of the `NoZeroDivisors` class to heterogeneous multiplication.
 -/
+@[mk_iff]
 class NoZeroSMulDivisors (R M : Type*) [Zero R] [Zero M] [SMul R M] : Prop where
   /-- If scalar multiplication yields zero, either the scalar or the vector was zero. -/
   eq_zero_or_eq_zero_of_smul_eq_zero : ∀ {c : R} {x : M}, c • x = 0 → c = 0 ∨ x = 0
@@ -601,7 +604,7 @@ theorem smul_eq_zero : c • x = 0 ↔ c = 0 ∨ x = 0 :=
     h.elim (fun h => h.symm ▸ zero_smul R x) fun h => h.symm ▸ smul_zero c⟩
 #align smul_eq_zero smul_eq_zero
 
-theorem smul_ne_zero_iff : c • x ≠ 0 ↔ c ≠ 0 ∧ x ≠ 0 := by rw [Ne.def, smul_eq_zero, not_or]
+theorem smul_ne_zero_iff : c • x ≠ 0 ↔ c ≠ 0 ∧ x ≠ 0 := by rw [Ne, smul_eq_zero, not_or]
 #align smul_ne_zero_iff smul_ne_zero_iff
 
 lemma smul_eq_zero_iff_left (hx : x ≠ 0) : c • x = 0 ↔ c = 0 := by simp [hx]
@@ -785,7 +788,7 @@ lemma support_smul_subset_right [Zero M] [SMulZeroClass R M] (f : α → R) (g :
 
 lemma support_const_smul_of_ne_zero [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M]
     (c : R) (g : α → M) (hc : c ≠ 0) : support (c • g) = support g :=
-  ext fun x ↦ by simp only [hc, mem_support, Pi.smul_apply, Ne.def, smul_eq_zero, false_or_iff]
+  ext fun x ↦ by simp only [hc, mem_support, Pi.smul_apply, Ne, smul_eq_zero, false_or_iff]
 #align function.support_const_smul_of_ne_zero Function.support_const_smul_of_ne_zero
 
 lemma support_smul [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] (f : α → R)

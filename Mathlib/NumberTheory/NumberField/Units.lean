@@ -178,10 +178,10 @@ spans the full space over `ℝ` (see `unitLattice_span_eq_top`); this is the mai
 see the section `span_top` below for more details.
 -/
 
-open Classical Finset
+open scoped Classical
+open Finset
 
 variable [NumberField K]
-
 variable {K}
 
 /-- The distinguished infinite place. -/
@@ -328,7 +328,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
     obtain ⟨y, hy, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt (f := g)
       (by rw [convexBodyLT_volume]; convert hB; exact congr_arg ((↑): NNReal → ENNReal) h_gprod)
     refine ⟨⟨y, hy⟩, Subtype.ne_of_val_ne h_ynz, fun w hw => (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
-    · rw [← Rat.cast_le (K := ℝ), Rat.cast_coe_nat]
+    · rw [← Rat.cast_le (K := ℝ), Rat.cast_natCast]
       calc
         _ = ∏ w : InfinitePlace K, w y ^ mult w := (prod_eq_abs_norm (y : K)).symm
         _ ≤ ∏ w : InfinitePlace K, (g w : ℝ) ^ mult w := by
@@ -439,7 +439,7 @@ theorem unitLattice_span_eq_top :
   rw [Basis.det_apply]
   -- We use a specific lemma to prove that this determinant is nonzero
   refine det_ne_zero_of_sum_col_lt_diag (fun w => ?_)
-  simp_rw [Real.norm_eq_abs, Basis.coePiBasisFun.toMatrix_eq_transpose, Matrix.transpose_apply]
+  simp_rw [Real.norm_eq_abs, B, Basis.coePiBasisFun.toMatrix_eq_transpose, Matrix.transpose_apply]
   rw [← sub_pos, sum_congr rfl (fun x hx => abs_of_neg ?_), sum_neg_distrib, sub_neg_eq_add,
     sum_erase_eq_sub (mem_univ _), ← add_comm_sub]
   refine add_pos_of_nonneg_of_pos ?_ ?_
@@ -460,7 +460,8 @@ section statements
 
 variable [NumberField K]
 
-open dirichletUnitTheorem FiniteDimensional Classical
+open scoped Classical
+open dirichletUnitTheorem FiniteDimensional
 
 /-- The unit rank of the number field `K`, it is equal to `card (InfinitePlace K) - 1`. -/
 def rank : ℕ := Fintype.card (InfinitePlace K) - 1
@@ -476,22 +477,18 @@ instance instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := by
     rintro ⟨x, hx, rfl⟩
     exact ⟨Subtype.mem x, hx⟩
 
+instance instZlattice_unitLattice : IsZlattice ℝ (unitLattice K) where
+  span_top := unitLattice_span_eq_top K
+
 protected theorem finrank_eq_rank :
     finrank ℝ ({w : InfinitePlace K // w ≠ w₀} → ℝ) = Units.rank K := by
   simp only [finrank_fintype_fun_eq_card, Fintype.card_subtype_compl,
     Fintype.card_ofSubsingleton, rank]
 
-instance instModuleFree_unitLattice : Module.Free ℤ (unitLattice K) :=
-  Zlattice.module_free ℝ (unitLattice_span_eq_top K)
-
-instance instModuleFinite_unitLattice : Module.Finite ℤ (unitLattice K) :=
-  Zlattice.module_finite ℝ (unitLattice_span_eq_top K)
-
 @[simp]
 theorem unitLattice_rank :
     finrank ℤ (unitLattice K) = Units.rank K := by
-  rw [← Units.finrank_eq_rank]
-  exact Zlattice.rank ℝ (unitLattice_span_eq_top K)
+  rw [← Units.finrank_eq_rank, Zlattice.rank ℝ]
 
 /-- The linear equivalence between `unitLattice` and `(𝓞 K)ˣ ⧸ (torsion K)` as an additive
 `ℤ`-module. -/
@@ -512,7 +509,7 @@ def unitLatticeEquiv : (unitLattice K) ≃ₗ[ℤ] Additive ((𝓞 K)ˣ ⧸ (tor
     rfl
 
 instance : Module.Free ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
-  (instModuleFree_unitLattice K).of_equiv' (unitLatticeEquiv K)
+  Module.Free.of_equiv (unitLatticeEquiv K)
 
 instance : Module.Finite ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   Module.Finite.equiv (unitLatticeEquiv K)
@@ -581,11 +578,11 @@ theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! (ζ : torsion K) (e : F
     exact ((basisModTorsion K).sum_repr (Additive.ofMul ↑x)).symm
   refine ⟨⟨ζ, h_tors⟩, ?_, ?_⟩
   · refine ⟨((basisModTorsion K).repr (Additive.ofMul ↑x) : Fin (rank K) → ℤ), ?_, ?_⟩
-    · simp only [_root_.inv_mul_cancel_right]
+    · simp only [ζ, _root_.inv_mul_cancel_right]
     · exact fun _ hf => fun_eq_repr K h_tors hf
   · rintro η ⟨_, hf, _⟩
     simp_rw [fun_eq_repr K η.prop hf] at hf
-    ext1; dsimp only
+    ext1; dsimp only [ζ]
     nth_rewrite 1 [hf]
     rw [_root_.mul_inv_cancel_right]
 

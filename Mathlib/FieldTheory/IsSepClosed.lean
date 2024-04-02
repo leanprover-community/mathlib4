@@ -113,7 +113,7 @@ theorem exists_pow_nat_eq [IsSepClosed k] (x : k) (n : ℕ) [hn : NeZero (n : k)
   · exact ⟨0, by rw [hx, pow_eq_zero_iff hn'.ne']⟩
   · obtain ⟨z, hz⟩ := exists_root _ this <| separable_X_pow_sub_C x hn.out hx
     use z
-    simpa [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def, sub_eq_zero] using hz
+    simpa [eval_C, eval_X, eval_pow, eval_sub, IsRoot.definition, sub_eq_zero] using hz
 
 theorem exists_eq_mul_self [IsSepClosed k] (x : k) [h2 : NeZero (2 : k)] : ∃ z, x = z * z := by
   rcases exists_pow_nat_eq x 2 with ⟨z, rfl⟩
@@ -267,7 +267,7 @@ variable [Algebra K L] [IsSepClosure K L]
 
 /-- A (random) isomorphism between two separable closures of `K`. -/
 noncomputable def equiv : L ≃ₐ[K] M :=
-  -- Porting note: added to replace local instance above
+  -- Porting note (#10754): added to replace local instance above
   haveI : IsSepClosed L := IsSepClosure.sep_closed K
   haveI : IsSepClosed M := IsSepClosure.sep_closed K
   AlgEquiv.ofBijective _ (Normal.isAlgebraic'.algHom_bijective₂

@@ -71,7 +71,7 @@ def Ultrafilter.semigroup {M} [Semigroup M] : Semigroup (Ultrafilter M) :=
   { Ultrafilter.mul with
     mul_assoc := fun U V W =>
       Ultrafilter.coe_inj.mp <|
-        -- porting note: `simp` was slow to typecheck, replaced by `simp_rw`
+        -- porting note (#11083): `simp` was slow to typecheck, replaced by `simp_rw`
         Filter.ext' fun p => by simp_rw [Ultrafilter.eventually_mul, mul_assoc] }
 #align ultrafilter.semigroup Ultrafilter.semigroup
 #align ultrafilter.add_semigroup Ultrafilter.addSemigroup
@@ -82,14 +82,14 @@ attribute [local instance] Ultrafilter.semigroup Ultrafilter.addSemigroup
 @[to_additive]
 theorem Ultrafilter.continuous_mul_left {M} [Semigroup M] (V : Ultrafilter M) :
     Continuous (· * V) :=
-  ultrafilterBasis_is_basis.continuous_iff.2 <| Set.forall_range_iff.mpr fun s ↦
+  ultrafilterBasis_is_basis.continuous_iff.2 <| Set.forall_mem_range.mpr fun s ↦
     ultrafilter_isOpen_basic { m : M | ∀ᶠ m' in V, m * m' ∈ s }
 #align ultrafilter.continuous_mul_left Ultrafilter.continuous_mul_left
 #align ultrafilter.continuous_add_left Ultrafilter.continuous_add_left
 
 namespace Hindman
 
--- porting note: mathport wants these names to be `fS`, `fP`, etc, but this does violence to
+-- Porting note: mathport wants these names to be `fS`, `fP`, etc, but this does violence to
 -- mathematical naming conventions, as does `fs`, `fp`, so we just followed `mathlib` 3 here
 
 /-- `FS a` is the set of finite sums in `a`, i.e. `m ∈ FS a` if `m` is the sum of a nonempty
@@ -143,9 +143,9 @@ theorem exists_idempotent_ultrafilter_le_FP {M} [Semigroup M] (a : Stream' M) :
     refine' ⟨U, U_idem, _⟩
     convert Set.mem_iInter.mp hU 0
   · exact Ultrafilter.continuous_mul_left
-  · apply IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed
+  · apply IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed
     · intro n U hU
-      apply Eventually.mono hU
+      filter_upwards [hU]
       rw [add_comm, ← Stream'.drop_drop, ← Stream'.tail_eq_drop]
       exact FP.tail _
     · intro n
@@ -158,11 +158,9 @@ theorem exists_idempotent_ultrafilter_le_FP {M} [Semigroup M] (a : Stream' M) :
     rw [Set.mem_iInter] at *
     intro n
     rw [Set.mem_setOf_eq, Ultrafilter.eventually_mul]
-    apply Eventually.mono (hU n)
-    intro m hm
+    filter_upwards [hU n] with m hm
     obtain ⟨n', hn⟩ := FP.mul hm
-    apply Eventually.mono (hV (n' + n))
-    intro m' hm'
+    filter_upwards [hV (n' + n)] with m' hm'
     apply hn
     simpa only [Stream'.drop_drop] using hm'
 set_option linter.uppercaseLean3 false in

@@ -45,7 +45,8 @@ vector measure, signed measure, complex measure
 
 noncomputable section
 
-open Classical BigOperators NNReal ENNReal MeasureTheory
+open scoped Classical
+open BigOperators NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
 
@@ -172,7 +173,7 @@ theorem hasSum_of_disjoint_iUnion [Countable β] {f : β → Set α} (hf₁ : �
     · exact (v.m_iUnion hg₁ hg₂).summable
     · intro x hx
       convert v.empty
-      simp only [Set.iUnion_eq_empty, Option.mem_def, not_exists, Set.mem_range] at hx ⊢
+      simp only [g, Set.iUnion_eq_empty, Option.mem_def, not_exists, Set.mem_range] at hx ⊢
       intro i hi
       exact False.elim ((hx i) ((Encodable.decode₂_is_partial_inv _ _).1 hi))
 #align measure_theory.vector_measure.has_sum_of_disjoint_Union MeasureTheory.VectorMeasure.hasSum_of_disjoint_iUnion
@@ -196,7 +197,7 @@ theorem of_add_of_diff {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSet
 theorem of_diff {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M]
     {v : VectorMeasure α M} {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSet B)
     (h : A ⊆ B) : v (B \ A) = v B - v A := by
-  rw [← of_add_of_diff hA hB h, add_sub_cancel']
+  rw [← of_add_of_diff hA hB h, add_sub_cancel_left]
 #align measure_theory.vector_measure.of_diff MeasureTheory.VectorMeasure.of_diff
 
 theorem of_diff_of_diff_eq_zero {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSet B)
@@ -249,7 +250,6 @@ end
 section SMul
 
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
-
 variable {R : Type*} [Semiring R] [DistribMulAction R M] [ContinuousConstSMul R M]
 
 /-- Given a real number `r` and a signed measure `s`, `smul r s` is the signed
@@ -380,7 +380,6 @@ end AddCommGroup
 section DistribMulAction
 
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
-
 variable {R : Type*} [Semiring R] [DistribMulAction R M] [ContinuousConstSMul R M]
 
 instance instDistribMulAction [ContinuousAdd M] : DistribMulAction R (VectorMeasure α M) :=
@@ -392,7 +391,6 @@ end DistribMulAction
 section Module
 
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
-
 variable {R : Type*} [Semiring R] [Module R M] [ContinuousConstSMul R M]
 
 instance instModule [ContinuousAdd M] : Module R (VectorMeasure α M) :=
@@ -548,9 +546,7 @@ end
 section
 
 variable [MeasurableSpace α] [MeasurableSpace β]
-
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
-
 variable (v : VectorMeasure α M)
 
 /-- The pushforward of a vector measure along a function. -/
@@ -646,7 +642,6 @@ end ContinuousAdd
 section Module
 
 variable {R : Type*} [Semiring R] [Module R M] [Module R N]
-
 variable [ContinuousAdd M] [ContinuousAdd N] [ContinuousConstSMul R M] [ContinuousConstSMul R N]
 
 /-- Given a continuous linear map `f : M → N`, `mapRangeₗ` is the linear map mapping the
@@ -756,9 +751,7 @@ end
 section
 
 variable [MeasurableSpace β]
-
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
-
 variable {R : Type*} [Semiring R] [DistribMulAction R M] [ContinuousConstSMul R M]
 
 @[simp]
@@ -789,9 +782,7 @@ end
 section
 
 variable [MeasurableSpace β]
-
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
-
 variable {R : Type*} [Semiring R] [Module R M] [ContinuousConstSMul R M] [ContinuousAdd M]
 
 /-- `VectorMeasure.map` as a linear map. -/
@@ -848,7 +839,6 @@ scoped[MeasureTheory]
 section
 
 variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
-
 variable (v w : VectorMeasure α M)
 
 theorem restrict_le_restrict_iff {i : Set α} (hi : MeasurableSet i) :
@@ -901,7 +891,6 @@ end
 section
 
 variable {M : Type*} [TopologicalSpace M] [OrderedAddCommGroup M] [TopologicalAddGroup M]
-
 variable (v w : VectorMeasure α M)
 
 nonrec theorem neg_le_neg {i : Set α} (hi : MeasurableSet i) (h : v ≤[i] w) : -w ≤[i] -v := by
@@ -922,7 +911,6 @@ end
 section
 
 variable {M : Type*} [TopologicalSpace M] [OrderedAddCommMonoid M] [OrderClosedTopology M]
-
 variable (v w : VectorMeasure α M) {i j : Set α}
 
 theorem restrict_le_restrict_iUnion {f : ℕ → Set α} (hf₁ : ∀ n, MeasurableSet (f n))
@@ -973,7 +961,6 @@ end
 section
 
 variable {M : Type*} [TopologicalSpace M] [OrderedAddCommMonoid M]
-
 variable (v w : VectorMeasure α M) {i j : Set α}
 
 theorem nonneg_of_zero_le_restrict (hi₂ : 0 ≤[i] v) : 0 ≤ v i := by
@@ -1019,7 +1006,6 @@ end
 section
 
 variable {M : Type*} [TopologicalSpace M] [LinearOrderedAddCommMonoid M]
-
 variable (v w : VectorMeasure α M) {i j : Set α}
 
 theorem exists_pos_measure_of_not_restrict_le_zero (hi : ¬v ≤[i] 0) :
@@ -1047,7 +1033,6 @@ end
 section
 
 variable {L M N : Type*}
-
 variable [AddCommMonoid L] [TopologicalSpace L] [AddCommMonoid M] [TopologicalSpace M]
   [AddCommMonoid N] [TopologicalSpace N]
 

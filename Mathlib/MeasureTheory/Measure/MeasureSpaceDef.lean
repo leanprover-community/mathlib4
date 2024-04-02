@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.OuterMeasure
+import Mathlib.MeasureTheory.OuterMeasure.Basic
 import Mathlib.Order.Filter.CountableInter
 
 #align_import measure_theory.measure.measure_space_def from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
@@ -56,13 +56,15 @@ measure, almost everywhere, measure space
 
 noncomputable section
 
-open Classical Set
+open scoped Classical
+open Set
 
 open Filter hiding map
 
 open Function MeasurableSpace
 
-open Classical Topology BigOperators Filter ENNReal NNReal
+open scoped Classical
+open Topology BigOperators Filter ENNReal NNReal
 
 variable {α β γ δ : Type*} {ι : Sort*}
 
@@ -705,7 +707,7 @@ def AEMeasurable {_m : MeasurableSpace α} (f : α → β) (μ : Measure α := b
   ∃ g : α → β, Measurable g ∧ f =ᵐ[μ] g
 #align ae_measurable AEMeasurable
 
-@[aesop unsafe 30% apply (rule_sets [Measurable])]
+@[aesop unsafe 30% apply (rule_sets := [Measurable])]
 theorem Measurable.aemeasurable (h : Measurable f) : AEMeasurable f μ :=
   ⟨f, h, ae_eq_refl f⟩
 #align measurable.ae_measurable Measurable.aemeasurable

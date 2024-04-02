@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison
 -/
 import Mathlib.Data.Fin.Basic
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.InsertNth
 import Mathlib.Logic.Relation
+import Mathlib.Logic.Small.Defs
 import Mathlib.Order.GameAdd
 
-#align_import set_theory.game.pgame from "leanprover-community/mathlib"@"dc9e5ba64653e017743ba5d2c28e42f9f486bf99"
+#align_import set_theory.game.pgame from "leanprover-community/mathlib"@"8900d545017cd21961daa2a1734bb658ef52c618"
 
 /-!
 # Combinatorial (pre-)games.
@@ -731,6 +732,42 @@ theorem leftResponse_spec {x : PGame} (h : 0 ≤ x) (j : x.RightMoves) :
   Classical.choose_spec <| (zero_le.1 h) j
 #align pgame.left_response_spec SetTheory.PGame.leftResponse_spec
 
+#noalign pgame.upper_bound
+#noalign pgame.upper_bound_right_moves_empty
+#noalign pgame.le_upper_bound
+#noalign pgame.upper_bound_mem_upper_bounds
+
+/-- A small family of pre-games is bounded above. -/
+lemma bddAbove_range_of_small [Small.{u} ι] (f : ι → PGame.{u}) : BddAbove (Set.range f) := by
+  let x : PGame.{u} := ⟨Σ i, (f $ (equivShrink.{u} ι).symm i).LeftMoves, PEmpty,
+    fun x ↦ moveLeft _ x.2, PEmpty.elim⟩
+  refine ⟨x, Set.forall_mem_range.2 fun i ↦ ?_⟩
+  rw [← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
+  simpa [x] using fun j ↦ @moveLeft_lf x ⟨equivShrink ι i, j⟩
+
+/-- A small set of pre-games is bounded above. -/
+lemma bddAbove_of_small (s : Set PGame.{u}) [Small.{u} s] : BddAbove s := by
+  simpa using bddAbove_range_of_small (Subtype.val : s → PGame.{u})
+#align pgame.bdd_above_of_small SetTheory.PGame.bddAbove_of_small
+
+#noalign pgame.lower_bound
+#noalign pgame.lower_bound_left_moves_empty
+#noalign pgame.lower_bound_le
+#noalign pgame.lower_bound_mem_lower_bounds
+
+/-- A small family of pre-games is bounded below. -/
+lemma bddBelow_range_of_small [Small.{u} ι] (f : ι → PGame.{u}) : BddBelow (Set.range f) := by
+  let x : PGame.{u} := ⟨PEmpty, Σ i, (f $ (equivShrink.{u} ι).symm i).RightMoves, PEmpty.elim,
+    fun x ↦ moveRight _ x.2⟩
+  refine ⟨x, Set.forall_mem_range.2 fun i ↦ ?_⟩
+  rw [← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
+  simpa [x] using fun j ↦ @lf_moveRight x ⟨equivShrink ι i, j⟩
+
+/-- A small set of pre-games is bounded below. -/
+lemma bddBelow_of_small (s : Set PGame.{u}) [Small.{u} s] : BddBelow s := by
+  simpa using bddBelow_range_of_small (Subtype.val : s → PGame.{u})
+#align pgame.bdd_below_of_small SetTheory.PGame.bddBelow_of_small
+
 /-- The equivalence relation on pre-games. Two pre-games `x`, `y` are equivalent if `x ≤ y` and
 `y ≤ x`.
 
@@ -1237,8 +1274,7 @@ instance : NegZeroClass PGame :=
 theorem neg_ofLists (L R : List PGame) :
     -ofLists L R = ofLists (R.map fun x => -x) (L.map fun x => -x) := by
   set_option linter.deprecated false in
-  simp only [ofLists, neg_def, List.length_map, List.nthLe_map', eq_self_iff_true, true_and,
-    mk.injEq]
+  simp only [ofLists, neg_def, List.nthLe_map', mk.injEq, List.length_map, true_and]
   constructor
   all_goals
     apply hfunext
@@ -1627,7 +1663,7 @@ def Relabelling.addCongr : ∀ {w x y z : PGame.{u}}, w ≡r x → y ≡r z → 
     · exact Hwx.addCongr (hL₂ j)
     · exact (hR₁ i).addCongr Hyz
     · exact Hwx.addCongr (hR₂ j)
-termination_by w x y z => (x, z)
+termination_by _ x _ z => (x, z)
 #align pgame.relabelling.add_congr SetTheory.PGame.Relabelling.addCongr
 
 instance : Sub PGame :=

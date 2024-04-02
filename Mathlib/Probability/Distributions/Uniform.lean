@@ -53,7 +53,6 @@ variable {E : Type*} [MeasurableSpace E] {m : Measure E} {μ : Measure E}
 namespace pdf
 
 variable {Ω : Type*}
-
 variable {_ : MeasurableSpace Ω} {ℙ : Measure Ω}
 
 /-- A random variable `X` has uniform distribution on `s` if its push-forward measure is
@@ -163,7 +162,7 @@ theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
   set ind := (volume s)⁻¹ • (1 : ℝ → ℝ≥0∞)
   have : ∀ x, ↑‖x‖₊ * s.indicator ind x = s.indicator (fun x => ‖x‖₊ * ind x) x := fun x =>
     (s.indicator_mul_right (fun x => ↑‖x‖₊) ind).symm
-  simp only [this, lintegral_indicator _ hcs.measurableSet, mul_one, Algebra.id.smul_eq_mul,
+  simp only [ind, this, lintegral_indicator _ hcs.measurableSet, mul_one, Algebra.id.smul_eq_mul,
     Pi.one_apply, Pi.smul_apply]
   rw [lintegral_mul_const _ measurable_nnnorm.coe_nnreal_ennreal]
   exact (ENNReal.mul_lt_top (set_lintegral_lt_top_of_isCompact hnt.2 hcs continuous_nnnorm).ne
@@ -230,7 +229,7 @@ def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : PMF α := by
   refine' ofFinset (fun a => if a ∈ s then s.card⁻¹ else 0) s _ _
   · simp only [Finset.sum_ite_mem, Finset.inter_self, Finset.sum_const, nsmul_eq_mul]
     have : (s.card : ℝ≥0∞) ≠ 0 := by
-      simpa only [Ne.def, Nat.cast_eq_zero, Finset.card_eq_zero] using
+      simpa only [Ne, Nat.cast_eq_zero, Finset.card_eq_zero] using
         Finset.nonempty_iff_ne_empty.1 hs
     exact ENNReal.mul_inv_cancel this <| ENNReal.nat_ne_top s.card
   · exact fun x hx => by simp only [hx, if_false]

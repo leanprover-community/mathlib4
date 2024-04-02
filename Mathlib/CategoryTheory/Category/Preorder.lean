@@ -50,8 +50,8 @@ instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCate
   comp f g := ⟨⟨le_trans _ _ _ f.down.down g.down.down⟩⟩
 #align preorder.small_category Preorder.smallCategory
 
--- porting note: added to ease the port of `CategoryTheory.Subobject.Basic`
-instance Preorder.subsingleton_hom {α : Type u} [Preorder α] (U V : α) :
+-- Porting note: added to ease the port of `CategoryTheory.Subobject.Basic`
+instance subsingleton_hom {α : Type u} [Preorder α] (U V : α) :
   Subsingleton (U ⟶ V) := ⟨fun _ _ => ULift.ext _ _ (Subsingleton.elim _ _ )⟩
 
 end Preorder
@@ -91,13 +91,13 @@ theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
 alias _root_.Quiver.Hom.le := leOfHom
 #align quiver.hom.le Quiver.Hom.le
 
--- porting note: why does this lemma exist? With proof irrelevance, we don't need to simplify proofs
+-- Porting note: why does this lemma exist? With proof irrelevance, we don't need to simplify proofs
 -- @[simp]
 theorem leOfHom_homOfLE {x y : X} (h : x ≤ y) : h.hom.le = h :=
   rfl
 #align category_theory.le_of_hom_hom_of_le CategoryTheory.leOfHom_homOfLE
 
--- porting note: linter gives: "Left-hand side does not simplify, when using the simp lemma on
+-- Porting note: linter gives: "Left-hand side does not simplify, when using the simp lemma on
 -- itself. This usually means that it will never apply." removing simp? It doesn't fire
 -- @[simp]
 theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=

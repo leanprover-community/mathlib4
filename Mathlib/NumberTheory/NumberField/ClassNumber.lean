@@ -68,8 +68,8 @@ theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)):
   · rw [← FractionalIdeal.absNorm_span_singleton (𝓞 K), Algebra.linearMap_apply,
       ← FractionalIdeal.coeIdeal_span_singleton, FractionalIdeal.coeIdeal_absNorm, hI, map_mul,
       Nat.cast_mul, Rat.cast_mul, show Ideal.absNorm I₀ = Ideal.absNorm (I : Ideal (𝓞 K)) by rfl,
-      Rat.cast_coe_nat, Rat.cast_coe_nat, FractionalIdeal.coe_mk0,
-      FractionalIdeal.coeIdeal_absNorm, Rat.cast_coe_nat, mul_div_assoc, mul_assoc, mul_assoc]
+      Rat.cast_natCast, Rat.cast_natCast, FractionalIdeal.coe_mk0,
+      FractionalIdeal.coeIdeal_absNorm, Rat.cast_natCast, mul_div_assoc, mul_assoc, mul_assoc]
       at h_nm
     refine le_of_mul_le_mul_of_pos_left h_nm ?_
     exact Nat.cast_pos.mpr <| Nat.pos_of_ne_zero <| Ideal.absNorm_ne_zero_of_nonZeroDivisors J

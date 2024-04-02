@@ -62,10 +62,10 @@ lemma eventually_weightSpace_smul_add_eq_bot :
   suffices Injective f by
     rw [← Nat.cofinite_eq_atTop, Filter.eventually_cofinite, ← finite_image_iff (this.injOn _)]
     apply (finite_weightSpace_ne_bot R L M).subset
-    simp
+    simp [f]
   intro k l hkl
   replace hkl : (k : ℤ) • χ₁ = (l : ℤ) • χ₁ := by
-    simpa only [add_left_inj, coe_nat_zsmul] using hkl
+    simpa only [f, add_left_inj, natCast_zsmul] using hkl
   exact Nat.cast_inj.mp <| smul_left_injective ℤ hχ₁ hkl
 
 lemma exists_weightSpace_smul_add_eq_bot :
@@ -79,9 +79,9 @@ lemma exists₂_weightSpace_smul_add_eq_bot :
   obtain ⟨q, hq₀, hq⟩ := exists_weightSpace_smul_add_eq_bot M χ₁ χ₂ hχ₁
   obtain ⟨p, hp₀, hp⟩ := exists_weightSpace_smul_add_eq_bot M (-χ₁) χ₂ (neg_ne_zero.mpr hχ₁)
   refine ⟨-(p : ℤ), by simpa, q, by simpa, ?_, ?_⟩
-  · rw [neg_smul, ← smul_neg, coe_nat_zsmul]
+  · rw [neg_smul, ← smul_neg, natCast_zsmul]
     exact hp
-  · rw [coe_nat_zsmul]
+  · rw [natCast_zsmul]
     exact hq
 
 end
@@ -106,7 +106,7 @@ lemma weightSpaceChain_neg :
     weightSpaceChain M (-χ₁) χ₂ (-q) (-p) = weightSpaceChain M χ₁ χ₂ p q := by
   let e : ℤ ≃ ℤ := neg_involutive.toPerm
   simp_rw [weightSpaceChain, ← e.biSup_comp (Ioo p q)]
-  simp [-mem_Ioo, neg_mem_Ioo_iff]
+  simp [e, -mem_Ioo, neg_mem_Ioo_iff]
 
 lemma weightSpace_le_weightSpaceChain {k : ℤ} (hk : k ∈ Ioo p q) :
     weightSpace M (k • χ₁ + χ₂) ≤ weightSpaceChain M χ₁ χ₂ p q :=
@@ -171,7 +171,8 @@ lemma trace_toEndomorphism_weightSpaceChain_eq_zero
           lie_mem_weightSpaceChain_of_weightSpace_eq_bot_left M α χ p q hp z.property hm⟩
         map_add' := fun _ _ ↦ by simp
         map_smul' := fun t m ↦ by simp }
-    have hfg : toEndomorphism R H _ (rootSpaceProductNegSelf α (y ⊗ₜ z)) = ⁅f, g⁆ := by ext; simp
+    have hfg : toEndomorphism R H _ (rootSpaceProductNegSelf α (y ⊗ₜ z)) = ⁅f, g⁆ := by
+      ext; simp [f, g]
     simp [hfg]
   · rw [LieModuleHom.map_add, LieHom.map_add, map_add, h₁, h₂, zero_add]
 
@@ -208,7 +209,7 @@ lemma exists_forall_mem_rootSpaceProductNegSelf_smul_add_eq_zero
     LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (weightSpaceChain M α χ p q) h₃]
   simp_rw [LieSubmodule.toEndomorphism_restrict_eq_toEndomorphism,
     trace_toEndomorphism_weightSpace, Pi.add_apply, Pi.smul_apply, smul_add, ← smul_assoc,
-    Finset.sum_add_distrib, ← Finset.sum_smul, coe_nat_zsmul]
+    Finset.sum_add_distrib, ← Finset.sum_smul, natCast_zsmul]
 
 end IsCartanSubalgebra
 

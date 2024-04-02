@@ -35,13 +35,11 @@ noncomputable section
 universe u v v' u₁' w w'
 
 variable {R S : Type u} {M : Type v} {M' : Type v'} {M₁ : Type v}
-
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
 open BigOperators Cardinal Basis Submodule Function Set FiniteDimensional DirectSum
 
 variable [Ring R] [CommRing S] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
-
 variable [Module R M] [Module R M'] [Module R M₁]
 
 section Quotient
@@ -118,7 +116,6 @@ theorem rank_add_rank_le_rank_prod [Nontrivial R] :
   convert ← lift_rank_add_lift_rank_le_rank_prod R M M₁ <;> apply lift_id
 
 variable {R M M'}
-
 variable [StrongRankCondition R] [Module.Free R M] [Module.Free R M'] [Module.Free R M₁]
 
 open Module.Free
@@ -149,7 +146,6 @@ end Prod
 section Finsupp
 
 variable (R M M')
-
 variable [StrongRankCondition R] [Module.Free R M] [Module.Free R M']
 
 open Module.Free BigOperators
@@ -253,7 +249,6 @@ end Finsupp
 section Pi
 
 variable [StrongRankCondition R] [Module.Free R M]
-
 variable [∀ i, AddCommGroup (φ i)] [∀ i, Module R (φ i)] [∀ i, Module.Free R (φ i)]
 
 open Module.Free
@@ -319,7 +314,7 @@ theorem FiniteDimensional.finrank_fintype_fun_eq_card : finrank R (η → R) = F
 #align finite_dimensional.finrank_fintype_fun_eq_card FiniteDimensional.finrank_fintype_fun_eq_card
 
 /-- The vector space of functions on `Fin n` has finrank equal to `n`. -/
--- @[simp] -- Porting note: simp already proves this
+-- @[simp] -- Porting note (#10618): simp already proves this
 theorem FiniteDimensional.finrank_fin_fun {n : ℕ} : finrank R (Fin n → R) = n := by simp
 #align finite_dimensional.finrank_fin_fun FiniteDimensional.finrank_fin_fun
 
@@ -344,7 +339,6 @@ section TensorProduct
 open TensorProduct
 
 variable [StrongRankCondition S]
-
 variable [Module S M] [Module.Free S M] [Module S M'] [Module.Free S M']
 variable [Module S M₁] [Module.Free S M₁]
 

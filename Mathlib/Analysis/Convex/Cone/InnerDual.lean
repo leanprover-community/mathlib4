@@ -31,7 +31,8 @@ We prove the following theorems:
 
 open Set LinearMap
 
-open Classical Pointwise
+open scoped Classical
+open Pointwise
 
 variable {𝕜 E F G : Type*}
 
@@ -179,8 +180,8 @@ theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem (K : Co
   · -- the rest of the proof is a straightforward calculation
     rintro x hxK
     specialize hinner _ (K.add_mem hxK hzK)
-    rwa [add_sub_cancel, real_inner_comm, ← neg_nonneg, neg_eq_neg_one_mul, ← real_inner_smul_right,
-      neg_smul, one_smul, neg_sub] at hinner
+    rwa [add_sub_cancel_right, real_inner_comm, ← neg_nonneg, neg_eq_neg_one_mul,
+      ← real_inner_smul_right, neg_smul, one_smul, neg_sub] at hinner
   · -- as `K` is closed and non-empty, it is pointed
     have hinner₀ := hinner 0 (K.pointed_of_nonempty_of_isClosed ne hc)
     -- the rest of the proof is a straightforward calculation

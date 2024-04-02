@@ -74,7 +74,7 @@ theorem derivation_C_mul (D : Derivation R (MvPolynomial σ R) A) (a : R) (f : M
 theorem derivation_eqOn_supported {D₁ D₂ : Derivation R (MvPolynomial σ R) A} {s : Set σ}
     (h : Set.EqOn (D₁ ∘ X) (D₂ ∘ X) s) {f : MvPolynomial σ R} (hf : f ∈ supported R s) :
     D₁ f = D₂ f :=
-  Derivation.eqOn_adjoin (Set.ball_image_iff.2 h) hf
+  Derivation.eqOn_adjoin (Set.forall_mem_image.2 h) hf
 #align mv_polynomial.derivation_eq_on_supported MvPolynomial.derivation_eqOn_supported
 
 theorem derivation_eq_of_forall_mem_vars {D₁ D₂ : Derivation R (MvPolynomial σ R) A}

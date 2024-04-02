@@ -98,7 +98,7 @@ instance : IsCoverDense e.inverse J where
     let g : e.inverse.obj _ ⟶ U := (e.unitInv.app Y) ≫ f
     have : (Sieve.coverByImage e.inverse U).arrows g := Presieve.in_coverByImage _ g
     replace := Sieve.downward_closed _ this (e.unit.app Y)
-    simpa using this
+    simpa [g] using this
 
 /-- A class saying that the equivalence `e` transports the Grothendieck topology `J` to `K`. -/
 class TransportsGrothendieckTopology : Prop where

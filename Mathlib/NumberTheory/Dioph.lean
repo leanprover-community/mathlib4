@@ -102,11 +102,6 @@ instance instFunLike : FunLike (Poly α) (α → ℕ) ℤ :=
   ⟨Subtype.val, Subtype.val_injective⟩
 #align poly.fun_like Poly.instFunLike
 
--- Porting note: This instance is not necessary anymore
--- /-- Helper instance for when there are too many metavariables to apply `DFunLike.hasCoeToFun`
--- directly. -/
--- instance : CoeFun (Poly α) fun _ => (α → ℕ) → ℤ := DFunLike.hasCoeToFun
-
 /-- The underlying function of a `Poly` is a polynomial -/
 protected theorem isPoly (f : Poly α) : IsPoly f := f.2
 #align poly.is_poly Poly.isPoly

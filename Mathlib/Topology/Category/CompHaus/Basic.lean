@@ -97,15 +97,15 @@ theorem coe_of : (CompHaus.of X : Type _) = X :=
 set_option linter.uppercaseLean3 false in
 #align CompHaus.coe_of CompHaus.coe_of
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus.{u}) : TopologicalSpace ((forget CompHaus).obj X) :=
   show TopologicalSpace X.toTop from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus.{u}) : CompactSpace ((forget CompHaus).obj X) :=
   show CompactSpace X.toTop from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus.{u}) : T2Space ((forget CompHaus).obj X) :=
   show T2Space X.toTop from inferInstance
 
@@ -191,11 +191,11 @@ instance : Full compHausToTop :=
 instance : Faithful compHausToTop :=
   show Faithful <| inducedFunctor _ from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus) : CompactSpace (compHausToTop.obj X) :=
   show CompactSpace X.toTop from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus) : T2Space (compHausToTop.obj X) :=
   show T2Space X.toTop from inferInstance
 
@@ -364,7 +364,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
       change 0 = φ (f x)
       simp only [hφ0 (Set.mem_range_self x), Pi.zero_apply]
     apply_fun fun e => (e y).down.1 at H
-    dsimp at H
+    dsimp [Z] at H
     change 0 = φ y at H
     simp only [hφ1 (Set.mem_singleton y), Pi.one_apply] at H
     exact zero_ne_one H

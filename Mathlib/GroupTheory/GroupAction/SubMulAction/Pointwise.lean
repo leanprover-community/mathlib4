@@ -73,7 +73,7 @@ section MulOneClass
 
 variable [Monoid R] [MulAction R M] [MulOneClass M] [IsScalarTower R M M] [SMulCommClass R M M]
 
--- porting note: giving the instance the name `mulOneClass`
+-- Porting note: giving the instance the name `mulOneClass`
 instance mulOneClass : MulOneClass (SubMulAction R M) where
   mul := (· * ·)
   one := 1
@@ -98,7 +98,7 @@ section Semigroup
 
 variable [Monoid R] [MulAction R M] [Semigroup M] [IsScalarTower R M M]
 
--- porting note: giving the instance the name `semiGroup`
+-- Porting note: giving the instance the name `semiGroup`
 instance semiGroup : Semigroup (SubMulAction R M)
     where
   mul := (· * ·)

@@ -29,6 +29,10 @@ In Lean 3, we use `id` here and there to get correct types of proofs. This is re
 `WithOne` and `WithZero` are marked as `Irreducible` at the end of
 `Mathlib.Algebra.Group.WithOne.Defs`, so proofs that use `Option α` instead of `WithOne α` no
 longer typecheck. In Lean 4, both types are plain `def`s, so we don't need these `id`s.
+
+## TODO
+
+`WithOne.coe_mul` and `WithZero.coe_mul` have inconsistent use of implicit parameters
 -/
 
 
@@ -92,7 +96,7 @@ instance inhabited : Inhabited (WithOne α) :=
 instance nontrivial [Nonempty α] : Nontrivial (WithOne α) :=
   Option.nontrivial
 
--- porting note: this new declaration is here to make `((a : α): WithOne α)` have type `WithOne α`;
+-- Porting note: this new declaration is here to make `((a : α): WithOne α)` have type `WithOne α`;
 -- otherwise the coercion kicks in and it becomes `Option.some a : WithOne α` which
 -- becomes `Option.some a : Option α`.
 /-- The canonical map from `α` into `WithOne α` -/
@@ -113,7 +117,7 @@ def recOneCoe {C : WithOne α → Sort*} (h₁ : C 1) (h₂ : ∀ a : α, C a) :
 #align with_one.rec_one_coe WithOne.recOneCoe
 #align with_zero.rec_zero_coe WithZero.recZeroCoe
 
--- porting note: in Lean 3 the to-additivised declaration
+-- Porting note: in Lean 3 the to-additivised declaration
 -- would automatically get this; right now in Lean 4...I don't
 -- know if it does or not, and I don't know how to check, so
 -- I'll add it manually just to be sure.
@@ -139,7 +143,7 @@ lemma coe_unone : ∀ {x : WithOne α} (hx : x ≠ 1), unone hx = x
 #align with_one.coe_unone WithOne.coe_unone
 #align with_zero.coe_unzero WithZero.coe_unzero
 
--- porting note: in Lean 4 the `some_eq_coe` lemmas present in the lean 3 version
+-- Porting note: in Lean 4 the `some_eq_coe` lemmas present in the lean 3 version
 -- of this file are syntactic tautologies
 #noalign with_one.some_eq_coe
 #noalign with_zero.some_eq_coe
@@ -180,7 +184,7 @@ protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 �
 #align with_one.cases_on WithOne.cases_on
 #align with_zero.cases_on WithZero.cases_on
 
--- port note: I don't know if `elab_as_elim` is being added to the additivised declaration.
+-- Porting note: I don't know if `elab_as_elim` is being added to the additivised declaration.
 attribute [elab_as_elim] WithZero.cases_on
 
 @[to_additive]
@@ -279,7 +283,9 @@ instance monoidWithZero [Monoid α] : MonoidWithZero (WithZero α) :=
       | some x => congr_arg some <| pow_zero x,
     npow_succ := fun n x =>
       match x with
-      | none => rfl
+      | none => by
+        change 0 ^ (n + 1) = 0 ^ n * 0
+        simp only [mul_zero]; rfl
       | some x => congr_arg some <| pow_succ x n }
 
 instance commMonoidWithZero [CommMonoid α] : CommMonoidWithZero (WithZero α) :=
@@ -338,7 +344,10 @@ instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) :=
       | some x => congr_arg some <| zpow_zero x,
     zpow_succ' := fun n x =>
       match x with
-      | none => rfl
+      | none => by
+        change 0 ^ _ = 0 ^ _ * 0
+        simp only [mul_zero]
+        rfl
       | some x => congr_arg some <| DivInvMonoid.zpow_succ' n x,
     zpow_neg' := fun n x =>
       match x with

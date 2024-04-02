@@ -52,7 +52,7 @@ attribute [local simp] eqToHom_map
 -- Porting note: we used to have:
 -- local attribute [tidy] tactic.auto_cases_opens
 -- We would replace this by:
--- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
+-- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opens
 -- although it doesn't appear to help in this file, in any case.
 
 @[simp]

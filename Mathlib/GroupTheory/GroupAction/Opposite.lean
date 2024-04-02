@@ -237,8 +237,8 @@ instance SMulCommClass.opposite_mid {M N} [Mul N] [SMul M N] [IsScalarTower M N 
 
 -- The above instance does not create an unwanted diamond, the two paths to
 -- `MulAction αᵐᵒᵖ αᵐᵒᵖ` are defeq.
-example [Monoid α] : Monoid.toMulAction αᵐᵒᵖ = MulOpposite.mulAction α αᵐᵒᵖ :=
-  rfl
+example [Monoid α] : Monoid.toMulAction αᵐᵒᵖ = MulOpposite.mulAction α αᵐᵒᵖ := by
+  with_reducible_and_instances rfl
 
 /-- `Monoid.toOppositeMulAction` is faithful on cancellative monoids. -/
 @[to_additive "`AddMonoid.toOppositeAddAction` is faithful on cancellative monoids."]

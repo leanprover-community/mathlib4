@@ -26,8 +26,6 @@ linear algebra, module, free
 
 -/
 
-set_option autoImplicit true
-
 open CategoryTheory
 
 namespace ModuleCat
@@ -83,7 +81,7 @@ end LinearIndependent
 
 section Span
 
-
+set_option autoImplicit true in
 /-- In the commutative diagram
 ```
     f     g
@@ -166,7 +164,7 @@ theorem free_shortExact_rank_add [Module.Free R S.X₁] [Module.Free R S.X₃]
   exact ⟨Basis.indexEquiv (Module.Free.chooseBasis R S.X₂) (Basis.ofShortExact hS'
     (Module.Free.chooseBasis R S.X₁) (Module.Free.chooseBasis R S.X₃))⟩
 
-theorem free_shortExact_finrank_add [Module.Free R S.X₁] [Module.Free R S.X₃]
+theorem free_shortExact_finrank_add {n p : ℕ} [Module.Free R S.X₁] [Module.Free R S.X₃]
     [Module.Finite R S.X₁] [Module.Finite R S.X₃]
     (hN : FiniteDimensional.finrank R S.X₁ = n)
     (hP : FiniteDimensional.finrank R S.X₃ = p)

@@ -22,7 +22,8 @@ We provide basic instances, as well as a custom tactic for discharging
 
 noncomputable section
 
-open Classical Topology Filter
+open scoped Classical
+open Topology Filter
 
 open Set Int Set.Icc
 
@@ -123,8 +124,9 @@ theorem symm_symm (x : I) : σ (σ x) = x :=
   Subtype.ext <| by simp [symm]
 #align unit_interval.symm_symm unitInterval.symm_symm
 
-theorem symm_bijective : Function.Bijective (symm : I → I) :=
-  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+theorem symm_involutive : Function.Involutive (symm : I → I) := symm_symm
+
+theorem symm_bijective : Function.Bijective (symm : I → I) := symm_involutive.bijective
 
 @[simp]
 theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
@@ -137,11 +139,21 @@ theorem continuous_symm : Continuous σ :=
   (continuous_const.add continuous_induced_dom.neg).subtype_mk _
 #align unit_interval.continuous_symm unitInterval.continuous_symm
 
+/-- `unitInterval.symm` as a `Homeomorph`. -/
+@[simps]
+def symmHomeomorph : I ≃ₜ I where
+  toFun := symm
+  invFun := symm
+  left_inv := symm_symm
+  right_inv := symm_symm
+
 theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
 
-theorem involutive_symm : Function.Involutive σ := symm_symm
+-- 2024-02-27
+@[deprecated] alias involutive_symm := symm_involutive
 
-theorem bijective_symm : Function.Bijective σ := involutive_symm.bijective
+-- 2024-02-27
+@[deprecated] alias bijective_symm := symm_bijective
 
 theorem half_le_symm_iff (t : I) : 1 / 2 ≤ (σ t : ℝ) ↔ (t : ℝ) ≤ 1 / 2 := by
   rw [coe_symm_eq, le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le, sub_half]
@@ -236,7 +248,7 @@ lemma abs_sub_addNSMul_le (hδ : 0 ≤ δ) {t : Icc a b} (n : ℕ)
     (|t - addNSMul h δ n| : α) ≤ δ :=
   (abs_eq_self.2 <| sub_nonneg.2 ht.1).trans_le <| (sub_le_sub_right (by exact ht.2) _).trans <|
     (le_abs_self _).trans <| (abs_projIcc_sub_projIcc h).trans <| by
-      rw [add_sub_add_comm, sub_self, zero_add, succ_nsmul, add_sub_cancel]
+      rw [add_sub_add_comm, sub_self, zero_add, succ_nsmul', add_sub_cancel_right]
       exact (abs_eq_self.mpr hδ).le
 
 end Set.Icc

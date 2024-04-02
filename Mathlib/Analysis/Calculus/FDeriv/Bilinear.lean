@@ -19,32 +19,23 @@ bounded bilinear maps.
 
 
 open Filter Asymptotics ContinuousLinearMap Set Metric
-open Topology Classical NNReal Asymptotics ENNReal
+open scoped Classical
+open Topology NNReal Asymptotics ENNReal
 
 noncomputable section
 
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-
 variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
-
 variable {f f₀ f₁ g : E → F}
-
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
-
 variable (e : E →L[𝕜] F)
-
 variable {x : E}
-
 variable {s t : Set E}
-
 variable {L L₁ L₂ : Filter E}
 
 section BilinearMap
@@ -55,7 +46,8 @@ variable {b : E × F → G} {u : Set (E × F)}
 
 open NormedField
 
--- porting note: todo: rewrite/golf using analytic functions?
+-- Porting note (#11215): TODO: rewrite/golf using analytic functions?
+@[fun_prop]
 theorem IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     HasStrictFDerivAt b (h.deriv p) p := by
   simp only [HasStrictFDerivAt]
@@ -82,21 +74,25 @@ theorem IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b)
     _ = _ := by simp [(· ∘ ·)]
 #align is_bounded_bilinear_map.has_strict_fderiv_at IsBoundedBilinearMap.hasStrictFDerivAt
 
+@[fun_prop]
 theorem IsBoundedBilinearMap.hasFDerivAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     HasFDerivAt b (h.deriv p) p :=
   (h.hasStrictFDerivAt p).hasFDerivAt
 #align is_bounded_bilinear_map.has_fderiv_at IsBoundedBilinearMap.hasFDerivAt
 
+@[fun_prop]
 theorem IsBoundedBilinearMap.hasFDerivWithinAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     HasFDerivWithinAt b (h.deriv p) u p :=
   (h.hasFDerivAt p).hasFDerivWithinAt
 #align is_bounded_bilinear_map.has_fderiv_within_at IsBoundedBilinearMap.hasFDerivWithinAt
 
+@[fun_prop]
 theorem IsBoundedBilinearMap.differentiableAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     DifferentiableAt 𝕜 b p :=
   (h.hasFDerivAt p).differentiableAt
 #align is_bounded_bilinear_map.differentiable_at IsBoundedBilinearMap.differentiableAt
 
+@[fun_prop]
 theorem IsBoundedBilinearMap.differentiableWithinAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     DifferentiableWithinAt 𝕜 b u p :=
   (h.differentiableAt p).differentiableWithinAt
@@ -113,10 +109,12 @@ protected theorem IsBoundedBilinearMap.fderivWithin (h : IsBoundedBilinearMap �
   exact h.fderiv p
 #align is_bounded_bilinear_map.fderiv_within IsBoundedBilinearMap.fderivWithin
 
+@[fun_prop]
 theorem IsBoundedBilinearMap.differentiable (h : IsBoundedBilinearMap 𝕜 b) : Differentiable 𝕜 b :=
   fun x => h.differentiableAt x
 #align is_bounded_bilinear_map.differentiable IsBoundedBilinearMap.differentiable
 
+@[fun_prop]
 theorem IsBoundedBilinearMap.differentiableOn (h : IsBoundedBilinearMap 𝕜 b) :
     DifferentiableOn 𝕜 b u :=
   h.differentiable.differentiableOn
@@ -124,6 +122,7 @@ theorem IsBoundedBilinearMap.differentiableOn (h : IsBoundedBilinearMap 𝕜 b) 
 
 variable (B : E →L[𝕜] F →L[𝕜] G)
 
+@[fun_prop]
 theorem ContinuousLinearMap.hasFDerivWithinAt_of_bilinear {f : G' → E} {g : G' → F}
     {f' : G' →L[𝕜] E} {g' : G' →L[𝕜] F} {x : G'} {s : Set G'} (hf : HasFDerivWithinAt f f' s x)
     (hg : HasFDerivWithinAt g g' s x) :
@@ -132,6 +131,7 @@ theorem ContinuousLinearMap.hasFDerivWithinAt_of_bilinear {f : G' → E} {g : G'
   (B.isBoundedBilinearMap.hasFDerivAt (f x, g x)).comp_hasFDerivWithinAt x (hf.prod hg)
 #align continuous_linear_map.has_fderiv_within_at_of_bilinear ContinuousLinearMap.hasFDerivWithinAt_of_bilinear
 
+@[fun_prop]
 theorem ContinuousLinearMap.hasFDerivAt_of_bilinear {f : G' → E} {g : G' → F} {f' : G' →L[𝕜] E}
     {g' : G' →L[𝕜] F} {x : G'} (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
     HasFDerivAt (fun y => B (f y) (g y)) (B.precompR G' (f x) g' + B.precompL G' f' (g x)) x :=

@@ -259,7 +259,7 @@ instance Step.scalar_tower (n) : IsScalarTower k (Step k n) (Step k (n + 1)) :=
     @Nat.leRecOn_succ (Step k) 0 n n.zero_le (n + 1).zero_le (@fun n => toStepSucc k n) z
 #align algebraic_closure.step.scalar_tower AlgebraicClosure.Step.scalar_tower
 
---Porting Note: Added to make `Step.isIntegral` faster
+-- Porting note: Added to make `Step.isIntegral` faster
 private theorem toStepOfLE.succ (n : ℕ) (h : 0 ≤ n) :
     toStepOfLE k 0 (n + 1) (h.trans n.le_succ) =
     (toStepSucc k n).comp (toStepOfLE k 0 n h) := by
@@ -289,7 +289,7 @@ theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
     · intro z
       have := AdjoinMonic.isIntegral (Step k a) (z : Step k (a + 1))
       convert this
-    · convert h --Porting Note: This times out at 500000
+    · convert h -- Porting note: This times out at 500000
 #align algebraic_closure.step.is_integral AlgebraicClosure.Step.isIntegral
 
 instance toStepOfLE.directedSystem : DirectedSystem (Step k) fun i j h => toStepOfLE k i j h :=
@@ -371,7 +371,7 @@ local instance instAlgebra : Algebra k (AlgebraicClosureAux k) :=
 def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosureAux k :=
   { ofStep k n with
     commutes' := by
-    --Porting Note: Originally `(fun x => Ring.DirectLimit.of_f n.zero_le x)`
+    -- Porting note: Originally `(fun x => Ring.DirectLimit.of_f n.zero_le x)`
     -- I think one problem was in recognizing that we want `toStepOfLE` in `of_f`
       intro x
       simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,

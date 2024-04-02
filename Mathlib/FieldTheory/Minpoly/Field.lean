@@ -19,12 +19,12 @@ are irreducible, and uniquely determined by their defining property.
 -/
 
 
-open Classical Polynomial Set Function minpoly
+open scoped Classical
+open Polynomial Set Function minpoly
 
 namespace minpoly
 
 variable {A B : Type*}
-
 variable (A) [Field A]
 
 section Ring
@@ -56,8 +56,7 @@ theorem unique {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0)
   have hx : IsIntegral A x := ⟨p, pmonic, hp⟩
   symm; apply eq_of_sub_eq_zero
   by_contra hnz
-  have hd := degree_le_of_ne_zero A x hnz (by simp [hp])
-  contrapose! hd
+  apply degree_le_of_ne_zero A x hnz (by simp [hp]) |>.not_lt
   apply degree_sub_lt _ (minpoly.ne_zero hx)
   · rw [(monic hx).leadingCoeff, pmonic.leadingCoeff]
   · exact le_antisymm (min A x pmonic hp) (pmin (minpoly A x) (monic hx) (aeval A x))
@@ -70,17 +69,19 @@ theorem dvd {p : A[X]} (hp : Polynomial.aeval x p = 0) : minpoly A x ∣ p := by
   by_cases hp0 : p = 0
   · simp only [hp0, dvd_zero]
   have hx : IsIntegral A x := IsAlgebraic.isIntegral ⟨p, hp0, hp⟩
-  rw [← dvd_iff_modByMonic_eq_zero (monic hx)]
+  rw [← modByMonic_eq_zero_iff_dvd (monic hx)]
   by_contra hnz
-  have hd := degree_le_of_ne_zero A x hnz
-    ((aeval_modByMonic_eq_self_of_root (monic hx) (aeval _ _)).trans hp)
-  contrapose! hd
+  apply degree_le_of_ne_zero A x hnz
+    ((aeval_modByMonic_eq_self_of_root (monic hx) (aeval _ _)).trans hp) |>.not_lt
   exact degree_modByMonic_lt _ (monic hx)
 #align minpoly.dvd minpoly.dvd
 
 variable {A x} in
 lemma dvd_iff {p : A[X]} : minpoly A x ∣ p ↔ Polynomial.aeval x p = 0 :=
   ⟨fun ⟨q, hq⟩ ↦ by rw [hq, map_mul, aeval, zero_mul], minpoly.dvd A x⟩
+
+theorem isRadical [IsReduced B] : IsRadical (minpoly A x) := fun n p dvd ↦ by
+  rw [dvd_iff] at dvd ⊢; rw [map_pow] at dvd; exact IsReduced.eq_zero _ ⟨n, dvd⟩
 
 theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [CommRing R]
     [Algebra A K] [Algebra A R] [Algebra K R] [IsScalarTower A K R] (x : R) :
@@ -167,7 +168,7 @@ noncomputable def Fintype.subtypeProd {E : Type*} {X : Set E} (hX : X.Finite) {L
 variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F E] [Algebra F K]
   [FiniteDimensional F E]
 
--- Porting note: removed `noncomputable!` since it seems not to be slow in lean 4,
+-- Porting note (#11083): removed `noncomputable!` since it seems not to be slow in lean 4,
 -- though it isn't very computable in practice (since neither `finrank` nor `finBasis` are).
 /-- Function from Hom_K(E,L) to pi type Π (x : basis), roots of min poly of x -/
 def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
@@ -230,7 +231,6 @@ end Ring
 section IsDomain
 
 variable [Ring B] [IsDomain B] [Algebra A B]
-
 variable {A} {x : B}
 
 /-- A minimal polynomial is prime. -/

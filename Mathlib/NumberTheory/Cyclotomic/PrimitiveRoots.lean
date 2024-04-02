@@ -69,7 +69,6 @@ open scoped IntermediateField
 universe u v w z
 
 variable {p n : ℕ+} (A : Type w) (B : Type z) (K : Type u) {L : Type v} (C : Type w)
-
 variable [CommRing A] [CommRing B] [Algebra A B] [IsCyclotomicExtension {n} A B]
 
 section Zeta
@@ -92,13 +91,13 @@ theorem zeta_spec : IsPrimitiveRoot (zeta n A B) n :=
 
 theorem aeval_zeta [IsDomain B] [NeZero ((n : ℕ) : B)] :
     aeval (zeta n A B) (cyclotomic n A) = 0 := by
-  rw [aeval_def, ← eval_map, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff]
+  rw [aeval_def, ← eval_map, ← IsRoot.definition, map_cyclotomic, isRoot_cyclotomic_iff]
   exact zeta_spec n A B
 #align is_cyclotomic_extension.aeval_zeta IsCyclotomicExtension.aeval_zeta
 
 theorem zeta_isRoot [IsDomain B] [NeZero ((n : ℕ) : B)] : IsRoot (cyclotomic n B) (zeta n A B) := by
   convert aeval_zeta n A B using 0
-  rw [IsRoot.def, aeval_def, eval₂_eq_eval_map, map_cyclotomic]
+  rw [IsRoot.definition, aeval_def, eval₂_eq_eval_map, map_cyclotomic]
 #align is_cyclotomic_extension.zeta_is_root IsCyclotomicExtension.zeta_isRoot
 
 theorem zeta_pow : zeta n A B ^ (n : ℕ) = 1 :=
@@ -152,16 +151,16 @@ noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDoma
         haveI hn := NeZero.of_noZeroSMulDivisors K C n
         refine' ⟨x.1, _⟩
         cases x
-        rwa [mem_primitiveRoots n.pos, ← isRoot_cyclotomic_iff, IsRoot.def, ←
-          map_cyclotomic _ (algebraMap K C), hζ.minpoly_eq_cyclotomic_of_irreducible hirr, ←
-          eval₂_eq_eval_map, ← aeval_def]
+        rwa [mem_primitiveRoots n.pos, ← isRoot_cyclotomic_iff, IsRoot.definition,
+          ← map_cyclotomic _ (algebraMap K C), hζ.minpoly_eq_cyclotomic_of_irreducible hirr,
+          ← eval₂_eq_eval_map, ← aeval_def]
       invFun := fun x => by
         haveI := IsCyclotomicExtension.neZero' n K L
         haveI hn := NeZero.of_noZeroSMulDivisors K C n
         refine' ⟨x.1, _⟩
         cases x
         rwa [aeval_def, eval₂_eq_eval_map, hζ.powerBasis_gen K, ←
-          hζ.minpoly_eq_cyclotomic_of_irreducible hirr, map_cyclotomic, ← IsRoot.def,
+          hζ.minpoly_eq_cyclotomic_of_irreducible hirr, map_cyclotomic, ← IsRoot.definition,
           isRoot_cyclotomic_iff, ← mem_primitiveRoots n.pos]
       left_inv := fun x => Subtype.ext rfl
       right_inv := fun x => Subtype.ext rfl }
@@ -189,6 +188,26 @@ theorem finrank (hirr : Irreducible (cyclotomic n K)) : finrank K L = (n : ℕ).
     (zeta_spec n K L).minpoly_eq_cyclotomic_of_irreducible hirr, natDegree_cyclotomic]
 #align is_cyclotomic_extension.finrank IsCyclotomicExtension.finrank
 
+variable {L} in
+/-- If `L` contains both a primitive `p`-th root of unity and `q`-th root of unity, and
+`Irreducible (cyclotomic (lcm p q) K)` (in particular for `K = ℚ`), then the `finrank K L` is at
+least `(lcm p q).totient`. -/
+theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p q : ℕ} {x y : L}
+    (hx : IsPrimitiveRoot x p) (hy : IsPrimitiveRoot y q)
+    (hirr : Irreducible (cyclotomic (Nat.lcm p q) K)) :
+    (Nat.lcm p q).totient ≤ FiniteDimensional.finrank K L := by
+  rcases Nat.eq_zero_or_pos p with (rfl | hppos)
+  · simp
+  rcases Nat.eq_zero_or_pos q with (rfl | hqpos)
+  · simp
+  let z := x ^ (p / factorizationLCMLeft p q) * y ^ (q / factorizationLCMRight p q)
+  let k := PNat.lcm ⟨p, hppos⟩ ⟨q, hqpos⟩
+  have : IsPrimitiveRoot z k := hx.pow_mul_pow_lcm hy hppos.ne' hqpos.ne'
+  haveI := IsPrimitiveRoot.adjoin_isCyclotomicExtension K this
+  convert Submodule.finrank_le (Subalgebra.toSubmodule (adjoin K {z}))
+  rw [show Nat.lcm p q = (k : ℕ) from rfl] at hirr
+  simpa using (IsCyclotomicExtension.finrank (Algebra.adjoin K {z}) hirr).symm
+
 end IsCyclotomicExtension
 
 end NoOrder
@@ -197,10 +216,73 @@ section Norm
 
 namespace IsPrimitiveRoot
 
+section Field
+
+variable {K} [Field K] [NumberField K]
+
+variable (n) in
+/-- If a `n`-th cyclotomic extension of `ℚ` contains a primitive `l`-th root of unity, then
+`l ∣ 2 * n`. -/
+theorem dvd_of_isCyclotomicExtension [NumberField K] [IsCyclotomicExtension {n} ℚ K] {ζ : K}
+    {l : ℕ} (hζ : IsPrimitiveRoot ζ l) (hl : l ≠ 0) : l ∣ 2 * n := by
+  have hl : NeZero l := ⟨hl⟩
+  have hroot := IsCyclotomicExtension.zeta_spec n ℚ K
+  have key := IsPrimitiveRoot.lcm_totient_le_finrank hζ hroot
+    (cyclotomic.irreducible_rat <| Nat.lcm_pos (Nat.pos_of_ne_zero hl.1) n.2)
+  rw [IsCyclotomicExtension.finrank K (cyclotomic.irreducible_rat n.2)] at key
+  rcases _root_.dvd_lcm_right l n with ⟨r, hr⟩
+  have ineq := Nat.totient_super_multiplicative n r
+  rw [← hr] at ineq
+  replace key := (mul_le_iff_le_one_right (Nat.totient_pos n.2)).mp (le_trans ineq key)
+  have rpos : 0 < r := by
+    refine Nat.pos_of_ne_zero (fun h ↦ ?_)
+    simp only [h, mul_zero, _root_.lcm_eq_zero_iff, PNat.ne_zero, or_false] at hr
+    exact hl.1 hr
+  replace key := (Nat.dvd_prime Nat.prime_two).1 (Nat.dvd_two_of_totient_le_one rpos key)
+  rcases key with (key | key)
+  · rw [key, mul_one] at hr
+    rw [← hr]
+    exact dvd_mul_of_dvd_right (_root_.dvd_lcm_left l ↑n) 2
+  · rw [key, mul_comm] at hr
+    simpa [← hr] using _root_.dvd_lcm_left _ _
+
+/-- If `x` is a root of unity (spelled as `IsOfFinOrder x`) in an `n`-th cyclotomic extension of
+`ℚ`, where `n` is odd, and `ζ` is a primitive `n`-th root of unity, then there exist `r`
+such that `x = (-ζ)^r`. -/
+theorem exists_neg_pow_of_isOfFinOrder [NumberField K] [IsCyclotomicExtension {n} ℚ K]
+    (hno : Odd (n : ℕ)) {ζ x : K} (hζ : IsPrimitiveRoot ζ n) (hx : IsOfFinOrder x) :
+    ∃ r : ℕ, x = (-ζ) ^ r :=  by
+  have hnegζ : IsPrimitiveRoot (-ζ) (2 * n) := by
+    convert IsPrimitiveRoot.orderOf (-ζ)
+    rw [neg_eq_neg_one_mul, (Commute.all _ _).orderOf_mul_eq_mul_orderOf_of_coprime]
+    · simp [hζ.eq_orderOf]
+    · simp [← hζ.eq_orderOf, Nat.odd_iff_not_even.1 hno]
+  obtain ⟨k, hkpos, hkn⟩ := isOfFinOrder_iff_pow_eq_one.1 hx
+  obtain ⟨l, hl, hlroot⟩ := (isRoot_of_unity_iff hkpos _).1 hkn
+  have hlzero : NeZero l := ⟨fun h ↦ by simp [h] at hl⟩
+  have : NeZero (l : K) := ⟨NeZero.natCast_ne l K⟩
+  rw [isRoot_cyclotomic_iff] at hlroot
+  obtain ⟨a, ha⟩ := hlroot.dvd_of_isCyclotomicExtension n hlzero.1
+  replace hlroot : x ^ (2 * (n : ℕ)) = 1 := by rw [ha, pow_mul, hlroot.pow_eq_one, one_pow]
+  obtain ⟨s, -, hs⟩ := hnegζ.eq_pow_of_pow_eq_one hlroot (by simp)
+  exact ⟨s, hs.symm⟩
+
+/-- If `x` is a root of unity (spelled as `IsOfFinOrder x`) in an `n`-th cyclotomic extension of
+`ℚ`, where `n` is odd, and `ζ` is a primitive `n`-th root of unity, then there exists `r < n`
+such that `x = ζ^r` or `x = -ζ^r`. -/
+theorem exists_pow_or_neg_mul_pow_of_isOfFinOrder [NumberField K] [IsCyclotomicExtension {n} ℚ K]
+    (hno : Odd (n : ℕ)) {ζ x : K} (hζ : IsPrimitiveRoot ζ n) (hx : IsOfFinOrder x) :
+    ∃ r : ℕ, r < n ∧ (x = ζ ^ r ∨ x = -ζ ^ r) :=  by
+  obtain ⟨r, hr⟩ := hζ.exists_neg_pow_of_isOfFinOrder hno hx
+  refine ⟨r % n, Nat.mod_lt _ n.2, ?_⟩
+  rw [show ζ ^ (r % ↑n) = ζ ^ r from (IsPrimitiveRoot.eq_orderOf hζ).symm ▸ pow_mod_orderOf .., hr]
+  rcases Nat.even_or_odd r with (h | h) <;> simp [neg_pow, h.neg_one_pow]
+
+end Field
+
 section CommRing
 
 variable [CommRing L] {ζ : L} (hζ : IsPrimitiveRoot ζ n)
-
 variable {K} [Field K] [Algebra K L]
 
 /-- This mathematically trivial result is complementary to `norm_eq_one` below. -/
@@ -250,7 +332,6 @@ end CommRing
 section Field
 
 variable [Field L] {ζ : L} (hζ : IsPrimitiveRoot ζ n)
-
 variable {K} [Field K] [Algebra K L]
 
 /-- If `Irreducible (cyclotomic n K)` (in particular for `K = ℚ`), then the norm of
@@ -326,7 +407,7 @@ theorem pow_sub_one_norm_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot ζ 
   have hirr₁ : Irreducible (cyclotomic ((p : ℕ) ^ (k - s + 1)) K) :=
     cyclotomic_irreducible_pow_of_irreducible_pow hpri.1 (by simp) hirr
   rw [← PNat.pow_coe] at hirr₁
-  set η := ζ ^ (p : ℕ) ^ s - 1 with ηdef
+  set η := ζ ^ (p : ℕ) ^ s - 1
   let η₁ : K⟮η⟯ := IntermediateField.AdjoinSimple.gen K η
   have hη : IsPrimitiveRoot (η + 1) ((p : ℕ) ^ (k + 1 - s)) := by
     rw [sub_add_cancel]
@@ -340,9 +421,8 @@ theorem pow_sub_one_norm_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot ζ 
         refine' Subalgebra.ext fun x => ⟨fun hx => adjoin_le _ hx, fun hx => adjoin_le _ hx⟩
         · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
           exact Subalgebra.add_mem _ (subset_adjoin (mem_singleton η)) (Subalgebra.one_mem _)
--- Porting note `ηdef` was not needed.
-        · simp only [Set.singleton_subset_iff, SetLike.mem_coe, ← ηdef]
-          nth_rw 1 [← add_sub_cancel η 1]
+        · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
+          nth_rw 1 [← add_sub_cancel_right η 1]
           exact Subalgebra.sub_mem _ (subset_adjoin (mem_singleton _)) (Subalgebra.one_mem _)
 -- Porting note: the previous proof was `rw [H] at this; exact this` but it now fails.
       exact IsCyclotomicExtension.equiv _ _ _ (Subalgebra.equivOfEq _ _ H)
@@ -365,7 +445,7 @@ theorem pow_sub_one_norm_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot ζ 
   rw [norm_eq_norm_adjoin K]
   · have H := hη.sub_one_norm_isPrimePow ?_ hirr₁ htwo
     swap; · rw [PNat.pow_coe]; exact hpri.1.isPrimePow.pow (Nat.succ_ne_zero _)
-    rw [add_sub_cancel] at H
+    rw [add_sub_cancel_right] at H
     rw [H]
     congr
     · rw [PNat.pow_coe, Nat.pow_minFac, hpri.1.minFac_eq]
@@ -479,8 +559,8 @@ theorem pow_sub_one_norm_prime_pow_of_ne_zero {k s : ℕ} (hζ : IsPrimitiveRoot
       at hζ hirr hcycl ⊢
     obtain ⟨k₁, hk₁⟩ := Nat.exists_eq_succ_of_ne_zero hk
 -- Porting note: the proof is slightly different because of coercions.
-    rw [hζ.pow_sub_one_norm_two hirr, hk₁, _root_.pow_succ, pow_mul, neg_eq_neg_one_mul, mul_pow,
-      neg_one_sq, one_mul, ← pow_mul, ← _root_.pow_succ]
+    rw [hζ.pow_sub_one_norm_two hirr, hk₁, _root_.pow_succ', pow_mul, neg_eq_neg_one_mul, mul_pow,
+      neg_one_sq, one_mul, ← pow_mul, ← _root_.pow_succ']
     simp
   · exact hζ.pow_sub_one_norm_prime_pow_ne_two hirr hs htwo
 #align is_primitive_root.pow_sub_one_norm_prime_pow_of_ne_zero IsPrimitiveRoot.pow_sub_one_norm_prime_pow_of_ne_zero

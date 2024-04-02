@@ -184,7 +184,7 @@ theorem pow_prime_pow_sub_pow_prime_pow (a : ℕ) :
     multiplicity (↑p) (x ^ p ^ a - y ^ p ^ a) = multiplicity (↑p) (x - y) + a := by
   induction' a with a h_ind
   · rw [Nat.cast_zero, add_zero, pow_zero, pow_one, pow_one]
-  rw [← Nat.add_one, Nat.cast_add, Nat.cast_one, ← add_assoc, ← h_ind, pow_succ', pow_mul, pow_mul]
+  rw [← Nat.add_one, Nat.cast_add, Nat.cast_one, ← add_assoc, ← h_ind, pow_succ, pow_mul, pow_mul]
   apply pow_prime_sub_pow_prime hp hp1
   · rw [← geom_sum₂_mul]
     exact dvd_mul_of_dvd_right hxy _
@@ -213,7 +213,7 @@ theorem Int.pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x) (
   · rw [Int.coe_nat_dvd]
     rintro ⟨c, rfl⟩
     refine' hpn ⟨c, _⟩
-    rwa [pow_succ', mul_assoc]
+    rwa [pow_succ, mul_assoc]
 #align multiplicity.int.pow_sub_pow multiplicity.Int.pow_sub_pow
 
 theorem Int.pow_add_pow {x y : ℤ} (hxy : ↑p ∣ x + y) (hx : ¬↑p ∣ x) {n : ℕ} (hn : Odd n) :
@@ -261,7 +261,7 @@ theorem pow_two_pow_sub_pow_two_pow [CommRing R] {x y : R} (n : ℕ) :
       ring
 #align pow_two_pow_sub_pow_two_pow pow_two_pow_sub_pow_two_pow
 
--- porting note: simplified proof because `fin_cases` was not available in that case
+-- Porting note: simplified proof because `fin_cases` was not available in that case
 theorem Int.sq_mod_four_eq_one_of_odd {x : ℤ} : Odd x → x ^ 2 % 4 = 1 := by
   intro hx
   unfold Odd at hx
@@ -293,7 +293,7 @@ theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hx
       this _ hx_odd, this _ hy_odd]
     decide
   intro x hx
-  rw [pow_succ, mul_comm, pow_mul, Int.sq_mod_four_eq_one_of_odd hx.pow]
+  rw [pow_succ', mul_comm, pow_mul, Int.sq_mod_four_eq_one_of_odd hx.pow]
 #align int.two_pow_two_pow_add_two_pow_two_pow Int.two_pow_two_pow_add_two_pow_two_pow
 
 theorem Int.two_pow_two_pow_sub_pow_two_pow {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2 ∣ x) :
@@ -321,7 +321,7 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   erw [Int.coe_nat_dvd]
   -- `erw` to deal with `2 : ℤ` vs `(2 : ℕ) : ℤ`
   contrapose! hpn
-  rw [pow_succ']
+  rw [pow_succ]
   conv_rhs => rw [hk]
   exact mul_dvd_mul_left _ hpn
 #align int.two_pow_sub_pow' Int.two_pow_sub_pow'
@@ -386,7 +386,7 @@ theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : 
   · convert Nat.two_pow_sub_pow hxy hx hneven using 2
   · exact hn.bot_lt
   · exact Nat.sub_pos_of_lt hyx
-  · linarith
+  · omega
   · simp only [tsub_pos_iff_lt, pow_lt_pow_left hyx zero_le' hn]
 #align padic_val_nat.pow_two_sub_pow padicValNat.pow_two_sub_pow
 

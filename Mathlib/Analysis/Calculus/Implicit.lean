@@ -205,7 +205,7 @@ theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
   have := φ.hasStrictFDerivAt.to_localInverse
   simp only [prodFun] at this
   convert this.comp (φ.rightFun φ.pt) ((hasStrictFDerivAt_const _ _).prod (hasStrictFDerivAt_id _))
-  -- porting note: added parentheses to help `simp`
+  -- Porting note: added parentheses to help `simp`
   simp only [ContinuousLinearMap.ext_iff, (ContinuousLinearMap.comp_apply)] at hg'inv hg'invf ⊢
   -- porting note (#10745): was `simp [ContinuousLinearEquiv.eq_symm_apply]`;
   -- both `simp` and `rw` fail here, `erw` works
@@ -293,7 +293,7 @@ theorem implicitToPartialHomeomorphOfComplemented_apply (hf : HasStrictFDerivAt 
 theorem implicitToPartialHomeomorphOfComplemented_apply_ker (hf : HasStrictFDerivAt f f' a)
     (hf' : range f' = ⊤) (hker : (ker f').ClosedComplemented) (y : ker f') :
     hf.implicitToPartialHomeomorphOfComplemented f f' hf' hker (y + a) = (f (y + a), y) := by
-  simp only [implicitToPartialHomeomorphOfComplemented_apply, add_sub_cancel,
+  simp only [implicitToPartialHomeomorphOfComplemented_apply, add_sub_cancel_right,
     Classical.choose_spec hker]
 #align has_strict_fderiv_at.implicit_to_local_homeomorph_of_complemented_apply_ker HasStrictFDerivAt.implicitToPartialHomeomorphOfComplemented_apply_ker
 
@@ -416,7 +416,7 @@ theorem implicitToPartialHomeomorph_fst (hf : HasStrictFDerivAt f f' a) (hf' : r
 @[simp]
 theorem implicitToPartialHomeomorph_apply_ker (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
     (y : ker f') : hf.implicitToPartialHomeomorph f f' hf' (y + a) = (f (y + a), y) :=
-  -- porting note: had to add `haveI` (here and below)
+  -- Porting note: had to add `haveI` (here and below)
   haveI := FiniteDimensional.complete 𝕜 F
   implicitToPartialHomeomorphOfComplemented_apply_ker ..
 #align has_strict_fderiv_at.implicit_to_local_homeomorph_apply_ker HasStrictFDerivAt.implicitToPartialHomeomorph_apply_ker

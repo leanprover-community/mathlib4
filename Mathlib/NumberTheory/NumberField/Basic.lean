@@ -95,7 +95,7 @@ instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
         Subtype.ext <| by simp only [Subalgebra.coe_mul, map_mul, Subtype.coe_mk] }
 #align number_field.ring_of_integers_algebra NumberField.inst_ringOfIntegersAlgebra
 
--- no diamond
+-- diamond at `reducible_and_instances` #10906
 example : Algebra.id (𝓞 K) = inst_ringOfIntegersAlgebra K K := rfl
 
 namespace RingOfIntegers

@@ -110,7 +110,7 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
   induction' n with n hn
   · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
   · refine' Prod.ext rfl (funext fun x => _)
-/- Porting note: broken proof was
+/- Porting note (#11039): broken proof was
     · dsimp only [actionDiagonalSucc]
       simp only [Iso.trans_hom, comp_hom, types_comp_apply, diagonalSucc_hom_hom,
         leftRegularTensorIso_hom_hom, tensorIso_hom, mkIso_hom_hom, Equiv.toIso_hom,
@@ -134,7 +134,7 @@ theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f
     simp only [Subsingleton.elim x 0, Pi.smul_apply, Fin.partialProd_zero, smul_eq_mul, mul_one]
     rfl
   · intro g
-/- Porting note: broken proof was
+/- Porting note (#11039): broken proof was
     ext
     dsimp only [actionDiagonalSucc]
     simp only [Iso.trans_inv, comp_hom, hn, diagonalSucc_inv_hom, types_comp_apply, tensorIso_inv,
@@ -176,7 +176,7 @@ variable {k G n}
 theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
     (diagonalSucc k G n).hom.hom (single f a) =
       single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
-/- Porting note: broken proof was
+/- Porting note (#11039): broken proof was
   dsimp only [diagonalSucc]
   simpa only [Iso.trans_hom, Iso.symm_hom, Action.comp_hom, ModuleCat.comp_def,
     LinearMap.comp_apply, Functor.mapIso_hom,
@@ -200,7 +200,7 @@ theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
 theorem diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
     (diagonalSucc k G n).inv.hom (Finsupp.single g a ⊗ₜ Finsupp.single f b) =
       single (g • partialProd f) (a * b) := by
-/- Porting note: broken proof was
+/- Porting note (#11039): broken proof was
   dsimp only [diagonalSucc]
   simp only [Iso.trans_inv, Iso.symm_inv, Iso.refl_inv, tensorIso_inv, Action.tensorHom,
     Action.comp_hom, ModuleCat.comp_def, LinearMap.comp_apply, asIso_hom, Functor.mapIso_inv,
@@ -222,7 +222,7 @@ theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
     (diagonalSucc k G n).inv.hom (Finsupp.single g r ⊗ₜ f) =
       Finsupp.lift (Gⁿ⁺¹ →₀ k) k Gⁿ (fun f => single (g • partialProd f) r) f := by
   refine f.induction ?_ ?_
-/- Porting note: broken proof was
+/- Porting note (#11039): broken proof was
   · simp only [TensorProduct.tmul_zero, map_zero]
   · intro a b x ha hb hx
     simp only [lift_apply, smul_single', mul_one, TensorProduct.tmul_add, map_add,
@@ -244,7 +244,7 @@ theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
     (diagonalSucc k G n).inv.hom (g ⊗ₜ Finsupp.single f r) =
       Finsupp.lift _ k G (fun a => single (a • partialProd f) r) g := by
   refine g.induction ?_ ?_
-/- Porting note: broken proof was
+/- Porting note (#11039): broken proof was
   · simp only [TensorProduct.zero_tmul, map_zero]
   · intro a b x ha hb hx
     simp only [lift_apply, smul_single', map_add, hx, diagonalSucc_inv_single_single,
@@ -279,7 +279,7 @@ def ofMulActionBasisAux :
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul]
       congr 1
-/- Porting note: broken proof was
+/- Porting note (#11039): broken proof was
       refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
       · simp only [smul_zero]
       · simp only [TensorProduct.smul_tmul']
@@ -340,7 +340,7 @@ sends a morphism of representations `f : k[Gⁿ⁺¹] ⟶ A` to the function
 `(g₁, ..., gₙ) ↦ f(1, g₁, g₁g₂, ..., g₁g₂...gₙ).` -/
 theorem diagonalHomEquiv_apply (f : Rep.ofMulAction k G (Fin (n + 1) → G) ⟶ A) (x : Fin n → G) :
     diagonalHomEquiv n A f x = f.hom (Finsupp.single (Fin.partialProd x) 1) := by
-/- Porting note: broken proof was
+/- Porting note (#11039): broken proof was
   unfold diagonalHomEquiv
   simpa only [LinearEquiv.trans_apply, Rep.leftRegularHomEquiv_apply,
     MonoidalClosed.linearHomEquivComm_hom, Finsupp.llift_symm_apply, TensorProduct.curry_apply,
@@ -361,7 +361,7 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
     ((diagonalHomEquiv n A).symm f).hom (Finsupp.single x 1) =
       A.ρ (x 0) (f fun i : Fin n => (x (Fin.castSucc i))⁻¹ * x i.succ) := by
   unfold diagonalHomEquiv
-/- Porting note: broken proof was
+/- Porting note (#11039): broken proof was
   simp only [LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
     Rep.leftRegularHomEquiv_symm_apply, Linear.homCongr_symm_apply, Action.comp_hom, Iso.refl_inv,
     Category.comp_id, Rep.MonoidalClosed.linearHomEquivComm_symm_hom, Iso.trans_hom,
@@ -555,7 +555,7 @@ set_option linter.uppercaseLean3 false in
 theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom = d k G (n + 1) := by
   refine' Finsupp.lhom_ext' fun x => LinearMap.ext_ring _
   dsimp [groupCohomology.resolution]
-/- Porting note: broken proof was
+/- Porting note (#11039): broken proof was
   simpa [← @intCast_smul k, simplicial_object.δ] -/
   simp_rw [alternatingFaceMapComplex_obj_d, AlternatingFaceMapComplex.objD, SimplicialObject.δ,
     Functor.comp_map, ← intCast_smul (k := k) ((-1) ^ _ : ℤ), Int.cast_pow, Int.cast_neg,

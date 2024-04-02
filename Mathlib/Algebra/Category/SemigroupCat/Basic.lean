@@ -49,7 +49,7 @@ namespace MagmaCat
 @[to_additive]
 instance bundledHom : BundledHom @MulHom :=
   ⟨@MulHom.toFun, @MulHom.id, @MulHom.comp,
-    --Porting note: was `@MulHom.coe_inj` which is deprecated
+    -- Porting note: was `@MulHom.coe_inj` which is deprecated
     by intros; apply @DFunLike.coe_injective, by aesop_cat, by aesop_cat⟩
 #align Magma.bundled_hom MagmaCat.bundledHom
 #align AddMagma.bundled_hom AddMagmaCat.bundledHom
@@ -322,7 +322,7 @@ instance SemigroupCat.forgetReflectsIsos : ReflectsIsomorphisms (forget Semigrou
 #align Semigroup.forget_reflects_isos SemigroupCat.forgetReflectsIsos
 #align AddSemigroup.forget_reflects_isos AddSemigroupCat.forgetReflectsIsos
 
--- porting note: this was added in order to ensure that `forget₂ CommMonCat MonCat`
+-- Porting note: this was added in order to ensure that `forget₂ CommMonCat MonCat`
 -- automatically reflects isomorphisms
 -- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
 @[to_additive]

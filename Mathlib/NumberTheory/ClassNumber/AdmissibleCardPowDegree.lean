@@ -111,7 +111,7 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
     exact mul_pos (Int.cast_pos.mpr (AbsoluteValue.pos _ hb)) hε
   have one_lt_q : 1 < Fintype.card Fq := Fintype.one_lt_card
   have one_lt_q' : (1 : ℝ) < Fintype.card Fq := by assumption_mod_cast
-  have q_pos : 0 < Fintype.card Fq := by linarith
+  have q_pos : 0 < Fintype.card Fq := by omega
   have q_pos' : (0 : ℝ) < Fintype.card Fq := by assumption_mod_cast
   -- If `b` is already small enough, then the remainders are equal and we are done.
   by_cases le_b : b.natDegree ≤ ⌈-log ε / log (Fintype.card Fq)⌉₊
@@ -136,7 +136,7 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
       Int.cast_pow, Int.cast_ofNat, Int.cast_pow, Int.cast_ofNat,
       log_mul (pow_ne_zero _ q_pos'.ne') hε.ne', ← rpow_nat_cast, ← rpow_nat_cast, log_rpow q_pos',
       log_rpow q_pos', ← lt_div_iff (log_pos one_lt_q'), add_div,
-      mul_div_cancel _ (log_pos one_lt_q').ne']
+      mul_div_cancel_right₀ _ (log_pos one_lt_q').ne']
   -- And that result follows from manipulating the result from `exists_approx_polynomial_aux`
   -- to turn the `-⌈-stuff⌉₊` into `+ stuff`.
   refine' lt_of_lt_of_le (Nat.cast_lt.mpr (WithBot.coe_lt_coe.mp _)) _
@@ -224,7 +224,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
       have := (Classical.choose_spec (hg j₀)).2
       contradiction
     · rw [Fin.cons_succ, Fin.cons_succ] at approx
-      rw [Ne.def, Fin.succ_inj] at j_ne
+      rw [Ne, Fin.succ_inj] at j_ne
       have : j₀ = j₁ := (Classical.choose_spec (hg j₀)).1.symm.trans
         (((ht' (Classical.choose (hg j₀)) (Classical.choose (hg j₁))).mpr approx).trans
           (Classical.choose_spec (hg j₁)).1)

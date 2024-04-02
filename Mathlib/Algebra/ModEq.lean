@@ -151,7 +151,7 @@ protected theorem of_zsmul : a ≡ b [PMOD z • p] → a ≡ b [PMOD p] := fun 
 #align add_comm_group.modeq.of_zsmul AddCommGroup.ModEq.of_zsmul
 
 protected theorem of_nsmul : a ≡ b [PMOD n • p] → a ≡ b [PMOD p] := fun ⟨m, hm⟩ =>
-  ⟨m * n, by rwa [mul_smul, coe_nat_zsmul]⟩
+  ⟨m * n, by rwa [mul_smul, natCast_zsmul]⟩
 #align add_comm_group.modeq.of_nsmul AddCommGroup.ModEq.of_nsmul
 
 protected theorem zsmul : a ≡ b [PMOD p] → z • a ≡ z • b [PMOD z • p] :=
@@ -222,7 +222,7 @@ alias ⟨sub_left_cancel, sub⟩ := ModEq.sub_iff_left
 alias ⟨sub_right_cancel, _⟩ := ModEq.sub_iff_right
 #align add_comm_group.modeq.sub_right_cancel AddCommGroup.ModEq.sub_right_cancel
 
--- porting note: doesn't work
+-- Porting note: doesn't work
 -- attribute [protected] add_left_cancel add_right_cancel add sub_left_cancel sub_right_cancel sub
 
 protected theorem add_left (c : α) (h : a ≡ b [PMOD p]) : c + a ≡ c + b [PMOD p] :=

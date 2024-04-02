@@ -187,13 +187,13 @@ instance Monoid.fg_range {M' : Type*} [Monoid M'] [Monoid.FG M] (f : M →* M') 
 #align monoid.fg_range Monoid.fg_range
 #align add_monoid.fg_range AddMonoid.fg_range
 
-@[to_additive AddSubmonoid.multiples_fg]
+@[to_additive]
 theorem Submonoid.powers_fg (r : M) : (Submonoid.powers r).FG :=
   ⟨{r}, (Finset.coe_singleton r).symm ▸ (Submonoid.powers_eq_closure r).symm⟩
 #align submonoid.powers_fg Submonoid.powers_fg
 #align add_submonoid.multiples_fg AddSubmonoid.multiples_fg
 
-@[to_additive AddMonoid.multiples_fg]
+@[to_additive]
 instance Monoid.powers_fg (r : M) : Monoid.FG (Submonoid.powers r) :=
   (Monoid.fg_iff_submonoid_fg _).mpr (Submonoid.powers_fg r)
 #align monoid.powers_fg Monoid.powers_fg
