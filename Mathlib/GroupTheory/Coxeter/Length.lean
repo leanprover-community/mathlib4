@@ -8,11 +8,12 @@ import Mathlib.GroupTheory.Coxeter.Basic
 
 /-!
 # The length function, reduced words, and descents
+
 Throughout this file, `B` is a type and `M : Matrix B B ℕ` is a Coxeter matrix.
 `cs : CoxeterSystem M W` is a Coxeter system; that is, `W` is a group, and `cs` holds the data
 of a group isomorphism `W ≃* M.coxeterGroup`, where `M.coxeterGroup` refers to the quotient of the
 free group on `B` by the Coxeter relations given by the matrix `M`. See
-`Mathlib.GroupTheory.Coxeter.Basic` for more details.
+`Mathlib/GroupTheory/Coxeter/Basic.lean` for more details.
 
 Given any element $w \in W$, its *length*, denoted $\ell(w)$, is the minimum number $\ell$ such that
 $w$ can be written as a product of a sequence of $\ell$ simple reflections:
@@ -30,13 +31,16 @@ a left descent of $w$, then $\ell(s_i w) = \ell(w) + 1$. We similarly define rig
 prove analogous results.
 
 ## Main definitions
+
 * `cs.length`
 * `cs.IsReduced`
 * `cs.IsLeftDescent`
 * `cs.IsRightDescent`
 
 ## References
+
 * [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*](bjorner2005)
+
 -/
 
 noncomputable section
