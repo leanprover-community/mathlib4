@@ -28,8 +28,8 @@ the main constructions deal with continuous group morphisms.
 * `MonoidHom.completion`: promotes a continuous group morphism
   from `G` to `H` into a continuous group morphism
   from `Completion G` to `Completion H`.
--/
 
+-/
 
 noncomputable section
 
@@ -49,6 +49,9 @@ instance [One α] : One (Completion α) :=
 noncomputable instance [Group α] : Inv (Completion α) :=
   ⟨Completion.map (fun a ↦ a⁻¹ : α → α)⟩
 
+instance [Neg α] : Neg (Completion α) :=
+  ⟨Completion.map (fun a ↦ -a : α → α)⟩
+
 @[to_additive]
 noncomputable instance [Mul α] : Mul (Completion α) :=
   ⟨Completion.map₂ (· * ·)⟩
@@ -56,6 +59,9 @@ noncomputable instance [Mul α] : Mul (Completion α) :=
 @[to_additive]
 noncomputable instance [Group α] : Div (Completion α) :=
   ⟨Completion.map₂ Div.div⟩
+
+instance [Sub α] : Sub (Completion α) :=
+  ⟨Completion.map₂ Sub.sub⟩
 
 @[to_additive (attr := norm_cast) coe_zero]
 theorem UniformSpace.Completion.coe_one' [One α] : ((1 : α) : Completion α) = 1 :=
@@ -177,8 +183,9 @@ noncomputable instance group : Group (Completion α) :=
 noncomputable instance uniformGroup : UniformGroup (Completion α) :=
   ⟨uniformContinuous_map₂ Div.div⟩
 
-/-- The map from a group to its completion as a group hom. -/
-@[to_additive (attr := simps) toCompl]
+/-- The map from a multiplicative group to its completion as a group hom. -/
+@[to_additive (attr := simps) toCompl "The map from an additive group to its completion as a group
+hom."]
 def toCompl_mul : α →* Completion α where
   toFun := (↑)
   map_mul' := coe_mul'
