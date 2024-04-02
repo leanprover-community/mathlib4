@@ -40,7 +40,7 @@ noncomputable section
 
 namespace CoxeterSystem
 
-open List Matrix Function CoxeterSystem
+open List Matrix Function
 
 variable {B : Type*} [DecidableEq B]
 variable {M : Matrix B B ℕ}
