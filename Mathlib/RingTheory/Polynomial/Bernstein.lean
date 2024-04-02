@@ -324,7 +324,7 @@ theorem sum_smul (n : ℕ) :
         simp only [← nat_cast_mul, Nat.succ_eq_add_one, Nat.add_succ_sub_one, add_zero, pow_succ]
         push_cast
         ring
-    rw [add_pow, (pderiv true).map_sum, (MvPolynomial.aeval e).map_sum, Finset.sum_mul]
+    rw [add_pow, map_sum (pderiv true), map_sum (MvPolynomial.aeval e), Finset.sum_mul]
     -- Step inside the sum:
     refine' Finset.sum_congr rfl fun k _ => (w k).trans _
     simp only [x, y, e, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul,
@@ -363,7 +363,7 @@ theorem sum_mul_smul (n : ℕ) :
         simp only [← nat_cast_mul, Nat.succ_eq_add_one, Nat.add_succ_sub_one, add_zero, pow_succ]
         push_cast
         ring
-    rw [add_pow, (pderiv true).map_sum, (pderiv true).map_sum, (MvPolynomial.aeval e).map_sum,
+    rw [add_pow, map_sum (pderiv true), map_sum (pderiv true), map_sum (MvPolynomial.aeval e),
       Finset.sum_mul]
     -- Step inside the sum:
     refine' Finset.sum_congr rfl fun k _ => (w k).trans _
