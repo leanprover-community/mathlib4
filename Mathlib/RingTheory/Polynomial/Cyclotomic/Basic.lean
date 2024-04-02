@@ -224,7 +224,7 @@ theorem int_coeff_of_cyclotomic' {K : Type*} [CommRing K] [IsDomain K] {ζ : K} 
     constructor
     · rw [zero_add, mul_comm, ← prod_cyclotomic'_eq_X_pow_sub_one hpos h, ←
         Nat.cons_self_properDivisors hpos.ne', Finset.prod_cons]
-    · simpa only [degree_zero, bot_lt_iff_ne_bot, Ne.def, degree_eq_bot] using Bmo.ne_zero
+    · simpa only [degree_zero, bot_lt_iff_ne_bot, Ne, degree_eq_bot] using Bmo.ne_zero
   replace huniq := div_modByMonic_unique (cyclotomic' k K) (0 : K[X]) Bmo huniq
   simp only [lifts, RingHom.mem_rangeS]
   use Q₁
@@ -341,7 +341,7 @@ theorem degree_cyclotomic (n : ℕ) (R : Type*) [Ring R] [Nontrivial R] :
     rw [← degree_cyclotomic' (Complex.isPrimitiveRoot_exp k.succ (Nat.succ_ne_zero k))]
     exact (int_cyclotomic_spec k.succ).2.1
   simp only [(int_cyclotomic_spec n).right.right, eq_intCast, Monic.leadingCoeff, Int.cast_one,
-    Ne.def, not_false_iff, one_ne_zero]
+    Ne, not_false_iff, one_ne_zero]
 #align polynomial.degree_cyclotomic Polynomial.degree_cyclotomic
 
 /-- The natural degree of `cyclotomic n` is `totient n`. -/
@@ -471,7 +471,7 @@ theorem cyclotomic_eq_prod_X_pow_sub_one_pow_moebius {n : ℕ} (R : Type*) [Comm
     intro n hn
     rw [← prod_cyclotomic_eq_X_pow_sub_one hn R, map_prod]
   rw [(prod_eq_iff_prod_pow_moebius_eq_of_nonzero (fun n hn => _) fun n hn => _).1 h n hpos] <;>
-    simp_rw [Ne.def, IsFractionRing.to_map_eq_zero_iff]
+    simp_rw [Ne, IsFractionRing.to_map_eq_zero_iff]
   · simp [cyclotomic_ne_zero]
   · intro n hn
     apply Monic.ne_zero

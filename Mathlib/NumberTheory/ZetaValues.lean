@@ -222,7 +222,7 @@ theorem hasSum_one_div_pow_mul_fourier_mul_bernoulliFun {k : ℕ} (hk : 2 ≤ k)
   convert step2.mul_left (-(2 * ↑π * I) ^ k / (k ! : ℂ)) using 2 with n
   rw [smul_eq_mul, ← mul_assoc, mul_div, mul_neg, div_mul_cancel₀, neg_neg, mul_pow _ (n : ℂ),
     ← div_div, div_self]
-  · rw [Ne.def, pow_eq_zero_iff', not_and_or]
+  · rw [Ne, pow_eq_zero_iff', not_and_or]
     exact Or.inl two_pi_I_ne_zero
   · exact Nat.cast_ne_zero.mpr (Nat.factorial_ne_zero _)
   · rw [ContinuousMap.coe_mk, Function.comp_apply, ofReal_inj, periodizedBernoulli,
