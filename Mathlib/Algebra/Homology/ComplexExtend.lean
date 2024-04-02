@@ -2,7 +2,7 @@ import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 universe v u w₁ w₂
 
-namespace CategoryTheory
+/-namespace CategoryTheory
 
 open Category Limits
 
@@ -555,3 +555,4 @@ noncomputable def extendFunctorCompRestrictionFunctor :
 end
 
 end HomologicalComplex
+-/
