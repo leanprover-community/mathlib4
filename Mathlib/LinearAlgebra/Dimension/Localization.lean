@@ -137,7 +137,7 @@ lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R�
     · simp only [hg0, zero_smul, add_zero, add_assoc] at hg
       cases i; exacts [hg0, IH _ _ hg _ (Nat.succ_lt_succ_iff.mp hin)]
     simp only [MulOpposite.smul_eq_mul_unop, zero_add, ← add_comm x, pow_add _ x,
-      mul_assoc, pow_succ, ← Finset.mul_sum] at hg
+      mul_assoc, pow_succ, ← Finset.mul_sum, pow_zero, one_mul] at hg
     rw [← neg_eq_iff_add_eq_zero, ← neg_mul, neg_mul_comm, ← neg_mul, neg_mul_comm] at hg
     have := mul_left_cancel₀ (mem_nonZeroDivisors_iff_ne_zero.mp (s ^ x).prop) hg
     exact (h _ ⟨(g 0).unop, mem_nonZeroDivisors_iff_ne_zero.mpr (by simpa)⟩ this.symm).elim
