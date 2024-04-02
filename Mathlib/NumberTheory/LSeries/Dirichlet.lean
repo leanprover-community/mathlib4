@@ -162,10 +162,15 @@ lemma not_LSeriesSummable_at_one {N : ℕ} (hN : N ≠ 0) (χ : DirichletCharact
   · rw [h₁, χ.map_one, norm_one]
   all_goals positivity
 
+/-- The L-series of a Dirichlet character converges absolutely at `s` if `re s > 1`. -/
+lemma LSeriesSummable_of_one_lt_re {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 < s.re) :
+    LSeriesSummable ↗χ s :=
+  LSeriesSummable_of_bounded_of_one_lt_re (fun _ _ ↦ χ.norm_le_one _) hs
+
 /-- The L-series of a Dirichlet character converges absolutely at `s` if and only if `re s > 1`. -/
 lemma LSeriesSummable_iff {N : ℕ} (hN : N ≠ 0) (χ : DirichletCharacter ℂ N) {s : ℂ} :
     LSeriesSummable ↗χ s ↔ 1 < s.re := by
-  refine ⟨fun H ↦ ?_, LSeriesSummable_of_bounded_of_one_lt_re fun _ _ ↦ χ.norm_le_one _⟩
+  refine ⟨fun H ↦ ?_, LSeriesSummable_of_one_lt_re χ⟩
   by_contra! h
   exact not_LSeriesSummable_at_one hN χ <| LSeriesSummable.of_re_le_re (by simp only [one_re, h]) H
 
@@ -189,12 +194,9 @@ open scoped ArithmeticFunction.Moebius in
 inverses. -/
 lemma LSeries.mul_mu_eq_one {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ}
     (hs : 1 < s.re) : L ↗χ s * L (↗χ * ↗μ) s = 1 := by
-  rcases eq_or_ne N 0 with rfl | hN
-  · rw [modZero_eq_delta, LSeries_delta, LSeries.delta_mul (by norm_cast), LSeries_delta,
-     Pi.one_apply, one_mul]
-  · rw [← LSeries_convolution' ((LSeriesSummable_iff hN χ).mpr hs) ?_, convolution_mul_moebius,
-      LSeries_delta, Pi.one_apply]
-    exact LSeriesSummable_mul χ <| ArithmeticFunction.LSeriesSummable_moebius_iff.mpr hs
+  rw [← LSeries_convolution' (LSeriesSummable_of_one_lt_re χ hs) <|
+          LSeriesSummable_mul χ <| ArithmeticFunction.LSeriesSummable_moebius_iff.mpr hs,
+    convolution_mul_moebius, LSeries_delta, Pi.one_apply]
 
 
 /-!
