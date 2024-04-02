@@ -251,3 +251,18 @@ lemma sign_natCast_of_ne_zero (hn : n ≠ 0) : Int.sign n = 1 := sign_ofNat_of_n
 
 -- Porting note: this was added in an ad hoc port for use in `Tactic/NormNum/Basic`
 @[simp] lemma pow_eq (m : ℤ) (n : ℕ) : m.pow n = m ^ n := rfl
+
+-- 2024-04-02
+@[deprecated] alias ofNat_eq_cast := ofNat_eq_natCast
+@[deprecated] alias cast_eq_cast_iff_Nat := natCast_inj
+@[deprecated] alias coe_nat_sub := Int.natCast_sub
+@[deprecated] alias coe_nat_nonneg := natCast_nonneg
+@[deprecated] alias sign_coe_add_one := sign_natCast_add_one
+@[deprecated] alias nat_succ_eq_int_succ := natCast_succ
+@[deprecated] alias succ_neg_nat_succ := succ_neg_natCast_succ
+@[deprecated] alias coe_pred_of_pos := natCast_pred_of_pos
+@[deprecated] alias coe_nat_div := natCast_div
+@[deprecated] alias coe_nat_ediv := natCast_ediv
+@[deprecated] alias sign_coe_nat_of_nonzero := sign_natCast_of_ne_zero
+@[deprecated] alias toNat_coe_nat := toNat_natCast
+@[deprecated] alias toNat_coe_nat_add_one := toNat_natCast_add_one
