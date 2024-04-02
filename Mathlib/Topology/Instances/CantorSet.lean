@@ -24,6 +24,10 @@ def preCantorSet : ℕ → Set ℝ
   | 0 => Set.Icc 0 1
   | n + 1 => (· / 3) '' preCantorSet n ∪ (fun x ↦ (2 + x) / 3) '' preCantorSet n
 
+@[simp] lemma preCantorSet_zero : preCantorSet 0 = Set.Icc 0 1 := rfl
+@[simp] lemma preCantorSet_succ (n : ℕ) :
+    preCantorSet (n + 1) = (· / 3) '' preCantorSet n ∪ (fun x ↦ (2 + x) / 3) '' preCantorSet n :=
+  rfl
 /-- The Cantor set is the intersection of all pre-Cantor sets. -/
 def cantorSet := iInf preCantorSet
 
