@@ -357,7 +357,6 @@ protected theorem Matrix.IsCoxeter.reindex {M} (hM : M.IsCoxeter) : (reindex e e
   diagonal := by intro b; dsimp [reindex]; exact hM.diagonal (e.symm b)
   off_diagonal := by intro i i' hii'; dsimp [reindex]; apply hM.off_diagonal; aesop
 
-@[simp]
 theorem Matrix.reindex_isCoxeter_iff : (reindex e e M).IsCoxeter ↔ M.IsCoxeter := by
   constructor
   · intro h
