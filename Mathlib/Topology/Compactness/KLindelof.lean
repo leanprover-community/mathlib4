@@ -142,7 +142,7 @@ theorem IsKLindelof.elim_cardinal_subcover {ι : Type u} (hreg : Cardinal.IsRegu
     intro S hS hsr
     choose! r hr using hsr
     refine ⟨⋃ s ∈ S, r s, ?_, ?_⟩
-    · rw [Cardinal.biUnion_iff hreg]
+    · rw [card_biUnion_lt_iff_forall_of_isRegular hreg]
       exact fun a ha ↦ (hr a ha).1
       exact hS
     refine sUnion_subset ?h.right.h
