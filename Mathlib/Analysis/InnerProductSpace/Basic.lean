@@ -2336,9 +2336,9 @@ protected theorem continuous_inner :
   rw [Completion.toInner, inner, uncurry_curry _]
   change
     Continuous
-      (((denseInducing_toCompl_add E).prod (denseInducing_toCompl_add E)).extend fun p : E × E =>
+      (((denseInducing_toComplAddHom E).prod (denseInducing_toComplAddHom E)).extend fun p : E × E =>
         inner' p.1 p.2)
-  exact (denseInducing_toCompl_add E).extend_Z_bilin (denseInducing_toCompl_add E) this
+  exact (denseInducing_toComplAddHom E).extend_Z_bilin (denseInducing_toComplAddHom E) this
 #align uniform_space.completion.continuous_inner UniformSpace.Completion.continuous_inner
 
 protected theorem Continuous.inner {α : Type*} [TopologicalSpace α] {f g : α → Completion E}

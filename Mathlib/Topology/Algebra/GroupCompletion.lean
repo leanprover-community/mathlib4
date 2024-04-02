@@ -191,17 +191,23 @@ def toComplMulHom : α →* Completion α where
   map_one' := coe_one'
 #align uniform_space.completion.to_compl UniformSpace.Completion.toComplAddHom
 
+@[deprecated] alias toCompl := toComplAddHom
+
 @[to_additive]
-theorem continuous_toCompl_mul : Continuous (toComplMulHom : α →* Completion α) :=
+theorem continuous_toComplMulHom : Continuous (toComplMulHom : α →* Completion α) :=
   continuous_coe α
-#align uniform_space.completion.continuous_to_compl UniformSpace.Completion.continuous_toCompl_add
+#align uniform_space.completion.continuous_to_compl UniformSpace.Completion.continuous_toComplMulHom
+
+@[deprecated] alias continuous_toCompl := continuous_toComplAddHom
 
 variable (α)
 
 @[to_additive]
-theorem denseInducing_toCompl_mul : DenseInducing (toComplMulHom : α →* Completion α) :=
+theorem denseInducing_toComplMulHom : DenseInducing (toComplMulHom : α →* Completion α) :=
   denseInducing_coe
-#align uniform_space.completion.dense_inducing_to_compl UniformSpace.Completion.denseInducing_toCompl_add
+#align uniform_space.completion.dense_inducing_to_compl UniformSpace.Completion.denseInducing_toComplMulHom
+
+@[deprecated] alias denseInducing_toCompl := denseInducing_toComplAddHom
 
 variable {α}
 
@@ -298,7 +304,7 @@ theorem MonoidHom.continuous_extension [CompleteSpace β] [T0Space β] (f : α �
 @[to_additive "Completion of a continuous additive group hom, as a group hom."]
 noncomputable def MonoidHom.completion (f : α →* β) (hf : Continuous f) :
     Completion α →* Completion β :=
-  (toComplMulHom.comp f).extension (continuous_toCompl_mul.comp hf)
+  (toComplMulHom.comp f).extension (continuous_toComplMulHom.comp hf)
 #align add_monoid_hom.completion AddMonoidHom.completion
 
 @[to_additive (attr := continuity)]
