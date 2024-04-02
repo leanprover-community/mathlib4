@@ -88,11 +88,9 @@ lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) 
     rw [← add_div_right _ (by decide), Nat.mul_comm 2, Nat.mul_assoc,
       show guess + n / guess + 2 = (guess + n / guess + 1) + 1 from rfl]
     have aux_lemma {a : ℕ} : a ≤ 2 * ((a + 1) / 2) := by omega
-    -- apply lt_of_lt_of_le (b := guess * (guess + n / guess + 1))
     refine lt_of_lt_of_le ?_ (Nat.mul_le_mul_left _ aux_lemma)
-    · rw [Nat.add_assoc, Nat.mul_add]
-      exact Nat.add_lt_add_left (lt_mul_div_succ _ (lt_of_le_of_lt (Nat.zero_le m) h)) _
-
+    rw [Nat.add_assoc, Nat.mul_add]
+    exact Nat.add_lt_add_left (lt_mul_div_succ _ (lt_of_le_of_lt (Nat.zero_le m) h)) _
   else
     simpa only [dif_neg h] using hn
 
