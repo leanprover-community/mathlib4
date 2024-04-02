@@ -42,7 +42,7 @@ def EventuallyMeasurableSpace : MeasurableSpace α where
     choose t ht hts using hs
     exact ⟨⋃ i, t i, MeasurableSet.iUnion ht, EventuallyEq.countable_iUnion hts⟩
 
-/-- We say a set `s` is and `EventuallyMeasurableSet` with respect to a given
+/-- We say a set `s` is an `EventuallyMeasurableSet` with respect to a given
 σ-algebra `m` and σ-filter `l` if it differs from a set in `m` by a set in
 the dual ideal of `l`. -/
 def EventuallyMeasurableSet (s : Set α) : Prop := @MeasurableSet _ (EventuallyMeasurableSpace m l) s
