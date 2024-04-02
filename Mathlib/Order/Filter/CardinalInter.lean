@@ -159,14 +159,14 @@ theorem EventuallyEq.cardinal_bInter {S : Set ι} (hS : #S < c)
 /-- Construct a filter with cardinal `c` intersection property. This constructor deduces
 `Filter.univ_sets` and `Filter.inter_sets` from the cardinal `c` intersection property. -/
 def ofCardinalInter (l : Set (Set α)) (hc : 2 < c)
-    (hp : ∀ S : Set (Set α), (#S < c) → S ⊆ l → ⋂₀ S ∈ l)
+    (hl : ∀ S : Set (Set α), (#S < c) → S ⊆ l → ⋂₀ S ∈ l)
     (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l) : Filter α where
   sets := l
   univ_sets :=
-    sInter_empty ▸ hp ∅ (mk_eq_zero (∅ : Set (Set α)) ▸ lt_trans zero_lt_two hc) (empty_subset _)
+    sInter_empty ▸ hl ∅ (mk_eq_zero (∅ : Set (Set α)) ▸ lt_trans zero_lt_two hc) (empty_subset _)
   sets_of_superset := h_mono _ _
   inter_sets {s t} hs ht := sInter_pair s t ▸ by
-    apply hp _ (?_) (insert_subset_iff.2 ⟨hs, singleton_subset_iff.2 ht⟩)
+    apply hl _ (?_) (insert_subset_iff.2 ⟨hs, singleton_subset_iff.2 ht⟩)
     have : #({s, t} : Set (Set α)) ≤ 2 := by
       calc
       _ ≤ #({t} : Set (Set α)) + 1 := Cardinal.mk_insert_le
@@ -174,15 +174,15 @@ def ofCardinalInter (l : Set (Set α)) (hc : 2 < c)
     exact lt_of_le_of_lt this hc
 
 instance cardinalInter_ofCardinalInter (l : Set (Set α)) (hc : 2 < c)
-    (hp : ∀ S : Set (Set α), (#S < c) → S ⊆ l → ⋂₀ S ∈ l)
+    (hl : ∀ S : Set (Set α), (#S < c) → S ⊆ l → ⋂₀ S ∈ l)
     (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l) :
-    CardinalInterFilter (Filter.ofCardinalInter l hc hp h_mono) c :=
-  ⟨hp⟩
+    CardinalInterFilter (Filter.ofCardinalInter l hc hl h_mono) c :=
+  ⟨hl⟩
 
 @[simp]
 theorem mem_ofCardinalInter {l : Set (Set α)} (hc : 2 < c)
-    (hp : ∀ S : Set (Set α), (#S < c) → S ⊆ l → ⋂₀ S ∈ l) (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l)
-    {s : Set α} : s ∈ Filter.ofCardinalInter l hc hp h_mono ↔ s ∈ l :=
+    (hl : ∀ S : Set (Set α), (#S < c) → S ⊆ l → ⋂₀ S ∈ l) (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l)
+    {s : Set α} : s ∈ Filter.ofCardinalInter l hc hl h_mono ↔ s ∈ l :=
   Iff.rfl
 
 /-- Construct a filter with cardinal `c` intersection property.
@@ -204,13 +204,13 @@ def ofCardinalUnion (l : Set (Set α)) (hc : 2 < c)
     rw [← compl_subset_compl] at hsub
     exact hmono sᶜ ht tᶜ hsub
 
-instance cardinalInter_ofCardinalUnion (p : Set α → Prop) (hc : 2 < c) (h₁ h₂) :
-    CardinalInterFilter (Filter.ofCardinalUnion p hc h₁ h₂) c :=
+instance cardinalInter_ofCardinalUnion (l : Set (Set α)) (hc : 2 < c) (h₁ h₂) :
+    CardinalInterFilter (Filter.ofCardinalUnion l hc h₁ h₂) c :=
   cardinalInter_ofCardinalInter ..
 
 @[simp]
-theorem mem_ofCardinalUnion {p : Set α → Prop} (hc : 2 < c) {hunion hmono s} :
-    s ∈ ofCardinalUnion p hc hunion hmono ↔ p sᶜ :=
+theorem mem_ofCardinalUnion {l : Set (Set α)} (hc : 2 < c) {hunion hmono s} :
+    s ∈ ofCardinalUnion l hc hunion hmono ↔ l sᶜ :=
   Iff.rfl
 
 instance cardinalInterFilter_principal (s : Set α) : CardinalInterFilter (𝓟 s) c :=
