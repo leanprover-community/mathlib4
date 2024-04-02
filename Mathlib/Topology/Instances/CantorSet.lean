@@ -24,7 +24,7 @@ def preCantorSet : ℕ → Set ℝ
   | 0 => Set.Icc 0 1
   | n + 1 => (· / 3) '' preCantorSet n ∪ (fun x ↦ (2 + x) / 3) '' preCantorSet n
 
-/-- We define the Cantor set as the limit of all preCantorSets. -/
+/-- The Cantor set is the intersection of all pre-Cantor sets. -/
 def cantorSet := iInf preCantorSet
 
 
