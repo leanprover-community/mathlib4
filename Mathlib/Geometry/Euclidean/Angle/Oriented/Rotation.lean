@@ -44,7 +44,7 @@ def rotationAux (θ : Real.Angle) : V →ₗᵢ[ℝ] V :=
       Real.Angle.sin θ • (LinearIsometryEquiv.toLinearEquiv J).toLinearMap)
     (by
       intro x y
-      simp only [IsROrC.conj_to_real, id, LinearMap.smul_apply, LinearMap.add_apply,
+      simp only [RCLike.conj_to_real, id, LinearMap.smul_apply, LinearMap.add_apply,
         LinearMap.id_coe, LinearEquiv.coe_coe, LinearIsometryEquiv.coe_toLinearEquiv,
         Orientation.areaForm_rightAngleRotation_left, Orientation.inner_rightAngleRotation_left,
         Orientation.inner_rightAngleRotation_right, inner_add_left, inner_smul_left,

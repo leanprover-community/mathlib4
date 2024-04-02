@@ -368,7 +368,7 @@ theorem ι_fromGlued (x : 𝒰.J) : 𝒰.gluedCover.ι x ≫ 𝒰.fromGlued = �
 
 -- Adaptation note: nightly-2024-04-01
 -- This maxHeartbeats was not needed previously.
-set_option maxHeartbeats 800000 in
+set_option maxHeartbeats 1600000 in
 theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.1.base := by
   intro x y h
   obtain ⟨i, x, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective x

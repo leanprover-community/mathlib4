@@ -195,6 +195,9 @@ end normalClosure
 
 variable {F K L}
 
+-- Adaptation note: nightly-2024-04-01
+-- This maxHeartbeats was not needed previously.
+set_option maxHeartbeats 400000 in
 open Cardinal in
 /-- An extension `L/F` in which every minimal polynomial of `K/F` splits is maximal with respect
   to `F`-embeddings of `K`, in the sense that `K →ₐ[F] L` achieves maximal cardinality.
