@@ -239,8 +239,9 @@ theorem tprod_eq_one_iff (hf : Multipliable f) : ∏' i, f i = 1 ↔ ∀ x, f x 
   rw [← hasProd_one_iff, hf.hasProd_iff]
 #align tsum_eq_zero_iff tsum_eq_zero_iff
 
-theorem tsum_ne_zero_iff (hf : Summable f) : ∑' i, f i ≠ 0 ↔ ∃ x, f x ≠ 0 := by
-  rw [Ne, tsum_eq_zero_iff hf, not_forall]
+@[to_additive]
+theorem tprod_ne_one_iff (hf : Multipliable f) : ∏' i, f i ≠ 1 ↔ ∃ x, f x ≠ 1 := by
+  rw [Ne, tprod_eq_one_iff hf, not_forall]
 #align tsum_ne_zero_iff tsum_ne_zero_iff
 
 @[to_additive]
