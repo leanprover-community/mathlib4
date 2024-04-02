@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       checks: write
+      pull-requests: write
       contents: read
     steps:
       - name: Label PR and report count
