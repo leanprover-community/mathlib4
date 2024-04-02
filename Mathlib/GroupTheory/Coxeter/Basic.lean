@@ -34,15 +34,6 @@ And the exceptional systems:
 
 ## Implementation details
 
-In this file a Coxeter system, designated as `CoxeterSystem M W`, is implemented as a
-structure which effectively records the isomorphism between a group `W` and the corresponding
-group presentation derived from a Coxeter matrix `M`.  From another perspective, it serves as
-a set of generators for `W`, tailored to the underlying type of `M`, while ensuring compliance
-with the relations specified by the Coxeter matrix `M`.
-
-A type class `IsCoxeterGroup` is introduced, for groups that are isomorphic to a group
-presentation corresponding to a Coxeter matrix which is registered in a Coxeter system.
-
 In most texts on Coxeter groups, each entry $M_{i,i'}$ of the Coxeter matrix can be either a
 positive integer or $\infty$. A value of $\infty$ indicates that there is no relation between the
 corresponding simple reflections. In our treatment of Coxeter groups, we use the value $0$ instead
@@ -59,12 +50,15 @@ wherever possible.
 
 ## Main definitions
 
-* `Matrix.IsCoxeter` : A matrix `IsCoxeter` if it is a symmetric matrix with diagonal
-  entries equal to one and off-diagonal entries distinct from one.
-* `Matrix.coxeterGroup` : The group presentation corresponding to a Coxeter matrix.
-* `CoxeterSystem` : A structure recording the isomorphism between a group `W` and the
-  group presentation corresponding to a Coxeter matrix, i.e. `Matrix.CoxeterGroup M`.
-* `IsCoxeterGroup` : A group is a Coxeter group if it is registered in a Coxeter system.
+* `Matrix.IsCoxeter` : `IsCoxeter M` means that `M` is a Coxeter matrix; that is, a symmetric matrix
+  of natural numbers with diagonal entries equal to one and off-diagonal entries distinct from one.
+* `Matrix.coxeterGroup` : `M.coxeterGroup` is the Coxeter group associated to the matrix $M$; that
+  is, the group
+  $$\langle \{s_i\}_{i \in B} \vert \{(s_i s_{i'})^{M_{i, i'}}\}_{i, i' \in B} \rangle.$$
+* `CoxeterSystem` : A structure recording the isomorphism between a group `W` and a
+  `M.coxeterGroup` for some Coxeter matrix `M`.
+* `IsCoxeterGroup` : `IsCoxeterGroup W` means that there exists a Coxeter matrix `M` such that
+  `W` is isomorphic to `M.coxeterGroup`.
 * `CoxeterMatrix.Aₙ` : Coxeter matrix for the symmetry group of the regular n-simplex.
 * `CoxeterMatrix.Bₙ` : Coxeter matrix for the symmetry group of the regular n-hypercube
   and its dual, the regular n-orthoplex (or n-cross-polytope).
@@ -96,7 +90,7 @@ reflections.
 
 ## TODO
 
-* The canonical map from the type to the Coxeter group `W` is an injection.
+* The simple reflections of a Coxeter system are distinct.
 * A group `W` registered in a Coxeter system is a Coxeter group.
 * A Coxeter group is an instance of `IsCoxeterGroup`.
 * Introduce some ways to actually construct some Coxeter groups. For example, given a Coxeter matrix
