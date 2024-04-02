@@ -359,7 +359,7 @@ variable [Preorder α]
   [@IsScott α _ S]  [@IsLawson α _ L] [@IsLower α l _]
 
 -- Scott open iff UpperSet and STopology open
-lemma LawsonOpen_iff_ScottOpen (s : Set α) (h : IsUpperSet s) :
+lemma lawsonOpen_iff_scottOpen_of_isUpperSet (s : Set α) (h : IsUpperSet s) :
     IsOpen[L] s ↔ IsOpen[S] s := by
   constructor
   · intro hs
@@ -373,6 +373,18 @@ lemma LawsonOpen_iff_ScottOpen (s : Set α) (h : IsUpperSet s) :
       exact α
   · apply TopologicalSpace.le_def.mp (Scott_le_Lawson _ _)
 
+lemma lawsonClosed_iff_scottClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s) :
+    IsClosed[L] s ↔ IsClosed[S] s := by
+    rw [← isUpperSet_compl] at h
+    rw [← isOpen_compl_iff, ← @isOpen_compl_iff,
+      (lawsonOpen_iff_scottOpen_of_isUpperSet S l L _ h)]
+
+lemma lawsonClosed_iff_dirSupClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s) :
+    IsClosed[L] s ↔ DirSupClosed s := by
+  rw [(lawsonClosed_iff_scottClosed_of_isLowerSet S l L _ h),
+    @Topology.IsScott.isClosed_iff_isLowerSet_and_dirSupClosed]
+  aesop
+
 end Preorder
 
 section CompleteLattice
@@ -380,13 +392,9 @@ section CompleteLattice
 variable [CompleteLattice α] [TopologicalSpace α] [IsLawson α]
 
 theorem isClosed_preimage_ofLawson (S : Set α) :
-    IsClosed (Topology.WithLawson.ofLawson ⁻¹' S) ↔
-      IsClosed S := by
-  rw [← isOpen_compl_iff]
-  rw [← preimage_compl]
-  rw [Topology.WithLawson.isOpen_preimage_ofLawson]
-  rw [← isOpen_compl_iff]
-  rw [← IsLawson.topology_eq]
+    IsClosed (Topology.WithLawson.ofLawson ⁻¹' S) ↔ IsClosed S := by
+  rw [← isOpen_compl_iff, ← preimage_compl, Topology.WithLawson.isOpen_preimage_ofLawson,
+    ← isOpen_compl_iff, ← IsLawson.topology_eq]
   exact Eq.to_iff rfl
 
 lemma singletonUpperLower (a : α) : ↑(upperClosure {a}) ∩ ↑(lowerClosure {a}) = ({a} : Set α) :=
