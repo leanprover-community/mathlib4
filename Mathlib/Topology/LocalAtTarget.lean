@@ -66,13 +66,17 @@ alias ClosedEmbedding.restrictPreimage := Set.restrictPreimage_closedEmbedding
 theorem Set.restrictPreimage_isClosedMap (s : Set β) (H : IsClosedMap f) :
     IsClosedMap (s.restrictPreimage f) := by
   intro t
-  simp [isClosed_induced_iff]
+  suffices ∀ u, IsClosed u → Subtype.val ⁻¹' u = t →
+    ∃ v, IsClosed v ∧ Subtype.val ⁻¹' v = s.restrictPreimage f '' t by
+      simpa [isClosed_induced_iff]
   exact fun u hu e => ⟨f '' u, H u hu, by simp [← e, image_restrictPreimage]⟩
 
 theorem Set.restrictPreimage_isOpenMap (s : Set β) (H : IsOpenMap f) :
     IsOpenMap (s.restrictPreimage f) := by
   intro t
-  simp [isOpen_induced_iff]
+  suffices ∀ u, IsOpen u → Subtype.val ⁻¹' u = t →
+    ∃ v, IsOpen v ∧ Subtype.val ⁻¹' v = s.restrictPreimage f '' t by
+      simpa [isOpen_induced_iff]
   exact fun u hu e => ⟨f '' u, H u hu, by simp [← e, image_restrictPreimage]⟩
 
 theorem isOpen_iff_inter_of_iSup_eq_top (s : Set β) : IsOpen s ↔ ∀ i, IsOpen (s ∩ U i) := by

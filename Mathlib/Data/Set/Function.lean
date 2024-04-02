@@ -562,8 +562,9 @@ theorem MapsTo.mem_iff (h : MapsTo f s t) (hc : MapsTo f sᶜ tᶜ) {x} : f x �
 
 section
 
-variable (s t f)
+variable (t f)
 
+variable (s) in
 theorem image_restrictPreimage :
     t.restrictPreimage f '' (Subtype.val ⁻¹' s) = Subtype.val ⁻¹' (f '' s) := by
   delta Set.restrictPreimage
