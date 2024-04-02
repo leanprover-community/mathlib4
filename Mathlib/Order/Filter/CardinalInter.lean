@@ -162,10 +162,8 @@ def ofCardinalInter (l : Set (Set α)) (hc : 2 < c)
     (hp : ∀ S : Set (Set α), (#S < c) → S ⊆ l → ⋂₀ S ∈ l)
     (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l) : Filter α where
   sets := l
-  univ_sets := by
-    apply sInter_empty ▸ hp ∅ (?_) (empty_subset _)
-    have this : 0 < c := lt_trans zero_lt_two hc
-    rwa [mk_eq_zero]
+  univ_sets :=
+    sInter_empty ▸ hp ∅ (mk_eq_zero (∅ : Set (Set α)) ▸ lt_trans zero_lt_two hc) (empty_subset _)
   sets_of_superset := h_mono _ _
   inter_sets {s t} hs ht := sInter_pair s t ▸ by
     apply hp _ (?_) (insert_subset_iff.2 ⟨hs, singleton_subset_iff.2 ht⟩)
@@ -228,8 +226,7 @@ instance (l : Filter β) [CardinalInterFilter l c] (f : α → β) :
     CardinalInterFilter (comap f l) c := by
   refine ⟨fun S hSc hS => ?_⟩
   choose! t htl ht using hS
-  have : (⋂ s ∈ S, t s) ∈ l := (cardinal_bInter_mem hSc).2 htl
-  refine ⟨_, this, ?_⟩
+  refine ⟨_, (cardinal_bInter_mem hSc).2 htl, ?_⟩
   simpa [preimage_iInter] using iInter₂_mono ht
 
 instance (l : Filter α) [CardinalInterFilter l c] (f : α → β) :
@@ -316,9 +313,8 @@ theorem mem_cardinaleGenerate_iff {s : Set α} {hreg : c.IsRegular} :
   rcases h with ⟨S, Sg, Sct, hS⟩
   have : CardinalInterFilter (cardinalGenerate g (IsRegular.nat_lt hreg 2)) c :=
     cardinalInter_ofCardinalGenerate _ _
-  refine mem_of_superset ((cardinal_sInter_mem Sct).mpr ?_) hS
-  intro s H
-  exact CardinalGenerateSets.basic (Sg H)
+  exact mem_of_superset ((cardinal_sInter_mem Sct).mpr
+    (fun s H => CardinalGenerateSets.basic (Sg H))) hS
 
 theorem le_cardinalGenerate_iff_of_cardinalInterFilter {f : Filter α} [CardinalInterFilter f c]
     (hc : 2 < c) : f ≤ cardinalGenerate g hc ↔ g ⊆ f.sets := by
