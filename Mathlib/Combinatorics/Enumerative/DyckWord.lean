@@ -27,8 +27,8 @@ one consequence being that the number of Dyck words with length `2n` is `catalan
 ## Main results
 
 * `DyckPath.treeEquiv`: equivalence between Dyck words and rooted binary trees.
-* `DyckPath.finiteTreeEquiv`: equivalence between Dyck words of length `2 * n` and rooted binary trees
-  with `n` internal nodes.
+* `DyckPath.finiteTreeEquiv`: equivalence between Dyck words of length `2 * n` and
+  rooted binary trees with `n` internal nodes.
 * `DyckPath.card_isBalanced_eq_catalan `: there are `catalan n` Dyck words of length `2 * n`.
 
 ## Implementation notes
@@ -266,18 +266,19 @@ theorem rightPart_length_lt : p.rightPart.length < p.length := by
 variable {q : DyckPath}
 
 theorem compose_firstReturn : (↑[U] ++ p ++ ↑[D] ++ q).firstReturn = p.length + 1 := by
-  rw [firstReturn]; apply eq_findIdx_of_not
-  pick_goal 3; · simp_rw [length_range, length_append, length_singleton]; omega
-  all_goals simp only [get_range, decide_eq_true_eq]
+  rw [firstReturn, findIdx_eq]
+  swap; · simp_rw [length_range, length_append, length_singleton]; omega
+  simp only [get_range, decide_eq_true_eq]
+  constructor
+  · simp_rw [take_append_eq_append_take (l₂ := q), length_append, length_singleton,
+      show p.length + 1 + 1 - (1 + p.length + 1) = 0 by omega, take_zero, append_nil]
+    rw [take_all_of_le, bp.nest.1]; simp_rw [length_append, length_singleton]; omega
   · intro j hji
     simp_rw [append_assoc _ _ [D], singleton_append, take_append_eq_append_take, length_cons,
       length_append, show j + 1 - (p.length + [D].length).succ = 0 by omega, take_zero,
       append_nil, take_cons, count_cons, ite_true, ite_false, take_append_eq_append_take,
       show j - p.length = 0 by omega, take_zero, append_nil]
     have := bp.2 j; omega
-  · simp_rw [take_append_eq_append_take (l₂ := q), length_append, length_singleton,
-      show p.length + 1 + 1 - (1 + p.length + 1) = 0 by omega, take_zero, append_nil]
-    rw [take_all_of_le, bp.nest.1]; simp_rw [length_append, length_singleton]; omega
 
 theorem compose_leftPart_eq_leftPart : (↑[U] ++ p ++ ↑[D] ++ q).leftPart = p := by
   rw [leftPart, compose_firstReturn bp, append_assoc, take_append_eq_append_take,
