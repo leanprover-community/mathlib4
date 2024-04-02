@@ -8,7 +8,7 @@ import Mathlib.GroupTheory.PresentedGroup
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 /-!
-# Coxeter Systems
+# Coxeter systems
 
 This file defines Coxeter systems and Coxeter groups.
 
