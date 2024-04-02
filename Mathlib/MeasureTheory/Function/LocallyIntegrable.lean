@@ -392,15 +392,17 @@ theorem integrable_iff_integrableAtFilter_cocompact :
 theorem integrable_iff_integrableAtFilter_atBot_atTop [LinearOrder X] [CompactIccSpace X] :
     Integrable f μ ↔
     (IntegrableAtFilter f atBot μ ∧ IntegrableAtFilter f atTop μ) ∧ LocallyIntegrable f μ := by
-  use fun hf ↦ ⟨⟨hf.integrableAtFilter _, hf.integrableAtFilter _⟩, hf.locallyIntegrable⟩
-  refine fun h ↦ integrable_iff_integrableAtFilter_cocompact.mpr ⟨?_, h.2⟩
-  exact (IntegrableAtFilter.sup_iff.mpr h.1).filter_mono cocompact_le_atBot_atTop
+  constructor
+  · exact fun hf ↦ ⟨⟨hf.integrableAtFilter _, hf.integrableAtFilter _⟩, hf.locallyIntegrable⟩
+  · refine fun h ↦ integrable_iff_integrableAtFilter_cocompact.mpr ⟨?_, h.2⟩
+    exact (IntegrableAtFilter.sup_iff.mpr h.1).filter_mono cocompact_le_atBot_atTop
 
 theorem integrable_iff_integrableAtFilter_atBot [LinearOrder X] [OrderTop X] [CompactIccSpace X] :
     Integrable f μ ↔ IntegrableAtFilter f atBot μ ∧ LocallyIntegrable f μ := by
-  use fun hf ↦ ⟨hf.integrableAtFilter _, hf.locallyIntegrable⟩
-  refine fun h ↦ integrable_iff_integrableAtFilter_cocompact.mpr ⟨?_, h.2⟩
-  exact h.1.filter_mono cocompact_le_atBot
+  constructor
+  · exact fun hf ↦ ⟨hf.integrableAtFilter _, hf.locallyIntegrable⟩
+  · refine fun h ↦ integrable_iff_integrableAtFilter_cocompact.mpr ⟨?_, h.2⟩
+    exact h.1.filter_mono cocompact_le_atBot
 
 theorem integrable_iff_integrableAtFilter_atTop [LinearOrder X] [OrderBot X] [CompactIccSpace X] :
     Integrable f μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrable f μ :=
@@ -424,12 +426,14 @@ theorem integrableOn_Iio_iff_integrableAtFilter_atBot_nhdsWithin
     [LinearOrder X] [CompactIccSpace X] [NoMinOrder X] [OrderTopology X] :
     IntegrableOn f (Iio a) μ ↔ IntegrableAtFilter f atBot μ ∧
     IntegrableAtFilter f (𝓝[<] a) μ ∧ LocallyIntegrableOn f (Iio a) μ := by
-  use fun h ↦ ⟨⟨Iio a, Iio_mem_atBot a, h⟩, ⟨Iio a, self_mem_nhdsWithin, h⟩, h.locallyIntegrableOn⟩
-  intro ⟨hbot, ⟨s, hsl, hs⟩, hlocal⟩
-  obtain ⟨s', ⟨hs'_mono, hs'⟩⟩ := mem_nhdsWithin_Iio_iff_exists_Ioo_subset.mp hsl
-  refine (integrableOn_union.mpr ⟨?_, hs.mono hs' le_rfl⟩).mono Iio_subset_Iic_union_Ioo le_rfl
-  exact integrableOn_Iic_iff_integrableAtFilter_atBot.mpr
-    ⟨hbot, hlocal.mono_set (Iic_subset_Iio.mpr hs'_mono)⟩
+  constructor
+  · intro h
+    exact ⟨⟨Iio a, Iio_mem_atBot a, h⟩, ⟨Iio a, self_mem_nhdsWithin, h⟩, h.locallyIntegrableOn⟩
+  · intro ⟨hbot, ⟨s, hsl, hs⟩, hlocal⟩
+    obtain ⟨s', ⟨hs'_mono, hs'⟩⟩ := mem_nhdsWithin_Iio_iff_exists_Ioo_subset.mp hsl
+    refine (integrableOn_union.mpr ⟨?_, hs.mono hs' le_rfl⟩).mono Iio_subset_Iic_union_Ioo le_rfl
+    exact integrableOn_Iic_iff_integrableAtFilter_atBot.mpr
+      ⟨hbot, hlocal.mono_set (Iic_subset_Iio.mpr hs'_mono)⟩
 
 theorem integrableOn_Ioi_iff_integrableAtFilter_atTop_nhdsWithin
     [LinearOrder X] [CompactIccSpace X] [NoMaxOrder X] [OrderTopology X] :

@@ -491,8 +491,9 @@ theorem integrableAtFilter_top : IntegrableAtFilter f ⊤ μ ↔ Integrable f μ
 
 theorem IntegrableAtFilter.sup_iff {l l' : Filter α} :
     IntegrableAtFilter f (l ⊔ l') μ ↔ IntegrableAtFilter f l μ ∧ IntegrableAtFilter f l' μ := by
-  use fun h => ⟨h.filter_mono le_sup_left, h.filter_mono le_sup_right⟩
-  exact fun ⟨⟨s, hsl, hs⟩, ⟨t, htl, ht⟩⟩ ↦ ⟨s ∪ t, union_mem_sup hsl htl, hs.union ht⟩
+  constructor
+  · exact fun h => ⟨h.filter_mono le_sup_left, h.filter_mono le_sup_right⟩
+  · exact fun ⟨⟨s, hsl, hs⟩, ⟨t, htl, ht⟩⟩ ↦ ⟨s ∪ t, union_mem_sup hsl htl, hs.union ht⟩
 
 /-- If `μ` is a measure finite at filter `l` and `f` is a function such that its norm is bounded
 above at `l`, then `f` is integrable at `l`. -/
