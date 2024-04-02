@@ -356,6 +356,22 @@ lemma prod_eq_pow_single [DecidableEq M] (a : M) (h : ∀ a', a' ≠ a → a' �
 #align list.prod_eq_pow_single List.prod_eq_pow_single
 #align list.sum_eq_nsmul_single List.sum_eq_nsmul_single
 
+/-- If elements of a list commute with each other, then their product does not
+depend on the order of elements. -/
+@[to_additive "If elements of a list additively commute with each other, then their sum does not
+depend on the order of elements."]
+lemma Perm.prod_eq' (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) : l₁.prod = l₂.prod := by
+  refine h.foldl_eq' ?_ _
+  apply Pairwise.forall_of_forall
+  · intro x y h z
+    exact (h z).symm
+  · intros; rfl
+  · apply hc.imp
+    intro a b h z
+    rw [mul_assoc z, mul_assoc z, h]
+#align list.perm.prod_eq' List.Perm.prod_eq'
+#align list.perm.sum_eq' List.Perm.sum_eq'
+
 @[to_additive sum_le_sum]
 theorem Forall₂.prod_le_prod' [Preorder M] [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)]
     [CovariantClass M M (· * ·) (· ≤ ·)] {l₁ l₂ : List M} (h : Forall₂ (· ≤ ·) l₁ l₂) :
@@ -489,22 +505,6 @@ lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
         mul_left_comm (f a) (f b)]
 #align list.prod_map_erase List.prod_map_erase
 #align list.sum_map_erase List.sum_map_erase
-
-/-- If elements of a list commute with each other, then their product does not
-depend on the order of elements. -/
-@[to_additive "If elements of a list additively commute with each other, then their sum does not
-depend on the order of elements."]
-lemma Perm.prod_eq' (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) : l₁.prod = l₂.prod := by
-  refine h.foldl_eq' ?_ _
-  apply Pairwise.forall_of_forall
-  · intro x y h z
-    exact (h z).symm
-  · intros; rfl
-  · apply hc.imp
-    intro a b h z
-    rw [mul_assoc z, mul_assoc z, h]
-#align list.perm.prod_eq' List.Perm.prod_eq'
-#align list.perm.sum_eq' List.Perm.sum_eq'
 
 @[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.fold_op_eq
 #align list.perm.prod_eq List.Perm.prod_eq
