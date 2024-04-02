@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Int.Basic
 The goal of this file is to prove Fermat Last theorem in the case `n = 3`.
 
 ## Main results
-* `fermatLastTheoremThree_case_1`: the first case of Fermat Last Theorem when `n = 3`:
+* `fermatLastTheoremThree_case1`: the first case of Fermat Last Theorem when `n = 3`:
   if `a b c : ℕ` are such that `¬ 3 ∣ a * b * c`, then `a ^ 3 + b ^ 3 ≠ c ^ 3`.
 
 ## TODO
@@ -36,7 +36,7 @@ private lemma cube_of_not_dvd {n : ℤ} (h : ¬ 3 ∣ n) :
   Let `a`, `b` and `c` be in `ℤ`.
   If `¬ 3 ∣ a * b * c`, then `a ^ 3 + b ^ 3 ≠ c ^ 3`.
 -/
-theorem fermatLastTheoremThree_case_1 {a b c : ℤ} (hdvd : ¬ 3 ∣ a * b * c) :
+theorem fermatLastTheoremThree_case1 {a b c : ℤ} (hdvd : ¬ 3 ∣ a * b * c) :
     a ^ 3 + b ^ 3 ≠ c ^ 3 := by
   simp_rw [Int.prime_three.dvd_mul, not_or] at hdvd
   apply mt (congrArg (Int.cast : ℤ → ZMod 9))
@@ -84,15 +84,18 @@ private lemma three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a 
     ring
 
 open Finset Int in
-/-- To prove `FermatLastTheoremFor 3`, we may assume that `¬ 3 ∣ a`, `¬ 3 ∣ b`, `a` and `b`
-are coprime and `3 ∣ c`. -/
+
+/--
+  For all `a`, `b`, `c` in `ℤ` such that `c ≠ 0`, `¬ 3 ∣ a`, `¬ 3 ∣ b`, `a` and `b`
+are coprime and `3 ∣ c`, then `a ^ 3 + b ^ 3 ≠ c ^ 3`.
+-/
 theorem fermatLastTheoremThree_of_three_dvd_only_c
     (H : ∀ a b c : ℤ, c ≠ 0 → ¬ 3 ∣ a → ¬ 3 ∣ b  → 3 ∣ c → IsCoprime a b → a ^ 3 + b ^ 3 ≠ c ^ 3) :
     FermatLastTheoremFor 3 := by
   rw [fermatLastTheoremFor_iff_int]
   refine fermatLastTheoremWith_of_fermatLastTheoremWith_coprime (fun a b c ha hb hc Hgcd hF ↦?_)
   by_cases h1 : 3 ∣ a * b * c
-  swap; exact fermatLastTheoremThree_case_1 h1 hF
+  swap; exact fermatLastTheoremThree_case1 h1 hF
   rw [(prime_three).dvd_mul, (prime_three).dvd_mul] at h1
   apply (show ¬(3 ∣ (1 : ℤ)) by decide)
   rw [← Hgcd]
