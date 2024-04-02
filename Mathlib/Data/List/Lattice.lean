@@ -262,8 +262,9 @@ theorem bagInter_sublist_left : ∀ l₁ l₂ : List α, l₁.bagInter l₂ <+ l
 theorem bagInter_nil_iff_inter_nil : ∀ l₁ l₂ : List α, l₁.bagInter l₂ = [] ↔ l₁ ∩ l₂ = []
   | [], l₂ => by simp
   | b :: l₁, l₂ => by
-    by_cases h : b ∈ l₂ <;> simp [h]
-    exact bagInter_nil_iff_inter_nil l₁ l₂
+    by_cases h : b ∈ l₂
+    · simp [h]
+    · simpa [h] using bagInter_nil_iff_inter_nil l₁ l₂
 #align list.bag_inter_nil_iff_inter_nil List.bagInter_nil_iff_inter_nil
 
 end BagInter
