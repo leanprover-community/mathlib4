@@ -18,8 +18,6 @@ set_option autoImplicit true
 
 set_option autoImplicit true
 
--- FIXME nightly-testing
--- The upstream of `rw?` has regressions. WIP.
 /--
 info: Try this: rw [@List.map_append]
 -- "no goals"
@@ -125,14 +123,12 @@ example (h : 1 = 2) : 2 = 1 := by
 
 def zero : Nat := 0
 
--- FIXME nightly-testing
--- This will be fixed in nightly-2024-03-27
--- -- This used to (incorrectly!) succeed because `rw?` would try `rfl`,
--- -- rather than `withReducible` `rfl`.
--- #guard_msgs(drop info) in
--- example : zero = 0 := by
---   rw?
---   exact test_sorry
+-- This used to (incorrectly!) succeed because `rw?` would try `rfl`,
+-- rather than `withReducible` `rfl`.
+#guard_msgs(drop info) in
+example : zero = 0 := by
+  rw?
+  exact test_sorry
 
 -- Discharge side conditions from local hypotheses.
 /--

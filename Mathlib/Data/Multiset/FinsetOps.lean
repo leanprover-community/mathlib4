@@ -218,7 +218,7 @@ def ndinter (s t : Multiset α) : Multiset α :=
 
 @[simp]
 theorem coe_ndinter (l₁ l₂ : List α) : @ndinter α _ l₁ l₂ = (l₁ ∩ l₂ : List α) :=
-  -- FIXME nightly-testin
+  -- FIXME nightly-testing
   sorry
   -- rfl
 
