@@ -266,7 +266,9 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
     rw [Finset.card_biUnion]
     · norm_cast
       simp only [Nat.cast_sum, card_map, neighborFinset_def]
-      apply Finset.sum_toFinset_eq_subtype
+      -- FIXME nightly-testing
+      sorry
+      -- apply Finset.sum_toFinset_eq_subtype
     -- Disjointness for card_bUnion
     · rintro ⟨x, hx⟩ - ⟨y, hy⟩ - hxy
       rw [disjoint_iff_inf_le]
