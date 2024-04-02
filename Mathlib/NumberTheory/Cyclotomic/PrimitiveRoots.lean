@@ -629,9 +629,12 @@ theorem norm_zeta_pow_sub_one_of_eq_two {k : ℕ} (hk : 2 ≤ k)
 end IsCyclotomicExtension
 
 -- deprecated 2024-04-02
-@[deprecated] alias IsPrimitiveRoot.pow_sub_one_norm_prime_pow_ne_two := IsPrimitiveRoot.norm_pow_sub_one_of_prime_pow_ne_two
-@[deprecated] alias IsPrimitiveRoot.pow_sub_one_norm_prime_ne_two := IsPrimitiveRoot.norm_pow_sub_one_of_prime_ne_two
-@[deprecated] alias IsPrimitiveRoot.sub_one_norm_prime_ne_two := IsPrimitiveRoot.norm_sub_one_of_prime_ne_two
+@[deprecated] alias IsPrimitiveRoot.pow_sub_one_norm_prime_pow_ne_two :=
+  IsPrimitiveRoot.norm_pow_sub_one_of_prime_pow_ne_two
+@[deprecated] alias IsPrimitiveRoot.pow_sub_one_norm_prime_ne_two :=
+  IsPrimitiveRoot.norm_pow_sub_one_of_prime_ne_two
+@[deprecated] alias IsPrimitiveRoot.sub_one_norm_prime_ne_two :=
+  IsPrimitiveRoot.norm_sub_one_of_prime_ne_two
 @[deprecated] alias IsPrimitiveRoot.sub_one_norm_prime :=
   IsPrimitiveRoot.norm_sub_one_of_prime_ne_two'
 @[deprecated] alias IsPrimitiveRoot.pow_sub_one_norm_two :=
