@@ -211,7 +211,7 @@ theorem diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
     linearization_map_hom_single (actionDiagonalSucc G n).inv (g, f) (a * b)] -/
   change mapDomain (actionDiagonalSucc G n).inv.hom
     (lcongr (Equiv.refl (G × (Fin n → G))) (TensorProduct.lid k k)
-      (finsuppTensorFinsupp k k k G (Fin n → G) (single g a ⊗ₜ[k] single f b)))
+      (finsuppTensorFinsupp k k k k G (Fin n → G) (single g a ⊗ₜ[k] single f b)))
     = single (g • partialProd f) (a * b)
   rw [finsuppTensorFinsupp_single, lcongr_single, mapDomain_single, Equiv.refl_apply,
     actionDiagonalSucc_inv_apply]
