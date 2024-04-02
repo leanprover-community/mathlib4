@@ -17,8 +17,11 @@ jobs:
         with:
           script: |
             const creator = context.payload.sender.login
+            const { owner, repo } = context.repo;
             const opts = github.rest.issues.listForRepo.endpoint.merge({
               ...context.issue,
+              owner,
+              repo,
               creator,
               state: 'closed'
             })
