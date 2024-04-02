@@ -10,8 +10,8 @@ import Mathlib.GroupTheory.Coxeter.Basic
 # The length function, reduced words, and descents
 Throughout this file, `B` is a type and `M : Matrix B B ℕ` is a Coxeter matrix.
 `cs : CoxeterSystem M W` is a Coxeter system; that is, `W` is a group, and `cs` holds the data
-of a group isomorphism `W ≃* Matrix.CoxeterGroup M`, where `Matrix.CoxeterGroup M` refers to
-the quotient of the free group on `B` by the Coxeter relations given by the matrix `M`. See
+of a group isomorphism `W ≃* M.coxeterGroup`, where `M.coxeterGroup` refers to the quotient of the
+free group on `B` by the Coxeter relations given by the matrix `M`. See
 `Mathlib.GroupTheory.Coxeter.Basic` for more details.
 
 Given any element $w \in W$, its *length*, denoted $\ell(w)$, is the minimum number $\ell$ such that
