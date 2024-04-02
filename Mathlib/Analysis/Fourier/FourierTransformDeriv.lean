@@ -157,7 +157,7 @@ lemma fderiv_fourierIntegral
       fourierIntegral 𝐞 μ L.toLinearMap₂ (fourierSMulRight L f) w :=
   (hasFDerivAt_fourierIntegral L hf hf' w).fderiv
 
-lemma differentiable_fourierIntegral [CompleteSpace E]
+lemma differentiable_fourierIntegral
     [MeasurableSpace V] [BorelSpace V] [SecondCountableTopology V] {μ : Measure V}
     (hf : Integrable f μ) (hf' : Integrable (fun v : V ↦ ‖v‖ * ‖f v‖) μ) :
     Differentiable ℝ (fourierIntegral 𝐞 μ L.toLinearMap₂ f) :=
