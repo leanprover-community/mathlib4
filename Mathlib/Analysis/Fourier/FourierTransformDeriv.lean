@@ -7,6 +7,7 @@ import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
+import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 
 /-!
 # Derivatives of the Fourier transform
@@ -71,12 +72,21 @@ open scoped FourierTransform Topology BigOperators
 
 attribute [local instance 2000] secondCountableTopologyEither_of_left
 
+
+lemma foo (n : ℕ) : 0 ≤ n := by exact?
+
 lemma Real.hasDerivAt_fourierChar (x : ℝ) : HasDerivAt (𝐞 · : ℝ → ℂ) (2 * π * I * 𝐞 x) x := by
   have h1 (y : ℝ) : 𝐞 y = fourier 1 (y : UnitAddCircle) := by
     rw [fourierChar_apply, fourier_coe_apply]
     push_cast
     ring_nf
   simpa only [h1, Int.cast_one, ofReal_one, div_one, mul_one] using hasDerivAt_fourier 1 1 x
+
+lemma Real.differentiable_fourierChar : Differentiable ℝ (𝐞 · : ℝ → ℂ) :=
+  fun x ↦ (Real.hasDerivAt_fourierChar x).differentiableAt
+
+lemma Real.deriv_fourierChar (x : ℝ) : deriv (𝐞 · : ℝ → ℂ) x = 2 * π * I * 𝐞 x :=
+  (Real.hasDerivAt_fourierChar x).deriv
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
@@ -175,18 +185,37 @@ lemma differentiable_fourierIntegral [MeasurableSpace V] [BorelSpace V] [SecondC
     Differentiable ℝ (fourierIntegral 𝐞 μ L.toLinearMap₂ f) :=
   fun w ↦ (hasFDerivAt_fourierIntegral L hf hf' w).differentiableAt
 
-lemma glou [MeasurableSpace V] [BorelSpace V] [SecondCountableTopology V]
-    {μ : Measure V}
+open Measure
+
+
+lemma glou [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
+    {μ : Measure V} [IsAddHaarMeasure μ]
     (hf : Integrable f μ) (h'f : Differentiable ℝ f) (hf' : Integrable (fderiv ℝ f) μ) (w : W) :
     fourierIntegral 𝐞 μ L.toLinearMap₂ (fderiv ℝ f) w
       = fourierSMulRight L.flip (fourierIntegral 𝐞 μ L.toLinearMap₂ f) w := by
   ext y
-  have J : Integrable (fun v ↦ 𝐞 (-(L v) w) • fderiv ℝ f v) μ := by simpa using hf'
-  suffices ∫ (x : V), 𝐞 (-(L x) w) • fderiv ℝ f x y ∂μ
-      = ∫ (a : V), -((2 * ↑π * I) • (L y) w • 𝐞 (-(L a) w) • f a) ∂μ by
-    simpa only [fourierIntegral, ContinuousLinearMap.toLinearMap₂_apply, fourierSMulRight_apply,
+  let g : V → ℂ := fun v ↦ 𝐞 (-L v w)
+  have J : Integrable (fun v ↦ g v • fderiv ℝ f v) μ := (fourierIntegral_convergent_iff' _ _).2 hf'
+  have : Differentiable ℝ g := Real.differentiable_fourierChar.comp (by fun_prop)
+  have A x : fderiv ℝ g x y = - 2 * ↑π * I * L y w * g x := by
+    have V := (L.hasFDerivAt_of_bilinear (hasFDerivAt_id x) (hasFDerivAt_const w x)).neg
+    have W := ((Real.hasDerivAt_fourierChar (-L x w)).hasFDerivAt.comp x V).fderiv
+    change fderiv ℝ g x = _ at W
+    simp [W, g]
+    ring
+
+
+#exit
+
+  suffices ∫ (x : V), (𝐞 (-(L x) w) : ℂ) • (fderiv ℝ f x y) ∂μ
+      = ∫ (a : V), -(((2 * ↑π * I) * (L y) w * 𝐞 (-(L a) w)) • f a) ∂μ by sorry
+     /-simpa only [fourierIntegral, ContinuousLinearMap.toLinearMap₂_apply, fourierSMulRight_apply,
       ContinuousLinearMap.flip_apply, neg_smul, ContinuousLinearMap.integral_apply J,
-      ← integral_smul, ContinuousLinearMap.coe_smul', Pi.smul_apply]
+      ← integral_smul, ContinuousLinearMap.coe_smul', Pi.smul_apply,
+      ← smul_smul, Complex.coe_smul, neg_smul] using this  -/
+  rw [integral_smul_fderiv_eq_neg_fderiv_smul_of_integrable, integral_neg]
+  · congr with x
+    congr
 
 
 
