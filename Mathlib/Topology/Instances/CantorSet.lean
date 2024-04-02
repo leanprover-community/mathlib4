@@ -11,12 +11,14 @@ import Mathlib.Topology.Instances.Real
 
 /-!
 # Ternary Cantor Set
-This file contains the definition of the Cantor ternary set
-as well as some first properties, which will be updated later.
+
+This file defines the Cantor ternary set and proves a few properties.
 
 ## Main Definitions
-We give a definition for the ternary Cantor set in this file, which
-is `cantorSet`.
+
+* `preCantorSet n`: The order `n` pre-Cantor set, defined inductively.
+* `cantorSet`: The ternary Cantor set, defined as the intersection of all
+  pre-Cantor sets.
 -/
 
 /-- We define the preCantorSet as the preimages under the iterations of some functions. -/
