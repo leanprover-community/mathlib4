@@ -430,6 +430,9 @@ instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
   infer_instance
 #align algebraic_geometry.Γ_Spec.is_iso_adjunction_counit AlgebraicGeometry.ΓSpec.isIso_adjunction_counit
 
+-- Adaptation note: nightly-2024-04-01
+-- This maxHeartbeats was not needed previously.
+set_option maxHeartbeats 400000 in
 theorem adjunction_unit_app_app_top (X : Scheme) :
     (ΓSpec.adjunction.unit.app X).1.c.app (op ⊤) =
     SpecΓIdentity.hom.app (X.presheaf.obj (op ⊤)) := by

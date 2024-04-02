@@ -114,6 +114,9 @@ private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
 variable {L : Type*} [Field L] [Algebra F L] [Algebra L E] [IsScalarTower F L E]
   (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom)
 
+-- Adaptation note: nightly-2024-04-01
+-- This maxHeartbeats was not needed previously.
+set_option maxHeartbeats 400000 in
 theorem exists_algHom_adjoin_of_splits' :
     ∃ φ : adjoin L S →ₐ[F] K, φ.comp (IsScalarTower.toAlgHom F L _) = f := by
   let L' := (IsScalarTower.toAlgHom F L E).fieldRange
