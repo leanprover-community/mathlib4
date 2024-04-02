@@ -418,7 +418,7 @@ class IsCoxeterGroup (W : Type*) [Group W] : Prop where
   nonempty_system : ∃ (B : Type*), ∃ (M : Matrix B B ℕ), Nonempty (CoxeterSystem M W)
 
 /-- The canonical Coxeter system of the Coxeter group over `M`. -/
-def Matrix.IsCoxeter.canonicalCoxeterSystem {M : Matrix B B ℕ} (hM : M.IsCoxeter) :
+def Matrix.IsCoxeter.toCoxeterSystem {M : Matrix B B ℕ} (hM : M.IsCoxeter) :
     CoxeterSystem M M.coxeterGroup where
   isCoxeter := hM
   mulEquiv := .refl _
@@ -446,8 +446,8 @@ def simpleReflection (i : B) : W := cs.mulEquiv.symm (PresentedGroup.of i)
 
 local prefix:100 "s" => cs.simpleReflection
 
-theorem canonicalCoxeterSystem_simple (hM : IsCoxeter M) :
-    hM.canonicalCoxeterSystem.simpleReflection = M.coxeterGroupSimpleReflection := rfl
+theorem _root_.Matrix.IsCoxeter.toCoxeterSystem_simple (hM : IsCoxeter M) :
+    hM.toCoxeterSystem.simpleReflection = M.coxeterGroupSimpleReflection := rfl
 
 @[simp]
 theorem reindex_simple {B' : Type*} (e : B ≃ B') (i' : B') :
