@@ -12,6 +12,7 @@ import Mathlib.Topology.MetricSpace.Thickening
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Semicontinuous
+import Mathlib.Topology.CountableSeparatingOn
 
 #align_import measure_theory.constructions.borel_space.basic from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 
@@ -418,7 +419,7 @@ theorem MeasurableSet.nhdsWithin_isMeasurablyGenerated {s : Set α} (hs : Measur
   Filter.inf_isMeasurablyGenerated _ _
 #align measurable_set.nhds_within_is_measurably_generated MeasurableSet.nhdsWithin_isMeasurablyGenerated
 
-instance (priority := 100) OpensMeasurableSpace.toSeparatesPoints [T0Space α] :
+instance (priority := 100) OpensMeasurableSpace.separatesPoints [T0Space α] :
     SeparatesPoints α := by
   rw [separatesPoints_iff]
   intro x y hxy
@@ -1917,7 +1918,7 @@ theorem exists_borelSpace_of_countablyGenerated_of_separatesPoints (α : Type*)
 /-- If a measurable space on `α` is countably generated and separates points, there is some
 second countable t4 topology on `α` (i.e. a separable metrizable one) for which every
 open set is measurable. -/
-theorem opensMeasurableSpace_secondCountableTopology_t4_of_hasCountableSeparatingOn (α : Type*)
+theorem exists_opensMeasurableSpace_of_hasCountableSeparatingOn (α : Type*)
     [m : MeasurableSpace α] [HasCountableSeparatingOn α MeasurableSet univ] :
     ∃ τ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ OpensMeasurableSpace α := by
   rcases exists_countablyGenerated_le_of_hasCountableSeparatingOn α with ⟨m', _, _, m'le⟩

@@ -533,18 +533,20 @@ end MeasureTheory
 
 namespace Measurable
 
-variable {X Y β : Type*} [MeasurableSpace X] [StandardBorelSpace X]
-  [TopologicalSpace Y] [T2Space Y] [MeasurableSpace Y] [OpensMeasurableSpace Y] [MeasurableSpace β]
+variable {X Y Z β : Type*} [MeasurableSpace X] [StandardBorelSpace X]
+  [TopologicalSpace Y] [T0Space Y] [MeasurableSpace Y] [OpensMeasurableSpace Y] [MeasurableSpace β]
+  [MeasurableSpace Z]
 
 /-- If `f : X → Y` is a surjective Borel measurable map from a standard Borel space
 to a topological space with second countable topology, then the preimage of a set `s`
 is measurable if and only if the set is measurable.
 One implication is the definition of measurability, the other one heavily relies on `X` being a
 standard Borel space. -/
-theorem measurableSet_preimage_iff_of_surjective [SecondCountableTopology Y] {f : X → Y}
-    (hf : Measurable f) (hsurj : Surjective f) {s : Set Y} :
+theorem measurableSet_preimage_iff_of_surjective  [HasCountableSeparatingOn Z MeasurableSet univ]
+    {f : X → Z} (hf : Measurable f) (hsurj : Surjective f) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet s := by
   refine ⟨fun h => ?_, fun h => hf h⟩
+  rcases exists_opensMeasurableSpace_of_hasCountableSeparatingOn Z with ⟨τ, _, _, _⟩
   apply AnalyticSet.measurableSet_of_compl
   · rw [← image_preimage_eq s hsurj]
     exact h.analyticSet_image hf
@@ -552,8 +554,20 @@ theorem measurableSet_preimage_iff_of_surjective [SecondCountableTopology Y] {f 
     exact h.compl.analyticSet_image hf
 #align measurable.measurable_set_preimage_iff_of_surjective Measurable.measurableSet_preimage_iff_of_surjective
 
-theorem map_measurableSpace_eq [SecondCountableTopology Y] {f : X → Y} (hf : Measurable f)
-    (hsurj : Surjective f) : MeasurableSpace.map f ‹MeasurableSpace X› = ‹MeasurableSpace Y› :=
+/-
+/-- If `f : X → Y` is a surjective Borel measurable map from a standard Borel space
+to a topological space with second countable topology, then the preimage of a set `s`
+is measurable if and only if the set is measurable.
+One implication is the definition of measurability, the other one heavily relies on `X` being a
+standard Borel space. -/
+theorem measurableSet_preimage_iff_of_surjective' [SecondCountableTopology Y] {f : X → Y}
+    (hf : Measurable f) (hsurj : Surjective f) {s : Set Y} :
+    MeasurableSet (f ⁻¹' s) ↔ MeasurableSet s := measurableSet_preimage_iff_of_surjective hf hsurj
+-/
+
+theorem map_measurableSpace_eq  [HasCountableSeparatingOn Z MeasurableSet univ]
+    {f : X → Z} (hf : Measurable f)
+    (hsurj : Surjective f) : MeasurableSpace.map f ‹MeasurableSpace X› = ‹MeasurableSpace Z› :=
   MeasurableSpace.ext fun _ => hf.measurableSet_preimage_iff_of_surjective hsurj
 #align measurable.map_measurable_space_eq Measurable.map_measurableSpace_eq
 
@@ -572,8 +586,9 @@ theorem borelSpace_codomain [SecondCountableTopology Y] {f : X → Y} (hf : Meas
 /-- If `f : X → Y` is a Borel measurable map from a standard Borel space to a topological space
 with second countable topology, then the preimage of a set `s` is measurable if and only if
 the set is measurable in `Set.range f`. -/
-theorem measurableSet_preimage_iff_preimage_val {f : X → Y} [SecondCountableTopology (range f)]
-    (hf : Measurable f) {s : Set Y} :
+theorem measurableSet_preimage_iff_preimage_val {f : X → Z}
+    [HasCountableSeparatingOn (range f) MeasurableSet univ]
+    (hf : Measurable f) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet ((↑) ⁻¹' s : Set (range f)) :=
   have hf' : Measurable (rangeFactorization f) := hf.subtype_mk
   hf'.measurableSet_preimage_iff_of_surjective (s := Subtype.val ⁻¹' s) surjective_onto_range
@@ -583,8 +598,9 @@ theorem measurableSet_preimage_iff_preimage_val {f : X → Y} [SecondCountableTo
 topological space with second countable topology and the range of `f` is measurable,
 then the preimage of a set `s` is measurable
 if and only if the intesection with `Set.range f` is measurable. -/
-theorem measurableSet_preimage_iff_inter_range {f : X → Y} [SecondCountableTopology (range f)]
-    (hf : Measurable f) (hr : MeasurableSet (range f)) {s : Set Y} :
+theorem measurableSet_preimage_iff_inter_range {f : X → Z}
+    [HasCountableSeparatingOn (range f) MeasurableSet univ]
+    (hf : Measurable f) (hr : MeasurableSet (range f)) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet (s ∩ range f) := by
   rw [hf.measurableSet_preimage_iff_preimage_val, inter_comm,
     ← (MeasurableEmbedding.subtype_coe hr).measurableSet_image, Subtype.image_preimage_coe]
@@ -594,8 +610,9 @@ theorem measurableSet_preimage_iff_inter_range {f : X → Y} [SecondCountableTop
 to a topological space with second countable topology,
 then for any measurable space `β` and `g : Y → β`, the composition `g ∘ f` is
 measurable if and only if the restriction of `g` to the range of `f` is measurable. -/
-theorem measurable_comp_iff_restrict {f : X → Y} [SecondCountableTopology (range f)]
-    (hf : Measurable f) {g : Y → β} : Measurable (g ∘ f) ↔ Measurable (restrict (range f) g) :=
+theorem measurable_comp_iff_restrict {f : X → Z}
+    [HasCountableSeparatingOn (range f) MeasurableSet univ]
+    (hf : Measurable f) {g : Z → β} : Measurable (g ∘ f) ↔ Measurable (restrict (range f) g) :=
   forall₂_congr fun s _ => measurableSet_preimage_iff_preimage_val hf (s := g ⁻¹' s)
 #align measurable.measurable_comp_iff_restrict Measurable.measurable_comp_iff_restrict
 
@@ -603,15 +620,16 @@ theorem measurable_comp_iff_restrict {f : X → Y} [SecondCountableTopology (ran
 to a topological space with second countable topology,
 then for any measurable space `α` and `g : Y → α`, the composition
 `g ∘ f` is measurable if and only if `g` is measurable. -/
-theorem measurable_comp_iff_of_surjective [SecondCountableTopology Y] {f : X → Y}
-    (hf : Measurable f) (hsurj : Surjective f) {g : Y → β} : Measurable (g ∘ f) ↔ Measurable g :=
+theorem measurable_comp_iff_of_surjective [HasCountableSeparatingOn Z MeasurableSet univ]
+    {f : X → Z} (hf : Measurable f) (hsurj : Surjective f)
+    {g : Z → β} : Measurable (g ∘ f) ↔ Measurable g :=
   forall₂_congr fun s _ => measurableSet_preimage_iff_of_surjective hf hsurj (s := g ⁻¹' s)
 #align measurable.measurable_comp_iff_of_surjective Measurable.measurable_comp_iff_of_surjective
 
 end Measurable
 
 theorem Continuous.map_eq_borel {X Y : Type*} [TopologicalSpace X] [PolishSpace X]
-    [MeasurableSpace X] [BorelSpace X] [TopologicalSpace Y] [T2Space Y] [SecondCountableTopology Y]
+    [MeasurableSpace X] [BorelSpace X] [TopologicalSpace Y] [T0Space Y] [SecondCountableTopology Y]
     {f : X → Y} (hf : Continuous f) (hsurj : Surjective f) :
     MeasurableSpace.map f ‹MeasurableSpace X› = borel Y := by
   borelize Y
@@ -619,14 +637,14 @@ theorem Continuous.map_eq_borel {X Y : Type*} [TopologicalSpace X] [PolishSpace 
 #align continuous.map_eq_borel Continuous.map_eq_borel
 
 theorem Continuous.map_borel_eq {X Y : Type*} [TopologicalSpace X] [PolishSpace X]
-    [TopologicalSpace Y] [T2Space Y] [SecondCountableTopology Y] {f : X → Y} (hf : Continuous f)
+    [TopologicalSpace Y] [T0Space Y] [SecondCountableTopology Y] {f : X → Y} (hf : Continuous f)
     (hsurj : Surjective f) : MeasurableSpace.map f (borel X) = borel Y := by
   borelize X
   exact hf.map_eq_borel hsurj
 #align continuous.map_borel_eq Continuous.map_borel_eq
 
 instance Quotient.borelSpace {X : Type*} [TopologicalSpace X] [PolishSpace X] [MeasurableSpace X]
-    [BorelSpace X] {s : Setoid X} [T2Space (Quotient s)] [SecondCountableTopology (Quotient s)] :
+    [BorelSpace X] {s : Setoid X} [T0Space (Quotient s)] [SecondCountableTopology (Quotient s)] :
     BorelSpace (Quotient s) :=
   ⟨continuous_quotient_mk'.map_eq_borel (surjective_quotient_mk' _)⟩
 #align quotient.borel_space Quotient.borelSpace
