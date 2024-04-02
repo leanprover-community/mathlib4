@@ -46,8 +46,8 @@ instance cantorSet.metricSpace : MetricSpace cantorSet := inferInstance
 lemma quarters_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n ∧ 3/4 ∈ preCantorSet n := by
   induction n with
   | zero =>
-    simp only [preCantorSet, Set.mem_Icc, inv_nonneg, Nat.ofNat_nonneg, true_and]
-    refine ⟨⟨?_, ?_ ⟩,?_,?_⟩ <;> linarith
+    simp only [preCantorSet_zero, inv_nonneg]
+    refine ⟨⟨ ?_, ?_⟩ , ⟨ ?_, ?_ ⟩⟩ <;> linarith
 
   | succ n ih =>
     apply And.intro
