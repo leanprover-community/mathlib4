@@ -27,8 +27,8 @@ as well as the fresh fvar for the bound variable.
 See also `Lean.PrettyPrinter.Delaborator.withBindingBodyUnusedName`. -/
 def withBindingBodyUnusedName' {α} (d : Syntax → Expr → DelabM α) : DelabM α := do
   let n ← getUnusedName (← getExpr).bindingName! (← getExpr).bindingBody!
-  let stxN ← annotateCurPos (mkIdent n)
-  withBindingBody' n (d stxN) pure
+  withBindingBody' n (fun fvar => return (← mkAnnotatedIdent n fvar, fvar))
+    (fun (stxN, fvar) => d stxN fvar)
 
 /-- Update `OptionsPerPos` at the given position, setting the key `n`
 to have the boolean value `v`. -/
