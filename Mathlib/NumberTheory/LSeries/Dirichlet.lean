@@ -38,6 +38,7 @@ lemma ArithmeticFunction.one_eq_delta : ↗(1 : ArithmeticFunction ℂ) = δ := 
   ext
   simp only [one_apply, LSeries.delta]
 
+
 section Moebius
 
 /-!
@@ -78,6 +79,7 @@ lemma abscissaOfAbsConv_moebius : abscissaOfAbsConv ↗μ = 1 := by
 end ArithmeticFunction
 
 end Moebius
+
 
 /-!
 ### L-series of Dirichlet characters
@@ -300,7 +302,7 @@ lemma LSeries_one_mul_Lseries_moebius {s : ℂ} (hs : 1 < s.re) : L 1 s * L ↗�
   LSeries_zeta_eq ▸ LSeries_zeta_mul_Lseries_moebius hs
 
 /-- The L-series of the constant sequence `1` does not vanish on the right half-plane
-`re s > 1`.-/
+`re s > 1`. -/
 lemma LSeries_one_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : L 1 s ≠ 0 :=
   LSeries_zeta_eq ▸ LSeries_zeta_ne_zero_of_one_lt_re hs
 
@@ -361,7 +363,7 @@ lemma LSeriesSummable_twist_vonMangoldt {N : ℕ} (χ : DirichletCharacter ℂ N
   LSeriesSummable_mul χ <| LSeriesSummable_vonMangoldt hs
 
 /-- The L-series of the twist of the von Mangoldt function `Λ` by a Dirichlet character `χ` at `s`
-equals the negative logarithmtic derivative of the L-series of `χ` when `re s > 1`. -/
+equals the negative logarithmic derivative of the L-series of `χ` when `re s > 1`. -/
 lemma LSeries_twist_vonMangoldt_eq {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 < s.re) :
     L (↗χ * ↗Λ) s = - deriv (L ↗χ) s / L ↗χ s := by
   rcases eq_or_ne N 0 with rfl | hN
