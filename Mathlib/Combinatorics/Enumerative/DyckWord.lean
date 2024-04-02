@@ -166,7 +166,7 @@ lemma IsBalanced.denest
   · replace bp := (cons_tail_dropLast_concat bp np).symm ▸ bp.1
     simp_rw [count_append, count_cons, count_nil, ite_true, ite_false] at bp; omega
   · intro i
-    rw [← drop_one, ← drop_take, dropLast_eq_take, take_take]
+    rw [← drop_one, take_drop, dropLast_eq_take, take_take]
     have ub : min (1 + i) p.length.pred < p.length :=
       (min_le_right _ p.length.pred).trans_lt (Nat.pred_lt ((length_pos.mpr np).ne'))
     have lb : 0 < min (1 + i) p.length.pred := by
