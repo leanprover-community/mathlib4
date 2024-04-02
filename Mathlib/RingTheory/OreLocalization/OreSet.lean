@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge
 -/
 import Mathlib.Algebra.Ring.Regular
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
 
