@@ -101,7 +101,7 @@ vector space `B →₀ ℝ`.
 -/
 namespace Matrix
 
-variable {B : Type*} [DecidableEq B]
+variable {B : Type*}
 variable {M : Matrix B B ℕ}
 variable (hM : IsCoxeter M)
 
@@ -372,7 +372,7 @@ end Matrix
 namespace CoxeterSystem
 
 variable {W : Type*} [Group W]
-variable {B : Type*} [DecidableEq B]
+variable {B : Type*}
 variable {M : Matrix B B ℕ}
 variable (cs : CoxeterSystem M W)
 
@@ -567,6 +567,7 @@ theorem SGR_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul
 
 private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬ cs.IsRightDescent w i) :
     (ρ w) (α i) ≥ 0 := by
+  classical
   -- We use induction on the length of `w`.
   generalize hn : ℓ w = n
   induction' n using Nat.strong_induction_on with n ih generalizing w i
@@ -805,6 +806,7 @@ theorem SGR_apply_simpleRoot_neg_iff (w : W) (i : B) :
     exact cs.SGR_apply_simpleRoot_neg_of h
 
 theorem injective_SGR : Function.Injective cs.SGR := by
+  classical
   apply (injective_iff_map_eq_one _).mpr
   intro w hw
   by_contra! w_ne_one
