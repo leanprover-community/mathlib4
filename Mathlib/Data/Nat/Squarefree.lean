@@ -83,7 +83,7 @@ theorem Squarefree.ext_iff {n m : ℕ} (hn : Squarefree n) (hm : Squarefree m) :
       hp.dvd_iff_one_le_factorization hm.ne_zero, not_le, lt_one_iff] at h₁
     have h₂ := hn.natFactorization_le_one p
     have h₃ := hm.natFactorization_le_one p
-    rw [Nat.le_add_one_iff, le_zero_iff] at h₂ h₃
+    rw [Nat.le_add_one_iff, Nat.le_zero] at h₂ h₃
     cases' h₂ with h₂ h₂
     · rwa [h₂, eq_comm, ← h₁]
     · rw [h₂, h₃.resolve_left]
@@ -287,7 +287,7 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
     · rintro ⟨s, hs, rfl⟩
       rw [Finset.mem_powerset, ← Finset.val_le_iff, Multiset.toFinset_val] at hs
       have hs0 : s.val.prod ≠ 0 := by
-        rw [Ne.def, Multiset.prod_eq_zero_iff]
+        rw [Ne, Multiset.prod_eq_zero_iff]
         intro con
         apply
           not_irreducible_zero

@@ -780,7 +780,7 @@ lemma strong_law_ae_of_measurable
       norm_add₃_le _ _ _
   _ ≤ (∑ i in Finset.range n, ‖X i ω - Y k i ω‖) / n + δ + δ := by
       gcongr
-      simp only [Function.comp_apply, norm_smul, norm_inv, IsROrC.norm_natCast,
+      simp only [Function.comp_apply, norm_smul, norm_inv, RCLike.norm_natCast,
         div_eq_inv_mul, inv_pos, Nat.cast_pos, inv_lt_zero]
       gcongr
       exact norm_sum_le _ _

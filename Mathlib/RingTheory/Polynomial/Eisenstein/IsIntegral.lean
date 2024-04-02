@@ -97,13 +97,13 @@ theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (
         rw [natDegree_comp, show (X + 1 : ℤ[X]) = X + C 1 by simp, natDegree_X_add_C, mul_one,
           natDegree_cyclotomic, Nat.totient_prime_pow hp.out (Nat.succ_pos _), Nat.add_one_sub_one]
           at hn hi
-        rw [hk, pow_succ, mul_assoc] at hi
+        rw [hk, pow_succ', mul_assoc] at hi
         rw [hk, mul_comm, Nat.mul_div_cancel _ hp.out.pos]
         replace hn := hn (lt_of_mul_lt_mul_left' hi)
         rw [Ideal.submodule_span_eq, Ideal.mem_span_singleton, ← ZMod.int_cast_zmod_eq_zero_iff_dvd,
            show ↑(_  : ℤ) = Int.castRingHom (ZMod p) _ by rfl, ← coeff_map] at hn
         simpa [map_comp] using hn
-      · exact ⟨p ^ n, by rw [pow_succ]⟩
+      · exact ⟨p ^ n, by rw [pow_succ']⟩
   · rw [coeff_zero_eq_eval_zero, eval_comp, cyclotomic_prime_pow_eq_geom_sum hp.out, eval_add,
       eval_X, eval_one, zero_add, eval_finset_sum]
     simp only [eval_pow, eval_X, one_pow, sum_const, card_range, Nat.smul_one_eq_coe,
@@ -383,7 +383,7 @@ theorem mem_adjoin_of_smul_prime_pow_smul_of_minpoly_isEisensteinAt {B : PowerBa
     z ∈ adjoin R ({B.gen} : Set L) := by
   induction' n with n hn
   · simpa using hz
-  · rw [_root_.pow_succ, mul_smul] at hz
+  · rw [_root_.pow_succ', mul_smul] at hz
     exact
       hn (mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt hp hBint (hzint.smul _) hz hei)
 #align mem_adjoin_of_smul_prime_pow_smul_of_minpoly_is_eiseinstein_at mem_adjoin_of_smul_prime_pow_smul_of_minpoly_isEisensteinAt

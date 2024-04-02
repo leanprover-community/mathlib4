@@ -760,6 +760,10 @@ theorem rid_symm_apply (m : M) : (TensorProduct.rid R M).symm m = m ⊗ₜ 1 :=
   rfl
 #align tensor_product.rid_symm_apply TensorProduct.rid_symm_apply
 
+variable (R) in
+theorem lid_eq_rid : TensorProduct.lid R R = TensorProduct.rid R R :=
+  LinearEquiv.toLinearMap_injective <| ext' mul_comm
+
 open LinearMap
 
 section
@@ -1153,6 +1157,21 @@ lemma comm_comp_lTensor_comp_comm_eq (g : N →ₗ[R] P) :
       rTensor Q g :=
   TensorProduct.ext rfl
 
+/-- Given a linear map `f : N → P`, `f ⊗ M` is injective if and only if `M ⊗ f` is injective. -/
+theorem lTensor_inj_iff_rTensor_inj :
+    Function.Injective (lTensor M f) ↔ Function.Injective (rTensor M f) := by
+  simp [← comm_comp_rTensor_comp_comm_eq]
+
+/-- Given a linear map `f : N → P`, `f ⊗ M` is surjective if and only if `M ⊗ f` is surjective. -/
+theorem lTensor_surj_iff_rTensor_surj :
+    Function.Surjective (lTensor M f) ↔ Function.Surjective (rTensor M f) := by
+  simp [← comm_comp_rTensor_comp_comm_eq]
+
+/-- Given a linear map `f : N → P`, `f ⊗ M` is bijective if and only if `M ⊗ f` is bijective. -/
+theorem lTensor_bij_iff_rTensor_bij :
+    Function.Bijective (lTensor M f) ↔ Function.Bijective (rTensor M f) := by
+  simp [← comm_comp_rTensor_comp_comm_eq]
+
 open TensorProduct
 
 attribute [local ext high] TensorProduct.ext
@@ -1377,7 +1396,7 @@ instance addCommGroup : AddCommGroup (M ⊗[R] N) :=
     add_left_neg := fun x => TensorProduct.add_left_neg x
     zsmul := fun n v => n • v
     zsmul_zero' := by simp [TensorProduct.zero_smul]
-    zsmul_succ' := by simp [Nat.succ_eq_one_add, TensorProduct.one_smul, TensorProduct.add_smul]
+    zsmul_succ' := by simp [Nat.succ_eq_add_one, TensorProduct.one_smul, TensorProduct.add_smul]
     zsmul_neg' := fun n x => by
       change (-n.succ : ℤ) • x = -(((n : ℤ) + 1) • x)
       rw [← zero_add (_ • x), ← TensorProduct.add_left_neg ((n.succ : ℤ) • x), add_assoc,
