@@ -20,6 +20,13 @@ theorem smul_mono_right [SMul M α] [Preorder α] [CovariantClass M α HSMul.hSM
     (m : M) : Monotone (HSMul.hSMul m : α → α) :=
   fun _ _ => CovariantClass.elim _
 
+/-- A copy of `smul_mono_right` that is understood by `gcongr`. -/
+@[gcongr]
+theorem smul_le_smul_left [SMul M α] [Preorder α] [CovariantClass M α HSMul.hSMul LE.le]
+    (m : M) {a b : α} (h : a ≤ b) :
+    m • a ≤ m • b :=
+  smul_mono_right _ h
+
 theorem smul_inf_le [SMul M α] [SemilatticeInf α] [CovariantClass M α HSMul.hSMul LE.le]
     (m : M) (a₁ a₂ : α) : m • (a₁ ⊓ a₂) ≤ m • a₁ ⊓ m • a₂ :=
   (smul_mono_right _).map_inf_le _ _
