@@ -62,14 +62,13 @@ lemma not_LSeriesSummable_moebius_at_one : ¬ LSeriesSummable ↗μ 1 := by
 
 /-- The L-series of the Möbius function converges absolutely at `s` if and only if `re s > 1`. -/
 lemma LSeriesSummable_moebius_iff {s : ℂ} : LSeriesSummable ↗μ s ↔ 1 < s.re := by
-  refine ⟨fun H ↦ ?_, LSeriesSummable_of_bounded_of_one_lt_re (m := 1) fun n ↦ ?_⟩
+  refine ⟨fun H ↦ ?_, LSeriesSummable_of_bounded_of_one_lt_re (m := 1) fun n _ ↦ ?_⟩
   · by_contra! h
     have h' : s.re ≤ (1 : ℂ).re := by simp only [one_re, h]
     exact not_LSeriesSummable_moebius_at_one <| LSeriesSummable.of_re_le_re h' H
-  · rw [abs_intCast, ← Int.cast_abs]
-    rcases eq_or_ne (μ n) 0 with h | h
-    · simp [h]
-    · rcases moebius_ne_zero_iff_eq_or.mp h with h | h <;> simp [h]
+  · rw [abs_intCast] -- not done by `norm_cast`
+    norm_cast
+    exact abs_moebius_le_one
 
 /-- The abscissa of absolute convergence of the L-series of the Möbius function is `1`. -/
 lemma abscissaOfAbsConv_moebius : abscissaOfAbsConv ↗μ = 1 := by
