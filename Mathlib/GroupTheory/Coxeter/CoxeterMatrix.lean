@@ -258,5 +258,3 @@ theorem isCoxeter_H₄ : H₄.IsCoxeter where
   off_diagonal := by decide
 
 end CoxeterMatrix
-
-end
