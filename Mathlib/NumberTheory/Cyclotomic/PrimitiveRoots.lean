@@ -489,9 +489,9 @@ theorem norm_sub_one_of_prime_ne_two {k : ℕ} (hζ : IsPrimitiveRoot ζ ↑(p ^
 
 /-- If `Irreducible (cyclotomic p K)` (in particular for `K = ℚ`) and `p` is an odd prime,
 then the norm of `ζ - 1` is `p`. -/
-theorem norm_sub_one_of_prime_ne_two' [hpri : Fact (p : ℕ).Prime] [hcyc : IsCyclotomicExtension {p} K L]
-    (hζ : IsPrimitiveRoot ζ p) (hirr : Irreducible (cyclotomic p K)) (h : p ≠ 2) :
-    norm K (ζ - 1) = p := by
+theorem norm_sub_one_of_prime_ne_two' [hpri : Fact (p : ℕ).Prime]
+    [hcyc : IsCyclotomicExtension {p} K L] (hζ : IsPrimitiveRoot ζ p)
+    (hirr : Irreducible (cyclotomic p K)) (h : p ≠ 2) : norm K (ζ - 1) = p := by
   replace hirr : Irreducible (cyclotomic (p ^ (0 + 1) : ℕ) K) := by simp [hirr]
   replace hζ : IsPrimitiveRoot ζ (p ^ (0 + 1) : ℕ) := by simp [hζ]
   haveI : IsCyclotomicExtension {p ^ (0 + 1)} K L := by simp [hcyc]
@@ -620,8 +620,9 @@ theorem norm_zeta_sub_one_of_prime_ne_two [Fact (p : ℕ).Prime]
 
 /-- If `Irreducible (cyclotomic (2 ^ k) K)` (in particular for `K = ℚ`) and `k` is at least `2`,
 then the norm of `zeta (2 ^ k) K L - 1` is `2`. -/
-theorem norm_zeta_pow_sub_one_of_eq_two {k : ℕ} (hk : 2 ≤ k) [IsCyclotomicExtension {(2 : ℕ+) ^ k} K L]
-    (hirr : Irreducible (cyclotomic (2 ^ k) K)) : norm K (zeta ((2 : ℕ+) ^ k) K L - 1) = 2 :=
+theorem norm_zeta_pow_sub_one_of_eq_two {k : ℕ} (hk : 2 ≤ k)
+    [IsCyclotomicExtension {(2 : ℕ+) ^ k} K L] (hirr : Irreducible (cyclotomic (2 ^ k) K)) :
+    norm K (zeta ((2 : ℕ+) ^ k) K L - 1) = 2 :=
   norm_sub_one_of_eq_two (zeta_spec ((2 : ℕ+) ^ k) K L) hk hirr
 #align is_cyclotomic_extension.two_pow_norm_zeta_sub_one IsCyclotomicExtension.norm_zeta_pow_sub_one_of_eq_two
 
@@ -631,14 +632,23 @@ end IsCyclotomicExtension
 @[deprecated] alias IsPrimitiveRoot.pow_sub_one_norm_prime_pow_ne_two := IsPrimitiveRoot.norm_pow_sub_one_of_prime_pow_ne_two
 @[deprecated] alias IsPrimitiveRoot.pow_sub_one_norm_prime_ne_two := IsPrimitiveRoot.norm_pow_sub_one_of_prime_ne_two
 @[deprecated] alias IsPrimitiveRoot.sub_one_norm_prime_ne_two := IsPrimitiveRoot.norm_sub_one_of_prime_ne_two
-@[deprecated] alias IsPrimitiveRoot.sub_one_norm_prime := IsPrimitiveRoot.norm_sub_one_of_prime_ne_two'
-@[deprecated] alias IsPrimitiveRoot.pow_sub_one_norm_two := IsPrimitiveRoot.norm_pow_sub_one_of_eq_two
-@[deprecated] alias IsPrimitiveRoot.sub_one_norm_two := IsPrimitiveRoot.norm_sub_one_of_eq_two
-@[deprecated] alias IsPrimitiveRoot.pow_sub_one_norm_prime_pow_of_ne_zero := IsPrimitiveRoot.norm_pow_sub_one_prime_pow_of_ne_zero
-@[deprecated] alias IsCyclotomicExtension.isPrimePow_norm_zeta_sub_one := IsCyclotomicExtension.norm_zeta_sub_one_of_isPrimePow
-@[deprecated] alias IsCyclotomicExtension.prime_ne_two_pow_norm_zeta_pow_sub_one := IsCyclotomicExtension.norm_zeta_pow_sub_one_of_prime_pow_ne_two
-@[deprecated] alias IsCyclotomicExtension.prime_ne_two_pow_norm_zeta_sub_one := IsCyclotomicExtension.norm_zeta_pow_sub_one_of_prime_ne_two
-@[deprecated] alias IsCyclotomicExtension.prime_ne_two_norm_zeta_sub_one := IsCyclotomicExtension.norm_zeta_sub_one_of_prime_ne_two
-@[deprecated] alias IsCyclotomicExtension.two_pow_norm_zeta_sub_one := IsCyclotomicExtension.norm_zeta_pow_sub_one_of_eq_two
+@[deprecated] alias IsPrimitiveRoot.sub_one_norm_prime :=
+  IsPrimitiveRoot.norm_sub_one_of_prime_ne_two'
+@[deprecated] alias IsPrimitiveRoot.pow_sub_one_norm_two :=
+  IsPrimitiveRoot.norm_pow_sub_one_of_eq_two
+@[deprecated] alias IsPrimitiveRoot.sub_one_norm_two :=
+  IsPrimitiveRoot.norm_sub_one_of_eq_two
+@[deprecated] alias IsPrimitiveRoot.pow_sub_one_norm_prime_pow_of_ne_zero :=
+  IsPrimitiveRoot.norm_pow_sub_one_prime_pow_of_ne_zero
+@[deprecated] alias IsCyclotomicExtension.isPrimePow_norm_zeta_sub_one :=
+  IsCyclotomicExtension.norm_zeta_sub_one_of_isPrimePow
+@[deprecated] alias IsCyclotomicExtension.prime_ne_two_pow_norm_zeta_pow_sub_one :=
+  IsCyclotomicExtension.norm_zeta_pow_sub_one_of_prime_pow_ne_two
+@[deprecated] alias IsCyclotomicExtension.prime_ne_two_pow_norm_zeta_sub_one :=
+  IsCyclotomicExtension.norm_zeta_pow_sub_one_of_prime_ne_two
+@[deprecated] alias IsCyclotomicExtension.prime_ne_two_norm_zeta_sub_one :=
+  IsCyclotomicExtension.norm_zeta_sub_one_of_prime_ne_two
+@[deprecated] alias IsCyclotomicExtension.two_pow_norm_zeta_sub_one :=
+  IsCyclotomicExtension.norm_zeta_pow_sub_one_of_eq_two
 
 end Norm
