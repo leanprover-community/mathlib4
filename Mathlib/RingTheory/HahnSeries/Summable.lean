@@ -493,7 +493,7 @@ def powers (x : HahnSeries Γ R) (hx : 0 < addVal Γ R x) : SummableFamily Γ R 
         refine' Set.mem_union_left _ ⟨n, Set.mem_iUnion.2 ⟨⟨j, i⟩, Set.mem_iUnion.2 ⟨_, hi⟩⟩, rfl⟩
         simp only [and_true_iff, Set.mem_iUnion, mem_addAntidiagonal, mem_coe, eq_self_iff_true,
           Ne, mem_support, Set.mem_setOf_eq]
-        exact ⟨hi, n, hj⟩
+        exact ⟨hj, ⟨n, hi⟩, add_comm j i⟩
 #align hahn_series.summable_family.powers HahnSeries.SummableFamily.powers
 
 variable {x : HahnSeries Γ R} (hx : 0 < addVal Γ R x)
