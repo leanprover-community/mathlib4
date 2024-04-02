@@ -192,7 +192,7 @@ theorem mul_den_eq_num {q : ℚ} : q * q.den = q.num := by
 #align rat.mul_denom_eq_num Rat.mul_den_eq_num
 
 theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den = 1 ↔ n ∣ m := by
-  replace hn : (n : ℚ) ≠ 0 := by rwa [Ne.def, ← Int.cast_zero, coe_int_inj]
+  replace hn : (n : ℚ) ≠ 0 := by rwa [Ne, ← Int.cast_zero, coe_int_inj]
   constructor
   · intro h
     -- Porting note: was `lift (m : ℚ) / n to ℤ using h with k hk`
@@ -231,7 +231,7 @@ theorem coe_int_div_self (n : ℤ) : ((n / n : ℤ) : ℚ) = n / n := by
   · subst hn
     simp only [Int.cast_zero, Int.zero_div, zero_div, Int.ediv_zero]
   · have : (n : ℚ) ≠ 0 := by rwa [← coe_int_inj] at hn
-    simp only [Int.ediv_self hn, Int.cast_one, Ne.def, not_false_iff, div_self this]
+    simp only [Int.ediv_self hn, Int.cast_one, Ne, not_false_iff, div_self this]
 #align rat.coe_int_div_self Rat.coe_int_div_self
 
 @[norm_cast]

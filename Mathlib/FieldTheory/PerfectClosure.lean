@@ -168,11 +168,11 @@ instance instCommMonoid : CommMonoid (PerfectClosure K p) :=
     one_mul := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ =>
         congr_arg (Quot.mk _) <| by
-          simp only [RingHom.iterate_map_one, iterate_zero_apply, one_mul, zero_add]
+          simp only [iterate_map_one, iterate_zero_apply, one_mul, zero_add]
     mul_one := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ =>
         congr_arg (Quot.mk _) <| by
-          simp only [RingHom.iterate_map_one, iterate_zero_apply, mul_one, add_zero]
+          simp only [iterate_map_one, iterate_zero_apply, mul_one, add_zero]
     mul_comm := fun e f =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ =>
@@ -279,15 +279,15 @@ instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
     zero_add := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ =>
         congr_arg (Quot.mk _) <| by
-          simp only [RingHom.iterate_map_zero, iterate_zero_apply, zero_add]
+          simp only [iterate_map_zero, iterate_zero_apply, zero_add]
     add_zero := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ =>
         congr_arg (Quot.mk _) <| by
-          simp only [RingHom.iterate_map_zero, iterate_zero_apply, add_zero]
+          simp only [iterate_map_zero, iterate_zero_apply, add_zero]
     sub_eq_add_neg := fun a b => rfl
     add_left_neg := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ => by
-        simp only [quot_mk_eq_mk, neg_mk, mk_add_mk, RingHom.iterate_map_neg, add_left_neg, mk_zero]
+        simp only [quot_mk_eq_mk, neg_mk, mk_add_mk, iterate_map_neg, add_left_neg, mk_zero]
     add_comm := fun e f =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ => congr_arg (Quot.mk _) <| by simp only [add_comm]
@@ -301,11 +301,11 @@ instance instCommRing : CommRing (PerfectClosure K p) :=
     zero_mul := fun a => by
       refine Quot.inductionOn a fun ⟨m, x⟩ => ?_
       rw [zero_def, quot_mk_eq_mk, mk_mul_mk]
-      simp only [zero_add, iterate_zero, id_eq, RingHom.iterate_map_zero, zero_mul, mk_zero]
+      simp only [zero_add, iterate_zero, id_eq, iterate_map_zero, zero_mul, mk_zero]
     mul_zero := fun a => by
       refine Quot.inductionOn a fun ⟨m, x⟩ => ?_
       rw [zero_def, quot_mk_eq_mk, mk_mul_mk]
-      simp only [zero_add, iterate_zero, id_eq, RingHom.iterate_map_zero, mul_zero, mk_zero]
+      simp only [zero_add, iterate_zero, id_eq, iterate_map_zero, mul_zero, mk_zero]
     left_distrib := fun e f g =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ =>
@@ -507,9 +507,9 @@ instance instDivisionRing : DivisionRing (PerfectClosure K p) :=
         have := mt (eq_iff _ _ _ _).2 H
         rw [mk_inv, mk_mul_mk]
         refine (eq_iff K p _ _).2 ?_
-        simp only [(frobenius _ _).iterate_map_one, (frobenius K p).iterate_map_zero,
+        simp only [iterate_map_one, iterate_map_zero,
             iterate_zero_apply, ← iterate_map_mul] at this ⊢
-        rw [mul_inv_cancel this, (frobenius _ _).iterate_map_one]
+        rw [mul_inv_cancel this, iterate_map_one]
     inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero])
     qsmul := qsmulRec _ }
 

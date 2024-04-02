@@ -204,7 +204,7 @@ instance hasNatSMul : SMul ℕ (LocalizedModule S M) where smul n := nsmulRec n
 private theorem nsmul_zero' (x : LocalizedModule S M) : (0 : ℕ) • x = 0 :=
   LocalizedModule.induction_on (fun _ _ => rfl) x
 
-private theorem nsmul_succ' (n : ℕ) (x : LocalizedModule S M) : n.succ • x = x + n • x :=
+private theorem nsmul_succ' (n : ℕ) (x : LocalizedModule S M) : n.succ • x = n • x + x :=
   LocalizedModule.induction_on (fun _ _ => rfl) x
 
 instance : AddCommMonoid (LocalizedModule S M) where

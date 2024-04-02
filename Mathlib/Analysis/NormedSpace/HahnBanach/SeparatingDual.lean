@@ -36,7 +36,7 @@ instance {E : Type*} [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup 
     simp only [map_zero] at hf
     exact ⟨f, hf.ne'⟩⟩
 
-instance {E 𝕜 : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
+instance {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
   ⟨fun x hx ↦ by
     rcases exists_dual_vector 𝕜 x hx with ⟨f, -, hf⟩
     refine ⟨f, ?_⟩

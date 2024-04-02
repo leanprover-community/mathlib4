@@ -197,6 +197,10 @@ section ContinuousInv
 variable [TopologicalSpace G] [Inv G] [ContinuousInv G]
 
 @[to_additive]
+instance : ContinuousInv (ULift G) :=
+  ⟨continuous_uLift_up.comp (continuous_inv.comp continuous_uLift_down)⟩
+
+@[to_additive]
 theorem continuousOn_inv {s : Set G} : ContinuousOn Inv.inv s :=
   continuous_inv.continuousOn
 #align continuous_on_inv continuousOn_inv
@@ -486,6 +490,8 @@ end Conj
 
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [TopologicalSpace α] {f : α → G}
   {s : Set α} {x : α}
+
+instance : TopologicalGroup (ULift G) where
 
 section ZPow
 
@@ -1602,7 +1608,7 @@ theorem TopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U �
     T2Space G := by
   suffices T1Space G from inferInstance
   refine t1Space_iff_specializes_imp_eq.2 fun x y hspec ↦ by_contra fun hne ↦ ?_
-  rcases H (x * y⁻¹) (by rwa [Ne.def, mul_inv_eq_one]) with ⟨U, hU₁, hU⟩
+  rcases H (x * y⁻¹) (by rwa [Ne, mul_inv_eq_one]) with ⟨U, hU₁, hU⟩
   exact hU <| mem_of_mem_nhds <| hspec.map (continuous_mul_right y⁻¹) (by rwa [mul_inv_self])
 #align topological_group.t2_space_of_one_sep TopologicalGroup.t2Space_of_one_sep
 #align topological_add_group.t2_space_of_zero_sep TopologicalAddGroup.t2Space_of_zero_sep
