@@ -262,13 +262,11 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
   rw [card_set_walk_length_eq]
   induction' n with n ih generalizing u v
   · obtain rfl | h := eq_or_ne u v <;> simp [finsetWalkLength, *]
-  · simp only [pow_succ, finsetWalkLength, ih, adjMatrix_mul_apply]
+  · simp only [pow_succ', finsetWalkLength, ih, adjMatrix_mul_apply]
     rw [Finset.card_biUnion]
     · norm_cast
       simp only [Nat.cast_sum, card_map, neighborFinset_def]
-      -- FIXME nightly-testing
-      sorry
-      -- apply Finset.sum_toFinset_eq_subtype
+      apply Finset.sum_toFinset_eq_subtype
     -- Disjointness for card_bUnion
     · rintro ⟨x, hx⟩ - ⟨y, hy⟩ - hxy
       rw [disjoint_iff_inf_le]
