@@ -1073,12 +1073,17 @@ theorem moebius_ne_zero_iff_squarefree {n : ℕ} : μ n ≠ 0 ↔ Squarefree n :
   · simp [h, pow_ne_zero]
 #align nat.arithmetic_function.moebius_ne_zero_iff_squarefree ArithmeticFunction.moebius_ne_zero_iff_squarefree
 
+theorem moebius_eq_or (n : ℕ) : μ n = 0 ∨ μ n = 1 ∨ μ n = -1 := by
+  simp only [moebius, coe_mk]
+  split_ifs
+  · right
+    exact neg_one_pow_eq_or ..
+  · left
+    rfl
+
 theorem moebius_ne_zero_iff_eq_or {n : ℕ} : μ n ≠ 0 ↔ μ n = 1 ∨ μ n = -1 := by
-  constructor <;> intro h
-  · rw [moebius_ne_zero_iff_squarefree] at h
-    rw [moebius_apply_of_squarefree h]
-    apply neg_one_pow_eq_or
-  · rcases h with (h | h) <;> simp [h]
+  have := moebius_eq_or n
+  aesop
 #align nat.arithmetic_function.moebius_ne_zero_iff_eq_or ArithmeticFunction.moebius_ne_zero_iff_eq_or
 
 theorem moebius_sq_eq_one_of_squarefree {l : ℕ} (hl : Squarefree l) : μ l ^ 2 = 1 := by
@@ -1099,6 +1104,10 @@ theorem abs_moebius {n : ℕ} :
   split_ifs with h
   · exact abs_moebius_eq_one_of_squarefree h
   · simp only [moebius_eq_zero_of_not_squarefree h, abs_zero]
+
+theorem abs_moebius_le_one {n : ℕ} : |μ n| ≤ 1 := by
+  rw [abs_moebius, apply_ite (· ≤ 1)]
+  simp
 
 theorem moebius_apply_prime {p : ℕ} (hp : p.Prime) : μ p = -1 := by
   rw [moebius_apply_of_squarefree hp.squarefree, cardFactors_apply_prime hp, pow_one]
