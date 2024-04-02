@@ -7,17 +7,18 @@ import Mathlib.GroupTheory.Coxeter.Length
 
 /-!
 # Reflections, inversions, and inversion sequences
+
 Throughout this file, `B` is a type and `M : Matrix B B ℕ` is a Coxeter matrix.
 `cs : CoxeterSystem M W` is a Coxeter system; that is, `W` is a group, and `cs` holds the data
 of a group isomorphism `W ≃* M.coxeterGroup`, where `M.coxeterGroup` refers to the quotient of the
 free group on `B` by the Coxeter relations given by the matrix `M`. See
-`Mathlib.GroupTheory.Coxeter.Basic` for more details.
+`Mathlib/GroupTheory/Coxeter/Basic.lean` for more details.
 
 We define a *reflection* to be an element of the form
 $t = u s_i u^{-1}$, where $u \in W$ and $s_i$ is a simple reflection. We say that a reflection $t$
 is a *left inversion* of an element $w \in W$ if $\ell(t w) < \ell (w)$, and we say it is a
 *right inversion* of $w$ if $\ell(w t) > \ell(w)$. Here $\ell$ is the length function
-(see `Mathlib.GroupTheory.Coxeter.Length`).
+(see `Mathlib/GroupTheory/Coxeter/Length.lean`).
 
 Given a word, we define its *left inversion sequence* and its *right inversion sequence*. We prove
 that if a word is reduced, then both of its inversion sequences contain no duplicates.
@@ -26,6 +27,7 @@ of the right (respectively, left) inversions of $w$ in some order, but we do not
 file.
 
 ## Main definitions
+
 * `cs.IsReflection`
 * `cs.IsLeftInversion`
 * `cs.IsRightInversion`
@@ -33,7 +35,9 @@ file.
 * `cs.rightInvSeq`
 
 ## References
+
 * [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*](bjorner2005)
+
 -/
 
 noncomputable section
