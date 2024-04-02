@@ -12,7 +12,7 @@ We develop properties of integrals with a group as domain.
 This file contains properties about Lebesgue integration.
 -/
 
--- assert_not_exists NormedSpace -- this doesn't work after #6225, but will hopefully work soon
+assert_not_exists NormedSpace
 
 namespace MeasureTheory
 
