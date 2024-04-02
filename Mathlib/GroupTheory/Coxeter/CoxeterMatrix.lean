@@ -5,7 +5,7 @@ Authors: Newell Jensen, Mitchell Lee
 -/
 import Mathlib.GroupTheory.Coxeter.Basic
 
-/-
+/--
 # Coxeter matrices
 
 Following `Mathlib/GroupTheory/Coxeter/Basic.lean`, we say that a matrix of natural numbers is a
