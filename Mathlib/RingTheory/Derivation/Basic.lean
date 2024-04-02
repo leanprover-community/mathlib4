@@ -33,7 +33,6 @@ and `RingTheory.Derivation.ToSquareZero` for
 -/
 
 open Algebra
-open scoped BigOperators
 
 /-- `D : Derivation R A M` is an `R`-linear map from `A` to `M` that satisfies the `leibniz`
 equality. We also require that `D 1 = 0`. See `Derivation.mk'` for a constructor that deduces this
@@ -129,10 +128,7 @@ theorem leibniz : D (a * b) = a • D b + b • D a :=
   D.leibniz' _ _
 #align derivation.leibniz Derivation.leibniz
 
-nonrec theorem map_sum {ι : Type*} (s : Finset ι) (f : ι → A) :
-    D (∑ i in s, f i) = ∑ i in s, D (f i) :=
-  map_sum D _ _
-#align derivation.map_sum Derivation.map_sum
+#noalign derivation.map_sum
 
 @[simp]
 theorem map_smul_of_tower {S : Type*} [SMul S A] [SMul S M] [LinearMap.CompatibleSMul A M S R]
