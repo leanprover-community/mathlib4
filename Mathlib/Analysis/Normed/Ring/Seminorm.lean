@@ -321,8 +321,7 @@ instance : Inhabited (MulRingNorm R) :=
   ⟨1⟩
 
 
-variable {R : Type*}
-variable [Ring R]
+variable {R : Type*} [Ring R]
 
 /-- Two multiplicative ring norms `f, g` on `R` are equivalent if there exists a positive constant
   `c` such that for all `x ∈ R`, `(f x)^c = g x`.
@@ -391,6 +390,6 @@ lemma MulRingNorm_nat_le_nat {R : Type*} [Ring R] (n : ℕ) (f : MulRingNorm R) 
   | succ n hn =>
     simp only [Nat.cast_succ]
     calc
-      f (↑n + 1) ≤ f (↑n) + f 1 := f.add_le' ↑n 1
-      _ = f (↑n) + 1 := by rw [map_one]
-      _ ≤ ↑n + 1 := add_le_add_right hn 1
+      f (n + 1) ≤ f (n) + f 1 := f.add_le' ↑n 1
+      _ = f (n) + 1 := by rw [map_one]
+      _ ≤ n + 1 := add_le_add_right hn 1
