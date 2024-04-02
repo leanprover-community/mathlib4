@@ -22,7 +22,7 @@ namespace Set
 
 section Subsingleton
 
-variable {α : Type u} {s t : Set α} (a : α)
+variable {α : Type u} {a : α} {s t : Set α}
 
 /-- A set `s` is a `Subsingleton` if it has at most one element. -/
 protected def Subsingleton (s : Set α) : Prop :=
