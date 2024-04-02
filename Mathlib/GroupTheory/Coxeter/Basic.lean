@@ -446,19 +446,16 @@ def simpleReflection (i : B) : W := cs.mulEquiv.symm (PresentedGroup.of i)
 
 local prefix:100 "s" => cs.simpleReflection
 
-@[simp]
-theorem ofCoxeterGroup_simple (hM : IsCoxeter M) :
+theorem canonicalCoxeterSystem_simple (hM : IsCoxeter M) :
     hM.canonicalCoxeterSystem.simpleReflection = M.coxeterGroupSimpleReflection := rfl
 
 @[simp]
 theorem reindex_simple {B' : Type*} (e : B ≃ B') (i' : B') :
-    (cs.reindex e).simpleReflection i' = s (e.symm i') :=
-  rfl
+    (cs.reindex e).simpleReflection i' = s (e.symm i') := rfl
 
 @[simp]
 theorem map_simple {W' : Type*} [Group W'] (e : W ≃* W') (i : B) :
-    (cs.map e).simpleReflection i = e (s i) :=
-  rfl
+    (cs.map e).simpleReflection i = e (s i) := rfl
 
 @[simp] theorem simple_mul_simple_self (i : B) : s i * s i = 1 := by
   dsimp [simpleReflection]
