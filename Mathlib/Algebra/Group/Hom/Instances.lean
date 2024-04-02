@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Ring.Basic
 
 #align_import algebra.hom.group_instances from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"
@@ -297,9 +297,9 @@ end MonoidHom
 /-!
 ### Miscellaneous definitions
 
-Due to the fact this file imports `Algebra.GroupPower.Basic`, it is not possible to import it in
-some of the lower-level files like `Algebra.Ring.Basic`. The following lemmas should be rehomed
-if the import structure permits them to be.
+This file used to import `Algebra.GroupPower.Basic`, hence it was not possible to import it in
+some of the lower-level files like `Algebra.Ring.Basic`. The following lemmas should be rehomed now
+that `Algebra.GroupPower.Basic` was deleted.
 -/
 
 

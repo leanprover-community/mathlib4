@@ -7,7 +7,6 @@ import Mathlib.Algebra.Invertible.GroupWithZero
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Units
-import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Ring.Defs
 

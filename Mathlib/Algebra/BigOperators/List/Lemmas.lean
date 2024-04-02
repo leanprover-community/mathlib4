@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 import Mathlib.Algebra.BigOperators.List.Basic
 import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Monoid.OrderDual
