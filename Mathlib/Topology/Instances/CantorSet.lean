@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Jana Göken. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Artur Szafarczyk, Suraj Krishna M S, JB Stiegler, Isabelle Dubois,
+Authors: Artur Szafarczyk, Suraj Krishna M S, Jean-Baptiste Stiegler, Isabelle Dubois,
 Tomáš Jakl, Lorenzo Zanichelli, Alina Yan, Emilie Uthaiwat, Jana Göken
 under guidance of Filippo A. E. Nuccio
 -/
