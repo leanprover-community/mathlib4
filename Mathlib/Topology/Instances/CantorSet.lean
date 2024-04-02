@@ -92,7 +92,7 @@ lemma isClosed_cantorSet : IsClosed cantorSet := by
       convert f.closedEmbedding using 2
       simp [f, div_eq_inv_mul]
     · refine (ClosedEmbedding.closed_iff_image_closed ?succ.refine_2.hf).mp ih
-      convert  g.closedEmbedding using 2
+      convert g.closedEmbedding using 2
       simp [g, f, div_eq_inv_mul]
 
 
