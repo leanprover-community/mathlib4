@@ -382,6 +382,9 @@ instance limitRing : Ring.{u} (Types.Small.limitCone.{v, u} (F ⋙ forget RingCa
 set_option linter.uppercaseLean3 false in
 #align Ring.limit_ring RingCat.limitRing
 
+-- Adaptation note: nightly-2024-04-01
+-- This maxHeartbeats increase was not previously needed.
+set_option maxHeartbeats 800000 in
 /-- We show that the forgetful functor `CommRingCat ⥤ RingCat` creates limits.
 
 All we need to do is notice that the limit point has a `Ring` instance available,

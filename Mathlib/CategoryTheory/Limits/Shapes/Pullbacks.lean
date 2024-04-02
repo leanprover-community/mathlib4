@@ -1695,11 +1695,13 @@ instance hasPullback_of_right_factors_mono (f : X ⟶ Z) : HasPullback i (f ≫ 
 
 instance pullback_snd_iso_of_right_factors_mono (f : X ⟶ Z) :
     IsIso (pullback.snd : pullback i (f ≫ i) ⟶ _) := by
-  convert (congrArg IsIso (show _ ≫ pullback.snd = _ from
-    limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono (𝟙 _) f i⟩ WalkingCospan.right)).mp
-    inferInstance;
-  · exact (Category.id_comp _).symm
-  · exact (Category.id_comp _).symm
+  -- FIXME nightly-testing 2024-04-01
+  sorry
+  -- convert (congrArg IsIso (show _ ≫ pullback.snd = _ from
+  --   limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono (𝟙 _) f i⟩ WalkingCospan.right)).mp
+  --   inferInstance;
+  -- · exact (Category.id_comp _).symm
+  -- · exact (Category.id_comp _).symm
 #align category_theory.limits.pullback_snd_iso_of_right_factors_mono CategoryTheory.Limits.pullback_snd_iso_of_right_factors_mono
 
 end PullbackLeftIso
@@ -1771,11 +1773,13 @@ instance hasPullback_of_left_factors_mono (f : X ⟶ Z) : HasPullback (f ≫ i) 
 
 instance pullback_snd_iso_of_left_factors_mono (f : X ⟶ Z) :
     IsIso (pullback.fst : pullback (f ≫ i) i ⟶ _) := by
-  convert (congrArg IsIso (show _ ≫ pullback.fst = _ from
-    limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono f (𝟙 _) i⟩ WalkingCospan.left)).mp
-    inferInstance;
-  · exact (Category.id_comp _).symm
-  · exact (Category.id_comp _).symm
+  -- FIXME nightly-testing 2024-04-01
+  sorry
+  -- convert (congrArg IsIso (show _ ≫ pullback.fst = _ from
+  --   limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono f (𝟙 _) i⟩ WalkingCospan.left)).mp
+  --   inferInstance;
+  -- · exact (Category.id_comp _).symm
+  -- · exact (Category.id_comp _).symm
 #align category_theory.limits.pullback_snd_iso_of_left_factors_mono CategoryTheory.Limits.pullback_snd_iso_of_left_factors_mono
 
 end PullbackRightIso

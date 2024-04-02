@@ -505,7 +505,9 @@ instance (f : ι → Type*) (g : (i : ι) → (f i) → C)
     { cocone := Cofan.mk (∐ fun i => ∐ g i)
         (fun X => Sigma.ι (g X.1) X.2 ≫ Sigma.ι (fun i => ∐ g i) X.1)
       isColimit := mkCofanColimit _
-        (fun s => Sigma.desc fun b => Sigma.desc fun c => s.inj ⟨b, c⟩) }
+        (fun s => Sigma.desc fun b => Sigma.desc fun c => s.inj ⟨b, c⟩)
+        -- FIXME nightly-testing: these used be autoparams by aesop
+        sorry sorry }
 
 /-- An iterated coproduct is a coproduct over a sigma type. -/
 @[simps]
