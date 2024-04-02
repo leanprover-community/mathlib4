@@ -636,7 +636,7 @@ theorem length_permutationsAux :
   refine' permutationsAux.rec (by simp) _
   intro t ts is IH1 IH2
   have IH2 : length (permutationsAux is nil) + 1 = is.length ! := by simpa using IH2
-  simp? [Nat.factorial, Nat.add_succ, mul_comm] at IH1 says
+  simp? [Nat.factorial, Nat.add_succ, Nat.mul_comm] at IH1 says
     simp only [factorial, add_eq, Nat.add_zero, Nat.mul_comm] at IH1
   rw [permutationsAux_cons,
     length_foldr_permutationsAux2' _ _ _ _ _ fun l m => (perm_of_mem_permutations m).length_eq,
