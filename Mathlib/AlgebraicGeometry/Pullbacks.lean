@@ -690,7 +690,8 @@ def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
   --     (fun i =>
   --       pullback.map _ _ _ _ pullback.fst pullback.fst (𝒰.map i) pullback.condition.symm
   --         pullback.condition.symm)
-  --     ((Equiv.prodPUnit 𝒰.J).symm.trans (Equiv.sigmaEquivProd 𝒰.J PUnit).symm) fun _ => Iso.refl _
+  --     ((Equiv.prodPUnit 𝒰.J).symm.trans (Equiv.sigmaEquivProd 𝒰.J PUnit).symm)
+  --       fun _ => Iso.refl _
   -- intro i
   -- -- Porting note: deviated from original proof a bit so that it won't timeout.
   -- rw [Iso.refl_hom, Category.id_comp, openCoverOfBase'_map]
