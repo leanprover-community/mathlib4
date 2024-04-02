@@ -663,8 +663,7 @@ def alternatingWord (i i' : B) (m : ℕ) : List B :=
   | m+1  => (alternatingWord i' i m).concat i'
 
 theorem alternatingWord_succ (i i' : B) (m : ℕ) :
-    alternatingWord i i' (m + 1) = (alternatingWord i' i m).concat i' := by
-  rfl
+    alternatingWord i i' (m + 1) = (alternatingWord i' i m).concat i' := rfl
 
 theorem alternatingWord_succ' (i i' : B) (m : ℕ) :
     alternatingWord i i' (m + 1) = (if Even m then i' else i) :: alternatingWord i i' m := by
@@ -707,9 +706,11 @@ theorem prod_alternatingWord_eq_prod_alternatingWord (i i' : B) (m : ℕ) (hm : 
     π (alternatingWord i i' m) = π (alternatingWord i' i (M i i' * 2 - m)) := by
   rw [prod_alternatingWord_eq_pow, prod_alternatingWord_eq_pow]
   simp_rw [← Int.even_coe_nat]
+
   -- Rewrite everything in terms of an integer m' which is equal to m.
   rw [← zpow_natCast, ← zpow_natCast, Int.ofNat_ediv, Int.ofNat_ediv, Int.ofNat_sub hm]
   set m' := (m : ℤ)
+
   -- The resulting equation holds for all integers m'.
   generalize m' = m'
 
