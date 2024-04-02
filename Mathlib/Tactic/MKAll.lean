@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Lean.Elab.Command
-import Lean.Util.Path
 
 /-!
 #  An implementation of the `mk_all.sh` script in Lean
