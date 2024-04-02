@@ -30,24 +30,20 @@ def preCantorSet : ℕ → Set ℝ
 @[simp] lemma preCantorSet_succ (n : ℕ) :
     preCantorSet (n + 1) = (· / 3) '' preCantorSet n ∪ (fun x ↦ (2 + x) / 3) '' preCantorSet n :=
   rfl
+
 /-- The Cantor set is the intersection of all pre-Cantor sets. -/
 def cantorSet : Set ℝ := ⋂ n, preCantorSet n
-
 
 
 /-!
 ## Simple Properties
 -/
 
-/-- The ternary Cantor set inherits the metric and in particular the topology from the reals. -/
-instance cantorSet.metricSpace : MetricSpace cantorSet := inferInstance
-
-
 lemma quarters_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n ∧ 3/4 ∈ preCantorSet n := by
   induction n with
   | zero =>
     simp only [preCantorSet_zero, inv_nonneg]
-    refine ⟨⟨ ?_, ?_⟩ , ⟨ ?_, ?_ ⟩⟩ <;> linarith
+    refine ⟨⟨ ?_, ?_⟩, ?_, ?_⟩ <;> linarith
 
   | succ n ih =>
     apply And.intro
@@ -72,7 +68,6 @@ lemma zero_mem_preCantorSet (n : ℕ) : 0 ∈ preCantorSet n := by
 
 theorem zero_mem_cantorSet : 0 ∈ cantorSet := by simp [cantorSet, zero_mem_preCantorSet]
 
-
 /-- The ternary Cantor set is a subset of [0,1]. -/
 lemma cantorSet_subset_unitInterval : cantorSet ⊆ Set.Icc 0 1 := by
   intro x hx
@@ -96,7 +91,6 @@ lemma isClosed_cantorSet : IsClosed cantorSet := by
     · refine (ClosedEmbedding.closed_iff_image_closed ?succ.refine_2.hf).mp ih
       convert g.closedEmbedding using 2
       simp [g, f, div_eq_inv_mul]
-
 
 /-- The ternary Cantor set is compact. -/
 lemma isCompact_cantorSet : IsCompact cantorSet :=
