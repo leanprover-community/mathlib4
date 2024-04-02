@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Logic.Equiv.Set
+import Mathlib.Tactic.Common
 
 #align_import group_theory.perm.basic from "leanprover-community/mathlib"@"b86832321b586c6ac23ef8cdef6a7a27e42b13bd"
 

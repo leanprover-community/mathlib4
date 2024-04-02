@@ -219,8 +219,7 @@ theorem IsSquare.zpow (n : ℤ) : IsSquare a → IsSquare (a ^ n) := by
 variable [HasDistribNeg α] {n : ℤ}
 
 theorem Even.neg_zpow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
-  rintro ⟨c, rfl⟩ a
-  exact zpow_bit0_neg _ _
+  rintro ⟨c, rfl⟩ a; simp_rw [← Int.two_mul, zpow_mul, zpow_two, neg_mul_neg]
 #align even.neg_zpow Even.neg_zpow
 
 theorem Even.neg_one_zpow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_zpow, one_zpow]
