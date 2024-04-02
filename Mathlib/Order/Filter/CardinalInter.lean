@@ -75,15 +75,15 @@ theorem cardinalInterFilter_aleph_one_iff :
    fun _ ↦ CountableInterFilter.toCardinalInterFilter l⟩
 
 /-- Every CardinalInterFilter for some c also is a CardinalInterFilter for some a ≤ c -/
-theorem CardinalInterFilter.of_CardinalInterFilter_of_le (l : Filter α) [CardinalInterFilter l c]
+theorem CardinalInterFilter.of_cardinalInterFilter_of_le (l : Filter α) [CardinalInterFilter l c]
     {a : Cardinal.{u}} (hac : a ≤ c) :
   CardinalInterFilter l a where
     cardinal_sInter_mem :=
       fun S hS a ↦ CardinalInterFilter.cardinal_sInter_mem S (lt_of_lt_of_le hS hac) a
 
-theorem CardinalInterFilter.of_CardinalInterFilter_of_lt (l : Filter α) [CardinalInterFilter l c]
+theorem CardinalInterFilter.of_cardinalInterFilter_of_lt (l : Filter α) [CardinalInterFilter l c]
     {a : Cardinal.{u}} (hac : a < c) : CardinalInterFilter l a :=
-  CardinalInterFilter.of_CardinalInterFilter_of_le l (hac.le)
+  CardinalInterFilter.of_cardinalInterFilter_of_le l (hac.le)
 
 namespace Filter
 
@@ -173,7 +173,7 @@ def ofCardinalInter (l : Set (Set α)) (hc : 2 < c)
       _ = 2 := by norm_num
     exact lt_of_le_of_lt this hc
 
-lemma cardinalInter_ofCardinalInter (l : Set (Set α)) (hc : 2 < c)
+instance cardinalInter_ofCardinalInter (l : Set (Set α)) (hc : 2 < c)
     (hp : ∀ S : Set (Set α), (#S < c) → S ⊆ l → ⋂₀ S ∈ l)
     (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l) :
     CardinalInterFilter (Filter.ofCardinalInter l hc hp h_mono) c :=
@@ -189,10 +189,7 @@ theorem mem_ofCardinalInter {l : Set (Set α)} (hc : 2 < c)
 Similarly to `Filter.comk`, a set belongs to this filter if its complement satisfies the property.
 Similarly to `Filter.ofCardinalInter`,
 this constructor deduces some properties from the cardinal `c` intersection property
-which becomes the cardinal `c` union property because we take complements of all sets.
-
-Another small difference from `Filter.ofCardinalInter`
-is that this definition takes `p : Set α → Prop` instead of `Set (Set α)`. -/
+which becomes the cardinal `c` union property because we take complements of all sets.-/
 def ofCardinalUnion (p : Set α → Prop) (hc : 2 < c)
     (hUnion : ∀ S : Set (Set α), (#S < c) → (∀ s ∈ S, p s) → p (⋃₀ S))
     (hmono : ∀ t, p t → ∀ s ⊆ t, p s) : Filter α := by
@@ -202,7 +199,7 @@ def ofCardinalUnion (p : Set α → Prop) (hc : 2 < c)
     rwa [Cardinal.mk_image_eq compl_injective]
   · exact hmono _ ht _ (compl_subset_compl.2 hsub)
 
-lemma cardinalInter_ofCardinalUnion (p : Set α → Prop) (hc : 2 < c) (h₁ h₂) :
+instance cardinalInter_ofCardinalUnion (p : Set α → Prop) (hc : 2 < c) (h₁ h₂) :
     CardinalInterFilter (Filter.ofCardinalUnion p hc h₁ h₂) c :=
   cardinalInter_ofCardinalInter ..
 
@@ -251,9 +248,9 @@ instance cardinalInterFilter_inf (l₁ l₂ : Filter α) {c₁ c₂ : Cardinal.{
     [CardinalInterFilter l₁ c₁] [CardinalInterFilter l₂ c₂] : CardinalInterFilter (l₁ ⊓ l₂)
     (c₁ ⊓ c₂) := by
   have : CardinalInterFilter l₁ (c₁ ⊓ c₂) :=
-    CardinalInterFilter.of_CardinalInterFilter_of_le l₁ inf_le_left
+    CardinalInterFilter.of_cardinalInterFilter_of_le l₁ inf_le_left
   have : CardinalInterFilter l₂ (c₁ ⊓ c₂) :=
-    CardinalInterFilter.of_CardinalInterFilter_of_le l₂ inf_le_right
+    CardinalInterFilter.of_cardinalInterFilter_of_le l₂ inf_le_right
   exact cardinalInterFilter_inf_eq _ _
 
 /-- Supremum of two `CardinalInterFilter`s is a `CardinalInterFilter`. -/
@@ -266,9 +263,9 @@ instance cardinalInterFilter_sup (l₁ l₂ : Filter α) {c₁ c₂ : Cardinal.{
     [CardinalInterFilter l₁ c₁] [CardinalInterFilter l₂ c₂] :
     CardinalInterFilter (l₁ ⊔ l₂) (c₁ ⊓ c₂) := by
   have : CardinalInterFilter l₁ (c₁ ⊓ c₂) :=
-    CardinalInterFilter.of_CardinalInterFilter_of_le l₁ inf_le_left
+    CardinalInterFilter.of_cardinalInterFilter_of_le l₁ inf_le_left
   have : CardinalInterFilter l₂ (c₁ ⊓ c₂) :=
-    CardinalInterFilter.of_CardinalInterFilter_of_le l₂ inf_le_right
+    CardinalInterFilter.of_cardinalInterFilter_of_le l₂ inf_le_right
   exact cardinalInterFilter_sup_eq _ _
 
 variable (g : Set (Set α))
