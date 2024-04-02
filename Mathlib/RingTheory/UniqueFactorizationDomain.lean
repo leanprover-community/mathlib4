@@ -1837,7 +1837,7 @@ theorem count_pow [Nontrivial α] [DecidableEq (Associates α)] {a : Associates 
     count p (a ^ k).factors = k * count p a.factors := by
   induction' k with n h
   · rw [pow_zero, factors_one, zero_mul, count_zero hp]
-  · rw [pow_succ, count_mul ha (pow_ne_zero _ ha) hp, h]
+  · rw [pow_succ', count_mul ha (pow_ne_zero _ ha) hp, h]
     ring
 #align associates.count_pow Associates.count_pow
 

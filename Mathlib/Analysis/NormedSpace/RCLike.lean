@@ -67,8 +67,8 @@ theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f :
   have eq : f z = ‖z‖ / r * f z₁ := by
     rw [hz₁, LinearMap.map_smul, smul_eq_mul]
     rw [← mul_assoc, ← mul_assoc, div_mul_cancel₀ _ r_ne_zero, mul_inv_cancel, one_mul]
-    simp only [z_zero, IsROrC.ofReal_eq_zero, norm_eq_zero, Ne, not_false_iff]
-  rw [eq, norm_mul, norm_div, IsROrC.norm_coe_norm, IsROrC.norm_of_nonneg r_pos.le,
+    simp only [z_zero, RCLike.ofReal_eq_zero, norm_eq_zero, Ne, not_false_iff]
+  rw [eq, norm_mul, norm_div, RCLike.norm_coe_norm, RCLike.norm_of_nonneg r_pos.le,
     div_mul_eq_mul_div, div_mul_eq_mul_div, mul_comm]
   apply div_le_div _ _ r_pos rfl.ge
   · exact mul_nonneg ((norm_nonneg _).trans norm_f_z₁) (norm_nonneg z)
