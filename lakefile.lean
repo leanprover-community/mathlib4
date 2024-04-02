@@ -61,6 +61,11 @@ lean_exe checkYaml where
   srcDir := "scripts"
   supportInterpreter := true
 
+/-- `lake exe mkAll` constructs the files containing all imports for a project. -/
+lean_exe mkAll where
+  srcDir := "scripts"
+  supportInterpreter := true
+
 /-- `lake exe shake` checks files for unnecessary imports. -/
 lean_exe shake where
   root := `Shake.Main
