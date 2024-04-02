@@ -39,12 +39,12 @@ Let `R` be a ring, `S` a flat `R`-algebra and `M` a flat `S`-module. To show tha
 as an `R`-module, we show that the inclusion of an `R`-ideal `I` into `R` tensored on the left with
 `M` is injective. For this consider the composition of natural maps
 
-`M ⊗[R] I ≃ M ⊗[S] (S ⊗[R] I) ≃ M ⊗[S] J → M ⊗[S] S → M ≃ M ⊗[R] R`
+`M ⊗[R] I ≃ M ⊗[S] (S ⊗[R] I) ≃ M ⊗[S] J → M ⊗[S] S ≃ M ≃ M ⊗[R] R`
 
 where `J` is the image of `S ⊗[R] I` under the (by flatness of `S`) injective map
 `S ⊗[R] I → S`. One checks that this composition is precisely `I → R` tensored on the left
-with `M` and the former is injective as a composition of injective maps (note that
-`M ⊗[S] S → M` is injective because `M` is `S`-flat).
+with `M` and it is injective as a composition of injective maps (note that
+`M ⊗[S] J → M ⊗[S] S` is injective because `M` is `S`-flat).
 -/
 
 variable (R : Type u) (S : Type v) (M : Type w)

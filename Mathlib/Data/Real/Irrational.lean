@@ -471,7 +471,7 @@ theorem of_pow : ∀ n : ℕ, Irrational (x ^ n) → Irrational x
     exact (h ⟨1, cast_one⟩).elim
   | n + 1 => fun h => by
     rw [pow_succ] at h
-    exact h.mul_cases.elim id (of_pow n)
+    exact h.mul_cases.elim (of_pow n) id
 #align irrational.of_pow Irrational.of_pow
 
 open Int in
@@ -630,7 +630,7 @@ theorem irrational_rat_div_iff : Irrational (q / x) ↔ q ≠ 0 ∧ Irrational x
 
 @[simp]
 theorem irrational_div_rat_iff : Irrational (x / q) ↔ q ≠ 0 ∧ Irrational x := by
-  rw [div_eq_mul_inv, ← cast_inv, irrational_mul_rat_iff, Ne.def, inv_eq_zero]
+  rw [div_eq_mul_inv, ← cast_inv, irrational_mul_rat_iff, Ne, inv_eq_zero]
 #align irrational_div_rat_iff irrational_div_rat_iff
 
 @[simp]

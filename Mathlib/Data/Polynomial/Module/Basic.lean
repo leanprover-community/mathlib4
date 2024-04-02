@@ -97,7 +97,7 @@ def _root_.LinearMap.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N]
     (fun p q hp hq m ↦ by simp_all [add_smul]) fun n k h m ↦ by
       simp_rw [RingHom.id_apply, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
         LinearMap.comp_apply, LinearEquiv.coe_toLinearMap] at h ⊢
-      simp_rw [pow_succ', ← mul_assoc, mul_smul _ X, ← hf, ← of_symm_X_smul, ← h]
+      simp_rw [pow_succ, ← mul_assoc, mul_smul _ X, ← hf, ← of_symm_X_smul, ← h]
 
 lemma annihilator_eq_ker_aeval [FaithfulSMul A M] :
     annihilator R[X] (AEval R M a) = RingHom.ker (aeval a) := by
