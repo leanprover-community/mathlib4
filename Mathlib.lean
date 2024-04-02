@@ -1467,6 +1467,11 @@ import Mathlib.Combinatorics.Quiver.Push
 import Mathlib.Combinatorics.Quiver.SingleObj
 import Mathlib.Combinatorics.Quiver.Subquiver
 import Mathlib.Combinatorics.Quiver.Symmetric
+import Mathlib.Combinatorics.Multigraph.Basic
+import Mathlib.Combinatorics.Multigraph.Covering
+import Mathlib.Combinatorics.Multigraph.ReducedPaths
+import Mathlib.Combinatorics.Multigraph.SubgroupCover
+import Mathlib.Combinatorics.Multigraph.UniversalCover
 import Mathlib.Combinatorics.Schnirelmann
 import Mathlib.Combinatorics.Multigraph.Basic
 import Mathlib.Combinatorics.Multigraph.Covering
