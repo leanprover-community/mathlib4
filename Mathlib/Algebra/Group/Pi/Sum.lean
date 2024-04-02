@@ -138,8 +138,7 @@ instance instElimDivInvMonoid [∀ (i : ια), DivInvMonoid (α i)]
 
 instance instElimSubNegMonoid [∀ (i : ια), SubNegMonoid (α i)]
     [∀ i : ιβ, SubNegMonoid (β i)] (i : ια ⊕ ιβ) : SubNegMonoid (Sum.elim α β i) :=
-  { toAddMonoid := instElimAddMonoid i
-    sub_eq_add_neg := fun _ _ => match i with
+  { sub_eq_add_neg := fun _ _ => match i with
     | Sum.inl i => sub_eq_add_neg (G := α i) _ _
     | Sum.inr i => sub_eq_add_neg (G := β i) _ _
     zsmul := fun i x => i • x
