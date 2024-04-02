@@ -24,14 +24,6 @@ associated to some Coxeter matrix $M$. By abuse of language, we also say that $W
 group, and we may speak of the simple reflections $s_i \in W$. The simple reflections of $W$
 generate $W$.
 
-The finite Coxeter groups are classified (TODO) as the four infinite families:
-
-* `Aₙ, Bₙ, Dₙ, I₂ₘ`
-
-And the exceptional systems:
-
-* `E₆, E₇, E₈, F₄, G₂, H₃, H₄`
-
 ## Implementation details
 
 In most texts on Coxeter groups, each entry $M_{i,i'}$ of the Coxeter matrix can be either a
@@ -51,7 +43,7 @@ wherever possible.
 ## Main definitions
 
 * `Matrix.IsCoxeter` : `IsCoxeter M` means that `M` is a Coxeter matrix; that is, a symmetric matrix
-  of natural numbers with diagonal entries equal to one and off-diagonal entries distinct from one.
+  of natural numbers with diagonal entries equal to 1 and off-diagonal entries not equal to 1.
 * `Matrix.coxeterGroup` : `M.coxeterGroup` is the Coxeter group associated to the matrix $M$; that
   is, the group
   $$\langle \{s_i\}_{i \in B} \vert \{(s_i s_{i'})^{M_{i, i'}}\}_{i, i' \in B} \rangle.$$
@@ -59,21 +51,6 @@ wherever possible.
   `M.coxeterGroup` for some Coxeter matrix `M`.
 * `IsCoxeterGroup` : `IsCoxeterGroup W` means that there exists a Coxeter matrix `M` such that
   `W` is isomorphic to `M.coxeterGroup`.
-* `CoxeterMatrix.Aₙ` : Coxeter matrix for the symmetry group of the regular n-simplex.
-* `CoxeterMatrix.Bₙ` : Coxeter matrix for the symmetry group of the regular n-hypercube
-  and its dual, the regular n-orthoplex (or n-cross-polytope).
-* `CoxeterMatrix.Dₙ` : Coxeter matrix for the symmetry group of the n-demicube.
-* `CoxeterMatrix.I₂ₘ` : Coxeter matrix for the symmetry group of the regular (m + 2)-gon.
-* `CoxeterMatrix.E₆` : Coxeter matrix for the symmetry group of the E₆ root polytope.
-* `CoxeterMatrix.E₇` : Coxeter matrix for the symmetry group of the E₇ root polytope.
-* `CoxeterMatrix.E₈` : Coxeter matrix for the symmetry group of the E₈ root polytope.
-* `CoxeterMatrix.F₄` : Coxeter matrix for the symmetry group of the regular 4-polytope,
-  the 24-cell.
-* `CoxeterMatrix.G₂` : Coxeter matrix for the symmetry group of the regular hexagon.
-* `CoxeterMatrix.H₃` : Coxeter matrix for the symmetry group of the regular dodecahedron
-  and icosahedron.
-* `CoxeterMatrix.H₄` : Coxeter matrix for the symmetry group of the regular 4-polytopes,
-  the 120-cell and 600-cell.
 * `CoxeterSystem.simpleReflection `: The simple reflection corresponding to an index `i : B`.
 * `CoxeterSystem.lift`: Given `f : B → G`, where `G` is a monoid and `f` is a function whose values
 satisfy the Coxeter relations, extend it to a monoid homomorphism `f' : W → G` satisfying
@@ -105,6 +82,7 @@ to combinatorially describe the Coxeter groups of type $A$, $B$, $D$, and $I$.
 ## Tags
 
 coxeter system, coxeter group
+
 -/
 
 noncomputable section
@@ -127,221 +105,6 @@ structure Matrix.IsCoxeter : Prop where
   symmetric : M.IsSymm := by aesop
   diagonal : ∀ i : B, M i i = 1 := by aesop
   off_diagonal : ∀ i i' : B, i ≠ i' → M i i' ≠ 1 := by aesop
-
-namespace CoxeterMatrix
-
-variable (n : ℕ)
-
-/-- The Coxeter matrix of family A(n).
-
-The corresponding Coxeter-Dynkin diagram is:
-```
-    o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
-```
--/
-abbrev Aₙ : Matrix (Fin n) (Fin n) ℕ :=
-  Matrix.of fun i j : Fin n =>
-    if i = j then 1
-      else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2)
-
-theorem isCoxeter_Aₙ : IsCoxeter (Aₙ n) where
-  symmetric := by
-    simp [Matrix.IsSymm]; aesop
-
-/-- The Coxeter matrix of family Bₙ.
-
-The corresponding Coxeter-Dynkin diagram is:
-```
-       4
-    o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
-```
--/
-abbrev Bₙ : Matrix (Fin n) (Fin n) ℕ :=
-  Matrix.of fun i j : Fin n =>
-    if i = j then 1
-      else (if i = n - 1 ∧ j = n - 2 ∨ j = n - 1 ∧ i = n - 2 then 4
-        else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2))
-
-theorem isCoxeter_Bₙ : IsCoxeter (Bₙ n) where
-  symmetric := by simp [Matrix.IsSymm]; aesop
-
-/-- The Coxeter matrix of family Dₙ.
-
-The corresponding Coxeter-Dynkin diagram is:
-```
-    o
-     \
-      o --- o ⬝ ⬝ ⬝ ⬝ o --- o
-     /
-    o
-```
--/
-abbrev Dₙ : Matrix (Fin n) (Fin n) ℕ :=
-  Matrix.of fun i j : Fin n =>
-    if i = j then 1
-      else (if i = n - 1 ∧ j = n - 3 ∨ j = n - 1 ∧ i = n - 3 then 3
-        else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2))
-
-theorem isCoxeter_Dₙ : IsCoxeter (Dₙ n) where
-  symmetric := by simp [Matrix.IsSymm]; aesop
-
-/-- The Coxeter matrix of m-indexed family I₂(m).
-
-The corresponding Coxeter-Dynkin diagram is:
-```
-     m + 2
-    o --- o
-```
--/
-abbrev I₂ₘ (m : ℕ) : Matrix (Fin 2) (Fin 2) ℕ :=
-  Matrix.of fun i j => if i = j then 1 else m + 2
-
-theorem isCoxeter_I₂ₘ (m : ℕ) : IsCoxeter (I₂ₘ m) where
-  symmetric := by simp [Matrix.IsSymm]; aesop
-
-/-- The Coxeter matrix of system E₆.
-
-The corresponding Coxeter-Dynkin diagram is:
-```
-                o
-                |
-    o --- o --- o --- o --- o
-```
--/
-def E₆ : Matrix (Fin 6) (Fin 6) ℕ :=
-  !![1, 2, 3, 2, 2, 2;
-     2, 1, 2, 3, 2, 2;
-     3, 2, 1, 3, 2, 2;
-     2, 3, 3, 1, 3, 2;
-     2, 2, 2, 3, 1, 3;
-     2, 2, 2, 2, 3, 1]
-
-theorem isCoxeter_E₆ : IsCoxeter E₆ where
-  symmetric := by simp [Matrix.IsSymm]; decide
-  diagonal := by decide
-  off_diagonal := by decide
-
-/-- The Coxeter matrix of system E₇.
-
-The corresponding Coxeter-Dynkin diagram is:
-```
-                o
-                |
-    o --- o --- o --- o --- o --- o
-```
--/
-def E₇ : Matrix (Fin 7) (Fin 7) ℕ :=
-  !![1, 2, 3, 2, 2, 2, 2;
-     2, 1, 2, 3, 2, 2, 2;
-     3, 2, 1, 3, 2, 2, 2;
-     2, 3, 3, 1, 3, 2, 2;
-     2, 2, 2, 3, 1, 3, 2;
-     2, 2, 2, 2, 3, 1, 3;
-     2, 2, 2, 2, 2, 3, 1]
-
-theorem isCoxeter_E₇ : IsCoxeter E₇ where
-  symmetric := by simp [Matrix.IsSymm]; decide
-  diagonal := by decide
-  off_diagonal := by decide
-
-/-- The Coxeter matrix of system E₈.
-
-The corresponding Coxeter-Dynkin diagram is:
-```
-                o
-                |
-    o --- o --- o --- o --- o --- o --- o
-```
--/
-def E₈ : Matrix (Fin 8) (Fin 8) ℕ :=
-  !![1, 2, 3, 2, 2, 2, 2, 2;
-     2, 1, 2, 3, 2, 2, 2, 2;
-     3, 2, 1, 3, 2, 2, 2, 2;
-     2, 3, 3, 1, 3, 2, 2, 2;
-     2, 2, 2, 3, 1, 3, 2, 2;
-     2, 2, 2, 2, 3, 1, 3, 2;
-     2, 2, 2, 2, 2, 3, 1, 3;
-     2, 2, 2, 2, 2, 2, 3, 1]
-
-theorem isCoxeter_E₈ : IsCoxeter E₈ where
-  symmetric := by simp [Matrix.IsSymm]; decide
-  diagonal := by decide
-  off_diagonal := by decide
-
-/-- The Coxeter matrix of system F₄.
-
-The corresponding Coxeter-Dynkin diagram is:
-```
-             4
-    o --- o --- o --- o
-```
--/
-def F₄ : Matrix (Fin 4) (Fin 4) ℕ :=
-  !![1, 3, 2, 2;
-     3, 1, 4, 2;
-     2, 4, 1, 3;
-     2, 2, 3, 1]
-
-theorem isCoxeter_F₄ : IsCoxeter F₄ where
-  symmetric := by simp [Matrix.IsSymm]; decide
-  diagonal := by decide
-  off_diagonal := by decide
-
-/-- The Coxeter matrix of system G₂.
-
-The corresponding Coxeter-Dynkin diagram is:
-```
-       6
-    o --- o
-```
--/
-def G₂ : Matrix (Fin 2) (Fin 2) ℕ :=
-  !![1, 6;
-     6, 1]
-
-theorem isCoxeter_G₂ : IsCoxeter G₂ where
-  symmetric := by simp [Matrix.IsSymm]; decide
-  diagonal := by decide
-  off_diagonal := by decide
-
-/-- The Coxeter matrix of system H₃.
-
-The corresponding Coxeter-Dynkin diagram is:
-```
-       5
-    o --- o --- o
-```
--/
-def H₃ : Matrix (Fin 3) (Fin 3) ℕ :=
-  !![1, 3, 2;
-     3, 1, 5;
-     2, 5, 1]
-
-theorem isCoxeter_H₃ : IsCoxeter H₃ where
-  symmetric := by simp [Matrix.IsSymm]; decide
-  diagonal := by decide
-  off_diagonal := by decide
-
-/-- The Coxeter matrix of system H₄.
-
-The corresponding Coxeter-Dynkin diagram is:
-```
-       5
-    o --- o --- o --- o
-```
--/
-def H₄ : Matrix (Fin 4) (Fin 4) ℕ :=
-  !![1, 3, 2, 2;
-     3, 1, 3, 2;
-     2, 3, 1, 5;
-     2, 2, 5, 1]
-
-theorem isCoxeter_H₄ : IsCoxeter H₄ where
-  symmetric := by simp [Matrix.IsSymm]; decide
-  diagonal := by decide
-  off_diagonal := by decide
-
-end CoxeterMatrix
 
 protected theorem Matrix.IsCoxeter.reindex {M} (hM : M.IsCoxeter) : (reindex e e M).IsCoxeter where
   symmetric := by dsimp only [IsSymm]; rw [transpose_reindex, hM.symmetric]
