@@ -563,7 +563,7 @@ theorem continuousOn_list_prod {f : ι → X → M} (l : List ι) {t : Set X}
 theorem continuous_pow : ∀ n : ℕ, Continuous fun a : M => a ^ n
   | 0 => by simpa using continuous_const
   | k + 1 => by
-    simp only [pow_succ]
+    simp only [pow_succ']
     exact continuous_id.mul (continuous_pow _)
 #align continuous_pow continuous_pow
 #align continuous_nsmul continuous_nsmul

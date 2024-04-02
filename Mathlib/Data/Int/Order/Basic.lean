@@ -418,7 +418,7 @@ theorem exists_lt_and_lt_iff_not_dvd (m : ℤ) {n : ℤ} (hn : 0 < n) :
     rw [lt_add_one_iff, ← not_lt] at h2k
     exact h2k h1k
   · intro h
-    rw [dvd_iff_emod_eq_zero, ← Ne.def] at h
+    rw [dvd_iff_emod_eq_zero, ← Ne] at h
     have := (emod_nonneg m hn.ne.symm).lt_of_ne h.symm
     rw [← emod_add_ediv m n]
     refine' ⟨m / n, lt_add_of_pos_left _ this, _⟩
@@ -566,7 +566,7 @@ variable [NonAssocRing R] (n r : R)
 lemma bit1_mul : bit1 n * r = (2 : ℤ) • (n * r) + r := by rw [bit1, add_mul, bit0_mul, one_mul]
 #align bit1_mul bit1_mul
 
-lemma mul_bit1 [NonAssocRing R] {n r : R} : r * bit1 n = (2 : ℤ) • (r * n) + r := by
+lemma mul_bit1 {n r : R} : r * bit1 n = (2 : ℤ) • (r * n) + r := by
   rw [bit1, mul_add, mul_bit0, mul_one]
 #align mul_bit1 mul_bit1
 

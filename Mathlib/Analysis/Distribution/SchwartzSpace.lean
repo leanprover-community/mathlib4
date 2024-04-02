@@ -838,7 +838,7 @@ end Multiplication
 section Comp
 
 variable (𝕜)
-variable [IsROrC 𝕜]
+variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
 variable [NormedAddCommGroup G] [NormedSpace ℝ G]
 variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
@@ -918,7 +918,7 @@ section Derivatives
 
 
 variable (𝕜)
-variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
@@ -1026,7 +1026,7 @@ section Integration
 
 open Real Complex Filter MeasureTheory MeasureTheory.Measure FiniteDimensional
 
-variable [IsROrC 𝕜]
+variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [NormedSpace 𝕜 V]
 variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D]
@@ -1068,10 +1068,6 @@ def integralCLM : 𝓢(D, V) →L[𝕜] V :=
       rcases hμ.exists_integrable with ⟨n, h⟩
       let m := (n, 0)
       use Finset.Iic m, 2 ^ n * ∫ x : D, (1 + ‖x‖) ^ (- (n : ℝ)) ∂μ
-      have hpos : 0 ≤ ∫ x : D, (1 + ‖x‖) ^ (- (n : ℝ)) ∂μ := by
-        apply integral_nonneg
-        intro
-        positivity
       refine ⟨by positivity, fun f ↦ (norm_integral_le_integral_norm f).trans ?_⟩
       have h' : ∀ x, ‖f x‖ ≤ (1 + ‖x‖) ^ (-(n : ℝ)) *
           (2 ^ n * ((Finset.Iic m).sup (fun m' => SchwartzMap.seminorm 𝕜 m'.1 m'.2) f)) := by
@@ -1119,7 +1115,7 @@ def toContinuousMap (f : 𝓢(E, F)) : C(E, F) :=
 #align schwartz_map.to_continuous_map SchwartzMap.toContinuousMap
 
 variable (𝕜 E F)
-variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The inclusion map from Schwartz functions to bounded continuous functions as a continuous linear
 map. -/
@@ -1202,7 +1198,7 @@ def toZeroAtInfty (f : 𝓢(E, F)) : C₀(E, F) where
   rfl
 
 variable (𝕜 E F)
-variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The inclusion map from Schwartz functions to continuous functions vanishing at infinity as a
 continuous linear map. -/

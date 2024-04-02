@@ -31,7 +31,7 @@ theorem aemeasurable_withDensity_iff {E : Type*} [NormedAddCommGroup E] [NormedS
       rw [ae_restrict_iff' A]
       filter_upwards [hg']
       intro a ha h'a
-      have : (f a : ℝ≥0∞) ≠ 0 := by simpa only [Ne.def, ENNReal.coe_eq_zero] using h'a
+      have : (f a : ℝ≥0∞) ≠ 0 := by simpa only [Ne, ENNReal.coe_eq_zero] using h'a
       rw [ha this]
     · filter_upwards [ae_restrict_mem A.compl]
       intro x hx
@@ -43,6 +43,6 @@ theorem aemeasurable_withDensity_iff {E : Type*} [NormedAddCommGroup E] [NormedS
     filter_upwards [hg']
     intro x hx h'x
     rw [← hx, smul_smul, _root_.inv_mul_cancel, one_smul]
-    simp only [Ne.def, ENNReal.coe_eq_zero] at h'x
-    simpa only [NNReal.coe_eq_zero, Ne.def] using h'x
+    simp only [Ne, ENNReal.coe_eq_zero] at h'x
+    simpa only [NNReal.coe_eq_zero, Ne] using h'x
 #align ae_measurable_with_density_iff aemeasurable_withDensity_iff

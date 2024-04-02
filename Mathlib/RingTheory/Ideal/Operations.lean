@@ -851,7 +851,7 @@ theorem pow_right_mono {I J : Ideal R} (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n
   induction' n with _ hn
   · rw [pow_zero, pow_zero]
   · rw [pow_succ, pow_succ]
-    exact Ideal.mul_mono e hn
+    exact Ideal.mul_mono hn e
 #align ideal.pow_right_mono Ideal.pow_right_mono
 
 @[simp]
@@ -957,22 +957,8 @@ theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
 def radical (I : Ideal R) : Ideal R where
   carrier := { r | ∃ n : ℕ, r ^ n ∈ I }
   zero_mem' := ⟨1, (pow_one (0 : R)).symm ▸ I.zero_mem⟩
-  add_mem' :=
-  fun {x y} ⟨m, hxmi⟩ ⟨n, hyni⟩ =>
-    ⟨m + n,
-      (add_pow x y (m + n)).symm ▸ I.sum_mem <|
-        show
-          ∀ c ∈ Finset.range (Nat.succ (m + n)), x ^ c * y ^ (m + n - c) * Nat.choose (m + n) c ∈ I
-          from fun c _ =>
-          Or.casesOn (le_total c m) (fun hcm =>
-              I.mul_mem_right _ <|
-                I.mul_mem_left _ <|
-                  Nat.add_comm n m ▸
-                    (add_tsub_assoc_of_le hcm n).symm ▸
-                      (pow_add y n (m - c)).symm ▸ I.mul_mem_right _ hyni) (fun hmc =>
-               I.mul_mem_right _ <|
-                I.mul_mem_right _ <|
-                  add_tsub_cancel_of_le hmc ▸ (pow_add x m (c - m)).symm ▸ I.mul_mem_right _ hxmi)⟩
+  add_mem' := fun {x y} ⟨m, hxmi⟩ ⟨n, hyni⟩ =>
+    ⟨m + n - 1, add_pow_add_pred_mem_of_pow_mem I hxmi hyni⟩
 -- Porting note: Below gives weird errors without `by exact`
   smul_mem' {r s} := by exact fun ⟨n, h⟩ ↦ ⟨n, (mul_pow r s n).symm ▸ I.mul_mem_left (r ^ n) h⟩
 #align ideal.radical Ideal.radical
@@ -1290,13 +1276,14 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
     rw [Finset.coe_insert, Set.biUnion_insert] at h
     have hsi : s ∈ f i := ((h hsI).resolve_left (mt Or.inl hs)).resolve_right (mt Or.inr hs)
     rcases h (I.add_mem hrI hsI) with (⟨ha | hb⟩ | hi | ht)
-    · exact hs (Or.inl <| Or.inl <| add_sub_cancel' r s ▸ (f a).sub_mem ha hra)
-    · exact hs (Or.inl <| Or.inr <| add_sub_cancel' r s ▸ (f b).sub_mem hb hrb)
-    · exact hri (add_sub_cancel r s ▸ (f i).sub_mem hi hsi)
+    · exact hs (Or.inl <| Or.inl <| add_sub_cancel_left r s ▸ (f a).sub_mem ha hra)
+    · exact hs (Or.inl <| Or.inr <| add_sub_cancel_left r s ▸ (f b).sub_mem hb hrb)
+    · exact hri (add_sub_cancel_right r s ▸ (f i).sub_mem hi hsi)
     · rw [Set.mem_iUnion₂] at ht
       rcases ht with ⟨j, hjt, hj⟩
       simp only [Finset.inf_eq_iInf, SetLike.mem_coe, Submodule.mem_iInf] at hr
-      exact hs (Or.inr <| Set.mem_biUnion hjt <| add_sub_cancel' r s ▸ (f j).sub_mem hj <| hr j hjt)
+      exact hs $ Or.inr $ Set.mem_biUnion hjt <|
+        add_sub_cancel_left r s ▸ (f j).sub_mem hj <| hr j hjt
 #align ideal.subset_union_prime' Ideal.subset_union_prime'
 
 /-- Prime avoidance. Atiyah-Macdonald 1.11, Eisenbud 3.3, Stacks 00DS, Matsumura Ex.1.6. -/
@@ -1786,7 +1773,7 @@ theorem comap_map_of_surjective (I : Ideal R) : comap f (map f I) = I ⊔ comap 
       let ⟨s, hsi, hfsr⟩ := mem_image_of_mem_map_of_surjective f hf h
       Submodule.mem_sup.2
         ⟨s, hsi, r - s, (Submodule.mem_bot S).2 <| by rw [map_sub, hfsr, sub_self],
-          add_sub_cancel'_right s r⟩)
+          add_sub_cancel s r⟩)
     (sup_le (map_le_iff_le_comap.1 le_rfl) (comap_mono bot_le))
 #align ideal.comap_map_of_surjective Ideal.comap_map_of_surjective
 
@@ -1944,7 +1931,7 @@ theorem le_comap_pow (n : ℕ) : K.comap f ^ n ≤ (K ^ n).comap f := by
   · rw [pow_zero, pow_zero, Ideal.one_eq_top, Ideal.one_eq_top]
     exact rfl.le
   · rw [pow_succ, pow_succ]
-    exact (Ideal.mul_mono_right n_ih).trans (Ideal.le_comap_mul f)
+    exact (Ideal.mul_mono_left n_ih).trans (Ideal.le_comap_mul f)
 #align ideal.le_comap_pow Ideal.le_comap_pow
 
 end CommRing
@@ -2092,7 +2079,7 @@ end span_range
 
 theorem Associates.mk_ne_zero' {R : Type*} [CommSemiring R] {r : R} :
     Associates.mk (Ideal.span {r} : Ideal R) ≠ 0 ↔ r ≠ 0 := by
-  rw [Associates.mk_ne_zero, Ideal.zero_eq_bot, Ne.def, Ideal.span_singleton_eq_bot]
+  rw [Associates.mk_ne_zero, Ideal.zero_eq_bot, Ne, Ideal.span_singleton_eq_bot]
 #align associates.mk_ne_zero' Associates.mk_ne_zero'
 
 -- Porting note: added explicit coercion `(b i : S)`
@@ -2205,7 +2192,7 @@ theorem ker_isPrime {F : Type*} [Ring R] [Ring S] [IsDomain S]
     [FunLike F R S] [RingHomClass F R S] (f : F) :
     (ker f).IsPrime :=
   ⟨by
-    rw [Ne.def, Ideal.eq_top_iff_one]
+    rw [Ne, Ideal.eq_top_iff_one]
     exact not_one_mem_ker f,
    fun {x y} => by
     simpa only [mem_ker, map_mul] using @eq_zero_or_eq_zero_of_mul_eq_zero S _ _ _ _ _⟩

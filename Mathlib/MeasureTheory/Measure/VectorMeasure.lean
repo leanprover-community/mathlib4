@@ -197,7 +197,7 @@ theorem of_add_of_diff {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSet
 theorem of_diff {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M]
     {v : VectorMeasure α M} {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSet B)
     (h : A ⊆ B) : v (B \ A) = v B - v A := by
-  rw [← of_add_of_diff hA hB h, add_sub_cancel']
+  rw [← of_add_of_diff hA hB h, add_sub_cancel_left]
 #align measure_theory.vector_measure.of_diff MeasureTheory.VectorMeasure.of_diff
 
 theorem of_diff_of_diff_eq_zero {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSet B)

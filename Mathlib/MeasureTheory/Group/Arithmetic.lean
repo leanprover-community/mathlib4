@@ -204,7 +204,7 @@ instance Monoid.measurablePow (M : Type*) [Monoid M] [MeasurableSpace M] [Measur
       induction' n with n ih
       · simp only [Nat.zero_eq, pow_zero, ← Pi.one_def, measurable_one]
       · simp only [pow_succ]
-        exact measurable_id.mul ih⟩
+        exact ih.mul measurable_id⟩
 #align monoid.has_measurable_pow Monoid.measurablePow
 
 section Pow
@@ -699,7 +699,7 @@ instance AddMonoid.measurableSMul_nat₂ (M : Type*) [AddMonoid M] [MeasurableSp
     induction' n with n ih
     · simp only [Nat.zero_eq, zero_smul, ← Pi.zero_def, measurable_zero]
     · simp only [succ_nsmul]
-      exact measurable_id.add ih⟩
+      exact ih.add measurable_id⟩
 #align add_monoid.has_measurable_smul_nat₂ AddMonoid.measurableSMul_nat₂
 
 /-- `SubNegMonoid.SMulInt` is measurable. -/

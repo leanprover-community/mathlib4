@@ -334,48 +334,50 @@ nonrec lemma card_lt_card (h : s ⊂ t) : s.card < t.card := card_lt_card <| val
 lemma card_strictMono : StrictMono (card : Finset α → ℕ) := fun _ _ ↦ card_lt_card
 
 theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i, ∃ h : i < n, f i h = a)
-    (hf' : ∀ (i) (h : i < n), f i h ∈ s)
-    (f_inj : ∀ (i j) (hi : i < n) (hj : j < n), f i hi = f j hj → i = j) : s.card = n := by
+    (hf' : ∀ i (h : i < n), f i h ∈ s)
+    (f_inj : ∀ i j (hi : i < n) (hj : j < n), f i hi = f j hj → i = j) : s.card = n := by
   classical
-    have : ∀ a : α, a ∈ s ↔ ∃ (i : _) (hi : i ∈ range n), f i (mem_range.1 hi) = a := fun a =>
-      ⟨fun ha =>
-        let ⟨i, hi, eq⟩ := hf a ha
-        ⟨i, mem_range.2 hi, eq⟩,
-        fun ⟨i, hi, eq⟩ => eq ▸ hf' i (mem_range.1 hi)⟩
-    have : s = (range n).attach.image fun i => f i.1 (mem_range.1 i.2) := by
-      simpa only [ext_iff, mem_image, exists_prop, Subtype.exists, mem_attach, true_and_iff]
-    calc
-      s.card = card ((range n).attach.image fun i => f i.1 (mem_range.1 i.2)) := by rw [this]
-      _ = card (range n).attach :=
-        (card_image_of_injective _) fun ⟨i, hi⟩ ⟨j, hj⟩ eq =>
-          Subtype.eq <| f_inj i j (mem_range.1 hi) (mem_range.1 hj) eq
-      _ = card (range n) := card_attach
-      _ = n := card_range n
+  have : s = (range n).attach.image fun i => f i.1 (mem_range.1 i.2) := by
+    ext a
+    suffices _ : a ∈ s ↔ ∃ (i : _) (hi : i ∈ range n), f i (mem_range.1 hi) = a by
+      simpa only [mem_image, mem_attach, true_and_iff, Subtype.exists]
+    constructor
+    · intro ha; obtain ⟨i, hi, rfl⟩ := hf a ha; use i, mem_range.2 hi
+    · rintro ⟨i, hi, rfl⟩; apply hf'
+  calc
+    s.card = ((range n).attach.image fun i => f i.1 (mem_range.1 i.2)).card := by rw [this]
+    _      = (range n).attach.card := ?_
+    _      = (range n).card := card_attach
+    _      = n := card_range n
+  apply card_image_of_injective
+  intro ⟨i, hi⟩ ⟨j, hj⟩ eq
+  exact Subtype.eq <| f_inj i j (mem_range.1 hi) (mem_range.1 hj) eq
 #align finset.card_eq_of_bijective Finset.card_eq_of_bijective
 
 theorem card_congr {t : Finset β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha ∈ t)
     (h₂ : ∀ a b ha hb, f a ha = f b hb → a = b) (h₃ : ∀ b ∈ t, ∃ a ha, f a ha = b) :
     s.card = t.card := by
-  classical calc
-      s.card = s.attach.card := card_attach.symm
-      _ = (s.attach.image fun a : { a // a ∈ s } => f a.1 a.2).card :=
-        Eq.symm ((card_image_of_injective _) fun a b h => Subtype.eq <| h₂ _ _ _ _ h)
-      _ = t.card :=
-        congr_arg card
-          (Finset.ext fun b =>
-            ⟨fun h =>
-              let ⟨a, _, ha₂⟩ := mem_image.1 h
-              ha₂ ▸ h₁ _ _,
-              fun h =>
-              let ⟨a, ha₁, ha₂⟩ := h₃ b h
-              mem_image.2 ⟨⟨a, ha₁⟩, by simp [ha₂]⟩⟩)
+  classical
+  calc
+    s.card = s.attach.card := card_attach.symm
+    _      = (s.attach.image fun a : { a // a ∈ s } => f a.1 a.2).card := Eq.symm ?_
+    _      = t.card := ?_
+  · apply card_image_of_injective
+    intro ⟨_, _⟩ ⟨_, _⟩ h
+    simpa using h₂ _ _ _ _ h
+  · congr 1
+    ext b
+    constructor
+    · intro h; obtain ⟨_, _, rfl⟩ := mem_image.1 h; apply h₁
+    · intro h; obtain ⟨a, ha, rfl⟩ := h₃ b h; exact mem_image.2 ⟨⟨a, ha⟩, by simp⟩
 #align finset.card_congr Finset.card_congr
 
 theorem card_le_card_of_inj_on {t : Finset β} (f : α → β) (hf : ∀ a ∈ s, f a ∈ t)
     (f_inj : ∀ a₁ ∈ s, ∀ a₂ ∈ s, f a₁ = f a₂ → a₁ = a₂) : s.card ≤ t.card := by
-  classical calc
-      s.card = (s.image f).card := (card_image_of_injOn f_inj).symm
-      _ ≤ t.card := card_le_card <| image_subset_iff.2 hf
+  classical
+  calc
+    s.card = (s.image f).card := (card_image_of_injOn f_inj).symm
+    _      ≤ t.card           := card_le_card <| image_subset_iff.2 hf
 #align finset.card_le_card_of_inj_on Finset.card_le_card_of_inj_on
 
 /-- If there are more pigeons than pigeonholes, then there are two pigeons in the same pigeonhole.
@@ -383,37 +385,39 @@ theorem card_le_card_of_inj_on {t : Finset β} (f : α → β) (hf : ∀ a ∈ s
 theorem exists_ne_map_eq_of_card_lt_of_maps_to {t : Finset β} (hc : t.card < s.card) {f : α → β}
     (hf : ∀ a ∈ s, f a ∈ t) : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
   classical
-    by_contra! hz
-    refine' hc.not_le (card_le_card_of_inj_on f hf _)
-    intro x hx y hy
-    contrapose
-    exact hz x hx y hy
+  by_contra! hz
+  refine hc.not_le (card_le_card_of_inj_on f hf ?_)
+  intro x hx y hy
+  contrapose
+  exact hz x hx y hy
 #align finset.exists_ne_map_eq_of_card_lt_of_maps_to Finset.exists_ne_map_eq_of_card_lt_of_maps_to
 
 theorem le_card_of_inj_on_range (f : ℕ → α) (hf : ∀ i < n, f i ∈ s)
     (f_inj : ∀ i < n, ∀ j < n, f i = f j → i = j) : n ≤ s.card :=
   calc
     n = card (range n) := (card_range n).symm
-    _ ≤ s.card := card_le_card_of_inj_on f (by simpa only [mem_range] ) (by simpa only [mem_range] )
+    _ ≤ s.card := card_le_card_of_inj_on f (by simpa only [mem_range]) (by simpa only [mem_range])
 #align finset.le_card_of_inj_on_range Finset.le_card_of_inj_on_range
 
 theorem surj_on_of_inj_on_of_card_le {t : Finset β} (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
     (hinj : ∀ a₁ a₂ ha₁ ha₂, f a₁ ha₁ = f a₂ ha₂ → a₁ = a₂) (hst : t.card ≤ s.card) :
     ∀ b ∈ t, ∃ a ha, b = f a ha := by
   classical
-    intro b hb
-    have h : (s.attach.image fun a : { a // a ∈ s } => f a a.prop).card = s.card :=
-      @card_attach _ s ▸
-        card_image_of_injective _ fun ⟨a₁, ha₁⟩ ⟨a₂, ha₂⟩ h => Subtype.eq <| hinj _ _ _ _ h
-    have h' : image (fun a : { a // a ∈ s } => f a a.prop) s.attach = t :=
-      eq_of_subset_of_card_le
-        (fun b h =>
-          let ⟨a, _, ha₂⟩ := mem_image.1 h
-          ha₂ ▸ hf _ _)
-        (by simp [hst, h])
-    rw [← h'] at hb
-    obtain ⟨a, _, ha₂⟩ := mem_image.1 hb
-    exact ⟨a, a.2, ha₂.symm⟩
+  intro b hb
+  have h : (s.attach.image fun a : { a // a ∈ s } => f a a.prop).card = s.card := by
+    rw [← @card_attach _ s]
+    apply card_image_of_injective
+    intro ⟨_, _⟩ ⟨_, _⟩ h
+    exact Subtype.eq <| hinj _ _ _ _ h
+  have h' : image (fun a : { a // a ∈ s } => f a a.prop) s.attach = t := by
+    apply eq_of_subset_of_card_le
+    · intro b h
+      obtain ⟨_, _, rfl⟩ := mem_image.1 h
+      apply hf
+    · simp [hst, h]
+  rw [← h'] at hb
+  obtain ⟨a, _, rfl⟩ := mem_image.1 hb
+  use a, a.2
 #align finset.surj_on_of_inj_on_of_card_le Finset.surj_on_of_inj_on_of_card_le
 
 theorem inj_on_of_surj_on_of_card_le {t : Finset β} (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
