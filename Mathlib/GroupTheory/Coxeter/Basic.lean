@@ -62,10 +62,9 @@ wherever possible.
 
 * `Matrix.IsCoxeter` : A matrix `IsCoxeter` if it is a symmetric matrix with diagonal
   entries equal to one and off-diagonal entries distinct from one.
-* `Matrix.CoxeterGroup` : The group presentation corresponding to a Coxeter matrix.
+* `Matrix.coxeterGroup` : The group presentation corresponding to a Coxeter matrix.
 * `CoxeterSystem` : A structure recording the isomorphism between a group `W` and the
   group presentation corresponding to a Coxeter matrix, i.e. `Matrix.CoxeterGroup M`.
-* `equivCoxeterGroup` : Coxeter groups of isomorphic types are isomorphic.
 * `IsCoxeterGroup` : A group is a Coxeter group if it is registered in a Coxeter system.
 * `CoxeterMatrix.Aₙ` : Coxeter matrix for the symmetry group of the regular n-simplex.
 * `CoxeterMatrix.Bₙ` : Coxeter matrix for the symmetry group of the regular n-hypercube
@@ -117,142 +116,28 @@ to combinatorially describe the Coxeter groups of type $A$, $B$, $D$, and $I$.
 coxeter system, coxeter group
 -/
 
-
-universe u
-
 noncomputable section
 
-variable {B : Type*} [DecidableEq B]
-variable (M : Matrix B B ℕ)
+open Matrix Function List
 
-/-- A matrix `IsCoxeter` if it is a symmetric matrix with diagonal entries equal to one
+variable {B B' : Type*} (M : Matrix B B ℕ) (e : B ≃ B')
+
+/-- The relations corresponding to a Coxeter matrix. -/
+def Matrix.coxeterRelation (i i' : B) : FreeGroup B :=
+ (FreeGroup.of i * FreeGroup.of i') ^ M i i'
+
+/-- The set of relations corresponding to a Coxeter matrix. -/
+def Matrix.coxeterRelationsSet : Set (FreeGroup B) :=
+  Set.range <| uncurry M.coxeterRelation
+
+/-- The proposition that `M` is a symmetric matrix with diagonal entries equal to one
 and off-diagonal entries distinct from one. -/
 structure Matrix.IsCoxeter : Prop where
   symmetric : M.IsSymm := by aesop
-  diagonal : ∀ i : B, M i i  = 1 := by aesop
+  diagonal : ∀ i : B, M i i = 1 := by aesop
   off_diagonal : ∀ i i' : B, i ≠ i' → M i i' ≠ 1 := by aesop
 
-theorem Matrix.reindex_isCoxeter {B B' : Type*} (M : Matrix B B ℕ)
-    (e : B ≃ B') (hM : M.IsCoxeter) : (Matrix.reindex e e M).IsCoxeter where
-  symmetric := by dsimp only [Matrix.IsSymm]; rw [Matrix.transpose_reindex, hM.symmetric]
-  diagonal := by intro b; dsimp [Matrix.reindex]; exact hM.diagonal (e.symm b)
-  off_diagonal := by intro i i' hii'; dsimp [Matrix.reindex]; apply hM.off_diagonal; aesop
-
-namespace CoxeterGroup
-
-namespace Relations
-
-/-- The relations corresponding to a Coxeter matrix. -/
-def ofMatrix : B × B → FreeGroup B :=
- Function.uncurry fun b₁ b₂ => (FreeGroup.of b₁ * FreeGroup.of b₂) ^ M b₁ b₂
-
-/-- The set of relations corresponding to a Coxeter matrix. -/
-def toSet : Set (FreeGroup B) :=
-  Set.range <| ofMatrix M
-
-end Relations
-
-end CoxeterGroup
-
-/-- The group presentation corresponding to a Coxeter matrix. -/
-def Matrix.CoxeterGroup := PresentedGroup (CoxeterGroup.Relations.toSet M)
-
-instance : Group (Matrix.CoxeterGroup M) :=
-  QuotientGroup.Quotient.group _
-
-namespace CoxeterGroup
-
-/-- The canonical map from `B` to the Coxeter group with generators `b : B`. The term `b`
-is mapped to the equivalence class of the image of `b` in `CoxeterGroup M`. -/
-def of (b : B) : Matrix.CoxeterGroup M := PresentedGroup.of b
-
-@[simp]
-theorem of_apply (b : B) : of M b = PresentedGroup.of (rels := Relations.toSet M) b :=
-  rfl
-
-end CoxeterGroup
-
-/-- A Coxeter system `CoxeterSystem W` is a structure recording the isomorphism between
-a group `W` and the group presentation corresponding to a Coxeter matrix. Equivalently, this
-can be seen as a list of generators of `W` parameterized by the underlying type of `M`, which
-satisfy the relations of the Coxeter matrix `M`. -/
-@[ext]
-structure CoxeterSystem (W : Type*) [Group W] where
-  isCoxeter : M.IsCoxeter
-  /-- `mulEquiv` is the isomorphism between the group `W` and the group presentation
-  corresponding to a Coxeter matrix `M`. -/
-  mulEquiv : W ≃* Matrix.CoxeterGroup M
-
-/-- A group is a Coxeter group if it admits a Coxeter system for some Coxeter matrix `M`. -/
-class IsCoxeterGroup (W : Type u) [Group W] : Prop where
-  nonempty_system : ∃ (B : Type u), ∃ (M : Matrix B B ℕ), Nonempty (CoxeterSystem M W)
-
-namespace CoxeterSystem
-
-open Matrix
-
-variable {B B' W H : Type*} [DecidableEq B] [DecidableEq B'] [Group W] [Group H]
-variable {M : Matrix B B ℕ}
-
-/-- The canonical Coxeter system of the Coxeter group over `X`. -/
-def ofCoxeterGroup {X : Type*} {D : Matrix X X ℕ} (hD : IsCoxeter D) :
-    CoxeterSystem D (CoxeterGroup D) where
-  isCoxeter := hD
-  mulEquiv := .refl _
-
-theorem map_relations_eq_reindex_relations (e : B ≃ B') :
-    (MulEquiv.toMonoidHom (FreeGroup.freeGroupCongr e)) '' CoxeterGroup.Relations.toSet M =
-    CoxeterGroup.Relations.toSet (reindex e e M) := by
-  simp [CoxeterGroup.Relations.toSet, CoxeterGroup.Relations.ofMatrix]
-  apply le_antisymm
-  · rw [Set.le_iff_subset]; intro _
-    simp only [Set.mem_image, Set.mem_range, Prod.exists, Function.uncurry_apply_pair,
-      forall_exists_index, and_imp]
-    intro _ hb b _ heq; rw [← heq]
-    use (e hb); use (e b); aesop
-  · rw [Set.le_iff_subset]; intro hb'
-    simp only [Set.mem_range, Prod.exists, Function.uncurry_apply_pair, Set.mem_image,
-      forall_exists_index]
-    intro b1' b2' heq; rw [← heq]
-    use ((FreeGroup.freeGroupCongr e).symm hb')
-    exact ⟨by use (e.symm b1'); use (e.symm b2'); aesop, by aesop⟩
-
-/-- Coxeter groups of isomorphic types are isomorphic. -/
-def equivCoxeterGroup (e : B ≃ B') : CoxeterGroup M ≃* CoxeterGroup (reindex e e M) :=
-  QuotientGroup.congr (Subgroup.normalClosure (CoxeterGroup.Relations.toSet M))
-    (Subgroup.normalClosure (CoxeterGroup.Relations.toSet (reindex e e M)))
-    (FreeGroup.freeGroupCongr e) (by
-      have := Subgroup.map_normalClosure (CoxeterGroup.Relations.toSet M)
-        (FreeGroup.freeGroupCongr e).toMonoidHom (FreeGroup.freeGroupCongr e).surjective
-      rwa [map_relations_eq_reindex_relations] at this)
-
-theorem equivCoxeterGroup_apply_of (b : B) (M : Matrix B B ℕ) (e : B ≃ B') :
-    (equivCoxeterGroup e) (CoxeterGroup.of M b) = CoxeterGroup.of (reindex e e M) (e b) :=
-  rfl
-
-theorem equivCoxeterGroup_symm_apply_of (b' : B') (M : Matrix B B ℕ) (e : B ≃ B') :
-    (equivCoxeterGroup e).symm (CoxeterGroup.of (reindex e e M) b') =
-    CoxeterGroup.of M (e.symm b') :=
-  rfl
-
-/-- Reindex a Coxeter system through a bijection of the indexing sets. -/
-@[simps]
-protected def reindex (cs : CoxeterSystem M W) (e : B ≃ B') :
-    CoxeterSystem (reindex e e M) W where
-  isCoxeter := M.reindex_isCoxeter e cs.isCoxeter
-  mulEquiv := cs.mulEquiv.trans (equivCoxeterGroup e)
-
-/-- Pushing a Coxeter system through a group isomorphism. -/
-@[simps]
-protected def map (cs : CoxeterSystem M W) (e : W ≃* H) : CoxeterSystem M H where
-  isCoxeter := cs.isCoxeter
-  mulEquiv := e.symm.trans cs.mulEquiv
-
-end CoxeterSystem
-
 namespace CoxeterMatrix
-
-open Matrix
 
 variable (n : ℕ)
 
@@ -467,14 +352,93 @@ theorem isCoxeter_H₄ : IsCoxeter H₄ where
 
 end CoxeterMatrix
 
+protected theorem Matrix.IsCoxeter.reindex {M} (hM : M.IsCoxeter) : (reindex e e M).IsCoxeter where
+  symmetric := by dsimp only [IsSymm]; rw [transpose_reindex, hM.symmetric]
+  diagonal := by intro b; dsimp [reindex]; exact hM.diagonal (e.symm b)
+  off_diagonal := by intro i i' hii'; dsimp [reindex]; apply hM.off_diagonal; aesop
+
+@[simp]
+theorem Matrix.reindex_isCoxeter_iff : (reindex e e M).IsCoxeter ↔ M.IsCoxeter := by
+  constructor
+  · intro h
+    simpa using h.reindex e.symm
+  · exact IsCoxeter.reindex _
+
+/-- The group presentation corresponding to a Coxeter matrix. -/
+def Matrix.coxeterGroup := PresentedGroup M.coxeterRelationsSet
+
+instance : Group M.coxeterGroup :=
+  QuotientGroup.Quotient.group _
+
+/-- The canonical map from `B` to the Coxeter group with generators `i : B`. The term `b`
+is mapped to the equivalence class of the image of `i` in `CoxeterGroup M`. -/
+def Matrix.coxeterGroupSimpleReflection (i : B) : M.coxeterGroup := PresentedGroup.of i
+
+theorem Matrix.reindex_coxeterRelationsSet :
+    (reindex e e M).coxeterRelationsSet =
+    (FreeGroup.freeGroupCongr e) '' M.coxeterRelationsSet := let M' := reindex e e M; calc
+  Set.range (uncurry M'.coxeterRelation)
+  _ = Set.range ((uncurry M'.coxeterRelation) ∘ Prod.map e e) := by simp [Set.range_comp]
+  _ = Set.range ((FreeGroup.freeGroupCongr e) ∘ uncurry M.coxeterRelation) := by
+      apply congrArg Set.range
+      ext ⟨i, i'⟩
+      simp [coxeterRelation, submatrix, M']
+  _ = _ := by simp [Set.range_comp]; rfl
+
+/-- Coxeter groups of isomorphic types are isomorphic. -/
+def Matrix.reindexCoxeterGroupEquiv : (reindex e e M).coxeterGroup ≃* M.coxeterGroup :=
+  (QuotientGroup.congr (Subgroup.normalClosure M.coxeterRelationsSet)
+    (Subgroup.normalClosure (reindex e e M).coxeterRelationsSet)
+    (FreeGroup.freeGroupCongr e) (by
+      rw [reindex_coxeterRelationsSet,
+        Subgroup.map_normalClosure _ _ (FreeGroup.freeGroupCongr e).surjective,
+        ← MulEquiv.coe_toMonoidHom]
+      rfl)).symm
+
+theorem Matrix.reindexCoxeterGroupEquiv_apply_simple (i : B') :
+    (M.reindexCoxeterGroupEquiv e) ((reindex e e M).coxeterGroupSimpleReflection i) =
+    M.coxeterGroupSimpleReflection (e.symm i) :=
+  rfl
+
+theorem Matrix.reindexCoxeterGroupEquiv_symm_apply_simple (i : B) :
+    (M.reindexCoxeterGroupEquiv e).symm (M.coxeterGroupSimpleReflection i) =
+    (reindex e e M).coxeterGroupSimpleReflection (e i) :=
+  rfl
+
+/-- A Coxeter system `CoxeterSystem M W` is a structure recording the isomorphism between
+a group `W` and the group presentation corresponding to a Coxeter matrix `M`. -/
+@[ext]
+structure CoxeterSystem (W : Type*) [Group W] where
+  isCoxeter : M.IsCoxeter
+  /-- `mulEquiv` is the isomorphism between the group `W` and the group presentation
+  corresponding to a Coxeter matrix `M`. -/
+  mulEquiv : W ≃* M.coxeterGroup
+
+/-- A group is a Coxeter group if it admits a Coxeter system for some Coxeter matrix `M`. -/
+class IsCoxeterGroup (W : Type*) [Group W] : Prop where
+  nonempty_system : ∃ (B : Type*), ∃ (M : Matrix B B ℕ), Nonempty (CoxeterSystem M W)
+
+/-- The canonical Coxeter system of the Coxeter group over `M`. -/
+def Matrix.IsCoxeter.canonicalCoxeterSystem {M : Matrix B B ℕ} (hM : M.IsCoxeter) :
+    CoxeterSystem M M.coxeterGroup where
+  isCoxeter := hM
+  mulEquiv := .refl _
+
 namespace CoxeterSystem
 
-open Matrix List Function
+variable {W H : Type*} [Group W] [Group H] {M} (cs : CoxeterSystem M W)
 
-variable {B : Type*} [DecidableEq B]
-variable {M : Matrix B B ℕ}
-variable {W : Type*} [Group W]
-variable (cs : CoxeterSystem M W)
+/-- Reindex a Coxeter system through a bijection of the indexing sets. -/
+@[simps]
+protected def reindex (e : B ≃ B') : CoxeterSystem (reindex e e M) W where
+  isCoxeter := cs.isCoxeter.reindex e
+  mulEquiv := cs.mulEquiv.trans (M.reindexCoxeterGroupEquiv e).symm
+
+/-- Pushing a Coxeter system through a group isomorphism. -/
+@[simps]
+protected def map (e : W ≃* H) : CoxeterSystem M H where
+  isCoxeter := cs.isCoxeter
+  mulEquiv := e.symm.trans cs.mulEquiv
 
 /-! ### Simple reflections -/
 
@@ -485,7 +449,7 @@ local prefix:100 "s" => cs.simpleReflection
 
 @[simp]
 theorem ofCoxeterGroup_simple (hM : IsCoxeter M) :
-    (CoxeterSystem.ofCoxeterGroup hM).simpleReflection = CoxeterGroup.of M := rfl
+    hM.canonicalCoxeterSystem.simpleReflection = M.coxeterGroupSimpleReflection := rfl
 
 @[simp]
 theorem reindex_simple {B' : Type*} (e : B ≃ B') (i' : B') :
@@ -500,11 +464,10 @@ theorem map_simple {W' : Type*} [Group W'] (e : W ≃* W') (i : B) :
 @[simp] theorem simple_mul_simple_self (i : B) : s i * s i = 1 := by
   dsimp [simpleReflection]
   rw [← _root_.map_mul, PresentedGroup.of, ← QuotientGroup.mk_mul]
-  have : (FreeGroup.of i) * (FreeGroup.of i) ∈ CoxeterGroup.Relations.toSet M := by
+  have : (FreeGroup.of i) * (FreeGroup.of i) ∈ M.coxeterRelationsSet := by
     use (i, i)
-    dsimp [CoxeterGroup.Relations.ofMatrix]
-    rw [cs.isCoxeter.diagonal i, pow_one]
-  have : (QuotientGroup.mk (FreeGroup.of i * FreeGroup.of i) : CoxeterGroup M) = 1 := by
+    rw [uncurry, coxeterRelation, cs.isCoxeter.diagonal i, pow_one]
+  have : (QuotientGroup.mk (FreeGroup.of i * FreeGroup.of i) : M.coxeterGroup) = 1 := by
     apply (QuotientGroup.eq_one_iff _).mpr
     exact Subgroup.subset_normalClosure this
   rw [this]
@@ -521,20 +484,20 @@ theorem map_simple {W' : Type*} [Group W'] (e : W ≃* W') (i : B) :
 @[simp] theorem inv_simple (i : B) : (s i)⁻¹ = s i :=
   (eq_inv_of_mul_eq_one_right (cs.simple_mul_simple_self i)).symm
 
-@[simp] theorem simple_mul_simple_pow (i i' : B) : ((s i) * (s i')) ^ M i i' = 1 := by
+@[simp] theorem simple_mul_simple_pow (i i' : B) : (s i * s i') ^ M i i' = 1 := by
   dsimp [simpleReflection]
   rw [← _root_.map_mul, ← map_pow, PresentedGroup.of, PresentedGroup.of,
       ← QuotientGroup.mk_mul, ← QuotientGroup.mk_pow]
-  have : (FreeGroup.of i * FreeGroup.of i') ^ M i i' ∈ CoxeterGroup.Relations.toSet M := by
+  have : (FreeGroup.of i * FreeGroup.of i') ^ M i i' ∈ M.coxeterRelationsSet := by
     use (i, i')
     rfl
-  have : (QuotientGroup.mk ((FreeGroup.of i * FreeGroup.of i') ^ M i i') : CoxeterGroup M) = 1 := by
+  have : (QuotientGroup.mk ((FreeGroup.of i * FreeGroup.of i') ^ M i i') : M.coxeterGroup) = 1 := by
     apply (QuotientGroup.eq_one_iff _).mpr
     exact Subgroup.subset_normalClosure this
   rw [this]
   simp
 
-@[simp] theorem simple_mul_simple_pow' (i i' : B) : ((s i') * (s i)) ^ M i i' = 1 :=
+@[simp] theorem simple_mul_simple_pow' (i i' : B) : (s i' * s i) ^ M i i' = 1 :=
   cs.isCoxeter.symmetric.apply i' i ▸ cs.simple_mul_simple_pow i' i
 
 /-- The simple reflections of `W` generate `W` as a group. -/
@@ -608,10 +571,9 @@ def IsLiftable {G : Type*} [Monoid G] (M : Matrix B B ℕ) (f : B → G) : Prop 
     ∀ i i' : B, (f i * f i') ^ M i i' = 1
 
 private theorem relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f) :
-    ∀ r ∈ CoxeterGroup.Relations.toSet M, (FreeGroup.lift f) r = 1 := by
+    ∀ r ∈ M.coxeterRelationsSet, (FreeGroup.lift f) r = 1 := by
   rintro r ⟨⟨i, i'⟩, rfl⟩
-  dsimp [CoxeterGroup.Relations.ofMatrix]
-  rw [map_pow, _root_.map_mul, FreeGroup.lift.of, FreeGroup.lift.of]
+  rw [uncurry, coxeterRelation, map_pow, _root_.map_mul, FreeGroup.lift.of, FreeGroup.lift.of]
   exact hf i i'
 
 private def groupLift {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f) : W →* G :=
@@ -632,8 +594,8 @@ def lift {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) : W →* G :
     (show ∀ i i' : B, ((cs.restrictUnit hf) i * (cs.restrictUnit hf) i') ^ M i i' = 1 from
       fun i i' ↦ Units.ext (hf i i')))
 
-private theorem toMonoidHom_symm (a : PresentedGroup (CoxeterGroup.Relations.toSet M)):
-    (MulEquiv.toMonoidHom cs.mulEquiv : W →* PresentedGroup (CoxeterGroup.Relations.toSet M))
+private theorem toMonoidHom_symm (a : PresentedGroup (M.coxeterRelationsSet)):
+    (MulEquiv.toMonoidHom cs.mulEquiv : W →* PresentedGroup (M.coxeterRelationsSet))
     ((MulEquiv.symm cs.mulEquiv) a) = a := calc
   _ = cs.mulEquiv ((MulEquiv.symm cs.mulEquiv) a) := by rfl
   _ = _                                           := by rw [MulEquiv.apply_symm_apply]
@@ -641,7 +603,7 @@ private theorem toMonoidHom_symm (a : PresentedGroup (CoxeterGroup.Relations.toS
 theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G}
     (hf : IsLiftable M f) (i : B) : cs.lift hf (s i) = f i := by
   dsimp only [simpleReflection, lift, groupLift, MonoidHom.comp_apply]
-  rw [← MonoidHom.toFun_eq_coe, toMonoidHom_symm cs (PresentedGroup.of i)]
+  rw [← MonoidHom.toFun_eq_coe, cs.toMonoidHom_symm (PresentedGroup.of i)]
   simp
   rfl
 
