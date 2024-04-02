@@ -283,7 +283,7 @@ theorem f_preserved_append {α : Type} {rel : List α → List α → Prop} : �
 
 -- the binary operation to make the Setoid into a Monoid
 def mul_append {α : Type} {rel : List α → List α → Prop} : PresentedMonoid rel →
-      PresentedMonoid rel → PresentedMonoid rel :=
+    PresentedMonoid rel → PresentedMonoid rel :=
   Quotient.lift₂
     append_monoid
     f_preserved_append
