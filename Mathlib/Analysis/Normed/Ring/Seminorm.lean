@@ -321,16 +321,20 @@ instance : Inhabited (MulRingNorm R) :=
   ⟨1⟩
 
 
+variable {R : Type*}
+variable [Ring R]
+
 /-- Two multiplicative ring norms `f, g` on `R` are equivalent if there exists a positive constant
   `c` such that for all `x ∈ R`, `(f x)^c = g x`.
   This could be generalised to RingNorm, but MulRingNorm does not extend this. -/
-def equiv {R : Type*} [Ring R] (f : MulRingNorm R) (g : MulRingNorm R) :=
+
+def equiv (f : MulRingNorm R) (g : MulRingNorm R) :=
   ∃ c : ℝ, 0 < c ∧ (λ x : R => (f x) ^ c) = g
 
 /- Equivalence of multiplicative ring norms is an equivalence relation
   1. is reflexive-/
 lemma equiv_refl {R : Type*} [Ring R] (f : MulRingNorm R) : equiv f f := by
-  refine ⟨1, by linarith, by simp only [Real.rpow_one]⟩
+  exact ⟨1, by linarith, by simp only [Real.rpow_one]⟩
 
 /- Equivalence of multiplicative ring norms is an equivalence relation
  2. is symmetric-/
@@ -339,11 +343,8 @@ lemma equiv_symm {R : Type*} [Ring R] (f g : MulRingNorm R) (hfg : equiv f g) : 
   use 1/c
   constructor
   · simp only [one_div, inv_pos, hcpos]
-  · replace h := congr_fun h
-    ext x
-    rw [← h x]
-    simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe, one_div, map_nonneg]
-    exact Real.rpow_rpow_inv (apply_nonneg f x) (ne_of_lt hcpos).symm
+  ext x
+  simpa [← congr_fun h x] using Real.rpow_rpow_inv (apply_nonneg f x) (ne_of_lt hcpos).symm
 
 /- Equivalence of multiplicative ring norms is an equivalence relation
  3. is transitive-/
@@ -384,10 +385,12 @@ def normRingNorm (R : Type*) [NonUnitalNormedRing R] : RingNorm R :=
 
 
 /-A multiplicative ring norm with value in the rationals satisfies `f n ≤ n` for every `n : ℕ`-/
-lemma MulRingNorm_nat_le_nat (n : ℕ) (f : MulRingNorm ℚ) : f n ≤ n := by
-  induction' n with n hn
-  · simp only [Nat.zero_eq, CharP.cast_eq_zero, map_zero, le_refl]
-  · simp only [Nat.cast_succ]
+/-A multiplicative ring norm with value in the rationals satisfies `f n ≤ n` for every `n : ℕ`-/
+lemma MulRingNorm_nat_le_nat {R : Type*} [Ring R] (n : ℕ) (f : MulRingNorm R) : f n ≤ n := by
+  induction n with
+  | zero => simp only [Nat.cast_zero, map_zero, le_refl]
+  | succ n hn =>
+    simp only [Nat.cast_succ]
     calc
       f (↑n + 1) ≤ f (↑n) + f 1 := f.add_le' ↑n 1
       _ = f (↑n) + 1 := by rw [map_one]
