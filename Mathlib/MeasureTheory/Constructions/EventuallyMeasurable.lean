@@ -15,6 +15,7 @@ Two important instances of this construction are null-measurability with respect
 where the filter is the collection of co-null sets, and
 Baire-measurability with respect to a topology,
 where the filter is the collection of comeager (residual) sets.
+TODO: Implement the latter.
 
 ## Main definitions
 
