@@ -737,6 +737,7 @@ theorem think_bind (c) (f : α → Computation β) : bind (think c) f = think (b
   destruct_eq_think <| by simp [bind, Bind.f]
 #align computation.think_bind Computation.think_bind
 
+set_option linter.flexible false in
 @[simp]
 theorem bind_pure (f : α → β) (s) : bind s (pure ∘ f) = map f s := by
   apply eq_of_bisim fun c₁ c₂ => c₁ = c₂ ∨ ∃ s, c₁ = bind s (pure ∘ f) ∧ c₂ = map f s
@@ -761,6 +762,7 @@ theorem bind_pure' (s : Computation α) : bind s pure = s := by
   · exact Or.inr ⟨s, rfl, rfl⟩
 #align computation.bind_ret' Computation.bind_pure'
 
+set_option linter.flexible false in
 @[simp]
 theorem bind_assoc (s : Computation α) (f : α → Computation β) (g : β → Computation γ) :
     bind (bind s f) g = bind s fun x : α => bind (f x) g := by
@@ -947,6 +949,7 @@ theorem orElse_think (c₁ c₂ : Computation α) : (think c₁ <|> think c₂) 
     simp [orElse]
 #align computation.orelse_think Computation.orElse_think
 
+set_option linter.flexible false in
 @[simp]
 theorem empty_orElse (c) : (empty α <|> c) = c := by
   apply eq_of_bisim (fun c₁ c₂ => (empty α <|> c₂) = c₁) _ rfl
@@ -955,6 +958,7 @@ theorem empty_orElse (c) : (empty α <|> c) = c := by
   rw [← think_empty]
 #align computation.empty_orelse Computation.empty_orElse
 
+set_option linter.flexible false in
 @[simp]
 theorem orElse_empty (c : Computation α) : (c <|> empty α) = c := by
   apply eq_of_bisim (fun c₁ c₂ => (c₂ <|> empty α) = c₁) _ rfl
@@ -1274,6 +1278,7 @@ theorem LiftRelAux.ret_right (R : α → β → Prop) (C : Computation α → Co
   rw [← LiftRelAux.swap, LiftRelAux.ret_left]
 #align computation.lift_rel_aux.ret_right Computation.LiftRelAux.ret_right
 
+set_option linter.flexible false in
 theorem LiftRelRec.lem {R : α → β → Prop} (C : Computation α → Computation β → Prop)
     (H : ∀ {ca cb}, C ca cb → LiftRelAux R C (destruct ca) (destruct cb)) (ca cb) (Hc : C ca cb) (a)
     (ha : a ∈ ca) : LiftRel R ca cb := by
