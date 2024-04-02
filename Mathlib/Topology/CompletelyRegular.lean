@@ -101,4 +101,4 @@ lemma separatesPoints_continuous_of_T35Space [T35Space X] :
   intro x y x_ne_y
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
-  refine ⟨fun x ↦ f x, continuous_subtype_val.comp f_cont, by aesop⟩
+  exact ⟨fun x ↦ f x, continuous_subtype_val.comp f_cont, by aesop⟩
