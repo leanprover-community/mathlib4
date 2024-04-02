@@ -114,7 +114,8 @@ theorem fermatLastTheoremThree_of_three_dvd_only_c
     · simpa [hx] using three_dvd_c_of_dvd_a_of_dvd_b hF h3a h3b
   · rw [add_assoc, add_comm (b ^ 3), ← add_assoc, add_comm (a ^ 3)] at hF
     have h3a : 3 ∣ a := by
-      refine three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 (neg_ne_zero.2 hc) hb ?_ (dvd_neg.2 h3c) hF H
+      refine three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 (neg_ne_zero.2 hc) hb ?_ (dvd_neg.2 h3c)
+        hF H
       rw [Finset.Insert.comm (-c), Finset.pair_comm (-c) b]
       simp only [← Hgcd, Insert.comm, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
     rcases hx with (hx | hx | hx)
