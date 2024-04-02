@@ -75,12 +75,12 @@ theorem coe_mul (a b : α) : ((a * b : α) : Completion α) = a * b :=
 variable [UniformAddGroup α]
 
 theorem continuous_mul : Continuous fun p : Completion α × Completion α => p.1 * p.2 := by
-  let m := (AddMonoidHom.mul : α →+ α →+ α).compr₂ toCompl
+  let m := (AddMonoidHom.mul : α →+ α →+ α).compr₂ toComplAddHom
   have : Continuous fun p : α × α => m p.1 p.2 := by
     apply (continuous_coe α).comp _
     simp only [AddMonoidHom.coe_mul, AddMonoidHom.coe_mulLeft]
     exact _root_.continuous_mul
-  have di : DenseInducing (toCompl : α → Completion α) := denseInducing_coe
+  have di : DenseInducing (toComplAddHom : α → Completion α) := denseInducing_coe
   convert di.extend_Z_bilin di this
 #align uniform_space.completion.continuous_mul UniformSpace.Completion.continuous_mul
 

@@ -184,23 +184,22 @@ noncomputable instance uniformGroup : UniformGroup (Completion α) :=
   ⟨uniformContinuous_map₂ Div.div⟩
 
 /-- The map from a multiplicative group to its completion as a group hom. -/
-@[to_additive (attr := simps) toCompl "The map from an additive group to its completion as a group
-hom."]
-def toCompl_mul : α →* Completion α where
+@[to_additive (attr := simps) "The map from an additive group to its completion as a group hom."]
+def toComplMulHom : α →* Completion α where
   toFun := (↑)
   map_mul' := coe_mul'
   map_one' := coe_one'
-#align uniform_space.completion.to_compl UniformSpace.Completion.toCompl
+#align uniform_space.completion.to_compl UniformSpace.Completion.toComplAddHom
 
 @[to_additive]
-theorem continuous_toCompl_mul : Continuous (toCompl_mul : α →* Completion α) :=
+theorem continuous_toCompl_mul : Continuous (toComplMulHom : α →* Completion α) :=
   continuous_coe α
 #align uniform_space.completion.continuous_to_compl UniformSpace.Completion.continuous_toCompl_add
 
 variable (α)
 
 @[to_additive]
-theorem denseInducing_toCompl_mul : DenseInducing (toCompl_mul : α →* Completion α) :=
+theorem denseInducing_toCompl_mul : DenseInducing (toComplMulHom : α →* Completion α) :=
   denseInducing_coe
 #align uniform_space.completion.dense_inducing_to_compl UniformSpace.Completion.denseInducing_toCompl_add
 
@@ -299,7 +298,7 @@ theorem MonoidHom.continuous_extension [CompleteSpace β] [T0Space β] (f : α �
 @[to_additive "Completion of a continuous additive group hom, as a group hom."]
 noncomputable def MonoidHom.completion (f : α →* β) (hf : Continuous f) :
     Completion α →* Completion β :=
-  (toCompl_mul.comp f).extension (continuous_toCompl_mul.comp hf)
+  (toComplMulHom.comp f).extension (continuous_toCompl_mul.comp hf)
 #align add_monoid_hom.completion AddMonoidHom.completion
 
 @[to_additive (attr := continuity)]
