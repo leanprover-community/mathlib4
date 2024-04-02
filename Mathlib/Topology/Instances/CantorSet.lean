@@ -22,7 +22,7 @@ is `cantorSet`.
 /-- We define the preCantorSet as the preimages under the iterations of some functions. -/
 def preCantorSet : ℕ → Set ℝ
   | 0 => Set.Icc 0 1
-  | Nat.succ n => (· / 3) '' preCantorSet n ∪ (fun x ↦ (2 + x) / 3)  '' preCantorSet n
+  | n + 1 => (· / 3) '' preCantorSet n ∪ (fun x ↦ (2 + x) / 3) '' preCantorSet n
 
 /-- We define the Cantor set as the limit of all preCantorSets. -/
 def cantorSet := iInf preCantorSet
