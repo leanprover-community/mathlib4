@@ -18,7 +18,7 @@
 
 cd "$(git rev-parse --show-toplevel)" || exit 1
 
-# assigne `targets` to be the input or default to "the usual Mathlib suspects"
+# assign `targets` to be the input if provided, default to "the usual Mathlib suspects" otherwise
 if [ -n "${*}" ]
 then
   targets=${*}
