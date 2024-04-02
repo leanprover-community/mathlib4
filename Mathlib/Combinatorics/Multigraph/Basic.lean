@@ -30,7 +30,7 @@ universe u v
 /--
 Graph a la Serre.
 -/
-@[class] structure SerreGraph (V : Type u) (E : Type v) where
+@[class] structure Multigraph (V : Type u) (E : Type v) where
   /-- The initial vertex of an edge in the Graph `G`. -/
   ι : E → V
   /-- Edge with reversed orientation. -/
@@ -40,10 +40,10 @@ Graph a la Serre.
   /-- An edge reversed is different from itself. -/
   bar_ne_self : ∀ e, e ≠ bar e
 
-namespace SerreGraph
+namespace Multigraph
 
 variable {V V₁ : Type u} {E : Type v} [DecidableEq V] [DecidableEq E]
-(G : SerreGraph V E)
+(G : Multigraph V E)
 variable {u u' v w : V}
 
 attribute [simp] bar_bar
@@ -116,7 +116,7 @@ end EdgeBetween
 
 It is either a point or obtained by adding an edge to a path.
 -/
-inductive EdgePath (G : SerreGraph V E) : V → V → Type _ where
+inductive EdgePath (G : Multigraph V E) : V → V → Type _ where
   | nil (v) : G.EdgePath v v
   | cons {v w u} : G.EdgeBetween v w → G.EdgePath w u → G.EdgePath v u
 deriving DecidableEq
@@ -193,7 +193,7 @@ def fold {A : Type _}(φ : {u v : V} → G.EdgeBetween u v → A)
   | .cons e p => comp (φ e) (fold φ comp init p)
 
 /--Appending paths using `_++_` -/
-instance  G.edgePathAppend {v w u : V} {G : SerreGraph V E} :
+instance  G.edgePathAppend {v w u : V} {G : Multigraph V E} :
   HAppend (G.EdgePath v w) (G.EdgePath w u) (G.EdgePath v u) :=
     ⟨append⟩
 
@@ -297,7 +297,7 @@ the need to reason about indexed inductive types.
 /--
 The list of edges associated to a path.
 -/
-def toList {G : SerreGraph V E} {v w : V} (p : EdgePath G v w) :
+def toList {G : Multigraph V E} {v w : V} (p : EdgePath G v w) :
     List E :=
   match p with
   | nil _ => []
@@ -306,13 +306,13 @@ def toList {G : SerreGraph V E} {v w : V} (p : EdgePath G v w) :
 /--
 The list of edges associated to the empty path is the empty list.
 -/
-theorem nil_toList {G : SerreGraph V E} {v : V}  :
+theorem nil_toList {G : Multigraph V E} {v : V}  :
     (nil v : EdgePath G v v).toList = [] := rfl
 
 /--
 The list of edges associated to a path obtained by adding an edge to a path
 -/
-theorem cons_toList {G: SerreGraph V E} {v w u: V} (e : EdgeBetween G v w)
+theorem cons_toList {G: Multigraph V E} {v w u: V} (e : EdgeBetween G v w)
     (p : EdgePath G w u) :
   (cons e p).toList = e.edge :: p.toList := rfl
 
@@ -320,7 +320,7 @@ theorem cons_toList {G: SerreGraph V E} {v w u: V} (e : EdgeBetween G v w)
 The list of edges associated to the result of appending two paths
 is the result of appending the lists of edges.
 -/
-theorem append_toList {G : SerreGraph V E}{v w u : V}
+theorem append_toList {G : Multigraph V E}{v w u : V}
     (p₁ : EdgePath G v w) (p₂ : EdgePath G w u) :
     (p₁ ++ p₂).toList = p₁.toList ++ p₂.toList := by
     induction p₁ with
@@ -334,7 +334,7 @@ theorem append_toList {G : SerreGraph V E}{v w u : V}
 The list of edges associated to the result of concatenating a path with an edge
 is the result of appending the list of edges of the path with the edge.
 -/
-theorem concat_toList {G : SerreGraph V E}{v w u : V} (p : EdgePath G v w)
+theorem concat_toList {G : Multigraph V E}{v w u : V} (p : EdgePath G v w)
     (e : EdgeBetween G w u) :
     (concat p e).toList = List.concat p.toList e.edge := by
     induction p with
@@ -348,7 +348,7 @@ theorem concat_toList {G : SerreGraph V E}{v w u : V} (p : EdgePath G v w)
 The list of edges associated to the reverse of a path is the
 reverse of the list of edges associated to the path.
 -/
-theorem reverse_toList {G : SerreGraph V E}{v w : V}
+theorem reverse_toList {G : Multigraph V E}{v w : V}
     (p : EdgePath G v w):
     p.reverse.toList  = p.toList.reverse.map (G.bar) := by
   induction p with
@@ -358,7 +358,7 @@ theorem reverse_toList {G : SerreGraph V E}{v w : V}
     simp [cons_toList, reverse_cons, concat_toList]
     simp [ih, EdgeBetween.bar]
 
-theorem toList_reverse {G : SerreGraph V E}{v w : V}
+theorem toList_reverse {G : Multigraph V E}{v w : V}
     (p : EdgePath G v w):
     p.toList.reverse = p.reverse.toList.map (G.bar) := by
   induction p with
@@ -384,7 +384,7 @@ def termVerts (p : G.EdgePath u v) : List V :=
 Given two paths with the same initial and terminal vertices,
 if their lists of edges are equal, then the paths are equal.
 -/
-@[ext] theorem eq_of_toList_eq {G: SerreGraph V E}{v w: V}
+@[ext] theorem eq_of_toList_eq {G: Multigraph V E}{v w: V}
     (p₁ p₂ : EdgePath G v w) : p₁.toList = p₂.toList → p₁ = p₂ := by
   induction p₁ with
   | nil v =>
@@ -413,7 +413,7 @@ if their lists of edges are equal, then the paths are equal.
       · apply ih
         exact h.2
 
-theorem eq_of_edge_eq {G: SerreGraph V E}{v w: V}
+theorem eq_of_edge_eq {G: Multigraph V E}{v w: V}
     (e₁ e₂ : EdgeBetween G v w) : e₁.edge = e₂.edge → e₁ = e₂ := by
       intro h
       ext
@@ -423,7 +423,7 @@ theorem eq_of_edge_eq {G: SerreGraph V E}{v w: V}
 Given two paths with equal initial vertices
 and lists of edges, their terminal vertices are equal.
 -/
-theorem terminal_eq_of_toList_eq {G: SerreGraph V E}{v₁ v₂ w₁ w₂: V}
+theorem terminal_eq_of_toList_eq {G: Multigraph V E}{v₁ v₂ w₁ w₂: V}
     (p₁ : EdgePath G v₁ w₁) (p₂ : EdgePath G v₂ w₂) :
     p₁.toList = p₂.toList → (v₁ = v₂) → (w₁ = w₂)  := by
   induction p₁ with
@@ -449,7 +449,7 @@ theorem terminal_eq_of_toList_eq {G: SerreGraph V E}{v₁ v₂ w₁ w₂: V}
 /--
 Edgepath obtained by shifting the target of an edgepath along an equality.
 -/
-def shiftTarget {G: SerreGraph V E}{v w w' : V}
+def shiftTarget {G: Multigraph V E}{v w w' : V}
     (p : EdgePath G v w)(eql : w = w'):  EdgePath G v w' := by
   match p, w', eql with
   | nil _, _, rfl =>
@@ -457,7 +457,7 @@ def shiftTarget {G: SerreGraph V E}{v w w' : V}
   | cons e p', w', eql =>
     exact cons e (shiftTarget p' eql)
 
-theorem toList_shiftTarget {G: SerreGraph V E}{v w w' : V}
+theorem toList_shiftTarget {G: Multigraph V E}{v w w' : V}
     (p : EdgePath G v w)(eql : w = w'):
     (shiftTarget p eql).toList = p.toList := by
   match p, w', eql with
@@ -470,7 +470,7 @@ theorem toList_shiftTarget {G: SerreGraph V E}{v w w' : V}
 /--
 Edgepath obtained by shifting the ends of an edgepath along equalities.
 -/
-def shiftEnds {G: SerreGraph V E}{v v' w w' : V}
+def shiftEnds {G: Multigraph V E}{v v' w w' : V}
     (p : EdgePath G v w)(eqlv : v = v')(eqlw : w = w'):
     EdgePath G v' w' := by
   match p, w', eqlv, eqlw with
@@ -479,7 +479,7 @@ def shiftEnds {G: SerreGraph V E}{v v' w w' : V}
   | cons e p', w', rfl,  eqlw =>
     exact cons e (shiftTarget p' eqlw)
 
-theorem toList_shiftEnds {G: SerreGraph V E}{v v' w w' : V}
+theorem toList_shiftEnds {G: Multigraph V E}{v v' w w' : V}
     (p : EdgePath G v w)(eqlv : v = v')(eqlw : w = w'):
     (shiftEnds p eqlv eqlw).toList = p.toList := by
   match p, w', eqlv, eqlw with
@@ -572,7 +572,7 @@ theorem reverse_reduced_iff {v w : V} (p : G.EdgePath v w) :
     assumption
 
 /-- Paths up to the equivalence relation generated by reduction. -/
-abbrev PathClass (G: SerreGraph V E) (v w : V)  :=
+abbrev PathClass (G: Multigraph V E) (v w : V)  :=
     Quot <| @Reduction _ _ G v w
 
 /-- The class of a path up to the equivalence generated by reduction. -/
@@ -640,14 +640,14 @@ namespace PathClass
 The constant path, identity in the fundamental group.
 -/
 @[aesop norm unfold]
-protected def id {G : SerreGraph V E} (v : V) : G.PathClass v v :=
+protected def id {G : Multigraph V E} (v : V) : G.PathClass v v :=
   [[.nil v]]
 
 /--
 The constant path, identity in the fundamental group, with graph explicit.
 -/
 @[aesop norm unfold]
-protected def id' (G : SerreGraph V E) (v : V) : G.PathClass v v :=
+protected def id' (G : Multigraph V E) (v : V) : G.PathClass v v :=
   [[.nil v]]
 
 /--
@@ -658,11 +658,11 @@ protected def mul {v w u : V} :
   apply Quot.lift₂ (fun p₁ p₂ ↦ [[ p₁ ++ p₂ ]])
   · rename_i _ _ u_1 v_1 w_1
     intro a b₁ b₂ a_1
-    apply SerreGraph.left_append_step
+    apply Multigraph.left_append_step
     simp_all only
   · rename_i _ _ u_1 v_1 w_1
     intro a₁ a₂ b a
-    apply SerreGraph.right_append_step
+    apply Multigraph.right_append_step
     simp_all only
 
 /--
@@ -695,7 +695,7 @@ The product of two path-classes is the homotopy class of the concatenation of th
     (p' : G.EdgePath v w) :
     [[p]] * [[p']] = [[p ++ p']] := rfl
 
-theorem cons_equiv_of_equiv{G: SerreGraph V E}{v w u : V}
+theorem cons_equiv_of_equiv{G: Multigraph V E}{v w u : V}
     (a : EdgeBetween G v w)  (b₁ b₂ : EdgePath G w u) : [[b₁]] = [[b₂]] →
     [[cons a  b₁]] = [[cons a b₂]] := by
   intro r
@@ -703,7 +703,7 @@ theorem cons_equiv_of_equiv{G: SerreGraph V E}{v w u : V}
       show cons a b₂ = cons a (nil _) ++ b₂ by rfl,
       ← mul_path_path, ← mul_path_path, r]
 
-theorem concat_equiv_of_equiv {G: SerreGraph V E}{v w u : V}
+theorem concat_equiv_of_equiv {G: Multigraph V E}{v w u : V}
     (a₁ a₂ : EdgePath G v w)  (b : EdgeBetween G w u) : [[a₁]] = [[a₂]] →
     [[concat a₁ b]] = [[concat a₂ b]] := by
   intro r
@@ -717,7 +717,7 @@ theorem concat_equiv_of_equiv {G: SerreGraph V E}{v w u : V}
 /--
 The fundamental group of a graph.
 -/
-abbrev π₁ (G: SerreGraph V E) (v : V) := G.PathClass v v
+abbrev π₁ (G: Multigraph V E) (v : V) := G.PathClass v v
 
 @[local simp] lemma mul_path_path' (p : G.EdgePath u v)
     (p' : G.EdgePath v w) :
@@ -789,7 +789,7 @@ instance : Group (π₁ G v) where
 /--
 The wedge of circles indexed by a given type `S`.
 -/
-def wedgeCircles (S: Type) : SerreGraph Unit (S × Bool) := {
+def wedgeCircles (S: Type) : Multigraph Unit (S × Bool) := {
   ι := fun _ ↦ ()
   bar := fun (e, b) ↦ (e, !b)
   bar_bar := by aesop
@@ -800,7 +800,7 @@ def wedgeCircles (S: Type) : SerreGraph Unit (S × Bool) := {
 A path class with given initial vertex but arbitrary terminal vertex.
 -/
 @[ext]
-structure PathClassFrom (G : SerreGraph V E) (v : V) where
+structure PathClassFrom (G : Multigraph V E) (v : V) where
   /-- The terminal vertex. -/
   τ  : V
   /-- The path class. -/

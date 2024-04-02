@@ -1468,11 +1468,11 @@ import Mathlib.Combinatorics.Quiver.SingleObj
 import Mathlib.Combinatorics.Quiver.Subquiver
 import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.Combinatorics.Schnirelmann
-import Mathlib.Combinatorics.SerreGraph.Basic
-import Mathlib.Combinatorics.SerreGraph.Covering
-import Mathlib.Combinatorics.SerreGraph.ReducedPaths
-import Mathlib.Combinatorics.SerreGraph.SubgroupCover
-import Mathlib.Combinatorics.SerreGraph.UniversalCover
+import Mathlib.Combinatorics.Multigraph.Basic
+import Mathlib.Combinatorics.Multigraph.Covering
+import Mathlib.Combinatorics.Multigraph.ReducedPaths
+import Mathlib.Combinatorics.Multigraph.SubgroupCover
+import Mathlib.Combinatorics.Multigraph.UniversalCover
 import Mathlib.Combinatorics.SetFamily.AhlswedeZhang
 import Mathlib.Combinatorics.SetFamily.CauchyDavenport
 import Mathlib.Combinatorics.SetFamily.Compression.Down

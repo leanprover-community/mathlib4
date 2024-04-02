@@ -3,8 +3,8 @@ Copyright (c) 2024 Siddhartha Gadgil. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Gadgil
 -/
-import Mathlib.Combinatorics.SerreGraph.Covering
-import Mathlib.Combinatorics.SerreGraph.ReducedPaths
+import Mathlib.Combinatorics.Multigraph.Covering
+import Mathlib.Combinatorics.Multigraph.ReducedPaths
 
 /-!
 ## Construction of the Universal covering of Serre Graphs
@@ -21,7 +21,7 @@ result is reduced. The other result is used to show that
 the `bar` map is an involution.
 -/
 
-namespace SerreGraph
+namespace Multigraph
 
 open EdgePath PathClass
 
@@ -31,7 +31,7 @@ variable {V : Type u} {E : Type v} [DecidableEq V] [DecidableEq E]
 
 namespace UniversalCover
 
-variable (G: SerreGraph V E) (x₀ : V)
+variable (G: Multigraph V E) (x₀ : V)
 
 /--
 The vertices of the universal cover: reduced edge paths
@@ -124,7 +124,7 @@ theorem bar_neq_self (e: Edge G x₀) :
 /--
 The universal cover of a Serre graph.
 -/
-def _root_.SerreGraph.univ : SerreGraph (Vert G x₀) (Edge G x₀) where
+def _root_.Multigraph.univ : Multigraph (Vert G x₀) (Edge G x₀) where
   ι := initial G x₀
   bar := bar G x₀
   bar_bar := bar_bar G x₀
@@ -222,7 +222,7 @@ def basepoint : Vert G x₀  :=
 Ray to the vetex in the universal cover corresponding to the reverse of
 a reduced path `p`, starting at the basepoint.
 -/
-def rayToRev (G: SerreGraph V E)(x₀ τ : V)(p : EdgePath G τ x₀)
+def rayToRev (G: Multigraph V E)(x₀ τ : V)(p : EdgePath G τ x₀)
     (hyp : reduced p.reverse)  :
     EdgePath  (G.univ x₀) (basepoint G x₀) ⟨τ, p.reverse, hyp⟩ := by
   match p, hyp with
@@ -246,7 +246,7 @@ def rayToRev (G: SerreGraph V E)(x₀ τ : V)(p : EdgePath G τ x₀)
       apply redCons_eq_cons_of_reduced
       assumption)⟩
 
-theorem rayToRev_proj_list (G: SerreGraph V E)(x₀ τ : V)
+theorem rayToRev_proj_list (G: Multigraph V E)(x₀ τ : V)
     (p : EdgePath G τ x₀)
     (hyp : reduced p.reverse) :
     (rayToRev G x₀ τ p hyp).toList.map (fun e ↦ e.nxt.edge) =
@@ -272,7 +272,7 @@ theorem rayToRev_proj_list (G: SerreGraph V E)(x₀ τ : V)
 Ray to the vetex in the universal cover corresponding to a
 reduced path `p`, starting at the basepoint.
 -/
-def rayTo (G: SerreGraph V E)(x₀ τ : V)(p : EdgePath G x₀ τ)
+def rayTo (G: Multigraph V E)(x₀ τ : V)(p : EdgePath G x₀ τ)
     (hyp : reduced p)  :
     EdgePath  (G.univ x₀) (basepoint G x₀) ⟨τ, p, hyp⟩ := by
   let ray := rayToRev G x₀ τ p.reverse
@@ -281,7 +281,7 @@ def rayTo (G: SerreGraph V E)(x₀ τ : V)(p : EdgePath G x₀ τ)
   simp [reverse_reverse]
 
 
-theorem rayTo_proj_list (G: SerreGraph V E)(x₀ τ : V)(p : EdgePath G x₀ τ)
+theorem rayTo_proj_list (G: Multigraph V E)(x₀ τ : V)(p : EdgePath G x₀ τ)
     (hyp : reduced p) :
     (rayTo G x₀ τ p hyp).toList.map (fun e ↦ e.nxt.edge) =
       p.toList := by
@@ -296,7 +296,7 @@ theorem rayTo_proj_list (G: SerreGraph V E)(x₀ τ : V)(p : EdgePath G x₀ τ)
 Lift of a reduced path `p` to the universal cover.
 This is the ray to the vertex corresponding to `p`.
 -/
-def rayLift (G: SerreGraph V E)(x₀ τ : V)(p : EdgePath G x₀ τ)
+def rayLift (G: Multigraph V E)(x₀ τ : V)(p : EdgePath G x₀ τ)
     (hyp : reduced p) : PathLift (proj G x₀) (basepoint G x₀)
     rfl p := {
   τ := ⟨τ, p, hyp⟩
@@ -311,7 +311,7 @@ def rayLift (G: SerreGraph V E)(x₀ τ : V)(p : EdgePath G x₀ τ)
 The lift of a reduced path `p` to the universal cover
 is the ray to the vertex corresponding to `p`.
 -/
-theorem lift_of_reduced {G: SerreGraph V E}{x₀ τ: V}(p : EdgePath G x₀ τ)
+theorem lift_of_reduced {G: Multigraph V E}{x₀ τ: V}(p : EdgePath G x₀ τ)
     (hyp : reduced p) :
     p.lift (proj G x₀) (basepoint G x₀) rfl =
       rayLift G x₀ τ p hyp := by
@@ -321,7 +321,7 @@ theorem lift_of_reduced {G: SerreGraph V E}{x₀ τ: V}(p : EdgePath G x₀ τ)
 The terminal vertex of the lift of a reduced path `p` to the universal cover
 is the vertex corresponding to `p`.
 -/
-theorem reduced_liftTerminal {G: SerreGraph V E}{x₀ τ: V}
+theorem reduced_liftTerminal {G: Multigraph V E}{x₀ τ: V}
     (p : EdgePath G x₀ τ)
     (hyp : reduced p) :
     liftTerminal (proj G x₀) (basepoint G x₀)  rfl p =
@@ -332,7 +332,7 @@ theorem reduced_liftTerminal {G: SerreGraph V E}{x₀ τ: V}
 /--
 If two reduced paths are homotopic, then they are equal.
 -/
-theorem eq_of_homotopic_of_reduced {G: SerreGraph V E}(x₀ τ: V)
+theorem eq_of_homotopic_of_reduced {G: Multigraph V E}(x₀ τ: V)
     {p₁ p₂ : EdgePath G x₀ τ}
     (hyp₁ : reduced p₁)(hyp₂ : reduced p₂):
     [[ p₁ ]] = [[ p₂ ]] → p₁ = p₂ := by
@@ -350,7 +350,7 @@ theorem eq_of_homotopic_of_reduced {G: SerreGraph V E}(x₀ τ: V)
 /--
 Two paths are homotopic if and only if their reductions are equal.
 -/
-theorem homotopic_iff_reduction_eq {G: SerreGraph V E}(x₀ τ: V)
+theorem homotopic_iff_reduction_eq {G: Multigraph V E}(x₀ τ: V)
     (p₁ p₂ : EdgePath G x₀ τ):
     [[ p₁ ]] = [[ p₂ ]] ↔ reduction p₁ = reduction p₂ := by
   apply Iff.intro
@@ -365,7 +365,7 @@ theorem homotopic_iff_reduction_eq {G: SerreGraph V E}(x₀ τ: V)
     rw [← reduction_homotopic_self p₁, ← reduction_homotopic_self p₂]
     rw [hyp]
 
-theorem homotopic_of_liftTerminal_eq  {G: SerreGraph V E}{x₀ τ: V}
+theorem homotopic_of_liftTerminal_eq  {G: Multigraph V E}{x₀ τ: V}
     {p₁ p₂ : EdgePath G x₀ τ} :
     liftTerminal (proj G x₀) (basepoint G x₀) rfl p₁ =
         liftTerminal (proj G x₀) (basepoint G x₀) rfl p₂ →
@@ -386,7 +386,7 @@ theorem homotopic_of_liftTerminal_eq  {G: SerreGraph V E}{x₀ τ: V}
   rw [homotopic_iff_reduction_eq]
   exact hyp
 
-theorem proj_liftTerminal {G: SerreGraph V E}{x₀: V}{vert : Vert G x₀}
+theorem proj_liftTerminal {G: Multigraph V E}{x₀: V}{vert : Vert G x₀}
     (e: EdgePath (G.univ x₀) (basepoint G x₀) vert) :
     liftTerminal (proj G x₀) (basepoint G x₀) rfl
       (e.map (proj G x₀)) = vert := by
@@ -397,7 +397,7 @@ theorem proj_liftTerminal {G: SerreGraph V E}{x₀: V}{vert : Vert G x₀}
 /--
 Any two paths in the universal cover with the same endpoints are homotopic.
 -/
-theorem simple_connectivity_for_paths {G: SerreGraph V E}{x₀: V}
+theorem simple_connectivity_for_paths {G: Multigraph V E}{x₀: V}
     {vert : Vert G x₀}
     (e₁ e₂: EdgePath (G.univ x₀) (basepoint G x₀) vert) :
     [[ e₁ ]] = [[ e₂ ]] := by

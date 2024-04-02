@@ -3,7 +3,7 @@ Copyright (c) 2024 Siddhartha Gadgil. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Gadgil
 -/
-import Mathlib.Combinatorics.SerreGraph.Basic
+import Mathlib.Combinatorics.Multigraph.Basic
 import Mathlib.Data.Nat.Parity
 /-!
 ## Reduced paths in graphs
@@ -12,7 +12,7 @@ We define reduced paths in graphs, some related operations and prove properties 
 
 In particular, we define `reduction` of a path, and show that it is homotopic to the original path.
 -/
-namespace SerreGraph
+namespace Multigraph
 
 open EdgePath PathClass
 
@@ -26,7 +26,7 @@ When `p` is a reduced path from `v` to `w` and `e` is an edge
  The function is defined for paths `p` that may not be reduced,
  but the result need not be reduced if `p` is not reduced.
 -/
-def redCons {G : SerreGraph V E} {u v w : V} (e: EdgeBetween G u v)
+def redCons {G : Multigraph V E} {u v w : V} (e: EdgeBetween G u v)
     (p : EdgePath G v w) : EdgePath G u w := by
   match p with
   | nil _ => exact cons e (nil v)
@@ -42,7 +42,7 @@ def redCons {G : SerreGraph V E} {u v w : V} (e: EdgeBetween G u v)
 /--
 Reduced-prepending to a point path is the same as prepending.
 -/
-theorem redCons_nil {G : SerreGraph V E} {u v : V}
+theorem redCons_nil {G : Multigraph V E} {u v : V}
     (e: EdgeBetween G u v) :  redCons e (nil v) = cons e (nil v) := by
   simp [redCons]
 
@@ -52,7 +52,7 @@ a path `p` from `v'` to `w` with `v'` distinct from `u`
 is the same as
 prepending `e` to the path obtained by prepending `e'` to `p`.
 -/
-theorem redCons_cons_vertex_neq {G : SerreGraph V E} {u v v' w : V}
+theorem redCons_cons_vertex_neq {G : Multigraph V E} {u v v' w : V}
     (e: EdgeBetween G u v) (e' : EdgeBetween G v v')
     (p : EdgePath G v' w) (h : v' ≠ u) : redCons e (cons e' p) =
     cons e (cons e' p) := by
@@ -64,7 +64,7 @@ a path `p` from `v` to `w` with `e'` not the reverse of `e`
 is the same as
 prepending `e` to the path obtained by prepending `e'` to `p`.
 -/
-theorem redCons_cons_edge_neq {G : SerreGraph V E} {u v w : V}
+theorem redCons_cons_edge_neq {G : Multigraph V E} {u v w : V}
     {e: EdgeBetween G u v} {e' : EdgeBetween G v u} (p : EdgePath G u w)
     (h : e' ≠ e.bar) :
     redCons e (cons e' p) = cons e (cons e' p) := by
@@ -75,7 +75,7 @@ Prepending edges `e` from `u` to `v` and `e'` from `v` to `u` to
 a path `p` from `v` to `w` with `e'` the reverse of `e`
 gives the path `p`.
 -/
-theorem redCons_cons_edge_eq {G : SerreGraph V E} {u v w : V}
+theorem redCons_cons_edge_eq {G : Multigraph V E} {u v w : V}
     {e: EdgeBetween G u v} {e' : EdgeBetween G v u} (p : EdgePath G u w)
     (h : e' = e.bar) :
     redCons e (cons e' p) = p := by
@@ -87,7 +87,7 @@ prepending `e` to `p` or
 `p` is the result of prepending `e.bar` to a path `t`,
 in which case the result is `t`.
 -/
-theorem prepend_cases {G : SerreGraph V E} {u v w : V}
+theorem prepend_cases {G : Multigraph V E} {u v w : V}
     (e: EdgeBetween G u v) (p : EdgePath G v w) :
     (redCons e p) = cons e p ∨ (
     ∃ t : EdgePath G u w, p = cons e.bar t ∧  (redCons e p = t)
@@ -112,7 +112,7 @@ theorem prepend_cases {G : SerreGraph V E} {u v w : V}
 If the result of prepending an edge `e` to a path `p` is split,
 then `p` is not reduced.
 -/
-theorem tail_reducible_of_split {G : SerreGraph V E} {u v w u' v' w': V}
+theorem tail_reducible_of_split {G : Multigraph V E} {u v w u' v' w': V}
     {e : EdgeBetween G u v} {p : EdgePath G v w}
     {ph: EdgeBetween G u v'}{pt : EdgePath G v' w'}
     {e' : EdgeBetween G w' u'}{p₂ : EdgePath G w' w}
@@ -135,7 +135,7 @@ theorem tail_reducible_of_split {G : SerreGraph V E} {u v w u' v' w': V}
 /--
 A path consisting of a single edge is reduced.
 -/
-theorem reduced_singleton {G : SerreGraph V E} {u v : V}
+theorem reduced_singleton {G : Multigraph V E} {u v : V}
     (e : EdgeBetween G u v) : reduced (cons e (nil v)) := by
   intro p' red'
   let ⟨u, u', e, p₁, p₂, eqn⟩   := red'.property
@@ -152,7 +152,7 @@ theorem reduced_singleton {G : SerreGraph V E} {u v : V}
 /--
 A point path is reduced.
 -/
-theorem reduced_nil {G : SerreGraph V E} {v : V} :
+theorem reduced_nil {G : Multigraph V E} {v : V} :
     reduced (nil v : EdgePath G v v) := by
   intro p' red'
   let ⟨u, u', e, p₁, p₂, eqn⟩   := red'.property
@@ -170,7 +170,7 @@ theorem reduced_nil {G : SerreGraph V E} {v : V} :
 /--
 The result of `redCons` (reduced-prepend) is reduced if the input is reduced.
 -/
-theorem reduced_redCons (G : SerreGraph V E) {u v w : V}
+theorem reduced_redCons (G : Multigraph V E) {u v w : V}
     (e: EdgeBetween G u v) (p : EdgePath G v w) (hyp : reduced p):
     reduced (redCons e p) := by
   match p with
@@ -231,7 +231,7 @@ theorem reduced_redCons (G : SerreGraph V E) {u v w : V}
 /--
 Reduced-prepend of `e` and its reverse to `p` gives `p`.
 -/
-theorem cancelling_steps_redCons {G : SerreGraph V E} {u v w : V}
+theorem cancelling_steps_redCons {G : Multigraph V E} {u v w : V}
     (e: EdgeBetween G u v) (p : EdgePath G v w) (hyp : reduced p):
     redCons e.bar (redCons e p) = p := by
   cases prepend_cases e p with
@@ -263,7 +263,7 @@ theorem cancelling_steps_redCons {G : SerreGraph V E} {u v w : V}
 If the result of prepending an edge `e` to a path `p` is reduced,
 then the result is the same as reduced-prepending `e` to `p`.
 -/
-theorem redCons_eq_cons_of_reduced {G : SerreGraph V E} {u v w : V}
+theorem redCons_eq_cons_of_reduced {G : Multigraph V E} {u v w : V}
     (e: EdgeBetween G u v) (p : EdgePath G v w) (hyp : reduced (cons e p)):
     redCons e p = cons e p := by
   cases prepend_cases e p with
@@ -284,7 +284,7 @@ theorem redCons_eq_cons_of_reduced {G : SerreGraph V E} {u v w : V}
 /--
 The results of prepending an edge `e` to a path `p` and reduced-prepending `e` to `p` are homotopic.
 -/
-theorem cons_homotopic_redCons {G : SerreGraph V E} {u v w : V}
+theorem cons_homotopic_redCons {G : Multigraph V E} {u v w : V}
     (e: EdgeBetween G u v) (p : EdgePath G v w):
     [[ cons  e p ]] = [[ redCons e p ]] := by
   cases prepend_cases e p with
@@ -305,7 +305,7 @@ theorem cons_homotopic_redCons {G : SerreGraph V E} {u v w : V}
 /--
 The reduction of a path, defined by induction on the path.
 -/
-def reduction {G: SerreGraph V E} {v w : V} (p : EdgePath G v w) :
+def reduction {G: Multigraph V E} {v w : V} (p : EdgePath G v w) :
     EdgePath G v w :=
   match p with
   | nil _ => nil v
@@ -314,7 +314,7 @@ def reduction {G: SerreGraph V E} {v w : V} (p : EdgePath G v w) :
 /--
 The reduction of a point path is the point path.
 -/
-theorem reduction_nil {G: SerreGraph V E} {v : V} :
+theorem reduction_nil {G: Multigraph V E} {v : V} :
     reduction (nil v : EdgePath G v v) = nil v := by
   simp [reduction]
 
@@ -322,7 +322,7 @@ theorem reduction_nil {G: SerreGraph V E} {v : V} :
 The reduction of a path obtained by prepending an edge to a path is
 the reduced-prepend of the edge to the reduction of the path.
 -/
-theorem reduction_cons {G: SerreGraph V E} {v w u : V}
+theorem reduction_cons {G: Multigraph V E} {v w u : V}
     (e: EdgeBetween G v w) (p : EdgePath G w u) :
   reduction (cons e p) = redCons e (reduction p) := by
   simp [reduction]
@@ -330,7 +330,7 @@ theorem reduction_cons {G: SerreGraph V E} {v w u : V}
 /--
 The reduction of a path is reduced.
 -/
-theorem reduction_reduced {G: SerreGraph V E} {v w : V} (p : EdgePath G v w) :
+theorem reduction_reduced {G: Multigraph V E} {v w : V} (p : EdgePath G v w) :
     reduced (reduction p) := by
   induction p with
   | nil _ =>
@@ -342,7 +342,7 @@ theorem reduction_reduced {G: SerreGraph V E} {v w : V} (p : EdgePath G v w) :
 /--
 The reduction of a reduced path is the path itself.
 -/
-theorem reduction_eq_self_of_reduced {G: SerreGraph V E} {v w : V}
+theorem reduction_eq_self_of_reduced {G: Multigraph V E} {v w : V}
     (p : EdgePath G v w) (hyp : reduced p) :
     reduction p = p := by
   induction p with
@@ -361,7 +361,7 @@ theorem reduction_eq_self_of_reduced {G: SerreGraph V E} {v w : V}
 /--
 The reduction of a path is homotopic to the path itself.
 -/
-theorem reduction_homotopic_self {G: SerreGraph V E} {v w : V}
+theorem reduction_homotopic_self {G: Multigraph V E} {v w : V}
     (p : EdgePath G v w)  :
     [[ reduction p ]] = [[ p ]] := by
   induction p with
@@ -376,7 +376,7 @@ theorem reduction_homotopic_self {G: SerreGraph V E} {v w : V}
 The parity of reduced-prepend of an edge to a path is
 the opposite of the parity of the path.
 -/
-theorem redCons_parity_neq {G : SerreGraph V E} {u v w : V}
+theorem redCons_parity_neq {G : Multigraph V E} {u v w : V}
     (e: EdgeBetween G u v) (p : EdgePath G v w) :
     Even ((redCons e p).toList.length) ↔ ¬ Even (p.toList.length) := by
   cases prepend_cases e p with
@@ -394,7 +394,7 @@ Reduction of a path obtained by concatenating an edge to a reduced path.
 The function is defined for paths `p` that may not be reduced,
 but the result need not be reduced if `p` is not reduced.
 -/
-def reducedConcat {G : SerreGraph V E} {v w u : V}
+def reducedConcat {G : Multigraph V E} {v w u : V}
     (p : EdgePath G v w) (e: EdgeBetween G w u) :
   EdgePath G v u :=
   reverse <| redCons e.bar (reverse p)
@@ -407,7 +407,7 @@ infixl:65 ":+" => reducedConcat
 /--
 The reduced-concatenation of an edge to a reduced path is reduced.
 -/
-theorem reducedConcat_reduced {G : SerreGraph V E} {v w u : V}
+theorem reducedConcat_reduced {G : Multigraph V E} {v w u : V}
     (p : EdgePath G v w) (e: EdgeBetween G w u) (hyp : reduced p) :
   reduced (p :+ e) := by
   simp only [reducedConcat]
@@ -419,7 +419,7 @@ theorem reducedConcat_reduced {G : SerreGraph V E} {v w u : V}
 /--
 Reduced-concatenation of an edge and its reverse to a path gives the path.
 -/
-theorem reducedConcat_cancel_pair {G : SerreGraph V E} {v w u : V}
+theorem reducedConcat_cancel_pair {G : Multigraph V E} {v w u : V}
     (p : EdgePath G v w) (e: EdgeBetween G w u) (hyp : reduced p) :
     p :+ e :+ e.bar = p := by
   have hyp' :=  reverse_reduced p hyp
@@ -435,7 +435,7 @@ theorem reducedConcat_cancel_pair {G : SerreGraph V E} {v w u : V}
 The parity of reduced-concatenation of an edge to a path is
 the opposite of the parity of the path.
 -/
-theorem concat_parity {G : SerreGraph V E} {v w u : V}
+theorem concat_parity {G : Multigraph V E} {v w u : V}
     (p : EdgePath G v w) (e: EdgeBetween G w u)  :
     Even ((p :+ e).toList.length) ↔ ¬ Even (p.toList.length) := by
   simp  [reducedConcat, reverse_toList]

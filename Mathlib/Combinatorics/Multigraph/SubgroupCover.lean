@@ -3,7 +3,7 @@ Copyright (c) 2024 Siddhartha Gadgil. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Gadgil
 -/
-import Mathlib.Combinatorics.SerreGraph.UniversalCover
+import Mathlib.Combinatorics.Multigraph.UniversalCover
 import Mathlib.GroupTheory.Subgroup.Basic
 /-!
 ## Covers of Serre Graphs for Subgroups of the Fundamental Group
@@ -15,7 +15,7 @@ fundamental group of this cover is isomorphic to the subgroup.
 The cover is constructed as a quotient of the universal cover.
 -/
 
-namespace SerreGraph
+namespace Multigraph
 
 universe u v
 
@@ -25,7 +25,7 @@ open EdgePath PathClass UniversalCover Edge
 
 variable {V : Type u} {E : Type v} [DecidableEq V] [DecidableEq E]
 
-variable {G: SerreGraph V E} {x₀ : V}
+variable {G: Multigraph V E} {x₀ : V}
 
 variable (H : Subgroup (π₁ G x₀))
 
@@ -320,7 +320,7 @@ end Quot
 The cover corresponding to the subgroup `H` of the fundamental group.
 -/
 def groupCover :
-    SerreGraph (Quotient (vertSetoid H)) (Quotient (edgeSetoid H)) where
+    Multigraph (Quotient (vertSetoid H)) (Quotient (edgeSetoid H)) where
   ι := Quot.ι H
   bar := Quot.bar H
   bar_bar := Quot.bar_bar H
@@ -439,7 +439,7 @@ def localSection : (v₁ : Quotient (vertSetoid H)) → (e : E) →
   intro v₁
   apply Quotient.hrecOn v₁
     (motive:= fun v₁ ↦ (e : E) →
-    Morphism.toFuncV (groupCoverProj H) v₁ = SerreGraph.ι G e →
+    Morphism.toFuncV (groupCoverProj H) v₁ = Multigraph.ι G e →
     Quotient (edgeSetoid H))
     (fun ⟨τ, p, is_reduced⟩ e h ↦
         ⟦ ⟨τ, G.τ e, ⟨e, Eq.symm h, rfl⟩, p, is_reduced⟩ ⟧)
@@ -713,4 +713,4 @@ noncomputable def group_of_cover_is_subgroup :
 
 end SubgroupCover
 
-end SerreGraph
+end Multigraph

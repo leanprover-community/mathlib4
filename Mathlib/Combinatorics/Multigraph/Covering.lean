@@ -3,7 +3,7 @@ Copyright (c) 2024 Siddhartha Gadgil. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Gadgil
 -/
-import Mathlib.Combinatorics.SerreGraph.Basic
+import Mathlib.Combinatorics.Multigraph.Basic
 import Mathlib.Data.List.Basic
 
 /-!
@@ -15,7 +15,7 @@ We prove the basic results about existence and uniqueness of lifts.
 We show that the covering map induces an injection on fundamental groups.
 -/
 
-namespace SerreGraph
+namespace Multigraph
 
 open EdgePath PathClass
 
@@ -36,7 +36,7 @@ We will eventually define maps of Serre graphs that allow collapsing edges.
 
 The definition of morphisms includes covering maps.
 -/
-@[ext] structure Morphism (G₁ : SerreGraph V₁ E₁) (G₂ : SerreGraph V₂ E₂) where
+@[ext] structure Morphism (G₁ : Multigraph V₁ E₁) (G₂ : Multigraph V₂ E₂) where
   /-- Map on vertices. -/
   toFuncV : V₁ → V₂
   /-- Map on edges. -/
@@ -47,7 +47,7 @@ The definition of morphisms includes covering maps.
 /--
 The initial vertex of an edge is mapped to the initial vertex of the image of the edge.
 -/
-theorem toFuncV_init {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+theorem toFuncV_init {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (f: Morphism G₁ G₂) :
       ∀ (e : E₁), f.toFuncV (G₁.ι e) = G₂.ι (f.toFuncE e)  := by
   intro e
@@ -56,7 +56,7 @@ theorem toFuncV_init {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
 /--
 The reverse of an edge is mapped to the reverse of the image of the edge.
 -/
-theorem toFuncE_bar {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+theorem toFuncE_bar {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (f: Morphism G₁ G₂) :
       ∀ (e : E₁), f.toFuncE (G₁.bar e) = G₂.bar (f.toFuncE e) := by
   intro e
@@ -65,11 +65,11 @@ theorem toFuncE_bar {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
 /--
 The terminal vertex of an edge is mapped to the terminal vertex of the image of the edge.
 -/
-theorem toFuncV_terminal {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+theorem toFuncV_terminal {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (f: Morphism G₁ G₂) :
       ∀ (e : E₁), f.toFuncV (G₁.τ e)=  G₂.τ (f.toFuncE e)  := by
   intro e
-  rw [SerreGraph.τ, SerreGraph.τ, ← toFuncE_bar, ← toFuncV_init]
+  rw [Multigraph.τ, Multigraph.τ, ← toFuncE_bar, ← toFuncV_init]
 
 /--
 An auxiliary function to define the induced map on paths of a Morphism.
@@ -77,7 +77,7 @@ For convenience with recursion and proofs,
 the results is a subtype giving a path and a
 proof that the list of edges of the path is mapped correctly.
 -/
-def Morphism.pathMapAux {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+def Morphism.pathMapAux {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (f: Morphism G₁ G₂) (v₁ w₁: V₁) (p: G₁.EdgePath v₁ w₁):
     {path : G₂.EdgePath (f.toFuncV v₁) (f.toFuncV w₁) //
     path.toList = p.toList.map f.toFuncE} := by
@@ -99,7 +99,7 @@ def Morphism.pathMapAux {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E�
 /--
 Map on paths induced by a morphism.
 -/
-def EdgePath.map {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}{v₁ w₁: V₁}
+def EdgePath.map {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}{v₁ w₁: V₁}
     (p: G₁.EdgePath v₁ w₁)(f: Morphism G₁ G₂)  :=
     (f.pathMapAux v₁ w₁ p).val
 
@@ -107,7 +107,7 @@ def EdgePath.map {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}{v�
 The list corresponding to the image of a path is
 the image of the list of edges of the path.
 -/
-theorem EdgePath.map_toList {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+theorem EdgePath.map_toList {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (f: Morphism G₁ G₂) {v₁ w₁: V₁} (p: G₁.EdgePath v₁ w₁) :
       (p.map f).toList = p.toList.map f.toFuncE :=
       (f.pathMapAux v₁ w₁ p).property
@@ -115,7 +115,7 @@ theorem EdgePath.map_toList {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V�
 /--
 Map on edges between vertices induced by a morphism.
 -/
-def EdgeBetween.map {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+def EdgeBetween.map {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (f: Morphism G₁ G₂) {v₁ w₁: V₁} (e: G₁.EdgeBetween v₁ w₁) :
       G₂.EdgeBetween (f.toFuncV v₁) (f.toFuncV w₁) :=
       ⟨f.toFuncE e.edge, by
@@ -130,7 +130,7 @@ def EdgeBetween.map {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
 /--
 The underlying edge of the image of an edge is the image of the underlying edge.
 -/
-theorem EdgeBetween.map_edge {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+theorem EdgeBetween.map_edge {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (f: Morphism G₁ G₂) {v₁ w₁: V₁} (e: G₁.EdgeBetween v₁ w₁) :
       (e.map f).edge = f.toFuncE e.edge := by
         simp [EdgeBetween.map, toList]
@@ -139,7 +139,7 @@ theorem EdgeBetween.map_edge {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V�
 The reverse of the image of an edge-between is
 the image of the reverse of the edge-between.
 -/
-theorem EdgeBetween.map_bar {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+theorem EdgeBetween.map_bar {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (f: Morphism G₁ G₂) {v₁ w₁: V₁} (e: G₁.EdgeBetween v₁ w₁) :
       (e.map f).bar = e.bar.map f := by
         ext
@@ -147,7 +147,7 @@ theorem EdgeBetween.map_bar {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V�
 
 namespace Morphism
 
-variable {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂} (f: Morphism G₁ G₂)
+variable {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂} (f: Morphism G₁ G₂)
 
 /--
 The image of the result of appending two paths is
@@ -200,7 +200,7 @@ theorem reduced_of_image_reduced {v w : V₁} (η : EdgePath G₁ v w):
 /--
 Composition of morphisms.
 -/
-def comp {G₃: SerreGraph V₃ E₃} (g: Morphism G₂ G₃)(f: Morphism G₁ G₂) :
+def comp {G₃: Multigraph V₃ E₃} (g: Morphism G₂ G₃)(f: Morphism G₁ G₂) :
     Morphism G₁ G₃ := {
   toFuncV := g.toFuncV ∘ f.toFuncV,
   toFuncE := g.toFuncE ∘ f.toFuncE,
@@ -247,7 +247,7 @@ protected theorem id_comp (f: Morphism G₁ G₂) :
 The map on vertices of the composition of morphisms is
 the composition of the maps on vertices.
 -/
-theorem comp_toFuncV {G₃: SerreGraph V₃ E₃} (g: Morphism G₂ G₃)
+theorem comp_toFuncV {G₃: Multigraph V₃ E₃} (g: Morphism G₂ G₃)
     (f: Morphism G₁ G₂) (v : V₁) :
     (g.comp f).toFuncV v = g.toFuncV (f.toFuncV v) := by
   rfl
@@ -256,7 +256,7 @@ theorem comp_toFuncV {G₃: SerreGraph V₃ E₃} (g: Morphism G₂ G₃)
 The map on edges of the composition of morphisms is
 the composition of the maps on edges.
 -/
-theorem comp_toFuncE {G₃: SerreGraph V₃ E₃} (g: Morphism G₂ G₃)
+theorem comp_toFuncE {G₃: Multigraph V₃ E₃} (g: Morphism G₂ G₃)
     (f: Morphism G₁ G₂) (e : E₁) :
     (g.comp f).toFuncE e = g.toFuncE (f.toFuncE e) := by
   rfl
@@ -265,7 +265,7 @@ theorem comp_toFuncE {G₃: SerreGraph V₃ E₃} (g: Morphism G₂ G₃)
 The map on edges of the composition of morphisms is
 the composition of the maps on edges.
 -/
-theorem comp_toFuncE' {G₃: SerreGraph V₃ E₃} (g: Morphism G₂ G₃)
+theorem comp_toFuncE' {G₃: Multigraph V₃ E₃} (g: Morphism G₂ G₃)
     (f: Morphism G₁ G₂)  :
     (g.comp f).toFuncE  = g.toFuncE ∘ f.toFuncE  := by
   rfl
@@ -273,7 +273,7 @@ theorem comp_toFuncE' {G₃: SerreGraph V₃ E₃} (g: Morphism G₂ G₃)
 /--
 The composition of morphisms is associative.
 -/
-theorem comp_assoc {G₃ G₄: SerreGraph V₃ E₃} (h: Morphism G₃ G₄)
+theorem comp_assoc {G₃ G₄: Multigraph V₃ E₃} (h: Morphism G₃ G₄)
     (g: Morphism G₂ G₃)(f: Morphism G₁ G₂) :
     Morphism.comp h (Morphism.comp g f) =
     Morphism.comp (Morphism.comp h g) f := by
@@ -286,7 +286,7 @@ end Morphism
 
 namespace PathClass
 
-variable {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+variable {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (f: Morphism G₁ G₂)
 
 /--
@@ -327,7 +327,7 @@ end PathClass
 Map on fundamental groups induced by a morphism.
 -/
 def Morphism.π₁map  (v₁ : V₁)(v₂ : V₂)
-    {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+    {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (f: Morphism G₁ G₂) (hyp : f.toFuncV v₁ = v₂) :
     π₁ G₁ v₁  →* π₁ G₂ v₂  := by
   cases hyp
@@ -342,7 +342,7 @@ def Morphism.π₁map  (v₁ : V₁)(v₂ : V₂)
 /--
 A covering map is a morphism of Serre graphs that is a local homeomorphism.
 -/
-class CoveringMap {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+class CoveringMap {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
       (p: Morphism G₁ G₂)  where
   /--
   A section of the covering map on edges adjacent to a vertex.
@@ -365,7 +365,7 @@ namespace Morphism
 /--
 Local section of a covering map on edges adjacent to a vertex.
 -/
-def localSection {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+def localSection {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (p: Morphism G₁ G₂) [CoveringMap p] (v₁ : V₁) (e₂ : E₂)
       (h : p.toFuncV v₁ = G₂.ι e₂) : E₁ :=
         CoveringMap.localSection v₁ e₂ h
@@ -373,7 +373,7 @@ def localSection {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
 /--
 The initial vertex of the local section is the vertex.
 -/
-theorem init_localSection {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+theorem init_localSection {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (p: Morphism G₁ G₂) [CoveringMap p] (v₁ : V₁) (e₂ : E₂)
       (h : p.toFuncV v₁ = G₂.ι e₂) :
       G₁.ι (localSection p v₁ e₂ h) = v₁ :=
@@ -382,8 +382,8 @@ theorem init_localSection {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ 
 /--
 The image of the local section is the edge.
 -/
-theorem toFuncE_localSection {G₁ : SerreGraph V₁ E₁}
-    {G₂ : SerreGraph V₂ E₂}
+theorem toFuncE_localSection {G₁ : Multigraph V₁ E₁}
+    {G₂ : Multigraph V₂ E₂}
     (p: Morphism G₁ G₂) [CoveringMap p] (v₁ : V₁) (e₂ : E₂)
     (h : p.toFuncV v₁ = G₂.ι e₂) :
     p.toFuncE (localSection p v₁ e₂ h) = e₂ :=
@@ -392,7 +392,7 @@ theorem toFuncE_localSection {G₁ : SerreGraph V₁ E₁}
 /--
 The local section of the image of an edge is the edge.
 -/
-theorem localSection_toFuncE {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+theorem localSection_toFuncE {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (p: Morphism G₁ G₂) [CoveringMap p] (v₁ : V₁) (e₁ : E₁)
     (h : v₁ = G₁.ι e₁) :
     localSection p v₁ (p.toFuncE e₁)
@@ -405,7 +405,7 @@ end Morphism
 Strcuture for the lift of a path in a covering space.
 -/
 @[ext]
-structure PathLift {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+structure PathLift {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (p : Morphism G₁ G₂)[CoveringMap p] (v₁: V₁) {v₂ w₂ : V₂}
     (h : p.toFuncV v₁ = v₂)(η: EdgePath G₂ v₂ w₂) where
   /-- The terminal vertex of the lift -/
@@ -418,7 +418,7 @@ structure PathLift {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
 /--
 The lift of a path-class in a covering space given a lifted path.
 -/
-def PathLift.pathClass {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+def PathLift.pathClass {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     {p : Morphism G₁ G₂}[CoveringMap p] {v₁: V₁} {v₂ w₂ : V₂}
     {h : p.toFuncV v₁ = v₂}{η: EdgePath G₂ v₂ w₂} (l : PathLift p v₁ h η) : PathClassFrom G₁ v₁  :=
       ⟨ l.τ , [[ l.path ]]⟩
@@ -426,7 +426,7 @@ def PathLift.pathClass {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E�
 /--
 The lift of a path in a covering space.
 -/
-def EdgePath.lift {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+def EdgePath.lift {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     {v₂ w₂ : V₂}
     (η: EdgePath G₂ v₂ w₂)
     (p : Morphism G₁ G₂)[CoveringMap p] (v₁: V₁)
@@ -455,7 +455,7 @@ def EdgePath.lift {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
 /--
 Viewing a path in a covering space as the lift of a path in the base space.
 -/
-def asPathLift {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+def asPathLift {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (p: Morphism G₁ G₂)[CoveringMap p] {v₁ w₁: V₁} (η: G₁.EdgePath v₁ w₁) :
     PathLift p v₁ rfl (η.map p) :=
   ⟨w₁, η, rfl, by simp [map_toList]⟩
@@ -464,7 +464,7 @@ def asPathLift {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
 If two paths between the same vertices in a covering space give equal lists,
 then their lifts give equal lists.
 -/
-theorem lifts_toList_eq {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+theorem lifts_toList_eq {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     {v₁ w₁ v₂ w₂ : V₁}
     (p : Morphism G₁ G₂)[CoveringMap p]
     (e₁ : EdgePath G₁ v₁ w₁) (e₂ : EdgePath G₁ v₂ w₂) (hv: v₁ = v₂) :
@@ -500,7 +500,7 @@ theorem lifts_toList_eq {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E�
 /--
 Path-lifts are unique.
 -/
-theorem unique_Pathlift {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+theorem unique_Pathlift {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (p : Morphism G₁ G₂)[CoveringMap p] {v₁: V₁} {v₂ w₂ : V₂}
     {h₁ h₂ : p.toFuncV v₁ = v₂}{η: EdgePath G₂ v₂ w₂} :
     (p₁ : PathLift p v₁ h₁ η) → (p₂ : PathLift p v₁ h₂ η) → p₁ = p₂ := by
@@ -527,7 +527,7 @@ theorem unique_Pathlift {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E�
 /--
 Pathlift obtained by appending two lifts with endpoints compatible.
 -/
-def PathLift.append {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+def PathLift.append {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     {p : Morphism G₁ G₂}[CoveringMap p] {v₁: V₁} {v₂ w₂ u₂ : V₂}
     {h : p.toFuncV v₁ = v₂}{η: EdgePath G₂ v₂ w₂}{η': EdgePath G₂ w₂ u₂}
     (lift : PathLift p v₁ h η)
@@ -544,7 +544,7 @@ def PathLift.append {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
 The lift of the result of appending two paths is
 the result of appending appropriate lifts of the paths.
 -/
-theorem EdgePath.lift_append {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+theorem EdgePath.lift_append {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (p : Morphism G₁ G₂)[CoveringMap p] {v₁: V₁} {v₂ w₂ u₂ : V₂}
     {h : p.toFuncV v₁ = v₂}{η: EdgePath G₂ v₂ w₂}{η': EdgePath G₂ w₂ u₂}:
       (η ++ η').lift p v₁ h  =
@@ -558,7 +558,7 @@ The terminal vertex of the lift of the result of appending two paths is
 the terminal vertex of the result of appending appropriate lifts
 of the second path.
 -/
-theorem EdgePath.lift_append_terminal {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+theorem EdgePath.lift_append_terminal {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (p : Morphism G₁ G₂)[CoveringMap p] {v₁: V₁} {v₂ w₂ u₂ : V₂}
     {h : p.toFuncV v₁ = v₂}{η: EdgePath G₂ v₂ w₂}{η': EdgePath G₂ w₂ u₂}:
       ((η ++ η').lift p v₁ h).τ  =
@@ -570,7 +570,7 @@ theorem EdgePath.lift_append_terminal {G₁ : SerreGraph V₁ E₁} {G₂ : Serr
 /--
 Pathlift obtained by reversing a path-lift.
 -/
-def PathLift.reverse {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+def PathLift.reverse {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (p : Morphism G₁ G₂)[CoveringMap p] {v₁: V₁} {v₂ w₂ : V₂}
     {h : p.toFuncV v₁ = v₂}{η: EdgePath G₂ v₂ w₂}
     (lift : PathLift p v₁ h η) :
@@ -590,8 +590,8 @@ def PathLift.reverse {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
 The lift of the reverse of a path is the reverse of the
 appropriate lift of the path.
 -/
-theorem EdgePath.lift_reverse {G₁ : SerreGraph V₁ E₁}
-    {G₂ : SerreGraph V₂ E₂}
+theorem EdgePath.lift_reverse {G₁ : Multigraph V₁ E₁}
+    {G₂ : Multigraph V₂ E₂}
     (p : Morphism G₁ G₂)[CoveringMap p] {v₁: V₁} {v₂ w₂ : V₂}
     {h : p.toFuncV v₁ = v₂}{η: EdgePath G₂ v₂ w₂}:
       (η.reverse).lift p (η.lift p v₁ h).τ
@@ -602,8 +602,8 @@ theorem EdgePath.lift_reverse {G₁ : SerreGraph V₁ E₁}
 /--
 Lift of a path followed by an edge and its inverse.
 -/
-def PathLift.cons_bar_cons {G₁ : SerreGraph V₁ E₁}
-    {G₂ : SerreGraph V₂ E₂}
+def PathLift.cons_bar_cons {G₁ : Multigraph V₁ E₁}
+    {G₂ : Multigraph V₂ E₂}
     {p : Morphism G₁ G₂}[CoveringMap p] {v₁: V₁} {v₂ w₂ w₂' : V₂}
     {h : p.toFuncV v₁ = v₂}{e: EdgeBetween G₂ v₂ w₂'}
     {η': EdgePath G₂ v₂ w₂}(lift' : PathLift p v₁  h η') :
@@ -624,7 +624,7 @@ def PathLift.cons_bar_cons {G₁ : SerreGraph V₁ E₁}
 /--
 Homotopy lifting for a single step.
 -/
-theorem homotopy_step_lift {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+theorem homotopy_step_lift {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     {p : Morphism G₁ G₂}[CoveringMap p] {v₁: V₁} {v₂ w₂ w₂' u₂  : V₂}
     {h : p.toFuncV v₁ = v₂}{η₁: EdgePath G₂ v₂ w₂}{e: EdgeBetween G₂ w₂ w₂'}{η₂: EdgePath G₂ w₂ u₂}:
     ((η₁ ++ (cons e (cons e.bar η₂))).lift p v₁  h ).pathClass =
@@ -671,7 +671,7 @@ theorem homotopy_step_lift {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂
 /--
 Lifting a homotopy of paths to the covering space.
 -/
-def homotopyLift {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+def homotopyLift {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (p : Morphism G₁ G₂)[CoveringMap p] (v₁: V₁) {v₂ w₂   : V₂}
     (h : p.toFuncV v₁ = v₂): PathClass G₂ v₂ w₂ →
     PathClassFrom G₁ v₁ := by
@@ -680,7 +680,7 @@ def homotopyLift {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
   induction red
   apply homotopy_step_lift
 
-theorem homotopyLift_of_path {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+theorem homotopyLift_of_path {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     {p : Morphism G₁ G₂}[CoveringMap p] {v₁: V₁} {v₂ w₂   : V₂}
     {h : p.toFuncV v₁ = v₂} (η : EdgePath G₂ v₂ w₂) :
     homotopyLift p v₁ h [[ η ]] =
@@ -690,7 +690,7 @@ theorem homotopyLift_of_path {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V�
 /--
 Lifting a path-class to the covering space.
 -/
-def liftClass {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+def liftClass {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (p : Morphism G₁ G₂)[CoveringMap p] (v₁: V₁) (v₂ w₂ : V₂)
     (h : p.toFuncV v₁ = v₂)(η: EdgePath G₂ v₂ w₂):
     PathClassFrom G₁ v₁ :=
@@ -699,8 +699,8 @@ def liftClass {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
 /--
 Homotopic paths have homotopic lifts.
 -/
-theorem liftClass_eq_of_homotopic {G₁ : SerreGraph V₁ E₁}
-    {G₂ : SerreGraph V₂ E₂}
+theorem liftClass_eq_of_homotopic {G₁ : Multigraph V₁ E₁}
+    {G₂ : Multigraph V₂ E₂}
     (p : Morphism G₁ G₂)[CoveringMap p] (v₁: V₁) {v₂ w₂   : V₂}
     (h : p.toFuncV v₁ = v₂) {e₁ e₂ : EdgePath G₂ v₂ w₂}
     (red : [[ e₁ ]] = [[ e₂ ]]) :
@@ -712,7 +712,7 @@ theorem liftClass_eq_of_homotopic {G₁ : SerreGraph V₁ E₁}
 The terminal vertex of the lift of a path in the covering space,
 given the path and the initial vertex.
 -/
-def liftTerminal {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+def liftTerminal {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (p : Morphism G₁ G₂)[CoveringMap p] (v₁: V₁) {v₂ w₂ : V₂}
     (h : p.toFuncV v₁ = v₂)(η: EdgePath G₂ v₂ w₂) : V₁:=
   (liftClass p v₁ v₂ w₂ h η).τ
@@ -720,8 +720,8 @@ def liftTerminal {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
 /--
 The terminal vertices of lifts of homotopic paths are equal.
 -/
-theorem liftTerminal_eq_of_homotopic {G₁ : SerreGraph V₁ E₁}
-    {G₂ : SerreGraph V₂ E₂}
+theorem liftTerminal_eq_of_homotopic {G₁ : Multigraph V₁ E₁}
+    {G₂ : Multigraph V₂ E₂}
     (p : Morphism G₁ G₂)[CoveringMap p] (v₁: V₁) {v₂ w₂   : V₂}
     (h : p.toFuncV v₁ = v₂) {e₁ e₂ : EdgePath G₂ v₂ w₂}
     (red : [[ e₁ ]] = [[ e₂ ]]) :
@@ -732,13 +732,13 @@ theorem liftTerminal_eq_of_homotopic {G₁ : SerreGraph V₁ E₁}
 /--
 Lift of the projection of a path in the covering space is the path itself.
 -/
-theorem lift_of_proj {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+theorem lift_of_proj {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (p: Morphism G₁ G₂)[CoveringMap p] {v₁ w₁: V₁}
     (η: G₁.EdgePath v₁ w₁):
     (η.map p).lift p v₁ rfl = ⟨w₁, η, rfl, by simp [map_toList]⟩ := by
     apply unique_Pathlift
 
-theorem liftTerminal_of_proj {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+theorem liftTerminal_of_proj {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (p: Morphism G₁ G₂)[CoveringMap p] {v₁ w₁: V₁} (η: G₁.EdgePath v₁ w₁):
     liftTerminal p v₁ rfl (η.map p) = w₁ := by
       simp only [liftTerminal, liftClass, lift_of_proj]
@@ -747,7 +747,7 @@ theorem liftTerminal_of_proj {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V�
 /--
 The projection map on homotopy classes of paths is injective.
 -/
-theorem proj_injective {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+theorem proj_injective {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (p: Morphism G₁ G₂)[CoveringMap p] {v₁ w₁: V₁}
     (e₁ e₂: G₁.EdgePath v₁ w₁): [[ e₁.map p ]] = [[ e₂.map p ]] →
     [[ e₁ ]] = [[ e₂ ]] := by
@@ -764,7 +764,7 @@ theorem proj_injective {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E�
 The fundamental group of a covering space injects into
 the fundamental group of the base space.
 -/
-theorem cover_π₁injective {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+theorem cover_π₁injective {G₁ : Multigraph V₁ E₁} {G₂ : Multigraph V₂ E₂}
     (p: Morphism G₁ G₂)[inst : CoveringMap p] (v₁ : V₁)(v₂ : V₂)(hyp : p.toFuncV v₁ = v₂):
     Function.Injective (p.π₁map v₁ v₂ hyp) := by
     cases hyp
@@ -775,4 +775,4 @@ theorem cover_π₁injective {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V�
     simp [Morphism.π₁map]
     apply proj_injective
 
-end SerreGraph
+end Multigraph
