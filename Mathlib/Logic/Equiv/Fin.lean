@@ -290,9 +290,9 @@ theorem finSuccEquivLast_symm_some (i : Fin n) :
 @[simps (config := .asFn)]
 def Equiv.piFinSuccAbove (α : Fin (n + 1) → Type u) (i : Fin (n + 1)) :
     (∀ j, α j) ≃ α i × ∀ j, α (i.succAbove j) where
-  toFun f := (f i, fun j => f (i.succAbove j))
+  toFun f := i.extractNth f
   invFun f := i.insertNth f.1 f.2
-  left_inv f := by simp [Fin.insertNth_eq_iff]
+  left_inv f := by simp
   right_inv f := by simp
 #align equiv.pi_fin_succ_above_equiv Equiv.piFinSuccAbove
 #align equiv.pi_fin_succ_above_equiv_apply Equiv.piFinSuccAbove_apply
