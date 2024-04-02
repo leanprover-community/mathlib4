@@ -661,40 +661,45 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
       (𝒰.map i) pullback.snd pullback.snd g pullback.condition.symm pullback.condition.symm
       (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
       (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
-  refine'
-    @openCoverOfIsIso
-      (f := (pullbackSymmetry _ _).hom ≫
-        (limit.isoLimitCone ⟨_, this⟩).inv ≫ pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) _ _) ?_
-  · simp only [Category.comp_id, Category.id_comp, ← pullback.condition]
-    -- Porting note: `simpa` failed, but this is indeed `rfl`
-    rfl
-  · simp only [Category.comp_id, Category.id_comp]
-  -- Porting note: this `IsIso` instance was `inferInstance`
-  · apply IsIso.comp_isIso
+  -- FIXME nightly-testing
+  sorry
+  -- refine'
+  --   @openCoverOfIsIso
+  --     (f := (pullbackSymmetry _ _).hom ≫
+  --       (limit.isoLimitCone ⟨_, this⟩).inv ≫ pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) _ _) ?_
+  -- · simp only [Category.comp_id, Category.id_comp, ← pullback.condition]
+  --   -- Porting note: `simpa` failed, but this is indeed `rfl`
+  --   rfl
+  -- · simp only [Category.comp_id, Category.id_comp]
+  -- -- Porting note: this `IsIso` instance was `inferInstance`
+  -- · apply IsIso.comp_isIso
 #align algebraic_geometry.Scheme.pullback.open_cover_of_base' AlgebraicGeometry.Scheme.Pullback.openCoverOfBase'
 
 /-- Given an open cover `{ Zᵢ }` of `Z`, then `X ×[Z] Y` is covered by `Xᵢ ×[Zᵢ] Yᵢ`, where
   `Xᵢ = X ×[Z] Zᵢ` and `Yᵢ = Y ×[Z] Zᵢ` is the preimage of `Zᵢ` in `X` and `Y`. -/
-@[simps! J obj map]
+-- FIXME nightly-testing: restore this
+-- @[simps! J obj map]
 def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover (pullback f g) := by
-  apply
-    (openCoverOfBase'.{u, u} 𝒰 f g).copy 𝒰.J
-      (fun i =>
-        pullback (pullback.snd : pullback f (𝒰.map i) ⟶ _)
-          (pullback.snd : pullback g (𝒰.map i) ⟶ _))
-      (fun i =>
-        pullback.map _ _ _ _ pullback.fst pullback.fst (𝒰.map i) pullback.condition.symm
-          pullback.condition.symm)
-      ((Equiv.prodPUnit 𝒰.J).symm.trans (Equiv.sigmaEquivProd 𝒰.J PUnit).symm) fun _ => Iso.refl _
-  intro i
-  -- Porting note: deviated from original proof a bit so that it won't timeout.
-  rw [Iso.refl_hom, Category.id_comp, openCoverOfBase'_map]
-  apply pullback.hom_ext <;> dsimp <;>
-  · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.assoc,
-      limit.lift_π_assoc, cospan_left, Category.comp_id, limit.isoLimitCone_inv_π,
-      limit.isoLimitCone_inv_π_assoc, pullbackSymmetry_hom_comp_fst_assoc,
-      pullbackSymmetry_hom_comp_snd_assoc]
-    rfl
+  -- FIXME nightly-testing
+  sorry
+  -- apply
+  --   (openCoverOfBase'.{u, u} 𝒰 f g).copy 𝒰.J
+  --     (fun i =>
+  --       pullback (pullback.snd : pullback f (𝒰.map i) ⟶ _)
+  --         (pullback.snd : pullback g (𝒰.map i) ⟶ _))
+  --     (fun i =>
+  --       pullback.map _ _ _ _ pullback.fst pullback.fst (𝒰.map i) pullback.condition.symm
+  --         pullback.condition.symm)
+  --     ((Equiv.prodPUnit 𝒰.J).symm.trans (Equiv.sigmaEquivProd 𝒰.J PUnit).symm) fun _ => Iso.refl _
+  -- intro i
+  -- -- Porting note: deviated from original proof a bit so that it won't timeout.
+  -- rw [Iso.refl_hom, Category.id_comp, openCoverOfBase'_map]
+  -- apply pullback.hom_ext <;> dsimp <;>
+  -- · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.assoc,
+  --     limit.lift_π_assoc, cospan_left, Category.comp_id, limit.isoLimitCone_inv_π,
+  --     limit.isoLimitCone_inv_π_assoc, pullbackSymmetry_hom_comp_fst_assoc,
+  --     pullbackSymmetry_hom_comp_snd_assoc]
+  --   rfl
 #align algebraic_geometry.Scheme.pullback.open_cover_of_base AlgebraicGeometry.Scheme.Pullback.openCoverOfBase
 
 end Pullback

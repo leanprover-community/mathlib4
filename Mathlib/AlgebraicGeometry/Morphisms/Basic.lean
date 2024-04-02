@@ -523,19 +523,22 @@ theorem diagonalTargetAffineLocallyOfOpenCover (P : AffineTargetMorphismProperty
     (𝒰' : ∀ i, Scheme.OpenCover.{u} (pullback f (𝒰.map i))) [∀ i j, IsAffine ((𝒰' i).obj j)]
     (h𝒰' : ∀ i j k, P (pullback.mapDesc ((𝒰' i).map j) ((𝒰' i).map k) pullback.snd)) :
     (targetAffineLocally P).diagonal f := by
-  let 𝒱 := (Scheme.Pullback.openCoverOfBase 𝒰 f f).bind fun i =>
-    Scheme.Pullback.openCoverOfLeftRight.{u} (𝒰' i) (𝒰' i) pullback.snd pullback.snd
-  have i1 : ∀ i, IsAffine (𝒱.obj i) := fun i => by dsimp [𝒱]; infer_instance
-  refine' (hP.affine_openCover_iff _ _).mpr _
-  rintro ⟨i, j, k⟩
-  dsimp [𝒱]
-  convert (affine_cancel_left_isIso hP.1
-    (pullbackDiagonalMapIso _ _ ((𝒰' i).map j) ((𝒰' i).map k)).inv pullback.snd).mp _
-  pick_goal 3
-  · convert h𝒰' i j k; apply pullback.hom_ext <;> simp
-  all_goals apply pullback.hom_ext <;>
-  simp only [Category.assoc, pullback.lift_fst, pullback.lift_snd, pullback.lift_fst_assoc,
-    pullback.lift_snd_assoc]
+  -- FIMXE nightly-testing
+  -- This is not currently possible because `openCoverOfBase` has been sorried.
+  sorry
+  -- let 𝒱 := (Scheme.Pullback.openCoverOfBase 𝒰 f f).bind fun i =>
+  --   Scheme.Pullback.openCoverOfLeftRight.{u} (𝒰' i) (𝒰' i) pullback.snd pullback.snd
+  -- have i1 : ∀ i, IsAffine (𝒱.obj i) := fun i => by dsimp [𝒱]; infer_instance
+  -- refine' (hP.affine_openCover_iff _ _).mpr _
+  -- rintro ⟨i, j, k⟩
+  -- dsimp [𝒱]
+  -- convert (affine_cancel_left_isIso hP.1
+  --   (pullbackDiagonalMapIso _ _ ((𝒰' i).map j) ((𝒰' i).map k)).inv pullback.snd).mp _
+  -- pick_goal 3
+  -- · convert h𝒰' i j k; apply pullback.hom_ext <;> simp
+  -- all_goals apply pullback.hom_ext <;>
+  -- simp only [Category.assoc, pullback.lift_fst, pullback.lift_snd, pullback.lift_fst_assoc,
+  --   pullback.lift_snd_assoc]
 #align algebraic_geometry.diagonal_target_affine_locally_of_open_cover AlgebraicGeometry.diagonalTargetAffineLocallyOfOpenCover
 
 theorem AffineTargetMorphismProperty.diagonalOfTargetAffineLocally
