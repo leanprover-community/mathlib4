@@ -396,13 +396,11 @@ def Matrix.reindexCoxeterGroupEquiv : (reindex e e M).coxeterGroup ≃* M.coxete
 
 theorem Matrix.reindexCoxeterGroupEquiv_apply_simple (i : B') :
     (M.reindexCoxeterGroupEquiv e) ((reindex e e M).coxeterGroupSimpleReflection i) =
-    M.coxeterGroupSimpleReflection (e.symm i) :=
-  rfl
+    M.coxeterGroupSimpleReflection (e.symm i) := rfl
 
 theorem Matrix.reindexCoxeterGroupEquiv_symm_apply_simple (i : B) :
     (M.reindexCoxeterGroupEquiv e).symm (M.coxeterGroupSimpleReflection i) =
-    (reindex e e M).coxeterGroupSimpleReflection (e i) :=
-  rfl
+    (reindex e e M).coxeterGroupSimpleReflection (e i) := rfl
 
 /-- A Coxeter system `CoxeterSystem M W` is a structure recording the isomorphism between
 a group `W` and the group presentation corresponding to a Coxeter matrix `M`. -/
@@ -457,7 +455,8 @@ theorem reindex_simple {B' : Type*} (e : B ≃ B') (i' : B') :
 theorem map_simple {W' : Type*} [Group W'] (e : W ≃* W') (i : B) :
     (cs.map e).simpleReflection i = e (s i) := rfl
 
-@[simp] theorem simple_mul_simple_self (i : B) : s i * s i = 1 := by
+@[simp]
+theorem simple_mul_simple_self (i : B) : s i * s i = 1 := by
   dsimp [simpleReflection]
   rw [← _root_.map_mul, PresentedGroup.of, ← QuotientGroup.mk_mul]
   have : (FreeGroup.of i) * (FreeGroup.of i) ∈ M.coxeterRelationsSet := by
@@ -469,18 +468,22 @@ theorem map_simple {W' : Type*} [Group W'] (e : W ≃* W') (i : B) :
   rw [this]
   simp
 
-@[simp] theorem simple_mul_simple_cancel_right {w : W} (i : B) : w * s i * s i = w := by
+@[simp]
+theorem simple_mul_simple_cancel_right {w : W} (i : B) : w * s i * s i = w := by
   simp [mul_assoc]
 
-@[simp] theorem simple_mul_simple_cancel_left {w : W} (i : B) : s i * (s i * w) = w := by
+@[simp]
+theorem simple_mul_simple_cancel_left {w : W} (i : B) : s i * (s i * w) = w := by
   simp [← mul_assoc]
 
 @[simp] theorem simple_sq (i : B) : s i ^ 2 = 1 := pow_two (s i) ▸ cs.simple_mul_simple_self i
 
-@[simp] theorem inv_simple (i : B) : (s i)⁻¹ = s i :=
+@[simp]
+theorem inv_simple (i : B) : (s i)⁻¹ = s i :=
   (eq_inv_of_mul_eq_one_right (cs.simple_mul_simple_self i)).symm
 
-@[simp] theorem simple_mul_simple_pow (i i' : B) : (s i * s i') ^ M i i' = 1 := by
+@[simp]
+theorem simple_mul_simple_pow (i i' : B) : (s i * s i') ^ M i i' = 1 := by
   dsimp [simpleReflection]
   rw [← _root_.map_mul, ← map_pow, PresentedGroup.of, PresentedGroup.of,
       ← QuotientGroup.mk_mul, ← QuotientGroup.mk_pow]
@@ -564,7 +567,7 @@ theorem simple_induction_right {p : W → Prop} (w : W) (H1 : p 1)
 /-- The proposition that the values of the function `f : B → G` satisfy the Coxeter relations
 corresponding to the matrix `M`. -/
 def IsLiftable {G : Type*} [Monoid G] (M : Matrix B B ℕ) (f : B → G) : Prop :=
-    ∀ i i' : B, (f i * f i') ^ M i i' = 1
+  ∀ i i', (f i * f i') ^ M i i' = 1
 
 private theorem relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f) :
     ∀ r ∈ M.coxeterRelationsSet, (FreeGroup.lift f) r = 1 := by
@@ -660,8 +663,7 @@ def alternatingWord (i i' : B) (m : ℕ) : List B :=
   | m+1  => (alternatingWord i' i m).concat i'
 
 theorem alternatingWord_succ (i i' : B) (m : ℕ) :
-    alternatingWord i i' (m + 1) = (alternatingWord i' i m).concat i' := by
-  rfl
+    alternatingWord i i' (m + 1) = (alternatingWord i' i m).concat i' := rfl
 
 theorem alternatingWord_succ' (i i' : B) (m : ℕ) :
     alternatingWord i i' (m + 1) = (if Even m then i' else i) :: alternatingWord i i' m := by
@@ -704,9 +706,11 @@ theorem prod_alternatingWord_eq_prod_alternatingWord (i i' : B) (m : ℕ) (hm : 
     π (alternatingWord i i' m) = π (alternatingWord i' i (M i i' * 2 - m)) := by
   rw [prod_alternatingWord_eq_pow, prod_alternatingWord_eq_pow]
   simp_rw [← Int.even_coe_nat]
+
   -- Rewrite everything in terms of an integer m' which is equal to m.
   rw [← zpow_natCast, ← zpow_natCast, Int.ofNat_ediv, Int.ofNat_ediv, Int.ofNat_sub hm]
   set m' := (m : ℤ)
+
   -- The resulting equation holds for all integers m'.
   generalize m' = m'
 
