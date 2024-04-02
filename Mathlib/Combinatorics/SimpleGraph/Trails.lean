@@ -57,23 +57,23 @@ theorem IsTrail.even_countP_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail
   · simp
   · rw [cons_isTrail_iff] at ht
     specialize ih ht.1
-    simp only [List.countP_cons, Ne.def, edges_cons, Sym2.mem_iff]
+    simp only [List.countP_cons, Ne, edges_cons, Sym2.mem_iff]
     split_ifs with h
     · rw [decide_eq_true_eq] at h
       obtain (rfl | rfl) := h
       · rw [Nat.even_add_one, ih]
-        simp only [huv.ne, imp_false, Ne.def, not_false_iff, true_and_iff, not_forall,
+        simp only [huv.ne, imp_false, Ne, not_false_iff, true_and_iff, not_forall,
           Classical.not_not, exists_prop, eq_self_iff_true, not_true, false_and_iff,
           and_iff_right_iff_imp]
         rintro rfl rfl
         exact G.loopless _ huv
       · rw [Nat.even_add_one, ih, ← not_iff_not]
-        simp only [huv.ne.symm, Ne.def, eq_self_iff_true, not_true, false_and_iff, not_forall,
+        simp only [huv.ne.symm, Ne, eq_self_iff_true, not_true, false_and_iff, not_forall,
           not_false_iff, exists_prop, and_true_iff, Classical.not_not, true_and_iff, iff_and_self]
         rintro rfl
         exact huv.ne
     · rw [decide_eq_true_eq, not_or] at h
-      simp only [h.1, h.2, not_false_iff, true_and_iff, add_zero, Ne.def] at ih ⊢
+      simp only [h.1, h.2, not_false_iff, true_and_iff, add_zero, Ne] at ih ⊢
       rw [ih]
       constructor <;>
         · rintro h' h'' rfl
@@ -149,7 +149,7 @@ theorem IsEulerian.card_filter_odd_degree [Fintype V] [DecidableRel G.Adj] {u v 
     s.card = 0 ∨ s.card = 2 := by
   subst s
   simp only [Nat.odd_iff_not_even, Finset.card_eq_zero]
-  simp only [ht.even_degree_iff, Ne.def, not_forall, not_and, Classical.not_not, exists_prop]
+  simp only [ht.even_degree_iff, Ne, not_forall, not_and, Classical.not_not, exists_prop]
   obtain rfl | hn := eq_or_ne u v
   · left
     simp

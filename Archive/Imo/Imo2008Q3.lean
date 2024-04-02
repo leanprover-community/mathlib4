@@ -82,6 +82,6 @@ theorem imo2008_q3 : ∀ N : ℕ, ∃ n : ℕ, n ≥ N ∧
   obtain ⟨n, hnat, hreal⟩ := p_lemma p hpp hpmod4 (by linarith [hineq₁, Nat.zero_le (N ^ 2)])
   have hineq₂ : n ^ 2 + 1 ≥ p := Nat.le_of_dvd (n ^ 2).succ_pos hnat
   have hineq₃ : n * n ≥ N * N := by linarith [hineq₁, hineq₂]
-  have hn_ge_N : n ≥ N := Nat.mul_self_le_mul_self_iff.mpr hineq₃
+  have hn_ge_N : n ≥ N := Nat.mul_self_le_mul_self_iff.1 hineq₃
   exact ⟨n, hn_ge_N, p, hpp, hnat, hreal⟩
 #align imo2008_q3 imo2008_q3

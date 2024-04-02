@@ -307,6 +307,9 @@ variable {𝕜 : Type*} [NormedField 𝕜] {E F G : Type*}
 /-- Send a continuous bilinear map to an abstract bilinear map (forgetting continuity). -/
 def toLinearMap₂ (L : E →L[𝕜] F →L[𝕜] G) : E →ₗ[𝕜] F →ₗ[𝕜] G := (coeLM 𝕜).comp L.toLinearMap
 
+@[simp] lemma toLinearMap₂_apply (L : E →L[𝕜] F →L[𝕜] G) (v : E) (w : F) :
+    L.toLinearMap₂ v w = L v w := rfl
+
 end BilinearMaps
 
 end ContinuousLinearMap
