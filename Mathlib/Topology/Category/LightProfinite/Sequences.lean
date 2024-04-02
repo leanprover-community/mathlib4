@@ -31,8 +31,13 @@ instance : TotallySeparatedSpace (OnePoint ℕ) where
 
 def NatUnionInfty := of (OnePoint ℕ)
 
--- TODO: prove `IsLight.of_countable` and deduce this
-instance : IsLight NatUnionInfty := sorry
+-- def LightProfiniteOfCountable_diagram (X : Profinite) [Countable X] : ℕᵒᵖ ⥤ FintypeCat where
+--   obj n := sorry
+--   map := sorry
+--   map_id := sorry
+--   map_comp := sorry
+
+-- def LightProfiniteOfCountable (X : Profinite) [Countable X] : LightProfinite := sorry
 
 end Profinite
 
@@ -62,7 +67,7 @@ def NatUnionInftyDiagram : ℕᵒᵖ ⥤ FintypeCat where
 
 noncomputable def NatUnionInfty := of NatUnionInftyDiagram
 
-def extracted_1 (n : ℕ) : LocallyConstant (ofIsLight Profinite.NatUnionInfty).toProfinite
+def extracted_1 (n : ℕ) : LocallyConstant Profinite.NatUnionInfty
     (NatUnionInfty.diagram.obj ⟨n⟩) where
   toFun a := by
     cases a with
@@ -101,8 +106,8 @@ def extracted_1 (n : ℕ) : LocallyConstant (ofIsLight Profinite.NatUnionInfty).
         aesop
 
 noncomputable def NatUnionInftyIso_hom :
-    LightProfinite.ofIsLight Profinite.NatUnionInfty ⟶ NatUnionInfty := by
-  refine homMk' extracted_1 ?_
+    Profinite.NatUnionInfty ⟶ NatUnionInfty.toProfinite := by
+  refine fromProfinite' extracted_1 ?_
   · intro n
     ext x
     cases x with
@@ -120,10 +125,58 @@ noncomputable def NatUnionInftyIso_hom :
       · simpa using lt_of_le_of_lt (not_lt.mp h₁) h₄
       · rfl
 
-noncomputable def NatUnionInftyIso : Profinite.NatUnionInfty ≅ NatUnionInfty.toProfinite  where
-  hom := NatUnionInftyIso_hom
-  inv := sorry
-  hom_inv_id := sorry
-  inv_hom_id := sorry
+theorem extracted_2 : Function.Bijective NatUnionInftyIso_hom := by
+  simp only [NatUnionInftyIso_hom, fromProfinite']
+  constructor
+  · apply homMk_injective _ _
+    intro a b h
+    cases a with
+    | none =>
+      cases b with
+      | none => rfl
+      | some b =>
+        have hh : extracted_1 (b + 1) none = extracted_1 (b + 1) (some b) := h (b + 1)
+        simp only [extracted_1, Finset.mem_range, LocallyConstant.coe_mk] at hh
+        split_ifs at hh with h'
+        · simpa using Subtype.ext_iff_val.mp hh
+        · simp [add_assoc] at h'
+    | some a =>
+      cases b with
+      | none =>
+        have hh : extracted_1 (a + 1) (some a) = extracted_1 (a + 1) none := h (a + 1)
+        simp only [extracted_1, Finset.mem_range, LocallyConstant.coe_mk, dite_eq_right_iff] at hh
+        specialize hh (by simp [add_assoc])
+        simpa using Subtype.ext_iff_val.mp hh
+      | some b =>
+        have hh : extracted_1 (a + b) (some a) = extracted_1 (a + b) (some b) := h (a + b)
+        simp only [extracted_1, Finset.mem_range, LocallyConstant.coe_mk] at hh
+        split_ifs at hh with h₁ h₂ h₂
+        · replace hh := Subtype.ext_iff_val.mp hh
+          dsimp at hh
+          rw [hh]
+        · simp [add_comm a b, add_assoc] at h₂
+        · simp [add_assoc] at h₁
+        · simp [add_comm a b, add_assoc] at h₂
+  · apply homMk_surjective _ _
+    intro a n
+    refine ⟨some (NatUnionInfty.proj n a).1, ?_⟩
+    change extracted_1 n (some (NatUnionInfty.proj n a).1) = _
+    simp [extracted_1]
+    intro h
+    rw [Subtype.ext_iff_val]
+    have := ((proj NatUnionInfty n) a).prop
+    simp only [concreteCategory_forget_obj, Finset.mem_range] at this
+    simpa using lt_of_le_of_lt h this
+
+instance : Mono NatUnionInftyIso_hom := by
+  rw [Profinite.mono_iff_injective]
+  exact extracted_2.1
+
+-- TODO: prove that in general, any countable profinite space is light.
+instance : Profinite.NatUnionInfty.IsLight :=
+  Profinite.isLight_of_mono NatUnionInftyIso_hom
+
+noncomputable def NatUnionInftyIso : ofIsLight Profinite.NatUnionInfty ≅ NatUnionInfty :=
+  isoMk (Profinite.isoOfBijective NatUnionInftyIso_hom extracted_2)
 
 end LightProfinite

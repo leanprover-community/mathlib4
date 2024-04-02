@@ -105,6 +105,13 @@ theorem coe_comp_apply {X Y Z : LightProfinite} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ∀ x, (f ≫ g) x = g (f x) := by
   intros; rfl
 
+@[simps]
+def isoMk {X Y : LightProfinite} (i : X.toProfinite ≅ Y.toProfinite) : X ≅ Y where
+  hom := i.hom
+  inv := i.inv
+  hom_inv_id := i.hom_inv_id
+  inv_hom_id := i.inv_hom_id
+
 /-- The fully faithful embedding `LightProfinite ⥤ Profinite` -/
 @[simps!]
 def lightToProfinite : LightProfinite ⥤ Profinite := inducedFunctor _

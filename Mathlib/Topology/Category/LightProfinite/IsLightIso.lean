@@ -11,22 +11,20 @@ def component (n : ℕ) : LightProfinite := fintypeCatToLightProfinite.obj <| S.
 def transitionMap (n : ℕ) : S.diagram.obj ⟨n+1⟩ ⟶ S.diagram.obj ⟨n⟩ :=
   S.diagram.map ⟨homOfLE (Nat.le_succ _)⟩
 
+def transitionMapLE {n m : ℕ} (h : n ≤ m) : S.diagram.obj ⟨m⟩ ⟶ S.diagram.obj ⟨n⟩ :=
+  S.diagram.map ⟨homOfLE h⟩
+
 def transitionMap' (n : ℕ) :  S.component (n+1) ⟶ S.component n :=
   fintypeCatToLightProfinite.map (S.transitionMap n)
 
-def isoMk {X Y : LightProfinite} (i : X.toProfinite ≅ Y.toProfinite) : X ≅ Y where
-  hom := i.hom
-  inv := i.inv
-  hom_inv_id := i.hom_inv_id
-  inv_hom_id := i.inv_hom_id
+def transitionMapLE' {n m : ℕ} (h : n ≤ m) : S.component m ⟶ S.component n :=
+  fintypeCatToLightProfinite.map (S.transitionMapLE h)
 
 noncomputable def iso : S ≅ ofIsLight S.toProfinite := isoMk <| (Iso.refl _)
 
 lemma transitionMap_surjective_aux {T : Profinite} [T.IsLight] {d e : DiscreteQuotient T}
-    (h : d ≤ e) : Surjective (T.diagram.map (homOfLE h)) := by
-  have : Surjective ((T.fintypeDiagram.map (homOfLE h)) ∘ d.proj) := by
-    change Surjective e.proj; exact e.proj_surjective
-  exact Surjective.of_comp this
+    (h : d ≤ e) : Surjective (T.diagram.map (homOfLE h)) :=
+  Surjective.of_comp (g := d.proj) e.proj_surjective
 
 lemma transitionMap_surjective (T : Profinite) [T.IsLight] (n : ℕ) :
     Surjective ((ofIsLight T).transitionMap n) :=
@@ -37,6 +35,17 @@ def proj (n : ℕ) : S ⟶ S.component n := S.cone.π.app ⟨n⟩
 @[simp]
 lemma proj_comp_transitionMap (n : ℕ) : S.proj (n + 1) ≫ S.transitionMap' n = S.proj n :=
   S.cone.w (homOfLE (Nat.le_succ n)).op
+
+@[simp]
+lemma proj_comp_transitionMapLE' {n m : ℕ} (h : n ≤ m) :
+    S.proj m ≫ S.transitionMapLE' h = S.proj n :=
+  S.cone.w (homOfLE h).op
+
+@[simp]
+lemma proj_comp_transitionMapLE {n m : ℕ} (h : n ≤ m) :
+    S.transitionMapLE' h ∘ S.proj m  = S.proj n := by
+  rw [← S.proj_comp_transitionMapLE' h]
+  rfl
 
 def natTrans_nat_mk {C : Type*} [Category C] {F G : ℕ ⥤ C} (f : (n : ℕ) → F.obj n ⟶ G.obj n)
     (w : ∀ n, F.map (homOfLE (Nat.le_succ _)) ≫ f (n + 1) = f n ≫ G.map (homOfLE (Nat.le_succ _))) :
@@ -77,31 +86,83 @@ def natTrans_nat_op_mk {C : Type*} [Category C] {F G : ℕᵒᵖ ⥤ C} (f : (n 
       rw [this, Category.assoc]
       rfl
 
-def homMk {X Y : LightProfinite}
-    (f : (n : ℕ) → X ⟶ Y.component n)
-    (w : ∀ n, Y.transitionMap n ∘ f (n + 1) = f n) : X ⟶ Y :=
-  let c : Cone (Y.diagram ⋙ FintypeCat.toProfinite) := ⟨X.toProfinite, natTrans_nat_op_mk f
+def fromProfinite {X : Profinite} {Y : LightProfinite}
+    (f : (n : ℕ) → X ⟶ (Y.component n).toProfinite)
+    (w : ∀ n, Y.transitionMap n ∘ f (n + 1) = f n) : X ⟶ Y.toProfinite :=
+  let c : Cone (Y.diagram ⋙ FintypeCat.toProfinite) := ⟨X, natTrans_nat_op_mk f
     (by intro n; ext; exact congrFun (w n).symm _)⟩
   Y.isLimit.lift c
 
-def homMk' {X Y : LightProfinite}
+abbrev fromProfinite' {X : Profinite} {Y : LightProfinite}
+    (f : (n : ℕ) → LocallyConstant X (Y.diagram.obj ⟨n⟩))
+    (w : ∀ n, Y.transitionMap n ∘ f (n + 1) = f n) : X ⟶ Y.toProfinite :=
+  let _ : ∀ n, TopologicalSpace (Y.diagram.obj ⟨n⟩) := ⊥
+  fromProfinite (fun n ↦ ⟨f n, (f n).2.continuous⟩) w
+
+def homMk {X Y : LightProfinite}
+    (f : (n : ℕ) → X ⟶ Y.component n)
+    (w : ∀ n, Y.transitionMap n ∘ f (n + 1) = f n) : X ⟶ Y :=
+  fromProfinite f w
+
+abbrev homMk' {X Y : LightProfinite}
     (f : (n : ℕ) → LocallyConstant X (Y.diagram.obj ⟨n⟩))
     (w : ∀ n, Y.transitionMap n ∘ f (n + 1) = f n) : X ⟶ Y :=
   let _ : ∀ n, TopologicalSpace (Y.diagram.obj ⟨n⟩) := ⊥
   homMk (fun n ↦ ⟨f n, (f n).2.continuous⟩) w
 
-def homMk'' {X Y : LightProfinite}
+abbrev homMk'' {X Y : LightProfinite}
     (f : (n : ℕ) → X ⟶ Y.component n)
-    (w : ∀ n, f (n + 1) ≫ Y.transitionMap' n = f n) : X ⟶ Y := by
-  refine homMk f ?_
-  intro n
-  ext x
-  have := w n
-  rw [DFunLike.ext_iff] at this
-  exact this x
-  -- or
-  -- let c : Cone (Y.diagram ⋙ FintypeCat.toProfinite) := ⟨X.toProfinite, natTrans_nat_op_mk f
-  --   (by intro n; simpa using (w n).symm)⟩
-  -- Y.isLimit.lift c
+    (w : ∀ n, f (n + 1) ≫ Y.transitionMap' n = f n) : X ⟶ Y :=
+  homMk f fun n ↦ funext fun x ↦ DFunLike.ext_iff.mp (w n) x
 
-  -- TODO: check that the same `f` gives the same `homMk` 
+theorem extracted_3 {X : Profinite} {Y : LightProfinite}
+    (f : (n : ℕ) → X ⟶ (Y.component n).toProfinite)
+    (w : ∀ n, Y.transitionMap n ∘ f (n + 1) = f n) (n : ℕ) :
+    (proj Y n) ∘ (fromProfinite f w) = (f n) := by
+  ext
+  change (Y.isLimit.lift _ ≫ Y.cone.π.app _) _ = _
+  simp only [Functor.comp_obj, IsLimit.fac]
+  rfl
+
+lemma homMk_injective {X : Profinite} {Y : LightProfinite}
+    (f : (n : ℕ) → X ⟶ (Y.component n).toProfinite)
+    (w : ∀ n, Y.transitionMap n ∘ f (n + 1) = f n)
+    (h : ∀ (a b : X), (∀ n, f n a = f n b) → a = b) : Function.Injective (fromProfinite f w) := by
+  intro a b hab
+  apply h a b
+  intro n
+  have : Y.proj n ∘ fromProfinite f w = f n := extracted_3 f w n
+  rw [← congrFun this a, ← congrFun this b]
+  simp only [concreteCategory_forget_obj, Function.comp_apply]
+  erw [hab]
+
+theorem ext' {Y : LightProfinite} {a b : Y} (h : ∀ n, Y.proj n a = Y.proj n b) : a = b :=
+  ext fun n ↦ h n.unop
+
+lemma homMk_surjective {X : Profinite} {Y : LightProfinite}
+    (f : (n : ℕ) → X ⟶ (Y.component n).toProfinite)
+    (w : ∀ n, Y.transitionMap n ∘ f (n + 1) = f n)
+    (h : ∀ (a : Y) n, ∃ (b : X), f n b = Y.proj n a) : Function.Surjective (fromProfinite f w) := by
+  intro a
+  replace h : ∀ n, Set.Nonempty ((f n) ⁻¹' {Y.proj n a}) := fun n ↦ h a n
+  have := IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _ ?_ h ?_ ?_
+  · obtain ⟨x, hx⟩ := this
+    refine ⟨x, ?_⟩
+    apply ext'
+    intro n
+    have := congrFun (extracted_3 f w n) x
+    simp only [concreteCategory_forget_obj, Function.comp_apply] at this
+    erw [this]
+    exact Set.mem_iInter.1 hx n
+  · apply directed_of_isDirected_le
+    intro i j hij x
+    simp only [concreteCategory_forget_obj, Set.mem_preimage, Set.mem_singleton_iff]
+    intro hx
+    erw [← congrFun (Y.proj_comp_transitionMapLE hij) a]
+    simp only [concreteCategory_forget_obj, Function.comp_apply]
+    rw [← hx]
+    erw [← congrFun (extracted_3 f w j) x, ← congrFun (extracted_3 f w i) x]
+    simp only [concreteCategory_forget_obj, Function.comp_apply]
+    exact (congrFun (Y.proj_comp_transitionMapLE hij) _).symm
+  · exact fun i ↦ (IsClosed.preimage (f i).2 isClosed_singleton).isCompact
+  · exact fun i ↦ IsClosed.preimage (f i).2 isClosed_singleton
