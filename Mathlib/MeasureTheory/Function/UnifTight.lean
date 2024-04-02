@@ -154,7 +154,7 @@ theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α → β}
     · rw [compl_union, ← indicator_indicator]
       apply (snorm_indicator_le _).trans
       exact hFε (Fin.castLT i hi)
-    · simp only [Fin.coe_eq_castSucc, Fin.castSucc_mk, Fin.eta]
+    · simp only [Fin.coe_eq_castSucc, Fin.castSucc_mk, g]
   · rw [(_ : i = n)]
     · rw [compl_union, inter_comm, ← indicator_indicator]
       apply (snorm_indicator_le _).trans
