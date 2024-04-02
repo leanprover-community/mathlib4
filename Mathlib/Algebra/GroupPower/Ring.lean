@@ -152,16 +152,6 @@ alias neg_one_pow_two := neg_one_sq
 
 end HasDistribNeg
 
-section DivisionMonoid
-variable [DivisionMonoid R] [HasDistribNeg R]
-
-set_option linter.deprecated false in
-@[simp] lemma zpow_bit0_neg (a : R) (n : ℤ) : (-a) ^ bit0 n = a ^ bit0 n := by
-  rw [zpow_bit0', zpow_bit0', neg_mul_neg]
-#align zpow_bit0_neg zpow_bit0_neg
-
-end DivisionMonoid
-
 section Ring
 
 variable [Ring R] {a b : R}
