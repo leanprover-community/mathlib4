@@ -48,7 +48,7 @@ jobs:
               status: 'completed',
               conclusion: 'neutral',
               output: {
-                title: 'Contributor PR Count',
+                title: message,
                 summary: message,
               },
             });
