@@ -11,6 +11,8 @@ import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.ProdSigma
+import Mathlib.Data.List.Join
+import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rotate
 
@@ -469,7 +471,7 @@ theorem one_le_prod_of_one_le [Preorder M] [CovariantClass M M (· * ·) (· ≤
 end Monoid
 
 section CommMonoid
-variable [CommMonoid M] {a : M} {l : List M}
+variable [CommMonoid M] {a : M} {l l₁ l₂ : List M}
 
 @[to_additive (attr := simp)]
 lemma prod_erase [DecidableEq M] (ha : a ∈ l) : a * (l.erase a).prod = l.prod :=
@@ -487,6 +489,30 @@ lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
         mul_left_comm (f a) (f b)]
 #align list.prod_map_erase List.prod_map_erase
 #align list.sum_map_erase List.sum_map_erase
+
+/-- If elements of a list commute with each other, then their product does not
+depend on the order of elements. -/
+@[to_additive "If elements of a list additively commute with each other, then their sum does not
+depend on the order of elements."]
+lemma Perm.prod_eq' (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) : l₁.prod = l₂.prod := by
+  refine h.foldl_eq' ?_ _
+  apply Pairwise.forall_of_forall
+  · intro x y h z
+    exact (h z).symm
+  · intros; rfl
+  · apply hc.imp
+    intro a b h z
+    rw [mul_assoc z, mul_assoc z, h]
+#align list.perm.prod_eq' List.Perm.prod_eq'
+#align list.perm.sum_eq' List.Perm.sum_eq'
+
+@[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.fold_op_eq
+#align list.perm.prod_eq List.Perm.prod_eq
+#align list.perm.sum_eq List.Perm.sum_eq
+
+@[to_additive] lemma prod_reverse (l : List M) : prod l.reverse = prod l := (reverse_perm l).prod_eq
+#align list.prod_reverse List.prod_reverse
+#align list.sum_reverse List.sum_reverse
 
 @[to_additive]
 lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
@@ -892,5 +918,50 @@ lemma ranges_join (l : List ℕ) : l.ranges.join = range l.sum := by simp [range
 /-- Any entry of any member of `l.ranges` is strictly smaller than `l.sum`. -/
 lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by simp [mem_mem_ranges_iff_lt_natSum]
+
+@[simp]
+theorem length_join (L : List (List α)) : length (join L) = sum (map length L) := by
+  induction L <;> [rfl; simp only [*, join, map, sum_cons, length_append]]
+#align list.length_join List.length_join
+
+lemma countP_join (p : α → Bool) : ∀ L : List (List α), countP p L.join = (L.map (countP p)).sum
+  | [] => rfl
+  | a :: l => by rw [join, countP_append, map_cons, sum_cons, countP_join _ l]
+#align list.countp_join List.countP_join
+
+lemma count_join [BEq α] (L : List (List α)) (a : α) : L.join.count a = (L.map (count a)).sum :=
+  countP_join _ _
+#align list.count_join List.count_join
+
+@[simp]
+theorem length_bind (l : List α) (f : α → List β) :
+    length (List.bind l f) = sum (map (length ∘ f) l) := by rw [List.bind, length_join, map_map]
+#align list.length_bind List.length_bind
+
+lemma countP_bind (p : β → Bool) (l : List α) (f : α → List β) :
+    countP p (l.bind f) = sum (map (countP p ∘ f) l) := by rw [List.bind, countP_join, map_map]
+
+lemma count_bind [BEq β] (l : List α) (f : α → List β) (x : β) :
+    count x (l.bind f) = sum (map (count x ∘ f) l) := countP_bind _ _ _
+#align list.count_bind List.count_bind
+
+/-- In a join, taking the first elements up to an index which is the sum of the lengths of the
+first `i` sublists, is the same as taking the join of the first `i` sublists. -/
+lemma take_sum_join (L : List (List α)) (i : ℕ) :
+    L.join.take ((L.map length).take i).sum = (L.take i).join := by simpa using take_sum_join' _ _
+#align list.take_sum_join List.take_sum_join
+
+/-- In a join, dropping all the elements up to an index which is the sum of the lengths of the
+first `i` sublists, is the same as taking the join after dropping the first `i` sublists. -/
+lemma drop_sum_join (L : List (List α)) (i : ℕ) :
+    L.join.drop ((L.map length).take i).sum = (L.drop i).join := by simpa using drop_sum_join' _ _
+#align list.drop_sum_join List.drop_sum_join
+
+/-- In a join of sublists, taking the slice between the indices `A` and `B - 1` gives back the
+original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
+`B` is the sum of the lengths of sublists of index `≤ i`. -/
+lemma drop_take_succ_join_eq_get (L : List (List α)) (i : Fin L.length) :
+    (L.join.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum = get L i := by
+  simpa using drop_take_succ_join_eq_get' _ _
 
 end List
