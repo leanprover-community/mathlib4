@@ -42,7 +42,7 @@ namespace CoxeterSystem
 
 open List Matrix Function
 
-variable {B : Type*} [DecidableEq B]
+variable {B : Type*}
 variable {M : Matrix B B ℕ}
 variable {W : Type*} [Group W]
 variable (cs : CoxeterSystem M W)
