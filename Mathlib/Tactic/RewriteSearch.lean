@@ -315,6 +315,6 @@ elab_rules : tactic |
         else if r₁.dist?.getD 0 ≤ r₂.dist?.getD 0 then r₁ else r₂
   setMCtx min.mctx
   replaceMainGoal [min.goal]
-  let type? := if min.rfl? = some true then none else some (← min.goal.getType)
+  let type? ← if min.rfl? = some true then pure none else do pure <| some (← min.goal.getType)
   addRewriteSuggestion tk (min.history.toList.map (·.2))
     type? (origSpan? := ← getRef)
