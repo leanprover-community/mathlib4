@@ -167,14 +167,16 @@ lemma LSeriesSummable_of_one_lt_re {N : ℕ} (χ : DirichletCharacter ℂ N) {s 
     LSeriesSummable ↗χ s :=
   LSeriesSummable_of_bounded_of_one_lt_re (fun _ _ ↦ χ.norm_le_one _) hs
 
-/-- The L-series of a Dirichlet character converges absolutely at `s` if and only if `re s > 1`. -/
+/-- The L-series of a Dirichlet character mod `N > 0` converges absolutely at `s` if and only if
+`re s > 1`. -/
 lemma LSeriesSummable_iff {N : ℕ} (hN : N ≠ 0) (χ : DirichletCharacter ℂ N) {s : ℂ} :
     LSeriesSummable ↗χ s ↔ 1 < s.re := by
   refine ⟨fun H ↦ ?_, LSeriesSummable_of_one_lt_re χ⟩
   by_contra! h
   exact not_LSeriesSummable_at_one hN χ <| LSeriesSummable.of_re_le_re (by simp only [one_re, h]) H
 
-/-- The abscissa of absolute convergence of the L-series of a Dirichlet character is `1`. -/
+/-- The abscissa of absolute convergence of the L-series of a Dirichlet character mod `N > 0`
+is `1`. -/
 lemma absicssaOfAbsConv_eq_one {N : ℕ} (hn : N ≠ 0) (χ : DirichletCharacter ℂ N) :
     abscissaOfAbsConv ↗χ = 1 := by
   simpa only [abscissaOfAbsConv, LSeriesSummable_iff hn χ, ofReal_re, Set.Ioi_def,
