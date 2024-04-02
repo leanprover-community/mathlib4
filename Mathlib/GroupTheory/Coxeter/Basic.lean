@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.Data.Int.Parity
 
 /-!
-# Coxeter Systems
+# Coxeter systems
 
 This file defines Coxeter systems and Coxeter groups.
 
