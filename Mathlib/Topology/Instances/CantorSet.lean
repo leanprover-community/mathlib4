@@ -31,7 +31,7 @@ def preCantorSet : ℕ → Set ℝ
     preCantorSet (n + 1) = (· / 3) '' preCantorSet n ∪ (fun x ↦ (2 + x) / 3) '' preCantorSet n :=
   rfl
 /-- The Cantor set is the intersection of all pre-Cantor sets. -/
-def cantorSet := iInf preCantorSet
+def cantorSet : Set ℝ := ⋂ n, preCantorSet n
 
 
 
@@ -40,7 +40,7 @@ def cantorSet := iInf preCantorSet
 -/
 
 /-- The ternary Cantor set inherits the metric and in particular the topology from the reals. -/
-instance cantorSet.metricSpace : MetricSpace cantorSet := Subtype.metricSpace
+instance cantorSet.metricSpace : MetricSpace cantorSet := inferInstance
 
 
 lemma quarters_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n ∧ 3/4 ∈ preCantorSet n := by
