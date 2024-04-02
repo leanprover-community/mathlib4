@@ -47,10 +47,11 @@ theorem jacobiTheta_S_smul (τ : ℍ) :
   have h0 : (τ : ℂ) ≠ 0 := ne_of_apply_ne im (zero_im.symm ▸ ne_of_gt τ.2)
   simp_rw [UpperHalfPlane.modular_S_smul, jacobiTheta_eq_jacobiTheta₂]
   conv_rhs => erw [← ofReal_zero, jacobiTheta₂_functional_equation 0 τ]
-  erw [zero_pow two_ne_zero, mul_zero, zero_div, Complex.exp_zero, mul_one, ← mul_assoc,
-    mul_one_div, div_self, one_mul, UpperHalfPlane.coe_mk, inv_neg, neg_div, one_div]
-  · rw [Ne.def, cpow_eq_zero_iff, not_and_or]
-    exact Or.inl <| mul_ne_zero (neg_ne_zero.mpr I_ne_zero) h0
+  rw [zero_pow two_ne_zero, mul_zero, zero_div, Complex.exp_zero, mul_one, ← mul_assoc, mul_one_div]
+  erw [div_self]
+  rw [one_mul, UpperHalfPlane.coe_mk, inv_neg, neg_div, one_div]
+  rw [Ne, cpow_eq_zero_iff, not_and_or]
+  exact Or.inl <| mul_ne_zero (neg_ne_zero.mpr I_ne_zero) h0
 set_option linter.uppercaseLean3 false in
 #align jacobi_theta_S_smul jacobiTheta_S_smul
 
