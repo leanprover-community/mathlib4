@@ -505,7 +505,7 @@ abbrev groupPowers {x : M} {n : ℕ} (hpos : 0 < n) (hx : x ^ n = 1) : Group (po
   mul_left_inv y := Subtype.ext <| by
     obtain ⟨_, k, rfl⟩ := y
     simp only [coe_one, coe_mul, SubmonoidClass.coe_pow]
-    rw [← pow_succ', Nat.sub_add_cancel hpos, ← pow_mul, mul_comm, pow_mul, hx, one_pow]
+    rw [← pow_succ, Nat.sub_add_cancel hpos, ← pow_mul, mul_comm, pow_mul, hx, one_pow]
   zpow z x := x ^ z.natMod n
   zpow_zero' z := by simp only [Int.natMod, Int.zero_emod, Int.toNat_zero, pow_zero]
   zpow_neg' m x := Subtype.ext <| by

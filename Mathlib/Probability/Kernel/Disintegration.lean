@@ -3,7 +3,7 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Kexing Ying
 -/
-import Mathlib.Probability.Kernel.CondCdf
+import Mathlib.Probability.Kernel.Disintegration.CondCdf
 import Mathlib.MeasureTheory.Constructions.Polish
 import Mathlib.Probability.Kernel.MeasureCompProd
 
@@ -66,7 +66,7 @@ noncomputable def condKernelReal (ρ : Measure (α × ℝ)) : kernel α ℝ wher
 #align probability_theory.cond_kernel_real ProbabilityTheory.condKernelReal
 
 instance (ρ : Measure (α × ℝ)) : IsMarkovKernel (condKernelReal ρ) :=
-  ⟨fun a => by rw [condKernelReal]; exact instIsProbabilityMeasure ρ a⟩
+  ⟨fun a => by rw [condKernelReal]; exact instIsProbabilityMeasureCondCDF ρ a⟩
 
 theorem condKernelReal_Iic (ρ : Measure (α × ℝ)) (a : α) (x : ℝ) :
     condKernelReal ρ a (Iic x) = ENNReal.ofReal (condCDF ρ a x) :=

@@ -427,11 +427,11 @@ theorem isCycle_swap_mul_aux₁ {α : Type*} [DecidableEq α] :
       else
         have : f b ≠ b ∧ b ≠ x := ne_and_ne_of_swap_mul_apply_ne_self hb
         have hb' : (swap x (f x) * f) (f⁻¹ b) ≠ f⁻¹ b := by
-          rw [mul_apply, apply_inv_self, swap_apply_of_ne_of_ne this.2 (Ne.symm hfbx), Ne.def, ←
+          rw [mul_apply, apply_inv_self, swap_apply_of_ne_of_ne this.2 (Ne.symm hfbx), Ne, ←
             f.injective.eq_iff, apply_inv_self]
           exact this.1
         let ⟨i, hi⟩ := hn hb' (f.injective <| by
-          rw [apply_inv_self]; rwa [pow_succ, mul_apply] at h)
+          rw [apply_inv_self]; rwa [pow_succ', mul_apply] at h)
         ⟨i + 1, by
           rw [add_comm, zpow_add, mul_apply, hi, zpow_one, mul_apply, apply_inv_self,
             swap_apply_of_ne_of_ne (ne_and_ne_of_swap_mul_apply_ne_self hb).2 (Ne.symm hfbx)]⟩
@@ -450,14 +450,13 @@ theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
         have hb : (swap x (f⁻¹ x) * f⁻¹) (f⁻¹ b) ≠ f⁻¹ b := by
           rw [mul_apply, swap_apply_def]
           split_ifs <;>
-              simp only [inv_eq_iff_eq, Perm.mul_apply, zpow_negSucc,
-                Ne.def, Perm.apply_inv_self] at
-                * <;> tauto
+            simp only [inv_eq_iff_eq, Perm.mul_apply, zpow_negSucc, Ne, Perm.apply_inv_self] at *
+              <;> tauto
         let ⟨i, hi⟩ :=
           isCycle_swap_mul_aux₁ n hb
             (show (f⁻¹ ^ n) (f⁻¹ x) = f⁻¹ b by
               rw [← zpow_natCast, ← h, ← mul_apply, ← mul_apply, ← mul_apply, zpow_negSucc,
-                ← inv_pow, pow_succ', mul_assoc, mul_assoc, inv_mul_self, mul_one, zpow_natCast,
+                ← inv_pow, pow_succ, mul_assoc, mul_assoc, inv_mul_self, mul_one, zpow_natCast,
                 ← pow_succ', ← pow_succ])
         have h : (swap x (f⁻¹ x) * f⁻¹) (f x) = f⁻¹ x := by
           rw [mul_apply, inv_apply_self, swap_apply_left]
@@ -735,15 +734,14 @@ theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : σ.support.car
   intro x hx
   simp only [Perm.mul_apply, Equiv.trans_apply, Equiv.sumCongr_apply]
   obtain ⟨n, rfl⟩ := hσ.exists_pow_eq (Classical.choose_spec hσ).1 (mem_support.1 hx)
-  apply
-    Eq.trans _
-      (congr rfl (congr rfl (congr rfl (congr rfl (hσ.zpowersEquivSupport_symm_apply n).symm))))
-  apply (congr rfl (congr rfl (congr rfl (hσ.zpowersEquivSupport_symm_apply (n + 1))))).trans _
+  erw [hσ.zpowersEquivSupport_symm_apply n]
+  simp only [← Perm.mul_apply, ← pow_succ']
+  erw [hσ.zpowersEquivSupport_symm_apply (n + 1)]
   -- This used to be a `simp only` before leanprover/lean4#2644
-  erw [zpowersEquivZPowers_apply, zpowersEquivZPowers_apply]
-  dsimp
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [pow_succ, Perm.mul_apply]
+  erw [zpowersEquivZPowers_apply, zpowersEquivZPowers_apply, zpowersEquivSupport_apply]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  simp_rw [pow_succ', Perm.mul_apply]
+  rfl
 #align equiv.perm.is_cycle.is_conj Equiv.Perm.IsCycle.isConj
 
 theorem IsCycle.isConj_iff (hσ : IsCycle σ) (hτ : IsCycle τ) :

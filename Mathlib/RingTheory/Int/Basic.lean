@@ -322,7 +322,7 @@ theorem Nat.factors_multiset_prod_of_irreducible {s : Multiset ℕ}
   apply
     UniqueFactorizationMonoid.factors_unique irreducible_of_normalized_factor h
       (normalizedFactors_prod _)
-  rw [Ne.def, Multiset.prod_eq_zero_iff]
+  rw [Ne, Multiset.prod_eq_zero_iff]
   intro con
   exact not_irreducible_zero (h 0 con)
 #align nat.factors_multiset_prod_of_irreducible Nat.factors_multiset_prod_of_irreducible

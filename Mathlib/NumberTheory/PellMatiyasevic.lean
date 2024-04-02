@@ -250,7 +250,7 @@ theorem pell_eq (n : ℕ) : xn a1 n * xn a1 n - d a1 * yn a1 n * yn a1 n = 1 :=
 instance dnsq : Zsqrtd.Nonsquare (d a1) :=
   ⟨fun n h =>
     have : n * n + 1 = a * a := by rw [← h]; exact Nat.succ_pred_eq_of_pos (asq_pos a1)
-    have na : n < a := Nat.mul_self_lt_mul_self_iff.2 (by rw [← this]; exact Nat.lt_succ_self _)
+    have na : n < a := Nat.mul_self_lt_mul_self_iff.1 (by rw [← this]; exact Nat.lt_succ_self _)
     have : (n + 1) * (n + 1) ≤ n * n + 1 := by rw [this]; exact Nat.mul_self_le_mul_self na
     have : n + n ≤ 0 :=
       @Nat.le_of_add_le_add_right _ (n * n + 1) _ (by ring_nf at this ⊢; assumption)
@@ -261,7 +261,7 @@ instance dnsq : Zsqrtd.Nonsquare (d a1) :=
 theorem xn_ge_a_pow : ∀ n : ℕ, a ^ n ≤ xn a1 n
   | 0 => le_refl 1
   | n + 1 => by
-    simp only [_root_.pow_succ', xn_succ]
+    simp only [_root_.pow_succ, xn_succ]
     exact le_trans (Nat.mul_le_mul_right _ (xn_ge_a_pow n)) (Nat.le_add_right _ _)
 #align pell.xn_ge_a_pow Pell.xn_ge_a_pow
 
@@ -272,7 +272,7 @@ theorem n_lt_a_pow : ∀ n : ℕ, n < a ^ n
     have : a ^ n + a ^ n ≤ a ^ n * a := by
       rw [← mul_two]
       exact Nat.mul_le_mul_left _ a1
-    simp only [_root_.pow_succ', gt_iff_lt]
+    simp only [_root_.pow_succ, gt_iff_lt]
     refine' lt_of_lt_of_le _ this
     exact add_lt_add_of_lt_of_le IH (lt_of_le_of_lt (Nat.zero_le _) IH)
 #align pell.n_lt_a_pow Pell.n_lt_a_pow
@@ -463,25 +463,25 @@ theorem xy_modEq_yn (n) :
         xn a1 n ^ k * xn a1 n + 0 [MOD yn a1 n ^ 2] :=
       (hx.mul_right _).add <|
         modEq_zero_iff_dvd.2 <| by
-          rw [_root_.pow_succ']
+          rw [_root_.pow_succ]
           exact
             mul_dvd_mul_right
               (dvd_mul_of_dvd_right
                 (modEq_zero_iff_dvd.1 <|
-                  (hy.of_dvd <| by simp [_root_.pow_succ']).trans <|
+                  (hy.of_dvd <| by simp [_root_.pow_succ]).trans <|
                     modEq_zero_iff_dvd.2 <| by simp)
                 _) _
     have R : xn a1 (n * k) * yn a1 n + yn a1 (n * k) * xn a1 n ≡
         xn a1 n ^ k * yn a1 n + k * xn a1 n ^ k * yn a1 n [MOD yn a1 n ^ 3] :=
       ModEq.add
           (by
-            rw [_root_.pow_succ']
+            rw [_root_.pow_succ]
             exact hx.mul_right' _) <| by
         have : k * xn a1 n ^ (k - 1) * yn a1 n * xn a1 n = k * xn a1 n ^ k * yn a1 n := by
-          cases' k with k <;> simp [_root_.pow_succ']; ring_nf
+          cases' k with k <;> simp [_root_.pow_succ]; ring_nf
         rw [← this]
         exact hy.mul_right _
-    rw [add_tsub_cancel_right, Nat.mul_succ, xn_add, yn_add, pow_succ' (xn _ n), Nat.succ_mul,
+    rw [add_tsub_cancel_right, Nat.mul_succ, xn_add, yn_add, pow_succ (xn _ n), Nat.succ_mul,
       add_comm (k * xn _ n ^ k) (xn _ n ^ k), right_distrib]
     exact ⟨L, R⟩
 #align pell.xy_modeq_yn Pell.xy_modEq_yn

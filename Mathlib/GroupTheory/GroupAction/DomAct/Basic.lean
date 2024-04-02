@@ -195,6 +195,10 @@ instance [Monoid M] [MulAction M α] [AddMonoid A] : DistribMulAction Mᵈᵐᵃ
   smul_zero _ := rfl
   smul_add _ _ _ := rfl
 
+instance [Monoid M] [MulAction M α] [Monoid A] : MulDistribMulAction Mᵈᵐᵃ (α → A) where
+  smul_mul _ _ _ := rfl
+  smul_one _ := rfl
+
 section MonoidHom
 
 variable [Monoid M] [Monoid A] [MulDistribMulAction M A] [MulOneClass B]
@@ -248,5 +252,9 @@ instance [Monoid M] [AddMonoid A] [DistribMulAction M A] [AddZeroClass B] :
 instance [Monoid M] [AddMonoid A] [DistribMulAction M A] [AddCommMonoid B] :
     DistribMulAction Mᵈᵐᵃ (A →+ B) :=
   DFunLike.coe_injective.distribMulAction (AddMonoidHom.coeFn A B) fun _ _ ↦ rfl
+
+instance [Monoid M] [Monoid A] [MulDistribMulAction M A] [CommMonoid B] :
+    MulDistribMulAction Mᵈᵐᵃ (A →* B) :=
+  DFunLike.coe_injective.mulDistribMulAction (MonoidHom.coeFn A B) fun _ _ ↦ rfl
 
 end AddMonoidHom
