@@ -411,4 +411,76 @@ instance (priority := 90) t0Space : T0Space α where
       closure_eq_iff_isClosed.mpr (singletonIsClosed b), singleton_eq_singleton_iff] at h
     exact h
 
+
+/- A set `s` is compact if for every nontrivial filter `f` that contains `s`,
+    there exists `a ∈ s` such that every set of `f` meets every neighborhood of `a`.
+def IsCompact (s : Set X) :=
+  ∀ ⦃f⦄ [NeBot f], f ≤ 𝓟 s → ∃ x ∈ s, ClusterPt x f
+-/
+--#check IsCompact
+
+--prefilters (also known as filter bases)
+--#check FilterBasis
+--filter subbasis - finite intersectio property - any finite collection has non-empty intersection
+
+-- Ultrafilter lemma
+--#check Ultrafilter.exists_le
+
+/-
+`isCompact_of_finite_subcover` says that if a set satisfies the traditional property of every
+open cover having a finite sub-cover then the set is compact in the filter definition
+-/
+--#check isCompact_of_finite_subcover
+
+/-
+theorem isCompact_iff_ultrafilter_le_nhds :
+    IsCompact s ↔ ∀ f : Ultrafilter X, ↑f ≤ 𝓟 s → ∃ x ∈ s, ↑f ≤ 𝓝 x
+-/
+--#check isCompact_iff_ultrafilter_le_nhds
+
+-- {s : Set (Set α)} generateFrom s
+
+
+
+/-
+instance (priority := 90) compactSpace : CompactSpace α where
+  isCompact_univ := by
+    sorry
+-/
+
 end CompleteLattice
+
+/-
+variable {s : Set (Set β)}
+
+#check generateFrom s
+
+universe u
+
+variable {ι : Type u} (U : ι → s)
+
+#check (Set.univ : Set β)
+
+variable (i : ι)
+
+#check (U i : Set β)
+
+#check Classical.choice
+
+variable [t : TopologicalSpace β]
+-/
+
+-- Probably not the optimal argument as still requires axiom of choice
+/-
+theorem isCompact_of_finite_subcover
+    (ht : t = generateFrom s) (h : ∀ {ι : Type u} (U : ι → s), (univ  ⊆ ⋃ i, (U i : Set β)) →
+      ∃ t : Finset ι, univ ⊆ ⋃ i ∈ t, (U i : Set β)) :
+    CompactSpace β  where
+  isCompact_univ := by
+    rw [isCompact_iff_ultrafilter_le_nhds]
+    by_contra nH
+    simp at nH
+    rcases nH with ⟨F,hF⟩
+    have e1 (x : β) : ∃ S ∈ s, x ∈ S ∧ S ∉ F := sorry
+    let V : β → s := fun x => by choice
+-/
