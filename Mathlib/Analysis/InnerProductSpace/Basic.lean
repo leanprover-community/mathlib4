@@ -2336,8 +2336,8 @@ protected theorem continuous_inner :
   rw [Completion.toInner, inner, uncurry_curry _]
   change
     Continuous
-      (((denseInducing_toComplAddHom E).prod (denseInducing_toComplAddHom E)).extend fun p : E × E =>
-        inner' p.1 p.2)
+      (((denseInducing_toComplAddHom E).prod (denseInducing_toComplAddHom E)).extend
+        fun p : E × E => inner' p.1 p.2)
   exact (denseInducing_toComplAddHom E).extend_Z_bilin (denseInducing_toComplAddHom E) this
 #align uniform_space.completion.continuous_inner UniformSpace.Completion.continuous_inner
 
