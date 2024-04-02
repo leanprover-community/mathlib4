@@ -333,12 +333,12 @@ def equiv (f : MulRingNorm R) (g : MulRingNorm R) :=
 
 /- Equivalence of multiplicative ring norms is an equivalence relation
   1. is reflexive-/
-lemma equiv_refl {R : Type*} [Ring R] (f : MulRingNorm R) : equiv f f := by
+lemma equiv_refl (f : MulRingNorm R) : equiv f f := by
   exact ⟨1, by linarith, by simp only [Real.rpow_one]⟩
 
 /- Equivalence of multiplicative ring norms is an equivalence relation
  2. is symmetric-/
-lemma equiv_symm {R : Type*} [Ring R] (f g : MulRingNorm R) (hfg : equiv f g) : equiv g f := by
+lemma equiv_symm (f g : MulRingNorm R) (hfg : equiv f g) : equiv g f := by
   rcases hfg with ⟨c, hcpos, h⟩
   use 1/c
   constructor
@@ -348,7 +348,7 @@ lemma equiv_symm {R : Type*} [Ring R] (f g : MulRingNorm R) (hfg : equiv f g) : 
 
 /- Equivalence of multiplicative ring norms is an equivalence relation
  3. is transitive-/
-lemma equiv_trans {R : Type*} [Ring R] (f g k : MulRingNorm R) (hfg : equiv f g) (hgk : equiv g k) :
+lemma equiv_trans (f g k : MulRingNorm R) (hfg : equiv f g) (hgk : equiv g k) :
     equiv f k := by
   rcases hfg with ⟨c, hcPos, hfg⟩
   rcases hgk with ⟨d, hdPos, hgk⟩
@@ -384,7 +384,6 @@ def normRingNorm (R : Type*) [NonUnitalNormedRing R] : RingNorm R :=
 #align norm_ring_norm normRingNorm
 
 
-/-A multiplicative ring norm with value in the rationals satisfies `f n ≤ n` for every `n : ℕ`-/
 /-A multiplicative ring norm with value in the rationals satisfies `f n ≤ n` for every `n : ℕ`-/
 lemma MulRingNorm_nat_le_nat {R : Type*} [Ring R] (n : ℕ) (f : MulRingNorm R) : f n ≤ n := by
   induction n with
