@@ -294,7 +294,7 @@ theorem zeta_sub_one_prime_of_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
   rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ), Subalgebra.algebraMap_eq]
   simp only [PNat.pow_coe, id.map_eq_id, RingHomCompTriple.comp_eq, RingHom.coe_coe,
     Subalgebra.coe_val, algebraMap_int_eq, map_natCast]
-  exact hζ.sub_one_norm_prime_ne_two (Polynomial.cyclotomic.irreducible_rat (PNat.pos _)) hodd
+  exact hζ.norm_sub_one_of_prime_ne_two (Polynomial.cyclotomic.irreducible_rat (PNat.pos _)) hodd
 
 /-- `ζ - 1` is prime if `ζ` is a primitive `2 ^ (k + 1)`-th root of unity.
   See `zeta_sub_one_prime` for a general statement. -/
@@ -314,13 +314,13 @@ theorem zeta_sub_one_prime_of_two_pow [IsCyclotomicExtension {(2 : ℕ+) ^ (k + 
     rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ), Subalgebra.algebraMap_eq]
     simp only [Nat.zero_eq, PNat.pow_coe, id.map_eq_id, RingHomCompTriple.comp_eq, RingHom.coe_coe,
       Subalgebra.coe_val, algebraMap_int_eq, map_neg, map_ofNat]
-    simpa using hζ.pow_sub_one_norm_two (cyclotomic.irreducible_rat (by simp))
+    simpa using hζ.norm_pow_sub_one_of_eq_two (cyclotomic.irreducible_rat (by simp))
   convert Int.prime_two
   apply RingHom.injective_int (algebraMap ℤ ℚ)
   rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ), Subalgebra.algebraMap_eq]
   simp only [PNat.pow_coe, id.map_eq_id, RingHomCompTriple.comp_eq, RingHom.coe_coe,
     Subalgebra.coe_val, algebraMap_int_eq, map_natCast]
-  exact hζ.sub_one_norm_two Nat.AtLeastTwo.prop (cyclotomic.irreducible_rat (by simp))
+  exact hζ.norm_sub_one_of_eq_two Nat.AtLeastTwo.prop (cyclotomic.irreducible_rat (by simp))
 
 /-- `ζ - 1` is prime if `ζ` is a primitive `p ^ (k + 1)`-th root of unity. -/
 theorem zeta_sub_one_prime [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
@@ -355,7 +355,7 @@ lemma norm_toInteger_pow_sub_one_of_prime_pow_ne_two [IsCyclotomicExtension {p ^
   have : algebraMap (𝓞 K) K (hζ.toInteger ^ (p : ℕ) ^ s - 1) = ζ ^ (p : ℕ) ^ s - 1 := by
     simp only [map_sub, map_pow, map_one, sub_left_inj]
     exact rfl
-  rw [← Algebra.norm_localization (Sₘ := K) ℤ ℤ⁰, this, hζ.pow_sub_one_norm_prime_pow_ne_two
+  rw [← Algebra.norm_localization (Sₘ := K) ℤ ℤ⁰, this, hζ.norm_pow_sub_one_of_prime_pow_ne_two
     (cyclotomic.irreducible_rat (by simp)) hs htwo]
   simp
 
@@ -370,7 +370,7 @@ lemma norm_toInteger_pow_sub_one_of_two [IsCyclotomicExtension {2 ^ (k + 1)} ℚ
   have : algebraMap (𝓞 K) K (hζ.toInteger ^ 2 ^ k - 1) = ζ ^ (2 : ℕ) ^ k - 1 := by
     simp only [map_sub, map_pow, map_one, sub_left_inj]
     exact rfl
-  rw [← Algebra.norm_localization (Sₘ := K) ℤ ℤ⁰, this, hζ.pow_sub_one_norm_two
+  rw [← Algebra.norm_localization (Sₘ := K) ℤ ℤ⁰, this, hζ.norm_pow_sub_one_of_eq_two
     (cyclotomic.irreducible_rat (pow_pos (by decide) _))]
   simp
 
