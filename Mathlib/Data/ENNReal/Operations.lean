@@ -473,12 +473,6 @@ theorem sub_le_sub_iff_left (h : c ≤ a) (h' : a ≠ ∞) :
     (a - b ≤ a - c) ↔ c ≤ b :=
   (cancel_of_ne h').tsub_le_tsub_iff_left (cancel_of_ne (ne_top_of_le_ne_top h' h)) h
 
-protected theorem add_sub_add_comm {a b c d : ℝ≥0∞} (hc : c ≠ ∞) (hd : d ≠ ∞)
-    (hac : c ≤ a) (hbd : d ≤ b) : (a + b) - (c + d) = (a - c) + (b - d) := by
-  refine add_tsub_add_le_tsub_add_tsub.antisymm ?_
-  apply le_sub_of_add_le_left (add_ne_top.2 ⟨hc, hd⟩)
-  rw [add_add_add_comm, add_tsub_cancel_of_le hac, add_tsub_cancel_of_le hbd]
-
 end Sub
 
 section Sum
