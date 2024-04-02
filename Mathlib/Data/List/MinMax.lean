@@ -44,7 +44,9 @@ def argAux (a : Option α) (b : α) : Option α :=
 theorem foldl_argAux_eq_none : l.foldl (argAux r) o = none ↔ l = [] ∧ o = none :=
   List.reverseRecOn l (by simp) fun tl hd => by
     simp only [foldl_append, foldl_cons, argAux, foldl_nil, append_eq_nil, and_false, false_and,
-      iff_false]; cases foldl (argAux r) o tl <;> simp; try split_ifs <;> simp
+      iff_false]
+    cases foldl (argAux r) o tl <;> simp only [not_false_eq_true, implies_true]
+    split_ifs <;> simp
 #align list.foldl_arg_aux_eq_none List.foldl_argAux_eq_none
 
 private theorem foldl_argAux_mem (l) : ∀ a m : α, m ∈ foldl (argAux r) (some a) l → m ∈ a :: l :=
