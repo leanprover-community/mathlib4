@@ -133,7 +133,7 @@ theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
   · exact fun _ => by norm_num
   · replace hp := H hp (dvd_of_mul_right_dvd hpq)
     replace hq := hq (dvd_of_mul_left_dvd hpq)
-    rw [show 3 = 3 % 4 by norm_num, Ne.def, ← ZMod.nat_cast_eq_nat_cast_iff'] at hp hq ⊢
+    rw [show 3 = 3 % 4 by norm_num, Ne, ← ZMod.nat_cast_eq_nat_cast_iff'] at hp hq ⊢
     rw [Nat.cast_mul]
     exact help p q hp hq
 #align zmod.is_square_neg_one_iff' ZMod.isSquare_neg_one_iff'

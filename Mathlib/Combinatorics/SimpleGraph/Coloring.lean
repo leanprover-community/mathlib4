@@ -260,7 +260,7 @@ theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     refine' ⟨Coloring.mk _ _⟩
     · exact fun v => ⟨C v, Cf v⟩
     · rintro v w hvw
-      simp only [Fin.mk_eq_mk, Ne.def]
+      simp only [Fin.mk_eq_mk, Ne]
       exact C.valid hvw
 #align simple_graph.colorable_iff_exists_bdd_nat_coloring SimpleGraph.colorable_iff_exists_bdd_nat_coloring
 

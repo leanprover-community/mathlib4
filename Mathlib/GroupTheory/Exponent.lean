@@ -327,7 +327,7 @@ order `p`. -/
 lemma exponent_eq_prime_iff {G : Type*} [Monoid G] [Nontrivial G] {p : ℕ} (hp : p.Prime) :
     Monoid.exponent G = p ↔ ∀ g : G, g ≠ 1 → orderOf g = p := by
   refine ⟨fun hG g hg ↦ ?_, fun h ↦ dvd_antisymm ?_ ?_⟩
-  · rw [Ne.def, ← orderOf_eq_one_iff] at hg
+  · rw [Ne, ← orderOf_eq_one_iff] at hg
     exact Eq.symm <| (hp.dvd_iff_eq hg).mp <| hG ▸ Monoid.order_dvd_exponent g
   · rw [exponent_dvd]
     intro g
@@ -368,7 +368,7 @@ theorem exponent_ne_zero_iff_range_orderOf_finite (h : ∀ g : G, 0 < orderOf g)
 theorem exponent_eq_zero_iff_range_orderOf_infinite (h : ∀ g : G, 0 < orderOf g) :
     exponent G = 0 ↔ (Set.range (orderOf : G → ℕ)).Infinite := by
   have := exponent_ne_zero_iff_range_orderOf_finite h
-  rwa [Ne.def, not_iff_comm, Iff.comm] at this
+  rwa [Ne, not_iff_comm, Iff.comm] at this
 #align monoid.exponent_eq_zero_iff_range_order_of_infinite Monoid.exponent_eq_zero_iff_range_orderOf_infinite
 #align add_monoid.exponent_eq_zero_iff_range_order_of_infinite AddMonoid.exponent_eq_zero_iff_range_addOrderOf_infinite
 
