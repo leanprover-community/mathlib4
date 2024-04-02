@@ -2694,7 +2694,7 @@ import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.LinearAlgebra.Trace
 import Mathlib.LinearAlgebra.UnitaryGroup
 import Mathlib.LinearAlgebra.Vandermonde
-import Mathlib.Linters.Lint
+import Mathlib.Linter.Lint
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Denumerable
 import Mathlib.Logic.Embedding.Basic

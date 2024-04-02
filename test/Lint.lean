@@ -1,4 +1,4 @@
-import Mathlib.Linters.Lint
+import Mathlib.Linter.Lint
 import Mathlib.Tactic.ToAdditive
 
 set_option linter.dupNamespace true in
