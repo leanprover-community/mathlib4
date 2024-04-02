@@ -189,15 +189,20 @@ theorem mem_ofCardinalInter {l : Set (Set α)} (hc : 2 < c)
 Similarly to `Filter.comk`, a set belongs to this filter if its complement satisfies the property.
 Similarly to `Filter.ofCardinalInter`,
 this constructor deduces some properties from the cardinal `c` intersection property
-which becomes the cardinal `c` union property because we take complements of all sets.-/
-def ofCardinalUnion (p : Set α → Prop) (hc : 2 < c)
-    (hUnion : ∀ S : Set (Set α), (#S < c) → (∀ s ∈ S, p s) → p (⋃₀ S))
-    (hmono : ∀ t, p t → ∀ s ⊆ t, p s) : Filter α := by
-  refine .ofCardinalInter {s | p sᶜ} hc (fun S hSc hSp ↦ ?_) fun s t ht hsub ↦ ?_
+which becomes the cardinal `c` union property because we take complements of all sets. -/
+def ofCardinalUnion (l : Set (Set α)) (hc : 2 < c)
+    (hUnion : ∀ S : Set (Set α), (#S < c) → (∀ s ∈ S, s ∈ l) → ⋃₀ S ∈ l)
+    (hmono : ∀ t ∈ l, ∀ s ⊆ t, s ∈ l) : Filter α := by
+  refine .ofCardinalInter {s | sᶜ ∈ l} hc (fun S hSc hSp ↦ ?_) fun s t ht hsub ↦ ?_
   · rw [mem_setOf_eq, compl_sInter]
-    apply hUnion _ ?_ (forall_mem_image.2 hSp)
-    rwa [Cardinal.mk_image_eq compl_injective]
-  · exact hmono _ ht _ (compl_subset_compl.2 hsub)
+    apply hUnion (compl '' S) (lt_of_le_of_lt mk_image_le hSc)
+    intro s hs
+    rw [mem_image] at hs
+    rcases hs with ⟨t, ht, rfl⟩
+    apply hSp ht
+  · rw [mem_setOf_eq]
+    rw [← compl_subset_compl] at hsub
+    exact hmono sᶜ ht tᶜ hsub
 
 instance cardinalInter_ofCardinalUnion (p : Set α → Prop) (hc : 2 < c) (h₁ h₂) :
     CardinalInterFilter (Filter.ofCardinalUnion p hc h₁ h₂) c :=

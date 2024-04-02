@@ -158,17 +158,20 @@ theorem Filter.mem_ofCountableInter {l : Set (Set α)}
 Similarly to `Filter.comk`, a set belongs to this filter if its complement satisfies the property.
 Similarly to `Filter.ofCountableInter`,
 this constructor deduces some properties from the countable intersection property
-which becomes the countable union property because we take complements of all sets.
-
-Another small difference from `Filter.ofCountableInter`
-is that this definition takes `p : Set α → Prop` instead of `Set (Set α)`. -/
-def Filter.ofCountableUnion (p : Set α → Prop)
-    (hUnion : ∀ S : Set (Set α), S.Countable → (∀ s ∈ S, p s) → p (⋃₀ S))
-    (hmono : ∀ t, p t → ∀ s ⊆ t, p s) : Filter α := by
-  refine .ofCountableInter {s | p sᶜ} (fun S hSc hSp ↦ ?_) fun s t ht hsub ↦ ?_
+which becomes the countable union property because we take complements of all sets. -/
+def Filter.ofCountableUnion (l : Set (Set α))
+    (hUnion : ∀ S : Set (Set α), S.Countable → (∀ s ∈ S, s ∈ l) → ⋃₀ S ∈ l)
+    (hmono : ∀ t ∈ l, ∀ s ⊆ t, s ∈ l) : Filter α := by
+  refine .ofCountableInter {s | sᶜ ∈ l} (fun S hSc hSp ↦ ?_) fun s t ht hsub ↦ ?_
   · rw [mem_setOf_eq, compl_sInter]
-    exact hUnion _ (hSc.image _) (forall_mem_image.2 hSp)
-  · exact hmono _ ht _ (compl_subset_compl.2 hsub)
+    apply hUnion (compl '' S) (hSc.image _)
+    intro s hs
+    rw [mem_image] at hs
+    rcases hs with ⟨t, ht, rfl⟩
+    apply hSp ht
+  · rw [mem_setOf_eq]
+    rw [← compl_subset_compl] at hsub
+    exact hmono sᶜ ht tᶜ hsub
 
 instance Filter.countableInter_ofCountableUnion (p : Set α → Prop) (h₁ h₂) :
     CountableInterFilter (Filter.ofCountableUnion p h₁ h₂) :=
