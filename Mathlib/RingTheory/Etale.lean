@@ -377,6 +377,68 @@ theorem FormallySmooth.iff_split_surjection [FormallySmooth R P] :
   · rintro ⟨g, hg⟩; exact FormallySmooth.of_split f g hg
 #align algebra.formally_smooth.iff_split_surjection Algebra.FormallySmooth.iff_split_surjection
 
+
+def finsuppTensorFinsupp : (ι →₀ M) ⊗[R] (κ →₀ N) ≃ₗ[R] ι × κ →₀ M ⊗[R] N :=
+  TensorProduct.congr (finsuppLEquivDirectSum R M ι) (finsuppLEquivDirectSum R N κ) ≪≫ₗ
+    ((TensorProduct.directSum R (fun _ : ι => M) fun _ : κ => N) ≪≫ₗ
+      (finsuppLEquivDirectSum R (M ⊗[R] N) (ι × κ)).symm)
+#align finsupp_tensor_finsupp finsuppTensorFinsupp
+
+
+
+-- noncomputable
+-- def TensorProduct.finsuppEquiv (R S) {M N ι} [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup N]
+--   [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M] [Module R N] :
+--     (ι →₀ (M ⊗[R] N)) ≃ₗ[S] M ⊗[R] (ι →₀ N) where
+--   __ := Finsupp.lsum R
+--     (fun i ↦ TensorProduct.AlgebraTensorModule.map LinearMap.id (Finsupp.lsingle i))
+--   invFun := TensorProduct.AlgebraTensorModule.lift (A := S) ((Finsupp.lsum S).toLinearMap.comp
+--     (LinearMap.pi fun i ↦ TensorProduct.AlgebraTensorModule.curry (Finsupp.lsingle i)))
+--   left_inv x := by
+--     show (TensorProduct.AlgebraTensorModule.lift (A := S) ((Finsupp.lsum S).toLinearMap.comp
+--     (LinearMap.pi fun i ↦ TensorProduct.AlgebraTensorModule.curry (Finsupp.lsingle i)))).comp
+--       (Finsupp.lsum R
+--         (fun i ↦ TensorProduct.AlgebraTensorModule.map LinearMap.id (Finsupp.lsingle i))) x =
+--         LinearMap.id (R := S) x
+--     congr
+--     ext
+--     simp
+--   right_inv x := by
+--     show (Finsupp.lsum R
+--       (fun i ↦ TensorProduct.AlgebraTensorModule.map LinearMap.id (Finsupp.lsingle i))).comp
+--       (TensorProduct.AlgebraTensorModule.lift (A := S) ((Finsupp.lsum S).toLinearMap.comp
+--       (LinearMap.pi fun i ↦ TensorProduct.AlgebraTensorModule.curry (Finsupp.lsingle i)))) x =
+--         LinearMap.id (R := S) x
+--     congr
+--     ext
+--     simp
+
+-- @[simp]
+-- lemma TensorProduct.finsuppEquiv_single {R S M N ι} [CommRing R] [CommRing S] [AddCommGroup M]
+--     [AddCommGroup N] [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M] [Module R N]
+--     (i : ι) (m : M) (n : N) :
+--     TensorProduct.finsuppEquiv R S (Finsupp.single i (m ⊗ₜ n)) = m ⊗ₜ (Finsupp.single i n) :=
+--   Finsupp.lsum_single _ _ _ _
+
+-- @[simp]
+-- lemma TensorProduct.finsuppEquiv_symm_tmul_single {R S M N ι} [CommRing R] [CommRing S] [AddCommGroup M]
+--     [AddCommGroup N] [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M] [Module R N]
+--     (m : M) (n : N) (i : ι) :
+--     (TensorProduct.finsuppEquiv R S).symm (m ⊗ₜ Finsupp.single i n) = Finsupp.single i (m ⊗ₜ n) := by
+--   show TensorProduct.AlgebraTensorModule.lift _ _ = _
+--   simp
+
+-- @[simp]
+-- lemma TensorProduct.finsuppEquiv_symm_tmul {R S M N ι} [CommRing R] [CommRing S] [AddCommGroup M]
+--     [AddCommGroup N] [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M] [Module R N]
+--     (m : M) (f : ι →₀ N) (i : ι) :
+--     (TensorProduct.finsuppEquiv R S).symm (m ⊗ₜ f) i = m ⊗ₜ (f i) := by
+--   classical
+--   induction f using Finsupp.induction_linear <;>
+--     simp [*, TensorProduct.tmul_add, Finsupp.single_apply, apply_ite (m ⊗ₜ[R] ·)]
+
+
+
 end OfSurjective
 
 section UnramifiedDerivation
@@ -556,5 +618,11 @@ theorem FormallyEtale.localization_map [FormallyEtale R S] : FormallyEtale Rₘ 
 #align algebra.formally_etale.localization_map Algebra.FormallyEtale.localization_map
 
 end Localization
+
+section ExactSequence
+
+
+
+end ExactSequence
 
 end Algebra
