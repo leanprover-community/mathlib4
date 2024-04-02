@@ -127,7 +127,7 @@ noncomputable instance : Monoid (Completion α) :=
               (continuous_snd.comp continuous_snd))))
         fun a b c ↦
         show (a : Completion α) * b * c = a * (b * c) by repeat' rw_mod_cast [mul_assoc]
-    npow := fun n ↦ Completion.map (fun a ↦ a ^ n : α → α)
+    npow := fun n x ↦ x ^ n
     npow_zero := fun a ↦
       Completion.induction_on a (isClosed_eq continuous_map continuous_const) fun a ↦
         show Completion.map (fun a ↦ a ^ 0 : α → α) a = 1 by
@@ -149,24 +149,20 @@ noncomputable instance : DivInvMonoid (Completion α) :=
         (isClosed_eq (continuous_map₂ continuous_fst continuous_snd)
           (continuous_map₂ continuous_fst (Completion.continuous_map.comp continuous_snd)))
         fun a b ↦ mod_cast congr_arg ((↑) : α → Completion α) (div_eq_mul_inv a b)
-    zpow := fun n ↦ Completion.map (fun a ↦ a ^ n : α → α)
+    zpow := fun z x ↦ x ^ z
     zpow_zero' := fun a ↦
-      Completion.induction_on a (isClosed_eq continuous_map continuous_const) fun a ↦
-        show Completion.map (fun a ↦ a ^ (0 : ℤ) : α → α) a = 1 by
-          rw [map_coe (uniformContinuous_zpow_const _), zpow_zero, coe_one']
+      Completion.induction_on a (isClosed_eq continuous_map continuous_const) fun a ↦ by
+        simp_rw [pow_def, map_coe (uniformContinuous_zpow_const _), zpow_zero, coe_one']
     zpow_succ' := fun n a ↦
       Completion.induction_on a
-        (isClosed_eq continuous_map <| continuous_map₂ continuous_map continuous_id) fun a ↦
-          show Completion.map (fun a ↦ a ^ (n + 1 : ℤ) : α → α) a =
-              Completion.map (fun a ↦ a ^ (n : ℤ) : α → α) a * a by
-            simp_rw [map_coe (uniformContinuous_zpow_const _), zpow_add, zpow_one, coe_mul']
+        (isClosed_eq continuous_map <| continuous_map₂ continuous_map continuous_id) fun a ↦ by
+          simp_rw [Int.ofNat_eq_coe, pow_def, map_coe (uniformContinuous_zpow_const _),
+            zpow_natCast, pow_succ, coe_mul']
     zpow_neg' := fun n a ↦
       Completion.induction_on a
-        (isClosed_eq continuous_map <| Completion.continuous_map.comp continuous_map) fun a ↦
-          show Completion.map (fun a ↦ a ^ (Int.negSucc n) : α → α) a =
-              (Completion.map (fun a ↦ a ^ (n + 1 : ℤ) : α → α) a)⁻¹ by
-            simp_rw [map_coe (uniformContinuous_zpow_const _), zpow_negSucc]
-            norm_cast }
+        (isClosed_eq continuous_map <| Completion.continuous_map.comp continuous_map) fun a ↦ by
+          simp_rw [pow_def, map_coe (uniformContinuous_zpow_const _), zpow_negSucc, zpow_natCast,
+            coe_inv'] }
 
 @[to_additive]
 noncomputable instance group : Group (Completion α) :=
