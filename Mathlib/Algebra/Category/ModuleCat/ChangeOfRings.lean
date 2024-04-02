@@ -613,6 +613,9 @@ def HomEquiv.toRestrictScalars {X Y} (g : (extendScalars f).obj X ⟶ Y) :
     congr
 #align category_theory.Module.extend_restrict_scalars_adj.hom_equiv.to_restrict_scalars ModuleCat.ExtendRestrictScalarsAdj.HomEquiv.toRestrictScalars
 
+-- Adaptation note: nightly-2024-04-01
+-- This maxHeartbeats was not needed previously.
+set_option maxHeartbeats 400000 in
 -- Porting note: forced to break apart fromExtendScalars due to timeouts
 /--
 The map `S → X →ₗ[R] Y` given by `fun s x => s • (g x)`
@@ -623,12 +626,15 @@ def HomEquiv.evalAt {X : ModuleCat R} {Y : ModuleCat S} (s : S)
     X →ₗ[R] Y :=
   @LinearMap.mk _ _ _ _ (RingHom.id R) X Y _ _ _ (_)
     { toFun := fun x => s • (g x : Y)
-      map_add' := by intros; dsimp; rw [map_add,smul_add] }
+      map_add' := by intros; dsimp; rw [map_add, smul_add] }
     (by
       intros r x
       rw [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply,
         LinearMap.map_smul, smul_comm r s (g x : Y)] )
 
+-- Adaptation note: nightly-2024-04-01
+-- This maxHeartbeats was not needed previously.
+set_option maxHeartbeats 400000 in
 /--
 Given `R`-module X and `S`-module Y and a map `X ⟶ (restrictScalars f).obj Y`, i.e `R`-linear map
 `X ⟶ Y`, there is a map `(extend_scalars f).obj X ⟶ Y`, i.e `S`-linear map `S ⨂ X → Y` by

@@ -66,7 +66,7 @@ namespace Ideal.Filtration
 theorem pow_smul_le (i j : ℕ) : I ^ i • F.N j ≤ F.N (i + j) := by
   induction' i with _ ih
   · simp
-  · rw [pow_succ, mul_smul, add_assoc, add_comm 1, ← add_assoc]
+  · rw [pow_succ', mul_smul, add_assoc, add_comm 1, ← add_assoc]
     exact (Submodule.smul_mono_right ih).trans (F.smul_le _)
 #align ideal.filtration.pow_smul_le Ideal.Filtration.pow_smul_le
 
