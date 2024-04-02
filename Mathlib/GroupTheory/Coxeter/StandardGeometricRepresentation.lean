@@ -11,17 +11,18 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
 
 /-!
 # The standard geometric representation
+
 Throughout this file, `B` is a type and `M : Matrix B B ℕ` is a Coxeter matrix.
 `cs : CoxeterSystem M W` is a Coxeter system; that is, `W` is a group, and `cs` holds the data
 of a group isomorphism `W ≃* Matrix.CoxeterGroup M`, where `Matrix.CoxeterGroup M` refers to
 the quotient of the free group on `B` by the Coxeter relations given by the matrix `M`. See
-`Mathlib.GroupTheory.Coxeter.Basic` for more details.
+`Mathlib/GroupTheory/Coxeter/Basic.lean` for more details.
 
 Let $V$ be the free $\mathbb{R}$ vector space over `B` and let $\{\alpha_i\}$ be the standard basis
 of $V$. We define a bilinear form on $V$ by
 $$\langle \alpha_i, \alpha_{i'}\rangle = -\cos (\pi / M_{i, i'}),$$
-where $M$ is the Coxeter matrix of $W$ (see `Mathlib.GroupTheory.Coxeter.Basic`). This is positive
-definite if and only if $W$ is a finite group, although we do not prove that in this file.
+where $M$ is the Coxeter matrix of $W$. This is positive definite if and only if $W$ is a finite
+group, although we do not prove that in this file.
 
 Then, we have a representation $\rho \colon W \to GL(V)$, called the
 *standard geometric representation*, given by
@@ -33,13 +34,16 @@ nonpositive linear combination of the simple roots, and that $\ell(w s_i) = \ell
 if $\rho(w) \alpha_i$ is a nonnegative linear combination of the simple roots.
 
 ## Main definitions
+
 * `cs.standardBilinForm`: The invariant bilinear form associated to the standard geometric
 representation.
 * `cs.standardGeometricRepresentation`: The standard geometric representation of `W`. This has type
 `Representation ℝ W (B →₀ ℝ)`.
 
 ## References
+
 * [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*](bjorner2005)
+
 -/
 
 noncomputable section
