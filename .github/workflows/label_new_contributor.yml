@@ -28,7 +28,7 @@ jobs:
             const pullRequestCount = response.data.length;
 
             // Determine if the creator has 5 or fewer pull requests
-            if (pullRequestCount <= 5) {
+            if (pullRequestCount <= 50) {
               // Add the "new-contributor" label to the current pull request
               await github.rest.issues.addLabels({
                 issue_number: context.issue.number,
