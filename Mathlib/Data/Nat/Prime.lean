@@ -461,10 +461,10 @@ theorem not_prime_of_dvd_of_ne {m n : ℕ} (h1 : m ∣ n) (h2 : m ≠ 1) (h3 : m
 theorem not_prime_of_dvd_of_lt {m n : ℕ} (h1 : m ∣ n) (h2 : 2 ≤ m) (h3 : m < n) : ¬Prime n :=
   not_prime_of_dvd_of_ne h1 (ne_of_gt h2) (ne_of_lt h3)
 
-theorem exists_dvd_ne_iff_not_prime {n : ℕ} (h : 2 ≤ n) : (¬Prime n) ↔ ∃ m, m ∣ n ∧ m ≠ 1 ∧ m ≠ n :=
+theorem not_prime_iff_exists_dvd_ne {n : ℕ} (h : 2 ≤ n) : (¬Prime n) ↔ ∃ m, m ∣ n ∧ m ≠ 1 ∧ m ≠ n :=
   ⟨exists_dvd_of_not_prime h, fun ⟨_,h1,h2,h3⟩ => not_prime_of_dvd_of_ne h1 h2 h3⟩
 
-theorem exists_dvd_lt_iff_not_prime {n : ℕ} (h : 2 ≤ n) : (¬Prime n) ↔ ∃ m, m ∣ n ∧ 2 ≤ m ∧ m < n :=
+theorem not_prime_iff_exists_dvd_lt {n : ℕ} (h : 2 ≤ n) : (¬Prime n) ↔ ∃ m, m ∣ n ∧ 2 ≤ m ∧ m < n :=
   ⟨exists_dvd_of_not_prime2 h, fun ⟨_,h1,h2,h3⟩ => not_prime_of_dvd_of_lt h1 h2 h3⟩
 
 theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) : ∃ p, Prime p ∧ p ∣ n :=
