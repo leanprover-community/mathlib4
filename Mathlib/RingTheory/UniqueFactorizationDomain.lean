@@ -999,8 +999,8 @@ theorem le_multiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} (
   intro b hb
   constructor
   · rintro ⟨c, rfl⟩
-    rw [Ne, pow_succ, mul_assoc, mul_eq_zero, not_or] at hb
-    rw [pow_succ, mul_assoc, normalizedFactors_mul hb.1 hb.2, replicate_succ,
+    rw [Ne, pow_succ', mul_assoc, mul_eq_zero, not_or] at hb
+    rw [pow_succ', mul_assoc, normalizedFactors_mul hb.1 hb.2, replicate_succ,
       normalizedFactors_irreducible ha, singleton_add, cons_le_cons_iff, ← ih hb.2]
     apply Dvd.intro _ rfl
   · rw [Multiset.le_iff_exists_add]
