@@ -355,22 +355,6 @@ theorem comp_apply (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [Monoid
     f.comp g x = f (g x) := rfl
 #align non_unital_alg_hom.comp_apply NonUnitalAlgHom.comp_apply
 
-/-
-/-- The composition of morphisms is a morphism. -/
-def comp' (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) : A →ₛₙₐ[ψ.comp φ] C :=
-  { (f : B →ₙ* C).comp (g : A →ₙ* B),
-    (f : B →ₑ+[ψ] C).comp (g : A →ₑ+[φ] B) with }
-
-@[simp, norm_cast]
-theorem coe_comp' (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) :
-    ⇑(f.comp' g) = (⇑f) ∘ (⇑g) := rfl
-
-theorem comp'_apply (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) (x : A) :
-    f.comp' g x = f (g x) := rfl
-
--/
-
-
 variable {B₁: Type*} [NonUnitalNonAssocSemiring B₁] [DistribMulAction R B₁]
 
 /-- The inverse of a bijective morphism is a morphism. -/
