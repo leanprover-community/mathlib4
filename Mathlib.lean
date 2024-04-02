@@ -3720,6 +3720,7 @@ import Mathlib.Tactic.Widget.Gcongr
 import Mathlib.Tactic.Widget.SelectInsertParamsClass
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.Zify
+import Mathlib.Tactic.mkAll
 import Mathlib.Testing.SlimCheck.Functions
 import Mathlib.Testing.SlimCheck.Gen
 import Mathlib.Testing.SlimCheck.Sampleable

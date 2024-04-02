@@ -9,7 +9,7 @@ import Lean.Util.Path
 #  An implementation of the `mk_all.sh` script in Lean
 -/
 
-namespace Mathlib.mkAll
+namespace Mathlib.MKAll
 
 /-- the command `git ls-files '*.lean'` -/
 def gitLSFiles : IO.Process.SpawnArgs where

@@ -201,3 +201,4 @@ import Mathlib.Tactic.Widget.Gcongr
 import Mathlib.Tactic.Widget.SelectInsertParamsClass
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.Zify
+import Mathlib.Tactic.mkAll
