@@ -1928,7 +1928,6 @@ import Mathlib.Data.Nat.Factorization.Root
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Data.Nat.Fib.Zeckendorf
-import Mathlib.Data.Nat.ForSqrt
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Data.Nat.Hyperoperation
@@ -1951,7 +1950,6 @@ import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Size
-import Mathlib.Data.Nat.Sqrt
 import Mathlib.Data.Nat.SqrtNormNum
 import Mathlib.Data.Nat.Squarefree
 import Mathlib.Data.Nat.SuccPred
