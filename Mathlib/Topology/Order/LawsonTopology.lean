@@ -198,10 +198,10 @@ lemma lawsonClosed_of_lowerClosed (s : Set α) (h : IsClosed (WithLower.ofLower 
     IsClosed (WithLawson.ofLawson ⁻¹' s) := IsClosed.mono h lawson_le_lower
 
 /-- An upper set is Lawson open if and only if it is Scott open -/
-lemma scottOpen_iff_lawsonOpen_of_isUpperSet {s : Set α} (h : IsUpperSet s) :
-    IsOpen (WithScott.ofScott ⁻¹' s) ↔ IsOpen (WithLawson.ofLawson ⁻¹' s) :=
-  ⟨lawson_le_scott _, fun hs => IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open.mpr
-    ⟨h, (scottHausdorff_le_lawson s) hs⟩⟩
+lemma lawsonOpen_iff_scottOpen_of_isUpperSet {s : Set α} (h : IsUpperSet s) :
+    IsOpen (WithLawson.ofLawson ⁻¹' s) ↔ IsOpen (WithScott.ofScott ⁻¹' s) :=
+  ⟨fun hs => IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open.mpr
+    ⟨h, (scottHausdorff_le_lawson s) hs⟩, lawson_le_scott _⟩
 
 variable (L : TopologicalSpace α) (S : TopologicalSpace α)
 variable [@IsLawson α _ L] [@IsScott α _ S]
@@ -215,19 +215,15 @@ lemma scottHausdorff_le_isLawson : (scottHausdorff α) ≤ L := by
   exact scottHausdorff_le_lawson
 
 /-- An upper set is Lawson open if and only if it is Scott open -/
-lemma lawsonOpen_iff_scottOpen_of_isUpperSet (s : Set α) (h : IsUpperSet s) :
+lemma lawsonOpen_iff_scottOpen_of_isUpperSet' (s : Set α) (h : IsUpperSet s) :
     IsOpen[L] s ↔ IsOpen[S] s := by
-  constructor
-  · intro hs
-    rw [@Topology.IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open α _ S]
-    exact ⟨h, fun d d₁ d₂ => (scottHausdorff_le_isLawson L) _ hs d₁ d₂⟩
-  · apply TopologicalSpace.le_def.mp (isLawson_le_isScott _ _)
+  rw [@IsLawson.topology_eq α _ L _, @Topology.IsScott.topology_eq α _ S _]
+  exact lawsonOpen_iff_scottOpen_of_isUpperSet h
 
 lemma lawsonClosed_iff_scottClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s) :
     IsClosed[L] s ↔ IsClosed[S] s := by
-    rw [← isUpperSet_compl] at h
-    rw [← @isOpen_compl_iff, ← isOpen_compl_iff,
-      (lawsonOpen_iff_scottOpen_of_isUpperSet L S _ h)]
+  rw [← @isOpen_compl_iff, ← isOpen_compl_iff,
+    (lawsonOpen_iff_scottOpen_of_isUpperSet' L S _ (isUpperSet_compl.mpr h))]
 
 /-- A lower set is Lawson closed if and only if it is closed under sups of directed sets -/
 lemma lawsonClosed_iff_dirSupClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s) :
