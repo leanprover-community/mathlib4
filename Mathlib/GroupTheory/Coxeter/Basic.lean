@@ -272,7 +272,7 @@ theorem simple_induction_right {p : W → Prop} (w : W) (one : p 1)
 /-- The proposition that the values of the function `f : B → G` satisfy the Coxeter relations
 corresponding to the matrix `M`. -/
 def _root_.CoxeterMatrix.IsLiftable {G : Type*} [Monoid G] (M : CoxeterMatrix B) (f : B → G) :
-  Prop := ∀ i i', (f i * f i') ^ M i i' = 1
+    Prop := ∀ i i', (f i * f i') ^ M i i' = 1
 
 private theorem relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f)
   (r : FreeGroup B) (hr : r ∈ M.relationsSet) : (FreeGroup.lift f) r = 1 := by
