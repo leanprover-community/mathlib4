@@ -2862,6 +2862,7 @@ import Mathlib.MeasureTheory.Measure.Complex
 import Mathlib.MeasureTheory.Measure.Content
 import Mathlib.MeasureTheory.Measure.Count
 import Mathlib.MeasureTheory.Measure.Dirac
+import Mathlib.MeasureTheory.Measure.DiracProba
 import Mathlib.MeasureTheory.Measure.Doubling
 import Mathlib.MeasureTheory.Measure.EverywherePos
 import Mathlib.MeasureTheory.Measure.FiniteMeasure
@@ -2890,7 +2891,6 @@ import Mathlib.MeasureTheory.Measure.NullMeasurable
 import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.MeasureTheory.Measure.Portmanteau
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-import Mathlib.MeasureTheory.Measure.ProbabilityMeasureEmbed
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Measure.Restrict
 import Mathlib.MeasureTheory.Measure.Stieltjes

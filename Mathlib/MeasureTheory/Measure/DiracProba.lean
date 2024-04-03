@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.Topology.CompletelyRegular
-import Mathlib.MeasureTheory.Measure.Portmanteau
+import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 
 /-!
 # Dirac deltas as probability measures and embedding of a space into probability measures on it
