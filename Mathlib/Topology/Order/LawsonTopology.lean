@@ -407,11 +407,8 @@ theorem isClosed_preimage_ofLawson (S : Set α) :
     ← isOpen_compl_iff, ← IsLawson.topology_eq]
   exact Eq.to_iff rfl
 
-lemma singletonUpperLower (a : α) : ↑(upperClosure {a}) ∩ ↑(lowerClosure {a}) = ({a} : Set α) :=
-  Set.OrdConnected.upperClosure_inter_lowerClosure ordConnected_singleton
-
 lemma singletonIsClosed (a : α) : IsClosed ({a} : Set α) := by
-  rw [← singletonUpperLower]
+  rw [← (Set.OrdConnected.upperClosure_inter_lowerClosure ordConnected_singleton)]
   apply IsClosed.inter
   · rw [← isClosed_preimage_ofLawson]
     exact LowerClosed_implies_LawsonClosed _ (IsLower.isClosed_upperClosure (finite_singleton a))
@@ -420,11 +417,11 @@ lemma singletonIsClosed (a : α) : IsClosed ({a} : Set α) := by
     apply ScottClosed_implies_LawsonClosed
     exact Topology.IsScott.isClosed_Iic
 
-instance (priority := 90) t0Space : T0Space α where
-  t0 := by
-    intros a b h
-    rw [inseparable_iff_closure_eq, closure_eq_iff_isClosed.mpr (singletonIsClosed a),
-      closure_eq_iff_isClosed.mpr (singletonIsClosed b), singleton_eq_singleton_iff] at h
-    exact h
+-- see Note [lower instance priority]
+/-- The Lawson topology on a partial order is T₀. -/
+instance (priority := 90) t0Space : T0Space α :=
+  (t0Space_iff_inseparable α).2 fun a b h => by
+    simpa only [inseparable_iff_closure_eq, closure_eq_iff_isClosed.mpr (singletonIsClosed a),
+      closure_eq_iff_isClosed.mpr (singletonIsClosed b), singleton_eq_singleton_iff] using h
 
 end PartialOrder
