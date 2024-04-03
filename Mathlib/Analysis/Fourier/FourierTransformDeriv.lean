@@ -32,13 +32,13 @@ We introduce two convenience definitions:
   between `V` and `W`, then this is the function `fun v ↦ -(2 * π * I) (L v ⬝) • f v`,
   from `V` to `Hom (W, E)`.
   This is essentially `ContinousLinearMap.smulRight`, up to the factor `- 2πI` designed to make sure
-  that the fourier integral of `fourierSMulRight L f` is the derivative of the Fourier
+  that the Fourier integral of `fourierSMulRight L f` is the derivative of the Fourier
   integral of `f`.
 * `VectorFourier.fourierPowSMulRight` is the higher order analogue for higher derivatives:
   `fourierPowSMulRight L f v n` is informally `(-(2 * π * I))^n (L v ⬝)^n • f v`, in
   the space of continuous multilinear maps `W [×n]→L[ℝ] E`.
 
-With these definitions, the statements read as follow, first in a general context
+With these definitions, the statements read as follows, first in a general context
 (arbitrary `L` and `μ`):
 
 * `VectorFourier.hasFDerivAt_fourierIntegral`: the Fourier integral of `f` is differentiable, with
@@ -180,7 +180,7 @@ lemma differentiable_fourierIntegral
   fun w ↦ (hasFDerivAt_fourierIntegral L hf hf' w).differentiableAt
 
 /-- The formal multilinear series whose `n`-th term is
-`(w₁, ..., wₙ) ↦ (-2Iπ)^n * L v w₁ * ... * L v wₙ • f v`, as a continuous multilinear map in
+`(w₁, ..., wₙ) ↦ (-2πI)^n * L v w₁ * ... * L v wₙ • f v`, as a continuous multilinear map in
 the space `W [×n]→L[ℝ] E`.
 
 This is designed so that the Fourier transform of `v ↦ fourierPowSMulRight L f v n` is the
@@ -311,7 +311,7 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
     apply fourierIntegral_continuous Real.continuous_fourierChar (by apply L.continuous₂)
     exact integrable_fourierPowSMulRight (hf n hn) h'f
 
-/-- If `‖v‖^n * ‖f v‖` is integrable for all `n ≤ N`, then the Fourier transform of `f` is `C^n`. -/
+/-- If `‖v‖^n * ‖f v‖` is integrable for all `n ≤ N`, then the Fourier transform of `f` is `C^N`. -/
 theorem contDiff_fourierIntegral {N : ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖^n * ‖f v‖) μ) :
     ContDiff ℝ N (fourierIntegral 𝐞 μ L.toLinearMap₂ f) := by
@@ -406,18 +406,18 @@ theorem iteratedDeriv_fourierIntegral {f : ℝ → E} {N : ℕ∞} {n : ℕ}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun x ↦ x^n • f x)) (hn : n ≤ N) :
     iteratedDeriv n (𝓕 f) = 𝓕 (fun x : ℝ ↦ (-2 * π * I * x) ^ n • f x) := by
   ext1 x
-  have I (n : ℕ) (hn : n ≤ N) : Integrable (fun v ↦ ‖v‖^n * ‖f v‖) := by
+  have A (n : ℕ) (hn : n ≤ N) : Integrable (fun v ↦ ‖v‖^n * ‖f v‖) := by
     convert (hf n hn).norm with x
     simp [norm_smul]
-  have J : AEStronglyMeasurable f := by
+  have B : AEStronglyMeasurable f := by
     convert (hf 0 (zero_le _)).1 with x
     simp
-  have K : Integrable (fun v ↦ 𝐞 (-⟪v, x⟫_ℝ) • fourierPowSMulRight (innerSL ℝ) f v n) := by
-    simpa [-RCLike.inner_apply] using integrable_fourierPowSMulRight (I n hn) J
-  rw [iteratedDeriv, iteratedFDeriv_fourierIntegral I J hn, fourierIntegral_eq,
-    ContinuousMultilinearMap.integral_apply K, fourierIntegral_eq]
+  have C : Integrable (fun v ↦ 𝐞 (-⟪v, x⟫_ℝ) • fourierPowSMulRight (innerSL ℝ) f v n) := by
+    simpa [-RCLike.inner_apply] using integrable_fourierPowSMulRight (A n hn) B
+  rw [iteratedDeriv, iteratedFDeriv_fourierIntegral A B hn, fourierIntegral_eq,
+    ContinuousMultilinearMap.integral_apply C, fourierIntegral_eq]
   congr with y
-  suffices (-(2 * ↑π * Complex.I)) ^ n • y ^ n • f y = (-(2 * ↑π * Complex.I * ↑y)) ^ n • f y by
+  suffices (-(2 * π * I)) ^ n • y ^ n • f y = (-(2 * π * I * y)) ^ n • f y by
     simpa only [RCLike.inner_apply, conj_trivial, ContinuousMultilinearMap.smul_apply,
       fourierPowSMulRight_apply, innerSL_apply _, mul_one, Finset.prod_const, Finset.card_fin,
       neg_mul, smul_left_cancel_iff]
