@@ -21,7 +21,8 @@ As opposed to `Even`, `Odd` does not have a multiplicative counterpart.
 ## TODO
 
 Try to generalize `Even` lemmas further. For example, there are still a few lemmas whose `Semiring`
-assumptions I (DT) am not convinced are necessary. If that turns out to be true, they could be moved to `Algebra.Group.Even`
+assumptions I (DT) am not convinced are necessary. If that turns out to be true, they could be moved
+to `Algebra.Group.Even`.
 
 ## See also
 
