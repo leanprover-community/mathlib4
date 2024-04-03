@@ -12,22 +12,22 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
 /-!
 # The standard geometric representation
 
-Throughout this file, `B` is a type and `M : Matrix B B ℕ` is a Coxeter matrix.
+Throughout this file, `B` is a type and `M : CoxeterMatrix B` is a Coxeter matrix.
 `cs : CoxeterSystem M W` is a Coxeter system; that is, `W` is a group, and `cs` holds the data
-of a group isomorphism `W ≃* Matrix.CoxeterGroup M`, where `Matrix.CoxeterGroup M` refers to
-the quotient of the free group on `B` by the Coxeter relations given by the matrix `M`. See
-`Mathlib/GroupTheory/Coxeter/Basic.lean` for more details.
+of a group isomorphism `W ≃* M.group`, where `M.group` refers to the quotient of the free group on
+`B` by the Coxeter relations given by the matrix `M`. See `Mathlib/GroupTheory/Coxeter/Basic.lean`
+for more details.
 
 Let $V$ be the free $\mathbb{R}$ vector space over `B` and let $\{\alpha_i\}$ be the standard basis
-of $V$. We define a bilinear form on $V$ by
+of $V$. We define a the *standard bilinear form* on $V$ (`CoxeterMatrix.standardBilinForm`) by
 $$\langle \alpha_i, \alpha_{i'}\rangle = -\cos (\pi / M_{i, i'}),$$
 where $M$ is the Coxeter matrix of $W$. This is positive definite if and only if $W$ is a finite
 group, although we do not prove that in this file.
 
 Then, we have a representation $\rho \colon W \to GL(V)$, called the
-*standard geometric representation*, given by
-$$\rho(s_i) v = v - \langle \alpha_i, v\rangle \alpha_i.$$ We prove that this representation is well
-defined and faithful.
+*standard geometric representation* (`CoxeterSystem.standardGeometricRepresentation`), given by
+$$\rho(s_i) v = v - \langle \alpha_i, v\rangle \alpha_i.$$
+We prove that this representation is well defined and faithful.
 
 We prove for all $w$ and $i$ that $\ell(w s_i) + 1 = \ell(w)$ if and only if $\rho(w) \alpha_i$ is a
 nonpositive linear combination of the simple roots, and that $\ell(w s_i) = \ell(w) + 1$ if and only
@@ -35,10 +35,8 @@ if $\rho(w) \alpha_i$ is a nonnegative linear combination of the simple roots.
 
 ## Main definitions
 
-* `cs.standardBilinForm`: The invariant bilinear form associated to the standard geometric
-representation.
-* `cs.standardGeometricRepresentation`: The standard geometric representation of `W`. This has type
-`Representation ℝ W (B →₀ ℝ)`.
+* `CoxeterMatrix.standardBilinForm`
+* `CoxeterSystem.standardGeometricRepresentation`
 
 ## References
 
@@ -53,7 +51,8 @@ open List Real LinearMap
 /-- The Chebyshev polynomial of the second kind corresponding to the index n - 1. Correctly
 yields U₋₁ = 0 if n = 0.
 -/
-@[local simp] private def Polynomial.Chebyshev.USubOne (R : Type) [CommRing R] (n : ℕ) :=
+@[local simp]
+private def Polynomial.Chebyshev.USubOne (R : Type) [CommRing R] (n : ℕ) :=
     U R (n + 1) - 2 * (T R (n + 1))
 
 private lemma Polynomial.Chebyshev.USubOne_add_one (R : Type) [CommRing R] (n : ℕ) :
@@ -103,39 +102,35 @@ Given a Coxeter group `W` whose simple reflections are indexed by a set `B`, we 
 the standard geometric representation of `W`, which is a representation of `W` with underlying
 vector space `B →₀ ℝ`.
 -/
-namespace Matrix
+namespace CoxeterMatrix
 
 variable {B : Type*}
-variable {M : Matrix B B ℕ}
-variable (hM : IsCoxeter M)
+variable (M : CoxeterMatrix B)
 
 local notation "V" => B →₀ ℝ
 
-local instance : AddCommMonoid V := Finsupp.instAddCommMonoid
+private local instance : AddCommMonoid V := Finsupp.instAddCommMonoid
 
 /-- The simple root at index `i`. That is, the standard basis vector of `B →₀ ℝ` at index `i`. -/
-def simpleRoot (i : B) : V := Finsupp.single i 1
-local prefix:100 "α" => simpleRoot
+def simpleRoot (_ : CoxeterMatrix B) (i : B) : V := Finsupp.single i 1
+
+local prefix:100 "α" => M.simpleRoot
 
 /-- The standard bilinear form on `B →₀ ℝ`. Given by `⟪αᵢ, αⱼ⟫ = -cos (π / Mᵢⱼ)`
 for `i j : B`, where {αᵢ} is the standard basis of `B →₀ ℝ` and `M` is the Coxeter matrix.
 This is positive definite if and only if the associated Coxeter group is finite. -/
-def standardBilinForm (M : Matrix B B ℕ) : LinearMap.BilinForm ℝ V :=
-    (Finsupp.lift (V →ₗ[ℝ] ℝ) ℝ B)
-        (fun i ↦ ((Finsupp.lift ℝ ℝ B)
-            (fun i' ↦ -cos (π / M i i'))))
+def standardBilinForm : LinearMap.BilinForm ℝ V :=
+  (Finsupp.lift (V →ₗ[ℝ] ℝ) ℝ B)
+    (fun i ↦ ((Finsupp.lift ℝ ℝ B)
+      (fun i' ↦ -cos (π / M i i'))))
 
-local notation:max "⟪"  a  ","  b  "⟫" => Matrix.standardBilinForm M a b
+local notation:max "⟪"  a  ","  b  "⟫" => M.standardBilinForm a b
 
 theorem standardBilinForm_simpleRoot_self (i : B) :
-    ⟪α i, α i⟫ = 1 := by simp [standardBilinForm, simpleRoot, hM.diagonal i]
+    ⟪α i, α i⟫ = 1 := by simp [standardBilinForm, simpleRoot, M.diagonal i]
 
-variable (M)
-
-@[simp] theorem standardBilinForm_simpleRoot_simpleRoot (i i' : B) :
+theorem standardBilinForm_simpleRoot_simpleRoot (i i' : B) :
     ⟪α i, α i'⟫ = - cos (π / M i i') := by simp [standardBilinForm, simpleRoot]
-
-variable {M}
 
 theorem isSymm_standardBilinForm : LinearMap.IsSymm (standardBilinForm M) := by
   apply LinearMap.isSymm_iff_eq_flip.mpr
@@ -143,9 +138,7 @@ theorem isSymm_standardBilinForm : LinearMap.IsSymm (standardBilinForm M) := by
   intro i
   apply (Finsupp.basisSingleOne).ext
   intro i'
-  simp [standardBilinForm, hM.symmetric.apply i i']
-
-variable (M)
+  simp [standardBilinForm, M.symmetric i i']
 
 /-- The orthogonal reflection in the vector `v` under the standard bilinear form.
 -/
@@ -158,15 +151,16 @@ local prefix:100 "r" => M.orthoReflection
 attribute [local simp] Module.reflection
 attribute [local simp] Module.preReflection
 
-@[simp] theorem orthoReflection_apply_self {v : V} (hv : ⟪v, v⟫ = 1) : (r hv) v = -v :=
+@[simp]
+theorem orthoReflection_apply_self {v : V} (hv : ⟪v, v⟫ = 1) : (r hv) v = -v :=
   Module.reflection_apply_self _
 
-theorem orthoReflection_sqr_eq_id {v : V} (hv : ⟪v, v⟫ = 1) :
+theorem orthoReflection_sq {v : V} (hv : ⟪v, v⟫ = 1) :
     (r hv) * (r hv) = LinearMap.id := by
   apply LinearMap.ext
   exact Module.involutive_reflection _
 
-theorem orthoReflection_eq_iff {v v' : V} (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) :
+theorem orthoReflection_eq_orthoReflection_iff {v v' : V} (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) :
     r hv = r hv' ↔ ∃ μ : ℝ, v' = μ • v := by
   constructor
   · intro h
@@ -193,22 +187,20 @@ theorem orthoReflection_eq_iff {v v' : V} (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'
 
 /-- Any orthogonal reflection is orthogonal with respect to the standard bilinear form. -/
 theorem standardBilinForm_compl₁₂_orthoReflection {v : V} (hv : ⟪v, v⟫ = 1) :
-    LinearMap.compl₁₂ M.standardBilinForm (r hv) (r hv)  = M.standardBilinForm := by
+    LinearMap.compl₁₂ M.standardBilinForm (r hv) (r hv) = M.standardBilinForm := by
   apply LinearMap.ext
   intro w
   apply LinearMap.ext
   intro w'
   dsimp [orthoReflection]
   simp only [map_sub, SMulHomClass.map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]
-  simp only [← (isSymm_standardBilinForm hM).eq v w, RingHom.id_apply, hv]
+  simp only [← M.isSymm_standardBilinForm.eq v w, RingHom.id_apply, hv]
   ring
 
-variable {M}
-
 /-- The orthogonal reflection in the standard basis vector `αᵢ` under the standard bilinear form. -/
-def simpleOrthoReflection (i : B) := r (standardBilinForm_simpleRoot_self hM i)
+def simpleOrthoReflection (i : B) := r (M.standardBilinForm_simpleRoot_self i)
 
-local prefix:100 "σ" => Matrix.simpleOrthoReflection hM
+local prefix:100 "σ" => M.simpleOrthoReflection
 
 theorem simpleOrthoReflection_simpleRoot (i i' : B) :
     (σ i) (α i') = α i' + (2 * cos (Real.pi / M i i')) • α i := by
@@ -219,14 +211,14 @@ theorem simpleOrthoReflection_simpleRoot (i i' : B) :
   ring
 
 @[simp] theorem simpleOrthoReflection_simpleRoot_self (i : B) : (σ i) (α i) = -α i := by
-  simp [simpleOrthoReflection_simpleRoot, hM.diagonal i, two_smul]
+  simp [simpleOrthoReflection_simpleRoot, M.diagonal i, two_smul]
 
 open Polynomial Polynomial.Chebyshev
 
 theorem orthoReflection_mul_orthoReflection_pow_apply {v v' : V} (k : ℕ)
     (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) :
-        (((r hv) * (r hv')) ^ k) v
-        = eval ⟪v, v'⟫ (U ℝ (2 * k)) • v - eval ⟪v, v'⟫ (USubOne ℝ (2 * k)) • v' := by
+    (((r hv) * (r hv')) ^ k) v
+    = eval ⟪v, v'⟫ (U ℝ (2 * k)) • v - eval ⟪v, v'⟫ (USubOne ℝ (2 * k)) • v' := by
   induction' k with k ih
   · simp [USubOne]
   · /- Apply inductive hypothesis. -/
@@ -242,7 +234,7 @@ theorem orthoReflection_mul_orthoReflection_pow_apply {v v' : V} (k : ℕ)
     apply sub_eq_zero.mp
 
     /- Rewrite using μ = ⟪v, v'⟫. -/
-    rw [(by rw[← (isSymm_standardBilinForm hM).eq v' v]; simp : ⟪v', v⟫ = ⟪v, v'⟫)]
+    rw [(by rw[← M.isSymm_standardBilinForm.eq v' v]; simp : ⟪v', v⟫ = ⟪v, v'⟫)]
     set μ := ⟪v, v'⟫
 
     /- Sort the terms and write the entire expression as a • v + b • v'. -/
@@ -291,8 +283,8 @@ theorem orthoReflection_mul_orthoReflection_pow_apply {v v' : V} (k : ℕ)
 
 private lemma orthoReflection_mul_orthoReflection_pow_order_apply_v {v v' : V} {m : ℕ}
     (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) (hvv' : ⟪v, v'⟫ = -cos (π / m)) (hm : m > 1) :
-        (((r hv) * (r hv')) ^ m) v = v := by
-  rw [orthoReflection_mul_orthoReflection_pow_apply hM, hvv']
+    (((r hv) * (r hv')) ^ m) v = v := by
+  rw [orthoReflection_mul_orthoReflection_pow_apply, hvv']
   rw [U_real_neg_cos_eq _ hm, USubOne_real_neg_cos_eq _ hm]
   rw [Nat.cast_mul, Nat.cast_two, add_div, mul_div_cancel_right₀ _ (by positivity : (m : ℝ) ≠ 0),
     mul_add π, mul_comm π, mul_one_div, add_comm (2 * π)]
@@ -302,9 +294,9 @@ private lemma orthoReflection_mul_orthoReflection_pow_order_apply_v {v v' : V} {
 
 private lemma orthoReflection_mul_orthoReflection_pow_order_apply_v' {v v' : V} {m : ℕ}
     (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) (hvv' : ⟪v, v'⟫ = -cos (π / m)) (hm : m > 1) :
-        (((r hv) * (r hv')) ^ m) v' = v' := let a := r hv; let b := r hv'; calc
+    (((r hv) * (r hv')) ^ m) v' = v' := let a := r hv; let b := r hv'; calc
   ((a * b) ^ m) v'
-  _ = (b * b * (a * b) ^ m) v'         := by simp [M.orthoReflection_sqr_eq_id hv']
+  _ = (b * b * (a * b) ^ m) v'         := by simp [M.orthoReflection_sq hv']
   _ = (b * (b * (a * b) ^ m)) v'       := by rw [mul_assoc]
   _ = (b * ((b * a) ^ m * b)) v'       := by
     congr 2
@@ -316,8 +308,8 @@ private lemma orthoReflection_mul_orthoReflection_pow_order_apply_v' {v v' : V} 
   _ = -(b (((b * a) ^ m) v'))          := congrArg _ (LinearMap.mul_apply _ _ _)
   _ = -(b v')                          := by
     congr
-    apply orthoReflection_mul_orthoReflection_pow_order_apply_v hM
-    · rwa [← (isSymm_standardBilinForm hM).eq v v', RingHom.id_apply]
+    apply orthoReflection_mul_orthoReflection_pow_order_apply_v
+    · rwa [← M.isSymm_standardBilinForm.eq v v', RingHom.id_apply]
     · assumption
   _ = -(-v')                           := congrArg _ (M.orthoReflection_apply_self hv')
   _ = v'                               := neg_neg v'
@@ -332,7 +324,7 @@ private lemma can_decomp_into_parallel_and_orthogonal {v v' : V} (w : V) {m : �
   simp only [mul_add, LinearMap.map_sub, LinearMap.map_add, LinearMap.map_smul, smul_eq_mul]
 
   -- Use known values of bilinear form.
-  rw [(by rw[← (isSymm_standardBilinForm hM).eq v' v]; simp : ⟪v', v⟫ = ⟪v, v'⟫)]
+  rw [(by rw[← M.isSymm_standardBilinForm.eq v' v]; simp : ⟪v', v⟫ = ⟪v, v'⟫)]
   simp only [hv, hv', hvv']
   field_simp [Polynomial.Chebyshev.sin_pi_div_m_ne_zero hm]
   ring_nf
@@ -359,7 +351,7 @@ private lemma orthoReflection_mul_orthoReflection_pow_order {v v' : V} {m : ℕ}
   · simp [Nat.lt_one_iff.mp mlt]
   · apply LinearMap.ext
     intro w
-    rcases can_decomp_into_parallel_and_orthogonal hM w hv hv' hvv' mgt with ⟨μ₁, μ₂, hμ⟩
+    rcases M.can_decomp_into_parallel_and_orthogonal w hv hv' hvv' mgt with ⟨μ₁, μ₂, hμ⟩
     set! w' := w - μ₁ • v - μ₂ • v' with hw'
     rw [← hw'] at hμ
     rcases hμ with ⟨h₁, h₂⟩
@@ -367,46 +359,41 @@ private lemma orthoReflection_mul_orthoReflection_pow_order {v v' : V} {m : ℕ}
     have h₃ : w = w' + μ₁ • v + μ₂ • v' := by rw [hw']; abel
     simp only [h₃, LinearMap.map_add, LinearMap.map_smul, LinearMap.one_apply]
     congr
-    · exact fixed_of_orthogonal w' hv hv' h₁ h₂
-    · exact orthoReflection_mul_orthoReflection_pow_order_apply_v hM hv hv' hvv' mgt
-    · exact orthoReflection_mul_orthoReflection_pow_order_apply_v' hM hv hv' hvv' mgt
+    · exact M.fixed_of_orthogonal w' hv hv' h₁ h₂
+    · exact M.orthoReflection_mul_orthoReflection_pow_order_apply_v hv hv' hvv' mgt
+    · exact M.orthoReflection_mul_orthoReflection_pow_order_apply_v' hv hv' hvv' mgt
 
-end Matrix
+end CoxeterMatrix
 
 namespace CoxeterSystem
 
-variable {W : Type*} [Group W]
-variable {B : Type*}
-variable {M : Matrix B B ℕ}
-variable (cs : CoxeterSystem M W)
+open CoxeterMatrix
 
-local prefix:100 "s" => cs.simpleReflection
+variable {B : Type*}
+variable {W : Type*} [Group W]
+variable {M : CoxeterMatrix B} (cs : CoxeterSystem M W)
+
+local prefix:100 "s" => cs.simple
 local prefix:100 "π" => cs.wordProd
 local prefix:100 "ℓ" => cs.length
-local prefix:100 "α" => Matrix.simpleRoot
-local notation:max "⟪"  a  ","  b  "⟫" => Matrix.standardBilinForm M a b
-local notation:100 "σ" i => Matrix.simpleOrthoReflection (cs.isCoxeter) i
+local prefix:100 "α" => M.simpleRoot
+local notation:max "⟪"  a  ","  b  "⟫" => M.standardBilinForm a b
+local notation:100 "σ" i => M.simpleOrthoReflection i
 local notation "V" => B →₀ ℝ
 
-scoped instance : AddCommMonoid V := Finsupp.instAddCommMonoid
-scoped instance : OrderedCancelAddCommMonoid V := Finsupp.orderedCancelAddCommMonoid
-scoped instance : SMulPosMono ℝ V := Finsupp.instSMulPosMono
+private local instance : AddCommMonoid V := Finsupp.instAddCommMonoid
 
 /-- The standard geometric representation on `B →₀ ℝ`. For `i : B`, the simple reflection `sᵢ`
 acts by `sᵢ v = v - 2 ⟪αᵢ, v⟫ * αᵢ`, where {αᵢ} is the standard basis of `B →₀ ℝ`.
 -/
 def standardGeometricRepresentation : Representation ℝ W V := cs.lift (
-  show IsLiftable M (fun i ↦ σ i) by
-    unfold IsLiftable
+  show M.IsLiftable (fun i ↦ σ i) by
     intro i i'
-    dsimp
     rcases em (i = i') with rfl | ne
-    · simp [Matrix.simpleOrthoReflection, Matrix.orthoReflection_sqr_eq_id, ← LinearMap.one_eq_id]
-    · let m := M i i'
-      have hm : m ≠ 1 := cs.isCoxeter.off_diagonal i i' ne
-      apply Matrix.orthoReflection_mul_orthoReflection_pow_order cs.isCoxeter
-      · exact Matrix.standardBilinForm_simpleRoot_simpleRoot M i i'
-      · exact hm
+    · simp [simpleOrthoReflection, orthoReflection_sq, ← LinearMap.one_eq_id]
+    · apply M.orthoReflection_mul_orthoReflection_pow_order
+      · exact M.standardBilinForm_simpleRoot_simpleRoot i i'
+      · exact M.off_diagonal i i' ne
 )
 
 noncomputable alias SGR := standardGeometricRepresentation
@@ -420,8 +407,7 @@ theorem standardBilinForm_compl₁₂_SGR_apply (w : W) :
     M.standardBilinForm.compl₁₂ (ρ w) (ρ w) = M.standardBilinForm := by
   apply cs.simple_induction w
   · intro i
-    rw [SGR_simple, Matrix.simpleOrthoReflection,
-      Matrix.standardBilinForm_compl₁₂_orthoReflection _ cs.isCoxeter]
+    rw [SGR_simple, simpleOrthoReflection, standardBilinForm_compl₁₂_orthoReflection]
   · rw [map_one, LinearMap.one_eq_id, LinearMap.compl₁₂_id_id]
   · intro w w' hw hw'
     rw [map_mul, mul_eq_comp, LinearMap.compl₁₂_comp_comp, hw, hw']
@@ -432,12 +418,13 @@ theorem SGR_alternatingWord_apply_simpleRoot (i i' : B) (m : ℕ) (hM : M i i' >
         + (sin (m * π / M i i') / sin (π / M i i')) • (α i')
       else (sin (m * π / M i i') / sin (π / M i i')) • (α i)
         + (sin ((m + 1) * π / M i i') / sin (π / M i i')) • (α i') := by
-  rw [prod_alternatingWord_eq_pow, map_mul, map_pow, map_mul, apply_ite cs.SGR, map_one, mul_apply]
+  rw [prod_alternatingWord_eq_mul_pow, map_mul, map_pow, map_mul, apply_ite cs.SGR, map_one,
+    mul_apply]
   simp only [SGR_simple]
-  nth_rw 3 [Matrix.simpleOrthoReflection]
-  nth_rw 2 [Matrix.simpleOrthoReflection]
-  rw [Matrix.orthoReflection_mul_orthoReflection_pow_apply cs.isCoxeter]
-  simp only [Matrix.standardBilinForm_simpleRoot_simpleRoot]
+  nth_rw 3 [simpleOrthoReflection]
+  nth_rw 2 [simpleOrthoReflection]
+  rw [orthoReflection_mul_orthoReflection_pow_apply]
+  simp only [standardBilinForm_simpleRoot_simpleRoot]
   rw [Polynomial.Chebyshev.USubOne_real_neg_cos_eq _ hM,
     Polynomial.Chebyshev.U_real_neg_cos_eq _ hM]
   simp only [pow_mul, (by norm_num : (-1 : ℝ) ^ 2 = 1), one_pow, one_mul]
@@ -454,7 +441,7 @@ theorem SGR_alternatingWord_apply_simpleRoot (i i' : B) (m : ℕ) (hM : M i i' >
       rw [Nat.cast_add, h₂, Nat.cast_one]
     simp only [h₁, h₂, h₃]
     simp only [map_add, map_smul, map_smul]
-    rw [Matrix.simpleOrthoReflection_simpleRoot_self, Matrix.simpleOrthoReflection_simpleRoot]
+    rw [simpleOrthoReflection_simpleRoot_self, simpleOrthoReflection_simpleRoot]
     rw [smul_neg, ← neg_smul, smul_add, smul_smul, add_assoc, ← add_smul]
     congr 3
     · congr 1
@@ -469,7 +456,7 @@ theorem SGR_alternatingWord_apply_simpleRoot (i i' : B) (m : ℕ) (hM : M i i' >
         field_simp
         ring
       rw [this, sin_sub]
-      rw [cs.isCoxeter.symmetric.apply i i']
+      rw [M.symmetric i i']
       ring_nf
 
 theorem SGR_alternatingWord_apply_simpleRoot' (i i' : B) (m : ℕ) (hM : M i i' = 0) :
@@ -477,10 +464,10 @@ theorem SGR_alternatingWord_apply_simpleRoot' (i i' : B) (m : ℕ) (hM : M i i' 
       then (m + 1 : ℝ) • (α i) + (m : ℝ) • (α i')
       else (m : ℝ) • (α i) + (m + 1 : ℝ) • (α i') := by
   have h₁ : (σ i') (α i) = α i + (2 : ℝ) • α i' := by
-    rw [Matrix.simpleOrthoReflection_simpleRoot, cs.isCoxeter.symmetric.apply i i', hM]
+    rw [simpleOrthoReflection_simpleRoot, M.symmetric, hM]
     simp
   have h₂ : (σ i) (α i') = (2 : ℝ) • α i + α i' := by
-    rw [Matrix.simpleOrthoReflection_simpleRoot, hM]
+    rw [simpleOrthoReflection_simpleRoot, hM]
     simp only [Nat.cast_zero, div_zero, cos_zero, mul_one]
     abel
 
@@ -491,13 +478,13 @@ theorem SGR_alternatingWord_apply_simpleRoot' (i i' : B) (m : ℕ) (hM : M i i' 
     rcases em (Even m) with even | not_even
     · have succ_not_even : ¬ Even (Nat.succ m) := by tauto
       simp only [if_pos even, if_neg succ_not_even]
-      simp only [SGR_simple, map_add, map_smul, h₁, Matrix.simpleOrthoReflection_simpleRoot_self]
+      simp only [SGR_simple, map_add, map_smul, h₁, simpleOrthoReflection_simpleRoot_self]
       rw [Nat.cast_succ, smul_add, smul_smul, smul_neg, ← neg_smul, add_assoc, ← add_smul]
       congr 2
       ring
     · have succ_even : Even (Nat.succ m) := by tauto
       simp only [if_neg not_even, if_pos succ_even]
-      simp only [SGR_simple, map_add, map_smul, h₂, Matrix.simpleOrthoReflection_simpleRoot_self]
+      simp only [SGR_simple, map_add, map_smul, h₂, simpleOrthoReflection_simpleRoot_self]
       rw [Nat.cast_succ, smul_add, smul_smul, smul_neg, ← neg_smul, ← add_assoc, ← add_smul]
       congr 2
       ring
@@ -580,10 +567,10 @@ private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬ cs.IsRigh
   · -- If `w = 1`, then the statement is trivial.
     simp only [map_one, one_apply]
     intro i'
-    rw [Matrix.simpleRoot, Finsupp.single_apply, Finsupp.zero_apply, apply_ite (0 ≤ ·)]
+    rw [simpleRoot, Finsupp.single_apply, Finsupp.zero_apply, apply_ite (0 ≤ ·)]
     simp
   · -- Otherwise, `w ≠ 1`. Let `i'` be a right descent of `w`.
-    have h₁ : 1 ≤ ℓ w := Nat.one_le_iff_ne_zero.mpr (cs.length_eq_zero_iff.mp.mt w_ne_one)
+    have h₁ : 1 ≤ ℓ w := Nat.one_le_iff_ne_zero.mpr ((cs.length_eq_zero_iff w).mp.mt w_ne_one)
     rcases cs.exists_rightDescent_of_ne_one w_ne_one with ⟨i', hwi'⟩
 
     -- Use the notation `aw` for alternating product of simple reflections `s i` and `s i'`.
@@ -721,11 +708,7 @@ private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬ cs.IsRigh
     right descent of `w`. -/
     have h₂₁ : ¬ (m = M i i' ∧ M i i' ≠ 0) := by
       rintro ⟨m_eq, _⟩
-      have : aw m = π (alternatingWord i' i m) := by
-        rw [haw]
-        dsimp
-        rw [cs.prod_alternatingWord_eq_prod_alternatingWord i i' m (by linarith only [m_eq])]
-        rw [← m_eq, mul_two, Nat.add_sub_cancel]
+      have : aw m = π (alternatingWord i' i m) := m_eq ▸ cs.prod_alternatingWord_matrix_apply i i'
       rw [this] at h₄
       have := calc
         ℓ (w * s i)
@@ -788,8 +771,7 @@ theorem SGR_apply_simpleRoot_neg_of {w : W} {i : B} (h : cs.IsRightDescent w i) 
     (ρ w) (α i) < 0 := by
   apply (cs.isRightDescent_iff_not_isRightDescent_mul _ _).mp at h
   apply SGR_apply_simpleRoot_pos_of at h
-  rw [map_mul, mul_apply, SGR_simple, Matrix.simpleOrthoReflection_simpleRoot_self,
-    map_neg] at h
+  rw [map_mul, mul_apply, SGR_simple, simpleOrthoReflection_simpleRoot_self, map_neg] at h
   exact neg_pos.mp h
 
 theorem SGR_apply_simpleRoot_pos_iff (w : W) (i : B) :
@@ -818,7 +800,7 @@ theorem injective_SGR : Function.Injective cs.SGR := by
   have := cs.SGR_apply_simpleRoot_neg_of hi
   rw [hw, one_apply] at this
   have := Finsupp.le_def.mp (le_of_lt this) i
-  rw [Finsupp.zero_apply, Matrix.simpleRoot, Finsupp.single_apply, if_pos (rfl : i = i)] at this
+  rw [Finsupp.zero_apply, simpleRoot, Finsupp.single_apply, if_pos (rfl : i = i)] at this
   norm_num at this
 
 alias faithful_SGR := injective_SGR
