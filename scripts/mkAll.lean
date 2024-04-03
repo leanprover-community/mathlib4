@@ -42,27 +42,30 @@ def getAll (git : Bool) (ml : String) : IO String := do
 
 open Lake in
 /-- `getLeanLibs` returns the array of names of all the libraries on which
-the current project depends. -/
-def getLeanLibs : IO (Array Name) := do
+the current project depends.
+If the package is `mathlib`, then it replaces the library `Cache` by `Mathlib/Tactic`. -/
+def getLeanLibs : IO (Array String) := do
   let (elanInstall?, leanInstall?, lakeInstall?) ← findInstall?
   let config ← MonadError.runEIO <| mkLoadConfig.{0} { elanInstall?, leanInstall?, lakeInstall? }
   let ws ← MonadError.runEIO <| (loadWorkspace config).run (.eio .normal)
-  return ws.root.leanLibs.map (·.name)
+  let package := ws.root
+  let libs := (package.leanLibs.map (·.name)).map (·.toString)
+  if package.name == "mathlib" then
+    return libs.erase "Cache" |>.push (("Mathlib".push pathSeparator ++ "Tactic"))
+  else
+    return libs
 
 open IO.FS IO.Process Name Cli in
 /-- Implementation of the `mk_all` command line program.
-The exit code is the number of files that the command updates/creates.
--/
+The exit code is the number of files that the command updates/creates. -/
 def mkAllCLI (args : Parsed) : IO UInt32 := do
   -- Check whether the `--git` flag was set
   let git := (args.flag? "git").isSome
   -- Check whether the `--lib` flag was set. If so, build the file corresponding to the library
   -- passed to `--lib`. Else build the standard mathlib libraries.
-  let mut libs := ← match args.flag? "lib" with
+  let libs := ← match args.flag? "lib" with
               | some lib => return #[lib.as! String]
-              | none => return (← getLeanLibs).map (·.toString)
-  if libs.getD 0 "" == "Mathlib" then
-    libs := libs.erase "Cache" |>.push "Mathlib/Tactic"
+              | none => getLeanLibs
   let mut updates := 0
   for d in libs do
     let fileName := addExtension d "lean"
