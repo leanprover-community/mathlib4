@@ -670,10 +670,10 @@ namespace DistribMulActionHom
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R M₂]
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
-instance : LinearMapClass (M →+[R] M₂) R M M₂ where
+instance instLinearMapClass : LinearMapClass (M →+[R] M₂) R M M₂ where
   map_smulₛₗ := map_smul
 
-instance : CoeTC (M →+[R] M₂) (M →ₗ[R] M₂) where
+instance instCoeTCLinearMap : CoeTC (M →+[R] M₂) (M →ₗ[R] M₂) where
   coe f := SemilinearMapClass.semilinearMap f
 
 -- Porting note: because coercions get unfolded, there is no need for this rewrite
