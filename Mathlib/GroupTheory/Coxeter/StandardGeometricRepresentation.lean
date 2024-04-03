@@ -112,9 +112,9 @@ local notation "V" => B →₀ ℝ
 private local instance : AddCommMonoid V := Finsupp.instAddCommMonoid
 
 /-- The simple root at index `i`. That is, the standard basis vector of `B →₀ ℝ` at index `i`. -/
-def simpleRoot (_ : CoxeterMatrix B) (i : B) : V := Finsupp.single i 1
+def simpleRoot (i : B) : V := Finsupp.single i 1
 
-local prefix:100 "α" => M.simpleRoot
+local prefix:100 "α" => simpleRoot
 
 /-- The standard bilinear form on `B →₀ ℝ`. Given by `⟪αᵢ, αⱼ⟫ = -cos (π / Mᵢⱼ)`
 for `i j : B`, where {αᵢ} is the standard basis of `B →₀ ℝ` and `M` is the Coxeter matrix.
@@ -376,7 +376,7 @@ variable {M : CoxeterMatrix B} (cs : CoxeterSystem M W)
 local prefix:100 "s" => cs.simple
 local prefix:100 "π" => cs.wordProd
 local prefix:100 "ℓ" => cs.length
-local prefix:100 "α" => M.simpleRoot
+local prefix:100 "α" => simpleRoot
 local notation:max "⟪"  a  ","  b  "⟫" => M.standardBilinForm a b
 local notation:100 "σ" i => M.simpleOrthoReflection i
 local notation "V" => B →₀ ℝ
