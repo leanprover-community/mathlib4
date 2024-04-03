@@ -1,35 +1,10 @@
-import Mathlib.Algebra.Homology.Embedding.Basic
+import Mathlib.Algebra.Homology.Embedding.Extend
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 open CategoryTheory Limits ZeroObject Category
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
   {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
-
-namespace ComplexShape.Embedding
-
-variable (e : c.Embedding c')
-
-def BoundaryGE (j : ι) : Prop :=
-  c'.Rel (c'.prev (e.f j)) (e.f j) ∧ ∀ i, ¬c'.Rel (e.f i) (e.f j)
-
-lemma not_mem_next_boundaryGE [e.IsRelIff] {j k : ι} (hk : c.Rel j k) :
-    ¬ e.BoundaryGE k := by
-  dsimp [BoundaryGE]
-  simp only [not_and, not_forall, not_not]
-  intro
-  exact ⟨j, by simpa only [← e.rel_iff] using hk⟩
-
-lemma mem_boundaryGE {i' : ι'} {j : ι} (hj : c'.Rel i' (e.f j))
-    (hi' : ∀ i, e.f i ≠ i') :
-    e.BoundaryGE j := by
-  constructor
-  · simpa only [c'.prev_eq' hj] using hj
-  · intro i hi
-    apply hi' i
-    rw [← c'.prev_eq' hj, c'.prev_eq' hi]
-
-end ComplexShape.Embedding
 
 namespace HomologicalComplex
 
@@ -144,7 +119,7 @@ lemma truncGE_d_eq_fromOpcycles {i' j' : ι'} {i j : ι} (hij : c.Rel i j)
   rw [(K.truncGE' e).extend_d_eq e hi' hj', K.truncGE'_d_eq_fromOpcycles e hij hi' hj' hi]
   simp [truncGE'XIso, truncGEXIso, truncGE'XIsoOpcycles, truncGEXIsoOpcycles]
 
-namespace truncGEπ
+namespace πTruncGE
 
 open Classical
 noncomputable def f (i' : ι') : K.X i' ⟶ (K.truncGE e).X i' :=
@@ -176,10 +151,10 @@ lemma f_eq_iso_inv {i' : ι'} {i : ι} (hi' : e.f i = i') (hi : ¬ e.BoundaryGE 
   rw [dif_pos hi'', dif_neg (by simpa only [this] using hi)]
   congr
 
-end truncGEπ
+end πTruncGE
 
-noncomputable def truncGEπ : K ⟶ K.truncGE e where
-  f := truncGEπ.f K e
+noncomputable def πTruncGE : K ⟶ K.truncGE e where
+  f := πTruncGE.f K e
   comm' i' j' hij' := by
     by_cases hj' : ∃ j, e.f j = j'
     · obtain ⟨j, rfl⟩ := hj'
@@ -187,44 +162,18 @@ noncomputable def truncGEπ : K ⟶ K.truncGE e where
       · obtain ⟨i, rfl⟩ := hi'
         rw [e.rel_iff] at hij'
         by_cases hi : e.BoundaryGE i
-        · rw [truncGEπ.f_eq_pOpcycles_comp_iso_inv K e rfl hi,
-            truncGEπ.f_eq_iso_inv K e rfl (e.not_mem_next_boundaryGE hij'),
+        · rw [πTruncGE.f_eq_pOpcycles_comp_iso_inv K e rfl hi,
+            πTruncGE.f_eq_iso_inv K e rfl (e.not_mem_next_boundaryGE hij'),
             K.truncGE_d_eq_fromOpcycles e hij' rfl rfl hi,
             assoc, Iso.inv_hom_id_assoc, p_fromOpcycles_assoc]
-        · rw [truncGEπ.f_eq_iso_inv K e rfl hi,
-            truncGEπ.f_eq_iso_inv K e rfl (e.not_mem_next_boundaryGE hij'),
+        · rw [πTruncGE.f_eq_iso_inv K e rfl hi,
+            πTruncGE.f_eq_iso_inv K e rfl (e.not_mem_next_boundaryGE hij'),
             K.truncGE_d_eq e hij' rfl rfl hi,
             Iso.inv_hom_id_assoc]
-      · rw [truncGEπ.f_eq_zero K e i' (by simpa using hi'), zero_comp,
-          truncGEπ.f_eq_pOpcycles_comp_iso_inv K e rfl
+      · rw [πTruncGE.f_eq_zero K e i' (by simpa using hi'), zero_comp,
+          πTruncGE.f_eq_pOpcycles_comp_iso_inv K e rfl
             (e.mem_boundaryGE hij' (by simpa using hi')),
             d_pOpcycles_assoc, zero_comp]
     · apply (K.isZero_truncGE_X e j' (by simpa using hj')).eq_of_tgt
 
 end HomologicalComplex
-
-namespace ComplexShape
-
-@[simps!]
-def embeddingNat : Embedding (up ℕ) (up ℤ) :=
-  Embedding.mk' _ _ (fun n => n)
-    (fun _ _ hij => by simpa using hij)
-    (fun _ _ => Nat.cast_inj.symm)
-
-instance : embeddingNat.IsRelIff := by
-  dsimp [embeddingNat]
-  infer_instance
-
-instance : embeddingNat.IsTruncGE where
-  mem_next hj := ⟨_, hj⟩
-
-example (n : ℕ) : embeddingNat.BoundaryGE n ↔ n = 0 := by
-  constructor
-  · intro h
-    obtain _| n := n
-    · rfl
-    · simpa using h.2 n
-  · rintro rfl
-    exact embeddingNat.mem_boundaryGE (i' := -1) (by simp) (fun i => by simp)
-
-end ComplexShape
