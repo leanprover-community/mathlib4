@@ -900,6 +900,10 @@ theorem lift_comp (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (M
   rw [LinearMap.comp_assoc, iso_symm_comp, LocalizedModule.lift_comp S g h]
 #align is_localized_module.lift_comp IsLocalizedModule.lift_comp
 
+@[simp]
+theorem lift_apply (g : M →ₗ[R] M'') (h) (x) :
+    lift S f g h (f x) = g x := LinearMap.congr_fun (lift_comp S f g h) x
+
 theorem lift_unique (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x))
     (l : M' →ₗ[R] M'') (hl : l.comp f = g) : lift S f g h = l := by
   dsimp only [IsLocalizedModule.lift]
@@ -1101,6 +1105,28 @@ theorem mk'_surjective : Function.Surjective (Function.uncurry <| mk' f : M × S
   obtain ⟨⟨m, s⟩, e : s • x = f m⟩ := IsLocalizedModule.surj S f x
   exact ⟨⟨m, s⟩, mk'_eq_iff.mpr e.symm⟩
 #align is_localized_module.mk'_surjective IsLocalizedModule.mk'_surjective
+
+variable {N N'} [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
+variable (g : N →ₗ[R] N') [IsLocalizedModule S g]
+
+/-- A linear map `M →ₗ[R] N` gives a map between localized modules `Mₛ →ₗ[R] Nₛ`. -/
+noncomputable
+def map : (M →ₗ[R] N) →ₗ[R] (M' →ₗ[R] N') where
+  toFun h := lift S f (g ∘ₗ h) (IsLocalizedModule.map_units g)
+  map_add' h₁ h₂ := by
+    apply IsLocalizedModule.ringHom_ext S f (IsLocalizedModule.map_units g)
+    simp only [lift_comp, LinearMap.add_comp, LinearMap.comp_add]
+  map_smul' r h := by
+    apply IsLocalizedModule.ringHom_ext S f (IsLocalizedModule.map_units g)
+    simp only [lift_comp, LinearMap.add_comp, LinearMap.comp_add, LinearMap.smul_comp,
+      LinearMap.comp_smul, RingHom.id_apply]
+
+lemma map_comp (h : M →ₗ[R] N) : (map S f g h) ∘ₗ f = g ∘ₗ h :=
+  lift_comp S f (g ∘ₗ h) (IsLocalizedModule.map_units g)
+
+@[simp]
+lemma map_apply (h : M →ₗ[R] N) (x) : map S f g h (f x) = g (h x) :=
+  lift_apply S f (g ∘ₗ h) (IsLocalizedModule.map_units g) x
 
 section Algebra
 
