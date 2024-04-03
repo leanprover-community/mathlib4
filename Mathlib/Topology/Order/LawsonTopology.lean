@@ -14,19 +14,29 @@ This file introduces the Lawson topology on a preorder.
 
 ## Main definitions
 
-- `LawsonTopology'` - the Lawson topology is defined as the meet of the `LowerTopology` and the
-  `ScottTopology`.
+- `Topology.lawson` - the Lawson topology is defined as the meet of `Topology.lower` and
+  `Topology.scott`.
+- `Topology.IsLawson.lawson_basis` - The complements of the upper closures of finite sets
+  intersected with Scott open sets.
 
 ## Main statements
 
+- `Topology.IsLawson.isTopologicalBasis` - `Topology.IsLawson.lawson_basis` is a basis for
+  `Topology.IsLawson`
+- `Topology.lawsonOpen_iff_scottOpen_of_isUpperSet'` - An upper set is Lawson open if and only if it
+  is Scott open
+- `Topology.lawsonClosed_iff_dirSupClosed_of_isLowerSet` - A lower set is Lawson closed if and only
+  if it is closed under sups of directed sets
+- `Topology.IsLawson.t0Space` - The Lawson topology is T₀
+
 ## Implementation notes
 
-A type synonym `WithLawsonTopology` is introduced and for a preorder `α`, `WithLawsonTopology α`
-is made an instance of `topological_space` by the `LawsonTopology'`.
+A type synonym `Topology.WithLawson` is introduced and for a preorder `α`, `Topology.WithLawson α`
+is made an instance of `TopologicalSpace` by `Topology.lawson`.
 
-We define a mixin class `LawsonTopology` for the class of types which are both a preorder and a
-topology and where the topology is the `LawsonTopology'`.
-It is shown that `WithLawsonTopology α` is an instance of `LawsonTopology`.
+We define a mixin class `Topology.IsLawson` for the class of types which are both a preorder and a
+topology and where the topology is `Topology.lawson`.
+It is shown that `Topology.WithLawson α` is an instance of `Topology.IsLawson`.
 
 ## References
 
@@ -50,7 +60,7 @@ section Lawson
 section Preorder
 
 /--
-The Lawson topology is defined as the meet of the `LowerTopology` and the `ScottTopology`.
+The Lawson topology is defined as the meet of `Topology.lower` and the `Topology.scott`.
 -/
 def lawson (α : Type*) [Preorder α] : TopologicalSpace α := lower α ⊓ scott α
 
@@ -58,7 +68,7 @@ variable (α) [Preorder α] [TopologicalSpace α]
 
 /-- Predicate for an ordered topological space to be equipped with its Lawson topology.
 
-The Lawson topology is defined as the meet of the `LowerTopology` and the `ScottTopology`.
+The Lawson topology is defined as the meet of `Topology.lower` and the `Topology.scott`.
 -/
 class IsLawson : Prop where
   topology_eq_lawson : ‹TopologicalSpace α› = lawson α
@@ -70,14 +80,6 @@ section Preorder
 variable (α) [Preorder α] [TopologicalSpace α] [IsLawson α]
 
 lemma topology_eq : ‹_› = lawson α := topology_eq_lawson
-
-/-- The complements of the upper closures of finite sets intersected with Scott open sets form
-a basis for the lawson topology. -/
-def lawsonBasis (α : Type*) [Preorder α] :=
-  { s : Set α | ∃ u : Set α, IsOpen[scott α] u ∧ ∃ t : Set α, t.Finite ∧
-    u ∩ (upperClosure t : Set α)ᶜ = s }
-
-open TopologicalSpace
 
 /-- The complements of the upper closures of finite sets intersected with Scott open sets form
 a basis for the lawson topology. -/
@@ -229,7 +231,7 @@ section PartialOrder
 
 variable [PartialOrder α] [TopologicalSpace α] [IsLawson α]
 
-lemma singletonIsClosed (a : α) : IsClosed ({a} : Set α) := by
+lemma singleton_isClosed (a : α) : IsClosed ({a} : Set α) := by
   rw [← (Set.OrdConnected.upperClosure_inter_lowerClosure ordConnected_singleton),
     ← isClosed_preimage_ofLawson]
   apply IsClosed.inter
@@ -242,8 +244,8 @@ lemma singletonIsClosed (a : α) : IsClosed ({a} : Set α) := by
 /-- The Lawson topology on a partial order is T₀. -/
 instance (priority := 90) t0Space : T0Space α :=
   (t0Space_iff_inseparable α).2 fun a b h => by
-    simpa only [inseparable_iff_closure_eq, closure_eq_iff_isClosed.mpr (singletonIsClosed a),
-      closure_eq_iff_isClosed.mpr (singletonIsClosed b), singleton_eq_singleton_iff] using h
+    simpa only [inseparable_iff_closure_eq, closure_eq_iff_isClosed.mpr (singleton_isClosed a),
+      closure_eq_iff_isClosed.mpr (singleton_isClosed b), singleton_eq_singleton_iff] using h
 
 end PartialOrder
 
