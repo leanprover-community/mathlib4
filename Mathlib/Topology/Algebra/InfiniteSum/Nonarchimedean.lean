@@ -12,6 +12,7 @@ import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 Let `G` be a complete nonarchimedean abelian group and let `f : α → G` be a function. We prove that
 `f` is unconditionally summable if and only if `f a` tends to zero on the cofinite filter on `α`.
 We also prove the analogous result in the multiplicative setting.
+
 -/
 
 open Filter Topology BigOperators
@@ -22,8 +23,7 @@ open scoped Pointwise
 
 /--Let `G` be a nonarchimedean multiplicative abelian group, and let `f : α → G` be a function that
 tends to one on the filter of cofinite sets. For each finite subset of `α`, consider the partial
-product of `f` on that subset. These partial products form a Cauchy filter.
--/
+product of `f` on that subset. These partial products form a Cauchy filter. -/
 @[to_additive "Let `G` be a nonarchimedean additive abelian group, and let `f : α → G` be a function
 that tends to zero on the filter of cofinite sets. For each finite subset of `α`, consider the
 partial sum of `f` on that subset. These partial sums form a Cauchy filter."]
@@ -34,14 +34,11 @@ theorem cauchy_partial_prod_of_tendsto_cofinite_one {α G : Type*} [CommGroup G]
   that for any `t : Finset α` disjoint from `s`, we have `∏ i in t, f i ∈ U`. -/
   apply cauchySeq_finset_iff_prod_vanishing.mpr
   intro U hU
-
   -- Since `G` is nonarchimedean, `U` contains an open subgroup `V`.
   rcases is_nonarchimedean U hU with ⟨V, hV⟩
-
   /- Let `s` be the set of all indices `i : α` such that `f i ∉ V`. By our assumption `hf`, this is
   finite. -/
-  use (tendsto_def.mp hf V (OpenSubgroup.mem_nhds_one V)).toFinset
-
+  use (tendsto_def.mp hf V V.mem_nhds_one).toFinset
   /- For any `t : Finset α` disjoint from `s`, the product `∏ i in t, f i` is a product of elements
   of `V`, so it is an element of `V` too. Thus, `∏ i in t, f i ∈ U`, as desired. -/
   intro t ht
