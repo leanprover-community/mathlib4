@@ -81,39 +81,40 @@ variable {ι : Type*} [DecidableEq ι]
 /-- The tensor product of `ι →₀ M` and `N` is linearly equivalent to `ι →₀ M ⊗[R] N` -/
 noncomputable def finsuppLeft :
     (ι →₀ M) ⊗[R] N ≃ₗ[R] ι →₀ M ⊗[R] N :=
-  congr (finsuppLEquivDirectSum R M ι) (LinearEquiv.refl R N) ≪≫ₗ
-    directSumLeft R (fun _ : ι => M) N ≪≫ₗ
-      (finsuppLEquivDirectSum R (M ⊗[R] N) ι).symm
+  congr (finsuppLEquivDirectSum R M ι) (.refl R N) ≪≫ₗ
+    directSumLeft R (fun _ ↦ M) N ≪≫ₗ (finsuppLEquivDirectSum R _ ι).symm
 
 lemma finsuppLeft_apply_tmul (p : ι →₀ M) (n : N) :
     finsuppLeft (p ⊗ₜ[R] n) = p.sum fun i m ↦ Finsupp.single i (m ⊗ₜ[R] n) := by
-  simp only [finsuppLeft, LinearEquiv.trans_apply, congr_tmul, LinearEquiv.refl_apply]
+  apply p.induction_linear
+  · simp
+  · intros f g hf hg; simp [add_tmul, map_add, hf, hg, Finsupp.sum_add_index]
+  · simp [finsuppLeft]
+  /- Or:
+  simp_rw [finsuppLeft, LinearEquiv.trans_apply, congr_tmul, LinearEquiv.refl_apply]
   conv_lhs => rw [← Finsupp.sum_single p]
-  rw [LinearEquiv.symm_apply_eq]
-  simp only [map_finsupp_sum]
-  simp only [finsuppLEquivDirectSum_single]
-  rw [← LinearEquiv.eq_symm_apply]
-  simp only [map_finsupp_sum]
-  simp only [directSumLeft_symm_lof_tmul]
-  simp only [Finsupp.sum, sum_tmul]
+  simp_rw [LinearEquiv.symm_apply_eq, map_finsupp_sum, finsuppLEquivDirectSum_single,
+   ← LinearEquiv.eq_symm_apply, map_finsupp_sum, directSumLeft_symm_lof_tmul, Finsupp.sum, sum_tmul] -/
 
 @[simp]
 lemma finsuppLeft_apply_tmul_apply (p : ι →₀ M) (n : N) (i : ι) :
     finsuppLeft (p ⊗ₜ[R] n) i = p i ⊗ₜ[R] n := by
-  rw [finsuppLeft_apply_tmul]
-  simp only [Finsupp.sum_apply]
-  conv_rhs => rw [← Finsupp.single_eq_same (a := i) (b := p i ⊗ₜ[R] n)]
-  apply Finsupp.sum_eq_single i
-  · exact fun _ _ ↦ Finsupp.single_eq_of_ne
-  · intro _
-    simp
+  rw [finsuppLeft_apply_tmul, Finsupp.sum_apply,
+    Finsupp.sum_eq_single i (fun _ _ ↦ Finsupp.single_eq_of_ne) (by simp), Finsupp.single_eq_same]
+  /- Or (more complicated):
+  apply p.induction_linear
+  · simp
+  · intros f g hf hg; simp [add_tmul, hf, hg]
+  · intro j _; rw [Finsupp.single_apply]
+    conv_rhs => rw [apply_ite (· ⊗ₜ[R] n)]
+    simp [finsuppLeft, Finsupp.single_apply] -/
 
 theorem finsuppLeft_apply (t : (ι →₀ M) ⊗[R] N) (i : ι) :
     finsuppLeft t i = rTensor N (Finsupp.lapply i) t := by
   induction t using TensorProduct.induction_on with
   | zero => simp
   | tmul f n => simp only [finsuppLeft_apply_tmul_apply, rTensor_tmul, Finsupp.lapply_apply]
-  | add x y hx hy => simp [LinearEquiv.map_add, hx, hy]
+  | add x y hx hy => simp [map_add, hx, hy]
 
 @[simp]
 lemma finsuppLeft_symm_apply_single (i : ι) (m : M) (n : N) :
@@ -124,37 +125,28 @@ lemma finsuppLeft_symm_apply_single (i : ι) (m : M) (n : N) :
 /-- The tensor product of `M` and `ι →₀ N` is linearly equivalent to `ι →₀ M ⊗[R] N` -/
 noncomputable def finsuppRight :
     M ⊗[R] (ι →₀ N) ≃ₗ[R] ι →₀ M ⊗[R] N :=
-  congr (LinearEquiv.refl R M) (finsuppLEquivDirectSum R N ι) ≪≫ₗ
-    directSumRight R M (fun _ : ι => N) ≪≫ₗ
-      (finsuppLEquivDirectSum R (M ⊗[R] N) ι).symm
+  congr (.refl R M) (finsuppLEquivDirectSum R N ι) ≪≫ₗ
+    directSumRight R M (fun _ : ι ↦ N) ≪≫ₗ (finsuppLEquivDirectSum R _ ι).symm
 
 lemma finsuppRight_apply_tmul (m : M) (p : ι →₀ N) :
     finsuppRight (m ⊗ₜ[R] p) = p.sum fun i n ↦ Finsupp.single i (m ⊗ₜ[R] n) := by
-  simp [finsuppRight]
-  conv_lhs => rw [← Finsupp.sum_single p]
-  rw [LinearEquiv.symm_apply_eq]
-  simp only [map_finsupp_sum, finsuppLEquivDirectSum_single]
-  rw [← LinearEquiv.eq_symm_apply]
-  simp only [map_finsupp_sum, directSumRight_symm_lof_tmul]
-  simp only [Finsupp.sum, tmul_sum]
+  apply p.induction_linear
+  · simp
+  · intros f g hf hg; simp [tmul_add, map_add, hf, hg, Finsupp.sum_add_index]
+  · simp [finsuppRight]
 
 @[simp]
 lemma finsuppRight_apply_tmul_apply (m : M) (p : ι →₀ N) (i : ι) :
     finsuppRight (m ⊗ₜ[R] p) i = m ⊗ₜ[R] p i := by
-  rw [finsuppRight_apply_tmul]
-  simp only [Finsupp.sum_apply]
-  conv_rhs => rw [← Finsupp.single_eq_same (a := i) (b := m ⊗ₜ[R] p i)]
-  apply Finsupp.sum_eq_single i
-  · exact fun _ _ ↦ Finsupp.single_eq_of_ne
-  · intro _
-    simp
+  rw [finsuppRight_apply_tmul, Finsupp.sum_apply,
+    Finsupp.sum_eq_single i (fun _ _ ↦ Finsupp.single_eq_of_ne) (by simp), Finsupp.single_eq_same]
 
 theorem finsuppRight_apply (t : M ⊗[R] (ι →₀ N)) (i : ι) :
     finsuppRight t i = lTensor M (Finsupp.lapply i) t := by
   induction t using TensorProduct.induction_on with
   | zero => simp
   | tmul m f => simp [finsuppRight_apply_tmul_apply]
-  | add x y hx hy => simp [LinearEquiv.map_add, hx, hy]
+  | add x y hx hy => simp [map_add, hx, hy]
 
 @[simp]
 lemma finsuppRight_symm_apply_single (i : ι) (m : M) (n : N) :
@@ -169,22 +161,15 @@ lemma finsuppLeft_smul' (s : S) (t : (ι →₀ M) ⊗[R] N) :
     finsuppLeft (s • t) = s • finsuppLeft t := by
   induction t using TensorProduct.induction_on with
   | zero => simp
-  | add x y hx hy =>
-    simp only [AddHom.toFun_eq_coe, coe_toAddHom, LinearEquiv.coe_coe, RingHom.id_apply] at hx hy ⊢
-    simp only [smul_add, map_add, hx, hy]
-  | tmul p n =>
-    simp only [smul_tmul', finsuppLeft_apply_tmul]
-    rw [Finsupp.smul_sum]
-    simp only [Finsupp.smul_single]
-    apply Finsupp.sum_smul_index'
-    simp
+  | add x y hx hy => simp [hx, hy]
+  | tmul p n => ext; simp [smul_tmul', finsuppLeft_apply_tmul_apply]
 
 /-- When `M` is also an `S`-module, then `TensorProduct.finsuppLeft R M N``
   is an `S`-linear equiv -/
 noncomputable def finsuppLeft' :
-    (ι →₀ M) ⊗[R] N ≃ₗ[S] ι →₀ M ⊗[R] N := {
-  finsuppLeft with
-  map_smul' := finsuppLeft_smul' }
+    (ι →₀ M) ⊗[R] N ≃ₗ[S] ι →₀ M ⊗[R] N where
+  __ := finsuppLeft
+  map_smul' := finsuppLeft_smul'
 
 lemma finsuppLeft'_apply (x : (ι →₀ M) ⊗[R] N) :
     finsuppLeft' (S := S) x = finsuppLeft x := rfl
@@ -194,7 +179,7 @@ noncomputable example :
     (ι →₀ M) ⊗[R] N ≃ₗ[S] ι →₀ (M ⊗[R] N) := by
   have f : (⨁ (i₁ : ι), M) ⊗[R] N ≃ₗ[S] ⨁ (i : ι), M ⊗[R] N := sorry
   exact (AlgebraTensorModule.congr
-    (finsuppLEquivDirectSum S M ι) (LinearEquiv.refl R N)).trans
+    (finsuppLEquivDirectSum S M ι) (.refl R N)).trans
     (f.trans (finsuppLEquivDirectSum S (M ⊗[R] N) ι).symm) -/
 
 /-- The tensor product of `ι →₀ R` and `N` is linearly equivalent to `ι →₀ N` -/
@@ -204,23 +189,14 @@ noncomputable def finsuppScalarLeft :
 
 @[simp]
 lemma finsuppScalarLeft_apply_tmul_apply (p : ι →₀ R) (n : N) (i : ι) :
-    finsuppScalarLeft (p ⊗ₜ[R] n) i = (p i) • n := by
-  simp only [finsuppScalarLeft, LinearEquiv.trans_apply, finsuppLeft_apply_tmul,
-    Finsupp.mapRange.linearEquiv_apply, Finsupp.mapRange.linearMap_apply, LinearEquiv.coe_coe,
-    Finsupp.mapRange_apply, Finsupp.sum_apply]
-  apply symm
-  rw [← LinearEquiv.symm_apply_eq, lid_symm_apply]
-  rw [Finsupp.sum_eq_single i (fun _ _ => Finsupp.single_eq_of_ne) (fun _ => by simp)]
-  simp only [Finsupp.single_eq_same]
-  rw [tmul_smul, smul_tmul', smul_eq_mul, mul_one]
+    finsuppScalarLeft (p ⊗ₜ[R] n) i = p i • n := by
+  simp [finsuppScalarLeft]
 
 lemma finsuppScalarLeft_apply_tmul (p : ι →₀ R) (n : N) :
     finsuppScalarLeft (p ⊗ₜ[R] n) = p.sum fun i m ↦ Finsupp.single i (m • n) := by
   ext i
-  rw [finsuppScalarLeft_apply_tmul_apply]
-  simp only [Finsupp.sum_apply]
-  rw [Finsupp.sum_eq_single i (fun _ _ => Finsupp.single_eq_of_ne) (fun _ => by simp)]
-  simp only [Finsupp.single_eq_same]
+  rw [finsuppScalarLeft_apply_tmul_apply, Finsupp.sum_apply,
+    Finsupp.sum_eq_single i (fun _ _ ↦ Finsupp.single_eq_of_ne) (by simp), Finsupp.single_eq_same]
 
 lemma finsuppScalarLeft_apply (pn : (ι →₀ R) ⊗[R] N) (i : ι) :
     finsuppScalarLeft pn i = TensorProduct.lid R N ((Finsupp.lapply i).rTensor N pn) := by
@@ -240,22 +216,13 @@ noncomputable def finsuppScalarRight :
 @[simp]
 lemma finsuppScalarRight_apply_tmul_apply (m : M) (p : ι →₀ R) (i : ι) :
     finsuppScalarRight (m ⊗ₜ[R] p) i = p i • m := by
-  simp only [finsuppScalarRight, LinearEquiv.trans_apply, finsuppRight_apply_tmul,
-    Finsupp.mapRange.linearEquiv_apply, Finsupp.mapRange.linearMap_apply, LinearEquiv.coe_coe,
-    Finsupp.mapRange_apply, Finsupp.sum_apply]
-  apply symm
-  rw [← LinearEquiv.symm_apply_eq, rid_symm_apply]
-  rw [Finsupp.sum_eq_single i (fun _ _ => Finsupp.single_eq_of_ne) (fun _ => by simp)]
-  simp only [Finsupp.single_eq_same]
-  rw [smul_tmul, smul_eq_mul, mul_one]
+  simp [finsuppScalarRight]
 
 lemma finsuppScalarRight_apply_tmul (m : M) (p : ι →₀ R) :
     finsuppScalarRight (m ⊗ₜ[R] p) = p.sum fun i n ↦ Finsupp.single i (n • m) := by
   ext i
-  rw [finsuppScalarRight_apply_tmul_apply]
-  simp only [Finsupp.sum_apply]
-  rw [Finsupp.sum_eq_single i (fun _ _ => Finsupp.single_eq_of_ne) (fun _ => by simp)]
-  simp only [Finsupp.single_eq_same]
+  rw [finsuppScalarRight_apply_tmul_apply, Finsupp.sum_apply,
+    Finsupp.sum_eq_single i (fun _ _ ↦ Finsupp.single_eq_of_ne) (by simp), Finsupp.single_eq_same]
 
 lemma finsuppScalarRight_apply (t : M ⊗[R] (ι →₀ R)) (i : ι) :
     finsuppScalarRight t i = TensorProduct.rid R M ((Finsupp.lapply i).lTensor M t) := by
@@ -279,15 +246,14 @@ open scoped Classical in
 noncomputable def finsuppTensorFinsupp :
     (ι →₀ M) ⊗[R] (κ →₀ N) ≃ₗ[R] ι × κ →₀ M ⊗[R] N :=
   TensorProduct.congr (finsuppLEquivDirectSum R M ι) (finsuppLEquivDirectSum R N κ) ≪≫ₗ
-    ((TensorProduct.directSum R (fun _ : ι => M) fun _ : κ => N) ≪≫ₗ
-      (finsuppLEquivDirectSum R (M ⊗[R] N) (ι × κ)).symm)
+    (TensorProduct.directSum R (fun _ ↦ M) fun _ ↦ N) ≪≫ₗ (finsuppLEquivDirectSum R _ _).symm
 #align finsupp_tensor_finsupp finsuppTensorFinsupp
 
 @[simp]
 theorem finsuppTensorFinsupp_single (i : ι) (m : M) (k : κ) (n : N) :
     finsuppTensorFinsupp R M N ι κ (Finsupp.single i m ⊗ₜ Finsupp.single k n) =
-      Finsupp.single (i, k) (m ⊗ₜ n) :=
-  by classical simp [finsuppTensorFinsupp]
+      Finsupp.single (i, k) (m ⊗ₜ n) := by
+  simp [finsuppTensorFinsupp]
 #align finsupp_tensor_finsupp_single finsuppTensorFinsupp_single
 
 @[simp]
@@ -297,19 +263,15 @@ theorem finsuppTensorFinsupp_apply (f : ι →₀ M) (g : κ →₀ N) (i : ι) 
   · simp
   · intro f₁ f₂ hf₁ hf₂
     simp [add_tmul, hf₁, hf₂]
-  · intro i' m
-    apply Finsupp.induction_linear g
-    · simp
-    · intro g₁ g₂ hg₁ hg₂
-      simp [tmul_add, hg₁, hg₂]
-    · intro k' n
-      simp only [finsuppTensorFinsupp_single]
-      -- split_ifs; finish can close the goal from here
-      by_cases h1 : (i', k') = (i, k)
-      · simp only [Prod.mk.inj_iff] at h1
-        simp [h1]
-      · simp only [Prod.mk.inj_iff, not_and_or] at h1
-        cases' h1 with h1 h1 <;> simp [h1]
+  intro i' m
+  apply Finsupp.induction_linear g
+  · simp
+  · intro g₁ g₂ hg₁ hg₂
+    simp [tmul_add, hg₁, hg₂]
+  intro k' n
+  classical
+  simp_rw [finsuppTensorFinsupp_single, Finsupp.single_apply, Prod.mk.inj_iff, ite_and]
+  split_ifs <;> simp
 #align finsupp_tensor_finsupp_apply finsuppTensorFinsupp_apply
 
 @[simp]
