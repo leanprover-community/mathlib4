@@ -103,11 +103,15 @@ lemma Module.finitePresentation_of_free_of_surjective [Module.Free R M] [Module.
   · rintro ⟨y, hy, rfl⟩
     simp [f, hπ, ← Finsupp.apply_total, hy]
 
+-- Ideally this should be an instance but it makes mathlib much slower.
 variable (R M) in
-instance (priority := 100) [Module.Free R M] [Module.Finite R M] :
+lemma Module.finitePresentation_of_free [Module.Free R M] [Module.Finite R M] :
     Module.FinitePresentation R M :=
   Module.finitePresentation_of_free_of_surjective LinearMap.id (⟨·, rfl⟩)
     (by simpa using Submodule.fg_bot)
+
+instance : Module.FinitePresentation R R := Module.finitePresentation_of_free _ _
+instance {ι} : Module.FinitePresentation R (ι →₀ R) := Module.finitePresentation_of_free _ _
 
 lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M] (l : M →ₗ[R] N)
     (hl : Function.Surjective l) (hl' : Submodule.FG (LinearMap.ker l)) :
