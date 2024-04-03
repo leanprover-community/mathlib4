@@ -8,31 +8,32 @@ import Mathlib.GroupTheory.Coxeter.Length
 /-!
 # Reflections, inversions, and inversion sequences
 
-Throughout this file, `B` is a type and `M : Matrix B B ℕ` is a Coxeter matrix.
+Throughout this file, `B` is a type and `M : CoxeterMatrix B` is a Coxeter matrix.
 `cs : CoxeterSystem M W` is a Coxeter system; that is, `W` is a group, and `cs` holds the data
-of a group isomorphism `W ≃* M.coxeterGroup`, where `M.coxeterGroup` refers to the quotient of the
-free group on `B` by the Coxeter relations given by the matrix `M`. See
-`Mathlib/GroupTheory/Coxeter/Basic.lean` for more details.
+of a group isomorphism `W ≃* M.group`, where `M.group` refers to the quotient of the free group on
+`B` by the Coxeter relations given by the matrix `M`. See `Mathlib/GroupTheory/Coxeter/Basic.lean`
+for more details.
 
-We define a *reflection* to be an element of the form
+We define a *reflection* (`CoxeterSystem.IsReflection`) to be an element of the form
 $t = u s_i u^{-1}$, where $u \in W$ and $s_i$ is a simple reflection. We say that a reflection $t$
-is a *left inversion* of an element $w \in W$ if $\ell(t w) < \ell (w)$, and we say it is a
-*right inversion* of $w$ if $\ell(w t) > \ell(w)$. Here $\ell$ is the length function
+is a *left inversion* (`CoxeterSystem.IsLeftInversion`) of an element $w \in W$ if
+$\ell(t w) < \ell(w)$, and we say it is a *right inversion* (`CoxeterSystem.IsRightInversion`) of
+$w$ if $\ell(w t) > \ell(w)$. Here $\ell$ is the length function
 (see `Mathlib/GroupTheory/Coxeter/Length.lean`).
 
-Given a word, we define its *left inversion sequence* and its *right inversion sequence*. We prove
-that if a word is reduced, then both of its inversion sequences contain no duplicates.
-In fact, the right (respectively, left) inversion sequence of a reduced word for $w$ consists of all
-of the right (respectively, left) inversions of $w$ in some order, but we do not prove that in this
-file.
+Given a word, we define its *left inversion sequence* (`CoxeterSystem.leftInvSeq`) and its
+*right inversion sequence* (`CoxeterSystem.rightInvSeq`). We prove that if a word is reduced, then
+both of its inversion sequences contain no duplicates. In fact, the right (respectively, left)
+inversion sequence of a reduced word for $w$ consists of all of the right (respectively, left)
+inversions of $w$ in some order, but we do not prove that in this file.
 
 ## Main definitions
 
-* `cs.IsReflection`
-* `cs.IsLeftInversion`
-* `cs.IsRightInversion`
-* `cs.leftInvSeq`
-* `cs.rightInvSeq`
+* `CoxeterSystem.IsReflection`
+* `CoxeterSystem.IsLeftInversion`
+* `CoxeterSystem.IsRightInversion`
+* `CoxeterSystem.leftInvSeq`
+* `CoxeterSystem.rightInvSeq`
 
 ## References
 
@@ -40,24 +41,21 @@ file.
 
 -/
 
-noncomputable section
-
 namespace CoxeterSystem
 
 open List Matrix Function
 
 variable {B : Type*}
-variable {M : Matrix B B ℕ}
 variable {W : Type*} [Group W]
-variable (cs : CoxeterSystem M W)
+variable {M : CoxeterMatrix B} (cs : CoxeterSystem M W)
 
-local prefix:100 "s" => cs.simpleReflection
+local prefix:100 "s" => cs.simple
 local prefix:100 "π" => cs.wordProd
 local prefix:100 "ℓ" => cs.length
 
 /-- The proposition that `t` is a reflection of the Coxeter system `cs`; i.e., it is of the form
 $w s_i w^{-1}$, where $w \in W$ and $s_i$ is a simple reflection. -/
-def IsReflection (t : W) : Prop := ∃ w : W, ∃ i : B, t = w * s i * w⁻¹
+def IsReflection (t : W) : Prop := ∃ w, ∃ i, t = w * s i * w⁻¹
 
 /-- The set of all reflections of the Coxeter group `W`. -/
 def reflections : Set W := {t : W | cs.IsReflection t}
@@ -76,9 +74,8 @@ theorem inv_reflection_eq {t : W} (rt : cs.IsReflection t) : t⁻¹ = t := by
 alias inv_eq_self_of_isReflection := inv_reflection_eq
 
 theorem length_reflection_odd {t : W} (rt : cs.IsReflection t) : Odd (ℓ t) := by
-  rw [Nat.odd_iff]
   rcases rt with ⟨w, i, rfl⟩
-  rw [length_mul_mod_two, Nat.add_mod, length_mul_mod_two, ← Nat.add_mod,
+  rw [Nat.odd_iff, length_mul_mod_two, Nat.add_mod, length_mul_mod_two, ← Nat.add_mod,
       length_simple, length_inv, add_comm, ← add_assoc, ← two_mul, Nat.mul_add_mod]
   norm_num
 
@@ -192,19 +189,18 @@ theorem leftInvSeq_reverse (ω : List B) :
 
 theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
     (ris ω).getD j 1 = (π (ω.drop (j + 1)))⁻¹
-        * (Option.map (cs.simpleReflection) (ω.get? j)).getD 1
+        * (Option.map (cs.simple) (ω.get? j)).getD 1
         * π (ω.drop (j + 1)) := by
   induction' ω with i ω ih generalizing j
   · simp
   · dsimp only [rightInvSeq]
     rcases j with _ | j'
     · simp [getD_cons_zero]
-    · simp [getD_cons_succ]
-      rw [ih j']
+    · simp [getD_cons_succ, ih j']
 
 theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
     (lis ω).getD j 1 = π (ω.take j)
-        * (Option.map (cs.simpleReflection) (ω.get? j)).getD 1
+        * (Option.map (cs.simple) (ω.get? j)).getD 1
         * (π (ω.take j))⁻¹ := by
   induction' ω with i ω ih generalizing j
   · simp
@@ -212,7 +208,7 @@ theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
     rcases j with _ | j'
     · simp [getD_cons_zero]
     · rw [getD_cons_succ]
-      rw [(by simp : 1 = ⇑(MulAut.conj (simpleReflection cs i)) 1)]
+      rw [(by simp : 1 = ⇑(MulAut.conj (s i)) 1)]
       rw [getD_map]
       rw [ih j']
       simp [← mul_assoc, wordProd_cons]
@@ -266,7 +262,7 @@ theorem isReflection_of_mem_rightInvSeq (ω : List B) (t : W) (ht : t ∈ ris ω
 
 theorem isReflection_of_mem_leftInvSeq (ω : List B) (t : W) (ht : t ∈ lis ω) :
     cs.IsReflection t := by
-  simp [leftInvSeq_eq_reverse_rightInvSeq_reverse] at ht
+  simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse, mem_reverse] at ht
   exact cs.isReflection_of_mem_rightInvSeq ω.reverse t ht
 
 theorem wordProd_mul_getD_rightInvSeq (ω : List B) (j : ℕ) :
@@ -381,5 +377,3 @@ theorem nodup_leftInvSeq_of_reduced {ω : List B} (rω : cs.IsReduced ω) : List
   rwa [isReduced_reverse]
 
 end CoxeterSystem
-
-end
