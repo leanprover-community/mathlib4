@@ -5,7 +5,6 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Parity
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.SuccessIfFailWithMsg

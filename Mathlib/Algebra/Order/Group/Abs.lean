@@ -3,6 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
+import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.Order.Group.Lattice
 
@@ -256,6 +257,10 @@ variable [Group α] [LinearOrder α] {a b : α}
   obtain rfl | rfl := eq_or_eq_inv_of_mabs_eq h <;>
     simpa only [inv_eq_iff_eq_inv (a := |b|ₘ), inv_inv, inv_inj, or_comm] using mabs_choice b
 #align abs_eq_abs abs_eq_abs
+
+@[to_additive] lemma isSquare_mabs : IsSquare |a|ₘ ↔ IsSquare a :=
+  mabs_by_cases (IsSquare · ↔ _) Iff.rfl isSquare_inv
+#align even_abs even_abs
 
 variable [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α}
 

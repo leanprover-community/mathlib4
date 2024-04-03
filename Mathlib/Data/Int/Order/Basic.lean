@@ -28,6 +28,9 @@ This file contains:
   induction on numbers less than `b`.
 -/
 
+-- We should need only a minimal development of sets in order to get here.
+assert_not_exists Set.Subsingleton
+
 open Function Nat
 
 namespace Int
@@ -572,6 +575,3 @@ lemma mul_bit1 {n r : R} : r * bit1 n = (2 : ℤ) • (r * n) + r := by
 
 end NonAssocRing
 end bit0_bit1
-
--- We should need only a minimal development of sets in order to get here.
-assert_not_exists Set.range

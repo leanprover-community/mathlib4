@@ -11,12 +11,10 @@ import Mathlib.Algebra.Order.Ring.Canonical
 
 /-!
 # Lemmas about the interaction of power operations with order
-
-Note that some lemmas are in `Algebra/GroupPower/Lemmas.lean` as they import files which
-depend on this file.
 -/
 
-assert_not_exists Set.range
+-- We should need only a minimal development of sets in order to get here.
+assert_not_exists Set.Subsingleton
 
 open Function Int
 
@@ -498,6 +496,46 @@ lemma strictMono_pow_bit1 (n : ℕ) : StrictMono (· ^ bit1 n : R → R) := by
 #align strict_mono_pow_bit1 strictMono_pow_bit1
 
 end deprecated
+
+lemma Even.pow_nonneg (hn : Even n) (a : R) : 0 ≤ a ^ n := by
+  obtain ⟨k, rfl⟩ := hn; rw [pow_add]; exact mul_self_nonneg _
+#align even.pow_nonneg Even.pow_nonneg
+
+lemma Even.pow_pos (hn : Even n) (ha : a ≠ 0) : 0 < a ^ n :=
+  (hn.pow_nonneg _).lt_of_ne' (pow_ne_zero _ ha)
+#align even.pow_pos Even.pow_pos
+
+lemma Even.pow_pos_iff (hn : Even n) (h₀ : n ≠ 0) : 0 < a ^ n ↔ a ≠ 0 := by
+  obtain ⟨k, rfl⟩ := hn; rw [pow_add, mul_self_pos (α := R), pow_ne_zero_iff (by simpa using h₀)]
+#align even.pow_pos_iff Even.pow_pos_iff
+
+lemma Odd.pow_neg_iff (hn : Odd n) : a ^ n < 0 ↔ a < 0 := by
+  refine ⟨lt_imp_lt_of_le_imp_le (pow_nonneg · _), fun ha ↦ ?_⟩
+  obtain ⟨k, rfl⟩ := hn
+  rw [pow_succ]
+  exact mul_neg_of_pos_of_neg ((even_two_mul _).pow_pos ha.ne) ha
+#align odd.pow_neg_iff Odd.pow_neg_iff
+
+lemma Odd.pow_nonneg_iff (hn : Odd n) : 0 ≤ a ^ n ↔ 0 ≤ a :=
+  le_iff_le_iff_lt_iff_lt.2 hn.pow_neg_iff
+#align odd.pow_nonneg_iff Odd.pow_nonneg_iff
+
+lemma Odd.pow_nonpos_iff (hn : Odd n) : a ^ n ≤ 0 ↔ a ≤ 0 := by
+  rw [le_iff_lt_or_eq, le_iff_lt_or_eq, hn.pow_neg_iff, pow_eq_zero_iff]
+  rintro rfl; simp [Odd, eq_comm (a := 0)] at hn
+#align odd.pow_nonpos_iff Odd.pow_nonpos_iff
+
+lemma Odd.pow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a := lt_iff_lt_of_le_iff_le hn.pow_nonpos_iff
+#align odd.pow_pos_iff Odd.pow_pos_iff
+
+alias ⟨_, Odd.pow_nonpos⟩ := Odd.pow_nonpos_iff
+alias ⟨_, Odd.pow_neg⟩ := Odd.pow_neg_iff
+#align odd.pow_nonpos Odd.pow_nonpos
+#align odd.pow_neg Odd.pow_neg
+
+lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
+  cases' hn with k hk; simpa only [hk, two_mul] using strictMono_pow_bit1 _
+#align odd.strict_mono_pow Odd.strictMono_pow
 
 lemma sq_pos_iff (a : R) : 0 < a ^ 2 ↔ a ≠ 0 := pow_bit0_pos_iff a one_ne_zero
 #align sq_pos_iff sq_pos_iff

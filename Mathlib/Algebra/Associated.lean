@@ -3,7 +3,8 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Parity
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Algebra.Ring.Parity
 
 #align_import algebra.associated from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
 
