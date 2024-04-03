@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.MinMax
@@ -16,7 +17,7 @@ import Mathlib.Order.Filter.Bases
 #align_import order.filter.at_top_bot from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
 /-!
-# `Filter.atTop` and `Filter.atBot` filters on preorded sets, monoids and groups.
+# `Filter.atTop` and `Filter.atBot` filters on preorders, monoids and groups.
 
 In this file we define the filters
 
