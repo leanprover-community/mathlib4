@@ -119,7 +119,7 @@ theorem EqualizerCondition.mk (P : Cᵒᵖ ⥤ Type*)
   · simpa [MapToEqualizer] using ha₁
   · simpa [MapToEqualizer] using ha₂
 
-lemma equalizerCondition_iff_isIso_lift_w (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B)
+lemma equalizerCondition_w' (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B)
     [HasPullback π π] : P.map π.op ≫ P.map (pullback.fst (f := π) (g := π)).op =
     P.map π.op ≫ P.map (pullback.snd).op := by
   simp only [← Functor.map_comp, ← op_comp, pullback.condition]
@@ -223,7 +223,7 @@ noncomputable def isLimit_forkOfι_equiv (P : Cᵒᵖ ⥤ D) {X B : C} (π : X �
       congr
 
 lemma equalizerConditionMap_iff_nonempty_isLimit (P : Cᵒᵖ ⥤ D) ⦃X B : C⦄ (π : X ⟶ B)
-    [HasPullback π π]: SingleEqualizerCondition P π ↔
+    [HasPullback π π] : SingleEqualizerCondition P π ↔
       Nonempty (IsLimit (P.mapCone
         (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows.cocone.op)) := by
   constructor
