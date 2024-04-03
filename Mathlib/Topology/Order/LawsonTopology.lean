@@ -396,13 +396,13 @@ section PartialOrder
 variable [PartialOrder α] [TopologicalSpace α] [IsLawson α]
 
 lemma singletonIsClosed (a : α) : IsClosed ({a} : Set α) := by
-  rw [← (Set.OrdConnected.upperClosure_inter_lowerClosure ordConnected_singleton)]
+  rw [← (Set.OrdConnected.upperClosure_inter_lowerClosure ordConnected_singleton),
+    ← isClosed_preimage_ofLawson]
   apply IsClosed.inter
-  · rw [← isClosed_preimage_ofLawson]
-    exact LowerClosed_implies_LawsonClosed _ (IsLower.isClosed_upperClosure (finite_singleton a))
-  · rw [← isClosed_preimage_ofLawson, lowerClosure_singleton, LowerSet.coe_Iic]
-    apply ScottClosed_implies_LawsonClosed
-    exact Topology.IsScott.isClosed_Iic
+    (LowerClosed_implies_LawsonClosed _ (IsLower.isClosed_upperClosure (finite_singleton a)))
+  rw [← isClosed_preimage_ofLawson, lowerClosure_singleton, LowerSet.coe_Iic]
+  apply ScottClosed_implies_LawsonClosed
+  exact Topology.IsScott.isClosed_Iic
 
 -- see Note [lower instance priority]
 /-- The Lawson topology on a partial order is T₀. -/
