@@ -44,7 +44,7 @@ With these definitions, the statements read as follows, first in a general conte
 * `VectorFourier.hasFDerivAt_fourierIntegral`: the Fourier integral of `f` is differentiable, with
     derivative the Fourier integral of `fourierSMulRight L f`.
 * `VectorFourier.differentiable_fourierIntegral`: the Fourier integral of `f` is differentiable.
-* `VectorFourier.deriv_fourierIntegral`: formula for the derivative of the Fourier integral of `f`.
+* `VectorFourier.fderiv_fourierIntegral`: formula for the derivative of the Fourier integral of `f`.
 * `VectorFourier.hasFTaylorSeriesUpTo_fourierIntegral`: under suitable integrability conditions,
   the Fourier integral of `f` has an explicit Taylor series up to order `N`, given by the Fourier
   integrals of `fun v ↦ fourierPowSMulRight L f v n`.
