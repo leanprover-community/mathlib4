@@ -247,7 +247,7 @@ theorem continuous_of_bound (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m 
   let D := max C 1
   have D_pos : 0 ≤ D := le_trans zero_le_one (le_max_right _ _)
   replace H (m) : ‖f m‖ ≤ D * ∏ i, ‖m i‖ :=
-    (H m).trans (mul_le_mul_of_nonneg_right (le_max_left _ _) $ by positivity)
+    (H m).trans (mul_le_mul_of_nonneg_right (le_max_left _ _) <| by positivity)
   refine' continuous_iff_continuousAt.2 fun m => _
   refine'
     continuousAt_of_locally_lipschitz zero_lt_one
@@ -804,8 +804,8 @@ theorem MultilinearMap.mkContinuous_norm_le (f : MultilinearMap 𝕜 E G) {C : �
 nonnegative. -/
 theorem MultilinearMap.mkContinuous_norm_le' (f : MultilinearMap 𝕜 E G) {C : ℝ}
     (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : ‖f.mkContinuous C H‖ ≤ max C 0 :=
-  ContinuousMultilinearMap.opNorm_le_bound _ (le_max_right _ _) fun m ↦ (H m).trans $
-    mul_le_mul_of_nonneg_right (le_max_left _ _) $ by positivity
+  ContinuousMultilinearMap.opNorm_le_bound _ (le_max_right _ _) fun m ↦ (H m).trans <|
+    mul_le_mul_of_nonneg_right (le_max_left _ _) <| by positivity
 #align multilinear_map.mk_continuous_norm_le' MultilinearMap.mkContinuous_norm_le'
 
 namespace ContinuousMultilinearMap
@@ -1420,7 +1420,7 @@ instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearM
     · intro n m N hn hm
       rw [dist_eq_norm]
       apply le_trans ((f n - f m).le_opNorm v) _
-      exact mul_le_mul_of_nonneg_right (b_bound n m N hn hm) $ by positivity
+      exact mul_le_mul_of_nonneg_right (b_bound n m N hn hm) <| by positivity
     · simpa using b_lim.mul tendsto_const_nhds
   -- We assemble the limits points of those Cauchy sequences
   -- (which exist as `G` is complete)
@@ -1445,7 +1445,7 @@ instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearM
     have A : ∀ n, ‖f n v‖ ≤ (b 0 + ‖f 0‖) * ∏ i, ‖v i‖ := by
       intro n
       apply le_trans ((f n).le_opNorm _) _
-      apply mul_le_mul_of_nonneg_right _ $ by positivity
+      apply mul_le_mul_of_nonneg_right _ <| by positivity
       calc
         ‖f n‖ = ‖f n - f 0 + f 0‖ := by
           congr 1
@@ -1465,7 +1465,7 @@ instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearM
     have A : ∀ᶠ m in atTop, ‖(f n - f m) v‖ ≤ b n * ∏ i, ‖v i‖ := by
       refine' eventually_atTop.2 ⟨n, fun m hm => _⟩
       apply le_trans ((f n - f m).le_opNorm _) _
-      exact mul_le_mul_of_nonneg_right (b_bound n m n le_rfl hm) $ by positivity
+      exact mul_le_mul_of_nonneg_right (b_bound n m n le_rfl hm) <| by positivity
     have B : Tendsto (fun m => ‖(f n - f m) v‖) atTop (𝓝 ‖(f n - Fcont) v‖) :=
       Tendsto.norm (tendsto_const_nhds.sub (hF v))
     exact le_of_tendsto B A

@@ -63,7 +63,7 @@ theorem ContinuousLinearMap.norm_map_tail_le
     ‖f (m 0) (tail m)‖ ≤ ‖f‖ * ∏ i, ‖m i‖ :=
   calc
     ‖f (m 0) (tail m)‖ ≤ ‖f (m 0)‖ * ∏ i, ‖(tail m) i‖ := (f (m 0)).le_opNorm _
-    _ ≤ ‖f‖ * ‖m 0‖ * ∏ i, ‖tail m i‖ := mul_le_mul_of_nonneg_right (f.le_opNorm _) $ by positivity
+    _ ≤ ‖f‖ * ‖m 0‖ * ∏ i, ‖tail m i‖ := mul_le_mul_of_nonneg_right (f.le_opNorm _) <| by positivity
     _ = ‖f‖ * (‖m 0‖ * ∏ i, ‖(tail m) i‖) := by ring
     _ = ‖f‖ * ∏ i, ‖m i‖ := by
       rw [prod_univ_succ]

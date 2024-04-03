@@ -891,38 +891,38 @@ because `compareHyp` can't look for assumptions behind binders.
 @[positivity Finset.prod _ _]
 def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
   match e with
-  | ~q(@Finset.prod _ $ι $instα $s $f) =>
+  | ~q(@Finset.prod $ι _ $instα $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
     have body : Q($α) := Expr.betaRev f #[i]
     let rbody ← core zα pα body
     let _instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
-    let p_pos : Option Q(0 < $e) := ← (do
+    let p_pos : Option Q(0 < $e) := ← do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
-      -- TODO: We must name the following, else `assertInstancesCommute` loops.
+      -- TODO(quote4#38): We must name the following, else `assertInstancesCommute` loops.
       let .some _instαzeroone ← trySynthInstanceQ q(ZeroLEOneClass $α) | pure none
       let .some _instαposmul ← trySynthInstanceQ q(PosMulStrictMono $α) | pure none
       let .some _instαnontriv ← trySynthInstanceQ q(Nontrivial $α) | pure none
       assertInstancesCommute
-      let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
-      return some q(prod_pos fun i _ ↦ $pr i))
+      let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
+      return some q(prod_pos fun i _ ↦ $pr i)
     -- Try to show that the product is positive
     if let some p_pos := p_pos then return .positive p_pos
-    let p_nonneg : Option Q(0 ≤ $e) := ← (do
+    let p_nonneg : Option Q(0 ≤ $e) := ← do
       let .some pbody := rbody.toNonneg
         | return none -- Fail if the body is not provably nonnegative
-      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
-      -- TODO: We must name the following, else `assertInstancesCommute` loops.
+      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
+      -- TODO(quote4#38): We must name the following, else `assertInstancesCommute` loops.
       let .some _instαzeroone ← trySynthInstanceQ q(ZeroLEOneClass $α) | pure none
       let .some _instαposmul ← trySynthInstanceQ q(PosMulMono $α) | pure none
       assertInstancesCommute
-      return some q(prod_nonneg fun i _ ↦ $pr i))
+      return some q(prod_nonneg fun i _ ↦ $pr i)
     -- Try to show that the product is nonnegative
     if let some p_nonneg := p_nonneg then return .nonnegative p_nonneg
     -- Fall back to showing that the product is nonzero
     else
       let pbody ← rbody.toNonzero
-      let pr : Q(∀ i, $f i ≠ 0) ← mkLambdaFVars #[i] pbody
-      -- TODO: We must name the following, else `assertInstancesCommute` loops.
+      let pr : Q(∀ i, $f i ≠ 0) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
+      -- TODO(quote4#38): We must name the following, else `assertInstancesCommute` loops.
       let _instαnontriv ← synthInstanceQ q(Nontrivial $α)
       let _instαnozerodiv ← synthInstanceQ q(NoZeroDivisors $α)
       assertInstancesCommute
