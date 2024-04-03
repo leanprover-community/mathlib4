@@ -198,13 +198,10 @@ lemma lawsonClosed_of_lowerClosed (s : Set α) (h : IsClosed (Topology.WithLower
     IsClosed (Topology.WithLawson.ofLawson ⁻¹' s) := IsClosed.mono h lawson_le_lower
 
 /-- An upper set is Lawson open if and only if it is Scott open -/
-lemma LawsonOpen_iff_ScottOpen' (s : Set α) (h : IsUpperSet s) :
-    IsOpen (Topology.WithScott.ofScott ⁻¹' s) ↔ IsOpen (Topology.WithLawson.ofLawson ⁻¹' s) := by
-  constructor
-  · exact lawson_le_scott _
-  · intro hs
-    rw [Topology.IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open]
-    exact ⟨h, (scottHausdorff_le_lawson s) hs⟩
+lemma scottOpen_iff_lawsonOpen_of_isUpperSet {s : Set α} (h : IsUpperSet s) :
+    IsOpen (Topology.WithScott.ofScott ⁻¹' s) ↔ IsOpen (Topology.WithLawson.ofLawson ⁻¹' s) :=
+  ⟨lawson_le_scott _, fun hs => Topology.IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open.mpr
+    ⟨h, (scottHausdorff_le_lawson s) hs⟩⟩
 
 variable (L : TopologicalSpace α) (l : TopologicalSpace α) (S : TopologicalSpace α)
 variable [@Topology.IsLawson α _ L] [@Topology.IsLower α l _] [@Topology.IsScott α _ S]
