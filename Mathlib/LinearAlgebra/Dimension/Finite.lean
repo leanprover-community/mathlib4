@@ -217,9 +217,7 @@ lemma exists_set_linearIndependent_of_lt_rank {n : Cardinal} (hn : n < Module.ra
   obtain ⟨t, ht, ht'⟩ := le_mk_iff_exists_subset.mp hs'.le
   exact ⟨t, ht', .mono ht hs⟩
 
-variable {n : ℕ} (hn : n ≤ Module.rank R M)
-
-lemma exists_finset_linearIndependent_of_le_rank :
+lemma exists_finset_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.rank R M) :
     ∃ s : Finset M, s.card = n ∧ LinearIndependent R ((↑) : s → M) := by
   letI := nonempty_linearIndependent_set
   cases' hn.eq_or_lt with h h
@@ -233,22 +231,22 @@ lemma exists_finset_linearIndependent_of_le_rank :
     cases nonempty_fintype s
     exact ⟨s.toFinset, by simpa using hs, by convert hs' <;> exact Set.mem_toFinset⟩
 
-lemma exists_linearIndependent_of_le_rank :
+lemma exists_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.rank R M) :
     ∃ f : Fin n → M, LinearIndependent R f :=
   have ⟨_, hs, hs'⟩ := exists_finset_linearIndependent_of_le_rank hn
   ⟨_, (linearIndependent_equiv (Finset.equivFinOfCardEq hs).symm).mpr hs'⟩
 
-lemma natCast_le_rank_iff :
+lemma natCast_le_rank_iff {n : ℕ} :
     n ≤ Module.rank R M ↔ ∃ f : Fin n → M, LinearIndependent R f :=
   ⟨exists_linearIndependent_of_le_rank,
     fun H ↦ by simpa using H.choose_spec.cardinal_lift_le_rank⟩
 
-lemma natCast_le_rank_iff_finset :
+lemma natCast_le_rank_iff_finset {n : ℕ} :
     n ≤ Module.rank R M ↔ ∃ s : Finset M, s.card = n ∧ LinearIndependent R ((↑) : s → M) :=
   ⟨exists_finset_linearIndependent_of_le_rank,
     fun ⟨s, h₁, h₂⟩ ↦ by simpa [h₁] using h₂.cardinal_le_rank⟩
 
-lemma exists_finset_linearIndependent_of_le_finrank :
+lemma exists_finset_linearIndependent_of_le_finrank {n : ℕ} (hn : n ≤ finrank R M) :
     ∃ s : Finset M, s.card = n ∧ LinearIndependent R ((↑) : s → M) := by
   by_cases h : finrank R M = 0
   · rw [le_zero_iff.mp (hn.trans_eq h)]
@@ -256,7 +254,7 @@ lemma exists_finset_linearIndependent_of_le_finrank :
   exact exists_finset_linearIndependent_of_le_rank
     ((natCast_le.mpr hn).trans_eq (cast_toNat_of_lt_aleph0 (toNat_ne_zero.mp h).2))
 
-lemma exists_linearIndependent_of_le_finrank :
+lemma exists_linearIndependent_of_le_finrank {n : ℕ} (hn : n ≤ finrank R M) :
     ∃ f : Fin n → M, LinearIndependent R f :=
   have ⟨_, hs, hs'⟩ := exists_finset_linearIndependent_of_le_finrank hn
   ⟨_, (linearIndependent_equiv (Finset.equivFinOfCardEq hs).symm).mpr hs'⟩
