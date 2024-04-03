@@ -116,21 +116,15 @@ lemma zpow_left (h : Commute a b) (m : ℤ) : Commute (a ^ m) b := (h.symm.zpow_
 
 variable (a) (m n : ℤ)
 
-@[to_additive]
-theorem self_zpow : Commute a (a ^ n) :=
-  (Commute.refl a).zpow_right n
+@[to_additive] lemma self_zpow : Commute a (a ^ n) := (Commute.refl a).zpow_right n
 #align commute.self_zpow Commute.self_zpow
 #align add_commute.self_zsmul AddCommute.self_zsmul
 
-@[to_additive]
-theorem zpow_self : Commute (a ^ n) a :=
-  (Commute.refl a).zpow_left n
+@[to_additive] lemma zpow_self : Commute (a ^ n) a := (Commute.refl a).zpow_left n
 #align commute.zpow_self Commute.zpow_self
 #align add_commute.zsmul_self AddCommute.zsmul_self
 
-@[to_additive]
-theorem zpow_zpow_self : Commute (a ^ m) (a ^ n) :=
-  (Commute.refl a).zpow_zpow m n
+@[to_additive] lemma zpow_zpow_self : Commute (a ^ m) (a ^ n) := (Commute.refl a).zpow_zpow m n
 #align commute.zpow_zpow_self Commute.zpow_zpow_self
 #align add_commute.zsmul_zsmul_self AddCommute.zsmul_zsmul_self
 
