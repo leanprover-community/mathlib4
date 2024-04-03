@@ -396,9 +396,9 @@ lemma lawsonClosed_iff_dirSupClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s
 
 end Preorder
 
-section CompleteLattice
+section PartialOrder
 
-variable [CompleteLattice α] [TopologicalSpace α] [IsLawson α]
+variable [PartialOrder α] [TopologicalSpace α] [IsLawson α]
 
 theorem isClosed_preimage_ofLawson (S : Set α) :
     IsClosed (Topology.WithLawson.ofLawson ⁻¹' S) ↔ IsClosed S := by
@@ -428,4 +428,4 @@ instance (priority := 90) t0Space : T0Space α where
       closure_eq_iff_isClosed.mpr (singletonIsClosed b), singleton_eq_singleton_iff] at h
     exact h
 
-end CompleteLattice
+end PartialOrder
