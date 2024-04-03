@@ -284,14 +284,6 @@ namespace Sum
 variable {ια ιβ M : Type*} {α : (i : ια) → Type u} {β : (i : ιβ) → Type u}
 
 @[to_additive]
-instance instElimSMul [∀ i : ια, SMul M (α i)]
-    [∀ i : ιβ, SMul M (β i)] (i : ια ⊕ ιβ) :
-    SMul M (Sum.elim α β i) :=
-  match i with
-  | Sum.inl i => inferInstanceAs (SMul M (α i))
-  | Sum.inr i => inferInstanceAs (SMul M (β i))
-
-@[to_additive]
 instance instElimMulAction [Monoid M] [∀ i : ια, MulAction M (α i)]
     [∀ i : ιβ, MulAction M (β i)] (i : ια ⊕ ιβ) : MulAction M (Sum.elim α β i) :=
   { one_smul := fun _ => match i with
