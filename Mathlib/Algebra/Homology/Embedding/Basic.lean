@@ -162,6 +162,11 @@ lemma not_mem_next_boundaryGE [e.IsRelIff] {j k : ι} (hk : c.Rel j k) :
   intro
   exact ⟨j, by simpa only [e.rel_iff] using hk⟩
 
+variable {e} in
+lemma BoundaryGE.not_mem {j : ι} (hj : e.BoundaryGE j) {i' : ι'} (hi' : c'.Rel i' (e.f j))
+    (a : ι) : e.f a ≠ i' := fun ha =>
+  hj.2 a (by simpa only [ha] using hi')
+
 /-- The upper boundary of an embedding `e : Embedding c c'`, as a predicate on `ι`.
 It is satisfied by `j : ι` when there exists `k' : ι'` not in the image of `e.f`
 such that `c'.Rel (e.f j) k'`. -/
@@ -182,6 +187,11 @@ lemma not_mem_prev_boundaryLE [e.IsRelIff] {i j : ι} (hi : c.Rel i j) :
   simp only [not_and, not_forall, not_not]
   intro
   exact ⟨j, by simpa only [e.rel_iff] using hi⟩
+
+variable {e} in
+lemma BoundaryLE.not_mem {j : ι} (hj : e.BoundaryLE j) {k' : ι'} (hk' : c'.Rel (e.f j) k')
+    (a : ι) : e.f a ≠ k' := fun ha =>
+  hj.2 a (by simpa only [ha] using hk')
 
 end Embedding
 

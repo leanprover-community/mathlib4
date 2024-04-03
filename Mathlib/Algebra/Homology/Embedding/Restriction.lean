@@ -19,6 +19,10 @@ def restriction : HomologicalComplex C c where
   d _ _ := K.d _ _
   shape i j hij := K.shape _ _ (by simpa only [← e.rel_iff] using hij)
 
+def restrictionXIso {i : ι} {i' : ι'} (h : e.f i = i') :
+    (K.restriction e).X i ≅ K.X i' :=
+  eqToIso (by subst h; rfl)
+
 variable {K L}
 
 @[simps]
