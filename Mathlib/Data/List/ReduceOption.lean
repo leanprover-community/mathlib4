@@ -77,8 +77,8 @@ theorem reduceOption_length_eq_iff {l : List (Option α)} :
 theorem reduceOption_length_lt_iff {l : List (Option α)} :
     l.reduceOption.length < l.length ↔ none ∈ l := by
   rw [(reduceOption_length_le l).lt_iff_ne, Ne, reduceOption_length_eq_iff]
-  induction l <;> simp [*]
-  rw [@eq_comm _ none, ← Option.not_isSome_iff_eq_none, Decidable.imp_iff_not_or]
+  induction l <;>
+    simp [*, @eq_comm _ none, ← Option.not_isSome_iff_eq_none, Decidable.imp_iff_not_or]
 #align list.reduce_option_length_lt_iff List.reduceOption_length_lt_iff
 
 theorem reduceOption_singleton (x : Option α) : [x].reduceOption = x.toList := by cases x <;> rfl
@@ -105,4 +105,3 @@ theorem reduceOption_get?_iff {l : List (Option α)} {x : α} :
     (∃ i, l.get? i = some (some x)) ↔ ∃ i, l.reduceOption.get? i = some x := by
   rw [← mem_iff_get?, ← mem_iff_get?, reduceOption_mem_iff]
 #align list.reduce_option_nth_iff List.reduceOption_get?_iff
-
