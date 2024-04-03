@@ -789,7 +789,8 @@ theorem floor_int_add (z : ℤ) (a : α) : ⌊↑z + a⌋ = z + ⌊a⌋ := by
 #align int.floor_int_add Int.floor_int_add
 
 @[simp]
-theorem floor_add_nat (a : α) (n : ℕ) : ⌊a + n⌋ = ⌊a⌋ + n := by rw [← Int.cast_natCast, floor_add_int]
+theorem floor_add_nat (a : α) (n : ℕ) : ⌊a + n⌋ = ⌊a⌋ + n := by
+  rw [← Int.cast_natCast, floor_add_int]
 #align int.floor_add_nat Int.floor_add_nat
 
 -- See note [no_index around OfNat.ofNat]
@@ -815,7 +816,8 @@ theorem floor_sub_int (a : α) (z : ℤ) : ⌊a - z⌋ = ⌊a⌋ - z :=
 #align int.floor_sub_int Int.floor_sub_int
 
 @[simp]
-theorem floor_sub_nat (a : α) (n : ℕ) : ⌊a - n⌋ = ⌊a⌋ - n := by rw [← Int.cast_natCast, floor_sub_int]
+theorem floor_sub_nat (a : α) (n : ℕ) : ⌊a - n⌋ = ⌊a⌋ - n := by
+  rw [← Int.cast_natCast, floor_sub_int]
 #align int.floor_sub_nat Int.floor_sub_nat
 
 @[simp] theorem floor_sub_one (a : α) : ⌊a - 1⌋ = ⌊a⌋ - 1 := mod_cast floor_sub_nat a 1

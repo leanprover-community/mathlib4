@@ -1044,7 +1044,8 @@ theorem coe_valMinAbs : ∀ {n : ℕ} (x : ZMod n), (x.valMinAbs : ZMod n) = x
     rw [valMinAbs_def_pos]
     split_ifs
     · rw [Int.cast_natCast, nat_cast_zmod_val]
-    · rw [Int.cast_sub, Int.cast_natCast, nat_cast_zmod_val, Int.cast_natCast, nat_cast_self, sub_zero]
+    · rw [Int.cast_sub, Int.cast_natCast, nat_cast_zmod_val, Int.cast_natCast, nat_cast_self,
+        sub_zero]
 #align zmod.coe_val_min_abs ZMod.coe_valMinAbs
 
 theorem injective_valMinAbs {n : ℕ} : (valMinAbs : ZMod n → ℤ).Injective :=
