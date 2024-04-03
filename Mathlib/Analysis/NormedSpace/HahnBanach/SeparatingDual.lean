@@ -168,7 +168,7 @@ lemma completeSpace_of_completeSpace_continuousLinearMap [CompleteSpace (E →L[
 
 lemma completeSpace_continuousLinearMap_iff :
     CompleteSpace (E →L[𝕜] F) ↔ CompleteSpace F :=
-  ⟨fun h ↦ completeSpace_of_completeSpace_continuousLinearMap 𝕜 E F, fun h ↦ by infer_instance⟩
+  ⟨fun _h ↦ completeSpace_of_completeSpace_continuousLinearMap 𝕜 E F, fun _h ↦ inferInstance⟩
 
 open ContinuousMultilinearMap
 
@@ -196,8 +196,7 @@ lemma completeSpace_of_completeSpace_continuousMultilinearMap
 
 lemma completeSpace_continuousMultilinearMap_iff {m : ∀ i, M i} (hm : ∀ i, m i ≠ 0) :
     CompleteSpace (ContinuousMultilinearMap 𝕜 M F) ↔ CompleteSpace F :=
-  ⟨fun h ↦ completeSpace_of_completeSpace_continuousMultilinearMap 𝕜 F hm,
-    fun h ↦ by infer_instance⟩
+  ⟨fun _h ↦ completeSpace_of_completeSpace_continuousMultilinearMap 𝕜 F hm, fun _h ↦ inferInstance⟩
 
 end
 

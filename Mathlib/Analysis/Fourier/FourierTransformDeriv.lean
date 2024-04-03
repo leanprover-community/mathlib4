@@ -139,8 +139,8 @@ variable {f}
 /-- Main theorem of this section: if both `f` and `x ↦ ‖x‖ * ‖f x‖` are integrable, then the
 Fourier transform of `f` has a Fréchet derivative (everywhere in its domain) and its derivative is
 the Fourier transform of `smulRight L f`. -/
-theorem hasFDerivAt_fourierIntegral [MeasurableSpace V] [BorelSpace V] [SecondCountableTopology V]
-    {μ : Measure V}
+theorem hasFDerivAt_fourierIntegral
+    [MeasurableSpace V] [BorelSpace V] [SecondCountableTopology V] {μ : Measure V}
     (hf : Integrable f μ) (hf' : Integrable (fun v : V ↦ ‖v‖ * ‖f v‖) μ) (w : W) :
     HasFDerivAt (fourierIntegral 𝐞 μ L.toLinearMap₂ f)
       (fourierIntegral 𝐞 μ L.toLinearMap₂ (fourierSMulRight L f) w) w := by
@@ -165,15 +165,15 @@ theorem hasFDerivAt_fourierIntegral [MeasurableSpace V] [BorelSpace V] [SecondCo
     ae_of_all _ (fun v w' _ ↦ hasFDerivAt_fourierChar_smul L f v w')
   exact hasFDerivAt_integral_of_dominated_of_fderiv_le one_pos h1 (h0 w) h3 h4 h5 h6
 
-lemma fderiv_fourierIntegral [MeasurableSpace V] [BorelSpace V] [SecondCountableTopology V]
-    {μ : Measure V}
+lemma fderiv_fourierIntegral
+    [MeasurableSpace V] [BorelSpace V] [SecondCountableTopology V] {μ : Measure V}
     (hf : Integrable f μ) (hf' : Integrable (fun v : V ↦ ‖v‖ * ‖f v‖) μ) (w : W) :
     fderiv ℝ (fourierIntegral 𝐞 μ L.toLinearMap₂ f) w =
       fourierIntegral 𝐞 μ L.toLinearMap₂ (fourierSMulRight L f) w :=
   (hasFDerivAt_fourierIntegral L hf hf' w).fderiv
 
-lemma differentiable_fourierIntegral [MeasurableSpace V] [BorelSpace V] [SecondCountableTopology V]
-    {μ : Measure V}
+lemma differentiable_fourierIntegral
+    [MeasurableSpace V] [BorelSpace V] [SecondCountableTopology V] {μ : Measure V}
     (hf : Integrable f μ) (hf' : Integrable (fun v : V ↦ ‖v‖ * ‖f v‖) μ) :
     Differentiable ℝ (fourierIntegral 𝐞 μ L.toLinearMap₂ f) :=
   fun w ↦ (hasFDerivAt_fourierIntegral L hf hf' w).differentiableAt
@@ -337,7 +337,7 @@ namespace Real
 open VectorFourier
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
-  [MeasurableSpace V] [BorelSpace V] [CompleteSpace E] {f : V → E}
+  [MeasurableSpace V] [BorelSpace V] {f : V → E}
 
 /-- The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of
     `fun v ↦ -2 * π * I ⟪v, ⬝⟫ f v`. -/
