@@ -87,8 +87,8 @@ instance : Group M.group := QuotientGroup.Quotient.group _
 def simple (i : B) : M.group := PresentedGroup.of i
 
 theorem reindex_relationsSet :
-    (M.reindex e).relationsSet =
-    (FreeGroup.freeGroupCongr e) '' M.relationsSet := let M' := M.reindex e; calc
+    (reindex e M).relationsSet =
+    (FreeGroup.freeGroupCongr e) '' M.relationsSet := let M' := reindex e M; calc
   Set.range (uncurry M'.relation)
   _ = Set.range ((uncurry M'.relation) ∘ Prod.map e e) := by simp [Set.range_comp]
   _ = Set.range ((FreeGroup.freeGroupCongr e) ∘ uncurry M.relation) := by
