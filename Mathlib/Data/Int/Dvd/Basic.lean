@@ -51,4 +51,9 @@ theorem dvd_natCast {n : ℕ} {z : ℤ} : z ∣ (↑n : ℤ) ↔ z.natAbs ∣ n 
 
 #align int.dvd_antisymm Int.dvd_antisymm
 
+-- 2024-04-02
+@[deprecated] alias coe_nat_dvd := natCast_dvd_natCast
+@[deprecated] alias coe_nat_dvd_right := dvd_natCast
+@[deprecated] alias coe_nat_dvd_left := natCast_dvd
+
 end Int

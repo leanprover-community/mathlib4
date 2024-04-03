@@ -11,17 +11,12 @@ import Std.Data.Int.Order
 
 open Nat
 
--- TODO: backport?
 #align int.neg_succ_of_nat Int.negSucc
 
 -- @[inherit_doc]
 notation "ℤ" => Int
 
 namespace Int
-
-protected theorem natCast_eq (n : ℕ) : ↑n = Int.ofNat n :=
-  rfl
-#align int.coe_nat_eq Int.natCast_eq
 
 #align int.of_nat_zero Int.ofNat_zero
 #align int.of_nat_one Int.ofNat_one

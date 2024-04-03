@@ -26,6 +26,10 @@ instance instNontrivialInt : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
 @[simp] lemma ofNat_eq_natCast : Int.ofNat n = n := rfl
 
+-- 2024-03-24
+@[deprecated ofNat_eq_natCast] protected lemma natCast_eq_ofNat (n : ℕ) : ↑n = Int.ofNat n := rfl
+#align int.coe_nat_eq Int.natCast_eq_ofNat
+
 @[norm_cast] lemma natCast_inj : (m : ℤ) = (n : ℤ) ↔ m = n := ofNat_inj
 #align int.coe_nat_inj' Int.natCast_inj
 
@@ -215,8 +219,8 @@ lemma ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -((-
 #align int.nat_abs_sign Int.natAbs_sign
 #align int.nat_abs_sign_of_nonzero Int.natAbs_sign_of_nonzero
 
-lemma sign_natCast_of_nonzero {n : ℕ} (hn : n ≠ 0) : Int.sign n = 1 := sign_ofNat_of_nonzero hn
-#align int.sign_coe_nat_of_nonzero Int.sign_natCast_of_nonzero
+lemma sign_natCast_of_ne_zero (hn : n ≠ 0) : Int.sign n = 1 := sign_ofNat_of_nonzero hn
+#align int.sign_coe_nat_of_nonzero Int.sign_natCast_of_ne_zero
 
 #align int.div_sign Int.div_sign -- int div alignment
 #align int.of_nat_add_neg_succ_of_nat_of_lt Int.ofNat_add_negSucc_of_lt
@@ -247,3 +251,18 @@ lemma sign_natCast_of_nonzero {n : ℕ} (hn : n ≠ 0) : Int.sign n = 1 := sign_
 
 -- Porting note: this was added in an ad hoc port for use in `Tactic/NormNum/Basic`
 @[simp] lemma pow_eq (m : ℤ) (n : ℕ) : m.pow n = m ^ n := rfl
+
+-- 2024-04-02
+@[deprecated] alias ofNat_eq_cast := ofNat_eq_natCast
+@[deprecated] alias cast_eq_cast_iff_Nat := natCast_inj
+@[deprecated] alias coe_nat_sub := Int.natCast_sub
+@[deprecated] alias coe_nat_nonneg := natCast_nonneg
+@[deprecated] alias sign_coe_add_one := sign_natCast_add_one
+@[deprecated] alias nat_succ_eq_int_succ := natCast_succ
+@[deprecated] alias succ_neg_nat_succ := succ_neg_natCast_succ
+@[deprecated] alias coe_pred_of_pos := natCast_pred_of_pos
+@[deprecated] alias coe_nat_div := natCast_div
+@[deprecated] alias coe_nat_ediv := natCast_ediv
+@[deprecated] alias sign_coe_nat_of_nonzero := sign_natCast_of_ne_zero
+@[deprecated] alias toNat_coe_nat := toNat_natCast
+@[deprecated] alias toNat_coe_nat_add_one := toNat_natCast_add_one

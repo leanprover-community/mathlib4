@@ -1088,8 +1088,8 @@ lemma pow_mod_card (a : G) (n : ℕ) : a ^ (n % card G) = a ^ n := by
 
 @[to_additive (attr := simp) mod_card_zsmul]
 theorem zpow_mod_card (a : G) (n : ℤ) : a ^ (n % Fintype.card G : ℤ) = a ^ n := by
-  rw [eq_comm, ← zpow_mod_orderOf,
-    ← Int.emod_emod_of_dvd n (Int.natCast_dvd_natCast.2 orderOf_dvd_card), zpow_mod_orderOf]
+  rw [eq_comm, ← zpow_mod_orderOf, ← Int.emod_emod_of_dvd n
+    (Int.natCast_dvd_natCast.2 orderOf_dvd_card), zpow_mod_orderOf]
 #align zpow_eq_mod_card zpow_mod_card
 #align zsmul_eq_mod_card mod_card_zsmul
 
