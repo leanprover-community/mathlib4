@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Field.IsField
-import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Logic.Equiv.Set
@@ -285,7 +285,7 @@ theorem symm_symm (e : R ≃+* S) : e.symm.symm = e :=
   ext fun _ => rfl
 #align ring_equiv.symm_symm RingEquiv.symm_symm
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem symm_refl : (RingEquiv.refl R).symm = RingEquiv.refl R :=
   rfl
@@ -831,15 +831,18 @@ def ofHomInv {R S F G : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
 
 end SemiringHom
 
-section GroupPower
-
 variable [Semiring R] [Semiring S]
+
+section GroupPower
 
 protected theorem map_pow (f : R ≃+* S) (a) : ∀ n : ℕ, f (a ^ n) = f a ^ n :=
   map_pow f a
 #align ring_equiv.map_pow RingEquiv.map_pow
 
 end GroupPower
+
+protected theorem isUnit_iff (f : R ≃+* S) {a} : IsUnit (f a) ↔ IsUnit a :=
+  MulEquiv.map_isUnit_iff f
 
 end RingEquiv
 

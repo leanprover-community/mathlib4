@@ -72,8 +72,8 @@ theorem ext_iff {a1 a2 : { x // p x }} : a1 = a2 ↔ (a1 : α) = (a2 : α) :=
 
 theorem heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x // q x }} :
     HEq a1 a2 ↔ (a1 : α) = (a2 : α) :=
-  Eq.rec (motive := λ (pp: (α → Prop)) _ => ∀ a2' : {x // pp x}, HEq a1 a2' ↔ (a1 : α) = (a2' : α))
-         (λ _ => heq_iff_eq.trans ext_iff) (funext <| λ x => propext (h x)) a2
+  Eq.rec (motive := fun (pp: (α → Prop)) _ ↦ ∀ a2' : {x // pp x}, HEq a1 a2' ↔ (a1 : α) = (a2' : α))
+         (fun _ ↦ heq_iff_eq.trans ext_iff) (funext <| fun x ↦ propext (h x)) a2
 #align subtype.heq_iff_coe_eq Subtype.heq_iff_coe_eq
 
 lemma heq_iff_coe_heq {α β : Sort _} {p : α → Prop} {q : β → Prop} {a : {x // p x}}
@@ -202,6 +202,11 @@ def map {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ a, p a → 
   fun x ↦ ⟨f x, h x x.prop⟩
 #align subtype.map Subtype.map
 #align subtype.map_coe Subtype.map_coe
+
+-- Adaptation note: nightly-2024-03-16: added to replace simp [Subtype.map]
+theorem map_def {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ a, p a → q (f a)) :
+    map f h = fun x ↦ ⟨f x, h x x.prop⟩ :=
+  rfl
 
 theorem map_comp {p : α → Prop} {q : β → Prop} {r : γ → Prop} {x : Subtype p}
     (f : α → β) (h : ∀ a, p a → q (f a)) (g : β → γ) (l : ∀ a, q a → r (g a)) :

@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.FinCategory.Basic
 
 universe w v u
 
-open Classical
+open scoped Classical
 
 noncomputable section
 

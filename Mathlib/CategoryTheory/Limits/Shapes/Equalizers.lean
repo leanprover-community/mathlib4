@@ -202,7 +202,6 @@ theorem walkingParallelPairOpEquiv_counitIso_one :
 #align category_theory.limits.walking_parallel_pair_op_equiv_counit_iso_one CategoryTheory.Limits.walkingParallelPairOpEquiv_counitIso_one
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X Y : C}
 
 /-- `parallelPair f g` is the diagram in `C` consisting of the two morphisms `f` and `g` with
@@ -1116,7 +1115,7 @@ This is an isomorphism iff `G` preserves the equalizer of `f,g`; see
 noncomputable def equalizerComparison [HasEqualizer f g] [HasEqualizer (G.map f) (G.map g)] :
     G.obj (equalizer f g) ⟶ equalizer (G.map f) (G.map g) :=
   equalizer.lift (G.map (equalizer.ι _ _))
-    (by simp only [← G.map_comp]; rw[equalizer.condition])
+    (by simp only [← G.map_comp]; rw [equalizer.condition])
 #align category_theory.limits.equalizer_comparison CategoryTheory.Limits.equalizerComparison
 
 @[reassoc (attr := simp)]

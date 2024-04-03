@@ -16,7 +16,7 @@ This file characterises the covering sieves of the regular topology.
   regular topology if and only if it contains an effective epi.
 -/
 
-namespace CategoryTheory
+namespace CategoryTheory.regularTopology
 
 open Limits
 
@@ -27,7 +27,7 @@ For a preregular category, any sieve that contains an `EffectiveEpi` is a coveri
 regular topology.
 Note: This is one direction of `mem_sieves_iff_hasEffectiveEpiFamily`, but is needed for the proof.
 -/
-theorem regularTopology.mem_sieves_of_hasEffectiveEpi (S : Sieve X) :
+theorem mem_sieves_of_hasEffectiveEpi (S : Sieve X) :
     (∃ (Y : C) (π : Y ⟶ X), EffectiveEpi π ∧ S.arrows π) → (S ∈ (regularTopology C).sieves X) := by
   rintro ⟨Y, π, h⟩
   have h_le : Sieve.generate (Presieve.ofArrows (fun () ↦ Y) (fun _ ↦ π)) ≤ S := by
@@ -61,7 +61,7 @@ instance {Y Y' : C} (π : Y ⟶ X) [EffectiveEpi π]
     exact ⟨Y', π', inferInstance, Y', (𝟙 _), π' ≫ π, Presieve.ofArrows.mk (), (by simp)⟩
 
 /-- A sieve is a cover for the regular topology if and only if it contains an `EffectiveEpi`. -/
-theorem regularTopology.mem_sieves_iff_hasEffectiveEpi (S : Sieve X) :
+theorem mem_sieves_iff_hasEffectiveEpi (S : Sieve X) :
     (S ∈ (regularTopology C).sieves  X) ↔
     ∃ (Y : C) (π : Y ⟶ X), EffectiveEpi π ∧ (S.arrows π) := by
   constructor
@@ -77,4 +77,4 @@ theorem regularTopology.mem_sieves_iff_hasEffectiveEpi (S : Sieve X) :
       exact ⟨Y', π' ≫ π, inferInstance, (by simpa using H)⟩
   · exact regularTopology.mem_sieves_of_hasEffectiveEpi S
 
-end CategoryTheory
+end CategoryTheory.regularTopology

@@ -330,7 +330,7 @@ variable [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
 
 section
 
-open Classical
+open scoped Classical
 
 /-- `factors a` is a multiset of irreducible elements whose product is `a`, up to units -/
 noncomputable def factors (a : R) : Multiset R :=
@@ -379,7 +379,6 @@ section Surjective
 open Submodule
 
 variable {S N : Type*} [Ring R] [AddCommGroup M] [AddCommGroup N] [Ring S]
-
 variable [Module R M] [Module R N]
 
 theorem Submodule.IsPrincipal.of_comap (f : M →ₗ[R] N) (hf : Function.Surjective f)

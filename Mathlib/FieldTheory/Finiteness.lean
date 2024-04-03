@@ -17,7 +17,8 @@ import Mathlib.LinearAlgebra.Dimension.Finite
 
 universe u v
 
-open Classical Cardinal
+open scoped Classical
+open Cardinal
 
 open Cardinal Submodule Module Function
 

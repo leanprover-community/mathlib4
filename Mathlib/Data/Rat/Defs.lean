@@ -61,7 +61,7 @@ theorem coe_int_den (n : ℤ) : (n : ℚ).den = 1 :=
 
 #noalign rat.mk_pnat
 
--- Porting note: TODO Should this be namespaced?
+-- Porting note (#11215): TODO Should this be namespaced?
 #align rat.mk_nat mkRat
 
 #noalign rat.mk_pnat_eq
@@ -202,7 +202,7 @@ theorem inv_def' {a b : ℤ} : (a /. b)⁻¹ = b /. a := inv_divInt ..
 
 variable (a b c : ℚ)
 
--- Porting note: TODO this is a workaround.
+-- Porting note (#11215): TODO this is a workaround.
 attribute [-simp] divInt_ofNat
 
 protected theorem add_zero : a + 0 = a :=
@@ -245,7 +245,9 @@ theorem divInt_zero_one : 0 /. 1 = 0 :=
 theorem divInt_one_one : 1 /. 1 = 1 :=
   show divInt _ _ = _ by
     rw [divInt]
-    simp [mkRat, normalize]
+    simp only [inline, mkRat, one_ne_zero, ↓reduceDite, normalize, Int.natAbs_one, Nat.gcd_self,
+      maybeNormalize_eq, Nat.cast_one, ne_eq, not_false_eq_true, Int.div_self, zero_lt_one,
+      Nat.div_self, mk_den_one]
     rfl
 #align rat.mk_one_one Rat.divInt_one_one
 
@@ -253,7 +255,9 @@ theorem divInt_one_one : 1 /. 1 = 1 :=
 theorem divInt_neg_one_one : -1 /. 1 = -1 :=
   show divInt _ _ = _ by
     rw [divInt]
-    simp [mkRat, normalize]
+    simp only [inline, mkRat, one_ne_zero, ↓reduceDite, normalize, Int.reduceNeg, Int.natAbs_neg,
+      Int.natAbs_one, Nat.gcd_self, maybeNormalize_eq, Nat.cast_one, Int.div_one, zero_lt_one,
+      Nat.div_self, mk_den_one, intCast_neg]
     rfl
 #align rat.mk_neg_one_one Rat.divInt_neg_one_one
 
@@ -282,7 +286,7 @@ protected theorem add_mul : (a + b) * c = a * c + b * c :=
       numDenCasesOn' c fun n₃ d₃ h₃ => by
         simp only [ne_eq, Nat.cast_eq_zero, h₁, not_false_eq_true, h₂, add_def'', mul_eq_zero,
           or_self, h₃, mul_def']
-        rw [← divInt_mul_right (Int.coe_nat_ne_zero.2 h₃), add_mul, add_mul]
+        rw [← divInt_mul_right (Int.natCast_ne_zero.2 h₃), add_mul, add_mul]
         ac_rfl
 #align rat.add_mul Rat.add_mul
 
@@ -332,6 +336,8 @@ instance commRing : CommRing ℚ where
   left_distrib := Rat.mul_add
   right_distrib := Rat.add_mul
   sub_eq_add_neg := Rat.sub_eq_add_neg
+  nsmul := nsmulRec
+  zsmul := zsmulRec
   intCast := fun n => n
   natCast n := Int.cast n
   natCast_zero := rfl
@@ -557,7 +563,7 @@ theorem mkRat_eq_div {n : ℤ} {d : ℕ} : mkRat n d = n / d := by
   simp only [mkRat, zero_mk]
   by_cases h : d = 0
   · simp [h]
-  · simp [h, HDiv.hDiv, Rat.div, Div.div]
+  · simp only [h, ↓reduceDite, HDiv.hDiv, Div.div, Rat.div]
     unfold Rat.inv
     have h₁ : 0 < d := Nat.pos_iff_ne_zero.2 h
     have h₂ : ¬ (d : ℤ) < 0 := of_decide_eq_false rfl

@@ -293,7 +293,7 @@ lemma range_toContinuousMap :
 theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
     ClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) where
   toEmbedding := embedding_toContinuousMap A B
-  closed_range := by
+  isClosed_range := by
     simp only [range_toContinuousMap, Set.setOf_and, Set.setOf_forall]
     refine .inter (isClosed_singleton.preimage (ContinuousMap.continuous_eval_const 1)) <|
       isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ ?_

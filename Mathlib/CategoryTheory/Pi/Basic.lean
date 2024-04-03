@@ -101,7 +101,6 @@ def comapId : comap C (id : I → I) ≅ 𝟭 (∀ i, C i) where
 example (g : J → I) : (j : J) → Category (C (g j)) := by infer_instance
 
 variable {I}
-
 variable {K : Type w₂}
 
 /-- The natural isomorphism comparing between
@@ -197,7 +196,6 @@ end Pi
 namespace Functor
 
 variable {C}
-
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)] {A : Type u₃} [Category.{v₃} A]
 
 /-- Assemble an `I`-indexed family of functors into a functor between the pi types.
@@ -266,9 +264,7 @@ end Functor
 namespace NatTrans
 
 variable {C}
-
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
-
 variable {F G : ∀ i, C i ⥤ D i}
 
 /-- Assemble an `I`-indexed family of natural transformations into a single natural transformation.

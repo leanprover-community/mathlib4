@@ -158,7 +158,7 @@ instance divInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ :=
     zpow_zero' := fun x => unop_injective <| DivInvMonoid.zpow_zero' x.unop,
     zpow_succ' := fun n x => unop_injective <| by
       simp only [Int.ofNat_eq_coe]
-      rw [unop_op, zpow_coe_nat, pow_succ', unop_mul, unop_op, zpow_coe_nat],
+      rw [unop_op, zpow_natCast, pow_succ', unop_mul, unop_op, zpow_natCast],
     zpow_neg' := fun z x => unop_injective <| DivInvMonoid.zpow_neg' z x.unop }
 
 @[to_additive AddOpposite.subtractionMonoid]
@@ -381,8 +381,8 @@ instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne �
 
 instance addCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne αᵃᵒᵖ :=
   { AddOpposite.addCommMonoidWithOne α, AddOpposite.addCommGroup α, AddOpposite.intCast α with
-    intCast_ofNat := λ _ ↦ congr_arg op <| Int.cast_ofNat _
-    intCast_negSucc := λ _ ↦ congr_arg op <| Int.cast_negSucc _ }
+    intCast_ofNat := fun _ ↦ congr_arg op <| Int.cast_ofNat _
+    intCast_negSucc := fun _ ↦ congr_arg op <| Int.cast_negSucc _ }
 
 variable {α}
 

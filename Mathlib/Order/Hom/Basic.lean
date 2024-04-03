@@ -237,7 +237,7 @@ protected theorem mono (f : α →o β) : Monotone f :=
 projection directly instead. -/
 def Simps.coe (f : α →o β) : α → β := f
 
-/- Porting note: TODO: all other DFunLike classes use `apply` instead of `coe`
+/- Porting note (#11215): TODO: all other DFunLike classes use `apply` instead of `coe`
 for the projection names. Maybe we should change this. -/
 initialize_simps_projections OrderHom (toFun → coe)
 
@@ -1147,7 +1147,6 @@ end Equiv
 namespace StrictMono
 
 variable [LinearOrder α] [Preorder β]
-
 variable (f : α → β) (h_mono : StrictMono f) (h_surj : Function.Surjective f)
 
 /-- A strictly monotone function with a right inverse is an order isomorphism. -/

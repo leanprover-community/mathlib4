@@ -6,7 +6,7 @@ Authors: Eric Wieser
 import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 import Mathlib.LinearAlgebra.TensorProduct.Opposite
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # The base change of a clifford algebra

@@ -577,7 +577,7 @@ theorem mul_sub_algebraMap_pow_commutes [Ring A] [Algebra R A] (x : A) (r : R) (
     x * (x - algebraMap R A r) ^ n = (x - algebraMap R A r) ^ n * x := by
   induction' n with n ih
   · simp
-  · rw [pow_succ, ← mul_assoc, mul_sub_algebraMap_commutes, mul_assoc, ih, ← mul_assoc]
+  · rw [pow_succ', ← mul_assoc, mul_sub_algebraMap_commutes, mul_assoc, ih, ← mul_assoc]
 #align algebra.mul_sub_algebra_map_pow_commutes Algebra.mul_sub_algebraMap_pow_commutes
 
 end CommSemiring
@@ -585,7 +585,6 @@ end CommSemiring
 section Ring
 
 variable [CommRing R]
-
 variable (R)
 
 /-- A `Semiring` that is an `Algebra` over a commutative ring carries a natural `Ring` structure.
@@ -896,7 +895,7 @@ variable (R)
 #align linear_map.coe_restrict_scalars_eq_coe LinearMap.coe_restrictScalars
 #align linear_map.coe_coe_is_scalar_tower LinearMap.coe_restrictScalars
 
--- Porting note: todo: generalize to `CompatibleSMul`
+-- Porting note (#11215): TODO: generalize to `CompatibleSMul`
 /-- `A`-linearly coerce an `R`-linear map from `M` to `A` to a function, given an algebra `A` over
 a commutative semiring `R` and `M` a module over `R`. -/
 def ltoFun (R : Type u) (M : Type v) (A : Type w) [CommSemiring R] [AddCommMonoid M] [Module R M]

@@ -27,8 +27,8 @@ This file defines the conversion between bilinear forms and matrices.
 ## Notations
 
 In this file we use the following type variables:
- - `M`, `M'`, ... are modules over the semiring `R`,
- - `M₁`, `M₁'`, ... are modules over the ring `R₁`,
+ - `M`, `M'`, ... are modules over the commutative semiring `R`,
+ - `M₁`, `M₁'`, ... are modules over the commutative ring `R₁`,
  - `M₂`, `M₂'`, ... are modules over the commutative semiring `R₂`,
  - `M₃`, `M₃'`, ... are modules over the commutative ring `R₃`,
  - `V`, ... is a vector space over the field `K`.
@@ -40,16 +40,11 @@ bilinear form, bilin form, BilinearForm, matrix, basis
 -/
 
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-
-variable {R₁ : Type*} {M₁ : Type*} [Ring R₁] [AddCommGroup M₁] [Module R₁ M₁]
-
+variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
 variable {R₂ : Type*} {M₂ : Type*} [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
-
 variable {R₃ : Type*} {M₃ : Type*} [CommRing R₃] [AddCommGroup M₃] [Module R₃ M₃]
-
 variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
-
 variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁} {B₂ : BilinForm R₂ M₂}
 
 section Matrix
@@ -79,7 +74,7 @@ theorem Matrix.toBilin'Aux_stdBasis [Fintype n] [DecidableEq n] (M : Matrix n n 
 
 This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
 def BilinForm.toMatrixAux (b : n → M₂) : BilinForm R₂ M₂ →ₗ[R₂] Matrix n n R₂ :=
-  (LinearMap.toMatrix₂Aux b b) ∘ₗ BilinForm.toLinHom (R₂ := R₂)
+  (LinearMap.toMatrix₂Aux b b) ∘ₗ BilinForm.toLinHom
 #align bilin_form.to_matrix_aux BilinForm.toMatrixAux
 
 @[simp]
@@ -295,9 +290,7 @@ theorem BilinForm.toMatrix_toBilin (M : Matrix n n R₂) :
 #align bilin_form.to_matrix_to_bilin BilinForm.toMatrix_toBilin
 
 variable {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂']
-
 variable (c : Basis o R₂ M₂')
-
 variable [DecidableEq o]
 
 -- Cannot be a `simp` lemma because `b` must be inferred.
@@ -359,9 +352,7 @@ section MatrixAdjoints
 open Matrix
 
 variable {n : Type*} [Fintype n]
-
 variable (b : Basis n R₃ M₃)
-
 variable (J J₃ A A' : Matrix n n R₃)
 
 @[simp]
@@ -432,7 +423,6 @@ section Det
 open Matrix
 
 variable {A : Type*} [CommRing A] [IsDomain A] [Module A M₃] (B₃ : BilinForm A M₃)
-
 variable {ι : Type*} [DecidableEq ι] [Fintype ι]
 
 theorem _root_.Matrix.nondegenerate_toBilin'_iff_nondegenerate_toBilin {M : Matrix ι ι R₂}

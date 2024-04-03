@@ -16,6 +16,7 @@ import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 import Mathlib.Tactic.CategoryTheory.Coherence
 import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Tactic.CategoryTheory.MonoidalComp
 import Mathlib.Tactic.CategoryTheory.Reassoc
 import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.Change
@@ -42,6 +43,7 @@ import Mathlib.Tactic.DeriveFintype
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.DeriveTraversable
 import Mathlib.Tactic.Eqns
+import Mathlib.Tactic.Eval
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Explode
 import Mathlib.Tactic.Explode.Datatypes

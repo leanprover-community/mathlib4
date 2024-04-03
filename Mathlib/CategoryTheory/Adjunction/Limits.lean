@@ -41,7 +41,6 @@ universe v u v₁ v₂ v₀ u₁ u₂
 section ArbitraryUniverse
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
 
 section PreservationColimits

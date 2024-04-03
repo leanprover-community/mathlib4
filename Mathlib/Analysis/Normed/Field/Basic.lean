@@ -322,7 +322,7 @@ instance Pi.nonUnitalSeminormedRing {π : ι → Type*} [Fintype ι]
 #align pi.non_unital_semi_normed_ring Pi.nonUnitalSeminormedRing
 
 instance MulOpposite.nonUnitalSeminormedRing : NonUnitalSeminormedRing αᵐᵒᵖ :=
-  { MulOpposite.seminormedAddCommGroup, MulOpposite.nonUnitalRing α with
+  { MulOpposite.seminormedAddCommGroup, MulOpposite.instNonUnitalRing α with
     norm_mul :=
       MulOpposite.rec' fun x =>
         MulOpposite.rec' fun y => (norm_mul_le y x).trans_eq (mul_comm _ _) }
@@ -406,7 +406,7 @@ See also `nnnorm_pow_le`. -/
 theorem nnnorm_pow_le' (a : α) : ∀ {n : ℕ}, 0 < n → ‖a ^ n‖₊ ≤ ‖a‖₊ ^ n
   | 1, _ => by simp only [pow_one, le_rfl]
   | n + 2, _ => by
-    simpa only [pow_succ _ (n + 1)] using
+    simpa only [pow_succ' _ (n + 1)] using
       le_trans (nnnorm_mul_le _ _) (mul_le_mul_left' (nnnorm_pow_le' a n.succ_pos) _)
 #align nnnorm_pow_le' nnnorm_pow_le'
 
@@ -449,7 +449,7 @@ instance Pi.seminormedRing {π : ι → Type*} [Fintype ι] [∀ i, SeminormedRi
 #align pi.semi_normed_ring Pi.seminormedRing
 
 instance MulOpposite.seminormedRing : SeminormedRing αᵐᵒᵖ :=
-  { MulOpposite.nonUnitalSeminormedRing, MulOpposite.ring α with }
+  { MulOpposite.nonUnitalSeminormedRing, MulOpposite.instRing α with }
 #align mul_opposite.semi_normed_ring MulOpposite.seminormedRing
 
 end SeminormedRing
@@ -532,7 +532,7 @@ instance Pi.nonUnitalSeminormedCommRing {π : ι → Type*} [Fintype ι]
   { Pi.nonUnitalSeminormedRing, Pi.nonUnitalCommRing with }
 
 instance MulOpposite.nonUnitalSeminormedCommRing : NonUnitalSeminormedCommRing αᵐᵒᵖ :=
-  { MulOpposite.nonUnitalSeminormedRing, MulOpposite.nonUnitalCommRing α with }
+  { MulOpposite.nonUnitalSeminormedRing, MulOpposite.instNonUnitalCommRing α with }
 
 end NonUnitalSeminormedCommRing
 
@@ -593,7 +593,7 @@ instance Pi.seminormedCommRing {π : ι → Type*} [Fintype ι] [∀ i, Seminorm
   { Pi.nonUnitalSeminormedCommRing, Pi.ring with }
 
 instance MulOpposite.seminormedCommRing : SeminormedCommRing αᵐᵒᵖ :=
-  { MulOpposite.nonUnitalSeminormedCommRing, MulOpposite.ring α with }
+  { MulOpposite.nonUnitalSeminormedCommRing, MulOpposite.instRing α with }
 
 end SeminormedCommRing
 
@@ -975,7 +975,7 @@ theorem punctured_nhds_neBot (x : α) : NeBot (𝓝[≠] x) := by
   rintro ε ε0
   rcases exists_norm_lt α ε0 with ⟨b, hb0, hbε⟩
   refine' ⟨x + b, mt (Set.mem_singleton_iff.trans add_right_eq_self).1 <| norm_pos_iff.1 hb0, _⟩
-  rwa [dist_comm, dist_eq_norm, add_sub_cancel']
+  rwa [dist_comm, dist_eq_norm, add_sub_cancel_left]
 #align normed_field.punctured_nhds_ne_bot NormedField.punctured_nhds_neBot
 
 @[instance]

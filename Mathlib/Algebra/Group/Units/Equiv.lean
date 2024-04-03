@@ -248,3 +248,10 @@ theorem MulEquiv.inv_symm (G : Type*) [DivisionCommMonoid G] :
   rfl
 #align mul_equiv.inv_symm MulEquiv.inv_symm
 -- Porting note: no `add_equiv.neg_symm` in `mathlib3`
+
+@[to_additive]
+protected
+theorem MulEquiv.map_isUnit_iff {M N} [Monoid M] [Monoid N] [EquivLike F M N] [MonoidHomClass F M N]
+    (f : F) {m : M} : IsUnit (f m) ↔ IsUnit m :=
+  isUnit_map_of_leftInverse (MonoidHom.inverse (f : M →* N) (EquivLike.inv f)
+    (EquivLike.left_inv f) <| EquivLike.right_inv f) (EquivLike.left_inv f)
