@@ -186,8 +186,8 @@ noncomputable def isLimit_forkOfι_equiv (P : Cᵒᵖ ⥤ D) {X B : C} (π : X �
     IsLimit (Fork.ofι (P.map π.op) (equalizerCondition_w P c)) ≃
     IsLimit (P.mapCone (Sieve.ofArrows (fun (_ : Unit) ↦ X) fun _ ↦ π).arrows.cocone.op) := by
   let S := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows
-  let X' : S.category := ⟨Over.mk π, ⟨_, 𝟙 _, π, ofArrows.mk (), Category.id_comp _⟩⟩
-  let P' : S.category := ⟨Over.mk (c.fst ≫ π), ⟨_, c.fst, π, ofArrows.mk (), rfl⟩⟩
+  let X' := S.categoryMk π ⟨_, 𝟙 _, π, ofArrows.mk (), Category.id_comp _⟩
+  let P' := S.categoryMk (c.fst ≫ π) ⟨_, c.fst, π, ofArrows.mk (), rfl⟩
   let fst : P' ⟶ X' := Over.homMk c.fst
   let snd : P' ⟶ X' := Over.homMk c.snd c.condition.symm
   let F : S.categoryᵒᵖ ⥤ D := S.diagram.op ⋙ P
