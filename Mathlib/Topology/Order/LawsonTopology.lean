@@ -192,10 +192,6 @@ lemma Scott_Hausdorff_le_Lawson' : scottHausdorff α  ≤ lawson α := by
   rw [lawson, le_inf_iff]
   exact ⟨@Scott_Hausdorff_le_Lower' α _, @scottHausdorff_le_scott α _⟩
 
-lemma LawsonOpen_implies_ScottHausdorffOpen''' (s : Set α) :
-    IsOpen (Topology.WithLawson.ofLawson ⁻¹' s) → (scottHausdorff α).IsOpen s :=
-  Scott_Hausdorff_le_Lawson' _
-
 lemma ScottOpen_implies_LawsonOpen (s : Set α) :
     IsOpen (Topology.WithScott.ofScott ⁻¹' s) → IsOpen (Topology.WithLawson.ofLawson ⁻¹' s) :=
   Lawson_le_Scott' _
@@ -232,7 +228,7 @@ lemma LawsonOpen_iff_ScottOpen' [Preorder α] (s : Set α) (h : IsUpperSet s) :
   · exact ScottOpen_implies_LawsonOpen _
   · intro hs
     rw [Topology.IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open]
-    exact ⟨h, LawsonOpen_implies_ScottHausdorffOpen''' _ hs⟩
+    exact ⟨h, (Scott_Hausdorff_le_Lawson' s) hs⟩
 
 variable (L : TopologicalSpace α) (l : TopologicalSpace α) (S : TopologicalSpace α)
 variable [Preorder α] [@Topology.IsLawson α _ L] [@Topology.IsLower α l _] [@Topology.IsScott α _ S]
