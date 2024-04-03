@@ -115,7 +115,8 @@ lemma mem_ball_re_aux {c : ℂ} {r : ℝ} {z : ℂ} :
   simp only [mem_preimage, mem_singleton_iff, mem_Ioo] at xRe xIm
   simp only [mem_ball]
   rw [dist_eq_re_im, xIm]
-  simp only [sub_self, ne_eq, not_false_eq_true, zero_pow', add_zero, Real.sqrt_sq_eq_abs, abs_lt]
+  simp only [sub_self, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, add_zero,
+    Real.sqrt_sq_eq_abs, abs_lt, neg_sub]
   refine ⟨by linarith, by linarith⟩
 
 lemma mem_ball_re_aux' {c : ℂ} {r : ℝ} {z : ℂ} {x : ℝ}
@@ -124,7 +125,7 @@ lemma mem_ball_re_aux' {c : ℂ} {r : ℝ} {z : ℂ} {x : ℝ}
   set r₁ := r - dist z c
   set s := Ioo (z.re - r₁) (z.re + r₁)
   have s_ball₁ : s ×ℂ {z.im} ⊆ ball z r₁ := mem_ball_re_aux
-  have s_ball : s ×ℂ {z.im} ⊆ ball c r := s_ball₁.trans (by apply ball_subset_ball'; simp)
+  have s_ball : s ×ℂ {z.im} ⊆ ball c r := s_ball₁.trans (by apply ball_subset_ball'; simp [r₁])
   apply s_ball
   rw [mem_reProdIm]
   simp only [add_re, ofReal_re, mul_re, I_re, mul_zero, ofReal_im, I_im, mul_one, sub_self,
@@ -254,8 +255,8 @@ lemma VanishesOnRectanglesInDisc.diff_of_wedges (hf : VanishesOnRectanglesInDisc
       WedgeInt c w f - WedgeInt c z f = WedgeInt z w f := by
   have hr : 0 < r := pos_of_mem_ball hz
   let r₁ := r - dist z c
-  have r₁_pos : 0 < r₁ := by simp only [mem_ball, gt_iff_lt] at hz ⊢; linarith
-  have z_ball : ball z r₁ ⊆ ball c r := ball_subset_ball' (by simp)
+  have r₁_pos : 0 < r₁ := by simp only [mem_ball, gt_iff_lt, r₁] at hz ⊢; linarith
+  have z_ball : ball z r₁ ⊆ ball c r := ball_subset_ball' (by simp [r₁])
   filter_upwards [ball_mem_nhds z r₁_pos]
   intro w w_in_z_ball
   have hzPlusH : w ∈ ball c r := mem_of_subset_of_mem z_ball w_in_z_ball
@@ -273,23 +274,23 @@ lemma VanishesOnRectanglesInDisc.diff_of_wedges (hf : VanishesOnRectanglesInDisc
       fun a₁ a₂ b ha₁ ha₂ ↦
         ContinuousOn.intervalIntegrable (f_cont.re_aux_2 ha₁ ha₂)
   have integrableVert : ∀ a b₁ b₂ : ℝ, a + b₁ * I ∈ ball c r → a + b₂ * I ∈ ball c r
-    → IntervalIntegrable (fun y ↦ f (a + y * I)) MeasureTheory.volume b₁ b₂
-  · intro a b₁ b₂ hb₁ hb₂
+    → IntervalIntegrable (fun y ↦ f (a + y * I)) MeasureTheory.volume b₁ b₂ := by
+    intro a b₁ b₂ hb₁ hb₂
     apply ContinuousOn.intervalIntegrable (f_cont.im_aux hb₁ hb₂)
-  have intIdecomp : intI = intIII + intVII
-  · rw [intervalIntegral.integral_add_adjacent_intervals] <;> apply integrableHoriz
+  have intIdecomp : intI = intIII + intVII := by
+    rw [intervalIntegral.integral_add_adjacent_intervals] <;> apply integrableHoriz
     · simp only [re_add_im, mem_ball, dist_self, hr]
     · exact cornerRectangle_in_disc hz
     · exact cornerRectangle_in_disc hz
     · exact cornerRectangle_in_disc hzPlusH
-  have intIIdecomp : intII = intVIII + intVI
-  · rw [← smul_add, intervalIntegral.integral_add_adjacent_intervals] <;> apply integrableVert
+  have intIIdecomp : intII = intVIII + intVI := by
+    rw [← smul_add, intervalIntegral.integral_add_adjacent_intervals] <;> apply integrableVert
     · exact cornerRectangle_in_disc hzPlusH
     · apply mem_of_subset_of_mem z_ball (cornerRectangle_in_disc w_in_z_ball)
     · apply mem_of_subset_of_mem z_ball (cornerRectangle_in_disc w_in_z_ball)
     · convert hzPlusH; simp
-  have rectZero : intVIII = - intVII + intV + intIV
-  · rw [← sub_eq_zero]
+  have rectZero : intVIII = - intVII + intV + intIV := by
+    rw [← sub_eq_zero]
     have : intVII - intV + intVIII - intIV = 0 := by
       have wzInBall : w.re + z.im * I ∈ ball c r :=
         by exact mem_of_subset_of_mem z_ball (cornerRectangle_in_disc w_in_z_ball)
@@ -303,19 +304,21 @@ lemma VanishesOnRectanglesInDisc.diff_of_wedges (hf : VanishesOnRectanglesInDisc
   rw [intIdecomp, intIIdecomp, rectZero]
   abel
 
+open MeasureTheory in
 /-- The integral of a continuous function `f` from `z` to `x + z.im * I` is equal to
   `(x - z.re) * f z` up to `o(x - z.re)`. -/
 lemma deriv_of_wedgeInt_re' : (fun (x : ℝ) ↦ (∫ t in z.re..x, f (t + z.im * I)) - (x - z.re) • f z)
     =o[𝓝 z.re] (fun (x : ℝ)  ↦ x - z.re) := by
   let r₁ := r - dist z c
+  have r₁_pos : 0 < r₁ := by simp only [mem_ball, gt_iff_lt, r₁] at hz ⊢; linarith
   let s : Set ℝ := Ioo (z.re - r₁) (z.re + r₁)
-  have zRe_mem_s : z.re ∈ s := by simp [mem_ball.mp hz]
+  have zRe_mem_s : z.re ∈ s := by simp [s, r₁_pos]
   have s_open : IsOpen s := isOpen_Ioo
   have f_contOn : ContinuousOn (fun (x : ℝ) ↦ f (x + z.im * I)) s := f_cont.re_aux_1
-  have int1 : IntervalIntegrable (fun (x : ℝ) ↦ f (x + z.im * I)) MeasureTheory.volume z.re z.re
-  · apply ContinuousOn.intervalIntegrable
+  have int1 : IntervalIntegrable (fun (x : ℝ) ↦ f (x + z.im * I)) volume z.re z.re := by
+    apply ContinuousOn.intervalIntegrable
     apply f_contOn.mono
-    simp [mem_ball.mp hz]
+    simpa [mem_ball.mp hz]
   have int2 : StronglyMeasurableAtFilter (fun (x : ℝ) ↦ f (x + z.im * I)) (𝓝 z.re) :=
     ContinuousOn.stronglyMeasurableAtFilter s_open f_contOn _ zRe_mem_s
   have int3 : ContinuousAt (fun (x : ℝ) ↦ f (x + z.im * I)) z.re :=
@@ -343,16 +346,16 @@ lemma deriv_of_wedgeInt_re :
   `f (w.re + y * I)` is equal to `(w - z).im * f z` up to `o(w - z)`, as `w` tends to `z`. -/
 lemma deriv_of_wedgeInt_im' : (fun w ↦ ∫ y in z.im..w.im, f (w.re + y * I) - f z)
     =o[𝓝 z] fun w ↦ w - z := by
-  have : (fun w ↦ f w - f z) =o[𝓝 z] fun (_ : ℂ) ↦ (1 : E)
-  · refine (Asymptotics.continuousAt_iff_isLittleO (f := f) (x := z)).mp
+  have : (fun w ↦ f w - f z) =o[𝓝 z] fun (_ : ℂ) ↦ (1 : E) := by
+    refine (Asymptotics.continuousAt_iff_isLittleO (f := f) (x := z)).mp
       ((f_cont z hz).continuousAt ?_)
     exact (IsOpen.mem_nhds_iff isOpen_ball).mpr hz
   rw [Asymptotics.IsLittleO] at this ⊢
   intro ε ε_pos
   have := this ε_pos
   simp only [Asymptotics.isBigOWith_iff, Pi.one_apply, norm_one, mul_one ] at this ⊢
-  have : ∀ᶠ (w : ℂ) in 𝓝 z, ∀ y ∈ Ι z.im w.im, ‖f (w.re + y * I) - f z‖ ≤ ε
-  · rw [Metric.nhds_basis_closedBall.eventually_iff] at this ⊢
+  have : ∀ᶠ (w : ℂ) in 𝓝 z, ∀ y ∈ Ι z.im w.im, ‖f (w.re + y * I) - f z‖ ≤ ε := by
+    rw [Metric.nhds_basis_closedBall.eventually_iff] at this ⊢
     obtain ⟨i, i_pos, hi⟩ := this
     refine ⟨i, i_pos, fun w w_in_ball y y_in_I ↦ hi (mem_closedBall_aux w_in_ball y_in_I)⟩
   apply this.mono (fun w hw ↦ ?_)
@@ -371,7 +374,7 @@ lemma deriv_of_wedgeInt_im : (fun w ↦ (∫ y in z.im..w.im, f (w.re + y * I)) 
     _ =ᶠ[𝓝 z] (fun w ↦ ∫ y in z.im..w.im, f (w.re + y * I) - f z) := ?_
     _ =o[𝓝 z] fun w ↦ w - z := deriv_of_wedgeInt_im' f_cont hz
   let r₁ := r - dist z c
-  have : 0 < r₁ := by simp only [mem_ball, gt_iff_lt] at hz ⊢; linarith
+  have : 0 < r₁ := by simp only [mem_ball, gt_iff_lt, r₁] at hz ⊢; linarith
   filter_upwards [ball_mem_nhds z this]
   intro w hw
   rw [intervalIntegral.integral_sub ?_ continuousOn_const.intervalIntegrable]
