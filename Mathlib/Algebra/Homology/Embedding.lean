@@ -123,7 +123,7 @@ namespace HomologicalComplex
 variable {c c'} {C : Type*} [Category C] [HasZeroMorphisms C]
   [HasZeroObject C]
 
-variable (K L : HomologicalComplex C c) (φ : K ⟶ L) (e : c.Embedding c')
+variable (K L M : HomologicalComplex C c) (φ : K ⟶ L) (φ' : L ⟶ M) (e : c.Embedding c')
 
 namespace extend
 
@@ -240,7 +240,7 @@ lemma extend_d_to_eq_zero (i' j' : ι') (j : ι) (hj : e.f j = j') (hj' : ¬ c.R
     obtain rfl := c.prev_eq' hij
     exact hj' hij
 
-variable {K L}
+variable {K L M}
 
 noncomputable def extendMap : K.extend e ⟶ L.extend e where
   f _ := extend.mapX φ _
@@ -263,7 +263,41 @@ noncomputable def extendMap : K.extend e ⟶ L.extend e where
       rw [extend.d_none_eq_zero _ _ _ hi', extend.d_none_eq_zero _ _ _ hi',
         comp_zero, zero_comp]
 
-variable (K L)
+lemma extendMap_f {i : ι} {i' : ι'} (h : e.f i = i') :
+    (extendMap φ e).f i' =
+      (extendXIso K e h).hom ≫ φ.f i ≫ (extendXIso L e h).inv := by
+  dsimp [extendMap]
+  rw [extend.mapX_some φ (e.r_eq_some h)]
+  rfl
+
+lemma extendMap_f_eq_zero (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
+    (extendMap φ e).f i' = 0 := by
+  dsimp [extendMap]
+  rw [extend.mapX_none φ (e.r_eq_none i' hi')]
+
+@[reassoc (attr := simp)]
+lemma extendMap_comp_f (i' : ι') :
+    (extendMap (φ ≫ φ') e).f i' = (extendMap φ e).f i' ≫ (extendMap φ' e).f i' := by
+  by_cases hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, hi⟩ := hi'
+    simp [extendMap_f _ e hi]
+  · simp [extendMap_f_eq_zero _ e i' (fun i hi => hi' ⟨i, hi⟩)]
+
+@[reassoc (attr := simp)]
+lemma extendMap_comp :
+    extendMap (φ ≫ φ') e = extendMap φ e ≫ extendMap φ' e := by aesop_cat
+
+variable (K L M)
+
+@[simp]
+lemma extendMap_id_f (i' : ι') : (extendMap (𝟙 K) e).f i' = 𝟙 _ := by
+  by_cases hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, hi⟩ := hi'
+    simp [extendMap_f _ e hi]
+  · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+
+@[simp]
+lemma extendMap_id : extendMap (𝟙 K) e = 𝟙 _ := by aesop_cat
 
 namespace extend
 
@@ -463,20 +497,21 @@ noncomputable def homologyData (h : (K.sc' i j k).HomologyData) :
   right := rightHomologyData K e hj' hi hi' hk hk' h.right
   iso := h.iso
 
+@[simps!]
+noncomputable def homologyData' (h : (K.sc' i j k).HomologyData) :
+    ((K.extend e).sc j').HomologyData :=
+  homologyData K e hj' hi rfl hk rfl h
+
 end HomologyData
 
-instance (j : ι) [K.HasHomology j] : (K.extend e).HasHomology (e.f j) :=
-  ShortComplex.HasHomology.mk'
-    (homologyData K e rfl rfl rfl rfl rfl ((K.sc j).homologyData))
+variable {j : ι} {j' : ι'} (hj' : e.f j = j')
 
-instance (j : ι) [K.HasHomology j] :
-    ((extend K e).sc' (c'.prev (e.f j)) (e.f j) (c'.next (e.f j))).HasHomology := by
-  change (K.extend e).HasHomology (e.f j)
-  infer_instance
+lemma hasHomology [K.HasHomology j] : (K.extend e).HasHomology j' :=
+  ShortComplex.HasHomology.mk'
+    (homologyData' K e hj' rfl rfl ((K.sc j).homologyData))
 
 instance (j : ι) [K.HasHomology j] : (K.extend e).HasHomology (e.f j) :=
-  ShortComplex.HasHomology.mk'
-    (homologyData K e rfl rfl rfl rfl rfl ((K.sc j).homologyData))
+  hasHomology K e rfl
 
 instance [∀ j, K.HasHomology j] (j' : ι') : (K.extend e).HasHomology j' := by
   by_cases h : ∃ j, e.f j = j'
@@ -490,28 +525,29 @@ end extend
 
 section
 
-variable (j : ι) [K.HasHomology j] [L.HasHomology j]
+variable {j : ι} {j' : ι'} (hj' : e.f j = j') [K.HasHomology j] [L.HasHomology j]
+  [(K.extend e).HasHomology j'] [(L.extend e).HasHomology j']
 
 noncomputable def extendCyclesIso :
-    (K.extend e).cycles (e.f j) ≅ K.cycles j :=
-  (extend.homologyData K e rfl rfl rfl rfl rfl (K.sc j).homologyData).left.cyclesIso ≪≫
+    (K.extend e).cycles j' ≅ K.cycles j :=
+  (extend.homologyData' K e hj' rfl rfl (K.sc j).homologyData).left.cyclesIso ≪≫
     (K.sc j).homologyData.left.cyclesIso.symm
 
 noncomputable def extendOpcyclesIso :
-    (K.extend e).opcycles (e.f j) ≅ K.opcycles j :=
-  (extend.homologyData K e rfl rfl rfl rfl rfl (K.sc j).homologyData).right.opcyclesIso ≪≫
+    (K.extend e).opcycles j' ≅ K.opcycles j :=
+  (extend.homologyData' K e hj' rfl rfl (K.sc j).homologyData).right.opcyclesIso ≪≫
     (K.sc j).homologyData.right.opcyclesIso.symm
 
 noncomputable def extendHomologyIso :
-    (K.extend e).homology (e.f j) ≅ K.homology j :=
-  (extend.homologyData K e rfl rfl rfl rfl rfl (K.sc j).homologyData).left.homologyIso ≪≫
+    (K.extend e).homology j' ≅ K.homology j :=
+  (extend.homologyData' K e hj' rfl rfl (K.sc j).homologyData).left.homologyIso ≪≫
     (K.sc j).homologyData.left.homologyIso.symm
 
 @[reassoc (attr := simp)]
 lemma extendCyclesIso_hom_iCycles :
-    (K.extendCyclesIso e j).hom ≫ K.iCycles j =
-      (K.extend e).iCycles (e.f j) ≫ (K.extendXIso e rfl).hom := by
-  rw [← cancel_epi (K.extendCyclesIso e j).inv, Iso.inv_hom_id_assoc]
+    (K.extendCyclesIso e hj').hom ≫ K.iCycles j =
+      (K.extend e).iCycles j' ≫ (K.extendXIso e hj').hom := by
+  rw [← cancel_epi (K.extendCyclesIso e hj').inv, Iso.inv_hom_id_assoc]
   dsimp [extendCyclesIso]
   rw [assoc]
   erw [ShortComplex.LeftHomologyData.cyclesIso_inv_comp_iCycles_assoc]
@@ -522,15 +558,15 @@ lemma extendCyclesIso_hom_iCycles :
 
 @[reassoc (attr := simp)]
 lemma extendCyclesIso_inv_iCycles :
-    (K.extendCyclesIso e j).inv ≫ (K.extend e).iCycles (e.f j) =
-      K.iCycles j ≫ (K.extendXIso e rfl).inv := by
-  simp only [← cancel_epi (K.extendCyclesIso e j).hom, Iso.hom_inv_id_assoc,
+    (K.extendCyclesIso e hj').inv ≫ (K.extend e).iCycles j' =
+      K.iCycles j ≫ (K.extendXIso e hj').inv := by
+  simp only [← cancel_epi (K.extendCyclesIso e hj').hom, Iso.hom_inv_id_assoc,
     extendCyclesIso_hom_iCycles_assoc, Iso.hom_inv_id, comp_id]
 
 @[reassoc (attr := simp)]
 lemma homologyπ_extendHomologyIso_hom :
-    (K.extend e).homologyπ (e.f j) ≫ (K.extendHomologyIso e j).hom =
-      (K.extendCyclesIso e j).hom ≫ K.homologyπ j := by
+    (K.extend e).homologyπ j' ≫ (K.extendHomologyIso e hj').hom =
+      (K.extendCyclesIso e hj').hom ≫ K.homologyπ j := by
   dsimp [extendHomologyIso]
   erw [ShortComplex.LeftHomologyData.homologyπ_comp_homologyIso_hom_assoc]
   rw [← cancel_mono (K.sc j).homologyData.left.homologyIso.hom,
@@ -541,16 +577,16 @@ lemma homologyπ_extendHomologyIso_hom :
 
 @[reassoc (attr := simp)]
 lemma homologyπ_extendHomologyIso_inv :
-    K.homologyπ j ≫ (K.extendHomologyIso e j).inv =
-      (K.extendCyclesIso e j).inv ≫ (K.extend e).homologyπ (e.f j) := by
-  simp only [← cancel_mono (K.extendHomologyIso e j).hom,
+    K.homologyπ j ≫ (K.extendHomologyIso e hj').inv =
+      (K.extendCyclesIso e hj').inv ≫ (K.extend e).homologyπ j' := by
+  simp only [← cancel_mono (K.extendHomologyIso e hj').hom,
     assoc, Iso.inv_hom_id, comp_id, homologyπ_extendHomologyIso_hom, Iso.inv_hom_id_assoc]
 
 @[reassoc (attr := simp)]
 lemma pOpcycles_extendOpcyclesIso_inv :
-    K.pOpcycles j ≫ (K.extendOpcyclesIso e j).inv =
-      (K.extendXIso e rfl).inv ≫ (K.extend e).pOpcycles (e.f j) := by
-  rw [← cancel_mono (K.extendOpcyclesIso e j).hom, assoc, assoc, Iso.inv_hom_id, comp_id]
+    K.pOpcycles j ≫ (K.extendOpcyclesIso e hj').inv =
+      (K.extendXIso e hj').inv ≫ (K.extend e).pOpcycles j' := by
+  rw [← cancel_mono (K.extendOpcyclesIso e hj').hom, assoc, assoc, Iso.inv_hom_id, comp_id]
   dsimp [extendOpcyclesIso]
   erw [ShortComplex.RightHomologyData.pOpcycles_comp_opcyclesIso_hom_assoc]
   dsimp
@@ -560,26 +596,43 @@ lemma pOpcycles_extendOpcyclesIso_inv :
 
 @[reassoc (attr := simp)]
 lemma pOpcycles_extendOpcyclesIso_hom :
-    (K.extend e).pOpcycles (e.f j) ≫ (K.extendOpcyclesIso e j).hom =
-    (K.extendXIso e rfl).hom ≫ K.pOpcycles j := by
-  simp only [← cancel_mono (K.extendOpcyclesIso e j).inv,
+    (K.extend e).pOpcycles j' ≫ (K.extendOpcyclesIso e hj').hom =
+    (K.extendXIso e hj').hom ≫ K.pOpcycles j := by
+  simp only [← cancel_mono (K.extendOpcyclesIso e hj').inv,
     assoc, Iso.hom_inv_id, comp_id, pOpcycles_extendOpcyclesIso_inv, Iso.hom_inv_id_assoc]
 
 @[reassoc (attr := simp)]
 lemma extendHomologyIso_hom_homologyι :
-    (K.extendHomologyIso e j).hom ≫ K.homologyι j =
-    (K.extend e).homologyι (e.f j) ≫ (K.extendOpcyclesIso e j).hom := by
-  simp only [← cancel_epi ((K.extend e).homologyπ (e.f j)),
+    (K.extendHomologyIso e hj').hom ≫ K.homologyι j =
+    (K.extend e).homologyι j' ≫ (K.extendOpcyclesIso e hj').hom := by
+  simp only [← cancel_epi ((K.extend e).homologyπ j'),
     homologyπ_extendHomologyIso_hom_assoc, homology_π_ι, extendCyclesIso_hom_iCycles_assoc,
     homology_π_ι_assoc, pOpcycles_extendOpcyclesIso_hom]
 
 @[reassoc (attr := simp)]
 lemma extendHomologyIso_inv_homologyι :
-    (K.extendHomologyIso e j).inv ≫ (K.extend e).homologyι (e.f j) =
-      K.homologyι j ≫ (K.extendOpcyclesIso e j).inv := by
-  simp only [← cancel_epi (K.extendHomologyIso e j).hom,
+    (K.extendHomologyIso e hj').inv ≫ (K.extend e).homologyι j' =
+      K.homologyι j ≫ (K.extendOpcyclesIso e hj').inv := by
+  simp only [← cancel_epi (K.extendHomologyIso e hj').hom,
     Iso.hom_inv_id_assoc, extendHomologyIso_hom_homologyι_assoc, Iso.hom_inv_id, comp_id]
 
 end
 
 end HomologicalComplex
+
+namespace ComplexShape
+
+namespace Embedding
+
+variable {c c'}
+variable (e : Embedding c c') (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+
+@[simps]
+noncomputable def extendFunctor :
+    HomologicalComplex C c ⥤ HomologicalComplex C c' where
+  obj K := K.extend e
+  map φ := HomologicalComplex.extendMap φ e
+
+end Embedding
+
+end ComplexShape
