@@ -89,8 +89,8 @@ def matchEqn? (e : Expr) : Option (Expr × Expr) :=
   | none => e.iff?
 
 /-- Try adding the lemma to the `RefinedDiscrTree`. -/
-def updateDiscrTree {α : Type} [BEq α] (name : Name) (cinfo : ConstantInfo)
-    (d : RefinedDiscrTree α) (addInfo : RewriteLemma → α) : MetaM (RefinedDiscrTree α) := do
+def updateDiscrTree (d : RefinedDiscrTree RewriteLemma) (name : Name) (cinfo : ConstantInfo) :
+    MetaM (RefinedDiscrTree RewriteLemma) := do
   if isBadDecl name cinfo (← getEnv) then
     return d
   let (vars, _, eqn) ← forallMetaTelescope cinfo.type
@@ -103,26 +103,21 @@ def updateDiscrTree {α : Type} [BEq α] (name : Name) (cinfo : ConstantInfo)
     if (lhs.findMVar? (· == mvarId)).isNone then
       return d
   d.insertEqn lhs rhs
-    (addInfo { name, symm := false, numParams := vars.size })
-    (addInfo { name, symm := true,  numParams := vars.size })
+    { name, symm := false, numParams := vars.size }
+    { name, symm := true,  numParams := vars.size }
 
 section Cache
 
-/-- The type that is stored as the library rewrite cache, for each rewrite lemma also storing
-the name of the module it is defined in. -/
-@[reducible]
-private def RewriteCache := Std.Tactic.Cache (RefinedDiscrTree (RewriteLemma × Name))
+/-- The type of the library rewrite cache. -/
+abbrev RewriteCache := Std.Tactic.Cache (RefinedDiscrTree RewriteLemma)
 
 /-- Construct the `RewriteCache` of all lemmas. -/
 def RewriteCache.mk : IO RewriteCache :=
   Std.Tactic.Cache.mk do
     profileitM Exception "rw??: init cache" (← getOptions) do
       let env ← getEnv
-      let mut tree := {}
-      for moduleName in env.header.moduleNames, data in env.header.moduleData do
-        for cinfo in data.constants do
-          tree ← updateDiscrTree cinfo.name cinfo tree (·, moduleName)
-      return tree.mapArrays (·.qsort (·.1 < ·.1))
+      let tree ← env.constants.map₁.foldM (init := {}) updateDiscrTree
+      return tree.mapArrays (·.qsort (· < ·))
 
 /-- The file path of the pre-build `RewriteCache` cache -/
 def cachePath : IO System.FilePath := do
@@ -134,19 +129,19 @@ def cachePath : IO System.FilePath := do
 private initialize cachedData : RewriteCache ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
-    let (d, _r) ← unpickle (RefinedDiscrTree (RewriteLemma × Name)) path
+    let (d, _r) ← unpickle (RefinedDiscrTree RewriteLemma) path
     Std.Tactic.Cache.mk (pure d)
   else
     RewriteCache.mk
 
 /-- Get the `RefinedDiscrTree` of all rewrite lemmas, attempting to get it from pre-built cache. -/
-def getCachedRewriteLemmas : MetaM (RefinedDiscrTree (RewriteLemma × Name)) :=
+def getCachedRewriteLemmas : MetaM (RefinedDiscrTree RewriteLemma) :=
   cachedData.get
 
 /-- Construct the `RefinedDiscrTree` of all lemmas defined in the current file. -/
 def getLocalRewriteLemmas : MetaM (RefinedDiscrTree (RewriteLemma)) := do
   let env ← getEnv
-  let tree ← env.constants.map₂.foldlM (init := {}) (fun tree n c => updateDiscrTree n c tree id)
+  let tree ← env.constants.map₂.foldlM (init := {}) updateDiscrTree
   return tree.mapArrays (·.qsort (· < ·))
 
 end Cache
@@ -175,9 +170,11 @@ def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Bool)) := do
   let localResults  ← (← getLocalRewriteLemmas ).getMatchWithScore e (unify := false)
   let cachedResults ← (← getCachedRewriteLemmas).getMatchWithScore e (unify := false)
   let excludedModules := getLibrarySearchExcludedModules (← getOptions)
-  let exclude (rws : Array (RewriteLemma × Name)) := rws.filterMap fun (rw, moduleName) =>
-    if containsPrefixOf excludedModules moduleName then none else rw
-  return localResults.map (·.1, true) ++ cachedResults.map (exclude ·.1, true)
+  let env ← getEnv
+  let exclude (rws : Array RewriteLemma) := rws.filterMap fun rw =>
+    let moduleName := env.header.moduleNames[(env.const2ModIdx.find! rw.name).toNat]!
+    if containsPrefixOf excludedModules moduleName then none else some rw
+  return localResults.map (·.1, true) ++ cachedResults.map ((exclude ·.1, false))
 
 /-- A rewrite lemma that has been applied to an expression. -/
 structure Rewrite extends RewriteLemma where
