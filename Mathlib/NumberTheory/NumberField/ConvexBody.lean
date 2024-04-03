@@ -28,6 +28,9 @@ namespace NumberField.mixedEmbedding
 
 open NumberField NumberField.InfinitePlace FiniteDimensional
 
+local notation "E" K =>
+  ({w : InfinitePlace K // IsReal w} → ℝ) × ({w : InfinitePlace K // IsComplex w} → ℂ)
+
 section convexBodyLT
 
 open Metric NNReal
