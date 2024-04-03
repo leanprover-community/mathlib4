@@ -86,7 +86,7 @@ theorem psub_eq_some {m : ℕ} : ∀ {n k}, psub m n = some k ↔ k + n = m
 #align nat.psub_eq_some Nat.psub_eq_some
 
 theorem psub_eq_none {m n : ℕ} : psub m n = none ↔ m < n := by
-  cases s : psub m n <;> simp [eq_comm]
+  cases s : psub m n <;> simp only [eq_comm, false_iff, true_iff, not_lt]
   · show m < n
     refine' lt_of_not_ge fun h => _
     cases' le.dest h with k e
