@@ -487,8 +487,9 @@ instance (f : ι → Type*) (g : (i : ι) → (f i) → C)
   exists_limit := Nonempty.intro
     { cone := Fan.mk (∏ fun i => ∏ g i) (fun X => Pi.π (fun i => ∏ g i) X.1 ≫ Pi.π (g X.1) X.2)
       isLimit := mkFanLimit _ (fun s => Pi.lift fun b => Pi.lift fun c => s.proj ⟨b, c⟩)
-        -- FIXME nightly-testing: these used be autoparams by aesop
-        sorry sorry }
+        -- Adaptation note: nightly-2024-04-01
+        -- Both of these proofs were previously by `aesop_cat`.
+        (by aesop_cat) (by intro s m w; simp only [Fan.mk_pt]; symm; ext i x; simp_all) }
 
 /-- An iterated product is a product over a sigma type. -/
 @[simps]
@@ -506,8 +507,9 @@ instance (f : ι → Type*) (g : (i : ι) → (f i) → C)
         (fun X => Sigma.ι (g X.1) X.2 ≫ Sigma.ι (fun i => ∐ g i) X.1)
       isColimit := mkCofanColimit _
         (fun s => Sigma.desc fun b => Sigma.desc fun c => s.inj ⟨b, c⟩)
-        -- FIXME nightly-testing: these used be autoparams by aesop
-        sorry sorry }
+        -- Adaptation note: nightly-2024-04-01
+        -- Both of these proofs were previously by `aesop_cat`.
+        (by aesop_cat) (by intro s m w; simp only [Cofan.mk_pt]; symm; ext i x; simp_all) }
 
 /-- An iterated coproduct is a coproduct over a sigma type. -/
 @[simps]

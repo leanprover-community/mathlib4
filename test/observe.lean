@@ -1,4 +1,3 @@
-import Mathlib.Tactic.Linarith
 import Mathlib.Data.Nat.Prime
 
 open Nat
@@ -15,12 +14,12 @@ theorem euclid (n : ℕ) : ∃ N, n < N ∧ N.Prime := by
   have prime : p.Prime := by
     apply minFac_prime
     observe : n.factorial > 0
-    linarith
+    omega
   constructor
   · by_contra!
-    observe : p ∣ n.factorial
-    observe : p ∣ N
-    observe : p ∣ 1
+    have this₁ : p ∣ n.factorial := (Prime.dvd_factorial prime).mpr this
+    have this₂ : p ∣ N := minFac_dvd N
+    have this₃ : p ∣ 1 := (Nat.dvd_add_iff_right this₁).mpr this₂
     observe : ¬ p ∣ 1
     contradiction
   · exact prime
