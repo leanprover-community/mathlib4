@@ -208,10 +208,6 @@ lemma ScottClosed_implies_LawsonClosed (s : Set α) :
   rw [← isOpen_compl_iff, ← isOpen_compl_iff]
   apply Lawson_le_Scott' _
 
-lemma LowerOpen_implies_LawsonOpen (s : Set α) :
-    IsOpen (Topology.WithLower.ofLower ⁻¹' s) → IsOpen (Topology.WithLawson.ofLawson ⁻¹' s) :=
-  Lawson_le_Lower' _
-
 lemma LowerClosed_implies_LawsonClosed (s : Set α) :
     IsClosed (Topology.WithLower.ofLower ⁻¹' s) →
     IsClosed (Topology.WithLawson.ofLawson ⁻¹' s) := by
