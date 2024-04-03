@@ -319,6 +319,10 @@ theorem zigzag_equivalence : _root_.Equivalence (@Zigzag J _) :=
   (fun h g => Relation.transitive_reflTransGen h g)
 #align category_theory.zigzag_equivalence CategoryTheory.zigzag_equivalence
 
+theorem Zigzag.refl (X : J) : Zigzag X X := zigzag_equivalence.refl _
+
+theorem Zigzag.symm {j₁ j₂ : J} (h : Zigzag j₁ j₂) : Zigzag j₂ j₁ := zigzag_symmetric h
+
 theorem Zigzag.trans {j₁ j₂ j₃ : J} (h₁ : Zigzag j₁ j₂) (h₂ : Zigzag j₂ j₃) : Zigzag j₁ j₃ :=
   zigzag_equivalence.trans h₁ h₂
 
