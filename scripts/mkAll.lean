@@ -27,15 +27,15 @@ The input `git` is a `Bool`ean flag:
 -/
 def getAll (git : Bool) (ml : String) : IO String := do
   let ml.lean := addExtension ⟨ml⟩ "lean"  -- `Mathlib.lean`
-  let stdout : List System.FilePath ← (do
+  let stdout : Array System.FilePath ← (do
     if git then
       let mlDir := ml.push pathSeparator   -- `Mathlib/`
       let allLean ← IO.Process.run { cmd := "git", args := #["ls-files", "*.lean"] }
-      return ((allLean.splitOn "\n").filter mlDir.isPrefixOf).map (⟨·⟩)
+      return (((allLean.splitOn "\n").filter mlDir.isPrefixOf).map (⟨·⟩)).toArray
     else do
-      let all := (← System.FilePath.walkDir ml)
-      return ((all.filter (·.extension == some "lean")).qsort (·.toString < ·.toString)).toList)
-  let files := (stdout.erase ml.lean).toArray.qsort (·.toString < ·.toString)
+      let all ← System.FilePath.walkDir ml
+      return all.filter (·.extension == some "lean"))
+  let files := (stdout.erase ml.lean).qsort (·.toString < ·.toString)
   let withImport ← files.mapM fun f => return "import " ++ (← moduleNameOfFileName f none).toString
   return ("\n".intercalate withImport.toList).push '\n'
 
