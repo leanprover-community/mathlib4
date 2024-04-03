@@ -871,7 +871,7 @@ theorem norm_mkPiAlgebraFin_succ_le : ‖ContinuousMultilinearMap.mkPiAlgebraFin
   simp only [ContinuousMultilinearMap.mkPiAlgebraFin_apply, one_mul, List.ofFn_eq_map,
     Fin.prod_univ_def, Multiset.map_coe, Multiset.prod_coe]
   refine' (List.norm_prod_le' _).trans_eq _
-  · rw [Ne.def, List.map_eq_nil, List.finRange_eq_nil]
+  · rw [Ne, List.map_eq_nil, List.finRange_eq_nil]
     exact Nat.succ_ne_zero _
   rw [List.map_map, Function.comp_def]
 #align continuous_multilinear_map.norm_mk_pi_algebra_fin_succ_le ContinuousMultilinearMap.norm_mkPiAlgebraFin_succ_le
@@ -940,7 +940,7 @@ def smulRightL : ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] Co
           map_smul' := fun c x ↦ by ext; simp [smul_smul, mul_comm] }
       map_add' := fun f g ↦ by ext; simp [add_smul]
       map_smul' := fun c f ↦ by ext; simp [smul_smul] }
-  1 (fun f z ↦ by simp [norm_smulRight])
+    1 (fun f z ↦ by simp [norm_smulRight])
 
 @[simp] lemma smulRightL_apply (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
   smulRightL 𝕜 E G f z = f.smulRight z := rfl
@@ -1236,17 +1236,16 @@ def compContinuousLinearMapLRight (g : ContinuousMultilinearMap 𝕜 E₁ G) :
       map_add' := by
         intro h f i f₁ f₂
         ext x
-        change (g fun j ↦ update f i (f₁ + f₂) j <| x j) =
-            (g fun j ↦ update f i f₁ j <| x j) + g fun j ↦ update f i f₂ j (x j)
+        simp only [compContinuousLinearMap_apply, add_apply]
         convert g.map_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
           exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
       map_smul' := by
         intro h f i a f₀
         ext x
-        change (g fun j ↦ update f i (a • f₀) j <| x j) = a • g fun j ↦ update f i f₀ j (x j)
+        simp only [compContinuousLinearMap_apply, smul_apply]
         convert g.map_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
           exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _ }
-  (‖g‖) (fun f ↦ by simp [norm_compContinuousLinearMap_le])
+    (‖g‖) (fun f ↦ by simp [norm_compContinuousLinearMap_le])
 
 @[simp]
 theorem compContinuousLinearMapLRight_apply (g : ContinuousMultilinearMap 𝕜 E₁ G)

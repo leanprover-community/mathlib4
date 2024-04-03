@@ -1248,7 +1248,7 @@ theorem abs_mul (x y : EReal) : (x * y).abs = x.abs * y.abs := by
   | coe_coe => simp only [← coe_mul, abs_def, _root_.abs_mul, ENNReal.ofReal_mul (abs_nonneg _)]
   | top_pos _ h =>
     rw [top_mul_coe_of_pos h, abs_top, ENNReal.top_mul]
-    rw [Ne.def, abs_eq_zero_iff, coe_eq_zero]
+    rw [Ne, abs_eq_zero_iff, coe_eq_zero]
     exact h.ne'
   | neg_left h => rwa [neg_mul, EReal.abs_neg, EReal.abs_neg]
 #align ereal.abs_mul EReal.abs_mul

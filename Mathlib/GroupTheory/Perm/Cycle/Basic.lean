@@ -427,7 +427,7 @@ theorem isCycle_swap_mul_aux₁ {α : Type*} [DecidableEq α] :
       else
         have : f b ≠ b ∧ b ≠ x := ne_and_ne_of_swap_mul_apply_ne_self hb
         have hb' : (swap x (f x) * f) (f⁻¹ b) ≠ f⁻¹ b := by
-          rw [mul_apply, apply_inv_self, swap_apply_of_ne_of_ne this.2 (Ne.symm hfbx), Ne.def, ←
+          rw [mul_apply, apply_inv_self, swap_apply_of_ne_of_ne this.2 (Ne.symm hfbx), Ne, ←
             f.injective.eq_iff, apply_inv_self]
           exact this.1
         let ⟨i, hi⟩ := hn hb' (f.injective <| by
@@ -450,9 +450,8 @@ theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
         have hb : (swap x (f⁻¹ x) * f⁻¹) (f⁻¹ b) ≠ f⁻¹ b := by
           rw [mul_apply, swap_apply_def]
           split_ifs <;>
-              simp only [inv_eq_iff_eq, Perm.mul_apply, zpow_negSucc,
-                Ne.def, Perm.apply_inv_self] at
-                * <;> tauto
+            simp only [inv_eq_iff_eq, Perm.mul_apply, zpow_negSucc, Ne, Perm.apply_inv_self] at *
+              <;> tauto
         let ⟨i, hi⟩ :=
           isCycle_swap_mul_aux₁ n hb
             (show (f⁻¹ ^ n) (f⁻¹ x) = f⁻¹ b by

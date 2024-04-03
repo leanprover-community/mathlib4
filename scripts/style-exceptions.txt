@@ -17,16 +17,8 @@ Mathlib/Combinatorics/SimpleGraph/Connectivity.lean : line 1 : ERR_NUM_LIN : 280
 Mathlib/Computability/Primrec.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1568 lines, try to split it up
 Mathlib/Computability/TMToPartrec.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2069 lines, try to split it up
 Mathlib/Computability/TuringMachine.lean : line 1 : ERR_NUM_LIN : 3000 file contains 2821 lines, try to split it up
-Mathlib/Data/Array/Basic.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Array/Basic.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Array/Basic.lean : line 3 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/Array/Basic.lean : line 3 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/BinaryHeap.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/ByteArray.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/ByteArray.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/ByteArray.lean : line 2 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/ByteArray.lean : line 3 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/ByteArray.lean : line 5 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/ByteArray.lean : line 5 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/Complex/Exponential.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1743 lines, try to split it up
 Mathlib/Data/DFinsupp/Basic.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2395 lines, try to split it up
@@ -54,14 +46,6 @@ Mathlib/Data/Set/Image.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1613 lin
 Mathlib/Data/Set/Intervals/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1970 lines, try to split it up
 Mathlib/Data/Set/Lattice.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2275 lines, try to split it up
 Mathlib/Data/String/Lemmas.lean : line 10 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/UInt.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/UInt.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/UInt.lean : line 2 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/UInt.lean : line 3 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/UInt.lean : line 4 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/UInt.lean : line 5 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/UInt.lean : line 6 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/UInt.lean : line 8 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/UInt.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/UnionFind.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/FieldTheory/RatFunc.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1781 lines, try to split it up
