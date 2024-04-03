@@ -310,7 +310,7 @@ theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K ↑1 < boundOfDiscBd
   gcongr
   · exact pow_le_one _ (by positivity) (by norm_num)
   · rwa [sqrt_le_sqrt, ← NNReal.coe_le_coe, coe_nnnorm, Int.norm_eq_abs, ← Int.cast_abs,
-      NNReal.coe_nat_cast, ← Int.cast_ofNat, Int.cast_le]
+      NNReal.coe_natCast, ← Int.cast_ofNat, Int.cast_le]
   · exact one_le_two
   · exact rank_le_rankOfDiscrBdd hK
 
