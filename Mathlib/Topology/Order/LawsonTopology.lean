@@ -88,20 +88,17 @@ open TopologicalSpace
 
 /-- The complements of the upper closures of finite sets intersected with Scott open sets form
 a basis for the lawson topology. -/
-def lawson_basis := (image2 (fun x x_1 ↦ ⇑WithLower.toLower ⁻¹' x ∩ ⇑WithScott.toScott ⁻¹' x_1)
-  (IsLower.lowerBasis (WithLower α)) {U | @IsOpen (WithScott α) _ U})
+def lawson_basis := { s : Set α | ∃ t : Set α, t.Finite ∧ ∃ u : Set α, IsOpen[scott α] u ∧
+      (upperClosure t : Set α)ᶜ ∩ u = s }
 
-lemma human_lawson_basis : lawson_basis α =
-    { s : Set α | ∃ t : Set α, t.Finite ∧ ∃ u : Set α, IsOpen[scott α] u ∧
-      (upperClosure t : Set α)ᶜ ∩ u = s } := by
-  rw [lawson_basis, image2]
-  --simp only [mem_setOf_eq]
-  rw [IsLower.lowerBasis]
-  --simp only [mem_setOf_eq, exists_exists_and_eq_and, preimage_compl]
+lemma lawson_basis_image2 : lawson_basis α =
+  (image2 (fun x x_1 ↦ ⇑WithLower.toLower ⁻¹' x ∩ ⇑WithScott.toScott ⁻¹' x_1)
+    (IsLower.lowerBasis (WithLower α)) {U | @IsOpen (WithScott α) _ U}) := by
+  rw [lawson_basis, image2, IsLower.lowerBasis]
   aesop
 
 protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (lawson_basis α) := by
-  rw [lawson_basis]
+  rw [lawson_basis_image2]
   convert IsTopologicalBasis.inf_induced IsLower.isTopologicalBasis
     (TopologicalSpace.isTopologicalBasis_opens (α := WithScott α))
     WithLower.toLower WithScott.toScott
@@ -113,47 +110,6 @@ protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (laws
 
 
 variable (s : Set α) (h: IsUpperSet s) (hs: IsOpen[Topology.scottHausdorff α] s)
-
-
-
--- Have the lower open sets are SH by
--- IsScottHausdorff.isOpen_of_isLowerSet (IsLower.isLowerSet_of_isOpen _)
--- Have the Scott open sets are SH by scottHausdorff_le_scott I think)
--- Together these are a subbasis
-/-
-lemma isOpen_implies_scottHausdorff_open {s : Set α} : IsOpen s → IsOpen[scottHausdorff α] s := by
-  erw [topology_eq α];
-  intro hs
-  sorry
--/
-
---#check ⟨h, hs⟩
-
---#check IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open.mpr ⟨h, hs⟩
-
---variable [IsScott α]
-
--- Get the statement deliberately wrong for now
-/-
-lemma LawsonOpen_iff_ScottOpen (s : Set α) (h : IsUpperSet s) :
-  IsOpen s ↔ IsOpen[Topology.scottHausdorff α] s := by
-  sorry
--/
-
-/-
-  constructor
-  · intro hs
-    rw [IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open.mpr ⟨h, hs⟩]
-    convert IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open.mpr _
-    rw [IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open]
-    rw [@IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open _ _ _ _ s]
-
-    constructor
-    · exact h
-    · exact fun d d₁ d₂ d₃ => (@LawsonOpen_implies_ScottHausdorffOpen' _ _ l S _ _ _ _ s)
-        hs d d₁ d₂ d₃
-  · apply TopologicalSpace.le_def.mp (Scott_le_Lawson _ _)
--/
 
 end Preorder
 end IsLawson
