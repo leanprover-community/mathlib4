@@ -65,6 +65,7 @@ lean_exe checkYaml where
 lean_exe shake where
   root := `Shake.Main
   supportInterpreter := true
+
 /--
 `lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
 and then calculates the longest pole
