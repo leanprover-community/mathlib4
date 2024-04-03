@@ -841,6 +841,9 @@ theorem smul_mem_pointwise_smul (g : G) (x : K) (S : ValuationSubring K) : x ∈
   (Set.smul_mem_smul_set : _ → _ ∈ g • (S : Set K))
 #align valuation_subring.smul_mem_pointwise_smul ValuationSubring.smul_mem_pointwise_smul
 
+instance : CovariantClass G (ValuationSubring K) HSMul.hSMul LE.le :=
+  ⟨fun _ _ _ => Set.image_subset _⟩
+
 theorem mem_smul_pointwise_iff_exists (g : G) (x : K) (S : ValuationSubring K) :
     x ∈ g • S ↔ ∃ s : K, s ∈ S ∧ g • s = x :=
   (Set.mem_smul_set : x ∈ g • (S : Set K) ↔ _)

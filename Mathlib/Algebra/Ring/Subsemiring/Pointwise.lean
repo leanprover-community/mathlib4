@@ -69,6 +69,9 @@ theorem smul_mem_pointwise_smul (m : M) (r : R) (S : Subsemiring R) : r ∈ S �
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set R))
 #align subsemiring.smul_mem_pointwise_smul Subsemiring.smul_mem_pointwise_smul
 
+instance : CovariantClass M (Subsemiring R) HSMul.hSMul LE.le :=
+  ⟨fun _ _ => image_subset _⟩
+
 theorem mem_smul_pointwise_iff_exists (m : M) (r : R) (S : Subsemiring R) :
     r ∈ m • S ↔ ∃ s : R, s ∈ S ∧ m • s = r :=
   (Set.mem_smul_set : r ∈ m • (S : Set R) ↔ _)
