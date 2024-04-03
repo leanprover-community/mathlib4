@@ -108,6 +108,8 @@ def updateDiscrTree {α : Type} [BEq α] (name : Name) (cinfo : ConstantInfo)
 
 section Cache
 
+/-- The type that is stored as the library rewrite cache, for each rewrite lemma also storing
+the name of the module it is defined in. -/
 @[reducible]
 private def RewriteCache := Std.Tactic.Cache (RefinedDiscrTree (RewriteLemma × Name))
 
@@ -154,7 +156,8 @@ An option allowing the user to select which modules will not be considered in li
 -/
 register_option librarySearch.excludedModules : String := {
   defValue := "Init.Omega Mathlib.Tactic"
-  descr := "list of modules that should not be considered in library search (separated by white space)"
+  descr :=
+    "list of modules that should not be considered in library search (separated by white space)"
 }
 
 /-- Get the names of the modules that should not be considered in library search. -/
@@ -193,17 +196,19 @@ def checkLemma (rwLemma : RewriteLemma) (e : Expr) : MetaM (Option Rewrite) := d
   let (mvars, binderInfos, eqn) ← forallMetaTelescope (← inferType thm)
   let some (lhs, rhs) := matchEqn? eqn | return none
   let (lhs, rhs) := if rwLemma.symm then (rhs, lhs) else (lhs, rhs)
-  let eq ← withTraceNodeBefore `rw??.isDefEq (pure m! "unifying {e} =?= {lhs}") do
-    withReducible (isDefEq lhs e)
-  unless eq do return none
+  let unifies ← withTraceNodeBefore `rw?? (return m! "unifying {e} =?= {lhs}")
+    (withReducible (isDefEq lhs e))
+  unless unifies do return none
   let mut extraGoals := #[]
   for mvar in mvars, bi in binderInfos do
     -- we need to check that all instances can be synthesized
     if bi.isInstImplicit then
-      let some inst ← withTraceNodeBefore `rw?? (pure m! "synthesising {← mvar.mvarId!.getType}") do
-        synthInstance? (← mvar.mvarId!.getType) | return none
-      unless ← isDefEq inst mvar do
-        return none
+      let some inst ← withTraceNodeBefore `rw?? (return m! "synthesising {← mvar.mvarId!.getType}")
+        (synthInstance? (← mvar.mvarId!.getType)) | return none
+      let unifies ← withTraceNodeBefore `rw??
+        (return m! "unifying with synthesized instance {mvar} =?= {inst}")
+        (isDefEq inst mvar)
+      unless unifies do return none
     else
       unless ← mvar.mvarId!.isAssigned do
         extraGoals := extraGoals.push (mvar.mvarId!, bi)
@@ -463,24 +468,22 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
     let md ← goal.mvarId.getDecl
     let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
     Meta.withLCtx lctx md.localInstances do
-      profileitM Exception "rw??" (← getOptions) do
 
-        let { userNames := initNames, .. } ← getMCtx
-        let some (subExpr, occ) ← viewKAbstractSubExpr (← loc.rootExpr) loc.pos |
-          return .text "expressions with bound variables are not supported"
-        let location ← loc.location
+      let { userNames := initNames, .. } ← getMCtx
+      let some (subExpr, occ) ← viewKAbstractSubExpr (← loc.rootExpr) loc.pos |
+        return .text "expressions with bound variables are not supported"
+      let location ← loc.location
 
-        let unfoldsHtml ←
-          InteractiveUnfold.renderUnfolds subExpr occ location props.replaceRange doc
+      let unfoldsHtml ← InteractiveUnfold.renderUnfolds subExpr occ location props.replaceRange doc
 
-        let (filtered, all) ← getRewriteInterfaces subExpr occ location initNames
-        let filtered ← renderRewrites subExpr filtered unfoldsHtml props.replaceRange doc false
-        let all      ← renderRewrites subExpr all      unfoldsHtml props.replaceRange doc true
-        return <FilterDetails
-          message={"Rewrite suggestions:"}
-          all={all}
-          filtered={filtered}
-          initiallyFiltered={true} />
+      let (filtered, all) ← getRewriteInterfaces subExpr occ location initNames
+      let filtered ← renderRewrites subExpr filtered unfoldsHtml props.replaceRange doc false
+      let all      ← renderRewrites subExpr all      unfoldsHtml props.replaceRange doc true
+      return <FilterDetails
+        message={"Rewrite suggestions:"}
+        all={all}
+        filtered={filtered}
+        initiallyFiltered={true} />
 
 /-- The component called by the `rw??` tactic -/
 @[widget_module]
