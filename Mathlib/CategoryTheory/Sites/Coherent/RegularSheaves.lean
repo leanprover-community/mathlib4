@@ -17,7 +17,7 @@ This file characterises sheaves for the regular topology.
 
 ## Main results
 
-* `isSheaf_iff_equalizerCondition`: In a preregular category with pullbacks, the sheaves for the
+* `equalizerCondition_iff_isSheaf`: In a preregular category with pullbacks, the sheaves for the
   regular topology are precisely the presheaves satisfying an equaliser condition with respect to
   effective epimorphisms.
 
