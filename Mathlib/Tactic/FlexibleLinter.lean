@@ -229,13 +229,14 @@ def ignored : HashSet Name :=
     ``cdot }
 
 /-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
-  `simp`, `simp_all`, `simp_a`, `rfl`, `omega`, `abel`, `ring`, `linarith`, `nlinarith`,
-  `norm_cast`, `aesop`, `tauto`, `split_ifs`.
+  `simp`, `simp_all`, `simpa`, `dsimp`, `rfl`, `omega`, `abel`, `ring`, `linarith`, `nlinarith`,
+  `norm_cast`, `aesop`, `tauto`, `split`, `split_ifs`.
 -/
 def followers : HashSet Name :=
   { ``Lean.Parser.Tactic.simp,
     ``Lean.Parser.Tactic.simpAll,
     ``Lean.Parser.Tactic.simpa,
+    ``Lean.Parser.Tactic.dsimp,
     ``Lean.Parser.Tactic.tacticRfl,
     ``Lean.Parser.Tactic.omega,
     `Mathlib.Tactic.Abel.abel,
@@ -245,6 +246,7 @@ def followers : HashSet Name :=
     ``Lean.Parser.Tactic.tacticNorm_cast_,
     `Aesop.Frontend.Parser.aesopTactic,
     `Mathlib.Tactic.Tauto.tauto,
+    `Lean.Parser.Tactic.split,
     `Mathlib.Tactic.splitIfs }
 
 /-- By default, if a `SyntaxNodeKind` is not special-cased here, then the linter assumes that
@@ -253,6 +255,9 @@ For tactics such as `cases` this is not true: for these tactics, `usesGoal?` yie
 def usesGoal? : SyntaxNodeKind → Bool
   | ``Lean.Parser.Tactic.cases => false
   | `Mathlib.Tactic.cases'     => false
+  | ``Lean.Parser.Tactic.obtain => false
+  | ``Lean.Parser.Tactic.tacticHave_ => false
+  | ``Lean.Parser.Tactic.rcases => false
   | _ => true
 
 /-- `getFVarIdCandidates fv name lctx` takes an input an `FVarId`, a `Name` and a `LocalContext`.
