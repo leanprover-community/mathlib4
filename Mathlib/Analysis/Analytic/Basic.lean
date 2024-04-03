@@ -441,7 +441,7 @@ theorem HasFPowerSeriesOnBall.comp_sub (hf : HasFPowerSeriesOnBall f p x r) (y :
 theorem HasFPowerSeriesOnBall.hasSum_sub (hf : HasFPowerSeriesOnBall f p x r) {y : E}
     (hy : y ∈ EMetric.ball x r) : HasSum (fun n : ℕ => p n fun _ => y - x) (f y) := by
   have : y - x ∈ EMetric.ball (0 : E) r := by simpa [edist_eq_coe_nnnorm_sub] using hy
-  simpa only [add_sub_cancel'_right] using hf.hasSum this
+  simpa only [add_sub_cancel] using hf.hasSum this
 #align has_fpower_series_on_ball.has_sum_sub HasFPowerSeriesOnBall.hasSum_sub
 
 theorem HasFPowerSeriesOnBall.radius_pos (hf : HasFPowerSeriesOnBall f p x r) : 0 < p.radius :=
@@ -1387,7 +1387,7 @@ theorem HasFPowerSeriesOnBall.analyticAt_of_mem (hf : HasFPowerSeriesOnBall f p 
     (h : y ∈ EMetric.ball x r) : AnalyticAt 𝕜 f y := by
   have : (‖y - x‖₊ : ℝ≥0∞) < r := by simpa [edist_eq_coe_nnnorm_sub] using h
   have := hf.changeOrigin this
-  rw [add_sub_cancel'_right] at this
+  rw [add_sub_cancel] at this
   exact this.analyticAt
 #align has_fpower_series_on_ball.analytic_at_of_mem HasFPowerSeriesOnBall.analyticAt_of_mem
 
@@ -1458,7 +1458,7 @@ theorem hasFPowerSeriesAt_iff :
 theorem hasFPowerSeriesAt_iff' :
     HasFPowerSeriesAt f p z₀ ↔ ∀ᶠ z in 𝓝 z₀, HasSum (fun n => (z - z₀) ^ n • p.coeff n) (f z) := by
   rw [← map_add_left_nhds_zero, eventually_map, hasFPowerSeriesAt_iff]
-  simp_rw [add_sub_cancel']
+  simp_rw [add_sub_cancel_left]
 #align has_fpower_series_at_iff' hasFPowerSeriesAt_iff'
 
 end

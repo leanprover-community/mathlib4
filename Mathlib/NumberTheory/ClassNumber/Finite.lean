@@ -187,7 +187,7 @@ theorem mem_finsetApprox {x : R} :
     simp at hx
   · rintro ⟨i, j, hij, rfl⟩
     refine' ⟨_, ⟨i, j⟩, Finset.mem_univ _, rfl⟩
-    rw [Ne.def, sub_eq_zero]
+    rw [Ne, sub_eq_zero]
     exact fun h => hij ((distinctElems bS adm).injective h)
 #align class_group.mem_finset_approx ClassGroup.mem_finsetApprox
 
@@ -209,7 +209,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
                 ≤ abv b ^ (Fintype.card ι : ℝ) := by
     have := normBound_pos abv bS
     have := abv.nonneg b
-    rw [ε_eq, Algebra.smul_def, eq_intCast, mul_rpow, ← rpow_mul, div_mul_cancel, rpow_neg_one,
+    rw [ε_eq, Algebra.smul_def, eq_intCast, mul_rpow, ← rpow_mul, div_mul_cancel₀, rpow_neg_one,
       mul_left_comm, mul_inv_cancel, mul_one, rpow_nat_cast] <;>
       try norm_cast; omega
     · exact Iff.mpr Int.cast_nonneg this
@@ -358,7 +358,7 @@ noncomputable def fintypeOfAdmissibleOfAlgebraic [IsDedekindDomain S]
       { J // J ∣ Ideal.span ({algebraMap R S (∏ m : R in finsetApprox bS adm, m)} : Set S) }
       (UniqueFactorizationMonoid.fintypeSubtypeDvd _
         (by
-          rw [Ne.def, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
+          rw [Ne, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
           exact prod_finsetApprox_ne_zero bS adm))
       ((Equiv.refl _).subtypeEquiv fun I =>
         Ideal.dvd_iff_le.trans (by

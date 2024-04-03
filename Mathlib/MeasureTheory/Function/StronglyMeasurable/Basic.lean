@@ -83,19 +83,22 @@ scoped notation "StronglyMeasurable[" m "]" => @MeasureTheory.StronglyMeasurable
 
 /-- A function is `FinStronglyMeasurable` with respect to a measure if it is the limit of simple
   functions with support with finite measure. -/
-def FinStronglyMeasurable [Zero β] {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) : Prop :=
+def FinStronglyMeasurable [Zero β]
+    {_ : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ fs : ℕ → α →ₛ β, (∀ n, μ (support (fs n)) < ∞) ∧ ∀ x, Tendsto (fun n => fs n x) atTop (𝓝 (f x))
 #align measure_theory.fin_strongly_measurable MeasureTheory.FinStronglyMeasurable
 
 /-- A function is `AEStronglyMeasurable` with respect to a measure `μ` if it is almost everywhere
 equal to the limit of a sequence of simple functions. -/
-def AEStronglyMeasurable {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) : Prop :=
+def AEStronglyMeasurable
+    {_ : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ g, StronglyMeasurable g ∧ f =ᵐ[μ] g
 #align measure_theory.ae_strongly_measurable MeasureTheory.AEStronglyMeasurable
 
 /-- A function is `AEFinStronglyMeasurable` with respect to a measure if it is almost everywhere
 equal to the limit of a sequence of simple functions with support with finite measure. -/
-def AEFinStronglyMeasurable [Zero β] {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) : Prop :=
+def AEFinStronglyMeasurable
+    [Zero β] {_ : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ g, FinStronglyMeasurable g μ ∧ f =ᵐ[μ] g
 #align measure_theory.ae_fin_strongly_measurable MeasureTheory.AEFinStronglyMeasurable
 
@@ -1296,6 +1299,15 @@ protected theorem prod_mk {f : α → β} {g : α → γ} (hf : AEStronglyMeasur
     hf.ae_eq_mk.prod_mk hg.ae_eq_mk⟩
 #align measure_theory.ae_strongly_measurable.prod_mk MeasureTheory.AEStronglyMeasurable.prod_mk
 
+/-- The composition of a continuous function of two variables and two ae strongly measurable
+functions is ae strongly measurable. -/
+theorem _root_.Continuous.comp_aestronglyMeasurable₂
+    {β' : Type*} [TopologicalSpace β']
+    {g : β → β' → γ} {f : α → β} {f' : α → β'} (hg : Continuous g.uncurry)
+    (hf : AEStronglyMeasurable f μ) (h'f : AEStronglyMeasurable f' μ) :
+    AEStronglyMeasurable (fun x => g (f x) (f' x)) μ :=
+  hg.comp_aestronglyMeasurable (hf.prod_mk h'f)
+
 /-- In a space with second countable topology, measurable implies ae strongly measurable. -/
 @[aesop unsafe 30% apply (rule_sets := [Measurable])]
 theorem _root_.Measurable.aestronglyMeasurable {_ : MeasurableSpace α} {μ : Measure α}
@@ -1870,7 +1882,7 @@ theorem apply_continuousLinearMap {φ : α → F →L[𝕜] E} (hφ : AEStrongly
 theorem _root_.ContinuousLinearMap.aestronglyMeasurable_comp₂ (L : E →L[𝕜] F →L[𝕜] G) {f : α → E}
     {g : α → F} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable (fun x => L (f x) (g x)) μ :=
-  L.continuous₂.comp_aestronglyMeasurable <| hf.prod_mk hg
+  L.continuous₂.comp_aestronglyMeasurable₂ hf hg
 #align continuous_linear_map.ae_strongly_measurable_comp₂ ContinuousLinearMap.aestronglyMeasurable_comp₂
 
 end ContinuousLinearMapNontriviallyNormedField
@@ -1887,7 +1899,7 @@ theorem _root_.aestronglyMeasurable_withDensity_iff {E : Type*} [NormedAddCommGr
     · rw [EventuallyEq, ae_withDensity_iff hf.coe_nnreal_ennreal] at hg'
       rw [ae_restrict_iff' A]
       filter_upwards [hg'] with a ha h'a
-      have : (f a : ℝ≥0∞) ≠ 0 := by simpa only [Ne.def, ENNReal.coe_eq_zero] using h'a
+      have : (f a : ℝ≥0∞) ≠ 0 := by simpa only [Ne, ENNReal.coe_eq_zero] using h'a
       rw [ha this]
     · filter_upwards [ae_restrict_mem A.compl] with x hx
       simp only [Classical.not_not, mem_setOf_eq, mem_compl_iff] at hx
@@ -1897,8 +1909,8 @@ theorem _root_.aestronglyMeasurable_withDensity_iff {E : Type*} [NormedAddCommGr
     rw [EventuallyEq, ae_withDensity_iff hf.coe_nnreal_ennreal]
     filter_upwards [hg'] with x hx h'x
     rw [← hx, smul_smul, _root_.inv_mul_cancel, one_smul]
-    simp only [Ne.def, ENNReal.coe_eq_zero] at h'x
-    simpa only [NNReal.coe_eq_zero, Ne.def] using h'x
+    simp only [Ne, ENNReal.coe_eq_zero] at h'x
+    simpa only [NNReal.coe_eq_zero, Ne] using h'x
 #align ae_strongly_measurable_with_density_iff aestronglyMeasurable_withDensity_iff
 
 end AEStronglyMeasurable

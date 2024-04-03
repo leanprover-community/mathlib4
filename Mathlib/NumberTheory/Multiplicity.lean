@@ -184,7 +184,7 @@ theorem pow_prime_pow_sub_pow_prime_pow (a : ℕ) :
     multiplicity (↑p) (x ^ p ^ a - y ^ p ^ a) = multiplicity (↑p) (x - y) + a := by
   induction' a with a h_ind
   · rw [Nat.cast_zero, add_zero, pow_zero, pow_one, pow_one]
-  rw [← Nat.add_one, Nat.cast_add, Nat.cast_one, ← add_assoc, ← h_ind, pow_succ', pow_mul, pow_mul]
+  rw [← Nat.add_one, Nat.cast_add, Nat.cast_one, ← add_assoc, ← h_ind, pow_succ, pow_mul, pow_mul]
   apply pow_prime_sub_pow_prime hp hp1
   · rw [← geom_sum₂_mul]
     exact dvd_mul_of_dvd_right hxy _
@@ -210,10 +210,10 @@ theorem Int.pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x) (
   · rw [← geom_sum₂_mul]
     exact dvd_mul_of_dvd_right hxy _
   · exact fun h => hx (hp.dvd_of_dvd_pow h)
-  · rw [Int.coe_nat_dvd]
+  · rw [Int.natCast_dvd_natCast]
     rintro ⟨c, rfl⟩
     refine' hpn ⟨c, _⟩
-    rwa [pow_succ', mul_assoc]
+    rwa [pow_succ, mul_assoc]
 #align multiplicity.int.pow_sub_pow multiplicity.Int.pow_sub_pow
 
 theorem Int.pow_add_pow {x y : ℤ} (hxy : ↑p ∣ x + y) (hx : ¬↑p ∣ x) {n : ℕ} (hn : Odd n) :
@@ -228,8 +228,8 @@ theorem Nat.pow_sub_pow {x y : ℕ} (hxy : p ∣ x - y) (hx : ¬p ∣ x) (n : �
   obtain hyx | hyx := le_total y x
   · iterate 2 rw [← Int.coe_nat_multiplicity]
     rw [Int.ofNat_sub (Nat.pow_le_pow_left hyx n)]
-    rw [← Int.coe_nat_dvd] at hxy hx
-    rw [Int.coe_nat_sub hyx] at *
+    rw [← Int.natCast_dvd_natCast] at hxy hx
+    rw [Int.natCast_sub hyx] at *
     push_cast at *
     exact Int.pow_sub_pow hp hp1 hxy hx n
   · simp only [Nat.sub_eq_zero_iff_le.mpr hyx,
@@ -240,7 +240,7 @@ theorem Nat.pow_sub_pow {x y : ℕ} (hxy : p ∣ x - y) (hx : ¬p ∣ x) (n : �
 theorem Nat.pow_add_pow {x y : ℕ} (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) :
     multiplicity p (x ^ n + y ^ n) = multiplicity p (x + y) + multiplicity p n := by
   iterate 2 rw [← Int.coe_nat_multiplicity]
-  rw [← Int.coe_nat_dvd] at hxy hx
+  rw [← Int.natCast_dvd_natCast] at hxy hx
   push_cast at *
   exact Int.pow_add_pow hp hp1 hxy hx hn
 #align multiplicity.nat.pow_add_pow multiplicity.Nat.pow_add_pow
@@ -293,7 +293,7 @@ theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hx
       this _ hx_odd, this _ hy_odd]
     decide
   intro x hx
-  rw [pow_succ, mul_comm, pow_mul, Int.sq_mod_four_eq_one_of_odd hx.pow]
+  rw [pow_succ', mul_comm, pow_mul, Int.sq_mod_four_eq_one_of_odd hx.pow]
 #align int.two_pow_two_pow_add_two_pow_two_pow Int.two_pow_two_pow_add_two_pow_two_pow
 
 theorem Int.two_pow_two_pow_sub_pow_two_pow {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2 ∣ x) :
@@ -318,10 +318,10 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   · exact Int.prime_two
   · simpa only [even_iff_two_dvd] using hx_odd.pow.sub_odd hy_odd.pow
   · simpa only [even_iff_two_dvd, Int.odd_iff_not_even] using hx_odd.pow
-  erw [Int.coe_nat_dvd]
+  erw [Int.natCast_dvd_natCast]
   -- `erw` to deal with `2 : ℤ` vs `(2 : ℕ) : ℤ`
   contrapose! hpn
-  rw [pow_succ']
+  rw [pow_succ]
   conv_rhs => rw [hk]
   exact mul_dvd_mul_left _ hpn
 #align int.two_pow_sub_pow' Int.two_pow_sub_pow'
@@ -363,8 +363,8 @@ theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n 
   · iterate 3 rw [← multiplicity.Int.coe_nat_multiplicity]
     simp only [Int.ofNat_sub hyx, Int.ofNat_sub (pow_le_pow_left' hyx _), Int.ofNat_add,
       Int.coe_nat_pow]
-    rw [← Int.coe_nat_dvd] at hx
-    rw [← Int.coe_nat_dvd, Int.ofNat_sub hyx] at hxy
+    rw [← Int.natCast_dvd_natCast] at hx
+    rw [← Int.natCast_dvd_natCast, Int.ofNat_sub hyx] at hxy
     convert Int.two_pow_sub_pow hxy hx hn using 2
     rw [← multiplicity.Int.coe_nat_multiplicity]
     rfl
