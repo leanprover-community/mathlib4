@@ -19,7 +19,7 @@ def gitLSFiles : IO.Process.SpawnArgs where
 
 open Lean System.FilePath
 
-/-- `getAll git? str` takes all `.lean` files in the dir `str` (recursing into sub-dirs) and
+/-- `getAll git str` takes all `.lean` files in the dir `str` (recursing into sub-dirs) and
 returns the string
 ```
 import file₁
@@ -28,7 +28,8 @@ import fileₙ
 ```
 The input `git` is a `Bool`ean flag:
 * `true` means that the command uses `git ls-files` to find the relevant files;
-* `false` means that the command recursively scans all dirs searching for `.lean` files. -/
+* `false` means that the command recursively scans all dirs searching for `.lean` files.
+-/
 def getAll (git : Bool) (ml : String) : IO String := do
   let ml.lean := addExtension ⟨ml⟩ "lean"  -- `Mathlib.lean`
   let stdout : List System.FilePath ← (do
@@ -44,7 +45,7 @@ def getAll (git : Bool) (ml : String) : IO String := do
   return ("\n".intercalate withImport.toList).push '\n'
 
 open IO.FS IO.Process Name Cli in
-/-- Implementation of the import graph command line program. -/
+/-- Implementation of the `mk_all` command line program. -/
 def mkAllCLI (args : Parsed) : IO UInt32 := do
   -- Check whether the `--git` flag was set
   let git := match args.flag? "git" with
