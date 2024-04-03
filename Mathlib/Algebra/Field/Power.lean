@@ -6,7 +6,6 @@ Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.Parity
-import Mathlib.Data.Int.Bitwise
 import Mathlib.Data.Int.Parity
 
 #align_import algebra.field.power from "leanprover-community/mathlib"@"1e05171a5e8cf18d98d9cf7b207540acb044acae"
