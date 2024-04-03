@@ -30,11 +30,9 @@ tensor product, finitely generated
 
 -/
 
-open scoped Classical TensorProduct
+open scoped TensorProduct
 
 open Submodule
-
-noncomputable section
 
 variable {R M N : Type*}
 
@@ -95,6 +93,7 @@ There are 8 variants of this function. -/
 theorem exists_finite_submodule_left_of_fintype {ι : Type*} [Fintype ι] (x : ι → M ⊗[R] N) :
     ∃ (M' : Submodule R M) (x' : ι → M' ⊗[R] N), Module.Finite R M' ∧
     ∀ (i : ι), M'.subtype.rTensor N (x' i) = x i := by
+  classical
   choose S hS using fun i ↦ (x i).exists_multiset
   let T := ((Finset.sum Finset.univ S).map Prod.fst).toFinset
   let M' := span R (T : Set M)
@@ -169,6 +168,7 @@ theorem exists_finite_submodule_of_fintype' {ι : Type*} [Fintype ι] (x : ι �
 theorem exists_finite_submodule_left_of_finsupp {ι : Type*} (x : ι →₀ M ⊗[R] N) :
     ∃ (M' : Submodule R M) (x' : ι →₀ M' ⊗[R] N), Module.Finite R M' ∧
     ∀ (i : ι), M'.subtype.rTensor N (x' i) = x i := by
+  classical
   obtain ⟨M', x', hfin, hx⟩ := exists_finite_submodule_left_of_fintype fun i : x.support ↦ x i
   refine ⟨M', (Finsupp.equivFunOnFinite.symm x').extendDomain, hfin, fun i ↦ ?_⟩
   by_cases h : i ∈ x.support
@@ -178,6 +178,7 @@ theorem exists_finite_submodule_left_of_finsupp {ι : Type*} (x : ι →₀ M �
 theorem exists_finite_submodule_right_of_finsupp {ι : Type*} (x : ι →₀ M ⊗[R] N) :
     ∃ (N' : Submodule R N) (x' : ι →₀ M ⊗[R] N'), Module.Finite R N' ∧
     ∀ (i : ι), N'.subtype.lTensor M (x' i) = x i := by
+  classical
   obtain ⟨N', x', hfin, hx⟩ := exists_finite_submodule_right_of_fintype fun i : x.support ↦ x i
   refine ⟨N', (Finsupp.equivFunOnFinite.symm x').extendDomain, hfin, fun i ↦ ?_⟩
   by_cases h : i ∈ x.support
@@ -196,6 +197,7 @@ theorem exists_finite_submodule_of_finsupp {ι : Type*} (x : ι →₀ M ⊗[R] 
 theorem exists_finite_submodule_left_of_finsupp' {ι : Type*} (x : ι →₀ M₁ ⊗[R] N₁) :
     ∃ (M' : Submodule R M) (x' : ι →₀ M' ⊗[R] N₁) (hM : M' ≤ M₁), Module.Finite R M' ∧
     ∀ (i : ι), (inclusion hM).rTensor N₁ (x' i) = x i := by
+  classical
   obtain ⟨M', x', hM, hfin, hx⟩ := exists_finite_submodule_left_of_fintype' fun i : x.support ↦ x i
   refine ⟨M', (Finsupp.equivFunOnFinite.symm x').extendDomain, hM, hfin, fun i ↦ ?_⟩
   by_cases h : i ∈ x.support
@@ -205,6 +207,7 @@ theorem exists_finite_submodule_left_of_finsupp' {ι : Type*} (x : ι →₀ M�
 theorem exists_finite_submodule_right_of_finsupp' {ι : Type*} (x : ι →₀ M₁ ⊗[R] N₁) :
     ∃ (N' : Submodule R N) (x' : ι →₀ M₁ ⊗[R] N') (hN : N' ≤ N₁), Module.Finite R N' ∧
     ∀ (i : ι), (inclusion hN).lTensor M₁ (x' i) = x i := by
+  classical
   obtain ⟨N', x', hN, hfin, hx⟩ := exists_finite_submodule_right_of_fintype' fun i : x.support ↦ x i
   refine ⟨N', (Finsupp.equivFunOnFinite.symm x').extendDomain, hN, hfin, fun i ↦ ?_⟩
   by_cases h : i ∈ x.support
