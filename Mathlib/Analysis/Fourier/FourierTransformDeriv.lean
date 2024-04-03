@@ -13,7 +13,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Analytic
 
 In this file we compute the Fréchet derivative of the Fourier transform of `f`, where `f` is a
 function such that both `f` and `v ↦ ‖v‖ * ‖f v‖` are integrable. Here the Fourier transform is
-understood as an  operator `(V → E) → (W → E)`, where `V` and `W` are normed `ℝ`-vector spaces
+understood as an operator `(V → E) → (W → E)`, where `V` and `W` are normed `ℝ`-vector spaces
 and the Fourier transform is taken with respect to a continuous `ℝ`-bilinear
 pairing `L : V × W → ℝ` and a given reference measure `μ`.
 
