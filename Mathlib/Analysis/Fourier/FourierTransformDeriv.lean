@@ -14,7 +14,7 @@ import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 
 In this file we compute the Fréchet derivative of the Fourier transform of `f`, where `f` is a
 function such that both `f` and `v ↦ ‖v‖ * ‖f v‖` are integrable. Here the Fourier transform is
-understood as an  operator `(V → E) → (W → E)`, where `V` and `W` are normed `ℝ`-vector spaces
+understood as an operator `(V → E) → (W → E)`, where `V` and `W` are normed `ℝ`-vector spaces
 and the Fourier transform is taken with respect to a continuous `ℝ`-bilinear
 pairing `L : V × W → ℝ` and a given reference measure `μ`.
 
@@ -30,19 +30,19 @@ terms, as the Fourier transform of `x * f x` (or `x^n * f x` for higher derivati
 
 ## Main definitions and results
 
-We introduce two handy definitions:
+We introduce two convenience definitions:
 
 * `VectorFourier.fourierSMulRight L f`: given `f : V → E` and `L` a bilinear pairing
   between `V` and `W`, then this is the function `fun v ↦ -(2 * π * I) (L v ⬝) • f v`,
   from `V` to `Hom (W, E)`.
   This is essentially `ContinousLinearMap.smulRight`, up to the factor `- 2πI` designed to make sure
-  that the fourier integral of `fourierSMulRight L f` is the derivative of the Fourier
+  that the Fourier integral of `fourierSMulRight L f` is the derivative of the Fourier
   integral of `f`.
 * `VectorFourier.fourierPowSMulRight` is the higher order analogue for higher derivatives:
   `fourierPowSMulRight L f v n` is informally `(-(2 * π * I))^n (L v ⬝)^n • f v`, in
   the space of continuous multilinear maps `W [×n]→L[ℝ] E`.
 
-With these definitions, the statements read as follow, first in a general context
+With these definitions, the statements read as follows, first in a general context
 (arbitrary `L` and `μ`):
 
 * `VectorFourier.hasFDerivAt_fourierIntegral`: the Fourier integral of `f` is differentiable, with
@@ -74,7 +74,10 @@ open Real Complex MeasureTheory Filter TopologicalSpace
 
 open scoped FourierTransform Topology BigOperators
 
-attribute [local instance 2000] secondCountableTopologyEither_of_left
+-- without this local instance, Lean tries first the instance
+-- `secondCountableTopologyEither_of_right` (whose priority is 100) and takes a very long time to
+-- fail. Since we only use the left instance in this file, we make sure it is tried first.
+attribute [local instance 101] secondCountableTopologyEither_of_left
 
 namespace Real
 
