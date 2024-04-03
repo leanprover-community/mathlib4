@@ -443,7 +443,7 @@ instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
           have hf := @mem_iff_mem _ _ f a b
           have hg := @mem_iff_mem _ _ g a b
           simp only [Option.mem_def] at *
-          split_ifs with h1 h2 h2 <;> try simp [hf]
+          split_ifs with h1 h2 h2 <;> try simp only [hf, iff_false, false_iff]
           · contrapose! h2
             rw [h2]
             rw [← h1, hf, h2] at hg
