@@ -129,7 +129,7 @@ theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzG
       ConjAct.toConjAct x • LinearMap.range (ι Q) ≤ LinearMap.range (ι Q) by
     apply le_antisymm
     · exact this _ hx
-    · have := Submodule.pointwise_smul_mono (ConjAct.toConjAct x) <| this _ (inv_mem hx)
+    · have := smul_mono_right (ConjAct.toConjAct x) <| this _ (inv_mem hx)
       refine Eq.trans_le ?_ this
       simp only [map_inv, smul_inv_smul]
   intro x hx
