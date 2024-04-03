@@ -37,7 +37,9 @@ theorem Equiv.Perm.decomposeFin_symm_of_one {n : ℕ} (p : Fin (n + 1)) :
   Equiv.Perm.decomposeFin_symm_of_refl p
 #align equiv.perm.decompose_fin_symm_of_one Equiv.Perm.decomposeFin_symm_of_one
 
-@[simp]
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+@[simp, nolint simpNF]
 theorem Equiv.Perm.decomposeFin_symm_apply_zero {n : ℕ} (p : Fin (n + 1)) (e : Perm (Fin n)) :
     Equiv.Perm.decomposeFin.symm (p, e) 0 = p := by simp [Equiv.Perm.decomposeFin]
 #align equiv.perm.decompose_fin_symm_apply_zero Equiv.Perm.decomposeFin_symm_apply_zero
