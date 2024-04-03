@@ -28,7 +28,7 @@ This file defines square and even elements in a monoid.
 
 ## See also
 
-`Algebra.Ring.Parity` for the definition of odd elements.
+`Mathlib.Algebra.Ring.Parity` for the definition of odd elements.
 -/
 
 assert_not_exists Ring
