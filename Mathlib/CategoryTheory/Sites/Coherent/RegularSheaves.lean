@@ -198,26 +198,7 @@ noncomputable def isLimit_forkOfι_equiv (P : Cᵒᵖ ⥤ D) {X B : C} (π : X �
   refine (IsLimit.equivOfNatIsoOfIso i.symm _ _ ?_).trans (Functor.Initial.isLimitWhiskerEquiv H _)
   refine Cones.ext (Iso.refl _) ?_
   rintro ⟨_ | _⟩
-  · simp only [id_obj, comp_obj, Functor.comp_map, Iso.refl_hom, id_eq, eq_mpr_eq_cast,
-      const_obj_obj, parallelPair_map_right, Quiver.Hom.unop_op, Over.homMk_left, Iso.symm_hom,
-      Cones.postcompose_obj_pt, Fork.ofι_pt, Cones.postcompose_obj_π, NatTrans.comp_app,
-      Fork.ofι_π_app, parallelPair.ext_inv_app, Iso.refl_inv, Sieve.generate_apply,
-      Cone.whisker_pt, mapCone_pt, Cocone.op_pt, Cocone.whisker_pt, Over.forgetCocone_pt,
-      Cone.whisker_π, whiskerLeft_app, mapCone_π_app, op_obj, fullSubcategoryInclusion.obj,
-      Over.forget_obj, Cocone.op_π, Cocone.whisker_ι, NatTrans.op_app, Over.forgetCocone_ι_app,
-      Category.id_comp, i]
-    erw [Category.comp_id]
-    congr
-  · simp only [id_obj, comp_obj, Functor.comp_map, Iso.refl_hom, id_eq, eq_mpr_eq_cast,
-      const_obj_obj, parallelPair_map_right, Quiver.Hom.unop_op, Over.homMk_left, Iso.symm_hom,
-      Cones.postcompose_obj_pt, Fork.ofι_pt, Cones.postcompose_obj_π, NatTrans.comp_app,
-      Fork.ofι_π_app, parallelPair_obj_one, parallelPair.ext_inv_app, Iso.refl_inv,
-      Category.assoc, Sieve.generate_apply, Cone.whisker_pt, mapCone_pt, Cocone.op_pt,
-      Cocone.whisker_pt, Over.forgetCocone_pt, Cone.whisker_π, whiskerLeft_app, mapCone_π_app,
-      op_obj, fullSubcategoryInclusion.obj, Over.forget_obj, Cocone.op_π, Cocone.whisker_ι,
-      NatTrans.op_app, Over.forgetCocone_ι_app, Category.id_comp, i]
-    erw [Category.comp_id, ← Functor.map_comp]
-    congr
+  all_goals aesop
 
 lemma equalizerConditionMap_iff_nonempty_isLimit (P : Cᵒᵖ ⥤ D) ⦃X B : C⦄ (π : X ⟶ B)
     [HasPullback π π] : SingleEqualizerCondition P π ↔
