@@ -180,7 +180,7 @@ end preorder
 
 end IsLawson
 
-section ts
+section Preorder
 
 variable [Preorder α]
 
@@ -191,43 +191,28 @@ lemma lawson_le_lower : lawson α ≤ lower α := inf_le_left
 lemma scottHausdorff_le_lawson : scottHausdorff α  ≤ lawson α :=
   le_inf scottHausdorff_le_lower scottHausdorff_le_scott
 
-lemma lawsonClosed_of_scottClosed (s : Set α) (h : IsClosed (Topology.WithScott.ofScott ⁻¹' s)) :
-    IsClosed (Topology.WithLawson.ofLawson ⁻¹' s) := IsClosed.mono h lawson_le_scott
+lemma lawsonClosed_of_scottClosed (s : Set α) (h : IsClosed (WithScott.ofScott ⁻¹' s)) :
+    IsClosed (WithLawson.ofLawson ⁻¹' s) := IsClosed.mono h lawson_le_scott
 
-lemma lawsonClosed_of_lowerClosed (s : Set α) (h : IsClosed (Topology.WithLower.ofLower ⁻¹' s)) :
-    IsClosed (Topology.WithLawson.ofLawson ⁻¹' s) := IsClosed.mono h lawson_le_lower
+lemma lawsonClosed_of_lowerClosed (s : Set α) (h : IsClosed (WithLower.ofLower ⁻¹' s)) :
+    IsClosed (WithLawson.ofLawson ⁻¹' s) := IsClosed.mono h lawson_le_lower
 
 /-- An upper set is Lawson open if and only if it is Scott open -/
 lemma scottOpen_iff_lawsonOpen_of_isUpperSet {s : Set α} (h : IsUpperSet s) :
-    IsOpen (Topology.WithScott.ofScott ⁻¹' s) ↔ IsOpen (Topology.WithLawson.ofLawson ⁻¹' s) :=
-  ⟨lawson_le_scott _, fun hs => Topology.IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open.mpr
+    IsOpen (WithScott.ofScott ⁻¹' s) ↔ IsOpen (WithLawson.ofLawson ⁻¹' s) :=
+  ⟨lawson_le_scott _, fun hs => IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open.mpr
     ⟨h, (scottHausdorff_le_lawson s) hs⟩⟩
 
-variable (L : TopologicalSpace α) (l : TopologicalSpace α) (S : TopologicalSpace α)
-variable [@Topology.IsLawson α _ L] [@Topology.IsLower α l _] [@Topology.IsScott α _ S]
+variable (L : TopologicalSpace α) (S : TopologicalSpace α)
+variable [@IsLawson α _ L] [@IsScott α _ S]
 
-lemma lawson_le_scott' : L ≤ S := by
+lemma isLawson_le_isScott : L ≤ S := by
   rw [@Topology.IsScott.topology_eq α _ S _, @Topology.IsLawson.topology_eq α _ L _]
   exact inf_le_right
 
-lemma Scott_Hausdorff_le_Lawson : (scottHausdorff α) ≤ L := by
-  rw [@IsLawson.topology_eq α _ L _,  lawson, le_inf_iff, ← @IsLower.topology_eq α _ l _,
-    ← @IsScott.topology_eq α _ S _]
-  constructor
-  · exact @IsLower.scottHausdorff_le  α _ l _
-  · convert scottHausdorff_le_scott
-    exact IsScott.topology_eq_scott
-
-end ts
-
-
-section Preorder
-
-open Topology
-
-variable [Preorder α]
-  (S :TopologicalSpace α) (l : TopologicalSpace α) (L : TopologicalSpace α)
-  [@IsScott α _ S]  [@IsLawson α _ L] [@IsLower α l _]
+lemma scottHausdorff_le_isLawson : (scottHausdorff α) ≤ L := by
+  rw [@IsLawson.topology_eq α _ L _]
+  exact scottHausdorff_le_lawson
 
 /-- An upper set is Lawson open if and only if it is Scott open -/
 lemma lawsonOpen_iff_scottOpen_of_isUpperSet (s : Set α) (h : IsUpperSet s) :
@@ -235,19 +220,19 @@ lemma lawsonOpen_iff_scottOpen_of_isUpperSet (s : Set α) (h : IsUpperSet s) :
   constructor
   · intro hs
     rw [@Topology.IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open α _ S]
-    exact ⟨h, fun d d₁ d₂ => (Scott_Hausdorff_le_Lawson L l S) _ hs d₁ d₂⟩
-  · apply TopologicalSpace.le_def.mp (lawson_le_scott' _ _)
+    exact ⟨h, fun d d₁ d₂ => (scottHausdorff_le_isLawson L) _ hs d₁ d₂⟩
+  · apply TopologicalSpace.le_def.mp (isLawson_le_isScott _ _)
 
 lemma lawsonClosed_iff_scottClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s) :
     IsClosed[L] s ↔ IsClosed[S] s := by
     rw [← isUpperSet_compl] at h
-    rw [← isOpen_compl_iff, ← @isOpen_compl_iff,
-      (lawsonOpen_iff_scottOpen_of_isUpperSet S l L _ h)]
+    rw [← @isOpen_compl_iff, ← isOpen_compl_iff,
+      (lawsonOpen_iff_scottOpen_of_isUpperSet L S _ h)]
 
 /-- A lower set is Lawson closed if and only if it is closed under sups of directed sets -/
 lemma lawsonClosed_iff_dirSupClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s) :
     IsClosed[L] s ↔ DirSupClosed s := by
-  rw [(lawsonClosed_iff_scottClosed_of_isLowerSet S l L _ h),
+  rw [(lawsonClosed_iff_scottClosed_of_isLowerSet L S _ h),
     @Topology.IsScott.isClosed_iff_isLowerSet_and_dirSupClosed]
   aesop
 
