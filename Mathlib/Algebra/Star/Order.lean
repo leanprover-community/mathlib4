@@ -82,7 +82,6 @@ instance (priority := 100) toOrderedAddCommGroup [NonUnitalRing R] [PartialOrder
 
 #align star_ordered_ring.to_ordered_add_comm_group StarOrderedRing.toOrderedAddCommGroup
 
--- set note [reducible non-instances]
 /-- To construct a `StarOrderedRing` instance it suffices to show that `x ≤ y` if and only if
 `y = x + star s * s` for some `s : R`.
 
@@ -92,8 +91,7 @@ and obviates the hassle of `AddSubmonoid.closure_induction` when creating those 
 If you are working with a `NonUnitalRing` and not a `NonUnitalSemiring`, see
 `StarOrderedRing.ofNonnegIff` for a more convenient version.
  -/
-@[reducible]
-def ofLEIff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
+lemma ofLEIff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
     (h_le_iff : ∀ x y : R, x ≤ y ↔ ∃ s, y = x + star s * s) : StarOrderedRing R where
   le_iff x y := by
     refine' ⟨fun h => _, _⟩
@@ -109,12 +107,10 @@ def ofLEIff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
         exact (ha _ _ rfl).trans (hb _ _ rfl)
 #align star_ordered_ring.of_le_iff StarOrderedRing.ofLEIffₓ
 
--- set note [reducible non-instances]
 /-- When `R` is a non-unital ring, to construct a `StarOrderedRing` instance it suffices to
 show that the nonnegative elements are precisely those elements in the `AddSubmonoid` generated
 by `star s * s` for `s : R`. -/
-@[reducible]
-def ofNonnegIff [NonUnitalRing R] [PartialOrder R] [StarRing R]
+lemma ofNonnegIff [NonUnitalRing R] [PartialOrder R] [StarRing R]
     (h_add : ∀ {x y : R}, x ≤ y → ∀ z, z + x ≤ z + y)
     (h_nonneg_iff : ∀ x : R, 0 ≤ x ↔ x ∈ AddSubmonoid.closure (Set.range fun s : R => star s * s)) :
     StarOrderedRing R where
@@ -123,7 +119,6 @@ def ofNonnegIff [NonUnitalRing R] [PartialOrder R] [StarRing R]
     simpa only [← sub_eq_iff_eq_add', sub_nonneg, exists_eq_right'] using h_nonneg_iff (y - x)
 #align star_ordered_ring.of_nonneg_iff StarOrderedRing.ofNonnegIff
 
--- set note [reducible non-instances]
 /-- When `R` is a non-unital ring, to construct a `StarOrderedRing` instance it suffices to
 show that the nonnegative elements are precisely those elements of the form `star s * s`
 for `s : R`.
@@ -131,8 +126,7 @@ for `s : R`.
 This is provided for convenience because it holds in many common scenarios (e.g.,`ℝ`, `ℂ`, or
 any C⋆-algebra), and obviates the hassle of `AddSubmonoid.closure_induction` when creating those
 instances. -/
-@[reducible]
-def ofNonnegIff' [NonUnitalRing R] [PartialOrder R] [StarRing R]
+lemma ofNonnegIff' [NonUnitalRing R] [PartialOrder R] [StarRing R]
     (h_add : ∀ {x y : R}, x ≤ y → ∀ z, z + x ≤ z + y)
     (h_nonneg_iff : ∀ x : R, 0 ≤ x ↔ ∃ s, x = star s * s) : StarOrderedRing R :=
   ofLEIff <| by
