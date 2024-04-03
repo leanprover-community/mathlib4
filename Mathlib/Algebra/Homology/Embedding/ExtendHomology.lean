@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.Embedding
+import Mathlib.Algebra.Homology.Embedding.Basic
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 open CategoryTheory Limits Category
