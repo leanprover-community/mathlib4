@@ -17,7 +17,6 @@ This file provides a `Seq α` type representing possibly infinite lists (referre
   `f m = none` for all `m ≥ n`.
 -/
 
-set_option linter.flexible false
 namespace Stream'
 
 universe u v w
@@ -666,6 +665,7 @@ theorem append_nil (s : Seq α) : append s nil = s := by
     exact ⟨rfl, s, rfl, rfl⟩
 #align stream.seq.append_nil Stream'.Seq.append_nil
 
+set_option linter.flexible false in  -- simp; apply ...
 @[simp]
 theorem append_assoc (s t u : Seq α) : append (append s t) u = append s (append t u) := by
   apply eq_of_bisim fun s1 s2 => ∃ s t u, s1 = append (append s t) u ∧ s2 = append s (append t u)
@@ -714,6 +714,7 @@ theorem map_comp (f : α → β) (g : β → γ) : ∀ s : Seq α, map (g ∘ f)
     ext ⟨⟩ <;> rfl
 #align stream.seq.map_comp Stream'.Seq.map_comp
 
+set_option linter.flexible false in  -- simp; apply ...
 @[simp]
 theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s) (map f t) := by
   apply
@@ -780,6 +781,7 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
         simpa [join_cons_cons, join_cons_nil] using Or.inr ⟨x, s, S, rfl, rfl⟩
 #align stream.seq.join_cons Stream'.Seq.join_cons
 
+set_option linter.flexible false in  -- simp; apply ...
 @[simp]
 theorem join_append (S T : Seq (Seq1 α)) : join (append S T) = append (join S) (join T) := by
   apply
@@ -979,6 +981,7 @@ theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
   apply recOn s <;> intros <;> simp
 #align stream.seq1.ret_bind Stream'.Seq1.ret_bind
 
+set_option linter.flexible false in  -- simp; apply ...
 @[simp]
 theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.map (map f) S) := by
   apply
@@ -1004,6 +1007,7 @@ theorem map_join (f : α → β) : ∀ S, map f (join S) = join (map (map f) S)
   | ((a, s), S) => by apply recOn s <;> intros <;> simp [map]
 #align stream.seq1.map_join Stream'.Seq1.map_join
 
+set_option linter.flexible false in  -- simp; apply ...
 @[simp]
 theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
     Seq.join (Seq.join SS) = Seq.join (Seq.map join SS) := by
@@ -1029,6 +1033,7 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
   · refine' ⟨nil, SS, _, _⟩ <;> simp
 #align stream.seq1.join_join Stream'.Seq1.join_join
 
+set_option linter.flexible false in  -- simp; cases' ...  -- maybe false positive
 @[simp]
 theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
     bind (bind s f) g = bind s fun x : α => bind (f x) g := by

@@ -288,7 +288,7 @@ theorem bitwise_xor : bitwise xor = Int.xor := by
     cases x <;> cases y <;> rfl
 #align int.bitwise_xor Int.bitwise_xor
 
-set_option linter.flexible false in
+set_option linter.flexible false in  -- simp; cases <;> simp -- false positive
 @[simp]
 theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
