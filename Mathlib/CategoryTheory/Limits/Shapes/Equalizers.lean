@@ -1115,7 +1115,7 @@ This is an isomorphism iff `G` preserves the equalizer of `f,g`; see
 noncomputable def equalizerComparison [HasEqualizer f g] [HasEqualizer (G.map f) (G.map g)] :
     G.obj (equalizer f g) ⟶ equalizer (G.map f) (G.map g) :=
   equalizer.lift (G.map (equalizer.ι _ _))
-    (by simp only [← G.map_comp]; rw[equalizer.condition])
+    (by simp only [← G.map_comp]; rw [equalizer.condition])
 #align category_theory.limits.equalizer_comparison CategoryTheory.Limits.equalizerComparison
 
 @[reassoc (attr := simp)]

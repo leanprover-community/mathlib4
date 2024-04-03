@@ -1,27 +1,22 @@
 /-
-Copyright (c) 2014 Parikshit Khanna. All rights reserved.
+Copyright (c) 2020 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
+Authors: Yakov Pechersky
 -/
-import Mathlib.Data.List.Basic
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Data.Nat.Order.Basic
-import Mathlib.Data.Option.Basic
+import Mathlib.Logic.IsEmpty
+import Mathlib.Order.Basic
+import Mathlib.Init.Data.Bool.Lemmas
+import Mathlib.Init.Data.Nat.Lemmas
 
+/-!
+# Properties of `List.reduceOption`
 
-/-! # reduceOption
-
-File containing lemmas for the `reduceOption` function, which removes all `none` elements from a
-list of options and unwraps the `some` elements.
+In this file we prove basic lemmas about `List.reduceOption`.
 -/
-
-open Function
 
 namespace List
 
-universe u v
-
-variable {α : Type u} {β : Type v}
+variable {α β : Type*}
 
 @[simp]
 theorem reduceOption_cons_of_some (x : α) (l : List (Option α)) :

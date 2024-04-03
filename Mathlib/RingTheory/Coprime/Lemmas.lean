@@ -124,7 +124,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
       Pairwise (IsCoprime on fun i : t ↦ s i) := by
   refine' h.cons_induction _ _
   · simp only [sum_singleton, Finset.sdiff_self, prod_empty, mul_one, exists_apply_eq,
-               Pairwise, Ne.def, true_iff_iff]
+               Pairwise, Ne, true_iff_iff]
     rintro a ⟨i, hi⟩ ⟨j, hj⟩ h
     rw [Finset.mem_singleton] at hi hj
     simp [hi, hj] at h
