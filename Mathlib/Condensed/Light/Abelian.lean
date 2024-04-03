@@ -27,9 +27,7 @@ The category of condensed abelian groups, defined as sheaves of abelian groups o
 abbrev LightCondAb := LightCondensed.{u} AddCommGroupCat.{u}
 
 noncomputable instance LightCondAb.abelian : Abelian LightCondAb.{u} :=
-  letI : PreservesLimits (forget AddCommGroupCat.{u}) :=
-    AddCommGroupCat.forgetPreservesLimits.{u}
-  letI : HasLimitsOfSize <| Sheaf (coherentTopology LightProfinite.{u}) AddCommGroupCat.{u} :=
-    inferInstance
+  letI : HasFiniteLimits <| Sheaf (coherentTopology LightProfinite.{u}) AddCommGroupCat.{u} :=
+    hasFiniteLimits_of_hasLimitsOfSize _
   CategoryTheory.sheafIsAbelian (J := coherentTopology LightProfinite.{u})
     (D := AddCommGroupCat.{u})
