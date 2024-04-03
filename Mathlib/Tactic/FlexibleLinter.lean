@@ -132,7 +132,7 @@ inductive Stained
   | name     : Name → Stained
   | goal     : Stained
   | wildcard : Stained
-  --deriving Repr, Inhabited, DecidableEq --, Hashable
+  deriving Repr, Inhabited, DecidableEq, Hashable
 
 /-- Converting a `Stained` to a `String`:
 * a `Name` is represented by the corresponding string;
@@ -151,15 +151,15 @@ The function is used to extract "location" information about `stx`: either expli
 Whether or not what this function extracts really is a location will be determined by the linter
 using data embedded in the `InfoTree`s. -/
 partial
-def toStained : Syntax → Array Stained
-  | .node _ _ arg => (arg.map toStained).flatten
-  | .ident _ _ val _ => #[.name val]
+def toStained : Syntax → HashSet Stained
+  | .node _ _ arg => (arg.map toStained).foldl (·.merge ·) {}
+  | .ident _ _ val _ => {.name val}
   | .atom _ val => match val with
-                  | "*" => #[.wildcard]
-                  | "⊢" => #[.goal]
-                  | "|" => #[.goal]
-                  | _ => #[]
-  | _ => #[]
+                  | "*" => {.wildcard}
+                  | "⊢" => {.goal}
+                  | "|" => {.goal}
+                  | _ => {}
+  | _ => {}
 
 /-- `getStained stx` expects `stx` to be an argument of a node of `SyntaxNodeKind`
 `Lean.Parser.Tactic.location`.
@@ -167,28 +167,27 @@ Typically, we apply `getStained` to the output of `getLocs`.
 
 See `getStained!` for a similar function. -/
 partial
-def getStained (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : Array Stained :=
+def getStained (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : HashSet Stained :=
   match stx with
     | stx@(.node _ ``Lean.Parser.Tactic.location loc) =>
-      if all? stx then #[] else (loc.map toStained).flatten
-    | .node _ _ args => (args.map (getStained · all?)).flatten
+      if all? stx then {} else (loc.map toStained).foldl (·.merge ·) {}
+    | .node _ _ args => (args.map (getStained · all?)).foldl (·.merge ·) {}
     | _ => default
 
 /-- `getStained! stx` expects `stx` to be an argument of a node of `SyntaxNodeKind`
 `Lean.Parser.Tactic.location`.
 Typically, we apply `getStained!` to the output of `getLocs`.
 
-It returns the array of `Stained` determined by the locations in `stx`.
+It returns the `HashSet` of `Stained` determined by the locations in `stx`.
 
-The only difference with `getStained stx`, is that `getStained!` never returns `#[]`:
-if `getStained stx = #[]`, then `getStained' stx = #[.goal]`.
+The only difference with `getStained stx`, is that `getStained!` never returns `{}`:
+if `getStained stx = {}`, then `getStained' stx = {.goal}`.
 
 This means that tactics that do not have an explicit "`at`" in their syntax will be treated as
 acting on the main goal. -/
-def getStained! (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : Array Stained :=
-  match getStained stx all? with
-    | #[] => #[.goal]
-    | out => out
+def getStained! (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : HashSet Stained :=
+  let out := getStained stx all?
+  if out.size == 0 then {.goal} else out
 
 /-- Gets the value of the `linter.flexible` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.flexible o
@@ -335,11 +334,14 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
             stains := stains.push (l, (d, s))
 
       else
-        let stained_in_syntax := if usesGoal? skind then (toStained s).push d else toStained s
+        let stained_in_syntax := if usesGoal? skind then (toStained s).insert d else toStained s
         if !followers.contains skind then
           for currMv0 in mvs0 do
             let lctx0 := ((ctx0.decls.find? currMv0).getD default).lctx
-            let foundFvs := (stained_in_syntax.map (·.toFMVarId currMv0 lctx0)).flatten
+            let mut foundFvs : HashSet (FVarId × MVarId):= {}
+            for st in stained_in_syntax do
+              for d in st.toFMVarId currMv0 lctx0 do
+                if !foundFvs.contains d then foundFvs := foundFvs.insert d
             for l in foundFvs do
               if let some (_stdLoc, (st, kind)) := stains.find? (Prod.fst · == l) then
                 msgs := msgs.push (s, kind, st)
