@@ -151,11 +151,13 @@ end Cache
 
 register_option librarySearch.excludedModules : String := {
   defValue := "Init.Omega Mathlib.Tactic"
-  descr := "list of modules that should not be considered in library search"
+  descr := "modules that should not be considered in library search (separated by white space)"
 }
 
 def getLibrarySearchExcludedModules (o : Options) : List Name :=
-  (librarySearch.excludedModules.get o).splitOn.map (·.toName)
+  (librarySearch.excludedModules.get o).splitOn.filterMap (match ·.toName with
+    | .anonymous => none
+    | name => name)
 
 /-- Get all potential rewrite lemmas from the dicrimination tree. -/
 def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Bool)) := do
