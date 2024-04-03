@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Translations
-import Mathlib.Data.Nat.Order.Basic
 
 #align_import algebra.continued_fractions.terminated_stable from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
@@ -32,7 +31,7 @@ variable [DivisionRing K]
 theorem continuantsAux_stable_step_of_terminated (terminated_at_n : g.TerminatedAt n) :
     g.continuantsAux (n + 2) = g.continuantsAux (n + 1) := by
   rw [terminatedAt_iff_s_none] at terminated_at_n
-  simp only [continuantsAux, Nat.add_eq, add_zero, terminated_at_n]
+  simp only [continuantsAux, Nat.add_eq, Nat.add_zero, terminated_at_n]
 #align generalized_continued_fraction.continuants_aux_stable_step_of_terminated GeneralizedContinuedFraction.continuantsAux_stable_step_of_terminated
 
 theorem continuantsAux_stable_of_terminated (n_lt_m : n < m) (terminated_at_n : g.TerminatedAt n) :

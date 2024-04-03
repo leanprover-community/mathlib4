@@ -143,7 +143,8 @@ theorem eq_of_suffix_of_length_eq (h : l₁ <:+ l₂) : l₁.length = l₂.lengt
 #align list.mem_of_mem_drop List.mem_of_mem_drop
 
 lemma dropSlice_sublist (n m : ℕ) (l : List α) : l.dropSlice n m <+ l :=
-  calc l.dropSlice n m = take n l ++ drop m (drop n l) := by rw [dropSlice_eq, drop_drop, add_comm]
+  calc
+    l.dropSlice n m = take n l ++ drop m (drop n l) := by rw [dropSlice_eq, drop_drop, Nat.add_comm]
   _ <+ take n l ++ drop n l := (Sublist.refl _).append (drop_sublist _ _)
   _ = _ := take_append_drop _ _
 #align list.slice_sublist List.dropSlice_sublist
@@ -377,7 +378,7 @@ theorem tails_cons (a : α) (l : List α) : tails (a :: l) = (a :: l) :: l.tails
 @[simp]
 theorem inits_append : ∀ s t : List α, inits (s ++ t) = s.inits ++ t.inits.tail.map fun l => s ++ l
   | [], [] => by simp
-  | [], a :: t => by simp[· ∘ ·]
+  | [], a :: t => by simp [· ∘ ·]
   | a :: s, t => by simp [inits_append s t, · ∘ ·]
 #align list.inits_append List.inits_append
 
@@ -440,7 +441,7 @@ theorem nth_le_tails (l : List α) (n : ℕ) (hn : n < length (tails l)) :
   induction' l with x l IH generalizing n
   · simp
   · cases n
-    · simp[nthLe_cons]
+    · simp [nthLe_cons]
     · simpa[nthLe_cons] using IH _ _
 #align list.nth_le_tails List.nth_le_tails
 
@@ -450,7 +451,7 @@ theorem nth_le_inits (l : List α) (n : ℕ) (hn : n < length (inits l)) :
   induction' l with x l IH generalizing n
   · simp
   · cases n
-    · simp[nthLe_cons]
+    · simp [nthLe_cons]
     · simpa[nthLe_cons] using IH _ _
 #align list.nth_le_inits List.nth_le_inits
 end deprecated

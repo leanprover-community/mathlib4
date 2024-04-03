@@ -88,7 +88,7 @@ protected theorem nonneg_of_pos {a : ℤ} : 0 < a → 0 ≤ a :=
 #align int.neg_succ_lt_zero Int.negSucc_lt_zero
 
 theorem zero_le_ofNat (n : ℕ) : 0 ≤ ofNat n :=
-  @le.intro _ _ n (by rw [Int.zero_add, Int.coe_nat_eq])
+  @le.intro _ _ n (by rw [Int.zero_add]; rfl)
 #align int.zero_le_of_nat Int.zero_le_ofNat
 
 #align int.of_nat_nat_abs_eq_of_nonneg Int.ofNat_natAbs_eq_of_nonnegₓ

@@ -300,7 +300,7 @@ theorem induction_with_natDegree_le (P : R[X] → Prop) (N : ℕ) (P_0 : P 0)
     · convert P_C_mul_pow f.natDegree f.leadingCoeff ?_ df using 1
       · convert zero_add (C (leadingCoeff f) * X ^ f.natDegree)
         rw [← card_support_eq_zero, card_support_eraseLead' f0]
-      · rw [leadingCoeff_ne_zero, Ne.def, ← card_support_eq_zero, f0]
+      · rw [leadingCoeff_ne_zero, Ne, ← card_support_eq_zero, f0]
         exact zero_ne_one.symm
     refine' P_C_add f.eraseLead _ _ _ _ _
     · refine' (eraseLead_natDegree_lt _).trans_le (le_of_eq _)
@@ -311,7 +311,7 @@ theorem induction_with_natDegree_le (P : R[X] → Prop) (N : ℕ) (P_0 : P 0)
     · exact (natDegree_C_mul_X_pow_le f.leadingCoeff f.natDegree).trans df
     · exact hc _ (eraseLead_natDegree_le_aux.trans df) (card_support_eraseLead' f0)
     · refine' P_C_mul_pow _ _ _ df
-      rw [Ne.def, leadingCoeff_eq_zero, ← card_support_eq_zero, f0]
+      rw [Ne, leadingCoeff_eq_zero, ← card_support_eq_zero, f0]
       exact Nat.succ_ne_zero _
 #align polynomial.induction_with_nat_degree_le Polynomial.induction_with_natDegree_le
 
