@@ -149,15 +149,23 @@ def getLocalRewriteLemmas : MetaM (RefinedDiscrTree (RewriteLemma)) := do
 
 end Cache
 
+/--
+An option allowing the user to select which modules will not be considered in library search
+-/
 register_option librarySearch.excludedModules : String := {
   defValue := "Init.Omega Mathlib.Tactic"
-  descr := "modules that should not be considered in library search (separated by white space)"
+  descr := "list of modules that should not be considered in library search (separated by white space)"
 }
 
+/-- Get the names of the modules that should not be considered in library search. -/
 def getLibrarySearchExcludedModules (o : Options) : List Name :=
   (librarySearch.excludedModules.get o).splitOn.filterMap (match ·.toName with
     | .anonymous => none
     | name => name)
+
+/-- Determine whether the list of names contains a prefix of the name. -/
+def containsPrefixOf (names : List Name) (name : Name) : Bool :=
+  names.any (·.isPrefixOf name)
 
 /-- Get all potential rewrite lemmas from the dicrimination tree. -/
 def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Bool)) := do
@@ -165,7 +173,7 @@ def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Bool)) := do
   let cachedResults ← (← getCachedRewriteLemmas).getMatchWithScore e (unify := false)
   let excludedModules := getLibrarySearchExcludedModules (← getOptions)
   let exclude (rws : Array (RewriteLemma × Name)) := rws.filterMap fun (rw, moduleName) =>
-    if excludedModules.any (·.isPrefixOf moduleName) then none else rw
+    if containsPrefixOf excludedModules moduleName then none else rw
   return localResults.map (·.1, true) ++ cachedResults.map (exclude ·.1, true)
 
 /-- A rewrite lemma that has been applied to an expression. -/
