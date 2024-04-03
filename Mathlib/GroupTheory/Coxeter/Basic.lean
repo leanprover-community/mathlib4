@@ -126,6 +126,7 @@ variable {B : Type*} (M : CoxeterMatrix B)
 a group `W` and the Coxeter group associated to a Coxeter matrix `M`. -/
 @[ext]
 structure CoxeterSystem (W : Type*) [Group W] where
+  /-- The isomorphism between `W` and the Coxeter group associated to `M`. -/
   mulEquiv : W ≃* M.group
 
 /-- A group is a Coxeter group if it admits a Coxeter system for some Coxeter matrix `M`. -/
