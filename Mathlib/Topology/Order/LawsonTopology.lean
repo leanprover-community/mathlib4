@@ -164,22 +164,6 @@ theorem isOpen_def (T : Set (Topology.WithLawson α)) :
 end WithLawson
 end Lawson
 
-
-namespace IsLawson
-
-section preorder
-
-variable [Preorder α] [TopologicalSpace α] [Topology.IsLawson α]
-
-theorem isClosed_preimage_ofLawson (S : Set α) :
-    IsClosed (Topology.WithLawson.ofLawson ⁻¹' S) ↔ IsClosed S := by
-  rw [WithLawson.isClosed_preimage_ofLawson]
-  simp only [IsLawson.topology_eq]
-
-end preorder
-
-end IsLawson
-
 section Preorder
 
 variable [Preorder α]
@@ -235,6 +219,11 @@ lemma lawsonClosed_iff_dirSupClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s
 end Preorder
 
 namespace IsLawson
+
+theorem isClosed_preimage_ofLawson [Preorder α] [TopologicalSpace α] [IsLawson α] (S : Set α) :
+    IsClosed (Topology.WithLawson.ofLawson ⁻¹' S) ↔ IsClosed S := by
+  rw [WithLawson.isClosed_preimage_ofLawson]
+  simp only [IsLawson.topology_eq]
 
 section PartialOrder
 
