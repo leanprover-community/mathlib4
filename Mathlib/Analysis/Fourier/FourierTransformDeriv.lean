@@ -22,7 +22,7 @@ that the Fourier transform of `f` is `C^n`.
 
 We give specialized versions of these results on inner product spaces (where `L` is the scalar
 product) and on the real line, where we express the one-dimensional derivative in more concrete
-terms, as the Fourier transform of `x * f x` (or `x^n * f x` for higher derivatives).
+terms, as the Fourier transform of `-2πI x * f x` (or `(-2πI x)^n * f x` for higher derivatives).
 
 ## Main definitions and results
 
@@ -167,10 +167,11 @@ theorem hasFDerivAt_fourierIntegral
 
 lemma fderiv_fourierIntegral
     [MeasurableSpace V] [BorelSpace V] [SecondCountableTopology V] {μ : Measure V}
-    (hf : Integrable f μ) (hf' : Integrable (fun v : V ↦ ‖v‖ * ‖f v‖) μ) (w : W) :
-    fderiv ℝ (fourierIntegral 𝐞 μ L.toLinearMap₂ f) w =
-      fourierIntegral 𝐞 μ L.toLinearMap₂ (fourierSMulRight L f) w :=
-  (hasFDerivAt_fourierIntegral L hf hf' w).fderiv
+    (hf : Integrable f μ) (hf' : Integrable (fun v : V ↦ ‖v‖ * ‖f v‖) μ) :
+    fderiv ℝ (fourierIntegral 𝐞 μ L.toLinearMap₂ f) =
+      fourierIntegral 𝐞 μ L.toLinearMap₂ (fourierSMulRight L f) := by
+  ext1 w
+  exact (hasFDerivAt_fourierIntegral L hf hf' w).fderiv
 
 lemma differentiable_fourierIntegral
     [MeasurableSpace V] [BorelSpace V] [SecondCountableTopology V] {μ : Measure V}
@@ -349,9 +350,9 @@ theorem hasFDerivAt_fourierIntegral
 /-- The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of
     `fun v ↦ -2 * π * I ⟪v, ⬝⟫ f v`. -/
 theorem fderiv_fourierIntegral
-    (hf_int : Integrable f) (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖)) (x : V) :
-    fderiv ℝ (𝓕 f) x = 𝓕 (fourierSMulRight (innerSL ℝ) f) x :=
-  VectorFourier.fderiv_fourierIntegral (innerSL ℝ) hf_int hvf_int x
+    (hf_int : Integrable f) (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖)) :
+    fderiv ℝ (𝓕 f) = 𝓕 (fourierSMulRight (innerSL ℝ) f) :=
+  VectorFourier.fderiv_fourierIntegral (innerSL ℝ) hf_int hvf_int
 
 theorem differentiable_fourierIntegral
     (hf_int : Integrable f) (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖)) :
@@ -396,16 +397,16 @@ lemma hasDerivAt_fourierIntegral
   rfl
 
 theorem deriv_fourierIntegral
-    {f : ℝ → E} (hf : Integrable f) (hf' : Integrable (fun x : ℝ ↦ x • f x)) (x : ℝ) :
-    deriv (𝓕 f) x = 𝓕 (fun x : ℝ ↦ (-2 * π * I * x) • f x) x :=
-  (hasDerivAt_fourierIntegral hf hf' x).deriv
+    {f : ℝ → E} (hf : Integrable f) (hf' : Integrable (fun x : ℝ ↦ x • f x)) :
+    deriv (𝓕 f) = 𝓕 (fun x : ℝ ↦ (-2 * π * I * x) • f x) := by
+  ext1 x
+  exact (hasDerivAt_fourierIntegral hf hf' x).deriv
 
-theorem iteratedDeriv_fourierIntegral
-    {f : ℝ → E} {N : ℕ∞} {n : ℕ}
-    (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun x ↦ x^n • f x)) (hn : n ≤ N) (x : ℝ) :
-    iteratedDeriv n (𝓕 f) x = 𝓕 (fun x : ℝ ↦ (-2 * π * I * x) ^ n • f x) x := by
-  have I : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖^n * ‖f v‖) := by
-    intro n hn
+theorem iteratedDeriv_fourierIntegral {f : ℝ → E} {N : ℕ∞} {n : ℕ}
+    (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun x ↦ x^n • f x)) (hn : n ≤ N) :
+    iteratedDeriv n (𝓕 f) = 𝓕 (fun x : ℝ ↦ (-2 * π * I * x) ^ n • f x) := by
+  ext1 x
+  have I (n : ℕ) (hn : n ≤ N) : Integrable (fun v ↦ ‖v‖^n * ‖f v‖) := by
     convert (hf n hn).norm with x
     simp [norm_smul]
   have J : AEStronglyMeasurable f := by
@@ -422,3 +423,5 @@ theorem iteratedDeriv_fourierIntegral
       neg_mul, smul_left_cancel_iff]
   have : y ^ n • f y = ((y ^ n : ℝ) : ℂ) • f y := rfl
   simp only [← neg_mul, this, smul_smul, mul_pow, ofReal_pow, mul_assoc]
+
+end Real
