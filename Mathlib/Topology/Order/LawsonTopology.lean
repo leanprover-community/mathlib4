@@ -191,13 +191,11 @@ lemma lawson_le_lower : lawson α ≤ lower α := inf_le_left
 lemma scottHausdorff_le_lawson : scottHausdorff α  ≤ lawson α :=
   le_inf scottHausdorff_le_lower scottHausdorff_le_scott
 
-lemma ScottClosed_implies_LawsonClosed (s : Set α) :
-    IsClosed (Topology.WithScott.ofScott ⁻¹' s) → IsClosed (Topology.WithLawson.ofLawson ⁻¹' s) :=
-  fun h => IsClosed.mono h lawson_le_scott
+lemma lawsonClosed_of_scottClosed (s : Set α) (h : IsClosed (Topology.WithScott.ofScott ⁻¹' s)) :
+    IsClosed (Topology.WithLawson.ofLawson ⁻¹' s) := IsClosed.mono h lawson_le_scott
 
-lemma LowerClosed_implies_LawsonClosed (s : Set α) :
-    IsClosed (Topology.WithLower.ofLower ⁻¹' s) → IsClosed (Topology.WithLawson.ofLawson ⁻¹' s) :=
-  fun h => IsClosed.mono h lawson_le_lower
+lemma lawsonClosed_of_lowerClosed (s : Set α) (h : IsClosed (Topology.WithLower.ofLower ⁻¹' s)) :
+    IsClosed (Topology.WithLawson.ofLawson ⁻¹' s) := IsClosed.mono h lawson_le_lower
 
 /-- An upper set is Lawson open if and only if it is Scott open -/
 lemma LawsonOpen_iff_ScottOpen' (s : Set α) (h : IsUpperSet s) :
@@ -268,9 +266,9 @@ lemma singletonIsClosed (a : α) : IsClosed ({a} : Set α) := by
   rw [← (Set.OrdConnected.upperClosure_inter_lowerClosure ordConnected_singleton),
     ← isClosed_preimage_ofLawson]
   apply IsClosed.inter
-    (LowerClosed_implies_LawsonClosed _ (IsLower.isClosed_upperClosure (finite_singleton a)))
+    (lawsonClosed_of_lowerClosed _ (IsLower.isClosed_upperClosure (finite_singleton a)))
   rw [← isClosed_preimage_ofLawson, lowerClosure_singleton, LowerSet.coe_Iic]
-  apply ScottClosed_implies_LawsonClosed
+  apply lawsonClosed_of_scottClosed
   exact Topology.IsScott.isClosed_Iic
 
 -- see Note [lower instance priority]
