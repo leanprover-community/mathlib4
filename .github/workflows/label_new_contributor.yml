@@ -16,17 +16,17 @@ jobs:
         uses: actions/github-script@v5
         with:
           script: |
-            const creator = context.payload.pull_request.user.login;
+            const creator = context.payload.sender.login
             const { owner, repo } = context.repo;
-
-            // Fetch all pull requests by the creator, across all states
-            const response = await github.rest.pulls.list({
+            const opts = github.rest.issues.listForRepo.endpoint.merge({
+              ...context.issue,
               owner,
               repo,
-              state: 'all',
-              creator
-            });
-            const pullRequestCount = response.data.length;
+              creator,
+              state: 'closed'
+            })
+            const issues = await github.paginate(opts)
+            const pullRequestCount = issues.length;
 
             // Determine if the creator has 5 or fewer pull requests
             if (pullRequestCount <= 5) {

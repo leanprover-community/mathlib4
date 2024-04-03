@@ -172,10 +172,15 @@ theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S) (x : M) :
 #align semilinear_map_class.map_smul_inv SemilinearMapClass.map_smul_inv
 
 /-- Reinterpret an element of a type of semilinear maps as a semilinear map. -/
-abbrev semilinearMap : M →ₛₗ[σ] M₃ where
+@[coe]
+def semilinearMap : M →ₛₗ[σ] M₃ where
   toFun := f
   map_add' := map_add f
   map_smul' := map_smulₛₗ f
+
+/-- Reinterpret an element of a type of semilinear maps as a semilinear map. -/
+instance instCoeToSemilinearMap : CoeHead F (M →ₛₗ[σ] M₃) where
+  coe f := semilinearMap f
 
 end SemilinearMapClass
 
@@ -185,6 +190,10 @@ variable {F : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [Mod
 
 /-- Reinterpret an element of a type of linear maps as a linear map. -/
 abbrev linearMap : M₁ →ₗ[R] M₂ := SemilinearMapClass.semilinearMap f
+
+/-- Reinterpret an element of a type of linear maps as a linear map. -/
+instance instCoeToLinearMap : CoeHead F (M₁ →ₗ[R] M₂) where
+  coe f := SemilinearMapClass.semilinearMap f
 
 end LinearMapClass
 
@@ -265,6 +274,17 @@ theorem coe_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
 theorem coe_addHom_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
     ((LinearMap.mk f h : M →ₛₗ[σ] M₃) : AddHom M M₃) = f :=
   rfl
+
+theorem coe_semilinearMap {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃] (f : F) :
+    ((f : M →ₛₗ[σ] M₃) : M → M₃) = f :=
+  rfl
+
+theorem toLinearMap_injective {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃]
+    {f g : F} (h : (f : M →ₛₗ[σ] M₃) = (g : M →ₛₗ[σ] M₃)) :
+    f = g := by
+  apply DFunLike.ext
+  intro m
+  exact DFunLike.congr_fun h m
 
 /-- Identity map as a `LinearMap` -/
 def id : M →ₗ[R] M :=
@@ -650,13 +670,11 @@ namespace DistribMulActionHom
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R M₂]
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
-@[coe]
-def toLinearMap (fₗ : M →+[R] M₂) : M →ₗ[R] M₂ :=
-  { fₗ with }
-#align distrib_mul_action_hom.to_linear_map DistribMulActionHom.toLinearMap
+instance instLinearMapClass : LinearMapClass (M →+[R] M₂) R M M₂ where
+  map_smulₛₗ := map_smul
 
-instance : CoeTC (M →+[R] M₂) (M →ₗ[R] M₂) :=
-  ⟨toLinearMap⟩
+instance instCoeTCLinearMap : CoeTC (M →+[R] M₂) (M →ₗ[R] M₂) where
+  coe f := SemilinearMapClass.semilinearMap f
 
 -- Porting note: because coercions get unfolded, there is no need for this rewrite
 #noalign distrib_mul_action_hom.to_linear_map_eq_coe

@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.Span
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.Order.Group.Action
 
 #align_import algebra.module.submodule.pointwise from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
@@ -240,6 +241,9 @@ theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submodule R M) : m ∈ S �
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))
 #align submodule.smul_mem_pointwise_smul Submodule.smul_mem_pointwise_smul
 
+instance : CovariantClass α (Submodule R M) HSMul.hSMul LE.le :=
+  ⟨fun _ _ => map_mono⟩
+
 /-- See also `Submodule.smul_bot`. -/
 @[simp]
 theorem smul_bot' (a : α) : a • (⊥ : Submodule R M) = ⊥ :=
@@ -374,10 +378,14 @@ lemma set_smul_eq_of_le (p : Submodule R M)
     s • N = p :=
   le_antisymm (set_smul_le s N p closed_under_smul) le
 
-lemma set_smul_mono_right {p q : Submodule R M} (le : p ≤ q) :
+instance : CovariantClass (Set S) (Submodule R M) HSMul.hSMul LE.le :=
+  ⟨fun _ _ _ le => set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := hr)
+    (mem2 := le hm)⟩
+
+-- 2024-03-31
+@[deprecated smul_mono_right] theorem set_smul_mono_right {p q : Submodule R M} (le : p ≤ q) :
     s • p ≤ s • q :=
-  set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := hr)
-    (mem2 := le hm)
+  smul_mono_right s le
 
 lemma set_smul_mono_left {s t : Set S} (le : s ≤ t) :
     s • N ≤ t • N :=
@@ -386,7 +394,7 @@ lemma set_smul_mono_left {s t : Set S} (le : s ≤ t) :
 
 lemma set_smul_le_of_le_le {s t : Set S} {p q : Submodule R M}
     (le_set : s ≤ t) (le_submodule : p ≤ q) : s • p ≤ t • q :=
-  le_trans (set_smul_mono_left _ le_set) <| set_smul_mono_right _ le_submodule
+  le_trans (set_smul_mono_left _ le_set) <| smul_mono_right _ le_submodule
 
 variable {s N} in
 /--
@@ -545,8 +553,7 @@ protected def pointwiseSetDistribMulAction [SMulCommClass R R M] :
       rw [smul_add, add_eq_sup, Submodule.mem_sup]
       exact ⟨r • a, mem_set_smul_of_mem_mem (mem1 := hr) (mem2 := ha),
         r • b, mem_set_smul_of_mem_mem (mem1 := hr) (mem2 := hb), rfl⟩)
-    (sup_le_iff.mpr ⟨set_smul_mono_right _ le_sup_left,
-      set_smul_mono_right _ le_sup_right⟩)
+    (sup_le_iff.mpr ⟨smul_mono_right _ le_sup_left, smul_mono_right _ le_sup_right⟩)
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseSetDistribMulAction
 
