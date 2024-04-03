@@ -769,9 +769,9 @@ def projIsoSpecTopComponent {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m
     (Proj.T| (pbo f)) ≅ (Spec.T (A⁰_ f))  where
   hom := ProjIsoSpecTopComponent.toSpec
   inv := ProjIsoSpecTopComponent.fromSpec hm f_deg
-  hom_inv_id := ConcreteCategory.hom_ext _ _ fun x ↦
-    ProjIsoSpecTopComponent.fromSpec_toSpec 𝒜 hm f_deg x
-  inv_hom_id := ConcreteCategory.hom_ext _ _ fun x ↦
-    ProjIsoSpecTopComponent.toSpec_fromSpec 𝒜 hm f_deg x
+  hom_inv_id := ConcreteCategory.hom_ext _ _
+    (ProjIsoSpecTopComponent.fromSpec_toSpec 𝒜 hm f_deg)
+  inv_hom_id := ConcreteCategory.hom_ext _ _
+    (ProjIsoSpecTopComponent.toSpec_fromSpec 𝒜 hm f_deg)
 
 end AlgebraicGeometry
