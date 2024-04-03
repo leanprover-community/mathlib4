@@ -22,7 +22,7 @@ namespace List
 
 /-- TFAE: The Following (propositions) Are Equivalent.
 
-The `tfae_have` and `tfae_finish` tactics can be useful in proofs with `TFAE` goals.
+The `tfae` tactic can be useful in proofs with `TFAE` goals.
 -/
 def TFAE (l : List Prop) : Prop :=
   ∀ x ∈ l, ∀ y ∈ l, x ↔ y
