@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Damiano Testa
 -/
 import Cli.Basic
 import Lean.Util.Path
+import Lake.CLI.Main
 
 /-!
 # Script to create a file importing all files from a folder
@@ -39,6 +40,15 @@ def getAll (git : Bool) (ml : String) : IO String := do
   let withImport ← files.mapM fun f => return "import " ++ (← moduleNameOfFileName f none).toString
   return ("\n".intercalate withImport.toList).push '\n'
 
+open Lake in
+/-- `getLeanLibs` returns the array of names of all the libraries on which
+the current project depends. -/
+def getLeanLibs : IO (Array Name) := do
+  let (elanInstall?, leanInstall?, lakeInstall?) ← findInstall?
+  let config ← MonadError.runEIO <| mkLoadConfig.{0} { elanInstall?, leanInstall?, lakeInstall? }
+  let ws ← MonadError.runEIO <| (loadWorkspace config).run (.eio .normal)
+  return ws.root.leanLibs.map (·.name)
+
 open IO.FS IO.Process Name Cli in
 /-- Implementation of the `mk_all` command line program.
 The exit code is the number of files that the command updates/creates.
@@ -48,14 +58,16 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   let git := (args.flag? "git").isSome
   -- Check whether the `--lib` flag was set. If so, build the file corresponding to the library
   -- passed to `--lib`. Else build the standard mathlib libraries.
-  let libs := match args.flag? "lib" with
-  | some lib => #[lib.as! String]
-  | none => #["Mathlib", "MathlibExtras", "Mathlib/Tactic", "Counterexamples", "Archive"]
+  let mut libs := ← match args.flag? "lib" with
+              | some lib => return #[lib.as! String]
+              | none => return (← getLeanLibs).map (·.toString)
+  if libs.getD 0 "" == "Mathlib" then
+    libs := libs.erase "Cache" |>.push "Mathlib/Tactic"
   let mut updates := 0
   for d in libs do
     let fileName := addExtension d "lean"
     let fileContent ← getAll git d
-    if (← IO.FS.readFile fileName) != fileContent then
+    if (! (←  pathExists fileName)) || (← IO.FS.readFile fileName) != fileContent then
       IO.println s!"Updating '{fileName}'"
       updates := updates + 1
       IO.FS.writeFile fileName fileContent
@@ -68,8 +80,8 @@ open Cli in
 def mkAll : Cmd := `[Cli|
   mkAll VIA mkAllCLI; ["0.0.1"]
   "Generate a file importing all the files of a Lean folder. \
-   By default, it generates the files for the folders `Mathlib`, \
-   `MathlibExtras`, `Mathlib/Tactic`, `Counterexamples`, `Archive`. \
+   By default, it generates the files for the Lean libraries of the package.\
+   In the case of `Mathlib`, it replaces `Cache` with `Mathlib/Tactic`. \
    If you are working in a downstream project, use `lake exe mkAll --lib MyProject`."
 
   FLAGS:
