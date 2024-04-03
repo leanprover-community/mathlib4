@@ -23,7 +23,8 @@ open Rat
 theorem num_dvd (a) {b : ℤ} (b0 : b ≠ 0) : (a /. b).num ∣ a := by
   cases' e : a /. b with n d h c
   rw [Rat.mk'_eq_divInt, divInt_eq_iff b0 (mod_cast h)] at e
-  refine' Int.natAbs_dvd.1 <| Int.dvd_natAbs.1 <| Int.natCast_dvd_natCast.2 <| c.dvd_of_dvd_mul_right _
+  refine Int.natAbs_dvd.1 <| Int.dvd_natAbs.1 <| Int.natCast_dvd_natCast.2 <|
+    c.dvd_of_dvd_mul_right ?_
   have := congr_arg Int.natAbs e
   simp only [Int.natAbs_mul, Int.natAbs_ofNat] at this; simp [this]
 #align rat.num_dvd Rat.num_dvd
