@@ -220,7 +220,7 @@ end WithLawson
 end Lawson
 
 
-namespace LawsonTopology
+namespace IsLawson
 
 section preorder
 
@@ -228,22 +228,14 @@ variable [Preorder α]
 
 variable [TopologicalSpace α] [Topology.IsLawson α]
 
-variable (α)
-
-variable {α}
-
-
-
-/-
-lemma isOpen_iff_Lower_and_Scott_Open (u : Set α) : (lawson α).IsOpen u
-↔ ((lower α).IsOpen u ∧ (scott α).IsOpen u) := by
-  sorry
--/
-
+theorem isClosed_preimage_ofLawson (S : Set α) :
+    IsClosed (Topology.WithLawson.ofLawson ⁻¹' S) ↔ IsClosed S := by
+  rw [WithLawson.isClosed_preimage_ofLawson]
+  simp only [IsLawson.topology_eq]
 
 end preorder
 
-end LawsonTopology
+end IsLawson
 
 section ts
 
@@ -397,23 +389,18 @@ lemma lawsonClosed_iff_dirSupClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s
 
 end Preorder
 
+namespace IsLawson
+
 section PartialOrder
 
 variable [PartialOrder α] [TopologicalSpace α] [IsLawson α]
-
-theorem isClosed_preimage_ofLawson (S : Set α) :
-    IsClosed (Topology.WithLawson.ofLawson ⁻¹' S) ↔ IsClosed S := by
-  rw [← isOpen_compl_iff, ← preimage_compl, Topology.WithLawson.isOpen_preimage_ofLawson,
-    ← isOpen_compl_iff, ← IsLawson.topology_eq]
-  exact Eq.to_iff rfl
 
 lemma singletonIsClosed (a : α) : IsClosed ({a} : Set α) := by
   rw [← (Set.OrdConnected.upperClosure_inter_lowerClosure ordConnected_singleton)]
   apply IsClosed.inter
   · rw [← isClosed_preimage_ofLawson]
     exact LowerClosed_implies_LawsonClosed _ (IsLower.isClosed_upperClosure (finite_singleton a))
-  · rw [← isClosed_preimage_ofLawson]
-    simp only [lowerClosure_singleton, LowerSet.coe_Iic]
+  · rw [← isClosed_preimage_ofLawson, lowerClosure_singleton, LowerSet.coe_Iic]
     apply ScottClosed_implies_LawsonClosed
     exact Topology.IsScott.isClosed_Iic
 
@@ -425,3 +412,5 @@ instance (priority := 90) t0Space : T0Space α :=
       closure_eq_iff_isClosed.mpr (singletonIsClosed b), singleton_eq_singleton_iff] using h
 
 end PartialOrder
+
+end IsLawson
