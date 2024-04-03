@@ -242,21 +242,12 @@ lemma Scott_le_Lawson : L ≤ S := by
   exact inf_le_right
 
 lemma Scott_Hausdorff_le_Lawson : (scottHausdorff α) ≤ L := by
-  rw [@Topology.IsLawson.topology_eq α _ L _,  lawson, le_inf_iff,
-    ← @Topology.IsLower.topology_eq α _ l _, ← @Topology.IsScott.topology_eq α _ S _]
+  rw [@IsLawson.topology_eq α _ L _,  lawson, le_inf_iff, ← @IsLower.topology_eq α _ l _,
+    ← @IsScott.topology_eq α _ S _]
   constructor
   · exact @IsLower.scottHausdorff_le  α _ l _
   · convert scottHausdorff_le_scott
     exact IsScott.topology_eq_scott
-
-open Topology
-
-lemma LawsonOpen_implies_ScottHausdorffOpen : IsOpen[L] ≤ IsOpen[scottHausdorff α] :=
-  (@Scott_Hausdorff_le_Lawson _ L l _ _ _ _ _)
-
-lemma LawsonOpen_implies_ScottHausdorffOpen' (s : Set α) :
-    IsOpen[L] s → IsOpen[scottHausdorff α] s := by
-  apply (@LawsonOpen_implies_ScottHausdorffOpen _ _ l _ _)
 
 end csh
 
@@ -275,7 +266,7 @@ lemma lawsonOpen_iff_scottOpen_of_isUpperSet (s : Set α) (h : IsUpperSet s) :
   constructor
   · intro hs
     rw [@Topology.IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open α _ S]
-    exact ⟨h, fun d d₁ d₂ => (@LawsonOpen_implies_ScottHausdorffOpen' _ _ l S _ _ _ _ s) hs d₁ d₂⟩
+    exact ⟨h, fun d d₁ d₂ => (@Scott_Hausdorff_le_Lawson _ L l S _ _ _ _ _) hs d₁ d₂⟩
   · apply TopologicalSpace.le_def.mp (Scott_le_Lawson _ _)
 
 lemma lawsonClosed_iff_scottClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s) :
