@@ -1917,25 +1917,24 @@ theorem norm_cast_real (m : ℤ) : ‖(m : ℝ)‖ = ‖m‖ :=
   rfl
 #align int.norm_cast_real Int.norm_cast_real
 
-theorem norm_eq_abs (n : ℤ) : ‖n‖ = |n| :=
-  show ‖(n : ℝ)‖ = |n| by rw [Real.norm_eq_abs, cast_abs]
--- Porting note: I'm not sure why this isn't `rfl` anymore, but I suspect it's about coercions
+theorem norm_eq_abs (n : ℤ) : ‖n‖ = |(n : ℝ)| :=
+  rfl
 #align int.norm_eq_abs Int.norm_eq_abs
 
 @[simp]
 theorem norm_coe_nat (n : ℕ) : ‖(n : ℤ)‖ = n := by simp [Int.norm_eq_abs]
 #align int.norm_coe_nat Int.norm_coe_nat
 
-theorem _root_.NNReal.coe_natAbs (n : ℤ) : (n.natAbs : ℝ≥0) = ‖n‖₊ :=
+theorem _root_.NNReal.natCast_natAbs (n : ℤ) : (n.natAbs : ℝ≥0) = ‖n‖₊ :=
   NNReal.eq <|
     calc
       ((n.natAbs : ℝ≥0) : ℝ) = (n.natAbs : ℤ) := by simp only [Int.cast_ofNat, NNReal.coe_nat_cast]
-      _ = |n| := by simp only [Int.coe_natAbs, Int.cast_abs]
+      _ = |(n : ℝ)| := by simp only [Int.natCast_natAbs, Int.cast_abs]
       _ = ‖n‖ := (norm_eq_abs n).symm
-#align nnreal.coe_nat_abs NNReal.coe_natAbs
+#align nnreal.coe_nat_abs NNReal.natCast_natAbs
 
 theorem abs_le_floor_nnreal_iff (z : ℤ) (c : ℝ≥0) : |z| ≤ ⌊c⌋₊ ↔ ‖z‖₊ ≤ c := by
-  rw [Int.abs_eq_natAbs, Int.ofNat_le, Nat.le_floor_iff (zero_le c), NNReal.coe_natAbs z]
+  rw [Int.abs_eq_natAbs, Int.ofNat_le, Nat.le_floor_iff (zero_le c), NNReal.natCast_natAbs z]
 #align int.abs_le_floor_nnreal_iff Int.abs_le_floor_nnreal_iff
 
 end Int
