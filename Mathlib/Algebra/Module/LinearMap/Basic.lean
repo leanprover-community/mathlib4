@@ -688,8 +688,8 @@ def toLinearMap (fₗ : M →+[R] M₃) : M →ₗ[R] M₃ :=
   { fₗ with }
 #align distrib_mul_action_hom.to_linear_map DistribMulActionHom.toLinearMap
 
-instance instCoeTCLinearMap : CoeTC (M →+[R] M₂) (M →ₗ[R] M₂) where
-  coe f := SemilinearMapClass.semilinearMap f
+instance instCoeTCLinearMap : CoeTC (M →+[R] M₃) (M →ₗ[R] M₃) :=
+  ⟨toLinearMap⟩
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
 instance : LinearMapClass (M →+[R] M₃) R M M₃ where
