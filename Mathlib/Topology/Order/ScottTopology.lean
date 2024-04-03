@@ -336,7 +336,13 @@ lemma isOpen_iff_isUpperSet_and_scottHausdorff_open' {u : Set α} :
 end WithScott
 end Scott
 
-variable [Preorder α] [TopologicalSpace α]
+variable [Preorder α]
+
+lemma scottHausdorff_le_lower : scottHausdorff α ≤ lower α :=
+  fun s h => @IsScottHausdorff.isOpen_of_isLowerSet  _ _ (scottHausdorff α) _ _
+      <| (@IsLower.isLowerSet_of_isOpen (Topology.WithLower α) _ _  _ s h)
+
+variable [TopologicalSpace α]
 
 /-- If `α` is equipped with the Scott topology, then it is homeomorphic to `WithScott α`.
 -/
@@ -350,9 +356,5 @@ lemma IsLower.scottHausdorff_le [IsLower α] : scottHausdorff α ≤ ‹Topologi
   fun _ h ↦
     @IsScottHausdorff.isOpen_of_isLowerSet _ _ (scottHausdorff α) _ _
       <| IsLower.isLowerSet_of_isOpen h
-
-lemma Scott_Hausdorff_le_Lower' : scottHausdorff α ≤ lower α :=
-  fun s h => @IsScottHausdorff.isOpen_of_isLowerSet  _ _ (scottHausdorff α) _ _
-      <| (@IsLower.isLowerSet_of_isOpen (Topology.WithLower α) _ _  _ s h)
 
 end Topology
