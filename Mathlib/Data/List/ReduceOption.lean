@@ -7,6 +7,9 @@ import Mathlib.Logic.IsEmpty
 import Mathlib.Order.Basic
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Data.Option.Basic
+import Mathlib.Data.List.Basic
+import Mathlib.Data.Nat.Order.Basic
 
 /-!
 # Properties of `List.reduceOption`
