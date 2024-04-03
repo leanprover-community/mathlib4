@@ -87,7 +87,7 @@ theorem _root_.Dvd.dvd.zero_modEq_nat (h : n ∣ a) : 0 ≡ a [MOD n] :=
 #align has_dvd.dvd.zero_modeq_nat Dvd.dvd.zero_modEq_nat
 
 theorem modEq_iff_dvd : a ≡ b [MOD n] ↔ (n : ℤ) ∣ b - a := by
-  rw [ModEq, eq_comm, ← Int.coe_nat_inj', Int.coe_nat_mod, Int.coe_nat_mod,
+  rw [ModEq, eq_comm, ← Int.natCast_inj, Int.natCast_mod, Int.natCast_mod,
     Int.emod_eq_emod_iff_emod_sub_eq_zero, Int.dvd_iff_emod_eq_zero]
 #align nat.modeq_iff_dvd Nat.modEq_iff_dvd
 
@@ -97,7 +97,7 @@ alias ⟨ModEq.dvd, modEq_of_dvd⟩ := modEq_iff_dvd
 
 /-- A variant of `modEq_iff_dvd` with `Nat` divisibility -/
 theorem modEq_iff_dvd' (h : a ≤ b) : a ≡ b [MOD n] ↔ n ∣ b - a := by
-  rw [modEq_iff_dvd, ← Int.coe_nat_dvd, Int.ofNat_sub h]
+  rw [modEq_iff_dvd, ← Int.natCast_dvd_natCast, Int.ofNat_sub h]
 #align nat.modeq_iff_dvd' Nat.modEq_iff_dvd'
 
 theorem mod_modEq (a n) : a % n ≡ a [MOD n] :=
@@ -275,8 +275,8 @@ lemma eq_of_abs_lt (h : a ≡ b [MOD m]) (h2 : |(b : ℤ) - a| < m) : a = b := b
 
 lemma eq_of_lt_of_lt (h : a ≡ b [MOD m]) (ha : a < m) (hb : b < m) : a = b :=
   h.eq_of_abs_lt <| abs_sub_lt_iff.2
-    ⟨(sub_le_self _ <| Int.coe_nat_nonneg _).trans_lt <| Int.ofNat_lt.2 hb,
-    (sub_le_self _ <| Int.coe_nat_nonneg _).trans_lt <| Int.ofNat_lt.2 ha⟩
+    ⟨(sub_le_self _ <| Int.natCast_nonneg _).trans_lt <| Int.ofNat_lt.2 hb,
+    (sub_le_self _ <| Int.natCast_nonneg _).trans_lt <| Int.ofNat_lt.2 ha⟩
 #align nat.modeq.eq_of_lt_of_lt Nat.ModEq.eq_of_lt_of_lt
 
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c` -/
@@ -287,12 +287,12 @@ lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) :  a ≡ b 
   rw [modEq_iff_dvd]
   refine' @Int.dvd_of_dvd_mul_right_of_gcd_one (m / d) (c / d) (b - a) _ _
   show (m / d : ℤ) ∣ c / d * (b - a)
-  · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) (Int.coe_nat_dvd.mpr hcd), mul_comm]
-    apply Int.ediv_dvd_ediv (Int.coe_nat_dvd.mpr hmd)
+  · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) (Int.natCast_dvd_natCast.mpr hcd), mul_comm]
+    apply Int.ediv_dvd_ediv (Int.natCast_dvd_natCast.mpr hmd)
     rw [mul_sub]
     exact modEq_iff_dvd.mp h
   show Int.gcd (m / d) (c / d) = 1
-  · simp only [← Int.coe_nat_div, Int.coe_nat_gcd (m / d) (c / d), gcd_div hmd hcd,
+  · simp only [← Int.natCast_div, Int.coe_nat_gcd (m / d) (c / d), gcd_div hmd hcd,
       Nat.div_self (gcd_pos_of_pos_left c hm)]
 #align nat.modeq.cancel_left_div_gcd Nat.ModEq.cancel_left_div_gcd
 
@@ -339,7 +339,7 @@ def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k
         rw [xgcd_val]
         dsimp
         rw [modEq_iff_dvd, modEq_iff_dvd,
-          Int.toNat_of_nonneg (Int.emod_nonneg _ (Int.coe_nat_ne_zero.2 (lcm_ne_zero hn hm)))]
+          Int.toNat_of_nonneg (Int.emod_nonneg _ (Int.natCast_ne_zero.2 (lcm_ne_zero hn hm)))]
         have hnonzero : (gcd n m : ℤ) ≠ 0 := by
           norm_cast
           rw [Nat.gcd_eq_zero_iff, not_and]
@@ -374,7 +374,7 @@ def chineseRemainder (co : n.Coprime m) (a b : ℕ) : { k // k ≡ a [MOD n] ∧
 theorem chineseRemainder'_lt_lcm (h : a ≡ b [MOD gcd n m]) (hn : n ≠ 0) (hm : m ≠ 0) :
     ↑(chineseRemainder' h) < lcm n m := by
   dsimp only [chineseRemainder']
-  rw [dif_neg hn, dif_neg hm, Subtype.coe_mk, xgcd_val, ← Int.toNat_coe_nat (lcm n m)]
+  rw [dif_neg hn, dif_neg hm, Subtype.coe_mk, xgcd_val, ← Int.toNat_natCast (lcm n m)]
   have lcm_pos := Int.coe_nat_pos.mpr (Nat.pos_of_ne_zero (lcm_ne_zero hn hm))
   exact (Int.toNat_lt_toNat lcm_pos).mpr (Int.emod_lt_of_pos _ lcm_pos)
 #align nat.chinese_remainder'_lt_lcm Nat.chineseRemainder'_lt_lcm
@@ -396,9 +396,9 @@ theorem chineseRemainder_modEq_unique (co : n.Coprime m) {a b z}
 theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℕ} (hmn : m.Coprime n) :
     a ≡ b [MOD m] ∧ a ≡ b [MOD n] ↔ a ≡ b [MOD m * n] :=
   ⟨fun h => by
-    rw [Nat.modEq_iff_dvd, Nat.modEq_iff_dvd, ← Int.dvd_natAbs, Int.coe_nat_dvd, ← Int.dvd_natAbs,
-      Int.coe_nat_dvd] at h
-    rw [Nat.modEq_iff_dvd, ← Int.dvd_natAbs, Int.coe_nat_dvd]
+    rw [Nat.modEq_iff_dvd, Nat.modEq_iff_dvd, ← Int.dvd_natAbs, Int.natCast_dvd_natCast,
+      ← Int.dvd_natAbs, Int.natCast_dvd_natCast] at h
+    rw [Nat.modEq_iff_dvd, ← Int.dvd_natAbs, Int.natCast_dvd_natCast]
     exact hmn.mul_dvd_of_dvd_of_dvd h.1 h.2,
    fun h => ⟨h.of_mul_right _, h.of_mul_left _⟩⟩
 #align nat.modeq_and_modeq_iff_modeq_mul Nat.modEq_and_modEq_iff_modEq_mul
