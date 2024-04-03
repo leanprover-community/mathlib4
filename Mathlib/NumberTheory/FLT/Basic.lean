@@ -7,6 +7,8 @@ import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Rat.Defs
+import Mathlib.RingTheory.Int.Basic
+import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.TFAE
 
@@ -140,3 +142,20 @@ lemma fermatLastTheoremWith_of_fermatLastTheoremWith_coprime {n : ℕ} {R : Type
   refine ⟨u, mul_left_cancel₀ (mt normalize_eq_zero.mp ha.1) (hu.symm ▸ ?_)⟩
   rw [← Finset.gcd_mul_left, gcd_eq_gcd_image, image_insert, image_insert, image_singleton,
       id_eq, id_eq, id_eq, ← hA, ← hB, ← hC]
+
+lemma isCoprime_of_gcd_eq_one_of_FLT {n : ℕ} {a b c : ℤ} (hb : b ≠ 0)
+    (Hgcd: Finset.gcd {a, b, c} id = 1) (HF : a ^ n + b ^ n + c ^ n = 0) : IsCoprime a b := by
+  by_cases hn : n = 0
+  · simp [hn] at HF
+  refine isCoprime_of_prime_dvd  ?_<| (fun p hp hpa hpb ↦ hp.not_dvd_one ?_)
+  · simp [hb]
+  · rw [← Hgcd]
+    refine Finset.dvd_gcd_iff.2 (fun x hx ↦ ?_)
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hx
+    rcases hx with (hx | hx | hx)
+    · exact hx ▸ hpa
+    · exact hx ▸ hpb
+    · simp only [hx, id_eq]
+      refine hp.dvd_of_dvd_pow (n := n) ?_
+      rw [add_eq_zero_iff_eq_neg] at HF
+      exact (dvd_neg.1 <| HF.symm ▸ dvd_add (dvd_pow hpa hn) (dvd_pow hpb hn))
