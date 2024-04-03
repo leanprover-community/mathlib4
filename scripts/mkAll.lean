@@ -12,11 +12,6 @@ import Lean.Util.Path
 This file declares a command to gather all Lean files from a folder into a single Lean file.
 -/
 
-/-- the command `git ls-files '*.lean'` -/
-def gitLSFiles : IO.Process.SpawnArgs where
-  cmd := "git"
-  args := #["ls-files", "*.lean"]
-
 open Lean System.FilePath
 
 /-- `getAll git str` takes all `.lean` files in the dir `str` (recursing into sub-dirs) and
@@ -35,7 +30,7 @@ def getAll (git : Bool) (ml : String) : IO String := do
   let stdout : List System.FilePath ← (do
     if git then
       let mlDir := ml.push pathSeparator   -- `Mathlib/`
-      let allLean ← IO.Process.run gitLSFiles
+      let allLean ← IO.Process.run { cmd := "git", args := #["ls-files", "*.lean"] }
       return ((allLean.splitOn "\n").filter mlDir.isPrefixOf).map (⟨·⟩)
     else do
       let all := (← System.FilePath.walkDir ml)
