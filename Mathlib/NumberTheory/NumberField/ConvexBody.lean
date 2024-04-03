@@ -9,7 +9,9 @@ import Mathlib.NumberTheory.NumberField.CanonicalEmbedding
 #align_import number_theory.number_field.canonical_embedding from "leanprover-community/mathlib"@"60da01b41bbe4206f05d34fd70c8dd7498717a30"
 
 /-!
-# TODO
+# Convex Bodies
+
+This file contains theorems about convex bodies on infinite places of a number field.
 
 ## Main definitions and results
 
