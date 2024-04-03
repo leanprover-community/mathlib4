@@ -76,7 +76,7 @@ variable (R : Type*) [CommSemiring R]
 
 namespace TensorProduct
 
-variable {ι : Type*} [DecidableEq ι]
+variable (ι : Type*) [DecidableEq ι]
 
 /-- The tensor product of `ι →₀ M` and `N` is linearly equivalent to `ι →₀ M ⊗[R] N` -/
 noncomputable def finsuppLeft :
@@ -84,7 +84,7 @@ noncomputable def finsuppLeft :
   congr (finsuppLEquivDirectSum R M ι) (.refl R N) ≪≫ₗ
     directSumLeft R (fun _ ↦ M) N ≪≫ₗ (finsuppLEquivDirectSum R _ ι).symm
 
-variable {R M N}
+variable {R M N ι}
 
 lemma finsuppLeft_apply_tmul (p : ι →₀ M) (n : N) :
     finsuppLeft (p ⊗ₜ[R] n) = p.sum fun i m ↦ Finsupp.single i (m ⊗ₜ[R] n) := by
@@ -112,11 +112,14 @@ lemma finsuppLeft_symm_apply_single (i : ι) (m : M) (n : N) :
       Finsupp.single i m ⊗ₜ[R] n := by
   simp [finsuppLeft, Finsupp.lsum]
 
+variable (R M N ι)
 /-- The tensor product of `M` and `ι →₀ N` is linearly equivalent to `ι →₀ M ⊗[R] N` -/
 noncomputable def finsuppRight :
     M ⊗[R] (ι →₀ N) ≃ₗ[R] ι →₀ M ⊗[R] N :=
   congr (.refl R M) (finsuppLEquivDirectSum R N ι) ≪≫ₗ
     directSumRight R M (fun _ : ι ↦ N) ≪≫ₗ (finsuppLEquivDirectSum R _ ι).symm
+
+variable {R M N ι}
 
 lemma finsuppRight_apply_tmul (m : M) (p : ι →₀ N) :
     finsuppRight (m ⊗ₜ[R] p) = p.sum fun i n ↦ Finsupp.single i (m ⊗ₜ[R] n) := by
