@@ -741,6 +741,8 @@ instance : FunLike (M →ₗ⁅R, L⁆ N) M N :=
     coe_injective' := fun x y h =>
       by cases x; cases y; simp at h; simp [h] }
 
+initialize_simps_projections LieModuleHom (toFun → apply)
+
 @[simp, norm_cast]
 theorem coe_toLinearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M → N) = f :=
   rfl

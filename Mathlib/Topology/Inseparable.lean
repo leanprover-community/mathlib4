@@ -11,7 +11,7 @@ import Mathlib.Topology.ContinuousOn
 /-!
 # Inseparable points in a topological space
 
-In this file we define
+In this file we prove basic properties of the following notions defined elsewhere.
 
 * `Specializes` (notation: `x ⤳ y`) : a relation saying that `𝓝 x ≤ 𝓝 y`;
 
@@ -44,25 +44,6 @@ variable {X Y Z α ι : Type*} {π : ι → Type*} [TopologicalSpace X] [Topolog
 /-!
 ### `Specializes` relation
 -/
-
-/-- `x` specializes to `y` (notation: `x ⤳ y`) if either of the following equivalent properties
-hold:
-
-* `𝓝 x ≤ 𝓝 y`; this property is used as the definition;
-* `pure x ≤ 𝓝 y`; in other words, any neighbourhood of `y` contains `x`;
-* `y ∈ closure {x}`;
-* `closure {y} ⊆ closure {x}`;
-* for any closed set `s` we have `x ∈ s → y ∈ s`;
-* for any open set `s` we have `y ∈ s → x ∈ s`;
-* `y` is a cluster point of the filter `pure x = 𝓟 {x}`.
-
-This relation defines a `Preorder` on `X`. If `X` is a T₀ space, then this preorder is a partial
-order. If `X` is a T₁ space, then this partial order is trivial : `x ⤳ y ↔ x = y`. -/
-def Specializes (x y : X) : Prop := 𝓝 x ≤ 𝓝 y
-#align specializes Specializes
-
-@[inherit_doc]
-infixl:300 " ⤳ " => Specializes
 
 /-- A collection of equivalent definitions of `x ⤳ y`. The public API is given by `iff` lemmas
 below. -/
@@ -245,17 +226,6 @@ theorem IsClosed.continuous_piecewise_of_specializes [DecidablePred (· ∈ s)] 
     Continuous (s.piecewise f g) := by
   simpa only [piecewise_compl] using hs.isOpen_compl.continuous_piecewise_of_specializes hg hf hspec
 
-variable (X)
-
-/-- Specialization forms a preorder on the topological space. -/
-def specializationPreorder : Preorder X :=
-  { Preorder.lift (OrderDual.toDual ∘ 𝓝) with
-    le := fun x y => y ⤳ x
-    lt := fun x y => y ⤳ x ∧ ¬x ⤳ y }
-#align specialization_preorder specializationPreorder
-
-variable {X}
-
 /-- A continuous function is monotone with respect to the specialization preorders on the domain and
 the codomain. -/
 theorem Continuous.specialization_monotone (hf : Continuous f) :
@@ -265,19 +235,6 @@ theorem Continuous.specialization_monotone (hf : Continuous f) :
 /-!
 ### `Inseparable` relation
 -/
-
-/-- Two points `x` and `y` in a topological space are `Inseparable` if any of the following
-equivalent properties hold:
-
-- `𝓝 x = 𝓝 y`; we use this property as the definition;
-- for any open set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_open`;
-- for any closed set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_closed`;
-- `x ∈ closure {y}` and `y ∈ closure {x}`, see `inseparable_iff_mem_closure`;
-- `closure {x} = closure {y}`, see `inseparable_iff_closure_eq`.
--/
-def Inseparable (x y : X) : Prop :=
-  𝓝 x = 𝓝 y
-#align inseparable Inseparable
 
 local infixl:0 " ~ᵢ " => Inseparable
 
@@ -412,15 +369,6 @@ In this section we define the quotient of a topological space by the `Inseparabl
 
 
 variable (X)
-
-/-- A `setoid` version of `Inseparable`, used to define the `SeparationQuotient`. -/
-def inseparableSetoid : Setoid X := { Setoid.comap 𝓝 ⊥ with r := Inseparable }
-#align inseparable_setoid inseparableSetoid
-
-/-- The quotient of a topological space by its `inseparableSetoid`. This quotient is guaranteed to
-be a T₀ space. -/
-def SeparationQuotient := Quotient (inseparableSetoid X)
-#align separation_quotient SeparationQuotient
 
 instance : TopologicalSpace (SeparationQuotient X) := instTopologicalSpaceQuotient
 

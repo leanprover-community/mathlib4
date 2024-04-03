@@ -233,7 +233,7 @@ theorem leadingCoeff_of_c_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) :
   rw [of_c_eq_zero ha hb hc, leadingCoeff_C]
 #align cubic.leading_coeff_of_c_eq_zero Cubic.leadingCoeff_of_c_eq_zero
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- porting note (#10618): simp can prove this
 theorem leadingCoeff_of_c_eq_zero' : (toPoly ⟨0, 0, 0, d⟩).leadingCoeff = d :=
   leadingCoeff_of_c_eq_zero rfl rfl rfl
 #align cubic.leading_coeff_of_c_eq_zero' Cubic.leadingCoeff_of_c_eq_zero'
@@ -368,7 +368,7 @@ theorem degree_of_d_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) (hd : P
   rw [of_d_eq_zero ha hb hc hd, degree_zero]
 #align cubic.degree_of_d_eq_zero Cubic.degree_of_d_eq_zero
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- porting note (#10618): simp can prove this
 theorem degree_of_d_eq_zero' : (⟨0, 0, 0, 0⟩ : Cubic R).toPoly.degree = ⊥ :=
   degree_of_d_eq_zero rfl rfl rfl rfl
 #align cubic.degree_of_d_eq_zero' Cubic.degree_of_d_eq_zero'
@@ -431,7 +431,7 @@ theorem natDegree_of_c_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) :
   rw [of_c_eq_zero ha hb hc, natDegree_C]
 #align cubic.nat_degree_of_c_eq_zero Cubic.natDegree_of_c_eq_zero
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- porting note (#10618): simp can prove this
 theorem natDegree_of_c_eq_zero' : (toPoly ⟨0, 0, 0, d⟩).natDegree = 0 :=
   natDegree_of_c_eq_zero rfl rfl rfl
 #align cubic.nat_degree_of_c_eq_zero' Cubic.natDegree_of_c_eq_zero'

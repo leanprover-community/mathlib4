@@ -608,7 +608,7 @@ protected theorem disjoint_iff [OrderBot α] [OrderBot β] {x y : α × β} :
       fun b hx hy ↦ (@h (⊥, b) ⟨_, hx⟩ ⟨_, hy⟩).2⟩
     all_goals exact bot_le
   · rintro ⟨ha, hb⟩ z hza hzb
-    refine' ⟨ha hza.1 hzb.1, hb hza.2 hzb.2⟩
+    exact ⟨ha hza.1 hzb.1, hb hza.2 hzb.2⟩
 #align prod.disjoint_iff Prod.disjoint_iff
 
 protected theorem codisjoint_iff [OrderTop α] [OrderTop β] {x y : α × β} :

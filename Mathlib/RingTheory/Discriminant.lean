@@ -70,10 +70,7 @@ noncomputable def discr (A : Type u) {B : Type v} [CommRing A] [CommRing B] [Alg
     [Fintype ι] (b : ι → B) := (traceMatrix A b).det
 #align algebra.discr Algebra.discr
 
-theorem discr_def [Fintype ι] (b : ι → B) : discr A b = (traceMatrix A b).det := by
--- Porting note: `unfold discr` was not necessary. `rfl` still does not work.
-  unfold discr
-  convert rfl
+theorem discr_def [Fintype ι] (b : ι → B) : discr A b = (traceMatrix A b).det := rfl
 
 variable {A C} in
 /-- Mapping a family of vectors along an `AlgEquiv` preserves the discriminant. -/
@@ -141,19 +138,8 @@ variable [Module.Finite K L] [IsAlgClosed E]
 /-- If `b` is a basis of a finite separable field extension `L/K`, then `Algebra.discr K b ≠ 0`. -/
 theorem discr_not_zero_of_basis [IsSeparable K L] (b : Basis ι K L) :
     discr K b ≠ 0 := by
-  cases isEmpty_or_nonempty ι
--- Porting note: the following proof was `simp [discr]`. Variations like `exact this` do not work.
-  · have : det (traceMatrix K ↑b) ≠ 0 := by simp
-    unfold discr
-    convert this
-  · have :=
-      span_eq_top_of_linearIndependent_of_card_eq_finrank b.linearIndependent
-        (finrank_eq_card_basis b).symm
-    classical
-    rw [discr_def, traceMatrix]
-    simp_rw [← Basis.mk_apply b.linearIndependent this.ge]
-    rw [← traceMatrix, traceMatrix_of_basis, ← BilinForm.nondegenerate_iff_det_ne_zero]
-    exact traceForm_nondegenerate _ _
+  rw [discr_def, traceMatrix_of_basis, ← BilinForm.nondegenerate_iff_det_ne_zero]
+  exact traceForm_nondegenerate _ _
 #align algebra.discr_not_zero_of_basis Algebra.discr_not_zero_of_basis
 
 /-- If `b` is a basis of a finite separable field extension `L/K`,
@@ -309,7 +295,7 @@ theorem discr_mul_isIntegral_mem_adjoin [IsSeparable K L] [IsIntegrallyClosed R]
     rw [← smul_assoc, ← hr, algebraMap_smul]
     refine' Subalgebra.smul_mem _ _ _
     rw [B.basis_eq_pow i]
-    refine' Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton _)) _
+    exact Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton _)) _
   intro i
   rw [← H, ← mulVec_smul] at cramer
   replace cramer := congr_arg (mulVec (traceMatrix K B.basis)⁻¹) cramer

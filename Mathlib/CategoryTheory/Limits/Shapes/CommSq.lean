@@ -451,7 +451,7 @@ namespace IsPullback
 variable {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
 
 theorem flip (h : IsPullback fst snd f g) : IsPullback snd fst g f :=
-  of_isLimit (PullbackCone.flipIsLimit (comm := h.w.symm) h.isLimit)
+  of_isLimit (PullbackCone.flipIsLimit h.isLimit)
 #align category_theory.is_pullback.flip CategoryTheory.IsPullback.flip
 
 theorem flip_iff : IsPullback fst snd f g ↔ IsPullback snd fst g f :=
@@ -661,7 +661,7 @@ namespace IsPushout
 variable {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P}
 
 theorem flip (h : IsPushout f g inl inr) : IsPushout g f inr inl :=
-  of_isColimit (PushoutCocone.flipIsColimit (comm := h.w.symm) h.isColimit)
+  of_isColimit (PushoutCocone.flipIsColimit h.isColimit)
 #align category_theory.is_pushout.flip CategoryTheory.IsPushout.flip
 
 theorem flip_iff : IsPushout f g inl inr ↔ IsPushout g f inr inl :=

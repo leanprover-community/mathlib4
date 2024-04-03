@@ -203,7 +203,7 @@ abbrev Sigma.ι (f : β → C) [HasCoproduct f] (b : β) : f b ⟶ ∐ f :=
   colimit.ι (Discrete.functor f) (Discrete.mk b)
 #align category_theory.limits.sigma.ι CategoryTheory.Limits.Sigma.ι
 
--- porting note: added the next two lemmas to ease automation; without these lemmas,
+-- porting note (#10688): added the next two lemmas to ease automation; without these lemmas,
 -- `limit.hom_ext` would be applied, but the goal would involve terms
 -- in `Discrete β` rather than `β` itself
 @[ext 1050]
@@ -339,6 +339,50 @@ from a family of isomorphisms between the factors.
 abbrev Pi.mapIso {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ≅ g b) : ∏ f ≅ ∏ g :=
   lim.mapIso (Discrete.natIso fun X => p X.as)
 #align category_theory.limits.pi.map_iso CategoryTheory.Limits.Pi.mapIso
+
+section
+
+/- In this section, we provide some API for products when we are given a functor
+`Discrete α ⥤ C` instead of a map `α → C`. -/
+
+variable (X : Discrete α ⥤ C) [HasProduct (fun j => X.obj (Discrete.mk j))]
+
+/-- A limit cone for `X : Discrete α ⥤ C` that is given
+by `∏ (fun j => X.obj (Discrete.mk j))`. -/
+@[simps]
+def Pi.cone : Cone X where
+  pt := ∏ (fun j => X.obj (Discrete.mk j))
+  π := Discrete.natTrans (fun _ => Pi.π _ _)
+
+/-- The cone `Pi.cone X` is a limit cone. -/
+def productIsProduct' :
+    IsLimit (Pi.cone X) where
+  lift s := Pi.lift (fun j => s.π.app ⟨j⟩)
+  fac s := by simp
+  uniq s m hm := by
+    dsimp
+    ext
+    simp only [limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
+    apply hm
+
+variable [HasLimit X]
+
+/-- The isomorphism `∏ (fun j => X.obj (Discrete.mk j)) ≅ limit X`. -/
+def Pi.isoLimit :
+    ∏ (fun j => X.obj (Discrete.mk j)) ≅ limit X :=
+  IsLimit.conePointUniqueUpToIso (productIsProduct' X) (limit.isLimit X)
+
+@[reassoc (attr := simp)]
+lemma Pi.isoLimit_inv_π (j : α) :
+    (Pi.isoLimit X).inv ≫ Pi.π _ j = limit.π _ (Discrete.mk j) :=
+  IsLimit.conePointUniqueUpToIso_inv_comp _ _ _
+
+@[reassoc (attr := simp)]
+lemma Pi.isoLimit_hom_π (j : α) :
+    (Pi.isoLimit X).hom ≫ limit.π _ (Discrete.mk j) = Pi.π _ j :=
+  IsLimit.conePointUniqueUpToIso_hom_comp _ _ _
+
+end
 
 /-- Construct a morphism between categorical coproducts (indexed by the same type)
 from a family of morphisms between the factors.

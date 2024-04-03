@@ -371,7 +371,7 @@ attribute [-instance] Finsupp.addMonoid
 @[simps]
 def sigmaFinsuppLequivDFinsupp [AddCommMonoid N] [Module R N] :
     ((Σi, η i) →₀ N) ≃ₗ[R] Π₀ i, η i →₀ N :=
-    -- porting notes: was
+    -- Porting note: was
     -- sigmaFinsuppAddEquivDFinsupp with map_smul' := sigmaFinsuppEquivDFinsupp_smul
     -- but times out
   { sigmaFinsuppEquivDFinsupp with

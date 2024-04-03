@@ -276,7 +276,7 @@ theorem map_eq_empty : s.map f = ∅ ↔ s = ∅ :=
     e.symm ▸ rfl⟩
 #align finset.map_eq_empty Finset.map_eq_empty
 
-@[simp]
+@[simp, aesop safe apply (rule_sets [finsetNonempty])]
 theorem map_nonempty : (s.map f).Nonempty ↔ s.Nonempty := by
   rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne.def, map_eq_empty]
 #align finset.map_nonempty Finset.map_nonempty
@@ -424,7 +424,7 @@ theorem coe_image : ↑(s.image f) = f '' ↑s :=
   Set.ext <| by simp only [mem_coe, mem_image, Set.mem_image, implies_true]
 #align finset.coe_image Finset.coe_image
 
-@[simp]
+@[simp, aesop safe apply (rule_sets [finsetNonempty])]
 lemma image_nonempty : (s.image f).Nonempty ↔ s.Nonempty := by
   exact_mod_cast Set.image_nonempty (f := f) (s := (s : Set α))
 #align finset.nonempty.image_iff Finset.image_nonempty

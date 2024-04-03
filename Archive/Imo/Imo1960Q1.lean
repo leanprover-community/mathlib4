@@ -95,11 +95,7 @@ theorem right_direction {n : ℕ} : ProblemPredicate n → SolutionPredicate n :
   iterate 82
     replace :=
       searchUpTo_step this (by norm_num1; rfl) (by norm_num1; rfl) (by norm_num1; rfl)
-        (by -- This used to be just `norm_num`, but after leanprover/lean4#2790,
-            -- that triggers a max recursion depth exception. As a workaround, we
-            -- manually rewrite with `Nat.digits_of_two_le_of_pos` first.
-            rw [Nat.digits_of_two_le_of_pos (by norm_num) (by norm_num)]
-            norm_num <;> decide)
+        (by norm_num <;> decide)
   exact searchUpTo_end this
 #align imo1960_q1.right_direction Imo1960Q1.right_direction
 
@@ -107,8 +103,7 @@ theorem right_direction {n : ℕ} : ProblemPredicate n → SolutionPredicate n :
 Now we just need to prove the equivalence, for the precise problem statement.
 -/
 theorem left_direction (n : ℕ) (spn : SolutionPredicate n) : ProblemPredicate n := by
-  -- Porting note: This is very slow
-  rcases spn with (rfl | rfl) <;> refine' ⟨_, by decide, _⟩ <;> rfl
+  rcases spn with (rfl | rfl) <;> refine' ⟨_, by decide, _⟩ <;> norm_num <;> rfl
 #align imo1960_q1.left_direction Imo1960Q1.left_direction
 
 end Imo1960Q1

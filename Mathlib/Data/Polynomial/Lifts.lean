@@ -234,7 +234,7 @@ theorem lifts_and_natDegree_eq_and_monic {p : S[X]} (hlifts : p ∈ lifts f) (hp
     ∃ q : R[X], map f q = p ∧ q.natDegree = p.natDegree ∧ q.Monic := by
   cases' subsingleton_or_nontrivial S with hR hR
   · obtain rfl : p = 1 := Subsingleton.elim _ _
-    refine' ⟨1, Subsingleton.elim _ _, by simp, by simp⟩
+    exact ⟨1, Subsingleton.elim _ _, by simp, by simp⟩
   obtain ⟨p', h₁, h₂, h₃⟩ := lifts_and_degree_eq_and_monic hlifts hp
   exact ⟨p', h₁, natDegree_eq_of_degree_eq h₂, h₃⟩
 #align polynomial.lifts_and_nat_degree_eq_and_monic Polynomial.lifts_and_natDegree_eq_and_monic

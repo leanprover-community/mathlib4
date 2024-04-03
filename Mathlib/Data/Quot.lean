@@ -367,7 +367,7 @@ noncomputable def Quot.out {r : α → α → Prop} (q : Quot r) : α :=
 /-- Unwrap the VM representation of a quotient to obtain an element of the equivalence class.
   Computable but unsound. -/
 unsafe def Quot.unquot {r : α → α → Prop} : Quot r → α :=
-  cast lcProof -- porting notes: was `unchecked_cast` before, which unfolds to `cast undefined`
+  cast lcProof -- Porting note: was `unchecked_cast` before, which unfolds to `cast undefined`
 
 @[simp]
 theorem Quot.out_eq {r : α → α → Prop} (q : Quot r) : Quot.mk r q.out = q :=

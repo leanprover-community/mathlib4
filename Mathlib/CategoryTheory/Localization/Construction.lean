@@ -190,23 +190,23 @@ theorem fac : W.Q ⋙ lift G hG = G :=
 #align category_theory.localization.construction.fac CategoryTheory.Localization.Construction.fac
 
 theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂) : G₁ = G₂ := by
-  suffices h' : Quotient.functor _ ⋙ G₁ = Quotient.functor _ ⋙ G₂
-  · refine' Functor.ext _ _
+  suffices h' : Quotient.functor _ ⋙ G₁ = Quotient.functor _ ⋙ G₂ by
+    refine' Functor.ext _ _
     · rintro ⟨⟨X⟩⟩
       apply Functor.congr_obj h
     · rintro ⟨⟨X⟩⟩ ⟨⟨Y⟩⟩ ⟨f⟩
       apply Functor.congr_hom h'
-  · refine' Paths.ext_functor _ _
-    · ext X
-      cases X
-      apply Functor.congr_obj h
-    · rintro ⟨X⟩ ⟨Y⟩ (f | ⟨w, hw⟩)
-      · simpa only using Functor.congr_hom h f
-      · have hw : W.Q.map w = (wIso w hw).hom := rfl
-        have hw' := Functor.congr_hom h w
-        simp only [Functor.comp_map, hw] at hw'
-        refine' Functor.congr_inv_of_congr_hom _ _ _ _ _ hw'
-        all_goals apply Functor.congr_obj h
+  refine' Paths.ext_functor _ _
+  · ext X
+    cases X
+    apply Functor.congr_obj h
+  · rintro ⟨X⟩ ⟨Y⟩ (f | ⟨w, hw⟩)
+    · simpa only using Functor.congr_hom h f
+    · have hw : W.Q.map w = (wIso w hw).hom := rfl
+      have hw' := Functor.congr_hom h w
+      simp only [Functor.comp_map, hw] at hw'
+      refine' Functor.congr_inv_of_congr_hom _ _ _ _ _ hw'
+      all_goals apply Functor.congr_obj h
 #align category_theory.localization.construction.uniq CategoryTheory.Localization.Construction.uniq
 
 variable (W)

@@ -3,11 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.Real.NNReal
+import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
+import Mathlib.Data.Real.NNReal
 import Mathlib.Data.Set.Intervals.WithBotTop
-import Mathlib.Tactic.GCongr.Core
-import Mathlib.Algebra.GroupPower.Order
 
 #align_import data.real.ennreal from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
@@ -188,11 +187,11 @@ theorem range_coe' : range ofNNReal = Iio ∞ := WithTop.range_coe
 theorem range_coe : range ofNNReal = {∞}ᶜ := (isCompl_range_some_none ℝ≥0).symm.compl_eq.symm
 
 /-- `toNNReal x` returns `x` if it is real, otherwise 0. -/
-protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
+@[pp_dot] protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
 #align ennreal.to_nnreal ENNReal.toNNReal
 
 /-- `toReal x` returns `x` if it is real, `0` otherwise. -/
-protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
+@[pp_dot] protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
 #align ennreal.to_real ENNReal.toReal
 
 /-- `ofReal x` returns `x` if it is nonnegative, `0` otherwise. -/
@@ -385,8 +384,8 @@ alias ⟨_, coe_le_coe_of_le⟩ := coe_le_coe
 attribute [gcongr] ENNReal.coe_le_coe_of_le
 
 -- Needed until `@[gcongr]` accepts iff statements
-alias ⟨_, coe_lt_coe_of_le⟩ := coe_lt_coe
-attribute [gcongr] ENNReal.coe_lt_coe_of_le
+alias ⟨_, coe_lt_coe_of_lt⟩ := coe_lt_coe
+attribute [gcongr] ENNReal.coe_lt_coe_of_lt
 
 theorem coe_mono : Monotone ofNNReal := fun _ _ => coe_le_coe.2
 #align ennreal.coe_mono ENNReal.coe_mono
@@ -443,7 +442,7 @@ theorem toNNReal_eq_toNNReal_iff (x y : ℝ≥0∞) :
 
 theorem toReal_eq_toReal_iff (x y : ℝ≥0∞) :
     x.toReal = y.toReal ↔ x = y ∨ x = 0 ∧ y = ⊤ ∨ x = ⊤ ∧ y = 0 := by
-  simp only [ENNReal.toReal, NNReal.coe_eq, toNNReal_eq_toNNReal_iff]
+  simp only [ENNReal.toReal, NNReal.coe_inj, toNNReal_eq_toNNReal_iff]
 #align ennreal.to_real_eq_to_real_iff ENNReal.toReal_eq_toReal_iff
 
 theorem toNNReal_eq_toNNReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ ⊤) :
@@ -453,7 +452,7 @@ theorem toNNReal_eq_toNNReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y �
 
 theorem toReal_eq_toReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ ⊤) :
     x.toReal = y.toReal ↔ x = y := by
-  simp only [ENNReal.toReal, NNReal.coe_eq, toNNReal_eq_toNNReal_iff' hx hy]
+  simp only [ENNReal.toReal, NNReal.coe_inj, toNNReal_eq_toNNReal_iff' hx hy]
 #align ennreal.to_real_eq_to_real_iff' ENNReal.toReal_eq_toReal_iff'
 
 @[simp]
@@ -846,23 +845,24 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `ENNReal.toReal`. -/
 @[positivity ENNReal.toReal _]
-def evalENNRealtoReal : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app (f : Q(ENNReal → Real)) (a : Q(ENNReal))) ← whnfR e | throwError "not ENNReal.toReal"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ENNReal.toReal)
-  pure (.nonnegative (q(@ENNReal.toReal_nonneg $a) : Expr))
+def evalENNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(ENNReal.toReal $a) =>
+    assertInstancesCommute
+    pure (.nonnegative q(ENNReal.toReal_nonneg))
+  | _, _, _ => throwError "not ENNReal.toReal"
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofNNReal`. -/
 @[positivity ENNReal.ofNNReal _]
-def evalENNRealOfNNReal : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app (f : Q(NNReal → ENNReal)) (a : Q(NNReal))) ← whnfR e | throwError "not ENNReal.ofNNReal"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ENNReal.ofNNReal)
-  let zα' ← synthInstanceQ (q(Zero NNReal) : Q(Type))
-  let pα' ← synthInstanceQ (q(PartialOrder NNReal) : Q(Type))
-  let ra ← core zα' pα' a
-  assertInstancesCommute
-  match ra with
-  | .positive pa => pure (.positive (q(Iff.mpr (@ENNReal.coe_pos $a) $pa) : Expr))
-  | _ => pure .none
+def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofNNReal $a) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa => pure <| .positive q(ENNReal.coe_pos.mpr $pa)
+    | _ => pure .none
+  | _, _, _ => throwError "not ENNReal.ofNNReal"
 
 end Mathlib.Meta.Positivity
 

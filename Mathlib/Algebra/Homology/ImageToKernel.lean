@@ -174,7 +174,7 @@ instance imageToKernel_epi_of_epi_of_zero [HasImages V] [Epi f] :
   simp only [imageToKernel_zero_right]
   haveI := epi_image_of_epi f
   rw [← imageSubobject_arrow]
-  refine' @epi_comp _ _ _ _ _ _ (epi_comp _ _) _ _
+  exact @epi_comp _ _ _ _ _ _ (epi_comp _ _) _ _
 #align image_to_kernel_epi_of_epi_of_zero imageToKernel_epi_of_epi_of_zero
 
 end

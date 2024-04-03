@@ -318,13 +318,14 @@ theorem pow_dvd_pow_iff {a b n : ℕ} (n0 : 0 < n) : a ^ n ∣ b ^ n ↔ a ∣ b
   simp [eq_one_of_dvd_one this]
 #align nat.pow_dvd_pow_iff Nat.pow_dvd_pow_iff
 
+theorem coprime_iff_isRelPrime {m n : ℕ} : m.Coprime n ↔ IsRelPrime m n := by
+  simp_rw [coprime_iff_gcd_eq_one, IsRelPrime, ← and_imp, ← dvd_gcd_iff, isUnit_iff_dvd_one]
+  exact ⟨fun h _ ↦ (h ▸ ·), (dvd_one.mp <| · dvd_rfl)⟩
+
 /-- If `k:ℕ` divides coprime `a` and `b` then `k = 1` -/
 theorem eq_one_of_dvd_coprimes {a b k : ℕ} (h_ab_coprime : Coprime a b) (hka : k ∣ a)
-    (hkb : k ∣ b) : k = 1 := by
-  rw [coprime_iff_gcd_eq_one] at h_ab_coprime
-  have h1 := dvd_gcd hka hkb
-  rw [h_ab_coprime] at h1
-  exact Nat.dvd_one.mp h1
+    (hkb : k ∣ b) : k = 1 :=
+  dvd_one.mp (isUnit_iff_dvd_one.mp <| coprime_iff_isRelPrime.mp h_ab_coprime hka hkb)
 #align nat.eq_one_of_dvd_coprimes Nat.eq_one_of_dvd_coprimes
 
 theorem Coprime.mul_add_mul_ne_mul {m n a b : ℕ} (cop : Coprime m n) (ha : a ≠ 0) (hb : b ≠ 0) :

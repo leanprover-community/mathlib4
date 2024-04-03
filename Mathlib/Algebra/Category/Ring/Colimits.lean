@@ -151,7 +151,7 @@ instance ColimitType.AddGroup : AddGroup (ColimitType F) where
   add_assoc := Quotient.ind fun _ => Quotient.ind₂ fun _ _ =>
     Quotient.sound <| Relation.add_assoc _ _ _
 
--- Porting note : failed to derive `Inhabited` instance
+-- Porting note: failed to derive `Inhabited` instance
 instance InhabitedColimitType : Inhabited <| ColimitType F where
   default := 0
 
@@ -189,13 +189,13 @@ theorem quot_one : Quot.mk Setoid.r one = (1 : ColimitType F) :=
 
 @[simp]
 theorem quot_neg (x : Prequotient F) :
-    -- Porting note : Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type
+    -- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type
     -- annotation unless we use `by exact` to change the elaboration order.
     (by exact Quot.mk Setoid.r (neg x) : ColimitType F) = -(by exact Quot.mk Setoid.r x) :=
   rfl
 #align CommRing.colimits.quot_neg CommRingCat.Colimits.quot_neg
 
--- Porting note : Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
+-- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
 -- unless we use `by exact` to change the elaboration order.
 @[simp]
 theorem quot_add (x y) :
@@ -204,7 +204,7 @@ theorem quot_add (x y) :
   rfl
 #align CommRing.colimits.quot_add CommRingCat.Colimits.quot_add
 
--- Porting note : Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
+-- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
 -- unless we use `by exact` to change the elaboration order.
 @[simp]
 theorem quot_mul (x y) :

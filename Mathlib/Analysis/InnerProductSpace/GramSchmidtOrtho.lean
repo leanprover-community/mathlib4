@@ -211,7 +211,7 @@ theorem gramSchmidt_ne_zero_coe {f : ι → E} (n : ι)
     simp only [Set.mem_image, Set.mem_Iio, orthogonalProjection_singleton]
     apply Submodule.smul_mem _ _ _
     rw [Finset.mem_Iio] at ha
-    refine' subset_span ⟨a, ha, by rfl⟩
+    exact subset_span ⟨a, ha, by rfl⟩
   have h₂ : (f ∘ ((↑) : Set.Iic n → ι)) ⟨n, le_refl n⟩ ∈
       span 𝕜 (f ∘ ((↑) : Set.Iic n → ι) '' Set.Iio ⟨n, le_refl n⟩) := by
     rw [image_comp]

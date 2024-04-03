@@ -129,7 +129,7 @@ instance (B : D) :
     (by
       rw [← F.map_comp, adj.right_triangle_components]
       apply F.map_id)
-    adj.left_triangle_components
+    (adj.left_triangle_components _)
 
 namespace Limits
 

@@ -122,8 +122,8 @@ theorem unitCompPartialBijectiveAux_symm_apply [Reflective i] {A : C} {B : D}
 
 /-- If `i` has a reflector `L`, then the function `(i.obj (L.obj A) ⟶ B) → (A ⟶ B)` given by
 precomposing with `η.app A` is a bijection provided `B` is in the essential image of `i`.
-That is, the function `λ (f : i.obj (L.obj A) ⟶ B), η.app A ≫ f` is bijective, as long as `B` is in
-the essential image of `i`.
+That is, the function `fun (f : i.obj (L.obj A) ⟶ B) ↦ η.app A ≫ f` is bijective,
+as long as `B` is in the essential image of `i`.
 This definition gives an equivalence: the key property that the inverse can be described
 nicely is shown in `unitCompPartialBijective_symm_apply`.
 

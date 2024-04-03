@@ -8,7 +8,7 @@ import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.MeasureTheory.Function.SimpleFuncDense
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
-#align_import measure_theory.function.strongly_measurable.basic from "leanprover-community/mathlib"@"ef95945cd48c932c9e034872bd25c3c220d9c946"
+#align_import measure_theory.function.strongly_measurable.basic from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
 
 /-!
 # Strongly measurable and finitely strongly measurable functions
@@ -231,7 +231,7 @@ theorem tendsto_approxBounded_of_norm_le {β} {f : α → β} [NormedAddCommGrou
     exact hfx
   nth_rw 2 [this.symm]
   refine' Tendsto.min tendsto_const_nhds _
-  refine' Tendsto.div tendsto_const_nhds h_tendsto.norm hfx0
+  exact Tendsto.div tendsto_const_nhds h_tendsto.norm hfx0
 #align measure_theory.strongly_measurable.tendsto_approx_bounded_of_norm_le MeasureTheory.StronglyMeasurable.tendsto_approxBounded_of_norm_le
 
 theorem tendsto_approxBounded_ae {β} {f : α → β} [NormedAddCommGroup β] [NormedSpace ℝ β]
@@ -1206,7 +1206,7 @@ theorem SimpleFunc.aestronglyMeasurable {_ : MeasurableSpace α} {μ : Measure �
 
 namespace AEStronglyMeasurable
 
-variable {m : MeasurableSpace α} {μ : Measure α} [TopologicalSpace β] [TopologicalSpace γ]
+variable {m : MeasurableSpace α} {μ ν : Measure α} [TopologicalSpace β] [TopologicalSpace γ]
   {f g : α → β}
 
 section Mk
@@ -1253,10 +1253,12 @@ theorem mono_measure {ν : Measure α} (hf : AEStronglyMeasurable f μ) (h : ν 
   ⟨hf.mk f, hf.stronglyMeasurable_mk, Eventually.filter_mono (ae_mono h) hf.ae_eq_mk⟩
 #align measure_theory.ae_strongly_measurable.mono_measure MeasureTheory.AEStronglyMeasurable.mono_measure
 
-protected theorem mono' {ν : Measure α} (h : AEStronglyMeasurable f μ) (h' : ν ≪ μ) :
-    AEStronglyMeasurable f ν :=
-  ⟨h.mk f, h.stronglyMeasurable_mk, h' h.ae_eq_mk⟩
-#align measure_theory.ae_strongly_measurable.mono' MeasureTheory.AEStronglyMeasurable.mono'
+protected lemma mono_ac (h : ν ≪ μ) (hμ : AEStronglyMeasurable f μ) : AEStronglyMeasurable f ν :=
+  let ⟨g, hg, hg'⟩ := hμ; ⟨g, hg, h.ae_eq hg'⟩
+#align measure_theory.ae_strongly_measurable.mono' MeasureTheory.AEStronglyMeasurable.mono_ac
+#align measure_theory.ae_strongly_measurable_of_absolutely_continuous MeasureTheory.AEStronglyMeasurable.mono_ac
+
+@[deprecated] protected alias mono' := AEStronglyMeasurable.mono_ac
 
 theorem mono_set {s t} (h : s ⊆ t) (ht : AEStronglyMeasurable f (μ.restrict t)) :
     AEStronglyMeasurable f (μ.restrict s) :=

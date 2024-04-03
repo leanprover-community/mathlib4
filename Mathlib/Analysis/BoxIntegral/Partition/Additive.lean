@@ -127,8 +127,8 @@ def ofMapSplitAdd [Finite ι] (f : Box ι → M) (I₀ : WithTop (Box ι))
       (I.splitLower i x).elim' 0 f + (I.splitUpper i x).elim' 0 f = f I) :
     ι →ᵇᵃ[I₀] M := by
   refine' ⟨f, _⟩
-  replace hf : ∀ I : Box ι, ↑I ≤ I₀ → ∀ s, (∑ J in (splitMany I s).boxes, f J) = f I
-  · intro I hI s
+  replace hf : ∀ I : Box ι, ↑I ≤ I₀ → ∀ s, (∑ J in (splitMany I s).boxes, f J) = f I := by
+    intro I hI s
     induction' s using Finset.induction_on with a s _ ihs
     · simp
     rw [splitMany_insert, inf_split, ← ihs, biUnion_boxes, sum_biUnion_boxes]

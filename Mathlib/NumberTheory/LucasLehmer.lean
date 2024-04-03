@@ -95,7 +95,7 @@ def sMod (p : ℕ) : ℕ → ℤ
 #align lucas_lehmer.s_mod LucasLehmer.sMod
 
 theorem mersenne_int_pos {p : ℕ} (hp : p ≠ 0) : (0 : ℤ) < 2 ^ p - 1 :=
-  sub_pos.2 <| mod_cast Nat.one_lt_two_pow p hp
+  sub_pos.2 <| mod_cast Nat.one_lt_two_pow hp
 
 theorem mersenne_int_ne_zero (p : ℕ) (hp : p ≠ 0) : (2 ^ p - 1 : ℤ) ≠ 0 :=
   (mersenne_int_pos hp).ne'
@@ -415,7 +415,7 @@ theorem two_lt_q (p' : ℕ) : 2 < q (p' + 2) := by
   refine (minFac_prime (one_lt_mersenne ?_).ne').two_le.lt_of_ne' ?_
   · exact le_add_left _ _
   · rw [Ne.def, minFac_eq_two_iff, mersenne, Nat.pow_succ']
-    exact Nat.two_not_dvd_two_mul_sub_one (Nat.one_le_two_pow _)
+    exact Nat.two_not_dvd_two_mul_sub_one Nat.one_le_two_pow
 #align lucas_lehmer.two_lt_q LucasLehmer.two_lt_q
 
 theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :

@@ -228,7 +228,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
           have aux : n + 2 ≤ i * (n + 1) := by trans 2 * (n + 1) <;> nlinarith only [h2i]
           refine' Ideal.mul_mem_left _ _ (Ideal.pow_le_pow_right aux _)
           rw [pow_mul']
-          refine' Ideal.pow_mem_pow ((Ideal.neg_mem_iff _).2 <| Ideal.mul_mem_right _ _ ih) _
+          exact Ideal.pow_mem_pow ((Ideal.neg_mem_iff _).2 <| Ideal.mul_mem_right _ _ ih) _
       -- we are now in the position to show that `c : ℕ → R` is a Cauchy sequence
       have aux : ∀ m n, m ≤ n → c m ≡ c n [SMOD (I ^ m • ⊤ : Ideal R)] := by
         intro m n hmn

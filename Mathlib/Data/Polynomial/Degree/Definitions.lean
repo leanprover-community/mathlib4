@@ -55,6 +55,9 @@ def degree (p : R[X]) : WithBot ℕ :=
   p.support.max
 #align polynomial.degree Polynomial.degree
 
+theorem supDegree_eq_degree (p : R[X]) : p.toFinsupp.supDegree WithBot.some = p.degree :=
+  max_eq_sup_coe
+
 theorem degree_lt_wf : WellFounded fun p q : R[X] => degree p < degree q :=
   InvImage.wf degree wellFounded_lt
 #align polynomial.degree_lt_wf Polynomial.degree_lt_wf
@@ -134,24 +137,23 @@ theorem degree_eq_natDegree (hp : p ≠ 0) : degree p = (natDegree p : WithBot �
   rw [natDegree, hn]; rfl
 #align polynomial.degree_eq_nat_degree Polynomial.degree_eq_natDegree
 
+theorem supDegree_eq_natDegree (p : R[X]) : p.toFinsupp.supDegree id = p.natDegree := by
+  obtain rfl|h := eq_or_ne p 0
+  · simp
+  apply WithBot.coe_injective
+  rw [← AddMonoidAlgebra.supDegree_withBot_some_comp, Function.comp_id, supDegree_eq_degree,
+    degree_eq_natDegree h, Nat.cast_withBot]
+  rwa [support_toFinsupp, nonempty_iff_ne_empty, Ne, support_eq_empty]
+
 theorem degree_eq_iff_natDegree_eq {p : R[X]} {n : ℕ} (hp : p ≠ 0) :
     p.degree = n ↔ p.natDegree = n := by rw [degree_eq_natDegree hp]; exact WithBot.coe_eq_coe
 #align polynomial.degree_eq_iff_nat_degree_eq Polynomial.degree_eq_iff_natDegree_eq
 
 theorem degree_eq_iff_natDegree_eq_of_pos {p : R[X]} {n : ℕ} (hn : 0 < n) :
     p.degree = n ↔ p.natDegree = n := by
-  constructor
-  · intro H
-    rwa [← degree_eq_iff_natDegree_eq]
-    rintro rfl
-    rw [degree_zero] at H
-    exact Option.noConfusion H
-  · intro H
-    rwa [degree_eq_iff_natDegree_eq]
-    rintro rfl
-    rw [natDegree_zero] at H
-    rw [H] at hn
-    exact lt_irrefl _ hn
+  obtain rfl|h := eq_or_ne p 0
+  · simp [hn.ne]
+  · exact degree_eq_iff_natDegree_eq h
 #align polynomial.degree_eq_iff_nat_degree_eq_of_pos Polynomial.degree_eq_iff_natDegree_eq_of_pos
 
 theorem natDegree_eq_of_degree_eq_some {p : R[X]} {n : ℕ} (h : degree p = n) : natDegree p = n := by
@@ -172,9 +174,9 @@ theorem natDegree_eq_of_degree_eq [Semiring S] {q : S[X]} (h : degree p = degree
     natDegree p = natDegree q := by unfold natDegree; rw [h]
 #align polynomial.nat_degree_eq_of_degree_eq Polynomial.natDegree_eq_of_degree_eq
 
-theorem le_degree_of_ne_zero (h : coeff p n ≠ 0) : (n : WithBot ℕ) ≤ degree p :=
-  show @LE.le (WithBot ℕ) _ (some n : WithBot ℕ) (p.support.sup some : WithBot ℕ) from
-    Finset.le_sup (mem_support_iff.2 h)
+theorem le_degree_of_ne_zero (h : coeff p n ≠ 0) : (n : WithBot ℕ) ≤ degree p := by
+  rw [Nat.cast_withBot]
+  exact Finset.le_sup (mem_support_iff.2 h)
 #align polynomial.le_degree_of_ne_zero Polynomial.le_degree_of_ne_zero
 
 theorem le_natDegree_of_ne_zero (h : coeff p n ≠ 0) : n ≤ natDegree p := by
@@ -212,7 +214,7 @@ theorem supp_subset_range_natDegree_succ : p.support ⊆ Finset.range (natDegree
 
 theorem degree_le_degree (h : coeff q (natDegree p) ≠ 0) : degree p ≤ degree q := by
   by_cases hp : p = 0
-  · rw [hp]
+  · rw [hp, degree_zero]
     exact bot_le
   · rw [degree_eq_natDegree hp]
     exact le_degree_of_ne_zero h
@@ -266,10 +268,8 @@ theorem degree_one_le : degree (1 : R[X]) ≤ (0 : WithBot ℕ) := by rw [← C_
 theorem natDegree_C (a : R) : natDegree (C a) = 0 := by
   by_cases ha : a = 0
   · have : C a = 0 := by rw [ha, C_0]
-    rw [natDegree, degree_eq_bot.2 this]
-    rfl
-  · rw [natDegree, degree_C ha]
-    rfl
+    rw [natDegree, degree_eq_bot.2 this, WithBot.unbot'_bot]
+  · rw [natDegree, degree_C ha, WithBot.unbot_zero']
 #align polynomial.nat_degree_C Polynomial.natDegree_C
 
 @[simp]
@@ -286,7 +286,7 @@ theorem degree_nat_cast_le (n : ℕ) : degree (n : R[X]) ≤ 0 := degree_le_of_n
 
 @[simp]
 theorem degree_monomial (n : ℕ) (ha : a ≠ 0) : degree (monomial n a) = n := by
-  rw [degree, support_monomial n ha]; rfl
+  rw [degree, support_monomial n ha, max_singleton, Nat.cast_withBot]
 #align polynomial.degree_monomial Polynomial.degree_monomial
 
 @[simp]
@@ -300,7 +300,7 @@ theorem degree_C_mul_X (ha : a ≠ 0) : degree (C a * X) = 1 := by
 
 theorem degree_monomial_le (n : ℕ) (a : R) : degree (monomial n a) ≤ n :=
   letI := Classical.decEq R
-  if h : a = 0 then by rw [h, (monomial n).map_zero]; exact bot_le
+  if h : a = 0 then by rw [h, (monomial n).map_zero, degree_zero]; exact bot_le
   else le_of_eq (degree_monomial n h)
 #align polynomial.degree_monomial_le Polynomial.degree_monomial_le
 
@@ -335,7 +335,7 @@ theorem natDegree_monomial_le (a : R) {m : ℕ} : (monomial m a).natDegree ≤ m
   classical
   rw [Polynomial.natDegree_monomial]
   split_ifs
-  exacts [Nat.zero_le _, rfl.le]
+  exacts [Nat.zero_le _, le_rfl]
 #align polynomial.nat_degree_monomial_le Polynomial.natDegree_monomial_le
 
 theorem natDegree_monomial_eq (i : ℕ) {r : R} (r0 : r ≠ 0) : (monomial i r).natDegree = i :=
@@ -452,8 +452,8 @@ theorem eq_X_add_C_of_degree_le_one (h : degree p ≤ 1) : p = C (p.coeff 1) * X
 
 theorem eq_X_add_C_of_degree_eq_one (h : degree p = 1) :
     p = C p.leadingCoeff * X + C (p.coeff 0) :=
-  (eq_X_add_C_of_degree_le_one (show degree p ≤ 1 from h ▸ le_rfl)).trans
-    (by simp only [leadingCoeff, natDegree_eq_of_degree_eq_some h]; rfl)
+  (eq_X_add_C_of_degree_le_one h.le).trans
+    (by rw [← Nat.cast_one] at h; rw [leadingCoeff, natDegree_eq_of_degree_eq_some h])
 #align polynomial.eq_X_add_C_of_degree_eq_one Polynomial.eq_X_add_C_of_degree_eq_one
 
 theorem eq_X_add_C_of_natDegree_le_one (h : natDegree p ≤ 1) :
@@ -511,7 +511,7 @@ variable [Semiring R] [Nontrivial R] {p q : R[X]}
 
 @[simp]
 theorem degree_one : degree (1 : R[X]) = (0 : WithBot ℕ) :=
-  degree_C (show (1 : R) ≠ 0 from zero_ne_one.symm)
+  degree_C one_ne_zero
 #align polynomial.degree_one Polynomial.degree_one
 
 @[simp]
@@ -866,12 +866,12 @@ theorem leadingCoeff_C (a : R) : leadingCoeff (C a) = a :=
   leadingCoeff_monomial a 0
 #align polynomial.leading_coeff_C Polynomial.leadingCoeff_C
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem leadingCoeff_X_pow (n : ℕ) : leadingCoeff ((X : R[X]) ^ n) = 1 := by
   simpa only [C_1, one_mul] using leadingCoeff_C_mul_X_pow (1 : R) n
 #align polynomial.leading_coeff_X_pow Polynomial.leadingCoeff_X_pow
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem leadingCoeff_X : leadingCoeff (X : R[X]) = 1 := by
   simpa only [pow_one] using @leadingCoeff_X_pow R _ 1
 #align polynomial.leading_coeff_X Polynomial.leadingCoeff_X
@@ -886,7 +886,7 @@ theorem monic_X : Monic (X : R[X]) :=
   leadingCoeff_X
 #align polynomial.monic_X Polynomial.monic_X
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem leadingCoeff_one : leadingCoeff (1 : R[X]) = 1 :=
   leadingCoeff_C 1
 #align polynomial.leading_coeff_one Polynomial.leadingCoeff_one
@@ -1684,6 +1684,10 @@ theorem leadingCoeffHom_apply (p : R[X]) : leadingCoeffHom p = leadingCoeff p :=
 theorem leadingCoeff_pow (p : R[X]) (n : ℕ) : leadingCoeff (p ^ n) = leadingCoeff p ^ n :=
   (leadingCoeffHom : R[X] →* R).map_pow p n
 #align polynomial.leading_coeff_pow Polynomial.leadingCoeff_pow
+
+theorem leadingCoeff_dvd_leadingCoeff {a p : R[X]} (hap : a ∣ p) :
+    a.leadingCoeff ∣ p.leadingCoeff :=
+  map_dvd leadingCoeffHom hap
 
 end NoZeroDivisors
 

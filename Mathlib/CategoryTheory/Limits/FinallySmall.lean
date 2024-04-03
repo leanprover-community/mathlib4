@@ -59,6 +59,18 @@ instance final_fromFinalModel [FinallySmall.{w} J] : Final (fromFinalModel J) :=
 theorem finallySmall_of_essentiallySmall [EssentiallySmall.{w} J] : FinallySmall.{w} J :=
   FinallySmall.mk' (equivSmallModel.{w} J).inverse
 
+variable {J}
+
+variable {K : Type u₁} [Category.{v₁} K] (F : K ⥤ J) [Final F]
+
+theorem finallySmall_of_final_of_finallySmall [FinallySmall.{w} K] : FinallySmall.{w} J :=
+  suffices Final ((fromFinalModel K) ⋙ F) from .mk' ((fromFinalModel K) ⋙ F)
+  final_comp _ _
+
+theorem finallySmall_of_final_of_essentiallySmall [EssentiallySmall.{w} K] : FinallySmall.{w} J :=
+  have := finallySmall_of_essentiallySmall K
+  finallySmall_of_final_of_finallySmall F
+
 end FinallySmall
 
 section InitiallySmall
@@ -94,6 +106,19 @@ instance initial_fromInitialModel [InitiallySmall.{w} J] : Initial (fromInitialM
 
 theorem initiallySmall_of_essentiallySmall [EssentiallySmall.{w} J] : InitiallySmall.{w} J :=
   InitiallySmall.mk' (equivSmallModel.{w} J).inverse
+
+variable {J}
+
+variable {K : Type u₁} [Category.{v₁} K] (F : K ⥤ J) [Initial F]
+
+theorem initiallySmall_of_initial_of_initiallySmall [InitiallySmall.{w} K] : InitiallySmall.{w} J :=
+  suffices Initial ((fromInitialModel K) ⋙ F) from .mk' ((fromInitialModel K) ⋙ F)
+  initial_comp _ _
+
+theorem initiallySmall_of_initial_of_essentiallySmall [EssentiallySmall.{w} K] :
+    InitiallySmall.{w} J :=
+  have := initiallySmall_of_essentiallySmall K
+  initiallySmall_of_initial_of_initiallySmall F
 
 end InitiallySmall
 

@@ -143,8 +143,8 @@ lemma Sigma.openEmbedding_ι {α : Type} [Finite α] (Z : α → Stonean.{u}) (a
 
 instance : PreservesFiniteCoproducts Stonean.toCompHaus := by
   refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
-  suffices : PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) Stonean.toCompHaus
-  · exact preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
+  suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) Stonean.toCompHaus from
+    preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
   apply preservesColimitOfPreservesColimitCocone (Stonean.finiteCoproduct.isColimit _)
   exact CompHaus.finiteCoproduct.isColimit _
 
@@ -180,8 +180,8 @@ def pullback : Stonean where
     constructor
     intro U hU
     dsimp at U
-    have h : IsClopen (f ⁻¹' (Set.range i))
-    · constructor
+    have h : IsClopen (f ⁻¹' (Set.range i)) := by
+      constructor
       · refine' IsClosed.preimage f.continuous _
         apply IsCompact.isClosed
         simp only [← Set.image_univ]
@@ -190,8 +190,8 @@ def pullback : Stonean where
     have hU' : IsOpen (Subtype.val '' U) := h.2.openEmbedding_subtype_val.isOpenMap U hU
     have := ExtremallyDisconnected.open_closure _ hU'
     rw [h.1.closedEmbedding_subtype_val.closure_image_eq U] at this
-    suffices hhU : closure U = Subtype.val ⁻¹' (Subtype.val '' (closure U))
-    · rw [hhU]
+    suffices hhU : closure U = Subtype.val ⁻¹' (Subtype.val '' (closure U)) by
+      rw [hhU]
       exact isOpen_induced this
     exact ((closure U).preimage_image_eq Subtype.coe_injective).symm
 
@@ -250,8 +250,8 @@ lemma pullback.lift_snd {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : Op
   ext z
   have := congr_fun (DFunLike.ext'_iff.mp w.symm) z
   have h : i (b z) = f (a z) := this
-  suffices : b z = (Homeomorph.ofEmbedding i hi.toEmbedding).symm (⟨f (a z), by rw [← h]; simp⟩)
-  · exact this.symm
+  suffices b z = (Homeomorph.ofEmbedding i hi.toEmbedding).symm (⟨f (a z), by rw [← h]; simp⟩) from
+    this.symm
   apply_fun (Homeomorph.ofEmbedding i hi.toEmbedding)
   simpa only [Homeomorph.ofEmbedding, Homeomorph.homeomorph_mk_coe, Equiv.ofInjective_apply,
     Homeomorph.homeomorph_mk_coe_symm, Equiv.apply_symm_apply, Subtype.mk.injEq]

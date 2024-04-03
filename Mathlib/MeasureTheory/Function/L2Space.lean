@@ -18,8 +18,8 @@ is also an inner product space, with inner product defined as `inner f g = ∫ a
 
 * `mem_L1_inner` : for `f` and `g` in `Lp E 2 μ`, the pointwise inner product `fun x ↦ ⟪f x, g x⟫`
   belongs to `Lp 𝕜 1 μ`.
-* `integrable_inner` : for `f` and `g` in `Lp E 2 μ`, the pointwise inner product `λ x, ⟪f x, g x⟫`
-  is integrable.
+* `integrable_inner` : for `f` and `g` in `Lp E 2 μ`, the pointwise inner product
+ `fun x ↦ ⟪f x, g x⟫` is integrable.
 * `L2.inner_product_space` : `Lp E 2 μ` is an inner product space.
 
 -/
@@ -233,19 +233,19 @@ theorem inner_indicatorConstLp_eq_set_integral_inner (f : Lp E 2 μ) (hs : Measu
     (hμs : μ s ≠ ∞) : (⟪indicatorConstLp 2 hs hμs c, f⟫ : 𝕜) = ∫ x in s, ⟪c, f x⟫ ∂μ := by
   rw [inner_def, ← integral_add_compl hs (L2.integrable_inner _ f)]
   have h_left : (∫ x in s, ⟪(indicatorConstLp 2 hs hμs c) x, f x⟫ ∂μ) = ∫ x in s, ⟪c, f x⟫ ∂μ := by
-    suffices h_ae_eq : ∀ᵐ x ∂μ, x ∈ s → ⟪indicatorConstLp 2 hs hμs c x, f x⟫ = ⟪c, f x⟫
-    exact set_integral_congr_ae hs h_ae_eq
+    suffices h_ae_eq : ∀ᵐ x ∂μ, x ∈ s → ⟪indicatorConstLp 2 hs hμs c x, f x⟫ = ⟪c, f x⟫ from
+      set_integral_congr_ae hs h_ae_eq
     have h_indicator : ∀ᵐ x : α ∂μ, x ∈ s → indicatorConstLp 2 hs hμs c x = c :=
       indicatorConstLp_coeFn_mem
     refine' h_indicator.mono fun x hx hxs => _
     congr
     exact hx hxs
   have h_right : (∫ x in sᶜ, ⟪(indicatorConstLp 2 hs hμs c) x, f x⟫ ∂μ) = 0 := by
-    suffices h_ae_eq : ∀ᵐ x ∂μ, x ∉ s → ⟪indicatorConstLp 2 hs hμs c x, f x⟫ = 0
-    · simp_rw [← Set.mem_compl_iff] at h_ae_eq
+    suffices h_ae_eq : ∀ᵐ x ∂μ, x ∉ s → ⟪indicatorConstLp 2 hs hμs c x, f x⟫ = 0 by
+      simp_rw [← Set.mem_compl_iff] at h_ae_eq
       suffices h_int_zero :
-        (∫ x in sᶜ, inner (indicatorConstLp 2 hs hμs c x) (f x) ∂μ) = ∫ _ in sᶜ, (0 : 𝕜) ∂μ
-      · rw [h_int_zero]
+          (∫ x in sᶜ, inner (indicatorConstLp 2 hs hμs c x) (f x) ∂μ) = ∫ _ in sᶜ, (0 : 𝕜) ∂μ by
+        rw [h_int_zero]
         simp
       exact set_integral_congr_ae hs.compl h_ae_eq
     have h_indicator : ∀ᵐ x : α ∂μ, x ∉ s → indicatorConstLp 2 hs hμs c x = 0 :=

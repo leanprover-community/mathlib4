@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Topology.LocalExtr
-import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.OrderClosed
 
 #align_import topology.algebra.order.extr_closure from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 

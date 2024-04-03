@@ -220,7 +220,7 @@ theorem nilpotent_iff_finite_ascending_central_series :
     IsNilpotent G ↔ ∃ n : ℕ, ∃ H : ℕ → Subgroup G, IsAscendingCentralSeries H ∧ H n = ⊤ := by
   constructor
   · rintro ⟨n, nH⟩
-    refine' ⟨_, _, upperCentralSeries_isAscendingCentralSeries G, nH⟩
+    exact ⟨_, _, upperCentralSeries_isAscendingCentralSeries G, nH⟩
   · rintro ⟨n, H, hH, hn⟩
     use n
     rw [eq_top_iff, ← hn]
@@ -469,7 +469,7 @@ instance Subgroup.isNilpotent (H : Subgroup G) [hG : IsNilpotent G] : IsNilpoten
 theorem Subgroup.nilpotencyClass_le (H : Subgroup G) [hG : IsNilpotent G] :
     Group.nilpotencyClass H ≤ Group.nilpotencyClass G := by
   repeat rw [← lowerCentralSeries_length_eq_nilpotencyClass]
-  --- Porting note : Lean needs to be told that predicates are decidable
+  --- Porting note: Lean needs to be told that predicates are decidable
   refine @Nat.find_mono _ _ (Classical.decPred _) (Classical.decPred _) ?_ _ _
   intro n hG
   have := lowerCentralSeries_map_subtype_le H n

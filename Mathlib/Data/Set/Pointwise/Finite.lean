@@ -192,8 +192,8 @@ theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k
     monotone_nat_of_le_succ fun n ↦ key a _ _ fun b hb ↦ Set.mul_mem_mul ha hb
   refine' card_pow_eq_card_pow_card_univ_aux mono (fun n ↦ set_fintype_card_le_univ (S ^ n))
     fun n h ↦ le_antisymm (mono (n + 1).le_succ) (key a⁻¹ (S ^ (n + 2)) (S ^ (n + 1)) _)
-  replace h₂ : {a} * S ^ n = S ^ (n + 1)
-  · have : Fintype (Set.singleton a * S ^ n) := by
+  replace h₂ : {a} * S ^ n = S ^ (n + 1) := by
+    have : Fintype (Set.singleton a * S ^ n) := by
       classical!
       apply fintypeMul
     refine' Set.eq_of_subset_of_card_le _ (le_trans (ge_of_eq h) _)

@@ -396,8 +396,7 @@ theorem mem_iSup_finset_iff_exists_sum {s : Finset ι} (p : ι → Submodule R N
         rw [mem_support_iff, not_ne_iff]
         ext
         rw [coe_zero, ← mem_bot R]
-        suffices : ⊥ = ⨆ (_ : x ∈ s), p x
-        · exact this.symm ▸ coe_mem (μ x)
+        suffices ⊥ = ⨆ (_ : x ∈ s), p x from this.symm ▸ coe_mem (μ x)
         exact (iSup_neg hx).symm
       · intro x _ hx
         rw [mem_support_iff, not_ne_iff] at hx
@@ -450,10 +449,9 @@ theorem independent_of_dfinsupp_lsum_injective (p : ι → Submodule R N)
     Independent p := by
   rw [independent_iff_forall_dfinsupp]
   intro i x v hv
-  replace hv :
-    lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (erase i v) =
-      lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (single i x)
-  · simpa only [lsum_single] using hv
+  replace hv : lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (erase i v) =
+      lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (single i x) := by
+    simpa only [lsum_single] using hv
   have := DFunLike.ext_iff.mp (h hv) i
   simpa [eq_comm] using this
 #align complete_lattice.independent_of_dfinsupp_lsum_injective CompleteLattice.independent_of_dfinsupp_lsum_injective

@@ -105,6 +105,10 @@ instance : CompactSpace circle :=
 instance : TopologicalGroup circle :=
   Metric.sphere.topologicalGroup
 
+instance : UniformGroup circle := by
+  convert topologicalGroup_is_uniform_of_compactSpace circle
+  exact unique_uniformity_of_compact rfl rfl
+
 /-- If `z` is a nonzero complex number, then `conj z / z` belongs to the unit circle. -/
 @[simps]
 def circle.ofConjDivSelf (z : ℂ) (hz : z ≠ 0) : circle :=

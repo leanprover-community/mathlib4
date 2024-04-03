@@ -351,21 +351,21 @@ theorem differentiableAt_riemannZeta {s : ℂ} (hs' : s ≠ 1) : DifferentiableA
         (continuousAt_const_cpow (ofReal_ne_zero.mpr pi_pos.ne')) ?_).tendsto using 2
       · simp_rw [Function.comp_apply, zero_div, cpow_zero]
       · exact continuousAt_id.div continuousAt_const two_ne_zero
-    suffices h2 : Tendsto (fun z => riemannCompletedZeta z / Gamma (z / 2)) (𝓝[≠] 0) (𝓝 <| -1 / 2)
-    · convert (h1.mono_left nhdsWithin_le_nhds).mul h2 using 1
+    suffices h2 : Tendsto (fun z ↦ riemannCompletedZeta z / Gamma (z / 2)) (𝓝[≠] 0)
+        (𝓝 <| -1 / 2) by
+      convert (h1.mono_left nhdsWithin_le_nhds).mul h2 using 1
       · ext1 x; rw [mul_div]
       · simp only [one_mul]
     suffices h3 :
-      Tendsto (fun z => riemannCompletedZeta z * (z / 2) / (z / 2 * Gamma (z / 2))) (𝓝[≠] 0)
-        (𝓝 <| -1 / 2)
-    · refine Tendsto.congr' (eventuallyEq_of_mem self_mem_nhdsWithin fun z hz => ?_) h3
+        Tendsto (fun z => riemannCompletedZeta z * (z / 2) / (z / 2 * Gamma (z / 2))) (𝓝[≠] 0)
+          (𝓝 <| -1 / 2) by
+      refine Tendsto.congr' (eventuallyEq_of_mem self_mem_nhdsWithin fun z hz ↦ ?_) h3
       rw [← div_div, mul_div_cancel _ (div_ne_zero hz two_ne_zero)]
     have h4 : Tendsto (fun z : ℂ => z / 2 * Gamma (z / 2)) (𝓝[≠] 0) (𝓝 1) := by
       refine tendsto_self_mul_Gamma_nhds_zero.comp ?_
       rw [tendsto_nhdsWithin_iff, (by simp : 𝓝 (0 : ℂ) = 𝓝 (0 / 2))]
-      exact
-        ⟨(tendsto_id.div_const _).mono_left nhdsWithin_le_nhds,
-          eventually_of_mem self_mem_nhdsWithin fun x hx => div_ne_zero hx two_ne_zero⟩
+      exact ⟨(tendsto_id.div_const _).mono_left nhdsWithin_le_nhds,
+        eventually_of_mem self_mem_nhdsWithin fun x hx => div_ne_zero hx two_ne_zero⟩
     suffices Tendsto (fun z => riemannCompletedZeta z * z / 2) (𝓝[≠] 0) (𝓝 (-1 / 2 : ℂ)) by
       have := this.div h4 one_ne_zero
       simp_rw [div_one, mul_div_assoc] at this
@@ -817,16 +817,16 @@ lemma riemannCompletedZeta_residue_one :
 
 /-- The residue of `ζ(s)` at `s = 1` is equal to 1. -/
 lemma riemannZeta_residue_one : Tendsto (fun s ↦ (s - 1) * riemannZeta s) (𝓝[≠] 1) (𝓝 1) := by
-  suffices : Tendsto (fun s => (s - 1) *
-      (π ^ (s / 2) * riemannCompletedZeta s / Gamma (s / 2))) (𝓝[≠] 1) (𝓝 1)
-  · refine this.congr' <| (eventually_ne_nhdsWithin one_ne_zero).mp (eventually_of_forall ?_)
+  suffices Tendsto (fun s => (s - 1) *
+      (π ^ (s / 2) * riemannCompletedZeta s / Gamma (s / 2))) (𝓝[≠] 1) (𝓝 1) by
+    refine this.congr' <| (eventually_ne_nhdsWithin one_ne_zero).mp (eventually_of_forall ?_)
     intro x hx
     simp [riemannZeta_def, Function.update_noteq hx]
-  have h0 : Tendsto (fun s ↦ π ^ (s / 2) : ℂ → ℂ) (𝓝[≠] 1) (𝓝 (π ^ (1 / 2 : ℂ)))
-  · refine ((continuousAt_id.div_const _).const_cpow ?_).tendsto.mono_left nhdsWithin_le_nhds
+  have h0 : Tendsto (fun s ↦ π ^ (s / 2) : ℂ → ℂ) (𝓝[≠] 1) (𝓝 (π ^ (1 / 2 : ℂ))) := by
+    refine ((continuousAt_id.div_const _).const_cpow ?_).tendsto.mono_left nhdsWithin_le_nhds
     exact Or.inl <| ofReal_ne_zero.mpr pi_ne_zero
-  have h1 : Tendsto (fun s : ℂ ↦ 1 / Gamma (s / 2)) (𝓝[≠] 1) (𝓝 (1 / π ^ (1 / 2 : ℂ)))
-  · rw [← Complex.Gamma_one_half_eq]
+  have h1 : Tendsto (fun s : ℂ ↦ 1 / Gamma (s / 2)) (𝓝[≠] 1) (𝓝 (1 / π ^ (1 / 2 : ℂ))) := by
+    rw [← Complex.Gamma_one_half_eq]
     refine (Continuous.tendsto ?_ _).mono_left nhdsWithin_le_nhds
     simpa using differentiable_one_div_Gamma.continuous.comp (continuous_id.div_const _)
   convert (riemannCompletedZeta_residue_one.mul h0).mul h1 using 2 with s

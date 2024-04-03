@@ -11,17 +11,19 @@ import Mathlib.Data.Fintype.Card
 /-!
 # Multiset coercion to type
 
-This module defines a `hasCoeToSort` instance for multisets and gives it a `Fintype` instance.
+This module defines a `CoeSort` instance for multisets and gives it a `Fintype` instance.
 It also defines `Multiset.toEnumFinset`, which is another way to enumerate the elements of
 a multiset. These coercions and definitions make it easier to sum over multisets using existing
 `Finset` theory.
 
 ## Main definitions
 
-* A coercion from `m : Multiset α` to a `Type*`. For `x : m`, then there is a coercion `↑x : α`,
-  and `x.2` is a term of `Fin (m.count x)`. The second component is what ensures each term appears
-  with the correct multiplicity. Note that this coercion requires `decidableEq α` due to
-  `Multiset.count`.
+* A coercion from `m : Multiset α` to a `Type*`. Each `x : m` has two components.
+  The first, `x.1`, can be obtained via the coercion `↑x : α`,
+  and it yields the underlying element of the multiset.
+  The second, `x.2`, is a term of `Fin (m.count x)`,
+  and its function is to ensure each term appears with the correct multiplicity.
+  Note that this coercion requires `DecidableEq α` due to the definition using `Multiset.count`.
 * `Multiset.toEnumFinset` is a `Finset` version of this.
 * `Multiset.coeEmbedding` is the embedding `m ↪ α × ℕ`, whose first component is the coercion
   and whose second component enumerates elements with multiplicity.
@@ -37,19 +39,17 @@ open BigOperators
 
 variable {α : Type*} [DecidableEq α] {m : Multiset α}
 
-/-- Auxiliary definition for the `hasCoeToSort` instance. This prevents the `hasCoe m α`
-instance from inadvertently applying to other sigma types. One should not use this definition
-directly. -/
--- Porting note: @[nolint has_nonempty_instance]
-def Multiset.ToType (m : Multiset α) : Type _ :=
-  Σx : α, Fin (m.count x)
+/-- Auxiliary definition for the `CoeSort` instance. This prevents the `CoeOut m α`
+instance from inadvertently applying to other sigma types. -/
+def Multiset.ToType (m : Multiset α) : Type _ := (x : α) × Fin (m.count x)
 #align multiset.to_type Multiset.ToType
 
 /-- Create a type that has the same number of elements as the multiset.
 Terms of this type are triples `⟨x, ⟨i, h⟩⟩` where `x : α`, `i : ℕ`, and `h : i < m.count x`.
-This way repeated elements of a multiset appear multiple times with different values of `i`. -/
-instance : CoeSort (Multiset α) (Type _) :=
-  ⟨Multiset.ToType⟩
+This way repeated elements of a multiset appear multiple times from different values of `i`. -/
+instance : CoeSort (Multiset α) (Type _) := ⟨Multiset.ToType⟩
+
+example : DecidableEq m := inferInstanceAs <| DecidableEq ((x : α) × Fin (m.count x))
 
 -- Porting note: syntactic equality
 #noalign multiset.coe_sort_eq
@@ -63,7 +63,6 @@ def Multiset.mkToType (m : Multiset α) (x : α) (i : Fin (m.count x)) : m :=
 
 /-- As a convenience, there is a coercion from `m : Type*` to `α` by projecting onto the first
 component. -/
--- Porting note: was `Coe m α`
 instance instCoeSortMultisetType.instCoeOutToType : CoeOut m α :=
   ⟨fun x ↦ x.1⟩
 #align multiset.has_coe_to_sort.has_coe instCoeSortMultisetType.instCoeOutToTypeₓ
@@ -78,7 +77,7 @@ theorem Multiset.coe_eq {x y : m} : (x : α) = (y : α) ↔ x.1 = y.1 := by
   rfl
 #align multiset.coe_eq Multiset.coe_eq
 
--- @[simp] -- Porting note: dsimp can prove this
+-- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem Multiset.coe_mk {x : α} {i : Fin (m.count x)} : ↑(m.mkToType x i) = x :=
   rfl
 #align multiset.coe_mk Multiset.coe_mk

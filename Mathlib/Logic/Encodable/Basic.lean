@@ -403,14 +403,10 @@ open Subtype Decidable
 
 variable {P : α → Prop} [encA : Encodable α] [decP : DecidablePred P]
 
---include encA
-
 /-- Explicit encoding function for a decidable subtype of an encodable type -/
 def encodeSubtype : { a : α // P a } → ℕ
   | ⟨v,_⟩ => encode v
 #align encodable.encode_subtype Encodable.encodeSubtype
-
---include decP
 
 /-- Explicit decoding function for a decidable subtype of an encodable type -/
 def decodeSubtype (v : ℕ) : Option { a : α // P a } :=

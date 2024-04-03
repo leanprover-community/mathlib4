@@ -519,6 +519,27 @@ theorem degreeOf_coeff_finSuccEquiv (p : MvPolynomial (Fin (n + 1)) R) (j : Fin 
     (support_coeff_finSuccEquiv.1 hm)
 #align mv_polynomial.degree_of_coeff_fin_succ_equiv MvPolynomial.degreeOf_coeff_finSuccEquiv
 
+/-- Consider a multivariate polynomial `φ` whose variables are indexed by `Option σ`,
+and suppose that `σ ≃ Fin n`.
+Then one may view `φ` as a polynomial over `MvPolynomial (Fin n) R`, by
+
+1. renaming the variables via `Option σ ≃ Fin (n+1)`, and then singling out the `0`-th variable
+    via `MvPolynomial.finSuccEquiv`;
+2. first viewing it as polynomial over `MvPolynomial σ R` via `MvPolynomial.optionEquivLeft`,
+    and then renaming the variables.
+
+This lemma shows that both constructions are the same. -/
+lemma finSuccEquiv_rename_finSuccEquiv (e : σ ≃ Fin n) (φ : MvPolynomial (Option σ) R) :
+    ((finSuccEquiv R n) ((rename ((Equiv.optionCongr e).trans (_root_.finSuccEquiv n).symm)) φ)) =
+      Polynomial.map (rename e).toRingHom (optionEquivLeft R σ φ) := by
+  suffices (finSuccEquiv R n).toRingEquiv.toRingHom.comp (rename ((Equiv.optionCongr e).trans
+        (_root_.finSuccEquiv n).symm)).toRingHom =
+      (Polynomial.mapRingHom (rename e).toRingHom).comp (optionEquivLeft R σ) by
+    exact DFunLike.congr_fun this φ
+  apply ringHom_ext
+  · simp [Polynomial.algebraMap_apply, algebraMap_eq]
+  · rintro (i|i) <;> simp
+
 end
 
 end Equiv

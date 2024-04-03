@@ -161,7 +161,7 @@ theorem toEquiv_inj {h h' : M ≃ₘ^n⟮I, I'⟯ M'} : h.toEquiv = h'.toEquiv �
   toEquiv_injective.eq_iff
 #align diffeomorph.to_equiv_inj Diffeomorph.toEquiv_inj
 
-/-- Coercion to function `λ h : M ≃ₘ^n⟮I, I'⟯ M', (h : M → M')` is injective. -/
+/-- Coercion to function `fun h : M ≃ₘ^n⟮I, I'⟯ M' ↦ (h : M → M')` is injective. -/
 theorem coeFn_injective : Injective ((↑) : (M ≃ₘ^n⟮I, I'⟯ M') → (M → M')) :=
   DFunLike.coe_injective
 #align diffeomorph.coe_fn_injective Diffeomorph.coeFn_injective

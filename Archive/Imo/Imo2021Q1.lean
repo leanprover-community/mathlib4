@@ -48,13 +48,13 @@ namespace Imo2021Q1
 -- n ≤ 2 * l ^ 2 - 4 * l and 2 * l ^ 2 + 4 * l ≤ 2 * n for n ≥ 100.
 theorem exists_numbers_in_interval (n : ℕ) (hn : 100 ≤ n) :
     ∃ l : ℕ, n + 4 * l ≤ 2 * l ^ 2 ∧ 2 * l ^ 2 + 4 * l ≤ 2 * n := by
-  have hn' : 1 ≤ Nat.sqrt (n + 1)
-  · rw [Nat.le_sqrt]
+  have hn' : 1 ≤ Nat.sqrt (n + 1) := by
+    rw [Nat.le_sqrt]
     linarith
   have h₁ := Nat.sqrt_le' (n + 1)
   have h₂ := Nat.succ_le_succ_sqrt' (n + 1)
-  have h₃ : 10 ≤ (n + 1).sqrt
-  · rw [Nat.le_sqrt]
+  have h₃ : 10 ≤ (n + 1).sqrt := by
+    rw [Nat.le_sqrt]
     linarith only [hn]
   rw [← Nat.sub_add_cancel hn'] at h₁ h₂ h₃
   set l := (n + 1).sqrt - 1

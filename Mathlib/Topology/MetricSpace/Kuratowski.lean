@@ -142,7 +142,7 @@ theorem LipschitzOnWith.extend_lp_infty [PseudoMetricSpace α] {s : Set α} {ι 
     ∃ g : α → ℓ^∞(ι), LipschitzWith K g ∧ EqOn f g s := by
   -- Construct the coordinate-wise extensions
   rw [LipschitzOnWith.coordinate] at hfl
-  have (i: ι) : ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn (fun x => f x i) g s :=
+  have (i : ι) : ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn (fun x => f x i) g s :=
     LipschitzOnWith.extend_real (hfl i) -- use the nonlinear Hahn-Banach theorem here!
   choose g hgl hgeq using this
   rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀_in_s⟩

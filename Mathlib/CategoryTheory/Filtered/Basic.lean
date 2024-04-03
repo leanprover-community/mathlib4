@@ -5,9 +5,11 @@ Authors: Reid Barton, Scott Morrison
 -/
 import Mathlib.CategoryTheory.FinCategory
 import Mathlib.CategoryTheory.Limits.Cones
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Category.ULift
+import Mathlib.CategoryTheory.PEmpty
 
 #align_import category_theory.filtered from "leanprover-community/mathlib"@"14e80e85cbca5872a329fbfd3d1f3fd64e306934"
 
@@ -37,6 +39,8 @@ This formulation is often more useful in practice and is available via `sup_exis
 which takes a finset of objects, and an indexed family (indexed by source and target)
 of finsets of morphisms.
 
+We also prove the converse of `cocone_nonempty` as `of_cocone_nonempty`.
+
 Furthermore, we give special support for two diagram categories: The `bowtie` and the `tulip`.
 This is because these shapes show up in the proofs that forgetful functors of algebraic categories
 (e.g. `MonCat`, `CommRingCat`, ...) preserve filtered colimits.
@@ -47,6 +51,10 @@ categories.
 ## See also
 In `CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit` we show that filtered colimits
 commute with finite limits.
+
+There is another characterization of filtered categories, namely that whenever `F : J ⥤ C` is a
+functor from a finite category, there is `X : C` such that `Nonempty (limit (F.op ⋙ yoneda.obj X))`.
+This is shown in `CategoryTheory.Limits.Filtered`.
 
 -/
 
@@ -260,7 +268,7 @@ theorem sup_exists :
   classical
   induction' H using Finset.induction with h' H' nmf h''
   · obtain ⟨S, f⟩ := sup_objs_exists O
-    refine' ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
+    exact ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
   · obtain ⟨X, Y, mX, mY, f⟩ := h'
     obtain ⟨S', T', w'⟩ := h''
     refine' ⟨coeq (f ≫ T' mY) (T' mX), fun mZ => T' mZ ≫ coeqHom (f ≫ T' mY) (T' mX), _⟩
@@ -306,7 +314,7 @@ theorem toSup_commutes {X Y : C} (mX : X ∈ O) (mY : Y ∈ O) {f : X ⟶ Y}
   (sup_exists O H).choose_spec.choose_spec mX mY mf
 #align category_theory.is_filtered.to_sup_commutes CategoryTheory.IsFiltered.toSup_commutes
 
-variable {J : Type v} [SmallCategory J] [FinCategory J]
+variable {J : Type w} [SmallCategory J] [FinCategory J]
 
 /-- If we have `IsFiltered C`, then for any functor `F : J ⥤ C` with `FinCategory J`,
 there exists a cocone over `F`.
@@ -355,6 +363,38 @@ theorem of_equivalence (h : C ≌ D) : IsFiltered D :=
 #align category_theory.is_filtered.of_equivalence CategoryTheory.IsFiltered.of_equivalence
 
 end Nonempty
+
+section OfCocone
+
+open CategoryTheory.Limits
+
+/-- If every finite diagram in `C` admits a cocone, then `C` is filtered. It is sufficient to verify
+    this for diagrams whose shape lives in any one fixed universe. -/
+theorem of_cocone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory J] (F : J ⥤ C),
+    Nonempty (Cocone F)) : IsFiltered C := by
+  have : Nonempty C := by
+    obtain ⟨c⟩ := h (Functor.empty _)
+    exact ⟨c.pt⟩
+  have : IsFilteredOrEmpty C := by
+    refine ⟨?_, ?_⟩
+    · intros X Y
+      obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ pair X Y)
+      exact ⟨c.pt, c.ι.app ⟨⟨WalkingPair.left⟩⟩, c.ι.app ⟨⟨WalkingPair.right⟩⟩, trivial⟩
+    · intros X Y f g
+      obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ parallelPair f g)
+      refine ⟨c.pt, c.ι.app ⟨WalkingParallelPair.one⟩, ?_⟩
+      have h₁ := c.ι.naturality ⟨WalkingParallelPairHom.left⟩
+      have h₂ := c.ι.naturality ⟨WalkingParallelPairHom.right⟩
+      simp_all
+  apply IsFiltered.mk
+
+/-- For every universe `w`, `C` is filtered if and only if every finite diagram in `C` with shape
+    in `w` admits a cocone. -/
+theorem iff_cocone_nonempty : IsFiltered C ↔
+    ∀ {J : Type w} [SmallCategory J] [FinCategory J] (F : J ⥤ C), Nonempty (Cocone F) :=
+  ⟨fun _ _ _ _ F => cocone_nonempty F, of_cocone_nonempty C⟩
+
+end OfCocone
 
 section SpecialShapes
 
@@ -703,7 +743,7 @@ theorem inf_exists :
   classical
   induction' H using Finset.induction with h' H' nmf h''
   · obtain ⟨S, f⟩ := inf_objs_exists O
-    refine' ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
+    exact ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
   · obtain ⟨X, Y, mX, mY, f⟩ := h'
     obtain ⟨S', T', w'⟩ := h''
     refine' ⟨eq (T' mX ≫ f) (T' mY), fun mZ => eqHom (T' mX ≫ f) (T' mY) ≫ T' mZ, _⟩
@@ -800,6 +840,39 @@ theorem of_equivalence (h : C ≌ D) : IsCofiltered D :=
 #align category_theory.is_cofiltered.of_equivalence CategoryTheory.IsCofiltered.of_equivalence
 
 end Nonempty
+
+
+section OfCone
+
+open CategoryTheory.Limits
+
+/-- If every finite diagram in `C` admits a cone, then `C` is cofiltered. It is sufficient to
+    verify this for diagrams whose shape lives in any one fixed universe. -/
+theorem of_cone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory J] (F : J ⥤ C),
+    Nonempty (Cone F)) : IsCofiltered C := by
+  have : Nonempty C := by
+    obtain ⟨c⟩ := h (Functor.empty _)
+    exact ⟨c.pt⟩
+  have : IsCofilteredOrEmpty C := by
+    refine ⟨?_, ?_⟩
+    · intros X Y
+      obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ pair X Y)
+      exact ⟨c.pt, c.π.app ⟨⟨WalkingPair.left⟩⟩, c.π.app ⟨⟨WalkingPair.right⟩⟩, trivial⟩
+    · intros X Y f g
+      obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ parallelPair f g)
+      refine ⟨c.pt, c.π.app ⟨WalkingParallelPair.zero⟩, ?_⟩
+      have h₁ := c.π.naturality ⟨WalkingParallelPairHom.left⟩
+      have h₂ := c.π.naturality ⟨WalkingParallelPairHom.right⟩
+      simp_all
+  apply IsCofiltered.mk
+
+/-- For every universe `w`, `C` is filtered if and only if every finite diagram in `C` with shape
+    in `w` admits a cocone. -/
+theorem iff_cone_nonempty : IsCofiltered C ↔
+    ∀ {J : Type w} [SmallCategory J] [FinCategory J] (F : J ⥤ C), Nonempty (Cone F) :=
+  ⟨fun _ _ _ _ F => cone_nonempty F, of_cone_nonempty C⟩
+
+end OfCone
 
 end IsCofiltered
 

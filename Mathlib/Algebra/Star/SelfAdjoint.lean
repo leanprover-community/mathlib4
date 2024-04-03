@@ -596,6 +596,11 @@ protected instance IsStarNormal.neg [Ring R] [StarAddMonoid R] {x : R} [IsStarNo
     IsStarNormal (-x) :=
   ⟨show star (-x) * -x = -x * star (-x) by simp_rw [star_neg, neg_mul_neg, star_comm_self']⟩
 
+protected instance IsStarNormal.map {F R S : Type*} [Mul R] [Star R] [Mul S] [Star S]
+    [FunLike F R S] [MulHomClass F R S] [StarHomClass F R S] (f : F) (r : R) [hr : IsStarNormal r] :
+    IsStarNormal (f r) where
+  star_comm_self := by simpa [map_star] using congr(f $(hr.star_comm_self))
+
 -- see Note [lower instance priority]
 instance (priority := 100) TrivialStar.isStarNormal [Mul R] [StarMul R] [TrivialStar R]
     {x : R} : IsStarNormal x :=

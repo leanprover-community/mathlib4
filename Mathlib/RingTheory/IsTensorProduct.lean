@@ -239,7 +239,7 @@ noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
       refine TensorProduct.induction_on x ?_ ?_ ?_
       · rw [smul_zero, map_zero, smul_zero]
       · intro x y
-        -- Porting note: was simp [smul_tmul', Algebra.ofId_apply]
+        -- porting note (#10745): was simp [smul_tmul', Algebra.ofId_apply]
         simp only [Algebra.linearMap_apply, lift.tmul, smul_eq_mul,
           LinearMap.mul_apply, LinearMap.smul_apply, IsTensorProduct.equiv_apply,
           Module.algebraMap_end_apply, _root_.map_mul, smul_tmul', eq_self_iff_true,
@@ -313,8 +313,7 @@ theorem IsBaseChange.ofEquiv (e : M ≃ₗ[R] N) : IsBaseChange R e.toLinearMap 
     ext r q
     show (by let _ := I₂; exact r • q) = (by let _ := I₃; exact r • q)
     dsimp
-    rw [← one_smul R q, smul_smul, ← @smul_assoc _ _ _ (id _) (id _) (id _) I₄, smul_eq_mul,
-      mul_one]
+    rw [← one_smul R q, smul_smul, ← @smul_assoc _ _ _ (id _) (id _) (id _) I₄, smul_eq_mul]
   cases this
   refine'
     ⟨g.comp e.symm.toLinearMap, by

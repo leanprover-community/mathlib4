@@ -54,7 +54,7 @@ theorem mul_eq_mul_prime_pow {x y a p : R} {n : ℕ} (hp : Prime p) (hx : x * y 
   rcases mul_eq_mul_prime_prod (fun _ _ ↦ hp)
     (show x * y = a * (range n).prod fun _ ↦ p by simpa) with
       ⟨t, u, b, c, htus, htu, rfl, rfl, rfl⟩
-  exact ⟨t.card, u.card, b, c, by rw [← card_disjoint_union htu, htus, card_range], by simp⟩
+  exact ⟨t.card, u.card, b, c, by rw [← card_union_of_disjoint htu, htus, card_range], by simp⟩
 #align mul_eq_mul_prime_pow mul_eq_mul_prime_pow
 
 end CancelCommMonoidWithZero

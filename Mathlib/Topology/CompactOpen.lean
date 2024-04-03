@@ -351,7 +351,7 @@ theorem continuous_coev : Continuous (coev X Y) :=
     rw [isOpen_iff_forall_mem_open]
     intro y hy
     have hy' : (↑(coev X Y y) '' s ⊆ u) := hy
-    -- porting notes: was below
+    -- Porting note: was below
     --change coev X Y y '' s ⊆ u at hy
     rw [image_coev s] at hy'
     rcases generalized_tube_lemma isCompact_singleton sc uo hy' with ⟨v, w, vo, _, yv, sw, vwu⟩

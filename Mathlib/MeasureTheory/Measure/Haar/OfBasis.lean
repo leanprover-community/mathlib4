@@ -180,8 +180,8 @@ def Basis.parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
       (continuous_finset_sum Finset.univ fun (i : ι) (_H : i ∈ Finset.univ) =>
         (continuous_apply i).smul continuous_const)
   interior_nonempty' := by
-    suffices H : Set.Nonempty (interior (b.equivFunL.symm.toHomeomorph '' Icc 0 1))
-    · dsimp only [_root_.parallelepiped]
+    suffices H : Set.Nonempty (interior (b.equivFunL.symm.toHomeomorph '' Icc 0 1)) by
+      dsimp only [_root_.parallelepiped]
       convert H
       exact (b.equivFun_symm_apply _).symm
     have A : Set.Nonempty (interior (Icc (0 : ι → ℝ) 1)) := by

@@ -256,7 +256,7 @@ theorem eq_zero [CharZero R] : ringChar R = 0 :=
   eq R 0
 #align ring_char.eq_zero ringChar.eq_zero
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem Nat.cast_ringChar : (ringChar R : R) = 0 := by rw [ringChar.spec]
 #align ring_char.nat.cast_ring_char ringChar.Nat.cast_ringChar
 

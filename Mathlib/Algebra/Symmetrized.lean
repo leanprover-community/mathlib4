@@ -112,12 +112,12 @@ theorem unsym_surjective : Surjective (unsym : αˢʸᵐ → α) :=
   unsym.surjective
 #align sym_alg.unsym_surjective SymAlg.unsym_surjective
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem sym_inj {a b : α} : sym a = sym b ↔ a = b :=
   sym_injective.eq_iff
 #align sym_alg.sym_inj SymAlg.sym_inj
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem unsym_inj {a b : αˢʸᵐ} : unsym a = unsym b ↔ a = b :=
   unsym_injective.eq_iff
 #align sym_alg.unsym_inj SymAlg.unsym_inj

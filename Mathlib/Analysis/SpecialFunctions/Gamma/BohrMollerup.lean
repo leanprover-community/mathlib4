@@ -110,7 +110,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
   -- We will apply Hölder's inequality, for the conjugate exponents `p = 1 / a`
   -- and `q = 1 / b`, to the functions `f a s` and `f b t`, where `f` is as follows:
   let f : ℝ → ℝ → ℝ → ℝ := fun c u x => exp (-c * x) * x ^ (c * (u - 1))
-  have e : IsConjugateExponent (1 / a) (1 / b) := Real.isConjugateExponent_one_div ha hb hab
+  have e : IsConjExponent (1 / a) (1 / b) := Real.isConjExponent_one_div ha hb hab
   have hab' : b = 1 - a := by linarith
   have hst : 0 < a * s + b * t := add_pos (mul_pos ha hs) (mul_pos hb ht)
   -- some properties of f:
@@ -379,8 +379,8 @@ function on the positive reals which satisfies `f 1 = 1` and `f (x + 1) = x * f 
 theorem eq_Gamma_of_log_convex {f : ℝ → ℝ} (hf_conv : ConvexOn ℝ (Ioi 0) (log ∘ f))
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = y * f y) (hf_pos : ∀ {y : ℝ}, 0 < y → 0 < f y)
     (hf_one : f 1 = 1) : EqOn f Gamma (Ioi (0 : ℝ)) := by
-  suffices : EqOn (log ∘ f) (log ∘ Gamma) (Ioi (0 : ℝ))
-  exact fun x hx => log_injOn_pos (hf_pos hx) (Gamma_pos_of_pos hx) (this hx)
+  suffices EqOn (log ∘ f) (log ∘ Gamma) (Ioi (0 : ℝ)) from
+    fun x hx ↦ log_injOn_pos (hf_pos hx) (Gamma_pos_of_pos hx) (this hx)
   intro x hx
   have e1 := BohrMollerup.tendsto_logGammaSeq hf_conv ?_ hx
   · rw [Function.comp_apply (f := log) (g := f) (x := 1), hf_one, log_one, sub_zero] at e1

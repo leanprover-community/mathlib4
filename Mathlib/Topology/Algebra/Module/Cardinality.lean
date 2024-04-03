@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.SetTheory.Cardinal.CountableCover
 import Mathlib.SetTheory.Cardinal.Continuum
 import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Topology.Perfect
+import Mathlib.Topology.MetricSpace.Perfect
 
 /-!
 # Cardinality of open subsets of vector spaces

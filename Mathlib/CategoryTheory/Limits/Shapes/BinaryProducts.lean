@@ -618,7 +618,7 @@ abbrev codiag (X : C) [HasBinaryCoproduct X X] : X ⨿ X ⟶ X :=
   coprod.desc (𝟙 _) (𝟙 _)
 #align category_theory.limits.codiag CategoryTheory.Limits.codiag
 
--- Porting note: simp removes as simp can prove this
+-- Porting note (#10618): simp removes as simp can prove this
 @[reassoc]
 theorem prod.lift_fst {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
     prod.lift f g ≫ prod.fst = f :=
@@ -626,7 +626,7 @@ theorem prod.lift_fst {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W �
 #align category_theory.limits.prod.lift_fst CategoryTheory.Limits.prod.lift_fst
 #align category_theory.limits.prod.lift_fst_assoc CategoryTheory.Limits.prod.lift_fst_assoc
 
--- Porting note: simp removes as simp can prove this
+-- Porting note (#10618): simp removes as simp can prove this
 @[reassoc]
 theorem prod.lift_snd {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
     prod.lift f g ≫ prod.snd = g :=

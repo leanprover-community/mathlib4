@@ -579,8 +579,8 @@ theorem induction {C : FreeAlgebra R X → Prop}
     ext
     simp [Subtype.coind]
   -- finding a proof is finding an element of the subalgebra
-  suffices : a = lift R of a
-  · rw [this]
+  suffices a = lift R of a by
+    rw [this]
     exact Subtype.prop (lift R of a)
   simp [AlgHom.ext_iff] at of_id
   exact of_id a

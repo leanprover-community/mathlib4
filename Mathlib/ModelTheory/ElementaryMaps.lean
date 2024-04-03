@@ -277,11 +277,10 @@ theorem isElementary_of_exists (f : M ↪[L] N)
         φ.Realize default (Fin.snoc (f ∘ x) a : _ → N) →
           ∃ b : M, φ.Realize default (Fin.snoc (f ∘ x) (f b) : _ → N)) :
     ∀ {n} (φ : L.Formula (Fin n)) (x : Fin n → M), φ.Realize (f ∘ x) ↔ φ.Realize x := by
-  suffices h :
-    ∀ (n : ℕ) (φ : L.BoundedFormula Empty n) (xs : Fin n → M),
-      φ.Realize (f ∘ default) (f ∘ xs) ↔ φ.Realize default xs
-  · intro n φ x
-    refine' φ.realize_relabel_sum_inr.symm.trans (_root_.trans (h n _ _) φ.realize_relabel_sum_inr)
+  suffices h : ∀ (n : ℕ) (φ : L.BoundedFormula Empty n) (xs : Fin n → M),
+      φ.Realize (f ∘ default) (f ∘ xs) ↔ φ.Realize default xs by
+    intro n φ x
+    exact φ.realize_relabel_sum_inr.symm.trans (_root_.trans (h n _ _) φ.realize_relabel_sum_inr)
   refine' fun n φ => φ.recOn _ _ _ _ _
   · exact fun {_} _ => Iff.rfl
   · intros

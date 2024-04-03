@@ -137,8 +137,8 @@ lemma isIntegral_discr_mul_of_mem_traceDual
   have hinv : IsUnit (traceMatrix K b).det := by
     simpa [← discr_def] using discr_isUnit_of_basis _ b
   have H := mulVec_cramer (traceMatrix K b) fun i => trace K L (x * a * b i)
-  have : Function.Injective (traceMatrix K b).mulVec
-  · rwa [mulVec_injective_iff_isUnit, isUnit_iff_isUnit_det]
+  have : Function.Injective (traceMatrix K b).mulVec := by
+    rwa [mulVec_injective_iff_isUnit, isUnit_iff_isUnit_det]
   rw [← traceMatrix_of_basis_mulVec, ← mulVec_smul, this.eq_iff,
     traceMatrix_of_basis_mulVec] at H
   rw [← b.equivFun.symm_apply_apply (_ * _), b.equivFun_symm_apply]
@@ -308,8 +308,8 @@ lemma dual_eq_mul_inv :
     dual A K I = dual A K 1 * I⁻¹ := by
   by_cases hI : I = 0; · simp [hI]
   apply le_antisymm
-  · suffices : dual A K I * I ≤ dual A K 1
-    · convert mul_right_mono I⁻¹ this using 1; simp only [mul_inv_cancel hI, mul_one, mul_assoc]
+  · suffices dual A K I * I ≤ dual A K 1 by
+      convert mul_right_mono I⁻¹ this using 1; simp only [mul_inv_cancel hI, mul_one, mul_assoc]
     rw [← le_dual_iff A K hI]
   rw [le_dual_iff A K hI, mul_assoc, inv_mul_cancel hI, mul_one]
 
@@ -395,9 +395,9 @@ lemma coeSubmodule_differentIdeal [NoZeroSMulDivisors A B] :
     Algebra.linearMap B L := by ext; simp
   rw [coeSubmodule, ← this]
   have H : RingHom.comp (algebraMap (FractionRing A) (FractionRing B))
-    ↑(FractionRing.algEquiv A K).symm.toRingEquiv =
-      RingHom.comp ↑(FractionRing.algEquiv B L).symm.toRingEquiv (algebraMap K L)
-  · apply IsLocalization.ringHom_ext A⁰
+      ↑(FractionRing.algEquiv A K).symm.toRingEquiv =
+        RingHom.comp ↑(FractionRing.algEquiv B L).symm.toRingEquiv (algebraMap K L) := by
+    apply IsLocalization.ringHom_ext A⁰
     ext
     simp only [AlgEquiv.toRingEquiv_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
       AlgEquiv.coe_ringEquiv, Function.comp_apply, AlgEquiv.commutes,
@@ -457,11 +457,12 @@ lemma traceForm_dualSubmodule_adjoin
   have pbgen : pb.gen = x := by simp
   have hpb : ⇑(BilinForm.dualBasis (traceForm K L) _ pb.basis) = _ :=
     _root_.funext (traceForm_dualBasis_powerBasis_eq pb)
-  have : (Subalgebra.toSubmodule (Algebra.adjoin A {x})) = Submodule.span A (Set.range pb.basis)
-  · rw [← span_range_natDegree_eq_adjoin (minpoly.monic hAx) (minpoly.aeval _ _)]
+  have : (Subalgebra.toSubmodule (Algebra.adjoin A {x})) =
+      Submodule.span A (Set.range pb.basis) := by
+    rw [← span_range_natDegree_eq_adjoin (minpoly.monic hAx) (minpoly.aeval _ _)]
     congr; ext y
-    have : natDegree (minpoly A x) = natDegree (minpoly K x)
-    · rw [minpoly.isIntegrallyClosed_eq_field_fractions' K hAx, (minpoly.monic hAx).natDegree_map]
+    have : natDegree (minpoly A x) = natDegree (minpoly K x) := by
+      rw [minpoly.isIntegrallyClosed_eq_field_fractions' K hAx, (minpoly.monic hAx).natDegree_map]
     simp only [Finset.coe_image, Finset.coe_range, Set.mem_image, Set.mem_Iio, Set.mem_range,
       pb.basis_eq_pow, pbgen]
     simp only [PowerBasis.map_dim, adjoin.powerBasis'_dim, this]
@@ -501,16 +502,16 @@ lemma conductor_mul_differentIdeal [NoZeroSMulDivisors A B]
   simp only [FractionalIdeal.coe_coeIdeal, FractionalIdeal.coe_mul,
     FractionalIdeal.coe_spanSingleton, Submodule.span_singleton_mul]
   ext y
-  have hne₁ : aeval (algebraMap B L x) (derivative (minpoly K (algebraMap B L x))) ≠ 0
-  · exact (IsSeparable.separable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
-  have : algebraMap B L (aeval x (derivative (minpoly A x))) ≠ 0
-  · rwa [minpoly.isIntegrallyClosed_eq_field_fractions K L hAx, derivative_map,
+  have hne₁ : aeval (algebraMap B L x) (derivative (minpoly K (algebraMap B L x))) ≠ 0 :=
+    (IsSeparable.separable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
+  have : algebraMap B L (aeval x (derivative (minpoly A x))) ≠ 0 := by
+    rwa [minpoly.isIntegrallyClosed_eq_field_fractions K L hAx, derivative_map,
       aeval_map_algebraMap, aeval_algebraMap_apply] at hne₁
   rw [Submodule.mem_smul_iff_inv_mul_mem this, FractionalIdeal.mem_coe, FractionalIdeal.mem_dual,
     mem_coeSubmodule_conductor]
   swap; exact one_ne_zero
-  have hne₂ : (aeval (algebraMap B L x) (derivative (minpoly K (algebraMap B L x))))⁻¹ ≠ 0
-  · rwa [ne_eq, inv_eq_zero]
+  have hne₂ : (aeval (algebraMap B L x) (derivative (minpoly K (algebraMap B L x))))⁻¹ ≠ 0 := by
+    rwa [ne_eq, inv_eq_zero]
   have : IsIntegral A (algebraMap B L x) := IsIntegral.map (IsScalarTower.toAlgHom A B L) hAx
   simp_rw [← Subalgebra.mem_toSubmodule, ← Submodule.mul_mem_smul_iff (y := y * _)
     (mem_nonZeroDivisors_of_ne_zero hne₂)]

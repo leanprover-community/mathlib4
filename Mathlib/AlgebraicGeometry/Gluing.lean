@@ -180,7 +180,7 @@ theorem ι_jointly_surjective (x : 𝖣.glued.carrier) :
   𝖣.ι_jointly_surjective (forgetToTop ⋙ forget TopCat) x
 #align algebraic_geometry.Scheme.glue_data.ι_jointly_surjective AlgebraicGeometry.Scheme.GlueData.ι_jointly_surjective
 
--- Porting note : promote to higher priority to short circuit simplifier
+-- Porting note: promote to higher priority to short circuit simplifier
 @[simp (high), reassoc]
 theorem glue_condition (i j : D.J) : D.t i j ≫ D.f j i ≫ D.ι j = D.f i j ≫ D.ι i :=
   𝖣.glue_condition i j
@@ -414,7 +414,7 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.1.base := by
     convert hU (𝒰.f x) using 1
     rw [← ι_fromGlued]; erw [coe_comp]; rw [Set.preimage_comp]
     congr! 1
-    refine' Set.preimage_image_eq _ 𝒰.fromGlued_injective
+    exact Set.preimage_image_eq _ 𝒰.fromGlued_injective
   · exact ⟨hx, 𝒰.Covers x⟩
 #align algebraic_geometry.Scheme.open_cover.from_glued_open_map AlgebraicGeometry.Scheme.OpenCover.fromGlued_open_map
 

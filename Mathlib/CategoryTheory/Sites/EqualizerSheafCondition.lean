@@ -55,7 +55,7 @@ def FirstObj : Type max v u :=
 
 variable {P R}
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[ext]
 lemma FirstObj.ext (z₁ z₂ : FirstObj P R) (h : ∀ (Y : C) (f : Y ⟶ X)
     (hf : R f), (Pi.π _ ⟨Y, f, hf⟩ : FirstObj P R ⟶ _) z₁ =
@@ -105,7 +105,7 @@ def SecondObj : Type max v u :=
 
 variable {P S}
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[ext]
 lemma SecondObj.ext (z₁ z₂ : SecondObj P S) (h : ∀ (Y Z : C) (g : Z ⟶ Y) (f : Y ⟶ X)
     (hf : S.arrows f), (Pi.π _ ⟨Y, Z, g, f, hf⟩ : SecondObj P S ⟶ _) z₁ =

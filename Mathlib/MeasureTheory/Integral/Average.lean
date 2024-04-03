@@ -404,9 +404,9 @@ theorem average_union_mem_openSegment {f : α → E} {s t : Set α} (hd : AEDisj
     (ht : NullMeasurableSet t μ) (hs₀ : μ s ≠ 0) (ht₀ : μ t ≠ 0) (hsμ : μ s ≠ ∞) (htμ : μ t ≠ ∞)
     (hfs : IntegrableOn f s μ) (hft : IntegrableOn f t μ) :
     ⨍ x in s ∪ t, f x ∂μ ∈ openSegment ℝ (⨍ x in s, f x ∂μ) (⨍ x in t, f x ∂μ) := by
-  replace hs₀ : 0 < (μ s).toReal; exact ENNReal.toReal_pos hs₀ hsμ
-  replace ht₀ : 0 < (μ t).toReal; exact ENNReal.toReal_pos ht₀ htμ
-  refine' mem_openSegment_iff_div.mpr
+  replace hs₀ : 0 < (μ s).toReal := ENNReal.toReal_pos hs₀ hsμ
+  replace ht₀ : 0 < (μ t).toReal := ENNReal.toReal_pos ht₀ htμ
+  exact mem_openSegment_iff_div.mpr
     ⟨(μ s).toReal, (μ t).toReal, hs₀, ht₀, (average_union hd ht hsμ htμ hfs hft).symm⟩
 #align measure_theory.average_union_mem_open_segment MeasureTheory.average_union_mem_openSegment
 
@@ -520,8 +520,8 @@ measure. -/
 theorem measure_le_setAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf : IntegrableOn f s μ) :
     0 < μ ({x ∈ s | f x ≤ ⨍ a in s, f a ∂μ}) := by
   refine' pos_iff_ne_zero.2 fun H => _
-  replace H : (μ.restrict s) {x | f x ≤ ⨍ a in s, f a ∂μ} = 0
-  · rwa [restrict_apply₀, inter_comm]
+  replace H : (μ.restrict s) {x | f x ≤ ⨍ a in s, f a ∂μ} = 0 := by
+    rwa [restrict_apply₀, inter_comm]
     exact AEStronglyMeasurable.nullMeasurableSet_le hf.1 aestronglyMeasurable_const
   haveI := Fact.mk hμ₁.lt_top
   refine' (integral_sub_average (μ.restrict s) f).not_gt _

@@ -19,7 +19,7 @@ namespace List
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem bind_singleton (f : α → List β) (x : α) : [x].bind f = f x :=
   append_nil (f x)

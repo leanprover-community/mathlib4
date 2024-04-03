@@ -143,7 +143,7 @@ theorem cyclotomic_mul_prime_dvd_eq_pow (R : Type*) {p n : ℕ} [hp : Fact (Nat.
     rw [← map_cyclotomic _ (algebraMap (ZMod p) R), ← map_cyclotomic _ (algebraMap (ZMod p) R),
       this, Polynomial.map_pow]
   rw [← ZMod.expand_card, ← map_cyclotomic_int n, ← map_expand,
-    cyclotomic_expand_eq_cyclotomic hp.out hn, map_cyclotomic, mul_comm]
+    cyclotomic_expand_eq_cyclotomic hp.out hn, map_cyclotomic]
 #align polynomial.cyclotomic_mul_prime_dvd_eq_pow Polynomial.cyclotomic_mul_prime_dvd_eq_pow
 
 /-- If `R` is of characteristic `p` and `¬p ∣ m`, then

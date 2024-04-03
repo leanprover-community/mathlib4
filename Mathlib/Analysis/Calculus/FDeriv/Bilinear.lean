@@ -74,8 +74,8 @@ theorem IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b)
     _ =o[𝓝 (0 : T)] fun x ↦ x.1 - x.2 := by
       -- TODO : add 2 `calc` steps instead of the next 3 lines
       refine h.toContinuousLinearMap.deriv₂.isBoundedBilinearMap.isBigO_comp.trans_isLittleO ?_
-      suffices : (fun x : T ↦ ‖x.1 - x.2‖ * ‖(x.2.1, x.1.2)‖) =o[𝓝 0] fun x ↦ ‖x.1 - x.2‖ * 1
-      · simpa only [mul_one, isLittleO_norm_right] using this
+      suffices (fun x : T ↦ ‖x.1 - x.2‖ * ‖(x.2.1, x.1.2)‖) =o[𝓝 0] fun x ↦ ‖x.1 - x.2‖ * 1 by
+        simpa only [mul_one, isLittleO_norm_right] using this
       refine (isBigO_refl _ _).mul_isLittleO ((isLittleO_one_iff _).2 ?_)
       -- TODO: `continuity` fails
       exact (continuous_snd.fst.prod_mk continuous_fst.snd).norm.tendsto' _ _ (by simp)

@@ -3,8 +3,8 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Algebra.Group.Pi
 import Mathlib.Topology.Homeomorph
 
 #align_import topology.algebra.group_with_zero from "leanprover-community/mathlib"@"c10e724be91096453ee3db13862b9fb9a992fef2"
@@ -123,16 +123,18 @@ nonrec theorem ContinuousWithinAt.inv₀ (hf : ContinuousWithinAt f s a) (ha : f
   hf.inv₀ ha
 #align continuous_within_at.inv₀ ContinuousWithinAt.inv₀
 
+@[fun_prop]
 nonrec theorem ContinuousAt.inv₀ (hf : ContinuousAt f a) (ha : f a ≠ 0) :
     ContinuousAt (fun x => (f x)⁻¹) a :=
   hf.inv₀ ha
 #align continuous_at.inv₀ ContinuousAt.inv₀
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.inv₀ (hf : Continuous f) (h0 : ∀ x, f x ≠ 0) : Continuous fun x => (f x)⁻¹ :=
   continuous_iff_continuousAt.2 fun x => (hf.tendsto x).inv₀ (h0 x)
 #align continuous.inv₀ Continuous.inv₀
 
+@[fun_prop]
 theorem ContinuousOn.inv₀ (hf : ContinuousOn f s) (h0 : ∀ x ∈ s, f x ≠ 0) :
     ContinuousOn (fun x => (f x)⁻¹) s := fun x hx => (hf x hx).inv₀ (h0 x hx)
 #align continuous_on.inv₀ ContinuousOn.inv₀
@@ -183,7 +185,7 @@ theorem Filter.tendsto_mul_iff_of_ne_zero [T1Space G₀] {f g : α → G₀} {l 
   refine' ⟨fun hfg => _, fun hf => hf.mul hg⟩
   rw [← mul_div_cancel x hy]
   refine' Tendsto.congr' _ (hfg.div hg hy)
-  refine' (hg.eventually_ne hy).mono fun n hn => mul_div_cancel _ hn
+  exact (hg.eventually_ne hy).mono fun n hn => mul_div_cancel _ hn
 #align filter.tendsto_mul_iff_of_ne_zero Filter.tendsto_mul_iff_of_ne_zero
 
 variable [TopologicalSpace α] [TopologicalSpace β] {s : Set α} {a : α}
@@ -212,6 +214,19 @@ theorem Continuous.div (hf : Continuous f) (hg : Continuous g) (h₀ : ∀ x, g 
 theorem continuousOn_div : ContinuousOn (fun p : G₀ × G₀ => p.1 / p.2) { p | p.2 ≠ 0 } :=
   continuousOn_fst.div continuousOn_snd fun _ => id
 #align continuous_on_div continuousOn_div
+
+@[fun_prop]
+theorem Continuous.div₀ (hf : Continuous f) (hg : Continuous g) (h₀ : ∀ x, g x ≠ 0) :
+    Continuous (fun x => f x / g x) :=
+  by simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+
+@[fun_prop]
+theorem ContinuousAt.div₀ (hf : ContinuousAt f a) (hg : ContinuousAt g a) (h₀ : g a ≠ 0) :
+    ContinuousAt (fun x => f x / g x) a := ContinuousAt.div hf hg h₀
+
+@[fun_prop]
+theorem ContinuousOn.div₀ (hf : ContinuousOn f s) (hg : ContinuousOn g s) (h₀ : ∀ x ∈ s, g x ≠ 0) :
+    ContinuousOn (fun x => f x / g x) s := ContinuousOn.div hf hg h₀
 
 /-- The function `f x / g x` is discontinuous when `g x = 0`. However, under appropriate
 conditions, `h x (f x / g x)` is still continuous.  The condition is that if `g a = 0` then `h x y`
@@ -344,6 +359,7 @@ theorem Filter.Tendsto.zpow₀ {f : α → G₀} {l : Filter α} {a : G₀} (hf 
 
 variable {X : Type*} [TopologicalSpace X] {a : X} {s : Set X} {f : X → G₀}
 
+@[fun_prop]
 nonrec theorem ContinuousAt.zpow₀ (hf : ContinuousAt f a) (m : ℤ) (h : f a ≠ 0 ∨ 0 ≤ m) :
     ContinuousAt (fun x => f x ^ m) a :=
   hf.zpow₀ m h
@@ -354,11 +370,12 @@ nonrec theorem ContinuousWithinAt.zpow₀ (hf : ContinuousWithinAt f s a) (m : �
   hf.zpow₀ m h
 #align continuous_within_at.zpow₀ ContinuousWithinAt.zpow₀
 
+@[fun_prop]
 theorem ContinuousOn.zpow₀ (hf : ContinuousOn f s) (m : ℤ) (h : ∀ a ∈ s, f a ≠ 0 ∨ 0 ≤ m) :
     ContinuousOn (fun x => f x ^ m) s := fun a ha => (hf a ha).zpow₀ m (h a ha)
 #align continuous_on.zpow₀ ContinuousOn.zpow₀
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.zpow₀ (hf : Continuous f) (m : ℤ) (h0 : ∀ a, f a ≠ 0 ∨ 0 ≤ m) :
     Continuous fun x => f x ^ m :=
   continuous_iff_continuousAt.2 fun x => (hf.tendsto x).zpow₀ m (h0 x)

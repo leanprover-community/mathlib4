@@ -118,8 +118,8 @@ section BPosAndNeOne
 variable (b_pos : 0 < b) (b_ne_one : b ≠ 1)
 
 private theorem log_b_ne_zero : log b ≠ 0 := by
-  have b_ne_zero : b ≠ 0; linarith
-  have b_ne_minus_one : b ≠ -1; linarith
+  have b_ne_zero : b ≠ 0 := by linarith
+  have b_ne_minus_one : b ≠ -1 := by linarith
   simp [b_ne_one, b_ne_zero, b_ne_minus_one]
 
 @[simp]
@@ -414,7 +414,7 @@ theorem ceil_logb_nat_cast {b : ℕ} {r : ℝ} (hb : 1 < b) (hr : 0 ≤ r) :
   have hb1' : 1 < (b : ℝ) := Nat.one_lt_cast.mpr hb
   apply le_antisymm
   · rw [Int.ceil_le, logb_le_iff_le_rpow hb1' hr, rpow_int_cast]
-    refine' Int.self_le_zpow_clog hb r
+    exact Int.self_le_zpow_clog hb r
   · rw [← Int.le_zpow_iff_clog_le hb hr, ← rpow_int_cast b]
     refine' (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr).symm.trans_le _
     exact rpow_le_rpow_of_exponent_le hb1'.le (Int.le_ceil _)

@@ -258,7 +258,7 @@ structure IsBilimit {F : J → C} (B : Bicone F) where
 
 attribute [inherit_doc IsBilimit] IsBilimit.isLimit IsBilimit.isColimit
 
--- Porting note: simp can prove this, linter doesn't notice it is removed
+-- Porting note (#10618): simp can prove this, linter doesn't notice it is removed
 attribute [-simp, nolint simpNF] IsBilimit.mk.injEq
 
 attribute [local ext] Bicone.IsBilimit

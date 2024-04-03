@@ -512,11 +512,11 @@ partial def addDecorations (e : Expr) : MetaM Expr :=
     if not (← Meta.inferType e).isProp then
       return .continue
     else if let Expr.forallE name type body data := expr then
-      let n := name.toString
       let newType ← addDecorations type
-      let newBody ← addDecorations body
+      let newBody ← Meta.withLocalDecl name data type fun fvar => do
+        return (← addDecorations (body.instantiate1 fvar)).abstract #[fvar]
       let rest := Expr.forallE name newType newBody data
-      return .done <| (← Meta.mkAppM `SlimCheck.NamedBinder #[mkStrLit n, rest])
+      return .done <| (← Meta.mkAppM `SlimCheck.NamedBinder #[mkStrLit name.toString, rest])
     else
       return .continue
 
@@ -550,11 +550,11 @@ end Decorations
 open Decorations in
 /-- Run a test suite for `p` and throw an exception if `p` does not hold. -/
 def Testable.check (p : Prop) (cfg : Configuration := {})
-    (p' : Decorations.DecorationsOf p := by mk_decorations) [Testable p'] : IO PUnit := do
+    (p' : Decorations.DecorationsOf p := by mk_decorations) [Testable p'] : Lean.CoreM PUnit := do
   match ← Testable.checkIO p' cfg with
-  | TestResult.success _ => if !cfg.quiet then IO.println "Success"
-  | TestResult.gaveUp n => if !cfg.quiet then IO.println s!"Gave up {n} times"
-  | TestResult.failure _ xs n => throw (IO.userError <| formatFailure "Found problems!" xs n)
+  | TestResult.success _ => if !cfg.quiet then Lean.logInfo "Success"
+  | TestResult.gaveUp n => if !cfg.quiet then Lean.logWarning s!"Gave up {n} times"
+  | TestResult.failure _ xs n => Lean.throwError <| formatFailure "Found problems!" xs n
 
 -- #eval Testable.check (∀ (x y z a : Nat) (h1 : 3 < x) (h2 : 3 < y), x - y = y - x)
 --   Configuration.verbose

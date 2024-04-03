@@ -296,7 +296,8 @@ theorem coe_prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) 
   rfl
 #align function.embedding.coe_prod_map Function.Embedding.coe_prodMap
 
-/-- If `e₁` and `e₂` are embeddings, then so is `λ ⟨a, b⟩, ⟨e₁ a, e₂ b⟩ : PProd α γ → PProd β δ`. -/
+/-- If `e₁` and `e₂` are embeddings,
+  then so is `fun ⟨a, b⟩ ↦ ⟨e₁ a, e₂ b⟩ : PProd α γ → PProd β δ`. -/
 def pprodMap {α β γ δ : Sort*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : PProd α γ ↪ PProd β δ :=
   ⟨fun x => ⟨e₁ x.1, e₂ x.2⟩, e₁.injective.pprod_map e₂.injective⟩
 #align function.embedding.pprod_map Function.Embedding.pprodMap
@@ -367,7 +368,7 @@ def arrowCongrRight {α : Sort u} {β : Sort v} {γ : Sort w} (e : α ↪ β) : 
 #align function.embedding.arrow_congr_right Function.Embedding.arrowCongrRight
 
 @[simp]
-theorem arrowCongrRight_apply {α : Sort u} {β : Sort v} {γ : Sort w} (e : α ↪ β) (f : γ ↪ α) :
+theorem arrowCongrRight_apply {α : Sort u} {β : Sort v} {γ : Sort w} (e : α ↪ β) (f : γ → α) :
     arrowCongrRight e f = e ∘ f :=
   rfl
 #align function.embedding.arrow_congr_right_apply Function.Embedding.arrowCongrRight_apply

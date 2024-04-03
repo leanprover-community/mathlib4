@@ -291,8 +291,8 @@ instance instExtremallyDisconnected {ι : Type*} {π : ι → Type*} [∀ i, Top
   rw [isOpen_sigma_iff] at hs ⊢
   intro i
   rcases h₀ i with ⟨h₀⟩
-  suffices h : Sigma.mk i ⁻¹' closure s = closure (Sigma.mk i ⁻¹' s)
-  · rw [h]
+  suffices h : Sigma.mk i ⁻¹' closure s = closure (Sigma.mk i ⁻¹' s) by
+    rw [h]
     exact h₀ _ (hs i)
   apply IsOpenMap.preimage_closure_eq_closure_preimage
   · intro U _

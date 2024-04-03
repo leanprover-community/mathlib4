@@ -138,7 +138,7 @@ set_option linter.uppercaseLean3 false in
 /-- restriction of a section to open subset -/
 scoped[AlgebraicGeometry] infixl:80 " |_ " => TopCat.Presheaf.restrictOpen
 
--- Porting note : linter tells this lemma is no going to be picked up by the simplifier, hence
+-- Porting note: linter tells this lemma is no going to be picked up by the simplifier, hence
 -- `@[simp]` is removed
 theorem restrict_restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C]
     {F : X.Presheaf C} {U V W : Opens X} (e₁ : U ≤ V) (e₂ : V ≤ W) (x : F.obj (op W)) :
@@ -149,7 +149,7 @@ theorem restrict_restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategor
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.restrict_restrict TopCat.Presheaf.restrict_restrict
 
--- Porting note : linter tells this lemma is no going to be picked up by the simplifier, hence
+-- Porting note: linter tells this lemma is no going to be picked up by the simplifier, hence
 -- `@[simp]` is removed
 theorem map_restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C]
     {F G : X.Presheaf C} (e : F ⟶ G) {U V : Opens X} (h : U ≤ V) (x : F.obj (op V)) :
@@ -213,7 +213,7 @@ theorem pushforward_eq'_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_eq'_hom_app TopCat.Presheaf.pushforward_eq'_hom_app
 
--- Porting note : This lemma is promoted to a higher priority to short circuit the simplifier
+-- Porting note: This lemma is promoted to a higher priority to short circuit the simplifier
 @[simp (high)]
 theorem pushforwardEq_rfl {X Y : TopCat.{w}} (f : X ⟶ Y) (ℱ : X.Presheaf C) (U) :
     (pushforwardEq (rfl : f = f) ℱ).hom.app (op U) = 𝟙 _ := by
@@ -246,7 +246,7 @@ theorem id_eq : 𝟙 X _* ℱ = ℱ := by
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_eq TopCat.Presheaf.Pushforward.id_eq
 
--- Porting note : This lemma is promoted to a higher priority to short circuit the simplifier
+-- Porting note: This lemma is promoted to a higher priority to short circuit the simplifier
 @[simp (high)]
 theorem id_hom_app' (U) (p) : (id ℱ).hom.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) := by
   dsimp [id]
@@ -351,7 +351,7 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
           apply (Set.image_subset f s.pt.hom.unop.le).trans
           exact Set.image_preimage.l_u_le (SetLike.coe s.pt.left.unop)
         · simp [autoParam, eq_iff_true_of_subsingleton]
-      -- porting note : add `fac`, `uniq` manually
+      -- Porting note: add `fac`, `uniq` manually
       fac := fun _ _ => by ext; simp [eq_iff_true_of_subsingleton]
       uniq := fun _ _ _ => by ext; simp [eq_iff_true_of_subsingleton] }
   exact IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (colimitOfDiagramTerminal hx _)
@@ -376,7 +376,7 @@ def id : pullbackObj (𝟙 _) ℱ ≅ ℱ :=
       erw [colimit.pre_desc_assoc, colimit.ι_desc_assoc, colimit.ι_desc_assoc]
       dsimp
       simp only [← ℱ.map_comp]
-      -- Porting note : `congr` does not work, but `congr 1` does
+      -- Porting note: `congr` does not work, but `congr 1` does
       congr 1
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pullback.id TopCat.Presheaf.Pullback.id
@@ -452,7 +452,7 @@ theorem toPushforwardOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : X.Presheaf
       ℱ.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) ≫
         H₂.app (op ((Opens.map H₁.inv).obj (unop U))) := by
   delta toPushforwardOfIso
-  -- Porting note : originally is a single invocation of `simp`
+  -- Porting note: originally is a single invocation of `simp`
   simp only [pushforwardObj_obj, Functor.op_obj, Equivalence.toAdjunction, Adjunction.homEquiv_unit,
     Functor.id_obj, Functor.comp_obj, Adjunction.mkOfUnitCounit_unit, unop_op, eqToHom_map]
   rw [NatTrans.comp_app, presheafEquivOfIso_inverse_map_app, Equivalence.Equivalence_mk'_unit]

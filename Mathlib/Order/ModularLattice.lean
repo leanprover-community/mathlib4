@@ -5,6 +5,7 @@ Authors: Aaron Anderson, Yaël Dillies
 -/
 import Mathlib.Order.Cover
 import Mathlib.Order.LatticeIntervals
+import Mathlib.Order.GaloisConnection
 
 #align_import order.modular_lattice from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 

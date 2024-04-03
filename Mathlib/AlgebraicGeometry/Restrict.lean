@@ -79,7 +79,7 @@ lemma Scheme.map_basicOpen_map (X : Scheme) (U : Opens X) (r : X.presheaf.obj (o
   rw [Scheme.map_basicOpen', Scheme.basicOpen_res_eq, Scheme.basicOpen_res_eq]
 
 
--- Porting note : `simps` can't synthesize `obj_left, obj_hom, mapLeft`
+-- Porting note: `simps` can't synthesize `obj_left, obj_hom, mapLeft`
 /-- The functor taking open subsets of `X` to open subschemes of `X`. -/
 -- @[simps obj_left obj_hom mapLeft]
 def Scheme.restrictFunctor : Opens X ⥤ Over X where
@@ -116,7 +116,7 @@ def Scheme.restrictFunctor : Opens X ⥤ Over X where
     erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]; rw [Subtype.range_val, Subtype.range_val]
     exact i.le) := rfl
 
--- Porting note : the `by ...` used to be automatically done by unification magic
+-- Porting note: the `by ...` used to be automatically done by unification magic
 @[reassoc]
 theorem Scheme.restrictFunctor_map_ofRestrict {U V : Opens X} (i : U ⟶ V) :
     (X.restrictFunctor.map i).1 ≫ ιOpens V = ιOpens U :=
@@ -128,7 +128,7 @@ theorem Scheme.restrictFunctor_map_ofRestrict {U V : Opens X} (i : U ⟶ V) :
 
 theorem Scheme.restrictFunctor_map_base {U V : Opens X} (i : U ⟶ V) :
     (X.restrictFunctor.map i).1.1.base = (Opens.toTopCat _).map i := by
-  ext a; refine Subtype.ext ?_ -- Porting note : `ext` did not pick up `Subtype.ext`
+  ext a; refine Subtype.ext ?_ -- Porting note: `ext` did not pick up `Subtype.ext`
   exact (congr_arg (fun f : X.restrict U.openEmbedding ⟶ X => f.1.base a)
         (X.restrictFunctor_map_ofRestrict i))
 #align algebraic_geometry.Scheme.restrict_functor_map_base AlgebraicGeometry.Scheme.restrictFunctor_map_base
@@ -149,7 +149,7 @@ theorem Scheme.restrictFunctor_map_app {U V : Opens X} (i : U ⟶ V) (W : Opens 
     Scheme.congr_app (X.restrictFunctor_map_ofRestrict i)
       (op <| V.openEmbedding.isOpenMap.functor.obj W)
   rw [Scheme.comp_val_c_app] at e₁
-  -- Porting note : `Opens.map_functor_eq` need more help
+  -- Porting note: `Opens.map_functor_eq` need more help
   have e₂ := (X.restrictFunctor.map i).1.val.c.naturality (eqToHom <| W.map_functor_eq (U := V)).op
   rw [← IsIso.eq_inv_comp] at e₂
   dsimp [restrict] at e₁ e₂ ⊢
@@ -281,7 +281,7 @@ theorem isPullback_morphismRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) :
   refine'
     (IsPullback.of_horiz_isIso ⟨_⟩).paste_horiz
       (IsPullback.of_hasPullback f (Y.ofRestrict U.openEmbedding)).flip
-  -- Porting note : changed `rw` to `erw`
+  -- Porting note: changed `rw` to `erw`
   erw [pullbackRestrictIsoRestrict_inv_fst]; rw [Category.comp_id]
 #align algebraic_geometry.is_pullback_morphism_restrict AlgebraicGeometry.isPullback_morphismRestrict
 
@@ -320,16 +320,16 @@ theorem image_morphismRestrict_preimage {X Y : Scheme} (f : X ⟶ Y) (U : Opens 
   constructor
   · rintro ⟨⟨x, hx⟩, hx' : (f ∣_ U).1.base _ ∈ V, rfl⟩
     refine' ⟨⟨_, hx⟩, _, rfl⟩
-    -- Porting note : this rewrite was not necessary
+    -- Porting note: this rewrite was not necessary
     rw [SetLike.mem_coe]
     convert hx'
-    -- Porting note : `ext1` is not compiling
+    -- Porting note: `ext1` is not compiling
     refine Subtype.ext ?_
     exact (morphismRestrict_base_coe f U ⟨x, hx⟩).symm
   · rintro ⟨⟨x, hx⟩, hx' : _ ∈ V.1, rfl : x = _⟩
     refine' ⟨⟨_, hx⟩, (_ : (f ∣_ U).1.base ⟨x, hx⟩ ∈ V.1), rfl⟩
     convert hx'
-    -- Porting note : `ext1` is compiling
+    -- Porting note: `ext1` is compiling
     refine Subtype.ext ?_
     exact morphismRestrict_base_coe f U ⟨x, hx⟩
 #align algebraic_geometry.image_morphism_restrict_preimage AlgebraicGeometry.image_morphismRestrict_preimage

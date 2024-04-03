@@ -147,7 +147,7 @@ theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
     trivial
 #align list.Ico.chain'_succ List.Ico.chain'_succ
 
--- Porting Note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem not_mem_top {n m : ℕ} : m ∉ Ico n m := by simp
 #align list.Ico.not_mem_top List.Ico.not_mem_top

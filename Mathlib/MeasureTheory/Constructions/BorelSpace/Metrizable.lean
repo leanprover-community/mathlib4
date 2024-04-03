@@ -70,8 +70,8 @@ theorem measurable_of_tendsto_metrizable' {ι} {f : ι → α → β} {g : α �
   apply measurable_of_isClosed'
   intro s h1s h2s h3s
   have : Measurable fun x => infNndist (g x) s := by
-    suffices : Tendsto (fun i x => infNndist (f i x) s) u (𝓝 fun x => infNndist (g x) s)
-    exact measurable_of_tendsto_nnreal' u (fun i => (hf i).infNndist) this
+    suffices Tendsto (fun i x => infNndist (f i x) s) u (𝓝 fun x => infNndist (g x) s) from
+      measurable_of_tendsto_nnreal' u (fun i => (hf i).infNndist) this
     rw [tendsto_pi_nhds] at lim ⊢
     intro x
     exact ((continuous_infNndist_pt s).tendsto (g x)).comp (lim x)

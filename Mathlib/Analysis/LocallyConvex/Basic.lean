@@ -164,6 +164,25 @@ section NormedField
 variable [NormedField 𝕜] [NormedRing 𝕝] [NormedSpace 𝕜 𝕝] [AddCommGroup E] [Module 𝕜 E]
   [SMulWithZero 𝕝 E] [IsScalarTower 𝕜 𝕝 E] {s t u v A B : Set E} {x : E} {a b : 𝕜}
 
+theorem absorbs_iff_eventually_nhdsWithin_zero :
+    Absorbs 𝕜 s t ↔ ∀ᶠ c : 𝕜 in 𝓝[≠] 0, MapsTo (c • ·) t s := by
+  rw [absorbs_iff_eventually_cobounded_mapsTo, ← Filter.inv_cobounded₀]; rfl
+
+alias ⟨Absorbs.eventually_nhdsWithin_zero, _⟩ := absorbs_iff_eventually_nhdsWithin_zero
+
+theorem Absorbs.eventually_nhds_zero (h : Absorbs 𝕜 s t) (h₀ : 0 ∈ s) :
+    ∀ᶠ c : 𝕜 in 𝓝 0, MapsTo (c • ·) t s := by
+  rw [← nhdsWithin_compl_singleton_sup_pure, Filter.eventually_sup, Filter.eventually_pure,
+    ← absorbs_iff_eventually_nhdsWithin_zero]
+  refine ⟨h, fun x _ ↦ ?_⟩
+  simpa only [zero_smul]
+
+theorem absorbent_iff_eventually_nhdsWithin_zero :
+    Absorbent 𝕜 s ↔ ∀ x : E, ∀ᶠ c : 𝕜 in 𝓝[≠] 0, c • x ∈ s :=
+  forall_congr' fun x ↦ by simp only [absorbs_iff_eventually_nhdsWithin_zero, mapsTo_singleton]
+
+alias ⟨Absorbent.eventually_nhdsWithin_zero, _⟩ := absorbent_iff_eventually_nhdsWithin_zero
+
 /-- Scalar multiplication (by possibly different types) of a balanced set is monotone. -/
 theorem Balanced.smul_mono (hs : Balanced 𝕝 s) {a : 𝕝} {b : 𝕜} (h : ‖a‖ ≤ ‖b‖) : a • s ⊆ b • s := by
   obtain rfl | hb := eq_or_ne b 0

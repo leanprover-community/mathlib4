@@ -79,6 +79,7 @@ theorem toReal_le_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal ≤ b.toRe
   norm_cast
 #align ennreal.to_real_le_to_real ENNReal.toReal_le_toReal
 
+@[gcongr]
 theorem toReal_mono (hb : b ≠ ∞) (h : a ≤ b) : a.toReal ≤ b.toReal :=
   (toReal_le_toReal (ne_top_of_le_ne_top hb h) hb).2 h
 #align ennreal.to_real_mono ENNReal.toReal_mono
@@ -96,10 +97,12 @@ theorem toReal_lt_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal < b.toReal
   norm_cast
 #align ennreal.to_real_lt_to_real ENNReal.toReal_lt_toReal
 
+@[gcongr]
 theorem toReal_strict_mono (hb : b ≠ ∞) (h : a < b) : a.toReal < b.toReal :=
   (toReal_lt_toReal h.ne_top hb).2 h
 #align ennreal.to_real_strict_mono ENNReal.toReal_strict_mono
 
+@[gcongr]
 theorem toNNReal_mono (hb : b ≠ ∞) (h : a ≤ b) : a.toNNReal ≤ b.toNNReal :=
   toReal_mono hb h
 #align ennreal.to_nnreal_mono ENNReal.toNNReal_mono
@@ -172,6 +175,7 @@ theorem toReal_pos {a : ℝ≥0∞} (ha₀ : a ≠ 0) (ha_top : a ≠ ∞) : 0 <
   toReal_pos_iff.mpr ⟨bot_lt_iff_ne_bot.mpr ha₀, lt_top_iff_ne_top.mpr ha_top⟩
 #align ennreal.to_real_pos ENNReal.toReal_pos
 
+@[gcongr]
 theorem ofReal_le_ofReal {p q : ℝ} (h : p ≤ q) : ENNReal.ofReal p ≤ ENNReal.ofReal q := by
   simp [ENNReal.ofReal, Real.toNNReal_le_toNNReal h]
 #align ennreal.of_real_le_of_real ENNReal.ofReal_le_ofReal
@@ -350,7 +354,7 @@ theorem ofReal_nsmul {x : ℝ} {n : ℕ} : ENNReal.ofReal (n • x) = n • ENNR
   simp only [nsmul_eq_mul, ← ofReal_coe_nat n, ← ofReal_mul n.cast_nonneg]
 #align ennreal.of_real_nsmul ENNReal.ofReal_nsmul
 
-theorem ofReal_inv_of_pos {x : ℝ} (hx : 0 < x) : (ENNReal.ofReal x)⁻¹ = ENNReal.ofReal x⁻¹ := by
+theorem ofReal_inv_of_pos {x : ℝ} (hx : 0 < x) : ENNReal.ofReal x⁻¹ = (ENNReal.ofReal x)⁻¹ := by
   rw [ENNReal.ofReal, ENNReal.ofReal, ← @coe_inv (Real.toNNReal x) (by simp [hx]), coe_inj,
     ← Real.toNNReal_inv]
 #align ennreal.of_real_inv_of_pos ENNReal.ofReal_inv_of_pos
@@ -437,7 +441,7 @@ theorem toReal_top_mul (a : ℝ≥0∞) : ENNReal.toReal (∞ * a) = 0 := by
 theorem toReal_eq_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal = b.toReal ↔ a = b := by
   lift a to ℝ≥0 using ha
   lift b to ℝ≥0 using hb
-  simp only [coe_inj, NNReal.coe_eq, coe_toReal]
+  simp only [coe_inj, NNReal.coe_inj, coe_toReal]
 #align ennreal.to_real_eq_to_real ENNReal.toReal_eq_toReal
 
 theorem toReal_smul (r : ℝ≥0) (s : ℝ≥0∞) : (r • s).toReal = r • s.toReal := by
@@ -672,14 +676,13 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofReal`. -/
 @[positivity ENNReal.ofReal _]
-def evalENNRealOfReal : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app (f : Q(Real → ENNReal)) (a : Q(Real))) ← whnfR e | throwError "not ENNReal.ofReal"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ENNReal.ofReal)
-  let zα' ← synthInstanceQ (q(Zero Real) : Q(Type))
-  let pα' ← synthInstanceQ (q(PartialOrder Real) : Q(Type))
-  let ra ← core zα' pα' a
-  assertInstancesCommute
-  match ra with
-  | .positive pa => pure (.positive (q(Iff.mpr (@ENNReal.ofReal_pos $a) $pa) : Expr))
-  | _ => pure .none
+def evalENNRealOfReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofReal $a) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa => pure (.positive q(Iff.mpr (@ENNReal.ofReal_pos $a) $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "not ENNReal.ofReal"
 end Mathlib.Meta.Positivity

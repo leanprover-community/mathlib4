@@ -67,7 +67,7 @@ instance : ConcreteCategory SemiRingCat := by
 instance : CoeSort SemiRingCat (Type*) where
   coe X := X.α
 
--- Porting note : Hinting to Lean that `forget R` and `R` are the same
+-- Porting note: Hinting to Lean that `forget R` and `R` are the same
 unif_hint forget_obj_eq_coe (R : SemiRingCat) where ⊢
   (forget SemiRingCat).obj R ≟ R
 
@@ -81,17 +81,17 @@ instance instFunLike {X Y : SemiRingCat} : FunLike (X ⟶ Y) X Y :=
   -- unfolding during unification
   ConcreteCategory.instFunLike
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance instRingHomClass {X Y : SemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_id {X : SemiRingCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : SemiRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[simp] lemma forget_map (f : X ⟶ Y) : (forget SemiRingCat).map f = (f : X → Y) := rfl
 
 lemma ext {X Y : SemiRingCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -193,7 +193,7 @@ instance : CoeSort RingCat (Type*) where
 
 instance (X : RingCat) : Ring X := X.str
 
--- Porting note : Hinting to Lean that `forget R` and `R` are the same
+-- Porting note: Hinting to Lean that `forget R` and `R` are the same
 unif_hint forget_obj_eq_coe (R : RingCat) where ⊢
   (forget RingCat).obj R ≟ R
 
@@ -205,17 +205,17 @@ instance instFunLike {X Y : RingCat} : FunLike (X ⟶ Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance instRingHomClass {X Y : RingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_id {X : RingCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : RingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[simp] lemma forget_map (f : X ⟶ Y) : (forget RingCat).map f = (f : X → Y) := rfl
 
 lemma ext {X Y : RingCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -298,7 +298,7 @@ instance : CoeSort CommSemiRingCat (Type*) where
 
 instance (X : CommSemiRingCat) : CommSemiring X := X.str
 
--- Porting note : Hinting to Lean that `forget R` and `R` are the same
+-- Porting note: Hinting to Lean that `forget R` and `R` are the same
 unif_hint forget_obj_eq_coe (R : CommSemiRingCat) where ⊢
   (forget CommSemiRingCat).obj R ≟ R
 
@@ -311,17 +311,17 @@ instance instFunLike {X Y : CommSemiRingCat} : FunLike (X ⟶ Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance instRingHomClass {X Y : CommSemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_id {X : CommSemiRingCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : CommSemiRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[simp] lemma forget_map (f : X ⟶ Y) : (forget CommSemiRingCat).map f = (f : X → Y) := rfl
 
 lemma ext {X Y : CommSemiRingCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -419,7 +419,7 @@ instance : ConcreteCategory CommRingCat := by
 instance : CoeSort CommRingCat (Type*) where
   coe X := X.α
 
--- Porting note : Hinting to Lean that `forget R` and `R` are the same
+-- Porting note: Hinting to Lean that `forget R` and `R` are the same
 unif_hint forget_obj_eq_coe (R : CommRingCat) where ⊢
   (forget CommRingCat).obj R ≟ R
 
@@ -431,17 +431,17 @@ instance instFunLike {X Y : CommRingCat} : FunLike (X ⟶ Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance instRingHomClass {X Y : CommRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_id {X : CommRingCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : CommRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[simp] lemma forget_map (f : X ⟶ Y) : (forget CommRingCat).map f = (f : X → Y) := rfl
 
 lemma ext {X Y : CommRingCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -557,7 +557,7 @@ def commRingCatIsoToRingEquiv {X Y : CommRingCat} (i : X ≅ Y) : X ≃+* Y :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.CommRing_iso_to_ring_equiv CategoryTheory.Iso.commRingCatIsoToRingEquiv
 
--- Porting note : make this high priority to short circuit simplifier
+-- Porting note: make this high priority to short circuit simplifier
 @[simp (high)]
 theorem commRingIsoToRingEquiv_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
     i.commRingCatIsoToRingEquiv.toRingHom = i.hom := by
@@ -566,7 +566,7 @@ theorem commRingIsoToRingEquiv_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.CommRing_iso_to_ring_equiv_to_ring_hom CategoryTheory.Iso.commRingIsoToRingEquiv_toRingHom
 
--- Porting note : make this high priority to short circuit simplifier
+-- Porting note: make this high priority to short circuit simplifier
 @[simp (high)]
 theorem commRingIsoToRingEquiv_symm_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
     i.commRingCatIsoToRingEquiv.symm.toRingHom = i.inv := by

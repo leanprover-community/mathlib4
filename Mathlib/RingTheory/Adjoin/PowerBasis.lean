@@ -141,7 +141,7 @@ theorem repr_mul_isIntegral [IsDomain S] {x y : A} (hx : ∀ i, IsIntegral R (B.
     RingHom.id_apply, Finsupp.coe_smul, Pi.smul_apply, id.smul_eq_mul]
   refine (hy _).mul ((hx _).mul ?_)
   simp only [coe_basis, ← pow_add]
-  refine' repr_gen_pow_isIntegral hB hmin _ _
+  exact repr_gen_pow_isIntegral hB hmin _ _
 #align power_basis.repr_mul_is_integral PowerBasis.repr_mul_isIntegral
 
 /-- Let `B : PowerBasis S A` be such that `IsIntegral R B.gen`, and let `x : A` be an element

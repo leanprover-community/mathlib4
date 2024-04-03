@@ -181,7 +181,7 @@ theorem isAdic_iff [top : TopologicalSpace R] [TopologicalRing R] {J : Ideal R} 
         exact ⟨n, trivial, h⟩
       · rcases H with ⟨n, -, hn⟩
         rw [mem_nhds_iff]
-        refine' ⟨_, hn, H₁ n, (J ^ n).zero_mem⟩
+        exact ⟨_, hn, H₁ n, (J ^ n).zero_mem⟩
 #align is_adic_iff isAdic_iff
 
 variable [TopologicalSpace R] [TopologicalRing R]

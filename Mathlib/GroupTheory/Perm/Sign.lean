@@ -94,18 +94,18 @@ theorem perm_inv_on_of_perm_on_finite {f : Perm α} {p : α → Prop} [Finite { 
 /-- If the permutation `f` maps `{x // p x}` into itself, then this returns the permutation
   on `{x // p x}` induced by `f`. Note that the `h` hypothesis is weaker than for
   `Equiv.Perm.subtypePerm`. -/
-abbrev subtypePermOfFintype (f : Perm α) {p : α → Prop} [Fintype { x // p x }]
+abbrev subtypePermOfFintype (f : Perm α) {p : α → Prop} [Finite { x // p x }]
     (h : ∀ x, p x → p (f x)) : Perm { x // p x } :=
   f.subtypePerm fun x => ⟨h x, fun h₂ => f.inv_apply_self x ▸ perm_inv_on_of_perm_on_finite h h₂⟩
 #align equiv.perm.subtype_perm_of_fintype Equiv.Perm.subtypePermOfFintype
 
 @[simp]
-theorem subtypePermOfFintype_apply (f : Perm α) {p : α → Prop} [Fintype { x // p x }]
+theorem subtypePermOfFintype_apply (f : Perm α) {p : α → Prop} [Finite { x // p x }]
     (h : ∀ x, p x → p (f x)) (x : { x // p x }) : subtypePermOfFintype f h x = ⟨f x, h x x.2⟩ :=
   rfl
 #align equiv.perm.subtype_perm_of_fintype_apply Equiv.Perm.subtypePermOfFintype_apply
 
-theorem subtypePermOfFintype_one (p : α → Prop) [Fintype { x // p x }]
+theorem subtypePermOfFintype_one (p : α → Prop) [Finite { x // p x }]
     (h : ∀ x, p x → p ((1 : Perm α) x)) : @subtypePermOfFintype α 1 p _ h = 1 :=
   rfl
 #align equiv.perm.subtype_perm_of_fintype_one Equiv.Perm.subtypePermOfFintype_one
@@ -113,8 +113,6 @@ theorem subtypePermOfFintype_one (p : α → Prop) [Fintype { x // p x }]
 theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ : Perm (Sum m n)) :
     Set.MapsTo σ (Set.range Sum.inl) (Set.range Sum.inl) ↔
       Set.MapsTo σ (Set.range Sum.inr) (Set.range Sum.inr) := by
-  cases nonempty_fintype m
-  cases nonempty_fintype n
   constructor <;>
     ( intro h
       classical
@@ -136,8 +134,6 @@ theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ :
 theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finite n]
     {σ : Perm (Sum m n)} (h : Set.MapsTo σ (Set.range Sum.inl) (Set.range Sum.inl)) :
     σ ∈ (sumCongrHom m n).range := by
-  cases nonempty_fintype m
-  cases nonempty_fintype n
   classical
     have h1 : ∀ x : Sum m n, (∃ a : m, Sum.inl a = x) → ∃ a : m, Sum.inl a = σ x := by
       rintro x ⟨a, ha⟩
@@ -502,19 +498,18 @@ theorem signAux_eq_signAux2 {n : ℕ} :
 
 /-- When the multiset `s : Multiset α` contains all nonfixed points of the permutation `f : Perm α`,
   `signAux2 f _` recursively calculates the sign of `f`. -/
-def signAux3 [Fintype α] (f : Perm α) {s : Multiset α} : (∀ x, x ∈ s) → ℤˣ :=
-  Quotient.hrecOn s (fun l _ => signAux2 l f)
-    (Trunc.induction_on (Fintype.truncEquivFin α) fun e l₁ l₂ h =>
-      Function.hfunext (show (∀ x, x ∈ l₁) = ∀ x, x ∈ l₂ by simp only [h.mem_iff]) fun h₁ h₂ _ => by
-        rw [← signAux_eq_signAux2 _ _ e fun _ _ => h₁ _,
-            ← signAux_eq_signAux2 _ _ e fun _ _ => h₂ _])
+def signAux3 [Finite α] (f : Perm α) {s : Multiset α} : (∀ x, x ∈ s) → ℤˣ :=
+  Quotient.hrecOn s (fun l _ => signAux2 l f) fun l₁ l₂ h ↦ by
+    rcases Finite.exists_equiv_fin α with ⟨n, ⟨e⟩⟩
+    refine Function.hfunext (forall_congr fun _ ↦ propext h.mem_iff) fun h₁ h₂ _ ↦ ?_
+    rw [← signAux_eq_signAux2 _ _ e fun _ _ => h₁ _, ← signAux_eq_signAux2 _ _ e fun _ _ => h₂ _]
 #align equiv.perm.sign_aux3 Equiv.Perm.signAux3
 
-theorem signAux3_mul_and_swap [Fintype α] (f g : Perm α) (s : Multiset α) (hs : ∀ x, x ∈ s) :
+theorem signAux3_mul_and_swap [Finite α] (f g : Perm α) (s : Multiset α) (hs : ∀ x, x ∈ s) :
     signAux3 (f * g) hs = signAux3 f hs * signAux3 g hs ∧
       Pairwise fun x y => signAux3 (swap x y) hs = -1 := by
   let ⟨l, hl⟩ := Quotient.exists_rep s
-  let e := equivFin α
+  rcases Finite.exists_equiv_fin α with ⟨n, ⟨e⟩⟩
   --clear _let_match
   subst hl
   show

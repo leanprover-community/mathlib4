@@ -19,8 +19,8 @@ of `WithTop.some`.
 
 open Set
 
--- porting notes: was `deriving instance` but "default handlers have not been implemented yet"
--- porting notes: `noncomputable` through 'Nat.instConditionallyCompleteLinearOrderBotNat'
+-- Porting note: was `deriving instance` but "default handlers have not been implemented yet"
+-- Porting note: `noncomputable` through 'Nat.instConditionallyCompleteLinearOrderBotNat'
 noncomputable instance : CompleteLinearOrder ENat :=
   inferInstanceAs (CompleteLinearOrder (WithTop ℕ))
 

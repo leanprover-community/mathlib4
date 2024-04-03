@@ -15,8 +15,9 @@ import Mathlib.Topology.Homotopy.Basic
 This file defines H-spaces mainly following the approach proposed by Serre in his paper
 *Homologie singulière des espaces fibrés*. The idea beneath `H-spaces` is that they are topological
 spaces with a binary operation `⋀ : X → X → X` that is a homotopic-theoretic weakening of an
-operation what would make `X` into a topological monoid. In particular, there exists a "neutral
-element" `e : X` such that `λ x, e ⋀ x` and `λ x, x ⋀ e` are homotopic to the identity on `X`, see
+operation what would make `X` into a topological monoid.
+In particular, there exists a "neutral element" `e : X` such that `fun x ↦e ⋀ x` and
+`fun x ↦x ⋀ e` are homotopic to the identity on `X`, see
 [the Wikipedia page of H-spaces](https://en.wikipedia.org/wiki/H-space).
 
 Some notable properties of `H-spaces` are
@@ -35,7 +36,7 @@ equal to the product of `H-space` structures on `G` and `G'`.
 
 ## To Do
 * Prove that for every `NormedAddTorsor Z` and every `z : Z`, the operation
-`λ x y, midpoint x y` defines an `H-space` structure with `z` as a "neutral element".
+`fun x y ↦ midpoint x y` defines an `H-space` structure with `z` as a "neutral element".
 * Prove that `S^0`, `S^1`, `S^3` and `S^7` are the unique spheres that are `H-spaces`, where the
 first three inherit the structure because they are topological groups (they are Lie groups,
 actually), isomorphic to the invertible elements in `ℤ`, in `ℂ` and in the quaternion; and the

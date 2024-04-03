@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Bhavik Mehta, Stuart Presnell
 -/
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Data.Nat.Order.Basic
 
 #align_import data.nat.choose.basic from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
 

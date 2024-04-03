@@ -113,11 +113,11 @@ theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'}
   refine' ⟨fun h => _, _⟩
   · rcases _root_.le_rank_iff_exists_linearIndependent.1 h with ⟨s, rfl, si⟩
     refine' ⟨g '' s, Cardinal.mk_image_eq_lift _ _ fg.injective, _⟩
-    replace fg : ∀ x, f (g x) = x
-    · intro x
+    replace fg : ∀ x, f (g x) = x := by
+      intro x
       convert congr_arg Subtype.val (fg x)
-    replace si : LinearIndependent K fun x : s => f (g x)
-    · simpa only [fg] using si.map' _ (ker_subtype _)
+    replace si : LinearIndependent K fun x : s => f (g x) := by
+      simpa only [fg] using si.map' _ (ker_subtype _)
     exact si.image_of_comp s g f
   · rintro ⟨s, hsc, si⟩
     have : LinearIndependent K fun x : s => f.rangeRestrict x :=

@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 -/
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.TypeVec
+import Mathlib.Logic.Equiv.Defs
 
 #align_import control.functor.multivariate from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
@@ -241,5 +242,10 @@ theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
 #align mvfunctor.liftr_last_rel_iff MvFunctor.LiftR_RelLast_iff
 
 end LiftPLastPredIff
+
+/-- Any type function that is (extensionally) equivalent to a functor, is itself a functor -/
+def ofEquiv {F F' : TypeVec.{u} n → Type*} [MvFunctor F'] (eqv : ∀ α, F α ≃ F' α) :
+    MvFunctor F where
+  map f x := (eqv _).symm <| f <$$> eqv _ x
 
 end MvFunctor

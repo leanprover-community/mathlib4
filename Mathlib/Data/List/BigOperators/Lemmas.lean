@@ -3,17 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Init.CCLemmas
-import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Commute
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.Int.Units
+import Mathlib.Data.List.BigOperators.Basic
 
 #align_import data.list.big_operators.lemmas from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
