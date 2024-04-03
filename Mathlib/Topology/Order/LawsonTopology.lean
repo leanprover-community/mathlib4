@@ -214,7 +214,7 @@ lemma LawsonOpen_iff_ScottOpen' (s : Set α) (h : IsUpperSet s) :
     exact ⟨h, (Scott_Hausdorff_le_Lawson' s) hs⟩
 
 variable (L : TopologicalSpace α) (l : TopologicalSpace α) (S : TopologicalSpace α)
-variable [Preorder α] [@Topology.IsLawson α _ L] [@Topology.IsLower α l _] [@Topology.IsScott α _ S]
+variable [@Topology.IsLawson α _ L] [@Topology.IsLower α l _] [@Topology.IsScott α _ S]
 
 lemma lawson_le_scott' : L ≤ S := by
   rw [@Topology.IsScott.topology_eq α _ S _, @Topology.IsLawson.topology_eq α _ L _]
@@ -245,7 +245,7 @@ lemma lawsonOpen_iff_scottOpen_of_isUpperSet (s : Set α) (h : IsUpperSet s) :
   constructor
   · intro hs
     rw [@Topology.IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open α _ S]
-    exact ⟨h, fun d d₁ d₂ => (@Scott_Hausdorff_le_Lawson _ L l S _ _ _ _ _) hs d₁ d₂⟩
+    exact ⟨h, fun d d₁ d₂ => (Scott_Hausdorff_le_Lawson L l S) _ hs d₁ d₂⟩
   · apply TopologicalSpace.le_def.mp (lawson_le_scott' _ _)
 
 lemma lawsonClosed_iff_scottClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s) :
