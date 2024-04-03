@@ -367,7 +367,7 @@ variable [Preorder α]
   (S :TopologicalSpace α) (l : TopologicalSpace α) (L : TopologicalSpace α)
   [@IsScott α _ S]  [@IsLawson α _ L] [@IsLower α l _]
 
--- Scott open iff UpperSet and STopology open
+/-- An upper set is Lawson open if and only if it is Scott open -/
 lemma lawsonOpen_iff_scottOpen_of_isUpperSet (s : Set α) (h : IsUpperSet s) :
     IsOpen[L] s ↔ IsOpen[S] s := by
   constructor
@@ -388,6 +388,7 @@ lemma lawsonClosed_iff_scottClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s)
     rw [← isOpen_compl_iff, ← @isOpen_compl_iff,
       (lawsonOpen_iff_scottOpen_of_isUpperSet S l L _ h)]
 
+/-- A lower set is Lawson closed if and only if it is closed under sups of directed sets -/
 lemma lawsonClosed_iff_dirSupClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s) :
     IsClosed[L] s ↔ DirSupClosed s := by
   rw [(lawsonClosed_iff_scottClosed_of_isLowerSet S l L _ h),
