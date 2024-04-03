@@ -134,8 +134,8 @@ lemma mapToEqualizer_eq_comp (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B)
 
 /-- An alternative phrasing of the explicit equalizer condition, using more categorical language. -/
 theorem equalizerCondition_iff_isIso_lift (P : Cᵒᵖ ⥤ Type*) : EqualizerCondition P ↔
-    ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π], IsIso
-    (equalizer.lift (P.map π.op) (equalizerCondition_w' P π)) := by
+    ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π],
+      IsIso (equalizer.lift (P.map π.op) (equalizerCondition_w' P π)) := by
   constructor
   · intro hP X B π _ _
     have h := hP.bijective_mapToEqualizer_pullback _ X B π
