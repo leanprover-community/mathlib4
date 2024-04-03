@@ -35,7 +35,7 @@ namespace Mathlib.Tactic.LibraryRewrite
 
 open Lean Meta Server
 
-/-- The rewrite lemma structure that we store in the `RefinedDiscrTree`. -/
+/-- The structure for rewrite lemmas stored in the `RefinedDiscrTree`. -/
 structure RewriteLemma where
   /-- The name of the lemma -/
   name : Name
@@ -66,10 +66,6 @@ instance : LT RewriteLemma := ⟨fun a b => RewriteLemma.lt a b⟩
 instance (a b : RewriteLemma) : Decidable (a < b) :=
   inferInstanceAs (Decidable (RewriteLemma.lt a b))
 
-/-- Return whether the definitions in this module should be ignored. -/
-def isBadModule (name : Name) : Bool :=
-  (`Mathlib.Tactic).isPrefixOf name || (`Init.Omega).isPrefixOf name
-
 /-- Similar to `Name.isBlackListed`. -/
 def isBadDecl (name : Name) (cinfo : ConstantInfo) (env : Environment) : Bool :=
   (match cinfo with
@@ -93,8 +89,8 @@ def matchEqn? (e : Expr) : Option (Expr × Expr) :=
   | none => e.iff?
 
 /-- Try adding the lemma to the `RefinedDiscrTree`. -/
-def updateDiscrTree (name : Name) (cinfo : ConstantInfo) (d : RefinedDiscrTree RewriteLemma) :
-    MetaM (RefinedDiscrTree RewriteLemma) := do
+def updateDiscrTree {α : Type} [BEq α] (name : Name) (cinfo : ConstantInfo)
+    (d : RefinedDiscrTree α) (addInfo : RewriteLemma → α) : MetaM (RefinedDiscrTree α) := do
   if isBadDecl name cinfo (← getEnv) then
     return d
   let (vars, _, eqn) ← forallMetaTelescope cinfo.type
@@ -107,28 +103,24 @@ def updateDiscrTree (name : Name) (cinfo : ConstantInfo) (d : RefinedDiscrTree R
     if (lhs.findMVar? (· == mvarId)).isNone then
       return d
   d.insertEqn lhs rhs
-    { name, symm := false, numParams := vars.size }
-    { name, symm := true,  numParams := vars.size }
+    (addInfo { name, symm := false, numParams := vars.size })
+    (addInfo { name, symm := true,  numParams := vars.size })
 
 section Cache
 
-open Std.Tactic
-
 @[reducible]
-private def RewriteCache := Cache (RefinedDiscrTree RewriteLemma)
+private def RewriteCache := Std.Tactic.Cache (RefinedDiscrTree (RewriteLemma × Name))
 
 /-- Construct the `RewriteCache` of all lemmas. -/
 def RewriteCache.mk : IO RewriteCache :=
-  Cache.mk do
+  Std.Tactic.Cache.mk do
     profileitM Exception "rw??: init cache" (← getOptions) do
       let env ← getEnv
       let mut tree := {}
       for moduleName in env.header.moduleNames, data in env.header.moduleData do
-        if isBadModule moduleName then
-          continue
         for cinfo in data.constants do
-          tree ← updateDiscrTree cinfo.name cinfo tree
-      return tree.mapArrays (·.qsort (· < ·))
+          tree ← updateDiscrTree cinfo.name cinfo tree (·, moduleName)
+      return tree.mapArrays (·.qsort (·.1 < ·.1))
 
 /-- The file path of the pre-build `RewriteCache` cache -/
 def cachePath : IO System.FilePath := do
@@ -140,29 +132,39 @@ def cachePath : IO System.FilePath := do
 private initialize cachedData : RewriteCache ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
-    let (d, _r) ← unpickle (RefinedDiscrTree RewriteLemma) path
-    Cache.mk (pure d)
+    let (d, _r) ← unpickle (RefinedDiscrTree (RewriteLemma × Name)) path
+    Std.Tactic.Cache.mk (pure d)
   else
     RewriteCache.mk
 
 /-- Get the `RefinedDiscrTree` of all rewrite lemmas, attempting to get it from pre-built cache. -/
-def getCachedRewriteLemmas : MetaM (RefinedDiscrTree RewriteLemma) :=
+def getCachedRewriteLemmas : MetaM (RefinedDiscrTree (RewriteLemma × Name)) :=
   cachedData.get
 
 /-- Construct the `RefinedDiscrTree` of all lemmas defined in the current file. -/
-def getLocalRewriteLemmas : MetaM (RefinedDiscrTree RewriteLemma) := do
-  (← getEnv).constants.map₂.foldlM (init := {}) (fun tree n c => updateDiscrTree n c tree)
+def getLocalRewriteLemmas : MetaM (RefinedDiscrTree (RewriteLemma)) := do
+  let env ← getEnv
+  let tree ← env.constants.map₂.foldlM (init := {}) (fun tree n c => updateDiscrTree n c tree id)
+  return tree.mapArrays (·.qsort (· < ·))
 
 end Cache
 
+register_option librarySearch.excludedModules : String := {
+  defValue := "Init.Omega Mathlib.Tactic"
+  descr := "list of modules that should not be considered in library search"
+}
 
+def getLibrarySearchExcludedModules (o : Options) : List Name :=
+  (librarySearch.excludedModules.get o).splitOn.map (·.toName)
 
 /-- Get all potential rewrite lemmas from the dicrimination tree. -/
 def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Bool)) := do
   let localResults  ← (← getLocalRewriteLemmas ).getMatchWithScore e (unify := false)
   let cachedResults ← (← getCachedRewriteLemmas).getMatchWithScore e (unify := false)
-  let allResults := localResults.map (·.1, true) ++ cachedResults.map (·.1, false)
-  return allResults
+  let excludedModules := getLibrarySearchExcludedModules (← getOptions)
+  let exclude (rws : Array (RewriteLemma × Name)) := rws.filterMap fun (rw, moduleName) =>
+    if excludedModules.any (·.isPrefixOf moduleName) then none else rw
+  return localResults.map (·.1, true) ++ cachedResults.map (exclude ·.1, true)
 
 /-- A rewrite lemma that has been applied to an expression. -/
 structure Rewrite extends RewriteLemma where
