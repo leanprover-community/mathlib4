@@ -581,7 +581,7 @@ theorem prod_biUnion [DecidableEq α] {s : Finset γ} {t : γ → Finset α}
 #align finset.prod_bUnion Finset.prod_biUnion
 #align finset.sum_bUnion Finset.sum_biUnion
 
-/-- Rewrite `Fintype.univ.prod f` using this lemma in order to prepare it for
+/-- Rewrite `Finset.univ.prod f` using this lemma in order to prepare it for
 `Finset.prod_sigma` application. -/
 @[to_additive "Rewrite `Finset.univ.sum f` using this lemma in order to prepare it for
 `Finset.sum_sigma` application."]
