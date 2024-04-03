@@ -585,7 +585,7 @@ theorem prod_biUnion [DecidableEq α] {s : Finset γ} {t : γ → Finset α}
 `Finset.prod_sigma` application. -/
 @[to_additive "Rewrite `Finset.univ.sum f` using this lemma in order to prepare it for
 `Finset.sum_sigma` application."]
-lemma _root_.Fintype.univ_prod_to_sigma [Fintype α] {σ : α → Type*} [∀ a : α, Fintype (σ a)]
+lemma univ_prod_to_sigma [Fintype α] {σ : α → Type*} [∀ a : α, Fintype (σ a)]
     (f : Sigma σ → β) :
     ∏ x : Sigma σ, f x = ∏ x in Finset.univ.sigma (fun _ => Finset.univ), f x :=
   rfl
