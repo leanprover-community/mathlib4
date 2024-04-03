@@ -37,8 +37,11 @@ def getAll (git : Bool) (ml : String) : IO String := do
       let all ← walkDir ml
       return all.filter (·.extension == some "lean"))
   let files := (stdout.erase ml.lean).qsort (·.toString < ·.toString)
-  let withImport ← files.mapM fun f => return "import " ++ (← moduleNameOfFileName f none).toString
-  return ("\n".intercalate withImport.toList).push '\n'
+  let withImport ← files.mapM fun f => do
+    if ←  pathExists f then
+      return "import " ++ (← moduleNameOfFileName f none).toString
+    else return ""
+  return ("\n".intercalate (withImport.filter (· != "")).toList).push '\n'
 
 open Lake in
 /-- `getLeanLibs` returns the array of names (as an `Array` of `String`s) of all the libraries
