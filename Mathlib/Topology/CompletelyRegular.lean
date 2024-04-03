@@ -96,7 +96,7 @@ instance T4Space.instT35Space [T4Space X] : T35Space X := by
   have : CompletelyRegularSpace X := NormalSpace.instCompletelyRegularSpace
   exact {}
 
-lemma separatesPoints_continuous_of_T35Space [T35Space X] :
+lemma separatesPoints_continuous_of_t35Space [T35Space X] :
     SeparatesPoints (Continuous : Set (X → ℝ)) := by
   intro x y x_ne_y
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
