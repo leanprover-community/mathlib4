@@ -126,7 +126,7 @@ lemma equalizerCondition_w' (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B)
 
 lemma mapToEqualizer_eq_comp (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B)
     [HasPullback π π] : MapToEqualizer P π pullback.fst pullback.snd pullback.condition =
-    equalizer.lift (P.map π.op) (equalizerCondition_iff_isIso_lift_w P π) ≫
+    equalizer.lift (P.map π.op) (equalizerCondition_w' P π) ≫
     (Types.equalizerIso _ _).hom := by
   rw [← Iso.comp_inv_eq (α := Types.equalizerIso _ _)]
   apply equalizer.hom_ext
@@ -135,13 +135,13 @@ lemma mapToEqualizer_eq_comp (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B)
 /-- An alternative phrasing of the explicit equalizer condition, using more categorical language. -/
 theorem equalizerCondition_iff_isIso_lift (P : Cᵒᵖ ⥤ Type*) : EqualizerCondition P ↔
     ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π], IsIso
-    (equalizer.lift (P.map π.op) (equalizerCondition_iff_isIso_lift_w P π)) := by
+    (equalizer.lift (P.map π.op) (equalizerCondition_w' P π)) := by
   constructor
   · intro hP X B π _ _
     have h := hP.bijective_mapToEqualizer_pullback _ X B π
     rw [← isIso_iff_bijective, mapToEqualizer_eq_comp] at h
     exact IsIso.of_isIso_comp_right (equalizer.lift (P.map π.op)
-      (equalizerCondition_iff_isIso_lift_w P π))
+      (equalizerCondition_w' P π))
       (Types.equalizerIso _ _).hom
   · intro hP
     apply EqualizerCondition.mk
