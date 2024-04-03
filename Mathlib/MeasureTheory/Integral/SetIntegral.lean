@@ -8,6 +8,7 @@ import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
 import Mathlib.Topology.ContinuousFunction.Compact
+import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 
 #align_import measure_theory.integral.set_integral from "leanprover-community/mathlib"@"24e0c85412ff6adbeca08022c25ba4876eedf37a"
 
@@ -1083,9 +1084,9 @@ theorem continuous_integral_comp_L1 (L : E →L[𝕜] F) :
 set_option linter.uppercaseLean3 false in
 #align continuous_linear_map.continuous_integral_comp_L1 ContinuousLinearMap.continuous_integral_comp_L1
 
-variable [CompleteSpace E] [CompleteSpace F] [NormedSpace ℝ E]
+variable [CompleteSpace F] [NormedSpace ℝ E]
 
-theorem integral_comp_comm (L : E →L[𝕜] F) {φ : X → E} (φ_int : Integrable φ μ) :
+theorem integral_comp_comm [CompleteSpace E] (L : E →L[𝕜] F) {φ : X → E} (φ_int : Integrable φ μ) :
     ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := by
   apply φ_int.induction (P := fun φ => ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ))
   · intro e s s_meas _
@@ -1105,9 +1106,31 @@ theorem integral_comp_comm (L : E →L[𝕜] F) {φ : X → E} (φ_int : Integra
 #align continuous_linear_map.integral_comp_comm ContinuousLinearMap.integral_comp_comm
 
 theorem integral_apply {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {φ : X → H →L[𝕜] E}
-    (φ_int : Integrable φ μ) (v : H) : (∫ x, φ x ∂μ) v = ∫ x, φ x v ∂μ :=
-  ((ContinuousLinearMap.apply 𝕜 E v).integral_comp_comm φ_int).symm
+    (φ_int : Integrable φ μ) (v : H) : (∫ x, φ x ∂μ) v = ∫ x, φ x v ∂μ := by
+  by_cases hE : CompleteSpace E
+  · exact ((ContinuousLinearMap.apply 𝕜 E v).integral_comp_comm φ_int).symm
+  · rcases subsingleton_or_nontrivial H with hH|hH
+    · simp [Subsingleton.eq_zero v]
+    · have : ¬(CompleteSpace (H →L[𝕜] E)) := by
+        rwa [SeparatingDual.completeSpace_continuousLinearMap_iff]
+      simp [integral, hE, this]
 #align continuous_linear_map.integral_apply ContinuousLinearMap.integral_apply
+
+theorem _root_.ContinuousMultilinearMap.integral_apply {ι : Type*} [Fintype ι] {M : ι → Type*}
+    [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)]
+    {φ : X → ContinuousMultilinearMap 𝕜 M E} (φ_int : Integrable φ μ) (m : ∀ i, M i) :
+    (∫ x, φ x ∂μ) m = ∫ x, φ x m ∂μ := by
+  by_cases hE : CompleteSpace E
+  · exact ((ContinuousMultilinearMap.apply 𝕜 M E m).integral_comp_comm φ_int).symm
+  · by_cases hm : ∀ i, m i ≠ 0
+    · have : ¬ CompleteSpace (ContinuousMultilinearMap 𝕜 M E) := by
+        rwa [SeparatingDual.completeSpace_continuousMultilinearMap_iff _ _ hm]
+      simp [integral, hE, this]
+    · push_neg at hm
+      rcases hm with ⟨i, hi⟩
+      simp [ContinuousMultilinearMap.map_coord_zero _ i hi]
+
+variable [CompleteSpace E]
 
 theorem integral_comp_comm' (L : E →L[𝕜] F) {K} (hL : AntilipschitzWith K L) (φ : X → E) :
     ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := by
