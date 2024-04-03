@@ -186,41 +186,38 @@ noncomputable def isLimit_forkOfι_equiv (P : Cᵒᵖ ⥤ D) {X B : C} (π : X �
     IsLimit (Fork.ofι (P.map π.op) (equalizerCondition_w P c)) ≃
     IsLimit (P.mapCone (Sieve.ofArrows (fun (_ : Unit) ↦ X) fun _ ↦ π).arrows.cocone.op) := by
   let S := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows
-  let E := @FullSubcategory (Over B) (fun f ↦ S f.hom)
-  let F : Eᵒᵖ ⥤ D := S.diagram.op ⋙ P
-  let G := parallelPair (P.map c.fst.op) (P.map c.snd.op)
-  let X' : E := ⟨Over.mk π, ⟨_, 𝟙 _, π, ofArrows.mk (), Category.id_comp _⟩⟩
-  let P' : E := ⟨Over.mk (c.fst ≫ π),
-    ⟨_, c.fst, π, ofArrows.mk (), rfl⟩⟩
+  let X' : S.category := ⟨Over.mk π, ⟨_, 𝟙 _, π, ofArrows.mk (), Category.id_comp _⟩⟩
+  let P' : S.category := ⟨Over.mk (c.fst ≫ π), ⟨_, c.fst, π, ofArrows.mk (), rfl⟩⟩
   let fst : P' ⟶ X' := Over.homMk c.fst
   let snd : P' ⟶ X' := Over.homMk c.snd c.condition.symm
+  let F : S.categoryᵒᵖ ⥤ D := S.diagram.op ⋙ P
+  let G := parallelPair (P.map c.fst.op) (P.map c.snd.op)
   let H := parallelPair fst.op snd.op
   have : H.Initial := parallelPair_pullback_initial π c hc
   let i : H ⋙ F ≅ G := parallelPair.ext (Iso.refl _) (Iso.refl _) (by aesop) (by aesop)
   refine (IsLimit.equivOfNatIsoOfIso i.symm _ _ ?_).trans (Functor.Initial.isLimitWhiskerEquiv H _)
-  refine Cones.ext ?_ ?_
-  · rfl
-  · rintro ⟨_ | _⟩
-    · simp only [id_obj, comp_obj, Functor.comp_map, Iso.refl_hom, id_eq, eq_mpr_eq_cast,
-        const_obj_obj, parallelPair_map_right, Quiver.Hom.unop_op, Over.homMk_left, Iso.symm_hom,
-        Cones.postcompose_obj_pt, Fork.ofι_pt, Cones.postcompose_obj_π, NatTrans.comp_app,
-        Fork.ofι_π_app, parallelPair.ext_inv_app, Iso.refl_inv, Sieve.generate_apply,
-        Cone.whisker_pt, mapCone_pt, Cocone.op_pt, Cocone.whisker_pt, Over.forgetCocone_pt,
-        Cone.whisker_π, whiskerLeft_app, mapCone_π_app, op_obj, fullSubcategoryInclusion.obj,
-        Over.forget_obj, Cocone.op_π, Cocone.whisker_ι, NatTrans.op_app, Over.forgetCocone_ι_app,
-        Category.id_comp, i]
-      erw [Category.comp_id]
-      congr
-    · simp only [id_obj, comp_obj, Functor.comp_map, Iso.refl_hom, id_eq, eq_mpr_eq_cast,
-        const_obj_obj, parallelPair_map_right, Quiver.Hom.unop_op, Over.homMk_left, Iso.symm_hom,
-        Cones.postcompose_obj_pt, Fork.ofι_pt, Cones.postcompose_obj_π, NatTrans.comp_app,
-        Fork.ofι_π_app, parallelPair_obj_one, parallelPair.ext_inv_app, Iso.refl_inv,
-        Category.assoc, Sieve.generate_apply, Cone.whisker_pt, mapCone_pt, Cocone.op_pt,
-        Cocone.whisker_pt, Over.forgetCocone_pt, Cone.whisker_π, whiskerLeft_app, mapCone_π_app,
-        op_obj, fullSubcategoryInclusion.obj, Over.forget_obj, Cocone.op_π, Cocone.whisker_ι,
-        NatTrans.op_app, Over.forgetCocone_ι_app, Category.id_comp, i]
-      erw [Category.comp_id, ← Functor.map_comp]
-      congr
+  refine Cones.ext (Iso.refl _) ?_
+  rintro ⟨_ | _⟩
+  · simp only [id_obj, comp_obj, Functor.comp_map, Iso.refl_hom, id_eq, eq_mpr_eq_cast,
+      const_obj_obj, parallelPair_map_right, Quiver.Hom.unop_op, Over.homMk_left, Iso.symm_hom,
+      Cones.postcompose_obj_pt, Fork.ofι_pt, Cones.postcompose_obj_π, NatTrans.comp_app,
+      Fork.ofι_π_app, parallelPair.ext_inv_app, Iso.refl_inv, Sieve.generate_apply,
+      Cone.whisker_pt, mapCone_pt, Cocone.op_pt, Cocone.whisker_pt, Over.forgetCocone_pt,
+      Cone.whisker_π, whiskerLeft_app, mapCone_π_app, op_obj, fullSubcategoryInclusion.obj,
+      Over.forget_obj, Cocone.op_π, Cocone.whisker_ι, NatTrans.op_app, Over.forgetCocone_ι_app,
+      Category.id_comp, i]
+    erw [Category.comp_id]
+    congr
+  · simp only [id_obj, comp_obj, Functor.comp_map, Iso.refl_hom, id_eq, eq_mpr_eq_cast,
+      const_obj_obj, parallelPair_map_right, Quiver.Hom.unop_op, Over.homMk_left, Iso.symm_hom,
+      Cones.postcompose_obj_pt, Fork.ofι_pt, Cones.postcompose_obj_π, NatTrans.comp_app,
+      Fork.ofι_π_app, parallelPair_obj_one, parallelPair.ext_inv_app, Iso.refl_inv,
+      Category.assoc, Sieve.generate_apply, Cone.whisker_pt, mapCone_pt, Cocone.op_pt,
+      Cocone.whisker_pt, Over.forgetCocone_pt, Cone.whisker_π, whiskerLeft_app, mapCone_π_app,
+      op_obj, fullSubcategoryInclusion.obj, Over.forget_obj, Cocone.op_π, Cocone.whisker_ι,
+      NatTrans.op_app, Over.forgetCocone_ι_app, Category.id_comp, i]
+    erw [Category.comp_id, ← Functor.map_comp]
+    congr
 
 lemma equalizerConditionMap_iff_nonempty_isLimit (P : Cᵒᵖ ⥤ D) ⦃X B : C⦄ (π : X ⟶ B)
     [HasPullback π π] : SingleEqualizerCondition P π ↔
