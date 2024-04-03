@@ -86,7 +86,7 @@ theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b)
     Irreducible (Φ ℚ a b) := by
   rw [← map_Phi a b (Int.castRingHom ℚ), ← IsPrimitive.Int.irreducible_iff_irreducible_map_cast]
   apply irreducible_of_eisenstein_criterion
-  · rwa [span_singleton_prime (Int.coe_nat_ne_zero.mpr hp.ne_zero), Int.prime_iff_natAbs_prime]
+  · rwa [span_singleton_prime (Int.natCast_ne_zero.mpr hp.ne_zero), Int.prime_iff_natAbs_prime]
   · rw [leadingCoeff_Phi, mem_span_singleton]
     exact mod_cast mt Nat.dvd_one.mp hp.ne_one
   · intro n hn
@@ -99,7 +99,7 @@ theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b)
   · simp only [degree_Phi, ← WithBot.coe_zero, WithBot.coe_lt_coe, Nat.succ_pos']
     decide
   · rw [coeff_zero_Phi, span_singleton_pow, mem_span_singleton]
-    exact mt Int.coe_nat_dvd.mp hp2b
+    exact mt Int.natCast_dvd_natCast.mp hp2b
   all_goals exact Monic.isPrimitive (monic_Phi a b)
 #align abel_ruffini.irreducible_Phi AbelRuffini.irreducible_Phi
 
