@@ -49,7 +49,7 @@ convenient to declare instances using `StarOrderedRing.ofNonnegIff'`.
 
 Porting note: dropped an unneeded assumption
 `add_le_add_left : ∀ {x y}, x ≤ y → ∀ z, z + x ≤ z + y` -/
-class StarOrderedRing (R : Type u) [NonUnitalSemiring R] [PartialOrder R] [StarRing R] where
+class StarOrderedRing (R : Type u) [NonUnitalSemiring R] [PartialOrder R] [StarRing R] : Prop where
   /-- characterization of the order in terms of the `StarRing` structure. -/
   le_iff :
     ∀ x y : R, x ≤ y ↔ ∃ p, p ∈ AddSubmonoid.closure (Set.range fun s => star s * s) ∧ y = x + p
