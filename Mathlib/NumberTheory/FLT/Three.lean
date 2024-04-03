@@ -61,18 +61,11 @@ private lemma three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a 
     (H : ∀ a b c : ℤ, c ≠ 0 → ¬ 3 ∣ a → ¬ 3 ∣ b  → 3 ∣ c → IsCoprime a b → a ^ 3 + b ^ 3 ≠ c ^ 3) :
     3 ∣ b := by
   have hbc : IsCoprime (-b) (-c) := by
-    refine IsCoprime.neg_neg <| isCoprime_of_prime_dvd  ?_<| (fun p hp hpb hpc ↦ hp.not_dvd_one ?_)
-    · simp [hc]
-    · rw [← Hgcd]
-      refine Finset.dvd_gcd_iff.2 (fun x hx ↦ ?_)
-      simp only [Finset.mem_insert, Finset.mem_singleton] at hx
-      rcases hx with (hx | hx | hx)
-      · simp only [hx, id_eq]
-        refine hp.dvd_of_dvd_pow (n := 3) ?_
-        rw [add_eq_zero_iff_eq_neg, ← eq_sub_iff_add_eq] at HF
-        exact HF ▸ dvd_sub (dvd_neg.2 (dvd_pow hpc (by decide))) (dvd_pow hpb (by decide))
-      · exact hx ▸ hpb
-      · exact hx ▸ hpc
+    refine IsCoprime.neg_neg ?_
+    rw [add_comm (a ^ 3), add_assoc, add_comm (a ^ 3), ← add_assoc] at HF
+    refine isCoprime_of_gcd_eq_one_of_FLT hc ?_ HF
+    convert Hgcd using 2
+    rw [Finset.pair_comm, Finset.Insert.comm]
   by_contra! h3b
   by_cases h3c : 3 ∣ c
   · apply h3b
