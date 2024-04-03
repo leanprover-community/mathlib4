@@ -38,7 +38,7 @@ reflections unless necessary; instead, we state our results in terms of $B$ wher
 * `CoxeterMatrix.group`
 * `CoxeterSystem`
 * `IsCoxeterGroup`
-* `CoxeterSystem.simpleReflection`
+* `CoxeterSystem.simple`
 
 ## References
 
