@@ -114,6 +114,9 @@ lemma term_sum_one (N : ℕ) : term_sum 1 N = log (N + 1) - harmonic (N + 1) + 1
     push_cast
     ring_nf
 
+/-- The topological sum of `ZetaAsymptotics.term (n + 1) 1` over all `n : ℕ` is `1 - γ`. This is
+proved by directly evaluating the sum of the first `N` terms and using the limit definition of `γ`.
+-/
 lemma term_tsum_one : HasSum (fun n ↦ term (n + 1) 1) (1 - eulerMascheroniConstant) := by
   rw [hasSum_iff_tendsto_nat_of_nonneg (fun n ↦ term_nonneg (n + 1) 1)]
   show Tendsto (fun N ↦ term_sum 1 N) atTop _
@@ -181,6 +184,9 @@ lemma term_sum_of_lt (N : ℕ) {s : ℝ} (hs : 1 < s) :
       congr 1
       ring_nf
 
+/-- For `1 < s`, the topological sum of `ZetaAsymptotics.term (n + 1) s` over all `n : ℕ` is
+`1 / (s - 1) - ζ s / s`.
+-/
 lemma term_tsum_of_lt {s : ℝ} (hs : 1 < s) :
     term_tsum s = (1 / (s - 1) - 1 / s * ∑' n : ℕ, 1 / (n + 1 : ℝ) ^ s) := by
   apply HasSum.tsum_eq
@@ -213,6 +219,8 @@ lemma term_tsum_of_lt {s : ℝ} (hs : 1 < s) :
           norm_cast
           all_goals positivity
 
+/-- Reformulation of `ZetaAsymptotics.term_tsum_of_lt` which is useful for some computations
+below. -/
 lemma zeta_limit_aux1 {s : ℝ} (hs : 1 < s) :
     (∑' n : ℕ, 1 / (n + 1 : ℝ) ^ s) - 1 / (s - 1) = 1 - s * term_tsum s := by
   rw [term_tsum_of_lt hs]
@@ -330,6 +338,35 @@ theorem _root_.tendsto_riemannZeta_sub_one_div :
         filter_upwards [self_mem_nhdsWithin] with x hx
         field_simp [sub_ne_zero.mpr <| mem_compl_singleton_iff.mp hx]
       · exact ((tendsto_id.sub tendsto_const_nhds).mono_left nhdsWithin_le_nhds).const_mul _
+
+lemma _root_.isBigO_nhds_ne_iff {α E F : Type*} [TopologicalSpace α] [Norm E] [SeminormedAddGroup F]
+    {f : α → E} {g : α → F} {a : α} (h : ‖g a‖ = 0 → ‖f a‖ = 0) :
+    f =O[𝓝[≠] a] g ↔ f =O[𝓝 a] g := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.mono nhdsWithin_le_nhds⟩
+  simp only [Asymptotics.isBigO_iff, eventually_nhdsWithin_iff] at h ⊢
+  obtain ⟨c, hc⟩ := h
+  use max c (‖f a‖ / ‖g a‖)
+  filter_upwards [hc] with b hb
+  rcases eq_or_ne a b with rfl | hb'
+  · transitivity (‖f a‖ / ‖g a‖) * ‖g a‖
+    · by_cases hf : ‖f a‖ = 0
+      · rw [hf, zero_div, zero_mul]
+      · exact le_of_eq (div_mul_cancel₀ _ (show ‖g a‖ ≠ 0 by tauto)).symm
+    · simp only [max_mul_of_nonneg _ _ (norm_nonneg _), le_max_iff, le_refl, or_true]
+  · refine (hb hb'.symm).trans ?_
+    simp only [max_mul_of_nonneg _ _ (norm_nonneg _), le_max_iff, le_refl, true_or]
+
+lemma _root_.isBigO_one_nhds_ne_iff {α E F : Type*} [TopologicalSpace α]
+    [Norm E] [SeminormedAddCommGroup F] [One F] [NormOneClass F]
+    {f : α → E} (a : α) :
+    f =O[𝓝[≠] a] (fun _ ↦ 1 : α → F) ↔ f =O[𝓝 a] (fun _ ↦ 1 : α → F) :=
+  isBigO_nhds_ne_iff (by simp)
+
+lemma _root_.isBigO_riemannZeta_sub_one_div
+    {F : Type*} [SeminormedAddCommGroup F] [One F] [NormOneClass F] :
+    (fun s ↦ riemannZeta s - 1 / (s - 1)) =O[𝓝 1] (fun _ ↦ 1 : ℂ → F) := by
+  have := _root_.tendsto_riemannZeta_sub_one_div.isBigO_one (F := F)
+  rwa [isBigO_one_nhds_ne_iff] at this
 
 end continuity
 
