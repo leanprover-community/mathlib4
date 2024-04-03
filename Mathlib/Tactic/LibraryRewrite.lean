@@ -176,16 +176,20 @@ structure Rewrite extends RewriteLemma where
 /-- If `rwLemma` can be used to rewrite `e`, return the rewrite. -/
 def checkLemma (rwLemma : RewriteLemma) (e : Expr) : MetaM (Option Rewrite) := do
   let thm ← mkConstWithFreshMVarLevels rwLemma.name
+  withTraceNodeBefore `rw?? (return m!
+    "rewriting {e} by {if rwLemma.symm then "← " else ""}{thm}") do
   let (mvars, binderInfos, eqn) ← forallMetaTelescope (← inferType thm)
   let some (lhs, rhs) := matchEqn? eqn | return none
   let (lhs, rhs) := if rwLemma.symm then (rhs, lhs) else (lhs, rhs)
-  unless ← withReducible (isDefEq lhs e) do return none
-
+  let eq ← withTraceNodeBefore `rw??.isDefEq (pure m! "unifying {e} =?= {lhs}") do
+    withReducible (isDefEq lhs e)
+  unless eq do return none
   let mut extraGoals := #[]
   for mvar in mvars, bi in binderInfos do
     -- we need to check that all instances can be synthesized
     if bi.isInstImplicit then
-      let .some inst ← trySynthInstance (← mvar.mvarId!.getType) | return none
+      let some inst ← withTraceNodeBefore `rw?? (pure m! "synthesising {← mvar.mvarId!.getType}") do
+        synthInstance? (← mvar.mvarId!.getType) | return none
       unless ← isDefEq inst mvar do
         return none
     else
@@ -195,6 +199,9 @@ def checkLemma (rwLemma : RewriteLemma) (e : Expr) : MetaM (Option Rewrite) := d
   let replacement ← instantiateMVars rhs
   let proof ← instantiateMVars (mkAppN thm mvars)
   return some { rwLemma with proof, replacement, extraGoals }
+
+initialize
+  registerTraceClass `rw??
 
 /-- Return all applicable library rewrites of `e`.
 The `Bool` indicates whether the lemmas are from the current file.
@@ -513,13 +520,8 @@ def elabrw??Command : Command.CommandElab := fun stx =>
     let e ← Term.elabTerm stx[1] none
     Term.synthesizeSyntheticMVarsNoPostponing
     let e ← Term.levelMVarToParam (← instantiateMVars e)
-    let t0 ← IO.monoMsNow
     _ ← getCandidates e
-    let t1 ← IO.monoMsNow
-    logInfo m! "discrimination tree lookup took {t1-t0}ms"
     let rewrites ← getRewrites e
-    let t2 ← IO.monoMsNow
-    logInfo m! "checking the candidates took {t2 + t0 - 2*t1}ms"
     let rewrites ← rewrites.mapM fun (rewrites, isLocal) =>
       return (← filterRewrites e rewrites (·.replacement), isLocal)
     let sections ← liftMetaM $ rewrites.filterMapM SectionToMessageData

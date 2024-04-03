@@ -1,24 +1,27 @@
 import Mathlib
-set_option profiler true
-set_option profiler.threshold 20
 
-#rw?? 42+90
-#check HasSum.update'
-#synth T3Space ℂ
+-- set_option trace.profiler true
+-- set_option trace.profiler.threshold 5
+-- set_option trace.rw?? true
 
+variable (A B : Set Nat)
 
-open Qq Lean Meta
-run_meta
-  let e := q(T3Space ℂ)
-  let x ← synthInstance? e
-  logInfo m! "{e}"
+/--
+info: Unfolds for 0:
+· ↑0
+· NatCast.natCast 0
+· Rat.ofInt ↑0
+-/
+#guard_msgs in
+#unfold? (0:Rat)
+
 /--
 info: Unfolds for -42:
 · Int.negOfNat 42
 · Int.negSucc 41
 -/
 #guard_msgs in
-#rw?? -42
+#unfold? -42
 
 -- Rat.mk is private, so it doesn't show up here
 /--
@@ -28,7 +31,7 @@ info: Unfolds for 42:
 · Rat.ofInt ↑42
 -/
 #guard_msgs in
-#rw?? (42 : Rat)
+#unfold? (42 : ℚ )
 
 /--
 info: Unfolds for 42:
@@ -37,7 +40,7 @@ info: Unfolds for 42:
 · { cauchy := ↑42 }
 -/
 #guard_msgs in
-#rw?? (42 : Real)
+#unfold? (42 : Real)
 
 variable (n : Nat)
 
@@ -50,7 +53,8 @@ info: Unfolds for n ∈ {n}:
 · n = n
 -/
 #guard_msgs in
-#rw?? n ∈ ({n} : Set Nat)
+#unfold? n ∈ ({n} : Set Nat)
+
 variable (A B : Set Nat)
 /--
 info: Unfolds for n ∈ A ∪ B:
@@ -61,14 +65,9 @@ info: Unfolds for n ∈ A ∪ B:
 · n ∈ A ∨ n ∈ B
 -/
 #guard_msgs in
-#rw?? n ∈ A ∪ B
-
+#unfold? n ∈ A ∪ B
 
 /--
-info: discrimination tree lookup took 3ms
----
-info: checking the candidates took 131ms
----
 info: Pattern n + 1
 · Nat.succ n
   Nat.add_one
@@ -118,6 +117,9 @@ Pattern n + m
 · List.nthLe (List.range' n ?m) 1 ?H
   ⊢ 1 < List.length (List.range' n ?m)
   List.nthLe_range'_1
+· ?a + n - (?a - 1)
+  ⊢ 1 ≤ ?a
+  Nat.add_sub_sub_cancel
 
 Pattern a + b
 · 1 + n
@@ -155,10 +157,6 @@ Pattern a + b
 #rw?? n+1
 
 /--
-info: discrimination tree lookup took 4ms
----
-info: checking the candidates took 98ms
----
 info: Pattern n / 2
 · Nat.div2 n
   Nat.div2_val
@@ -211,10 +209,6 @@ Pattern x / y
 open BigOperators
 
 /--
-info: discrimination tree lookup took 5ms
----
-info: checking the candidates took 159ms
----
 info: Pattern ∑ x in s, (f x + g x)
 · ∑ x in Finset.range n, x + ∑ x in Finset.range n, 1
   Finset.sum_add_distrib
@@ -346,7 +340,7 @@ Pattern ∑ x in s, f x
   ⊢ ∀ a ∈ ?s₁, a ∉ Finset.range n → a + 1 = 0
   Finset.sum_union_eq_right
 · ∑ x in Finset.preimage (Finset.range n) ?f ⋯, (?f x + 1)
-  ⊢ ?α → ℕ
+  ⊢ ?ι → ℕ
   ⊢ Set.BijOn ?f (?f ⁻¹' ↑(Finset.range n)) ↑(Finset.range n)
   Finset.sum_preimage_of_bij
 · ∑ᶠ (i : ℕ) (_ : i ∈ ?s), (i + 1)
@@ -361,7 +355,7 @@ Pattern ∑ x in s, f x
   ⊢ ∀ x ∈ ?s₂, x + 1 = ?g x
   Finset.sum_congr
 · ∑ x in Finset.preimage (Finset.range n) ?f ?hf, (?f x + 1)
-  ⊢ ?α → ℕ
+  ⊢ ?ι → ℕ
   ⊢ Set.InjOn ?f (?f ⁻¹' ↑(Finset.range n))
   ⊢ ∀ x ∈ Finset.range n, x ∉ Set.range ?f → x + 1 = 0
   Finset.sum_preimage
