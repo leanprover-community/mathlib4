@@ -184,13 +184,16 @@ protected theorem pullback {X Y Z A : C} {g : Y ⟶ Z} {a₁ a₂ : A ⟶ Y} (h 
   · ext
     · simp [s.condition]
     · simp
-  · -- FIXME nightly-testing
-    sorry
-    -- apply pullback.hom_ext
-    -- · simpa using hm WalkingCospan.left =≫ pullback.fst
-    -- · apply PullbackCone.IsLimit.hom_ext h.isLimit
-    --   · simpa using hm WalkingCospan.left =≫ pullback.snd
-    --   · simpa using hm WalkingCospan.right =≫ pullback.snd
+  · -- Adaptation note: nightly-2024-04-01
+    -- This `symm` (or the following ones that undo it) wasn't previously necessary.
+    symm
+    apply pullback.hom_ext
+    · symm
+      simpa using hm WalkingCospan.left =≫ pullback.fst
+    · symm
+      apply PullbackCone.IsLimit.hom_ext h.isLimit
+      · simpa using hm WalkingCospan.left =≫ pullback.snd
+      · simpa using hm WalkingCospan.right =≫ pullback.snd
 #align category_theory.is_kernel_pair.pullback CategoryTheory.IsKernelPair.pullback
 
 theorem mono_of_isIso_fst (h : IsKernelPair f a b) [IsIso a] : Mono f := by
