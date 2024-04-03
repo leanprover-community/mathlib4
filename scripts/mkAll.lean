@@ -43,9 +43,7 @@ open IO.FS IO.Process Name Cli in
 /-- Implementation of the `mk_all` command line program. -/
 def mkAllCLI (args : Parsed) : IO UInt32 := do
   -- Check whether the `--git` flag was set
-  let git := match args.flag? "git" with
-  | some _ => true
-  | none => false
+  let git := (args.flag? "git").isSome
   -- Check whether the `--lib` flag was set. If so, build the file corresponding to the library
   -- passed to `--lib`. Else build the standard mathlib libraries.
   let libs := match args.flag? "lib" with
