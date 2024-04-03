@@ -123,12 +123,8 @@ instance : Inhabited (ClosureOperator α) :=
 
 variable {α} [PartialOrder α] (c : ClosureOperator α)
 
-theorem ext : ∀ c₁ c₂ : ClosureOperator α, (c₁ : α → α) = (c₂ : α → α) → c₁ = c₂ :=
-  @DFunLike.ext' _ _ _ _
-#align closure_operator.ext ClosureOperator.ext
-
 @[ext]
-theorem ext' : ∀ c₁ c₂ : ClosureOperator α, (∀ x, c₁ x = c₂ x) → c₁ = c₂ :=
+theorem ext : ∀ c₁ c₂ : ClosureOperator α, (∀ x, c₁ x = c₂ x) → c₁ = c₂ :=
   DFunLike.ext
 
 /-- Constructor for a closure operator using the weaker idempotency axiom: `f (f x) ≤ f x`. -/
@@ -226,7 +222,7 @@ lemma closure_isGLB (x : α) : IsGLB { y | x ≤ y ∧ c.IsClosed y } (c x) wher
 
 theorem ext_isClosed (c₁ c₂ : ClosureOperator α)
     (h : ∀ x, c₁.IsClosed x ↔ c₂.IsClosed x) : c₁ = c₂ :=
-  ext' c₁ c₂ <| fun x => IsGLB.unique (c₁.closure_isGLB x) <|
+  ext c₁ c₂ <| fun x => IsGLB.unique (c₁.closure_isGLB x) <|
     (Set.ext (and_congr_right' <| h ·)).substr (c₂.closure_isGLB x)
 
 /-- A closure operator is equal to the closure operator obtained by feeding `c.closed` into the
