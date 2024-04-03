@@ -248,6 +248,14 @@ def followers : HashSet Name :=
     `Mathlib.Tactic.Tauto.tauto,
     `Mathlib.Tactic.splitIfs }
 
+/-- By default, if a `SyntaxNodeKind` is not special-cased here, then the linter assumes that
+the tactic will use the goal as well: this heuristic works well with `exact`, `refine`, `apply`.
+For tactics such as `cases` this is not true: for these tactics, `usesGoal?` yields `false. -/
+def usesGoal? : SyntaxNodeKind → Bool
+  | ``Lean.Parser.Tactic.cases => false
+  | `Mathlib.Tactic.cases'     => false
+  | _ => true
+
 /-- `getFVarIdCandidates fv name lctx` takes an input an `FVarId`, a `Name` and a `LocalContext`.
 It returns an array of guesses for a "best fit" `FVarId` in the given `LocalContext`.
 The first entry of the array is the input `FVarId` `fv`, if it is present.
@@ -327,13 +335,12 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
             stains := stains.push (l, (d, s))
 
       else
-        let stained_in_syntax := toStained s
+        let stained_in_syntax := if usesGoal? skind then (toStained s).push d else toStained s
         if !followers.contains skind then
           for currMv0 in mvs0 do
             let lctx0 := ((ctx0.decls.find? currMv0).getD default).lctx
             let foundFvs := (stained_in_syntax.map (·.toFMVarId currMv0 lctx0)).flatten
-            let locsBefore := foundFvs ++ (d.toFMVarId currMv0 lctx0).filter (!foundFvs.contains ·)
-            for l in locsBefore do
+            for l in foundFvs do
               if let some (_stdLoc, (st, kind)) := stains.find? (Prod.fst · == l) then
                 msgs := msgs.push (s, kind, st)
 
