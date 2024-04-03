@@ -7,7 +7,6 @@ import Mathlib.Algebra.AddTorsor
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.Topology.Algebra.ConstMulAction
-import Mathlib.Algebra.Module.ULift
 
 #align_import topology.algebra.mul_action from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 
