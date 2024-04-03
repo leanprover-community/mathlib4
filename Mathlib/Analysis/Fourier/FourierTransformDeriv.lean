@@ -419,7 +419,7 @@ namespace Real
 open VectorFourier
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
-  [MeasurableSpace V] [BorelSpace V] [CompleteSpace E] {f : V → E}
+  [MeasurableSpace V] [BorelSpace V] {f : V → E}
 
 /-- The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of
     `fun v ↦ -2 * π * I ⟪v, ⬝⟫ f v`. -/
@@ -441,7 +441,7 @@ theorem differentiable_fourierIntegral
   VectorFourier.differentiable_fourierIntegral (innerSL ℝ) hf_int hvf_int
 
 /-- The Fourier integral of the Fréchet derivative of a function is obtained by multiplying the
-Fourier integral of the original function by `-⟪v, w⟫`. -/
+Fourier integral of the original function by `2πI ⟪v, w⟫`. -/
 theorem fourierIntegral_fderiv
     (hf : Integrable f) (h'f : Differentiable ℝ f) (hf' : Integrable (fderiv ℝ f)) :
     𝓕 (fderiv ℝ f) = fourierSMulRight (-innerSL ℝ) (𝓕 f) := by
@@ -490,6 +490,25 @@ theorem deriv_fourierIntegral
     deriv (𝓕 f) = 𝓕 (fun x : ℝ ↦ (-2 * π * I * x) • f x) := by
   ext x
   exact (hasDerivAt_fourierIntegral hf hf' x).deriv
+
+/-- The Fourier integral of the Fréchet derivative of a function is obtained by multiplying the
+Fourier integral of the original function by `2πI x`. -/
+theorem fourierIntegral_deriv
+    {f : ℝ → E} (hf : Integrable f) (h'f : Differentiable ℝ f) (hf' : Integrable (deriv f)) :
+    𝓕 (deriv f) = fun (x : ℝ) ↦ (2 * π * I * x) • (𝓕 f x) := by
+  ext x
+  have I : Integrable (fun x ↦ fderiv ℝ f x) := by
+    simp_rw [← deriv_fderiv]
+    change Integrable (fun x ↦ ContinuousLinearMap.smulRightL _ _ _ 1 (deriv f x)) volume
+    apply ContinuousLinearMap.integrable_comp _ hf'
+  have : 𝓕 (deriv f) x = 𝓕 (fderiv ℝ f) x 1 := by
+    simp_rw [fourierIntegral_eq, deriv,
+      ContinuousLinearMap.integral_apply ((fourierIntegral_convergent_iff _).2 I)]
+    rfl
+  rw [this, fourierIntegral_fderiv hf h'f I]
+  have : x • 𝓕 f x = (x : ℂ) • 𝓕 f x := rfl
+  simp only [fourierSMulRight_apply, ContinuousLinearMap.neg_apply, innerSL_apply, smul_smul,
+    RCLike.inner_apply, conj_trivial, mul_one, neg_smul, smul_neg, neg_neg, neg_mul, this]
 
 theorem iteratedDeriv_fourierIntegral
     {f : ℝ → E} {N : ℕ∞} {n : ℕ}
