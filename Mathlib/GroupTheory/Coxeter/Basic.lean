@@ -69,7 +69,7 @@ variable {B B' : Type*} (M : CoxeterMatrix B) (e : B ≃ B')
 That is, the relation $(s_i s_{i'})^{M_{i, i'}}$, considered as an element of the free group
 on $\{s_i\}_{i \in B}$.
 If $M_{i, i'} = 0$, then this is the identity, indicating that there is no relation between
-$s_i$ and $s_i'$. -/
+$s_i$ and $s_{i'}$. -/
 def relation (i i' : B) : FreeGroup B := (FreeGroup.of i * FreeGroup.of i') ^ M i i'
 
 /-- The set of all Coxeter relations associated to the Coxeter matrix $M$. -/
@@ -81,7 +81,7 @@ def group := PresentedGroup M.relationsSet
 
 instance : Group M.group := QuotientGroup.Quotient.group _
 
-/-- The simple reflection of the Coxeter group `M.coxeterGroup` at the index `i`. -/
+/-- The simple reflection of the Coxeter group `M.group` at the index `i`. -/
 def simple (i : B) : M.group := PresentedGroup.of i
 
 theorem reindex_relationsSet :
