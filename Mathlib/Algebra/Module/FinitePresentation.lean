@@ -110,8 +110,11 @@ lemma Module.finitePresentation_of_free [Module.Free R M] [Module.Finite R M] :
   Module.finitePresentation_of_free_of_surjective LinearMap.id (⟨·, rfl⟩)
     (by simpa using Submodule.fg_bot)
 
+variable {ι} [Finite ι]
+
 instance : Module.FinitePresentation R R := Module.finitePresentation_of_free _ _
-instance {ι} : Module.FinitePresentation R (ι →₀ R) := Module.finitePresentation_of_free _ _
+instance : Module.FinitePresentation R (ι →₀ R) := Module.finitePresentation_of_free _ _
+instance : Module.FinitePresentation R (ι → R) := Module.finitePresentation_of_free _ _
 
 lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M] (l : M →ₗ[R] N)
     (hl : Function.Surjective l) (hl' : Submodule.FG (LinearMap.ker l)) :
