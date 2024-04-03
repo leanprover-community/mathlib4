@@ -414,12 +414,10 @@ lemma singletonIsClosed (a : α) : IsClosed ({a} : Set α) := by
   rw [← singletonUpperLower]
   apply IsClosed.inter
   · rw [← isClosed_preimage_ofLawson]
-    apply LowerClosed_implies_LawsonClosed
-    apply IsLower.isClosed_upperClosure
-    exact finite_singleton a
+    exact LowerClosed_implies_LawsonClosed _ (IsLower.isClosed_upperClosure (finite_singleton a))
   · rw [← isClosed_preimage_ofLawson]
-    apply ScottClosed_implies_LawsonClosed
     simp only [lowerClosure_singleton, LowerSet.coe_Iic]
+    apply ScottClosed_implies_LawsonClosed
     exact Topology.IsScott.isClosed_Iic
 
 instance (priority := 90) t0Space : T0Space α where
