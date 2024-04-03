@@ -661,7 +661,9 @@ theorem normSq_pos {z : ℂ} : 0 < normSq z ↔ z ≠ 0 :=
   (normSq_nonneg z).lt_iff_ne.trans <| not_congr (eq_comm.trans normSq_eq_zero)
 #align complex.norm_sq_pos Complex.normSq_pos
 
-@[simp]
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+@[simp, nolint simpNF]
 theorem normSq_neg (z : ℂ) : normSq (-z) = normSq z := by simp [normSq]
 #align complex.norm_sq_neg Complex.normSq_neg
 

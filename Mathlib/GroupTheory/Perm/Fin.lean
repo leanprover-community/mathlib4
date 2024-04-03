@@ -54,7 +54,9 @@ theorem Equiv.Perm.decomposeFin_symm_apply_succ {n : ℕ} (e : Perm (Fin n)) (p 
         swap_apply_def, Ne.symm h]
 #align equiv.perm.decompose_fin_symm_apply_succ Equiv.Perm.decomposeFin_symm_apply_succ
 
-@[simp]
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+@[simp, nolint simpNF]
 theorem Equiv.Perm.decomposeFin_symm_apply_one {n : ℕ} (e : Perm (Fin (n + 1))) (p : Fin (n + 2)) :
     Equiv.Perm.decomposeFin.symm (p, e) 1 = swap 0 p (e 0).succ := by
   rw [← Fin.succ_zero_eq_one, Equiv.Perm.decomposeFin_symm_apply_succ e p 0]
