@@ -388,7 +388,7 @@ set_option push_neg.use_distrib true in
   at least one of them is greater than 1 and both are positive. -/
 lemma one_lt_mul_iff : 1 < m * n ↔ 0 < m ∧ 0 < n ∧ (1 < m ∨ 1 < n) := by
   constructor <;> intro h
-  · by_contra h'; push_neg at h'; simp [Nat.le_zero] at h'
+  · by_contra h'; push_neg at h'; simp only [le_zero_eq] at h'
     obtain rfl | rfl | h' := h'
     · simp at h
     · simp at h
