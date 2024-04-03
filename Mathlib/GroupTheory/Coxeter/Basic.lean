@@ -95,7 +95,7 @@ theorem reindex_relationsSet :
       simp [relation, reindex_apply, M']
   _ = _ := by simp [Set.range_comp]; rfl
 
-/-- The isomorphism between the Coxeter group associated to the reindexed matrix `reindex e M` and
+/-- The isomorphism between the Coxeter group associated to the reindexed matrix `M.reindex e` and
 the Coxeter group associated to `M`. -/
 def reindexGroupEquiv : (M.reindex e).group ≃* M.group :=
   (QuotientGroup.congr (Subgroup.normalClosure M.relationsSet)
