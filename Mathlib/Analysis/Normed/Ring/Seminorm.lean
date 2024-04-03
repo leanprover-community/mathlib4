@@ -328,7 +328,7 @@ variable {R : Type*} [Ring R]
   This could be generalised to RingNorm, but MulRingNorm does not extend this. -/
 
 def equiv (f : MulRingNorm R) (g : MulRingNorm R) :=
-  ∃ c : ℝ, 0 < c ∧ (λ x : R => (f x) ^ c) = g
+  ∃ c : ℝ, 0 < c ∧ (fun x => (f x) ^ c) = g
 
 /- Equivalence of multiplicative ring norms is an equivalence relation
   1. is reflexive-/
