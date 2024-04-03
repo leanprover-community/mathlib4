@@ -231,7 +231,7 @@ def ignored : HashSet Name :=
 
 /-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
   `simp`, `simp_all`, `simp_a`, `rfl`, `omega`, `abel`, `ring`, `linarith`, `nlinarith`,
-  `norm_cast`, `aesop`, `tauto`.
+  `norm_cast`, `aesop`, `tauto`, `split_ifs`.
 -/
 def followers : HashSet Name :=
   { ``Lean.Parser.Tactic.simp,
@@ -245,7 +245,8 @@ def followers : HashSet Name :=
     `nlinarith,
     ``Lean.Parser.Tactic.tacticNorm_cast_,
     `Aesop.Frontend.Parser.aesopTactic,
-    `Mathlib.Tactic.Tauto.tauto }
+    `Mathlib.Tactic.Tauto.tauto,
+    `Mathlib.Tactic.splitIfs }
 
 /-- `getFVarIdCandidates fv name lctx` takes an input an `FVarId`, a `Name` and a `LocalContext`.
 It returns an array of guesses for a "best fit" `FVarId` in the given `LocalContext`.
