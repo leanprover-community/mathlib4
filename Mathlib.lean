@@ -267,7 +267,10 @@ import Mathlib.Algebra.Homology.DerivedCategory.TruncGE
 import Mathlib.Algebra.Homology.DerivedCategory.TruncLE
 import Mathlib.Algebra.Homology.DifferentialObject
 import Mathlib.Algebra.Homology.Embedding.Basic
+import Mathlib.Algebra.Homology.Embedding.Extend
 import Mathlib.Algebra.Homology.Embedding.ExtendHomology
+import Mathlib.Algebra.Homology.Embedding.Restriction
+import Mathlib.Algebra.Homology.Embedding.StupidTrunc
 import Mathlib.Algebra.Homology.Embedding.TruncGE
 import Mathlib.Algebra.Homology.Exact
 import Mathlib.Algebra.Homology.ExactSequence
