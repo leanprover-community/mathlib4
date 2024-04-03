@@ -33,6 +33,7 @@ Mathlib/Data/List/Card.lean : line 12 : ERR_MOD : Module docstring missing, or t
 Mathlib/Data/Matrix/Basic.lean : line 1 : ERR_NUM_LIN : 2900 file contains 2715 lines, try to split it up
 Mathlib/Data/Multiset/Basic.lean : line 1 : ERR_NUM_LIN : 3300 file contains 3196 lines, try to split it up
 Mathlib/Data/MvPolynomial/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1705 lines, try to split it up
+Mathlib/Data/Nat/Defs.lean#L1: ERR_NUM_LIN: 1800 file contains 1642 lines, try to split it up
 Mathlib/Data/Num/Lemmas.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1771 lines, try to split it up
 Mathlib/Data/Ordmap/Ordset.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1795 lines, try to split it up
 Mathlib/Data/Polynomial/Degree/Definitions.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1689 lines, try to split it up
