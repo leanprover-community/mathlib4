@@ -1680,7 +1680,7 @@ theorem preimage_mul_sphere (a b : E) (r : ℝ) : (b * ·) ⁻¹' sphere a r = s
 @[to_additive norm_nsmul_le]
 theorem norm_pow_le_mul_norm (n : ℕ) (a : E) : ‖a ^ n‖ ≤ n * ‖a‖ := by
   induction' n with n ih; · simp
-  simpa only [pow_succ', Nat.cast_succ, add_mul, one_mul] using norm_mul_le_of_le ih le_rfl
+  simpa only [pow_succ, Nat.cast_succ, add_mul, one_mul] using norm_mul_le_of_le ih le_rfl
 #align norm_pow_le_mul_norm norm_pow_le_mul_norm
 #align norm_nsmul_le norm_nsmul_le
 
@@ -1917,9 +1917,8 @@ theorem norm_cast_real (m : ℤ) : ‖(m : ℝ)‖ = ‖m‖ :=
   rfl
 #align int.norm_cast_real Int.norm_cast_real
 
-theorem norm_eq_abs (n : ℤ) : ‖n‖ = |n| :=
-  show ‖(n : ℝ)‖ = |n| by rw [Real.norm_eq_abs, cast_abs]
--- Porting note: I'm not sure why this isn't `rfl` anymore, but I suspect it's about coercions
+theorem norm_eq_abs (n : ℤ) : ‖n‖ = |(n : ℝ)| :=
+  rfl
 #align int.norm_eq_abs Int.norm_eq_abs
 
 @[simp]
@@ -1930,7 +1929,7 @@ theorem _root_.NNReal.coe_natAbs (n : ℤ) : (n.natAbs : ℝ≥0) = ‖n‖₊ :
   NNReal.eq <|
     calc
       ((n.natAbs : ℝ≥0) : ℝ) = (n.natAbs : ℤ) := by simp only [Int.cast_ofNat, NNReal.coe_nat_cast]
-      _ = |n| := by simp only [Int.coe_natAbs, Int.cast_abs]
+      _ = |(n : ℝ)| := by simp only [Int.coe_natAbs, Int.cast_abs]
       _ = ‖n‖ := (norm_eq_abs n).symm
 #align nnreal.coe_nat_abs NNReal.coe_natAbs
 

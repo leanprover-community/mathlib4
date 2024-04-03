@@ -988,7 +988,7 @@ theorem neg_val {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = if a = 0 then 0 e
   apply Nat.mod_eq_of_lt
   apply Nat.sub_lt (NeZero.pos n)
   contrapose! h
-  rwa [le_zero_iff, val_eq_zero] at h
+  rwa [Nat.le_zero, val_eq_zero] at h
 #align zmod.neg_val ZMod.neg_val
 
 theorem val_neg_of_ne_zero {n : ℕ} [nz : NeZero n] (a : ZMod n) [na : NeZero a] :
@@ -1163,7 +1163,7 @@ theorem val_eq_ite_valMinAbs {n : ℕ} [NeZero n] (a : ZMod n) :
 
 theorem prime_ne_zero (p q : ℕ) [hp : Fact p.Prime] [hq : Fact q.Prime] (hpq : p ≠ q) :
     (q : ZMod p) ≠ 0 := by
-  rwa [← Nat.cast_zero, Ne.def, eq_iff_modEq_nat, Nat.modEq_zero_iff_dvd, ←
+  rwa [← Nat.cast_zero, Ne, eq_iff_modEq_nat, Nat.modEq_zero_iff_dvd, ←
     hp.1.coprime_iff_not_dvd, Nat.coprime_primes hp.1 hq.1]
 #align zmod.prime_ne_zero ZMod.prime_ne_zero
 

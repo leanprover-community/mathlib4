@@ -242,7 +242,7 @@ theorem count_bagInter {a : α} :
       by_cases ab : a = b
       · rw [if_pos ab, Nat.sub_add_cancel]
         rwa [succ_le_iff, count_pos_iff_mem, ab]
-      · rw [if_neg ab, Nat.sub_zero, add_zero, add_zero]
+      · rw [if_neg ab, Nat.sub_zero, Nat.add_zero, Nat.add_zero]
     · rw [cons_bagInter_of_neg _ hb, count_bagInter]
       by_cases ab : a = b
       · rw [← ab] at hb

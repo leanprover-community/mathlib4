@@ -229,7 +229,7 @@ def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : PMF α := by
   refine' ofFinset (fun a => if a ∈ s then s.card⁻¹ else 0) s _ _
   · simp only [Finset.sum_ite_mem, Finset.inter_self, Finset.sum_const, nsmul_eq_mul]
     have : (s.card : ℝ≥0∞) ≠ 0 := by
-      simpa only [Ne.def, Nat.cast_eq_zero, Finset.card_eq_zero] using
+      simpa only [Ne, Nat.cast_eq_zero, Finset.card_eq_zero] using
         Finset.nonempty_iff_ne_empty.1 hs
     exact ENNReal.mul_inv_cancel this <| ENNReal.nat_ne_top s.card
   · exact fun x hx => by simp only [hx, if_false]

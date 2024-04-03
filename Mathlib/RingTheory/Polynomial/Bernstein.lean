@@ -195,7 +195,7 @@ theorem iterate_derivative_at_0 (n ν : ℕ) :
 
 theorem iterate_derivative_at_0_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n) :
     (Polynomial.derivative^[ν] (bernsteinPolynomial R n ν)).eval 0 ≠ 0 := by
-  simp only [Int.coe_nat_eq_zero, bernsteinPolynomial.iterate_derivative_at_0, Ne.def,
+  simp only [Int.coe_nat_eq_zero, bernsteinPolynomial.iterate_derivative_at_0, Ne,
     Nat.cast_eq_zero]
   simp only [← ascPochhammer_eval_cast]
   norm_cast
@@ -234,7 +234,7 @@ theorem iterate_derivative_at_1 (n ν : ℕ) (h : ν ≤ n) :
 
 theorem iterate_derivative_at_1_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n) :
     (Polynomial.derivative^[n - ν] (bernsteinPolynomial R n ν)).eval 1 ≠ 0 := by
-  rw [bernsteinPolynomial.iterate_derivative_at_1 _ _ _ h, Ne.def, neg_one_pow_mul_eq_zero_iff, ←
+  rw [bernsteinPolynomial.iterate_derivative_at_1 _ _ _ h, Ne, neg_one_pow_mul_eq_zero_iff, ←
     Nat.cast_succ, ← ascPochhammer_eval_cast, ← Nat.cast_zero, Nat.cast_inj]
   exact (ascPochhammer_pos _ _ (Nat.succ_pos ν)).ne'
 #align bernstein_polynomial.iterate_derivative_at_1_ne_zero bernsteinPolynomial.iterate_derivative_at_1_ne_zero
@@ -324,7 +324,7 @@ theorem sum_smul (n : ℕ) :
         simp only [← nat_cast_mul, Nat.succ_eq_add_one, Nat.add_succ_sub_one, add_zero, pow_succ]
         push_cast
         ring
-    rw [add_pow, (pderiv true).map_sum, (MvPolynomial.aeval e).map_sum, Finset.sum_mul]
+    rw [add_pow, map_sum (pderiv true), map_sum (MvPolynomial.aeval e), Finset.sum_mul]
     -- Step inside the sum:
     refine' Finset.sum_congr rfl fun k _ => (w k).trans _
     simp only [x, y, e, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul,
@@ -363,7 +363,7 @@ theorem sum_mul_smul (n : ℕ) :
         simp only [← nat_cast_mul, Nat.succ_eq_add_one, Nat.add_succ_sub_one, add_zero, pow_succ]
         push_cast
         ring
-    rw [add_pow, (pderiv true).map_sum, (pderiv true).map_sum, (MvPolynomial.aeval e).map_sum,
+    rw [add_pow, map_sum (pderiv true), map_sum (pderiv true), map_sum (MvPolynomial.aeval e),
       Finset.sum_mul]
     -- Step inside the sum:
     refine' Finset.sum_congr rfl fun k _ => (w k).trans _

@@ -48,7 +48,7 @@ theorem derivative_rootMultiplicity_of_root_of_mem_nonZeroDivisors
   have hm : m - 1 + 1 = m := Nat.sub_add_cancel <| (rootMultiplicity_pos h).2 hpt
   have hndvd : ¬(X - C t) ^ m ∣ derivative p := by
     rw [hp, derivative_mul, dvd_add_left (dvd_mul_right _ _),
-      derivative_X_sub_C_pow, ← hm, pow_succ', hm, mul_comm (C _), mul_assoc,
+      derivative_X_sub_C_pow, ← hm, pow_succ, hm, mul_comm (C _), mul_assoc,
       dvd_cancel_left_mem_nonZeroDivisors (monic_X_sub_C t |>.pow _ |>.mem_nonZeroDivisors)]
     rw [dvd_iff_isRoot, IsRoot] at hndvd ⊢
     rwa [eval_mul, eval_C, mul_left_mem_nonZeroDivisors_eq_zero_iff hnzd]
@@ -182,7 +182,7 @@ instance instNormalizationMonoid : NormalizationMonoid R[X] where
     Units.ext
       (by
         dsimp
-        rw [Ne.def, ← leadingCoeff_eq_zero] at *
+        rw [Ne, ← leadingCoeff_eq_zero] at *
         rw [leadingCoeff_mul, normUnit_mul hp0 hq0, Units.val_mul, C_mul])
   normUnit_coe_units u :=
     Units.ext
@@ -210,6 +210,13 @@ theorem Monic.normalize_eq_self {p : R[X]} (hp : p.Monic) : normalize p = p := b
 theorem roots_normalize {p : R[X]} : (normalize p).roots = p.roots := by
   rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
 #align polynomial.roots_normalize Polynomial.roots_normalize
+
+theorem normUnit_X : normUnit (X : Polynomial R) = 1 := by
+  have := coe_normUnit (R := R) (p := X)
+  rwa [leadingCoeff_X, normUnit_one, Units.val_one, map_one, Units.val_eq_one] at this
+
+theorem X_eq_normalize : (X : Polynomial R) = normalize X := by
+  simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
 
 end NormalizationMonoid
 
@@ -513,7 +520,7 @@ theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = 
 #align polynomial.coeff_inv_units Polynomial.coeff_inv_units
 
 theorem monic_normalize [DecidableEq R] (hp0 : p ≠ 0) : Monic (normalize p) := by
-  rw [Ne.def, ← leadingCoeff_eq_zero, ← Ne.def, ← isUnit_iff_ne_zero] at hp0
+  rw [Ne, ← leadingCoeff_eq_zero, ← Ne, ← isUnit_iff_ne_zero] at hp0
   rw [Monic, leadingCoeff_normalize, normalize_eq_one]
   apply hp0
 #align polynomial.monic_normalize Polynomial.monic_normalize
