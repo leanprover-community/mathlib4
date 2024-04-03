@@ -185,7 +185,7 @@ noncomputable def truncGEπ : K ⟶ K.truncGE e where
     · obtain ⟨j, rfl⟩ := hj'
       by_cases hi' : ∃ i, e.f i = i'
       · obtain ⟨i, rfl⟩ := hi'
-        rw [← e.rel_iff] at hij'
+        rw [e.rel_iff] at hij'
         by_cases hi : e.BoundaryGE i
         · rw [truncGEπ.f_eq_pOpcycles_comp_iso_inv K e rfl hi,
             truncGEπ.f_eq_iso_inv K e rfl (e.not_mem_next_boundaryGE hij'),

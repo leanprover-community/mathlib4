@@ -28,10 +28,10 @@ variable (e : Embedding c c')
 class IsRelIff : Prop where
   rel' (i₁ i₂ : ι) (h : c'.Rel (e.f i₁) (e.f i₂)) : c.Rel i₁ i₂
 
-lemma rel_iff [e.IsRelIff] (i₁ i₂ : ι) : c.Rel i₁ i₂ ↔ c'.Rel (e.f i₁) (e.f i₂) := by
+lemma rel_iff [e.IsRelIff] (i₁ i₂ : ι) : c'.Rel (e.f i₁) (e.f i₂) ↔ c.Rel i₁ i₂ := by
   constructor
-  · exact e.rel
   · apply IsRelIff.rel'
+  · exact e.rel
 
 section
 
