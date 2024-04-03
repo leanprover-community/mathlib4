@@ -136,6 +136,9 @@ def totalInstructions (instructions : NameMap Float) (graph : NameMap (Array Nam
 def String.rightPad (s : String) (n : Nat) (c : Char := ' ') : String :=
   s ++ String.replicate (n - s.length) c
 
+def String.leftPad (s : String) (n : Nat) (c : Char := ' ') : String :=
+  String.replicate (n - s.length) c ++ s
+
 open IO.FS IO.Process Name in
 /-- Implementation of the longest pole command line program. -/
 def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
@@ -156,19 +159,20 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
     let mut table := #[]
     let mut n := some to
     while n != none do
+      let i := instructions.find! n.get!
       let c := cumulative.find! n.get!
       let t := total.find! n.get!
       let r := (t / c).toString
       let r := match r.split (· = '.') with
       | [a, b] => a ++ "." ++ b.take 2
       | _ => r
-      table := table.push (n.get!, c/10^6 |>.toUInt64, r)
+      table := table.push (n.get!, i/10^6 |>.toUInt64, c/10^6 |>.toUInt64, r)
       n := slowest.find? n.get!
     let widest := table.map (·.1.toString.length) |>.toList.maximum?.getD 0
-    IO.println s!"{"file".rightPad widest} | instructions | parallelism"
-    IO.println s!"{"".rightPad widest '-'} | ------------ | -----------"
-    for (name, inst, speedup) in table do
-      IO.println s!"{name.toString.rightPad widest} | {(toString inst).rightPad 12} | x{speedup}"
+    IO.println s!"{"file".rightPad widest} | instructions | (cumulative) | parallelism"
+    IO.println s!"{"".rightPad widest '-'} | ------------ | ------------ | -----------"
+    for (name, inst, cumu, speedup) in table do
+      IO.println s!"{name.toString.rightPad widest} | {(toString inst).leftPad 12} | {(toString cumu).leftPad 12} | x{speedup}"
   return 0
 
 /-- Setting up command line options and help text for `lake exe pole`. -/
