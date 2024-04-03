@@ -1,4 +1,4 @@
-import Mathlib.Topology.Category.LightProfinite.IsLightIso
+import Mathlib.Topology.Category.LightProfinite.Maps
 import Mathlib.Topology.Compactification.OnePoint
 
 open CategoryTheory Limits Opposite Option
@@ -30,14 +30,6 @@ instance : TotallySeparatedSpace (OnePoint ℕ) where
         all_goals aesop
 
 def NatUnionInfty := of (OnePoint ℕ)
-
--- def LightProfiniteOfCountable_diagram (X : Profinite) [Countable X] : ℕᵒᵖ ⥤ FintypeCat where
---   obj n := sorry
---   map := sorry
---   map_id := sorry
---   map_comp := sorry
-
--- def LightProfiniteOfCountable (X : Profinite) [Countable X] : LightProfinite := sorry
 
 end Profinite
 

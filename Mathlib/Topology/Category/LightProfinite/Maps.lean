@@ -32,9 +32,20 @@ lemma transitionMap_surjective (T : Profinite) [T.IsLight] (n : ℕ) :
 
 def proj (n : ℕ) : S ⟶ S.component n := S.cone.π.app ⟨n⟩
 
-@[simp]
-lemma proj_comp_transitionMap (n : ℕ) : S.proj (n + 1) ≫ S.transitionMap' n = S.proj n :=
+@[simp, reassoc]
+lemma proj_comp_transitionMap' (n : ℕ) : S.proj (n + 1) ≫ S.transitionMap' n = S.proj n :=
   S.cone.w (homOfLE (Nat.le_succ n)).op
+
+@[simp]
+lemma proj_comp_transitionMap (n : ℕ) : S.transitionMap n ∘ S.proj (n + 1)  = S.proj n := by
+  rw [← S.proj_comp_transitionMap' n, transitionMap]
+  rfl
+
+@[simp]
+lemma proj_comp_transitionMap_assoc (n : ℕ) {Y : LightProfinite} (f : Y → S) :
+    S.transitionMap n ∘ S.proj (n + 1) ∘ f  = S.proj n ∘ f := by
+  rw [← S.proj_comp_transitionMap' n, transitionMap]
+  rfl
 
 @[simp]
 lemma proj_comp_transitionMapLE' {n m : ℕ} (h : n ≤ m) :
@@ -166,3 +177,28 @@ lemma homMk_surjective {X : Profinite} {Y : LightProfinite}
     exact (congrFun (Y.proj_comp_transitionMapLE hij) _).symm
   · exact fun i ↦ (IsClosed.preimage (f i).2 isClosed_singleton).isCompact
   · exact fun i ↦ IsClosed.preimage (f i).2 isClosed_singleton
+
+def locallyConstant_of_hom {X Y : LightProfinite} (f : X ⟶ Y) (n : ℕ) :
+    LocallyConstant X (Y.diagram.obj ⟨n⟩) where
+  toFun x := Y.proj n (f x)
+  isLocallyConstant := by
+    let _ : TopologicalSpace (Y.diagram.obj ⟨n⟩) := ⊥
+    have : DiscreteTopology (Y.diagram.obj ⟨n⟩) := ⟨rfl⟩
+    rw [IsLocallyConstant.iff_continuous]
+    exact (f ≫ Y.proj n).continuous
+
+def locallyConstant_of_hom_w {X Y : LightProfinite} (f : X ⟶ Y) (n : ℕ) :
+    Y.transitionMap n ∘ locallyConstant_of_hom f (n + 1) = locallyConstant_of_hom f n := by
+  change Y.transitionMap n ∘ (Y.proj _) ∘ f = _
+  simp [← Function.comp.assoc]
+  erw [proj_comp_transitionMap]
+  rfl
+
+lemma eq_homMk {X Y : LightProfinite} (f : X ⟶ Y) :
+    f = homMk' (locallyConstant_of_hom f) (locallyConstant_of_hom_w f) := by
+  apply Y.isLimit.hom_ext
+  intro ⟨n⟩
+  ext
+  simp only [Functor.comp_obj, CategoryTheory.comp_apply, homMk', homMk, fromProfinite,
+    locallyConstant_of_hom, concreteCategory_forget_obj, LocallyConstant.coe_mk, IsLimit.fac]
+  rfl

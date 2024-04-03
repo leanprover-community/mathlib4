@@ -122,6 +122,10 @@ instance : Full lightToProfinite := show Full <| inducedFunctor _ from inferInst
 
 instance : lightToProfinite.ReflectsEpimorphisms := inferInstance
 
+instance : ReflectsLimits lightToProfinite := inferInstance
+
+instance : ReflectsColimits lightToProfinite := inferInstance
+
 instance {X : LightProfinite} : TopologicalSpace ((forget LightProfinite).obj X) :=
   (inferInstance : TopologicalSpace X.cone.pt)
 
