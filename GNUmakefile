@@ -10,6 +10,8 @@ build:
 	lake build
 
 test: $(addsuffix .run, $(TESTS))
+	# add any extra targets that tests depend on here
+	lake build ProofWidgets
 
 test/%.run: build
 	lake env lean test/$* | scripts/check_silent.sh test/$*.log
