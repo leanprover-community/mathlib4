@@ -32,7 +32,8 @@ homomorphism $W \to G$ (`CoxeterSystem.lift`) in a unique way.
 
 A *word* is a sequence of elements of $B$. The word $(i_1, \ldots, i_\ell)$ has a corresponding
 product $s_{i_1} \cdots s_{i_\ell} \in W$ (`CoxeterSystem.wordProd`). Every element of $W$ is the
-product of some word (`CoxeterSystem.wordProd_surjective`).
+product of some word (`CoxeterSystem.wordProd_surjective`). The words that alternate between two
+elements of $B$ (`CoxeterSystem.alternatingWord`) are particularly important.
 
 ## Implementation details
 
@@ -379,14 +380,14 @@ theorem alternatingWord_succ' (i i' : B) (m : ℕ) :
     rw [alternatingWord]
     simp [Nat.even_add_one]
 
-@[simp] theorem length_alternatingWord (i i' : B) (m : ℕ) :
+@[simp]
+theorem length_alternatingWord (i i' : B) (m : ℕ) :
     List.length (alternatingWord i i' m) = m := by
   induction' m with m ih generalizing i i'
   · dsimp [alternatingWord]
-  · simp [alternatingWord]
-    exact ih i' i
+  · simpa [alternatingWord] using ih i' i
 
-theorem prod_alternatingWord_eq_pow (i i' : B) (m : ℕ) :
+theorem prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
     π (alternatingWord i i' m) = (if Even m then 1 else s i') * (s i * s i') ^ (m / 2) := by
   induction' m with m ih
   · simp [alternatingWord]
@@ -407,49 +408,43 @@ theorem prod_alternatingWord_eq_pow (i i' : B) (m : ℕ) :
       norm_num
       rw [pow_succ', mul_assoc]
 
-theorem prod_alternatingWord_eq_prod_alternatingWord (i i' : B) (m : ℕ) (hm : m ≤ M i i' * 2) :
+theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (hm : m ≤ M i i' * 2) :
     π (alternatingWord i i' m) = π (alternatingWord i' i (M i i' * 2 - m)) := by
-  rw [prod_alternatingWord_eq_pow, prod_alternatingWord_eq_pow]
-  simp_rw [← Int.even_coe_nat]
+  simp_rw [prod_alternatingWord_eq_mul_pow, ← Int.even_coe_nat]
 
-  -- Rewrite everything in terms of an integer m' which is equal to m.
-  rw [← zpow_natCast, ← zpow_natCast, Int.ofNat_ediv, Int.ofNat_ediv, Int.ofNat_sub hm]
-  set m' := (m : ℤ)
-
-  -- The resulting equation holds for all integers m'.
-  generalize m' = m'
-
-  rw [Int.ofNat_mul, (by norm_num : (↑(2 : ℕ) : ℤ) = 2)]
+  /- Rewrite everything in terms of an integer m' which is equal to m.
+  The resulting equation holds for all integers m'. -/
+  simp_rw [← zpow_natCast, Int.ofNat_ediv, Int.ofNat_sub hm]
+  generalize (m : ℤ) = m'
   clear hm
+  push_cast
 
-  rcases Int.even_or_odd m' with even | odd
-  · rcases even with ⟨k, rfl⟩
-    ring_nf
-    have : Even (k * 2) := by use k; ring
-    rw [if_pos this]
-    have : Even (-(k * 2) + ↑(M i i') * 2) := by use -k + (M i i'); ring
-    rw [if_pos this]
-    rw [(by ring : -(k * 2) + ↑(M i i') * 2 = (-k + ↑(M i i')) * 2)]
-    rw [Int.mul_ediv_cancel _ (by norm_num), Int.mul_ediv_cancel _ (by norm_num)]
-    rw [zpow_add, zpow_natCast]
-    rw [simple_mul_simple_pow']
-    rw [zpow_neg, ← inv_zpow]
+  rcases Int.even_or_odd' m' with ⟨k, rfl | rfl⟩
+  · rw [if_pos (by use k; ring), if_pos (by use -k + (M i i'); ring), mul_comm 2 k, ← sub_mul]
+    repeat rw [Int.mul_ediv_cancel _ (by norm_num)]
+    rw [zpow_sub, zpow_natCast, simple_mul_simple_pow' cs i i', ← inv_zpow]
     simp
-  · rcases odd with ⟨k, rfl⟩
-    ring_nf
-    have : ¬Even (1 + k * 2) := by apply Int.odd_iff_not_even.mp; use k; ring
+  · have : ¬Even (2 * k + 1) := Int.odd_iff_not_even.mp ⟨k, rfl⟩
     rw [if_neg this]
-    have : ¬Even (-1 - k * 2 + ↑(M i i') * 2) := by
-      apply Int.odd_iff_not_even.mp
-      use ↑(M i i') - k - 1
-      ring
+    have : ¬Even (↑(M i i') * 2 - (2 * k + 1)) :=
+      Int.odd_iff_not_even.mp ⟨↑(M i i') - k - 1, by ring⟩
     rw [if_neg this]
-    rw [(by ring : -1 - k * 2 + ↑(M i i') * 2 = -1 + (-k + ↑(M i i')) * 2)]
-    rw [Int.add_mul_ediv_right _ _ (by norm_num), Int.add_mul_ediv_right _ _ (by norm_num)]
+
+    rw [(by ring : ↑(M i i') * 2 - (2 * k + 1) = -1 + (-k + ↑(M i i')) * 2),
+      (by ring : 2 * k + 1 = 1 + k * 2)]
+    repeat rw [Int.add_mul_ediv_right _ _ (by norm_num)]
     norm_num
-    rw [zpow_add, zpow_add, zpow_natCast]
-    rw [simple_mul_simple_pow']
-    rw [zpow_neg, ← inv_zpow, zpow_neg, ← inv_zpow]
+
+    rw [zpow_add, zpow_add, zpow_natCast, simple_mul_simple_pow', zpow_neg, ← inv_zpow, zpow_neg,
+      ← inv_zpow]
     simp [← mul_assoc]
+
+/-- The two words of length `M i i'` that alternate between `i` and `i'` have the same product.
+This is known as the "braid relation" or "Artin-Tits relation". -/
+theorem prod_alternatingWord_matrix_apply (i i' : B) :
+    π (alternatingWord i i' (M i i')) = π (alternatingWord i' i (M i i')) := by
+  have := cs.prod_alternatingWord_eq_prod_alternatingWord_sub i i' (M i i')
+    (Nat.le_mul_of_pos_right _ (by norm_num))
+  simpa [tsub_eq_of_eq_add (mul_two (M i i'))]
 
 end CoxeterSystem
