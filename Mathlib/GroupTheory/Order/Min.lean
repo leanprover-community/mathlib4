@@ -77,7 +77,7 @@ protected lemma minOrder {n : ℕ} (hn : n ≠ 0) (hn₁ : n ≠ 1) : minOrder (
   have : Fact (1 < n) := ⟨one_lt_iff_ne_zero_and_ne_one.mpr ⟨hn, hn₁⟩⟩
   classical
   have : (↑(n / n.minFac) : ZMod n) ≠ 0 := by
-    rw [Ne.def, ringChar.spec, ringChar.eq (ZMod n) n]
+    rw [Ne, ringChar.spec, ringChar.eq (ZMod n) n]
     exact
       not_dvd_of_pos_of_lt (Nat.div_pos (minFac_le hn.bot_lt) n.minFac_pos)
         (div_lt_self hn.bot_lt (minFac_prime hn₁).one_lt)

@@ -114,7 +114,7 @@ alias Dvd.dvd.sub := dvd_sub
 /-- If an element `a` divides another element `c` in a ring, `a` divides the sum of another element
 `b` with `c` iff `a` divides `b`. -/
 theorem dvd_add_left (h : a ∣ c) : a ∣ b + c ↔ a ∣ b :=
-  ⟨fun H => by simpa only [add_sub_cancel] using dvd_sub H h, fun h₂ => dvd_add h₂ h⟩
+  ⟨fun H => by simpa only [add_sub_cancel_right] using dvd_sub H h, fun h₂ => dvd_add h₂ h⟩
 #align dvd_add_left dvd_add_left
 
 /-- If an element `a` divides another element `b` in a ring, `a` divides the sum of `b` and another

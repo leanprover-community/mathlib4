@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Data.Rat.Encodable
 import Mathlib.Data.Real.EReal
-import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Order.MonotoneContinuity
 
 #align_import topology.instances.ereal from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 

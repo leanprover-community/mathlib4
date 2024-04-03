@@ -188,7 +188,8 @@ theorem trunc_trunc_mul_trunc {n} (f g : R⟦X⟧) :
   | zero =>
     rw [pow_zero, pow_zero]
   | succ a ih =>
-    rw [pow_succ, pow_succ, trunc_trunc_mul, ← trunc_trunc_mul_trunc, ih, trunc_trunc_mul_trunc]
+    rw [_root_.pow_succ', _root_.pow_succ', trunc_trunc_mul,
+      ← trunc_trunc_mul_trunc, ih, trunc_trunc_mul_trunc]
 
 theorem trunc_coe_eq_self {n} {f : R[X]} (hn : natDegree f < n) : trunc n (f : R⟦X⟧) = f := by
   rw [← Polynomial.coe_inj]

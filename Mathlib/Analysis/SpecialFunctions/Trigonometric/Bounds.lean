@@ -67,7 +67,7 @@ lemma one_sub_sq_div_two_le_cos : 1 - x ^ 2 / 2 ≤ cos x := by
     (Continuous.continuousOn <| by continuity)
     (fun x _ ↦ ((hasDerivAt_cos ..).add <| (hasDerivAt_pow ..).div_const _).hasDerivWithinAt)
     fun x hx ↦ ?_
-  simpa [mul_div_cancel_left] using sin_le <| interior_subset hx
+  simpa [mul_div_cancel_left₀] using sin_le <| interior_subset hx
 
 /-- **Jordan's inequality**. -/
 lemma two_div_pi_mul_le_sin (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 2 / π * x ≤ sin x := by
@@ -182,7 +182,7 @@ theorem lt_tan {x : ℝ} (h1 : 0 < x) (h2 : x < π / 2) : x < tan x := by
     have bd2 : cos y ^ 2 < 1 := by
       apply lt_of_le_of_ne y.cos_sq_le_one
       rw [cos_sq']
-      simpa only [Ne.def, sub_eq_self, sq_eq_zero_iff] using (sin_pos hy).ne'
+      simpa only [Ne, sub_eq_self, sq_eq_zero_iff] using (sin_pos hy).ne'
     rwa [lt_inv, inv_one]
     · exact zero_lt_one
     simpa only [sq, mul_self_pos] using this.ne'

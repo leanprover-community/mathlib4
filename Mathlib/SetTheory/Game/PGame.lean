@@ -1274,8 +1274,7 @@ instance : NegZeroClass PGame :=
 theorem neg_ofLists (L R : List PGame) :
     -ofLists L R = ofLists (R.map fun x => -x) (L.map fun x => -x) := by
   set_option linter.deprecated false in
-  simp only [ofLists, neg_def, List.length_map, List.nthLe_map', eq_self_iff_true, true_and,
-    mk.injEq]
+  simp only [ofLists, neg_def, List.nthLe_map', mk.injEq, List.length_map, true_and]
   constructor
   all_goals
     apply hfunext

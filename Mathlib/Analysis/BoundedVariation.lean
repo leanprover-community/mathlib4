@@ -258,7 +258,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       · have : i + 1 ≤ n := Nat.succ_le_of_lt hi
         simp only [hi.le, this, if_true]
         exact hu (Nat.le_succ i)
-      · simp only [le_refl, if_true, add_le_iff_nonpos_right, le_zero_iff, Nat.one_ne_zero,
+      · simp only [le_refl, if_true, add_le_iff_nonpos_right, Nat.le_zero, Nat.one_ne_zero,
           if_false, h]
       · have A : ¬i ≤ n := hi.not_le
         have B : ¬i + 1 ≤ n := fun h => A (i.le_succ.trans h)
@@ -759,7 +759,7 @@ protected theorem sub_self_monotoneOn {f : α → ℝ} {s : Set α} (hf : Locall
       apply eVariationOn.edist_le f
       exacts [⟨bs, le_rfl, bc⟩, ⟨cs, bc, le_rfl⟩]
     _ = variationOnFromTo f s a c - variationOnFromTo f s a b := by
-      rw [← variationOnFromTo.add hf as bs cs, add_sub_cancel']
+      rw [← variationOnFromTo.add hf as bs cs, add_sub_cancel_left]
 
 #align variation_on_from_to.sub_self_monotone_on variationOnFromTo.sub_self_monotoneOn
 
