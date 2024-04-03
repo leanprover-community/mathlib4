@@ -40,7 +40,9 @@ def getAll (git : Bool) (ml : String) : IO String := do
   return ("\n".intercalate withImport.toList).push '\n'
 
 open IO.FS IO.Process Name Cli in
-/-- Implementation of the `mk_all` command line program. -/
+/-- Implementation of the `mk_all` command line program.
+The exit code is the number of files that the command updates/creates.
+-/
 def mkAllCLI (args : Parsed) : IO UInt32 := do
   -- Check whether the `--git` flag was set
   let git := (args.flag? "git").isSome
@@ -49,13 +51,17 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   let libs := match args.flag? "lib" with
   | some lib => #[lib.as! String]
   | none => #["Mathlib", "MathlibExtras", "Mathlib/Tactic", "Counterexamples", "Archive"]
+  let mut updates := 0
   for d in libs do
     let fileName := addExtension d "lean"
     let fileContent ← getAll git d
     if (← IO.FS.readFile fileName) != fileContent then
       IO.println s!"Updating '{fileName}'"
+      updates := updates + 1
       IO.FS.writeFile fileName fileContent
-  return 0
+  if updates == 0 then
+    IO.println "No update necessary"
+  return updates
 
 open Cli in
 /-- Setting up command line options and help text for `lake exe mkAll`. -/
