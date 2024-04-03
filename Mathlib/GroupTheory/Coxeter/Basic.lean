@@ -75,7 +75,7 @@ def relation (i i' : B) : FreeGroup B := (FreeGroup.of i * FreeGroup.of i') ^ M 
 /-- The set of all Coxeter relations associated to the Coxeter matrix $M$. -/
 def relationsSet : Set (FreeGroup B) := Set.range <| uncurry M.relation
 
-/-- The Coxeter group associated with a Coxeter matrix $M$; that is, the group
+/-- The Coxeter group associated to a Coxeter matrix $M$; that is, the group
 $$\langle \{s_i\}_{i \in B} \vert \{(s_i s_{i'})^{M_{i, i'}}\}_{i, i' \in B} \rangle.$$ -/
 def group := PresentedGroup M.relationsSet
 
