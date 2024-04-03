@@ -3,7 +3,7 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Countable
 import Mathlib.Data.Countable.Defs
@@ -153,5 +153,30 @@ proof_wanted hasCountableColimits_of_hasFiniteColimits_and_hasSequentialColimits
   [HasFiniteColimits C] [HasLimitsOfShape ℕ C] : HasCountableColimits C
 
 end Preorder
+
+section N_times_N
+
+@[simps]
+def Nat.diagonal : ℕ ⥤ ℕ × ℕ where
+  obj n := (n, n)
+  map f := (f, f)
+
+instance Nat.diagonal_initial : Nat.diagonal.Initial := by
+  rw [Functor.initial_iff_of_isCofiltered]
+  exact ⟨fun ⟨n, m⟩ ↦ ⟨min n m, ⟨⟨⟨⟨by simp⟩⟩, ⟨⟨by simp⟩⟩⟩⟩⟩, fun _ _ ↦ ⟨_, 𝟙 _, rfl⟩⟩
+
+instance Nat.diagonal_final : Nat.diagonal.Final := by
+  rw [Functor.final_iff_of_isFiltered]
+  exact ⟨fun ⟨n, m⟩ ↦ ⟨max n m, ⟨⟨⟨⟨by simp⟩⟩, ⟨⟨by simp⟩⟩⟩⟩⟩, fun _ _ ↦ ⟨_, 𝟙 _, rfl⟩⟩
+
+def Nat.op_diagonal : ℕᵒᵖ ⥤ ℕᵒᵖ × ℕᵒᵖ := diagonal.op ⋙ (prodOpEquiv _).functor
+
+@[simp]
+lemma Nat.op_diagonal_obj (n : ℕᵒᵖ) : op_diagonal.obj n = (n, n) := rfl
+
+@[simp]
+lemma Nat.op_diagonal_map (n m : ℕᵒᵖ) (f : n ⟶ m) : op_diagonal.map f = (f, f) := rfl
+
+end N_times_N
 
 end CategoryTheory.Limits
