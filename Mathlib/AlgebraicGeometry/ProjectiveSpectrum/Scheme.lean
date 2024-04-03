@@ -716,51 +716,46 @@ lemma toSpec_bijective {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m):
 
 end fromSpecToSpec
 
+namespace toSpec
+
+variable {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m)
+
+variable {𝒜} in
+lemma image_basicOpen_eq_basicOpen (a : A) (i : ℕ) :
+    toSpec (f := f) '' {x | x.1 ∈ (pbo f) ⊓ pbo (decompose 𝒜 a i)} =
+    (PrimeSpectrum.basicOpen (R := A⁰_ f) <|
+      Quotient.mk'' ⟨m * i, ⟨decompose 𝒜 a i ^ m, SetLike.pow_mem_graded _ (Submodule.coe_mem _)⟩,
+        ⟨f^i, by rw [mul_comm]; exact SetLike.pow_mem_graded _ f_deg⟩, ⟨i, rfl⟩⟩).1 :=
+  Set.preimage_injective.mpr (toSpec_surjective 𝒜 hm f_deg) <|
+    Set.preimage_image_eq _ (toSpec_injective 𝒜 hm f_deg) ▸ by
+  erw [ToSpec.preimage_eq, ProjectiveSpectrum.basicOpen_pow 𝒜 _ m hm]; rfl
+
+end toSpec
+
 variable {𝒜} in
 /--The continuous function `Spec A⁰_f → Proj|D(f)` by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`.-/
 def fromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
     (Spec.T (A⁰_ f)) ⟶ (Proj.T| (pbo f)) where
   toFun := FromSpec.toFun f_deg hm
-  continuous_toFun :=
-    (IsTopologicalBasis.continuous_iff <|
-      IsTopologicalBasis.inducing (α := Proj.T| (pbo f)) (β := Proj) (f := Subtype.val)
-        (hf := ⟨rfl⟩) (h := ProjectiveSpectrum.isTopologicalBasis_basic_opens 𝒜)).mpr fun s hs ↦ by
-    obtain ⟨_, ⟨a, rfl⟩, rfl⟩ := hs
+  continuous_toFun := by
+    rw [isTopologicalBasis_subtype (ProjectiveSpectrum.isTopologicalBasis_basic_opens 𝒜) (pbo f).1
+      |>.continuous_iff]
+    rintro s ⟨_, ⟨a, rfl⟩, rfl⟩
+    dsimp
+    have h₁ : Subtype.val (p := (pbo f).1) ⁻¹' (pbo a) =
+        ⋃ i : ℕ, {x | x.1 ∈ (pbo f) ⊓ pbo (decompose 𝒜 a i)} := by
+      ext ⟨x, (hx : f ∉ x.asHomogeneousIdeal)⟩
+      rw [ProjectiveSpectrum.basicOpen_eq_union_of_projection 𝒜 a]
+      change (∃ _, _) ↔ (∃ _, _)
+      simp only [GradedAlgebra.proj_apply, Set.mem_range, Set.iUnion_exists, exists_exists_eq_and,
+        Set.mem_iUnion, SetLike.mem_coe, exists_prop, exists_and_right,
+        ProjectiveSpectrum.mem_basicOpen, Opens.carrier_eq_coe, Set.mem_setOf_eq]
+      exact exists_congr fun n ↦ show _ ↔ (_ ∉ _ ∧ _ ∉ _) by tauto
 
-    suffices o1 : IsOpen <| toSpec '' (Subtype.val ⁻¹' (pbo a).1 : Set (Proj.T| (pbo f))) by
-      convert o1
-      ext s x
-      simp only [Set.mem_preimage, LocallyRingedSpace.restrict_carrier,
-        Spec.locallyRingedSpaceObj_toSheafedSpace, Spec.sheafedSpaceObj_carrier, Set.mem_image]
-      constructor
-      · intro h; exact ⟨_, h, toSpec_fromSpec 𝒜 hm f_deg _⟩
-      · rintro ⟨x, hx', rfl⟩; erw [fromSpec_toSpec 𝒜 hm f_deg x]; exact hx'
-
-    rw [calc Subtype.val ⁻¹' (pbo a).1
-      _ = {x  : Proj.T| (pbo f) | x.1 ∈ (pbo f) ⊓ pbo a} := by
-          ext ⟨x, (hx : f ∉ _)⟩
-          show _ ↔ _ ∧ _
-          simp [hx]
-      _ = {x | x.1 ∈ (pbo f) ⊓ (⨆ i : ℕ, pbo (decompose 𝒜 a i))} := by
-          simp_rw [ProjectiveSpectrum.basicOpen_eq_union_of_projection 𝒜 a]; rfl
-      _ = {x | x.1 ∈ ⨆ i : ℕ, (pbo f) ⊓ pbo (decompose 𝒜 a i)} := by rw [inf_iSup_eq]
-      _ = ⋃ i : ℕ, {x | x.1 ∈ (pbo f) ⊓ pbo (decompose 𝒜 a i)} := by
-        ext x
-        simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_inf, Opens.mem_mk, Set.mem_iUnion,
-          Set.mem_inter_iff, Set.mem_compl_iff, SetLike.mem_coe]
-        rfl, Set.image_iUnion]
-    refine isOpen_iUnion fun i ↦ ?_
-
-    suffices toSpec (f := f) '' {x | x.1 ∈ (pbo f) ⊓ pbo (decompose 𝒜 a i)} =
-      (PrimeSpectrum.basicOpen (R := A⁰_ f) <|
-        Quotient.mk'' ⟨m * i, ⟨decompose 𝒜 a i ^ m, SetLike.pow_mem_graded _ (Submodule.coe_mem _)⟩,
-          ⟨f^i, by rw [mul_comm]; exact SetLike.pow_mem_graded _ f_deg⟩, ⟨i, rfl⟩⟩).1 from
-      this ▸ (PrimeSpectrum.basicOpen _).2
-
-    apply_fun _ using Set.preimage_injective.mpr (toSpec_surjective 𝒜 hm f_deg)
-    erw [Set.preimage_image_eq _ (toSpec_injective 𝒜 hm f_deg), ToSpec.preimage_eq,
-      ProjectiveSpectrum.basicOpen_pow 𝒜 _ m hm]
-    rfl
+    erw [Set.preimage_equiv_eq_image_symm _ ⟨FromSpec.toFun f_deg hm, ToSpec.toFun f,
+      toSpec_fromSpec _ _ _, fromSpec_toSpec _ _ _⟩, h₁, Set.image_iUnion]
+    exact isOpen_iUnion fun i ↦ toSpec.image_basicOpen_eq_basicOpen hm f_deg a i ▸
+      PrimeSpectrum.isOpen_basicOpen
 
 end ProjIsoSpecTopComponent
 
