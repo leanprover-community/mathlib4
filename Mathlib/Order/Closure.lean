@@ -123,12 +123,10 @@ instance : Inhabited (ClosureOperator α) :=
 
 variable {α} [PartialOrder α] (c : ClosureOperator α)
 
-@[ext]
 theorem ext : ∀ c₁ c₂ : ClosureOperator α, (c₁ : α → α) = (c₂ : α → α) → c₁ = c₂ :=
   @DFunLike.ext' _ _ _ _
 #align closure_operator.ext ClosureOperator.ext
 
--- this should probably be the defautlt?
 @[ext]
 theorem ext' : ∀ c₁ c₂ : ClosureOperator α, (∀ x, c₁ x = c₂ x) → c₁ = c₂ :=
   DFunLike.ext
@@ -222,14 +220,14 @@ theorem IsClosed.closure_le_iff (hy : c.IsClosed y) : c x ≤ y ↔ x ≤ y := b
 
 lemma closure_min (hxy : x ≤ y) (hy : c.IsClosed y) : c x ≤ y := hy.closure_le_iff.2 hxy
 
-lemma closure_IsGLB (x : α) : IsGLB { y | x ≤ y ∧ c.IsClosed y } (c x) where
+lemma closure_isGLB (x : α) : IsGLB { y | x ≤ y ∧ c.IsClosed y } (c x) where
   left _ := and_imp.mpr closure_min
   right _ h := h ⟨c.le_closure x, c.isClosed_closure x⟩
 
-theorem ext_IsClosed (c₁ c₂ : ClosureOperator α)
+theorem ext_isClosed (c₁ c₂ : ClosureOperator α)
     (h : ∀ x, c₁.IsClosed x ↔ c₂.IsClosed x) : c₁ = c₂ :=
-  ext' c₁ c₂ <| fun x => IsGLB.unique (c₁.closure_IsGLB x) <|
-    (Set.ext (and_congr_right' <| h ·)).substr (c₂.closure_IsGLB x)
+  ext' c₁ c₂ <| fun x => IsGLB.unique (c₁.closure_isGLB x) <|
+    (Set.ext (and_congr_right' <| h ·)).substr (c₂.closure_isGLB x)
 
 /-- A closure operator is equal to the closure operator obtained by feeding `c.closed` into the
 `ofPred` constructor. -/
@@ -298,7 +296,7 @@ def ofCompletePred (p : α → Prop) (hsinf : ∀ s, (∀ a ∈ s, p a) → p (s
     (fun a ↦ hsinf _ <| forall_range_iff.2 fun b ↦ b.2.2)
     (fun a b hab hb ↦ iInf_le_of_le ⟨b, hab, hb⟩ le_rfl)
 
-theorem sInf_IsClosed {c : ClosureOperator α} {S : Set α}
+theorem sInf_isClosed {c : ClosureOperator α} {S : Set α}
     (H : ∀ x ∈ S, c.IsClosed x) : c.IsClosed (sInf S) :=
   isClosed_iff_closure_le.mpr <| le_of_le_of_eq c.monotone.map_sInf_le <|
     Eq.trans (biInf_congr (c.isClosed_iff.mp <| H · ·)) sInf_eq_iInf.symm
