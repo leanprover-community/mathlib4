@@ -1273,7 +1273,7 @@ theorem Ioo_union_Ioi' (h₁ : c < b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
 #align set.Ioo_union_Ioi' Set.Ioo_union_Ioi'
 
 theorem Ioo_union_Ioi (h : c < max a b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
-  rcases le_total a b with hab | hab <;> simp [hab] at h
+  rcases le_total a b with hab | hab <;> simp only [max_eq_left, hab, max_eq_right] at h
   · exact Ioo_union_Ioi' h
   · rw [min_comm]
     simp [*, min_eq_left_of_lt]
@@ -1307,7 +1307,7 @@ theorem Ico_union_Ici' (h₁ : c ≤ b) : Ico a b ∪ Ici c = Ici (min a c) := b
 #align set.Ico_union_Ici' Set.Ico_union_Ici'
 
 theorem Ico_union_Ici (h : c ≤ max a b) : Ico a b ∪ Ici c = Ici (min a c) := by
-  rcases le_total a b with hab | hab <;> simp [hab] at h
+  rcases le_total a b with hab | hab <;> simp only [max_eq_left, hab, max_eq_right] at h
   · exact Ico_union_Ici' h
   · simp [*]
 #align set.Ico_union_Ici Set.Ico_union_Ici
@@ -1331,7 +1331,7 @@ theorem Ioc_union_Ioi' (h₁ : c ≤ b) : Ioc a b ∪ Ioi c = Ioi (min a c) := b
 #align set.Ioc_union_Ioi' Set.Ioc_union_Ioi'
 
 theorem Ioc_union_Ioi (h : c ≤ max a b) : Ioc a b ∪ Ioi c = Ioi (min a c) := by
-  rcases le_total a b with hab | hab <;> simp [hab] at h
+  rcases le_total a b with hab | hab <;> simp only [max_eq_left, hab, max_eq_right] at h
   · exact Ioc_union_Ioi' h
   · simp [*]
 #align set.Ioc_union_Ioi Set.Ioc_union_Ioi
@@ -1374,7 +1374,7 @@ theorem Icc_union_Ici' (h₁ : c ≤ b) : Icc a b ∪ Ici c = Ici (min a c) := b
 #align set.Icc_union_Ici' Set.Icc_union_Ici'
 
 theorem Icc_union_Ici (h : c ≤ max a b) : Icc a b ∪ Ici c = Ici (min a c) := by
-  rcases le_or_lt a b with hab | hab <;> simp [hab] at h
+  rcases le_or_lt a b with hab | hab <;> simp only [le_max_iff, hab, max_eq_right] at h
   · exact Icc_union_Ici' h
   · cases' h with h h
     · simp [*]
@@ -1415,7 +1415,7 @@ theorem Iio_union_Ico' (h₁ : c ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := b
 #align set.Iio_union_Ico' Set.Iio_union_Ico'
 
 theorem Iio_union_Ico (h : min c d ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := by
-  rcases le_total c d with hcd | hcd <;> simp [hcd] at h
+  rcases le_total c d with hcd | hcd <;> simp only [min_eq_left, hcd, min_eq_right] at h
   · exact Iio_union_Ico' h
   · simp [*]
 #align set.Iio_union_Ico Set.Iio_union_Ico
@@ -1440,7 +1440,7 @@ theorem Iic_union_Ioc' (h₁ : c < b) : Iic b ∪ Ioc c d = Iic (max b d) := by
 #align set.Iic_union_Ioc' Set.Iic_union_Ioc'
 
 theorem Iic_union_Ioc (h : min c d < b) : Iic b ∪ Ioc c d = Iic (max b d) := by
-  rcases le_total c d with hcd | hcd <;> simp [hcd] at h
+  rcases le_total c d with hcd | hcd <;> simp only [min_eq_left, hcd, min_eq_right] at h
   · exact Iic_union_Ioc' h
   · rw [max_comm]
     simp [*, max_eq_right_of_lt h]
@@ -1466,7 +1466,7 @@ theorem Iio_union_Ioo' (h₁ : c < b) : Iio b ∪ Ioo c d = Iio (max b d) := by
 #align set.Iio_union_Ioo' Set.Iio_union_Ioo'
 
 theorem Iio_union_Ioo (h : min c d < b) : Iio b ∪ Ioo c d = Iio (max b d) := by
-  rcases le_total c d with hcd | hcd <;> simp [hcd] at h
+  rcases le_total c d with hcd | hcd <;> simp only [min_eq_left, hcd, min_eq_right] at h
   · exact Iio_union_Ioo' h
   · rw [max_comm]
     simp [*, max_eq_right_of_lt h]
@@ -1492,7 +1492,7 @@ theorem Iic_union_Icc' (h₁ : c ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := b
 #align set.Iic_union_Icc' Set.Iic_union_Icc'
 
 theorem Iic_union_Icc (h : min c d ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := by
-  rcases le_or_lt c d with hcd | hcd <;> simp [hcd] at h
+  rcases le_or_lt c d with hcd | hcd <;> simp only [min_le_iff, hcd, min_eq_left] at h
   · exact Iic_union_Icc' h
   · cases' h with h h
     · have hdb : d ≤ b := hcd.le.trans h
@@ -1549,9 +1549,10 @@ theorem Ico_union_Ico' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ico a b ∪ Ico c d =
 
 theorem Ico_union_Ico (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
-  rcases le_total a b with hab | hab <;> rcases le_total c d with hcd | hcd <;> simp [*] at h₁ h₂
-  · exact Ico_union_Ico' h₂ h₁
-  all_goals simp [*]
+  rcases le_total a b with hab | hab <;> rcases le_total c d with hcd | hcd --<;> simp [*] at h₁ h₂
+  · simp only [min_eq_left, max_eq_right, hab, hcd] at h₁ h₂
+    exact Ico_union_Ico' h₂ h₁
+  all_goals simp [*] at h₁ h₂; simp [*]
 #align set.Ico_union_Ico Set.Ico_union_Ico
 
 theorem Icc_subset_Ico_union_Icc : Icc a c ⊆ Ico a b ∪ Icc b c := fun x hx =>
@@ -1637,9 +1638,10 @@ theorem Ioc_union_Ioc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ioc a b ∪ Ioc c d =
 
 theorem Ioc_union_Ioc (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ioc a b ∪ Ioc c d = Ioc (min a c) (max b d) := by
-  rcases le_total a b with hab | hab <;> rcases le_total c d with hcd | hcd <;> simp [*] at h₁ h₂
-  · exact Ioc_union_Ioc' h₂ h₁
-  all_goals simp [*]
+  rcases le_total a b with hab | hab <;> rcases le_total c d with hcd | hcd --<;> simp [*] at h₁ h₂
+  · simp only [min_eq_left, max_eq_right, hab, hcd] at h₁ h₂
+    exact Ioc_union_Ioc' h₂ h₁
+  all_goals simp [*] at h₁ h₂; simp [*]
 #align set.Ioc_union_Ioc Set.Ioc_union_Ioc
 
 /-! #### Two finite intervals with a common point -/
