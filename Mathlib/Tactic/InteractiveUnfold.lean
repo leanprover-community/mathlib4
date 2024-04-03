@@ -61,6 +61,8 @@ where
     withCatchingRuntimeEx do
     try
       withoutCatchingRuntimeEx do withIncRecDepth do
+      if let some e := e.etaExpandedStrict? then
+        return ← go e (acc.push e)
       if let some e ← reduceNat? e then
         return acc.push e
       if let some e ← reduceNative? e then

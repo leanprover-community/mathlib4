@@ -68,6 +68,23 @@ info: Unfolds for n ∈ A ∪ B:
 #unfold? n ∈ A ∪ B
 
 /--
+info: Unfolds for (fun x => x) (1 + 1):
+· 1 + 1
+· Nat.add 1 1
+· 2
+-/
+#guard_msgs in
+#unfold? (fun x => x) (1+1)
+
+/--
+info: Unfolds for fun x => id x:
+· id
+· fun a => a
+-/
+#guard_msgs in
+#unfold? fun x => id x
+
+/--
 info: Pattern n + 1
 · Nat.succ n
   Nat.add_one
