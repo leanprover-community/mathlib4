@@ -52,7 +52,7 @@ theorem X_pow_dvd_iff {f : R[X]} {n : ℕ} : X ^ n ∣ f ↔ ∀ d < n, f.coeff 
       rw [zero_add, ← hgf, hd n (Nat.lt_succ_self n)] at this
       obtain ⟨k, hgk⟩ := Polynomial.X_dvd_iff.mpr this.symm
       use k
-      rwa [pow_succ', mul_assoc, ← hgk]⟩
+      rwa [pow_succ, mul_assoc, ← hgk]⟩
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_pow_dvd_iff Polynomial.X_pow_dvd_iff
 
@@ -395,7 +395,7 @@ theorem map_modByMonic [Ring S] (f : R →+* S) (hq : Monic q) :
   (map_mod_divByMonic f hq).2
 #align polynomial.map_mod_by_monic Polynomial.map_modByMonic
 
-theorem dvd_iff_modByMonic_eq_zero (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
+theorem modByMonic_eq_zero_iff_dvd (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
   ⟨fun h => by rw [← modByMonic_add_div p hq, h, zero_add]; exact dvd_mul_right _ _, fun h => by
     nontriviality R
     obtain ⟨r, hr⟩ := exists_eq_mul_right_of_dvd h
@@ -410,11 +410,21 @@ theorem dvd_iff_modByMonic_eq_zero (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
     rw [degree_mul' hlc, degree_eq_natDegree hq.ne_zero,
       degree_eq_natDegree (mt leadingCoeff_eq_zero.2 hrpq0)] at this
     exact not_lt_of_ge (Nat.le_add_right _ _) (WithBot.some_lt_some.1 this)⟩
-#align polynomial.dvd_iff_mod_by_monic_eq_zero Polynomial.dvd_iff_modByMonic_eq_zero
+#align polynomial.dvd_iff_mod_by_monic_eq_zero Polynomial.modByMonic_eq_zero_iff_dvd
+
+-- 2024-03-23
+@[deprecated] alias dvd_iff_modByMonic_eq_zero := modByMonic_eq_zero_iff_dvd
+
+/-- See `Polynomial.mul_left_modByMonic` for the other multiplication order. That version, unlike
+this one, requires commutativity. -/
+@[simp]
+lemma self_mul_modByMonic (hq : q.Monic) : (q * p) %ₘ q = 0 := by
+  rw [modByMonic_eq_zero_iff_dvd hq]
+  exact dvd_mul_right q p
 
 theorem map_dvd_map [Ring S] (f : R →+* S) (hf : Function.Injective f) {x y : R[X]}
     (hx : x.Monic) : x.map f ∣ y.map f ↔ x ∣ y := by
-  rw [← dvd_iff_modByMonic_eq_zero hx, ← dvd_iff_modByMonic_eq_zero (hx.map f), ←
+  rw [← modByMonic_eq_zero_iff_dvd hx, ← modByMonic_eq_zero_iff_dvd (hx.map f), ←
     map_modByMonic f hx]
   exact
     ⟨fun H => map_injective f hf <| by rw [H, Polynomial.map_zero], fun H => by
@@ -423,7 +433,7 @@ theorem map_dvd_map [Ring S] (f : R →+* S) (hf : Function.Injective f) {x y : 
 
 @[simp]
 theorem modByMonic_one (p : R[X]) : p %ₘ 1 = 0 :=
-  (dvd_iff_modByMonic_eq_zero (by convert monic_one (R := R))).2 (one_dvd _)
+  (modByMonic_eq_zero_iff_dvd (by convert monic_one (R := R))).2 (one_dvd _)
 #align polynomial.mod_by_monic_one Polynomial.modByMonic_one
 
 @[simp]
@@ -465,7 +475,7 @@ theorem coeff_divByMonic_X_sub_C (p : R[X]) (a : R) (n : ℕ) :
           sum_cons, Nat.sub_self, pow_zero, one_mul, mul_sum]
       congr 1; refine sum_congr ?_ fun i hi ↦ ?_
       · ext; simp [Nat.succ_le]
-      rw [← mul_assoc, ← pow_succ, eq_comm, i.sub_succ', Nat.sub_add_cancel]
+      rw [← mul_assoc, ← pow_succ', eq_comm, i.sub_succ', Nat.sub_add_cancel]
       apply Nat.le_sub_of_add_le
       rw [add_comm]; exact (mem_Icc.mp hi).1
     · exact this _ le_rfl
@@ -493,7 +503,7 @@ The algorithm is "compute `p %ₘ q` and compare to `0`".
 See `polynomial.modByMonic` for the algorithm that computes `%ₘ`.
 -/
 def decidableDvdMonic [DecidableEq R] (p : R[X]) (hq : Monic q) : Decidable (q ∣ p) :=
-  decidable_of_iff (p %ₘ q = 0) (dvd_iff_modByMonic_eq_zero hq)
+  decidable_of_iff (p %ₘ q = 0) (modByMonic_eq_zero_iff_dvd hq)
 #align polynomial.decidable_dvd_monic Polynomial.decidableDvdMonic
 
 theorem multiplicity_X_sub_C_finite (a : R) (h0 : p ≠ 0) : multiplicity.Finite (X - C a) p := by
@@ -567,7 +577,7 @@ theorem pow_mul_divByMonic_rootMultiplicity_eq (p : R[X]) (a : R) :
   have : Monic ((X - C a) ^ rootMultiplicity a p) := (monic_X_sub_C _).pow _
   conv_rhs =>
       rw [← modByMonic_add_div p this,
-        (dvd_iff_modByMonic_eq_zero this).2 (pow_rootMultiplicity_dvd _ _)]
+        (modByMonic_eq_zero_iff_dvd this).2 (pow_rootMultiplicity_dvd _ _)]
   simp
 #align polynomial.div_by_monic_mul_pow_root_multiplicity_eq Polynomial.pow_mul_divByMonic_rootMultiplicity_eq
 
@@ -614,7 +624,7 @@ theorem mul_divByMonic_eq_iff_isRoot : (X - C a) * (p /ₘ (X - C a)) = p ↔ Is
 
 theorem dvd_iff_isRoot : X - C a ∣ p ↔ IsRoot p a :=
   ⟨fun h => by
-    rwa [← dvd_iff_modByMonic_eq_zero (monic_X_sub_C _), modByMonic_X_sub_C_eq_C_eval, ← C_0,
+    rwa [← modByMonic_eq_zero_iff_dvd (monic_X_sub_C _), modByMonic_X_sub_C_eq_C_eval, ← C_0,
       C_inj] at h,
     fun h => ⟨p /ₘ (X - C a), by rw [mul_divByMonic_eq_iff_isRoot.2 h]⟩⟩
 #align polynomial.dvd_iff_is_root Polynomial.dvd_iff_isRoot
@@ -687,7 +697,7 @@ theorem eval_divByMonic_pow_rootMultiplicity_ne_zero {p : R[X]} (a : R) (hp : p 
   rw [Ne.def, ← IsRoot.definition, ← dvd_iff_isRoot]
   rintro ⟨q, hq⟩
   have := pow_mul_divByMonic_rootMultiplicity_eq p a
-  rw [hq, ← mul_assoc, ← pow_succ', rootMultiplicity_eq_multiplicity, dif_neg hp] at this
+  rw [hq, ← mul_assoc, ← pow_succ, rootMultiplicity_eq_multiplicity, dif_neg hp] at this
   exact
     multiplicity.is_greatest'
       (multiplicity_finite_of_degree_pos_of_monic
@@ -695,6 +705,13 @@ theorem eval_divByMonic_pow_rootMultiplicity_ne_zero {p : R[X]} (a : R) (hp : p 
         (monic_X_sub_C _) hp)
       (Nat.lt_succ_self _) (dvd_of_mul_right_eq _ this)
 #align polynomial.eval_div_by_monic_pow_root_multiplicity_ne_zero Polynomial.eval_divByMonic_pow_rootMultiplicity_ne_zero
+
+/-- See `Polynomial.mul_right_modByMonic` for the other multiplication order. This version, unlike
+that one, requires commutativity. -/
+@[simp]
+lemma mul_self_modByMonic (hq : q.Monic) : (p * q) %ₘ q = 0 := by
+  rw [modByMonic_eq_zero_iff_dvd hq]
+  exact dvd_mul_left q p
 
 end CommRing
 

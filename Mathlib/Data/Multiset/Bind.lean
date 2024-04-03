@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Data.Multiset.Dedup
 
 #align_import data.multiset.bind from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
@@ -211,12 +212,10 @@ theorem count_bind [DecidableEq α] {m : Multiset β} {f : β → Multiset α} {
 theorem le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : α} (hx : x ∈ S) :
     f x ≤ S.bind f := by
   classical
-    rw [le_iff_count]
-    intro a
-    rw [count_bind]
-    apply le_sum_of_mem
-    rw [mem_map]
-    exact ⟨x, hx, rfl⟩
+  refine le_iff_count.2 fun a ↦ ?_
+  obtain ⟨m', hm'⟩ := exists_cons_of_mem $ mem_map_of_mem (fun b ↦ count a (f b)) hx
+  rw [count_bind, hm', sum_cons]
+  exact Nat.le_add_right _ _
 #align multiset.le_bind Multiset.le_bind
 
 -- Porting note (#11119): @[simp] removed because not in normal form
@@ -224,6 +223,27 @@ theorem attach_bind_coe (s : Multiset α) (f : α → Multiset β) :
     (s.attach.bind fun i => f i) = s.bind f :=
   congr_arg join <| attach_map_val' _ _
 #align multiset.attach_bind_coe Multiset.attach_bind_coe
+
+variable {f s t}
+
+@[simp] lemma nodup_bind :
+    Nodup (bind s f) ↔ (∀ a ∈ s, Nodup (f a)) ∧ s.Pairwise fun a b => Disjoint (f a) (f b) := by
+  have : ∀ a, ∃ l : List β, f a = l := fun a => Quot.induction_on (f a) fun l => ⟨l, rfl⟩
+  choose f' h' using this
+  have : f = fun a ↦ ofList (f' a) := funext h'
+  have hd : Symmetric fun a b ↦ List.Disjoint (f' a) (f' b) := fun a b h ↦ h.symm
+  exact Quot.induction_on s <| by simp [this, List.nodup_bind, pairwise_coe_iff_pairwise hd]
+#align multiset.nodup_bind Multiset.nodup_bind
+
+@[simp]
+lemma dedup_bind_dedup [DecidableEq α] [DecidableEq β] (s : Multiset α) (f : α → Multiset β) :
+    (s.dedup.bind f).dedup = (s.bind f).dedup := by
+  ext x
+  -- Porting note: was `simp_rw [count_dedup, mem_bind, mem_dedup]`
+  simp_rw [count_dedup]
+  refine if_congr ?_ rfl rfl
+  simp
+#align multiset.dedup_bind_dedup Multiset.dedup_bind_dedup
 
 end Bind
 
@@ -287,13 +307,18 @@ theorem product_add (s : Multiset α) : ∀ t u : Multiset β, s ×ˢ (t + u) = 
 #align multiset.product_add Multiset.product_add
 
 @[simp]
-theorem mem_product {s t} : ∀ {p : α × β}, p ∈ @product α β s t ↔ p.1 ∈ s ∧ p.2 ∈ t
+theorem card_product : card (s ×ˢ t) = card s * card t := by simp [SProd.sprod, product]
+#align multiset.card_product Multiset.card_product
+
+variable {s t}
+
+@[simp] lemma mem_product : ∀ {p : α × β}, p ∈ @product α β s t ↔ p.1 ∈ s ∧ p.2 ∈ t
   | (a, b) => by simp [product, and_left_comm]
 #align multiset.mem_product Multiset.mem_product
 
-@[simp]
-theorem card_product : card (s ×ˢ t) = card s * card t := by simp [SProd.sprod, product]
-#align multiset.card_product Multiset.card_product
+protected theorem Nodup.product : Nodup s → Nodup t → Nodup (s ×ˢ t) :=
+  Quotient.inductionOn₂ s t fun l₁ l₂ d₁ d₂ => by simp [List.Nodup.product d₁ d₂]
+#align multiset.nodup.product Multiset.Nodup.product
 
 end Product
 
@@ -347,14 +372,22 @@ theorem sigma_add :
 #align multiset.sigma_add Multiset.sigma_add
 
 @[simp]
-theorem mem_sigma {s t} : ∀ {p : Σa, σ a}, p ∈ @Multiset.sigma α σ s t ↔ p.1 ∈ s ∧ p.2 ∈ t p.1
-  | ⟨a, b⟩ => by simp [Multiset.sigma, and_assoc, and_left_comm]
-#align multiset.mem_sigma Multiset.mem_sigma
-
-@[simp]
 theorem card_sigma : card (s.sigma t) = sum (map (fun a => card (t a)) s) := by
   simp [Multiset.sigma, (· ∘ ·)]
 #align multiset.card_sigma Multiset.card_sigma
+
+variable {s t}
+
+@[simp] lemma mem_sigma : ∀ {p : Σa, σ a}, p ∈ @Multiset.sigma α σ s t ↔ p.1 ∈ s ∧ p.2 ∈ t p.1
+  | ⟨a, b⟩ => by simp [Multiset.sigma, and_assoc, and_left_comm]
+#align multiset.mem_sigma Multiset.mem_sigma
+
+protected theorem Nodup.sigma {σ : α → Type*} {t : ∀ a, Multiset (σ a)} :
+    Nodup s → (∀ a, Nodup (t a)) → Nodup (s.sigma t) :=
+  Quot.induction_on s fun l₁ => by
+    choose f hf using fun a => Quotient.exists_rep (t a)
+    simpa [← funext hf] using List.Nodup.sigma
+#align multiset.nodup.sigma Multiset.Nodup.sigma
 
 end Sigma
 

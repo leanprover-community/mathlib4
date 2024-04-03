@@ -140,10 +140,10 @@ instance : GCDMonoid ℤ where
   gcd_dvd_right a b := Int.gcd_dvd_right
   dvd_gcd := dvd_gcd
   gcd_mul_lcm a b := by
-    rw [← Int.ofNat_mul, gcd_mul_lcm, coe_natAbs, abs_eq_normalize]
+    rw [← Int.ofNat_mul, gcd_mul_lcm, natCast_natAbs, abs_eq_normalize]
     exact normalize_associated (a * b)
-  lcm_zero_left a := coe_nat_eq_zero.2 <| Nat.lcm_zero_left _
-  lcm_zero_right a := coe_nat_eq_zero.2 <| Nat.lcm_zero_right _
+  lcm_zero_left a := natCast_eq_zero.2 <| Nat.lcm_zero_left _
+  lcm_zero_right a := natCast_eq_zero.2 <| Nat.lcm_zero_right _
 
 instance : NormalizedGCDMonoid ℤ :=
   { Int.normalizationMonoid,
@@ -194,8 +194,8 @@ theorem gcd_eq_one_iff_coprime {a b : ℤ} : Int.gcd a b = 1 ↔ IsCoprime a b :
     by_contra hg
     obtain ⟨p, ⟨hp, ha, hb⟩⟩ := Nat.Prime.not_coprime_iff_dvd.mp hg
     apply Nat.Prime.not_dvd_one hp
-    rw [← coe_nat_dvd, Int.ofNat_one, ← h]
-    exact dvd_add ((coe_nat_dvd_left.mpr ha).mul_left _) ((coe_nat_dvd_left.mpr hb).mul_left _)
+    rw [← natCast_dvd_natCast, Int.ofNat_one, ← h]
+    exact dvd_add ((natCast_dvd.mpr ha).mul_left _) ((natCast_dvd.mpr hb).mul_left _)
 #align int.gcd_eq_one_iff_coprime Int.gcd_eq_one_iff_coprime
 
 theorem coprime_iff_nat_coprime {a b : ℤ} : IsCoprime a b ↔ Nat.Coprime a.natAbs b.natAbs := by
@@ -242,7 +242,7 @@ theorem sq_of_coprime {a b c : ℤ} (h : IsCoprime a b) (heq : a * b = c ^ 2) :
 
 theorem natAbs_euclideanDomain_gcd (a b : ℤ) :
     Int.natAbs (EuclideanDomain.gcd a b) = Int.gcd a b := by
-  apply Nat.dvd_antisymm <;> rw [← Int.coe_nat_dvd]
+  apply Nat.dvd_antisymm <;> rw [← Int.natCast_dvd_natCast]
   · rw [Int.natAbs_dvd]
     exact Int.dvd_gcd (EuclideanDomain.gcd_dvd_left _ _) (EuclideanDomain.gcd_dvd_right _ _)
   · rw [Int.dvd_natAbs]
@@ -265,24 +265,24 @@ def associatesIntEquivNat : Associates ℤ ≃ ℕ := by
 
 theorem Int.Prime.dvd_mul {m n : ℤ} {p : ℕ} (hp : Nat.Prime p) (h : (p : ℤ) ∣ m * n) :
     p ∣ m.natAbs ∨ p ∣ n.natAbs := by
-  rwa [← hp.dvd_mul, ← Int.natAbs_mul, ← Int.coe_nat_dvd_left]
+  rwa [← hp.dvd_mul, ← Int.natAbs_mul, ← Int.natCast_dvd]
 #align int.prime.dvd_mul Int.Prime.dvd_mul
 
 theorem Int.Prime.dvd_mul' {m n : ℤ} {p : ℕ} (hp : Nat.Prime p) (h : (p : ℤ) ∣ m * n) :
     (p : ℤ) ∣ m ∨ (p : ℤ) ∣ n := by
-  rw [Int.coe_nat_dvd_left, Int.coe_nat_dvd_left]
+  rw [Int.natCast_dvd, Int.natCast_dvd]
   exact Int.Prime.dvd_mul hp h
 #align int.prime.dvd_mul' Int.Prime.dvd_mul'
 
 theorem Int.Prime.dvd_pow {n : ℤ} {k p : ℕ} (hp : Nat.Prime p) (h : (p : ℤ) ∣ n ^ k) :
     p ∣ n.natAbs := by
-  rw [Int.coe_nat_dvd_left, Int.natAbs_pow] at h
+  rw [Int.natCast_dvd, Int.natAbs_pow] at h
   exact hp.dvd_of_dvd_pow h
 #align int.prime.dvd_pow Int.Prime.dvd_pow
 
 theorem Int.Prime.dvd_pow' {n : ℤ} {k p : ℕ} (hp : Nat.Prime p) (h : (p : ℤ) ∣ n ^ k) :
     (p : ℤ) ∣ n := by
-  rw [Int.coe_nat_dvd_left]
+  rw [Int.natCast_dvd]
   exact Int.Prime.dvd_pow hp h
 #align int.prime.dvd_pow' Int.Prime.dvd_pow'
 
@@ -298,7 +298,7 @@ theorem prime_two_or_dvd_of_dvd_two_mul_pow_self_two {m : ℤ} {p : ℕ} (hp : N
 
 theorem Int.exists_prime_and_dvd {n : ℤ} (hn : n.natAbs ≠ 1) : ∃ p, Prime p ∧ p ∣ n := by
   obtain ⟨p, pp, pd⟩ := Nat.exists_prime_and_dvd hn
-  exact ⟨p, Nat.prime_iff_prime_int.mp pp, Int.coe_nat_dvd_left.mpr pd⟩
+  exact ⟨p, Nat.prime_iff_prime_int.mp pp, Int.natCast_dvd.mpr pd⟩
 #align int.exists_prime_and_dvd Int.exists_prime_and_dvd
 
 open UniqueFactorizationMonoid
@@ -322,7 +322,7 @@ theorem Nat.factors_multiset_prod_of_irreducible {s : Multiset ℕ}
   apply
     UniqueFactorizationMonoid.factors_unique irreducible_of_normalized_factor h
       (normalizedFactors_prod _)
-  rw [Ne.def, Multiset.prod_eq_zero_iff]
+  rw [Ne, Multiset.prod_eq_zero_iff]
   intro con
   exact not_irreducible_zero (h 0 con)
 #align nat.factors_multiset_prod_of_irreducible Nat.factors_multiset_prod_of_irreducible
@@ -359,7 +359,7 @@ theorem induction_on_primes {P : ℕ → Prop} (h₀ : P 0) (h₁ : P 1)
 #align induction_on_primes induction_on_primes
 
 theorem Int.associated_natAbs (k : ℤ) : Associated k k.natAbs :=
-  associated_of_dvd_dvd (Int.coe_nat_dvd_right.mpr dvd_rfl) (Int.natAbs_dvd.mpr dvd_rfl)
+  associated_of_dvd_dvd (Int.dvd_natCast.mpr dvd_rfl) (Int.natAbs_dvd.mpr dvd_rfl)
 #align int.associated_nat_abs Int.associated_natAbs
 
 theorem Int.prime_iff_natAbs_prime {k : ℤ} : Prime k ↔ Nat.Prime k.natAbs :=

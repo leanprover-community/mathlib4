@@ -201,7 +201,7 @@ instance (priority := 100) divisibleByIntOfCharZero {𝕜} [DivisionRing 𝕜] [
   div q n := q / n
   div_zero q := by norm_num
   div_cancel {n} q hn := by
-    rw [zsmul_eq_mul, (Int.cast_commute n _).eq, div_mul_cancel q (Int.cast_ne_zero.mpr hn)]
+    rw [zsmul_eq_mul, (Int.cast_commute n _).eq, div_mul_cancel₀ q (Int.cast_ne_zero.mpr hn)]
 #align divisible_by_int_of_char_zero divisibleByIntOfCharZero
 
 namespace Group
