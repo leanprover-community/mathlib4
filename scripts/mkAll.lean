@@ -71,10 +71,14 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
               | some lib => return #[lib.as! String]
               | none => getLeanLibs
   let mut updates := 0
-  for d in libs do
+  for d in libs.reverse do  -- reverse to create `Mathlib.Tactic` before `Mathlib`
     let fileName := addExtension d "lean"
     let fileContent ← getAll git d
-    if (! (←  pathExists fileName)) || (← IO.FS.readFile fileName) != fileContent then
+    if !(← pathExists fileName) then
+      IO.println s!"Updating '{fileName}'"
+      updates := updates + 1
+      IO.FS.writeFile fileName fileContent
+    else if (← IO.FS.readFile fileName) != fileContent then
       IO.println s!"Updating '{fileName}'"
       updates := updates + 1
       IO.FS.writeFile fileName fileContent
