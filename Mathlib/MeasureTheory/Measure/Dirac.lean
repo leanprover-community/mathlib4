@@ -166,3 +166,45 @@ theorem restrict_dirac [MeasurableSingletonClass α] [Decidable (a ∈ s)] :
 lemma mutuallySingular_dirac [MeasurableSingletonClass α] (x : α) (μ : Measure α) [NoAtoms μ] :
     Measure.dirac x ⟂ₘ μ :=
   ⟨{x}ᶜ, (MeasurableSet.singleton x).compl, by simp, by simp⟩
+
+section dirac_injective
+
+/-- Dirac delta measures at two points are equal if every measurable set contains either both or
+neither of the points. -/
+lemma dirac_eq_dirac_iff_forall_measurableSet {x y : α} :
+    Measure.dirac x = Measure.dirac y ↔ ∀ A, MeasurableSet A → (x ∈ A ↔ y ∈ A) := by
+  constructor
+  · intro h A A_mble
+    have obs := congr_arg (fun μ ↦ μ A) h
+    simp only [Measure.dirac_apply' _ A_mble] at obs
+    by_cases x_in_A : x ∈ A
+    · simpa only [x_in_A, indicator_of_mem, Pi.one_apply, true_iff, Eq.comm (a := (1 : ℝ≥0∞)),
+                  indicator_eq_one_iff_mem] using obs
+    · simpa only [x_in_A, indicator_of_not_mem, Eq.comm (a := (0 : ℝ≥0∞)), indicator_apply_eq_zero,
+                  false_iff, not_false_eq_true, Pi.one_apply, one_ne_zero, imp_false] using obs
+  · intro h
+    ext A A_mble
+    by_cases x_in_A : x ∈ A
+    · simp only [Measure.dirac_apply' _ A_mble, x_in_A, indicator_of_mem, Pi.one_apply,
+                 (h A A_mble).mp x_in_A]
+    · have y_notin_A : y ∉ A := by simp_all only [false_iff, not_false_eq_true]
+      simp only [Measure.dirac_apply' _ A_mble, x_in_A, y_notin_A,
+                 not_false_eq_true, indicator_of_not_mem]
+
+/-- Dirac delta measures at two points are different if and only if there is a measurable set
+containing one of the points but not the other. -/
+lemma dirac_ne_dirac_iff {x y : α} :
+    Measure.dirac x ≠ Measure.dirac y ↔ ∃ A, MeasurableSet A ∧ x ∈ A ∧ y ∉ A := by
+  apply not_iff_not.mp
+  simp only [ne_eq, not_not, not_exists, not_and, dirac_eq_dirac_iff_forall_measurableSet]
+  refine ⟨fun h A A_mble ↦ by simp only [h A A_mble, imp_self], fun h A A_mble ↦ ?_⟩
+  by_cases x_in_A : x ∈ A
+  · simp only [x_in_A, h A A_mble x_in_A]
+  · simpa only [x_in_A, false_iff] using h Aᶜ (MeasurableSet.compl_iff.mpr A_mble) x_in_A
+
+/-- Dirac delta measures at two different points are different if all singletons are measurable. -/
+lemma dirac_ne_dirac [MeasurableSingletonClass α] {x y : α} (x_ne_y : x ≠ y) :
+    Measure.dirac x ≠ Measure.dirac y :=
+  dirac_ne_dirac_iff.mpr ⟨{x}, measurableSet_singleton x, rfl, Ne.symm x_ne_y⟩
+
+end dirac_injective
