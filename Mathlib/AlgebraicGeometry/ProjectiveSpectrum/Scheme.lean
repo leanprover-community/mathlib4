@@ -657,6 +657,9 @@ lemma toSpec_fromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x :
       rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
         HomogeneousLocalization.zero_val, Localization.mk_zero]
 
+@[deprecated] -- 2024-03-02
+alias toSpecFromSpec := toSpec_fromSpec
+
 end toSpecFromSpec
 
 section fromSpecToSpec

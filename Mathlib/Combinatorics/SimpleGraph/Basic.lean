@@ -662,7 +662,7 @@ theorem fromEdgeSet_univ : fromEdgeSet (Set.univ : Set (Sym2 V)) = ⊤ := by
 theorem fromEdgeSet_inf (s t : Set (Sym2 V)) :
     fromEdgeSet s ⊓ fromEdgeSet t = fromEdgeSet (s ∩ t) := by
   ext v w
-  simp only [fromEdgeSet_adj, Set.mem_inter_iff, Ne.def, inf_adj]
+  simp only [fromEdgeSet_adj, Set.mem_inter_iff, Ne, inf_adj]
   tauto
 #align simple_graph.from_edge_set_inf SimpleGraph.fromEdgeSet_inf
 
@@ -683,7 +683,7 @@ theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
 @[mono]
 theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ fromEdgeSet t := by
   rintro v w
-  simp (config := { contextual := true }) only [fromEdgeSet_adj, Ne.def, not_false_iff,
+  simp (config := { contextual := true }) only [fromEdgeSet_adj, Ne, not_false_iff,
     and_true_iff, and_imp]
   exact fun vws _ => h vws
 #align simple_graph.from_edge_set_mono SimpleGraph.fromEdgeSet_mono

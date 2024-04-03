@@ -64,9 +64,7 @@ theorem order_finite_iff_ne_zero : (order φ).Dom ↔ φ ≠ 0 := by
   simp only [order]
   constructor
   · split_ifs with h <;> intro H
-    · contrapose! H
-      simp only [← Part.eq_none_iff']
-      rfl
+    · simp only [PartENat.top_eq_none, Part.not_none_dom] at H
     · exact h
   · intro h
     simp [h]

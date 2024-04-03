@@ -131,7 +131,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
           orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc, Subtype.coe_mk,
           dist_of_mem_subset_mk_sphere hp1 hcr, dist_eq_norm_vsub V cc₂ cc, vadd_vsub, norm_smul, ←
           dist_eq_norm_vsub V, Real.norm_eq_abs, abs_div, abs_of_nonneg dist_nonneg,
-          div_mul_cancel _ hy0, abs_mul_abs_self]
+          div_mul_cancel₀ _ hy0, abs_mul_abs_self]
   · rintro ⟨cc₃, cr₃⟩ ⟨hcc₃, hcr₃⟩
     simp only at hcc₃ hcr₃
     obtain ⟨t₃, cc₃', hcc₃', hcc₃''⟩ :
@@ -456,7 +456,7 @@ theorem dist_circumcenter_sq_eq_sq_sub_circumradius {n : ℕ} {r : ℝ} (s : Sim
     dist p₁ s.circumcenter * dist p₁ s.circumcenter = r * r - s.circumradius * s.circumradius := by
   rw [dist_comm, ← h₁ 0,
     s.dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p₁ h]
-  simp only [h₁', dist_comm p₁, add_sub_cancel', Simplex.dist_circumcenter_eq_circumradius]
+  simp only [h₁', dist_comm p₁, add_sub_cancel_left, Simplex.dist_circumcenter_eq_circumradius]
 #align affine.simplex.dist_circumcenter_sq_eq_sq_sub_circumradius Affine.Simplex.dist_circumcenter_sq_eq_sq_sub_circumradius
 
 /-- If there exists a distance that a point has from all vertices of a
@@ -936,7 +936,7 @@ theorem eq_or_eq_reflection_of_dist_eq {n : ℕ} {s : Simplex ℝ P n} {p p₁ p
     rw [hp₁, hp₂, ← hp]
     simp only [true_or_iff, eq_self_iff_true, smul_zero, vsub_self]
   · have hz : ⟪p -ᵥ orthogonalProjection span_s p, p -ᵥ orthogonalProjection span_s p⟫ ≠ 0 := by
-      simpa only [Ne.def, vsub_eq_zero_iff_eq, inner_self_eq_zero] using hp
+      simpa only [Ne, vsub_eq_zero_iff_eq, inner_self_eq_zero] using hp
     rw [mul_left_inj' hz, mul_self_eq_mul_self_iff] at hd₁
     rw [hp₁, hp₂]
     cases' hd₁ with hd₁ hd₁

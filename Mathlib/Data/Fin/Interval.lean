@@ -39,8 +39,6 @@ end Fin
 
 open Finset Fin Function
 
-open BigOperators
-
 namespace Fin
 
 variable (n : ℕ)

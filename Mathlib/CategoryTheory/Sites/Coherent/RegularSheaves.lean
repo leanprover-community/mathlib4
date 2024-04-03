@@ -3,7 +3,8 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
-import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.EffectiveEpi.Preserves
+import Mathlib.CategoryTheory.Limits.Final.ParallelPair
 import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 import Mathlib.CategoryTheory.Sites.Canonical
@@ -17,7 +18,7 @@ This file characterises sheaves for the regular topology.
 
 ## Main results
 
-* `isSheaf_iff_equalizerCondition`: In a preregular category with pullbacks, the sheaves for the
+* `equalizerCondition_iff_isSheaf`: In a preregular category with pullbacks, the sheaves for the
   regular topology are precisely the presheaves satisfying an equaliser condition with respect to
   effective epimorphisms.
 
@@ -119,14 +120,14 @@ theorem EqualizerCondition.mk (P : Cᵒᵖ ⥤ Type*)
   · simpa [MapToEqualizer] using ha₁
   · simpa [MapToEqualizer] using ha₂
 
-lemma equalizerCondition_iff_isIso_lift_w (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B)
+lemma equalizerCondition_w' (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B)
     [HasPullback π π] : P.map π.op ≫ P.map (pullback.fst (f := π) (g := π)).op =
     P.map π.op ≫ P.map (pullback.snd).op := by
   simp only [← Functor.map_comp, ← op_comp, pullback.condition]
 
 lemma mapToEqualizer_eq_comp (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B)
     [HasPullback π π] : MapToEqualizer P π pullback.fst pullback.snd pullback.condition =
-    equalizer.lift (P.map π.op) (equalizerCondition_iff_isIso_lift_w P π) ≫
+    equalizer.lift (P.map π.op) (equalizerCondition_w' P π) ≫
     (Types.equalizerIso _ _).hom := by
   rw [← Iso.comp_inv_eq (α := Types.equalizerIso _ _)]
   apply equalizer.hom_ext
@@ -134,14 +135,14 @@ lemma mapToEqualizer_eq_comp (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B)
 
 /-- An alternative phrasing of the explicit equalizer condition, using more categorical language. -/
 theorem equalizerCondition_iff_isIso_lift (P : Cᵒᵖ ⥤ Type*) : EqualizerCondition P ↔
-    ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π], IsIso
-    (equalizer.lift (P.map π.op) (equalizerCondition_iff_isIso_lift_w P π)) := by
+    ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π],
+      IsIso (equalizer.lift (P.map π.op) (equalizerCondition_w' P π)) := by
   constructor
   · intro hP X B π _ _
     have h := hP.bijective_mapToEqualizer_pullback _ X B π
     rw [← isIso_iff_bijective, mapToEqualizer_eq_comp] at h
     exact IsIso.of_isIso_comp_right (equalizer.lift (P.map π.op)
-      (equalizerCondition_iff_isIso_lift_w P π))
+      (equalizerCondition_w' P π))
       (Types.equalizerIso _ _).hom
   · intro hP
     apply EqualizerCondition.mk
@@ -157,68 +158,25 @@ theorem equalizerCondition_iff_of_equivalence (P : Cᵒᵖ ⥤ D)
       (equalizerCondition_precomp_of_preservesPullback (e.op.inverse ⋙ P) e.functor h)⟩
 
 open WalkingParallelPair WalkingParallelPairHom in
-theorem parallelPair_initial_of_zigzag_zero {X Y : C} (f g : X ⟶ Y)
-    [∀ (Z : C), Nonempty (CostructuredArrow (parallelPair f.op g.op) ⟨Z⟩)]
-    (h : ∀ {Z : C} (i j : Z ⟶ Y), Zigzag
-      (⟨zero, ⟨()⟩, i.op⟩ : CostructuredArrow (parallelPair f.op g.op) ⟨Z⟩) ⟨zero, ⟨()⟩, j.op⟩) :
-    (parallelPair f.op g.op).Initial where
-  out _ := by
-    let H := parallelPair f.op g.op
-    apply zigzag_isConnected
-    rintro ⟨⟨_ | _⟩, _, ⟨i⟩⟩ ⟨⟨_ | _⟩, _, ⟨j⟩⟩
-    · exact h i j
-    · exact (h i (j ≫ (H.map right).unop)).trans (Relation.ReflTransGen.single
-        (Or.inl ⟨CostructuredArrow.homMk right rfl⟩))
-    · refine (?_ : Zigzag _ _).trans (h (i ≫ (H.map left).unop) j)
-      exact Relation.ReflTransGen.single (Or.inr ⟨CostructuredArrow.homMk left rfl⟩)
-    · refine ((?_ : Zigzag _ _).trans
-        (h (i ≫ (H.map left).unop) (j ≫ (H.map right).unop))).trans
-        (Relation.ReflTransGen.single (Or.inl ⟨CostructuredArrow.homMk right rfl⟩))
-      exact Relation.ReflTransGen.single (Or.inr ⟨CostructuredArrow.homMk left rfl⟩)
-
-open WalkingParallelPair WalkingParallelPairHom in
-theorem parallelPair_pullback_initial {X B : C} (π : X ⟶ B) (c : PullbackCone π π)
-    (hc : IsLimit c) : let S := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows
-    let E := @FullSubcategory (Over B) (fun f ↦ S f.hom)
-    let X' : E := ⟨Over.mk π, ⟨_, 𝟙 _, π, ofArrows.mk (), Category.id_comp _⟩⟩
-    let P' : E := ⟨Over.mk (c.fst ≫ π),
-      ⟨_, c.fst, π, ofArrows.mk (), rfl⟩⟩
-    let fst : P' ⟶ X' := Over.homMk c.fst
-    let snd : P' ⟶ X' := Over.homMk c.snd c.condition.symm
-    (parallelPair fst.op snd.op).Initial := by
-  let S := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows
-  let E := @FullSubcategory (Over B) (fun f ↦ S f.hom)
-  let X' : E := ⟨Over.mk π, ⟨_, 𝟙 _, π, ofArrows.mk (), Category.id_comp _⟩⟩
-  let P' : E := ⟨Over.mk (c.fst ≫ π),
-    ⟨_, c.fst, π, ofArrows.mk (), rfl⟩⟩
-  let fst : P' ⟶ X' := Over.homMk c.fst
-  let snd : P' ⟶ X' := Over.homMk c.snd c.condition.symm
-  let H := parallelPair fst.op snd.op
-  refine @parallelPair_initial_of_zigzag_zero _ _ _ _ fst snd (fun Z ↦ ?_) fun {Z} i j ↦ ?_
-  · obtain ⟨_, f, g, ⟨⟩, hh⟩ := Z.property
-    refine ⟨CostructuredArrow.mk (Y := zero) ?_⟩
+theorem parallelPair_pullback_initial {X B : C} (π : X ⟶ B)
+    (c : PullbackCone π π) (hc : IsLimit c) :
+    (parallelPair (C := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows.categoryᵒᵖ)
+    (Y := op ((Presieve.categoryMk _ (c.fst ≫ π) ⟨_, c.fst, π, ofArrows.mk (), rfl⟩)))
+    (X := op ((Presieve.categoryMk _ π (Sieve.ofArrows_mk _ _ Unit.unit))))
+    (Quiver.Hom.op (Over.homMk c.fst))
+    (Quiver.Hom.op (Over.homMk c.snd c.condition.symm))).Initial := by
+  apply Limits.parallelPair_initial_mk
+  · intro ⟨Z⟩
+    obtain ⟨_, f, g, ⟨⟩, hh⟩ := Z.property
+    let X' : (Presieve.ofArrows (fun () ↦ X) (fun () ↦ π)).category :=
+      Presieve.categoryMk _ π (ofArrows.mk ())
     let f' : Z.obj.left ⟶ X'.obj.left := f
-    refine (Over.homMk f').op
-  · let ij := PullbackCone.IsLimit.lift hc i.left j.left (by erw [i.w, j.w]; rfl)
-    let cij : CostructuredArrow H ⟨Z⟩ :=
-      CostructuredArrow.mk (⟨ij, (𝟙 _), (by simpa [H, ij] using i.w)⟩ : H.obj one ⟶ ⟨Z⟩)
-    let fig : (⟨zero, ⟨()⟩, ⟨i⟩⟩ : CostructuredArrow H ⟨Z⟩).left ⟶ cij.left := left
-    let fjg : (⟨zero, ⟨()⟩, ⟨j⟩⟩ : CostructuredArrow H ⟨Z⟩).left ⟶ cij.left := right
-    let fi : ⟨zero, _, ⟨i⟩⟩ ⟶ cij := CostructuredArrow.homMk fig (by
-      erw [← op_comp]
-      congr
-      apply CostructuredArrow.hom_ext
-      change PullbackCone.IsLimit.lift _ _ _ _ ≫ c.fst = _
-      simp)
-    let fj : ⟨zero, _, ⟨j⟩⟩ ⟶ cij := CostructuredArrow.homMk fjg (by
-      erw [← op_comp]
-      congr
-      apply CostructuredArrow.hom_ext
-      change PullbackCone.IsLimit.lift _ _ _ _ ≫ c.snd = _
-      simp)
-    refine List.relationReflTransGen_of_exists_chain [cij, ⟨zero, _, ⟨j⟩⟩] ?_ rfl
-    simp only [id_obj, const_obj_obj, List.chain_cons, List.Chain.nil, and_true]
-    exact ⟨Or.inl ⟨fi⟩, Or.inr ⟨fj⟩⟩
+    exact ⟨(Over.homMk f').op⟩
+  · intro ⟨Z⟩ ⟨i⟩ ⟨j⟩
+    let ij := PullbackCone.IsLimit.lift hc i.left j.left (by erw [i.w, j.w]; rfl)
+    refine ⟨Quiver.Hom.op (Over.homMk ij (by simpa [ij] using i.w)), ?_, ?_⟩
+    all_goals congr
+    all_goals exact Comma.hom_ext _ _ (by erw [Over.comp_left]; simp [ij]) rfl
 
 /--
 Given a limiting pullback cone, the fork in `SingleEqualizerCondition` is limiting iff the diagram
@@ -229,44 +187,22 @@ noncomputable def isLimit_forkOfι_equiv (P : Cᵒᵖ ⥤ D) {X B : C} (π : X �
     IsLimit (Fork.ofι (P.map π.op) (equalizerCondition_w P c)) ≃
     IsLimit (P.mapCone (Sieve.ofArrows (fun (_ : Unit) ↦ X) fun _ ↦ π).arrows.cocone.op) := by
   let S := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows
-  let E := @FullSubcategory (Over B) (fun f ↦ S f.hom)
-  let F : Eᵒᵖ ⥤ D := S.diagram.op ⋙ P
-  let G := parallelPair (P.map c.fst.op) (P.map c.snd.op)
-  let X' : E := ⟨Over.mk π, ⟨_, 𝟙 _, π, ofArrows.mk (), Category.id_comp _⟩⟩
-  let P' : E := ⟨Over.mk (c.fst ≫ π),
-    ⟨_, c.fst, π, ofArrows.mk (), rfl⟩⟩
+  let X' := S.categoryMk π ⟨_, 𝟙 _, π, ofArrows.mk (), Category.id_comp _⟩
+  let P' := S.categoryMk (c.fst ≫ π) ⟨_, c.fst, π, ofArrows.mk (), rfl⟩
   let fst : P' ⟶ X' := Over.homMk c.fst
   let snd : P' ⟶ X' := Over.homMk c.snd c.condition.symm
+  let F : S.categoryᵒᵖ ⥤ D := S.diagram.op ⋙ P
+  let G := parallelPair (P.map c.fst.op) (P.map c.snd.op)
   let H := parallelPair fst.op snd.op
   have : H.Initial := parallelPair_pullback_initial π c hc
   let i : H ⋙ F ≅ G := parallelPair.ext (Iso.refl _) (Iso.refl _) (by aesop) (by aesop)
   refine (IsLimit.equivOfNatIsoOfIso i.symm _ _ ?_).trans (Functor.Initial.isLimitWhiskerEquiv H _)
-  refine Cones.ext ?_ ?_
-  · rfl
-  · rintro ⟨_ | _⟩
-    · simp only [id_obj, comp_obj, Functor.comp_map, Iso.refl_hom, id_eq, eq_mpr_eq_cast,
-        const_obj_obj, parallelPair_map_right, Quiver.Hom.unop_op, Over.homMk_left, Iso.symm_hom,
-        Cones.postcompose_obj_pt, Fork.ofι_pt, Cones.postcompose_obj_π, NatTrans.comp_app,
-        Fork.ofι_π_app, parallelPair.ext_inv_app, Iso.refl_inv, Sieve.generate_apply,
-        Cone.whisker_pt, mapCone_pt, Cocone.op_pt, Cocone.whisker_pt, Over.forgetCocone_pt,
-        Cone.whisker_π, whiskerLeft_app, mapCone_π_app, op_obj, fullSubcategoryInclusion.obj,
-        Over.forget_obj, Cocone.op_π, Cocone.whisker_ι, NatTrans.op_app, Over.forgetCocone_ι_app,
-        Category.id_comp, i]
-      erw [Category.comp_id]
-      congr
-    · simp only [id_obj, comp_obj, Functor.comp_map, Iso.refl_hom, id_eq, eq_mpr_eq_cast,
-        const_obj_obj, parallelPair_map_right, Quiver.Hom.unop_op, Over.homMk_left, Iso.symm_hom,
-        Cones.postcompose_obj_pt, Fork.ofι_pt, Cones.postcompose_obj_π, NatTrans.comp_app,
-        Fork.ofι_π_app, parallelPair_obj_one, parallelPair.ext_inv_app, Iso.refl_inv,
-        Category.assoc, Sieve.generate_apply, Cone.whisker_pt, mapCone_pt, Cocone.op_pt,
-        Cocone.whisker_pt, Over.forgetCocone_pt, Cone.whisker_π, whiskerLeft_app, mapCone_π_app,
-        op_obj, fullSubcategoryInclusion.obj, Over.forget_obj, Cocone.op_π, Cocone.whisker_ι,
-        NatTrans.op_app, Over.forgetCocone_ι_app, Category.id_comp, i]
-      erw [Category.comp_id, ← Functor.map_comp]
-      congr
+  refine Cones.ext (Iso.refl _) ?_
+  rintro ⟨_ | _⟩
+  all_goals aesop
 
 lemma equalizerConditionMap_iff_nonempty_isLimit (P : Cᵒᵖ ⥤ D) ⦃X B : C⦄ (π : X ⟶ B)
-    [HasPullback π π]: SingleEqualizerCondition P π ↔
+    [HasPullback π π] : SingleEqualizerCondition P π ↔
       Nonempty (IsLimit (P.mapCone
         (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows.cocone.op)) := by
   constructor

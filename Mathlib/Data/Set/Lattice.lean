@@ -1513,7 +1513,7 @@ theorem injective_iff_injective_of_iUnion_eq_univ :
     Injective f ↔ ∀ i, Injective ((U i).restrictPreimage f) := by
   refine' ⟨fun H i => (U i).restrictPreimage_injective H, fun H x y e => _⟩
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp
-      (show f x ∈ Set.iUnion U by rw [hU]; triv)
+      (show f x ∈ Set.iUnion U by rw [hU]; trivial)
   injection @H i ⟨x, hi⟩ ⟨y, show f y ∈ U i from e ▸ hi⟩ (Subtype.ext e)
 #align set.injective_iff_injective_of_Union_eq_univ Set.injective_iff_injective_of_iUnion_eq_univ
 
@@ -1522,7 +1522,7 @@ theorem surjective_iff_surjective_of_iUnion_eq_univ :
   refine' ⟨fun H i => (U i).restrictPreimage_surjective H, fun H x => _⟩
   obtain ⟨i, hi⟩ :=
     Set.mem_iUnion.mp
-      (show x ∈ Set.iUnion U by rw [hU]; triv)
+      (show x ∈ Set.iUnion U by rw [hU]; trivial)
   exact ⟨_, congr_arg Subtype.val (H i ⟨x, hi⟩).choose_spec⟩
 #align set.surjective_iff_surjective_of_Union_eq_univ Set.surjective_iff_surjective_of_iUnion_eq_univ
 
