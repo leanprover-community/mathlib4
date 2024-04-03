@@ -466,16 +466,14 @@ variable [MeasurableSpace β]
 /-- A class registering that either `α` is countable with measurable singletons or `β` is a
 countably generated measurable space. -/
 class CountableOrCountablyGenerated (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] : Prop :=
-  (countableOrCountablyGenerated :
-    (Countable α ∧ MeasurableSingletonClass α) ∨ MeasurableSpace.CountablyGenerated β)
+  countableOrCountablyGenerated : Countable α ∨ MeasurableSpace.CountablyGenerated β
 
-instance instCountableOrCountablyGeneratedOfCountable
-    [h1 : Countable α] [h2 : MeasurableSingletonClass α] :
-  CountableOrCountablyGenerated α β := ⟨Or.inl ⟨h1, h2⟩⟩
+instance instCountableOrCountablyGeneratedOfCountable [h1 : Countable α] :
+    CountableOrCountablyGenerated α β := ⟨Or.inl h1⟩
 
 instance instCountableOrCountablyGeneratedOfCountablyGenerated
     [h : MeasurableSpace.CountablyGenerated β] :
-  CountableOrCountablyGenerated α β := ⟨Or.inr h⟩
+    CountableOrCountablyGenerated α β := ⟨Or.inr h⟩
 
 end CountableOrCountablyGenerated
 
