@@ -80,31 +80,6 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      - uses: actions/checkout@v4
-
-      - name: update Mathlib.lean
-        run: |
-          git ls-files 'Mathlib/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
-
-      - name: update MathlibExtras.lean
-        run: |
-          git ls-files 'MathlibExtras/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > MathlibExtras.lean
-
-      - name: update Mathlib/Tactic.lean
-        run: |
-          git ls-files 'Mathlib/Tactic/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib/Tactic.lean
-
-      - name: update Counterexamples.lean
-        run: |
-          git ls-files 'Counterexamples/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Counterexamples.lean
-
-      - name: update Archive.lean
-        run: |
-          git ls-files 'Archive/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Archive.lean
-
-      - name: check that all files are imported
-        run: git diff --exit-code
-
   check_workflows:
     if: github.repository == 'leanprover-community/mathlib4'
     name: check workflows
@@ -171,6 +146,15 @@ jobs:
         run: |
           lean --version
           lake --version
+
+      - uses: actions/checkout@v4
+
+      - name: update {Mathlib, MathlibExtras, Tactic, Counterexamples, Archive}.lean
+        run: lake exe mkAll
+
+      - name: check that all files are imported
+        run: git diff --exit-code
+
 
       - name: build cache
         run: |
