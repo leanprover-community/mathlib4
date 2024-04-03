@@ -105,7 +105,7 @@ theorem isSymm : M.val.IsSymm := Matrix.IsSymm.ext (forall_swap.mp M.symmetric)
 theorem off_diagonal (i i' : B) (h : i ≠ i') : M i i' ≠ 1 := M.2.2.2 i i' h
 
 /-- The Coxeter matrix formed by reindexing via the bijection `e : B ≃ B'`. -/
-def reindex : CoxeterMatrix B' :=
+protected def reindex : CoxeterMatrix B' :=
   of (Matrix.reindex e e M.val)
     (fun i i' ↦ M.symmetric (e.symm i) (e.symm i'))
     (fun i ↦ M.diagonal (e.symm i))

@@ -70,12 +70,10 @@ That is, the relation $(s_i s_{i'})^{M_{i, i'}}$, considered as an element of th
 on $\{s_i\}_{i \in B}$.
 If $M_{i, i'} = 0$, then this is the identity, indicating that there is no relation between
 $s_i$ and $s_i'$. -/
-def relation (i i' : B) : FreeGroup B :=
- (FreeGroup.of i * FreeGroup.of i') ^ M i i'
+def relation (i i' : B) : FreeGroup B := (FreeGroup.of i * FreeGroup.of i') ^ M i i'
 
 /-- The set of all Coxeter relations associated to the Coxeter matrix $M$. -/
-def relationsSet : Set (FreeGroup B) :=
-  Set.range <| uncurry M.relation
+def relationsSet : Set (FreeGroup B) := Set.range <| uncurry M.relation
 
 /-- The Coxeter group associated with a Coxeter matrix $M$; that is, the group
 $$\langle \{s_i\}_{i \in B} \vert \{(s_i s_{i'})^{M_{i, i'}}\}_{i, i' \in B} \rangle.$$ -/
@@ -87,11 +85,11 @@ instance : Group M.group := QuotientGroup.Quotient.group _
 def simple (i : B) : M.group := PresentedGroup.of i
 
 theorem reindex_relationsSet :
-    (reindex e M).relationsSet =
-    (FreeGroup.freeGroupCongr e) '' M.relationsSet := let M' := reindex e M; calc
+    (M.reindex e).relationsSet =
+    FreeGroup.freeGroupCongr e '' M.relationsSet := let M' := M.reindex e; calc
   Set.range (uncurry M'.relation)
-  _ = Set.range ((uncurry M'.relation) ∘ Prod.map e e) := by simp [Set.range_comp]
-  _ = Set.range ((FreeGroup.freeGroupCongr e) ∘ uncurry M.relation) := by
+  _ = Set.range (uncurry M'.relation ∘ Prod.map e e) := by simp [Set.range_comp]
+  _ = Set.range (FreeGroup.freeGroupCongr e ∘ uncurry M.relation) := by
       apply congrArg Set.range
       ext ⟨i, i'⟩
       simp [relation, reindex_apply, M']
@@ -99,9 +97,9 @@ theorem reindex_relationsSet :
 
 /-- The isomorphism between the Coxeter group associated to the reindexed matrix `reindex e M` and
 the Coxeter group associated to `M`. -/
-def reindexGroupEquiv : (reindex e M).group ≃* M.group :=
+def reindexGroupEquiv : (M.reindex e).group ≃* M.group :=
   (QuotientGroup.congr (Subgroup.normalClosure M.relationsSet)
-    (Subgroup.normalClosure (reindex e M).relationsSet)
+    (Subgroup.normalClosure (M.reindex e).relationsSet)
     (FreeGroup.freeGroupCongr e) (by
       rw [reindex_relationsSet,
         Subgroup.map_normalClosure _ _ (FreeGroup.freeGroupCongr e).surjective,
@@ -109,10 +107,10 @@ def reindexGroupEquiv : (reindex e M).group ≃* M.group :=
       rfl)).symm
 
 theorem reindexGroupEquiv_apply_simple (i : B') :
-    (M.reindexGroupEquiv e) ((reindex e M).simple i) = M.simple (e.symm i) := rfl
+    (M.reindexGroupEquiv e) ((M.reindex e).simple i) = M.simple (e.symm i) := rfl
 
 theorem reindexGroupEquiv_symm_apply_simple (i : B) :
-    (M.reindexGroupEquiv e).symm (M.simple i) = (reindex e M).simple (e i) := rfl
+    (M.reindexGroupEquiv e).symm (M.simple i) = (M.reindex e).simple (e i) := rfl
 
 end CoxeterMatrix
 
@@ -131,7 +129,7 @@ structure CoxeterSystem (W : Type*) [Group W] where
 
 /-- A group is a Coxeter group if it admits a Coxeter system for some Coxeter matrix `M`. -/
 class IsCoxeterGroup (W : Type*) [Group W] : Prop where
-  nonempty_system : ∃ (B : Type*), ∃ (M : CoxeterMatrix B), Nonempty (CoxeterSystem M W)
+  nonempty_system : ∃ B : Type*, ∃ M : CoxeterMatrix B, Nonempty (CoxeterSystem M W)
 
 /-- The canonical Coxeter system on the Coxeter group associated to `M`. -/
 def CoxeterMatrix.toCoxeterSystem : CoxeterSystem M M.group := ⟨.refl _⟩
@@ -148,12 +146,11 @@ variable {M : CoxeterMatrix B} (cs : CoxeterSystem M W)
 
 /-- Reindex a Coxeter system through a bijection of the indexing sets. -/
 @[simps]
-protected def reindex (e : B ≃ B') : CoxeterSystem (reindex e M) W :=
+protected def reindex (e : B ≃ B') : CoxeterSystem (M.reindex e) W :=
   ⟨cs.mulEquiv.trans (M.reindexGroupEquiv e).symm⟩
 
 /-- Push a Coxeter system through a group isomorphism. -/
-@[simps]
-protected def map (e : W ≃* H) : CoxeterSystem M H := ⟨e.symm.trans cs.mulEquiv⟩
+@[simps] protected def map (e : W ≃* H) : CoxeterSystem M H := ⟨e.symm.trans cs.mulEquiv⟩
 
 /-! ### Simple reflections -/
 
@@ -163,12 +160,8 @@ def simple (i : B) : W := cs.mulEquiv.symm (PresentedGroup.of i)
 theorem _root_.CoxeterMatrix.toCoxeterSystem_simple (M : CoxeterMatrix B) :
     M.toCoxeterSystem.simple = M.simple := rfl
 
-@[simp]
-theorem reindex_simple (i' : B') :
-    (cs.reindex e).simple i' = cs.simple (e.symm i') := rfl
+@[simp] theorem reindex_simple (i' : B') : (cs.reindex e).simple i' = cs.simple (e.symm i') := rfl
 
-@[simp]
-theorem map_simple (e : W ≃* H) (i : B) :
-    (cs.map e).simple i = e (cs.simple i) := rfl
+@[simp] theorem map_simple (e : W ≃* H) (i : B) : (cs.map e).simple i = e (cs.simple i) := rfl
 
 end CoxeterSystem
