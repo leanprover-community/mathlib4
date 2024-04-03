@@ -143,10 +143,27 @@ lemma fermatLastTheoremWith_of_fermatLastTheoremWith_coprime {n : ℕ} {R : Type
   rw [← Finset.gcd_mul_left, gcd_eq_gcd_image, image_insert, image_insert, image_singleton,
       id_eq, id_eq, id_eq, ← hA, ← hB, ← hC]
 
-lemma isCoprime_of_gcd_eq_one_of_FLT {n : ℕ} {a b c : ℤ} (hb : b ≠ 0)
-    (Hgcd: Finset.gcd {a, b, c} id = 1) (HF : a ^ n + b ^ n + c ^ n = 0) : IsCoprime a b := by
+lemma isCoprime_of_gcd_eq_one_of_FLT {n : ℕ} {a b c : ℤ} (Hgcd: Finset.gcd {a, b, c} id = 1)
+    (HF : a ^ n + b ^ n + c ^ n = 0) : IsCoprime a b := by
   by_cases hn : n = 0
   · simp [hn] at HF
+  by_cases hb : b = 0
+  · by_cases ha : a = 0
+    · simp_all
+    · by_cases hc : c = 0
+      · simp_all
+      · rw [hb, zero_pow hn, add_zero, add_eq_zero_iff_neg_eq] at HF
+        refine hb ▸ isCoprime_zero_right.2 (isUnit_of_dvd_one ?_)
+        rw [← Hgcd]
+        refine Finset.dvd_gcd_iff.2 (fun x hx ↦ ?_)
+        simp only [Finset.mem_insert, Finset.mem_singleton] at hx
+        rcases hx with (hx | hx | hx)
+        · simp [hx]
+        · simp [hx, hb]
+        · by_cases hneven : Even n
+          · linarith [hneven.pow_pos hc, hneven.pow_pos ha]
+          · rw [← (Nat.odd_iff_not_even.2 hneven).neg_pow] at HF
+            simp [hx, ← ((Nat.odd_iff_not_even.2 hneven).strictMono_pow (R := ℤ)).injective HF]
   refine isCoprime_of_prime_dvd  ?_<| (fun p hp hpa hpb ↦ hp.not_dvd_one ?_)
   · simp [hb]
   · rw [← Hgcd]
