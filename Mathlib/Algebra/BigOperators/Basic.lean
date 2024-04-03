@@ -581,6 +581,15 @@ theorem prod_biUnion [DecidableEq α] {s : Finset γ} {t : γ → Finset α}
 #align finset.prod_bUnion Finset.prod_biUnion
 #align finset.sum_bUnion Finset.sum_biUnion
 
+/-- Rewrite `Fintype.univ.prod f` using this lemma in order to prepare it for
+`Finset.prod_sigma` application. -/
+@[to_additive "Rewrite `Finset.univ.sum f` using this lemma in order to prepare it for
+`Finset.sum_sigma` application."]
+lemma _root_.Fintype.univ_prod_to_sigma [Fintype α] {σ : α → Type*} [∀ a : α, Fintype (σ a)]
+    (f : Sigma σ → β) :
+    ∏ x : Sigma σ, f x = ∏ x in Finset.univ.sigma (fun _ => Finset.univ), f x :=
+  rfl
+
 /-- Product over a sigma type equals the product of fiberwise products. For rewriting
 in the reverse direction, use `Finset.prod_sigma'`.  -/
 @[to_additive "Sum over a sigma type equals the sum of fiberwise sums. For rewriting
