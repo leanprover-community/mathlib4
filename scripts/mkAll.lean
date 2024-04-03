@@ -30,10 +30,10 @@ def getAll (git : Bool) (ml : String) : IO String := do
   let stdout : Array System.FilePath ← (do
     if git then
       let mlDir := ml.push pathSeparator   -- `Mathlib/`
-      let allLean ← IO.Process.run { cmd := "git", args := #["ls-files", "*.lean"] }
-      return (((allLean.splitOn "\n").filter mlDir.isPrefixOf).map (⟨·⟩)).toArray
+      let allLean ← IO.Process.run { cmd := "git", args := #["ls-files", mlDir ++ "*.lean"] }
+      return (((allLean.dropRightWhile (· == '\n')).splitOn "\n").map (⟨·⟩)).toArray
     else do
-      let all ← System.FilePath.walkDir ml
+      let all ← walkDir ml
       return all.filter (·.extension == some "lean"))
   let files := (stdout.erase ml.lean).qsort (·.toString < ·.toString)
   let withImport ← files.mapM fun f => return "import " ++ (← moduleNameOfFileName f none).toString
