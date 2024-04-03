@@ -190,9 +190,7 @@ lemma Lawson_le_Lower' : lawson α ≤ lower α := inf_le_left
 
 lemma Scott_Hausdorff_le_Lawson' : scottHausdorff α  ≤ lawson α := by
   rw [lawson, le_inf_iff]
-  constructor
-  · exact @Scott_Hausdorff_le_Lower' α _
-  · exact @scottHausdorff_le_scott α _
+  exact ⟨@Scott_Hausdorff_le_Lower' α _, @scottHausdorff_le_scott α _⟩
 
 lemma LawsonOpen_implies_ScottHausdorffOpen''' (s : Set α) :
     IsOpen (Topology.WithLawson.ofLawson ⁻¹' s) → (scottHausdorff α).IsOpen s :=
@@ -206,7 +204,7 @@ lemma ScottClosed_implies_LawsonClosed (s : Set α) :
     IsClosed (Topology.WithScott.ofScott ⁻¹' s) →
     IsClosed (Topology.WithLawson.ofLawson ⁻¹' s) := by
   rw [← isOpen_compl_iff, ← isOpen_compl_iff]
-  apply Lawson_le_Scott' _
+  exact Lawson_le_Scott' _
 
 lemma LowerClosed_implies_LawsonClosed (s : Set α) :
     IsClosed (Topology.WithLower.ofLower ⁻¹' s) →
@@ -236,14 +234,12 @@ lemma LawsonOpen_iff_ScottOpen' [Preorder α] (s : Set α) (h : IsUpperSet s) :
     rw [Topology.IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open]
     exact ⟨h, LawsonOpen_implies_ScottHausdorffOpen''' _ hs⟩
 
-variable  (L : TopologicalSpace α) (l : TopologicalSpace α) (S : TopologicalSpace α)
-
-variable [Preorder α]  [@Topology.IsLawson α _ L] [@Topology.IsLower α l _]
-  [@Topology.IsScott α _ S]
+variable (L : TopologicalSpace α) (l : TopologicalSpace α) (S : TopologicalSpace α)
+variable [Preorder α] [@Topology.IsLawson α _ L] [@Topology.IsLower α l _] [@Topology.IsScott α _ S]
 
 lemma Scott_le_Lawson : L ≤ S := by
   rw [@Topology.IsScott.topology_eq α _ S _, @Topology.IsLawson.topology_eq α _ L _]
-  apply inf_le_right
+  exact inf_le_right
 
 lemma Scott_Hausdorff_le_Lawson : (scottHausdorff α) ≤ L := by
   rw [@Topology.IsLawson.topology_eq α _ L _,  lawson, le_inf_iff,
@@ -255,13 +251,12 @@ lemma Scott_Hausdorff_le_Lawson : (scottHausdorff α) ≤ L := by
 
 open Topology
 
-lemma LawsonOpen_implies_ScottHausdorffOpen : IsOpen[L] ≤ IsOpen[scottHausdorff α] := by
-  rw [← TopologicalSpace.le_def]
-  apply (@Scott_Hausdorff_le_Lawson _ L l _ _ _)
+lemma LawsonOpen_implies_ScottHausdorffOpen : IsOpen[L] ≤ IsOpen[scottHausdorff α] :=
+  (@Scott_Hausdorff_le_Lawson _ L l _ _ _ _ _)
 
 lemma LawsonOpen_implies_ScottHausdorffOpen' (s : Set α) :
     IsOpen[L] s → IsOpen[scottHausdorff α] s := by
-  apply (@LawsonOpen_implies_ScottHausdorffOpen _ _ l)
+  apply (@LawsonOpen_implies_ScottHausdorffOpen _ _ l _ _)
 
 end csh
 
