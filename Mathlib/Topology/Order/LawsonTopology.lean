@@ -42,19 +42,12 @@ open TopologicalSpace
 
 variable {α β : Type*}
 
-variable [TopologicalSpace α]
-
---instance : TopologicalSpace (α×α) := by exact instTopologicalSpaceProd
-
-
 namespace Topology
 
 /-! ### Lawson topology -/
 
 section Lawson
 section Preorder
-
---variable [Preorder α]
 
 /--
 The Lawson topology is defined as the meet of the `LowerTopology` and the `ScottTopology`.
@@ -106,9 +99,6 @@ protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (laws
   apply (congrArg₂ Inf.inf _) _
   letI _ := lower α; exact @IsLower.withLowerHomeomorph α ‹_› (lower α) ⟨rfl⟩ |>.inducing.induced
   letI _ := scott α; exact @IsScott.withScottHomeomorph α _ (scott α) ⟨rfl⟩ |>.inducing.induced
-
-
-variable (s : Set α) (h: IsUpperSet s) (hs: IsOpen[Topology.scottHausdorff α] s)
 
 end Preorder
 end IsLawson
@@ -179,9 +169,7 @@ namespace IsLawson
 
 section preorder
 
-variable [Preorder α]
-
-variable [TopologicalSpace α] [Topology.IsLawson α]
+variable [Preorder α] [TopologicalSpace α] [Topology.IsLawson α]
 
 theorem isClosed_preimage_ofLawson (S : Set α) :
     IsClosed (Topology.WithLawson.ofLawson ⁻¹' S) ↔ IsClosed S := by
@@ -206,8 +194,6 @@ lemma Scott_Hausdorff_le_Lawson' : scottHausdorff α  ≤ lawson α := by
   · exact @Scott_Hausdorff_le_Lower' α _
   · exact @scottHausdorff_le_scott α _
 
-
-
 lemma LawsonOpen_implies_ScottHausdorffOpen''' (s : Set α) :
     IsOpen (Topology.WithLawson.ofLawson ⁻¹' s) → (scottHausdorff α).IsOpen s :=
   Scott_Hausdorff_le_Lawson' _
@@ -221,7 +207,6 @@ lemma ScottClosed_implies_LawsonClosed (s : Set α) :
     IsClosed (Topology.WithLawson.ofLawson ⁻¹' s) := by
   rw [← isOpen_compl_iff, ← isOpen_compl_iff]
   apply Lawson_le_Scott' _
-
 
 lemma LowerOpen_implies_LawsonOpen (s : Set α) :
     IsOpen (Topology.WithLower.ofLower ⁻¹' s) → IsOpen (Topology.WithLawson.ofLawson ⁻¹' s) :=
@@ -238,8 +223,7 @@ end ts
 
 section csh
 
-variable [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
-  [Topology.IsScott α] [Topology.IsLawson β] (e : OrderIso α β) (s : Set α)
+variable [Preorder α] [TopologicalSpace α] [Topology.IsScott α] (s : Set α)
 
 lemma ScottLawsonCont' [Preorder α] :
     Continuous (WithScott.toScott ∘ WithLawson.ofLawson : WithLawson α → _) := by
