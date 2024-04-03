@@ -91,6 +91,15 @@ a basis for the lawson topology. -/
 def lawson_basis := (image2 (fun x x_1 ↦ ⇑WithLower.toLower ⁻¹' x ∩ ⇑WithScott.toScott ⁻¹' x_1)
   (IsLower.lowerBasis (WithLower α)) {U | @IsOpen (WithScott α) _ U})
 
+lemma human_lawson_basis : lawson_basis α =
+    { s : Set α | ∃ t : Set α, t.Finite ∧ ∃ u : Set α, IsOpen[scott α] u ∧
+      (upperClosure t : Set α)ᶜ ∩ u = s } := by
+  rw [lawson_basis, image2]
+  --simp only [mem_setOf_eq]
+  rw [IsLower.lowerBasis]
+  --simp only [mem_setOf_eq, exists_exists_and_eq_and, preimage_compl]
+  aesop
+
 protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (lawson_basis α) := by
   rw [lawson_basis]
   convert IsTopologicalBasis.inf_induced IsLower.isTopologicalBasis
