@@ -50,7 +50,7 @@ namespace Presieve
 noncomputable instance : Inhabited (Presieve X) :=
   ⟨⊤⟩
 
-/-- The full subcategory of the over category `C/X` consisting of arrows in `S` to `C`. -/
+/-- The full subcategory of the over category `C/X` consisting of arrows which belong to a presieve of `X`. -/
 abbrev category {X : C} (P : Presieve X) :=
   FullSubcategory fun f : Over X => P f.hom
 
