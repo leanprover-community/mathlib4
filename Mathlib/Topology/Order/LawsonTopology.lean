@@ -192,16 +192,12 @@ lemma scottHausdorff_le_lawson : scottHausdorff α  ≤ lawson α :=
   le_inf scottHausdorff_le_lower scottHausdorff_le_scott
 
 lemma ScottClosed_implies_LawsonClosed (s : Set α) :
-    IsClosed (Topology.WithScott.ofScott ⁻¹' s) →
-    IsClosed (Topology.WithLawson.ofLawson ⁻¹' s) := by
-  rw [← isOpen_compl_iff, ← isOpen_compl_iff]
-  exact lawson_le_scott _
+    IsClosed (Topology.WithScott.ofScott ⁻¹' s) → IsClosed (Topology.WithLawson.ofLawson ⁻¹' s) :=
+  fun h => IsClosed.mono h lawson_le_scott
 
 lemma LowerClosed_implies_LawsonClosed (s : Set α) :
-    IsClosed (Topology.WithLower.ofLower ⁻¹' s) →
-    IsClosed (Topology.WithLawson.ofLawson ⁻¹' s) := by
-  rw [← isOpen_compl_iff, ← isOpen_compl_iff]
-  exact lawson_le_lower _
+    IsClosed (Topology.WithLower.ofLower ⁻¹' s) → IsClosed (Topology.WithLawson.ofLawson ⁻¹' s) :=
+  fun h => IsClosed.mono h lawson_le_lower
 
 /-- An upper set is Lawson open if and only if it is Scott open -/
 lemma LawsonOpen_iff_ScottOpen' (s : Set α) (h : IsUpperSet s) :
