@@ -122,7 +122,7 @@ def E₆ : Matrix (Fin 6) (Fin 6) ℕ :=
      2, 2, 2, 2, 3, 1]
 
 theorem E₆IsCoxeter : IsCoxeter E₆ where
-  symmetric := by simp [Matrix.IsSymm]; decide
+  symmetric := by decide
   diagonal := by decide
   off_diagonal := by decide
 
@@ -145,7 +145,7 @@ def E₇ : Matrix (Fin 7) (Fin 7) ℕ :=
      2, 2, 2, 2, 2, 3, 1]
 
 theorem E₇IsCoxeter : IsCoxeter E₇ where
-  symmetric := by simp [Matrix.IsSymm]; decide
+  symmetric := by decide
   diagonal := by decide
   off_diagonal := by decide
 
@@ -169,7 +169,7 @@ def E₈ : Matrix (Fin 8) (Fin 8) ℕ :=
      2, 2, 2, 2, 2, 2, 3, 1]
 
 theorem E₈IsCoxeter : IsCoxeter E₈ where
-  symmetric := by simp [Matrix.IsSymm]; decide
+  symmetric := by decide
   diagonal := by decide
   off_diagonal := by decide
 
@@ -188,7 +188,7 @@ def F₄ : Matrix (Fin 4) (Fin 4) ℕ :=
      2, 2, 3, 1]
 
 theorem F₄IsCoxeter : IsCoxeter F₄ where
-  symmetric := by simp [Matrix.IsSymm]; decide
+  symmetric := by decide
   diagonal := by decide
   off_diagonal := by decide
 
@@ -205,7 +205,7 @@ def G₂ : Matrix (Fin 2) (Fin 2) ℕ :=
      6, 1]
 
 theorem G₂IsCoxeter : IsCoxeter G₂ where
-  symmetric := by simp [Matrix.IsSymm]; decide
+  symmetric := by decide
   diagonal := by decide
   off_diagonal := by decide
 
@@ -223,7 +223,7 @@ def H₃ : Matrix (Fin 3) (Fin 3) ℕ :=
      2, 5, 1]
 
 theorem H₃IsCoxeter : IsCoxeter H₃ where
-  symmetric := by simp [Matrix.IsSymm]; decide
+  symmetric := by decide
   diagonal := by decide
   off_diagonal := by decide
 
@@ -242,7 +242,7 @@ def H₄ : Matrix (Fin 4) (Fin 4) ℕ :=
      2, 2, 5, 1]
 
 theorem H₄IsCoxeter : IsCoxeter H₄ where
-  symmetric := by simp [Matrix.IsSymm]; decide
+  symmetric := by decide
   diagonal := by decide
   off_diagonal := by decide
 
