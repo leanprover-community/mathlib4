@@ -5,7 +5,6 @@ Authors: Xavier Roblot
 -/
 import Mathlib.Algebra.Module.Zlattice
 import Mathlib.MeasureTheory.Group.GeometryOfNumbers
-import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
 
