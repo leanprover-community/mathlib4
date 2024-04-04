@@ -260,7 +260,7 @@ multiplication by zero law (`MulZeroClass`). -/
 class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemigroup α
 #align non_unital_comm_semiring NonUnitalCommSemiring
 
-/-- A commutative semiring (`CommSemiring`) is a semiring (`Semiring`)
+/-- A commutative semiring is a semiring with commutative multiplication. -/
 with commutative multiplication. -/
 class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
 #align comm_semiring CommSemiring
