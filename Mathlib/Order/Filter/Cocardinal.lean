@@ -37,7 +37,8 @@ def cocardinal (hreg : Cardinal.IsRegular c) : Filter α := by
     apply Cardinal.mul_lt_of_lt hc hS
     apply Cardinal.iSup_lt_of_isRegular hreg hS
     intro i
-    simp_all only [Subtype.coe_prop]
+    apply hSc i
+    exact Subtype.coe_prop i
   · exact fun _ hSc _ ht ↦ lt_of_le_of_lt (Cardinal.mk_le_mk_of_subset ht) hSc
 
 @[simp]
