@@ -83,42 +83,6 @@ lemma truncGE'_d_eq_fromOpcycles {i j : ι} (hij : c.Rel i j) {i' j' : ι'}
 
 noncomputable def truncGE : HomologicalComplex C c' := (K.truncGE' e).extend e
 
-/-lemma isZero_truncGE_X (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
-    IsZero ((K.truncGE e).X i') :=
-  (K.truncGE' e).isZero_extend_X _ _ hi'
-
-noncomputable def truncGEXIsoOpcycles {i' : ι'} {i : ι} (hi' : e.f i = i') (hi : e.BoundaryGE i) :
-    (K.truncGE e).X i' ≅ K.opcycles i' :=
-  (K.truncGE' e).extendXIso e hi' ≪≫ truncGE'.XIsoOpcycles K e hi ≪≫
-    eqToIso (by subst hi'; rfl)
-
-noncomputable def truncGEXIso {i' : ι'} {i : ι} (hi' : e.f i = i') (hi : ¬e.BoundaryGE i) :
-    (K.truncGE e).X i' ≅ K.X i' :=
-  (K.truncGE' e).extendXIso e hi' ≪≫ truncGE'.XIso K e hi ≪≫
-    eqToIso (by subst hi'; rfl)
-
-lemma truncGE_d_eq {i' j' : ι'} {i j : ι} (hij : c.Rel i j)
-    (hi' : e.f i = i') (hj' : e.f j = j')
-    (hi : ¬ e.BoundaryGE i) :
-    (K.truncGE e).d i' j' = (K.truncGEXIso e hi' hi).hom ≫ K.d i' j' ≫
-      (K.truncGEXIso e hj' (by
-        subst hi' hj'
-        exact e.not_mem_next_boundaryGE hij)).inv := by
-  dsimp only [truncGE]
-  rw [(K.truncGE' e).extend_d_eq e hi' hj', K.truncGE'_d_eq e hij hi' hj' hi]
-  simp [truncGE'XIso, truncGEXIso]
-
-lemma truncGE_d_eq_fromOpcycles {i' j' : ι'} {i j : ι} (hij : c.Rel i j)
-    (hi' : e.f i = i') (hj' : e.f j = j')
-    (hi : e.BoundaryGE i) :
-    (K.truncGE e).d i' j' = (K.truncGEXIsoOpcycles e hi' hi).hom ≫ K.fromOpcycles i' j' ≫
-      (K.truncGEXIso e hj' (by
-        subst hi' hj'
-        exact e.not_mem_next_boundaryGE hij)).inv := by
-  dsimp only [truncGE]
-  rw [(K.truncGE' e).extend_d_eq e hi' hj', K.truncGE'_d_eq_fromOpcycles e hij hi' hj' hi]
-  simp [truncGE'XIso, truncGEXIso, truncGE'XIsoOpcycles, truncGEXIsoOpcycles]-/
-
 namespace restrictionToTruncGE'
 
 open Classical in
@@ -168,8 +132,32 @@ lemma restrictionToTruncGE'_hasLift : e.HasLift (K.restrictionToTruncGE' e) := b
   rw [restrictionToTruncGE'.f_eq_pOpcycles_iso_inv K e rfl hj]
   simp [restrictionXIso]
 
+lemma restrictionToTruncGE'_f_eq_pOpcycles_iso_inv
+    {i : ι} {i' : ι'} (hi' : e.f i = i') (hi : e.BoundaryGE i) :
+    (K.restrictionToTruncGE' e).f i = (K.restrictionXIso e hi').hom ≫ K.pOpcycles i' ≫
+      (K.truncGE'XIsoOpcycles e hi' hi).inv := by
+  apply restrictionToTruncGE'.f_eq_pOpcycles_iso_inv
+
+lemma restrictionToTruncGE'_f_eq_iso_inv {i : ι} {i' : ι'} (hi' : e.f i = i') (hi : ¬ e.BoundaryGE i) :
+    (K.restrictionToTruncGE' e).f i =
+      (K.restrictionXIso e hi').hom ≫ (K.truncGE'XIso e hi' hi).inv := by
+  apply restrictionToTruncGE'.f_eq_iso_inv
+
+lemma isIso_restrictionToTruncGE' (i : ι) (hi : ¬ e.BoundaryGE i) :
+    IsIso ((K.restrictionToTruncGE' e).f i) := by
+  rw [K.restrictionToTruncGE'_f_eq_iso_inv e rfl hi]
+  infer_instance
+
+attribute [local instance] epi_comp
+
+instance (i : ι) : Epi ((K.restrictionToTruncGE' e).f i) := by
+  by_cases hi : e.BoundaryGE i
+  · rw [K.restrictionToTruncGE'_f_eq_pOpcycles_iso_inv e rfl hi]
+    infer_instance
+  · have := K.isIso_restrictionToTruncGE' e i hi
+    infer_instance
+
 noncomputable def πTruncGE : K ⟶ K.truncGE e :=
-  (e.homEquiv K (K.truncGE' e)).2
-    ⟨K.restrictionToTruncGE' e, K.restrictionToTruncGE'_hasLift e⟩
+  e.liftExtend (K.restrictionToTruncGE' e) (K.restrictionToTruncGE'_hasLift e)
 
 end HomologicalComplex

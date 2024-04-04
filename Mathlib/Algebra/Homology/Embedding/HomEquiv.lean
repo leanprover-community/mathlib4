@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Homology.Embedding.Restriction
 import Mathlib.Algebra.Homology.Embedding.Extend
+import Mathlib.CategoryTheory.MorphismProperty
 
 open CategoryTheory Category Limits
 
@@ -72,16 +73,36 @@ lemma comm (i' j' : ι') : f φ i' ≫ (L.extend e).d i' j' = K.d i' j' ≫ f φ
 
 end liftExtend
 
-noncomputable def liftExtend (φ : K.restriction e ⟶ L) (hφ : e.HasLift φ) :
+variable (φ : K.restriction e ⟶ L) (hφ : e.HasLift φ)
+
+noncomputable def liftExtend :
     K ⟶ L.extend e where
   f i' := liftExtend.f φ i'
   comm' _ _ _ := liftExtend.comm φ hφ _ _
 
-lemma liftExtend_f (φ : K.restriction e ⟶ L) (hφ : e.HasLift φ)
-    {i' : ι'} {i : ι} (hi : e.f i = i') :
+variable {i' : ι'} {i : ι} (hi : e.f i = i')
+
+lemma liftExtend_f :
     (e.liftExtend φ hφ).f i' = (K.restrictionXIso e hi).inv ≫ φ.f i ≫
       (L.extendXIso e hi).inv := by
   apply liftExtend.f_eq
+
+lemma liftExtendfArrowIso :
+    Arrow.mk ((e.liftExtend φ hφ).f i') ≅ Arrow.mk (φ.f i) :=
+  Arrow.isoMk (K.restrictionXIso e hi).symm (L.extendXIso e hi)
+    (by simp [e.liftExtend_f φ hφ hi])
+
+lemma isIso_liftExtend_f_iff :
+    IsIso ((e.liftExtend φ hφ).f i') ↔ IsIso (φ.f i) :=
+  (MorphismProperty.RespectsIso.isomorphisms C).arrow_mk_iso_iff (e.liftExtendfArrowIso φ hφ hi)
+
+lemma mono_liftExtend_f_iff :
+    Mono ((e.liftExtend φ hφ).f i') ↔ Mono (φ.f i) :=
+  (MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff (e.liftExtendfArrowIso φ hφ hi)
+
+lemma epi_liftExtend_f_iff :
+    Epi ((e.liftExtend φ hφ).f i') ↔ Epi (φ.f i) :=
+  (MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff (e.liftExtendfArrowIso φ hφ hi)
 
 end
 

@@ -1169,6 +1169,42 @@ instance epi_homologyMap_of_epi_cyclesMap
     Epi (homologyMap φ) :=
   epi_homologyMap_of_epi_cyclesMap' φ inferInstance
 
+@[simps!]
+noncomputable def LeftHomologyData.canonical [S.HasHomology] : S.LeftHomologyData where
+  K := S.cycles
+  H := S.homology
+  i := S.iCycles
+  π := S.homologyπ
+  wi := by simp
+  hi := S.cyclesIsKernel
+  wπ := S.toCycles_comp_homologyπ
+  hπ := S.homologyIsCokernel
+
+@[simp]
+lemma LeftHomologyData.canonical_f' [S.HasHomology] :
+    (LeftHomologyData.canonical S).f' = S.toCycles := rfl
+
+@[simps!]
+noncomputable def RightHomologyData.canonical [S.HasHomology] : S.RightHomologyData where
+  Q := S.opcycles
+  H := S.homology
+  p := S.pOpcycles
+  ι := S.homologyι
+  wp := by simp
+  hp := S.opcyclesIsCokernel
+  wι := S.homologyι_comp_fromOpcycles
+  hι := S.homologyIsKernel
+
+@[simp]
+lemma RightHomologyData.canonical_g' [S.HasHomology] :
+    (RightHomologyData.canonical S).g' = S.fromOpcycles := rfl
+
+@[simps!]
+noncomputable def HomologyData.canonical [S.HasHomology] : S.HomologyData where
+  left := LeftHomologyData.canonical S
+  right := RightHomologyData.canonical S
+  iso := Iso.refl _
+
 end ShortComplex
 
 end CategoryTheory

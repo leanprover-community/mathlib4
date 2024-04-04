@@ -106,6 +106,33 @@ class IsTruncLE extends e.IsRelIff : Prop where
 lemma mem_next [e.IsTruncGE] {j : ι} {k' : ι'} (h : c'.Rel (e.f j) k') : ∃ k, e.f k = k' :=
   IsTruncGE.mem_next h
 
+lemma _root_.ComplexShape.next_eq_self' (c : ComplexShape ι) (j : ι) (hj : ∀ k, ¬ c.Rel j k) :
+    c.next j = j :=
+  dif_neg (by simpa using hj)
+
+lemma _root_.ComplexShape.prev_eq_self' (c : ComplexShape ι) (j : ι) (hj : ∀ i, ¬ c.Rel i j) :
+    c.prev j = j :=
+  dif_neg (by simpa using hj)
+
+lemma _root_.ComplexShape.next_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬ c.Rel j (c.next j)) :
+    c.next j = j :=
+  c.next_eq_self' j (fun k hk' => hj (by simpa only [c.next_eq' hk'] using hk'))
+
+lemma _root_.ComplexShape.prev_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬ c.Rel (c.prev j) j) :
+    c.prev j = j :=
+  c.prev_eq_self' j (fun k hk' => hj (by simpa only [c.prev_eq' hk'] using hk'))
+
+lemma next_f [e.IsTruncGE] {j k : ι} (hjk : c.next j = k) : c'.next (e.f j) = e.f k := by
+  by_cases hj : c'.Rel (e.f j) (c'.next (e.f j))
+  · obtain ⟨k', hk'⟩ := e.mem_next hj
+    rw [← hk', e.rel_iff] at hj
+    rw [← hk', ← c.next_eq' hj, hjk]
+  · rw [c'.next_eq_self _ hj, ← hjk, c.next_eq_self j]
+    intro hj'
+    apply hj
+    rw [← e.rel_iff] at hj'
+    simpa only [c'.next_eq' hj'] using hj'
+
 lemma mem_prev [e.IsTruncLE] {i' : ι'} {j : ι} (h : c'.Rel i' (e.f j)) : ∃ i, e.f i = i' :=
   IsTruncLE.mem_prev h
 
@@ -162,10 +189,32 @@ lemma not_mem_next_boundaryGE [e.IsRelIff] {j k : ι} (hk : c.Rel j k) :
   intro
   exact ⟨j, by simpa only [e.rel_iff] using hk⟩
 
+lemma not_mem_next_boundaryGE' [e.IsRelIff] {j k : ι} (hj : ¬ e.BoundaryGE j) (hk : c.next j = k) :
+    ¬ e.BoundaryGE k := by
+  by_cases hjk : c.Rel j k
+  · exact e.not_mem_next_boundaryGE hjk
+  · subst hk
+    simpa only [c.next_eq_self j hjk] using hj
+
 variable {e} in
 lemma BoundaryGE.not_mem {j : ι} (hj : e.BoundaryGE j) {i' : ι'} (hi' : c'.Rel i' (e.f j))
     (a : ι) : e.f a ≠ i' := fun ha =>
   hj.2 a (by simpa only [ha] using hi')
+
+lemma prev_f_of_not_mem_boundaryGE [e.IsRelIff] {i j : ι} (hij : c.prev j = i)
+    (hj : ¬ e.BoundaryGE j) :
+    c'.prev (e.f j) = e.f i := by
+  by_cases hij' : c.Rel i j
+  · exact c'.prev_eq' (by simpa only [e.rel_iff] using hij')
+  · obtain rfl : j = i := by
+      simpa only [c.prev_eq_self j (by simpa only [hij] using hij')] using hij
+    apply c'.prev_eq_self
+    intro hj'
+    simp only [BoundaryGE, not_and, not_forall, not_not] at hj
+    obtain ⟨i, hi⟩ := hj hj'
+    rw [e.rel_iff] at hi
+    rw [c.prev_eq' hi] at hij
+    exact hij' (by simpa only [hij] using hi)
 
 /-- The upper boundary of an embedding `e : Embedding c c'`, as a predicate on `ι`.
 It is satisfied by `j : ι` when there exists `k' : ι'` not in the image of `e.f`
