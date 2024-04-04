@@ -221,4 +221,4 @@ flex? simp_all
 #eval show CoreM _ from do
   let h := mkIdent `h
   let hc : TSyntax `Lean.Parser.Tactic.casesTarget := ⟨h⟩
-  IO.println s!"{toStained (← `(tactic| cases $hc))}"
+  IO.println s!"{(toStained (← `(tactic| cases $hc))).toArray}"
