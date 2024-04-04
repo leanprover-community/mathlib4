@@ -909,7 +909,7 @@ theorem associated_rightInverse :
 
 /-- `associated'` is the `ℤ`-linear map that sends a quadratic form on a module `M` over `R` to its
 associated symmetric bilinear form. -/
-abbrev associated' : QuadraticForm R M R →ₗ[ℤ] M →ₗ[R] M →ₗ[R] R :=
+abbrev associated' : QuadraticForm R M R →ₗ[ℤ] BilinMap R M R :=
   associatedHom ℤ
 #align quadratic_form.associated' QuadraticForm.associated'
 
@@ -1004,7 +1004,7 @@ theorem _root_.LinearMap.BilinForm.toQuadraticForm_isOrtho [IsCancelAdd R]
     [NoZeroDivisors R] [CharZero R] {B : BilinMap R M R} {x y : M} (h : B.IsSymm):
     B.toQuadraticForm.IsOrtho x y ↔ B.IsOrtho x y := by
   letI : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstanceAs <| AddCommMonoid R) with }
-  simp_rw [isOrtho_def, LinearMap.isOrtho_def, LinearMap.BilinMap.toQuadraticForm_apply, map_add,
+  simp_rw [isOrtho_def, LinearMap.isOrtho_def, B.toQuadraticForm_apply, map_add,
     LinearMap.add_apply, add_comm _ (B y y), add_add_add_comm _ _ (B y y), add_comm (B y y)]
   rw [add_right_eq_self (a := B x x + B y y), ← h, RingHom.id_apply, add_self_eq_zero]
 
