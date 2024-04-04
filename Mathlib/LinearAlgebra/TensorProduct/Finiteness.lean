@@ -92,11 +92,6 @@ theorem exists_finset (x : M ⊗[R] N) :
   rw [h, Finsupp.sum]
   refine' Finset.sum_nbij' (fun m ↦ ⟨m, S m⟩) Prod.fst .. <;> simp
 
-lemma range_mapIncl_mono (hM : M₁ ≤ M₂) (hN : N₁ ≤ N₂) :
-    LinearMap.range (mapIncl M₁ N₁) ≤ LinearMap.range (mapIncl M₂ N₂) := by
-  simp_rw [mapIncl, ← subtype_comp_inclusion _ _ hM, ← subtype_comp_inclusion _ _ hN, map_comp]
-  exact LinearMap.range_comp_le_range _ _
-
 /-- For a finite subset `s` of `M ⊗[R] N`, there are finitely generated
 submodules `M'` and `N'` of `M` and `N`, respectively, such that `s` is contained in the image
 of `M' ⊗[R] N'` in `M ⊗[R] N`. -/
