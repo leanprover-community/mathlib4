@@ -31,9 +31,12 @@ noncomputable section
 /-- An interval of ℝ with a nonatomic measure, and where polynomials are integrable
 -/
 structure IntervalWithMeasure where
+  /-- the left extreme of the interval -/
   a : ℝ
+  /-- the right extreme of the interval -/
   b : ℝ
   hab : a < b
+  /-- the measure that we put on the interval -/
   μ : Measure ℝ
   hna : MeasureTheory.NoAtoms μ
   hp : μ (Ioc a b) > 0
@@ -696,10 +699,6 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) :
     have hip0 : ⟪OrthoPoly s n, po⟫_ℝ = 0 := OrthoPoly_orthogonal_low_deg' hpod
 
     have hipn0 : ⟪OrthoPoly s n, po⟫_ℝ ≠ 0 := by
-      have : (fun x => (↑(OrthoPoly s n) : ℝ[X]).eval x * po.eval x) =
-          (fun x => (↑(OrthoPoly s n) * po).eval x) := by
-        simp only [eval_mul]
-
       rw [MySpace.inner_def, IntervalWithMeasure.dot]
 
       have ⟨q, hq2⟩ : ∃q : ℝ[X], q * q =
@@ -852,7 +851,9 @@ theorem OrthoPoly_factorization (s : IntervalWithMeasure) (n : ℕ) : ∃a : ℝ
 /-- a quadrature formula : finitely many nodes and the corresponding weights
 -/
 structure Quadrature where
+  /-- the nodes of the quadrature formula -/
   nodes : Finset ℝ
+  /-- the associated weights -/
   weights : nodes → ℝ
 
 
