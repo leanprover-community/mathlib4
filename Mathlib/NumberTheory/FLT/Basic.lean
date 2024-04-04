@@ -145,11 +145,11 @@ lemma fermatLastTheoremWith_of_fermatLastTheoremWith_coprime {n : ℕ} {R : Type
 
 lemma isCoprime_of_gcd_eq_one_of_FLT {n : ℕ} {a b c : ℤ} (Hgcd: Finset.gcd {a, b, c} id = 1)
     (HF : a ^ n + b ^ n + c ^ n = 0) : IsCoprime a b := by
-  rcases n.eq_zero_or_pos with rfl | hn
+  rcases eq_or_ne n 0 with rfl | hn
   · simp only [pow_zero, Int.reduceAdd, OfNat.ofNat_ne_zero] at HF
   refine isCoprime_of_prime_dvd  ?_ <| (fun p hp hpa hpb ↦ hp.not_dvd_one ?_)
   · rintro ⟨rfl, rfl⟩
-    simp only [ne_eq, hn.ne', not_false_eq_true, zero_pow, add_zero, zero_add, pow_eq_zero_iff]
+    simp only [ne_eq, hn, not_false_eq_true, zero_pow, add_zero, zero_add, pow_eq_zero_iff]
       at HF
     simp only [HF, Finset.mem_singleton, Finset.insert_eq_of_mem, Finset.gcd_singleton, id_eq,
       map_zero, zero_ne_one] at Hgcd
