@@ -29,7 +29,7 @@ theorem AnalyticAt.aeval_polynomial (hf : AnalyticAt 𝕜 f z) (p : A[X]) :
   · simp_rw [aeval_C]; apply analyticAt_const
   · simp_rw [aeval_add]; exact hp.add hq
   · convert hp.mul hf
-    simp_rw [pow_succ', aeval_mul, ← mul_assoc, aeval_X]
+    simp_rw [pow_succ, aeval_mul, ← mul_assoc, aeval_X]
 
 theorem AnalyticOn.aeval_polynomial (hf : AnalyticOn 𝕜 f s) (p : A[X]) :
     AnalyticOn 𝕜 (fun x ↦ aeval (f x) p) s := fun x hx ↦ (hf x hx).aeval_polynomial p

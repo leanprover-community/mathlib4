@@ -99,7 +99,7 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
   ext (n v)
   match n with
   | 0 =>
-    simp only [leftInv_coeff_zero, ContinuousMultilinearMap.zero_apply, id_apply_ne_one, Ne.def,
+    simp only [leftInv_coeff_zero, ContinuousMultilinearMap.zero_apply, id_apply_ne_one, Ne,
       not_false_iff, zero_ne_one, comp_coeff_zero']
   | 1 =>
     simp only [leftInv_coeff_one, comp_coeff_one, h, id_apply_one, ContinuousLinearEquiv.coe_apply,
@@ -251,7 +251,7 @@ theorem comp_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F
   ext (n v)
   match n with
   | 0 =>
-    simp only [h0, ContinuousMultilinearMap.zero_apply, id_apply_ne_one, Ne.def, not_false_iff,
+    simp only [h0, ContinuousMultilinearMap.zero_apply, id_apply_ne_one, Ne, not_false_iff,
       zero_ne_one, comp_coeff_zero']
   | 1 =>
     simp only [comp_coeff_one, h, rightInv_coeff_one, ContinuousLinearEquiv.apply_symm_apply,

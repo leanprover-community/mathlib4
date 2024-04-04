@@ -1543,7 +1543,7 @@ theorem contDiff_prod {t : Finset ι} {f : ι → E → 𝔸'} (h : ∀ i ∈ t,
 
 theorem ContDiff.pow {f : E → 𝔸} (hf : ContDiff 𝕜 n f) : ∀ m : ℕ, ContDiff 𝕜 n fun x => f x ^ m
   | 0 => by simpa using contDiff_const
-  | m + 1 => by simpa [pow_succ] using hf.mul (hf.pow m)
+  | m + 1 => by simpa [pow_succ] using (hf.pow m).mul hf
 #align cont_diff.pow ContDiff.pow
 
 theorem ContDiffWithinAt.pow {f : E → 𝔸} (hf : ContDiffWithinAt 𝕜 n f s x) (m : ℕ) :

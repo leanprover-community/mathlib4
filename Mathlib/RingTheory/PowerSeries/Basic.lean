@@ -719,7 +719,7 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors R] (φ ψ : R⟦X⟧) 
       exact ne_of_lt this hij.symm
     contrapose! hne
     obtain rfl := le_antisymm hi hne
-    simpa [Ne.def, Prod.mk.inj_iff] using (add_right_inj m).mp hij
+    simpa [Ne, Prod.mk.inj_iff] using (add_right_inj m).mp hij
   · contrapose!
     intro
     rw [mem_antidiagonal]

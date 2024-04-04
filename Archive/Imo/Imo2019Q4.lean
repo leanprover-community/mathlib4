@@ -3,9 +3,9 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Tactic.IntervalCases
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Nat.Multiplicity
+import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.GCongr
 
 #align_import imo.imo2019_q4 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"

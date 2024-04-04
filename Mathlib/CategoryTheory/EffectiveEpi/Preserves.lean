@@ -146,8 +146,8 @@ A class describing the property of reflecting effective epimorphisms.
 -/
 class ReflectsEffectiveEpis (F : C ⥤ D) : Prop where
   /--
-  A functor reflects effective epimorphisms if it only maps effective
-  epimorphisms to effective epimorphisms.
+  A functor reflects effective epimorphisms if morphisms that are mapped to epimorphisms are
+  themselves effective epimorphisms.
   -/
   reflects : ∀ {X Y : C} (f : X ⟶ Y), EffectiveEpi (F.map f) → EffectiveEpi f
 
@@ -160,8 +160,8 @@ A class describing the property of reflecting effective epimorphic families.
 -/
 class ReflectsEffectiveEpiFamilies (F : C ⥤ D) : Prop where
   /--
-  A functor reflects effective epimorphic families if it only maps effective epimorphic families to
-  effective epimorphic families.
+  A functor reflects effective epimorphic families if families that are mapped to effective
+  epimorphic families are themselves effective epimorphic families.
   -/
   reflects : ∀ {α : Type u} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B)),
     EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a)) →
@@ -178,8 +178,8 @@ A class describing the property of reflecting finite effective epimorphic famili
 -/
 class ReflectsFiniteEffectiveEpiFamilies (F : C ⥤ D) : Prop where
   /--
-  A functor reflects finite effective epimorphic families if it only maps finite effective
-  epimorphic families to finite effective epimorphic families.
+  A functor reflects finite effective epimorphic families if finite families that are
+  mapped to effective epimorphic families are themselves effective epimorphic families.
   -/
   reflects : ∀ {α : Type} [Finite α] {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B)),
     EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a)) →

@@ -107,9 +107,9 @@ theorem cast_add_of_ne_zero :
     ∀ {m n : ℚ}, (m.den : α) ≠ 0 → (n.den : α) ≠ 0 → ((m + n : ℚ) : α) = m + n
   | ⟨n₁, d₁, h₁, c₁⟩, ⟨n₂, d₂, h₂, c₂⟩ => fun (d₁0 : (d₁ : α) ≠ 0) (d₂0 : (d₂ : α) ≠ 0) => by
     have d₁0' : (d₁ : ℤ) ≠ 0 :=
-      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₁0; exact d₁0 Nat.cast_zero
+      Int.natCast_ne_zero.2 fun e => by rw [e] at d₁0; exact d₁0 Nat.cast_zero
     have d₂0' : (d₂ : ℤ) ≠ 0 :=
-      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₂0; exact d₂0 Nat.cast_zero
+      Int.natCast_ne_zero.2 fun e => by rw [e] at d₂0; exact d₂0 Nat.cast_zero
     rw [num_den', num_den', add_def'' d₁0' d₂0']
     suffices (n₁ * (d₂ * ((d₂ : α)⁻¹ * (d₁ : α)⁻¹)) + n₂ * (d₁ * (d₂ : α)⁻¹) * (d₁ : α)⁻¹ : α)
         = n₁ * (d₁ : α)⁻¹ + n₂ * (d₂ : α)⁻¹ by
@@ -140,9 +140,9 @@ theorem cast_mul_of_ne_zero :
     ∀ {m n : ℚ}, (m.den : α) ≠ 0 → (n.den : α) ≠ 0 → ((m * n : ℚ) : α) = m * n
   | ⟨n₁, d₁, h₁, c₁⟩, ⟨n₂, d₂, h₂, c₂⟩ => fun (d₁0 : (d₁ : α) ≠ 0) (d₂0 : (d₂ : α) ≠ 0) => by
     have d₁0' : (d₁ : ℤ) ≠ 0 :=
-      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₁0; exact d₁0 Nat.cast_zero
+      Int.natCast_ne_zero.2 fun e => by rw [e] at d₁0; exact d₁0 Nat.cast_zero
     have d₂0' : (d₂ : ℤ) ≠ 0 :=
-      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₂0; exact d₂0 Nat.cast_zero
+      Int.natCast_ne_zero.2 fun e => by rw [e] at d₂0; exact d₂0 Nat.cast_zero
     rw [num_den', num_den', mul_def' d₁0' d₂0']
     suffices (n₁ * (n₂ * (d₂ : α)⁻¹ * (d₁ : α)⁻¹) : α) = n₁ * ((d₁ : α)⁻¹ * (n₂ * (d₂ : α)⁻¹)) by
       rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero, cast_mk_of_ne_zero]
