@@ -25,7 +25,7 @@ product of `f` on that subset. These partial products form a Cauchy filter. -/
 @[to_additive "Let `G` be a nonarchimedean additive abelian group, and let `f : α → G` be a function
 that tends to zero on the filter of cofinite sets. For each finite subset of `α`, consider the
 partial sum of `f` on that subset. These partial sums form a Cauchy filter."]
-theorem cauchy_partial_prod_of_tendsto_cofinite_one {α G : Type*} [CommGroup G] [UniformSpace G]
+theorem cauchySeq_prod_of_tendsto_cofinite_one {α G : Type*} [CommGroup G] [UniformSpace G]
     [UniformGroup G] [NonarchimedeanGroup G] {f : α → G}
     (hf : Tendsto f cofinite (𝓝 1)) : CauchySeq (fun s ↦ ∏ i in s, f i) := by
   /- Let `U` be a neighborhood of `1`. It suffices to show that there exists `s : Finset α` such
@@ -53,7 +53,7 @@ function that tends to zero on the filter of cofinite sets. Then `f` is uncondit
 theorem multipliable_of_tendsto_cofinite_one {α G : Type*} [CommGroup G] [UniformSpace G]
     [UniformGroup G] [CompleteSpace G] [NonarchimedeanGroup G] {f : α → G}
     (hf : Tendsto f cofinite (𝓝 1)) : Multipliable f :=
-  CompleteSpace.complete (cauchy_partial_prod_of_tendsto_cofinite_one hf)
+  CompleteSpace.complete (cauchySeq_prod_of_tendsto_cofinite_one hf)
 
 /-- Let `G` be a complete nonarchimedean multiplicative abelian group. Then a function `f : α → G`
 is unconditionally multipliable if and only if it tends to one on the filter of cofinite sets. -/
