@@ -454,13 +454,6 @@ private theorem test2L {ι : Type*} [Fintype ι] (x : ι → M ⊗[R] N) :
   simp_rw [Function.comp_apply, f, dif_pos hi]; rfl
 
 -- TODO: move to suitable file and give it a better name
-private theorem test2Lpair (x y : M ⊗[R] N) :
-    ∃ (M' : Submodule R S) (x' y' : M' ⊗[R] N) (hM : M' ≤ M), Module.Finite R M' ∧
-      (inclusion hM).rTensor N x' = x ∧ (inclusion hM).rTensor N y' = y := by
-  obtain ⟨M', x', hM, hfin, hx⟩ := test2L M N ![x, y]
-  exact ⟨M', x' 0, x' 1, hM, hfin, hx 0, hx 1⟩
-
--- TODO: move to suitable file and give it a better name
 private theorem test2R {ι : Type*} [Fintype ι] (x : ι → M ⊗[R] N) :
     ∃ (N' : Submodule R S) (x' : ι → M ⊗[R] N') (hN : N' ≤ N), Module.Finite R N' ∧
       ∀ (i : ι), (inclusion hN).lTensor M (x' i) = x i := by
@@ -473,26 +466,19 @@ private theorem test2R {ι : Type*} [Fintype ι] (x : ι → M ⊗[R] N) :
   rw [LinearEquiv.symm_apply_apply] at hx
   simpa only [← hx] using congr($key (x' i))
 
--- TODO: move to suitable file and give it a better name
-private theorem test2Rpair (x y : M ⊗[R] N) :
-    ∃ (N' : Submodule R S) (x' y' : M ⊗[R] N') (hN : N' ≤ N), Module.Finite R N' ∧
-      (inclusion hN).lTensor M x' = x ∧ (inclusion hN).lTensor M y' = y := by
-  obtain ⟨M', x', hM, hfin, hx⟩ := test2R M N ![x, y]
-  exact ⟨M', x' 0, x' 1, hM, hfin, hx 0, hx 1⟩
-
 theorem of_linearDisjoint_finite_left
     (H : ∀ M' : Submodule R S, M' ≤ M → [Module.Finite R M'] → M'.LinearDisjoint N) :
     M.LinearDisjoint N := fun x y hxy ↦ by
-  obtain ⟨M', x', y', hM, _, hx', hy'⟩ := test2Lpair M N x y
-  suffices x' = y' by rw [← hx', ← hy', this]
-  exact H M' hM (by simpa [← mulMap_comp_rTensor _ _ _ hM, hx', hy'])
+  obtain ⟨M', x', hM, _, hx'⟩ := test2L M N ![x, y]
+  suffices x' 0 = x' 1 by simpa [hx'] using congr((inclusion hM).rTensor N $this)
+  exact H M' hM (by simp [← mulMap_comp_rTensor _ _ _ hM, hx', hxy])
 
 theorem of_linearDisjoint_finite_right
     (H : ∀ N' : Submodule R S, N' ≤ N → [Module.Finite R N'] → M.LinearDisjoint N') :
     M.LinearDisjoint N := fun x y hxy ↦ by
-  obtain ⟨N', x', y', hN, _, hx', hy'⟩ := test2Rpair M N x y
-  suffices x' = y' by rw [← hx', ← hy', this]
-  exact H N' hN (by simpa [← mulMap_comp_lTensor _ _ _ hN, hx', hy'])
+  obtain ⟨N', x', hN, _, hx'⟩ := test2R M N ![x, y]
+  suffices x' 0 = x' 1 by simpa [hx'] using congr((inclusion hN).lTensor M $this)
+  exact H N' hN (by simp [← mulMap_comp_lTensor _ _ _ hN, hx', hxy])
 
 theorem of_linearDisjoint_finite
     (H : ∀ (M' N' : Submodule R S), M' ≤ M → N' ≤ N →
