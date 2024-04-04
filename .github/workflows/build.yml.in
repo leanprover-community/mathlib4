@@ -286,7 +286,7 @@ jobs:
   final:
     name: Post-CI jobJOB_NAME
     if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
-    needs: [style_lint, build, check_imported]
+    needs: [style_lint, build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
