@@ -220,7 +220,7 @@ theorem restrict_withDensity' [SFinite μ] (s : Set α) (f : α → ℝ≥0∞) 
   rw [restrict_apply ht, withDensity_apply _ ht, withDensity_apply' _ (t ∩ s),
     restrict_restrict ht]
 
-lemma trim_withDensity {m m0 : MeasurableSpace α} {μ : Measure α} [SigmaFinite μ]
+lemma trim_withDensity {m m0 : MeasurableSpace α} {μ : Measure α}
     (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] f) :
     (μ.withDensity f).trim hm = (μ.trim hm).withDensity f := by
   refine @Measure.ext _ m _ _ (fun s hs ↦ ?_)
