@@ -516,7 +516,7 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
     (s₁ ∪ s₂).entries ~ (s₂ ∪ s₁).entries :=
   lookup_ext (AList.nodupKeys _) (AList.nodupKeys _)
     (by
-      intros; simp
+      intros; simp only [union_entries, Option.mem_def, dlookup_kunion_eq_some]
       constructor <;> intro h'
       · cases' h' with h' h'
         · right
