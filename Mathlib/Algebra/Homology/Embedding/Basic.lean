@@ -7,7 +7,7 @@ import Mathlib.Algebra.Homology.HomologicalComplex
 
 /-! # Embeddings of complex shapes
 
-Given two complexes shapes `c : ComplexShape ι` and `c' : ComplexShape ι'`,
+Given two complex shapes `c : ComplexShape ι` and `c' : ComplexShape ι'`,
 an embedding from `c` to `c'` (`e : c.Embedding c'`) consists of the data
 of an injective map `f : ι → ι'` such that for all `i₁ i₂ : ι`,
 `c.Rel i₁ i₂` implies `c'.Rel (e.f i₁) (e.f i₂)`.
@@ -44,9 +44,9 @@ in degrees in the image of `e.f`;
 
 -/
 
-namespace ComplexShape
-
 variable {ι ι' : Type*} (c : ComplexShape ι) (c' : ComplexShape ι')
+
+namespace ComplexShape
 
 /-- An embedding of a complex shape `c : ComplexShape ι` into a complex shape
 `c' : ComplexShape ι'` consists of a injective map `f : ι → ι'` which satisfies
@@ -296,7 +296,86 @@ lemma boundaryLE_embeddingDownNat_iff (n : ℕ) :
       dsimp at hi
       omega
 
+variable (p : ℤ)
+
+/-- The embedding from `up ℕ` to `up ℤ` which sends `n : ℕ` to `p + n`. -/
+@[simps!]
+def embeddingUpIntGE : Embedding (up ℕ) (up ℤ) :=
+  Embedding.mk' _ _ (fun n => p + n)
+    (fun _ _ h => by dsimp at h; omega)
+    (by dsimp; omega)
+
+instance : (embeddingUpIntGE p).IsRelIff := by dsimp [embeddingUpIntGE]; infer_instance
+
+instance : (embeddingUpIntGE p).IsTruncGE where
+  mem_next {j _} h := ⟨j + 1, by dsimp at h ⊢; omega⟩
+
+/-- The embedding from `down ℕ` to `up ℤ` which sends `n : ℕ` to `p - n`. -/
+@[simps!]
+def embeddingUpIntLE : Embedding (down ℕ) (up ℤ) :=
+  Embedding.mk' _ _ (fun n => p - n)
+    (fun _ _ h => by dsimp at h; omega)
+    (by dsimp; omega)
+
+instance : (embeddingUpIntLE p).IsRelIff := by dsimp [embeddingUpIntLE]; infer_instance
+
+instance : (embeddingUpIntLE p).IsTruncLE where
+  mem_prev {_ k} h := ⟨k + 1, by dsimp at h ⊢; omega⟩
+
+lemma boundaryGE_embeddingUpIntGE_iff (n : ℕ) :
+    (embeddingUpIntGE p).BoundaryGE n ↔ n = 0 := by
+  constructor
+  · intro h
+    obtain _|n := n
+    · rfl
+    · have := h.2 n
+      dsimp at this
+      omega
+  · rintro rfl
+    constructor
+    · simp
+    · intro i hi
+      dsimp at hi
+      omega
+
+lemma boundaryLE_embeddingUpIntLE_iff (n : ℕ) :
+    (embeddingUpIntGE p).BoundaryGE n ↔ n = 0 := by
+  constructor
+  · intro h
+    obtain _|n := n
+    · rfl
+    · have := h.2 n
+      dsimp at this
+      omega
+  · rintro rfl
+    constructor
+    · simp
+    · intro i hi
+      dsimp at hi
+      omega
+
 end ComplexShape
+
+open CategoryTheory Limits
+
+namespace HomologicalComplex
+
+variable {c c'}
+variable {C : Type*} [Category C] [HasZeroMorphisms C]
+  (K : HomologicalComplex C c') (e : c.Embedding c')
+
+class IsStrictlySupported : Prop where
+  isZero (i' : ι') (hi' : ∀ i, e.f i ≠ i') : IsZero (K.X i')
+
+lemma isZero_X_of_isStrictlySupported [K.IsStrictlySupported e]
+    (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
+    IsZero (K.X i') :=
+  IsStrictlySupported.isZero i' hi'
+
+structure IsStrictlySupportedOutside : Prop where
+  isZero (i : ι) : IsZero (K.X (e.f i))
+
+end HomologicalComplex
 
 lemma Option.eq_none_or_eq_some {ι : Type*} (x : Option ι) :
     x = none ∨ ∃ y, x = some y := by
