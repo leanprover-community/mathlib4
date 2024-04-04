@@ -3,8 +3,6 @@
  ["docBlame", "AsTrue"],
  ["docBlame", "Associative"],
  ["docBlame", "BinTree"],
- ["docBlame", "CommRing"],
- ["docBlame", "CommSemiring"],
  ["docBlame", "Commutative"],
  ["docBlame", "Computable"],
  ["docBlame", "Computable₂"],
