@@ -388,6 +388,15 @@ def toSpec (f : A) : (Proj.T| pbo f) ⟶ Spec.T A⁰_ f where
     · intro hz; simpa only [Set.inf_eq_inter,Set.mem_inter_iff,Set.mem_preimage]
 #align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec AlgebraicGeometry.ProjIsoSpecTopComponent.toSpec
 
+variable {𝒜} in
+lemma toSpec_preimage_eq {f : A} (a b : A) (k : ℕ) (a_mem : a ∈ 𝒜 k) (b_mem1 : b ∈ 𝒜 k)
+    (b_mem2 : b ∈ Submonoid.powers f) :
+    toSpec 𝒜 f ⁻¹'
+        (@PrimeSpectrum.basicOpen (A⁰_ f) _ (Quotient.mk'' ⟨k, ⟨a, a_mem⟩, ⟨b, b_mem1⟩, b_mem2⟩) :
+          Set (PrimeSpectrum (HomogeneousLocalization.Away 𝒜 f))) =
+      {x | x.1 ∈ (pbo f) ⊓ pbo a} :=
+  ToSpec.preimage_eq f a b k a_mem b_mem1 b_mem2
+
 end
 
 namespace FromSpec
@@ -727,7 +736,7 @@ lemma image_basicOpen_eq_basicOpen (a : A) (i : ℕ) :
         ⟨f^i, by rw [mul_comm]; exact SetLike.pow_mem_graded _ f_deg⟩, ⟨i, rfl⟩⟩).1 :=
   Set.preimage_injective.mpr (toSpec_surjective 𝒜 f_deg hm) <|
     Set.preimage_image_eq _ (toSpec_injective 𝒜 f_deg hm) ▸ by
-  erw [ToSpec.preimage_eq, ProjectiveSpectrum.basicOpen_pow 𝒜 _ m hm]; rfl
+  rw [Opens.carrier_eq_coe, toSpec_preimage_eq, ProjectiveSpectrum.basicOpen_pow 𝒜 _ m hm]
 
 end toSpec
 
@@ -751,8 +760,10 @@ def fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
         ProjectiveSpectrum.mem_basicOpen, Opens.carrier_eq_coe, Set.mem_setOf_eq]
       exact exists_congr fun n ↦ show _ ↔ (_ ∉ _ ∧ _ ∉ _) by tauto
 
-    erw [Set.preimage_equiv_eq_image_symm _ ⟨FromSpec.toFun f_deg hm, ToSpec.toFun f,
-      toSpec_fromSpec _ _ _, fromSpec_toSpec _ _ _⟩, h₁, Set.image_iUnion]
+    let e : _ ≃ _ :=
+      ⟨FromSpec.toFun f_deg hm, ToSpec.toFun f, toSpec_fromSpec _ _ _, fromSpec_toSpec _ _ _⟩
+    change IsOpen <| e ⁻¹' _
+    rw [Set.preimage_equiv_eq_image_symm, h₁, Set.image_iUnion]
     exact isOpen_iUnion fun i ↦ toSpec.image_basicOpen_eq_basicOpen f_deg hm a i ▸
       PrimeSpectrum.isOpen_basicOpen
 
