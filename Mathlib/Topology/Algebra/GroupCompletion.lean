@@ -35,44 +35,67 @@ noncomputable section
 
 variable {M R α β : Type*}
 
-section Group
+namespace UniformSpace.Completion
 
-open UniformSpace CauchyFilter Filter Set
+open UniformSpace CauchyFilter Filter Set Function
 
 variable [UniformSpace α]
 
-@[to_additive]
-instance [One α] : One (Completion α) :=
-  ⟨(1 : α)⟩
+/-! # Operations on the completion of a uniform space -/
 
-@[to_additive]
-noncomputable instance [Group α] : Inv (Completion α) :=
-  ⟨Completion.map (fun a ↦ a⁻¹ : α → α)⟩
+@[to_additive "If `α` has a `0`, then so does `Completion α`."]
+instance [One α] : One (Completion α) := ⟨(1 : α)⟩
 
-instance [Neg α] : Neg (Completion α) :=
-  ⟨Completion.map (fun a ↦ -a : α → α)⟩
+/-- If `α` is a group, then `Completion α` has an inversion operation. Note that this is defined
+differently from the inversion operation on the completion of a field
+(`UniformSpace.Completion.instInvCompletion` in `Mathlib/Topology/Algebra/UniformField.lean`).
+However, this cannot create a bad diamond because a `Group` is never a `Field`. -/
+@[to_additive "If `α` is an additive group, then `Completion α` has a negation operation. This
+is a special case of `UniformSpace.Completion.instNegCompletion` and exists solely as an additive
+counterpart to the multiplicative `UniformSpace.Completion.instInvCompletionOfGroup`."]
+noncomputable instance instInvCompletionOfGroup [Group α] : Inv (Completion α) :=
+  ⟨denseInducing_coe.extend ((↑) ∘ (·⁻¹))⟩
+
+/-- If `α` has a negation operation, then `Completion α` has a negation operation. This is
+definitionally equal to `UniformSpace.Completion.instNegCompletionOfAddGroup`, but we do not require
+that `α` is an additive group. -/
+instance instNegCompletion [Neg α] : Neg (Completion α) :=
+  ⟨denseInducing_coe.extend ((↑) ∘ (-·))⟩
 
 @[to_additive]
 noncomputable instance [Mul α] : Mul (Completion α) :=
-  ⟨Completion.map₂ (· * ·)⟩
+  ⟨curry <| (denseInducing_coe.prod denseInducing_coe).extend ((↑) ∘ uncurry (· * ·))⟩
 
-@[to_additive]
-noncomputable instance [Group α] : Div (Completion α) :=
-  ⟨Completion.map₂ Div.div⟩
+/-- If `α` is a group, then `Completion α` has an division operation. Note that this is defined
+differently from the division operation on the completion of a field
+(`UniformSpace.Completion.instDivCompletion` in `Mathlib/Topology/Algebra/UniformField.lean`).
+However, this cannot create a bad diamond because a `Group` is never a `Field`. -/
+@[to_additive "If `α` is an additive group, then `Completion α` has a subtraction operation. This
+is a special case of `UniformSpace.Completion.instSubCompletion` and exists solely as an additive
+counterpart to the multiplicative `UniformSpace.Completion.instDivCompletionOfGroup`."]
+noncomputable instance instDivCompletionOfGroup [Group α] : Div (Completion α) :=
+  ⟨curry <| (denseInducing_coe.prod denseInducing_coe).extend ((↑) ∘ uncurry (· / ·))⟩
 
-instance [Sub α] : Sub (Completion α) :=
-  ⟨Completion.map₂ Sub.sub⟩
+/-- If `α` has a subtraction operation, then `Completion α` has a subtraction operation. This is
+definitionally equal to `UniformSpace.Completion.instSubCompletionOfAddGroup`, but we do not require
+that `α` is an additive group. -/
+instance instSubCompletion [Sub α] : Sub (Completion α) :=
+  ⟨curry <| (denseInducing_coe.prod denseInducing_coe).extend ((↑) ∘ uncurry (· - ·))⟩
 
-@[to_additive (attr := norm_cast) coe_zero]
-theorem UniformSpace.Completion.coe_one' [One α] : ((1 : α) : Completion α) = 1 :=
+variable (α)
+
+@[to_additive (attr := norm_cast)]
+theorem coe_one [One α] : ((1 : α) : Completion α) = 1 :=
   rfl
 #align uniform_space.completion.coe_zero UniformSpace.Completion.coe_zero
 
-end Group
+variable {α}
 
-namespace UniformSpace.Completion
-
-open UniformSpace
+@[to_additive (attr := norm_cast)]
+theorem coe_mul [Mul α] [ContinuousMul α] (a b : α) : ((a * b : α) : Completion α) = a * b :=
+  ((denseInducing_coe.prod denseInducing_coe).extend_eq
+      ((continuous_coe α).comp (@continuous_mul α _ _ _)) (a, b)).symm
+#align uniform_space.completion.coe_mul UniformSpace.Completion.coe_mul
 
 section Zero
 
@@ -92,18 +115,49 @@ variable [UniformSpace α] [Group α] [UniformGroup α]
 
 @[to_additive (attr := norm_cast) coe_neg]
 theorem coe_inv' (a : α) : ((a⁻¹ : α) : Completion α) = (a : Completion α)⁻¹ :=
-  (map_coe uniformContinuous_inv a).symm
+  (denseInducing_coe.extend_eq ((continuous_coe α).comp (@continuous_inv α _ _ _)) a).symm
 #align uniform_space.completion.coe_neg UniformSpace.Completion.coe_neg
 
-@[to_additive (attr := norm_cast)]
-theorem coe_div (a b : α) : ((a / b : α) : Completion α) = a / b :=
-  (map₂_coe_coe a b Div.div uniformContinuous_div).symm
+@[to_additive (attr := norm_cast) coe_sub]
+theorem coe_div' (a b : α) : ((a / b : α) : Completion α) = a / b :=
+  ((denseInducing_coe.prod denseInducing_coe).extend_eq
+      ((continuous_coe α).comp (@continuous_div' α _ _ _)) (a, b)).symm
 #align uniform_space.completion.coe_sub UniformSpace.Completion.coe_sub
 
-@[to_additive (attr := norm_cast) coe_add]
-theorem coe_mul' (a b : α) : ((a * b : α) : Completion α) = a * b :=
-  (map₂_coe_coe a b (· * ·) uniformContinuous_mul).symm
-#align uniform_space.completion.coe_add UniformSpace.Completion.coe_add
+@[to_additive]
+theorem map₂_mul : Completion.map₂ ((· * ·) : α → α → α) = (· * ·) := by
+  dsimp only [Completion.map₂, AbstractCompletion.map₂, AbstractCompletion.extend₂,
+    AbstractCompletion.extend]
+  rw [if_pos]
+  · rfl
+  · exact (uniformContinuous_coe α).comp uniformContinuous_mul
+
+@[to_additive]
+protected theorem map_inv : Completion.map ((·⁻¹) : α → α) = (·⁻¹) := by
+  dsimp only [Completion.map, AbstractCompletion.map, AbstractCompletion.extend]
+  rw [if_pos]
+  · rfl
+  · exact (uniformContinuous_coe α).comp uniformContinuous_inv
+
+@[to_additive]
+theorem map₂_div : Completion.map₂ ((· / ·) : α → α → α) = (· / ·) := by
+  dsimp only [Completion.map₂, AbstractCompletion.map₂, AbstractCompletion.extend₂,
+    AbstractCompletion.extend]
+  rw [if_pos]
+  · rfl
+  · exact (uniformContinuous_coe α).comp uniformContinuous_div
+
+@[to_additive]
+instance : ContinuousMul (Completion α) :=
+  ⟨by simp_rw [← map₂_mul]; exact continuous_map₂ continuous_fst continuous_snd⟩
+
+@[to_additive]
+instance : ContinuousInv (Completion α) :=
+  ⟨by simp_rw [← Completion.map_inv]; exact continuous_map⟩
+
+@[to_additive]
+instance : ContinuousDiv (Completion α) :=
+  ⟨by simp_rw [← map₂_div]; exact continuous_map₂ continuous_fst continuous_snd⟩
 
 @[to_additive]
 noncomputable instance : Monoid (Completion α) :=
@@ -111,19 +165,19 @@ noncomputable instance : Monoid (Completion α) :=
     (inferInstance : Mul <| Completion α) with
     one_mul := fun a ↦
       Completion.induction_on a
-        (isClosed_eq (continuous_map₂ continuous_const continuous_id) continuous_id) fun a ↦
-        show 1 * (a : Completion α) = a by rw [← coe_one', ← coe_mul', one_mul]
+        (isClosed_eq (continuous_const.mul continuous_id) continuous_id) fun a ↦
+        show 1 * (a : Completion α) = a by rw [← coe_one, ← coe_mul, one_mul]
     mul_one := fun a ↦
       Completion.induction_on a
-        (isClosed_eq (continuous_map₂ continuous_id continuous_const) continuous_id) fun a ↦
-        show (a : Completion α) * 1 = a by rw [← coe_one', ← coe_mul', mul_one]
+        (isClosed_eq (continuous_id.mul continuous_const) continuous_id) fun a ↦
+        show (a : Completion α) * 1 = a by rw [← coe_one, ← coe_mul, mul_one]
     mul_assoc := fun a b c ↦
       Completion.induction_on₃ a b c
         (isClosed_eq
-          (continuous_map₂ (continuous_map₂ continuous_fst (continuous_fst.comp continuous_snd))
+          ((continuous_fst.mul (continuous_fst.comp continuous_snd)).mul
             (continuous_snd.comp continuous_snd))
-          (continuous_map₂ continuous_fst
-            (continuous_map₂ (continuous_fst.comp continuous_snd)
+          (continuous_fst.mul
+            ((continuous_fst.comp continuous_snd).mul
               (continuous_snd.comp continuous_snd))))
         fun a b c ↦
         show (a : Completion α) * b * c = a * (b * c) by repeat' rw_mod_cast [mul_assoc]
@@ -131,13 +185,13 @@ noncomputable instance : Monoid (Completion α) :=
     npow_zero := fun a ↦
       Completion.induction_on a (isClosed_eq continuous_map continuous_const) fun a ↦
         show Completion.map (fun a ↦ a ^ 0 : α → α) a = 1 by
-          simp_rw [map_coe (uniformContinuous_pow_const _), pow_zero, coe_one']
+          simp_rw [map_coe (uniformContinuous_pow_const _), pow_zero, coe_one]
     npow_succ := fun n a ↦
       Completion.induction_on a
-        (isClosed_eq continuous_map <| continuous_map₂ continuous_map continuous_id) fun a ↦
+        (isClosed_eq continuous_map <| continuous_map.mul continuous_id) fun a ↦
         show Completion.map (fun a ↦ a ^ (n + 1) : α → α) a =
             Completion.map (fun a ↦ a ^ n : α → α) a * a by
-          simp_rw [map_coe (uniformContinuous_pow_const _), pow_succ, coe_mul'] }
+          simp_rw [map_coe (uniformContinuous_pow_const _), pow_succ, coe_mul] }
 
 @[to_additive]
 noncomputable instance : DivInvMonoid (Completion α) :=
@@ -146,21 +200,21 @@ noncomputable instance : DivInvMonoid (Completion α) :=
     (inferInstance : Div <| Completion α) with
     div_eq_mul_inv := fun a b ↦
       Completion.induction_on₂ a b
-        (isClosed_eq (continuous_map₂ continuous_fst continuous_snd)
-          (continuous_map₂ continuous_fst (Completion.continuous_map.comp continuous_snd)))
+        (isClosed_eq (continuous_fst.div' continuous_snd)
+          (continuous_fst.mul continuous_snd.inv))
         fun a b ↦ mod_cast congr_arg ((↑) : α → Completion α) (div_eq_mul_inv a b)
     zpow := fun z x ↦ x ^ z
     zpow_zero' := fun a ↦
       Completion.induction_on a (isClosed_eq continuous_map continuous_const) fun a ↦ by
-        simp_rw [pow_def, map_coe (uniformContinuous_zpow_const _), zpow_zero, coe_one']
+        simp_rw [pow_def, map_coe (uniformContinuous_zpow_const _), zpow_zero, coe_one]
     zpow_succ' := fun n a ↦
       Completion.induction_on a
-        (isClosed_eq continuous_map <| continuous_map₂ continuous_map continuous_id) fun a ↦ by
+        (isClosed_eq continuous_map <| continuous_map.mul continuous_id) fun a ↦ by
           simp_rw [Int.ofNat_eq_coe, pow_def, map_coe (uniformContinuous_zpow_const _),
-            zpow_natCast, pow_succ, coe_mul']
+            zpow_natCast, pow_succ, coe_mul]
     zpow_neg' := fun n a ↦
       Completion.induction_on a
-        (isClosed_eq continuous_map <| Completion.continuous_map.comp continuous_map) fun a ↦ by
+        (isClosed_eq continuous_map <| continuous_map.inv) fun a ↦ by
           simp_rw [pow_def, map_coe (uniformContinuous_zpow_const _), zpow_negSucc, zpow_natCast,
             coe_inv'] }
 
@@ -169,7 +223,7 @@ noncomputable instance group : Group (Completion α) :=
   { (inferInstance : DivInvMonoid <| Completion α) with
     mul_left_inv := fun a ↦
       Completion.induction_on a
-        (isClosed_eq (continuous_map₂ Completion.continuous_map continuous_id) continuous_const)
+        (isClosed_eq (continuous_id.inv.mul continuous_id) continuous_const)
         fun a ↦
         show (a : Completion α)⁻¹ * a = 1 by
           rw_mod_cast [mul_left_inv]
@@ -177,14 +231,14 @@ noncomputable instance group : Group (Completion α) :=
 
 @[to_additive]
 noncomputable instance uniformGroup : UniformGroup (Completion α) :=
-  ⟨uniformContinuous_map₂ Div.div⟩
+  ⟨by simp_rw [← map₂_div]; exact uniformContinuous_map₂ _⟩
 
 /-- The map from a multiplicative group to its completion as a group hom. -/
 @[to_additive (attr := simps) "The map from an additive group to its completion as a group hom."]
 def toComplMulHom : α →* Completion α where
   toFun := (↑)
-  map_mul' := coe_mul'
-  map_one' := coe_one'
+  map_mul' := coe_mul
+  map_one' := coe_one α
 #align uniform_space.completion.to_compl UniformSpace.Completion.toComplAddHom
 
 @[deprecated] alias toCompl := toComplAddHom
@@ -234,11 +288,11 @@ noncomputable instance : CommGroup (Completion α) :=
   { (inferInstance : Group <| Completion α) with
     mul_comm := fun a b ↦
       Completion.induction_on₂ a b
-        (isClosed_eq (continuous_map₂ continuous_fst continuous_snd)
-          (continuous_map₂ continuous_snd continuous_fst))
+        (isClosed_eq (continuous_fst.mul continuous_snd)
+          (continuous_snd.mul continuous_fst))
         fun x y ↦ by
         change (x : Completion α) * ↑y = ↑y * ↑x
-        rw [← coe_mul', ← coe_mul', mul_comm] }
+        rw [← coe_mul, ← coe_mul, mul_comm] }
 
 end UniformCommGroup
 
@@ -273,7 +327,7 @@ noncomputable def MonoidHom.extension [CompleteSpace β] [T0Space β] (f : α �
     (hf : Continuous f) : Completion α →* β :=
   have hf : UniformContinuous f := uniformContinuous_monoidHom_of_continuous hf
   { toFun := Completion.extension f
-    map_one' := by rw [← coe_one', extension_coe hf, f.map_one]
+    map_one' := by rw [← coe_one, extension_coe hf, f.map_one]
     map_mul' := fun a b ↦
       Completion.induction_on₂ a b
         (isClosed_eq (continuous_extension.comp continuous_mul)
@@ -323,7 +377,7 @@ theorem MonoidHom.completion_one :
   · apply isClosed_eq (MonoidHom.continuous_completion (1 : α →* β) continuous_const)
     simp [continuous_const]
   · intro a
-    simp [(1 : α →* β).completion_coe continuous_const, coe_one']
+    simp [(1 : α →* β).completion_coe continuous_const, coe_one]
 #align add_monoid_hom.completion_zero AddMonoidHom.completion_zero
 
 @[to_additive]
@@ -337,7 +391,7 @@ theorem MonoidHom.completion_mul {γ : Type*} [CommGroup γ] [UniformSpace γ]
   · exact isClosed_eq ((f * g).continuous_completion hfg)
       ((f.continuous_completion hf).mul (g.continuous_completion hg))
   · intro a
-    simp [(f * g).completion_coe hfg, coe_mul', f.completion_coe hf, g.completion_coe hg]
+    simp [(f * g).completion_coe hfg, coe_mul, f.completion_coe hf, g.completion_coe hg]
 #align add_monoid_hom.completion_add AddMonoidHom.completion_add
 
 end MonoidHom
