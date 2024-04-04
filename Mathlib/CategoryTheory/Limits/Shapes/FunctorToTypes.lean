@@ -289,3 +289,4 @@ def binaryCoproductEquiv (a : C) :
 end coprod
 
 end CategoryTheory.FunctorToTypes
+
