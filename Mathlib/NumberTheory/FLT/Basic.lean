@@ -7,6 +7,7 @@ import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Rat.Defs
+import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Tactic.Positivity.Basic
@@ -150,20 +151,18 @@ lemma isCoprime_of_gcd_eq_one_of_FLT {n : ℕ} {a b c : ℤ} (Hgcd: Finset.gcd {
   by_cases hb : b = 0
   · by_cases ha : a = 0
     · simp_all
-    · by_cases hc : c = 0
-      · simp_all
-      · rw [hb, zero_pow hn, add_zero, add_eq_zero_iff_neg_eq] at HF
-        refine hb ▸ isCoprime_zero_right.2 (isUnit_of_dvd_one ?_)
-        rw [← Hgcd]
-        refine Finset.dvd_gcd_iff.2 (fun x hx ↦ ?_)
-        simp only [Finset.mem_insert, Finset.mem_singleton] at hx
-        rcases hx with (hx | hx | hx)
-        · simp [hx]
-        · simp [hx, hb]
-        · by_cases hneven : Even n
-          · linarith [hneven.pow_pos hc, hneven.pow_pos ha]
-          · rw [← (Nat.odd_iff_not_even.2 hneven).neg_pow] at HF
-            simp [hx, ← ((Nat.odd_iff_not_even.2 hneven).strictMono_pow (R := ℤ)).injective HF]
+    by_cases hc : c = 0
+    · simp_all
+    rw [hb, zero_pow hn, add_zero, add_eq_zero_iff_neg_eq] at HF
+    refine hb ▸ isCoprime_zero_right.2 (isUnit_of_dvd_one ?_)
+    rw [← Hgcd]
+    refine Finset.dvd_gcd_iff.2 (fun x hx ↦ ?_)
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hx
+    rcases hx with (hx | hx | hx)
+    · simp [hx]
+    · simp [hx, hb]
+    · refine (IsIntegrallyClosed.dvd_of_dvd_pow hn).1 ?_
+      rw [hx, id_eq, ← HF, ← neg_dvd]
   refine isCoprime_of_prime_dvd  ?_<| (fun p hp hpa hpb ↦ hp.not_dvd_one ?_)
   · simp [hb]
   · rw [← Hgcd]
@@ -172,7 +171,7 @@ lemma isCoprime_of_gcd_eq_one_of_FLT {n : ℕ} {a b c : ℤ} (Hgcd: Finset.gcd {
     rcases hx with (hx | hx | hx)
     · exact hx ▸ hpa
     · exact hx ▸ hpb
-    · simp only [hx, id_eq]
-      refine hp.dvd_of_dvd_pow (n := n) ?_
+    · rw [hx, id_eq]
       rw [add_eq_zero_iff_eq_neg] at HF
-      exact (dvd_neg.1 <| HF.symm ▸ dvd_add (dvd_pow hpa hn) (dvd_pow hpb hn))
+      exact hp.dvd_of_dvd_pow (n := n) <|
+        (dvd_neg.1 <| HF.symm ▸ dvd_add (dvd_pow hpa hn) (dvd_pow hpb hn))
