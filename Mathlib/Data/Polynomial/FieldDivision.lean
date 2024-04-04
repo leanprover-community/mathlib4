@@ -83,7 +83,7 @@ theorem lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors
   by_contra! h'
   replace hroot := hroot _ h'
   simp only [IsRoot, eval_iterate_derivative_rootMultiplicity] at hroot
-  obtain ⟨q, hq⟩ := Nat.coe_nat_dvd (α := R) <| Nat.factorial_dvd_factorial h'
+  obtain ⟨q, hq⟩ := Nat.cast_dvd_cast (α := R) <| Nat.factorial_dvd_factorial h'
   rw [hq, mul_mem_nonZeroDivisors] at hnzd
   rw [nsmul_eq_mul, mul_left_mem_nonZeroDivisors_eq_zero_iff hnzd.1] at hroot
   exact eval_divByMonic_pow_rootMultiplicity_ne_zero t h hroot
@@ -182,7 +182,7 @@ instance instNormalizationMonoid : NormalizationMonoid R[X] where
     Units.ext
       (by
         dsimp
-        rw [Ne.def, ← leadingCoeff_eq_zero] at *
+        rw [Ne, ← leadingCoeff_eq_zero] at *
         rw [leadingCoeff_mul, normUnit_mul hp0 hq0, Units.val_mul, C_mul])
   normUnit_coe_units u :=
     Units.ext
@@ -520,7 +520,7 @@ theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = 
 #align polynomial.coeff_inv_units Polynomial.coeff_inv_units
 
 theorem monic_normalize [DecidableEq R] (hp0 : p ≠ 0) : Monic (normalize p) := by
-  rw [Ne.def, ← leadingCoeff_eq_zero, ← Ne.def, ← isUnit_iff_ne_zero] at hp0
+  rw [Ne, ← leadingCoeff_eq_zero, ← Ne, ← isUnit_iff_ne_zero] at hp0
   rw [Monic, leadingCoeff_normalize, normalize_eq_one]
   apply hp0
 #align polynomial.monic_normalize Polynomial.monic_normalize

@@ -287,7 +287,7 @@ theorem snorm'_const' [IsFiniteMeasure μ] (c : F) (hc_ne_zero : c ≠ 0) (hq_ne
     rw [← ENNReal.rpow_mul]
     suffices hp_cancel : q * (1 / q) = 1 by rw [hp_cancel, ENNReal.rpow_one]
     rw [one_div, mul_inv_cancel hq_ne_zero]
-  · rw [Ne.def, ENNReal.rpow_eq_top_iff, not_or, not_and_or, not_and_or]
+  · rw [Ne, ENNReal.rpow_eq_top_iff, not_or, not_and_or, not_and_or]
     constructor
     · left
       rwa [ENNReal.coe_eq_zero, nnnorm_eq_zero]
@@ -533,7 +533,7 @@ theorem snorm_norm_rpow (f : α → F) (hq_pos : 0 < q) :
   rw [snorm_eq_snorm' h0 hp_top, snorm_eq_snorm' _ _]
   swap;
   · refine' mul_ne_zero h0 _
-    rwa [Ne.def, ENNReal.ofReal_eq_zero, not_le]
+    rwa [Ne, ENNReal.ofReal_eq_zero, not_le]
   swap; · exact ENNReal.mul_ne_top hp_top ENNReal.ofReal_ne_top
   rw [ENNReal.toReal_mul, ENNReal.toReal_ofReal hq_pos.le]
   exact snorm'_norm_rpow f p.toReal q hq_pos

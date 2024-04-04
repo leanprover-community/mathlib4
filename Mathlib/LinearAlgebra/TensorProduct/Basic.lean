@@ -1157,6 +1157,21 @@ lemma comm_comp_lTensor_comp_comm_eq (g : N →ₗ[R] P) :
       rTensor Q g :=
   TensorProduct.ext rfl
 
+/-- Given a linear map `f : N → P`, `f ⊗ M` is injective if and only if `M ⊗ f` is injective. -/
+theorem lTensor_inj_iff_rTensor_inj :
+    Function.Injective (lTensor M f) ↔ Function.Injective (rTensor M f) := by
+  simp [← comm_comp_rTensor_comp_comm_eq]
+
+/-- Given a linear map `f : N → P`, `f ⊗ M` is surjective if and only if `M ⊗ f` is surjective. -/
+theorem lTensor_surj_iff_rTensor_surj :
+    Function.Surjective (lTensor M f) ↔ Function.Surjective (rTensor M f) := by
+  simp [← comm_comp_rTensor_comp_comm_eq]
+
+/-- Given a linear map `f : N → P`, `f ⊗ M` is bijective if and only if `M ⊗ f` is bijective. -/
+theorem lTensor_bij_iff_rTensor_bij :
+    Function.Bijective (lTensor M f) ↔ Function.Bijective (rTensor M f) := by
+  simp [← comm_comp_rTensor_comp_comm_eq]
+
 open TensorProduct
 
 attribute [local ext high] TensorProduct.ext

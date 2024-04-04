@@ -643,12 +643,12 @@ theorem convexBodyLT'_mem {x : K} :
   · by_cases hw : IsReal w
     · exact norm_embedding_eq w _ ▸ h₁ w hw
     · specialize h₂ w (not_isReal_iff_isComplex.mp hw)
-      rwa [if_neg (by exact Subtype.ne_of_val_ne h_ne)] at h₂
+      rwa [if_neg (by exact Subtype.coe_ne_coe.1 h_ne)] at h₂
   · simpa [if_true] using h₂ w₀.val w₀.prop
   · exact h₁ w (ne_of_isReal_isComplex hw w₀.prop)
   · by_cases h_ne : w = w₀
     · simpa [h_ne]
-    · rw [if_neg (by exact Subtype.ne_of_val_ne h_ne)]
+    · rw [if_neg (by exact Subtype.coe_ne_coe.1 h_ne)]
       exact h₁ w h_ne
 
 theorem convexBodyLT'_neg_mem (x : E K) (hx : x ∈ convexBodyLT' K f w₀) :
@@ -1029,7 +1029,7 @@ theorem exists_primitive_element_lt_of_isReal {w₀ : InfinitePlace K} (hw₀ : 
     exact hB
   obtain ⟨a, ha, h_nz, h_le⟩ := exists_ne_zero_mem_ringOfIntegers_lt K this
   refine ⟨a, ha, ?_, fun w ↦ lt_of_lt_of_le (h_le w) ?_⟩
-  · exact is_primitive_element_of_infinitePlace_lt (x := ⟨a, ha⟩) (Subtype.ne_of_val_ne h_nz)
+  · exact is_primitive_element_of_infinitePlace_lt (x := ⟨a, ha⟩) (Subtype.coe_ne_coe.1 h_nz)
       (fun w h_ne ↦ by convert (if_neg h_ne) ▸ h_le w) (Or.inl hw₀)
   · split_ifs <;> simp
 
@@ -1046,7 +1046,7 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
     exact hB
   obtain ⟨a, ha, h_nz, h_le, h_le₀⟩ := exists_ne_zero_mem_ringOfIntegers_lt' K ⟨w₀, hw₀⟩ this
   refine ⟨a, ha, ?_, fun w ↦ ?_⟩
-  · exact is_primitive_element_of_infinitePlace_lt (x := ⟨a, ha⟩) (Subtype.ne_of_val_ne h_nz)
+  · exact is_primitive_element_of_infinitePlace_lt (x := ⟨a, ha⟩) (Subtype.coe_ne_coe.1 h_nz)
       (fun w h_ne ↦ by convert if_neg h_ne ▸ h_le w h_ne) (Or.inr h_le₀.1)
   · by_cases h_eq : w = w₀
     · rw [if_pos rfl] at h_le₀

@@ -312,6 +312,7 @@ import Mathlib.Algebra.Lie.CartanMatrix
 import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.Algebra.Lie.Character
 import Mathlib.Algebra.Lie.Classical
+import Mathlib.Algebra.Lie.Derivation.Basic
 import Mathlib.Algebra.Lie.DirectSum
 import Mathlib.Algebra.Lie.Engel
 import Mathlib.Algebra.Lie.EngelSubalgebra
@@ -400,6 +401,7 @@ import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.Floor.Div
 import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Group.Action
 import Mathlib.Algebra.Order.Group.Bounds
 import Mathlib.Algebra.Order.Group.Cone
 import Mathlib.Algebra.Order.Group.Defs
@@ -598,6 +600,7 @@ import Mathlib.AlgebraicTopology.Quasicategory
 import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.AlgebraicTopology.SimplicialSet
+import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 import Mathlib.AlgebraicTopology.SingularSet
 import Mathlib.AlgebraicTopology.SplitSimplicialObject
 import Mathlib.AlgebraicTopology.TopologicalSimplex
@@ -1067,6 +1070,7 @@ import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.Category.TwoP
 import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.ChosenFiniteProducts
+import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Closed.Functor
 import Mathlib.CategoryTheory.Closed.FunctorCategory
@@ -1191,6 +1195,7 @@ import Mathlib.CategoryTheory.Limits.ExactFunctor
 import Mathlib.CategoryTheory.Limits.Filtered
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Limits.Final.ParallelPair
 import Mathlib.CategoryTheory.Limits.FinallySmall
 import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.CategoryTheory.Limits.Fubini
@@ -1678,6 +1683,7 @@ import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.PiAntidiagonal
 import Mathlib.Data.Finset.PiInduction
+import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Finset.Pointwise.Interval
 import Mathlib.Data.Finset.Powerset
@@ -1689,6 +1695,7 @@ import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Finset.Sups
 import Mathlib.Data.Finset.Sym
+import Mathlib.Data.Finset.Union
 import Mathlib.Data.Finset.Update
 import Mathlib.Data.Finsupp.AList
 import Mathlib.Data.Finsupp.Antidiagonal
@@ -2333,6 +2340,8 @@ import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.Coprod.Basic
 import Mathlib.GroupTheory.CoprodI
 import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.Coxeter.Basic
+import Mathlib.GroupTheory.Coxeter.Matrix
 import Mathlib.GroupTheory.Divisible
 import Mathlib.GroupTheory.DoubleCoset
 import Mathlib.GroupTheory.EckmannHilton
@@ -2403,7 +2412,6 @@ import Mathlib.GroupTheory.SchurZassenhaus
 import Mathlib.GroupTheory.SemidirectProduct
 import Mathlib.GroupTheory.Solvable
 import Mathlib.GroupTheory.SpecificGroups.Alternating
-import Mathlib.GroupTheory.SpecificGroups.Coxeter
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.SpecificGroups.KleinFour
@@ -2449,7 +2457,6 @@ import Mathlib.Init.Data.Buffer.Parser
 import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Bitwise
-import Mathlib.Init.Data.Int.CompLemmas
 import Mathlib.Init.Data.Int.DivMod
 import Mathlib.Init.Data.Int.Lemmas
 import Mathlib.Init.Data.Int.Order
@@ -2472,13 +2479,11 @@ import Mathlib.Init.Data.Quot
 import Mathlib.Init.Data.Rat.Basic
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Init.Data.Sigma.Lex
-import Mathlib.Init.Data.Subtype.Basic
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Meta.WellFoundedTactics
 import Mathlib.Init.Order.Defs
 import Mathlib.Init.Order.LinearOrder
-import Mathlib.Init.Propext
 import Mathlib.Init.Quot
 import Mathlib.Init.Set
 import Mathlib.Init.ZeroOne
@@ -2969,6 +2974,7 @@ import Mathlib.NumberTheory.LSeries.Basic
 import Mathlib.NumberTheory.LSeries.Convergence
 import Mathlib.NumberTheory.LSeries.Convolution
 import Mathlib.NumberTheory.LSeries.Deriv
+import Mathlib.NumberTheory.LSeries.Dirichlet
 import Mathlib.NumberTheory.LSeries.Linearity
 import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
 import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
