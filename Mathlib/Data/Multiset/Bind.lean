@@ -77,6 +77,20 @@ theorem card_join (S) : card (@join α S) = sum (map card S) :=
   Multiset.induction_on S (by simp) (by simp)
 #align multiset.card_join Multiset.card_join
 
+@[simp]
+theorem map_join (f : α → β) (S : Multiset (Multiset α)) :
+    map f (join S) = join (map (map f) S) := by
+  induction S using Multiset.induction with
+  | empty => simp
+  | cons ih => simp [ih]
+
+@[to_additive (attr := simp)]
+theorem prod_join [CommMonoid α] {S : Multiset (Multiset α)} :
+    prod (join S) = prod (map prod S) := by
+  induction S using Multiset.induction with
+  | empty => simp
+  | cons ih => simp [ih]
+
 theorem rel_join {r : α → β → Prop} {s t} (h : Rel (Rel r) s t) : Rel r s.join t.join := by
   induction h with
   | zero => simp
@@ -160,8 +174,7 @@ theorem bind_hcongr {β' : Type v} {m : Multiset α} {f : α → Multiset β} {f
 #align multiset.bind_hcongr Multiset.bind_hcongr
 
 theorem map_bind (m : Multiset α) (n : α → Multiset β) (f : β → γ) :
-    map f (bind m n) = bind m fun a => map f (n a) :=
-  Multiset.induction_on m (by simp) (by simp (config := { contextual := true }))
+    map f (bind m n) = bind m fun a => map f (n a) := by simp [bind]
 #align multiset.map_bind Multiset.map_bind
 
 theorem bind_map (m : Multiset α) (n : β → Multiset γ) (f : α → β) :
@@ -186,8 +199,7 @@ theorem bind_map_comm (m : Multiset α) (n : Multiset β) {f : α → β → γ}
 
 @[to_additive (attr := simp)]
 theorem prod_bind [CommMonoid β] (s : Multiset α) (t : α → Multiset β) :
-    (s.bind t).prod = (s.map fun a => (t a).prod).prod :=
-  Multiset.induction_on s (by simp) fun a s ih => by simp [ih, cons_bind]
+    (s.bind t).prod = (s.map fun a => (t a).prod).prod := by simp [bind]
 #align multiset.prod_bind Multiset.prod_bind
 #align multiset.sum_bind Multiset.sum_bind
 
