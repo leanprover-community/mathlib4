@@ -215,7 +215,7 @@ theorem add {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (
   rcases p.trichotomy with (rfl | rfl | hp)
   · apply memℓp_zero
     refine' (hf.finite_dsupport.union hg.finite_dsupport).subset fun i => _
-    simp only [Pi.add_apply, Ne.def, Set.mem_union, Set.mem_setOf_eq]
+    simp only [Pi.add_apply, Ne, Set.mem_union, Set.mem_setOf_eq]
     contrapose!
     rintro ⟨hf', hg'⟩
     simp [hf', hg']
@@ -987,7 +987,7 @@ protected def single (p) (i : α) (a : E i) : lp E p :=
     refine' (memℓp_zero _).of_exponent_ge (zero_le p)
     refine' (Set.finite_singleton i).subset _
     intro j
-    simp only [forall_exists_index, Set.mem_singleton_iff, Ne.def, dite_eq_right_iff,
+    simp only [forall_exists_index, Set.mem_singleton_iff, Ne, dite_eq_right_iff,
       Set.mem_setOf_eq, not_forall]
     rintro rfl
     simp⟩
@@ -1191,7 +1191,7 @@ theorem tendsto_lp_of_tendsto_pi {F : ℕ → lp E p} (hF : CauchySeq F) {f : lp
   refine' norm_le_of_tendsto (hn.mono fun k hk => hk.le) _
   rw [tendsto_pi_nhds]
   intro a
-  exact (hf.apply a).const_sub (F n a)
+  exact (hf.apply_nhds a).const_sub (F n a)
 #align lp.tendsto_lp_of_tendsto_pi lp.tendsto_lp_of_tendsto_pi
 
 variable [∀ a, CompleteSpace (E a)]

@@ -171,7 +171,7 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
         use star a
         ext1 φ
         dsimp
-        simp only [map_star, IsROrC.star_def] }
+        simp only [map_star, RCLike.star_def] }
   suffices rng = ⊤ from
     fun x => show x ∈ rng from this.symm ▸ StarSubalgebra.mem_top
   /- Because the `gelfandTransform ℂ A` is an isometry, it has closed range, and so by the
@@ -303,7 +303,7 @@ V                     V
 Y  --- η Y ---> characterSpace ℂ C(Y, ℂ)
 ```
 -/
-lemma WeakDual.CharacterSpace.homeoEval_naturality {X Y 𝕜 : Type*} [IsROrC 𝕜] [TopologicalSpace X]
+lemma WeakDual.CharacterSpace.homeoEval_naturality {X Y 𝕜 : Type*} [RCLike 𝕜] [TopologicalSpace X]
     [CompactSpace X] [T2Space X] [TopologicalSpace Y] [CompactSpace Y] [T2Space Y] (f : C(X, Y)) :
     (homeoEval Y 𝕜 : C(_, _)).comp f =
       (f.compStarAlgHom' 𝕜 𝕜 |> compContinuousMap).comp (homeoEval X 𝕜 : C(_, _)) :=

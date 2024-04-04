@@ -161,7 +161,7 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
     _ ≤ (G.nonuniformWitness ε U V).card - ↑2 ^ (P.parts.card - 1) * m := by
       refine' sub_le_sub_left _ _
       have : (2 : ℝ) ^ P.parts.card = ↑2 ^ (P.parts.card - 1) * 2 := by
-        rw [← _root_.pow_succ', tsub_add_cancel_of_le (succ_le_iff.2 hP₁)]
+        rw [← _root_.pow_succ, tsub_add_cancel_of_le (succ_le_iff.2 hP₁)]
       rw [← mul_div_right_comm, this, mul_right_comm _ (2 : ℝ), mul_assoc, le_div_iff]
       refine' mul_le_mul_of_nonneg_left _ (by positivity)
       exact (G.le_card_nonuniformWitness hunif).trans

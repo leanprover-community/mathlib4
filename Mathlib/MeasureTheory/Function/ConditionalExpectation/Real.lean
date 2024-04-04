@@ -165,7 +165,7 @@ theorem ae_bdd_condexp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
   · simp_rw [← Real.norm_eq_abs]
     exact @measurableSet_lt _ _ _ _ _ m _ _ _ _ _ measurable_const
       stronglyMeasurable_condexp.norm.measurable
-  simp only [← smul_eq_mul, ← set_integral_const, NNReal.val_eq_coe, IsROrC.ofReal_real_eq_id,
+  simp only [← smul_eq_mul, ← set_integral_const, NNReal.val_eq_coe, RCLike.ofReal_real_eq_id,
     id.def]
   refine' set_integral_mono_ae hfint.abs.integrableOn _ hbdd
   refine' ⟨aestronglyMeasurable_const, lt_of_le_of_lt _

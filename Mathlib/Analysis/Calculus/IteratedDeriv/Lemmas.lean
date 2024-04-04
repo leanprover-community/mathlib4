@@ -97,7 +97,7 @@ theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff 𝕜 n
       · exact differentiableAt_id'.const_mul _
     rw [iteratedDeriv_succ, ih h.of_succ, deriv_const_smul _ h₁, iteratedDeriv_succ,
       ← Function.comp_def, deriv.scomp x h₀ (differentiableAt_id'.const_mul _),
-      deriv_const_mul _ differentiableAt_id', deriv_id'', smul_smul, mul_one, pow_succ']
+      deriv_const_mul _ differentiableAt_id', deriv_id'', smul_smul, mul_one, pow_succ]
 
 theorem iteratedDeriv_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiff 𝕜 n f) (c : 𝕜) :
     iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n * iteratedDeriv n f (c * x) := by
@@ -113,6 +113,6 @@ lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
   · simp only [Nat.zero_eq, iteratedDeriv_zero, pow_zero, one_smul]
   · have ih' : iteratedDeriv n (fun x ↦ f (-x)) = fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f (-x) :=
       funext ih
-    rw [iteratedDeriv_succ, iteratedDeriv_succ, ih', pow_succ, neg_mul, one_mul,
+    rw [iteratedDeriv_succ, iteratedDeriv_succ, ih', pow_succ', neg_mul, one_mul,
       deriv_comp_neg (f := fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f x), deriv_const_smul',
       neg_smul]
