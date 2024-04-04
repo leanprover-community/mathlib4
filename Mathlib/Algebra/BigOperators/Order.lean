@@ -896,6 +896,8 @@ def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
     have body : Q($α) := Expr.betaRev f #[i]
     let rbody ← core zα pα body
     let _instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
+
+    -- Try to show that the product is positive
     let p_pos : Option Q(0 < $e) := ← do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
       -- TODO(quote4#38): We must name the following, else `assertInstancesCommute` loops.
@@ -905,8 +907,9 @@ def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
       assertInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
       return some q(prod_pos fun i _ ↦ $pr i)
-    -- Try to show that the product is positive
     if let some p_pos := p_pos then return .positive p_pos
+
+    -- Try to show that the product is nonnegative
     let p_nonneg : Option Q(0 ≤ $e) := ← do
       let .some pbody := rbody.toNonneg
         | return none -- Fail if the body is not provably nonnegative
@@ -916,17 +919,15 @@ def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
       let .some _instαposmul ← trySynthInstanceQ q(PosMulMono $α) | pure none
       assertInstancesCommute
       return some q(prod_nonneg fun i _ ↦ $pr i)
-    -- Try to show that the product is nonnegative
     if let some p_nonneg := p_nonneg then return .nonnegative p_nonneg
+
     -- Fall back to showing that the product is nonzero
-    else
-      let pbody ← rbody.toNonzero
-      let pr : Q(∀ i, $f i ≠ 0) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
-      -- TODO(quote4#38): We must name the following, else `assertInstancesCommute` loops.
-      let _instαnontriv ← synthInstanceQ q(Nontrivial $α)
-      let _instαnozerodiv ← synthInstanceQ q(NoZeroDivisors $α)
-      assertInstancesCommute
-      return .nonzero q(prod_ne_zero fun i _ ↦ $pr i)
-  | _ => throwError "not Finset.prod"
+    let pbody ← rbody.toNonzero
+    let pr : Q(∀ i, $f i ≠ 0) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
+    -- TODO(quote4#38): We must name the following, else `assertInstancesCommute` loops.
+    let _instαnontriv ← synthInstanceQ q(Nontrivial $α)
+    let _instαnozerodiv ← synthInstanceQ q(NoZeroDivisors $α)
+    assertInstancesCommute
+    return .nonzero q(prod_ne_zero fun i _ ↦ $pr i)
 
 end Mathlib.Meta.Positivity
