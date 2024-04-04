@@ -71,7 +71,7 @@ theorem rank_le_width [StrongRankCondition R] {m n : ℕ} (A : Matrix (Fin m) (F
 theorem rank_mul_le_left [StrongRankCondition R] (A : Matrix m n R) (B : Matrix n o R) :
     (A * B).rank ≤ A.rank := by
   rw [rank, rank, mulVecLin_mul]
-  exact Cardinal.toNat_le_of_le_of_lt_aleph0 (rank_lt_aleph0 _ _) (LinearMap.rank_comp_le_left _ _)
+  exact Cardinal.toNat_le_toNat (LinearMap.rank_comp_le_left _ _) (rank_lt_aleph0 _ _)
 #align matrix.rank_mul_le_left Matrix.rank_mul_le_left
 
 theorem rank_mul_le_right [StrongRankCondition R] (A : Matrix l m R) (B : Matrix m n R) :
@@ -103,9 +103,9 @@ theorem rank_of_isUnit [StrongRankCondition R] [DecidableEq n] (A : Matrix n n R
 lemma rank_mul_eq_left_of_isUnit_det [DecidableEq n]
     (A : Matrix n n R) (B : Matrix m n R) (hA : IsUnit A.det) :
     (B * A).rank = B.rank := by
-  suffices : Function.Surjective A.mulVecLin
-  · rw [rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top _
-    (LinearMap.range_eq_top.mpr this), ← rank]
+  suffices Function.Surjective A.mulVecLin by
+    rw [rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top _
+      (LinearMap.range_eq_top.mpr this), ← rank]
   intro v
   exact ⟨(A⁻¹).mulVecLin v, by simp [mul_nonsing_inv _ hA]⟩
 
@@ -189,7 +189,7 @@ variable [Field R]
 theorem rank_diagonal [DecidableEq m] [DecidableEq R] (w : m → R) :
     (diagonal w).rank = Fintype.card {i // (w i) ≠ 0} := by
   rw [Matrix.rank, ← Matrix.toLin'_apply', FiniteDimensional.finrank, ← LinearMap.rank,
-    LinearMap.rank_diagonal, Cardinal.toNat_cast]
+    LinearMap.rank_diagonal, Cardinal.toNat_natCast]
 
 end Field
 

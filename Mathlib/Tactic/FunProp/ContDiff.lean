@@ -9,7 +9,6 @@ import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
 
 import Mathlib.Tactic.FunProp
-import Mathlib.Tactic.FunProp.Continuous
 import Mathlib.Tactic.FunProp.Differentiable
 
 /-!

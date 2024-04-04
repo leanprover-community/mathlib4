@@ -64,8 +64,8 @@ theorem tendsto_sum_pi_div_four :
   -- (3) We introduce an auxiliary function `f`
   let b (i : ℕ) x := (-(1 : ℝ)) ^ i * x ^ (2 * i + 1) / (2 * i + 1)
   let f x := arctan x - ∑ i in Finset.range k, b i x
-  suffices f_bound : |f 1 - f 0| ≤ (1 : ℝ) - U + U ^ (2 * (k : ℝ) + 1)
-  · rw [← norm_neg]
+  suffices f_bound : |f 1 - f 0| ≤ (1 : ℝ) - U + U ^ (2 * (k : ℝ) + 1) by
+    rw [← norm_neg]
     convert f_bound using 1
     simp
   -- We show that `U` is indeed in [0,1]

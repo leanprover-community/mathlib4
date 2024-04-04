@@ -119,7 +119,7 @@ def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right)
     simpa using w.symm
 #align category_theory.structured_arrow.hom_mk CategoryTheory.StructuredArrow.homMk
 
-/- Porting note : it appears the simp lemma is not getting generated but the linter
+/- Porting note: it appears the simp lemma is not getting generated but the linter
 picks up on it (seems like a bug). Either way simp solves it.  -/
 attribute [-simp, nolint simpNF] homMk_left
 
@@ -169,7 +169,7 @@ def isoMk {f f' : StructuredArrow S T} (g : f.right ≅ f'.right)
   Comma.isoMk (eqToIso (by ext)) g (by simpa using w.symm)
 #align category_theory.structured_arrow.iso_mk CategoryTheory.StructuredArrow.isoMk
 
-/- Porting note : it appears the simp lemma is not getting generated but the linter
+/- Porting note: it appears the simp lemma is not getting generated but the linter
 picks up on it. Either way simp solves these. -/
 attribute [-simp, nolint simpNF] isoMk_hom_left_down_down isoMk_inv_left_down_down
 
@@ -216,7 +216,7 @@ def eta (f : StructuredArrow S T) : f ≅ mk f.hom :=
   isoMk (Iso.refl _)
 #align category_theory.structured_arrow.eta CategoryTheory.StructuredArrow.eta
 
-/- Porting note : it appears the simp lemma is not getting generated but the linter
+/- Porting note: it appears the simp lemma is not getting generated but the linter
 picks up on it. Either way simp solves these. -/
 attribute [-simp, nolint simpNF] eta_hom_left_down_down eta_inv_left_down_down
 
@@ -459,7 +459,7 @@ def homMk {f f' : CostructuredArrow S T} (g : f.left ⟶ f'.left)
   right := 𝟙 _
 #align category_theory.costructured_arrow.hom_mk CategoryTheory.CostructuredArrow.homMk
 
-/- Porting note : it appears the simp lemma is not getting generated but the linter
+/- Porting note: it appears the simp lemma is not getting generated but the linter
 picks up on it. Either way simp can prove this -/
 attribute [-simp, nolint simpNF] homMk_right_down_down
 
@@ -507,7 +507,7 @@ def isoMk {f f' : CostructuredArrow S T} (g : f.left ≅ f'.left)
   Comma.isoMk g (eqToIso (by ext)) (by simpa using w)
 #align category_theory.costructured_arrow.iso_mk CategoryTheory.CostructuredArrow.isoMk
 
-/- Porting note : it appears the simp lemma is not getting generated but the linter
+/- Porting note: it appears the simp lemma is not getting generated but the linter
 picks up on it. Either way simp solves these. -/
 attribute [-simp, nolint simpNF] isoMk_hom_right_down_down isoMk_inv_right_down_down
 
@@ -553,7 +553,7 @@ def eta (f : CostructuredArrow S T) : f ≅ mk f.hom :=
   isoMk (Iso.refl _)
 #align category_theory.costructured_arrow.eta CategoryTheory.CostructuredArrow.eta
 
-/- Porting note : it appears the simp lemma is not getting generated but the linter
+/- Porting note: it appears the simp lemma is not getting generated but the linter
 picks up on it. Either way simp solves these. -/
 attribute [-simp, nolint simpNF] eta_hom_right_down_down eta_inv_right_down_down
 

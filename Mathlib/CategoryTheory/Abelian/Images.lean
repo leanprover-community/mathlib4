@@ -55,7 +55,7 @@ protected abbrev factorThruImage : P ⟶ Abelian.image f :=
   kernel.lift (cokernel.π f) f <| cokernel.condition f
 #align category_theory.abelian.factor_thru_image CategoryTheory.Abelian.factorThruImage
 
--- Porting note: simp can prove this and reassoc version, removed tags
+-- Porting note (#10618): simp can prove this and reassoc version, removed tags
 /-- `f` factors through its image via the canonical morphism `p`. -/
 protected theorem image.fac : Abelian.factorThruImage f ≫ image.ι f = f :=
   kernel.lift_ι _ _ _

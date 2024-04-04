@@ -6,6 +6,7 @@ Floris van Doorn, E.W.Ayers, Arthur Paulino
 -/
 import Lean.Meta.Tactic.Rewrite
 import Std.Lean.Expr
+import Std.Lean.Name
 import Std.Data.Rat.Basic
 import Std.Data.List.Basic
 

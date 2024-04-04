@@ -425,6 +425,6 @@ def Submonoid.of {s : Set M} (h : IsSubmonoid s) : Submonoid M :=
 
 @[to_additive]
 theorem Submonoid.isSubmonoid (S : Submonoid M) : IsSubmonoid (S : Set M) := by
-  refine' ⟨S.2, S.1.2⟩
+  exact ⟨S.2, S.1.2⟩
 #align submonoid.is_submonoid Submonoid.isSubmonoid
 #align add_submonoid.is_add_submonoid AddSubmonoid.isAddSubmonoid

@@ -604,12 +604,12 @@ theorem exists_normalWord_prod_eq
       w'.toList.map Prod.fst = w.toList.map Prod.fst ∧
       ∀ u ∈ w.toList.head?.map Prod.fst,
       w'.head⁻¹ * w.head ∈ toSubgroup A B (-u) := by
-  suffices : ∀ w : ReducedWord G A B,
+  suffices ∀ w : ReducedWord G A B,
       w.head = 1 → ∃ w' : NormalWord d, w'.prod φ = w.prod φ ∧
       w'.toList.map Prod.fst = w.toList.map Prod.fst ∧
       ∀ u ∈ w.toList.head?.map Prod.fst,
-      w'.head ∈ toSubgroup A B (-u)
-  · by_cases hw1 : w.head = 1
+      w'.head ∈ toSubgroup A B (-u) by
+    by_cases hw1 : w.head = 1
     · simp only [hw1, inv_mem_iff, mul_one]
       exact this w hw1
     · rcases this ⟨1, w.toList, w.chain⟩ rfl with ⟨w', hw'⟩

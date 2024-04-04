@@ -188,6 +188,20 @@ theorem expChar_of_injective_ringHom {R A : Type*}
   · haveI := charZero_of_injective_ringHom h; exact .zero
   haveI := charP_of_injective_ringHom h q; exact .prime hprime
 
+/-- If `R →+* A` is injective, and `A` is of exponential characteristic `p`, then `R` is also of
+exponential characteristic `p`. Similar to `RingHom.charZero`. -/
+theorem RingHom.expChar {R A : Type*} [Semiring R] [Semiring A] (f : R →+* A)
+    (H : Function.Injective f) (p : ℕ) [ExpChar A p] : ExpChar R p := by
+  cases ‹ExpChar A p› with
+  | zero => haveI := f.charZero; exact .zero
+  | prime hp => haveI := f.charP H p; exact .prime hp
+
+/-- If `R →+* A` is injective, then `R` is of exponential characteristic `p` if and only if `A` is
+also of exponential characteristic `p`. Similar to `RingHom.charZero_iff`. -/
+theorem RingHom.expChar_iff {R A : Type*} [Semiring R] [Semiring A] (f : R →+* A)
+    (H : Function.Injective f) (p : ℕ) : ExpChar R p ↔ ExpChar A p :=
+  ⟨fun _ ↦ expChar_of_injective_ringHom H p, fun _ ↦ f.expChar H p⟩
+
 /-- If the algebra map `R →+* A` is injective then `A` has the same exponential characteristic
 as `R`. -/
 theorem expChar_of_injective_algebraMap {R A : Type*}
@@ -289,22 +303,34 @@ variable (R)
 theorem coe_iterateFrobenius : iterateFrobenius R p n = (frobenius R p)^[n] :=
   (pow_iterate p n).symm
 
-@[simp]
-theorem iterateFrobenius_one : iterateFrobenius R p 1 = frobenius R p := by
-  simp_rw [iterateFrobenius, frobenius, pow_one]
+theorem iterateFrobenius_one_apply : iterateFrobenius R p 1 x = x ^ p := by
+  rw [iterateFrobenius_def, pow_one]
 
 @[simp]
-theorem iterateFrobenius_zero : iterateFrobenius R p 0 = RingHom.id R := by
-  simp_rw [iterateFrobenius, powMonoidHom, pow_zero, pow_one]
-  rfl
+theorem iterateFrobenius_one : iterateFrobenius R p 1 = frobenius R p :=
+  RingHom.ext (iterateFrobenius_one_apply R p)
+
+theorem iterateFrobenius_zero_apply : iterateFrobenius R p 0 x = x := by
+  rw [iterateFrobenius_def, pow_zero, pow_one]
+
+@[simp]
+theorem iterateFrobenius_zero : iterateFrobenius R p 0 = RingHom.id R :=
+  RingHom.ext (iterateFrobenius_zero_apply R p)
+
+theorem iterateFrobenius_add_apply :
+    iterateFrobenius R p (m + n) x = iterateFrobenius R p m (iterateFrobenius R p n x) := by
+  simp_rw [iterateFrobenius_def, add_comm m n, pow_add, pow_mul]
 
 theorem iterateFrobenius_add :
-    iterateFrobenius R p (m + n) = (iterateFrobenius R p m).comp (iterateFrobenius R p n) := by
-  ext x
-  simp_rw [RingHom.comp_apply, iterateFrobenius_def, add_comm m n, pow_add, pow_mul]
+    iterateFrobenius R p (m + n) = (iterateFrobenius R p m).comp (iterateFrobenius R p n) :=
+  RingHom.ext (iterateFrobenius_add_apply R p m n)
 
-theorem coe_iterateFrobenius_mul : iterateFrobenius R p (m * n) = (iterateFrobenius R p m)^[n] := by
+theorem iterateFrobenius_mul_apply :
+    iterateFrobenius R p (m * n) x = (iterateFrobenius R p m)^[n] x := by
   simp_rw [coe_iterateFrobenius, Function.iterate_mul]
+
+theorem coe_iterateFrobenius_mul : iterateFrobenius R p (m * n) = (iterateFrobenius R p m)^[n] :=
+  funext (iterateFrobenius_mul_apply R p m n)
 
 variable {R}
 

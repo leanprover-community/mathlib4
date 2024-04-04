@@ -99,15 +99,18 @@ theorem ContinuousWithinAt.cexp (h : ContinuousWithinAt f s x) :
   h.cexp
 #align continuous_within_at.cexp ContinuousWithinAt.cexp
 
+@[fun_prop]
 nonrec
 theorem ContinuousAt.cexp (h : ContinuousAt f x) : ContinuousAt (fun y => exp (f y)) x :=
   h.cexp
 #align continuous_at.cexp ContinuousAt.cexp
 
+@[fun_prop]
 theorem ContinuousOn.cexp (h : ContinuousOn f s) : ContinuousOn (fun y => exp (f y)) s :=
   fun x hx => (h x hx).cexp
 #align continuous_on.cexp ContinuousOn.cexp
 
+@[fun_prop]
 theorem Continuous.cexp (h : Continuous f) : Continuous fun y => exp (f y) :=
   continuous_iff_continuousAt.2 fun _ => h.continuousAt.cexp
 #align continuous.cexp Continuous.cexp
@@ -146,15 +149,18 @@ theorem ContinuousWithinAt.exp (h : ContinuousWithinAt f s x) :
   h.exp
 #align continuous_within_at.exp ContinuousWithinAt.exp
 
+@[fun_prop]
 nonrec
 theorem ContinuousAt.exp (h : ContinuousAt f x) : ContinuousAt (fun y => exp (f y)) x :=
   h.exp
 #align continuous_at.exp ContinuousAt.exp
 
+@[fun_prop]
 theorem ContinuousOn.exp (h : ContinuousOn f s) : ContinuousOn (fun y => exp (f y)) s := fun x hx =>
   (h x hx).exp
 #align continuous_on.exp ContinuousOn.exp
 
+@[fun_prop]
 theorem Continuous.exp (h : Continuous f) : Continuous fun y => exp (f y) :=
   continuous_iff_continuousAt.2 fun _ => h.continuousAt.exp
 #align continuous.exp Continuous.exp

@@ -131,8 +131,8 @@ section Normal
 instance commutator_normal [h₁ : H₁.Normal] [h₂ : H₂.Normal] : Normal ⁅H₁, H₂⁆ := by
   let base : Set G := { x | ∃ g₁ ∈ H₁, ∃ g₂ ∈ H₂, ⁅g₁, g₂⁆ = x }
   change (closure base).Normal
-  suffices h_base : base = Group.conjugatesOfSet base
-  · rw [h_base]
+  suffices h_base : base = Group.conjugatesOfSet base by
+    rw [h_base]
     exact Subgroup.normalClosure_normal
   refine' Set.Subset.antisymm Group.subset_conjugatesOfSet fun a h => _
   simp_rw [Group.mem_conjugatesOfSet_iff, isConj_iff] at h

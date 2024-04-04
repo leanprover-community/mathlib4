@@ -137,8 +137,6 @@ variable [Algebra Rₛ Aₛ] [Algebra R Aₛ] [IsScalarTower R Rₛ Aₛ] [IsSca
 
 variable [hA : IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ]
 
---include hA
-
 open Submodule
 
 theorem LinearIndependent.localization_localization {ι : Type*} {v : ι → A}

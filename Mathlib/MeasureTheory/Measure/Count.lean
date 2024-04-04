@@ -40,7 +40,7 @@ theorem count_apply (hs : MeasurableSet s) : count s = ∑' i : s, 1 := by
   simp only [count, sum_apply, hs, dirac_apply', ← tsum_subtype s (1 : α → ℝ≥0∞), Pi.one_apply]
 #align measure_theory.measure.count_apply MeasureTheory.Measure.count_apply
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem count_empty : count (∅ : Set α) = 0 := by rw [count_apply MeasurableSet.empty, tsum_empty]
 #align measure_theory.measure.count_empty MeasureTheory.Measure.count_empty
 
@@ -157,7 +157,7 @@ theorem count_singleton' {a : α} (ha : MeasurableSet ({a} : Set α)) : count ({
     @Fintype.card_unique _ _ (Set.finite_singleton a).fintype]
 #align measure_theory.measure.count_singleton' MeasureTheory.Measure.count_singleton'
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem count_singleton [MeasurableSingletonClass α] (a : α) : count ({a} : Set α) = 1 :=
   count_singleton' (measurableSet_singleton a)
 #align measure_theory.measure.count_singleton MeasureTheory.Measure.count_singleton

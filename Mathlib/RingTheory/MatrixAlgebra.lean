@@ -162,7 +162,7 @@ theorem matrixEquivTensor_apply (M : Matrix n n A) :
   rfl
 #align matrix_equiv_tensor_apply matrixEquivTensor_apply
 
--- Porting note : short circuiting simplifier from simplifying left hand side
+-- Porting note: short circuiting simplifier from simplifying left hand side
 @[simp (high)]
 theorem matrixEquivTensor_apply_std_basis (i j : n) (x : A) :
     matrixEquivTensor R A n (stdBasisMatrix i j x) = x ⊗ₜ stdBasisMatrix i j 1 := by

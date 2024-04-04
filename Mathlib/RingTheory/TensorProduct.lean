@@ -32,7 +32,7 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 
 ## References
 
-* [C. Kassel, *Quantum Groups* (§II.4)][kasselTensorProducts1995]
+* [C. Kassel, *Quantum Groups* (§II.4)][Kassel1995]
 
 -/
 
@@ -524,10 +524,10 @@ instance instCommSemiring : CommSemiring (A ⊗[R] B) where
       · intro a₂ b₂
         simp [mul_comm]
       · intro a₂ b₂ ha hb
-        -- porting note: was `simp` not `rw`
+        -- porting note (#10745): was `simp` not `rw`
         rw [mul_add, add_mul, ha, hb]
     · intro x₁ x₂ h₁ h₂
-      -- porting note: was `simp` not `rw`
+      -- porting note (#10745): was `simp` not `rw`
       rw [mul_add, add_mul, h₁, h₂]
 
 end CommSemiring

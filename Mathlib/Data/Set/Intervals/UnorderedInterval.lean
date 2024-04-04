@@ -7,7 +7,7 @@ import Mathlib.Data.Set.Intervals.Image
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Tactic.Common
 
-#align_import data.set.intervals.unordered_interval from "leanprover-community/mathlib"@"4020ddee5b4580a409bfda7d2f42726ce86ae674"
+#align_import data.set.intervals.unordered_interval from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
 /-!
 # Intervals without endpoints ordering
@@ -83,7 +83,7 @@ lemma uIcc_of_lt (h : a < b) : [[a, b]] = Icc a b := uIcc_of_le h.le
 lemma uIcc_of_gt (h : b < a) : [[a, b]] = Icc b a := uIcc_of_ge h.le
 #align set.uIcc_of_gt Set.uIcc_of_gt
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 -- @[simp]
 lemma uIcc_self : [[a, a]] = {a} := by simp [uIcc]
 #align set.uIcc_self Set.uIcc_self

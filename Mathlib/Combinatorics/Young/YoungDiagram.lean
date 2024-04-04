@@ -170,7 +170,7 @@ theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
 #align young_diagram.cells_bot YoungDiagram.cells_bot
 
 -- porting note: removed `↑`, added `.cells` and changed proof
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 @[norm_cast]
 theorem coe_bot : (⊥ : YoungDiagram).cells = (∅ : Set (ℕ × ℕ)) := by
   refine' Set.eq_of_subset_of_subset _ _
@@ -500,7 +500,7 @@ theorem rowLens_length_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (hpo
     (ofRowLens w hw).rowLens.length = w.length := by
   simp only [length_rowLens, colLen, Nat.find_eq_iff, mem_cells, mem_ofRowLens,
     lt_self_iff_false, IsEmpty.exists_iff, Classical.not_not]
-  refine' ⟨not_false, fun n hn => ⟨hn, hpos _ (List.get_mem _ _ hn)⟩⟩
+  exact ⟨not_false, fun n hn => ⟨hn, hpos _ (List.get_mem _ _ hn)⟩⟩
 #align young_diagram.row_lens_length_of_row_lens YoungDiagram.rowLens_length_ofRowLens
 
 -- Porting note: use `List.get` instead of `List.nthLe` because it has been deprecated

@@ -59,7 +59,7 @@ structure Partition (n : ℕ) where
   parts_pos : ∀ {i}, i ∈ parts → 0 < i
   /-- proof that the `parts` sum to `n`-/
   parts_sum : parts.sum = n
-  -- porting notes: chokes on `parts_pos`
+  -- Porting note: chokes on `parts_pos`
   --deriving DecidableEq
 #align nat.partition Nat.Partition
 

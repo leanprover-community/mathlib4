@@ -413,7 +413,7 @@ theorem sdiff_symmDiff : c \ a ∆ b = c ⊓ a ⊓ b ⊔ c \ a ⊓ c \ b := by
 #align sdiff_symm_diff sdiff_symmDiff
 
 theorem sdiff_symmDiff' : c \ a ∆ b = c ⊓ a ⊓ b ⊔ c \ (a ⊔ b) := by
-  rw [sdiff_symmDiff, sdiff_sup, sup_comm]
+  rw [sdiff_symmDiff, sdiff_sup]
 #align sdiff_symm_diff' sdiff_symmDiff'
 
 @[simp]

@@ -38,8 +38,8 @@ def replaceVertex : SimpleGraph V where
 /-- There is never an `s-t` edge in `G.replaceVertex s t`. -/
 lemma not_adj_replaceVertex_same : ¬(G.replaceVertex s t).Adj s t := by simp [replaceVertex]
 
-@[simp]
-lemma replaceVertex_self : G.replaceVertex s s = G := by ext; unfold replaceVertex; aesop
+@[simp] lemma replaceVertex_self : G.replaceVertex s s = G := by
+  ext; unfold replaceVertex; aesop (add simp or_iff_not_imp_left)
 
 variable {t}
 
@@ -102,7 +102,7 @@ theorem card_edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) :
     (G.replaceVertex s t).edgeFinset.card = G.edgeFinset.card + G.degree s - G.degree t := by
   have inc : G.incidenceFinset t ⊆ G.edgeFinset := by simp [incidenceFinset, incidenceSet_subset]
   rw [G.edgeFinset_replaceVertex_of_not_adj hn,
-    card_disjoint_union G.disjoint_sdiff_neighborFinset_image, card_sdiff inc,
+    card_union_of_disjoint G.disjoint_sdiff_neighborFinset_image, card_sdiff inc,
     tsub_add_eq_add_tsub <| card_le_card inc, card_incidenceFinset_eq_degree]
   congr 2
   rw [card_image_of_injective, card_neighborFinset_eq_degree]
@@ -113,7 +113,7 @@ theorem card_edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) :
     (G.replaceVertex s t).edgeFinset.card = G.edgeFinset.card + G.degree s - G.degree t - 1 := by
   have inc : G.incidenceFinset t ⊆ G.edgeFinset := by simp [incidenceFinset, incidenceSet_subset]
   rw [G.edgeFinset_replaceVertex_of_adj ha, card_sdiff (by simp [ha]),
-    card_disjoint_union G.disjoint_sdiff_neighborFinset_image, card_sdiff inc,
+    card_union_of_disjoint G.disjoint_sdiff_neighborFinset_image, card_sdiff inc,
     tsub_add_eq_add_tsub <| card_le_card inc, card_incidenceFinset_eq_degree]
   congr 2
   rw [card_image_of_injective, card_neighborFinset_eq_degree]

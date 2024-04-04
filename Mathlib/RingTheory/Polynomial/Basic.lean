@@ -1126,6 +1126,27 @@ end Polynomial
 
 namespace MvPolynomial
 
+lemma aeval_natDegree_le {R : Type*} [CommSemiring R] {m n : ℕ}
+    (F : MvPolynomial σ R) (hF : F.totalDegree ≤ m)
+    (f : σ → Polynomial R) (hf : ∀ i, (f i).natDegree ≤ n) :
+    (MvPolynomial.aeval f F).natDegree ≤ m * n := by
+  rw [MvPolynomial.aeval_def, MvPolynomial.eval₂]
+  apply (Polynomial.natDegree_sum_le _ _).trans
+  apply Finset.sup_le
+  intro d hd
+  simp_rw [Function.comp_apply, ← C_eq_algebraMap]
+  apply (Polynomial.natDegree_C_mul_le _ _).trans
+  apply (Polynomial.natDegree_prod_le _ _).trans
+  have : ∑ i in d.support, (d i) * n ≤ m * n := by
+    rw [← Finset.sum_mul]
+    apply mul_le_mul' (.trans _ hF) le_rfl
+    rw [MvPolynomial.totalDegree]
+    exact Finset.le_sup_of_le hd le_rfl
+  apply (Finset.sum_le_sum _).trans this
+  rintro i -
+  apply Polynomial.natDegree_pow_le.trans
+  exact mul_le_mul' le_rfl (hf i)
+
 theorem isNoetherianRing_fin_0 [IsNoetherianRing R] :
     IsNoetherianRing (MvPolynomial (Fin 0) R) := by
   apply isNoetherianRing_of_ringEquiv R
@@ -1275,11 +1296,8 @@ namespace Polynomial
 
 attribute [-instance] Ring.toSemiring in
 instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid D[X] := by
-  letI := Classical.decEq (Associates D)
-  letI := Classical.decEq D
-  haveI : NormalizationMonoid D := Inhabited.default
-  haveI := toNormalizedGCDMonoid D
-  exact ufm_of_gcd_of_wfDvdMonoid
+  letI := Classical.arbitrary (NormalizedGCDMonoid D)
+  exact ufm_of_decomposition_of_wfDvdMonoid
 #align polynomial.unique_factorization_monoid Polynomial.uniqueFactorizationMonoid
 
 /-- If `D` is a unique factorization domain, `f` is a non-zero polynomial in `D[X]`, then `f` has
@@ -1342,3 +1360,14 @@ instance (priority := 100) uniqueFactorizationMonoid :
 end MvPolynomial
 
 end UniqueFactorizationDomain
+
+/-- A polynomial over a field which is not a unit must have a monic irreducible factor.
+See also `WfDvdMonoid.exists_irreducible_factor`. -/
+theorem Polynomial.exists_monic_irreducible_factor {F : Type*} [Field F] (f : F[X])
+    (hu : ¬IsUnit f) : ∃ g : F[X], g.Monic ∧ Irreducible g ∧ g ∣ f := by
+  by_cases hf : f = 0
+  · exact ⟨X, monic_X, irreducible_X, hf ▸ dvd_zero X⟩
+  obtain ⟨g, hi, hf⟩ := WfDvdMonoid.exists_irreducible_factor hu hf
+  have ha : Associated g (g * C g.leadingCoeff⁻¹) := associated_mul_unit_right _ _ <|
+    isUnit_C.2 (leadingCoeff_ne_zero.2 hi.ne_zero).isUnit.inv
+  exact ⟨_, monic_mul_leadingCoeff_inv hi.ne_zero, ha.irreducible hi, ha.dvd_iff_dvd_left.1 hf⟩

@@ -412,7 +412,7 @@ theorem Mon_tensor_mul_one (M N : Mon_ C) :
     (M.X ⊗ N.X) ◁ ((λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one)) ≫
         tensor_μ C (M.X, N.X) (M.X, N.X) ≫ (M.mul ⊗ N.mul) =
       (ρ_ (M.X ⊗ N.X)).hom := by
-  simp only [whiskerLeft_comp_assoc]
+  simp only [MonoidalCategory.whiskerLeft_comp_assoc]
   slice_lhs 2 3 => rw [tensor_μ_natural_right]
   slice_lhs 3 4 => rw [← tensor_comp, mul_one M, mul_one N]
   symm
@@ -425,7 +425,7 @@ theorem Mon_tensor_mul_assoc (M N : Mon_ C) :
       (α_ (M.X ⊗ N.X) (M.X ⊗ N.X) (M.X ⊗ N.X)).hom ≫
         ((M.X ⊗ N.X) ◁ (tensor_μ C (M.X, N.X) (M.X, N.X) ≫ (M.mul ⊗ N.mul))) ≫
           tensor_μ C (M.X, N.X) (M.X, N.X) ≫ (M.mul ⊗ N.mul) := by
-  simp only [comp_whiskerRight_assoc, whiskerLeft_comp_assoc]
+  simp only [comp_whiskerRight_assoc, MonoidalCategory.whiskerLeft_comp_assoc]
   slice_lhs 2 3 => rw [tensor_μ_natural_left]
   slice_lhs 3 4 => rw [← tensor_comp, mul_assoc M, mul_assoc N, tensor_comp, tensor_comp]
   slice_lhs 1 3 => rw [tensor_associativity]

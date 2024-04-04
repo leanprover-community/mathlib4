@@ -250,7 +250,7 @@ theorem le_mul_inv_iff_mul_le : c ≤ a * b⁻¹ ↔ c * b ≤ a :=
 #align le_mul_inv_iff_mul_le le_mul_inv_iff_mul_le
 #align le_add_neg_iff_add_le le_add_neg_iff_add_le
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 @[to_additive]
 theorem mul_inv_le_one_iff_le : a * b⁻¹ ≤ 1 ↔ a ≤ b :=
   mul_inv_le_iff_le_mul.trans <| by rw [one_mul]
@@ -313,7 +313,7 @@ theorem lt_mul_inv_iff_mul_lt : c < a * b⁻¹ ↔ c * b < a :=
 #align lt_mul_inv_iff_mul_lt lt_mul_inv_iff_mul_lt
 #align lt_add_neg_iff_add_lt lt_add_neg_iff_add_lt
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 @[to_additive]
 theorem inv_mul_lt_one_iff_lt : a * b⁻¹ < 1 ↔ a < b := by
   rw [← mul_lt_mul_iff_right b, inv_mul_cancel_right, one_mul]
@@ -711,7 +711,7 @@ theorem div_le_div_iff_right (c : α) : a / c ≤ b / c ↔ a ≤ b := by
 #align div_le_div_iff_right div_le_div_iff_right
 #align sub_le_sub_iff_right sub_le_sub_iff_right
 
-@[to_additive sub_le_sub_right]
+@[to_additive (attr := gcongr) sub_le_sub_right]
 theorem div_le_div_right' (h : a ≤ b) (c : α) : a / c ≤ b / c :=
   (div_le_div_iff_right c).2 h
 #align div_le_div_right' div_le_div_right'
@@ -780,7 +780,7 @@ theorem div_le_div_iff_left (a : α) : a / b ≤ a / c ↔ c ≤ b := by
 #align div_le_div_iff_left div_le_div_iff_left
 #align sub_le_sub_iff_left sub_le_sub_iff_left
 
-@[to_additive sub_le_sub_left]
+@[to_additive (attr := gcongr) sub_le_sub_left]
 theorem div_le_div_left' (h : a ≤ b) (c : α) : c / b ≤ c / a :=
   (div_le_div_iff_left c).2 h
 #align div_le_div_left' div_le_div_left'
@@ -851,7 +851,7 @@ section Preorder
 
 variable [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b c d : α}
 
-@[to_additive sub_le_sub]
+@[to_additive (attr := gcongr) sub_le_sub]
 theorem div_le_div'' (hab : a ≤ b) (hcd : c ≤ d) : a / d ≤ b / c := by
   rw [div_eq_mul_inv, div_eq_mul_inv, mul_comm b, mul_inv_le_inv_mul_iff, mul_comm]
   exact mul_le_mul' hab hcd
@@ -878,7 +878,7 @@ theorem div_lt_div_iff_right (c : α) : a / c < b / c ↔ a < b := by
 #align div_lt_div_iff_right div_lt_div_iff_right
 #align sub_lt_sub_iff_right sub_lt_sub_iff_right
 
-@[to_additive sub_lt_sub_right]
+@[to_additive (attr := gcongr) sub_lt_sub_right]
 theorem div_lt_div_right' (h : a < b) (c : α) : a / c < b / c :=
   (div_lt_div_iff_right c).2 h
 #align div_lt_div_right' div_lt_div_right'
@@ -947,7 +947,7 @@ theorem inv_lt_div_iff_lt_mul : a⁻¹ < b / c ↔ c < a * b := by
 #align inv_lt_div_iff_lt_mul inv_lt_div_iff_lt_mul
 #align neg_lt_sub_iff_lt_add neg_lt_sub_iff_lt_add
 
-@[to_additive sub_lt_sub_left]
+@[to_additive (attr := gcongr) sub_lt_sub_left]
 theorem div_lt_div_left' (h : a < b) (c : α) : c / b < c / a :=
   (div_lt_div_iff_left c).2 h
 #align div_lt_div_left' div_lt_div_left'
@@ -1013,7 +1013,7 @@ section Preorder
 
 variable [Preorder α] [CovariantClass α α (· * ·) (· < ·)] {a b c d : α}
 
-@[to_additive sub_lt_sub]
+@[to_additive (attr := gcongr) sub_lt_sub]
 theorem div_lt_div'' (hab : a < b) (hcd : c < d) : a / d < b / c := by
   rw [div_eq_mul_inv, div_eq_mul_inv, mul_comm b, mul_inv_lt_inv_mul_iff, mul_comm]
   exact mul_lt_mul_of_lt_of_lt hab hcd
@@ -1266,14 +1266,14 @@ section NormNumLemmas
 expected signatures.  -/
 variable [OrderedCommGroup α] {a b : α}
 
-@[to_additive neg_le_neg]
+@[to_additive (attr := gcongr) neg_le_neg]
 theorem inv_le_inv' : a ≤ b → b⁻¹ ≤ a⁻¹ :=
   -- Porting note: explicit type annotation was not needed before.
   (@inv_le_inv_iff α ..).mpr
 #align inv_le_inv' inv_le_inv'
 #align neg_le_neg neg_le_neg
 
-@[to_additive neg_lt_neg]
+@[to_additive (attr := gcongr) neg_lt_neg]
 theorem inv_lt_inv' : a < b → b⁻¹ < a⁻¹ :=
   -- Porting note: explicit type annotation was not needed before.
   (@inv_lt_inv_iff α ..).mpr

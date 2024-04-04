@@ -207,7 +207,7 @@ lemma ext_cochain_from_iff (i j : ℤ) (hij : i + 1 = j)
     replace h₂ := Cochain.congr_v h₂ p q (by linarith)
     simp only [Cochain.comp_v (inl φ) _ _ (p + 1) p q (by linarith) hpq] at h₁
     simp only [Cochain.zero_cochain_comp_v, Cochain.ofHom_v] at h₂
-    refine' ⟨h₁, h₂⟩
+    exact ⟨h₁, h₂⟩
 
 lemma id :
     (fst φ).1.comp (inl φ) (add_neg_self 1) +

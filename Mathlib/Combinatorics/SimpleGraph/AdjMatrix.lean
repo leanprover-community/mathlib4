@@ -248,7 +248,7 @@ theorem adjMatrix_mul_self_apply_self [NonAssocSemiring α] (i : V) :
 
 variable {G}
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem adjMatrix_mulVec_const_apply [Semiring α] {a : α} {v : V} :
     (G.adjMatrix α *ᵥ Function.const _ a) v = G.degree v * a := by simp
 #align simple_graph.adj_matrix_mul_vec_const_apply SimpleGraph.adjMatrix_mulVec_const_apply

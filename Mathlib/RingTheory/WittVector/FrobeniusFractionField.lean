@@ -33,7 +33,7 @@ This construction is described in Dupuis, Lewis, and Macbeth,
 We approximately follow an approach sketched on MathOverflow:
 <https://mathoverflow.net/questions/62468/about-frobenius-of-witt-vectors>
 
-The result is a dependency for the proof of `witt_vector.isocrystal_classification`,
+The result is a dependency for the proof of `WittVector.isocrystal_classification`,
 the classification of one-dimensional isocrystals over an algebraically closed field.
 -/
 
@@ -54,7 +54,7 @@ namespace RecursionMain
 
 The first coefficient of our solution vector is easy to define below.
 In this section we focus on the recursive case.
-The goal is to turn `witt_poly_prod n` into a univariate polynomial
+The goal is to turn `WittVector.wittPolyProd n` into a univariate polynomial
 whose variable represents the `n`th coefficient of `x` in `x * a`.
 
 -/
@@ -205,8 +205,8 @@ noncomputable def frobeniusRotationCoeff {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coef
 decreasing_by apply Fin.is_lt
 #align witt_vector.frobenius_rotation_coeff WittVector.frobeniusRotationCoeff
 
-/-- For nonzero `a₁` and `a₂`, `frobenius_rotation a₁ a₂` is a Witt vector that satisfies the
-equation `frobenius (frobenius_rotation a₁ a₂) * a₁ = (frobenius_rotation a₁ a₂) * a₂`.
+/-- For nonzero `a₁` and `a₂`, `frobeniusRotation a₁ a₂` is a Witt vector that satisfies the
+equation `frobenius (frobeniusRotation a₁ a₂) * a₁ = (frobeniusRotation a₁ a₂) * a₂`.
 -/
 def frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) : 𝕎 k :=
   WittVector.mk p (frobeniusRotationCoeff p ha₁ ha₂)
@@ -272,8 +272,7 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
 #align witt_vector.exists_frobenius_solution_fraction_ring_aux WittVector.exists_frobenius_solution_fractionRing_aux
 
 theorem exists_frobenius_solution_fractionRing {a : FractionRing (𝕎 k)} (ha : a ≠ 0) :
-    ∃ (b : FractionRing (𝕎 k)) (_ : b ≠ 0) (m : ℤ),
-      φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by
+    ∃ᵉ (b ≠ 0) (m : ℤ), φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by
   revert ha
   refine' Localization.induction_on a _
   rintro ⟨r, q, hq⟩ hrq

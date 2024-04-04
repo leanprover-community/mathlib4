@@ -99,7 +99,7 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
       · rw [Set.eq_singleton_iff_unique_mem, and_comm]
         rfl
       · rw [Set.eq_empty_iff_forall_not_mem]
-        refine' ⟨fun h x hx => h.2 (h.1 hx ▸ hx), fun h => ⟨fun x hx => (h _ hx).elim, h _⟩⟩
+        exact ⟨fun h x hx => h.2 (h.1 hx ▸ hx), fun h => ⟨fun x hx => (h _ hx).elim, h _⟩⟩
     _ ≃ Sum (derangements ({a}ᶜ : Set α)) (derangements α) := by
       -- porting note: was `subtypeEquiv _` but now needs the placeholder to be provided explicitly
       refine'

@@ -102,7 +102,7 @@ lemma iff_rTensor_injective :
     erw [← Equiv.comp_injective _ (TensorProduct.lid R M).toEquiv]
     have h₁ := F.out hI
     rw [← aux] at h₁
-    refine h₁
+    exact h₁
   · intro h₁
     constructor
     intro I hI
@@ -155,8 +155,8 @@ lemma of_retract [f : Flat R M] (i : N →ₗ[R] M) (r : M →ₗ[R] N) (h : r.c
     Flat R N := by
   rw [iff_rTensor_injective] at *
   intro I hI
-  have h₁ : Function.Injective (lTensor R i)
-  · apply Function.RightInverse.injective (g := (lTensor R r))
+  have h₁ : Function.Injective (lTensor R i) := by
+    apply Function.RightInverse.injective (g := (lTensor R r))
     intro x
     rw [← LinearMap.comp_apply, ← lTensor_comp, h]
     simp
@@ -187,6 +187,9 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
   classical
   rw [iff_rTensor_injective]
   intro I hI
+  -- This instance was added during PR #10828,
+  -- see https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.2310828.20-.20generalizing.20CommRing.20to.20CommSemiring.20etc.2E/near/422684923
+  letI : ∀ i, AddCommGroup (I ⊗[R] M i) := inferInstance
   rw [← Equiv.comp_injective _ (TensorProduct.lid R (⨁ i, M i)).toEquiv]
   set η₁ := TensorProduct.lid R (⨁ i, M i)
   set η := (fun i ↦ TensorProduct.lid R (M i))
@@ -199,8 +202,8 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
   rw [LinearEquiv.coe_toEquiv, ← LinearEquiv.coe_coe, ← LinearMap.coe_comp]
   rw [LinearEquiv.coe_toEquiv, ← LinearEquiv.coe_coe, ← LinearMap.coe_comp]
   rw [← psi_def, injective_iff_map_eq_zero ((η₁.comp ρ).comp ψ)]
-  have h₁ : ∀ (i : ι), (π i).comp ((η₁.comp ρ).comp ψ) = (η i).comp ((φ i).comp (τ i))
-  · intro i
+  have h₁ : ∀ (i : ι), (π i).comp ((η₁.comp ρ).comp ψ) = (η i).comp ((φ i).comp (τ i)) := by
+    intro i
     apply DirectSum.linearMap_ext
     intro j
     apply TensorProduct.ext'

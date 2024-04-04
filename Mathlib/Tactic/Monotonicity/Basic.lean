@@ -5,6 +5,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Tactic.Monotonicity.Attr
 import Std.Tactic.SolveByElim
+import Std.Lean.Parser
 
 /-! # Monotonicity tactic
 

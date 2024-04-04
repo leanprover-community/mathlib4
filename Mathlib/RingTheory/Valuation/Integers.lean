@@ -36,6 +36,8 @@ def integer : Subring R where
   neg_mem' {x} hx := by simp only [Set.mem_setOf_eq] at hx; simpa only [Set.mem_setOf_eq, map_neg]
 #align valuation.integer Valuation.integer
 
+lemma mem_integer_iff (r : R) : r ∈ v.integer ↔ v r ≤ 1 := by rfl
+
 end Ring
 
 section CommRing

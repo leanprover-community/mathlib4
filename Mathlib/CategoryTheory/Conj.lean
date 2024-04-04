@@ -44,7 +44,7 @@ def homCongr {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) : (X ⟶ Y)
       rw [Category.assoc, Category.assoc, β.inv_hom_id, α.inv_hom_id_assoc, Category.comp_id]
 #align category_theory.iso.hom_congr CategoryTheory.Iso.homCongr
 
--- @[simp, nolint simpNF] Porting note: dsimp can not prove this
+-- @[simp, nolint simpNF] Porting note (#10675): dsimp can not prove this
 @[simp]
 theorem homCongr_apply {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) (f : X ⟶ Y) :
     α.homCongr β f = α.inv ≫ f ≫ β.hom := by
@@ -55,11 +55,11 @@ theorem homCongr_comp {X Y Z X₁ Y₁ Z₁ : C} (α : X ≅ X₁) (β : Y ≅ Y
     (g : Y ⟶ Z) : α.homCongr γ (f ≫ g) = α.homCongr β f ≫ β.homCongr γ g := by simp
 #align category_theory.iso.hom_congr_comp CategoryTheory.Iso.homCongr_comp
 
-/- Porting note: removed `@[simp]`; simp can prove this -/
+/- Porting note (#10618): removed `@[simp]`; simp can prove this -/
 theorem homCongr_refl {X Y : C} (f : X ⟶ Y) : (Iso.refl X).homCongr (Iso.refl Y) f = f := by simp
 #align category_theory.iso.hom_congr_refl CategoryTheory.Iso.homCongr_refl
 
-/- Porting note: removed `@[simp]`; simp can prove this -/
+/- Porting note (#10618): removed `@[simp]`; simp can prove this -/
 theorem homCongr_trans {X₁ Y₁ X₂ Y₂ X₃ Y₃ : C} (α₁ : X₁ ≅ X₂) (β₁ : Y₁ ≅ Y₂) (α₂ : X₂ ≅ X₃)
     (β₂ : Y₂ ≅ Y₃) (f : X₁ ⟶ Y₁) :
     (α₁ ≪≫ α₂).homCongr (β₁ ≪≫ β₂) f = (α₁.homCongr β₁).trans (α₂.homCongr β₂) f := by simp
@@ -113,7 +113,7 @@ theorem self_symm_conj (f : End Y) : α.conj (α.symm.conj f) = f :=
   α.symm.symm_self_conj f
 #align category_theory.iso.self_symm_conj CategoryTheory.Iso.self_symm_conj
 
-/- Porting note: removed `@[simp]`; simp can prove this -/
+/- Porting note (#10618): removed `@[simp]`; simp can prove this -/
 theorem conj_pow (f : End X) (n : ℕ) : α.conj (f ^ n) = α.conj f ^ n :=
   α.conj.toMonoidHom.map_pow f n
 #align category_theory.iso.conj_pow CategoryTheory.Iso.conj_pow
@@ -142,7 +142,7 @@ theorem trans_conjAut {Z : C} (β : Y ≅ Z) (f : Aut X) :
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.trans_conj_Aut CategoryTheory.Iso.trans_conjAut
 
-/- Porting note: removed `@[simp]`; simp can prove this -/
+/- Porting note (#10618): removed `@[simp]`; simp can prove this -/
 theorem conjAut_mul (f g : Aut X) : α.conjAut (f * g) = α.conjAut f * α.conjAut g :=
   α.conjAut.map_mul f g
 set_option linter.uppercaseLean3 false in
@@ -154,13 +154,13 @@ theorem conjAut_trans (f g : Aut X) : α.conjAut (f ≪≫ g) = α.conjAut f ≪
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut_trans CategoryTheory.Iso.conjAut_trans
 
-/- Porting note: removed `@[simp]`; simp can prove this -/
+/- Porting note (#10618): removed `@[simp]`; simp can prove this -/
 theorem conjAut_pow (f : Aut X) (n : ℕ) : α.conjAut (f ^ n) = α.conjAut f ^ n :=
   α.conjAut.toMonoidHom.map_pow f n
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut_pow CategoryTheory.Iso.conjAut_pow
 
-/- Porting note: removed `@[simp]`; simp can prove this -/
+/- Porting note (#10618): removed `@[simp]`; simp can prove this -/
 theorem conjAut_zpow (f : Aut X) (n : ℤ) : α.conjAut (f ^ n) = α.conjAut f ^ n :=
   α.conjAut.toMonoidHom.map_zpow f n
 set_option linter.uppercaseLean3 false in

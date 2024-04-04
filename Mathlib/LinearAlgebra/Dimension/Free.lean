@@ -193,8 +193,9 @@ lemma Module.rank_lt_alpeh0_iff :
 
 theorem FiniteDimensional.finrank_of_not_finite
     (h : ¬Module.Finite R M) :
-    finrank R M = 0 :=
-  dif_neg (Module.rank_lt_alpeh0_iff.not.mpr h)
+    finrank R M = 0 := by
+  rw [finrank, toNat_eq_zero, ← not_lt, Module.rank_lt_alpeh0_iff]
+  exact .inr h
 
 theorem Module.finite_of_finrank_pos (h : 0 < finrank R M) :
     Module.Finite R M := by

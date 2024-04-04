@@ -128,7 +128,7 @@ theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
   use s, α, γ
   dsimp
   simp_rw [MonoidHom.map_mul]
-  -- Porting note : Lean cannot seem to use lemmas from concrete categories directly
+  -- Porting note: Lean cannot seem to use lemmas from concrete categories directly
   change (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _ =
     (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _
   simp_rw [← F.map_comp, h₁, h₂, h₃, F.map_comp]
@@ -153,7 +153,7 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
   use s, α, γ
   dsimp
   simp_rw [MonoidHom.map_mul]
-  -- Porting note : Lean cannot seem to use lemmas from concrete categories directly
+  -- Porting note: Lean cannot seem to use lemmas from concrete categories directly
   change (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _ =
     (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _
   simp_rw [← F.map_comp, h₁, h₂, h₃, F.map_comp]
@@ -196,7 +196,7 @@ theorem colimit_mul_mk_eq (x y : Σ j, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1
   use s, α, β
   dsimp
   simp_rw [MonoidHom.map_mul]
-  -- Porting note : Lean cannot seem to use lemmas from concrete categories directly
+  -- Porting note: Lean cannot seem to use lemmas from concrete categories directly
   change (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _ =
     (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _
   simp_rw [← F.map_comp, h₁, h₂]
@@ -213,7 +213,7 @@ noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
       cases' x with j x
       rw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, 1⟩ ⟨j, x⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
         one_mul, F.map_id]
-      -- Porting note : `id_apply` does not work here, but the two sides are def-eq
+      -- Porting note: `id_apply` does not work here, but the two sides are def-eq
       rfl
     mul_one := fun x => by
       refine Quot.inductionOn x ?_
@@ -221,7 +221,7 @@ noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
       cases' x with j x
       rw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, 1⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
         mul_one, F.map_id]
-      -- Porting note : `id_apply` does not work here, but the two sides are def-eq
+      -- Porting note: `id_apply` does not work here, but the two sides are def-eq
       rfl }
 
 @[to_additive]
@@ -314,7 +314,7 @@ def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt where
     dsimp [Types.colimitCoconeIsColimit]
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [MonoidHom.map_mul]
-    -- Porting note : `rw` can't see through coercion is actually forgetful functor,
+    -- Porting note: `rw` can't see through coercion is actually forgetful functor,
     -- so can't rewrite `t.w_apply`
     congr 1 <;>
     exact t.w_apply _ _

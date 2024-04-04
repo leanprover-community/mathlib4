@@ -269,24 +269,9 @@ noncomputable def coords : P →ᵃ[k] ι → k where
   toFun q i := b.coord i q
   linear :=
     { toFun := fun v i => -(b.basisOf i).sumCoords v
-      map_add' := fun v w => by
-        ext i
-        simp only [LinearMap.map_add, Pi.add_apply, neg_add]
-      map_smul' := fun t v => by
-        ext i
-        simp only [LinearMap.map_smul, Pi.smul_apply, smul_neg, RingHom.id_apply, mul_neg] }
-  map_vadd' p v := by
-    ext i
-    -- Porting note:
-    -- mathlib3 proof was:
-    -- simp only [linear_eq_sumCoords, LinearMap.coe_mk, LinearMap.neg_apply, Pi.vadd_apply',
-    --   AffineMap.map_vadd]
-    -- but now we need to `dsimp` before `AffineMap.map_vadd` works.
-    rw [LinearMap.coe_mk, Pi.vadd_apply']
-    dsimp
-    rw [AffineMap.map_vadd, linear_eq_sumCoords,
-        LinearMap.neg_apply]
-    simp only [ne_eq, Basis.coe_sumCoords, vadd_eq_add]
+      map_add' := fun v w => by ext; simp only [LinearMap.map_add, Pi.add_apply, neg_add]
+      map_smul' := fun t v => by ext; simp }
+  map_vadd' p v := by ext; simp
 #align affine_basis.coords AffineBasis.coords
 
 @[simp]

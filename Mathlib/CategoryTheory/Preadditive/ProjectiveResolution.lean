@@ -50,7 +50,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution CategoryTheory.ProjectiveResolution
 
 open ProjectiveResolution in
-attribute [instance] projective quasiIso hasHomology
+attribute [instance] projective hasHomology ProjectiveResolution.quasiIso
 
 /-- An object admits a projective resolution.
 -/
@@ -98,7 +98,7 @@ theorem complex_d_comp_π_f_zero :
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.complex_d_comp_π_f_zero CategoryTheory.ProjectiveResolution.complex_d_comp_π_f_zero
 
--- Porting note: removed @[simp] simp can prove this
+-- Porting note (#10618): removed @[simp] simp can prove this
 theorem complex_d_succ_comp (n : ℕ) :
     P.complex.d n (n + 1) ≫ P.complex.d (n + 1) (n + 2) = 0 := by
   simp

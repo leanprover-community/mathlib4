@@ -96,9 +96,6 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
   tfae_have 2 → 3
   · rintro h a b c ha hb hc habc
     rw [← Rat.num_ne_zero] at ha hb hc
-    have : a.den ≠ 0 := a.den_pos.ne'
-    have : b.den ≠ 0 := b.den_pos.ne'
-    have : c.den ≠ 0 := c.den_pos.ne'
     refine' h (a.num * b.den * c.den) (a.den * b.num * c.den) (a.den * b.den * c.num)
       (by positivity) (by positivity) (by positivity) _
     have : (a.den * b.den * c.den : ℚ) ^ n ≠ 0 := by positivity

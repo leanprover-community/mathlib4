@@ -210,8 +210,8 @@ lemma sumLexLift_nonempty :
       (∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ (f₁ a₁ b₁).Nonempty) ∨
         (∃ a₁ b₂, a = inl a₁ ∧ b = inr b₂ ∧ ((g₁ a₁ b₂).Nonempty ∨ (g₂ a₁ b₂).Nonempty)) ∨
           ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ (f₂ a₂ b₂).Nonempty := by
-  -- porting note: was `simp [nonempty_iff_ne_empty, sumLexLift_eq_empty, not_and_or]`. Could
-  -- add `-exists_and_left, -not_and, -exists_and_right` but easier to squeeze.
+  -- porting note (#10745): was `simp [nonempty_iff_ne_empty, sumLexLift_eq_empty, not_and_or]`.
+  -- Could add `-exists_and_left, -not_and, -exists_and_right` but easier to squeeze.
   simp only [nonempty_iff_ne_empty, Ne.def, sumLexLift_eq_empty, not_and_or, exists_prop,
     not_forall]
 #align finset.sum_lex_lift_nonempty Finset.sumLexLift_nonempty
@@ -276,7 +276,7 @@ theorem Ioc_inl_inr : Ioc (inl a₁) (inr b₂) = ∅ :=
   rfl
 #align sum.Ioc_inl_inr Sum.Ioc_inl_inr
 
-@[simp, nolint simpNF] -- Porting note: dsimp can not prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
 theorem Ioo_inl_inr : Ioo (inl a₁) (inr b₂) = ∅ := by
   rfl
 #align sum.Ioo_inl_inr Sum.Ioo_inl_inr
@@ -296,7 +296,7 @@ theorem Ioc_inr_inl : Ioc (inr b₁) (inl a₂) = ∅ :=
   rfl
 #align sum.Ioc_inr_inl Sum.Ioc_inr_inl
 
-@[simp, nolint simpNF] -- Porting note: dsimp can not prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
 theorem Ioo_inr_inl : Ioo (inr b₁) (inl a₂) = ∅ := by
   rfl
 #align sum.Ioo_inr_inl Sum.Ioo_inr_inl
@@ -393,19 +393,19 @@ lemma Ioc_inl_inr : Ioc (inlₗ a) (inrₗ b) = ((Ioi a).disjSum (Iic b)).map to
 lemma Ioo_inl_inr : Ioo (inlₗ a) (inrₗ b) = ((Ioi a).disjSum (Iio b)).map toLex.toEmbedding := rfl
 #align sum.lex.Ioo_inl_inr Sum.Lex.Ioo_inl_inr
 
-@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
 lemma Icc_inr_inl : Icc (inrₗ b) (inlₗ a) = ∅ := rfl
 #align sum.lex.Icc_inr_inl Sum.Lex.Icc_inr_inl
 
-@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
 lemma Ico_inr_inl : Ico (inrₗ b) (inlₗ a) = ∅ := rfl
 #align sum.lex.Ico_inr_inl Sum.Lex.Ico_inr_inl
 
-@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
 lemma Ioc_inr_inl : Ioc (inrₗ b) (inlₗ a) = ∅ := rfl
 #align sum.lex.Ioc_inr_inl Sum.Lex.Ioc_inr_inl
 
-@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
 lemma Ioo_inr_inl : Ioo (inrₗ b) (inlₗ a) = ∅ := rfl
 #align sum.lex.Ioo_inr_inl Sum.Lex.Ioo_inr_inl
 

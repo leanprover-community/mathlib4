@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
+Authors: Michael Stoll, Thomas Zhu, Mario Carneiro
 -/
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 
@@ -48,6 +48,10 @@ We prove the main properties of the Jacobi symbol, including the following.
 * The symbol depends on `a` only via its residue class mod `b` (`jacobiSym.mod_left`)
   and on `b` only via its residue class mod `4*a` (`jacobiSym.mod_right`)
 
+* A `csimp` rule for `jacobiSym` and `legendreSym` that evaluates `J(a | b)` efficiently by
+  reducing to the case `0 ≤ a < b` and `a`, `b` odd, and then swaps `a`, `b` and recurses using
+  quadratic reciprocity.
+
 ## Notations
 
 We define the notation `J(a | b)` for `jacobiSym a b`, localized to `NumberTheorySymbols`.
@@ -82,6 +86,7 @@ def jacobiSym (a : ℤ) (b : ℕ) : ℤ :=
 #align jacobi_sym jacobiSym
 
 -- Notation for the Jacobi symbol.
+@[inherit_doc]
 scoped[NumberTheorySymbols] notation "J(" a " | " b ")" => jacobiSym a b
 
 -- porting note: Without the following line, Lean expected `|` on several lines, e.g. line 102.
@@ -353,6 +358,24 @@ theorem at_neg_two {b : ℕ} (hb : Odd b) : J(-2 | b) = χ₈' b :=
   value_at (-2) χ₈'.toMonoidHom (fun p pp => @legendreSym.at_neg_two p ⟨pp⟩) hb
 #align jacobi_sym.at_neg_two jacobiSym.at_neg_two
 
+theorem div_four_left {a : ℤ} {b : ℕ} (ha4 : a % 4 = 0) (hb2 : b % 2 = 1) :
+    J(a / 4 | b) = J(a | b) := by
+  obtain ⟨a, rfl⟩ := Int.dvd_of_emod_eq_zero ha4
+  have : Int.gcd (2 : ℕ) b = 1 := by
+    rw [Int.coe_nat_gcd, ← b.mod_add_div 2, hb2, Nat.gcd_add_mul_left_right, Nat.gcd_one_right]
+  rw [Int.mul_ediv_cancel_left _ (by decide), jacobiSym.mul_left,
+    (by decide : (4 : ℤ) = (2 : ℕ) ^ 2), jacobiSym.sq_one' this, one_mul]
+
+theorem even_odd {a : ℤ} {b : ℕ} (ha2 : a % 2 = 0) (hb2 : b % 2 = 1) :
+    (if b % 8 = 3 ∨ b % 8 = 5 then -J(a / 2 | b) else J(a / 2 | b)) = J(a | b) := by
+  obtain ⟨a, rfl⟩ := Int.dvd_of_emod_eq_zero ha2
+  rw [Int.mul_ediv_cancel_left _ (by decide), jacobiSym.mul_left,
+    jacobiSym.at_two (Nat.odd_iff.mpr hb2), ZMod.χ₈_nat_eq_if_mod_eight,
+    if_neg (Nat.mod_two_ne_zero.mpr hb2)]
+  have := Nat.mod_lt b (by decide : 0 < 8)
+  interval_cases h : b % 8 <;> simp_all <;>
+    exact absurd (hb2 ▸ h ▸ Nat.mod_mod_of_dvd b (by decide : 2 ∣ 8)) zero_ne_one
+
 end jacobiSym
 
 /-!
@@ -464,6 +487,14 @@ theorem quadratic_reciprocity_three_mod_four {a b : ℕ} (ha : a % 4 = 3) (hb : 
     rwa [odd_iff, odd_of_mod_four_eq_three]
 #align jacobi_sym.quadratic_reciprocity_three_mod_four jacobiSym.quadratic_reciprocity_three_mod_four
 
+theorem quadratic_reciprocity_if {a b : ℕ} (ha2 : a % 2 = 1) (hb2 : b % 2 = 1) :
+    (if a % 4 = 3 ∧ b % 4 = 3 then -J(b | a) else J(b | a)) = J(a | b) := by
+  rcases Nat.odd_mod_four_iff.mp ha2 with ha1 | ha3
+  · simpa [ha1] using jacobiSym.quadratic_reciprocity_one_mod_four' (Nat.odd_iff.mpr hb2) ha1
+  rcases Nat.odd_mod_four_iff.mp hb2 with hb1 | hb3
+  · simpa [hb1] using jacobiSym.quadratic_reciprocity_one_mod_four hb1 (Nat.odd_iff.mpr ha2)
+  simpa [ha3, hb3] using (jacobiSym.quadratic_reciprocity_three_mod_four ha3 hb3).symm
+
 /-- The Jacobi symbol `J(a | b)` depends only on `b` mod `4*a` (version for `a : ℕ`). -/
 theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * a)) := by
   rcases eq_or_ne a 0 with (rfl | ha₀)
@@ -501,3 +532,107 @@ theorem mod_right (a : ℤ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * a
 end jacobiSym
 
 end Jacobi
+
+
+section FastJacobi
+
+/-!
+### Fast computation of the Jacobi symbol
+We follow the implementation as in `Mathlib.Tactic.NormNum.LegendreSymbol`.
+-/
+
+
+open NumberTheorySymbols jacobiSym
+
+/-- Computes `J(a | b)` (or `-J(a | b)` if `flip` is set to `true`) given assumptions, by reducing
+`a` to odd by repeated division and then using quadratic reciprocity to swap `a`, `b`. -/
+private def fastJacobiSymAux (a b : ℕ) (flip : Bool) (ha0 : a > 0) : ℤ :=
+  if ha4 : a % 4 = 0 then
+    fastJacobiSymAux (a / 4) b flip
+      (a.div_pos (Nat.le_of_dvd ha0 (Nat.dvd_of_mod_eq_zero ha4)) (by decide))
+  else if ha2 : a % 2 = 0 then
+    fastJacobiSymAux (a / 2) b (xor (b % 8 = 3 ∨ b % 8 = 5) flip)
+      (a.div_pos (Nat.le_of_dvd ha0 (Nat.dvd_of_mod_eq_zero ha2)) (by decide))
+  else if ha1 : a = 1 then
+    if flip then -1 else 1
+  else if hba : b % a = 0 then
+    0
+  else
+    fastJacobiSymAux (b % a) a (xor (a % 4 = 3 ∧ b % 4 = 3) flip) (Nat.pos_of_ne_zero hba)
+termination_by a
+decreasing_by
+  · exact a.div_lt_self ha0 (by decide)
+  · exact a.div_lt_self ha0 (by decide)
+  · exact b.mod_lt ha0
+
+private theorem fastJacobiSymAux.eq_jacobiSym {a b : ℕ} {flip : Bool} {ha0 : a > 0}
+    (hb2 : b % 2 = 1) (hb1 : b > 1) :
+    fastJacobiSymAux a b flip ha0 = if flip then -J(a | b) else J(a | b) := by
+  induction' a using Nat.strongInductionOn with a IH generalizing b flip
+  unfold fastJacobiSymAux
+  split <;> rename_i ha4
+  · rw [IH (a / 4) (a.div_lt_self ha0 (by decide)) hb2 hb1]
+    simp only [Int.ofNat_ediv, Nat.cast_ofNat, div_four_left (a := a) (mod_cast ha4) hb2]
+  split <;> rename_i ha2
+  · rw [IH (a / 2) (a.div_lt_self ha0 (by decide)) hb2 hb1]
+    simp only [Int.ofNat_ediv, Nat.cast_ofNat, ← even_odd (a := a) (mod_cast ha2) hb2]
+    by_cases h : b % 8 = 3 ∨ b % 8 = 5 <;> simp [h]; cases flip <;> simp
+  split <;> rename_i ha1
+  · subst ha1; simp
+  split <;> rename_i hba
+  · suffices J(a | b) = 0 by simp [this]
+    refine eq_zero_iff.mpr ⟨fun h ↦ absurd (h ▸ hb1) (by decide), ?_⟩
+    rwa [Int.coe_nat_gcd, Nat.gcd_eq_left (Nat.dvd_of_mod_eq_zero hba)]
+  rw [IH (b % a) (b.mod_lt ha0) (Nat.mod_two_ne_zero.mp ha2) (lt_of_le_of_ne ha0 (Ne.symm ha1))]
+  simp only [Int.coe_nat_mod, ← mod_left]
+  rw [← quadratic_reciprocity_if (Nat.mod_two_ne_zero.mp ha2) hb2]
+  by_cases h : a % 4 = 3 ∧ b % 4 = 3 <;> simp [h]; cases flip <;> simp
+
+/-- Computes `J(a | b)` by reducing `b` to odd by repeated division and then using
+`fastJacobiSymAux`. -/
+private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
+  if hb0 : b = 0 then
+    1
+  else if hb2 : b % 2 = 0 then
+    if a % 2 = 0 then
+      0
+    else
+      have : b / 2 < b := b.div_lt_self (Nat.pos_of_ne_zero hb0) one_lt_two
+      fastJacobiSym a (b / 2)
+  else if b = 1 then
+    1
+  else if hab : a % b = 0 then
+    0
+  else
+    fastJacobiSymAux (a % b).natAbs b false (Int.natAbs_pos.mpr hab)
+
+@[csimp] private theorem fastJacobiSym.eq : jacobiSym = fastJacobiSym := by
+  ext a b
+  induction' b using Nat.strongInductionOn with b IH
+  unfold fastJacobiSym
+  split_ifs with hb0 hb2 ha2 hb1 hab
+  · rw [hb0, zero_right]
+  · refine eq_zero_iff.mpr ⟨hb0, ne_of_gt ?_⟩
+    refine Nat.le_of_dvd (Int.gcd_pos_iff.mpr (mod_cast .inr hb0)) ?_
+    refine Nat.dvd_gcd (Int.ofNat_dvd_left.mp (Int.dvd_of_emod_eq_zero ha2)) ?_
+    exact Int.ofNat_dvd_left.mp (Int.dvd_of_emod_eq_zero (mod_cast hb2))
+  · rw [← IH (b / 2) (b.div_lt_self (Nat.pos_of_ne_zero hb0) one_lt_two)]
+    obtain ⟨b, rfl⟩ := Nat.dvd_of_mod_eq_zero hb2
+    rw [mul_right' a (by decide) fun h ↦ hb0 (mul_eq_zero_of_right 2 h),
+      b.mul_div_cancel_left (by decide), mod_left a 2, Nat.cast_ofNat,
+      Int.emod_two_ne_zero.mp ha2, one_left, one_mul]
+  · rw [hb1, one_right]
+  · rw [mod_left, hab, zero_left (lt_of_le_of_ne (Nat.pos_of_ne_zero hb0) (Ne.symm hb1))]
+  · rw [fastJacobiSymAux.eq_jacobiSym, if_neg Bool.false_ne_true, mod_left a b,
+      Int.natAbs_of_nonneg (a.emod_nonneg (mod_cast hb0))]
+    · exact Nat.mod_two_ne_zero.mp hb2
+    · exact lt_of_le_of_ne (Nat.one_le_iff_ne_zero.mpr hb0) (Ne.symm hb1)
+
+/-- Computes `legendreSym p a` using `fastJacobiSym`. -/
+@[inline, nolint unusedArguments]
+private def fastLegendreSym (p : ℕ) [Fact p.Prime] (a : ℤ) : ℤ := J(a | p)
+
+@[csimp] private theorem fastLegendreSym.eq : legendreSym = fastLegendreSym := by
+  ext p _ a; rw [legendreSym.to_jacobiSym, fastLegendreSym]
+
+end FastJacobi

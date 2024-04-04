@@ -28,7 +28,7 @@ You can use these to produce instances for specific `DFunLike` types.
 They can't be instances themselves since they can cause loops.
 -/
 
--- porting notes: `Type` is a reserved word, switched to `Type'`
+-- Porting note: `Type` is a reserved word, switched to `Type'`
 section Type'
 
 variable (F G : Type*) {α γ : Type*} {β : α → Type*} [DFunLike F α β] [FunLike G α γ]
@@ -54,7 +54,7 @@ noncomputable def FunLike.fintype [DecidableEq α] [Fintype α] [Fintype γ] : F
 
 end Type'
 
--- porting notes: `Sort` is a reserved word, switched to `Sort'`
+-- Porting note: `Sort` is a reserved word, switched to `Sort'`
 section Sort'
 
 variable (F G : Sort*) {α γ : Sort*} {β : α → Sort*} [DFunLike F α β] [FunLike G α γ]

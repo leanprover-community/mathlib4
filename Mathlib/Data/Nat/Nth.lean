@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Scott Morrison, Eric Rodriguez
 -/
 import Mathlib.Data.Nat.Count
+import Mathlib.Data.Nat.SuccPred
 import Mathlib.Data.Set.Intervals.Monotone
 import Mathlib.Order.OrderIsoNat
 

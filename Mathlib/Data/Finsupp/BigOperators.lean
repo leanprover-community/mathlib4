@@ -101,29 +101,29 @@ theorem Multiset.support_sum_eq [AddCommMonoid M] (s : Multiset (ι →₀ M))
     s.sum.support = (s.map Finsupp.support).sup := by
   induction' s using Quot.inductionOn with a
   obtain ⟨l, hl, hd⟩ := hs
-  suffices : a.Pairwise (_root_.Disjoint on Finsupp.support)
-  · convert List.support_sum_eq a this
+  suffices a.Pairwise (_root_.Disjoint on Finsupp.support) by
+    convert List.support_sum_eq a this
     · simp only [Multiset.quot_mk_to_coe'', Multiset.coe_sum]
     · dsimp only [Function.comp_def]
       simp only [quot_mk_to_coe'', coe_map, sup_coe, ge_iff_le, Finset.le_eq_subset,
         Finset.sup_eq_union, Finset.bot_eq_empty, List.foldr_map]
-  · simp only [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.coe_eq_coe] at hl
-    exact hl.symm.pairwise hd fun h ↦ _root_.Disjoint.symm h
+  simp only [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.coe_eq_coe] at hl
+  exact hl.symm.pairwise hd fun h ↦ _root_.Disjoint.symm h
 #align multiset.support_sum_eq Multiset.support_sum_eq
 
 theorem Finset.support_sum_eq [AddCommMonoid M] (s : Finset (ι →₀ M))
     (hs : (s : Set (ι →₀ M)).PairwiseDisjoint Finsupp.support) :
     (s.sum id).support = Finset.sup s Finsupp.support := by
   classical
-    suffices : s.1.Pairwise (_root_.Disjoint on Finsupp.support)
-    · convert Multiset.support_sum_eq s.1 this
-      · exact (Finset.sum_val _).symm
-    · obtain ⟨l, hl, hn⟩ : ∃ l : List (ι →₀ M), l.toFinset = s ∧ l.Nodup := by
-        refine' ⟨s.toList, _, Finset.nodup_toList _⟩
-        simp
-      subst hl
-      rwa [List.toFinset_val, List.dedup_eq_self.mpr hn, Multiset.pairwise_coe_iff_pairwise, ←
-        List.pairwiseDisjoint_iff_coe_toFinset_pairwise_disjoint hn]
-      intro x y hxy
-      exact symmetric_disjoint hxy
+  suffices s.1.Pairwise (_root_.Disjoint on Finsupp.support) by
+    convert Multiset.support_sum_eq s.1 this
+    exact (Finset.sum_val _).symm
+  obtain ⟨l, hl, hn⟩ : ∃ l : List (ι →₀ M), l.toFinset = s ∧ l.Nodup := by
+    refine' ⟨s.toList, _, Finset.nodup_toList _⟩
+    simp
+  subst hl
+  rwa [List.toFinset_val, List.dedup_eq_self.mpr hn, Multiset.pairwise_coe_iff_pairwise, ←
+    List.pairwiseDisjoint_iff_coe_toFinset_pairwise_disjoint hn]
+  intro x y hxy
+  exact symmetric_disjoint hxy
 #align finset.support_sum_eq Finset.support_sum_eq

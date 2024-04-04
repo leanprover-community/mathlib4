@@ -429,8 +429,8 @@ theorem Cotrident.IsColimit.homIso_natural [Nonempty J] {t : Cotrident f} {Z Z' 
 
 /-- This is a helper construction that can be useful when verifying that a category has certain wide
     equalizers. Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
-    `parallelFamily (λ j, F.map (line j))`, and a trident on `λ j, F.map (line j)`, we get a cone
-    on `F`.
+    `parallelFamily (λ j, F.map (line j))`, and a trident on `fun j ↦ F.map (line j)`,
+    we get a cone on `F`.
 
     If you're thinking about using this, have a look at
     `hasWideEqualizers_of_hasLimit_parallelFamily`, which you may find to be an easier way of

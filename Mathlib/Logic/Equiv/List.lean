@@ -276,8 +276,7 @@ theorem list_ofNat_succ (v : ℕ) :
     show decodeList (succ v) = _ by
       cases' e : unpair v with v₁ v₂
       simp [decodeList, e]
-      rw [show decodeList v₂ = decode (α := List α) v₂ from rfl, decode_eq_ofNat, Option.seq_some,
-        Option.some.injEq]
+      rw [show decodeList v₂ = decode (α := List α) v₂ from rfl, decode_eq_ofNat, Option.seq_some]
 #align denumerable.list_of_nat_succ Denumerable.list_ofNat_succ
 
 end List

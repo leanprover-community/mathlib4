@@ -186,8 +186,7 @@ theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : �
   rcases mem_span_finset.1 h.1 with ⟨μ, rfl⟩
   have := h.2 x ?_
   · rw [Finset.sum_singleton] at this ⊢
-    suffices hμzero : μ x = 0
-    · rw [hμzero, zero_smul, Submodule.mem_bot]
+    suffices hμzero : μ x = 0 by rw [hμzero, zero_smul, Submodule.mem_bot]
     change B x (μ x • x) = 0 at this
     rw [smul_right] at this
     exact eq_zero_of_ne_zero_of_mul_right_eq_zero hx this
@@ -308,7 +307,7 @@ theorem toLin_restrict_range_dualCoannihilator_eq_orthogonal (B : BilinForm K V)
   ext x; constructor <;> rw [mem_orthogonal_iff] <;> intro hx
   · intro y hy
     rw [Submodule.mem_dualCoannihilator] at hx
-    refine' hx (B.toLin.domRestrict W ⟨y, hy⟩) ⟨⟨y, hy⟩, rfl⟩
+    exact hx (B.toLin.domRestrict W ⟨y, hy⟩) ⟨⟨y, hy⟩, rfl⟩
   · rw [Submodule.mem_dualCoannihilator]
     rintro _ ⟨⟨w, hw⟩, rfl⟩
     exact hx w hw

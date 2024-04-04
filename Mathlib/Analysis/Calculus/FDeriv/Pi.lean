@@ -16,8 +16,8 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 theorem hasFDerivAt_update (x : ∀ i, E i) {i : ι} (y : E i) :
     HasFDerivAt (Function.update x i) (.pi (Pi.single i (.id 𝕜 (E i)))) y := by
   set l := (ContinuousLinearMap.pi (Pi.single i (.id 𝕜 (E i))))
-  have update_eq : Function.update x i = (fun _ ↦ x) + l ∘ (· - x i)
-  · ext t j
+  have update_eq : Function.update x i = (fun _ ↦ x) + l ∘ (· - x i) := by
+    ext t j
     dsimp [Pi.single, Function.update]
     split_ifs with hji
     · subst hji

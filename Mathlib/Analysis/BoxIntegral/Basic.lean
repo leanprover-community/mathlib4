@@ -638,8 +638,8 @@ theorem tendsto_integralSum_sum_integral (h : Integrable I l f vol) (π₀ : Pre
   exact h.dist_integralSum_sum_integral_le_of_memBaseSet_of_iUnion_eq ε0 hc hU
 #align box_integral.integrable.tendsto_integral_sum_sum_integral BoxIntegral.Integrable.tendsto_integralSum_sum_integral
 
-/-- If `f` is integrable on `I`, then `λ J, integral J l f vol` is box-additive on subboxes of `I`:
-if `π₁`, `π₂` are two prepartitions of `I` covering the same part of `I`, then the sum of integrals
+/-- If `f` is integrable on `I`, then `fun J ↦ integral J l f vol` is box-additive on subboxes of
+`I`: if `π₁`, `π₂` are two prepartitions of `I` covering the same part of `I`, the sum of integrals
 of `f` over the boxes of `π₁` is equal to the sum of integrals of `f` over the boxes of `π₂`.
 
 See also `BoxIntegral.Integrable.toBoxAdditive` for a bundled version. -/
@@ -651,8 +651,8 @@ theorem sum_integral_congr (h : Integrable I l f vol) {π₁ π₂ : Prepartitio
   exact h.tendsto_integralSum_sum_integral π₂
 #align box_integral.integrable.sum_integral_congr BoxIntegral.Integrable.sum_integral_congr
 
-/-- If `f` is integrable on `I`, then `λ J, integral J l f vol` is box-additive on subboxes of `I`:
-if `π₁`, `π₂` are two prepartitions of `I` covering the same part of `I`, then the sum of integrals
+/-- If `f` is integrable on `I`, then `fun J ↦ integral J l f vol` is box-additive on subboxes of
+`I`: if `π₁`, `π₂` are two prepartitions of `I` covering the same part of `I`, the sum of integrals
 of `f` over the boxes of `π₁` is equal to the sum of integrals of `f` over the boxes of `π₂`.
 
 See also `BoxIntegral.Integrable.sum_integral_congr` for an unbundled version. -/

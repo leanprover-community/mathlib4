@@ -5,6 +5,7 @@ Authors: Yury Kudryashov, Scott Morrison, Simon Hudon
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.GroupTheory.GroupAction.Defs
@@ -167,6 +168,10 @@ def unitsEndEquivAut : (End X)ˣ ≃* Aut X where
   map_mul' f g := by cases f; cases g; rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Aut.units_End_equiv_Aut CategoryTheory.Aut.unitsEndEquivAut
+
+/-- The inclusion of `Aut X` to `End X` as a monoid homomorphism. -/
+@[simps!]
+def toEnd (X : C) : Aut X →* End X := (Units.coeHom (End X)).comp (Aut.unitsEndEquivAut X).symm
 
 /-- Isomorphisms induce isomorphisms of the automorphism group -/
 def autMulEquivOfIso {X Y : C} (h : X ≅ Y) : Aut X ≃* Aut Y where

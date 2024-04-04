@@ -55,7 +55,7 @@ def Component (j : ConnectedComponents J) : Type u₁ :=
 instance : Category (Component (j : ConnectedComponents J)) :=
   FullSubcategory.category _
 
---porting note : it was originally @[simps (config := { rhsMd := semireducible })]
+--Porting note: it was originally @[simps (config := { rhsMd := semireducible })]
 /-- The inclusion functor from a connected component to the whole category. -/
 @[simps!]
 def Component.ι (j : ConnectedComponents J) : Component j ⥤ J :=
@@ -118,7 +118,7 @@ abbrev inclusion (j : ConnectedComponents J) : Component j ⥤ Decomposed J :=
   Sigma.incl _
 #align category_theory.inclusion CategoryTheory.inclusion
 
---porting note : it was originally @[simps (config := { rhsMd := semireducible })]
+--Porting note: it was originally @[simps (config := { rhsMd := semireducible })]
 /-- The forward direction of the equivalence between the decomposed category and the original. -/
 @[simps!]
 def decomposedTo (J : Type u₁) [Category.{v₁} J] : Decomposed J ⥤ J :=

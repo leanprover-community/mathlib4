@@ -364,7 +364,7 @@ theorem measurableSpace_le' [IsCountablyGenerated (atTop : Filter ι)] [(atTop :
   · exact MeasurableSet.iUnion fun i => f.le (seq i) _ (hs (seq i))
   · ext ω; constructor <;> rw [Set.mem_iUnion]
     · intro hx
-      suffices : ∃ i, τ ω ≤ seq i; exact ⟨this.choose, hx, this.choose_spec⟩
+      suffices ∃ i, τ ω ≤ seq i from ⟨this.choose, hx, this.choose_spec⟩
       rw [tendsto_atTop] at h_seq_tendsto
       exact (h_seq_tendsto (τ ω)).exists
     · rintro ⟨_, hx, _⟩
@@ -819,14 +819,14 @@ theorem progMeasurable_min_stopping_time [MetrizableSpace ι] (hτ : IsStoppingT
       simp only [Set.mem_preimage, Set.mem_Iic, iff_and_self, le_min_iff, Set.mem_setOf_eq]
       exact fun _ => ω.prop
     rw [h_set_eq]
-    suffices h_meas : @Measurable _ _ (m_set s) (f i) fun x : s => (x : Set.Iic i × Ω).snd
-    exact h_meas (f.mono (min_le_left _ _) _ (hτ.measurableSet_le (min i j)))
+    suffices h_meas : @Measurable _ _ (m_set s) (f i) fun x : s ↦ (x : Set.Iic i × Ω).snd from
+      h_meas (f.mono (min_le_left _ _) _ (hτ.measurableSet_le (min i j)))
     exact measurable_snd.comp (@measurable_subtype_coe _ m_prod _)
   · letI sc := sᶜ
     suffices h_min_eq_left :
       (fun x : sc => min (↑(x : Set.Iic i × Ω).fst) (τ (x : Set.Iic i × Ω).snd)) = fun x : sc =>
-        ↑(x : Set.Iic i × Ω).fst
-    · simp (config := { unfoldPartialApp := true }) only [Set.restrict, h_min_eq_left]
+        ↑(x : Set.Iic i × Ω).fst by
+      simp (config := { unfoldPartialApp := true }) only [Set.restrict, h_min_eq_left]
       exact h_meas_fst _
     ext1 ω
     rw [min_eq_left]

@@ -117,7 +117,7 @@ theorem N₁Γ₀_inv_app_f_f (K : ChainComplex C ℕ) (n : ℕ) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₁Γ₀_inv_app_f_f AlgebraicTopology.DoldKan.N₁Γ₀_inv_app_f_f
 
--- Porting note: added to speed up elaboration
+-- Porting note (#10694): added to speed up elaboration
 attribute [irreducible] N₁Γ₀
 
 /-- Compatibility isomorphism between `toKaroubi _ ⋙ Γ₂ ⋙ N₂` and `Γ₀ ⋙ N₁` which
@@ -160,7 +160,7 @@ lemma N₂Γ₂ToKaroubiIso_inv_app (X : ChainComplex C ℕ) :
   rw [Splitting.ι_desc]
   erw [comp_id, id_comp]
 
--- Porting note: added to speed up elaboration
+-- Porting note (#10694): added to speed up elaboration
 attribute [irreducible] N₂Γ₂ToKaroubiIso
 
 /-- The counit isomorphism of the Dold-Kan equivalence for additive categories. -/
@@ -195,7 +195,7 @@ lemma whiskerLeft_toKaroubi_N₂Γ₂_hom :
   dsimp only [whiskeringLeft, N₂Γ₂, Functor.preimageIso] at h ⊢
   exact h
 
--- Porting note: added to speed up elaboration
+-- Porting note (#10694): added to speed up elaboration
 attribute [irreducible] N₂Γ₂
 
 theorem N₂Γ₂_compatible_with_N₁Γ₀ (K : ChainComplex C ℕ) :

@@ -256,8 +256,8 @@ lemma isCoprime_scaleRoots (p q : R[X]) (r : R) (hr : IsUnit r) (h : IsCoprime p
     IsCoprime (p.scaleRoots r) (q.scaleRoots r) := by
   obtain ⟨a, b, e⟩ := h
   let s : R := ↑hr.unit⁻¹
-  have : natDegree (a * p) = natDegree (b * q)
-  · apply natDegree_eq_of_natDegree_add_eq_zero
+  have : natDegree (a * p) = natDegree (b * q) := by
+    apply natDegree_eq_of_natDegree_add_eq_zero
     rw [e, natDegree_one]
   use s ^ natDegree (a * p) • s ^ (natDegree a + natDegree p - natDegree (a * p)) • a.scaleRoots r
   use s ^ natDegree (a * p) • s ^ (natDegree b + natDegree q - natDegree (b * q)) • b.scaleRoots r
