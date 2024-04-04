@@ -138,7 +138,7 @@ jobs:
       - name: update {Mathlib, MathlibExtras, Tactic, Counterexamples, Archive}.lean
         run: lake exe mkAll
 
-      - name: check that all files are imported
+      - name: check_imported
         run: git diff --exit-code
 
       - name: build cache
@@ -304,7 +304,7 @@ jobs:
   final:
     name: Post-CI job (fork)
     if: github.repository != 'leanprover-community/mathlib4'
-    needs: [style_lint, build, check_imported]
+    needs: [style_lint, build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
