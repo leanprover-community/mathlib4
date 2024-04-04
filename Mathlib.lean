@@ -2457,7 +2457,6 @@ import Mathlib.Init.Data.Buffer.Parser
 import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Bitwise
-import Mathlib.Init.Data.Int.CompLemmas
 import Mathlib.Init.Data.Int.DivMod
 import Mathlib.Init.Data.Int.Lemmas
 import Mathlib.Init.Data.Int.Order
@@ -2480,13 +2479,11 @@ import Mathlib.Init.Data.Quot
 import Mathlib.Init.Data.Rat.Basic
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Init.Data.Sigma.Lex
-import Mathlib.Init.Data.Subtype.Basic
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Meta.WellFoundedTactics
 import Mathlib.Init.Order.Defs
 import Mathlib.Init.Order.LinearOrder
-import Mathlib.Init.Propext
 import Mathlib.Init.Quot
 import Mathlib.Init.Set
 import Mathlib.Init.ZeroOne
