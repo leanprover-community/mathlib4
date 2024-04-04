@@ -55,8 +55,8 @@ noncomputable instance instInvCompletionOfGroup [Group α] : Inv (Completion α)
   ⟨denseInducing_coe.extend ((↑) ∘ (·⁻¹))⟩
 
 /-- If `α` has a negation operation, then `Completion α` has a negation operation. This is
-definitionally equal to `UniformSpace.Completion.instNegCompletionOfAddGroup`, but we do not require
-that `α` is an additive group. -/
+definitionally equal to `UniformSpace.Completion.instNegCompletionOfAddGroup`, but it is more
+general: we do not require that `α` is an additive group. -/
 instance instNegCompletion [Neg α] : Neg (Completion α) :=
   ⟨denseInducing_coe.extend ((↑) ∘ (-·))⟩
 
@@ -75,8 +75,8 @@ noncomputable instance instDivCompletionOfGroup [Group α] : Div (Completion α)
   ⟨curry <| (denseInducing_coe.prod denseInducing_coe).extend ((↑) ∘ uncurry (· / ·))⟩
 
 /-- If `α` has a subtraction operation, then `Completion α` has a subtraction operation. This is
-definitionally equal to `UniformSpace.Completion.instSubCompletionOfAddGroup`, but we do not require
-that `α` is an additive group. -/
+definitionally equal to `UniformSpace.Completion.instSubCompletionOfAddGroup`, but it is more
+general: we do not require that `α` is an additive group. -/
 instance instSubCompletion [Sub α] : Sub (Completion α) :=
   ⟨curry <| (denseInducing_coe.prod denseInducing_coe).extend ((↑) ∘ uncurry (· - ·))⟩
 
@@ -263,7 +263,8 @@ section UniformAddGroup
 
 variable [UniformSpace α] [AddGroup α] [UniformAddGroup α]
 
-instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α] :
+instance instDistribMulAction {M} [Monoid M] [DistribMulAction M α]
+    [UniformContinuousConstSMul M α] :
     DistribMulAction M (Completion α) :=
   { (inferInstance : MulAction M <| Completion α) with
     smul_add := fun r x y ↦
@@ -274,6 +275,24 @@ instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α
     smul_zero := fun r ↦ by rw [← coe_zero, ← coe_smul, smul_zero r] }
 
 end UniformAddGroup
+
+section UniformGroup
+
+variable [UniformSpace α] [Group α] [UniformGroup α]
+
+@[to_additive existing instDistribMulAction]
+instance instMulDistribMulAction {M} [Monoid M] [MulDistribMulAction M α]
+    [UniformContinuousConstSMul M α] :
+    MulDistribMulAction M (Completion α) :=
+  { (inferInstance : MulAction M <| Completion α) with
+    smul_mul := fun r x y ↦
+      induction_on₂ x y
+        (isClosed_eq ((continuous_fst.mul continuous_snd).const_smul _)
+          ((continuous_fst.const_smul _).mul (continuous_snd.const_smul _)))
+        fun a b ↦ by simp only [← coe_mul, ← coe_smul, smul_mul']
+    smul_one := fun r ↦ by rw [← coe_one, ← coe_smul, smul_one r] }
+
+end UniformGroup
 
 section UniformCommGroup
 
