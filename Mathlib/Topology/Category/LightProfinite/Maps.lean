@@ -1,4 +1,5 @@
 import Mathlib.Topology.Category.LightProfinite.IsLight
+import Mathlib.CategoryTheory.Limits.FintypeCat
 
 open CategoryTheory Limits Function Profinite
 
@@ -29,6 +30,41 @@ lemma transitionMap_surjective_aux {T : Profinite} [T.IsLight] {d e : DiscreteQu
 lemma transitionMap_surjective (T : Profinite) [T.IsLight] (n : ℕ) :
     Surjective ((ofIsLight T).transitionMap n) :=
   transitionMap_surjective_aux (sequentialFunctor_map _ (Nat.le_succ _))
+
+lemma _root_.CategoryTheory.FintypeCat.epi_iff_surjective {X Y : FintypeCat} (f : X ⟶ Y) :
+    Epi f ↔ Surjective f := by
+  change _ ↔ Surjective (FintypeCat.incl.map f)
+  rw [← CategoryTheory.epi_iff_surjective]
+  refine ⟨fun _ ↦ inferInstance, FintypeCat.incl.epi_of_epi_map⟩
+
+instance (T : Profinite) [T.IsLight] (n : ℕ) :
+    Epi ((ofIsLight T).transitionMap n) := by
+  rw [FintypeCat.epi_iff_surjective]
+  exact transitionMap_surjective T n
+
+instance (T : Profinite) [T.IsLight] {n m : ℕ} (h : n ≤ m) :
+    Epi ((ofIsLight T).transitionMapLE h) := by
+  induction h with
+  | refl =>
+    change Epi ((ofIsLight T).diagram.map (𝟙 _))
+    simp only [CategoryTheory.Functor.map_id]
+    infer_instance
+  | @step k h ih =>
+    have : Epi ((transitionMap (ofIsLight T) k ≫
+      (transitionMapLE (ofIsLight T) h))) := epi_comp _ _
+    convert this
+    simp only [transitionMapLE, transitionMap, ← Functor.map_comp]
+    congr
+
+noncomputable def _root_.CategoryTheory.FintypeCat.splitEpi_of_epi {X Y : FintypeCat}
+    (f : X ⟶ Y) [Epi f] : SplitEpi f where
+  section_ := surjInv ((FintypeCat.epi_iff_surjective f).1 inferInstance)
+  id := by ext; exact surjInv_eq _ _
+
+instance : SplitEpiCategory FintypeCat where
+  isSplitEpi_of_epi f _ := ⟨⟨FintypeCat.splitEpi_of_epi f⟩⟩
+
+instance {X Y : FintypeCat} (f : X ⟶ Y) [Epi f] : IsSplitEpi f := isSplitEpi_of_epi f
 
 def proj (n : ℕ) : S ⟶ S.component n := S.cone.π.app ⟨n⟩
 

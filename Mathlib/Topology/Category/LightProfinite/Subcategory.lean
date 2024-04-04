@@ -28,3 +28,21 @@ noncomputable def equivSurj : surj ≌ LightProfinite where
     map := fun f ↦ ((iso _).inv ≫ f ≫ (iso _).hom : _) }
   unitIso := NatIso.ofComponents (fun X ↦ surj_isoMk (iso X.1))
   counitIso := NatIso.ofComponents (fun X ↦ (iso X).symm)
+
+instance (X : surj) (n : ℕ) :
+    Epi (X.obj.transitionMap n) := by
+  rw [FintypeCat.epi_iff_surjective]
+  exact X.property n
+
+instance (X : surj) {n m : ℕ} (h : n ≤ m) : Epi (X.obj.transitionMapLE h) := by
+  induction h with
+  | refl =>
+    change Epi (X.obj.diagram.map (𝟙 _))
+    simp only [CategoryTheory.Functor.map_id]
+    infer_instance
+  | @step k h ih =>
+    have : Epi ((transitionMap X.obj k ≫
+      (transitionMapLE X.obj h))) := epi_comp _ _
+    convert this
+    simp only [transitionMapLE, transitionMap, ← Functor.map_comp]
+    congr

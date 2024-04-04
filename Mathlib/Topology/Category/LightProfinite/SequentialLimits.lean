@@ -4,27 +4,27 @@ open CategoryTheory Limits
 
 namespace LightProfinite
 
-variable (M : ℕᵒᵖ ⥤ LightProfinite)
+variable (M : ℕᵒᵖ ⥤ surj)
 
 noncomputable
-def component_map {X Y : surj} (f : X ⟶ Y) (n : ℕ) : X.obj.component n ⟶ Y.obj.component n := by
+def component_map {X Y : surj} (f : X ⟶ Y) (n : ℕ) : X.obj.diagram.obj ⟨n⟩ ⟶ Y.obj.diagram.obj ⟨n⟩ :=
   let g := locallyConstant_of_hom f n
   have := Profinite.exists_locallyConstant X.obj.cone X.obj.isLimit g
   let m := this.choose.unop
   let g' : LocallyConstant (X.obj.component m) (Y.obj.component n) := this.choose_spec.choose
-  have h : g = g'.comap (X.obj.proj m) := this.choose_spec.choose_spec
-  by_cases h : m ≤ n
-  · exact X.obj.transitionMapLE' h ≫ ⟨g'.1, g'.2.continuous⟩
-  · sorry
+  -- have h : g = g'.comap (X.obj.proj m) := this.choose_spec.choose_spec
+  if hh : m ≤ n then
+    X.obj.transitionMapLE hh ≫ g'.1 else
+    (section_ (X.obj.transitionMapLE
+      (le_of_lt (by simpa using hh)))) ≫ g'.1
 
-def functor : ℕᵒᵖ × ℕᵒᵖ ⥤ FintypeCat where
-  obj := fun (n, m) ↦ (M.obj n).diagram.obj m
-  map := @fun (n, m) (k, p) ((f : n ⟶ k), (g : m ⟶ p)) ↦ (by
-    simp
-    sorry
-    )
+noncomputable def functor : ℕᵒᵖ × ℕᵒᵖ ⥤ FintypeCat where
+  obj n := (M.obj n.1).obj.diagram.obj n.2
+  map f := (M.obj _).obj.diagram.map f.2 ≫ (component_map (M.map f.1) _)
   map_id := sorry
   map_comp := sorry
+
+#exit
 
 def limitCone : Cone M where
   pt := {
