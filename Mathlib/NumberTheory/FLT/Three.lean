@@ -50,12 +50,6 @@ end case1
 
 section case2
 
-private lemma three_dvd_c_of_dvd_a_of_dvd_b {a b c : ℤ} (HF : a ^ 3 + b ^ 3 + c ^ 3 = 0)
-    (h3a : 3 ∣ a) (h3b : 3 ∣ b) : 3 ∣ c := by
-  refine Int.prime_three.dvd_of_dvd_pow (n := 3) (dvd_neg.1 ?_)
-  rw [add_eq_zero_iff_eq_neg] at HF
-  exact HF.symm ▸ dvd_add (dvd_pow h3a (by decide)) (dvd_pow h3b (by decide))
-
 private lemma three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a ≠ 0)
     (Hgcd: Finset.gcd {a, b, c} id = 1) (h3a : 3 ∣ a) (HF : a ^ 3 + b ^ 3 + c ^ 3 = 0)
     (H : ∀ a b c : ℤ, c ≠ 0 → ¬ 3 ∣ a → ¬ 3 ∣ b  → 3 ∣ c → IsCoprime a b → a ^ 3 + b ^ 3 ≠ c ^ 3) :
@@ -70,7 +64,7 @@ private lemma three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a 
   by_cases h3c : 3 ∣ c
   · apply h3b
     rw [add_assoc, add_comm (b ^ 3), ← add_assoc] at HF
-    exact three_dvd_c_of_dvd_a_of_dvd_b HF h3a h3c
+    exact dvd_c_of_prime_of_dvd_a_of_dvd_b Int.prime_three HF h3a h3c
   · refine H (-b) (-c) a ha (by simp [h3b]) (by simp [h3c]) h3a hbc ?_
     rw [add_eq_zero_iff_eq_neg, ← (show Odd 3 by decide).neg_pow] at HF
     rw [← HF]
@@ -92,7 +86,7 @@ private lemma fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : �
   rcases hx with (hx | hx | hx)
   · exact hx ▸ h3a
   · exact hx ▸ h3b
-  · simpa [hx] using three_dvd_c_of_dvd_a_of_dvd_b HF h3a h3b
+  · simpa [hx] using dvd_c_of_prime_of_dvd_a_of_dvd_b Int.prime_three HF h3a h3b
 
 open Finset Int in
 /--
