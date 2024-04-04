@@ -27,7 +27,7 @@ that tends to zero on the filter of cofinite sets. For each finite subset of `α
 partial sum of `f` on that subset. These partial sums form a Cauchy filter."]
 theorem cauchy_partial_prod_of_tendsto_cofinite_one {α G : Type*} [CommGroup G] [UniformSpace G]
     [UniformGroup G] [NonarchimedeanGroup G] {f : α → G}
-    (hf : Tendsto f cofinite (𝓝 1)) : Cauchy (map (fun s ↦ ∏ i in s, f i) atTop) := by
+    (hf : Tendsto f cofinite (𝓝 1)) : CauchySeq (fun s ↦ ∏ i in s, f i) := by
   /- Let `U` be a neighborhood of `1`. It suffices to show that there exists `s : Finset α` such
   that for any `t : Finset α` disjoint from `s`, we have `∏ i in t, f i ∈ U`. -/
   apply cauchySeq_finset_iff_prod_vanishing.mpr
