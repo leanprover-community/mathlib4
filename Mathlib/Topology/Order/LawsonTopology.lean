@@ -176,7 +176,7 @@ lemma scottHausdorff_le_lawson : scottHausdorff α  ≤ lawson α :=
   le_inf scottHausdorff_le_lower scottHausdorff_le_scott
 
 lemma lawsonClosed_of_scottClosed (s : Set α) (h : IsClosed (WithScott.ofScott ⁻¹' s)) :
-    IsClosed (WithLawson.ofLawson ⁻¹' s) := IsClosed.mono h lawson_le_scott
+    IsClosed (WithLawson.ofLawson ⁻¹' s) := h.mono lawson_le_scott
 
 lemma lawsonClosed_of_lowerClosed (s : Set α) (h : IsClosed (WithLower.ofLower ⁻¹' s)) :
     IsClosed (WithLawson.ofLawson ⁻¹' s) := IsClosed.mono h lawson_le_lower
