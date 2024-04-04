@@ -15,8 +15,6 @@ section hamming
 variable {ι K:Type*} [Fintype ι] [DecidableEq K]
 
 abbrev hdist :GMetric (ι → K) ℕ∞ := hammingENatDist
-abbrev hmdist {A B C:Type*} [Fintype A] [Fintype B] [DecidableEq C] : GMetric (Matrix A B C) ℕ∞ :=
-  hammingMatrixENatDist
 -- variable (s:Set (ι → K)) [IsDelone hdist s]
 -- maybe sensitive to universe problems? because the choice of ι is *very* unimportant
 def trivdist : GMetric K ℕ∞ where
@@ -37,13 +35,6 @@ instance Hamming.instAddGNorm [AddMonoid K] [IsCancelAdd K]: AddGNorm (∀ _:ι,
     simp only [hammingENatdist_eq_cast_hammingDist, Nat.cast_inj]
     rw[hammingDist,hammingDist]
     simp
-
-instance Hamming.instMatrixAddGNorm {ι ι₂ K:Type*} [Fintype ι₂] [Fintype ι] [DecidableEq K] [AddMonoid K] [IsCancelAdd K] :
-    AddGNorm (Matrix ι ι₂ K) ℕ∞ (hammingMatrixENatDist) where
-      gdist_absorb_add := fun z a b=> by
-        simp only [hammingMatrixENatdist_eq_hammingENatDist_on_uncurry]
-        rw [Function.uncurry_map_add,Function.uncurry_map_add]
-        apply AddGNorm.gdist_absorb_add
 
 -- prefer [AddMonoid K] [IsCancelAdd K] over [CancelAddMonoid],
 -- because i want [Semiring K] and [IsCancelAdd K]
@@ -111,27 +102,10 @@ lemma norm_eq_smul
     rw [hammingNorm,hammingNorm,hammingNorm]
     simp_all
 
-lemma norm_eq_smul'
-    {A B:Type*} [Fintype A] [Fintype B]
-    [Semiring K] [IsCancelAdd K] [IsDomain K] (a:K) (b:Matrix A B K):
-    addGNorm hmdist (a • b) = addGNorm trivdist a * addGNorm hmdist b := by
-  rw [addGNorm,addGNorm,addGNorm]
-  rw [hmdist]
-  simp only [hammingMatrixENatdist_eq_hammingENatDist_on_uncurry]
-  rw [Function.uncurry_map_smul]
-  exact @norm_eq_smul (A × B) K _ _ _ _ _ a b.uncurry
-
 noncomputable instance Hamming.instStrictModuleGNorm_Module
     [Semiring K] [IsCancelAdd K] [IsDomain K]: StrictModuleGNorm K (ι → K) trivdist hdist where
   norm_smul_le' := fun a b => (norm_eq_smul a b).le
   smul_norm_le' := fun a b => (norm_eq_smul a b).ge
-
-noncomputable instance Hamming.instStrictModuleGNorm_Module'
-    {A B:Type*} [Fintype A] [Fintype B]
-    [Semiring K] [IsCancelAdd K] [IsDomain K] :
-    StrictModuleGNorm K (Matrix A B K) trivdist hmdist where
-  norm_smul_le' := fun a b => (norm_eq_smul' a b).le
-  smul_norm_le' := fun a b => (norm_eq_smul' a b).ge
 
 instance instIsDelone (s:Set (ι → K)) [hs: Inhabited s]: IsDelone hdist s where
   isDeloneWith := ⟨1, (Fintype.card ι), {
@@ -153,35 +127,6 @@ instance instIsDelone (s:Set (ι → K)) [hs: Inhabited s]: IsDelone hdist s whe
       exact hammingDist_le_card_fintype
   }⟩
 
-instance instIsDelone'
-    {A B:Type*} [Fintype A] [Fintype B] (s:Set (Matrix A B K)) [hs:Inhabited s]:
-    IsDelone hmdist s where
-  isDeloneWith := ⟨1,(Fintype.card (A × B)),{
-      isOpenPacking := by
-        obtain h := (s.exists_ne_mem_inter_of_not_pairwiseDisjoint).mt
-        push_neg at h
-        apply h
-        intro x _ y _ hne z
-        simp only [mem_inter_iff, not_and]
-        intro hz
-        rw [mem_ball] at hz ⊢
-        simp_all only [ne_eq, mem_inter_iff, not_and,
-          hammingMatrixENatdist_eq_hammingENatDist_on_uncurry, hammingENatdist_eq_cast_hammingDist,
-          Nat.cast_lt_one, hammingDist_eq_zero]
-        contrapose! hne
-        rw [← Function.curry_uncurry x,← Function.curry_uncurry y]
-        rw [hne]
-      isClosedCoveringWith := by
-        ext y
-        simp only [mem_iUnion, exists_prop, mem_univ, iff_true]
-        obtain ⟨x,hx⟩ := hs
-        use x
-        use hx
-        rw [mem_closedBall]
-        simp only [hammingMatrixENatdist_eq_hammingENatDist_on_uncurry,
-          hammingENatdist_eq_cast_hammingDist, Nat.cast_le]
-        exact hammingDist_le_card_fintype
-    }⟩
 
 end hamming
 
@@ -209,15 +154,14 @@ instance : MulDistribMulAction (ι ≃ ι) (ι → K) where
     simp only [Function.comp_apply]
     simp_rw [HMul.hMul,Mul.mul]
     simp only [Equiv.symm_trans_apply]
-  smul_mul := fun r x y => by
-    simp only
-    simp_rw [HSMul.hSMul,HMul.hMul,Mul.mul]
-    ext i
-    simp only [Function.comp_apply, Units.val_mul]
-  smul_one := fun r => by
-    simp only
-    simp_rw [HSMul.hSMul]
-    simp only [Pi.one_comp]
+  smul_mul := fun _ _ _ => rfl
+  smul_one := fun _ => rfl
+
+instance : DistribMulAction (ι ≃ ι) (ι → K) where
+  smul_zero := fun _ => rfl
+  smul_add := fun _ _ _ => rfl
+
+
 
 instance : DistribMulAction ((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ)ᵐᵒᵖ (ι → K) where
   smul := fun z f => DomMulAct.mk.symm (MulOpposite.unop z).right • ((MulOpposite.unop z).left • f)
@@ -535,6 +479,25 @@ lemma extract_gives_stuff (i:ι) :
         . rfl
     _ = (extract_diag f • (b i:ι → K)) ((extract_perm f).symm j) := by rw [Pi.smul_apply']
     _ = (extract_perm f • (extract_diag f • (b i:ι → K))) j := by rfl
+
+instance : SMulCommClass (ι ≃ ι) K (ι → K) where
+  smul_comm := fun _ _ _ ↦ rfl
+
+instance : SMulCommClass (ι → Kˣ) K (ι → K) where
+  smul_comm := by exact fun m n a ↦ (smul_comm n m a).symm
+
+lemma extract_gives_stuff_strong (x:ι → K) : f x = extract_perm f • (extract_diag f • x) := by
+  suffices hsuf :
+      ((DistribMulAction.toLinearEquiv K (ι → K) (extract_diag f)).trans
+      (DistribMulAction.toLinearEquiv K (ι → K) (extract_perm f))) = f by
+    rw [LinearEquiv.ext_iff] at hsuf
+    simp only [LinearEquiv.trans_apply, DistribMulAction.toLinearEquiv_apply,
+      LinearCodeEquiv.coe_toLinearEquiv] at hsuf
+    rw [hsuf]
+  apply b.ext'
+  simp only [LinearEquiv.trans_apply, DistribMulAction.toLinearEquiv_apply,
+    LinearCodeEquiv.coe_toLinearEquiv]
+  exact fun i ↦ (extract_gives_stuff f i).symm
 
 noncomputable def toSemidirectProd' (f:LinearCodeAut K trivdist hdist s) :
     ((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ)ᵐᵒᵖ :=

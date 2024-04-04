@@ -275,51 +275,20 @@ def hammingNatDist : GMetric (∀ i:ι,β i) ℕ where
 theorem hammingNatdist_eq_cast_hammingDist (x y : ∀ i, β i) :
     hammingNatDist x y = hammingDist x y :=
   rfl
-lemma Function.uncurry_map_add {A B C:Type*} [Add C]:
-  ∀ (x y: A → B → C), (x + y).uncurry = x.uncurry + y.uncurry := fun _ _ => rfl
+lemma Function.curry_map_add {A B C:Type*} [Add C]:
+  ∀ (x y: A × B → C), (x + y).curry = x.curry + y.curry := fun _ _ => rfl
+
+lemma Function.curry_map_zero {A B C:Type*} [Zero C]:
+  (0: A × B → C).curry = 0 := rfl
+
+lemma Function.curry_map_sub {A B C:Type*} [AddGroup C]:
+  ∀  (x y: A × B → C), (x - y).curry = x.curry - y.curry := fun _ _ => rfl
 
 lemma Function.uncurry_map_mul {A B C:Type*} [Mul C]:
-  ∀ (x y: A → B → C), (x * y).uncurry = x.uncurry * y.uncurry := fun _ _ => rfl
+  ∀ (x y: A × B → C), (x * y).curry = x.curry * y.curry := fun _ _ => rfl
 
-lemma Function.uncurry_map_smul {A B C D:Type*} [Semiring D] [AddCommMonoid C] [Module D C]:
-  ∀ (r: D) (m:A → B → C), (r • m).uncurry = r • m.uncurry := fun _ _ => rfl
-
-def hammingMatrixNatDist {A B C:Type*} [Fintype A] [Fintype B] [DecidableEq C]: GMetric (Matrix A B C) ℕ where
-  toFun := fun x y => hammingNatDist x.uncurry y.uncurry
-  gdist_self := fun x => gdist_self hammingNatDist (Function.uncurry x)
-  comm' := fun x y => hammingDist_comm (Function.uncurry x) (Function.uncurry y)
-  triangle' := fun x y z => by
-    exact hammingDist_triangle (Function.uncurry x) (Function.uncurry y) (Function.uncurry z)
-  eq_of_dist_eq_zero := fun h => by
-    simp only [hammingNatdist_eq_cast_hammingDist, hammingDist_eq_zero] at h
-    rename_i x y
-    rw [← Function.curry_uncurry x,← Function.curry_uncurry y]
-    rw [h]
-
-@[simp, push_cast]
-theorem hammingMatrixNatdist_eq_hammingNatDist_uncurry
-    {A B C:Type*} [Fintype A] [Fintype B] [DecidableEq C] (x y : Matrix A B C) :
-    hammingMatrixNatDist x y = (hammingNatDist x.uncurry y.uncurry) := rfl
-
-
-def hammingMatrixENatDist {A B C:Type*} [Fintype A] [Fintype B] [DecidableEq C]: GMetric (Matrix A B C) ℕ∞ where
-  toFun := fun a b => hammingMatrixNatDist a b
-  gdist_self := by simp only [gdist_self, Nat.cast_zero, implies_true]
-  comm' := by
-    simp only [Nat.cast_inj]
-    exact hammingMatrixNatDist.comm'
-  triangle' := by
-    simp only
-    simp_rw [← ENat.coe_add,@Nat.cast_le]
-    exact hammingMatrixNatDist.triangle'
-  eq_of_dist_eq_zero := by
-    simp only [Nat.cast_eq_zero]
-    exact hammingMatrixNatDist.eq_of_dist_eq_zero
-
-@[simp, push_cast]
-theorem hammingMatrixENatdist_eq_hammingENatDist_on_uncurry
-    {A B C:Type*} [Fintype A] [Fintype B] [DecidableEq C] (x y : Matrix A B C) :
-    hammingMatrixENatDist x y = (hammingENatDist x.uncurry y.uncurry) := rfl
+lemma Function.curry_map_smul {A B C D:Type*} [Semiring D] [AddCommMonoid C] [Module D C]:
+  ∀ (r: D) (m:A × B → C), (r • m).curry = r • m.curry := fun _ _ => rfl
 
 end HammingGDist
 
