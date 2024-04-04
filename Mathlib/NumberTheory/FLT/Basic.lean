@@ -145,32 +145,19 @@ lemma fermatLastTheoremWith_of_fermatLastTheoremWith_coprime {n : ℕ} {R : Type
 
 lemma isCoprime_of_gcd_eq_one_of_FLT {n : ℕ} {a b c : ℤ} (Hgcd: Finset.gcd {a, b, c} id = 1)
     (HF : a ^ n + b ^ n + c ^ n = 0) : IsCoprime a b := by
-  by_cases hn : n = 0
-  · simp [hn] at HF
-  by_cases hb : b = 0
-  · by_cases ha : a = 0
-    · simp_all
-    by_cases hc : c = 0
-    · simp_all
-    rw [hb, zero_pow hn, add_zero, add_eq_zero_iff_neg_eq] at HF
-    refine hb ▸ isCoprime_zero_right.2 (isUnit_of_dvd_one ?_)
+  rcases n.eq_zero_or_pos with rfl | hn
+  · simp only [pow_zero, Int.reduceAdd, OfNat.ofNat_ne_zero] at HF
+  refine isCoprime_of_prime_dvd  ?_ <| (fun p hp hpa hpb ↦ hp.not_dvd_one ?_)
+  · rintro ⟨rfl, rfl⟩
+    simp only [ne_eq, hn.ne', not_false_eq_true, zero_pow, add_zero, zero_add, pow_eq_zero_iff]
+      at HF
+    simp only [HF, Finset.mem_singleton, Finset.insert_eq_of_mem, Finset.gcd_singleton, id_eq,
+      map_zero, zero_ne_one] at Hgcd
+  · have hpc : p ∣ c := by
+      refine (Int.pow_dvd_pow_iff hn).mp ?_
+      rw [← Int.neg_eq_of_add_eq_zero HF, dvd_neg]
+      exact dvd_add ((Int.pow_dvd_pow_iff hn).mpr hpa) ((Int.pow_dvd_pow_iff hn).mpr hpb)
     rw [← Hgcd]
-    refine Finset.dvd_gcd_iff.2 (fun x hx ↦ ?_)
+    refine Finset.dvd_gcd_iff.mpr fun x hx ↦ ?_
     simp only [Finset.mem_insert, Finset.mem_singleton] at hx
-    rcases hx with (hx | hx | hx)
-    · simp [hx]
-    · simp [hx, hb]
-    · refine (Int.pow_dvd_pow_iff <| Nat.pos_of_ne_zero hn).1 ?_
-      rw [hx, id_eq, ← HF, ← neg_dvd]
-  refine isCoprime_of_prime_dvd  ?_<| (fun p hp hpa hpb ↦ hp.not_dvd_one ?_)
-  · simp [hb]
-  · rw [← Hgcd]
-    refine Finset.dvd_gcd_iff.2 (fun x hx ↦ ?_)
-    simp only [Finset.mem_insert, Finset.mem_singleton] at hx
-    rcases hx with (hx | hx | hx)
-    · exact hx ▸ hpa
-    · exact hx ▸ hpb
-    · rw [hx, id_eq]
-      rw [add_eq_zero_iff_eq_neg] at HF
-      exact hp.dvd_of_dvd_pow (n := n) <|
-        (dvd_neg.1 <| HF.symm ▸ dvd_add (dvd_pow hpa hn) (dvd_pow hpb hn))
+    rcases hx with hx | hx | hx <;> simp only [id_eq, hx, hpa, hpb, hpc]
