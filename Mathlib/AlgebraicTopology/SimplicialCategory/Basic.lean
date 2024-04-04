@@ -42,9 +42,7 @@ variable (C : Type u) [Category.{v} C]
 /-- A simplicial category is a category `C` that is enriched over the
 category of simplicial sets in such a way that morphisms in
 `C` identify to the `0`-simplices of the enriched hom. -/
-class SimplicialCategory where
-  /-- a simplicial category is enriched over `SSet` -/
-  enrichedCategory : EnrichedCategory SSet.{v} C := by infer_instance
+class SimplicialCategory extends EnrichedCategory SSet.{v} C where
   /-- morphisms identify to `0`-simplices of the enriched hom -/
   homEquiv (K L : C) : (K ⟶ L) ≃ (𝟙_ SSet.{v} ⟶ EnrichedCategory.Hom K L)
   homEquiv_id (K : C) : homEquiv K K (𝟙 K) = eId SSet K := by aesop_cat
@@ -53,8 +51,6 @@ class SimplicialCategory where
       eComp SSet K L M := by aesop_cat
 
 namespace SimplicialCategory
-
-attribute [instance] enrichedCategory
 
 variable [SimplicialCategory C]
 
@@ -74,7 +70,7 @@ def homEquiv' (K L : C) : (K ⟶ L) ≃ sHom K L _[0] :=
 /-- The morphism `sHom K' L ⟶ sHom K L` induced by a morphism `K ⟶ K'`. -/
 noncomputable def sHomWhiskerRight {K K' : C} (f : K ⟶ K') (L : C) :
     sHom K' L ⟶ sHom K L :=
-  (λ_ _).inv ≫ homEquiv K K' f ▷ _ ≫ eComp SSet K K' L
+  (λ_ _).inv ≫ homEquiv K K' f ▷ _ ≫ sHomComp K K' L
 
 @[simp]
 lemma sHomWhiskerRight_id (K L : C) : sHomWhiskerRight (𝟙 K) L = 𝟙 _ := by
@@ -90,7 +86,7 @@ lemma sHomWhiskerRight_comp {K K' K'' : C} (f : K ⟶ K') (f' : K' ⟶ K'') (L :
 /-- The morphism `sHom K L ⟶ sHom K L'` induced by a morphism `L ⟶ L'`. -/
 noncomputable def sHomWhiskerLeft (K : C) {L L' : C} (g : L ⟶ L') :
     sHom K L ⟶ sHom K L' :=
-  (ρ_ _).inv ≫ _ ◁ homEquiv L L' g ≫ eComp SSet K L L'
+  (ρ_ _).inv ≫ _ ◁ homEquiv L L' g ≫ sHomComp K L L'
 
 @[simp]
 lemma sHomWhiskerLeft_id (K L : C) : sHomWhiskerLeft K (𝟙 L) = 𝟙 _ := by
