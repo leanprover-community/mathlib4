@@ -113,7 +113,6 @@ theorem fish_assoc {α β γ φ} (f : α → m β) (g : β → m γ) (h : γ →
 #align fish_assoc fish_assoc
 
 variable {β' γ' : Type v}
-
 variable {m' : Type v → Type w} [Monad m']
 
 /-- Takes a value `β` and `List α` and accumulates pairs according to a monadic function `f`.
@@ -254,7 +253,7 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
   f <$> a <*> b = flip f <$> b <*> a :=
   calc
     f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) := by
-      simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map]; rfl
+      simp only [map_seq, map_map]; rfl
     _ = (fun b a => f a b) <$> b <*> a := by
       rw [@CommApplicative.commutative_prod m h]
       simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]

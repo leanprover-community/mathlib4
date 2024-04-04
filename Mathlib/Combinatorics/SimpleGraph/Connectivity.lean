@@ -76,7 +76,6 @@ universe u v w
 namespace SimpleGraph
 
 variable {V : Type u} {V' : Type v} {V'' : Type w}
-
 variable (G : SimpleGraph V) (G' : SimpleGraph V') (G'' : SimpleGraph V'')
 
 /-- A walk is a sequence of adjacent vertices.  For vertices `u v : V`,
@@ -833,12 +832,12 @@ inductive Nil : {v w : V} → G.Walk v w → Prop
 
 @[simp] lemma nil_nil : (nil : G.Walk u u).Nil := Nil.nil
 
-@[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬ (cons h p).Nil := fun.
+@[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬ (cons h p).Nil := nofun
 
 instance (p : G.Walk v w) : Decidable p.Nil :=
   match p with
   | nil => isTrue .nil
-  | cons _ _ => isFalse fun.
+  | cons _ _ => isFalse nofun
 
 protected lemma Nil.eq {p : G.Walk v w} : p.Nil → v = w | .nil => rfl
 
@@ -1080,6 +1079,14 @@ theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.
 lemma IsCycle.ne_bot : ∀ {p : G.Walk u u}, p.IsCycle → G ≠ ⊥
   | nil, hp => by cases hp.ne_nil rfl
   | cons h _, hp => by rintro rfl; exact h
+
+lemma IsCycle.three_le_length {v : V} {p : G.Walk v v} (hp : p.IsCycle) : 3 ≤ p.length := by
+  have ⟨⟨hp, hp'⟩, _⟩ := hp
+  match p with
+  | .nil => simp at hp'
+  | .cons h .nil => simp at h
+  | .cons _ (.cons _ .nil) => simp at hp
+  | .cons _ (.cons _ (.cons _ _)) => simp_rw [SimpleGraph.Walk.length_cons]; omega
 
 theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
     (Walk.cons h p).IsCycle ↔ p.IsPath ∧ ¬s(u, v) ∈ p.edges := by
@@ -1649,7 +1656,7 @@ alias ⟨_, map_isTrail_of_injective⟩ := map_isTrail_iff_of_injective
 
 theorem map_isCycle_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective f) :
     (p.map f).IsCycle ↔ p.IsCycle := by
-  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, Ne.def, map_eq_nil_iff,
+  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, Ne, map_eq_nil_iff,
     support_map, ← List.map_tail, List.nodup_map_iff hinj]
 #align simple_graph.walk.map_is_cycle_iff_of_injective SimpleGraph.Walk.map_isCycle_iff_of_injective
 
@@ -1758,7 +1765,7 @@ protected def transfer {u v : V} (p : G.Walk u v)
     (H : SimpleGraph V) (h : ∀ e, e ∈ p.edges → e ∈ H.edgeSet) : H.Walk u v :=
   match p with
   | nil => nil
-  | cons' u v w a p =>
+  | cons' u v w _ p =>
     cons (h s(u, v) (by simp)) (p.transfer H fun e he => h e (by simp [he]))
 #align simple_graph.walk.transfer SimpleGraph.Walk.transfer
 
@@ -2590,7 +2597,7 @@ theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
   let puw := (c.takeUntil v hv).takeUntil w hw
   let pwv := (c.takeUntil v hv).dropUntil w hw
   let pvu := c.dropUntil v hv
-  have : c = (puw.append pwv).append pvu := by simp
+  have : c = (puw.append pwv).append pvu := by simp [puw, pwv, pvu]
   -- We have two walks from v to w
   --      pvu     puw
   --   v ----> u ----> w

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Michael Stoll
 -/
 import Mathlib.Analysis.PSeries
-import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 
 #align_import number_theory.l_series from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
@@ -36,18 +35,17 @@ Given a sequence `f: ℕ → ℂ`, we define the corresponding L-series.
  * `LSeriesSummable.isBigO_rpow`: if the `LSeries` of `f` is summable at `s`,
     then `f = O(n^(re s))`.
 
+## Notation
+
+We introduce `L` as notation for `LSeries` and `↗f` as notation for `fun n : ℕ ↦ (f n : ℂ)`,
+both scoped to `LSeries.notation`. The latter makes it convenient to use arithmetic functions
+or Dirichlet characters (or anything that coerces to a function `N → R`, where `ℕ` coerces
+to `N` and `R` coerces to `ℂ`) as arguments to `LSeries` etc.
+
 ## Tags
 
 L-series
-
-## TODO
-
-* Move `LSeriesSummable.one_iff_one_lt_re` and `zeta_LSeriesSummable_iff_one_lt_r`
-  to a new file on L-series of specific functions
-
-* Move `LSeries_add` and friends to a new file on algebraic operations on L-series
 -/
-
 
 open scoped BigOperators
 
@@ -82,7 +80,7 @@ lemma term_of_ne_zero {n : ℕ} (hn : n ≠ 0) (f : ℕ → ℂ) (s : ℂ) :
     term f s n = f n / n ^ s :=
   if_neg hn
 
-lemma term_congr {f g : ℕ → ℂ} (h : ∀ n ≠ 0, f n = g n) (s : ℂ) (n : ℕ) :
+lemma term_congr {f g : ℕ → ℂ} (h : ∀ {n}, n ≠ 0 → f n = g n) (s : ℂ) (n : ℕ) :
     term f s n = term g s n := by
   rcases eq_or_ne n 0 with hn | hn <;> simp [hn, h]
 
@@ -126,7 +124,7 @@ def LSeries (f : ℕ → ℂ) (s : ℂ) : ℂ :=
   ∑' n, term f s n
 #align nat.arithmetic_function.l_series LSeries
 
-lemma LSeries_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ n ≠ 0, f n = g n) :
+lemma LSeries_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ {n}, n ≠ 0 → f n = g n) :
     LSeries f s = LSeries g s :=
   tsum_congr <| term_congr h s
 
@@ -135,9 +133,31 @@ def LSeriesSummable (f : ℕ → ℂ) (s : ℂ) : Prop :=
   Summable (term f s)
 #align nat.arithmetic_function.l_series_summable LSeriesSummable
 
-lemma LSeriesSummable_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ n ≠ 0, f n = g n) :
+lemma LSeriesSummable_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ {n}, n ≠ 0 → f n = g n) :
     LSeriesSummable f s ↔ LSeriesSummable g s :=
   summable_congr <| term_congr h s
+
+open Filter in
+/-- If `f` and `g` agree on large `n : ℕ` and the `LSeries` of `f` converges at `s`,
+then so does that of `g`. -/
+lemma LSeriesSummable.congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g) (hf : LSeriesSummable f s) :
+    LSeriesSummable g s := by
+  rw [← Nat.cofinite_eq_atTop] at h
+  refine (summable_norm_iff.mpr hf).of_norm_bounded_eventually _ ?_
+  have : term f s =ᶠ[cofinite] term g s := by
+    rw [eventuallyEq_iff_exists_mem] at h ⊢
+    obtain ⟨S, hS, hS'⟩ := h
+    refine ⟨S \ {0}, diff_mem hS <| (Set.finite_singleton 0).compl_mem_cofinite, fun n hn ↦ ?_⟩
+    simp only [Set.mem_diff, Set.mem_singleton_iff] at hn
+    simp only [term_of_ne_zero hn.2, hS' hn.1]
+  exact Eventually.mono this.symm fun n hn ↦ by simp only [hn, le_rfl]
+
+open Filter in
+/-- If `f` and `g` agree on large `n : ℕ`, then the `LSeries` of `f` converges at `s`
+if and only if that of `g` does. -/
+lemma LSeriesSummable_congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g) :
+    LSeriesSummable f s ↔ LSeriesSummable g s :=
+  ⟨fun H ↦ H.congr' s h, fun H ↦ H.congr' s h.symm⟩
 
 theorem LSeries.eq_zero_of_not_LSeriesSummable (f : ℕ → ℂ) (s : ℂ) :
     ¬ LSeriesSummable f s → LSeries f s = 0 :=
@@ -171,7 +191,7 @@ lemma LSeriesHasSum_iff {f : ℕ → ℂ} {s a : ℂ} :
     LSeriesHasSum f s a ↔ LSeriesSummable f s ∧ LSeries f s = a :=
   ⟨fun H ↦ ⟨H.LSeriesSummable, H.LSeries_eq⟩, fun ⟨H₁, H₂⟩ ↦ H₂ ▸ H₁.LSeriesHasSum⟩
 
-lemma LSeriesHasSum_congr {f g : ℕ → ℂ} (s a : ℂ) (h : ∀ n ≠ 0, f n = g n) :
+lemma LSeriesHasSum_congr {f g : ℕ → ℂ} (s a : ℂ) (h : ∀ {n}, n ≠ 0 → f n = g n) :
     LSeriesHasSum f s a ↔ LSeriesHasSum g s a := by
   simp only [LSeriesHasSum_iff, LSeriesSummable_congr s h, LSeries_congr s h]
 
@@ -184,6 +204,75 @@ theorem LSeriesSummable_iff_of_re_eq_re {f : ℕ → ℂ} {s s' : ℂ} (h : s.re
     LSeriesSummable f s ↔ LSeriesSummable f s' :=
   ⟨fun H ↦ H.of_re_le_re h.le, fun H ↦ H.of_re_le_re h.symm.le⟩
 #align nat.arithmetic_function.l_series_summable_iff_of_re_eq_re LSeriesSummable_iff_of_re_eq_re
+
+/-- The indicator function of `{1} ⊆ ℕ` with values in `ℂ`. -/
+def LSeries.delta (n : ℕ) : ℂ :=
+  if n = 1 then 1 else 0
+
+/-!
+### Notation
+-/
+
+@[inherit_doc]
+scoped[LSeries.notation] notation "L" => LSeries
+
+/-- We introduce notation `↗f` for `f` interpreted as a function `ℕ → ℂ`.
+
+Let `R` be a ring with a coercion to `ℂ`. Then we can write `↗χ` when `χ : DirichletCharacter R`
+or `↗f` when `f : ArithmeticFunction R` or simply `f : N → R` with a coercion from `ℕ` to `N`
+as an argument to `LSeries`, `LSeriesHasSum`, `LSeriesSummable` etc. -/
+scoped[LSeries.notation] notation:max "↗" f:max => fun n : ℕ ↦ (f n : ℂ)
+
+@[inherit_doc]
+scoped[LSeries.notation] notation "δ" => delta
+
+/-!
+### LSeries of 0 and δ
+-/
+
+@[simp]
+lemma LSeries_zero : LSeries 0 = 0 := by
+  ext
+  simp only [LSeries, LSeries.term, Pi.zero_apply, zero_div, ite_self, tsum_zero]
+
+section delta
+
+open scoped LSeries.notation
+
+namespace LSeries
+
+open Nat Complex
+
+lemma term_delta (s : ℂ) (n : ℕ) : term δ s n = if n = 1 then 1 else 0 := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp only [term_zero, zero_ne_one, ↓reduceIte]
+  · simp only [ne_eq, hn, not_false_eq_true, term_of_ne_zero, delta]
+    rcases eq_or_ne n 1 with rfl | hn'
+    · simp only [↓reduceIte, cast_one, one_cpow, ne_eq, one_ne_zero, not_false_eq_true, div_self]
+    · simp only [hn', ↓reduceIte, zero_div]
+
+lemma mul_delta_eq_smul_delta {f : ℕ → ℂ} : f * δ = f 1 • δ := by
+  ext n
+  simp only [Pi.mul_apply, delta, mul_ite, mul_one, mul_zero, Pi.smul_apply, smul_eq_mul]
+  split_ifs with hn <;> simp only [hn]
+
+lemma mul_delta {f : ℕ → ℂ} (h : f 1 = 1) : f * δ = δ := by
+  rw [mul_delta_eq_smul_delta, h, one_smul]
+
+lemma delta_mul_eq_smul_delta {f : ℕ → ℂ} : δ * f = f 1 • δ :=
+  mul_comm δ f ▸ mul_delta_eq_smul_delta
+
+lemma delta_mul {f : ℕ → ℂ} (h : f 1 = 1) : δ * f = δ :=
+  mul_comm δ f ▸ mul_delta h
+
+end LSeries
+
+/-- The L-series of `δ` is the constant function `1`. -/
+lemma LSeries_delta : LSeries δ = 1 := by
+  ext
+  simp only [LSeries, LSeries.term_delta, tsum_ite_eq, Pi.one_apply]
+
+end delta
 
 
 /-!
@@ -281,58 +370,3 @@ theorem LSeriesSummable_of_bounded_of_one_lt_real {f : ℕ → ℂ} {m : ℝ}
     LSeriesSummable f s :=
   LSeriesSummable_of_bounded_of_one_lt_re h <| by simp only [ofReal_re, hs]
 #align nat.arithmetic_function.l_series_summable_of_bounded_of_one_lt_real LSeriesSummable_of_bounded_of_one_lt_real
-
--- TODO: Move this to a separate file on concrete L-series
-
-open Set in
-/-- The `LSeries` with all coefficients `1` converges at `s` if and only if `re s > 1`. -/
-theorem LSeriesSummable.one_iff_one_lt_re {s : ℂ} : LSeriesSummable 1 s ↔ 1 < s.re := by
-  rw [← LSeriesSummable_iff_of_re_eq_re (Complex.ofReal_re s.re), LSeriesSummable,
-    ← summable_norm_iff, ← Real.summable_one_div_nat_rpow]
-  simp_rw [← Finite.summable_compl_iff (finite_singleton 0), summable_subtype_iff_indicator]
-  refine summable_congr fun n ↦ ?_
-  by_cases hn : n ∈ ({0}ᶜ :Set ℕ)
-  · simp only [indicator_of_mem hn, norm_term_eq]
-    simp only [show n ≠ 0 from hn, ↓reduceIte, Pi.one_apply, norm_one, ofReal_re]
-  · simp only [indicator_of_not_mem hn]
-
-open scoped ArithmeticFunction in
-/-- The `LSeries` associated to the arithmetic function `ζ` converges at `s` if and only if
-`re s > 1`. -/
-theorem zeta_LSeriesSummable_iff_one_lt_re {s : ℂ} : LSeriesSummable (ζ ·) s ↔ 1 < s.re := by
-  have (n : ℕ) (hn : n ≠ 0) : ζ n = (1 : ℕ → ℂ) n := by
-    simp only [ArithmeticFunction.zeta_apply, hn, ↓reduceIte, Nat.cast_one, Pi.one_apply]
-  exact (LSeriesSummable_congr s this).trans <| LSeriesSummable.one_iff_one_lt_re
-#align nat.arithmetic_function.zeta_l_series_summable_iff_one_lt_re zeta_LSeriesSummable_iff_one_lt_re
-
--- TODO: Move this to a separate file on operations on L-series
-
-lemma LSeries.term_add (f g : ℕ → ℂ) (s : ℂ) :
-    term (f + g) s = term f s + term g s := by
-  ext ⟨- | n⟩
-  · simp only [term_zero, Pi.add_apply, add_zero]
-  · simp only [term_of_ne_zero (Nat.succ_ne_zero _), Pi.add_apply, _root_.add_div]
-
-lemma LSeries.term_add_apply (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
-    term (f + g) s n = term f s n + term g s n := by
-  rw [term_add, Pi.add_apply]
-
-lemma LSeriesHasSum_add {f g : ℕ → ℂ} {s a b : ℂ} (hf : LSeriesHasSum f s a)
-    (hg : LSeriesHasSum g s b) :
-    LSeriesHasSum (f + g) s (a + b) := by
-  simpa only [LSeriesHasSum, term_add] using HasSum.add hf hg
-
-@[simp]
-theorem LSeries_add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s)
-    (hg : LSeriesSummable g s) : LSeries (f + g) s = LSeries f s + LSeries g s := by
-  simp only [LSeries, Pi.add_apply]
-  rw [← tsum_add hf hg]
-  congr
-  exact term_add ..
-#align nat.arithmetic_function.l_series_add LSeries_add
-
-lemma LSeriesSummable_add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s)
-    (hg : LSeriesSummable g s) : LSeriesSummable (f + g) s := by
-  convert Summable.add hf hg
-  simp_rw [← term_add_apply]
-  rfl

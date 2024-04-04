@@ -161,13 +161,13 @@ namespace LocalRing
 
 theorem of_isUnit_or_isUnit_one_sub_self [Nontrivial R] (h : ∀ a : R, IsUnit a ∨ IsUnit (1 - a)) :
     LocalRing R :=
-  ⟨fun {a b} hab => add_sub_cancel' a b ▸ hab.symm ▸ h a⟩
+  ⟨fun {a b} hab => add_sub_cancel_left a b ▸ hab.symm ▸ h a⟩
 #align local_ring.of_is_unit_or_is_unit_one_sub_self LocalRing.of_isUnit_or_isUnit_one_sub_self
 
 variable [LocalRing R]
 
 theorem isUnit_or_isUnit_one_sub_self (a : R) : IsUnit a ∨ IsUnit (1 - a) :=
-  isUnit_or_isUnit_of_isUnit_add <| (add_sub_cancel'_right a 1).symm ▸ isUnit_one
+  isUnit_or_isUnit_of_isUnit_add <| (add_sub_cancel a 1).symm ▸ isUnit_one
 #align local_ring.is_unit_or_is_unit_one_sub_self LocalRing.isUnit_or_isUnit_one_sub_self
 
 theorem isUnit_of_mem_nonunits_one_sub_self (a : R) (h : 1 - a ∈ nonunits R) : IsUnit a :=
@@ -517,7 +517,7 @@ namespace Field
 
 variable (K) [Field K]
 
-open Classical
+open scoped Classical
 
 -- see Note [lower instance priority]
 instance (priority := 100) : LocalRing K :=

@@ -684,8 +684,9 @@ def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
   LinearEquiv.toModuleIso'
     { counitIsoAddEquiv with
       map_smul' := fun r x => by
+        set_option tactic.skipAssignedInstances false in
         dsimp [counitIsoAddEquiv]
-/- Porting note: rest of broken proof was `simp`. -/
+        /- Porting note: rest of broken proof was `simp`. -/
         rw [AddEquiv.trans_apply]
         rw [AddEquiv.trans_apply]
         erw [@Representation.ofModule_asAlgebraHom_apply_apply k G _ _ _ _ (_)]

@@ -74,7 +74,6 @@ end CommSemiring
 section CommRing
 
 variable [CommRing R] {𝓟 : Ideal R} {f : R[X]} (hf : f.IsWeaklyEisensteinAt 𝓟)
-
 variable {S : Type v} [CommRing S] [Algebra R S]
 
 section Principal
@@ -132,7 +131,7 @@ theorem pow_natDegree_le_of_root_of_monic_mem {x : R} (hroot : IsRoot f x) (hmo 
   obtain ⟨k, hk⟩ := exists_add_of_le hi
   rw [hk, pow_add]
   suffices x ^ f.natDegree ∈ 𝓟 by exact mul_mem_right (x ^ k) 𝓟 this
-  rw [IsRoot.def, eval_eq_sum_range, Finset.range_add_one,
+  rw [IsRoot.definition, eval_eq_sum_range, Finset.range_add_one,
     Finset.sum_insert Finset.not_mem_range_self, Finset.sum_range, hmo.coeff_natDegree, one_mul] at
     *
   rw [eq_neg_of_add_eq_zero_left hroot, Ideal.neg_mem_iff]
@@ -147,7 +146,7 @@ theorem pow_natDegree_le_of_aeval_zero_of_monic_mem_map {x : S} (hx : aeval x f 
     obtain ⟨k, hk⟩ := exists_add_of_le hi
     rw [hk, pow_add]
     exact mul_mem_right _ _ this
-  rw [aeval_def, eval₂_eq_eval_map, ← IsRoot.def] at hx
+  rw [aeval_def, eval₂_eq_eval_map, ← IsRoot.definition] at hx
   exact pow_natDegree_le_of_root_of_monic_mem (hf.map _) hx (hmo.map _) _ rfl.le
 #align polynomial.is_weakly_eisenstein_at.pow_nat_degree_le_of_aeval_zero_of_monic_mem_map Polynomial.IsWeaklyEisensteinAt.pow_natDegree_le_of_aeval_zero_of_monic_mem_map
 

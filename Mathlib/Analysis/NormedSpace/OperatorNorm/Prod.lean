@@ -11,26 +11,37 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.Bilinear
 Interaction of operator norm with Cartesian products.
 -/
 
---suppress_compilation
-
--- the `ₗ` subscript variables are because we only treat linear maps in this file, while other
--- closely related files use plain letters for semilinear maps and subscript `ₗ` for linear
-variable {𝕜 E Fₗ Gₗ : Type*}
-
-section SemiNormed
+variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
 
 open Set Real Metric ContinuousLinearMap
 
-variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup Fₗ] [SeminormedAddCommGroup Gₗ]
+section SemiNormed
 
-variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜 Gₗ]
+variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup G]
+variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
 
 namespace ContinuousLinearMap
+
+section FirstSecond
+
+variable (𝕜 E F)
+
+/-- The operator norm of the first projection `E × F → E` is at most 1. (It is 0 if `E` is zero, so
+the inequality cannot be improved without further assumptions.) -/
+lemma norm_fst_le : ‖fst 𝕜 E F‖ ≤ 1 :=
+  opNorm_le_bound _ zero_le_one (fun ⟨e, f⟩ ↦ by simpa only [one_mul] using le_max_left ‖e‖ ‖f‖)
+
+/-- The operator norm of the second projection `E × F → F` is at most 1. (It is 0 if `F` is zero, so
+the inequality cannot be improved without further assumptions.) -/
+lemma norm_snd_le : ‖snd 𝕜 E F‖ ≤ 1 :=
+  opNorm_le_bound _ zero_le_one (fun ⟨e, f⟩ ↦ by simpa only [one_mul] using le_max_right ‖e‖ ‖f‖)
+
+end FirstSecond
 
 section OpNorm
 
 @[simp]
-theorem opNorm_prod (f : E →L[𝕜] Fₗ) (g : E →L[𝕜] Gₗ) : ‖f.prod g‖ = ‖(f, g)‖ :=
+theorem opNorm_prod (f : E →L[𝕜] F) (g : E →L[𝕜] G) : ‖f.prod g‖ = ‖(f, g)‖ :=
   le_antisymm
       (opNorm_le_bound _ (norm_nonneg _) fun x => by
         simpa only [prod_apply, Prod.norm_def, max_mul_of_nonneg, norm_nonneg] using
@@ -47,7 +58,7 @@ alias op_norm_prod :=
   opNorm_prod -- deprecated on 2024-02-02
 
 @[simp]
-theorem opNNNorm_prod (f : E →L[𝕜] Fₗ) (g : E →L[𝕜] Gₗ) : ‖f.prod g‖₊ = ‖(f, g)‖₊ :=
+theorem opNNNorm_prod (f : E →L[𝕜] F) (g : E →L[𝕜] G) : ‖f.prod g‖₊ = ‖(f, g)‖₊ :=
   Subtype.ext <| opNorm_prod f g
 #align continuous_linear_map.op_nnnorm_prod ContinuousLinearMap.opNNNorm_prod
 
@@ -56,9 +67,9 @@ alias op_nnnorm_prod :=
   opNNNorm_prod -- deprecated on 2024-02-02
 
 /-- `ContinuousLinearMap.prod` as a `LinearIsometryEquiv`. -/
-def prodₗᵢ (R : Type*) [Semiring R] [Module R Fₗ] [Module R Gₗ] [ContinuousConstSMul R Fₗ]
-    [ContinuousConstSMul R Gₗ] [SMulCommClass 𝕜 R Fₗ] [SMulCommClass 𝕜 R Gₗ] :
-    (E →L[𝕜] Fₗ) × (E →L[𝕜] Gₗ) ≃ₗᵢ[R] E →L[𝕜] Fₗ × Gₗ :=
+def prodₗᵢ (R : Type*) [Semiring R] [Module R F] [Module R G] [ContinuousConstSMul R F]
+    [ContinuousConstSMul R G] [SMulCommClass 𝕜 R F] [SMulCommClass 𝕜 R G] :
+    (E →L[𝕜] F) × (E →L[𝕜] G) ≃ₗᵢ[R] E →L[𝕜] F × G :=
   ⟨prodₗ R, fun ⟨f, g⟩ => opNorm_prod f g⟩
 #align continuous_linear_map.prodₗᵢ ContinuousLinearMap.prodₗᵢ
 
@@ -68,13 +79,12 @@ set_option linter.uppercaseLean3 false
 
 section Prod
 
-universe u₁ u₂ u₃ u₄
-
-variable (M₁ : Type u₁) [SeminormedAddCommGroup M₁] [NormedSpace 𝕜 M₁] (M₂ : Type u₂)
-  [SeminormedAddCommGroup M₂] [NormedSpace 𝕜 M₂] (M₃ : Type u₃) [SeminormedAddCommGroup M₃]
-  [NormedSpace 𝕜 M₃] (M₄ : Type u₄) [SeminormedAddCommGroup M₄] [NormedSpace 𝕜 M₄]
-
-variable (𝕜)
+variable (M₁ M₂ M₃ M₄ : Type*) (𝕜)
+variable
+  [SeminormedAddCommGroup M₁] [NormedSpace 𝕜 M₁]
+  [SeminormedAddCommGroup M₂] [NormedSpace 𝕜 M₂]
+  [SeminormedAddCommGroup M₃] [NormedSpace 𝕜 M₃]
+  [SeminormedAddCommGroup M₄] [NormedSpace 𝕜 M₄]
 
 /-- `ContinuousLinearMap.prodMap` as a continuous linear map. -/
 def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ × M₃ →L[𝕜] M₂ × M₄ :=
@@ -139,3 +149,37 @@ end Prod
 end ContinuousLinearMap
 
 end SemiNormed
+
+section Normed
+
+namespace ContinuousLinearMap
+
+section FirstSecond
+
+variable (𝕜 E F)
+
+/-- The operator norm of the first projection `E × F → E` is exactly 1 if `E` is nontrivial. -/
+@[simp] lemma norm_fst [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial E] :
+    ‖fst 𝕜 E F‖ = 1 := by
+  refine le_antisymm (norm_fst_le ..) ?_
+  let ⟨e, he⟩ := exists_ne (0 : E)
+  have : ‖e‖ ≤ _ * max ‖e‖ ‖0‖ := (fst 𝕜 E F).le_opNorm (e, 0)
+  rw [norm_zero, max_eq_left (norm_nonneg e)] at this
+  rwa [← mul_le_mul_iff_of_pos_right (norm_pos_iff.mpr he), one_mul]
+
+/-- The operator norm of the second projection `E × F → F` is exactly 1 if `F` is nontrivial. -/
+@[simp] lemma norm_snd [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial F]  :
+    ‖snd 𝕜 E F‖ = 1 := by
+  refine le_antisymm (norm_snd_le ..) ?_
+  let ⟨f, hf⟩ := exists_ne (0 : F)
+  have : ‖f‖ ≤ _ * max ‖0‖ ‖f‖ := (snd 𝕜 E F).le_opNorm (0, f)
+  rw [norm_zero, max_eq_right (norm_nonneg f)] at this
+  rwa [← mul_le_mul_iff_of_pos_right (norm_pos_iff.mpr hf), one_mul]
+
+end FirstSecond
+
+end ContinuousLinearMap
+
+end Normed

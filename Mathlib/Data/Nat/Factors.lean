@@ -310,7 +310,7 @@ theorem four_dvd_or_exists_odd_prime_and_dvd_of_two_lt {n : ℕ} (n2 : 2 < n) :
   obtain ⟨_ | _ | k, rfl⟩ | ⟨p, hp, hdvd, hodd⟩ := n.eq_two_pow_or_exists_odd_prime_and_dvd
   · contradiction
   · contradiction
-  · simp [pow_succ, mul_assoc]
+  · simp [Nat.pow_succ, mul_assoc]
   · exact Or.inr ⟨p, hp, hdvd, hodd⟩
 
 end Nat

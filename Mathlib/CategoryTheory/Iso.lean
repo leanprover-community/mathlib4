@@ -68,9 +68,6 @@ attribute [reassoc (attr := simp)] Iso.hom_inv_id Iso.inv_hom_id
 #align category_theory.iso.hom_inv_id_assoc CategoryTheory.Iso.hom_inv_id_assoc
 #align category_theory.iso.inv_hom_id_assoc CategoryTheory.Iso.inv_hom_id_assoc
 
--- Pretty printer support for additional arguments when in a concrete category
-attribute [pp_dot] Iso.hom Iso.inv
-
 /-- Notation for an isomorphism in a category. -/
 infixr:10 " ≅ " => Iso -- type as \cong or \iso
 
@@ -581,7 +578,6 @@ namespace Functor
 universe u₁ v₁ u₂ v₂
 
 variable {D : Type u₂}
-
 variable [Category.{v₂} D]
 
 /-- A functor `F : C ⥤ D` sends isomorphisms `i : X ≅ Y` to isomorphisms `F.obj X ≅ F.obj Y` -/

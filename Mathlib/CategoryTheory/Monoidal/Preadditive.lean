@@ -17,7 +17,7 @@ is linear in both factors.
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 namespace CategoryTheory
 
@@ -202,7 +202,7 @@ theorem leftDistributor_assoc {J : Type} [Fintype J] (X Y : C) (f : J → C) :
   simp_rw [← id_tensorHom]
   simp only [← id_tensor_comp, biproduct.ι_π]
   simp only [id_tensor_comp, tensor_dite, comp_dite]
-  simp [id_tensorHom]
+  simp
 #align category_theory.left_distributor_assoc CategoryTheory.leftDistributor_assoc
 
 /-- The isomorphism showing how tensor product on the right distributes over direct sums. -/

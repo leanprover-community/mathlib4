@@ -57,7 +57,6 @@ def rename (f : σ → τ) : MvPolynomial σ R →ₐ[R] MvPolynomial τ R :=
   aeval (X ∘ f)
 #align mv_polynomial.rename MvPolynomial.rename
 
-@[simp]
 theorem rename_C (f : σ → τ) (r : R) : rename f (C r) = C r :=
   eval₂_C _ _ _
 set_option linter.uppercaseLean3 false in
@@ -124,7 +123,7 @@ section
 
 variable {f : σ → τ} (hf : Function.Injective f)
 
-open Classical
+open scoped Classical
 
 /-- Given a function between sets of variables `f : σ → τ` that is injective with proof `hf`,
   `MvPolynomial.killCompl hf` is the `AlgHom` from `R[τ]` to `R[σ]` that is left inverse to
@@ -132,6 +131,8 @@ open Classical
 def killCompl : MvPolynomial τ R →ₐ[R] MvPolynomial σ R :=
   aeval fun i => if h : i ∈ Set.range f then X <| (Equiv.ofInjective f hf).symm ⟨i, h⟩ else 0
 #align mv_polynomial.kill_compl MvPolynomial.killCompl
+
+theorem killCompl_C (r : R) : killCompl hf (C r) = C r := algHom_C _ _
 
 theorem killCompl_comp_rename : (killCompl hf).comp (rename f) = AlgHom.id R _ :=
   algHom_ext fun i => by

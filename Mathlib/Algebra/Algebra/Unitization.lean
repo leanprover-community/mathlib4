@@ -156,6 +156,9 @@ section Additive
 
 variable {T : Type*} {S : Type*} {R : Type*} {A : Type*}
 
+instance instCanLift [Zero R] : CanLift (Unitization R A) A inr (fun x ↦ x.fst = 0) where
+  prf x hx := ⟨x.snd, ext (hx ▸ fst_inr R (snd x)) rfl⟩
+
 instance instInhabited [Inhabited R] [Inhabited A] : Inhabited (Unitization R A) :=
   instInhabitedProd
 

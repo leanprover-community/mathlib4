@@ -7,8 +7,8 @@ import Mathlib.Data.Int.Basic
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.Rel
-import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Linarith
 
 /-!
 # Series of a relation
@@ -242,7 +242,6 @@ lemma append_apply_right (p q : RelSeries r) (connect : r p.last q.head)
     (p.append q connect).last = q.last := by
   delta last
   convert append_apply_right p q connect (Fin.last _)
-  congr
   ext
   change _ = _ % _
   simp only [append_length, Fin.val_last, Fin.natAdd_last, Nat.one_mod, Nat.mod_add_mod,
@@ -254,15 +253,13 @@ For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves
 `a₀ -r→ a₁ -r→ ... -r→ aₙ ↦ f a₀ -s→ f a₁ -s→ ... -s→ f aₙ`
 -/
 @[simps length]
-def map (p : RelSeries r)
-    (f : α → β) (hf : ∀ ⦃x y : α⦄, r x y → s (f x) (f y)) : RelSeries s where
+def map (p : RelSeries r) (f : r →r s) : RelSeries s where
   length := p.length
-  toFun := f.comp p
-  step := (hf <| p.step .)
+  toFun := f.1.comp p
+  step := (f.2 <| p.step .)
 
-@[simp] lemma map_apply (p : RelSeries r)
-    (f : α → β) (hf : ∀ ⦃x y : α⦄, r x y → s (f x) (f y)) (i : Fin (p.length + 1)) :
-    p.map f hf i = f (p i) := rfl
+@[simp] lemma map_apply (p : RelSeries r) (f : r →r s) (i : Fin (p.length + 1)) :
+    p.map f i = f (p i) := rfl
 
 /--
 If `a₀ -r→ a₁ -r→ ... -r→ aₙ` is an `r`-series and `a` is such that
@@ -453,11 +450,9 @@ lemma smash_succ_castAdd {p q : RelSeries r} (h : p.last = q.head)
 
 lemma smash_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
     smash p q h (Fin.castSucc <| i.natAdd p.length) = q (Fin.castSucc i) := by
-  rw [smash_toFun]
-  split_ifs with H
-  · simp only [Fin.coe_castSucc, Fin.coe_natAdd, add_lt_iff_neg_left, not_lt_zero'] at H
-  · congr
-    exact Nat.add_sub_self_left _ _
+  rw [smash_toFun, dif_neg (by simp)]
+  congr
+  exact Nat.add_sub_self_left _ _
 
 lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
     smash p q h (i.natAdd p.length).succ = q i.succ := by
@@ -485,6 +480,12 @@ end RelSeries
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
 abbrev FiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
   Rel.FiniteDimensional ((. < .) : γ → γ → Prop)
+
+instance FiniteDimensionalOrder.ofUnique (γ : Type*) [Preorder γ] [Unique γ] :
+    FiniteDimensionalOrder γ where
+  exists_longest_relSeries := ⟨.singleton _ default, fun x ↦ by
+    by_contra! r
+    exact (ne_of_lt <| x.step ⟨0, by omega⟩) <| Subsingleton.elim _ _⟩
 
 /-- A type is infinite dimensional if it has `LTSeries` of at least arbitrary length -/
 abbrev InfiniteDimensionalOrder (γ : Type*) [Preorder γ] :=

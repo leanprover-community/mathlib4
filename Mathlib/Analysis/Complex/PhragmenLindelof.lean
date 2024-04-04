@@ -463,7 +463,7 @@ theorem quadrant_II (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Ioi 0))
       f =O[cobounded ℂ ⊓ 𝓟 (Iio 0 ×ℂ Ioi 0)] fun z => expR (B * abs z ^ c))
     (hre : ∀ x : ℝ, x ≤ 0 → ‖f x‖ ≤ C) (him : ∀ x : ℝ, 0 ≤ x → ‖f (x * I)‖ ≤ C) (hz_re : z.re ≤ 0)
     (hz_im : 0 ≤ z.im) : ‖f z‖ ≤ C := by
-  obtain ⟨z, rfl⟩ : ∃ z', z' * I = z := ⟨z / I, div_mul_cancel _ I_ne_zero⟩
+  obtain ⟨z, rfl⟩ : ∃ z', z' * I = z := ⟨z / I, div_mul_cancel₀ _ I_ne_zero⟩
   simp only [mul_I_re, mul_I_im, neg_nonpos] at hz_re hz_im
   change ‖(f ∘ (· * I)) z‖ ≤ C
   have H : MapsTo (· * I) (Ioi 0 ×ℂ Ioi 0) (Iio 0 ×ℂ Ioi 0) := fun w hw ↦ by
@@ -774,7 +774,7 @@ theorem right_half_plane_of_bounded_on_real (hd : DiffContOnCl ℂ f {z | 0 < z.
     rw [hgn, one_mul]
     refine' mul_le_of_le_one_left (norm_nonneg _) (Real.exp_le_one_iff.2 _)
     exact mul_nonpos_of_nonpos_of_nonneg ε₀.le (le_of_lt hz)
-  · simp_rw [← ofReal_mul, ← ofReal_exp, coe_smul]
+  · simp_rw [g, ← ofReal_mul, ← ofReal_exp, coe_smul]
     have h₀ : Tendsto (fun x : ℝ => expR (ε * x)) atTop (𝓝 0) :=
       Real.tendsto_exp_atBot.comp (tendsto_const_nhds.neg_mul_atTop ε₀ tendsto_id)
     exact h₀.zero_smul_isBoundedUnder_le hre

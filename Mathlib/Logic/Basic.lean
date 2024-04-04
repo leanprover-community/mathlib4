@@ -577,7 +577,7 @@ theorem congr_fun_congr_arg (f : α → β → γ) {a a' : α} (p : a = a') (b :
 theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) (z : P x) :
     h ▸ z = cast (congr_arg P h) z := by induction h; rfl
 
--- Porting note: new theorem. More general version of `eqRec_heq`
+-- Porting note (#10756): new theorem. More general version of `eqRec_heq`
 theorem eqRec_heq' {α : Sort u_1} {a' : α} {motive : (a : α) → a' = a → Sort u}
     (p : motive a' (rfl : a' = a')) {a : α} (t : a' = a) :
     HEq (@Eq.rec α a' motive p a t) p :=
@@ -1150,12 +1150,12 @@ theorem ite_eq_iff' : ite P a b = c ↔ (P → a = c) ∧ (¬P → b = c) := dit
 #align ite_eq_right_iff ite_eq_right_iff
 
 theorem dite_ne_left_iff : dite P (fun _ ↦ a) B ≠ a ↔ ∃ h, a ≠ B h := by
-  rw [Ne.def, dite_eq_left_iff, not_forall]
+  rw [Ne, dite_eq_left_iff, not_forall]
   exact exists_congr fun h ↦ by rw [ne_comm]
 #align dite_ne_left_iff dite_ne_left_iff
 
 theorem dite_ne_right_iff : (dite P A fun _ ↦ b) ≠ b ↔ ∃ h, A h ≠ b := by
-  simp only [Ne.def, dite_eq_right_iff, not_forall]
+  simp only [Ne, dite_eq_right_iff, not_forall]
 #align dite_ne_right_iff dite_ne_right_iff
 
 theorem ite_ne_left_iff : ite P a b ≠ a ↔ ¬P ∧ a ≠ b :=
@@ -1292,3 +1292,20 @@ theorem not_beq_of_ne [BEq α] [LawfulBEq α] {a b : α} (ne : a ≠ b) : ¬(a =
 theorem beq_eq_decide [BEq α] [LawfulBEq α] {a b : α} : (a == b) = decide (a = b) := by
   rw [← beq_iff_eq a b]
   cases a == b <;> simp
+
+@[ext]
+theorem beq_ext (inst1 : BEq α) (inst2 : BEq α)
+    (h : ∀ x y, @BEq.beq _ inst1 x y = @BEq.beq _ inst2 x y) :
+    inst1 = inst2 := by
+  have ⟨beq1⟩ := inst1
+  have ⟨beq2⟩ := inst2
+  congr
+  funext x y
+  exact h x y
+
+theorem lawful_beq_subsingleton (inst1 : BEq α) (inst2 : BEq α)
+    [@LawfulBEq α inst1] [@LawfulBEq α inst2] :
+    inst1 = inst2 := by
+  apply beq_ext
+  intro x y
+  simp only [beq_eq_decide]

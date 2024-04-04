@@ -211,7 +211,7 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
       have h2 : (range (p ^ n)).image (· * p) ⊆ range (p ^ (n + 1)) := fun a => by
         simp only [mem_image, mem_range, exists_imp]
         rintro b ⟨h, rfl⟩
-        rw [pow_succ]
+        rw [Nat.pow_succ]
         exact (mul_lt_mul_right hp.pos).2 h
       rw [card_sdiff h2, Finset.card_image_of_injective _ h1, card_range, card_range, ←
         one_mul (p ^ n), pow_succ', ← tsub_mul, one_mul, mul_comm]
@@ -275,6 +275,9 @@ theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
     simp only [succ_succ_ne_one, false_or_iff]
     exact ⟨fun h => not_even_one.elim <| h ▸ totient_even this, by rintro ⟨⟩⟩
 #align nat.totient_eq_one_iff Nat.totient_eq_one_iff
+
+theorem dvd_two_of_totient_le_one {a : ℕ} (han : 0 < a) (ha : a.totient ≤ 1) : a ∣ 2 := by
+  rcases totient_eq_one_iff.mp <| le_antisymm ha <| totient_pos han with rfl | rfl <;> norm_num
 
 /-! ### Euler's product formula for the totient function
 

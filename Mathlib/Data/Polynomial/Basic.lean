@@ -423,6 +423,9 @@ theorem support_eq_empty : p.support = ∅ ↔ p = 0 := by
   simp [support]
 #align polynomial.support_eq_empty Polynomial.support_eq_empty
 
+@[simp] lemma support_nonempty : p.support.Nonempty ↔ p ≠ 0 :=
+  Finset.nonempty_iff_ne_empty.trans support_eq_empty.not
+
 theorem card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp
 #align polynomial.card_support_eq_zero Polynomial.card_support_eq_zero
 
@@ -575,7 +578,7 @@ theorem monomial_one_one_eq_X : monomial 1 (1 : R) = X :=
 theorem monomial_one_right_eq_X_pow (n : ℕ) : monomial n (1 : R) = X ^ n := by
   induction' n with n ih
   · simp [monomial_zero_one]
-  · rw [pow_succ, ← ih, ← monomial_one_one_eq_X, monomial_mul_monomial, add_comm, one_mul]
+  · rw [pow_succ, ← ih, ← monomial_one_one_eq_X, monomial_mul_monomial, mul_one]
 #align polynomial.monomial_one_right_eq_X_pow Polynomial.monomial_one_right_eq_X_pow
 
 @[simp]
@@ -596,8 +599,8 @@ theorem X_mul : X * p = p * X := by
 theorem X_pow_mul {n : ℕ} : X ^ n * p = p * X ^ n := by
   induction' n with n ih
   · simp
-  · conv_lhs => rw [pow_succ']
-    rw [mul_assoc, X_mul, ← mul_assoc, ih, mul_assoc, ← pow_succ']
+  · conv_lhs => rw [pow_succ]
+    rw [mul_assoc, X_mul, ← mul_assoc, ih, mul_assoc, ← pow_succ]
 #align polynomial.X_pow_mul Polynomial.X_pow_mul
 
 /-- Prefer putting constants to the left of `X`.
@@ -646,7 +649,7 @@ theorem monomial_mul_X_pow (n : ℕ) (r : R) (k : ℕ) :
     monomial n r * X ^ k = monomial (n + k) r := by
   induction' k with k ih
   · simp
-  · simp [ih, pow_succ', ← mul_assoc, add_assoc]
+  · simp [ih, pow_succ, ← mul_assoc, add_assoc]
 #align polynomial.monomial_mul_X_pow Polynomial.monomial_mul_X_pow
 
 @[simp]
@@ -667,7 +670,7 @@ def coeff : R[X] → ℕ → R
   | ⟨p⟩ => p
 #align polynomial.coeff Polynomial.coeff
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem coeff_ofFinsupp (p) : coeff (⟨p⟩ : R[X]) = p := by rw [coeff]
 
@@ -774,7 +777,7 @@ theorem coeff_ofNat_succ (a n : ℕ) [h : a.AtLeastTwo] :
 theorem C_mul_X_pow_eq_monomial : ∀ {n : ℕ}, C a * X ^ n = monomial n a
   | 0 => mul_one _
   | n + 1 => by
-    rw [pow_succ', ← mul_assoc, C_mul_X_pow_eq_monomial, X, monomial_mul_monomial, mul_one]
+    rw [pow_succ, ← mul_assoc, C_mul_X_pow_eq_monomial, X, monomial_mul_monomial, mul_one]
 #align polynomial.C_mul_X_pow_eq_monomial Polynomial.C_mul_X_pow_eq_monomial
 
 @[simp high]
@@ -927,7 +930,7 @@ end Fewnomials
 theorem X_pow_eq_monomial (n) : X ^ n = monomial n (1 : R) := by
   induction' n with n hn
   · rw [pow_zero, monomial_zero_one]
-  · rw [pow_succ', hn, X, monomial_mul_monomial, one_mul]
+  · rw [pow_succ, hn, X, monomial_mul_monomial, one_mul]
 #align polynomial.X_pow_eq_monomial Polynomial.X_pow_eq_monomial
 
 @[simp high]
@@ -1039,6 +1042,7 @@ theorem sum_smul_index {S : Type*} [AddCommMonoid S] (p : R[X]) (b : R) (f : ℕ
   Finsupp.sum_smul_index hf
 #align polynomial.sum_smul_index Polynomial.sum_smul_index
 
+@[simp]
 theorem sum_monomial_eq : ∀ p : R[X], (p.sum fun n a => monomial n a) = p
   | ⟨_p⟩ => (ofFinsupp_sum _ _).symm.trans (congr_arg _ <| Finsupp.sum_single _)
 #align polynomial.sum_monomial_eq Polynomial.sum_monomial_eq

@@ -91,13 +91,6 @@ def IntegrableOn (f : α → E) (s : Set α) (μ : Measure α := by volume_tac) 
   Integrable f (μ.restrict s)
 #align measure_theory.integrable_on MeasureTheory.IntegrableOn
 
--- Porting note: TODO Delete this when leanprover/lean4#2243 is fixed.
-theorem integrableOn_def (f : α → E) (s : Set α) (μ : Measure α) :
-    IntegrableOn f s μ ↔ Integrable f (μ.restrict s) :=
-  Iff.rfl
-
-attribute [eqns integrableOn_def] IntegrableOn
-
 theorem IntegrableOn.integrable (h : IntegrableOn f s μ) : Integrable f (μ.restrict s) :=
   h
 #align measure_theory.integrable_on.integrable MeasureTheory.IntegrableOn.integrable
@@ -317,7 +310,7 @@ theorem IntegrableOn.restrict_toMeasurable (hf : IntegrableOn f s μ) (h's : ∀
     exact (hf.measure_norm_ge_lt_top (u_pos n)).ne
   apply Measure.restrict_toMeasurable_of_cover _ A
   intro x hx
-  have : 0 < ‖f x‖ := by simp only [h's x hx, norm_pos_iff, Ne.def, not_false_iff]
+  have : 0 < ‖f x‖ := by simp only [h's x hx, norm_pos_iff, Ne, not_false_iff]
   obtain ⟨n, hn⟩ : ∃ n, u n < ‖f x‖ := ((tendsto_order.1 u_lim).2 _ this).exists
   exact mem_iUnion.2 ⟨n, subset_toMeasurable _ _ hn.le⟩
 #align measure_theory.integrable_on.restrict_to_measurable MeasureTheory.IntegrableOn.restrict_toMeasurable
@@ -530,6 +523,11 @@ theorem Measure.FiniteAtFilter.integrableAtFilter_of_tendsto {l : Filter α}
 alias _root_.Filter.Tendsto.integrableAtFilter :=
   Measure.FiniteAtFilter.integrableAtFilter_of_tendsto
 #align filter.tendsto.integrable_at_filter Filter.Tendsto.integrableAtFilter
+
+lemma Measure.integrableOn_of_bounded (s_finite : μ s ≠ ∞) (f_mble : AEStronglyMeasurable f μ)
+    {M : ℝ} (f_bdd : ∀ᵐ a ∂(μ.restrict s), ‖f a‖ ≤ M) :
+    IntegrableOn f s μ :=
+  ⟨f_mble.restrict, hasFiniteIntegral_restrict_of_bounded (C := M) s_finite.lt_top f_bdd⟩
 
 theorem integrable_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (support g))
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :

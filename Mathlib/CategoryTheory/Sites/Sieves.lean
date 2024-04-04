@@ -34,7 +34,6 @@ namespace CategoryTheory
 open Category Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
-
 variable {X Y Z : C} (f : Y ⟶ X)
 
 /-- A set of arrows all with codomain `X`. -/
@@ -51,10 +50,19 @@ namespace Presieve
 noncomputable instance : Inhabited (Presieve X) :=
   ⟨⊤⟩
 
+/-- The full subcategory of the over category `C/X` consisting of arrows which belong to a
+    presieve on `X`. -/
+abbrev category {X : C} (P : Presieve X) :=
+  FullSubcategory fun f : Over X => P f.hom
+
+/-- Construct an object of `P.category`. -/
+abbrev categoryMk {X : C} (P : Presieve X) {Y : C} (f : Y ⟶ X) (hf : P f) : P.category :=
+  ⟨Over.mk f, hf⟩
+
 /-- Given a sieve `S` on `X : C`, its associated diagram `S.diagram` is defined to be
     the natural functor from the full subcategory of the over category `C/X` consisting
     of arrows in `S` to `C`. -/
-abbrev diagram (S : Presieve X) : (FullSubcategory fun f : Over X => S f.hom) ⥤ C :=
+abbrev diagram (S : Presieve X) : S.category ⥤ C :=
   fullSubcategoryInclusion _ ⋙ Over.forget X
 #align category_theory.presieve.diagram CategoryTheory.Presieve.diagram
 
@@ -265,8 +273,6 @@ structure Sieve {C : Type u₁} [Category.{v₁} C] (X : C) where
   /-- stability by precomposition -/
   downward_closed : ∀ {Y Z f} (_ : arrows f) (g : Z ⟶ Y), arrows (g ≫ f)
 #align category_theory.sieve CategoryTheory.Sieve
-
-attribute [pp_dot] Sieve.arrows
 
 namespace Sieve
 

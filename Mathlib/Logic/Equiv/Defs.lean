@@ -3,7 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Std.Tactic.CoeExt
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
 import Mathlib.Init.Data.Bool.Lemmas
@@ -887,8 +886,8 @@ protected theorem exists_unique_congr_left {p : β → Prop} (f : α ≃ β) :
 protected theorem forall_congr {p : α → Prop} {q : β → Prop} (f : α ≃ β)
     (h : ∀ {x}, p x ↔ q (f x)) : (∀ x, p x) ↔ (∀ y, q y) := by
   constructor <;> intro h₂ x
-  · rw [← f.right_inv x]; apply h.mp; apply h₂
-  · apply h.mpr; apply h₂
+  · rw [← f.right_inv x]; exact h.mp (h₂ _)
+  · exact h.mpr (h₂ _)
 #align equiv.forall_congr Equiv.forall_congr
 
 protected theorem forall_congr' {p : α → Prop} {q : β → Prop} (f : α ≃ β)

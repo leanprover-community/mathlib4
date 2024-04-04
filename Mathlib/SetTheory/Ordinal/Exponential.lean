@@ -19,7 +19,8 @@ noncomputable section
 
 open Function Cardinal Set Equiv Order
 
-open Classical Cardinal Ordinal
+open scoped Classical
+open Cardinal Ordinal
 
 universe u v w
 
@@ -455,7 +456,7 @@ theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y 
 theorem nat_cast_opow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n : ℕ) = (m : Ordinal) ^ (n : Ordinal)
   | 0 => by simp
   | n + 1 => by
-    rw [pow_succ', nat_cast_mul, nat_cast_opow m n, Nat.cast_succ, add_one_eq_succ, opow_succ]
+    rw [pow_succ, nat_cast_mul, nat_cast_opow m n, Nat.cast_succ, add_one_eq_succ, opow_succ]
 #align ordinal.nat_cast_opow Ordinal.nat_cast_opow
 
 theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o ^ (n : Ordinal)) = o ^ ω := by
@@ -469,7 +470,7 @@ theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o ^ (n : O
 
 end Ordinal
 
--- Porting note: TODO: Port this meta code.
+-- Porting note (#11215): TODO: Port this meta code.
 
 -- namespace Tactic
 

@@ -74,18 +74,16 @@ noncomputable section
 
 variable {𝕜 E F G : Type*}
 
-open Topology Classical BigOperators NNReal Filter ENNReal
+open scoped Classical
+open Topology BigOperators NNReal Filter ENNReal
 
 open Set Filter Asymptotics
 
 namespace FormalMultilinearSeries
 
 variable [Ring 𝕜] [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
-
 variable [TopologicalSpace E] [TopologicalSpace F]
-
 variable [TopologicalAddGroup E] [TopologicalAddGroup F]
-
 variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F]
 
 /-- Given a formal multilinear series `p` and a vector `x`, then `p.sum x` is the sum `Σ pₙ xⁿ`. A
@@ -443,7 +441,7 @@ theorem HasFPowerSeriesOnBall.comp_sub (hf : HasFPowerSeriesOnBall f p x r) (y :
 theorem HasFPowerSeriesOnBall.hasSum_sub (hf : HasFPowerSeriesOnBall f p x r) {y : E}
     (hy : y ∈ EMetric.ball x r) : HasSum (fun n : ℕ => p n fun _ => y - x) (f y) := by
   have : y - x ∈ EMetric.ball (0 : E) r := by simpa [edist_eq_coe_nnnorm_sub] using hy
-  simpa only [add_sub_cancel'_right] using hf.hasSum this
+  simpa only [add_sub_cancel] using hf.hasSum this
 #align has_fpower_series_on_ball.has_sum_sub HasFPowerSeriesOnBall.hasSum_sub
 
 theorem HasFPowerSeriesOnBall.radius_pos (hf : HasFPowerSeriesOnBall f p x r) : 0 < p.radius :=
@@ -776,9 +774,7 @@ theorem HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
           · apply hp
           · apply hy'.le
         _ = B n := by
-          -- Porting note: in the original, `B` was in the `field_simp`, but now Lean does not
-          -- accept it. The current proof works in Lean 4, but does not in Lean 3.
-          field_simp [pow_succ]
+          field_simp [B, pow_succ]
           simp only [mul_assoc, mul_comm, mul_left_comm]
     have hBL : HasSum B (L y) := by
       apply HasSum.mul_left
@@ -792,7 +788,7 @@ theorem HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
     refine' (IsBigO.of_bound 1 (eventually_principal.2 fun y hy => _)).trans this
     rw [one_mul]
     exact (hL y hy).trans (le_abs_self _)
-  simp_rw [mul_right_comm _ (_ * _)]  -- Porting note: there was an `L` inside the `simp_rw`.
+  simp_rw [L, mul_right_comm _ (_ * _)]
   exact (isBigO_refl _ _).const_mul_left _
 set_option linter.uppercaseLean3 false in
 #align has_fpower_series_on_ball.is_O_image_sub_image_sub_deriv_principal HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
@@ -1333,7 +1329,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
     exact p.nnnorm_changeOriginSeriesTerm_apply_le _ _ _ _ _ _
   have hf : HasSum f ((p.changeOrigin x).sum y) := by
     refine' HasSum.sigma_of_hasSum ((p.changeOrigin x).summable y_mem_ball).hasSum (fun k => _) hsf
-    · dsimp only
+    · dsimp only [f]
       refine' ContinuousMultilinearMap.hasSum_eval _ _
       have := (p.hasFPowerSeriesOnBall_changeOrigin k radius_pos).hasSum x_mem_ball
       rw [zero_add] at this
@@ -1391,7 +1387,7 @@ theorem HasFPowerSeriesOnBall.analyticAt_of_mem (hf : HasFPowerSeriesOnBall f p 
     (h : y ∈ EMetric.ball x r) : AnalyticAt 𝕜 f y := by
   have : (‖y - x‖₊ : ℝ≥0∞) < r := by simpa [edist_eq_coe_nnnorm_sub] using h
   have := hf.changeOrigin this
-  rw [add_sub_cancel'_right] at this
+  rw [add_sub_cancel] at this
   exact this.analyticAt
 #align has_fpower_series_on_ball.analytic_at_of_mem HasFPowerSeriesOnBall.analyticAt_of_mem
 
@@ -1449,7 +1445,6 @@ theorem hasFPowerSeriesAt_iff :
       simp only [dist_zero_right] at h
       apply FormalMultilinearSeries.le_radius_of_tendsto
       convert tendsto_norm.comp (h le_z).summable.tendsto_atTop_zero
-      funext
       simp [norm_smul, mul_comm]
     refine' lt_of_lt_of_le _ this
     simp only [ENNReal.coe_pos]
@@ -1463,7 +1458,7 @@ theorem hasFPowerSeriesAt_iff :
 theorem hasFPowerSeriesAt_iff' :
     HasFPowerSeriesAt f p z₀ ↔ ∀ᶠ z in 𝓝 z₀, HasSum (fun n => (z - z₀) ^ n • p.coeff n) (f z) := by
   rw [← map_add_left_nhds_zero, eventually_map, hasFPowerSeriesAt_iff]
-  simp_rw [add_sub_cancel']
+  simp_rw [add_sub_cancel_left]
 #align has_fpower_series_at_iff' hasFPowerSeriesAt_iff'
 
 end

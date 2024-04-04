@@ -41,9 +41,9 @@ private lemma iter_fp_bound (n k : ℕ) :
   intro iter_next
   unfold sqrt.iter
   if h : (k + n / k) / 2 < k then
-    simp [if_pos h]; exact iter_fp_bound _ _
+    simpa [if_pos h] using iter_fp_bound _ _
   else
-    simp [if_neg h]; exact Nat.le_of_not_lt h
+    simpa [if_neg h] using Nat.le_of_not_lt h
 
 private lemma AM_GM : {a b : ℕ} → (4 * a * b ≤ (a + b) * (a + b))
   | 0, _ => by rw [mul_zero, zero_mul]; exact zero_le _

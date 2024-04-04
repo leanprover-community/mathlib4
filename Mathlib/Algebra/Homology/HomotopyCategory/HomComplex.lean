@@ -26,9 +26,6 @@ If `α : Cochain F G n`, we shall define `α.v p q hpq : F.X p ⟶ G.X q`.
 We follow the signs conventions appearing in the introduction of
 [Brian Conrad's book *Grothendieck duality and base change*][conrad2000].
 
-TODO:
-* Behaviour with respect to shifting the cochain complexes `F` and `G`.
-
 ## References
 * [Brian Conrad, Grothendieck duality and base change][conrad2000]
 
@@ -415,7 +412,7 @@ it shall be zero). The basic equational lemma is `δ_v` below. -/
 
 lemma δ_v (hnm : n + 1 = m) (z : Cochain F G n) (p q : ℤ) (hpq : p + m = q) (q₁ q₂ : ℤ)
     (hq₁ : q₁ = q - 1) (hq₂ : p + 1 = q₂) : (δ n m z).v p q hpq =
-    z.v p q₁ (by rw [hq₁, ← hpq, ← hnm, ← add_assoc, add_sub_cancel]) ≫ G.d q₁ q
+    z.v p q₁ (by rw [hq₁, ← hpq, ← hnm, ← add_assoc, add_sub_cancel_right]) ≫ G.d q₁ q
       + m.negOnePow • F.d p q₂ ≫ z.v q₂ q
           (by rw [← hq₂, add_assoc, add_comm 1, hnm, hpq]) := by
   obtain rfl : q₁ = p + n := by omega

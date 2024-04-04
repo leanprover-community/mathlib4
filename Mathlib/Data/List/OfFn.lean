@@ -44,7 +44,7 @@ theorem length_ofFn {n} (f : Fin n → α) : length (ofFn f) = n := by
 
 #noalign list.nth_of_fn_aux
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by simp) i) := by
   have := Array.getElem_ofFn f i (by simpa using i.2)
@@ -52,7 +52,7 @@ theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by s
   simp only [getElem, Array.get] at this
   simp only [Fin.cast_mk]
   rw [← this]
-  congr <;> simp [ofFn]
+  congr
 
 /-- The `n`th element of a list -/
 @[simp]
@@ -60,7 +60,7 @@ theorem get?_ofFn {n} (f : Fin n → α) (i) : get? (ofFn f) i = ofFnNthVal f i 
   if h : i < (ofFn f).length
   then by
     rw [get?_eq_get h, get_ofFn]
-    · simp at h; simp [ofFnNthVal, h]
+    · simp only [length_ofFn] at h; simp [ofFnNthVal, h]
   else by
     rw [ofFnNthVal, dif_neg] <;>
     simpa using h
@@ -203,7 +203,7 @@ theorem mem_ofFn {n} (f : Fin n → α) (a : α) : a ∈ ofFn f ↔ a ∈ Set.ra
 
 @[simp]
 theorem forall_mem_ofFn_iff {n : ℕ} {f : Fin n → α} {P : α → Prop} :
-    (∀ i ∈ ofFn f, P i) ↔ ∀ j : Fin n, P (f j) := by simp only [mem_ofFn, Set.forall_range_iff]
+    (∀ i ∈ ofFn f, P i) ↔ ∀ j : Fin n, P (f j) := by simp only [mem_ofFn, Set.forall_mem_range]
 #align list.forall_mem_of_fn_iff List.forall_mem_ofFn_iff
 
 @[simp]

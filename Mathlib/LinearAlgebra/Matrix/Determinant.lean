@@ -51,7 +51,6 @@ namespace Matrix
 open Matrix BigOperators
 
 variable {m n : Type*} [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m]
-
 variable {R : Type v} [CommRing R]
 
 -- mathport name: «exprε »
@@ -327,7 +326,7 @@ variable {S : Type w} [CommRing S]
 
 theorem _root_.RingHom.map_det (f : R →+* S) (M : Matrix n n R) :
     f M.det = Matrix.det (f.mapMatrix M) :=
-  by simp [Matrix.det_apply', f.map_sum, f.map_prod]
+  by simp [Matrix.det_apply', map_sum f, map_prod f]
 #align ring_hom.map_det RingHom.map_det
 
 theorem _root_.RingEquiv.map_det (f : R ≃+* S) (M : Matrix n n R) :
@@ -718,8 +717,8 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
   -- `Perm (Fin n.succ)` than the determinant of the submatrix we want,
   -- permute `A` so that we get the correct one.
   have : (-1 : R) ^ (i : ℕ) = (Perm.sign i.cycleRange) := by simp [Fin.sign_cycleRange]
-  rw [Fin.val_succ, pow_succ, this, mul_assoc, mul_assoc, mul_left_comm (ε _), ←
-    det_permute, Matrix.det_apply, Finset.mul_sum, Finset.mul_sum]
+  rw [Fin.val_succ, pow_succ', this, mul_assoc, mul_assoc, mul_left_comm (ε _),
+    ← det_permute, Matrix.det_apply, Finset.mul_sum, Finset.mul_sum]
   -- now we just need to move the corresponding parts to the same place
   refine' Finset.sum_congr rfl fun σ _ => _
   rw [Equiv.Perm.decomposeFin.symm_sign, if_neg (Fin.succ_ne_zero i)]

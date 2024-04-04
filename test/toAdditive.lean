@@ -1,6 +1,4 @@
 import Mathlib.Algebra.Group.Defs
-import Std.Tactic.NormCast
-import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 import Mathlib.Util.Time
 import Qq.MetaM
@@ -271,7 +269,7 @@ class FooClass (α) : Prop where
   refle : ∀ a : α, a = a
 
 @[to_additive]
-instance FooClass_one [One α] : FooClass α := ⟨λ _ => rfl⟩
+instance FooClass_one [One α] : FooClass α := ⟨fun _ ↦ rfl⟩
 
 lemma one_fooClass [One α] : FooClass α := by infer_instance
 

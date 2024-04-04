@@ -1,6 +1,5 @@
 import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Init.Logic
-import Std.Tactic.GuardExpr
 
 set_option autoImplicit true
 

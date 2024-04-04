@@ -68,7 +68,6 @@ open Topology Uniformity Filter Set
 
 universe u v w x
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x} [UniformSpace β]
-
 variable {F : ι → α → β} {f : α → β} {s s' : Set α} {x : α} {p : Filter ι} {p' : Filter α}
   {g : ι → α}
 
@@ -367,7 +366,7 @@ theorem Filter.Tendsto.tendstoUniformlyOn_const {g : ι → β} {b : β} (hg : T
   tendstoUniformlyOn_iff_tendstoUniformlyOnFilter.mpr (hg.tendstoUniformlyOnFilter_const (𝓟 s))
 #align filter.tendsto.tendsto_uniformly_on_const Filter.Tendsto.tendstoUniformlyOn_const
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem UniformContinuousOn.tendstoUniformlyOn [UniformSpace α] [UniformSpace γ] {x : α} {U : Set α}
     {V : Set β} {F : α → β → γ} (hF : UniformContinuousOn (↿F) (U ×ˢ V)) (hU : x ∈ U) :
     TendstoUniformlyOn F (F x) (𝓝[U] x) V := by
@@ -551,6 +550,13 @@ theorem UniformCauchySeqOn.cauchy_map [hp : NeBot p] (hf : UniformCauchySeqOn F 
   filter_upwards [hf u hu] with p hp using hp x hx
 #align uniform_cauchy_seq_on.cauchy_map UniformCauchySeqOn.cauchy_map
 
+/-- If a sequence of functions is uniformly Cauchy on a set, then the values at each point form
+a Cauchy sequence.  See `UniformCauchSeqOn.cauchy_map` for the non-`atTop` case. -/
+theorem UniformCauchySeqOn.cauchySeq [Nonempty ι] [SemilatticeSup ι]
+    (hf : UniformCauchySeqOn F atTop s) (hx : x ∈ s) :
+    CauchySeq fun i ↦ F i x :=
+  hf.cauchy_map (hp := atTop_neBot) hx
+
 section SeqTendsto
 
 theorem tendstoUniformlyOn_of_seq_tendstoUniformlyOn {l : Filter ι} [l.IsCountablyGenerated]
@@ -606,7 +612,7 @@ theorem tendstoLocallyUniformlyOn_univ :
   simp [TendstoLocallyUniformlyOn, TendstoLocallyUniformly, nhdsWithin_univ]
 #align tendsto_locally_uniformly_on_univ tendstoLocallyUniformlyOn_univ
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem tendstoLocallyUniformlyOn_iff_forall_tendsto :
     TendstoLocallyUniformlyOn F f p s ↔
       ∀ x ∈ s, Tendsto (fun y : ι × α => (f y.2, F y.1 y.2)) (p ×ˢ 𝓝[s] x) (𝓤 β) :=

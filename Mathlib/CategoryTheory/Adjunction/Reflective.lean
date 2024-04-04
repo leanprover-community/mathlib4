@@ -28,7 +28,6 @@ namespace CategoryTheory
 open Category Adjunction
 
 variable {C : Type u₁} {D : Type u₂} {E : Type u₃}
-
 variable [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E]
 
 /--
@@ -97,7 +96,6 @@ theorem mem_essImage_of_unit_isSplitMono [Reflective i] {A : C}
     refine @epi_of_epi _ _ _ _ _ (retraction (η.app A)) (η.app A) ?_
     rw [show retraction _ ≫ η.app A = _ from η.naturality (retraction (η.app A))]
     apply epi_comp (η.app (i.obj ((leftAdjoint i).obj A)))
-  skip
   haveI := isIso_of_epi_of_isSplitMono (η.app A)
   exact mem_essImage_of_unit_isIso A
 #align category_theory.mem_ess_image_of_unit_is_split_mono CategoryTheory.mem_essImage_of_unit_isSplitMono
@@ -177,7 +175,9 @@ lemma equivEssImageOfReflective_map_counitIso_app_hom [Reflective i]
     (X : Functor.EssImageSubcategory i) :
   (Functor.essImageInclusion i).map (equivEssImageOfReflective_counitIso_app X).hom =
     inv (NatTrans.app (ofRightAdjoint i).unit X.obj) := by
-    simp [equivEssImageOfReflective_counitIso_app, asIso]
+    simp only [Functor.comp_obj, Functor.essImageInclusion_obj, Functor.toEssImage_obj_obj,
+      equivEssImageOfReflective_counitIso_app, asIso, Iso.symm_mk, Functor.essImageInclusion_map,
+      Functor.id_obj]
     rfl
 
 lemma equivEssImageOfReflective_map_counitIso_app_inv [Reflective i]

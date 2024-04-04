@@ -95,9 +95,8 @@ private theorem isRoot_cyclotomic_iff' {n : ℕ} {K : Type*} [Field K] {μ : K} 
   rw [← Finset.prod_sdiff hni, Finset.prod_pair key.ne, hk, hj] at this
   have hn := (X_pow_sub_one_separable_iff.mpr <| NeZero.natCast_ne n K).squarefree
   rw [← this, Squarefree] at hn
-  contrapose! hn
-  refine' ⟨X - C μ, ⟨(∏ x in n.divisors \ {i, n}, cyclotomic x K) * k * j, by ring⟩, _⟩
-  simp [Polynomial.isUnit_iff_degree_eq_zero]
+  specialize hn (X - C μ) ⟨(∏ x in n.divisors \ {i, n}, cyclotomic x K) * k * j, by ring⟩
+  simp [Polynomial.isUnit_iff_degree_eq_zero] at hn
 
 theorem isRoot_cyclotomic_iff [NeZero (n : R)] {μ : R} :
     IsRoot (cyclotomic n R) μ ↔ IsPrimitiveRoot μ n := by
@@ -170,7 +169,7 @@ theorem cyclotomic_injective [CharZero R] : Function.Injective fun n => cyclotom
 theorem _root_.IsPrimitiveRoot.minpoly_dvd_cyclotomic {n : ℕ} {K : Type*} [Field K] {μ : K}
     (h : IsPrimitiveRoot μ n) (hpos : 0 < n) [CharZero K] : minpoly ℤ μ ∣ cyclotomic n ℤ := by
   apply minpoly.isIntegrallyClosed_dvd (h.isIntegral hpos)
-  simpa [aeval_def, eval₂_eq_eval_map, IsRoot.def] using h.isRoot_cyclotomic hpos
+  simpa [aeval_def, eval₂_eq_eval_map, IsRoot.definition] using h.isRoot_cyclotomic hpos
 #align is_primitive_root.minpoly_dvd_cyclotomic IsPrimitiveRoot.minpoly_dvd_cyclotomic
 
 section minpoly
@@ -182,7 +181,7 @@ theorem _root_.IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible {K : Type*} 
     (h : Irreducible <| cyclotomic n K) [NeZero (n : K)] : cyclotomic n K = minpoly K μ := by
   haveI := NeZero.of_noZeroSMulDivisors K R n
   refine' minpoly.eq_of_irreducible_of_monic h _ (cyclotomic.monic n K)
-  rwa [aeval_def, eval₂_eq_eval_map, map_cyclotomic, ← IsRoot.def, isRoot_cyclotomic_iff]
+  rwa [aeval_def, eval₂_eq_eval_map, map_cyclotomic, ← IsRoot.definition, isRoot_cyclotomic_iff]
 #align is_primitive_root.minpoly_eq_cyclotomic_of_irreducible IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible
 
 /-- `cyclotomic n ℤ` is the minimal polynomial of a primitive `n`-th root of unity `μ`. -/

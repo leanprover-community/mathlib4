@@ -37,9 +37,7 @@ namespace Language
 open Structure Set
 
 variable {L : Language} {ι : Type v} [Preorder ι]
-
 variable {G : ι → Type w} [∀ i, L.Structure (G i)]
-
 variable (f : ∀ i j, i ≤ j → G i ↪[L] G j)
 
 namespace DirectedSystem
@@ -360,9 +358,7 @@ theorem exists_fg_substructure_in_Sigma (S : L.Substructure (DirectLimit G f)) (
     Subtype.range_coe_subtype, Finset.setOf_mem, A_closure]
 
 variable {P : Type u₁} [L.Structure P] (g : ∀ i, G i ↪[L] P)
-
 variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
-
 variable (L ι G f)
 
 /-- The universal property of the direct limit: maps from the components to another module

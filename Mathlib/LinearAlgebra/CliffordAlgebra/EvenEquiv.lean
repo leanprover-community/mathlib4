@@ -38,7 +38,6 @@ This file provides some notable isomorphisms regarding the even subalgebra, `Cli
 namespace CliffordAlgebra
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-
 variable (Q : QuadraticForm R M)
 
 /-! ### Constructions needed for `CliffordAlgebra.equivEven` -/
@@ -85,7 +84,7 @@ theorem neg_e0_mul_v (m : M) : -(e0 Q * v Q m) = v Q m * e0 Q := by
   refine' neg_eq_of_add_eq_zero_right ((ι_mul_ι_add_swap _ _).trans _)
   dsimp [QuadraticForm.polar]
   simp only [add_zero, mul_zero, mul_one, zero_add, neg_zero, QuadraticForm.map_zero,
-    add_sub_cancel, sub_self, map_zero, zero_sub]
+    add_sub_cancel_right, sub_self, map_zero, zero_sub]
 #align clifford_algebra.equiv_even.neg_e0_mul_v CliffordAlgebra.EquivEven.neg_e0_mul_v
 
 theorem neg_v_mul_e0 (m : M) : -(v Q m * e0 Q) = e0 Q * v Q m := by
@@ -136,7 +135,6 @@ def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
     rw [← mul_assoc, e0_mul_v_mul_e0, v_sq_scalar]
 #align clifford_algebra.to_even CliffordAlgebra.toEven
 
-@[simp]
 theorem toEven_ι (m : M) : (toEven Q (ι Q m) : CliffordAlgebra (Q' Q)) = e0 Q * v Q m := by
   rw [toEven, CliffordAlgebra.lift_ι_apply]
   -- Porting note (#10691): was `rw`
@@ -233,13 +231,9 @@ theorem ofEven_comp_toEven : (ofEven Q).comp (toEven Q) = AlgHom.id R _ :=
 /-- Any clifford algebra is isomorphic to the even subalgebra of a clifford algebra with an extra
 dimension (that is, with vector space `M × R`), with a quadratic form evaluating to `-1` on that new
 basis vector. -/
-@[simps!]
 def equivEven : CliffordAlgebra Q ≃ₐ[R] CliffordAlgebra.even (Q' Q) :=
   AlgEquiv.ofAlgHom (toEven Q) (ofEven Q) (toEven_comp_ofEven Q) (ofEven_comp_toEven Q)
 #align clifford_algebra.equiv_even CliffordAlgebra.equivEven
-
--- Note: times out on linting CI
-attribute [nolint simpNF] equivEven_symm_apply
 
 /-- The representation of the clifford conjugate (i.e. the reverse of the involute) in the even
 subalgebra is just the reverse of the representation. -/

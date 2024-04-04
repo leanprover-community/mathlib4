@@ -54,7 +54,6 @@ open Set
 section
 
 variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
-
 variable [AffineSpace V P]
 
 /-- The submodule spanning the differences of a (possibly empty) set of points. -/
@@ -1194,16 +1193,16 @@ variable {k}
 /-- An induction principle for span membership. If `p` holds for all elements of `s` and is
 preserved under certain affine combinations, then `p` holds for all elements of the span of `s`. -/
 theorem affineSpan_induction {x : P} {s : Set P} {p : P → Prop} (h : x ∈ affineSpan k s)
-    (Hs : ∀ x : P, x ∈ s → p x)
-    (Hc : ∀ (c : k) (u v w : P), p u → p v → p w → p (c • (u -ᵥ v) +ᵥ w)) : p x :=
-  (affineSpan_le (Q := ⟨p, Hc⟩)).mpr Hs h
+    (mem : ∀ x : P, x ∈ s → p x)
+    (smul_vsub_vadd : ∀ (c : k) (u v w : P), p u → p v → p w → p (c • (u -ᵥ v) +ᵥ w)) : p x :=
+  (affineSpan_le (Q := ⟨p, smul_vsub_vadd⟩)).mpr mem h
 #align affine_span_induction affineSpan_induction
 
 /-- A dependent version of `affineSpan_induction`. -/
 @[elab_as_elim]
 theorem affineSpan_induction' {s : Set P} {p : ∀ x, x ∈ affineSpan k s → Prop}
-    (Hs : ∀ (y) (hys : y ∈ s), p y (subset_affineSpan k _ hys))
-    (Hc :
+    (mem : ∀ (y) (hys : y ∈ s), p y (subset_affineSpan k _ hys))
+    (smul_vsub_vadd :
       ∀ (c : k) (u hu v hv w hw),
         p u hu →
           p v hv → p w hw → p (c • (u -ᵥ v) +ᵥ w) (AffineSubspace.smul_vsub_vadd_mem _ _ hu hv hw))
@@ -1211,12 +1210,13 @@ theorem affineSpan_induction' {s : Set P} {p : ∀ x, x ∈ affineSpan k s → P
   refine' Exists.elim _ fun (hx : x ∈ affineSpan k s) (hc : p x hx) => hc
   -- Porting note: Lean couldn't infer the motive
   refine' affineSpan_induction (p := fun y => ∃ z, p y z) h _ _
-  · exact fun y hy => ⟨subset_affineSpan _ _ hy, Hs y hy⟩
+  · exact fun y hy => ⟨subset_affineSpan _ _ hy, mem y hy⟩
   · exact fun c u v w hu hv hw =>
       Exists.elim hu fun hu' hu =>
         Exists.elim hv fun hv' hv =>
           Exists.elim hw fun hw' hw =>
-            ⟨AffineSubspace.smul_vsub_vadd_mem _ _ hu' hv' hw', Hc _ _ _ _ _ _ _ hu hv hw⟩
+            ⟨AffineSubspace.smul_vsub_vadd_mem _ _ hu' hv' hw',
+              smul_vsub_vadd _ _ _ _ _ _ _ hu hv hw⟩
 #align affine_span_induction' affineSpan_induction'
 
 section WithLocalInstance
@@ -1426,8 +1426,8 @@ lemma affineSpan_le_toAffineSubspace_span {s : Set V} :
   intro x hx
   show x ∈ Submodule.span k s
   induction hx using affineSpan_induction' with
-  | Hs x hx => exact Submodule.subset_span hx
-  | Hc c u _ v _ w _ hu hv hw =>
+  | mem x hx => exact Submodule.subset_span hx
+  | smul_vsub_vadd c u _ v _ w _ hu hv hw =>
     simp only [vsub_eq_sub, vadd_eq_add]
     apply Submodule.add_mem _ _ hw
     exact Submodule.smul_mem _ _ (Submodule.sub_mem _ hu hv)
@@ -1513,11 +1513,8 @@ end AffineSubspace
 section MapComap
 
 variable {k V₁ P₁ V₂ P₂ V₃ P₃ : Type*} [Ring k]
-
 variable [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁]
-
 variable [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
-
 variable [AddCommGroup V₃] [Module k V₃] [AddTorsor V₃ P₃]
 
 section
@@ -1797,7 +1794,6 @@ namespace AffineSubspace
 open AffineEquiv
 
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
-
 variable [AffineSpace V P]
 
 /-- Two affine subspaces are parallel if one is related to the other by adding the same vector

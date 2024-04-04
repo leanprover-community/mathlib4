@@ -7,8 +7,10 @@ import Mathlib.Data.List.Sigma
 import Mathlib.Data.Int.Range
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.ToDFinsupp
+import Std.Data.LazyList
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
+import Std.Data.LazyList
 import Std.Data.List.Perm
 
 #align_import testing.slim_check.functions from "leanprover-community/mathlib"@"f9c300047a57aeda7c2fe15a3ac2455eb05ec225"
@@ -183,7 +185,7 @@ def applyFinsupp (tf : TotalFunction α β) : α →₀ β where
     intro a
     rcases tf with ⟨A, y⟩
     simp only [apply, zeroDefaultSupp, List.mem_map, List.mem_filter, exists_and_right,
-      List.mem_toFinset, exists_eq_right, Sigma.exists, Ne.def, zeroDefault]
+      List.mem_toFinset, exists_eq_right, Sigma.exists, Ne, zeroDefault]
     constructor
     · rintro ⟨od, hval, hod⟩
       have := List.mem_dlookup (List.nodupKeys_dedupKeys A) hval

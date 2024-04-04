@@ -6,7 +6,7 @@ Authors: Thomas Browning, Patrick Lutz
 import Mathlib.FieldTheory.IntermediateField
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import field_theory.adjoin from "leanprover-community/mathlib"@"df76f43357840485b9d04ed5dee5ab115d420e87"
 
@@ -536,12 +536,13 @@ theorem adjoin_eq_top_of_algebra (hS : Algebra.adjoin F S = ⊤) : adjoin F S = 
   top_le_iff.mp (hS.symm.trans_le <| algebra_adjoin_le_adjoin F S)
 
 @[elab_as_elim]
-theorem adjoin_induction {s : Set E} {p : E → Prop} {x} (h : x ∈ adjoin F s) (Hs : ∀ x ∈ s, p x)
-    (Hmap : ∀ x, p (algebraMap F E x)) (Hadd : ∀ x y, p x → p y → p (x + y))
-    (Hneg : ∀ x, p x → p (-x)) (Hinv : ∀ x, p x → p x⁻¹) (Hmul : ∀ x y, p x → p y → p (x * y)) :
+theorem adjoin_induction {s : Set E} {p : E → Prop} {x} (h : x ∈ adjoin F s) (mem : ∀ x ∈ s, p x)
+    (algebraMap : ∀ x, p (algebraMap F E x)) (add : ∀ x y, p x → p y → p (x + y))
+    (neg : ∀ x, p x → p (-x)) (inv : ∀ x, p x → p x⁻¹) (mul : ∀ x y, p x → p y → p (x * y)) :
     p x :=
-  Subfield.closure_induction h (fun x hx => Or.casesOn hx (fun ⟨x, hx⟩ => hx ▸ Hmap x) (Hs x))
-    ((algebraMap F E).map_one ▸ Hmap 1) Hadd Hneg Hinv Hmul
+  Subfield.closure_induction h
+    (fun x hx => Or.casesOn hx (fun ⟨x, hx⟩ => hx ▸ algebraMap x) (mem x))
+    ((_root_.algebraMap F E).map_one ▸ algebraMap 1) add neg inv mul
 #align intermediate_field.adjoin_induction IntermediateField.adjoin_induction
 
 /- Porting note (kmill): this notation is replacing the typeclass-based one I had previously
@@ -787,7 +788,6 @@ end Supremum
 section Tower
 
 variable (E)
-
 variable {K : Type*} [Field K] [Algebra F K] [Algebra E K] [IsScalarTower F E K]
 
 /-- If `K / E / F` is a field extension tower, `L` is an intermediate field of `K / F`, such that
@@ -1061,7 +1061,6 @@ section AdjoinIntegralElement
 universe u
 
 variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] {α : E}
-
 variable {K : Type u} [Field K] [Algebra F K]
 
 theorem minpoly_gen (α : E) :
@@ -1136,7 +1135,7 @@ noncomputable def adjoin.powerBasis {x : L} (hx : IsIntegral K x) : PowerBasis K
 #align intermediate_field.adjoin.power_basis IntermediateField.adjoin.powerBasis
 
 theorem adjoin.finiteDimensional {x : L} (hx : IsIntegral K x) : FiniteDimensional K K⟮x⟯ :=
-  PowerBasis.finiteDimensional (adjoin.powerBasis hx)
+  (adjoin.powerBasis hx).finite
 #align intermediate_field.adjoin.finite_dimensional IntermediateField.adjoin.finiteDimensional
 
 theorem isAlgebraic_adjoin_simple {x : L} (hx : IsIntegral K x) : Algebra.IsAlgebraic K K⟮x⟯ :=
@@ -1297,7 +1296,7 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
     (this.trans natDegree_comp.symm).ge).irreducible hp₁
   have := Fact.mk hp₁
   let Kx := AdjoinRoot p
-  letI := (AdjoinRoot.powerBasis hp₁.ne_zero).finiteDimensional
+  letI := (AdjoinRoot.powerBasis hp₁.ne_zero).finite
   have key₁ : f = minpoly K (aeval (root p) g) := by
     refine minpoly.eq_of_irreducible_of_monic hf ?_ hfm
     rw [← aeval_comp]

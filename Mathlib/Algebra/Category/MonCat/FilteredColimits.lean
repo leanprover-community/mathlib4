@@ -3,7 +3,7 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
+import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 import Mathlib.CategoryTheory.Limits.Types
@@ -29,7 +29,7 @@ universe v u
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 open CategoryTheory
 
@@ -43,7 +43,7 @@ section
 
 -- Porting note: mathlib 3 used `parameters` here, mainly so we can have the abbreviations `M` and
 -- `M.mk` below, without passing around `F` all the time.
-variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCat.{max v u})
+variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCatMax.{v, u})
 
 /-- The colimit of `F ⋙ forget MonCat` in the category of types.
 In the following, we will construct a monoid structure on `M`.
@@ -51,22 +51,22 @@ In the following, we will construct a monoid structure on `M`.
 @[to_additive
       "The colimit of `F ⋙ forget AddMon` in the category of types.
       In the following, we will construct an additive monoid structure on `M`."]
-abbrev M : TypeMax.{v, u} :=
+abbrev M :=
   Types.Quot (F ⋙ forget MonCat)
 #align Mon.filtered_colimits.M MonCat.FilteredColimits.M
 #align AddMon.filtered_colimits.M AddMonCat.FilteredColimits.M
 
 /-- The canonical projection into the colimit, as a quotient type. -/
 @[to_additive "The canonical projection into the colimit, as a quotient type."]
-abbrev M.mk : (Σ j, F.obj j) → M.{v, u} F :=
-  Quot.mk (Types.Quot.Rel (F ⋙ forget MonCat))
+noncomputable abbrev M.mk : (Σ j, F.obj j) → M.{v, u} F :=
+  Quot.mk _
 #align Mon.filtered_colimits.M.mk MonCat.FilteredColimits.M.mk
 #align AddMon.filtered_colimits.M.mk AddMonCat.FilteredColimits.M.mk
 
 @[to_additive]
 theorem M.mk_eq (x y : Σ j, F.obj j)
     (h : ∃ (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2) :
-  M.mk.{v, u} F x = M.mk F y :=
+    M.mk.{v, u} F x = M.mk F y :=
   Quot.EqvGen_sound (Types.FilteredColimit.eqvGen_quot_rel_of_rel (F ⋙ forget MonCat) x y h)
 #align Mon.filtered_colimits.M.mk_eq MonCat.FilteredColimits.M.mk_eq
 #align AddMon.filtered_colimits.M.mk_eq AddMonCat.FilteredColimits.M.mk_eq
@@ -116,7 +116,7 @@ noncomputable def colimitMulAux (x y : Σ j, F.obj j) : M.{v, u} F :=
 /-- Multiplication in the colimit is well-defined in the left argument. -/
 @[to_additive "Addition in the colimit is well-defined in the left argument."]
 theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
-    (hxx' : Types.FilteredColimit.Rel.{v, u} (F ⋙ forget MonCat) x x') :
+    (hxx' : Types.FilteredColimit.Rel (F ⋙ forget MonCat) x x') :
     colimitMulAux.{v, u} F x y = colimitMulAux.{v, u} F x' y := by
   cases' x with j₁ x; cases' y with j₂ y; cases' x' with j₃ x'
   obtain ⟨l, f, g, hfg⟩ := hxx'
@@ -141,7 +141,7 @@ theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
 /-- Multiplication in the colimit is well-defined in the right argument. -/
 @[to_additive "Addition in the colimit is well-defined in the right argument."]
 theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
-    (hyy' : Types.FilteredColimit.Rel.{v, u} (F ⋙ forget MonCat) y y') :
+    (hyy' : Types.FilteredColimit.Rel (F ⋙ forget MonCat) y y') :
     colimitMulAux.{v, u} F x y = colimitMulAux.{v, u} F x y' := by
   cases' y with j₁ y; cases' x with j₂ x; cases' y' with j₃ y'
   obtain ⟨l, f, g, hfg⟩ := hyy'
@@ -192,7 +192,7 @@ theorem colimit_mul_mk_eq (x y : Σ j, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1
   cases' x with j₁ x; cases' y with j₂ y
   obtain ⟨s, α, β, h₁, h₂⟩ := IsFiltered.bowtie (IsFiltered.leftToMax j₁ j₂) f
     (IsFiltered.rightToMax j₁ j₂) g
-  apply M.mk_eq
+  refine M.mk_eq F _ _ ?_
   use s, α, β
   dsimp
   simp_rw [MonoidHom.map_mul]
@@ -264,11 +264,11 @@ noncomputable def colimit : MonCat.{max v u} :=
 @[to_additive
       "The additive monoid homomorphism from a given additive monoid in the diagram to the
       colimit additive monoid."]
-def coconeMorphism (j : J) : F.obj j ⟶ colimit.{v, u} F where
-  toFun := (Types.colimitCocone (F ⋙ forget MonCat)).ι.app j
+def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
+  toFun := (Types.TypeMax.colimitCocone.{v, max v u, v} (F ⋙ forget MonCat)).ι.app j
   map_one' := (colimit_one_eq F j).symm
   map_mul' x y := by
-    convert (colimit_mul_mk_eq.{v, u} F ⟨j, x⟩ ⟨j, y⟩ j (𝟙 j) (𝟙 j)).symm
+    convert (colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, y⟩ j (𝟙 j) (𝟙 j)).symm
     rw [F.map_id]
     rfl
 #align Mon.filtered_colimits.cocone_morphism MonCat.FilteredColimits.coconeMorphism
@@ -277,7 +277,8 @@ def coconeMorphism (j : J) : F.obj j ⟶ colimit.{v, u} F where
 @[to_additive (attr := simp)]
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism.{v, u} F j' = coconeMorphism F j :=
-  MonoidHom.ext fun x => congr_fun ((Types.colimitCocone (F ⋙ forget MonCat)).ι.naturality f) x
+  MonoidHom.ext fun x =>
+    congr_fun ((Types.TypeMax.colimitCocone (F ⋙ forget MonCat)).ι.naturality f) x
 #align Mon.filtered_colimits.cocone_naturality MonCat.FilteredColimits.cocone_naturality
 #align AddMon.filtered_colimits.cocone_naturality AddMonCat.FilteredColimits.cocone_naturality
 
@@ -299,7 +300,8 @@ The only thing left to see is that it is a monoid homomorphism.
       corresponding cocone in `Type`. The only thing left to see is that it is an additive monoid
       homomorphism."]
 def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt where
-  toFun := (Types.colimitCoconeIsColimit (F ⋙ forget MonCat)).desc ((forget MonCat).mapCocone t)
+  toFun := (Types.TypeMax.colimitCoconeIsColimit.{v, max v u, v} (F ⋙ forget MonCat)).desc
+    ((forget MonCat).mapCocone t)
   map_one' := by
     rw [colimit_one_eq F IsFiltered.nonempty.some]
     exact MonoidHom.map_one _
@@ -311,7 +313,7 @@ def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt where
     cases' y with j y
     rw [colimit_mul_mk_eq F ⟨i, x⟩ ⟨j, y⟩ (max' i j) (IsFiltered.leftToMax i j)
       (IsFiltered.rightToMax i j)]
-    dsimp [Types.colimitCoconeIsColimit]
+    dsimp [Types.TypeMax.colimitCoconeIsColimit]
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [MonoidHom.map_mul]
     -- Porting note: `rw` can't see through coercion is actually forgetful functor,
@@ -325,10 +327,10 @@ def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt where
 @[to_additive "The proposed colimit cocone is a colimit in `AddMon`."]
 def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   desc := colimitDesc.{v, u} F
-  fac t j := MonoidHom.ext fun x => congr_fun ((Types.colimitCoconeIsColimit.{v, u}
+  fac t j := MonoidHom.ext fun x => congr_fun ((Types.TypeMax.colimitCoconeIsColimit.{v, u}
     (F ⋙ forget MonCat)).fac ((forget MonCat).mapCocone t) j) x
   uniq t m h := MonoidHom.ext fun y => congr_fun
-      ((Types.colimitCoconeIsColimit (F ⋙ forget MonCat)).uniq ((forget MonCat).mapCocone t)
+      ((Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget MonCat)).uniq ((forget MonCat).mapCocone t)
         ((forget MonCat).map m)
         fun j => funext fun x => DFunLike.congr_fun (i := MonCat.instFunLike _ _) (h j) x) y
 #align Mon.filtered_colimits.colimit_cocone_is_colimit MonCat.FilteredColimits.colimitCoconeIsColimit
@@ -339,7 +341,7 @@ noncomputable instance forgetPreservesFilteredColimits :
     PreservesFilteredColimits (forget MonCat.{u}) :=
   ⟨fun J hJ1 _ => letI hJ1' : Category J := hJ1
     ⟨fun {F} => preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit.{u, u} F)
-      (Types.colimitCoconeIsColimit (F ⋙ forget MonCat.{u}))⟩⟩
+      (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget MonCat.{u}))⟩⟩
 end
 
 end MonCat.FilteredColimits
@@ -406,11 +408,11 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
       ((forget₂ CommMonCat MonCat.{max v u}).mapCocone t)
   fac t j :=
     DFunLike.coe_injective (i := CommMonCat.instFunLike _ _) <|
-      (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommMonCat.{max v u})).fac
+      (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommMonCat.{max v u})).fac
         ((forget CommMonCat).mapCocone t) j
   uniq t m h :=
     DFunLike.coe_injective (i := CommMonCat.instFunLike _ _) <|
-      (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommMonCat.{max v u})).uniq
+      (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommMonCat.{max v u})).uniq
         ((forget CommMonCat.{max v u}).mapCocone t)
         ((forget CommMonCat.{max v u}).map m) fun j => funext fun x =>
           DFunLike.congr_fun (i := CommMonCat.instFunLike _ _) (h j) x

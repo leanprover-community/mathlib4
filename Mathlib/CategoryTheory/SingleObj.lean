@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.FinCategory
+import Mathlib.CategoryTheory.FinCategory.Basic
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Combinatorics.Quiver.SingleObj
