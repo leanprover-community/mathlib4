@@ -476,7 +476,7 @@ theorem locallyCompactSpace [i : LocallyCompactSpace Y] (h : X ≃ₜ Y) :
   obtain ⟨T, hT⟩ := hN
   obtain ⟨S, hS⟩ := (i.1 (h x)) T hT.1
   refine ⟨h.symm '' S, ?_⟩
-  rw [←h.symm_map_nhds_eq, Filter.mem_map, preimage_image, Set.image_subset_iff, isCompact_image,
+  rw [← h.symm_map_nhds_eq, Filter.mem_map, preimage_image, Set.image_subset_iff, isCompact_image,
     h.preimage_symm, ← h.preimage_subset, coe_toEquiv, preimage_image]
   exact ⟨hS.1, subset_trans ((Equiv.preimage_subset _ _ _).2 hS.2.1) hT.2, hS.2.2⟩
 
