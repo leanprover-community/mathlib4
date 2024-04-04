@@ -11,9 +11,9 @@ import Mathlib.LinearAlgebra.Dimension.Finite
 # The rank nullity theorem
 
 In this file we provide the rank nullity theorem as a typeclass, and prove various corollaries
-of the theorem. The main definition is `HasRankNullity.{w} R`, which states that
-1. Every `R`-module `M : Type w` has a linear independent subset of cardinality `Module.rank R M`.
-2. `rank (M ⧸ N) + rank N = rank M` for every `R`-module `M : Type w` and every `N : Submodule R M`.
+of the theorem. The main definition is `HasRankNullity.{u} R`, which states that
+1. Every `R`-module `M : Type u` has a linear independent subset of cardinality `Module.rank R M`.
+2. `rank (M ⧸ N) + rank N = rank M` for every `R`-module `M : Type u` and every `N : Submodule R M`.
 
 The following instances are provided in mathlib:
 1. `DivisionRing.hasRankNullity` for division rings in `LinearAlgebra/Dimension/DivisionRing.lean`.
@@ -31,9 +31,12 @@ variable [AddCommGroup M] [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup 
 variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R M']
 
 /--
-A class of rings satisfying
-1. Every `R`-module `M : Type w` has a linear independent subset of cardinality `Module.rank R M`.
-2. `rank (M ⧸ N) + rank N = rank M` for every `R`-module `M : Type w` and every `N : Submodule R M`.
+`HasRankNullity.{u}` is a class of rings satisfying
+1. Every `R`-module `M : Type u` has a linear independent subset of cardinality `Module.rank R M`.
+2. `rank (M ⧸ N) + rank N = rank M` for every `R`-module `M : Type u` and every `N : Submodule R M`.
+
+Usually such a ring satisfies `HasRankNullity.{w}` for all universes `w`, and the universe
+argument is there because of technical limitations to universe polymorphism.
 
 See `DivisionRing.hasRankNullity` and `IsDomain.hasRankNullity`.
 -/

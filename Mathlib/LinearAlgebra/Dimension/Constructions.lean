@@ -61,8 +61,7 @@ theorem LinearIndependent.union_of_quotient
     LinearIndependent (ι := (s ∪ t : _)) R Subtype.val := by
   refine (LinearIndependent.sum_elim_of_quotient (f := Set.embeddingOfSubset s M' hs)
     (of_comp M'.subtype (by simpa using hs')) Subtype.val ht).to_subtype_range' ?_
-  show range (Sum.elim Subtype.val Subtype.val) = s ∪ t
-  rw [Sum.elim_range, Subtype.range_val, Subtype.range_val]
+  simp only [embeddingOfSubset_apply_coe, Sum.elim_range, Subtype.range_val]
 
 theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
     Module.rank R (M ⧸ M') + Module.rank R M' ≤ Module.rank R M := by
