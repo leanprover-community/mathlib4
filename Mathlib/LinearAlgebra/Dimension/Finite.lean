@@ -219,7 +219,7 @@ lemma exists_set_linearIndependent_of_lt_rank {n : Cardinal} (hn : n < Module.ra
 
 lemma exists_finset_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.rank R M) :
     ∃ s : Finset M, s.card = n ∧ LinearIndependent R ((↑) : s → M) := by
-  letI := nonempty_linearIndependent_set
+  have := nonempty_linearIndependent_set
   cases' hn.eq_or_lt with h h
   · obtain ⟨⟨s, hs⟩, hs'⟩ := Cardinal.exists_eq_natCast_of_iSup_eq _
       (Cardinal.bddAbove_range.{v, v} _) _ (h.trans (Module.rank_def R M)).symm
