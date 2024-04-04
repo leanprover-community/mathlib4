@@ -151,6 +151,7 @@ import Mathlib.Tactic.Recall
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.ReduceModChar
 import Mathlib.Tactic.ReduceModChar.Ext
+import Mathlib.Tactic.RefineLinter
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.Rename
