@@ -112,7 +112,7 @@ def WithLawson (α : Type*) := α
 
 namespace WithLawson
 
-/-- `toLawson` is the identity function to the `WithLawson` of a type.  -/
+/-- `toLawson` is the identity function to the `WithLawson` of a type. -/
 @[match_pattern] def toLawson : α ≃ WithLawson α := Equiv.refl _
 
 /-- `ofLawson` is the identity function from the `WithLawson` of a type.  -/
