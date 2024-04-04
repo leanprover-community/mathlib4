@@ -58,6 +58,6 @@ def refineLinter : Linter where run := withSetOptionIn fun _stx => do
   let trees ← getInfoTrees
   for t in trees.toArray do
     for stx in (refine_tree t) do
-      Linter.logLint linter.refine stx ""
+      Linter.logLint linter.refine stx "Please, use `refine` instead of `refine'`!"
 
 initialize addLinter refineLinter
