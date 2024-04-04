@@ -609,7 +609,7 @@ theorem isTopologicalBasis_subtype
     {α : Type*} [TopologicalSpace α] {B : Set (Set α)}
     (h : TopologicalSpace.IsTopologicalBasis B) (p : α → Prop) :
     IsTopologicalBasis (Set.preimage (Subtype.val (p := p)) '' B) :=
-  h.inducing (f := Subtype.val (p := p)) ⟨rfl⟩
+  h.inducing ⟨rfl⟩
 
 -- Porting note: moved `DenseRange.separableSpace` up
 
