@@ -27,19 +27,6 @@ open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
 section generic_lemmas
 
-/-- Dirac delta measures at two different points in a T0 topological space are different if the
-sigma algebra contains all open sets. -/
-lemma MeasureTheory.dirac_ne_dirac' {X : Type*} [TopologicalSpace X] [T0Space X]
-    [MeasurableSpace X] [OpensMeasurableSpace X] {x y : X} (x_ne_y : x ≠ y) :
-    Measure.dirac x ≠ Measure.dirac y := by
-  apply dirac_ne_dirac_iff.mpr
-  obtain ⟨U, U_open, mem_U⟩ := exists_isOpen_xor'_mem x_ne_y
-  by_cases x_in_U : x ∈ U
-  · refine ⟨U, U_open.measurableSet, x_in_U, ?_⟩
-    simp_all only [ne_eq, xor_true, not_false_eq_true]
-  · refine ⟨Uᶜ, U_open.isClosed_compl.measurableSet, x_in_U, ?_⟩
-    simp_all only [ne_eq, xor_false, id_eq, mem_compl_iff, not_true_eq_false, not_false_eq_true]
-
 lemma CompletelyRegularSpace.exists_BCNN {X : Type*} [TopologicalSpace X] [CompletelyRegularSpace X]
     {K : Set X} (K_closed : IsClosed K) {x : X} (x_notin_K : x ∉ K) :
     ∃ (f : X →ᵇ ℝ≥0), f x = 1 ∧ (∀ y ∈ K, f y = 0) := by
@@ -109,7 +96,7 @@ lemma injective_diracProba_of_T0 [T0Space Ω] :
     Function.Injective (fun (x : Ω) ↦ diracProba x) := by
   intro x y x_ne_y
   by_contra con
-  exact dirac_ne_dirac' con <| congr_arg Subtype.val x_ne_y
+  exact dirac_ne_dirac con <| congr_arg Subtype.val x_ne_y
 
 lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace Ω] {x : Ω} (L : Filter Ω)
     (h : ¬ Tendsto id L (𝓝 x)) :

@@ -536,6 +536,18 @@ theorem measure_closure_of_null_frontier {μ : Measure α'} {s : Set α'} (h : �
   measure_congr (closure_ae_eq_of_null_frontier h)
 #align measure_closure_of_null_frontier measure_closure_of_null_frontier
 
+instance separatesPoints_of_opensMeasurableSpace_of_t0Space [T0Space α] :
+    MeasurableSpace.SeparatesPoints α where
+  separates x y := by
+    contrapose!
+    intro x_ne_y
+    obtain ⟨U, U_open, mem_U⟩ := exists_isOpen_xor'_mem x_ne_y
+    by_cases x_in_U : x ∈ U
+    · refine ⟨U, U_open.measurableSet, x_in_U, ?_⟩
+      simp_all only [ne_eq, xor_true, not_false_eq_true]
+    · refine ⟨Uᶜ, U_open.isClosed_compl.measurableSet, x_in_U, ?_⟩
+      simp_all only [ne_eq, xor_false, id_eq, mem_compl_iff, not_true_eq_false, not_false_eq_true]
+
 section Preorder
 
 variable [Preorder α] [OrderClosedTopology α] {a b x : α}

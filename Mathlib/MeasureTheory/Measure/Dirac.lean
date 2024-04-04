@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.MeasureTheory.Measure.Typeclasses
 import Mathlib.MeasureTheory.Measure.MutuallySingular
+import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
 
 /-!
 # Dirac measure
@@ -171,7 +172,7 @@ section dirac_injective
 
 /-- Dirac delta measures at two points are equal if every measurable set contains either both or
 neither of the points. -/
-lemma dirac_eq_dirac_iff_forall_measurableSet {x y : α} :
+lemma dirac_eq_dirac_iff_forall_mem_iff_mem {x y : α} :
     Measure.dirac x = Measure.dirac y ↔ ∀ A, MeasurableSet A → (x ∈ A ↔ y ∈ A) := by
   constructor
   · intro h A A_mble
@@ -196,15 +197,18 @@ containing one of the points but not the other. -/
 lemma dirac_ne_dirac_iff {x y : α} :
     Measure.dirac x ≠ Measure.dirac y ↔ ∃ A, MeasurableSet A ∧ x ∈ A ∧ y ∉ A := by
   apply not_iff_not.mp
-  simp only [ne_eq, not_not, not_exists, not_and, dirac_eq_dirac_iff_forall_measurableSet]
+  simp only [ne_eq, not_not, not_exists, not_and, dirac_eq_dirac_iff_forall_mem_iff_mem]
   refine ⟨fun h A A_mble ↦ by simp only [h A A_mble, imp_self], fun h A A_mble ↦ ?_⟩
   by_cases x_in_A : x ∈ A
   · simp only [x_in_A, h A A_mble x_in_A]
   · simpa only [x_in_A, false_iff] using h Aᶜ (MeasurableSet.compl_iff.mpr A_mble) x_in_A
 
-/-- Dirac delta measures at two different points are different if all singletons are measurable. -/
-lemma dirac_ne_dirac [MeasurableSingletonClass α] {x y : α} (x_ne_y : x ≠ y) :
-    Measure.dirac x ≠ Measure.dirac y :=
-  dirac_ne_dirac_iff.mpr ⟨{x}, measurableSet_singleton x, rfl, Ne.symm x_ne_y⟩
+open MeasurableSpace in
+/-- Dirac delta measures at two different points are different, assuming the measurable space
+separates points. -/
+lemma dirac_ne_dirac [SeparatesPoints α] {x y : α} (x_ne_y : x ≠ y) :
+    Measure.dirac x ≠ Measure.dirac y := by
+  obtain ⟨A, A_mble, x_in_A, y_notin_A⟩ := exists_measurableSet_of_ne x_ne_y
+  exact dirac_ne_dirac_iff.mpr ⟨A, A_mble, x_in_A, y_notin_A⟩
 
 end dirac_injective
