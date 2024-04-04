@@ -19,7 +19,7 @@ with cardinality `k` has a clusterpoint.
 Equivalence is established in `isKLindelof_iff_cardinal_subcover` when `k` is regular.
 TODO: Add the following (in a future PR)
 * `KLindelofSpace X`: `X` is `k`-Lindelöf if it is `k`-Lindelöf as a set.
-* `NonKLindelofSpace`: a space that is not a k-Lindëlof space, e.g. the Long Line.
+* `NonKLindelofSpace`: a space that is not a k-Lindelöf space, e.g. the Long Line.
 
 ## Main results
 
@@ -28,7 +28,7 @@ TODO: Add the following (in a future PR)
 
 ## Implementation details
 
-* This API is mainly based on the API for IsCompact and IsLindelöf and follows notation and style as
+* This API is mainly based on the API for `IsCompact` and `IsLindelof` and follows notation and style as
  much as possible.
 -/
 open Set Filter Topology TopologicalSpace Cardinal
@@ -227,7 +227,7 @@ theorem IsKLindelof.elim_cardinal_subfamily_closed (hreg : Cardinal.IsRegular k)
   simp only [U, Pi.compl_apply, compl_iUnion, compl_compl] at husub
   exact disjoint_iff_inter_eq_empty.mp (Disjoint.symm husub)
 
-/--To show that a `k`-Lindelöf set intersects the intersection of a family of closed sets,
+/-- To show that a `k`-Lindelöf set intersects the intersection of a family of closed sets,
   it is sufficient to show that it intersects every subfamily of cardinality below `k`. -/
 theorem IsKLindelof.inter_iInter_nonempty (hreg : Cardinal.IsRegular k) {ι : Type u}
     (hs : IsKLindelof k s) (t : ι → Set X) (htc : ∀ i, IsClosed (t i))
