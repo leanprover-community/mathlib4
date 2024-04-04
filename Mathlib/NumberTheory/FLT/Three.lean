@@ -76,7 +76,7 @@ private lemma three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a 
     rw [← HF]
     ring
 
-open Finset Int in
+open Finset in
 private lemma fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a ≠ 0)
     (h3a : 3 ∣ a) (Hgcd: Finset.gcd {a, b, c} id = 1)
     (H : ∀ a b c : ℤ, c ≠ 0 → ¬ 3 ∣ a → ¬ 3 ∣ b  → 3 ∣ c → IsCoprime a b → a ^ 3 + b ^ 3 ≠ c ^ 3) :
@@ -88,14 +88,13 @@ private lemma fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : �
   simp only [mem_insert, mem_singleton] at hx
   have h3b : 3 ∣ b := by
     refine three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 ha ?_ h3a HF H
-    simp only [← Hgcd, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
+    simp only [← Hgcd, gcd_insert, gcd_singleton, id_eq, ← Int.abs_eq_normalize, abs_neg]
   rcases hx with (hx | hx | hx)
   · exact hx ▸ h3a
   · exact hx ▸ h3b
   · simpa [hx] using three_dvd_c_of_dvd_a_of_dvd_b HF h3a h3b
 
 open Finset Int in
-
 /--
   To prove Fermat Last Theorem for `n = 3`, it is enough to show that that for all `a`, `b`, `c` in
   `ℤ` such that `c ≠ 0`, `¬ 3 ∣ a`, `¬ 3 ∣ b`, `a` and `b` are coprime and `3 ∣ c`, we have
