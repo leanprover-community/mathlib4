@@ -123,7 +123,7 @@ The corresponding Coxeter-Dynkin diagram is:
 ```
 -/
 def Aₙ : CoxeterMatrix (Fin n) :=
-  of (fun i j : Fin n ↦
+  of (Matrix.of fun i j : Fin n ↦
     if i = j then 1
       else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2))
     (by aesop) (by simp) (by aesop)
@@ -137,7 +137,7 @@ The corresponding Coxeter-Dynkin diagram is:
 ```
 -/
 def Bₙ : CoxeterMatrix (Fin n) :=
-  of (fun i j : Fin n ↦
+  of (Matrix.of fun i j : Fin n ↦
     if i = j then 1
       else (if i = n - 1 ∧ j = n - 2 ∨ j = n - 1 ∧ i = n - 2 then 4
         else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2)))
@@ -155,7 +155,7 @@ The corresponding Coxeter-Dynkin diagram is:
 ```
 -/
 def Dₙ : CoxeterMatrix (Fin n) :=
-  of (fun i j : Fin n ↦
+  of (Matrix.of fun i j : Fin n ↦
     if i = j then 1
       else (if i = n - 1 ∧ j = n - 3 ∨ j = n - 1 ∧ i = n - 3 then 3
         else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2)))
