@@ -261,7 +261,8 @@ class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemi
 #align non_unital_comm_semiring NonUnitalCommSemiring
 
 /--
-  A commutative semiring (`CommSemiring`) is a semiring (`Semiring`) with commutative multiplication.
+  A commutative semiring (`CommSemiring`) is a semiring (`Semiring`)
+  with commutative multiplication.
 -/
 class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
 #align comm_semiring CommSemiring
