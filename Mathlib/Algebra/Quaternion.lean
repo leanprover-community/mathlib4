@@ -400,7 +400,7 @@ instance : AddCommGroupWithOne ℍ[R,c₁,c₂] where
   natCast_zero := by simp
   natCast_succ := by simp
   intCast n := ((n : R) : ℍ[R,c₁,c₂])
-  intCast_ofNat _ := congr_arg coe (Int.cast_ofNat _)
+  intCast_ofNat _ := congr_arg coe (Int.cast_natCast _)
   intCast_negSucc n := by
     change coe _ = -coe _
     rw [Int.cast_negSucc, coe_neg]

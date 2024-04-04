@@ -747,7 +747,7 @@ theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
     rw [riemannZeta_one_sub]
     rotate_left
     · intro n
-      rw [(by norm_cast : 2 * (m : ℂ) + 2 = ↑(2 * m + 2)), ← Int.cast_neg_natCast, ← Int.cast_ofNat,
+      rw [(by norm_cast : 2 * (m : ℂ) + 2 = ↑(2 * m + 2)), ← Int.cast_neg_natCast, ← Int.cast_natCast,
         Ne, Int.cast_inj]
       apply ne_of_gt
       exact lt_of_le_of_lt
