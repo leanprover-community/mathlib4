@@ -147,4 +147,3 @@ theorem subtypeOrEquiv_symm_inr (p q : α → Prop) [DecidablePred p] (h : Disjo
 #align subtype_or_equiv_symm_inr subtypeOrEquiv_symm_inr
 
 end Subtype
-#lint
