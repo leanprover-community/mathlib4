@@ -94,8 +94,6 @@ the second approach only when you need to weaken a condition on either `R` or `A
 
 universe u v w u₁ v₁
 
-open BigOperators
-
 section Prio
 
 -- We set this priority to 0 later in this file
