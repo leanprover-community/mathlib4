@@ -399,7 +399,7 @@ theorem natDegree_comp : natDegree (p.comp q) = natDegree p * natDegree q := by
     · simp only [p0, zero_comp, natDegree_zero, zero_mul]
     refine' le_antisymm natDegree_comp_le (le_natDegree_of_ne_zero _)
     simp only [coeff_comp_degree_mul_degree q0, p0, mul_eq_zero, leadingCoeff_eq_zero, or_self_iff,
-      ne_zero_of_natDegree_gt (Nat.pos_of_ne_zero q0), pow_ne_zero, Ne.def, not_false_iff]
+      ne_zero_of_natDegree_gt (Nat.pos_of_ne_zero q0), pow_ne_zero, Ne, not_false_iff]
 #align polynomial.nat_degree_comp Polynomial.natDegree_comp
 
 @[simp]

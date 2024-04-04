@@ -502,7 +502,7 @@ theorem le_degree_of_mem_supp (a : ℕ) : a ∈ p.support → ↑a ≤ degree p 
 #align polynomial.le_degree_of_mem_supp Polynomial.le_degree_of_mem_supp
 
 theorem nonempty_support_iff : p.support.Nonempty ↔ p ≠ 0 := by
-  rw [Ne.def, nonempty_iff_ne_empty, Ne.def, ← support_eq_empty]
+  rw [Ne, nonempty_iff_ne_empty, Ne, ← support_eq_empty]
 #align polynomial.nonempty_support_iff Polynomial.nonempty_support_iff
 
 end Semiring
@@ -606,7 +606,7 @@ theorem ne_zero_of_degree_gt {n : WithBot ℕ} (h : n < degree p) : p ≠ 0 :=
 
 theorem ne_zero_of_degree_ge_degree (hpq : p.degree ≤ q.degree) (hp : p ≠ 0) : q ≠ 0 :=
   Polynomial.ne_zero_of_degree_gt
-    (lt_of_lt_of_le (bot_lt_iff_ne_bot.mpr (by rwa [Ne.def, Polynomial.degree_eq_bot])) hpq :
+    (lt_of_lt_of_le (bot_lt_iff_ne_bot.mpr (by rwa [Ne, Polynomial.degree_eq_bot])) hpq :
       q.degree > ⊥)
 #align polynomial.ne_zero_of_degree_ge_degree Polynomial.ne_zero_of_degree_ge_degree
 
@@ -684,7 +684,7 @@ theorem leadingCoeff_eq_zero : leadingCoeff p = 0 ↔ p = 0 :=
     fun h => h.symm ▸ leadingCoeff_zero⟩
 #align polynomial.leading_coeff_eq_zero Polynomial.leadingCoeff_eq_zero
 
-theorem leadingCoeff_ne_zero : leadingCoeff p ≠ 0 ↔ p ≠ 0 := by rw [Ne.def, leadingCoeff_eq_zero]
+theorem leadingCoeff_ne_zero : leadingCoeff p ≠ 0 ↔ p ≠ 0 := by rw [Ne, leadingCoeff_eq_zero]
 #align polynomial.leading_coeff_ne_zero Polynomial.leadingCoeff_ne_zero
 
 theorem leadingCoeff_eq_zero_iff_deg_eq_bot : leadingCoeff p = 0 ↔ degree p = ⊥ := by
@@ -998,7 +998,7 @@ theorem degree_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
 theorem Monic.degree_mul (hq : Monic q) : degree (p * q) = degree p + degree q :=
   letI := Classical.decEq R
   if hp : p = 0 then by simp [hp]
-  else degree_mul' <| by rwa [hq.leadingCoeff, mul_one, Ne.def, leadingCoeff_eq_zero]
+  else degree_mul' <| by rwa [hq.leadingCoeff, mul_one, Ne, leadingCoeff_eq_zero]
 #align polynomial.monic.degree_mul Polynomial.Monic.degree_mul
 
 theorem natDegree_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
@@ -1061,7 +1061,7 @@ theorem leadingCoeff_monic_mul {p q : R[X]} (hp : Monic p) :
   rcases eq_or_ne q 0 with (rfl | H)
   · simp
   · rw [leadingCoeff_mul', hp.leadingCoeff, one_mul]
-    rwa [hp.leadingCoeff, one_mul, Ne.def, leadingCoeff_eq_zero]
+    rwa [hp.leadingCoeff, one_mul, Ne, leadingCoeff_eq_zero]
 #align polynomial.leading_coeff_monic_mul Polynomial.leadingCoeff_monic_mul
 
 theorem leadingCoeff_mul_monic {p q : R[X]} (hq : Monic q) :
@@ -1158,14 +1158,14 @@ theorem degree_zero_le : degree (0 : R[X]) ≤ 0 := natDegree_eq_zero_iff_degree
 theorem degree_le_iff_coeff_zero (f : R[X]) (n : WithBot ℕ) :
     degree f ≤ n ↔ ∀ m : ℕ, n < m → coeff f m = 0 := by
   -- Porting note: `Nat.cast_withBot` is required.
-  simp only [degree, Finset.max, Finset.sup_le_iff, mem_support_iff, Ne.def, ← not_le,
+  simp only [degree, Finset.max, Finset.sup_le_iff, mem_support_iff, Ne, ← not_le,
     not_imp_comm, Nat.cast_withBot]
 #align polynomial.degree_le_iff_coeff_zero Polynomial.degree_le_iff_coeff_zero
 
 theorem degree_lt_iff_coeff_zero (f : R[X]) (n : ℕ) :
     degree f < n ↔ ∀ m : ℕ, n ≤ m → coeff f m = 0 := by
   simp only [degree, Finset.sup_lt_iff (WithBot.bot_lt_coe n), mem_support_iff,
-    WithBot.coe_lt_coe, ← @not_le ℕ, max_eq_sup_coe, Nat.cast_withBot, Ne.def, not_imp_not]
+    WithBot.coe_lt_coe, ← @not_le ℕ, max_eq_sup_coe, Nat.cast_withBot, Ne, not_imp_not]
 #align polynomial.degree_lt_iff_coeff_zero Polynomial.degree_lt_iff_coeff_zero
 
 theorem degree_smul_le (a : R) (p : R[X]) : degree (a • p) ≤ degree p := by
