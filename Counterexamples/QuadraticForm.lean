@@ -23,6 +23,7 @@ variable (F : Type*) [Nontrivial F] [CommRing F] [CharP F 2]
 open LinearMap
 open LinearMap.BilinForm
 open LinearMap (BilinForm)
+open LinearMap.BilinMap
 
 namespace Counterexample
 
@@ -53,12 +54,12 @@ This disproves a weaker version of `QuadraticForm.associated_left_inverse`.
 -/
 theorem LinearMap.BilinForm.not_injOn_toQuadraticForm_isSymm.{u} :
     ¬∀ {R M : Type u} [CommSemiring R] [AddCommMonoid M], ∀ [Module R M],
-      Set.InjOn (toQuadraticForm : BilinForm R M → QuadraticForm R M) {B | B.IsSymm} := by
+      Set.InjOn (toQuadraticMap : BilinForm R M → QuadraticForm R M) {B | B.IsSymm} := by
   intro h
   let F := ULift.{u} (ZMod 2)
   apply B_ne_zero F
   apply h (isSymm_B F) isSymm_zero
-  rw [toQuadraticForm_zero, toQuadraticForm_eq_zero]
+  rw [toQuadraticMap_zero, toQuadraticMap_eq_zero]
   exact isAlt_B F
 #align counterexample.bilin_form.not_inj_on_to_quadratic_form_is_symm Counterexample.LinearMap.BilinForm.not_injOn_toQuadraticForm_isSymm
 
