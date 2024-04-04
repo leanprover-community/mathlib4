@@ -3,7 +3,6 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
--- import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Data.Int.Monoid
 import Mathlib.Data.Nat.Monoid
 import Mathlib.GroupTheory.GroupAction.Opposite
@@ -11,9 +10,9 @@ import Mathlib.GroupTheory.GroupAction.Opposite
 #align_import algebra.hom.iterate from "leanprover-community/mathlib"@"792a2a264169d64986541c6f8f7e3bbb6acb6295"
 
 /-!
-# Iterates of monoid and ring homomorphisms
+# Iterates of monoid homomorphisms
 
-Iterate of a monoid/ring homomorphism is a monoid/ring homomorphism but it has a wrong type, so Lean
+Iterate of a monoid homomorphism is a monoid homomorphism but it has a wrong type, so Lean
 can't apply lemmas like `MonoidHom.map_one` to `f^[n] 1`. Though it is possible to define
 a monoid structure on the endomorphisms, quite often we do not want to convert from
 `M →* M` to `Monoid.End M` and from `f^[n]` to `f^n` just to apply a simple lemma.
