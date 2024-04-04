@@ -84,7 +84,7 @@ lemma topology_eq : ‹_› = lawson α := topology_eq_lawson
 /-- The complements of the upper closures of finite sets intersected with Scott open sets form
 a basis for the lawson topology. -/
 def lawsonBasis := { s : Set α | ∃ t : Set α, t.Finite ∧ ∃ u : Set α, IsOpen[scott α] u ∧
-      (upperClosure t : Set α)ᶜ ∩ u = s }
+      u \ upperClosure t = s }
 
 protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (lawsonBasis α) := by
   have lawsonBasis_image2 : lawsonBasis α =
