@@ -28,8 +28,8 @@ TODO: Add the following (in a future PR)
 
 ## Implementation details
 
-* This API is mainly based on the API for `IsCompact` and `IsLindelof` and follows notation and style
- as much as possible.
+* This API is mainly based on the API for `IsCompact` and `IsLindelof` and follows notation 
+  and style as much as possible.
 -/
 open Set Filter Topology TopologicalSpace Cardinal
 
