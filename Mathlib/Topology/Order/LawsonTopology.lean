@@ -158,7 +158,7 @@ theorem isClosed_preimage_ofLawson (S : Set α) :
       @IsClosed (WithLawson α) _ S :=
   Iff.rfl
 
-theorem isOpen_def (T : Set (Topology.WithLawson α)) :
+theorem isOpen_def (T : Set (WithLawson α)) :
     IsOpen T ↔
       (lawson α).IsOpen (Topology.WithLawson.toLawson ⁻¹' T) :=
   Iff.rfl
