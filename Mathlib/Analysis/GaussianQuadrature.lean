@@ -1,11 +1,32 @@
-import Mathlib.Analysis.Complex.Polynomial
+/-
+Copyright (c) 2024 Giorgia Benassi. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Giorgia Benassi, Giacomo Gallina, Chiara Molinari
+-/
+
+import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
+import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.LinearAlgebra.Lagrange
 import Mathlib.RingTheory.MvPolynomial.Basic
+
+/-!
+# Orthogonal Polynomials and Quadrature Formulas
+
+## Main definitions and results
+* `IntervalWithMeasure` is an interval of ℝ with a nonatomic, nonnull measure
+  for which every polynomial has finite L¹ norm
+* `OrthoPoly s n` is the `n`th orthogonal polynomial with respect to `s : IntervalWithMeasure`
+* `OrthoPoly_three_term_recurrence`
+* `Quadrature` is a generic quadrature formula
+* `Quadrature.interp` is an interpolatory quadrature formula
+* `Quadrature.Gaussian` is a Gaussian quadrature formula
+-/
+
 
 open MeasureTheory Polynomial Set Real Finset BigOperators Lagrange
 
 noncomputable section
-
 
 -- An interval of ℝ with a nonatomic measure, and where polynomials are integrable
 structure IntervalWithMeasure where
@@ -83,7 +104,8 @@ theorem MySpace.inner_def (x y : MySpace s) : ⟪x, y⟫_ℝ = s.dot x y :=
 -- a nonzero polynomial that is nonnegative on an open interval,
 -- has positive integral in that interval
 theorem MySpace.integral_pos_of_pos {p : MySpace s} (hne0 : p ≠ 0)
-  (hpos : ∀ x : ℝ, x ∈ Ioo s.a s.b → p.eval x ≥ 0) : 0 < ∫ (x : ℝ) in s.a..s.b, p.eval x ∂s.μ := by
+    (hpos : ∀ x : ℝ, x ∈ Ioo s.a s.b → p.eval x ≥ 0) :
+    0 < ∫ (x : ℝ) in s.a..s.b, p.eval x ∂s.μ := by
 
   have hpge0ae : 0 ≤ᶠ[Measure.ae (Measure.restrict s.μ (Ι s.a s.b))] p.eval := by
     apply MeasureTheory.ae_restrict_uIoc_iff.mpr
@@ -112,7 +134,8 @@ theorem MySpace.integral_pos_of_pos {p : MySpace s} (hne0 : p ≠ 0)
 
   have hsp : s.μ (Function.support (p.eval) ∩ Ioc s.a s.b) > 0 := by
     unfold Function.support
-    have hd2 : Disjoint ({x : ℝ | p.eval x ≠ 0} ∩ Ioc s.a s.b) ({x : ℝ | p.eval x = 0} ∩ Ioc s.a s.b) := by
+    have hd2 : Disjoint ({x : ℝ | p.eval x ≠ 0} ∩ Ioc s.a s.b)
+        ({x : ℝ | p.eval x = 0} ∩ Ioc s.a s.b) := by
       apply Set.disjoint_left.mpr
       intro a
       intro ha
@@ -127,7 +150,7 @@ theorem MySpace.integral_pos_of_pos {p : MySpace s} (hne0 : p ≠ 0)
     have hu : ({x : ℝ | p.eval x ≠ 0} ∩ Ioc s.a s.b) ∪ ({x : ℝ | p.eval x = 0} ∩ Ioc s.a s.b) =
         Ioc s.a s.b := by
       rw [← Set.union_inter_distrib_right]
-      rw [←Set.setOf_or]
+      rw [← Set.setOf_or]
       have duh (x : ℝ) : (p.eval x ≠ 0 ∨ p.eval x = 0) = True := eq_true (ne_or_eq (p.eval x) 0)
       simp only [duh]
       simp only [setOf_true, Set.univ_inter]
@@ -203,7 +226,7 @@ def MySpace.InnerProductSpaceCore : InnerProductSpace.Core ℝ (MySpace s) where
     intro p q
     intro α
     simp only [IsROrC.re_to_real, MySpace.inner_def, IntervalWithMeasure.dot, conj_trivial]
-    rw [←intervalIntegral.integral_const_mul]
+    rw [← intervalIntegral.integral_const_mul]
     apply intervalIntegral.integral_congr
     unfold EqOn
     simp only [Algebra.smul_mul_assoc, eval_smul, eval_mul, smul_eq_mul, implies_true, forall_const]
@@ -391,7 +414,7 @@ theorem IntervalWithMeasure.xp_dot_q_eq_p_dot_xq (p q : MySpace s) :
   ring_nf
 
 
-theorem three_term_recurrence (n : ℕ) : ∃ a b c : ℝ, OrthoPoly s (n+2) =
+theorem OrthoPoly_three_term_recurrence (n : ℕ) : ∃ a b c : ℝ, OrthoPoly s (n+2) =
     (a • X + Polynomial.C b) * (OrthoPoly s (n+1)) + (c • OrthoPoly s n) := by
   have : ∃ a : ℝ, degree ((OrthoPoly s (n+2)) - (a • X : ℝ[X]) * (OrthoPoly s (n+1))) <= n+1 := by
     let a := (OrthoPoly s (n+2) : ℝ[X]).leadingCoeff / (OrthoPoly s (n+1) : ℝ[X]).leadingCoeff
@@ -441,12 +464,12 @@ theorem three_term_recurrence (n : ℕ) : ∃ a b c : ℝ, OrthoPoly s (n+2) =
     let hfinite2 := Fintype.ofFinite D.support
     have : ∑ j in Set.toFinset D.support, D j =
         ∑ j in Set.toFinset (OrthoPoly s '' ↑(Finset.range (n + 2))), D j := by
-      rw [←(finsum_eq_sum_of_support_toFinset_subset D hc4
+      rw [← (finsum_eq_sum_of_support_toFinset_subset D hc4
         (fun ⦃a⦄ a_1 ↦ (subset_toFinset.mpr hc1) ((toFinset_subset.mpr hsupport) a_1)))]
       exact (finsum_eq_sum_of_support_toFinset_subset D hc4 fun ⦃a⦄ a ↦ a).symm
     have : ∑ j in C.support, C j • j =
         ∑ j in toFinset (OrthoPoly s '' (Finset.range (n + 2))), C j • j := by
-      rw [←this, ←(finsum_eq_sum_of_support_toFinset_subset D hc4 (toFinset_subset.mpr hsupport))]
+      rw [← this, ← (finsum_eq_sum_of_support_toFinset_subset D hc4 (toFinset_subset.mpr hsupport))]
       exact finsum_eq_sum_of_support_toFinset_subset D hc4 fun ⦃a⦄ a ↦ a
     rw [this]
     have : (natDegree ∘ OrthoPoly s).Injective := by
@@ -487,7 +510,7 @@ theorem three_term_recurrence (n : ℕ) : ∃ a b c : ℝ, OrthoPoly s (n+2) =
       simp only [Nat.cast_lt]
       exact Finset.mem_range.mp hilessn
     have : ⟪C (-a) * X * OrthoPoly s (n + 1), OrthoPoly s i⟫_ℝ = 0 := by
-      rw [←this,
+      rw [← this,
         MySpace.InnerProductSpaceCore.smul_left (X * OrthoPoly s (n + 1)) (OrthoPoly s i) (-a)]
       have : degree (X * OrthoPoly s i) ≤ n := by
         rw [congrArg degree (mul_comm X (OrthoPoly s i)), Polynomial.degree_mul_X]
@@ -512,7 +535,7 @@ theorem three_term_recurrence (n : ℕ) : ∃ a b c : ℝ, OrthoPoly s (n+2) =
       rw [MySpace.InnerProductSpaceCore.smul_left]
       exact mul_eq_zero_of_right ((starRingEnd ℝ) (coef i)) (OrthoPoly_orthogonal inotj)
     have hh : ⟪coef j • OrthoPoly s j, OrthoPoly s j⟫_ℝ = 0 := by
-      rw [←(sum_eq_single_of_mem j
+      rw [← (sum_eq_single_of_mem j
         (Finset.mem_range.mpr (Nat.le.step (Nat.le.step (List.mem_range.mp hp)))) this)]
       exact (p_2 j hp)
     rw [MySpace.InnerProductSpaceCore.smul_left, mul_eq_zero, or_iff_not_imp_right] at hh
@@ -530,7 +553,7 @@ theorem three_term_recurrence (n : ℕ) : ∃ a b c : ℝ, OrthoPoly s (n+2) =
     rw [Polynomial.smul_eq_C_mul]
   use (coef (n+1))
   use (coef n)
-  rw [add_mul, add_assoc, ←this]
+  rw [add_mul, add_assoc, ← this]
   simp only [p]
   rw [← add_sub_assoc, add_comm (a • X * OrthoPoly s (n+1)) _, add_sub_assoc, sub_self, add_zero]
 
@@ -1052,7 +1075,7 @@ theorem Quadrature.Gaussian_exact (s : IntervalWithMeasure) (n : ℕ) (hpos : 0 
       exact this
     have lemax: degree (p - p%ₘa) ≤ max (degree p) (degree (p %ₘ a)) :=
       Polynomial.degree_sub_le p (p %ₘ a)
-    rw [←somma] at lemax
+    rw [← somma] at lemax
     have :  (degree (p %ₘ a)) ≤ (degree p) := by
       by_cases h : degree a ≤ degree p
       have := Polynomial.degree_modByMonic_le p hmonic
@@ -1063,7 +1086,7 @@ theorem Quadrature.Gaussian_exact (s : IntervalWithMeasure) (n : ℕ) (hpos : 0 
       max_eq_iff.mpr (Or.inl { left := rfl, right := this })
     rw [this, hadeg] at lemax
     have hqdeg : degree (p /ₘ a) + ↑n ≤ ↑(2 * n - 1) := LE.le.trans lemax hpdeg
-    rw [←Nat.sub_one_add_self] at hqdeg
+    rw [← Nat.sub_one_add_self] at hqdeg
     have : degree (p /ₘ a) ≤ ↑(n - 1) := by
       apply ((WithBot.add_le_add_iff_right (WithBot.nat_ne_bot n)).mp)
       exact hqdeg
@@ -1072,14 +1095,14 @@ theorem Quadrature.Gaussian_exact (s : IntervalWithMeasure) (n : ℕ) (hpos : 0 
   have hdegdiv : degree (p/ₘa) < ↑n := natbot_lt_of_le_sub_one hpos this
 
   have hdegmod : degree (p%ₘa) < n := by
-    rw [←hadeg]
+    rw [← hadeg]
     apply Polynomial.degree_modByMonic_lt
     simp only
     apply hmonic
 
   have : nint (Gaussian s n) p = nint (Gaussian s n) (p %ₘ a) := by
     unfold nint Gaussian
-    nth_rw 1 [←hdiv]
+    nth_rw 1 [← hdiv]
     simp only
     apply Finset.sum_congr
     simp only
