@@ -127,7 +127,7 @@ open scoped ComplexConjugate
 
 /-- The quadratic form sending elements to the negation of their square. -/
 def Q : QuadraticForm ℝ ℝ :=
-  -QuadraticForm.sq (R := ℝ) -- Porting note: Added `(R := ℝ)`
+  -QuadraticMap.sq (R := ℝ) -- Porting note: Added `(R := ℝ)`
 set_option linter.uppercaseLean3 false in
 #align clifford_algebra_complex.Q CliffordAlgebraComplex.Q
 
@@ -259,7 +259,8 @@ variable {R : Type*} [CommRing R] (c₁ c₂ : R)
 /-- `Q c₁ c₂` is a quadratic form over `R × R` such that `CliffordAlgebra (Q c₁ c₂)` is isomorphic
 as an `R`-algebra to `ℍ[R,c₁,c₂]`. -/
 def Q : QuadraticForm R (R × R) :=
-  (c₁ • QuadraticForm.sq (R := R)).prod (c₂ • QuadraticForm.sq) -- Porting note: Added `(R := R)`
+   -- Porting note: Added `(R := R)`
+  QuadraticForm.prod (c₁ • QuadraticMap.sq (R := R)) (c₂ • QuadraticMap.sq)
 set_option linter.uppercaseLean3 false in
 #align clifford_algebra_quaternion.Q CliffordAlgebraQuaternion.Q
 
@@ -283,7 +284,7 @@ def quaternionBasis : QuaternionAlgebra.Basis (CliffordAlgebra (Q c₁ c₂)) c�
     simp
   i_mul_j := rfl
   j_mul_i := by
-    rw [eq_neg_iff_add_eq_zero, ι_mul_ι_add_swap, QuadraticForm.polar]
+    rw [eq_neg_iff_add_eq_zero, ι_mul_ι_add_swap, QuadraticMap.polar]
     simp
 #align clifford_algebra_quaternion.quaternion_basis CliffordAlgebraQuaternion.quaternionBasis
 
@@ -399,7 +400,7 @@ variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 theorem ι_mul_ι (r₁ r₂) : ι (0 : QuadraticForm R R) r₁ * ι (0 : QuadraticForm R R) r₂ = 0 := by
   rw [← mul_one r₁, ← mul_one r₂, ← smul_eq_mul R, ← smul_eq_mul R, LinearMap.map_smul,
-    LinearMap.map_smul, smul_mul_smul, ι_sq_scalar, QuadraticForm.zero_apply, RingHom.map_zero,
+    LinearMap.map_smul, smul_mul_smul, ι_sq_scalar, QuadraticMap.zero_apply, RingHom.map_zero,
     smul_zero]
 #align clifford_algebra_dual_number.ι_mul_ι CliffordAlgebraDualNumber.ι_mul_ι
 

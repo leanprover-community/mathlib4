@@ -28,6 +28,8 @@ open scoped BigOperators
 
 open Real Finset
 
+open QuadraticMap
+
 variable {ι : Type*} [Fintype ι]
 
 /-- The isometry between a weighted sum of squares with weights `u` on the
@@ -39,7 +41,7 @@ noncomputable def isometryEquivSignWeightedSumSquares (w : ι → ℝ) :
     intro i
     exact (ne_of_lt (Real.rpow_pos_of_pos (sign_mul_pos_of_ne_zero _ <| Units.ne_zero _) _)).symm
   convert
-    (weightedSumSquares ℝ w).isometryEquivBasisRepr
+    QuadraticForm.isometryEquivBasisRepr (weightedSumSquares ℝ w)
       ((Pi.basisFun ℝ ι).unitsSMul fun i => (isUnit_iff_ne_zero.2 <| hu' i).unit)
   ext1 v
   rw [basisRepr_apply, weightedSumSquares_apply, weightedSumSquares_apply]

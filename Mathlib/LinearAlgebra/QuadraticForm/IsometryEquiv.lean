@@ -25,6 +25,8 @@ import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 
 variable {ι R K M M₁ M₂ M₃ V : Type*}
 
+open QuadraticMap
+
 namespace QuadraticForm
 
 variable [CommSemiring R]

@@ -21,7 +21,9 @@ universe uR uA uM₁ uM₂
 variable {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂}
 
 open TensorProduct
+open LinearMap (BilinMap)
 open LinearMap (BilinForm)
+open QuadraticMap
 
 namespace QuadraticForm
 
@@ -44,11 +46,11 @@ noncomputable def tensorDistrib :
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
   -- while `letI`s would produce a better term than `let`, they would make this already-slow
   -- definition even slower.
-  let toQ := BilinForm.toQuadraticFormLinearMap A A (M₁ ⊗[R] M₂)
-  let tmulB := BilinForm.tensorDistrib R A (M₁ := M₁) (M₂ := M₂)
+  let toQ := BilinMap.toQuadraticMapLinearMap A A (M₁ ⊗[R] M₂)
+  let tmulB := BilinMap.tensorDistrib R A (M₁ := M₁) (M₂ := M₂)
   let toB := AlgebraTensorModule.map
-      (QuadraticForm.associated : QuadraticForm A M₁ →ₗ[A] BilinForm A M₁)
-      (QuadraticForm.associated : QuadraticForm R M₂ →ₗ[R] BilinForm R M₂)
+      (QuadraticMap.associated : QuadraticForm A M₁ →ₗ[A] BilinForm A M₁)
+      (QuadraticMap.associated : QuadraticForm R M₂ →ₗ[R] BilinForm R M₂)
   toQ ∘ₗ tmulB ∘ₗ toB
 
 -- TODO: make the RHS `MulOpposite.op (Q₂ m₂) • Q₁ m₁` so that this has a nicer defeq for
@@ -57,7 +59,7 @@ noncomputable def tensorDistrib :
 theorem tensorDistrib_tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) (m₁ : M₁) (m₂ : M₂) :
     tensorDistrib R A (Q₁ ⊗ₜ Q₂) (m₁ ⊗ₜ m₂) = Q₂ m₂ • Q₁ m₁ :=
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
-  (BilinForm.tensorDistrib_tmul _ _ _ _ _ _).trans <| congr_arg₂ _
+  (BilinMap.tensorDistrib_tmul _ _ _ _ _ _).trans <| congr_arg₂ _
     (associated_eq_self_apply _ _ _) (associated_eq_self_apply _ _ _)
 
 /-- The tensor product of two quadratic forms, a shorthand for dot notation. -/
@@ -69,13 +71,13 @@ protected noncomputable abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : Quadra
 theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     associated (R := A) (Q₁.tmul Q₂)
       = (associated (R := A) Q₁).tmul (associated (R := R) Q₂) := by
-  rw [QuadraticForm.tmul, tensorDistrib, BilinForm.tmul]
+  rw [QuadraticForm.tmul, tensorDistrib, BilinMap.tmul]
   dsimp
   convert associated_left_inverse A ((associated_isSymm A Q₁).tmul (associated_isSymm R Q₂))
 
 theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     polarBilin (Q₁.tmul Q₂) = ⅟(2 : A) • (polarBilin Q₁).tmul (polarBilin Q₂) := by
-  simp_rw [← two_nsmul_associated A, ← two_nsmul_associated R, BilinForm.tmul, tmul_smul,
+  simp_rw [← two_nsmul_associated A, ← two_nsmul_associated R, BilinMap.tmul, tmul_smul,
     ← smul_tmul', map_nsmul, associated_tmul]
   rw [smul_comm (_ : A) (_ : ℕ), ← smul_assoc, two_smul _ (_ : A), invOf_two_add_invOf_two,
     one_smul]
@@ -84,7 +86,7 @@ variable (A) in
 /-- The base change of a quadratic form. -/
 -- `noncomputable` is a performance workaround for mathlib4#7103
 protected noncomputable def baseChange (Q : QuadraticForm R M₂) : QuadraticForm A (A ⊗[R] M₂) :=
-  QuadraticForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (QuadraticForm.sq (R := A)) Q
+  QuadraticForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (QuadraticMap.sq (R := A)) Q
 
 @[simp]
 theorem baseChange_tmul (Q : QuadraticForm R M₂) (a : A) (m₂ : M₂) :
@@ -94,12 +96,12 @@ theorem baseChange_tmul (Q : QuadraticForm R M₂) (a : A) (m₂ : M₂) :
 theorem associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
     associated (R := A) (Q.baseChange A) = (associated (R := R) Q).baseChange A := by
   dsimp only [QuadraticForm.baseChange, LinearMap.baseChange]
-  rw [associated_tmul (QuadraticForm.sq (R := A)) Q, associated_sq]
+  rw [associated_tmul (QuadraticMap.sq (R := A)) Q, associated_sq]
   exact rfl
 
 theorem polarBilin_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
     polarBilin (Q.baseChange A) = (polarBilin Q).baseChange A := by
-  rw [QuadraticForm.baseChange, BilinForm.baseChange, polarBilin_tmul, BilinForm.tmul,
+  rw [QuadraticForm.baseChange, BilinMap.baseChange, polarBilin_tmul, BilinMap.tmul,
     ← LinearMap.map_smul, smul_tmul', ← two_nsmul_associated R, coe_associatedHom, associated_sq,
     smul_comm, ← smul_assoc, two_smul, invOf_two_add_invOf_two, one_smul]
 

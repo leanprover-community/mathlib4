@@ -135,7 +135,8 @@ def toProd : evenOdd Q₁ ᵍ⊗[R] evenOdd Q₂ →ₐ[R] CliffordAlgebra (Q₁
   GradedTensorProduct.lift _ _
     (CliffordAlgebra.map <| .inl _ _)
     (CliffordAlgebra.map <| .inr _ _)
-    fun _i₁ _i₂ x₁ x₂ => map_mul_map_of_isOrtho_of_mem_evenOdd _ _ (.inl_inr) _ _ x₁.prop x₂.prop
+    fun _i₁ _i₂ x₁ x₂ => map_mul_map_of_isOrtho_of_mem_evenOdd _ _ (QuadraticForm.IsOrtho.inl_inr) _
+      _ x₁.prop x₂.prop
 
 @[simp]
 lemma toProd_ι_tmul_one (m₁ : M₁) : toProd Q₁ Q₂ (ι _ m₁ ᵍ⊗ₜ 1) = ι _ (m₁, 0) := by

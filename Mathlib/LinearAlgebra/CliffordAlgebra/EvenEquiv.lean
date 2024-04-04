@@ -48,7 +48,7 @@ namespace EquivEven
 /-- The quadratic form on the augmented vector space `M × R` sending `v + r•e0` to `Q v - r^2`. -/
 @[reducible]
 def Q' : QuadraticForm R (M × R) :=
-  Q.prod <| -@QuadraticForm.sq R _
+  Q.prod <| -@QuadraticMap.sq R _
 set_option linter.uppercaseLean3 false in
 #align clifford_algebra.equiv_even.Q' CliffordAlgebra.EquivEven.Q'
 
@@ -82,8 +82,8 @@ theorem v_sq_scalar (m : M) : v Q m * v Q m = algebraMap _ _ (Q m) :=
 
 theorem neg_e0_mul_v (m : M) : -(e0 Q * v Q m) = v Q m * e0 Q := by
   refine' neg_eq_of_add_eq_zero_right ((ι_mul_ι_add_swap _ _).trans _)
-  dsimp [QuadraticForm.polar]
-  simp only [add_zero, mul_zero, mul_one, zero_add, neg_zero, QuadraticForm.map_zero,
+  dsimp [QuadraticMap.polar]
+  simp only [add_zero, mul_zero, mul_one, zero_add, neg_zero, QuadraticMap.map_zero,
     add_sub_cancel_right, sub_self, map_zero, zero_sub]
 #align clifford_algebra.equiv_even.neg_e0_mul_v CliffordAlgebra.EquivEven.neg_e0_mul_v
 
@@ -271,11 +271,11 @@ def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
       contract := fun m => by
       -- Not sure what causes the timeout with unqualified `map_neg`,
       -- the synthInstance trace looks okay #8386
-        simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticForm.neg_apply, RingHom.map_neg,
+        simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticMap.neg_apply, RingHom.map_neg,
           neg_neg]
       contract_mid := fun m₁ m₂ m₃ => by
         simp_rw [LinearMap.neg_apply, neg_mul_neg, EvenHom.contract_mid, h,
-          QuadraticForm.neg_apply, smul_neg, neg_smul] }
+          QuadraticMap.neg_apply, smul_neg, neg_smul] }
 #align clifford_algebra.even_to_neg CliffordAlgebra.evenToNeg
 
 -- Porting note: `simpNF` times out, but only in CI where all of `Mathlib` is imported
