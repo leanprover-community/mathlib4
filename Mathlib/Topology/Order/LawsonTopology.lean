@@ -149,9 +149,7 @@ def withLawsonTopologyHomeomorph [TopologicalSpace α] [IsLawson α]  : WithLaws
   WithLawson.ofLawson.toHomeomorphOfInducing ⟨by erw [IsLawson.topology_eq α, induced_id]; rfl⟩
 
 theorem isOpen_preimage_ofLawson (S : Set α) :
-    IsOpen (Topology.WithLawson.ofLawson ⁻¹' S) ↔
-      (lawson α).IsOpen S :=
-  Iff.rfl
+    IsOpen (ofLawson ⁻¹' S) ↔ (lawson α).IsOpen S := Iff.rfl
 
 theorem isClosed_preimage_ofLawson (S : Set α) :
     IsClosed (Topology.WithLawson.ofLawson ⁻¹' S) ↔
