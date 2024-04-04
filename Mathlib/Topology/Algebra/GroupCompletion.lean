@@ -123,39 +123,37 @@ theorem coe_div' (a b : α) : ((a / b : α) : Completion α) = a / b :=
 #align uniform_space.completion.coe_sub UniformSpace.Completion.coe_sub
 
 @[to_additive]
-theorem map₂_mul : Completion.map₂ ((· * ·) : α → α → α) = (· * ·) := by
-  dsimp only [Completion.map₂, AbstractCompletion.map₂, AbstractCompletion.extend₂,
-    AbstractCompletion.extend]
-  rw [if_pos]
-  · rfl
-  · exact (uniformContinuous_coe α).comp uniformContinuous_mul
+private lemma uniformContinuous_completion_mul :
+    UniformContinuous (fun p : Completion α × Completion α ↦ p.1 * p.2) :=
+  uniformContinuous_uniformly_extend
+    ((uniformInducing_coe α).prod (uniformInducing_coe α))
+    (denseRange_coe.prod_map denseRange_coe)
+    ((uniformContinuous_coe α).comp uniformContinuous_mul)
 
 @[to_additive]
-protected theorem map_inv : Completion.map ((·⁻¹) : α → α) = (·⁻¹) := by
-  dsimp only [Completion.map, AbstractCompletion.map, AbstractCompletion.extend]
-  rw [if_pos]
-  · rfl
-  · exact (uniformContinuous_coe α).comp uniformContinuous_inv
+private lemma uniformContinuous_completion_inv :
+    UniformContinuous (fun p : Completion α ↦ p⁻¹) :=
+  uniformContinuous_uniformly_extend
+    (uniformInducing_coe α)
+    denseRange_coe
+    ((uniformContinuous_coe α).comp uniformContinuous_inv)
 
 @[to_additive]
-theorem map₂_div : Completion.map₂ ((· / ·) : α → α → α) = (· / ·) := by
-  dsimp only [Completion.map₂, AbstractCompletion.map₂, AbstractCompletion.extend₂,
-    AbstractCompletion.extend]
-  rw [if_pos]
-  · rfl
-  · exact (uniformContinuous_coe α).comp uniformContinuous_div
+private lemma uniformContinuous_completion_div :
+    UniformContinuous (fun p : Completion α × Completion α ↦ p.1 / p.2) :=
+  uniformContinuous_uniformly_extend
+    ((uniformInducing_coe α).prod (uniformInducing_coe α))
+    (denseRange_coe.prod_map denseRange_coe)
+    ((uniformContinuous_coe α).comp uniformContinuous_div)
 
 @[to_additive]
-instance : ContinuousMul (Completion α) :=
-  ⟨by simp_rw [← map₂_mul]; exact continuous_map₂ continuous_fst continuous_snd⟩
+instance : ContinuousMul (Completion α) := ⟨uniformContinuous_completion_mul.continuous⟩
 
 @[to_additive]
-instance : ContinuousInv (Completion α) :=
-  ⟨by simp_rw [← Completion.map_inv]; exact continuous_map⟩
+instance : ContinuousInv (Completion α) := ⟨uniformContinuous_completion_inv.continuous⟩
 
 @[to_additive]
-instance : ContinuousDiv (Completion α) :=
-  ⟨by simp_rw [← map₂_div]; exact continuous_map₂ continuous_fst continuous_snd⟩
+instance : ContinuousDiv (Completion α) := ⟨uniformContinuous_completion_div.continuous⟩
 
 @[to_additive]
 noncomputable instance : Monoid (Completion α) :=
@@ -212,7 +210,7 @@ noncomputable instance : DivInvMonoid (Completion α) :=
             zpow_natCast, pow_succ, coe_mul]
     zpow_neg' := fun n a ↦
       Completion.induction_on a
-        (isClosed_eq continuous_map <| continuous_map.inv) fun a ↦ by
+        (isClosed_eq continuous_map continuous_map.inv) fun a ↦ by
           simp_rw [pow_def, map_coe (uniformContinuous_zpow_const _), zpow_negSucc, zpow_natCast,
             coe_inv'] }
 
@@ -229,7 +227,7 @@ noncomputable instance group : Group (Completion α) :=
 
 @[to_additive]
 noncomputable instance uniformGroup : UniformGroup (Completion α) :=
-  ⟨by simp_rw [← map₂_div]; exact uniformContinuous_map₂ _⟩
+  ⟨uniformContinuous_completion_div⟩
 
 /-- The map from a multiplicative group to its completion as a group hom. -/
 @[to_additive (attr := simps) "The map from an additive group to its completion as a group hom."]
