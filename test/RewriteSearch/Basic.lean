@@ -18,14 +18,15 @@ set_option autoImplicit true
 example (xs ys : List α) : (xs ++ ys).length = ys.length + xs.length := by
   rw_search
 
-/-
-/-
-info: Try this: rw [← @add_assoc, @add_right_comm, @add_assoc, @add_add_add_comm, ← @add_assoc, @add_right_comm]
--/
-#guard_msgs (drop info) in
-example [AddCommMonoid α] {a b c d : α} : (a + b) + (c + d) = a + d + c + b := by
-  rw_search
--/
+-- This worked in previous versions, but for now doesn't.
+-- There are of course better tools for AC rewriting, but it would be nice if `rw_search`
+-- could do a little of it in the course of a longer rewrite.
+-- /-
+-- info: Try this: rw [← @add_assoc, @add_right_comm, @add_assoc, @add_add_add_comm, ← @add_assoc, @add_right_comm]
+-- -/
+-- #guard_msgs (drop info) in
+-- example [AddCommMonoid α] {a b c d : α} : (a + b) + (c + d) = a + d + c + b := by
+--   rw_search
 
 /--
 info: Try this: rw [@List.length_append, @List.length_append, Nat.two_mul, @add_rotate]
