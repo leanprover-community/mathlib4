@@ -240,7 +240,7 @@ theorem selfZPow_add {n m : ℤ} : selfZPow x B (n + m) = selfZPow x B n * selfZ
     rw [selfZPow_of_nonneg _ _ hm, selfZPow_of_neg _ _ hn, this, selfZPow_sub_cast_nat,
       IsLocalization.mk'_eq_mul_mk'_one, map_pow, mul_comm]
   · rw [selfZPow_of_neg _ _ hn, selfZPow_of_neg _ _ hm, selfZPow_of_neg _ _ (add_neg hn hm),
-      Int.natAbs_add_neg hn hm, ← mk'_mul, one_mul]
+      Int.natAbs_add_of_nonpos hn.le hm.le, ← mk'_mul, one_mul]
     congr
     ext
     simp [pow_add]
