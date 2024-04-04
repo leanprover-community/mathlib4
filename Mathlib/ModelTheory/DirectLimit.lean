@@ -420,15 +420,10 @@ lemma range_lift : (lift L ι G f g Hg).toHom.range = ⨆ i, (g i).toHom.range :
   rfl
 
 variable (L ι G f)
-
 variable (G' : ι → Type w') [∀ i, L.Structure (G' i)]
-
 variable (f' : ∀ i j, i ≤ j → G' i ↪[L] G' j)
-
 variable (g : ∀ i, G i ≃[L] G' i)
-
 variable (H_commuting : ∀ i j hij x, g j (f i j hij x) = f' i j hij (g i x))
-
 variable [DirectedSystem G' fun i j h => f' i j h]
 
 /-- The isomorphism between limits of isomorphic systems. -/
