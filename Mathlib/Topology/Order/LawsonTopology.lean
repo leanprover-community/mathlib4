@@ -146,19 +146,19 @@ instance : IsLawson (WithLawson α) := ⟨rfl⟩
 /-- If `α` is equipped with the Lawson topology, then it is homeomorphic to `WithLawson α`.
 -/
 def withLawsonTopologyHomeomorph [TopologicalSpace α] [IsLawson α]  : WithLawson α ≃ₜ α :=
-  WithLawson.ofLawson.toHomeomorphOfInducing ⟨by erw [IsLawson.topology_eq α, induced_id]; rfl⟩
+  ofLawson.toHomeomorphOfInducing ⟨by erw [IsLawson.topology_eq α, induced_id]; rfl⟩
 
 theorem isOpen_preimage_ofLawson (S : Set α) :
     IsOpen (ofLawson ⁻¹' S) ↔ (lawson α).IsOpen S := Iff.rfl
 
 theorem isClosed_preimage_ofLawson (S : Set α) :
-    IsClosed (Topology.WithLawson.ofLawson ⁻¹' S) ↔
+    IsClosed (ofLawson ⁻¹' S) ↔
       @IsClosed (WithLawson α) _ S :=
   Iff.rfl
 
 theorem isOpen_def (T : Set (WithLawson α)) :
     IsOpen T ↔
-      (lawson α).IsOpen (Topology.WithLawson.toLawson ⁻¹' T) :=
+      (lawson α).IsOpen (toLawson ⁻¹' T) :=
   Iff.rfl
 
 end WithLawson
@@ -191,7 +191,7 @@ variable (L : TopologicalSpace α) (S : TopologicalSpace α)
 variable [@IsLawson α _ L] [@IsScott α _ S]
 
 lemma isLawson_le_isScott : L ≤ S := by
-  rw [@Topology.IsScott.topology_eq α _ S _, @Topology.IsLawson.topology_eq α _ L _]
+  rw [@IsScott.topology_eq α _ S _, @IsLawson.topology_eq α _ L _]
   exact inf_le_right
 
 lemma scottHausdorff_le_isLawson : scottHausdorff α ≤ L := by
@@ -201,7 +201,7 @@ lemma scottHausdorff_le_isLawson : scottHausdorff α ≤ L := by
 /-- An upper set is Lawson open if and only if it is Scott open -/
 lemma lawsonOpen_iff_scottOpen_of_isUpperSet' (s : Set α) (h : IsUpperSet s) :
     IsOpen[L] s ↔ IsOpen[S] s := by
-  rw [@IsLawson.topology_eq α _ L _, @Topology.IsScott.topology_eq α _ S _]
+  rw [@IsLawson.topology_eq α _ L _, @IsScott.topology_eq α _ S _]
   exact lawsonOpen_iff_scottOpen_of_isUpperSet h
 
 lemma lawsonClosed_iff_scottClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s) :
@@ -213,7 +213,7 @@ lemma lawsonClosed_iff_scottClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s)
 lemma lawsonClosed_iff_dirSupClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s) :
     IsClosed[L] s ↔ DirSupClosed s := by
   rw [(lawsonClosed_iff_scottClosed_of_isLowerSet L S _ h),
-    @Topology.IsScott.isClosed_iff_isLowerSet_and_dirSupClosed]
+    @IsScott.isClosed_iff_isLowerSet_and_dirSupClosed]
   aesop
 
 end Preorder
@@ -221,7 +221,7 @@ end Preorder
 namespace IsLawson
 
 theorem isClosed_preimage_ofLawson [Preorder α] [TopologicalSpace α] [IsLawson α] (S : Set α) :
-    IsClosed (Topology.WithLawson.ofLawson ⁻¹' S) ↔ IsClosed S := by
+    IsClosed (WithLawson.ofLawson ⁻¹' S) ↔ IsClosed S := by
   rw [WithLawson.isClosed_preimage_ofLawson]
   simp only [IsLawson.topology_eq]
 
@@ -236,7 +236,7 @@ lemma singleton_isClosed (a : α) : IsClosed ({a} : Set α) := by
     (lawsonClosed_of_lowerClosed _ (IsLower.isClosed_upperClosure (finite_singleton a)))
   rw [← isClosed_preimage_ofLawson, lowerClosure_singleton, LowerSet.coe_Iic]
   apply lawsonClosed_of_scottClosed
-  exact Topology.IsScott.isClosed_Iic
+  exact IsScott.isClosed_Iic
 
 -- see Note [lower instance priority]
 /-- The Lawson topology on a partial order is T₀. -/
