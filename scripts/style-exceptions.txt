@@ -17,7 +17,6 @@ Mathlib/Combinatorics/SimpleGraph/Connectivity.lean : line 1 : ERR_NUM_LIN : 280
 Mathlib/Computability/Primrec.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1568 lines, try to split it up
 Mathlib/Computability/TMToPartrec.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2069 lines, try to split it up
 Mathlib/Computability/TuringMachine.lean : line 1 : ERR_NUM_LIN : 3000 file contains 2821 lines, try to split it up
-Mathlib/Data/Array/Basic.lean : line 3 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/BinaryHeap.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/ByteArray.lean : line 5 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/Complex/Exponential.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1743 lines, try to split it up
@@ -54,8 +53,6 @@ Mathlib/GroupTheory/MonoidLocalization.lean : line 1 : ERR_NUM_LIN : 2300 file c
 Mathlib/GroupTheory/Perm/Cycle/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1980 lines, try to split it up
 Mathlib/GroupTheory/Subgroup/Basic.lean : line 1 : ERR_NUM_LIN : 4000 file contains 3878 lines, try to split it up
 Mathlib/GroupTheory/Submonoid/Operations.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1504 lines, try to split it up
-Mathlib/Init/Data/Int/Basic.lean : line 12 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Init/Data/Nat/Basic.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Data/Nat/Lemmas.lean : line 13 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Logic.lean : line 17 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Meta/WellFoundedTactics.lean : line 13 : ERR_MOD : Module docstring missing, or too late
@@ -106,7 +103,6 @@ Mathlib/SetTheory/Ordinal/Arithmetic.lean : line 1 : ERR_NUM_LIN : 2700 file con
 Mathlib/SetTheory/Ordinal/Basic.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1606 lines, try to split it up
 Mathlib/SetTheory/ZFC/Basic.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1805 lines, try to split it up
 Mathlib/Tactic/ApplyWith.lean : line 5 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Basic.lean : line 13 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/ByContra.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/ClearExcept.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Coe.lean : line 8 : ERR_MOD : Module docstring missing, or too late

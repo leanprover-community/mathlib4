@@ -10,6 +10,12 @@ import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 
+/-!
+# Tactics
+
+This file contains basic tactics and utilities for tactic programming.
+-/
+
 set_option autoImplicit true
 
 namespace Mathlib.Tactic

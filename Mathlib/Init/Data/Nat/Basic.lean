@@ -7,6 +7,12 @@ import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Util.CompileInductive
 
+/-!
+# Natural numbers
+
+This file contains basic properties of natural numbers.
+-/
+
 namespace Nat
 
 set_option linter.deprecated false
