@@ -91,6 +91,7 @@ protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (laws
       (image2 (fun x x_1 ↦ ⇑WithLower.toLower ⁻¹' x ∩ ⇑WithScott.toScott ⁻¹' x_1)
         (IsLower.lowerBasis (WithLower α)) {U | @IsOpen (WithScott α) _ U}) := by
     rw [lawsonBasis, image2, IsLower.lowerBasis]
+    simp_rw [diff_eq_compl_inter]
     aesop
   rw [lawsonBasis_image2]
   convert IsTopologicalBasis.inf_induced IsLower.isTopologicalBasis
