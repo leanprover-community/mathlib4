@@ -810,9 +810,8 @@ end
 variable {N' : Type*} [AddCommGroup N'] [Module R N']
 
 theorem _root_.LinearMap.compQuadraticMap_polar [CommSemiring S] [Algebra S R] [Module S N]
-    [Module S N'] [IsScalarTower S R N] [IsScalarTower S R N'] [Module S M] [IsScalarTower S R M]
-    (f : N →ₗ[S] N') (Q : QuadraticMap R M N) (x y : M) :
-    polar (f.compQuadraticMap Q) x y = f (polar Q x y) := by
+    [Module S N'] [IsScalarTower S R N] [Module S M] [IsScalarTower S R M] (f : N →ₗ[S] N')
+    (Q : QuadraticMap R M N) (x y : M) : polar (f.compQuadraticMap Q) x y = f (polar Q x y) := by
   simp [polar]
 
 theorem _root_.LinearMap.compQuadraticMap_polarBilin (f : N →ₗ[R] N') (Q : QuadraticMap R M N) :
