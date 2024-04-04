@@ -66,6 +66,7 @@ universe u
 1 and whose off-diagonal entries are not equal to 1. -/
 @[ext]
 structure CoxeterMatrix (B : Type u) where
+  /-- The underlying matrix of the Coxeter matrix. -/
   M : Matrix B B ℕ
   isSymm : M.IsSymm := by decide
   diagonal i : M i i = 1 := by decide
@@ -76,10 +77,7 @@ namespace CoxeterMatrix
 variable {B : Type*}
 
 /-- A Coxeter matrix can be coerced to a matrix. -/
-instance : Coe (CoxeterMatrix B) (Matrix B B ℕ) := ⟨M⟩
-
-/-- A Coxeter matrix can be thought of as a function `B → B → ℕ`. -/
-instance : FunLike (CoxeterMatrix B) B (B → ℕ) := ⟨M, CoxeterMatrix.ext⟩
+instance : CoeFun (CoxeterMatrix B) fun _ ↦ (Matrix B B ℕ) := ⟨M⟩
 
 variable {B' : Type*} (e : B ≃ B') (M : CoxeterMatrix B)
 
