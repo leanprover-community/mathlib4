@@ -217,21 +217,17 @@ end Preorder
 
 namespace IsLawson
 
-theorem isClosed_preimage_ofLawson [Preorder α] [TopologicalSpace α] [IsLawson α] (S : Set α) :
-    IsClosed (WithLawson.ofLawson ⁻¹' S) ↔ IsClosed S := by
-  rw [WithLawson.isClosed_preimage_ofLawson]
-  simp only [IsLawson.topology_eq]
-
 section PartialOrder
 
 variable [PartialOrder α] [TopologicalSpace α] [IsLawson α]
 
 lemma singleton_isClosed (a : α) : IsClosed ({a} : Set α) := by
+  simp only [IsLawson.topology_eq]
   rw [← (Set.OrdConnected.upperClosure_inter_lowerClosure ordConnected_singleton),
-    ← isClosed_preimage_ofLawson]
+    ← WithLawson.isClosed_preimage_ofLawson]
   apply IsClosed.inter
     (lawsonClosed_of_lowerClosed _ (IsLower.isClosed_upperClosure (finite_singleton a)))
-  rw [← isClosed_preimage_ofLawson, lowerClosure_singleton, LowerSet.coe_Iic]
+  rw [ lowerClosure_singleton, LowerSet.coe_Iic, ← WithLawson.isClosed_preimage_ofLawson]
   apply lawsonClosed_of_scottClosed
   exact IsScott.isClosed_Iic
 
