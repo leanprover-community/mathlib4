@@ -290,40 +290,21 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.eq_C_of_derivative_eq_zero Polynomial.eq_C_of_derivative_eq_zero
 
 @[simp]
-theorem derivative_mul {f g : R[X]} : derivative (f * g) = derivative f * g + f * derivative g :=
-  calc
-    derivative (f * g) =
-        f.sum fun n a => g.sum fun m b => (n + m) • (C (a * b) * X ^ (n + m - 1)) := by
-      rw [mul_eq_sum_sum, derivative_sum]
-      trans
-      · apply Finset.sum_congr rfl
-        intro x _
-        exact derivative_sum
-      apply Finset.sum_congr rfl; intro n _; apply Finset.sum_congr rfl; intro m _
-      trans
-      · exact congr_arg _ C_mul_X_pow_eq_monomial.symm
-      dsimp; rw [← smul_mul_assoc, smul_C, nsmul_eq_mul']; exact derivative_C_mul_X_pow _ _
-    _ =
-        f.sum fun n a =>
-          g.sum fun m b =>
-            n • (C a * X ^ (n - 1)) * (C b * X ^ m) + C a * X ^ n * m • (C b * X ^ (m - 1)) :=
-      (sum_congr rfl fun n hn =>
-        sum_congr rfl fun m hm => by
-          cases n <;> cases m <;>
-            simp_rw [add_smul, mul_smul_comm, smul_mul_assoc, X_pow_mul_assoc, ← mul_assoc, ←
-              C_mul, mul_assoc, ← pow_add] <;>
-            simp [Nat.add_succ, Nat.succ_add, Nat.add_one_sub_one, zero_smul, add_comm])
-    _ = derivative f * g + f * derivative g := by
-      conv =>
-        rhs
-        congr
-        · rw [← sum_C_mul_X_pow_eq g]
-        · rw [← sum_C_mul_X_pow_eq f]
-      simp only [sum, sum_add_distrib, Finset.mul_sum, Finset.sum_mul, derivative_apply]
-      simp_rw [← smul_mul_assoc, smul_C, nsmul_eq_mul']
-      rw [Finset.sum_comm]
-      congr 1
-      rw [Finset.sum_comm]
+theorem derivative_mul {f g : R[X]} : derivative (f * g) = derivative f * g + f * derivative g := by
+  induction f using Polynomial.induction_on'
+  · simp only [add_mul, map_add, add_assoc, add_left_comm, *]
+  induction g using Polynomial.induction_on'
+  · simp only [mul_add, map_add, add_assoc, add_left_comm, *]
+  rename_i m a n b
+  simp only [monomial_mul_monomial, derivative_monomial]
+  simp only [mul_assoc, (Nat.cast_commute _ _).eq, Nat.cast_add, mul_add, map_add]
+  cases m
+  · simp only [zero_add, Nat.cast_zero, mul_zero, map_zero, Nat.zero_eq]
+  cases n
+  · simp only [add_zero, Nat.cast_zero, mul_zero, map_zero, Nat.zero_eq]
+  rename_i m n
+  simp only [Nat.add_succ_sub_one, add_tsub_cancel_right, Nat.zero_eq, Nat.succ_eq_add_one]
+  rw [add_assoc, add_comm n 1]
 #align polynomial.derivative_mul Polynomial.derivative_mul
 
 theorem derivative_eval (p : R[X]) (x : R) :
