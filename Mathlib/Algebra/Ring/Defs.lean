@@ -261,7 +261,6 @@ class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemi
 #align non_unital_comm_semiring NonUnitalCommSemiring
 
 /-- A commutative semiring is a semiring with commutative multiplication. -/
-with commutative multiplication. -/
 class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
 #align comm_semiring CommSemiring
 
@@ -455,7 +454,7 @@ instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUni
   { s with }
 #align non_unital_comm_ring.to_non_unital_comm_semiring NonUnitalCommRing.toNonUnitalCommSemiring
 
-/-- A commutative ring (`CommRing`) is a ring (`Ring`) with commutative multiplication. -/
+/-- A commutative ring is a ring with commutative multiplication. -/
 class CommRing (α : Type u) extends Ring α, CommMonoid α
 #align comm_ring CommRing
 
