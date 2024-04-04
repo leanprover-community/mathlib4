@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
 
 # Reflecting the property of being preregular
 
-We prove that given a fully faitful functor `F : C ⥤ D`, with `Preregular D`, such that for every
+We prove that given a fully faithful functor `F : C ⥤ D`, with `Preregular D`, such that for every
 object `X` of `D` there exists an object `W` of `C` with an effective epi `π : F.obj W ⟶ X`, the
 category `C` is `Preregular`.
 -/
@@ -29,5 +29,7 @@ lemma reflects_preregular : Preregular C where
       ⟨F.effectiveEpi_of_map _ ?_, Full.preimage (F.effectiveEpiOver  W ≫ i), ?_⟩⟩
     · simp only [Full.witness]
       infer_instance
-    · apply Faithful.map_injective (F := F)
+    · apply F.map_injective
       simp [w]
+
+end CategoryTheory

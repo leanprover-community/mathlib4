@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
 
 # Reflecting the property of being precoherent
 
-We prove that given a fully faitful functor `F : C ⥤ D` which preserves and reflects finite
+We prove that given a fully faithful functor `F : C ⥤ D` which preserves and reflects finite
 effective epimorphic families, such that for every object `X` of `D` there exists an object `W` of
 `C` with an effective epi `π : F.obj W ⟶ X`, the category `C` is `Precoherent` whenever `D` is.
 -/
@@ -36,3 +36,6 @@ lemma reflects_precoherent : Precoherent C where
     · intro b
       apply Faithful.map_injective (F := F)
       simp [π₂, hh b]
+
+end CategoryTheory
+
