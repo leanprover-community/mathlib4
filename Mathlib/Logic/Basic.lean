@@ -934,7 +934,8 @@ lemma imp_congr_ctx_eq {a b c d : Prop} (h₁ : a = c) (h₂ : c → b = d) : (a
 lemma eq_true_intro (h : a) : a = True := propext (iff_true_intro h)
 lemma eq_false_intro (h : ¬a) : a = False := propext (iff_false_intro h)
 
-alias Iff.eq := propext
+-- FIXME: `alias` creates `def Iff.eq := propext` instead of `lemma Iff.eq := propext`
+@[nolint defLemma] alias Iff.eq := propext
 
 lemma iff_eq_eq : (a ↔ b) = (a = b) := propext ⟨propext, Eq.to_iff⟩
 
