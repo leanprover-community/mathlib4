@@ -76,5 +76,7 @@ theorem Etale.of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Etale R
 -- 6. Standard etale morphisms
 -- 7. etale implies smooth or relative dimenion zero
 -- 8. Make category FinEt
+-- 9. Open immersions are etale
+-- 10. Open immersions =  etale and universally injective morphism
 
 end
