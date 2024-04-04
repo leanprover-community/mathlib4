@@ -330,4 +330,3 @@ theorem gdist_lt_add_of_nonempty_ball_inter_ball
   gdist_lt_add_of_nonempty_closedBall_inter_ball gdist <|
     h.mono (inter_subset_inter (ball_subset_closedBall gdist) Subset.rfl)
 end strong_cancel
-#lint
