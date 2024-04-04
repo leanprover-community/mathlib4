@@ -11,7 +11,6 @@ import Mathlib.Init.Core
 -- It's useful to re-test here with a larger environment.
 
 private axiom test_sorry : ∀ {α}, α
-set_option autoImplicit true
 
 -- To see the (sorted) list of lemmas that `rw?` will try rewriting by, use:
 -- set_option trace.Tactic.rewrites.lemmas true
@@ -121,12 +120,12 @@ lemma test : f n = f m := by
 example (h : 1 = 2) : 2 = 1 := by
   rw?
 
-def zero : Nat := 0
+def testConst : Nat := 4
 
 -- This used to (incorrectly!) succeed because `rw?` would try `rfl`,
 -- rather than `withReducible` `rfl`.
 #guard_msgs(drop info) in
-example : zero = 0 := by
+example : testConst = 4 := by
   rw?
   exact test_sorry
 
