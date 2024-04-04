@@ -134,7 +134,7 @@ jobs:
       - name: update {Mathlib, MathlibExtras, Tactic, Counterexamples, Archive}.lean
         run: lake exe mkAll
 
-      - name: check that all files are imported
+      - name: check_imported
         run: git diff --exit-code
 
       - name: build cache
