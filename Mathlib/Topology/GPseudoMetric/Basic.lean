@@ -42,15 +42,15 @@ necessarily `ℝ` (or `ℝ≥0∞`), and as a result does not endow `α` with a 
 structure GPseudoMetric (α : Type*) (β : Type*) [LinearOrder β] [AddCommMonoid β] where
   /-- A distance function on `α` with values in `β` -/
   toFun : α → α → β
-  private gdist_self' : ∀ x : α, toFun x x = 0
-  private comm' : ∀ x y : α, toFun x y = toFun y x
-  private triangle' : ∀ x y z : α, toFun x z ≤ toFun x y + toFun y z
+  protected gdist_self' : ∀ x : α, toFun x x = 0
+  protected comm' : ∀ x y : α, toFun x y = toFun y x
+  protected triangle' : ∀ x y z : α, toFun x z ≤ toFun x y + toFun y z
 
 namespace GPseudoMetric
 variable {α β : Type*} [LinearOrder β] [AddCommMonoid β] [CovariantClass β β (. + .) (. ≤ .)]
 
 @[ext]
-private theorem ext {d₁ d₂ : GPseudoMetric α β} (h : d₁.toFun = d₂.toFun) : d₁ = d₂ := by
+protected theorem ext {d₁ d₂ : GPseudoMetric α β} (h : d₁.toFun = d₂.toFun) : d₁ = d₂ := by
   cases' d₁; cases' d₂; congr
 
 instance : FunLike (GPseudoMetric α β) α (α → β) where
@@ -161,7 +161,8 @@ def closedBall (x : α) (ε : β) :=
 
 @[simp] theorem mem_closedBall : y ∈ closedBall gdist x ε ↔ gdist y x ≤ ε := Iff.rfl
 
-theorem mem_closedBall' : y ∈ closedBall gdist x ε ↔ gdist x y ≤ ε := by rw [GPseudoMetric.comm, mem_closedBall]
+theorem mem_closedBall' : y ∈ closedBall gdist x ε ↔ gdist x y ≤ ε := by
+  rw [GPseudoMetric.comm, mem_closedBall]
 
 /-- `sphere gdist x ε` is the set of all points `y` with `gdist y x = ε` -/
 def sphere (x : α) (ε : β) := { y | gdist y x = ε }
@@ -329,3 +330,4 @@ theorem gdist_lt_add_of_nonempty_ball_inter_ball
   gdist_lt_add_of_nonempty_closedBall_inter_ball gdist <|
     h.mono (inter_subset_inter (ball_subset_closedBall gdist) Subset.rfl)
 end strong_cancel
+#lint
