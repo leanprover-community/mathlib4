@@ -43,7 +43,6 @@ unbounded, its Krull dimension is defined to be positive infinity.
 noncomputable def krullDim : WithBot (WithTop ℕ) :=
   ⨆ (p : LTSeries α), p.length
 
-
 /--
 Height of an element `a` of a preordered set `α` is the Krull dimension of the subset `(-∞, a]`
 -/
@@ -58,16 +57,16 @@ end definitions
 
 namespace krullDim
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 variable [Preorder α] [Preorder β]
 
-lemma nonneg_of_nonempty [Nonempty α] : 0 ≤ krullDim α :=
+lemma krullDim_nonneg_of_nonempty [Nonempty α] : 0 ≤ krullDim α :=
   le_sSup ⟨⟨0, fun _ ↦ @Nonempty.some α inferInstance, fun f ↦ f.elim0⟩, rfl⟩
 
 lemma eq_bot_of_isEmpty [IsEmpty α] : krullDim α = ⊥ := WithBot.ciSup_empty _
 
-lemma eq_top_of_infiniteDimensionalType [InfiniteDimensionalOrder α] :
+lemma eq_top_of_infiniteDimensionalOrder [InfiniteDimensionalOrder α] :
     krullDim α = ⊤ :=
 le_antisymm le_top <| le_iSup_iff.mpr <| fun m hm ↦ match m, hm with
 | ⊥, hm => False.elim <| by
@@ -79,7 +78,7 @@ le_antisymm le_top <| le_iSup_iff.mpr <| fun m hm ↦ match m, hm with
   erw [WithBot.coe_lt_coe, WithTop.coe_lt_coe]
   simp
 
-lemma eq_len_of_finiteDimensionalType [FiniteDimensionalOrder α] :
+lemma eq_length_of_finiteDimensionalType [FiniteDimensionalOrder α] :
     krullDim α = (LTSeries.longestOf α).length :=
 le_antisymm
   (iSup_le <| fun _ ↦ WithBot.coe_le_coe.mpr <| WithTop.coe_le_coe.mpr <|
