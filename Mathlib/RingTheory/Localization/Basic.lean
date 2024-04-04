@@ -1186,7 +1186,7 @@ instance : CommRing (Localization M) :=
       Localization.induction_on x fun x => by simp only [smul_mk, zero_zsmul, mk_zero]
     zsmul_succ' := fun n x =>
       Localization.induction_on x fun x => by
-        simp [smul_mk, add_mk_self, -mk_eq_monoidOf_mk', add_comm (n : ℤ) 1, add_smul]
+        simp [smul_mk, add_mk_self, -mk_eq_monoidOf_mk', add_smul]
     zsmul_neg' := fun n x =>
       Localization.induction_on x fun x => by
         dsimp only
