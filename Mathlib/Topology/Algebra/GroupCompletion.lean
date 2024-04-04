@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Johannes Hölzl, Mitchell Lee
+Authors: Patrick Massot, Johannes Hölzl, Mitchell Lee, Eric Wieser
 -/
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Algebra.UniformMulAction
