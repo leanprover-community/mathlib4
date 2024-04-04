@@ -77,10 +77,29 @@ private lemma three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a 
     ring
 
 open Finset Int in
+private lemma fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a ≠ 0)
+    (h3a : 3 ∣ a) (Hgcd: Finset.gcd {a, b, c} id = 1)
+    (H : ∀ a b c : ℤ, c ≠ 0 → ¬ 3 ∣ a → ¬ 3 ∣ b  → 3 ∣ c → IsCoprime a b → a ^ 3 + b ^ 3 ≠ c ^ 3) :
+    a ^ 3 + b ^ 3 + c ^ 3 ≠ 0 := by
+  intro HF
+  apply (show ¬(3 ∣ (1 : ℤ)) by decide)
+  rw [← Hgcd]
+  refine dvd_gcd (fun x hx ↦ ?_)
+  simp only [mem_insert, mem_singleton] at hx
+  have h3b : 3 ∣ b := by
+    refine three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 ha ?_ h3a HF H
+    simp only [← Hgcd, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
+  rcases hx with (hx | hx | hx)
+  · exact hx ▸ h3a
+  · exact hx ▸ h3b
+  · simpa [hx] using three_dvd_c_of_dvd_a_of_dvd_b HF h3a h3b
+
+open Finset Int in
 
 /--
-  For all `a`, `b`, `c` in `ℤ` such that `c ≠ 0`, `¬ 3 ∣ a`, `¬ 3 ∣ b`, `a` and `b`
-are coprime and `3 ∣ c`, then `a ^ 3 + b ^ 3 ≠ c ^ 3`.
+  To prove Fermat Last Theorem for `n = 3`, it is enough to show that that for all `a`, `b`, `c` in
+  `ℤ` such that `c ≠ 0`, `¬ 3 ∣ a`, `¬ 3 ∣ b`, `a` and `b` are coprime and `3 ∣ c`, we have
+  `a ^ 3 + b ^ 3 ≠ c ^ 3`.
 -/
 theorem fermatLastTheoremThree_of_three_dvd_only_c
     (H : ∀ a b c : ℤ, c ≠ 0 → ¬ 3 ∣ a → ¬ 3 ∣ b  → 3 ∣ c → IsCoprime a b → a ^ 3 + b ^ 3 ≠ c ^ 3) :
@@ -90,36 +109,17 @@ theorem fermatLastTheoremThree_of_three_dvd_only_c
   by_cases h1 : 3 ∣ a * b * c
   swap; exact fermatLastTheoremThree_case1 h1 hF
   rw [(prime_three).dvd_mul, (prime_three).dvd_mul] at h1
-  apply (show ¬(3 ∣ (1 : ℤ)) by decide)
-  rw [← Hgcd]
   rw [← sub_eq_zero, sub_eq_add_neg, ← (show Odd 3 by decide).neg_pow] at hF
-  refine dvd_gcd (fun x hx ↦ ?_)
-  simp only [mem_insert, mem_singleton] at hx
   rcases h1 with ((h3a | h3b) | h3c)
-  · have h3b : 3 ∣ b := by
-      refine three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 ha ?_ h3a hF H
-      simp only [← Hgcd, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
-    rcases hx with (hx | hx | hx)
-    · exact hx ▸ h3a
-    · exact hx ▸ h3b
-    · simpa [hx] using three_dvd_c_of_dvd_a_of_dvd_b hF h3a h3b
-  · have h3a : 3 ∣ a := by
-      rw [add_comm (a ^ 3)] at hF
-      refine three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 hb ?_ h3b hF H
-      simp only [← Hgcd, Insert.comm, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
-    rcases hx with (hx | hx | hx)
-    · exact hx ▸ h3a
-    · exact hx ▸ h3b
-    · simpa [hx] using three_dvd_c_of_dvd_a_of_dvd_b hF h3a h3b
-  · rw [add_assoc, add_comm (b ^ 3), ← add_assoc, add_comm (a ^ 3)] at hF
-    have h3a : 3 ∣ a := by
-      refine three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 (neg_ne_zero.2 hc) ?_ (dvd_neg.2 h3c)
-        hF H
-      rw [Finset.Insert.comm (-c), Finset.pair_comm (-c) b]
-      simp only [← Hgcd, Insert.comm, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
-    rcases hx with (hx | hx | hx)
-    · exact hx ▸ h3a
-    · exact hx ▸ three_dvd_c_of_dvd_a_of_dvd_b hF (dvd_neg.2 h3c) h3a
-    · exact hx ▸ h3c
+  · refine fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 ha h3a ?_ H hF
+    simp only [← Hgcd, Insert.comm, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
+  · rw [add_comm (a ^ 3)] at hF
+    refine fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 hb h3b ?_ H hF
+    simp only [← Hgcd, Insert.comm, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
+  · rw [add_comm _ ((-c) ^ 3), ← add_assoc] at hF
+    refine fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 (neg_ne_zero.2 hc) (by simp [h3c])
+      ?_ H hF
+    rw [Finset.Insert.comm (-c), Finset.pair_comm (-c) b]
+    simp only [← Hgcd, Insert.comm, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
 
 end case2
