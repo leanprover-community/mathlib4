@@ -3,7 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Int.Basic
+import Mathlib.Data.Int.Ring
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Size
 import Mathlib.Init.Data.Int.Bitwise

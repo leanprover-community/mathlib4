@@ -3,9 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Data.Int.Basic
-import Mathlib.Data.Nat.Basic
+-- import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.Data.Int.Monoid
+import Mathlib.Data.Nat.Monoid
 import Mathlib.GroupTheory.GroupAction.Opposite
 
 #align_import algebra.hom.iterate from "leanprover-community/mathlib"@"792a2a264169d64986541c6f8f7e3bbb6acb6295"
@@ -94,20 +94,6 @@ theorem Monoid.End.coe_pow {M} [Monoid M] (f : Monoid.End M) (n : ℕ) : ⇑(f ^
 theorem AddMonoid.End.coe_pow {A} [AddMonoid A] (f : AddMonoid.End A) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ => rfl) _ _
 #align add_monoid.End.coe_pow AddMonoid.End.coe_pow
-
-namespace RingHom
-
-section Semiring
-
-variable {R : Type*} [Semiring R] (f : R →+* R) (n : ℕ) (x y : R)
-
-theorem coe_pow (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ => rfl) f n
-#align ring_hom.coe_pow RingHom.coe_pow
-
-end Semiring
-
-end RingHom
 
 --what should be the namespace for this section?
 section Monoid

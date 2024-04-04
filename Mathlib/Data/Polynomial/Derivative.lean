@@ -3,7 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.GroupPower.IterateHom
+import Mathlib.Algebra.GroupPower.IterateMonoidHom
 import Mathlib.Data.Polynomial.Eval
 import Mathlib.GroupTheory.GroupAction.Ring
 

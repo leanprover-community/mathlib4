@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Nat.Order.Basic
-import Mathlib.Data.Int.Basic
+import Mathlib.Data.Int.Ring
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Algebra.Divisibility.Basic

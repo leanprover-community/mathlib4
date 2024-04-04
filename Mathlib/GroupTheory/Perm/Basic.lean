@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Algebra.GroupPower.IterateHom
+import Mathlib.Algebra.GroupPower.IterateMonoidHom
 import Mathlib.Logic.Equiv.Set
 
 #align_import group_theory.perm.basic from "leanprover-community/mathlib"@"b86832321b586c6ac23ef8cdef6a7a27e42b13bd"

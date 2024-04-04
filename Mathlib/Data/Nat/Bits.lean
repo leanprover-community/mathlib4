@@ -6,7 +6,7 @@ Authors: Praneeth Kolichala
 import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Monoid
 import Mathlib.Data.Nat.Defs
 import Mathlib.Tactic.Convert
 

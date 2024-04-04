@@ -5,6 +5,7 @@ Authors: Markus Himmel, Alex Keizer
 -/
 import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Bits
+import Mathlib.Data.Nat.Semiring
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
 

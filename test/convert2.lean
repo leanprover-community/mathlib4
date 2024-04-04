@@ -1,5 +1,5 @@
 import Mathlib.Algebra.BigOperators.List.Defs
-import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Monoid
 import Mathlib.Tactic.Convert
 
 set_option linter.unreachableTactic false

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.Group.TypeTags
-import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Order.Monotone.Basic
 
@@ -13,25 +12,23 @@ import Mathlib.Order.Monotone.Basic
 /-!
 # Basic algebraic instances on the integers
 
-This file contains instances on `ℤ`. The stronger one is `Int.linearOrderedCommRing`.
+This file contains additive and multiplicative monoid instances on `ℤ`.
 -/
 
 open Nat
 
 namespace Int
 
-instance instCommRingInt : CommRing ℤ where
-  zero_mul := Int.zero_mul
-  mul_zero := Int.mul_zero
+instance instCommMonoidInt : CommMonoid ℤ where
   mul_comm := Int.mul_comm
-  left_distrib := Int.mul_add
-  right_distrib := Int.add_mul
   mul_one := Int.mul_one
   one_mul := Int.one_mul
   npow n x := x ^ n
   npow_zero _ := rfl
-  npow_succ n x := rfl
+  npow_succ _ _ := rfl
   mul_assoc := Int.mul_assoc
+
+instance instAddCommGroupWithOneInt : AddCommGroupWithOne ℤ where
   add_comm := Int.add_comm
   add_assoc := Int.add_assoc
   add_zero := Int.add_zero
@@ -55,27 +52,12 @@ instance instCommRingInt : CommRing ℤ where
   intCast_ofNat _ := rfl
   intCast_negSucc _ := rfl
 
-@[simp, norm_cast] lemma cast_id {n : ℤ} : Int.cast n = n := rfl
 
-@[simp, norm_cast]
-theorem cast_mul {α : Type*} [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) = m * n := fun m => by
-  obtain ⟨m, rfl | rfl⟩ := Int.eq_nat_or_neg m
-  · induction m with
-    | zero => simp
-    | succ m ih => simp_all [add_mul]
-  · induction m with
-    | zero => simp
-    | succ m ih => simp_all [add_mul]
-#align int.cast_mul Int.cast_mulₓ -- dubious translation, type involves HasLiftT
+@[simp, norm_cast] lemma cast_id {n : ℤ} : Int.cast n = n := rfl
 
 lemma cast_Nat_cast {n : ℕ} {R : Type*} [AddGroupWithOne R] :
     (Int.cast (Nat.cast n) : R) = Nat.cast n :=
   Int.cast_ofNat _
-
-@[simp, norm_cast] lemma cast_pow {R : Type*} [Ring R] (n : ℤ) (m : ℕ) :
-    ↑(n ^ m) = (n ^ m : R) := by
-  induction' m with m ih <;> simp [_root_.pow_succ, *]
-#align int.cast_pow Int.cast_pow
 
 /-! ### Extra instances to short-circuit type class resolution
 
@@ -85,17 +67,12 @@ these instances non-computably.
 instance : AddCommMonoid ℤ    := by infer_instance
 instance : AddMonoid ℤ        := by infer_instance
 instance : Monoid ℤ           := by infer_instance
-instance : CommMonoid ℤ       := by infer_instance
 instance : CommSemigroup ℤ    := by infer_instance
 instance : Semigroup ℤ        := by infer_instance
-instance : AddCommGroup ℤ     := by infer_instance
 instance : AddGroup ℤ         := by infer_instance
+instance : AddCommGroup ℤ    := by infer_instance
 instance : AddCommSemigroup ℤ := by infer_instance
 instance : AddSemigroup ℤ     := by infer_instance
-instance : CommSemiring ℤ     := by infer_instance
-instance : Semiring ℤ         := by infer_instance
-instance instRingInt : Ring ℤ             := by infer_instance
-instance : Distrib ℤ          := by infer_instance
 
 lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
   induction' k with k ih
@@ -131,3 +108,4 @@ lemma zsmul_int_one (n : ℤ) : n • (1 : ℤ) = n := mul_one _
 #align zsmul_int_one zsmul_int_one
 
 assert_not_exists Set.range
+assert_not_exists Ring

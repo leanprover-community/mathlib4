@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.GroupTheory.Perm.Cycle.Type
-import Mathlib.Algebra.GroupPower.IterateHom
+import Mathlib.Algebra.GroupPower.IterateMonoidHom
 import Mathlib.GroupTheory.OrderOfElement
 
 /-!

@@ -5,7 +5,7 @@ Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.GroupTheory.GroupAction.Prod
-import Mathlib.Data.Int.Basic
+import Mathlib.Data.Int.Ring
 import Mathlib.Data.Nat.Cast.Basic
 
 /-!
