@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Homology.Homotopy
+import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.CategoryTheory.Abelian.Homology
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
@@ -286,6 +287,11 @@ lemma quasiIsoAt_iff_exactAt' (f : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHom
 instance (f : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology i] [hf : QuasiIsoAt f i] :
     IsIso (homologyMap f i) := by
   simpa only [quasiIsoAt_iff, ShortComplex.quasiIso_iff] using hf
+
+lemma quasiIsoAt_op_iff (φ : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology i] :
+    QuasiIsoAt ((HomologicalComplex.opFunctor _ _).map φ.op) i ↔ QuasiIsoAt φ i := by
+  simp only [quasiIsoAt_iff]
+  exact ShortComplex.quasiIso_opMap_iff ((shortComplexFunctor C c i).map φ)
 
 /-- The isomorphism `K.homology i ≅ L.homology i` induced by a morphism `f : K ⟶ L` such
 that `[QuasiIsoAt f i]` holds. -/

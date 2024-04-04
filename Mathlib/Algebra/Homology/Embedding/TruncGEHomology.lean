@@ -8,18 +8,6 @@ open CategoryTheory Limits ZeroObject Category
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
   {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
 
-namespace CategoryTheory.Limits.IsZero
-
-variable {X : C} (hX : IsZero X)
-
-lemma epi {Y : C} (f : Y ⟶ X) : Epi f where
-  left_cancellation := by intros; apply hX.eq_of_src
-
-lemma mono {Y : C} (f : X ⟶ Y) : Mono f where
-  right_cancellation := by intros; apply hX.eq_of_tgt
-
-end CategoryTheory.Limits.IsZero
-
 namespace CategoryTheory.Limits.KernelFork
 
 noncomputable def isLimitEquivNonemptyIsIso {X Y : C} {f : X ⟶ Y} (c : KernelFork f) (hf : f = 0) :

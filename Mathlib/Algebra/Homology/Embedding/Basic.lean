@@ -62,6 +62,12 @@ namespace Embedding
 variable {c c'}
 variable (e : Embedding c c')
 
+@[simps]
+def op : Embedding c.symm c'.symm where
+  f := e.f
+  injective_f := e.injective_f
+  rel h := e.rel h
+
 /-- An embedding of complex shapes `e` satisfies `e.IsRelIff` if the implication
 `e.rel` is an equivalence. -/
 class IsRelIff : Prop where
@@ -71,6 +77,9 @@ lemma rel_iff [e.IsRelIff] (i₁ i₂ : ι) : c'.Rel (e.f i₁) (e.f i₂) ↔ c
   constructor
   · apply IsRelIff.rel'
   · exact e.rel
+
+instance [e.IsRelIff] : e.op.IsRelIff where
+  rel' _ _ h := (e.rel_iff _ _).1 h
 
 section
 
@@ -135,6 +144,12 @@ lemma next_f [e.IsTruncGE] {j k : ι} (hjk : c.next j = k) : c'.next (e.f j) = e
 
 lemma mem_prev [e.IsTruncLE] {i' : ι'} {j : ι} (h : c'.Rel i' (e.f j)) : ∃ i, e.f i = i' :=
   IsTruncLE.mem_prev h
+
+instance [e.IsTruncLE] : e.op.IsTruncGE where
+  mem_next h := e.mem_prev h
+
+instance [e.IsTruncGE] : e.op.IsTruncLE where
+  mem_prev h := e.mem_next h
 
 open Classical in
 /-- The map `ι' → Option ι` which sends `e.f i` to `some i` and the other elements to `none`. -/

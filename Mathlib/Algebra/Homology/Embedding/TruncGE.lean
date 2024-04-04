@@ -6,6 +6,18 @@ open CategoryTheory Limits ZeroObject Category
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
   {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
 
+namespace CategoryTheory.Limits.IsZero
+
+variable {X : C} (hX : IsZero X)
+
+lemma epi {Y : C} (f : Y ⟶ X) : Epi f where
+  left_cancellation := by intros; apply hX.eq_of_src
+
+lemma mono {Y : C} (f : X ⟶ Y) : Mono f where
+  right_cancellation := by intros; apply hX.eq_of_tgt
+
+end CategoryTheory.Limits.IsZero
+
 namespace HomologicalComplex
 
 variable (K : HomologicalComplex C c') (e : c.Embedding c') [e.IsTruncGE]
@@ -159,5 +171,13 @@ instance (i : ι) : Epi ((K.restrictionToTruncGE' e).f i) := by
 
 noncomputable def πTruncGE : K ⟶ K.truncGE e :=
   e.liftExtend (K.restrictionToTruncGE' e) (K.restrictionToTruncGE'_hasLift e)
+
+instance (i' : ι') : Epi ((K.πTruncGE e).f i') := by
+  by_cases hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, hi⟩ := hi'
+    dsimp [πTruncGE]
+    rw [e.epi_liftExtend_f_iff _ _ hi]
+    infer_instance
+  · apply (isZero_extend_X _ _ _ (by simpa using hi')).epi
 
 end HomologicalComplex
