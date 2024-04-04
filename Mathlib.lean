@@ -2485,7 +2485,6 @@ import Mathlib.Init.Logic
 import Mathlib.Init.Meta.WellFoundedTactics
 import Mathlib.Init.Order.Defs
 import Mathlib.Init.Order.LinearOrder
-import Mathlib.Init.Propext
 import Mathlib.Init.Quot
 import Mathlib.Init.Set
 import Mathlib.Init.ZeroOne
