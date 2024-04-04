@@ -213,7 +213,7 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     Fintype.prod_dvd_of_coprime
       (Polynomial.pairwise_coprime_X_sub_C <| MulAction.injective_ofQuotientStabilizer G x) fun y =>
       QuotientGroup.induction_on y fun g => _
-  rw [Polynomial.dvd_iff_isRoot, Polynomial.IsRoot.def, MulAction.ofQuotientStabilizer_mk,
+  rw [Polynomial.dvd_iff_isRoot, Polynomial.IsRoot.definition, MulAction.ofQuotientStabilizer_mk,
     Polynomial.eval_smul', ← this, ← Subfield.toSubring_subtype_eq_subtype, ←
     IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring, h,
     ← MulSemiringActionHom.coe_polynomial, ← MulSemiringActionHom.map_smul, smul_polynomial,

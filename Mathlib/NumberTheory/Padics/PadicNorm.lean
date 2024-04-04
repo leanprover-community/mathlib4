@@ -157,7 +157,7 @@ protected theorem mul (q r : ℚ) : padicNorm p (q * r) = padicNorm p q * padicN
 @[simp]
 protected theorem div (q r : ℚ) : padicNorm p (q / r) = padicNorm p q / padicNorm p r :=
   if hr : r = 0 then by simp [hr]
-  else eq_div_of_mul_eq (padicNorm.nonzero hr) (by rw [← padicNorm.mul, div_mul_cancel _ hr])
+  else eq_div_of_mul_eq (padicNorm.nonzero hr) (by rw [← padicNorm.mul, div_mul_cancel₀ _ hr])
 #align padic_norm.div padicNorm.div
 
 /-- The `p`-adic norm of an integer is at most `1`. -/
@@ -297,11 +297,11 @@ theorem of_nat (m : ℕ) : padicNorm p m ≤ 1 :=
 
 /-- The `p`-adic norm of a natural `m` is one iff `p` doesn't divide `m`. -/
 theorem nat_eq_one_iff (m : ℕ) : padicNorm p m = 1 ↔ ¬p ∣ m := by
-  rw [← Int.coe_nat_dvd, ← int_eq_one_iff, Int.cast_ofNat]
+  rw [← Int.natCast_dvd_natCast, ← int_eq_one_iff, Int.cast_ofNat]
 #align padic_norm.nat_eq_one_iff padicNorm.nat_eq_one_iff
 
 theorem nat_lt_one_iff (m : ℕ) : padicNorm p m < 1 ↔ p ∣ m := by
-  rw [← Int.coe_nat_dvd, ← int_lt_one_iff, Int.cast_ofNat]
+  rw [← Int.natCast_dvd_natCast, ← int_lt_one_iff, Int.cast_ofNat]
 #align padic_norm.nat_lt_one_iff padicNorm.nat_lt_one_iff
 
 /-- If a rational is not a p-adic integer, it is not an integer. -/

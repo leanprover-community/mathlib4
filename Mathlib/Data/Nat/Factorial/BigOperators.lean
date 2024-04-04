@@ -23,6 +23,9 @@ open BigOperators Finset Nat
 
 namespace Nat
 
+lemma monotone_factorial : Monotone factorial := fun _ _ => factorial_le
+#align nat.monotone_factorial Nat.monotone_factorial
+
 variable {α : Type*} (s : Finset α) (f : α → ℕ)
 
 theorem prod_factorial_pos : 0 < ∏ i in s, (f i)! :=

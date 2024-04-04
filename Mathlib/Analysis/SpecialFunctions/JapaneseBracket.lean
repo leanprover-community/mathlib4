@@ -94,8 +94,9 @@ theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ
   rwa [neg_lt_neg_iff, inv_mul_lt_iff' hr, one_mul]
 #align finite_integral_rpow_sub_one_pow_aux finite_integral_rpow_sub_one_pow_aux
 
-theorem finite_integral_one_add_norm [MeasurableSpace E] [BorelSpace E] {μ : Measure E}
-    [μ.IsAddHaarMeasure] {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
+variable [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [μ.IsAddHaarMeasure]
+
+theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
     (∫⁻ x : E, ENNReal.ofReal ((1 + ‖x‖) ^ (-r)) ∂μ) < ∞ := by
   have hr : 0 < r := lt_of_le_of_lt (finrank ℝ E).cast_nonneg hnr
   -- We start by applying the layer cake formula
@@ -137,9 +138,8 @@ theorem finite_integral_one_add_norm [MeasurableSpace E] [BorelSpace E] {μ : Me
     exact WithTop.zero_lt_top
 #align finite_integral_one_add_norm finite_integral_one_add_norm
 
-theorem integrable_one_add_norm [MeasurableSpace E] [BorelSpace E] {μ : Measure E}
-    [μ.IsAddHaarMeasure]
-    {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) : Integrable (fun x : E => (1 + ‖x‖) ^ (-r)) μ := by
+theorem integrable_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
+    Integrable (fun x ↦ (1 + ‖x‖) ^ (-r)) μ := by
   constructor
   · measurability
   -- Lower Lebesgue integral
@@ -149,9 +149,8 @@ theorem integrable_one_add_norm [MeasurableSpace E] [BorelSpace E] {μ : Measure
   exact finite_integral_one_add_norm hnr
 #align integrable_one_add_norm integrable_one_add_norm
 
-theorem integrable_rpow_neg_one_add_norm_sq [MeasurableSpace E] [BorelSpace E] {μ : Measure E}
-    [μ.IsAddHaarMeasure] {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
-    Integrable (fun x : E => ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2)) μ := by
+theorem integrable_rpow_neg_one_add_norm_sq {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
+    Integrable (fun x ↦ ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2)) μ := by
   have hr : 0 < r := lt_of_le_of_lt (finrank ℝ E).cast_nonneg hnr
   refine ((integrable_one_add_norm hnr).const_mul <| (2 : ℝ) ^ (r / 2)).mono'
     ?_ (eventually_of_forall fun x => ?_)

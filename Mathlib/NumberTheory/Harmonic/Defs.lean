@@ -6,8 +6,8 @@ Authors: Koundinya Vajjha, Thomas Browning
 
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Tactic.Linarith
-import Mathlib.Data.Nat.Interval
 
 /-!
 
