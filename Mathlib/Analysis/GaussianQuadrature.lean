@@ -28,7 +28,8 @@ open MeasureTheory Polynomial Set Real Finset BigOperators Lagrange
 
 noncomputable section
 
--- An interval of ℝ with a nonatomic measure, and where polynomials are integrable
+/-- An interval of ℝ with a nonatomic measure, and where polynomials are integrable
+-/
 structure IntervalWithMeasure where
   a : ℝ
   b : ℝ
@@ -39,17 +40,20 @@ structure IntervalWithMeasure where
   hpi (p : ℝ[X]) : IntervalIntegrable (fun x => (p.eval x)) μ a b
 
 
--- Integral of a polynomial
+/-- Integral of a polynomial
+-/
 def IntervalWithMeasure.int (s : IntervalWithMeasure) (p : ℝ[X]) : ℝ :=
   ∫ x in s.a..s.b, p.eval x ∂s.μ
 
 
--- L² scalar product between 2 polynomials
+/-- L² scalar product between 2 polynomials
+-/
 def IntervalWithMeasure.dot (s: IntervalWithMeasure)(p q : ℝ[X]) : ℝ :=
   ∫ x in s.a..s.b, (p * q).eval x ∂s.μ
 
 
--- the scalar product of 2 polynomials is well posed, since it's integrable
+/-- the scalar product of 2 polynomials is well posed, since it's integrable
+-/
 theorem IntervalWithMeasure.IntervalIntegrable_dot (s : IntervalWithMeasure)(p q : ℝ[X]) :
     IntervalIntegrable (fun x => p.eval x * q.eval x) s.μ s.a s.b:= by
   let h (x : ℝ) : p.eval x * q.eval x = (p * q).eval x := by
@@ -58,8 +62,9 @@ theorem IntervalWithMeasure.IntervalIntegrable_dot (s : IntervalWithMeasure)(p q
   exact s.hpi (p * q)
 
 
--- polynomials with a structure of inner product space
 set_option linter.unusedVariables false
+/-- polynomials with a structure of inner product space
+-/
 @[inline, reducible]
 abbrev MySpace (s: IntervalWithMeasure) := WithLp 2 ℝ[X]
 
@@ -101,8 +106,9 @@ theorem MySpace.inner_def (x y : MySpace s) : ⟪x, y⟫_ℝ = s.dot x y :=
   rfl
 
 
--- a nonzero polynomial that is nonnegative on an open interval,
--- has positive integral in that interval
+/-- a nonzero polynomial that is nonnegative on an open interval,
+has positive integral in that interval
+-/
 theorem MySpace.integral_pos_of_pos {p : MySpace s} (hne0 : p ≠ 0)
     (hpos : ∀ x : ℝ, x ∈ Ioo s.a s.b → p.eval x ≥ 0) :
     0 < ∫ (x : ℝ) in s.a..s.b, p.eval x ∂s.μ := by
@@ -170,6 +176,8 @@ theorem MySpace.integral_pos_of_pos {p : MySpace s} (hne0 : p ≠ 0)
   exact hsp
 
 
+/-- InnerProductSpaceCore for MySpace
+-/
 def MySpace.InnerProductSpaceCore : InnerProductSpace.Core ℝ (MySpace s) where
   conj_symm := by
     intro p q
@@ -240,23 +248,27 @@ instance MySpace.instInnerProductSpace : InnerProductSpace ℝ (MySpace s) :=
   InnerProductSpace.ofCore MySpace.InnerProductSpaceCore
 
 
+/-- powers of X -/
 def pows : ℕ → MySpace s := by
   intro k
   exact X^k
 
 
--- orthogonal polynomials on an interval with respect to a specified measure
+/-- orthogonal polynomials on an interval with respect to a specified measure
+-/
 def OrthoPoly(s: IntervalWithMeasure) : ℕ → MySpace s := gramSchmidt ℝ pows
 
 
--- orthogonal polynomials are orthogonal
+/-- orthogonal polynomials are orthogonal
+-/
 theorem OrthoPoly_orthogonal {a b : ℕ} (hab : a ≠ b) : ⟪OrthoPoly s a, OrthoPoly s b⟫_ℝ = 0 := by
   unfold OrthoPoly
   apply gramSchmidt_orthogonal
   exact hab
 
 
--- the span of the first n orthogonal polynomials is all the polynomials of degree ≤ n
+/-- the span of the first n orthogonal polynomials is all the polynomials of degree ≤ n
+-/
 theorem OrthoPoly_span (s) (n : ℕ) :
     Submodule.span ℝ ((OrthoPoly s) '' (Finset.range (n + 1))) = Polynomial.degreeLE ℝ n := by
   unfold OrthoPoly
@@ -558,7 +570,8 @@ theorem OrthoPoly_three_term_recurrence (n : ℕ) : ∃ a b c : ℝ, OrthoPoly s
   rw [← add_sub_assoc, add_comm (a • X * OrthoPoly s (n+1)) _, add_sub_assoc, sub_self, add_zero]
 
 
--- distinct roots of an orthogonal polynomial that belong to the domain interval
+/-- distinct roots of an orthogonal polynomial that belong to the domain interval
+-/
 def OrthoPoly_internal_roots (s : IntervalWithMeasure) (n : ℕ) : Finset ℝ :=
   Finset.filter (fun r => r ∈ Ioo s.a s.b) (OrthoPoly s n).roots.toFinset
 
@@ -577,7 +590,8 @@ theorem OrthoPoly_internal_roots_le (s : IntervalWithMeasure) (n : ℕ) :
   apply LE.le.trans h2 h
 
 
--- the n-th orthogonal polynomial has n distinct roots in the internal part of the domain interval
+/-- the n-th orthogonal polynomial has n distinct roots in the internal part of the domain interval
+-/
 theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) :
     (OrthoPoly_internal_roots s n).card = n := by
   have hor := LE.le.lt_or_eq (OrthoPoly_internal_roots_le s n)
@@ -835,12 +849,15 @@ theorem OrthoPoly_factorization (s : IntervalWithMeasure) (n : ℕ) : ∃a : ℝ
   exact hf
 
 
--- a quadrature formula : finitely many nodes and the corresponding weights
+/-- a quadrature formula : finitely many nodes and the corresponding weights
+-/
 structure Quadrature where
   nodes : Finset ℝ
   weights : nodes → ℝ
 
 
+/-- the number of nodes of a quadrature formula
+-/
 def Quadrature.card (q : Quadrature) : ℕ :=
   q.nodes.card
 
@@ -857,19 +874,22 @@ theorem Quadrature.eq {a b : Quadrature} (hn : a.nodes = b.nodes) (hw : HEq a.we
       exact hw
 
 
--- numerical integration with the quadrature formula
+/-- numerical integration with the quadrature formula
+-/
 def Quadrature.nint (q : Quadrature) (p : ℝ[X]) :=
   ∑ n : q.nodes, (q.weights n) * p.eval ↑n
 
 
--- the notion of exactness: a quadrature formula is exact of degree n if it integrates
--- all polynomials of degree ≤ n exactly
+/-- the notion of exactness: a quadrature formula is exact of degree n if it integrates
+all polynomials of degree ≤ n exactly
+-/
 def Quadrature.exact (q : Quadrature) (s : IntervalWithMeasure) (n : ℕ) :=
   ∀p : ℝ[X], p.degree ≤ n → q.nint p = s.int p
 
 
--- an interpolatory quadrature formula: a quadrature formula that approximates the integral
--- of a polynomial with the exact integral of its Lagrange interpolant on the quadrature nodes
+/-- an interpolatory quadrature formula: a quadrature formula that approximates the integral
+of a polynomial with the exact integral of its Lagrange interpolant on the quadrature nodes
+-/
 def Quadrature.interp (s : IntervalWithMeasure) (F : Finset ℝ) : Quadrature where
   nodes := F
   weights : F -> ℝ := fun i => s.int (Lagrange.basis F id i)
@@ -900,7 +920,8 @@ theorem Quadrature.interp_nint (s : IntervalWithMeasure) (F : Finset ℝ) (p : �
   apply s.hpi
 
 
--- an interpolatory quadrature formula with n nodes has exactness at least n-1
+/-- an interpolatory quadrature formula with n nodes has exactness at least n-1
+-/
 theorem Quadrature.interp_exact (s : IntervalWithMeasure) (F : Finset ℝ) (hpos : 0 < F.card) :
     Quadrature.exact (Quadrature.interp s F) s (F.card - 1) := by
   unfold exact
@@ -931,7 +952,8 @@ theorem Quadrature.interp_exact (s : IntervalWithMeasure) (F : Finset ℝ) (hpos
   simp only [id_eq]
 
 
--- a quadrature formula on n nodes with exactnes at least n-1 is interpolatory
+/-- a quadrature formula on n nodes with exactnes at least n-1 is interpolatory
+-/
 theorem Quadrature.is_interp (q : Quadrature) (s : IntervalWithMeasure)
     (hex : q.exact s (q.card-1)) : ∃ F : Finset ℝ, q = Quadrature.interp s F := by
   use q.nodes
@@ -964,7 +986,8 @@ theorem Quadrature.is_interp (q : Quadrature) (s : IntervalWithMeasure)
     sum_ite_eq, Finset.mem_attach, ↓reduceIte] at this
   exact this
 
--- a quadrature formula on n nodes with exactness at least 2n - 2 has positive weights
+/-- a quadrature formula on n nodes with exactness at least 2n - 2 has positive weights
+-/
 theorem Quadrature.pos_weights (q : Quadrature) (s : IntervalWithMeasure)
     (hex : q.exact s (2*(q.card - 1))) : ∀ x : q.nodes, q.weights x > 0 := by
   intro x
@@ -1030,9 +1053,10 @@ theorem Quadrature.pos_weights (q : Quadrature) (s : IntervalWithMeasure)
   exact hpos
 
 
--- a Gaussian quadrature: an interpolatory quadrature formula with nodes in the roots of the n-th
--- orthogonal polynomial
-theorem Quadrature.Gaussian (s : IntervalWithMeasure) (n : ℕ) : Quadrature :=
+/-- a Gaussian quadrature: an interpolatory quadrature formula with nodes in the roots of the n-th
+orthogonal polynomial
+-/
+def Quadrature.Gaussian (s : IntervalWithMeasure) (n : ℕ) : Quadrature :=
   Quadrature.interp s (OrthoPoly_internal_roots s n)
 
 
@@ -1045,7 +1069,8 @@ theorem Quadrature.Gaussian_card (s : IntervalWithMeasure) (n : ℕ) :
   exact OrthoPoly_internal_roots_eq s n
 
 
--- a Gaussian quadrature formula on n nodes has exactness 2n - 1
+/-- a Gaussian quadrature formula on n nodes has exactness 2n - 1
+-/
 theorem Quadrature.Gaussian_exact (s : IntervalWithMeasure) (n : ℕ) (hpos : 0 < n) :
     Quadrature.exact (Quadrature.Gaussian s n) s (2*n - 1) := by
   rw [exact]
@@ -1149,7 +1174,8 @@ theorem Quadrature.Gaussian_exact (s : IntervalWithMeasure) (n : ℕ) (hpos : 0 
   exact natbot_le_sub_one_of_lt hdegmod
 
 
--- there are no quadrature formulas on n nodes with exactness 2n
+/-- there are no quadrature formulas on n nodes with exactness 2n
+-/
 theorem Quadrature.max_exactness (q : Quadrature) (s : IntervalWithMeasure) :
     ¬ q.exact s (2*q.card) := by
   unfold exact
