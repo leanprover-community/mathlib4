@@ -6,6 +6,12 @@ Authors: Junyan Xu
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Field.IsField
 
+/-!
+# If a semiring is a field, any isomorphic semiring is also a field.
+
+This is in a separate file to avoiding need to import `Field` in `Mathlib.Algebra.Ring.Equiv.`
+-/
+
 namespace MulEquiv
 
 protected theorem isField {A : Type*} (B : Type*) [Semiring A] [Semiring B] (hB : IsField B)
