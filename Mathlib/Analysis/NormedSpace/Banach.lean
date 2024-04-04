@@ -256,11 +256,10 @@ protected theorem quotientMap (surj : Surjective f) : QuotientMap f :=
   (f.isOpenMap surj).to_quotientMap f.continuous surj
 #align continuous_linear_map.quotient_map ContinuousLinearMap.quotientMap
 
-theorem _root_.AffineMap.isOpenMap {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {F : Type*}
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F] {P Q : Type*}
-    [MetricSpace P] [NormedAddTorsor E P] [MetricSpace Q] [NormedAddTorsor F Q]
-    (f : P →ᵃ[𝕜] Q) (hf : Continuous f) (surj : Surjective f) : IsOpenMap f :=
+theorem _root_.AffineMap.isOpenMap {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    [CompleteSpace F] {P Q : Type*} [MetricSpace P] [NormedAddTorsor E P] [MetricSpace Q]
+    [NormedAddTorsor F Q] (f : P →ᵃ[𝕜] Q) (hf : Continuous f) (surj : Surjective f) :
+    IsOpenMap f :=
   AffineMap.isOpenMap_linear_iff.mp <|
     ContinuousLinearMap.isOpenMap { f.linear with cont := AffineMap.continuous_linear_iff.mpr hf }
       (f.linear_surjective_iff.mpr surj)
