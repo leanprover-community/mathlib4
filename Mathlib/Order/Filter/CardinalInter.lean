@@ -33,11 +33,11 @@ filter, cardinal
 open Set Filter Cardinal
 
 universe u
-variable {ι : Type u} {α β : Type u} {c : Cardinal}
+variable {ι : Type u} {α β : Type u} {c : Cardinal.{u}}
 
 /-- A filter `l` has the cardinal `c` intersection property if for any collection
 of less than `c` sets `s ∈ l`, their intersection belongs to `l` as well. -/
-class CardinalInterFilter (l : Filter α) (c : Cardinal) : Prop where
+class CardinalInterFilter (l : Filter α) (c : Cardinal.{u}) : Prop where
   /-- For a collection of sets `s ∈ l` with cardinality below c,
   their intersection belongs to `l` as well. -/
   cardinal_sInter_mem : ∀ S : Set (Set α), (#S < c) → (∀ s ∈ S, s ∈ l) → ⋂₀ S ∈ l
