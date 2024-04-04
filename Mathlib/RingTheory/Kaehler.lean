@@ -770,7 +770,7 @@ open Polynomial
 
 lemma KaehlerDifferential.polynomial_D_apply (P : R[X]) :
     D R R[X] P = derivative P • D R R[X] X := by
-  rw [← aeval_X_left_apply P, (D R R[X]).apply_aeval, aeval_X_left_apply, aeval_X_left_apply]
+  rw [← aeval_X_left_apply P, (D R R[X]).map_aeval, aeval_X_left_apply, aeval_X_left_apply]
 
 /-- The relative differential module of the univariate polynomial algebra `R[X]` is isomorphic to
   `R[X]` as an `R[X]`-module. -/
