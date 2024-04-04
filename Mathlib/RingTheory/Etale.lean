@@ -62,16 +62,19 @@ section
 variable (r : R)
 variable (A : Type u) [CommRing A] [Algebra R A] [IsLocalization.Away r A]
 
-theorem Etale.IsLocalization_Away (r : R) [IsLocalization.Away r A] : Etale R A where
+theorem Etale.of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Etale R A where
   formallyEtale := Algebra.FormallyEtale.of_isLocalization (Submonoid.powers r)
   finitePresentation := IsLocalization.Away.finitePresentation r
 
---not sure about the naming convention.
-
 --TODO
--- 2. Localization R -> R_f is etale, or more general localization
+-- 2. Localization R -> R_M is etale for M finitely generated
 -- 3. If R=k is a field, A is etale iff A is a finite product of fields
 --    this is a nice goal, I am afraid we need dimension theory for this (at least that's what the SP does)
 --    but maybe there is a direct way
+-- 4. Characterization of unramified via stalks
+-- 5. Smooth implies Flat
+-- 6. Standard etale morphisms
+-- 7. etale implies smooth or relative dimenion zero
+-- 8. Make category FinEt
 
 end
