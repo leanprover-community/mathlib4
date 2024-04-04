@@ -343,7 +343,7 @@ structure LEquiv (L L' : Language) where
   right_inv : toLHom.comp invLHom = LHom.id L'
 #align first_order.lanugage.Lequiv FirstOrder.Language.LEquiv
 
--- mathport name: «expr ≃ᴸ »
+@[inherit_doc]
 infixl:10 " ≃ᴸ " => LEquiv
 
 -- \^L

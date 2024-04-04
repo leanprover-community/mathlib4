@@ -160,7 +160,7 @@ def adjoint : F →ₗ.[𝕜] E where
   toFun := if hT : Dense (T.domain : Set E) then adjointAux hT else 0
 #align linear_pmap.adjoint LinearPMap.adjoint
 
-scoped postfix:1024 "†" => LinearPMap.adjoint
+@[inherit_doc] scoped postfix:1024 "†" => LinearPMap.adjoint
 
 theorem mem_adjoint_domain_iff (y : F) : y ∈ T†.domain ↔ Continuous ((innerₛₗ 𝕜 y).comp T.toFun) :=
   Iff.rfl

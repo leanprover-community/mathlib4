@@ -519,6 +519,7 @@ theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSeq α} {t : WSeq β
 #align stream.wseq.lift_rel_destruct_iff Stream'.WSeq.liftRel_destruct_iff
 
 -- Porting note: To avoid ambiguous notation, `~` became `~ʷ`.
+@[inherit_doc]
 infixl:50 " ~ʷ " => Equiv
 
 theorem destruct_congr {s t : WSeq α} :

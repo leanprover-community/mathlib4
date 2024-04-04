@@ -479,7 +479,7 @@ section StarOrderedRing
 
 variable {𝕜 : Type*} [CommRing 𝕜] [PartialOrder 𝕜] [StarRing 𝕜] [StarOrderedRing 𝕜]
 
-scoped infixl:65 " ⊕ᵥ " => Sum.elim
+@[inherit_doc] scoped infixl:65 " ⊕ᵥ " => Sum.elim
 
 theorem schur_complement_eq₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : Matrix m m 𝕜}
     (B : Matrix m n 𝕜) (D : Matrix n n 𝕜) (x : m → 𝕜) (y : n → 𝕜) [Invertible A]

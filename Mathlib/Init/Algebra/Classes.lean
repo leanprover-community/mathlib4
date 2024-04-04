@@ -417,7 +417,7 @@ instance isEquiv : IsEquiv α (@Equiv _ r) where
 end
 
 /-- The equivalence relation induced by `lt` -/
-notation:50 a " ≈[" lt "]" b:50 => @Equiv _ lt a b--Equiv (r := lt) a b
+notation:50 a " ≈[" lt "]" b:50 => Equiv (r := lt) a b
 
 end StrictWeakOrder
 

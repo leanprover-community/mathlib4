@@ -38,7 +38,7 @@ def SymAlg (α : Type*) : Type _ :=
   α
 #align sym_alg SymAlg
 
--- mathport name: «expr ˢʸᵐ»
+@[inherit_doc]
 postfix:max "ˢʸᵐ" => SymAlg
 
 namespace SymAlg

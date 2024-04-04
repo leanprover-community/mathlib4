@@ -125,6 +125,7 @@ def Set.reProdIm (s t : Set ℝ) : Set ℂ :=
   re ⁻¹' s ∩ im ⁻¹' t
 #align set.re_prod_im Complex.Set.reProdIm
 
+@[inherit_doc]
 infixl:72 " ×ℂ " => Set.reProdIm
 
 theorem mem_reProdIm {z : ℂ} {s t : Set ℝ} : z ∈ s ×ℂ t ↔ z.re ∈ s ∧ z.im ∈ t :=

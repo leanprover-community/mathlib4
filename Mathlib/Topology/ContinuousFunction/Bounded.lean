@@ -44,7 +44,7 @@ structure BoundedContinuousFunction (α : Type u) (β : Type v) [TopologicalSpac
   map_bounded' : ∃ C, ∀ x y, dist (toFun x) (toFun y) ≤ C
 #align bounded_continuous_function BoundedContinuousFunction
 
--- mathport name: bounded_continuous_function
+@[inherit_doc]
 scoped[BoundedContinuousFunction] infixr:25 " →ᵇ " => BoundedContinuousFunction
 
 section

@@ -34,6 +34,7 @@ structure Zsqrtd (d : ℤ) where
 #align zsqrtd Zsqrtd
 #align zsqrtd.ext Zsqrtd.ext_iff
 
+@[inherit_doc]
 prefix:100 "ℤ√" => Zsqrtd
 
 namespace Zsqrtd

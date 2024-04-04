@@ -50,6 +50,7 @@ def GaussianInt : Type :=
   Zsqrtd (-1)
 #align gaussian_int GaussianInt
 
+@[inherit_doc]
 local notation "ℤ[i]" => GaussianInt
 
 namespace GaussianInt

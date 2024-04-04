@@ -60,7 +60,7 @@ def crossProduct : (Fin 3 → R) →ₗ[R] (Fin 3 → R) →ₗ[R] Fin 3 → R :
     simp_rw [smul_vec3, Pi.smul_apply, smul_sub, mul_smul_comm]
 #align cross_product crossProduct
 
-scoped[Matrix] infixl:74 " ×₃ " => crossProduct
+@[inherit_doc] scoped[Matrix] infixl:74 " ×₃ " => crossProduct
 
 theorem cross_apply (a b : Fin 3 → R) :
     a ×₃ b = ![a 1 * b 2 - a 2 * b 1, a 2 * b 0 - a 0 * b 2, a 0 * b 1 - a 1 * b 0] := rfl

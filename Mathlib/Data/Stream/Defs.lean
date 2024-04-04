@@ -30,7 +30,7 @@ def cons (a : α) (s : Stream' α) : Stream' α
   | n + 1 => s n
 #align stream.cons Stream'.cons
 
-scoped infixr:67 " :: " => cons
+@[inherit_doc] scoped infixr:67 " :: " => cons
 
 /-- Get the `n`-th element of a stream. -/
 def get (s : Stream' α) (n : ℕ) : α := s n
@@ -114,7 +114,7 @@ def interleave (s₁ s₂ : Stream' α) : Stream' α :=
   corecOn (s₁, s₂) (fun ⟨s₁, _⟩ => head s₁) fun ⟨s₁, s₂⟩ => (s₂, tail s₁)
 #align stream.interleave Stream'.interleave
 
-infixl:65 " ⋈ " => interleave
+@[inherit_doc] infixl:65 " ⋈ " => interleave
 
 /-- Elements of a stream with even indices. -/
 def even (s : Stream' α) : Stream' α :=
@@ -132,7 +132,7 @@ def appendStream' : List α → Stream' α → Stream' α
   | List.cons a l, s => a::appendStream' l s
 #align stream.append_stream Stream'.appendStream'
 
-infixl:65 " ++ₛ " => appendStream'
+@[inherit_doc] infixl:65 " ++ₛ " => appendStream'
 
 /-- `take n s` returns a list of the `n` first elements of stream `s` -/
 def take : ℕ → Stream' α → List α
@@ -183,7 +183,7 @@ def pure (a : α) : Stream' α :=
 def apply (f : Stream' (α → β)) (s : Stream' α) : Stream' β := fun n => (get f n) (get s n)
 #align stream.apply Stream'.apply
 
-infixl:75 " ⊛ " => apply
+@[inherit_doc] infixl:75 " ⊛ " => apply
 -- Porting note: "input as \o*" was here but doesn't work for the above notation
 
 /-- The stream of natural numbers: `Stream'.get n Stream'.nats = n`. -/
