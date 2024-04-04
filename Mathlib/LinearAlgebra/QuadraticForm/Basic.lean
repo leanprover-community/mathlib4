@@ -81,7 +81,7 @@ variable {R : Type*} {M N : Type*}
 
 open BigOperators
 
-open LinearMap (BilinForm)
+open LinearMap (BilinMap)
 
 section Polar
 
@@ -142,7 +142,7 @@ structure QuadraticForm (R : Type u) (M : Type v) (N : Type w) [CommSemiring R] 
     [Module R M] [AddCommMonoid N] [Module R N] where
   toFun : M → N
   toFun_smul : ∀ (a : R) (x : M), toFun (a • x) = (a * a) • toFun x
-  exists_companion' : ∃ B : M →ₗ[R] M →ₗ[R] N, ∀ x y, toFun (x + y) = toFun x + toFun y + B x y
+  exists_companion' : ∃ B : BilinMap R M N, ∀ x y, toFun (x + y) = toFun x + toFun y + B x y
 #align quadratic_form QuadraticForm
 
 structure QuadraticForm' (R : Type u) (M : Type v) [CommSemiring R] [AddCommMonoid M]
@@ -219,7 +219,7 @@ theorem map_smul (a : R) (x : M) : Q (a • x) = (a * a) • Q x :=
   Q.toFun_smul a x
 #align quadratic_form.map_smul QuadraticForm.map_smul
 
-theorem exists_companion : ∃ B : M →ₗ[R] M →ₗ[R] N, ∀ x y, Q (x + y) = Q x + Q y + B x y :=
+theorem exists_companion : ∃ B : BilinMap R M N, ∀ x y, Q (x + y) = Q x + Q y + B x y :=
   Q.exists_companion'
 #align quadratic_form.exists_companion QuadraticForm.exists_companion
 
@@ -327,7 +327,7 @@ theorem polar_self (x : M) : polar Q x x = 2 • Q x := by
 
 /-- `QuadraticForm.polar` as a bilinear map -/
 @[simps!]
-def polarBilin : M →ₗ[R] M →ₗ[R] N :=
+def polarBilin : BilinMap R M N :=
   LinearMap.mk₂ R (polar Q) (polar_add_left Q) (polar_smul_left Q) (polar_add_right Q)
   (polar_smul_right Q)
 #align quadratic_form.polar_bilin QuadraticForm.polarBilin
@@ -707,7 +707,7 @@ variable (S R M)
 
 /-- `LinearMap.BilinForm.toQuadraticForm` as an additive homomorphism -/
 @[simps]
-def toQuadraticFormAddMonoidHom : (M →ₗ[R] M →ₗ[R] N) →+ QuadraticForm R M N where
+def toQuadraticFormAddMonoidHom : (BilinMap R M N) →+ QuadraticForm R M N where
   toFun := toQuadraticForm
   map_zero' := toQuadraticForm_zero _ _
   map_add' := toQuadraticForm_add
@@ -716,7 +716,7 @@ def toQuadraticFormAddMonoidHom : (M →ₗ[R] M →ₗ[R] N) →+ QuadraticForm
 /-- `LinearMap.BilinForm.toQuadraticForm` as a linear map -/
 @[simps!]
 def toQuadraticFormLinearMap [Semiring S] [Module S N] [SMulCommClass S R N] [SMulCommClass R S N] :
-    (M →ₗ[R] M →ₗ[R] N) →ₗ[S] QuadraticForm R M N where
+    (BilinMap R M N) →ₗ[S] QuadraticForm R M N where
   toFun := toQuadraticForm
   map_smul' := toQuadraticForm_smul
   map_add' := toQuadraticForm_add
@@ -943,13 +943,13 @@ variable [Invertible (2 : R)]
 -- the more general `associatedHom` and place it in the previous section.
 /-- `associated` is the linear map that sends a quadratic form over a commutative ring to its
 associated symmetric bilinear form. -/
-abbrev associated : QuadraticForm R M N →ₗ[R] M →ₗ[R] M →ₗ[R] N :=
+abbrev associated : QuadraticForm R M N →ₗ[R] BilinMap R M N :=
   associatedHom R
 #align quadratic_form.associated QuadraticForm.associated
 
 variable (S) in
 theorem coe_associatedHom :
-    ⇑(associatedHom S : QuadraticForm R M N →ₗ[S] M →ₗ[R] M →ₗ[R] N) = associated :=
+    ⇑(associatedHom S : QuadraticForm R M N →ₗ[S] BilinMap R M N) = associated :=
   rfl
 
 open LinearMap in
@@ -1248,8 +1248,8 @@ variable [FiniteDimensional K V]
 
 /-- Given a symmetric bilinear form `B` on some vector space `V` over a field `K`
 in which `2` is invertible, there exists an orthogonal basis with respect to `B`. -/
-theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : BilinForm K V} (hB₂ : B.IsSymm) :
-    ∃ v : Basis (Fin (finrank K V)) K V, B.IsOrthoᵢ v := by
+theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinForm K V}
+    (hB₂ : B.IsSymm) : ∃ v : Basis (Fin (finrank K V)) K V, B.IsOrthoᵢ v := by
   induction' hd : finrank K V with d ih generalizing V
   · simp_rw [Nat.zero_eq]
     exact ⟨basisOfFinrankZero hd, fun _ _ _ => map_zero _⟩
