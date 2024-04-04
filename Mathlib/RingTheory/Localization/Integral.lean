@@ -54,14 +54,14 @@ noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
 
 theorem coeffIntegerNormalization_of_not_mem_support (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
     coeffIntegerNormalization M p i = 0 := by
-  simp only [coeffIntegerNormalization, h, mem_support_iff, eq_self_iff_true, not_true, Ne.def,
+  simp only [coeffIntegerNormalization, h, mem_support_iff, eq_self_iff_true, not_true, Ne,
     dif_neg, not_false_iff]
 #align is_localization.coeff_integer_normalization_of_not_mem_support IsLocalization.coeffIntegerNormalization_of_not_mem_support
 
 theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
     (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
   contrapose h
-  rw [Ne.def, Classical.not_not, coeffIntegerNormalization, dif_neg h]
+  rw [Ne, Classical.not_not, coeffIntegerNormalization, dif_neg h]
 #align is_localization.coeff_integer_normalization_mem_support IsLocalization.coeffIntegerNormalization_mem_support
 
 /-- `integerNormalization g` normalizes `g` to have integer coefficients
@@ -391,7 +391,7 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [Algebra R K] [Alge
     · rw [← isAlgebraic_iff_isIntegral]
       use (f.map (algebraMap R (FractionRing R))).reverse
       constructor
-      · rwa [Ne.def, Polynomial.reverse_eq_zero, ← Polynomial.degree_eq_bot,
+      · rwa [Ne, Polynomial.reverse_eq_zero, ← Polynomial.degree_eq_bot,
           Polynomial.degree_map_eq_of_injective
             (NoZeroSMulDivisors.algebraMap_injective R (FractionRing R)),
           Polynomial.degree_eq_bot]

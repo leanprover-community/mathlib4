@@ -243,7 +243,7 @@ theorem Real.coe_fib_eq : ∀ n, (Nat.fib n : ℝ) = (φ ^ n - ψ ^ n) / Real.sq
 /-- Relationship between the Fibonacci Sequence, Golden Ratio and its conjugate's exponents --/
 theorem fib_golden_conj_exp (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ n := by
   repeat rw [coe_fib_eq]
-  rw [mul_div, div_sub_div_same, mul_sub, ← pow_succ]
+  rw [mul_div, div_sub_div_same, mul_sub, ← pow_succ']
   ring_nf
   have nz : sqrt 5 ≠ 0 := by norm_num
   rw [← (mul_inv_cancel nz).symm, one_mul]

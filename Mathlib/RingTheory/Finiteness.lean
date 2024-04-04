@@ -468,7 +468,7 @@ theorem FG.mul (hm : M.FG) (hn : N.FG) : (M * N).FG :=
 #align submodule.fg.mul Submodule.FG.mul
 
 theorem FG.pow (h : M.FG) (n : ℕ) : (M ^ n).FG :=
-  Nat.recOn n ⟨{1}, by simp [one_eq_span]⟩ fun n ih => by simpa [pow_succ] using h.mul ih
+  Nat.recOn n ⟨{1}, by simp [one_eq_span]⟩ fun n ih => by simpa [pow_succ] using ih.mul h
 #align submodule.fg.pow Submodule.FG.pow
 
 end Mul

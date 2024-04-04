@@ -2033,9 +2033,9 @@ lemma measurableSet_tendsto {_ : MeasurableSpace β} [MeasurableSpace γ]
     (v_meas n).2.preimage (hf i)
 
 /-- We say that a collection of sets is countably spanning if a countable subset spans the
-  whole type. This is a useful condition in various parts of measure theory. For example, it is
-  a needed condition to show that the product of two collections generate the product sigma algebra,
-  see `generateFrom_prod_eq`. -/
+whole type. This is a useful condition in various parts of measure theory. For example, it is
+a needed condition to show that the product of two collections generate the product sigma algebra,
+see `generateFrom_prod_eq`. -/
 def IsCountablySpanning (C : Set (Set α)) : Prop :=
   ∃ s : ℕ → Set α, (∀ n, s n ∈ C) ∧ ⋃ n, s n = univ
 #align is_countably_spanning IsCountablySpanning

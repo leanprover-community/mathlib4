@@ -249,6 +249,7 @@ theorem IsUnit.mk0 (x : G₀) (hx : x ≠ 0) : IsUnit x :=
   (Units.mk0 x hx).isUnit
 #align is_unit.mk0 IsUnit.mk0
 
+@[simp]
 theorem isUnit_iff_ne_zero : IsUnit a ↔ a ≠ 0 :=
   Units.exists_iff_ne_zero
 #align is_unit_iff_ne_zero isUnit_iff_ne_zero

@@ -1513,7 +1513,7 @@ theorem injective_iff_injective_of_iUnion_eq_univ :
     Injective f ↔ ∀ i, Injective ((U i).restrictPreimage f) := by
   refine' ⟨fun H i => (U i).restrictPreimage_injective H, fun H x y e => _⟩
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp
-      (show f x ∈ Set.iUnion U by rw [hU]; triv)
+      (show f x ∈ Set.iUnion U by rw [hU]; trivial)
   injection @H i ⟨x, hi⟩ ⟨y, show f y ∈ U i from e ▸ hi⟩ (Subtype.ext e)
 #align set.injective_iff_injective_of_Union_eq_univ Set.injective_iff_injective_of_iUnion_eq_univ
 
@@ -1522,7 +1522,7 @@ theorem surjective_iff_surjective_of_iUnion_eq_univ :
   refine' ⟨fun H i => (U i).restrictPreimage_surjective H, fun H x => _⟩
   obtain ⟨i, hi⟩ :=
     Set.mem_iUnion.mp
-      (show x ∈ Set.iUnion U by rw [hU]; triv)
+      (show x ∈ Set.iUnion U by rw [hU]; trivial)
   exact ⟨_, congr_arg Subtype.val (H i ⟨x, hi⟩).choose_spec⟩
 #align set.surjective_iff_surjective_of_Union_eq_univ Set.surjective_iff_surjective_of_iUnion_eq_univ
 
@@ -1733,6 +1733,15 @@ theorem preimage_iUnion {f : α → β} {s : ι → Set β} : (f ⁻¹' ⋃ i, s
 theorem preimage_iUnion₂ {f : α → β} {s : ∀ i, κ i → Set β} :
     (f ⁻¹' ⋃ (i) (j), s i j) = ⋃ (i) (j), f ⁻¹' s i j := by simp_rw [preimage_iUnion]
 #align set.preimage_Union₂ Set.preimage_iUnion₂
+
+theorem image_sUnion {f : α → β} {s : Set (Set α)} : (f '' ⋃₀ s) = ⋃₀ (image f '' s) := by
+  ext b
+  simp only [mem_image, mem_sUnion, exists_prop, sUnion_image, mem_iUnion]
+  constructor
+  · rintro ⟨a, ⟨t, ht₁, ht₂⟩, rfl⟩
+    exact ⟨t, ht₁, a, ht₂, rfl⟩
+  · rintro ⟨t, ht₁, a, ht₂, rfl⟩
+    exact ⟨a, ⟨t, ht₁, ht₂⟩, rfl⟩
 
 @[simp]
 theorem preimage_sUnion {f : α → β} {s : Set (Set β)} : f ⁻¹' ⋃₀s = ⋃ t ∈ s, f ⁻¹' t := by
