@@ -18,15 +18,15 @@ instead only requiring that it is an (additive) commutative monoid, with a linea
 ## Main definitions
 
 - `GPseudoMetric α β`: a structure containing a distance function on `α` with codomain `β`,
-which may be equal to 0 for non-equal elements. The distance function is 0 for equal elements,
+which may be equal to `0` for non-equal elements. The distance function is `0` for equal elements,
 is commutative in its arguments, and satisfies the triangle inequality.
 - `GPseudoMetricClass α β`: the class of types of generic pseudo-metrics on `α` to `β`.
 
 Additional useful definitions:
 
-- `ball gdist x δ`: the set of points with distance to x strictly less than δ
-- `closedBall gdist x δ`: the set of points with distance to x less than or equal to δ
-- `sphere gdist x δ`: the set of points with distance to x equal to δ
+- `ball gdist x δ`: the set of points with distance to `x` strictly less than `δ`
+- `closedBall gdist x δ`: the set of points with distance to `x` less than or equal to `δ`
+- `sphere gdist x δ`: the set of points with distance to `x` equal to `δ`
 -/
 
 open Set
@@ -36,34 +36,40 @@ open Set
 A generic pseudo-metric is a distance function `gdist : α → α → β`, which is zero for identical
 elements, for which the arguments commute, and for which the triangle inequality holds.
 As opposed to a classical pseudo-metric, the codomain of this distance function is not
-necessarily ℝ (or ℝ≥0∞), and as a result does not endow α with a uniform space structure.
+necessarily `ℝ` (or `ℝ≥0∞`), and as a result does not endow `α` with a uniform space structure.
 -/
-structure GPseudoMetric (α : Type*) (β : Type*) [LinearOrder β] [AddCommMonoid β] where
-  /-- A distance function on α with values in β -/
-  toFun : α → α → β
-  gdist_self : ∀ x : α, toFun x x = 0
-  comm' : ∀ x y : α, toFun x y = toFun y x
-  triangle' : ∀ x y z : α, toFun x z ≤ toFun x y + toFun y z
 
+structure GPseudoMetric (α : Type*) (β : Type*) [LinearOrder β] [AddCommMonoid β] where
+  /-- A distance function on `α` with values in `β` -/
+  toFun : α → α → β
+  private gdist_self' : ∀ x : α, toFun x x = 0
+  private comm' : ∀ x y : α, toFun x y = toFun y x
+  private triangle' : ∀ x y z : α, toFun x z ≤ toFun x y + toFun y z
+
+namespace GPseudoMetric
 variable {α β : Type*} [LinearOrder β] [AddCommMonoid β] [CovariantClass β β (. + .) (. ≤ .)]
 
 @[ext]
-theorem GPseudoMetric.ext {d₁ d₂ : GPseudoMetric α β} (h : d₁.toFun = d₂.toFun) : d₁ = d₂ := by
+private theorem ext {d₁ d₂ : GPseudoMetric α β} (h : d₁.toFun = d₂.toFun) : d₁ = d₂ := by
   cases' d₁; cases' d₂; congr
 
 instance : FunLike (GPseudoMetric α β) α (α → β) where
   coe := GPseudoMetric.toFun
   coe_injective' := by apply GPseudoMetric.ext
 
-/-- A class for types of pseudo-metric functions on α with values in β -/
+end GPseudoMetric
+/-- A class for types of pseudo-metric functions on `α` with values in `β` -/
 class GPseudoMetricClass (T : Type*) (α β : outParam Type*) [LinearOrder β] [AddCommMonoid β]
     [CovariantClass β β (. + .) (. ≤ .)] [FunLike T α (α → β)] : Prop :=
-  gdist_self : ∀ (gdist : T), ∀ x : α, gdist x x = 0
+  gdist_self' : ∀ (gdist : T), ∀ x : α, gdist x x = 0
   comm' : ∀ (gdist : T), ∀ x y:α, gdist x y = gdist y x
   triangle' : ∀ (gdist : T), ∀ (x y z : α), gdist x z ≤ gdist x y + gdist y z
 
+namespace GPseudoMetric
+variable {α β : Type*} [LinearOrder β] [AddCommMonoid β] [CovariantClass β β (. + .) (. ≤ .)]
+
 instance: GPseudoMetricClass (GPseudoMetric α β) α β where
-  gdist_self := GPseudoMetric.gdist_self
+  gdist_self' := GPseudoMetric.gdist_self'
   comm' := GPseudoMetric.comm'
   triangle' := GPseudoMetric.triangle'
 
@@ -71,48 +77,53 @@ variable {T : Type*} [FunLike T α (α → β)] [GPseudoMetricClass T α β] (gd
 
 @[simp]
 theorem gdist_self (x : α) : gdist x x = 0 :=
-  GPseudoMetricClass.gdist_self gdist x
+  GPseudoMetricClass.gdist_self' gdist x
 
-theorem comm' (x y : α) : gdist x y = gdist y x :=
+theorem comm (x y : α) : gdist x y = gdist y x :=
   GPseudoMetricClass.comm' gdist x y
 
-theorem triangle' (x y z : α) : gdist x z ≤ gdist x y + gdist y z :=
+theorem triangle (x y z : α) : gdist x z ≤ gdist x y + gdist y z :=
   GPseudoMetricClass.triangle' gdist x y z
 
 theorem triangle_left (x y z : α) : gdist x y ≤ gdist z x + gdist z y := by
-  rw [comm' gdist z]; apply triangle'
+  rw [comm gdist z]; apply triangle
 
 theorem triangle_right (x y z : α) : gdist x y ≤ gdist x z + gdist y z := by
-  rw [comm' gdist y]; apply triangle'
+  rw [comm gdist y]; apply triangle
 
 theorem triangle4 (x y z w : α) : gdist x w ≤ gdist x y + gdist y z + gdist z w :=
   calc
     gdist x w
-      ≤ gdist x z + gdist z w := triangle' gdist x z w
+      ≤ gdist x z + gdist z w := triangle gdist x z w
     _ ≤ (gdist x y + gdist y z + gdist z w : β) :=
-      @act_rel_act_of_rel β β (Function.swap (. + .)) (. ≤ .) _ _ _ _ (triangle' gdist x y z)
+      @act_rel_act_of_rel β β (Function.swap (. + .)) (. ≤ .) _ _ _ _ (triangle gdist x y z)
 
 theorem triangle4_left (x₁ y₁ x₂ y₂ : α) :
     gdist x₂ y₂ ≤ gdist x₁ y₁ + (gdist x₁ x₂ + gdist y₁ y₂) := by
-  rw [add_left_comm, comm' gdist x₁,← add_assoc]
+  rw [add_left_comm, comm gdist x₁,← add_assoc]
   apply triangle4
 
 theorem triangle4_right (x₁ y₁ x₂ y₂ : α) :
     gdist x₁ y₁ ≤ gdist x₁ x₂ + gdist y₁ y₂ + gdist x₂ y₂ := by
-  rw [add_right_comm, comm' gdist y₁]
+  rw [add_right_comm, comm gdist y₁]
   apply triangle4
 
 theorem gdist_nonneg {x y : α} : 0 ≤ gdist x y := by
   have h1 : 0 ≤ gdist x y + gdist x y :=
     calc
       0 = gdist x x             := (gdist_self gdist _).symm
-      _ ≤ gdist x y + gdist y x := triangle' gdist _ _ _
-      _ = gdist x y + gdist x y := by rw [comm' gdist]
+      _ ≤ gdist x y + gdist y x := triangle gdist _ _ _
+      _ = gdist x y + gdist x y := by rw [comm gdist]
   contrapose! h1
   exact Left.add_neg' h1 h1
 
-namespace GMetric
+end GPseudoMetric
 
+namespace GMetric
+open GPseudoMetric
+
+variable {α β : Type*} [LinearOrder β] [AddCommMonoid β] [CovariantClass β β (. + .) (. ≤ .)]
+  {T : Type*} [FunLike T α (α → β)] [GPseudoMetricClass T α β] (gdist : T)
 variable {x y z : α} {δ ε ε₁ ε₂ : β} {s : Set α}
 
 section non_cancel
@@ -125,7 +136,7 @@ def ball (x : α) (ε : β) : Set α :=
 theorem mem_ball : y ∈ ball gdist x ε ↔ gdist y x < ε :=
   Iff.rfl
 
-theorem mem_ball' : y ∈ ball gdist x ε ↔ gdist x y < ε := by rw [comm', mem_ball]
+theorem mem_ball' : y ∈ ball gdist x ε ↔ gdist x y < ε := by rw [GPseudoMetric.comm, mem_ball]
 
 theorem pos_of_mem_ball (hy : y ∈ ball gdist x ε) : 0 < ε :=
   (gdist_nonneg gdist).trans_lt hy
@@ -150,14 +161,14 @@ def closedBall (x : α) (ε : β) :=
 
 @[simp] theorem mem_closedBall : y ∈ closedBall gdist x ε ↔ gdist y x ≤ ε := Iff.rfl
 
-theorem mem_closedBall' : y ∈ closedBall gdist x ε ↔ gdist x y ≤ ε := by rw [comm', mem_closedBall]
+theorem mem_closedBall' : y ∈ closedBall gdist x ε ↔ gdist x y ≤ ε := by rw [GPseudoMetric.comm, mem_closedBall]
 
 /-- `sphere gdist x ε` is the set of all points `y` with `gdist y x = ε` -/
 def sphere (x : α) (ε : β) := { y | gdist y x = ε }
 
 @[simp] theorem mem_sphere : y ∈ sphere gdist x ε ↔ gdist y x = ε := Iff.rfl
 
-theorem mem_sphere' : y ∈ sphere gdist x ε ↔ gdist x y = ε := by rw [comm', mem_sphere]
+theorem mem_sphere' : y ∈ sphere gdist x ε ↔ gdist x y = ε := by rw [GPseudoMetric.comm, mem_sphere]
 
 theorem ne_of_mem_sphere (h : y ∈ sphere gdist x ε) (hε : ε ≠ 0) : y ≠ x :=
   ne_of_mem_of_not_mem h <| by simpa using hε.symm
@@ -251,7 +262,7 @@ theorem closedBall_subset_closedBall' (h : ε₁ + gdist x y ≤ ε₂) :
     closedBall gdist x ε₁ ⊆ closedBall gdist y ε₂ := fun z hz =>
   calc
     gdist z y
-      ≤ gdist z x + gdist x y := triangle' gdist _ _ _
+      ≤ gdist z x + gdist x y := triangle gdist _ _ _
     _ ≤ ε₁ + gdist x y        := add_le_add_right ((mem_closedBall gdist).1 hz) _
     _ ≤ ε₂                    := h
 
@@ -262,7 +273,7 @@ theorem closedBall_subset_ball' (h : ε₁ + gdist x y < ε₂) :
     closedBall gdist x ε₁ ⊆ ball gdist y ε₂ := fun z hz =>
   calc
     gdist z y
-      ≤ gdist z x + gdist x y := triangle' gdist _ _ _
+      ≤ gdist z x + gdist x y := triangle gdist _ _ _
     _ ≤ ε₁ + gdist x y        := add_le_add_right ((mem_closedBall gdist).1 hz) _
     _ < ε₂                    := h
 
@@ -286,7 +297,7 @@ theorem closedBall_disjoint_ball
 
 theorem ball_disjoint_closedBall
     (h : δ + ε ≤ gdist x y) : Disjoint (ball gdist x δ) (closedBall gdist (y : α) (ε : β)) :=
-  (closedBall_disjoint_ball gdist <| by rwa [add_comm, comm']).symm
+  (closedBall_disjoint_ball gdist <| by rwa [add_comm, GPseudoMetric.comm]).symm
 
 theorem ball_disjoint_ball (h : δ + ε ≤ gdist x y) : Disjoint (ball gdist x δ) (ball gdist y ε) :=
   (closedBall_disjoint_ball gdist h).mono_left (ball_subset_closedBall gdist)
@@ -295,7 +306,7 @@ theorem ball_subset_ball' (h : ε₁ + gdist x y ≤ ε₂) : ball gdist x ε₁
   z hz =>
     calc
       gdist z y
-        ≤ gdist z x + gdist x y := by apply triangle' gdist
+        ≤ gdist z x + gdist x y := by apply triangle gdist
       _ < ε₁ + gdist x y := by exact add_lt_add_right hz _
       _ ≤ ε₂ := h
 
@@ -310,7 +321,7 @@ theorem gdist_lt_add_of_nonempty_closedBall_inter_ball
 theorem gdist_lt_add_of_nonempty_ball_inter_closedBall
     (h : (ball gdist x ε₁ ∩ closedBall gdist y ε₂).Nonempty) : gdist x y < ε₁ + ε₂ := by
   rw [inter_comm] at h
-  rw [add_comm, comm']
+  rw [add_comm, GPseudoMetric.comm]
   exact gdist_lt_add_of_nonempty_closedBall_inter_ball gdist h
 
 theorem gdist_lt_add_of_nonempty_ball_inter_ball
