@@ -1302,17 +1302,17 @@ namespace QuadraticForm
 
 open Finset
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 variable {ι : Type*}
 
 /-- Given a quadratic form `Q` and a basis, `basisRepr` is the basis representation of `Q`. -/
-noncomputable def basisRepr [Finite ι] (Q : QuadraticForm R M R) (v : Basis ι R M) :
-    QuadraticForm R (ι → R) R :=
+noncomputable def basisRepr [Finite ι] (Q : QuadraticForm R M N) (v : Basis ι R M) :
+    QuadraticForm R (ι → R) N :=
   Q.comp v.equivFun.symm
 #align quadratic_form.basis_repr QuadraticForm.basisRepr
 
 @[simp]
-theorem basisRepr_apply [Fintype ι] {v : Basis ι R M} (Q : QuadraticForm R M R) (w : ι → R) :
+theorem basisRepr_apply [Fintype ι] {v : Basis ι R M} (Q : QuadraticForm R M N) (w : ι → R) :
     Q.basisRepr v w = Q (∑ i : ι, w i • v i) := by
   rw [← v.equivFun_symm_apply]
   rfl
@@ -1328,8 +1328,8 @@ variable (R)
 
 The weights are applied using `•`; typically this definition is used either with `S = R` or
 `[Algebra S R]`, although this is stated more generally. -/
-def weightedSumSquares [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] (w : ι → S) :
-    QuadraticForm R (ι → R) R :=
+def weightedSumSquares [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] [SMulCommClass R S R]
+    (w : ι → S) : QuadraticForm R (ι → R) R :=
   ∑ i : ι, w i • (proj (R:=R) (n:=ι) i i)
 #align quadratic_form.weighted_sum_squares QuadraticForm.weightedSumSquares
 
@@ -1337,7 +1337,7 @@ end
 
 @[simp]
 theorem weightedSumSquares_apply [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
-    (w : ι → S) (v : ι → R) :
+    [SMulCommClass R S R] (w : ι → S) (v : ι → R) :
     weightedSumSquares R w v = ∑ i : ι, w i • (v i * v i) :=
   QuadraticForm.sum_apply _ _ _
 #align quadratic_form.weighted_sum_squares_apply QuadraticForm.weightedSumSquares_apply
