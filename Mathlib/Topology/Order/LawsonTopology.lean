@@ -89,7 +89,7 @@ def lawsonBasis := { s : Set α | ∃ t : Set α, t.Finite ∧ ∃ u : Set α, I
 protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (lawsonBasis α) := by
   have lawsonBasis_image2 : lawsonBasis α =
       (image2 (fun x x_1 ↦ ⇑WithLower.toLower ⁻¹' x ∩ ⇑WithScott.toScott ⁻¹' x_1)
-        (IsLower.lowerBasis (WithLower α)) {U | @IsOpen (WithScott α) _ U}) := by
+        (IsLower.lowerBasis (WithLower α)) {U | IsOpen[scott α] U}) := by
     rw [lawsonBasis, image2, IsLower.lowerBasis]
     simp_rw [diff_eq_compl_inter]
     aesop
