@@ -8,6 +8,8 @@ import Mathlib.Init.ZeroOne
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.Convert
 
+#align_import init.data.int.comp_lemmas from "leanprover-community/lean"@"4a03bdeb31b3688c31d02d7ff8e0ff2e5d6174db"
+
 /-!
 # Basic operations on the integers
 
@@ -19,8 +21,35 @@ open Nat
 namespace Int
 variable {m n : ℕ}
 
+#noalign int.ne_neg_of_ne
+#noalign int.neg_ne_zero_of_ne
+#noalign int.zero_ne_neg_of_ne
+#noalign int.neg_ne_of_pos
+#noalign int.ne_neg_of_pos
+#noalign int.bit0_nonneg
+#noalign int.bit1_nonneg
+#noalign int.nonneg_of_pos
+#noalign int.ne_of_nat_abs_ne_nat_abs_of_nonneg
+#noalign int.ne_of_nat_ne_nonneg_case
+#noalign int.nat_abs_bit0
+#noalign int.nat_abs_bit0_step
+#noalign int.nat_abs_bit1_nonneg
+#noalign int.nat_abs_bit1_nonneg_step
+#align int.neg_succ_lt_zero Int.negSucc_lt_zero
+#align int.of_nat_nat_abs_eq_of_nonneg Int.ofNat_natAbs_eq_of_nonnegₓ
+#align int.nat_abs_of_neg_succ_of_nat Int.natAbs_negSucc
+
 -- TODO: Tag in Std
 attribute [simp] natAbs_pos
+
+protected lemma one_pos : 0 < (1 : Int) := Int.zero_lt_one
+#align int.one_pos Int.one_pos
+
+protected lemma one_nonneg : 0 ≤ (1 : ℤ) := Int.le_of_lt Int.zero_lt_one
+#align int.one_nonneg Int.one_nonneg
+
+lemma zero_le_ofNat (n : ℕ) : 0 ≤ ofNat n := @le.intro _ _ n (by rw [Int.zero_add]; rfl)
+#align int.zero_le_of_nat Int.zero_le_ofNat
 
 instance instNontrivialInt : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
@@ -137,6 +166,21 @@ lemma succ_neg_natCast_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ
 #align int.induction_on Int.induction_on
 
 /-! ### nat abs -/
+
+-- TODO: Rename `natAbs_of_Nat` to `natAbs_natCast`
+lemma natAbs_ofNat' (n : ℕ) : natAbs (ofNat n) = n := rfl
+#align int.nat_abs_of_nat_core Int.natAbs_ofNat'
+
+lemma natAbs_add_of_nonneg : ∀ {a b : Int}, 0 ≤ a → 0 ≤ b → natAbs (a + b) = natAbs a + natAbs b
+  | ofNat _, ofNat _, _, _ => rfl
+#align int.nat_abs_add_nonneg Int.natAbs_add_of_nonneg
+
+lemma natAbs_add_of_nonpos : ∀ {a b : Int}, a ≤ 0 → b ≤ 0 → natAbs (a + b) = natAbs a + natAbs b
+  | negSucc _, negSucc _, _, _ => by simp [negSucc_add_negSucc, Nat.succ_add]; rfl
+  | negSucc _, 0, _, _ => by simp
+  | 0, negSucc _, _, _ => by simp
+  | 0, 0, _, _ => rfl
+#align int.nat_abs_add_neg Int.natAbs_add_of_nonpos
 
 lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_ofNat n⟩
 #align int.nat_abs_surjective Int.natAbs_surjective
