@@ -1389,7 +1389,7 @@ theorem tendsto_nhds_unique_of_frequently_eq [T2Space X] {f g : Y → X} {l : Fi
 /-- If `s` and `t` are compact sets in a T₂ space, then the set neighborhoods filter of `s ∩ t`
 is the infimum of set neighborhoods filters for `s` and `t`.
 
-For general sets, only the `≤` inequality holds, see `nhdsSet_inf_le`. -/
+For general sets, only the `≤` inequality holds, see `nhdsSet_inter_le`. -/
 theorem IsCompact.nhdsSet_inter_eq [T2Space X] {s t : Set X} (hs : IsCompact s) (ht : IsCompact t) :
     𝓝ˢ (s ∩ t) = 𝓝ˢ s ⊓ 𝓝ˢ t := by
   refine le_antisymm (nhdsSet_inter_le _ _) ?_
