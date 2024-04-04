@@ -7,7 +7,6 @@ import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Rat.Defs
-import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Tactic.Positivity.Basic
@@ -161,7 +160,7 @@ lemma isCoprime_of_gcd_eq_one_of_FLT {n : ℕ} {a b c : ℤ} (Hgcd: Finset.gcd {
     rcases hx with (hx | hx | hx)
     · simp [hx]
     · simp [hx, hb]
-    · refine (IsIntegrallyClosed.dvd_of_dvd_pow hn).1 ?_
+    · refine (Int.pow_dvd_pow_iff <| Nat.pos_of_ne_zero hn).1 ?_
       rw [hx, id_eq, ← HF, ← neg_dvd]
   refine isCoprime_of_prime_dvd  ?_<| (fun p hp hpa hpb ↦ hp.not_dvd_one ?_)
   · simp [hb]
