@@ -125,11 +125,18 @@ which performs quite poorly!
 def editCost : Levenshtein.Cost String String Nat := Levenshtein.defaultCost
 
 /-- Check whether a goal can be solved by `rfl`, and fill in the `SearchNode.rfl?` field. -/
-def compute_rfl? (n : SearchNode) : MetaM SearchNode := withMCtx n.mctx do
-  if (← try? n.goal.applyRfl).isSome then
-    pure { n with mctx := ← getMCtx, rfl? := some true }
-  else
-    pure { n with rfl? := some false }
+def compute_rfl? (n : SearchNode) : MetaM SearchNode := do
+  try
+    withoutModifyingState <| withMCtx n.mctx do
+      -- We use `withReducible` here to follow the behaviour of `rw`.
+      n.goal.refl
+      pure { n with mctx := ← getMCtx, rfl? := some true }
+  catch _e =>
+    withMCtx n.mctx do
+      if (←  try? n.goal.applyRfl).isSome then
+        pure { n with mctx := ← getMCtx, rfl? := some true }
+      else
+        pure { n with rfl? := some false }
 
 /-- Fill in the `SearchNode.dist?` field with the edit distance between the two sides. -/
 def compute_dist? (n : SearchNode) : SearchNode :=
