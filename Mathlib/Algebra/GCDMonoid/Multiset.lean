@@ -235,7 +235,7 @@ theorem extract_gcd' (s t : Multiset α) (hs : ∃ x, x ∈ s ∧ x ≠ (0 : α)
 converted to `Multiset.replicate` format yet, so I made some ad hoc ones in `Data.Multiset.Basic`
 using the originals. -/
 /- Porting note: The old proof used a strange form
-`have := _, refine ⟨s.pmap @f (λ _, id), this, extract_gcd' s _ h this⟩,`
+`have := _, refine ⟨s.pmap @f (fun _ ↦ id), this, extract_gcd' s _ h this⟩,`
 so I rearranged the proof slightly. -/
 theorem extract_gcd (s : Multiset α) (hs : s ≠ 0) :
     ∃ t : Multiset α, s = t.map (s.gcd * ·) ∧ t.gcd = 1 := by

@@ -59,7 +59,7 @@ def induced (f : X → Y) (t : TopologicalSpace Y) : TopologicalSpace X where
     exact ⟨s'₁ ∩ s'₂, hs₁.inter hs₂, preimage_inter⟩
   isOpen_sUnion S h := by
     choose! g hgo hfg using h
-    refine ⟨⋃₀ (g '' S), isOpen_sUnion <| ball_image_iff.2 hgo, ?_⟩
+    refine ⟨⋃₀ (g '' S), isOpen_sUnion <| forall_mem_image.2 hgo, ?_⟩
     rw [preimage_sUnion, biUnion_image, sUnion_eq_biUnion]
     exact iUnion₂_congr hfg
 #align topological_space.induced TopologicalSpace.induced
@@ -103,7 +103,7 @@ structure Embedding [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) exte
 @[mk_iff]
 structure OpenEmbedding (f : X → Y) extends Embedding f : Prop where
   /-- The range of an open embedding is an open set. -/
-  open_range : IsOpen <| range f
+  isOpen_range : IsOpen <| range f
 #align open_embedding OpenEmbedding
 #align open_embedding_iff openEmbedding_iff
 
@@ -111,7 +111,7 @@ structure OpenEmbedding (f : X → Y) extends Embedding f : Prop where
 @[mk_iff]
 structure ClosedEmbedding (f : X → Y) extends Embedding f : Prop where
   /-- The range of a closed embedding is a closed set. -/
-  closed_range : IsClosed <| range f
+  isClosed_range : IsClosed <| range f
 #align closed_embedding ClosedEmbedding
 #align closed_embedding_iff closedEmbedding_iff
 

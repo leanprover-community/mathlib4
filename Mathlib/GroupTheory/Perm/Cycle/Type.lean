@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Algebra.GCDMonoid.Multiset
-import Mathlib.Combinatorics.Partition
+import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Data.List.Rotate
-import Mathlib.GroupTheory.Perm.Cycle.Basic
+import Mathlib.GroupTheory.Perm.Cycle.Factors
+import Mathlib.GroupTheory.Perm.Closure
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.NormNum.GCD
 
@@ -74,12 +75,12 @@ theorem cycleType_eq {σ : Perm α} (l : List (Perm α)) (h0 : l.prod = σ)
   · simp [hl, h0]
 #align equiv.perm.cycle_type_eq Equiv.Perm.cycleType_eq
 
-@[simp] -- porting note: new attr
+@[simp] -- Porting note: new attr
 theorem cycleType_eq_zero {σ : Perm α} : σ.cycleType = 0 ↔ σ = 1 := by
   simp [cycleType_def, cycleFactorsFinset_eq_empty_iff]
 #align equiv.perm.cycle_type_eq_zero Equiv.Perm.cycleType_eq_zero
 
-@[simp] -- porting note: new attr
+@[simp] -- Porting note: new attr
 theorem cycleType_one : (1 : Perm α).cycleType = 0 := cycleType_eq_zero.2 rfl
 #align equiv.perm.cycle_type_one Equiv.Perm.cycleType_one
 
@@ -125,7 +126,7 @@ theorem Disjoint.cycleType {σ τ : Perm α} (h : Disjoint σ τ) :
   exact Finset.disjoint_val.2 h.disjoint_cycleFactorsFinset
 #align equiv.perm.disjoint.cycle_type Equiv.Perm.Disjoint.cycleType
 
-@[simp] -- porting note: new attr
+@[simp] -- Porting note: new attr
 theorem cycleType_inv (σ : Perm α) : σ⁻¹.cycleType = σ.cycleType :=
   cycle_induction_on (P := fun τ : Perm α => τ⁻¹.cycleType = τ.cycleType) σ rfl
     (fun σ hσ => by simp only [hσ.cycleType, hσ.inv.cycleType, support_inv])
@@ -134,7 +135,7 @@ theorem cycleType_inv (σ : Perm α) : σ⁻¹.cycleType = σ.cycleType :=
         add_comm]
 #align equiv.perm.cycle_type_inv Equiv.Perm.cycleType_inv
 
-@[simp] -- porting note: new attr
+@[simp] -- Porting note: new attr
 theorem cycleType_conj {σ τ : Perm α} : (τ * σ * τ⁻¹).cycleType = σ.cycleType := by
   induction σ using cycle_induction_on with
   | base_one => simp
@@ -146,7 +147,7 @@ theorem cycleType_conj {σ τ : Perm α} : (τ * σ * τ⁻¹).cycleType = σ.cy
 theorem sum_cycleType (σ : Perm α) : σ.cycleType.sum = σ.support.card := by
   induction σ using cycle_induction_on with
   | base_one => simp
-  | base_cycles σ hσ => rw [hσ.cycleType, coe_sum, List.sum_singleton]
+  | base_cycles σ hσ => rw [hσ.cycleType, sum_coe, List.sum_singleton]
   | induction_disjoint σ τ hd _ hσ hτ => rw [hd.cycleType, sum_add, hσ, hτ, hd.card_support_mul]
 #align equiv.perm.sum_cycle_type Equiv.Perm.sum_cycleType
 
@@ -167,7 +168,7 @@ theorem sign_of_cycleType (f : Perm α) :
     simp only [pow_add, pow_one, mul_neg_one, neg_mul, mul_neg, mul_assoc, mul_one]
 #align equiv.perm.sign_of_cycle_type Equiv.Perm.sign_of_cycleType
 
-@[simp] -- porting note: new attr
+@[simp] -- Porting note: new attr
 theorem lcm_cycleType (σ : Perm α) : σ.cycleType.lcm = orderOf σ := by
   induction σ using cycle_induction_on with
   | base_one => simp
@@ -194,17 +195,17 @@ theorem orderOf_cycleOf_dvd_orderOf (f : Perm α) (x : α) : orderOf (cycleOf f 
 theorem two_dvd_card_support {σ : Perm α} (hσ : σ ^ 2 = 1) : 2 ∣ σ.support.card :=
   (congr_arg (Dvd.dvd 2) σ.sum_cycleType).mp
     (Multiset.dvd_sum fun n hn => by
-      rw [le_antisymm
+      rw [_root_.le_antisymm
           (Nat.le_of_dvd zero_lt_two <|
             (dvd_of_mem_cycleType hn).trans <| orderOf_dvd_of_pow_eq_one hσ)
           (two_le_of_mem_cycleType hn)])
 #align equiv.perm.two_dvd_card_support Equiv.Perm.two_dvd_card_support
 
 theorem cycleType_prime_order {σ : Perm α} (hσ : (orderOf σ).Prime) :
-    ∃ n : ℕ, σ.cycleType = replicate (n + 1) (orderOf σ) := by
+    ∃ n : ℕ, σ.cycleType = Multiset.replicate (n + 1) (orderOf σ) := by
   refine ⟨Multiset.card σ.cycleType - 1, eq_replicate.2 ⟨?_, fun n hn ↦ ?_⟩⟩
   · rw [tsub_add_cancel_of_le]
-    rw [Nat.succ_le_iff, card_cycleType_pos, Ne.def, ← orderOf_eq_one_iff]
+    rw [Nat.succ_le_iff, card_cycleType_pos, Ne, ← orderOf_eq_one_iff]
     exact hσ.ne_one
   · exact (hσ.eq_one_or_self_of_dvd n (dvd_of_mem_cycleType hn)).resolve_left
       (one_lt_of_mem_cycleType hn).ne'
@@ -214,7 +215,7 @@ theorem isCycle_of_prime_order {σ : Perm α} (h1 : (orderOf σ).Prime)
     (h2 : σ.support.card < 2 * orderOf σ) : σ.IsCycle := by
   obtain ⟨n, hn⟩ := cycleType_prime_order h1
   rw [← σ.sum_cycleType, hn, Multiset.sum_replicate, nsmul_eq_mul, Nat.cast_id,
-    mul_lt_mul_right (orderOf_pos σ), Nat.succ_lt_succ_iff, Nat.lt_succ_iff, le_zero_iff] at h2
+    mul_lt_mul_right (orderOf_pos σ), Nat.succ_lt_succ_iff, Nat.lt_succ_iff, Nat.le_zero] at h2
   rw [← card_cycleType_eq_one, hn, card_replicate, h2]
 #align equiv.perm.is_cycle_of_prime_order Equiv.Perm.isCycle_of_prime_order
 
@@ -309,9 +310,9 @@ theorem le_card_support_of_mem_cycleType {n : ℕ} {σ : Perm α} (h : n ∈ cyc
 theorem cycleType_of_card_le_mem_cycleType_add_two {n : ℕ} {g : Perm α}
     (hn2 : Fintype.card α < n + 2) (hng : n ∈ g.cycleType) : g.cycleType = {n} := by
   obtain ⟨c, g', rfl, hd, hc, rfl⟩ := mem_cycleType_iff.1 hng
-  by_cases g'1 : g' = 1
-  · rw [hd.cycleType, hc.cycleType, coe_singleton, g'1, cycleType_one, add_zero]
-  contrapose! hn2
+  suffices g'1 : g' = 1 by
+    rw [hd.cycleType, hc.cycleType, coe_singleton, g'1, cycleType_one, add_zero]
+  contrapose! hn2 with g'1
   apply le_trans _ (c * g').support.card_le_univ
   rw [hd.card_support_mul]
   exact add_le_add_left (two_le_card_support_of_ne_one g'1) _
@@ -486,8 +487,10 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
   let σ :=
     Equiv.mk (f 1) (f (p - 1)) (fun s => by rw [hf2, add_tsub_cancel_of_le hp.out.one_lt.le, hf3])
       fun s => by rw [hf2, tsub_add_cancel_of_le hp.out.one_lt.le, hf3]
-  have hσ : ∀ k v, (σ ^ k) v = f k v := fun k v =>
-    Nat.rec (hf1 v).symm (fun k hk => Eq.trans (congr_arg σ hk) (hf2 k 1 v)) k
+  have hσ : ∀ k v, (σ ^ k) v = f k v := fun k =>
+    Nat.rec (fun v => (hf1 v).symm) (fun k hk v => by
+      rw [pow_succ, Perm.mul_apply, hk (σ v), Nat.succ_eq_one_add, ← hf2 1 k]
+      rfl) k
   replace hσ : σ ^ p ^ 1 = 1 := Perm.ext fun v => by rw [pow_one, hσ, hf3, one_apply]
   let v₀ : vectorsProdEqOne G p :=
     ⟨Vector.replicate p 1, (List.prod_replicate p 1).trans (one_pow p)⟩
@@ -532,7 +535,7 @@ variable [DecidableEq α]
 
 /-- The partition corresponding to a permutation -/
 def partition (σ : Perm α) : (Fintype.card α).Partition where
-  parts := σ.cycleType + replicate (Fintype.card α - σ.support.card) 1
+  parts := σ.cycleType + Multiset.replicate (Fintype.card α - σ.support.card) 1
   parts_pos {n hn} := by
     cases' mem_add.mp hn with hn hn
     · exact zero_lt_one.trans (one_lt_of_mem_cycleType hn)
@@ -543,7 +546,7 @@ def partition (σ : Perm α) : (Fintype.card α).Partition where
 #align equiv.perm.partition Equiv.Perm.partition
 
 theorem parts_partition {σ : Perm α} :
-    σ.partition.parts = σ.cycleType + replicate (Fintype.card α - σ.support.card) 1 :=
+    σ.partition.parts = σ.cycleType + Multiset.replicate (Fintype.card α - σ.support.card) 1 :=
   rfl
 #align equiv.perm.parts_partition Equiv.Perm.parts_partition
 
@@ -598,10 +601,7 @@ theorem _root_.card_support_eq_three_iff : σ.support.card = 3 ↔ σ.IsThreeCyc
     rw [IsThreeCycle, ← cons_erase hn, h1, h, ← cons_zero]
   obtain ⟨m, hm⟩ := exists_mem_of_ne_zero h1
   rw [← sum_cycleType, ← cons_erase hn, ← cons_erase hm, Multiset.sum_cons, Multiset.sum_cons] at h
-  -- TODO: linarith [...] should solve this directly
-  have : ∀ {k}, 2 ≤ m → 2 ≤ n → n + (m + k) = 3 → False := by
-    intros
-    linarith
+  have : ∀ {k}, 2 ≤ m → 2 ≤ n → n + (m + k) = 3 → False := by omega
   cases this (two_le_of_mem_cycleType (mem_of_mem_erase hm)) (two_le_of_mem_cycleType hn) h
 #align card_support_eq_three_iff card_support_eq_three_iff
 
@@ -650,7 +650,7 @@ theorem isThreeCycle_swap_mul_swap_same {a b c : α} (ab : a ≠ b) (ac : a ≠ 
   · simp [ab, ac, bc]
   · simp only [Finset.mem_insert, Finset.mem_singleton] at hx
     rw [mem_support]
-    simp only [Perm.coe_mul, Function.comp_apply, Ne.def]
+    simp only [Perm.coe_mul, Function.comp_apply, Ne]
     obtain rfl | rfl | rfl := hx
     · rw [swap_apply_left, swap_apply_of_ne_of_ne ac.symm bc.symm]
       exact ac.symm

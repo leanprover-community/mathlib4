@@ -23,12 +23,10 @@ open CategoryTheory.Limits
 open CategoryTheory.MonoidalCategory
 
 variable (R : Type*) [Semiring R]
-
 variable (C : Type*) [Category C] [Preadditive C] [Linear R C]
-
 variable [MonoidalCategory C]
 
--- porting note: added `MonoidalPreadditive` as argument ``
+-- Porting note: added `MonoidalPreadditive` as argument ``
 /-- A category is `MonoidalLinear R` if tensoring is `R`-linear in both factors.
 -/
 class MonoidalLinear [MonoidalPreadditive C] : Prop where
@@ -63,12 +61,12 @@ theorem monoidalLinearOfFaithful {D : Type*} [Category D] [Preadditive D] [Linea
   { whiskerLeft_smul := by
       intros X Y Z r f
       apply F.toFunctor.map_injective
-      rw [F.map_whiskerLeft']
+      rw [F.map_whiskerLeft]
       simp
     smul_whiskerRight := by
       intros r X Y f Z
       apply F.toFunctor.map_injective
-      rw [F.map_whiskerRight']
+      rw [F.map_whiskerRight]
       simp }
 #align category_theory.monoidal_linear_of_faithful CategoryTheory.monoidalLinearOfFaithful
 

@@ -90,11 +90,8 @@ open DirectSum SetLike.GradedMonoid Localization
 open Finset hiding mk_zero
 
 variable {R A : Type*}
-
 variable [CommRing R] [CommRing A] [Algebra R A]
-
 variable (𝒜 : ℕ → Submodule R A)
-
 variable [GradedAlgebra 𝒜]
 
 open TopCat TopologicalSpace
@@ -248,7 +245,7 @@ theorem disjoint :
   · erw [x.1.isPrime.pow_mem_iff_mem _ k_ineq] at hg1
     exact x.2 hg1
   · dsimp at hg1
-    erw [show k = 0 by linarith, pow_zero, ← Ideal.eq_top_iff_one] at hg1
+    erw [show k = 0 by omega, pow_zero, ← Ideal.eq_top_iff_one] at hg1
     apply x.1.isPrime.1
     exact hg1
 #align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec.disjoint AlgebraicGeometry.ProjIsoSpecTopComponent.ToSpec.disjoint
@@ -673,6 +670,9 @@ lemma toSpec_fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) (x :
       rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
         HomogeneousLocalization.zero_val, Localization.mk_zero]
 
+@[deprecated] -- 2024-03-02
+alias toSpecFromSpec := toSpec_fromSpec
+
 end toSpecFromSpec
 
 section fromSpecToSpec
@@ -701,7 +701,7 @@ lemma fromSpec_toSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) (x :
   · intro i
     erw [ToSpec.mem_carrier_iff, HomogeneousLocalization.val_mk'']
     dsimp only [GradedAlgebra.proj_apply]
-    rw [show (mk (decompose 𝒜 z i ^ m) ⟨f^i, ⟨i, rfl⟩⟩: Away f) =
+    rw [show (mk (decompose 𝒜 z i ^ m) ⟨f^i, ⟨i, rfl⟩⟩ : Away f) =
       (decompose 𝒜 z i ^ m : A) • (mk 1 ⟨f^i, ⟨i, rfl⟩⟩ : Away f) by
       · rw [smul_mk, smul_eq_mul, mul_one], Algebra.smul_def]
     exact Ideal.mul_mem_right _ _ <|

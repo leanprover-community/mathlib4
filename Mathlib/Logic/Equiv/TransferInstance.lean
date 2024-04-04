@@ -177,7 +177,7 @@ theorem mulEquiv_apply (e : α ≃ β) [Mul β] (a : α) : (mulEquiv e) a = e a 
 theorem mulEquiv_symm_apply (e : α ≃ β) [Mul β] (b : β) :
     letI := Equiv.mul e
     (mulEquiv e).symm b = e.symm b :=
-  by intros; rfl
+  rfl
 #align equiv.mul_equiv_symm_apply Equiv.mulEquiv_symm_apply
 #align equiv.add_equiv_symm_apply Equiv.addEquiv_symm_apply
 
@@ -213,7 +213,7 @@ theorem ringEquiv_apply (e : α ≃ β) [Add β] [Mul β] (a : α) : (ringEquiv 
 theorem ringEquiv_symm_apply (e : α ≃ β) [Add β] [Mul β] (b : β) : by
     letI := Equiv.add e
     letI := Equiv.mul e
-    exact (ringEquiv e).symm b = e.symm b := by intros; rfl
+    exact (ringEquiv e).symm b = e.symm b := rfl
 #align equiv.ring_equiv_symm_apply Equiv.ringEquiv_symm_apply
 
 variable (α) in
@@ -265,7 +265,6 @@ protected def mulZeroClass [MulZeroClass β] : MulZeroClass α := by
   apply e.injective.mulZeroClass _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.mul_zero_class Equiv.mulZeroClass
 
-@[to_additive]
 noncomputable instance [Small.{v} α] [MulZeroClass α] : MulZeroClass (Shrink.{v} α) :=
   (equivShrink α).symm.mulZeroClass
 
@@ -278,6 +277,7 @@ protected def mulOneClass [MulOneClass β] : MulOneClass α := by
 #align equiv.mul_one_class Equiv.mulOneClass
 #align equiv.add_zero_class Equiv.addZeroClass
 
+@[to_additive]
 noncomputable instance [Small.{v} α] [MulOneClass α] : MulOneClass (Shrink.{v} α) :=
   (equivShrink α).symm.mulOneClass
 
@@ -698,13 +698,24 @@ protected def algebra (e : α ≃ β) [Semiring β] :
     let semiring := Equiv.semiring e
     ∀ [Algebra R β], Algebra R α := by
   intros
-  fapply RingHom.toAlgebra'
-  · exact ((ringEquiv e).symm : β →+* α).comp (algebraMap R β)
-  · intro r x
-    rw [RingHom.coe_comp, Function.comp_apply, RingHom.coe_coe, ringEquiv_symm_apply e]
-    apply (ringEquiv e).injective
-    simp [Algebra.commutes]
+  letI : Module R α := e.module R
+  fapply Algebra.ofModule
+  · intro r x y
+    show e.symm (e (e.symm (r • e x)) * e y) = e.symm (r • e.ringEquiv (x * y))
+    simp only [apply_symm_apply, Algebra.smul_mul_assoc, map_mul, ringEquiv_apply]
+  · intro r x y
+    show e.symm (e x * e (e.symm (r • e y))) = e.symm (r • e (e.symm (e x * e y)))
+    simp only [apply_symm_apply, Algebra.mul_smul_comm]
 #align equiv.algebra Equiv.algebra
+
+lemma algebraMap_def (e : α ≃ β) [Semiring β] [Algebra R β] (r : R) :
+    let semiring := Equiv.semiring e
+    let algebra := Equiv.algebra R e
+    (algebraMap R α) r = e.symm ((algebraMap R β) r) := by
+  intros
+  simp only [Algebra.algebraMap_eq_smul_one]
+  show e.symm (r • e 1) = e.symm (r • 1)
+  simp only [Equiv.one_def, apply_symm_apply]
 
 noncomputable instance [Small.{v} α] [Semiring α] [Algebra R α] :
     Algebra R (Shrink.{v} α) :=
@@ -723,12 +734,22 @@ def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] : by
     { Equiv.ringEquiv e with
       commutes' := fun r => by
         apply e.symm.injective
-        simp
-        rfl }
+        simp only [RingEquiv.toEquiv_eq_coe, toFun_as_coe, EquivLike.coe_coe, ringEquiv_apply,
+          symm_apply_apply, algebraMap_def] }
 #align equiv.alg_equiv Equiv.algEquiv
+
+@[simp]
+theorem algEquiv_apply (e : α ≃ β) [Semiring β] [Algebra R β] (a : α) : (algEquiv R e) a = e a :=
+  rfl
+
+theorem algEquiv_symm_apply (e : α ≃ β) [Semiring β] [Algebra R β] (b : β) : by
+    letI := Equiv.semiring e
+    letI := Equiv.algebra R e
+    exact (algEquiv R e).symm b = e.symm b := by intros; rfl
 
 variable (α) in
 /-- Shrink `α` to a smaller universe preserves algebra structure. -/
+@[simps!]
 noncomputable def _root_.Shrink.algEquiv [Small.{v} α] [Semiring α] [Algebra R α] :
     Shrink.{v} α ≃ₐ[R] α :=
   Equiv.algEquiv _ (equivShrink α).symm

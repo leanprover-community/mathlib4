@@ -50,7 +50,6 @@ variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ �
 section CommRing
 
 variable [CommRing R]
-
 variable {p q : MvPolynomial σ R}
 
 instance instCommRingMvPolynomial : CommRing (MvPolynomial σ R) :=
@@ -127,7 +126,6 @@ end Vars
 section Eval
 
 variable [CommRing S]
-
 variable (f : R →+* S) (g : σ → S)
 
 @[simp]
@@ -191,7 +189,7 @@ theorem degreeOf_sub_lt {x : σ} {f g : MvPolynomial σ R} {k : ℕ} (h : 0 < k)
   intro m hm
   by_contra! hc
   have h := support_sub σ f g hm
-  simp only [mem_support_iff, Ne.def, coeff_sub, sub_eq_zero] at hm
+  simp only [mem_support_iff, Ne, coeff_sub, sub_eq_zero] at hm
   cases' Finset.mem_union.1 h with cf cg
   · exact hm (hf m cf hc)
   · exact hm (hg m cg hc)

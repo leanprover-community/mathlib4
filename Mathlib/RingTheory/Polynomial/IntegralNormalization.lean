@@ -107,7 +107,6 @@ end IsDomain
 section IsDomain
 
 variable [CommRing R] [IsDomain R]
-
 variable [CommSemiring S]
 
 theorem integralNormalization_eval₂_eq_zero {p : R[X]} (f : R →+* S) {z : S} (hz : eval₂ f z p = 0)
@@ -129,7 +128,7 @@ theorem integralNormalization_eval₂_eq_zero {p : R[X]} (f : R →+* S) {z : S}
       congr with i
       congr 2
       by_cases hi : i.1 = natDegree p
-      · rw [hi, integralNormalization_coeff_degree, one_mul, leadingCoeff, ← pow_succ,
+      · rw [hi, integralNormalization_coeff_degree, one_mul, leadingCoeff, ← pow_succ',
           tsub_add_cancel_of_le one_le_deg]
         exact degree_eq_natDegree hp
       · have : i.1 ≤ p.natDegree - 1 :=

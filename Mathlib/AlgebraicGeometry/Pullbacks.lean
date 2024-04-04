@@ -38,9 +38,7 @@ namespace AlgebraicGeometry.Scheme
 namespace Pullback
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X Y Z : Scheme.{u}} (𝒰 : OpenCover.{u} X) (f : X ⟶ Z) (g : Y ⟶ Z)
-
 variable [∀ i, HasPullback (𝒰.map i ≫ f) g]
 
 /-- The intersection of `Uᵢ ×[Z] Y` and `Uⱼ ×[Z] Y` is given by (Uᵢ ×[Z] Y) ×[X] Uⱼ -/
@@ -272,7 +270,7 @@ def p1 : (gluing 𝒰 f g).glued ⟶ X := by
   exact fun i => pullback.fst ≫ 𝒰.map i
   rintro ⟨i, j⟩
   change pullback.fst ≫ _ ≫ 𝒰.map i = (_ ≫ _) ≫ _ ≫ 𝒰.map j
-  -- Porting note: change `rw` to `erw`
+  -- Porting note (#11224): change `rw` to `erw`
   erw [pullback.condition]
   rw [← Category.assoc]
   congr 1

@@ -680,7 +680,7 @@ protected theorem pow_mem {M : Type*} [Monoid M] (S : Submonoid M) {x : M} (hx :
 #align submonoid.pow_mem Submonoid.pow_mem
 #align add_submonoid.nsmul_mem AddSubmonoid.nsmul_mem
 
--- porting note: coe_pow removed, syntactic tautology
+-- Porting note: coe_pow removed, syntactic tautology
 #noalign submonoid.coe_pow
 #noalign add_submonoid.coe_smul
 
@@ -1305,7 +1305,7 @@ theorem nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x 
   calc
     Nontrivial S ↔ ∃ x : S, x ≠ 1 := nontrivial_iff_exists_ne 1
     _ ↔ ∃ (x : _) (hx : x ∈ S), (⟨x, hx⟩ : S) ≠ ⟨1, S.one_mem⟩ := Subtype.exists
-    _ ↔ ∃ x ∈ S, x ≠ (1 : M) := by simp [Ne.def]
+    _ ↔ ∃ x ∈ S, x ≠ (1 : M) := by simp [Ne]
 #align submonoid.nontrivial_iff_exists_ne_one Submonoid.nontrivial_iff_exists_ne_one
 #align add_submonoid.nontrivial_iff_exists_ne_zero AddSubmonoid.nontrivial_iff_exists_ne_zero
 

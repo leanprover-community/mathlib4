@@ -561,7 +561,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalSubring R} : (↑(⨅ i, S i)
   simp only [iInf, coe_sInf, Set.biInter_range]
 
 theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalSubring R} {x : R} :
-    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_range_iff]
+    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
 theorem sInf_toSubsemigroup (s : Set (NonUnitalSubring R)) :
@@ -680,29 +680,29 @@ theorem closure_eq_of_le {s : Set R} {t : NonUnitalSubring R} (h₁ : s ⊆ t) (
 of `s`, and is preserved under addition, negation, and multiplication, then `p` holds for all
 elements of the closure of `s`. -/
 @[elab_as_elim]
-theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s) (Hs : ∀ x ∈ s, p x)
-    (H0 : p 0) (Hadd : ∀ x y, p x → p y → p (x + y)) (Hneg : ∀ x : R, p x → p (-x))
-    (Hmul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨⟨⟨⟨p, Hadd _ _⟩, H0⟩, Hmul _ _⟩, Hneg _⟩).2 Hs h
+theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x)
+    (zero : p 0) (add : ∀ x y, p x → p y → p (x + y)) (neg : ∀ x : R, p x → p (-x))
+    (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
+  (@closure_le _ _ _ ⟨⟨⟨⟨p, add _ _⟩, zero⟩, mul _ _⟩, neg _⟩).2 mem h
 
 /-- The difference with `NonUnitalSubring.closure_induction` is that this acts on the
 subtype. -/
 @[elab_as_elim]
 theorem closure_induction' {s : Set R} {p : closure s → Prop} (a : closure s)
-    (Hs : ∀ (x) (hx : x ∈ s), p ⟨x, subset_closure hx⟩) (H0 : p 0)
-    (Hadd : ∀ x y, p x → p y → p (x + y)) (Hneg : ∀ x, p x → p (-x))
-    (Hmul : ∀ x y, p x → p y → p (x * y)) : p a :=
+    (mem : ∀ (x) (hx : x ∈ s), p ⟨x, subset_closure hx⟩) (zero : p 0)
+    (add : ∀ x y, p x → p y → p (x + y)) (neg : ∀ x, p x → p (-x))
+    (mul : ∀ x y, p x → p y → p (x * y)) : p a :=
   Subtype.recOn a fun b hb => by
     refine' Exists.elim _ fun (hb : b ∈ closure s) (hc : p ⟨b, hb⟩) => hc
     refine'
-      closure_induction hb (fun x hx => ⟨subset_closure hx, Hs x hx⟩) ⟨zero_mem (closure s), H0⟩ _ _
-        _
+      closure_induction hb (fun x hx => ⟨subset_closure hx, mem x hx⟩)
+        ⟨zero_mem (closure s), zero⟩ _ _ _
     · rintro x y ⟨hx, hpx⟩ ⟨hy, hpy⟩
-      exact ⟨add_mem hx hy, Hadd _ _ hpx hpy⟩
+      exact ⟨add_mem hx hy, add _ _ hpx hpy⟩
     · rintro x ⟨hx, hpx⟩
-      exact ⟨neg_mem hx, Hneg _ hpx⟩
+      exact ⟨neg_mem hx, neg _ hpx⟩
     · rintro x y ⟨hx, hpx⟩ ⟨hy, hpy⟩
-      exact ⟨mul_mem hx hy, Hmul _ _ hpx hpy⟩
+      exact ⟨mul_mem hx hy, mul _ _ hpx hpy⟩
 
 /-- An induction principle for closure membership, for predicates with two arguments. -/
 @[elab_as_elim]

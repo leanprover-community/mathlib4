@@ -29,7 +29,6 @@ open CategoryTheory CategoryTheory.Category
 namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
-
 variable {D : Type u'} [Category.{v'} D] (G : C ⥤ D)
 
 -- We hide the "implementation details" inside a namespace

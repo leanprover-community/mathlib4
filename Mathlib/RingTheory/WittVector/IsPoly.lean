@@ -247,7 +247,7 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
   fin_cases i <;>
     simp only [aeval_eq_eval₂Hom, eval₂Hom_rename, Function.comp, Matrix.cons_val_zero,
       Matrix.head_cons, Matrix.cons_val_one]
-    -- porting note: added the rest of the proof.
+    -- Porting note: added the rest of the proof.
     <;>
     open Matrix in
     simp only [algebraMap_int_eq, coe_eval₂Hom, Fin.mk_zero, Fin.mk_one, cons_val', empty_val',
@@ -320,7 +320,7 @@ def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 @[simp]
 theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
     bind₁ onePoly (wittPolynomial p ℤ n) = 1 := by
-  ext  -- porting note: `ext` was not in the mathport output.
+  ext  -- Porting note: `ext` was not in the mathport output.
   rw [wittPolynomial_eq_sum_C_mul_X_pow, AlgHom.map_sum, Finset.sum_eq_single 0]
   · simp only [onePoly, one_pow, one_mul, AlgHom.map_pow, C_1, pow_zero, bind₁_X_right, if_true,
       eq_self_iff_true]
@@ -328,7 +328,7 @@ theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
     simp only [onePoly, if_neg hi0, zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero,
       AlgHom.map_pow, bind₁_X_right, AlgHom.map_mul]
   · rw [Finset.mem_range]
-    -- porting note: was `decide`
+    -- Porting note: was `decide`
     intro h
     simp only [add_pos_iff, zero_lt_one, or_true, not_true_eq_false] at h
 #align witt_vector.bind₁_one_poly_witt_polynomial WittVector.bind₁_onePoly_wittPolynomial
@@ -337,9 +337,9 @@ theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
 instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
   ⟨⟨onePoly, by
       intros; funext n; cases n
-      · -- porting note: was `simp only [...]` but with slightly different `[...]`.
+      · -- Porting note: was `simp only [...]` but with slightly different `[...]`.
         simp only [Nat.zero_eq, lt_self_iff_false, one_coeff_zero, onePoly, ite_true, map_one]
-      · -- porting note: was `simp only [...]` but with slightly different `[...]`.
+      · -- Porting note: was `simp only [...]` but with slightly different `[...]`.
         simp only [Nat.succ_pos', one_coeff_eq_of_pos, onePoly, Nat.succ_ne_zero, ite_false,
           map_zero]
   ⟩⟩
@@ -373,7 +373,7 @@ theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : �
   ext n
   simp only [map_coeff, hf, map_aeval]
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
-  ext  -- porting note: this `ext` was not present in the mathport output
+  ext  -- Porting note: this `ext` was not present in the mathport output
   simp only [map_coeff]
 #align witt_vector.is_poly.map WittVector.IsPoly.map
 
@@ -439,7 +439,7 @@ theorem map [Fact p.Prime] {f} (hf : IsPoly₂ p f) (g : R →+* S) (x y : 𝕎 
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
   try ext ⟨i, k⟩; fin_cases i
   all_goals simp only [map_coeff, Matrix.cons_val_zero, Matrix.head_cons, Matrix.cons_val_one]
-  -- porting note: added the rest of the proof
+  -- Porting note: added the rest of the proof
   all_goals
     simp only [Fin.mk_zero, Fin.mk_one, Matrix.cons_val', Matrix.empty_val', Matrix.cons_val_one,
       Matrix.cons_val_fin_one, Matrix.cons_val_zero, map_coeff, Matrix.head_fin_const]

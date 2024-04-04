@@ -50,7 +50,7 @@ variable (K : Type) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
 
 section TwoDenominators
 
---Porting note: added for scoped `Algebra.cast` instance
+-- Porting note: added for scoped `Algebra.cast` instance
 open algebraMap
 
 /-- Let R be an integral domain and f, g₁, g₂ ∈ R[X]. Let g₁ and g₂ be monic and coprime.
@@ -85,7 +85,7 @@ section NDenominators
 
 open BigOperators
 
---Porting note: added for scoped `Algebra.cast` instance
+-- Porting note: added for scoped `Algebra.cast` instance
 open algebraMap
 
 /-- Let R be an integral domain and f ∈ R[X]. Let s be a finite index set.

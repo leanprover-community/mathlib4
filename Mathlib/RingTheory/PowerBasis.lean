@@ -46,9 +46,7 @@ open Polynomial
 open Polynomial
 
 variable {R S T : Type*} [CommRing R] [Ring S] [Algebra R S]
-
 variable {A B : Type*} [CommRing A] [CommRing B] [IsDomain B] [Algebra A B]
-
 variable {K : Type*} [Field K]
 
 /-- `pb : PowerBasis R S` states that `1, pb.gen, ..., pb.gen ^ (pb.dim - 1)`
@@ -78,9 +76,9 @@ theorem coe_basis (pb : PowerBasis R S) : ⇑pb.basis = fun i : Fin pb.dim => pb
 #align power_basis.coe_basis PowerBasis.coe_basis
 
 /-- Cannot be an instance because `PowerBasis` cannot be a class. -/
-theorem finiteDimensional [Algebra K S] (pb : PowerBasis K S) : FiniteDimensional K S :=
-  FiniteDimensional.of_fintype_basis pb.basis
-#align power_basis.finite_dimensional PowerBasis.finiteDimensional
+theorem finite (pb : PowerBasis R S) : Module.Finite R S := .of_basis pb.basis
+#align power_basis.finite_dimensional PowerBasis.finite
+@[deprecated] alias finiteDimensional := PowerBasis.finite
 
 theorem finrank [StrongRankCondition R] (pb : PowerBasis R S) :
     FiniteDimensional.finrank R S = pb.dim := by
@@ -226,7 +224,7 @@ protected theorem leftMulMatrix (pb : PowerBasis A S) : Algebra.leftMulMatrix pb
   rw [Algebra.leftMulMatrix_apply, ← LinearEquiv.eq_symm_apply, LinearMap.toMatrix_symm]
   refine' pb.basis.ext fun k => _
   simp_rw [Matrix.toLin_self, Matrix.of_apply, pb.basis_eq_pow]
-  apply (pow_succ _ _).symm.trans
+  apply (pow_succ' _ _).symm.trans
   split_ifs with h
   · simp_rw [h, neg_smul, Finset.sum_neg_distrib, eq_neg_iff_add_eq_zero]
     convert pb.aeval_minpolyGen

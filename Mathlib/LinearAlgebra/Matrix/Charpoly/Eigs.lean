@@ -48,9 +48,7 @@ dependencies are not general enough to unify them. We should refactor
 
 
 variable {n : Type*} [Fintype n] [DecidableEq n]
-
 variable {R : Type*} [Field R]
-
 variable {A : Matrix n n R}
 
 open Matrix Polynomial

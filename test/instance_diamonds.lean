@@ -10,7 +10,7 @@ import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Data.Complex.Module
 import Mathlib.RingTheory.Algebraic
 import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-! # Tests that instances do not form diamonds -/
 

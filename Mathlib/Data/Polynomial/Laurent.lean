@@ -56,12 +56,11 @@ Lots is missing!
 -- A "better" definition of `trunc` would be as an `R`-linear map.  This works:
 --  ```
 --  def trunc : R[T;T⁻¹] →[R] R[X] :=
---  begin
---    refine (_ : R[ℕ] →[R] R[X]).comp _,
---    { exact ⟨(toFinsuppIso R).symm, by simp⟩ },
---    { refine ⟨λ r, comapDomain _ r (Set.injOn_of_injective (λ a b ab, Int.ofNat.inj ab) _), _⟩,
---      exact λ r f, comapDomain_smul _ _ _ }
---  end
+--    refine (?_ : R[ℕ] →[R] R[X]).comp ?_
+--    · exact ⟨(toFinsuppIso R).symm, by simp⟩
+--    · refine ⟨fun r ↦ comapDomain _ r
+--        (Set.injOn_of_injective (fun _ _ ↦ Int.ofNat.inj) _), ?_⟩
+--      exact fun r f ↦ comapDomain_smul ..
 --  ```
 --  but it would make sense to bundle the maps better, for a smoother user experience.
 --  I (DT) did not have the strength to embark on this (possibly short!) journey, after getting to
@@ -380,7 +379,7 @@ theorem leftInverse_trunc_toLaurent :
   · intro f g hf hg
     simp only [hf, hg, _root_.map_add]
   · intro n r
-    simp only [Polynomial.toLaurent_C_mul_T, trunc_C_mul_T, Int.coe_nat_nonneg, Int.toNat_coe_nat,
+    simp only [Polynomial.toLaurent_C_mul_T, trunc_C_mul_T, Int.natCast_nonneg, Int.toNat_natCast,
       if_true]
 #align laurent_polynomial.left_inverse_trunc_to_laurent LaurentPolynomial.leftInverse_trunc_toLaurent
 
@@ -504,7 +503,7 @@ theorem degree_eq_bot_iff {f : R[T;T⁻¹]} : f.degree = ⊥ ↔ f = 0 := by
   rw [degree, Finset.max_eq_sup_withBot] at h
   ext n
   refine' not_not.mp fun f0 => _
-  simp_rw [Finset.sup_eq_bot_iff, Finsupp.mem_support_iff, Ne.def, WithBot.coe_ne_bot] at h
+  simp_rw [Finset.sup_eq_bot_iff, Finsupp.mem_support_iff, Ne, WithBot.coe_ne_bot] at h
   exact h n f0
 #align laurent_polynomial.degree_eq_bot_iff LaurentPolynomial.degree_eq_bot_iff
 
@@ -517,7 +516,7 @@ theorem degree_C_mul_T (n : ℤ) (a : R) (a0 : a ≠ 0) : degree (C a * T n) = n
   have : Finsupp.support (C a * T n) = {n} := by
     refine' support_eq_singleton.mpr _
     rw [← single_eq_C_mul_T]
-    simp only [single_eq_same, a0, Ne.def, not_false_iff, eq_self_iff_true, and_self_iff]
+    simp only [single_eq_same, a0, Ne, not_false_iff, eq_self_iff_true, and_self_iff]
   rw [this]
   exact Finset.max_singleton
 set_option linter.uppercaseLean3 false in
@@ -526,7 +525,7 @@ set_option linter.uppercaseLean3 false in
 theorem degree_C_mul_T_ite [DecidableEq R] (n : ℤ) (a : R) :
     degree (C a * T n) = if a = 0 then ⊥ else ↑n := by
   split_ifs with h <;>
-    simp only [h, map_zero, zero_mul, degree_zero, degree_C_mul_T, Ne.def,
+    simp only [h, map_zero, zero_mul, degree_zero, degree_C_mul_T, Ne,
       not_false_iff]
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.degree_C_mul_T_ite LaurentPolynomial.degree_C_mul_T_ite
@@ -545,7 +544,7 @@ set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.degree_C LaurentPolynomial.degree_C
 
 theorem degree_C_ite [DecidableEq R] (a : R) : (C a).degree = if a = 0 then ⊥ else 0 := by
-  split_ifs with h <;> simp only [h, map_zero, degree_zero, degree_C, Ne.def, not_false_iff]
+  split_ifs with h <;> simp only [h, map_zero, degree_zero, degree_C, Ne, not_false_iff]
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.degree_C_ite LaurentPolynomial.degree_C_ite
 

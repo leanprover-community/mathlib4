@@ -19,10 +19,7 @@ namespace CategoryTheory
 open MonoidalCategory
 
 variable {C D : Type*} [Category C] [Category D] [MonoidalCategory C] [MonoidalCategory D]
-
 variable (F : MonoidalFunctor C D)
-
-attribute [local simp] id_tensorHom tensorHom_id
 
 /-- Given candidate data for an exact pairing,
 which is sent by a faithful monoidal functor to an exact pairing,
@@ -36,11 +33,11 @@ def exactPairingOfFaithful [Faithful F.toFunctor] {X Y : C} (eval : Y ⊗ X ⟶ 
   evaluation_coevaluation' :=
     F.toFunctor.map_injective <| by
       simp [map_eval, map_coeval,
-        MonoidalFunctor.map_whiskerLeft', MonoidalFunctor.map_whiskerRight']
+        MonoidalFunctor.map_whiskerLeft, MonoidalFunctor.map_whiskerRight]
   coevaluation_evaluation' :=
     F.toFunctor.map_injective <| by
       simp [map_eval, map_coeval,
-        MonoidalFunctor.map_whiskerLeft', MonoidalFunctor.map_whiskerRight']
+        MonoidalFunctor.map_whiskerLeft, MonoidalFunctor.map_whiskerRight]
 #align category_theory.exact_pairing_of_faithful CategoryTheory.exactPairingOfFaithful
 
 /-- Given a pair of objects which are sent by a fully faithful functor to a pair of objects
@@ -57,7 +54,7 @@ def hasLeftDualOfEquivalence [IsEquivalence F.toFunctor] (X : C) [HasLeftDual (F
     HasLeftDual X where
   leftDual := F.toFunctor.inv.obj (ᘁ(F.obj X))
   exact := by
-    -- porting note: in Lean3, `apply exactPairingOfFullyFaithful F _ _` automatically
+    -- Porting note: in Lean3, `apply exactPairingOfFullyFaithful F _ _` automatically
     -- created the goals for `ExactPairing` type class
     refine @exactPairingOfFullyFaithful _ _ _ _ _ _ F _ _ _ _ ?_
     refine @exactPairingCongrLeft _ _ _ _ _ _ ?_ (F.toFunctor.asEquivalence.counitIso.app _)

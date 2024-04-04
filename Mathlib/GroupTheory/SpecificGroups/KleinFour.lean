@@ -143,7 +143,7 @@ def mulEquiv' (e : G₁ ≃ G₂) (he : e 1 = 1) (h : Monoid.exponent G₂ = 2) 
       have univ₂ : {e (x * y), e x, e y, (1 : G₂)} = Finset.univ := by
         simpa [map_univ_equiv e, map_insert, he]
           using congr(Finset.map e.toEmbedding $(eq_finset_univ hx hy hxy))
-      rw [← Ne.def, ← e.injective.ne_iff] at hx hy hxy
+      rw [← Ne, ← e.injective.ne_iff] at hx hy hxy
       rw [he] at hx hy
       symm
       apply eq_of_not_mem_of_mem_insert <| univ₂.symm ▸ mem_univ _
