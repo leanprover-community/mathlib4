@@ -251,6 +251,11 @@ def embeddingUpNat : Embedding (up ℕ) (up ℤ) :=
     (fun _ _ h => by simpa using h)
     (by dsimp; omega)
 
+instance : embeddingUpNat.IsRelIff := by dsimp [embeddingUpNat]; infer_instance
+
+instance : embeddingUpNat.IsTruncGE where
+  mem_next {j _} h := ⟨j + 1, h⟩
+
 /-- The embedding from `down ℕ` to `up ℤ` with sends `n` to `-n`. -/
 @[simps!]
 def embeddingDownNat : Embedding (down ℕ) (up ℤ) :=
@@ -258,12 +263,7 @@ def embeddingDownNat : Embedding (down ℕ) (up ℤ) :=
     (fun _ _ h => by simpa using h)
     (by dsimp; omega)
 
-instance : embeddingUpNat.IsRelIff := by dsimp [embeddingUpNat]; infer_instance
-
 instance : embeddingDownNat.IsRelIff := by dsimp [embeddingDownNat]; infer_instance
-
-instance : embeddingUpNat.IsTruncGE where
-  mem_next {j _} h := ⟨j + 1, h⟩
 
 instance : embeddingDownNat.IsTruncLE where
   mem_prev {i j} h := ⟨j + 1, by dsimp at h ⊢; omega⟩
