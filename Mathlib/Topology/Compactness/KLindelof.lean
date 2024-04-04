@@ -17,6 +17,7 @@ every open cover that contains `s` contains a subcover of cardinality less than 
 We choose for the equivalent definition where we require that every nontrivial CardinalInterFilter
 with cardinality `k` has a clusterpoint.
 Equivalence is established in `isKLindelof_iff_cardinal_subcover` when `k` is regular.
+TODO: Add the following (in a future PR)
 * `KLindelofSpace X`: `X` is `k`-Lindelöf if it is `k`-Lindelöf as a set.
 * `NonKLindelofSpace`: a space that is not a k-Lindëlof space, e.g. the Long Line.
 
@@ -157,7 +158,6 @@ theorem IsKLindelof.elim_cardinal_subcover {ι : Type u} (hreg : Cardinal.IsRegu
     exact subset_rfl
   exact hs.induction_on (hk := hk) hmono hcardinal_union h_nhds
 
-
 theorem IsKLindelof.elim_nhds_subcover' (hreg : Cardinal.IsRegular k) (hs : IsKLindelof k s)
     (U : ∀ x ∈ s, Set X) (hU : ∀ x (hx : x ∈ s), U x ‹x ∈ s› ∈ 𝓝 x) :
     ∃ t : Set s, (#t < k) ∧ s ⊆ ⋃ x ∈ t, U (x : s) x.2 := by
@@ -206,7 +206,6 @@ theorem IsKLindelof.disjoint_nhdsSet_right (hreg : Cardinal.IsRegular k) {l : Fi
     [CardinalInterFilter l k] (hs : IsKLindelof k s) :
     Disjoint l (𝓝ˢ s) ↔ ∀ x ∈ s, Disjoint l (𝓝 x) := by
   simpa only [disjoint_comm] using (hs.disjoint_nhdsSet_left hreg)
-
 
 /-- For every family of closed sets whose intersection avoids a `k`-Lindelöf set,
 there exists a subfamil of size less than `k` whose intersection avoids this `k`-Lindelöf set. -/
