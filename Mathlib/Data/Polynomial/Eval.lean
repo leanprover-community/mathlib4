@@ -468,7 +468,7 @@ theorem eval_mul_X : (p * X).eval x = p.eval x * x := by
   | h_add p q ph qh =>
     simp only [add_mul, eval_add, ph, qh]
   | h_monomial n a =>
-    simp only [← monomial_one_one_eq_X, monomial_mul_monomial, eval_monomial, mul_one, pow_succ',
+    simp only [← monomial_one_one_eq_X, monomial_mul_monomial, eval_monomial, mul_one, pow_succ,
       mul_assoc]
 #align polynomial.eval_mul_X Polynomial.eval_mul_X
 
@@ -476,7 +476,7 @@ theorem eval_mul_X : (p * X).eval x = p.eval x * x := by
 theorem eval_mul_X_pow {k : ℕ} : (p * X ^ k).eval x = p.eval x * x ^ k := by
   induction' k with k ih
   · simp
-  · simp [pow_succ', ← mul_assoc, ih]
+  · simp [pow_succ, ← mul_assoc, ih]
 #align polynomial.eval_mul_X_pow Polynomial.eval_mul_X_pow
 
 theorem eval_sum (p : R[X]) (f : ℕ → R → R[X]) (x : R) :
@@ -606,21 +606,21 @@ theorem mul_X_comp : (p * X).comp r = p.comp r * r := by
   | h_add p q hp hq =>
     simp only [hp, hq, add_mul, add_comp]
   | h_monomial n b =>
-    simp only [pow_succ', mul_assoc, monomial_mul_X, monomial_comp]
+    simp only [pow_succ, mul_assoc, monomial_mul_X, monomial_comp]
 #align polynomial.mul_X_comp Polynomial.mul_X_comp
 
 @[simp]
 theorem X_pow_comp {k : ℕ} : (X ^ k).comp p = p ^ k := by
   induction' k with k ih
   · simp
-  · simp [pow_succ', mul_X_comp, ih]
+  · simp [pow_succ, mul_X_comp, ih]
 #align polynomial.X_pow_comp Polynomial.X_pow_comp
 
 @[simp]
 theorem mul_X_pow_comp {k : ℕ} : (p * X ^ k).comp r = p.comp r * r ^ k := by
   induction' k with k ih
   · simp
-  · simp [ih, pow_succ', ← mul_assoc, mul_X_comp]
+  · simp [ih, pow_succ, ← mul_assoc, mul_X_comp]
 #align polynomial.mul_X_pow_comp Polynomial.mul_X_pow_comp
 
 @[simp]
@@ -677,7 +677,7 @@ theorem comp_assoc {R : Type*} [CommSemiring R] (φ ψ χ : R[X]) :
     (φ.comp ψ).comp χ = φ.comp (ψ.comp χ) := by
   refine Polynomial.induction_on φ ?_ ?_ ?_ <;>
     · intros
-      simp_all only [add_comp, mul_comp, C_comp, X_comp, pow_succ', ← mul_assoc]
+      simp_all only [add_comp, mul_comp, C_comp, X_comp, pow_succ, ← mul_assoc]
 #align polynomial.comp_assoc Polynomial.comp_assoc
 
 theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
@@ -983,7 +983,7 @@ theorem map_comp (p q : R[X]) : map f (p.comp q) = (map f p).comp (map f q) :=
       simp (config := { contextual := true }) only [Polynomial.map_add, add_comp, forall_const,
         imp_true_iff, eq_self_iff_true])
     (by
-      simp (config := { contextual := true }) only [pow_succ', ← mul_assoc, comp, forall_const,
+      simp (config := { contextual := true }) only [pow_succ, ← mul_assoc, comp, forall_const,
         eval₂_mul_X, imp_true_iff, eq_self_iff_true, map_X, Polynomial.map_mul])
 #align polynomial.map_comp Polynomial.map_comp
 

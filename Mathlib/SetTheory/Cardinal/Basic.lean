@@ -533,7 +533,7 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   nsmul := nsmulRec
   npow n c := c ^ (n : Cardinal)
   npow_zero := @power_zero
-  npow_succ n c := show c ^ (↑(n + 1) : Cardinal) = c * c ^ (↑n : Cardinal)
+  npow_succ n c := show c ^ (↑(n + 1) : Cardinal) = c ^ (↑n : Cardinal) * c
     by rw [Cardinal.cast_succ, power_add, power_one, mul_comm']
   natCast := (fun n => lift.{u} #(Fin n) : ℕ → Cardinal.{u})
   natCast_zero := rfl
@@ -1450,7 +1450,7 @@ theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
 -- @[simp, norm_cast]
 @[norm_cast]
 theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) := by
-  induction n <;> simp [pow_succ', power_add, *, Pow.pow]
+  induction n <;> simp [pow_succ, power_add, *, Pow.pow]
 #align cardinal.nat_cast_pow Cardinal.natCast_pow
 
 -- porting note (#10618): simp can prove this
@@ -2103,6 +2103,11 @@ theorem mk_insert {α : Type u} {s : Set α} {a : α} (h : a ∉ s) :
   rw [← union_singleton, mk_union_of_disjoint, mk_singleton]
   simpa
 #align cardinal.mk_insert Cardinal.mk_insert
+
+theorem mk_insert_le {α : Type u} {s : Set α} {a : α} : #(insert a s : Set α) ≤ #s + 1 := by
+  by_cases h : a ∈ s
+  · simp only [insert_eq_of_mem h, self_le_add_right]
+  · rw [mk_insert h]
 
 theorem mk_sum_compl {α} (s : Set α) : #s + #(sᶜ : Set α) = #α :=
   mk_congr (Equiv.Set.sumCompl s)

@@ -545,13 +545,13 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     by_cases hi : i = i₀
     · rw [hi]
       simp only [B, sdiff_subset, update_same]
-    · simp only [B, hi, update_noteq, Ne.def, not_false_iff, Finset.Subset.refl]
+    · simp only [B, hi, update_noteq, Ne, not_false_iff, Finset.Subset.refl]
   have C_subset_A : ∀ i, C i ⊆ A i := by
     intro i
     by_cases hi : i = i₀
     · rw [hi]
       simp only [C, hj₂, Finset.singleton_subset_iff, update_same]
-    · simp only [C, hi, update_noteq, Ne.def, not_false_iff, Finset.Subset.refl]
+    · simp only [C, hi, update_noteq, Ne, not_false_iff, Finset.Subset.refl]
   -- split the sum at `i₀` as the sum over `B i₀` plus the sum over `C i₀`, to use additivity.
   have A_eq_BC :
     (fun i => ∑ j in A i, g i j) =
@@ -579,7 +579,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     by_cases hi : i = i₀
     · rw [hi]
       simp only [update_same]
-    · simp only [B, hi, update_noteq, Ne.def, not_false_iff]
+    · simp only [B, hi, update_noteq, Ne, not_false_iff]
   have Ceq :
     Function.update (fun i => ∑ j in A i, g i j) i₀ (∑ j in C i₀, g i₀ j) = fun i =>
       ∑ j in C i, g i j := by
@@ -587,7 +587,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     by_cases hi : i = i₀
     · rw [hi]
       simp only [update_same]
-    · simp only [C, hi, update_noteq, Ne.def, not_false_iff]
+    · simp only [C, hi, update_noteq, Ne, not_false_iff]
   -- Express the inductive assumption for `B`
   have Brec : (f fun i => ∑ j in B i, g i j) = ∑ r in piFinset B, f fun i => g i (r i) := by
     have : (∑ i, Finset.card (B i)) < ∑ i, Finset.card (A i) := by

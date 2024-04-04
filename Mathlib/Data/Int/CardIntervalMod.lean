@@ -83,16 +83,16 @@ lemma Ico_filter_modEq_cast {v : ℕ} : ((Ico a b).filter (· ≡ v [MOD r])).ma
   ext x
   simp only [mem_map, mem_filter, mem_Ico, castEmbedding_apply]
   constructor
-  · simp_rw [forall_exists_index, ← coe_nat_modEq_iff]; intro y ⟨h, c⟩; subst c; exact_mod_cast h
-  · intro h; lift x to ℕ using (by linarith); exact ⟨x, by simp_all [coe_nat_modEq_iff]⟩
+  · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact_mod_cast h
+  · intro h; lift x to ℕ using (by linarith); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
 
 lemma Ioc_filter_modEq_cast {v : ℕ} : ((Ioc a b).filter (· ≡ v [MOD r])).map castEmbedding =
     (Ioc ↑a ↑b).filter (· ≡ v [ZMOD r]) := by
   ext x
   simp only [mem_map, mem_filter, mem_Ioc, castEmbedding_apply]
   constructor
-  · simp_rw [forall_exists_index, ← coe_nat_modEq_iff]; intro y ⟨h, c⟩; subst c; exact_mod_cast h
-  · intro h; lift x to ℕ using (by linarith); exact ⟨x, by simp_all [coe_nat_modEq_iff]⟩
+  · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact_mod_cast h
+  · intro h; lift x to ℕ using (by linarith); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
 
 /-- There are `⌈(b - v) / r⌉ - ⌈(a - v) / r⌉` numbers congruent to `v` mod `r` in `[a, b)`,
 if `a ≤ b`. `Nat` version of `Int.Ico_filter_modEq_card`. -/

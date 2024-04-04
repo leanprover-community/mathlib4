@@ -33,7 +33,6 @@ and `RingTheory.Derivation.ToSquareZero` for
 -/
 
 open Algebra
-open scoped BigOperators
 
 /-- `D : Derivation R A M` is an `R`-linear map from `A` to `M` that satisfies the `leibniz`
 equality. We also require that `D 1 = 0`. See `Derivation.mk'` for a constructor that deduces this
@@ -129,10 +128,7 @@ theorem leibniz : D (a * b) = a • D b + b • D a :=
   D.leibniz' _ _
 #align derivation.leibniz Derivation.leibniz
 
-nonrec theorem map_sum {ι : Type*} (s : Finset ι) (f : ι → A) :
-    D (∑ i in s, f i) = ∑ i in s, D (f i) :=
-  map_sum D _ _
-#align derivation.map_sum Derivation.map_sum
+#noalign derivation.map_sum
 
 @[simp]
 theorem map_smul_of_tower {S : Type*} [SMul S A] [SMul S M] [LinearMap.CompatibleSMul A M S R]
@@ -162,8 +158,8 @@ theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
   · rw [Nat.zero_eq, pow_zero, map_one_eq_zero, zero_smul]
   · rcases (zero_le n).eq_or_lt with (rfl | hpos)
     · erw [pow_one, one_smul, pow_zero, one_smul]
-    · have : a * a ^ (n - 1) = a ^ n := by rw [← pow_succ, Nat.sub_add_cancel hpos]
-      simp only [pow_succ, leibniz, ihn, smul_comm a n (_ : M), smul_smul a, add_smul, this,
+    · have : a * a ^ (n - 1) = a ^ n := by rw [← pow_succ', Nat.sub_add_cancel hpos]
+      simp only [pow_succ', leibniz, ihn, smul_comm a n (_ : M), smul_smul a, add_smul, this,
         Nat.succ_eq_add_one, Nat.add_succ_sub_one, add_zero, one_nsmul]
 #align derivation.leibniz_pow Derivation.leibniz_pow
 
