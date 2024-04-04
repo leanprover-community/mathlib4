@@ -167,7 +167,7 @@ theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
 
 open Polynomial in
 @[simp]
-theorem apply_aeval (P : R[X]) (x : A) :
+theorem map_aeval (P : R[X]) (x : A) :
     D (aeval x P) = aeval x (derivative P) • D x := by
   induction P using Polynomial.induction_on
   · simp
