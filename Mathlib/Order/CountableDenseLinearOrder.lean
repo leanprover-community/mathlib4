@@ -61,7 +61,7 @@ theorem exists_between_finsets {α : Type*} [LinearOrder α] [DenselyOrdered α]
         Exists.elim
         (exists_lt (Finset.min' hi nhi)) fun m hm ↦
         ⟨m, fun x hx ↦ (nlo ⟨x, hx⟩).elim, fun y hy ↦ lt_of_lt_of_le hm (Finset.min'_le hi y hy)⟩
-    else-- both sets are empty, use `Nonempty`
+    else -- both sets are empty, use `Nonempty`
           nonem.elim
         fun m ↦ ⟨m, fun x hx ↦ (nlo ⟨x, hx⟩).elim, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩
 #align order.exists_between_finsets Order.exists_between_finsets
