@@ -95,21 +95,21 @@ theorem coe_mk {U : Set α} {hU : IsOpen U} : ↑(⟨U, hU⟩ : Opens α) = U :=
 theorem mem_mk {x : α} {U : Set α} {h : IsOpen U} : x ∈ mk U h ↔ x ∈ U := Iff.rfl
 #align topological_space.opens.mem_mk TopologicalSpace.Opens.mem_mk
 
--- porting note: removed @[simp] because LHS simplifies to `∃ x, x ∈ U`
+-- Porting note: removed @[simp] because LHS simplifies to `∃ x, x ∈ U`
 protected theorem nonempty_coeSort {U : Opens α} : Nonempty U ↔ (U : Set α).Nonempty :=
   Set.nonempty_coe_sort
 #align topological_space.opens.nonempty_coe_sort TopologicalSpace.Opens.nonempty_coeSort
 
--- porting note: new lemma; todo: prove it for a `SetLike`?
+-- Porting note (#10756): new lemma; todo: prove it for a `SetLike`?
 protected theorem nonempty_coe {U : Opens α} : (U : Set α).Nonempty ↔ ∃ x, x ∈ U :=
   Iff.rfl
 
-@[ext] -- porting note: todo: replace with `∀ x, x ∈ U ↔ x ∈ V`
+@[ext] -- Porting note (#11215): TODO: replace with `∀ x, x ∈ U ↔ x ∈ V`
 theorem ext {U V : Opens α} (h : (U : Set α) = V) : U = V :=
   SetLike.coe_injective h
 #align topological_space.opens.ext TopologicalSpace.Opens.ext
 
--- porting note: removed @[simp], simp can prove it
+-- Porting note: removed @[simp], simp can prove it
 theorem coe_inj {U V : Opens α} : (U : Set α) = V ↔ U = V :=
   SetLike.ext'_iff.symm
 #align topological_space.opens.coe_inj TopologicalSpace.Opens.coe_inj
@@ -186,7 +186,7 @@ theorem coe_bot : ((⊥ : Opens α) : Set α) = ∅ :=
 
 @[simp] theorem mk_empty : (⟨∅, isOpen_empty⟩ : Opens α) = ⊥ := rfl
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 @[simp, norm_cast]
 theorem coe_eq_empty {U : Opens α} : (U : Set α) = ∅ ↔ U = ⊥ :=
   SetLike.coe_injective.eq_iff' rfl
@@ -198,7 +198,7 @@ theorem coe_top : ((⊤ : Opens α) : Set α) = Set.univ :=
 
 @[simp] theorem mk_univ : (⟨univ, isOpen_univ⟩ : Opens α) = ⊤ := rfl
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 @[simp, norm_cast]
 theorem coe_eq_univ {U : Opens α} : (U : Set α) = univ ↔ U = ⊤ :=
   SetLike.coe_injective.eq_iff' rfl
@@ -220,11 +220,11 @@ theorem coe_finset_inf (f : ι → Opens α) (s : Finset ι) : (↑(s.inf f) : S
 
 instance : Inhabited (Opens α) := ⟨⊥⟩
 
--- porting note: new instance
+-- porting note (#10754): new instance
 instance [IsEmpty α] : Unique (Opens α) where
   uniq _ := ext <| Subsingleton.elim _ _
 
--- porting note: new instance
+-- porting note (#10754): new instance
 instance [Nonempty α] : Nontrivial (Opens α) where
   exists_pair_ne := ⟨⊥, ⊤, mt coe_inj.2 empty_ne_univ⟩
 
@@ -266,7 +266,7 @@ theorem openEmbedding' (U : Opens α) : OpenEmbedding (Subtype.val : U → α) :
 theorem openEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
     OpenEmbedding (Set.inclusion <| SetLike.coe_subset_coe.2 i) :=
   { toEmbedding := embedding_inclusion i
-    open_range := by
+    isOpen_range := by
       rw [Set.range_inclusion i]
       exact U.isOpen.preimage continuous_subtype_val }
 #align topological_space.opens.open_embedding_of_le TopologicalSpace.Opens.openEmbedding_of_le
@@ -276,7 +276,7 @@ theorem not_nonempty_iff_eq_bot (U : Opens α) : ¬Set.Nonempty (U : Set α) ↔
 #align topological_space.opens.not_nonempty_iff_eq_bot TopologicalSpace.Opens.not_nonempty_iff_eq_bot
 
 theorem ne_bot_iff_nonempty (U : Opens α) : U ≠ ⊥ ↔ Set.Nonempty (U : Set α) := by
-  rw [Ne.def, ← not_nonempty_iff_eq_bot, not_not]
+  rw [Ne, ← not_nonempty_iff_eq_bot, not_not]
 #align topological_space.opens.ne_bot_iff_nonempty TopologicalSpace.Opens.ne_bot_iff_nonempty
 
 /-- An open set in the indiscrete topology is either empty or the whole space. -/
@@ -286,7 +286,7 @@ theorem eq_bot_or_top {α} [t : TopologicalSpace α] (h : t = ⊤) (U : Opens α
   exact U.2
 #align topological_space.opens.eq_bot_or_top TopologicalSpace.Opens.eq_bot_or_top
 
--- porting note: new instance
+-- porting note (#10754): new instance
 instance [Nonempty α] [Subsingleton α] : IsSimpleOrder (Opens α) where
   eq_bot_or_eq_top := eq_bot_or_top <| Subsingleton.elim _ _
 
@@ -459,7 +459,7 @@ instance : Inhabited (OpenNhdsOf x) := ⟨⊤⟩
 instance : Inf (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊓ V.1, U.2, V.2⟩⟩
 instance : Sup (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊔ V.1, Or.inl U.2⟩⟩
 
--- porting note: new instance
+-- porting note (#10754): new instance
 instance [Subsingleton α] : Unique (OpenNhdsOf x) where
   uniq U := SetLike.ext' <| Subsingleton.eq_univ_of_nonempty ⟨x, U.mem⟩
 
@@ -482,7 +482,7 @@ end OpenNhdsOf
 
 end TopologicalSpace
 
--- porting note: TODO: once we port `auto_cases`, port this
+-- Porting note (#11215): TODO: once we port `auto_cases`, port this
 -- namespace Tactic
 
 -- namespace AutoCases

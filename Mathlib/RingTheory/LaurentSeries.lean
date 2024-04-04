@@ -22,8 +22,8 @@ import Mathlib.RingTheory.Localization.FractionRing
 
 -/
 
-
-open HahnSeries BigOperators Classical Polynomial
+open scoped Classical
+open HahnSeries BigOperators Polynomial
 
 noncomputable section
 
@@ -34,7 +34,7 @@ abbrev LaurentSeries (R : Type*) [Zero R] :=
   HahnSeries ℤ R
 #align laurent_series LaurentSeries
 
-variable {R : Type u}
+variable {R : Type*}
 
 namespace LaurentSeries
 
@@ -97,7 +97,7 @@ theorem single_order_mul_powerSeriesPart (x : LaurentSeries R) :
   by_cases h : x.order ≤ n
   · rw [Int.eq_natAbs_of_zero_le (sub_nonneg_of_le h), coeff_coe_powerSeries,
       powerSeriesPart_coeff, ← Int.eq_natAbs_of_zero_le (sub_nonneg_of_le h),
-      add_sub_cancel'_right]
+      add_sub_cancel]
   · rw [ofPowerSeries_apply, embDomain_notin_range]
     · contrapose! h
       exact order_le_of_coeff_ne_zero h.symm
@@ -204,11 +204,11 @@ theorem coeff_coe (i : ℤ) :
     ((f : PowerSeries R) : LaurentSeries R).coeff i =
       if i < 0 then 0 else PowerSeries.coeff R i.natAbs f := by
   cases i
-  · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries, if_neg (Int.coe_nat_nonneg _).not_lt,
+  · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries, if_neg (Int.natCast_nonneg _).not_lt,
       Int.natAbs_ofNat]
   · rw [ofPowerSeries_apply, embDomain_notin_image_support, if_pos (Int.negSucc_lt_zero _)]
     simp only [not_exists, RelEmbedding.coe_mk, Set.mem_image, not_and, Function.Embedding.coeFn_mk,
-      Ne.def, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
+      Ne, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
       not_false_iff]
 #align power_series.coeff_coe PowerSeries.coeff_coe
 

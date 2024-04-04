@@ -3,7 +3,7 @@ Copyright (c) 2021 Alena Gusakov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Jeremy Tan
 -/
-import Mathlib.Combinatorics.DoubleCounting
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Data.Set.Finite
@@ -86,7 +86,7 @@ theorem IsSRGWith.card_neighborFinset_union_eq {v w : V} (h : G.IsSRGWith n k �
       2 * k - Fintype.card (G.commonNeighbors v w) := by
   apply Nat.add_right_cancel (m := Fintype.card (G.commonNeighbors v w))
   rw [Nat.sub_add_cancel, ← Set.toFinset_card]
-  -- porting note: Set.toFinset_inter needs workaround to use unification to solve for one of the
+  -- Porting note: Set.toFinset_inter needs workaround to use unification to solve for one of the
   -- instance arguments:
   · simp [commonNeighbors, @Set.toFinset_inter _ _ _ _ _ _ (_),
       ← neighborFinset_def, Finset.card_union_add_card_inter, card_neighborFinset_eq_degree,
@@ -183,6 +183,7 @@ set_option linter.uppercaseLean3 false in
 `k * (k - ℓ - 1) = (n - k - 1) * μ`. -/
 theorem IsSRGWith.param_eq (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
     k * (k - ℓ - 1) = (n - k - 1) * μ := by
+  letI := Classical.decEq V
   rw [← h.card, Fintype.card_pos_iff] at hn
   obtain ⟨v⟩ := hn
   convert card_mul_eq_card_mul G.Adj (s := G.neighborFinset v) (t := Gᶜ.neighborFinset v) _ _

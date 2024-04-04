@@ -237,7 +237,7 @@ protected theorem mono (f : α →o β) : Monotone f :=
 projection directly instead. -/
 def Simps.coe (f : α →o β) : α → β := f
 
-/- Porting note: TODO: all other DFunLike classes use `apply` instead of `coe`
+/- Porting note (#11215): TODO: all other DFunLike classes use `apply` instead of `coe`
 for the projection names. Maybe we should change this. -/
 initialize_simps_projections OrderHom (toFun → coe)
 
@@ -943,19 +943,18 @@ theorem self_trans_symm (e : α ≃o β) : e.trans e.symm = OrderIso.refl α :=
 theorem symm_trans_self (e : α ≃o β) : e.symm.trans e = OrderIso.refl β :=
   RelIso.symm_trans_self e
 
--- todo: behavior of this under composition of f, g and of the input
 /-- An order isomorphism between the domains and codomains of two prosets of
 order homomorphisms gives an order isomorphism between the two function prosets. -/
 @[simps apply symm_apply]
 def arrowCongr {α β γ δ} [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
     (f : α ≃o γ) (g : β ≃o δ) : (α →o β) ≃o (γ →o δ) where
-  toFun := (.comp g $ .comp . f.symm)
-  invFun := (.comp g.symm $ .comp . f)
-  left_inv p := DFunLike.coe_injective $ by
+  toFun  p := .comp g <| .comp p f.symm
+  invFun p := .comp g.symm <| .comp p f
+  left_inv p := DFunLike.coe_injective <| by
     change (g.symm ∘ g) ∘ p ∘ (f.symm ∘ f) = p
     simp only [← DFunLike.coe_eq_coe_fn, ← OrderIso.coe_trans, Function.id_comp,
                OrderIso.self_trans_symm, OrderIso.coe_refl, Function.comp_id]
-  right_inv p := DFunLike.coe_injective $ by
+  right_inv p := DFunLike.coe_injective <| by
     change (g ∘ g.symm) ∘ p ∘ (f ∘ f.symm) = p
     simp only [← DFunLike.coe_eq_coe_fn, ← OrderIso.coe_trans, Function.id_comp,
                OrderIso.symm_trans_self, OrderIso.coe_refl, Function.comp_id]
@@ -1182,7 +1181,6 @@ end Equiv
 namespace StrictMono
 
 variable [LinearOrder α] [Preorder β]
-
 variable (f : α → β) (h_mono : StrictMono f) (h_surj : Function.Surjective f)
 
 /-- A strictly monotone function with a right inverse is an order isomorphism. -/

@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.BoxIntegral.Basic
 import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.Tactic.Generalize
 
 #align_import analysis.box_integral.integrability from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -76,10 +77,10 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
   set t := (π.filter (π.tag · ∈ s)).iUnion
   change abs ((μ t).toReal - (μ (s ∩ I)).toReal) ≤ ε
   have htU : t ⊆ U ∩ I := by
-    simp only [TaggedPrepartition.iUnion_def, iUnion_subset_iff, TaggedPrepartition.mem_filter,
+    simp only [t, TaggedPrepartition.iUnion_def, iUnion_subset_iff, TaggedPrepartition.mem_filter,
       and_imp]
     refine' fun J hJ hJs x hx => ⟨hrsU _ ⟨hJs, π.tag_mem_Icc J⟩ _, π.le_of_mem' J hJ hx⟩
-    simpa only [s.piecewise_eq_of_mem _ _ hJs] using hπ.1 J hJ (Box.coe_subset_Icc hx)
+    simpa only [r, s.piecewise_eq_of_mem _ _ hJs] using hπ.1 J hJ (Box.coe_subset_Icc hx)
   refine' abs_sub_le_iff.2 ⟨_, _⟩
   · refine' (ENNReal.le_toReal_sub B).trans (ENNReal.toReal_le_coe_of_le_coe _)
     refine' (tsub_le_tsub (measure_mono htU) le_rfl).trans (le_measure_diff.trans _)
@@ -90,13 +91,13 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
     refine' le_measure_diff.trans ((measure_mono _).trans hμF.le)
     rintro x ⟨⟨hxs, hxI⟩, hxt⟩
     refine' ⟨⟨hxs, Box.coe_subset_Icc hxI⟩, fun hxF => hxt _⟩
-    simp only [TaggedPrepartition.iUnion_def, TaggedPrepartition.mem_filter, Set.mem_iUnion,
+    simp only [t, TaggedPrepartition.iUnion_def, TaggedPrepartition.mem_filter, Set.mem_iUnion,
       exists_prop]
     rcases hπp x hxI with ⟨J, hJπ, hxJ⟩
     refine' ⟨J, ⟨hJπ, _⟩, hxJ⟩
     contrapose hxF
     refine' hrs'F _ ⟨π.tag_mem_Icc J, hxF⟩ _
-    simpa only [s.piecewise_eq_of_not_mem _ _ hxF] using hπ.1 J hJπ (Box.coe_subset_Icc hxJ)
+    simpa only [r, s.piecewise_eq_of_not_mem _ _ hxF] using hπ.1 J hJπ (Box.coe_subset_Icc hxJ)
 #align box_integral.has_integral_indicator_const BoxIntegral.hasIntegralIndicatorConst
 
 /-- If `f` is a.e. equal to zero on a rectangular box, then it has McShane integral zero on this
@@ -112,7 +113,7 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   haveI := Fact.mk (I.measure_coe_lt_top μ)
   change μ.restrict I {x | f x ≠ 0} = 0 at hf
   set N : (ι → ℝ) → ℕ := fun x => ⌈‖f x‖⌉₊
-  have N0 : ∀ {x}, N x = 0 ↔ f x = 0 := by simp
+  have N0 : ∀ {x}, N x = 0 ↔ f x = 0 := by simp [N]
   have : ∀ n, ∃ U, N ⁻¹' {n} ⊆ U ∧ IsOpen U ∧ μ.restrict I U < δ n / n := fun n ↦ by
     refine (N ⁻¹' {n}).exists_isOpen_lt_of_lt _ ?_
     cases' n with n
@@ -140,7 +141,13 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
     exact hJ.2 ▸ Nat.le_ceil _
   refine' (norm_sum_le_of_le _ this).trans _; clear this
   rw [← sum_mul, ← Prepartition.measure_iUnion_toReal]
-  generalize hm : μ (π.filter fun J => N (π.tag J) = n).iUnion = m
+  -- Adaption note: v4.7.0-rc1
+  -- The behaviour of `generalize` was changed in https://github.com/leanprover/lean4/pull/3575
+  -- to use transparancy `instances` (rather than `default`)
+  -- `generalize'` is a temporary backwards compatibility shim.
+  -- Hopefully we will be able to refactor this proof to use `generalize` again, and then drop
+  -- `generalize'`.
+  generalize' hm : μ (π.filter fun J => N (π.tag J) = n).iUnion = m
   have : m < δ n / n := by
     simp only [Measure.restrict_apply (hUo _).measurableSet] at hμU
     refine' hm ▸ (measure_mono _).trans_lt (hμU _)

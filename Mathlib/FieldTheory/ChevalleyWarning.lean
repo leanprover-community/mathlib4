@@ -61,7 +61,7 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
     _ = ∑ d in f.support, ∑ x : σ → K, f.coeff d * ∏ i, x i ^ d i := sum_comm
     _ = 0 := sum_eq_zero ?_
   intro d hd
-  obtain ⟨i, hi⟩ : ∃ i, d i < q - 1; exact f.exists_degree_lt (q - 1) h hd
+  obtain ⟨i, hi⟩ : ∃ i, d i < q - 1 := f.exists_degree_lt (q - 1) h hd
   calc
     (∑ x : σ → K, f.coeff d * ∏ i, x i ^ d i) = f.coeff d * ∑ x : σ → K, ∏ i, x i ^ d i :=
       (mul_sum ..).symm
@@ -113,7 +113,7 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
   let S : Finset (σ → K) := { x ∈ univ | ∀ i ∈ s, eval x (f i) = 0 }.toFinset
   have hS : ∀ x : σ → K, x ∈ S ↔ ∀ i : ι, i ∈ s → eval x (f i) = 0 := by
     intro x
-    simp only [Set.toFinset_setOf, mem_univ, true_and, mem_filter]
+    simp only [S, Set.toFinset_setOf, mem_univ, true_and, mem_filter]
   /- The polynomial `F = ∏ i in s, (1 - (f i)^(q - 1))` has the nice property
     that it takes the value `1` on elements of `{x : σ → K // ∀ i ∈ s, (f i).eval x = 0}`
     while it is `0` outside that locus.

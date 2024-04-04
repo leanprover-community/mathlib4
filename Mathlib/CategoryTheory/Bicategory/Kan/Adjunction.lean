@@ -182,7 +182,7 @@ def isKanOfWhiskerLeftAdjoint
         _ = 𝟙 _ ⊗≫ t.unit ▷ (𝟙 c) ⊗≫ f ◁ (t.extension ◁ η' ⊗≫ σ ▷ u) ⊗≫ 𝟙 _ := by
           rw [whisker_exchange]; simp [bicategoricalComp]
         _ = _ := by
-          rw [Hσ]; simp [bicategoricalComp]) <| by
+          rw [Hσ]; simp [τ, bicategoricalComp]) <| by
     intro s' τ₀'
     let τ' : t.extension ≫ h ⟶ s'.extension := τ₀'.right
     have Hτ' : t.unit ▷ h ⊗≫ f ◁ τ' = s'.unit := by simpa [bicategoricalComp] using τ₀'.w.symm

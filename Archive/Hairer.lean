@@ -8,6 +8,7 @@ import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 import Mathlib.Data.MvPolynomial.Funext
+import Mathlib.LinearAlgebra.Dual
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Topology.Algebra.MvPolynomial
 

@@ -34,7 +34,6 @@ Submonoid, Submonoids, IsSubmonoid
 open BigOperators
 
 variable {M : Type*} [Monoid M] {s : Set M}
-
 variable {A : Type*} [AddMonoid A] {t : Set A}
 
 /-- `s` is an additive submonoid: a set containing 0 and closed under addition.
@@ -122,7 +121,7 @@ theorem isSubmonoid_iUnion_of_directed {ι : Type*} [hι : Nonempty ι] {s : ι 
 section powers
 
 /-- The set of natural number powers `1, x, x², ...` of an element `x` of a monoid. -/
-@[to_additive multiples
+@[to_additive
       "The set of natural number multiples `0, x, 2x, ...` of an element `x` of an `AddMonoid`."]
 def powers (x : M) : Set M :=
   { y | ∃ n : ℕ, x ^ n = y }
@@ -211,17 +210,19 @@ theorem IsSubmonoid.pow_mem {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : ∀ {n 
     exact hs.one_mem
   | n + 1 => by
     rw [pow_succ]
-    exact hs.mul_mem h (IsSubmonoid.pow_mem hs h)
+    exact hs.mul_mem (IsSubmonoid.pow_mem hs h) h
 #align is_submonoid.pow_mem IsSubmonoid.pow_mem
 
-/-- The set of natural number powers of an element of a submonoid is a subset of the submonoid. -/
-@[to_additive IsAddSubmonoid.multiples_subset
+/-- The set of natural number powers of an element of a `Submonoid` is a subset of the
+`Submonoid`. -/
+@[to_additive
       "The set of natural number multiples of an element of an `AddSubmonoid` is a subset of
       the `AddSubmonoid`."]
-theorem IsSubmonoid.power_subset {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : powers a ⊆ s :=
+theorem IsSubmonoid.powers_subset {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : powers a ⊆ s :=
   fun _ ⟨_, hx⟩ => hx ▸ hs.pow_mem h
-#align is_submonoid.power_subset IsSubmonoid.power_subset
+#align is_submonoid.power_subset IsSubmonoid.powers_subset
 #align is_add_submonoid.multiples_subset IsAddSubmonoid.multiples_subset
+/- 2024-02-21 -/ @[deprecated] alias IsSubmonoid.power_subset := IsSubmonoid.powers_subset
 
 end powers
 
@@ -247,7 +248,7 @@ the submonoid. -/
 theorem multiset_prod_mem {M} [CommMonoid M] {s : Set M} (hs : IsSubmonoid s) (m : Multiset M) :
     (∀ a ∈ m, a ∈ s) → m.prod ∈ s := by
   refine' Quotient.inductionOn m fun l hl => _
-  rw [Multiset.quot_mk_to_coe, Multiset.coe_prod]
+  rw [Multiset.quot_mk_to_coe, Multiset.prod_coe]
   exact list_prod_mem hs hl
 #align is_submonoid.multiset_prod_mem IsSubmonoid.multiset_prod_mem
 #align is_add_submonoid.multiset_sum_mem IsAddSubmonoid.multiset_sum_mem
@@ -337,7 +338,7 @@ theorem closure_mono {s t : Set M} (h : s ⊆ t) : Closure s ⊆ Closure t :=
 theorem closure_singleton {x : M} : Closure ({x} : Set M) = powers x :=
   Set.eq_of_subset_of_subset
       (closure_subset (powers.isSubmonoid x) <| Set.singleton_subset_iff.2 <| powers.self_mem) <|
-    IsSubmonoid.power_subset (closure.isSubmonoid _) <|
+    IsSubmonoid.powers_subset (closure.isSubmonoid _) <|
       Set.singleton_subset_iff.1 <| subset_closure
 #align monoid.closure_singleton Monoid.closure_singleton
 #align add_monoid.closure_singleton AddMonoid.closure_singleton

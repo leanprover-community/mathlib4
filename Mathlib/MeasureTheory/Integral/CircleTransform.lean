@@ -149,7 +149,7 @@ theorem circleTransformDeriv_bound {R : ℝ} (hR : 0 < R) {z x : ℂ} {f : ℂ �
     (HX2 (circleMap z R y1) (circleMap_mem_sphere z hR.le y1)) (Complex.abs.nonneg _)
     (Complex.abs.nonneg _)
   rw [hfun]
-  simpa [circleTransformBoundingFunction, circleTransformDeriv, mul_assoc] using this
+  simpa [V, circleTransformBoundingFunction, circleTransformDeriv, mul_assoc] using this
 #align complex.circle_transform_deriv_bound Complex.circleTransformDeriv_bound
 
 end Complex

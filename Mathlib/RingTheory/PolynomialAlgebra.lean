@@ -38,9 +38,7 @@ open Algebra.TensorProduct (algHomOfLinearMapTensorProduct includeLeft)
 noncomputable section
 
 variable (R A : Type*)
-
 variable [CommSemiring R]
-
 variable [Semiring A] [Algebra R A]
 
 namespace PolyEquivTensor
@@ -49,7 +47,7 @@ namespace PolyEquivTensor
 The function underlying `A ⊗[R] R[X] →ₐ[R] A[X]`,
 as a bilinear function of two arguments.
 -/
--- porting note: was  `@[simps apply_apply]`
+-- Porting note: was  `@[simps apply_apply]`
 @[simps! apply_apply]
 def toFunBilinear : A →ₗ[A] R[X] →ₗ[R] A[X] :=
   LinearMap.toSpanSingleton A _ (aeval (Polynomial.X : A[X])).toLinearMap
@@ -99,9 +97,9 @@ theorem toFunLinear_mul_tmul_mul (a₁ a₂ : A) (p₁ p₂ : R[X]) :
   classical
     simp only [toFunLinear_tmul_apply, toFunBilinear_apply_eq_sum]
     ext k
-    simp_rw [coeff_sum, coeff_monomial, sum_def, Finset.sum_ite_eq', mem_support_iff, Ne.def]
+    simp_rw [coeff_sum, coeff_monomial, sum_def, Finset.sum_ite_eq', mem_support_iff, Ne]
     conv_rhs => rw [coeff_mul]
-    simp_rw [finset_sum_coeff, coeff_monomial, Finset.sum_ite_eq', mem_support_iff, Ne.def, mul_ite,
+    simp_rw [finset_sum_coeff, coeff_monomial, Finset.sum_ite_eq', mem_support_iff, Ne, mul_ite,
       mul_zero, ite_mul, zero_mul]
     simp_rw [← ite_zero_mul (¬coeff p₁ _ = 0) (a₁ * (algebraMap R A) (coeff p₁ _))]
     simp_rw [← mul_ite_zero (¬coeff p₂ _ = 0) _ (_ * _)]
@@ -210,7 +208,6 @@ theorem polyEquivTensor_symm_apply_tmul (a : A) (p : R[X]) :
 open DMatrix Matrix BigOperators
 
 variable {R}
-
 variable {n : Type w} [DecidableEq n] [Fintype n]
 
 /--

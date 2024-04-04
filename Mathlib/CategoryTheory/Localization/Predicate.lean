@@ -284,7 +284,7 @@ theorem natTrans_ext {F₁ F₂ : D ⥤ E} (τ τ' : F₁ ⟶ F₂)
   rw [← cancel_epi (F₁.map (L.objObjPreimageIso Y).hom), τ.naturality, τ'.naturality, h]
 #align category_theory.localization.nat_trans_ext CategoryTheory.Localization.natTrans_ext
 
--- porting note: the field `iso` was renamed `Lifting.iso'` and it was redefined as
+-- Porting note: the field `iso` was renamed `Lifting.iso'` and it was redefined as
 -- `Lifting.iso` with explicit parameters
 /-- When `L : C ⥤ D` is a localization functor for `W : MorphismProperty C` and
 `F : C ⥤ E` is a functor, we shall say that `F' : D ⥤ E` lifts `F` if the obvious diagram
@@ -313,7 +313,7 @@ instance liftingLift (F : C ⥤ E) (hF : W.IsInvertedBy F) (L : C ⥤ D) [L.IsLo
   ⟨(inducedFunctor _).mapIso ((functorEquivalence L W E).counitIso.app ⟨F, hF⟩)⟩
 #align category_theory.localization.lifting_lift CategoryTheory.Localization.liftingLift
 
--- porting note: removed the unnecessary @[simps] attribute
+-- Porting note: removed the unnecessary @[simps] attribute
 /-- The canonical isomorphism `L ⋙ lift F hF L ≅ F` for any functor `F : C ⥤ E`
 which inverts `W`, when `L : C ⥤ D` is a localization functor for `W`. -/
 def fac (F : C ⥤ E) (hF : W.IsInvertedBy F) (L : C ⥤ D) [L.IsLocalization W] :

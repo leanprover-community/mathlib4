@@ -187,10 +187,10 @@ section Frame
 
 variable [Frame α] {s t : Set α} {a b : α}
 
-instance OrderDual.coframe : Coframe αᵒᵈ where
-  __ := OrderDual.completeLattice α
+instance OrderDual.instCoframe : Coframe αᵒᵈ where
+  __ := OrderDual.instCompleteLattice α
   iInf_sup_le_sup_sInf := @Frame.inf_sSup_le_iSup_inf α _
-#align order_dual.coframe OrderDual.coframe
+#align order_dual.coframe OrderDual.instCoframe
 
 theorem inf_sSup_eq : a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
   (Frame.inf_sSup_le_iSup_inf _ _).antisymm iSup_inf_le_inf_sSup
@@ -208,8 +208,8 @@ theorem inf_iSup_eq (a : α) (f : ι → α) : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓
   simpa only [inf_comm] using iSup_inf_eq f a
 #align inf_supr_eq inf_iSup_eq
 
-instance Prod.frame (α β) [Frame α] [Frame β] : Frame (α × β) where
-  __ := Prod.completeLattice α β
+instance Prod.instFrame (α β) [Frame α] [Frame β] : Frame (α × β) where
+  __ := Prod.instCompleteLattice α β
   inf_sSup_le_iSup_inf a s := by
     simp [Prod.le_def, sSup_eq_iSup, fst_iSup, snd_iSup, fst_iInf, snd_iInf, inf_iSup_eq]
 
@@ -278,11 +278,11 @@ theorem iSup_inf_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (swap (·
   @iSup_inf_of_monotone α _ ιᵒᵈ _ _ f g hf.dual_left hg.dual_left
 #align supr_inf_of_antitone iSup_inf_of_antitone
 
-instance Pi.frame {ι : Type*} {π : ι → Type*} [∀ i, Frame (π i)] : Frame (∀ i, π i) where
-  __ := Pi.completeLattice
+instance Pi.instFrame {ι : Type*} {π : ι → Type*} [∀ i, Frame (π i)] : Frame (∀ i, π i) where
+  __ := Pi.instCompleteLattice
   inf_sSup_le_iSup_inf a s := fun i => by
     simp only [sSup_apply, iSup_apply, inf_apply, inf_iSup_eq, ← iSup_subtype'']; rfl
-#align pi.frame Pi.frame
+#align pi.frame Pi.instFrame
 
 -- see Note [lower instance priority]
 instance (priority := 100) Frame.toDistribLattice : DistribLattice α :=
@@ -296,10 +296,10 @@ section Coframe
 
 variable [Coframe α] {s t : Set α} {a b : α}
 
-instance OrderDual.frame : Frame αᵒᵈ where
-  __ := OrderDual.completeLattice α
+instance OrderDual.instFrame : Frame αᵒᵈ where
+  __ := OrderDual.instCompleteLattice α
   inf_sSup_le_iSup_inf := @Coframe.iInf_sup_le_sup_sInf α _
-#align order_dual.frame OrderDual.frame
+#align order_dual.frame OrderDual.instFrame
 
 theorem sup_sInf_eq : a ⊔ sInf s = ⨅ b ∈ s, a ⊔ b :=
   @inf_sSup_eq αᵒᵈ _ _ _
@@ -317,8 +317,8 @@ theorem sup_iInf_eq (a : α) (f : ι → α) : (a ⊔ ⨅ i, f i) = ⨅ i, a ⊔
   @inf_iSup_eq αᵒᵈ _ _ _ _
 #align sup_infi_eq sup_iInf_eq
 
-instance Prod.coframe (α β) [Coframe α] [Coframe β] : Coframe (α × β) where
-  __ := Prod.completeLattice α β
+instance Prod.instCoframe (α β) [Coframe α] [Coframe β] : Coframe (α × β) where
+  __ := Prod.instCompleteLattice α β
   iInf_sup_le_sup_sInf a s := by
     simp [Prod.le_def, sInf_eq_iInf, fst_iSup, snd_iSup, fst_iInf, snd_iInf, sup_iInf_eq]
 
@@ -354,11 +354,11 @@ theorem iInf_sup_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ �
   @iSup_inf_of_monotone αᵒᵈ _ _ _ _ _ _ hf.dual_right hg.dual_right
 #align infi_sup_of_antitone iInf_sup_of_antitone
 
-instance Pi.coframe {ι : Type*} {π : ι → Type*} [∀ i, Coframe (π i)] : Coframe (∀ i, π i) where
-  __ := Pi.completeLattice
+instance Pi.instCoframe {ι : Type*} {π : ι → Type*} [∀ i, Coframe (π i)] : Coframe (∀ i, π i) where
+  __ := Pi.instCompleteLattice
   iInf_sup_le_sup_sInf a s := fun i => by
     simp only [sInf_apply, iInf_apply, sup_apply, sup_iInf_eq, ← iInf_subtype'']; rfl
-#align pi.coframe Pi.coframe
+#align pi.coframe Pi.instCoframe
 
 -- see Note [lower instance priority]
 instance (priority := 100) Coframe.toDistribLattice : DistribLattice α where
@@ -373,45 +373,45 @@ section CompleteDistribLattice
 
 variable [CompleteDistribLattice α] {a b : α} {s t : Set α}
 
--- Porting note: this is mysteriously slow. Minimised in
+-- Porting note (#11083): this is mysteriously slow. Minimised in
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Performance.20issue.20with.20.60CompleteBooleanAlgebra.60
 -- but not yet resolved.
-instance OrderDual.completeDistribLattice (α) [CompleteDistribLattice α] :
+instance OrderDual.instCompleteDistribLattice (α) [CompleteDistribLattice α] :
     CompleteDistribLattice αᵒᵈ where
-  __ := OrderDual.frame
-  __ := OrderDual.coframe
+  __ := OrderDual.instFrame
+  __ := OrderDual.instCoframe
 
-instance Prod.completeDistribLattice (α β)
+instance Prod.instCompleteDistribLattice (α β)
     [CompleteDistribLattice α] [CompleteDistribLattice β] :
     CompleteDistribLattice (α × β) where
-  __ := Prod.completeLattice α β
-  __ := Prod.frame α β
-  __ := Prod.coframe α β
+  __ := Prod.instCompleteLattice α β
+  __ := Prod.instFrame α β
+  __ := Prod.instCoframe α β
 
-instance Pi.completeDistribLattice {ι : Type*} {π : ι → Type*}
+instance Pi.instCompleteDistribLattice {ι : Type*} {π : ι → Type*}
     [∀ i, CompleteDistribLattice (π i)] : CompleteDistribLattice (∀ i, π i) where
-  __ := Pi.frame
-  __ := Pi.coframe
-#align pi.complete_distrib_lattice Pi.completeDistribLattice
+  __ := Pi.instFrame
+  __ := Pi.instCoframe
+#align pi.complete_distrib_lattice Pi.instCompleteDistribLattice
 
 end CompleteDistribLattice
 
 section CompletelyDistribLattice
 
-instance OrderDual.completelyDistribLattice (α) [CompletelyDistribLattice α] :
+instance OrderDual.instCompletelyDistribLattice (α) [CompletelyDistribLattice α] :
     CompletelyDistribLattice αᵒᵈ where
-  __ := OrderDual.completeLattice α
+  __ := OrderDual.instCompleteLattice α
   iInf_iSup_eq _ := iSup_iInf_eq (α := α)
 
-instance Prod.completelyDistribLattice (α β)
+instance Prod.instCompletelyDistribLattice (α β)
     [CompletelyDistribLattice α] [CompletelyDistribLattice β] :
     CompletelyDistribLattice (α × β) where
-  __ := Prod.completeLattice α β
+  __ := Prod.instCompleteLattice α β
   iInf_iSup_eq f := by ext <;> simp [fst_iSup, fst_iInf, snd_iSup, snd_iInf, iInf_iSup_eq]
 
-instance Pi.completelyDistribLattice {ι : Type*} {π : ι → Type*}
+instance Pi.instCompletelyDistribLattice {ι : Type*} {π : ι → Type*}
     [∀ i, CompletelyDistribLattice (π i)] : CompletelyDistribLattice (∀ i, π i) where
-  __ := Pi.completeLattice
+  __ := Pi.instCompleteLattice
   iInf_iSup_eq f := by ext i; simp only [iInf_apply, iSup_apply, iInf_iSup_eq]
 
 end CompletelyDistribLattice
@@ -424,22 +424,22 @@ It is only completely distributive if it is also atomic.
 class CompleteBooleanAlgebra (α) extends BooleanAlgebra α, CompleteDistribLattice α
 #align complete_boolean_algebra CompleteBooleanAlgebra
 
-instance Prod.completeBooleanAlgebra (α β)
+instance Prod.instCompleteBooleanAlgebra (α β)
     [CompleteBooleanAlgebra α] [CompleteBooleanAlgebra β] :
     CompleteBooleanAlgebra (α × β) where
-  __ := Prod.booleanAlgebra α β
-  __ := Prod.completeDistribLattice α β
+  __ := Prod.instBooleanAlgebra α β
+  __ := Prod.instCompleteDistribLattice α β
 
-instance Pi.completeBooleanAlgebra {ι : Type*} {π : ι → Type*}
+instance Pi.instCompleteBooleanAlgebra {ι : Type*} {π : ι → Type*}
     [∀ i, CompleteBooleanAlgebra (π i)] : CompleteBooleanAlgebra (∀ i, π i) where
-  __ := Pi.booleanAlgebra
-  __ := Pi.completeDistribLattice
-#align pi.complete_boolean_algebra Pi.completeBooleanAlgebra
+  __ := Pi.instBooleanAlgebra
+  __ := Pi.instCompleteDistribLattice
+#align pi.complete_boolean_algebra Pi.instCompleteBooleanAlgebra
 
-instance OrderDual.completeBooleanAlgebra (α) [CompleteBooleanAlgebra α] :
+instance OrderDual.instCompleteBooleanAlgebra (α) [CompleteBooleanAlgebra α] :
     CompleteBooleanAlgebra αᵒᵈ where
-  __ := OrderDual.booleanAlgebra α
-  __ := OrderDual.completeDistribLattice α
+  __ := OrderDual.instBooleanAlgebra α
+  __ := OrderDual.instCompleteDistribLattice α
 
 section CompleteBooleanAlgebra
 
@@ -484,29 +484,29 @@ class CompleteAtomicBooleanAlgebra (α : Type u) extends
   iInf_sup_le_sup_sInf := CompletelyDistribLattice.toCompleteDistribLattice.iInf_sup_le_sup_sInf
   inf_sSup_le_iSup_inf := CompletelyDistribLattice.toCompleteDistribLattice.inf_sSup_le_iSup_inf
 
-instance Prod.completeAtomicBooleanAlgebra (α β)
+instance Prod.instCompleteAtomicBooleanAlgebra (α β)
     [CompleteAtomicBooleanAlgebra α] [CompleteAtomicBooleanAlgebra β] :
     CompleteAtomicBooleanAlgebra (α × β) where
-  __ := Prod.booleanAlgebra α β
-  __ := Prod.completelyDistribLattice α β
+  __ := Prod.instBooleanAlgebra α β
+  __ := Prod.instCompletelyDistribLattice α β
 
-instance Pi.completeAtomicBooleanAlgebra {ι : Type*} {π : ι → Type*}
+instance Pi.instCompleteAtomicBooleanAlgebra {ι : Type*} {π : ι → Type*}
     [∀ i, CompleteAtomicBooleanAlgebra (π i)] : CompleteAtomicBooleanAlgebra (∀ i, π i) where
-  __ := Pi.completeBooleanAlgebra
+  __ := Pi.instCompleteBooleanAlgebra
   iInf_iSup_eq f := by ext; rw [iInf_iSup_eq]
 
-instance OrderDual.completeAtomicBooleanAlgebra (α) [CompleteAtomicBooleanAlgebra α] :
+instance OrderDual.instCompleteAtomicBooleanAlgebra (α) [CompleteAtomicBooleanAlgebra α] :
     CompleteAtomicBooleanAlgebra αᵒᵈ where
-  __ := OrderDual.completeBooleanAlgebra α
-  __ := OrderDual.completelyDistribLattice α
+  __ := OrderDual.instCompleteBooleanAlgebra α
+  __ := OrderDual.instCompletelyDistribLattice α
 
-instance Prop.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra Prop where
-  __ := Prop.completeLattice
-  __ := Prop.booleanAlgebra
+instance Prop.instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra Prop where
+  __ := Prop.instCompleteLattice
+  __ := Prop.instBooleanAlgebra
   iInf_iSup_eq f := by simp [Classical.skolem]
 
-instance Prop.completeBooleanAlgebra : CompleteBooleanAlgebra Prop := inferInstance
-#align Prop.complete_boolean_algebra Prop.completeBooleanAlgebra
+instance Prop.instCompleteBooleanAlgebra : CompleteBooleanAlgebra Prop := inferInstance
+#align Prop.complete_boolean_algebra Prop.instCompleteBooleanAlgebra
 
 section lift
 
@@ -600,18 +600,18 @@ namespace PUnit
 
 variable (s : Set PUnit.{u + 1}) (x y : PUnit.{u + 1})
 
-instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit := by
+instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit := by
   refine'
-    { PUnit.booleanAlgebra with
+    { PUnit.instBooleanAlgebra with
       sSup := fun _ => unit
       sInf := fun _ => unit
       .. } <;>
   (intros; trivial)
 
-instance completeBooleanAlgebra : CompleteBooleanAlgebra PUnit := inferInstance
+instance instCompleteBooleanAlgebra : CompleteBooleanAlgebra PUnit := inferInstance
 
-instance completeLinearOrder : CompleteLinearOrder PUnit :=
-  { PUnit.completeBooleanAlgebra, PUnit.linearOrder with }
+instance instCompleteLinearOrder : CompleteLinearOrder PUnit :=
+  { PUnit.instCompleteBooleanAlgebra, PUnit.instLinearOrder with }
 
 @[simp]
 theorem sSup_eq : sSup s = unit :=

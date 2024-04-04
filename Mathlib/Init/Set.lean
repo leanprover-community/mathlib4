@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Lean.Parser.Term
-import Std.Classes.SetNotation
+import Std.Util.ExtendedBinder
 import Mathlib.Mathport.Rename
 
 /-!
@@ -33,6 +33,8 @@ stuff which happens before mathlib3's data.set.basic .
 This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean`.
 
 -/
+
+open Std.ExtendedBinder
 
 set_option autoImplicit true
 
@@ -78,9 +80,8 @@ instance : HasSubset (Set α) :=
   ⟨(· ≤ ·)⟩
 
 instance : EmptyCollection (Set α) :=
-  ⟨λ _ => False⟩
+  ⟨fun _ ↦ False⟩
 
-open Std.ExtendedBinder in
 syntax "{" extBinder " | " term "}" : term
 
 macro_rules
@@ -205,10 +206,10 @@ def image (f : α → β) (s : Set α) : Set β := {f a | a ∈ s}
 instance : Functor Set where map := @Set.image
 
 instance : LawfulFunctor Set where
-  id_map _ := funext fun _ ↦ propext ⟨λ ⟨_, sb, rfl⟩ => sb, λ sb => ⟨_, sb, rfl⟩⟩
-  comp_map g h _ := funext <| λ c => propext
-    ⟨λ ⟨a, ⟨h₁, h₂⟩⟩ => ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
-     λ ⟨_, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
+  id_map _ := funext fun _ ↦ propext ⟨fun ⟨_, sb, rfl⟩ ↦ sb, fun sb ↦ ⟨_, sb, rfl⟩⟩
+  comp_map g h _ := funext <| fun c ↦ propext
+    ⟨fun ⟨a, ⟨h₁, h₂⟩⟩ ↦ ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
+     fun ⟨_, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ ↦ ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
   map_const := rfl
 
 /-- The property `s.Nonempty` expresses the fact that the set `s` is not empty. It should be used

@@ -20,7 +20,7 @@ namespace ArithmeticFunction
 The `arith_mult` attribute used to tag `IsMultiplicative` statements for the
 `arith_mult` tactic. -/
 macro "arith_mult" : attr =>
-  `(attr|aesop safe apply (rule_sets [$(Lean.mkIdent `IsMultiplicative):ident]))
+  `(attr|aesop safe apply (rule_sets := [$(Lean.mkIdent `IsMultiplicative):ident]))
 
 /--
 `arith_mult` solves goals of the form `IsMultiplicative f` for `f : ArithmeticFunction R`
@@ -32,7 +32,7 @@ macro (name := arith_mult) "arith_mult" c:Aesop.tactic_clause* : tactic =>
       applyHypsTransparency := .default,
       introsTransparency? := some .reducible,
       enableSimp := false } )
-  (rule_sets [$(Lean.mkIdent `IsMultiplicative):ident])})
+  (rule_sets := [$(Lean.mkIdent `IsMultiplicative):ident])})
 
 /--
 `arith_mult` solves goals of the form `IsMultiplicative f` for `f : ArithmeticFunction R`

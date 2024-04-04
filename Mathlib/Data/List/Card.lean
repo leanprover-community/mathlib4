@@ -1,5 +1,12 @@
 /-
+Copyright (c) 2021 Jeremy Avigad. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
+-/
+import Mathlib.Data.Nat.Order.Basic
+
+/-!
+# Cardinality of Lists
 
 This is a makeshift theory of the cardinality of a list. Any list can be taken to represent the
 finite set of its elements. Cardinality counts the number of distinct elements. Cardinality
@@ -7,8 +14,6 @@ respects equivalence and is preserved by any mapping that is injective on its el
 
 It might make sense to remove this when we have a proper theory of finite sets.
 -/
-import Mathlib.Data.Nat.Order.Basic
-
 set_option autoImplicit true
 
 namespace List
@@ -52,8 +57,7 @@ theorem mem_remove_iff {a b : α} {as : List α} : b ∈ remove a as ↔ b ∈ a
     | inr h =>
       simp only [if_neg h, Bool.not_eq_true, mem_cons, ih, ne_eq]
       constructor
-      { focus
-        intro h'
+      { intro h'
         cases h' with
         | inl h₁ => exact ⟨Or.inl h₁, h₁.symm ▸ (Ne.symm h)⟩
         | inr h₁ => exact ⟨Or.inr h₁.1, h₁.2⟩ }

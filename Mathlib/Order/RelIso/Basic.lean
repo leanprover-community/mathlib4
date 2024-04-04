@@ -228,7 +228,7 @@ def toRelHom (f : r ↪r s) : r →r s where
 instance : Coe (r ↪r s) (r →r s) :=
   ⟨toRelHom⟩
 
---Porting note: removed
+-- Porting note: removed
 -- see Note [function coercion]
 -- instance : CoeFun (r ↪r s) fun _ => α → β :=
 --   ⟨fun o => o.toEmbedding⟩
@@ -656,7 +656,7 @@ instance : EquivLike (r ≃r s) α β where
   right_inv f := f.right_inv
   coe_injective' _ _ hf _ := DFunLike.ext' hf
 
---Porting note: helper instance
+-- Porting note: helper instance
 -- see Note [function coercion]
 instance : CoeFun (r ≃r s) fun _ => α → β :=
   ⟨DFunLike.coe⟩
@@ -685,7 +685,7 @@ theorem coe_fn_toEquiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
 #align rel_iso.coe_fn_to_equiv RelIso.coe_fn_toEquiv
 
 /-- The map `coe_fn : (r ≃r s) → (α → β)` is injective. Lean fails to parse
-`function.injective (λ e : r ≃r s, (e : α → β))`, so we use a trick to say the same. -/
+`function.injective (fun e : r ≃r s ↦ (e : α → β))`, so we use a trick to say the same. -/
 theorem coe_fn_injective : Injective fun f : r ≃r s => (f : α → β) :=
   DFunLike.coe_injective
 #align rel_iso.coe_fn_injective RelIso.coe_fn_injective

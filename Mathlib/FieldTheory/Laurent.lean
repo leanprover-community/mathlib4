@@ -66,7 +66,7 @@ theorem laurentAux_ofFractionRing_mk (q : R[X]⁰) :
 theorem laurentAux_div :
     laurentAux r (algebraMap _ _ p / algebraMap _ _ q) =
       algebraMap _ _ (taylor r p) / algebraMap _ _ (taylor r q) :=
-  -- porting note: added `by exact taylor_mem_nonZeroDivisors r`
+  -- Porting note: added `by exact taylor_mem_nonZeroDivisors r`
   map_apply_div _ (by exact taylor_mem_nonZeroDivisors r) _ _
 #align ratfunc.laurent_aux_div RatFunc.laurentAux_div
 

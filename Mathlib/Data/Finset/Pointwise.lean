@@ -111,7 +111,7 @@ theorem one_mem_one : (1 : α) ∈ (1 : Finset α) :=
 #align finset.one_mem_one Finset.one_mem_one
 #align finset.zero_mem_zero Finset.zero_mem_zero
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets [finsetNonempty]))]
+@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
 theorem one_nonempty : (1 : Finset α).Nonempty :=
   ⟨1, one_mem_one⟩
 #align finset.one_nonempty Finset.one_nonempty
@@ -253,7 +253,7 @@ theorem inv_empty : (∅ : Finset α)⁻¹ = ∅ :=
 #align finset.inv_empty Finset.inv_empty
 #align finset.neg_empty Finset.neg_empty
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets [finsetNonempty]))]
+@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
 theorem inv_nonempty_iff : s⁻¹.Nonempty ↔ s.Nonempty := image_nonempty
 #align finset.inv_nonempty_iff Finset.inv_nonempty_iff
 #align finset.neg_nonempty_iff Finset.neg_nonempty_iff
@@ -419,7 +419,7 @@ theorem mul_eq_empty : s * t = ∅ ↔ s = ∅ ∨ t = ∅ :=
 #align finset.mul_eq_empty Finset.mul_eq_empty
 #align finset.add_eq_empty Finset.add_eq_empty
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets [finsetNonempty]))]
+@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
 theorem mul_nonempty : (s * t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 #align finset.mul_nonempty Finset.mul_nonempty
@@ -669,7 +669,7 @@ theorem div_eq_empty : s / t = ∅ ↔ s = ∅ ∨ t = ∅ :=
 #align finset.div_eq_empty Finset.div_eq_empty
 #align finset.sub_eq_empty Finset.sub_eq_empty
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets [finsetNonempty]))]
+@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
 theorem div_nonempty : (s / t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 #align finset.div_nonempty Finset.div_nonempty
@@ -991,7 +991,7 @@ theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
     exact one_mem_one
   | n + 1 => by
     rw [pow_succ]
-    exact mul_mem_mul ha (pow_mem_pow ha n)
+    exact mul_mem_mul (pow_mem_pow ha n) ha
 #align finset.pow_mem_pow Finset.pow_mem_pow
 #align finset.nsmul_mem_nsmul Finset.nsmul_mem_nsmul
 
@@ -1001,7 +1001,7 @@ theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
     simp [pow_zero]
   | n + 1 => by
     rw [pow_succ]
-    exact mul_subset_mul hst (pow_subset_pow hst n)
+    exact mul_subset_mul (pow_subset_pow hst n) hst
 #align finset.pow_subset_pow Finset.pow_subset_pow
 #align finset.nsmul_subset_nsmul Finset.nsmul_subset_nsmul
 
@@ -1011,7 +1011,7 @@ theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) : m ≤ n → s ^ m ⊆ 
   · exact fun _ hn => hn
   · intro n _ hmn
     rw [pow_succ]
-    exact hmn.trans (subset_mul_right (s ^ n) hs)
+    exact hmn.trans (subset_mul_left (s ^ n) hs)
 #align finset.pow_subset_pow_of_one_mem Finset.pow_subset_pow_of_one_mem
 #align finset.nsmul_subset_nsmul_of_zero_mem Finset.nsmul_subset_nsmul_of_zero_mem
 
@@ -1032,13 +1032,14 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Finset α} :
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).prod = a := by
+  set_option tactic.skipAssignedInstances false in
   simp [← mem_coe, coe_pow, Set.mem_pow]
 #align finset.mem_pow Finset.mem_pow
 #align finset.mem_nsmul Finset.mem_nsmul
 
 @[to_additive (attr := simp)]
 theorem empty_pow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by
-  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ, empty_mul]
+  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ', empty_mul]
 #align finset.empty_pow Finset.empty_pow
 #align finset.empty_nsmul Finset.empty_nsmul
 
@@ -1433,7 +1434,7 @@ theorem smul_eq_empty : s • t = ∅ ↔ s = ∅ ∨ t = ∅ :=
 #align finset.smul_eq_empty Finset.smul_eq_empty
 #align finset.vadd_eq_empty Finset.vadd_eq_empty
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets [finsetNonempty]))]
+@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
 theorem smul_nonempty_iff : (s • t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 #align finset.smul_nonempty_iff Finset.smul_nonempty_iff
@@ -1598,7 +1599,7 @@ theorem vsub_eq_empty : s -ᵥ t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image₂_eq_empty_iff
 #align finset.vsub_eq_empty Finset.vsub_eq_empty
 
-@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem vsub_nonempty : (s -ᵥ t : Finset α).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 #align finset.vsub_nonempty Finset.vsub_nonempty
@@ -1743,7 +1744,7 @@ theorem smul_finset_eq_empty : a • s = ∅ ↔ s = ∅ :=
 #align finset.smul_finset_eq_empty Finset.smul_finset_eq_empty
 #align finset.vadd_finset_eq_empty Finset.vadd_finset_eq_empty
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets [finsetNonempty]))]
+@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
 theorem smul_finset_nonempty : (a • s).Nonempty ↔ s.Nonempty :=
   image_nonempty
 #align finset.smul_finset_nonempty Finset.smul_finset_nonempty

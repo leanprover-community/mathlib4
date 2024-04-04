@@ -150,7 +150,7 @@ theorem card_eq_or_dvd : Nat.card G = 1 ∨ p ∣ Nat.card G := by
     rw [Nat.card_eq_fintype_card, hn]
     cases' n with n n
     · exact Or.inl rfl
-    · exact Or.inr ⟨p ^ n, by rw [pow_succ]⟩
+    · exact Or.inr ⟨p ^ n, by rw [pow_succ']⟩
   · rw [Nat.card_eq_zero_of_infinite]
     exact Or.inr ⟨0, rfl⟩
 #align is_p_group.card_eq_or_dvd IsPGroup.card_eq_or_dvd
@@ -205,7 +205,7 @@ theorem card_modEq_card_fixedPoints [Fintype (fixedPoints G α)] :
           rw [key, mem_fixedPoints_iff_card_orbit_eq_one.mp a.2])
     obtain ⟨k, hk⟩ := hG.card_orbit b
     have : k = 0 :=
-      le_zero_iff.1
+      Nat.le_zero.1
         (Nat.le_of_lt_succ
           (lt_of_not_ge
             (mt (pow_dvd_pow p)
@@ -319,8 +319,7 @@ theorem to_sup_of_normal_right {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsPG
 #align is_p_group.to_sup_of_normal_right IsPGroup.to_sup_of_normal_right
 
 theorem to_sup_of_normal_left {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsPGroup p K)
-    [H.Normal] : IsPGroup p (H ⊔ K : Subgroup G) :=
-  (congr_arg (fun H : Subgroup G => IsPGroup p H) sup_comm).mp (to_sup_of_normal_right hK hH)
+    [H.Normal] : IsPGroup p (H ⊔ K : Subgroup G) := sup_comm H K ▸ to_sup_of_normal_right hK hH
 #align is_p_group.to_sup_of_normal_left IsPGroup.to_sup_of_normal_left
 
 theorem to_sup_of_normal_right' {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsPGroup p K)
@@ -336,7 +335,7 @@ theorem to_sup_of_normal_right' {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsP
 
 theorem to_sup_of_normal_left' {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsPGroup p K)
     (hHK : K ≤ H.normalizer) : IsPGroup p (H ⊔ K : Subgroup G) :=
-  (congr_arg (fun H : Subgroup G => IsPGroup p H) sup_comm).mp (to_sup_of_normal_right' hK hH hHK)
+  sup_comm H K ▸ to_sup_of_normal_right' hK hH hHK
 #align is_p_group.to_sup_of_normal_left' IsPGroup.to_sup_of_normal_left'
 
 /-- finite p-groups with different p have coprime orders -/

@@ -454,7 +454,7 @@ lemma traceForm_dualSubmodule_adjoin
   have hKx : IsIntegral K x := Algebra.IsIntegral.of_finite (R := K) (B := L) x
   let pb := (Algebra.adjoin.powerBasis' hKx).map
     ((Subalgebra.equivOfEq _ _ hx).trans (Subalgebra.topEquiv))
-  have pbgen : pb.gen = x := by simp
+  have pbgen : pb.gen = x := by simp [pb]
   have hpb : ⇑(BilinForm.dualBasis (traceForm K L) _ pb.basis) = _ :=
     _root_.funext (traceForm_dualBasis_powerBasis_eq pb)
   have : (Subalgebra.toSubmodule (Algebra.adjoin A {x})) =

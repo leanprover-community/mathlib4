@@ -88,11 +88,11 @@ instance : SmallCategory (WalkingMulticospan fst snd) where
   assoc := by
     rintro (_ | _) (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) (_ | _ | _) <;> rfl
 
-@[simp] -- Porting note: added simp lemma
+@[simp] -- Porting note (#10756): added simp lemma
 lemma Hom.id_eq_id (X : WalkingMulticospan fst snd) :
     Hom.id X = 𝟙 X := rfl
 
-@[simp] -- Porting note: added simp lemma
+@[simp] -- Porting note (#10756): added simp lemma
 lemma Hom.comp_eq_comp {X Y Z : WalkingMulticospan fst snd}
     (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
 
@@ -137,10 +137,10 @@ instance : SmallCategory (WalkingMultispan fst snd) where
   assoc := by
     rintro (_ | _) (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) (_ | _ | _) <;> rfl
 
-@[simp] -- Porting note: added simp lemma
+@[simp] -- Porting note (#10756): added simp lemma
 lemma Hom.id_eq_id (X : WalkingMultispan fst snd) : Hom.id X = 𝟙 X := rfl
 
-@[simp] -- Porting note: added simp lemma
+@[simp] -- Porting note (#10756): added simp lemma
 lemma Hom.comp_eq_comp {X Y Z : WalkingMultispan fst snd}
     (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
 
@@ -549,7 +549,7 @@ theorem snd_app_right (a) : K.ι.app (WalkingMultispan.left a) = I.snd a ≫ K.�
   rfl
 #align category_theory.limits.multicofork.snd_app_right CategoryTheory.Limits.Multicofork.snd_app_right
 
-@[reassoc (attr := simp)] -- Porting note: added simp lemma
+@[reassoc (attr := simp)] -- Porting note (#10756): added simp lemma
 lemma π_comp_hom (K₁ K₂ : Multicofork I) (f : K₁ ⟶ K₂) (b : I.R) : K₁.π b ≫ f.hom = K₂.π b :=
   f.w _
 
@@ -698,7 +698,7 @@ noncomputable def ofSigmaCoforkFunctor : Cofork I.fstSigmaMap I.sndSigmaMap ⥤ 
         -- `Multicofork.ofSigmaCofork_ι_app_left` before `Multicofork.fst_app_right`,
         -- but mathlib4 finds `Multicofork.fst_app_right` first.
         { simp [-Multicofork.fst_app_right] }
-        -- porting note: similarly here, the `simp` set seems to be non-confluent
+        -- Porting note: similarly here, the `simp` set seems to be non-confluent
         { simp [-Multicofork.ofSigmaCofork_pt] } }
 
 /--
@@ -716,7 +716,7 @@ noncomputable def multicoforkEquivSigmaCofork :
   counitIso := NatIso.ofComponents fun K =>
     Cofork.ext (Iso.refl _)
       (by
-        -- porting note: in mathlib3 this was just `ext` and I don't know why it's not here
+        -- Porting note: in mathlib3 this was just `ext` and I don't know why it's not here
         apply Limits.colimit.hom_ext
         rintro ⟨j⟩
         dsimp

@@ -200,7 +200,7 @@ variable {P}
 lemma isUnit_aeval_of_isUnit_aeval_of_isNilpotent_sub
     (hb : IsUnit (aeval b P)) (hab : IsNilpotent (a - b)) :
     IsUnit (aeval a P) := by
-  rw [← add_sub_cancel'_right (aeval b P) (aeval a P)]
+  rw [← add_sub_cancel (aeval b P) (aeval a P)]
   refine IsNilpotent.isUnit_add_left_of_commute ?_ hb (Commute.all _ _)
   exact isNilpotent_aeval_sub_of_isNilpotent_sub P hab
 

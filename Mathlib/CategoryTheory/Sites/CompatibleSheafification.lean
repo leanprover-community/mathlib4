@@ -27,28 +27,19 @@ open Opposite
 universe w₁ w₂ v u
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-
 variable {D : Type w₁} [Category.{max v u} D]
-
 variable {E : Type w₂} [Category.{max v u} E]
-
 variable (F : D ⥤ E)
 
--- porting note: Removed this and made whatever necessary noncomputable
+-- Porting note: Removed this and made whatever necessary noncomputable
 -- noncomputable section
 
 variable [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) D]
-
 variable [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) E]
-
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ E]
-
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
-
 variable [∀ (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (W.index P).multicospan F]
-
 variable (P : Cᵒᵖ ⥤ D)
 
 /-- The isomorphism between the sheafification of `P` composed with `F` and

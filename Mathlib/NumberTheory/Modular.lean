@@ -99,9 +99,9 @@ theorem bottom_row_surj {R : Type*} [CommRing R] :
   have det_A_1 : det A = 1 := by
     convert gcd_eqn
     rw [det_fin_two]
-    simp [(by ring : a * cd 1 + b₀ * cd 0 = b₀ * cd 0 + a * cd 1)]
+    simp [A, (by ring : a * cd 1 + b₀ * cd 0 = b₀ * cd 0 + a * cd 1)]
   refine' ⟨⟨A, det_A_1⟩, Set.mem_univ _, _⟩
-  ext; simp
+  ext; simp [A]
 #align modular_group.bottom_row_surj ModularGroup.bottom_row_surj
 
 end BottomRow
@@ -124,7 +124,8 @@ theorem tendsto_normSq_coprime_pair :
   let f : (Fin 2 → ℝ) →ₗ[ℝ] ℂ := π₀.smulRight (z : ℂ) + π₁.smulRight 1
   have f_def : ⇑f = fun p : Fin 2 → ℝ => (p 0 : ℂ) * ↑z + p 1 := by
     ext1
-    dsimp only [LinearMap.coe_proj, real_smul, LinearMap.coe_smulRight, LinearMap.add_apply]
+    dsimp only [π₀, π₁, f, LinearMap.coe_proj, real_smul, LinearMap.coe_smulRight,
+      LinearMap.add_apply]
     rw [mul_one]
   have :
     (fun p : Fin 2 → ℤ => normSq ((p 0 : ℂ) * ↑z + ↑(p 1))) =
@@ -198,7 +199,7 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
   let mB : ℝ → Matrix (Fin 2) (Fin 2) ℝ := fun t => of ![![t, (-(1 : ℤ) : ℝ)], (↑) ∘ cd]
   have hmB : Continuous mB := by
     refine' continuous_matrix _
-    simp only [Fin.forall_fin_two, continuous_const, continuous_id', of_apply, cons_val_zero,
+    simp only [mB, Fin.forall_fin_two, continuous_const, continuous_id', of_apply, cons_val_zero,
       cons_val_one, and_self_iff]
   refine' Filter.Tendsto.of_tendsto_comp _ (comap_cocompact_le hmB)
   let f₁ : SL(2, ℤ) → Matrix (Fin 2) (Fin 2) ℝ := fun g =>
@@ -217,13 +218,13 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
   ext ⟨g, rfl⟩ i j : 3
   fin_cases i <;> [fin_cases j; skip]
   -- the following are proved by `simp`, but it is replaced by `simp only` to avoid timeouts.
-  · simp only [mulVec, dotProduct, Fin.sum_univ_two, coe_matrix_coe,
+  · simp only [mB, mulVec, dotProduct, Fin.sum_univ_two, coe_matrix_coe,
       Int.coe_castRingHom, lcRow0_apply, Function.comp_apply, cons_val_zero, lcRow0Extend_apply,
       LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLinear,
       val_planeConformalMatrix, neg_neg, mulVecLin_apply, cons_val_one, head_cons, of_apply,
       Fin.mk_zero, Fin.mk_one]
   · convert congr_arg (fun n : ℤ => (-n : ℝ)) g.det_coe.symm using 1
-    simp only [mulVec, dotProduct, Fin.sum_univ_two, Matrix.det_fin_two, Function.comp_apply,
+    simp only [f₁, mulVec, dotProduct, Fin.sum_univ_two, Matrix.det_fin_two, Function.comp_apply,
       Subtype.coe_mk, lcRow0Extend_apply, cons_val_zero,
       LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLinear,
       val_planeConformalMatrix, mulVecLin_apply, cons_val_one, head_cons, map_apply, neg_mul,
@@ -514,7 +515,7 @@ theorem c_eq_zero (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : (↑ₘg) 1 
     let d := (↑ₘg') 1 1
     have had : T ^ (-a) * g' = S * T ^ d := by rw [g_eq_of_c_eq_one hc]; group
     let w := T ^ (-a) • g' • z
-    have h₁ : w = S • T ^ d • z := by simp only [← mul_smul, had]
+    have h₁ : w = S • T ^ d • z := by simp only [w, ← mul_smul, had]
     replace h₁ : normSq w < 1 := h₁.symm ▸ normSq_S_smul_lt_one (one_lt_normSq_T_zpow_smul hz d)
     have h₂ : 1 < normSq w := one_lt_normSq_T_zpow_smul hg' (-a)
     linarith

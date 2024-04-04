@@ -121,12 +121,12 @@ section
 
 variable (C)
 
--- porting note: added to ease the port
+-- Porting note: added to ease the port
 /-- Pull back an `I`-graded object in `C` to a `J`-graded object along a function `J → I`. -/
 abbrev comap {I J : Type*} (h : J → I) : GradedObject I C ⥤ GradedObject J C :=
   Pi.comap (fun _ => C) h
 
--- porting note: added to ease the port, this is a special case of `Functor.eqToHom_proj`
+-- Porting note: added to ease the port, this is a special case of `Functor.eqToHom_proj`
 @[simp]
 theorem eqToHom_proj {x x' : GradedObject I C} (h : x = x') (i : I) :
     (eqToHom h : x ⟶ x') i = eqToHom (Function.funext_iff.mp h i) := by
@@ -227,9 +227,7 @@ namespace GradedObject
 -- Since we're typically interested in grading by ℤ or a finite group, this should be okay.
 -- If you're grading by things in higher universes, have fun!
 variable (β : Type)
-
 variable (C : Type u) [Category.{v} C]
-
 variable [HasCoproducts.{0} C]
 
 section
@@ -265,7 +263,6 @@ namespace GradedObject
 noncomputable section
 
 variable (β : Type)
-
 variable (C : Type (u + 1)) [LargeCategory C] [ConcreteCategory C] [HasCoproducts.{0} C]
   [HasZeroMorphisms C]
 

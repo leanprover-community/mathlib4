@@ -64,7 +64,7 @@ instance categoryStruct : CategoryStruct.{max u v} (FreeBicategory B) where
   comp := @fun _ _ _ => Hom.comp
 
 /-- Representatives of 2-morphisms in the free bicategory. -/
--- porting note: no such linter
+-- Porting note: no such linter
 -- @[nolint has_nonempty_instance]
 inductive Hom₂ : ∀ {a b : FreeBicategory B}, (a ⟶ b) → (a ⟶ b) → Type max u v
   | id {a b} (f : a ⟶ b) : Hom₂ f f
@@ -84,7 +84,7 @@ inductive Hom₂ : ∀ {a b : FreeBicategory B}, (a ⟶ b) → (a ⟶ b) → Typ
 
 section
 
--- porting note: commenting out redundant binder annotation update
+-- Porting note: commenting out redundant binder annotation update
 -- variable {B}
 
 -- mathport name: vcomp
@@ -164,7 +164,7 @@ inductive Rel : ∀ {a b : FreeBicategory B} {f g : a ⟶ b}, Hom₂ f g → Hom
 
 end
 
--- porting note: commenting out redundant binder annotation update
+-- Porting note: commenting out redundant binder annotation update
 -- variable {B}
 
 instance homCategory (a b : FreeBicategory B) : Category (a ⟶ b) where
@@ -314,7 +314,6 @@ end
 section
 
 variable {B : Type u₁} [Quiver.{v₁ + 1} B] {C : Type u₂} [CategoryStruct.{v₂} C]
-
 variable (F : Prefunctor B C)
 
 /-- Auxiliary definition for `lift`. -/
@@ -341,7 +340,6 @@ end
 section
 
 variable {B : Type u₁} [Quiver.{v₁ + 1} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
-
 variable (F : Prefunctor B C)
 
 /-- Auxiliary definition for `lift`. -/

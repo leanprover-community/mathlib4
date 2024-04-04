@@ -451,7 +451,7 @@ private theorem Cofix.bisim_aux (r : Cofix F → Cofix F → Prop) (h' : ∀ x, 
     have h₁ : ∀ u v : q.P.M, Mcongr u v → Quot.mk r' u = Quot.mk r' v := by
       intro u v cuv
       apply Quot.sound
-      simp only
+      simp only [r']
       rw [Quot.sound cuv]
       apply h'
     let f : Quot r → Quot r' :=
@@ -480,7 +480,7 @@ theorem Cofix.bisim_rel (r : Cofix F → Cofix F → Prop)
     · rw [r'xy]
     have : ∀ x y, r x y → r' x y := fun x y h => Or.inr h
     rw [← Quot.factor_mk_eq _ _ this]
-    dsimp
+    dsimp [r']
     rw [@comp_map _ _ q _ _ _ (Quot.mk r), @comp_map _ _ q _ _ _ (Quot.mk r)]
     rw [h _ _ r'xy]
   right; exact rxy
@@ -518,7 +518,6 @@ Composition of qpfs.
 namespace QPF
 
 variable {F₂ : Type u → Type u} [Functor F₂] [q₂ : QPF F₂]
-
 variable {F₁ : Type u → Type u} [Functor F₁] [q₁ : QPF F₁]
 
 /-- composition of qpfs gives another qpf -/
@@ -574,11 +573,8 @@ We show that if `F` is a qpf and `G` is a suitable quotient of `F`, then `G` is 
 namespace QPF
 
 variable {F : Type u → Type u} [Functor F] [q : QPF F]
-
 variable {G : Type u → Type u} [Functor G]
-
 variable {FG_abs : ∀ {α}, F α → G α}
-
 variable {FG_repr : ∀ {α}, G α → F α}
 
 /-- Given a qpf `F` and a well-behaved surjection `FG_abs` from `F α` to
