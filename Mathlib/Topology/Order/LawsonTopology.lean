@@ -106,7 +106,7 @@ end Preorder
 end IsLawson
 
 /--
-Type synonym for a preorder equipped with the Lawson topology
+Type synonym for a preorder equipped with the Lawson topology.
 -/
 def WithLawson (α : Type*) := α
 
