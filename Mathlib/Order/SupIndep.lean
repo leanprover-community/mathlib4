@@ -141,7 +141,7 @@ theorem supIndep_pair [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
     · convert h.symm using 1
       have : ({i, k} : Finset ι).erase k = {i} := by
         ext
-        rw [mem_erase, mem_insert, mem_singleton, mem_singleton, and_or_left, Ne.def,
+        rw [mem_erase, mem_insert, mem_singleton, mem_singleton, and_or_left, Ne,
           not_and_self_iff, or_false_iff, and_iff_right_of_imp]
         rintro rfl
         exact hij
@@ -150,7 +150,7 @@ theorem supIndep_pair [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
 
 theorem supIndep_univ_bool (f : Bool → α) :
     (Finset.univ : Finset Bool).SupIndep f ↔ Disjoint (f false) (f true) :=
-  haveI : true ≠ false := by simp only [Ne.def, not_false_iff]
+  haveI : true ≠ false := by simp only [Ne, not_false_iff]
   (supIndep_pair this).trans disjoint_comm
 #align finset.sup_indep_univ_bool Finset.supIndep_univ_bool
 

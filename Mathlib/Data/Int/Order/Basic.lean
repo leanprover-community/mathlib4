@@ -58,11 +58,11 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
   | -[_+1] => abs_of_nonpos <| le_of_lt <| negSucc_lt_zero _
 #align int.abs_eq_nat_abs Int.abs_eq_natAbs
 
-@[simp, norm_cast] lemma coe_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm
-#align int.coe_nat_abs Int.coe_natAbs
+@[simp, norm_cast] lemma natCast_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm
+#align int.coe_nat_abs Int.natCast_natAbs
 
 lemma _root_.Nat.cast_natAbs {α : Type*} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| := by
-  rw [← coe_natAbs, Int.cast_ofNat]
+  rw [← natCast_natAbs, Int.cast_ofNat]
 #align nat.cast_nat_abs Nat.cast_natAbs
 
 theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; rfl
@@ -92,26 +92,26 @@ lemma le_self_sq (b : ℤ) : b ≤ b ^ 2 := le_trans le_natAbs (natAbs_le_self_s
 alias le_self_pow_two := le_self_sq
 #align int.le_self_pow_two Int.le_self_pow_two
 
-theorem coe_nat_eq_zero {n : ℕ} : (n : ℤ) = 0 ↔ n = 0 :=
+theorem natCast_eq_zero {n : ℕ} : (n : ℤ) = 0 ↔ n = 0 :=
   Nat.cast_eq_zero
-#align int.coe_nat_eq_zero Int.coe_nat_eq_zero
+#align int.coe_nat_eq_zero Int.natCast_eq_zero
 
-theorem coe_nat_ne_zero {n : ℕ} : (n : ℤ) ≠ 0 ↔ n ≠ 0 := by simp
-#align int.coe_nat_ne_zero Int.coe_nat_ne_zero
+theorem natCast_ne_zero {n : ℕ} : (n : ℤ) ≠ 0 ↔ n ≠ 0 := by simp
+#align int.coe_nat_ne_zero Int.natCast_ne_zero
 
-theorem coe_nat_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n :=
-  ⟨fun h => Nat.pos_of_ne_zero (coe_nat_ne_zero.1 h),
+theorem natCast_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n :=
+  ⟨fun h => Nat.pos_of_ne_zero (natCast_ne_zero.1 h),
    fun h => (_root_.ne_of_lt (ofNat_lt.2 h)).symm⟩
-#align int.coe_nat_ne_zero_iff_pos Int.coe_nat_ne_zero_iff_pos
+#align int.coe_nat_ne_zero_iff_pos Int.natCast_ne_zero_iff_pos
 
-@[norm_cast] lemma abs_coe_nat (n : ℕ) : |(n : ℤ)| = n := abs_of_nonneg (coe_nat_nonneg n)
-#align int.abs_coe_nat Int.abs_coe_nat
+@[norm_cast] lemma abs_natCast (n : ℕ) : |(n : ℤ)| = n := abs_of_nonneg (natCast_nonneg n)
+#align int.abs_coe_nat Int.abs_natCast
 
 theorem sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign = n.sign := by
   have : (1 : ℤ) ≠ -1 := by decide
   rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm, Int.negSucc_add_negSucc]
   rw [Int.sign_eq_one_iff_pos]
-  apply Int.add_pos <;> · exact zero_lt_one.trans_le (le_add_of_nonneg_left <| coe_nat_nonneg _)
+  apply Int.add_pos <;> · exact zero_lt_one.trans_le (le_add_of_nonneg_left <| natCast_nonneg _)
 #align int.sign_add_eq_of_sign_eq Int.sign_add_eq_of_sign_eq
 
 /-- Note this holds in marginally more generality than `Int.cast_mul` -/
@@ -487,10 +487,10 @@ theorem lt_toNat {n : ℕ} {a : ℤ} : n < toNat a ↔ (n : ℤ) < a :=
 #align int.lt_to_nat Int.lt_toNat
 
 @[simp]
-theorem coe_nat_nonpos_iff {n : ℕ} : (n : ℤ) ≤ 0 ↔ n = 0 :=
+theorem natCast_nonpos_iff {n : ℕ} : (n : ℤ) ≤ 0 ↔ n = 0 :=
   ⟨fun h => le_antisymm (Int.ofNat_le.mp (h.trans Int.ofNat_zero.le)) n.zero_le,
-   fun h => (coe_nat_eq_zero.mpr h).le⟩
-#align int.coe_nat_nonpos_iff Int.coe_nat_nonpos_iff
+   fun h => (natCast_eq_zero.mpr h).le⟩
+#align int.coe_nat_nonpos_iff Int.natCast_nonpos_iff
 
 theorem toNat_le_toNat {a b : ℤ} (h : a ≤ b) : toNat a ≤ toNat b := by
   rw [toNat_le]; exact le_trans h (self_le_toNat b)
@@ -514,8 +514,8 @@ theorem toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ
 theorem toNat_eq_zero : ∀ {n : ℤ}, n.toNat = 0 ↔ n ≤ 0
   | (n : ℕ) =>
     calc
-      _ ↔ n = 0 := ⟨(toNat_coe_nat n).symm.trans, (toNat_coe_nat n).trans⟩
-      _ ↔ _ := coe_nat_nonpos_iff.symm
+      _ ↔ n = 0 := ⟨(toNat_natCast n).symm.trans, (toNat_natCast n).trans⟩
+      _ ↔ _ := natCast_nonpos_iff.symm
 
   | -[n+1] =>
     show (-((n : ℤ) + 1)).toNat = 0 ↔ (-(n + 1) : ℤ) ≤ 0 from
@@ -537,7 +537,7 @@ variable {G : Type*} [Group G]
 
 @[to_additive (attr := simp) abs_zsmul_eq_zero]
 lemma zpow_abs_eq_one (a : G) (n : ℤ) : a ^ |n| = 1 ↔ a ^ n = 1 := by
-  rw [← Int.coe_natAbs, zpow_natCast, pow_natAbs_eq_one]
+  rw [← Int.natCast_natAbs, zpow_natCast, pow_natAbs_eq_one]
 
 end Group
 

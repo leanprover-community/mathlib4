@@ -40,6 +40,15 @@ lemma exists_girth_eq_length :
       ← exists_prop, Subtype.exists', Sigma.exists', eq_comm] at h ⊢
     exact ciInf_mem _
 
+lemma three_le_girth : 3 ≤ G.girth := by
+  by_cases h : G.IsAcyclic
+  · rw [← girth_eq_top] at h
+    rw [h]
+    apply le_top
+  · rw [← exists_girth_eq_length] at h
+    have ⟨_, _, _⟩ := h
+    simp_all only [Nat.cast_inj, Nat.ofNat_le_cast, Walk.IsCycle.three_le_length]
+
 @[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = ⊤ := by simp
 
 end SimpleGraph

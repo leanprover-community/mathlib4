@@ -1731,6 +1731,15 @@ theorem preimage_iUnion₂ {f : α → β} {s : ∀ i, κ i → Set β} :
     (f ⁻¹' ⋃ (i) (j), s i j) = ⋃ (i) (j), f ⁻¹' s i j := by simp_rw [preimage_iUnion]
 #align set.preimage_Union₂ Set.preimage_iUnion₂
 
+theorem image_sUnion {f : α → β} {s : Set (Set α)} : (f '' ⋃₀ s) = ⋃₀ (image f '' s) := by
+  ext b
+  simp only [mem_image, mem_sUnion, exists_prop, sUnion_image, mem_iUnion]
+  constructor
+  · rintro ⟨a, ⟨t, ht₁, ht₂⟩, rfl⟩
+    exact ⟨t, ht₁, a, ht₂, rfl⟩
+  · rintro ⟨t, ht₁, a, ht₂, rfl⟩
+    exact ⟨a, ⟨t, ht₁, ht₂⟩, rfl⟩
+
 @[simp]
 theorem preimage_sUnion {f : α → β} {s : Set (Set β)} : f ⁻¹' ⋃₀s = ⋃ t ∈ s, f ⁻¹' t := by
   rw [sUnion_eq_biUnion, preimage_iUnion₂]
