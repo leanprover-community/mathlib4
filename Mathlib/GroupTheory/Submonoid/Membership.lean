@@ -412,6 +412,18 @@ theorem exists_multiset_of_mem_closure {M : Type*} [CommMonoid M] {s : Set M} {x
 #align submonoid.exists_multiset_of_mem_closure Submonoid.exists_multiset_of_mem_closure
 #align add_submonoid.exists_multiset_of_mem_closure AddSubmonoid.exists_multiset_of_mem_closure
 
+@[to_additive]
+theorem mem_closure_of_exists_multiset {M : Type*} [CommMonoid M] {s : Set M} {x : M}
+    (hx : ∃ (l : Multiset M) (_ : ∀ y ∈ l, y ∈ s), l.prod = x) : x ∈ closure s := by
+  rcases hx with ⟨_, hl, hprod⟩
+  rw [← hprod]
+  exact multiset_prod_mem _ _ (fun a ha => Set.mem_of_subset_of_mem subset_closure (hl a ha))
+
+@[to_additive]
+theorem mem_closure_iff_exists_multiset {M : Type*} [CommMonoid M] {s : Set M} {x : M} :
+    x ∈ closure s ↔ ∃ (l : Multiset M) (_ : ∀ y ∈ l, y ∈ s), l.prod = x :=
+  ⟨exists_multiset_of_mem_closure, mem_closure_of_exists_multiset⟩
+
 @[to_additive (attr := elab_as_elim)]
 theorem closure_induction_left {s : Set M} {p : (m : M) → m ∈ closure s → Prop}
     (one : p 1 (one_mem _))

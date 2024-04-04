@@ -81,6 +81,35 @@ theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero α] {p : α}
       exact ⟨q, Multiset.mem_cons.2 (Or.inr hq₁), hq₂⟩
 #align exists_associated_mem_of_dvd_prod exists_associated_mem_of_dvd_prod
 
+open Submonoid in
+/-- Let x, y ∈ α. If x * y can be written as a product of prime elements, then x can be written as
+a product of a unit and prime elements. -/
+theorem Associated_closure_of_mul_mem_closure [CancelCommMonoidWithZero α] :
+    ∀ x y, x * y ∈ closure { r | Prime r } → ∃ z ∈ closure { r : α | Prime r }, x ~ᵤ z := by
+  intros a b hab
+  obtain ⟨m, hm⟩ := exists_multiset_of_mem_closure hab
+  revert a b hm
+  refine' m.induction (p := fun m => ∀ a b, a * b ∈ closure {r | Prime r} →
+    (∃ (_ : ∀ y ∈ m, Prime y), m.prod = a * b) → ∃ z ∈ closure {r | Prime r}, a ~ᵤ z) _ _
+  simp only [Multiset.prod_zero, Multiset.not_mem_zero, Set.mem_setOf_eq, IsEmpty.forall_iff,
+    forall_const, exists_const]
+  exact (fun _ _ _ hprod => ⟨1, one_mem _, associated_one_of_mul_eq_one _ hprod.symm⟩)
+  simp only [Set.mem_setOf_eq, exists_prop, and_imp, Multiset.prod_cons, Multiset.mem_cons,
+    forall_eq_or_imp]
+  intros a s hind x y _ hprime hprime₂ hprod
+  cases' hprime.dvd_mul.1 (Dvd.intro _ hprod) with h₁ h₂
+  · rcases h₁ with ⟨c, h₁⟩
+    rw [h₁, mul_assoc] at hprod
+    have hprod₂ := mul_left_cancel₀ (hprime.ne_zero) hprod
+    obtain ⟨_, hz₁, hz₂⟩ :=
+      hind _ _ (mem_closure_of_exists_multiset ⟨_, hprime₂, hprod₂⟩) hprime₂ hprod₂
+    rw [h₁]
+    exact ⟨_, mul_mem (Set.mem_of_subset_of_mem subset_closure hprime) hz₁, hz₂.mul_left _⟩
+  · rcases h₂ with ⟨c, h₂⟩
+    rw [h₂, ← mul_assoc, mul_comm _ a, mul_assoc] at hprod
+    have hprod₂ := mul_left_cancel₀ (hprime.ne_zero) hprod
+    exact (hind _ _ (mem_closure_of_exists_multiset ⟨_, hprime₂, hprod₂⟩) hprime₂ hprod₂)
+
 theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero α]
     [∀ a : α, DecidablePred (Associated a)] {s : Multiset α} (n : α) (h : ∀ a ∈ s, Prime a)
     (div : ∀ a ∈ s, a ∣ n) (uniq : ∀ a, s.countP (Associated a) ≤ 1) : s.prod ∣ n := by
