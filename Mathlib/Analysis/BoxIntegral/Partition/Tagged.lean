@@ -27,7 +27,8 @@ rectangular box, box partition
 
 noncomputable section
 
-open Classical ENNReal NNReal
+open scoped Classical
+open ENNReal NNReal
 
 open Set Function
 

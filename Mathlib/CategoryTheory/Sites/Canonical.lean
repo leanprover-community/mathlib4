@@ -38,16 +38,15 @@ universe v u
 
 namespace CategoryTheory
 
-open CategoryTheory Category Limits Sieve Classical
+open scoped Classical
+open CategoryTheory Category Limits Sieve
 
 variable {C : Type u} [Category.{v} C]
 
 namespace Sheaf
 
 variable {P : Cᵒᵖ ⥤ Type v}
-
 variable {X Y : C} {S : Sieve X} {R : Presieve X}
-
 variable (J J₂ : GrothendieckTopology C)
 
 /--

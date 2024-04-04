@@ -75,11 +75,8 @@ class NonUnitalStarAlgHomClass (F : Type*) (R A B : outParam Type*)
 namespace NonUnitalStarAlgHomClass
 
 variable {F R A B : Type*} [Monoid R]
-
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [Star A]
-
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
-
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B]
 
 /-- Turn an element of a type `F` satisfying `NonUnitalStarAlgHomClass F R A B` into an actual
@@ -99,13 +96,9 @@ namespace NonUnitalStarAlgHom
 section Basic
 
 variable {R A B C D : Type*} [Monoid R]
-
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [Star A]
-
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
-
 variable [NonUnitalNonAssocSemiring C] [DistribMulAction R C] [Star C]
-
 variable [NonUnitalNonAssocSemiring D] [DistribMulAction R D] [Star D]
 
 instance : FunLike (A →⋆ₙₐ[R] B) A B
@@ -262,9 +255,7 @@ section Zero
 
 -- the `zero` requires extra type class assumptions because we need `star_zero`
 variable {R A B C D : Type*} [Monoid R]
-
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [StarAddMonoid A]
-
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [StarAddMonoid B]
 
 instance : Zero (A →⋆ₙₐ[R] B) :=
@@ -338,7 +329,6 @@ instance (priority := 100) toNonUnitalStarAlgHomClass {_ : CommSemiring R} {_ : 
 #align star_alg_hom_class.to_non_unital_star_alg_hom_class StarAlgHomClass.toNonUnitalStarAlgHomClass
 
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Star A]
-
 variable [Semiring B] [Algebra R B] [Star B] [FunLike F A B] [AlgHomClass F R A B]
 variable [StarAlgHomClass F R A B]
 
@@ -981,11 +971,8 @@ end Basic
 section Bijective
 
 variable {F G R A B : Type*} [Monoid R]
-
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [Star A]
-
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
-
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
 variable [FunLike G B A] [NonUnitalAlgHomClass G R B A] [NonUnitalStarAlgHomClass G R B A]
 

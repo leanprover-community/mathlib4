@@ -52,7 +52,8 @@ free commutative ring, free ring
 
 noncomputable section
 
-open Classical Polynomial
+open scoped Classical
+open Polynomial
 
 universe u v
 

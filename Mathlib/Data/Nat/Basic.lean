@@ -10,12 +10,25 @@ import Mathlib.Algebra.GroupWithZero.Defs
 #align_import data.nat.basic from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 
 /-!
-# Basic instances for the natural numbers
+# Algebraic instances for the natural numbers
 
-This file contains:
-* Algebraic instances on the natural numbers
-* Basic lemmas about natural numbers that require more imports than available in
-  `Data.Nat.Defs`.
+This file contains algebraic instances on the natural numbers and a few lemmas about them.
+
+## Implementation note
+
+Std has a home-baked development of the algebraic and order theoretic theory of `ℕ` which, in
+particular, is not typeclass-mediated. This is useful to set up the algebra and finiteness libraries
+in mathlib (naturals show up as indices in lists, cardinality in finsets, powers in groups, ...).
+This home-baked development is pursued in `Data.Nat.Defs`.
+
+Less basic uses of `ℕ` should however use the typeclass-mediated development. This file is the one
+giving access to the algebraic instances. `Data.Nat.Order.Basic` is the one giving access to the
+algebraic order instances.
+
+## TODO
+
+The names of this file, `Data.Nat.Defs` and `Data.Nat.Order.Basic` are archaic and don't match up
+with reality anymore. Rename them.
 -/
 
 open Multiplicative
@@ -43,13 +56,13 @@ instance commSemiring : CommSemiring ℕ where
   mul_comm := Nat.mul_comm
   natCast n := n
   natCast_zero := rfl
-  natCast_succ n := rfl
+  natCast_succ _ := rfl
   nsmul m n := m * n
   nsmul_zero := Nat.zero_mul
-  nsmul_succ _ _ := by dsimp only; rw [Nat.add_comm, Nat.right_distrib, Nat.one_mul]
+  nsmul_succ := succ_mul
   npow m n := n ^ m
   npow_zero := Nat.pow_zero
-  npow_succ _ _ := Nat.pow_succ'
+  npow_succ _ _ := rfl
 
 /-! Extra instances to short-circuit type class resolution and ensure computability -/
 

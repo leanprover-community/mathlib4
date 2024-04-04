@@ -220,7 +220,7 @@ theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine
     change SpecΓIdentity.hom.app (X.presheaf.obj <| op ⊤) = _
     rw [← ΓSpec.adjunction_unit_app_app_top X]
     rfl
-  · dsimp; congr
+  · dsimp
     refine' (Scheme.preimage_basicOpen _ _).trans _
     congr 1
     exact IsIso.inv_hom_id_apply _ _

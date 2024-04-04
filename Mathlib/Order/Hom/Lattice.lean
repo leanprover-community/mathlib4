@@ -87,7 +87,7 @@ structure BoundedLatticeHom (α β : Type*) [Lattice α] [Lattice β] [BoundedOr
   map_bot' : toFun ⊥ = ⊥
 #align bounded_lattice_hom BoundedLatticeHom
 
--- Porting note: todo: remove this configuration and use the default configuration.
+-- Porting note (#11215): TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
 initialize_simps_projections SupBotHom (+toSupHom, -toFun)
 initialize_simps_projections InfTopHom (+toInfHom, -toFun)
@@ -464,8 +464,7 @@ end Sup
 variable (α) [SemilatticeSup β]
 
 /-- The constant function as a `SupHom`. -/
-def const (b : β) : SupHom α β :=
-  ⟨fun _ => b, fun _ _ => sup_idem.symm⟩
+def const (b : β) : SupHom α β := ⟨fun _ ↦ b, fun _ _ ↦ (sup_idem _).symm⟩
 #align sup_hom.const SupHom.const
 
 @[simp]
@@ -649,8 +648,7 @@ end Inf
 variable (α) [SemilatticeInf β]
 
 /-- The constant function as an `InfHom`. -/
-def const (b : β) : InfHom α β :=
-  ⟨fun _ => b, fun _ _ => inf_idem.symm⟩
+def const (b : β) : InfHom α β := ⟨fun _ ↦ b, fun _ _ ↦ (inf_idem _).symm⟩
 #align inf_hom.const InfHom.const
 
 @[simp]
@@ -1651,9 +1649,9 @@ def withTop' [OrderTop β] (f : SupHom α β) : SupHom (WithTop α) β where
   toFun a := a.elim ⊤ f
   map_sup' a b :=
     match a, b with
-    | ⊤, ⊤ => top_sup_eq.symm
-    | ⊤, (b : α) => top_sup_eq.symm
-    | (a : α), ⊤ => sup_top_eq.symm
+    | ⊤, ⊤ => (top_sup_eq _).symm
+    | ⊤, (b : α) => (top_sup_eq _).symm
+    | (a : α), ⊤ => (sup_top_eq _).symm
     | (a : α), (b : α) => f.map_sup' _ _
 #align sup_hom.with_top' SupHom.withTop'
 
@@ -1663,9 +1661,9 @@ def withBot' [OrderBot β] (f : SupHom α β) : SupBotHom (WithBot α) β where
   toFun a := a.elim ⊥ f
   map_sup' a b :=
     match a, b with
-    | ⊥, ⊥ => bot_sup_eq.symm
-    | ⊥, (b : α) => bot_sup_eq.symm
-    | (a : α), ⊥ => sup_bot_eq.symm
+    | ⊥, ⊥ => (bot_sup_eq _).symm
+    | ⊥, (b : α) => (bot_sup_eq _).symm
+    | (a : α), ⊥ => (sup_bot_eq _).symm
     | (a : α), (b : α) => f.map_sup' _ _
   map_bot' := rfl
 #align sup_hom.with_bot' SupHom.withBot'
@@ -1729,9 +1727,9 @@ def withTop' [OrderTop β] (f : InfHom α β) : InfTopHom (WithTop α) β where
   toFun a := a.elim ⊤ f
   map_inf' a b :=
     match a, b with
-    | ⊤, ⊤ => top_inf_eq.symm
-    | ⊤, (b : α) => top_inf_eq.symm
-    | (a : α), ⊤ => inf_top_eq.symm
+    | ⊤, ⊤ => (top_inf_eq _).symm
+    | ⊤, (b : α) => (top_inf_eq _).symm
+    | (a : α), ⊤ => (inf_top_eq _).symm
     | (a : α), (b : α) => f.map_inf' _ _
   map_top' := rfl
 #align inf_hom.with_top' InfHom.withTop'
@@ -1742,9 +1740,9 @@ def withBot' [OrderBot β] (f : InfHom α β) : InfHom (WithBot α) β where
   toFun a := a.elim ⊥ f
   map_inf' a b :=
     match a, b with
-    | ⊥, ⊥ => bot_inf_eq.symm
-    | ⊥, (b : α) => bot_inf_eq.symm
-    | (a : α), ⊥ => inf_bot_eq.symm
+    | ⊥, ⊥ => (bot_inf_eq _).symm
+    | ⊥, (b : α) => (bot_inf_eq _).symm
+    | (a : α), ⊥ => (inf_bot_eq _).symm
     | (a : α), (b : α) => f.map_inf' _ _
 #align inf_hom.with_bot' InfHom.withBot'
 

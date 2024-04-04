@@ -189,6 +189,10 @@ class IsAntisymm (α : Sort u) (r : α → α → Prop) : Prop where
   antisymm : ∀ a b, r a b → r b a → a = b
 #align is_antisymm IsAntisymm
 
+instance (priority := 100) IsAsymm.toIsAntisymm {α : Sort u} (r : α → α → Prop) [IsAsymm α r] :
+    IsAntisymm α r where
+  antisymm _ _ hx hy := (IsAsymm.asymm _ _ hx hy).elim
+
 /-- `IsTrans X r` means the binary relation `r` on `X` is transitive. -/
 class IsTrans (α : Sort u) (r : α → α → Prop) : Prop where
   trans : ∀ a b c, r a b → r b c → r a c

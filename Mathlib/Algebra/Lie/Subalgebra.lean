@@ -228,7 +228,6 @@ theorem coe_to_submodule : ((L' : Submodule R L) : Set L) = L' :=
 section LieModule
 
 variable {M : Type w} [AddCommGroup M] [LieRingModule L M]
-
 variable {N : Type w₁} [AddCommGroup N] [LieRingModule L N] [Module R N] [LieModule R L N]
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie ring module
@@ -525,14 +524,16 @@ instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
     inf_le_left := fun _ _ _ ↦ And.left
     inf_le_right := fun _ _ _ ↦ And.right }
 
-instance addCommMonoid : AddCommMonoid (LieSubalgebra R L)
-    where
-  add := (· ⊔ ·)
-  add_assoc _ _ _ := sup_assoc
-  zero := ⊥
-  zero_add _ := bot_sup_eq
-  add_zero _ := sup_bot_eq
-  add_comm _ _ := sup_comm
+instance : Add (LieSubalgebra R L) where add := Sup.sup
+
+instance : Zero (LieSubalgebra R L) where zero := ⊥
+
+instance addCommMonoid : AddCommMonoid (LieSubalgebra R L) where
+  add_assoc := sup_assoc
+  zero_add := bot_sup_eq
+  add_zero := sup_bot_eq
+  add_comm := sup_comm
+  nsmul := nsmulRec
 
 instance : CanonicallyOrderedAddCommMonoid (LieSubalgebra R L) :=
   { LieSubalgebra.addCommMonoid,
@@ -746,6 +747,21 @@ theorem span_iUnion {ι} (s : ι → Set L) : lieSpan R L (⋃ i, s i) = ⨆ i, 
   (LieSubalgebra.gi R L).gc.l_iSup
 #align lie_subalgebra.span_Union LieSubalgebra.span_iUnion
 
+/-- If a predicate `p` is true on some set `s ⊆ L`, true for `0`, stable by scalar multiplication,
+by addition and by Lie bracket, then the predicate is true on the Lie span of `s`. (Since `s` can be
+empty, and the Lie span always contains `0`, the assumption that `p 0` holds cannot be removed.) -/
+@[elab_as_elim]
+theorem lieSpan_induction {p : L → Prop} {x : L} (h : x ∈ lieSpan R L s) (mem : ∀ x ∈ s, p x)
+    (zero : p 0) (smul : ∀ (r : R), ∀ {x : L}, p x → p (r • x))
+    (add : ∀ x y, p x → p y → p (x + y)) (lie : ∀ x y, p x → p y → p ⁅x, y⁆) : p x :=
+  let S : LieSubalgebra R L :=
+    { carrier := p
+      add_mem' := add _ _
+      zero_mem' := zero
+      smul_mem' := smul
+      lie_mem' := lie _ _ }
+  lieSpan_le.mpr (show s ≤ S from mem) h
+
 end LieSpan
 
 end LieSubalgebra
@@ -755,7 +771,6 @@ end LieSubalgebra
 namespace LieEquiv
 
 variable {R : Type u} {L₁ : Type v} {L₂ : Type w}
-
 variable [CommRing R] [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂]
 
 /-- An injective Lie algebra morphism is an equivalence onto its range. -/

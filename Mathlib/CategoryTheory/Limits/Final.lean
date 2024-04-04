@@ -78,7 +78,6 @@ open CategoryTheory.Limits
 section ArbitraryUniverse
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
 
 /--
@@ -768,7 +767,8 @@ theorem final_comp [hF : Final F] [hG : Final G] : Final (F ⋙ G) := by
     final_iff_isIso_colimit_pre] at hF
   rw [final_iff_comp_equivalence G s₃.functor, final_iff_equivalence_comp s₂.inverse,
     final_iff_isIso_colimit_pre] at hG
-  simp only [← colimit.pre_pre]
+  intro H
+  rw [← colimit.pre_pre]
   infer_instance
 
 theorem initial_comp [Initial F] [Initial G] : Initial (F ⋙ G) := by
@@ -788,8 +788,10 @@ theorem final_of_final_comp [hF : Final F] [hFG : Final (F ⋙ G)] : Final G := 
     final_iff_isIso_colimit_pre] at hF
   rw [final_iff_comp_equivalence (F ⋙ G) s₃.functor, final_iff_equivalence_comp s₁.inverse,
     final_natIso_iff _i, final_iff_isIso_colimit_pre] at hFG
-  simp only [← colimit.pre_pre] at hFG
-  exact fun H => IsIso.of_isIso_comp_left (colimit.pre _ (s₁.inverse ⋙ F ⋙ s₂.functor)) _
+  intro H
+  replace hFG := hFG H
+  rw [← colimit.pre_pre] at hFG
+  exact IsIso.of_isIso_comp_left (colimit.pre _ (s₁.inverse ⋙ F ⋙ s₂.functor)) _
 
 theorem initial_of_initial_comp [Initial F] [Initial (F ⋙ G)] : Initial G := by
   suffices Final G.op from initial_of_final_op _
@@ -828,7 +830,6 @@ section Filtered
 open Functor
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
 
 /-- Final functors preserve filteredness.

@@ -124,7 +124,7 @@ namespace DFinsupp
 variable [DecidableEq α] {f g : Π₀ _a : α, ℕ}
 
 @[simp]
-theorem toMultiset_toDFinsupp [DecidableEq α] (f : Π₀ _ : α, ℕ) :
+theorem toMultiset_toDFinsupp (f : Π₀ _ : α, ℕ) :
     Multiset.toDFinsupp (DFinsupp.toMultiset f) = f :=
   Multiset.equivDFinsupp.apply_symm_apply f
 #align dfinsupp.to_multiset_to_dfinsupp DFinsupp.toMultiset_toDFinsupp
