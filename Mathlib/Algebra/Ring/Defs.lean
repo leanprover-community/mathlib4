@@ -472,14 +472,13 @@ instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
     AddCommGroupWithOne α :=
   { s with }
 
-/--
-  A domain is a nontrivial semiring such that multiplication by a non zero element
-  is cancellative on both sides. In other words, a nontrivial semiring `R` satisfying
-  `∀ {a b c : R}, a ≠ 0 → a * b = a * c → b = c` and
-  `∀ {a b c : R}, b ≠ 0 → a * b = c * b → a = c`.
+/-- A domain is a nontrivial semiring such that multiplication by a non zero element
+is cancellative on both sides. In other words, a nontrivial semiring `R` satisfying
+`∀ {a b c : R}, a ≠ 0 → a * b = a * c → b = c` and
+`∀ {a b c : R}, b ≠ 0 → a * b = c * b → a = c`.
 
-  This is implemented as a mixin for `Semiring α`.
-  To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
+This is implemented as a mixin for `Semiring α`.
+To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
 class IsDomain (α : Type u) [Semiring α] extends IsCancelMulZero α, Nontrivial α : Prop
 #align is_domain IsDomain
 
