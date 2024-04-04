@@ -122,6 +122,25 @@ theorem integralClosure_eq_bot_iff : integralClosure R K = ⊥ ↔ IsIntegrallyC
     exact isIntegral_iff.mp hx
 #align is_integrally_closed.integral_closure_eq_bot_iff IsIntegrallyClosed.integralClosure_eq_bot_iff
 
+@[simp]
+theorem dvd_of_dvd_pow {n : ℕ} (hn : n ≠ 0) {a b : R} : a ^ n ∣  b ^ n ↔ a ∣ b  := by
+  refine ⟨fun ⟨x, hx⟩ ↦ ?_, fun h ↦  pow_dvd_pow_of_dvd h n⟩
+  by_cases ha : a = 0
+  · simpa [ha, hn] using hx
+  let K := FractionRing R
+  replace ha : algebraMap R K a ≠ 0 := fun h ↦
+    ha <| (injective_iff_map_eq_zero _).1 (IsFractionRing.injective R K) _ h
+  set y := (algebraMap R K b) / (algebraMap R K a) with hydef
+  have hy : IsIntegral R y := by
+    refine ⟨X ^ n - C x, monic_X_pow_sub_C _ hn, ?_⟩
+    simp only [hydef, map_pow, eval₂_sub, eval₂_X_pow, div_pow, eval₂_pow', eval₂_C]
+    replace hx := congr_arg (algebraMap R K) hx
+    rw [map_pow] at hx
+    field_simp [hx, ha]
+  obtain ⟨k, hk⟩ := algebraMap_eq_of_integral hy
+  refine ⟨k, IsFractionRing.injective R K ?_⟩
+  rw [map_mul, hk, hydef, mul_div_cancel₀ _ ha]
+
 variable (R)
 
 @[simp]
