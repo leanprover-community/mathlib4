@@ -13,7 +13,7 @@ The goal of this file is to prove Fermat Last theorem in the case `n = 3`.
 
 ## Main results
 * `fermatLastTheoremThree_case1`: the first case of Fermat Last Theorem when `n = 3`:
-  if `a b c : ℕ` are such that `¬ 3 ∣ a * b * c`, then `a ^ 3 + b ^ 3 ≠ c ^ 3`.
+  if `a b c : ℤ` are such that `¬ 3 ∣ a * b * c`, then `a ^ 3 + b ^ 3 ≠ c ^ 3`.
 
 ## TODO
 Prove case 2.
