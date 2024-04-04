@@ -249,7 +249,7 @@ instance cardinalInterFilter_inf_eq (l₁ l₂ : Filter α) [CardinalInterFilter
   rw [hst i hi]
   apply inter_subset_inter <;> exact iInter_subset_of_subset i (iInter_subset _ _)
 
-instance cardinalInterFilter_inf (l₁ l₂ : Filter α) {c₁ c₂ : Cardinal}
+instance cardinalInterFilter_inf (l₁ l₂ : Filter α) {c₁ c₂ : Cardinal.{u}}
     [CardinalInterFilter l₁ c₁] [CardinalInterFilter l₂ c₂] : CardinalInterFilter (l₁ ⊓ l₂)
     (c₁ ⊓ c₂) := by
   have : CardinalInterFilter l₁ (c₁ ⊓ c₂) :=
@@ -264,7 +264,7 @@ instance cardinalInterFilter_sup_eq (l₁ l₂ : Filter α) [CardinalInterFilter
   refine ⟨fun S hSc hS => ⟨?_, ?_⟩⟩ <;> refine (cardinal_sInter_mem hSc).2 fun s hs => ?_
   exacts [(hS s hs).1, (hS s hs).2]
 
-instance cardinalInterFilter_sup (l₁ l₂ : Filter α) {c₁ c₂ : Cardinal}
+instance cardinalInterFilter_sup (l₁ l₂ : Filter α) {c₁ c₂ : Cardinal.{u}}
     [CardinalInterFilter l₁ c₁] [CardinalInterFilter l₂ c₂] :
     CardinalInterFilter (l₁ ⊔ l₂) (c₁ ⊓ c₂) := by
   have : CardinalInterFilter l₁ (c₁ ⊓ c₂) :=
