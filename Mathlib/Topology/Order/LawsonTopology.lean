@@ -196,7 +196,7 @@ lemma isLawson_le_isScott : L ≤ S := by
   rw [@Topology.IsScott.topology_eq α _ S _, @Topology.IsLawson.topology_eq α _ L _]
   exact inf_le_right
 
-lemma scottHausdorff_le_isLawson : (scottHausdorff α) ≤ L := by
+lemma scottHausdorff_le_isLawson : scottHausdorff α ≤ L := by
   rw [@IsLawson.topology_eq α _ L _]
   exact scottHausdorff_le_lawson
 
