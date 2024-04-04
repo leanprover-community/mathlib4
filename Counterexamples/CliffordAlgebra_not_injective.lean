@@ -39,6 +39,7 @@ noncomputable section
 open scoped BigOperators
 
 open LinearMap (BilinForm)
+open LinearMap (BilinMap)
 
 namespace Q60596
 
@@ -151,7 +152,7 @@ abbrev L : Type _ := _ ⧸ LinearMap.ker lFunc
 
 /-- The quadratic form corresponding to squaring a single coefficient. -/
 def sq {ι R : Type*} [CommRing R] (i : ι) : QuadraticForm R (ι → R) :=
-  QuadraticForm.sq.comp <| LinearMap.proj i
+  QuadraticMap.sq.comp <| LinearMap.proj i
 
 theorem sq_map_add_char_two {ι R : Type*} [CommRing R] [CharP R 2] (i : ι) (a b : ι → R) :
     sq i (a + b) = sq i a + sq i b :=
@@ -169,10 +170,10 @@ def Q' : QuadraticForm K (Fin 3 → K) :=
   ∑ i, sq i
 
 theorem Q'_add (x y : Fin 3 → K) : Q' (x + y) = Q' x + Q' y := by
-  simp only [Q', QuadraticForm.sum_apply, sq_map_add_char_two, Finset.sum_add_distrib]
+  simp only [Q', QuadraticMap.sum_apply, sq_map_add_char_two, Finset.sum_add_distrib]
 
 theorem Q'_sub (x y : Fin 3 → K) : Q' (x - y) = Q' x - Q' y := by
-  simp only [Q', QuadraticForm.sum_apply, sq_map_sub_char_two, Finset.sum_sub_distrib]
+  simp only [Q', QuadraticMap.sum_apply, sq_map_sub_char_two, Finset.sum_sub_distrib]
 
 theorem Q'_apply (a : Fin 3 → K) : Q' a = a 0 * a 0 + a 1 * a 1 + a 2 * a 2 :=
   calc
@@ -208,7 +209,7 @@ theorem Q'_zero_under_ideal (v : Fin 3 → K) (hv : v ∈ LinearMap.ker lFunc) :
 /-- `Q'`, lifted to operate on the quotient space `L`. -/
 @[simps!]
 def Q : QuadraticForm K L :=
-  QuadraticForm.ofPolar
+  QuadraticMap.ofPolar
     (fun x =>
       Quotient.liftOn' x Q' fun a b h => by
         rw [Submodule.quotientRel_r_def] at h
@@ -267,7 +268,7 @@ theorem algebraMap_not_injective : ¬Function.Injective (algebraMap K <| Cliffor
   fun h => αβγ_ne_zero <| h <| by rw [algebraMap_αβγ_eq_zero, RingHom.map_zero]
 
 /-- Bonus counterexample: `Q` is a quadratic form that has no bilinear form. -/
-theorem Q_not_in_range_toQuadraticForm : Q ∉ Set.range BilinForm.toQuadraticForm := by
+theorem Q_not_in_range_toQuadraticForm : Q ∉ Set.range LinearMap.BilinMap.toQuadraticMap := by
   rintro ⟨B, hB⟩
   rw [← sub_zero Q] at hB
   apply algebraMap_not_injective
@@ -298,10 +299,10 @@ open Q60596 in
 theorem QuadraticForm.not_forall_mem_range_toQuadraticForm.{v} :
     -- TODO: make `R` universe polymorphic
     ¬∀ (R : Type) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M] (Q : QuadraticForm R M),
-      Q ∈ Set.range BilinForm.toQuadraticForm :=
+      Q ∈ Set.range BilinMap.toQuadraticMap :=
   fun h => Q_not_in_range_toQuadraticForm <| by
     let uU := ULift.moduleEquiv (R := K) (M := L)
     obtain ⟨x, hx⟩ := h K (ULift L) (Q.comp uU)
     refine ⟨x.compl₁₂ uU.symm uU.symm, ?_⟩
     ext
-    simp [BilinForm.toQuadraticForm_comp_same, hx]
+    simp [BilinMap.toQuadraticMap_comp_same, hx]
