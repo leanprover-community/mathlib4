@@ -6,6 +6,7 @@ Authors: Damiano Testa
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Data.Set.Defs
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Logic.Function.Iterate
 
 #align_import algebra.parity from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"

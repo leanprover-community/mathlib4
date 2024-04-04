@@ -3,10 +3,11 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.Init.Data.List.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Data.Nat.Defs
+import Mathlib.Init.Data.List.Basic
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Says
