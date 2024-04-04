@@ -86,13 +86,13 @@ a basis for the lawson topology. -/
 def lawsonBasis := { s : Set α | ∃ t : Set α, t.Finite ∧ ∃ u : Set α, IsOpen[scott α] u ∧
       (upperClosure t : Set α)ᶜ ∩ u = s }
 
-protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (lawson_basis α) := by
-  have lawson_basis_image2 : lawson_basis α =
+protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (lawsonBasis α) := by
+  have lawsonBasis_image2 : lawsonBasis α =
       (image2 (fun x x_1 ↦ ⇑WithLower.toLower ⁻¹' x ∩ ⇑WithScott.toScott ⁻¹' x_1)
         (IsLower.lowerBasis (WithLower α)) {U | @IsOpen (WithScott α) _ U}) := by
-    rw [lawson_basis, image2, IsLower.lowerBasis]
+    rw [lawsonBasis, image2, IsLower.lowerBasis]
     aesop
-  rw [lawson_basis_image2]
+  rw [lawsonBasis_image2]
   convert IsTopologicalBasis.inf_induced IsLower.isTopologicalBasis
     (TopologicalSpace.isTopologicalBasis_opens (α := WithScott α))
     WithLower.toLower WithScott.toScott
