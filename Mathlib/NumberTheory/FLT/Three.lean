@@ -64,7 +64,7 @@ private lemma three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a 
   by_cases h3c : 3 ∣ c
   · apply h3b
     rw [add_assoc, add_comm (b ^ 3), ← add_assoc] at HF
-    exact dvd_c_of_prime_of_dvd_a_of_dvd_b Int.prime_three HF h3a h3c
+    exact dvd_c_of_prime_of_dvd_a_of_dvd_b_of_FLT Int.prime_three h3a h3c HF
   · refine H (-b) (-c) a ha (by simp [h3b]) (by simp [h3c]) h3a hbc ?_
     rw [add_eq_zero_iff_eq_neg, ← (show Odd 3 by decide).neg_pow] at HF
     rw [← HF]
@@ -86,7 +86,7 @@ private lemma fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : �
   rcases hx with (hx | hx | hx)
   · exact hx ▸ h3a
   · exact hx ▸ h3b
-  · simpa [hx] using dvd_c_of_prime_of_dvd_a_of_dvd_b Int.prime_three HF h3a h3b
+  · simpa [hx] using dvd_c_of_prime_of_dvd_a_of_dvd_b_of_FLT Int.prime_three h3a h3b HF
 
 open Finset Int in
 /--
