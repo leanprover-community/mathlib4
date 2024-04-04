@@ -366,8 +366,8 @@ end
 theorem restrictDom_comp_subtype (s : Set α) [DecidablePred (· ∈ s)] :
     (restrictDom M R s).comp (Submodule.subtype _) = LinearMap.id := by
   ext l a
-  by_cases h : a ∈ s <;> simp [h]
-  exact ((mem_supported' R l.1).1 l.2 a h).symm
+  by_cases h : a ∈ s; · simp [h]
+  simpa [h] using ((mem_supported' R l.1).1 l.2 a h).symm
 #align finsupp.restrict_dom_comp_subtype Finsupp.restrictDom_comp_subtype
 
 theorem range_restrictDom (s : Set α) [DecidablePred (· ∈ s)] :
@@ -404,9 +404,11 @@ theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
   refine Finsupp.induction l ?_ ?_
   · exact zero_mem _
   · refine' fun x a l _ _ => add_mem _
-    by_cases h : ∃ i, x ∈ s i <;> simp [h]
-    · cases' h with i hi
+    by_cases h : ∃ i, x ∈ s i
+    · suffices single x a ∈ ⨆ i, supported M R (s i) by simpa [h]
+      cases' h with i hi
       exact le_iSup (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
+    · simp [h]
 #align finsupp.supported_Union Finsupp.supported_iUnion
 
 theorem supported_union (s t : Set α) : supported M R (s ∪ t) = supported M R s ⊔ supported M R t :=
@@ -614,7 +616,7 @@ theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
   rw [disjoint_iff_inf_le]
   rintro l ⟨h₁, h₂⟩
   rw [SetLike.mem_coe, mem_ker, lmapDomain_apply, mapDomain] at h₂
-  simp; ext x
+  simp only [mem_bot]; ext x
   haveI := Classical.decPred fun x => x ∈ s
   by_cases xs : x ∈ s
   · have : Finsupp.sum l (fun a => Finsupp.single (f a)) (f x) = 0 := by

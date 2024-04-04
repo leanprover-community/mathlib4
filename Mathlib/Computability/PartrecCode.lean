@@ -68,7 +68,7 @@ theorem rfind' {f} (hf : Nat.Partrec f) :
               (Primrec₂.pair.comp (Primrec.fst.comp <| Primrec.unpair.comp Primrec.fst)
                   (Primrec.nat_add.comp Primrec.snd
                     (Primrec.snd.comp <| Primrec.unpair.comp Primrec.fst))).to_comp))
-    simp at this; exact this
+    simpa using this
 #align nat.partrec.rfind' Nat.Partrec.rfind'
 
 /-- Code for partial recursive functions from ℕ to ℕ.
@@ -343,7 +343,7 @@ theorem rec_prim' {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (h
       snd.pair <| nat_div2.comp <| nat_div2.comp snd
   refine (nat_strong_rec (fun a n => F a (ofNat Code n)) this.to₂ fun a n => ?_)
     |>.comp .id (encode_iff.2 hc) |>.of_eq fun a => by simp
-  simp
+  simp only
   iterate 4 cases' n with n; · simp [ofNatCode_eq, ofNatCode]; rfl
   simp only [G]; rw [List.length_map, List.length_range]
   let m := n.div2.div2
@@ -356,9 +356,8 @@ theorem rec_prim' {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (h
       (Nat.succ_le_succ (Nat.le_add_right ..))
   have m1 : m.unpair.1 < n + 4 := lt_of_le_of_lt m.unpair_left_le hm
   have m2 : m.unpair.2 < n + 4 := lt_of_le_of_lt m.unpair_right_le hm
-  simp [G₁]; simp [m, List.get?_map, List.get?_range, hm, m1, m2]
-  rw [show ofNat Code (n + 4) = ofNatCode (n + 4) from rfl]
-  simp [ofNatCode]
+  simp only [List.get?_map, hm, List.get?_range, Option.map_some', m1, m2, Option.some_bind,
+    show ofNat Code (n + 4) = ofNatCode (n + 4) from rfl, ofNatCode, Option.some.injEq, G₁, m]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
 #align nat.partrec.code.rec_prim' Nat.Partrec.Code.rec_prim'
 
@@ -456,7 +455,7 @@ theorem rec_computable {α σ} [Primcodable α] [Primcodable σ] {c : α → Cod
       snd.pair <| nat_div2.comp <| nat_div2.comp snd
   refine (nat_strong_rec (fun a n => F a (ofNat Code n)) this.to₂ fun a n => ?_)
     |>.comp .id (encode_iff.2 hc) |>.of_eq fun a => by simp
-  simp
+  simp only
   iterate 4 cases' n with n; · simp [ofNatCode_eq, ofNatCode]; rfl
   simp only [G]; rw [List.length_map, List.length_range]
   let m := n.div2.div2
@@ -469,9 +468,8 @@ theorem rec_computable {α σ} [Primcodable α] [Primcodable σ] {c : α → Cod
       (Nat.succ_le_succ (Nat.le_add_right ..))
   have m1 : m.unpair.1 < n + 4 := lt_of_le_of_lt m.unpair_left_le hm
   have m2 : m.unpair.2 < n + 4 := lt_of_le_of_lt m.unpair_right_le hm
-  simp [G₁]; simp [m, List.get?_map, List.get?_range, hm, m1, m2]
-  rw [show ofNat Code (n + 4) = ofNatCode (n + 4) from rfl]
-  simp [ofNatCode]
+  simp only [List.get?_map, hm, List.get?_range, Option.map_some', m1, m2, Option.some_bind,
+    show ofNat Code (n + 4) = ofNatCode (n + 4) from rfl, ofNatCode, Option.some.injEq, G₁, m]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
 #align nat.partrec.code.rec_computable Nat.Partrec.Code.rec_computable
 
@@ -544,7 +542,7 @@ theorem eval_curry (c n x) : eval (curry c n) x = eval c (Nat.pair n x) := by si
 theorem const_prim : Primrec Code.const :=
   (_root_.Primrec.id.nat_iterate (_root_.Primrec.const zero)
     (comp_prim.comp (_root_.Primrec.const succ) Primrec.snd).to₂).of_eq
-    fun n => by simp; induction n <;>
+    fun n => by simp only [id_eq]; induction n <;>
       simp [*, Code.const, Function.iterate_succ', -Function.iterate_succ]
 #align nat.partrec.code.const_prim Nat.Partrec.Code.const_prim
 
@@ -680,18 +678,20 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
     · -- prec cf cg
       revert h
       simp only [unpaired, bind, Option.mem_def]
-      induction n.unpair.2 <;> simp
+      induction n.unpair.2 --simp
       · apply hf
-      · exact fun y h₁ h₂ => ⟨y, evaln_mono hl' h₁, hg _ _ h₂⟩
+      · simpa using fun y h₁ h₂ => ⟨y, evaln_mono hl' h₁, hg _ _ h₂⟩
     · -- rfind' cf
       simp? [Bind.bind] at h ⊢ says
         simp only [unpaired, bind, pair_unpair, Option.pure_def, Option.mem_def,
           Option.bind_eq_some] at h ⊢
       refine' h.imp fun x => And.imp (hf _ _) _
-      by_cases x0 : x = 0 <;> simp [x0]
-      exact evaln_mono hl'
+      by_cases x0 : x = 0
+      · simp [x0]
+      · simpa [x0] using evaln_mono hl'
 #align nat.partrec.code.evaln_mono Nat.Partrec.Code.evaln_mono
 
+set_option linter.flexible false in  -- simp; lots
 theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
   | 0, _, n, x, h => by simp [evaln] at h
   | k + 1, c, n, x, h => by
@@ -957,6 +957,7 @@ private theorem evaln_map (k c n) :
       exact kn.elim (evaln_bound e)
     simpa using kn
 
+set_option linter.flexible false in  -- simp; lots
 /-- The `Nat.Partrec.Code.evaln` function is primitive recursive. -/
 theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a.2 :=
   have :

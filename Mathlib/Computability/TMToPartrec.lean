@@ -282,6 +282,7 @@ theorem exists_code.comp {m n} {f : Vector ℕ n →. ℕ} {g : Fin n → Vector
         rfl⟩
 #align turing.to_partrec.code.exists_code.comp Turing.ToPartrec.Code.exists_code.comp
 
+set_option linter.flexible false in  -- simp; lots
 theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     ∃ c : Code, ∀ v : Vector ℕ n, c.eval v.1 = pure <$> f v := by
   induction hf with
@@ -1443,6 +1444,7 @@ theorem trNat_natEnd (n) : ∀ x ∈ trNat n, natEnd x = false :=
   trNum_natEnd _
 #align turing.partrec_to_TM2.tr_nat_nat_end Turing.PartrecToTM2.trNat_natEnd
 
+set_option linter.flexible false in  -- simp; lots
 theorem trList_ne_consₗ : ∀ (l), ∀ x ∈ trList l, x ≠ Γ'.consₗ
   | a :: l, x, h => by
     simp [trList] at h
@@ -1539,6 +1541,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
     rfl
 #align turing.partrec_to_TM2.succ_ok Turing.PartrecToTM2.succ_ok
 
+set_option linter.flexible false in  -- simp; lots
 theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
     Reaches₁ (TM2.step tr) ⟨some (Λ'.pred q₁ q₂), s, K'.elim (trList v) [] c d⟩
       (v.headI.rec ⟨some q₁, s', K'.elim (trList v.tail) [] c d⟩ fun n _ =>
@@ -1620,6 +1623,7 @@ theorem trNormal_respects (c k v s) :
   | fix f IH => apply IH
 #align turing.partrec_to_TM2.tr_normal_respects Turing.PartrecToTM2.trNormal_respects
 
+set_option linter.flexible false in  -- simp; lots
 theorem tr_ret_respects (k v s) : ∃ b₂,
     TrCfg (stepRet k v) b₂ ∧
       Reaches₁ (TM2.step tr)
@@ -1693,6 +1697,7 @@ theorem tr_init (c v) :
   trNormal_respects _ _ _ _
 #align turing.partrec_to_TM2.tr_init Turing.PartrecToTM2.tr_init
 
+set_option linter.flexible false in  -- simp; lots
 theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v := by
   obtain ⟨i, h₁, h₂⟩ := tr_init c v
   refine' Part.ext fun x => _
@@ -1722,6 +1727,7 @@ def trStmts₁ : Λ' → Finset Λ'
   | Q@(Λ'.ret _) => {Q}
 #align turing.partrec_to_TM2.tr_stmts₁ Turing.PartrecToTM2.trStmts₁
 
+set_option linter.flexible false in  -- simp; lots
 theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trStmts₁ q := by
   induction' q with _ _ _ q q_ih _ _ q q_ih q q_ih _ _ q q_ih q q_ih q q_ih q₁ q₂ q₁_ih q₂_ih _ <;>
     simp (config := { contextual := true }) only [trStmts₁, Finset.mem_insert, Finset.mem_union,
@@ -1919,7 +1925,7 @@ theorem supports_union {K₁ K₂ S} : Supports (K₁ ∪ K₂) S ↔ Supports K
 
 theorem supports_biUnion {K : Option Γ' → Finset Λ'} {S} :
     Supports (Finset.univ.biUnion K) S ↔ ∀ a, Supports (K a) S := by
-  simp [Supports]; apply forall_swap
+  simpa [Supports] using forall_swap
 #align turing.partrec_to_TM2.supports_bUnion Turing.PartrecToTM2.supports_biUnion
 
 theorem head_supports {S k q} (H : (q : Λ').Supports S) : (head k q).Supports S := fun _ => by
@@ -1941,6 +1947,7 @@ theorem ret_supports {S k} (H₁ : contSupp k ⊆ S) : TM2.SupportsStmt S (tr (�
     · exact H₁ (R _ <| L _ <| R _ <| R _ <| R _ <| Finset.mem_singleton_self _)
 #align turing.partrec_to_TM2.ret_supports Turing.PartrecToTM2.ret_supports
 
+set_option linter.flexible false in  -- simp; lots
 theorem trStmts₁_supports {S q} (H₁ : (q : Λ').Supports S) (HS₁ : trStmts₁ q ⊆ S) :
     Supports (trStmts₁ q) S := by
   have W := fun {q} => trStmts₁_self q
@@ -1972,6 +1979,7 @@ theorem trStmts₁_supports' {S q K} (H₁ : (q : Λ').Supports S) (H₂ : trStm
   exact supports_union.2 ⟨trStmts₁_supports H₁ H₂.1, H₃ H₂.2⟩
 #align turing.partrec_to_TM2.tr_stmts₁_supports' Turing.PartrecToTM2.trStmts₁_supports'
 
+set_option linter.flexible false in  -- simp; lots
 theorem trNormal_supports {S c k} (Hk : codeSupp c k ⊆ S) : (trNormal c k).Supports S := by
   induction c generalizing k with simp [Λ'.Supports, head]
   | zero' => exact Finset.union_subset_right Hk

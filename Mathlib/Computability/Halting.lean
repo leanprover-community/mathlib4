@@ -43,7 +43,8 @@ theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
     obtain ⟨k, e⟩ := Nat.rfindOpt_spec h
     revert e
     simp only [Option.mem_def]
-    cases' e' : cf.evaln k n with y <;> simp <;> intro e
+    cases' e' : cf.evaln k n with y <;>
+      simp only [Option.none_orElse, Option.some_orElse, Option.some.injEq] <;> intro e
     · exact Or.inr (Code.evaln_sound e)
     · subst y
       exact Or.inl (Code.evaln_sound e')
@@ -87,7 +88,7 @@ theorem merge' {f g : α →. σ} (hf : Partrec f) (hg : Partrec g) :
     simp only [k', exists_prop, mem_coe, mem_bind_iff, Option.mem_def] at h'
     obtain ⟨n, hn, hx⟩ := h'
     have := (H _).1 _ hn
-    simp [mem_decode₂, encode_injective.eq_iff] at this
+    simp only [decode₂_encode, coe_some, bind_some, mem_map_iff] at this
     obtain ⟨a', ha, rfl⟩ | ⟨a', ha, rfl⟩ := this <;> simp only [encodek, Option.some_inj] at hx <;>
       rw [hx] at ha
     · exact Or.inl ha
@@ -223,7 +224,7 @@ theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C �
                 (Partrec.nat_iff.1 <| eval_part.comp (const cf) Computable.id)
                 (Partrec.nat_iff.1 <| eval_part.comp (const cg) Computable.id) ((hC _).1 fC),
         fun h => by {
-          obtain rfl | rfl := h <;> simp [ComputablePred, Set.mem_empty_iff_false] <;>
+          obtain rfl | rfl := h <;> simp only [ComputablePred] <;>
             exact ⟨by infer_instance, Computable.const _⟩ }⟩
 #align computable_pred.rice₂ ComputablePred.rice₂
 
@@ -317,6 +318,7 @@ theorem head {n : ℕ} : @Partrec' n.succ (@head ℕ n) :=
   prim Nat.Primrec'.head
 #align nat.partrec'.head Nat.Partrec'.head
 
+set_option linter.flexible false in  -- simp; rw
 theorem tail {n f} (hf : @Partrec' n f) : @Partrec' n.succ fun v => f v.tail :=
   (hf.comp _ fun i => @prim _ _ <| Nat.Primrec'.get i.succ).of_eq fun v => by
     simp; rw [← ofFn_get v.tail]; congr; funext i; simp
@@ -325,14 +327,14 @@ theorem tail {n f} (hf : @Partrec' n f) : @Partrec' n.succ fun v => f v.tail :=
 protected theorem bind {n f g} (hf : @Partrec' n f) (hg : @Partrec' (n + 1) g) :
     @Partrec' n fun v => (f v).bind fun a => g (a ::ᵥ v) :=
   (@comp n (n + 1) g (fun i => Fin.cases f (fun i v => some (v.get i)) i) hg fun i => by
-        refine' Fin.cases _ (fun i => _) i <;> simp [*]
+        refine' Fin.cases _ (fun i => _) i; · simp [*]
         exact prim (Nat.Primrec'.get _)).of_eq
     fun v => by simp [mOfFn, Part.bind_assoc, pure]
 #align nat.partrec'.bind Nat.Partrec'.bind
 
 protected theorem map {n f} {g : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' n f)
     (hg : @Partrec' (n + 1) g) : @Partrec' n fun v => (f v).map fun a => g (a ::ᵥ v) := by
-  simp [(Part.bind_some_eq_map _ _).symm]; exact hf.bind hg
+  simpa [(Part.bind_some_eq_map _ _).symm] using hf.bind hg
 #align nat.partrec'.map Nat.Partrec'.map
 
 /-- Analogous to `Nat.Partrec'` for `ℕ`-valued functions, a predicate for partial recursive

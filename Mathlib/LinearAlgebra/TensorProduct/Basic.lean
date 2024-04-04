@@ -697,7 +697,9 @@ variable (R M)
 -/
 protected def lid : R ⊗[R] M ≃ₗ[R] M :=
   LinearEquiv.ofLinear (lift <| LinearMap.lsmul R M) (mk R R M 1) (LinearMap.ext fun _ => by simp)
-    (ext' fun r m => by simp; rw [← tmul_smul, ← smul_tmul, smul_eq_mul, mul_one])
+    (ext' fun r m => by
+      suffices r • 1 ⊗ₜ[R] m = r ⊗ₜ[R] m by simpa using this
+      rw [← tmul_smul, ← smul_tmul, smul_eq_mul, mul_one])
 #align tensor_product.lid TensorProduct.lid
 
 end
