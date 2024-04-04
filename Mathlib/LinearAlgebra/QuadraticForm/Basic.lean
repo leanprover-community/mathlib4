@@ -386,8 +386,7 @@ instance : SMul S (QuadraticForm R M N) :=
   ⟨fun a Q =>
     { toFun := a • ⇑Q
       toFun_smul := fun b x => by
-        rw [Pi.smul_apply, map_smul, Pi.smul_apply]
-        rw [smul_comm]
+        rw [Pi.smul_apply, map_smul, Pi.smul_apply, smul_comm]
       exists_companion' :=
         let ⟨B, h⟩ := Q.exists_companion
         ⟨a • B, by simp [h]⟩ }⟩
