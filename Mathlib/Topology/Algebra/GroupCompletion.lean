@@ -41,9 +41,7 @@ open UniformSpace CauchyFilter Filter Set Function
 
 variable [UniformSpace α]
 
-/-! # Operations on the completion of a uniform space -/
-
-@[to_additive "If `α` has a `0`, then so does `Completion α`."]
+@[to_additive]
 instance [One α] : One (Completion α) := ⟨(1 : α)⟩
 
 /-- If `α` is a group, then `Completion α` has an inversion operation. Note that this is defined
