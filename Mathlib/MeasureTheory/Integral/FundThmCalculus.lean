@@ -1357,7 +1357,7 @@ theorem integral_deriv_mul_eq_sub_of_hasDeriv_right {u v u' v' : ℝ → A}
 
 /-- Special case of `integral_deriv_mul_eq_sub_of_hasDeriv_right` where the functions have a
   one-sided derivative at the endpoints. -/
-theorem integral_deriv_mul_eq_sub_of_HasDerivWithinAt {u v u' v' : ℝ → A}
+theorem integral_deriv_mul_eq_sub_of_hasDerivWithinAt {u v u' v' : ℝ → A}
     (hu : ∀ x ∈ [[a, b]], HasDerivWithinAt u (u' x) [[a, b]] x)
     (hv : ∀ x ∈ [[a, b]], HasDerivWithinAt v (v' x) [[a, b]] x)
     (hu' : IntervalIntegrable u' volume a b)
