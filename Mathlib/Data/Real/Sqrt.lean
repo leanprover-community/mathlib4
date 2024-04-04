@@ -126,8 +126,11 @@ end NNReal
 
 namespace Real
 
-/-- An auxiliary sequence of rational numbers that converges to `Real.sqrt (mk f)`.
-Currently this sequence is not used in `mathlib`.  -/
+/-- An auxiliary sequence of rational numbers that converges to `Real.sqrt (mk f)` as long as `mk f` is not equal to 0.
+Currently this sequence is not used in `mathlib`.
+See https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/Computable.20real.2Esqrt for discussion:
+this is not immediately a path to a computable `Real.sqrt` function.
+-/
 def sqrtAux (f : CauSeq ℚ abs) : ℕ → ℚ
   | 0 => mkRat (f 0).num.toNat.sqrt (f 0).den.sqrt
   | n + 1 =>
@@ -142,7 +145,7 @@ theorem sqrtAux_nonneg (f : CauSeq ℚ abs) : ∀ i : ℕ, 0 ≤ sqrtAux f i
   | n + 1 => le_max_left _ _
 #align real.sqrt_aux_nonneg Real.sqrtAux_nonneg
 
-/- TODO(Mario): finish the proof
+/- TODO(Mario): finish the proof; note that this theorem is only true if f is bounded away from 0
 theorem sqrt_aux_converges (f : cau_seq ℚ abs) : ∃ h x, 0 ≤ x ∧ x * x = max 0 (mk f) ∧
     mk ⟨sqrt_aux f, h⟩ = x :=
 begin
