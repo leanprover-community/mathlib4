@@ -179,7 +179,7 @@ lemma lawsonClosed_of_scottClosed (s : Set α) (h : IsClosed (WithScott.ofScott 
     IsClosed (WithLawson.ofLawson ⁻¹' s) := h.mono lawson_le_scott
 
 lemma lawsonClosed_of_lowerClosed (s : Set α) (h : IsClosed (WithLower.ofLower ⁻¹' s)) :
-    IsClosed (WithLawson.ofLawson ⁻¹' s) := IsClosed.mono h lawson_le_lower
+    IsClosed (WithLawson.ofLawson ⁻¹' s) := h.mono lawson_le_lower
 
 /-- An upper set is Lawson open if and only if it is Scott open -/
 lemma lawsonOpen_iff_scottOpen_of_isUpperSet {s : Set α} (h : IsUpperSet s) :
