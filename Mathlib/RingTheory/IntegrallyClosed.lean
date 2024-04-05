@@ -98,6 +98,9 @@ namespace IsIntegrallyClosedIn
 
 variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] [iic : IsIntegrallyClosedIn R A]
 
+theorem algebraMap_eq_of_integral {x : A} : IsIntegral R x → ∃ y : R, algebraMap R A y = x :=
+  IsIntegralClosure.isIntegral_iff.mp
+
 theorem isIntegral_iff {x : A} : IsIntegral R x ↔ ∃ y : R, algebraMap R A y = x :=
   IsIntegralClosure.isIntegral_iff
 
@@ -141,6 +144,9 @@ variable {K : Type*} [CommRing K] [Algebra R K] [ifr : IsFractionRing R K]
 as `IsIntegrallyClosed R R (FractionRing R)`. -/
 instance : IsIntegralClosure R R K :=
   (isIntegrallyClosed_iff_isIntegralClosure K).mp iic
+
+theorem algebraMap_eq_of_integral {x : K} : IsIntegral R x → ∃ y : R, algebraMap R K y = x :=
+  IsIntegralClosure.isIntegral_iff.mp
 
 theorem isIntegral_iff {x : K} : IsIntegral R x ↔ ∃ y : R, algebraMap R K y = x :=
   IsIntegrallyClosedIn.isIntegral_iff
