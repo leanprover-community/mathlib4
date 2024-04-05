@@ -269,6 +269,7 @@ def usesGoal? : SyntaxNodeKind → Bool
   | ``Lean.Parser.Tactic.rcases => false
   | ``Lean.Parser.Tactic.specialize => false
   | ``Lean.Parser.Tactic.subst => false
+  | ``«tacticBy_cases_:_» => false
   | _ => true
 
 /-- `getFVarIdCandidates fv name lctx` takes an input an `FVarId`, a `Name` and a `LocalContext`.
