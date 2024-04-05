@@ -22,6 +22,10 @@ Hahn series.
   of `HahnSeries Γ R` on `HahnModule Γ V` for an `R`-module `V`.
   * If `R` is a (commutative) (semi-)ring, then so is `HahnSeries Γ R`.
 
+## To do
+
+* Incorporate OrderedCancelVAdd from Algebra.Order.AddTorsor.
+
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/

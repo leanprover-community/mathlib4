@@ -7,7 +7,6 @@ import Mathlib.Data.Int.Interval
 import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
-import Mathlib.RingTheory.Localization.FractionRing
 
 #align_import ring_theory.laurent_series from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
@@ -42,39 +41,11 @@ variable {R : Type*}
 
 namespace LaurentSeries
 
-section Zero
-
-variable [Zero R]
-
-theorem supp_bdd_below_supp_PWO (f : ℤ → R) (n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
-    (Function.support f).IsPWO := by
-  rw [← Set.isWF_iff_isPWO, Set.isWF_iff_no_descending_seq]
-  rintro g hg hsupp
-  refine Set.infinite_range_of_injective (StrictAnti.injective hg) ?_
-  refine (Set.finite_Icc n <| g 0).subset <| Set.range_subset_iff.2 ?_
-  simp_all only [Function.mem_support, ne_eq, Set.mem_Icc]
-  intro k
-  constructor
-  exact Int.not_lt.mp (mt (hn (g k)) (hsupp k))
-  exact (StrictAnti.le_iff_le hg).mpr (Nat.zero_le k)
-
-/-- Construct a Laurent series from any function with support that is bounded below. -/
-def LaurentFromSuppBddBelow (f : ℤ → R) (n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
-    LaurentSeries R where
-  coeff := f
-  isPWO_support' := supp_bdd_below_supp_PWO f n hn
-
-@[simp]
-theorem coeff_LaurentFromSuppBddBelow (f : ℤ → R) (m n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
-    coeff (LaurentFromSuppBddBelow f n hn) m = f m := by exact rfl
-
-end Zero
-
 section HasseDeriv
 
 variable {V : Type*} [AddCommGroup V] [CommRing R] [Module R V]
 
-theorem hasseDeriv_bdd_below (k : ℕ) (f : LaurentSeries V) (m : ℤ) (h : m < f.order - k) :
+theorem hasseDerivCoeffEqZero (k : ℕ) (f : LaurentSeries V) (m : ℤ) (h : m < f.order - k) :
     (fun (n : ℤ) ↦ Ring.choose (n + k) k • HahnSeries.coeff f (n + k)) m = 0 := by
   simp only
   rw [@lt_sub_iff_add_lt] at h
@@ -82,17 +53,19 @@ theorem hasseDeriv_bdd_below (k : ℕ) (f : LaurentSeries V) (m : ℤ) (h : m < 
 
 /-- The Laurent series given by Hasse derivative. -/
 def hasseDeriv (k : ℕ) (f : LaurentSeries V) : LaurentSeries V :=
-  LaurentFromSuppBddBelow (fun n => (Ring.choose (n + k) k) • f.coeff (n + k)) (f.order - k)
-    (hasseDeriv_bdd_below k f)
+  HahnSeries.ofSuppBddBelow (fun (n : ℤ) => (Ring.choose (n + k) k) • f.coeff (n + k))
+  (forallLTEqZero_supp_BddBelow _ (f.order - k : ℤ) (hasseDerivCoeffEqZero k f))
 
 theorem hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) : (hasseDeriv k f).coeff n =
     Ring.choose (n + k) k • HahnSeries.coeff f (n + k) := rfl
 
+@[simp]
 theorem hasseDeriv_coeff_add (k : ℕ) (f g : LaurentSeries V) (n : ℤ) :
     HahnSeries.coeff (hasseDeriv k (f + g)) n = HahnSeries.coeff (hasseDeriv k f) n +
     HahnSeries.coeff (hasseDeriv k g) n := by
   simp only [hasseDeriv_coeff, add_coeff', Pi.add_apply, smul_add]
 
+@[simp]
 theorem hasseDeriv_coeff_smul {S : Type*} [Monoid S] [DistribMulAction S V] (k : ℕ) (s : S)
     (f : LaurentSeries V) (n : ℤ) : HahnSeries.coeff (hasseDeriv k (s • f)) n =
     s • HahnSeries.coeff (hasseDeriv k f) n := by
@@ -112,7 +85,7 @@ theorem hasseDeriv_smul (k : ℕ) (r : R) (f : LaurentSeries V) : hasseDeriv k (
 theorem hasseDeriv_zero' (f : LaurentSeries V) : hasseDeriv 0 f = f := by
   simp only [HahnSeries.ext_iff, hasseDeriv, hasseDeriv, Ring.choose_zero_right]
   ext
-  simp_rw [Nat.cast_zero, add_zero, one_smul, sub_zero]
+  simp_rw [Nat.cast_zero, add_zero, one_smul]
   exact rfl
 
 /-- The Hasse derivative as a linear map. -/
@@ -142,7 +115,7 @@ theorem hasseDeriv_single' (k : ℕ) (n : ℤ) (x : V) :
     hasseDeriv k (single (n + k) x) = single n ((Ring.choose (n + k) k) • x) := by
   simp_rw [hasseDeriv, single_coeff, single]
   ext m
-  simp only [add_left_inj, smul_ite_zero, ne_eq, coeff_LaurentFromSuppBddBelow, ZeroHom.coe_mk]
+  simp only [add_left_inj, smul_ite_zero, ne_eq, HahnSeries.ofSuppBddBelow_coeff, ZeroHom.coe_mk]
   unfold Pi.single Function.update
   simp_all only [eq_rec_constant, Pi.zero_apply, dite_eq_ite]
 

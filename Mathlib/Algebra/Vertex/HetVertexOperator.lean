@@ -18,7 +18,7 @@ In this file we introduce heterogeneous vertex operators using Hahn series.
   products of the form `(X-Y)^n A(X)B(Y)` for all integers `n`, where `(X-Y)^n` is expanded as
   `X^n(1-Y/X)^n` in `R((X))((Y))`
 ## To do:
-* Residues of heterogeneous vertex operators, when `Γ = Γ' ×ₗ ℤ` or `Γ = ℤ ×ₗ Γ'`.
+* Incorporate CancelVAdd
 * more API to make ext comparisons easier.
 * formal variable API?
 ## References
@@ -120,12 +120,13 @@ def HetVertexOperator.of_coeff (f : Γ → V →ₗ[R] W)
     simp only [map_smul, RingHom.id_apply]
     exact rfl
 
+variable {Γ' : Type*} [OrderedCancelAddCommMonoid Γ']
+
 /-- The composite of two heterogeneous vertex operators acting on a vector, as an iterated Hahn
   series.-/
 @[simps]
-def CompHahnSeries {Γ' : Type*} [OrderedCancelAddCommMonoid Γ'] {U : Type*} [AddCommGroup U]
-    [Module R U] (A : HetVertexOperator Γ R V W) (B : HetVertexOperator Γ' R U V) (u : U) :
-    HahnSeries Γ' (HahnSeries Γ W) where
+def CompHahnSeries {U : Type*} [AddCommGroup U] [Module R U] (A : HetVertexOperator Γ R V W)
+    (B : HetVertexOperator Γ' R U V) (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
   coeff g' := A (coeff B g' u)
   isPWO_support' := by
     refine Set.IsPWO.mono ((B u).isPWO_support') ?_
@@ -136,26 +137,25 @@ def CompHahnSeries {Γ' : Type*} [OrderedCancelAddCommMonoid Γ'] {U : Type*} [A
     simp_all only [map_zero, HahnSeries.zero_coeff, not_true_eq_false]
 
 @[simp]
-theorem CompHahnSeries.add {Γ' : Type*} [OrderedCancelAddCommMonoid Γ'] {U : Type*} [AddCommGroup U]
-    [Module R U] (A : HetVertexOperator Γ R V W) (B : HetVertexOperator Γ' R U V) (u v : U) :
+theorem CompHahnSeries.add {U : Type*} [AddCommGroup U] [Module R U] (A : HetVertexOperator Γ R V W)
+    (B : HetVertexOperator Γ' R U V) (u v : U) :
     CompHahnSeries A B (u + v) = CompHahnSeries A B u + CompHahnSeries A B v := by
   ext
   simp only [CompHahnSeries_coeff, map_add, coeff_apply, HahnSeries.add_coeff', Pi.add_apply]
   rw [← @HahnSeries.add_coeff]
 
 @[simp]
-theorem CompHahnSeries.sMul {Γ' : Type*} [OrderedCancelAddCommMonoid Γ'] {U : Type*}
-    [AddCommGroup U] [Module R U] (A : HetVertexOperator Γ R V W) (B : HetVertexOperator Γ' R U V)
-    (r : R) (u : U) : CompHahnSeries A B (r • u) = r • CompHahnSeries A B u := by
+theorem CompHahnSeries.sMul {U : Type*} [AddCommGroup U] [Module R U]
+    (A : HetVertexOperator Γ R V W) (B : HetVertexOperator Γ' R U V) (r : R) (u : U) :
+    CompHahnSeries A B (r • u) = r • CompHahnSeries A B u := by
   ext
   simp only [CompHahnSeries_coeff, map_smul, coeff_apply, HahnSeries.smul_coeff]
   exact rfl
 
 /-- The composite of two heterogeneous vertex operators, as a heterogeneous vertex operator. -/
 @[simps]
-def HetComp {Γ' : Type*} [OrderedCancelAddCommMonoid Γ'] {U : Type*} [AddCommGroup U] [Module R U]
-    (A : HetVertexOperator Γ R V W) (B : HetVertexOperator Γ' R U V) :
-    HetVertexOperator (Γ' ×ₗ Γ) R U W where
+def HetComp {U : Type*} [AddCommGroup U] [Module R U] (A : HetVertexOperator Γ R V W)
+    (B : HetVertexOperator Γ' R U V) : HetVertexOperator (Γ' ×ₗ Γ) R U W where
   toFun u := HahnModule.of R (HahnSeries.ofIterate (CompHahnSeries A B u))
   map_add' := by
     intro u v
@@ -169,39 +169,43 @@ def HetComp {Γ' : Type*} [OrderedCancelAddCommMonoid Γ'] {U : Type*} [AddCommG
       HahnSeries.smul_coeff, CompHahnSeries_coeff, coeff_apply]
     exact rfl
 
-/-- The residue of a heterogeneous vertex operator on a lex product with `ℤ` on the left. -/
-def ResLeft (A : HetVertexOperator (ℤ ×ₗ Γ) R V W) :  HetVertexOperator Γ R V W :=
-  HetVertexOperator.of_coeff (fun g => coeff A (toLex (-1, g)))
+/-- The restriction of a heterogeneous vertex operator on a lex product to an element of the left
+factor. -/
+def ResLeft (A : HetVertexOperator (Γ' ×ₗ Γ) R V W) (g' : Γ'):  HetVertexOperator Γ R V W :=
+  HetVertexOperator.of_coeff (fun g => coeff A (toLex (g', g)))
     (fun v => Set.PartiallyWellOrderedOn.fiberProdLex (A v).isPWO_support' _)
 
-theorem coeff_ResLeft (A : HetVertexOperator (ℤ ×ₗ Γ) R V W) (g : Γ) :
-    coeff (ResLeft A) g = coeff A (toLex (-1, g)) := rfl
+theorem coeff_ResLeft (A : HetVertexOperator (Γ' ×ₗ Γ) R V W) (g' : Γ') (g : Γ) :
+    coeff (ResLeft A g') g = coeff A (toLex (g', g)) :=
+  rfl
 
 /-- The left residue as a linear map. -/
 @[simps]
-def ResLeft.linearMap : HetVertexOperator (ℤ ×ₗ Γ) R V W →ₗ[R] HetVertexOperator Γ R V W where
-  toFun := ResLeft
+def ResLeft.linearMap (g' : Γ'):
+    HetVertexOperator (Γ' ×ₗ Γ) R V W →ₗ[R] HetVertexOperator Γ R V W where
+  toFun A := ResLeft A g'
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-theorem coeff_left_lex_supp.isPWO (A : HetVertexOperator (Γ ×ₗ ℤ) R V W) (v : V) :
-    (Function.support (fun (g : Γ) => (coeff A (toLex (g, -1))) v)).IsPWO := by
+theorem coeff_left_lex_supp.isPWO (A : HetVertexOperator (Γ ×ₗ Γ') R V W) (g' : Γ') (v : V) :
+    (Function.support (fun (g : Γ) => (coeff A (toLex (g, g'))) v)).IsPWO := by
   refine Set.IsPWO.mono (Set.PartiallyWellOrderedOn.imageProdLex (A v).isPWO_support') ?_
   simp_all only [coeff_apply, Function.support_subset_iff, ne_eq, Set.mem_image,
     Function.mem_support]
-  exact fun x a ↦ Exists.intro (toLex (x, -1)) { left := a, right := rfl }
+  exact fun x a ↦ Exists.intro (toLex (x, g')) { left := a, right := rfl }
 
-/-- The residue of a heterogeneous vertex operator on a lex product with `ℤ` on the right. -/
-def ResRight (A : HetVertexOperator (Γ ×ₗ ℤ) R V W) : HetVertexOperator Γ R V W :=
-  HetVertexOperator.of_coeff (fun g => coeff A (g, -1)) (fun v => coeff_left_lex_supp.isPWO A v)
+/-- The restriction of a heterogeneous vertex operator on a lex product to an element of the right
+factor. -/
+def ResRight (A : HetVertexOperator (Γ ×ₗ Γ') R V W) (g' : Γ') : HetVertexOperator Γ R V W :=
+  HetVertexOperator.of_coeff (fun g => coeff A (g, g')) (fun v => coeff_left_lex_supp.isPWO A g' v)
 
-theorem coeff_ResRight (A : HetVertexOperator (Γ ×ₗ ℤ) R V W) (g : Γ) :
-    coeff (ResRight A) g = coeff A (toLex (g, -1)) := rfl
+theorem coeff_ResRight (A : HetVertexOperator (Γ ×ₗ Γ') R V W) (g' : Γ') (g : Γ) :
+    coeff (ResRight A g') g = coeff A (toLex (g, g')) := rfl
 
 /-- The right residue as a linear map. -/
 @[simps]
-def ResRight.linearMap : HetVertexOperator (Γ ×ₗ ℤ) R V W →ₗ[R] HetVertexOperator Γ R V W where
-  toFun := ResRight
+def ResRight.linearMap (g' : Γ') : HetVertexOperator (Γ ×ₗ Γ') R V W →ₗ[R] HetVertexOperator Γ R V W where
+  toFun A := ResRight A g'
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
