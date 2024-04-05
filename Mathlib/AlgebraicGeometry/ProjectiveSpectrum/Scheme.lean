@@ -809,12 +809,12 @@ The homeomorphism `Proj|D(f) ≅ Spec A⁰_f` defined by
 -/
 def projIsoSpecTopComponent {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     (Proj.T| (pbo f)) ≅ (Spec.T (A⁰_ f))  where
-  hom := ProjIsoSpecTopComponent.toSpec _ _
+  hom := ProjIsoSpecTopComponent.toSpec 𝒜 f
   inv := ProjIsoSpecTopComponent.fromSpec f_deg hm
-  hom_inv_id := ConcreteCategory.hom_ext _ _ <|
-    ProjIsoSpecTopComponent.fromSpec_toSpec 𝒜 f_deg hm
+  hom_inv_id := ConcreteCategory.hom_ext _ _
+    (ProjIsoSpecTopComponent.fromSpec_toSpec 𝒜 f_deg hm)
   inv_hom_id := ConcreteCategory.hom_ext _ _ <|
-    ProjIsoSpecTopComponent.toSpec_fromSpec 𝒜 f_deg hm
+    (ProjIsoSpecTopComponent.toSpec_fromSpec 𝒜 f_deg hm)
 
 namespace ProjIsoSpecSheafComponent
 
@@ -847,44 +847,43 @@ def eval : AlgebraicGeometry.StructureSheaf.Localizations (A⁰_ f) (φ ⟨y, _m
 /--
 choose an arbitrary numerator for `s (φ y)` where `y ∈ φ⁻¹(V)`.
 -/
-abbrev eval_num : A⁰_ f := eval _ _ s y |>.exists_rep.choose.1
+abbrev evalNum : A⁰_ f := eval _ _ s y |>.exists_rep.choose.1
 
 
 /--
 choose an arbitrary denominator for `s (φ y)` where `y ∈ φ⁻¹(V)`.
 -/
-abbrev eval_den : A⁰_ f := eval _ _ s y |>.exists_rep.choose.2.1
+abbrev evalDen : A⁰_ f := eval _ _ s y |>.exists_rep.choose.2.1
 
-lemma eval_den_not_mem : eval_den _ _ s y ∉ (φ ⟨y, _mem_pbo _ _ y⟩).asIdeal :=
+lemma evalDen_not_mem : evalDen _ _ s y ∉ (φ ⟨y, _mem_pbo _ _ y⟩).asIdeal :=
   eval _ _ s y |>.exists_rep.choose.2.2
 
-lemma eval_den_num_not_mem : (eval_den _ _ s y).num ∉ y.1.asHomogeneousIdeal := by
+lemma evalDen_num_not_mem : (evalDen _ _ s y).num ∉ y.1.asHomogeneousIdeal := by
   intro r
-  refine eval_den_not_mem _ _ s y ?_
-  rw [ProjIsoSpecTopComponent.ToSpec.mem_carrier_iff, (eval_den s y).eq_num_div_den,
-    show Localization.mk (eval_den s y).num _ = mk (eval_den s y).num 1 * Localization.mk 1 _ by
+  refine evalDen_not_mem _ _ s y ?_
+  erw [ProjIsoSpecTopComponent.ToSpec.mem_carrier_iff, (evalDen _ _ s y).eq_num_div_den,
+    show Localization.mk (evalDen _ _ s y).num _ = mk (evalDen _ _ s y).num 1 * mk 1 _ by
       rw [mk_mul, one_mul, mul_one]]
   exact Ideal.mul_mem_right _ _ <| Ideal.subset_span ⟨_, r, rfl⟩
 
-lemma eval_num_den_not_mem : (eval_num s y).den ∉ y.1.asHomogeneousIdeal := by
-  let k := (eval_num s y).den_mem.choose
-  have hk : (eval_num s y).den = f^k := (eval_num s y).den_mem.choose_spec.symm
+lemma evalNum_den_not_mem : (evalNum _ _ s y).den ∉ y.1.asHomogeneousIdeal := by
+  let k := (evalNum _ _ s y).den_mem.choose
+  have hk : (evalNum _ _ s y).den = f^k := (evalNum _ _ s y).den_mem.choose_spec.symm
   obtain ⟨⟨a, (h1 : f ∉ _)⟩, _, (h2 : a = y.1)⟩ := y.2
   rw [hk, ← h2]
   intro r
   refine h1 <| a.isPrime.pow_mem_iff_mem _ ?_ |>.mp r
   by_contra! r'
-  replace r' : k = 0
-  · simpa using r'
+  replace r' : k = 0 := by simpa using r'
   erw [r', pow_zero, ← Ideal.eq_top_iff_one] at r
   exact a.isPrime.ne_top r
 
 lemma eval_eq_num_div_den :
-    eval s y =
-    Localization.mk (eval_num s y)
-      ⟨eval_den s y,
-        show eval_den s y ∈ (φ ⟨y, _⟩).asIdeal.primeCompl from eval_den_not_mem s y⟩ :=
-  eval s y |>.exists_rep.choose_spec.symm
+    eval _ _ s y =
+    Localization.mk (evalNum _ _ s y)
+      ⟨evalDen _ _ s y,
+        show evalDen _ _ s y ∈ (φ ⟨y, _⟩).asIdeal.primeCompl from evalDen_not_mem _ _ s y⟩ :=
+  eval _ _ s y |>.exists_rep.choose_spec.symm
 
 /--
 Let `y ∈ φ⁻¹(V)`.
@@ -901,35 +900,36 @@ We will use this to build ring homomorphism between `(Spec A⁰_f)(V)` and `(φ 
 -/
 abbrev α : HomogeneousLocalization.AtPrime 𝒜 y.1.asHomogeneousIdeal.toIdeal :=
   Quotient.mk''
-  { deg := (eval_num s y).deg + (eval_den s y).deg
-    num := Subtype.mk ((eval_num s y).num * (eval_den s y).den) <|
-      SetLike.mul_mem_graded (eval_num s y).num_mem_deg (eval_den s y).den_mem_deg
-    den := Subtype.mk ((eval_den s y).num * (eval_num s y).den) <| add_comm (eval_num s y).deg _ ▸
-      SetLike.mul_mem_graded (eval_den s y).num_mem_deg (eval_num s y).den_mem_deg
-    den_mem := fun r ↦ y.1.isPrime.mem_or_mem r |>.elim (eval_den_num_not_mem s y)
-      (eval_num_den_not_mem s y) }
+  { deg := (evalNum _ _ s y).deg + (evalDen _ _ s y).deg
+    num := Subtype.mk ((evalNum _ _ s y).num * (evalDen _ _ s y).den) <|
+      SetLike.mul_mem_graded (evalNum _ _ s y).num_mem_deg (evalDen _ _ s y).den_mem_deg
+    den := Subtype.mk ((evalDen _ _ s y).num * (evalNum _ _ s y).den) <|
+      add_comm (evalNum _ _ s y).deg _ ▸
+        SetLike.mul_mem_graded (evalDen _ _ s y).num_mem_deg (evalNum _ _ s y).den_mem_deg
+    den_mem := fun r ↦ y.1.isPrime.mem_or_mem r |>.elim (evalDen_num_not_mem _ _ s y)
+      (evalNum_den_not_mem _ _ s y) }
 
 lemma val_α :
-    (α s y).val =
-    Localization.mk ((eval_num s y).num * (eval_den s y).den)
-      ⟨(eval_den s y).num * (eval_num s y).den, by
+    (α _ _ s y).val =
+    Localization.mk ((evalNum _ _ s y).num * (evalDen _ _ s y).den)
+      ⟨(evalDen _ _ s y).num * (evalNum _ _ s y).den, by
         exact fun r ↦ y.1.isPrime.mem_or_mem r |>.elim
-          (eval_den_num_not_mem s y) (eval_num_den_not_mem s y)⟩ :=
+          (evalDen_num_not_mem _ _ s y) (evalNum_den_not_mem _ _ s y)⟩ :=
   HomogeneousLocalization.val_mk'' _
 
-lemma α_one : α (m := m) (V := V) 1 = 1 := by
+lemma α_one : α f_deg hm (V := V) 1 = 1 := by
   ext1 y
   rw [Pi.one_apply, HomogeneousLocalization.ext_iff_val, val_α, HomogeneousLocalization.one_val,
     show (1 : Localization.AtPrime y.1.asHomogeneousIdeal.toIdeal) = Localization.mk 1 1 from
     Localization.mk_self 1 |>.symm, mk_eq_mk_iff, r_iff_exists]
-  have eq1 : _ = 1 := eval_eq_num_div_den 1 y |>.symm
+  have eq1 : _ = 1 := eval_eq_num_div_den _ _ 1 y |>.symm
   rw [show (1 : Localization.AtPrime (φ ⟨y, _⟩).asIdeal) = Localization.mk 1 1 from
     Localization.mk_self 1 |>.symm, mk_eq_mk_iff, r_iff_exists] at eq1
   obtain ⟨⟨C, (hC : C ∉ ProjIsoSpecTopComponent.ToSpec.carrier _)⟩, eq1⟩ := eq1
   simp only [one_mul, mul_one, Submonoid.coe_one] at eq1 ⊢
   rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.mul_val,
-    HomogeneousLocalization.mul_val, C.eq_num_div_den, (eval_num 1 y).eq_num_div_den,
-    (eval_den 1 y).eq_num_div_den, mk_mul, mk_mul, mk_eq_mk_iff, r_iff_exists] at eq1
+    HomogeneousLocalization.mul_val, C.eq_num_div_den, (evalNum _ _ 1 y).eq_num_div_den,
+    (evalDen _ _ 1 y).eq_num_div_den, mk_mul, mk_mul, mk_eq_mk_iff, r_iff_exists] at eq1
   obtain ⟨⟨_, ⟨n, rfl⟩⟩, eq1⟩ := eq1
   dsimp at eq1
   rw [show ∀ a b c d e: A, a * (b * c * (d * e)) = (a * b * d) * (e * c) by intros; ring,
@@ -937,19 +937,19 @@ lemma α_one : α (m := m) (V := V) 1 = 1 := by
     show C.den = f^_ from C.den_mem.choose_spec.symm, ← pow_add] at eq1
   exact ⟨⟨_, ProjIsoSpecTopComponent.ToSpec.pow_mul_num_not_mem_of_not_mem_carrier _ _ hC _⟩, eq1⟩
 
-lemma α_zero : α (m := m) (V := V) 0 = 0 := by
+lemma α_zero : α f_deg hm (V := V) 0 = 0 := by
   ext1 y
   rw [Pi.zero_apply, HomogeneousLocalization.ext_iff_val, val_α, HomogeneousLocalization.zero_val,
     show (0 : Localization.AtPrime y.1.asHomogeneousIdeal.toIdeal) = Localization.mk 0 1 from
     Localization.mk_zero 1 |>.symm, mk_eq_mk_iff, r_iff_exists]
-  have eq1 : _ = 0 := eval_eq_num_div_den 0 y |>.symm
+  have eq1 : _ = 0 := eval_eq_num_div_den _ _ 0 y |>.symm
   rw [show (0 : Localization.AtPrime (φ ⟨y, _⟩).asIdeal) = Localization.mk 0 1 from
     Localization.mk_zero 1 |>.symm, mk_eq_mk_iff, r_iff_exists] at eq1
   simp only [one_mul, mul_one, Submonoid.coe_one, mul_zero] at eq1 ⊢
   obtain ⟨⟨C, hC⟩, eq1⟩ := eq1
   dsimp at eq1
   rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.zero_val,
-    HomogeneousLocalization.mul_val, C.eq_num_div_den, (eval_num 0 y).eq_num_div_den, mk_mul,
+    HomogeneousLocalization.mul_val, C.eq_num_div_den, (evalNum _ _ 0 y).eq_num_div_den, mk_mul,
     show (0 : Localization.Away f) = Localization.mk 0 1 from Localization.mk_zero 1 |>.symm,
     mk_eq_mk_iff, r_iff_exists] at eq1
   obtain ⟨⟨_, ⟨n, rfl⟩⟩, eq1⟩ := eq1
@@ -959,40 +959,43 @@ lemma α_zero : α (m := m) (V := V) 0 = 0 := by
     ProjIsoSpecTopComponent.ToSpec.pow_mul_num_not_mem_of_not_mem_carrier _ _ hC _⟩,
     by erw [← mul_assoc, eq1, zero_mul]⟩
 
-lemma α_add (x y : (Spec (A⁰_ f)).presheaf.obj V) : α (m := m) (V := V) (x + y) = α x + α y := by
+lemma α_add (x y : (Spec (A⁰_ f)).presheaf.obj V) :
+    α f_deg hm (x + y) = α f_deg hm x + α f_deg hm y := by
   ext1 z
   rw [Pi.add_apply, HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.add_val, val_α,
     val_α, val_α, add_mk, mk_eq_mk_iff, r_iff_exists]
-  have eq1 := eval_eq_num_div_den (m := m) (V := V) (x + y) z
-  rw [show eval (m := m) (V := V) (x + y) z = eval x z + eval y z from rfl,
+  have eq1 := eval_eq_num_div_den f_deg hm (x + y) z
+  rw [show eval f_deg hm (x + y) z = eval f_deg hm x z + eval f_deg hm y z from rfl,
     eval_eq_num_div_den, eval_eq_num_div_den, add_mk, mk_eq_mk_iff, r_iff_exists] at eq1
   obtain ⟨⟨C, hC⟩, eq1⟩ := eq1
   dsimp only [Submonoid.coe_mul] at eq1 ⊢
+  -- the following two `simp` can not be combined
   simp only [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.mul_val,
     HomogeneousLocalization.add_val] at eq1
   simp only [HomogeneousLocalization.eq_num_div_den, mk_mul, add_mk, Submonoid.mk_mul_mk] at eq1
   rw [mk_eq_mk_iff, r_iff_exists] at eq1
   obtain ⟨⟨_, ⟨n, rfl⟩⟩, eq1⟩ := eq1
   dsimp only at eq1
-  refine ⟨⟨(f^n * C.den * (eval_den x z).den * (eval_den y z).den * C.num), ?_⟩, ?_⟩
+  refine ⟨⟨(f^n * C.den * (evalDen f_deg hm x z).den * (evalDen f_deg hm y z).den * C.num), ?_⟩, ?_⟩
   · rw [show C.den = f^_ from C.den_mem.choose_spec.symm,
-      show (eval_den x z).den = f^_ from (eval_den x z).den_mem.choose_spec.symm,
-      show (eval_den y z).den = f^_ from (eval_den y z).den_mem.choose_spec.symm,
+      show (evalDen f_deg hm x z).den = f^_ from (evalDen f_deg hm x z).den_mem.choose_spec.symm,
+      show (evalDen f_deg hm y z).den = f^_ from (evalDen f_deg hm y z).den_mem.choose_spec.symm,
       ← pow_add, ← pow_add, ← pow_add]
     exact ProjIsoSpecTopComponent.ToSpec.pow_mul_num_not_mem_of_not_mem_carrier _ _ hC _
   · dsimp only
-    ring_nf at eq1 ⊢
-    exact eq1.symm
+    convert eq1.symm using 1 <;> ring
 
-lemma α_mul (x y : (Spec (A⁰_ f)).presheaf.obj V) : α (m := m) (V := V) (x * y) = α x * α y := by
+lemma α_mul (x y : (Spec (A⁰_ f)).presheaf.obj V) :
+    α f_deg hm (x * y) = α f_deg hm x * α f_deg hm y := by
   ext1 z
   rw [Pi.mul_apply, HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.mul_val, val_α,
     val_α, val_α, mk_mul, mk_eq_mk_iff, r_iff_exists]
-  have eq1 := eval_eq_num_div_den (m := m) (V := V) (x * y) z
-  rw [show eval (m := m) (V := V) (x * y) z = eval x z * eval y z from rfl,
+  have eq1 := eval_eq_num_div_den f_deg hm (x * y) z
+  rw [show eval f_deg hm (x * y) z = eval f_deg hm x z * eval f_deg hm y z from rfl,
     eval_eq_num_div_den, eval_eq_num_div_den, mk_mul, mk_eq_mk_iff, r_iff_exists] at eq1
   obtain ⟨⟨C, hC⟩, eq1⟩ := eq1
   dsimp only [Submonoid.coe_mul] at eq1 ⊢
+  -- the following `simp` lemma cannot be combined
   simp only [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.mul_val] at eq1
   simp only [HomogeneousLocalization.eq_num_div_den, mk_mul, Submonoid.mk_mul_mk] at eq1
   rw [mk_eq_mk_iff, r_iff_exists] at eq1
@@ -1005,8 +1008,6 @@ lemma α_mul (x y : (Spec (A⁰_ f)).presheaf.obj V) : α (m := m) (V := V) (x *
     ring_nf at eq1 ⊢
     exact eq1.symm
 
-example : true := rfl
-
 namespace isLocallyFraction
 
 -- Implementation detail, should not be used directly
@@ -1017,7 +1018,7 @@ abbrev U (V' : Opens (Spec.T (A⁰_ f))) : Opens Proj.T where
   carrier := {x | ∃ x' ∈ φ ⁻¹' V'.1, x = x'.1}
   is_open' := by
     have ho1 := Homeomorph.isOpen_preimage
-      (h := homeoOfIso (projIsoSpecTopComponent hm.out f_deg.out)) |>.mpr V'.2
+      (h := homeoOfIso (projIsoSpecTopComponent f_deg hm)) |>.mpr V'.2
     rw [isOpen_induced_iff] at ho1
     obtain ⟨o, ho1, (eq : _ = φ ⁻¹' V'.1)⟩ := ho1
     simp_rw [← eq]
@@ -1031,7 +1032,7 @@ abbrev U (V' : Opens (Spec.T (A⁰_ f))) : Opens Proj.T where
 If `V' ⊆ V ⊆ Spec A⁰_f`, then `φ⁻¹ V' ⊆ φ⁻¹ V`.
 -/
 def U.LE {V' : Opens (Spec.T (A⁰_ f))} (le : V' ⟶ V.unop) :
-    (U (m := m) V') ⟶
+    (U f_deg hm V') ⟶
     ((@Opens.openEmbedding Proj.T (pbo f)).isOpenMap.functor.op.obj <|
       Opens.map φ |>.op.obj V).unop :=
   homOfLE <| by rintro _ ⟨x, hx, rfl⟩; simpa using leOfHom le hx
@@ -1039,30 +1040,32 @@ def U.LE {V' : Opens (Spec.T (A⁰_ f))} (le : V' ⟶ V.unop) :
 end isLocallyFraction
 
 set_option maxHeartbeats 300000 in
-lemma α_isLocallyFraction : isLocallyFraction 𝒜 |>.pred (α (m := m) s) := by
+lemma α_isLocallyFraction : isLocallyFraction 𝒜 |>.pred (α f_deg hm s) := by
   intro y
-  obtain ⟨V', ⟨(mem1 : φ _ ∈ V'), le, a, b, is_local⟩⟩ := s.2 ⟨φ ⟨y.1, _mem_pbo _⟩, _mem_V _⟩
+  obtain ⟨V', ⟨(mem1 : φ _ ∈ V'), le, a, b, is_local⟩⟩ :=
+    s.2 ⟨φ ⟨y.1, _mem_pbo _ _ _⟩, _mem_V _ _ _⟩
 
   obtain ⟨la, (hla : f^_ = _)⟩ := a.den_mem
   obtain ⟨lb, (hlb : f^_ = _)⟩ := b.den_mem
 
-  refine ⟨isLocallyFraction.U (m := m) V', ⟨⟨⟨y.1, _mem_pbo _⟩, mem1, rfl⟩,
-    isLocallyFraction.U.LE le, a.deg + b.deg, ⟨a.num * f^lb, SetLike.mul_mem_graded a.num_mem_deg
-      (hlb ▸ b.den_mem_deg)⟩, ⟨b.num * f^la, add_comm a.deg _ ▸ SetLike.mul_mem_graded b.num_mem_deg
-      (hla ▸ a.den_mem_deg)⟩, fun z ↦ ?_⟩⟩
+  refine ⟨isLocallyFraction.U f_deg hm V', ⟨⟨⟨y.1, _mem_pbo _ _ _⟩, mem1, rfl⟩,
+    isLocallyFraction.U.LE f_deg hm le, a.deg + b.deg,
+      ⟨a.num * f^lb, SetLike.mul_mem_graded a.num_mem_deg
+        (hlb ▸ b.den_mem_deg)⟩,
+        ⟨b.num * f^la, add_comm a.deg _ ▸ SetLike.mul_mem_graded b.num_mem_deg
+          (hla ▸ a.den_mem_deg)⟩, fun z ↦ ?_⟩⟩
 
-  have z_mem_pbo : z.1 ∈ pbo f
-  · obtain ⟨⟨_, h1⟩, _, h2⟩ := z.2; rw [h2]; exact h1
-  have z_mem_V' : φ ⟨z.1, z_mem_pbo⟩ ∈ V'
-  · obtain ⟨z, ⟨_, h1, rfl⟩⟩ := z; exact h1
-  have z_mem_V : φ ⟨z.1, z_mem_pbo⟩ ∈ V.unop
-  · exact leOfHom le z_mem_V'
+  have z_mem_pbo : z.1 ∈ pbo f := by
+    obtain ⟨⟨_, h1⟩, _, h2⟩ := z.2; rw [h2]; exact h1
+  have z_mem_V' : φ ⟨z.1, z_mem_pbo⟩ ∈ V' := by
+    obtain ⟨z, ⟨_, h1, rfl⟩⟩ := z; exact h1
+  have z_mem_V : φ ⟨z.1, z_mem_pbo⟩ ∈ V.unop := leOfHom le z_mem_V'
   specialize is_local ⟨φ ⟨z.1, z_mem_pbo⟩, z_mem_V'⟩
   obtain ⟨b_not_mem, (eq1 : s.1 ⟨φ _, _⟩ * _ = Localization.mk a 1)⟩ := is_local
   change _ * Localization.mk b 1 =  _ at eq1
   replace eq1 : s.1 ⟨φ ⟨z.1, z_mem_pbo⟩, z_mem_V⟩ =
-    (Localization.mk a ⟨b, b_not_mem⟩ : Localization.AtPrime _)
-  · rw [show Localization.mk a _ = Localization.mk a 1 * Localization.mk 1 _ by
+    (Localization.mk a ⟨b, b_not_mem⟩ : Localization.AtPrime _) := by
+    rw [show Localization.mk a _ = Localization.mk a 1 * Localization.mk 1 _ by
       rw [mk_mul, one_mul, mul_one], ← eq1, mul_assoc, mk_mul, one_mul, mul_one,
       show Localization.mk b ⟨b, _⟩ = 1 from Localization.mk_self ⟨b, _⟩, mul_one]
 
@@ -1073,7 +1076,7 @@ lemma α_isLocallyFraction : isLocallyFraction 𝒜 |>.pred (α (m := m) s) := b
   rw [HomogeneousLocalization.ext_iff_val, val_α, HomogeneousLocalization.val_mk'', mk_eq_mk_iff,
     r_iff_exists]
   rw [show s.1 ⟨φ ⟨z.1, z_mem_pbo⟩, z_mem_V⟩ =
-    eval (m := m) (V := V) s ⟨z.1, (isLocallyFraction.U.LE le z) |>.2⟩ from rfl,
+    eval f_deg hm s ⟨z.1, (isLocallyFraction.U.LE f_deg hm le z) |>.2⟩ from rfl,
     eval_eq_num_div_den, mk_eq_mk_iff, r_iff_exists] at eq1
   obtain ⟨⟨C, hC⟩, eq1⟩ := eq1
   dsimp only at eq1 ⊢
@@ -1090,17 +1093,18 @@ lemma α_isLocallyFraction : isLocallyFraction 𝒜 |>.pred (α (m := m) s) := b
     ring_nf at eq1 ⊢
     exact eq1
 
+variable (V) in
 /--
 The ring homomorphism between` (Spec A⁰_ f)(V)` and `(φ _* (Proj| (pbo f))(V)` defined by sending
 a section `s` to `α s`. See also `ProjIsoSpecSheafComponent.FromSpec.α`.
 -/
 def ringHom :
     (Spec (A⁰_ f)).presheaf.obj V ⟶ (φ _* (Proj| (pbo f)).presheaf).obj V where
-  toFun s := ⟨α s, α_isLocallyFraction s⟩
-  map_one' := Subtype.ext α_one
-  map_mul' _ _ := Subtype.ext <| α_mul _ _
-  map_zero' := Subtype.ext α_zero
-  map_add' _ _ := Subtype.ext <| α_add _ _
+  toFun s := ⟨α f_deg hm s, α_isLocallyFraction f_deg hm s⟩
+  map_one' := Subtype.ext <| α_one f_deg hm
+  map_mul' _ _ := Subtype.ext <| α_mul f_deg hm _ _
+  map_zero' := Subtype.ext <| α_zero f_deg hm
+  map_add' _ _ := Subtype.ext <| α_add f_deg hm _ _
 
 end FromSpec
 
@@ -1110,8 +1114,8 @@ a section `s` to `α s` is natural with respect to open sets of `Spec A⁰_f`.
 -/
 def fromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
     (Spec (A⁰_ f)).presheaf ⟶
-    (projIsoSpecTopComponent hm f_deg).hom  _* (Proj| (pbo f)).presheaf where
-  app V := FromSpec.ringHom (hm := ⟨hm⟩) (f_deg := ⟨f_deg⟩) (V := V)
+    (projIsoSpecTopComponent f_deg hm).hom  _* (Proj| (pbo f)).presheaf where
+  app V := FromSpec.ringHom f_deg hm V
   naturality U V le := by aesop_cat
 
 end ProjIsoSpecSheafComponent
