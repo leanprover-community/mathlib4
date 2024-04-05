@@ -58,7 +58,7 @@ theorem Nat.sq_add_sq_mul {a b x y u v : ℕ} (ha : a = x ^ 2 + y ^ 2) (hb : b =
   zify at ha hb ⊢
   obtain ⟨r, s, h⟩ := _root_.sq_add_sq_mul ha hb
   refine' ⟨r.natAbs, s.natAbs, _⟩
-  simpa only [Int.coe_natAbs, sq_abs]
+  simpa only [Int.natCast_natAbs, sq_abs]
 #align nat.sq_add_sq_mul Nat.sq_add_sq_mul
 
 end General
@@ -133,7 +133,7 @@ theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
   · exact fun _ => by norm_num
   · replace hp := H hp (dvd_of_mul_right_dvd hpq)
     replace hq := hq (dvd_of_mul_left_dvd hpq)
-    rw [show 3 = 3 % 4 by norm_num, Ne.def, ← ZMod.nat_cast_eq_nat_cast_iff'] at hp hq ⊢
+    rw [show 3 = 3 % 4 by norm_num, Ne, ← ZMod.nat_cast_eq_nat_cast_iff'] at hp hq ⊢
     rw [Nat.cast_mul]
     exact help p q hp hq
 #align zmod.is_square_neg_one_iff' ZMod.isSquare_neg_one_iff'
