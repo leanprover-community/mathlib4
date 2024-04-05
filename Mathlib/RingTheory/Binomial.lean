@@ -108,7 +108,7 @@ theorem descPochhammer_smeval_eq_ascPochhammer (r : R) (n : ℕ) :
   induction n with
   | zero => simp only [descPochhammer_zero, ascPochhammer_zero, smeval_one, npow_zero]
   | succ n ih =>
-    rw [Nat.cast_succ, sub_add, add_sub_cancel, descPochhammer_succ_right, smeval_mul, ih,
+    rw [Nat.cast_succ, sub_add, add_sub_cancel_right, descPochhammer_succ_right, smeval_mul, ih,
       ascPochhammer_succ_left, X_mul, smeval_mul_X, smeval_comp, smeval_sub, ← C_eq_nat_cast]
     simp only [smeval_add, smeval_X, npow_one, smeval_one, npow_zero, one_smul, smeval_C, zsmul_one,
       Int.cast_ofNat]
@@ -204,7 +204,7 @@ theorem choose_nat_cast [NatPowAssoc R] (n k : ℕ) : choose (n : R) k = Nat.cho
   refine nsmul_right_injective (Nat.factorial k) (Nat.factorial_ne_zero k) ?_
   simp only
   rw [← descPochhammer_eq_factorial_smul_choose, nsmul_eq_mul, ← Nat.cast_mul,
-  ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_eval_eq_descFactorial]
+  ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_smeval_eq_descFactorial]
 
 end Ring
 
