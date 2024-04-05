@@ -6,7 +6,6 @@ Authors: Frédéric Dupuis
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Star.Pi
-import Mathlib.Init.Data.Subtype.Basic
 
 #align_import algebra.star.self_adjoint from "leanprover-community/mathlib"@"a6ece35404f60597c651689c1b46ead86de5ac1b"
 
@@ -359,7 +358,7 @@ theorem val_one : ↑(1 : selfAdjoint R) = (1 : R) :=
 #align self_adjoint.coe_one selfAdjoint.val_one
 
 instance [Nontrivial R] : Nontrivial (selfAdjoint R) :=
-  ⟨⟨0, 1, Subtype.ne_of_val_ne zero_ne_one⟩⟩
+  ⟨⟨0, 1, ne_of_apply_ne Subtype.val zero_ne_one⟩⟩
 
 instance : NatCast (selfAdjoint R) where
   natCast n := ⟨n, isSelfAdjoint_natCast _⟩
