@@ -160,6 +160,14 @@ instance : ClosedUnderIsomorphisms (mk' P zero shift ext₂).P where
 
 end
 
+@[simp]
+lemma shift_iff [ClosedUnderIsomorphisms S.P] (X : C) (n : ℤ) :
+    S.P (X⟦n⟧) ↔ S.P X := by
+  constructor
+  · intro h
+    exact mem_of_iso _ ((shiftEquiv C n).unitIso.symm.app X) (S.shift _ (-n) h)
+  · exact S.shift X n
+
 lemma ext₂ [ClosedUnderIsomorphisms S.P]
     (T : Triangle C) (hT : T ∈ distTriang C) (h₁ : S.P T.obj₁)
     (h₃ : S.P T.obj₃) : S.P T.obj₂ := by
@@ -258,6 +266,13 @@ lemma mem_W_iff_of_distinguished
     exact mem_of_iso S.P (Triangle.π₃.mapIso e) mem
   · intro h
     exact ⟨_, _, _, hT, h⟩
+
+lemma mem_W_iff_of_distinguished'
+    [ClosedUnderIsomorphisms S.P] (T : Triangle C) (hT : T ∈ distTriang C) :
+    S.W T.mor₂ ↔ S.P T.obj₁ := by
+  have := S.mem_W_iff_of_distinguished _ (rot_of_distTriang _ hT)
+  dsimp at this
+  rw [this, shift_iff]
 
 instance [IsTriangulated C] : S.W.HasLeftCalculusOfFractions where
   exists_leftFraction X Y φ := by
