@@ -8,7 +8,7 @@ import Mathlib.Analysis.Calculus.Deriv.ZPow
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 import Mathlib.Analysis.Analytic.Basic
-import Mathlib.Tactic.FlexibleLinter
+
 #align_import measure_theory.integral.circle_integral from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
