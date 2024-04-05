@@ -96,7 +96,6 @@ namespace ExactPairing
 -- arguments for class fields explicit,
 -- we now repeat all the fields without primes.
 -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Making.20variable.20in.20class.20field.20explicit
-
 variable (X Y : C)
 variable [ExactPairing X Y]
 

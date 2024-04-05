@@ -42,7 +42,6 @@ universe v u
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {ι : Type*}
-
 variable (V : Type u) [Category.{v} V] [HasZeroMorphisms V]
 
 /-- A `HomologicalComplex V c` with a "shape" controlled by `c : ComplexShape ι`
@@ -715,7 +714,6 @@ end Of
 section OfHom
 
 variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
-
 variable (X : α → V) (d_X : ∀ n, X (n + 1) ⟶ X n) (sq_X : ∀ n, d_X (n + 1) ≫ d_X n = 0) (Y : α → V)
   (d_Y : ∀ n, Y (n + 1) ⟶ Y n) (sq_Y : ∀ n, d_Y (n + 1) ≫ d_Y n = 0)
 
@@ -964,7 +962,6 @@ end Of
 section OfHom
 
 variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
-
 variable (X : α → V) (d_X : ∀ n, X n ⟶ X (n + 1)) (sq_X : ∀ n, d_X n ≫ d_X (n + 1) = 0) (Y : α → V)
   (d_Y : ∀ n, Y n ⟶ Y (n + 1)) (sq_Y : ∀ n, d_Y n ≫ d_Y (n + 1) = 0)
 
@@ -989,7 +986,6 @@ end OfHom
 section Mk
 
 variable {V}
-
 variable (X₀ X₁ X₂ : V) (d₀ : X₀ ⟶ X₁) (d₁ : X₁ ⟶ X₂) (s : d₀ ≫ d₁ = 0)
   (succ : ∀ (S : ShortComplex V), Σ' (X₄ : V) (d₂ : S.X₃ ⟶ X₄), S.g ≫ d₂ = 0)
 

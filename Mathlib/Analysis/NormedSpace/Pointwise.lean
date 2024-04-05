@@ -26,7 +26,6 @@ variable {𝕜 E : Type*}
 section SMulZeroClass
 
 variable [SeminormedAddCommGroup 𝕜] [SeminormedAddCommGroup E]
-
 variable [SMulZeroClass 𝕜 E] [BoundedSMul 𝕜 E]
 
 theorem ediam_smul_le (c : 𝕜) (s : Set E) : EMetric.diam (c • s) ≤ ‖c‖₊ • EMetric.diam s :=
@@ -38,7 +37,6 @@ end SMulZeroClass
 section DivisionRing
 
 variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
-
 variable [Module 𝕜 E] [BoundedSMul 𝕜 E]
 
 theorem ediam_smul₀ (c : 𝕜) (s : Set E) : EMetric.diam (c • s) = ‖c‖₊ • EMetric.diam s := by
@@ -142,7 +140,7 @@ theorem eventually_singleton_add_smul_subset {x : E} {s : Set E} (hs : Bornology
       _ = ε := by field_simp
   have : y = x + r • z := by simp only [hz, add_neg_cancel_left]
   apply hε
-  simpa only [this, dist_eq_norm, add_sub_cancel', mem_closedBall] using I
+  simpa only [this, dist_eq_norm, add_sub_cancel_left, mem_closedBall] using I
 #align eventually_singleton_add_smul_subset eventually_singleton_add_smul_subset
 
 variable [NormedSpace ℝ E] {x y z : E} {δ ε : ℝ}
@@ -269,7 +267,7 @@ theorem infEdist_thickening (hδ : 0 < δ) (s : Set E) (x : E) :
     have := hs.trans_lt ((infEdist_le_edist_of_mem hz).trans_lt h)
     rw [ofReal_eq_coe_nnreal hδ.le, some_eq_coe] at this
     exact mod_cast this
-  rw [some_eq_coe, edist_lt_coe, ← dist_lt_coe, ← add_sub_cancel'_right δ ↑r] at h
+  rw [some_eq_coe, edist_lt_coe, ← dist_lt_coe, ← add_sub_cancel δ ↑r] at h
   obtain ⟨y, hxy, hyz⟩ := exists_dist_lt_lt hr hδ h
   refine' (ENNReal.add_lt_add_right ofReal_ne_top <|
     infEdist_lt_iff.2 ⟨_, mem_thickening_iff.2 ⟨_, hz, hyz⟩, edist_lt_ofReal.2 hxy⟩).trans_le _
@@ -429,8 +427,8 @@ theorem NormedSpace.sphere_nonempty [Nontrivial E] {x : E} {r : ℝ} :
   refine' ⟨fun h => nonempty_closedBall.1 (h.mono sphere_subset_closedBall), fun hr =>
     ⟨r • ‖y - x‖⁻¹ • (y - x) + x, _⟩⟩
   have : ‖y - x‖ ≠ 0 := by simpa [sub_eq_zero]
-  simp only [mem_sphere_iff_norm, add_sub_cancel, norm_smul, Real.norm_eq_abs, norm_inv, norm_norm,
-    ne_eq, norm_eq_zero]
+  simp only [mem_sphere_iff_norm, add_sub_cancel_right, norm_smul, Real.norm_eq_abs, norm_inv,
+    norm_norm, ne_eq, norm_eq_zero]
   simp only [abs_norm, ne_eq, norm_eq_zero]
   rw [inv_mul_cancel this, mul_one, abs_eq_self.mpr hr]
 #align normed_space.sphere_nonempty NormedSpace.sphere_nonempty

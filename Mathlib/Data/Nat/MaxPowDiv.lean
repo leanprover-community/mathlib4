@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matthew Robert Ballard
 -/
 import Mathlib.Algebra.Divisibility.Units
-import Mathlib.Algebra.Order.WithZero
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Tactic.Common
 

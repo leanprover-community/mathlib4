@@ -5,7 +5,7 @@ Authors: Bhavik Mehta, Aaron Anderson
 -/
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Order
-import Mathlib.Combinatorics.Partition
+import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal

@@ -613,7 +613,7 @@ theorem contMDiff_transDiffeomorph_right {f : M' → M} :
   (toTransDiffeomorph I M e).contMDiff_diffeomorph_comp_iff le_top
 #align diffeomorph.cont_mdiff_trans_diffeomorph_right Diffeomorph.contMDiff_transDiffeomorph_right
 
--- Porting note: was `@[simp]` but now `simp` can prove it
+-- Porting note (#10618): was `@[simp]` but now `simp` can prove it
 theorem smooth_transDiffeomorph_right {f : M' → M} :
     Smooth I' (I.transDiffeomorph e) f ↔ Smooth I' I f :=
   contMDiff_transDiffeomorph_right e
@@ -643,7 +643,7 @@ theorem contMDiff_transDiffeomorph_left {f : M → M'} :
   ((toTransDiffeomorph I M e).contMDiff_comp_diffeomorph_iff le_top).symm
 #align diffeomorph.cont_mdiff_trans_diffeomorph_left Diffeomorph.contMDiff_transDiffeomorph_left
 
--- Porting note: was `@[simp]` but now `simp` can prove it
+-- Porting note (#10618): was `@[simp]` but now `simp` can prove it
 theorem smooth_transDiffeomorph_left {f : M → M'} :
     Smooth (I.transDiffeomorph e) I' f ↔ Smooth I I' f :=
   e.contMDiff_transDiffeomorph_left
