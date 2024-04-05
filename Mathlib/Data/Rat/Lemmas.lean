@@ -311,8 +311,8 @@ theorem inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a 
 @[deprecated] alias coe_nat_div := natCast_div
 @[deprecated] alias inv_coe_int_num_of_pos := inv_intCast_num_of_pos
 @[deprecated] alias inv_coe_nat_num_of_pos := inv_natCast_num_of_pos
-@[deprecated] alias inv_intCast_den_of_pos := inv_intCast_den_of_pos
-@[deprecated] alias inv_coe_nat_den_of_pos := inv_intCast_den_of_pos
+@[deprecated] alias inv_coe_int_den_of_pos := inv_intCast_den_of_pos
+@[deprecated] alias inv_coe_nat_den_of_pos := inv_natCast_den_of_pos
 @[deprecated] alias inv_coe_int_num := inv_intCast_num
 @[deprecated] alias inv_coe_nat_num := inv_natCast_num
 @[deprecated] alias inv_coe_int_den := inv_intCast_den
