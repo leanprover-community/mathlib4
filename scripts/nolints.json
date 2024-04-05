@@ -86,7 +86,6 @@
  ["docBlame", "AlgHom.toAddMonoidHom'"],
  ["docBlame", "AlgHom.toMonoidHom'"],
  ["docBlame", "AlgebraCat.carrier"],
- ["docBlame", "AlgebraicGeometry.«termProj|_»"],
  ["docBlame", "AndThen'.andthen"],
  ["docBlame", "Bifunctor.bimap"],
  ["docBlame", "BilinForm.bilin"],

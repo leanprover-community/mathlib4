@@ -219,6 +219,7 @@ def combinatorLike : HashSet Name :=
     `by,
     ``Lean.Parser.Tactic.tacticTry_,
     `choice,  -- involved in `first`
+    ``Lean.Parser.Tactic.allGoals,
     `Std.Tactic.«tacticOn_goal-_=>_»,
     ``Lean.Parser.Tactic.«tactic_<;>_»,
     ``cdotTk,
@@ -242,6 +243,8 @@ def followers : HashSet Name :=
     ``Lean.Parser.Tactic.simpAll,
     ``Lean.Parser.Tactic.simpa,
     ``Lean.Parser.Tactic.dsimp,
+    ``Lean.Parser.Tactic.congr,
+    ``Lean.Parser.Tactic.done,
     ``Lean.Parser.Tactic.tacticRfl,
     ``Lean.Parser.Tactic.omega,
     `Mathlib.Tactic.Abel.abel,

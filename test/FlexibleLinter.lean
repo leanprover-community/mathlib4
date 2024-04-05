@@ -51,6 +51,10 @@ example (h : 0 = 1 ∨ 0 = 1) : 0 = 1 ∧ 0 = 1 := by
   on_goal 2 => · contradiction
   · contradiction
 
+-- `omega` is a follower and `all_goals` is a `combinatorLike`
+#guard_msgs in
+example {a : Nat} : a + 1 + 0 = 1 + a := by simp; all_goals omega
+
 set_option linter.flexible false in
 set_option linter.flexible true in
 /--
@@ -101,6 +105,41 @@ example {a b : Nat} (h : ∀ c, c + a + b = a + c) : (0 + 2 + 1 + a + b) = a + 3
 example : (0 + 2 : Rat) < 3 := by
   simp
   norm_num
+
+set_option linter.flexible false in
+set_option linter.flexible true in
+/--
+error: 'simp' stains '⊢'... [linter.flexible]
+---
+info: ... and 'rw [add_comm]' uses '⊢'!
+-/
+#guard_msgs in
+-- `norm_num` is allowed after `simp`, but "passes along the stain".
+example {a : Rat} : a + (0 + 2 : Rat) < 3 + a := by
+  simp
+  norm_num
+  rw [add_comm]
+  norm_num
+
+set_option linter.flexible false in
+set_option linter.flexible true in
+/--
+error: 'simp' stains '⊢'... [linter.flexible]
+---
+info: ... and 'exact h.symm' uses '⊢'!
+-/
+#guard_msgs in
+-- `congr` is allowed after `simp`, but "passes along the stain".
+example {a b : Nat} (h : a = b) : a + b + 0 = b + a := by
+  simp
+  congr
+  exact h.symm
+
+-- `done` is an allowed follower
+#guard_msgs in
+example (h : False) : 0 ≠ 0 := by
+  try (simp; done)
+  exact h.elim
 
 --  `abel_nf` is a `rigidifier`: the "stain" of `simp` does not continue past `abel_nf`.
 #guard_msgs in
