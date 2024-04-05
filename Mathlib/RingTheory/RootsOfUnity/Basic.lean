@@ -6,7 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.CharP.Two
 import Mathlib.Algebra.CharP.Reduced
 import Mathlib.Algebra.NeZero
-import Mathlib.Data.Polynomial.RingDivision
+import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.NumberTheory.Divisors
 import Mathlib.RingTheory.IntegralDomain
