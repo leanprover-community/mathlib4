@@ -220,7 +220,7 @@ theorem ppred : Partrec fun n => ppred n :=
       (_root_.Primrec.const 0) (_root_.Primrec.const 1)).to₂
   (of_primrec (Primrec₂.unpaired'.2 this)).rfind.of_eq fun n => by
     cases n
-    · simp
+    · simp  -- why does `linter.flexible` not complain here?
       exact
         eq_none_iff.2 fun a ⟨⟨m, h, _⟩, _⟩ => by
           simp [show 0 ≠ m.succ by intro h; injection h] at h
@@ -231,7 +231,6 @@ theorem ppred : Partrec fun n => ppred n :=
       intro m h
       simp [ne_of_gt h]
 #align nat.partrec.ppred Nat.Partrec.ppred
---set_option linter.flexible false in  -- simp; lots
 
 end Partrec
 
@@ -566,11 +565,15 @@ theorem rfind {p : α → ℕ →. Bool} (hp : Partrec₂ p) : Partrec fun a => 
   (Nat.Partrec.rfind <|
         hp.map ((Primrec.dom_bool fun b => cond b 0 1).comp Primrec.snd).to₂.to_comp).of_eq
     fun n => by
-    cases' e : decode (α := α) n with a <;> simp [e, Nat.rfind_zero_none, map_id']
-    congr; funext n
-    simp only [map_map, Function.comp]
-    refine map_id' (fun b => ?_) _
-    cases b <;> rfl
+    cases' e : decode (α := α) n with a
+    · simp [e, Nat.rfind_zero_none]
+    · suffices (Nat.rfind fun n ↦
+          Part.map (decide <|· = 0) (Part.map (bif · then 0 else 1) (p a n))) = Nat.rfind (p a) by
+        simpa [e, Nat.rfind_zero_none, map_id']
+      congr; funext n
+      simp only [map_map, Function.comp]
+      refine map_id' (fun b => ?_) _
+      cases b <;> rfl
 #align partrec.rfind Partrec.rfind
 
 theorem rfindOpt {f : α → ℕ → Option σ} (hf : Computable₂ f) :
