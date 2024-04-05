@@ -39,7 +39,7 @@ instance instCommRingInt : CommRing ℤ where
   intCast_negSucc _ := rfl
 
 @[simp, norm_cast]
-theorem cast_mul {α : Type*} [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) = m * n := fun m => by
+lemma cast_mul {α : Type*} [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) = m * n := fun m => by
   obtain ⟨m, rfl | rfl⟩ := Int.eq_nat_or_neg m
   · induction m with
     | zero => simp
@@ -60,10 +60,11 @@ theorem cast_mul {α : Type*} [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) 
 These also prevent non-computable instances like `Int.normedCommRing` being used to construct
 these instances non-computably.
 -/
-instance : CommSemiring ℤ     := by infer_instance
-instance : Semiring ℤ         := by infer_instance
-instance instRingInt : Ring ℤ := by infer_instance
-instance : Distrib ℤ          := by infer_instance
+
+instance instCommSemiring : CommSemiring ℤ := by infer_instance
+instance instSemiring     : Semiring ℤ     := by infer_instance
+instance instRingInt      : Ring ℤ         := by infer_instance
+instance instDistrib      : Distrib ℤ      := by infer_instance
 
 /-! ### Miscellaneous lemmas -/
 

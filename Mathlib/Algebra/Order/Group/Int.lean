@@ -54,6 +54,20 @@ theorem sign_mul_abs (a : ℤ) : sign a * |a| = a := by
   rw [abs_eq_natAbs, sign_mul_natAbs a]
 #align int.sign_mul_abs Int.sign_mul_abs
 
+lemma natAbs_le_self_sq (a : ℤ) : (Int.natAbs a : ℤ) ≤ a ^ 2 := by
+  rw [← Int.natAbs_sq a, sq]
+  norm_cast
+  apply Nat.le_mul_self
+#align int.abs_le_self_sq Int.natAbs_le_self_sq
+
+alias natAbs_le_self_pow_two := natAbs_le_self_sq
+
+lemma le_self_sq (b : ℤ) : b ≤ b ^ 2 := le_trans le_natAbs (natAbs_le_self_sq _)
+#align int.le_self_sq Int.le_self_sq
+
+alias le_self_pow_two := le_self_sq
+#align int.le_self_pow_two Int.le_self_pow_two
+
 @[norm_cast] lemma abs_natCast (n : ℕ) : |(n : ℤ)| = n := abs_of_nonneg (natCast_nonneg n)
 #align int.abs_coe_nat Int.abs_natCast
 
