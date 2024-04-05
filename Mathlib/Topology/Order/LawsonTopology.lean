@@ -43,6 +43,7 @@ It is shown that `Topology.WithLawson α` is an instance of `Topology.IsLawson`.
 * [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
 
 ## Tags
+
 Lawson topology, preorder
 -/
 
