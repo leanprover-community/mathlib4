@@ -438,38 +438,35 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
     -/
   | succ n ih =>
     ext w m
-    suffices H : (∫ (v : V), 𝐞 (-L v w) • fderiv ℝ (iteratedFDeriv ℝ n f) v (m 0) ∂μ) (Fin.tail m) =
-        (-(2 * π * I)) ^ (n + 1) • (∏ x : Fin (n + 1), -L (m x) w) •
-          ∫ (v : V), 𝐞 (-L v w) • f v ∂μ by
-      have J : Integrable (fun v ↦ 𝐞 (-(L v) w) • fderiv ℝ (iteratedFDeriv ℝ n f) v) μ := by
-        apply (fourierIntegral_convergent_iff' L w).2
+    -- instance on next line should not be necessary, but proof breaks down without it.
+    let N : NormedSpace ℝ (V [×n]→L[ℝ] E) := by infer_instance
+    suffices H : (fourierIntegral 𝐞 μ L.toLinearMap₂ (fderiv ℝ (iteratedFDeriv ℝ n f)) w)
+          (m 0) (Fin.tail m) =
+        (-(2 * π * I)) ^ (n + 1) • (∏ x : Fin (n + 1), -L (m x) w) • ∫ v, 𝐞 (-L v w) • f v ∂μ by
+      sorry
+      /- have J : Integrable (fun a ↦ fderiv ℝ (iteratedFDeriv ℝ n f) a) μ := by
         specialize h'f (n + 1) hn
         simp_rw [iteratedFDeriv_succ_eq_comp_left] at h'f
         let T : (V →L[ℝ] (V [×n]→L[ℝ] E)) ≃L[ℝ] (V [×(n+1)]→L[ℝ] E) :=
           continuousMultilinearCurryLeftEquiv ℝ (fun (x : Fin (n + 1)) ↦ V) E
         apply T.integrable_comp_iff.1
         exact h'f
-      have A : ∫ v, 𝐞 (- L v w) • (fderiv ℝ (iteratedFDeriv ℝ n f) v (m 0)) (Fin.tail m) ∂μ
+      have A : ∫ v, 𝐞 (-L v w) • (fderiv ℝ (iteratedFDeriv ℝ n f) v (m 0)) (Fin.tail m) ∂μ
           = (∫ v, 𝐞 (-L v w) • (fderiv ℝ (iteratedFDeriv ℝ n f) v (m 0)) ∂μ) (Fin.tail m) := by
         rw [integral_apply]
         · simp only [smul_apply]
-        · apply (fourierIntegral_convergent_iff' L w).2
-
-#exit
-
+        · exact (fourierIntegral_convergent_iff' L w).2 (J.apply_continuousLinearMap _)
       have B : ∫ v, 𝐞 (-L v w) • (fderiv ℝ (iteratedFDeriv ℝ n f) v (m 0)) ∂μ =
           (∫ v, 𝐞 (-L v w) • (fderiv ℝ (iteratedFDeriv ℝ n f) v) ∂μ) (m 0) := by
         rw [ContinuousLinearMap.integral_apply]
         · simp only [ContinuousLinearMap.coe_smul', Pi.smul_apply]
-        · sorry
-
-#exit
-
+        · exact (fourierIntegral_convergent_iff' L w).2 J
       simp only [fourierIntegral, ContinuousLinearMap.toLinearMap₂_apply,
         integral_apply ((fourierIntegral_convergent_iff' L w).2 (h'f _ hn)), smul_apply,
         iteratedFDeriv_succ_apply_left, fourierPowSMulRight_apply, ContinuousLinearMap.neg_apply,
-        ContinuousLinearMap.flip_apply, A]
-      exact H
+        ContinuousLinearMap.flip_apply, A, B]
+      exact H -/
+    sorry
 
 
 #exit
