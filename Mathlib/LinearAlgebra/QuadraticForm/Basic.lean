@@ -671,7 +671,7 @@ variable {N' : Type*}  [AddCommMonoid N'] [Module R N']
 /-- A bilinear form gives a quadratic form by applying the argument twice. -/
 def toQuadraticMap (B : BilinMap R M N) : QuadraticMap R M N where
   toFun x := B x x
-  toFun_smul a x := by simp only [SMulHomClass.map_smul, LinearMap.smul_apply, smul_smul]
+  toFun_smul a x := by simp only [_root_.map_smul, LinearMap.smul_apply, smul_smul]
   exists_companion' := ⟨B + LinearMap.flip B, fun x y => by simp [add_add_add_comm, add_comm]⟩
 #align bilin_form.to_quadratic_form LinearMap.BilinMap.toQuadraticMap
 
