@@ -594,7 +594,7 @@ theorem padicValNat_mul_pow_left {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prim
   rw [padicValNat.mul (NeZero.ne' (p^n)).symm (NeZero.ne' (q^m)).symm,
     padicValNat.prime_pow, padicValNat_prime_prime_pow m neq, add_zero]
 
-theorem padicValNat_prod_pow_right {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
+theorem padicValNat_mul_pow_right {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
     (n m : ℕ) (neq : q ≠ p) : padicValNat q (p^n * q^m) = m := by
   rw [padicValNat.mul (NeZero.ne' (p^n)).symm (NeZero.ne' (q^m)).symm,
     padicValNat.prime_pow, padicValNat_prime_prime_pow n neq, zero_add]
