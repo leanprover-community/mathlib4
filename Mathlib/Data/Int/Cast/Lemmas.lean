@@ -46,8 +46,8 @@ theorem natCast_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) :=
 #align int.coe_nat_succ_pos Int.natCast_succ_pos
 
 -- 2024-04-05
-@[deprecated] alias coe_nat_pos := coe_nat_pos
-@[deprecated] alias coe_nat_succ_pos := coe_nat_succ_pos
+@[deprecated] alias coe_nat_pos := natCast_pos
+@[deprecated] alias coe_nat_succ_pos := natCast_succ_pos
 
 lemma toNat_lt' {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.toNat < b ↔ a < b := by
   rw [← toNat_lt_toNat, toNat_natCast]; exact natCast_pos.2 hb.bot_lt
