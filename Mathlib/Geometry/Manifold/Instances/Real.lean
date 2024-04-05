@@ -150,11 +150,13 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
     (continuous_pi fun i => (continuous_id.max continuous_const).comp (continuous_apply i)) _
 #align model_with_corners_euclidean_quadrant modelWithCornersEuclideanQuadrant
 
+/-- The model space used to define `n`-dimensional real manifolds without boundary. -/
 scoped[Manifold]
   notation "𝓡 " n =>
     (modelWithCornersSelf ℝ (EuclideanSpace ℝ (Fin n)) :
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanSpace ℝ (Fin n)))
 
+/-- The model space used to define `n`-dimensional real manifolds with boundary. -/
 scoped[Manifold]
   notation "𝓡∂ " n =>
     (modelWithCornersEuclideanHalfSpace n :
