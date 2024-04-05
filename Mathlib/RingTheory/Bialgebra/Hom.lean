@@ -50,18 +50,17 @@ class BialgHomClass (F : Type*) (R A B : outParam Type*)
 
 namespace BialgHomClass
 
-variable {R : Type*} {A : Type*} {B : Type*} [CommSemiring R]
+variable {R A B F : Type*} [CommSemiring R]
   [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
   [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
+  [BialgHomClass F R A B]
 
 /-- Turn an element of a type `F` satisfying `BialgHomClass F R A B` into an actual
 `BialgHom`. This is declared as the default coercion from `F` to `A →ₐc[R] B`. -/
 @[coe]
 def toBialgHom {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f : F) : A →ₐc[R] B :=
   { CoalgHomClass.toCoalgHom f, AlgHomClass.toAlgHom f with
-    toFun := f
-    counit_comp := BialgHomClass.counit_comp f
-    map_comp_comul := BialgHomClass.map_comp_comul f }
+    toFun := f }
 
 instance coeTC {F : Type*} [FunLike F A B] [BialgHomClass F R A B] : CoeTC F (A →ₐc[R] B) :=
   ⟨BialgHomClass.toBialgHom⟩
@@ -82,20 +81,25 @@ variable [CoalgebraStruct R A] [CoalgebraStruct R B] [CoalgebraStruct R C] [Coal
 instance funLike : FunLike (A →ₐc[R] B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
-    rcases f with ⟨⟨⟨_, _⟩, _⟩, _, _⟩
-    rcases g with ⟨⟨⟨_, _⟩, _⟩, _, _⟩
-    congr
+    rcases f with ⟨_, _⟩
+    rcases g with ⟨_, _⟩
+    simp_all only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, CoalgHom.coe_toLinearMap,
+      DFunLike.coe_fn_eq]
 
 instance bialgHomClass : BialgHomClass (A →ₐc[R] B) R A B where
   map_add := fun f => f.map_add'
   map_smulₛₗ := fun f => f.map_smul'
   counit_comp := fun f => f.counit_comp
   map_comp_comul := fun f => f.map_comp_comul
+  map_mul := fun f => f.map_mul'
+  map_one := fun f => f.map_one'
+  map_zero := fun f => f.map_zero'
+  commutes := fun f => f.commutes'
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
-    [Semiring α] [Semiring β]
-    [Algebra R α] [Algebra R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
+    [Semiring α] [Algebra R α] [Semiring β]
+    [Algebra R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
     (f : α →ₐc[R] β) : α → β := f
 
 initialize_simps_projections BialgHom (toFun → apply)
@@ -109,6 +113,9 @@ protected theorem coe_coe {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f
 theorem toFun_eq_coe (f : A →ₐc[R] B) : f.toFun = f :=
   rfl
 
+variable (f : A →ₐc[R] B)
+#check (f : A →ₗc[R] B)
+#synth CoeOut (A →ₐc[R] B) (A →ₗc[R] B)
 /-attribute [coe] BialgHom.toLinearMap
 
 instance coeOutLinearMap : CoeOut (A →ₐc[R] B) (A →ₗ[R] B) :=

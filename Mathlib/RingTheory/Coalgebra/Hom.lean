@@ -23,7 +23,7 @@ homomorphism.
 
 -/
 
-open TensorProduct Coalgebra
+open TensorProduct Coalgebra BigOperators
 
 universe u v w u₁ v₁
 
@@ -54,7 +54,7 @@ class CoalgHomClass (F : Type*) (R A B : outParam Type*)
 
 namespace CoalgHomClass
 
-variable {R : Type*} {A : Type*} {B : Type*} [CommSemiring R]
+variable {R A B F : Type*} [CommSemiring R]
   [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
   [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
 
@@ -98,8 +98,8 @@ instance coalgHomClass : CoalgHomClass (A →ₗc[R] B) R A B where
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
-    [AddCommMonoid α] [AddCommMonoid β]
-    [Module R α] [Module R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
+    [AddCommMonoid α] [Module R α] [AddCommMonoid β]
+    [Module R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
     (f : α →ₗc[R] β) : α → β := f
 
 initialize_simps_projections CoalgHom (toFun → apply)
@@ -113,28 +113,37 @@ protected theorem coe_coe {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (f
 theorem toFun_eq_coe (f : A →ₗc[R] B) : f.toFun = f :=
   rfl
 
-/-
+attribute [coe] SemilinearMapClass.semilinearMap
+attribute [coe] LinearMapClass.linearMap
+/-instance coeOutLinearMap : CoeOut (A →ₗc[R] B) (A →ₗ[R] B) :=
+  ⟨CoalgHom.toLinearMap⟩-/
+
 /-- The `AddMonoidHom` underlying a coalgebra homomorphism. -/
 @[coe]
 def toAddMonoidHom' (f : A →ₗc[R] B) : A →+ B := (f : A →ₗ[R] B)
 
 instance coeOutAddMonoidHom : CoeOut (A →ₗc[R] B) (A →+ B) :=
   ⟨CoalgHom.toAddMonoidHom'⟩
--/
 
 @[simp]
 theorem coe_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₗc[R] B) : A → B) = f :=
   rfl
 
 @[norm_cast]
-theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ ) : ⇑(⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : A →ₗc[R] B) = f :=
+theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : A →ₗc[R] B) = f :=
   rfl
 
-@[norm_cast]
+/- corresponding `AlgHom.coe_ringHom_mk` is tagged with `simp` and `norm_cast`, neither of which
+work here
+-/
+@[simp]
 theorem coe_linearMap_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₗc[R] B) : A →ₗ[R] B) = f :=
   rfl
 
-@[simp, norm_cast]
+/- `AlgHom.coe_toRingHom` is also tagged with `norm_cast` but doesn't work here.
+The other difference is the LHS pretty prints as `⇑f.toLinearMap` rather than
+`⇑↑f`. -/
+@[simp]
 theorem coe_toLinearMap (f : A →ₗc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
   rfl
 
@@ -195,6 +204,14 @@ protected theorem map_zero : φ 0 = 0 :=
 
 protected theorem map_smul (r : R) (x : A) : φ (r • x) = r • φ x :=
   map_smul _ _ _
+
+protected theorem map_sum {ι : Type*} (f : ι → A) (s : Finset ι) :
+    φ (∑ x in s, f x) = ∑ x in s, φ (f x) :=
+  map_sum _ _ _
+
+protected theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A) :
+    φ (f.sum g) = f.sum fun i a => φ (g i a) :=
+  map_finsupp_sum _ _ _
 
 section
 
@@ -295,8 +312,7 @@ variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
     map_comp_comul := by
       ext
       simp only [LinearMap.coe_comp, Function.comp_apply, CommSemiring.comul_apply,
-        ← LinearMap.lTensor_comp_rTensor, LinearMap.coe_comp, Function.comp_apply,
-        rTensor_counit_comul, LinearMap.lTensor_tmul] }
+        ← LinearMap.lTensor_comp_rTensor, rTensor_counit_comul, LinearMap.lTensor_tmul] }
 
 variable {R}
 
