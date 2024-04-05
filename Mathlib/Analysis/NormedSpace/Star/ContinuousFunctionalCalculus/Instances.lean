@@ -248,7 +248,7 @@ end SpectrumRestricts
 section Nonneg
 
 variable {A : Type*} [NormedRing A] [CompleteSpace A]
-variable [PartialOrder A] [StarOrderedRing A] [CstarRing A]
+variable [PartialOrder A] [StarRing A] [StarOrderedRing A] [CstarRing A]
 variable [NormedAlgebra ℂ A] [StarModule ℂ A]
 
 lemma nonneg_iff_isSelfAdjoint_and_spectrumRestricts {a : A} :
