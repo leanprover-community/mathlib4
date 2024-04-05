@@ -21,7 +21,7 @@ This file introduces the Lawson topology on a preorder.
 
 ## Main statements
 
-- `Topology.IsLawson.isTopologicalBasis` - `Topology.IsLawson.lawson_basis` is a basis for
+- `Topology.IsLawson.isTopologicalBasis` - `Topology.IsLawson.lawsonBasis` is a basis for
   `Topology.IsLawson`
 - `Topology.lawsonOpen_iff_scottOpen_of_isUpperSet'` - An upper set is Lawson open if and only if it
   is Scott open
