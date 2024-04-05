@@ -401,7 +401,7 @@ theorem inv_subtypePerm (f : Perm α) (hf) :
 
 private theorem pow_aux (hf : ∀ x, p x ↔ p (f x)) : ∀ {n : ℕ} (x), p x ↔ p ((f ^ n) x)
   | 0, _ => Iff.rfl
-  | _ + 1, _ => (pow_aux hf _).trans (hf _)
+  | _ + 1, _ => (hf _).trans (pow_aux hf _)
 
 @[simp]
 theorem subtypePerm_pow (f : Perm α) (n : ℕ) (hf) :

@@ -806,7 +806,7 @@ namespace FactorsThrough
 
 protected theorem rfl {f : α → β} : FactorsThrough f f := fun _ _ ↦ id
 
-theorem comp_left {f : α → β} {g : α → γ}  (h : FactorsThrough g f) (g' : γ → δ) :
+theorem comp_left {f : α → β} {g : α → γ} (h : FactorsThrough g f) (g' : γ → δ) :
     FactorsThrough (g' ∘ g) f := fun _x _y hxy ↦
   congr_arg g' (h hxy)
 
@@ -926,6 +926,11 @@ protected theorem eq_iff {x y : α} : f x = y ↔ x = f y :=
 #align function.involutive.eq_iff Function.Involutive.eq_iff
 
 end Involutive
+
+lemma not_involutive : Involutive Not := fun _ ↦ propext not_not
+lemma not_injective : Injective Not := not_involutive.injective
+lemma not_surjective : Surjective Not := not_involutive.surjective
+lemma not_bijective : Bijective Not := not_involutive.bijective
 
 @[simp]
 lemma symmetric_apply_eq_iff {f : α → α} : Symmetric (f · = ·) ↔ Involutive f := by

@@ -112,7 +112,7 @@ theorem support_zero : support (0 : HahnSeries Γ R) = ∅ :=
 
 @[simp]
 nonrec theorem support_nonempty_iff {x : HahnSeries Γ R} : x.support.Nonempty ↔ x ≠ 0 := by
-  rw [support, support_nonempty_iff, Ne.def, coeff_fun_eq_zero_iff]
+  rw [support, support_nonempty_iff, Ne, coeff_fun_eq_zero_iff]
 #align hahn_series.support_nonempty_iff HahnSeries.support_nonempty_iff
 
 @[simp]

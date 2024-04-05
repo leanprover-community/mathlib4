@@ -747,6 +747,21 @@ theorem span_iUnion {ι} (s : ι → Set L) : lieSpan R L (⋃ i, s i) = ⨆ i, 
   (LieSubalgebra.gi R L).gc.l_iSup
 #align lie_subalgebra.span_Union LieSubalgebra.span_iUnion
 
+/-- If a predicate `p` is true on some set `s ⊆ L`, true for `0`, stable by scalar multiplication,
+by addition and by Lie bracket, then the predicate is true on the Lie span of `s`. (Since `s` can be
+empty, and the Lie span always contains `0`, the assumption that `p 0` holds cannot be removed.) -/
+@[elab_as_elim]
+theorem lieSpan_induction {p : L → Prop} {x : L} (h : x ∈ lieSpan R L s) (mem : ∀ x ∈ s, p x)
+    (zero : p 0) (smul : ∀ (r : R), ∀ {x : L}, p x → p (r • x))
+    (add : ∀ x y, p x → p y → p (x + y)) (lie : ∀ x y, p x → p y → p ⁅x, y⁆) : p x :=
+  let S : LieSubalgebra R L :=
+    { carrier := p
+      add_mem' := add _ _
+      zero_mem' := zero
+      smul_mem' := smul
+      lie_mem' := lie _ _ }
+  lieSpan_le.mpr (show s ≤ S from mem) h
+
 end LieSpan
 
 end LieSubalgebra
