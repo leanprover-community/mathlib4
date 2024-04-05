@@ -646,6 +646,11 @@ lemma ExactAt.isZero_homology [K.HasHomology i] (h : K.ExactAt i) :
     IsZero (K.homology i) :=
   (K.exactAt_iff_isZero_homology i).1 h
 
+def Acyclic := ∀ i, K.ExactAt i
+
+lemma acyclic_iff :
+    K.Acyclic ↔ ∀ i, K.ExactAt i := by rfl
+
 end HomologicalComplex
 
 namespace ChainComplex

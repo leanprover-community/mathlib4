@@ -178,4 +178,32 @@ lemma quasiIsoAt_πTruncGE {j : ι} {j' : ι'} (hj' : e.f j = j') :
 
 instance (i : ι) : QuasiIsoAt (K.πTruncGE e) (e.f i) := K.quasiIsoAt_πTruncGE e rfl
 
+lemma quasiIso_πTruncGE_iff_isSupported :
+    QuasiIso (K.πTruncGE e) ↔ K.IsSupported e := by
+  constructor
+  · intro
+    refine' ⟨fun i' hi' => _⟩
+    rw [exactAt_iff_of_quasiIsoAt (K.πTruncGE e) i']
+    exact (K.truncGE e).exactAt_of_isSupported e i' hi'
+  · intro
+    rw [quasiIso_iff]
+    intro i'
+    by_cases hi' : ∃ i, e.f i = i'
+    · obtain ⟨i, rfl⟩ := hi'
+      infer_instance
+    · rw [quasiIsoAt_iff_exactAt (K.πTruncGE e) i']
+      all_goals exact exactAt_of_isSupported _ e i' (by simpa using hi')
+
+lemma acyclic_πTruncGE_iff_isSupportedOutside :
+    (K.truncGE e).Acyclic ↔ K.IsSupportedOutside e := by
+  constructor
+  · intro hK
+    exact ⟨fun i =>
+      by simpa only [exactAt_iff_of_quasiIsoAt (K.πTruncGE e)] using hK (e.f i)⟩
+  · intro hK i'
+    by_cases hi' : ∃ i, e.f i = i'
+    · obtain ⟨i, rfl⟩ := hi'
+      simpa only [← exactAt_iff_of_quasiIsoAt (K.πTruncGE e)] using hK.exactAt i
+    · exact exactAt_of_isSupported _ e i' (by simpa using hi')
+
 end HomologicalComplex

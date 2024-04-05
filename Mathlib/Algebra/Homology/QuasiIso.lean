@@ -284,6 +284,12 @@ lemma quasiIsoAt_iff_exactAt' (f : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHom
   · intro hK
     exact ⟨⟨0, IsZero.eq_of_src hK _ _, IsZero.eq_of_tgt hL _ _⟩⟩
 
+lemma exactAt_iff_of_quasiIsoAt (f : K ⟶ L) (i : ι)
+    [K.HasHomology i] [L.HasHomology i] [QuasiIsoAt f i] :
+    K.ExactAt i ↔ L.ExactAt i :=
+  ⟨fun hK => (quasiIsoAt_iff_exactAt f i hK).1 inferInstance,
+    fun hL => (quasiIsoAt_iff_exactAt' f i hL).1 inferInstance⟩
+
 instance (f : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology i] [hf : QuasiIsoAt f i] :
     IsIso (homologyMap f i) := by
   simpa only [quasiIsoAt_iff, ShortComplex.quasiIso_iff] using hf
