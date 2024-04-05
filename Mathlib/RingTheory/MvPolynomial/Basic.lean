@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.CharP.Basic
-import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.MvPolynomial.Degrees
+import Mathlib.Algebra.MvPolynomial.Degrees
+import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
