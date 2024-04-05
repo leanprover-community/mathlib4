@@ -38,13 +38,6 @@ instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵐᵒ�
 instance instDivisionRing [DivisionRing α] : DivisionRing αᵐᵒᵖ where
   __ := instRing
   __ := instDivisionSemiring
-  ratCast_mk a b hb h := unop_injective <| by rw [unop_ratCast, Rat.cast_def, unop_mul, unop_inv,
-    unop_natCast, unop_intCast, Int.commute_cast, div_eq_mul_inv]
-  qsmul := qsmulRec _
-
-instance instDivisionRing [DivisionRing α] : DivisionRing αᵐᵒᵖ where
-  __ := instRing _
-  __ := instDivisionSemiring _
   ratCast_def q := unop_injective <| by rw [unop_ratCast, Rat.cast_def, unop_div,
     unop_natCast, unop_intCast, Int.commute_cast, div_eq_mul_inv]
   qsmul := qsmulRec _
@@ -58,22 +51,22 @@ end MulOpposite
 namespace AddOpposite
 
 instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵃᵒᵖ where
-  __ := instSemiring _
-  __ := instGroupWithZero _
+  __ := instSemiring
+  __ := instGroupWithZero
 
 instance instDivisionRing [DivisionRing α] : DivisionRing αᵃᵒᵖ where
-  __ := instRing _
+  __ := instRing
   __ := instDivisionSemiring
   ratCast_def q := unop_injective <| by rw [unop_ratCast, Rat.cast_def, unop_div, unop_natCast,
     unop_intCast, div_eq_mul_inv]
   qsmul := qsmulRec _
 
 instance instSemifield [Semifield α] : Semifield αᵃᵒᵖ where
-  __ := instCommSemiring _
+  __ := instCommSemiring
   __ := instDivisionSemiring
 
 instance instField [Field α] : Field αᵃᵒᵖ where
-  toCommRing := instCommRing _
+  __ := instCommRing
   __ := instDivisionRing
 
 end AddOpposite
