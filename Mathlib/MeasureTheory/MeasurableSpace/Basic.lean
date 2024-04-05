@@ -691,6 +691,53 @@ theorem measurable_of_measurable_on_compl_singleton [MeasurableSingletonClass α
 
 end Subtype
 
+section Atoms
+
+variable [MeasurableSpace β]
+
+/-- The *measurable atom* of `x` is the intersection of all the measurable sets countaining `x`.
+It is measurable when the space is countable (or more generally when the measurable space is
+countably generated). -/
+def measurableAtom (x : β) : Set β :=
+  ⋂ (s : Set β) (_h's : x ∈ s) (_hs : MeasurableSet s), s
+
+@[simp] lemma mem_measurableAtom_self (x : β) : x ∈ measurableAtom x := by
+  simp (config := {contextual := true}) [measurableAtom]
+
+lemma mem_of_mem_measurableAtom {x y : β} (h : y ∈ measurableAtom x) {s : Set β}
+    (hs : MeasurableSet s) (hxs : x ∈ s) : y ∈ s := by
+  simp only [measurableAtom, mem_iInter] at h
+  exact h s hxs hs
+
+lemma measurableAtom_subset {s : Set β} {x : β} (hs : MeasurableSet s) (hx : x ∈ s) :
+    measurableAtom x ⊆ s :=
+  iInter₂_subset_of_subset s hx fun ⦃a⦄ ↦ (by simp [hs])
+
+@[simp] lemma measurableAtom_of_measurableSingletonClass [MeasurableSingletonClass β] (x : β) :
+    measurableAtom x = {x} :=
+  Subset.antisymm (measurableAtom_subset (measurableSet_singleton x) rfl) (by simp)
+
+lemma MeasurableSet.measurableAtom_of_countable [Countable β] (x : β) :
+    MeasurableSet (measurableAtom x) := by
+  have : ∀ (y : β), y ∉ measurableAtom x → ∃ s, MeasurableSet s ∧ x ∈ s ∧ y ∉ s :=
+    fun y hy ↦ by simpa [measurableAtom] using hy
+  choose! s hs using this
+  have : measurableAtom x = ⋂ (y ∈ (measurableAtom x)ᶜ), s y := by
+    apply Subset.antisymm
+    · intro z hz
+      simp only [mem_iInter, mem_compl_iff]
+      intro i hi
+      show z ∈ s i
+      exact mem_of_mem_measurableAtom hz (hs i hi).1 (hs i hi).2.1
+    · apply compl_subset_compl.1
+      intro z hz
+      simp only [compl_iInter, mem_iUnion, mem_compl_iff, exists_prop]
+      exact ⟨z, hz, (hs z hz).2.2⟩
+  rw [this]
+  exact MeasurableSet.biInter (to_countable (measurableAtom x)ᶜ) (fun i hi ↦ (hs i hi).1)
+
+end Atoms
+
 section Prod
 
 /-- A `MeasurableSpace` structure on the product of two measurable spaces. -/
@@ -814,47 +861,6 @@ instance Prod.instMeasurableSingletonClass
     MeasurableSingletonClass (α × β) :=
   ⟨fun ⟨a, b⟩ => @singleton_prod_singleton _ _ a b ▸ .prod (.singleton a) (.singleton b)⟩
 #align prod.measurable_singleton_class Prod.instMeasurableSingletonClass
-
-def measurableAtom {β : Type*} [MeasurableSpace β] (x : β) :
-    Set β := ⋂ (s : Set β) (_h's : x ∈ s) (_hs : MeasurableSet s), s
-
-@[simp] lemma mem_measurableAtom_self {β : Type*} [MeasurableSpace β] (x : β) :
-    x ∈ measurableAtom x := by
-  simp (config := {contextual := true}) [measurableAtom]
-
-lemma mem_of_mem_measurableAtom {β : Type*} [MeasurableSpace β]
-    {x y : β} (h : y ∈ measurableAtom x) {s : Set β}
-    (hs : MeasurableSet s) (hxs : x ∈ s) : y ∈ s := by
-  simp only [measurableAtom, mem_iInter] at h
-  exact h s hxs hs
-
-lemma measurableAtom_subset {β : Type*} [MeasurableSpace β] {s : Set β} {x : β}
-    (hs : MeasurableSet s) (hx : x ∈ s) : measurableAtom x ⊆ s :=
-  iInter₂_subset_of_subset s hx fun ⦃a⦄ ↦ (by simp [hs])
-
-@[simp] lemma measurableAtom_of_measurableSingletonClass
-    {β : Type*} [MeasurableSpace β] [MeasurableSingletonClass β] (x : β) :
-    measurableAtom x = {x} :=
-  Subset.antisymm (measurableAtom_subset (measurableSet_singleton x) rfl) (by simp)
-
-lemma MeasurableSet.measurableAtom_of_countable {β : Type*} [MeasurableSpace β] [Countable β] (x : β) :
-    MeasurableSet (measurableAtom x) := by
-  have : ∀ (y : β), y ∉ measurableAtom x → ∃ s, MeasurableSet s ∧ x ∈ s ∧ y ∉ s :=
-    fun y hy ↦ by simpa [measurableAtom] using hy
-  choose! s hs using this
-  have : measurableAtom x = ⋂ (y ∈ (measurableAtom x)ᶜ), s y := by
-    apply Subset.antisymm
-    · intro z hz
-      simp only [mem_iInter, mem_compl_iff]
-      intro i hi
-      show z ∈ s i
-      exact mem_of_mem_measurableAtom hz (hs i hi).1 (hs i hi).2.1
-    · apply compl_subset_compl.1
-      intro z hz
-      simp only [compl_iInter, mem_iUnion, mem_compl_iff, exists_prop]
-      exact ⟨z, hz, (hs z hz).2.2⟩
-  rw [this]
-  exact MeasurableSet.biInter (to_countable (measurableAtom x)ᶜ) (fun i hi ↦ (hs i hi).1)
 
 theorem measurable_from_prod_countable' [Countable β]
     {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y))
