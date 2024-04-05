@@ -19,6 +19,13 @@ example (h : 0 + 0 = 0) : True := by
   simp at h
   try exact h
 
+-- `subst` does not use the goal
+#guard_msgs in
+example {a b : Nat} (h : a = b) : a + 0 = b := by
+  simp
+  subst h
+  rfl
+
 set_option linter.flexible false in
 set_option linter.flexible true in
 /--
