@@ -507,3 +507,5 @@ theorem mem_span_fractionalIdealLatticeBasis (x : (E K)) :
   rfl
 
 end integerLattice
+
+end NumberField.mixedEmbedding
