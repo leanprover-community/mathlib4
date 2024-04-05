@@ -39,7 +39,7 @@ structure KatetovMap (α : Type*) [MetricSpace α] where
   /-- The function `α → ℝ` -/
   protected toFun : α → ℝ
   /-- Proposition that `toFun` is a Katetov map -/
-  protected IsKatetovtoFun : IsKatetov toFun
+  protected isKatetov : IsKatetov toFun
 
 /-- The type of Katetov maps from `α`. -/
 notation "E(" α ")" => KatetovMap α
