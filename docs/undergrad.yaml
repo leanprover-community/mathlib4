@@ -202,7 +202,7 @@ Bilinear and Quadratic Forms Over a Vector Space:
     rank of a bilinear form: ''
   Quadratic forms:
     quadratic form: 'QuadraticForm'
-    polar form of a quadratic: 'QuadraticForm.polar'
+    polar form of a quadratic: 'QuadraticMap.polar'
   Orthogonality:
     orthogonal elements: 'BilinForm.IsOrtho'
     adjoint endomorphism: 'BilinForm.leftAdjointOfNondegenerate'

@@ -190,7 +190,7 @@ Linear algebra:
     symmetric bilinear form: 'BilinForm.IsSymm'
     matrix representation: 'BilinForm.toMatrix'
     quadratic form: 'QuadraticForm'
-    polar form of a quadratic: 'QuadraticForm.polar'
+    polar form of a quadratic: 'QuadraticMap.polar'
   Finite-dimensional inner product spaces (see also Hilbert spaces, below):
     existence of orthonormal basis: 'OrthonormalBasis'
     diagonalization of self-adjoint endomorphisms: 'LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply'
