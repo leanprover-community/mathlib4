@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Lie.BaseChange
-import Mathlib.Data.Polynomial.Laurent
+import Mathlib.Algebra.Polynomial.Laurent
 
 /-!
 # Loop Lie algebras and their central extensions
