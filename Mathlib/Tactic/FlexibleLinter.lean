@@ -243,6 +243,7 @@ def followers : HashSet Name :=
     ``Lean.Parser.Tactic.simpAll,
     ``Lean.Parser.Tactic.simpa,
     ``Lean.Parser.Tactic.dsimp,
+    ``Lean.Parser.Tactic.congr,
     ``Lean.Parser.Tactic.tacticRfl,
     ``Lean.Parser.Tactic.omega,
     `Mathlib.Tactic.Abel.abel,

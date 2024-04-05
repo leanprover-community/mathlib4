@@ -106,6 +106,40 @@ example : (0 + 2 : Rat) < 3 := by
   simp
   norm_num
 
+set_option linter.flexible false in
+set_option linter.flexible true in
+/--
+error: 'simp' stains '⊢'... [linter.flexible]
+---
+info: ... and 'rw [add_comm]' uses '⊢'!
+-/
+#guard_msgs in
+-- `norm_num` is allowed after `simp`, but "passes along the stain".
+example {a : Rat} : a + (0 + 2 : Rat) < 3 + a := by
+  simp
+  norm_num
+  rw [add_comm]
+  norm_num
+
+set_option linter.flexible false in
+set_option linter.flexible true in
+/--
+error: 'simp' stains '⊢'... [linter.flexible]
+---
+info: ... and 'congr' uses '⊢'!
+---
+error: 'simp' stains '⊢'... [linter.flexible]
+---
+info: ... and 'exact h.symm' uses '⊢'!
+-/
+#guard_msgs in
+-- `congr` is allowed after `simp`, but "passes along the stain".
+example {a b : Nat} (h : a = b) : a + b + 0 = b + a := by
+  simp
+  congr
+  exact h.symm
+
+
 --  `abel_nf` is a `rigidifier`: the "stain" of `simp` does not continue past `abel_nf`.
 #guard_msgs in
 example {a b : Nat} (h : a + b = a + (b + 1)) : a + b = b + a + 0 + 1 := by
