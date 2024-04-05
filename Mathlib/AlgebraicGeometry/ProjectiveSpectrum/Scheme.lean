@@ -57,9 +57,6 @@ open sets in `Proj`, more specifically:
     to prove `fromSpec ∘ toSpec` and `toSpec ∘ fromSpec` are both identities; these are achieved in
     `ProjIsoSpecTopComponent.fromSpec_toSpec` and `ProjIsoSpecTopComponent.toSpec_fromSpec`.
 
-    `ProjIsoSpecTopComponent.FromSpec.toFun`. But to prove the continuity of this function, we need
-    to prove `fromSpec ∘ toSpec` and `toSpec ∘ fromSpec` are both identities; these are achieved in
-    `ProjIsoSpecTopComponent.fromSpecToSpec` and `ProjIsoSpecTopComponent.toSpecFromSpec`.
 3. We then construct a sheaf isomorphism between `φ _* Proj| pbo f` and `Spec A⁰_ f`.
   - `Spec A⁰_f` to `φ _* Proj | pbo f`: we need to construct a family of ring homomorphisms --- for
     each open sets `V ⊆ Spec A⁰_f`, `(Spec A⁰_f)(V) ⟶ (Proj| pbo f)(φ⁻¹ V)`. Let `s` be a section
