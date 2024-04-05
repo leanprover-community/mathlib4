@@ -5,7 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Data.Finsupp.Fin

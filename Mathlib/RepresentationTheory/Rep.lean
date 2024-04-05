@@ -665,7 +665,7 @@ set_option linter.uppercaseLean3 false in
 def counitIsoAddEquiv {M : ModuleCat.{u} (MonoidAlgebra k G)} :
     (ofModuleMonoidAlgebra ⋙ toModuleMonoidAlgebra).obj M ≃+ M := by
   dsimp [ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
-  refine' (Representation.ofModule M).asModuleEquiv.trans
+  exact (Representation.ofModule M).asModuleEquiv.trans
     (RestrictScalars.addEquiv k (MonoidAlgebra k G) _)
 set_option linter.uppercaseLean3 false in
 #align Rep.counit_iso_add_equiv Rep.counitIsoAddEquiv

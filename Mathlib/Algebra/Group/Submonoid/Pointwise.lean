@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.WellFoundedSet
 
