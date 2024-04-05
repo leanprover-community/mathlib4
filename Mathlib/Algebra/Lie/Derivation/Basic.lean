@@ -309,10 +309,6 @@ lemma toLinearMapLinearMap_injective : Function.Injective ((@toLinearMapLinearMa
   ext a
   exact congrFun (congrArg DFunLike.coe h) a
 
-/-- Lie derivations over a field form a free module. -/
-instance instModuleFree : Module.Free R (LieDerivation R L L) :=
-  Module.Free.of_divisionRing R (LieDerivation R L L)
-
 /-- Lie derivations over a finite dimensional Lie algebra form a finite dimensional module. -/
 instance instModuleFinite [Module.Finite R L] : Module.Finite R (LieDerivation R L L) :=
   FiniteDimensional.of_injective toLinearMapLinearMap toLinearMapLinearMap_injective
