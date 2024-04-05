@@ -97,11 +97,11 @@ theorem prod_univ_castSucc [CommMonoid β] {n : ℕ} (f : Fin (n + 1) → β) :
 #align fin.sum_univ_cast_succ Fin.sum_univ_castSucc
 
 @[to_additive (attr := simp)]
-theorem Fin.prod_univ_get [CommMonoid α] (l : List α) : ∏ i, l.get i = l.prod := by
+theorem prod_univ_get [CommMonoid α] (l : List α) : ∏ i, l.get i = l.prod := by
   simp [Finset.prod_eq_multiset_prod]
 
 @[to_additive (attr := simp)]
-theorem Fin.prod_univ_get' [CommMonoid β] (l : List α) (f : α → β) :
+theorem prod_univ_get' [CommMonoid β] (l : List α) (f : α → β) :
     ∏ i, f (l.get i) = (l.map f).prod := by
   simp [Finset.prod_eq_multiset_prod]
 
