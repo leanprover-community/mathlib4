@@ -157,7 +157,7 @@ section MonoidWithZero
 variable [MonoidWithZero M₀] {a : M₀} {m n : ℕ}
 
 @[simp] lemma zero_pow : ∀ {n : ℕ}, n ≠ 0 → (0 : M₀) ^ n = 0
-  | n + 1, _ => by rw [pow_succ, zero_mul]
+  | n + 1, _ => by rw [pow_succ, mul_zero]
 #align zero_pow zero_pow
 #align zero_pow' zero_pow
 
@@ -169,7 +169,7 @@ lemma zero_pow_eq (n : ℕ) : (0 : M₀) ^ n = if n = 0 then 1 else 0 := by
 
 lemma pow_eq_zero_of_le : ∀ {m n} (hmn : m ≤ n) (ha : a ^ m = 0), a ^ n = 0
   | _, _, Nat.le.refl, ha => ha
-  | _, _, Nat.le.step hmn, ha => by rw [pow_succ, pow_eq_zero_of_le hmn ha, mul_zero]
+  | _, _, Nat.le.step hmn, ha => by rw [pow_succ, pow_eq_zero_of_le hmn ha, zero_mul]
 #align pow_eq_zero_of_le pow_eq_zero_of_le
 
 lemma ne_zero_pow (hn : n ≠ 0) (ha : a ^ n ≠ 0) : a ≠ 0 := by rintro rfl; exact ha $ zero_pow hn
@@ -184,7 +184,7 @@ variable [NoZeroDivisors M₀]
 
 lemma pow_eq_zero : ∀ {n}, a ^ n = 0 → a = 0
   | 0, ha => by simpa using congr_arg (a * ·) ha
-  | n + 1, ha => by rw [pow_succ, mul_eq_zero] at ha; exact ha.elim id pow_eq_zero
+  | n + 1, ha => by rw [pow_succ, mul_eq_zero] at ha; exact ha.elim pow_eq_zero id
 #align pow_eq_zero pow_eq_zero
 
 @[simp] lemma pow_eq_zero_iff (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
