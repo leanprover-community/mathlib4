@@ -575,6 +575,7 @@ theorem image_restrictPreimage :
   rw [← (Subtype.coe_injective).image_injective.eq_iff, ← image_comp, MapsTo.restrict_commutes,
     image_comp, Subtype.image_preimage_coe, Subtype.image_preimage_coe, image_preimage_inter]
 
+variable (f) in
 theorem range_restrictPreimage : range (t.restrictPreimage f) = Subtype.val ⁻¹' range f := by
   simp only [← image_univ, ← image_restrictPreimage, preimage_univ]
 #align set.range_restrict_preimage Set.range_restrictPreimage
