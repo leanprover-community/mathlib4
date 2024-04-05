@@ -50,6 +50,58 @@ then `A` and `B` are linearly disjoint, if they are linearly disjoint as submodu
 protected def LinearDisjoint : Prop :=
   (Subalgebra.toSubmodule A).LinearDisjoint (Subalgebra.toSubmodule B)
 
+variable {A B}
+
+/-- Linearly disjoint is symmetric if elements in the module commute. -/
+theorem LinearDisjoint.symm_of_commute (H : A.LinearDisjoint B)
+    (hc : ∀ (a : A) (b : B), Commute a.1 b.1) : B.LinearDisjoint A :=
+  Submodule.LinearDisjoint.symm_of_commute H hc
+
+/-- Linearly disjoint is symmetric if elements in the module commute. -/
+theorem linearDisjoint_symm_of_commute
+    (hc : ∀ (a : A) (b : B), Commute a.1 b.1) : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
+  ⟨fun H ↦ H.symm_of_commute hc, fun H ↦ H.symm_of_commute fun _ _ ↦ (hc _ _).symm⟩
+
+namespace LinearDisjoint
+
+variable (A B)
+
+-- skip of_map_linearIndependent_left' ??
+
+-- skip of_map_linearIndependent_right' ??
+
+-- skip of_map_linearIndependent_mul' ??
+
+theorem of_bot_left : (⊥ : Subalgebra R S).LinearDisjoint B :=
+  Submodule.LinearDisjoint.of_self_left _
+
+theorem of_bot_right : A.LinearDisjoint ⊥ :=
+  Submodule.LinearDisjoint.of_self_right _
+
+-- skip of_linearDisjoint_finite_left ?? (not correct ??)
+
+-- skip of_linearDisjoint_finite_right ?? (not correct ??)
+
+-- skip of_linearDisjoint_finite ?? (not correct ??)
+
+end LinearDisjoint
+
 end Semiring
+
+section CommSemiring
+
+variable [CommSemiring R] [CommSemiring S] [Algebra R S]
+
+variable {A B : Subalgebra R S}
+
+/-- Linearly disjoint is symmetric in a commutative ring. -/
+theorem LinearDisjoint.symm (H : A.LinearDisjoint B) : B.LinearDisjoint A :=
+  H.symm_of_commute fun _ _ ↦ mul_comm _ _
+
+/-- Linearly disjoint is symmetric in a commutative ring. -/
+theorem linearDisjoint_symm : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
+  ⟨LinearDisjoint.symm, LinearDisjoint.symm⟩
+
+end CommSemiring
 
 end Subalgebra

@@ -516,7 +516,7 @@ theorem of_map_linearIndependent_left {ι : Type*} (m : Basis ι R M)
   letI : AddCommGroup (ι →₀ N) := Finsupp.instAddCommGroup
   exact of_map_linearIndependent_left' M N m (LinearMap.ker_eq_bot.1 H)
 
--- TODO: move to suitable file ?
+-- TODO: remove once #11748 is merged
 theorem _root_.Module.Flat.preserves_injective_linearMap'
     {R : Type u} {M : Type v} [CommRing R] [AddCommGroup M] [Module R M]
     {N : Type w} [AddCommGroup N] [Module R N] {M' : Type*} [AddCommGroup M'] [Module R M']
