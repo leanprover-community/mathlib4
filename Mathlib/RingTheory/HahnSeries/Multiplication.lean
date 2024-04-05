@@ -76,7 +76,7 @@ end HahnSeries
 /-- We introduce a type alias for `HahnSeries` in order to work with scalar multiplication by
 series. If we wrote a `SMul (HahnSeries Γ R) (HahnSeries Γ V)` instance, then when
 `V = HahnSeries Γ R`, we would have two different actions of `HahnSeries Γ R` on `HahnSeries Γ V`.
-See `Mathlib.Data.Polynomial.Module` for more discussion on this problem. -/
+See `Mathlib.Algebra.Polynomial.Module` for more discussion on this problem. -/
 @[nolint unusedArguments]
 def HahnModule (Γ R V : Type*) [PartialOrder Γ] [Zero V] [SMul R V] :=
   HahnSeries Γ V
@@ -362,7 +362,7 @@ theorem mul_single_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
     {b : Γ} : (x * single b r).coeff (a + b) = x.coeff a * r := by
   by_cases hr : r = 0
   · simp [hr, mul_coeff]
-  simp only [hr, smul_coeff, mul_coeff, support_single_of_ne, Ne.def, not_false_iff, smul_eq_mul]
+  simp only [hr, smul_coeff, mul_coeff, support_single_of_ne, Ne, not_false_iff, smul_eq_mul]
   by_cases hx : x.coeff a = 0
   · simp only [hx, zero_mul]
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
@@ -599,7 +599,7 @@ theorem order_pow {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Semiring R] [NoZer
   · simp
   rcases eq_or_ne x 0 with (rfl | hx)
   · simp
-  rw [pow_succ', order_mul (pow_ne_zero _ hx) hx, succ_nsmul', IH]
+  rw [pow_succ, order_mul (pow_ne_zero _ hx) hx, succ_nsmul, IH]
 #align hahn_series.order_pow HahnSeries.order_pow
 
 section NonUnitalNonAssocSemiring
@@ -767,7 +767,7 @@ theorem algebraMap_apply {r : R} : algebraMap R (HahnSeries Γ A) r = C (algebra
 
 instance [Nontrivial Γ] [Nontrivial R] : Nontrivial (Subalgebra R (HahnSeries Γ R)) :=
   ⟨⟨⊥, ⊤, by
-      rw [Ne.def, SetLike.ext_iff, not_forall]
+      rw [Ne, SetLike.ext_iff, not_forall]
       obtain ⟨a, ha⟩ := exists_ne (0 : Γ)
       refine' ⟨single a 1, _⟩
       simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top]

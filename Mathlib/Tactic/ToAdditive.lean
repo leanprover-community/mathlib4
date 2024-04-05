@@ -925,6 +925,7 @@ def nameDict : String → List String
   | "hdiv"        => ["hsub"]
   | "hpow"        => ["hsmul"]
   | "finprod"     => ["finsum"]
+  | "tprod"       => ["tsum"]
   | "pow"         => ["nsmul"]
   | "npow"        => ["nsmul"]
   | "zpow"        => ["zsmul"]
@@ -945,6 +946,7 @@ def nameDict : String → List String
   | "semiconj"    => ["add", "Semiconj"]
   | "zpowers"     => ["zmultiples"]
   | "powers"      => ["multiples"]
+  | "multipliable"=> ["summable"]
   | x             => [x]
 
 /--

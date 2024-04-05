@@ -217,11 +217,14 @@ noncomputable instance : NormedAddCommGroup (V →A[𝕜] W) :=
 
 instance : NormedSpace 𝕜 (V →A[𝕜] W) where
   norm_smul_le t f := by
-    simp only [norm_def, (smul_contLinear), norm_smul]
+    simp only [SMul.smul, norm_def, (smul_contLinear), norm_smul]
     -- Porting note: previously all these rewrites were in the `simp only`,
     -- but now they don't fire.
     -- (in fact, `norm_smul` fires, but only once rather than twice!)
-    rw [coe_smul, Pi.smul_apply, norm_smul, ← mul_max_of_nonneg _ _ (norm_nonneg t)]
+    have : NormedAddCommGroup (V →A[𝕜] W) := inferInstance -- this is necessary for `norm_smul`
+    rw [coe_smul, Pi.smul_apply, norm_smul, norm_smul _ (f.contLinear),
+      ← mul_max_of_nonneg _ _ (norm_nonneg t)]
+
 
 theorem norm_comp_le (g : W₂ →A[𝕜] V) : ‖f.comp g‖ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by
   rw [norm_def, max_le_iff]

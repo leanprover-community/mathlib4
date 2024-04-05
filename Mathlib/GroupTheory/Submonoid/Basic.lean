@@ -137,7 +137,7 @@ theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x :
     exact OneMemClass.one_mem S
   | n + 1 => by
     rw [pow_succ]
-    exact mul_mem hx (pow_mem hx n)
+    exact mul_mem (pow_mem hx n) hx
 #align pow_mem pow_mem
 #align nsmul_mem nsmul_mem
 

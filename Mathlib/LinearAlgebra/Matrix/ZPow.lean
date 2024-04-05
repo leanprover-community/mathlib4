@@ -63,11 +63,11 @@ theorem pow_inv_comm' (A : M) (m n : ℕ) : A⁻¹ ^ m * A ^ n = A ^ n * A⁻¹ 
   · simp only [Nat.succ_eq_add_one]
     calc
        A⁻¹ ^ (m + 1) * A ^ (n + 1) = A⁻¹ ^ m * (A⁻¹ * A) * A ^ n := by
-        simp only [pow_succ' A⁻¹, pow_succ A, Matrix.mul_assoc]
+        simp only [pow_succ A⁻¹, pow_succ' A, Matrix.mul_assoc]
       _ = A ^ n * A⁻¹ ^ m := by simp only [h, Matrix.mul_one, Matrix.one_mul, IH m]
       _ = A ^ n * (A * A⁻¹) * A⁻¹ ^ m := by simp only [h', Matrix.mul_one, Matrix.one_mul]
       _ = A ^ (n + 1) * A⁻¹ ^ (m + 1) := by
-        simp only [pow_succ' A, pow_succ A⁻¹, Matrix.mul_assoc]
+        simp only [pow_succ A, pow_succ' A⁻¹, Matrix.mul_assoc]
   · simp [h]
 #align matrix.pow_inv_comm' Matrix.pow_inv_comm'
 
@@ -148,7 +148,7 @@ theorem inv_zpow' {A : M} (h : IsUnit A.det) (n : ℤ) : A⁻¹ ^ n = A ^ (-n) :
 #align matrix.inv_zpow' Matrix.inv_zpow'
 
 theorem zpow_add_one {A : M} (h : IsUnit A.det) : ∀ n : ℤ, A ^ (n + 1) = A ^ n * A
-  | (n : ℕ) => by simp only [← Nat.cast_succ, pow_succ', zpow_coe_nat]
+  | (n : ℕ) => by simp only [← Nat.cast_succ, pow_succ, zpow_coe_nat]
   | -[n+1] =>
     calc
       A ^ (-(n + 1) + 1 : ℤ) = (A ^ n)⁻¹ := by
@@ -156,7 +156,7 @@ theorem zpow_add_one {A : M} (h : IsUnit A.det) : ∀ n : ℤ, A ^ (n + 1) = A ^
       _ = (A * A ^ n)⁻¹ * A := by
         rw [mul_inv_rev, Matrix.mul_assoc, nonsing_inv_mul _ h, Matrix.mul_one]
       _ = A ^ (-(n + 1 : ℤ)) * A := by
-        rw [zpow_neg h, ← Int.ofNat_succ, zpow_coe_nat, pow_succ]
+        rw [zpow_neg h, ← Int.ofNat_succ, zpow_coe_nat, pow_succ']
 #align matrix.zpow_add_one Matrix.zpow_add_one
 
 theorem zpow_sub_one {A : M} (h : IsUnit A.det) (n : ℤ) : A ^ (n - 1) = A ^ n * A⁻¹ :=
@@ -248,7 +248,7 @@ theorem zpow_bit0 (A : M) (n : ℤ) : A ^ bit0 n = A ^ n * A ^ n := by
 #align matrix.zpow_bit0 Matrix.zpow_bit0
 
 theorem zpow_add_one_of_ne_neg_one {A : M} : ∀ n : ℤ, n ≠ -1 → A ^ (n + 1) = A ^ n * A
-  | (n : ℕ), _ => by simp only [pow_succ', ← Nat.cast_succ, zpow_coe_nat]
+  | (n : ℕ), _ => by simp only [pow_succ, ← Nat.cast_succ, zpow_coe_nat]
   | -1, h => absurd rfl h
   | -((n : ℕ) + 2), _ => by
     rcases nonsing_inv_cancel_or_zero A with (⟨h, _⟩ | h)
