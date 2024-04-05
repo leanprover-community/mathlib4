@@ -121,10 +121,7 @@ def E₆ : Matrix (Fin 6) (Fin 6) ℕ :=
      2, 2, 2, 3, 1, 3;
      2, 2, 2, 2, 3, 1]
 
-theorem E₆IsCoxeter : IsCoxeter E₆ where
-  symmetric := by simp [Matrix.IsSymm]; decide
-  diagonal := by decide
-  off_diagonal := by decide
+theorem E₆IsCoxeter : IsCoxeter E₆ := by decide
 
 /-- The Coxeter matrix of system E₇.
 
@@ -144,10 +141,7 @@ def E₇ : Matrix (Fin 7) (Fin 7) ℕ :=
      2, 2, 2, 2, 3, 1, 3;
      2, 2, 2, 2, 2, 3, 1]
 
-theorem E₇IsCoxeter : IsCoxeter E₇ where
-  symmetric := by simp [Matrix.IsSymm]; decide
-  diagonal := by decide
-  off_diagonal := by decide
+theorem E₇IsCoxeter : IsCoxeter E₇ := by decide
 
 /-- The Coxeter matrix of system E₈.
 
@@ -168,10 +162,7 @@ def E₈ : Matrix (Fin 8) (Fin 8) ℕ :=
      2, 2, 2, 2, 2, 3, 1, 3;
      2, 2, 2, 2, 2, 2, 3, 1]
 
-theorem E₈IsCoxeter : IsCoxeter E₈ where
-  symmetric := by simp [Matrix.IsSymm]; decide
-  diagonal := by decide
-  off_diagonal := by decide
+theorem E₈IsCoxeter : IsCoxeter E₈ := by decide
 
 /-- The Coxeter matrix of system F₄.
 
@@ -187,10 +178,7 @@ def F₄ : Matrix (Fin 4) (Fin 4) ℕ :=
      2, 4, 1, 3;
      2, 2, 3, 1]
 
-theorem F₄IsCoxeter : IsCoxeter F₄ where
-  symmetric := by simp [Matrix.IsSymm]; decide
-  diagonal := by decide
-  off_diagonal := by decide
+theorem F₄IsCoxeter : IsCoxeter F₄ := by decide
 
 /-- The Coxeter matrix of system G₂.
 
@@ -204,10 +192,7 @@ def G₂ : Matrix (Fin 2) (Fin 2) ℕ :=
   !![1, 6;
      6, 1]
 
-theorem G₂IsCoxeter : IsCoxeter G₂ where
-  symmetric := by simp [Matrix.IsSymm]; decide
-  diagonal := by decide
-  off_diagonal := by decide
+theorem G₂IsCoxeter : IsCoxeter G₂ := by decide
 
 /-- The Coxeter matrix of system H₃.
 
@@ -222,10 +207,7 @@ def H₃ : Matrix (Fin 3) (Fin 3) ℕ :=
      3, 1, 5;
      2, 5, 1]
 
-theorem H₃IsCoxeter : IsCoxeter H₃ where
-  symmetric := by simp [Matrix.IsSymm]; decide
-  diagonal := by decide
-  off_diagonal := by decide
+theorem H₃IsCoxeter : IsCoxeter H₃ := by decide
 
 /-- The Coxeter matrix of system H₄.
 
@@ -241,9 +223,6 @@ def H₄ : Matrix (Fin 4) (Fin 4) ℕ :=
      2, 3, 1, 5;
      2, 2, 5, 1]
 
-theorem H₄IsCoxeter : IsCoxeter H₄ where
-  symmetric := by simp [Matrix.IsSymm]; decide
-  diagonal := by decide
-  off_diagonal := by decide
+theorem H₄IsCoxeter : IsCoxeter H₄ := by decide
 
 end CoxeterMatrix
