@@ -106,6 +106,8 @@ import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Category.SemigroupCat.Basic
 import Mathlib.Algebra.Center.Basic
 import Mathlib.Algebra.Center.Ring
+import Mathlib.Algebra.Centralizer.Basic
+import Mathlib.Algebra.Centralizer.Ring
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.CharP.CharAndCard
