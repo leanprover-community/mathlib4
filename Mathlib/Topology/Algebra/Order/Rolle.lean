@@ -3,10 +3,10 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Order.ExtendFrom
+import Mathlib.Topology.Order.ExtendFrom
 import Mathlib.Topology.Algebra.Order.Compact
-import Mathlib.Topology.Algebra.Order.T5
-import Mathlib.Topology.LocalExtr
+import Mathlib.Topology.Order.LocalExtr
+import Mathlib.Topology.Order.T5
 
 #align_import analysis.calculus.local_extr from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
@@ -14,7 +14,7 @@ import Mathlib.Topology.LocalExtr
 # Rolle's Theorem (topological part)
 
 In this file we prove the purely topological part of Rolle's Theorem:
-a function that is continuous on an interval $[a, b]$, $a<b$,
+a function that is continuous on an interval $[a, b]$, $a < b$,
 has a local extremum at a point $x ∈ (a, b)$ provided that $f(a)=f(b)$.
 We also prove several variations of this statement.
 
@@ -25,11 +25,9 @@ to prove several versions of Rolle's Theorem from calculus.
 local minimum, local maximum, extremum, Rolle's Theorem
 -/
 
-set_option autoImplicit true
-
 open Filter Set Topology
 
-variable
+variable {X Y : Type*}
   [ConditionallyCompleteLinearOrder X] [DenselyOrdered X] [TopologicalSpace X] [OrderTopology X]
   [LinearOrder Y] [TopologicalSpace Y] [OrderTopology Y]
   {f : X → Y} {a b : X} {l : Y}

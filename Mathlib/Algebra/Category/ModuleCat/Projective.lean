@@ -15,9 +15,7 @@ import Mathlib.Data.Finsupp.Basic
 # The category of `R`-modules has enough projectives.
 -/
 
-set_option autoImplicit true
-
-universe v u
+universe v u u'
 
 open CategoryTheory
 

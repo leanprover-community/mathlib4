@@ -32,7 +32,7 @@ namespace Mathlib.Meta.NormNum
 
 theorem not_prime_mul_of_ble (a b n : ℕ) (h : a * b = n) (h₁ : a.ble 1 = false)
     (h₂ : b.ble 1 = false) : ¬ n.Prime :=
-  not_prime_mul' h (ble_eq_false.mp h₁) (ble_eq_false.mp h₂)
+  not_prime_mul' h (ble_eq_false.mp h₁).ne' (ble_eq_false.mp h₂).ne'
 
 /-- Produce a proof that `n` is not prime from a factor `1 < d < n`. `en` should be the expression
   that is the natural number literal `n`. -/
@@ -76,7 +76,6 @@ theorem minFacHelper_1 {n k k' : ℕ} (e : k + 2 = k') (h : MinFacHelper n k)
   · refine ((h.1.trans_le h.2.2).ne ?_).elim
     have h3 : 2 ∣ minFac n := by
       rw [Nat.dvd_iff_mod_eq_zero, ← h2, succ_eq_add_one, add_mod, h.2.1]
-      norm_num
     rw [dvd_prime <| minFac_prime h.one_lt.ne'] at h3
     norm_num at h3
     exact h3

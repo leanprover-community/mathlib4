@@ -27,7 +27,6 @@ in any basis is in `LinearAlgebra/Charpoly/ToMatrix`.
 universe u v w
 
 variable {R : Type u} {M : Type v} [CommRing R] [Nontrivial R]
-
 variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] (f : M →ₗ[R] M)
 
 open Matrix Polynomial
@@ -56,6 +55,10 @@ section Coeff
 theorem charpoly_monic : f.charpoly.Monic :=
   Matrix.charpoly_monic _
 #align linear_map.charpoly_monic LinearMap.charpoly_monic
+
+open FiniteDimensional in
+lemma charpoly_natDegree [StrongRankCondition R] : natDegree (charpoly f) = finrank R M := by
+  rw [charpoly, Matrix.charpoly_natDegree_eq_dim, finrank_eq_card_chooseBasisIndex]
 
 end Coeff
 
@@ -106,7 +109,7 @@ theorem minpoly_coeff_zero_of_injective (hf : Function.Injective f) :
     exact minpoly.ne_zero (isIntegral f) hP
   have hPmonic : P.Monic := by
     suffices (minpoly R f).Monic by
-      rwa [Monic.def, hP, mul_comm, leadingCoeff_mul_X, ← Monic.def] at this
+      rwa [Monic.def', hP, mul_comm, leadingCoeff_mul_X, ← Monic.def'] at this
     exact minpoly.monic (isIntegral f)
   have hzero : aeval f (minpoly R f) = 0 := minpoly.aeval _ _
   simp only [hP, mul_eq_comp, ext_iff, hf, aeval_X, map_eq_zero_iff, coe_comp, AlgHom.map_mul,

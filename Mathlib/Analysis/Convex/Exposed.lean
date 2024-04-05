@@ -6,7 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Analysis.Convex.Extreme
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.OrderClosed
 
 #align_import analysis.convex.exposed from "leanprover-community/mathlib"@"48024901a8e2a462363650c50d62248a77cbcab3"
 
@@ -46,7 +46,8 @@ More not-yet-PRed stuff is available on the branch `sperner_again`.
 -/
 
 
-open Classical Affine BigOperators
+open scoped Classical
+open Affine BigOperators
 
 open Set
 

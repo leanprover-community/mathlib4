@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 -/
-import Mathlib.Data.List.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.List.Basic
 
 #align_import data.list.join from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 
@@ -21,7 +21,7 @@ namespace List
 
 attribute [simp] join
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem join_singleton (l : List α) : [l].join = l := by rw [join, join, append_nil]
 #align list.join_singleton List.join_singleton
@@ -42,23 +42,22 @@ theorem join_append (L₁ L₂ : List (List α)) : join (L₁ ++ L₂) = join L�
 theorem join_concat (L : List (List α)) (l : List α) : join (L.concat l) = join L ++ l := by simp
 #align list.join_concat List.join_concat
 
--- Porting note: `ff/tt` should be translated to `false/true`.
--- Porting note: `List.filter` now takes a `Bool` not a `Prop`.
---     Should the correct spelling now be `== false` instead?
 @[simp]
-theorem join_filter_isEmpty_eq_false [DecidablePred fun l : List α => l.isEmpty = false] :
-    ∀ {L : List (List α)}, join (L.filter fun l => l.isEmpty = false) = L.join
+theorem join_filter_not_isEmpty  :
+    ∀ {L : List (List α)}, join (L.filter fun l => !l.isEmpty) = L.join
   | [] => rfl
   | [] :: L => by
-      simp [join_filter_isEmpty_eq_false (L := L), isEmpty_iff_eq_nil]
+      simp [join_filter_not_isEmpty (L := L), isEmpty_iff_eq_nil]
   | (a :: l) :: L => by
-      simp [join_filter_isEmpty_eq_false (L := L)]
-#align list.join_filter_empty_eq_ff List.join_filter_isEmpty_eq_false
+      simp [join_filter_not_isEmpty (L := L)]
+#align list.join_filter_empty_eq_ff List.join_filter_not_isEmpty
+
+@[deprecated] alias join_filter_isEmpty_eq_false := join_filter_not_isEmpty
 
 @[simp]
 theorem join_filter_ne_nil [DecidablePred fun l : List α => l ≠ []] {L : List (List α)} :
     join (L.filter fun l => l ≠ []) = L.join := by
-  simp [join_filter_isEmpty_eq_false, ← isEmpty_iff_eq_nil]
+  simp [join_filter_not_isEmpty, ← isEmpty_iff_eq_nil]
 #align list.join_filter_ne_nil List.join_filter_ne_nil
 
 theorem join_join (l : List (List (List α))) : l.join.join = (l.map join).join := by
@@ -70,10 +69,26 @@ theorem length_join (L : List (List α)) : length (join L) = sum (map length L) 
   induction L <;> [rfl; simp only [*, join, map, sum_cons, length_append]]
 #align list.length_join List.length_join
 
+lemma countP_join (p : α → Bool) : ∀ L : List (List α), countP p L.join = (L.map (countP p)).sum
+  | [] => rfl
+  | a :: l => by rw [join, countP_append, map_cons, sum_cons, countP_join _ l]
+#align list.countp_join List.countP_join
+
+lemma count_join [BEq α] (L : List (List α)) (a : α) : L.join.count a = (L.map (count a)).sum :=
+  countP_join _ _
+#align list.count_join List.count_join
+
 @[simp]
 theorem length_bind (l : List α) (f : α → List β) :
     length (List.bind l f) = sum (map (length ∘ f) l) := by rw [List.bind, length_join, map_map]
 #align list.length_bind List.length_bind
+
+lemma countP_bind (p : β → Bool) (l : List α) (f : α → List β) :
+    countP p (l.bind f) = sum (map (countP p ∘ f) l) := by rw [List.bind, countP_join, map_map]
+
+lemma count_bind [BEq β] (l : List α) (f : α → List β) (x : β) :
+    count x (l.bind f) = sum (map (count x ∘ f) l) := countP_bind _ _ _
+#align list.count_bind List.count_bind
 
 @[simp]
 theorem bind_eq_nil {l : List α} {f : α → List β} : List.bind l f = [] ↔ ∀ x ∈ l, f x = [] :=
@@ -160,28 +175,8 @@ theorem sum_take_map_length_lt1 (L : List (List α)) {i j : ℕ} (hi : i < L.len
   simp [hi, sum_take_succ, hj]
 #align list.sum_take_map_length_lt1 List.sum_take_map_length_lt1
 
-set_option linter.deprecated false in
-/-- Auxiliary lemma to control elements in a join. -/
-@[deprecated]
-theorem sum_take_map_length_lt2 (L : List (List α)) {i j : ℕ} (hi : i < L.length)
-    (hj : j < (nthLe L i hi).length) : ((L.map length).take i).sum + j < L.join.length := by
-  convert lt_of_lt_of_le (sum_take_map_length_lt1 L hi hj) (monotone_sum_take _ hi)
-  have : L.length = (L.map length).length := by simp
-  simp [this, -length_map]
-#align list.sum_take_map_length_lt2 List.sum_take_map_length_lt2
-
-set_option linter.deprecated false in
-/-- The `n`-th element in a join of sublists is the `j`-th element of the `i`th sublist,
-where `n` can be obtained in terms of `i` and `j` by adding the lengths of all the sublists
-of index `< i`, and adding `j`. -/
-@[deprecated]
-theorem nthLe_join (L : List (List α)) {i j : ℕ} (hi : i < L.length)
-    (hj : j < (nthLe L i hi).length) :
-    nthLe L.join (((L.map length).take i).sum + j) (sum_take_map_length_lt2 L hi hj) =
-      nthLe (nthLe L i hi) j hj := by
-  have := nthLe_take L.join (sum_take_map_length_lt2 L hi hj) (sum_take_map_length_lt1 L hi hj)
-  rw [this, nthLe_drop, nthLe_of_eq (drop_take_succ_join_eq_nthLe L hi)]
-#align list.nth_le_join List.nthLe_join
+#noalign list.sum_take_map_length_lt2
+#noalign list.nth_le_join
 
 /-- Two lists of sublists are equal iff their joins coincide, as well as the lengths of the
 sublists. -/

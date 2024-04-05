@@ -33,7 +33,6 @@ and `RingTheory.Derivation.ToSquareZero` for
 -/
 
 open Algebra
-open scoped BigOperators
 
 /-- `D : Derivation R A M` is an `R`-linear map from `A` to `M` that satisfies the `leibniz`
 equality. We also require that `D 1 = 0`. See `Derivation.mk'` for a constructor that deduces this
@@ -62,16 +61,13 @@ variable [Module A M] [Module B M] [Module R M]
 
 variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
 
-instance : AddMonoidHomClass (Derivation R A M) A M where
+instance : FunLike (Derivation R A M) A M where
   coe D := D.toFun
   coe_injective' D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
+
+instance : AddMonoidHomClass (Derivation R A M) A M where
   map_add D := D.toLinearMap.map_add'
   map_zero D := D.toLinearMap.map_zero
-
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
-directly. -/
-instance : CoeFun (Derivation R A M) fun _ => A → M :=
-  ⟨DFunLike.coe⟩
 
 -- Not a simp lemma because it can be proved via `coeFn_coe` + `toLinearMap_eq_coe`
 theorem toFun_eq_coe : D.toFun = ⇑D :=
@@ -89,7 +85,7 @@ instance hasCoeToLinearMap : Coe (Derivation R A M) (A →ₗ[R] M) :=
   ⟨fun D => D.toLinearMap⟩
 #align derivation.has_coe_to_linear_map Derivation.hasCoeToLinearMap
 
-#noalign derivation.to_linear_map_eq_coe -- porting note: not needed anymore
+#noalign derivation.to_linear_map_eq_coe -- Porting note: not needed anymore
 
 @[simp]
 theorem mk_coe (f : A →ₗ[R] M) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : Derivation R A M) : A → M) = f :=
@@ -132,10 +128,7 @@ theorem leibniz : D (a * b) = a • D b + b • D a :=
   D.leibniz' _ _
 #align derivation.leibniz Derivation.leibniz
 
-nonrec theorem map_sum {ι : Type*} (s : Finset ι) (f : ι → A) :
-    D (∑ i in s, f i) = ∑ i in s, D (f i) :=
-  map_sum D _ _
-#align derivation.map_sum Derivation.map_sum
+#noalign derivation.map_sum
 
 @[simp]
 theorem map_smul_of_tower {S : Type*} [SMul S A] [SMul S M] [LinearMap.CompatibleSMul A M S R]
@@ -165,8 +158,8 @@ theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
   · rw [Nat.zero_eq, pow_zero, map_one_eq_zero, zero_smul]
   · rcases (zero_le n).eq_or_lt with (rfl | hpos)
     · erw [pow_one, one_smul, pow_zero, one_smul]
-    · have : a * a ^ (n - 1) = a ^ n := by rw [← pow_succ, Nat.sub_add_cancel hpos]
-      simp only [pow_succ, leibniz, ihn, smul_comm a n (_ : M), smul_smul a, add_smul, this,
+    · have : a * a ^ (n - 1) = a ^ n := by rw [← pow_succ', Nat.sub_add_cancel hpos]
+      simp only [pow_succ', leibniz, ihn, smul_comm a n (_ : M), smul_smul a, add_smul, this,
         Nat.succ_eq_add_one, Nat.add_succ_sub_one, add_zero, one_nsmul]
 #align derivation.leibniz_pow Derivation.leibniz_pow
 
@@ -228,9 +221,7 @@ instance : Inhabited (Derivation R A M) :=
 section Scalar
 
 variable {S T : Type*}
-
 variable [Monoid S] [DistribMulAction S M] [SMulCommClass R S M] [SMulCommClass S A M]
-
 variable [Monoid T] [DistribMulAction T M] [SMulCommClass R T M] [SMulCommClass T A M]
 
 instance : SMul S (Derivation R A M) :=
@@ -345,9 +336,7 @@ def compAlgebraMap [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
 section RestrictScalars
 
 variable {S : Type*} [CommSemiring S]
-
 variable [Algebra S A] [Module S M] [LinearMap.CompatibleSMul A M R S]
-
 variable (R)
 
 /-- If `A` is both an `R`-algebra and an `S`-algebra; `M` is both an `R`-module and an `S`-module,
@@ -390,13 +379,11 @@ end Cancel
 section
 
 variable {R : Type*} [CommRing R]
-
 variable {A : Type*} [CommRing A] [Algebra R A]
 
 section
 
 variable {M : Type*} [AddCommGroup M] [Module A M] [Module R M]
-
 variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
 
 protected theorem map_neg : D (-a) = -D a :=

@@ -15,13 +15,14 @@ series.
 
 ## Main results
 
-* `NormedAddCommGroup.completeSpace_of_summable_implies_tendsto`: A normed additive group is
+* `NormedAddCommGroup.completeSpace_of_summable_imp_tendsto`: A normed additive group is
 complete if any absolutely convergent series converges in the space.
 
 ## References
 
-* [bergh_lofstrom_1976] `completeSpace_of_summable_implies_tendsto` and
-  `summable_implies_tendsto_of_complete` correspond to the two directions of Lemma 2.2.1.
+* [bergh_lofstrom_1976] `NormedAddCommGroup.completeSpace_of_summable_imp_tendsto` and
+  `NormedAddCommGroup.summable_imp_tendsto_of_complete` correspond to the two directions of
+  Lemma 2.2.1.
 
 ## Tags
 
@@ -67,8 +68,8 @@ lemma NormedAddCommGroup.completeSpace_of_summable_imp_tendsto
   refine ⟨a + u (f 0), ?_⟩
   refine tendsto_nhds_of_cauchySeq_of_subseq hu hf₁.tendsto_atTop ?_
   rw [hv_sum] at ha
-  have h₁ : Tendsto (fun n => u (f n) - u (f 0) + u (f 0)) atTop (𝓝 (a + u (f 0))) := by
-    refine Tendsto.add_const _ ha
+  have h₁ : Tendsto (fun n => u (f n) - u (f 0) + u (f 0)) atTop (𝓝 (a + u (f 0))) :=
+    Tendsto.add_const _ ha
   simpa only [sub_add_cancel] using h₁
 
 /-- In a complete normed additive group, every absolutely convergent series converges in the

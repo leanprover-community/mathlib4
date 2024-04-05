@@ -22,9 +22,9 @@ variable [LinearOrderedCommGroup α] {a b : α}
 @[to_additive] lemma mabs_zpow (n : ℤ) (a : α) : |a ^ n|ₘ = |a|ₘ ^ |n| := by
   obtain n0 | n0 := le_total 0 n
   · obtain ⟨n, rfl⟩ := Int.eq_ofNat_of_zero_le n0
-    simp only [mabs_pow, zpow_coe_nat, Nat.abs_cast]
+    simp only [mabs_pow, zpow_natCast, Nat.abs_cast]
   · obtain ⟨m, h⟩ := Int.eq_ofNat_of_zero_le (neg_nonneg.2 n0)
-    rw [← mabs_inv, ← zpow_neg, ← abs_neg, h, zpow_coe_nat, Nat.abs_cast, zpow_coe_nat]
+    rw [← mabs_inv, ← zpow_neg, ← abs_neg, h, zpow_natCast, Nat.abs_cast, zpow_natCast]
     exact mabs_pow m _
 #align abs_zsmul abs_zsmul
 
@@ -37,7 +37,7 @@ variable [LinearOrderedRing α] {n : ℕ} {a b c : α}
 @[simp] lemma abs_one : |(1 : α)| = 1 := abs_of_pos zero_lt_one
 #align abs_one abs_one
 
-@[simp] lemma abs_two : |(2 : α)| = 2 := abs_of_pos zero_lt_two
+lemma abs_two : |(2 : α)| = 2 := abs_of_pos zero_lt_two
 #align abs_two abs_two
 
 lemma abs_mul (a b : α) : |a * b| = |a| * |b| := by
@@ -157,6 +157,9 @@ lemma sq_eq_sq_iff_abs_eq_abs (a b : α) : a ^ 2 = b ^ 2 ↔ |a| = |b| := by
 @[simp] lemma one_lt_sq_iff_one_lt_abs (a : α) : 1 < a ^ 2 ↔ 1 < |a| := by
   simpa only [one_pow, abs_one] using @sq_lt_sq _ _ 1 a
 #align one_lt_sq_iff_one_lt_abs one_lt_sq_iff_one_lt_abs
+
+lemma exists_abs_lt {α : Type*} [LinearOrderedRing α] (a : α) : ∃ b > 0, |a| < b :=
+  ⟨|a| + 1, lt_of_lt_of_le zero_lt_one <| by simp, lt_add_one |a|⟩
 
 end LinearOrderedRing
 

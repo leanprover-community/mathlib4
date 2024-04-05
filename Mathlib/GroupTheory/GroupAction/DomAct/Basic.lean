@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
@@ -110,7 +110,8 @@ run_cmd
     `RightCancelSemigroup, `MulOneClass, `Monoid, `CommMonoid, `LeftCancelMonoid,
     `RightCancelMonoid, `CancelMonoid, `CancelCommMonoid, `InvolutiveInv, `DivInvMonoid,
     `InvOneClass, `DivInvOneMonoid, `DivisionMonoid, `DivisionCommMonoid, `Group,
-    `CommGroup].map Lean.mkIdent do
+    `CommGroup, `NonAssocSemiring, `NonUnitalSemiring, `NonAssocSemiring, `Semiring,
+    `Ring, `CommRing].map Lean.mkIdent do
   Lean.Elab.Command.elabCommand (← `(
     @[to_additive] instance [$n Mᵐᵒᵖ] : $n Mᵈᵐᵃ := ‹_›
   ))
@@ -194,6 +195,10 @@ instance [Monoid M] [MulAction M α] [AddMonoid A] : DistribMulAction Mᵈᵐᵃ
   smul_zero _ := rfl
   smul_add _ _ _ := rfl
 
+instance [Monoid M] [MulAction M α] [Monoid A] : MulDistribMulAction Mᵈᵐᵃ (α → A) where
+  smul_mul _ _ _ := rfl
+  smul_one _ := rfl
+
 section MonoidHom
 
 variable [Monoid M] [Monoid A] [MulDistribMulAction M A] [MulOneClass B]
@@ -236,6 +241,9 @@ theorem smul_addMonoidHom_apply (c : Mᵈᵐᵃ) (f : A →+ B) (a : A) : (c •
 @[simp]
 theorem mk_smul_addMonoidHom_apply (c : M) (f : A →+ B) (a : A) : (mk c • f) a = f (c • a) := rfl
 
+theorem coe_smul_addMonoidHom (c : Mᵈᵐᵃ) (f : A →+ B) : ⇑(c • f) = c • ⇑f :=
+  rfl
+
 end DistribSMul
 
 instance [Monoid M] [AddMonoid A] [DistribMulAction M A] [AddZeroClass B] :
@@ -244,5 +252,9 @@ instance [Monoid M] [AddMonoid A] [DistribMulAction M A] [AddZeroClass B] :
 instance [Monoid M] [AddMonoid A] [DistribMulAction M A] [AddCommMonoid B] :
     DistribMulAction Mᵈᵐᵃ (A →+ B) :=
   DFunLike.coe_injective.distribMulAction (AddMonoidHom.coeFn A B) fun _ _ ↦ rfl
+
+instance [Monoid M] [Monoid A] [MulDistribMulAction M A] [CommMonoid B] :
+    MulDistribMulAction Mᵈᵐᵃ (A →* B) :=
+  DFunLike.coe_injective.mulDistribMulAction (MonoidHom.coeFn A B) fun _ _ ↦ rfl
 
 end AddMonoidHom

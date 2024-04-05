@@ -49,7 +49,7 @@ namespace MagmaCat
 @[to_additive]
 instance bundledHom : BundledHom @MulHom :=
   ⟨@MulHom.toFun, @MulHom.id, @MulHom.comp,
-    --Porting note : was `@MulHom.coe_inj` which is deprecated
+    -- Porting note: was `@MulHom.coe_inj` which is deprecated
     by intros; apply @DFunLike.coe_injective, by aesop_cat, by aesop_cat⟩
 #align Magma.bundled_hom MagmaCat.bundledHom
 #align AddMagma.bundled_hom AddMagmaCat.bundledHom
@@ -66,7 +66,7 @@ attribute [to_additive] instMagmaCatLargeCategory instConcreteCategory
 instance : CoeSort MagmaCat (Type*) where
   coe X := X.α
 
--- Porting note : Hinting to Lean that `forget R` and `R` are the same
+-- Porting note: Hinting to Lean that `forget R` and `R` are the same
 unif_hint forget_obj_eq_coe (R : MagmaCat) where ⊢
   (forget MagmaCat).obj R ≟ R
 unif_hint _root_.AddMagmaCat.forget_obj_eq_coe (R : AddMagmaCat) where ⊢
@@ -74,6 +74,10 @@ unif_hint _root_.AddMagmaCat.forget_obj_eq_coe (R : AddMagmaCat) where ⊢
 
 @[to_additive]
 instance (X : MagmaCat) : Mul X := X.str
+
+@[to_additive]
+instance instFunLike (X Y : MagmaCat) : FunLike (X ⟶ Y) X Y :=
+  inferInstanceAs <| FunLike (X →ₙ* Y) X Y
 
 @[to_additive]
 instance instMulHomClass (X Y : MagmaCat) : MulHomClass (X ⟶ Y) X Y :=
@@ -151,7 +155,7 @@ attribute [to_additive] instSemigroupCatLargeCategory SemigroupCat.instConcreteC
 instance : CoeSort SemigroupCat (Type*) where
   coe X := X.α
 
--- Porting note : Hinting to Lean that `forget R` and `R` are the same
+-- Porting note: Hinting to Lean that `forget R` and `R` are the same
 unif_hint forget_obj_eq_coe (R : SemigroupCat) where ⊢
   (forget SemigroupCat).obj R ≟ R
 unif_hint _root_.AddSemigroupCat.forget_obj_eq_coe (R : AddSemigroupCat) where ⊢
@@ -159,6 +163,10 @@ unif_hint _root_.AddSemigroupCat.forget_obj_eq_coe (R : AddSemigroupCat) where �
 
 @[to_additive]
 instance (X : SemigroupCat) : Semigroup X := X.str
+
+@[to_additive]
+instance instFunLike (X Y : SemigroupCat) : FunLike (X ⟶ Y) X Y :=
+  inferInstanceAs <| FunLike (X →ₙ* Y) X Y
 
 @[to_additive]
 instance instMulHomClass (X Y : SemigroupCat) : MulHomClass (X ⟶ Y) X Y :=
@@ -314,7 +322,7 @@ instance SemigroupCat.forgetReflectsIsos : ReflectsIsomorphisms (forget Semigrou
 #align Semigroup.forget_reflects_isos SemigroupCat.forgetReflectsIsos
 #align AddSemigroup.forget_reflects_isos AddSemigroupCat.forgetReflectsIsos
 
--- porting note: this was added in order to ensure that `forget₂ CommMonCat MonCat`
+-- Porting note: this was added in order to ensure that `forget₂ CommMonCat MonCat`
 -- automatically reflects isomorphisms
 -- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
 @[to_additive]

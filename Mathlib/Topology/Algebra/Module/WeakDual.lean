@@ -103,11 +103,8 @@ instance instIsScalarTower [CommSemiring 𝕜] [CommSemiring 𝕝] [AddCommGroup
 section Semiring
 
 variable [TopologicalSpace 𝕜] [CommSemiring 𝕜]
-
 variable [AddCommMonoid E] [Module 𝕜 E]
-
 variable [AddCommMonoid F] [Module 𝕜 F]
-
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 instance instTopologicalSpace : TopologicalSpace (WeakBilin B) :=
@@ -162,9 +159,7 @@ end Semiring
 section Ring
 
 variable [TopologicalSpace 𝕜] [CommRing 𝕜]
-
 variable [AddCommGroup E] [Module 𝕜 E]
-
 variable [AddCommGroup F] [Module 𝕜 F]
 
 
@@ -179,10 +174,6 @@ instance instTopologicalAddGroup [ContinuousAdd 𝕜] : TopologicalAddGroup (Wea
     refine' cast (congr_arg _ _) (eval_continuous B (-y))
     ext x
     simp only [map_neg, Function.comp_apply, LinearMap.neg_apply]
-    -- Porting note: mathlib3 proof was done here
-    rw [← (B x).neg_apply]
-    congr
-    exact (map_neg B x).symm
 
 end Ring
 
@@ -199,9 +190,7 @@ def topDualPairing (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [Continu
 #align top_dual_pairing topDualPairing
 
 variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-
 variable [ContinuousConstSMul 𝕜 𝕜]
-
 variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
 theorem topDualPairing_apply (v : E →L[𝕜] 𝕜) (x : E) : topDualPairing 𝕜 E v x = v x :=
@@ -232,6 +221,9 @@ instance instContinuousAdd : ContinuousAdd (WeakDual 𝕜 E) :=
 
 instance instInhabited : Inhabited (WeakDual 𝕜 E) :=
   ContinuousLinearMap.inhabited
+
+instance instFunLike : FunLike (WeakDual 𝕜 E) E 𝕜 :=
+  ContinuousLinearMap.funLike
 
 instance instContinuousLinearMapClass : ContinuousLinearMapClass (WeakDual 𝕜 E) 𝕜 E 𝕜 :=
   ContinuousLinearMap.continuousSemilinearMapClass

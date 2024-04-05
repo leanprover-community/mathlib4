@@ -47,6 +47,16 @@ def of {rels : Set (FreeGroup α)} (x : α) : PresentedGroup rels :=
   QuotientGroup.mk (FreeGroup.of x)
 #align presented_group.of PresentedGroup.of
 
+/-- The generators of a presented group generate the presented group. That is, the subgroup closure
+of the set of generators equals `⊤`. -/
+@[simp]
+theorem closure_range_of (rels : Set (FreeGroup α)) :
+    Subgroup.closure (Set.range (PresentedGroup.of : α → PresentedGroup rels)) = ⊤ := by
+  have : (PresentedGroup.of : α → PresentedGroup rels) = QuotientGroup.mk' _ ∘ FreeGroup.of := rfl
+  rw [this, Set.range_comp, ← MonoidHom.map_closure (QuotientGroup.mk' _),
+    FreeGroup.closure_range_of, ← MonoidHom.range_eq_map]
+  exact MonoidHom.range_top_of_surjective _ (QuotientGroup.mk'_surjective _)
+
 section ToGroup
 
 /-

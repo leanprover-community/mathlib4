@@ -3,6 +3,7 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Adam Topaz
 -/
+import Mathlib.Data.Setoid.Partition
 import Mathlib.Topology.Separation
 import Mathlib.Topology.LocallyConstant.Basic
 
@@ -62,14 +63,14 @@ of finite discrete spaces.
 -/
 
 
-open Set Function
+open Set Function TopologicalSpace
 
 variable {α X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 /-- The type of discrete quotients of a topological space. -/
-@[ext] -- porting note: in Lean 4, uses projection to `r` instead of `Setoid`.
+@[ext] -- Porting note: in Lean 4, uses projection to `r` instead of `Setoid`.
 structure DiscreteQuotient (X : Type*) [TopologicalSpace X] extends Setoid X where
-  /-- For every point `x`, the set `{ y | Rel x y }` is a clopen set. -/
+  /-- For every point `x`, the set `{ y | Rel x y }` is an open set. -/
   protected isOpen_setOf_rel : ∀ x, IsOpen (setOf (toSetoid.Rel x))
 #align discrete_quotient DiscreteQuotient
 
@@ -77,7 +78,7 @@ namespace DiscreteQuotient
 
 variable (S : DiscreteQuotient X)
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 lemma toSetoid_injective : Function.Injective (@toSetoid X _)
   | ⟨_, _⟩, ⟨_, _⟩, _ => by congr
 
@@ -139,11 +140,11 @@ theorem isClopen_preimage (A : Set S) : IsClopen (S.proj ⁻¹' A) :=
 #align discrete_quotient.is_clopen_preimage DiscreteQuotient.isClopen_preimage
 
 theorem isOpen_preimage (A : Set S) : IsOpen (S.proj ⁻¹' A) :=
-  (S.isClopen_preimage A).1
+  (S.isClopen_preimage A).2
 #align discrete_quotient.is_open_preimage DiscreteQuotient.isOpen_preimage
 
 theorem isClosed_preimage (A : Set S) : IsClosed (S.proj ⁻¹' A) :=
-  (S.isClopen_preimage A).2
+  (S.isClopen_preimage A).1
 #align discrete_quotient.is_closed_preimage DiscreteQuotient.isClosed_preimage
 
 theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.Rel x)) := by
@@ -166,10 +167,10 @@ instance : Inhabited (DiscreteQuotient X) := ⟨⊤⟩
 instance inhabitedQuotient [Inhabited X] : Inhabited S := ⟨S.proj default⟩
 #align discrete_quotient.inhabited_quotient DiscreteQuotient.inhabitedQuotient
 
--- porting note: TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
+-- Porting note (#11215): TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
 instance [Nonempty X] : Nonempty S := Nonempty.map S.proj ‹_›
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 /-- The quotient by `⊤ : DiscreteQuotient X` is a `Subsingleton`. -/
 instance : Subsingleton (⊤ : DiscreteQuotient X) where
   allEq := by rintro ⟨_⟩ ⟨_⟩; exact Quotient.sound trivial
@@ -325,7 +326,7 @@ theorem map_proj (cond : LEComap f A B) (x : X) : map f cond (A.proj x) = B.proj
 theorem map_id : map _ (leComap_id A) = id := by ext ⟨⟩; rfl
 #align discrete_quotient.map_id DiscreteQuotient.map_id
 
--- porting note: todo: figure out why `simpNF` says this is a bad `@[simp]` lemma
+-- Porting note (#11215): TODO: figure out why `simpNF` says this is a bad `@[simp]` lemma
 theorem map_comp (h1 : LEComap g B C) (h2 : LEComap f A B) :
     map (g.comp f) (h1.comp h2) = map g h1 ∘ map f h2 := by
   ext ⟨⟩
@@ -382,7 +383,7 @@ theorem exists_of_compat [CompactSpace X] (Qs : (Q : DiscreteQuotient X) → Q)
     rw [← compat _ _ h]
     exact fiber_subset_ofLE _ _
   obtain ⟨x, hx⟩ : Set.Nonempty (⋂ Q, proj Q ⁻¹' {Qs Q}) :=
-    IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
+    IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
       (fun Q : DiscreteQuotient X => Q.proj ⁻¹' {Qs _}) (directed_of_isDirected_ge H₁)
       (fun Q => (singleton_nonempty _).preimage Q.proj_surjective)
       (fun Q => (Q.isClosed_preimage {Qs _}).isCompact) fun Q => Q.isClosed_preimage _
@@ -393,6 +394,54 @@ theorem exists_of_compat [CompactSpace X] (Qs : (Q : DiscreteQuotient X) → Q)
 instance [CompactSpace X] : Finite S := by
   have : CompactSpace S := Quotient.compactSpace
   rwa [← isCompact_univ_iff, isCompact_iff_finite, finite_univ_iff] at this
+
+variable (X)
+
+open Classical in
+/--
+If `X` is a compact space, then we associate to any discrete quotient on `X` a finite set of
+clopen subsets of `X`, given by the fibers of `proj`.
+
+TODO: prove that these form a partition of `X` 
+-/
+noncomputable def finsetClopens [CompactSpace X]
+    (d : DiscreteQuotient X) : Finset (Clopens X) := have : Fintype d := Fintype.ofFinite _
+  (Set.range (fun (x : d) ↦ ⟨_, d.isClopen_preimage {x}⟩) : Set (Clopens X)).toFinset
+
+/-- A helper lemma to prove that `finsetClopens X` is injective, see `finsetClopens_inj`. -/
+lemma comp_finsetClopens [CompactSpace X] :
+    (Set.image (fun (t : Clopens X) ↦ t.carrier) ∘ Finset.toSet) ∘
+      finsetClopens X = fun ⟨f, _⟩ ↦ f.classes := by
+  ext d
+  simp only [Setoid.classes, Setoid.Rel, Set.mem_setOf_eq, Function.comp_apply,
+    finsetClopens, Set.coe_toFinset, Set.mem_image, Set.mem_range,
+    exists_exists_eq_and]
+  constructor
+  · refine fun ⟨y, h⟩ ↦ ⟨Quotient.out (s := d.toSetoid) y, ?_⟩
+    ext
+    simpa [← h] using Quotient.mk_eq_iff_out (s := d.toSetoid)
+  · exact fun ⟨y, h⟩ ↦ ⟨d.proj y, by ext; simp [h, proj]⟩
+
+/-- `finsetClopens X` is injective. -/
+theorem finsetClopens_inj [CompactSpace X] :
+    (finsetClopens X).Injective := by
+  apply Function.Injective.of_comp (f := Set.image (fun (t : Clopens X) ↦ t.carrier) ∘ Finset.toSet)
+  rw [comp_finsetClopens]
+  intro ⟨_, _⟩ ⟨_, _⟩ h
+  congr
+  rw [Setoid.classes_inj]
+  exact h
+
+/--
+The discrete quotients of a compact space are in bijection with a subtype of the type of
+`Finset (Clopens X)`.
+
+TODO: show that this is precisely those finsets of clopens which form a partition of `X`.
+-/
+noncomputable
+def equivFinsetClopens [CompactSpace X] := Equiv.ofInjective _ (finsetClopens_inj X)
+
+variable {X}
 
 end DiscreteQuotient
 

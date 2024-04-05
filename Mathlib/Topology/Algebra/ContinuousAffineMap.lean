@@ -44,9 +44,7 @@ notation:25 P " →A[" R "] " Q => ContinuousAffineMap R P Q
 namespace ContinuousAffineMap
 
 variable {R V W P Q : Type*} [Ring R]
-
 variable [AddCommGroup V] [Module R V] [TopologicalSpace P] [AddTorsor V P]
-
 variable [AddCommGroup W] [Module R W] [TopologicalSpace Q] [AddTorsor W Q]
 
 instance : Coe (P →A[R] Q) (P →ᵃ[R] Q) :=
@@ -59,15 +57,12 @@ theorem to_affineMap_injective {f g : P →A[R] Q} (h : (f : P →ᵃ[R] Q) = (g
   congr
 #align continuous_affine_map.to_affine_map_injective ContinuousAffineMap.to_affineMap_injective
 
-instance : ContinuousMapClass (P →A[R] Q) P Q where
+instance : FunLike (P →A[R] Q) P Q where
   coe f := f.toAffineMap
   coe_injective' _ _ h := to_affineMap_injective <| DFunLike.coe_injective h
-  map_continuous := cont
 
-/-- Helper instance for when there's too many metavariables to apply
-`DFunLike.hasCoeToFun` directly. -/
-instance : CoeFun (P →A[R] Q) fun _ ↦ P → Q :=
-  DFunLike.hasCoeToFun
+instance : ContinuousMapClass (P →A[R] Q) P Q where
+  map_continuous := cont
 
 theorem toFun_eq_coe (f : P →A[R] Q) : f.toFun = ⇑f := rfl
 #align continuous_affine_map.to_fun_eq_coe ContinuousAffineMap.toFun_eq_coe
@@ -155,7 +150,6 @@ noncomputable instance : Inhabited (P →A[R] Q) :=
   ⟨const R P <| Nonempty.some (by infer_instance : Nonempty Q)⟩
 
 variable {R P} {W₂ Q₂ : Type*}
-
 variable [AddCommGroup W₂] [Module R W₂] [TopologicalSpace Q₂] [AddTorsor W₂ Q₂]
 
 /-- The composition of morphisms is a morphism. -/
@@ -174,7 +168,6 @@ theorem comp_apply (f : Q →A[R] Q₂) (g : P →A[R] Q) (x : P) : f.comp g x =
 section ModuleValuedMaps
 
 variable {S : Type*}
-
 variable [TopologicalSpace W]
 
 instance : Zero (P →A[R] W) :=
@@ -190,7 +183,6 @@ theorem zero_apply (x : P) : (0 : P →A[R] W) x = 0 := rfl
 section MulAction
 
 variable [Monoid S] [DistribMulAction S W] [SMulCommClass R S W]
-
 variable [ContinuousConstSMul S W]
 
 instance : SMul S (P →A[R] W) where
@@ -263,9 +255,7 @@ end ContinuousAffineMap
 namespace ContinuousLinearMap
 
 variable {R V W : Type*} [Ring R]
-
 variable [AddCommGroup V] [Module R V] [TopologicalSpace V]
-
 variable [AddCommGroup W] [Module R W] [TopologicalSpace W]
 
 /-- A continuous linear map can be regarded as a continuous affine map. -/

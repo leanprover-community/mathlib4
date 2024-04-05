@@ -33,7 +33,6 @@ hadamard product, hadamard
 
 
 variable {α β γ m n : Type*}
-
 variable {R : Type*}
 
 namespace Matrix
@@ -113,7 +112,6 @@ end Zero
 section One
 
 variable [DecidableEq n] [MulZeroOneClass α]
-
 variable (M : Matrix n n α)
 
 theorem hadamard_one : M ⊙ (1 : Matrix n n α) = diagonal fun i => M i i := by
@@ -142,7 +140,6 @@ end Diagonal
 section trace
 
 variable [Fintype m] [Fintype n]
-
 variable (R) [Semiring α] [Semiring R] [Module R α]
 
 theorem sum_hadamard_eq : (∑ i : m, ∑ j : n, (A ⊙ B) i j) = trace (A * Bᵀ) :=
@@ -150,7 +147,7 @@ theorem sum_hadamard_eq : (∑ i : m, ∑ j : n, (A ⊙ B) i j) = trace (A * B�
 #align matrix.sum_hadamard_eq Matrix.sum_hadamard_eq
 
 theorem dotProduct_vecMul_hadamard [DecidableEq m] [DecidableEq n] (v : m → α) (w : n → α) :
-    dotProduct (vecMul v (A ⊙ B)) w = trace (diagonal v * A * (B * diagonal w)ᵀ) := by
+    dotProduct (v ᵥ* (A ⊙ B)) w = trace (diagonal v * A * (B * diagonal w)ᵀ) := by
   rw [← sum_hadamard_eq, Finset.sum_comm]
   simp [dotProduct, vecMul, Finset.sum_mul, mul_assoc]
 #align matrix.dot_product_vec_mul_hadamard Matrix.dotProduct_vecMul_hadamard

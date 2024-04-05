@@ -42,7 +42,7 @@ lemma isNat_neg_of_isNegNat {a : ℤ} {b : ℕ} (h : IsInt a (.negOfNat b)) : Is
 
 /-- The `norm_num` extension which identifies expressions of the form `Int.ediv a b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num (_ : ℤ) / _, Div.div (_ : ℤ) _, Int.ediv _ _]
+@[norm_num (_ : ℤ) / _, Int.ediv _ _]
 partial def evalIntDiv : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℤ))) (b : Q(ℤ)) ← whnfR e | failure
   -- We assert that the default instance for `HDiv` is `Int.div` when the first parameter is `ℤ`.
@@ -100,7 +100,7 @@ lemma isInt_emod_neg {a b : ℤ} {r : ℕ} (h : IsNat (a % -b) r) : IsNat (a % b
 
 /-- The `norm_num` extension which identifies expressions of the form `Int.emod a b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num (_ : ℤ) % _, Mod.mod (_ : ℤ) _, Int.emod _ _]
+@[norm_num (_ : ℤ) % _, Int.emod _ _]
 partial def evalIntMod : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℤ))) (b : Q(ℤ)) ← whnfR e | failure
   -- We assert that the default instance for `HMod` is `Int.mod` when the first parameter is `ℤ`.

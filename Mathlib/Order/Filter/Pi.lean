@@ -24,7 +24,8 @@ In this file we define two filters on `Π i, α i` and prove some basic properti
 
 open Set Function
 
-open Classical Filter
+open scoped Classical
+open Filter
 
 namespace Filter
 
@@ -51,6 +52,11 @@ theorem tendsto_pi {β : Type*} {m : β → ∀ i, α i} {l : Filter β} :
     Tendsto m l (pi f) ↔ ∀ i, Tendsto (fun x => m x i) l (f i) := by
   simp only [pi, tendsto_iInf, tendsto_comap_iff]; rfl
 #align filter.tendsto_pi Filter.tendsto_pi
+
+/-- If a function tends to a product `Filter.pi f` of filters, then its `i`-th component tends to
+`f i`. See also `Filter.Tendsto.apply_nhds` for the special case of converging to a point in a
+product of topological spaces. -/
+alias ⟨Tendsto.apply, _⟩ := tendsto_pi
 
 theorem le_pi {g : Filter (∀ i, α i)} : g ≤ pi f ↔ ∀ i, Tendsto (eval i) g (f i) :=
   tendsto_pi
@@ -118,6 +124,19 @@ theorem hasBasis_pi {ι' : ι → Type} {s : ∀ i, ι' i → Set (α i)} {p : �
       fun If : Set ι × ∀ i, ι' i => If.1.pi fun i => s i <| If.2 i := by
   simpa [Set.pi_def] using hasBasis_iInf' fun i => (h i).comap (eval i : (∀ j, α j) → α i)
 #align filter.has_basis_pi Filter.hasBasis_pi
+
+theorem le_pi_principal (s : (i : ι) → Set (α i)) :
+    𝓟 (univ.pi s) ≤ pi fun i ↦ 𝓟 (s i) :=
+  le_pi.2 fun i ↦ tendsto_principal_principal.2 fun _f hf ↦ hf i trivial
+
+@[simp]
+theorem pi_principal [Finite ι] (s : (i : ι) → Set (α i)) :
+    pi (fun i ↦ 𝓟 (s i)) = 𝓟 (univ.pi s) := by
+  simp [Filter.pi, Set.pi_def]
+
+@[simp]
+theorem pi_pure [Finite ι] (f : (i : ι) → α i) : pi (pure <| f ·) = pure f := by
+  simp only [← principal_singleton, pi_principal, univ_pi_singleton]
 
 @[simp]
 theorem pi_inf_principal_univ_pi_eq_bot :
