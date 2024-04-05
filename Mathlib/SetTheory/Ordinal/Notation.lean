@@ -127,17 +127,15 @@ def ofNat : ℕ → ONote
   | Nat.succ n => oadd 0 n.succPNat 0
 #align onote.of_nat ONote.ofNat
 
--- Porting note: the generated simp lemmas of `ofNat` is not good so we replace.
+-- Adaptation note:
+-- During the port we marked these lemmas with `@[eqns]` to emulate the old Lean 3 behaviour.
+-- See https://github.com/leanprover-community/mathlib4/issues/11647
 
-theorem ofNat_zero : ofNat 0 = 0 :=
+@[simp] theorem ofNat_zero : ofNat 0 = 0 :=
   rfl
 
-theorem ofNat_succ (n) : ofNat (Nat.succ n) = oadd 0 n.succPNat 0 :=
+@[simp] theorem ofNat_succ (n) : ofNat (Nat.succ n) = oadd 0 n.succPNat 0 :=
   rfl
-
-attribute [eqns ofNat_zero ofNat_succ] ofNat
-
-attribute [simp] ofNat
 
 instance nat (n : ℕ) : OfNat ONote n where
   ofNat := ofNat n
@@ -1216,7 +1214,7 @@ theorem fastGrowing_two : fastGrowing 2 = fun n => (2 ^ n) * n := by
   rw [@fastGrowing_succ 2 1 rfl]; funext i; rw [fastGrowing_one]
   suffices ∀ a b, (fun n : ℕ => 2 * n)^[a] b = (2 ^ a) * b from this _ _
   intro a b; induction a <;>
-    simp [*, Function.iterate_succ', pow_succ, mul_assoc, -Function.iterate_succ]
+    simp [*, Function.iterate_succ, pow_succ, mul_assoc, -Function.iterate_succ]
 #align onote.fast_growing_two ONote.fastGrowing_two
 
 end

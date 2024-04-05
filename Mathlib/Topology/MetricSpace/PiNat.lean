@@ -295,7 +295,7 @@ theorem dist_triangle_nonarch (x y z : ∀ n, E n) : dist x z ≤ max (dist x y)
   · simp
   rcases eq_or_ne y z with (rfl | hyz)
   · simp
-  simp only [dist_eq_of_ne, hxz, hxy, hyz, inv_le_inv, one_div, inv_pow, zero_lt_two, Ne.def,
+  simp only [dist_eq_of_ne, hxz, hxy, hyz, inv_le_inv, one_div, inv_pow, zero_lt_two, Ne,
     not_false_iff, le_max_iff, pow_le_pow_iff_right, one_lt_two, pow_pos,
     min_le_iff.1 (min_firstDiff_le x y z hxz)]
 #align pi_nat.dist_triangle_nonarch PiNat.dist_triangle_nonarch
@@ -747,7 +747,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
     have diff_pos : 0 < firstDiff x.1 y.1 := by
       by_contra! h
       apply apply_firstDiff_ne hne'
-      rw [le_zero_iff.1 h]
+      rw [Nat.le_zero.1 h]
       apply apply_eq_of_dist_lt _ le_rfl
       rw [pow_zero]
       exact hxy

@@ -47,27 +47,25 @@ open BigOperators Matrix LinearMap Submodule Set Function
 universe u v w
 
 variable {R : Type*} [CommRing R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M]
-
 variable {M' : Type*} [AddCommGroup M'] [Module R M']
-
 variable {ι : Type*} [DecidableEq ι] [Fintype ι]
-
 variable (e : Basis ι R M)
 
 section Conjugate
 
 variable {A : Type*} [CommRing A]
-
-variable {m n : Type*} [Fintype m] [Fintype n]
+variable {m n : Type*}
 
 /-- If `R^m` and `R^n` are linearly equivalent, then `m` and `n` are also equivalent. -/
-def equivOfPiLEquivPi {R : Type*} [CommRing R] [Nontrivial R] (e : (m → R) ≃ₗ[R] n → R) : m ≃ n :=
+def equivOfPiLEquivPi {R : Type*} [Finite m] [Finite n] [CommRing R] [Nontrivial R]
+    (e : (m → R) ≃ₗ[R] n → R) : m ≃ n :=
   Basis.indexEquiv (Basis.ofEquivFun e.symm) (Pi.basisFun _ _)
 #align equiv_of_pi_lequiv_pi equivOfPiLEquivPi
 
 namespace Matrix
+
+variable [Fintype m] [Fintype n]
 
 /-- If `M` and `M'` are each other's inverse matrices, they are square matrices up to
 equivalence of types. -/
@@ -111,7 +109,6 @@ namespace LinearMap
 
 
 variable {A : Type*} [CommRing A] [Module A M]
-
 variable {κ : Type*} [Fintype κ]
 
 /-- The determinant of `LinearMap.toMatrix` does not depend on the choice of basis. -/

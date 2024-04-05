@@ -57,9 +57,7 @@ section SeminormedRing
 section Zero
 
 variable (𝕜)
-
 variable [SeminormedRing 𝕜] [SMul 𝕜 E] [Zero E]
-
 variable [TopologicalSpace E]
 
 /-- A set `s` is von Neumann bounded if every neighborhood of 0 absorbs `s`. -/
@@ -232,7 +230,6 @@ end sequence
 section NormedField
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 
 /-- Singletons are bounded. -/
@@ -335,7 +332,6 @@ end Bornology
 section UniformAddGroup
 
 variable (𝕜) [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [UniformSpace E] [UniformAddGroup E] [ContinuousSMul 𝕜 E]
 
 theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :

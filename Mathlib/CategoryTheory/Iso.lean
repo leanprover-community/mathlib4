@@ -578,7 +578,6 @@ namespace Functor
 universe u₁ v₁ u₂ v₂
 
 variable {D : Type u₂}
-
 variable [Category.{v₂} D]
 
 /-- A functor `F : C ⥤ D` sends isomorphisms `i : X ≅ Y` to isomorphisms `F.obj X ≅ F.obj Y` -/

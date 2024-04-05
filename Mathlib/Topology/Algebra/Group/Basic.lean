@@ -197,6 +197,10 @@ section ContinuousInv
 variable [TopologicalSpace G] [Inv G] [ContinuousInv G]
 
 @[to_additive]
+instance : ContinuousInv (ULift G) :=
+  ⟨continuous_uLift_up.comp (continuous_inv.comp continuous_uLift_down)⟩
+
+@[to_additive]
 theorem continuousOn_inv {s : Set G} : ContinuousOn Inv.inv s :=
   continuous_inv.continuousOn
 #align continuous_on_inv continuousOn_inv
@@ -486,6 +490,8 @@ end Conj
 
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [TopologicalSpace α] {f : α → G}
   {s : Set α} {x : α}
+
+instance : TopologicalGroup (ULift G) where
 
 section ZPow
 
@@ -881,7 +887,7 @@ theorem continuous_of_continuousAt_one {M hom : Type*} [MulOneClass M] [Topologi
 #align continuous_of_continuous_at_one continuous_of_continuousAt_one
 #align continuous_of_continuous_at_zero continuous_of_continuousAt_zero
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[to_additive continuous_of_continuousAt_zero₂]
 theorem continuous_of_continuousAt_one₂ {H M : Type*} [CommMonoid M] [TopologicalSpace M]
     [ContinuousMul M] [Group H] [TopologicalSpace H] [TopologicalGroup H] (f : G →* H →* M)
@@ -1602,7 +1608,7 @@ theorem TopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U �
     T2Space G := by
   suffices T1Space G from inferInstance
   refine t1Space_iff_specializes_imp_eq.2 fun x y hspec ↦ by_contra fun hne ↦ ?_
-  rcases H (x * y⁻¹) (by rwa [Ne.def, mul_inv_eq_one]) with ⟨U, hU₁, hU⟩
+  rcases H (x * y⁻¹) (by rwa [Ne, mul_inv_eq_one]) with ⟨U, hU₁, hU⟩
   exact hU <| mem_of_mem_nhds <| hspec.map (continuous_mul_right y⁻¹) (by rwa [mul_inv_self])
 #align topological_group.t2_space_of_one_sep TopologicalGroup.t2Space_of_one_sep
 #align topological_add_group.t2_space_of_zero_sep TopologicalAddGroup.t2Space_of_zero_sep
@@ -1757,7 +1763,7 @@ theorem compact_covered_by_mul_left_translates {K V : Set G} (hK : IsCompact K)
     cases' hV with g₀ hg₀
     refine' fun g _ => mem_iUnion.2 ⟨g₀ * g⁻¹, _⟩
     refine' preimage_interior_subset_interior_preimage (continuous_const.mul continuous_id) _
-    rwa [mem_preimage, id_def, inv_mul_cancel_right]
+    rwa [mem_preimage, Function.id_def, inv_mul_cancel_right]
   exact ⟨t, Subset.trans ht <| iUnion₂_mono fun g _ => interior_subset⟩
 #align compact_covered_by_mul_left_translates compact_covered_by_mul_left_translates
 #align compact_covered_by_add_left_translates compact_covered_by_add_left_translates

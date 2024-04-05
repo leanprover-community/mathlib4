@@ -33,7 +33,7 @@ open scoped ENNReal MeasureTheory
 
 namespace MeasureTheory
 
-variable {α E' F' 𝕜 : Type*} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {μ : Measure α} [IsROrC 𝕜]
+variable {α E' F' 𝕜 : Type*} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {μ : Measure α} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- E' for an inner product space on which we compute integrals
   [NormedAddCommGroup E']
@@ -208,7 +208,7 @@ theorem lintegral_nnnorm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g 
   rw [← ofReal_integral_norm_eq_lintegral_nnnorm hfi, ←
     ofReal_integral_norm_eq_lintegral_nnnorm hgi, ENNReal.ofReal_le_ofReal_iff]
   · exact integral_norm_le_of_forall_fin_meas_integral_eq hm hf hfi hg hgi hgf hs hμs
-  · exact integral_nonneg fun x => norm_nonneg _
+  · positivity
 #align measure_theory.lintegral_nnnorm_le_of_forall_fin_meas_integral_eq MeasureTheory.lintegral_nnnorm_le_of_forall_fin_meas_integral_eq
 
 end IntegralNormLE

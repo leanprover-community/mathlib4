@@ -3,7 +3,7 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Data.IsROrC.Lemmas
+import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
 import Mathlib.MeasureTheory.Integral.SetIntegral
 
@@ -61,8 +61,7 @@ end
 section InnerProductSpace
 
 variable {α : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
-
-variable {E 𝕜 : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 -- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
@@ -110,7 +109,7 @@ end InnerProductSpace
 
 namespace L2
 
-variable {α E F 𝕜 : Type*} [IsROrC 𝕜] [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
+variable {α E F 𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
   [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
 
 -- mathport name: «expr⟪ , ⟫»
@@ -168,9 +167,9 @@ theorem integral_inner_eq_sq_snorm (f : α →₂[μ] E) :
   norm_cast
 #align measure_theory.L2.integral_inner_eq_sq_snorm MeasureTheory.L2.integral_inner_eq_sq_snorm
 
-private theorem norm_sq_eq_inner' (f : α →₂[μ] E) : ‖f‖ ^ 2 = IsROrC.re ⟪f, f⟫ := by
+private theorem norm_sq_eq_inner' (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike.re ⟪f, f⟫ := by
   have h_two : (2 : ℝ≥0∞).toReal = 2 := by simp
-  rw [inner_def, integral_inner_eq_sq_snorm, norm_def, ← ENNReal.toReal_pow, IsROrC.ofReal_re,
+  rw [inner_def, integral_inner_eq_sq_snorm, norm_def, ← ENNReal.toReal_pow, RCLike.ofReal_re,
     ENNReal.toReal_eq_toReal (ENNReal.pow_ne_top (Lp.snorm_ne_top f)) _]
   · rw [← ENNReal.rpow_nat_cast, snorm_eq_snorm' two_ne_zero ENNReal.two_ne_top, snorm', ←
       ENNReal.rpow_mul, one_div, h_two]
@@ -280,8 +279,7 @@ end L2
 
 section InnerContinuous
 
-variable {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] {𝕜 : Type*} [IsROrC 𝕜]
-
+variable {α 𝕜 : Type*} [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [RCLike 𝕜]
 variable (μ : Measure α) [IsFiniteMeasure μ]
 
 open scoped BoundedContinuousFunction ComplexConjugate

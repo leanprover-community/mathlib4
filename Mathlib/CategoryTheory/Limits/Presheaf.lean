@@ -53,9 +53,7 @@ universe v₁ v₂ u₁ u₂
 section SmallCategory
 
 variable {C : Type u₁} [SmallCategory C]
-
 variable {ℰ : Type u₂} [Category.{u₁} ℰ]
-
 variable (A : C ⥤ ℰ)
 
 namespace ColimitAdj

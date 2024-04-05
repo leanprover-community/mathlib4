@@ -258,7 +258,7 @@ theorem forall_mem_cons {p : α → Prop} {a : α} {s : Multiset α} :
 
 theorem exists_cons_of_mem {s : Multiset α} {a : α} : a ∈ s → ∃ t, s = a ::ₘ t :=
   Quot.inductionOn s fun l (h : a ∈ l) =>
-    let ⟨l₁, l₂, e⟩ := mem_split h
+    let ⟨l₁, l₂, e⟩ := append_of_mem h
     e.symm ▸ ⟨(l₁ ++ l₂ : List α), Quot.sound perm_middle⟩
 #align multiset.exists_cons_of_mem Multiset.exists_cons_of_mem
 
@@ -603,7 +603,7 @@ theorem le_cons_of_not_mem (m : a ∉ s) : s ≤ a ::ₘ t ↔ s ≤ t := by
   revert m
   refine' leInductionOn h _
   introv s m₁ m₂
-  rcases mem_split m₂ with ⟨r₁, r₂, rfl⟩
+  rcases append_of_mem m₂ with ⟨r₁, r₂, rfl⟩
   exact
     perm_middle.subperm_left.2
       ((subperm_cons _).2 <| ((sublist_or_mem_of_sublist s).resolve_right m₁).subperm)
@@ -626,7 +626,7 @@ theorem singleton_le {a : α} {s : Multiset α} : {a} ≤ s ↔ a ∈ s :=
     coe_eq_zero, coe_eq_coe, perm_singleton, subperm_singleton_iff]
 
 @[simp] lemma lt_singleton : s < {a} ↔ s = 0 := by
-  simp only [lt_iff_le_and_ne, le_singleton, or_and_right, Ne.def, and_not_self, or_false,
+  simp only [lt_iff_le_and_ne, le_singleton, or_and_right, Ne, and_not_self, or_false,
     and_iff_left_iff_imp]
   rintro rfl
   exact (singleton_ne_zero _).symm
@@ -726,7 +726,7 @@ theorem mem_of_mem_nsmul {a : α} {s : Multiset α} {n : ℕ} (h : a ∈ n • s
   · rw [zero_nsmul] at h
     exact absurd h (not_mem_zero _)
   · rw [succ_nsmul, mem_add] at h
-    exact h.elim id ih
+    exact h.elim ih id
 #align multiset.mem_of_mem_nsmul Multiset.mem_of_mem_nsmul
 
 @[simp]
@@ -734,7 +734,7 @@ theorem mem_nsmul {a : α} {s : Multiset α} {n : ℕ} (h0 : n ≠ 0) : a ∈ n 
   refine' ⟨mem_of_mem_nsmul, fun h => _⟩
   obtain ⟨n, rfl⟩ := exists_eq_succ_of_ne_zero h0
   rw [succ_nsmul, mem_add]
-  exact Or.inl h
+  exact Or.inr h
 #align multiset.mem_nsmul Multiset.mem_nsmul
 
 theorem nsmul_cons {s : Multiset α} (n : ℕ) (a : α) :
@@ -1782,11 +1782,11 @@ theorem map_union [DecidableEq β] {f : α → β} (finj : Function.Injective f)
     congr_arg ofList (by rw [List.map_append f, List.map_diff finj])
 #align multiset.map_union Multiset.map_union
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp] theorem zero_union : 0 ∪ s = s := by
   simp [union_def]
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp] theorem union_zero : s ∪ 0 = s := by
   simp [union_def]
 
@@ -2306,7 +2306,7 @@ theorem countP_add (s t) : countP p (s + t) = countP p s + countP p t := by
 
 @[simp]
 theorem countP_nsmul (s) (n : ℕ) : countP p (n • s) = n * countP p s := by
-  induction n <;> simp [*, succ_nsmul', succ_mul, zero_nsmul]
+  induction n <;> simp [*, succ_nsmul, succ_mul, zero_nsmul]
 #align multiset.countp_nsmul Multiset.countP_nsmul
 
 theorem card_eq_countP_add_countP (s) : card s = countP p s + countP (fun x => ¬p x) s :=
@@ -2491,7 +2491,7 @@ theorem coe_countAddMonoidHom {a : α} : (countAddMonoidHom a : Multiset α → 
 
 @[simp]
 theorem count_nsmul (a : α) (n s) : count a (n • s) = n * count a s := by
-  induction n <;> simp [*, succ_nsmul', succ_mul, zero_nsmul]
+  induction n <;> simp [*, succ_nsmul, succ_mul, zero_nsmul]
 #align multiset.count_nsmul Multiset.count_nsmul
 
 @[simp]
@@ -2517,7 +2517,7 @@ theorem count_eq_zero {a : α} {s : Multiset α} : count a s = 0 ↔ a ∉ s :=
 #align multiset.count_eq_zero Multiset.count_eq_zero
 
 theorem count_ne_zero {a : α} {s : Multiset α} : count a s ≠ 0 ↔ a ∈ s := by
-  simp [Ne.def, count_eq_zero]
+  simp [Ne, count_eq_zero]
 #align multiset.count_ne_zero Multiset.count_ne_zero
 
 theorem count_eq_card {a : α} {s} : count a s = card s ↔ ∀ x ∈ s, a = x := by
@@ -2681,11 +2681,11 @@ theorem inter_replicate (s : Multiset α) (n : ℕ) (x : α) :
   rw [inter_comm, replicate_inter, min_comm]
 #align multiset.inter_replicate Multiset.inter_replicate
 
-theorem erase_attach_map_val [DecidableEq α] (s : Multiset α) (x : {x // x ∈ s}) :
+theorem erase_attach_map_val (s : Multiset α) (x : {x // x ∈ s}) :
     (s.attach.erase x).map (↑) = s.erase x := by
   rw [Multiset.map_erase _ val_injective, attach_map_val]
 
-theorem erase_attach_map [DecidableEq α] (s : Multiset α) (f : α → β) (x : {x // x ∈ s}) :
+theorem erase_attach_map (s : Multiset α) (f : α → β) (x : {x // x ∈ s}) :
     (s.attach.erase x).map (fun j : {x // x ∈ s} ↦ f j) = (s.erase x).map f := by
   simp only [← Function.comp_apply (f := f)]
   rw [← map_map, erase_attach_map_val]
