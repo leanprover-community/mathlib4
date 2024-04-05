@@ -750,7 +750,7 @@ lemma IsFundamentalDomain.quotientMeasure_eq [Countable G] [MeasurableSpace G] {
     (fund_dom_t : IsFundamentalDomain G t μ) :
     (μ.restrict s).map π = (μ.restrict t).map π := by
   ext U meas_U
-  rw [measureRestrictMap_apply (meas_U := meas_U), measureRestrictMap_apply (meas_U := meas_U)]
+  rw [measure_map_restrict_apply (meas_U := meas_U), measure_map_restrict_apply (meas_U := meas_U)]
   apply MeasureTheory.IsFundamentalDomain.measure_set_eq fund_dom_s fund_dom_t
   · exact measurableSet_quotient.mp meas_U
   · intro g
