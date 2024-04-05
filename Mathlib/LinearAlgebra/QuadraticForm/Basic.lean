@@ -1141,10 +1141,6 @@ variable [CommRing R] [AddCommMonoid M] [Module R M]
 
 variable (M : Matrix n n R)
 
--- This is the function x -> Mx
--- We want (x,y) -> x^T M y
-#check Matrix.toLin'.toFun M
-
 /-- `M.toQuadraticMap'` is the map `fun x ↦ col x * M * row x` as a quadratic form. -/
 def Matrix.toQuadraticMap' (M : Matrix n n R) : QuadraticMap R (n → R) R :=
   LinearMap.BilinMap.toQuadraticMap (Matrix.toLinearMap₂' M)
