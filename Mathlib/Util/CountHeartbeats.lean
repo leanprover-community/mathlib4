@@ -39,18 +39,26 @@ def runTacForHeartbeats (tac : TSyntax `Lean.Parser.Tactic.tacticSeq) (revert : 
   return (← IO.getNumHeartbeats) - start
 
 /--
+Given a `List Nat`, return the minimum, maximum, and standard deviation.
+-/
+def variation (counts : List Nat) : List Nat :=
+  let min := counts.minimum?.getD 0
+  let max := counts.maximum?.getD 0
+  let μ := counts.foldl (· + ·) 0 / counts.length
+  -- We jump through some hoops here to get access to Float.sqrt, to avoid imports.
+  let stddev := (Float.sqrt <| UInt64.toFloat <| UInt64.ofNat
+    -- `i - μ + (μ - i)` really computes `|i - μ|` with non-truncated subtraction
+    (((counts.map fun i => (i - μ + (μ - i))^2).foldl (· + ·) 0) / counts.length)).toUInt64.toNat
+  [min, max, stddev]
+
+/--
 Given a `List Nat`, log an info message with the minimum, maximum, and standard deviation.
 -/
 def logVariation {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
     (counts : List Nat) : m Unit := do
-  let counts := counts.map fun i => i / 1000 -- convert to user-facing heartbeats
-  let counts := counts.toArray.qsort (· < ·)
-  let μ := counts.foldl (· + · ) 0 / counts.size
-  -- We jump through some hoops here to get access to `Float.sqrt`, to avoid imports.
-  let var := (Float.sqrt <| UInt64.toFloat <| UInt64.ofNat
-    ((counts.map fun i => (i - μ)^2).foldl (· + · ) 0)).toUInt64.toNat
-  let stddev := var * 100 / μ
-  logInfo s!"Min: {counts[0]!} Max: {counts[counts.size - 1]!} StdDev: {stddev}%"
+  if let [min, max, stddev] := variation counts then
+  -- convert `[min, max, stddev]` to user-facing heartbeats
+  logInfo s!"Min: {min / 1000} Max: {max / 1000} StdDev: {stddev / 10}%"
 
 /-- Count the heartbeats used by a tactic, e.g.: `count_heartbeats simp`. -/
 elab "count_heartbeats " tac:tacticSeq : tactic => do
@@ -59,8 +67,10 @@ elab "count_heartbeats " tac:tacticSeq : tactic => do
 /--
 Run a tactic 10 times, counting the heartbeats used, and log the range and standard deviation.
 -/
-elab "count_heartbeats! " tac:tacticSeq : tactic => do
-  let n := 10
+elab "count_heartbeats! " n:(num)? "in" ppLine cmd:command : command => do
+  let n := match n with
+           | some j => j.getNat
+           | none => 10
   -- First run the command `n-1` times, reverting the state.
   let counts ← (List.range (n - 1)).mapM fun _ => runTacForHeartbeats tac
   -- Then run once more, keeping the state.
