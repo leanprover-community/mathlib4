@@ -78,10 +78,14 @@ variable (M : Matrix B B ℕ)
 
 /-- A matrix `IsCoxeter` if it is a symmetric matrix with diagonal entries equal to one
 and off-diagonal entries distinct from one. -/
+@[mk_iff]
 structure Matrix.IsCoxeter : Prop where
   symmetric : M.IsSymm := by aesop
-  diagonal : ∀ b : B, M b b  = 1 := by aesop
+  diagonal : ∀ b : B, M b b = 1 := by aesop
   off_diagonal : ∀ b₁ b₂ : B, b₁ ≠ b₂ → M b₁ b₂ ≠ 1 := by aesop
+
+instance [Fintype B] [DecidableEq B] : DecidablePred (Matrix.IsCoxeter (B := B)) :=
+  fun M => decidable_of_iff' _ M.isCoxeter_iff
 
 namespace CoxeterGroup
 
