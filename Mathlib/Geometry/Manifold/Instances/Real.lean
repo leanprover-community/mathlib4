@@ -30,7 +30,7 @@ In the locale `manifold`, we introduce the notations
 For instance, if a manifold `M` is boundaryless, smooth and modelled on `EuclideanSpace ℝ (Fin m)`,
 and `N` is smooth with boundary modelled on `EuclideanHalfSpace n`, and `f : M → N` is a smooth
 map, then the derivative of `f` can be written simply as `mfderiv (𝓡 m) (𝓡∂ n) f` (as to why the
-model with corners can not be implicit, see the discussion in `smooth_manifold_with_corners.lean`).
+model with corners can not be implicit, see the discussion in `SmoothManifoldWithCorners.lean`).
 
 ## Implementation notes
 
