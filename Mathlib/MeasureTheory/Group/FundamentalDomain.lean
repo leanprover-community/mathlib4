@@ -879,7 +879,7 @@ lemma IsFundamentalDomain.projection_respects_measure_apply {ν : Measure α}
     (μ : Measure (Quotient α_mod_G)) [i : QuotientMeasureEqMeasurePreimage ν μ] {t : Set α}
     (fund_dom_t : IsFundamentalDomain G t ν) {U : Set (Quotient α_mod_G)}
     (meas_U : MeasurableSet U) : μ U = ν (π ⁻¹' U ∩ t) := by
-  rw [fund_dom_t.projection_respects_measure (μ := μ), measureRestrictMap_apply ν t meas_U]
+  rw [fund_dom_t.projection_respects_measure (μ := μ), measure_map_restrict_apply ν t meas_U]
 
 variable {ν : Measure α} [Countable G] [MeasurableSpace G]
   [SMulInvariantMeasure G α ν] [MeasurableSMul G α]
