@@ -145,7 +145,7 @@ def right : Tree α → Tree α
   | node _ _l r => r
 #align tree.right Tree.right
 
--- Notation for making a node with `Unit` data
+/-- A node with `Unit` data -/
 scoped infixr:65 " △ " => Tree.node ()
 
 -- Porting note: workaround for leanprover/lean4#2049
