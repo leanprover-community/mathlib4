@@ -64,7 +64,6 @@ variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category
   (G' : D ⥤ E)
 
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-
 variable {L : GrothendieckTopology E}
 
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is called cocontinuous (SGA 4 III 2.1)
@@ -116,9 +115,7 @@ A `X ⟶ 𝒢(U)`. The remaining work is to verify that this is indeed the amalg
 
 
 variable {C D : Type u} [Category.{v} C] [Category.{v} D] (G : C ⥤ D)
-
 variable {A : Type w} [Category.{max u v} A] [HasLimits A]
-
 variable {J : GrothendieckTopology C} {K : GrothendieckTopology D}
   [G.IsCocontinuous J K]
 
@@ -126,7 +123,6 @@ namespace RanIsSheafOfIsCocontinuous
 
 variable {G}
 variable (ℱ : Sheaf J A)
-
 variable {X : A} {U : D} (S : Sieve U) (hS : S ∈ K U)
 
 instance (X : Dᵒᵖ) : HasLimitsOfShape (StructuredArrow X G.op) A :=
@@ -134,7 +130,6 @@ instance (X : Dᵒᵖ) : HasLimitsOfShape (StructuredArrow X G.op) A :=
   HasLimitsOfSize.has_limits_of_shape _
 
 variable (x : S.arrows.FamilyOfElements ((ran G.op).obj ℱ.val ⋙ coyoneda.obj (op X)))
-
 variable (hx : x.Compatible)
 
 /-- The family of morphisms `X ⟶ 𝒢(G(Y')) ⟶ ℱ(Y')` defined on `{ Y' ⊆ Y : G(Y') ⊆ U ∈ S}`. -/
@@ -258,7 +253,7 @@ theorem gluedSection_isAmalgamation : x.IsAmalgamation (gluedSection ℱ hS hx) 
   -- Porting note: next line was `ext W`
   -- Now `ext` can't see that `ran` is defined as a limit.
   -- See https://github.com/leanprover-community/mathlib4/issues/5229
-  refine limit.hom_ext (λ (W : StructuredArrow (op V) G.op) => ?_)
+  refine limit.hom_ext (fun (W : StructuredArrow (op V) G.op) ↦ ?_)
   simp only [Functor.comp_map, limit.lift_pre, coyoneda_obj_map, ran_obj_map, gluedSection]
   erw [limit.lift_π]
   symm
@@ -275,7 +270,7 @@ theorem gluedSection_is_unique (y) (hy : x.IsAmalgamation y) : y = gluedSection 
   -- Porting note: next line was `ext W`
   -- Now `ext` can't see that `ran` is defined as a limit.
   -- See https://github.com/leanprover-community/mathlib4/issues/5229
-  refine limit.hom_ext (λ (W : StructuredArrow (op U) G.op) => ?_)
+  refine limit.hom_ext (fun (W : StructuredArrow (op U) G.op) ↦ ?_)
   erw [limit.lift_π]
   convert helper ℱ hS hx (𝟙 _) y W _
   · simp only [op_id, StructuredArrow.map_id]

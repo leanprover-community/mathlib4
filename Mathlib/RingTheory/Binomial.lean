@@ -3,7 +3,7 @@ Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Data.Polynomial.Smeval
+import Mathlib.Algebra.Polynomial.Smeval
 import Mathlib.RingTheory.Polynomial.Pochhammer
 
 /-!
@@ -202,10 +202,9 @@ theorem descPochhammer_eq_factorial_smul_choose [NatPowAssoc R] (r : R) (n : ℕ
 
 theorem choose_nat_cast [NatPowAssoc R] (n k : ℕ) : choose (n : R) k = Nat.choose n k := by
   refine nsmul_right_injective (Nat.factorial k) (Nat.factorial_ne_zero k) ?_
-  simp only [choose]
-  rw [factorial_nsmul_multichoose_eq_ascPochhammer, nsmul_eq_mul, ← Nat.cast_mul,
-    ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_smeval_eq_descFactorial,
-    descPochhammer_smeval_eq_ascPochhammer]
+  simp only
+  rw [← descPochhammer_eq_factorial_smul_choose, nsmul_eq_mul, ← Nat.cast_mul,
+  ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_eval_eq_descFactorial]
 
 end Ring
 

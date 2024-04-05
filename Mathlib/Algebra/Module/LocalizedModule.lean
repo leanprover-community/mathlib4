@@ -42,9 +42,7 @@ namespace LocalizedModule
 universe u v
 
 variable {R : Type u} [CommSemiring R] (S : Submonoid R)
-
 variable (M : Type v) [AddCommMonoid M] [Module R M]
-
 variable (T : Type*) [CommSemiring T] [Algebra R T] [IsLocalization S T]
 
 /-- The equivalence relation on `M × S` where `(m1, s1) ≈ (m2, s2)` if and only if
@@ -206,7 +204,7 @@ instance hasNatSMul : SMul ℕ (LocalizedModule S M) where smul n := nsmulRec n
 private theorem nsmul_zero' (x : LocalizedModule S M) : (0 : ℕ) • x = 0 :=
   LocalizedModule.induction_on (fun _ _ => rfl) x
 
-private theorem nsmul_succ' (n : ℕ) (x : LocalizedModule S M) : n.succ • x = x + n • x :=
+private theorem nsmul_succ' (n : ℕ) (x : LocalizedModule S M) : n.succ • x = n • x + x :=
   LocalizedModule.induction_on (fun _ _ => rfl) x
 
 instance : AddCommMonoid (LocalizedModule S M) where
@@ -544,13 +542,9 @@ section IsLocalizedModule
 universe u v
 
 variable {R : Type*} [CommSemiring R] (S : Submonoid R)
-
 variable {M M' M'' : Type*} [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid M'']
-
 variable {A : Type*} [CommSemiring A] [Algebra R A] [Module A M'] [IsLocalization S A]
-
 variable [Module R M] [Module R M'] [Module R M''] [IsScalarTower R A M']
-
 variable (f : M →ₗ[R] M') (g : M →ₗ[R] M'')
 
 /-- The characteristic predicate for localized module.

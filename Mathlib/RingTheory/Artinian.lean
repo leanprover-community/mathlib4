@@ -67,9 +67,7 @@ class IsArtinian (R M) [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
 section
 
 variable {R M P N : Type*}
-
 variable [Ring R] [AddCommGroup M] [AddCommGroup P] [AddCommGroup N]
-
 variable [Module R M] [Module R P] [Module R N]
 
 open IsArtinian
@@ -475,7 +473,8 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
       (le_sup_right.trans_eq (this.eq_of_not_lt (hJ' _ ?_)).symm)))
     exact lt_of_le_of_ne le_sup_left fun h => H <| h.symm ▸ le_sup_right
   have : Ideal.span {x} * Jac ^ (n + 1) ≤ ⊥ := calc
-    Ideal.span {x} * Jac ^ (n + 1) = Ideal.span {x} * Jac * Jac ^ n := by rw [pow_succ, ← mul_assoc]
+    Ideal.span {x} * Jac ^ (n + 1) = Ideal.span {x} * Jac * Jac ^ n := by
+      rw [pow_succ', ← mul_assoc]
     _ ≤ J * Jac ^ n := (mul_le_mul (by rwa [mul_comm]) le_rfl)
     _ = ⊥ := by simp [J]
   refine' hxJ (mem_annihilator.2 fun y hy => (mem_bot R).1 _)
@@ -496,7 +495,7 @@ theorem localization_surjective : Function.Surjective (algebraMap R L) := by
   · exact ⟨r₁ * r₂, by rw [IsLocalization.mk'_eq_mul_mk'_one, map_mul, h]⟩
   obtain ⟨n, r, hr⟩ := IsArtinian.exists_pow_succ_smul_dvd (s : R) (1 : R)
   use r
-  rw [smul_eq_mul, smul_eq_mul, pow_succ', mul_assoc] at hr
+  rw [smul_eq_mul, smul_eq_mul, pow_succ, mul_assoc] at hr
   apply_fun algebraMap R L at hr
   simp only [map_mul] at hr
   rw [← IsLocalization.mk'_one (M := S) L, IsLocalization.mk'_eq_iff_eq, mul_one, Submonoid.coe_one,

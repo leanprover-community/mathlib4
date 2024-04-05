@@ -633,7 +633,7 @@ theorem Tape.move_left_nth {Γ} [Inhabited Γ] :
   | ⟨_, L, _⟩, 0 => (ListBlank.nth_zero _).symm
   | ⟨a, L, R⟩, 1 => (ListBlank.nth_zero _).trans (ListBlank.head_cons _ _)
   | ⟨a, L, R⟩, (n + 1 : ℕ) + 1 => by
-    rw [add_sub_cancel]
+    rw [add_sub_cancel_right]
     change (R.cons a).nth (n + 1) = R.nth n
     rw [ListBlank.nth_succ, ListBlank.tail_cons]
 #align turing.tape.move_left_nth Turing.Tape.move_left_nth
@@ -642,7 +642,7 @@ theorem Tape.move_left_nth {Γ} [Inhabited Γ] :
 theorem Tape.move_right_nth {Γ} [Inhabited Γ] (T : Tape Γ) (i : ℤ) :
     (T.move Dir.right).nth i = T.nth (i + 1) := by
   conv => rhs; rw [← T.move_right_left]
-  rw [Tape.move_left_nth, add_sub_cancel]
+  rw [Tape.move_left_nth, add_sub_cancel_right]
 #align turing.tape.move_right_nth Turing.Tape.move_right_nth
 
 @[simp]
@@ -1123,11 +1123,8 @@ end
 section
 
 variable {Γ : Type*} [Inhabited Γ]
-
 variable {Γ' : Type*} [Inhabited Γ']
-
 variable {Λ : Type*} [Inhabited Λ]
-
 variable {Λ' : Type*} [Inhabited Λ']
 
 /-- Map a TM statement across a function. This does nothing to move statements and maps the write
@@ -1438,9 +1435,7 @@ set_option linter.uppercaseLean3 false
 section
 
 variable {Γ : Type*} [Inhabited Γ]
-
 variable {Λ : Type*} [Inhabited Λ]
-
 variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₁" => TM1.Stmt Γ Λ σ
@@ -1629,7 +1624,6 @@ theorem exists_enc_dec [Finite Γ] : ∃ (n : ℕ) (enc : Γ → Vector Bool n) 
 #align turing.TM1to1.exists_enc_dec Turing.TM1to1.exists_enc_dec
 
 variable {Λ : Type*} [Inhabited Λ]
-
 variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₁" => Stmt Γ Λ σ
@@ -1977,7 +1971,6 @@ set_option linter.uppercaseLean3 false
 section
 
 variable {Γ : Type*} [Inhabited Γ]
-
 variable {Λ : Type*} [Inhabited Λ]
 
 /-- The machine states for a TM1 emulating a TM0 machine. States of the TM0 machine are embedded
@@ -2332,11 +2325,8 @@ theorem stk_nth_val {K : Type*} {Γ : K → Type*} {L : ListBlank (∀ k, Option
 section
 
 variable {K : Type*} [DecidableEq K]
-
 variable {Γ : K → Type*}
-
 variable {Λ : Type*} [Inhabited Λ]
-
 variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₂" => TM2.Stmt Γ Λ σ

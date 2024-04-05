@@ -394,7 +394,6 @@ end Zero
 section SMul
 
 variable {M N : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass R M F]
-
 variable [Monoid N] [DistribMulAction N F] [SMulCommClass R N F]
 
 instance instSMul : SMul M (E →ₗ.[R] F) :=

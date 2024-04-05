@@ -269,7 +269,7 @@ theorem sub_apply : (f - g) x = f x - g x :=
 
 @[simp]
 theorem coe_zsmulRec : ∀ z, ⇑(zsmulRec z f) = z • ⇑f
-  | Int.ofNat n => by rw [zsmulRec, Int.ofNat_eq_coe, coe_nsmulRec, coe_nat_zsmul]
+  | Int.ofNat n => by rw [zsmulRec, Int.ofNat_eq_coe, coe_nsmulRec, natCast_zsmul]
   | Int.negSucc n => by rw [zsmulRec, negSucc_zsmul, coe_neg, coe_nsmulRec]
 #align zero_at_infty_continuous_map.coe_zsmul_rec ZeroAtInftyContinuousMap.coe_zsmulRec
 
@@ -465,7 +465,7 @@ theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → C₀(α, β)} {f :
 theorem isometry_toBCF : Isometry (toBCF : C₀(α, β) → α →ᵇ β) := by tauto
 #align zero_at_infty_continuous_map.isometry_to_bcf ZeroAtInftyContinuousMap.isometry_toBCF
 
-theorem closed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →ᵇ β)) := by
+theorem isClosed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →ᵇ β)) := by
   refine' isClosed_iff_clusterPt.mpr fun f hf => _
   rw [clusterPt_principal_iff] at hf
   have : Tendsto f (cocompact α) (𝓝 0) := by
@@ -478,13 +478,15 @@ theorem closed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →ᵇ
       _ < dist g.toBCF f + ε / 2 := (add_lt_add_of_le_of_lt (dist_coe_le_dist x) hx)
       _ < ε := by simpa [add_halves ε] using add_lt_add_right (mem_ball.1 hg) (ε / 2)
   exact ⟨⟨f.toContinuousMap, this⟩, rfl⟩
-#align zero_at_infty_continuous_map.closed_range_to_bcf ZeroAtInftyContinuousMap.closed_range_toBCF
+#align zero_at_infty_continuous_map.closed_range_to_bcf ZeroAtInftyContinuousMap.isClosed_range_toBCF
+
+@[deprecated] alias closed_range_toBCF := isClosed_range_toBCF -- 2024-03-17
 
 /-- Continuous functions vanishing at infinity taking values in a complete space form a
 complete space. -/
 instance instCompleteSpace [CompleteSpace β] : CompleteSpace C₀(α, β) :=
   (completeSpace_iff_isComplete_range isometry_toBCF.uniformInducing).mpr
-    closed_range_toBCF.isComplete
+    isClosed_range_toBCF.isComplete
 
 end Metric
 

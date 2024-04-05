@@ -37,18 +37,18 @@ jobs:
         token: ${{ secrets.NIGHTLY_TESTING }}
     - name: Update the nightly-testing-YYYY-MM-DD branch
       run: |
-        toolchain=$(<lean-toolchain)
+        toolchain="$(<lean-toolchain)"
         if [[ $toolchain =~ leanprover/lean4:nightly-([a-zA-Z0-9_-]+) ]]; then
           version=${BASH_REMATCH[1]}
-          echo "NIGHTLY=$version" >> $GITHUB_ENV
+          printf 'NIGHTLY=%s\n' "${version}" >> "${GITHUB_ENV}"
           # Check if the remote tag exists
           if git ls-remote --tags --exit-code origin "nightly-testing-$version" >/dev/null; then
-              echo "Tag nightly-testing-$version already exists on the remote."
+              printf 'Tag nightly-testing-%s already exists on the remote.' "${version}"
           else
               # If the tag does not exist, create and push the tag to remote
-              echo "Creating tag nightly-testing-$version from the current state of the nightly-testing branch."
-              git tag nightly-testing-$version
-              git push origin nightly-testing-$version
+              printf 'Creating tag %s from the current state of the nightly-testing branch.' "nightly-testing-${version}"
+              git tag "nightly-testing-${version}"
+              git push origin "nightly-testing-${version}"
           fi
         else
           echo "Error: The file lean-toolchain does not contain the expected pattern."
@@ -58,7 +58,7 @@ jobs:
     # Next, we'll update the `nightly-with-mathlib` branch at Lean.
     - name: Cleanup workspace
       run: |
-        sudo rm -rf *
+        sudo rm -rf -- *
     # Checkout the Lean repository on 'nightly-with-mathlib'
     - name: Checkout Lean repository
       uses: actions/checkout@v3
@@ -72,7 +72,7 @@ jobs:
         git remote add nightly https://github.com/leanprover/lean4-nightly.git
         git fetch nightly --tags
         # Note: old jobs may run out of order, but it is safe to merge an older `nightly-YYYY-MM-DD`.
-        git merge nightly-${NIGHTLY} --strategy-option ours --allow-unrelated-histories || true
+        git merge "nightly-${NIGHTLY}" --strategy-option ours --allow-unrelated-histories || true
         git push origin
 
     # Now post a success message to zulip, if the last message there is not a success message.
@@ -101,7 +101,7 @@ jobs:
                 'type': 'stream',
                 'to': 'nightly-testing',
                 'topic': 'Mathlib status updates',
-                'content': '✅ The latest CI for Mathlib's branch#nightly-testing has succeeded!'
+                'content': "✅ The latest CI for Mathlib's branch#nightly-testing has succeeded!"
             }
             result = client.send_message(request)
             print(result)
@@ -112,8 +112,7 @@ jobs:
     - name: Read lean-toolchain from current branch
       id: current_version
       run: |
-        echo "current_version=$(grep 'leanprover/lean4:nightly-' lean-toolchain | sed 's/leanprover\/lean4:nightly-//')" >> $GITHUB_ENV
-        echo "::set-output name=current_version::$(cat lean-toolchain | grep 'leanprover/lean4:nightly-' | sed 's/leanprover\/lean4:nightly-//')"
+        sed -n 's|leanprover/lean4:nightly-|current_version=|p' lean-toolchain >> "${GITHUB_OUTPUT}"
 
     - name: Check for matching bump/nightly-YYYY-MM-DD branch
       id: check_branch
@@ -178,9 +177,12 @@ jobs:
         CURRENT_VERSION: ${{ steps.current_version.outputs.current_version }}
         BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
         BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
+        ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
       shell: python
       run: |
         import os
+        import zulip
+        client = zulip.Client(email='github-mathlib4-bot@leanprover.zulipchat.com', api_key=os.getenv('ZULIP_API_KEY'), site='https://leanprover.zulipchat.com')
         current_version = os.getenv('CURRENT_VERSION')
         bump_version = os.getenv('BUMP_VERSION')
         bump_branch = os.getenv('BUMP_BRANCH')
@@ -191,7 +193,7 @@ jobs:
                 'type': 'stream',
                 'to': 'nightly-testing',
                 'topic': 'Mathlib status update',
-                'content': f'🛠️: it looks like it's time to create a new bump/nightly-{current_version} branch from nightly-testing, and then PR that to {bump_branch}.'
+                'content': f"🛠️: it looks like it's time to create a new bump/nightly-{current_version} branch from nightly-testing, and then PR that to {bump_branch}."
             }
             result = client.send_message(request)
         else:

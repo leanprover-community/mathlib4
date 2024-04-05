@@ -49,7 +49,7 @@ theorem rpow_def (x y : ℝ) : x ^ y = ((x : ℂ) ^ (y : ℂ)).re := rfl
 theorem rpow_def_of_nonneg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) :
     x ^ y = if x = 0 then if y = 0 then 1 else 0 else exp (log x * y) := by
   simp only [rpow_def, Complex.cpow_def]; split_ifs <;>
-  simp_all [(Complex.ofReal_log hx).symm, -Complex.ofReal_mul, -IsROrC.ofReal_mul,
+  simp_all [(Complex.ofReal_log hx).symm, -Complex.ofReal_mul, -RCLike.ofReal_mul,
       (Complex.ofReal_mul _ _).symm, Complex.exp_ofReal_re, Complex.ofReal_eq_zero]
 #align real.rpow_def_of_nonneg Real.rpow_def_of_nonneg
 

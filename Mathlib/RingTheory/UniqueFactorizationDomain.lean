@@ -153,7 +153,7 @@ theorem WfDvdMonoid.max_power_factor' [CommMonoidWithZero α] [WfDvdMonoid α] {
   obtain ⟨a, ⟨n, rfl⟩, hm⟩ := wellFounded_dvdNotUnit.has_min
     {a | ∃ n, x ^ n * a = a₀} ⟨a₀, 0, by rw [pow_zero, one_mul]⟩
   refine ⟨n, a, ?_, rfl⟩; rintro ⟨d, rfl⟩
-  exact hm d ⟨n + 1, by rw [pow_succ', mul_assoc]⟩
+  exact hm d ⟨n + 1, by rw [pow_succ, mul_assoc]⟩
     ⟨(right_ne_zero_of_mul <| right_ne_zero_of_mul h), x, hx, mul_comm _ _⟩
 
 theorem WfDvdMonoid.max_power_factor [CommMonoidWithZero α] [WfDvdMonoid α] {a₀ x : α}
@@ -163,7 +163,7 @@ theorem WfDvdMonoid.max_power_factor [CommMonoidWithZero α] [WfDvdMonoid α] {a
 theorem multiplicity.finite_of_not_isUnit [CancelCommMonoidWithZero α] [WfDvdMonoid α]
     {a b : α} (ha : ¬IsUnit a) (hb : b ≠ 0) : multiplicity.Finite a b := by
   obtain ⟨n, c, ndvd, rfl⟩ := WfDvdMonoid.max_power_factor' hb ha
-  exact ⟨n, by rwa [pow_succ', mul_dvd_mul_iff_left (left_ne_zero_of_mul hb)]⟩
+  exact ⟨n, by rwa [pow_succ, mul_dvd_mul_iff_left (left_ne_zero_of_mul hb)]⟩
 
 section Prio
 
@@ -307,7 +307,6 @@ theorem prime_factors_irreducible [CancelCommMonoidWithZero α] {a : α} {f : Mu
 section ExistsPrimeFactors
 
 variable [CancelCommMonoidWithZero α]
-
 variable (pf : ∀ a : α, a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a)
 
 theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
@@ -462,7 +461,6 @@ theorem UniqueFactorizationMonoid.of_exists_unique_irreducible_factors [CancelCo
 namespace UniqueFactorizationMonoid
 
 variable [CancelCommMonoidWithZero α]
-
 variable [UniqueFactorizationMonoid α]
 
 open Classical in
@@ -476,10 +474,13 @@ theorem factors_prod {a : α} (ane0 : a ≠ 0) : Associated (factors a).prod a :
   exact (Classical.choose_spec (exists_prime_factors a ane0)).2
 #align unique_factorization_monoid.factors_prod UniqueFactorizationMonoid.factors_prod
 
+@[simp]
+theorem factors_zero : factors (0 : α) = 0 := by simp [factors]
+#align unique_factorization_monoid.factors_zero UniqueFactorizationMonoid.factors_zero
+
 theorem ne_zero_of_mem_factors {p a : α} (h : p ∈ factors a) : a ≠ 0 := by
-  intro ha
-  rw [factors, dif_pos ha] at h
-  exact Multiset.not_mem_zero _ h
+  rintro rfl
+  simp at h
 #align unique_factorization_monoid.ne_zero_of_mem_factors UniqueFactorizationMonoid.ne_zero_of_mem_factors
 
 theorem dvd_of_mem_factors {p a : α} (h : p ∈ factors a) : p ∣ a :=
@@ -495,10 +496,6 @@ theorem prime_of_factor {a : α} (x : α) (hx : x ∈ factors a) : Prime x := by
 theorem irreducible_of_factor {a : α} : ∀ x : α, x ∈ factors a → Irreducible x := fun x h =>
   (prime_of_factor x h).irreducible
 #align unique_factorization_monoid.irreducible_of_factor UniqueFactorizationMonoid.irreducible_of_factor
-
-@[simp]
-theorem factors_zero : factors (0 : α) = 0 := by simp [factors]
-#align unique_factorization_monoid.factors_zero UniqueFactorizationMonoid.factors_zero
 
 @[simp]
 theorem factors_one : factors (1 : α) = 0 := by
@@ -551,7 +548,7 @@ theorem factors_pow {x : α} (n : ℕ) :
   | n+1 =>
     · by_cases h0 : x = 0
       · simp [h0, zero_pow n.succ_ne_zero, smul_zero]
-      · rw [pow_succ, succ_nsmul]
+      · rw [pow_succ', succ_nsmul']
         refine' Multiset.Rel.trans _ (factors_mul h0 (pow_ne_zero n h0)) _
         refine' Multiset.Rel.add _ <| factors_pow n
         exact Multiset.rel_refl_of_refl_on fun y _ => Associated.refl _
@@ -584,7 +581,6 @@ end UniqueFactorizationMonoid
 namespace UniqueFactorizationMonoid
 
 variable [CancelCommMonoidWithZero α] [NormalizationMonoid α]
-
 variable [UniqueFactorizationMonoid α]
 
 /-- Noncomputably determines the multiset of prime factors. -/
@@ -730,7 +726,7 @@ theorem normalizedFactors_pow {x : α} (n : ℕ) :
   · simp
   by_cases h0 : x = 0
   · simp [h0, zero_pow n.succ_ne_zero, smul_zero]
-  rw [pow_succ, succ_nsmul, normalizedFactors_mul h0 (pow_ne_zero _ h0), ih]
+  rw [pow_succ', succ_nsmul', normalizedFactors_mul h0 (pow_ne_zero _ h0), ih]
 #align unique_factorization_monoid.normalized_factors_pow UniqueFactorizationMonoid.normalizedFactors_pow
 
 theorem _root_.Irreducible.normalizedFactors_pow {p : α} (hp : Irreducible p) (k : ℕ) :
@@ -990,7 +986,6 @@ theorem pow_eq_pow_iff {a : R} (ha0 : a ≠ 0) (ha1 : ¬IsUnit a) {i j : ℕ} : 
 section multiplicity
 
 variable [Nontrivial R] [NormalizationMonoid R]
-
 variable [dec_dvd : DecidableRel (Dvd.dvd : R → R → Prop)]
 
 open multiplicity Multiset
@@ -1004,8 +999,8 @@ theorem le_multiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} (
   intro b hb
   constructor
   · rintro ⟨c, rfl⟩
-    rw [Ne.def, pow_succ, mul_assoc, mul_eq_zero, not_or] at hb
-    rw [pow_succ, mul_assoc, normalizedFactors_mul hb.1 hb.2, replicate_succ,
+    rw [Ne.def, pow_succ', mul_assoc, mul_eq_zero, not_or] at hb
+    rw [pow_succ', mul_assoc, normalizedFactors_mul hb.1 hb.2, replicate_succ,
       normalizedFactors_irreducible ha, singleton_add, cons_le_cons_iff, ← ih hb.2]
     apply Dvd.intro _ rfl
   · rw [Multiset.le_iff_exists_add]
@@ -1076,7 +1071,6 @@ end multiplicity
 section Multiplicative
 
 variable [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α]
-
 variable {β : Type*} [CancelCommMonoidWithZero β]
 
 open BigOperators
@@ -1843,7 +1837,7 @@ theorem count_pow [Nontrivial α] [DecidableEq (Associates α)] {a : Associates 
     count p (a ^ k).factors = k * count p a.factors := by
   induction' k with n h
   · rw [pow_zero, factors_one, Nat.zero_eq, zero_mul, count_zero hp]
-  · rw [pow_succ, count_mul ha (pow_ne_zero _ ha) hp, h, Nat.succ_eq_add_one]
+  · rw [pow_succ', count_mul ha (pow_ne_zero _ ha) hp, h, Nat.succ_eq_add_one]
     ring
 #align associates.count_pow Associates.count_pow
 
@@ -2037,7 +2031,6 @@ end UniqueFactorizationMonoid
 section Finsupp
 
 variable [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α]
-
 variable [NormalizationMonoid α] [DecidableEq α]
 
 open UniqueFactorizationMonoid

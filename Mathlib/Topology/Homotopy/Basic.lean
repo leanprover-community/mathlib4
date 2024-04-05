@@ -3,7 +3,7 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Topology.Algebra.Order.ProjIcc
+import Mathlib.Topology.Order.ProjIcc
 import Mathlib.Topology.ContinuousFunction.Ordered
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.UnitInterval
@@ -59,7 +59,6 @@ noncomputable section
 universe u v w x
 
 variable {F : Type*} {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x} {ι : Type*}
-
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace Z']
 
 open unitInterval

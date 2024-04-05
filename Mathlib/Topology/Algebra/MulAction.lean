@@ -74,6 +74,10 @@ section SMul
 variable [SMul M X] [ContinuousSMul M X]
 
 @[to_additive]
+instance : ContinuousSMul (ULift M) X :=
+  ⟨(continuous_smul (M := M)).comp₂ (continuous_uLift_down.comp continuous_fst) continuous_snd⟩
+
+@[to_additive]
 instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstSMul M X where
   continuous_const_smul _ := continuous_smul.comp (continuous_const.prod_mk continuous_id)
 #align has_continuous_smul.has_continuous_const_smul ContinuousSMul.continuousConstSMul
@@ -272,7 +276,6 @@ end LatticeOps
 section AddTorsor
 
 variable (G : Type*) (P : Type*) [AddGroup G] [AddTorsor G P] [TopologicalSpace G]
-
 variable [PreconnectedSpace G] [TopologicalSpace P] [ContinuousVAdd G P]
 
 /-- An `AddTorsor` for a connected space is a connected space. This is not an instance because

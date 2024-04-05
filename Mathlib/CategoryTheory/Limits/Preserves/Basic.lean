@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Limits.HasLimits
 # Preservation and reflection of (co)limits.
 
 There are various distinct notions of "preserving limits". The one we
-aim to capture here is: A functor F : C → D "preserves limits" if it
+aim to capture here is: A functor F : C ⥤ D "preserves limits" if it
 sends every limit cone in C to a limit cone in D. Informally, F
 preserves all the limits which exist in C.
 
@@ -45,9 +45,7 @@ namespace CategoryTheory.Limits
 universe w' w₂' w w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable {J : Type w} [Category.{w'} J] {K : J ⥤ C}
 
 /-- A functor `F` preserves limits of `K` (written as `PreservesLimit K F`)
@@ -186,10 +184,16 @@ instance idPreservesColimits : PreservesColimitsOfSize.{w', w} (𝟭 C) where
               exact h.uniq _ m w⟩⟩ }
 #align category_theory.limits.id_preserves_colimits CategoryTheory.Limits.idPreservesColimits
 
+instance [HasLimit K] {F : C ⥤ D} [PreservesLimit K F] : HasLimit (K ⋙ F) where
+  exists_limit := ⟨⟨F.mapCone (limit.cone K), PreservesLimit.preserves (limit.isLimit K)⟩⟩
+
+instance [HasColimit K] {F : C ⥤ D} [PreservesColimit K F] : HasColimit (K ⋙ F) where
+  exists_colimit :=
+    ⟨⟨F.mapCocone (colimit.cocone K), PreservesColimit.preserves (colimit.isColimit K)⟩⟩
+
 section
 
 variable {E : Type u₃} [ℰ : Category.{v₃} E]
-
 variable (F : C ⥤ D) (G : D ⥤ E)
 
 -- Porting note: made this global by removing local
@@ -533,7 +537,6 @@ instance idReflectsColimits : ReflectsColimitsOfSize.{w, w'} (𝟭 C) where
 section
 
 variable {E : Type u₃} [ℰ : Category.{v₃} E]
-
 variable (F : C ⥤ D) (G : D ⥤ E)
 
 instance compReflectsLimit [ReflectsLimit K F] [ReflectsLimit (K ⋙ F) G] :

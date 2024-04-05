@@ -25,7 +25,6 @@ open CategoryTheory
 universe u v
 
 variable {X : Type u} {Y : Type v} [TopologicalSpace X] [TopologicalSpace Y]
-
 variable {x₀ x₁ : X}
 
 noncomputable section
@@ -218,7 +217,7 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
         (Subtype.ext transAssocReparamAux_zero) (Subtype.ext transAssocReparamAux_one) := by
   ext x
   simp only [transAssocReparamAux, Path.trans_apply, mul_inv_cancel_left₀, not_le,
-    Function.comp_apply, Ne.def, not_false_iff, bit0_eq_zero, one_ne_zero, mul_ite, Subtype.coe_mk,
+    Function.comp_apply, Ne, not_false_iff, bit0_eq_zero, one_ne_zero, mul_ite, Subtype.coe_mk,
     Path.coe_reparam]
   -- TODO: why does split_ifs not reduce the ifs??????
   split_ifs with h₁ h₂ h₃ h₄ h₅

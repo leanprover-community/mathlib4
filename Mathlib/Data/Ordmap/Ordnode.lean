@@ -138,13 +138,15 @@ def size : Ordnode α → ℕ
   | node sz _ _ _ => sz
 #align ordnode.size Ordnode.size
 
-theorem size_nil : size (nil : Ordnode α) = 0 :=
-  rfl
-theorem size_node (sz : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) : size (node sz l x r) = sz :=
-  rfl
+-- Adaptation note:
+-- During the port we marked these lemmas with `@[eqns]` to emulate the old Lean 3 behaviour.
+-- See https://github.com/leanprover-community/mathlib4/issues/11647
 
-attribute [eqns size_nil size_node] size
-attribute [simp] size
+@[simp] theorem size_nil : size (nil : Ordnode α) = 0 :=
+  rfl
+@[simp] theorem size_node (sz : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) :
+    size (node sz l x r) = sz :=
+  rfl
 
 /-- O(1). Is the set empty?
 

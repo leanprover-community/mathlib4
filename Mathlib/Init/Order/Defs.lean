@@ -8,6 +8,7 @@ import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.TypeStar
+import Std.Classes.Order
 
 #align_import init.algebra.order from "leanprover-community/lean"@"c2bcdbcbe741ed37c361a30d38e179182b989f76"
 
@@ -44,6 +45,11 @@ variable [Preorder α]
 theorem le_refl : ∀ a : α, a ≤ a :=
   Preorder.le_refl
 #align le_refl le_refl
+
+/-- A version of `le_refl` where the argument is implicit -/
+theorem le_rfl {a : α} : a ≤ a :=
+  le_refl a
+#align le_rfl le_rfl
 
 /-- The relation `≤` on a preorder is transitive. -/
 @[trans]
@@ -129,7 +135,7 @@ theorem gt_of_ge_of_gt {a b c : α} (h₁ : a ≥ b) (h₂ : b > c) : a > c :=
   lt_of_lt_of_le h₂ h₁
 #align gt_of_ge_of_gt gt_of_ge_of_gt
 
--- Porting note: new
+-- Porting note (#10754): new instance
 instance (priority := 900) : @Trans α α α LE.le LE.le LE.le := ⟨le_trans⟩
 instance (priority := 900) : @Trans α α α LT.lt LT.lt LT.lt := ⟨lt_trans⟩
 instance (priority := 900) : @Trans α α α LT.lt LE.le LT.lt := ⟨lt_of_lt_of_le⟩

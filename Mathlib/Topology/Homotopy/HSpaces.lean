@@ -71,7 +71,7 @@ class HSpace (X : Type u) [TopologicalSpace X] where
     (hmul.comp <| (ContinuousMap.id X).prodMk <| const X e).HomotopyRel (ContinuousMap.id X) {e}
 #align H_space HSpace
 
--- We use the notation `⋀`, typeset as \And, to denote the binary operation `hmul` on an H-space
+/-- The binary operation `hmul` on an `H`-space -/
 scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
 
 -- Porting note: opening `HSpaces` so that the above notation works
@@ -208,7 +208,7 @@ theorem qRight_one_right (t : I) : qRight (t, 1) = t :=
         rw [qRight]
         congr
         norm_num
-        apply mul_div_cancel_left
+        apply mul_div_cancel_left₀
         exact two_ne_zero) <|
     Set.projIcc_val zero_le_one _
 #align unit_interval.Q_right_one_right unitInterval.qRight_one_right
