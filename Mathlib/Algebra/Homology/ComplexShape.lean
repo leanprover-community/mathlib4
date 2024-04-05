@@ -97,9 +97,7 @@ def symm (c : ComplexShape ι) : ComplexShape ι where
 #align complex_shape.symm_rel ComplexShape.symm_Rel
 
 @[simp]
-theorem symm_symm (c : ComplexShape ι) : c.symm.symm = c := by
-  ext
-  simp
+theorem symm_symm (c : ComplexShape ι) : c.symm.symm = c := rfl
 #align complex_shape.symm_symm ComplexShape.symm_symm
 
 theorem symm_bijective :

@@ -184,6 +184,24 @@ lemma opcycles_right_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.E
         d_pOpcycles_assoc, zero_comp]
     · rw [← cancel_epi (S.X₂.pOpcycles i), opcyclesMap_comp_descOpcycles, p_descOpcycles, H.2])
 
+section
+
+variable {K L : HomologicalComplex C c} (φ : K ⟶ L) [Epi φ] (i : ι)
+
+attribute [local instance] epi_comp
+
+instance : Epi (opcyclesMap φ i) :=
+  epi_of_epi_fac (p_opcyclesMap φ i)
+
+lemma epi_homologyMap_of_epi_of_not_rel (hi : ∀ j, ¬ c.Rel i j) :
+    Epi (homologyMap φ i) := by
+  let e : ∀ (M : HomologicalComplex C c), M.homology i ≅ M.opcycles i := fun M =>
+    (M.isoHomologyι i _ rfl (shape _ _ _ (by tauto)))
+  exact ((MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff
+    (Arrow.isoMk (e _) (e _))).2 (inferInstance : Epi (opcyclesMap φ i))
+
+end
+
 /-- If `0 ⟶ X₁ ⟶ X₂ ⟶ X₃` is an exact sequence of homological complex, then
 `0 ⟶ X₁.cycles i ⟶ X₂.cycles i ⟶ X₃.cycles i` is exact. This lemma states
 the exactness at `X₂.cycles i`, while the fact that `X₁.cycles i ⟶ X₂.cycles i`

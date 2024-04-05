@@ -104,6 +104,9 @@ lemma isZero_extend_X (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
     · exfalso
       exact hi' _ (e.f_eq_of_r_eq_some hi))
 
+instance : (K.extend e).IsStrictlySupported e where
+  isZero i' hi' := K.isZero_extend_X e i' hi'
+
 lemma extend_d_eq {i' j' : ι'} {i j : ι} (hi : e.f i = i') (hj : e.f j = j') :
     (K.extend e).d i' j' = (K.extendXIso e hi).hom ≫ K.d i j ≫
       (K.extendXIso e hj).inv := by

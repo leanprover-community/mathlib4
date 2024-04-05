@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
+import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-! # Embeddings of complex shapes
 
@@ -387,8 +387,30 @@ lemma isZero_X_of_isStrictlySupported [K.IsStrictlySupported e]
     IsZero (K.X i') :=
   IsStrictlySupported.isZero i' hi'
 
+class IsSupported : Prop where
+  exactAt (i' : ι') (hi' : ∀ i, e.f i ≠ i') : K.ExactAt i'
+
+lemma exactAt_of_isSupported [K.IsSupported e] (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
+    K.ExactAt i' :=
+  IsSupported.exactAt i' hi'
+
+instance [K.IsStrictlySupported e] : K.IsSupported e where
+  exactAt i' hi' := by
+    rw [exactAt_iff]
+    exact ShortComplex.exact_of_isZero_X₂ _ (K.isZero_X_of_isStrictlySupported e i' hi')
+
 structure IsStrictlySupportedOutside : Prop where
   isZero (i : ι) : IsZero (K.X (e.f i))
+
+structure IsSupportedOutside : Prop where
+  exactAt (i : ι) : K.ExactAt (e.f i)
+
+variable {K e} in
+lemma IsStrictlySupportedOutside.isSupportedOutside (h : K.IsStrictlySupportedOutside e) :
+    K.IsSupportedOutside e where
+  exactAt i := by
+    rw [exactAt_iff]
+    exact ShortComplex.exact_of_isZero_X₂ _ (h.isZero i)
 
 end HomologicalComplex
 

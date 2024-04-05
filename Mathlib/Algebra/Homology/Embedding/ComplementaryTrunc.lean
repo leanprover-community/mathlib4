@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.Embedding.Basic
+import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 
 lemma Int.exists_eq_add_nat_of_le (a b : ℤ) (hab : a ≤ b) :
     ∃ (k : ℕ), b = a + k := by
@@ -8,11 +8,12 @@ lemma Int.exists_eq_add_nat_of_le (a b : ℤ) (hab : a ≤ b) :
 open CategoryTheory Limits
 
 variable {ι ι₁ ι₂ : Type*} {c : ComplexShape ι} {c₁ : ComplexShape ι₁} {c₂ : ComplexShape ι₂}
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
 
 namespace ComplexShape
 
 namespace Embedding
+
+variable {C : Type*} [Category C] [HasZeroMorphisms C]
 
 variable (e₁ : Embedding c₁ c) (e₂ : Embedding c₂ c)
 
@@ -57,6 +58,21 @@ lemma isStrictlySupportedOutside₁_iff :
 lemma isStrictlySupportedOutside₂_iff :
     K.IsStrictlySupportedOutside e₂ ↔ K.IsStrictlySupported e₁ :=
   ac.symm.isStrictlySupportedOutside₁_iff K
+
+lemma isSupportedOutside₁_iff :
+    K.IsSupportedOutside e₁ ↔ K.IsSupported e₂ := by
+  constructor
+  · intro h
+    exact ⟨fun i hi => by
+      obtain ⟨i₁, rfl⟩ := ac.exists_i₁ i hi
+      exact h.exactAt i₁⟩
+  · intro _
+    exact ⟨fun i₁ => K.exactAt_of_isSupported e₂ _
+      (fun i₂ => (ac.disjoint i₁ i₂).symm)⟩
+
+lemma isSupportedOutside₂_iff :
+    K.IsSupportedOutside e₂ ↔ K.IsSupported e₁ :=
+  ac.symm.isSupportedOutside₁_iff K
 
 variable {K L}
 
@@ -163,3 +179,33 @@ lemma embeddingUpInt_areComplementary (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
 end Embedding
 
 end ComplexShape
+
+namespace HomologicalComplex
+
+variable {C : Type*} [Category C] [Abelian C]
+
+variable (K : HomologicalComplex C c) {e₁ : c₁.Embedding c} {e₂ : c₂.Embedding c}
+  [e₁.IsTruncLE] [e₂.IsTruncGE] (ac : e₁.AreComplementary e₂)
+
+noncomputable def shortComplexTruncLEX₃ToTruncGE :
+    (K.shortComplexTruncLE e₁).X₃ ⟶ K.truncGE e₂ :=
+  cokernel.desc _ (K.πTruncGE e₂) (ac.hom_ext _)
+
+@[reassoc (attr := simp)]
+lemma g_shortComplexTruncLEX₃ToTruncGE :
+    (K.shortComplexTruncLE e₁).g ≫ K.shortComplexTruncLEX₃ToTruncGE ac = K.πTruncGE e₂ :=
+  cokernel.π_desc _ _ _
+
+instance : QuasiIso (K.shortComplexTruncLEX₃ToTruncGE ac) where
+  quasiIsoAt i := by
+    obtain ⟨i₁, rfl⟩ | ⟨i₂, rfl⟩ := ac.union i
+    · have h₁ := ((ac.isSupportedOutside₁_iff (K.truncGE e₂)).2 inferInstance).exactAt i₁
+      have h₂ := (K.shortComplexTruncLE_X₃_isSupportedOutside e₁).exactAt i₁
+      simpa only [quasiIsoAt_iff_exactAt _ _ h₂] using h₁
+    · have := quasiIsoAt_shortComplexTruncLE_g K e₁ (e₂.f i₂) (fun _ => ac.disjoint _ _)
+      rw [← quasiIsoAt_iff_comp_left (K.shortComplexTruncLE e₁).g
+        (K.shortComplexTruncLEX₃ToTruncGE ac), g_shortComplexTruncLEX₃ToTruncGE]
+      dsimp
+      infer_instance
+
+end HomologicalComplex

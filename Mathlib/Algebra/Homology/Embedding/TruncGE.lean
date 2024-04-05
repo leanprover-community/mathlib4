@@ -20,8 +20,9 @@ end CategoryTheory.Limits.IsZero
 
 namespace HomologicalComplex
 
-variable (K : HomologicalComplex C c') (e : c.Embedding c') [e.IsTruncGE]
-  [∀ i', K.HasHomology i']
+variable (K L M : HomologicalComplex C c') (φ : K ⟶ L) (φ' : L ⟶ M)
+  (e : c.Embedding c') [e.IsTruncGE]
+  [∀ i', K.HasHomology i'] [∀ i', L.HasHomology i'] [∀ i', M.HasHomology i']
 
 namespace truncGE'
 
@@ -95,6 +96,71 @@ lemma truncGE'_d_eq_fromOpcycles {i j : ι} (hij : c.Rel i j) {i' j' : ι'}
 
 noncomputable def truncGE : HomologicalComplex C c' := (K.truncGE' e).extend e
 
+section
+
+variable {K L M}
+
+open Classical in
+noncomputable def truncGE'Map : K.truncGE' e ⟶ L.truncGE' e where
+  f i :=
+    if hi : e.BoundaryGE i
+    then
+      (K.truncGE'XIsoOpcycles e rfl hi).hom ≫ opcyclesMap φ (e.f i) ≫
+        (L.truncGE'XIsoOpcycles e rfl hi).inv
+    else
+      (K.truncGE'XIso e rfl hi).hom ≫ φ.f (e.f i) ≫ (L.truncGE'XIso e rfl hi).inv
+  comm' i j hij := by
+    dsimp
+    rw [dif_neg (e.not_mem_next_boundaryGE hij)]
+    by_cases hi : e.BoundaryGE i
+    · rw [dif_pos hi]
+      simp [truncGE'_d_eq_fromOpcycles _ e hij rfl rfl hi,
+        ← cancel_epi (K.pOpcycles (e.f i))]
+    · rw [dif_neg hi]
+      simp [truncGE'_d_eq _ e hij rfl rfl hi]
+
+lemma truncGE'Map_f_eq_opcyclesMap {i : ι} (hi : e.BoundaryGE i) {i' : ι'} (h : e.f i = i') :
+    (truncGE'Map φ e).f i =
+      (K.truncGE'XIsoOpcycles e h hi).hom ≫ opcyclesMap φ i' ≫
+        (L.truncGE'XIsoOpcycles e h hi).inv := by
+  subst h
+  exact dif_pos hi
+
+lemma truncGE'Map_f_eq {i : ι} (hi : ¬ e.BoundaryGE i) {i' : ι'} (h : e.f i = i') :
+    (truncGE'Map φ e).f i =
+      (K.truncGE'XIso e h hi).hom ≫ φ.f i' ≫ (L.truncGE'XIso e h hi).inv := by
+  subst h
+  exact dif_neg hi
+
+variable (K) in
+@[simp]
+lemma truncGE'Map_id : truncGE'Map (𝟙 K) e = 𝟙 _ := by
+  ext i
+  by_cases hi : e.BoundaryGE i
+  · simp [truncGE'Map_f_eq_opcyclesMap _ _ hi rfl]
+  · simp [truncGE'Map_f_eq _ _ hi rfl]
+
+@[reassoc, simp]
+lemma truncGE'Map_comp : truncGE'Map (φ ≫ φ') e = truncGE'Map φ e ≫ truncGE'Map φ' e := by
+  ext i
+  by_cases hi : e.BoundaryGE i
+  · simp [truncGE'Map_f_eq_opcyclesMap _ _ hi rfl, opcyclesMap_comp]
+  · simp [truncGE'Map_f_eq _ _ hi rfl]
+
+noncomputable def truncGEMap : K.truncGE e ⟶ L.truncGE e :=
+  (e.extendFunctor C).map (truncGE'Map φ e)
+
+variable (K) in
+@[simp]
+lemma truncGEMap_id : truncGEMap (𝟙 K) e = 𝟙 _ := by
+  simp [truncGEMap, truncGE]
+
+@[reassoc, simp]
+lemma truncGEMap_comp : truncGEMap (φ ≫ φ') e = truncGEMap φ e ≫ truncGEMap φ' e := by
+  simp [truncGEMap, truncGE]
+
+end
+
 namespace restrictionToTruncGE'
 
 open Classical in
@@ -160,6 +226,19 @@ lemma isIso_restrictionToTruncGE' (i : ι) (hi : ¬ e.BoundaryGE i) :
   rw [K.restrictionToTruncGE'_f_eq_iso_inv e rfl hi]
   infer_instance
 
+variable {K L} in
+@[reassoc (attr := simp)]
+lemma restrictionToTruncGE'_naturality :
+    K.restrictionToTruncGE' e ≫ truncGE'Map φ e =
+      restrictionMap φ e ≫ L.restrictionToTruncGE' e := by
+  ext i
+  dsimp
+  by_cases hi : e.BoundaryGE i
+  · simp [restrictionToTruncGE'_f_eq_pOpcycles_iso_inv _ e rfl hi,
+      truncGE'Map_f_eq_opcyclesMap φ e hi rfl, restrictionXIso]
+  · simp [restrictionToTruncGE'_f_eq_iso_inv _ e rfl hi,
+      truncGE'Map_f_eq φ e hi rfl, restrictionXIso]
+
 attribute [local instance] epi_comp
 
 instance (i : ι) : Epi ((K.restrictionToTruncGE' e).f i) := by
@@ -180,4 +259,48 @@ instance (i' : ι') : Epi ((K.πTruncGE e).f i') := by
     infer_instance
   · apply (isZero_extend_X _ _ _ (by simpa using hi')).epi
 
+instance : Epi (K.πTruncGE e) := epi_of_epi_f _ (fun _ => inferInstance)
+
+instance : (K.truncGE e).IsStrictlySupported e := by
+  dsimp [truncGE]
+  infer_instance
+
+variable {K L} in
+@[reassoc (attr := simp)]
+lemma πTruncGE_naturality :
+    K.πTruncGE e ≫ truncGEMap φ e = φ ≫ L.πTruncGE e := by
+  apply (e.homEquiv _ _).injective
+  ext1
+  dsimp [truncGEMap, πTruncGE]
+  rw [e.homRestrict_comp_extend, e.homRestrict_liftExtend, e.homRestrict_precomp,
+    e.homRestrict_liftExtend, restrictionToTruncGE'_naturality]
+
 end HomologicalComplex
+
+namespace ComplexShape.Embedding
+
+variable (e : Embedding c c') [e.IsTruncGE]
+    (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C] [CategoryWithHomology C]
+
+@[simps]
+noncomputable def truncGE'Functor :
+    HomologicalComplex C c' ⥤ HomologicalComplex C c where
+  obj K := K.truncGE' e
+  map φ := HomologicalComplex.truncGE'Map φ e
+
+@[simps]
+noncomputable def restrictionToTruncGE'NatTrans :
+    e.restrictionFunctor C ⟶ e.truncGE'Functor C where
+  app K := K.restrictionToTruncGE' e
+
+@[simps]
+noncomputable def truncGEFunctor :
+    HomologicalComplex C c' ⥤ HomologicalComplex C c' where
+  obj K := K.truncGE e
+  map φ := HomologicalComplex.truncGEMap φ e
+
+@[simps]
+noncomputable def πTruncGENatTrans : 𝟭 _ ⟶ e.truncGEFunctor C where
+  app K := K.πTruncGE e
+
+end ComplexShape.Embedding

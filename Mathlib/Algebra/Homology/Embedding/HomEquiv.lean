@@ -14,7 +14,7 @@ namespace Embedding
 
 open HomologicalComplex
 
-variable {K : HomologicalComplex C c'} {L : HomologicalComplex C c}
+variable {K K' : HomologicalComplex C c'} {L L' : HomologicalComplex C c}
   [e.IsRelIff]
 
 section
@@ -87,7 +87,7 @@ lemma liftExtend_f :
       (L.extendXIso e hi).inv := by
   apply liftExtend.f_eq
 
-lemma liftExtendfArrowIso :
+noncomputable def liftExtendfArrowIso :
     Arrow.mk ((e.liftExtend φ hφ).f i') ≅ Arrow.mk (φ.f i) :=
   Arrow.isoMk (K.restrictionXIso e hi).symm (L.extendXIso e hi)
     (by simp [e.liftExtend_f φ hφ hi])
@@ -158,8 +158,22 @@ lemma homRestrict_liftExtend (φ : K.restriction e ⟶ L) (hφ : e.HasLift φ) :
   ext i
   simp [e.homRestrict_f _ rfl, e.liftExtend_f _ _ rfl]
 
+@[reassoc]
+lemma homRestrict_precomp (α : K' ⟶ K) (ψ : K ⟶ L.extend e) :
+    e.homRestrict (α ≫ ψ) = restrictionMap α e ≫ e.homRestrict ψ := by
+  ext i
+  simp [homRestrict_f _ _ rfl, restrictionXIso]
+
+@[reassoc]
+lemma homRestrict_comp_extend (ψ : K ⟶ L.extend e) (β : L ⟶ L') :
+    e.homRestrict (ψ ≫ extendMap β e) =
+      e.homRestrict ψ ≫ β := by
+  ext i
+  simp [homRestrict_f _ _ rfl, extendMap_f β e rfl]
+
 variable (K L)
 
+@[simps]
 noncomputable def homEquiv :
     (K ⟶ L.extend e) ≃ { φ : K.restriction e ⟶ L // e.HasLift φ } where
   toFun ψ := ⟨e.homRestrict ψ, e.homRestrict_hasLift ψ⟩
