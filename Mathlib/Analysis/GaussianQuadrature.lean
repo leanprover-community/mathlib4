@@ -69,7 +69,7 @@ set_option linter.unusedVariables false
 /-- polynomials with a structure of inner product space
 -/
 @[inline, reducible]
-abbrev MySpace (s: IntervalWithMeasure) := WithLp 2 ℝ[X]
+abbrev PolyL2 (s: IntervalWithMeasure) := WithLp 2 ℝ[X]
 
 set_option linter.unusedVariables true
 
@@ -83,36 +83,36 @@ instance : NoAtoms s.μ where
     apply s.hna.measure_singleton
 
 
-instance MySpace.instInner : Inner ℝ (MySpace s) where
+instance PolyL2.instInner : Inner ℝ (PolyL2 s) where
   inner := s.dot
 
 
-instance MySpace.inst_HMul_poly : HMul ℝ[X] (MySpace s) (MySpace s) := by
-    simp_rw [MySpace]
+instance PolyL2.inst_HMul_poly : HMul ℝ[X] (PolyL2 s) (PolyL2 s) := by
+    simp_rw [PolyL2]
     simp_rw [WithLp]
     infer_instance
 
 
-instance MySpace.inst_HMul_poly' : HMul (MySpace s) ℝ[X] (MySpace s) := by
-    simp_rw [MySpace]
+instance PolyL2.inst_HMul_poly' : HMul (PolyL2 s) ℝ[X] (PolyL2 s) := by
+    simp_rw [PolyL2]
     simp_rw [WithLp]
     infer_instance
 
 
-instance MySpace.instDecidableEq : DecidableEq (MySpace s) := by
-  simp_rw [MySpace]
+instance PolyL2.instDecidableEq : DecidableEq (PolyL2 s) := by
+  simp_rw [PolyL2]
   simp_rw [WithLp]
   infer_instance
 
 
-theorem MySpace.inner_def (x y : MySpace s) : ⟪x, y⟫_ℝ = s.dot x y :=
+theorem PolyL2.inner_def (x y : PolyL2 s) : ⟪x, y⟫_ℝ = s.dot x y :=
   rfl
 
 
 /-- a nonzero polynomial that is nonnegative on an open interval,
 has positive integral in that interval
 -/
-theorem MySpace.integral_pos_of_pos {p : MySpace s} (hne0 : p ≠ 0)
+theorem PolyL2.integral_pos_of_pos {p : PolyL2 s} (hne0 : p ≠ 0)
     (hpos : ∀ x : ℝ, x ∈ Ioo s.a s.b → p.eval x ≥ 0) :
     0 < ∫ (x : ℝ) in s.a..s.b, p.eval x ∂s.μ := by
 
@@ -179,9 +179,9 @@ theorem MySpace.integral_pos_of_pos {p : MySpace s} (hne0 : p ≠ 0)
   exact hsp
 
 
-/-- InnerProductSpaceCore for MySpace
+/-- InnerProductSpaceCore for PolyL2
 -/
-def MySpace.InnerProductSpaceCore : InnerProductSpace.Core ℝ (MySpace s) where
+def PolyL2.InnerProductSpaceCore : InnerProductSpace.Core ℝ (PolyL2 s) where
   conj_symm := by
     intro p q
     simp only [conj_trivial, inner_def, IntervalWithMeasure.dot]
@@ -193,7 +193,7 @@ def MySpace.InnerProductSpaceCore : InnerProductSpace.Core ℝ (MySpace s) where
     rw [mul_comm (q.eval _) (p.eval _)]
   nonneg_re := by
     intro p
-    simp only [IsROrC.re_to_real, MySpace.inner_def, IntervalWithMeasure.dot]
+    simp only [IsROrC.re_to_real, PolyL2.inner_def, IntervalWithMeasure.dot]
     apply intervalIntegral.integral_nonneg (le_of_lt s.hab)
     intro x
     intro _
@@ -202,7 +202,7 @@ def MySpace.InnerProductSpaceCore : InnerProductSpace.Core ℝ (MySpace s) where
     exact sq_nonneg (p.eval x)
   definite := by
     intro p
-    simp only [IsROrC.re_to_real, MySpace.inner_def, IntervalWithMeasure.dot]
+    simp only [IsROrC.re_to_real, PolyL2.inner_def, IntervalWithMeasure.dot]
     intro hi0
 
     by_contra hpn0
@@ -213,7 +213,7 @@ def MySpace.InnerProductSpaceCore : InnerProductSpace.Core ℝ (MySpace s) where
 
     apply Eq.not_gt hi0
 
-    apply MySpace.integral_pos_of_pos hp2n0
+    apply PolyL2.integral_pos_of_pos hp2n0
     intro x _
     rw [eval_mul]
     rw [← sq (p.eval x)]
@@ -221,7 +221,7 @@ def MySpace.InnerProductSpaceCore : InnerProductSpace.Core ℝ (MySpace s) where
 
   add_left := by
     intro p q r
-    simp only [IsROrC.re_to_real, MySpace.inner_def, IntervalWithMeasure.dot]
+    simp only [IsROrC.re_to_real, PolyL2.inner_def, IntervalWithMeasure.dot]
     rw [← intervalIntegral.integral_add]
     apply intervalIntegral.integral_congr
     unfold EqOn
@@ -236,30 +236,30 @@ def MySpace.InnerProductSpaceCore : InnerProductSpace.Core ℝ (MySpace s) where
   smul_left := by
     intro p q
     intro α
-    simp only [IsROrC.re_to_real, MySpace.inner_def, IntervalWithMeasure.dot, conj_trivial]
+    simp only [IsROrC.re_to_real, PolyL2.inner_def, IntervalWithMeasure.dot, conj_trivial]
     rw [← intervalIntegral.integral_const_mul]
     apply intervalIntegral.integral_congr
     unfold EqOn
     simp only [Algebra.smul_mul_assoc, eval_smul, eval_mul, smul_eq_mul, implies_true, forall_const]
 
 
-instance MySpace.instNormedAddCommGroup : NormedAddCommGroup (MySpace s) :=
-  MySpace.InnerProductSpaceCore.toNormedAddCommGroup
+instance PolyL2.instNormedAddCommGroup : NormedAddCommGroup (PolyL2 s) :=
+  PolyL2.InnerProductSpaceCore.toNormedAddCommGroup
 
 
-instance MySpace.instInnerProductSpace : InnerProductSpace ℝ (MySpace s) :=
-  InnerProductSpace.ofCore MySpace.InnerProductSpaceCore
+instance PolyL2.instInnerProductSpace : InnerProductSpace ℝ (PolyL2 s) :=
+  InnerProductSpace.ofCore PolyL2.InnerProductSpaceCore
 
 
 /-- powers of X -/
-def pows : ℕ → MySpace s := by
+def pows : ℕ → PolyL2 s := by
   intro k
   exact X^k
 
 
 /-- orthogonal polynomials on an interval with respect to a specified measure
 -/
-def OrthoPoly(s: IntervalWithMeasure) : ℕ → MySpace s := gramSchmidt ℝ pows
+def OrthoPoly(s: IntervalWithMeasure) : ℕ → PolyL2 s := gramSchmidt ℝ pows
 
 
 /-- orthogonal polynomials are orthogonal
@@ -283,12 +283,12 @@ theorem OrthoPoly_span (s) (n : ℕ) :
   simp only [coe_range, coe_image]
 
 
-theorem OrthoPoly_orthogonal_low_deg {n : ℕ} {p : MySpace s} (hdegp : degree p ≤ n) :
+theorem OrthoPoly_orthogonal_low_deg {n : ℕ} {p : PolyL2 s} (hdegp : degree p ≤ n) :
     ⟪OrthoPoly s (n + 1), p⟫_ℝ = 0 := by
   have h := mem_degreeLE.mpr hdegp
   rw [← OrthoPoly_span] at h
-  have : ∀ ⦃u : MySpace s⦄, u ∈ (OrthoPoly s) '' (Finset.range (n+1)) →
-         ∀ ⦃v : MySpace s⦄, v ∈ {(OrthoPoly s (n+1))} →
+  have : ∀ ⦃u : PolyL2 s⦄, u ∈ (OrthoPoly s) '' (Finset.range (n+1)) →
+         ∀ ⦃v : PolyL2 s⦄, v ∈ {(OrthoPoly s (n+1))} →
          ⟪u, v⟫_ℝ = 0 := by
     intro u hu
     intro v hv
@@ -352,7 +352,7 @@ theorem natbot_le_sub_one_of_lt {a : WithBot ℕ} {b : ℕ} (hle : a < ↑b) : a
     apply Nat.le_pred_of_lt this
 
 
-theorem OrthoPoly_orthogonal_low_deg' {n : ℕ} {p : MySpace s} (hdegp : degree p < n) :
+theorem OrthoPoly_orthogonal_low_deg' {n : ℕ} {p : PolyL2 s} (hdegp : degree p < n) :
     ⟪OrthoPoly s n, p⟫_ℝ = 0 := by
   cases n with
   | zero =>
@@ -421,7 +421,7 @@ theorem OrthoPoly_natdeg (n : ℕ) : natDegree (OrthoPoly s n) = n := by
   rw [← this]
 
 
-theorem IntervalWithMeasure.xp_dot_q_eq_p_dot_xq (p q : MySpace s) :
+theorem IntervalWithMeasure.xp_dot_q_eq_p_dot_xq (p q : PolyL2 s) :
     ⟪X * p, q⟫_ℝ = ⟪p, X * q⟫_ℝ := by
   apply intervalIntegral.integral_congr
   intro x _
@@ -493,7 +493,7 @@ theorem OrthoPoly_three_term_recurrence (n : ℕ) : ∃ a b c : ℝ, OrthoPoly s
       have hq : natDegree (OrthoPoly s a1) = natDegree (OrthoPoly s a2) := hp
       rw [OrthoPoly_natdeg a1, OrthoPoly_natdeg a2] at hq
       exact hq
-    have injective_sum (f : ℕ → MySpace s)(g : MySpace s → MySpace s)
+    have injective_sum (f : ℕ → PolyL2 s)(g : PolyL2 s → PolyL2 s)
         (A : Finset ℕ)(hp: Fintype (f '' A))(hf : f.Injective) :
       ∑ j in Set.toFinset (f '' A), g j = ∑ i in A, g (f i) := by
       simp only [toFinset_image, Finset.toFinset_coe]
@@ -513,7 +513,7 @@ theorem OrthoPoly_three_term_recurrence (n : ℕ) : ∃ a b c : ℝ, OrthoPoly s
   have p_1 : ∀ j ∈ Finset.range n , ⟪p, (OrthoPoly s j)⟫_ℝ = 0 := by
     rw [this]
     intro i hilessn
-    rw [MySpace.InnerProductSpaceCore.add_left (OrthoPoly s (n + 2))
+    rw [PolyL2.InnerProductSpaceCore.add_left (OrthoPoly s (n + 2))
       ((C (-a) * X) * OrthoPoly s (n + 1)) (OrthoPoly s i),
       OrthoPoly_orthogonal (Nat.ne_of_gt (Nat.le.step (Nat.le.step (List.mem_range.mp hilessn))))]
     have : -a • (X * OrthoPoly s (n + 1)) = C (-a) * X * OrthoPoly s (n + 1) := by
@@ -526,7 +526,7 @@ theorem OrthoPoly_three_term_recurrence (n : ℕ) : ∃ a b c : ℝ, OrthoPoly s
       exact Finset.mem_range.mp hilessn
     have : ⟪C (-a) * X * OrthoPoly s (n + 1), OrthoPoly s i⟫_ℝ = 0 := by
       rw [← this,
-        MySpace.InnerProductSpaceCore.smul_left (X * OrthoPoly s (n + 1)) (OrthoPoly s i) (-a)]
+        PolyL2.InnerProductSpaceCore.smul_left (X * OrthoPoly s (n + 1)) (OrthoPoly s i) (-a)]
       have : degree (X * OrthoPoly s i) ≤ n := by
         rw [congrArg degree (mul_comm X (OrthoPoly s i)), Polynomial.degree_mul_X]
         exact Nat.WithBot.add_one_le_of_lt ht
@@ -547,14 +547,14 @@ theorem OrthoPoly_three_term_recurrence (n : ℕ) : ∃ a b c : ℝ, OrthoPoly s
     intro j hp
     have : ∀ i ∈ Finset.range (n+2), i ≠ j → ⟪coef i • OrthoPoly s i, OrthoPoly s j⟫_ℝ = 0 := by
       intro i _ inotj
-      rw [MySpace.InnerProductSpaceCore.smul_left]
+      rw [PolyL2.InnerProductSpaceCore.smul_left]
       exact mul_eq_zero_of_right ((starRingEnd ℝ) (coef i)) (OrthoPoly_orthogonal inotj)
     have hh : ⟪coef j • OrthoPoly s j, OrthoPoly s j⟫_ℝ = 0 := by
       rw [← (sum_eq_single_of_mem j
         (Finset.mem_range.mpr (Nat.le.step (Nat.le.step (List.mem_range.mp hp)))) this)]
       exact (p_2 j hp)
-    rw [MySpace.InnerProductSpaceCore.smul_left, mul_eq_zero, or_iff_not_imp_right] at hh
-    exact hh ((fun a a_1 ↦ a ((MySpace.InnerProductSpaceCore.definite (OrthoPoly s j)) a_1))
+    rw [PolyL2.InnerProductSpaceCore.smul_left, mul_eq_zero, or_iff_not_imp_right] at hh
+    exact hh ((fun a a_1 ↦ a ((PolyL2.InnerProductSpaceCore.definite (OrthoPoly s j)) a_1))
       OrthoPoly_ne_zero)
   have : p = (coef n) • (OrthoPoly s n) + (coef (n+1)) • (OrthoPoly s (n+1)) := by
     rw [hcoef, Finset.sum_range_succ (fun x ↦ coef x • OrthoPoly s x) (n + 1)]
@@ -699,7 +699,7 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) :
     have hip0 : ⟪OrthoPoly s n, po⟫_ℝ = 0 := OrthoPoly_orthogonal_low_deg' hpod
 
     have hipn0 : ⟪OrthoPoly s n, po⟫_ℝ ≠ 0 := by
-      rw [MySpace.inner_def, IntervalWithMeasure.dot]
+      rw [PolyL2.inner_def, IntervalWithMeasure.dot]
 
       have ⟨q, hq2⟩ : ∃q : ℝ[X], q * q =
           Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots) * po := by
@@ -784,7 +784,7 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) :
           simp only [eval_neg, eval_mul, mul_neg]
 
         rw [this]
-        apply MySpace.integral_pos_of_pos
+        apply PolyL2.integral_pos_of_pos
         apply mul_ne_zero_iff.mpr ⟨hne0, neg_ne_zero.mpr hrne0⟩
         intro x hx
         rw [eval_mul]
@@ -797,7 +797,7 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) :
         exact LT.lt.le (hneg x hx)
       | inr hpos =>
         apply ne_of_gt
-        apply MySpace.integral_pos_of_pos
+        apply PolyL2.integral_pos_of_pos
         apply mul_ne_zero_iff.mpr ⟨hne0, hrne0⟩
         intro x hx
         rw [eval_mul]
@@ -1014,7 +1014,7 @@ theorem Quadrature.pos_weights (q : Quadrature) (s : IntervalWithMeasure)
     apply Finset.prod_ne_zero_iff.mpr
     intro a _
     simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, X_sub_C_ne_zero]
-  have hpos := MySpace.integral_pos_of_pos hpne0 this
+  have hpos := PolyL2.integral_pos_of_pos hpne0 this
   unfold IntervalWithMeasure.int at hex
   rw [← hex] at hpos
   unfold nint at hpos
@@ -1202,7 +1202,7 @@ theorem Quadrature.max_exactness (q : Quadrature) (s : IntervalWithMeasure) :
     apply Finset.prod_ne_zero_iff.mpr
     intro a _
     simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, X_sub_C_ne_zero]
-  have hpos := MySpace.integral_pos_of_pos hpne0 this
+  have hpos := PolyL2.integral_pos_of_pos hpne0 this
 
   have h0 : q.nint p = 0 := by
     unfold nint
