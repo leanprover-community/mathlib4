@@ -3,9 +3,9 @@ Copyright (c) 2020 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Jujian Zhang
 -/
+import Mathlib.Algebra.Polynomial.DenomsClearable
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Data.Polynomial.DenomsClearable
 import Mathlib.Data.Real.Irrational
 import Mathlib.Topology.Algebra.Polynomial
 
@@ -55,7 +55,7 @@ protected theorem irrational {x : ℝ} (h : Liouville x) : Irrational x := by
     exact mod_cast a1
   -- At a0, clear denominators...
   replace a0 : a * q - ↑b * p ≠ 0 := by
-    rw [Ne.def, div_eq_div_iff b0 qR0.ne', mul_comm (p : ℝ), ← sub_eq_zero] at a0
+    rw [Ne, div_eq_div_iff b0 qR0.ne', mul_comm (p : ℝ), ← sub_eq_zero] at a0
     exact mod_cast a0
   -- Actually, `q` is a natural number
   lift q to ℕ using (zero_lt_one.trans q1).le

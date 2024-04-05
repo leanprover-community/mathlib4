@@ -3,7 +3,7 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.Polynomial.Expand
+import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 import Mathlib.RingTheory.Adjoin.FG
@@ -597,7 +597,7 @@ theorem normalizeScaleRoots_coeff_mul_leadingCoeff_pow (i : ℕ) (hp : 1 ≤ nat
     (normalizeScaleRoots p).coeff i * p.leadingCoeff ^ i =
       p.coeff i * p.leadingCoeff ^ (p.natDegree - 1) := by
   simp only [normalizeScaleRoots, finset_sum_coeff, coeff_monomial, Finset.sum_ite_eq', one_mul,
-    zero_mul, mem_support_iff, ite_mul, Ne.def, ite_not]
+    zero_mul, mem_support_iff, ite_mul, Ne, ite_not]
   split_ifs with h₁ h₂
   · simp [h₁]
   · rw [h₂, leadingCoeff, ← pow_succ', tsub_add_cancel_of_le hp]
@@ -611,7 +611,7 @@ theorem leadingCoeff_smul_normalizeScaleRoots (p : R[X]) :
     p.leadingCoeff • normalizeScaleRoots p = scaleRoots p p.leadingCoeff := by
   ext
   simp only [coeff_scaleRoots, normalizeScaleRoots, coeff_monomial, coeff_smul, Finset.smul_sum,
-    Ne.def, Finset.sum_ite_eq', finset_sum_coeff, smul_ite, smul_zero, mem_support_iff]
+    Ne, Finset.sum_ite_eq', finset_sum_coeff, smul_ite, smul_zero, mem_support_iff]
   -- Porting note: added the following `simp only`
   simp only [ge_iff_le, tsub_le_iff_right, smul_eq_mul, mul_ite, mul_one, mul_zero,
     Finset.sum_ite_eq', mem_support_iff, ne_eq, ite_not]
@@ -628,7 +628,7 @@ theorem normalizeScaleRoots_support : (normalizeScaleRoots p).support ≤ p.supp
   intro x
   contrapose
   simp only [not_mem_support_iff, normalizeScaleRoots, finset_sum_coeff, coeff_monomial,
-    Finset.sum_ite_eq', mem_support_iff, Ne.def, Classical.not_not, ite_eq_right_iff]
+    Finset.sum_ite_eq', mem_support_iff, Ne, Classical.not_not, ite_eq_right_iff]
   intro h₁ h₂
   exact (h₂ h₁).elim
 #align normalize_scale_roots_support normalizeScaleRoots_support

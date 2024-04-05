@@ -31,23 +31,27 @@ theorem unop_ratCast [RatCast α] (q : ℚ) : unop (q : αᵐᵒᵖ) = q :=
 #align mul_opposite.unop_rat_cast MulOpposite.unop_ratCast
 #align add_opposite.unop_rat_cast AddOpposite.unop_ratCast
 
-variable (α)
-
-instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵐᵒᵖ :=
-  { MulOpposite.instGroupWithZero α, MulOpposite.instSemiring α with }
+instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵐᵒᵖ where
+  __ := instSemiring
+  __ := instGroupWithZero
 
 instance instDivisionRing [DivisionRing α] : DivisionRing αᵐᵒᵖ where
-  toRing := instRing _
+  __ := instRing
+  __ := instDivisionSemiring
+  ratCast_mk a b hb h := unop_injective <| by rw [unop_ratCast, Rat.cast_def, unop_mul, unop_inv,
+    unop_natCast, unop_intCast, Int.commute_cast, div_eq_mul_inv]
+  qsmul := qsmulRec _
+
+instance instDivisionRing [DivisionRing α] : DivisionRing αᵐᵒᵖ where
+  __ := instRing _
   __ := instDivisionSemiring _
   ratCast_def q := unop_injective <| by rw [unop_ratCast, Rat.cast_def, unop_div,
     unop_natCast, unop_intCast, Int.commute_cast, div_eq_mul_inv]
   qsmul := qsmulRec _
 
-instance instSemifield [Semifield α] : Semifield αᵐᵒᵖ :=
-  { MulOpposite.instDivisionSemiring α, MulOpposite.instCommSemiring α with }
-
-instance instField [Field α] : Field αᵐᵒᵖ :=
-  { MulOpposite.instDivisionRing α, MulOpposite.instCommRing α with }
+instance instField [Field α] : Field αᵐᵒᵖ where
+  __ := instCommRing
+  __ := instDivisionRing
 
 end MulOpposite
 
@@ -58,14 +62,14 @@ instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵃᵒ�
   __ := instGroupWithZero _
 
 instance instDivisionRing [DivisionRing α] : DivisionRing αᵃᵒᵖ where
-  toRing := instRing _
+  __ := instRing _
   __ := instDivisionSemiring
   ratCast_def q := unop_injective <| by rw [unop_ratCast, Rat.cast_def, unop_div, unop_natCast,
     unop_intCast, div_eq_mul_inv]
   qsmul := qsmulRec _
 
 instance instSemifield [Semifield α] : Semifield αᵃᵒᵖ where
-  toCommSemiring := instCommSemiring _
+  __ := instCommSemiring _
   __ := instDivisionSemiring
 
 instance instField [Field α] : Field αᵃᵒᵖ where

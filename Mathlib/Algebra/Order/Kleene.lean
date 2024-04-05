@@ -63,6 +63,7 @@ class IdemSemiring (α : Type u) extends Semiring α, SemilatticeSup α where
   protected add_eq_sup : ∀ a b : α, a + b = a ⊔ b := by
     intros
     rfl
+  /-- The bottom element of an idempotent semiring: `0` by default -/
   protected bot : α := 0
   protected bot_le : ∀ a, bot ≤ a
 #align idem_semiring IdemSemiring
@@ -74,11 +75,12 @@ class IdemCommSemiring (α : Type u) extends CommSemiring α, IdemSemiring α
 
 /-- Notation typeclass for the Kleene star `∗`. -/
 class KStar (α : Type*) where
+  /-- The Kleene star operator on a Kleene algebra -/
   protected kstar : α → α
 #align has_kstar KStar
 
--- mathport name: «expr ∗»
-scoped[Computability] postfix:1024 "∗" => KStar.kstar
+@[inherit_doc] scoped[Computability] postfix:1024 "∗" => KStar.kstar
+
 open Computability
 
 /-- A Kleene Algebra is an idempotent semiring with an additional unary operator `kstar` (for Kleene
