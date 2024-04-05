@@ -674,15 +674,9 @@ attribute [instance] FirstCountableTopology.nhds_generated_countable
 /-- If `β` is a first-countable space, then its induced topology via `f` on `α` is also
 first-countable. -/
 theorem firstCountableTopology_induced (α β : Type*) [t : TopologicalSpace β]
-    [FirstCountableTopology β] (f : α → β) : @FirstCountableTopology α (t.induced f) := by
-  letI := t.induced f
-  refine ⟨fun a ↦ ?_⟩
-  have nhds_fa := @FirstCountableTopology.nhds_generated_countable β _ _ (f a)
-  rw [Filter.isCountablyGenerated_iff_exists_antitone_basis] at *
-  obtain ⟨B, hB⟩ := nhds_fa
-  refine ⟨fun n ↦ preimage f (B n), ⟨?_, fun _ _ le ↦ preimage_mono <| hB.2 le⟩⟩
-  rw [(@induced_iff_nhds_eq β α _ _ f).mp rfl a]
-  apply hB.toHasBasis.comap
+    [FirstCountableTopology β] (f : α → β) : @FirstCountableTopology α (t.induced f) :=
+  let _ := t.induced f;
+  ⟨fun x ↦ nhds_induced f x ▸ inferInstance⟩
 
 variable {α}
 
