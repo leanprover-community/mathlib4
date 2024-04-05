@@ -74,7 +74,7 @@ elab "count_heartbeats! " n:(num)? "in" ppLine cmd:command : command => do
   -- First run the command `n-1` times, reverting the state.
   let counts ← (List.range (n - 1)).mapM fun _ => runTacForHeartbeats cmd
   -- Then run once more, keeping the state.
-  let counts := (← runTacForHeartbeats tac (revert := false)) :: counts
+  let counts := (← runTacForHeartbeats cmd (revert := false)) :: counts
   logVariation counts
 
 /--
