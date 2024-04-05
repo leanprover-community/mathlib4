@@ -268,7 +268,7 @@ theorem algebraMap_not_injective : ¬Function.Injective (algebraMap K <| Cliffor
   fun h => αβγ_ne_zero <| h <| by rw [algebraMap_αβγ_eq_zero, RingHom.map_zero]
 
 /-- Bonus counterexample: `Q` is a quadratic form that has no bilinear form. -/
-theorem Q_not_in_range_toQuadraticForm : Q ∉ Set.range LinearMap.BilinMap.toQuadraticMap := by
+theorem Q_not_in_range_toQuadraticForm : Q ∉ Set.range BilinMap.toQuadraticMap := by
   rintro ⟨B, hB⟩
   rw [← sub_zero Q] at hB
   apply algebraMap_not_injective

@@ -42,6 +42,7 @@ Within this file, we use the local notation
 
 -/
 
+open LinearMap (BilinMap)
 open LinearMap (BilinForm)
 
 universe u1 u2 u3
@@ -265,7 +266,7 @@ def changeForm (h : B.toQuadraticMap = Q' - Q) : CliffordAlgebra Q →ₗ[R] Cli
   foldr Q (changeFormAux Q' B)
     (fun m x =>
       (changeFormAux_changeFormAux Q' B m x).trans <| by
-        dsimp only [← LinearMap.BilinMap.toQuadraticMap_apply]
+        dsimp only [← BilinMap.toQuadraticMap_apply]
         rw [h, QuadraticMap.sub_apply, sub_sub_cancel])
     1
 #align clifford_algebra.change_form CliffordAlgebra.changeForm
