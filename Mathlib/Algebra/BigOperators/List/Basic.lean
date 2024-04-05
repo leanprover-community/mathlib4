@@ -7,8 +7,8 @@ import Mathlib.Algebra.BigOperators.List.Defs
 import Mathlib.Data.List.Forall2
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Ring.Commute
-import Mathlib.Data.Nat.Order.Basic
-import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range

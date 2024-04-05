@@ -1800,7 +1800,7 @@ import Mathlib.Data.HashMap
 import Mathlib.Data.Holor
 import Mathlib.Data.Int.AbsoluteValue
 import Mathlib.Data.Int.Associated
-import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Int.Bitwise
 import Mathlib.Data.Int.CardIntervalMod
 import Mathlib.Data.Int.Cast.Basic
@@ -1821,7 +1821,7 @@ import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Int.Log
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Int.NatPrime
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Int.Order.Units
 import Mathlib.Data.Int.Parity
@@ -1927,7 +1927,7 @@ import Mathlib.Data.Multiset.Sym
 import Mathlib.Data.NNRat.BigOperators
 import Mathlib.Data.NNRat.Defs
 import Mathlib.Data.NNRat.Lemmas
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Cast.Basic
@@ -1977,7 +1977,7 @@ import Mathlib.Data.Nat.MaxPowDiv
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.Nat.Nth
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Pairing

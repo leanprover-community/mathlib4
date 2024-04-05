@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Ring.Hom.Basic
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Data.Nat.Cast.Order
 

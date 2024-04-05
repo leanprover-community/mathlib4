@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Nat.Cast.Order
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Order.UpperLower.Basic
 
 /-!

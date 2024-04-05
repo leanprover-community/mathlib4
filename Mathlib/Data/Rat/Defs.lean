@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Data.List.Infix
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 
 #align_import data.list.rdrop from "leanprover-community/mathlib"@"26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2"
 /-!

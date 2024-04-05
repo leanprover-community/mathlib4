@@ -3,7 +3,7 @@ Copyright (c) 2019 Seul Baek. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Seul Baek
 -/
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 
 #align_import data.list.func from "leanprover-community/mathlib"@"d11893b411025250c8e61ff2f12ccbd7ee35ab15"
 
