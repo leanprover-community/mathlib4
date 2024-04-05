@@ -112,10 +112,11 @@ def hcomp {F G : LaxMonoidalFunctor C D} {H K : LaxMonoidalFunctor D E} (α : Mo
     (β : MonoidalNatTrans H K) : MonoidalNatTrans (F ⊗⋙ H) (G ⊗⋙ K) :=
   { NatTrans.hcomp α.toNatTrans β.toNatTrans with
     unit := by
-      dsimp; simp
+      dsimp; simp only [assoc, NatTrans.naturality_assoc, unit_assoc]
       conv_lhs => rw [← K.toFunctor.map_comp, α.unit]
     tensor := fun X Y => by
-      dsimp; simp
+      dsimp; simp only [assoc, NatTrans.naturality_assoc, tensor_assoc, tensor_comp,
+        LaxMonoidalFunctor.μ_natural_assoc]
       conv_lhs => rw [← K.toFunctor.map_comp, α.tensor, K.toFunctor.map_comp] }
 #align category_theory.monoidal_nat_trans.hcomp CategoryTheory.MonoidalNatTrans.hcomp
 
