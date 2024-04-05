@@ -3,12 +3,12 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Finiteness
-import Mathlib.Data.Polynomial.Module.Basic
 import Mathlib.Order.Basic
 import Mathlib.Order.Hom.Lattice
 

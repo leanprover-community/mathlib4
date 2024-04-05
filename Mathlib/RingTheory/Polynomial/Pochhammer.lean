@@ -3,11 +3,11 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.Algebra.Polynomial.Degree.Definitions
+import Mathlib.Algebra.Polynomial.Eval
+import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Tactic.Abel
-import Mathlib.Data.Polynomial.Degree.Definitions
-import Mathlib.Data.Polynomial.Eval
-import Mathlib.Data.Polynomial.Monic
-import Mathlib.Data.Polynomial.RingDivision
 
 #align_import ring_theory.polynomial.pochhammer from "leanprover-community/mathlib"@"53b216bcc1146df1c4a0a86877890ea9f1f01589"
 
