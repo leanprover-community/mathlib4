@@ -25,7 +25,7 @@ the Kuratowski embedding.
 
 variable {α : Type _} [MetricSpace α]
 
-/-- A real valued function from a metric space is katetov if
+/-- A real valued function from a metric space is Katetov if
   it satisfies the following inequalities: -/
 @[mk_iff]
 structure IsKatetov (f : α → ℝ) : Prop where
