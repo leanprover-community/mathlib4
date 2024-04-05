@@ -324,20 +324,20 @@ instance : Inhabited (MulRingNorm R) :=
 variable {R : Type*} [Ring R]
 
 /-- Two multiplicative ring norms `f, g` on `R` are equivalent if there exists a positive constant
-  `c` such that for all `x ∈ R`, `(f x)^c = g x`.
-  This could be generalised to RingNorm, but MulRingNorm does not extend this. -/
+  `c` such that for all `x ∈ R`, `(f x)^c = g x`.  -/
 
 def equiv (f : MulRingNorm R) (g : MulRingNorm R) :=
   ∃ c : ℝ, 0 < c ∧ (fun x => (f x) ^ c) = g
 
 /- Equivalence of multiplicative ring norms is an equivalence relation
+
   1. is reflexive-/
 lemma equiv_refl (f : MulRingNorm R) : equiv f f := by
-  exact ⟨1, by linarith, by simp only [Real.rpow_one]⟩
-
+    exact ⟨1, Real.zero_lt_one, by simp only [Real.rpow_one]⟩
 /- Equivalence of multiplicative ring norms is an equivalence relation
+
  2. is symmetric-/
-lemma equiv_symm (f g : MulRingNorm R) (hfg : equiv f g) : equiv g f := by
+lemma equiv_symm {f g : MulRingNorm R} (hfg : equiv f g) : equiv g f := by
   rcases hfg with ⟨c, hcpos, h⟩
   use 1/c
   constructor
@@ -346,8 +346,9 @@ lemma equiv_symm (f g : MulRingNorm R) (hfg : equiv f g) : equiv g f := by
   simpa [← congr_fun h x] using Real.rpow_rpow_inv (apply_nonneg f x) (ne_of_lt hcpos).symm
 
 /- Equivalence of multiplicative ring norms is an equivalence relation
+
  3. is transitive-/
-lemma equiv_trans (f g k : MulRingNorm R) (hfg : equiv f g) (hgk : equiv g k) :
+lemma equiv_trans {f g k : MulRingNorm R} (hfg : equiv f g) (hgk : equiv g k) :
     equiv f k := by
   rcases hfg with ⟨c, hcPos, hfg⟩
   rcases hgk with ⟨d, hdPos, hgk⟩
@@ -383,7 +384,7 @@ def normRingNorm (R : Type*) [NonUnitalNormedRing R] : RingNorm R :=
 #align norm_ring_norm normRingNorm
 
 
-/-A multiplicative ring norm with value in the rationals satisfies `f n ≤ n` for every `n : ℕ`-/
+/-A multiplicative ring norm satisfies `f n ≤ n` for every `n : ℕ`-/
 lemma MulRingNorm_nat_le_nat {R : Type*} [Ring R] (n : ℕ) (f : MulRingNorm R) : f n ≤ n := by
   induction n with
   | zero => simp only [Nat.cast_zero, map_zero, le_refl]
