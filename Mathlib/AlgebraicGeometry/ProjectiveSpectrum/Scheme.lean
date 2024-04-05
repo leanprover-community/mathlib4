@@ -807,26 +807,26 @@ The homeomorphism `Proj|D(f) ≅ Spec A⁰_f` defined by
 - `φ : Proj|D(f) ⟶ Spec A⁰_f` by sending `x` to `A⁰_f ∩ span {g / 1 | g ∈ x}`
 - `ψ : Spec A⁰_f ⟶ Proj|D(f)` by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`.
 -/
-def projIsoSpecTopComponent {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
+def projIsoSpecTopComponent {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     (Proj.T| (pbo f)) ≅ (Spec.T (A⁰_ f))  where
-  hom := ProjIsoSpecTopComponent.toSpec
-  inv := ProjIsoSpecTopComponent.fromSpec hm f_deg
-  hom_inv_id := ConcreteCategory.hom_ext _ _ fun x ↦
-    ProjIsoSpecTopComponent.fromSpecToSpec 𝒜 hm f_deg x
-  inv_hom_id := ConcreteCategory.hom_ext _ _ fun x ↦
-    ProjIsoSpecTopComponent.toSpecFromSpec 𝒜 hm f_deg x
+  hom := ProjIsoSpecTopComponent.toSpec _ _
+  inv := ProjIsoSpecTopComponent.fromSpec f_deg hm
+  hom_inv_id := ConcreteCategory.hom_ext _ _ <|
+    ProjIsoSpecTopComponent.fromSpec_toSpec 𝒜 f_deg hm
+  inv_hom_id := ConcreteCategory.hom_ext _ _ <|
+    ProjIsoSpecTopComponent.toSpec_fromSpec 𝒜 f_deg hm
 
 namespace ProjIsoSpecSheafComponent
 
 namespace FromSpec
 
-local notation "φ" => (projIsoSpecTopComponent hm.out f_deg.out).hom
+local notation "φ" => (projIsoSpecTopComponent f_deg hm).hom
 
 -- We use `φ` denote the homeomorphism `Proj | D(f) ≅ Spec A⁰_f`constructed above.
 -- Let `V` be an open set in `Spec A⁰_f`, `s ∈ (Spec A⁰_f)(V)` be a section on `V` of prime spectrum
 -- of `A⁰_f` and `y ∈ (φ⁻¹ V)` be a point in `Proj | D(f)`.
 variable {𝒜}
-variable {m : ℕ} {f : A} [hm : Fact <| 0 < m] [f_deg : Fact <| f ∈ 𝒜 m]
+variable {m : ℕ} {f : A} (f_deg : f ∈ 𝒜 m) (hm : 0 < m)
 variable {V : (Opens <| Spec (A⁰_ f))ᵒᵖ}
 variable (s : (Spec (A⁰_ f)).presheaf.obj V)
 variable (y : ((@Opens.openEmbedding Proj.T (pbo f)).isOpenMap.functor.op.obj <|
@@ -835,33 +835,33 @@ variable (y : ((@Opens.openEmbedding Proj.T (pbo f)).isOpenMap.functor.op.obj <|
 private lemma _mem_pbo : (y : Proj.T) ∈ pbo f := by
   obtain ⟨⟨z, h1⟩, _, h2⟩ := y.2; rwa [← h2]
 
-private lemma _mem_V : φ ⟨y, _mem_pbo y⟩ ∈ V.unop := by
+private lemma _mem_V : φ ⟨y, _mem_pbo _ _ y⟩ ∈ V.unop := by
   obtain ⟨y, ⟨_, h1, rfl⟩⟩ := y; exact h1
 
 /--
 Evaluating a section `s` of `(Spec A⁰_f)(V)` on `φ y` where `y ∈ φ⁻¹(V)`
 -/
-def eval : AlgebraicGeometry.StructureSheaf.Localizations (A⁰_ f) (φ ⟨y, _mem_pbo y⟩) :=
-  s.1 ⟨φ ⟨y, _mem_pbo y⟩, _mem_V y⟩
+def eval : AlgebraicGeometry.StructureSheaf.Localizations (A⁰_ f) (φ ⟨y, _mem_pbo _ _ y⟩) :=
+  s.1 ⟨φ ⟨y, _mem_pbo _ _ y⟩, _mem_V _ _ y⟩
 
 /--
 choose an arbitrary numerator for `s (φ y)` where `y ∈ φ⁻¹(V)`.
 -/
-abbrev eval_num : A⁰_ f := eval s y |>.exists_rep.choose.1
+abbrev eval_num : A⁰_ f := eval _ _ s y |>.exists_rep.choose.1
 
 
 /--
 choose an arbitrary denominator for `s (φ y)` where `y ∈ φ⁻¹(V)`.
 -/
-abbrev eval_den : A⁰_ f := eval s y |>.exists_rep.choose.2.1
+abbrev eval_den : A⁰_ f := eval _ _ s y |>.exists_rep.choose.2.1
 
-lemma eval_den_not_mem : eval_den s y ∉ (φ ⟨y, _mem_pbo y⟩).asIdeal :=
-  eval s y |>.exists_rep.choose.2.2
+lemma eval_den_not_mem : eval_den _ _ s y ∉ (φ ⟨y, _mem_pbo _ _ y⟩).asIdeal :=
+  eval _ _ s y |>.exists_rep.choose.2.2
 
-lemma eval_den_num_not_mem : (eval_den s y).num ∉ y.1.asHomogeneousIdeal := by
+lemma eval_den_num_not_mem : (eval_den _ _ s y).num ∉ y.1.asHomogeneousIdeal := by
   intro r
-  refine eval_den_not_mem s y ?_
-  erw [ProjIsoSpecTopComponent.ToSpec.mem_carrier_iff, (eval_den s y).eq_num_div_den,
+  refine eval_den_not_mem _ _ s y ?_
+  rw [ProjIsoSpecTopComponent.ToSpec.mem_carrier_iff, (eval_den s y).eq_num_div_den,
     show Localization.mk (eval_den s y).num _ = mk (eval_den s y).num 1 * Localization.mk 1 _ by
       rw [mk_mul, one_mul, mul_one]]
   exact Ideal.mul_mem_right _ _ <| Ideal.subset_span ⟨_, r, rfl⟩
@@ -1009,6 +1009,7 @@ example : true := rfl
 
 namespace isLocallyFraction
 
+-- Implementation detail, should not be used directly
 /--
 Given an open set `V ⊆ Spec A⁰_f`, `φ⁻¹ V` is an open set in `Proj 𝒜`
 -/
@@ -1025,6 +1026,7 @@ abbrev U (V' : Opens (Spec.T (A⁰_ f))) : Opens Proj.T where
     · rintro ⟨x, hx, rfl⟩; exact ⟨hx, x.2⟩
     · rintro ⟨h1, h2⟩; exact ⟨⟨z, h2⟩, h1, rfl⟩
 
+-- Implementation detail, should not be used directly
 /--
 If `V' ⊆ V ⊆ Spec A⁰_f`, then `φ⁻¹ V' ⊆ φ⁻¹ V`.
 -/
