@@ -1311,7 +1311,7 @@ theorem Nonempty.cons_induction {α : Type*} {p : ∀ s : Finset α, s.Nonempty 
 #align finset.nonempty.cons_induction Finset.Nonempty.cons_induction
 
 lemma Nonempty.exists_cons_eq (hs : s.Nonempty) : ∃ t a ha, cons a t ha = s :=
-  hs.cons_induction (fun a ↦ ⟨∅, a, by simp⟩) fun _ _ _ _ _ ↦ ⟨_, _, _, rfl⟩
+  hs.cons_induction (fun a ↦ ⟨∅, a, _, cons_empty _⟩) fun _ _ _ _ _ ↦ ⟨_, _, _, rfl⟩
 
 /-- Inserting an element to a finite set is equivalent to the option type. -/
 def subtypeInsertEquivOption {t : Finset α} {x : α} (h : x ∉ t) :
@@ -2637,7 +2637,7 @@ theorem filter_eq_empty_iff : s.filter p = ∅ ↔ ∀ ⦃x⦄, x ∈ s → ¬p 
 #align finset.filter_eq_empty_iff Finset.filter_eq_empty_iff
 
 theorem filter_nonempty_iff : (s.filter p).Nonempty ↔ ∃ a ∈ s, p a := by
-  simp only [nonempty_iff_ne_empty, Ne.def, filter_eq_empty_iff, Classical.not_not, not_forall,
+  simp only [nonempty_iff_ne_empty, Ne, filter_eq_empty_iff, Classical.not_not, not_forall,
     exists_prop]
 #align finset.filter_nonempty_iff Finset.filter_nonempty_iff
 
@@ -2885,7 +2885,7 @@ theorem filter_eq' [DecidableEq β] (s : Finset β) (b : β) :
 theorem filter_ne [DecidableEq β] (s : Finset β) (b : β) :
     (s.filter fun a => b ≠ a) = s.erase b := by
   ext
-  simp only [mem_filter, mem_erase, Ne.def, decide_not, Bool.not_eq_true', decide_eq_false_iff_not]
+  simp only [mem_filter, mem_erase, Ne, decide_not, Bool.not_eq_true', decide_eq_false_iff_not]
   tauto
 #align finset.filter_ne Finset.filter_ne
 
@@ -3158,7 +3158,7 @@ theorem toFinset_eq_empty {m : Multiset α} : m.toFinset = ∅ ↔ m = 0 :=
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem toFinset_nonempty : s.toFinset.Nonempty ↔ s ≠ 0 := by
-  simp only [toFinset_eq_empty, Ne.def, Finset.nonempty_iff_ne_empty]
+  simp only [toFinset_eq_empty, Ne, Finset.nonempty_iff_ne_empty]
 #align multiset.to_finset_nonempty Multiset.toFinset_nonempty
 
 @[simp]

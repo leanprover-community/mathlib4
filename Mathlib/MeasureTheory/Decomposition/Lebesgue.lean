@@ -71,6 +71,7 @@ class HaveLebesgueDecomposition (μ ν : Measure α) : Prop where
 /-- If a pair of measures `HaveLebesgueDecomposition`, then `singularPart` chooses the
 measure from `HaveLebesgueDecomposition`, otherwise it returns the zero measure. For sigma-finite
 measures, `μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν)`. -/
+@[pp_dot]
 irreducible_def singularPart (μ ν : Measure α) : Measure α :=
   if h : HaveLebesgueDecomposition μ ν then (Classical.choose h.lebesgue_decomposition).1 else 0
 #align measure_theory.measure.singular_part MeasureTheory.Measure.singularPart
@@ -78,6 +79,7 @@ irreducible_def singularPart (μ ν : Measure α) : Measure α :=
 /-- If a pair of measures `HaveLebesgueDecomposition`, then `rnDeriv` chooses the
 measurable function from `HaveLebesgueDecomposition`, otherwise it returns the zero function.
 For sigma-finite measures, `μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν)`.-/
+@[pp_dot]
 irreducible_def rnDeriv (μ ν : Measure α) : α → ℝ≥0∞ :=
   if h : HaveLebesgueDecomposition μ ν then (Classical.choose h.lebesgue_decomposition).2 else 0
 #align measure_theory.measure.rn_deriv MeasureTheory.Measure.rnDeriv
@@ -869,7 +871,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
           ← ENNReal.toReal_add, ENNReal.toReal_le_toReal, Measure.coe_smul, Pi.smul_apply,
           withDensity_apply _ (hA.inter hE₁), show ε • ν (A ∩ E) = (ε : ℝ≥0∞) * ν (A ∩ E) by rfl,
           ← set_lintegral_const, ← lintegral_add_left measurable_const] at this
-        · rw [Ne.def, ENNReal.add_eq_top, not_or]
+        · rw [Ne, ENNReal.add_eq_top, not_or]
           exact ⟨measure_ne_top _ _, measure_ne_top _ _⟩
         · exact measure_ne_top _ _
         · exact measure_ne_top _ _

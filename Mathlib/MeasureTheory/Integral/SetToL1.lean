@@ -124,7 +124,7 @@ theorem of_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞) (hT : FinMeasAd
     FinMeasAdditive μ T := by
   refine' of_eq_top_imp_eq_top (fun s _ hμs => _) hT
   rw [Measure.smul_apply, smul_eq_mul, ENNReal.mul_eq_top] at hμs
-  simp only [hc_ne_top, or_false_iff, Ne.def, false_and_iff] at hμs
+  simp only [hc_ne_top, or_false_iff, Ne, false_and_iff] at hμs
   exact hμs.2
 #align measure_theory.fin_meas_additive.of_smul_measure MeasureTheory.FinMeasAdditive.of_smul_measure
 
@@ -132,7 +132,7 @@ theorem smul_measure (c : ℝ≥0∞) (hc_ne_zero : c ≠ 0) (hT : FinMeasAdditi
     FinMeasAdditive (c • μ) T := by
   refine' of_eq_top_imp_eq_top (fun s _ hμs => _) hT
   rw [Measure.smul_apply, smul_eq_mul, ENNReal.mul_eq_top]
-  simp only [hc_ne_zero, true_and_iff, Ne.def, not_false_iff]
+  simp only [hc_ne_zero, true_and_iff, Ne, not_false_iff]
   exact Or.inl hμs
 #align measure_theory.fin_meas_additive.smul_measure MeasureTheory.FinMeasAdditive.smul_measure
 
@@ -253,7 +253,7 @@ theorem of_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞) (hT : Dominated
     DominatedFinMeasAdditive μ T (c.toReal * C) := by
   have h : ∀ s, MeasurableSet s → c • μ s = ∞ → μ s = ∞ := by
     intro s _ hcμs
-    simp only [hc_ne_top, Algebra.id.smul_eq_mul, ENNReal.mul_eq_top, or_false_iff, Ne.def,
+    simp only [hc_ne_top, Algebra.id.smul_eq_mul, ENNReal.mul_eq_top, or_false_iff, Ne,
       false_and_iff] at hcμs
     exact hcμs.2
   refine' ⟨hT.1.of_eq_top_imp_eq_top (μ := c • μ) h, fun s hs hμs => _⟩
@@ -1590,7 +1590,7 @@ theorem continuous_L1_toL1 {μ' : Measure α} (c' : ℝ≥0∞) (hc' : c' ≠ �
     _ ≤ c'.toReal * (ε / 2 / c'.toReal) :=
       (mul_le_mul le_rfl hfg.le toReal_nonneg toReal_nonneg)
     _ = ε / 2 := by
-      refine' mul_div_cancel₀ (ε / 2) _; rw [Ne.def, toReal_eq_zero_iff]; simp [hc', hc'0]
+      refine' mul_div_cancel₀ (ε / 2) _; rw [Ne, toReal_eq_zero_iff]; simp [hc', hc'0]
     _ < ε := half_lt_self hε_pos
 #align measure_theory.continuous_L1_to_L1 MeasureTheory.continuous_L1_toL1
 
@@ -1660,7 +1660,7 @@ theorem setToFun_top_smul_measure (hT : DominatedFinMeasAdditive (∞ • μ) T 
   refine' setToFun_measure_zero' hT fun s _ hμs => _
   rw [lt_top_iff_ne_top] at hμs
   simp only [true_and_iff, Measure.smul_apply, ENNReal.mul_eq_top, eq_self_iff_true,
-    top_ne_zero, Ne.def, not_false_iff, not_or, Classical.not_not, smul_eq_mul] at hμs
+    top_ne_zero, Ne, not_false_iff, not_or, Classical.not_not, smul_eq_mul] at hμs
   simp only [hμs.right, Measure.smul_apply, mul_zero, smul_eq_mul]
 #align measure_theory.set_to_fun_top_smul_measure MeasureTheory.setToFun_top_smul_measure
 
