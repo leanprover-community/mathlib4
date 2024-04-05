@@ -3,9 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Int
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Algebra.Ring.Int
-import Mathlib.Algebra.Ring.Nat
 import Mathlib.GroupTheory.GroupAction.Opposite
 
 #align_import algebra.hom.iterate from "leanprover-community/mathlib"@"792a2a264169d64986541c6f8f7e3bbb6acb6295"

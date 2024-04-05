@@ -3,11 +3,8 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Nat.Units
+import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Set.Basic
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Algebra.GroupWithZero.Divisibility
 
 #align_import data.nat.order.lemmas from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
