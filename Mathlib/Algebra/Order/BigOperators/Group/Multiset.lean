@@ -3,15 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.List.Order
 import Mathlib.Algebra.BigOperators.Multiset.Basic
-import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Order.Monoid.OrderDual
-import Mathlib.Data.Multiset.Fold
-import Mathlib.Data.List.MinMax
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.List
 
 /-!
 # Big operators on a multiset in ordered groups

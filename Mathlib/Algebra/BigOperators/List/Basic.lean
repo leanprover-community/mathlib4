@@ -535,16 +535,6 @@ theorem sum_zipWith_distrib_left [Semiring γ] (f : α → β → γ) (n : γ) (
     · simp [hl, mul_add]
 #align list.sum_zip_with_distrib_left List.sum_zipWith_distrib_left
 
-@[to_additive]
-theorem eq_of_prod_take_eq [LeftCancelMonoid M] {L L' : List M} (h : L.length = L'.length)
-    (h' : ∀ i ≤ L.length, (L.take i).prod = (L'.take i).prod) : L = L' := by
-  refine ext_get h fun i h₁ h₂ => ?_
-  have : (L.take (i + 1)).prod = (L'.take (i + 1)).prod := h' _ (Nat.succ_le_of_lt h₁)
-  rw [prod_take_succ L i h₁, prod_take_succ L' i h₂, h' i (le_of_lt h₁)] at this
-  convert mul_left_cancel this
-#align list.eq_of_prod_take_eq List.eq_of_prod_take_eq
-#align list.eq_of_sum_take_eq List.eq_of_sum_take_eq
-
 theorem sum_const_nat (m n : ℕ) : sum (replicate m n) = m * n :=
   sum_replicate m n
 #align list.sum_const_nat List.sum_const_nat
