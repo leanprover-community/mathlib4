@@ -24,17 +24,15 @@ variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
 
 lemma Functor.reflects_precoherent : Precoherent C where
   pullback {B₁ B₂} f α _ X₁ π₁ _ := by
-    let Y₁ := fun a ↦ F.obj (X₁ a)
-    let τ₁ := fun a ↦ F.map (π₁ a)
-    have : EffectiveEpiFamily Y₁ τ₁ := inferInstance
-    obtain ⟨β, _, Y₂, τ₂, H, i, ι, hh⟩ := Precoherent.pullback (F.map f) _ Y₁ τ₁ this
-    let π₂ := fun b ↦ F.preimage (F.effectiveEpiOver (Y₂ b) ≫ τ₂ b)
-    refine ⟨β, inferInstance, _, π₂, F.finite_effectiveEpiFamily_of_map _ π₂ ?_, ⟨i,
-      fun b ↦ F.preimage (F.effectiveEpiOver (Y₂ b) ≫ ι b), ?_⟩⟩
-    · simp only [Functor.image_preimage, π₂]
+    obtain ⟨β, _, Y₂, τ₂, H, i, ι, hh⟩ := Precoherent.pullback (F.map f) _ _
+      (fun a ↦ F.map (π₁ a)) inferInstance
+    refine ⟨β, inferInstance, _, fun b ↦ F.preimage (F.effectiveEpiOver (Y₂ b) ≫ τ₂ b),
+      F.finite_effectiveEpiFamily_of_map _ _ ?_,
+        ⟨i, fun b ↦ F.preimage (F.effectiveEpiOver (Y₂ b) ≫ ι b), ?_⟩⟩
+    · simp only [Functor.image_preimage]
       infer_instance
     · intro b
       apply F.map_injective
-      simp [π₂, hh b]
+      simp [hh b]
 
 end CategoryTheory
