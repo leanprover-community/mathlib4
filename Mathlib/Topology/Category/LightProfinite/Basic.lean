@@ -143,6 +143,13 @@ def fintypeCatToLightProfinite : FintypeCat ⥤ LightProfinite.{u} where
   obj X := X.toLightProfinite
   map f := FintypeCat.toProfinite.map f
 
+instance : Faithful fintypeCatToLightProfinite where
+  map_injective h := funext fun _ ↦ (DFunLike.ext_iff.mp h) _
+
+instance : Full fintypeCatToLightProfinite where
+  preimage f := fun x ↦ f x
+  witness _ := rfl
+
 /-- The fully faithful embedding of `LightProfinite` in `TopCat`. -/
 @[simps!]
 def toTopCat : LightProfinite ⥤ TopCat :=
