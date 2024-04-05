@@ -32,7 +32,7 @@ If `R` is a `Field` and `M` an `AddCommGroup`, `M` would be called an `R`-vector
 Since those assumptions can be made by changing the typeclasses applied to `R` and `M`,
 without changing the axioms in `Module`, mathlib calls everything a `Module`.
 
-In older versions of mathlib3, we had separate `semimodule` and `vector_space` abbreviations.
+In older versions of mathlib3, we had separate abbreviations for semimodules and vector spaces.
 This caused inference issues in some cases, while not providing any real advantages, so we decided
 to use a canonical `Module` typeclass throughout.
 
