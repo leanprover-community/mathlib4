@@ -412,9 +412,7 @@ set_option linter.uppercaseLean3 false in
 namespace Structure
 
 variable {c f₁ f₂ : Type u} {r₁ r₂ : Type v}
-
 variable {c' : c → M} {f₁' : f₁ → M → M} {f₂' : f₂ → M → M → M}
-
 variable {r₁' : r₁ → Set M} {r₂' : r₂ → M → M → Prop}
 
 @[simp]

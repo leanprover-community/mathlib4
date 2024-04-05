@@ -414,7 +414,7 @@ set_option linter.uppercaseLean3 false in
 theorem X_pow_eq (s : σ) (n : ℕ) : (X s : MvPowerSeries σ R) ^ n = monomial R (single s n) 1 := by
   induction' n with n ih
   · simp
-  · rw [pow_succ', ih, Nat.succ_eq_add_one, Finsupp.single_add, X, monomial_mul_monomial, one_mul]
+  · rw [pow_succ, ih, Nat.succ_eq_add_one, Finsupp.single_add, X, monomial_mul_monomial, one_mul]
 set_option linter.uppercaseLean3 false in
 #align mv_power_series.X_pow_eq MvPowerSeries.X_pow_eq
 
@@ -541,9 +541,7 @@ end Semiring
 section Map
 
 variable {S T : Type*} [Semiring R] [Semiring S] [Semiring T]
-
 variable (f : R →+* S) (g : S →+* T)
-
 variable (σ)
 
 /-- The map between multivariate formal power series induced by a map on the coefficients.-/
@@ -755,7 +753,7 @@ theorem algebraMap_apply {r : R} :
 instance [Nonempty σ] [Nontrivial R] : Nontrivial (Subalgebra R (MvPowerSeries σ R)) :=
   ⟨⟨⊥, ⊤, by
       classical
-      rw [Ne.def, SetLike.ext_iff, not_forall]
+      rw [Ne, SetLike.ext_iff, not_forall]
       inhabit σ
       refine' ⟨X default, _⟩
       simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top]

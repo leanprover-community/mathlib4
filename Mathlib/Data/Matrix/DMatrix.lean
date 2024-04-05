@@ -24,7 +24,6 @@ def DMatrix (m : Type u) (n : Type u') (α : m → n → Type v) : Type max u u'
 #align dmatrix DMatrix
 
 variable {l m n o : Type*}
-
 variable {α : m → n → Type v}
 
 namespace DMatrix

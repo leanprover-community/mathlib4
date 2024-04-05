@@ -20,9 +20,7 @@ subgroup, subgroups
 
 
 variable {G : Type*} [Group G]
-
 variable {A : Type*} [AddGroup A]
-
 variable {N : Type*} [Group N]
 
 namespace Subgroup
@@ -62,7 +60,7 @@ theorem zpow_mem_zpowers (g : G) (k : ℤ) : g ^ k ∈ zpowers g :=
 #align subgroup.zpow_mem_zpowers Subgroup.zpow_mem_zpowers
 
 theorem npow_mem_zpowers (g : G) (k : ℕ) : g ^ k ∈ zpowers g :=
-  zpow_coe_nat g k ▸ zpow_mem_zpowers g k
+  zpow_natCast g k ▸ zpow_mem_zpowers g k
 #align subgroup.npow_mem_zpowers Subgroup.npow_mem_zpowers
 
 theorem forall_zpowers {x : G} {p : zpowers x → Prop} : (∀ g, p g) ↔ ∀ m : ℤ, p ⟨x ^ m, m, rfl⟩ :=

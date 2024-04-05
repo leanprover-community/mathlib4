@@ -788,7 +788,6 @@ end Supremum
 section Tower
 
 variable (E)
-
 variable {K : Type*} [Field K] [Algebra F K] [Algebra E K] [IsScalarTower F E K]
 
 /-- If `K / E / F` is a field extension tower, `L` is an intermediate field of `K / F`, such that
@@ -1062,7 +1061,6 @@ section AdjoinIntegralElement
 universe u
 
 variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] {α : E}
-
 variable {K : Type u} [Field K] [Algebra F K]
 
 theorem minpoly_gen (α : E) :

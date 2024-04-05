@@ -32,7 +32,6 @@ open CategoryTheory CategoryTheory.Functor
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
-
 variable {C : Type u₃} [Category.{v₃} C] {D : Type u₄} [Category.{v₄} D]
 
 /-- Given a cone `c` over `F`, we can interpret the legs of `c` as structured arrows
@@ -40,6 +39,14 @@ variable {C : Type u₃} [Category.{v₃} C] {D : Type u₄} [Category.{v₄} D]
 @[simps]
 def Cone.toStructuredArrow {F : J ⥤ C} (c : Cone F) : J ⥤ StructuredArrow c.pt F where
   obj j := StructuredArrow.mk (c.π.app j)
+  map f := StructuredArrow.homMk f
+
+/-- If `F` has a limit, then the limit projections can be interpreted as structured arrows
+    `limit F ⟶ F.obj -`. -/
+@[simps]
+noncomputable def limit.toStructuredArrow (F : J ⥤ C) [HasLimit F] :
+    J ⥤ StructuredArrow (limit F) F where
+  obj j := StructuredArrow.mk (limit.π F j)
   map f := StructuredArrow.homMk f
 
 /-- `Cone.toStructuredArrow` can be expressed in terms of `Functor.toStructuredArrow`. -/
@@ -79,6 +86,25 @@ def Cone.toStructuredArrowCompToUnderCompForget {F : J ⥤ C} (c : Cone F) :
 lemma Cone.toStructuredArrow_comp_toUnder_comp_forget {F : J ⥤ C} (c : Cone F) :
     c.toStructuredArrow ⋙ StructuredArrow.toUnder _ _ ⋙ Under.forget _ = F :=
   rfl
+
+/-- A cone `c` on `F : J ⥤ C` lifts to a cone in `Over c.pt` with cone point `𝟙 c.pt`. -/
+@[simps]
+def Cone.toUnder {F : J ⥤ C} (c : Cone F) :
+    Cone (c.toStructuredArrow ⋙ StructuredArrow.toUnder _ _) where
+  pt := Under.mk (𝟙 c.pt)
+  π := { app := fun j => Under.homMk (c.π.app j) (by simp) }
+
+/-- The limit cone for `F : J ⥤ C` lifts to a cocone in `Under (limit F)` with cone point
+    `𝟙 (limit F)`. This is automatically also a limit cone. -/
+noncomputable def limit.toUnder (F : J ⥤ C) [HasLimit F] :
+    Cone (limit.toStructuredArrow F ⋙ StructuredArrow.toUnder _ _) where
+  pt := Under.mk (𝟙 (limit F))
+  π := { app := fun j => Under.homMk (limit.π F j) (by simp) }
+
+/-- `c.toUnder` is a lift of `c` under the forgetful functor. -/
+@[simps!]
+def Cone.mapConeToUnder {F : J ⥤ C} (c : Cone F) : (Under.forget c.pt).mapCone c.toUnder ≅ c :=
+  Iso.refl _
 
 /-- Given a diagram of `StructuredArrow X F`s, we may obtain a cone with cone point `X`. -/
 @[simps!]
@@ -193,6 +219,14 @@ def Cocone.toCostructuredArrow {F : J ⥤ C} (c : Cocone F) : J ⥤ Costructured
   obj j := CostructuredArrow.mk (c.ι.app j)
   map f := CostructuredArrow.homMk f
 
+/-- If `F` has a colimit, then the colimit inclusions can be interpreted as costructured arrows
+    `F.obj - ⟶ colimit F`. -/
+@[simps]
+noncomputable def colimit.toCostructuredArrow (F : J ⥤ C) [HasColimit F] :
+    J ⥤ CostructuredArrow F (colimit F) where
+  obj j := CostructuredArrow.mk (colimit.ι F j)
+  map f := CostructuredArrow.homMk f
+
 /-- `Cocone.toCostructuredArrow` can be expressed in terms of `Functor.toCostructuredArrow`. -/
 def Cocone.toCostructuredArrowIsoToCostructuredArrow {F : J ⥤ C} (c : Cocone F) :
     c.toCostructuredArrow ≅ (𝟭 J).toCostructuredArrow F c.pt c.ι.app (by simp) :=
@@ -230,6 +264,26 @@ def Cocone.toCostructuredArrowCompToOverCompForget {F : J ⥤ C} (c : Cocone F) 
 lemma Cocone.toCostructuredArrow_comp_toOver_comp_forget {F : J ⥤ C} (c : Cocone F) :
     c.toCostructuredArrow ⋙ CostructuredArrow.toOver _ _ ⋙ Over.forget _ = F :=
   rfl
+
+/-- A cocone `c` on `F : J ⥤ C` lifts to a cocone in `Over c.pt` with cone point `𝟙 c.pt`. -/
+@[simps]
+def Cocone.toOver {F : J ⥤ C} (c : Cocone F) :
+    Cocone (c.toCostructuredArrow ⋙ CostructuredArrow.toOver _ _) where
+  pt := Over.mk (𝟙 c.pt)
+  ι := { app := fun j => Over.homMk (c.ι.app j) (by simp) }
+
+/-- The colimit cocone for `F : J ⥤ C` lifts to a cocone in `Over (colimit F)` with cone point
+    `𝟙 (colimit F)`. This is automatically also a colimit cocone. -/
+@[simps]
+noncomputable def colimit.toOver (F : J ⥤ C) [HasColimit F] :
+    Cocone (colimit.toCostructuredArrow F ⋙ CostructuredArrow.toOver _ _) where
+  pt := Over.mk (𝟙 (colimit F))
+  ι := { app := fun j => Over.homMk (colimit.ι F j) (by simp) }
+
+/-- `c.toOver` is a lift of `c` under the forgetful functor. -/
+@[simps!]
+def Cocone.mapCoconeToOver {F : J ⥤ C} (c : Cocone F) : (Over.forget c.pt).mapCocone c.toOver ≅ c :=
+  Iso.refl _
 
 /-- Given a diagram `CostructuredArrow F X`s, we may obtain a cocone with cone point `X`. -/
 @[simps!]

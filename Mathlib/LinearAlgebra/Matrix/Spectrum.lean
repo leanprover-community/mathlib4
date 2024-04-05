@@ -24,8 +24,7 @@ spectral theorem, diagonalization theorem
 
 namespace Matrix
 
-variable {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
-
+variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
 variable {A : Matrix n n 𝕜}
 
 open scoped BigOperators
@@ -35,7 +34,6 @@ namespace IsHermitian
 section DecidableEq
 
 variable [DecidableEq n]
-
 variable (hA : A.IsHermitian)
 
 /-- The eigenvalues of a hermitian matrix, indexed by `Fin (Fintype.card n)` where `n` is the index
@@ -89,7 +87,7 @@ theorem eigenvectorMatrixInv_apply (i j : n) :
     hA.eigenvectorMatrixInv i j = star (hA.eigenvectorBasis i j) := by
   rw [eigenvectorMatrixInv, Basis.toMatrix_apply, OrthonormalBasis.coe_toBasis_repr_apply,
     OrthonormalBasis.repr_apply_apply, PiLp.basisFun_apply, WithLp.equiv_symm_single,
-    EuclideanSpace.inner_single_right, one_mul, IsROrC.star_def]
+    EuclideanSpace.inner_single_right, one_mul, RCLike.star_def]
 #align matrix.is_hermitian.eigenvector_matrix_inv_apply Matrix.IsHermitian.eigenvectorMatrixInv_apply
 
 theorem conjTranspose_eigenvectorMatrixInv : hA.eigenvectorMatrixInvᴴ = hA.eigenvectorMatrix := by
@@ -125,11 +123,11 @@ theorem spectral_theorem :
 
 theorem eigenvalues_eq (i : n) :
     hA.eigenvalues i =
-      IsROrC.re (star (hA.eigenvectorMatrixᵀ i) ⬝ᵥ A *ᵥ hA.eigenvectorMatrixᵀ i) := by
+      RCLike.re (star (hA.eigenvectorMatrixᵀ i) ⬝ᵥ A *ᵥ hA.eigenvectorMatrixᵀ i) := by
   have := hA.spectral_theorem
   rw [← @Matrix.mul_inv_eq_iff_eq_mul_of_invertible (A := hA.eigenvectorMatrixInv)] at this
-  have := congr_arg IsROrC.re (congr_fun (congr_fun this i) i)
-  rw [diagonal_apply_eq, Function.comp_apply, IsROrC.ofReal_re,
+  have := congr_arg RCLike.re (congr_fun (congr_fun this i) i)
+  rw [diagonal_apply_eq, Function.comp_apply, RCLike.ofReal_re,
     inv_eq_left_inv hA.eigenvectorMatrix_mul_inv, ← conjTranspose_eigenvectorMatrix, mul_mul_apply]
     at this
   exact this.symm
@@ -172,7 +170,7 @@ lemma mulVec_eigenvectorBasis (i : n) :
   have := congr_fun (congr_fun this j) i
   simp only [mul_diagonal, Function.comp_apply] at this
   convert this using 1
-  rw [mul_comm, Pi.smul_apply, IsROrC.real_smul_eq_coe_mul, hA.eigenvectorMatrix_apply]
+  rw [mul_comm, Pi.smul_apply, RCLike.real_smul_eq_coe_mul, hA.eigenvectorMatrix_apply]
 
 end DecidableEq
 
@@ -183,7 +181,7 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
   have : hA.eigenvalues ≠ 0 := by
     contrapose! h_ne
     have := hA.spectral_theorem'
-    rwa [h_ne, Pi.comp_zero, IsROrC.ofReal_zero, (by rfl : Function.const n (0 : 𝕜) = fun _ ↦ 0),
+    rwa [h_ne, Pi.comp_zero, RCLike.ofReal_zero, (by rfl : Function.const n (0 : 𝕜) = fun _ ↦ 0),
       diagonal_zero, mul_zero, zero_mul] at this
   obtain ⟨i, hi⟩ := Function.ne_iff.mp this
   exact ⟨_, _, hi, hA.eigenvectorBasis.orthonormal.ne_zero i, hA.mulVec_eigenvectorBasis i⟩

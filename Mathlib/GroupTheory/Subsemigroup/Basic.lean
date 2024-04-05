@@ -55,7 +55,6 @@ variable {M : Type*} {N : Type*} {A : Type*}
 section NonAssoc
 
 variable [Mul M] {s : Set M}
-
 variable [Add A] {t : Set A}
 
 /-- `MulMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(*)` -/
@@ -354,22 +353,22 @@ is preserved under multiplication, then `p` holds for all elements of the closur
 @[to_additive (attr := elab_as_elim) "An induction principle for additive closure membership. If `p`
   holds for all elements of `s`, and is preserved under addition, then `p` holds for all
   elements of the additive closure of `s`."]
-theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (Hs : ∀ x ∈ s, p x)
-    (Hmul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨p, Hmul _ _⟩).2 Hs h
+theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x)
+    (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
+  (@closure_le _ _ _ ⟨p, mul _ _⟩).2 mem h
 #align subsemigroup.closure_induction Subsemigroup.closure_induction
 #align add_subsemigroup.closure_induction AddSubsemigroup.closure_induction
 
 /-- A dependent version of `Subsemigroup.closure_induction`.  -/
 @[to_additive (attr := elab_as_elim) "A dependent version of `AddSubsemigroup.closure_induction`. "]
 theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
-    (Hs : ∀ (x) (h : x ∈ s), p x (subset_closure h))
-    (Hmul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
+    (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h))
+    (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
     p x hx := by
   refine' Exists.elim _ fun (hx : x ∈ closure s) (hc : p x hx) => hc
   exact
-    closure_induction hx (fun x hx => ⟨_, Hs x hx⟩) fun x y ⟨hx', hx⟩ ⟨hy', hy⟩ =>
-      ⟨_, Hmul _ _ _ _ hx hy⟩
+    closure_induction hx (fun x hx => ⟨_, mem x hx⟩) fun x y ⟨hx', hx⟩ ⟨hy', hy⟩ =>
+      ⟨_, mul _ _ _ _ hx hy⟩
 #align subsemigroup.closure_induction' Subsemigroup.closure_induction'
 #align add_subsemigroup.closure_induction' AddSubsemigroup.closure_induction'
 
@@ -392,9 +391,10 @@ and verify that `p x` and `p y` imply `p (x * y)`. -/
   `AddSubsemigroup.closure s = ⊤`, then in order to prove that some predicate `p` holds
   for all `x : M` it suffices to verify `p x` for `x ∈ s`, and verify that `p x` and `p y` imply
   `p (x + y)`."]
-theorem dense_induction {p : M → Prop} (x : M) {s : Set M} (hs : closure s = ⊤) (Hs : ∀ x ∈ s, p x)
-    (Hmul : ∀ x y, p x → p y → p (x * y)) : p x := by
-  have : ∀ x ∈ closure s, p x := fun x hx => closure_induction hx Hs Hmul
+theorem dense_induction {p : M → Prop} (x : M) {s : Set M} (hs : closure s = ⊤)
+    (mem : ∀ x ∈ s, p x)
+    (mul : ∀ x y, p x → p y → p (x * y)) : p x := by
+  have : ∀ x ∈ closure s, p x := fun x hx => closure_induction hx mem mul
   simpa [hs] using this x
 #align subsemigroup.dense_induction Subsemigroup.dense_induction
 #align add_subsemigroup.dense_induction AddSubsemigroup.dense_induction

@@ -24,9 +24,7 @@ noncomputable section
 universe u v v' w
 
 variable {R : Type u} {M M₁ : Type v} {M' : Type v'} {ι : Type w}
-
 variable [Ring R] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
-
 variable [Module R M] [Module R M'] [Module R M₁]
 
 attribute [local instance] nontrivial_of_invariantBasisNumber
@@ -67,10 +65,9 @@ lemma rank_eq_zero_iff :
     simpa using DFunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
 
 variable [Nontrivial R]
-
 variable [NoZeroSMulDivisors R M]
 
-theorem rank_zero_iff_forall_zero [NoZeroSMulDivisors R M] :
+theorem rank_zero_iff_forall_zero :
     Module.rank R M = 0 ↔ ∀ x : M, x = 0 := by
   simp_rw [rank_eq_zero_iff, smul_eq_zero, and_or_left, not_and_self_iff, false_or,
     exists_and_right, and_iff_right (exists_ne (0 : R))]
@@ -96,7 +93,7 @@ lemma rank_eq_zero_iff_isTorsion {R M} [CommRing R] [IsDomain R] [AddCommGroup M
   rw [Module.IsTorsion, rank_eq_zero_iff]
   simp [mem_nonZeroDivisors_iff_ne_zero]
 
-theorem rank_pos [NoZeroSMulDivisors R M] [Nontrivial M] : 0 < Module.rank R M :=
+theorem rank_pos [Nontrivial M] : 0 < Module.rank R M :=
   rank_pos_iff_nontrivial.mpr ‹_›
 #align rank_pos rank_pos
 
@@ -385,7 +382,7 @@ theorem FiniteDimensional.finrank_pos [NoZeroSMulDivisors R M] [h : Nontrivial M
 
 /-- See `FiniteDimensional.finrank_zero_iff`
   for the stronger version with `NoZeroSMulDivisors R M`. -/
-theorem FiniteDimensional.finrank_eq_zero_iff [Module.Finite R M] :
+theorem FiniteDimensional.finrank_eq_zero_iff :
     finrank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 := by
   rw [← rank_eq_zero_iff (R := R), ← finrank_eq_rank]
   norm_cast

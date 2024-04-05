@@ -36,7 +36,6 @@ namespace Algebra
 section Semiring
 
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
-
 variable [Algebra R S] [Algebra R A] [Algebra S A] [Algebra R B] [IsScalarTower R S A]
 variable {s t : Set A}
 
@@ -130,11 +129,8 @@ theorem adjoin_induction' {p : adjoin R s → Prop} (mem : ∀ (x) (h : x ∈ s)
 
 @[simp]
 theorem adjoin_adjoin_coe_preimage {s : Set A} : adjoin R (((↑) : adjoin R s → A) ⁻¹' s) = ⊤ := by
-  refine'
-    eq_top_iff.2 fun x =>
-      -- Porting note: Lean could no longer infer the motive
-      adjoin_induction' (p := fun y => y ∈ adjoin R (((↑) : adjoin R s → A) ⁻¹' s))
-      (fun a ha => _) (fun r => _) (fun _ _ => _) (fun _ _ => _) x
+  refine eq_top_iff.2 fun x ↦
+      adjoin_induction' (fun a ha ↦ ?_) (fun r ↦ ?_) (fun _ _ ↦ ?_) (fun _ _ ↦ ?_) x
   · exact subset_adjoin ha
   · exact Subalgebra.algebraMap_mem _ r
   · exact Subalgebra.add_mem _
@@ -342,9 +338,7 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A]
-
 variable [Algebra R A] {s t : Set A}
-
 variable (R s t)
 
 theorem adjoin_union_eq_adjoin_adjoin :
@@ -395,7 +389,6 @@ end CommSemiring
 section Ring
 
 variable [CommRing R] [Ring A]
-
 variable [Algebra R A] {s t : Set A}
 
 theorem mem_adjoin_iff {s : Set A} {x : A} :

@@ -204,7 +204,7 @@ instance Monoid.measurablePow (M : Type*) [Monoid M] [MeasurableSpace M] [Measur
       induction' n with n ih
       · simp only [Nat.zero_eq, pow_zero, ← Pi.one_def, measurable_one]
       · simp only [pow_succ]
-        exact measurable_id.mul ih⟩
+        exact ih.mul measurable_id⟩
 #align monoid.has_measurable_pow Monoid.measurablePow
 
 section Pow
@@ -513,6 +513,11 @@ theorem MeasurableSet.inv {s : Set G} (hs : MeasurableSet s) : MeasurableSet s�
 #align measurable_set.inv MeasurableSet.inv
 #align measurable_set.neg MeasurableSet.neg
 
+@[to_additive]
+theorem measurableEmbedding_inv [InvolutiveInv α] [MeasurableInv α] :
+    MeasurableEmbedding (Inv.inv (α := α)) :=
+  ⟨inv_injective, measurable_inv, fun s hs ↦ s.image_inv ▸ hs.inv⟩
+
 end Inv
 
 /-- `DivInvMonoid.Pow` is measurable. -/
@@ -520,7 +525,7 @@ instance DivInvMonoid.measurableZPow (G : Type u) [DivInvMonoid G] [MeasurableSp
     [MeasurableMul₂ G] [MeasurableInv G] : MeasurablePow G ℤ :=
   ⟨measurable_from_prod_countable fun n => by
       cases' n with n n
-      · simp_rw [Int.ofNat_eq_coe, zpow_coe_nat]
+      · simp_rw [Int.ofNat_eq_coe, zpow_natCast]
         exact measurable_id.pow_const _
       · simp_rw [zpow_negSucc]
         exact (measurable_id.pow_const (n + 1)).inv⟩
@@ -699,7 +704,7 @@ instance AddMonoid.measurableSMul_nat₂ (M : Type*) [AddMonoid M] [MeasurableSp
     induction' n with n ih
     · simp only [Nat.zero_eq, zero_smul, ← Pi.zero_def, measurable_zero]
     · simp only [succ_nsmul]
-      exact measurable_id.add ih⟩
+      exact ih.add measurable_id⟩
 #align add_monoid.has_measurable_smul_nat₂ AddMonoid.measurableSMul_nat₂
 
 /-- `SubNegMonoid.SMulInt` is measurable. -/
@@ -709,7 +714,7 @@ instance SubNegMonoid.measurableSMul_int₂ (M : Type*) [SubNegMonoid M] [Measur
     suffices Measurable fun p : M × ℤ => p.2 • p.1 by apply this.comp measurable_swap
     refine' measurable_from_prod_countable fun n => _
     induction' n with n n ih
-    · simp only [Int.ofNat_eq_coe, coe_nat_zsmul]
+    · simp only [Int.ofNat_eq_coe, natCast_zsmul]
       exact measurable_const_smul _
     · simp only [negSucc_zsmul]
       exact (measurable_const_smul _).neg⟩

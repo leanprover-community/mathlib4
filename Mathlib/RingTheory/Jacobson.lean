@@ -159,7 +159,6 @@ section Localization
 open IsLocalization Submonoid
 
 variable {R S : Type*} [CommRing R] [CommRing S] {I : Ideal R}
-
 variable (y : R) [Algebra R S] [IsLocalization.Away y S]
 
 theorem disjoint_powers_iff_not_mem (hI : I.IsRadical) :
@@ -294,13 +293,12 @@ lemma mem_closure_X_union_C {R : Type*} [Ring R] (p : R[X]) :
   · intros p1 p2 h1 h2
     exact Subring.add_mem _ h1 h2
   · intros n r hr
-    rw [pow_succ', ← mul_assoc]
+    rw [pow_succ, ← mul_assoc]
     apply Subring.mul_mem _ hr
     apply Subring.subset_closure
     apply Set.mem_insert
 
 variable {R S : Type*} [CommRing R] [CommRing S] [IsDomain S]
-
 variable {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
 
 /-- If `I` is a prime ideal of `R[X]` and `pX ∈ I` is a non-constant polynomial,
@@ -421,7 +419,7 @@ private theorem isJacobson_polynomial_of_domain (R : Type*) [CommRing R] [IsDoma
     haveI hR' : IsJacobson (R ⧸ P') := by infer_instance
     obtain ⟨p, pP, p0⟩ := exists_nonzero_mem_of_ne_bot Pb hP
     let x := (Polynomial.map (Quotient.mk P') p).leadingCoeff
-    have hx : x ≠ 0 := by rwa [Ne.def, leadingCoeff_eq_zero]
+    have hx : x ≠ 0 := by rwa [Ne, leadingCoeff_eq_zero]
     let φ : R ⧸ P' →+* R[X] ⧸ P := Ideal.quotientMap P (C : R →+* R[X]) le_rfl
     let hφ : Function.Injective ↑φ := quotientMap_injective
     let Rₘ := Localization.Away x
@@ -474,7 +472,6 @@ end CommRing
 section
 
 variable {R : Type*} [CommRing R] [IsJacobson R]
-
 variable (P : Ideal R[X]) [hP : P.IsMaximal]
 
 theorem isMaximal_comap_C_of_isMaximal [Nontrivial R] (hP' : ∀ x : R, C x ∈ P → x = 0) :

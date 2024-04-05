@@ -321,7 +321,7 @@ protected def nonUnitalCommSemiring [NonUnitalCommSemiring α] (zero : f 0 = 0)
   __ := hf.commSemigroup f mul
 #align function.surjective.non_unital_comm_semiring Function.Surjective.nonUnitalCommSemiring
 
-/-- Pushforward a `NonAssocSemiring` instance along a surjective function. -/
+/-- Pushforward a `CommSemiring` instance along a surjective function. -/
 @[reducible] -- See note [reducible non-instances]
 protected def commSemiring [CommSemiring α] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)

@@ -166,14 +166,14 @@ variable (x y : BitVec w)
 -- These should be simp, but Std's simp-lemmas do not allow this yet.
 lemma toFin_zero : toFin (0 : BitVec w) = 0 := rfl
 lemma toFin_one  : toFin (1 : BitVec w) = 1 := by
-  apply toFin_inj.mpr; simp only [ofNat_eq_ofNat, ofFin_ofNat]
+  rw [toFin_inj]; simp only [ofNat_eq_ofNat, ofFin_ofNat]
 
 lemma toFin_nsmul (n : ℕ) (x : BitVec w) : toFin (n • x) = n • x.toFin := rfl
 lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin := rfl
 @[simp] lemma toFin_pow (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := rfl
 
 lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := by
-  apply toFin_inj.mpr; simp only [ofFin_natCast]
+  rw [toFin_inj]; simp only [ofFin_natCast]
 
 end
 
