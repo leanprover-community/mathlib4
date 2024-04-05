@@ -405,7 +405,7 @@ lemma addZ_of_X_ne_smul (P Q : Fin 3 → R) (u v : Rˣ) :
 non-zero and its $Y$-coordinate is distinct from that of its negation. -/
 @[pp_dot]
 def addZ_of_Y_ne (P : Fin 3 → R) : R :=
-  P z ^ 2 * (P y - W.negY P) ^ 2 * ((P y - W.negY P) * P z)
+  P z ^ 2 * (P y - W.negY P) ^ 2 * (P z * (P y - W.negY P))
 
 lemma addZ_of_Y_ne_smul (P : Fin 3 → R) (u : Rˣ) :
     W.addZ_of_Y_ne (u • P) = (u : R) ^ 6 * W.addZ_of_Y_ne P := by
@@ -427,7 +427,7 @@ lemma addX_of_X_ne_smul (P Q : Fin 3 → R) (u v : Rˣ) :
 non-zero and its $Y$-coordinate is distinct from that of its negation. -/
 @[pp_dot]
 def addX_of_Y_ne (P : Fin 3 → R) : R :=
-  W.addX'_of_Y_ne P * ((P y - W.negY P) * P z)
+  W.addX'_of_Y_ne P * (P z * (P y - W.negY P))
 
 lemma addX_of_Y_ne_smul (P : Fin 3 → R) (u : Rˣ) :
     W.addX_of_Y_ne (u • P) = (u : R) ^ 6 * W.addX_of_Y_ne P := by
@@ -462,7 +462,7 @@ variable {F : Type u} [Field F] {W : Projective F}
 
 lemma negY_divZ {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.negY P / P z = W.toAffine.negY (P x / P z) (P y / P z) := by
-  field_simp [negY, Affine.negY]
+  field_simp [negY]
   ring1
 
 lemma Y_ne_of_Y_ne {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) (hPz : P z ≠ 0)
@@ -480,16 +480,14 @@ private lemma addX_eq {P Q : Fin 3 → F} {n d : F} (hPz : P z ≠ 0) (hQz : Q z
     W.toAffine.addX (P x / P z) (Q x / Q z) (n / d) =
       (n ^ 2 * P z * Q z + W.a₁ * n * P z * Q z * d - W.a₂ * P z * Q z * d ^ 2 - P x * Q z * d ^ 2
         - Q x * P z * d ^ 2) / (P z * Q z * d ^ 2) := by
-  rw [Affine.addX]
   field_simp [pow_ne_zero 2 hd]
   ring1
 
 private lemma addX_eq' {P : Fin 3 → F} {n d : F} (hPz : P z ≠ 0) (hd : d ≠ 0) :
-    W.toAffine.addX (P x / P z) (P x / P z) (n / (d * P z)) =
+    W.toAffine.addX (P x / P z) (P x / P z) (n / (P z * d)) =
       (n ^ 2 + W.a₁ * n * P z * d - W.a₂ * P z ^ 2 * d ^ 2 - 2 * P x * P z * d ^ 2)
         / (P z ^ 2 * d ^ 2) := by
-  rw [Affine.addX]
-  field_simp [mul_ne_zero hd hPz]
+  field_simp [mul_ne_zero hPz hd]
   ring1
 
 private lemma slope_eq {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
@@ -503,7 +501,7 @@ private lemma slope_eq' {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsi
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = P z * Q x) (hy : P y * Q z ≠ P z * W.negY Q) :
     W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z) =
       (3 * P x ^ 2 + 2 * W.a₂ * P x * P z + W.a₄ * P z ^ 2 - W.a₁ * P y * P z)
-        / ((P y - W.negY P) * P z) := by
+        / (P z * (P y - W.negY P)) := by
   have hPy : P y - W.negY P ≠ 0 := sub_ne_zero_of_ne <| Y_ne_of_Y_ne hP hQ hPz hQz hx hy
   simp only [mul_comm <| P z, ne_eq, ← div_eq_div_iff hPz hQz] at hx hy
   rw [Affine.slope_of_Yne hx <| (negY_divZ hQz).symm ▸ hy, ← negY_divZ hPz]
@@ -522,7 +520,7 @@ lemma addX_div_addZ_of_Y_ne {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.N
     W.addX_of_Y_ne P / W.addZ_of_Y_ne P = W.toAffine.addX (P x / P z) (Q x / Q z)
       (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
   have hPy : P y - W.negY P ≠ 0 := sub_ne_zero_of_ne <| Y_ne_of_Y_ne hP hQ hPz hQz hx hy
-  rw [addX_of_Y_ne, addX'_of_Y_ne, addZ_of_Y_ne, mul_div_mul_right _ _ <| mul_ne_zero hPy hPz,
+  rw [addX_of_Y_ne, addX'_of_Y_ne, addZ_of_Y_ne, mul_div_mul_right _ _ <| mul_ne_zero hPz hPy,
     slope_eq' hP hQ hPz hQz hx hy, ← (div_eq_div_iff hPz hQz).mpr <| mul_comm (P z) _ ▸ hx,
     addX_eq' hPz hPy]
 
@@ -544,7 +542,7 @@ lemma addY'_div_addZ_of_Y_ne {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.
   rw [Affine.addY', ← addX_div_addZ_of_Y_ne hP hQ hPz hQz hx hy, slope_eq' hP hQ hPz hQz hx hy,
     addY'_of_Y_ne, addX_of_Y_ne, addZ_of_Y_ne, add_div]
   nth_rw 1 [mul_comm <| _ ^ 2 * _]
-  rw [mul_div_mul_comm, sub_div _ <| _ * _ ^ 2, mul_div_mul_right _ _ <| mul_ne_zero hPy hPz]
+  rw [mul_div_mul_comm, sub_div _ <| _ * _ ^ 2, mul_div_mul_right _ _ <| mul_ne_zero hPz hPy]
   simp only [sq, ← mul_assoc, mul_comm (_ * _ * _) <| P z, mul_div_mul_right _ _ hPy,
     mul_div_mul_right _ _ hPz, mul_div_mul_right _ _ <| pow_ne_zero 2 hPy]
 
