@@ -68,6 +68,13 @@ instance {X Y : FintypeCat} (f : X ⟶ Y) [Epi f] : IsSplitEpi f := isSplitEpi_o
 
 def proj (n : ℕ) : S ⟶ S.component n := S.cone.π.app ⟨n⟩
 
+lemma proj_surjective_aux {T : Profinite} (d : DiscreteQuotient T) :
+    Surjective (T.asLimitCone.π.app d) :=
+  DiscreteQuotient.proj_surjective _
+
+lemma proj_surjective (T : Profinite) [IsLight T] (n : ℕ) : Surjective ((ofIsLight T).proj n) :=
+  DiscreteQuotient.proj_surjective _
+
 @[simp, reassoc]
 lemma proj_comp_transitionMap' (n : ℕ) : S.proj (n + 1) ≫ S.transitionMap' n = S.proj n :=
   S.cone.w (homOfLE (Nat.le_succ n)).op
@@ -91,6 +98,12 @@ lemma proj_comp_transitionMapLE' {n m : ℕ} (h : n ≤ m) :
 @[simp]
 lemma proj_comp_transitionMapLE {n m : ℕ} (h : n ≤ m) :
     S.transitionMapLE' h ∘ S.proj m  = S.proj n := by
+  rw [← S.proj_comp_transitionMapLE' h]
+  rfl
+
+@[simp]
+lemma proj_comp_transitionMapLE'' {n m : ℕ} (h : n ≤ m) :
+    S.transitionMapLE h ∘ S.proj m  = S.proj n := by
   rw [← S.proj_comp_transitionMapLE' h]
   rfl
 
