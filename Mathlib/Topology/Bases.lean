@@ -613,6 +613,12 @@ theorem isTopologicalBasis_singletons (α : Type*) [TopologicalSpace α] [Discre
     ⟨{x}, ⟨x, rfl⟩, mem_singleton x, singleton_subset_iff.2 hx⟩
 #align is_topological_basis_singletons isTopologicalBasis_singletons
 
+theorem isTopologicalBasis_subtype
+    {α : Type*} [TopologicalSpace α] {B : Set (Set α)}
+    (h : TopologicalSpace.IsTopologicalBasis B) (p : α → Prop) :
+    IsTopologicalBasis (Set.preimage (Subtype.val (p := p)) '' B) :=
+  h.inducing ⟨rfl⟩
+
 -- Porting note: moved `DenseRange.separableSpace` up
 
 -- Porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t (_ : t ⊆ s), _`
