@@ -1930,7 +1930,7 @@ theorem _root_.NNReal.natCast_natAbs (n : ℤ) : (n.natAbs : ℝ≥0) = ‖n‖�
     calc
       ((n.natAbs : ℝ≥0) : ℝ) = (n.natAbs : ℤ) := by
         simp only [Int.cast_natCast, NNReal.coe_nat_cast]
-      _ = |(n : ℝ)| := by simp only [Int.coe_natAbs, Int.cast_abs]
+      _ = |(n : ℝ)| := by simp only [Int.natCast_natAbs, Int.cast_abs]
       _ = ‖n‖ := (norm_eq_abs n).symm
 #align nnreal.coe_nat_abs NNReal.natCast_natAbs
 
