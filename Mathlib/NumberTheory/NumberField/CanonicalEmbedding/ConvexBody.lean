@@ -10,28 +10,28 @@ import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 #align_import number_theory.number_field.canonical_embedding from "leanprover-community/mathlib"@"60da01b41bbe4206f05d34fd70c8dd7498717a30"
 
 /-!
-# Canonical embedding of a number field
+# Convex Bodies
 
-The canonical embedding of a number field `K` of degree `n` is the ring homomorphism
-`K →+* ℂ^n` that sends `x ∈ K` to `(φ_₁(x),...,φ_n(x))` where the `φ_i`'s are the complex
-embeddings of `K`. Note that we do not choose an ordering of the embeddings, but instead map `K`
-into the type `(K →+* ℂ) → ℂ` of `ℂ`-vectors indexed by the complex embeddings.
+The file contains the definitions of several convex bodies lying in the space `ℝ^r₁ × ℂ^r₂`
+associated to a number field of signature `K` and proves several existence theorems by applying
+*Minkowski Convex Body Theorem* to those.
 
-## Main results
+## Main definitions and results
+
+* `NumberField.mixedEmbedding.convexBodyLT`: The set of points `x` such that `‖x w‖ < f w` for all
+infinite places `w` with `f : InfinitePlace K → ℝ≥0`.
+
+* `NumberField.mixedEmbedding.convexBodySum`: The set of points `x` such that
+`∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`
 
 * `NumberField.mixedEmbedding.exists_ne_zero_mem_ideal_lt`: Let `I` be a fractional ideal of `K`.
-Assume that `f : InfinitePlace K → ℝ≥0` is such that
-`minkowskiBound K I < volume (convexBodyLT K f)` where `convexBodyLT K f` is the set of
-points `x` such that `‖x w‖ < f w` for all infinite places `w` (see `convexBodyLT_volume` for
-the computation of this volume), then there exists a nonzero algebraic number `a` in `I` such
-that `w a < f w` for all infinite places `w`.
+Assume that `f` is such that `minkowskiBound K I < volume (convexBodyLT K f)`, then there exists a
+nonzero algebraic number `a` in `I` such that `w a < f w` for all infinite places `w`.
 
 * `NumberField.mixedEmbedding.exists_ne_zero_mem_ideal_of_norm_le`: Let `I` be a fractional ideal
-of `K`. Assume that `B : ℝ` is such that `minkowskiBound K I < volume (convexBodySum K B)` where
-`convexBodySum K B` is the set of points `x` such that
-`∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B` (see `convexBodySum_volume` for
-the computation of this volume), then there exists a nonzero algebraic number `a` in `I` such
-that `|Norm a| < (B / d) ^ d` where `d` is the degree of `K`.
+of `K`. Assume that `B` is such that `minkowskiBound K I < volume (convexBodySum K B)` (see
+`convexBodySum_volume` for the computation of this volume), then there exists a nonzero algebraic
+number `a` in `I` such that `|Norm a| < (B / d) ^ d` where `d` is the degree of `K`.
 
 ## Tags
 
