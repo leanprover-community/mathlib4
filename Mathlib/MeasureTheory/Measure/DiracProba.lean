@@ -25,8 +25,6 @@ open Topology Metric Filter Set ENNReal NNReal BoundedContinuousFunction
 
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
-section generic_lemmas
-
 lemma CompletelyRegularSpace.exists_BCNN {X : Type*} [TopologicalSpace X] [CompletelyRegularSpace X]
     {K : Set X} (K_closed : IsClosed K) {x : X} (x_notin_K : x ∉ K) :
     ∃ (f : X →ᵇ ℝ≥0), f x = 1 ∧ (∀ y ∈ K, f y = 0) := by
@@ -51,16 +49,14 @@ lemma CompletelyRegularSpace.exists_BCNN {X : Type*} [TopologicalSpace X] [Compl
     simp only [mkOfBound_coe, ContinuousMap.coe_mk, g_one_on_K y_in_K, Pi.one_apply, Icc.coe_one,
                sub_self, Real.toNNReal_zero, f, h]
 
-end generic_lemmas
-
 namespace MeasureTheory
 
 section embed_to_probabilityMeasure
 
-variable {Ω : Type*} [MeasurableSpace Ω]
+variable {X : Type*} [MeasurableSpace X]
 
-/-- The Dirac delta mass at a point `x : Ω` as a `ProbabilityMeasure`. -/
-noncomputable def diracProba (x : Ω) : ProbabilityMeasure Ω :=
+/-- The Dirac delta mass at a point `x : X` as a `ProbabilityMeasure`. -/
+noncomputable def diracProba (x : X) : ProbabilityMeasure X :=
   ⟨Measure.dirac x, Measure.dirac.isProbabilityMeasure⟩
 
 /-- The assignment `x ↦ diracProba x` is injective if all singletons are measurable. -/
@@ -70,35 +66,35 @@ lemma injective_diracProba {X : Type*} [MeasurableSpace X] [MeasurableSingletonC
   by_contra con
   exact dirac_ne_dirac con <| congr_arg Subtype.val x_ne_y
 
-@[simp] lemma diracProba_toMeasure_apply' (x : Ω) {A : Set Ω} (A_mble : MeasurableSet A) :
+@[simp] lemma diracProba_toMeasure_apply' (x : X) {A : Set X} (A_mble : MeasurableSet A) :
     (diracProba x).toMeasure A = A.indicator 1 x := Measure.dirac_apply' x A_mble
 
-@[simp] lemma diracProba_toMeasure_apply_of_mem {x : Ω} {A : Set Ω} (x_in_A : x ∈ A) :
+@[simp] lemma diracProba_toMeasure_apply_of_mem {x : X} {A : Set X} (x_in_A : x ∈ A) :
     (diracProba x).toMeasure A = 1 := Measure.dirac_apply_of_mem x_in_A
 
-@[simp] lemma diracProba_toMeasure_apply [MeasurableSingletonClass Ω] (x : Ω) (A : Set Ω) :
+@[simp] lemma diracProba_toMeasure_apply [MeasurableSingletonClass X] (x : X) (A : Set X) :
     (diracProba x).toMeasure A = A.indicator 1 x := Measure.dirac_apply _ _
 
-variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
+variable [TopologicalSpace X] [OpensMeasurableSpace X]
 
-/-- The assignment `x ↦ diracProba x` is continuous `Ω → ProbabilityMeasure Ω`. -/
-lemma continuous_diracProba : Continuous (fun (x : Ω) ↦ diracProba x) := by
+/-- The assignment `x ↦ diracProba x` is continuous `X → ProbabilityMeasure X`. -/
+lemma continuous_diracProba : Continuous (fun (x : X) ↦ diracProba x) := by
   rw [continuous_iff_continuousAt]
   apply fun x ↦ ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto.mpr fun f ↦ ?_
-  have f_mble : Measurable (fun ω ↦ (f ω : ℝ≥0∞)) :=
+  have f_mble : Measurable (fun X ↦ (f X : ℝ≥0∞)) :=
     measurable_coe_nnreal_ennreal_iff.mpr f.continuous.measurable
   simp only [diracProba, ProbabilityMeasure.coe_mk, lintegral_dirac' _ f_mble]
   exact (ENNReal.continuous_coe.comp f.continuous).continuousAt
 
 /-- In a T0 topological space equipped with a sigma algebra which contains all open sets,
 the assignment `x ↦ diracProba x` is injective. -/
-lemma injective_diracProba_of_T0 [T0Space Ω] :
-    Function.Injective (fun (x : Ω) ↦ diracProba x) := by
-  intro x y x_ne_y
-  by_contra con
-  exact dirac_ne_dirac con <| congr_arg Subtype.val x_ne_y
+lemma injective_diracProba_of_T0 [T0Space X] :
+    Function.Injective (fun (x : X) ↦ diracProba x) := by
+  intro x y δx_eq_δy
+  by_contra x_ne_y
+  exact dirac_ne_dirac x_ne_y <| congr_arg Subtype.val δx_eq_δy
 
-lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace Ω] {x : Ω} (L : Filter Ω)
+lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace X] {x : X} (L : Filter X)
     (h : ¬ Tendsto id L (𝓝 x)) :
     ¬ Tendsto diracProba L (𝓝 (diracProba x)) := by
   obtain ⟨U, U_nhd, hU⟩ : ∃ U, U ∈ 𝓝 x ∧ ∃ᶠ x in L, x ∉ U := by
@@ -110,8 +106,7 @@ lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace Ω] {x : Ω}
   obtain ⟨f, fx_eq_one, f_vanishes_outside⟩ :=
     CompletelyRegularSpace.exists_BCNN isOpen_interior.isClosed_compl
       (by simpa only [mem_compl_iff, not_not] using mem_of_mem_nhds Uint_nhd)
-  rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto]
-  rw [not_forall]
+  rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto, not_forall]
   use f
   simp only [diracProba, ProbabilityMeasure.coe_mk, fx_eq_one,
              lintegral_dirac' _ (measurable_coe_nnreal_ennreal_iff.mpr f.continuous.measurable)]
@@ -120,82 +115,82 @@ lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace Ω] {x : Ω}
           hU.mp (eventually_of_forall ?_)⟩
   intro x x_notin_U
   rw [f_vanishes_outside x
-      (compl_subset_compl.mpr (show interior U ⊆ U from interior_subset) x_notin_U)]
+        (compl_subset_compl.mpr (show interior U ⊆ U from interior_subset) x_notin_U)]
   simp only [ENNReal.coe_zero, mem_Ioi, lt_self_iff_false, not_false_eq_true]
 
-lemma tendsto_diracProba_iff_tendsto [CompletelyRegularSpace Ω] {x : Ω} (L : Filter Ω) :
+lemma tendsto_diracProba_iff_tendsto [CompletelyRegularSpace X] {x : X} (L : Filter X) :
     Tendsto diracProba L (𝓝 (diracProba x)) ↔ Tendsto id L (𝓝 x) := by
   constructor
   · contrapose
-    apply not_tendsto_diracProba_of_not_tendsto
+    exact not_tendsto_diracProba_of_not_tendsto L
   · intro h
-    have aux := (@continuous_diracProba Ω _ _ _).continuousAt (x := x)
+    have aux := (@continuous_diracProba X _ _ _).continuousAt (x := x)
     simp only [ContinuousAt] at aux
-    apply aux.comp h
+    exact aux.comp h
 
 /-- An inverse function to `diracProba` (only really an inverse under hypotheses that
 guarantee injectivity of `diracProba`). -/
-noncomputable def diracProbaInverse : range (diracProba (Ω := Ω)) → Ω :=
+noncomputable def diracProbaInverse : range (diracProba (X := X)) → X :=
   fun μ' ↦ (mem_range.mp μ'.prop).choose
 
-@[simp] lemma diracProba_diracProbaInverse (μ : range (diracProba (Ω := Ω))) :
+@[simp] lemma diracProba_diracProbaInverse (μ : range (diracProba (X := X))) :
     diracProba (diracProbaInverse μ) = μ := (mem_range.mp μ.prop).choose_spec
 
-lemma diracProbaInverse_eq [T0Space Ω] {x : Ω} {μ : range (diracProba (Ω := Ω))}
+lemma diracProbaInverse_eq [T0Space X] {x : X} {μ : range (diracProba (X := X))}
     (h : μ = diracProba x) :
     diracProbaInverse μ = x := by
-  apply injective_diracProba_of_T0 (Ω := Ω)
+  apply injective_diracProba_of_T0 (X := X)
   simp only [← h]
   exact (mem_range.mp μ.prop).choose_spec
 
-/-- In a T0 topological space `Ω`, the assignment `x ↦ diracProba x` is a bijection to its
-range in `ProbabilityMeasure Ω`. -/
-noncomputable def diracProbaEquiv [T0Space Ω] : Ω ≃ range (diracProba (Ω := Ω)) where
+/-- In a T0 topological space `X`, the assignment `x ↦ diracProba x` is a bijection to its
+range in `ProbabilityMeasure X`. -/
+noncomputable def diracProbaEquiv [T0Space X] : X ≃ range (diracProba (X := X)) where
   toFun := fun x ↦ ⟨diracProba x, by exact mem_range_self x⟩
   invFun := diracProbaInverse
   left_inv x := by apply diracProbaInverse_eq; rfl
   right_inv μ := Subtype.ext (by simp only [diracProba_diracProbaInverse])
 
 /-- The composition of `diracProbaEquiv.symm` and `diracProba` is the subtype inclusion. -/
-lemma diracProba_comp_diracProbaEquiv_symm_eq_val [T0Space Ω] :
-    diracProba ∘ (diracProbaEquiv (Ω := Ω)).symm = fun μ ↦ μ.val := by
+lemma diracProba_comp_diracProbaEquiv_symm_eq_val [T0Space X] :
+    diracProba ∘ (diracProbaEquiv (X := X)).symm = fun μ ↦ μ.val := by
   funext μ; simp [diracProbaEquiv]
 
-lemma tendsto_diracProbaEquivSymm_iff_tendsto [T0Space Ω] [CompletelyRegularSpace Ω]
-    {μ : range (diracProba (Ω := Ω))} (F : Filter (range (diracProba (Ω := Ω)))) :
+lemma tendsto_diracProbaEquivSymm_iff_tendsto [T0Space X] [CompletelyRegularSpace X]
+    {μ : range (diracProba (X := X))} (F : Filter (range (diracProba (X := X)))) :
     Tendsto diracProbaEquiv.symm F (𝓝 (diracProbaEquiv.symm μ)) ↔ Tendsto id F (𝓝 μ) := by
   have key :=
     tendsto_diracProba_iff_tendsto (F.map diracProbaEquiv.symm) (x := diracProbaEquiv.symm μ)
-  rw [← (diracProbaEquiv (Ω := Ω)).symm_comp_self, ← tendsto_map'_iff] at key
+  rw [← (diracProbaEquiv (X := X)).symm_comp_self, ← tendsto_map'_iff] at key
   simp only [tendsto_map'_iff, map_map, Equiv.self_comp_symm, map_id] at key
   simp only [← key, diracProba_comp_diracProbaEquiv_symm_eq_val]
   convert tendsto_subtype_rng.symm
-  exact apply_rangeSplitting (fun x => diracProba x) μ
+  exact apply_rangeSplitting (fun x ↦ diracProba x) μ
 
 /-- In a T0 topological space, `diracProbaEquiv` is continuous. -/
-lemma continuous_diracProbaEquiv [T0Space Ω] :
-    Continuous (diracProbaEquiv (Ω := Ω)) :=
+lemma continuous_diracProbaEquiv [T0Space X] :
+    Continuous (diracProbaEquiv (X := X)) :=
   Continuous.subtype_mk continuous_diracProba mem_range_self
 
 /-- In a completely regular T0 topological space, the inverse of `diracProbaEquiv` is continuous. -/
-lemma continuous_diracProbaEquivSymm [T0Space Ω] [CompletelyRegularSpace Ω] :
-    Continuous (diracProbaEquiv (Ω := Ω)).symm := by
+lemma continuous_diracProbaEquivSymm [T0Space X] [CompletelyRegularSpace X] :
+    Continuous (diracProbaEquiv (X := X)).symm := by
   apply continuous_iff_continuousAt.mpr
   intro μ
   apply continuousAt_of_tendsto_nhds (y := diracProbaInverse μ)
-  exact (@tendsto_diracProbaEquivSymm_iff_tendsto Ω _ _ _ _ _ μ (𝓝 μ)).mpr fun _ mem_nhd ↦ mem_nhd
+  exact (tendsto_diracProbaEquivSymm_iff_tendsto _).mpr fun _ mem_nhd ↦ mem_nhd
 
-/-- In a completely regular T0 topological space `Ω`, `diracProbaEquiv` is a homeomorphism to
-its image in `ProbabilityMeasure Ω`. -/
-noncomputable def homeomorph_diracProba [T0Space Ω] [CompletelyRegularSpace Ω]
-    [MeasurableSpace Ω] [OpensMeasurableSpace Ω] : Ω ≃ₜ range (diracProba (Ω := Ω)) :=
-  @Homeomorph.mk Ω _ _ _ diracProbaEquiv continuous_diracProbaEquiv continuous_diracProbaEquivSymm
+/-- In a completely regular T0 topological space `X`, `diracProbaEquiv` is a homeomorphism to
+its image in `ProbabilityMeasure X`. -/
+noncomputable def homeomorph_diracProba [T0Space X] [CompletelyRegularSpace X]
+    [MeasurableSpace X] [OpensMeasurableSpace X] : X ≃ₜ range (diracProba (X := X)) :=
+  @Homeomorph.mk X _ _ _ diracProbaEquiv continuous_diracProbaEquiv continuous_diracProbaEquivSymm
 
 /-- If `X` is a completely regular T0 space with its Borel sigma algebra, then the mapping
 that takes a point `x : X` to the delta-measure `diracProba x` is an embedding
 `X → ProbabilityMeasure X`. -/
-theorem embedding_diracProba [T0Space Ω] [CompletelyRegularSpace Ω]
-    [MeasurableSpace Ω] [OpensMeasurableSpace Ω] : Embedding (fun (x : Ω) ↦ diracProba x) :=
+theorem embedding_diracProba [T0Space X] [CompletelyRegularSpace X]
+    [MeasurableSpace X] [OpensMeasurableSpace X] : Embedding (fun (x : X) ↦ diracProba x) :=
   embedding_subtype_val.comp homeomorph_diracProba.embedding
 
 end embed_to_probabilityMeasure
