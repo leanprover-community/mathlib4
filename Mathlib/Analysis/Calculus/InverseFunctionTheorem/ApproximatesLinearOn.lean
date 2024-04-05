@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.Banach
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
+import Mathlib.Topology.PartialHomeomorph
 
 #align_import analysis.calculus.inverse from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 /-!
@@ -50,18 +52,13 @@ open scoped Topology Classical NNReal
 noncomputable section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-
 variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
-
 variable {ε : ℝ}
 
-open Asymptotics Filter Metric Set
+open Filter Metric Set
 
 open ContinuousLinearMap (id)
 
@@ -120,7 +117,7 @@ theorem lipschitz_sub (hf : ApproximatesLinearOn f f' s c) :
 
 protected theorem lipschitz (hf : ApproximatesLinearOn f f' s c) :
     LipschitzWith (‖f'‖₊ + c) (s.restrict f) := by
-  simpa only [restrict_apply, add_sub_cancel'_right] using
+  simpa only [restrict_apply, add_sub_cancel] using
     (f'.lipschitz.restrict s).add hf.lipschitz_sub
 #align approximates_linear_on.lipschitz ApproximatesLinearOn.lipschitz
 
@@ -181,7 +178,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
   -- First bound: if `f z` is close to `y`, then `g z` is close to `z` (i.e., almost a fixed point).
   have A : ∀ z, dist (g z) z ≤ f'symm.nnnorm * dist (f z) y := by
     intro z
-    rw [dist_eq_norm, hg, add_sub_cancel', dist_eq_norm']
+    rw [dist_eq_norm, hg, add_sub_cancel_left, dist_eq_norm']
     exact f'symm.bound _
   -- Second bound: if `z` and `g z` are in the set with good control, then `f (g z)` becomes closer
   -- to `y` than `f z` was (this uses the linear approximation property, and is the reason for the
@@ -195,7 +192,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
       dist (f (g z)) y = ‖f (z + v) - y‖ := by rw [dist_eq_norm]
       _ = ‖f (z + v) - f z - f' v + f' v - (y - f z)‖ := by congr 1; abel
       _ = ‖f (z + v) - f z - f' (z + v - z)‖ := by
-        simp only [ContinuousLinearMap.NonlinearRightInverse.right_inv, add_sub_cancel',
+        simp only [v, ContinuousLinearMap.NonlinearRightInverse.right_inv, add_sub_cancel_left,
           sub_add_cancel]
       _ ≤ c * ‖z + v - z‖ := (hf _ (hε hgz) _ (hε hz))
       _ ≤ c * (f'symm.nnnorm * dist (f z) y) := by
@@ -252,8 +249,8 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
         apply IH.1
       _ = ((c : ℝ) * f'symm.nnnorm) ^ n.succ * dist (f b) y := by simp only [pow_succ']; ring
   -- Deduce from the inductive bound that `uₙ` is a Cauchy sequence, therefore converging.
-  have : CauchySeq u
-  · refine cauchySeq_of_le_geometric _ (↑f'symm.nnnorm * dist (f b) y) Icf' fun n ↦ ?_
+  have : CauchySeq u := by
+    refine cauchySeq_of_le_geometric _ (↑f'symm.nnnorm * dist (f b) y) Icf' fun n ↦ ?_
     calc
       dist (u n) (u (n + 1)) = dist (g (u n)) (u n) := by rw [usucc, dist_comm]
       _ ≤ f'symm.nnnorm * dist (f (u n)) y := (A _)
@@ -276,7 +273,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
   have T2 : Tendsto (f ∘ u) atTop (𝓝 y) := by
     rw [tendsto_iff_dist_tendsto_zero]
     refine' squeeze_zero (fun _ => dist_nonneg) (fun n => (D n).1) _
-    simpa using (tendsto_pow_atTop_nhds_0_of_lt_1 (by positivity) Icf').mul tendsto_const_nhds
+    simpa using (tendsto_pow_atTop_nhds_zero_of_lt_one (by positivity) Icf').mul tendsto_const_nhds
   exact tendsto_nhds_unique T1 T2
 #align approximates_linear_on.surj_on_closed_ball_of_nonlinear_right_inverse ApproximatesLinearOn.surjOn_closedBall_of_nonlinearRightInverse
 
@@ -284,7 +281,7 @@ theorem open_image (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRi
     (hs : IsOpen s) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : IsOpen (f '' s) := by
   cases' hc with hE hc
   · exact isOpen_discrete _
-  simp only [isOpen_iff_mem_nhds, nhds_basis_closedBall.mem_iff, ball_image_iff] at hs ⊢
+  simp only [isOpen_iff_mem_nhds, nhds_basis_closedBall.mem_iff, forall_mem_image] at hs ⊢
   intro x hx
   rcases hs x hx with ⟨ε, ε0, hε⟩
   refine' ⟨(f'symm.nnnorm⁻¹ - c) * ε, mul_pos (sub_pos.2 hc) ε0, _⟩

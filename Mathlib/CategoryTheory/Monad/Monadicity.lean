@@ -332,7 +332,7 @@ def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair
         IsIso
           (IsColimit.coconePointUniqueUpToIso (beckCoequalizer X)
               (unitColimitOfPreservesCoequalizer X)).hom
-      refine' IsIso.of_iso (IsColimit.coconePointUniqueUpToIso _ _)
+      exact IsIso.of_iso (IsColimit.coconePointUniqueUpToIso _ _)
   let _ : ∀ Y : D, IsIso ((ofRightAdjoint (comparison (ofRightAdjoint G))).counit.app Y) := by
     intro Y
     change IsIso (comparisonAdjunction.counit.app Y)

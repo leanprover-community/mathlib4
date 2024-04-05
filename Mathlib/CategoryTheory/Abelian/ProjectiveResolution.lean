@@ -59,7 +59,7 @@ section Abelian
 
 variable [Abelian C]
 
-lemma exact₀ [Abelian C] {Z : C} (P : ProjectiveResolution Z) :
+lemma exact₀ {Z : C} (P : ProjectiveResolution Z) :
     (ShortComplex.mk _ _ P.complex_d_comp_π_f_zero).Exact :=
   ShortComplex.exact_of_g_is_cokernel _ P.isColimitCokernelCofork
 
@@ -72,7 +72,7 @@ def liftFOne {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y) (Q : Projectiv
 @[simp]
 theorem liftFOne_zero_comm {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
     (Q : ProjectiveResolution Z) :
-    liftFOne f P Q ≫ Q.complex.d 1 0 = P.complex.d 1 0 ≫ liftFZero f P Q :=  by
+    liftFOne f P Q ≫ Q.complex.d 1 0 = P.complex.d 1 0 ≫ liftFZero f P Q := by
   apply Q.exact₀.liftFromProjective_comp
 #align category_theory.ProjectiveResolution.lift_f_one_zero_comm CategoryTheory.ProjectiveResolution.liftFOne_zero_comm
 

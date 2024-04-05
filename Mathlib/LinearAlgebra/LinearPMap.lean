@@ -39,7 +39,7 @@ structure LinearPMap (R : Type u) [Ring R] (E : Type v) [AddCommGroup E] [Module
   toFun : domain →ₗ[R] F
 #align linear_pmap LinearPMap
 
-notation:25 E " →ₗ.[" R:25 "] " F:0 => LinearPMap R E F
+@[inherit_doc] notation:25 E " →ₗ.[" R:25 "] " F:0 => LinearPMap R E F
 
 variable {R : Type*} [Ring R] {E : Type*} [AddCommGroup E] [Module R E] {F : Type*}
   [AddCommGroup F] [Module R F] {G : Type*} [AddCommGroup G] [Module R G]
@@ -304,7 +304,7 @@ private theorem sup_aux (f g : E →ₗ.[R] F)
   have fg_eq : ∀ (x' : f.domain) (y' : g.domain) (z' : ↥(f.domain ⊔ g.domain))
       (_H : (x' : E) + y' = z'), fg z' = f x' + g y' := by
     intro x' y' z' H
-    dsimp
+    dsimp [fg]
     rw [add_comm, ← sub_eq_sub_iff_add_eq_add, eq_comm, ← map_sub, ← map_sub]
     apply h
     simp only [← eq_sub_iff_add_eq] at hxy
@@ -394,7 +394,6 @@ end Zero
 section SMul
 
 variable {M N : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass R M F]
-
 variable [Monoid N] [DistribMulAction N F] [SMulCommClass R N F]
 
 instance instSMul : SMul M (E →ₗ.[R] F) :=
@@ -487,6 +486,7 @@ instance instAddMonoid : AddMonoid (E →ₗ.[R] F) where
     simp
   add_zero := by
     simp
+  nsmul := nsmulRec
 
 instance instAddCommMonoid : AddCommMonoid (E →ₗ.[R] F) :=
   ⟨fun f g => by
@@ -567,6 +567,7 @@ instance instSubtractionCommMonoid : SubtractionCommMonoid (E →ₗ.[R] F) wher
     simp only [inf_coe, neg_domain, Eq.ndrec, Int.ofNat_eq_coe, add_apply, Subtype.coe_eta,
       ← neg_eq_iff_add_eq_zero] at h'
     rw [h', h]
+  zsmul := zsmulRec
 
 end Sub
 
@@ -615,7 +616,7 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     apply Classical.indefiniteDescription
     have := (mem_sSup_of_directed (cne.image _) hdir).1 x.2
     -- Porting note: + `← bex_def`
-    rwa [Set.bex_image_iff, ← bex_def, SetCoe.exists'] at this
+    rwa [Set.exists_mem_image, ← bex_def, SetCoe.exists'] at this
   set f : ↥(sSup (domain '' c)) → F := fun x => (P x).val.val ⟨x, (P x).property⟩
   have f_eq : ∀ (p : c) (x : ↥(sSup (domain '' c))) (y : p.1.1) (_hxy : (x : E) = y),
       f x = p.1 y := by
@@ -632,8 +633,8 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     rw [f_eq ⟨p, hpc⟩ x x' rfl, f_eq ⟨p, hpc⟩ y y' rfl, f_eq ⟨p, hpc⟩ (x + y) (x' + y') rfl,
       map_add]
   · intro c x
-    -- Porting note: `simp [..]` to `simp only [..]`, or timeouts.
-    simp only [f_eq (P x).1 (c • x) (c • ⟨x, (P x).2⟩) rfl, ← map_smul, RingHom.id_apply]
+    simp only [RingHom.id_apply]
+    rw [f_eq (P x).1 (c • x) (c • ⟨x, (P x).2⟩) rfl, ← map_smul]
   · intro p hpc
     refine' ⟨le_sSup <| Set.mem_image_of_mem domain hpc, fun x y hxy => Eq.symm _⟩
     exact f_eq ⟨p, hpc⟩ _ _ hxy.symm
@@ -1010,7 +1011,7 @@ noncomputable def toLinearPMapAux (g : Submodule R (E × F))
     rw [Prod.smul_mk] at hav'
     exact (existsUnique_from_graph @hg hsmul).unique hav hav'
 
-open Classical in
+open scoped Classical in
 /-- Define a `LinearPMap` from its graph.
 
 In the case that the submodule is not a graph of a `LinearPMap` then the underlying linear map

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
+import Mathlib.Algebra.CharP.Algebra
 
 #align_import field_theory.splitting_field.construction from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
 
@@ -89,7 +90,7 @@ theorem X_sub_C_mul_removeFactor (f : K[X]) (hf : f.natDegree ≠ 0) :
   let ⟨g, hg⟩ := factor_dvd_of_natDegree_ne_zero hf
   apply (mul_divByMonic_eq_iff_isRoot
     (R := AdjoinRoot f.factor) (a := AdjoinRoot.root f.factor)).mpr
-  rw [IsRoot.def, eval_map, hg, eval₂_mul, ← hg, AdjoinRoot.eval₂_root, zero_mul]
+  rw [IsRoot.definition, eval_map, hg, eval₂_mul, ← hg, AdjoinRoot.eval₂_root, zero_mul]
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_sub_C_mul_remove_factor Polynomial.X_sub_C_mul_removeFactor
 
@@ -301,6 +302,9 @@ instance instCharZero [CharZero K] : CharZero (SplittingField f) :=
 instance instCharP (p : ℕ) [CharP K p] : CharP (SplittingField f) p :=
   charP_of_injective_algebraMap (algebraMap K _).injective p
 
+instance instExpChar (p : ℕ) [ExpChar K p] : ExpChar (SplittingField f) p :=
+  expChar_of_injective_algebraMap (algebraMap K _).injective p
+
 -- The algebra instance deriving from `K` should be definitionally equal to that
 -- deriving from the field structure on `SplittingField f`.
 example :
@@ -347,7 +351,6 @@ namespace IsSplittingField
 
 variable (K L)
 variable [Algebra K L]
-
 variable {K}
 
 instance (f : K[X]) : FiniteDimensional K f.SplittingField :=

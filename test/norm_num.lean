@@ -17,6 +17,10 @@ axiom Real : Type
 notation "ℝ" => Real
 @[instance] axiom Real.linearOrderedRing : LinearOrderedField ℝ
 
+axiom NNReal : Type
+notation "ℝ≥0" => NNReal
+@[instance] axiom NNReal.linearOrderedsemifield : LinearOrderedSemifield ℝ≥0
+
 axiom Complex : Type
 notation "ℂ" => Complex
 @[instance] axiom Complex.field : Field ℂ
@@ -38,11 +42,15 @@ example : (7:ℝ)/2 > 3 := by norm_num1
 example : (4:ℝ)⁻¹ < 1 := by norm_num1
 example : ((1:ℝ) / 2)⁻¹ = 2 := by norm_num1
 example : 2 ^ 17 - 1 = 131071 := by norm_num1
--- example : (3 : ℝ) ^ (-2 : ℤ) = 1/9 := by norm_num1
--- example : (3 : ℝ) ^ (-2 : ℤ) = 1/9 := by norm_num1
--- example : (-3 : ℝ) ^ (0 : ℤ) = 1 := by norm_num1
--- example : (-3 : ℝ) ^ (-1 : ℤ) = -1/3 := by norm_num1
--- example : (-3 : ℝ) ^ (2 : ℤ) = 9 := by norm_num1
+example : (3 : ℝ) ^ (-2 : ℤ) = 1/9 := by norm_num1
+example : (-3 : ℝ) ^ (0 : ℤ) = 1 := by norm_num1
+example : (-3 : ℝ) ^ (-1 : ℤ) = -1/3 := by norm_num1
+example : (-3 : ℝ) ^ (1 : ℤ) = -3 := by norm_num1
+example : (-3 : ℝ) ^ (2 : ℤ) = 9 := by norm_num1
+example : (1/3 : ℝ) ^ (2 : ℤ) = 1/9 := by norm_num1
+example : (1/3 : ℝ) ^ (-2 : ℤ) = 9 := by norm_num1
+example : (-1/3 : ℝ) ^ (-1 : ℤ) = -3 := by norm_num1
+example : (3 : ℝ≥0) ^ (2 : ℤ) = 9 := by norm_num1
 
 section InvLit
 
@@ -154,6 +162,10 @@ example : ((1 : ℤ) ≠ 1) = False := by norm_num1
 example : ((-1 : ℤ) ≠ -1) = False := by norm_num1
 example : ((1 : α) ≠ 1) = False := by norm_num1
 example : ((-1 : α) = 2) = False := by norm_num1
+
+example : Int.natAbs 5 = 5 := by norm_num1
+example : Int.natAbs (-5) = 5 := by norm_num1
+example : Int.natAbs 0 = 0 := by norm_num1
 
 end Int
 
@@ -403,7 +415,7 @@ example : 10 / 1 = 10 := by norm_num1
 example : 5 / 4 = 1 := by norm_num1
 example : 9 / 4 = 2 := by norm_num1
 example : 0 / 1 = 0 := by norm_num1
-example : Nat.div 10 9 = 1 := by norm_num1
+example : 10 / 9 = 1 := by norm_num1
 example : 1099 / 100 = 10 := by norm_num1
 
 end Nat.div
@@ -508,18 +520,6 @@ section
   example : (-2 : α) * 4 / 3 = -8 / 3 := by norm_num1
   example : - (-4 / 3) = 1 / (3 / (4 : α)) := by norm_num1
 end
-
-section Transparency
-
-example : Add.add 10 2 = 12 := by norm_num1
-example : Nat.sub 10 1 = 9 := by norm_num1
-example : Nat.mod 10 5 = 0 := by norm_num1
-example : Sub.sub 10 1 = 9 := by norm_num1
-example : Sub.sub 10 (-2) = 12 := by norm_num1
-example : Mul.mul 10 1 = 10 := by norm_num1
-example : (Div.div 10 1 : ℚ) = 10 := by norm_num1
-
-end Transparency
 
 -- user command
 

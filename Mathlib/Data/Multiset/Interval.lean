@@ -3,7 +3,7 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Finset.LocallyFinite
+import Mathlib.Data.Finset.LocallyFinite.Basic
 import Mathlib.Data.DFinsupp.Interval
 import Mathlib.Data.DFinsupp.Multiset
 import Mathlib.Data.Nat.Interval
@@ -36,7 +36,7 @@ namespace Multiset
 
 variable [DecidableEq α] (s t : Multiset α)
 
-instance : LocallyFiniteOrder (Multiset α) :=
+instance instLocallyFiniteOrder : LocallyFiniteOrder (Multiset α) :=
   LocallyFiniteOrder.ofIcc (Multiset α)
     (fun s t => (Finset.Icc (toDFinsupp s) (toDFinsupp t)).map
       Multiset.equivDFinsupp.toEquiv.symm.toEmbedding)

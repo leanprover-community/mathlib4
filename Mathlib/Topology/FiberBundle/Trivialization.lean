@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Data.Bundle
-import Mathlib.Topology.Algebra.Order.Field
+import Mathlib.Data.Set.Image
 import Mathlib.Topology.PartialHomeomorph
+import Mathlib.Topology.Order.Basic
 
 #align_import topology.fiber_bundle.trivialization from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
@@ -53,7 +54,6 @@ open TopologicalSpace Filter Set Bundle Function
 open scoped Topology Classical Bundle
 
 variable {ι : Type*} {B : Type*} {F : Type*} {E : B → Type*}
-
 variable (F) {Z : Type*} [TopologicalSpace B] [TopologicalSpace F] {proj : Z → B}
 
 /-- This structure contains the information left for a local trivialization (which is implemented
@@ -89,7 +89,7 @@ lemma ext' (e e' : Pretrivialization F proj) (h₁ : e.toPartialEquiv = e'.toPar
   cases e; cases e'; congr
 #align pretrivialization.ext Pretrivialization.ext'
 
--- porting note: todo: move `ext` here?
+-- Porting note (#11215): TODO: move `ext` here?
 lemma ext {e e' : Pretrivialization F proj} (h₁ : ∀ x, e x = e' x)
     (h₂ : ∀ x, e.toPartialEquiv.symm x = e'.toPartialEquiv.symm x) (h₃ : e.baseSet = e'.baseSet) :
     e = e' := by
@@ -300,7 +300,7 @@ variable [TopologicalSpace Z] [TopologicalSpace (TotalSpace F E)]
 `proj : Z → B` with fiber `F`, as a partial homeomorphism between `Z` and `B × F` defined between
 two sets of the form `proj ⁻¹' baseSet` and `baseSet × F`, acting trivially on the first coordinate.
 -/
--- porting note: todo: was @[nolint has_nonempty_instance]
+-- Porting note (#11215): TODO: was @[nolint has_nonempty_instance]
 structure Trivialization (proj : Z → B) extends PartialHomeomorph Z (B × F) where
   baseSet : Set B
   open_baseSet : IsOpen baseSet
@@ -786,7 +786,7 @@ noncomputable def piecewise (e e' : Trivialization F proj) (s : Set B)
   target_eq := by simp [target_eq, prod_univ]
   proj_toFun p := by
     rintro (⟨he, hs⟩ | ⟨he, hs⟩)
-    -- porting note: was `<;> simp [*]`
+    -- Porting note: was `<;> simp [*]`
     · simp [piecewise_eq_of_mem _ _ _ hs, *]
     · simp [piecewise_eq_of_not_mem _ _ _ hs, *]
 #align trivialization.piecewise Trivialization.piecewise

@@ -32,13 +32,6 @@ open Set Filter Topology
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : Filter X}
   {s t s₁ s₂ t₁ t₂ : Set X} {x : X}
 
-/-- The filter of neighborhoods of a set in a topological space. -/
-def nhdsSet (s : Set X) : Filter X :=
-  sSup (nhds '' s)
-#align nhds_set nhdsSet
-
-@[inherit_doc] scoped[Topology] notation "𝓝ˢ" => nhdsSet
-
 theorem nhdsSet_diagonal (X) [TopologicalSpace (X × X)] :
     𝓝ˢ (diagonal X) = ⨆ (x : X), 𝓝 (x, x) := by
   rw [nhdsSet, ← range_diag, ← range_comp]
@@ -46,14 +39,14 @@ theorem nhdsSet_diagonal (X) [TopologicalSpace (X × X)] :
 #align nhds_set_diagonal nhdsSet_diagonal
 
 theorem mem_nhdsSet_iff_forall : s ∈ 𝓝ˢ t ↔ ∀ x : X, x ∈ t → s ∈ 𝓝 x := by
-  simp_rw [nhdsSet, Filter.mem_sSup, ball_image_iff]
+  simp_rw [nhdsSet, Filter.mem_sSup, forall_mem_image]
 #align mem_nhds_set_iff_forall mem_nhdsSet_iff_forall
 
 lemma nhdsSet_le : 𝓝ˢ s ≤ f ↔ ∀ x ∈ s, 𝓝 x ≤ f := by simp [nhdsSet]
 
 theorem bUnion_mem_nhdsSet {t : X → Set X} (h : ∀ x ∈ s, t x ∈ 𝓝 x) : (⋃ x ∈ s, t x) ∈ 𝓝ˢ s :=
   mem_nhdsSet_iff_forall.2 fun x hx => mem_of_superset (h x hx) <|
-    subset_iUnion₂ (s := fun x _ => t x) x hx -- porting note: fails to find `s`
+    subset_iUnion₂ (s := fun x _ => t x) x hx -- Porting note: fails to find `s`
 #align bUnion_mem_nhds_set bUnion_mem_nhdsSet
 
 theorem subset_interior_iff_mem_nhdsSet : s ⊆ interior t ↔ t ∈ 𝓝ˢ s := by
@@ -85,6 +78,14 @@ theorem eventually_nhdsSet_iff_forall {p : X → Prop} :
 theorem hasBasis_nhdsSet (s : Set X) : (𝓝ˢ s).HasBasis (fun U => IsOpen U ∧ s ⊆ U) fun U => U :=
   ⟨fun t => by simp [mem_nhdsSet_iff_exists, and_assoc]⟩
 #align has_basis_nhds_set hasBasis_nhdsSet
+
+@[simp]
+lemma lift'_nhdsSet_interior (s : Set X) : (𝓝ˢ s).lift' interior = 𝓝ˢ s :=
+  (hasBasis_nhdsSet s).lift'_interior_eq_self fun _ ↦ And.left
+
+lemma Filter.HasBasis.nhdsSet_interior {ι : Sort*} {p : ι → Prop} {s : ι → Set X} {t : Set X}
+    (h : (𝓝ˢ t).HasBasis p s) : (𝓝ˢ t).HasBasis p (interior <| s ·) :=
+  lift'_nhdsSet_interior t ▸ h.lift'_interior
 
 theorem IsOpen.mem_nhdsSet (hU : IsOpen s) : s ∈ 𝓝ˢ t ↔ t ⊆ s := by
   rw [← subset_interior_iff_mem_nhdsSet, hU.interior_eq]
@@ -177,3 +178,45 @@ lemma Continuous.tendsto_nhdsSet_nhds
     Tendsto f (𝓝ˢ s) (𝓝 y) := by
   rw [← nhdsSet_singleton]
   exact h.tendsto_nhdsSet h'
+
+/- This inequality cannot be improved to an equality. For instance,
+if `X` has two elements and the coarse topology and `s` and `t` are distinct singletons then
+`𝓝ˢ (s ∩ t) = ⊥` while `𝓝ˢ s ⊓ 𝓝ˢ t = ⊤` and those are different. -/
+theorem nhdsSet_inter_le (s t : Set X) : 𝓝ˢ (s ∩ t) ≤ 𝓝ˢ s ⊓ 𝓝ˢ t :=
+  (monotone_nhdsSet (X := X)).map_inf_le s t
+
+variable (s) in
+theorem IsClosed.nhdsSet_le_sup (h : IsClosed t) : 𝓝ˢ s ≤ 𝓝ˢ (s ∩ t) ⊔ 𝓟 (tᶜ) :=
+  calc
+    𝓝ˢ s = 𝓝ˢ (s ∩ t ∪ s ∩ tᶜ) := by rw [Set.inter_union_compl s t]
+    _ = 𝓝ˢ (s ∩ t) ⊔ 𝓝ˢ (s ∩ tᶜ) := by rw [nhdsSet_union]
+    _ ≤ 𝓝ˢ (s ∩ t) ⊔ 𝓝ˢ (tᶜ) := (sup_le_sup_left (monotone_nhdsSet (s.inter_subset_right (tᶜ))) _)
+    _ = 𝓝ˢ (s ∩ t) ⊔ 𝓟 (tᶜ) := by rw [h.isOpen_compl.nhdsSet_eq]
+
+variable (s) in
+theorem IsClosed.nhdsSet_le_sup' (h : IsClosed t) :
+    𝓝ˢ s ≤ 𝓝ˢ (t ∩ s) ⊔ 𝓟 (tᶜ) := by rw [Set.inter_comm]; exact h.nhdsSet_le_sup s
+
+theorem Filter.Eventually.eventually_nhdsSet {p : X → Prop} (h : ∀ᶠ y in 𝓝ˢ s, p y) :
+    ∀ᶠ y in 𝓝ˢ s, ∀ᶠ x in 𝓝 y, p x :=
+  eventually_nhdsSet_iff_forall.mpr fun x x_in ↦
+    (eventually_nhdsSet_iff_forall.mp h x x_in).eventually_nhds
+
+theorem Filter.Eventually.union_nhdsSet {p : X → Prop} :
+    (∀ᶠ x in 𝓝ˢ (s ∪ t), p x) ↔ (∀ᶠ x in 𝓝ˢ s, p x) ∧ ∀ᶠ x in 𝓝ˢ t, p x := by
+  rw [nhdsSet_union, eventually_sup]
+
+theorem Filter.Eventually.union {p : X → Prop} (hs : ∀ᶠ x in 𝓝ˢ s, p x) (ht : ∀ᶠ x in 𝓝ˢ t, p x) :
+    ∀ᶠ x in 𝓝ˢ (s ∪ t), p x :=
+  Filter.Eventually.union_nhdsSet.mpr ⟨hs, ht⟩
+
+theorem nhdsSet_iUnion {ι : Sort*} (s : ι → Set X) : 𝓝ˢ (⋃ i, s i) = ⨆ i, 𝓝ˢ (s i) := by
+  simp only [nhdsSet, image_iUnion, sSup_iUnion (β := Filter X)]
+
+theorem eventually_nhdsSet_iUnion₂ {ι : Sort*} {p : ι → Prop} {s : ι → Set X} {P : X → Prop} :
+    (∀ᶠ x in 𝓝ˢ (⋃ (i) (_ : p i), s i), P x) ↔ ∀ i, p i → ∀ᶠ x in 𝓝ˢ (s i), P x := by
+  simp only [nhdsSet_iUnion, eventually_iSup]
+
+theorem eventually_nhdsSet_iUnion {ι : Sort*} {s : ι → Set X} {P : X → Prop} :
+    (∀ᶠ x in 𝓝ˢ (⋃ i, s i), P x) ↔ ∀ i, ∀ᶠ x in 𝓝ˢ (s i), P x := by
+  simp only [nhdsSet_iUnion, eventually_iSup]

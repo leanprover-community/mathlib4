@@ -230,10 +230,10 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
   -- let f : ∀ i j, i ≤ j → G i ↪[L] G j := DirectedSystem.natLeRec fun n => (hP _ n).some
   let f : ∀ (i j : ℕ), i ≤ j → (G i).val ↪[L] (G j).val := by
     refine DirectedSystem.natLERec (G' := fun i => (G i).val) (L := L) ?_
-    dsimp only
+    dsimp only [G]
     exact (fun n => (hP _ n).some)
   have : DirectedSystem (fun n ↦ (G n).val) fun i j h ↦ ↑(f i j h) := by
-    dsimp; infer_instance
+    dsimp [f, G]; infer_instance
   refine ⟨Bundled.of (@DirectLimit L _ _ (fun n ↦ (G n).val) _ f _ _), ?_, ?_⟩
   · exact DirectLimit.cg _ (fun n => (fg _ (G n).2).cg)
   · refine (age_directLimit (fun n ↦ (G n).val) f).trans
@@ -242,8 +242,8 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
     obtain ⟨n, ⟨e⟩⟩ := (hF N).1 ⟨N, KN, this⟩
     refine mem_iUnion_of_mem n ⟨fg _ KN, ⟨Embedding.comp ?_ e.symm.toEmbedding⟩⟩
     cases' n with n
-    · dsimp; exact Embedding.refl _ _
-    · dsimp; exact (hFP _ n).some
+    · dsimp [G]; exact Embedding.refl _ _
+    · dsimp [G]; exact (hFP _ n).some
 #align first_order.language.exists_cg_is_age_of FirstOrder.Language.exists_cg_is_age_of
 
 theorem exists_countable_is_age_of_iff [Countable (Σ l, L.Functions l)] :

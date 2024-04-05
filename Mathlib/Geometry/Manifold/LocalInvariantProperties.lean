@@ -47,16 +47,14 @@ in the one for `LiftPropWithinAt`.
 
 noncomputable section
 
-open Classical Manifold Topology
+open scoped Classical
+open Manifold Topology
 
 open Set Filter TopologicalSpace
 
 variable {H M H' M' X : Type*}
-
 variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
-
 variable [TopologicalSpace H'] [TopologicalSpace M'] [ChartedSpace H' M']
-
 variable [TopologicalSpace X]
 
 namespace StructureGroupoid
@@ -77,7 +75,6 @@ structure LocalInvariantProp (P : (H → H') → Set H → H → Prop) : Prop wh
 #align structure_groupoid.local_invariant_prop StructureGroupoid.LocalInvariantProp
 
 variable {G G'} {P : (H → H') → Set H → H → Prop} {s t u : Set H} {x : H}
-
 variable (hG : G.LocalInvariantProp G' P)
 
 namespace LocalInvariantProp
@@ -490,8 +487,8 @@ theorem liftPropOn_of_mem_maximalAtlas [HasGroupoid M G] (hG : G.LocalInvariantP
 theorem liftPropAt_symm_of_mem_maximalAtlas [HasGroupoid M G] {x : H}
     (hG : G.LocalInvariantProp G Q) (hQ : ∀ y, Q id univ y) (he : e ∈ maximalAtlas M G)
     (hx : x ∈ e.target) : LiftPropAt Q e.symm x := by
-  suffices h : Q (e ∘ e.symm) univ x
-  · have : e.symm x ∈ e.source := by simp only [hx, mfld_simps]
+  suffices h : Q (e ∘ e.symm) univ x by
+    have : e.symm x ∈ e.source := by simp only [hx, mfld_simps]
     rw [LiftPropAt, hG.liftPropWithinAt_indep_chart G.id_mem_maximalAtlas (mem_univ _) he this]
     refine' ⟨(e.symm.continuousAt hx).continuousWithinAt, _⟩
     simp only [h, mfld_simps]
@@ -649,7 +646,7 @@ theorem _root_.PartialHomeomorph.isLocalStructomorphWithinAt_iff {G : StructureG
     obtain ⟨e, he, hfe, hxe⟩ := hf h2x
     refine' ⟨e.restr f.source, closedUnderRestriction' he f.open_source, _, _, hxe, _⟩
     · simp_rw [PartialHomeomorph.restr_source]
-      refine' (inter_subset_right _ _).trans interior_subset
+      exact (inter_subset_right _ _).trans interior_subset
     · intro x' hx'
       exact hfe ⟨hx'.1, hx'.2.1⟩
     · rw [f.open_source.interior_eq]
@@ -709,7 +706,7 @@ theorem HasGroupoid.comp
         (f.symm ≫ₕ e.symm ≫ₕ e' ≫ₕ f').open_source
       refine' ⟨_, hs.inter φ.open_source, _, _⟩
       · simp only [hx, hφ_dom, mfld_simps]
-      · refine' G₁.eq_on_source (closedUnderRestriction' hφG₁ hs) _
+      · refine' G₁.mem_of_eqOnSource (closedUnderRestriction' hφG₁ hs) _
         rw [PartialHomeomorph.restr_source_inter]
         refine' PartialHomeomorph.Set.EqOn.restr_eqOn_source (hφ.mono _)
         mfld_set_tac }

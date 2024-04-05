@@ -7,6 +7,7 @@ import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.Algebra.Module.Algebra
 
 #align_import linear_algebra.matrix.finite_dimensional from "leanprover-community/mathlib"@"b1c23399f01266afe392a0d8f71f599a0dad4f7b"
 
@@ -47,9 +48,7 @@ end Matrix
 namespace LinearMap
 
 variable {K : Type*} [Field K]
-
 variable {V : Type*} [AddCommGroup V] [Module K V] [FiniteDimensional K V]
-
 variable {W : Type*} [AddCommGroup W] [Module K W] [FiniteDimensional K W]
 
 instance finiteDimensional : FiniteDimensional K (V →ₗ[K] W) :=

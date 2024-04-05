@@ -54,7 +54,6 @@ universe u v
 section Ring
 
 variable {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
-
 variable {ι : Type*} (b : Basis ι R M)
 
 open Submodule.IsPrincipal Submodule
@@ -89,7 +88,6 @@ end Ring
 section IsDomain
 
 variable {ι : Type*} {R : Type*} [CommRing R] [IsDomain R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
 
 open Submodule.IsPrincipal Set Submodule
@@ -109,7 +107,6 @@ section PrincipalIdealDomain
 open Submodule.IsPrincipal Set Submodule
 
 variable {ι : Type*} {R : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
 
 open Submodule.IsPrincipal
@@ -228,7 +225,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
   have M'_le_M : M' ≤ M := M.map_subtype_le (LinearMap.ker ϕ)
   have N'_le_M' : N' ≤ M' := by
     intro x hx
-    simp only [mem_map, LinearMap.mem_ker] at hx ⊢
+    simp only [N', mem_map, LinearMap.mem_ker] at hx ⊢
     obtain ⟨⟨x, xN⟩, hx, rfl⟩ := hx
     exact ⟨⟨x, N_le_M xN⟩, hx, rfl⟩
   have N'_le_N : N' ≤ N := N.map_subtype_le (LinearMap.ker (ϕ.comp (inclusion N_le_M)))
@@ -413,6 +410,13 @@ instance Module.free_of_finite_type_torsion_free' [Module.Finite R M] [NoZeroSMu
   exact Module.Free.of_basis b
 #align module.free_of_finite_type_torsion_free' Module.free_of_finite_type_torsion_free'
 
+instance {S : Type*} [CommRing S] [Algebra R S] {I : Ideal S} [hI₁ : Module.Finite R I]
+    [hI₂ : NoZeroSMulDivisors R I] : Module.Free R I := by
+  have : Module.Finite R (restrictScalars R I) := hI₁
+  have : NoZeroSMulDivisors R (restrictScalars R I) := hI₂
+  change Module.Free R (restrictScalars R I)
+  exact Module.free_of_finite_type_torsion_free'
+
 theorem Module.free_iff_noZeroSMulDivisors [Module.Finite R M] :
     Module.Free R M ↔ NoZeroSMulDivisors R M :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
@@ -561,7 +565,7 @@ noncomputable def Submodule.smithNormalForm [Finite ι] (b : Basis ι R M) (N : 
   let bM' := bM.map (LinearEquiv.ofTop _ rfl)
   let e := bM'.indexEquiv b
   ⟨n, bM'.reindex e, bN.map (comapSubtypeEquivOfLe le_top), f.trans e.toEmbedding, a, fun i ↦ by
-    simp only [snf, Basis.map_apply, LinearEquiv.ofTop_apply, Submodule.coe_smul_of_tower,
+    simp only [bM', snf, Basis.map_apply, LinearEquiv.ofTop_apply, Submodule.coe_smul_of_tower,
       Submodule.comapSubtypeEquivOfLe_apply_coe, Basis.reindex_apply,
       Equiv.toEmbedding_apply, Function.Embedding.trans_apply, Equiv.symm_apply_apply]⟩
 #align submodule.smith_normal_form Submodule.smithNormalForm
@@ -674,7 +678,7 @@ theorem Ideal.smithCoeffs_ne_zero (b : Basis ι R S) (I : Ideal S) (hI : I ≠ �
   simp [hi]
 #align ideal.smith_coeffs_ne_zero Ideal.smithCoeffs_ne_zero
 
--- porting note: can be inferred in Lean 4 so no longer necessary
+-- Porting note: can be inferred in Lean 4 so no longer necessary
 #noalign has_quotient.quotient.module
 
 end Ideal

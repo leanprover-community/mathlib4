@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.GroupTheory.Subsemigroup.Operations
 import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Logic.Basic
 
 #align_import group_theory.subsemigroup.center from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 
@@ -63,12 +64,12 @@ namespace IsMulCentral
 
 variable {a b c : M} [Mul M]
 
--- c.f. Commute.left_comm
+-- cf. `Commute.left_comm`
 @[to_additive]
 protected theorem left_comm (h : IsMulCentral a) (b c) : a * (b * c) = b * (a * c) := by
   simp only [h.comm, h.right_assoc]
 
--- c.f. Commute.right_comm
+-- cf. `Commute.right_comm`
 @[to_additive]
 protected theorem right_comm (h : IsMulCentral c) (a b) : a * b * c = a * c * b := by
   simp only [h.right_assoc, h.mid_assoc, h.comm]
@@ -87,7 +88,7 @@ def center : Set M :=
 #align set.center Set.center
 #align set.add_center Set.addCenter
 
--- porting note: The `to_additive` version used to be `mem_addCenter` without the iff
+-- Porting note: The `to_additive` version used to be `mem_addCenter` without the iff
 @[to_additive mem_addCenter_iff]
 theorem mem_center_iff {z : M} : z ∈ center M ↔ IsMulCentral z :=
   Iff.rfl
@@ -323,7 +324,7 @@ def center : Subsemigroup M where
 #align subsemigroup.center Subsemigroup.center
 #align add_subsemigroup.center AddSubsemigroup.center
 
--- porting note: `coe_center` is now redundant
+-- Porting note: `coe_center` is now redundant
 #noalign subsemigroup.coe_center
 #noalign add_subsemigroup.coe_center
 

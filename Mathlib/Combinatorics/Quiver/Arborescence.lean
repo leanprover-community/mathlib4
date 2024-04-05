@@ -5,7 +5,6 @@ Authors: David Wärn
 -/
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Subquiver
-import Mathlib.Data.Nat.Defs
 import Mathlib.Order.WellFounded
 
 #align_import combinatorics.quiver.arborescence from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"

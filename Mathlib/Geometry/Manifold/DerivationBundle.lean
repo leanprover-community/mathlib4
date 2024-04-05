@@ -42,6 +42,7 @@ def PointedSmoothMap (_ : M) :=
   C^n⟮I, M; 𝕜⟯
 #align pointed_smooth_map PointedSmoothMap
 
+@[inherit_doc]
 scoped[Derivation] notation "C^" n "⟮" I ", " M "; " 𝕜 "⟯⟨" x "⟩" => PointedSmoothMap 𝕜 I M n x
 
 variable {𝕜 M}
@@ -50,9 +51,9 @@ namespace PointedSmoothMap
 
 open scoped Derivation
 
-instance funLike {x : M} : FunLike C^∞⟮I, M; 𝕜⟯⟨x⟩ M fun _ => 𝕜 :=
-  ContMDiffMap.funLike
-#align pointed_smooth_map.fun_like PointedSmoothMap.funLike
+instance instFunLike {x : M} : FunLike C^∞⟮I, M; 𝕜⟯⟨x⟩ M 𝕜 :=
+  ContMDiffMap.instFunLike
+#align pointed_smooth_map.fun_like PointedSmoothMap.instFunLike
 
 instance {x : M} : CommRing C^∞⟮I, M; 𝕜⟯⟨x⟩ :=
   SmoothMap.commRing

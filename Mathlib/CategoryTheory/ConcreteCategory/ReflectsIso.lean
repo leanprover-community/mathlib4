@@ -21,7 +21,6 @@ namespace CategoryTheory
 instance : ReflectsIsomorphisms (forget (Type u)) where reflects _ _ _ {i} := i
 
 variable (C : Type (u + 1)) [Category C] [ConcreteCategory.{u} C]
-
 variable (D : Type (u + 1)) [Category D] [ConcreteCategory.{u} D]
 
 -- This should not be an instance, as it causes a typeclass loop
@@ -32,12 +31,10 @@ where `forget C` reflects isomorphisms, itself reflects isomorphisms.
 theorem reflectsIsomorphisms_forget₂ [HasForget₂ C D] [ReflectsIsomorphisms (forget C)] :
     ReflectsIsomorphisms (forget₂ C D) :=
   { reflects := fun X Y f {i} => by
-      skip
       haveI i' : IsIso ((forget D).map ((forget₂ C D).map f)) := Functor.map_isIso (forget D) _
       haveI : IsIso ((forget C).map f) := by
         have := @HasForget₂.forget_comp C D
-        rw [← this]
-        exact i'
+        rwa [← this]
       apply isIso_of_reflects_iso f (forget C) }
 #align category_theory.reflects_isomorphisms_forget₂ CategoryTheory.reflectsIsomorphisms_forget₂
 

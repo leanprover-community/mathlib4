@@ -52,14 +52,14 @@ theorem derivedSeries_succ (n : ℕ) :
   rfl
 #align derived_series_succ derivedSeries_succ
 
--- porting note: had to provide inductive hypothesis explicitly
+-- Porting note: had to provide inductive hypothesis explicitly
 theorem derivedSeries_normal (n : ℕ) : (derivedSeries G n).Normal := by
   induction' n with n ih
   · exact (⊤ : Subgroup G).normal_of_characteristic
   · exact @Subgroup.commutator_normal G _ (derivedSeries G n) (derivedSeries G n) ih ih
 #align derived_series_normal derivedSeries_normal
 
--- porting note: higher simp priority to restore Lean 3 behavior
+-- Porting note: higher simp priority to restore Lean 3 behavior
 @[simp 1100]
 theorem derivedSeries_one : derivedSeries G 1 = commutator G :=
   rfl
@@ -137,7 +137,7 @@ theorem solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G'
     IsSolvable G := by
   obtain ⟨n, hn⟩ := id hG''
   obtain ⟨m, hm⟩ := id hG'
-  refine' ⟨⟨n + m, le_bot_iff.mp (map_bot f ▸ hm ▸ _)⟩⟩
+  refine' ⟨⟨n + m, le_bot_iff.mp (Subgroup.map_bot f ▸ hm ▸ _)⟩⟩
   clear hm
   induction' m with m hm
   · exact f.range_eq_map ▸ ((derivedSeries G n).map_eq_bot_iff.mp

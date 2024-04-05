@@ -75,7 +75,7 @@ theorem Convex.integral_mem [IsProbabilityMeasure μ] (hs : Convex ℝ s) (hsc :
   · rw [← ENNReal.toReal_sum, (G n).sum_range_measure_preimage_singleton, measure_univ,
       ENNReal.one_toReal]
     exact fun _ _ => measure_ne_top _ _
-  · simp only [SimpleFunc.mem_range, forall_range_iff]
+  · simp only [SimpleFunc.mem_range, forall_mem_range]
     intro x
     apply inter_subset_right (range g)
     exact SimpleFunc.approxOn_mem hgm.measurable h₀ _ _
@@ -333,7 +333,7 @@ theorem ae_eq_const_or_norm_average_lt_of_norm_le_const [StrictConvexSpace ℝ E
   · simp [average_eq, integral_undef hfi, hC0, ENNReal.toReal_pos_iff]
   rcases (le_top : μ univ ≤ ∞).eq_or_lt with hμt | hμt; · simp [average_eq, hμt, hC0]
   haveI : IsFiniteMeasure μ := ⟨hμt⟩
-  replace h_le : ∀ᵐ x ∂μ, f x ∈ closedBall (0 : E) C; · simpa only [mem_closedBall_zero_iff]
+  replace h_le : ∀ᵐ x ∂μ, f x ∈ closedBall (0 : E) C := by simpa only [mem_closedBall_zero_iff]
   simpa only [interior_closedBall _ hC0.ne', mem_ball_zero_iff] using
     (strictConvex_closedBall ℝ (0 : E) C).ae_eq_const_or_average_mem_interior isClosed_ball h_le
       hfi

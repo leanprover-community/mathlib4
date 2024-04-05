@@ -83,7 +83,7 @@ theorem isOpen_connectedComponent [LocallyConnectedSpace α] {x : α} :
 
 theorem isClopen_connectedComponent [LocallyConnectedSpace α] {x : α} :
     IsClopen (connectedComponent x) :=
-  ⟨isOpen_connectedComponent, isClosed_connectedComponent⟩
+  ⟨isClosed_connectedComponent, isOpen_connectedComponent⟩
 #align is_clopen_connected_component isClopen_connectedComponent
 
 theorem locallyConnectedSpace_iff_connectedComponentIn_open :
@@ -139,7 +139,7 @@ theorem OpenEmbedding.locallyConnectedSpace [LocallyConnectedSpace α] [Topologi
     (fun x s hxs ↦ hxs.1.2.2.isPreconnected.preimage_of_isOpenMap h.inj h.isOpenMap hxs.2)
   rw [h.nhds_eq_comap]
   exact LocallyConnectedSpace.open_connected_basis (f x) |>.restrict_subset
-    (h.open_range.mem_nhds <| mem_range_self _) |>.comap _
+    (h.isOpen_range.mem_nhds <| mem_range_self _) |>.comap _
 
 theorem IsOpen.locallyConnectedSpace [LocallyConnectedSpace α] {U : Set α} (hU : IsOpen U) :
     LocallyConnectedSpace U :=

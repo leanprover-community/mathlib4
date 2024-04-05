@@ -26,21 +26,6 @@ variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type*} {f f' : α → �
 variable {s s' : Set α} {t t' : Set β} {u u' : Set γ} {v : Set δ} {a a' : α} {b b' : β} {c c' : γ}
   {d d' : δ}
 
-/-- The image of a binary function `f : α → β → γ` as a function `Set α → Set β → Set γ`.
-Mathematically this should be thought of as the image of the corresponding function `α × β → γ`.-/
-def image2 (f : α → β → γ) (s : Set α) (t : Set β) : Set γ :=
-  { c | ∃ a ∈ s, ∃ b ∈ t, f a b = c }
-#align set.image2 Set.image2
-
-@[simp]
-theorem mem_image2 : c ∈ image2 f s t ↔ ∃ a ∈ s, ∃ b ∈ t, f a b = c :=
-  Iff.rfl
-#align set.mem_image2 Set.mem_image2
-
-theorem mem_image2_of_mem (ha : a ∈ s) (hb : b ∈ t) : f a b ∈ image2 f s t :=
-  ⟨a, ha, b, hb, rfl⟩
-#align set.mem_image2_of_mem Set.mem_image2_of_mem
-
 theorem mem_image2_iff (hf : Injective2 f) : f a b ∈ image2 f s t ↔ a ∈ s ∧ b ∈ t :=
   ⟨by
     rintro ⟨a', ha', b', hb', h⟩
@@ -63,11 +48,11 @@ theorem image2_subset_right (hs : s ⊆ s') : image2 f s t ⊆ image2 f s' t :=
 #align set.image2_subset_right Set.image2_subset_right
 
 theorem image_subset_image2_left (hb : b ∈ t) : (fun a => f a b) '' s ⊆ image2 f s t :=
-  ball_image_of_ball fun _ ha => mem_image2_of_mem ha hb
+  forall_mem_image.2 fun _ ha => mem_image2_of_mem ha hb
 #align set.image_subset_image2_left Set.image_subset_image2_left
 
 theorem image_subset_image2_right (ha : a ∈ s) : f a '' t ⊆ image2 f s t :=
-  ball_image_of_ball fun _ => mem_image2_of_mem ha
+  forall_mem_image.2 fun _ => mem_image2_of_mem ha
 #align set.image_subset_image2_right Set.image_subset_image2_right
 
 theorem forall_image2_iff {p : γ → Prop} :
