@@ -14,8 +14,8 @@ This file introduces the Lawson topology on a preorder.
 
 ## Main definitions
 
-- `Topology.lawson` - the Lawson topology is defined as the meet of `Topology.lower` and
-  `Topology.scott`.
+- `Topology.lawson` - the Lawson topology is defined as the meet of the lower topology and the
+  Scott topology.
 - `Topology.IsLawson.lawsonBasis` - The complements of the upper closures of finite sets
   intersected with Scott open sets.
 
