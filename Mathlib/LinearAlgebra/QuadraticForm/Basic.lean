@@ -10,10 +10,10 @@ import Mathlib.LinearAlgebra.Matrix.Symmetric
 #align_import linear_algebra.quadratic_form.basic from "leanprover-community/mathlib"@"d11f435d4e34a6cea0a1797d6b625b0c170be845"
 
 /-!
-# Quadratic forms
+# Quadratic maps
 
-This file defines quadratic forms over a `R`-module `M`.
-A quadratic form on a commutative ring `R` is a map `Q : M → R` such that:
+This file defines quadratic maps over a `R`-module `M`.
+A quadratic map on a commutative ring `R` is a map `Q : M → N` such that:
 
 * `QuadraticMap.map_smul`: `Q (a • x) = a * a * Q x`
 * `QuadraticMap.polar_add_left`, `QuadraticMap.polar_add_right`,
@@ -21,31 +21,31 @@ A quadratic form on a commutative ring `R` is a map `Q : M → R` such that:
   the map `QuadraticMap.polar Q := fun x y ↦ Q (x + y) - Q x - Q y` is bilinear.
 
 This notion generalizes to commutative semirings using the approach in [izhakian2016][] which
-requires that there be a (possibly non-unique) companion bilinear form `B` such that
+requires that there be a (possibly non-unique) companion bilinear map `B` such that
 `∀ x y, Q (x + y) = Q x + Q y + B x y`. Over a ring, this `B` is precisely `QuadraticMap.polar Q`.
 
 To build a `QuadraticMap` from the `polar` axioms, use `QuadraticMap.ofPolar`.
 
-Quadratic forms come with a scalar multiplication, `(a • Q) x = Q (a • x) = a * a * Q x`,
+Quadratic maps come with a scalar multiplication, `(a • Q) x = Q (a • x) = a * a * Q x`,
 and composition with linear maps `f`, `Q.comp f x = Q (f x)`.
 
 ## Main definitions
 
  * `QuadraticMap.ofPolar`: a more familiar constructor that works on rings
- * `QuadraticMap.associated`: associated bilinear form
- * `QuadraticMap.PosDef`: positive definite quadratic forms
- * `QuadraticMap.Anisotropic`: anisotropic quadratic forms
- * `QuadraticMap.discr`: discriminant of a quadratic form
- * `QuadraticMap.IsOrtho`: orthogonality of vectors with respect to a quadratic form.
+ * `QuadraticMap.associated`: associated bilinear map
+ * `QuadraticMap.PosDef`: positive definite quadratic maps
+ * `QuadraticMap.Anisotropic`: anisotropic quadratic maps
+ * `QuadraticMap.discr`: discriminant of a quadratic map
+ * `QuadraticMap.IsOrtho`: orthogonality of vectors with respect to a quadratic map.
 
 ## Main statements
 
  * `QuadraticMap.associated_left_inverse`,
  * `QuadraticMap.associated_rightInverse`: in a commutative ring where 2 has
-  an inverse, there is a correspondence between quadratic forms and symmetric
+  an inverse, there is a correspondence between quadratic maps and symmetric
   bilinear forms
  * `LinearMap.BilinForm.exists_orthogonal_basis`: There exists an orthogonal basis with
-  respect to any nondegenerate, symmetric bilinear form `B`.
+  respect to any nondegenerate, symmetric bilinear map `B`.
 
 ## Notation
 
@@ -56,7 +56,7 @@ The variable `S` is used when `R` itself has a `•` action.
 ## Implementation notes
 
 While the definition and many results make sense if we drop commutativity assumptions,
-the correct definition of a quadratic form in the noncommutative setting would require
+the correct definition of a quadratic maps in the noncommutative setting would require
 substantial refactors from the current version, such that $Q(rm) = rQ(m)r^*$ for some
 suitable conjugation $r^*$.
 
@@ -89,7 +89,7 @@ variable [CommRing R] [AddCommGroup M] [AddCommGroup N]
 
 namespace QuadraticMap
 
-/-- Up to a factor 2, `Q.polar` is the associated bilinear form for a quadratic form `Q`.
+/-- Up to a factor 2, `Q.polar` is the associated bilinear map for a quadratic map `Q`.
 
 Source of this name: https://en.wikipedia.org/wiki/Quadratic_form#Generalization
 -/
@@ -135,7 +135,7 @@ end QuadraticMap
 
 end Polar
 
-/-- A quadratic form over a module.
+/-- A quadratic map over a module.
 
 For a more familiar constructor when `R` is a ring, see `QuadraticMap.ofPolar`. -/
 structure QuadraticMap (R : Type u) (M : Type v) (N : Type w) [CommSemiring R] [AddCommMonoid M]
@@ -150,6 +150,7 @@ section QuadraticForm
 variable (R : Type u) (M : Type v) [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 variable (R M) in
+/-- A quadratic form over a module. -/
 abbrev QuadraticForm : Type _ := QuadraticMap R M R
 
 end QuadraticForm
@@ -173,7 +174,7 @@ instance : CoeFun (QuadraticMap R M N) fun _ => M → N :=
 
 variable (Q)
 
-/-- The `simp` normal form for a quadratic form is `DFunLike.coe`, not `toFun`. -/
+/-- The `simp` normal form for a quadratic map is `DFunLike.coe`, not `toFun`. -/
 @[simp]
 theorem toFun_eq_coe : Q.toFun = ⇑Q :=
   rfl
@@ -466,7 +467,7 @@ def coeFnAddMonoidHom : QuadraticMap R M N →+ M → N where
   map_add' := coeFn_add
 #align quadratic_form.coe_fn_add_monoid_hom QuadraticMap.coeFnAddMonoidHom
 
-/-- Evaluation on a particular element of the module `M` is an additive map over quadratic forms. -/
+/-- Evaluation on a particular element of the module `M` is an additive map over quadratic maps. -/
 @[simps! apply]
 def evalAddMonoidHom (m : M) : QuadraticMap R M N →+ N :=
   (Pi.evalAddMonoidHom _ m).comp coeFnAddMonoidHom
@@ -556,7 +557,7 @@ section Comp
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 variable {N' : Type v} [AddCommMonoid N'] [Module R N']
 
-/-- Compose the quadratic form with a linear function. -/
+/-- Compose the quadratic map with a linear function. -/
 def comp (Q : QuadraticMap R N' N) (f : M →ₗ[R] N') : QuadraticMap R M N where
   toFun x := Q (f x)
   toFun_smul a x := by simp only [map_smul, f.map_smul]
@@ -570,7 +571,7 @@ theorem comp_apply (Q : QuadraticMap R N' N) (f : M →ₗ[R] N') (x : M) : (Q.c
   rfl
 #align quadratic_form.comp_apply QuadraticMap.comp_apply
 
-/-- Compose a quadratic form with a linear function on the left. -/
+/-- Compose a quadratic map with a linear function on the left. -/
 @[simps (config := { simpRhs := true })]
 def _root_.LinearMap.compQuadraticMap [CommSemiring S] [Algebra S R] [Module S N] [Module S M]
     [IsScalarTower S R N] [IsScalarTower S R M] [Module S N']
@@ -648,12 +649,12 @@ end CommRing
 end QuadraticMap
 
 /-!
-### Associated bilinear forms
+### Associated bilinear maps
 
-Over a commutative ring with an inverse of 2, the theory of quadratic forms is
-basically identical to that of symmetric bilinear forms. The map from quadratic
-forms to bilinear forms giving this identification is called the `associated`
-quadratic form.
+Over a commutative ring with an inverse of 2, the theory of quadratic maps is
+basically identical to that of symmetric bilinear maps. The map from quadratic
+maps to bilinear maps giving this identification is called the `associated`
+quadratic map.
 -/
 
 namespace LinearMap
@@ -668,7 +669,7 @@ section Semiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 variable {N' : Type*}  [AddCommMonoid N'] [Module R N']
 
-/-- A bilinear form gives a quadratic form by applying the argument twice. -/
+/-- A bilinear map gives a quadratic map by applying the argument twice. -/
 def toQuadraticMap (B : BilinMap R M N) : QuadraticMap R M N where
   toFun x := B x x
   toFun_smul a x := by simp only [_root_.map_smul, LinearMap.smul_apply, smul_smul]
@@ -834,13 +835,11 @@ section AssociatedHom
 
 variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable (S) [CommSemiring S] [Algebra S R]
--- I think this is saying, consider `N` as a module over `S` via the action induced from `S` being
--- mapped into the centre of `R`?
 variable [Module S N] [IsScalarTower S R N]
 variable [Invertible (2 : R)] {B₁ : BilinMap R M R}
 
-/-- `associatedHom` is the map that sends a quadratic form on a module `M` over `R` to its
-associated symmetric bilinear form.  As provided here, this has the structure of an `S`-linear map
+/-- `associatedHom` is the map that sends a quadratic map on a module `M` over `R` to its
+associated symmetric bilinear map.  As provided here, this has the structure of an `S`-linear map
 where `S` is a commutative subring of `R`.
 
 Over a commutative ring, use `QuadraticMap.associated`, which gives an `R`-linear map.  Over a
@@ -946,8 +945,8 @@ variable [Invertible (2 : R)]
 
 -- Note:  When possible, rather than writing lemmas about `associated`, write a lemma applying to
 -- the more general `associatedHom` and place it in the previous section.
-/-- `associated` is the linear map that sends a quadratic form over a commutative ring to its
-associated symmetric bilinear form. -/
+/-- `associated` is the linear map that sends a quadratic map over a commutative ring to its
+associated symmetric bilinear map. -/
 abbrev associated : QuadraticMap R M N →ₗ[R] BilinMap R M N :=
   associatedHom R
 #align quadratic_form.associated QuadraticMap.associated
@@ -984,7 +983,7 @@ section CommSemiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
   {Q : QuadraticMap R M N}
 
-/-- The proposition that two elements of a quadratic form space are orthogonal. -/
+/-- The proposition that two elements of a quadratic map space are orthogonal. -/
 def IsOrtho (Q : QuadraticMap R M N) (x y : M) : Prop :=
   Q (x + y) = Q x + Q y
 
@@ -1042,7 +1041,7 @@ section Semiring
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
 
-/-- An anisotropic quadratic form is zero only on zero vectors. -/
+/-- An anisotropic quadratic map is zero only on zero vectors. -/
 def Anisotropic (Q : QuadraticMap R M N) : Prop :=
   ∀ x, Q x = 0 → x = 0
 #align quadratic_form.anisotropic QuadraticMap.Anisotropic
@@ -1306,7 +1305,7 @@ open Finset
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 variable {ι : Type*}
 
-/-- Given a quadratic form `Q` and a basis, `basisRepr` is the basis representation of `Q`. -/
+/-- Given a quadratic map `Q` and a basis, `basisRepr` is the basis representation of `Q`. -/
 noncomputable def basisRepr [Finite ι] (Q : QuadraticMap R M N) (v : Basis ι R M) :
     QuadraticMap R (ι → R) N :=
   Q.comp v.equivFun.symm
