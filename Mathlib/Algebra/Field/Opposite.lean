@@ -42,6 +42,10 @@ instance instDivisionRing [DivisionRing α] : DivisionRing αᵐᵒᵖ where
     unop_natCast, unop_intCast, Int.commute_cast, div_eq_mul_inv]
   qsmul := qsmulRec _
 
+instance instSemifield [Semifield α] : Semifield αᵐᵒᵖ where
+  __ := instCommSemiring
+  __ := instDivisionSemiring
+
 instance instField [Field α] : Field αᵐᵒᵖ where
   __ := instCommRing
   __ := instDivisionRing
