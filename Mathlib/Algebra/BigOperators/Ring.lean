@@ -6,7 +6,6 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.BigOperators.Multiset.Lemmas
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Int.Cast.Lemmas
 
