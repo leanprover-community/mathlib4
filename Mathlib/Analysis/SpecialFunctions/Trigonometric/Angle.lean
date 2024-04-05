@@ -750,7 +750,7 @@ theorem cos_pos_iff_abs_toReal_lt_pi_div_two {θ : Angle} : 0 < cos θ ↔ |θ.t
   rw [lt_iff_le_and_ne, lt_iff_le_and_ne, cos_nonneg_iff_abs_toReal_le_pi_div_two, ←
     and_congr_right]
   rintro -
-  rw [Ne.def, Ne.def, not_iff_not, @eq_comm ℝ 0, abs_toReal_eq_pi_div_two_iff, cos_eq_zero_iff]
+  rw [Ne, Ne, not_iff_not, @eq_comm ℝ 0, abs_toReal_eq_pi_div_two_iff, cos_eq_zero_iff]
 #align real.angle.cos_pos_iff_abs_to_real_lt_pi_div_two Real.Angle.cos_pos_iff_abs_toReal_lt_pi_div_two
 
 theorem cos_neg_iff_pi_div_two_lt_abs_toReal {θ : Angle} : cos θ < 0 ↔ π / 2 < |θ.toReal| := by
@@ -1016,7 +1016,7 @@ theorem sign_two_nsmul_eq_sign_iff {θ : Angle} :
       · simp at h
       · linarith [neg_pi_lt_toReal θ]
   · have hpi' : (2 : ℕ) • θ ≠ π := by
-      rw [Ne.def, two_nsmul_eq_pi_iff, not_or]
+      rw [Ne, two_nsmul_eq_pi_iff, not_or]
       constructor
       · rintro rfl
         simp [pi_pos, div_pos, abs_of_pos] at h

@@ -37,7 +37,7 @@ open scoped NNReal ENNReal Topology BigOperators MeasureTheory
 
 namespace MeasureTheory
 
-variable {α β F F' G G' 𝕜 : Type*} {p : ℝ≥0∞} [IsROrC 𝕜]
+variable {α β F F' G G' 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- F for a Lp submodule
   [NormedAddCommGroup F]
@@ -184,11 +184,11 @@ variable {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
 
 theorem condexpIndL1_of_measurableSet_of_measure_ne_top (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : G) : condexpIndL1 hm μ s x = condexpIndL1Fin hm hs hμs x := by
-  simp only [condexpIndL1, And.intro hs hμs, dif_pos, Ne.def, not_false_iff, and_self_iff]
+  simp only [condexpIndL1, And.intro hs hμs, dif_pos, Ne, not_false_iff, and_self_iff]
 #align measure_theory.condexp_ind_L1_of_measurable_set_of_measure_ne_top MeasureTheory.condexpIndL1_of_measurableSet_of_measure_ne_top
 
 theorem condexpIndL1_of_measure_eq_top (hμs : μ s = ∞) (x : G) : condexpIndL1 hm μ s x = 0 := by
-  simp only [condexpIndL1, hμs, eq_self_iff_true, not_true, Ne.def, dif_neg, not_false_iff,
+  simp only [condexpIndL1, hμs, eq_self_iff_true, not_true, Ne, dif_neg, not_false_iff,
     and_false_iff]
 #align measure_theory.condexp_ind_L1_of_measure_eq_top MeasureTheory.condexpIndL1_of_measure_eq_top
 
@@ -275,7 +275,7 @@ theorem condexpInd_ae_eq_condexpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
     condexpInd G hm μ s x =ᵐ[μ] condexpIndSMul hm hs hμs x := by
   refine' EventuallyEq.trans _ (condexpIndL1Fin_ae_eq_condexpIndSMul hm hs hμs x)
-  simp [condexpInd, condexpIndL1, hs, hμs]; rfl
+  simp [condexpInd, condexpIndL1, hs, hμs]
 #align measure_theory.condexp_ind_ae_eq_condexp_ind_smul MeasureTheory.condexpInd_ae_eq_condexpIndSMul
 
 variable {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]

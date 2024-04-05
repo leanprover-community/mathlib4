@@ -78,7 +78,7 @@ theorem isOfFinOrder_iff_pow_eq_one : IsOfFinOrder x ↔ ∃ n, 0 < n ∧ x ^ n 
 lemma isOfFinOrder_iff_zpow_eq_one {G} [Group G] {x : G} :
     IsOfFinOrder x ↔ ∃ (n : ℤ), n ≠ 0 ∧ x ^ n = 1 := by
   rw [isOfFinOrder_iff_pow_eq_one]
-  refine ⟨fun ⟨n, hn, hn'⟩ ↦ ⟨n, Int.coe_nat_ne_zero_iff_pos.mpr hn, zpow_natCast x n ▸ hn'⟩,
+  refine ⟨fun ⟨n, hn, hn'⟩ ↦ ⟨n, Int.natCast_ne_zero_iff_pos.mpr hn, zpow_natCast x n ▸ hn'⟩,
     fun ⟨n, hn, hn'⟩ ↦ ⟨n.natAbs, Int.natAbs_pos.mpr hn, ?_⟩⟩
   cases' (Int.natAbs_eq_iff (a := n)).mp rfl with h h;
   · rwa [h, zpow_natCast] at hn'
@@ -391,8 +391,8 @@ theorem orderOf_units {y : Gˣ} : orderOf (y : G) = orderOf y :=
 noncomputable
 def IsOfFinOrder.unit {M} [Monoid M] {x : M} (hx : IsOfFinOrder x) : Mˣ :=
 ⟨x, x ^ (orderOf x - 1),
-  by rw [← _root_.pow_succ, tsub_add_cancel_of_le (by exact hx.orderOf_pos), pow_orderOf_eq_one],
-  by rw [← _root_.pow_succ', tsub_add_cancel_of_le (by exact hx.orderOf_pos), pow_orderOf_eq_one]⟩
+  by rw [← _root_.pow_succ', tsub_add_cancel_of_le (by exact hx.orderOf_pos), pow_orderOf_eq_one],
+  by rw [← _root_.pow_succ, tsub_add_cancel_of_le (by exact hx.orderOf_pos), pow_orderOf_eq_one]⟩
 
 lemma IsOfFinOrder.isUnit {M} [Monoid M] {x : M} (hx : IsOfFinOrder x) : IsUnit x := ⟨hx.unit, rfl⟩
 
@@ -462,7 +462,7 @@ theorem orderOf_dvd_lcm_mul : orderOf y ∣ Nat.lcm (orderOf x) (orderOf (x * y)
     apply dvd_zero
   conv_lhs =>
     rw [← one_mul y, ← pow_orderOf_eq_one x, ← succ_pred_eq_of_pos (Nat.pos_of_ne_zero h0),
-      _root_.pow_succ', mul_assoc]
+      _root_.pow_succ, mul_assoc]
   exact
     (((Commute.refl x).mul_right h).pow_left _).orderOf_mul_dvd_lcm.trans
       (lcm_dvd_iff.2 ⟨(orderOf_pow_dvd _).trans (dvd_lcm_left _ _), dvd_lcm_right _ _⟩)
@@ -660,8 +660,9 @@ theorem isOfFinOrder_inv_iff {x : G} : IsOfFinOrder x⁻¹ ↔ IsOfFinOrder x :=
 @[to_additive]
 theorem orderOf_dvd_iff_zpow_eq_one : (orderOf x : ℤ) ∣ i ↔ x ^ i = 1 := by
   rcases Int.eq_nat_or_neg i with ⟨i, rfl | rfl⟩
-  · rw [Int.coe_nat_dvd, orderOf_dvd_iff_pow_eq_one, zpow_natCast]
-  · rw [dvd_neg, Int.coe_nat_dvd, zpow_neg, inv_eq_one, zpow_natCast, orderOf_dvd_iff_pow_eq_one]
+  · rw [Int.natCast_dvd_natCast, orderOf_dvd_iff_pow_eq_one, zpow_natCast]
+  · rw [dvd_neg, Int.natCast_dvd_natCast, zpow_neg, inv_eq_one, zpow_natCast,
+      orderOf_dvd_iff_pow_eq_one]
 #align order_of_dvd_iff_zpow_eq_one orderOf_dvd_iff_zpow_eq_one
 #align add_order_of_dvd_iff_zsmul_eq_zero addOrderOf_dvd_iff_zsmul_eq_zero
 
@@ -744,7 +745,7 @@ lemma IsOfFinOrder.mem_powers_iff_mem_zpowers (hx : IsOfFinOrder x) :
   ⟨fun ⟨n, hn⟩ ↦ ⟨n, by simp_all⟩, fun ⟨i, hi⟩ ↦ ⟨(i % orderOf x).natAbs, by
     dsimp only
     rwa [← zpow_natCast, Int.natAbs_of_nonneg <| Int.emod_nonneg _ <|
-      Int.coe_nat_ne_zero_iff_pos.2 <| hx.orderOf_pos, zpow_mod_orderOf]⟩⟩
+      Int.natCast_ne_zero_iff_pos.2 <| hx.orderOf_pos, zpow_mod_orderOf]⟩⟩
 
 @[to_additive]
 lemma IsOfFinOrder.powers_eq_zpowers (hx : IsOfFinOrder x) : (powers x : Set G) = zpowers x :=
@@ -919,7 +920,7 @@ variable [Finite G] {x y : G}
 @[to_additive]
 theorem exists_zpow_eq_one (x : G) : ∃ (i : ℤ) (_ : i ≠ 0), x ^ (i : ℤ) = 1 := by
   obtain ⟨w, hw1, hw2⟩ := isOfFinOrder_of_finite x
-  refine' ⟨w, Int.coe_nat_ne_zero.mpr (_root_.ne_of_gt hw1), _⟩
+  refine' ⟨w, Int.natCast_ne_zero.mpr (_root_.ne_of_gt hw1), _⟩
   rw [zpow_natCast]
   exact (isPeriodicPt_mul_iff_pow_eq_one _).mp hw2
 #align exists_zpow_eq_one exists_zpow_eq_one
@@ -1087,8 +1088,8 @@ lemma pow_mod_card (a : G) (n : ℕ) : a ^ (n % card G) = a ^ n := by
 
 @[to_additive (attr := simp) mod_card_zsmul]
 theorem zpow_mod_card (a : G) (n : ℤ) : a ^ (n % Fintype.card G : ℤ) = a ^ n := by
-  rw [eq_comm, ← zpow_mod_orderOf, ← Int.emod_emod_of_dvd n (Int.coe_nat_dvd.2 orderOf_dvd_card),
-    zpow_mod_orderOf]
+  rw [eq_comm, ← zpow_mod_orderOf, ← Int.emod_emod_of_dvd n
+    (Int.natCast_dvd_natCast.2 orderOf_dvd_card), zpow_mod_orderOf]
 #align zpow_eq_mod_card zpow_mod_card
 #align zsmul_eq_mod_card mod_card_zsmul
 
@@ -1099,7 +1100,7 @@ lemma pow_mod_natCard (a : G) (n : ℕ) : a ^ (n % Nat.card G) = a ^ n := by
 @[to_additive (attr := simp) mod_natCard_zsmul]
 lemma zpow_mod_natCard (a : G) (n : ℤ) : a ^ (n % Nat.card G : ℤ) = a ^ n := by
   rw [eq_comm, ← zpow_mod_orderOf,
-    ← Int.emod_emod_of_dvd n $ Int.coe_nat_dvd.2 $ orderOf_dvd_natCard _, zpow_mod_orderOf]
+    ← Int.emod_emod_of_dvd n $ Int.natCast_dvd_natCast.2 $ orderOf_dvd_natCard _, zpow_mod_orderOf]
 
 /-- If `gcd(|G|,n)=1` then the `n`th power map is a bijection -/
 @[to_additive (attr := simps) "If `gcd(|G|,n)=1` then the smul by `n` is a bijection"]
@@ -1176,7 +1177,7 @@ def submonoidOfIdempotent {M : Type*} [LeftCancelMonoid M] [Finite M] (S : Set M
     (hS1 : S.Nonempty) (hS2 : S * S = S) : Submonoid M :=
   have pow_mem : ∀ a : M, a ∈ S → ∀ n : ℕ, a ^ (n + 1) ∈ S := fun a ha =>
     Nat.rec (by rwa [Nat.zero_eq, zero_add, pow_one]) fun n ih =>
-      (congr_arg₂ (· ∈ ·) (pow_succ a (n + 1)).symm hS2).mp (Set.mul_mem_mul ha ih)
+      (congr_arg₂ (· ∈ ·) (pow_succ a (n + 1)).symm hS2).mp (Set.mul_mem_mul ih ha)
   { carrier := S
     one_mem' := by
       obtain ⟨a, ha⟩ := hS1
