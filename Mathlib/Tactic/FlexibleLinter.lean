@@ -251,6 +251,7 @@ def followers : HashSet Name :=
     ``Lean.Parser.Tactic.tacticNorm_cast_,
     `Aesop.Frontend.Parser.aesopTactic,
     `Mathlib.Tactic.Tauto.tauto,
+    `Mathlib.Meta.FunProp.funPropTacStx,
     `Lean.Parser.Tactic.split,
     `Mathlib.Tactic.splitIfs }
 
