@@ -219,6 +219,7 @@ def combinatorLike : HashSet Name :=
     `by,
     ``Lean.Parser.Tactic.tacticTry_,
     `choice,  -- involved in `first`
+    ``Lean.Parser.Tactic.allGoals,
     `Std.Tactic.«tacticOn_goal-_=>_»,
     ``Lean.Parser.Tactic.«tactic_<;>_»,
     ``cdotTk,

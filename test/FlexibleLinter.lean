@@ -51,6 +51,10 @@ example (h : 0 = 1 ∨ 0 = 1) : 0 = 1 ∧ 0 = 1 := by
   on_goal 2 => · contradiction
   · contradiction
 
+-- `omega` is a follower and `all_goals` is a `combinatorLike`
+#guard_msgs in
+example {a : Nat} : a + 1 + 0 = 1 + a := by simp; all_goals omega
+
 set_option linter.flexible false in
 set_option linter.flexible true in
 /--
