@@ -467,18 +467,12 @@ theorem locallyConnectedSpace [i : LocallyConnectedSpace Y] (h : X ≃ₜ Y) :
   refine locallyConnectedSpace_of_connected_bases _ _ this fun _ _ hs ↦ ?_
   exact hs.2.2.2.image _ h.symm.continuous.continuousOn
 
-/-- If the codomain of a homeomorphism is a locally compact space, then the domain is
-also a locally compact space. -/
-theorem locallyCompactSpace [i : LocallyCompactSpace Y] (h : X ≃ₜ Y) :
-    LocallyCompactSpace X := by
-  refine LocallyCompactSpace.mk (fun x N hN => ?_)
-  rw [h.nhds_eq_comap, Filter.mem_comap] at hN
-  obtain ⟨T, hT⟩ := hN
-  obtain ⟨S, hS⟩ := (i.1 (h x)) T hT.1
-  refine ⟨h.symm '' S, ?_⟩
-  rw [← h.symm_map_nhds_eq, Filter.mem_map, preimage_image, Set.image_subset_iff, isCompact_image,
-    h.preimage_symm, ← h.preimage_subset, coe_toEquiv, preimage_image]
-  exact ⟨hS.1, subset_trans ((Equiv.preimage_subset _ _ _).2 hS.2.1) hT.2, hS.2.2⟩
+/-- The codomain of a homeomorphism is a locally compact space if and only if
+the domain is a locally compact space. -/
+theorem locallyCompactSpace_iff (h : X ≃ₜ Y) :
+    LocallyCompactSpace X ↔ LocallyCompactSpace Y := by
+  exact ⟨fun _ => h.symm.openEmbedding.locallyCompactSpace,
+    fun _ => h.closedEmbedding.locallyCompactSpace⟩
 
 /-- If a bijective map `e : X ≃ Y` is continuous and open, then it is a homeomorphism. -/
 def homeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) : X ≃ₜ Y where
