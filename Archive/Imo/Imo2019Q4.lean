@@ -85,7 +85,7 @@ theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
   -- The implication `←` holds.
   constructor
   swap
-  · rintro (h | h) <;> simp [Prod.ext_iff] at h <;> rcases h with ⟨rfl, rfl⟩ <;> decide
+  · rintro (h | h) <;> simp only [Prod.ext_iff] at h <;> rcases h with ⟨rfl, rfl⟩ <;> decide
   intro h
   -- We know that n < 6.
   have := Imo2019Q4.upper_bound hk h

@@ -105,8 +105,7 @@ theorem snorm_add_le' {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : AE
     · have : p ∈ Set.Ioo (0 : ℝ≥0∞) 1 := ⟨hp.bot_lt, h'p⟩
       simp only [LpAddConst, if_pos this]
     · simpa using ENNReal.toReal_mono ENNReal.one_ne_top h'p.le
-  · simp [LpAddConst_of_one_le h'p]
-    exact snorm_add_le hf hg h'p
+  · simpa [LpAddConst_of_one_le h'p] using snorm_add_le hf hg h'p
 #align measure_theory.snorm_add_le' MeasureTheory.snorm_add_le'
 
 variable (μ E)

@@ -421,7 +421,8 @@ theorem measurableSet_inter_eq_iff (hτ : IsStoppingTime f τ) (s : Set Ω) (i :
     by_cases hij : i ≤ j
     · simp only [hij, Set.setOf_true, Set.inter_univ]
       exact f.mono hij _ h
-    · set_option tactic.skipAssignedInstances false in simp [hij]
+    · set_option tactic.skipAssignedInstances false in
+      simp only [hij, Set.setOf_false, Set.inter_empty]
       convert @MeasurableSet.empty _ (Filtration.seq f j)
 #align measure_theory.is_stopping_time.measurable_set_inter_eq_iff MeasureTheory.IsStoppingTime.measurableSet_inter_eq_iff
 

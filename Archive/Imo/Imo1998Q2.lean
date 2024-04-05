@@ -163,7 +163,7 @@ theorem A_card_upper_bound {k : ℕ}
   rw [← Finset.offDiag_card]
   apply Finset.card_le_mul_card_image_of_maps_to (A_maps_to_offDiag_judgePair r)
   intro p hp
-  have hp' : p.Distinct := by simp [Finset.mem_offDiag] at hp; exact hp
+  have hp' : p.Distinct := by simpa [Finset.mem_offDiag] using hp
   rw [← A_fibre_over_judgePair_card r hp']; apply hk; exact hp'
 #align imo1998_q2.A_card_upper_bound Imo1998Q2.A_card_upper_bound
 

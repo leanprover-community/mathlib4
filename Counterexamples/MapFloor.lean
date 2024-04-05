@@ -96,15 +96,17 @@ instance : FloorRing ℤ[ε] :=
     · split_ifs with h
       · rintro ⟨_ | n, hn⟩
         · refine' (sub_one_lt _).trans _
-          simp at hn
-          rwa [int_cast_coeff_zero] at hn
+          suffices hp : coeff q 0 < coeff (p : ℤ[ε]) 0 by rwa [int_cast_coeff_zero] at hp
+          simpa [int_cast_coeff_zero] using hn
         · dsimp at hn
-          simp [hn.1 _ n.zero_lt_succ]
-          rw [int_cast_coeff_zero]; simp
+          rw [hn.1 _ n.zero_lt_succ, int_cast_coeff_zero]
+          simp
       · exact fun h' => cast_lt.1 ((not_lt.1 h).trans_lt h')
     · split_ifs with h
       · exact fun h' => h.trans_le (cast_le.2 <| sub_one_lt_iff.1 h')
-      · exact fun h' => ⟨0, by simp; rwa [int_cast_coeff_zero]⟩
+      · exact fun h' => ⟨0, by
+          suffices coeff q 0 < coeff (p : ℤ[ε]) 0 by simpa
+          rwa [int_cast_coeff_zero]⟩
 
 /-- The ordered ring homomorphisms from `ℤ[ε]` to `ℤ` that "forgets" the `ε`s. -/
 def forgetEpsilons : ℤ[ε] →+*o ℤ where
