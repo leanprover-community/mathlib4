@@ -13,6 +13,7 @@ import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.Quotient
+import Mathlib.Algebra.Order.Group.Action
 
 #align_import ring_theory.ideal.operations from "leanprover-community/mathlib"@"e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74"
 
@@ -187,8 +188,12 @@ theorem smul_mono_left (h : I ≤ J) : I • N ≤ J • N :=
   map₂_le_map₂_left h
 #align submodule.smul_mono_left Submodule.smul_mono_left
 
-theorem smul_mono_right (h : N ≤ P) : I • N ≤ I • P :=
-  map₂_le_map₂_right h
+instance : CovariantClass (Ideal R) (Submodule R M) HSMul.hSMul LE.le :=
+  ⟨fun _ _ => map₂_le_map₂_right⟩
+
+@[deprecated smul_mono_right] -- 2024-03-31
+protected theorem smul_mono_right (h : N ≤ P) : I • N ≤ I • P :=
+  _root_.smul_mono_right I h
 #align submodule.smul_mono_right Submodule.smul_mono_right
 
 theorem map_le_smul_top (I : Ideal R) (f : R →ₗ[R] M) :
@@ -250,17 +255,19 @@ protected theorem smul_assoc : (I • J) • N = I • J • N :=
         show r • s • n ∈ (I • J) • N from mul_smul r s n ▸ smul_mem_smul (smul_mem_smul hr hs) hn)
 #align submodule.smul_assoc Submodule.smul_assoc
 
-theorem smul_inf_le (M₁ M₂ : Submodule R M) : I • (M₁ ⊓ M₂) ≤ I • M₁ ⊓ I • M₂ :=
-  le_inf (Submodule.smul_mono_right inf_le_left) (Submodule.smul_mono_right inf_le_right)
+@[deprecated smul_inf_le] -- 2024-03-31
+protected theorem smul_inf_le (M₁ M₂ : Submodule R M) :
+    I • (M₁ ⊓ M₂) ≤ I • M₁ ⊓ I • M₂ := smul_inf_le _ _ _
 #align submodule.smul_inf_le Submodule.smul_inf_le
 
 theorem smul_iSup {ι : Sort*} {I : Ideal R} {t : ι → Submodule R M} : I • iSup t = ⨆ i, I • t i :=
   map₂_iSup_right _ _ _
 #align submodule.smul_supr Submodule.smul_iSup
 
-theorem smul_iInf_le {ι : Sort*} {I : Ideal R} {t : ι → Submodule R M} :
+@[deprecated smul_iInf_le] -- 2024-03-31
+protected theorem smul_iInf_le {ι : Sort*} {I : Ideal R} {t : ι → Submodule R M} :
     I • iInf t ≤ ⨅ i, I • t i :=
-  le_iInf fun _ => smul_mono_right (iInf_le _ _)
+  smul_iInf_le
 #align submodule.smul_infi_le Submodule.smul_iInf_le
 
 variable (S : Set R) (T : Set M)
@@ -820,7 +827,7 @@ theorem mul_mono_left (h : I ≤ J) : I * K ≤ J * K :=
 #align ideal.mul_mono_left Ideal.mul_mono_left
 
 theorem mul_mono_right (h : J ≤ K) : I * J ≤ I * K :=
-  Submodule.smul_mono_right h
+  smul_mono_right _ h
 #align ideal.mul_mono_right Ideal.mul_mono_right
 
 variable (I J K)
