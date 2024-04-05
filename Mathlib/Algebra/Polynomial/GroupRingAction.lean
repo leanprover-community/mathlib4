@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.GroupRingAction.Basic
-import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.Polynomial.Monic
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.GroupAction.Quotient
 
@@ -132,11 +132,12 @@ protected noncomputable def polynomial (g : P →+*[M] Q) : P[X] →+*[M] Q[X] w
   toFun := map g
   map_smul' m p :=
     Polynomial.induction_on p
-      (fun b ↦ by rw [smul_C, map_C, coe_fn_coe, g.map_smul, map_C, coe_fn_coe, smul_C])
+      (fun b ↦ by rw [MonoidHom.id_apply, smul_C, map_C, coe_fn_coe, g.map_smul, map_C,
+          coe_fn_coe, smul_C])
       (fun p q ihp ihq ↦ by
         rw [smul_add, Polynomial.map_add, ihp, ihq, Polynomial.map_add, smul_add])
-      fun n b _ ↦ by
-      rw [smul_mul', smul_C, smul_pow', smul_X, Polynomial.map_mul, map_C, Polynomial.map_pow,
+      fun n b _ ↦ by rw [MonoidHom.id_apply, smul_mul', smul_C, smul_pow', smul_X,
+        Polynomial.map_mul, map_C, Polynomial.map_pow,
         map_X, coe_fn_coe, g.map_smul, Polynomial.map_mul, map_C, Polynomial.map_pow, map_X,
         smul_mul', smul_C, smul_pow', smul_X, coe_fn_coe]
   -- Porting note: added `.toRingHom`

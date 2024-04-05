@@ -252,7 +252,7 @@ theorem IsAlgebraic.tower_top_of_injective
     (A_alg : IsAlgebraic R x) : IsAlgebraic S x :=
   let ⟨p, hp₁, hp₂⟩ := A_alg
   ⟨p.map (algebraMap _ _), by
-    rwa [Ne.def, ← degree_eq_bot, degree_map_eq_of_injective hinj, degree_eq_bot], by simpa⟩
+    rwa [Ne, ← degree_eq_bot, degree_map_eq_of_injective hinj, degree_eq_bot], by simpa⟩
 #align is_algebraic_of_larger_base_of_injective IsAlgebraic.tower_top_of_injective
 
 /-- If A is an algebraic algebra over R, then A is algebraic over S when S is an extension of R,

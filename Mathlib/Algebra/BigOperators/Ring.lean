@@ -4,8 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Multiset.Lemmas
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Fintype.Powerset
+import Mathlib.Data.Int.Cast.Lemmas
 
 #align_import algebra.big_operators.ring from "leanprover-community/mathlib"@"b2c89893177f66a48daf993b7ba5ef7cddeff8c9"
 
@@ -19,8 +22,76 @@ multiplicative and additive structures on the values being combined.
 open Fintype
 open scoped BigOperators
 
+variable {ι α β γ : Type*} {κ : ι → Type*} {s s₁ s₂ : Finset ι} {i : ι} {a : α} {f g : ι → α}
+
+section Deprecated
+
+#align monoid_hom.map_prod map_prodₓ
+#align add_monoid_hom.map_sum map_sumₓ
+#align mul_equiv.map_prod map_prodₓ
+#align add_equiv.map_sum map_sumₓ
+
+@[deprecated _root_.map_list_prod]
+protected lemma RingHom.map_list_prod [Semiring β] [Semiring γ] (f : β →+* γ) (l : List β) :
+    f l.prod = (l.map f).prod :=
+  map_list_prod f l
+#align ring_hom.map_list_prod RingHom.map_list_prod
+
+@[deprecated _root_.map_list_sum]
+protected lemma RingHom.map_list_sum [NonAssocSemiring β] [NonAssocSemiring γ] (f : β →+* γ)
+    (l : List β) : f l.sum = (l.map f).sum :=
+  map_list_sum f l
+#align ring_hom.map_list_sum RingHom.map_list_sum
+
+/-- A morphism into the opposite ring acts on the product by acting on the reversed elements. -/
+@[deprecated _root_.unop_map_list_prod]
+protected lemma RingHom.unop_map_list_prod [Semiring β] [Semiring γ] (f : β →+* γᵐᵒᵖ)
+    (l : List β) : MulOpposite.unop (f l.prod) = (l.map (MulOpposite.unop ∘ f)).reverse.prod :=
+  unop_map_list_prod f l
+#align ring_hom.unop_map_list_prod RingHom.unop_map_list_prod
+
+@[deprecated _root_.map_multiset_prod]
+protected lemma RingHom.map_multiset_prod [CommSemiring β] [CommSemiring γ] (f : β →+* γ)
+    (s : Multiset β) : f s.prod = (s.map f).prod :=
+  map_multiset_prod f s
+#align ring_hom.map_multiset_prod RingHom.map_multiset_prod
+
+@[deprecated _root_.map_multiset_sum]
+protected lemma RingHom.map_multiset_sum [NonAssocSemiring β] [NonAssocSemiring γ] (f : β →+* γ)
+    (s : Multiset β) : f s.sum = (s.map f).sum :=
+  map_multiset_sum f s
+#align ring_hom.map_multiset_sum RingHom.map_multiset_sum
+
+@[deprecated _root_.map_prod]
+protected lemma RingHom.map_prod [CommSemiring β] [CommSemiring γ] (g : β →+* γ) (f : α → β)
+    (s : Finset α) : g (∏ x in s, f x) = ∏ x in s, g (f x) :=
+  map_prod g f s
+#align ring_hom.map_prod RingHom.map_prod
+
+@[deprecated _root_.map_sum]
+protected lemma RingHom.map_sum [NonAssocSemiring β] [NonAssocSemiring γ] (g : β →+* γ)
+    (f : α → β) (s : Finset α) : g (∑ x in s, f x) = ∑ x in s, g (f x) :=
+  map_sum g f s
+#align ring_hom.map_sum RingHom.map_sum
+
+end Deprecated
+
 namespace Finset
-variable {ι α : Type*} {κ : ι → Type*} {s s₁ s₂ : Finset ι} {i : ι} {a : α} {f g : ι → α}
+
+section AddCommMonoidWithOne
+variable [AddCommMonoidWithOne α]
+
+lemma natCast_card_filter (p) [DecidablePred p] (s : Finset ι) :
+    ((filter p s).card : α) = ∑ a in s, if p a then (1 : α) else 0 := by
+  rw [sum_ite, sum_const_zero, add_zero, sum_const, nsmul_one]
+#align finset.nat_cast_card_filter Finset.natCast_card_filter
+
+@[simp] lemma sum_boole (p) [DecidablePred p] (s : Finset ι) :
+    (∑ x in s, if p x then 1 else 0 : α) = (s.filter p).card :=
+  (natCast_card_filter _ _).symm
+#align finset.sum_boole Finset.sum_boole
+
+end AddCommMonoidWithOne
 
 section NonUnitalNonAssocSemiring
 variable [NonUnitalNonAssocSemiring α]
@@ -37,6 +108,18 @@ lemma sum_mul_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → α) (
     (∑ i in s, f i) * ∑ j in t, g j = ∑ i in s, ∑ j in t, f i * g j := by
   simp_rw [sum_mul, ← mul_sum]
 #align finset.sum_mul_sum Finset.sum_mul_sum
+
+lemma _root_.Commute.sum_right [NonUnitalNonAssocSemiring α] (s : Finset ι) (f : ι → α) (b : α)
+    (h : ∀ i ∈ s, Commute b (f i)) : Commute b (∑ i in s, f i) :=
+  (Commute.multiset_sum_right _ _) fun b hb => by
+    obtain ⟨i, hi, rfl⟩ := Multiset.mem_map.mp hb
+    exact h _ hi
+#align commute.sum_right Commute.sum_right
+
+lemma _root_.Commute.sum_left [NonUnitalNonAssocSemiring α] (s : Finset ι) (f : ι → α) (b : α)
+    (h : ∀ i ∈ s, Commute (f i) b) : Commute (∑ i in s, f i) b :=
+  ((Commute.sum_right _ _ _) fun _i hi => (h _ hi).symm).symm
+#align commute.sum_left Commute.sum_left
 
 lemma sum_range_succ_mul_sum_range_succ (m n : ℕ) (f g : ℕ → α) :
     (∑ i in range (m + 1), f i) * ∑ i in range (n + 1), g i =
@@ -71,6 +154,16 @@ end NonAssocSemiring
 
 section CommSemiring
 variable [CommSemiring α]
+
+/-- If `f = g = h` everywhere but at `i`, where `f i = g i + h i`, then the product of `f` over `s`
+  is the sum of the products of `g` and `h`. -/
+theorem prod_add_prod_eq {s : Finset ι} {i : ι} {f g h : ι → α} (hi : i ∈ s)
+    (h1 : g i + h i = f i) (h2 : ∀ j ∈ s, j ≠ i → g j = f j) (h3 : ∀ j ∈ s, j ≠ i → h j = f j) :
+    (∏ i in s, g i) + ∏ i in s, h i = ∏ i in s, f i := by
+  classical
+    simp_rw [prod_eq_mul_prod_diff_singleton hi, ← h1, right_distrib]
+    congr 2 <;> apply prod_congr rfl <;> simpa
+#align finset.prod_add_prod_eq Finset.prod_add_prod_eq
 
 section DecidableEq
 variable [DecidableEq ι]
@@ -197,7 +290,7 @@ lemma _root_.Fintype.sum_pow_mul_eq_add_pow (ι : Type*) [Fintype ι] (a b : α)
 
 @[norm_cast]
 theorem prod_natCast (s : Finset ι) (f : ι → ℕ) : ↑(∏ i in s, f i : ℕ) = ∏ i in s, (f i : α) :=
-  (Nat.castRingHom α).map_prod f s
+  map_prod (Nat.castRingHom α) f s
 #align finset.prod_nat_cast Finset.prod_natCast
 
 end CommSemiring
@@ -244,3 +337,78 @@ lemma sum_div (s : Finset ι) (f : ι → α) (a : α) :
 
 end DivisionSemiring
 end Finset
+
+namespace Nat
+
+@[simp, norm_cast]
+lemma cast_list_sum [AddMonoidWithOne β] (s : List ℕ) : (↑s.sum : β) = (s.map (↑)).sum :=
+  map_list_sum (castAddMonoidHom β) _
+#align nat.cast_list_sum Nat.cast_list_sum
+
+@[simp, norm_cast]
+lemma cast_list_prod [Semiring β] (s : List ℕ) : (↑s.prod : β) = (s.map (↑)).prod :=
+  map_list_prod (castRingHom β) _
+#align nat.cast_list_prod Nat.cast_list_prod
+
+@[simp, norm_cast]
+lemma cast_multiset_sum [AddCommMonoidWithOne β] (s : Multiset ℕ) :
+    (↑s.sum : β) = (s.map (↑)).sum :=
+  map_multiset_sum (castAddMonoidHom β) _
+#align nat.cast_multiset_sum Nat.cast_multiset_sum
+
+@[simp, norm_cast]
+lemma cast_multiset_prod [CommSemiring β] (s : Multiset ℕ) : (↑s.prod : β) = (s.map (↑)).prod :=
+  map_multiset_prod (castRingHom β) _
+#align nat.cast_multiset_prod Nat.cast_multiset_prod
+
+@[simp, norm_cast]
+lemma cast_sum [AddCommMonoidWithOne β] (s : Finset α) (f : α → ℕ) :
+    ↑(∑ x in s, f x : ℕ) = ∑ x in s, (f x : β) :=
+  map_sum (castAddMonoidHom β) _ _
+#align nat.cast_sum Nat.cast_sum
+
+@[simp, norm_cast]
+lemma cast_prod [CommSemiring β] (f : α → ℕ) (s : Finset α) :
+    (↑(∏ i in s, f i) : β) = ∏ i in s, (f i : β) :=
+  map_prod (castRingHom β) _ _
+#align nat.cast_prod Nat.cast_prod
+
+end Nat
+
+namespace Int
+
+@[simp, norm_cast]
+lemma cast_list_sum [AddGroupWithOne β] (s : List ℤ) : (↑s.sum : β) = (s.map (↑)).sum :=
+  map_list_sum (castAddHom β) _
+#align int.cast_list_sum Int.cast_list_sum
+
+@[simp, norm_cast]
+lemma cast_list_prod [Ring β] (s : List ℤ) : (↑s.prod : β) = (s.map (↑)).prod :=
+  map_list_prod (castRingHom β) _
+#align int.cast_list_prod Int.cast_list_prod
+
+@[simp, norm_cast]
+lemma cast_multiset_sum [AddCommGroupWithOne β] (s : Multiset ℤ) :
+    (↑s.sum : β) = (s.map (↑)).sum :=
+  map_multiset_sum (castAddHom β) _
+#align int.cast_multiset_sum Int.cast_multiset_sum
+
+@[simp, norm_cast]
+lemma cast_multiset_prod {R : Type*} [CommRing R] (s : Multiset ℤ) :
+    (↑s.prod : R) = (s.map (↑)).prod :=
+  map_multiset_prod (castRingHom R) _
+#align int.cast_multiset_prod Int.cast_multiset_prod
+
+@[simp, norm_cast]
+lemma cast_sum [AddCommGroupWithOne β] (s : Finset α) (f : α → ℤ) :
+    ↑(∑ x in s, f x : ℤ) = ∑ x in s, (f x : β) :=
+  map_sum (castAddHom β) _ _
+#align int.cast_sum Int.cast_sum
+
+@[simp, norm_cast]
+lemma cast_prod {R : Type*} [CommRing R] (f : α → ℤ) (s : Finset α) :
+    (↑(∏ i in s, f i) : R) = ∏ i in s, (f i : R) :=
+  map_prod (Int.castRingHom R) _ _
+#align int.cast_prod Int.cast_prod
+
+end Int
