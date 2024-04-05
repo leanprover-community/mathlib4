@@ -210,23 +210,26 @@ def Stained.toFMVarId (mv : MVarId) (lctx: LocalContext) : Stained → Array (FV
 /-- `SyntaxNodeKind`s that are mostly "formatting": mostly they are ignored
 because we do not want the linter to spend time on them.
 The nodes that they contain will be visited by the linter anyway. -/
-def ignored : HashSet Name :=
-  { ``Lean.Parser.Tactic.tacticSeq1Indented,
+def combinatorLike : HashSet Name :=
+  { -- "continuators": these typically wrap other tactics inside them. the linter ignores the
+    -- wrapper, but does recurse into the enclosed tactics
+    ``Lean.Parser.Tactic.tacticSeq1Indented,
     ``Lean.Parser.Tactic.tacticSeq,
     ``Lean.Parser.Term.byTactic,
-    `null,
     `by,
-    -- even ignoring `try`, the linter still looks at the "tried" tactics
     ``Lean.Parser.Tactic.tacticTry_,
-    `«]»,
+    `choice,  -- involved in `first`
     `Std.Tactic.«tacticOn_goal-_=>_»,
+    ``Lean.Parser.Tactic.«tactic_<;>_»,
+    ``cdotTk,
+    ``cdot,
+    -- "stopper tactics": their effect is analogous to "continuators", but they do not wrap
+    -- other tactics inside them
     ``Lean.Parser.Tactic.tacticSorry,
     ``Lean.Parser.Tactic.tacticRepeat_,
     ``Lean.Parser.Tactic.tacticStop_,
-    ``Lean.Parser.Tactic.«tactic_<;>_»,
-    `«;»,
-    ``cdotTk,
-    ``cdot }
+    `Mathlib.Tactic.Abel.abelNF,
+    `Mathlib.Tactic.RingNF.ringNF }
 
 /-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
   `simp`, `simp_all`, `simpa`, `dsimp`, `rfl`, `omega`, `abel`, `ring`, `linarith`, `nlinarith`,
@@ -234,6 +237,7 @@ def ignored : HashSet Name :=
 -/
 def followers : HashSet Name :=
   { ``Lean.Parser.Tactic.simp,
+    ``Lean.Parser.Tactic.constructor,
     ``Lean.Parser.Tactic.simpAll,
     ``Lean.Parser.Tactic.simpa,
     ``Lean.Parser.Tactic.dsimp,
@@ -327,7 +331,7 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
   let mut msgs : Array (Syntax × Syntax × Stained) := #[]
   for d in x do for (s, ctx0, ctx1, mvs0, mvs1) in d do
     let skind := s.getKind
-    if ignored.contains skind then continue
+    if combinatorLike.contains skind then continue
     for d in getStained! s do
       let shouldStain? := flexible? s && mvs1.length == mvs0.length
       if shouldStain? then

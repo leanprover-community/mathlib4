@@ -1,5 +1,7 @@
 import Std.Tactic.PermuteGoals
 import Mathlib.Tactic.FlexibleLinter
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Ring
 
 set_option warningAsError true
 
@@ -80,12 +82,38 @@ info: ... and 'rw [← Classical.not_not (a := True)] at h' uses 'h'!
 #guard_msgs in
 -- `simp at h` stains `h` but not other locations
 example {h : 0 = 0} {k : 1 = 1} : True := by
-  simp at h k
+  simp at h k;
   rw [← Classical.not_not (a := True)]
   -- flag the two below vvv do not above ^^^
   rw [← Classical.not_not (a := True)] at k
   rw [← Classical.not_not (a := True)] at h
   assumption
+
+--  `abel_nf` is a `rigidifier`: the "stain" of `simp` does not continue past `abel_nf`.
+#guard_msgs in
+example {a b : Nat} (h : a + b = a + (b + 1)) : a + b = b + a + 0 + 1 := by
+  simp
+  abel_nf
+  assumption
+
+--  `abel` is an allowed `simp`-follower.
+#guard_msgs in
+example {a b : Nat} : a + b = b + a + 0 := by
+  simp
+  abel
+
+--  `ring_nf` is a `rigidifier`: the "stain" of `simp` does not continue past `ring_nf`.
+#guard_msgs in
+example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 + 1 := by
+  simp
+  ring_nf
+  assumption
+
+--  `ring` is an allowed `simp`-follower.
+#guard_msgs in
+example {a b : Nat} : a + b = b + a + 0 := by
+  simp
+  ring
 
 set_option linter.flexible false in
 set_option linter.flexible true in
@@ -206,6 +234,7 @@ elab "flex? " tac:tactic : command => do
     | true  => logWarningAt tac m!"{flexible? tac}"
     | false => logInfoAt tac m!"{flexible? tac}"
 
+section set_option linter.unreachableTactic false
 /-- info: false -/#guard_msgs in
 flex? done
 /-- info: false -/#guard_msgs in
@@ -216,9 +245,10 @@ flex? simp_all only
 flex? simp
 /-- error: true -/#guard_msgs in
 flex? simp_all
+end
 
 /-- info: #[h] -/ #guard_msgs in
 #eval show CoreM _ from do
   let h := mkIdent `h
   let hc : TSyntax `Lean.Parser.Tactic.casesTarget := ⟨h⟩
-  IO.println s!"{toStained (← `(tactic| cases $hc))}"
+  IO.println s!"{(toStained (← `(tactic| cases $hc))).toArray}"
