@@ -78,7 +78,7 @@ instance : CoeFun (P₁ ≃ᵃL[k] P₂) fun _ ↦ P₁ → P₂ :=
 attribute [coe] ContinuousAffineEquiv.toAffineEquiv
 
 /-- Coerce continuous affine equivalences to affine equivalences. -/
-instance ContinuousAffineEquiv.coe : Coe (P₁ ≃ᵃL[k] P₂) (P₁ ≃ᵃ[k] P₂) := ⟨toAffineEquiv⟩
+instance coe : Coe (P₁ ≃ᵃL[k] P₂) (P₁ ≃ᵃ[k] P₂) := ⟨toAffineEquiv⟩
 
 theorem coe_injective : Function.Injective ((↑) : (P₁ ≃ᵃL[k] P₂) → P₁ ≃ᵃ[k] P₂) := by
   intro e e' H
