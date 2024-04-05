@@ -596,8 +596,8 @@ theorem padicValNat_mul_pow_left {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prim
 
 theorem padicValNat_mul_pow_right {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
     (n m : ℕ) (neq : q ≠ p) : padicValNat q (p^n * q^m) = m := by
-  rw [padicValNat.mul (NeZero.ne' (p^n)).symm (NeZero.ne' (q^m)).symm,
-    padicValNat.prime_pow, padicValNat_prime_prime_pow n neq, zero_add]
+  rw [mul_comm (p^n) (q^m)]
+  exact padicValNat_mul_pow_left m n neq
 
 /-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t `p`.-/
 lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
