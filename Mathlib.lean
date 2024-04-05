@@ -29,7 +29,6 @@ import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.List.Basic
-import Mathlib.Algebra.BigOperators.List.Defs
 import Mathlib.Algebra.BigOperators.List.Lemmas
 import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.BigOperators.Multiset.Basic
