@@ -542,7 +542,7 @@ theorem finset_sup_factors {I : Type*} {A B : C} {s : Finset I} {P : I → Subob
   · rintro ⟨_, ⟨⟨⟩, _⟩⟩
   · rintro ⟨j, ⟨m, h⟩⟩
     simp only [Finset.sup_insert]
-    simp at m
+    rw [Finset.mem_insert] at m
     rcases m with (rfl | m)
     · exact sup_factors_of_factors_left h
     · exact sup_factors_of_factors_right (ih ⟨j, ⟨m, h⟩⟩)

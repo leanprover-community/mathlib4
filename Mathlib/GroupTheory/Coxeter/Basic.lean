@@ -177,6 +177,7 @@ theorem ofCoxeterGroup_apply {X : Type*} (D : Matrix X X ℕ) (x : X) :
     CoxeterSystem.ofCoxeterGroup X D x = CoxeterGroup.of D x :=
   rfl
 
+set_option linter.flexible false in  -- messy
 theorem map_relations_eq_reindex_relations (e : B ≃ B') :
     (MulEquiv.toMonoidHom (FreeGroup.freeGroupCongr e)) '' CoxeterGroup.Relations.toSet M =
     CoxeterGroup.Relations.toSet (reindex e e M) := by

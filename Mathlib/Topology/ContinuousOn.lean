@@ -1267,7 +1267,7 @@ theorem continuous_if' {p : α → Prop} {f g : α → β} [∀ a, Decidable (p 
     (hf : ContinuousOn f { x | p x }) (hg : ContinuousOn g { x | ¬p x }) :
     Continuous fun a => ite (p a) (f a) (g a) := by
   rw [continuous_iff_continuousOn_univ]
-  apply ContinuousOn.if' <;> simp [*] <;> assumption
+  apply ContinuousOn.if' <;> simp only [univ_inter] <;> assumption
 #align continuous_if' continuous_if'
 
 theorem continuous_if {p : α → Prop} {f g : α → β} [∀ a, Decidable (p a)]
@@ -1275,7 +1275,7 @@ theorem continuous_if {p : α → Prop} {f g : α → β} [∀ a, Decidable (p a
     (hg : ContinuousOn g (closure { x | ¬p x })) :
     Continuous fun a => if p a then f a else g a := by
   rw [continuous_iff_continuousOn_univ]
-  apply ContinuousOn.if <;> simp <;> assumption
+  apply ContinuousOn.if <;> simpa
 #align continuous_if continuous_if
 
 theorem Continuous.if {p : α → Prop} {f g : α → β} [∀ a, Decidable (p a)]

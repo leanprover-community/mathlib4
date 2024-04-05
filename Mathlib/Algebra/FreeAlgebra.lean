@@ -247,7 +247,7 @@ instance : Semiring (FreeAlgebra R X) where
   __ := instDistrib R X
   natCast n := Quot.mk _ (n : R)
   natCast_zero := by simp; rfl
-  natCast_succ n := by simp; exact Quot.sound Rel.add_scalar
+  natCast_succ n := by simpa using Quot.sound Rel.add_scalar
 
 instance : Inhabited (FreeAlgebra R X) :=
   ⟨0⟩
@@ -583,8 +583,8 @@ theorem induction {C : FreeAlgebra R X → Prop}
   suffices a = lift R of a by
     rw [this]
     exact Subtype.prop (lift R of a)
-  simp [AlgHom.ext_iff] at of_id
-  exact of_id a
+  suffices of_id : ∀ (x : FreeAlgebra R X), x = ↑(((lift R) of) x) by exact of_id a
+  simpa [AlgHom.ext_iff] using of_id
 #align free_algebra.induction FreeAlgebra.induction
 
 @[simp]
