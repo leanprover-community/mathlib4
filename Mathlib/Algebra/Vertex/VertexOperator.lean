@@ -73,17 +73,11 @@ theorem ncoef_ofForallLTEqZero (f : ℤ → V) (n : ℤ) (h : ∀(m : ℤ), n < 
 /-- Given an endomorphism-valued formal power series satisfying a pointwise bounded-pole condition,
 we produce a vertex operator. -/
 noncomputable def VertexOperator.of_coeff (f : ℤ → Module.End R V)
-    (hf : ∀(x : V), ∃(n : ℤ), ∀(m : ℤ), m < n → (f m) x = 0) : VertexOperator R V where
-  toFun := fun x => LaurentSeries.LaurentFromSuppBddBelow
-    (fun n => (f n) x) (Exists.choose (hf x)) (Exists.choose_spec (hf x))
-  map_add' := by
-    intros
-    simp only [map_add]
-    exact rfl
-  map_smul' := by
-    intros
-    simp only [map_smul, RingHom.id_apply]
-    exact rfl
+    (hf : ∀(x : V), ∃(n : ℤ), ∀(m : ℤ), m < n → (f m) x = 0) : VertexOperator R V :=
+  HetVertexOperator.of_coeff f
+    (fun x => HahnSeries.suppBddBelow_supp_PWO (fun n => (f n) x)
+      (HahnSeries.forallLTEqZero_supp_BddBelow (fun n => (f n) x)
+        (Exists.choose (hf x)) (Exists.choose_spec (hf x))))
 
 noncomputable instance [CommRing R] [AddCommGroup V] [Module R V] : One (VertexOperator R V) :=
   {

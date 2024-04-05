@@ -109,7 +109,6 @@ theorem multichoose_zero_succ (k : ℕ) : multichoose (0 : R) (k + 1) = 0 := by
   rw [factorial_nsmul_multichoose_eq_ascPochhammer, smul_zero, ascPochhammer_succ_left,
     smeval_X_mul, zero_mul]
 
-
 theorem ascPochhammer_succ_succ (r : R) (k : ℕ) :
     smeval (ascPochhammer ℕ (k + 1)) (r + 1) = Nat.factorial (k + 1) • multichoose (r + 1) k +
     smeval (ascPochhammer ℕ (k + 1)) r := by
@@ -118,7 +117,7 @@ theorem ascPochhammer_succ_succ (r : R) (k : ℕ) :
   rw [Nat.factorial, mul_smul, factorial_nsmul_multichoose_eq_ascPochhammer]
   simp only [smeval_one, npow_one, npow_zero, one_smul]
   rw [← C_eq_nat_cast, smeval_C, npow_zero, add_assoc, add_mul, add_comm 1, @nsmul_one, add_mul]
-  rw [← @nsmul_eq_mul, @add_rotate', @succ_nsmul', add_assoc]
+  rw [← @nsmul_eq_mul, @add_rotate', @succ_nsmul, add_assoc]
   simp_all only [Nat.cast_id, nsmul_eq_mul, one_mul]
 
 theorem multichoose_succ_succ (r : R) (k : ℕ) :

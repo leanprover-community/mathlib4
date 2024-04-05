@@ -204,7 +204,8 @@ theorem coeff_ResRight (A : HetVertexOperator (Γ ×ₗ Γ') R V W) (g' : Γ') (
 
 /-- The right residue as a linear map. -/
 @[simps]
-def ResRight.linearMap (g' : Γ') : HetVertexOperator (Γ ×ₗ Γ') R V W →ₗ[R] HetVertexOperator Γ R V W where
+def ResRight.linearMap (g' : Γ') :
+    HetVertexOperator (Γ ×ₗ Γ') R V W →ₗ[R] HetVertexOperator Γ R V W where
   toFun A := ResRight A g'
   map_add' _ _ := rfl
   map_smul' _ _ := rfl

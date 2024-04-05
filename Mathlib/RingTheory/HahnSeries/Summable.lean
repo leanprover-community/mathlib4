@@ -125,7 +125,7 @@ theorem support_pow_subset_closure [OrderedCancelAddCommMonoid Γ] [Semiring R] 
     not_forall, exists_prop, SetLike.mem_coe]
     exact AddSubmonoid.zero_mem (AddSubmonoid.closure (support x))
   · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
-    exact SetLike.mem_coe.2 (AddSubmonoid.add_mem _ (AddSubmonoid.subset_closure hi) (ih hj))
+    exact SetLike.mem_coe.2 (AddSubmonoid.add_mem _ (ih hi) (AddSubmonoid.subset_closure hj))
 
 theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Semiring R]
     (x : HahnSeries Γ R) (hx : 0 ≤ x.order) :
@@ -528,10 +528,10 @@ theorem pow_finite_co_support (g : Γ) : Set.Finite {a | ((fun n ↦ x ^ n) a).c
   · rintro (_ | n) hn
     · exact Set.mem_union_right _ (Set.mem_singleton 0)
     · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
-      refine' Set.mem_union_left _ ⟨n, Set.mem_iUnion.2 ⟨⟨i, j⟩, Set.mem_iUnion.2 ⟨_, hj⟩⟩, rfl⟩
+      refine' Set.mem_union_left _ ⟨n, Set.mem_iUnion.2 ⟨⟨j, i⟩, Set.mem_iUnion.2 ⟨_, hi⟩⟩, rfl⟩
       simp only [and_true_iff, Set.mem_iUnion, mem_addAntidiagonal, mem_coe, eq_self_iff_true,
         Ne.def, mem_support, Set.mem_setOf_eq]
-      exact ⟨hi, n, hj⟩
+      exact ⟨hj, ⟨n, hi⟩, add_comm j i⟩
 
 /-- Powers of an element of positive order (or zero) form a summable family. -/
 @[simps]
@@ -561,7 +561,7 @@ theorem embDomain_succ_smul_powers :
     exact Nat.succ_ne_zero
   · refine' Eq.trans (embDomain_image _ ⟨Nat.succ, Nat.succ_injective⟩) _
     simp only [smul_apply, powers_toFun, Algebra.mul_smul_comm, coe_sub, coe_ofFinsupp,
-      Pi.sub_apply, ne_eq, not_false_eq_true, Finsupp.single_eq_of_ne, sub_zero, pow_succ]
+      Pi.sub_apply, ne_eq, not_false_eq_true, Finsupp.single_eq_of_ne, sub_zero, pow_succ']
 #align hahn_series.summable_family.emb_domain_succ_smul_powers HahnSeries.SummableFamily.embDomain_succ_smul_powers
 
 theorem one_sub_self_mul_hsum_powers : (1 - x) * (powers hx).hsum = 1 := by

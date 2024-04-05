@@ -95,6 +95,7 @@ instance (priority := 200) OrderedCancelVAdd.toContravariantClassLeLeft [LE α]
     [LE β] [OrderedCancelVAdd α β] : ContravariantClass α β (· +ᵥ ·) (· ≤ ·) :=
   ⟨OrderedCancelVAdd.le_of_vadd_le_vadd_left⟩
 
+/-- An AddTorsor is ordered if vector addition preserves and reflects order. -/
 class OrderedAddTorsor (G : outParam (Type*)) (P : Type*) [outParam <| OrderedAddCommGroup G] [LE P]
     extends AddTorsor G P where
   protected le_of_vadd_left_iff : ∀ (a : G) (b c : P), a +ᵥ b ≤ a +ᵥ c ↔ b ≤ c
@@ -191,8 +192,8 @@ theorem Monotone.vAdd {γ : Type*} [Preorder α] [Preorder β] [Preorder γ] [Or
   fun _ _ hab => (OrderedVAdd.vadd_le_vadd_left _ _ (hg hab) _).trans
     (OrderedVAdd.vadd_le_vadd_right _ _ (hf hab) _)
 
-theorem Set.IsPWO.vAdd [PartialOrder G] [PartialOrder P] [OrderedCancelVAdd G P] {s : Set G} {t : Set P}
-    (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO ((fun x ↦ x.1 +ᵥ x.2) '' s ×ˢ t) := by
+theorem Set.IsPWO.vAdd [PartialOrder G] [PartialOrder P] [OrderedCancelVAdd G P] {s : Set G}
+    {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO ((fun x ↦ x.1 +ᵥ x.2) '' s ×ˢ t) := by
   exact (hs.prod ht).image_of_monotone (monotone_fst.vAdd monotone_snd)
 
 namespace Finset
@@ -215,7 +216,8 @@ theorem mem_vAddAntidiagonal :
   simp only [vAddAntidiagonal, Set.Finite.mem_toFinset, VAdd.antidiagonal]
   exact Set.mem_sep_iff
 
-theorem vAddAntidiagonal_mono_left (h : u ⊆ s) : vAddAntidiagonal hu ht a ⊆ vAddAntidiagonal hs ht a :=
+theorem vAddAntidiagonal_mono_left (h : u ⊆ s) :
+    vAddAntidiagonal hu ht a ⊆ vAddAntidiagonal hs ht a :=
   Set.Finite.toFinset_mono <| VAdd.antidiagonal_mono_left h
 
 theorem vAddAntidiagonal_mono_right (h : v ⊆ t) :
