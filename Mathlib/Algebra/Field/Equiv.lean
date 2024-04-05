@@ -3,8 +3,8 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Field.IsField
+import Mathlib.Algebra.GroupWithZero.Hom
 
 /-!
 # If a semiring is a field, any isomorphic semiring is also a field.
