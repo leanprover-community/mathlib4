@@ -22,7 +22,7 @@ variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
   [F.EffectivelyEnough]
   [Preregular D] [Full F] [Faithful F]
 
-lemma reflects_preregular : Preregular C where
+lemma Functor.reflects_preregular : Preregular C where
   exists_fac f g _ := by
     obtain ⟨W, f', _, i, w⟩ := Preregular.exists_fac (F.map f) (F.map g)
     refine ⟨_, F.preimage (F.effectiveEpiOver  W ≫ f'),

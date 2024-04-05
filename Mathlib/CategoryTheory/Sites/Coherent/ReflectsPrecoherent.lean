@@ -22,7 +22,7 @@ variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
   [F.EffectivelyEnough]
   [Precoherent D] [Full F] [Faithful F]
 
-lemma reflects_precoherent : Precoherent C where
+lemma Functor.reflects_precoherent : Precoherent C where
   pullback {B₁ B₂} f α _ X₁ π₁ _ := by
     let Y₁ := fun a ↦ F.obj (X₁ a)
     let τ₁ := fun a ↦ F.map (π₁ a)
