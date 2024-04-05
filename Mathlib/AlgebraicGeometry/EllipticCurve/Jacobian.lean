@@ -92,8 +92,11 @@ local macro "pderiv_simp" : tactic =>
 
 variable {R : Type u} [CommRing R] (W : Jacobian R)
 
-lemma fin3_def (P : Fin 3 → R) : P = ![P x, P y, P z] := by
+lemma fin3_def (P : Fin 3 → R) : ![P x, P y, P z] = P := by
   ext n; fin_cases n <;> rfl
+
+lemma fin3_def_ext {X Y Z : R} : ![X, Y, Z] x = X ∧ ![X, Y, Z] y = Y ∧ ![X, Y, Z] z = Z :=
+  ⟨rfl, rfl, rfl⟩
 
 /-- The scalar multiplication on a point representative. -/
 scoped instance instSMulPoint : SMul Rˣ <| Fin 3 → R :=
@@ -104,12 +107,12 @@ lemma smul_fin3 (P : Fin 3 → R) (u : Rˣ) :
   rfl
 
 lemma smul_fin3_ext (P : Fin 3 → R) (u : Rˣ) :
-    (u • P) x = u ^ 2 * P x ∧ (u • P) y = u ^ 3 * P y ∧ (u • P) z = u * P z := by
-  simp [smul_fin3]
+    (u • P) x = u ^ 2 * P x ∧ (u • P) y = u ^ 3 * P y ∧ (u • P) z = u * P z :=
+  ⟨rfl, rfl, rfl⟩
 
 /-- The multiplicative action on a point representative. -/
 scoped instance instMulActionPoint : MulAction Rˣ <| Fin 3 → R where
-  one_smul _ := by simp only [smul_fin3, Units.val_one, one_pow, one_mul, ← fin3_def]
+  one_smul _ := by simp only [smul_fin3, Units.val_one, one_pow, one_mul, fin3_def]
   mul_smul _ _ _ := by simp only [smul_fin3, Units.val_mul, mul_pow, mul_assoc]; matrix_simp
 
 /-- The equivalence setoid for a point representative. -/
@@ -293,8 +296,8 @@ variable {F : Type u} [Field F] {W : Jacobian F}
 
 lemma equiv_of_Z_eq_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q)
     (hPz : P z = 0) (hQz : Q z = 0) : P ≈ Q := by
-  rw [fin3_def P, hPz] at hP ⊢
-  rw [fin3_def Q, hQz] at hQ ⊢
+  rw [← fin3_def P, hPz] at hP ⊢
+  rw [← fin3_def Q, hQz] at hQ ⊢
   simp [nonsingular_iff, equation_iff] at hP hQ
   have hPx : P x ≠ 0 := fun h => by simp [h] at hP; simp [hP] at hP
   have hQx : Q x ≠ 0 := fun h => by simp [h] at hQ; simp [hQ] at hQ
@@ -314,7 +317,7 @@ lemma equiv_zero_of_Z_eq_zero {P : Fin 3 → F} (h : W.Nonsingular P) (hPz : P z
 
 lemma equiv_some_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     P ≈ ![P x / P z ^ 2, P y / P z ^ 3, 1] :=
-  ⟨Units.mk0 _ hPz, by simp [smul_fin3, ← fin3_def P, mul_div_cancel₀ _ <| pow_ne_zero _ hPz]⟩
+  ⟨Units.mk0 _ hPz, by simp [smul_fin3, fin3_def P, mul_div_cancel₀ _ <| pow_ne_zero _ hPz]⟩
 
 lemma nonsingular_iff_affine_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.Nonsingular P ↔ W.toAffine.nonsingular (P x / P z ^ 2) (P y / P z ^ 3) :=
@@ -347,37 +350,36 @@ lemma negY_smul (P : Fin 3 → R) (u : Rˣ) : W.negY (u • P) = u ^ 3 * W.negY 
 /-- The $X$-coordinate of the addition of two point representatives, where their $Z$-coordinates are
 non-zero and their $X$-coordinates divided by $Z$-coordinates squared are distinct. -/
 @[pp_dot]
-def addX_of_Xne (P Q : Fin 3 → R) : R :=
+def addX_of_X_ne (P Q : Fin 3 → R) : R :=
   P x * Q x ^ 2 * P z ^ 2 - 2 * P y * Q y * P z * Q z + P x ^ 2 * Q x * Q z ^ 2
     - W.a₁ * P x * Q y * P z ^ 2 * Q z - W.a₁ * P y * Q x * P z * Q z ^ 2
     + 2 * W.a₂ * P x * Q x * P z ^ 2 * Q z ^ 2 - W.a₃ * Q y * P z ^ 4 * Q z
     - W.a₃ * P y * P z * Q z ^ 4 + W.a₄ * Q x * P z ^ 4 * Q z ^ 2 + W.a₄ * P x * P z ^ 2 * Q z ^ 4
     + 2 * W.a₆ * P z ^ 4 * Q z ^ 4
 
-lemma addX_of_Xne_smul (P Q : Fin 3 → R) (u v : Rˣ) :
-    W.addX_of_Xne (u • P) (v • Q) = (u : R) ^ 4 * (v : R) ^ 4 * W.addX_of_Xne P Q := by
-  simp only [addX_of_Xne, smul_fin3_ext]
+lemma addX_of_X_ne_smul (P Q : Fin 3 → R) (u v : Rˣ) :
+    W.addX_of_X_ne (u • P) (v • Q) = (u : R) ^ 4 * (v : R) ^ 4 * W.addX_of_X_ne P Q := by
+  simp only [addX_of_X_ne, smul_fin3_ext]
   ring1
 
 /-- The $X$-coordinate of the doubling of a point representative, where its $Z$-coordinate is
 non-zero and its $Y$-coordinate is distinct from that of its negation. -/
 @[pp_dot]
-def addX_of_Yne (P : Fin 3 → R) : R :=
+def addX_of_Y_ne (P : Fin 3 → R) : R :=
   (3 * P x ^ 2 + 2 * W.a₂ * P x * P z ^ 2 + W.a₄ * P z ^ 4 - W.a₁ * P y * P z) ^ 2
-    + W.a₁ * (3 * P x ^ 2 + 2 * W.a₂ * P x * P z ^ 2 + W.a₄ * P z ^ 4 - W.a₁ * P y * P z)
-      * (P y * P z - W.negY P * P z)
-    - (W.a₂ * P z ^ 2 + 2 * P x) * (P y - W.negY P) ^ 2
+    + W.a₁ * (3 * P x ^ 2 + 2 * W.a₂ * P x * P z ^ 2 + W.a₄ * P z ^ 4 - W.a₁ * P y * P z) * P z
+      * (P y - W.negY P) - W.a₂ * P z ^ 2 * (P y - W.negY P) ^ 2 - 2 * P x * (P y - W.negY P) ^ 2
 
-lemma addX_of_Yne_smul (P : Fin 3 → R) (u : Rˣ) :
-    W.addX_of_Yne (u • P) = (u : R) ^ 8 * W.addX_of_Yne P := by
-  simp only [addX_of_Yne, negY_smul, smul_fin3_ext]
+lemma addX_of_Y_ne_smul (P : Fin 3 → R) (u : Rˣ) :
+    W.addX_of_Y_ne (u • P) = (u : R) ^ 8 * W.addX_of_Y_ne P := by
+  simp only [addX_of_Y_ne, negY_smul, smul_fin3_ext]
   ring1
 
 /-- The $Y$-coordinate of the addition of two point representatives, before applying the final
 negation that maps $Y$ to $-Y - a_1XZ - a_3Z^3$, where their $Z$-coordinates are non-zero and their
 $X$-coordinates divided by $Z$-coordinates squared are distinct. -/
 @[pp_dot]
-def addY'_of_Xne (P Q : Fin 3 → R) : R :=
+def addY'_of_X_ne (P Q : Fin 3 → R) : R :=
   -P y * Q x ^ 3 * P z ^ 3 + 2 * P y * Q y ^ 2 * P z ^ 3 - 3 * P x ^ 2 * Q x * Q y * P z ^ 2 * Q z
     + 3 * P x * P y * Q x ^ 2 * P z * Q z ^ 2 + P x ^ 3 * Q y * Q z ^ 3
     - 2 * P y ^ 2 * Q y * Q z ^ 3 + W.a₁ * P x * Q y ^ 2 * P z ^ 4
@@ -389,67 +391,67 @@ def addY'_of_Xne (P Q : Fin 3 → R) : R :=
     + W.a₄ * P x * P y * P z * Q z ^ 6 - 2 * W.a₆ * Q y * P z ^ 6 * Q z ^ 3
     + 2 * W.a₆ * P y * P z ^ 3 * Q z ^ 6
 
-lemma addY'_of_Xne_smul (P Q : Fin 3 → R) (u v : Rˣ) :
-    W.addY'_of_Xne (u • P) (v • Q) = (u : R) ^ 6 * (v : R) ^ 6 * W.addY'_of_Xne P Q := by
-  simp only [addY'_of_Xne, smul_fin3_ext]
+lemma addY'_of_X_ne_smul (P Q : Fin 3 → R) (u v : Rˣ) :
+    W.addY'_of_X_ne (u • P) (v • Q) = (u : R) ^ 6 * (v : R) ^ 6 * W.addY'_of_X_ne P Q := by
+  simp only [addY'_of_X_ne, smul_fin3_ext]
   ring1
 
 /-- The $Y$-coordinate of the doubling of a point representative, before applying the final negation
 that maps $Y$ to $-Y - a_1XZ - a_3Z^3$, where its $Z$-coordinate is non-zero and its $Y$-coordinate
 is distinct from that of its negation. -/
 @[pp_dot]
-def addY'_of_Yne (P : Fin 3 → R) : R :=
+def addY'_of_Y_ne (P : Fin 3 → R) : R :=
   (3 * P x ^ 2 + 2 * W.a₂ * P x * P z ^ 2 + W.a₄ * P z ^ 4 - W.a₁ * P y * P z)
-      * (W.addX_of_Yne P - P x * (P y - W.negY P) ^ 2)
+      * (W.addX_of_Y_ne P - P x * (P y - W.negY P) ^ 2)
     + P y * (P y - W.negY P) ^ 3
 
-lemma addY'_of_Yne_smul (P : Fin 3 → R) (u : Rˣ) :
-    W.addY'_of_Yne (u • P) = (u : R) ^ 12 * W.addY'_of_Yne P := by
-  simp only [addY'_of_Yne, addX_of_Yne_smul, negY_smul, smul_fin3_ext]
+lemma addY'_of_Y_ne_smul (P : Fin 3 → R) (u : Rˣ) :
+    W.addY'_of_Y_ne (u • P) = (u : R) ^ 12 * W.addY'_of_Y_ne P := by
+  simp only [addY'_of_Y_ne, addX_of_Y_ne_smul, negY_smul, smul_fin3_ext]
   ring1
 
 /-- The $Z$-coordinate of the addition of two point representatives, where their $Z$-coordinates are
 non-zero and their $X$-coordinates divided by $Z$-coordinates squared are distinct. -/
-def addZ_of_Xne (P Q : Fin 3 → R) : R :=
+def addZ_of_X_ne (P Q : Fin 3 → R) : R :=
   P x * Q z ^ 2 - P z ^ 2 * Q x
 
-lemma addZ_of_Xne_smul (P Q : Fin 3 → R) (u v : Rˣ) :
-    addZ_of_Xne (u • P) (v • Q) = (u : R) ^ 2 * (v : R) ^ 2 * addZ_of_Xne P Q := by
-  simp only [addZ_of_Xne, smul_fin3_ext]
+lemma addZ_of_X_ne_smul (P Q : Fin 3 → R) (u v : Rˣ) :
+    addZ_of_X_ne (u • P) (v • Q) = (u : R) ^ 2 * (v : R) ^ 2 * addZ_of_X_ne P Q := by
+  simp only [addZ_of_X_ne, smul_fin3_ext]
   ring1
 
 /-- The $Z$-coordinate of the doubling of a point representative, where its $Z$-coordinate is
 non-zero and its $Y$-coordinate is distinct from that of its negation. -/
 @[pp_dot]
-def addZ_of_Yne (P : Fin 3 → R) : R :=
+def addZ_of_Y_ne (P : Fin 3 → R) : R :=
   P z * (P y - W.negY P)
 
-lemma addZ_of_Yne_smul (P : Fin 3 → R) (u : Rˣ) :
-    W.addZ_of_Yne (u • P) = (u : R) ^ 4 * W.addZ_of_Yne P := by
-  simp only [addZ_of_Yne, negY_smul, smul_fin3_ext]
+lemma addZ_of_Y_ne_smul (P : Fin 3 → R) (u : Rˣ) :
+    W.addZ_of_Y_ne (u • P) = (u : R) ^ 4 * W.addZ_of_Y_ne P := by
+  simp only [addZ_of_Y_ne, negY_smul, smul_fin3_ext]
   ring1
 
 /-- The $Y$-coordinate of the addition of two point representatives, where their $Z$-coordinates are
 non-zero and their $X$-coordinates divided by $Z$-coordinates squared are distinct. -/
 @[pp_dot]
-def addY_of_Xne (P Q : Fin 3 → R) : R :=
-  W.negY ![W.addX_of_Xne P Q, W.addY'_of_Xne P Q, addZ_of_Xne P Q]
+def addY_of_X_ne (P Q : Fin 3 → R) : R :=
+  W.negY ![W.addX_of_X_ne P Q, W.addY'_of_X_ne P Q, addZ_of_X_ne P Q]
 
-lemma addY_of_Xne_smul (P Q : Fin 3 → R) (u v : Rˣ) :
-    W.addY_of_Xne (u • P) (v • Q) = (u : R) ^ 6 * (v : R) ^ 6 * W.addY_of_Xne P Q := by
-  simp only [addY_of_Xne, negY, addX_of_Xne_smul, addY'_of_Xne_smul, addZ_of_Xne_smul]
+lemma addY_of_X_ne_smul (P Q : Fin 3 → R) (u v : Rˣ) :
+    W.addY_of_X_ne (u • P) (v • Q) = (u : R) ^ 6 * (v : R) ^ 6 * W.addY_of_X_ne P Q := by
+  simp only [addY_of_X_ne, negY, addX_of_X_ne_smul, addY'_of_X_ne_smul, addZ_of_X_ne_smul]
   matrix_simp
   ring1
 
 /-- The $Y$-coordinate of the doubling of a point representative, where its $Z$-coordinate is
 non-zero and its $Y$-coordinate is distinct from that of its negation. -/
 @[pp_dot]
-def addY_of_Yne (P : Fin 3 → R) : R :=
-  W.negY ![W.addX_of_Yne P, W.addY'_of_Yne P, W.addZ_of_Yne P]
+def addY_of_Y_ne (P : Fin 3 → R) : R :=
+  W.negY ![W.addX_of_Y_ne P, W.addY'_of_Y_ne P, W.addZ_of_Y_ne P]
 
-lemma addY_of_Yne_smul (P : Fin 3 → R) (u : Rˣ) :
-    W.addY_of_Yne (u • P) = (u : R) ^ 12 * W.addY_of_Yne P := by
-  simp only [addY_of_Yne, negY, addX_of_Yne_smul, addY'_of_Yne_smul, addZ_of_Yne_smul]
+lemma addY_of_Y_ne_smul (P : Fin 3 → R) (u : Rˣ) :
+    W.addY_of_Y_ne (u • P) = (u : R) ^ 12 * W.addY_of_Y_ne P := by
+  simp only [addY_of_Y_ne, negY, addX_of_Y_ne_smul, addY'_of_Y_ne_smul, addZ_of_Y_ne_smul]
   matrix_simp
   ring1
 
@@ -460,107 +462,143 @@ lemma negY_divZ {P : Fin 3 → F} (hPz : P z ≠ 0) :
   field_simp [negY, Affine.negY]
   ring1
 
-lemma Yne_of_Yne {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsingular Q) (hPz : P z ≠ 0)
+lemma Y_ne_of_Y_ne {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) (hPz : P z ≠ 0)
     (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = P z ^ 2 * Q x) (hy : P y * Q z ^ 3 ≠ P z ^ 3 * W.negY Q) :
     P y ≠ W.negY P := by
   simp only [mul_comm <| P z ^ _, ne_eq, ← div_eq_div_iff (pow_ne_zero _ hPz) (pow_ne_zero _ hQz)]
     at hx hy
   have hx' : P x * (P z / P z ^ 3) = Q x * (Q z / Q z ^ 3) := by
-    simp_rw [pow_succ _ 2, div_mul_right _ hPz, div_mul_right _ hQz, mul_one_div, hx]
+    simpa only [pow_succ _ 2, ← mul_div_assoc, mul_div_mul_right _ _ hPz, mul_div_mul_right _ _ hQz]
   have hy' : P y / P z ^ 3 = Q y / Q z ^ 3 :=
-    Affine.Yeq_of_Yne (nonsingular_affine_of_Zne0 hP hPz).left
-      (nonsingular_affine_of_Zne0 hQ hQz).left hx <| (negY_divZ hQz).symm ▸ hy
+    Affine.Yeq_of_Yne (nonsingular_affine_of_Z_ne_zero hP hPz).left
+      (nonsingular_affine_of_Z_ne_zero hQ hQz).left hx <| (negY_divZ hQz).symm ▸ hy
   simp_rw [negY, sub_div, neg_div, mul_div_assoc, mul_assoc, ← hy', ← hx',
     div_self <| pow_ne_zero 3 hQz, ← div_self <| pow_ne_zero 3 hPz, ← mul_assoc, ← mul_div_assoc,
     ← neg_div, ← sub_div, div_left_inj' <| pow_ne_zero 3 hPz] at hy
   exact hy
 
-lemma addX_div_addZ_of_Xne {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsingular Q)
-    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 ≠ P z ^ 2 * Q x) :
-    W.addX_of_Xne P Q / addZ_of_Xne P Q ^ 2 = W.toAffine.addX (P x / P z ^ 2) (Q x / Q z ^ 2)
-      (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)) := by
-  convert_to
-    ((P y * Q z ^ 3 - P z ^ 3 * Q y) ^ 2
-      + W.a₁ * P z * Q z * (P y * Q z ^ 3 - P z ^ 3 * Q y) * (P x * Q z ^ 2 - P z ^ 2 * Q x)
-      - (W.a₂ * P z ^ 2 * Q z ^ 2 + P x * Q z ^ 2 + P z ^ 2 * Q x)
-        * (P x * Q z ^ 2 - P z ^ 2 * Q x) ^ 2)
-      / (P z ^ 2 * Q z ^ 2) / addZ_of_Xne P Q ^ 2 = _ using 2
-  · rw [nonsingular_iff, equation_iff] at hP hQ
-    rw [addX_of_Xne, eq_div_iff_mul_eq <| mul_ne_zero (pow_ne_zero 2 hPz) (pow_ne_zero 2 hQz)]
-    linear_combination (norm := ring1) -Q z ^ 6 * hP.left - P z ^ 6 * hQ.left
+private lemma addX_eq {P Q : Fin 3 → F} {n d : F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hd : d ≠ 0) :
+    W.toAffine.addX (P x / P z ^ 2) (Q x / Q z ^ 2) (n / (P z * Q z * d)) =
+      (n ^ 2 + W.a₁ * n * P z * Q z * d - W.a₂ * P z ^ 2 * Q z ^ 2 * d ^ 2 - P x * Q z ^ 2 * d ^ 2
+        - Q x * P z ^ 2 * d ^ 2) / (P z ^ 2 * Q z ^ 2 * d ^ 2) := by
+  field_simp [mul_ne_zero (mul_ne_zero hPz hQz) hd]
+  ring1
+
+private lemma addX_eq' {P : Fin 3 → F} {n d : F} (hPz : P z ≠ 0) (hd : d ≠ 0) :
+    W.toAffine.addX (P x / P z ^ 2) (P x / P z ^ 2) (n / (P z * d)) =
+      (n ^ 2 + W.a₁ * n * P z * d - W.a₂ * P z ^ 2 * d ^ 2 - 2 * P x * d ^ 2)
+        / (P z ^ 2 * d ^ 2) := by
+  field_simp [mul_ne_zero hPz hd]
+  ring1
+
+private lemma slope_eq {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
+    (hx : P x * Q z ^ 2 ≠ P z ^ 2 * Q x) :
+    W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3) =
+      (P y * Q z ^ 3 - P z ^ 3 * Q y) / (P z * Q z * (P x * Q z ^ 2 - P z ^ 2 * Q x)) := by
   rw [Affine.slope_of_Xne <|
     by rwa [ne_eq, div_eq_div_iff (pow_ne_zero 2 hPz) (pow_ne_zero 2 hQz), mul_comm <| Q x]]
-  field_simp [sub_ne_zero_of_ne hx, addZ_of_Xne]
+  field_simp [mul_ne_zero (mul_ne_zero hPz hQz) <| sub_ne_zero_of_ne hx,
+    mul_ne_zero (mul_ne_zero (pow_ne_zero 3 hPz) (pow_ne_zero 3 hQz)) <| sub_ne_zero_of_ne hx]
   ring1
 
-lemma addX_div_addZ_of_Yne {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsingular Q)
+private lemma slope_eq' {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = P z ^ 2 * Q x)
     (hy : P y * Q z ^ 3 ≠ P z ^ 3 * W.negY Q) :
-    W.addX_of_Yne P / W.addZ_of_Yne P ^ 2 = W.toAffine.addX (P x / P z ^ 2) (Q x / Q z ^ 2)
-      (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)) := by
-  have := sub_ne_zero_of_ne <| Yne_of_Yne hP hQ hPz hQz hx hy
-  simp only [mul_comm <| P z ^ _, ne_eq, ← div_eq_div_iff (pow_ne_zero _ hPz) (pow_ne_zero _ hQz)]
-    at hx hy
-  rw [Affine.slope_of_Yne hx <| (negY_divZ hQz).symm ▸ hy, ← hx, ← negY_divZ hPz]
-  field_simp [addX_of_Yne, addX_of_Yne, addZ_of_Yne]
-  ring1
-
-lemma addY'_div_addZ_of_Xne {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsingular Q)
-    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 ≠ P z ^ 2 * Q x) :
-    W.addY'_of_Xne P Q / addZ_of_Xne P Q ^ 3 =
-      W.toAffine.addY' (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3)
-        (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)) := by
-  convert_to
-    ((P y * Q z ^ 3 - P z ^ 3 * Q y) * (P z ^ 2 * Q z ^ 2 * W.addX_of_Xne P Q
-        - P x * Q z ^ 2 * (P x * Q z ^ 2 - P z ^ 2 * Q x) ^ 2)
-      + P y * Q z ^ 3 * (P x * Q z ^ 2 - P z ^ 2 * Q x) ^ 3)
-      / (P z ^ 3 * Q z ^ 3) / addZ_of_Xne P Q ^ 3 = _ using 2
-  · rw [addY'_of_Xne, addX_of_Xne,
-      eq_div_iff_mul_eq <| mul_ne_zero (pow_ne_zero 3 hPz) (pow_ne_zero 3 hQz)]
-    ring1
-  rw [Affine.addY', ← addX_div_addZ_of_Xne hP hQ hPz hQz hx, Affine.slope_of_Xne <|
-    by rwa [ne_eq, div_eq_div_iff (pow_ne_zero 2 hPz) (pow_ne_zero 2 hQz), mul_comm <| Q x]]
-  field_simp [sub_ne_zero_of_ne hx, addX_of_Xne, addZ_of_Xne]
-  ring1
-
-lemma addY'_div_addZ_of_Yne {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsingular Q)
-    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = P z ^ 2 * Q x)
-    (hy : P y * Q z ^ 3 ≠ P z ^ 3 * W.negY Q) : W.addY'_of_Yne P / W.addZ_of_Yne P ^ 3 =
-    W.toAffine.addY' (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3)
-      (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)) := by
-  have := sub_ne_zero_of_ne <| Yne_of_Yne hP hQ hPz hQz hx hy
-  rw [Affine.addY', ← addX_div_addZ_of_Yne hP hQ hPz hQz hx hy]
+    W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3) =
+      (3 * P x ^ 2 + 2 * W.a₂ * P x * P z ^ 2 + W.a₄ * P z ^ 4 - W.a₁ * P y * P z)
+        / (P z * (P y - W.negY P)) := by
+  have hPy : P y - W.negY P ≠ 0 := sub_ne_zero_of_ne <| Y_ne_of_Y_ne hP hQ hPz hQz hx hy
   simp only [mul_comm <| P z ^ _, ne_eq, ← div_eq_div_iff (pow_ne_zero _ hPz) (pow_ne_zero _ hQz)]
     at hx hy
   rw [Affine.slope_of_Yne hx <| (negY_divZ hQz).symm ▸ hy, ← negY_divZ hPz]
-  field_simp [addY'_of_Yne, addX_of_Yne, addZ_of_Yne]
+  field_simp [pow_ne_zero 2 hPz]
   ring1
 
-lemma addZ_ne_zero_of_Xne {P Q : Fin 3 → F} (hx : P x * Q z ^ 2 ≠ P z ^ 2 * Q x) :
-    addZ_of_Xne P Q ≠ 0 :=
+lemma addX_div_addZ_of_X_ne {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 ≠ P z ^ 2 * Q x) :
+    W.addX_of_X_ne P Q / addZ_of_X_ne P Q ^ 2 = W.toAffine.addX (P x / P z ^ 2) (Q x / Q z ^ 2)
+      (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)) := by
+  convert_to
+    ((P y * Q z ^ 3 - P z ^ 3 * Q y) ^ 2
+      + W.a₁ * (P y * Q z ^ 3 - P z ^ 3 * Q y) * P z * Q z * (P x * Q z ^ 2 - P z ^ 2 * Q x)
+      - W.a₂ * P z ^ 2 * Q z ^ 2 * (P x * Q z ^ 2 - P z ^ 2 * Q x) ^ 2
+      - P x * Q z ^ 2 * (P x * Q z ^ 2 - P z ^ 2 * Q x) ^ 2
+      - Q x * P z ^ 2 * (P x * Q z ^ 2 - P z ^ 2 * Q x) ^ 2)
+      / (P z ^ 2 * Q z ^ 2) / addZ_of_X_ne P Q ^ 2 = _ using 2
+  · rw [nonsingular_iff, equation_iff] at hP hQ
+    rw [addX_of_X_ne, eq_div_iff_mul_eq <| mul_ne_zero (pow_ne_zero 2 hPz) (pow_ne_zero 2 hQz)]
+    linear_combination (norm := ring1) -Q z ^ 6 * hP.left - P z ^ 6 * hQ.left
+  rw [slope_eq hPz hQz hx, addX_eq hPz hQz <| sub_ne_zero_of_ne hx, addZ_of_X_ne, div_div]
+
+lemma addX_div_addZ_of_Y_ne {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = P z ^ 2 * Q x)
+    (hy : P y * Q z ^ 3 ≠ P z ^ 3 * W.negY Q) :
+    W.addX_of_Y_ne P / W.addZ_of_Y_ne P ^ 2 = W.toAffine.addX (P x / P z ^ 2) (Q x / Q z ^ 2)
+      (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)) := by
+  have hPy : P y - W.negY P ≠ 0 := sub_ne_zero_of_ne <| Y_ne_of_Y_ne hP hQ hPz hQz hx hy
+  rw [addX_of_Y_ne, addZ_of_Y_ne, mul_pow, slope_eq' hP hQ hPz hQz hx hy,
+    ← (div_eq_div_iff (pow_ne_zero 2 hPz) (pow_ne_zero 2 hQz)).mpr <| mul_comm (P z ^ 2) _ ▸ hx,
+    addX_eq' hPz hPy]
+
+lemma addY'_div_addZ_of_X_ne {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 ≠ P z ^ 2 * Q x) :
+    W.addY'_of_X_ne P Q / addZ_of_X_ne P Q ^ 3 =
+      W.toAffine.addY' (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3)
+        (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)) := by
+  convert_to
+    ((P y * Q z ^ 3 - P z ^ 3 * Q y) * (P z ^ 2 * Q z ^ 2 * W.addX_of_X_ne P Q
+        - P x * Q z ^ 2 * (P x * Q z ^ 2 - P z ^ 2 * Q x) ^ 2)
+      + P y * Q z ^ 3 * (P x * Q z ^ 2 - P z ^ 2 * Q x) ^ 3)
+      / (P z ^ 3 * Q z ^ 3) / addZ_of_X_ne P Q ^ 3 = _ using 2
+  · rw [addY'_of_X_ne, addX_of_X_ne,
+      eq_div_iff_mul_eq <| mul_ne_zero (pow_ne_zero 3 hPz) (pow_ne_zero 3 hQz)]
+    ring1
+  rw [Affine.addY', ← addX_div_addZ_of_X_ne hP hQ hPz hQz hx, slope_eq hPz hQz hx, addZ_of_X_ne,
+    div_div, add_div, mul_sub, sub_div, mul_div_assoc, ← mul_pow, mul_div_mul_right _ _ <|
+      pow_ne_zero 3 <| sub_ne_zero_of_ne hx, mul_div_mul_right _ _ <| pow_ne_zero 3 hQz, ← mul_pow,
+    pow_succ (_ * _) 2, pow_succ' (_ - _) 2, mul_assoc, ← mul_assoc <| _ * _,
+    mul_div_mul_left _ _ <| pow_ne_zero 2 <| mul_ne_zero hPz hQz, ← mul_div_assoc, mul_div_mul_comm,
+    mul_assoc <| P x, ← mul_assoc, mul_pow, mul_mul_mul_comm <| _ ^ 2, mul_div_mul_right _ _ <|
+      mul_ne_zero (pow_ne_zero 2 hQz) (pow_ne_zero 2 <| sub_ne_zero_of_ne hx), mul_comm _ <| _ * _,
+    mul_div_mul_comm, mul_sub _ <| _ / _ ^ 2]
+
+lemma addY'_div_addZ_of_Y_ne {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = P z ^ 2 * Q x)
+    (hy : P y * Q z ^ 3 ≠ P z ^ 3 * W.negY Q) : W.addY'_of_Y_ne P / W.addZ_of_Y_ne P ^ 3 =
+    W.toAffine.addY' (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3)
+      (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)) := by
+  have hPy : P y - W.negY P ≠ 0 := sub_ne_zero_of_ne <| Y_ne_of_Y_ne hP hQ hPz hQz hx hy
+  rw [Affine.addY', ← addX_div_addZ_of_Y_ne hP hQ hPz hQz hx hy, slope_eq' hP hQ hPz hQz hx hy,
+    addY'_of_Y_ne, addX_of_Y_ne, addZ_of_Y_ne, add_div, mul_sub, sub_div]
+  nth_rw 1 [pow_succ' _ 2, mul_div_mul_comm, pow_succ' _ 2, mul_div_mul_comm]
+  rw [mul_pow, mul_div_mul_right _ _ <| pow_ne_zero 2 hPy, mul_pow,
+    mul_div_mul_right _ _ <| pow_ne_zero 3 hPy, mul_sub <| _ / _]
+
+lemma addZ_ne_zero_of_X_ne {P Q : Fin 3 → F} (hx : P x * Q z ^ 2 ≠ P z ^ 2 * Q x) :
+    addZ_of_X_ne P Q ≠ 0 :=
   sub_ne_zero_of_ne hx
 
-lemma addZ_ne_zero_of_Yne {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsingular Q)
+lemma addZ_ne_zero_of_Y_ne {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = P z ^ 2 * Q x)
-    (hy : P y * Q z ^ 3 ≠ P z ^ 3 * W.negY Q) : W.addZ_of_Yne P ≠ 0 :=
-  mul_ne_zero hPz <| sub_ne_zero_of_ne <| Yne_of_Yne hP hQ hPz hQz hx hy
+    (hy : P y * Q z ^ 3 ≠ P z ^ 3 * W.negY Q) : W.addZ_of_Y_ne P ≠ 0 :=
+  mul_ne_zero hPz <| sub_ne_zero_of_ne <| Y_ne_of_Y_ne hP hQ hPz hQz hx hy
 
-lemma addY_div_addZ_of_Xne {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsingular Q)
+lemma addY_div_addZ_of_X_ne {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 ≠ P z ^ 2 * Q x) :
-    W.addY_of_Xne P Q / addZ_of_Xne P Q ^ 3 =
+    W.addY_of_X_ne P Q / addZ_of_X_ne P Q ^ 3 =
       W.toAffine.addY (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3)
         (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)) := by
-  simpa only [Affine.addY, ← addX_div_addZ_of_Xne hP hQ hPz hQz hx,
-    ← addY'_div_addZ_of_Xne hP hQ hPz hQz hx] using negY_divZ <| addZ_ne_zero_of_Xne hx
+  simpa only [Affine.addY, ← addX_div_addZ_of_X_ne hP hQ hPz hQz hx,
+    ← addY'_div_addZ_of_X_ne hP hQ hPz hQz hx] using negY_divZ <| addZ_ne_zero_of_X_ne hx
 
-lemma addY_div_addZ_of_Yne {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsingular Q)
+lemma addY_div_addZ_of_Y_ne {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = P z ^ 2 * Q x)
-    (hy : P y * Q z ^ 3 ≠ P z ^ 3 * W.negY Q) : W.addY_of_Yne P / W.addZ_of_Yne P ^ 3 =
+    (hy : P y * Q z ^ 3 ≠ P z ^ 3 * W.negY Q) : W.addY_of_Y_ne P / W.addZ_of_Y_ne P ^ 3 =
       W.toAffine.addY (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3)
         (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)) := by
-  rw [Affine.addY, ← addX_div_addZ_of_Yne hP hQ hPz hQz hx hy,
-    ← addY'_div_addZ_of_Yne hP hQ hPz hQz hx hy]
-  exact negY_divZ <| addZ_ne_zero_of_Yne hP hQ hPz hQz hx hy
+  rw [Affine.addY, ← addX_div_addZ_of_Y_ne hP hQ hPz hQz hx hy,
+    ← addY'_div_addZ_of_Y_ne hP hQ hPz hQz hx hy]
+  exact negY_divZ <| addZ_ne_zero_of_Y_ne hP hQ hPz hQz hx hy
 
 end Polynomial
 
