@@ -3,7 +3,7 @@ Copyright (c) 2024 Fangming Li. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li
 -/
-import Mathlib.Algebra.Group.Basic
+import Mathlib.RingTheory.PowerSeries.WellKnown
 import Mathlib.Algebra.HilbertSerre.Theorem
 
 /-!
@@ -25,64 +25,6 @@ open CategoryTheory.Limits
 open BigOperators
 open PowerSeries
 
-
-namespace PowerSeries
-
-open Polynomial
-
-variable {R : Type _} [CommRing R]
-
-theorem inv_one_sub_pow_eq (d : ℕ) :
-    (@mk R fun _ ↦ 1) ^ (d + 1) = @mk R fun n ↦ (Nat.choose (d + n) d) := by
-  induction' d with d hd
-  · simp only [Nat.zero_eq, zero_add, pow_one, Nat.choose_zero_right, Nat.cast_one]
-  · ring_nf
-    rw [show Nat.succ d = d + 1 by rfl, PowerSeries.ext_iff]
-    exact λ n ↦ by
-      rw [hd, coeff_mul]; simp only [coeff_mk, one_mul]; rw [Nat.succ_add,
-      Nat.choose_succ_succ, ← Finset.sum_antidiagonal_choose_add]; exact (Nat.cast_sum
-      (Finset.antidiagonal n) fun x ↦ Nat.choose (d + x.2) d).symm
-
-/--
-`mk fun n => Nat.choose (d + n) d`.
--/
-noncomputable def invOneSubPow'' (d : ℕ) : (PowerSeries R)ˣ where
-  val := mk fun n => Nat.choose (d + n) d
-  inv := (1 - X) ^ (d + 1)
-  val_inv := by
-    rw [← inv_one_sub_pow_eq, ← mul_pow,
-      show (mk fun x ↦ 1) * (@HSub.hSub R⟦X⟧ R⟦X⟧ R⟦X⟧ instHSub 1 X) = 1 by
-      rw [mul_comm, PowerSeries.ext_iff]; exact λ n ↦ by
-        by_cases hn : n = 0
-        · subst hn; simp only [coeff_zero_eq_constantCoeff, map_mul, map_sub, map_one,
-          constantCoeff_X, sub_zero, one_mul, coeff_one, ↓reduceIte]; rfl
-        · rw [sub_mul]; simp only [one_mul, map_sub, coeff_mk, coeff_one, hn, ↓reduceIte];
-          rw [show n = (n - 1) + 1 by exact (Nat.succ_pred hn).symm, PowerSeries.coeff_succ_X_mul];
-          simp only [coeff_mk, sub_self]]
-    exact one_pow (d + 1)
-  inv_val := by
-    rw [← inv_one_sub_pow_eq, ← mul_pow,
-      show (@HSub.hSub R⟦X⟧ R⟦X⟧ R⟦X⟧ instHSub 1 X) * (mk fun _ ↦ 1) = 1 by
-      rw [PowerSeries.ext_iff]; exact λ n ↦ by
-        by_cases hn : n = 0
-        · subst hn; simp only [coeff_zero_eq_constantCoeff, map_mul, map_sub, map_one,
-          constantCoeff_X, sub_zero, one_mul, coeff_one, ↓reduceIte]; rfl
-        · rw [sub_mul]; simp only [one_mul, map_sub, coeff_mk, coeff_one, hn, ↓reduceIte];
-          rw [show n = (n - 1) + 1 by exact (Nat.succ_pred hn).symm, PowerSeries.coeff_succ_X_mul];
-          simp only [coeff_mk, sub_self]]
-    exact one_pow (d + 1)
-
-theorem invOneSubPow''_eq_one_sub_inv_pow (d : ℕ) :
-    invOneSubPow'' d = ⟨1 - PowerSeries.X, invOfUnit (1 - PowerSeries.X) 1,
-    @PowerSeries.mul_invOfUnit ℤ _ (1 - PowerSeries.X) 1 <| by
-    simp only [map_sub, map_one, constantCoeff_X, sub_zero, Units.val_one], by
-    rw [mul_comm]; exact @PowerSeries.mul_invOfUnit ℤ _ (1 - PowerSeries.X) 1 <| by
-      simp only [map_sub, map_one, constantCoeff_X, sub_zero, Units.val_one]⟩⁻¹ ^ (d + 1) := by
-  rw [inv_pow]; exact (DivisionMonoid.inv_eq_of_mul _ (invOneSubPow'' d) <| by
-  rw [← Units.val_eq_one, Units.val_mul, Units.val_pow_eq_pow_val];
-  exact (invOneSubPow'' d).inv_val).symm
-
-end PowerSeries
 
 namespace Hilbert
 
@@ -131,12 +73,12 @@ noncomputable def polynomial_of_polynomial (p : Polynomial ℤ) (d : ℕ) : Poly
 
 theorem polynomial_mul_invOneSubPow''_coeff_eq_polynomial_of_polynomial_eval
     (p : Polynomial ℤ) (d : ℕ) (n : ℕ) (hn : Polynomial.natDegree p ≤ n) :
-    (PowerSeries.coeff ℤ n) (p * (@invOneSubPow'' ℤ _ d)) =
+    (PowerSeries.coeff ℤ n) (p * (@invOneSubPow ℤ _ d)) =
     Polynomial.eval (n : ℚ) (polynomial_of_polynomial p d) := by
   rw [show p.ToPowerSeries = (Finset.sum (Finset.range (Polynomial.natDegree p + 1)) (fun (i : ℕ)
     => (Polynomial.coeff p i) • (Polynomial.X ^ i)) : Polynomial ℤ).ToPowerSeries by
     simp only [zsmul_eq_mul, Polynomial.coe_inj]; exact Polynomial.as_sum_range_C_mul_X_pow p,
-    invOneSubPow'', polynomial_of_polynomial]
+    invOneSubPow, polynomial_of_polynomial]
   simp only [zsmul_eq_mul]; rw [Polynomial.eval_finset_sum]
   simp only [Polynomial.eval_mul, Polynomial.eval_int_cast]
   rw [(Finset.sum_eq_sum_iff_of_le (λ i hi ↦ by
@@ -323,8 +265,8 @@ theorem additiveFunction_val_eq_hilbertPolynomial_eval
         ← polynomial_mul_invOneSubPow''_coeff_eq_polynomial_of_polynomial_eval _ _ _ (le_trans
         (natDegree_auxPolynomial'_le 𝒜 ℳ μ S h) <| Nat.lt_succ.mp (Nat.le.step hn)),
         show one_sub⁻¹ ^ (S.toFinset.card - rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S)) =
-        invOneSubPow'' (S.toFinset.card - rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S) - 1) by
-        rw [invOneSubPow''_eq_one_sub_inv_pow, Nat.sub_add_cancel]; exact Nat.le_sub_of_add_le'
+        invOneSubPow (S.toFinset.card - rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S) - 1) by
+        rw [invOneSubPow_eq_inv_one_sub_pow, Nat.sub_add_cancel]; exact Nat.le_sub_of_add_le'
           (Nat.not_le.mp h1), mul_comm (auxPolynomial' 𝒜 ℳ μ S h).ToPowerSeries]
 
 lemma coeff_S_card_sub_eq_one (x : ℕ) :
