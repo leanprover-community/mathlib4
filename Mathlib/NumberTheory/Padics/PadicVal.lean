@@ -589,7 +589,7 @@ theorem padicValNat_prime_prime_pow {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.P
     (n : ℕ) (neq : p ≠ q) : padicValNat p (q ^ n) = 0 := by
   rw [padicValNat.pow _ <| Nat.Prime.ne_zero hq.elim, padicValNat_primes neq, mul_zero]
 
-theorem padicValNat_prod_pow_left {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
+theorem padicValNat_mul_pow_left {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
     (n m : ℕ) (neq : p ≠ q) : padicValNat p (p^n * q^m) = n := by
   rw [padicValNat.mul (NeZero.ne' (p^n)).symm (NeZero.ne' (q^m)).symm,
     padicValNat.prime_pow, padicValNat_prime_prime_pow m neq, add_zero]
