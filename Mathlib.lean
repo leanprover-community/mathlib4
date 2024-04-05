@@ -2464,6 +2464,7 @@ import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Instances
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Init.Data.Nat.Div
 import Mathlib.Init.Data.Nat.GCD
 import Mathlib.Init.Data.Nat.Lemmas
