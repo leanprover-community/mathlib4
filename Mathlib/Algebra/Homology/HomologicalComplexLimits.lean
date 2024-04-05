@@ -181,7 +181,7 @@ def preservesLimitsOfShapeOfEval {D : Type*} [Category D]
     (G : D ⥤ HomologicalComplex C c)
     (_ : ∀ (i : ι), PreservesLimitsOfShape J (G ⋙ eval C c i)) :
     PreservesLimitsOfShape J G :=
-  ⟨fun {_} => ⟨fun hs =>  isLimitOfEval _ _
+  ⟨fun {_} => ⟨fun hs ↦ isLimitOfEval _ _
     (fun i => isLimitOfPreserves (G ⋙ eval C c i) hs)⟩⟩
 
 /-- A functor `D ⥤ HomologicalComplex C c` preserves colimits of shape `J`
@@ -190,7 +190,7 @@ def preservesColimitsOfShapeOfEval {D : Type*} [Category D]
     (G : D ⥤ HomologicalComplex C c)
     (_ : ∀ (i : ι), PreservesColimitsOfShape J (G ⋙ eval C c i)) :
     PreservesColimitsOfShape J G :=
-  ⟨fun {_} => ⟨fun hs =>  isColimitOfEval _ _
+  ⟨fun {_} => ⟨fun hs ↦ isColimitOfEval _ _
     (fun i => isColimitOfPreserves (G ⋙ eval C c i) hs)⟩⟩
 
 end HomologicalComplex

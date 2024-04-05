@@ -19,7 +19,7 @@ universe u
 
 open Set Classical
 
-open Classical
+open scoped Classical
 
 /-- Any partial order can be extended to a linear order.
 -/

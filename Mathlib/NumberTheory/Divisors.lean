@@ -3,8 +3,8 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Nat.Interval
 
@@ -32,7 +32,8 @@ divisors, perfect numbers
 -/
 
 
-open BigOperators Classical Finset
+open scoped Classical
+open BigOperators Finset
 
 namespace Nat
 
@@ -94,7 +95,7 @@ theorem cons_self_properDivisors (h : n ≠ 0) :
 @[simp]
 theorem mem_divisors {m : ℕ} : n ∈ divisors m ↔ n ∣ m ∧ m ≠ 0 := by
   rcases eq_or_ne m 0 with (rfl | hm); · simp [divisors]
-  simp only [hm, Ne.def, not_false_iff, and_true_iff, ← filter_dvd_eq_divisors hm, mem_filter,
+  simp only [hm, Ne, not_false_iff, and_true_iff, ← filter_dvd_eq_divisors hm, mem_filter,
     mem_range, and_iff_right_iff_imp, Nat.lt_succ_iff]
   exact le_of_dvd hm.bot_lt
 #align nat.mem_divisors Nat.mem_divisors
@@ -115,7 +116,7 @@ theorem dvd_of_mem_divisors {m : ℕ} (h : n ∈ divisors m) : n ∣ m := by
 @[simp]
 theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     x ∈ divisorsAntidiagonal n ↔ x.fst * x.snd = n ∧ n ≠ 0 := by
-  simp only [divisorsAntidiagonal, Finset.mem_Ico, Ne.def, Finset.mem_filter, Finset.mem_product]
+  simp only [divisorsAntidiagonal, Finset.mem_Ico, Ne, Finset.mem_filter, Finset.mem_product]
   rw [and_comm]
   apply and_congr_right
   rintro rfl
@@ -131,13 +132,26 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
         Nat.le_mul_of_pos_left _ (Nat.pos_of_ne_zero h.1)⟩
 #align nat.mem_divisors_antidiagonal Nat.mem_divisorsAntidiagonal
 
+lemma ne_zero_of_mem_divisorsAntidiagonal {p : ℕ × ℕ} (hp : p ∈ n.divisorsAntidiagonal) :
+    p.1 ≠ 0 ∧ p.2 ≠ 0 := by
+  obtain ⟨hp₁, hp₂⟩ := Nat.mem_divisorsAntidiagonal.mp hp
+  exact mul_ne_zero_iff.mp (hp₁.symm ▸ hp₂)
+
+lemma left_ne_zero_of_mem_divisorsAntidiagonal {p : ℕ × ℕ} (hp : p ∈ n.divisorsAntidiagonal) :
+    p.1 ≠ 0 :=
+  (ne_zero_of_mem_divisorsAntidiagonal hp).1
+
+lemma right_ne_zero_of_mem_divisorsAntidiagonal {p : ℕ × ℕ} (hp : p ∈ n.divisorsAntidiagonal) :
+    p.2 ≠ 0 :=
+  (ne_zero_of_mem_divisorsAntidiagonal hp).2
+
 -- Porting note: Redundant binder annotation update
 -- variable {n}
 
 theorem divisor_le {m : ℕ} : n ∈ divisors m → n ≤ m := by
   cases' m with m
   · simp
-  · simp only [mem_divisors, Nat.succ_ne_zero m, and_true_iff, Ne.def, not_false_iff]
+  · simp only [mem_divisors, Nat.succ_ne_zero m, and_true_iff, Ne, not_false_iff]
     exact Nat.le_of_dvd (Nat.succ_pos m)
 #align nat.divisor_le Nat.divisor_le
 
@@ -409,8 +423,7 @@ theorem sum_properDivisors_dvd (h : (∑ x in n.properDivisors, x) ∣ n) :
   cases' n with n
   · simp
   · cases' n with n
-    · contrapose! h
-      simp
+    · simp at h
     · rw [or_iff_not_imp_right]
       intro ne_n
       have hlt : ∑ x in n.succ.succ.properDivisors, x < n.succ.succ :=

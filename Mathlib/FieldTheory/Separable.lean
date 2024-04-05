@@ -3,9 +3,9 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Polynomial.Expand
+import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.Data.Polynomial.Expand
-import Mathlib.Data.Polynomial.Splits
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.PowerBasis
 
@@ -27,7 +27,8 @@ properties about separable polynomials here.
 
 universe u v w
 
-open Classical BigOperators Polynomial Finset
+open scoped Classical
+open BigOperators Polynomial Finset
 
 namespace Polynomial
 
@@ -119,7 +120,7 @@ theorem Separable.of_pow' {f : R[X]} :
   | 1 => fun h => Or.inr <| Or.inl ⟨pow_one f ▸ h, rfl⟩
   | n + 2 => fun h => by
     rw [pow_succ, pow_succ] at h
-    exact Or.inl (isCoprime_self.1 h.isCoprime.of_mul_right_left)
+    exact Or.inl (isCoprime_self.1 h.isCoprime.of_mul_left_right)
 #align polynomial.separable.of_pow' Polynomial.Separable.of_pow'
 
 theorem Separable.of_pow {f : R[X]} (hf : ¬IsUnit f) {n : ℕ} (hn : n ≠ 0)
@@ -279,7 +280,7 @@ theorem separable_X_pow_sub_C_unit {n : ℕ} (u : Rˣ) (hn : IsUnit (n : R)) :
       simp only [C.map_mul, C_eq_nat_cast]
       ring
     _ = 1 := by
-      simp only [Units.inv_mul, hn', C.map_one, mul_one, ← pow_succ,
+      simp only [Units.inv_mul, hn', C.map_one, mul_one, ← pow_succ',
         Nat.sub_add_cancel (show 1 ≤ n from hpos), sub_add_cancel]
 set_option linter.uppercaseLean3 false in
 #align polynomial.separable_X_pow_sub_C_unit Polynomial.separable_X_pow_sub_C_unit
@@ -399,7 +400,7 @@ theorem exists_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : p 
       exact Nat.mul_lt_mul_of_pos_left hp.one_lt hg2.bot_lt
     rcases ih _ hg3 hg rfl with ⟨n, g, hg4, rfl⟩
     refine' ⟨n + 1, g, hg4, _⟩
-    rw [← hgf, expand_expand, pow_succ]
+    rw [← hgf, expand_expand, pow_succ']
 #align polynomial.exists_separable_of_irreducible Polynomial.exists_separable_of_irreducible
 
 theorem isUnit_or_eq_zero_of_separable_expand {f : F[X]} (n : ℕ) (hp : 0 < p)
@@ -507,7 +508,7 @@ theorem eq_X_sub_C_of_separable_of_root_eq {x : F} {h : F[X]} (h_sep : h.Separab
     constructor
     · apply Finset.mem_mk.mpr
       · rw [mem_roots (show h.map i ≠ 0 from map_ne_zero h_ne_zero)]
-        rw [IsRoot.def, ← eval₂_eq_eval_map, eval₂_hom, h_root]
+        rw [IsRoot.definition, ← eval₂_eq_eval_map, eval₂_hom, h_root]
         exact RingHom.map_zero i
       · exact nodup_roots (Separable.map h_sep)
     · exact h_roots
@@ -673,9 +674,7 @@ end IsSeparableTower
 section CardAlgHom
 
 variable {R S T : Type*} [CommRing S]
-
 variable {K L F : Type*} [Field K] [Field L] [Field F]
-
 variable [Algebra K S] [Algebra K L]
 
 theorem AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : (minpoly K pb.gen).Separable)

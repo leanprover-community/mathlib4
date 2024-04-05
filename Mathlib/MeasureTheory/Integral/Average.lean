@@ -242,7 +242,7 @@ theorem setLaverage_one (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) : ⨍⁻ _x in 
   setLaverage_const hs₀ hs _
 #align measure_theory.set_laverage_one MeasureTheory.setLaverage_one
 
---porting note: Dropped `simp` because of `simp` seeing through `1 : α → ℝ≥0∞` and applying
+-- Porting note: Dropped `simp` because of `simp` seeing through `1 : α → ℝ≥0∞` and applying
 -- `lintegral_const`. This is suboptimal.
 theorem lintegral_laverage (μ : Measure α) [IsFiniteMeasure μ] (f : α → ℝ≥0∞) :
     ∫⁻ _x, ⨍⁻ a, f a ∂μ ∂μ = ∫⁻ x, f x ∂μ := by
@@ -344,7 +344,7 @@ theorem measure_smul_average [IsFiniteMeasure μ] (f : α → E) :
   · rw [hμ, integral_zero_measure, average_zero_measure, smul_zero]
   · rw [average_eq, smul_inv_smul₀]
     refine' (ENNReal.toReal_pos _ <| measure_ne_top _ _).ne'
-    rwa [Ne.def, measure_univ_eq_zero]
+    rwa [Ne, measure_univ_eq_zero]
 #align measure_theory.measure_smul_average MeasureTheory.measure_smul_average
 
 theorem setAverage_eq (f : α → E) (s : Set α) :
@@ -446,7 +446,7 @@ theorem setAverage_const {s : Set α} (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) (
   have := NeZero.mk hs₀; have := Fact.mk hs.lt_top; average_const _ _
 #align measure_theory.set_average_const MeasureTheory.setAverage_const
 
--- porting note: was `@[simp]` but `simp` can prove it
+-- Porting note (#10618): was `@[simp]` but `simp` can prove it
 theorem integral_average (μ : Measure α) [IsFiniteMeasure μ] (f : α → E) :
     ∫ _, ⨍ a, f a ∂μ ∂μ = ∫ x, f x ∂μ := by simp
 #align measure_theory.integral_average MeasureTheory.integral_average

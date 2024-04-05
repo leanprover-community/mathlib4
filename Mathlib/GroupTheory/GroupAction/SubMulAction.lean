@@ -104,7 +104,7 @@ instance instSMulCommClass [Mul M] [MulMemClass S M] [SMulCommClass R M M]
     (s : S) : SMulCommClass R s s where
   smul_comm r x y := Subtype.ext <| smul_comm r (x : M) (y : M)
 
--- Porting note: TODO lower priority not actually there
+-- Porting note (#11215): TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp, norm_cast)]
 protected theorem val_smul (r : R) (x : s) : (↑(r • x) : M) = r • (x : M) :=
@@ -112,7 +112,7 @@ protected theorem val_smul (r : R) (x : s) : (↑(r • x) : M) = r • (x : M) 
 #align set_like.coe_smul SetLike.val_smul
 #align set_like.coe_vadd SetLike.val_vadd
 
--- Porting note: TODO lower priority not actually there
+-- Porting note (#11215): TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp)]
 theorem mk_smul_mk (r : R) (x : M) (hx : x ∈ s) : r • (⟨x, hx⟩ : s) = ⟨r • x, smul_mem r hx⟩ :=
@@ -193,9 +193,7 @@ namespace SubMulAction
 section SMul
 
 variable [SMul R M]
-
 variable (p : SubMulAction R M)
-
 variable {r : R} {x : M}
 
 theorem smul_mem (r : R) (h : x ∈ p) : r • x ∈ p :=
@@ -211,7 +209,7 @@ theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
   rfl
 #align sub_mul_action.coe_smul SubMulAction.val_smul
 
--- porting note: no longer needed because of defeq structure eta
+-- Porting note: no longer needed because of defeq structure eta
 #noalign sub_mul_action.coe_mk
 
 variable (p)
@@ -234,7 +232,6 @@ end SMul
 namespace SMulMemClass
 
 variable [Monoid R] [MulAction R M] {A : Type*} [SetLike A M]
-
 variable [hA : SMulMemClass A R M] (S' : A)
 
 -- Prefer subclasses of `MulAction` over `SMulMemClass`.
@@ -262,7 +259,6 @@ variable [Monoid R] [MulAction R M]
 section
 
 variable [SMul S R] [SMul S M] [IsScalarTower S R M]
-
 variable (p : SubMulAction R M)
 
 theorem smul_of_tower_mem (s : S) {x : M} (h : x ∈ p) : s • x ∈ p := by
@@ -303,7 +299,6 @@ end
 section
 
 variable [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
-
 variable (p : SubMulAction R M)
 
 /-- If the scalar product forms a `MulAction`, then the subset inherits this action -/
@@ -329,6 +324,15 @@ theorem val_image_orbit {p : SubMulAction R M} (m : p) :
 lemma orbit_of_sub_mul {p : SubMulAction R M} (m : p) :
     (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
 -/
+
+theorem val_preimage_orbit {p : SubMulAction R M} (m : p) :
+    Subtype.val ⁻¹' MulAction.orbit R (m : M) = MulAction.orbit R m := by
+  rw [← val_image_orbit, Subtype.val_injective.preimage_image]
+
+lemma mem_orbit_subMul_iff {p : SubMulAction R M} {x m : p} :
+    x ∈ MulAction.orbit R m ↔ (x : M) ∈ MulAction.orbit R (m : M) := by
+  rw [← val_preimage_orbit, Set.mem_preimage]
+
 /-- Stabilizers in monoid SubMulAction coincide with stabilizers in the ambient space -/
 theorem stabilizer_of_subMul.submonoid {p : SubMulAction R M} (m : p) :
     MulAction.stabilizerSubmonoid R m = MulAction.stabilizerSubmonoid R (m : M) := by
@@ -342,6 +346,12 @@ section MulActionGroup
 
 variable [Group R] [MulAction R M]
 
+lemma orbitRel_of_subMul (p : SubMulAction R M) :
+    MulAction.orbitRel R p = (MulAction.orbitRel R M).comap Subtype.val := by
+  refine Setoid.ext_iff.2 (fun x y ↦ ?_)
+  rw [Setoid.comap_rel]
+  exact mem_orbit_subMul_iff
+
 /-- Stabilizers in group SubMulAction coincide with stabilizers in the ambient space -/
 theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
     MulAction.stabilizer R m = MulAction.stabilizer R (m : M) := by
@@ -354,9 +364,7 @@ end MulActionGroup
 section Module
 
 variable [Semiring R] [AddCommMonoid M]
-
 variable [Module R M]
-
 variable (p : SubMulAction R M)
 
 theorem zero_mem (h : (p : Set M).Nonempty) : (0 : M) ∈ p :=
@@ -374,11 +382,8 @@ end Module
 section AddCommGroup
 
 variable [Ring R] [AddCommGroup M]
-
 variable [Module R M]
-
 variable (p p' : SubMulAction R M)
-
 variable {r : R} {x y : M}
 
 theorem neg_mem (hx : x ∈ p) : -x ∈ p := by
@@ -408,9 +413,7 @@ end SubMulAction
 namespace SubMulAction
 
 variable [GroupWithZero S] [Monoid R] [MulAction R M]
-
 variable [SMul S R] [MulAction S M] [IsScalarTower S R M]
-
 variable (p : SubMulAction R M) {s : S} {x y : M}
 
 theorem smul_mem_iff (s0 : s ≠ 0) : s • x ∈ p ↔ x ∈ p :=

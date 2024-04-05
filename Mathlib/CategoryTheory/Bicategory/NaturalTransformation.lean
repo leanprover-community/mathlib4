@@ -72,8 +72,6 @@ structure OplaxNatTrans (F G : OplaxFunctor B C) where
 #align category_theory.oplax_nat_trans.naturality_comp' CategoryTheory.OplaxNatTrans.naturality_comp
 #align category_theory.oplax_nat_trans.naturality_comp CategoryTheory.OplaxNatTrans.naturality_comp
 
-attribute [pp_dot] OplaxNatTrans.app
-
 attribute [nolint docBlame] CategoryTheory.OplaxNatTrans.app
   CategoryTheory.OplaxNatTrans.naturality
   CategoryTheory.OplaxNatTrans.naturality_naturality

@@ -15,7 +15,8 @@ In this file we define a coercion from `ℕ∞` to `ℝ≥0∞` and prove some b
 -/
 
 
-open Classical NNReal ENNReal
+open scoped Classical
+open NNReal ENNReal
 
 noncomputable section
 

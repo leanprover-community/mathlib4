@@ -58,7 +58,7 @@ lemma isPiSystem (hC : IsSetSemiring C) : IsPiSystem C := fun s hs t ht _ ↦ hC
 
 section diffFinset
 
-open Classical in
+open scoped Classical in
 /-- In a semi-ring of sets `C`, for all sets `s, t ∈ C`, `s \ t` is equal to a disjoint union of
 finitely many sets in `C`. The finite set of sets in the union is not unique, but this definition
 gives an arbitrary `Finset (Set α)` that satisfies the equality.
@@ -165,7 +165,7 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
   let J' : Finset (Set α) := Finset.biUnion (Finset.univ : Finset J) fun u ↦ Ju u (h_ss u.prop)
   have hJ'_subset : ↑J' ⊆ C := by
     intro u
-    simp only [Subtype.coe_mk, univ_eq_attach, coe_biUnion, mem_coe, mem_attach, iUnion_true,
+    simp only [J' ,Subtype.coe_mk, univ_eq_attach, coe_biUnion, mem_coe, mem_attach, iUnion_true,
       mem_iUnion, Finset.exists_coe, bex_imp]
     intro v hv huvt
     exact hJu_subset v (h_ss hv) huvt
@@ -173,7 +173,7 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
   · rw [Finset.coe_biUnion]
     refine PairwiseDisjoint.biUnion ?_ ?_
     · simp only [univ_eq_attach, mem_coe, id.def, iSup_eq_iUnion]
-      simp_rw [PairwiseDisjoint, Set.Pairwise, Function.onFun]
+      simp_rw [PairwiseDisjoint, Set.Pairwise]
       intro x _ y _ hxy
       have hxy_disj : Disjoint (x : Set α) y := by
         by_contra h_contra
@@ -187,7 +187,7 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
         congr
     · exact fun u _ ↦ hJu_disj _ _
   · rw [coe_insert, sUnion_insert, Set.union_comm, ← Set.diff_diff, h_eq]
-    simp_rw [sUnion_eq_biUnion, Set.iUnion_diff]
+    simp_rw [J', sUnion_eq_biUnion, Set.iUnion_diff]
     simp only [Subtype.coe_mk, mem_coe, Finset.mem_biUnion, Finset.mem_univ, exists_true_left,
       Finset.exists_coe, iUnion_exists, true_and]
     rw [iUnion_comm]
@@ -198,7 +198,7 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
       simp only [mem_coe]
     · simp only [hi, iUnion_of_empty, iUnion_empty]
 
-open Classical in
+open scoped Classical in
 /-- In a semiring of sets `C`, for all set `s ∈ C` and finite set of sets `I ⊆ C`,
 `diffFinset₀` is a finite set of sets in `C` such that `s \ ⋃₀ I = ⋃₀ (hC.diffFinset₀ hs I hI)`.
 `diffFinset` is a special case of `diffFinset₀` where `I` is a singleton. -/

@@ -26,8 +26,6 @@ linear algebra, module, free
 
 -/
 
-set_option autoImplicit true
-
 open CategoryTheory
 
 namespace ModuleCat
@@ -83,7 +81,7 @@ end LinearIndependent
 
 section Span
 
-
+set_option autoImplicit true in
 /-- In the commutative diagram
 ```
     f     g
@@ -107,14 +105,14 @@ theorem span_exact (huv : u ∘ Sum.inl = S.f ∘ v)
     rw [hS.moduleCat_range_eq_ker]
     simp only [LinearMap.mem_ker, map_sub, sub_eq_zero]
     rw [← hm, map_finsupp_sum]
-    simp only [Function.comp_apply, SMulHomClass.map_smul]
+    simp only [Function.comp_apply, map_smul]
   obtain ⟨n, hnm⟩ := hsub
   have hn : n ∈ span R (range v) := hv mem_top
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hn
   obtain ⟨cn, hn⟩ := hn
   rw [← hn, map_finsupp_sum] at hnm
   rw [← sub_add_cancel m m', ← hnm,]
-  simp only [SMulHomClass.map_smul]
+  simp only [map_smul]
   have hn' : (Finsupp.sum cn fun a b ↦ b • S.f (v a)) =
       (Finsupp.sum cn fun a b ↦ b • u (Sum.inl a)) :=
     by congr; ext a b; change b • (S.f ∘ v) a = _; rw [← huv]; rfl
@@ -166,7 +164,7 @@ theorem free_shortExact_rank_add [Module.Free R S.X₁] [Module.Free R S.X₃]
   exact ⟨Basis.indexEquiv (Module.Free.chooseBasis R S.X₂) (Basis.ofShortExact hS'
     (Module.Free.chooseBasis R S.X₁) (Module.Free.chooseBasis R S.X₃))⟩
 
-theorem free_shortExact_finrank_add [Module.Free R S.X₁] [Module.Free R S.X₃]
+theorem free_shortExact_finrank_add {n p : ℕ} [Module.Free R S.X₁] [Module.Free R S.X₃]
     [Module.Finite R S.X₁] [Module.Finite R S.X₃]
     (hN : FiniteDimensional.finrank R S.X₁ = n)
     (hP : FiniteDimensional.finrank R S.X₃ = p)

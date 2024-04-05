@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Dart
-import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Data.FunLike.Fintype
 
 /-!
@@ -52,10 +51,10 @@ the adjacency relation.
 This is injective (see `SimpleGraph.map_injective`). -/
 protected def map (f : V ↪ W) (G : SimpleGraph V) : SimpleGraph W where
   Adj := Relation.Map G.Adj f f
-  symm a b := by -- porting note: `obviously` used to handle this
+  symm a b := by -- Porting note: `obviously` used to handle this
     rintro ⟨v, w, h, rfl, rfl⟩
     use w, v, h.symm, rfl
-  loopless a := by -- porting note: `obviously` used to handle this
+  loopless a := by -- Porting note: `obviously` used to handle this
     rintro ⟨v, w, h, rfl, h'⟩
     exact h.ne (f.injective h'.symm)
 #align simple_graph.map SimpleGraph.map
@@ -411,7 +410,7 @@ def mapNeighborSet (v : V) : G.neighborSet v ↪ G'.neighborSet (f v)
 
 /-- Given an injective function, there is an embedding from the comapped graph into the original
 graph. -/
--- porting note: @[simps] does not work here since `f` is not a constructor application.
+-- Porting note: @[simps] does not work here since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `comap_apply` for now.
 protected def comap (f : V ↪ W) (G : SimpleGraph W) : G.comap f ↪g G :=
   { f with map_rel_iff' := by simp }
@@ -423,7 +422,7 @@ theorem comap_apply (f : V ↪ W) (G : SimpleGraph W) (v : V) :
 #align simple_graph.embedding.comap_apply SimpleGraph.Embedding.comap_apply
 
 /-- Given an injective function, there is an embedding from a graph into the mapped graph. -/
--- porting note: @[simps] does not work here since `f` is not a constructor application.
+-- Porting note: @[simps] does not work here since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `map_apply` for now.
 protected def map (f : V ↪ W) (G : SimpleGraph V) : G ↪g G.map f :=
   { f with map_rel_iff' := by simp }
@@ -454,6 +453,8 @@ protected def completeGraph {α β : Type*} (f : α ↪ β) :
     (⊤ : SimpleGraph α) ↪g (⊤ : SimpleGraph β) :=
   { f with map_rel_iff' := by simp }
 #align simple_graph.embedding.complete_graph SimpleGraph.Embedding.completeGraph
+
+@[simp] lemma coe_completeGraph {α β : Type*} (f : α ↪ β) : ⇑(Embedding.completeGraph f) = f := rfl
 
 variable {G'' : SimpleGraph X}
 
@@ -594,15 +595,9 @@ theorem card_eq [Fintype V] [Fintype W] : Fintype.card V = Fintype.card W := by
   convert rfl
 #align simple_graph.iso.card_eq_of_iso SimpleGraph.Iso.card_eq
 
-theorem card_edgeFinset_eq [Fintype G.edgeSet] [Fintype G'.edgeSet] :
-    G.edgeFinset.card = G'.edgeFinset.card := by
-  apply Finset.card_eq_of_equiv
-  simp only [Set.mem_toFinset]
-  exact f.mapEdgeSet
-
 /-- Given a bijection, there is an embedding from the comapped graph into the original
 graph. -/
--- porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
+-- Porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `comap_apply` for now.
 protected def comap (f : V ≃ W) (G : SimpleGraph W) : G.comap f.toEmbedding ≃g G :=
   { f with map_rel_iff' := by simp }
@@ -619,7 +614,7 @@ lemma comap_symm_apply (f : V ≃ W) (G : SimpleGraph W) (w : W) :
 #align simple_graph.iso.comap_symm_apply SimpleGraph.Iso.comap_symm_apply
 
 /-- Given an injective function, there is an embedding from a graph into the mapped graph. -/
--- porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
+-- Porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `map_apply` for now.
 protected def map (f : V ≃ W) (G : SimpleGraph V) : G ≃g G.map f.toEmbedding :=
   { f with map_rel_iff' := by simp }

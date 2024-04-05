@@ -338,7 +338,7 @@ theorem eq_of_isDetecting [HasPullbacks C] {𝒢 : Set C} (h𝒢 : IsDetecting �
     (P Q : Subobject X) (h : ∀ G ∈ 𝒢, ∀ {f : G ⟶ X}, P.Factors f ↔ Q.Factors f) : P = Q :=
   calc
     P = P ⊓ Q := Eq.symm <| inf_eq_of_isDetecting h𝒢 _ _ fun G hG _ hf => (h G hG).1 hf
-    _ = Q ⊓ P := inf_comm
+    _ = Q ⊓ P := inf_comm ..
     _ = Q := inf_eq_of_isDetecting h𝒢 _ _ fun G hG _ hf => (h G hG).2 hf
 
 #align category_theory.subobject.eq_of_is_detecting CategoryTheory.Subobject.eq_of_isDetecting
@@ -460,10 +460,12 @@ theorem isSeparator_def (G : C) :
     fun hG X Y f g hfg => hG _ _ fun h => hfg _ (Set.mem_singleton _) _⟩
 #align category_theory.is_separator_def CategoryTheory.isSeparator_def
 
-theorem IsSeparator.def {G : C} :
+-- Adaptation note: 2024-03-15
+-- Renamed to avoid the reserved name `IsSeparator.def`.
+theorem IsSeparator.def' {G : C} :
     IsSeparator G → ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), (∀ h : G ⟶ X, h ≫ f = h ≫ g) → f = g :=
   (isSeparator_def _).1
-#align category_theory.is_separator.def CategoryTheory.IsSeparator.def
+#align category_theory.is_separator.def CategoryTheory.IsSeparator.def'
 
 theorem isCoseparator_def (G : C) :
     IsCoseparator G ↔ ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), (∀ h : Y ⟶ G, f ≫ h = g ≫ h) → f = g :=
@@ -474,10 +476,12 @@ theorem isCoseparator_def (G : C) :
     fun hG X Y f g hfg => hG _ _ fun h => hfg _ (Set.mem_singleton _) _⟩
 #align category_theory.is_coseparator_def CategoryTheory.isCoseparator_def
 
-theorem IsCoseparator.def {G : C} :
+-- Adaptation note: 2024-03-15
+-- Renamed to avoid the reserved name `IsCoseparator.def`.
+theorem IsCoseparator.def' {G : C} :
     IsCoseparator G → ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), (∀ h : Y ⟶ G, f ≫ h = g ≫ h) → f = g :=
   (isCoseparator_def _).1
-#align category_theory.is_coseparator.def CategoryTheory.IsCoseparator.def
+#align category_theory.is_coseparator.def CategoryTheory.IsCoseparator.def'
 
 theorem isDetector_def (G : C) :
     IsDetector G ↔ ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ h : G ⟶ Y, ∃! h', h' ≫ f = h) → IsIso f :=
@@ -488,10 +492,12 @@ theorem isDetector_def (G : C) :
     fun hG X Y f hf => hG _ fun h => hf _ (Set.mem_singleton _) _⟩
 #align category_theory.is_detector_def CategoryTheory.isDetector_def
 
-theorem IsDetector.def {G : C} :
+-- Adaptation note: 2024-03-15
+-- Renamed to avoid the reserved name `IsDetector.def`.
+theorem IsDetector.def' {G : C} :
     IsDetector G → ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ h : G ⟶ Y, ∃! h', h' ≫ f = h) → IsIso f :=
   (isDetector_def _).1
-#align category_theory.is_detector.def CategoryTheory.IsDetector.def
+#align category_theory.is_detector.def CategoryTheory.IsDetector.def'
 
 theorem isCodetector_def (G : C) :
     IsCodetector G ↔ ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ h : X ⟶ G, ∃! h', f ≫ h' = h) → IsIso f :=
@@ -502,19 +508,21 @@ theorem isCodetector_def (G : C) :
     fun hG X Y f hf => hG _ fun h => hf _ (Set.mem_singleton _) _⟩
 #align category_theory.is_codetector_def CategoryTheory.isCodetector_def
 
-theorem IsCodetector.def {G : C} :
+-- Adaptation note: 2024-03-15
+-- Renamed to avoid the reserved name `IsCodetector.def`.
+theorem IsCodetector.def' {G : C} :
     IsCodetector G → ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ h : X ⟶ G, ∃! h', f ≫ h' = h) → IsIso f :=
   (isCodetector_def _).1
-#align category_theory.is_codetector.def CategoryTheory.IsCodetector.def
+#align category_theory.is_codetector.def CategoryTheory.IsCodetector.def'
 
 theorem isSeparator_iff_faithful_coyoneda_obj (G : C) :
     IsSeparator G ↔ Faithful (coyoneda.obj (op G)) :=
-  ⟨fun hG => ⟨fun hfg => hG.def _ _ (congr_fun hfg)⟩, fun _ =>
+  ⟨fun hG => ⟨fun hfg => hG.def' _ _ (congr_fun hfg)⟩, fun _ =>
     (isSeparator_def _).2 fun _ _ _ _ hfg => (coyoneda.obj (op G)).map_injective (funext hfg)⟩
 #align category_theory.is_separator_iff_faithful_coyoneda_obj CategoryTheory.isSeparator_iff_faithful_coyoneda_obj
 
 theorem isCoseparator_iff_faithful_yoneda_obj (G : C) : IsCoseparator G ↔ Faithful (yoneda.obj G) :=
-  ⟨fun hG => ⟨fun hfg => Quiver.Hom.unop_inj (hG.def _ _ (congr_fun hfg))⟩, fun _ =>
+  ⟨fun hG => ⟨fun hfg => Quiver.Hom.unop_inj (hG.def' _ _ (congr_fun hfg))⟩, fun _ =>
     (isCoseparator_def _).2 fun _ _ _ _ hfg =>
       Quiver.Hom.op_inj <| (yoneda.obj G).map_injective (funext hfg)⟩
 #align category_theory.is_coseparator_iff_faithful_yoneda_obj CategoryTheory.isCoseparator_iff_faithful_yoneda_obj
@@ -548,7 +556,7 @@ theorem isSeparator_coprod (G H : C) [HasBinaryCoproduct G H] :
   refine'
     ⟨fun h X Y u v huv => _, fun h =>
       (isSeparator_def _).2 fun X Y u v huv => h _ _ fun Z hZ g => _⟩
-  · refine' h.def _ _ fun g => coprod.hom_ext _ _
+  · refine' h.def' _ _ fun g => coprod.hom_ext _ _
     · simpa using huv G (by simp) (coprod.inl ≫ g)
     · simpa using huv H (by simp) (coprod.inr ≫ g)
   · simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hZ
@@ -572,7 +580,7 @@ theorem isSeparator_sigma {β : Type w} (f : β → C) [HasCoproduct f] :
   refine'
     ⟨fun h X Y u v huv => _, fun h =>
       (isSeparator_def _).2 fun X Y u v huv => h _ _ fun Z hZ g => _⟩
-  · refine' h.def _ _ fun g => colimit.hom_ext fun b => _
+  · refine' h.def' _ _ fun g => colimit.hom_ext fun b => _
     simpa using huv (f b.as) (by simp) (colimit.ι (Discrete.functor f) _ ≫ g)
   · obtain ⟨b, rfl⟩ := Set.mem_range.1 hZ
     classical simpa using Sigma.ι f b ≫= huv (Sigma.desc (Pi.single b g))
@@ -588,7 +596,7 @@ theorem isCoseparator_prod (G H : C) [HasBinaryProduct G H] :
   refine'
     ⟨fun h X Y u v huv => _, fun h =>
       (isCoseparator_def _).2 fun X Y u v huv => h _ _ fun Z hZ g => _⟩
-  · refine' h.def _ _ fun g => prod.hom_ext _ _
+  · refine' h.def' _ _ fun g => prod.hom_ext _ _
     · simpa using huv G (by simp) (g ≫ Limits.prod.fst)
     · simpa using huv H (by simp) (g ≫ Limits.prod.snd)
   · simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hZ
@@ -612,7 +620,7 @@ theorem isCoseparator_pi {β : Type w} (f : β → C) [HasProduct f] :
   refine'
     ⟨fun h X Y u v huv => _, fun h =>
       (isCoseparator_def _).2 fun X Y u v huv => h _ _ fun Z hZ g => _⟩
-  · refine' h.def _ _ fun g => limit.hom_ext fun b => _
+  · refine' h.def' _ _ fun g => limit.hom_ext fun b => _
     simpa using huv (f b.as) (by simp) (g ≫ limit.π (Discrete.functor f) _)
   · obtain ⟨b, rfl⟩ := Set.mem_range.1 hZ
     classical simpa using huv (Pi.lift (Pi.single b g)) =≫ Pi.π f b
@@ -628,7 +636,7 @@ end ZeroMorphisms
 theorem isDetector_iff_reflectsIsomorphisms_coyoneda_obj (G : C) :
     IsDetector G ↔ ReflectsIsomorphisms (coyoneda.obj (op G)) := by
   refine'
-    ⟨fun hG => ⟨fun f hf => hG.def _ fun h => _⟩, fun h =>
+    ⟨fun hG => ⟨fun f hf => hG.def' _ fun h => _⟩, fun h =>
       (isDetector_def _).2 fun X Y f hf => _⟩
   · rw [isIso_iff_bijective, Function.bijective_iff_existsUnique] at hf
     exact hf h
@@ -640,7 +648,7 @@ theorem isDetector_iff_reflectsIsomorphisms_coyoneda_obj (G : C) :
 theorem isCodetector_iff_reflectsIsomorphisms_yoneda_obj (G : C) :
     IsCodetector G ↔ ReflectsIsomorphisms (yoneda.obj G) := by
   refine' ⟨fun hG => ⟨fun f hf => _⟩, fun h => (isCodetector_def _).2 fun X Y f hf => _⟩
-  · refine' (isIso_unop_iff _).1 (hG.def _ _)
+  · refine' (isIso_unop_iff _).1 (hG.def' _ _)
     rwa [isIso_iff_bijective, Function.bijective_iff_existsUnique] at hf
   · rw [← isIso_op_iff]
     suffices IsIso ((yoneda.obj G).map f.op) by
@@ -649,7 +657,7 @@ theorem isCodetector_iff_reflectsIsomorphisms_yoneda_obj (G : C) :
 #align category_theory.is_codetector_iff_reflects_isomorphisms_yoneda_obj CategoryTheory.isCodetector_iff_reflectsIsomorphisms_yoneda_obj
 
 theorem wellPowered_of_isDetector [HasPullbacks C] (G : C) (hG : IsDetector G) : WellPowered C :=
-  -- porting note: added the following `haveI` to prevent universe issues
+  -- Porting note: added the following `haveI` to prevent universe issues
   haveI := small_subsingleton ({G} : Set C)
   wellPowered_of_isDetecting hG
 #align category_theory.well_powered_of_is_detector CategoryTheory.wellPowered_of_isDetector

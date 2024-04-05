@@ -151,10 +151,11 @@ instance instSemiring : Semiring (Language α) where
   natCast_succ n := by cases n <;> simp [Nat.cast, add_def, zero_def]
   left_distrib _ _ _ := image2_union_right
   right_distrib _ _ _ := image2_union_left
+  nsmul := nsmulRec
 
 @[simp]
 theorem add_self (l : Language α) : l + l = l :=
-  sup_idem
+  sup_idem _
 #align language.add_self Language.add_self
 
 /-- Maps the alphabet of a language. -/
@@ -239,7 +240,7 @@ theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
       exact ⟨[], rfl, rfl, fun _ h ↦ by contradiction⟩
     · rintro ⟨_, rfl, rfl, _⟩
       rfl
-  · simp only [pow_succ, mem_mul, ihn]
+  · simp only [pow_succ', mem_mul, ihn]
     constructor
     · rintro ⟨a, ha, b, ⟨S, rfl, rfl, hS⟩, rfl⟩
       exact ⟨a :: S, rfl, rfl, forall_mem_cons.2 ⟨ha, hS⟩⟩
@@ -271,7 +272,7 @@ theorem mul_self_kstar_comm (l : Language α) : l∗ * l = l * l∗ := by
 
 @[simp]
 theorem one_add_self_mul_kstar_eq_kstar (l : Language α) : 1 + l * l∗ = l∗ := by
-  simp only [kstar_eq_iSup_pow, mul_iSup, ← pow_succ, ← pow_zero l]
+  simp only [kstar_eq_iSup_pow, mul_iSup, ← pow_succ', ← pow_zero l]
   exact sup_iSup_nat_succ _
 #align language.one_add_self_mul_kstar_eq_kstar Language.one_add_self_mul_kstar_eq_kstar
 
@@ -291,15 +292,15 @@ instance : KleeneAlgebra (Language α) :=
       refine' iSup_le (fun n ↦ _)
       induction' n with n ih
       · simp
-      rw [pow_succ', mul_assoc (l^n) l m]
+      rw [pow_succ, mul_assoc (l^n) l m]
       exact le_trans (le_mul_congr le_rfl h) ih,
     mul_kstar_le_self := fun l m h ↦ by
       rw [kstar_eq_iSup_pow, mul_iSup]
       refine' iSup_le (fun n ↦ _)
       induction' n with n ih
       · simp
-      rw [pow_succ, ← mul_assoc m l (l^n)]
-      exact le_trans (le_mul_congr h le_rfl) ih }
+      rw [pow_succ, ← mul_assoc m (l^n) l]
+      exact le_trans (le_mul_congr ih le_rfl) h }
 
 /-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
 def reverse (l : Language α) : Language α := { w : List α | w.reverse ∈ l }

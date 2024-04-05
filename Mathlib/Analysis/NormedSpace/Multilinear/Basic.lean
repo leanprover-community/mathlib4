@@ -105,20 +105,10 @@ does not satisfy this condition. -/
 lemma norm_map_coord_zero (hf : Continuous f) {m : ∀ i, E i} {i : ι} (hi : ‖m i‖ = 0) :
     ‖f m‖ = 0 := by
   classical
-  have : Nonempty ι := ⟨i⟩
-  set m' : 𝕜 → ∀ i, E i := fun ε : 𝕜 ↦ update (ε • m) i (ε⁻¹ ^ (Fintype.card ι) • ((ε • m) i))
-  have A : Tendsto m' (𝓝[≠] 0) (𝓝 0) := by
-    rw [← update_eq_self i (0 : ∀ i, E i)]
-    refine (Tendsto.mono_left ?_ inf_le_left).update i ?_
-    · exact (continuous_id.smul continuous_const).tendsto' _ _ (zero_smul _ m)
-    · refine NormedAddCommGroup.tendsto_nhds_zero.2 fun r hr ↦ eventually_mem_nhdsWithin.mono ?_
-      simp [norm_smul, *]
-  have B : Tendsto (‖f <| m' ·‖) (𝓝[≠] 0) (𝓝 0) := by
-    simpa only [f.map_zero, norm_zero] using ((hf.tendsto 0).comp A).norm
-  refine tendsto_nhds_unique (tendsto_const_nhds.congr' ?_) B
-  refine eventually_mem_nhdsWithin.mono fun ε (hε : ε ≠ 0) ↦ ?_
-  simp_rw [f.map_smul, Pi.smul_def, update_eq_self, f.map_smul_univ, prod_const, smul_smul,
-    Fintype.card, ← mul_pow, inv_mul_cancel hε, one_pow, one_smul]
+  rw [← inseparable_zero_iff_norm] at hi ⊢
+  have : Inseparable (update m i 0) m := inseparable_pi.2 <|
+    (forall_update_iff m fun i a ↦ Inseparable a (m i)).2 ⟨hi.symm, fun _ _ ↦ rfl⟩
+  simpa only [map_update_zero] using this.symm.map hf
 
 theorem bound_of_shell_of_norm_map_coord_zero (hf₀ : ∀ {m i}, ‖m i‖ = 0 → ‖f m‖ = 0)
     {ε : ι → ℝ} {C : ℝ} (hε : ∀ i, 0 < ε i) {c : ι → 𝕜} (hc : ∀ i, 1 < ‖c i‖)
@@ -692,9 +682,7 @@ end
 section RestrictScalars
 
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
-
 variable [NormedSpace 𝕜' G] [IsScalarTower 𝕜' 𝕜 G]
-
 variable [∀ i, NormedSpace 𝕜' (E i)] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)]
 
 @[simp]
@@ -881,9 +869,9 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 theorem norm_mkPiAlgebraFin_succ_le : ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n.succ A‖ ≤ 1 := by
   refine opNorm_le_bound _ zero_le_one fun m => ?_
   simp only [ContinuousMultilinearMap.mkPiAlgebraFin_apply, one_mul, List.ofFn_eq_map,
-    Fin.prod_univ_def, Multiset.coe_map, Multiset.coe_prod]
+    Fin.prod_univ_def, Multiset.map_coe, Multiset.prod_coe]
   refine' (List.norm_prod_le' _).trans_eq _
-  · rw [Ne.def, List.map_eq_nil, List.finRange_eq_nil]
+  · rw [Ne, List.map_eq_nil, List.finRange_eq_nil]
     exact Nat.succ_ne_zero _
   rw [List.map_map, Function.comp_def]
 #align continuous_multilinear_map.norm_mk_pi_algebra_fin_succ_le ContinuousMultilinearMap.norm_mkPiAlgebraFin_succ_le
@@ -941,6 +929,21 @@ theorem norm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
 theorem norm_mkPiRing (z : G) : ‖ContinuousMultilinearMap.mkPiRing 𝕜 ι z‖ = ‖z‖ := by
   rw [ContinuousMultilinearMap.mkPiRing, norm_smulRight, norm_mkPiAlgebra, one_mul]
 #align continuous_multilinear_map.norm_mk_pi_field ContinuousMultilinearMap.norm_mkPiRing
+
+variable (𝕜 E G) in
+/-- Continuous bilinear map realizing `(f, z) ↦ f.smulRight z`. -/
+def smulRightL : ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] ContinuousMultilinearMap 𝕜 E G :=
+  LinearMap.mkContinuous₂
+    { toFun := fun f ↦
+        { toFun := fun z ↦ f.smulRight z
+          map_add' := fun x y ↦ by ext; simp
+          map_smul' := fun c x ↦ by ext; simp [smul_smul, mul_comm] }
+      map_add' := fun f g ↦ by ext; simp [add_smul]
+      map_smul' := fun c f ↦ by ext; simp [smul_smul] }
+    1 (fun f z ↦ by simp [norm_smulRight])
+
+@[simp] lemma smulRightL_apply (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
+  smulRightL 𝕜 E G f z = f.smulRight z := rfl
 
 variable (𝕜 ι G)
 
@@ -1088,7 +1091,7 @@ def mkContinuousLinear (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G') (C : ℝ)
         rfl
       map_smul' := fun c x => by
         ext1
-        simp only [SMulHomClass.map_smul]
+        simp only [_root_.map_smul]
         rfl }
     (max C 0) fun x => by
       rw [LinearMap.coe_mk, AddHom.coe_mk] -- Porting note: added
@@ -1194,7 +1197,9 @@ theorem norm_compContinuous_linearIsometryEquiv (g : ContinuousMultilinearMap �
 This implementation fixes `f : Π i, E i →L[𝕜] E₁ i`.
 
 Actually, the map is multilinear in `f`,
-see `ContinuousMultilinearMap.compContinuousLinearMapContinuousMultilinear`. -/
+see `ContinuousMultilinearMap.compContinuousLinearMapContinuousMultilinear`.
+
+For a version fixing `g` and varying `f`, see `compContinuousLinearMapLRight`. -/
 def compContinuousLinearMapL (f : ∀ i, E i →L[𝕜] E₁ i) :
     ContinuousMultilinearMap 𝕜 E₁ G →L[𝕜] ContinuousMultilinearMap 𝕜 E G :=
   LinearMap.mkContinuous
@@ -1211,14 +1216,48 @@ theorem compContinuousLinearMapL_apply (g : ContinuousMultilinearMap 𝕜 E₁ G
   rfl
 #align continuous_multilinear_map.comp_continuous_linear_mapL_apply ContinuousMultilinearMap.compContinuousLinearMapL_apply
 
-variable (G)
-
+variable (G) in
 theorem norm_compContinuousLinearMapL_le (f : ∀ i, E i →L[𝕜] E₁ i) :
     ‖compContinuousLinearMapL (G := G) f‖ ≤ ∏ i, ‖f i‖ :=
   LinearMap.mkContinuous_norm_le _ (prod_nonneg fun _ _ => norm_nonneg _) _
 #align continuous_multilinear_map.norm_comp_continuous_linear_mapL_le ContinuousMultilinearMap.norm_compContinuousLinearMapL_le
 
-variable (𝕜 E E₁)
+/-- `ContinuousMultilinearMap.compContinuousLinearMap` as a bundled continuous linear map.
+This implementation fixes `g : ContinuousMultilinearMap 𝕜 E₁ G`.
+
+Actually, the map is linear in `g`,
+see `ContinuousMultilinearMap.compContinuousLinearMapContinuousMultilinear`.
+
+For a version fixing `f` and varying `g`, see `compContinuousLinearMapL`. -/
+def compContinuousLinearMapLRight (g : ContinuousMultilinearMap 𝕜 E₁ G) :
+    ContinuousMultilinearMap 𝕜 (fun i ↦ E i →L[𝕜] E₁ i) (ContinuousMultilinearMap 𝕜 E G) :=
+  MultilinearMap.mkContinuous
+    { toFun := fun f => g.compContinuousLinearMap f
+      map_add' := by
+        intro h f i f₁ f₂
+        ext x
+        simp only [compContinuousLinearMap_apply, add_apply]
+        convert g.map_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
+          exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
+      map_smul' := by
+        intro h f i a f₀
+        ext x
+        simp only [compContinuousLinearMap_apply, smul_apply]
+        convert g.map_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
+          exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _ }
+    (‖g‖) (fun f ↦ by simp [norm_compContinuousLinearMap_le])
+
+@[simp]
+theorem compContinuousLinearMapLRight_apply (g : ContinuousMultilinearMap 𝕜 E₁ G)
+    (f : ∀ i, E i →L[𝕜] E₁ i) : compContinuousLinearMapLRight g f = g.compContinuousLinearMap f :=
+  rfl
+
+variable (E) in
+theorem norm_compContinuousLinearMapLRight_le (g : ContinuousMultilinearMap 𝕜 E₁ G) :
+    ‖compContinuousLinearMapLRight (E := E) g‖ ≤ ‖g‖ :=
+  MultilinearMap.mkContinuous_norm_le _ (norm_nonneg _) _
+
+variable (𝕜 E E₁ G)
 
 open Function in
 /-- If `f` is a collection of continuous linear maps, then the construction
@@ -1368,7 +1407,7 @@ open Topology Filter
 
 /-- If the target space is complete, the space of continuous multilinear maps with its norm is also
 complete. The proof is essentially the same as for the space of continuous linear maps (modulo the
-addition of `Finset.prod` where needed. The duplication could be avoided by deducing the linear
+addition of `Finset.prod` where needed). The duplication could be avoided by deducing the linear
 case from the multilinear case via a currying isomorphism. However, this would mess up imports,
 and it is more satisfactory to have the simplest case as a standalone proof. -/
 instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearMap 𝕜 E G) := by
@@ -1397,13 +1436,11 @@ instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearM
   let Fmult : MultilinearMap 𝕜 E G :=
     { toFun := F
       map_add' := fun v i x y => by
-        skip
         have A := hF (Function.update v i (x + y))
         have B := (hF (Function.update v i x)).add (hF (Function.update v i y))
         simp? at A B says simp only [map_add] at A B
         exact tendsto_nhds_unique A B
       map_smul' := fun v i c x => by
-        skip
         have A := hF (Function.update v i (c • x))
         have B := Filter.Tendsto.smul (tendsto_const_nhds (x := c)) (hF (Function.update v i x))
         simp? at A B says simp only [map_smul] at A B

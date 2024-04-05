@@ -64,7 +64,6 @@ open scoped ENNReal NNReal Topology BoundedContinuousFunction
 open MeasureTheory TopologicalSpace ContinuousMap Set Bornology
 
 variable {α : Type*} [MeasurableSpace α] [TopologicalSpace α] [T4Space α] [BorelSpace α]
-
 variable {E : Type*} [NormedAddCommGroup E] {μ : Measure α} {p : ℝ≥0∞}
 
 namespace MeasureTheory
@@ -121,7 +120,7 @@ theorem exists_continuous_snorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ �
     refine' ⟨g.continuous.aestronglyMeasurable, _⟩
     have : snorm (v.indicator fun _x => (1 : ℝ)) p μ < ⊤ := by
       refine' (snorm_indicator_const_le _ _).trans_lt _
-      simp only [lt_top_iff_ne_top, hμv.ne, nnnorm_one, ENNReal.coe_one, one_div, one_mul, Ne.def,
+      simp only [lt_top_iff_ne_top, hμv.ne, nnnorm_one, ENNReal.coe_one, one_div, one_mul, Ne,
         ENNReal.rpow_eq_top_iff, inv_lt_zero, false_and_iff, or_false_iff, not_and, not_lt,
         ENNReal.toReal_nonneg, imp_true_iff]
     refine' (snorm_mono fun x => _).trans_lt this
@@ -199,8 +198,8 @@ theorem Memℒp.exists_hasCompactSupport_integral_rpow_sub_le
         (∫ x, ‖f x - g x‖ ^ p ∂μ) ≤ ε ∧ Continuous g ∧ Memℒp g (ENNReal.ofReal p) μ := by
   have I : 0 < ε ^ (1 / p) := Real.rpow_pos_of_pos hε _
   have A : ENNReal.ofReal (ε ^ (1 / p)) ≠ 0 := by
-    simp only [Ne.def, ENNReal.ofReal_eq_zero, not_le, I]
-  have B : ENNReal.ofReal p ≠ 0 := by simpa only [Ne.def, ENNReal.ofReal_eq_zero, not_le] using hp
+    simp only [Ne, ENNReal.ofReal_eq_zero, not_le, I]
+  have B : ENNReal.ofReal p ≠ 0 := by simpa only [Ne, ENNReal.ofReal_eq_zero, not_le] using hp
   rcases hf.exists_hasCompactSupport_snorm_sub_le ENNReal.coe_ne_top A with
     ⟨g, g_support, hg, g_cont, g_mem⟩
   change snorm _ (ENNReal.ofReal p) _ ≤ _ at hg
@@ -208,7 +207,7 @@ theorem Memℒp.exists_hasCompactSupport_integral_rpow_sub_le
   rwa [(hf.sub g_mem).snorm_eq_integral_rpow_norm B ENNReal.coe_ne_top,
     ENNReal.ofReal_le_ofReal_iff I.le, one_div, ENNReal.toReal_ofReal hp.le,
     Real.rpow_le_rpow_iff _ hε.le (inv_pos.2 hp)] at hg
-  exact integral_nonneg fun x => Real.rpow_nonneg (norm_nonneg _) _
+  positivity
 #align measure_theory.mem_ℒp.exists_has_compact_support_integral_rpow_sub_le MeasureTheory.Memℒp.exists_hasCompactSupport_integral_rpow_sub_le
 
 /-- In a locally compact space, any integrable function can be approximated by compactly supported
@@ -293,15 +292,15 @@ theorem Memℒp.exists_boundedContinuous_integral_rpow_sub_le [μ.WeaklyRegular]
     ∃ g : α →ᵇ E, (∫ x, ‖f x - g x‖ ^ p ∂μ) ≤ ε ∧ Memℒp g (ENNReal.ofReal p) μ := by
   have I : 0 < ε ^ (1 / p) := Real.rpow_pos_of_pos hε _
   have A : ENNReal.ofReal (ε ^ (1 / p)) ≠ 0 := by
-    simp only [Ne.def, ENNReal.ofReal_eq_zero, not_le, I]
-  have B : ENNReal.ofReal p ≠ 0 := by simpa only [Ne.def, ENNReal.ofReal_eq_zero, not_le] using hp
+    simp only [Ne, ENNReal.ofReal_eq_zero, not_le, I]
+  have B : ENNReal.ofReal p ≠ 0 := by simpa only [Ne, ENNReal.ofReal_eq_zero, not_le] using hp
   rcases hf.exists_boundedContinuous_snorm_sub_le ENNReal.coe_ne_top A with ⟨g, hg, g_mem⟩
   change snorm _ (ENNReal.ofReal p) _ ≤ _ at hg
   refine' ⟨g, _, g_mem⟩
   rwa [(hf.sub g_mem).snorm_eq_integral_rpow_norm B ENNReal.coe_ne_top,
     ENNReal.ofReal_le_ofReal_iff I.le, one_div, ENNReal.toReal_ofReal hp.le,
     Real.rpow_le_rpow_iff _ hε.le (inv_pos.2 hp)] at hg
-  exact integral_nonneg fun x => Real.rpow_nonneg (norm_nonneg _) _
+  positivity
 #align measure_theory.mem_ℒp.exists_bounded_continuous_integral_rpow_sub_le MeasureTheory.Memℒp.exists_boundedContinuous_integral_rpow_sub_le
 
 /-- Any integrable function can be approximated by bounded continuous functions,
@@ -335,14 +334,14 @@ theorem boundedContinuousFunction_dense [SecondCountableTopologyEither α E] [_i
   refine' mem_closure_iff_frequently.mpr _
   rw [Metric.nhds_basis_closedBall.frequently_iff]
   intro ε hε
-  have A : ENNReal.ofReal ε ≠ 0 := by simp only [Ne.def, ENNReal.ofReal_eq_zero, not_le, hε]
+  have A : ENNReal.ofReal ε ≠ 0 := by simp only [Ne, ENNReal.ofReal_eq_zero, not_le, hε]
   obtain ⟨g, hg, g_mem⟩ :
       ∃ g : α →ᵇ E, snorm ((f : α → E) - (g : α → E)) p μ ≤ ENNReal.ofReal ε ∧ Memℒp g p μ :=
     (Lp.memℒp f).exists_boundedContinuous_snorm_sub_le hp A
   refine' ⟨g_mem.toLp _, _, ⟨g, rfl⟩⟩
   simp only [dist_eq_norm, Metric.mem_closedBall']
   rw [Lp.norm_def]
-  -- porting note: original proof started with:
+  -- Porting note: original proof started with:
   -- convert ENNReal.toReal_le_of_le_ofReal hε.le hg using 2
   -- the `convert` was completely borked and timed out
   have key : snorm ((f : α → E) - (g : α → E)) p μ = snorm (f - Memℒp.toLp (↑g) g_mem) p μ := by
@@ -358,9 +357,7 @@ end Lp
 end MeasureTheory
 
 variable [SecondCountableTopologyEither α E] [_i : Fact (1 ≤ p)] (hp : p ≠ ∞)
-
 variable (𝕜 : Type*) [NormedField 𝕜] [NormedAlgebra ℝ 𝕜] [NormedSpace 𝕜 E]
-
 variable (E) (μ)
 
 namespace BoundedContinuousFunction

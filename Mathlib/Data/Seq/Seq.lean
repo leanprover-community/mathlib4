@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Std.Data.LazyList
+import Mathlib.Data.Option.NAry
 import Mathlib.Data.Seq.Computation
 
 #align_import data.seq.seq from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
@@ -241,7 +242,7 @@ theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
     apply Subtype.eq; dsimp [tail]
 #align stream.seq.destruct_cons Stream'.Seq.destruct_cons
 
--- porting note: needed universe annotation to avoid universe issues
+-- Porting note: needed universe annotation to avoid universe issues
 theorem head_eq_destruct (s : Seq α) : head.{u} s = Prod.fst.{u} <$> destruct.{u} s := by
   unfold destruct head; cases get? s 0 <;> rfl
 #align stream.seq.head_eq_destruct Stream'.Seq.head_eq_destruct
@@ -295,7 +296,7 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
       rfl
     rw [TH]
     apply h1 _ _ (Or.inl rfl)
-  -- porting note: had to reshuffle `intro`
+  -- Porting note: had to reshuffle `intro`
   revert e; apply s.recOn _ fun b s' => _
   · intro e; injection e
   · intro b s' e
@@ -339,7 +340,7 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
 theorem corec_eq (f : β → Option (α × β)) (b : β) :
     destruct (corec f b) = omap (corec f) (f b) := by
   dsimp [corec, destruct, get]
-  -- porting note: next two lines were `change`...`with`...
+  -- Porting note: next two lines were `change`...`with`...
   have h: Stream'.corec' (Corec.f f) (some b) 0 = (Corec.f f (some b)).1 := rfl
   rw [h]
   dsimp [Corec.f]
@@ -746,12 +747,12 @@ theorem join_nil : join nil = (nil : Seq α) :=
   destruct_eq_nil rfl
 #align stream.seq.join_nil Stream'.Seq.join_nil
 
---@[simp] -- porting note: simp can prove: `join_cons` is more general
+--@[simp] -- Porting note: simp can prove: `join_cons` is more general
 theorem join_cons_nil (a : α) (S) : join (cons (a, nil) S) = cons a (join S) :=
   destruct_eq_cons <| by simp [join]
 #align stream.seq.join_cons_nil Stream'.Seq.join_cons_nil
 
---@[simp] -- porting note: simp can prove: `join_cons` is more general
+--@[simp] -- Porting note: simp can prove: `join_cons` is more general
 theorem join_cons_cons (a b : α) (s S) :
     join (cons (a, cons b s) S) = cons a (join (cons (b, s) S)) :=
   destruct_eq_cons <| by simp [join]
@@ -775,8 +776,7 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
       apply recOn s
       · simp [join_cons_cons, join_cons_nil]
       · intro x s
-        simp [join_cons_cons, join_cons_nil]
-        exact Or.inr ⟨x, s, S, rfl, rfl⟩
+        simpa [join_cons_cons, join_cons_nil] using Or.inr ⟨x, s, S, rfl, rfl⟩
 #align stream.seq.join_cons Stream'.Seq.join_cons
 
 @[simp]
@@ -793,11 +793,11 @@ theorem join_append (S T : Seq (Seq1 α)) : join (append S T) = append (join S) 
           · apply recOn T
             · simp
             · intro s T
-              cases' s with a s; simp
+              cases' s with a s; simp only [join_cons, destruct_cons, true_and]
               refine' ⟨s, nil, T, _, _⟩ <;> simp
           · intro s S
-            cases' s with a s; simp
-            exact ⟨s, S, T, rfl, rfl⟩
+            cases' s with a s
+            simpa using ⟨s, S, T, rfl, rfl⟩
         · intro _ s
           exact ⟨s, S, T, rfl, rfl⟩
   · refine' ⟨nil, S, T, _, _⟩ <;> simp
@@ -805,7 +805,7 @@ theorem join_append (S T : Seq (Seq1 α)) : join (append S T) = append (join S) 
 
 @[simp]
 theorem ofStream_cons (a : α) (s) : ofStream (a::s) = cons a (ofStream s) := by
-  apply Subtype.eq; simp [ofStream, cons]; rw [Stream'.map_cons]
+  apply Subtype.eq; simp only [ofStream, cons]; rw [Stream'.map_cons]
 #align stream.seq.of_stream_cons Stream'.Seq.ofStream_cons
 
 @[simp]
@@ -837,7 +837,7 @@ theorem dropn_add (s : Seq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
 #align stream.seq.dropn_add Stream'.Seq.dropn_add
 
 theorem dropn_tail (s : Seq α) (n) : drop (tail s) n = drop s (n + 1) := by
-  rw [add_comm]; symm; apply dropn_add
+  rw [Nat.add_comm]; symm; apply dropn_add
 #align stream.seq.dropn_tail Stream'.Seq.dropn_tail
 
 @[simp]
@@ -914,7 +914,7 @@ def map (f : α → β) : Seq1 α → Seq1 β
   | (a, s) => (f a, Seq.map f s)
 #align stream.seq1.map Stream'.Seq1.map
 
--- Porting note: New theorem.
+-- Porting note (#10756): new theorem.
 theorem map_pair {f : α → β} {a s} : map f (a, s) = (f a, Seq.map f s) := rfl
 
 theorem map_id : ∀ s : Seq1 α, map id s = s
@@ -991,8 +991,8 @@ theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.m
         apply recOn s <;> simp
         · apply recOn S <;> simp
           · intro x S
-            cases' x with a s; simp [map]
-            exact ⟨_, _, rfl, rfl⟩
+            cases' x with a s
+            simpa [map] using ⟨_, _, rfl, rfl⟩
         · intro _ s
           exact ⟨s, S, rfl, rfl⟩
   · refine' ⟨nil, S, _, _⟩ <;> simp
@@ -1017,7 +1017,8 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
         apply recOn s <;> simp
         · apply recOn SS <;> simp
           · intro S SS
-            cases' S with s S; cases' s with x s; simp [map]
+            cases' S with s S; cases' s with x s
+            simp only [Seq.join_cons, join_append, destruct_cons]
             apply recOn s <;> simp
             · exact ⟨_, _, rfl, rfl⟩
             · intro x s

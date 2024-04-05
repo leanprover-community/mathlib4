@@ -3,24 +3,26 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.GroupTheory.Perm.Support
-import Mathlib.GroupTheory.OrderOfElement
+
 import Mathlib.Data.Finset.Fin
+import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Int.Order.Units
+import Mathlib.GroupTheory.Perm.Support
+import Mathlib.GroupTheory.Subgroup.Finite
+import Mathlib.Logic.Equiv.Fin
+import Mathlib.Tactic.NormNum.Ineq
 
 #align_import group_theory.perm.sign from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Sign of a permutation
 
-The main definition of this file is `Equiv.Perm.sign`, associating a `ℤˣ` sign with a
-permutation.
+The main definition of this file is `Equiv.Perm.sign`,
+associating a `ℤˣ` sign with a permutation.
 
-This file also contains miscellaneous lemmas about `Equiv.Perm` and `Equiv.swap`, building on top
-of those in `Data/Equiv/Basic` and other files in `GroupTheory/Perm/*`.
+Other lemmas have been moved to `Mathlib.GroupTheory.Perm.Fintype`
 
 -/
-
 
 universe u v
 
@@ -28,11 +30,7 @@ open Equiv Function Fintype Finset
 
 open BigOperators
 
-variable {α : Type u} {β : Type v}
-
--- An example on how to determine the order of an element of a finite group.
-example : orderOf (-1 : ℤˣ) = 2 :=
-  orderOf_eq_prime (Int.units_sq _) (by decide)
+variable {α : Type u} [DecidableEq α] {β : Type v}
 
 namespace Equiv.Perm
 
@@ -41,12 +39,12 @@ namespace Equiv.Perm
 We use this to partition permutations in `Matrix.det_zero_of_row_eq`, such that each partition
 sums up to `0`.
 -/
-def modSwap [DecidableEq α] (i j : α) : Setoid (Perm α) :=
+def modSwap (i j : α) : Setoid (Perm α) :=
   ⟨fun σ τ => σ = τ ∨ σ = swap i j * τ, fun σ => Or.inl (refl σ), fun {σ τ} h =>
     Or.casesOn h (fun h => Or.inl h.symm) fun h => Or.inr (by rw [h, swap_mul_self_mul]),
     fun {σ τ υ} hστ hτυ => by
     cases' hστ with hστ hστ <;> cases' hτυ with hτυ hτυ <;> try rw [hστ, hτυ, swap_mul_self_mul] <;>
-    simp [hστ, hτυ] -- porting note: should close goals, but doesn't
+    simp [hστ, hτυ] -- Porting note: should close goals, but doesn't
     · simp [hστ, hτυ]
     · simp [hστ, hτυ]
     · simp [hστ, hτυ]⟩
@@ -55,152 +53,6 @@ def modSwap [DecidableEq α] (i j : α) : Setoid (Perm α) :=
 noncomputable instance {α : Type*} [Fintype α] [DecidableEq α] (i j : α) :
     DecidableRel (modSwap i j).r :=
   fun _ _ => Or.decidable
-
-theorem perm_inv_on_of_perm_on_finset {s : Finset α} {f : Perm α} (h : ∀ x ∈ s, f x ∈ s) {y : α}
-    (hy : y ∈ s) : f⁻¹ y ∈ s := by
-  have h0 : ∀ y ∈ s, ∃ (x : _) (hx : x ∈ s), y = (fun i (_ : i ∈ s) => f i) x hx :=
-    Finset.surj_on_of_inj_on_of_card_le (fun x hx => (fun i _ => f i) x hx) (fun a ha => h a ha)
-      (fun a₁ a₂ ha₁ ha₂ heq => (Equiv.apply_eq_iff_eq f).mp heq) rfl.ge
-  obtain ⟨y2, hy2, heq⟩ := h0 y hy
-  convert hy2
-  rw [heq]
-  simp only [inv_apply_self]
-#align equiv.perm.perm_inv_on_of_perm_on_finset Equiv.Perm.perm_inv_on_of_perm_on_finset
-
-theorem perm_inv_mapsTo_of_mapsTo (f : Perm α) {s : Set α} [Finite s] (h : Set.MapsTo f s s) :
-    Set.MapsTo (f⁻¹ : _) s s := by
-  cases nonempty_fintype s;
-    exact fun x hx =>
-      Set.mem_toFinset.mp <|
-        perm_inv_on_of_perm_on_finset
-          (fun a ha => Set.mem_toFinset.mpr (h (Set.mem_toFinset.mp ha)))
-          (Set.mem_toFinset.mpr hx)
-#align equiv.perm.perm_inv_maps_to_of_maps_to Equiv.Perm.perm_inv_mapsTo_of_mapsTo
-
-@[simp]
-theorem perm_inv_mapsTo_iff_mapsTo {f : Perm α} {s : Set α} [Finite s] :
-    Set.MapsTo (f⁻¹ : _) s s ↔ Set.MapsTo f s s :=
-  ⟨perm_inv_mapsTo_of_mapsTo f⁻¹, perm_inv_mapsTo_of_mapsTo f⟩
-#align equiv.perm.perm_inv_maps_to_iff_maps_to Equiv.Perm.perm_inv_mapsTo_iff_mapsTo
-
-theorem perm_inv_on_of_perm_on_finite {f : Perm α} {p : α → Prop} [Finite { x // p x }]
-    (h : ∀ x, p x → p (f x)) {x : α} (hx : p x) : p (f⁻¹ x) :=
-  -- Porting note: relies heavily on the definitions of `Subtype` and `setOf` unfolding to their
-  -- underlying predicate.
-  have : Finite { x | p x } := ‹_›
-  perm_inv_mapsTo_of_mapsTo (s := {x | p x}) f h hx
-#align equiv.perm.perm_inv_on_of_perm_on_finite Equiv.Perm.perm_inv_on_of_perm_on_finite
-
-/-- If the permutation `f` maps `{x // p x}` into itself, then this returns the permutation
-  on `{x // p x}` induced by `f`. Note that the `h` hypothesis is weaker than for
-  `Equiv.Perm.subtypePerm`. -/
-abbrev subtypePermOfFintype (f : Perm α) {p : α → Prop} [Finite { x // p x }]
-    (h : ∀ x, p x → p (f x)) : Perm { x // p x } :=
-  f.subtypePerm fun x => ⟨h x, fun h₂ => f.inv_apply_self x ▸ perm_inv_on_of_perm_on_finite h h₂⟩
-#align equiv.perm.subtype_perm_of_fintype Equiv.Perm.subtypePermOfFintype
-
-@[simp]
-theorem subtypePermOfFintype_apply (f : Perm α) {p : α → Prop} [Finite { x // p x }]
-    (h : ∀ x, p x → p (f x)) (x : { x // p x }) : subtypePermOfFintype f h x = ⟨f x, h x x.2⟩ :=
-  rfl
-#align equiv.perm.subtype_perm_of_fintype_apply Equiv.Perm.subtypePermOfFintype_apply
-
-theorem subtypePermOfFintype_one (p : α → Prop) [Finite { x // p x }]
-    (h : ∀ x, p x → p ((1 : Perm α) x)) : @subtypePermOfFintype α 1 p _ h = 1 :=
-  rfl
-#align equiv.perm.subtype_perm_of_fintype_one Equiv.Perm.subtypePermOfFintype_one
-
-theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ : Perm (Sum m n)) :
-    Set.MapsTo σ (Set.range Sum.inl) (Set.range Sum.inl) ↔
-      Set.MapsTo σ (Set.range Sum.inr) (Set.range Sum.inr) := by
-  constructor <;>
-    ( intro h
-      classical
-        rw [← perm_inv_mapsTo_iff_mapsTo] at h
-        intro x
-        cases' hx : σ x with l r)
-  · rintro ⟨a, rfl⟩
-    obtain ⟨y, hy⟩ := h ⟨l, rfl⟩
-    rw [← hx, σ.inv_apply_self] at hy
-    exact absurd hy Sum.inl_ne_inr
-  · rintro _; exact ⟨r, rfl⟩
-  · rintro _; exact ⟨l, rfl⟩
-  · rintro ⟨a, rfl⟩
-    obtain ⟨y, hy⟩ := h ⟨r, rfl⟩
-    rw [← hx, σ.inv_apply_self] at hy
-    exact absurd hy Sum.inr_ne_inl
-#align equiv.perm.perm_maps_to_inl_iff_maps_to_inr Equiv.Perm.perm_mapsTo_inl_iff_mapsTo_inr
-
-theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finite n]
-    {σ : Perm (Sum m n)} (h : Set.MapsTo σ (Set.range Sum.inl) (Set.range Sum.inl)) :
-    σ ∈ (sumCongrHom m n).range := by
-  classical
-    have h1 : ∀ x : Sum m n, (∃ a : m, Sum.inl a = x) → ∃ a : m, Sum.inl a = σ x := by
-      rintro x ⟨a, ha⟩
-      apply h
-      rw [← ha]
-      exact ⟨a, rfl⟩
-    have h3 : ∀ x : Sum m n, (∃ b : n, Sum.inr b = x) → ∃ b : n, Sum.inr b = σ x := by
-      rintro x ⟨b, hb⟩
-      apply (perm_mapsTo_inl_iff_mapsTo_inr σ).mp h
-      rw [← hb]
-      exact ⟨b, rfl⟩
-    let σ₁' := subtypePermOfFintype σ h1
-    let σ₂' := subtypePermOfFintype σ h3
-    let σ₁ := permCongr (Equiv.ofInjective _ Sum.inl_injective).symm σ₁'
-    let σ₂ := permCongr (Equiv.ofInjective _ Sum.inr_injective).symm σ₂'
-    rw [MonoidHom.mem_range, Prod.exists]
-    use σ₁, σ₂
-    rw [Perm.sumCongrHom_apply]
-    ext x
-    cases' x with a b
-    · rw [Equiv.sumCongr_apply, Sum.map_inl, permCongr_apply, Equiv.symm_symm,
-        apply_ofInjective_symm Sum.inl_injective]
-      rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [subtypePerm_apply]
-    · rw [Equiv.sumCongr_apply, Sum.map_inr, permCongr_apply, Equiv.symm_symm,
-        apply_ofInjective_symm Sum.inr_injective]
-      erw [subtypePerm_apply]
-      rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]
-#align equiv.perm.mem_sum_congr_hom_range_of_perm_maps_to_inl Equiv.Perm.mem_sumCongrHom_range_of_perm_mapsTo_inl
-
-nonrec theorem Disjoint.orderOf {σ τ : Perm α} (hστ : Disjoint σ τ) :
-    orderOf (σ * τ) = Nat.lcm (orderOf σ) (orderOf τ) :=
-  haveI h : ∀ n : ℕ, (σ * τ) ^ n = 1 ↔ σ ^ n = 1 ∧ τ ^ n = 1 := fun n => by
-    rw [hστ.commute.mul_pow, Disjoint.mul_eq_one_iff (hστ.pow_disjoint_pow n n)]
-  Nat.dvd_antisymm hστ.commute.orderOf_mul_dvd_lcm
-    (Nat.lcm_dvd
-      (orderOf_dvd_of_pow_eq_one ((h (orderOf (σ * τ))).mp (pow_orderOf_eq_one (σ * τ))).1)
-      (orderOf_dvd_of_pow_eq_one ((h (orderOf (σ * τ))).mp (pow_orderOf_eq_one (σ * τ))).2))
-#align equiv.perm.disjoint.order_of Equiv.Perm.Disjoint.orderOf
-
-theorem Disjoint.extendDomain {α : Type*} {p : β → Prop} [DecidablePred p] (f : α ≃ Subtype p)
-    {σ τ : Perm α} (h : Disjoint σ τ) : Disjoint (σ.extendDomain f) (τ.extendDomain f) := by
-  intro b
-  by_cases pb : p b
-  · refine' (h (f.symm ⟨b, pb⟩)).imp _ _ <;>
-      · intro h
-        rw [extendDomain_apply_subtype _ _ pb, h, apply_symm_apply, Subtype.coe_mk]
-  · left
-    rw [extendDomain_apply_not_subtype _ _ pb]
-#align equiv.perm.disjoint.extend_domain Equiv.Perm.Disjoint.extendDomain
-
-variable [DecidableEq α]
-
-section Fintype
-
-variable [Fintype α]
-
-theorem support_pow_coprime {σ : Perm α} {n : ℕ} (h : Nat.Coprime n (orderOf σ)) :
-    (σ ^ n).support = σ.support := by
-  obtain ⟨m, hm⟩ := exists_pow_eq_self_of_coprime h
-  exact
-    le_antisymm (support_pow_le σ n)
-      (le_trans (ge_of_eq (congr_arg support hm)) (support_pow_le (σ ^ n) m))
-#align equiv.perm.support_pow_coprime Equiv.Perm.support_pow_coprime
-
-end Fintype
 
 /-- Given a list `l : List α` and a permutation `f : Perm α` such that the nonfixed points of `f`
   are in `l`, recursively factors `f` as a product of transpositions. -/
@@ -313,7 +165,7 @@ def signAux {n : ℕ} (a : Perm (Fin n)) : ℤˣ :=
 @[simp]
 theorem signAux_one (n : ℕ) : signAux (1 : Perm (Fin n)) = 1 := by
   unfold signAux
-  conv => rhs; rw [← @Finset.prod_const_one ℤˣ _ (finPairsLT n)]
+  conv => rhs; rw [← @Finset.prod_const_one _ _ (finPairsLT n)]
   exact Finset.prod_congr rfl fun a ha => if_neg (mem_finPairsLT.1 ha).not_le
 #align equiv.perm.sign_aux_one Equiv.Perm.signAux_one
 
@@ -366,26 +218,9 @@ theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
     if h : f⁻¹ b < f⁻¹ a then by
       simp_all [signBijAux, dif_pos h, if_neg h.not_le, apply_inv_self, apply_inv_self,
         if_neg (mem_finPairsLT.1 hab).not_le]
-      split_ifs with h₁
-      · dsimp [finPairsLT] at hab
-        simp? at hab says
-          simp only [mem_sigma, mem_univ, mem_attachFin, mem_range, Fin.val_fin_lt,
-            true_and] at hab
-        exact absurd h₁ (not_le_of_gt hab)
-      · rfl
     else by
       simp_all [signBijAux, if_pos (le_of_not_gt h), dif_neg h, apply_inv_self, apply_inv_self,
         if_pos (mem_finPairsLT.1 hab).le]
-      split_ifs with h₁ h₂ h₃
-      · rfl
-      · exact absurd h (not_le_of_gt h₁)
-      · rfl
-      · dsimp at *
-        dsimp [finPairsLT] at hab
-        simp? at * says
-          simp only [mem_sigma, mem_univ, mem_attachFin, mem_range, Fin.val_fin_lt,
-            true_and, not_lt, apply_inv_self, not_le, neg_units_ne_self] at *
-        exact absurd h₃ (asymm_of LT.lt hab)
 #align equiv.perm.sign_aux_inv Equiv.Perm.signAux_inv
 
 theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f * signAux g := by
@@ -400,13 +235,10 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
   by_cases h : g b < g a
   · rw [dif_pos h]
     simp only [not_le_of_gt hab, mul_one, mul_ite, mul_neg, Perm.inv_apply_self, if_false]
-    split_ifs with h₁ h₂ h₃ <;> dsimp at *
-    · exact absurd hab (not_lt_of_ge h₂)
-    · exact absurd hab (not_lt_of_ge h₃)
   · rw [dif_neg h, inv_apply_self, inv_apply_self, if_pos hab.le]
     by_cases h₁ : f (g b) ≤ f (g a)
     · have : f (g b) ≠ f (g a) := by
-        rw [Ne.def, f.injective.eq_iff, g.injective.eq_iff]
+        rw [Ne, f.injective.eq_iff, g.injective.eq_iff]
         exact ne_of_lt hab
       rw [if_pos h₁, if_neg (h₁.lt_of_ne this).not_le]
       rfl
@@ -438,6 +270,7 @@ private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2
       · rw [swap_apply_of_ne_of_ne (ne_of_gt H) (ne_of_gt lt),
           swap_apply_of_ne_of_ne (ne_of_gt H') (ne_of_gt lt'), if_neg ha₁.not_le]
 
+set_option tactic.skipAssignedInstances false in
 private theorem signAux_swap_zero_one {n : ℕ} (hn : 2 ≤ n) :
     signAux (swap (⟨0, lt_of_lt_of_le (by decide) hn⟩ : Fin n) ⟨1, lt_of_lt_of_le (by decide) hn⟩) =
       -1 := by
@@ -527,7 +360,7 @@ theorem signAux3_mul_and_swap [Finite α] (f g : Perm α) (s : Multiset α) (hs 
 theorem signAux3_symm_trans_trans [Finite α] [DecidableEq β] [Finite β] (f : Perm α) (e : α ≃ β)
     {s : Multiset α} {t : Multiset β} (hs : ∀ x, x ∈ s) (ht : ∀ x, x ∈ t) :
     signAux3 ((e.symm.trans f).trans e) ht = signAux3 f hs := by
-  -- porting note: switched from term mode to tactic mode
+  -- Porting note: switched from term mode to tactic mode
   induction' t, s using Quotient.inductionOn₂ with t s ht hs
   show signAux2 _ _ = signAux2 _ _
   rcases Finite.exists_equiv_fin β with ⟨n, ⟨e'⟩⟩
@@ -660,7 +493,6 @@ theorem sign_subtypePerm (f : Perm α) {p : α → Prop} [DecidablePred p] (h₁
   conv =>
     congr
     rw [← l.2.1]
-    skip
   simp_rw [← hl'₂]
   rw [sign_prod_list_swap l.2.2, sign_prod_list_swap hl', List.length_map]
 #align equiv.perm.sign_subtype_perm Equiv.Perm.sign_subtypePerm

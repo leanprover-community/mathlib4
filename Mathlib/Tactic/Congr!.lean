@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Lean.Elab.Tactic.Config
+import Lean.Elab.Tactic.RCases
 import Mathlib.Lean.Meta.CongrTheorems
+import Mathlib.Logic.Basic
 import Mathlib.Tactic.Relation.Rfl
 import Std.Logic
-import Std.Tactic.RCases
 
 /-!
 # The `congr!` tactic
@@ -107,6 +108,9 @@ structure Congr!.Config where
   `preferLHS`, `partialApp` and `maxArgs` and transparency settings. It acts as if `sameFun := true`
   and it ignores `typeEqs`. -/
   useCongrSimp : Bool := false
+  /-- Whether to use a special congruence lemma for `BEq` instances.
+  This synthesizes `LawfulBEq` instances to discharge equalities of `BEq` instances. -/
+  beqEq : Bool := true
 
 /-- A configuration option that makes `congr!` do the sorts of aggressive unfoldings that `congr`
 does while also similarly preventing `congr!` from considering partial applications or congruences
@@ -307,7 +311,6 @@ Applies the congruence generated congruence lemmas according to `config`.
 def Lean.MVarId.congrSimp? (config : Congr!.Config) (mvarId : MVarId) :
     MetaM (Option (List MVarId)) :=
   mvarId.withContext do
-    unless config.useCongrSimp do return none
     mvarId.checkNotAssigned `congrSimp?
     let some (_, lhs, rhs) := (← withReducible mvarId.getType').eq? | return none
     let (fst, snd) := if config.preferLHS then (lhs, rhs) else (rhs, lhs)
@@ -333,7 +336,7 @@ where
       observing? <| applyCongrThm? config mvarId congrThm.type congrThm.proof
   /-- Like `mkCongrSimp?` but takes in a specific arity. -/
   mkCongrSimpNArgs (f : Expr) (nArgs : Nat) : MetaM (Option CongrTheorem) := do
-    let f := (← instantiateMVars f).cleanupAnnotations
+    let f := (← Lean.instantiateMVars f).cleanupAnnotations
     let info ← getFunInfoNArgs f nArgs
     mkCongrSimpCore? f info
       (← getCongrSimpKinds f info) (subsingletonInstImplicitRhs := false)
@@ -445,18 +448,34 @@ def Lean.MVarId.subsingletonHelim? (mvarId : MVarId) : MetaM (Option (List MVarI
     failure
 
 /--
+Tries to apply `lawful_beq_subsingleton` to prove that two `BEq` instances are equal
+by synthesizing `LawfulBEq` instances for both.
+-/
+def Lean.MVarId.beqInst? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
+  observing? do withReducible <| mvarId.applyConst ``lawful_beq_subsingleton
+
+/--
 A list of all the congruence strategies used by `Lean.MVarId.congrCore!`.
 -/
 def Lean.MVarId.congrPasses! :
     List (String × (Congr!.Config → MVarId → MetaM (Option (List MVarId)))) :=
   [("user congr", userCongr?),
    ("hcongr lemma", smartHCongr?),
-   ("congr simp lemma", congrSimp?),
+   ("congr simp lemma", when (·.useCongrSimp) congrSimp?),
    ("Subsingleton.helim", fun _ => subsingletonHelim?),
+   ("BEq instances", when (·.beqEq) fun _ => beqInst?),
    ("obvious funext", fun _ => obviousFunext?),
    ("obvious hfunext", fun _ => obviousHfunext?),
    ("congr_implies", fun _ => congrImplies?'),
    ("congr_pi", fun _ => congrPi?)]
+where
+  /--
+  Conditionally runs a congruence strategy depending on the predicate `b` applied to the config.
+  -/
+  when (b : Congr!.Config → Bool) (f : Congr!.Config → MVarId → MetaM (Option (List MVarId)))
+      (config : Congr!.Config) (mvar : MVarId) : MetaM (Option (List MVarId)) := do
+    unless b config do return none
+    f config mvar
 
 structure CongrState where
   /-- Accumulated goals that `congr!` could not handle. -/
@@ -517,13 +536,13 @@ where
         if ty.isArrow then
           if ← (isTrivialType ty.bindingDomain!
                 <||> (← getLCtx).anyM (fun decl => do
-                        return (← instantiateMVars decl.type) == ty.bindingDomain!)) then
+                        return (← Lean.instantiateMVars decl.type) == ty.bindingDomain!)) then
             -- Don't intro, clear it
             let mvar ← mkFreshExprSyntheticOpaqueMVar ty.bindingBody! (← mvarId.getTag)
             mvarId.assign <| .lam .anonymous ty.bindingDomain! mvar .default
             return ← loop mvar.mvarId!
         if let some patt ← CongrMetaM.nextPattern then
-          let gs ← Term.TermElabM.run' <| Std.Tactic.RCases.rintro #[patt] none mvarId
+          let gs ← Term.TermElabM.run' <| Lean.Elab.Tactic.RCases.rintro #[patt] none mvarId
           List.join <$> gs.mapM loop
         else
           let (_, mvarId) ← mvarId.intro1
@@ -533,7 +552,7 @@ where
   isTrivialType (ty : Expr) : MetaM Bool := do
     unless ← Meta.isProp ty do
       return false
-    let ty ← instantiateMVars ty
+    let ty ← Lean.instantiateMVars ty
     if let some (lhs, rhs) := ty.eqOrIff? then
       if lhs.cleanupAnnotations == rhs.cleanupAnnotations then
         return true
@@ -714,7 +733,7 @@ syntax (name := congr!) "congr!" (Parser.Tactic.config)? (ppSpace num)?
 elab_rules : tactic
 | `(tactic| congr! $[$cfg:config]? $[$n]? $[with $ps?*]?) => do
   let config ← elabConfig (mkOptionalNode cfg)
-  let patterns := (Std.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
+  let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
   liftMetaTactic fun g ↦
     let depth := n.map (·.getNat)
     g.congrN! depth config patterns

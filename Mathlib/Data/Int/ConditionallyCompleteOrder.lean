@@ -19,7 +19,7 @@ open Int
 
 
 noncomputable section
-open Classical
+open scoped Classical
 
 instance : ConditionallyCompleteLinearOrder ℤ :=
   { Int.linearOrderedCommRing,

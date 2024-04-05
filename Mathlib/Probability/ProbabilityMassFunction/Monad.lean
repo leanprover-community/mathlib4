@@ -25,7 +25,8 @@ noncomputable section
 
 variable {α β γ : Type*}
 
-open Classical BigOperators NNReal ENNReal
+open scoped Classical
+open BigOperators NNReal ENNReal
 
 open MeasureTheory
 
@@ -224,7 +225,7 @@ theorem bindOnSupport_apply (b : β) :
 theorem support_bindOnSupport :
     (p.bindOnSupport f).support = ⋃ (a : α) (h : a ∈ p.support), (f a h).support := by
   refine' Set.ext fun b => _
-  simp only [ENNReal.tsum_eq_zero, not_or, mem_support_iff, bindOnSupport_apply, Ne.def, not_forall,
+  simp only [ENNReal.tsum_eq_zero, not_or, mem_support_iff, bindOnSupport_apply, Ne, not_forall,
     mul_eq_zero, Set.mem_iUnion]
   exact
     ⟨fun hb =>

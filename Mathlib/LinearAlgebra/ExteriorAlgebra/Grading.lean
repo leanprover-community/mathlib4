@@ -20,14 +20,13 @@ The main result is `ExteriorAlgebra.gradedAlgebra`, which says that the exterior
 namespace ExteriorAlgebra
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-
 variable (R M)
 
 open scoped DirectSum
 
 /-- A version of `ExteriorAlgebra.ι` that maps directly into the graded structure. This is
 primarily an auxiliary construction used to provide `ExteriorAlgebra.gradedAlgebra`. -/
--- porting note: protected
+-- Porting note: protected
 protected def GradedAlgebra.ι :
     M →ₗ[R] ⨁ i : ℕ, ⋀[R]^i M :=
   DirectSum.lof R ℕ (fun i => ⋀[R]^i M) 1 ∘ₗ

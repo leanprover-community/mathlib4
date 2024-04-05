@@ -52,7 +52,8 @@ in general), and `ι` is countable.
 
 noncomputable section
 
-open Classical Topology Filter
+open scoped Classical
+open Topology Filter
 
 open TopologicalSpace Set Metric Filter Function
 
@@ -294,7 +295,7 @@ theorem dist_triangle_nonarch (x y z : ∀ n, E n) : dist x z ≤ max (dist x y)
   · simp
   rcases eq_or_ne y z with (rfl | hyz)
   · simp
-  simp only [dist_eq_of_ne, hxz, hxy, hyz, inv_le_inv, one_div, inv_pow, zero_lt_two, Ne.def,
+  simp only [dist_eq_of_ne, hxz, hxy, hyz, inv_le_inv, one_div, inv_pow, zero_lt_two, Ne,
     not_false_iff, le_max_iff, pow_le_pow_iff_right, one_lt_two, pow_pos,
     min_le_iff.1 (min_firstDiff_le x y z hxz)]
 #align pi_nat.dist_triangle_nonarch PiNat.dist_triangle_nonarch
@@ -608,14 +609,14 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
     Otherwise, `f x` remains in the same `n`-cylinder as `x`. Similarly for `y`. Finally, `f x` and
     `f y` are again in the same `n`-cylinder, as desired. -/
   set f := fun x => if x ∈ s then x else (inter_cylinder_longestPrefix_nonempty hs hne x).some
-  have fs : ∀ x ∈ s, f x = x := fun x xs => by simp [xs]
+  have fs : ∀ x ∈ s, f x = x := fun x xs => by simp [f, xs]
   refine' ⟨f, fs, _, _⟩
   -- check that the range of `f` is `s`.
   · apply Subset.antisymm
     · rintro x ⟨y, rfl⟩
       by_cases hy : y ∈ s
       · rwa [fs y hy]
-      simpa [if_neg hy] using (inter_cylinder_longestPrefix_nonempty hs hne y).choose_spec.1
+      simpa [f, if_neg hy] using (inter_cylinder_longestPrefix_nonempty hs hne y).choose_spec.1
     · intro x hx
       rw [← fs x hx]
       exact mem_range_self _
@@ -640,7 +641,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
       -- case where `y ∉ s`
       have A : (s ∩ cylinder y (longestPrefix y s)).Nonempty :=
         inter_cylinder_longestPrefix_nonempty hs hne y
-      have fy : f y = A.some := by simp_rw [if_neg ys]
+      have fy : f y = A.some := by simp_rw [f, if_neg ys]
       have I : cylinder A.some (firstDiff x y) = cylinder y (firstDiff x y) := by
         rw [← mem_cylinder_iff_eq, firstDiff_comm]
         apply cylinder_anti y _ A.some_mem.2
@@ -652,7 +653,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
       -- case where `y ∈ s` (similar to the above)
       · have A : (s ∩ cylinder x (longestPrefix x s)).Nonempty :=
           inter_cylinder_longestPrefix_nonempty hs hne x
-        have fx : f x = A.some := by simp_rw [if_neg xs]
+        have fx : f x = A.some := by simp_rw [f, if_neg xs]
         have I : cylinder A.some (firstDiff x y) = cylinder x (firstDiff x y) := by
           rw [← mem_cylinder_iff_eq]
           apply cylinder_anti x _ A.some_mem.2
@@ -662,10 +663,10 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
       -- case where `y ∉ s`
       · have Ax : (s ∩ cylinder x (longestPrefix x s)).Nonempty :=
           inter_cylinder_longestPrefix_nonempty hs hne x
-        have fx : f x = Ax.some := by simp_rw [if_neg xs]
+        have fx : f x = Ax.some := by simp_rw [f, if_neg xs]
         have Ay : (s ∩ cylinder y (longestPrefix y s)).Nonempty :=
           inter_cylinder_longestPrefix_nonempty hs hne y
-        have fy : f y = Ay.some := by simp_rw [if_neg ys]
+        have fy : f y = Ay.some := by simp_rw [f, if_neg ys]
         -- case where the common prefix to `x` and `s`, or `y` and `s`, is shorter than the
         -- common part to `x` and `y` -- then `f x = f y`.
         by_cases H : longestPrefix x s < firstDiff x y ∨ longestPrefix y s < firstDiff x y
@@ -746,7 +747,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
     have diff_pos : 0 < firstDiff x.1 y.1 := by
       by_contra! h
       apply apply_firstDiff_ne hne'
-      rw [le_zero_iff.1 h]
+      rw [Nat.le_zero.1 h]
       apply apply_eq_of_dist_lt _ le_rfl
       rw [pow_zero]
       exact hxy

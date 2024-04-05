@@ -3,14 +3,14 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.Polynomial.Expand
+import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 import Mathlib.RingTheory.Adjoin.FG
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 import Mathlib.RingTheory.Polynomial.Tower
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import ring_theory.integral_closure from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"
 
@@ -33,12 +33,12 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
 -/
 
 
-open Classical BigOperators Polynomial Submodule
+open scoped Classical
+open BigOperators Polynomial Submodule
 
 section Ring
 
 variable {R S A : Type*}
-
 variable [CommRing R] [Ring A] [Ring S] (f : R →+* S)
 
 /-- An element `x` of `A` is said to be integral over `R` with respect to `f`
@@ -84,9 +84,7 @@ end Ring
 section
 
 variable {R A B S : Type*}
-
 variable [CommRing R] [CommRing A] [Ring B] [CommRing S]
-
 variable [Algebra R A] [Algebra R B] (f : R →+* S)
 
 theorem IsIntegral.map {B C F : Type*} [Ring B] [Ring C] [Algebra R B] [Algebra A B] [Algebra R C]
@@ -264,13 +262,13 @@ theorem isIntegral_of_smul_mem_submodule {M : Type*} [AddCommGroup M] [Module R 
   let f : A' →ₐ[R] Module.End R N :=
     AlgHom.ofLinearMap
       { toFun := fun x => (DistribMulAction.toLinearMap R M x).restrict x.prop
-        -- porting note: was
+        -- Porting note: was
                 -- `fun x y => LinearMap.ext fun n => Subtype.ext <| add_smul x y n`
         map_add' := by intros x y; ext; exact add_smul _ _ _
-        -- porting note: was
+        -- Porting note: was
                 --  `fun r s => LinearMap.ext fun n => Subtype.ext <| smul_assoc r s n`
         map_smul' := by intros r s; ext; apply smul_assoc }
-      -- porting note: the next two lines were
+      -- Porting note: the next two lines were
       --`(LinearMap.ext fun n => Subtype.ext <| one_smul _ _) fun x y =>`
       --`LinearMap.ext fun n => Subtype.ext <| mul_smul x y n`
       (by ext; apply one_smul)
@@ -599,10 +597,10 @@ theorem normalizeScaleRoots_coeff_mul_leadingCoeff_pow (i : ℕ) (hp : 1 ≤ nat
     (normalizeScaleRoots p).coeff i * p.leadingCoeff ^ i =
       p.coeff i * p.leadingCoeff ^ (p.natDegree - 1) := by
   simp only [normalizeScaleRoots, finset_sum_coeff, coeff_monomial, Finset.sum_ite_eq', one_mul,
-    zero_mul, mem_support_iff, ite_mul, Ne.def, ite_not]
+    zero_mul, mem_support_iff, ite_mul, Ne, ite_not]
   split_ifs with h₁ h₂
   · simp [h₁]
-  · rw [h₂, leadingCoeff, ← pow_succ, tsub_add_cancel_of_le hp]
+  · rw [h₂, leadingCoeff, ← pow_succ', tsub_add_cancel_of_le hp]
   · rw [mul_assoc, ← pow_add, tsub_add_cancel_of_le]
     apply Nat.le_sub_one_of_lt
     rw [lt_iff_le_and_ne]
@@ -613,14 +611,14 @@ theorem leadingCoeff_smul_normalizeScaleRoots (p : R[X]) :
     p.leadingCoeff • normalizeScaleRoots p = scaleRoots p p.leadingCoeff := by
   ext
   simp only [coeff_scaleRoots, normalizeScaleRoots, coeff_monomial, coeff_smul, Finset.smul_sum,
-    Ne.def, Finset.sum_ite_eq', finset_sum_coeff, smul_ite, smul_zero, mem_support_iff]
-  -- porting note: added the following `simp only`
+    Ne, Finset.sum_ite_eq', finset_sum_coeff, smul_ite, smul_zero, mem_support_iff]
+  -- Porting note: added the following `simp only`
   simp only [ge_iff_le, tsub_le_iff_right, smul_eq_mul, mul_ite, mul_one, mul_zero,
     Finset.sum_ite_eq', mem_support_iff, ne_eq, ite_not]
   split_ifs with h₁ h₂
   · simp [*]
   · simp [*]
-  · rw [mul_comm, mul_assoc, ← pow_succ', tsub_right_comm,
+  · rw [mul_comm, mul_assoc, ← pow_succ, tsub_right_comm,
       tsub_add_cancel_of_le]
     rw [Nat.succ_le_iff]
     exact tsub_pos_of_lt (lt_of_le_of_ne (le_natDegree_of_ne_zero h₁) h₂)
@@ -630,7 +628,7 @@ theorem normalizeScaleRoots_support : (normalizeScaleRoots p).support ≤ p.supp
   intro x
   contrapose
   simp only [not_mem_support_iff, normalizeScaleRoots, finset_sum_coeff, coeff_monomial,
-    Finset.sum_ite_eq', mem_support_iff, Ne.def, Classical.not_not, ite_eq_right_iff]
+    Finset.sum_ite_eq', mem_support_iff, Ne, Classical.not_not, ite_eq_right_iff]
   intro h₁ h₂
   exact (h₂ h₁).elim
 #align normalize_scale_roots_support normalizeScaleRoots_support
@@ -722,9 +720,7 @@ theorem algebraMap_injective (A R B : Type*) [CommRing R] [CommSemiring A] [Comm
   algebraMap_injective' R
 
 variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B]
-
 variable [Algebra R B] [Algebra A B] [IsIntegralClosure A R B]
-
 variable (R B)
 
 protected theorem isIntegral [Algebra R A] [IsScalarTower R A B] (x : A) : IsIntegral R x :=
@@ -790,7 +786,6 @@ section lift
 variable (B) {S : Type*} [CommRing S] [Algebra R S]
 -- split from above, since otherwise it does not synthesize `Semiring S`
 variable [Algebra S B] [IsScalarTower R S B]
-
 variable [Algebra R A] [IsScalarTower R A B] (h : Algebra.IsIntegral R S)
 
 /-- If `B / S / R` is a tower of ring extensions where `S` is integral over `R`,
@@ -815,7 +810,6 @@ section Equiv
 
 variable (R B) (A' : Type*) [CommRing A']
 variable [Algebra A' B] [IsIntegralClosure A' R B]
-
 variable [Algebra R A] [Algebra R A'] [IsScalarTower R A B] [IsScalarTower R A' B]
 
 /-- Integral closures are all isomorphic to each other. -/
@@ -841,11 +835,8 @@ section Algebra
 open Algebra
 
 variable {R A B S T : Type*}
-
 variable [CommRing R] [CommRing A] [Ring B] [CommRing S] [CommRing T]
-
 variable [Algebra A B] [Algebra R B] (f : R →+* S) (g : S →+* T)
-
 variable [Algebra R A] [IsScalarTower R A B]
 
 /-- If A is an R-algebra all of whose elements are integral over R,

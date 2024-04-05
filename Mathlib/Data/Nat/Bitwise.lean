@@ -5,8 +5,8 @@ Authors: Markus Himmel, Alex Keizer
 -/
 import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Bits
-import Mathlib.Algebra.GroupPower.Order
-import Mathlib.Tactic.Set
+import Mathlib.Order.Basic
+import Mathlib.Tactic.Common
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
 
@@ -66,7 +66,7 @@ lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
     bitwise f n m = bit (f (bodd n) (bodd m)) (bitwise f (n / 2) (m / 2)) := by
   conv_lhs => unfold bitwise
   have mod_two_iff_bod x : (x % 2 = 1 : Bool) = bodd x := by
-    simp [mod_two_of_bodd, cond]; cases bodd x <;> rfl
+    simp only [mod_two_of_bodd, cond]; cases bodd x <;> rfl
   simp only [hn, hm, mod_two_iff_bod, ite_false, bit, bit1, bit0, Bool.cond_eq_ite]
   split_ifs <;> rfl
 
@@ -82,18 +82,23 @@ theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n →
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   conv_lhs => unfold bitwise
-  simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, Bool.cond_eq_ite]
+  -- Adaptation note: nightly-2024-03-16: simp was
+  -- simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, Bool.cond_eq_ite]
+  simp only [bit, ite_apply, bit1, bit0, Bool.cond_eq_ite]
   have h1 x :     (x + x) % 2 = 0 := by rw [← two_mul, mul_comm]; apply mul_mod_left
   have h2 x : (x + x + 1) % 2 = 1 := by rw [← two_mul, add_comm]; apply add_mul_mod_self_left
-  have h3 x :     (x + x) / 2 = x := by rw [← two_mul, mul_comm]; apply mul_div_left _ zero_lt_two
-  have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]; rfl
+  have h3 x :     (x + x) / 2 = x := by omega
+  have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]
   cases a <;> cases b <;> simp [h1, h2, h3, h4] <;> split_ifs
     <;> simp_all (config := {decide := true})
 #align nat.bitwise_bit Nat.bitwise_bit
 
 lemma bit_mod_two (a : Bool) (x : ℕ) :
     bit a x % 2 = if a then 1 else 0 := by
-  simp (config := { unfoldPartialApp := true }) [bit, bit0, bit1, Bool.cond_eq_ite, ← mul_two]
+  -- Adaptation note: nightly-2024-03-16: simp was
+  -- simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, ← mul_two,
+  --   Bool.cond_eq_ite]
+  simp only [bit, ite_apply, bit1, bit0, ← mul_two, Bool.cond_eq_ite]
   split_ifs <;> simp [Nat.add_mod]
 
 @[simp]
@@ -241,9 +246,9 @@ theorem exists_most_significant_bit {n : ℕ} (h : n ≠ 0) :
 theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : testBit m i = true)
     (hnm : ∀ j, i < j → testBit n j = testBit m j) : n < m := by
   induction' n using Nat.binaryRec with b n hn' generalizing i m
-  · contrapose! hm
-    rw [le_zero_iff] at hm
-    simp [hm]
+  · rw [Nat.pos_iff_ne_zero]
+    rintro rfl
+    simp at hm
   induction' m using Nat.binaryRec with b' m hm' generalizing i
   · exact False.elim (Bool.false_ne_true ((zero_testBit i).symm.trans hm))
   by_cases hi : i = 0
@@ -253,12 +258,12 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
       eq_of_testBit_eq fun i => by convert hnm (i + 1) (Nat.zero_lt_succ _) using 1
       <;> rw [testBit_bit_succ]
     rw [hn, hm, this, bit_false, bit_true, bit0_val, bit1_val]
-    exact lt_add_one _
+    exact Nat.lt_succ_self _
   · obtain ⟨i', rfl⟩ := exists_eq_succ_of_ne_zero hi
     simp only [testBit_bit_succ] at hn hm
     have := hn' _ hn hm fun j hj => by
       convert hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_bit_succ]
-    have this' : 2 * n < 2 * m := Nat.mul_lt_mul' (le_refl _) this two_pos
+    have this' : 2 * n < 2 * m := Nat.mul_lt_mul' (le_refl _) this Nat.two_pos
     cases b <;> cases b'
     <;> simp only [bit_false, bit_true, bit0_val n, bit1_val n, bit0_val m, bit1_val m]
     · exact this'
@@ -271,7 +276,7 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
 
 @[simp]
 theorem testBit_two_pow_self (n : ℕ) : testBit (2 ^ n) n = true := by
-  rw [testBit, shiftRight_eq_div_pow, Nat.div_self (pow_pos (α := ℕ) zero_lt_two n)]
+  rw [testBit, shiftRight_eq_div_pow, Nat.div_self (Nat.pow_pos Nat.zero_lt_two)]
   simp
 #align nat.test_bit_two_pow_self Nat.testBit_two_pow_self
 
@@ -280,8 +285,8 @@ theorem testBit_two_pow_of_ne {n m : ℕ} (hm : n ≠ m) : testBit (2 ^ n) m = f
   cases' hm.lt_or_lt with hm hm
   · rw [Nat.div_eq_of_lt]
     · simp
-    · exact pow_lt_pow_right one_lt_two hm
-  · rw [Nat.pow_div hm.le zero_lt_two, ← tsub_add_cancel_of_le (succ_le_of_lt <| tsub_pos_of_lt hm)]
+    · exact Nat.pow_lt_pow_right Nat.one_lt_two hm
+  · rw [Nat.pow_div hm.le Nat.two_pos, ← Nat.sub_add_cancel (succ_le_of_lt <| Nat.sub_pos_of_lt hm)]
     -- Porting note: XXX why does this make it work?
     rw [(rfl : succ 0 = 1)]
     simp [pow_succ, and_one_is_mod, mul_mod_left]
@@ -325,7 +330,7 @@ theorem land_comm (n m : ℕ) : n &&& m = m &&& n :=
   bitwise_comm Bool.and_comm n m
 #align nat.land_comm Nat.land_comm
 
-theorem xor_comm (n m : ℕ) : n ^^^ m = m ^^^ n :=
+protected lemma xor_comm (n m : ℕ) : n ^^^ m = m ^^^ n :=
   bitwise_comm (Bool.bne_eq_xor ▸ Bool.xor_comm) n m
 #align nat.lxor_comm Nat.xor_comm
 
@@ -366,7 +371,7 @@ macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
   -- This is necessary because these are simp lemmas in mathlib
   <;> simp [hn, Bool.or_assoc, Bool.and_assoc, Bool.bne_eq_xor]))
 
-theorem xor_assoc (n m k : ℕ) : (n ^^^ m) ^^^ k = n ^^^ (m ^^^ k) := by bitwise_assoc_tac
+protected lemma xor_assoc (n m k : ℕ) : (n ^^^ m) ^^^ k = n ^^^ (m ^^^ k) := by bitwise_assoc_tac
 #align nat.lxor_assoc Nat.xor_assoc
 
 theorem land_assoc (n m k : ℕ) : (n &&& m) &&& k = n &&& (m &&& k) := by bitwise_assoc_tac
@@ -381,12 +386,12 @@ theorem xor_self (n : ℕ) : n ^^^ n = 0 :=
 #align nat.lxor_self Nat.xor_self
 
 -- These lemmas match `mul_inv_cancel_right` and `mul_inv_cancel_left`.
-theorem lxor_cancel_right (n m : ℕ) : (m ^^^ n) ^^^ n = m := by
-  rw [xor_assoc, xor_self, xor_zero]
-#align nat.lxor_cancel_right Nat.lxor_cancel_right
+theorem xor_cancel_right (n m : ℕ) : (m ^^^ n) ^^^ n = m := by
+  rw [Nat.xor_assoc, xor_self, xor_zero]
+#align nat.lxor_cancel_right Nat.xor_cancel_right
 
 theorem xor_cancel_left (n m : ℕ) : n ^^^ (n ^^^ m) = m := by
-  rw [← xor_assoc, xor_self, zero_xor]
+  rw [← Nat.xor_assoc, xor_self, zero_xor]
 #align nat.lxor_cancel_left Nat.xor_cancel_left
 
 theorem xor_right_injective {n : ℕ} : Function.Injective (HXor.hXor n : ℕ → ℕ) := fun m m' h => by
@@ -395,7 +400,7 @@ theorem xor_right_injective {n : ℕ} : Function.Injective (HXor.hXor n : ℕ �
 
 theorem xor_left_injective {n : ℕ} : Function.Injective fun m => m ^^^ n :=
   fun m m' (h : m ^^^ n = m' ^^^ n) => by
-  rw [← lxor_cancel_right n m, ← lxor_cancel_right n m', h]
+  rw [← xor_cancel_right n m, ← xor_cancel_right n m', h]
 #align nat.lxor_left_injective Nat.xor_left_injective
 
 @[simp]
@@ -424,15 +429,15 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ≠ b ^^^ c) :
   have hab : a ^^^ b = c ^^^ v := by
     rw [hv]
     conv_rhs =>
-      rw [xor_comm]
-      simp [xor_assoc]
+      rw [Nat.xor_comm]
+      simp [Nat.xor_assoc]
   have hac : a ^^^ c = b ^^^ v := by
     rw [hv]
     conv_rhs =>
       right
-      rw [← xor_comm]
-    rw [← xor_assoc, ← xor_assoc, xor_self, zero_xor, xor_comm]
-  have hbc : b ^^^ c = a ^^^ v := by simp [hv, ← xor_assoc]
+      rw [← Nat.xor_comm]
+    rw [← Nat.xor_assoc, ← Nat.xor_assoc, xor_self, zero_xor, Nat.xor_comm]
+  have hbc : b ^^^ c = a ^^^ v := by simp [hv, ← Nat.xor_assoc]
   -- If `i` is the position of the most significant bit of `v`, then at least one of `a`, `b`, `c`
   -- has a one bit at position `i`.
   obtain ⟨i, ⟨hi, hi'⟩⟩ := exists_most_significant_bit (xor_ne_zero.2 h)
@@ -447,14 +452,7 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ≠ b ^^^ c) :
   on_goal 2 => right; left; rw [hac]
   on_goal 3 => right; right; rw [hab]
   all_goals
-    exact lt_of_testBit i (by
-      -- Porting note: this was originally `simp [h, hi]`
-      rw [Nat.testBit_xor, h, Bool.xor, Bool.true_xor, hi]
-      rfl
-    ) h fun j hj => by
-      -- Porting note: this was originally `simp [hi' _ hj]`
-      rw [Nat.testBit_xor, hi' _ hj, Bool.xor, Bool.xor_false, eq_self_iff_true]
-      trivial
+    exact lt_of_testBit i (by simp [h, hi]) h fun j hj => by simp [hi' _ hj]
 #align nat.lxor_trichotomy Nat.xor_trichotomy
 
 theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b < c :=
@@ -462,8 +460,7 @@ theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b <
 #align nat.lt_lxor_cases Nat.lt_xor_cases
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
-  rw [pow_succ', ← bit0_eq_two_mul]
-  cases b <;> simp
+  cases b <;> simp [bit0, bit1] <;> omega
 
 /-- If `x` and `y` fit within `n` bits, then the result of any bitwise operation on `x` and `y` also
 fits within `n` bits -/
@@ -483,12 +480,12 @@ theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy : y < 2 ^ n) :
       cases n <;> simp_all
 
 lemma shiftLeft_lt {x n m : ℕ} (h : x < 2 ^ n) : x <<< m < 2 ^ (n + m) := by
-  simp only [pow_add, shiftLeft_eq, mul_lt_mul_right (Nat.two_pow_pos _), h]
+  simp only [Nat.pow_add, shiftLeft_eq, Nat.mul_lt_mul_right (Nat.two_pow_pos _), h]
 
 /-- Note that the LHS is the expression used within `Std.BitVec.append`, hence the name. -/
 lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy : y < 2 ^ m) : y <<< n ||| x < 2 ^ (n + m) := by
   apply bitwise_lt
   · rw [add_comm]; apply shiftLeft_lt hy
-  · apply lt_of_lt_of_le hx <| pow_le_pow_right (le_succ _) (le_add_right _ _)
+  · apply lt_of_lt_of_le hx <| Nat.pow_le_pow_right (le_succ _) (le_add_right _ _)
 
 end Nat

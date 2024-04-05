@@ -90,13 +90,13 @@ structure LaxMonoidalFunctor extends C ⥤ D where
     by aesop_cat
 #align category_theory.lax_monoidal_functor CategoryTheory.LaxMonoidalFunctor
 
--- Porting note: todo: remove this configuration and use the default configuration.
+-- Porting note (#11215): TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
 -- See also `initialize_simps_projections MonoidalFunctor` below.
 -- This may require waiting on https://github.com/leanprover-community/mathlib4/pull/2936
 initialize_simps_projections LaxMonoidalFunctor (+toFunctor, -obj, -map)
 
---Porting note: was `[simp, reassoc.1]`
+-- Porting note: was `[simp, reassoc.1]`
 attribute [reassoc (attr := simp)] LaxMonoidalFunctor.μ_natural_left
 attribute [reassoc (attr := simp)] LaxMonoidalFunctor.μ_natural_right
 
@@ -104,7 +104,7 @@ attribute [simp] LaxMonoidalFunctor.left_unitality
 
 attribute [simp] LaxMonoidalFunctor.right_unitality
 
---Porting note: was `[simp, reassoc.1]`
+-- Porting note: was `[simp, reassoc.1]`
 attribute [reassoc (attr := simp)] LaxMonoidalFunctor.associativity
 
 -- When `rewrite_search` lands, add @[search] attributes to
@@ -165,7 +165,7 @@ def LaxMonoidalFunctor.ofTensorHom (F : C ⥤ D)
   right_unitality := fun X => by
     simp_rw [← id_tensorHom, right_unitality]
 
---Porting note: was `[simp, reassoc.1]`
+-- Porting note: was `[simp, reassoc.1]`
 @[reassoc (attr := simp)]
 theorem LaxMonoidalFunctor.left_unitality_inv (F : LaxMonoidalFunctor C D) (X : C) :
     (λ_ (F.obj X)).inv ≫ F.ε ▷ F.obj X ≫ F.μ (𝟙_ C) X = F.map (λ_ X).inv := by
@@ -173,7 +173,7 @@ theorem LaxMonoidalFunctor.left_unitality_inv (F : LaxMonoidalFunctor C D) (X : 
     Iso.hom_inv_id, F.toFunctor.map_id, comp_id]
 #align category_theory.lax_monoidal_functor.left_unitality_inv CategoryTheory.LaxMonoidalFunctor.left_unitality_inv
 
---Porting note: was `[simp, reassoc.1]`
+-- Porting note: was `[simp, reassoc.1]`
 @[reassoc (attr := simp)]
 theorem LaxMonoidalFunctor.right_unitality_inv (F : LaxMonoidalFunctor C D) (X : C) :
     (ρ_ (F.obj X)).inv ≫ F.obj X ◁ F.ε ≫ F.μ X (𝟙_ C) = F.map (ρ_ X).inv := by
@@ -181,7 +181,7 @@ theorem LaxMonoidalFunctor.right_unitality_inv (F : LaxMonoidalFunctor C D) (X :
     Iso.hom_inv_id, F.toFunctor.map_id, comp_id]
 #align category_theory.lax_monoidal_functor.right_unitality_inv CategoryTheory.LaxMonoidalFunctor.right_unitality_inv
 
---Porting note: was `[simp, reassoc.1]`
+-- Porting note: was `[simp, reassoc.1]`
 @[reassoc (attr := simp)]
 theorem LaxMonoidalFunctor.associativity_inv (F : LaxMonoidalFunctor C D) (X Y Z : C) :
     F.obj X ◁ F.μ Y Z ≫ F.μ X (Y ⊗ Z) ≫ F.map (α_ X Y Z).inv =
@@ -249,9 +249,7 @@ namespace MonoidalFunctor
 section
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
-
 variable (F : MonoidalFunctor.{v₁, v₂} C D)
 
 @[reassoc]
@@ -304,7 +302,7 @@ theorem μIso_hom (X Y : C) : (F.μIso X Y).hom = F.μ X Y :=
   rfl
 #align category_theory.monoidal_functor.μ_iso_hom CategoryTheory.MonoidalFunctor.μIso_hom
 
---Porting note: was `[simp, reassoc.1]`
+-- Porting note: was `[simp, reassoc.1]`
 @[reassoc (attr := simp)]
 theorem μ_inv_hom_id (X Y : C) : (F.μIso X Y).inv ≫ F.μ X Y = 𝟙 _ :=
   (F.μIso X Y).inv_hom_id
@@ -320,7 +318,7 @@ theorem εIso_hom : F.εIso.hom = F.ε :=
   rfl
 #align category_theory.monoidal_functor.ε_iso_hom CategoryTheory.MonoidalFunctor.εIso_hom
 
---Porting note: was `[simp, reassoc.1]`
+-- Porting note: was `[simp, reassoc.1]`
 @[reassoc (attr := simp)]
 theorem ε_inv_hom_id : F.εIso.inv ≫ F.ε = 𝟙 _ :=
   F.εIso.inv_hom_id
@@ -367,9 +365,7 @@ end
 end MonoidalFunctor
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
-
 variable {E : Type u₃} [Category.{v₃} E] [MonoidalCategory.{v₃} E]
 
 namespace LaxMonoidalFunctor
@@ -407,7 +403,6 @@ namespace LaxMonoidalFunctor
 universe v₀ u₀
 
 variable {B : Type u₀} [Category.{v₀} B] [MonoidalCategory.{v₀} B]
-
 variable (F : LaxMonoidalFunctor.{v₀, v₁} B C) (G : LaxMonoidalFunctor.{v₂, v₃} D E)
 
 attribute [local simp] μ_natural associativity left_unitality right_unitality
@@ -495,7 +490,6 @@ namespace MonoidalFunctor
 universe v₀ u₀
 
 variable {B : Type u₀} [Category.{v₀} B] [MonoidalCategory.{v₀} B]
-
 variable (F : MonoidalFunctor.{v₀, v₁} B C) (G : MonoidalFunctor.{v₂, v₃} D E)
 
 /-- The cartesian product of two monoidal functors is monoidal. -/

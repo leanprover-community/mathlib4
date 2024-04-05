@@ -99,7 +99,7 @@ theorem isPreconnected_of_forall {s : Set α} (x : α)
   have xs : x ∈ s := by
     rcases H y ys with ⟨t, ts, xt, -, -⟩
     exact ts xt
-  -- porting note: todo: use `wlog xu : x ∈ u := hs xs using u v y z, v u z y`
+  -- Porting note (#11215): TODO: use `wlog xu : x ∈ u := hs xs using u v y z, v u z y`
   cases hs xs with
   | inl xu =>
     rcases H y ys with ⟨t, ts, xt, yt, ht⟩
@@ -130,7 +130,7 @@ theorem isPreconnected_sUnion (x : α) (c : Set (Set α)) (H1 : ∀ s ∈ c, x �
 
 theorem isPreconnected_iUnion {ι : Sort*} {s : ι → Set α} (h₁ : (⋂ i, s i).Nonempty)
     (h₂ : ∀ i, IsPreconnected (s i)) : IsPreconnected (⋃ i, s i) :=
-  Exists.elim h₁ fun f hf => isPreconnected_sUnion f _ hf (forall_range_iff.2 h₂)
+  Exists.elim h₁ fun f hf => isPreconnected_sUnion f _ hf (forall_mem_range.2 h₂)
 #align is_preconnected_Union isPreconnected_iUnion
 
 theorem IsPreconnected.union (x : α) {s t : Set α} (H1 : x ∈ s) (H2 : x ∈ t) (H3 : IsPreconnected s)
@@ -318,7 +318,7 @@ protected theorem IsPreconnected.image [TopologicalSpace β] {s : Set α} (H : I
   replace huv : s ⊆ u' ∪ v' := by
     rw [image_subset_iff, preimage_union] at huv
     replace huv := subset_inter huv Subset.rfl
-    rw [inter_distrib_right, u'_eq, v'_eq, ← inter_distrib_right] at huv
+    rw [union_inter_distrib_right, u'_eq, v'_eq, ← union_inter_distrib_right] at huv
     exact (subset_inter_iff.1 huv).1
   -- Now `s ⊆ u' ∪ v'`, so we can apply `‹IsPreconnected s›`
   obtain ⟨z, hz⟩ : (s ∩ (u' ∩ v')).Nonempty := by
@@ -437,7 +437,7 @@ theorem IsPreconnected.subset_right_of_subset_union (hu : IsOpen u) (hv : IsOpen
   hs.subset_left_of_subset_union hv hu huv.symm (union_comm u v ▸ hsuv) hsv
 #align is_preconnected.subset_right_of_subset_union IsPreconnected.subset_right_of_subset_union
 
--- porting note: moved up
+-- Porting note: moved up
 /-- Preconnected sets are either contained in or disjoint to any given clopen set. -/
 theorem IsPreconnected.subset_isClopen {s t : Set α} (hs : IsPreconnected s) (ht : IsClopen t)
     (hne : (s ∩ t).Nonempty) : s ⊆ t :=
@@ -938,7 +938,7 @@ theorem frontier_eq_empty_iff [PreconnectedSpace α] {s : Set α} :
 
 theorem nonempty_frontier_iff [PreconnectedSpace α] {s : Set α} :
     (frontier s).Nonempty ↔ s.Nonempty ∧ s ≠ univ := by
-  simp only [nonempty_iff_ne_empty, Ne.def, frontier_eq_empty_iff, not_or]
+  simp only [nonempty_iff_ne_empty, Ne, frontier_eq_empty_iff, not_or]
 #align nonempty_frontier_iff nonempty_frontier_iff
 
 theorem Subtype.preconnectedSpace {s : Set α} (h : IsPreconnected s) : PreconnectedSpace s where
@@ -1035,11 +1035,9 @@ theorem isPreconnected_iff_subset_of_disjoint {s : Set α} :
     have hyu : y ∈ u := or_iff_not_imp_right.mp (hs hys) hyv
     exact h ⟨y, hys, hyu⟩ ⟨x, hxs, hxv⟩
   · intro u v hu hv hs hsu hsv
-    rw [nonempty_iff_ne_empty]
-    intro H
-    specialize h u v hu hv hs H
-    contrapose H
-    apply Nonempty.ne_empty
+    by_contra H
+    specialize h u v hu hv hs (Set.not_nonempty_iff_eq_empty.mp H)
+    apply H
     cases' h with h h
     · rcases hsv with ⟨x, hxs, hxv⟩
       exact ⟨x, hxs, ⟨h hxs, hxv⟩⟩
@@ -1071,7 +1069,7 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
     simpa [*, or_imp, forall_and] using h {u, v}
 #align is_connected_iff_sUnion_disjoint_open isConnected_iff_sUnion_disjoint_open
 
--- porting note: `IsPreconnected.subset_isClopen` moved up from here
+-- Porting note: `IsPreconnected.subset_isClopen` moved up from here
 
 /-- Preconnected sets are either contained in or disjoint to any given clopen set. -/
 theorem disjoint_or_subset_of_isClopen {s t : Set α} (hs : IsPreconnected s) (ht : IsClopen t) :
@@ -1097,11 +1095,9 @@ theorem isPreconnected_iff_subset_of_disjoint_closed :
     exact h ⟨y, hys, hyu⟩ ⟨x, hxs, hxv⟩
   · rw [isPreconnected_closed_iff]
     intro u v hu hv hs hsu hsv
-    rw [nonempty_iff_ne_empty]
-    intro H
-    specialize h u v hu hv hs H
-    contrapose H
-    apply Nonempty.ne_empty
+    by_contra H
+    specialize h u v hu hv hs (Set.not_nonempty_iff_eq_empty.mp H)
+    apply H
     cases' h with h h
     · rcases hsv with ⟨x, hxs, hxv⟩
       exact ⟨x, hxs, ⟨h hxs, hxv⟩⟩
@@ -1121,7 +1117,7 @@ theorem isPreconnected_iff_subset_of_fully_disjoint_closed {s : Set α} (hs : Is
   rw [subset_inter_iff, subset_inter_iff] at H1
   simp only [Subset.refl, and_true] at H1
   apply H1 (hu.inter hs) (hv.inter hs)
-  · rw [← inter_distrib_right]
+  · rw [← union_inter_distrib_right]
     exact subset_inter hss Subset.rfl
   · rwa [disjoint_iff_inter_eq_empty, ← inter_inter_distrib_right, inter_comm]
 #align is_preconnected_iff_subset_of_fully_disjoint_closed isPreconnected_iff_subset_of_fully_disjoint_closed

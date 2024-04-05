@@ -251,7 +251,6 @@ end
 namespace Functor
 
 -- variable {C}
-
 variable {D : I → Type u₁} [∀ i, Category.{v₁} (D i)]
 
 /-- Assemble an `I`-indexed family of functors into a functor between the sigma types.
@@ -265,7 +264,6 @@ end Functor
 namespace natTrans
 
 variable {D : I → Type u₁} [∀ i, Category.{v₁} (D i)]
-
 variable {F G : ∀ i, C i ⥤ D i}
 
 /-- Assemble an `I`-indexed family of natural transformations into a single natural transformation.

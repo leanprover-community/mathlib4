@@ -201,44 +201,21 @@ theorem add_im (z w : ℂ) : (z + w).im = z.im + w.im :=
   rfl
 #align complex.add_im Complex.add_im
 
-section
-set_option linter.deprecated false
-@[simp]
-theorem bit0_re (z : ℂ) : (bit0 z).re = bit0 z.re :=
-  rfl
-#align complex.bit0_re Complex.bit0_re
-
-@[simp]
-theorem bit1_re (z : ℂ) : (bit1 z).re = bit1 z.re :=
-  rfl
-#align complex.bit1_re Complex.bit1_re
-
-@[simp]
-theorem bit0_im (z : ℂ) : (bit0 z).im = bit0 z.im :=
-  Eq.refl _
-#align complex.bit0_im Complex.bit0_im
-
-@[simp]
-theorem bit1_im (z : ℂ) : (bit1 z).im = bit0 z.im :=
-  add_zero _
-#align complex.bit1_im Complex.bit1_im
+-- replaced by `re_ofNat`
+#noalign complex.bit0_re
+#noalign complex.bit1_re
+-- replaced by `im_ofNat`
+#noalign complex.bit0_im
+#noalign complex.bit1_im
 
 @[simp, norm_cast]
 theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : ℂ) = r + s :=
   ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_add Complex.ofReal_add
 
-@[simp, norm_cast]
-theorem ofReal_bit0 (r : ℝ) : ((bit0 r : ℝ) : ℂ) = bit0 (r : ℂ) :=
-  ext_iff.2 <| by simp [bit0]
-#align complex.of_real_bit0 Complex.ofReal_bit0
-
-@[simp, norm_cast]
-theorem ofReal_bit1 (r : ℝ) : ((bit1 r : ℝ) : ℂ) = bit1 (r : ℂ) :=
-  ext_iff.2 <| by simp [bit1]
-#align complex.of_real_bit1 Complex.ofReal_bit1
-
-end
+-- replaced by `Complex.ofReal_ofNat`
+#noalign complex.of_real_bit0
+#noalign complex.of_real_bit1
 
 instance : Neg ℂ :=
   ⟨fun z => ⟨-z.re, -z.im⟩⟩
@@ -368,7 +345,7 @@ defined in `Data.Complex.Module`. -/
 instance : Nontrivial ℂ :=
   pullback_nonzero re rfl rfl
 
--- porting note: moved from `Module/Data/Complex/Basic.lean`
+-- Porting note: moved from `Module/Data/Complex/Basic.lean`
 section SMul
 
 variable {R : Type*} [SMul R ℝ]
@@ -460,7 +437,7 @@ instance : Ring ℂ := by infer_instance
 instance : CommSemiring ℂ :=
   inferInstance
 
--- porting note: added due to changes in typeclass search order
+-- Porting note: added due to changes in typeclass search order
 /-- This shortcut instance ensures we do not find `Semiring` via the noncomputable
 `Complex.field` instance. -/
 instance : Semiring ℂ :=
@@ -502,7 +479,7 @@ theorem I_pow_bit1 (n : ℕ) : I ^ bit1 n = (-1 : ℂ) ^ n * I := by rw [pow_bit
 set_option linter.uppercaseLean3 false in
 #align complex.I_pow_bit1 Complex.I_pow_bit1
 
---Porting note: new theorem
+-- Porting note (#10756): new theorem
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
@@ -556,19 +533,17 @@ theorem conj_I : conj I = -I :=
   set_option linter.uppercaseLean3 false in
 #align complex.conj_I Complex.conj_I
 
+#noalign complex.conj_bit0
+#noalign complex.conj_bit1
 
-section
-set_option linter.deprecated false
-theorem conj_bit0 (z : ℂ) : conj (bit0 z) = bit0 (conj z) :=
-  ext_iff.2 <| by simp [bit0]
-#align complex.conj_bit0 Complex.conj_bit0
+theorem conj_nat_cast (n : ℕ) : conj (n : ℂ) = n := map_natCast _ _
 
-theorem conj_bit1 (z : ℂ) : conj (bit1 z) = bit1 (conj z) :=
-  ext_iff.2 <| by simp [bit0]
-#align complex.conj_bit1 Complex.conj_bit1
-end
+-- See note [no_index around OfNat.ofNat]
+theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=
+  map_ofNat _ _
+
 -- @[simp]
-/- Porting note: `simp` attribute removed as the result could be proved
+/- Porting note (#11119): `simp` attribute removed as the result could be proved
 by `simp only [@map_neg, Complex.conj_i, @neg_neg]`
 -/
 theorem conj_neg_I : conj (-I) = I :=
@@ -590,7 +565,7 @@ theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
     ext rfl (neg_eq_iff_add_eq_zero.mpr (add_self_eq_zero.mpr h))⟩
 #align complex.conj_eq_iff_im Complex.conj_eq_iff_im
 
--- `simpNF` complains about this being provable by `IsROrC.star_def` even
+-- `simpNF` complains about this being provable by `RCLike.star_def` even
 -- though it's not imported by this file.
 -- Porting note: linter `simpNF` not found
 @[simp]
@@ -652,14 +627,14 @@ theorem normSq_eq_conj_mul_self {z : ℂ} : (normSq z : ℂ) = conj z * z := by
 #align complex.norm_sq_eq_conj_mul_self Complex.normSq_eq_conj_mul_self
 
 -- @[simp]
-/- Porting note: `simp` attribute removed as linter reports this can be proved
+/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_zero]` -/
 theorem normSq_zero : normSq 0 = 0 :=
   normSq.map_zero
 #align complex.norm_sq_zero Complex.normSq_zero
 
 -- @[simp]
-/- Porting note: `simp` attribute removed as linter reports this can be proved
+/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_one]` -/
 theorem normSq_one : normSq 1 = 1 :=
   normSq.map_one
@@ -903,14 +878,14 @@ set_option linter.uppercaseLean3 false in
 #align complex.inv_I Complex.inv_I
 
 -- @[simp]
-/- Porting note: `simp` attribute removed as linter reports this can be proved
+/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_inv₀]` -/
 theorem normSq_inv (z : ℂ) : normSq z⁻¹ = (normSq z)⁻¹ :=
   map_inv₀ normSq z
 #align complex.norm_sq_inv Complex.normSq_inv
 
 -- @[simp]
-/- Porting note: `simp` attribute removed as linter reports this can be proved
+/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_div₀]` -/
 theorem normSq_div (z w : ℂ) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
@@ -959,16 +934,13 @@ instance charZero : CharZero ℂ :=
 
 /-- A complex number `z` plus its conjugate `conj z` is `2` times its real part. -/
 theorem re_eq_add_conj (z : ℂ) : (z.re : ℂ) = (z + conj z) / 2 := by
-  have : (↑(↑2 : ℝ) : ℂ) = (2 : ℂ) := rfl
-  simp only [add_conj, ofReal_mul, ofReal_one, ofReal_bit0, this,
-    mul_div_cancel_left (z.re : ℂ) two_ne_zero]
+  simp only [add_conj, ofReal_mul, ofReal_ofNat, mul_div_cancel_left₀ (z.re : ℂ) two_ne_zero]
 #align complex.re_eq_add_conj Complex.re_eq_add_conj
 
 /-- A complex number `z` minus its conjugate `conj z` is `2i` times its imaginary part. -/
 theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
-  have : (↑2 : ℝ ) * I = 2 * I := rfl
-  simp only [sub_conj, ofReal_mul, ofReal_one, ofReal_bit0, mul_right_comm, this,
-    mul_div_cancel_left _ (mul_ne_zero two_ne_zero I_ne_zero : 2 * I ≠ 0)]
+  simp only [sub_conj, ofReal_mul, ofReal_ofNat, mul_right_comm,
+    mul_div_cancel_left₀ _ (mul_ne_zero two_ne_zero I_ne_zero : 2 * I ≠ 0)]
 #align complex.im_eq_sub_conj Complex.im_eq_sub_conj
 
 end Complex

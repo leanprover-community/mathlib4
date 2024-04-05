@@ -60,7 +60,7 @@ We define cardinal numbers as a quotient of types under the equivalence relation
   `Cardinal.{u} : Type (u + 1)` is the quotient of types in `Type u`.
   The operation `Cardinal.lift` lifts cardinal numbers to a higher level.
 * Cardinal arithmetic specifically for infinite cardinals (like `κ * κ = κ`) is in the file
-  `SetTheory/Cardinal/Ordinal.lean`.
+  `Mathlib/SetTheory/Cardinal/Ordinal.lean`.
 * There is an instance `Pow Cardinal`, but this will only fire if Lean already knows that both
   the base and the exponent live in the same universe. As a workaround, you can add
   ```
@@ -81,7 +81,8 @@ Cantor's theorem, König's theorem, Konig's theorem
 -/
 
 
-open Function Set Order BigOperators Classical
+open scoped Classical
+open Function Set Order BigOperators
 
 noncomputable section
 
@@ -529,15 +530,16 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   mul_comm := mul_comm'
   left_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.prodSumDistrib α β γ
   right_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumProdDistrib α β γ
+  nsmul := nsmulRec
   npow n c := c ^ (n : Cardinal)
   npow_zero := @power_zero
-  npow_succ n c := show c ^ (↑(n + 1) : Cardinal) = c * c ^ (↑n : Cardinal)
+  npow_succ n c := show c ^ (↑(n + 1) : Cardinal) = c ^ (↑n : Cardinal) * c
     by rw [Cardinal.cast_succ, power_add, power_one, mul_comm']
   natCast := (fun n => lift.{u} #(Fin n) : ℕ → Cardinal.{u})
   natCast_zero := rfl
   natCast_succ := Cardinal.cast_succ
 
-/-! Porting note: Deprecated section. Remove. -/
+/-! Porting note (#11229): Deprecated section. Remove. -/
 section deprecated
 set_option linter.deprecated false
 
@@ -617,7 +619,7 @@ theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v}
     mk_congr <| Equiv.ulift.trans (Equiv.prodCongr Equiv.ulift Equiv.ulift).symm
 #align cardinal.lift_mul Cardinal.lift_mul
 
-/-! Porting note: Deprecated section. Remove. -/
+/-! Porting note (#11229): Deprecated section. Remove. -/
 section deprecated
 set_option linter.deprecated false
 
@@ -705,7 +707,7 @@ instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
 instance : CommMonoidWithZero Cardinal.{u} :=
   { Cardinal.canonicallyOrderedCommSemiring with }
 
--- porting note: new
+-- Porting note: new
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoid Cardinal.{u} :=
   { Cardinal.canonicallyOrderedCommSemiring with }
@@ -766,13 +768,13 @@ end OrderProperties
 
 protected theorem lt_wf : @WellFounded Cardinal.{u} (· < ·) :=
   ⟨fun a =>
-    byContradiction fun h => by
+    by_contradiction fun h => by
       let ι := { c : Cardinal // ¬Acc (· < ·) c }
       let f : ι → Cardinal := Subtype.val
       haveI hι : Nonempty ι := ⟨⟨_, h⟩⟩
       obtain ⟨⟨c : Cardinal, hc : ¬Acc (· < ·) c⟩, ⟨h_1 : ∀ j, (f ⟨c, hc⟩).out ↪ (f j).out⟩⟩ :=
         Embedding.min_injective fun i => (f i).out
-      refine hc (Acc.intro _ fun j h' => byContradiction fun hj => h'.2 ?_)
+      refine hc (Acc.intro _ fun j h' => by_contradiction fun hj => h'.2 ?_)
       have : #_ ≤ #_ := ⟨h_1 ⟨j, hj⟩⟩
       simpa only [mk_out] using this⟩
 #align cardinal.lt_wf Cardinal.lt_wf
@@ -794,6 +796,19 @@ instance : ConditionallyCompleteLinearOrderBot Cardinal :=
 theorem sInf_empty : sInf (∅ : Set Cardinal.{u}) = 0 :=
   dif_neg Set.not_nonempty_empty
 #align cardinal.Inf_empty Cardinal.sInf_empty
+
+lemma sInf_eq_zero_iff {s : Set Cardinal} : sInf s = 0 ↔ s = ∅ ∨ ∃ a ∈ s, a = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rcases s.eq_empty_or_nonempty with rfl | hne
+    · exact Or.inl rfl
+    · exact Or.inr ⟨sInf s, csInf_mem hne, h⟩
+  · rcases h with rfl | ⟨a, ha, rfl⟩
+    · exact Cardinal.sInf_empty
+    · exact eq_bot_iff.2 (csInf_le' ha)
+
+lemma iInf_eq_zero_iff {ι : Sort*} {f : ι → Cardinal} :
+    (⨅ i, f i) = 0 ↔ IsEmpty ι ∨ ∃ i, f i = 0 := by
+  simp [iInf, sInf_eq_zero_iff]
 
 /-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
 instance : SuccOrder Cardinal :=
@@ -1431,11 +1446,11 @@ theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
   @mk_coe_finset _ s ▸ mk_set_le _
 #align cardinal.card_le_of_finset Cardinal.card_le_of_finset
 
--- porting note: was `simp`. LHS is not normal form.
+-- Porting note: was `simp`. LHS is not normal form.
 -- @[simp, norm_cast]
 @[norm_cast]
 theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) := by
-  induction n <;> simp [pow_succ', power_add, *, Pow.pow]
+  induction n <;> simp [pow_succ, power_add, *, Pow.pow]
 #align cardinal.nat_cast_pow Cardinal.natCast_pow
 
 -- porting note (#10618): simp can prove this
@@ -1472,6 +1487,17 @@ theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
   refine (add_one_le_succ _).antisymm (succ_le_of_lt ?_)
   rw [← Nat.cast_succ]
   exact natCast_lt.2 (Nat.lt_succ_self _)
+
+lemma succ_natCast (n : ℕ) : Order.succ (n : Cardinal) = n + 1 := by
+  rw [← Cardinal.nat_succ]
+  norm_cast
+
+lemma natCast_add_one_le_iff {n : ℕ} {c : Cardinal} : n + 1 ≤ c ↔ n < c := by
+  rw [← Order.succ_le_iff, Cardinal.succ_natCast]
+
+lemma two_le_iff_one_lt {c : Cardinal} : 2 ≤ c ↔ 1 < c := by
+  convert natCast_add_one_le_iff
+  norm_cast
 
 @[simp]
 theorem succ_zero : succ (0 : Cardinal) = 1 := by norm_cast
@@ -1535,6 +1561,10 @@ theorem lt_aleph0 {c : Cardinal} : c < ℵ₀ ↔ ∃ n : ℕ, c = n :=
     haveI := Infinite.to_subtype h'
     exact ⟨Infinite.natEmbedding S⟩, fun ⟨n, e⟩ => e.symm ▸ nat_lt_aleph0 _⟩
 #align cardinal.lt_aleph_0 Cardinal.lt_aleph0
+
+lemma succ_eq_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) : Order.succ c = c + 1 := by
+  obtain ⟨n, hn⟩ := Cardinal.lt_aleph0.mp h
+  rw [hn, succ_natCast]
 
 theorem aleph0_le {c : Cardinal} : ℵ₀ ≤ c ↔ ∀ n : ℕ, ↑n ≤ c :=
   ⟨fun h n => (nat_lt_aleph0 _).le.trans h, fun h =>
@@ -1740,6 +1770,10 @@ theorem denumerable_iff {α : Type u} : Nonempty (Denumerable α) ↔ #α = ℵ�
 theorem mk_denumerable (α : Type u) [Denumerable α] : #α = ℵ₀ :=
   denumerable_iff.1 ⟨‹_›⟩
 #align cardinal.mk_denumerable Cardinal.mk_denumerable
+
+theorem _root_.Set.countable_infinite_iff_nonempty_denumerable {α : Type*} {s : Set α} :
+    s.Countable ∧ s.Infinite ↔ Nonempty (Denumerable s) := by
+  rw [nonempty_denumerable_iff, ← Set.infinite_coe_iff, countable_coe_iff]
 
 @[simp]
 theorem aleph0_add_aleph0 : ℵ₀ + ℵ₀ = ℵ₀ :=
@@ -2073,6 +2107,11 @@ theorem mk_insert {α : Type u} {s : Set α} {a : α} (h : a ∉ s) :
   rw [← union_singleton, mk_union_of_disjoint, mk_singleton]
   simpa
 #align cardinal.mk_insert Cardinal.mk_insert
+
+theorem mk_insert_le {α : Type u} {s : Set α} {a : α} : #(insert a s : Set α) ≤ #s + 1 := by
+  by_cases h : a ∈ s
+  · simp only [insert_eq_of_mem h, self_le_add_right]
+  · rw [mk_insert h]
 
 theorem mk_sum_compl {α} (s : Set α) : #s + #(sᶜ : Set α) = #α :=
   mk_congr (Equiv.Set.sumCompl s)

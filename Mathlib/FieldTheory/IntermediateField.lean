@@ -301,7 +301,7 @@ def Subalgebra.toIntermediateField' (S : Subalgebra K L) (hS : IsField S) : Inte
     · rw [hx0, inv_zero]
       exact S.zero_mem
     letI hS' := hS.toField
-    obtain ⟨y, hy⟩ := hS.mul_inv_cancel (show (⟨x, hx⟩ : S) ≠ 0 from Subtype.ne_of_val_ne hx0)
+    obtain ⟨y, hy⟩ := hS.mul_inv_cancel (show (⟨x, hx⟩ : S) ≠ 0 from Subtype.coe_ne_coe.1 hx0)
     rw [Subtype.ext_iff, S.coe_mul, S.coe_one, Subtype.coe_mk, mul_eq_one_iff_inv_eq₀ hx0] at hy
     exact hy.symm ▸ y.2
 #align subalgebra.to_intermediate_field' Subalgebra.toIntermediateField'
@@ -634,7 +634,7 @@ def lift {F : IntermediateField K L} (E : IntermediateField K F) : IntermediateF
   E.map (val F)
 #align intermediate_field.lift IntermediateField.lift
 
---Porting note: change from `HasLiftT` to `CoeOut`
+-- Porting note: change from `HasLiftT` to `CoeOut`
 instance hasLift {F : IntermediateField K L} :
     CoeOut (IntermediateField K F) (IntermediateField K L) :=
   ⟨lift⟩

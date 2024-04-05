@@ -3,9 +3,9 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.RingTheory.MvPowerSeries.Basic
-import Mathlib.Data.Polynomial.Basic
-import Mathlib.Data.Polynomial.AlgebraMap
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 
@@ -496,7 +496,6 @@ set_option linter.uppercaseLean3 false in
 section Map
 
 variable {S : Type*} {T : Type*} [Semiring S] [Semiring T]
-
 variable (f : R →+* S) (g : S →+* T)
 
 /-- The map between formal power series induced by a map on the coefficients.-/
@@ -720,7 +719,7 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors R] (φ ψ : R⟦X⟧) 
       exact ne_of_lt this hij.symm
     contrapose! hne
     obtain rfl := le_antisymm hi hne
-    simpa [Ne.def, Prod.mk.inj_iff] using (add_right_inj m).mp hij
+    simpa [Ne, Prod.mk.inj_iff] using (add_right_inj m).mp hij
   · contrapose!
     intro
     rw [mem_antidiagonal]

@@ -38,7 +38,6 @@ open scoped MeasureTheory ENNReal NNReal BigOperators
 namespace ProbabilityTheory.kernel
 
 variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
-
 variable {κ : kernel α β} {f : α → β → ℝ≥0∞}
 
 /-- Kernel with image `(κ a).withDensity (f a)` if `Function.uncurry f` is measurable, and
@@ -150,7 +149,7 @@ lemma withDensity_add_right [IsSFiniteKernel κ] {f g : α → β → ℝ≥0∞
     withDensity κ (f + g) = withDensity κ f + withDensity κ g := by
   ext a
   rw [coeFn_add, Pi.add_apply, kernel.withDensity_apply _ hf, kernel.withDensity_apply _ hg,
-    kernel.withDensity_apply,Pi.add_apply, MeasureTheory.withDensity_add_right]
+    kernel.withDensity_apply, Pi.add_apply, MeasureTheory.withDensity_add_right]
   · exact hg.comp measurable_prod_mk_left
   · exact hf.add hg
 
@@ -226,7 +225,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
   have h_zero : ∀ a b n, ⌈(f a b).toReal⌉₊ ≤ n → fs n a b = 0 := by
     intro a b n hn
     suffices min (f a b) (n + 1) = f a b ∧ min (f a b) n = f a b by
-      simp_rw [this.1, this.2, tsub_self (f a b)]
+      simp_rw [fs, this.1, this.2, tsub_self (f a b)]
     exact ⟨min_eq_left ((h_le a b n hn).trans (le_add_of_nonneg_right zero_le_one)),
       min_eq_left (h_le a b n hn)⟩
   have hf_eq_tsum : f = ∑' n, fs n := by
@@ -245,7 +244,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
       induction' n with n hn
       · simp
       rw [Finset.sum_range_succ, hn]
-      simp
+      simp [fs]
     simp_rw [h_finset_sum]
     refine' (Filter.Tendsto.liminf_eq _).symm
     refine' Filter.Tendsto.congr' _ tendsto_const_nhds

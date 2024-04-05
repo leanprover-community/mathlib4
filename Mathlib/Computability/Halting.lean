@@ -66,7 +66,6 @@ end Nat.Partrec
 namespace Partrec
 
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 open Computable Part
@@ -168,7 +167,6 @@ theorem ComputablePred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : Com
 namespace ComputablePred
 
 variable {α : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable σ]
 
 open Nat.Partrec (Code)
@@ -203,19 +201,12 @@ theorem to_re {p : α → Prop} (hp : ComputablePred p) : RePred p := by
 /-- **Rice's Theorem** -/
 theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C) {f g} (hf : Nat.Partrec f)
     (hg : Nat.Partrec g) (fC : f ∈ C) : g ∈ C := by
-  cases' h with _ h; skip
+  cases' h with _ h
   obtain ⟨c, e⟩ :=
     fixed_point₂
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂
           ((Partrec.nat_iff.2 hf).comp snd).to₂).to₂
-  simp? at e says simp only [Bool.cond_decide] at e
-  by_cases H : eval c ∈ C
-  · simp only [H, if_true] at e
-    change (fun b => g b) ∈ C
-    rwa [← e]
-  · simp only [H, if_false] at e
-    rw [e] at H
-    contradiction
+  aesop
 #align computable_pred.rice ComputablePred.rice
 
 theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C ↔ cg ∈ C)) :
