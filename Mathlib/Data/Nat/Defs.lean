@@ -279,8 +279,9 @@ attribute [simp] le_add_left le_add_right Nat.lt_add_left_iff_pos Nat.lt_add_rig
 @[simp] lemma add_def : Nat.add m n = m + n := rfl
 #align nat.add_def Nat.add_def
 
-@[simp] protected lemma add_eq_left : a + b = a ↔ b = 0 := by omega
-@[simp] protected lemma add_eq_right : a + b = b ↔ a = 0 := by omega
+-- We want to use these two lemmas earlier than the lemmas simp can prove them with
+@[simp, nolint simpNF] protected alias add_left_inj := Nat.add_right_cancel_iff
+@[simp, nolint simpNF] protected alias add_right_inj := Nat.add_left_cancel_iff
 
 lemma two_le_iff : ∀ n, 2 ≤ n ↔ n ≠ 0 ∧ n ≠ 1
   | 0 => by simp
