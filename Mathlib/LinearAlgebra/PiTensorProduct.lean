@@ -319,6 +319,62 @@ theorem tprodCoeff_eq_smul_tprod (z : R) (f : Π i, s i) : tprodCoeff R z f = z 
   conv_lhs => rw [this]
 #align pi_tensor_product.tprod_coeff_eq_smul_tprod PiTensorProduct.tprodCoeff_eq_smul_tprod
 
+/-- The image of an element `p` of `FreeAddMonoid (R × Π i, s i)` in the `PiTensorProduct` is
+equal to the sum of `a • ⨂ₜ[R] i, m i` over all the entries `(a, m)` of `p`.
+-/
+lemma _root_.FreeAddMonoid.toPiTensorProduct (p : FreeAddMonoid (R × Π i, s i)) :
+    AddCon.toQuotient (c := addConGen (PiTensorProduct.Eqv R s)) p =
+    List.sum (List.map (fun x ↦ x.1 • ⨂ₜ[R] i, x.2 i) p) := by
+  match p with
+  | [] => rw [List.map_nil, List.sum_nil]; rfl
+  | x :: ps => rw [List.map_cons, List.sum_cons, ← List.singleton_append, ← toPiTensorProduct ps,
+                 ← tprodCoeff_eq_smul_tprod]; rfl
+
+/-- The set of lifts of an element `x` of `⨂[R] i, s i` in `FreeAddMonoid (R × Π i, s i)`.-/
+def lifts (x : ⨂[R] i, s i) : Set (FreeAddMonoid (R × Π i, s i)) :=
+  {p | AddCon.toQuotient (c := addConGen (PiTensorProduct.Eqv R s)) p = x}
+
+/-- An element `p` of `FreeAddMonoid (R × Π i, s i)` lifts an element `x` of `⨂[R] i, s i`
+if and only if `x` is equal to to the sum of `a • ⨂ₜ[R] i, m i` over all the entries
+`(a, m)` of `p`.
+-/
+lemma mem_lifts_iff (x : ⨂[R] i, s i) (p : FreeAddMonoid (R × Π i, s i)) :
+    p ∈ lifts x ↔ List.sum (List.map (fun x ↦ x.1 • ⨂ₜ[R] i, x.2 i) p) = x := by
+  simp only [lifts, Set.mem_setOf_eq, FreeAddMonoid.toPiTensorProduct]
+
+/-- Every element of `⨂[R] i, s i` has a lift in `FreeAddMonoid (R × Π i, s i)`.
+-/
+lemma nonempty_lifts (x : ⨂[R] i, s i) : Set.Nonempty (lifts x) := by
+  existsi @Quotient.out _ (addConGen (PiTensorProduct.Eqv R s)).toSetoid x
+  simp only [lifts, Set.mem_setOf_eq]
+  rw [← AddCon.quot_mk_eq_coe]
+  erw [Quot.out_eq]
+
+/-- The empty list lifts the element `0` of `⨂[R] i, s i`.
+-/
+lemma lifts_zero : 0 ∈ lifts (0 : ⨂[R] i, s i) := by
+  rw [mem_lifts_iff]; erw [List.map_nil]; rw [List.sum_nil]
+
+/-- If elements `p,q` of `FreeAddMonoid (R × Π i, s i)` lift elements `x,y` of `⨂[R] i, s i`
+respectively, then `p + q` lifts `x + y`.
+-/
+lemma lifts_add {x y : ⨂[R] i, s i} {p q : FreeAddMonoid (R × Π i, s i)}
+    (hp : p ∈ lifts x) (hq : q ∈ lifts y): p + q ∈ lifts (x + y) := by
+  simp only [lifts, Set.mem_setOf_eq, AddCon.coe_add]
+  rw [hp, hq]
+
+/-- If an element `p` of `FreeAddMonoid (R × Π i, s i)` lifts an element `x` of `⨂[R] i, s i`,
+and if `a` is an element of `R`, then the list obtained by multiplying the first entry of each
+element of `p` by `a` lifts `a • x`.
+-/
+lemma lifts_smul {x : ⨂[R] i, s i} {p : FreeAddMonoid (R × Π i, s i)} (h : p ∈ lifts x) (a : R) :
+    List.map (fun (y : R × Π i, s i) ↦ (a * y.1, y.2)) p ∈ lifts (a • x) := by
+  rw [mem_lifts_iff] at h ⊢
+  rw [← List.comp_map, ← h, List.smul_sum, ← List.comp_map]
+  congr 2
+  ext _
+  simp only [comp_apply, smul_smul]
+
 /-- Induct using scaled versions of `PiTensorProduct.tprod`. -/
 @[elab_as_elim]
 protected theorem induction_on {motive : (⨂[R] i, s i) → Prop} (z : ⨂[R] i, s i)
@@ -476,7 +532,7 @@ def map : (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i :=
 
 theorem map_range_eq_span_tprod :
     LinearMap.range (map f) =
-      Submodule.span R { t | ∃ (m : Π i, s i), tprod R (fun i ↦ f i (m i)) = t } := by
+      Submodule.span R {t | ∃ (m : Π i, s i), tprod R (fun i ↦ f i (m i)) = t} := by
   rw [← Submodule.map_top, ← span_tprod_eq_top, Submodule.map_span, ← Set.range_comp]
   apply congrArg; ext x
   simp only [Set.mem_range, comp_apply, map_tprod, Set.mem_setOf_eq]

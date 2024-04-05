@@ -122,7 +122,7 @@ theorem mulSupport_eq_empty_iff {f : α → M} : mulSupport f = ∅ ↔ f = 1 :=
 
 @[to_additive (attr := simp)]
 theorem mulSupport_nonempty_iff {f : α → M} : (mulSupport f).Nonempty ↔ f ≠ 1 := by
-  rw [nonempty_iff_ne_empty, Ne.def, mulSupport_eq_empty_iff]
+  rw [nonempty_iff_ne_empty, Ne, mulSupport_eq_empty_iff]
 #align function.mul_support_nonempty_iff Function.mulSupport_nonempty_iff
 #align function.support_nonempty_iff Function.support_nonempty_iff
 
@@ -202,7 +202,7 @@ theorem mulSupport_comp_eq_preimage (g : β → M) (f : α → β) :
 theorem mulSupport_prod_mk (f : α → M) (g : α → N) :
     (mulSupport fun x => (f x, g x)) = mulSupport f ∪ mulSupport g :=
   Set.ext fun x => by
-    simp only [mulSupport, not_and_or, mem_union, mem_setOf_eq, Prod.mk_eq_one, Ne.def]
+    simp only [mulSupport, not_and_or, mem_union, mem_setOf_eq, Prod.mk_eq_one, Ne]
 #align function.mul_support_prod_mk Function.mulSupport_prod_mk
 #align function.support_prod_mk Function.support_prod_mk
 
@@ -234,7 +234,7 @@ theorem mulSupport_pow [Monoid M] (f : α → M) (n : ℕ) :
     (mulSupport fun x => f x ^ n) ⊆ mulSupport f := by
   induction' n with n hfn
   · simp [pow_zero, mulSupport_one]
-  · simpa only [pow_succ] using (mulSupport_mul f _).trans (union_subset Subset.rfl hfn)
+  · simpa only [pow_succ'] using (mulSupport_mul f _).trans (union_subset Subset.rfl hfn)
 #align function.mul_support_pow Function.mulSupport_pow
 #align function.support_nsmul Function.support_nsmul
 

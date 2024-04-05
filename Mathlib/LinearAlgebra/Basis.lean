@@ -1358,7 +1358,7 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
     simpa [x_mem] using x_ortho 1 0 N.zero_mem
   induction' n with n rank_ih generalizing N
   · suffices N = ⊥ by rwa [this]
-    apply Basis.eq_bot_of_rank_eq_zero b _ fun m hv => le_zero_iff.mp (rank_le _ hv)
+    apply Basis.eq_bot_of_rank_eq_zero b _ fun m hv => Nat.le_zero.mp (rank_le _ hv)
   apply ih
   intro N' N'_le x x_mem x_ortho
   apply rank_ih
