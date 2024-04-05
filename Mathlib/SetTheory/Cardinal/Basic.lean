@@ -60,7 +60,7 @@ We define cardinal numbers as a quotient of types under the equivalence relation
   `Cardinal.{u} : Type (u + 1)` is the quotient of types in `Type u`.
   The operation `Cardinal.lift` lifts cardinal numbers to a higher level.
 * Cardinal arithmetic specifically for infinite cardinals (like `κ * κ = κ`) is in the file
-  `SetTheory/Cardinal/Ordinal.lean`.
+  `Mathlib/SetTheory/Cardinal/Ordinal.lean`.
 * There is an instance `Pow Cardinal`, but this will only fire if Lean already knows that both
   the base and the exponent live in the same universe. As a workaround, you can add
   ```
@@ -1770,6 +1770,10 @@ theorem denumerable_iff {α : Type u} : Nonempty (Denumerable α) ↔ #α = ℵ�
 theorem mk_denumerable (α : Type u) [Denumerable α] : #α = ℵ₀ :=
   denumerable_iff.1 ⟨‹_›⟩
 #align cardinal.mk_denumerable Cardinal.mk_denumerable
+
+theorem _root_.Set.countable_infinite_iff_nonempty_denumerable {α : Type*} {s : Set α} :
+    s.Countable ∧ s.Infinite ↔ Nonempty (Denumerable s) := by
+  rw [nonempty_denumerable_iff, ← Set.infinite_coe_iff, countable_coe_iff]
 
 @[simp]
 theorem aleph0_add_aleph0 : ℵ₀ + ℵ₀ = ℵ₀ :=
