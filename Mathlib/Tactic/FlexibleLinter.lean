@@ -332,8 +332,8 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
   for d in x do for (s, ctx0, ctx1, mvs0, mvs1) in d do
     let skind := s.getKind
     if combinatorLike.contains skind then continue
+    let shouldStain? := flexible? s && mvs1.length == mvs0.length
     for d in getStained! s do
-      let shouldStain? := flexible? s && mvs1.length == mvs0.length
       if shouldStain? then
         for currMVar1 in mvs1 do
           let lctx1 := ((ctx1.decls.find? currMVar1).getD default).lctx
