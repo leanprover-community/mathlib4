@@ -191,12 +191,12 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
   rw [add_sub_cancel_right, add_sub_cancel_right] at h_int
   have int_ev := intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le zero_le_one hc hder h_int
   have hF0 : F 0 = 0 := by
-    simp only [F, mul_eq_zero, ofReal_zero, cpow_eq_zero_iff, eq_self_iff_true, Ne.def,
+    simp only [F, mul_eq_zero, ofReal_zero, cpow_eq_zero_iff, eq_self_iff_true, Ne,
       true_and_iff, sub_zero, one_cpow, one_ne_zero, or_false_iff]
     contrapose! hu; rw [hu, zero_re]
   have hF1 : F 1 = 0 := by
     simp only [F, mul_eq_zero, ofReal_one, one_cpow, one_ne_zero, sub_self, cpow_eq_zero_iff,
-      eq_self_iff_true, Ne.def, true_and_iff, false_or_iff]
+      eq_self_iff_true, Ne, true_and_iff, false_or_iff]
     contrapose! hv; rw [hv, zero_re]
   rw [hF0, hF1, sub_zero, intervalIntegral.integral_sub, intervalIntegral.integral_const_mul,
     intervalIntegral.integral_const_mul] at int_ev

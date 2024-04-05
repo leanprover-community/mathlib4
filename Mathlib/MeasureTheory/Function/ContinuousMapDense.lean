@@ -120,7 +120,7 @@ theorem exists_continuous_snorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ �
     refine' ⟨g.continuous.aestronglyMeasurable, _⟩
     have : snorm (v.indicator fun _x => (1 : ℝ)) p μ < ⊤ := by
       refine' (snorm_indicator_const_le _ _).trans_lt _
-      simp only [lt_top_iff_ne_top, hμv.ne, nnnorm_one, ENNReal.coe_one, one_div, one_mul, Ne.def,
+      simp only [lt_top_iff_ne_top, hμv.ne, nnnorm_one, ENNReal.coe_one, one_div, one_mul, Ne,
         ENNReal.rpow_eq_top_iff, inv_lt_zero, false_and_iff, or_false_iff, not_and, not_lt,
         ENNReal.toReal_nonneg, imp_true_iff]
     refine' (snorm_mono fun x => _).trans_lt this
@@ -198,8 +198,8 @@ theorem Memℒp.exists_hasCompactSupport_integral_rpow_sub_le
         (∫ x, ‖f x - g x‖ ^ p ∂μ) ≤ ε ∧ Continuous g ∧ Memℒp g (ENNReal.ofReal p) μ := by
   have I : 0 < ε ^ (1 / p) := Real.rpow_pos_of_pos hε _
   have A : ENNReal.ofReal (ε ^ (1 / p)) ≠ 0 := by
-    simp only [Ne.def, ENNReal.ofReal_eq_zero, not_le, I]
-  have B : ENNReal.ofReal p ≠ 0 := by simpa only [Ne.def, ENNReal.ofReal_eq_zero, not_le] using hp
+    simp only [Ne, ENNReal.ofReal_eq_zero, not_le, I]
+  have B : ENNReal.ofReal p ≠ 0 := by simpa only [Ne, ENNReal.ofReal_eq_zero, not_le] using hp
   rcases hf.exists_hasCompactSupport_snorm_sub_le ENNReal.coe_ne_top A with
     ⟨g, g_support, hg, g_cont, g_mem⟩
   change snorm _ (ENNReal.ofReal p) _ ≤ _ at hg
@@ -292,8 +292,8 @@ theorem Memℒp.exists_boundedContinuous_integral_rpow_sub_le [μ.WeaklyRegular]
     ∃ g : α →ᵇ E, (∫ x, ‖f x - g x‖ ^ p ∂μ) ≤ ε ∧ Memℒp g (ENNReal.ofReal p) μ := by
   have I : 0 < ε ^ (1 / p) := Real.rpow_pos_of_pos hε _
   have A : ENNReal.ofReal (ε ^ (1 / p)) ≠ 0 := by
-    simp only [Ne.def, ENNReal.ofReal_eq_zero, not_le, I]
-  have B : ENNReal.ofReal p ≠ 0 := by simpa only [Ne.def, ENNReal.ofReal_eq_zero, not_le] using hp
+    simp only [Ne, ENNReal.ofReal_eq_zero, not_le, I]
+  have B : ENNReal.ofReal p ≠ 0 := by simpa only [Ne, ENNReal.ofReal_eq_zero, not_le] using hp
   rcases hf.exists_boundedContinuous_snorm_sub_le ENNReal.coe_ne_top A with ⟨g, hg, g_mem⟩
   change snorm _ (ENNReal.ofReal p) _ ≤ _ at hg
   refine' ⟨g, _, g_mem⟩
@@ -334,7 +334,7 @@ theorem boundedContinuousFunction_dense [SecondCountableTopologyEither α E] [_i
   refine' mem_closure_iff_frequently.mpr _
   rw [Metric.nhds_basis_closedBall.frequently_iff]
   intro ε hε
-  have A : ENNReal.ofReal ε ≠ 0 := by simp only [Ne.def, ENNReal.ofReal_eq_zero, not_le, hε]
+  have A : ENNReal.ofReal ε ≠ 0 := by simp only [Ne, ENNReal.ofReal_eq_zero, not_le, hε]
   obtain ⟨g, hg, g_mem⟩ :
       ∃ g : α →ᵇ E, snorm ((f : α → E) - (g : α → E)) p μ ≤ ENNReal.ofReal ε ∧ Memℒp g p μ :=
     (Lp.memℒp f).exists_boundedContinuous_snorm_sub_le hp A

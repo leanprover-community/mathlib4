@@ -127,7 +127,7 @@ theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
       multinomial {a, b} (Function.update f a (f a).succ) +
       multinomial {a, b} (Function.update f b (f b).succ) := by
   simp only [binomial_eq_choose, Function.update_apply,
-    h, Ne.def, ite_true, ite_false, not_false_eq_true]
+    h, Ne, ite_true, ite_false, not_false_eq_true]
   rw [if_neg h.symm]
   rw [add_succ, choose_succ_succ, succ_add_eq_add_succ]
   ring

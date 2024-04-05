@@ -5,15 +5,15 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.Algebra.GeomSum
-import Mathlib.Data.MvPolynomial.CommRing
-import Mathlib.Data.MvPolynomial.Equiv
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.UniqueFactorizationDomain
 
 #align_import ring_theory.polynomial.basic from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
 /-!
-# Ring-theoretic supplement of Data.Polynomial.
+# Ring-theoretic supplement of Algebra.Polynomial.
 
 ## Main results
 * `MvPolynomial.isDomain`:
@@ -273,7 +273,7 @@ theorem frange_one : frange (1 : R[X]) ⊆ {1} := by
 
 theorem coeff_mem_frange (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n ∈ p.frange := by
   classical
-  simp only [frange, exists_prop, mem_support_iff, (Finset.mem_image), Ne.def]
+  simp only [frange, exists_prop, mem_support_iff, (Finset.mem_image), Ne]
   exact ⟨n, h, rfl⟩
 #align polynomial.coeff_mem_frange Polynomial.coeff_mem_frange
 
@@ -307,7 +307,7 @@ theorem Monic.geom_sum {P : R[X]} (hP : P.Monic) (hdeg : 0 < P.natDegree) {n : �
     simp only [Nat.cast_lt, hP.natDegree_pow]
     intro k
     exact nsmul_lt_nsmul_left hdeg
-  · rw [bot_lt_iff_ne_bot, Ne.def, degree_eq_bot]
+  · rw [bot_lt_iff_ne_bot, Ne, degree_eq_bot]
     exact (hP.pow _).ne_zero
 #align polynomial.monic.geom_sum Polynomial.Monic.geom_sum
 
@@ -345,7 +345,7 @@ def restriction (p : R[X]) : Polynomial (Subring.closure (↑p.frange : Set R)) 
 theorem coeff_restriction {p : R[X]} {n : ℕ} : ↑(coeff (restriction p) n) = coeff p n := by
   classical
   simp only [restriction, coeff_monomial, finset_sum_coeff, mem_support_iff, Finset.sum_ite_eq',
-    Ne.def, ite_not]
+    Ne, ite_not]
   split_ifs with h
   · rw [h]
     rfl
@@ -360,7 +360,7 @@ theorem coeff_restriction' {p : R[X]} {n : ℕ} : (coeff (restriction p) n).1 = 
 @[simp]
 theorem support_restriction (p : R[X]) : support (restriction p) = support p := by
   ext i
-  simp only [mem_support_iff, not_iff_not, Ne.def]
+  simp only [mem_support_iff, not_iff_not, Ne]
   conv_rhs => rw [← coeff_restriction]
   exact ⟨fun H => by rw [H, ZeroMemClass.coe_zero], fun H => Subtype.coe_injective H⟩
 #align polynomial.support_restriction Polynomial.support_restriction
@@ -426,7 +426,7 @@ variable (hp : (↑p.frange : Set R) ⊆ T)
 theorem coeff_toSubring {n : ℕ} : ↑(coeff (toSubring p T hp) n) = coeff p n := by
   classical
   simp only [toSubring, coeff_monomial, finset_sum_coeff, mem_support_iff, Finset.sum_ite_eq',
-    Ne.def, ite_not]
+    Ne, ite_not]
   split_ifs with h
   · rw [h]
     rfl
@@ -441,7 +441,7 @@ theorem coeff_toSubring' {n : ℕ} : (coeff (toSubring p T hp) n).1 = coeff p n 
 @[simp]
 theorem support_toSubring : support (toSubring p T hp) = support p := by
   ext i
-  simp only [mem_support_iff, not_iff_not, Ne.def]
+  simp only [mem_support_iff, not_iff_not, Ne]
   conv_rhs => rw [← coeff_toSubring p T hp]
   exact ⟨fun H => by rw [H, ZeroMemClass.coe_zero], fun H => Subtype.coe_injective H⟩
 #align polynomial.support_to_subring Polynomial.support_toSubring
@@ -494,7 +494,7 @@ def ofSubring (p : T[X]) : R[X] :=
 
 theorem coeff_ofSubring (p : T[X]) (n : ℕ) : coeff (ofSubring T p) n = (coeff p n : T) := by
   simp only [ofSubring, coeff_monomial, finset_sum_coeff, mem_support_iff, Finset.sum_ite_eq',
-    ite_eq_right_iff, Ne.def, ite_not, Classical.not_not, ite_eq_left_iff]
+    ite_eq_right_iff, Ne, ite_not, Classical.not_not, ite_eq_left_iff]
   intro h
   rw [h, ZeroMemClass.coe_zero]
 #align polynomial.coeff_of_subring Polynomial.coeff_ofSubring
@@ -503,7 +503,7 @@ theorem coeff_ofSubring (p : T[X]) (n : ℕ) : coeff (ofSubring T p) n = (coeff 
 theorem frange_ofSubring {p : T[X]} : (↑(p.ofSubring T).frange : Set R) ⊆ T := by
   classical
   intro i hi
-  simp only [frange, Set.mem_image, mem_support_iff, Ne.def, Finset.mem_coe,
+  simp only [frange, Set.mem_image, mem_support_iff, Ne, Finset.mem_coe,
     (Finset.coe_image)] at hi
   rcases hi with ⟨n, _, h'n⟩
   rw [← h'n, coeff_ofSubring]
@@ -758,7 +758,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
       simpa only [coeff_C_zero] using h 0
   · intro h
     constructor
-    · rw [Ne.def, eq_top_iff_one, mem_map_C_iff, not_forall]
+    · rw [Ne, eq_top_iff_one, mem_map_C_iff, not_forall]
       use 0
       rw [coeff_one_zero, ← eq_top_iff_one]
       exact h.1
@@ -778,7 +778,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         apply P.sum_mem
         rintro ⟨i, j⟩ hij
         rw [Finset.mem_erase, Finset.mem_antidiagonal] at hij
-        simp only [Ne.def, Prod.mk.inj_iff, not_and_or] at hij
+        simp only [Ne, Prod.mk.inj_iff, not_and_or] at hij
         obtain hi | hj : i < m ∨ j < n := by
           rw [or_iff_not_imp_left, not_lt, le_iff_lt_or_eq]
           rintro (hmi | rfl)
