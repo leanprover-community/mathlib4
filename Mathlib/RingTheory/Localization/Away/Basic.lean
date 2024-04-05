@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
 import Mathlib.RingTheory.UniqueFactorizationDomain
-import Mathlib.RingTheory.Localization.Integer
+import Mathlib.RingTheory.Localization.Basic
 
 #align_import ring_theory.localization.away.basic from "leanprover-community/mathlib"@"a7c017d750512a352b623b1824d75da5998457d0"
 
