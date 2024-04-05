@@ -146,9 +146,7 @@ def getLocalRewriteLemmas : MetaM (RefinedDiscrTree (RewriteLemma)) := do
 
 end Cache
 
-/--
-An option allowing the user to select which modules will not be considered in library search
--/
+/-- An option allowing the user to control which modules will not be considered in library search -/
 register_option librarySearch.excludedModules : String := {
   defValue := "Init.Omega Mathlib.Tactic"
   descr :=
@@ -165,15 +163,16 @@ def getLibrarySearchExcludedModules (o : Options) : List Name :=
 def containsPrefixOf (names : List Name) (name : Name) : Bool :=
   names.any (·.isPrefixOf name)
 
-/-- Get all potential rewrite lemmas from the dicrimination tree. -/
+/-- Get all potential rewrite lemmas from the dicrimination tree. Exclude lemmas from modules
+in the `librarySearch.excludedModules` option. -/
 def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Bool)) := do
   let localResults  ← (← getLocalRewriteLemmas ).getMatchWithScore e (unify := false)
   let cachedResults ← (← getCachedRewriteLemmas).getMatchWithScore e (unify := false)
   let excludedModules := getLibrarySearchExcludedModules (← getOptions)
   let env ← getEnv
-  let exclude (rws : Array RewriteLemma) := rws.filterMap fun rw =>
-    let moduleName := env.header.moduleNames[(env.const2ModIdx.find! rw.name).toNat]!
-    if containsPrefixOf excludedModules moduleName then none else some rw
+  let exclude := Array.filterMap fun rw =>
+    env.const2ModIdx.find? rw.name >>= fun idx =>
+    if containsPrefixOf excludedModules env.header.moduleNames[idx.toNat]! then none else some rw
   return localResults.map (·.1, true) ++ cachedResults.map ((exclude ·.1, false))
 
 /-- A rewrite lemma that has been applied to an expression. -/
@@ -532,7 +531,7 @@ def elabrw??Command : Command.CommandElab := fun stx =>
     let e ← Term.elabTerm stx[1] none
     Term.synthesizeSyntheticMVarsNoPostponing
     let e ← Term.levelMVarToParam (← instantiateMVars e)
-    _ ← getCandidates e
+
     let rewrites ← getRewrites e
     let rewrites ← rewrites.mapM fun (rewrites, isLocal) =>
       return (← filterRewrites e rewrites (·.replacement), isLocal)
@@ -540,4 +539,4 @@ def elabrw??Command : Command.CommandElab := fun stx =>
     if sections.isEmpty then
       logInfo m! "No rewrites found for {e}"
     else
-      logInfo (.joinSep (sections.toList) "\n\n")
+      logInfo (.joinSep sections.toList "\n\n")

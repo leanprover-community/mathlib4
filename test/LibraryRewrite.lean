@@ -481,3 +481,56 @@ Pattern ∑ x in s, f x
 -/
 #guard_msgs in
 #rw?? ∑ n in Finset.range n, (n + 1)
+
+axiom foo (f : Rat → Rat) : Continuous (fun x => (f x)⁻¹) = True
+-- `Inv.inv` is indexed as `id⁻¹`, and `fun x => (f x)⁻¹` is indexed as `f⁻¹`.
+/--
+info: Pattern Continuous fun x => (f x)⁻¹
+· True
+  foo
+
+Pattern Continuous f
+· ∀ (s : Set ℚ), IsOpen s → IsOpen (Inv.inv ⁻¹' s)
+  continuous_def
+· ∀ (b : ℚ), ∀ ε > 0, ∃ δ > 0, ∀ (a : ℚ), dist a b < δ → dist a⁻¹ b⁻¹ < ε
+  Metric.continuous_iff
+· ∀ (a : ℚ), ∀ ε > 0, ∀ᶠ (x : ℚ) in nhds a, dist x⁻¹ a⁻¹ < ε
+  Metric.continuous_iff'
+· ∀ (s : Set ℚ), IsClosed s → IsClosed (Inv.inv ⁻¹' s)
+  continuous_iff_isClosed
+· UniformSpace.toTopologicalSpace ≤ TopologicalSpace.induced Inv.inv UniformSpace.toTopologicalSpace
+  continuous_iff_le_induced
+· ∀ (x : ℚ) (g : Ultrafilter ℚ), ↑g ≤ nhds x → Filter.Tendsto Inv.inv (↑g) (nhds x⁻¹)
+  continuous_iff_ultrafilter
+· TopologicalSpace.coinduced Inv.inv UniformSpace.toTopologicalSpace ≤ UniformSpace.toTopologicalSpace
+  continuous_iff_coinduced_le
+· ∀ (x : ℚ), ContinuousAt Inv.inv x
+  continuous_iff_continuousAt
+· ∀ (b : ℚ), Filter.Tendsto (fun x => (x⁻¹, b⁻¹)) (nhds b) (uniformity ℚ)
+  Uniform.continuous_iff'_left
+· ∀ (b : ℚ), Filter.Tendsto (fun x => (b⁻¹, x⁻¹)) (nhds b) (uniformity ℚ)
+  Uniform.continuous_iff'_right
+· Continuous fun x => dist x.1⁻¹ x.2⁻¹
+  continuous_iff_continuous_dist
+· ContinuousOn Inv.inv Set.univ
+  continuous_iff_continuousOn_univ
+· SeqContinuous Inv.inv
+  continuous_iff_seqContinuous
+· Continuous (SeparationQuotient.lift Inv.inv ?hf)
+  SeparationQuotient.continuous_lift
+· Continuous ?g
+  ⊢ ∀ (x : ℚ), x⁻¹ = ?g x
+  continuous_congr
+· Continuous (Rat.cast ∘ Inv.inv)
+  continuous_induced_rng
+· Continuous ?g
+  ⊢ ∀ (x : ℚ), Inseparable x⁻¹ (?g x)
+  continuous_congr_of_inseparable
+· LowerSemicontinuous Inv.inv ∧ UpperSemicontinuous Inv.inv
+  continuous_iff_lower_upperSemicontinuous
+· ∀ s ∈ ?B, IsOpen (Inv.inv ⁻¹' s)
+  ⊢ TopologicalSpace.IsTopologicalBasis ?B
+  TopologicalSpace.IsTopologicalBasis.continuous_iff
+-/
+#guard_msgs in
+#rw?? Continuous (Inv.inv : Rat → Rat)

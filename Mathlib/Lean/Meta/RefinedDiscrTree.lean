@@ -75,13 +75,18 @@ I document here what features are not in the original:
   - The expression `fun a : α => a` is stored as `@id α`.
     - This makes lemmas such as `continuous_id'` redundant, which is the same as `continuous_id`,
       with `id` replaced by `fun x => x`.
-  - Any expressions involving `+`, `*`, `-`, `/` or `⁻¹` is normalized to not have a lambda
+  - lambdas in front of number literals have been removed.
+  - Any expression with head constant `+`, `*`, `-`, `/` or `⁻¹` is normalized to not have a lambda
     in front and to always have the default amount of arguments.
     e.g. `(f + g) a` is stored as `f a + g a` and `fun x => f x + g x` is stored as `f + g`.
     - This makes lemmas such as `MeasureTheory.integral_integral_add'` redundant, which is the
       same as `MeasureTheory.integral_integral_add`, with `f a + g a` replaced by `(f + g) a`
     - it also means that a lemma like `Continuous.mul` can be stated as talking about `f * g`
-      instead of `fun x => f x + g x`.
+      instead of `fun x => f x * g x`.
+    - When trying to find `Continuous.mul` with the expression `Continuous fun x => 1 + x`,
+      this is possible, because we first revert the eta-reduction that happens by default,
+      and then distribute the lambda. Thus this is indexed as `Continuous (1 + id)`,
+      which matches with `Continuous (f + g)` from `Continuous.mul`.
 
 I have also made some changes in the implementation:
 
@@ -540,19 +545,20 @@ termination_by goalArity - args.size
 
 
 /-- Normalize an application of a heterogenous binary operator like `HAdd.hAdd`, using:
-- `f = fun x => f x` to increase the arity to 6
-- `(f + g) a = f a + g a` to decrease the arity to 6
-- `(fun x => f x + g x) = f + g` to get rid of some lambdas in front -/
+- (1) `f = fun x => f x` to increase the arity to 6
+- (2) `(f + g) a = f a + g a` to try to decrease the arity to 6
+- (3) `(fun x => f x + g x) = f + g` to get rid of the lambdas in front -/
 def reduceHBinOpAux (args : Array Expr) (lambdas : List FVarId) (instH instPi : Name) :
     MetaM (Option (Expr × Expr × Expr × List FVarId)) := do
   let some (mkApp2 (.const instH' _) type inst) := args[3]? | return none
   unless (instH == instH') do return none
   some <$> do
   if args.size ≤ 6 then
+    -- (1)
     etaExpand args type lambdas 6 fun args lambdas =>
       distributeLambdas lambdas type args[4]! args[5]!
   else
-  /- use that `(f + g) a = f a + g a` -/
+  -- (2)
   let mut type := type
   let mut inst := inst
   let mut lhs := args[4]!
@@ -566,7 +572,7 @@ def reduceHBinOpAux (args : Array Expr) (lambdas : List FVarId) (instH instPi : 
     rhs := .app rhs arg
   distributeLambdas lambdas type lhs rhs
 where
-  /-- use that `(fun x => f x + g x) = f + g` -/
+  -- (3)
   distributeLambdas (lambdas : List FVarId) (type lhs rhs : Expr) :
       MetaM (Expr × Expr × Expr × List FVarId) := match lambdas with
     | fvarId :: lambdas => do
@@ -589,27 +595,33 @@ Optionally return the `(type, lhs, rhs, lambdas)`. -/
   | _ => return none
 
 /-- Normalize an application of a unary operator like `Inv.inv`, using:
-- `f⁻¹ a = (f a)⁻¹` to decrease the arity to 3
-- `(fun x => (f x)⁻¹) = f⁻¹` to get rid of some lambdas in front -/
+- (1) `Inv.inv => id⁻¹` to increase the arity to 3
+- (2) `f⁻¹ a = (f a)⁻¹` to try to decrease the arity to 3
+- (3) `(fun x => (f x)⁻¹) = f⁻¹` to get rid of the lambdas in front -/
 def reduceUnOpAux (args : Array Expr) (lambdas : List FVarId) (instPi : Name) :
-    OptionT MetaM (Expr × Expr × List FVarId) := do
-  guard (args.size ≥ 3)
-  let mut type := args[0]!
-  let mut inst := args[1]!
-  let mut arg := args[2]!
-  if args.size == 3 then
+    MetaM (Option (Expr × Expr × List FVarId)) := do
+  unless args.size ≥ 2 do return none
+  let type := args[0]!
+  let inst := args[1]!
+  if args.size == 2 then
+    -- (1)
+    let arg  := .app (.const ``id [← getLevel type]) type
+    let type := .forallE `_a type type .default
     distributeLambdas lambdas type arg
   else
-  /- use that `f⁻¹ a = (f a)⁻¹` -/
+  let mut type := type
+  let mut inst := inst
+  let mut arg  := args[2]!
+  -- (2)
   for arg' in args[3:] do
     let mkApp3 (.const i _) _ f inst' := inst | return (type, arg, lambdas)
     unless i == instPi do return (type, arg, lambdas)
     type := .app f arg'
     inst := inst'
-    arg := .app arg arg'
+    arg  := .app arg arg'
   distributeLambdas lambdas type arg
 where
-  /-- use that `(fun x => (f x)⁻¹) = f⁻¹` -/
+  -- (3)
   distributeLambdas (lambdas : List FVarId) (type arg : Expr) :
       MetaM (Expr × Expr × List FVarId) := match lambdas with
     | fvarId :: lambdas => do
