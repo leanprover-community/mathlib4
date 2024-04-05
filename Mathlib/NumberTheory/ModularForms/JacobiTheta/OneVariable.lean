@@ -50,7 +50,7 @@ theorem jacobiTheta_S_smul (τ : ℍ) :
   erw [div_self]
   rw [one_mul, UpperHalfPlane.coe_mk, inv_neg, neg_div, one_div]
   · rfl
-  · rw [Ne.def, cpow_eq_zero_iff, not_and_or]
+  · rw [Ne, cpow_eq_zero_iff, not_and_or]
     exact Or.inl <| mul_ne_zero (neg_ne_zero.mpr I_ne_zero) h0
 set_option linter.uppercaseLean3 false in
 #align jacobi_theta_S_smul jacobiTheta_S_smul

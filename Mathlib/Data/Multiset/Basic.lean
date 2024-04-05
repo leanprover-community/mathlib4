@@ -626,7 +626,7 @@ theorem singleton_le {a : α} {s : Multiset α} : {a} ≤ s ↔ a ∈ s :=
     coe_eq_zero, coe_eq_coe, perm_singleton, subperm_singleton_iff]
 
 @[simp] lemma lt_singleton : s < {a} ↔ s = 0 := by
-  simp only [lt_iff_le_and_ne, le_singleton, or_and_right, Ne.def, and_not_self, or_false,
+  simp only [lt_iff_le_and_ne, le_singleton, or_and_right, Ne, and_not_self, or_false,
     and_iff_left_iff_imp]
   rintro rfl
   exact (singleton_ne_zero _).symm
@@ -2517,7 +2517,7 @@ theorem count_eq_zero {a : α} {s : Multiset α} : count a s = 0 ↔ a ∉ s :=
 #align multiset.count_eq_zero Multiset.count_eq_zero
 
 theorem count_ne_zero {a : α} {s : Multiset α} : count a s ≠ 0 ↔ a ∈ s := by
-  simp [Ne.def, count_eq_zero]
+  simp [Ne, count_eq_zero]
 #align multiset.count_ne_zero Multiset.count_ne_zero
 
 theorem count_eq_card {a : α} {s} : count a s = card s ↔ ∀ x ∈ s, a = x := by
@@ -3090,6 +3090,23 @@ theorem add_eq_union_iff_disjoint [DecidableEq α] {s t : Multiset α} :
   simp_rw [← inter_eq_zero_iff_disjoint, ext, count_add, count_union, count_inter, count_zero,
     Nat.min_eq_zero_iff, Nat.add_eq_max_iff]
 #align multiset.add_eq_union_iff_disjoint Multiset.add_eq_union_iff_disjoint
+
+lemma add_eq_union_left_of_le [DecidableEq α] {s t u : Multiset α} (h : t ≤ s) :
+    u + s = u ∪ t ↔ u.Disjoint s ∧ s = t := by
+  rw [← add_eq_union_iff_disjoint]
+  refine ⟨fun h0 ↦ ?_, ?_⟩
+  · rw [and_iff_right_of_imp]
+    · exact (le_of_add_le_add_left <| h0.trans_le <| union_le_add u t).antisymm h
+    · rintro rfl
+      exact h0
+  · rintro ⟨h0, rfl⟩
+    exact h0
+#align multiset.add_eq_union_left_of_le Multiset.add_eq_union_left_of_le
+
+lemma add_eq_union_right_of_le [DecidableEq α] {x y z : Multiset α} (h : z ≤ y) :
+    x + y = x ∪ z ↔ y = z ∧ x.Disjoint y := by
+  simpa only [and_comm] using add_eq_union_left_of_le h
+#align multiset.add_eq_union_right_of_le Multiset.add_eq_union_right_of_le
 
 theorem disjoint_map_map {f : α → γ} {g : β → γ} {s : Multiset α} {t : Multiset β} :
     Disjoint (s.map f) (t.map g) ↔ ∀ a ∈ s, ∀ b ∈ t, f a ≠ g b := by

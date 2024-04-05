@@ -201,44 +201,21 @@ theorem add_im (z w : ℂ) : (z + w).im = z.im + w.im :=
   rfl
 #align complex.add_im Complex.add_im
 
-section
-set_option linter.deprecated false
-@[simp]
-theorem bit0_re (z : ℂ) : (bit0 z).re = bit0 z.re :=
-  rfl
-#align complex.bit0_re Complex.bit0_re
-
-@[simp]
-theorem bit1_re (z : ℂ) : (bit1 z).re = bit1 z.re :=
-  rfl
-#align complex.bit1_re Complex.bit1_re
-
-@[simp]
-theorem bit0_im (z : ℂ) : (bit0 z).im = bit0 z.im :=
-  Eq.refl _
-#align complex.bit0_im Complex.bit0_im
-
-@[simp]
-theorem bit1_im (z : ℂ) : (bit1 z).im = bit0 z.im :=
-  add_zero _
-#align complex.bit1_im Complex.bit1_im
+-- replaced by `re_ofNat`
+#noalign complex.bit0_re
+#noalign complex.bit1_re
+-- replaced by `im_ofNat`
+#noalign complex.bit0_im
+#noalign complex.bit1_im
 
 @[simp, norm_cast]
 theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : ℂ) = r + s :=
   ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_add Complex.ofReal_add
 
-@[simp, norm_cast]
-theorem ofReal_bit0 (r : ℝ) : ((bit0 r : ℝ) : ℂ) = bit0 (r : ℂ) :=
-  ext_iff.2 <| by simp [bit0]
-#align complex.of_real_bit0 Complex.ofReal_bit0
-
-@[simp, norm_cast]
-theorem ofReal_bit1 (r : ℝ) : ((bit1 r : ℝ) : ℂ) = bit1 (r : ℂ) :=
-  ext_iff.2 <| by simp [bit1]
-#align complex.of_real_bit1 Complex.ofReal_bit1
-
-end
+-- replaced by `Complex.ofReal_ofNat`
+#noalign complex.of_real_bit0
+#noalign complex.of_real_bit1
 
 instance : Neg ℂ :=
   ⟨fun z => ⟨-z.re, -z.im⟩⟩
@@ -556,17 +533,15 @@ theorem conj_I : conj I = -I :=
   set_option linter.uppercaseLean3 false in
 #align complex.conj_I Complex.conj_I
 
+#noalign complex.conj_bit0
+#noalign complex.conj_bit1
 
-section
-set_option linter.deprecated false
-theorem conj_bit0 (z : ℂ) : conj (bit0 z) = bit0 (conj z) :=
-  ext_iff.2 <| by simp [bit0]
-#align complex.conj_bit0 Complex.conj_bit0
+theorem conj_nat_cast (n : ℕ) : conj (n : ℂ) = n := map_natCast _ _
 
-theorem conj_bit1 (z : ℂ) : conj (bit1 z) = bit1 (conj z) :=
-  ext_iff.2 <| by simp [bit0]
-#align complex.conj_bit1 Complex.conj_bit1
-end
+-- See note [no_index around OfNat.ofNat]
+theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=
+  map_ofNat _ _
+
 -- @[simp]
 /- Porting note (#11119): `simp` attribute removed as the result could be proved
 by `simp only [@map_neg, Complex.conj_i, @neg_neg]`
