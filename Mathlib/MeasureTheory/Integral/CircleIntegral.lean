@@ -8,7 +8,7 @@ import Mathlib.Analysis.Calculus.Deriv.ZPow
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 import Mathlib.Analysis.Analytic.Basic
-
+import Mathlib.Tactic.FlexibleLinter
 #align_import measure_theory.integral.circle_integral from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
@@ -550,9 +550,11 @@ theorem norm_cauchyPowerSeries_le (f : ℂ → E) (c : ℂ) (R : ℝ) (n : ℕ) 
       simp [norm_smul, mul_left_comm |R|]
     _ ≤ ((2 * π)⁻¹ * ∫ θ : ℝ in (0)..2 * π, ‖f (circleMap c R θ)‖) * |R|⁻¹ ^ n := by
       rcases eq_or_ne R 0 with (rfl | hR)
-      · cases n <;> simp [-mul_inv_rev]
-        rw [← mul_assoc, inv_mul_cancel (Real.two_pi_pos.ne.symm), one_mul]
-        apply norm_nonneg
+      · cases n
+        · suffices 0 ≤ (2 * π)⁻¹ * (2 * π * ‖f c‖) by simpa
+          rw [← mul_assoc, inv_mul_cancel (Real.two_pi_pos.ne.symm), one_mul]
+          apply norm_nonneg
+        · simp
       · rw [mul_inv_cancel_left₀, mul_assoc, mul_comm (|R|⁻¹ ^ n)]
         rwa [Ne, _root_.abs_eq_zero]
 #align norm_cauchy_power_series_le norm_cauchyPowerSeries_le
