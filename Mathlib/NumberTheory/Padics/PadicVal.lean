@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
 import Mathlib.NumberTheory.Divisors
-import Mathlib.RingTheory.Int.Basic
 import Mathlib.Data.Nat.Digits
 import Mathlib.Data.Nat.MaxPowDiv
 import Mathlib.Data.Nat.Multiplicity

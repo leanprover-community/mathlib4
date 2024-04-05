@@ -19,8 +19,6 @@ The resulting nonnegative real number is denoted by `‖n‖₊`.
 -/
 
 
-open BigOperators
-
 namespace Int
 
 theorem nnnorm_coe_units (e : ℤˣ) : ‖(e : ℤ)‖₊ = 1 := by

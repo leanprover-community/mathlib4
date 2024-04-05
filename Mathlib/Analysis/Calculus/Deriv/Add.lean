@@ -148,9 +148,6 @@ section Sum
 
 /-! ### Derivative of a finite sum of functions -/
 
-
-open BigOperators
-
 variable {ι : Type*} {u : Finset ι} {A : ι → 𝕜 → F} {A' : ι → F}
 
 theorem HasDerivAtFilter.sum (h : ∀ i ∈ u, HasDerivAtFilter (A i) (A' i) x L) :
