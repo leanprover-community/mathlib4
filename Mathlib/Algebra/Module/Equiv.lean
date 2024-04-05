@@ -122,6 +122,19 @@ instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   [EquivLike F M M₂] [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
   { s with }
 
+variable {F}
+
+/-- Reinterpret an element of a type of semilinear equivalences as a semilinear equivalence. -/
+@[coe]
+def semilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+  [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] (f : F) : M ≃ₛₗ[σ] M₂ :=
+  { (f : M ≃+ M₂), (f : M →ₛₗ[σ] M₂) with }
+
+/-- Reinterpret an element of a type of semilinear equivalences as a semilinear equivalence. -/
+instance instCoeToSemilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+  [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] : CoeHead F (M ≃ₛₗ[σ] M₂) where
+  coe f := semilinearEquiv f
+
 end SemilinearEquivClass
 
 namespace LinearEquiv
