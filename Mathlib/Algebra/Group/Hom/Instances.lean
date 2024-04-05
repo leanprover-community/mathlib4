@@ -76,7 +76,8 @@ instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M 
 instance AddMonoid.End.instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) :=
   AddMonoidHom.addCommMonoid
 
-instance AddMonoid.End.instAddMonoidWithOne (M) [AddCommMonoid M] : AddMonoidWithOne (AddMonoid.End M) :=
+instance AddMonoid.End.instAddMonoidWithOne (M) [AddCommMonoid M] :
+    AddMonoidWithOne (AddMonoid.End M) :=
   { natCast := fun n => n • (1 : AddMonoid.End M),
     natCast_zero := AddMonoid.nsmul_zero _,
     natCast_succ := fun n => AddMonoid.nsmul_succ n 1 }
