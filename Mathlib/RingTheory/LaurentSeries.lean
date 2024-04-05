@@ -55,33 +55,13 @@ def hasseDeriv (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V
     exact rfl
   map_smul' r f := by
     ext
-    simp only [ofSuppBddBelow, smul_coeff, RingHom.id_apply]
-    rw [smul_comm]
+    simp only [ofSuppBddBelow, smul_coeff, RingHom.id_apply, smul_comm r]
 
 variable [Semiring R] {V : Type*} [AddCommGroup V] [Module R V]
 
 theorem hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
     (hasseDeriv R k f).coeff n = Ring.choose (n + k) k • f.coeff (n + k) :=
   rfl
-
-theorem hasseDeriv_add (k : ℕ) (f g : LaurentSeries V) : hasseDeriv R k (f + g) =
-    hasseDeriv R k f + hasseDeriv R k g := by
-  simp
-
-theorem hasseDeriv_smul (k : ℕ) (r : R) (f : LaurentSeries V) : hasseDeriv R k (r • f) =
-    r • (hasseDeriv R k f) := by
-  simp
-
-theorem hasseDeriv_coeff_add (k : ℕ) (f g : LaurentSeries V) (n : ℤ) :
-    (hasseDeriv R k (f + g)).coeff n = (hasseDeriv R k f).coeff n +
-     (hasseDeriv R k g).coeff n := by
-  simp
-
-theorem hasseDeriv_coeff_smul {S : Type*} [Monoid S] [DistribMulAction S V] (k : ℕ) (s : S)
-    (f : LaurentSeries V) (n : ℤ) :  (hasseDeriv R k (s • f)).coeff n =
-    s •  (hasseDeriv R k f).coeff n := by
-  simp only [hasseDeriv_apply, smul_coeff, ofSuppBddBelow_coeff]
-  rw [smul_comm]
 
 end HasseDeriv
 
