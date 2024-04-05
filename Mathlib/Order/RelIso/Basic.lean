@@ -798,6 +798,14 @@ theorem symm_apply_rel (e : r ≃r s) {x y} : r (e.symm x) y ↔ s x (e y) := by
   rw [← e.map_rel_iff, e.apply_symm_apply]
 #align rel_iso.symm_apply_rel RelIso.symm_apply_rel
 
+@[simp]
+theorem self_trans_symm (e : r ≃r s) : e.trans e.symm = RelIso.refl r :=
+  ext e.symm_apply_apply
+
+@[simp]
+theorem symm_trans_self (e : r ≃r s) : e.symm.trans e = RelIso.refl s :=
+  ext e.apply_symm_apply
+
 protected theorem bijective (e : r ≃r s) : Bijective e :=
   e.toEquiv.bijective
 #align rel_iso.bijective RelIso.bijective

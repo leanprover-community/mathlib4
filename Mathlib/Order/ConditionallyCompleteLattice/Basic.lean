@@ -1071,7 +1071,7 @@ theorem csSup_eq_csSup_of_forall_exists_le {s t : Set α}
   · simp [csSup_of_not_bddAbove, (not_or.1 B).1, (not_or.1 B).2]
 
 /-- When every element of a set `s` is bounded by an element of a set `t`, and conversely, then
-`s` and `t` have the same supremum. This holds even when the sets may be empty or unbounded. -/
+`s` and `t` have the same infimum. This holds even when the sets may be empty or unbounded. -/
 theorem csInf_eq_csInf_of_forall_exists_le {s t : Set α}
     (hs : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) (ht : ∀ y ∈ t, ∃ x ∈ s, x ≤ y) :
     sInf s = sInf t :=
@@ -1719,7 +1719,7 @@ lemma iSup_coe_lt_top : ⨆ x, (f x : WithTop α) < ⊤ ↔ BddAbove (range f) :
 lemma iInf_coe_eq_top : ⨅ x, (f x : WithTop α) = ⊤ ↔ IsEmpty ι := by simp [isEmpty_iff]
 
 lemma iInf_coe_lt_top : ⨅ i, (f i : WithTop α) < ⊤ ↔ Nonempty ι := by
-  rw [lt_top_iff_ne_top, Ne.def, iInf_coe_eq_top, not_isEmpty_iff]
+  rw [lt_top_iff_ne_top, Ne, iInf_coe_eq_top, not_isEmpty_iff]
 
 end WithTop
 end WithTopBot

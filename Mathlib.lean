@@ -193,6 +193,7 @@ import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Group.Ext
 import Mathlib.Algebra.Group.Freiman
 import Mathlib.Algebra.Group.Hom.Basic
+import Mathlib.Algebra.Group.Hom.CompTypeclasses
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.Group.InjSurj
@@ -312,6 +313,7 @@ import Mathlib.Algebra.Lie.CartanMatrix
 import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.Algebra.Lie.Character
 import Mathlib.Algebra.Lie.Classical
+import Mathlib.Algebra.Lie.Derivation.Basic
 import Mathlib.Algebra.Lie.DirectSum
 import Mathlib.Algebra.Lie.Engel
 import Mathlib.Algebra.Lie.EngelSubalgebra
@@ -400,6 +402,7 @@ import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.Floor.Div
 import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Group.Action
 import Mathlib.Algebra.Order.Group.Bounds
 import Mathlib.Algebra.Order.Group.Cone
 import Mathlib.Algebra.Order.Group.Defs
@@ -1193,6 +1196,7 @@ import Mathlib.CategoryTheory.Limits.ExactFunctor
 import Mathlib.CategoryTheory.Limits.Filtered
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Limits.Final.ParallelPair
 import Mathlib.CategoryTheory.Limits.FinallySmall
 import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.CategoryTheory.Limits.Fubini
@@ -2338,6 +2342,7 @@ import Mathlib.GroupTheory.Coprod.Basic
 import Mathlib.GroupTheory.CoprodI
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Coxeter.Basic
+import Mathlib.GroupTheory.Coxeter.Matrix
 import Mathlib.GroupTheory.Divisible
 import Mathlib.GroupTheory.DoubleCoset
 import Mathlib.GroupTheory.EckmannHilton
@@ -2452,8 +2457,6 @@ import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Buffer.Parser
 import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Init.Data.Int.Basic
-import Mathlib.Init.Data.Int.Bitwise
-import Mathlib.Init.Data.Int.CompLemmas
 import Mathlib.Init.Data.Int.DivMod
 import Mathlib.Init.Data.Int.Lemmas
 import Mathlib.Init.Data.Int.Order
@@ -2461,7 +2464,6 @@ import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Instances
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Basic
-import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Init.Data.Nat.Div
 import Mathlib.Init.Data.Nat.GCD
 import Mathlib.Init.Data.Nat.Lemmas
@@ -2476,13 +2478,11 @@ import Mathlib.Init.Data.Quot
 import Mathlib.Init.Data.Rat.Basic
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Init.Data.Sigma.Lex
-import Mathlib.Init.Data.Subtype.Basic
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Meta.WellFoundedTactics
 import Mathlib.Init.Order.Defs
 import Mathlib.Init.Order.LinearOrder
-import Mathlib.Init.Propext
 import Mathlib.Init.Quot
 import Mathlib.Init.Set
 import Mathlib.Init.ZeroOne
@@ -2715,6 +2715,7 @@ import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Logic.Function.Basic
+import Mathlib.Logic.Function.CompTypeclasses
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Logic.Function.FromTypes
 import Mathlib.Logic.Function.Iterate
@@ -2973,6 +2974,7 @@ import Mathlib.NumberTheory.LSeries.Basic
 import Mathlib.NumberTheory.LSeries.Convergence
 import Mathlib.NumberTheory.LSeries.Convolution
 import Mathlib.NumberTheory.LSeries.Deriv
+import Mathlib.NumberTheory.LSeries.Dirichlet
 import Mathlib.NumberTheory.LSeries.Linearity
 import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
 import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
@@ -3006,6 +3008,7 @@ import Mathlib.NumberTheory.Multiplicity
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding
 import Mathlib.NumberTheory.NumberField.ClassNumber
+import Mathlib.NumberTheory.NumberField.ConvexBody
 import Mathlib.NumberTheory.NumberField.Discriminant
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
@@ -3746,6 +3749,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Defs
 import Mathlib.Topology.Algebra.InfiniteSum.Group
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Algebra.InfiniteSum.NatInt
+import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.InfiniteSum.Ring

@@ -29,8 +29,6 @@ universe uι u v
 
 open Set
 
-open BigOperators
-
 open Pointwise
 
 namespace Submodule
