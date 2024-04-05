@@ -126,10 +126,6 @@ set_option linter.flexible true in
 /--
 error: 'simp' stains '⊢'... [linter.flexible]
 ---
-info: ... and 'congr' uses '⊢'!
----
-error: 'simp' stains '⊢'... [linter.flexible]
----
 info: ... and 'exact h.symm' uses '⊢'!
 -/
 #guard_msgs in
@@ -139,6 +135,11 @@ example {a b : Nat} (h : a = b) : a + b + 0 = b + a := by
   congr
   exact h.symm
 
+-- `done` is an allowed follower
+#guard_msgs in
+example (h : False) : 0 ≠ 0 := by
+  try (simp; done)
+  exact h.elim
 
 --  `abel_nf` is a `rigidifier`: the "stain" of `simp` does not continue past `abel_nf`.
 #guard_msgs in
