@@ -200,6 +200,8 @@ open UnivLE
 instance hasLimit [Small.{u} J] (F : J ⥤ Type u) : HasLimit F :=
   (Small.hasLimit_iff_small_sections F).mpr inferInstance
 
+instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J (Type u) where
+
 /--
 The category of types has all limits.
 
