@@ -377,24 +377,6 @@ theorem FormallySmooth.iff_split_surjection [FormallySmooth R P] :
   · rintro ⟨g, hg⟩; exact FormallySmooth.of_split f g hg
 #align algebra.formally_smooth.iff_split_surjection Algebra.FormallySmooth.iff_split_surjection
 
-open KaehlerDifferential in
-theorem FormallySmooth.iff_split_injection [FormallySmooth R P]
-    [Algebra P A] [IsScalarTower R P A] (h : Function.Surjective (algebraMap P A)) :
-    FormallySmooth R A ↔ ∃ l, l ∘ₗ tensorKerCotangentToTensor R P A = LinearMap.id := by
-  rw [iff_split_surjection (IsScalarTower.toAlgHom R P A) h, ← nonempty_subtype,
-    ← nonempty_subtype, (tensorKerCotangentToTensorRetractionEquiv R h).nonempty_congr]
-  rfl
-
-instance : Algebra (MvPolynomial A R) A := (MvPolynomial.aeval _root_.id).toAlgebra
-
-instance : IsScalarTower R (MvPolynomial A R) A :=
-  IsScalarTower.of_algebraMap_eq' (MvPolynomial.aeval _root_.id).comp_algebraMap.symm
-
-noncomputable
-def _root_.KaehlerDifferential.kerTensorKerCotangentToTensor :
-    Submodule A (A ⊗[MvPolynomial A R] RingHom.ker (algebraMap (MvPolynomial A R) A)) :=
-  LinearMap.ker (KaehlerDifferential.tensorKerCotangentToTensor R _ A)
-
 end OfSurjective
 
 section UnramifiedDerivation
@@ -574,11 +556,5 @@ theorem FormallyEtale.localization_map [FormallyEtale R S] : FormallyEtale Rₘ 
 #align algebra.formally_etale.localization_map Algebra.FormallyEtale.localization_map
 
 end Localization
-
-section ExactSequence
-
-
-
-end ExactSequence
 
 end Algebra
