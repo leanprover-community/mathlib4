@@ -154,7 +154,7 @@ theorem map_comp : (c.map f).map g = c.map (g.comp f) :=
 
 @[mono]
 theorem map_le_map {g : α →o β} (h : f ≤ g) : c.map f ≤ c.map g :=
-  fun i => by simp [mem_map_iff]; intros; exists i; apply h
+  fun i => by simp [mem_map_iff]; exists i; apply h
 #align omega_complete_partial_order.chain.map_le_map OmegaCompletePartialOrder.Chain.map_le_map
 
 /-- `OmegaCompletePartialOrder.Chain.zip` pairs up the elements of two chains
@@ -194,7 +194,6 @@ class OmegaCompletePartialOrder (α : Type*) extends PartialOrder α where
 namespace OmegaCompletePartialOrder
 
 variable {α : Type u} {β : Type v} {γ : Type*}
-
 variable [OmegaCompletePartialOrder α]
 
 /-- Transfer an `OmegaCompletePartialOrder` on `β` to an `OmegaCompletePartialOrder` on `α`
@@ -584,7 +583,6 @@ end CompleteLattice
 namespace OmegaCompletePartialOrder
 
 variable {α : Type u} {α' : Type*} {β : Type v} {β' : Type*} {γ : Type*} {φ : Type*}
-
 variable [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β]
 variable [OmegaCompletePartialOrder γ] [OmegaCompletePartialOrder φ]
 variable [OmegaCompletePartialOrder α'] [OmegaCompletePartialOrder β']

@@ -24,7 +24,6 @@ subgroup, subgroups
 
 
 variable {G : Type*} [Group G]
-
 variable {A : Type*} [AddGroup A]
 
 section

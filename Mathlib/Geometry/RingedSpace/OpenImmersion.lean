@@ -590,7 +590,6 @@ open CategoryTheory.Limits.WalkingCospan
 section ToSheafedSpace
 
 variable {X : PresheafedSpace C} (Y : SheafedSpace C)
-
 variable (f : X ⟶ Y.toPresheafedSpace) [H : IsOpenImmersion f]
 
 /-- If `X ⟶ Y` is an open immersion, and `Y` is a SheafedSpace, then so is `X`. -/
@@ -638,7 +637,6 @@ end ToSheafedSpace
 section ToLocallyRingedSpace
 
 variable {X : PresheafedSpace CommRingCat} (Y : LocallyRingedSpace)
-
 variable (f : X ⟶ Y.toPresheafedSpace) [H : IsOpenImmersion f]
 
 /-- If `X ⟶ Y` is an open immersion, and `Y` is a LocallyRingedSpace, then so is `X`. -/
@@ -707,7 +705,6 @@ instance comp {X Y Z : SheafedSpace C} (f : X ⟶ Y) (g : Y ⟶ Z) [SheafedSpace
 noncomputable section Pullback
 
 variable {X Y Z : SheafedSpace C} (f : X ⟶ Z) (g : Y ⟶ Z)
-
 variable [H : SheafedSpace.IsOpenImmersion f]
 
 -- Porting note: in mathlib3, this local notation is often followed by a space to avoid confusion
@@ -824,7 +821,6 @@ end Pullback
 section OfStalkIso
 
 variable [HasLimits C] [HasColimits C] [ConcreteCategory C]
-
 variable [ReflectsIsomorphisms (CategoryTheory.forget C)]
   [PreservesLimits (CategoryTheory.forget C)]
 
@@ -952,7 +948,6 @@ namespace LocallyRingedSpace.IsOpenImmersion
 noncomputable section Pullback
 
 variable {X Y Z : LocallyRingedSpace} (f : X ⟶ Z) (g : Y ⟶ Z)
-
 variable [H : LocallyRingedSpace.IsOpenImmersion f]
 
 instance (priority := 100) of_isIso [IsIso g] : LocallyRingedSpace.IsOpenImmersion g :=

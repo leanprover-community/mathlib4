@@ -518,7 +518,6 @@ Composition of qpfs.
 namespace QPF
 
 variable {F₂ : Type u → Type u} [Functor F₂] [q₂ : QPF F₂]
-
 variable {F₁ : Type u → Type u} [Functor F₁] [q₁ : QPF F₁]
 
 /-- composition of qpfs gives another qpf -/
@@ -574,11 +573,8 @@ We show that if `F` is a qpf and `G` is a suitable quotient of `F`, then `G` is 
 namespace QPF
 
 variable {F : Type u → Type u} [Functor F] [q : QPF F]
-
 variable {G : Type u → Type u} [Functor G]
-
 variable {FG_abs : ∀ {α}, F α → G α}
-
 variable {FG_repr : ∀ {α}, G α → F α}
 
 /-- Given a qpf `F` and a well-behaved surjection `FG_abs` from `F α` to

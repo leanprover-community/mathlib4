@@ -394,7 +394,7 @@ theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
 #align filter.mem_generate_iff Filter.mem_generate_iff
 
 @[simp] lemma generate_singleton (s : Set α) : generate {s} = 𝓟 s :=
-  le_antisymm (λ _t ht ↦ mem_of_superset (mem_generate_of_mem <| mem_singleton _) ht) <|
+  le_antisymm (fun _t ht ↦ mem_of_superset (mem_generate_of_mem <| mem_singleton _) ht) <|
     le_generate_iff.2 <| singleton_subset_iff.2 Subset.rfl
 
 /-- `mk_of_closure s hs` constructs a filter on `α` whose elements set is exactly
@@ -530,7 +530,7 @@ theorem neBot_of_le {f g : Filter α} [hf : NeBot f] (hg : f ≤ g) : NeBot g :=
 #align filter.ne_bot_of_le Filter.neBot_of_le
 
 @[simp] theorem sup_neBot {f g : Filter α} : NeBot (f ⊔ g) ↔ NeBot f ∨ NeBot g := by
-  simp only [neBot_iff, not_and_or, Ne.def, sup_eq_bot_iff]
+  simp only [neBot_iff, not_and_or, Ne, sup_eq_bot_iff]
 #align filter.sup_ne_bot Filter.sup_neBot
 
 theorem not_disjoint_self_iff : ¬Disjoint f f ↔ f.NeBot := by rw [disjoint_self, neBot_iff]
@@ -1330,7 +1330,7 @@ theorem Eventually.exists {p : α → Prop} {f : Filter α} [NeBot f] (hp : ∀�
 #align filter.eventually.exists Filter.Eventually.exists
 
 lemma frequently_iff_neBot {p : α → Prop} : (∃ᶠ x in l, p x) ↔ NeBot (l ⊓ 𝓟 {x | p x}) := by
-  rw [neBot_iff, Ne.def, inf_principal_eq_bot]; rfl
+  rw [neBot_iff, Ne, inf_principal_eq_bot]; rfl
 
 lemma frequently_mem_iff_neBot {s : Set α} : (∃ᶠ x in l, x ∈ s) ↔ NeBot (l ⊓ 𝓟 s) :=
   frequently_iff_neBot
@@ -1477,7 +1477,7 @@ theorem EventuallyEq.rw {l : Filter α} {f g : α → β} (h : f =ᶠ[l] g) (p :
 #align filter.eventually_eq.rw Filter.EventuallyEq.rw
 
 theorem eventuallyEq_set {s t : Set α} {l : Filter α} : s =ᶠ[l] t ↔ ∀ᶠ x in l, x ∈ s ↔ x ∈ t :=
-  eventually_congr <| eventually_of_forall fun _ => ⟨Eq.to_iff, Iff.to_eq⟩
+  eventually_congr <| eventually_of_forall fun _ ↦ eq_iff_iff
 #align filter.eventually_eq_set Filter.eventuallyEq_set
 
 alias ⟨EventuallyEq.mem_iff, Eventually.set_eq⟩ := eventuallyEq_set
@@ -1509,7 +1509,7 @@ theorem EventuallyEq.filter_mono {l l' : Filter α} {f g : α → β} (h₁ : f 
   h₂ h₁
 #align filter.eventually_eq.filter_mono Filter.EventuallyEq.filter_mono
 
-@[refl]
+@[refl, simp]
 theorem EventuallyEq.refl (l : Filter α) (f : α → β) : f =ᶠ[l] f :=
   eventually_of_forall fun _ => rfl
 #align filter.eventually_eq.refl Filter.EventuallyEq.refl

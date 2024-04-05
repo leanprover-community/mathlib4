@@ -194,7 +194,7 @@ theorem nonempty_support : (support f).Nonempty :=
 
 theorem isCompact_symm_image_closedBall :
     IsCompact ((extChartAt I c).symm '' (closedBall (extChartAt I c c) f.rOut ∩ range I)) :=
-  ((isCompact_closedBall _ _).inter_right I.closed_range).image_of_continuousOn <|
+  ((isCompact_closedBall _ _).inter_right I.isClosed_range).image_of_continuousOn <|
     (continuousOn_extChartAt_symm _ _).mono f.closedBall_subset
 #align smooth_bump_function.is_compact_symm_image_closed_ball SmoothBumpFunction.isCompact_symm_image_closedBall
 
@@ -217,7 +217,7 @@ theorem isClosed_image_of_isClosed {s : Set M} (hsc : IsClosed s) (hs : s ⊆ su
   rw [f.image_eq_inter_preimage_of_subset_support hs]
   refine' ContinuousOn.preimage_isClosed_of_isClosed
     ((continuousOn_extChartAt_symm _ _).mono f.closedBall_subset) _ hsc
-  exact IsClosed.inter isClosed_ball I.closed_range
+  exact IsClosed.inter isClosed_ball I.isClosed_range
 #align smooth_bump_function.is_closed_image_of_is_closed SmoothBumpFunction.isClosed_image_of_isClosed
 
 /-- If `f` is a smooth bump function and `s` closed subset of the support of `f` (i.e., of the open

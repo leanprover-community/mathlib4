@@ -3,9 +3,8 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Field.IsField
-import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Logic.Equiv.Set
@@ -285,7 +284,7 @@ theorem symm_symm (e : R ≃+* S) : e.symm.symm = e :=
   ext fun _ => rfl
 #align ring_equiv.symm_symm RingEquiv.symm_symm
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem symm_refl : (RingEquiv.refl R).symm = RingEquiv.refl R :=
   rfl
@@ -831,15 +830,18 @@ def ofHomInv {R S F G : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
 
 end SemiringHom
 
-section GroupPower
-
 variable [Semiring R] [Semiring S]
+
+section GroupPower
 
 protected theorem map_pow (f : R ≃+* S) (a) : ∀ n : ℕ, f (a ^ n) = f a ^ n :=
   map_pow f a
 #align ring_equiv.map_pow RingEquiv.map_pow
 
 end GroupPower
+
+protected theorem isUnit_iff (f : R ≃+* S) {a} : IsUnit (f a) ↔ IsUnit a :=
+  MulEquiv.map_isUnit_iff f
 
 end RingEquiv
 
@@ -898,15 +900,8 @@ protected theorem isDomain {A : Type*} (B : Type*) [Semiring A] [Semiring B] [Is
     exists_pair_ne := ⟨e.symm 0, e.symm 1, e.symm.injective.ne zero_ne_one⟩ }
 #noalign ring_equiv.is_domain
 
-protected theorem isField {A : Type*} (B : Type*) [Semiring A] [Semiring B] (hB : IsField B)
-    (e : A ≃* B) : IsField A where
-  exists_pair_ne := have ⟨x, y, h⟩ := hB.exists_pair_ne; ⟨e.symm x, e.symm y, e.symm.injective.ne h⟩
-  mul_comm := fun x y => e.injective <| by rw [map_mul, map_mul, hB.mul_comm]
-  mul_inv_cancel := fun h => by
-    obtain ⟨a', he⟩ := hB.mul_inv_cancel ((e.injective.ne h).trans_eq <| map_zero e)
-    exact ⟨e.symm a', e.injective <| by rw [map_mul, map_one, e.apply_symm_apply, he]⟩
-
 end MulEquiv
 
 -- guard against import creep
+assert_not_exists Field
 assert_not_exists Fintype

@@ -333,7 +333,7 @@ The `Fin.pos_iff_ne_zero` in `Std` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
-  rw [← val_fin_lt, val_zero', _root_.pos_iff_ne_zero, Ne.def, Ne.def, ext_iff, val_zero']
+  rw [← val_fin_lt, val_zero', _root_.pos_iff_ne_zero, Ne, Ne, ext_iff, val_zero']
 #align fin.pos_iff_ne_zero Fin.pos_iff_ne_zero'
 
 #align fin.eq_zero_or_eq_succ Fin.eq_zero_or_eq_succ
@@ -544,12 +544,12 @@ instance addCommSemigroup (n : ℕ) : AddCommSemigroup (Fin n) where
   add_comm := by simp [ext_iff, add_def, add_comm]
 #align fin.add_comm_semigroup Fin.addCommSemigroup
 
--- Porting note: removing `simp`, `simp` can prove it with AddCommMonoid instance
+-- Porting note (#10618): removing `simp`, `simp` can prove it with AddCommMonoid instance
 protected theorem add_zero [NeZero n] (k : Fin n) : k + 0 = k := by
   simp only [add_def, val_zero', add_zero, mod_eq_of_lt (is_lt k)]
 #align fin.add_zero Fin.add_zero
 
--- Porting note: removing `simp`, `simp` can prove it with AddCommMonoid instance
+-- Porting note (#10618): removing `simp`, `simp` can prove it with AddCommMonoid instance
 protected theorem zero_add [NeZero n] (k : Fin n) : 0 + k = k := by
   simp [ext_iff, add_def, mod_eq_of_lt (is_lt k)]
 #align fin.zero_add Fin.zero_add
@@ -673,9 +673,9 @@ theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).
   Nat.mod_eq_of_lt h
 #align fin.coe_val_of_lt Fin.val_cast_of_lt
 
-/-- Converting the value of a `Fin (n + 1)` to `Fin (n + 1)` results
+/-- If `n` is non-zero, converting the value of a `Fin n` to `Fin n` results
 in the same value.  -/
-theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a :=
+@[simp] theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a :=
   ext <| val_cast_of_lt a.isLt
 #align fin.coe_val_eq_self Fin.cast_val_eq_self
 
@@ -807,6 +807,11 @@ theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
 
 theorem strictMono_castLE (h : n ≤ m) : StrictMono (castLE h : Fin n → Fin m) :=
   fun _ _ h => h
+
+lemma castLE_injective (hmn : m ≤ n) : Injective (castLE hmn) := (strictMono_castLE _).injective
+
+@[simp] lemma castLE_inj {hmn : m ≤ n} {a b : Fin m} : castLE hmn a = castLE hmn b ↔ a = b :=
+  (castLE_injective _).eq_iff
 
 /-- `Fin.castLE` as an `OrderEmbedding`, `castLEEmb h i` embeds `i` into a larger `Fin` type.  -/
 @[simps! apply toEmbedding]
@@ -1081,6 +1086,9 @@ theorem coe_eq_castSucc {a : Fin n} : (a : Fin (n + 1)) = castSucc a := by
   ext
   exact val_cast_of_lt (Nat.lt.step a.is_lt)
 #align fin.coe_eq_cast_succ Fin.coe_eq_castSucc
+
+theorem coe_succ_lt_iff_lt {n : ℕ} {j k : Fin n} : (j : Fin <| n + 1) < k ↔ j < k := by
+  simp only [coe_eq_castSucc]; rfl
 
 #align fin.coe_succ_eq_succ Fin.coeSucc_eq_succ
 

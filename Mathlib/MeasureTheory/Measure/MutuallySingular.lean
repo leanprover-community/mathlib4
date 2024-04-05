@@ -154,6 +154,12 @@ theorem smul_nnreal (r : ℝ≥0) (h : ν ⟂ₘ μ) : r • ν ⟂ₘ μ :=
 
 end MutuallySingular
 
+lemma eq_zero_of_absolutelyContinuous_of_mutuallySingular {μ ν : Measure α}
+    (h_ac : μ ≪ ν) (h_ms : μ ⟂ₘ ν) :
+    μ = 0 := by
+  rw [← Measure.MutuallySingular.self_iff]
+  exact h_ms.mono_ac Measure.AbsolutelyContinuous.rfl h_ac
+
 end Measure
 
 end MeasureTheory

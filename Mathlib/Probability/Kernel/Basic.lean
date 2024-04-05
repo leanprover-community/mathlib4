@@ -169,6 +169,10 @@ instance IsFiniteKernel.add (κ η : kernel α β) [IsFiniteKernel κ] [IsFinite
   exact add_le_add (kernel.measure_le_bound _ _ _) (kernel.measure_le_bound _ _ _)
 #align probability_theory.is_finite_kernel.add ProbabilityTheory.IsFiniteKernel.add
 
+lemma isFiniteKernel_of_le {κ ν : kernel α β} [hν : IsFiniteKernel ν] (hκν : κ ≤ ν) :
+    IsFiniteKernel κ := by
+  refine ⟨hν.bound, hν.bound_lt_top, fun a ↦ (hκν _ _).trans (kernel.measure_le_bound ν a Set.univ)⟩
+
 variable {κ : kernel α β}
 
 instance IsMarkovKernel.is_probability_measure' [IsMarkovKernel κ] (a : α) :

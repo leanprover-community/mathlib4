@@ -46,12 +46,14 @@ universe u v w
 
 variable {α : Type u} {β : Type v} {X ι : Type*}
 
+theorem UniformSpace.ofDist_aux (ε : ℝ) (hε : 0 < ε) : ∃ δ > (0 : ℝ), ∀ x < δ, ∀ y < δ, x + y < ε :=
+  ⟨ε / 2, half_pos hε, fun _x hx _y hy => add_halves ε ▸ add_lt_add hx hy⟩
+
 /-- Construct a uniform structure from a distance function and metric space axioms -/
 def UniformSpace.ofDist (dist : α → α → ℝ) (dist_self : ∀ x : α, dist x x = 0)
     (dist_comm : ∀ x y : α, dist x y = dist y x)
     (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z) : UniformSpace α :=
-  .ofFun dist dist_self dist_comm dist_triangle fun ε ε0 =>
-    ⟨ε / 2, half_pos ε0, fun _x hx _y hy => add_halves ε ▸ add_lt_add hx hy⟩
+  .ofFun dist dist_self dist_comm dist_triangle ofDist_aux
 #align uniform_space_of_dist UniformSpace.ofDist
 
 -- Porting note: dropped the `dist_self` argument
@@ -162,10 +164,10 @@ def PseudoMetricSpace.ofDistTopology {α : Type u} [TopologicalSpace α] (dist :
     dist_triangle := dist_triangle
     edist_dist := fun x y => by exact ENNReal.coe_nnreal_eq _
     toUniformSpace :=
-      { toCore := (UniformSpace.ofDist dist dist_self dist_comm dist_triangle).toCore
-        isOpen_uniformity := fun s => (H s).trans <| forall₂_congr fun x _ =>
-          ((UniformSpace.hasBasis_ofFun (exists_gt (0 : ℝ)) dist _ _ _ _).comap
-            (Prod.mk x)).mem_iff.symm.trans mem_comap_prod_mk }
+      (UniformSpace.ofDist dist dist_self dist_comm dist_triangle).replaceTopology <|
+        TopologicalSpace.ext_iff.2 fun s ↦ (H s).trans <| forall₂_congr fun x _ ↦
+          ((UniformSpace.hasBasis_ofFun (exists_gt (0 : ℝ)) dist dist_self dist_comm dist_triangle
+            UniformSpace.ofDist_aux).comap (Prod.mk x)).mem_iff.symm
     uniformity_dist := rfl
     toBornology := Bornology.ofDist dist dist_comm dist_triangle
     cobounded_sets := rfl }
@@ -664,7 +666,7 @@ theorem iUnion_inter_closedBall_nat (s : Set α) (x : α) : ⋃ n : ℕ, s ∩ c
 #align metric.Union_inter_closed_ball_nat Metric.iUnion_inter_closedBall_nat
 
 theorem ball_subset (h : dist x y ≤ ε₂ - ε₁) : ball x ε₁ ⊆ ball y ε₂ := fun z zx => by
-  rw [← add_sub_cancel'_right ε₁ ε₂]
+  rw [← add_sub_cancel ε₁ ε₂]
   exact lt_of_le_of_lt (dist_triangle z x y) (add_lt_add_of_lt_of_le zx h)
 #align metric.ball_subset Metric.ball_subset
 
@@ -1152,7 +1154,7 @@ open Metric
 we need to show that the uniform structure coming from the edistance and the
 distance coincide. -/
 
--- Porting note: new
+-- Porting note (#10756): new theorem
 theorem Metric.uniformity_edist_aux {α} (d : α → α → ℝ≥0) :
     ⨅ ε > (0 : ℝ), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε } =
       ⨅ ε > (0 : ℝ≥0∞), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε } := by
@@ -1395,13 +1397,13 @@ theorem Real.closedBall_eq_Icc {x r : ℝ} : closedBall x r = Icc (x - r) (x + r
 #align real.closed_ball_eq_Icc Real.closedBall_eq_Icc
 
 theorem Real.Ioo_eq_ball (x y : ℝ) : Ioo x y = ball ((x + y) / 2) ((y - x) / 2) := by
-  rw [Real.ball_eq_Ioo, ← sub_div, add_comm, ← sub_add, add_sub_cancel', add_self_div_two,
-    ← add_div, add_assoc, add_sub_cancel'_right, add_self_div_two]
+  rw [Real.ball_eq_Ioo, ← sub_div, add_comm, ← sub_add, add_sub_cancel_left, add_self_div_two,
+    ← add_div, add_assoc, add_sub_cancel, add_self_div_two]
 #align real.Ioo_eq_ball Real.Ioo_eq_ball
 
 theorem Real.Icc_eq_closedBall (x y : ℝ) : Icc x y = closedBall ((x + y) / 2) ((y - x) / 2) := by
-  rw [Real.closedBall_eq_Icc, ← sub_div, add_comm, ← sub_add, add_sub_cancel', add_self_div_two, ←
-    add_div, add_assoc, add_sub_cancel'_right, add_self_div_two]
+  rw [Real.closedBall_eq_Icc, ← sub_div, add_comm, ← sub_add, add_sub_cancel_left, add_self_div_two,
+    ← add_div, add_assoc, add_sub_cancel, add_self_div_two]
 #align real.Icc_eq_closed_ball Real.Icc_eq_closedBall
 
 section MetricOrdered
@@ -1481,6 +1483,9 @@ theorem eventually_closedBall_subset {x : α} {u : Set α} (hu : u ∈ 𝓝 x) :
   have : Iic ε ∈ 𝓝 (0 : ℝ) := Iic_mem_nhds εpos
   filter_upwards [this] with _ hr using Subset.trans (closedBall_subset_closedBall hr) hε
 #align eventually_closed_ball_subset eventually_closedBall_subset
+
+theorem tendsto_closedBall_smallSets (x : α) : Tendsto (closedBall x) (𝓝 0) (𝓝 x).smallSets :=
+  tendsto_smallSets_iff.2 fun _ ↦ eventually_closedBall_subset
 
 end Real
 

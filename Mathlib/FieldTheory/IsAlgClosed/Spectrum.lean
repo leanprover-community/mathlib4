@@ -14,9 +14,9 @@ import Mathlib.FieldTheory.IsAlgClosed.Basic
 This file develops proves the spectral mapping theorem for polynomials over algebraically closed
 fields. In particular, if `a` is an element of a `𝕜`-algebra `A` where `𝕜` is a field, and
 `p : 𝕜[X]` is a polynomial, then the spectrum of `Polynomial.aeval a p` contains the image of the
-spectrum of `a` under `(λ k, Polynomial.eval k p)`. When `𝕜` is algebraically closed, these are in
-fact equal (assuming either that the spectrum of `a` is nonempty or the polynomial has positive
-degree), which is the **spectral mapping theorem**.
+spectrum of `a` under `(fun k ↦ Polynomial.eval k p)`. When `𝕜` is algebraically closed,
+these are in fact equal (assuming either that the spectrum of `a` is nonempty or the polynomial
+has positive degree), which is the **spectral mapping theorem**.
 
 In addition, this file contains the fact that every element of a finite dimensional nontrivial
 algebra over an algebraically closed field has nonempty spectrum. In particular, this is used in
@@ -46,7 +46,6 @@ universe u v
 section ScalarRing
 
 variable {R : Type u} {A : Type v}
-
 variable [CommRing R] [Ring A] [Algebra R A]
 
 local notation "σ" => spectrum R
@@ -69,7 +68,6 @@ end ScalarRing
 section ScalarField
 
 variable {𝕜 : Type u} {A : Type v}
-
 variable [Field 𝕜] [Ring A] [Algebra 𝕜 A]
 
 local notation "σ" => spectrum 𝕜
@@ -83,7 +81,7 @@ because it holds over any field, whereas `spectrum.map_polynomial_aeval_of_degre
 theorem subset_polynomial_aeval (a : A) (p : 𝕜[X]) : (eval · p) '' σ a ⊆ σ (aeval a p) := by
   rintro _ ⟨k, hk, rfl⟩
   let q := C (eval k p) - p
-  have hroot : IsRoot q k := by simp only [q, eval_C, eval_sub, sub_self, IsRoot.def]
+  have hroot : IsRoot q k := by simp only [q, eval_C, eval_sub, sub_self, IsRoot.definition]
   rw [← mul_div_eq_iff_isRoot, ← neg_mul_neg, neg_sub] at hroot
   have aeval_q_eq : ↑ₐ (eval k p) - aeval a p = aeval a q := by
     simp only [q, aeval_C, AlgHom.map_sub, sub_left_inj]

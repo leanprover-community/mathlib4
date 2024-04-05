@@ -217,7 +217,7 @@ theorem odd_coe_nat (n : ℕ) : Odd (n : ℤ) ↔ Odd n := by
 
 @[simp]
 theorem natAbs_even : Even n.natAbs ↔ Even n := by
-  simp [even_iff_two_dvd, dvd_natAbs, coe_nat_dvd_left.symm]
+  simp [even_iff_two_dvd, dvd_natAbs, natCast_dvd.symm]
 #align int.nat_abs_even Int.natAbs_even
 
 -- Porting note (#10618): was simp. simp can prove this.
@@ -245,7 +245,7 @@ theorem four_dvd_add_or_sub_of_odd {a b : ℤ} (ha : Odd a) (hb : Odd b) :
     rw [Int.even_add, ← Int.even_sub] at h
     obtain ⟨k, hk⟩ := h
     convert dvd_mul_right 4 k using 1
-    rw [eq_add_of_sub_eq hk, mul_add, add_assoc, add_sub_cancel, ← two_mul, ← mul_assoc]
+    rw [eq_add_of_sub_eq hk, mul_add, add_assoc, add_sub_cancel_right, ← two_mul, ← mul_assoc]
     rfl
   · left
     obtain ⟨k, hk⟩ := h

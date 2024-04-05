@@ -71,7 +71,6 @@ namespace PrimeSpectrum
 section CommSemiRing
 
 variable [CommSemiring R] [CommSemiring S]
-
 variable {R S}
 
 instance [Nontrivial R] : Nonempty <| PrimeSpectrum R :=
@@ -517,7 +516,7 @@ theorem isIrreducible_zeroLocus_iff_of_radical (I : Ideal R) (hI : I.IsRadical) 
     IsIrreducible (zeroLocus (I : Set R)) ↔ I.IsPrime := by
   rw [Ideal.isPrime_iff, IsIrreducible]
   apply and_congr
-  · rw [Set.nonempty_iff_ne_empty, Ne.def, zeroLocus_empty_iff_eq_top]
+  · rw [Set.nonempty_iff_ne_empty, Ne, zeroLocus_empty_iff_eq_top]
   · trans ∀ x y : Ideal R, Z(I) ⊆ Z(x) ∪ Z(y) → Z(I) ⊆ Z(x) ∨ Z(I) ⊆ Z(y)
     · simp_rw [isPreirreducible_iff_closed_union_closed, isClosed_iff_zeroLocus_ideal]
       constructor
@@ -761,7 +760,7 @@ theorem isClosed_range_comap_of_surjective (hf : Surjective f) :
 theorem closedEmbedding_comap_of_surjective (hf : Surjective f) : ClosedEmbedding (comap f) :=
   { induced := (comap_inducing_of_surjective S f hf).induced
     inj := comap_injective_of_surjective f hf
-    closed_range := isClosed_range_comap_of_surjective S f hf }
+    isClosed_range := isClosed_range_comap_of_surjective S f hf }
 #align prime_spectrum.closed_embedding_comap_of_surjective PrimeSpectrum.closedEmbedding_comap_of_surjective
 
 end SpecOfSurjective
@@ -875,7 +874,7 @@ theorem localization_away_comap_range (S : Type v) [CommSemiring S] [Algebra R S
 theorem localization_away_openEmbedding (S : Type v) [CommSemiring S] [Algebra R S] (r : R)
     [IsLocalization.Away r S] : OpenEmbedding (comap (algebraMap R S)) :=
   { toEmbedding := localization_comap_embedding S (Submonoid.powers r)
-    open_range := by
+    isOpen_range := by
       rw [localization_away_comap_range S r]
       exact isOpen_basicOpen }
 #align prime_spectrum.localization_away_open_embedding PrimeSpectrum.localization_away_openEmbedding
@@ -962,6 +961,22 @@ protected def pointsEquivIrreducibleCloseds :
   __ := irreducibleSetEquivPoints.toEquiv.symm.trans OrderDual.toDual
   map_rel_iff' {p q} :=
     (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans (le_iff_specializes p q).symm
+
+section LocalizationAtMinimal
+
+variable {I : Ideal R} [hI : I.IsPrime]
+
+/--
+Localizations at minimal primes have single-point prime spectra.
+-/
+def primeSpectrum_unique_of_localization_at_minimal (h : I ∈ minimalPrimes R) :
+    Unique (PrimeSpectrum (Localization.AtPrime I)) where
+  default :=
+    ⟨LocalRing.maximalIdeal (Localization I.primeCompl),
+    (LocalRing.maximalIdeal.isMaximal _).isPrime⟩
+  uniq x := PrimeSpectrum.ext _ _ (Localization.AtPrime.prime_unique_of_minimal h x.asIdeal)
+
+end LocalizationAtMinimal
 
 end CommSemiRing
 
