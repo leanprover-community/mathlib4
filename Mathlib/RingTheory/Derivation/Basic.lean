@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
 import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.Polynomial.Derivative
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Derivative
 
 #align_import ring_theory.derivation.basic from "leanprover-community/mathlib"@"b608348ffaeb7f557f2fd46876037abafd326ff3"
 
