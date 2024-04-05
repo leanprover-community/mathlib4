@@ -71,7 +71,7 @@ class HSpace (X : Type u) [TopologicalSpace X] where
     (hmul.comp <| (ContinuousMap.id X).prodMk <| const X e).HomotopyRel (ContinuousMap.id X) {e}
 #align H_space HSpace
 
--- We use the notation `⋀`, typeset as \And, to denote the binary operation `hmul` on an H-space
+/-- The binary operation `hmul` on an `H`-space -/
 scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
 
 -- Porting note: opening `HSpaces` so that the above notation works

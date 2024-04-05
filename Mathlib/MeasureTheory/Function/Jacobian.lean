@@ -380,7 +380,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
   have L : Tendsto (fun a => (m : ℝ≥0∞) * (μ s + a)) (𝓝[>] 0) (𝓝 (m * (μ s + 0))) := by
     apply Tendsto.mono_left _ nhdsWithin_le_nhds
     apply ENNReal.Tendsto.const_mul (tendsto_const_nhds.add tendsto_id)
-    simp only [ENNReal.coe_ne_top, Ne.def, or_true_iff, not_false_iff]
+    simp only [ENNReal.coe_ne_top, Ne, or_true_iff, not_false_iff]
   rw [add_zero] at L
   exact ge_of_tendsto L J
 #align measure_theory.add_haar_image_le_mul_of_det_lt MeasureTheory.addHaar_image_le_mul_of_det_lt
@@ -437,7 +437,7 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
       · simpa only [H, zero_mul] using tendsto_const_nhds
       refine' Tendsto.mul (tendsto_const_nhds.mul _) tendsto_id
       refine' (Tendsto.sub tendsto_const_nhds tendsto_id).inv₀ _
-      simpa only [tsub_zero, inv_eq_zero, Ne.def] using H
+      simpa only [tsub_zero, inv_eq_zero, Ne] using H
     simp only [mul_zero] at this
     exact (tendsto_order.1 this).2 δ₀ δ₀pos
   -- let `δ` be small enough, and `f` approximated by `B` up to `δ`.
@@ -451,8 +451,8 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
     rwa [← F.symm_image_target_eq_source, mul_comm, ← ENNReal.le_div_iff_mul_le, div_eq_mul_inv,
       mul_comm, ← ENNReal.coe_inv mpos.ne']
     · apply Or.inl
-      simpa only [ENNReal.coe_eq_zero, Ne.def] using mpos.ne'
-    · simp only [ENNReal.coe_ne_top, true_or_iff, Ne.def, not_false_iff]
+      simpa only [ENNReal.coe_eq_zero, Ne] using mpos.ne'
+    · simp only [ENNReal.coe_ne_top, true_or_iff, Ne, not_false_iff]
   -- as `f⁻¹` is well approximated by `B⁻¹`, the conclusion follows from `hδ₀`
   -- and our choice of `δ`.
   exact hδ₀ _ _ ((hf'.to_inv h1δ).mono_num h2δ.le)
@@ -959,8 +959,8 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
     have I : (m : ℝ≥0∞) < ENNReal.ofReal |A.det| := by
       simp only [m, ENNReal.ofReal, ENNReal.coe_sub]
       apply ENNReal.sub_lt_self ENNReal.coe_ne_top
-      · simpa only [abs_nonpos_iff, Real.toNNReal_eq_zero, ENNReal.coe_eq_zero, Ne.def] using hA
-      · simp only [εpos.ne', ENNReal.coe_eq_zero, Ne.def, not_false_iff]
+      · simpa only [abs_nonpos_iff, Real.toNNReal_eq_zero, ENNReal.coe_eq_zero, Ne] using hA
+      · simp only [εpos.ne', ENNReal.coe_eq_zero, Ne, not_false_iff]
     rcases ((mul_le_addHaar_image_of_lt_det μ A I).and self_mem_nhdsWithin).exists with ⟨δ, h, δpos⟩
     refine' ⟨min δ δ'', lt_min δpos (half_pos δ'pos), _, _⟩
     · intro B hB
@@ -968,11 +968,11 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
       simp only [le_refl, NNReal.coe_min, min_le_iff, or_true_iff]
     · intro t g htg
       rcases eq_or_ne (μ t) ∞ with (ht | ht)
-      · simp only [ht, εpos.ne', ENNReal.mul_top, ENNReal.coe_eq_zero, le_top, Ne.def,
+      · simp only [ht, εpos.ne', ENNReal.mul_top, ENNReal.coe_eq_zero, le_top, Ne,
           not_false_iff, _root_.add_top]
       have := h t g (htg.mono_num (min_le_left _ _))
       rwa [ENNReal.coe_sub, ENNReal.sub_mul, tsub_le_iff_right] at this
-      simp only [ht, imp_true_iff, Ne.def, not_false_iff]
+      simp only [ht, imp_true_iff, Ne, not_false_iff]
   choose δ hδ using this
   obtain ⟨t, A, t_disj, t_meas, t_cover, ht, -⟩ :
     ∃ (t : ℕ → Set E) (A : ℕ → E →L[ℝ] E),

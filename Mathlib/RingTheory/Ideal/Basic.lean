@@ -273,7 +273,7 @@ theorem IsPrime.mem_of_pow_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : ℕ
 
 theorem not_isPrime_iff {I : Ideal α} :
     ¬I.IsPrime ↔ I = ⊤ ∨ ∃ (x : α) (_hx : x ∉ I) (y : α) (_hy : y ∉ I), x * y ∈ I := by
-  simp_rw [Ideal.isPrime_iff, not_and_or, Ne.def, Classical.not_not, not_forall, not_or]
+  simp_rw [Ideal.isPrime_iff, not_and_or, Ne, Classical.not_not, not_forall, not_or]
   exact
     or_congr Iff.rfl
       ⟨fun ⟨x, y, hxy, hx, hy⟩ => ⟨x, hx, y, hy, hxy⟩, fun ⟨x, hx, y, hy, hxy⟩ =>
@@ -578,6 +578,32 @@ theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
     (fun m _hm => (pow_succ a m).symm ▸ I.mul_mem_left (a ^ m) ha) hn
 #align ideal.pow_mem_of_mem Ideal.pow_mem_of_mem
 
+theorem pow_mem_of_pow_mem {m n : ℕ} (ha : a ^ m ∈ I) (h : m ≤ n) : a ^ n ∈ I := by
+  rw [← Nat.add_sub_of_le h, pow_add]
+  exact I.mul_mem_right _ ha
+
+theorem add_pow_mem_of_pow_mem_of_le {m n k : ℕ}
+    (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) (hk : m + n ≤ k + 1) :
+    (a + b) ^ k ∈ I := by
+  rw [add_pow]
+  apply I.sum_mem
+  intro c _
+  apply mul_mem_right
+  by_cases h : m ≤ c
+  · exact I.mul_mem_right _ (I.pow_mem_of_pow_mem ha h)
+  · refine I.mul_mem_left _ (I.pow_mem_of_pow_mem hb ?_)
+    simp only [not_le, Nat.lt_iff_add_one_le] at h
+    have hck : c ≤ k := by
+      rw [← add_le_add_iff_right 1]
+      exact le_trans h (le_trans (Nat.le_add_right _ _) hk)
+    rw [Nat.le_sub_iff_add_le hck, ← add_le_add_iff_right 1]
+    exact le_trans (by rwa [add_comm _ n, add_assoc, add_le_add_iff_left]) hk
+
+theorem add_pow_add_pred_mem_of_pow_mem  {m n : ℕ}
+    (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) :
+    (a + b) ^ (m + n - 1) ∈ I :=
+  I.add_pow_mem_of_pow_mem_of_le ha hb <| by rw [← Nat.sub_le_iff_le_add]
+
 theorem IsPrime.mul_mem_iff_mem_or_mem {I : Ideal α} (hI : I.IsPrime) :
     ∀ {x y : α}, x * y ∈ I ↔ x ∈ I ∨ y ∈ I := @fun x y =>
   ⟨hI.mem_or_mem, by
@@ -803,7 +829,7 @@ theorem not_isField_iff_exists_ideal_bot_lt_and_lt_top [Nontrivial R] :
     obtain ⟨x, mem, ne_zero⟩ := SetLike.exists_of_lt bot_lt
     rw [Submodule.mem_bot] at ne_zero
     obtain ⟨y, hy⟩ := hf.mul_inv_cancel ne_zero
-    rw [lt_top_iff_ne_top, Ne.def, Ideal.eq_top_iff_one, ← hy] at lt_top
+    rw [lt_top_iff_ne_top, Ne, Ideal.eq_top_iff_one, ← hy] at lt_top
     exact lt_top (I.mul_mem_right _ mem)
 #align ring.not_is_field_iff_exists_ideal_bot_lt_and_lt_top Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top
 

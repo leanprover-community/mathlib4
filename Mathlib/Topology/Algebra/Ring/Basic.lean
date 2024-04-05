@@ -91,6 +91,8 @@ section
 
 variable [TopologicalSpace α] [Semiring α] [TopologicalSemiring α]
 
+instance : TopologicalSemiring (ULift α) where
+
 namespace Subsemiring
 
 -- Porting note: named instance because generated name was huge
@@ -226,6 +228,8 @@ variable [TopologicalSpace α]
 section
 
 variable [NonUnitalNonAssocRing α] [TopologicalRing α]
+
+instance : TopologicalRing (ULift α) where
 
 /-- In a topological semiring, the left-multiplication `AddMonoidHom` is continuous. -/
 theorem mulLeft_continuous (x : α) : Continuous (AddMonoidHom.mulLeft x) :=

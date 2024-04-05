@@ -715,8 +715,8 @@ theorem get_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ} (hi) 
   · rw [Nat.add_zero, List.take_zero, sum_nil]
     simpa using get_zero hi
   · simp only [splitWrtCompositionAux._eq_2, get_cons_succ, IH, take,
-        sum_cons, Nat.add_eq, add_zero, splitAt_eq_take_drop, ← drop_take, drop_drop]
-    rw [Nat.succ_eq_add_one, add_comm i 1, add_comm]
+        sum_cons, Nat.add_eq, add_zero, splitAt_eq_take_drop, drop_take, drop_drop]
+    rw [Nat.succ_eq_add_one, add_comm (sum _) n, Nat.add_sub_add_left]
 #align list.nth_le_split_wrt_composition_aux List.get_splitWrtCompositionAux
 
 /-- The `i`-th sublist in the splitting of a list `l` along a composition `c`, is the slice of `l`

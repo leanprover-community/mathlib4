@@ -440,7 +440,7 @@ def IsNontrivial (χ : MulChar R R') : Prop :=
 
 /-- A multiplicative character is nontrivial iff it is not the trivial character. -/
 theorem isNontrivial_iff (χ : MulChar R R') : χ.IsNontrivial ↔ χ ≠ 1 := by
-  simp only [IsNontrivial, Ne.def, ext_iff, not_forall, one_apply_coe]
+  simp only [IsNontrivial, Ne, ext_iff, not_forall, one_apply_coe]
 #align mul_char.is_nontrivial_iff MulChar.isNontrivial_iff
 
 end nontrivial
