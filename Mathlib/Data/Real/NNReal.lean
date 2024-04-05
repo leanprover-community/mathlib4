@@ -402,6 +402,9 @@ theorem mk_natCast (n : ℕ) : @Eq ℝ≥0 (⟨(n : ℝ), n.cast_nonneg⟩ : ℝ
   NNReal.eq (NNReal.coe_nat_cast n).symm
 #align nnreal.mk_coe_nat NNReal.mk_natCast
 
+-- 2024-04-05
+@[deprecated] alias mk_coe_nat := mk_natCast
+
 -- Porting note: place this in the `Real` namespace
 @[simp]
 theorem toNNReal_coe_nat (n : ℕ) : Real.toNNReal n = n :=

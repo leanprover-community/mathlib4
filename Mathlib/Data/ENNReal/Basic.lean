@@ -673,6 +673,14 @@ theorem natCast_lt_coe {n : ℕ} : n < (r : ℝ≥0∞) ↔ n < r := ENNReal.coe
 theorem coe_lt_natCast {n : ℕ} : (r : ℝ≥0∞) < n ↔ r < n := ENNReal.coe_natCast n ▸ coe_lt_coe
 #align ennreal.coe_lt_coe_nat ENNReal.coe_lt_natCast
 
+-- 2024-04-05
+@[deprecated] alias coe_nat := coe_natCast
+@[deprecated] alias ofReal_coe_nat := ofReal_natCast
+@[deprecated] alias nat_ne_top := natCast_ne_top
+@[deprecated] alias top_ne_nat := top_ne_natCast
+@[deprecated] alias coe_nat_lt_coe := natCast_lt_coe
+@[deprecated] alias coe_lt_coe_nat := coe_lt_natCast
+
 protected theorem exists_nat_gt {r : ℝ≥0∞} (h : r ≠ ∞) : ∃ n : ℕ, r < n := by
   lift r to ℝ≥0 using h
   rcases exists_nat_gt r with ⟨n, hn⟩

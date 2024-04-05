@@ -45,6 +45,10 @@ theorem natCast_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) :=
   Int.natCast_pos.2 (succ_pos n)
 #align int.coe_nat_succ_pos Int.natCast_succ_pos
 
+-- 2024-04-05
+@[deprecated] alias coe_nat_pos := coe_nat_pos
+@[deprecated] alias coe_nat_succ_pos := coe_nat_succ_pos
+
 lemma toNat_lt' {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.toNat < b ↔ a < b := by
   rw [← toNat_lt_toNat, toNat_natCast]; exact natCast_pos.2 hb.bot_lt
 #align int.to_nat_lt Int.toNat_lt'
@@ -524,6 +528,10 @@ theorem intCast_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
 theorem intCast_def (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
   rfl
 #align pi.coe_int Pi.intCast_def
+
+-- 2024-04-05
+@[deprecated] alias int_apply := intCast_apply
+@[deprecated] alias coe_int := intCast_def
 
 end Pi
 

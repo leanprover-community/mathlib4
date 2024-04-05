@@ -1863,6 +1863,10 @@ theorem nnnorm_natCast (n : ℕ) : ‖(n : ℝ)‖₊ = n :=
   NNReal.eq <| norm_natCast _
 #align real.nnnorm_coe_nat Real.nnnorm_natCast
 
+-- 2024-04-05
+@[deprecated] alias norm_coe_nat := norm_natCast
+@[deprecated] alias nnnorm_coe_nat := nnnorm_natCast
+
 -- Porting note (#10618): `simp` can prove this
 theorem norm_two : ‖(2 : ℝ)‖ = 2 :=
   abs_of_pos zero_lt_two
@@ -1924,6 +1928,9 @@ theorem norm_eq_abs (n : ℤ) : ‖n‖ = |(n : ℝ)| :=
 @[simp]
 theorem norm_natCast (n : ℕ) : ‖(n : ℤ)‖ = n := by simp [Int.norm_eq_abs]
 #align int.norm_coe_nat Int.norm_natCast
+
+-- 2024-04-05
+@[deprecated] alias norm_coe_nat := norm_natCast
 
 theorem _root_.NNReal.natCast_natAbs (n : ℤ) : (n.natAbs : ℝ≥0) = ‖n‖₊ :=
   NNReal.eq <|

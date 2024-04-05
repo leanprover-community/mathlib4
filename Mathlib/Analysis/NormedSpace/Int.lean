@@ -35,6 +35,9 @@ theorem nnnorm_natCast (n : ℕ) : ‖(n : ℤ)‖₊ = n :=
   Real.nnnorm_natCast _
 #align int.nnnorm_coe_nat Int.nnnorm_natCast
 
+-- 2024-04-05
+@[deprecated] alias nnnorm_coe_nat := nnnorm_natCast
+
 @[simp]
 theorem toNat_add_toNat_neg_eq_nnnorm (n : ℤ) : ↑n.toNat + ↑(-n).toNat = ‖n‖₊ := by
   rw [← Nat.cast_add, toNat_add_toNat_neg_eq_natAbs, NNReal.natCast_natAbs]

@@ -954,6 +954,10 @@ theorem adjoin_natCast (n : ℕ) : F⟮(n : E)⟯ = ⊥ :=
   adjoin_simple_eq_bot_iff.mpr (natCast_mem ⊥ n)
 #align intermediate_field.adjoin_nat IntermediateField.adjoin_natCast
 
+-- 2024-04-05
+@[deprecated] alias adjoin_int := adjoin_intCast
+@[deprecated] alias adjoin_nat := adjoin_natCast
+
 section AdjoinRank
 
 open FiniteDimensional Module

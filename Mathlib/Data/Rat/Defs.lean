@@ -541,6 +541,11 @@ theorem natCast_eq_divInt (n : ℕ) : ↑n = n /. 1 := by
   rw [← Int.cast_ofNat, intCast_eq_divInt]
 #align rat.coe_nat_eq_mk Rat.natCast_eq_divInt
 
+-- 2024-04-05
+@[deprecated] alias coe_int_eq_divInt := intCast_eq_divInt
+@[deprecated] alias coe_int_div_eq_divInt := intCast_div_eq_divInt
+@[deprecated] alias coe_nat_eq_divInt := natCast_eq_divInt
+
 @[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
 #align rat.coe_nat_num Rat.num_natCast
 

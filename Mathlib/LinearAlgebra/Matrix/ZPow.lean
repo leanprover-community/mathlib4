@@ -107,7 +107,7 @@ theorem zpow_neg_one (A : M) : A ^ (-1 : ℤ) = A⁻¹ := by
   simp only [zpow_one, Int.ofNat_zero, Int.ofNat_succ, zpow_eq_pow, zero_add]
 #align matrix.zpow_neg_one Matrix.zpow_neg_one
 
-#align matrix.zpow_nat_cast zpow_natCast
+#align matrix.zpow_coe_nat zpow_natCast
 
 @[simp]
 theorem zpow_neg_natCast (A : M) (n : ℕ) : A ^ (-n : ℤ) = (A ^ n)⁻¹ := by
@@ -115,6 +115,9 @@ theorem zpow_neg_natCast (A : M) (n : ℕ) : A ^ (-n : ℤ) = (A ^ n)⁻¹ := by
   · simp
   · exact DivInvMonoid.zpow_neg' _ _
 #align matrix.zpow_neg_coe_nat Matrix.zpow_neg_natCast
+
+-- 2024-04-05
+@[deprecated] alias zpow_neg_coe_nat := zpow_neg_natCast
 
 theorem _root_.IsUnit.det_zpow {A : M} (h : IsUnit A.det) (n : ℤ) : IsUnit (A ^ n).det := by
   cases' n with n n

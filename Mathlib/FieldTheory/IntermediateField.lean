@@ -271,6 +271,10 @@ end InheritedLemmas
 theorem natCast_mem (n : ℕ) : (n : L) ∈ S := by simpa using intCast_mem S n
 #align intermediate_field.coe_nat_mem IntermediateField.natCast_mem
 
+-- 2024-04-05
+@[deprecated _root_.natCast_mem] alias coe_nat_mem := natCast_mem
+@[deprecated _root_.intCast_mem] alias coe_int_mem := intCast_mem
+
 end IntermediateField
 
 /-- Turn a subalgebra closed under inverses into an intermediate field -/

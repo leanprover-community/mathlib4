@@ -99,6 +99,10 @@ instance (s : S) : RatCast s :=
 @[simp, norm_cast] lemma coe_ratCast (s : S) (x : ℚ) : ((x : s) : K) = x := rfl
 #align subfield_class.coe_rat_cast SubfieldClass.coe_ratCast
 
+-- 2024-04-05
+@[deprecated] alias coe_rat_cast := coe_ratCast
+@[deprecated] alias coe_rat_mem := ratCast_mem
+
 -- Porting note: Mistranslated: used to be (a • x : K) ∈ s
 @[aesop safe apply (rule_sets := [SetLike])]
 theorem rat_smul_mem (s : S) (a : ℚ) (x : s) : a • (x : K) ∈ s := by
@@ -316,6 +320,9 @@ protected theorem zsmul_mem {x : K} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
 
 protected theorem intCast_mem (n : ℤ) : (n : K) ∈ s := intCast_mem s n
 #align subfield.coe_int_mem Subfield.intCast_mem
+
+-- 2024-04-05
+@[deprecated] alias coe_int_mem := intCast_mem
 
 theorem zpow_mem {x : K} (hx : x ∈ s) (n : ℤ) : x ^ n ∈ s := by
   cases n

@@ -382,6 +382,11 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
 @[simp] lemma top_ne_natCast (n : ℕ) : (⊤ : WithTop α) ≠ n := top_ne_coe
 #align with_top.top_ne_nat WithTop.top_ne_natCast
 
+-- 2024-04-05
+@[deprecated] alias coe_nat := coe_natCast
+@[deprecated] alias nat_ne_top := natCast_ne_top
+@[deprecated] alias top_ne_nat := top_ne_natCast
+
 end AddMonoidWithOne
 
 instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithTop α) :=
@@ -577,6 +582,11 @@ instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWi
 
 @[simp] lemma bot_ne_natCast (n : ℕ) : (⊥ : WithBot α) ≠ n := bot_ne_coe
 #align with_bot.bot_ne_nat WithBot.bot_ne_natCast
+
+-- 2024-04-05
+@[deprecated] alias coe_nat := coe_natCast
+@[deprecated] alias nat_ne_bot := natCast_ne_bot
+@[deprecated] alias bot_ne_nat := bot_ne_natCast
 
 end AddMonoidWithOne
 

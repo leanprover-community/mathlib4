@@ -311,6 +311,15 @@ instance : CharZero (ℤ√d) where cast_injective m n := by simp [Zsqrtd.ext_if
 theorem ofInt_eq_intCast (n : ℤ) : (ofInt n : ℤ√d) = n := by ext <;> simp [ofInt_re, ofInt_im]
 #align zsqrtd.of_int_eq_coe Zsqrtd.ofInt_eq_intCast
 
+-- 2024-04-05
+@[deprecated] alias coe_nat_re := natCast_re
+@[deprecated] alias coe_nat_im := natCast_im
+@[deprecated] alias coe_nat_val := natCast_val
+@[deprecated] alias coe_int_re := intCast_re
+@[deprecated] alias coe_int_im := intCast_im
+@[deprecated] alias coe_int_val := intCast_val
+@[deprecated] alias ofInt_eq_coe := ofInt_eq_intCast
+
 @[simp]
 theorem smul_val (n x y : ℤ) : (n : ℤ√d) * ⟨x, y⟩ = ⟨n * x, n * y⟩ := by ext <;> simp
 #align zsqrtd.smul_val Zsqrtd.smul_val

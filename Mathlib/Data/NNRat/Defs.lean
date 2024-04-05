@@ -206,6 +206,9 @@ theorem mk_natCast (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ
   rfl
 #align nnrat.mk_coe_nat NNRat.mk_natCast
 
+-- 2024-04-05
+@[deprecated] alias mk_coe_nat := mk_natCast
+
 @[simp]
 theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=
   rfl
