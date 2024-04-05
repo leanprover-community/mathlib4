@@ -934,7 +934,7 @@ theorem IsFundamentalDomain.quotientMeasureEqMeasurePreimage_of_zero
   ext U meas_U
   simp only [zero_toOuterMeasure, OuterMeasure.coe_zero, Pi.zero_apply]
   convert (measure_inter_null_of_null_right (h := vol_s) (Quotient.mk α_mod_G ⁻¹' U)).symm
-  rw [measureRestrictMap_apply (meas_U := meas_U)]
+  rw [measure_map_restrict_apply (meas_U := meas_U)]
 
 /-- If a measure `μ` on a quotient satisfies `QuotientMeasureEqMeasurePreimage` with respect to a
 sigma-finite measure `ν`, then it is itself `SigmaFinite`. -/
