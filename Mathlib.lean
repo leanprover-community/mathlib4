@@ -1838,7 +1838,6 @@ import Mathlib.Data.Int.Units
 import Mathlib.Data.LazyList.Basic
 import Mathlib.Data.List.AList
 import Mathlib.Data.List.Basic
-import Mathlib.Data.List.Card
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Cycle
@@ -1852,7 +1851,6 @@ import Mathlib.Data.List.EditDistance.Defs
 import Mathlib.Data.List.EditDistance.Estimator
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.List.Forall2
-import Mathlib.Data.List.Func
 import Mathlib.Data.List.GetD
 import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Infix
