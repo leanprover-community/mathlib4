@@ -290,9 +290,9 @@ theorem natCast_im (n : ℕ) : (n : ℤ√d).im = 0 :=
 theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).im = 0 :=
   rfl
 
-theorem coe_nat_val (n : ℕ) : (n : ℤ√d) = ⟨n, 0⟩ :=
+theorem natCast_val (n : ℕ) : (n : ℤ√d) = ⟨n, 0⟩ :=
   rfl
-#align zsqrtd.coe_nat_val Zsqrtd.coe_nat_val
+#align zsqrtd.coe_nat_val Zsqrtd.natCast_val
 
 @[simp]
 theorem intCast_re (n : ℤ) : (n : ℤ√d).re = n := by cases n <;> rfl
