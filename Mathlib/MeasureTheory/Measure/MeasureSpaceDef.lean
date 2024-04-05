@@ -29,6 +29,10 @@ extension of the restricted measure.
 
 Measures on `α` form a complete lattice, and are closed under scalar multiplication with `ℝ≥0∞`.
 
+## Notation
+
+TODO add this!
+
 ## Implementation notes
 
 Given `μ : Measure α`, `μ s` is the value of the *outer measure* applied to `s`.
@@ -362,6 +366,7 @@ theorem measure_inter_null_of_null_left {S : Set α} (T : Set α) (h : μ S = 0)
 #align measure_theory.measure_inter_null_of_null_left MeasureTheory.measure_inter_null_of_null_left
 
 /-! ### The almost everywhere filter -/
+section ae
 
 /-- The “almost everywhere” filter of co-null sets. -/
 def Measure.ae {α : Type*} {_m : MeasurableSpace α} (μ : Measure α) : Filter α :=
@@ -613,6 +618,8 @@ alias _root_.Filter.EventuallyEq.measure_eq := measure_congr
 theorem measure_mono_null_ae (H : s ≤ᵐ[μ] t) (ht : μ t = 0) : μ s = 0 :=
   nonpos_iff_eq_zero.1 <| ht ▸ H.measure_le
 #align measure_theory.measure_mono_null_ae MeasureTheory.measure_mono_null_ae
+
+end ae
 
 /-- A measurable set `t ⊇ s` such that `μ t = μ s`. It even satisfies `μ (t ∩ u) = μ (s ∩ u)` for
 any measurable set `u` if `μ s ≠ ∞`, see `measure_toMeasurable_inter`.
