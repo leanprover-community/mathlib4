@@ -2733,10 +2733,10 @@ choice of norm in the multiplicative `SeminormedGroup E` case.
 We could repeat this instance to provide a `[SeminormedGroup E] : SeminormedGroup Eᵃᵒᵖ` instance,
 but that case would likely never be used.
 -/
-instance seminormedAddGroup [SeminormedAddGroup E] : SeminormedAddGroup Eᵐᵒᵖ where
+instance instSeminormedAddGroup [SeminormedAddGroup E] : SeminormedAddGroup Eᵐᵒᵖ where
+  __ := instPseudoMetricSpace
   norm x := ‖x.unop‖
   dist_eq _ _ := dist_eq_norm _ _
-  toPseudoMetricSpace := MulOpposite.instPseudoMetricSpace
 
 theorem norm_op [SeminormedAddGroup E] (a : E) : ‖MulOpposite.op a‖ = ‖a‖ :=
   rfl
@@ -2754,16 +2754,16 @@ theorem nnnorm_unop [SeminormedAddGroup E] (a : Eᵐᵒᵖ) : ‖MulOpposite.uno
   rfl
 #align mul_opposite.nnnorm_unop MulOpposite.nnnorm_unop
 
-instance normedAddGroup [NormedAddGroup E] : NormedAddGroup Eᵐᵒᵖ :=
-  { MulOpposite.seminormedAddGroup with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+instance instNormedAddGroup [NormedAddGroup E] : NormedAddGroup Eᵐᵒᵖ where
+  __ := instMetricSpace
+  __ := instSeminormedAddGroup
 
-instance seminormedAddCommGroup [SeminormedAddCommGroup E] : SeminormedAddCommGroup Eᵐᵒᵖ where
+instance instSeminormedAddCommGroup [SeminormedAddCommGroup E] : SeminormedAddCommGroup Eᵐᵒᵖ where
   dist_eq _ _ := dist_eq_norm _ _
 
-instance normedAddCommGroup [NormedAddCommGroup E] : NormedAddCommGroup Eᵐᵒᵖ :=
-  { MulOpposite.seminormedAddCommGroup with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+instance instNormedAddCommGroup [NormedAddCommGroup E] : NormedAddCommGroup Eᵐᵒᵖ where
+  __ := instSeminormedAddCommGroup
+  __ := instNormedAddGroup
 
 end MulOpposite
 
