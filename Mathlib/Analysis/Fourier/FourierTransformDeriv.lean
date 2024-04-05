@@ -428,8 +428,8 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
       = (fun v ↦ fourierPowSMulRight (-L.flip) (fourierIntegral 𝐞 μ L.toLinearMap₂ f) v n) := by
   induction n with
   | zero =>
-    sorry /-ext v m
-    have I : Integrable (fun w ↦ 𝐞 (- L w v) • iteratedFDeriv ℝ 0 f w) μ :=
+    sorry /-ext w m
+    have I : Integrable (fun v ↦ 𝐞 (- L v w) • iteratedFDeriv ℝ 0 f v) μ :=
       (fourierIntegral_convergent_iff' _ _).2 (h'f 0 bot_le)
     simp only [Nat.zero_eq, fourierIntegral, ContinuousLinearMap.toLinearMap₂_apply,
       integral_apply I, smul_apply, iteratedFDeriv_zero_apply, fourierPowSMulRight_apply, pow_zero,
@@ -437,25 +437,40 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
       Finset.prod_empty, one_smul]
     -/
   | succ n ih =>
-    ext v m
-    have A : ∫ w, 𝐞 (- L w v) • ((fderiv ℝ (iteratedFDeriv ℝ n f) w) (m 0)) (Fin.tail m) ∂μ
-        = (∫ w, 𝐞 (-L w v) • ((fderiv ℝ (iteratedFDeriv ℝ n f) w) (m 0)) ∂μ) (Fin.tail m) := by
-      rw [integral_apply]
-      · simp only [smul_apply]
-      · apply (fourierIntegral_convergent_iff' L v).2
-        apply Integrable.apply_continuousLinearMap
+    ext w m
+    suffices H : (∫ (v : V), 𝐞 (-L v w) • fderiv ℝ (iteratedFDeriv ℝ n f) v (m 0) ∂μ) (Fin.tail m) =
+        (-(2 * π * I)) ^ (n + 1) • (∏ x : Fin (n + 1), -L (m x) w) •
+          ∫ (v : V), 𝐞 (-L v w) • f v ∂μ by
+      have J : Integrable (fun v ↦ 𝐞 (-(L v) w) • fderiv ℝ (iteratedFDeriv ℝ n f) v) μ := by
+        apply (fourierIntegral_convergent_iff' L w).2
         specialize h'f (n + 1) hn
         simp_rw [iteratedFDeriv_succ_eq_comp_left] at h'f
-        have Z := ContinuousLinearMap.integrable_comp
-
+        let T : (V →L[ℝ] (V [×n]→L[ℝ] E)) ≃L[ℝ] (V [×(n+1)]→L[ℝ] E) :=
+          continuousMultilinearCurryLeftEquiv ℝ (fun (x : Fin (n + 1)) ↦ V) E
+        apply T.integrable_comp_iff.1
+        exact h'f
+      have A : ∫ v, 𝐞 (- L v w) • (fderiv ℝ (iteratedFDeriv ℝ n f) v (m 0)) (Fin.tail m) ∂μ
+          = (∫ v, 𝐞 (-L v w) • (fderiv ℝ (iteratedFDeriv ℝ n f) v (m 0)) ∂μ) (Fin.tail m) := by
+        rw [integral_apply]
+        · simp only [smul_apply]
+        · apply (fourierIntegral_convergent_iff' L w).2
 
 #exit
 
+      have B : ∫ v, 𝐞 (-L v w) • (fderiv ℝ (iteratedFDeriv ℝ n f) v (m 0)) ∂μ =
+          (∫ v, 𝐞 (-L v w) • (fderiv ℝ (iteratedFDeriv ℝ n f) v) ∂μ) (m 0) := by
+        rw [ContinuousLinearMap.integral_apply]
+        · simp only [ContinuousLinearMap.coe_smul', Pi.smul_apply]
+        · sorry
 
-    simp only [fourierIntegral, ContinuousLinearMap.toLinearMap₂_apply,
-      integral_apply ((fourierIntegral_convergent_iff' L v).2 (h'f _ hn)), smul_apply,
-      iteratedFDeriv_succ_apply_left, fourierPowSMulRight_apply, ContinuousLinearMap.neg_apply,
-      ContinuousLinearMap.flip_apply]
+#exit
+
+      simp only [fourierIntegral, ContinuousLinearMap.toLinearMap₂_apply,
+        integral_apply ((fourierIntegral_convergent_iff' L w).2 (h'f _ hn)), smul_apply,
+        iteratedFDeriv_succ_apply_left, fourierPowSMulRight_apply, ContinuousLinearMap.neg_apply,
+        ContinuousLinearMap.flip_apply, A]
+      exact H
+
 
 #exit
 
