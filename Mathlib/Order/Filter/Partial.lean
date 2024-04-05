@@ -115,7 +115,9 @@ theorem rcomap_sets (r : Rel α β) (f : Filter β) :
 theorem rcomap_rcomap (r : Rel α β) (s : Rel β γ) (l : Filter γ) :
     rcomap r (rcomap s l) = rcomap (r.comp s) l :=
   filter_eq <| by
-    ext t; simp [rcomap_sets, Rel.image, Rel.core_comp]; constructor
+    ext t
+    simp only [rcomap_sets, Rel.image, Filter.mem_sets, Set.mem_setOf_eq, Rel.core_comp]
+    constructor
     · rintro ⟨u, ⟨v, vsets, hv⟩, h⟩
       exact ⟨v, vsets, Set.Subset.trans (Rel.core_mono _ hv) h⟩
     rintro ⟨t, tsets, ht⟩
@@ -131,7 +133,9 @@ theorem rtendsto_iff_le_rcomap (r : Rel α β) (l₁ : Filter α) (l₂ : Filter
     RTendsto r l₁ l₂ ↔ l₁ ≤ l₂.rcomap r := by
   rw [rtendsto_def]
   simp_rw [← l₂.mem_sets]
-  simp [Filter.le_def, rcomap, Rel.mem_image]; constructor
+  simp only [Filter.mem_sets, rcomap, le_def, Filter.mem_mk, Rel.mem_image, forall_exists_index,
+    and_imp]
+  constructor
   · exact fun h s t tl₂ => mem_of_superset (h t tl₂)
   · exact fun h t tl₂ => h _ t tl₂ Set.Subset.rfl
 #align filter.rtendsto_iff_le_rcomap Filter.rtendsto_iff_le_rcomap
@@ -187,7 +191,9 @@ def RTendsto' (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :=
 
 theorem rtendsto'_def (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :
     RTendsto' r l₁ l₂ ↔ ∀ s ∈ l₂, r.preimage s ∈ l₁ := by
-  unfold RTendsto' rcomap'; simp [le_def, Rel.mem_image]; constructor
+  unfold RTendsto' rcomap'
+  simp only [le_def, Filter.mem_mk, Rel.mem_image, Filter.mem_sets, forall_exists_index, and_imp]
+  constructor
   · exact fun h s hs => h _ _ hs Set.Subset.rfl
   · exact fun h s t ht => mem_of_superset (h t ht)
 #align filter.rtendsto'_def Filter.rtendsto'_def
