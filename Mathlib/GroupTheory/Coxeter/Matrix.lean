@@ -60,12 +60,10 @@ equal to 1.
 
 -/
 
-universe u
-
 /-- A *Coxeter matrix* is a symmetric matrix of natural numbers whose diagonal entries are equal to
 1 and whose off-diagonal entries are not equal to 1. -/
 @[ext]
-structure CoxeterMatrix (B : Type u) where
+structure CoxeterMatrix (B : Type*) where
   /-- The underlying matrix of the Coxeter matrix. -/
   M : Matrix B B ℕ
   isSymm : M.IsSymm := by decide
@@ -89,8 +87,8 @@ theorem symmetric (i i' : B) : M i i' = M i' i := M.isSymm.apply i' i
 protected def reindex : CoxeterMatrix B' where
   M := Matrix.reindex e e M
   isSymm := M.isSymm.submatrix _
-  diagonal := (fun i ↦ M.diagonal (e.symm i))
-  off_diagonal := (fun i i' h ↦ M.off_diagonal (e.symm i) (e.symm i') (e.symm.injective.ne h))
+  diagonal i := M.diagonal (e.symm i)
+  off_diagonal i i' h := M.off_diagonal (e.symm i) (e.symm i') (e.symm.injective.ne h)
 
 theorem reindex_apply (i i' : B') : M.reindex e i i' = M (e.symm i) (e.symm i') := rfl
 
