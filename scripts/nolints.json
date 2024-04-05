@@ -488,8 +488,6 @@
  ["docBlame", "Zsqrtd.im"],
  ["docBlame", "Zsqrtd.re"],
  ["docBlame", "algebraMap.coeHTCT"],
- ["docBlame", "omegaLimit.«termω⁺»"],
- ["docBlame", "omegaLimit.«termω⁻»"],
  ["docBlame", "Action.Hom.hom"],
  ["docBlame", "Affine.Simplex.points"],
  ["docBlame", "AlgebraicGeometry.PresheafedSpace.carrier"],
