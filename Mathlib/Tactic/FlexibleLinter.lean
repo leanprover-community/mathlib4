@@ -229,6 +229,7 @@ def combinatorLike : HashSet Name :=
     ``Lean.Parser.Tactic.tacticRepeat_,
     ``Lean.Parser.Tactic.tacticStop_,
     `Mathlib.Tactic.Abel.abelNF,
+    `Mathlib.Tactic.normNum,
     `Mathlib.Tactic.RingNF.ringNF }
 
 /-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
@@ -250,6 +251,7 @@ def followers : HashSet Name :=
     ``Lean.Parser.Tactic.tacticNorm_cast_,
     `Aesop.Frontend.Parser.aesopTactic,
     `Mathlib.Tactic.Tauto.tauto,
+    `Mathlib.Meta.FunProp.funPropTacStx,
     `Lean.Parser.Tactic.split,
     `Mathlib.Tactic.splitIfs }
 
@@ -262,6 +264,7 @@ def usesGoal? : SyntaxNodeKind → Bool
   | ``Lean.Parser.Tactic.obtain => false
   | ``Lean.Parser.Tactic.tacticHave_ => false
   | ``Lean.Parser.Tactic.rcases => false
+  | ``Lean.Parser.Tactic.specialize => false
   | _ => true
 
 /-- `getFVarIdCandidates fv name lctx` takes an input an `FVarId`, a `Name` and a `LocalContext`.
