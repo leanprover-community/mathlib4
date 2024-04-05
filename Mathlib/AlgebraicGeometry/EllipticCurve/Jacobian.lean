@@ -459,7 +459,7 @@ variable {F : Type u} [Field F] {W : Jacobian F}
 
 lemma negY_divZ {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.negY P / P z ^ 3 = W.toAffine.negY (P x / P z ^ 2) (P y / P z ^ 3) := by
-  field_simp [negY, Affine.negY]
+  field_simp [negY]
   ring1
 
 lemma Y_ne_of_Y_ne {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) (hPz : P z ≠ 0)
