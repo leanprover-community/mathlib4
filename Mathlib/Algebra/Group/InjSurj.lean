@@ -430,7 +430,7 @@ surjective map that preserves `0` and `+` to an additive monoid. This version ta
 as a `[SMul ℕ M₂]` argument."]
 protected def monoid [Monoid M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : Monoid M₂ :=
-  { hf.semigroup f mul, hf.mulOneClass f one mul with
+  { hf.mulOneClass f one mul, hf.semigroup f mul with
     npow := fun n x => x ^ n,
     npow_zero := hf.forall.2 fun x => by dsimp only; erw [← npow, pow_zero, ← one],
     npow_succ := fun n => hf.forall.2 fun x => by

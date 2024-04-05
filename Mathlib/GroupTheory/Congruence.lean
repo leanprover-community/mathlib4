@@ -1195,17 +1195,22 @@ instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup
 #align con.comm_semigroup Con.commSemigroup
 #align add_con.add_comm_semigroup AddCon.addCommSemigroup
 
+/-- The quotient of a `MulOneClass` by a congruence relation is a `MulOneClass`. -/
+@[to_additive "The quotient of an `AddZeroClass` by an additive congruence relation is
+an `AddZeroClass`."]
+instance mulOneClass {M : Type*} [MulOneClass M] (c : Con M) : MulOneClass c.Quotient :=
+  { (Function.Surjective.mulOneClass _ Quotient.surjective_Quotient_mk'' rfl
+      (fun _ _ => rfl) : MulOneClass c.Quotient) with }
+
 /-- The quotient of a monoid by a congruence relation is a monoid. -/
 @[to_additive "The quotient of an `AddMonoid` by an additive congruence relation is
 an `AddMonoid`."]
 instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient :=
-  { (Function.Surjective.monoid _ Quotient.surjective_Quotient_mk'' rfl
-      (fun _ _ => rfl) fun _ _ => rfl : Monoid c.Quotient) with
+  { Con.semigroup _ with
+    toMulOneClass := Con.mulOneClass _
     /- The `toSemigroup` and `toOne` fields are given explicitly for performance reasons.
     This avoids any need to unfold `Function.Surjective.monoid` when the type checker is
-    checking that instance diagrams commute -/
-    toSemigroup := Con.semigroup _
-    toOne := Con.one _ }
+    checking that instance diagrams commute -/ }
 #align con.monoid Con.monoid
 #align add_con.add_monoid AddCon.addMonoid
 

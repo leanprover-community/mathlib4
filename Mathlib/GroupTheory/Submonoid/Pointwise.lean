@@ -667,7 +667,7 @@ variable [Semiring R]
 
 /-- Monoid structure on additive submonoids of a semiring. -/
 protected def monoid : Monoid (AddSubmonoid R) :=
-  { AddSubmonoid.semigroup, AddSubmonoid.mulOneClass with }
+  { AddSubmonoid.mulOneClass, AddSubmonoid.semigroup with }
 scoped[Pointwise] attribute [instance] AddSubmonoid.monoid
 
 theorem closure_pow (s : Set R) : ∀ n : ℕ, closure s ^ n = closure (s ^ n)

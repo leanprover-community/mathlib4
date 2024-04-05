@@ -126,7 +126,7 @@ instance mulOneClass [MulOneClass α] : MulOneClass αᵐᵒᵖ :=
 
 @[to_additive]
 instance monoid [Monoid α] : Monoid αᵐᵒᵖ :=
-  { MulOpposite.semigroup α, MulOpposite.mulOneClass α with
+  { MulOpposite.mulOneClass α, MulOpposite.semigroup α with
     npow := fun n x => op <| x.unop ^ n,
     npow_zero := fun x => unop_injective <| Monoid.npow_zero x.unop,
     npow_succ := fun n x => unop_injective <| pow_succ' x.unop n }

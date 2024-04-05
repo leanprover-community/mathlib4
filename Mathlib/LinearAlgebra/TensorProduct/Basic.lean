@@ -334,8 +334,8 @@ protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • 
 #align tensor_product.add_smul TensorProduct.add_smul
 
 instance addMonoid : AddMonoid (M ⊗[R] N) :=
-{ TensorProduct.addZeroClass _ _ with
-  toAddSemigroup := TensorProduct.addSemigroup _ _
+{ TensorProduct.addSemigroup _ _ with
+  toAddZeroClass := TensorProduct.addZeroClass _ _
   toZero := (TensorProduct.addZeroClass _ _).toZero
   nsmul := fun n v => n • v
   nsmul_zero := by simp [TensorProduct.zero_smul]

@@ -333,8 +333,8 @@ section AddMonoid
 variable [AddMonoid α]
 
 instance addMonoid : AddMonoid (WithTop α) where
-  __ := WithTop.addSemigroup
   __ := WithTop.addZeroClass
+  __ := WithTop.addSemigroup
   nsmul n a := match a, n with
     | (a : α), n => ↑(n • a)
     | ⊤, 0 => 0

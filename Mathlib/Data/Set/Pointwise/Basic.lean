@@ -936,7 +936,7 @@ variable [Monoid α] {s t : Set α} {a : α} {m n : ℕ}
 /-- `Set α` is a `Monoid` under pointwise operations if `α` is. -/
 @[to_additive "`Set α` is an `AddMonoid` under pointwise operations if `α` is."]
 protected noncomputable def monoid : Monoid (Set α) :=
-  { Set.semigroup, Set.mulOneClass, @Set.NPow α _ _ with }
+  { Set.mulOneClass, Set.semigroup, @Set.NPow α _ _ with }
 #align set.monoid Set.monoid
 #align set.add_monoid Set.addMonoid
 

@@ -111,8 +111,8 @@ section Monoid
 variable [Monoid R] [MulAction R M] [Monoid M] [IsScalarTower R M M] [SMulCommClass R M M]
 
 instance : Monoid (SubMulAction R M) :=
-  { SubMulAction.semiGroup,
-    SubMulAction.mulOneClass with }
+  { SubMulAction.mulOneClass,
+    SubMulAction.semiGroup with }
 
 theorem coe_pow (p : SubMulAction R M) : ∀ {n : ℕ} (_ : n ≠ 0), ↑(p ^ n) = (p : Set M) ^ n
   | 0, hn => (hn rfl).elim

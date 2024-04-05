@@ -249,8 +249,8 @@ instance invOneClass [∀ i, InvOneClass (f i)] : InvOneClass (∀ i, f i) where
 
 @[to_additive]
 instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where
-  __ := semigroup
   __ := mulOneClass
+  __ := semigroup
   npow := fun n x i => x i ^ n
   npow_zero := by intros; ext; exact Monoid.npow_zero _
   npow_succ := by intros; ext; exact Monoid.npow_succ _ _
