@@ -71,7 +71,7 @@ lemma term_one {n : ℕ} (hn : 0 < n) :
     intro x hx
     rw [uIcc_of_le (by simp only [le_add_iff_nonneg_right, zero_le_one])] at hx
     exact (Nat.cast_pos.mpr hn).trans_le hx.1
-  calc
+  calc term n 1
     _ = ∫ x : ℝ in n..(n + 1), (x - n) / x ^ 2 := by
       simp_rw [term, one_add_one_eq_two, ← Nat.cast_two (R := ℝ), rpow_nat_cast]
     _ = ∫ x : ℝ in n..(n + 1), (1 / x - n / x ^ 2) := by
@@ -143,7 +143,7 @@ lemma term_of_lt {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 1 < s) :
     intro x hx
     rw [uIcc_of_le (by simp only [le_add_iff_nonneg_right, zero_le_one])] at hx
     exact (Nat.cast_pos.mpr hn).trans_le hx.1
-  calc
+  calc term n s
     _ = ∫ x : ℝ in n..(n + 1), (x - n) / x ^ (s + 1) := by rfl
     _ = ∫ x : ℝ in n..(n + 1), (x ^ (-s) - n * x ^ (-(s + 1))) := by
       refine intervalIntegral.integral_congr (fun x hx ↦ ?_)
@@ -156,7 +156,8 @@ lemma term_of_lt {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 1 < s) :
       · refine intervalIntegral.intervalIntegrable_rpow (Or.inr <| not_mem_uIcc_of_lt ?_ ?_)
         · exact_mod_cast hn
         · linarith
-    _ = _ := by
+    _ = 1 / (s - 1) * (1 / n ^ (s - 1) - 1 / (n + 1) ^ (s - 1))
+          - n / s * (1 / n ^ s - 1 / (n + 1) ^ s) := by
       have : 0 ∉ uIcc (n : ℝ) (n + 1) := (lt_irrefl _ <| hv _ ·)
       rw [integral_rpow (Or.inr ⟨by linarith, this⟩), integral_rpow (Or.inr ⟨by linarith, this⟩)]
       congr 1
@@ -307,7 +308,7 @@ lemma tendsto_riemannZeta_nhds_right : Tendsto (fun s : ℝ ↦ riemannZeta s - 
 
 /-- The function `ζ s - 1 / (s - 1)` tends to `γ` as `s → 1`. -/
 theorem _root_.tendsto_riemannZeta_sub_one_div :
-    Tendsto (fun s ↦ riemannZeta s - 1 / (s - 1)) (𝓝[≠] 1) (𝓝 eulerMascheroniConstant) := by
+    Tendsto (fun s : ℂ ↦ riemannZeta s - 1 / (s - 1)) (𝓝[≠] 1) (𝓝 eulerMascheroniConstant) := by
   -- We use the removable-singularity theorem to show that *some* limit over `𝓝[≠] (1 : ℂ)` exists,
   -- and then use the previous result to deduce that this limit must be `γ`.
   let f (s : ℂ) := riemannZeta s - 1 / (s - 1)
@@ -339,34 +340,10 @@ theorem _root_.tendsto_riemannZeta_sub_one_div :
         field_simp [sub_ne_zero.mpr <| mem_compl_singleton_iff.mp hx]
       · exact ((tendsto_id.sub tendsto_const_nhds).mono_left nhdsWithin_le_nhds).const_mul _
 
-lemma _root_.isBigO_nhds_ne_iff {α E F : Type*} [TopologicalSpace α] [Norm E] [SeminormedAddGroup F]
-    {f : α → E} {g : α → F} {a : α} (h : ‖g a‖ = 0 → ‖f a‖ = 0) :
-    f =O[𝓝[≠] a] g ↔ f =O[𝓝 a] g := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h.mono nhdsWithin_le_nhds⟩
-  simp only [Asymptotics.isBigO_iff, eventually_nhdsWithin_iff] at h ⊢
-  obtain ⟨c, hc⟩ := h
-  use max c (‖f a‖ / ‖g a‖)
-  filter_upwards [hc] with b hb
-  rcases eq_or_ne a b with rfl | hb'
-  · transitivity (‖f a‖ / ‖g a‖) * ‖g a‖
-    · by_cases hf : ‖f a‖ = 0
-      · rw [hf, zero_div, zero_mul]
-      · exact le_of_eq (div_mul_cancel₀ _ (show ‖g a‖ ≠ 0 by tauto)).symm
-    · simp only [max_mul_of_nonneg _ _ (norm_nonneg _), le_max_iff, le_refl, or_true]
-  · refine (hb hb'.symm).trans ?_
-    simp only [max_mul_of_nonneg _ _ (norm_nonneg _), le_max_iff, le_refl, true_or]
-
-lemma _root_.isBigO_one_nhds_ne_iff {α E F : Type*} [TopologicalSpace α]
-    [Norm E] [SeminormedAddCommGroup F] [One F] [NormOneClass F]
-    {f : α → E} (a : α) :
-    f =O[𝓝[≠] a] (fun _ ↦ 1 : α → F) ↔ f =O[𝓝 a] (fun _ ↦ 1 : α → F) :=
-  isBigO_nhds_ne_iff (by simp)
-
-lemma _root_.isBigO_riemannZeta_sub_one_div
-    {F : Type*} [SeminormedAddCommGroup F] [One F] [NormOneClass F] :
-    (fun s ↦ riemannZeta s - 1 / (s - 1)) =O[𝓝 1] (fun _ ↦ 1 : ℂ → F) := by
-  have := _root_.tendsto_riemannZeta_sub_one_div.isBigO_one (F := F)
-  rwa [isBigO_one_nhds_ne_iff] at this
+lemma _root_.isBigO_riemannZeta_sub_one_div {F : Type*} [Norm F] [One F] [NormOneClass F] :
+    (fun s : ℂ ↦ riemannZeta s - 1 / (s - 1)) =O[𝓝 1] (fun _ ↦ 1 : ℂ → F) := by
+  simpa only [Asymptotics.isBigO_one_nhds_ne_iff] using
+     tendsto_riemannZeta_sub_one_div.isBigO_one (F := F)
 
 end continuity
 
