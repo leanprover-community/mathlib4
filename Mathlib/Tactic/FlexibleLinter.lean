@@ -229,6 +229,7 @@ def combinatorLike : HashSet Name :=
     ``Lean.Parser.Tactic.tacticRepeat_,
     ``Lean.Parser.Tactic.tacticStop_,
     `Mathlib.Tactic.Abel.abelNF,
+    `Mathlib.Tactic.normNum,
     `Mathlib.Tactic.RingNF.ringNF }
 
 /-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
