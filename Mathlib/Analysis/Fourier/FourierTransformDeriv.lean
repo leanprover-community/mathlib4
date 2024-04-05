@@ -68,6 +68,9 @@ We also give specialized versions of the one-dimensional real derivative (and it
 in `Real.deriv_fourierIntegral` and `Real.iteratedDeriv_fourierIntegral`.
 -/
 
+
+lemma foo (n : ℕ) : 0 ≤ n := by exact?
+
 noncomputable section
 
 open Real Complex MeasureTheory Filter TopologicalSpace
@@ -415,6 +418,46 @@ lemma iteratedFDeriv_fourierIntegral {N : ℕ∞}
       fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ fourierPowSMulRight L f v n) := by
   ext1 w
   exact ((hasFTaylorSeriesUpTo_fourierIntegral L hf h'f).eq_iteratedFDeriv hn w).symm
+
+/-- The Fourier integral of the derivative of a function is obtained by multiplying the Fourier
+integral of the original function by `-L w v`. -/
+theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
+    {μ : Measure V} [Measure.IsAddHaarMeasure μ] {N : ℕ∞} (hf : ContDiff ℝ N f)
+    (h'f : ∀ (n : ℕ), n ≤ N → Integrable (iteratedFDeriv ℝ n f) μ) {n : ℕ} (hn : n ≤ N) :
+    fourierIntegral 𝐞 μ L.toLinearMap₂ (iteratedFDeriv ℝ n f)
+      = (fun v ↦ fourierPowSMulRight (-L.flip) (fourierIntegral 𝐞 μ L.toLinearMap₂ f) v n) := by
+  induction n with
+  | zero =>
+    sorry /-ext v m
+    have I : Integrable (fun w ↦ 𝐞 (- L w v) • iteratedFDeriv ℝ 0 f w) μ :=
+      (fourierIntegral_convergent_iff' _ _).2 (h'f 0 bot_le)
+    simp only [Nat.zero_eq, fourierIntegral, ContinuousLinearMap.toLinearMap₂_apply,
+      integral_apply I, smul_apply, iteratedFDeriv_zero_apply, fourierPowSMulRight_apply, pow_zero,
+      Finset.univ_eq_empty, ContinuousLinearMap.neg_apply, ContinuousLinearMap.flip_apply,
+      Finset.prod_empty, one_smul]
+    -/
+  | succ n ih =>
+    ext v m
+    have A : ∫ w, 𝐞 (- L w v) • ((fderiv ℝ (iteratedFDeriv ℝ n f) w) (m 0)) (Fin.tail m) ∂μ
+        = (∫ w, 𝐞 (-L w v) • ((fderiv ℝ (iteratedFDeriv ℝ n f) w) (m 0)) ∂μ) (Fin.tail m) := by
+      rw [integral_apply]
+      · simp only [smul_apply]
+      · apply (fourierIntegral_convergent_iff' L v).2
+        apply Integrable.apply_continuousLinearMap
+        specialize h'f (n + 1) hn
+        simp_rw [iteratedFDeriv_succ_eq_comp_left] at h'f
+        have Z := ContinuousLinearMap.integrable_comp
+
+
+#exit
+
+
+    simp only [fourierIntegral, ContinuousLinearMap.toLinearMap₂_apply,
+      integral_apply ((fourierIntegral_convergent_iff' L v).2 (h'f _ hn)), smul_apply,
+      iteratedFDeriv_succ_apply_left, fourierPowSMulRight_apply, ContinuousLinearMap.neg_apply,
+      ContinuousLinearMap.flip_apply]
+
+#exit
 
 end VectorFourier
 
