@@ -421,6 +421,7 @@ def algEquivAlgebraicClosureAux :
   delta AlgebraicClosure
   exact Ideal.quotientKerAlgEquivOfSurjective
     (fun x => ⟨MvPolynomial.X x, by simp⟩)
+
 -- Those two instances are copy-pasta from the analogous instances for `SplittingField`
 instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) :=
   let e := algEquivAlgebraicClosureAux k
