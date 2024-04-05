@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
 import Mathlib.NumberTheory.Divisors
-import Mathlib.RingTheory.Int.Basic
 import Mathlib.Data.Nat.Digits
 import Mathlib.Data.Nat.MaxPowDiv
 import Mathlib.Data.Nat.Multiplicity
@@ -108,7 +107,7 @@ theorem self (hp : 1 < p) : padicValNat p p = 1 := by
 @[simp]
 theorem eq_zero_iff {n : ℕ} : padicValNat p n = 0 ↔ p = 1 ∨ n = 0 ∨ ¬p ∣ n := by
   simp only [padicValNat, dite_eq_right_iff, PartENat.get_eq_iff_eq_coe, Nat.cast_zero,
-    multiplicity_eq_zero, and_imp, pos_iff_ne_zero, Ne.def, ← or_iff_not_imp_left]
+    multiplicity_eq_zero, and_imp, pos_iff_ne_zero, Ne, ← or_iff_not_imp_left]
 #align padic_val_nat.eq_zero_iff padicValNat.eq_zero_iff
 
 theorem eq_zero_of_not_dvd {n : ℕ} (h : ¬p ∣ n) : padicValNat p n = 0 :=
@@ -749,7 +748,7 @@ section padicValInt
 variable {p : ℕ} [hp : Fact p.Prime]
 
 theorem padicValInt_dvd_iff (n : ℕ) (a : ℤ) : (p : ℤ) ^ n ∣ a ↔ a = 0 ∨ n ≤ padicValInt p a := by
-  rw [padicValInt, ← Int.natAbs_eq_zero, ← padicValNat_dvd_iff, ← Int.coe_nat_dvd_left,
+  rw [padicValInt, ← Int.natAbs_eq_zero, ← padicValNat_dvd_iff, ← Int.natCast_dvd,
     Int.coe_nat_pow]
 #align padic_val_int_dvd_iff padicValInt_dvd_iff
 
@@ -770,7 +769,7 @@ theorem padicValInt.mul {a b : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) :
 
 theorem padicValInt_mul_eq_succ (a : ℤ) (ha : a ≠ 0) :
     padicValInt p (a * p) = padicValInt p a + 1 := by
-  rw [padicValInt.mul ha (Int.coe_nat_ne_zero.mpr hp.out.ne_zero)]
+  rw [padicValInt.mul ha (Int.natCast_ne_zero.mpr hp.out.ne_zero)]
   simp only [eq_self_iff_true, padicValInt.of_nat, padicValNat_self]
 #align padic_val_int_mul_eq_succ padicValInt_mul_eq_succ
 

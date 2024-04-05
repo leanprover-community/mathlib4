@@ -26,7 +26,7 @@ when `re s < x`. -/
 noncomputable def LSeries.abscissaOfAbsConv (f : ℕ → ℂ) : EReal :=
   sInf <| Real.toEReal '' {x : ℝ | LSeriesSummable f x}
 
-lemma LSeries.abscissaOfAbsConv_congr {f g : ℕ → ℂ} (h : ∀ n ≠ 0, f n = g n) :
+lemma LSeries.abscissaOfAbsConv_congr {f g : ℕ → ℂ} (h : ∀ {n}, n ≠ 0 → f n = g n) :
     abscissaOfAbsConv f = abscissaOfAbsConv g :=
   congr_arg sInf <| congr_arg _ <| Set.ext fun x ↦ LSeriesSummable_congr x h
 
