@@ -158,7 +158,7 @@ theorem mulMap_comp_lTensor (N' : Submodule R S) (hN : N' ≤ N) :
     mulMap M N ∘ₗ (inclusion hN).lTensor M = mulMap M N' :=
   TensorProduct.ext' fun _ _ ↦ rfl
 
-theorem mulMap_comp_inclusion (M' N' : Submodule R S) (hM : M' ≤ M) (hN : N' ≤ N) :
+theorem mulMap_comp_map_inclusion (M' N' : Submodule R S) (hM : M' ≤ M) (hN : N' ≤ N) :
     mulMap M N ∘ₗ TensorProduct.map (inclusion hM) (inclusion hN) = mulMap M' N' :=
   TensorProduct.ext' fun _ _ ↦ rfl
 
@@ -416,69 +416,50 @@ theorem of_self_right :
     M.injective_subtype.comp M.rTensorAlgebraMap.injective
   rwa [this] at h
 
--- TODO: move to suitable file and give it a better name
-private theorem test1 (R : Type*) [CommSemiring R] (M N : Type*)
-    [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] (x : M ⊗[R] N) :
-    ∃ S : Multiset (M × N), x = (S.map fun i ↦ i.1 ⊗ₜ[R] i.2).sum := by
-  induction x using TensorProduct.induction_on with
-  | zero => exact ⟨0, by simp⟩
-  | tmul x y => exact ⟨{(x, y)}, by simp⟩
-  | add x y hx hy =>
-    obtain ⟨Sx, hx⟩ := hx
-    obtain ⟨Sy, hy⟩ := hy
-    exact ⟨Sx + Sy, by rw [Multiset.map_add, Multiset.sum_add, hx, hy]⟩
+variable {M N} in
+/-- TODO: remove once #11859 is merged -/
+private axiom test6 (s : Set (M ⊗[R] N)) (hs : s.Finite) :
+    ∃ (M' N' : Submodule R S) (hM : M' ≤ M) (hN : N' ≤ N),
+    Module.Finite R M' ∧ Module.Finite R N' ∧
+    s ⊆ LinearMap.range (TensorProduct.map (inclusion hM) (inclusion hN))
 
--- TODO: move to suitable file and give it a better name
-private theorem test2L {ι : Type*} [Fintype ι] (x : ι → M ⊗[R] N) :
-    ∃ (M' : Submodule R S) (x' : ι → M' ⊗[R] N) (hM : M' ≤ M), Module.Finite R M' ∧
-      ∀ (i : ι), (inclusion hM).rTensor N (x' i) = x i := by
-  choose Sx hSx using fun i ↦ test1 R M N (x i)
-  let T := ((Finset.sum Finset.univ Sx).map fun i ↦ i.1.1).toFinset
-  let M' := span R (T : Set S)
-  have hM : M' ≤ M := span_le.2 fun x hx ↦ by
-    simp only [Finset.mem_coe, Multiset.mem_toFinset, Multiset.mem_map, Prod.exists,
-      exists_and_right, Subtype.exists, exists_eq_right, T] at hx
-    obtain ⟨hx, _⟩ := hx
-    exact hx
-  let f (i : M × N) : M' ⊗[R] N :=
-    if h : i.1.1 ∈ T then ⟨i.1.1, subset_span h⟩ ⊗ₜ[R] i.2 else 0
-  let x' (i : ι) := ((Sx i).map f).sum
-  refine ⟨M', x', hM, inferInstance, fun j ↦ ?_⟩
-  simp_rw [x', hSx, map_multiset_sum, Multiset.map_map]
-  congr 1
-  refine Multiset.map_congr rfl fun i hi ↦ ?_
-  replace hi : i.1.1 ∈ T := by
-    simp only [Multiset.mem_toFinset, Multiset.mem_map, SetLike.coe_eq_coe, Prod.exists,
-      exists_and_right, Subtype.exists, exists_eq_right, T]
-    exact ⟨i.2.1, i.2.2, Multiset.mem_of_le (Finset.single_le_sum (by simp) (by simp)) hi⟩
-  simp_rw [Function.comp_apply, f, dif_pos hi]; rfl
+-- TODO: remove once #11859 is merged
+variable {M N} in
+private theorem test6L (s : Set (M ⊗[R] N)) (hs : s.Finite) :
+    ∃ (M' : Submodule R S) (hM : M' ≤ M), Module.Finite R M' ∧
+    s ⊆ LinearMap.range ((inclusion hM).rTensor N) := by
+  obtain ⟨M', _, hM, _, hfin, _, h⟩ := test6 s hs
+  refine ⟨M', hM, hfin, ?_⟩
+  rw [← LinearMap.rTensor_comp_lTensor] at h
+  exact h.trans (LinearMap.range_comp_le_range _ _)
 
--- TODO: move to suitable file and give it a better name
-private theorem test2R {ι : Type*} [Fintype ι] (x : ι → M ⊗[R] N) :
-    ∃ (N' : Submodule R S) (x' : ι → M ⊗[R] N') (hN : N' ≤ N), Module.Finite R N' ∧
-      ∀ (i : ι), (inclusion hN).lTensor M (x' i) = x i := by
-  obtain ⟨N', x', hN, hfin, hx⟩ := test2L N M fun i ↦ TensorProduct.comm R M N (x i)
-  have key : (inclusion hN).lTensor M ∘ₗ TensorProduct.comm R N' M =
-      (TensorProduct.comm R M N).symm ∘ₗ (inclusion hN).rTensor M :=
-    TensorProduct.ext' fun _ _ ↦ rfl
-  refine ⟨N', fun i ↦ TensorProduct.comm R N' M (x' i), hN, hfin, fun i ↦ ?_⟩
-  replace hx := congr((TensorProduct.comm R M N).symm $(hx i))
-  rw [LinearEquiv.symm_apply_apply] at hx
-  simpa only [← hx] using congr($key (x' i))
+-- TODO: remove once #11859 is merged
+variable {M N} in
+private theorem test6R (s : Set (M ⊗[R] N)) (hs : s.Finite) :
+    ∃ (N' : Submodule R S) (hN : N' ≤ N), Module.Finite R N' ∧
+    s ⊆ LinearMap.range ((inclusion hN).lTensor M) := by
+  obtain ⟨_, N', _, hN, _, hfin, h⟩ := test6 s hs
+  refine ⟨N', hN, hfin, ?_⟩
+  rw [← LinearMap.lTensor_comp_rTensor] at h
+  exact h.trans (LinearMap.range_comp_le_range _ _)
 
 theorem of_linearDisjoint_finite_left
     (H : ∀ M' : Submodule R S, M' ≤ M → [Module.Finite R M'] → M'.LinearDisjoint N) :
     M.LinearDisjoint N := fun x y hxy ↦ by
-  obtain ⟨M', x', hM, _, hx'⟩ := test2L M N ![x, y]
-  suffices x' 0 = x' 1 by simpa [hx'] using congr((inclusion hM).rTensor N $this)
-  exact H M' hM (by simp [← mulMap_comp_rTensor _ _ _ hM, hx', hxy])
+  obtain ⟨M', hM, _, h⟩ := test6L {x, y} (Set.toFinite _)
+  obtain ⟨x', hx'⟩ := h (show x ∈ {x, y} by simp)
+  obtain ⟨y', hy'⟩ := h (show y ∈ {x, y} by simp)
+  rw [← hx', ← hy']; congr
+  exact H M' hM (by simp [← mulMap_comp_rTensor _ _ _ hM, hx', hy', hxy])
 
 theorem of_linearDisjoint_finite_right
     (H : ∀ N' : Submodule R S, N' ≤ N → [Module.Finite R N'] → M.LinearDisjoint N') :
     M.LinearDisjoint N := fun x y hxy ↦ by
-  obtain ⟨N', x', hN, _, hx'⟩ := test2R M N ![x, y]
-  suffices x' 0 = x' 1 by simpa [hx'] using congr((inclusion hN).lTensor M $this)
-  exact H N' hN (by simp [← mulMap_comp_lTensor _ _ _ hN, hx', hxy])
+  obtain ⟨N', hN, _, h⟩ := test6R {x, y} (Set.toFinite _)
+  obtain ⟨x', hx'⟩ := h (show x ∈ {x, y} by simp)
+  obtain ⟨y', hy'⟩ := h (show y ∈ {x, y} by simp)
+  rw [← hx', ← hy']; congr
+  exact H N' hN (by simp [← mulMap_comp_lTensor _ _ _ hN, hx', hy', hxy])
 
 theorem of_linearDisjoint_finite
     (H : ∀ (M' N' : Submodule R S), M' ≤ M → N' ≤ N →
