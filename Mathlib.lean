@@ -1851,7 +1851,6 @@ import Mathlib.Data.List.EditDistance.Defs
 import Mathlib.Data.List.EditDistance.Estimator
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.List.Forall2
-import Mathlib.Data.List.Func
 import Mathlib.Data.List.GetD
 import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Infix
