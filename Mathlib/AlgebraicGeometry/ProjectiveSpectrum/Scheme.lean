@@ -813,7 +813,7 @@ def projIsoSpecTopComponent {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m
   inv := ProjIsoSpecTopComponent.fromSpec f_deg hm
   hom_inv_id := ConcreteCategory.hom_ext _ _
     (ProjIsoSpecTopComponent.fromSpec_toSpec 𝒜 f_deg hm)
-  inv_hom_id := ConcreteCategory.hom_ext _ _ <|
+  inv_hom_id := ConcreteCategory.hom_ext _ _
     (ProjIsoSpecTopComponent.toSpec_fromSpec 𝒜 f_deg hm)
 
 namespace ProjIsoSpecSheafComponent
