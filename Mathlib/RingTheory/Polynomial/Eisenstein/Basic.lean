@@ -74,7 +74,6 @@ end CommSemiring
 section CommRing
 
 variable [CommRing R] {𝓟 : Ideal R} {f : R[X]} (hf : f.IsWeaklyEisensteinAt 𝓟)
-
 variable {S : Type v} [CommRing S] [Algebra R S]
 
 section Principal
@@ -90,7 +89,7 @@ theorem exists_mem_adjoin_mul_eq_pow_natDegree {x : S} (hx : aeval x f = 0) (hmo
   replace hx := eq_neg_of_add_eq_zero_left hx
   have : ∀ n < f.natDegree, p ∣ f.coeff n := by
     intro n hn
-    refine' mem_span_singleton.1 (by simpa using hf.mem hn)
+    exact mem_span_singleton.1 (by simpa using hf.mem hn)
   choose! φ hφ using this
   conv_rhs at hx =>
     congr
@@ -132,11 +131,11 @@ theorem pow_natDegree_le_of_root_of_monic_mem {x : R} (hroot : IsRoot f x) (hmo 
   obtain ⟨k, hk⟩ := exists_add_of_le hi
   rw [hk, pow_add]
   suffices x ^ f.natDegree ∈ 𝓟 by exact mul_mem_right (x ^ k) 𝓟 this
-  rw [IsRoot.def, eval_eq_sum_range, Finset.range_add_one,
+  rw [IsRoot.definition, eval_eq_sum_range, Finset.range_add_one,
     Finset.sum_insert Finset.not_mem_range_self, Finset.sum_range, hmo.coeff_natDegree, one_mul] at
     *
   rw [eq_neg_of_add_eq_zero_left hroot, Ideal.neg_mem_iff]
-  refine' Submodule.sum_mem _ fun i _ => mul_mem_right _ _ (hf.mem (Fin.is_lt i))
+  exact Submodule.sum_mem _ fun i _ => mul_mem_right _ _ (hf.mem (Fin.is_lt i))
 #align polynomial.is_weakly_eisenstein_at.pow_nat_degree_le_of_root_of_monic_mem Polynomial.IsWeaklyEisensteinAt.pow_natDegree_le_of_root_of_monic_mem
 
 theorem pow_natDegree_le_of_aeval_zero_of_monic_mem_map {x : S} (hx : aeval x f = 0)
@@ -146,9 +145,9 @@ theorem pow_natDegree_le_of_aeval_zero_of_monic_mem_map {x : S} (hx : aeval x f 
     intro i hi
     obtain ⟨k, hk⟩ := exists_add_of_le hi
     rw [hk, pow_add]
-    refine' mul_mem_right _ _ this
-  rw [aeval_def, eval₂_eq_eval_map, ← IsRoot.def] at hx
-  refine' pow_natDegree_le_of_root_of_monic_mem (hf.map _) hx (hmo.map _) _ rfl.le
+    exact mul_mem_right _ _ this
+  rw [aeval_def, eval₂_eq_eval_map, ← IsRoot.definition] at hx
+  exact pow_natDegree_le_of_root_of_monic_mem (hf.map _) hx (hmo.map _) _ rfl.le
 #align polynomial.is_weakly_eisenstein_at.pow_nat_degree_le_of_aeval_zero_of_monic_mem_map Polynomial.IsWeaklyEisensteinAt.pow_natDegree_le_of_aeval_zero_of_monic_mem_map
 
 end CommRing

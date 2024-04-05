@@ -71,8 +71,8 @@ theorem continuousOn_extendFrom [RegularSpace Y] {f : X → Y} {A B : Set X} (hB
     have := tendsto_extendFrom (hf x x_in)
     rcases (nhdsWithin_basis_open x A).tendsto_left_iff.mp this V' V'_in with ⟨V, ⟨hxV, V_op⟩, hV⟩
     exact ⟨V, IsOpen.mem_nhds V_op hxV, V_op, hV⟩
-  suffices : ∀ y ∈ V ∩ B, φ y ∈ V'
-  exact mem_of_superset (inter_mem_inf V_in <| mem_principal_self B) this
+  suffices ∀ y ∈ V ∩ B, φ y ∈ V' from
+    mem_of_superset (inter_mem_inf V_in <| mem_principal_self B) this
   rintro y ⟨hyV, hyB⟩
   haveI := mem_closure_iff_nhdsWithin_neBot.mp (hB hyB)
   have limy : Tendsto f (𝓝[A] y) (𝓝 <| φ y) := tendsto_extendFrom (hf y hyB)

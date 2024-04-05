@@ -91,7 +91,7 @@ the monomorphisms in `AddCommGroup` are just the injective functions.
 -/
 -- Porting note: had to elaborate instance of Mono rather than just using `apply_instance`.
 example {G H : AddCommGroupCat.{u}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
-  (mono_iff_injective (FunLike.coe f)).mp (Functor.map_mono (forget AddCommGroupCat) f)
+  (mono_iff_injective (DFunLike.coe f)).mp (Functor.map_mono (forget AddCommGroupCat) f)
 
 
 end AddCommGroupCat

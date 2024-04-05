@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
 import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.CategoryTheory.Bicategory.Coherence
 
 /-!
 # Adjunctions in bicategories
@@ -74,6 +75,20 @@ b －－－－－－ ▸ b
 -/
 def rightZigzag (η : 𝟙 a ⟶ f ≫ g) (ε : g ≫ f ⟶ 𝟙 b) :=
   g ◁ η ⊗≫ ε ▷ g
+
+theorem rightZigzag_idempotent_of_left_triangle
+    (η : 𝟙 a ⟶ f ≫ g) (ε : g ≫ f ⟶ 𝟙 b) (h : leftZigzag η ε = (λ_ _).hom ≫ (ρ_ _).inv) :
+    rightZigzag η ε ⊗≫ rightZigzag η ε = rightZigzag η ε := by
+  dsimp only [rightZigzag]
+  calc
+    _ = g ◁ η ⊗≫ ((ε ▷ g ▷ 𝟙 a) ≫ (𝟙 b ≫ g) ◁ η) ⊗≫ ε ▷ g := by
+      simp [bicategoricalComp]; coherence
+    _ = 𝟙 _ ⊗≫ g ◁ (η ▷ 𝟙 a ≫ (f ≫ g) ◁ η) ⊗≫ (ε ▷ (g ≫ f) ≫ 𝟙 b ◁ ε) ▷ g ⊗≫ 𝟙 _ := by
+      rw [← whisker_exchange]; simp [bicategoricalComp]; coherence
+    _ = g ◁ η ⊗≫ g ◁ leftZigzag η ε ▷ g ⊗≫ ε ▷ g := by
+      rw [← whisker_exchange,  ← whisker_exchange]; simp [leftZigzag, bicategoricalComp]; coherence
+    _ = g ◁ η ⊗≫ ε ▷ g := by
+      rw [h]; simp [bicategoricalComp]; coherence
 
 /-- Adjunction between two 1-morphisms. -/
 structure Adjunction (f : a ⟶ b) (g : b ⟶ a) where
@@ -198,6 +213,18 @@ theorem leftZigzagIso_symm : (leftZigzagIso η ε).symm = rightZigzagIso ε.symm
 theorem rightZigzagIso_symm : (rightZigzagIso η ε).symm = leftZigzagIso ε.symm η.symm :=
   Iso.ext (rightZigzagIso_inv η ε)
 
+instance : IsIso (leftZigzag η.hom ε.hom) := inferInstanceAs <| IsIso (leftZigzagIso η ε).hom
+
+instance : IsIso (rightZigzag η.hom ε.hom) := inferInstanceAs <| IsIso (rightZigzagIso η ε).hom
+
+theorem right_triangle_of_left_triangle (h : leftZigzag η.hom ε.hom = (λ_ f).hom ≫ (ρ_ f).inv) :
+    rightZigzag η.hom ε.hom = (ρ_ g).hom ≫ (λ_ g).inv := by
+  rw [← cancel_epi (rightZigzag η.hom ε.hom ≫ (λ_ g).hom ≫ (ρ_ g).inv)]
+  calc
+    _ = rightZigzag η.hom ε.hom ⊗≫ rightZigzag η.hom ε.hom := by coherence
+    _ = rightZigzag η.hom ε.hom := rightZigzag_idempotent_of_left_triangle _ _ h
+    _ = _ := by simp
+
 /-- An auxiliary definition for `mkOfAdjointifyCounit`. -/
 def adjointifyCounit (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) : g ≫ f ≅ 𝟙 b :=
   whiskerLeftIso g ((ρ_ f).symm ≪≫ rightZigzagIso ε.symm η.symm ≪≫ λ_ f) ≪≫ ε
@@ -240,6 +267,18 @@ namespace Equivalence
 def id (a : B) : a ≌ a := ⟨_, _, (ρ_ _).symm, ρ_ _, by ext; simp [bicategoricalIsoComp]⟩
 
 instance : Inhabited (Equivalence a a) := ⟨id a⟩
+
+theorem left_triangle_hom (e : a ≌ b) :
+    leftZigzag e.unit.hom e.counit.hom = (λ_ e.hom).hom ≫ (ρ_ e.hom).inv :=
+  congrArg Iso.hom e.left_triangle
+
+theorem right_triangle (e : a ≌ b) :
+    rightZigzagIso e.unit e.counit = ρ_ e.inv ≪≫ (λ_ e.inv).symm :=
+  Iso.ext (right_triangle_of_left_triangle e.unit e.counit e.left_triangle_hom)
+
+theorem right_triangle_hom (e : a ≌ b) :
+    rightZigzag e.unit.hom e.counit.hom = (ρ_ e.inv).hom ≫ (λ_ e.inv).inv :=
+  congrArg Iso.hom e.right_triangle
 
 /-- Construct an adjoint equivalence from 2-isomorphisms by upgrading `ε` to a counit. -/
 def mkOfAdjointifyCounit (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) : a ≌ b where

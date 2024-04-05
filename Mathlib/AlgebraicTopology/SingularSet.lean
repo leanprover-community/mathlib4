@@ -5,6 +5,7 @@ Authors: Johan Commelin, Scott Morrison, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet
 import Mathlib.AlgebraicTopology.TopologicalSimplex
+import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
@@ -28,6 +29,7 @@ It is the left Kan extension of `SimplexCategory.toTop` along the Yoneda embeddi
 
 ## TODO
 
+- Generalize to an adjunction between `SSet.{u}` and `TopCat.{u}` for any universe `u`
 - Show that the singular simplicial set is a Kan complex.
 - Show the adjunction `sSetTopAdj` is a Quillen adjunction.
 

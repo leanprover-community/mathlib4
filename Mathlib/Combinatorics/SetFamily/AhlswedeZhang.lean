@@ -5,9 +5,8 @@ Authors: Yaël Dillies, Vladimir Ivanov
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Finset.Sups
-import Mathlib.Order.Hom.Lattice
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
@@ -49,21 +48,18 @@ open scoped BigOperators
 private lemma binomial_sum_eq (h : n < m) :
     ∑ i in range (n + 1), (n.choose i * (m - n) / ((m - i) * m.choose i) : ℚ) = 1 := by
   set f : ℕ → ℚ := fun i ↦ n.choose i * (m.choose i : ℚ)⁻¹ with hf
-  suffices : ∀ i ∈ range (n + 1), f i - f (i + 1) = n.choose i * (m - n) / ((m - i) * m.choose i)
-  · rw [← sum_congr rfl this, sum_range_sub', hf]
+  suffices ∀ i ∈ range (n + 1), f i - f (i + 1) = n.choose i * (m - n) / ((m - i) * m.choose i) by
+    rw [← sum_congr rfl this, sum_range_sub', hf]
     simp [choose_self, choose_zero_right, choose_eq_zero_of_lt h]
   intro i h₁
   rw [mem_range] at h₁
   have h₁ := le_of_lt_succ h₁
   have h₂ := h₁.trans_lt h
   have h₃ := h₂.le
-  have hi₄ : (i + 1 : ℚ) ≠ 0 := by
-    have := (@cast_ne_zero ℚ _ _ _).mpr (succ_ne_zero i)
-    push_cast at this
-    exact this
+  have hi₄ : (i + 1 : ℚ) ≠ 0 := i.cast_add_one_ne_zero
   have := congr_arg ((↑) : ℕ → ℚ) (choose_succ_right_eq m i)
   push_cast at this
-  dsimp [hf]
+  dsimp [f, hf]
   rw [(eq_mul_inv_iff_mul_eq₀ hi₄).mpr this]
   have := congr_arg ((↑) : ℕ → ℚ) (choose_succ_right_eq n i)
   push_cast at this
@@ -79,20 +75,18 @@ private lemma Fintype.sum_div_mul_card_choose_card :
   rw [← powerset_univ, powerset_card_disjiUnion, sum_disjiUnion]
   have : ∀ {x : ℕ}, ∀ s ∈ powersetCard x (univ : Finset α),
     (card α / ((card α - Finset.card s) * (card α).choose (Finset.card s)) : ℚ) =
-      card α / ((card α - x) * (card α).choose x)
-  · intros n s hs
+      card α / ((card α - x) * (card α).choose x) := by
+    intros n s hs
     rw [mem_powersetCard_univ.1 hs]
-  simp_rw [sum_congr rfl this, sum_const, card_powersetCard, card_univ]
-  simp
-  simp_rw [mul_div, mul_comm, ← mul_div]
+  simp_rw [sum_congr rfl this, sum_const, card_powersetCard, card_univ, nsmul_eq_mul, mul_div,
+    mul_comm, ← mul_div]
   rw [← mul_sum, ← mul_inv_cancel (cast_ne_zero.mpr card_ne_zero : (card α : ℚ) ≠ 0), ← mul_add,
     add_comm _ ((card α)⁻¹ : ℚ), ← sum_insert (f := fun x : ℕ ↦ (x⁻¹ : ℚ)) not_mem_range_self,
     ← range_succ]
   have (n) (hn : n ∈ range (card α + 1)) :
-      ((card α).choose n / ((card α - n) * (card α).choose n) : ℚ) = (card α - n : ℚ)⁻¹
-  · rw [div_mul_left]
-    · simp
-    · exact cast_ne_zero.2 (choose_pos $ mem_range_succ_iff.1 hn).ne'
+      ((card α).choose n / ((card α - n) * (card α).choose n) : ℚ) = (card α - n : ℚ)⁻¹ := by
+    rw [div_mul_cancel_right₀]
+    exact cast_ne_zero.2 (choose_pos $ mem_range_succ_iff.1 hn).ne'
   simp only [sum_congr rfl this, mul_eq_mul_left_iff, cast_eq_zero]
   convert Or.inl $ sum_range_reflect _ _ with a ha
   rw [add_tsub_cancel_right, cast_sub (mem_range_succ_iff.mp ha)]
@@ -136,8 +130,7 @@ lemma le_truncatedSup : a ≤ truncatedSup s a := by
 
 lemma map_truncatedSup (e : α ≃o β) (s : Finset α) (a : α) :
     e (truncatedSup s a) = truncatedSup (s.map e.toEquiv.toEmbedding) (e a) := by
-  have : e a ∈ lowerClosure (s.map e.toEquiv.toEmbedding : Set β) ↔ a ∈ lowerClosure s
-  · simp
+  have : e a ∈ lowerClosure (s.map e.toEquiv.toEmbedding : Set β) ↔ a ∈ lowerClosure s := by simp
   simp_rw [truncatedSup, apply_dite e, map_finset_sup', map_top, this]
   congr with h
   simp only [filter_map, Function.comp, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv,
@@ -203,7 +196,9 @@ lemma truncatedInf_le : truncatedInf s a ≤ a := by
 @[simp] lemma truncatedInf_empty (a : α) : truncatedInf ∅ a = ⊥ := truncatedInf_of_not_mem $ by simp
 
 @[simp] lemma truncatedInf_singleton (b a : α) : truncatedInf {b} a = if b ≤ a then b else ⊥ := by
-  simp [truncatedInf]; split_ifs <;> simp [*]
+  simp only [truncatedInf, coe_singleton, upperClosure_singleton, UpperSet.mem_Ici_iff,
+    filter_congr_decidable, id_eq]
+  split_ifs <;> simp [*]
 
 lemma map_truncatedInf (e : α ≃o β) (s : Finset α) (a : α) :
     e (truncatedInf s a) = truncatedInf (s.map e.toEquiv.toEmbedding) (e a) := by
@@ -211,10 +206,7 @@ lemma map_truncatedInf (e : α ≃o β) (s : Finset α) (a : α) :
   simp_rw [truncatedInf, apply_dite e, map_finset_inf', map_bot, this]
   congr with h
   simp only [filter_map, Function.comp, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv,
-    OrderIso.le_iff_le, id.def]
-  rw [inf'_map]
-  -- TODO: Why can't `simp` use `Finset.inf'_map`?
-  simp only [Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv, Function.comp_apply]
+    OrderIso.le_iff_le, id.def, inf'_map]
 
 variable [DecidableEq α]
 
@@ -264,14 +256,14 @@ lemma truncatedSup_infs (hs : a ∈ lowerClosure s) (ht : a ∈ lowerClosure t) 
   simp only [truncatedSup_of_mem, hs, ht, infs_aux.2 ⟨hs, ht⟩, sup'_inf_sup', filter_infs_le]
   simp_rw [← image_inf_product]
   rw [sup'_image]
-  rfl
+  simp [Function.uncurry_def]
 
 lemma truncatedInf_sups (hs : a ∈ upperClosure s) (ht : a ∈ upperClosure t) :
     truncatedInf (s ⊻ t) a = truncatedInf s a ⊔ truncatedInf t a := by
   simp only [truncatedInf_of_mem, hs, ht, sups_aux.2 ⟨hs, ht⟩, inf'_sup_inf', filter_sups_le]
   simp_rw [← image_sup_product]
   rw [inf'_image]
-  rfl
+  simp [Function.uncurry_def]
 
 lemma truncatedSup_infs_of_not_mem (ha : a ∉ lowerClosure s ⊓ lowerClosure t) :
     truncatedSup (s ⊼ t) a = ⊤ :=
@@ -363,7 +355,7 @@ lemma IsAntichain.le_infSum (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset
     _ = ∑ s in 𝒜, (truncatedInf 𝒜 s).card / (s.card * (card α).choose s.card : ℚ) := ?_
     _ ≤ _ := sum_le_univ_sum_of_nonneg fun s ↦ by positivity
   refine' sum_congr rfl fun s hs ↦ _
-  rw [truncatedInf_of_isAntichain h𝒜 hs, div_mul_right, one_div]
+  rw [truncatedInf_of_isAntichain h𝒜 hs, div_mul_cancel_left₀]
   have := (nonempty_iff_ne_empty.2 $ ne_of_mem_of_not_mem hs h𝒜₀).card_pos
   positivity
 
@@ -373,8 +365,8 @@ variable [Nonempty α]
     supSum ({s} : Finset (Finset α)) = card α * ∑ k in range (card α), (k : ℚ)⁻¹ := by
   have : ∀ t : Finset α,
     (card α - (truncatedSup {s} t).card : ℚ) / ((card α - t.card) * (card α).choose t.card) =
-      if t ⊆ s then (card α - s.card : ℚ) / ((card α - t.card) * (card α).choose t.card) else 0
-  · rintro t
+    if t ⊆ s then (card α - s.card : ℚ) / ((card α - t.card) * (card α).choose t.card) else 0 := by
+    rintro t
     simp_rw [truncatedSup_singleton, le_iff_subset]
     split_ifs <;> simp [card_univ]
   simp_rw [← sub_eq_of_eq_add (Fintype.sum_div_mul_card_choose_card α), eq_sub_iff_add_eq,
@@ -408,7 +400,7 @@ lemma supSum_of_not_univ_mem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ �
   obtain ⟨s, 𝒜, hs, rfl, rfl⟩ := card_eq_succ.1 hm.symm
   have h𝒜 : 𝒜.Nonempty := nonempty_iff_ne_empty.2 (by rintro rfl; simp at h𝒜₃)
   rw [insert_eq, eq_sub_of_add_eq (supSum_union_add_supSum_infs _ _), singleton_infs,
-    supSum_singleton (ne_of_mem_of_not_mem (mem_insert_self _ _) h𝒜₂), ih, ih, add_sub_cancel]
+    supSum_singleton (ne_of_mem_of_not_mem (mem_insert_self _ _) h𝒜₂), ih, ih, add_sub_cancel_right]
   · exact card_image_le.trans_lt (lt_add_one _)
   · exact h𝒜.image _
   · simpa using fun _ ↦ ne_of_mem_of_not_mem (mem_insert_self _ _) h𝒜₂
@@ -419,7 +411,7 @@ lemma supSum_of_not_univ_mem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ �
 /-- The **Ahlswede-Zhang Identity**. -/
 lemma infSum_eq_one (h𝒜₁ : 𝒜.Nonempty) (h𝒜₀ : ∅ ∉ 𝒜) : infSum 𝒜 = 1 := by
   rw [← compls_compls 𝒜, eq_sub_of_add_eq (infSum_compls_add_supSum _),
-    supSum_of_not_univ_mem h𝒜₁.compls, add_sub_cancel']
+    supSum_of_not_univ_mem h𝒜₁.compls, add_sub_cancel_left]
   simpa
 
 end AhlswedeZhang

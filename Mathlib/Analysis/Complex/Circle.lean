@@ -105,6 +105,10 @@ instance : CompactSpace circle :=
 instance : TopologicalGroup circle :=
   Metric.sphere.topologicalGroup
 
+instance : UniformGroup circle := by
+  convert topologicalGroup_is_uniform_of_compactSpace circle
+  exact unique_uniformity_of_compact rfl rfl
+
 /-- If `z` is a nonzero complex number, then `conj z / z` belongs to the unit circle. -/
 @[simps]
 def circle.ofConjDivSelf (z : ℂ) (hz : z ≠ 0) : circle :=
@@ -152,3 +156,9 @@ theorem expMapCircle_sub (x y : ℝ) : expMapCircle (x - y) = expMapCircle x / e
 theorem expMapCircle_neg (x : ℝ) : expMapCircle (-x) = (expMapCircle x)⁻¹ :=
   expMapCircleHom.map_neg x
 #align exp_map_circle_neg expMapCircle_neg
+
+@[simp]
+lemma norm_circle_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
+    (u : circle) (v : E) :
+    ‖u • v‖ = ‖v‖ := by
+  rw [Submonoid.smul_def, norm_smul, norm_eq_of_mem_sphere, one_mul]

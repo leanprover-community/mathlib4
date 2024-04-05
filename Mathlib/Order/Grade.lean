@@ -3,7 +3,6 @@ Copyright (c) 2022 Yaël Dillies, Violeta Hernández Palacios. All rights reserv
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Vladimir Ivanov
 -/
-import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Int.SuccPred
 
 #align_import order.grade from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
@@ -56,7 +55,7 @@ Instead, we define graded orders by their grade function, without talking about 
 * [Richard Stanley, *Enumerative Combinatorics*][stanley2012]
 -/
 
-open Finset Nat OrderDual
+open Nat OrderDual
 
 variable {𝕆 ℙ α β : Type*}
 
@@ -64,7 +63,7 @@ variable {𝕆 ℙ α β : Type*}
 `grade 𝕆 : α → 𝕆` which preserves order covering (`CovBy`). -/
 class GradeOrder (𝕆 α : Type*) [Preorder 𝕆] [Preorder α] where
   /-- The grading function. -/
-  grade : α → 𝕆
+  protected grade : α → 𝕆
   /-- `grade` is strictly monotonic. -/
   grade_strictMono : StrictMono grade
   /-- `grade` preserves `CovBy`. -/
@@ -90,14 +89,14 @@ class GradeBoundedOrder (𝕆 α : Type*) [Preorder 𝕆] [Preorder α] extends 
 #align grade_bounded_order GradeBoundedOrder
 
 section Preorder -- grading
--- PORTING NOTE: this `variable [Preorder 𝕆]` for the whole section seems to not work in Lean4
--- variable [Preorder 𝕆]
+variable [Preorder 𝕆]
 
 section Preorder -- graded order
 variable [Preorder α]
 
 section GradeOrder
-variable (𝕆) [Preorder 𝕆] [GradeOrder 𝕆 α] {a b : α}
+variable (𝕆)
+variable [GradeOrder 𝕆 α] {a b : α}
 
 /-- The grade of an element in a graded order. Morally, this is the number of elements you need to
 go down by to get to `⊥`. -/
@@ -266,9 +265,8 @@ theorem grade_ofDual [GradeOrder 𝕆 α] (a : αᵒᵈ) : grade 𝕆 (ofDual a)
 /-- Lifts a graded order along a strictly monotone function. -/
 @[reducible]
 def GradeOrder.liftLeft [GradeOrder 𝕆 α] (f : 𝕆 → ℙ) (hf : StrictMono f)
-    (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) : GradeOrder ℙ α
-    where
-  grade := f ∘ (@grade 𝕆 _ _ _ _) -- porting note - what the hell?! used to be `grade 𝕆`
+    (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) : GradeOrder ℙ α where
+  grade := f ∘ grade 𝕆
   grade_strictMono := hf.comp grade_strictMono
   covBy_grade _ _ h := hcovBy _ _ <| h.grade _
 #align grade_order.lift_left GradeOrder.liftLeft
@@ -302,9 +300,8 @@ def GradeBoundedOrder.liftLeft [GradeBoundedOrder 𝕆 α] (f : 𝕆 → ℙ) (h
 /-- Lifts a graded order along a strictly monotone function. -/
 @[reducible]
 def GradeOrder.liftRight [GradeOrder 𝕆 β] (f : α → β) (hf : StrictMono f)
-    (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) : GradeOrder 𝕆 α
-    where
-  grade := (@grade 𝕆 _ _ _ _) ∘ f -- porting note: again, weird
+    (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) : GradeOrder 𝕆 α where
+  grade := grade 𝕆 ∘ f
   grade_strictMono := grade_strictMono.comp hf
   covBy_grade _ _ h := (hcovBy _ _ h).grade _
 #align grade_order.lift_right GradeOrder.liftRight

@@ -56,7 +56,7 @@ instance : ConcreteCategory TopCommRingCat.{u} where
   forget :=
     { obj := fun R => R
       map := fun f => f.val }
-  -- Porting note : Old proof was `forget_faithful := { }`
+  -- Porting note: Old proof was `forget_faithful := { }`
   forget_faithful :=
     { map_injective := fun {_ _ a b} h => Subtype.ext <| RingHom.coe_inj h }
 

@@ -55,6 +55,10 @@ open sets in `Proj`, more specifically:
     Hence we have a well defined function `Spec.T A⁰_f → Proj.T | (pbo f)`, this function is called
     `ProjIsoSpecTopComponent.FromSpec.toFun`. But to prove the continuity of this function, we need
     to prove `fromSpec ∘ toSpec` and `toSpec ∘ fromSpec` are both identities; these are achieved in
+    `ProjIsoSpecTopComponent.fromSpec_toSpec` and `ProjIsoSpecTopComponent.toSpec_fromSpec`.
+
+    `ProjIsoSpecTopComponent.FromSpec.toFun`. But to prove the continuity of this function, we need
+    to prove `fromSpec ∘ toSpec` and `toSpec ∘ fromSpec` are both identities; these are achieved in
     `ProjIsoSpecTopComponent.fromSpecToSpec` and `ProjIsoSpecTopComponent.toSpecFromSpec`.
 3. We then construct a sheaf isomorphism between `φ _* Proj| pbo f` and `Spec A⁰_ f`.
   - `Spec A⁰_f` to `φ _* Proj | pbo f`: we need to construct a family of ring homomorphisms --- for
@@ -71,19 +75,19 @@ open sets in `Proj`, more specifically:
     `(Proj| pbo f)(φ⁻¹ V)`; see `ProjIsoSpecSheafComponent.FromSpec.isLocallyFraction`.
 ## Main Definitions and Statements
 
-For a homogeneous element `f` of degree `n`
+For a homogeneous element `f` of degree `m`
 * `ProjIsoSpecTopComponent.toSpec`: the continuous map between `Proj.T| pbo f` and `Spec.T A⁰_f`
   defined by sending `x : Proj| (pbo f)` to `A⁰_f ∩ span {g / 1 | g ∈ x}`. We also denote this map
   as `ψ`.
 * `ProjIsoSpecTopComponent.ToSpec.preimage_eq`: for any `a: A`, if `a/f^m` has degree zero,
   then the preimage of `sbo a/f^m` under `to_Spec f` is `pbo f ∩ pbo a`.
 
-If we further assume `n` is positive
+If we further assume `m` is positive
 * `ProjIsoSpecTopComponent.fromSpec`: the continuous map between `Spec.T A⁰_f` and `Proj.T| pbo f`
-  defined by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`. We also denote this map as `φ`
+  defined by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}` where `aᵢ` is the `i`-th coordinate of `a`.
+  We also denote this map as `φ`
 * `projIsoSpecTopComponent`: the homeomorphism `Proj.T| pbo f ≅ Spec.T A⁰_f` obtained by `φ` and
   `ψ`.
-* `ProjIsoSpecSheafComponent.fromSpec`: the sheaf morphism from `Spec A⁰_f` to `φ _* Proj | pbo f`.
 ## Reference
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]: Chapter II.2 Proposition 2.5
 -/
@@ -102,11 +106,8 @@ open DirectSum SetLike.GradedMonoid Localization
 open Finset hiding mk_zero mk
 
 variable {R A : Type*}
-
 variable [CommRing R] [CommRing A] [Algebra R A]
-
 variable (𝒜 : ℕ → Submodule R A)
-
 variable [GradedAlgebra 𝒜]
 
 open TopCat TopologicalSpace
@@ -240,8 +241,8 @@ lemma carrier_eq_span :
   · intro z hz
     let k : ℕ := z.den_mem.choose
     have hk : f^k = z.den := z.den_mem.choose_spec
-    suffices mem1 : z.num ∈ x.1.asHomogeneousIdeal
-    · refine Ideal.subset_span ⟨_, _, mem1, _, z.num_mem_deg, z.den_mem_deg, z.den_mem, ?_⟩
+    suffices mem1 : z.num ∈ x.1.asHomogeneousIdeal by
+      refine Ideal.subset_span ⟨_, _, mem1, _, z.num_mem_deg, z.den_mem_deg, z.den_mem, ?_⟩
       rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
         HomogeneousLocalization.eq_num_div_den]
 
@@ -252,9 +253,9 @@ lemma carrier_eq_span :
     dsimp only [OneMemClass.coe_one] at eq1
     rw [one_mul, ← hk, ← mul_assoc, ← mul_assoc, ← pow_add, ← pow_add] at eq1
 
-    suffices : f^(l + k) * ∑ i in c.support.attach, acd (c i) _ * i.1.2.choose ∈
-      x.1.asHomogeneousIdeal
-    · exact (x.1.isPrime.mem_or_mem (eq1.symm ▸ this)).resolve_left fun r ↦
+    suffices f^(l + k) * ∑ i in c.support.attach, acd (c i) _ * i.1.2.choose ∈
+      x.1.asHomogeneousIdeal from
+      (x.1.isPrime.mem_or_mem (eq1.symm ▸ this)).resolve_left fun r ↦
         (ProjectiveSpectrum.mem_basicOpen 𝒜 _ _).mp x.2 <| x.1.isPrime.mem_of_pow_mem _ r
     exact Ideal.mul_mem_left _ _ <| Ideal.sum_mem _ (fun ⟨j, hj⟩ _ ↦
       Ideal.mul_mem_left _ _ j.2.choose_spec.1)
@@ -276,7 +277,7 @@ theorem disjoint :
   · erw [x.1.isPrime.pow_mem_iff_mem _ k_ineq] at hg1
     exact x.2 hg1
   · dsimp at hg1
-    erw [show k = 0 by linarith, pow_zero, ← Ideal.eq_top_iff_one] at hg1
+    erw [show k = 0 by omega, pow_zero, ← Ideal.eq_top_iff_one] at hg1
     apply x.1.isPrime.1
     exact hg1
 #align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec.disjoint AlgebraicGeometry.ProjIsoSpecTopComponent.ToSpec.disjoint
@@ -311,8 +312,8 @@ def toFun (x : Proj.T| pbo f) : Spec.T A⁰_ f :=
     classical
     rw [mem_carrier_iff] at hx12
     let J := span ((algebraMap A (Away f) : A → (Away f)) '' x.val.asHomogeneousIdeal)
-    suffices h : ∀ x y : Localization.Away f, x * y ∈ J → x ∈ J ∨ y ∈ J
-    · rw [HomogeneousLocalization.mul_val] at hx12; exact h x1.val x2.val hx12
+    suffices h : ∀ x y : Localization.Away f, x * y ∈ J → x ∈ J ∨ y ∈ J by
+      rw [HomogeneousLocalization.mul_val] at hx12; exact h x1.val x2.val hx12
     clear x1 x2 hx12
     intro x1 x2 hx12
     induction' x1 using Localization.induction_on with data_x1
@@ -401,12 +402,10 @@ end ToSpec
 
 section
 
-variable {𝒜}
-
 /-- The continuous function between the basic open set `D(f)` in `Proj` to the corresponding basic
 open set in `Spec A⁰_f`.
 -/
-def toSpec {f : A} : (Proj.T| pbo f) ⟶ Spec.T A⁰_ f where
+def toSpec (f : A) : (Proj.T| pbo f) ⟶ Spec.T A⁰_ f where
   toFun := ToSpec.toFun f
   continuous_toFun := by
     rw [PrimeSpectrum.isTopologicalBasis_basic_opens.continuous_iff]
@@ -417,6 +416,15 @@ def toSpec {f : A} : (Proj.T| pbo f) ⟶ Spec.T A⁰_ f where
     · intro hz; simpa [Set.mem_preimage]
     · intro hz; simpa only [Set.inf_eq_inter,Set.mem_inter_iff,Set.mem_preimage]
 #align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec AlgebraicGeometry.ProjIsoSpecTopComponent.toSpec
+
+variable {𝒜} in
+lemma toSpec_preimage_eq {f : A} (a b : A) (k : ℕ) (a_mem : a ∈ 𝒜 k) (b_mem1 : b ∈ 𝒜 k)
+    (b_mem2 : b ∈ Submonoid.powers f) :
+    toSpec 𝒜 f ⁻¹'
+        (@PrimeSpectrum.basicOpen (A⁰_ f) _ (Quotient.mk'' ⟨k, ⟨a, a_mem⟩, ⟨b, b_mem1⟩, b_mem2⟩) :
+          Set (PrimeSpectrum (HomogeneousLocalization.Away 𝒜 f))) =
+      {x | x.1 ∈ (pbo f) ⊓ pbo a} :=
+  ToSpec.preimage_eq f a b k a_mem b_mem1 b_mem2
 
 end
 
@@ -537,7 +545,7 @@ variable (hm : 0 < m) (q : Spec.T A⁰_ f)
 theorem carrier.zero_mem : (0 : A) ∈ carrier f_deg q := fun i => by
   convert Submodule.zero_mem q.1 using 1
   rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
-    HomogeneousLocalization.zero_val]; simp_rw [map_zero, zero_pow hm]
+    HomogeneousLocalization.zero_val]; simp_rw [map_zero, zero_pow hm.ne']
   convert Localization.mk_zero (S := Submonoid.powers f) _ using 1
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.carrier.zero_mem AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.carrier.zero_mem
 
@@ -553,7 +561,7 @@ theorem carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ ca
           (Quotient.mk'' ⟨_, ⟨proj 𝒜 (i - n) x ^ m, by mem_tac⟩, ⟨_, ?_⟩, ⟨i - n, rfl⟩⟩ : A⁰_ f)
     split_ifs with h
     · convert_to product ∈ q.1
-      · dsimp
+      · dsimp [product]
         erw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
           HomogeneousLocalization.mul_val, HomogeneousLocalization.val_mk'',
           HomogeneousLocalization.val_mk'']
@@ -562,7 +570,7 @@ theorem carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ ca
         · rw [(_ : m • n = _)]; mem_tac; simp only [smul_eq_mul, mul_comm]
         · rw [(_ : m • (i - n) = _)]; mem_tac; simp only [smul_eq_mul, mul_comm]
       · apply Ideal.mul_mem_left (α := A⁰_ f) _ _ (hx _)
-    · simp_rw [zero_pow hm]; convert carrier.zero_mem f_deg hm q i; rw [map_zero, zero_pow hm]
+    · simpa only [map_zero, zero_pow hm.ne'] using zero_mem f_deg hm q i
   · simp_rw [add_smul]; exact fun _ _ => carrier.add_mem f_deg q
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.carrier.smul_mem AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.carrier.smul_mem
 
@@ -580,9 +588,8 @@ theorem carrier.asIdeal.homogeneous : (carrier.asIdeal f_deg hm q).IsHomogeneous
   fun i a ha j =>
   (em (i = j)).elim (fun h => h ▸ by simpa only [proj_apply, decompose_coe, of_eq_same] using ha _)
     fun h => by
-    simp only [proj_apply, decompose_of_mem_ne 𝒜 (Submodule.coe_mem (decompose 𝒜 a i)) h,
-      zero_pow hm]
-    convert carrier.zero_mem f_deg hm q j; rw [map_zero, zero_pow hm]
+    simpa only [proj_apply, decompose_of_mem_ne 𝒜 (Submodule.coe_mem (decompose 𝒜 a i)) h,
+      zero_pow hm.ne', map_zero] using carrier.zero_mem f_deg hm q j
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.carrier.as_ideal.homogeneous AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.carrier.asIdeal.homogeneous
 
 /-- For a prime ideal `q` in `A⁰_f`, the set `{a | aᵢᵐ/fⁱ ∈ q}` as a homogeneous ideal.
@@ -629,7 +636,7 @@ theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
         rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
           HomogeneousLocalization.zero_val]; simp_rw [proj_apply]
         convert mk_zero (S := Submonoid.powers f) _
-        rw [decompose_of_mem_ne 𝒜 _ hn.symm, zero_pow hm]
+        rw [decompose_of_mem_ne 𝒜 _ hn.symm, zero_pow hm.ne']
         · first | exact hnx | exact hny
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.carrier.as_ideal.prime AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.carrier.asIdeal.prime
 
@@ -645,8 +652,8 @@ end FromSpec
 
 section toSpecFromSpec
 
-lemma toSpecFromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : Spec.T (A⁰_ f)) :
-    toSpec (FromSpec.toFun f_deg hm x) = x := show _ = (_ : PrimeSpectrum _) by
+lemma toSpec_fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) (x : Spec.T (A⁰_ f)) :
+    toSpec 𝒜 f (FromSpec.toFun f_deg hm x) = x := show _ = (_ : PrimeSpectrum _) by
   ext (z : A⁰_ f); fconstructor <;> intro hz
   · change z ∈ ToSpec.carrier _ at hz
     erw [ToSpec.carrier_eq_span, mem_span_set] at hz
@@ -689,32 +696,35 @@ lemma toSpecFromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : 
       · dsimp; congr 2
         rw [← k_spec, ← pow_mul, show z.deg = k * m from
           degree_eq_of_mem_mem 𝒜 (k_spec ▸ z.den_mem_deg) (SetLike.pow_mem_graded k f_deg) ineq]
-    · simp only [CommRingCat.coe_of, GradedAlgebra.proj_apply, zero_pow hm,
+    · simp only [CommRingCat.coe_of, GradedAlgebra.proj_apply, zero_pow (by linarith only [hm]),
         DirectSum.decompose_of_mem_ne 𝒜 z.num_mem_deg ineq]
       convert x.asIdeal.zero_mem
       rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
         HomogeneousLocalization.zero_val, Localization.mk_zero]
 
+@[deprecated] -- 2024-03-02
+alias toSpecFromSpec := toSpec_fromSpec
+
 end toSpecFromSpec
 
 section fromSpecToSpec
 
-lemma fromSpecToSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : Proj.T| pbo f) :
-    FromSpec.toFun f_deg hm (toSpec x) = x := by
+lemma fromSpec_toSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) (x : Proj.T| pbo f) :
+    FromSpec.toFun f_deg hm (toSpec 𝒜 f x) = x := by
   classical
   refine Subtype.ext <| ProjectiveSpectrum.ext _ _ <| HomogeneousIdeal.ext <| Ideal.ext fun z ↦ ?_
-  fconstructor <;> intro hz
+  constructor <;> intro hz
   · rw [← DirectSum.sum_support_decompose 𝒜 z]
     refine Ideal.sum_mem _ fun i _ ↦ ?_
-    specialize hz i
-    obtain ⟨c, N, acd, eq1⟩ := ToSpec.MemCarrier.clear_denominator x hz
+    obtain ⟨c, N, acd, eq1⟩ := ToSpec.MemCarrier.clear_denominator x (hz i)
     rw [HomogeneousLocalization.val_mk'', smul_mk, ← mk_one_eq_algebraMap, mk_eq_mk_iff,
       r_iff_exists, OneMemClass.coe_one, one_mul] at eq1
     obtain ⟨⟨_, ⟨k, rfl⟩⟩, eq1⟩ := eq1
     dsimp at eq1
     rw [← mul_assoc, ← mul_assoc, ← pow_add, ← pow_add] at eq1
-    suffices mem : f^(k + i) * ∑ i in c.support.attach, acd (c i) _ * _ ∈ x.1.asHomogeneousIdeal
-    · exact x.1.isPrime.mem_of_pow_mem _ <| x.1.isPrime.mem_or_mem (eq1.symm ▸ mem)
+    suffices mem : f^(k + i) * ∑ i in c.support.attach, acd (c i) _ * _ ∈
+      x.1.asHomogeneousIdeal from
+      x.1.isPrime.mem_of_pow_mem _ <| x.1.isPrime.mem_or_mem (eq1.symm ▸ mem)
         |>.resolve_left fun r ↦ ProjectiveSpectrum.mem_basicOpen 𝒜 _ _
         |>.mp x.2 <| x.1.isPrime.mem_of_pow_mem _ r
     exact Ideal.mul_mem_left _ _ <| Ideal.sum_mem _ fun i _ ↦
@@ -723,80 +733,71 @@ lemma fromSpecToSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : 
   · intro i
     erw [ToSpec.mem_carrier_iff, HomogeneousLocalization.val_mk'']
     dsimp only [GradedAlgebra.proj_apply]
-    rw [show (mk (decompose 𝒜 z i ^ m) ⟨f^i, ⟨i, rfl⟩⟩: Away f) =
+    rw [show (mk (decompose 𝒜 z i ^ m) ⟨f^i, ⟨i, rfl⟩⟩ : Away f) =
       (decompose 𝒜 z i ^ m : A) • (mk 1 ⟨f^i, ⟨i, rfl⟩⟩ : Away f) by
       · rw [smul_mk, smul_eq_mul, mul_one], Algebra.smul_def]
     exact Ideal.mul_mem_right _ _ <|
       Ideal.subset_span ⟨_, ⟨Ideal.pow_mem_of_mem _ (x.1.asHomogeneousIdeal.2 i hz) _ hm, rfl⟩⟩
 
-lemma toSpec_injective {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m):
-    Function.Injective (toSpec (𝒜 := 𝒜) (f := f)) := by
+lemma toSpec_injective {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
+    Function.Injective (toSpec 𝒜 f) := by
   intro x₁ x₂ h
   have := congr_arg (FromSpec.toFun f_deg hm) h
-  rwa [fromSpecToSpec, fromSpecToSpec] at this
+  rwa [fromSpec_toSpec, fromSpec_toSpec] at this
 
-lemma toSpec_surjective {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m):
-    Function.Surjective (toSpec (𝒜 := 𝒜) (f := f)) :=
+lemma toSpec_surjective {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
+    Function.Surjective (toSpec 𝒜 f) :=
   Function.surjective_iff_hasRightInverse |>.mpr
-    ⟨FromSpec.toFun f_deg hm, toSpecFromSpec 𝒜 hm f_deg⟩
+    ⟨FromSpec.toFun f_deg hm, toSpec_fromSpec 𝒜 f_deg hm⟩
 
-lemma toSpec_bijective {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m):
+lemma toSpec_bijective {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m):
     Function.Bijective (toSpec (𝒜 := 𝒜) (f := f)) :=
-  ⟨toSpec_injective 𝒜 hm f_deg, toSpec_surjective 𝒜 hm f_deg⟩
+  ⟨toSpec_injective 𝒜 f_deg hm, toSpec_surjective 𝒜 f_deg hm⟩
 
 end fromSpecToSpec
 
+namespace toSpec
+
+variable {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m)
+
 variable {𝒜} in
-/--The continuous function `Spec A⁰_f → Proj|D(f)` by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`.-/
-def fromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
+lemma image_basicOpen_eq_basicOpen (a : A) (i : ℕ) :
+    toSpec 𝒜 f '' {x | x.1 ∈ (pbo f) ⊓ pbo (decompose 𝒜 a i)} =
+    (PrimeSpectrum.basicOpen (R := A⁰_ f) <|
+      Quotient.mk'' ⟨m * i, ⟨decompose 𝒜 a i ^ m, SetLike.pow_mem_graded _ (Submodule.coe_mem _)⟩,
+        ⟨f^i, by rw [mul_comm]; exact SetLike.pow_mem_graded _ f_deg⟩, ⟨i, rfl⟩⟩).1 :=
+  Set.preimage_injective.mpr (toSpec_surjective 𝒜 f_deg hm) <|
+    Set.preimage_image_eq _ (toSpec_injective 𝒜 f_deg hm) ▸ by
+  rw [Opens.carrier_eq_coe, toSpec_preimage_eq, ProjectiveSpectrum.basicOpen_pow 𝒜 _ m hm]
+
+end toSpec
+
+variable {𝒜} in
+/--The continuous function `Spec A⁰_f → Proj|D(f)` by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}` where
+`m` is the degree of `f`.-/
+def fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     (Spec.T (A⁰_ f)) ⟶ (Proj.T| (pbo f)) where
   toFun := FromSpec.toFun f_deg hm
-  continuous_toFun :=
-    (IsTopologicalBasis.continuous_iff <|
-      IsTopologicalBasis.inducing (α := Proj.T| (pbo f)) (β := Proj) (f := Subtype.val)
-        (hf := ⟨rfl⟩) (h := ProjectiveSpectrum.isTopologicalBasis_basic_opens 𝒜)).mpr fun s hs ↦ by
-    erw [Set.mem_preimage] at hs
-    obtain ⟨_, ⟨a, rfl⟩, rfl⟩ := hs
-    dsimp only [Spec.locallyRingedSpaceObj_toSheafedSpace, Spec.sheafedSpaceObj_carrier,
-      LocallyRingedSpace.restrict_carrier]
+  continuous_toFun := by
+    rw [isTopologicalBasis_subtype (ProjectiveSpectrum.isTopologicalBasis_basic_opens 𝒜) (pbo f).1
+      |>.continuous_iff]
+    rintro s ⟨_, ⟨a, rfl⟩, rfl⟩
+    have h₁ : Subtype.val (p := (pbo f).1) ⁻¹' (pbo a) =
+        ⋃ i : ℕ, {x | x.1 ∈ (pbo f) ⊓ pbo (decompose 𝒜 a i)} := by
+      ext ⟨x, (hx : f ∉ x.asHomogeneousIdeal)⟩
+      rw [ProjectiveSpectrum.basicOpen_eq_union_of_projection 𝒜 a]
+      change (∃ _, _) ↔ (∃ _, _)
+      simp only [GradedAlgebra.proj_apply, Set.mem_range, Set.iUnion_exists, exists_exists_eq_and,
+        Set.mem_iUnion, SetLike.mem_coe, exists_prop, exists_and_right,
+        ProjectiveSpectrum.mem_basicOpen, Opens.carrier_eq_coe, Set.mem_setOf_eq]
+      exact exists_congr fun n ↦ show _ ↔ (_ ∉ _ ∧ _ ∉ _) by tauto
 
-    suffices o1 : IsOpen <| toSpec '' (Subtype.val ⁻¹' (pbo a).1 : Set (Proj.T| (pbo f)))
-    · convert o1
-      ext s x
-      simp only [Set.mem_preimage, LocallyRingedSpace.restrict_carrier,
-        Spec.locallyRingedSpaceObj_toSheafedSpace, Spec.sheafedSpaceObj_carrier, Set.mem_image]
-      constructor
-      · intro h; exact ⟨_, h, toSpecFromSpec 𝒜 hm f_deg _⟩
-      · rintro ⟨x, hx', rfl⟩; erw [fromSpecToSpec 𝒜 hm f_deg x]; exact hx'
-
-    rw [calc
-      Subtype.val ⁻¹' (pbo a).1
-      = {x  : Proj.T| (pbo f) | x.1 ∈ (pbo f) ⊓ pbo a} := by
-        ext ⟨x, (hx : x ∈ ProjectiveSpectrum.basicOpen _ _)⟩
-        show _ ↔ _ ∧ _
-        simp only [ProjectiveSpectrum.mem_basicOpen] at hx
-        simp [hx]
-    _ = {x | x.1 ∈ (pbo f) ⊓ (⨆ i : ℕ, pbo (decompose 𝒜 a i))} := by
-        simp_rw [ProjectiveSpectrum.basicOpen_eq_union_of_projection 𝒜 a]
-        rfl
-    _ = {x | x.1 ∈ ⨆ i : ℕ, (pbo f) ⊓ pbo (decompose 𝒜 a i)} := by rw [inf_iSup_eq]
-    _ = ⋃ i : ℕ, {x | x.1 ∈ (pbo f) ⊓ pbo (decompose 𝒜 a i)} := by
-      ext x
-      simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_inf, Opens.mem_mk, Set.mem_iUnion,
-        Set.mem_inter_iff, Set.mem_compl_iff, SetLike.mem_coe]
-      rfl, Set.image_iUnion]
-    refine isOpen_iUnion fun i ↦ ?_
-
-    suffices : toSpec (f := f) '' {x | x.1 ∈ (pbo f) ⊓ pbo (decompose 𝒜 a i)} =
-      (PrimeSpectrum.basicOpen (R := A⁰_ f) <|
-        Quotient.mk'' ⟨m * i, ⟨decompose 𝒜 a i ^ m, SetLike.pow_mem_graded _ (Submodule.coe_mem _)⟩,
-          ⟨f^i, by rw [mul_comm]; exact SetLike.pow_mem_graded _ f_deg⟩, ⟨i, rfl⟩⟩).1
-    · erw [this]; exact (PrimeSpectrum.basicOpen _).2
-
-    apply_fun _ using Set.preimage_injective.mpr (toSpec_surjective 𝒜 hm f_deg)
-    erw [Set.preimage_image_eq _ (toSpec_injective 𝒜 hm f_deg), ToSpec.preimage_eq,
-      ProjectiveSpectrum.basicOpen_pow 𝒜 _ m hm]
-    rfl
+    let e : _ ≃ _ :=
+      ⟨FromSpec.toFun f_deg hm, ToSpec.toFun f, toSpec_fromSpec _ _ _, fromSpec_toSpec _ _ _⟩
+    change IsOpen <| e ⁻¹' _
+    rw [Set.preimage_equiv_eq_image_symm, h₁, Set.image_iUnion]
+    exact isOpen_iUnion fun i ↦ toSpec.image_basicOpen_eq_basicOpen f_deg hm a i ▸
+      PrimeSpectrum.isOpen_basicOpen
 
 end ProjIsoSpecTopComponent
 

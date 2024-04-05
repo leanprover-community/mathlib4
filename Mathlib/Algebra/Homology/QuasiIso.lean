@@ -29,9 +29,7 @@ variable {ι : Type*}
 section
 
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V] [HasZeroObject V]
-
 variable [HasEqualizers V] [HasImages V] [HasImageMaps V] [HasCokernels V]
-
 variable {c : ComplexShape ι} {C D E : HomologicalComplex V c}
 
 /-- A chain map is a quasi-isomorphism if it induces isomorphisms on homology.
@@ -468,13 +466,13 @@ end PreservesHomology
 variable (C c)
 
 /-- The morphism property on `HomologicalComplex C c` given by quasi-isomorphisms. -/
-def qis [CategoryWithHomology C] :
+def quasiIso [CategoryWithHomology C] :
     MorphismProperty (HomologicalComplex C c) := fun _ _ f => QuasiIso f
 
 variable {C c}
 
 @[simp]
-lemma qis_iff [CategoryWithHomology C] (f : K ⟶ L) : qis C c f ↔ QuasiIso f := by rfl
+lemma mem_quasiIso_iff [CategoryWithHomology C] (f : K ⟶ L) : quasiIso C c f ↔ QuasiIso f := by rfl
 
 end HomologicalComplex
 
@@ -497,8 +495,10 @@ instance : QuasiIso e.hom where
 
 instance : QuasiIso e.inv := (inferInstance : QuasiIso e.symm.hom)
 
-lemma homotopyEquivalences_subset_qis [CategoryWithHomology C] :
-    homotopyEquivalences C c ⊆ qis C c := by
+variable (C c)
+
+lemma homotopyEquivalences_subset_quasiIso [CategoryWithHomology C] :
+    homotopyEquivalences C c ⊆ quasiIso C c := by
   rintro K L _ ⟨e, rfl⟩
-  simp only [qis_iff]
+  simp only [HomologicalComplex.mem_quasiIso_iff]
   infer_instance

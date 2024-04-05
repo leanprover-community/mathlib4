@@ -36,7 +36,6 @@ noncomputable section
 universe u v v' v'' u₁' w w'
 
 variable {K R : Type u} {V V₁ V₂ V₃ : Type v} {V' V'₁ : Type v'} {V'' : Type v''}
-
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
 open BigOperators Cardinal Basis Submodule Function Set
@@ -46,11 +45,8 @@ section Module
 section DivisionRing
 
 variable [DivisionRing K]
-
 variable [AddCommGroup V] [Module K V]
-
 variable [AddCommGroup V'] [Module K V']
-
 variable [AddCommGroup V₁] [Module K V₁]
 
 /-- If a vector space has a finite dimension, the index set of `Basis.ofVectorSpace` is finite. -/
@@ -117,7 +113,6 @@ theorem exists_linearIndependent_pair_of_one_lt_rank
 section
 
 variable [AddCommGroup V₂] [Module K V₂]
-
 variable [AddCommGroup V₃] [Module K V₃]
 
 open LinearMap
@@ -181,7 +176,6 @@ end
 end DivisionRing
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V] [AddCommGroup V₁] [Module K V₁]
-
 variable [AddCommGroup V'] [Module K V']
 
 /-- The `ι` indexed basis on `V`, where `ι` is an empty type and `V` is zero-dimensional.
@@ -230,11 +224,11 @@ theorem rank_le_one_iff : Module.rank K V ≤ 1 ↔ ∃ v₀ : V, ∀ v, ∃ r :
     rw [← b.mk_eq_rank'', Cardinal.le_one_iff_subsingleton, subsingleton_coe] at hd
     rcases eq_empty_or_nonempty (ofVectorSpaceIndex K V) with (hb | ⟨⟨v₀, hv₀⟩⟩)
     · use 0
-      have h' : ∀ v : V, v = 0 := by simpa [hb, Submodule.eq_bot_iff] using b.span_eq.symm
+      have h' : ∀ v : V, v = 0 := by simpa [b, hb, Submodule.eq_bot_iff] using b.span_eq.symm
       intro v
       simp [h' v]
     · use v₀
-      have h' : (K ∙ v₀) = ⊤ := by simpa [hd.eq_singleton_of_mem hv₀] using b.span_eq
+      have h' : (K ∙ v₀) = ⊤ := by simpa [b, hd.eq_singleton_of_mem hv₀] using b.span_eq
       intro v
       have hv : v ∈ (⊤ : Submodule K V) := mem_top
       rwa [← h', mem_span_singleton] at hv
@@ -410,13 +404,13 @@ theorem linearIndependent_iff_card_eq_finrank_span {ι : Type*} [Fintype ι] {b 
       have h : span K (f '' Set.range b') = map f (span K (Set.range b')) := span_image f
       have hf : f '' Set.range b' = Set.range b := by
         ext x
-        simp [Set.mem_image, Set.mem_range]
+        simp [f, Set.mem_image, Set.mem_range]
       rw [hf] at h
       have hx : (x : V) ∈ span K (Set.range b) := x.property
       conv at hx =>
         arg 2
         rw [h]
-      simpa [mem_map] using hx
+      simpa [f, mem_map] using hx
     have hi : LinearMap.ker f = ⊥ := ker_subtype _
     convert (linearIndependent_of_top_le_span_of_card_eq_finrank hs hc).map' _ hi
 #align linear_independent_iff_card_eq_finrank_span linearIndependent_iff_card_eq_finrank_span
@@ -461,27 +455,26 @@ end Basis
 section Cardinal
 
 variable (K)
-
 variable [DivisionRing K]
 
 /-- Key lemma towards the Erdős-Kaplansky theorem from https://mathoverflow.net/a/168624 -/
 theorem max_aleph0_card_le_rank_fun_nat : max ℵ₀ #K ≤ Module.rank K (ℕ → K) := by
   have aleph0_le : ℵ₀ ≤ Module.rank K (ℕ → K) := (rank_finsupp_self K ℕ).symm.trans_le
-    (Finsupp.lcoeFun.rank_le_of_injective <| by exact FunLike.coe_injective)
+    (Finsupp.lcoeFun.rank_le_of_injective <| by exact DFunLike.coe_injective)
   refine max_le aleph0_le ?_
   obtain card_K | card_K := le_or_lt #K ℵ₀
   · exact card_K.trans aleph0_le
   by_contra!
   obtain ⟨⟨ιK, bK⟩⟩ := Module.Free.exists_basis (R := K) (M := ℕ → K)
   let L := Subfield.closure (Set.range (fun i : ιK × ℕ ↦ bK i.1 i.2))
-  have hLK : #L < #K
-  · refine (Subfield.cardinal_mk_closure_le_max _).trans_lt
+  have hLK : #L < #K := by
+    refine (Subfield.cardinal_mk_closure_le_max _).trans_lt
       (max_lt_iff.mpr ⟨mk_range_le.trans_lt ?_, card_K⟩)
     rwa [mk_prod, ← aleph0, lift_uzero, bK.mk_eq_rank'', mul_aleph0_eq aleph0_le]
   letI := Module.compHom K (RingHom.op L.subtype)
   obtain ⟨⟨ιL, bL⟩⟩ := Module.Free.exists_basis (R := Lᵐᵒᵖ) (M := K)
-  have card_ιL : ℵ₀ ≤ #ιL
-  · contrapose! hLK
+  have card_ιL : ℵ₀ ≤ #ιL := by
+    contrapose! hLK
     haveI := @Fintype.ofFinite _ (lt_aleph0_iff_finite.mp hLK)
     rw [bL.repr.toEquiv.cardinal_eq, mk_finsupp_of_fintype,
         ← MulOpposite.opEquiv.cardinal_eq] at card_K ⊢

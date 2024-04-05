@@ -194,7 +194,7 @@ def ofNatList (l : List ℕ) (h : ∀ p : ℕ, p ∈ l → p.Prime) : PrimeMulti
 
 theorem prod_ofNatList (l : List ℕ) (h) : ((ofNatList l h).prod : ℕ) = l.prod := by
   have := prod_ofNatMultiset (l : Multiset ℕ) h
-  rw [Multiset.coe_prod] at this
+  rw [Multiset.prod_coe] at this
   exact this
 #align prime_multiset.prod_of_nat_list PrimeMultiset.prod_ofNatList
 
@@ -206,7 +206,7 @@ def ofPNatList (l : List ℕ+) (h : ∀ p : ℕ+, p ∈ l → p.Prime) : PrimeMu
 
 theorem prod_ofPNatList (l : List ℕ+) (h) : (ofPNatList l h).prod = l.prod := by
   have := prod_ofPNatMultiset (l : Multiset ℕ+) h
-  rw [Multiset.coe_prod] at this
+  rw [Multiset.prod_coe] at this
   exact this
 #align prime_multiset.prod_of_pnat_list PrimeMultiset.prod_ofPNatList
 
@@ -222,12 +222,10 @@ theorem prod_add (u v : PrimeMultiset) : (u + v).prod = u.prod * v.prod := by
   exact Multiset.prod_add _ _
 #align prime_multiset.prod_add PrimeMultiset.prod_add
 
--- Porting note: Need to replace ^ with Pow.pow to get the original mathlib statement
-theorem prod_smul (d : ℕ) (u : PrimeMultiset) : (d • u).prod = Pow.pow u.prod d := by
-  induction' d with n ih
-  · rfl
-  · have : ∀ n' : ℕ, Pow.pow (prod u) n' = Monoid.npow n' (prod u) := fun _ ↦ rfl
-    rw [succ_nsmul, prod_add, ih, this, this, Monoid.npow_succ, mul_comm]
+theorem prod_smul (d : ℕ) (u : PrimeMultiset) : (d • u).prod = u.prod ^ d := by
+  induction d with
+  | zero => simp only [Nat.zero_eq, zero_nsmul, pow_zero, prod_zero]
+  | succ n ih => rw [succ_nsmul, prod_add, ih, pow_succ]
 #align prime_multiset.prod_smul PrimeMultiset.prod_smul
 
 end PrimeMultiset
@@ -265,7 +263,7 @@ theorem factorMultiset_prod (v : PrimeMultiset) : v.prod.factorMultiset = v := b
   rcases v with ⟨l⟩
   --unfold_coes
   dsimp [PrimeMultiset.toNatMultiset]
-  rw [Multiset.coe_prod]
+  rw [Multiset.prod_coe]
   let l' := l.map (Coe.coe : Nat.Primes → ℕ)
   have : ∀ p : ℕ, p ∈ l' → p.Prime := fun p hp => by
     rcases List.mem_map.mp hp with ⟨⟨_, hp'⟩, ⟨_, h_eq⟩⟩
@@ -303,7 +301,7 @@ theorem factorMultiset_mul (n m : ℕ+) :
 #align pnat.factor_multiset_mul PNat.factorMultiset_mul
 
 theorem factorMultiset_pow (n : ℕ+) (m : ℕ) :
-    factorMultiset (Pow.pow n m) = m • factorMultiset n := by
+    factorMultiset (n ^ m) = m • factorMultiset n := by
   let u := factorMultiset n
   have : n = u.prod := (prod_factorMultiset n).symm
   rw [this, ← PrimeMultiset.prod_smul]
@@ -389,8 +387,7 @@ theorem factorMultiset_lcm (m n : ℕ+) :
 /-- The number of occurrences of p in the factor multiset of m
  is the same as the p-adic valuation of m. -/
 theorem count_factorMultiset (m : ℕ+) (p : Nat.Primes) (k : ℕ) :
-    Pow.pow (p : ℕ+) k ∣ m ↔ k ≤ m.factorMultiset.count p := by
-  intros
+    (p : ℕ+) ^ k ∣ m ↔ k ≤ m.factorMultiset.count p := by
   rw [Multiset.le_count_iff_replicate_le, ← factorMultiset_le_iff, factorMultiset_pow,
     factorMultiset_ofPrime]
   congr! 2

@@ -68,7 +68,7 @@ def MulOpposite (α : Type u) : Type u :=
   PreOpposite α
 #align mul_opposite MulOpposite
 #align add_opposite AddOpposite
--- porting note: the attribute `pp_nodot` does not exist yet; `op` and `unop` were
+-- Porting note: the attribute `pp_nodot` does not exist yet; `op` and `unop` were
 -- both tagged with it in mathlib3
 
 

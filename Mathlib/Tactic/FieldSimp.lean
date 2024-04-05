@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, David Renshaw
 
 import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Simp.Main
-import Std.Lean.Parser
 import Mathlib.Algebra.Group.Units
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.NormNum.Core
@@ -61,17 +60,18 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     if let some pf := pf? then return some pf
 
     -- Discharge strategy 4: Use the simplifier
-    let ctx ← read
+    let ctx ← readThe Simp.Context
     let usedTheorems := (← get).usedTheorems
 
-    -- Port note: mathlib3's analogous field_simp discharger `field_simp.ne_zero`
+    -- Porting note: mathlib3's analogous field_simp discharger `field_simp.ne_zero`
     -- does not explicitly call `simp` recursively like this. It's unclear to me
     -- whether this is because
     --   1) Lean 3 simp dischargers automatically call `simp` recursively. (Do they?),
     --   2) mathlib3 norm_num1 is able to handle any needed discharging, or
     --   3) some other reason?
     let ⟨simpResult, usedTheorems'⟩ ←
-      simp prop { ctx with dischargeDepth := ctx.dischargeDepth + 1} discharge usedTheorems
+      simp prop { ctx with dischargeDepth := ctx.dischargeDepth + 1 } #[(← Simp.getSimprocs)]
+        discharge usedTheorems
     set {(← get) with usedTheorems := usedTheorems'}
     if simpResult.expr.isConstOf ``True then
       try
@@ -150,7 +150,11 @@ syntax (name := fieldSimp) "field_simp" (config)? (discharger)? (&" only")?
 elab_rules : tactic
 | `(tactic| field_simp $[$cfg:config]? $[(discharger := $dis)]? $[only%$only?]?
     $[$sa:simpArgs]? $[$loc:location]?) => withMainContext do
-  let cfg ← elabSimpConfig (cfg.getD ⟨.missing⟩) .simp
+  let cfg ← elabSimpConfig (mkOptionalNode cfg) .simp
+  -- The `field_simp` discharger relies on recursively calling the discharger.
+  -- Prior to https://github.com/leanprover/lean4/pull/3523,
+  -- the maxDischargeDepth wasn't actually being checked: now we have to set it higher.
+  let cfg := { cfg with maxDischargeDepth := 7 }
   let loc := expandOptLocation (mkOptionalNode loc)
 
   let dis ← match dis with
@@ -175,7 +179,7 @@ elab_rules : tactic
      congrTheorems := (← getSimpCongrTheorems)
      config := cfg
   }
-  let mut r ← elabSimpArgs (sa.getD ⟨.missing⟩) ctx (eraseLocal := false) .simp
+  let mut r ← elabSimpArgs (sa.getD ⟨.missing⟩) ctx (simprocs := {}) (eraseLocal := false) .simp
   if r.starArg then
     r ← do
       let ctx := r.ctx
@@ -185,6 +189,6 @@ elab_rules : tactic
         unless simpTheorems.isErased (.fvar h) do
           simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
       let ctx := { ctx with simpTheorems }
-      pure { ctx }
+      pure { ctx, simprocs := {} }
 
-  _ ← simpLocation r.ctx dis loc
+  _ ← simpLocation r.ctx {} dis loc

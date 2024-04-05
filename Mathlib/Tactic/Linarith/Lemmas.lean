@@ -3,13 +3,11 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Std.Tactic.Simpa
 import Std.Tactic.Lint.Basic
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Data.Nat.Cast.Order
 
 /-!

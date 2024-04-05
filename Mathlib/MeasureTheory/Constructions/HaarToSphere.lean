@@ -114,14 +114,14 @@ theorem measurePreserving_homeomorphUnitSphereProd :
     ((borel_eq_generateFrom_Iio _).symm.trans BorelSpace.measurable_eq.symm)
     isPiSystem_measurableSet isPiSystem_Iio
     μ.toSphere.toFiniteSpanningSetsIn (finiteSpanningSetsIn_volumeIoiPow_range_Iio _)
-    fun s hs ↦ forall_range_iff.2 fun r ↦ ?_
+    fun s hs ↦ forall_mem_range.2 fun r ↦ ?_
   have : Ioo (0 : ℝ) r = r.1 • Ioo (0 : ℝ) 1 := by
     rw [LinearOrderedField.smul_Ioo r.2.out, smul_zero, smul_eq_mul, mul_one]
   have hpos : 0 < dim E := FiniteDimensional.finrank_pos
   rw [(Homeomorph.measurableEmbedding _).map_apply, toSphere_apply' _ hs, volumeIoiPow_apply_Iio,
     comap_subtype_coe_apply (measurableSet_singleton _).compl, toSphere_apply_aux, this,
     smul_assoc, μ.addHaar_smul_of_nonneg r.2.out.le, Nat.sub_add_cancel hpos, Nat.cast_pred hpos,
-    sub_add_cancel, mul_right_comm, ← ENNReal.ofReal_coe_nat, ← ENNReal.ofReal_mul, mul_div_cancel']
+    sub_add_cancel, mul_right_comm, ← ENNReal.ofReal_coe_nat, ← ENNReal.ofReal_mul, mul_div_cancel₀]
   exacts [(Nat.cast_pos.2 hpos).ne', Nat.cast_nonneg _]
 
 end Measure
