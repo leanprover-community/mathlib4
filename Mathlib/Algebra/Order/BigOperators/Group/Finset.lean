@@ -9,7 +9,6 @@ import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.Positivity.Core
 
 #align_import algebra.big_operators.order from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
-
 /-!
 # Big operators on a finset in ordered groups
 
@@ -659,7 +658,7 @@ theorem finset_sum_eq_sup_iff_disjoint [DecidableEq α] {β : Type*} {i : Finset
   · simp only [Finset.not_mem_empty, IsEmpty.forall_iff, imp_true_iff, Finset.sum_empty,
       Finset.sup_empty, bot_eq_zero, eq_self_iff_true]
   · simp_rw [Finset.sum_cons hz, Finset.sup_cons, Finset.mem_cons, Multiset.sup_eq_union,
-      forall_eq_or_imp, Ne.def, not_true_eq_false, IsEmpty.forall_iff, true_and_iff,
+      forall_eq_or_imp, Ne, not_true_eq_false, IsEmpty.forall_iff, true_and_iff,
       imp_and, forall_and, ← hr, @eq_comm _ z]
     have := fun x (H : x ∈ i) => ne_of_mem_of_not_mem H hz
     simp (config := { contextual := true }) only [this, not_false_iff, true_imp_iff]
