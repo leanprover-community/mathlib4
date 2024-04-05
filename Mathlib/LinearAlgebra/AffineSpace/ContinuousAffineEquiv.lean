@@ -32,8 +32,8 @@ with multiplication corresponding to composition in `AffineEquiv.group`.
 
 open Function
 
-/-- A continuous affine equivalence between two affine topological spaces is an affine equivalence
-such that forward and inverse maps are continuous. -/
+/-- A continuous affine equivalence, denoted `P₁ ≃ᵃL[k] P₂`, between two affine topological spaces
+is an affine equivalence such that forward and inverse maps are continuous. -/
 structure ContinuousAffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring k]
   [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁] [TopologicalSpace P₁]
   [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [TopologicalSpace P₂] extends P₁ ≃ᵃ[k] P₂ where
@@ -61,17 +61,11 @@ section Basic
 def toHomeomorph (e : P₁ ≃ᵃL[k] P₂) : P₁ ≃ₜ P₂ where
   __ := e
 
--- unused; is still useful still?
--- simpVarHead linter complained, so removed @[simp]
-theorem toAffineEquiv_mk (f : P₁ ≃ᵃ[k] P₂) (h₁ : Continuous f.toFun) (h₂ : Continuous f.invFun) :
-    toAffineEquiv (mk f h₁ h₂) = f :=
-  rfl
-
 theorem toAffineEquiv_injective : Injective (toAffineEquiv : (P₁ ≃ᵃL[k] P₂) → P₁ ≃ᵃ[k] P₂) := by
   rintro ⟨e, econt, einv_cont⟩ ⟨e', e'cont, e'inv_cont⟩ H
   congr
 
-instance equivLike : EquivLike (P₁ ≃ᵃL[k] P₂) P₁ P₂ where
+instance instEquivLike : EquivLike (P₁ ≃ᵃL[k] P₂) P₁ P₂ where
   coe f := f.toFun
   inv f := f.invFun
   left_inv f := f.left_inv
@@ -91,7 +85,7 @@ theorem coe_injective : Function.Injective ((↑) : (P₁ ≃ᵃL[k] P₂) → P
   cases e
   congr
 
-instance funLike : FunLike (P₁ ≃ᵃL[k] P₂) P₁ P₂ where
+instance instFunLike : FunLike (P₁ ≃ᵃL[k] P₂) P₁ P₂ where
   coe f := f.toAffineEquiv
   coe_injective' _ _ h := coe_injective (DFunLike.coe_injective h)
 
@@ -103,10 +97,6 @@ theorem coe_coe (e : P₁ ≃ᵃL[k] P₂) : ⇑(e : P₁ ≃ᵃ[k] P₂) = e :=
 theorem coe_toEquiv (e : P₁ ≃ᵃL[k] P₂) : ⇑e.toEquiv = e :=
   rfl
 
--- NOTE(MR): I have omitted `coe_mk`, `coe_mk'`, `coe_inj`, `coeFn_injective` lemmas for now;
--- happy to add them!
-
--- NOTE(MR): the next three items are cargo-culted; please review carefully if they make sense!
 /-- See Note [custom simps projection].
   We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
@@ -171,10 +161,6 @@ theorem symm_toAffineEquiv (e : P₁ ≃ᵃL[k] P₂) : e.toAffineEquiv.symm = e
 @[simp]
 theorem symm_toEquiv (e : P₁ ≃ᵃL[k] P₂) : e.toEquiv.symm = e.symm.toEquiv := rfl
 
--- custom simps projections??
-
--- bijectivity, range_eq??
-
 @[simp]
 theorem apply_symm_apply (e : P₁ ≃ᵃL[k] P₂) (p : P₂) : e (e.symm p) = p :=
   e.toEquiv.apply_symm_apply p
@@ -210,6 +196,15 @@ theorem image_symm (f : P₁ ≃ᵃL[k] P₂) (s : Set P₂) : f.symm '' s = f �
 @[simp]
 theorem preimage_symm (f : P₁ ≃ᵃL[k] P₂) (s : Set P₁) : f.symm ⁻¹' s = f '' s :=
   (f.symm.image_symm _).symm
+
+protected theorem bijective (e : P₁ ≃ᵃL[k] P₂) : Bijective e :=
+  e.toEquiv.bijective
+
+protected theorem surjective (e : P₁ ≃ᵃL[k] P₂) : Surjective e :=
+  e.toEquiv.surjective
+
+protected theorem injective (e : P₁ ≃ᵃL[k] P₂) : Injective e :=
+  e.toEquiv.injective
 
 protected theorem image_eq_preimage  (e : P₁ ≃ᵃL[k] P₂) (s : Set P₁) : e '' s = e.symm ⁻¹' s :=
   e.toEquiv.image_eq_preimage s
