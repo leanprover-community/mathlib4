@@ -738,8 +738,8 @@ local notation "π" => @Quotient.mk _ α_mod_G
 
 variable {G}
 
-@[to_additive addMeasureRestrictMap_apply]
-lemma measureRestrictMap_apply (s : Set α) {U : Set (Quotient α_mod_G)} (meas_U : MeasurableSet U) :
+@[to_additive addMeasure_map_restrict_apply]
+lemma measure_map_restrict_apply (s : Set α) {U : Set (Quotient α_mod_G)} (meas_U : MeasurableSet U) :
     (μ.restrict s).map π U = μ ((π ⁻¹' U) ∩ s) := by
   rw [map_apply (f := π) (fun V hV ↦ measurableSet_quotient.mp hV) meas_U,
     Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' U)) (measurableSet_quotient.mp meas_U)]
