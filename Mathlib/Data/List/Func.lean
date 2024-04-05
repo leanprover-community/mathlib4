@@ -58,7 +58,6 @@ def set (a : α) : List α → ℕ → List α
   | [], k + 1 => default :: set a ([] : List α) k
 #align list.func.set List.Func.set
 
--- mathport name: list.func.set
 @[inherit_doc]
 scoped notation as " {" m " ↦ " a "}" => List.Func.set a as m
 
