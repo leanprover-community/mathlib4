@@ -89,6 +89,13 @@ example {h : 0 = 0} {k : 1 = 1} : True := by
   rw [← Classical.not_not (a := True)] at h
   assumption
 
+-- `specialize` does not touch, by default, the target
+#guard_msgs in
+example {a b : Nat} (h : ∀ c, c + a + b = a + c) : (0 + 2 + 1 + a + b) = a + 3 := by
+  simp
+  specialize h 3
+  simp_all
+
 -- `norm_num` is allowed after `simp`.
 #guard_msgs in
 example : (0 + 2 : Rat) < 3 := by
