@@ -30,11 +30,11 @@ Mathlib/Data/Finsupp/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1956
 Mathlib/Data/List/Basic.lean : line 1 : ERR_NUM_LIN : 4500 file contains 4309 lines, try to split it up
 Mathlib/Data/Matrix/Basic.lean : line 1 : ERR_NUM_LIN : 2900 file contains 2715 lines, try to split it up
 Mathlib/Data/Multiset/Basic.lean : line 1 : ERR_NUM_LIN : 3300 file contains 3196 lines, try to split it up
-Mathlib/Data/MvPolynomial/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1705 lines, try to split it up
+Mathlib/Algebra/MvPolynomial/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1705 lines, try to split it up
 Mathlib/Data/Num/Lemmas.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1771 lines, try to split it up
 Mathlib/Data/Ordmap/Ordset.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1795 lines, try to split it up
-Mathlib/Data/Polynomial/Degree/Definitions.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1689 lines, try to split it up
-Mathlib/Data/Polynomial/RingDivision.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1569 lines, try to split it up
+Mathlib/Algebra/Polynomial/Degree/Definitions.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1689 lines, try to split it up
+Mathlib/Algebra/Polynomial/RingDivision.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1569 lines, try to split it up
 Mathlib/Data/QPF/Multivariate/Basic.lean : line 75 : ERR_LIN : Line has more than 100 characters
 Mathlib/Data/Seq/WSeq.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1825 lines, try to split it up
 Mathlib/Data/Set/Basic.lean : line 1 : ERR_NUM_LIN : 3100 file contains 2991 lines, try to split it up

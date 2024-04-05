@@ -104,14 +104,14 @@ theorem span_exact {β : Type*} {u : ι ⊕ β → S.X₂} (huv : u ∘ Sum.inl 
     rw [hS.moduleCat_range_eq_ker]
     simp only [LinearMap.mem_ker, map_sub, sub_eq_zero]
     rw [← hm, map_finsupp_sum]
-    simp only [Function.comp_apply, SMulHomClass.map_smul]
+    simp only [Function.comp_apply, map_smul]
   obtain ⟨n, hnm⟩ := hsub
   have hn : n ∈ span R (range v) := hv mem_top
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hn
   obtain ⟨cn, hn⟩ := hn
   rw [← hn, map_finsupp_sum] at hnm
   rw [← sub_add_cancel m m', ← hnm,]
-  simp only [SMulHomClass.map_smul]
+  simp only [map_smul]
   have hn' : (Finsupp.sum cn fun a b ↦ b • S.f (v a)) =
       (Finsupp.sum cn fun a b ↦ b • u (Sum.inl a)) :=
     by congr; ext a b; change b • (S.f ∘ v) a = _; rw [← huv]; rfl
