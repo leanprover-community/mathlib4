@@ -386,18 +386,23 @@ end Measure
 
 section Countable
 
-variable [MeasurableSingletonClass α] [Countable α]
+variable [Countable α]
 
 /-- Auxiliary definition for `ProbabilityTheory.kernel.condKernel`.
-A conditional kernel for `κ : kernel α (β × Ω)` where `α` is countable with measurable singletons
-and `Ω` is standard Borel. -/
+A conditional kernel for `κ : kernel α (β × Ω)` where `α` is countable and `Ω` is standard Borel. -/
 noncomputable
 def condKernelCountable (κ : kernel α (β × Ω)) [IsFiniteKernel κ] : kernel (α × β) Ω where
   val p := (κ p.1).condKernel p.2
   property := by
     change Measurable ((fun q : β × α ↦ (κ q.2).condKernel q.1) ∘ Prod.swap)
-    refine (measurable_from_prod_countable (fun a ↦ ?_)).comp measurable_swap
-    exact kernel.measurable (κ a).condKernel
+    refine (measurable_from_prod_countable' (fun a ↦ ?_) ?_).comp measurable_swap
+    · exact kernel.measurable (κ a).condKernel
+    · intro y y' x hy'
+      have : κ y' = κ y := by
+        ext s hs
+        exact mem_of_mem_measurableAtom hy'
+          (kernel.measurable_coe κ hs (measurableSet_singleton (κ y s))) rfl
+      simp [this]
 
 lemma condKernelCountable_apply (κ : kernel α (β × Ω)) [IsFiniteKernel κ] (p : α × β) :
     condKernelCountable κ p = (κ p.1).condKernel p.2 := rfl
@@ -422,14 +427,13 @@ open Classical in
 
 /-- Conditional kernel of a kernel `κ : kernel α (β × Ω)`: a Markov kernel such that
 `fst κ ⊗ₖ condKernel κ = κ` (see `MeasureTheory.Measure.compProd_fst_condKernel`).
-It exists whenever `Ω` is standard Borel and either `α` is countable with measurable singletons
+It exists whenever `Ω` is standard Borel and either `α` is countable
 or `β` is countably generated. -/
 noncomputable
 irreducible_def condKernel [h : CountableOrCountablyGenerated α β]
     (κ : kernel α (β × Ω)) [IsFiniteKernel κ] :
     kernel (α × β) Ω :=
-  if hα : Countable α ∧ MeasurableSingletonClass α then
-    letI := hα.1; letI := hα.2; condKernelCountable κ
+  if hα : Countable α then condKernelCountable κ
   else letI := h.countableOrCountablyGenerated.resolve_left hα; condKernelBorel κ
 
 /-- `condKernel κ` is a Markov kernel. -/
@@ -446,8 +450,7 @@ lemma compProd_fst_condKernel [hαβ : CountableOrCountablyGenerated α β]
     fst κ ⊗ₖ condKernel κ = κ := by
   rw [condKernel_def]
   split_ifs with h
-  · cases h
-    exact compProd_fst_condKernelCountable κ
+  · exact compProd_fst_condKernelCountable κ
   · have := hαβ.countableOrCountablyGenerated.resolve_left h
     exact compProd_fst_condKernelBorel κ
 
