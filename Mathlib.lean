@@ -3010,9 +3010,9 @@ import Mathlib.NumberTheory.ModularForms.SlashActions
 import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 import Mathlib.NumberTheory.Multiplicity
 import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding
+import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 import Mathlib.NumberTheory.NumberField.ClassNumber
-import Mathlib.NumberTheory.NumberField.ConvexBody
 import Mathlib.NumberTheory.NumberField.Discriminant
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
