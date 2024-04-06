@@ -8,6 +8,7 @@ import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
 import Mathlib.Topology.ContinuousFunction.Compact
+import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 
 #align_import measure_theory.integral.set_integral from "leanprover-community/mathlib"@"24e0c85412ff6adbeca08022c25ba4876eedf37a"
 
@@ -221,7 +222,7 @@ theorem tendsto_set_integral_of_monotone {ι : Type*} [Countable ι] [Semilattic
   lift ε to ℝ≥0 using ε0.le
   have : ∀ᶠ i in atTop, ν (s i) ∈ Icc (ν S - ε) (ν S + ε) :=
     tendsto_measure_iUnion h_mono (ENNReal.Icc_mem_nhds hfi'.ne (ENNReal.coe_pos.2 ε0).ne')
-  refine' this.mono fun i hi => _
+  filter_upwards [this] with i hi
   rw [mem_closedBall_iff_norm', ← integral_diff (hsm i) hfi hsub, ← coe_nnnorm, NNReal.coe_le_coe, ←
     ENNReal.coe_le_coe]
   refine' (ennnorm_integral_le_lintegral_ennnorm _).trans _
@@ -229,6 +230,30 @@ theorem tendsto_set_integral_of_monotone {ι : Type*} [Countable ι] [Semilattic
   exacts [tsub_le_iff_tsub_le.mp hi.1,
     (hi.2.trans_lt <| ENNReal.add_lt_top.2 ⟨hfi', ENNReal.coe_lt_top⟩).ne]
 #align measure_theory.tendsto_set_integral_of_monotone MeasureTheory.tendsto_set_integral_of_monotone
+
+theorem tendsto_set_integral_of_antitone {ι : Type*} [Countable ι] [SemilatticeSup ι]
+    {s : ι → Set X} (hsm : ∀ i, MeasurableSet (s i)) (h_anti : Antitone s)
+    (hfi : ∃ i, IntegrableOn f (s i) μ) :
+    Tendsto (fun i ↦ ∫ x in s i, f x ∂μ) atTop (𝓝 (∫ x in ⋂ n, s n, f x ∂μ)) := by
+  set S := ⋂ i, s i
+  have hSm : MeasurableSet S := MeasurableSet.iInter hsm
+  have hsub i : S ⊆ s i := iInter_subset _ _
+  set ν := μ.withDensity fun x => ‖f x‖₊ with hν
+  refine' Metric.nhds_basis_closedBall.tendsto_right_iff.2 fun ε ε0 => _
+  lift ε to ℝ≥0 using ε0.le
+  rcases hfi with ⟨i₀, hi₀⟩
+  have νi₀ : ν (s i₀) ≠ ∞ := by
+    simpa [hsm i₀, ν, ENNReal.ofReal, norm_toNNReal] using hi₀.norm.lintegral_lt_top.ne
+  have νS : ν S ≠ ∞ := ((measure_mono (hsub i₀)).trans_lt νi₀.lt_top).ne
+  have : ∀ᶠ i in atTop, ν (s i) ∈ Icc (ν S - ε) (ν S + ε) := by
+    apply tendsto_measure_iInter hsm h_anti ⟨i₀, νi₀⟩
+    apply ENNReal.Icc_mem_nhds νS (ENNReal.coe_pos.2 ε0).ne'
+  filter_upwards [this, Ici_mem_atTop i₀] with i hi h'i
+  rw [mem_closedBall_iff_norm, ← integral_diff hSm (hi₀.mono_set (h_anti h'i)) (hsub i),
+    ← coe_nnnorm, NNReal.coe_le_coe, ← ENNReal.coe_le_coe]
+  refine' (ennnorm_integral_le_lintegral_ennnorm _).trans _
+  rw [← withDensity_apply _ ((hsm _).diff hSm), ← hν, measure_diff (hsub i) hSm νS]
+  exact tsub_le_iff_left.2 hi.2
 
 theorem hasSum_integral_iUnion_ae {ι : Type*} [Countable ι] {s : ι → Set X}
     (hm : ∀ i, NullMeasurableSet (s i) μ) (hd : Pairwise (AEDisjoint μ on s))
@@ -1083,9 +1108,9 @@ theorem continuous_integral_comp_L1 (L : E →L[𝕜] F) :
 set_option linter.uppercaseLean3 false in
 #align continuous_linear_map.continuous_integral_comp_L1 ContinuousLinearMap.continuous_integral_comp_L1
 
-variable [CompleteSpace E] [CompleteSpace F] [NormedSpace ℝ E]
+variable [CompleteSpace F] [NormedSpace ℝ E]
 
-theorem integral_comp_comm (L : E →L[𝕜] F) {φ : X → E} (φ_int : Integrable φ μ) :
+theorem integral_comp_comm [CompleteSpace E] (L : E →L[𝕜] F) {φ : X → E} (φ_int : Integrable φ μ) :
     ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := by
   apply φ_int.induction (P := fun φ => ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ))
   · intro e s s_meas _
@@ -1105,9 +1130,31 @@ theorem integral_comp_comm (L : E →L[𝕜] F) {φ : X → E} (φ_int : Integra
 #align continuous_linear_map.integral_comp_comm ContinuousLinearMap.integral_comp_comm
 
 theorem integral_apply {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {φ : X → H →L[𝕜] E}
-    (φ_int : Integrable φ μ) (v : H) : (∫ x, φ x ∂μ) v = ∫ x, φ x v ∂μ :=
-  ((ContinuousLinearMap.apply 𝕜 E v).integral_comp_comm φ_int).symm
+    (φ_int : Integrable φ μ) (v : H) : (∫ x, φ x ∂μ) v = ∫ x, φ x v ∂μ := by
+  by_cases hE : CompleteSpace E
+  · exact ((ContinuousLinearMap.apply 𝕜 E v).integral_comp_comm φ_int).symm
+  · rcases subsingleton_or_nontrivial H with hH|hH
+    · simp [Subsingleton.eq_zero v]
+    · have : ¬(CompleteSpace (H →L[𝕜] E)) := by
+        rwa [SeparatingDual.completeSpace_continuousLinearMap_iff]
+      simp [integral, hE, this]
 #align continuous_linear_map.integral_apply ContinuousLinearMap.integral_apply
+
+theorem _root_.ContinuousMultilinearMap.integral_apply {ι : Type*} [Fintype ι] {M : ι → Type*}
+    [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)]
+    {φ : X → ContinuousMultilinearMap 𝕜 M E} (φ_int : Integrable φ μ) (m : ∀ i, M i) :
+    (∫ x, φ x ∂μ) m = ∫ x, φ x m ∂μ := by
+  by_cases hE : CompleteSpace E
+  · exact ((ContinuousMultilinearMap.apply 𝕜 M E m).integral_comp_comm φ_int).symm
+  · by_cases hm : ∀ i, m i ≠ 0
+    · have : ¬ CompleteSpace (ContinuousMultilinearMap 𝕜 M E) := by
+        rwa [SeparatingDual.completeSpace_continuousMultilinearMap_iff _ _ hm]
+      simp [integral, hE, this]
+    · push_neg at hm
+      rcases hm with ⟨i, hi⟩
+      simp [ContinuousMultilinearMap.map_coord_zero _ i hi]
+
+variable [CompleteSpace E]
 
 theorem integral_comp_comm' (L : E →L[𝕜] F) {K} (hL : AntilipschitzWith K L) (φ : X → E) :
     ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := by
