@@ -547,6 +547,20 @@ instance : ClosedUnderIsomorphisms (S.inverseImage F).P where
     rw [mem_inverseImage_iff] at hX ⊢
     exact mem_of_iso _ (F.mapIso e) hX
 
+lemma mem_inverseImage_W_iff {X Y : D} (s : X ⟶ Y) :
+    (S.inverseImage F).W s ↔ S.W (F.map s) := by
+  obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle s
+  have eq₁ := (S.inverseImage F).mem_W_iff_of_distinguished _ hT
+  have eq₂ := S.mem_W_iff_of_distinguished _ (F.map_distinguished _ hT)
+  dsimp at eq₁ eq₂
+  rw [eq₁, mem_inverseImage_iff, eq₂]
+
+lemma inverseImage_W_isInverted {E : Type*} [Category E]
+    (L : C ⥤ E) [L.IsLocalization S.W] :
+    (S.inverseImage F).W.IsInvertedBy (F ⋙ L) :=
+  fun X Y f hf => Localization.inverts L S.W (F.map f)
+    (by simpa only [mem_inverseImage_W_iff] using hf)
+
 end
 
 end Subcategory
