@@ -845,13 +845,11 @@ attribute [reassoc (attr := simp)] Scheme.OpenCover.Hom.w
 attribute [instance] Scheme.OpenCover.Hom.isOpen
 
 /-- The identity morphism in the category of open covers of a scheme. -/
-@[simps]
 def Scheme.OpenCover.Hom.id {X : Scheme.{u}} (𝓤 : Scheme.OpenCover.{v} X) : 𝓤.Hom 𝓤 where
   idx j := j
   app j := 𝟙 _
 
 /-- The composition of two morphisms in the category of open covers of a scheme. -/
-@[simps]
 def Scheme.OpenCover.Hom.comp {X : Scheme.{u}} {𝓤 𝓥 𝓦 : Scheme.OpenCover.{v} X}
     (f : 𝓤.Hom 𝓥) (g : 𝓥.Hom 𝓦) : 𝓤.Hom 𝓦 where
   idx j := g.idx <| f.idx j
@@ -861,6 +859,24 @@ instance Scheme.OpenCover.category {X : Scheme.{u}} : Category (Scheme.OpenCover
   Hom 𝓤 𝓥 := 𝓤.Hom 𝓥
   id := Scheme.OpenCover.Hom.id
   comp f g := f.comp g
+
+@[simp]
+lemma Scheme.OpenCover.id_idx_apply {X : Scheme.{u}} (𝓤 : X.OpenCover) (j : 𝓤.J) :
+    (𝟙 𝓤 : 𝓤 ⟶ 𝓤).idx j = j := rfl
+
+@[simp]
+lemma Scheme.OpenCover.id_app {X : Scheme.{u}} (𝓤 : X.OpenCover) (j : 𝓤.J) :
+    (𝟙 𝓤 : 𝓤 ⟶ 𝓤).app j = 𝟙 _ := rfl
+
+@[simp]
+lemma Scheme.OpenCover.comp_idx_apply {X : Scheme.{u}} {𝓤 𝓥 𝓦 : X.OpenCover}
+    (f : 𝓤 ⟶ 𝓥) (g : 𝓥 ⟶ 𝓦) (j : 𝓤.J) :
+    (f ≫ g).idx j = g.idx (f.idx j) := rfl
+
+@[simp]
+lemma Scheme.OpenCover.comp_app {X : Scheme.{u}} {𝓤 𝓥 𝓦 : X.OpenCover}
+    (f : 𝓤 ⟶ 𝓥) (g : 𝓥 ⟶ 𝓦) (j : 𝓤.J) :
+    (f ≫ g).app j = f.app j ≫ g.app _ := rfl
 
 end category
 
