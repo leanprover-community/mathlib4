@@ -36,6 +36,24 @@ example {a b : Nat} (h : a = b) : a + 0 = b := by
 
 set_option linter.flexible false in
 set_option linter.flexible true in
+-- `induction` does not use the goal
+/--
+error: 'simp' stains '⊢'... [linter.flexible]
+---
+info: ... and 'assumption' uses '⊢'!
+---
+error: 'simp' stains '⊢'... [linter.flexible]
+---
+info: ... and 'assumption' uses '⊢'!
+-/
+#guard_msgs in
+example {a b : Nat} (h : a = b) : a + 0 = b := by
+  simp
+  induction a <;> assumption
+
+
+set_option linter.flexible false in
+set_option linter.flexible true in
 /--
 error: 'simp at h' stains 'h'... [linter.flexible]
 ---
