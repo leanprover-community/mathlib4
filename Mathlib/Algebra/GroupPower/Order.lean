@@ -423,11 +423,10 @@ lemma add_pow_le (ha : 0 ≤ a) (hb : 0 ≤ b) : ∀ n, (a + b) ^ n ≤ 2 ^ (n -
       · exact mul_add_mul_le_mul_add_mul (pow_le_pow_left ha hab _) hab
       · exact mul_add_mul_le_mul_add_mul' (pow_le_pow_left hb hba _) hba
 
--- TODO: State using `Even`
-protected lemma Even.add_pow_le (hn : ∃ k, 2 * k = n) :
+protected lemma Even.add_pow_le (hn : Even n) :
     (a + b) ^ n ≤ 2 ^ (n - 1) * (a ^ n + b ^ n) := by
   obtain ⟨n, rfl⟩ := hn
-  rw [pow_mul]
+  rw [← two_mul, pow_mul]
   calc
     _ ≤ (2 * (a ^ 2 + b ^ 2)) ^ n := pow_le_pow_left (sq_nonneg _) add_sq_le _
     _ = 2 ^ n * (a ^ 2 + b ^ 2) ^ n := by -- TODO: Should be `Nat.cast_commute`
@@ -435,67 +434,6 @@ protected lemma Even.add_pow_le (hn : ∃ k, 2 * k = n) :
     _ ≤ 2 ^ n * (2 ^ (n - 1) * ((a ^ 2) ^ n + (b ^ 2) ^ n)) := mul_le_mul_of_nonneg_left
           (add_pow_le (sq_nonneg _) (sq_nonneg _) _) $ pow_nonneg (zero_le_two (α := R)) _
     _ = _ := by simp only [← mul_assoc, ← pow_add, ← pow_mul]; cases n; rfl; simp [Nat.two_mul]
-
-end LinearOrderedSemiring
-
-section LinearOrderedRing
-variable [LinearOrderedRing R] {a b : R} {n : ℕ}
-
-section deprecated
-set_option linter.deprecated false
-
-theorem pow_bit0_nonneg (a : R) (n : ℕ) : 0 ≤ a ^ bit0 n := by
-  rw [pow_bit0]
-  exact mul_self_nonneg _
-#align pow_bit0_nonneg pow_bit0_nonneg
-
-theorem pow_bit0_pos {a : R} (h : a ≠ 0) (n : ℕ) : 0 < a ^ bit0 n :=
-  (pow_bit0_nonneg a n).lt_of_ne (pow_ne_zero _ h).symm
-#align pow_bit0_pos pow_bit0_pos
-
-theorem sq_pos_of_ne_zero (a : R) (h : a ≠ 0) : 0 < a ^ 2 :=
-  pow_bit0_pos h 1
-#align sq_pos_of_ne_zero sq_pos_of_ne_zero
-
-alias pow_two_pos_of_ne_zero := sq_pos_of_ne_zero
-#align pow_two_pos_of_ne_zero pow_two_pos_of_ne_zero
-
-theorem pow_bit0_pos_iff (a : R) {n : ℕ} (hn : n ≠ 0) : 0 < a ^ bit0 n ↔ a ≠ 0 := by
-  refine' ⟨fun h => _, fun h => pow_bit0_pos h n⟩
-  rintro rfl
-  rw [zero_pow (Nat.bit0_ne_zero hn)] at h
-  exact lt_irrefl _ h
-#align pow_bit0_pos_iff pow_bit0_pos_iff
-
-@[simp]
-lemma pow_bit1_neg_iff : a ^ bit1 n < 0 ↔ a < 0 :=
-  ⟨fun h ↦ not_le.1 fun h' => not_le.2 h <| pow_nonneg h' _, fun ha ↦ pow_bit1_neg ha n⟩
-#align pow_bit1_neg_iff pow_bit1_neg_iff
-
-@[simp]
-lemma pow_bit1_nonneg_iff : 0 ≤ a ^ bit1 n ↔ 0 ≤ a := le_iff_le_iff_lt_iff_lt.2 pow_bit1_neg_iff
-#align pow_bit1_nonneg_iff pow_bit1_nonneg_iff
-
-@[simp]
-lemma pow_bit1_nonpos_iff : a ^ bit1 n ≤ 0 ↔ a ≤ 0 := by
-  simp only [le_iff_lt_or_eq, pow_bit1_neg_iff, pow_eq_zero_iff']; simp [bit1]
-#align pow_bit1_nonpos_iff pow_bit1_nonpos_iff
-
-@[simp]
-lemma pow_bit1_pos_iff : 0 < a ^ bit1 n ↔ 0 < a := lt_iff_lt_of_le_iff_le pow_bit1_nonpos_iff
-#align pow_bit1_pos_iff pow_bit1_pos_iff
-
-lemma strictMono_pow_bit1 (n : ℕ) : StrictMono (· ^ bit1 n : R → R) := by
-  intro a b hab
-  rcases le_total a 0 with ha | ha
-  · rcases le_or_lt b 0 with hb | hb
-    · rw [← neg_lt_neg_iff, ← neg_pow_bit1, ← neg_pow_bit1]
-      exact pow_lt_pow_left (neg_lt_neg hab) (neg_nonneg.2 hb) n.bit1_ne_zero
-    · exact (pow_bit1_nonpos_iff.2 ha).trans_lt (pow_bit1_pos_iff.2 hb)
-  · exact pow_lt_pow_left hab ha n.bit1_ne_zero
-#align strict_mono_pow_bit1 strictMono_pow_bit1
-
-end deprecated
 
 lemma Even.pow_nonneg (hn : Even n) (a : R) : 0 ≤ a ^ n := by
   obtain ⟨k, rfl⟩ := hn; rw [pow_add]; exact mul_self_nonneg _
@@ -534,17 +472,77 @@ alias ⟨_, Odd.pow_neg⟩ := Odd.pow_neg_iff
 #align odd.pow_neg Odd.pow_neg
 
 lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
-  cases' hn with k hk; simpa only [hk, two_mul] using strictMono_pow_bit1 _
+  have hn₀ : n ≠ 0 := by rintro rfl; simp [Odd, eq_comm (a := 0)] at hn
+  intro a b hab
+  obtain ha | ha := le_total 0 a
+  · exact pow_lt_pow_left hab ha hn₀
+  obtain hb | hb := lt_or_le 0 b
+  · exact (hn.pow_nonpos ha).trans_lt (pow_pos hb _)
+  obtain ⟨c, hac⟩ := exists_add_of_le ha
+  obtain ⟨d, hbd⟩ := exists_add_of_le hb
+  have hd := nonneg_of_le_add_right (hb.trans_eq hbd)
+  refine lt_of_add_lt_add_right (a := c ^ n + d ^ n) ?_
+  dsimp
+  calc
+    a ^ n + (c ^ n + d ^ n) = d ^ n := by
+      rw [← add_assoc, hn.pow_add_pow_eq_zero hac.symm, zero_add]
+    _ < c ^ n := pow_lt_pow_left ?_ hd hn₀
+    _ = b ^ n + (c ^ n + d ^ n) := by rw [add_left_comm, hn.pow_add_pow_eq_zero hbd.symm, add_zero]
+  refine lt_of_add_lt_add_right (a := a + b) ?_
+  rwa [add_rotate', ← hbd, add_zero, add_left_comm, ← add_assoc, ← hac, zero_add]
 #align odd.strict_mono_pow Odd.strictMono_pow
 
-lemma sq_pos_iff (a : R) : 0 < a ^ 2 ↔ a ≠ 0 := pow_bit0_pos_iff a one_ne_zero
+lemma sq_pos_iff {a : R} : 0 < a ^ 2 ↔ a ≠ 0 := even_two.pow_pos_iff two_ne_zero
 #align sq_pos_iff sq_pos_iff
+
+alias ⟨_, sq_pos_of_ne_zero⟩ := sq_pos_iff
+alias pow_two_pos_of_ne_zero := sq_pos_of_ne_zero
+#align sq_pos_of_ne_zero sq_pos_of_ne_zero
+#align pow_two_pos_of_ne_zero pow_two_pos_of_ne_zero
 
 lemma pow_four_le_pow_two_of_pow_two_le (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
   (pow_mul a 2 2).symm ▸ pow_le_pow_left (sq_nonneg a) h 2
 #align pow_four_le_pow_two_of_pow_two_le pow_four_le_pow_two_of_pow_two_le
 
-end LinearOrderedRing
+section deprecated
+set_option linter.deprecated false
+
+@[deprecated Even.pow_nonneg] -- 2024-04-06
+lemma pow_bit0_nonneg (a : R) (n : ℕ) : 0 ≤ a ^ bit0 n := (even_bit0 _).pow_nonneg _
+#align pow_bit0_nonneg pow_bit0_nonneg
+
+@[deprecated Even.pow_pos] -- 2024-04-06
+lemma pow_bit0_pos {a : R} (h : a ≠ 0) (n : ℕ) : 0 < a ^ bit0 n := (even_bit0 _).pow_pos h
+#align pow_bit0_pos pow_bit0_pos
+
+@[deprecated Even.pow_pos_iff] -- 2024-04-06
+lemma pow_bit0_pos_iff (a : R) {n : ℕ} (hn : n ≠ 0) : 0 < a ^ bit0 n ↔ a ≠ 0 :=
+  (even_bit0 _).pow_pos_iff (by simpa [bit0])
+#align pow_bit0_pos_iff pow_bit0_pos_iff
+
+@[simp, deprecated Odd.pow_neg_iff] -- 2024-04-06
+lemma pow_bit1_neg_iff : a ^ bit1 n < 0 ↔ a < 0 := (odd_bit1 _).pow_neg_iff
+#align pow_bit1_neg_iff pow_bit1_neg_iff
+
+@[simp, deprecated Odd.pow_nonneg_iff] -- 2024-04-06
+lemma pow_bit1_nonneg_iff : 0 ≤ a ^ bit1 n ↔ 0 ≤ a := (odd_bit1 _).pow_nonneg_iff
+#align pow_bit1_nonneg_iff pow_bit1_nonneg_iff
+
+@[simp, deprecated Odd.pow_nonpos_iff] -- 2024-04-06
+lemma pow_bit1_nonpos_iff : a ^ bit1 n ≤ 0 ↔ a ≤ 0 := (odd_bit1 _).pow_nonpos_iff
+#align pow_bit1_nonpos_iff pow_bit1_nonpos_iff
+
+@[simp, deprecated Odd.pow_pos_iff] -- 2024-04-06
+lemma pow_bit1_pos_iff : 0 < a ^ bit1 n ↔ 0 < a := (odd_bit1 _).pow_pos_iff
+#align pow_bit1_pos_iff pow_bit1_pos_iff
+
+@[deprecated Odd.strictMono_pow] -- 2024-04-06
+lemma strictMono_pow_bit1 (n : ℕ) : StrictMono (· ^ bit1 n : R → R) := (odd_bit1 _).strictMono_pow
+#align strict_mono_pow_bit1 strictMono_pow_bit1
+
+end deprecated
+
+end LinearOrderedSemiring
 
 namespace MonoidHom
 
