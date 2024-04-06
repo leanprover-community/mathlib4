@@ -639,7 +639,6 @@ def translationNumber : ℝ :=
 
 end
 
--- mathport name: exprτ
 -- TODO: choose two different symbols for `CircleDeg1Lift.translationNumber` and the future
 -- `circle_mono_homeo.rotation_number`, then make them `localized notation`s
 local notation "τ" => translationNumber
