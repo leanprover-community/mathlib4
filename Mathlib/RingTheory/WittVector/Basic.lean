@@ -3,8 +3,8 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Data.MvPolynomial.Counit
-import Mathlib.Data.MvPolynomial.Invertible
+import Mathlib.Algebra.MvPolynomial.Counit
+import Mathlib.Algebra.MvPolynomial.Invertible
 import Mathlib.RingTheory.WittVector.Defs
 
 #align_import ring_theory.witt_vector.basic from "leanprover-community/mathlib"@"9556784a5b84697562e9c6acb40500d4a82e675a"
@@ -56,7 +56,6 @@ open scoped BigOperators
 variable {p : ℕ} {R S T : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S] [CommRing T]
 variable {α : Type*} {β : Type*}
 
--- mathport name: expr𝕎
 local notation "𝕎" => WittVector p
 local notation "W_" => wittPolynomial p
 
@@ -120,10 +119,10 @@ theorem mul : mapFun f (x * y) = mapFun f x * mapFun f y := by map_fun_tac
 theorem neg : mapFun f (-x) = -mapFun f x := by map_fun_tac
 #align witt_vector.map_fun.neg WittVector.mapFun.neg
 
-theorem nsmul (n : ℕ) : mapFun f (n • x) = n • mapFun f x := by map_fun_tac
+theorem nsmul (n : ℕ) (x : WittVector p R) : mapFun f (n • x) = n • mapFun f x := by map_fun_tac
 #align witt_vector.map_fun.nsmul WittVector.mapFun.nsmul
 
-theorem zsmul (z : ℤ) : mapFun f (z • x) = z • mapFun f x := by map_fun_tac
+theorem zsmul (z : ℤ) (x : WittVector p R) : mapFun f (z • x) = z • mapFun f x := by map_fun_tac
 #align witt_vector.map_fun.zsmul WittVector.mapFun.zsmul
 
 theorem pow (n : ℕ) : mapFun f (x ^ n) = mapFun f x ^ n := by map_fun_tac
@@ -209,12 +208,12 @@ private theorem ghostFun_int_cast (i : ℤ) : ghostFun (i : 𝕎 R) = i :=
   show ghostFun i.castDef = _ by
     cases i <;> simp [*, Int.castDef, ghostFun_nat_cast, ghostFun_neg, -Pi.coe_nat, -Pi.coe_int]
 
-private theorem ghostFun_nsmul (m : ℕ) : ghostFun (m • x) = m • ghostFun x := by
+private lemma ghostFun_nsmul (m : ℕ) (x : WittVector p R) : ghostFun (m • x) = m • ghostFun x := by
   --  porting note: I had to add the explicit type ascription.
   --  This could very well be due to my poor tactic writing!
   ghost_fun_tac m • (X 0 : MvPolynomial _ ℤ), ![x.coeff]
 
-private theorem ghostFun_zsmul (m : ℤ) : ghostFun (m • x) = m • ghostFun x := by
+private lemma ghostFun_zsmul (m : ℤ) (x : WittVector p R) : ghostFun (m • x) = m • ghostFun x := by
   --  porting note: I had to add the explicit type ascription.
   --  This could very well be due to my poor tactic writing!
   ghost_fun_tac m • (X 0 : MvPolynomial _ ℤ), ![x.coeff]
