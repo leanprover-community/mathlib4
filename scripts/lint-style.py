@@ -406,12 +406,13 @@ def test_backtick_extraction():
     print("All tests pass!")
 
 
-# HACK: currently, this reads from local files, which have been generated manually...
+'''Read in information on old files and declarations.
+
+Return a tuple (old_files, old_declarations) consisting of
+- a list of all old files (i.e., mentioned in an align_import statement)
+- a dictionary of all align-ed declarations of the form {old: new}.'''
+# HACK: currently, this reads from local files, which have been pre-generated...
 def import_old_files_declarations():
-    # Import input data:
-    # - all align_import statements, looking for filesnames we don't want
-    # - all align statements, to parse out old lemma names
-    # Read in all align_import statements and parse out the name of the old file.
     old_files = []
     for line in open('/home/michael/align_imports.txt', 'r', encoding='utf-8'):
         if not line.startswith("#align_import "):
@@ -442,11 +443,13 @@ def import_old_files_declarations():
     same = set(aligns.values()).intersection(set(old_declarations))
     # print(f"Found {len(same)} old declarations which occur as a different new declaration:\n{same}")
     old_declarations = [s for s in old_declarations if s not in same]
-    assert "CommRing" not in old_declarations
+    old_declarations = dict(
+        (d, aligns[d]) for d in old_declarations
+    )
     return old_files, old_declarations
 
 
-''''Check the contents of doc comments in `backticks`: for old file names or Lean declarations.'''
+'''Check the contents of doc comments in `backticks`: for old file names or Lean declarations.'''
 # Currently, we flag any string in backticks which is exactly an old file or declaration name.
 # TODO: a substring of the old declaration should also work, e.g. just the lemma/file name.
 # FUTURE ideas:
