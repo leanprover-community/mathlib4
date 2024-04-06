@@ -926,4 +926,17 @@ def Scheme.OpenCover.fromAffineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) 
   idx j := j.fst
   app j := (𝓤.obj j.fst).affineCover.map _
 
+@[simps]
+def Scheme.OpenCover.inl {X : Scheme.{u}} (𝓤₁ 𝓤₂ : Scheme.OpenCover.{v} X) :
+    𝓤₁.inter 𝓤₂ ⟶ 𝓤₁ where
+  idx j := j.fst
+  app j := Limits.pullback.fst
+
+@[simps]
+def Scheme.OpenCover.inr {X : Scheme.{u}} (𝓤₁ 𝓤₂ : Scheme.OpenCover.{v} X) :
+    𝓤₁.inter 𝓤₂ ⟶ 𝓤₂ where
+  idx j := j.snd
+  app j := Limits.pullback.snd
+  w _ := by simp [inter, Limits.pullback.condition]
+
 end AlgebraicGeometry

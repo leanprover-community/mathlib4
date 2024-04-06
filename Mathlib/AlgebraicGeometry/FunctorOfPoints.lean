@@ -96,5 +96,22 @@ instance : Full schemeToFunctor where
   preimage f := homOfFunctorOfPoints f
   witness := by
     intro X Y f
+    ext A e : 3
+    dsimp at e ⊢
+    let a := e ≫ homOfFunctorOfPoints f
+    let b := f.app A e
+    dsimp at b
+    change a = b
+    let 𝓥 := Y.affineOpenCover
+    let 𝓤a := 𝓥.openCover.pullbackCover a
+    let 𝓤b := 𝓥.openCover.pullbackCover b
+    let 𝓤' := 𝓤a.inter 𝓤b
+    let ιa : 𝓤' ⟶ 𝓤a := 𝓤a.inl 𝓤b
+    let ιb : 𝓤' ⟶ 𝓤b := Scheme.OpenCover.inr 𝓤a 𝓤b
+    let 𝓤 := 𝓤'.affineRefinement
+    let ι : 𝓤.openCover ⟶ 𝓤' := Scheme.OpenCover.fromAffineRefinement _
+    apply Scheme.OpenCover.hom_ext_refinement 𝓤.openCover 𝓥.openCover _ _ (ι ≫ ιa) (ι ≫ ιb)
+    intro j
+    sorry
 
 end AlgebraicGeometry
