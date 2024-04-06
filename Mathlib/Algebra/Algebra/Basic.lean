@@ -715,7 +715,7 @@ section Rat
 
 instance algebraRat {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
   smul := (· • ·)
-  smul_def' := DivisionRing.qsmul_eq_mul'
+  smul_def' := Rat.smul_def
   toRingHom := Rat.castHom α
   commutes' := Rat.cast_commute
 #align algebra_rat algebraRat
