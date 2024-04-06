@@ -35,9 +35,7 @@ open Category
 open Opposite
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R)
 
 /-- If the left adjoint is fully faithful, then the unit is an isomorphism.
@@ -91,7 +89,7 @@ by L whiskered with the counit. -/
 @[simp]
 theorem inv_map_unit {X : C} [IsIso (h.unit.app X)] :
     inv (L.map (h.unit.app X)) = h.counit.app (L.obj X) :=
-  IsIso.inv_eq_of_hom_inv_id h.left_triangle_components
+  IsIso.inv_eq_of_hom_inv_id (h.left_triangle_components X)
 #align category_theory.inv_map_unit CategoryTheory.inv_map_unit
 
 /-- If the unit is an isomorphism, bundle one has an isomorphism `L ⋙ R ⋙ L ≅ L`. -/
@@ -106,7 +104,7 @@ by R whiskered with the unit. -/
 @[simp]
 theorem inv_counit_map {X : D} [IsIso (h.counit.app X)] :
     inv (R.map (h.counit.app X)) = h.unit.app (R.obj X) :=
-  IsIso.inv_eq_of_inv_hom_id h.right_triangle_components
+  IsIso.inv_eq_of_inv_hom_id (h.right_triangle_components X)
 #align category_theory.inv_counit_map CategoryTheory.inv_counit_map
 
 /-- If the counit of an is an isomorphism, one has an isomorphism `(R ⋙ L ⋙ R) ≅ R`. -/
@@ -184,7 +182,6 @@ set_option linter.uppercaseLean3 false in
 universe v₃ v₄ u₃ u₄
 
 variable {C' : Type u₃} [Category.{v₃} C']
-
 variable {D' : Type u₄} [Category.{v₄} D']
 
 -- TODO: This needs some lemmas describing the produced adjunction, probably in terms of `adj`,

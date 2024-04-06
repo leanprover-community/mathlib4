@@ -40,7 +40,8 @@ noncomputable section
 
 namespace Polynomial
 
-open Classical Polynomial
+open scoped Classical
+open Polynomial
 
 section CommSemiring
 
@@ -103,7 +104,6 @@ end CommSemiring
 section Field
 
 variable {F : Type*} [Field F]
-
 variable (q : ℕ) {f : F[X]} (hf : HasSeparableContraction q f)
 
 /-- Every irreducible polynomial can be contracted to a separable polynomial.

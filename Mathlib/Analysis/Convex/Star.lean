@@ -3,6 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.Tactic.GCongr
 
@@ -94,7 +95,7 @@ theorem starConvex_iff_pointwise_add_subset :
   refine'
     ⟨_, fun h y hy a b ha hb hab =>
       h ha hb hab (add_mem_add (smul_mem_smul_set <| mem_singleton _) ⟨_, hy, rfl⟩)⟩
-  rintro hA a b ha hb hab w ⟨au, bv, ⟨u, rfl : u = x, rfl⟩, ⟨v, hv, rfl⟩, rfl⟩
+  rintro hA a b ha hb hab w ⟨au, ⟨u, rfl : u = x, rfl⟩, bv, ⟨v, hv, rfl⟩, rfl⟩
   exact hA hv ha hb hab
 #align star_convex_iff_pointwise_add_subset starConvex_iff_pointwise_add_subset
 
@@ -114,7 +115,7 @@ theorem starConvex_sInter {S : Set (Set E)} (h : ∀ s ∈ S, StarConvex 𝕜 x 
 
 theorem starConvex_iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, StarConvex 𝕜 x (s i)) :
     StarConvex 𝕜 x (⋂ i, s i) :=
-  sInter_range s ▸ starConvex_sInter <| forall_range_iff.2 h
+  sInter_range s ▸ starConvex_sInter <| forall_mem_range.2 h
 #align star_convex_Inter starConvex_iInter
 
 theorem StarConvex.union (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 x t) :

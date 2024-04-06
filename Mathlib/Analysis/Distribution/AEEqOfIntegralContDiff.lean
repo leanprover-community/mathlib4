@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Geometry.Manifold.PartitionOfUnity
 import Mathlib.Geometry.Manifold.Metrizable
+import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 
 /-!
 # Functions which vanish as distributions vanish as functions
@@ -76,7 +77,7 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
       exact (hf.integrableOn_isCompact K_compact).norm
     have C : ∀ n, ∀ᵐ x ∂μ, ‖g n x • f x‖ ≤ bound x := by
       intro n
-      apply eventually_of_forall (fun x ↦ ?_)
+      filter_upwards with x
       rw [norm_smul]
       refine le_indicator_apply (fun _ ↦ ?_) (fun hxK ↦ ?_)
       · have : ‖g n x‖ ≤ 1 := by
@@ -87,14 +88,14 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
       · have : g n x = 0 := by rw [← nmem_support, g_supp]; contrapose! hxK; exact vK n hxK
         simp [this]
     have D : ∀ᵐ x ∂μ, Tendsto (fun n => g n x • f x) atTop (𝓝 (s.indicator f x)) := by
-      apply eventually_of_forall (fun x ↦ ?_)
+      filter_upwards with x
       by_cases hxs : x ∈ s
       · have : ∀ n, g n x = 1 := fun n ↦ hg n x hxs
         simp [this, indicator_of_mem hxs f]
       · simp_rw [indicator_of_not_mem hxs f]
         apply tendsto_const_nhds.congr'
-        suffices H : ∀ᶠ n in atTop, g n x = 0
-        · filter_upwards [H] with n hn using by simp [hn]
+        suffices H : ∀ᶠ n in atTop, g n x = 0 by
+          filter_upwards [H] with n hn using by simp [hn]
         obtain ⟨ε, εpos, hε⟩ : ∃ ε, 0 < ε ∧ x ∉ thickening ε s := by
           rw [← hs.isClosed.closure_eq, closure_eq_iInter_thickening s] at hxs
           simpa using hxs

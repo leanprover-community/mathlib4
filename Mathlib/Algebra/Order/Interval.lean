@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Prod
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Order.Interval
-import Mathlib.Tactic.Positivity
 
 #align_import algebra.order.interval from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
@@ -41,10 +40,6 @@ variable [Preorder α] [One α]
 @[to_additive]
 instance : One (NonemptyInterval α) :=
   ⟨NonemptyInterval.pure 1⟩
-
-@[to_additive]
-instance : One (Interval α) :=
-  ⟨Interval.pure 1⟩
 
 namespace NonemptyInterval
 
@@ -89,15 +84,11 @@ theorem pure_one : pure (1 : α) = 1 :=
 #align interval.pure_one Interval.pure_one
 #align interval.pure_zero Interval.pure_zero
 
-@[to_additive (attr := simp)]
-theorem one_ne_bot : (1 : Interval α) ≠ ⊥ :=
-  pure_ne_bot
+@[to_additive] lemma one_ne_bot : (1 : Interval α) ≠ ⊥ := pure_ne_bot
 #align interval.one_ne_bot Interval.one_ne_bot
 #align interval.zero_ne_bot Interval.zero_ne_bot
 
-@[to_additive (attr := simp)]
-theorem bot_ne_one : (⊥ : Interval α) ≠ 1 :=
-  bot_ne_pure
+@[to_additive] lemma bot_ne_one : (⊥ : Interval α) ≠ 1 := bot_ne_pure
 #align interval.bot_ne_one Interval.bot_ne_one
 #align interval.bot_ne_zero Interval.bot_ne_zero
 
@@ -288,11 +279,9 @@ instance Interval.mulOneClass [OrderedCommMonoid α] : MulOneClass (Interval α)
   mul := (· * ·)
   one := 1
   one_mul s :=
-    (Option.map₂_coe_left _ _ _).trans <| by
-      simp_rw [NonemptyInterval.pure_one, one_mul, ← id_def, Option.map_id, id]
+    (Option.map₂_coe_left _ _ _).trans <| by simp_rw [one_mul, ← id_def, Option.map_id, id]
   mul_one s :=
-    (Option.map₂_coe_right _ _ _).trans <| by
-      simp_rw [NonemptyInterval.pure_one, mul_one, ← id_def, Option.map_id, id]
+    (Option.map₂_coe_right _ _ _).trans <| by simp_rw [mul_one, ← id_def, Option.map_id, id]
 
 @[to_additive]
 instance Interval.commMonoid [OrderedCommMonoid α] : CommMonoid (Interval α) :=
@@ -321,7 +310,7 @@ variable [OrderedCommMonoid α] (s : Interval α) {n : ℕ}
 @[to_additive]
 theorem bot_pow : ∀ {n : ℕ}, n ≠ 0 → (⊥ : Interval α) ^ n = ⊥
   | 0, h => (h rfl).elim
-  | Nat.succ n, _ => bot_mul (⊥ ^ n)
+  | Nat.succ n, _ => mul_bot (⊥ ^ n)
 #align interval.bot_pow Interval.bot_pow
 #align interval.bot_nsmul Interval.bot_nsmul
 
@@ -528,7 +517,7 @@ variable [OrderedCommGroup α] {s t : NonemptyInterval α}
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 := by
   refine' ⟨fun h => _, _⟩
-  · rw [ext_iff, Prod.ext_iff] at h
+  · rw [NonemptyInterval.ext_iff, Prod.ext_iff] at h
     have := (mul_le_mul_iff_of_ge s.fst_le_snd t.fst_le_snd).1 (h.2.trans h.1.symm).le
     refine' ⟨s.fst, t.fst, _, _, h.1⟩ <;> apply NonemptyInterval.ext <;> dsimp [pure]
     · nth_rw 2 [this.1]
@@ -552,7 +541,9 @@ instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
       exact neg_add_rev _ _
     neg_eq_of_add := fun s t h => by
       obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.add_eq_zero_iff.1 h
-      rw [neg_pure, neg_eq_of_add_eq_zero_right hab] }
+      rw [neg_pure, neg_eq_of_add_eq_zero_right hab]
+    -- TODO: use a better defeq
+    zsmul := zsmulRec }
 
 @[to_additive existing NonemptyInterval.subtractionCommMonoid]
 instance divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) :=
@@ -601,7 +592,9 @@ instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
       rintro (_ | s) (_ | t) h <;>
         first
           | cases h
-          | exact congr_arg some (neg_eq_of_add_eq_zero_right <| Option.some_injective _ h) }
+          | exact congr_arg some (neg_eq_of_add_eq_zero_right <| Option.some_injective _ h)
+    -- TODO: use a better defeq
+    zsmul := zsmulRec }
 
 @[to_additive existing Interval.subtractionCommMonoid]
 instance divisionCommMonoid : DivisionCommMonoid (Interval α) :=
@@ -732,27 +725,17 @@ open Lean Meta Qq
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity NonemptyInterval.length _]
 def evalNonemptyIntervalLength : PositivityExt where
-  eval {u α} _ _ e := do
-    let .app (f : Q(NonemptyInterval $α → $α)) (a : Q(NonemptyInterval $α)) ←
-      withReducible (whnf e) | throwError "not NonemptyInterval.length"
-    let _eq : $e =Q $f $a := ⟨⟩
-    let _I ← synthInstanceQ (q(OrderedAddCommGroup $α) : Q(Type u))
-    assumeInstancesCommute
-    let ⟨_f_eq⟩ ←
-      withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(NonemptyInterval.length)
+  eval {u _α} _ _ e := do
+    let ~q(@NonemptyInterval.length _ $inst $a) := e | throwError "not NonemptyInterval.length"
+    assertInstancesCommute
     return .nonnegative q(NonemptyInterval.length_nonneg $a)
 
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity Interval.length _]
 def evalIntervalLength : PositivityExt where
-  eval {u α} _ _ e := do
-    let .app (f : Q(Interval $α → $α)) (a : Q(Interval $α)) ←
-      withReducible (whnf e) | throwError "not NonemptyInterval.length"
-    let _eq : $e =Q $f $a := ⟨⟩
-    let _I ← synthInstanceQ (q(OrderedAddCommGroup $α) : Q(Type u))
+  eval {u _α} _ _ e := do
+    let ~q(@Interval.length _ $inst $a) := e | throwError "not Interval.length"
     assumeInstancesCommute
-    let ⟨_f_eq⟩ ←
-      withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(Interval.length)
     return .nonnegative q(Interval.length_nonneg $a)
 
 end Mathlib.Meta.Positivity

@@ -89,7 +89,7 @@ theorem isSeparatedMap_iff_isClosed_diagonal {f : X → Y} :
 theorem isSeparatedMap_iff_closedEmbedding {f : X → Y} :
     IsSeparatedMap f ↔ ClosedEmbedding (toPullbackDiag f) := by
   rw [isSeparatedMap_iff_isClosed_diagonal, ← range_toPullbackDiag]
-  exact ⟨fun h ↦ ⟨embedding_toPullbackDiag f, h⟩, fun h ↦ h.2⟩
+  exact ⟨fun h ↦ ⟨embedding_toPullbackDiag f, h⟩, fun h ↦ h.isClosed_range⟩
 
 theorem isSeparatedMap_iff_isClosedMap {f : X → Y} :
     IsSeparatedMap f ↔ IsClosedMap (toPullbackDiag f) :=
@@ -144,7 +144,7 @@ theorem isLocallyInjective_iff_isOpen_diagonal {f : X → Y} :
 theorem IsLocallyInjective_iff_openEmbedding {f : X → Y} :
     IsLocallyInjective f ↔ OpenEmbedding (toPullbackDiag f) := by
   rw [isLocallyInjective_iff_isOpen_diagonal, ← range_toPullbackDiag]
-  exact ⟨fun h ↦ ⟨embedding_toPullbackDiag f, h⟩, fun h ↦ h.2⟩
+  exact ⟨fun h ↦ ⟨embedding_toPullbackDiag f, h⟩, fun h ↦ h.isOpen_range⟩
 
 theorem isLocallyInjective_iff_isOpenMap {f : X → Y} :
     IsLocallyInjective f ↔ IsOpenMap (toPullbackDiag f) :=
@@ -195,7 +195,7 @@ variable (sep : IsSeparatedMap p) (inj : IsLocallyInjective p) {s : Set A} (hs :
   then two lifts `g₁, g₂ : A → E` of a map `f : A → X` are equal if they agree at one point. -/
 theorem eq_of_comp_eq [PreconnectedSpace A] (h₁ : Continuous g₁) (h₂ : Continuous g₂)
     (he : p ∘ g₁ = p ∘ g₂) (a : A) (ha : g₁ a = g₂ a) : g₁ = g₂ := funext fun a' ↦ by
-  apply (IsClopen.eq_univ ⟨inj.isOpen_eqLocus h₁ h₂ he, sep.isClosed_eqLocus h₁ h₂ he⟩ ⟨a, ha⟩).symm
+  apply (IsClopen.eq_univ ⟨sep.isClosed_eqLocus h₁ h₂ he, inj.isOpen_eqLocus h₁ h₂ he⟩ ⟨a, ha⟩).symm
     ▸ Set.mem_univ a'
 
 theorem eqOn_of_comp_eqOn (h₁ : ContinuousOn g₁ s) (h₂ : ContinuousOn g₂ s)

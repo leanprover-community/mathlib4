@@ -6,7 +6,6 @@ Authors: Kevin Kappelmann
 import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
 import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 import Mathlib.Algebra.Order.Archimedean
-import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Tactic.GCongr
 import Mathlib.Topology.Order.Basic
 
@@ -46,8 +45,8 @@ convergence, fractions
 variable {K : Type*} (v : K) [LinearOrderedField K] [FloorRing K]
 
 open GeneralizedContinuedFraction (of)
-
 open GeneralizedContinuedFraction
+open scoped Topology
 
 theorem GeneralizedContinuedFraction.of_isSimpleContinuedFraction :
     (of v).IsSimpleContinuedFraction := fun _ _ nth_part_num_eq =>
@@ -123,8 +122,8 @@ theorem of_convergence_epsilon :
     have B_ineq : (fib (n + 1) : K) ≤ B :=
       haveI : ¬g.TerminatedAt (n - 1) := mt (terminated_stable n.pred_le) not_terminated_at_n
       succ_nth_fib_le_of_nth_denom (Or.inr this)
-    have zero_lt_B : 0 < B := B_ineq.trans_lt' $ mod_cast fib_pos.2 n.succ_pos
-    have nB_pos : 0 < nB := nB_ineq.trans_lt' $ mod_cast fib_pos.2 $ succ_pos _
+    have zero_lt_B : 0 < B := B_ineq.trans_lt' <| mod_cast fib_pos.2 n.succ_pos
+    have nB_pos : 0 < nB := nB_ineq.trans_lt' <| mod_cast fib_pos.2 <| succ_pos _
     have zero_lt_mul_conts : 0 < B * nB := by positivity
     suffices 1 < ε * (B * nB) from (div_lt_iff zero_lt_mul_conts).mpr this
     -- use that `N' ≥ n` was obtained from the archimedean property to show the following
@@ -142,10 +141,8 @@ theorem of_convergence_epsilon :
       _ ≤ B * nB := by gcongr
 #align generalized_continued_fraction.of_convergence_epsilon GeneralizedContinuedFraction.of_convergence_epsilon
 
-attribute [local instance] Preorder.topology
-
-theorem of_convergence [OrderTopology K] :
-    Filter.Tendsto (of v).convergents Filter.atTop <| nhds v := by
+theorem of_convergence [TopologicalSpace K] [OrderTopology K] :
+    Filter.Tendsto (of v).convergents Filter.atTop <| 𝓝 v := by
   simpa [LinearOrderedAddCommGroup.tendsto_nhds, abs_sub_comm] using of_convergence_epsilon v
 #align generalized_continued_fraction.of_convergence GeneralizedContinuedFraction.of_convergence
 

@@ -51,7 +51,7 @@ theorem integrable_of_isBigO_exp_neg {f : ℝ → ℝ} {a b : ℝ} (h0 : 0 < b)
     exact (h1.mono u).intervalIntegrable_of_Icc (le_max_left a r)
   suffices IntegrableOn f (Ioi v) by
     have t := integrableOn_union.mpr ⟨int_left, this⟩
-    simpa only [Ioc_union_Ioi_eq_Ioi, le_max_iff, le_refl, true_or_iff] using t
+    simpa only [v, Ioc_union_Ioi_eq_Ioi, le_max_iff, le_refl, true_or_iff] using t
   -- now show integrable on `(v, ∞)` from asymptotic
   constructor
   · exact (h1.mono <| Ioi_subset_Ici <| le_max_left a r).aestronglyMeasurable measurableSet_Ioi
@@ -59,7 +59,7 @@ theorem integrable_of_isBigO_exp_neg {f : ℝ → ℝ} {a b : ℝ} (h0 : 0 < b)
     (exp_neg_integrableOn_Ioi v h0).hasFiniteIntegral.const_mul c
   apply this.mono
   refine' (ae_restrict_iff' measurableSet_Ioi).mpr _
-  refine' ae_of_all _ fun x h1x => _
+  filter_upwards with x h1x
   rw [norm_mul, norm_eq_abs]
   rw [mem_Ioi] at h1x
   specialize bdr x ((le_max_right a r).trans h1x.le)

@@ -45,7 +45,6 @@ open CategoryTheory
 namespace CategoryTheory.Limits
 
 variable {β : Type w} {α : Type w₂} {γ : Type w₃}
-
 variable {C : Type u} [Category.{v} C]
 
 -- We don't need an analogue of `Pair` (for binary products), `ParallelPair` (for equalizers),
@@ -203,7 +202,7 @@ abbrev Sigma.ι (f : β → C) [HasCoproduct f] (b : β) : f b ⟶ ∐ f :=
   colimit.ι (Discrete.functor f) (Discrete.mk b)
 #align category_theory.limits.sigma.ι CategoryTheory.Limits.Sigma.ι
 
--- porting note: added the next two lemmas to ease automation; without these lemmas,
+-- porting note (#10688): added the next two lemmas to ease automation; without these lemmas,
 -- `limit.hom_ext` would be applied, but the goal would involve terms
 -- in `Discrete β` rather than `β` itself
 @[ext 1050]
@@ -249,10 +248,18 @@ abbrev Pi.lift {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) : P 
   limit.lift _ (Fan.mk P p)
 #align category_theory.limits.pi.lift CategoryTheory.Limits.Pi.lift
 
+theorem Pi.lift_π {β : Type w} {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) (b : β) :
+    Pi.lift p ≫ Pi.π f b = p b := by
+  simp only [limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
+
 /-- A collection of morphisms `f b ⟶ P` induces a morphism `∐ f ⟶ P`. -/
 abbrev Sigma.desc {f : β → C} [HasCoproduct f] {P : C} (p : ∀ b, f b ⟶ P) : ∐ f ⟶ P :=
   colimit.desc _ (Cofan.mk P p)
 #align category_theory.limits.sigma.desc CategoryTheory.Limits.Sigma.desc
+
+theorem Sigma.ι_desc {β : Type w} {f : β → C} [HasCoproduct f] {P : C} (p : ∀ b, f b ⟶ P) (b : β) :
+    Sigma.ι f b ≫ Sigma.desc p = p b := by
+  simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
 
 instance {f : β → C} [HasCoproduct f] : IsIso (Sigma.desc (fun a ↦ Sigma.ι f a)) := by
   convert IsIso.id _
@@ -339,6 +346,50 @@ from a family of isomorphisms between the factors.
 abbrev Pi.mapIso {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ≅ g b) : ∏ f ≅ ∏ g :=
   lim.mapIso (Discrete.natIso fun X => p X.as)
 #align category_theory.limits.pi.map_iso CategoryTheory.Limits.Pi.mapIso
+
+section
+
+/- In this section, we provide some API for products when we are given a functor
+`Discrete α ⥤ C` instead of a map `α → C`. -/
+
+variable (X : Discrete α ⥤ C) [HasProduct (fun j => X.obj (Discrete.mk j))]
+
+/-- A limit cone for `X : Discrete α ⥤ C` that is given
+by `∏ (fun j => X.obj (Discrete.mk j))`. -/
+@[simps]
+def Pi.cone : Cone X where
+  pt := ∏ (fun j => X.obj (Discrete.mk j))
+  π := Discrete.natTrans (fun _ => Pi.π _ _)
+
+/-- The cone `Pi.cone X` is a limit cone. -/
+def productIsProduct' :
+    IsLimit (Pi.cone X) where
+  lift s := Pi.lift (fun j => s.π.app ⟨j⟩)
+  fac s := by simp
+  uniq s m hm := by
+    dsimp
+    ext
+    simp only [limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
+    apply hm
+
+variable [HasLimit X]
+
+/-- The isomorphism `∏ (fun j => X.obj (Discrete.mk j)) ≅ limit X`. -/
+def Pi.isoLimit :
+    ∏ (fun j => X.obj (Discrete.mk j)) ≅ limit X :=
+  IsLimit.conePointUniqueUpToIso (productIsProduct' X) (limit.isLimit X)
+
+@[reassoc (attr := simp)]
+lemma Pi.isoLimit_inv_π (j : α) :
+    (Pi.isoLimit X).inv ≫ Pi.π _ j = limit.π _ (Discrete.mk j) :=
+  IsLimit.conePointUniqueUpToIso_inv_comp _ _ _
+
+@[reassoc (attr := simp)]
+lemma Pi.isoLimit_hom_π (j : α) :
+    (Pi.isoLimit X).hom ≫ limit.π _ (Discrete.mk j) = Pi.π _ j :=
+  IsLimit.conePointUniqueUpToIso_hom_comp _ _ _
+
+end
 
 /-- Construct a morphism between categorical coproducts (indexed by the same type)
 from a family of morphisms between the factors.
@@ -465,7 +516,6 @@ def sigmaSigmaIso (f : ι → Type*) (g : (i : ι) → (f i) → C)
 section Comparison
 
 variable {D : Type u₂} [Category.{v₂} D] (G : C ⥤ D)
-
 variable (f : β → C)
 
 /-- The comparison morphism for the product of `f`. This is an iso iff `G` preserves the product

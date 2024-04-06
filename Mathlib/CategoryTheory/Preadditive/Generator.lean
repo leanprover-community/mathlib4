@@ -39,14 +39,14 @@ theorem Preadditive.isCoseparating_iff (𝒢 : Set C) :
 
 theorem Preadditive.isSeparator_iff (G : C) :
     IsSeparator G ↔ ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ h : G ⟶ X, h ≫ f = 0) → f = 0 :=
-  ⟨fun hG X Y f hf => hG.def _ _ (by simpa only [Limits.comp_zero] using hf), fun hG =>
+  ⟨fun hG X Y f hf => hG.def' _ _ (by simpa only [Limits.comp_zero] using hf), fun hG =>
     (isSeparator_def _).2 fun X Y f g hfg =>
       sub_eq_zero.1 <| hG _ (by simpa only [Preadditive.comp_sub, sub_eq_zero] using hfg)⟩
 #align category_theory.preadditive.is_separator_iff CategoryTheory.Preadditive.isSeparator_iff
 
 theorem Preadditive.isCoseparator_iff (G : C) :
     IsCoseparator G ↔ ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ h : Y ⟶ G, f ≫ h = 0) → f = 0 :=
-  ⟨fun hG X Y f hf => hG.def _ _ (by simpa only [Limits.zero_comp] using hf), fun hG =>
+  ⟨fun hG X Y f hf => hG.def' _ _ (by simpa only [Limits.zero_comp] using hf), fun hG =>
     (isCoseparator_def _).2 fun X Y f g hfg =>
       sub_eq_zero.1 <| hG _ (by simpa only [Preadditive.sub_comp, sub_eq_zero] using hfg)⟩
 #align category_theory.preadditive.is_coseparator_iff CategoryTheory.Preadditive.isCoseparator_iff

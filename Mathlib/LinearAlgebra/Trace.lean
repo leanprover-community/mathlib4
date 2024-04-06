@@ -3,14 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Antoine Labelle
 -/
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.LinearAlgebra.Contraction
-import Mathlib.LinearAlgebra.TensorProductBasis
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
-import Mathlib.LinearAlgebra.Projection
-import Mathlib.LinearAlgebra.FreeModule.PID
 
 #align_import linear_algebra.trace from "leanprover-community/mathlib"@"4cf7ca0e69e048b006674cf4499e5c7d296a89e0"
 
@@ -45,11 +38,8 @@ open TensorProduct
 section
 
 variable (R : Type u) [CommSemiring R] {M : Type v} [AddCommMonoid M] [Module R M]
-
 variable {ι : Type w} [DecidableEq ι] [Fintype ι]
-
 variable {κ : Type*} [DecidableEq κ] [Fintype κ]
-
 variable (b : Basis ι R M) (c : Basis κ R M)
 
 /-- The trace of an endomorphism given a basis. -/
@@ -80,7 +70,7 @@ theorem traceAux_eq : traceAux R b = traceAux R c :=
       _ = Matrix.trace (LinearMap.toMatrix c c f) := by rw [LinearMap.comp_id, LinearMap.comp_id]
 #align linear_map.trace_aux_eq LinearMap.traceAux_eq
 
-open Classical
+open scoped Classical
 
 variable (M)
 
@@ -130,14 +120,18 @@ theorem trace_conj (g : M →ₗ[R] M) (f : (M →ₗ[R] M)ˣ) :
   simp
 #align linear_map.trace_conj LinearMap.trace_conj
 
+@[simp]
+lemma trace_lie {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (f g : Module.End R M) :
+    trace R M ⁅f, g⁆ = 0 := by
+  rw [Ring.lie_def, map_sub, trace_mul_comm]
+  exact sub_self _
+
 end
 
 section
 
 variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
-
 variable (N P : Type*) [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
-
 variable {ι : Type*}
 
 /-- The trace of a linear map correspond to the contraction pairing under the isomorphism
@@ -165,7 +159,6 @@ theorem trace_eq_contract_of_basis' [Fintype ι] [DecidableEq ι] (b : Basis ι 
 #align linear_map.trace_eq_contract_of_basis' LinearMap.trace_eq_contract_of_basis'
 
 variable (R M)
-
 variable [Module.Free R M] [Module.Finite R M] [Module.Free R N] [Module.Finite R N]
   [Module.Free R P] [Module.Finite R P]
 
@@ -209,7 +202,7 @@ theorem trace_transpose : trace R (Module.Dual R M) ∘ₗ Module.Dual.transpose
   let e := dualTensorHomEquiv R M M
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine' (cancel_right h).1 _
-  ext f m; simp
+  ext f m; simp [e]
 #align linear_map.trace_transpose LinearMap.trace_transpose
 
 theorem trace_prodMap :
@@ -219,11 +212,11 @@ theorem trace_prodMap :
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine' (cancel_right h).1 _
   ext
-  · simp only [dualTensorHomEquiv, LinearEquiv.coe_prod, dualTensorHomEquivOfBasis_toLinearMap,
+  · simp only [e, dualTensorHomEquiv, LinearEquiv.coe_prod, dualTensorHomEquivOfBasis_toLinearMap,
       AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars, coe_comp, coe_inl,
       Function.comp_apply, prodMap_apply, map_zero, prodMapLinear_apply, dualTensorHom_prodMap_zero,
       trace_eq_contract_apply, contractLeft_apply, fst_apply, coprod_apply, id_coe, id_eq, add_zero]
-  · simp only [dualTensorHomEquiv, LinearEquiv.coe_prod, dualTensorHomEquivOfBasis_toLinearMap,
+  · simp only [e, dualTensorHomEquiv, LinearEquiv.coe_prod, dualTensorHomEquivOfBasis_toLinearMap,
       AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars, coe_comp, coe_inr,
       Function.comp_apply, prodMap_apply, map_zero, prodMapLinear_apply, zero_prodMap_dualTensorHom,
       trace_eq_contract_apply, contractLeft_apply, snd_apply, coprod_apply, id_coe, id_eq, zero_add]
@@ -262,7 +255,8 @@ theorem trace_comp_comm :
         (show Surjective (dualTensorHom R M N) from (dualTensorHomEquiv R M N).surjective)).1
   ext g m f n
   simp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply, coe_restrictScalars,
-    compl₁₂_apply, compr₂_apply, llcomp_apply', comp_dualTensorHom, map_smulₛₗ, RingHom.id_apply,
+    -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
+    compl₁₂_apply, compr₂_apply, llcomp_apply', comp_dualTensorHom, map_smulₛₗ _, RingHom.id_apply,
     trace_eq_contract_apply, contractLeft_apply, smul_eq_mul, mul_comm, flip_apply]
 #align linear_map.trace_comp_comm LinearMap.trace_comp_comm
 
@@ -346,7 +340,7 @@ lemma trace_baseChange [Module.Free R M] [Module.Finite R M]
   let b := Module.Free.chooseBasis R M
   let b' := Algebra.TensorProduct.basis A b
   change _ = (algebraMap R A : R →+ A) _
-  simp [trace_eq_matrix_trace R b, trace_eq_matrix_trace A b', AddMonoidHom.map_trace]
+  simp [b', trace_eq_matrix_trace R b, trace_eq_matrix_trace A b', AddMonoidHom.map_trace]
 
 end
 

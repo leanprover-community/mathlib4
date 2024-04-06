@@ -28,7 +28,7 @@ in `Mathlib/MeasureTheory/Measure/VectorMeasure.lean` and is known as
 * `MeasureTheory.ComplexMeasure.equivSignedMeasure`: is the equivalence between the complex
   measures and the type of the product of the signed measures with itself.
 
-# Tags
+## Tags
 
 Complex measure
 -/
@@ -49,13 +49,13 @@ namespace ComplexMeasure
 /-- The real part of a complex measure is a signed measure. -/
 @[simps! apply]
 def re : ComplexMeasure α →ₗ[ℝ] SignedMeasure α :=
-  mapRangeₗ Complex.reClm Complex.continuous_re
+  mapRangeₗ Complex.reCLM Complex.continuous_re
 #align measure_theory.complex_measure.re MeasureTheory.ComplexMeasure.re
 
 /-- The imaginary part of a complex measure is a signed measure. -/
 @[simps! apply]
 def im : ComplexMeasure α →ₗ[ℝ] SignedMeasure α :=
-  mapRangeₗ Complex.imClm Complex.continuous_im
+  mapRangeₗ Complex.imCLM Complex.continuous_im
 #align measure_theory.complex_measure.im MeasureTheory.ComplexMeasure.im
 
 /-- Given `s` and `t` signed measures, `s + it` is a complex measure-/
@@ -96,7 +96,6 @@ def equivSignedMeasure : ComplexMeasure α ≃ SignedMeasure α × SignedMeasure
 section
 
 variable {R : Type*} [Semiring R] [Module R ℝ]
-
 variable [ContinuousConstSMul R ℝ] [ContinuousConstSMul R ℂ]
 
 /-- The complex measures form a linear isomorphism to the type of pairs of signed measures. -/

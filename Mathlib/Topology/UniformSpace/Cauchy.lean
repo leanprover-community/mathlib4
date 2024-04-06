@@ -16,9 +16,11 @@ import Mathlib.Topology.UniformSpace.Basic
 
 universe u v
 
-open Filter TopologicalSpace Set Classical UniformSpace Function
+open scoped Classical
+open Filter TopologicalSpace Set UniformSpace Function
 
-open Classical Uniformity Topology Filter
+open scoped Classical
+open Uniformity Topology Filter
 
 variable {α : Type u} {β : Type v} [uniformSpace : UniformSpace α]
 
@@ -310,6 +312,17 @@ theorem tendsto_nhds_of_cauchySeq_of_subseq [Preorder β] {u : β → α} (hu : 
   le_nhds_of_cauchy_adhp hu (mapClusterPt_of_comp hf ha)
 #align tendsto_nhds_of_cauchy_seq_of_subseq tendsto_nhds_of_cauchySeq_of_subseq
 
+/-- Any shift of a Cauchy sequence is also a Cauchy sequence. -/
+theorem cauchySeq_shift {u : ℕ → α} (k : ℕ) : CauchySeq (fun n ↦ u (n + k)) ↔ CauchySeq u := by
+  constructor <;> intro h
+  · rw [cauchySeq_iff] at h ⊢
+    intro V mV
+    obtain ⟨N, h⟩ := h V mV
+    use N + k
+    intro a ha b hb
+    convert h (a - k) (Nat.le_sub_of_add_le ha) (b - k) (Nat.le_sub_of_add_le hb) <;> omega
+  · exact h.comp_tendsto (tendsto_add_atTop_nat k)
+
 theorem Filter.HasBasis.cauchySeq_iff {γ} [Nonempty β] [SemilatticeSup β] {u : β → α} {p : γ → Prop}
     {s : γ → Set (α × α)} (h : (𝓤 α).HasBasis p s) :
     CauchySeq u ↔ ∀ i, p i → ∃ N, ∀ m, N ≤ m → ∀ n, N ≤ n → (u m, u n) ∈ s i := by
@@ -477,14 +490,14 @@ theorem cauchySeq_tendsto_of_isComplete [Preorder β] {K : Set α} (h₁ : IsCom
     ⟨univ, univ_mem, by rwa [image_univ, range_subset_iff]⟩
 #align cauchy_seq_tendsto_of_is_complete cauchySeq_tendsto_of_isComplete
 
-theorem Cauchy.le_nhds_lim [CompleteSpace α] [Nonempty α] {f : Filter α} (hf : Cauchy f) :
-    f ≤ 𝓝 (lim f) :=
+theorem Cauchy.le_nhds_lim [CompleteSpace α] {f : Filter α} (hf : Cauchy f) :
+    haveI := hf.1.nonempty; f ≤ 𝓝 (lim f) :=
   _root_.le_nhds_lim (CompleteSpace.complete hf)
 set_option linter.uppercaseLean3 false in
 #align cauchy.le_nhds_Lim Cauchy.le_nhds_lim
 
-theorem CauchySeq.tendsto_limUnder [Preorder β] [CompleteSpace α] [Nonempty α] {u : β → α}
-    (h : CauchySeq u) : Tendsto u atTop (𝓝 <| limUnder atTop u) :=
+theorem CauchySeq.tendsto_limUnder [Preorder β] [CompleteSpace α] {u : β → α} (h : CauchySeq u) :
+    haveI := h.1.nonempty; Tendsto u atTop (𝓝 <| limUnder atTop u) :=
   h.le_nhds_lim
 #align cauchy_seq.tendsto_lim CauchySeq.tendsto_limUnder
 
@@ -685,7 +698,7 @@ noncomputable section
 /-- An auxiliary sequence of sets approximating a Cauchy filter. -/
 def setSeqAux (n : ℕ) : { s : Set α // s ∈ f ∧ s ×ˢ s ⊆ U n } :=
   -- Porting note: changed `∃ _ : s ∈ f, ..` to `s ∈ f ∧ ..`
-  indefiniteDescription _ <| (cauchy_iff.1 hf).2 (U n) (U_mem n)
+  Classical.indefiniteDescription _ <| (cauchy_iff.1 hf).2 (U n) (U_mem n)
 #align sequentially_complete.set_seq_aux SequentiallyComplete.setSeqAux
 
 /-- Given a Cauchy filter `f` and a sequence `U` of entourages, `set_seq` provides
@@ -717,11 +730,11 @@ theorem setSeq_prod_subset {N m n} (hm : N ≤ m) (hn : N ≤ n) :
 sequence of sets `setSeq n ∈ f` with diameters controlled by a given sequence
 of entourages. -/
 def seq (n : ℕ) : α :=
-  choose <| hf.1.nonempty_of_mem (setSeq_mem hf U_mem n)
+  (hf.1.nonempty_of_mem (setSeq_mem hf U_mem n)).choose
 #align sequentially_complete.seq SequentiallyComplete.seq
 
 theorem seq_mem (n : ℕ) : seq hf U_mem n ∈ setSeq hf U_mem n :=
-  choose_spec <| hf.1.nonempty_of_mem (setSeq_mem hf U_mem n)
+  (hf.1.nonempty_of_mem (setSeq_mem hf U_mem n)).choose_spec
 #align sequentially_complete.seq_mem SequentiallyComplete.seq_mem
 
 theorem seq_pair_mem ⦃N m n : ℕ⦄ (hm : N ≤ m) (hn : N ≤ n) :
@@ -782,7 +795,7 @@ theorem complete_of_cauchySeq_tendsto (H' : ∀ u : ℕ → α, CauchySeq u → 
 
 variable (α)
 
--- porting note: todo: move to `Topology.UniformSpace.Basic`
+-- Porting note (#11215): TODO: move to `Topology.UniformSpace.Basic`
 instance (priority := 100) firstCountableTopology : FirstCountableTopology α :=
   ⟨fun a => by rw [nhds_eq_comap_uniformity]; infer_instance⟩
 #align uniform_space.first_countable_topology UniformSpace.firstCountableTopology

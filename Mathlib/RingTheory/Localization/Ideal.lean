@@ -23,7 +23,6 @@ namespace IsLocalization
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
-
 variable [Algebra R S] [IsLocalization M S]
 
 /-- Explicit characterization of the ideal given by `Ideal.map (algebraMap R S) I`.
@@ -164,7 +163,6 @@ end CommSemiring
 section CommRing
 
 variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
-
 variable [Algebra R S] [IsLocalization M S]
 
 /-- `quotientMap` applied to maximal ideals of a localization is `surjective`.
@@ -201,7 +199,7 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
               (Ideal.Quotient.eq_zero_iff_mem.2
                 (Ideal.mem_comap.2 (Ideal.Quotient.eq_zero_iff_mem.1 hn))))
           (_root_.trans hn ?_))
-    -- Porting note: was `rw`, but this took extremely long.
+    -- Porting note (#10691): was `rw`, but this took extremely long.
     refine Eq.trans ?_ (RingHom.map_mul (Ideal.Quotient.mk I) (algebraMap R S m) (mk' S 1 ⟨m, hm⟩))
     rw [← mk'_eq_mul_mk'_one, mk'_self, RingHom.map_one]
 #align is_localization.surjective_quotient_map_of_maximal_of_localization IsLocalization.surjective_quotientMap_of_maximal_of_localization

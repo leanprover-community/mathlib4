@@ -327,7 +327,8 @@ theorem tsub_add_cancel_iff_le : b - a + a = b ↔ a ≤ b := by
   exact add_tsub_cancel_iff_le
 #align tsub_add_cancel_iff_le tsub_add_cancel_iff_le
 
-@[simp]
+-- This was previously a `@[simp]` lemma, but it is not necessarily a good idea, e.g. in
+-- `example (h : n - m = 0) : a + (n - m) = a := by simp_all`
 theorem tsub_eq_zero_iff_le : a - b = 0 ↔ a ≤ b := by
   rw [← nonpos_iff_eq_zero, tsub_le_iff_left, add_zero]
 #align tsub_eq_zero_iff_le tsub_eq_zero_iff_le
@@ -354,7 +355,7 @@ theorem tsub_self_add (a b : α) : a - (a + b) = 0 :=
 #align tsub_self_add tsub_self_add
 
 theorem tsub_pos_iff_not_le : 0 < a - b ↔ ¬a ≤ b := by
-  rw [pos_iff_ne_zero, Ne.def, tsub_eq_zero_iff_le]
+  rw [pos_iff_ne_zero, Ne, tsub_eq_zero_iff_le]
 #align tsub_pos_iff_not_le tsub_pos_iff_not_le
 
 theorem tsub_pos_of_lt (h : a < b) : 0 < b - a :=

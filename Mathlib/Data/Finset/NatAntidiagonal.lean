@@ -99,10 +99,10 @@ theorem antidiagonal_succ_succ' {n : ℕ} :
 #align finset.nat.antidiagonal_succ_succ' Finset.Nat.antidiagonal_succ_succ'
 
 theorem antidiagonal.fst_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.1 < n + 1 :=
-  Nat.lt_succ_of_le $ antidiagonal.fst_le hlk
+  Nat.lt_succ_of_le <| antidiagonal.fst_le hlk
 
 theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.2 < n + 1 :=
-  Nat.lt_succ_of_le $ antidiagonal.snd_le hlk
+  Nat.lt_succ_of_le <| antidiagonal.snd_le hlk
 
 @[simp] lemma antidiagonal_filter_snd_le_of_le {n k : ℕ} (h : k ≤ n) :
     (antidiagonal n).filter (fun a ↦ a.snd ≤ k) = (antidiagonal k).map

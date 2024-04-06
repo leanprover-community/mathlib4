@@ -32,26 +32,20 @@ derivative, chain rule
 
 universe u v w
 
-open Classical Topology BigOperators Filter ENNReal
+open scoped Classical
+open Topology BigOperators Filter ENNReal
 
 open Filter Asymptotics Set
 
 open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {f f₀ f₁ g : 𝕜 → F}
-
 variable {f' f₀' f₁' g' : F}
-
 variable {x : 𝕜}
-
 variable {s t : Set 𝕜}
-
 variable {L L₁ L₂ : Filter 𝕜}
 
 section Composition
@@ -232,7 +226,6 @@ section CompositionVector
 open ContinuousLinearMap
 
 variable {l : F → E} {l' : F →L[𝕜] E}
-
 variable (x)
 
 /-- The composition `l ∘ f` where `l : F → E` and `f : 𝕜 → F`, has a derivative within a set

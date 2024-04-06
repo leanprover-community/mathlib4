@@ -35,10 +35,10 @@ These actions are available in the `Pointwise` locale.
 
 For an `R`-module `M`, The action of a subset of `R` acting on a submodule of `M` introduced in
 section `set_acting_on_submodules` does not have a counterpart in
-`GroupTheory/Submonoid/Pointwise.lean`.
+`Mathlib/GroupTheory/Submonoid/Pointwise.lean`.
 
 Other than section `set_acting_on_submodules`, most of the lemmas in this file are direct copies of
-lemmas from `GroupTheory/Submonoid/Pointwise.lean`.
+lemmas from `Mathlib/GroupTheory/Submonoid/Pointwise.lean`.
 -/
 
 
@@ -164,14 +164,18 @@ end Neg
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
-instance pointwiseAddCommMonoid : AddCommMonoid (Submodule R M)
-    where
-  add := (· ⊔ ·)
-  add_assoc _ _ _ := sup_assoc
+instance pointwiseZero : Zero (Submodule R M) where
   zero := ⊥
-  zero_add _ := bot_sup_eq
-  add_zero _ := sup_bot_eq
-  add_comm _ _ := sup_comm
+
+instance pointwiseAdd : Add (Submodule R M) where
+  add := (· ⊔ ·)
+
+instance pointwiseAddCommMonoid : AddCommMonoid (Submodule R M) where
+  add_assoc := sup_assoc
+  zero_add := bot_sup_eq
+  add_zero := sup_bot_eq
+  add_comm := sup_comm
+  nsmul := nsmulRec
 #align submodule.pointwise_add_comm_monoid Submodule.pointwiseAddCommMonoid
 
 @[simp]
@@ -327,7 +331,6 @@ then this action actually gives a module structure on submodules of `M` over sub
 section set_acting_on_submodules
 
 variable {S : Type*} [Monoid S]
-
 variable [AddCommMonoid M] [Module R M] [DistribMulAction S M]
 
 /--
@@ -447,7 +450,7 @@ lemma set_smul_eq_map [SMulCommClass R R N] :
         exact fun p hp ↦ hp hr hn
       · aesop
 
-lemma mem_set_smul(x : M) [SMulCommClass R R N] :
+lemma mem_set_smul (x : M) [SMulCommClass R R N] :
     x ∈ sR • N ↔ ∃ (c : R →₀ N), (c.support : Set R) ⊆ sR ∧ x = c.sum fun r m ↦ r • m := by
   fconstructor
   · intros h
@@ -508,14 +511,13 @@ protected def pointwiseSetMulAction [SMulCommClass R R M] :
       fun h => ⟨m, h, (one_smul _ _).symm⟩⟩
   mul_smul s t x := le_antisymm
     (set_smul_le _ _ _ <| by rintro _ _ ⟨_, _, _, _, rfl⟩ _; rw [mul_smul]; aesop)
-    (set_smul_le _ _ _ <| by
-      rintro r m hr hm
+    (set_smul_le _ _ _ fun r m hr hm ↦ by
       have : SMulCommClass R R x := ⟨fun r s m => Subtype.ext <| smul_comm _ _ _⟩
       obtain ⟨c, hc1, rfl⟩ := mem_set_smul _ _ _ |>.mp hm
       simp only [Finsupp.sum, AddSubmonoid.coe_finset_sum, coe_toAddSubmonoid, SetLike.val_smul,
-        Finset.smul_sum]
-      exact Submodule.sum_mem _ fun r' hr' ↦ mul_smul r r' (c r' : M) ▸
-        mem_set_smul_of_mem_mem (mem1 := ⟨r, r', hr, hc1 hr', rfl⟩) (mem2 := (c _).2))
+        Finset.smul_sum, smul_smul]
+      exact Submodule.sum_mem _ fun r' hr' ↦
+        mem_set_smul_of_mem_mem (Set.mul_mem_mul hr (hc1 hr')) (c _).2)
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMulAction
 

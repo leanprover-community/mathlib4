@@ -3,11 +3,8 @@ Copyright (c) 2021 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 -/
-import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Field.Opposite
-import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Order.Archimedean
-import Mathlib.Data.Int.Parity
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Subgroup.ZPowers
 import Mathlib.GroupTheory.Submonoid.Membership
@@ -230,7 +227,7 @@ theorem Periodic.nat_mul_sub_eq [Ring α] (h : Periodic f c) (n : ℕ) : f (n * 
 
 protected theorem Periodic.zsmul [AddGroup α] (h : Periodic f c) (n : ℤ) : Periodic f (n • c) := by
   cases' n with n n
-  · simpa only [Int.ofNat_eq_coe, coe_nat_zsmul] using h.nsmul n
+  · simpa only [Int.ofNat_eq_coe, natCast_zsmul] using h.nsmul n
   · simpa only [negSucc_zsmul] using (h.nsmul (n + 1)).neg
 #align function.periodic.zsmul Function.Periodic.zsmul
 
@@ -351,6 +348,11 @@ theorem Periodic.lift_coe [AddGroup α] (h : Periodic f c) (a : α) :
     h.lift (a : α ⧸ AddSubgroup.zmultiples c) = f a :=
   rfl
 #align function.periodic.lift_coe Function.Periodic.lift_coe
+
+/-- A periodic function `f : R → X` on a semiring (or, more generally, `AddZeroClass`)
+of non-zero period is not injective. -/
+lemma Periodic.not_injective {R X : Type*} [AddZeroClass R] {f : R → X} {c : R}
+    (hf : Periodic f c) (hc : c ≠ 0) : ¬ Injective f := fun h ↦ hc <| h hf.eq
 
 /-! ### Antiperiodicity -/
 

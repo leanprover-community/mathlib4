@@ -118,8 +118,8 @@ section BPosAndNeOne
 variable (b_pos : 0 < b) (b_ne_one : b ≠ 1)
 
 private theorem log_b_ne_zero : log b ≠ 0 := by
-  have b_ne_zero : b ≠ 0; linarith
-  have b_ne_minus_one : b ≠ -1; linarith
+  have b_ne_zero : b ≠ 0 := by linarith
+  have b_ne_minus_one : b ≠ -1 := by linarith
   simp [b_ne_one, b_ne_zero, b_ne_minus_one]
 
 @[simp]
@@ -132,7 +132,7 @@ theorem rpow_logb_eq_abs (hx : x ≠ 0) : b ^ logb b x = |x| := by
   apply log_injOn_pos
   simp only [Set.mem_Ioi]
   apply rpow_pos_of_pos b_pos
-  simp only [abs_pos, mem_Ioi, Ne.def, hx, not_false_iff]
+  simp only [abs_pos, mem_Ioi, Ne, hx, not_false_iff]
   rw [log_rpow b_pos, logb, log_abs]
   field_simp [log_b_ne_zero b_pos b_ne_one]
 #align real.rpow_logb_eq_abs Real.rpow_logb_eq_abs
@@ -414,7 +414,7 @@ theorem ceil_logb_nat_cast {b : ℕ} {r : ℝ} (hb : 1 < b) (hr : 0 ≤ r) :
   have hb1' : 1 < (b : ℝ) := Nat.one_lt_cast.mpr hb
   apply le_antisymm
   · rw [Int.ceil_le, logb_le_iff_le_rpow hb1' hr, rpow_int_cast]
-    refine' Int.self_le_zpow_clog hb r
+    exact Int.self_le_zpow_clog hb r
   · rw [← Int.le_zpow_iff_clog_le hb hr, ← rpow_int_cast b]
     refine' (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr).symm.trans_le _
     exact rpow_le_rpow_of_exponent_le hb1'.le (Int.le_ceil _)

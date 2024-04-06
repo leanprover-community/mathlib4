@@ -87,7 +87,7 @@ namespace Pretriangulated
 
 variable [∀ n : ℤ, Functor.Additive (CategoryTheory.shiftFunctor C n)] [hC : Pretriangulated C]
 
--- porting note: increased the priority so that we can write `T ∈ distTriang C`, and
+-- Porting note: increased the priority so that we can write `T ∈ distTriang C`, and
 -- not just `T ∈ (distTriang C)`
 /-- distinguished triangles in a pretriangulated category -/
 notation:60 "distTriang " C => @distinguishedTriangles C _ _ _ _ _ _
@@ -446,7 +446,7 @@ lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
     obtain ⟨x₁, hx₁⟩ : ∃ (x₁ : A ⟶ T.obj₁), x₁ ≫ φ.hom₁ = y₁ := ⟨y₁ ≫ inv φ.hom₁, by simp⟩
     refine' ⟨x₂ + x₁ ≫ T.mor₁, _⟩
     dsimp
-    rw [add_comp, assoc, φ.comm₁, reassoc_of% hx₁, ← hy₁, add_sub_cancel'_right]
+    rw [add_comp, assoc, φ.comm₁, reassoc_of% hx₁, ← hy₁, add_sub_cancel]
 
 lemma isIso₃_of_isIso₁₂ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₁ : IsIso φ.hom₁) (h₂ : IsIso φ.hom₂) : IsIso φ.hom₃ :=
@@ -469,7 +469,7 @@ def binaryBiproductData (T : Triangle C) (hT : T ∈ distTriang C) (hT₀ : T.mo
     (total : fst ≫ T.mor₁ + T.mor₂ ≫ inr = 𝟙 T.obj₂) :
     BinaryBiproductData T.obj₁ T.obj₃ := by
   have : Mono T.mor₁ := T.mono₁ hT hT₀
-  have eq : fst ≫ T.mor₁ = 𝟙 T.obj₂ - T.mor₂ ≫ inr := by rw [← total, add_sub_cancel]
+  have eq : fst ≫ T.mor₁ = 𝟙 T.obj₂ - T.mor₂ ≫ inr := by rw [← total, add_sub_cancel_right]
   exact
     { bicone :=
       { pt := T.obj₂
@@ -512,10 +512,10 @@ lemma exists_iso_binaryBiproduct_of_distTriang (T : Triangle C) (hT : T ∈ dist
   obtain ⟨fst, hfst⟩ := T.coyoneda_exact₂ hT (𝟙 T.obj₂ - T.mor₂ ≫ section_ T.mor₂) (by simp)
   let d := binaryBiproductData _ hT zero (section_ T.mor₂) (by simp) fst
     (by simp only [← hfst, sub_add_cancel])
-  refine' ⟨biprod.uniqueUpToIso _ _ d.isBilimit, ⟨_, by simp⟩⟩
+  refine' ⟨biprod.uniqueUpToIso _ _ d.isBilimit, ⟨_, by simp [d]⟩⟩
   ext
-  · simpa using d.bicone.inl_fst
-  · simpa using d.bicone.inl_snd
+  · simpa [d] using d.bicone.inl_fst
+  · simpa [d] using d.bicone.inl_snd
 
 lemma binaryBiproductTriangle_distinguished (X₁ X₂ : C) :
     binaryBiproductTriangle X₁ X₂ ∈ distTriang C := by
@@ -561,7 +561,7 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
   let T' := Triangle.mk f₁ f₂ f₃
   change T' ∈ distTriang C at hT'
   let φ : ∀ j, T' ⟶ T j := fun j => completeDistinguishedTriangleMorphism _ _
-    hT' (hT j) (Pi.π _ j) (Pi.π _ j) (by simp)
+    hT' (hT j) (Pi.π _ j) (Pi.π _ j) (by simp [f₁, T'])
   let φ' := productTriangle.lift _ φ
   have h₁ : φ'.hom₁ = 𝟙 _ := by aesop_cat
   have h₂ : φ'.hom₂ = 𝟙 _ := by aesop_cat
@@ -590,7 +590,7 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
     have hg'' := fun j => (T j).coyoneda_exact₂ (hT j) _ (hg' j)
     let α := fun j => (hg'' j).choose
     have hα : ∀ j, _ = α j ≫ _ := fun j => (hg'' j).choose_spec
-    have hg''' : g = Pi.lift α ≫ T'.mor₁ := by dsimp; ext j; rw [hα]; simp
+    have hg''' : g = Pi.lift α ≫ T'.mor₁ := by dsimp [f₁, T']; ext j; rw [hα]; simp
     rw [hg, hg''', assoc, comp_distTriang_mor_zero₁₂ _ hT', comp_zero]
   · intro a
     obtain ⟨a', ha'⟩ : ∃ (a' : A ⟶ Z), a' ≫ T'.mor₃ = a ≫ (productTriangle T).mor₃ := by
@@ -612,8 +612,35 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
     have hb' : a - a' ≫ φ'.hom₃ = Pi.lift b ≫ (productTriangle T).mor₂ :=
       Limits.Pi.hom_ext _ _ (fun j => by rw [hb]; simp)
     have : (a' + (by exact Pi.lift b) ≫ T'.mor₂) ≫ φ'.hom₃ = a := by
-      rw [add_comp, assoc, φ'.comm₂, h₂, id_comp, ← hb', add_sub_cancel'_right]
+      rw [add_comp, assoc, φ'.comm₂, h₂, id_comp, ← hb', add_sub_cancel]
     exact ⟨_, this⟩
+
+lemma exists_iso_of_arrow_iso (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)
+    (hT₂ : T₂ ∈ distTriang C) (e : Arrow.mk T₁.mor₁ ≅ Arrow.mk T₂.mor₁) :
+    ∃ (e' : T₁ ≅ T₂), e'.hom.hom₁ = e.hom.left ∧ e'.hom.hom₂ = e.hom.right := by
+  let φ := completeDistinguishedTriangleMorphism T₁ T₂ hT₁ hT₂ e.hom.left e.hom.right e.hom.w.symm
+  have : IsIso φ.hom₁ := by dsimp [φ]; infer_instance
+  have : IsIso φ.hom₂ := by dsimp [φ]; infer_instance
+  have : IsIso φ.hom₃ := isIso₃_of_isIso₁₂ φ hT₁ hT₂ inferInstance inferInstance
+  have : IsIso φ := by
+    apply Triangle.isIso_of_isIsos
+    all_goals infer_instance
+  exact ⟨asIso φ, by simp [φ], by simp [φ]⟩
+
+/-- A choice of isomorphism `T₁ ≅ T₂` between two distinguished triangles
+when we are given two isomorphisms `e₁ : T₁.obj₁ ≅ T₂.obj₁` and `e₂ : T₁.obj₂ ≅ T₂.obj₂`. -/
+@[simps! hom_hom₁ hom_hom₂ inv_hom₁ inv_hom₂]
+def isoTriangleOfIso₁₂ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)
+    (hT₂ : T₂ ∈ distTriang C) (e₁ : T₁.obj₁ ≅ T₂.obj₁) (e₂ : T₁.obj₂ ≅ T₂.obj₂)
+    (comm : T₁.mor₁ ≫ e₂.hom = e₁.hom ≫ T₂.mor₁) : T₁ ≅ T₂ := by
+  have h := exists_iso_of_arrow_iso T₁ T₂ hT₁ hT₂ (Arrow.isoMk e₁ e₂ comm.symm)
+  exact Triangle.isoMk _ _ e₁ e₂ (Triangle.π₃.mapIso h.choose) comm (by
+    have eq := h.choose_spec.2
+    dsimp at eq ⊢
+    conv_rhs => rw [← eq, ← TriangleMorphism.comm₂]) (by
+    have eq := h.choose_spec.1
+    dsimp at eq ⊢
+    conv_lhs => rw [← eq, TriangleMorphism.comm₃])
 
 end Pretriangulated
 

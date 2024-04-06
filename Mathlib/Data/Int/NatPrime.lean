@@ -16,7 +16,7 @@ open Nat
 
 namespace Int
 
-theorem not_prime_of_int_mul {a b : ℤ} {c : ℕ} (ha : 1 < a.natAbs) (hb : 1 < b.natAbs)
+theorem not_prime_of_int_mul {a b : ℤ} {c : ℕ} (ha : a.natAbs ≠ 1) (hb : b.natAbs ≠ 1)
     (hc : a * b = (c : ℤ)) : ¬Nat.Prime c :=
   not_prime_mul' (natAbs_mul_natAbs_eq hc) ha hb
 #align int.not_prime_of_int_mul Int.not_prime_of_int_mul

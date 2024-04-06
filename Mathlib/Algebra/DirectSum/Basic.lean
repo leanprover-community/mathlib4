@@ -23,15 +23,16 @@ This notation is in the `DirectSum` locale, accessible after `open DirectSum`.
 * https://en.wikipedia.org/wiki/Direct_sum
 -/
 
-open BigOperators
+open Function
+open scoped BigOperators
 
 universe u v w u₁
 
 variable (ι : Type v) [dec_ι : DecidableEq ι] (β : ι → Type w)
 
-/-- `DirectSum β` is the direct sum of a family of additive commutative monoids `β i`.
+/-- `DirectSum ι β` is the direct sum of a family of additive commutative monoids `β i`.
 
-Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum β`. -/
+Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum ι β`. -/
 def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
   -- Porting note: Failed to synthesize
   -- Π₀ i, β i deriving AddCommMonoid, Inhabited
@@ -39,16 +40,16 @@ def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
   Π₀ i, β i
 #align direct_sum DirectSum
 
--- Porting note: Added inhabited instance manually
+-- Porting note (#10754): Added inhabited instance manually
 instance [∀ i, AddCommMonoid (β i)] : Inhabited (DirectSum ι β) :=
   inferInstanceAs (Inhabited (Π₀ i, β i))
 
--- Porting note: Added addCommMonoid instance manually
+-- Porting note (#10754): Added addCommMonoid instance manually
 instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (DirectSum ι β) :=
   inferInstanceAs (AddCommMonoid (Π₀ i, β i))
 
-instance [∀ i, AddCommMonoid (β i)] : FunLike (DirectSum ι β) _ fun i : ι => β i :=
-  inferInstanceAs (FunLike (Π₀ i, β i) _ _)
+instance [∀ i, AddCommMonoid (β i)] : DFunLike (DirectSum ι β) _ fun i : ι => β i :=
+  inferInstanceAs (DFunLike (Π₀ i, β i) _ _)
 
 instance [∀ i, AddCommMonoid (β i)] : CoeFun (DirectSum ι β) fun _ => ∀ i : ι, β i :=
   inferInstanceAs (CoeFun (Π₀ i, β i) fun _ => ∀ i : ι, β i)
@@ -102,9 +103,6 @@ theorem add_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ + g₂) i = g₁ i 
 #align direct_sum.add_apply DirectSum.add_apply
 
 variable (β)
-
--- Porting note: commented out
--- include dec_ι
 
 /-- `mk β s x` is the element of `⨁ i, β i` that is zero outside `s`
 and has coefficient `x i` for `i` in `s`. -/
@@ -183,7 +181,7 @@ See note [partially-applied ext lemmas]. -/
 @[ext high]
 theorem addHom_ext' {γ : Type*} [AddMonoid γ] ⦃f g : (⨁ i, β i) →+ γ⦄
     (H : ∀ i : ι, f.comp (of _ i) = g.comp (of _ i)) : f = g :=
-  addHom_ext fun i => FunLike.congr_fun <| H i
+  addHom_ext fun i => DFunLike.congr_fun <| H i
 #align direct_sum.add_hom_ext' DirectSum.addHom_ext'
 
 variable {γ : Type u₁} [AddCommMonoid γ]
@@ -212,6 +210,12 @@ theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.c
   apply DFinsupp.addHom_ext'
   simp [toAddMonoid, of]
 #align direct_sum.to_add_monoid.unique DirectSum.toAddMonoid.unique
+
+lemma toAddMonoid_injective : Injective (toAddMonoid : (∀ i, β i →+ γ) → (⨁ i, β i) →+ γ) :=
+  DFinsupp.liftAddHom.injective
+
+@[simp] lemma toAddMonoid_inj {f g : ∀ i, β i →+ γ} : toAddMonoid f = toAddMonoid g ↔ f = g :=
+  toAddMonoid_injective.eq_iff
 
 end ToAddMonoid
 
@@ -248,9 +252,6 @@ def setToSet (S T : Set ι) (H : S ⊆ T) : (⨁ i : S, β i) →+ ⨁ i : T, β
 #align direct_sum.set_to_set DirectSum.setToSet
 
 variable {β}
-
--- Porting note: commented out
--- omit dec_ι
 
 instance unique [∀ i, Subsingleton (β i)] : Unique (⨁ i, β i) :=
   DFinsupp.unique
@@ -298,11 +299,8 @@ section Option
 
 variable {α : Option ι → Type w} [∀ i, AddCommMonoid (α i)]
 
--- Porting note: commented out
--- include dec_ι
-
 /-- Isomorphism obtained by separating the term of index `none` of a direct sum over `Option ι`.-/
-@[simps]
+@[simps!]
 noncomputable def addEquivProdDirectSum : (⨁ i, α i) ≃+ α none × ⨁ i, α (some i) :=
   { DFinsupp.equivProdDFinsupp with map_add' := DFinsupp.equivProdDFinsupp_add }
 #align direct_sum.add_equiv_prod_direct_sum DirectSum.addEquivProdDirectSum
@@ -380,7 +378,7 @@ theorem coe_of_apply {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S
 
 For the alternate statement in terms of independence and spanning, see
 `DirectSum.subgroup_isInternal_iff_independent_and_supr_eq_top` and
-`DirectSum.isInternalSubmodule_iff_independent_and_supr_eq_top`. -/
+`DirectSum.isInternal_submodule_iff_independent_and_iSup_eq_top`. -/
 def IsInternal {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S) : Prop :=
   Function.Bijective (DirectSum.coeAddMonoidHom A)

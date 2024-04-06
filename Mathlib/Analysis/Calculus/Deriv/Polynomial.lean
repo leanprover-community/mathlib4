@@ -39,19 +39,12 @@ open Filter Asymptotics Set
 open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {f f₀ f₁ g : 𝕜 → F}
-
 variable {f' f₀' f₁' g' : F}
-
 variable {x : 𝕜}
-
 variable {s t : Set 𝕜}
-
 variable {L L₁ L₂ : Filter 𝕜}
 
 namespace Polynomial
@@ -60,15 +53,14 @@ namespace Polynomial
 
 
 variable {R : Type*} [CommSemiring R] [Algebra R 𝕜]
-
 variable (p : 𝕜[X]) (q : R[X])
 
 /-- The derivative (in the analysis sense) of a polynomial `p` is given by `p.derivative`. -/
 protected theorem hasStrictDerivAt (x : 𝕜) :
     HasStrictDerivAt (fun x => p.eval x) (p.derivative.eval x) x := by
-  induction p using Polynomial.induction_on'
-  case h_add p q hp hq => simpa using hp.add hq
-  case h_monomial n a => simpa [mul_assoc] using (hasStrictDerivAt_pow n x).const_mul a
+  induction p using Polynomial.induction_on' with
+  | h_add p q hp hq => simpa using hp.add hq
+  | h_monomial n a => simpa [mul_assoc] using (hasStrictDerivAt_pow n x).const_mul a
 #align polynomial.has_strict_deriv_at Polynomial.hasStrictDerivAt
 
 protected theorem hasStrictDerivAt_aeval (x : 𝕜) :
@@ -195,4 +187,3 @@ protected theorem fderivWithin_aeval (hxs : UniqueDiffWithinAt 𝕜 s x) :
 #align polynomial.fderiv_within_aeval Polynomial.fderivWithin_aeval
 
 end Polynomial
-

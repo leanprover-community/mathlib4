@@ -45,7 +45,7 @@ Every split monomorphism is a monomorphism.
 -/
 /- Porting note: @[nolint has_nonempty_instance] -/
 /- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule -/
-@[aesop apply safe (rule_sets [CategoryTheory])]
+@[aesop apply safe (rule_sets := [CategoryTheory])]
 structure SplitMono {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/
   retraction : Y ⟶ X
@@ -75,7 +75,7 @@ Every split epimorphism is an epimorphism.
 -/
 /- Porting note: @[nolint has_nonempty_instance] -/
 /- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule -/
-@[aesop apply safe (rule_sets [CategoryTheory])]
+@[aesop apply safe (rule_sets := [CategoryTheory])]
 structure SplitEpi {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/
   section_ : Y ⟶ X

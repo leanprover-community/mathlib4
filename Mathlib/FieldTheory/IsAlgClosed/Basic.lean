@@ -34,6 +34,13 @@ polynomial in `k` splits.
 
 algebraic closure, algebraically closed
 
+## TODO
+
+- Prove that if `K / k` is algebraic, and any monic irreducible polynomial over `k` has a root
+  in `K`, then `K` is algebraically closed (in fact an algebraic closure of `k`).
+
+  Reference: <https://kconrad.math.uconn.edu/blurbs/galoistheory/algclosure.pdf>, Theorem 2
+
 -/
 
 
@@ -85,7 +92,7 @@ theorem exists_pow_nat_eq [IsAlgClosed k] (x : k) {n : ℕ} (hn : 0 < n) : ∃ z
     exact ne_of_gt (WithBot.coe_lt_coe.2 hn)
   obtain ⟨z, hz⟩ := exists_root (X ^ n - C x) this
   · use z
-    simp only [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def] at hz
+    simp only [eval_C, eval_X, eval_pow, eval_sub, IsRoot.definition] at hz
     exact sub_eq_zero.1 hz
 #align is_alg_closed.exists_pow_nat_eq IsAlgClosed.exists_pow_nat_eq
 
@@ -184,6 +191,15 @@ theorem algebraMap_surjective_of_isAlgebraic {k K : Type*} [Field k] [Ring K] [I
 
 end IsAlgClosed
 
+/-- If `k` is algebraically closed, `K / k` is a field extension, `L / k` is an intermediate field
+which is algebraic, then `L` is equal to `k`. A corollary of
+`IsAlgClosed.algebraMap_surjective_of_isAlgebraic`. -/
+theorem IntermediateField.eq_bot_of_isAlgClosed_of_isAlgebraic {k K : Type*} [Field k] [Field K]
+    [IsAlgClosed k] [Algebra k K] (L : IntermediateField k K) (hf : Algebra.IsAlgebraic k L) :
+    L = ⊥ := bot_unique fun x hx ↦ by
+  obtain ⟨y, hy⟩ := IsAlgClosed.algebraMap_surjective_of_isAlgebraic hf ⟨x, hx⟩
+  exact ⟨y, congr_arg (algebraMap L K) hy⟩
+
 /-- Typeclass for an extension being an algebraic closure. -/
 class IsAlgClosure (R : Type u) (K : Type v) [CommRing R] [Field K] [Algebra R K]
     [NoZeroSMulDivisors R K] : Prop where
@@ -209,8 +225,19 @@ instance (priority := 100) IsAlgClosure.separable (R K : Type*) [Field R] [Field
 
 namespace IsAlgClosed
 
-variable (K : Type u) [Field K] (L : Type v) (M : Type w) [Field L] [Algebra K L] [Field M]
-  [Algebra K M] [IsAlgClosed M] (hL : Algebra.IsAlgebraic K L)
+variable {K : Type u} [Field K] {L : Type v} {M : Type w} [Field L] [Algebra K L] [Field M]
+  [Algebra K M] [IsAlgClosed M]
+
+/-- If E/L/K is a tower of field extensions with E/L algebraic, and if M is an algebraically
+  closed extension of K, then any embedding of L/K into M/K extends to an embedding of E/K.
+  Known as the extension lemma in https://math.stackexchange.com/a/687914. -/
+theorem surjective_comp_algebraMap_of_isAlgebraic {E : Type*}
+    [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E] (hE : Algebra.IsAlgebraic L E) :
+    Function.Surjective fun φ : E →ₐ[K] M ↦ φ.comp (IsScalarTower.toAlgHom K L E) :=
+  fun f ↦ IntermediateField.exists_algHom_of_splits'
+    (E := E) f fun s ↦ ⟨(hE s).isIntegral, IsAlgClosed.splits_codomain _⟩
+
+variable (hL : Algebra.IsAlgebraic K L) (K L M)
 
 /-- Less general version of `lift`. -/
 private noncomputable irreducible_def lift_aux : L →ₐ[K] M :=
@@ -219,7 +246,6 @@ private noncomputable irreducible_def lift_aux : L →ₐ[K] M :=
     (IntermediateField.adjoin_univ K L)
 
 variable {R : Type u} [CommRing R]
-
 variable {S : Type v} [CommRing S] [IsDomain S] [Algebra R S] [Algebra R M] [NoZeroSMulDivisors R S]
   [NoZeroSMulDivisors R M] (hS : Algebra.IsAlgebraic R S)
 
@@ -256,13 +282,17 @@ noncomputable instance (priority := 100) perfectRing (p : ℕ) [Fact p.Prime] [C
   PerfectRing.ofSurjective k p fun _ => IsAlgClosed.exists_pow_nat_eq _ <| NeZero.pos p
 #align is_alg_closed.perfect_ring IsAlgClosed.perfectRing
 
+noncomputable instance (priority := 100) perfectField [IsAlgClosed k] : PerfectField k := by
+  obtain _ | ⟨p, _, _⟩ := CharP.exists' k
+  exacts [.ofCharZero, PerfectRing.toPerfectField k p]
+
 /-- Algebraically closed fields are infinite since `Xⁿ⁺¹ - 1` is separable when `#K = n` -/
 instance (priority := 500) {K : Type*} [Field K] [IsAlgClosed K] : Infinite K := by
   apply Infinite.of_not_fintype
   intro hfin
   set n := Fintype.card K
   set f := (X : K[X]) ^ (n + 1) - 1
-  have hfsep : Separable f := separable_X_pow_sub_C 1 (by simp) one_ne_zero
+  have hfsep : Separable f := separable_X_pow_sub_C 1 (by simp [n]) one_ne_zero
   apply Nat.not_succ_le_self (Fintype.card K)
   have hroot : n.succ = Fintype.card (f.rootSet K) := by
     erw [card_rootSet_eq_natDegree hfsep (IsAlgClosed.splits_domain _), natDegree_X_pow_sub_C]
@@ -286,7 +316,7 @@ variable [Algebra R L] [NoZeroSMulDivisors R L] [IsAlgClosure R L]
 
 /-- A (random) isomorphism between two algebraic closures of `R`. -/
 noncomputable def equiv : L ≃ₐ[R] M :=
-  -- Porting note: added to replace local instance above
+  -- Porting note (#10754): added to replace local instance above
   haveI : IsAlgClosed L := IsAlgClosure.alg_closed R
   haveI : IsAlgClosed M := IsAlgClosure.alg_closed R
   AlgEquiv.ofBijective _ (IsAlgClosure.algebraic.algHom_bijective₂

@@ -146,9 +146,9 @@ instance (priority := 100) LinearLocallyFiniteOrder.isSuccArchimedean [LocallyFi
       fun n ↦ Finset.mem_Icc.mpr ⟨le_succ_iterate n i, (h_lt n).le⟩
     obtain ⟨n, m, hnm, h_eq⟩ : ∃ n m, n < m ∧ succ^[n] i = succ^[m] i := by
       let f : ℕ → Finset.Icc i j := fun n ↦ ⟨succ^[n] i, h_mem n⟩
-      obtain ⟨n, m, hnm_ne, hfnm⟩ : ∃ n m, n ≠ m ∧ f n = f m
-      exact Finite.exists_ne_map_eq_of_infinite f
-      have hnm_eq : succ^[n] i = succ^[m] i := by simpa only [Subtype.mk_eq_mk] using hfnm
+      obtain ⟨n, m, hnm_ne, hfnm⟩ : ∃ n m, n ≠ m ∧ f n = f m :=
+        Finite.exists_ne_map_eq_of_infinite f
+      have hnm_eq : succ^[n] i = succ^[m] i := by simpa only [f, Subtype.mk_eq_mk] using hfnm
       rcases le_total n m with h_le | h_le
       · exact ⟨n, m, lt_of_le_of_ne h_le hnm_ne, hnm_eq⟩
       · exact ⟨m, n, lt_of_le_of_ne h_le hnm_ne.symm, hnm_eq.symm⟩
@@ -161,8 +161,8 @@ instance (priority := 100) LinearOrder.isPredArchimedean_of_isSuccArchimedean [S
   exists_pred_iterate_of_le := by
     intro i j hij
     have h_exists := exists_succ_iterate_of_le hij
-    obtain ⟨n, hn_eq, hn_lt_ne⟩ : ∃ n, succ^[n] i = j ∧ ∀ m < n, succ^[m] i ≠ j
-    exact ⟨Nat.find h_exists, Nat.find_spec h_exists, fun m hmn ↦ Nat.find_min h_exists hmn⟩
+    obtain ⟨n, hn_eq, hn_lt_ne⟩ : ∃ n, succ^[n] i = j ∧ ∀ m < n, succ^[m] i ≠ j :=
+      ⟨Nat.find h_exists, Nat.find_spec h_exists, fun m hmn ↦ Nat.find_min h_exists hmn⟩
     refine' ⟨n, _⟩
     rw [← hn_eq]
     induction' n with n

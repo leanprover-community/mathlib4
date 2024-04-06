@@ -5,9 +5,8 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Bhavik Mehta,
 -/
 
 import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finsupp.Defs
-import Mathlib.Data.Finsupp.Interval
 import Mathlib.Algebra.Order.Sub.Defs
+import Mathlib.Order.LocallyFinite
 
 /-! # Antidiagonal with values in general types
 
@@ -48,11 +47,9 @@ def s : Multiset ℕ := {0, 0, 0}
   For `PNat`, we will recover the set of divisors of a strictly positive integer.
 -/
 
-namespace Finset
-
-open scoped BigOperators
-
 open Function
+
+namespace Finset
 
 /-- The class of additive monoids with an antidiagonal -/
 class HasAntidiagonal (A : Type*) [AddMonoid A] where

@@ -125,8 +125,8 @@ def isAlphanum (c : UInt8) : Bool :=
 
 theorem toChar_aux (n : Nat) (h : n < size) : Nat.isValidChar (UInt32.ofNat n).1 := by
   rw [UInt32.val_eq_of_lt]
-  exact Or.inl $ Nat.lt_trans h $ by decide
-  exact Nat.lt_trans h $ by decide
+  exact Or.inl <| Nat.lt_trans h <| by decide
+  exact Nat.lt_trans h <| by decide
 
 /-- The numbers from 0 to 256 are all valid UTF-8 characters, so we can embed one in the other. -/
 def toChar (n : UInt8) : Char := ⟨n.toUInt32, toChar_aux n.1 n.1.2⟩

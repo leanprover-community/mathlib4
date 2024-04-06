@@ -95,10 +95,27 @@ theorem IsIntegral.mem_range_algebraMap_of_minpoly_splits [Algebra K L] [IsScala
     x ∈ (algebraMap K L).range :=
   int.mem_range_algHom_of_minpoly_splits h (IsScalarTower.toAlgHom R K L)
 
-theorem IsIntegral.minpoly_splits_tower_top
-    [Algebra K L] [IsScalarTower R K L] [Algebra K M] [IsScalarTower R K M]
-    {x : M} (int : IsIntegral R x) (h : Splits (algebraMap R L) (minpoly R x)) :
+variable [Algebra K M] [IsScalarTower R K M] {x : M} (int : IsIntegral R x)
+
+theorem IsIntegral.minpoly_splits_tower_top' {f : K →+* L}
+    (h : Splits (f.comp <| algebraMap R K) (minpoly R x)) :
+    Splits f (minpoly K x) :=
+  splits_of_splits_of_dvd _ ((minpoly.monic int).map _).ne_zero
+    ((splits_map_iff _ _).mpr h) (minpoly.dvd_map_of_isScalarTower R _ x)
+
+theorem IsIntegral.minpoly_splits_tower_top [Algebra K L] [IsScalarTower R K L]
+    (h : Splits (algebraMap R L) (minpoly R x)) :
     Splits (algebraMap K L) (minpoly K x) := by
   rw [IsScalarTower.algebraMap_eq R K L] at h
-  exact splits_of_splits_of_dvd _ ((minpoly.monic int).map _).ne_zero
-    ((splits_map_iff _ _).mpr h) (minpoly.dvd_map_of_isScalarTower R _ x)
+  exact int.minpoly_splits_tower_top' h
+
+/-- If `K / E / F` is a ring extension tower, `L` is a subalgebra of `K / F`,
+then `[E[L] : E] ≤ [L : F]`. -/
+lemma Subalgebra.adjoin_rank_le {F : Type*} (E : Type*) {K : Type*}
+    [CommRing F] [StrongRankCondition F] [CommRing E] [StrongRankCondition E] [Ring K]
+    [SMul F E] [Algebra E K] [Algebra F K] [IsScalarTower F E K]
+    (L : Subalgebra F K) [Module.Free F L] :
+    Module.rank E (Algebra.adjoin E (L : Set K)) ≤ Module.rank F L := by
+  rw [← rank_toSubmodule, Module.Free.rank_eq_card_chooseBasisIndex F L,
+    L.adjoin_eq_span_basis E (Module.Free.chooseBasis F L)]
+  exact rank_span_le _ |>.trans Cardinal.mk_range_le

@@ -158,7 +158,7 @@ instance divInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ :=
     zpow_zero' := fun x => unop_injective <| DivInvMonoid.zpow_zero' x.unop,
     zpow_succ' := fun n x => unop_injective <| by
       simp only [Int.ofNat_eq_coe]
-      rw [unop_op, zpow_ofNat, pow_succ', unop_mul, unop_op, zpow_ofNat],
+      rw [unop_op, zpow_natCast, pow_succ', unop_mul, unop_op, zpow_natCast],
     zpow_neg' := fun z x => unop_injective <| DivInvMonoid.zpow_neg' z x.unop }
 
 @[to_additive AddOpposite.subtractionMonoid]
@@ -181,11 +181,40 @@ instance commGroup [CommGroup α] : CommGroup αᵐᵒᵖ :=
   { MulOpposite.group α, MulOpposite.commMonoid α with }
 
 variable {α}
+
+section Monoid
+variable [Monoid α]
+
+@[simp] lemma op_pow (x : α) (n : ℕ) : op (x ^ n) = op x ^ n := rfl
+#align mul_opposite.op_pow MulOpposite.op_pow
+
+@[simp] lemma unop_pow (x : αᵐᵒᵖ) (n : ℕ) : unop (x ^ n) = unop x ^ n := rfl
+#align mul_opposite.unop_pow MulOpposite.unop_pow
+
+end Monoid
+
+section DivInvMonoid
+variable [DivInvMonoid α]
+
+@[simp] lemma op_zpow (x : α) (z : ℤ) : op (x ^ z) = op x ^ z := rfl
+#align mul_opposite.op_zpow MulOpposite.op_zpow
+
+@[simp] lemma unop_zpow (x : αᵐᵒᵖ) (z : ℤ) : unop (x ^ z) = unop x ^ z := rfl
+#align mul_opposite.unop_zpow MulOpposite.unop_zpow
+
+end DivInvMonoid
+
 @[to_additive (attr := simp, norm_cast)]
 theorem op_natCast [NatCast α] (n : ℕ) : op (n : α) = n :=
   rfl
 #align mul_opposite.op_nat_cast MulOpposite.op_natCast
 #align add_opposite.op_nat_cast AddOpposite.op_natCast
+
+-- See note [no_index around OfNat.ofNat]
+@[to_additive (attr := simp)]
+theorem op_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+    op (no_index (OfNat.ofNat n : α)) = OfNat.ofNat n :=
+  rfl
 
 @[to_additive (attr := simp, norm_cast)]
 theorem op_intCast [IntCast α] (n : ℤ) : op (n : α) = n :=
@@ -198,6 +227,12 @@ theorem unop_natCast [NatCast α] (n : ℕ) : unop (n : αᵐᵒᵖ) = n :=
   rfl
 #align mul_opposite.unop_nat_cast MulOpposite.unop_natCast
 #align add_opposite.unop_nat_cast AddOpposite.unop_natCast
+
+-- See note [no_index around OfNat.ofNat]
+@[to_additive (attr := simp)]
+theorem unop_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+    unop (no_index (OfNat.ofNat n : αᵐᵒᵖ)) = OfNat.ofNat n :=
+  rfl
 
 @[to_additive (attr := simp, norm_cast)]
 theorem unop_intCast [IntCast α] (n : ℤ) : unop (n : αᵐᵒᵖ) = n :=
@@ -346,8 +381,8 @@ instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne �
 
 instance addCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne αᵃᵒᵖ :=
   { AddOpposite.addCommMonoidWithOne α, AddOpposite.addCommGroup α, AddOpposite.intCast α with
-    intCast_ofNat := λ _ ↦ congr_arg op $ Int.cast_ofNat _
-    intCast_negSucc := λ _ ↦ congr_arg op $ Int.cast_negSucc _ }
+    intCast_ofNat := fun _ ↦ congr_arg op <| Int.cast_ofNat _
+    intCast_negSucc := fun _ ↦ congr_arg op <| Int.cast_negSucc _ }
 
 variable {α}
 
@@ -672,7 +707,7 @@ theorem AddMonoidHom.mul_op_ext {α β} [AddZeroClass α] [AddZeroClass β] (f g
       f.comp (opAddEquiv : α ≃+ αᵐᵒᵖ).toAddMonoidHom =
         g.comp (opAddEquiv : α ≃+ αᵐᵒᵖ).toAddMonoidHom) :
     f = g :=
-  AddMonoidHom.ext <| MulOpposite.rec' fun x => (FunLike.congr_fun h : _) x
+  AddMonoidHom.ext <| MulOpposite.rec' fun x => (DFunLike.congr_fun h : _) x
 #align add_monoid_hom.mul_op_ext AddMonoidHom.mul_op_ext
 
 end Ext

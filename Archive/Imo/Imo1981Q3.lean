@@ -149,7 +149,7 @@ variable {K : ℕ} (HK : N < fib K + fib (K + 1)) {N}
 theorem m_n_bounds {m n : ℕ} (h1 : NatPredicate N m n) : m ≤ fib K ∧ n ≤ fib (K + 1) := by
   obtain ⟨k : ℕ, hm : m = fib k, hn : n = fib (k + 1)⟩ := h1.imp_fib m
   by_cases h2 : k < K + 1
-  · have h3 : k ≤ K := lt_succ_iff.mp h2
+  · have h3 : k ≤ K := Nat.lt_succ_iff.mp h2
     constructor
     · calc
         m = fib k := hm
@@ -207,5 +207,5 @@ theorem imo1981_q3 : IsGreatest (specifiedSet 1981) 3524578 := by
   apply this
   · decide
   · decide
-  · norm_num [ProblemPredicate_iff]; decide
+  · norm_num [problemPredicate_iff]; decide
 #align imo1981_q3 imo1981_q3

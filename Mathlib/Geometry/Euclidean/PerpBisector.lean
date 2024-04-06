@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Joseph Myers
 -/
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
+import Mathlib.Analysis.Normed.Group.AddTorsor
 
 #align_import geometry.euclidean.basic from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
 
@@ -20,12 +21,10 @@ define this subspace.
 euclidean geometry, perpendicular, perpendicular bisector, line segment bisector, equidistant
 -/
 
-set_option autoImplicit true
-
 open Set
 open scoped BigOperators RealInnerProductSpace
 
-variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]
 
 noncomputable section
@@ -108,7 +107,7 @@ theorem perpBisector_comm (p₁ p₂ : P) : perpBisector p₁ p₂ = perpBisecto
   rw [perpBisector_comm, right_mem_perpBisector, eq_comm]
 
 @[simp] theorem perpBisector_self (p : P) : perpBisector p p = ⊤ :=
-  top_unique <| fun _ ↦ by simp [mem_perpBisector_iff_inner_eq_inner]
+  top_unique fun _ ↦ by simp [mem_perpBisector_iff_inner_eq_inner]
 
 @[simp] theorem perpBisector_eq_top : perpBisector p₁ p₂ = ⊤ ↔ p₁ = p₂ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h ▸ perpBisector_self _⟩
@@ -135,7 +134,7 @@ theorem inner_vsub_vsub_of_dist_eq_of_dist_eq {c₁ c₂ p₁ p₂ : P} (hc₁ :
 
 end EuclideanGeometry
 
-variable [NormedAddCommGroup V'] [InnerProductSpace ℝ V'] [MetricSpace P']
+variable {V' P' : Type*} [NormedAddCommGroup V'] [InnerProductSpace ℝ V'] [MetricSpace P']
 variable [NormedAddTorsor V' P']
 
 theorem Isometry.preimage_perpBisector {f : P → P'} (h : Isometry f) (p₁ p₂ : P) :

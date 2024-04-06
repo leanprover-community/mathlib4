@@ -5,6 +5,8 @@ Authors: Riccardo Brasca, Johan Commelin
 -/
 import Mathlib.RingTheory.RootsOfUnity.Basic
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
+import Mathlib.FieldTheory.Finite.Basic
 
 #align_import ring_theory.roots_of_unity.minpoly from "leanprover-community/mathlib"@"7fdeecc0d03cd40f7a165e6cf00a4d2286db599f"
 
@@ -104,12 +106,10 @@ theorem minpoly_dvd_pow_mod {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n)
 
 /- Let `P` be the minimal polynomial of a root of unity `μ` and `Q` be the minimal polynomial of
 `μ ^ p`, where `p` is a prime that does not divide `n`. Then `P` divides `Q` modulo `p`. -/
-theorem minpoly_dvd_mod_p {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
+theorem minpoly_dvd_mod_p {p : ℕ} [Fact p.Prime] (hdiv : ¬p ∣ n) :
     map (Int.castRingHom (ZMod p)) (minpoly ℤ μ) ∣
       map (Int.castRingHom (ZMod p)) (minpoly ℤ (μ ^ p)) :=
-  (UniqueFactorizationMonoid.dvd_pow_iff_dvd_of_squarefree (squarefree_minpoly_mod h hdiv)
-        hprime.1.ne_zero).1
-    (minpoly_dvd_pow_mod h hdiv)
+  (squarefree_minpoly_mod h hdiv).isRadical _ _ (minpoly_dvd_pow_mod h hdiv)
 #align is_primitive_root.minpoly_dvd_mod_p IsPrimitiveRoot.minpoly_dvd_mod_p
 
 /-- If `p` is a prime that does not divide `n`,
@@ -198,7 +198,7 @@ then the minimal polynomial of a primitive `n`-th root of unity `μ`
 has `μ ^ m` as root. -/
 theorem pow_isRoot_minpoly {m : ℕ} (hcop : Nat.Coprime m n) :
     IsRoot (map (Int.castRingHom K) (minpoly ℤ μ)) (μ ^ m) := by
-  simp only [minpoly_eq_pow_coprime h hcop, IsRoot.def, eval_map]
+  simp only [minpoly_eq_pow_coprime h hcop, IsRoot.definition, eval_map]
   exact minpoly.aeval ℤ (μ ^ m)
 #align is_primitive_root.pow_is_root_minpoly IsPrimitiveRoot.pow_isRoot_minpoly
 
