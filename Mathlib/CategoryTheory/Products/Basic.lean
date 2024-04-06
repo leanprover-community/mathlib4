@@ -237,7 +237,7 @@ def prod (F : A ⥤ B) (G : C ⥤ D) : A × C ⥤ B × D where
 
 /- Because of limitations in Lean 3's handling of notations, we do not setup a notation `F × G`.
    You can use `F.prod G` as a "poor man's infix", or just write `functor.prod F G`. -/
-/-- Similar to `prod`, but both functors start from the same category `A` -/
+/-- Similar to `Prod`, but both functors start from the same category `A` -/
 @[simps]
 def prod' (F : A ⥤ B) (G : A ⥤ C) : A ⥤ B × C where
   obj a := (F.obj a, G.obj a)
