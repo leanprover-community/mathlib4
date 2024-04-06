@@ -76,3 +76,29 @@ example {p q r : ℕ} (hp : 2 ≤ p) (hpq : p ≤ q) (hqr : q ≤ r) (h : (p:ℚ
     · interval_cases r <;>
       · norm_num1 at h <;>
         · simp
+
+/-! ### ADE inequality -/
+
+/-- ADE inequality: Classification of triples `(p, q, r)` of natural numbers, such that
+`p⁻¹ + q⁻¹ + r⁻¹ > 1`. -/
+example {p q r : ℕ} (hp : 1 ≤ p) (hpq : p ≤ q) (hqr : q ≤ r) (h : (p:ℚ)⁻¹ + (q:ℚ)⁻¹ + (r:ℚ)⁻¹ > 1) :
+    p = 1 ∨ (p, q) = (2, 2)
+    ∨ (p, q, r) = (2, 3, 3) ∨ (p, q, r) = (2, 3, 4) ∨ (p, q, r) = (2, 3, 5) := by
+  have : 0 < q := by linarith only [hp, hpq]
+  have : 0 < r := by linarith only [hp, hpq, hqr]
+  have h₁ : 0 < (r:ℚ)⁻¹ := by positivity
+  have h₂ : (q:ℚ)⁻¹ ≤ (p:ℚ)⁻¹ := by gcongr
+  have h₃ : (r:ℚ)⁻¹ ≤ (q:ℚ)⁻¹ := by gcongr
+  have Hp_lower : 3⁻¹ < (p:ℚ)⁻¹ := by linarith only [h, h₂, h₃]
+  -- ** Real work starts here
+  have Hq_lower : (1 - (p:ℚ)⁻¹) / 2 < (q:ℚ)⁻¹ := by linarith only [h, h₃]
+  have Hr_lower : 1 - (p:ℚ)⁻¹ - (q:ℚ)⁻¹ < (r:ℚ)⁻¹ := by linarith only [h]
+  cleanup_nat_inv at Hp_lower
+  interval_cases p
+  · tauto
+  cleanup_nat_inv at Hq_lower
+  interval_cases q
+  · tauto
+  cleanup_nat_inv at Hr_lower
+  interval_cases r <;>
+  · tauto
