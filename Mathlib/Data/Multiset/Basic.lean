@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Order.Sub.Canonical
 import Mathlib.Data.List.Perm
+import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Set.List
 import Mathlib.Init.Quot
 import Mathlib.Order.Hom.Basic
@@ -1730,7 +1732,7 @@ theorem sub_eq_fold_erase (s t : Multiset α) : s - t = foldl erase erase_comm s
 
 @[simp]
 theorem card_sub {s t : Multiset α} (h : t ≤ s) : card (s - t) = card s - card t :=
-  (Nat.sub_eq_of_eq_add <| by rw [← card_add, tsub_add_cancel_of_le h]).symm
+  Nat.eq_sub_of_add_eq $ by rw [← card_add, tsub_add_cancel_of_le h]
 #align multiset.card_sub Multiset.card_sub
 
 /-! ### Union -/

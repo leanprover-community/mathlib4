@@ -289,7 +289,7 @@ theorem length_sublistsLen {α : Type*} :
   | _ + 1, [] => by simp
   | n + 1, a :: l => by
     rw [sublistsLen_succ_cons, length_append, length_sublistsLen (n+1) l,
-      length_map, length_sublistsLen n l, length_cons, Nat.choose_succ_succ, add_comm]
+      length_map, length_sublistsLen n l, length_cons, Nat.choose_succ_succ, Nat.add_comm]
 #align list.length_sublists_len List.length_sublistsLen
 
 theorem sublistsLen_sublist_sublists' {α : Type*} :
