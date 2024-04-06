@@ -286,6 +286,8 @@
   ["Mathlib.CategoryTheory.Functor.Basic"],
   "Mathlib.Tactic.CategoryTheory.Coherence":
   ["Mathlib.Tactic.CategoryTheory.MonoidalComp"],
+  "Mathlib.Tactic.CC.Addition":
+  ["Mathlib.Logic.Basic", "Mathlib.Tactic.CC.Lemmas"],
   "Mathlib.Tactic.Basic": ["Std"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
