@@ -55,13 +55,13 @@ def exp (z : ℂ) : ℂ :=
   CauSeq.lim (exp' z)
 #align complex.exp Complex.exp
 
-/-- The complex sine function, defined via `NormedSpace.exp` -/
+/-- The complex sine function, defined via `exp` -/
 -- Porting note (#11180): removed `@[pp_nodot]`
 def sin (z : ℂ) : ℂ :=
   (exp (-z * I) - exp (z * I)) * I / 2
 #align complex.sin Complex.sin
 
-/-- The complex cosine function, defined via `NormedSpace.exp` -/
+/-- The complex cosine function, defined via `exp` -/
 -- Porting note (#11180): removed `@[pp_nodot]`
 def cos (z : ℂ) : ℂ :=
   (exp (z * I) + exp (-z * I)) / 2
@@ -73,13 +73,13 @@ def tan (z : ℂ) : ℂ :=
   sin z / cos z
 #align complex.tan Complex.tan
 
-/-- The complex hyperbolic sine function, defined via `NormedSpace.exp` -/
+/-- The complex hyperbolic sine function, defined via `exp` -/
 -- Porting note (#11180): removed `@[pp_nodot]`
 def sinh (z : ℂ) : ℂ :=
   (exp z - exp (-z)) / 2
 #align complex.sinh Complex.sinh
 
-/-- The complex hyperbolic cosine function, defined via `NormedSpace.exp` -/
+/-- The complex hyperbolic cosine function, defined via `exp` -/
 -- Porting note (#11180): removed `@[pp_nodot]`
 def cosh (z : ℂ) : ℂ :=
   (exp z + exp (-z)) / 2
@@ -1022,7 +1022,7 @@ nonrec theorem sin_three_mul : sin (3 * x) = 3 * sin x - 4 * sin x ^ 3 := by
   rw [← ofReal_inj]; simp [sin_three_mul]
 #align real.sin_three_mul Real.sin_three_mul
 
-/-- The definition of `sinh` in terms of `NormedSpace.exp`. -/
+/-- The definition of `sinh` in terms of `exp`. -/
 nonrec theorem sinh_eq (x : ℝ) : sinh x = (exp x - exp (-x)) / 2 :=
   ofReal_injective <| by simp [Complex.sinh]
 #align real.sinh_eq Real.sinh_eq
@@ -1039,7 +1039,7 @@ nonrec theorem sinh_add : sinh (x + y) = sinh x * cosh y + cosh x * sinh y := by
   rw [← ofReal_inj]; simp [sinh_add]
 #align real.sinh_add Real.sinh_add
 
-/-- The definition of `cosh` in terms of `NormedSpace.exp`. -/
+/-- The definition of `cosh` in terms of `exp`. -/
 theorem cosh_eq (x : ℝ) : cosh x = (exp x + exp (-x)) / 2 :=
   eq_div_of_mul_eq two_ne_zero <| by
     rw [cosh, exp, exp, Complex.ofReal_neg, Complex.cosh, mul_two, ← Complex.add_re, ← mul_two,

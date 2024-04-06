@@ -103,7 +103,7 @@ protected def sgt (x y : BitVec w) : Bool := BitVec.slt y x
 protected def sge (x y : BitVec w) : Bool := BitVec.sle y x
 #align bitvec.sge BitVec.sge
 
-/-! ### Conversion to `Nat` and `int` -/
+/-! ### Conversion to `Nat` and `Int` -/
 
 #align bitvec.of_nat BitVec.ofNat
 

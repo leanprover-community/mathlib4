@@ -606,7 +606,7 @@ theorem insertNth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
 
 end InsertNth
 
--- Porting note: renamed to `Set` from `updateNth` to align with `List`
+-- Porting note: renamed to `set` from `updateNth` to align with `List`
 section ModifyNth
 
 /-- `set v n a` replaces the `n`th element of `v` with `a` -/
