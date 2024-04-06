@@ -103,6 +103,13 @@ theorem braiding_inv_apply {M N : ModuleCat.{u} R} (m : M) (n : N) :
 set_option linter.uppercaseLean3 false in
 #align Module.monoidal_category.braiding_inv_apply ModuleCat.MonoidalCategory.braiding_inv_apply
 
+@[simp]
+theorem tensor_μ_eq_tensorTensorTensorComm
+    {A B C D : ModuleCat R} :
+    tensor_μ _ (A, B) (C, D) = (TensorProduct.tensorTensorTensorComm R A B C D).toLinearMap :=
+  TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext₂ fun _ _ =>
+    TensorProduct.ext <| LinearMap.ext₂ fun _ _ => rfl
+
 end MonoidalCategory
 
 end ModuleCat

@@ -499,6 +499,14 @@ instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) :=
 theorem tensorUnit_X : (𝟙_ (Mon_ C)).X = 𝟙_ C := rfl
 
 @[simp]
+theorem tensorObj_one (M N : Mon_ C) :
+    (M ⊗ N).one = (λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one) := rfl
+
+@[simp]
+theorem tensorObj_mul (M N : Mon_ C) :
+    (M ⊗ N).mul = tensor_μ C (M.X, N.X) (M.X, N.X) ≫ (M.mul ⊗ N.mul) := rfl
+
+@[simp]
 theorem whiskerLeft_hom {X Y : Mon_ C} (f : X ⟶ Y) (Z : Mon_ C) :
     (f ▷ Z).hom = f.hom ▷ Z.X := by
   rw [← tensorHom_id]; rfl
