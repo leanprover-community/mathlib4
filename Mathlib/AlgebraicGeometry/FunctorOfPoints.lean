@@ -73,9 +73,28 @@ def homOfFunctorOfPoints {X Y : Scheme.{u}} (f : X.functorOfPoints ⟶ Y.functor
     rw [← hi, ← hj]
     simp_rw [hfst, hsnd, Category.assoc, Limits.pullback.condition]
 
+def Scheme.OpenCover.hom_ext_refinement
+    {X Y : Scheme.{u}}
+    (𝓤 : X.OpenCover) (𝓥 : Y.OpenCover)
+    (f g : X ⟶ Y)
+    (a : 𝓤 ⟶ 𝓥.pullbackCover f) (b : 𝓤 ⟶ 𝓥.pullbackCover g)
+    (h : ∀ j : 𝓤.J,
+      a.app j ≫ Limits.pullback.snd ≫ 𝓥.map _ =
+      b.app j ≫ Limits.pullback.snd ≫ 𝓥.map _ ) :
+    f = g := by
+  apply 𝓤.hom_ext
+  intro j
+  specialize h j
+  have ha := a.w j
+  have hb := b.w j
+  dsimp at ha hb
+  conv_lhs => rw [← ha, Category.assoc, Limits.pullback.condition]
+  conv_rhs => rw [← hb, Category.assoc, Limits.pullback.condition]
+  exact h
+
 instance : Full schemeToFunctor where
   preimage f := homOfFunctorOfPoints f
   witness := by
-    sorry
+    intro X Y f
 
 end AlgebraicGeometry
