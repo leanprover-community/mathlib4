@@ -53,7 +53,6 @@ open Matrix BigOperators
 variable {m n : Type*} [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m]
 variable {R : Type v} [CommRing R]
 
--- mathport name: «exprε »
 local notation "ε " σ:arg => ((sign σ : ℤ) : R)
 
 /-- `det` is an `AlternatingMap` in the rows of the matrix. -/

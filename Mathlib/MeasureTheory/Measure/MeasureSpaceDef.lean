@@ -369,16 +369,12 @@ def Measure.ae {α : Type*} {_m : MeasurableSpace α} (μ : Measure α) : Filter
     measure_mono_null hs ht
 #align measure_theory.measure.ae MeasureTheory.Measure.ae
 
--- mathport name: «expr∀ᵐ ∂ , »
 notation3 "∀ᵐ "(...)" ∂"μ", "r:(scoped p => Filter.Eventually p <| Measure.ae μ) => r
 
--- mathport name: «expr∃ᵐ ∂ , »
 notation3 "∃ᵐ "(...)" ∂"μ", "r:(scoped P => Filter.Frequently P <| Measure.ae μ) => r
 
--- mathport name: «expr =ᵐ[ ] »
 notation:50 f " =ᵐ[" μ:50 "] " g:50 => Filter.EventuallyEq (Measure.ae μ) f g
 
--- mathport name: «expr ≤ᵐ[ ] »
 notation:50 f " ≤ᵐ[" μ:50 "] " g:50 => Filter.EventuallyLE (Measure.ae μ) f g
 
 theorem mem_ae_iff {s : Set α} : s ∈ μ.ae ↔ μ sᶜ = 0 :=
@@ -668,11 +664,9 @@ add_decl_doc volume
 
 section MeasureSpace
 
--- mathport name: «expr∀ᵐ , »
 notation3 "∀ᵐ "(...)", "r:(scoped P =>
   Filter.Eventually P <| MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
 
--- mathport name: «expr∃ᵐ , »
 notation3 "∃ᵐ "(...)", "r:(scoped P =>
   Filter.Frequently P <| MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
 

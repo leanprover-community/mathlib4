@@ -1267,7 +1267,6 @@ def aleph0 : Cardinal.{u} :=
   lift #ℕ
 #align cardinal.aleph_0 Cardinal.aleph0
 
--- mathport name: cardinal.aleph_0
 @[inherit_doc]
 scoped notation "ℵ₀" => Cardinal.aleph0
 
