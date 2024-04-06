@@ -54,9 +54,9 @@ Matiyasevic's theorem, Hilbert's tenth problem
 
 open Fin2 Function Nat Sum
 
-local infixr:67 " ::ₒ " => Option.elim'
+@[inherit_doc] local infixr:67 " ::ₒ " => Option.elim'
 
-local infixr:65 " ⊗ " => Sum.elim
+@[inherit_doc] local infixr:65 " ⊗ " => Sum.elim
 
 universe u
 

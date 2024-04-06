@@ -47,7 +47,7 @@ open Topology BigOperators NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
 
-local infixr:25 " →ₛ " => SimpleFunc
+@[inherit_doc] local infixr:25 " →ₛ " => SimpleFunc
 
 variable {α β γ δ : Type*}
 

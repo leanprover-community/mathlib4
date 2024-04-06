@@ -81,7 +81,7 @@ variable {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α]
 
 namespace MeasureTheory
 
-local infixr:25 " →ₛ " => SimpleFunc
+@[inherit_doc] local infixr:25 " →ₛ " => SimpleFunc
 
 /-! ### Lower semicontinuous upper bound for nonnegative functions -/
 

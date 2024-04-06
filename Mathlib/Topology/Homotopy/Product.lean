@@ -115,7 +115,7 @@ namespace Path.Homotopic
 
 attribute [local instance] Path.Homotopic.setoid
 
-local infixl:70 " ⬝ " => Quotient.comp
+@[inherit_doc] local infixl:70 " ⬝ " => Quotient.comp
 
 section Pi
 

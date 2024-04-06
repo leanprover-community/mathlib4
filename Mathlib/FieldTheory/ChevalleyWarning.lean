@@ -50,7 +50,7 @@ open Finset FiniteField
 
 variable {K σ ι : Type*} [Fintype K] [Field K] [Fintype σ] [DecidableEq σ]
 
-local notation "q" => Fintype.card K
+@[inherit_doc] local notation "q" => Fintype.card K
 
 theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
     (h : f.totalDegree < (q - 1) * Fintype.card σ) : ∑ x, eval x f = 0 := by

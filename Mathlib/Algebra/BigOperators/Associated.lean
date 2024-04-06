@@ -19,7 +19,8 @@ and products of multisets, finsets, and finsupps.
 
 variable {α β γ δ : Type*}
 
--- the same local notation used in `Algebra.Associated`
+/-- Notation for two elements of a monoid are associated, i.e.
+if one of them is another one multiplied by a unit on the right.-/
 local infixl:50 " ~ᵤ " => Associated
 
 open BigOperators

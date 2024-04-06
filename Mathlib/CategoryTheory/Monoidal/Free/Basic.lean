@@ -76,7 +76,7 @@ inductive Hom : F C → F C → Type u
   | tensor {W X Y Z} (f : Hom W Y) (g : Hom X Z) : Hom (W.tensor X) (Y.tensor Z)
 #align category_theory.free_monoidal_category.hom CategoryTheory.FreeMonoidalCategory.Hom
 
-local infixr:10 " ⟶ᵐ " => Hom
+@[inherit_doc] local infixr:10 " ⟶ᵐ " => Hom
 
 /-- The morphisms of the free monoidal category satisfy 21 relations ensuring that the resulting
     category is in fact a category and that it is monoidal. -/

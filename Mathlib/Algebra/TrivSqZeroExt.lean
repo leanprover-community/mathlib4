@@ -66,7 +66,7 @@ def TrivSqZeroExt (R : Type u) (M : Type v) :=
   R × M
 #align triv_sq_zero_ext TrivSqZeroExt
 
-local notation "tsze" => TrivSqZeroExt
+@[inherit_doc] local notation "tsze" => TrivSqZeroExt
 
 open scoped BigOperators RightActions
 

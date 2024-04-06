@@ -54,7 +54,7 @@ noncomputable def divOf (x : k[G]) (g : G) : k[G] :=
   @Finsupp.comapDomain.addMonoidHom _ _ _ _ (g + ·) (add_right_injective g) x
 #align add_monoid_algebra.div_of AddMonoidAlgebra.divOf
 
-local infixl:70 " /ᵒᶠ " => divOf
+@[inherit_doc] local infixl:70 " /ᵒᶠ " => divOf
 
 @[simp]
 theorem divOf_apply (g : G) (x : k[G]) (g' : G) : (x /ᵒᶠ g) g' = x (g + g') :=
@@ -127,7 +127,7 @@ noncomputable def modOf (x : k[G]) (g : G) : k[G] :=
   x.filter fun g₁ => ¬∃ g₂, g₁ = g + g₂
 #align add_monoid_algebra.mod_of AddMonoidAlgebra.modOf
 
-local infixl:70 " %ᵒᶠ " => modOf
+@[inherit_doc] local infixl:70 " %ᵒᶠ " => modOf
 
 @[simp]
 theorem modOf_apply_of_not_exists_add (x : k[G]) (g : G) (g' : G)

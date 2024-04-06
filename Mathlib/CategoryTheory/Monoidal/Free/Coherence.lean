@@ -61,11 +61,11 @@ inductive NormalMonoidalObject : Type u
 
 end
 
-local notation "F" => FreeMonoidalCategory
+@[inherit_doc] local notation "F" => FreeMonoidalCategory
 
-local notation "N" => Discrete ∘ NormalMonoidalObject
+@[inherit_doc] local notation "N" => Discrete ∘ NormalMonoidalObject
 
-local infixr:10 " ⟶ᵐ " => Hom
+@[inherit_doc] local infixr:10 " ⟶ᵐ " => Hom
 
 -- Porting note: this was automatic in mathlib 3
 instance (x y : N C) : Subsingleton (x ⟶ y) := Discrete.instSubsingletonDiscreteHom _ _

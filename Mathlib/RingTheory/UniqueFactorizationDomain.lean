@@ -29,7 +29,7 @@ import Mathlib.RingTheory.Multiplicity
 
 variable {α : Type*}
 
-local infixl:50 " ~ᵤ " => Associated
+@[inherit_doc] local infixl:50 " ~ᵤ " => Associated
 
 /-- Well-foundedness of the strict version of |, which is equivalent to the descending chain
 condition on divisibility and to the ascending chain condition on

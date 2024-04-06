@@ -641,7 +641,7 @@ end
 
 -- TODO: choose two different symbols for `CircleDeg1Lift.translationNumber` and the future
 -- `circle_mono_homeo.rotation_number`, then make them `localized notation`s
-local notation "τ" => translationNumber
+@[inherit_doc] local notation "τ" => translationNumber
 
 theorem transnumAuxSeq_def : f.transnumAuxSeq = fun n : ℕ => (f ^ (2 ^ n : ℕ)) 0 / 2 ^ n :=
   rfl

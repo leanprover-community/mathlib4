@@ -67,7 +67,7 @@ variable {α β γ ι : Type*} [Countable ι]
 
 namespace MeasureTheory
 
-local infixr:25 " →ₛ " => SimpleFunc
+@[inherit_doc] local infixr:25 " →ₛ " => SimpleFunc
 
 section Definitions
 

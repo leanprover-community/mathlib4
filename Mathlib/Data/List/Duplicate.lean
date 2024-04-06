@@ -31,7 +31,7 @@ inductive Duplicate (x : α) : List α → Prop
   | cons_duplicate {y : α} {l : List α} : Duplicate x l → Duplicate x (y :: l)
 #align list.duplicate List.Duplicate
 
-local infixl:50 " ∈+ " => List.Duplicate
+@[inherit_doc] local infixl:50 " ∈+ " => List.Duplicate
 
 variable {l : List α} {x : α}
 
