@@ -1488,6 +1488,10 @@ theorem get_eq_iff {l : List α} {n : Fin l.length} {x : α} : l.get n = x ↔ l
   rw [get?_eq_some]
   simp [n.2]
 
+theorem get_eq_get? {l : List α} (n : Fin l.length) :
+    l.get n = (l.get? n).get (by simp [get?_eq_get]) := by
+  simp [get_eq_iff]
+
 @[deprecated get_eq_iff]
 theorem nthLe_eq_iff {l : List α} {n : ℕ} {x : α} {h} : l.nthLe n h = x ↔ l.get? n = some x :=
   get_eq_iff
