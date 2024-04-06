@@ -68,9 +68,6 @@ We also give specialized versions of the one-dimensional real derivative (and it
 in `Real.deriv_fourierIntegral` and `Real.iteratedDeriv_fourierIntegral`.
 -/
 
-
-lemma foo (n : ℕ) : 0 ≤ n := by exact?
-
 noncomputable section
 
 open Real Complex MeasureTheory Filter TopologicalSpace
@@ -592,7 +589,7 @@ theorem iteratedDeriv_fourierIntegral
     convert (hf 0 (zero_le _)).1 with x
     simp
   have K : Integrable (fun v ↦ 𝐞 (-⟪v, x⟫_ℝ) • fourierPowSMulRight (innerSL ℝ) f v n) := by
-    simpa [-RCLike.inner_apply] using integrable_fourierPowSMulRight (I n hn) J
+    simpa [-RCLike.inner_apply] using integrable_fourierPowSMulRight _ (I n hn) J
   rw [iteratedDeriv, iteratedFDeriv_fourierIntegral I J hn, fourierIntegral_eq,
     ContinuousMultilinearMap.integral_apply K, fourierIntegral_eq]
   congr with y
@@ -603,14 +600,20 @@ theorem iteratedDeriv_fourierIntegral
   have : y ^ n • f y = ((y ^ n : ℝ) : ℂ) • f y := rfl
   simp only [← neg_mul, this, smul_smul, mul_pow, ofReal_pow, mul_assoc]
 
-theorem fourierIntegral_iteratedDeriv {f : ℝ → E} {N : ℕ∞} {n : ℕ}
-    (hf : ContDiff ℝ N f)
+theorem fourierIntegral_iteratedDeriv {f : ℝ → E} {N : ℕ∞} (hf : ContDiff ℝ N f)
     (h'f : ∀ (n : ℕ), n ≤ N → Integrable (iteratedDeriv n f)) {n : ℕ} (hn : n ≤ N) :
     𝓕 (iteratedDeriv n f) = fun (x : ℝ) ↦ (2 * π * I * x) ^ n • (𝓕 f x) := by
   ext x : 1
-  have : ∀ (n : ℕ), n ≤ N → Integrable (iteratedFDeriv ℝ n f) := by
+  have A : ∀ (n : ℕ), n ≤ N → Integrable (iteratedFDeriv ℝ n f) := by
     intro n hn
     rw [iteratedFDeriv_eq_equiv_comp]
-    have Z := h'f n hn
+    exact (LinearIsometryEquiv.integrable_comp_iff _).2 (h'f n hn)
+  have B : 𝓕 (fun x ↦ (iteratedFDeriv ℝ n f x) (fun i ↦ 1)) x =
+      𝓕 (iteratedFDeriv ℝ n f) x (fun i ↦ 1) := by
+    rw [fourierIntegral_eq, fourierIntegral_eq, ContinuousMultilinearMap.integral_apply]
+    · rfl
+    · exact (fourierIntegral_convergent_iff _).2 (A n hn)
+  have C : ∀ (c : ℝ) (v : E), c • v = (c : ℂ) • v := fun c v ↦ rfl
   change 𝓕 (fun x ↦ iteratedDeriv n f x) x = _
-  simp_rw [iteratedDeriv]
+  simp_rw [iteratedDeriv, B, fourierIntegral_iteratedFDeriv hf A hn]
+  simp [C, smul_smul, ← mul_pow]
