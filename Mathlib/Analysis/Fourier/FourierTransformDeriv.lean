@@ -576,8 +576,7 @@ theorem fourierIntegral_deriv
   simp only [fourierSMulRight_apply, ContinuousLinearMap.neg_apply, innerSL_apply, smul_smul,
     RCLike.inner_apply, conj_trivial, mul_one, neg_smul, smul_neg, neg_neg, neg_mul, this]
 
-theorem iteratedDeriv_fourierIntegral
-    {f : ℝ → E} {N : ℕ∞} {n : ℕ}
+theorem iteratedDeriv_fourierIntegral {f : ℝ → E} {N : ℕ∞} {n : ℕ}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun x ↦ x^n • f x)) (hn : n ≤ N) :
     iteratedDeriv n (𝓕 f) = 𝓕 (fun x : ℝ ↦ (-2 * π * I * x) ^ n • f x) := by
   ext x : 1
@@ -600,8 +599,8 @@ theorem iteratedDeriv_fourierIntegral
   have : y ^ n • f y = ((y ^ n : ℝ) : ℂ) • f y := rfl
   simp only [← neg_mul, this, smul_smul, mul_pow, ofReal_pow, mul_assoc]
 
-theorem fourierIntegral_iteratedDeriv {f : ℝ → E} {N : ℕ∞} (hf : ContDiff ℝ N f)
-    (h'f : ∀ (n : ℕ), n ≤ N → Integrable (iteratedDeriv n f)) {n : ℕ} (hn : n ≤ N) :
+theorem fourierIntegral_iteratedDeriv {f : ℝ → E} {N : ℕ∞} {n : ℕ} (hf : ContDiff ℝ N f)
+    (h'f : ∀ (n : ℕ), n ≤ N → Integrable (iteratedDeriv n f)) (hn : n ≤ N) :
     𝓕 (iteratedDeriv n f) = fun (x : ℝ) ↦ (2 * π * I * x) ^ n • (𝓕 f x) := by
   ext x : 1
   have A : ∀ (n : ℕ), n ≤ N → Integrable (iteratedFDeriv ℝ n f) := by
