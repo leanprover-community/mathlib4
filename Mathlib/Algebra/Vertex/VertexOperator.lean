@@ -115,35 +115,37 @@ theorem one_ncoef_ite (x : V) (n : ℤ) : @ncoef R V _ _ _ 1 n x = if n = (-1) t
 -/
 section HasseDerivative
 
+-- start out with this as a linear map!!!
+
 /-- The `k`th Hasse derivative of a vertex operator `∑ A_i X^i` is `∑ (i.choose k) A_i X^(i-k)`.
 That is, it sends a vector to the `k`th Hasse derivative of the corresponding Laurent series.
 It satisfies `k! * (hasseDeriv k A) = derivative^[k] A`. -/
 @[simps]
 def hasseDeriv (k : ℕ) (A : VertexOperator R V) : VertexOperator R V :=
   {
-    toFun := fun (x : V) => LaurentSeries.hasseDeriv k ((HahnModule.of R).symm (A x))
+    toFun := fun (x : V) => LaurentSeries.hasseDeriv R k ((HahnModule.of R).symm (A x))
     map_add' := by
       intros
-      simp only [map_add, HahnModule.of_symm_add, LaurentSeries.hasseDeriv_add]
+      simp only [map_add, HahnModule.of_symm_add]
     map_smul' := by
       intros
-      simp only [map_smul, RingHom.id_apply, HahnModule.of_symm_smul, LaurentSeries.hasseDeriv_smul]
+      simp only [map_smul, RingHom.id_apply, HahnModule.of_symm_smul]
   }
 
 theorem hasseDeriv_add (k : ℕ) (A B : VertexOperator R V) : hasseDeriv k (A + B) =
     hasseDeriv k A + hasseDeriv k B := by
   ext
-  simp_all only [hasseDeriv_apply, LinearMap.add_apply, HahnModule.of_symm_add,
-    HahnSeries.add_coeff', Pi.add_apply, LinearMap.coe_mk, AddHom.coe_mk, HahnSeries.add_coeff,
-    hasseDeriv, LaurentSeries.hasseDeriv_add, HahnModule.of_symm_add]
+  simp_all only [coeff_apply, hasseDeriv_apply, LinearMap.add_apply, HahnModule.of_symm_add,
+    map_add, LaurentSeries.hasseDeriv_apply, HahnSeries.add_coeff', Pi.add_apply,
+    HahnSeries.ofSuppBddBelow_coeff]
   exact rfl
 
 theorem hasseDeriv_smul (k : ℕ) (A : VertexOperator R V) (r : R) :
     hasseDeriv k (r • A) = r • hasseDeriv k A := by
   ext
-  simp_all only [hasseDeriv_apply, LinearMap.smul_apply, HahnModule.of_symm_smul,
-    HahnSeries.smul_coeff, hasseDeriv, LaurentSeries.hasseDeriv_smul, LinearMap.coe_mk,
-    AddHom.coe_mk, HahnModule.of_symm_smul]
+  simp_all only [coeff_apply, hasseDeriv_apply, LinearMap.smul_apply, HahnModule.of_symm_smul,
+    LinearMapClass.map_smul, LaurentSeries.hasseDeriv_apply, HahnSeries.smul_coeff,
+    HahnSeries.ofSuppBddBelow_coeff]
   exact rfl
 
 /-- The Hasse derivative as a linear map on vertex operators. -/
