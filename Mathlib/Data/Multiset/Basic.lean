@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Order.Sub.Canonical
+import Mathlib.Data.List.Perm
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Set.List
-import Mathlib.Data.List.Perm
-import Mathlib.Init.Quot -- Porting note: added import
+import Mathlib.Init.Quot
 import Mathlib.Order.Hom.Basic
 
 #align_import data.multiset.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
@@ -2514,14 +2514,11 @@ theorem count_eq_zero_of_not_mem {a : α} {s : Multiset α} (h : a ∉ s) : coun
   by_contradiction fun h' => h <| count_pos.1 (Nat.pos_of_ne_zero h')
 #align multiset.count_eq_zero_of_not_mem Multiset.count_eq_zero_of_not_mem
 
-@[simp]
-theorem count_eq_zero {a : α} {s : Multiset α} : count a s = 0 ↔ a ∉ s :=
-  iff_not_comm.1 <| count_pos.symm.trans Nat.pos_iff_ne_zero
-#align multiset.count_eq_zero Multiset.count_eq_zero
-
-theorem count_ne_zero {a : α} {s : Multiset α} : count a s ≠ 0 ↔ a ∈ s := by
-  simp [Ne, count_eq_zero]
+lemma count_ne_zero {a : α} : count a s ≠ 0 ↔ a ∈ s := Nat.pos_iff_ne_zero.symm.trans count_pos
 #align multiset.count_ne_zero Multiset.count_ne_zero
+
+@[simp] lemma count_eq_zero {a : α} : count a s = 0 ↔ a ∉ s := count_ne_zero.not_right
+#align multiset.count_eq_zero Multiset.count_eq_zero
 
 theorem count_eq_card {a : α} {s} : count a s = card s ↔ ∀ x ∈ s, a = x := by
   simp [countP_eq_card, count, @eq_comm _ a]
