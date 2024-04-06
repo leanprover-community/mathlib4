@@ -81,5 +81,5 @@ discharge theorems about the trivial case (where we know `Subsingleton α` and m
 in e.g. groups are trivially true). -/
 register_simp_attr nontriviality
 
-/-- A stub attribute for `IsPoly`. -/
+/-- A stub attribute for `is_poly`. -/
 register_label_attr is_poly
