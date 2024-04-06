@@ -8,7 +8,6 @@ import Mathlib.Data.Fintype.Order
 import Mathlib.Algebra.DirectLimit
 import Mathlib.ModelTheory.Quotients
 import Mathlib.ModelTheory.FinitelyGenerated
-import Mathlib.Order.Ideal
 
 #align_import model_theory.direct_limit from "leanprover-community/mathlib"@"f53b23994ac4c13afa38d31195c588a1121d1860"
 
