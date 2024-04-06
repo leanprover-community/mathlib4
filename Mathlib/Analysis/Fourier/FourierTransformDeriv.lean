@@ -442,10 +442,7 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
     have J : Integrable (fderiv ℝ (iteratedFDeriv ℝ n f)) μ := by
       specialize h'f (n + 1) hn
       simp_rw [iteratedFDeriv_succ_eq_comp_left] at h'f
-      let T : (V →L[ℝ] (V [×n]→L[ℝ] E)) ≃L[ℝ] (V [×(n+1)]→L[ℝ] E) :=
-        continuousMultilinearCurryLeftEquiv ℝ (fun (_x : Fin (n + 1)) ↦ V) E
-      apply T.integrable_comp_iff.1
-      exact h'f
+      exact (LinearIsometryEquiv.integrable_comp_iff _).1 h'f
     suffices H : (fourierIntegral 𝐞 μ L.toLinearMap₂ (fderiv ℝ (iteratedFDeriv ℝ n f)) w)
           (m 0) (Fin.tail m) =
         (-(2 * π * I)) ^ (n + 1) • (∏ x : Fin (n + 1), -L (m x) w) • ∫ v, 𝐞 (-L v w) • f v ∂μ by
@@ -615,6 +612,8 @@ theorem fourierIntegral_iteratedDeriv {f : ℝ → E} {N : ℕ∞} {n : ℕ}
     𝓕 (iteratedDeriv n f) = fun (x : ℝ) ↦ (2 * π * I * x) ^ n • (𝓕 f x) := by
   ext x : 1
   have : ∀ (n : ℕ), n ≤ N → Integrable (iteratedFDeriv ℝ n f) := by
-    sorry
+    intro n hn
+    rw [iteratedFDeriv_eq_equiv_comp]
+    have Z := h'f n hn
   change 𝓕 (fun x ↦ iteratedDeriv n f x) x = _
   simp_rw [iteratedDeriv]
