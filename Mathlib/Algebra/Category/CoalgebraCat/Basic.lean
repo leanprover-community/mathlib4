@@ -56,7 +56,7 @@ instance {M N : CoalgebraCat.{v} R} : FunLike (M ⟶ N) M N :=
 instance {M N : CoalgebraCat.{v} R} : CoalgHomClass (M ⟶ N) R M N :=
   CoalgHom.coalgHomClass
 
-instance coalgConcreteCategory : ConcreteCategory.{v} (CoalgebraCat.{v} R) where
+instance coalgebraConcreteCategory : ConcreteCategory.{v} (CoalgebraCat.{v} R) where
   forget :=
     { obj := fun R => R
       map := fun f => f.toFun }
@@ -176,7 +176,7 @@ section
 /-- Build an isomorphism in the category `CoalgebraCat R` from a `CoalgEquiv`
 between coalgebras. -/
 @[simps]
-def CoalgEquiv.toCoalgIso {g₁ : AddCommGroup X₁} {g₂ : AddCommGroup X₂} {m₁ : Module R X₁}
+def CoalgEquiv.toCoalgebraIso {g₁ : AddCommGroup X₁} {g₂ : AddCommGroup X₂} {m₁ : Module R X₁}
       {c₁ : Coalgebra R X₁} {m₂ : Module R X₂} {c₂ : Coalgebra R X₂} (e : X₁ ≃ₗc[R] X₂) :
       CoalgebraCat.of R X₁ ≅ CoalgebraCat.of R X₂ where
   hom := (e : X₁ →ₗc[R] X₂)
@@ -186,20 +186,22 @@ def CoalgEquiv.toCoalgIso {g₁ : AddCommGroup X₁} {g₂ : AddCommGroup X₂} 
 
 /-- Build an isomorphism in the category `CoalgebraCat R` from a `CoalgEquiv`
 between coalgebras. -/
-abbrev CoalgEquiv.toCoalgIso' {M N : CoalgebraCat.{v} R} (i : M ≃ₗc[R] N) : M ≅ N :=
-  i.toCoalgIso
+abbrev CoalgEquiv.toCoalgebraIso' {M N : CoalgebraCat.{v} R} (i : M ≃ₗc[R] N) : M ≅ N :=
+  i.toCoalgebraIso
 
 /-- Build an isomorphism in the category `CoalgebraCat R` from a `CoalgEquiv`
 between coalgebras. -/
-abbrev CoalgEquiv.toCoalgIso'Left {X₁ : CoalgebraCat.{v} R} [AddCommGroup X₂] [Module R X₂] [Coalgebra R X₂]
+abbrev CoalgEquiv.toCoalgebraIso'Left {X₁ : CoalgebraCat.{v} R}
+    [AddCommGroup X₂] [Module R X₂] [Coalgebra R X₂]
     (e : X₁ ≃ₗc[R] X₂) : X₁ ≅ CoalgebraCat.of R X₂ :=
-  e.toCoalgIso
+  e.toCoalgebraIso
 
 /-- Build an isomorphism in the category `CoalgebraCat R` from a `CoalgEquiv`
 between coalgebras. -/
-abbrev CoalgEquiv.toCoalgIso'Right [AddCommGroup X₁] [Module R X₁] [Coalgebra R X₁] {X₂ : CoalgebraCat.{v} R}
+abbrev CoalgEquiv.toCoalgebraIso'Right
+    [AddCommGroup X₁] [Module R X₁] [Coalgebra R X₁] {X₂ : CoalgebraCat.{v} R}
     (e : X₁ ≃ₗc[R] X₂) : CoalgebraCat.of R X₁ ≅ X₂ :=
-  e.toCoalgIso
+  e.toCoalgebraIso
 
 namespace CategoryTheory.Iso
 
@@ -230,10 +232,10 @@ end CategoryTheory.Iso
 /-- Coalgebra equivalences are the same as (isomorphic to) isomorphisms
 in `CoalgebraCat R` -/
 @[simps]
-def coalgEquivIsoCoalgIso {X Y : Type u} [AddCommGroup X] [AddCommGroup Y]
+def coalgEquivIsoCoalgebraIso {X Y : Type u} [AddCommGroup X] [AddCommGroup Y]
     [Module R X] [Coalgebra R X] [Module R Y] [Coalgebra R Y] :
     (X ≃ₗc[R] Y) ≅ CoalgebraCat.of R X ≅ CoalgebraCat.of R Y where
-  hom e := e.toCoalgIso
+  hom e := e.toCoalgebraIso
   inv i := i.toCoalgEquiv
 
 end

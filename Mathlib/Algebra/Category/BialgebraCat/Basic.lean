@@ -56,7 +56,7 @@ instance {M N : BialgebraCat.{v} R} : FunLike (M ⟶ N) M N :=
 instance {M N : BialgebraCat.{v} R} : BialgHomClass (M ⟶ N) R M N :=
   BialgHom.bialgHomClass
 
-instance bialgConcreteCategory : ConcreteCategory.{v} (BialgebraCat.{v} R) where
+instance bialgebraConcreteCategory : ConcreteCategory.{v} (BialgebraCat.{v} R) where
   forget :=
     { obj := fun R => R
       map := fun f => f }
@@ -194,7 +194,7 @@ section
 /-- Build an isomorphism in the category `BialgebraCat R` from a `BialgEquiv`
 between bialgebras. -/
 @[simps]
-def BialgEquiv.toBialgIso {g₁ : Ring X₁} {g₂ : Ring X₂}
+def BialgEquiv.toBialgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂}
       {c₁ : Bialgebra R X₁} {c₂ : Bialgebra R X₂} (e : X₁ ≃ₐc[R] X₂) :
       BialgebraCat.of R X₁ ≅ BialgebraCat.of R X₂ where
   hom := (e : X₁ →ₐc[R] X₂)
@@ -204,20 +204,22 @@ def BialgEquiv.toBialgIso {g₁ : Ring X₁} {g₂ : Ring X₂}
 
 /-- Build an isomorphism in the category `BialgebraCat R` from a `BialgEquiv`
 between bialgebras. -/
-abbrev BialgEquiv.toBialgIso' {M N : BialgebraCat.{v} R} (i : M ≃ₐc[R] N) : M ≅ N :=
-  i.toBialgIso
+abbrev BialgEquiv.toBialgebraIso' {M N : BialgebraCat.{v} R} (i : M ≃ₐc[R] N) : M ≅ N :=
+  i.toBialgebraIso
 
 /-- Build an isomorphism in the category `BialgebraCat R` from a `BialgEquiv`
 between bialgebras. -/
-abbrev BialgEquiv.toBialgIso'Left {X₁ : BialgebraCat.{v} R} [Ring X₂] [Module R X₂] [Bialgebra R X₂]
+abbrev BialgEquiv.toBialgebraIso'Left
+    {X₁ : BialgebraCat.{v} R} [Ring X₂] [Module R X₂] [Bialgebra R X₂]
     (e : X₁ ≃ₐc[R] X₂) : X₁ ≅ BialgebraCat.of R X₂ :=
-  e.toBialgIso
+  e.toBialgebraIso
 
 /-- Build an isomorphism in the category `BialgebraCat R` from a `BialgEquiv`
 between bialgebras. -/
-abbrev BialgEquiv.toBialgIso'Right [Ring X₁] [Module R X₁] [Bialgebra R X₁] {X₂ : BialgebraCat.{v} R}
+abbrev BialgEquiv.toBialgebraIso'Right
+    [Ring X₁] [Module R X₁] [Bialgebra R X₁] {X₂ : BialgebraCat.{v} R}
     (e : X₁ ≃ₐc[R] X₂) : BialgebraCat.of R X₁ ≅ X₂ :=
-  e.toBialgIso
+  e.toBialgebraIso
 
 namespace CategoryTheory.Iso
 
@@ -248,10 +250,10 @@ end CategoryTheory.Iso
 /-- Bialgebra equivalences are the same as (isomorphic to) isomorphisms
 in `BialgebraCat R` -/
 @[simps]
-def bialgEquivIsoBialgIso {X Y : Type u} [Ring X] [Ring Y]
+def bialgEquivIsoBialgebraIso {X Y : Type u} [Ring X] [Ring Y]
     [Bialgebra R X] [Bialgebra R Y] :
     (X ≃ₐc[R] Y) ≅ BialgebraCat.of R X ≅ BialgebraCat.of R Y where
-  hom e := e.toBialgIso
+  hom e := e.toBialgebraIso
   inv i := i.toBialgEquiv
 
 end
