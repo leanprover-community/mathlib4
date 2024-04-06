@@ -3,10 +3,10 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Std.Data.Nat.Lemmas
 import Std.WF
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Order.Defs
+import Std.Data.Nat.Basic
 
 #align_import init.data.nat.lemmas from "leanprover-community/lean"@"38b59111b2b4e6c572582b27e8937e92fc70ac02"
 
