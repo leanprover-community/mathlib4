@@ -1,20 +1,19 @@
+#!/usr/bin/env python3
+"""
+Lint the contents of all backticks in comments: for old declaration names, old file names
+or possibly further things.
+"""
 
-
-'''Extract all things in backticks from an input text.
-
-Return `None` if the input has >= 7 backticks (not supported),
-otherwise a list of matches.
+'''Return a list of all substrings in `text` enclosed in single backticks.
+Triple backticks are treated as single backticks.
 
 If the input contains an odd number of backticks, we pretend it is followed by a final backtick.
-We do not look at newlines at all.
-'''
+This function does not look at newlines at all.'''
 def extract_backticks(text):
-    if "'" * 7 in text:
-        print(f"input {text} contains seven backticks; output is unreliable")
-        return None
-    # Replace triple backticks by single ones. We do so twice. That's enough in practice.
-    text = text.replace("```", "`").replace("```", "`")
-    # Split the text by a backtick, take the odd-indexed hits; done.
+    # Replace triple backticks by single ones (as markdown code block use this).
+    text = text.replace("```", "`")
+    # Split the text by single backticks and take the odd-indexed hits.
+    # This means an
     parts = text.split('`')
     output = []
     for (idx, s) in enumerate(parts):
@@ -51,8 +50,11 @@ def test_backtick_extraction():
     # Triple backticks are replaced first.
     check("```triple`", ["triple"])
     check("```lean\ntest```", ["lean\ntest"])
-    # Yet untested: many backticks.
-    check("`````````nine`", ["nine"])
+    check("```six```nine`", ["six", ""])
+    check("```six```nine``", ["six", ""])
+    # Document behaviour with more backticks: this isn't used in practice.
+    check("``````test", [""])
+    check("``````test `one`", ["", "one"])
     print("All tests pass!")
 
 if __name__ == '__main__':
