@@ -255,7 +255,7 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     apply measure_mono
     exact inter_subset_right _ s
 
-/- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
+/-- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
   right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
   properly normalized, satisfies `QuotientMeasureEqMeasurePreimage`. -/
 @[to_additive "Given a normal
@@ -284,7 +284,7 @@ theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_HaarMeasure {𝓕 :
 
 variable (K : PositiveCompacts (G ⧸ Γ))
 
-/- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
+/-- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
   right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
   properly normalized, satisfies `QuotientMeasureEqMeasurePreimage`. -/
 @[to_additive "Given a
