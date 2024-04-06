@@ -154,7 +154,7 @@ elab "exact " t:term : tactic => do
   let exaTac ← `(Lean.Parser.Tactic.tacticSeq | exact $t)
   let refTac ← `(Lean.Parser.Tactic.tacticSeq | refine $t)
   match ← speedTestElab #[refTac, exaTac] with
-    | #[ex, re] =>
+    | #[re, ex] =>
       if re < ex then logWarning m!"`refine` is faster: {re} vs {ex}"
       else logInfo m!"`exact` is not slower: {ex} vs {re}"
     | _ => logInfo "why are we here?"
