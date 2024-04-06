@@ -72,7 +72,7 @@ matrix `a : Matrix n n ℂ`, and, because this set is discrete, any function is 
 spectrum. The continuous functional calculus allows us to make sense of expressions like `log a`
 (`:= cfc log a`), and when `0 ∉ spectrum ℂ a`, we get the nice property `exp (log a) = a`, which
 arises from the composition property `cfc exp (cfc log a) = cfc (exp ∘ log) a = cfc id a = a`, since
-`NormedSpace.exp ∘ log = id` *on the spectrum of `a`*. Of course, there are other ways to make sense of `NormedSpace.exp`
+`exp ∘ log = id` *on the spectrum of `a`*. Of course, there are other ways to make sense of `exp`
 and `log` for matrices (power series), and these agree with the continuous functional calculus.
 In fact, given `f : C(spectrum ℂ a, ℂ)`, `cfc f a` amounts to diagonalizing `a` (possible since `a`
 is normal), and applying `f` to the resulting diagonal entries. That is, if `a = u * d * star u`
