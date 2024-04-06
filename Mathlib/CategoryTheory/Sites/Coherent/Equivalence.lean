@@ -34,16 +34,9 @@ theorem precoherent : Precoherent D := e.inverse.reflects_precoherent
 instance [EssentiallySmall C] :
     Precoherent (SmallModel C) := (equivSmallModel C).precoherent
 
-/--
-Transferring the coherent topology along an equivalence of categories gives the coherent topology.
--/
-theorem precoherent_eq : haveI := precoherent e
-    (e.locallyCoverDense (coherentTopology C)).inducedTopology =
-    coherentTopology D := (coherentTopology.eq_induced e.inverse).symm
-
 instance : haveI := precoherent e
     e.TransportsGrothendieckTopology (coherentTopology C) (coherentTopology D) where
-  eq_inducedTopology := e.precoherent_eq.symm
+  eq_inducedTopology := coherentTopology.eq_induced e.inverse
 
 variable (A : Type*) [Category A]
 
@@ -95,7 +88,7 @@ theorem preregular_eq : haveI := preregular e
 
 instance : haveI := preregular e
     e.TransportsGrothendieckTopology (regularTopology C) (regularTopology D) where
-  eq_inducedTopology := e.preregular_eq.symm
+  eq_inducedTopology := regularTopology.eq_induced e.inverse
 
 variable (A : Type*) [Category A]
 
