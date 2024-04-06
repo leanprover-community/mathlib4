@@ -88,7 +88,9 @@ theorem not_isEulerian {u v : Verts} (p : graph.Walk u v) (h : p.IsEulerian) : F
   have h' := setOf_odd_degree_eq
   apply_fun Fintype.card at h'
   rw [h'] at h
-  norm_num at h
+  -- Adaptation note: around nightly-2024-04-05, `norm_num` cannot prove that `4 = 2` is false.
+  -- Was `norm_num at h`.
+  norm_num (config := {decide := true}) at h
 #align konigsberg.not_is_eulerian Konigsberg.not_isEulerian
 
 end Konigsberg
