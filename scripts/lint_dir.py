@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 ''''
-Lint all files in a given directory. Use as
+Lint all files in a given directory. Run this script, from the root directory of mathlib, as
  $ python3 ./scripts/lint_dir.py
 This avoids parsing the list of all aligns and align_imports several times.
 '''
@@ -12,7 +12,7 @@ from pathlib import Path
 
 if __name__ == '__main__':
     # Parse the list of all files to lint, the the given directory.
-    dir = ''
+    dir = 'Utils'
     exclude = tuple(''.split(' '))
     assert '/' not in dir
     #print(f"about to lint all files in directory {dir}")

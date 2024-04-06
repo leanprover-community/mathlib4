@@ -414,7 +414,7 @@ Return a tuple (old_files, old_declarations) consisting of
 # HACK: currently, this reads from local files, which have been pre-generated...
 def import_old_files_declarations():
     old_files = []
-    for line in open('/home/michael/align_imports.txt', 'r', encoding='utf-8'):
+    for line in open('align_imports.txt', 'r', encoding='utf-8'):
         if not line.startswith("#align_import "):
             continue
         line = line[len("#align_import "):]
@@ -424,7 +424,7 @@ def import_old_files_declarations():
         old_files.append(old_file)
     # Read in all #align statements and parse the names of the old and new declaration.
     aligns = dict()
-    for line in open('/home/michael/all_aligns.txt', 'r', encoding='utf-8'):
+    for line in open('all_aligns.txt', 'r', encoding='utf-8'):
         line = line.strip()
         if not line.startswith("#align "):
             continue
