@@ -334,8 +334,8 @@ export NonnegSpectrumClass (quasispectrum_nonneg_of_nonneg)
 
 namespace NonnegSpectrumClass
 
-lemma iff_spectrum_nonneg {𝕜 A : Type*} [LinearOrderedField 𝕜] [Ring A] [PartialOrder A] [Algebra 𝕜 A] :
-    NonnegSpectrumClass 𝕜 A ↔ ∀ a : A, 0 ≤ a → ∀ x ∈ spectrum 𝕜 a, 0 ≤ x := by
+lemma iff_spectrum_nonneg {𝕜 A : Type*} [LinearOrderedField 𝕜] [Ring A] [PartialOrder A]
+    [Algebra 𝕜 A] : NonnegSpectrumClass 𝕜 A ↔ ∀ a : A, 0 ≤ a → ∀ x ∈ spectrum 𝕜 a, 0 ≤ x := by
   simp [show NonnegSpectrumClass 𝕜 A ↔ _ from ⟨fun ⟨h⟩ ↦ h, (⟨·⟩)⟩,
     quasispectrum_eq_spectrum_union_zero]
 
