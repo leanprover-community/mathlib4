@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 /-!
 # The category of additive commutative groups has all colimits.
 
-This file uses a "pre-automated" approach, just as for `Algebra.Category.MonCat.Colimits.lean`.
+This file uses a "pre-automated" approach, just as for `Algebra.Category.MonCat.Colimits`.
 It is a very uniform approach, that conceivably could be synthesised directly
 by a tactic that analyses the shape of `AddCommGroup` and `MonoidHom`.
 
