@@ -216,20 +216,30 @@ theorem add_apply [AddZeroClass β] [ContinuousAdd β] (f g : C₀(α, β)) : (f
 instance instAddZeroClass [AddZeroClass β] [ContinuousAdd β] : AddZeroClass C₀(α, β) :=
   DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
+instance instSMul [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β] :
+    SMul R C₀(α, β) :=
+  -- Porting note: Original version didn't have `Continuous.const_smul f.continuous r`
+  ⟨fun r f => ⟨⟨r • ⇑f, Continuous.const_smul f.continuous r⟩,
+    by simpa [smul_zero] using (zero_at_infty f).const_smul r⟩⟩
+#align zero_at_infty_continuous_map.has_nat_scalar ZeroAtInftyContinuousMap.instSMul
+#align zero_at_infty_continuous_map.has_int_scalar ZeroAtInftyContinuousMap.instSMul
+
+@[simp, norm_cast]
+theorem coe_smul [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β] (r : R)
+    (f : C₀(α, β)) : ⇑(r • f) = r • ⇑f :=
+  rfl
+#align zero_at_infty_continuous_map.coe_smul ZeroAtInftyContinuousMap.coe_smul
+#align zero_at_infty_continuous_map.coe_nsmul_rec ZeroAtInftyContinuousMap.coe_smul
+#align zero_at_infty_continuous_map.coe_zsmul_rec ZeroAtInftyContinuousMap.coe_smul
+
+theorem smul_apply [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β]
+    (r : R) (f : C₀(α, β)) (x : α) : (r • f) x = r • f x :=
+  rfl
+#align zero_at_infty_continuous_map.smul_apply ZeroAtInftyContinuousMap.smul_apply
+
 section AddMonoid
 
 variable [AddMonoid β] [ContinuousAdd β] (f g : C₀(α, β))
-
-@[simp]
-theorem coe_nsmulRec : ∀ n, ⇑(nsmulRec n f) = n • ⇑f
-  | 0 => by rw [nsmulRec, zero_smul, coe_zero]
-  | n + 1 => by rw [nsmulRec, succ_nsmul, coe_add, coe_nsmulRec n]
-#align zero_at_infty_continuous_map.coe_nsmul_rec ZeroAtInftyContinuousMap.coe_nsmulRec
-
-instance instNatSMul : SMul ℕ C₀(α, β) :=
-  ⟨fun n f => ⟨n • (f : C(α, β)),
-    by simpa [coe_nsmulRec] using zero_at_infty (nsmulRec n f)⟩⟩
-#align zero_at_infty_continuous_map.has_nat_scalar ZeroAtInftyContinuousMap.instNatSMul
 
 instance instAddMonoid : AddMonoid C₀(α, β) :=
   DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
@@ -267,18 +277,6 @@ theorem sub_apply : (f - g) x = f x - g x :=
   rfl
 #align zero_at_infty_continuous_map.sub_apply ZeroAtInftyContinuousMap.sub_apply
 
-@[simp]
-theorem coe_zsmulRec : ∀ z, ⇑(zsmulRec z f) = z • ⇑f
-  | Int.ofNat n => by rw [zsmulRec, Int.ofNat_eq_coe, coe_nsmulRec, natCast_zsmul]
-  | Int.negSucc n => by rw [zsmulRec, negSucc_zsmul, coe_neg, coe_nsmulRec]
-#align zero_at_infty_continuous_map.coe_zsmul_rec ZeroAtInftyContinuousMap.coe_zsmulRec
-
-instance instIntSMul : SMul ℤ C₀(α, β) :=
-  -- Porting note: Original version didn't have `Continuous.const_smul f.continuous n`
-  ⟨fun n f => ⟨⟨n • ⇑f, Continuous.const_smul f.continuous n⟩,
-    by simpa using zero_at_infty (zsmulRec n f)⟩⟩
-#align zero_at_infty_continuous_map.has_int_scalar ZeroAtInftyContinuousMap.instIntSMul
-
 instance instAddGroup : AddGroup C₀(α, β) :=
   DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
 
@@ -287,23 +285,6 @@ end AddGroup
 instance instAddCommGroup [AddCommGroup β] [TopologicalAddGroup β] : AddCommGroup C₀(α, β) :=
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
     rfl
-
-instance instSMul [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β] :
-    SMul R C₀(α, β) :=
-  -- Porting note: Original version didn't have `Continuous.const_smul f.continuous r`
-  ⟨fun r f => ⟨⟨r • ⇑f, Continuous.const_smul f.continuous r⟩,
-    by simpa [smul_zero] using (zero_at_infty f).const_smul r⟩⟩
-
-@[simp]
-theorem coe_smul [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β] (r : R)
-    (f : C₀(α, β)) : ⇑(r • f) = r • ⇑f :=
-  rfl
-#align zero_at_infty_continuous_map.coe_smul ZeroAtInftyContinuousMap.coe_smul
-
-theorem smul_apply [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β]
-    (r : R) (f : C₀(α, β)) (x : α) : (r • f) x = r • f x :=
-  rfl
-#align zero_at_infty_continuous_map.smul_apply ZeroAtInftyContinuousMap.smul_apply
 
 instance instIsCentralScalar [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [SMulWithZero Rᵐᵒᵖ β]
     [ContinuousConstSMul R β] [IsCentralScalar R β] : IsCentralScalar R C₀(α, β) :=

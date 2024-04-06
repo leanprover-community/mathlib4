@@ -3,11 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Int.GCD
 import Mathlib.Data.Int.Order.Lemmas
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.NormNum.Basic
 
 #align_import data.nat.modeq from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 
@@ -27,6 +26,7 @@ and proves basic properties about it such as the Chinese Remainder Theorem
 ModEq, congruence, mod, MOD, modulo
 -/
 
+assert_not_exists Function.support
 
 namespace Nat
 
