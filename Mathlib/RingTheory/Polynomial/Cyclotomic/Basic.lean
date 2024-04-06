@@ -5,9 +5,9 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Polynomial.BigOperators
+import Mathlib.Algebra.Polynomial.Lifts
+import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.RingTheory.RootsOfUnity.Complex
-import Mathlib.Data.Polynomial.Lifts
-import Mathlib.Data.Polynomial.Splits
 import Mathlib.FieldTheory.RatFunc
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.RingTheory.RootsOfUnity.Basic

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
 import Mathlib.NumberTheory.Divisors
-import Mathlib.RingTheory.Int.Basic
 import Mathlib.Data.Nat.Digits
 import Mathlib.Data.Nat.MaxPowDiv
 import Mathlib.Data.Nat.Multiplicity
@@ -584,6 +583,20 @@ theorem padicValNat_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (ne
   @padicValNat.eq_zero_of_not_dvd p q <|
     (not_congr (Iff.symm (prime_dvd_prime_iff_eq hp.1 hq.1))).mp neq
 #align padic_val_nat_primes padicValNat_primes
+
+theorem padicValNat_prime_prime_pow {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
+    (n : ℕ) (neq : p ≠ q) : padicValNat p (q ^ n) = 0 := by
+  rw [padicValNat.pow _ <| Nat.Prime.ne_zero hq.elim, padicValNat_primes neq, mul_zero]
+
+theorem padicValNat_mul_pow_left {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
+    (n m : ℕ) (neq : p ≠ q) : padicValNat p (p^n * q^m) = n := by
+  rw [padicValNat.mul (NeZero.ne' (p^n)).symm (NeZero.ne' (q^m)).symm,
+    padicValNat.prime_pow, padicValNat_prime_prime_pow m neq, add_zero]
+
+theorem padicValNat_mul_pow_right {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
+    (n m : ℕ) (neq : q ≠ p) : padicValNat q (p^n * q^m) = m := by
+  rw [mul_comm (p^n) (q^m)]
+  exact padicValNat_mul_pow_left m n neq
 
 /-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t `p`.-/
 lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by

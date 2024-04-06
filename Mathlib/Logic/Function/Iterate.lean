@@ -82,7 +82,8 @@ theorem iterate_add_apply (m n : ℕ) (x : α) : f^[m + n] x = f^[m] (f^[n] x) :
   rfl
 #align function.iterate_add_apply Function.iterate_add_apply
 
-@[simp]
+-- can be proved by simp but this is shorter and more natural
+@[simp high]
 theorem iterate_one : f^[1] = f :=
   funext fun _ ↦ rfl
 #align function.iterate_one Function.iterate_one

@@ -2984,13 +2984,13 @@ theorem mem_range_le {n x : ℕ} (hx : x ∈ range n) : x ≤ n :=
 #align finset.mem_range_le Finset.mem_range_le
 
 theorem mem_range_sub_ne_zero {n x : ℕ} (hx : x ∈ range n) : n - x ≠ 0 :=
-  _root_.ne_of_gt <| tsub_pos_of_lt <| mem_range.1 hx
+  _root_.ne_of_gt <| Nat.sub_pos_of_lt <| mem_range.1 hx
 #align finset.mem_range_sub_ne_zero Finset.mem_range_sub_ne_zero
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem nonempty_range_iff : (range n).Nonempty ↔ n ≠ 0 :=
-  ⟨fun ⟨k, hk⟩ => ((_root_.zero_le k).trans_lt <| mem_range.1 hk).ne',
-   fun h => ⟨0, mem_range.2 <| pos_iff_ne_zero.2 h⟩⟩
+  ⟨fun ⟨k, hk⟩ => (k.zero_le.trans_lt <| mem_range.1 hk).ne',
+   fun h => ⟨0, mem_range.2 <| Nat.pos_iff_ne_zero.2 h⟩⟩
 #align finset.nonempty_range_iff Finset.nonempty_range_iff
 
 @[simp]
@@ -3012,7 +3012,7 @@ theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then 
 
 lemma range_nontrivial {n : ℕ} (hn : 1 < n) : (Finset.range n).Nontrivial := by
   rw [Finset.Nontrivial, Finset.coe_range]
-  exact ⟨0, zero_lt_one.trans hn, 1, hn, zero_ne_one⟩
+  exact ⟨0, Nat.zero_lt_one.trans hn, 1, hn, zero_ne_one⟩
 
 end Range
 

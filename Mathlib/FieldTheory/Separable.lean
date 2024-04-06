@@ -3,9 +3,9 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Polynomial.Expand
+import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.Data.Polynomial.Expand
-import Mathlib.Data.Polynomial.Splits
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.PowerBasis
 

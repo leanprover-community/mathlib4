@@ -320,6 +320,7 @@
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
   "Mathlib.Data.Rat.Init": ["Std.Data.Rat.Basic"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.GroupTheory.GroupAction.Defs"],
+  "Mathlib.Data.List.TFAE": ["Std.Tactic.Classical"],
   "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertNth"],
   "Mathlib.Data.List.EditDistance.Defs": ["Mathlib.Data.Nat.Basic"],
   "Mathlib.Data.List.Basic": ["Mathlib.Data.Option.Basic", "Mathlib.Init.Core"],
@@ -339,6 +340,7 @@
   ["Mathlib.GroupTheory.Subgroup.Order", "Mathlib.GroupTheory.Submonoid.Order"],
   "Mathlib.Algebra.Module.LinearMap.Basic": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
+  "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Algebra.Category.Ring.Basic":
   ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
   "Mathlib.Algebra.Algebra.Subalgebra.Order":
