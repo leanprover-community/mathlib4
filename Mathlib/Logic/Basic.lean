@@ -1044,14 +1044,14 @@ theorem exists_mem_congr (H : ∀ x h, P x h ↔ Q x h) : (∃ x h, P x h) ↔ �
   exists_congr fun x ↦ exists_congr (H x)
 #align bex_congr exists_mem_congr
 
-theorem exists_mem_eq_left {a : α} : (∃ (x : _) (_ : x = a), p x) ↔ p a := by
+@[deprecated exists_eq_left] -- 2024-04-06
+theorem bex_eq_left {a : α} : (∃ (x : _) (_ : x = a), p x) ↔ p a := by
   simp only [exists_prop, exists_eq_left]
-#align bex_eq_left exists_mem_eq_left
+#align bex_eq_left bex_eq_left
 
--- 2024-03-23
+-- 2024-04-06
 @[deprecated] alias ball_congr := forall_mem_congr
 @[deprecated] alias bex_congr := exists_mem_congr
-@[deprecated] alias bex_eq_left := exists_mem_eq_left
 
 theorem BAll.imp_right (H : ∀ x h, P x h → Q x h) (h₁ : ∀ x h, P x h) (x h) : Q x h :=
   H _ _ <| h₁ _ _
