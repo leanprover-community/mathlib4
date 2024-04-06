@@ -57,6 +57,8 @@ attribute [simp] Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_o
   -- Nat.zero_ne_bit1 Nat.bit1_ne_zero Nat.bit0_ne_one Nat.one_ne_bit0 Nat.bit0_ne_bit1
   -- Nat.bit1_ne_bit0
 
+attribute [simp] Nat.min_eq_left Nat.min_eq_right
+
 /-! ### `succ`, `pred` -/
 
 lemma succ_pos' : 0 < succ n := succ_pos n
@@ -321,9 +323,15 @@ theorem le_or_le_of_add_eq_add_pred (h : a + c = b + d - 1) : b ≤ a ∨ d ≤ 
 
 /-! ### `sub` -/
 
+attribute [simp] Nat.sub_eq_zero_of_le Nat.sub_le_iff_le_add
+
 /-- A version of `Nat.sub_succ` in the form `_ - 1` instead of `Nat.pred _`. -/
 lemma sub_succ' (m n : ℕ) : m - n.succ = m - n - 1 := rfl
 #align nat.sub_succ' Nat.sub_succ'
+
+protected lemma sub_eq_of_eq_add' (h : a = b + c) : a - b = c := by rw [h, Nat.add_sub_cancel_left]
+protected lemma eq_sub_of_add_eq (h : c + b = a) : c = a - b := (Nat.sub_eq_of_eq_add h.symm).symm
+protected lemma eq_sub_of_add_eq' (h : b + c = a) : c = a - b := (Nat.sub_eq_of_eq_add' h.symm).symm
 
 protected lemma lt_sub_iff_add_lt : a < c - b ↔ a + b < c := ⟨add_lt_of_lt_sub, lt_sub_of_add_lt⟩
 protected lemma lt_sub_iff_add_lt' : a < c - b ↔ b + a < c := by omega

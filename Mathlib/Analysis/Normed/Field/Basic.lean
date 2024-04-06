@@ -1119,7 +1119,7 @@ instance Int.normOneClass : NormOneClass ℤ :=
   ⟨by simp [← Int.norm_cast_real]⟩
 
 instance Rat.normedField : NormedField ℚ :=
-  { Rat.normedAddCommGroup, Rat.field with
+  { Rat.normedAddCommGroup, Rat.instField with
     norm_mul' := fun r₁ r₂ => by simp only [norm, Rat.cast_mul, abs_mul] }
 
 instance Rat.denselyNormedField : DenselyNormedField ℚ where

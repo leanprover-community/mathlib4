@@ -465,7 +465,6 @@ def Padic (p : ℕ) [Fact p.Prime] :=
   CauSeq.Completion.Cauchy (padicNorm p)
 #align padic Padic
 
--- mathport name: «exprℚ_[ ]»
 /-- notation for p-padic rationals -/
 notation "ℚ_[" p "]" => Padic p
 
