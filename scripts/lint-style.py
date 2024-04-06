@@ -440,26 +440,21 @@ def import_old_files_declarations():
         if old != new: # and old not in aligns.values():
             old_declarations.append(old)
     same = set(aligns.values()).intersection(set(old_declarations))
-    print(f"Found {len(same)} old declarations which occur as a different new declaration:\n{same}")
+    #print(f"Found {len(same)} old declarations which occur as a different new declaration:\n{same}")
     old_declarations = [s for s in old_declarations if s not in same]
     assert "CommRing" not in old_declarations
     return old_files, old_declarations
 
 
 ''''Check the contents of doc comments in `backticks`: for old file names or Lean declarations.'''
+# Currently, we flag any string in backticks which is exactly an old file or declaration name.
+# TODO: a substring of the old declaration should also work, e.g. just the lemma/file name.
 # FUTURE ideas:
 # - file names exist (parse Mathlib.lean)
 # - enforce normal form for file names
-def lint_backticks_in_comments(lines, path):
-    old_files, old_declarations = import_old_files_declarations()
+def lint_backticks_in_comments(old_files, old_declarations, lines, path):
     errors = []
-    newlines = []
-    i = 0
-    for line_nr, line in enumerate(lines):
-        i += 1
-        if i == 10 * 1000:
-            print("breaking out")
-            break
+    for line_nr, line in lines:
         line=line.strip()
         s = extract_backticks(line)
         if s is None:
@@ -470,8 +465,7 @@ def lint_backticks_in_comments(lines, path):
                 errors += [(ERR_OLD_FILE, (item, line), line_nr, path)]
             if item in old_declarations:
                 errors += [(ERR_OLD_DECL, (item, line), line_nr, path)]
-        newlines.append((line_nr, line))
-    return errors, newlines
+    return errors
 
 def output_message(path, line_nr, code, msg):
     if len(exceptions) == 0:
@@ -532,6 +526,8 @@ def format_errors(errors):
             item, line = context
             output_message(path, line_nr, "ERR_OLD_DECL", f'old declaration {item} mentioned in line: "{line}"')
 
+# XXX: is there a more elegant way?
+old_files, old_declarations = import_old_files_declarations()
 
 def lint(path, fix=False):
     global new_exceptions
@@ -540,6 +536,7 @@ def lint(path, fix=False):
         # we will modify lines as we go, so we need to keep track of the original line numbers
         lines = f.readlines()
         enum_lines = enumerate(lines, 1)
+        format_errors(lint_backticks_in_comments(old_files, old_declarations, enumerate(lines[:], 1), path))
         newlines = enum_lines
         for error_check in [line_endings_check,
                             four_spaces_in_second_line,
