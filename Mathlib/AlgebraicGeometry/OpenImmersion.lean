@@ -826,4 +826,42 @@ def Scheme.openCoverOfSuprEqTop {s : Type*} (X : Scheme) (U : s → Opens X)
     exact (Opens.mem_iSup.mp this).choose_spec
 #align algebraic_geometry.Scheme.open_cover_of_supr_eq_top AlgebraicGeometry.Scheme.openCoverOfSuprEqTop
 
+section category
+
+/--
+A morphism between open covers `𝓤 ⟶ 𝓥` indicates that `𝓤` is a refinement of `𝓥`.
+Since open covers of schemes are indexed, the definition also involves a map on the
+indexing types.
+-/
+structure Scheme.OpenCover.Hom {X : Scheme.{u}} (𝓤 𝓥 : Scheme.OpenCover.{v} X) where
+  /-- The map on indexing types associated to a morphism of open covers. -/
+  idx : 𝓤.J → 𝓥.J
+  /-- The morphism between open subsets associated to a morphism of open covers. -/
+  app (j : 𝓤.J) : 𝓤.obj j ⟶ 𝓥.obj (idx j)
+  isOpen (j : 𝓤.J) : IsOpenImmersion (app j) := by infer_instance
+  w (j : 𝓤.J) : app j ≫ 𝓥.map _ = 𝓤.map _ := by aesop_cat
+
+attribute [reassoc (attr := simp)] Scheme.OpenCover.Hom.w
+attribute [instance] Scheme.OpenCover.Hom.isOpen
+
+/-- The identity morphism in the category of open covers of a scheme. -/
+@[simps]
+def Scheme.OpenCover.Hom.id {X : Scheme.{u}} (𝓤 : Scheme.OpenCover.{v} X) : 𝓤.Hom 𝓤 where
+  idx j := j
+  app j := 𝟙 _
+
+/-- The composition of two morphisms in the category of open covers of a scheme. -/
+@[simps]
+def Scheme.OpenCover.Hom.comp {X : Scheme.{u}} {𝓤 𝓥 𝓦 : Scheme.OpenCover.{v} X}
+    (f : 𝓤.Hom 𝓥) (g : 𝓥.Hom 𝓦) : 𝓤.Hom 𝓦 where
+  idx j := g.idx <| f.idx j
+  app j := f.app _ ≫ g.app _
+
+instance Scheme.OpenCover.category {X : Scheme.{u}} : Category (Scheme.OpenCover.{v} X) where
+  Hom 𝓤 𝓥 := 𝓤.Hom 𝓥
+  id := Scheme.OpenCover.Hom.id
+  comp f g := f.comp g
+
+end category
+
 end AlgebraicGeometry
