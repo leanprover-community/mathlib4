@@ -79,13 +79,6 @@ theorem preregular : Preregular D := e.inverse.reflects_preregular
 instance [EssentiallySmall C] :
     Preregular (SmallModel C) := (equivSmallModel C).preregular
 
-/--
-Transferring the regular topology along an equivalence of categories gives the regular topology.
--/
-theorem preregular_eq : haveI := preregular e
-    (e.locallyCoverDense (regularTopology C)).inducedTopology =
-    regularTopology D := (regularTopology.eq_induced e.inverse).symm
-
 instance : haveI := preregular e
     e.TransportsGrothendieckTopology (regularTopology C) (regularTopology D) where
   eq_inducedTopology := regularTopology.eq_induced e.inverse
