@@ -146,7 +146,8 @@ noncomputable def Borcherds_id [CommRing R] [AddCommGroup V] [NonAssocNonUnitalV
 
 /-- The associativity property of vertex algebras. -/
 def associativity [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
-    (a b c : V) (s t : ℤ) : Prop := ncoef R (Y R (ncoef R (Y R a) t b)) s c = Finset.sum (Finset.range
+    (a b c : V) (s t : ℤ) : Prop :=
+  ncoef R (Y R (ncoef R (Y R a) t b)) s c = Finset.sum (Finset.range
     (Int.toNat (-s - order R b c))) (fun i ↦ (-1)^i • (Ring.choose (t : ℤ)  i) •
     (ncoef R (Y R a) (t-i) (ncoef R (Y R b) (s+i) c))) + Finset.sum (Finset.range (Int.toNat
     (- order R a c))) (fun i ↦ (-1: ℤˣ)^(t+i+1) • (Ring.choose t i) • ncoef R (Y R b) (s+t-i)

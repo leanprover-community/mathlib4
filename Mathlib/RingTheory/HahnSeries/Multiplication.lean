@@ -160,7 +160,8 @@ section SMulZeroClass
 
 variable [Zero R] [AddCommMonoid V]
 
-instance instRSMulZeroClass [PartialOrder Γ] [SMulZeroClass R V] : SMulZeroClass R (HahnModule Γ R V) :=
+instance instRSMulZeroClass [PartialOrder Γ] [SMulZeroClass R V] :
+    SMulZeroClass R (HahnModule Γ R V) :=
   inferInstanceAs <| SMulZeroClass R (HahnSeries Γ V)
 
 @[simp] theorem of_symm_smul [PartialOrder Γ] [SMulZeroClass R V] (r : R) (x : HahnModule Γ R V) :
