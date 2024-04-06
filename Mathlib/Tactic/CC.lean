@@ -68,6 +68,7 @@ open Lean Meta Elab Tactic Parser.Tactic Std
 
 namespace Mathlib.Tactic.CC
 
+@[nolint docBlame]
 scoped elab "#?" : command =>
   return
   -- logInfo "The English of this document is possibly poor, please correct."
@@ -454,6 +455,7 @@ structure SymmCongruencesKey where
 
 abbrev SymmCongruences := Std.HashMap SymmCongruencesKey (List (Expr × Name))
 
+/-- Stores the root representatives of subsingletons. -/
 abbrev SubsingletonReprs := RBExprMap Expr
 
 /-- Stores the root representatives of `.instImplicit` arguments. -/
@@ -473,7 +475,6 @@ structure CCState extends CCConfig where
   congruences : Congruences := ∅
   symmCongruences : SymmCongruences := ∅
   subsingletonReprs : SubsingletonReprs := ∅
-  /-- Stores the root representatives of `.instImplicit` arguments. -/
   instImplicitReprs : InstImplicitReprs := ∅
   /-- The congruence closure module has a mode where the root of each equivalence class is marked as
       an interpreted/abstract value. Moreover, in this mode proof production is disabled.
@@ -484,7 +485,6 @@ structure CCState extends CCConfig where
   canOps : RBExprMap Expr := ∅
   /-- Whether the canonical operator is suppoted by AC. -/
   opInfo : RBExprMap Bool := ∅
-  nextACIdx : Nat := 0
   acEntries : RBExprMap ACEntry := ∅
   acR : RBACAppsMap (ACApps × DelayedExpr) := ∅
   /-- Returns true if the `CCState` is inconsistent. For example if it had both `a = b` and `a ≠ b`
@@ -497,6 +497,10 @@ structure CCState extends CCConfig where
 #align cc_state Mathlib.Tactic.CC.CCState
 #align cc_state.inconsistent Mathlib.Tactic.CC.CCState.inconsistent
 #align cc_state.gmt Mathlib.Tactic.CC.CCState.gmt
+
+attribute [inherit_doc Entries] CCState.entries
+attribute [inherit_doc SubsingletonReprs] CCState.subsingletonReprs
+attribute [inherit_doc InstImplicitReprs] CCState.instImplicitReprs
 
 def CCState.mkEntryCore (ccs : CCState) (e : Expr) (interpreted : Bool) (constructor : Bool)
     (gen : Nat) : CCState :=
@@ -1713,8 +1717,7 @@ def internalizeACVar (e : Expr) : CCM Bool := do
   if ccs.acEntries.contains e then return false
   modify fun _ =>
     { ccs with
-      acEntries := ccs.acEntries.insert e { idx := ccs.nextACIdx }
-      nextACIdx := ccs.nextACIdx + 1 }
+      acEntries := ccs.acEntries.insert e { idx := ccs.acEntries.size } }
   setACVar e
   return true
 
