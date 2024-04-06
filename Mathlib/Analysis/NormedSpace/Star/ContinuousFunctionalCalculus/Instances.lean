@@ -37,7 +37,7 @@ section Normal
 instance IsStarNormal.cfc_map {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R]
     [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A] [Ring A]
     [StarRing A] [Algebra R A] [ContinuousFunctionalCalculus R p] (a : A) (f : R → R) :
-    IsStarNormal (cfc a f) where
+    IsStarNormal (cfc f a) where
   star_comm_self := by
     rw [Commute, SemiconjBy]
     by_cases h : ContinuousOn f (spectrum R a)
@@ -72,13 +72,13 @@ contained in `ℝ`. -/
 lemma isSelfAdjoint_iff_isStarNormal_and_spectrumRestricts {a : A} :
     IsSelfAdjoint a ↔ IsStarNormal a ∧ SpectrumRestricts a Complex.reCLM := by
   refine ⟨fun ha ↦ ⟨ha.isStarNormal, ⟨fun x hx ↦ ?_, Complex.ofReal_re⟩⟩, ?_⟩
-  · have := eqOn_of_cfc_eq_cfc a <| (cfc_star a (id : ℂ → ℂ)).symm ▸ (cfc_id ℂ a).symm ▸ ha.star_eq
+  · have := eqOn_of_cfc_eq_cfc <| (cfc_star (id : ℂ → ℂ) a).symm ▸ (cfc_id ℂ a).symm ▸ ha.star_eq
     exact Complex.conj_eq_iff_re.mp (by simpa using this hx)
   · rintro ⟨ha₁, ha₂⟩
     rw [isSelfAdjoint_iff]
     nth_rw 2 [← cfc_id ℂ a]
     rw [← cfc_star_id a (R := ℂ)]
-    refine cfc_congr a fun x hx ↦ ?_
+    refine cfc_congr fun x hx ↦ ?_
     obtain ⟨x, -, rfl⟩ := ha₂.algebraMap_image.symm ▸ hx
     exact Complex.conj_ofReal _
 
@@ -103,8 +103,8 @@ lemma unitary_iff_isStarNormal_and_spectrum_subset_circle {u : A} :
   · have h_normal := isStarNormal_of_mem_unitary hu
     refine ⟨h_normal, ?_⟩
     have h := unitary.star_mul_self_of_mem hu
-    rw [← cfc_id ℂ u, ← cfc_star u id, ← cfc_mul .., ← cfc_one ℂ u] at h
-    have := eqOn_of_cfc_eq_cfc u h
+    rw [← cfc_id ℂ u, ← cfc_star id u, ← cfc_mul .., ← cfc_one ℂ u] at h
+    have := eqOn_of_cfc_eq_cfc h
     peel this with x hx _
     rw [SetLike.mem_coe, mem_circle_iff_normSq]
     simpa using congr($(this).re)
@@ -113,7 +113,7 @@ lemma unitary_iff_isStarNormal_and_spectrum_subset_circle {u : A} :
     simp only [id_eq]
     constructor
     all_goals
-      apply cfc_congr _ (fun x hx ↦ ?_)
+      apply cfc_congr (fun x hx ↦ ?_)
       simp only [RCLike.star_def, mul_comm x]
       apply hu at hx
       rwa [SetLike.mem_coe, mem_circle_iff_normSq, ← Complex.ofReal_injective.eq_iff,
@@ -135,18 +135,18 @@ lemma CFC.exists_sqrt_of_isSelfAdjoint_of_spectrumRestricts {A : Type*} [Ring A]
     [TopologicalSpace A] [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
     {a : A} (ha₁ : IsSelfAdjoint a) (ha₂ : SpectrumRestricts a ContinuousMap.realToNNReal) :
     ∃ x : A, IsSelfAdjoint x ∧ SpectrumRestricts x ContinuousMap.realToNNReal ∧ x ^ 2 = a := by
-  use cfc a Real.sqrt, cfc_predicate a Real.sqrt
+  use cfc Real.sqrt a, cfc_predicate Real.sqrt a
   constructor
-  · simpa only [SpectrumRestricts.nnreal_iff, cfc_map_spectrum a Real.sqrt, Set.mem_image,
+  · simpa only [SpectrumRestricts.nnreal_iff, cfc_map_spectrum Real.sqrt a, Set.mem_image,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] using fun x _ ↦ Real.sqrt_nonneg x
   · rw [← cfc_pow ..]
     nth_rw 2 [← cfc_id ℝ a]
-    apply cfc_congr a fun x hx ↦ ?_
+    apply cfc_congr fun x hx ↦ ?_
     rw [SpectrumRestricts.nnreal_iff] at ha₂
     apply ha₂ x at hx
     simp [Real.sq_sqrt hx]
 
-variable {A : Type*} [Ring A] [PartialOrder A] [StarOrderedRing A] [TopologicalSpace A]
+variable {A : Type*} [Ring A] [PartialOrder A] [StarRing A] [StarOrderedRing A] [TopologicalSpace A]
 variable [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
 variable [NonnegSpectrumClass ℝ A] [UniqueContinuousFunctionalCalculus ℝ A]
 
@@ -230,12 +230,12 @@ lemma SpectrumRestricts.smul_of_nonneg {A : Type*} [Ring A] [Algebra ℝ A] {a :
 lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b), 0 ≤ x := by
   set a := star b * b
   have a_def : a = star b * b := rfl
-  let a_neg : A := cfc a (fun x ↦ (- ContinuousMap.id ℝ ⊔ 0) x)
+  let a_neg : A := cfc (fun x ↦ (- ContinuousMap.id ℝ ⊔ 0) x) a
   set c := b * a_neg
   have h_eq_a_neg : - (star c * c) = a_neg ^ 3 := by
     simp only [c, a_neg, star_mul]
     rw [← mul_assoc, mul_assoc _ _ b, ← cfc_star, ← cfc_id' ℝ (star b * b), a_def, ← neg_mul]
-    rw [← cfc_mul (star b * b) _ _ (by simp; fun_prop), neg_mul]
+    rw [← cfc_mul _ _ (star b * b) (by simp; fun_prop), neg_mul]
     simp only [ContinuousMap.coe_neg, ContinuousMap.coe_id, Pi.sup_apply, Pi.neg_apply,
       star_trivial]
     rw [← cfc_mul .., ← cfc_neg .., ← cfc_pow ..]
@@ -248,8 +248,8 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
       simp [sup_eq_right.mpr hx.le]
   have h_c_spec₀ : SpectrumRestricts (- (star c * c)) (ContinuousMap.realToNNReal ·) := by
     simp only [SpectrumRestricts.nnreal_iff, h_eq_a_neg]
-    rw [← cfc_pow _ _ _ (.star_mul_self b)]
-    simp only [cfc_map_spectrum (R := ℝ) (star b * b) (fun x => (-ContinuousMap.id ℝ ⊔ 0) x ^ 3)]
+    rw [← cfc_pow _ _ (ha := .star_mul_self b)]
+    simp only [cfc_map_spectrum (R := ℝ) (fun x => (-ContinuousMap.id ℝ ⊔ 0) x ^ 3) (star b * b)]
     rintro - ⟨x, -, rfl⟩
     simp
   have c_eq := star_mul_self_add_self_mul_star c
@@ -272,12 +272,12 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
     exacts [le_rfl, h_c_spec₁ x hx]
   rw [h_c_spec₂.eq_zero_of_neg (.star_mul_self c) h_c_spec₀, neg_zero] at h_eq_a_neg
   simp only [a_neg] at h_eq_a_neg
-  rw [← cfc_pow _ _ _ (by aesop (add simp a)), ← cfc_zero a (R := ℝ)] at h_eq_a_neg
+  rw [← cfc_pow _ _ (ha := by aesop (add simp a)), ← cfc_zero a (R := ℝ)] at h_eq_a_neg
   intro x hx
   by_contra! hx'
   rw [← neg_pos] at hx'
   apply (pow_pos hx' 3).ne
-  have h_eqOn := eqOn_of_cfc_eq_cfc (star b * b) h_eq_a_neg
+  have h_eqOn := eqOn_of_cfc_eq_cfc (a := star b * b) h_eq_a_neg
   simpa [sup_eq_left.mpr hx'.le] using h_eqOn hx
 
 end SpectrumRestricts
@@ -285,7 +285,7 @@ end SpectrumRestricts
 section NonnegSpectrumClass
 
 variable {A : Type*} [NormedRing A] [CompleteSpace A]
-variable [PartialOrder A] [StarOrderedRing A] [CstarRing A]
+variable [PartialOrder A] [StarRing A] [StarOrderedRing A] [CstarRing A]
 variable [NormedAlgebra ℂ A] [StarModule ℂ A]
 
 instance CstarRing.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A where
@@ -319,7 +319,7 @@ lemma cfcHom_real_eq_restrict {a : A} (ha : IsSelfAdjoint a) :
   ha.spectrumRestricts.cfcHom_eq_restrict Complex.isometry_ofReal ha ha.isStarNormal
 
 lemma cfc_real_eq_complex {a : A} (f : ℝ → ℝ) (ha : IsSelfAdjoint a := by cfc_tac)  :
-    cfc a f = cfc a (fun x ↦ f x.re : ℂ → ℂ) := by
+    cfc f a = cfc (fun x ↦ f x.re : ℂ → ℂ) a := by
   have := UniqueContinuousFunctionalCalculus.compactSpace_spectrum a (R := ℂ)
   replace ha : IsSelfAdjoint a := ha -- hack to avoid issues caused by autoParam
   exact ha.spectrumRestricts.cfc_eq_restrict (f := Complex.reCLM) Complex.isometry_ofReal ha
@@ -331,11 +331,10 @@ section NNRealEqReal
 
 open NNReal
 
-variable {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [StarOrderedRing A]
-  [Algebra ℝ A] [TopologicalRing A] [ContinuousStar A] [StarModule ℝ A]
+variable {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [StarRing A]
+  [StarOrderedRing A] [Algebra ℝ A] [TopologicalRing A] [ContinuousStar A] [StarModule ℝ A]
   [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
-  [ContinuousFunctionalCalculus ℝ≥0 ((0 : A) ≤ ·)]
-  [UniqueContinuousFunctionalCalculus ℝ A]
+  [ContinuousFunctionalCalculus ℝ≥0 ((0 : A) ≤ ·)] [UniqueContinuousFunctionalCalculus ℝ A]
   [NonnegSpectrumClass ℝ A]
 
 lemma cfcHom_nnreal_eq_restrict {a : A} (ha : 0 ≤ a) :
@@ -345,7 +344,7 @@ lemma cfcHom_nnreal_eq_restrict {a : A} (ha : 0 ≤ a) :
   apply (SpectrumRestricts.nnreal_of_nonneg ha).cfcHom_eq_restrict isometry_subtype_coe
 
 lemma cfc_nnreal_eq_real {a : A} (f : ℝ≥0 → ℝ≥0) (ha : 0 ≤ a := by cfc_tac)  :
-    cfc a f = cfc a (fun x ↦ f x.toNNReal : ℝ → ℝ) := by
+    cfc f a = cfc (fun x ↦ f x.toNNReal : ℝ → ℝ) a := by
   have := UniqueContinuousFunctionalCalculus.compactSpace_spectrum a (R := ℝ)
   replace ha : 0 ≤ a := ha -- hack to avoid issues caused by autoParam
   apply (SpectrumRestricts.nnreal_of_nonneg ha).cfc_eq_restrict

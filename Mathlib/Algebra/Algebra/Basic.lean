@@ -94,8 +94,6 @@ the second approach only when you need to weaken a condition on either `R` or `A
 
 universe u v w u₁ v₁
 
-open BigOperators
-
 section Prio
 
 -- We set this priority to 0 later in this file
@@ -717,7 +715,7 @@ section Rat
 
 instance algebraRat {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
   smul := (· • ·)
-  smul_def' := DivisionRing.qsmul_eq_mul'
+  smul_def' := Rat.smul_def
   toRingHom := Rat.castHom α
   commutes' := Rat.cast_commute
 #align algebra_rat algebraRat
