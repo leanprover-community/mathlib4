@@ -58,7 +58,7 @@ def homOfFunctorOfPoints {X Y : Scheme.{u}} (f : X.functorOfPoints ⟶ Y.functor
     X ⟶ Y :=
   X.affineOpenCover.openCover.glueMorphisms (fun j => f.app _ <| X.affineOpenCover.map _) <| by
     intro i j
-    apply schemeToFunctor.map_injective ; ext A e : 3
+    apply schemeToFunctor.map_injective; ext A e : 3
     dsimp at e ⊢
     let 𝓤 := X.affineOpenCover
     obtain ⟨fst',hfst⟩ := Scheme.Spec.map_surjective
