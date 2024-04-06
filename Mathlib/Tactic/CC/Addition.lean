@@ -13,6 +13,10 @@ import Mathlib.Tactic.CC.Lemmas
 
 /-!
 # Process when an new equation is added to a congruence closure
+
+## TODO
+
+This file is ported from C++ code, so many declarations lack documents.
 -/
 
 universe u

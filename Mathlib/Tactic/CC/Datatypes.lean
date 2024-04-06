@@ -15,6 +15,10 @@ import Mathlib.Mathport.Rename
 
 Some of the data structures here are used in multiple parts of the tactic.
 We split them into their own file.
+
+## TODO
+
+This file is ported from C++ code, so many declarations lack documents.
 -/
 
 universe u
