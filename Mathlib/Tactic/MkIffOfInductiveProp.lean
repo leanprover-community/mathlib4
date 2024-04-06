@@ -83,7 +83,7 @@ def mkExistsList (args : List Expr) (inner : Expr) : MetaM Expr :=
     inner
 
 /-- `mkOpList op empty [x1, x2, ...]` is defined as `op x1 (op x2 ...)`.
-  Returns `Empty` if the list is Empty. -/
+  Returns `empty` if the list is empty. -/
 def mkOpList (op : Expr) (empty : Expr) : List Expr → Expr
   | []        => empty
   | [e]       => e

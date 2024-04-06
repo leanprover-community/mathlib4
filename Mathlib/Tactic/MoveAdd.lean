@@ -203,13 +203,13 @@ def reorderUsing (toReorder : List α) (instructions : List (α × Bool)) : List
 
 end reorder
 
-/-- `prepareOp Sum` takes an `Expr`ession as input.  It asSumes that `Sum` is a well-formed
+/-- `prepareOp sum` takes an `Expr`ession as input.  It assumes that `sum` is a well-formed
 term representing a repeated application of a binary operation and that the summands are the
 last two arguments passed to the operation.
 It returns the expression consisting of the operation with all its arguments already applied,
 except for the last two.
 This is similar to `Lean.Meta.mkAdd, Lean.Meta.mkMul`, except that the resulting operation is
-primed to work with operands of the same type as the ones already appearing in `Sum`.
+primed to work with operands of the same type as the ones already appearing in `sum`.
 
 This is useful to rearrange the operands.
 -/
@@ -244,7 +244,7 @@ open Meta
 variable (op : Name)
 
 variable (R : Expr) in
-/-- If `Sum` is an expression consisting of repeated applications of `op`, then `getAddends`
+/-- If `sum` is an expression consisting of repeated applications of `op`, then `getAddends`
 returns the Array of those recursively determined arguments whose type is DefEq to `R`. -/
 partial def getAddends (sum : Expr) : MetaM (Array Expr) := do
   if sum.isAppOf op then
@@ -253,7 +253,7 @@ partial def getAddends (sum : Expr) : MetaM (Array Expr) := do
     return new.foldl Array.append  #[]
   else return #[sum]
 
-/-- Recursively compute the Array of `getAddends` Arrays by recursing into the expression `Sum`
+/-- Recursively compute the Array of `getAddends` Arrays by recursing into the expression `sum`
 looking for instance of the operation `op`.
 
 Possibly returns duplicates!

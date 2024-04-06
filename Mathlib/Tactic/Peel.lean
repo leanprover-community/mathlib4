@@ -171,7 +171,7 @@ def peelCore (goal : MVarId) (e : Expr) (n? : Option Name) (n' : Name) (unfold :
   else
     throwPeelError ty target
 
-/-- Given a list `l` of names, this peels `Num` quantifiers off of the expression `e` and
+/-- Given a list `l` of names, this peels `num` quantifiers off of the expression `e` and
 the main goal and introduces variables with the provided names until the list of names is exhausted.
 Note: the name `n?` (with default `this`) is used for the name of the expression `e` with
 quantifiers peeled. -/

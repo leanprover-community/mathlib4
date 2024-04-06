@@ -35,7 +35,7 @@ namespace Lean.Meta
 /-- Extract the lemma, with arguments, that was used to produce a `RewriteResult`. -/
 -- This assumes that `r.eqProof` was constructed as:
 -- `mkApp6 (.const ``congrArg _) α eType lhs rhs motive heq`
--- in `Lean.Meta.Tactic.Rewrite` and we want `HEq`.
+-- in `Lean.Meta.Tactic.Rewrite` and we want `heq`.
 def RewriteResult.by? (r : RewriteResult) : Option Expr :=
   if r.eqProof.isAppOfArity ``congrArg 6 then
     r.eqProof.getArg! 5

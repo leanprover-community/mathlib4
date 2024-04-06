@@ -146,7 +146,7 @@ def eval (e : Expr) (post := false) : MetaM Simp.Result := do
   let ⟨_, _, e⟩ ← inferTypeQ' e
   (← derive e post).toSimpResult
 
-/-- Erases a name marked `norm_num` by adding it to the state's `Erased` field and
+/-- Erases a name marked `norm_num` by adding it to the state's `erased` field and
   removing it from the state's list of `Entry`s. -/
 def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums :=
  { d with erased := d.erased.insert declName }

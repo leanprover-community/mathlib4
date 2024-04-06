@@ -100,7 +100,7 @@ end Lean
 namespace Mathlib.Tactic
 
 -- FIXME: we cannot write this line when `Lean.Parser.Tactic` is open,
--- or it will get an extra `Group`
+-- or it will get an extra `group`
 syntax withArgs := " with" (ppSpace colGt ident)+
 syntax usingArg := " using " term
 
