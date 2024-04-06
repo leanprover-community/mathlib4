@@ -147,7 +147,6 @@ theorem coe_toLinearMap (f : A →ₐc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
 theorem coe_toAlgHom (f : A →ₐc[R] B) : ⇑(f : A →ₐ[R] B) = f :=
   rfl
 
-@[simp]
 theorem toAlgHom_toLinearMap (f : A →ₐc[R] B) :
     ((f : A →ₐ[R] B) : A →ₗ[R] B) = f := by
   rfl
