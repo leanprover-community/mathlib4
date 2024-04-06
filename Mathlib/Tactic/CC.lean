@@ -55,6 +55,11 @@ Journal of the ACM (1980)
 * The congruence lemmas for dependent type theory as used in Lean are described in
 [Congruence closure in intensional type theory](https://leanprover.github.io/papers/congr.pdf)
 (de Moura, Selsam IJCAR 2016).
+
+## TODO
+
+This file is ported from C++ code, so many declarations lack documents.
+
 -/
 
 universe u
@@ -62,7 +67,8 @@ universe u
 open Lean Meta Elab Tactic Parser.Tactic Std
 
 local elab "#?" : command =>
-  logInfo "The English of this document is possibly poor, please correct."
+  return
+  -- logInfo "The English of this document is possibly poor, please correct."
 
 /--
 The congruence closure tactic `cc` tries to solve the goal by chaining
@@ -1512,9 +1518,8 @@ def simplifyACCore (e lhs rhs : ACApps) (H : DelayedExpr) :
     return (rhs, H)
   else
     let .apps op _ := e | failure
-    let dummy := Expr.sort .zero
     let newArgs := e.diff lhs #[]
-    let r : ACApps := if newArgs.isEmpty then dummy else .mkApps op newArgs
+    let r : ACApps := if newArgs.isEmpty then default else .mkApps op newArgs
     let newArgs := ACApps.append op rhs newArgs
     let newE := ACApps.mkApps op newArgs
     let some true := (← get).opInfo.find? op | failure
@@ -1604,15 +1609,14 @@ def composeAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
       eraseRRHSOccs Rrhs Rlhs
       insertRRHSOccs newRrhs Rlhs
       let ccs ← get
-      let oldRw :=
-        paren (ccs.ppACApps Rlhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps Rrhs)
-      let newRw :=
-        paren (ccs.ppACApps lhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps rhs)
-      let r :=
+      trace[Debug.Meta.Tactic.cc.ac] group <|
+        let oldRw :=
+          paren (ccs.ppACApps Rlhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps Rrhs)
+        let newRw :=
+          paren (ccs.ppACApps lhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps rhs)
         "compose: " ++ nest 9 (group
           (oldRw ++ ofFormat (Format.line ++ "with" ++ .line) ++ newRw) ++
             ofFormat (Format.line ++ ":=" ++ .line) ++ ccs.ppACApps newRrhs)
-      trace[Debug.Meta.Tactic.cc.ac] group r
 
 open MessageData in
 def collapseAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
@@ -1629,15 +1633,14 @@ def collapseAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
       let newRH := DelayedExpr.eqTransOpt newRlhs Rlhs Rrhs newRlhsEqRlhs RH
       modifyACTodo fun todo => todo.push (newRlhs, Rrhs, newRH)
       let ccs ← get
-      let newRw :=
-        paren (ccs.ppACApps lhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps rhs)
-      let oldRw :=
-        paren (ccs.ppACApps Rrhs ++ ofFormat (Format.line ++ "<--" ++ .line) ++ ccs.ppACApps Rlhs)
-      let r :=
+      trace[Debug.Meta.Tactic.cc.ac] group <|
+        let newRw :=
+          paren (ccs.ppACApps lhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps rhs)
+        let oldRw :=
+          paren (ccs.ppACApps Rrhs ++ ofFormat (Format.line ++ "<--" ++ .line) ++ ccs.ppACApps Rlhs)
         "collapse: " ++ nest 10 (group
           (newRw ++ ofFormat (Format.line ++ "at" ++ .line) ++ oldRw) ++
             ofFormat (Format.line ++ ":=" ++ .line) ++ ccs.ppACApps newRlhs)
-      trace[Debug.Meta.Tactic.cc.ac] group r
 
 open MessageData in
 def superposeAC (ts a : ACApps) (tsEqa : DelayedExpr) : CCM Unit := do
@@ -1665,17 +1668,16 @@ def superposeAC (ts a : ACApps) (tsEqa : DelayedExpr) : CCM Unit := do
         let raEqsb ← mkACSuperposeProof ra sb a b r s ts tr tsEqa trEqb
         modifyACTodo fun todo => todo.push (ra, sb, raEqsb)
         let ccs ← get
-        let rw₁ :=
-          paren (ccs.ppACApps ts ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps a)
-        let rw₂ :=
-          paren (ccs.ppACApps tr ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps b)
-        let eq :=
-          paren (ccs.ppACApps ra ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps sb)
-        let r :=
-        "superpose: " ++ nest 11 (group
-          (rw₁ ++ ofFormat (Format.line ++ "with" ++ .line) ++ rw₂) ++
-            ofFormat (Format.line ++ ":=" ++ .line) ++ eq)
-        trace[Debug.Meta.Tactic.cc.ac] group r
+        trace[Debug.Meta.Tactic.cc.ac] group <|
+          let rw₁ :=
+            paren (ccs.ppACApps ts ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps a)
+          let rw₂ :=
+            paren (ccs.ppACApps tr ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps b)
+          let eq :=
+            paren (ccs.ppACApps ra ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps sb)
+          "superpose: " ++ nest 11 (group
+            (rw₁ ++ ofFormat (Format.line ++ "with" ++ .line) ++ rw₂) ++
+              ofFormat (Format.line ++ ":=" ++ .line) ++ eq)
 
 open MessageData in
 def processAC : CCM Unit := do
@@ -1721,14 +1723,14 @@ def processAC : CCM Unit := do
     -- Superposition
     superposeAC lhs rhs H
 
-    -- Update R
+    -- Update acR
     modify fun ccs => { ccs with acR := ccs.acR.insert lhs (rhs, H) }
     insertRBHSOccs lhs rhs
 
     let ccs ← get
-    let newRw :=
-      group (ccs.ppACApps lhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps rhs)
-    trace[Debug.Meta.Tactic.cc.ac] group ("new rw: " ++ newRw)
+    trace[Debug.Meta.Tactic.cc.ac] group <|
+      "new rw: " ++
+        group (ccs.ppACApps lhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps rhs)
 
 def addACEq (e₁ e₂ : Expr) : CCM Unit := do
   dbgTraceACEq "cc eq:" e₁ e₂
@@ -1780,9 +1782,9 @@ def internalizeAC (e : Expr) (parent? : Option Expr) : CCM Unit := do
   let pr ← mkACProof norme repe
 
   let ccs ← get
-  let d := paren (ccs.ppACApps e ++ ofFormat (" :=" ++ Format.line) ++ ofExpr e)
-  let r := "new term: " ++ d ++ ofFormat (Format.line ++ "===>" ++ .line) ++ ccs.ppACApps rep
-  trace[Debug.Meta.Tactic.cc.ac] group r
+  trace[Debug.Meta.Tactic.cc.ac] group <|
+    let d := paren (ccs.ppACApps e ++ ofFormat (" :=" ++ Format.line) ++ ofExpr e)
+    "new term: " ++ d ++ ofFormat (Format.line ++ "===>" ++ .line) ++ ccs.ppACApps rep
 
   modifyACTodo fun todo => todo.push (e, rep, pr)
   processAC
@@ -2771,8 +2773,49 @@ def _root_.Lean.MVarId.cc (m : MVarId) : MetaM Unit :=
   m.ccCore {}
 #align tactic.cc Lean.MVarId.cc
 
-elab_rules : tactic
-  | `(tactic| cc) => withMainContext do liftMetaFinishingTactic (·.cc)
+/--
+The congruence closure tactic `cc` tries to solve the goal by chaining
+equalities from context and applying congruence (i.e. if `a = b`, then `f a = f b`).
+It is a finishing tactic, i.e. it is meant to close
+the current goal, not to make some inconclusive progress.
+A mostly trivial example would be:
+
+```lean
+example (a b c : ℕ) (f : ℕ → ℕ) (h: a = b) (h' : b = c) : f a = f c := by
+  cc
+```
+
+As an example requiring some thinking to do by hand, consider:
+
+```lean
+example (f : ℕ → ℕ) (x : ℕ)
+    (H1 : f (f (f x)) = x) (H2 : f (f (f (f (f x)))) = x) :
+    f x = x := by
+  cc
+```
+
+The tactic works by building an equality matching graph. It's a graph where
+the vertices are terms and they are linked by edges if they are known to
+be equal. Once you've added all the equalities in your context, you take
+the transitive closure of the graph and, for each connected component
+(i.e. equivalence class) you can elect a term that will represent the
+whole class and store proofs that the other elements are equal to it.
+You then take the transitive closure of these equalities under the
+congruence lemmas.
+
+The `cc` implementation in Lean does a few more tricks: for example it
+derives `a = b` from `Nat.succ a = Nat.succ b`, and `Nat.succ a != Nat.zero` for any `a`.
+
+* The starting reference point is Nelson, Oppen, [Fast decision procedures based on congruence
+closure](http://www.cs.colorado.edu/~bec/courses/csci5535-s09/reading/nelson-oppen-congruence.pdf),
+Journal of the ACM (1980)
+
+* The congruence lemmas for dependent type theory as used in Lean are described in
+[Congruence closure in intensional type theory](https://leanprover.github.io/papers/congr.pdf)
+(de Moura, Selsam IJCAR 2016).
+-/
+elab (name := Lean.Parser.Tactic.cc) "cc" : tactic =>
+  withMainContext <| liftMetaFinishingTactic (·.cc)
 
 #noalign tactic.cc_dbg_core
 
