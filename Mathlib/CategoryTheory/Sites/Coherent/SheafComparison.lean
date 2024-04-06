@@ -5,8 +5,8 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 import Mathlib.CategoryTheory.Sites.InducedTopology
-import Mathlib.CategoryTheory.Sites.Coherent.ReflectCoherent
-import Mathlib.CategoryTheory.Sites.Coherent.ReflectRegular
+import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
+import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 /-!
 
 # Categories of coherent sheaves
@@ -62,25 +62,25 @@ theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
       rw [this]
       exact S.downward_closed h₁ _
 
-lemma eq_induced : haveI := reflects_precoherent F
+lemma eq_induced : haveI := F.reflects_precoherent
     coherentTopology C =
       F.inducedTopologyOfIsCoverDense (coherentTopology _) := by
   ext X S
-  have := reflects_precoherent F
+  have := F.reflects_precoherent
   rw [← exists_effectiveEpiFamily_iff_mem_induced F X]
   rw [← coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily S]
 
-lemma coverPreserving : haveI := reflects_precoherent F
+lemma coverPreserving : haveI := F.reflects_precoherent
     CoverPreserving (coherentTopology _) (coherentTopology _) F := by
   rw [eq_induced F]
   apply LocallyCoverDense.inducedTopology_coverPreserving
 
-instance coverLifting : haveI := reflects_precoherent F
+instance coverLifting : haveI := F.reflects_precoherent
     F.IsCocontinuous (coherentTopology _) (coherentTopology _) := by
   rw [eq_induced F]
   apply LocallyCoverDense.inducedTopology_isCocontinuous
 
-instance isContinuous : haveI := reflects_precoherent F
+instance isContinuous : haveI := F.reflects_precoherent
     F.IsContinuous (coherentTopology _) (coherentTopology _) :=
   Functor.IsCoverDense.isContinuous _ _ _ (coverPreserving F)
 
@@ -99,7 +99,7 @@ The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompH
 (i.e. condensed sets).
 -/
 noncomputable
-def equivalence (A : Type _) [Category.{u+1} A] [HasLimits A] : haveI := reflects_precoherent F
+def equivalence (A : Type _) [Category.{u+1} A] [HasLimits A] : haveI := F.reflects_precoherent
     Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A :=
   Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting F _ _ _
 
@@ -123,7 +123,7 @@ The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompH
 -/
 noncomputable
 def equivalence' (A : Type _) [Category.{u+1} A] [HasLimits A] :
-    haveI := reflects_precoherent F
+    haveI := F.reflects_precoherent
     Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A :=
   Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting F _ _ _
 
@@ -160,25 +160,25 @@ theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
       rw [this]
       exact S.downward_closed h₁ _
 
-lemma eq_induced : haveI := reflects_preregular F
+lemma eq_induced : haveI := F.reflects_preregular
     regularTopology C =
       F.inducedTopologyOfIsCoverDense (regularTopology _) := by
   ext X S
-  have := reflects_preregular F
+  have := F.reflects_preregular
   rw [← exists_effectiveEpi_iff_mem_induced F X]
   rw [← mem_sieves_iff_hasEffectiveEpi S]
 
-lemma coverPreserving : haveI := reflects_preregular F
+lemma coverPreserving : haveI := F.reflects_preregular
     CoverPreserving (regularTopology _) (regularTopology _) F := by
   rw [eq_induced F]
   apply LocallyCoverDense.inducedTopology_coverPreserving
 
-instance coverLifting : haveI := reflects_preregular F
+instance coverLifting : haveI := F.reflects_preregular
     F.IsCocontinuous (regularTopology _) (regularTopology _) := by
   rw [eq_induced F]
   apply LocallyCoverDense.inducedTopology_isCocontinuous
 
-instance isContinuous : haveI := reflects_preregular F
+instance isContinuous : haveI := F.reflects_preregular
     F.IsContinuous (regularTopology _) (regularTopology _) :=
   Functor.IsCoverDense.isContinuous _ _ _ (coverPreserving F)
 
@@ -197,7 +197,7 @@ The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompH
 (i.e. condensed sets).
 -/
 noncomputable
-def equivalence (A : Type _) [Category.{u+1} A] [HasLimits A] : haveI := reflects_preregular F
+def equivalence (A : Type _) [Category.{u+1} A] [HasLimits A] : haveI := F.reflects_preregular
     Sheaf (regularTopology C) A ≌ Sheaf (regularTopology D) A :=
   Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting F _ _ _
 
