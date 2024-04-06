@@ -97,21 +97,28 @@ instance : Full schemeToFunctor where
   witness := by
     intro X Y f
     ext A e : 3
-    dsimp at e ⊢
-    let a := e ≫ homOfFunctorOfPoints f
-    let b := f.app A e
-    dsimp at b
-    change a = b
-    let 𝓥 := Y.affineOpenCover
-    let 𝓤a := 𝓥.openCover.pullbackCover a
-    let 𝓤b := 𝓥.openCover.pullbackCover b
-    let 𝓤' := 𝓤a.inter 𝓤b
-    let ιa : 𝓤' ⟶ 𝓤a := 𝓤a.inl 𝓤b
-    let ιb : 𝓤' ⟶ 𝓤b := Scheme.OpenCover.inr 𝓤a 𝓤b
-    let 𝓤 := 𝓤'.affineRefinement
-    let ι : 𝓤.openCover ⟶ 𝓤' := Scheme.OpenCover.fromAffineRefinement _
-    apply Scheme.OpenCover.hom_ext_refinement 𝓤.openCover 𝓥.openCover _ _ (ι ≫ ιa) (ι ≫ ιb)
+    dsimp [homOfFunctorOfPoints] at e ⊢
+    let 𝓤 := X.affineCover
+    let 𝓥 := 𝓤.pullbackCover e
+    let 𝓦 := 𝓥.affineRefinement
+    let ι : 𝓦.openCover ⟶ 𝓥 := 𝓥.fromAffineRefinement
+    apply 𝓦.openCover.hom_ext
     intro j
-    sorry
+    dsimp
+    have aux : 𝓦.map j ≫ e = ι.app j ≫ Limits.pullback.snd ≫ X.affineCover.map j.fst := by
+      have := ι.w j
+      dsimp at this
+      rw [← this]
+      rw [Category.assoc]
+      congr 1
+      apply Limits.pullback.condition
+    rw [reassoc_of% aux, Scheme.OpenCover.ι_glueMorphisms]
+    let ⟨w,hw⟩ := Scheme.Spec.map_surjective (𝓦.map j)
+    have := congr_fun (f.naturality w.unop) e
+    dsimp at this
+    rw [← hw, ← this, hw, aux]
+    let ⟨w,hw⟩ := Scheme.Spec.map_surjective (ι.app j ≫ Limits.pullback.snd)
+    simp only [← Category.assoc, ← hw]
+    exact congr_fun (f.naturality w.unop) (X.affineCover.map j.fst) |>.symm
 
 end AlgebraicGeometry
