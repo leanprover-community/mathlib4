@@ -477,8 +477,8 @@ section CountableOrCountablyGenerated
 
 variable [MeasurableSpace β]
 
-/-- A class registering that either `α` is countable with measurable singletons or `β` is a
-countably generated measurable space. -/
+/-- A class registering that either `α` is countable or `β` is a countably generated
+measurable space. -/
 class CountableOrCountablyGenerated (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] : Prop :=
   countableOrCountablyGenerated : Countable α ∨ MeasurableSpace.CountablyGenerated β
 
