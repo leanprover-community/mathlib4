@@ -469,6 +469,9 @@ def lint_backticks_in_comments(old_files, old_declarations, lines):
                 # Some declarations are also mathlib4 tactics: skip these.
                 if item in ['group', 'rel', 'ring']:
                     continue
+                elif item in ['irreducible', 'computable']:
+                    # These are keywords, hence should also be left alone.
+                    continue
                 # FIXME: auto-fixing one replaces one item at a time
                 fixed = fixed.replace(f'`{item}`', f'`{old_declarations[item]}`')
                 print(f'old declaration "{item}" mentioned in line: \n{line.strip()}\nfixed line would be\n{fixed.strip()}')
