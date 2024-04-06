@@ -3,6 +3,7 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
+import Mathlib.Data.List.Count
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Permutation
 import Mathlib.Data.List.Pairwise
@@ -136,7 +137,6 @@ open Relator
 
 variable {γ : Type*} {δ : Type*} {r : α → β → Prop} {p : γ → δ → Prop}
 
--- mathport name: «expr ∘r »
 local infixr:80 " ∘r " => Relation.Comp
 
 theorem perm_comp_perm : (Perm ∘r Perm : List α → List α → Prop) = Perm := by
@@ -282,10 +282,8 @@ section
 
 variable {op : α → α → α} [IA : Std.Associative op] [IC : Std.Commutative op]
 
--- mathport name: op
 local notation a " * " b => op a b
 
--- mathport name: foldl
 local notation l " <*> " a => foldl op a l
 
 theorem Perm.fold_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : (l₁ <*> a) = l₂ <*> a :=
