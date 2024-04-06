@@ -106,7 +106,7 @@ class SBtw (α : Type*) where
 export SBtw (sbtw)
 
 /-- A circular preorder is the analogue of a preorder where you can loop around. `≤` and `<` are
-replaced by ternary relations `btw` and `sbtw`. `btw` is reflexive and cyclic. `sbtw` is transitive.
+replaced by ternary relations `btw` and `Sbtw`. `btw` is reflexive and cyclic. `Sbtw` is transitive.
 -/
 class CircularPreorder (α : Type*) extends Btw α, SBtw α where
   /-- `a` is between `a` and `a`. -/
@@ -130,8 +130,8 @@ class CircularPreorder (α : Type*) extends Btw α, SBtw α where
 export CircularPreorder (btw_refl btw_cyclic_left sbtw_trans_left)
 
 /-- A circular partial order is the analogue of a partial order where you can loop around. `≤` and
-`<` are replaced by ternary relations `btw` and `sbtw`. `btw` is reflexive, cyclic and
-antisymmetric. `sbtw` is transitive. -/
+`<` are replaced by ternary relations `btw` and `Sbtw`. `btw` is reflexive, cyclic and
+antisymmetric. `Sbtw` is transitive. -/
 class CircularPartialOrder (α : Type*) extends CircularPreorder α where
   /-- If `b` is between `a` and `c` and also between `c` and `a`, then at least one pair of points
   among `a`, `b`, `c` are identical. -/
@@ -141,8 +141,8 @@ class CircularPartialOrder (α : Type*) extends CircularPreorder α where
 export CircularPartialOrder (btw_antisymm)
 
 /-- A circular order is the analogue of a linear order where you can loop around. `≤` and `<` are
-replaced by ternary relations `btw` and `sbtw`. `btw` is reflexive, cyclic, antisymmetric and total.
-`sbtw` is transitive. -/
+replaced by ternary relations `btw` and `Sbtw`. `btw` is reflexive, cyclic, antisymmetric and total.
+`Sbtw` is transitive. -/
 class CircularOrder (α : Type*) extends CircularPartialOrder α where
   /-- For any triple of points, the second is between the other two one way or another. -/
   btw_total : ∀ a b c : α, btw a b c ∨ btw c b a
