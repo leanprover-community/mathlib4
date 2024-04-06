@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Parity
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.SuccessIfFailWithMsg
@@ -104,7 +106,8 @@ example {x : ℤ} (hx : x ≥ 12) (h : Even x) : Even x := by
 
 example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 1 ≤ x + 1) : x * a + c ≤ x * b + d := by
   success_if_fail_with_msg
-    "rel failed, cannot prove goal by 'substituting' the listed relationships. The steps which could not be automatically justified were: \n0 ≤ x\nc ≤ d"
+    "rel failed, cannot prove goal by 'substituting' the listed relationships. \
+     The steps which could not be automatically justified were:\n0 ≤ x\nc ≤ d"
     (rel [h1])
   have : 0 ≤ x := by linarith
   rel [h1, h2]
@@ -112,8 +115,8 @@ example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 1 ≤ x + 1) : x *
 -- test for a missing `withContext`
 example {x y : ℚ} {n : ℕ} (hx : 0 ≤ x) (hn : 0 < n) : y ≤ x := by
   have h : x < y := test_sorry
-  have _this : x ^ n < y ^ n
-  · rel [h] -- before bugfix: complained "unknown identifier 'h'"
+  have _this : x ^ n < y ^ n := by
+    rel [h] -- before bugfix: complained "unknown identifier 'h'"
   exact test_sorry
 
 /-! ## Non-finishing examples -/

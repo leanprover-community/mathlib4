@@ -3,13 +3,12 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.Algebra.GeomSum
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Equiv
 import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.UniqueFactorizationDomain
-import Mathlib.RingTheory.Ideal.QuotientOperations
 
 #align_import ring_theory.polynomial.basic from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
@@ -47,6 +46,9 @@ variable [Semiring R]
 instance instCharP (p : ℕ) [h : CharP R p] : CharP R[X] p :=
   let ⟨h⟩ := h
   ⟨fun n => by rw [← map_natCast C, ← C_0, C_inj, h]⟩
+
+instance instExpChar (p : ℕ) [h : ExpChar R p] : ExpChar R[X] p := by
+  cases h; exacts [ExpChar.zero, ExpChar.prime ‹_›]
 
 variable (R)
 
@@ -195,7 +197,7 @@ theorem exists_degree_le_of_mem_span {s : Set R[X]} {p : R[X]}
   by_contra! h
   by_cases hp_zero : p = 0
   · rw [hp_zero, degree_zero] at h
-    rcases hs with ⟨x,hx⟩
+    rcases hs with ⟨x, hx⟩
     exact not_lt_bot (h x hx)
   · have : p ∈ degreeLT R (natDegree p) := by
       refine (Submodule.span_le.mpr fun p' p'_mem => ?_) hp
@@ -212,9 +214,8 @@ theorem exists_degree_le_of_mem_span_of_finite {s : Set R[X]} (s_fin : s.Finite)
   rcases Set.Finite.exists_maximal_wrt degree s s_fin hs with ⟨a, has, hmax⟩
   refine ⟨a, has, fun p hp => ?_⟩
   rcases exists_degree_le_of_mem_span hs hp with ⟨p', hp'⟩
-  have p'max := hmax p' hp'.left
   by_cases h : degree a ≤ degree p'
-  · rw [← p'max h] at hp'; exact hp'.right
+  · rw [← hmax p' hp'.left h] at hp'; exact hp'.right
   · exact le_trans hp'.right (not_le.mp h).le
 
 /-- The span of every finite set of polynomials is contained in a `degreeLE n` for some `n`. -/
@@ -521,7 +522,7 @@ variable {q : R[X]}
 
 theorem mem_ker_modByMonic (hq : q.Monic) {p : R[X]} :
     p ∈ LinearMap.ker (modByMonicHom q) ↔ q ∣ p :=
-  LinearMap.mem_ker.trans (dvd_iff_modByMonic_eq_zero hq)
+  LinearMap.mem_ker.trans (modByMonic_eq_zero_iff_dvd hq)
 #align polynomial.mem_ker_mod_by_monic Polynomial.mem_ker_modByMonic
 
 @[simp]
@@ -740,12 +741,12 @@ variable [CommRing R]
 /-- If `P` is a prime ideal of `R`, then `P.R[x]` is a prime ideal of `R[x]`. -/
 theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
     IsPrime (map (C : R →+* R[X]) P : Ideal R[X]) ↔ IsPrime P := by
-  -- Porting note: the following proof avoids quotient rings
+  -- Note: the following proof avoids quotient rings
   -- It can be golfed substantially by using something like
   -- `(Quotient.isDomain_iff_prime (map C P : Ideal R[X]))`
   constructor
   · intro H
-    have := @comap_isPrime R R[X] (R →+* R[X]) _ _ _ C (map C P) H
+    have := comap_isPrime C (map C P)
     convert this using 1
     ext x
     simp only [mem_comap, mem_map_C_iff]
@@ -805,8 +806,7 @@ theorem is_fg_degreeLE [IsNoetherianRing R] (I : Ideal R[X]) (n : ℕ) :
     Submodule.FG (I.degreeLE n) :=
   letI := Classical.decEq R
   isNoetherian_submodule_left.1
-    -- porting note: times out without explicit `R`.
-    (isNoetherian_of_fg_of_noetherian _ ⟨_, (degreeLE_eq_span_X_pow (R := R)).symm⟩) _
+    (isNoetherian_of_fg_of_noetherian _ ⟨_, degreeLE_eq_span_X_pow.symm⟩) _
 #align ideal.is_fg_degree_le Ideal.is_fg_degreeLE
 
 end CommRing
@@ -814,7 +814,6 @@ end CommRing
 end Ideal
 
 variable {σ : Type v} {M : Type w}
-
 variable [CommRing R] [CommRing S] [AddCommGroup M] [Module R M]
 
 section Prime
@@ -823,10 +822,8 @@ variable (σ) {r : R}
 
 namespace Polynomial
 
--- Porting note: this ordering of the argument dramatically speeds up lean
 theorem prime_C_iff : Prime (C r) ↔ Prime r :=
-  ⟨comap_prime C (evalRingHom (0 : R)) fun r => eval_C, by
-    intro hr
+  ⟨comap_prime C (evalRingHom (0 : R)) fun r => eval_C, fun hr => by
     have := hr.1
     rw [← Ideal.span_singleton_prime] at hr ⊢
     · rw [← Set.image_singleton, ← Ideal.map_span]
@@ -840,15 +837,8 @@ end Polynomial
 
 namespace MvPolynomial
 
-/- Porting note: had to move the heavy inference outside the convert call to stop timeouts.
-Also, many @'s. etaExperiment caused more time outs-/
 private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommRing R] [Fintype σ] :
     Prime (C r : MvPolynomial σ R) ↔ Prime r := by
-  let f (d : ℕ) := (finSuccEquiv R d).symm.toMulEquiv
-  let _coe' (d : ℕ) : CoeFun ((MvPolynomial (Fin d) R)[X] ≃* MvPolynomial (Fin (d + 1)) R)
-    (fun _ => (MvPolynomial (Fin d) R)[X] → MvPolynomial (Fin (d + 1)) R) := inferInstance
-  have that (d : ℕ) : @C R (Fin (d+1)) _ r = (f d) (Polynomial.C (@C R (Fin d) _ r)) := by
-    rw [← finSuccEquiv_comp_C_eq_C]; rfl
   rw [(renameEquiv R (Fintype.equivFin σ)).toMulEquiv.prime_iff]
   convert_to Prime (C r) ↔ _
   · congr!
@@ -857,16 +847,12 @@ private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommR
     induction' Fintype.card σ with d hd
     · exact (isEmptyAlgEquiv R (Fin 0)).toMulEquiv.symm.prime_iff
     · rw [hd, ← Polynomial.prime_C_iff]
-      rw [that d]
-      -- Porting note: change ?_ to _ and watch it time out
-      refine @MulEquiv.prime_iff (MvPolynomial (Fin d) R)[X] (MvPolynomial (Fin (d + 1)) R)
-        ?_ ?_ (Polynomial.C (C r)) ?_
+      convert (finSuccEquiv R d).toMulEquiv.symm.prime_iff (p := Polynomial.C (C r))
+      rw [← finSuccEquiv_comp_C_eq_C]; rfl
 
--- Porting note: @'s help with multiple timeouts. It seems like there are too many things to unify
 theorem prime_C_iff : Prime (C r : MvPolynomial σ R) ↔ Prime r :=
   ⟨comap_prime C constantCoeff (constantCoeff_C _), fun hr =>
-    ⟨fun h =>
-      hr.1 <| by
+    ⟨fun h => hr.1 <| by
         rw [← C_inj, h]
         simp,
       fun h =>
@@ -876,11 +862,10 @@ theorem prime_C_iff : Prime (C r : MvPolynomial σ R) ↔ Prime r :=
       fun a b hd => by
       obtain ⟨s, a', b', rfl, rfl⟩ := exists_finset_rename₂ a b
       rw [← algebraMap_eq] at hd
-      have := (@killCompl s σ R _ ((↑) : s → σ) Subtype.coe_injective).toRingHom.map_dvd hd
-      have : algebraMap R _ r ∣ a' * b' := by convert this <;> simp
+      have : algebraMap R _ r ∣ a' * b' := by
+        convert killCompl Subtype.coe_injective |>.toRingHom.map_dvd hd <;> simp
       rw [← rename_C ((↑) : s → σ)]
-      let f := @AlgHom.toRingHom R (MvPolynomial s R)
-        (MvPolynomial σ R) _ _ _ _ _ (@rename _ _ R _ ((↑) : s → σ))
+      let f := (rename (R := R) ((↑) : s → σ)).toRingHom
       exact (((prime_C_iff_of_fintype s).2 hr).2.2 a' b' this).imp f.map_dvd f.map_dvd⟩⟩
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.prime_C_iff MvPolynomial.prime_C_iff
@@ -897,18 +882,23 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
     have : (rename (↑)).toRingHom = eqv.toAlgHom.toRingHom.comp C := by
       apply ringHom_ext
       · intro
-        dsimp
-        erw [iterToSum_C_C, rename_C, rename_C]
+        simp only [eqv, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, rename_C,
+          AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp,
+          AlgEquiv.coe_trans, Function.comp_apply, MvPolynomial.sumAlgEquiv_symm_apply,
+          iterToSum_C_C, renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply]
       · intro
-        dsimp
-        erw [iterToSum_C_X, rename_X, rename_X]
-        rfl
-    rw [← @prime_C_iff (MvPolynomial s R) (↥sᶜ) instCommRingMvPolynomial p]
-    rw [@MulEquiv.prime_iff (MvPolynomial ↑sᶜ (MvPolynomial ↑s R)) (MvPolynomial σ R) (_) (_)]
-    rotate_left
-    exact eqv.toMulEquiv
-    convert Iff.rfl
-    apply RingHom.congr_fun this p
+        simp only [eqv, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, rename_X,
+          AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp,
+          AlgEquiv.coe_trans, Function.comp_apply, MvPolynomial.sumAlgEquiv_symm_apply,
+          iterToSum_C_X, renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply, Sum.swap_inr,
+          Equiv.Set.sumCompl_apply_inl]
+    apply_fun (· p) at this
+    simp_rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe] at this
+    rw [← prime_C_iff, eqv.toMulEquiv.prime_iff, this]
+    simp only [MulEquiv.coe_mk, AlgEquiv.toEquiv_eq_coe, EquivLike.coe_coe, AlgEquiv.trans_apply,
+      MvPolynomial.sumAlgEquiv_symm_apply, renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply,
+      AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp, RingHom.coe_coe,
+      AlgEquiv.coe_trans, Function.comp_apply]
 #align mv_polynomial.prime_rename_iff MvPolynomial.prime_rename_iff
 
 end MvPolynomial
@@ -1124,6 +1114,27 @@ end Polynomial
 
 namespace MvPolynomial
 
+lemma aeval_natDegree_le {R : Type*} [CommSemiring R] {m n : ℕ}
+    (F : MvPolynomial σ R) (hF : F.totalDegree ≤ m)
+    (f : σ → Polynomial R) (hf : ∀ i, (f i).natDegree ≤ n) :
+    (MvPolynomial.aeval f F).natDegree ≤ m * n := by
+  rw [MvPolynomial.aeval_def, MvPolynomial.eval₂]
+  apply (Polynomial.natDegree_sum_le _ _).trans
+  apply Finset.sup_le
+  intro d hd
+  simp_rw [Function.comp_apply, ← C_eq_algebraMap]
+  apply (Polynomial.natDegree_C_mul_le _ _).trans
+  apply (Polynomial.natDegree_prod_le _ _).trans
+  have : ∑ i in d.support, (d i) * n ≤ m * n := by
+    rw [← Finset.sum_mul]
+    apply mul_le_mul' (.trans _ hF) le_rfl
+    rw [MvPolynomial.totalDegree]
+    exact Finset.le_sup_of_le hd le_rfl
+  apply (Finset.sum_le_sum _).trans this
+  rintro i -
+  apply Polynomial.natDegree_pow_le.trans
+  exact mul_le_mul' le_rfl (hf i)
+
 theorem isNoetherianRing_fin_0 [IsNoetherianRing R] :
     IsNoetherianRing (MvPolynomial (Fin 0) R) := by
   apply isNoetherianRing_of_ringEquiv R
@@ -1176,22 +1187,15 @@ theorem noZeroDivisors_of_finite (R : Type u) (σ : Type v) [CommSemiring R] [Fi
 #align mv_polynomial.no_zero_divisors_of_finite MvPolynomial.noZeroDivisors_of_finite
 
 instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
-    NoZeroDivisors (MvPolynomial σ R) :=
-  ⟨fun {p} {q} h => by
-    classical
-    obtain ⟨s, p, rfl⟩ := exists_finset_rename p
-    obtain ⟨t, q, rfl⟩ := exists_finset_rename q
-    have :
-        rename (Subtype.map id (Finset.subset_union_left s t) :
-          { x // x ∈ s } → { x // x ∈ s ∪ t }) p *
-        rename (Subtype.map id (Finset.subset_union_right s t) :
-          { x // x ∈ t } → { x // x ∈ s ∪ t }) q =
-        0 := by
+    NoZeroDivisors (MvPolynomial σ R) where
+  eq_zero_or_eq_zero_of_mul_eq_zero {p q} h := by
+    obtain ⟨s, p, q, rfl, rfl⟩ := exists_finset_rename₂ p q
+    let _nzd := MvPolynomial.noZeroDivisors_of_finite R s
+    have : p * q = 0 := by
       apply rename_injective _ Subtype.val_injective
       simpa using h
-    letI that := MvPolynomial.noZeroDivisors_of_finite R { x // x ∈ s ∪ t }
     rw [mul_eq_zero] at this
-    apply this.imp <;> intro that <;> simpa using congr_arg (rename Subtype.val) that⟩
+    apply this.imp <;> rintro rfl <;> simp
 
 /-- The multivariate polynomial ring over an integral domain is an integral domain. -/
 instance isDomain {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
@@ -1207,10 +1211,10 @@ theorem map_mvPolynomial_eq_eval₂ {S : Type*} [CommRing S] [Finite σ] (ϕ : M
     ϕ p = MvPolynomial.eval₂ (ϕ.comp MvPolynomial.C) (fun s => ϕ (MvPolynomial.X s)) p := by
   cases nonempty_fintype σ
   refine' Trans.trans (congr_arg ϕ (MvPolynomial.as_sum p)) _
-  rw [MvPolynomial.eval₂_eq', ϕ.map_sum]
+  rw [MvPolynomial.eval₂_eq', map_sum ϕ]
   congr
   ext
-  simp only [monomial_eq, ϕ.map_pow, ϕ.map_prod, ϕ.comp_apply, ϕ.map_mul, Finsupp.prod_pow]
+  simp only [monomial_eq, ϕ.map_pow, map_prod ϕ, ϕ.comp_apply, ϕ.map_mul, Finsupp.prod_pow]
 #align mv_polynomial.map_mv_polynomial_eq_eval₂ MvPolynomial.map_mvPolynomial_eq_eval₂
 
 /-- If every coefficient of a polynomial is in an ideal `I`, then so is the polynomial itself,
@@ -1278,13 +1282,9 @@ open UniqueFactorizationMonoid
 
 namespace Polynomial
 
-attribute [-instance] Ring.toSemiring in
 instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid D[X] := by
-  letI := Classical.decEq (Associates D)
-  letI := Classical.decEq D
-  haveI : NormalizationMonoid D := Inhabited.default
-  haveI := toNormalizedGCDMonoid D
-  exact ufm_of_gcd_of_wfDvdMonoid
+  letI := Classical.arbitrary (NormalizedGCDMonoid D)
+  exact ufm_of_decomposition_of_wfDvdMonoid
 #align polynomial.unique_factorization_monoid Polynomial.uniqueFactorizationMonoid
 
 /-- If `D` is a unique factorization domain, `f` is a non-zero polynomial in `D[X]`, then `f` has
@@ -1308,27 +1308,14 @@ end Polynomial
 namespace MvPolynomial
 variable (d : ℕ)
 
-/- Porting note: lean can come up with this instance in infinite time by resolving
-the diamond with CommSemiring.toSemiring. I don't know how to inline this
-attribute for a haveI in the proof of the uniqueFactorizationMonoid_of_fintype.
-The proof times out if we remove these from instance graph for all of
-uniqueFactorizationMonoid_of_fintype. -/
-attribute [-instance] Polynomial.semiring Polynomial.commSemiring in
-private instance : CancelCommMonoidWithZero (MvPolynomial (Fin d) D)[X] := by
-  apply IsDomain.toCancelCommMonoidWithZero
-
-/- Porting note: this can probably be cleaned up a little -/
 private theorem uniqueFactorizationMonoid_of_fintype [Fintype σ] :
     UniqueFactorizationMonoid (MvPolynomial σ D) :=
   (renameEquiv D (Fintype.equivFin σ)).toMulEquiv.symm.uniqueFactorizationMonoid <| by
     induction' Fintype.card σ with d hd
     · apply (isEmptyAlgEquiv D (Fin 0)).toMulEquiv.symm.uniqueFactorizationMonoid
       infer_instance
-    · rw [Nat.succ_eq_add_one d]
-      apply @MulEquiv.uniqueFactorizationMonoid _ _ (_) (_)
-      · exact (finSuccEquiv D d).toMulEquiv.symm
-      · apply @Polynomial.uniqueFactorizationMonoid (MvPolynomial (Fin d) D) _ _ ?_
-        assumption
+    · apply (finSuccEquiv D d).toMulEquiv.symm.uniqueFactorizationMonoid
+      exact Polynomial.uniqueFactorizationMonoid
 
 instance (priority := 100) uniqueFactorizationMonoid :
     UniqueFactorizationMonoid (MvPolynomial σ D) := by
@@ -1347,3 +1334,14 @@ instance (priority := 100) uniqueFactorizationMonoid :
 end MvPolynomial
 
 end UniqueFactorizationDomain
+
+/-- A polynomial over a field which is not a unit must have a monic irreducible factor.
+See also `WfDvdMonoid.exists_irreducible_factor`. -/
+theorem Polynomial.exists_monic_irreducible_factor {F : Type*} [Field F] (f : F[X])
+    (hu : ¬IsUnit f) : ∃ g : F[X], g.Monic ∧ Irreducible g ∧ g ∣ f := by
+  by_cases hf : f = 0
+  · exact ⟨X, monic_X, irreducible_X, hf ▸ dvd_zero X⟩
+  obtain ⟨g, hi, hf⟩ := WfDvdMonoid.exists_irreducible_factor hu hf
+  have ha : Associated g (g * C g.leadingCoeff⁻¹) := associated_mul_unit_right _ _ <|
+    isUnit_C.2 (leadingCoeff_ne_zero.2 hi.ne_zero).isUnit.inv
+  exact ⟨_, monic_mul_leadingCoeff_inv hi.ne_zero, ha.irreducible hi, ha.dvd_iff_dvd_left.1 hf⟩

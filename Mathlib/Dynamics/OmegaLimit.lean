@@ -44,13 +44,13 @@ section omegaLimit
 
 variable {τ : Type*} {α : Type*} {β : Type*} {ι : Type*}
 
-/-- The ω-limit of a set `s` under `ϕ` with respect to a filter `f` is
-    ⋂ u ∈ f, cl (ϕ u s). -/
+/-- The ω-limit of a set `s` under `ϕ` with respect to a filter `f` is `⋂ u ∈ f, cl (ϕ u s)`. -/
 def omegaLimit [TopologicalSpace β] (f : Filter τ) (ϕ : τ → α → β) (s : Set α) : Set β :=
   ⋂ u ∈ f, closure (image2 ϕ u s)
 #align omega_limit omegaLimit
 
 -- mathport name: omega_limit
+@[inherit_doc]
 scoped[omegaLimit] notation "ω" => omegaLimit
 
 -- mathport name: omega_limit.atTop
@@ -60,7 +60,6 @@ scoped[omegaLimit] notation "ω⁺" => omegaLimit Filter.atTop
 scoped[omegaLimit] notation "ω⁻" => omegaLimit Filter.atBot
 
 variable [TopologicalSpace β]
-
 variable (f : Filter τ) (ϕ : τ → α → β) (s s₁ s₂ : Set α)
 
 /-!
@@ -134,11 +133,11 @@ theorem mem_omegaLimit_iff_frequently (y : β) :
   simp_rw [frequently_iff, omegaLimit_def, mem_iInter, mem_closure_iff_nhds]
   constructor
   · intro h _ hn _ hu
-    rcases h _ hu _ hn with ⟨_, _, _, _, ht, hx, hϕtx⟩
-    exact ⟨_, ht, _, hx, by rwa [mem_preimage, hϕtx]⟩
+    rcases h _ hu _ hn with ⟨_, _, _, ht, _, hx, rfl⟩
+    exact ⟨_, ht, _, hx, by rwa [mem_preimage]⟩
   · intro h _ hu _ hn
     rcases h _ hn hu with ⟨_, ht, _, hx, hϕtx⟩
-    exact ⟨_, hϕtx, _, _, ht, hx, rfl⟩
+    exact ⟨_, hϕtx, _, ht, _, hx, rfl⟩
 #align mem_omega_limit_iff_frequently mem_omegaLimit_iff_frequently
 
 /-- An element `y` is in the ω-limit set of `s` w.r.t. `f` if the
@@ -244,15 +243,15 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
     have : ⋃ u ∈ f, j u = ⋃ u : (↥f.sets), j u := biUnion_eq_iUnion _ _
     rw [this, diff_subset_comm, diff_iUnion]
     rw [omegaLimit_eq_iInter_inter _ _ _ hv₁] at hn₂
-    simp_rw [diff_compl]
+    simp_rw [j, diff_compl]
     rw [← inter_iInter]
     exact Subset.trans (inter_subset_right _ _) hn₂
   rcases hk.elim_finite_subcover_image hj₁ hj₂ with ⟨g, hg₁ : ∀ u ∈ g, u ∈ f, hg₂, hg₃⟩
   let w := (⋂ u ∈ g, u) ∩ v
-  have hw₂ : w ∈ f := by simpa [*]
+  have hw₂ : w ∈ f := by simpa [w, *]
   have hw₃ : k \ n ⊆ (closure (image2 ϕ w s))ᶜ := by
     apply Subset.trans hg₃
-    simp only [iUnion_subset_iff, compl_subset_compl]
+    simp only [j, iUnion_subset_iff, compl_subset_compl]
     intros u hu
     mono
     refine' iInter_subset_of_subset u (iInter_subset_of_subset hu _)
@@ -305,7 +304,7 @@ theorem nonempty_omegaLimit_of_isCompact_absorbing [NeBot f] {c : Set β} (hc₁
     (hc₂ : ∃ v ∈ f, closure (image2 ϕ v s) ⊆ c) (hs : s.Nonempty) : (ω f ϕ s).Nonempty := by
   rcases hc₂ with ⟨v, hv₁, hv₂⟩
   rw [omegaLimit_eq_iInter_inter _ _ _ hv₁]
-  apply IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
+  apply IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
   · rintro ⟨u₁, hu₁⟩ ⟨u₂, hu₂⟩
     use ⟨u₁ ∩ u₂, inter_mem hu₁ hu₂⟩
     constructor
@@ -391,7 +390,7 @@ theorem omegaLimit_omegaLimit (hf : ∀ t, Tendsto (t + ·) f f) : ω f ϕ (ω f
   have l₃ : (o ∩ image2 ϕ u s).Nonempty := by
     rcases l₂ with ⟨b, hb₁, hb₂⟩
     exact mem_closure_iff_nhds.mp hb₁ o (IsOpen.mem_nhds ho₂ hb₂)
-  rcases l₃ with ⟨ϕra, ho, ⟨_, _, hr, ha, hϕra⟩⟩
+  rcases l₃ with ⟨ϕra, ho, ⟨_, hr, _, ha, hϕra⟩⟩
   exact ⟨_, hr, ϕra, ⟨_, ha, hϕra⟩, ho₁ ho⟩
 #align flow.omega_limit_omega_limit Flow.omegaLimit_omegaLimit
 

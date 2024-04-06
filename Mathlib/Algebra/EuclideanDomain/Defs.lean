@@ -140,7 +140,7 @@ theorem div_add_mod' (m k : R) : m / k * k + m % k = m := by
 
 theorem mod_eq_sub_mul_div {R : Type*} [EuclideanDomain R] (a b : R) : a % b = a - b * (a / b) :=
   calc
-    a % b = b * (a / b) + a % b - b * (a / b) := (add_sub_cancel' _ _).symm
+    a % b = b * (a / b) + a % b - b * (a / b) := (add_sub_cancel_left _ _).symm
     _ = a - b * (a / b) := by rw [div_add_mod]
 #align euclidean_domain.mod_eq_sub_mul_div EuclideanDomain.mod_eq_sub_mul_div
 
@@ -173,7 +173,7 @@ theorem div_zero (a : R) : a / 0 = 0 :=
 
 section
 
-open Classical
+open scoped Classical
 
 @[elab_as_elim]
 theorem GCD.induction {P : R → R → Prop} (a b : R) (H0 : ∀ x, P 0 x)
@@ -186,7 +186,7 @@ theorem GCD.induction {P : R → R → Prop} (a b : R) (H0 : ∀ x, P 0 x)
   else
     have _ := mod_lt b a0
     H1 _ _ a0 (GCD.induction (b % a) a H0 H1)
-termination_by _ => a
+termination_by a
 #align euclidean_domain.gcd.induction EuclideanDomain.GCD.induction
 
 end
@@ -202,7 +202,7 @@ def gcd (a b : R) : R :=
   else
     have _ := mod_lt b a0
     gcd (b % a) a
-termination_by _ => a
+termination_by a
 #align euclidean_domain.gcd EuclideanDomain.gcd
 
 @[simp]
@@ -226,7 +226,7 @@ def xgcdAux (r s t r' s' t' : R) : R × R × R :=
     let q := r' / r
     have _ := mod_lt r' _hr
     xgcdAux (r' % r) (s' - q * s) (t' - q * t) r s t
-termination_by _ => r
+termination_by r
 #align euclidean_domain.xgcd_aux EuclideanDomain.xgcdAux
 
 @[simp]

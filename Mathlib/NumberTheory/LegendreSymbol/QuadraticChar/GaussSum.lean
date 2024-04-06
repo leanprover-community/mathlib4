@@ -58,7 +58,7 @@ theorem FiniteField.isSquare_two_iff :
     have h₁ := Nat.mod_lt (Fintype.card F) (by decide : 0 < 8)
     revert h₁ h
     generalize Fintype.card F % 8 = n
-    intros; interval_cases n <;> simp_all -- Porting note: was `decide!`
+    intros; interval_cases n <;> simp_all -- Porting note (#11043): was `decide!`
 #align finite_field.is_square_two_iff FiniteField.isSquare_two_iff
 
 /-- The value of the quadratic character at `-2` -/
@@ -88,7 +88,7 @@ theorem FiniteField.isSquare_neg_two_iff :
     have h₁ := Nat.mod_lt (Fintype.card F) (by decide : 0 < 8)
     revert h₁ h
     generalize Fintype.card F % 8 = n
-    intros; interval_cases n <;> simp_all -- Porting note: was `decide!`
+    intros; interval_cases n <;> simp_all -- Porting note (#11043): was `decide!`
 #align finite_field.is_square_neg_two_iff FiniteField.isSquare_neg_two_iff
 
 /-- The relation between the values of the quadratic character of one field `F` at the
@@ -105,7 +105,7 @@ theorem quadraticChar_card_card [DecidableEq F] (hF : ringChar F ≠ 2) {F' : Ty
       contrapose ha
       exact ne_of_eq_of_ne (map_nonunit (quadraticChar F) ha) (mt zero_eq_neg.mp one_ne_zero)
     use hu.unit
-    simp only [IsUnit.unit_spec, ringHomComp_apply, eq_intCast, Ne.def, ha]
+    simp only [χ, IsUnit.unit_spec, ringHomComp_apply, eq_intCast, Ne.def, ha]
     rw [Int.cast_neg, Int.cast_one]
     exact Ring.neg_one_ne_one_of_char_ne_two hF'
   have hχ₂ : χ.IsQuadratic := IsQuadratic.comp (quadraticChar_isQuadratic F) _
@@ -137,7 +137,7 @@ theorem FiniteField.isSquare_odd_prime_iff (hF : ringChar F ≠ 2) {p : ℕ} [Fa
     obtain ⟨n, _, hc⟩ := FiniteField.card F (ringChar F)
     have hchar : ringChar F = ringChar (ZMod p) := by rw [hFp]; exact (ringChar_zmod_n p).symm
     conv => enter [1, 1, 2]; rw [hc, Nat.cast_pow, map_pow, hchar, map_ringChar]
-    simp only [zero_pow n.pos, mul_zero, zero_eq_neg, one_ne_zero, not_false_iff]
+    simp only [zero_pow n.ne_zero, mul_zero, zero_eq_neg, one_ne_zero, not_false_iff]
   · rw [← Iff.not_left (@quadraticChar_neg_one_iff_not_isSquare F _ _ _ _),
       quadraticChar_odd_prime hF hp]
     exact hFp

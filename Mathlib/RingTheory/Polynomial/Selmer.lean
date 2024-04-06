@@ -30,15 +30,15 @@ variable {n : ℕ}
 
 theorem X_pow_sub_X_sub_one_irreducible_aux (z : ℂ) : ¬(z ^ n = z + 1 ∧ z ^ n + z ^ 2 = 0) := by
   rintro ⟨h1, h2⟩
-  replace h3 : z ^ 3 = 1
-  · linear_combination (1 - z - z ^ 2 - z ^ n) * h1 + (z ^ n - 2) * h2
+  replace h3 : z ^ 3 = 1 := by
+    linear_combination (1 - z - z ^ 2 - z ^ n) * h1 + (z ^ n - 2) * h2
   have key : z ^ n = 1 ∨ z ^ n = z ∨ z ^ n = z ^ 2 := by
     rw [← Nat.mod_add_div n 3, pow_add, pow_mul, h3, one_pow, mul_one]
     have : n % 3 < 3 := Nat.mod_lt n zero_lt_three
     interval_cases n % 3 <;>
     simp only [this, pow_zero, pow_one, eq_self_iff_true, or_true_iff, true_or_iff]
   have z_ne_zero : z ≠ 0 := fun h =>
-    zero_ne_one ((zero_pow zero_lt_three).symm.trans (show (0 : ℂ) ^ 3 = 1 from h ▸ h3))
+    zero_ne_one ((zero_pow three_ne_zero).symm.trans (show (0 : ℂ) ^ 3 = 1 from h ▸ h3))
   rcases key with (key | key | key)
   · exact z_ne_zero (by rwa [key, self_eq_add_left] at h1)
   · exact one_ne_zero (by rwa [key, self_eq_add_right] at h1)
@@ -62,7 +62,7 @@ theorem X_pow_sub_X_sub_one_irreducible (hn1 : n ≠ 1) : Irreducible (X ^ n - X
     Units.val_neg, Units.val_one, map_neg, map_one] at h1 h2
   replace h1 : z ^ n = z + 1 := by linear_combination h1
   replace h2 := mul_eq_zero_of_left h2 z
-  rw [add_mul, add_mul, add_zero, mul_assoc (-1 : ℂ), ← pow_succ', Nat.sub_add_cancel hn.le] at h2
+  rw [add_mul, add_mul, add_zero, mul_assoc (-1 : ℂ), ← pow_succ, Nat.sub_add_cancel hn.le] at h2
   rw [h1] at h2 ⊢
   exact ⟨rfl, by linear_combination -h2⟩
 set_option linter.uppercaseLean3 false in

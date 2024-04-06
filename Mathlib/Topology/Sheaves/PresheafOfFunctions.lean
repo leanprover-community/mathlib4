@@ -118,7 +118,7 @@ set_option linter.uppercaseLean3 false in
 /-- The (bundled) commutative ring of continuous functions from a topological space
 to a topological commutative ring, with pointwise multiplication. -/
 def continuousFunctions (X : TopCat.{v}ᵒᵖ) (R : TopCommRingCat.{v}) : CommRingCat.{v} :=
-  -- Porting note : Lean did not see through that `X.unop ⟶ R` is just continuous functions
+  -- Porting note: Lean did not see through that `X.unop ⟶ R` is just continuous functions
   -- hence forms a ring
   @CommRingCat.of (X.unop ⟶ (forget₂ TopCommRingCat TopCat).obj R) <|
   show CommRing (ContinuousMap _ _) by infer_instance
@@ -143,7 +143,7 @@ this is a ring homomorphism (with respect to the pointwise ring operations on fu
 def map (X : TopCat.{u}ᵒᵖ) {R S : TopCommRingCat.{u}} (φ : R ⟶ S) :
     continuousFunctions X R ⟶ continuousFunctions X S where
   toFun g := g ≫ (forget₂ TopCommRingCat TopCat).map φ
-  -- Porting note : `ext` tactic does not work, since Lean can't see through `R ⟶ S` is just
+  -- Porting note: `ext` tactic does not work, since Lean can't see through `R ⟶ S` is just
   -- continuous ring homomorphism
   map_one' := ContinuousMap.ext fun _ => φ.1.map_one
   map_zero' := ContinuousMap.ext fun _ => φ.1.map_zero

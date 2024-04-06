@@ -84,7 +84,7 @@ def toRingFilterBasis [Nonempty ι] {B : ι → AddSubgroup A} (hB : RingSubgrou
     use B i
     constructor
     · use i
-    · rintro x ⟨y, z, y_in, z_in, rfl⟩
+    · rintro x ⟨y, y_in, z, z_in, rfl⟩
       exact (B i).add_mem y_in z_in
   neg' := by
     rintro _ ⟨i, rfl⟩
@@ -159,8 +159,8 @@ theorem hasBasis_nhds (a : A) :
     constructor
     · rintro ⟨-, ⟨i, rfl⟩, hi⟩
       use i
-      suffices h : { b : A | b - a ∈ B i } = (fun y => a + y) '' ↑(B i)
-      · rw [h]
+      suffices h : { b : A | b - a ∈ B i } = (fun y => a + y) '' ↑(B i) by
+        rw [h]
         assumption
       simp only [image_add_left, neg_add_eq_sub]
       ext b
@@ -276,7 +276,7 @@ def toModuleFilterBasis : ModuleFilterBasis R M where
     use B i
     constructor
     · use i
-    · rintro x ⟨y, z, y_in, z_in, rfl⟩
+    · rintro x ⟨y, y_in, z, z_in, rfl⟩
       exact (B i).add_mem y_in z_in
   neg' := by
     rintro _ ⟨i, rfl⟩
@@ -299,7 +299,7 @@ def toModuleFilterBasis : ModuleFilterBasis R M where
     · use B i
       constructor
       · use i
-      · rintro _ ⟨a, m, -, hm, rfl⟩
+      · rintro _ ⟨a, -, m, hm, rfl⟩
         exact (B i).smul_mem _ hm
   smul_left' := by
     rintro x₀ _ ⟨i, rfl⟩

@@ -112,7 +112,7 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
     · rw [Function.comp_apply, i.1.extend_left_inv I hxi]
 #align tangent_bundle_core tangentBundleCore
 
--- porting note: moved to a separate `simp high` lemma b/c `simp` can simplify the LHS
+-- Porting note: moved to a separate `simp high` lemma b/c `simp` can simplify the LHS
 @[simp high]
 theorem tangentBundleCore_baseSet (i) : (tangentBundleCore I M).baseSet i = i.1.source := rfl
 
@@ -124,6 +124,51 @@ theorem tangentBundleCore_coordChange_achart (x x' z : M) :
   rfl
 #align tangent_bundle_core_coord_change_achart tangentBundleCore_coordChange_achart
 
+section tangentCoordChange
+
+/-- In a manifold `M`, given two preferred charts indexed by `x y : M`, `tangentCoordChange I x y`
+is the family of derivatives of the corresponding change-of-coordinates map. It takes junk values
+outside the intersection of the sources of the two charts.
+
+Note that this definition takes advantage of the fact that `tangentBundleCore` has the same base
+sets as the preferred charts of the base manifold. -/
+abbrev tangentCoordChange (x y : M) : M → E →L[𝕜] E :=
+  (tangentBundleCore I M).coordChange (achart H x) (achart H y)
+
+variable {I}
+
+lemma tangentCoordChange_def {x y z : M} : tangentCoordChange I x y z =
+    fderivWithin 𝕜 (extChartAt I y ∘ (extChartAt I x).symm) (range I) (extChartAt I x z) := rfl
+
+lemma tangentCoordChange_self {x z : M} {v : E} (h : z ∈ (extChartAt I x).source) :
+    tangentCoordChange I x x z v = v := by
+  apply (tangentBundleCore I M).coordChange_self
+  rw [tangentBundleCore_baseSet, coe_achart, ← extChartAt_source I]
+  exact h
+
+lemma tangentCoordChange_comp {w x y z : M} {v : E}
+    (h : z ∈ (extChartAt I w).source ∩ (extChartAt I x).source ∩ (extChartAt I y).source) :
+    tangentCoordChange I x y z (tangentCoordChange I w x z v) = tangentCoordChange I w y z v := by
+  apply (tangentBundleCore I M).coordChange_comp
+  simp only [tangentBundleCore_baseSet, coe_achart, ← extChartAt_source I]
+  exact h
+
+lemma hasFDerivWithinAt_tangentCoordChange {x y z : M}
+    (h : z ∈ (extChartAt I x).source ∩ (extChartAt I y).source) :
+    HasFDerivWithinAt ((extChartAt I y) ∘ (extChartAt I x).symm) (tangentCoordChange I x y z)
+      (range I) (extChartAt I x z) :=
+  have h' : extChartAt I x z ∈ ((extChartAt I x).symm ≫ (extChartAt I y)).source := by
+    rw [PartialEquiv.trans_source'', PartialEquiv.symm_symm, PartialEquiv.symm_target]
+    exact mem_image_of_mem _ h
+  ((contDiffWithinAt_ext_coord_change I y x h').differentiableWithinAt (by simp)).hasFDerivWithinAt
+
+lemma continuousOn_tangentCoordChange (x y : M) : ContinuousOn (tangentCoordChange I x y)
+    ((extChartAt I x).source ∩ (extChartAt I y).source) := by
+  convert (tangentBundleCore I M).continuousOn_coordChange (achart H x) (achart H y) <;>
+  simp only [tangentBundleCore_baseSet, coe_achart, ← extChartAt_source I]
+
+end tangentCoordChange
+
 /-- The tangent space at a point of the manifold `M`. It is just `E`. We could use instead
 `(tangentBundleCore I M).to_topological_vector_bundle_core.fiber x`, but we use `E` to help the
 kernel.
@@ -132,7 +177,7 @@ kernel.
 def TangentSpace {𝕜} [NontriviallyNormedField 𝕜] {E} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M} [TopologicalSpace M]
     [ChartedSpace H M] [SmoothManifoldWithCorners I M] (_x : M) : Type* := E
--- porting note: was deriving TopologicalSpace, AddCommGroup, TopologicalAddGroup
+-- Porting note: was deriving TopologicalSpace, AddCommGroup, TopologicalAddGroup
 #align tangent_space TangentSpace
 
 instance {x : M} : TopologicalSpace (TangentSpace I x) := inferInstanceAs (TopologicalSpace E)
@@ -144,7 +189,7 @@ variable (M)
 -- is empty if the base manifold is empty
 /-- The tangent bundle to a smooth manifold, as a Sigma type. Defined in terms of
 `Bundle.TotalSpace` to be able to put a suitable topology on it. -/
-@[reducible] -- porting note: was nolint has_nonempty_instance
+@[reducible] -- Porting note: was nolint has_nonempty_instance
 def TangentBundle :=
   Bundle.TotalSpace E (TangentSpace I : M → Type _)
 #align tangent_bundle TangentBundle
@@ -164,7 +209,7 @@ instance : Module 𝕜 (TangentSpace I x) := inferInstanceAs (Module 𝕜 E)
 
 instance : Inhabited (TangentSpace I x) := ⟨0⟩
 
--- porting note: removed unneeded ContinuousAdd (TangentSpace I x)
+-- Porting note: removed unneeded ContinuousAdd (TangentSpace I x)
 
 end
 
@@ -276,7 +321,7 @@ theorem trivializationAt_symmL {b₀ b : M}
 set_option linter.uppercaseLean3 false in
 #align tangent_bundle.trivialization_at_symmL TangentBundle.trivializationAt_symmL
 
--- porting note: `simp` simplifies LHS to `.id _ _`
+-- Porting note: `simp` simplifies LHS to `.id _ _`
 @[simp high, mfld_simps]
 theorem coordChange_model_space (b b' x : F) :
     (tangentBundleCore 𝓘(𝕜, F) F).coordChange (achart F b) (achart F b') x = 1 := by
@@ -284,7 +329,7 @@ theorem coordChange_model_space (b b' x : F) :
     fderivWithin_id uniqueDiffWithinAt_univ
 #align tangent_bundle.coord_change_model_space TangentBundle.coordChange_model_space
 
--- porting note: `simp` simplifies LHS to `.id _ _`
+-- Porting note: `simp` simplifies LHS to `.id _ _`
 @[simp high, mfld_simps]
 theorem symmL_model_space (b b' : F) :
     (trivializationAt F (TangentSpace 𝓘(𝕜, F)) b).symmL 𝕜 b' = (1 : F →L[𝕜] F) := by
@@ -293,7 +338,7 @@ theorem symmL_model_space (b b' : F) :
 set_option linter.uppercaseLean3 false in
 #align tangent_bundle.symmL_model_space TangentBundle.symmL_model_space
 
--- porting note: `simp` simplifies LHS to `.id _ _`
+-- Porting note: `simp` simplifies LHS to `.id _ _`
 @[simp high, mfld_simps]
 theorem continuousLinearMapAt_model_space (b b' : F) :
     (trivializationAt F (TangentSpace 𝓘(𝕜, F)) b).continuousLinearMapAt 𝕜 b' = (1 : F →L[𝕜] F) := by
@@ -331,7 +376,7 @@ theorem tangentBundle_model_space_chartAt (p : TangentBundle I H) :
   ext x : 1
   · ext; · rfl
     exact (tangentBundleCore I H).coordChange_self (achart _ x.1) x.1 (mem_achart_source H x.1) x.2
-  · -- porting note: was ext; · rfl; apply hEq_of_eq
+  · -- Porting note: was ext; · rfl; apply hEq_of_eq
     refine congr_arg (TotalSpace.mk _) ?_
     exact (tangentBundleCore I H).coordChange_self (achart _ x.1) x.1 (mem_achart_source H x.1) x.2
   simp_rw [TangentBundle.chartAt, FiberBundleCore.localTriv,

@@ -159,7 +159,7 @@ such that `norm_num` successfully recognises `a`. -/
         let .isNat inst n pa := ra | failure
         haveI' : $n =Q nat_lit 1 := ⟨⟩
         assumeInstancesCommute
-        return .isNat inst n (q(isRat_inv_one $pa))
+        return .isNat inst n q(isRat_inv_one $pa)
     else if qa < 0 then
       if let some i := i then
         have lit : Q(ℕ) := na.appArg!

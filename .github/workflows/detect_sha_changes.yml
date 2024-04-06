@@ -28,9 +28,9 @@ jobs:
       - name: Fetch merge base SHA from API
         run: |
           my_merge_base_cmd="gh api repos/${{ github.repository }}/compare/${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }} | jq -r '.merge_base_commit.sha'"
-          echo $my_merge_base_cmd
-          my_merge_base=$(eval $my_merge_base_cmd)
-          echo "MY_MERGE_BASE_SHA=$my_merge_base" >> $GITHUB_ENV
+          echo "${my_merge_base_cmd}"
+          my_merge_base="$(eval "${my_merge_base_cmd}")"
+          printf 'MY_MERGE_BASE_SHA=%s\n' "${my_merge_base}" >> "${GITHUB_ENV}"
 
       - name: Fetch merge base SHA
         run: |
@@ -40,7 +40,7 @@ jobs:
             --progress \
             --no-recurse-submodules \
             --depth=1 \
-            origin $MY_MERGE_BASE_SHA
+            origin "${MY_MERGE_BASE_SHA}"
 
       - name: install Python
         uses: actions/setup-python@v4
@@ -53,4 +53,4 @@ jobs:
 
       - name: run the script
         run: |
-          python scripts/detect_sha_changes.py "$MY_MERGE_BASE_SHA" "HEAD"
+          python scripts/detect_sha_changes.py "${MY_MERGE_BASE_SHA}" "HEAD"

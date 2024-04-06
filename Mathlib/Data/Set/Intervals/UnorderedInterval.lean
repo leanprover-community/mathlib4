@@ -7,7 +7,7 @@ import Mathlib.Data.Set.Intervals.Image
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Tactic.Common
 
-#align_import data.set.intervals.unordered_interval from "leanprover-community/mathlib"@"4020ddee5b4580a409bfda7d2f42726ce86ae674"
+#align_import data.set.intervals.unordered_interval from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
 /-!
 # Intervals without endpoints ordering
@@ -62,7 +62,9 @@ scoped[Interval] notation "[[" a ", " b "]]" => Set.uIcc a b
 
 open Interval
 
-@[simp] lemma dual_uIcc (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] := dual_Icc
+@[simp] lemma dual_uIcc (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] :=
+  -- Note: needed to hint `(α := α)` after #8386 (elaboration order?)
+  dual_Icc (α := α)
 #align set.dual_uIcc Set.dual_uIcc
 
 @[simp]
@@ -81,7 +83,7 @@ lemma uIcc_of_lt (h : a < b) : [[a, b]] = Icc a b := uIcc_of_le h.le
 lemma uIcc_of_gt (h : b < a) : [[a, b]] = Icc b a := uIcc_of_ge h.le
 #align set.uIcc_of_gt Set.uIcc_of_gt
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 -- @[simp]
 lemma uIcc_self : [[a, a]] = {a} := by simp [uIcc]
 #align set.uIcc_self Set.uIcc_self
@@ -221,9 +223,9 @@ theorem Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
   rfl
 #align set.Icc_min_max Set.Icc_min_max
 
-lemma uIcc_of_not_le (h : ¬a ≤ b) : [[a, b]] = Icc b a := uIcc_of_gt $ lt_of_not_ge h
+lemma uIcc_of_not_le (h : ¬a ≤ b) : [[a, b]] = Icc b a := uIcc_of_gt <| lt_of_not_ge h
 #align set.uIcc_of_not_le Set.uIcc_of_not_le
-lemma uIcc_of_not_ge (h : ¬b ≤ a) : [[a, b]] = Icc a b := uIcc_of_lt $ lt_of_not_ge h
+lemma uIcc_of_not_ge (h : ¬b ≤ a) : [[a, b]] = Icc a b := uIcc_of_lt <| lt_of_not_ge h
 #align set.uIcc_of_not_ge Set.uIcc_of_not_ge
 
 lemma uIcc_eq_union : [[a, b]] = Icc a b ∪ Icc b a := by rw [Icc_union_Icc', max_comm] <;> rfl

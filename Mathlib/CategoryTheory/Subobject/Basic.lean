@@ -79,7 +79,6 @@ namespace CategoryTheory
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
-
 variable {D : Type u₂} [Category.{v₂} D]
 
 /-!
@@ -105,7 +104,7 @@ instance (X : C) : PartialOrder (Subobject X) := by
 
 namespace Subobject
 
--- porting note: made it a def rather than an abbreviation
+-- Porting note: made it a def rather than an abbreviation
 -- because Lean would make it too transparent
 /-- Convenience constructor for a subobject. -/
 def mk {X A : C} (f : A ⟶ X) [Mono f] : Subobject X :=
@@ -183,7 +182,7 @@ noncomputable def underlying {X : C} : Subobject X ⥤ C :=
 
 instance : CoeOut (Subobject X) C where coe Y := underlying.obj Y
 
--- porting note: removed as it has become a syntactic tautology
+-- Porting note: removed as it has become a syntactic tautology
 -- @[simp]
 -- theorem underlying_as_coe {X : C} (P : Subobject X) : underlying.obj P = P :=
 --   rfl
@@ -285,7 +284,7 @@ theorem eq_of_comm {B : C} {X Y : Subobject B} (f : (X : C) ≅ (Y : C))
   le_antisymm (le_of_comm f.hom w) <| le_of_comm f.inv <| f.inv_comp_eq.2 w.symm
 #align category_theory.subobject.eq_of_comm CategoryTheory.Subobject.eq_of_comm
 
--- porting note: removed @[ext]
+-- Porting note (#11182): removed @[ext]
 /-- To show that two subobjects are equal, it suffices to exhibit an isomorphism commuting with
     the arrows. -/
 theorem eq_mk_of_comm {B A : C} {X : Subobject B} (f : A ⟶ B) [Mono f] (i : (X : C) ≅ A)
@@ -293,7 +292,7 @@ theorem eq_mk_of_comm {B A : C} {X : Subobject B} (f : A ⟶ B) [Mono f] (i : (X
   eq_of_comm (i.trans (underlyingIso f).symm) <| by simp [w]
 #align category_theory.subobject.eq_mk_of_comm CategoryTheory.Subobject.eq_mk_of_comm
 
--- porting note: removed @[ext]
+-- Porting note (#11182): removed @[ext]
 /-- To show that two subobjects are equal, it suffices to exhibit an isomorphism commuting with
     the arrows. -/
 theorem mk_eq_of_comm {B A : C} {X : Subobject B} (f : A ⟶ B) [Mono f] (i : A ≅ (X : C))
@@ -301,7 +300,7 @@ theorem mk_eq_of_comm {B A : C} {X : Subobject B} (f : A ⟶ B) [Mono f] (i : A 
   Eq.symm <| eq_mk_of_comm _ i.symm <| by rw [Iso.symm_hom, Iso.inv_comp_eq, w]
 #align category_theory.subobject.mk_eq_of_comm CategoryTheory.Subobject.mk_eq_of_comm
 
--- porting note: removed @[ext]
+-- Porting note (#11182): removed @[ext]
 /-- To show that two subobjects are equal, it suffices to exhibit an isomorphism commuting with
     the arrows. -/
 theorem mk_eq_mk_of_comm {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mono f] [Mono g] (i : A₁ ≅ A₂)

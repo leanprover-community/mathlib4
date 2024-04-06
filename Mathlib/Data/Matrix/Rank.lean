@@ -3,13 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Matrix.Diagonal
-import Mathlib.Data.Complex.Module
 
 #align_import data.matrix.rank from "leanprover-community/mathlib"@"17219820a8aa8abe85adf5dfde19af1dd1bd8ae7"
 
@@ -75,7 +71,7 @@ theorem rank_le_width [StrongRankCondition R] {m n : ℕ} (A : Matrix (Fin m) (F
 theorem rank_mul_le_left [StrongRankCondition R] (A : Matrix m n R) (B : Matrix n o R) :
     (A * B).rank ≤ A.rank := by
   rw [rank, rank, mulVecLin_mul]
-  exact Cardinal.toNat_le_of_le_of_lt_aleph0 (rank_lt_aleph0 _ _) (LinearMap.rank_comp_le_left _ _)
+  exact Cardinal.toNat_le_toNat (LinearMap.rank_comp_le_left _ _) (rank_lt_aleph0 _ _)
 #align matrix.rank_mul_le_left Matrix.rank_mul_le_left
 
 theorem rank_mul_le_right [StrongRankCondition R] (A : Matrix l m R) (B : Matrix m n R) :
@@ -107,9 +103,9 @@ theorem rank_of_isUnit [StrongRankCondition R] [DecidableEq n] (A : Matrix n n R
 lemma rank_mul_eq_left_of_isUnit_det [DecidableEq n]
     (A : Matrix n n R) (B : Matrix m n R) (hA : IsUnit A.det) :
     (B * A).rank = B.rank := by
-  suffices : Function.Surjective A.mulVecLin
-  · rw [rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top _
-    (LinearMap.range_eq_top.mpr this), ← rank]
+  suffices Function.Surjective A.mulVecLin by
+    rw [rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top _
+      (LinearMap.range_eq_top.mpr this), ← rank]
   intro v
   exact ⟨(A⁻¹).mulVecLin v, by simp [mul_nonsing_inv _ hA]⟩
 
@@ -162,7 +158,7 @@ theorem rank_eq_finrank_range_toLin [DecidableEq n] {M₁ M₂ : Type*} [AddComm
   have aux₂ := Basis.equiv_apply (Pi.basisFun R n) i v₂
   rw [toLin_eq_toLin', toLin'_apply'] at aux₁
   rw [Pi.basisFun_apply, LinearMap.coe_stdBasis] at aux₁ aux₂
-  simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, Equiv.refl_apply, aux₁, aux₂,
+  simp only [e₁, e₁, LinearMap.comp_apply, LinearEquiv.coe_coe, Equiv.refl_apply, aux₁, aux₂,
     LinearMap.coe_single, toLin_self, map_sum, LinearEquiv.map_smul, Basis.equiv_apply]
 #align matrix.rank_eq_finrank_range_to_lin Matrix.rank_eq_finrank_range_toLin
 
@@ -193,7 +189,7 @@ variable [Field R]
 theorem rank_diagonal [DecidableEq m] [DecidableEq R] (w : m → R) :
     (diagonal w).rank = Fintype.card {i // (w i) ≠ 0} := by
   rw [Matrix.rank, ← Matrix.toLin'_apply', FiniteDimensional.finrank, ← LinearMap.rank,
-    LinearMap.rank_diagonal, Cardinal.toNat_cast]
+    LinearMap.rank_diagonal, Cardinal.toNat_natCast]
 
 end Field
 

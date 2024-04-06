@@ -117,7 +117,7 @@ theorem cast_zpow (q : ℚ) (n : ℤ) : ((q ^ n : ℚ) : α) = (q : α) ^ n :=
 
 @[norm_cast]
 theorem cast_mk (a b : ℤ) : (a /. b : α) = a / b := by
-  simp only [divInt_eq_div, cast_div, cast_coe_int]
+  simp only [divInt_eq_div, cast_div, cast_intCast]
 #align rat.cast_mk Rat.cast_mk
 
 @[simp, norm_cast]

@@ -24,7 +24,6 @@ open TopologicalSpace Set Filter
 open Topology Filter
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
-
 variable {s : Set β} {ι : Type*} {U : ι → Opens β} (hU : iSup U = ⊤)
 
 theorem Set.restrictPreimage_inducing (s : Set β) (h : Inducing f) :
@@ -49,7 +48,7 @@ alias Embedding.restrictPreimage := Set.restrictPreimage_embedding
 theorem Set.restrictPreimage_openEmbedding (s : Set β) (h : OpenEmbedding f) :
     OpenEmbedding (s.restrictPreimage f) :=
   ⟨h.1.restrictPreimage s,
-    (s.range_restrictPreimage f).symm ▸ continuous_subtype_val.isOpen_preimage _ h.2⟩
+    (s.range_restrictPreimage f).symm ▸ continuous_subtype_val.isOpen_preimage _ h.isOpen_range⟩
 #align set.restrict_preimage_open_embedding Set.restrictPreimage_openEmbedding
 
 alias OpenEmbedding.restrictPreimage := Set.restrictPreimage_openEmbedding
@@ -58,7 +57,7 @@ alias OpenEmbedding.restrictPreimage := Set.restrictPreimage_openEmbedding
 theorem Set.restrictPreimage_closedEmbedding (s : Set β) (h : ClosedEmbedding f) :
     ClosedEmbedding (s.restrictPreimage f) :=
   ⟨h.1.restrictPreimage s,
-    (s.range_restrictPreimage f).symm ▸ inducing_subtype_val.isClosed_preimage _ h.2⟩
+    (s.range_restrictPreimage f).symm ▸ inducing_subtype_val.isClosed_preimage _ h.isClosed_range⟩
 #align set.restrict_preimage_closed_embedding Set.restrictPreimage_closedEmbedding
 
 alias ClosedEmbedding.restrictPreimage := Set.restrictPreimage_closedEmbedding
@@ -127,7 +126,7 @@ theorem inducing_iff_inducing_of_iSup_eq_top (h : Continuous f) :
       Opens.mem_iSup.mp
         (show f x ∈ iSup U by
           rw [hU]
-          triv)
+          trivial)
     erw [← OpenEmbedding.map_nhds_eq (h.1 _ (U i).2).openEmbedding_subtype_val ⟨x, hi⟩]
     rw [(H i) ⟨x, hi⟩, Filter.subtype_coe_map_comap, Function.comp_apply, Subtype.coe_mk,
       inf_eq_left, Filter.le_principal_iff]

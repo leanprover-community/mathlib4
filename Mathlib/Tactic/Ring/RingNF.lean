@@ -91,7 +91,7 @@ A tactic in the `RingNF.M` monad which will simplify expression `parent` to a no
 -/
 def rewrite (parent : Expr) (root := true) : M Simp.Result :=
   fun nctx rctx s ↦ do
-    let pre e :=
+    let pre : Simp.Simproc := fun e =>
       try
         guard <| root || parent != e -- recursion guard
         let e ← withReducible <| whnf e
@@ -106,8 +106,8 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
         let r ← nctx.simp { expr := a, proof? := pa }
         if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
         pure (.done r)
-      catch _ => pure <| .visit { expr := e }
-    let post := (Simp.postDefault · fun _ ↦ none)
+      catch _ => pure <| .continue
+    let post := Simp.postDefault #[]
     (·.1) <$> Simp.main parent nctx.ctx (methods := { pre, post })
 
 variable [CommSemiring R]
@@ -149,7 +149,7 @@ partial def M.run
       ``rat_rawCast_neg, ``rat_rawCast_pos].foldlM (·.addConst · (post := false)) thms
     let ctx' := { ctx with simpTheorems := #[thms] }
     pure fun r' : Simp.Result ↦ do
-      Simp.mkEqTrans r' (← Simp.main r'.expr ctx' (methods := Simp.DefaultMethods.methods)).1
+      r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
   let nctx := { ctx, simp }
   let rec
     /-- The recursive context. -/
@@ -164,7 +164,8 @@ partial def M.run
 /-- Overrides the default error message in `ring1` to use a prettified version of the goal. -/
 initialize ringCleanupRef.set fun e => do
   M.run (← IO.mkRef {}) { recursive := false } fun nctx _ _ =>
-    return (← nctx.simp { expr := e } nctx.ctx |>.run {}).1.expr
+    return (← nctx.simp { expr := e } ({} : Lean.Meta.Simp.Methods).toMethodsRef nctx.ctx
+      |>.run {}).1.expr
 
 open Elab.Tactic Parser.Tactic
 /-- Use `ring_nf` to rewrite the main goal. -/

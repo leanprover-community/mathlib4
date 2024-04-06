@@ -51,9 +51,9 @@ def primeCounting (n : ℕ) : ℕ :=
   primeCounting' (n + 1)
 #align nat.prime_counting Nat.primeCounting
 
-scoped notation "π" => Nat.primeCounting
+@[inherit_doc] scoped notation "π" => Nat.primeCounting
 
-scoped notation "π'" => Nat.primeCounting'
+@[inherit_doc] scoped notation "π'" => Nat.primeCounting'
 
 theorem monotone_primeCounting' : Monotone primeCounting' :=
   count_monotone Prime

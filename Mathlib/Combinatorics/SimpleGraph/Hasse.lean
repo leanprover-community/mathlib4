@@ -5,15 +5,16 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Combinatorics.SimpleGraph.Prod
 import Mathlib.Data.Fin.SuccPred
-import Mathlib.Data.ZMod.Basic
+import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.SuccPred.Relation
+import Mathlib.Tactic.FinCases
 
 #align_import combinatorics.simple_graph.hasse from "leanprover-community/mathlib"@"8a38a697305292b37a61650e2c3bd3502d98c805"
 
 /-!
 # The Hasse diagram as a graph
 
-This file defines the Hasse diagram of an order (graph of `Covby`, the covering relation) and the
+This file defines the Hasse diagram of an order (graph of `CovBy`, the covering relation) and the
 path graph on `n` vertices.
 
 ## Main declarations
@@ -71,7 +72,7 @@ variable [PartialOrder α] [PartialOrder β]
 @[simp]
 theorem hasse_prod : hasse (α × β) = hasse α □ hasse β := by
   ext x y
-  simp_rw [boxProd_adj, hasse_adj, Prod.covby_iff, or_and_right, @eq_comm _ y.1, @eq_comm _ y.2,
+  simp_rw [boxProd_adj, hasse_adj, Prod.covBy_iff, or_and_right, @eq_comm _ y.1, @eq_comm _ y.2,
     or_or_or_comm]
 #align simple_graph.hasse_prod SimpleGraph.hasse_prod
 
@@ -85,16 +86,16 @@ theorem hasse_preconnected_of_succ [SuccOrder α] [IsSuccArchimedean α] : (hass
   fun a b => by
   rw [reachable_iff_reflTransGen]
   exact
-    reflTransGen_of_succ _ (fun c hc => Or.inl <| covby_succ_of_not_isMax hc.2.not_isMax)
-      fun c hc => Or.inr <| covby_succ_of_not_isMax hc.2.not_isMax
+    reflTransGen_of_succ _ (fun c hc => Or.inl <| covBy_succ_of_not_isMax hc.2.not_isMax)
+      fun c hc => Or.inr <| covBy_succ_of_not_isMax hc.2.not_isMax
 #align simple_graph.hasse_preconnected_of_succ SimpleGraph.hasse_preconnected_of_succ
 
 theorem hasse_preconnected_of_pred [PredOrder α] [IsPredArchimedean α] : (hasse α).Preconnected :=
   fun a b => by
   rw [reachable_iff_reflTransGen, ← reflTransGen_swap]
   exact
-    reflTransGen_of_pred _ (fun c hc => Or.inl <| pred_covby_of_not_isMin hc.1.not_isMin)
-      fun c hc => Or.inr <| pred_covby_of_not_isMin hc.1.not_isMin
+    reflTransGen_of_pred _ (fun c hc => Or.inl <| pred_covBy_of_not_isMin hc.1.not_isMin)
+      fun c hc => Or.inr <| pred_covBy_of_not_isMin hc.1.not_isMin
 #align simple_graph.hasse_preconnected_of_pred SimpleGraph.hasse_preconnected_of_pred
 
 end LinearOrder
@@ -107,7 +108,7 @@ def pathGraph (n : ℕ) : SimpleGraph (Fin n) :=
 theorem pathGraph_adj {n : ℕ} {u v : Fin n} :
     (pathGraph n).Adj u v ↔ u.val + 1 = v.val ∨ v.val + 1 = u.val := by
   simp only [pathGraph, hasse]
-  simp_rw [← Fin.coe_covby_iff, Nat.covby_iff_succ_eq]
+  simp_rw [← Fin.coe_covBy_iff, Nat.covBy_iff_succ_eq]
 
 theorem pathGraph_preconnected (n : ℕ) : (pathGraph n).Preconnected :=
   hasse_preconnected_of_succ _
@@ -119,6 +120,6 @@ theorem pathGraph_connected (n : ℕ) : (pathGraph (n + 1)).Connected :=
 
 theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
   ext u v
-  fin_cases u <;> fin_cases v <;> simp [pathGraph, ← Fin.coe_covby_iff, Nat.covby_iff_succ_eq]
+  fin_cases u <;> fin_cases v <;> simp [pathGraph, ← Fin.coe_covBy_iff, Nat.covBy_iff_succ_eq]
 
 end SimpleGraph

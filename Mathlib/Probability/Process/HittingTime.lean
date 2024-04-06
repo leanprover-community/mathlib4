@@ -52,6 +52,12 @@ noncomputable def hitting [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : 
   fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m
 #align measure_theory.hitting MeasureTheory.hitting
 
+-- Adaptation note: nightly-2024-03-16: added to replace simp [hitting]
+theorem hitting_def [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Set β) (n m : ι) :
+    hitting u s n m =
+    fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m :=
+  rfl
+
 section Inequalities
 
 variable [ConditionallyCompleteLinearOrder ι] {u : ι → Ω → β} {s : Set β} {n i : ι} {ω : Ω}
@@ -81,8 +87,7 @@ theorem not_mem_of_lt_hitting {m k : ι} (hk₁ : k < hitting u s n m ω) (hk₂
     u k ω ∉ s := by
   classical
   intro h
-  have hexists : ∃ j ∈ Set.Icc n m, u j ω ∈ s
-  refine' ⟨k, ⟨hk₂, le_trans hk₁.le <| hitting_le _⟩, h⟩
+  have hexists : ∃ j ∈ Set.Icc n m, u j ω ∈ s := ⟨k, ⟨hk₂, le_trans hk₁.le <| hitting_le _⟩, h⟩
   refine' not_le.2 hk₁ _
   simp_rw [hitting, if_pos hexists]
   exact csInf_le bddBelow_Icc.inter_of_left ⟨⟨hk₂, le_trans hk₁.le <| hitting_le _⟩, h⟩
@@ -293,7 +298,6 @@ end CompleteLattice
 section ConditionallyCompleteLinearOrderBot
 
 variable [ConditionallyCompleteLinearOrderBot ι] [IsWellOrder ι (· < ·)]
-
 variable {u : ι → Ω → β} {s : Set β} {f : Filtration ℕ m}
 
 theorem hitting_bot_le_iff {i n : ι} {ω : Ω} (hx : ∃ j, j ≤ n ∧ u j ω ∈ s) :
