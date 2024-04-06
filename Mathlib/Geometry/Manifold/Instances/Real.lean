@@ -88,15 +88,17 @@ theorem EuclideanHalfSpace.ext [Zero (Fin n)] (x y : EuclideanHalfSpace n)
     (h : x.1 = y.1) : x = y :=
   Subtype.eq h
 
-theorem range_half_space (n : ℕ) [Zero (Fin n)] :
+theorem range_euclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
     (range fun x : EuclideanHalfSpace n => x.val) = { y | 0 ≤ y 0 } :=
   Subtype.range_val
-#align range_half_space range_half_space
+#align range_half_space range_euclideanHalfSpace
+@[deprecated] alias range_half_space := range_euclideanHalfSpace -- 2024-04-05
 
-theorem range_quadrant (n : ℕ) :
+theorem range_euclideanQuadrant (n : ℕ) :
     (range fun x : EuclideanQuadrant n => x.val) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
-#align range_quadrant range_quadrant
+#align range_quadrant range_euclideanQuadrant
+@[deprecated] alias range_quadrant := range_euclideanQuadrant -- 2024-04-05
 
 end
 
