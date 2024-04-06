@@ -199,7 +199,7 @@ instance commRing : CommRing ℝ := by
             sub := @Sub.sub ℝ _
             npow := @npowRec ℝ ⟨1⟩ ⟨(· * ·)⟩
             nsmul := @nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩
-            zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩,
+            zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩ (@nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩),
             .. }
   all_goals
     intros

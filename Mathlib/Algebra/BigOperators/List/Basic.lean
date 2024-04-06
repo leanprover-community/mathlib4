@@ -3,16 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Algebra.BigOperators.List.Defs
-import Mathlib.Data.List.Forall2
-import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Ring.Commute
-import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rotate
+import Mathlib.Data.Nat.Basic
 
 #align_import data.list.big_operators.basic from "leanprover-community/mathlib"@"6c5f73fd6f6cc83122788a80a27cdd54663609f4"
 
@@ -21,12 +18,45 @@ import Mathlib.Data.List.Rotate
 
 This file provides basic results about `List.prod`, `List.sum`, which calculate the product and sum
 of elements of a list and `List.alternatingProd`, `List.alternatingSum`, their alternating
-counterparts. These are defined in [`Algebra.BigOperators.List.Defs`](./Defs).
+counterparts.
 -/
+
+-- Make sure we haven't imported `Data.Nat.Order.Basic`
+assert_not_exists OrderedSub
+
+-- TODO
+-- assert_not_exists Ring
 
 variable {ι α β γ M N P M₀ G R : Type*}
 
 namespace List
+section Defs
+
+/-- Product of a list.
+
+`List.prod [a, b, c] = ((1 * a) * b) * c` -/
+@[to_additive "Sum of a list.\n\n`List.sum [a, b, c] = ((0 + a) + b) + c`"]
+def prod {α} [Mul α] [One α] : List α → α :=
+  foldl (· * ·) 1
+#align list.prod List.prod
+#align list.sum List.sum
+
+/-- The alternating sum of a list. -/
+def alternatingSum {G : Type*} [Zero G] [Add G] [Neg G] : List G → G
+  | [] => 0
+  | g :: [] => g
+  | g :: h :: t => g + -h + alternatingSum t
+#align list.alternating_sum List.alternatingSum
+
+/-- The alternating product of a list. -/
+@[to_additive existing]
+def alternatingProd {G : Type*} [One G] [Mul G] [Inv G] : List G → G
+  | [] => 1
+  | g :: [] => g
+  | g :: h :: t => g * h⁻¹ * alternatingProd t
+#align list.alternating_prod List.alternatingProd
+
+end Defs
 
 section MulOneClass
 
@@ -248,7 +278,8 @@ theorem prod_set :
       (L.set n a).prod =
         ((L.take n).prod * if n < L.length then a else 1) * (L.drop (n + 1)).prod
   | x :: xs, 0, a => by simp [set]
-  | x :: xs, i + 1, a => by simp [set, prod_set xs i a, mul_assoc, Nat.succ_eq_add_one]
+  | x :: xs, i + 1, a => by
+    simp [set, prod_set xs i a, mul_assoc, Nat.succ_eq_add_one, Nat.add_lt_add_iff_right]
   | [], _, _ => by simp [set, (Nat.zero_le _).not_lt, Nat.zero_le]
 #align list.prod_update_nth List.prod_set
 #align list.sum_update_nth List.sum_set
@@ -309,10 +340,7 @@ lemma prod_range_succ' (f : ℕ → M) (n : ℕ) :
 #align list.prod_range_succ' List.prod_range_succ'
 #align list.sum_range_succ' List.sum_range_succ'
 
-/-- Slightly more general version of `List.prod_eq_one_iff` for a non-ordered `Monoid` -/
-@[to_additive
-      "Slightly more general version of `List.sum_eq_zero_iff` for a non-ordered `AddMonoid`"]
-lemma prod_eq_one (hl : ∀ x ∈ l, x = 1) : l.prod = 1 := by
+@[to_additive] lemma prod_eq_one (hl : ∀ x ∈ l, x = 1) : l.prod = 1 := by
   induction' l with i l hil
   · rfl
   rw [List.prod_cons, hil fun x hx ↦ hl _ (mem_cons_of_mem i hx), hl _ (mem_cons_self i l), one_mul]
@@ -403,37 +431,15 @@ lemma prod_mul_prod_eq_prod_zipWith_of_length_eq (l l' : List M) (h : l.length =
 
 end CommMonoid
 
-section MonoidWithZero
-
-variable [MonoidWithZero M₀]
-
-/-- If zero is an element of a list `L`, then `List.prod L = 0`. If the domain is a nontrivial
-monoid with zero with no divisors, then this implication becomes an `iff`, see
-`List.prod_eq_zero_iff`. -/
-theorem prod_eq_zero {L : List M₀} (h : (0 : M₀) ∈ L) : L.prod = 0 := by
-  induction' L with a L ihL
-  · exact absurd h (not_mem_nil _)
-  · rw [prod_cons]
-    cases' mem_cons.1 h with ha hL
-    exacts [mul_eq_zero_of_left ha.symm _, mul_eq_zero_of_right _ (ihL hL)]
-#align list.prod_eq_zero List.prod_eq_zero
-
-/-- Product of elements of a list `L` equals zero if and only if `0 ∈ L`. See also
-`List.prod_eq_zero` for an implication that needs weaker typeclass assumptions. -/
-@[simp]
-theorem prod_eq_zero_iff [Nontrivial M₀] [NoZeroDivisors M₀] {L : List M₀} :
-    L.prod = 0 ↔ (0 : M₀) ∈ L := by
-  induction' L with a L ihL
-  · simp
-  · rw [prod_cons, mul_eq_zero, ihL, mem_cons, eq_comm]
-#align list.prod_eq_zero_iff List.prod_eq_zero_iff
-
-theorem prod_ne_zero [Nontrivial M₀] [NoZeroDivisors M₀] {L : List M₀} (hL : (0 : M₀) ∉ L) :
-    L.prod ≠ 0 :=
-  mt prod_eq_zero_iff.1 hL
-#align list.prod_ne_zero List.prod_ne_zero
-
-end MonoidWithZero
+@[to_additive]
+lemma eq_of_prod_take_eq [LeftCancelMonoid M] {L L' : List M} (h : L.length = L'.length)
+    (h' : ∀ i ≤ L.length, (L.take i).prod = (L'.take i).prod) : L = L' := by
+  refine ext_get h fun i h₁ h₂ => ?_
+  have : (L.take (i + 1)).prod = (L'.take (i + 1)).prod := h' _ (Nat.succ_le_of_lt h₁)
+  rw [prod_take_succ L i h₁, prod_take_succ L' i h₂, h' i (le_of_lt h₁)] at this
+  convert mul_left_cancel this
+#align list.eq_of_prod_take_eq List.eq_of_prod_take_eq
+#align list.eq_of_sum_take_eq List.eq_of_sum_take_eq
 
 section Group
 
@@ -529,16 +535,6 @@ theorem sum_zipWith_distrib_left [Semiring γ] (f : α → β → γ) (n : γ) (
     · simp [hl, mul_add]
 #align list.sum_zip_with_distrib_left List.sum_zipWith_distrib_left
 
-@[to_additive]
-theorem eq_of_prod_take_eq [LeftCancelMonoid M] {L L' : List M} (h : L.length = L'.length)
-    (h' : ∀ i ≤ L.length, (L.take i).prod = (L'.take i).prod) : L = L' := by
-  refine ext_get h fun i h₁ h₂ => ?_
-  have : (L.take (i + 1)).prod = (L'.take (i + 1)).prod := h' _ (Nat.succ_le_of_lt h₁)
-  rw [prod_take_succ L i h₁, prod_take_succ L' i h₂, h' i (le_of_lt h₁)] at this
-  convert mul_left_cancel this
-#align list.eq_of_prod_take_eq List.eq_of_prod_take_eq
-#align list.eq_of_sum_take_eq List.eq_of_sum_take_eq
-
 theorem sum_const_nat (m n : ℕ) : sum (replicate m n) = m * n :=
   sum_replicate m n
 #align list.sum_const_nat List.sum_const_nat
@@ -561,7 +557,7 @@ theorem headI_le_sum (L : List ℕ) : L.headI ≤ L.sum :=
 
 /-- This relies on `default ℕ = 0`. -/
 theorem tail_sum (L : List ℕ) : L.tail.sum = L.sum - L.headI := by
-  rw [← headI_add_tail_sum L, add_comm, @add_tsub_cancel_right]
+  rw [← headI_add_tail_sum L, add_comm, Nat.add_sub_cancel_right]
 #align list.tail_sum List.tail_sum
 
 section Alternating
@@ -619,11 +615,15 @@ theorem alternatingProd_cons (a : α) (l : List α) :
 end Alternating
 
 lemma sum_nat_mod (l : List ℕ) (n : ℕ) : l.sum % n = (l.map (· % n)).sum % n := by
-  induction l <;> simp [Nat.add_mod, *]
+  induction' l with a l ih
+  · simp only [Nat.zero_mod, map_nil]
+  · simpa only [map_cons, sum_cons, Nat.mod_add_mod, Nat.add_mod_mod] using congr((a + $ih) % n)
 #align list.sum_nat_mod List.sum_nat_mod
 
 lemma prod_nat_mod (l : List ℕ) (n : ℕ) : l.prod % n = (l.map (· % n)).prod % n := by
-  induction l <;> simp [Nat.mul_mod, *]
+  induction' l with a l ih
+  · simp only [Nat.zero_mod, map_nil]
+  · simpa only [prod_cons, map_cons, Nat.mod_mul_mod, Nat.mul_mod_mod] using congr((a * $ih) % n)
 #align list.prod_nat_mod List.prod_nat_mod
 
 lemma sum_int_mod (l : List ℤ) (n : ℤ) : l.sum % n = (l.map (· % n)).sum % n := by
