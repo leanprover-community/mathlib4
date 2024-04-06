@@ -229,12 +229,22 @@ theorem HasDerivAtFilter.comp (hh₂ : HasDerivAtFilter h₂ h₂' (h x) L')
   exact hh₂.scomp x hh hL
 #align has_deriv_at_filter.comp HasDerivAtFilter.comp
 
+theorem HasDerivAtFilter.comp_of_eq (hh₂ : HasDerivAtFilter h₂ h₂' y L')
+    (hh : HasDerivAtFilter h h' x L) (hL : Tendsto h L L') (hy : y = h x) :
+    HasDerivAtFilter (h₂ ∘ h) (h₂' * h') x L := by
+  rw [hy] at hh₂; exact hh₂.comp x hh hL
+
 theorem HasDerivWithinAt.comp (hh₂ : HasDerivWithinAt h₂ h₂' s' (h x))
     (hh : HasDerivWithinAt h h' s x) (hst : MapsTo h s s') :
     HasDerivWithinAt (h₂ ∘ h) (h₂' * h') s x := by
   rw [mul_comm]
   exact hh₂.scomp x hh hst
 #align has_deriv_within_at.comp HasDerivWithinAt.comp
+
+theorem HasDerivWithinAt.comp_of_eq (hh₂ : HasDerivWithinAt h₂ h₂' s' y)
+    (hh : HasDerivWithinAt h h' s x) (hst : MapsTo h s s') (hy : y = h x) :
+    HasDerivWithinAt (h₂ ∘ h) (h₂' * h') s x := by
+  rw [hy] at hh₂; exact hh₂.comp x hh hst
 
 /-- The chain rule.
 
@@ -254,11 +264,6 @@ theorem HasDerivAt.comp_of_eq
     HasDerivAt (h₂ ∘ h) (h₂' * h') x := by
   rw [hy] at hh₂; exact hh₂.comp x hh
 
-theorem HasDerivAtFilter.comp_of_eq (hh₂ : HasDerivAtFilter h₂ h₂' y L')
-    (hh : HasDerivAtFilter h h' x L) (hL : Tendsto h L L') (hy : y = h x) :
-    HasDerivAtFilter (h₂ ∘ h) (h₂' * h') x L := by
-  rw [hy] at hh₂; exact hh₂.comp x hh hL
-
 theorem HasStrictDerivAt.comp (hh₂ : HasStrictDerivAt h₂ h₂' (h x)) (hh : HasStrictDerivAt h h' x) :
     HasStrictDerivAt (h₂ ∘ h) (h₂' * h') x := by
   rw [mul_comm]
@@ -269,11 +274,6 @@ theorem HasStrictDerivAt.comp_of_eq
     (hh₂ : HasStrictDerivAt h₂ h₂' y) (hh : HasStrictDerivAt h h' x) (hy : y = h x) :
     HasStrictDerivAt (h₂ ∘ h) (h₂' * h') x := by
   rw [hy] at hh₂; exact hh₂.comp x hh
-
-theorem HasDerivWithinAt.comp_of_eq (hh₂ : HasDerivWithinAt h₂ h₂' s' y)
-    (hh : HasDerivWithinAt h h' s x) (hst : MapsTo h s s') (hy : y = h x) :
-    HasDerivWithinAt (h₂ ∘ h) (h₂' * h') s x := by
-  rw [hy] at hh₂; exact hh₂.comp x hh hst
 
 theorem HasDerivAt.comp_hasDerivWithinAt (hh₂ : HasDerivAt h₂ h₂' (h x))
     (hh : HasDerivWithinAt h h' s x) : HasDerivWithinAt (h₂ ∘ h) (h₂' * h') s x :=
