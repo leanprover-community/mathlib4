@@ -1365,14 +1365,9 @@ theorem pair_comm (a b : α) : ({a, b} : Set α) = {b, a} :=
   union_comm _ _
 #align set.pair_comm Set.pair_comm
 
--- Porting note: first branch after `constructor` used to be by `tauto!`.
 theorem pair_eq_pair_iff {x y z w : α} :
     ({x, y} : Set α) = {z, w} ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
-  simp only [Set.Subset.antisymm_iff, Set.insert_subset_iff, Set.mem_insert_iff,
-    Set.mem_singleton_iff, Set.singleton_subset_iff]
-  constructor
-  · rintro ⟨⟨rfl | rfl, rfl | rfl⟩, ⟨h₁, h₂⟩⟩ <;> simp [h₁, h₂] at * <;> simp [h₁, h₂]
-  · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> simp
+  simp [subset_antisymm_iff, insert_subset_iff]; aesop
 #align set.pair_eq_pair_iff Set.pair_eq_pair_iff
 
 /-! ### Lemmas about sets defined as `{x ∈ s | p x}`. -/
@@ -1541,7 +1536,7 @@ lemma disjoint_or_nonempty_inter (s t : Set α) : Disjoint s t ∨ (s ∩ t).Non
 #align set.disjoint_or_nonempty_inter Set.disjoint_or_nonempty_inter
 
 lemma disjoint_iff_forall_ne : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ t → a ≠ b := by
-  simp only [Ne.def, disjoint_left, @imp_not_comm _ (_ = _), forall_eq']
+  simp only [Ne, disjoint_left, @imp_not_comm _ (_ = _), forall_eq']
 #align set.disjoint_iff_forall_ne Set.disjoint_iff_forall_ne
 
 alias ⟨_root_.Disjoint.ne_of_mem, _⟩ := disjoint_iff_forall_ne

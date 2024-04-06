@@ -662,7 +662,7 @@ def evalEquiv : M ≃ₗ[R] Dual R (Dual R M) :=
 
 /-- The dual of a reflexive module is reflexive. -/
 instance Dual.instIsReflecive : IsReflexive R (Dual R M) :=
-⟨by simpa only [← symm_dualMap_evalEquiv] using (evalEquiv R M).dualMap.symm.bijective⟩
+  ⟨by simpa only [← symm_dualMap_evalEquiv] using (evalEquiv R M).dualMap.symm.bijective⟩
 
 /-- The isomorphism `Module.evalEquiv` induces an order isomorphism on subspaces. -/
 def mapEvalEquiv : Submodule R M ≃o Submodule R (Dual R (Dual R M)) :=
@@ -694,7 +694,7 @@ instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
     exact Bijective.Prod_map (bijective_dual_eval R M) (bijective_dual_eval R N)
 
 variable {R M N} in
-lemma equiv [IsReflexive R M] (e : M ≃ₗ[R] N) : IsReflexive R N where
+lemma equiv (e : M ≃ₗ[R] N) : IsReflexive R N where
   bijective_dual_eval' := by
     let ed : Dual R (Dual R N) ≃ₗ[R] Dual R (Dual R M) := e.symm.dualMap.dualMap
     have : Dual.eval R N = ed.symm.comp ((Dual.eval R M).comp e.symm.toLinearMap) := by

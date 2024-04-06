@@ -176,6 +176,9 @@ theorem dense_iff (hf : Inducing f) {s : Set X} :
   simp only [Dense, hf.closure_eq_preimage_closure_image, mem_preimage]
 #align inducing.dense_iff Inducing.dense_iff
 
+theorem of_subsingleton [Subsingleton X] (f : X → Y) : Inducing f :=
+  ⟨Subsingleton.elim _ _⟩
+
 end Inducing
 
 end Inducing
@@ -250,6 +253,9 @@ See also `DiscreteTopology.of_continuous_injective`. -/
 theorem Embedding.discreteTopology [DiscreteTopology Y] (hf : Embedding f) : DiscreteTopology X :=
   .of_continuous_injective hf.continuous hf.inj
 #align embedding.discrete_topology Embedding.discreteTopology
+
+theorem Embedding.of_subsingleton [Subsingleton X] (f : X → Y) : Embedding f :=
+  ⟨.of_subsingleton f, f.injective_of_subsingleton⟩
 
 end Embedding
 
@@ -416,6 +422,8 @@ theorem preimage_frontier_eq_frontier_preimage (hf : IsOpenMap f) (hfc : Continu
   simp only [frontier_eq_closure_inter_closure, preimage_inter, preimage_compl,
     hf.preimage_closure_eq_closure_preimage hfc]
 #align is_open_map.preimage_frontier_eq_frontier_preimage IsOpenMap.preimage_frontier_eq_frontier_preimage
+
+theorem of_isEmpty [h : IsEmpty X] (f : X → Y) : IsOpenMap f := of_nhds_le h.elim
 
 end IsOpenMap
 
@@ -629,6 +637,9 @@ theorem of_comp (f : X → Y) (hg : OpenEmbedding g)
     (h : OpenEmbedding (g ∘ f)) : OpenEmbedding f :=
   (OpenEmbedding.of_comp_iff f hg).1 h
 #align open_embedding.of_comp OpenEmbedding.of_comp
+
+theorem of_isEmpty [IsEmpty X] (f : X → Y) : OpenEmbedding f :=
+  openEmbedding_of_embedding_open (.of_subsingleton f) (IsOpenMap.of_isEmpty f)
 
 end OpenEmbedding
 

@@ -349,7 +349,7 @@ def UniformSpace.ofCore {α : Type u} (u : UniformSpace.Core α) : UniformSpace 
   .ofCoreEq u _ rfl
 #align uniform_space.of_core UniformSpace.ofCore
 
-/-- Construct a `UniformSpace.core` from a `UniformSpace`. -/
+/-- Construct a `UniformSpace.Core` from a `UniformSpace`. -/
 @[reducible]
 def UniformSpace.toCore (u : UniformSpace α) : UniformSpace.Core α where
   __ := u

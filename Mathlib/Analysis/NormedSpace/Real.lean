@@ -92,8 +92,7 @@ theorem interior_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
     have hf1 : (1 : ℝ) ∈ f ⁻¹' interior (closedBall x <| dist y x) := by simpa [f]
     have h1 : (1 : ℝ) ∈ interior (Icc (-1 : ℝ) 1) :=
       interior_mono this (preimage_interior_subset_interior_preimage hfc hf1)
-    contrapose h1
-    simp
+    simp at h1
   intro c hc
   rw [mem_Icc, ← abs_le, ← Real.norm_eq_abs, ← mul_le_mul_right hr]
   simpa [f, dist_eq_norm, norm_smul] using hc

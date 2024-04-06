@@ -3,9 +3,9 @@ Copyright (c) 2020 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Jujian Zhang
 -/
+import Mathlib.Algebra.Polynomial.DenomsClearable
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Data.Polynomial.DenomsClearable
 import Mathlib.Data.Real.Irrational
 import Mathlib.Topology.Algebra.Polynomial
 
@@ -40,7 +40,7 @@ protected theorem irrational {x : ℝ} (h : Liouville x) : Irrational x := by
   -- By contradiction, `x = a / b`, with `a ∈ ℤ`, `0 < b ∈ ℕ` is a Liouville number,
   rintro ⟨⟨a, b, bN0, cop⟩, rfl⟩
   -- clear up the mess of constructions of rationals
-  rw [Rat.cast_mk', ← div_eq_mul_inv] at h
+  rw [Rat.cast_mk'] at h
   -- Since `a / b` is a Liouville number, there are `p, q ∈ ℤ`, with `q1 : 1 < q`,
   -- `a0 : a / b ≠ p / q` and `a1 : |a / b - p / q| < 1 / q ^ (b + 1)`
   rcases h (b + 1) with ⟨p, q, q1, a0, a1⟩
@@ -55,7 +55,7 @@ protected theorem irrational {x : ℝ} (h : Liouville x) : Irrational x := by
     exact mod_cast a1
   -- At a0, clear denominators...
   replace a0 : a * q - ↑b * p ≠ 0 := by
-    rw [Ne.def, div_eq_div_iff b0 qR0.ne', mul_comm (p : ℝ), ← sub_eq_zero] at a0
+    rw [Ne, div_eq_div_iff b0 qR0.ne', mul_comm (p : ℝ), ← sub_eq_zero] at a0
     exact mod_cast a0
   -- Actually, `q` is a natural number
   lift q to ℕ using (zero_lt_one.trans q1).le
