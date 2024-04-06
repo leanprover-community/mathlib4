@@ -66,54 +66,11 @@ universe u
 
 open Lean Meta Elab Tactic Parser.Tactic Std
 
-local elab "#?" : command =>
+namespace Mathlib.Tactic.CC
+
+scoped elab "#?" : command =>
   return
   -- logInfo "The English of this document is possibly poor, please correct."
-
-/--
-The congruence closure tactic `cc` tries to solve the goal by chaining
-equalities from context and applying congruence (i.e. if `a = b`, then `f a = f b`).
-It is a finishing tactic, i.e. it is meant to close
-the current goal, not to make some inconclusive progress.
-A mostly trivial example would be:
-
-```lean
-example (a b c : ℕ) (f : ℕ → ℕ) (h: a = b) (h' : b = c) : f a = f c := by
-  cc
-```
-
-As an example requiring some thinking to do by hand, consider:
-
-```lean
-example (f : ℕ → ℕ) (x : ℕ)
-    (H1 : f (f (f x)) = x) (H2 : f (f (f (f (f x)))) = x) :
-    f x = x := by
-  cc
-```
-
-The tactic works by building an equality matching graph. It's a graph where
-the vertices are terms and they are linked by edges if they are known to
-be equal. Once you've added all the equalities in your context, you take
-the transitive closure of the graph and, for each connected component
-(i.e. equivalence class) you can elect a term that will represent the
-whole class and store proofs that the other elements are equal to it.
-You then take the transitive closure of these equalities under the
-congruence lemmas.
-
-The `cc` implementation in Lean does a few more tricks: for example it
-derives `a = b` from `Nat.succ a = Nat.succ b`, and `Nat.succ a != Nat.zero` for any `a`.
-
-* The starting reference point is Nelson, Oppen, [Fast decision procedures based on congruence
-closure](http://www.cs.colorado.edu/~bec/courses/csci5535-s09/reading/nelson-oppen-congruence.pdf),
-Journal of the ACM (1980)
-
-* The congruence lemmas for dependent type theory as used in Lean are described in
-[Congruence closure in intensional type theory](https://leanprover.github.io/papers/congr.pdf)
-(de Moura, Selsam IJCAR 2016).
--/
-syntax (name := Lean.Parser.Tactic.cc) "cc" : tactic
-
-namespace Mathlib.Tactic.CC
 
 initialize
   registerTraceClass `Meta.Tactic.cc.merge
@@ -2818,7 +2775,7 @@ Journal of the ACM (1980)
 [Congruence closure in intensional type theory](https://leanprover.github.io/papers/congr.pdf)
 (de Moura, Selsam IJCAR 2016).
 -/
-elab (name := Lean.Parser.Tactic.cc) "cc" : tactic =>
+elab (name := _root_.Mathlib.Tactic.cc) "cc" : tactic =>
   withMainContext <| liftMetaFinishingTactic (·.cc)
 
 #noalign tactic.cc_dbg_core
