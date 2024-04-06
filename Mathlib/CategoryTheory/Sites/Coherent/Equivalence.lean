@@ -3,7 +3,8 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
+import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
+import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 import Mathlib.CategoryTheory.Sites.Equivalence
 /-!
 
@@ -29,7 +30,7 @@ section Coherent
 variable [Precoherent C]
 
 /-- `Precoherent` is preserved by equivalence of categories. -/
-theorem precoherent : Precoherent D := reflects_precoherent e.inverse
+theorem precoherent : Precoherent D := e.inverse.reflects_precoherent
 
 instance [EssentiallySmall C] :
     Precoherent (SmallModel C) := (equivSmallModel C).precoherent
@@ -81,8 +82,7 @@ section Regular
 variable [Preregular C]
 
 /-- `Preregular` is preserved by equivalence of categories. -/
-theorem preregular : Preregular D :=
-  reflects_preregular e.inverse
+theorem preregular : Preregular D := e.inverse.reflects_preregular
 
 instance [EssentiallySmall C] :
     Preregular (SmallModel C) := (equivSmallModel C).preregular

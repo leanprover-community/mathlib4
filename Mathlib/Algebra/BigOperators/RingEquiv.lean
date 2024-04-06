@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.List.Lemmas
 import Mathlib.Algebra.Ring.Equiv
 
 #align_import algebra.big_operators.ring_equiv from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
