@@ -8,6 +8,7 @@ import Mathlib.Data.Fintype.Order
 import Mathlib.Algebra.DirectLimit
 import Mathlib.ModelTheory.Quotients
 import Mathlib.ModelTheory.FinitelyGenerated
+import Mathlib.Order.Ideal
 
 #align_import model_theory.direct_limit from "leanprover-community/mathlib"@"f53b23994ac4c13afa38d31195c588a1121d1860"
 
@@ -427,12 +428,12 @@ noncomputable def equiv_lift : DirectLimit G f ≃[L] DirectLimit G' f' := by
   let U i : G i ↪[L] DirectLimit G' f' := (of L _ G' f' i).comp (g i).toEmbedding
   let F : DirectLimit G f ↪[L] DirectLimit G' f' := lift L _ G f U <| by
     intro _ _ _ _
-    simp only [Embedding.comp_apply, Equiv.coe_toEmbedding, H_commuting, of_f]
+    simp only [U, Embedding.comp_apply, Equiv.coe_toEmbedding, H_commuting, of_f]
   have surj_f : Function.Surjective F := by
     intro x
     rcases x with ⟨i, pre_x⟩
     use of L _ G f i ((g i).symm pre_x)
-    simp only [lift_of, Embedding.comp_apply, Equiv.coe_toEmbedding, Equiv.apply_symm_apply]
+    simp only [F, U, lift_of, Embedding.comp_apply, Equiv.coe_toEmbedding, Equiv.apply_symm_apply]
     rfl
   exact ⟨Equiv.ofBijective F ⟨F.injective, surj_f⟩, F.map_fun', F.map_rel'⟩
 
@@ -504,7 +505,7 @@ noncomputable def Equiv_iSup :
     rintro ⟨m, hm⟩
     rw [← rangeLiftInclusion, Hom.mem_range] at hm
     rcases hm with ⟨a, _⟩; use a
-    simpa only [Embedding.codRestrict_apply', Subtype.mk.injEq]
+    simpa only [F, Embedding.codRestrict_apply', Subtype.mk.injEq]
   exact ⟨Equiv.ofBijective F ⟨F.injective, F_surj⟩, F.map_fun', F.map_rel'⟩
 
 theorem Equiv_isup_of_apply {i : ι} (x : S i) :
