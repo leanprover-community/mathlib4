@@ -12,12 +12,9 @@ import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 # Categories of coherent sheaves
 
 Given a fully faithful functor `F : C ⥤ D` into a precoherent category, which preserves and reflects
-finite effective epi families, satisfies the property `F.EffectivelyEnough` (meaning that to every
-object in `C` there is an effective epi from an object in the image of `F`), and
-`F.IsCoverDense (coherentTopology _)` (which holds e.g. if every object in the image of `F` is
-projective, see `CategoryTheory/Sites/Coherent/Projective`, or if `F` is an equivalence, see
-`CategoryTheory/Sites/Equivalence`), the categories of coherent sheaves on `C` and `D` are
-equivalent.
+finite effective epi families, and satisfies the property `F.EffectivelyEnough` (meaning that to
+every object in `C` there is an effective epi from an object in the image of `F`), the categories
+of coherent sheaves on `C` and `D` are equivalent.
 
 We give the corresonding result for the regular topology as well.
 -/
@@ -32,9 +29,20 @@ variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
 namespace coherentTopology
 
 variable [F.PreservesFiniteEffectiveEpiFamilies] [F.ReflectsFiniteEffectiveEpiFamilies]
-  [Full F] [Faithful F]
-  [Precoherent D]
-  [F.EffectivelyEnough] [F.IsCoverDense (coherentTopology _)]
+  [Full F] [Faithful F] [F.EffectivelyEnough] [Precoherent D]
+
+instance : F.IsCoverDense (coherentTopology _) := by
+  refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
+  apply Coverage.saturate.of
+  refine ⟨Unit, inferInstance, fun _ => F.effectiveEpiOverObj B,
+    fun _ => F.effectiveEpiOver B, ?_ , ?_⟩
+  · funext X f
+    ext
+    refine ⟨fun ⟨⟩ ↦ ⟨()⟩, ?_⟩
+    rintro ⟨⟩
+    simp only [Presieve.singleton_eq_iff_domain]
+  · rw [← effectiveEpi_iff_effectiveEpiFamily]
+    infer_instance
 
 theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
     (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
@@ -133,10 +141,18 @@ end coherentTopology
 
 namespace regularTopology
 
-variable [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis]
-  [Full F] [Faithful F]
-  [Preregular D]
-  [F.EffectivelyEnough] [F.IsCoverDense (regularTopology _)]
+variable [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis] [Full F] [Faithful F]
+  [F.EffectivelyEnough] [Preregular D]
+
+instance : F.IsCoverDense (regularTopology _) := by
+  refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
+  apply Coverage.saturate.of
+  refine ⟨F.effectiveEpiOverObj B, F.effectiveEpiOver B, ?_, inferInstance⟩
+  funext X f
+  ext
+  refine ⟨fun ⟨⟩ ↦ ⟨()⟩, ?_⟩
+  rintro ⟨⟩
+  simp only [Presieve.singleton_eq_iff_domain]
 
 theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
     (∃ (Y : C) (π : Y ⟶ X),

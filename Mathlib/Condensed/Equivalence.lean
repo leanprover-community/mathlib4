@@ -7,7 +7,6 @@ import Mathlib.Topology.Category.Profinite.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.EffectiveEpi
 import Mathlib.Condensed.Basic
 import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
-import Mathlib.CategoryTheory.Sites.Coherent.CoverDense
 /-!
 
 # Sheaves on CompHaus are equivalent to sheaves on Stonean
