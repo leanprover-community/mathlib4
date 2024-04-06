@@ -161,7 +161,7 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
       | .node info kind args => .node (alignInfo info) kind (args.map alignSyntax)
       | .atom info val =>
         -- We have to preserve the unsubscripted `val` even though it breaks `Syntax.reprint`
-        -- because basic parsers like `num` read the `val` directly
+        -- because basic parsers like `Num` read the `val` directly
         .atom (alignInfo info) val
       | .ident info rawVal val preresolved =>
         .ident (alignInfo info) (alignSubstr rawVal) val preresolved

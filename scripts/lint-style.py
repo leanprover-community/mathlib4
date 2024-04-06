@@ -455,22 +455,48 @@ def import_old_files_declarations():
 # FUTURE ideas:
 # - file names exist (parse Mathlib.lean)
 # - enforce normal form for file names
-def lint_backticks_in_comments(old_files, old_declarations, lines, path):
-    errors = []
-    for line_nr, line in lines:
-        line=line.strip()
-        s = extract_backticks(line)
-        if s is None:
-            print(f'what, what input did we get: "{line}"')
-            assert False # omit invalid input for now
+def lint_backticks_in_comments(old_files, old_declarations, lines):
+    errors = False
+    newlines = []
+    for _line_nr, line in lines:
+        s = extract_backticks(line.rstrip())
+        fixed = line
         for item in s:
             if item in old_files:
-                print(f'old file "{item}" mentioned in line: "{line}"')
-                #errors += [(ERR_OLD_FILE, (item, line), line_nr, path)]
-            if item in old_declarations:
-                print(f'old declaration "{item}" mentioned in line: "{line}"')
-                #errors += [(ERR_OLD_DECL, (item, line), line_nr, path)]
-    return errors
+                print(f'old file "{item}" mentioned in line: "{line.strip()}"')
+                errors = True
+            elif item in old_declarations:
+                # Some declarations are also mathlib4 tactics: skip these.
+                if item in ['group', 'rel', 'ring']:
+                    continue
+                # FIXME: auto-fixing one replaces one item at a time
+                fixed = line.replace(f'`{item}`', f'`{old_declarations[item]}`')
+                print(f'old declaration "{item}" mentioned in line: \n{line.strip()}\nfixed line would be\n{fixed.strip()}')
+                errors = True
+        newlines.append(fixed)
+    return errors, newlines
+
+def test_backtick_linting():
+    decls = dict({'convex' : 'Convex', 'ring' : 'Ring'})
+    def check_fine(input):
+        errors, new = lint_backticks_in_comments([], decls, [(0, input)])
+        assert not errors, f'Input "{input}" should yield no errors'
+        assert len(new) == 1
+        actual = new[0]
+        if actual != input:
+            print(f'ERROR: input "{input}" should not be modified, actual output was\n{actual}')
+    def check_error(input, expected):
+        errors, newlines = lint_backticks_in_comments([], decls, [(0, input)])
+        assert errors
+        assert len(newlines) == 1
+        actual = newlines[0]
+        assert actual == expected, f'input "{input}" was changed to\n{actual}\nbut expected this instead:\n{expected}'
+    check_fine("Some normal input without any backticks.")
+    check_fine("Some `in backticks`")
+    check_fine("My `ring` is fine.")
+    check_error("A `convex` set", "A `Convex` set")
+    check_error("A convex set, `convex` set", "A convex set, `Convex` set")
+
 
 def output_message(path, line_nr, code, msg):
     if len(exceptions) == 0:
@@ -541,7 +567,10 @@ def lint(path, fix=False):
         # we will modify lines as we go, so we need to keep track of the original line numbers
         lines = f.readlines()
         enum_lines = enumerate(lines, 1)
-        format_errors(lint_backticks_in_comments(old_files, old_declarations, enumerate(lines[:], 1), path))
+        errors, newlines = lint_backticks_in_comments(old_files, old_declarations, enumerate(lines[:], 1))
+        if errors:
+            path.with_name(path.name + '.bak').write_text("".join(newlines), encoding = "utf8")
+            shutil.move(path.with_name(path.name + '.bak'), path)
         newlines = enum_lines
         for error_check in [line_endings_check,
                             four_spaces_in_second_line,
@@ -573,10 +602,11 @@ def lint(path, fix=False):
             format_errors(errs)
             errs, newlines = banned_import_check(newlines, path)
             format_errors(errs)
-    # if we haven't been asked to fix errors, or there are no errors or no fixes, we're done
-    if fix and new_exceptions and enum_lines != newlines:
-        path.with_name(path.name + '.bak').write_text("".join(l for _,l in newlines), encoding = "utf8")
-        shutil.move(path.with_name(path.name + '.bak'), path)
+    # Don't fix other errors in parallel, for simplicity.
+    # # if we haven't been asked to fix errors, or there are no errors or no fixes, we're done
+    # if fix and new_exceptions and enum_lines != newlines:
+    #     path.with_name(path.name + '.bak').write_text("".join(l for _,l in newlines), encoding = "utf8")
+    #     shutil.move(path.with_name(path.name + '.bak'), path)
 
 fix = "--fix" in sys.argv
 argv = (arg for arg in sys.argv[1:] if arg != "--fix")
