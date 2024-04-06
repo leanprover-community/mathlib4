@@ -224,7 +224,7 @@ protected theorem leftMulMatrix (pb : PowerBasis A S) : Algebra.leftMulMatrix pb
   rw [Algebra.leftMulMatrix_apply, ← LinearEquiv.eq_symm_apply, LinearMap.toMatrix_symm]
   refine' pb.basis.ext fun k => _
   simp_rw [Matrix.toLin_self, Matrix.of_apply, pb.basis_eq_pow]
-  apply (pow_succ _ _).symm.trans
+  apply (pow_succ' _ _).symm.trans
   split_ifs with h
   · simp_rw [h, neg_smul, Finset.sum_neg_distrib, eq_neg_iff_add_eq_zero]
     convert pb.aeval_minpolyGen

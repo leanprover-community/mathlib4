@@ -456,7 +456,6 @@ theorem Zlattice.FG [hs : IsZlattice K L] : AddSubgroup.FG L := by
 theorem Zlattice.module_finite [IsZlattice K L] : Module.Finite ℤ L :=
   Module.Finite.iff_addGroup_fg.mpr ((AddGroup.fg_iff_addSubgroup_fg L).mpr (FG K L))
 
-
 instance instModuleFinite_of_discrete_addSubgroup {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : AddSubgroup E) [DiscreteTopology L] :
     Module.Finite ℤ L := by
@@ -487,7 +486,7 @@ theorem Zlattice.module_free [IsZlattice K L] : Module.Free ℤ L := by
     exact noZeroSMulDivisors _
   infer_instance
 
-instance instModuleFree__of_discrete_addSubgroup {E : Type*} [NormedAddCommGroup E]
+instance instModuleFree_of_discrete_addSubgroup {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : AddSubgroup E) [DiscreteTopology L] :
     Module.Free ℤ L := by
   have : Module ℚ E := Module.compHom E (algebraMap ℚ ℝ)

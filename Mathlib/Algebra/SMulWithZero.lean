@@ -155,7 +155,7 @@ instance MonoidWithZero.toMulActionWithZero : MulActionWithZero R R :=
 /-- Like `MonoidWithZero.toMulActionWithZero`, but multiplies on the right. See also
 `Semiring.toOppositeModule` -/
 instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero Rᵐᵒᵖ R :=
-  { MulZeroClass.toOppositeSMulWithZero R, Monoid.toOppositeMulAction R with }
+  { MulZeroClass.toOppositeSMulWithZero R, Monoid.toOppositeMulAction with }
 #align monoid_with_zero.to_opposite_mul_action_with_zero MonoidWithZero.toOppositeMulActionWithZero
 
 protected lemma MulActionWithZero.subsingleton
