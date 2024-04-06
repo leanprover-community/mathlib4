@@ -1392,7 +1392,7 @@ instance instRatCast : RatCast ℍ[R] where ratCast q := (q : R)
 instance instDivisionRing : DivisionRing ℍ[R] where
   __ := Quaternion.instGroupWithZero
   __ := Quaternion.instRing
-  ratCast_def q := by rw [← coe_ratCast, Rat.cast_def, coe_div, coe_int_cast, coe_nat_cast]
+  ratCast_def q := by rw [← coe_ratCast, Rat.cast_def, coe_div, coe_intCast, coe_natCast]
   qsmul := (· • ·)
   qsmul_def q x := by rw [← coe_ratCast, coe_mul_eq_smul]; ext <;> exact Rat.smul_def _ _
 
