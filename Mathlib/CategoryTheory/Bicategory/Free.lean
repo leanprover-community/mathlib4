@@ -87,35 +87,25 @@ section
 -- Porting note: commenting out redundant binder annotation update
 -- variable {B}
 
--- mathport name: vcomp
 -- The following notations are only used in the definition of `Rel` to simplify the notation.
 local infixr:0 " ≫ " => Hom₂.vcomp
 
--- mathport name: id
 local notation "𝟙" => Hom₂.id
 
--- mathport name: whisker_left
 local notation f " ◁ " η => Hom₂.whisker_left f η
 
--- mathport name: whisker_right
 local notation η " ▷ " h => Hom₂.whisker_right h η
 
--- mathport name: associator
 local notation "α_" => Hom₂.associator
 
--- mathport name: left_unitor
 local notation "λ_" => Hom₂.left_unitor
 
--- mathport name: right_unitor
 local notation "ρ_" => Hom₂.right_unitor
 
--- mathport name: associator_inv
 local notation "α⁻¹_" => Hom₂.associator_inv
 
--- mathport name: left_unitor_inv
 local notation "λ⁻¹_" => Hom₂.left_unitor_inv
 
--- mathport name: right_unitor_inv
 local notation "ρ⁻¹_" => Hom₂.right_unitor_inv
 
 /-- Relations between 2-morphisms in the free bicategory. -/
