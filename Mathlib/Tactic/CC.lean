@@ -478,6 +478,8 @@ structure ParentOcc where
       performance reasons. -/
   symmTable : Bool
 
+#?
+/-- Red-black sets of `ParentOcc`s. -/
 abbrev ParentOccSet := Std.RBSet ParentOcc (Ordering.byKey ParentOcc.expr compare)
 
 abbrev Parents := RBExprMap ParentOccSet
@@ -731,6 +733,8 @@ end CCState
     produced by internal propagation rules (e.g., subsingleton propagator).  -/
 structure CCNormalizer where
   normalize : Expr → MetaM Expr
+
+attribute [inherit_doc CCNormalizer] CCNormalizer.normalize
 
 structure CCPropagationHandler where
   propagated : Array Expr → MetaM Unit
