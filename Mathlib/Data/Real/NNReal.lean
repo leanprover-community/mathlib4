@@ -64,7 +64,6 @@ def NNReal := { r : ℝ // 0 ≤ r } deriving
 
 namespace NNReal
 
--- mathport name: nnreal
 scoped notation "ℝ≥0" => NNReal
 
 noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring

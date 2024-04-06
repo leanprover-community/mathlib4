@@ -312,10 +312,9 @@ protected def divisionRing [DivisionRing β] (zero : f 0 = 0) (one : f 1 = 1)
   toRing := hf.ring f zero one add mul neg sub nsmul zsmul npow natCast intCast
   __ := hf.groupWithZero f zero one mul inv div npow zpow
   __ := hf.divisionSemiring f zero one add mul inv div nsmul npow zpow natCast
-  ratCast_mk a b h1 h2 := hf $ by
-    erw [ratCast, mul, inv, intCast, natCast, Rat.cast_def, div_eq_mul_inv]
+  ratCast_def q := hf $ by erw [ratCast, div, intCast, natCast, Rat.cast_def]
   qsmul := (· • ·)
-  qsmul_eq_mul' q a := hf $ by erw [qsmul, mul, Rat.smul_def, ratCast]
+  qsmul_def q a := hf $ by erw [qsmul, mul, Rat.smul_def, ratCast]
 #align function.injective.division_ring Function.Injective.divisionRing
 
 /-- Pullback a `Field` along an injective function. -/
@@ -344,12 +343,8 @@ protected def field [Field β] (zero : f 0 = 0) (one : f 1 = 1)
     (ratCast : ∀ q : ℚ, f q = q) :
     Field α where
   toCommRing := hf.commRing f zero one add mul neg sub nsmul zsmul npow natCast intCast
-  __ := hf.commGroupWithZero f zero one mul inv div npow zpow
-  __ := hf.divisionSemiring f zero one add mul inv div nsmul npow zpow natCast
-  ratCast_mk a b h1 h2 := hf $ by
-    erw [ratCast, mul, inv, intCast, natCast, Rat.cast_def, div_eq_mul_inv]
-  qsmul := (· • ·)
-  qsmul_eq_mul' q a := hf $ by erw [qsmul, mul, Rat.smul_def, ratCast]
+  __ := hf.divisionRing f zero one add mul neg sub inv div nsmul zsmul qsmul npow zpow
+    natCast intCast ratCast
 #align function.injective.field Function.Injective.field
 
 end Function.Injective

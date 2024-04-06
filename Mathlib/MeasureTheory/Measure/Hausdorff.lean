@@ -576,7 +576,6 @@ def hausdorffMeasure (d : ℝ) : Measure X :=
   mkMetric fun r => r ^ d
 #align measure_theory.measure.hausdorff_measure MeasureTheory.Measure.hausdorffMeasure
 
--- mathport name: hausdorff_measure
 scoped[MeasureTheory] notation "μH[" d "]" => MeasureTheory.Measure.hausdorffMeasure d
 
 theorem le_hausdorffMeasure (d : ℝ) (μ : Measure X) (ε : ℝ≥0∞) (h₀ : 0 < ε)

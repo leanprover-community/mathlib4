@@ -479,27 +479,41 @@ theorem I_pow_bit1 (n : ℕ) : I ^ bit1 n = (-1 : ℂ) ^ n * I := by rw [pow_bit
 set_option linter.uppercaseLean3 false in
 #align complex.I_pow_bit1 Complex.I_pow_bit1
 
--- Porting note (#10756): new theorem
--- See note [no_index around OfNat.ofNat]
-@[simp, norm_cast]
-theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n) : ℝ) : ℂ) = OfNat.ofNat n :=
-  rfl
-
--- See note [no_index around OfNat.ofNat]
-@[simp]
-theorem re_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).re = OfNat.ofNat n :=
-  rfl
-
--- See note [no_index around OfNat.ofNat]
-@[simp]
-theorem im_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).im = 0 :=
-  rfl
-
-noncomputable instance : RatCast ℂ where
-  ratCast q := ofReal' q
-
 end
+
+/-! ### Cast lemmas -/
+
+noncomputable instance instRatCast : RatCast ℂ where ratCast q := ofReal' q
+
+-- See note [no_index around OfNat.ofNat]
+@[simp, norm_cast] lemma ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ofReal' (no_index (OfNat.ofNat n)) = OfNat.ofNat n := rfl
+@[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ofReal' n = n := rfl
+@[simp, norm_cast] lemma ofReal_intCast (n : ℤ) : ofReal' n = n := rfl
+@[simp, norm_cast] lemma ofReal_ratCast (q : ℚ) : ofReal' q = q := rfl
+#align complex.of_real_nat_cast Complex.ofReal_natCast
+#align complex.of_real_int_cast Complex.ofReal_intCast
+#align complex.of_real_rat_cast Complex.ofReal_ratCast
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).re = OfNat.ofNat n := rfl
+@[simp] lemma im_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).im = 0 := rfl
+@[simp, norm_cast] lemma natCast_re (n : ℕ) : (n : ℂ).re = n := rfl
+@[simp, norm_cast] lemma natCast_im (n : ℕ) : (n : ℂ).im = 0 := rfl
+@[simp, norm_cast] lemma intCast_re (n : ℤ) : (n : ℂ).re = n := rfl
+@[simp, norm_cast] lemma intCast_im (n : ℤ) : (n : ℂ).im = 0 := rfl
+@[simp, norm_cast] lemma ratCast_re (q : ℚ) : (q : ℂ).re = q := rfl
+@[simp, norm_cast] lemma ratCast_im (q : ℚ) : (q : ℂ).im = 0 := rfl
+#align complex.nat_cast_re Complex.natCast_re
+#align complex.nat_cast_im Complex.natCast_im
+#align complex.int_cast_re Complex.intCast_re
+#align complex.int_cast_im Complex.intCast_im
+#align complex.rat_cast_re Complex.ratCast_re
+#align complex.rat_cast_im Complex.ratCast_im
+
+@[norm_cast] lemma ofReal_nsmul (n : ℕ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
+@[norm_cast] lemma ofReal_zsmul (n : ℤ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
 
 /-! ### Complex conjugation -/
 
@@ -536,7 +550,7 @@ theorem conj_I : conj I = -I :=
 #noalign complex.conj_bit0
 #noalign complex.conj_bit1
 
-theorem conj_nat_cast (n : ℕ) : conj (n : ℂ) = n := map_natCast _ _
+theorem conj_natCast (n : ℕ) : conj (n : ℂ) = n := map_natCast _ _
 
 -- See note [no_index around OfNat.ofNat]
 theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=
@@ -777,57 +791,28 @@ protected theorem mul_inv_cancel {z : ℂ} (h : z ≠ 0) : z * z⁻¹ = 1 := by
     ofReal_one]
 #align complex.mul_inv_cancel Complex.mul_inv_cancel
 
-/-! ### Cast lemmas -/
+noncomputable instance instDivInvMonoid : DivInvMonoid ℂ where
 
-@[simp, norm_cast]
-theorem ofReal_natCast (n : ℕ) : ((n : ℝ) : ℂ) = n := rfl
-#align complex.of_real_nat_cast Complex.ofReal_natCast
+lemma div_re (z w : ℂ) : (z / w).re = z.re * w.re / normSq w + z.im * w.im / normSq w := by
+  simp [div_eq_mul_inv, mul_assoc, sub_eq_add_neg]
+#align complex.div_re Complex.div_re
 
-@[simp, norm_cast]
-theorem natCast_re (n : ℕ) : (n : ℂ).re = n := rfl
-#align complex.nat_cast_re Complex.natCast_re
-
-@[simp, norm_cast]
-theorem natCast_im (n : ℕ) : (n : ℂ).im = 0 := rfl
-#align complex.nat_cast_im Complex.natCast_im
-
-@[simp, norm_cast]
-theorem ofReal_intCast (n : ℤ) : ((n : ℝ) : ℂ) = n := rfl
-#align complex.of_real_int_cast Complex.ofReal_intCast
-
-@[simp, norm_cast]
-theorem intCast_re (n : ℤ) : (n : ℂ).re = n := rfl
-#align complex.int_cast_re Complex.intCast_re
-
-@[simp, norm_cast]
-theorem intCast_im (n : ℤ) : (n : ℂ).im = 0 := rfl
-#align complex.int_cast_im Complex.intCast_im
-
-@[simp, norm_cast]
-theorem ofReal_ratCast (q : ℚ) : ((q : ℝ) : ℂ) = q := rfl
-#align complex.of_real_rat_cast Complex.ofReal_ratCast
-
-@[simp, norm_cast]
-theorem ratCast_re (q : ℚ) : (q : ℂ).re = (q : ℝ) := rfl
-#align complex.rat_cast_re Complex.ratCast_re
-
-@[simp, norm_cast]
-theorem ratCast_im (q : ℚ) : (q : ℂ).im = 0 := rfl
-#align complex.rat_cast_im Complex.ratCast_im
-
-@[norm_cast] lemma ofReal_nsmul (n : ℕ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
-@[norm_cast] lemma ofReal_zsmul (n : ℤ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
+lemma div_im (z w : ℂ) : (z / w).im = z.im * w.re / normSq w - z.re * w.im / normSq w := by
+  simp [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, add_comm]
+#align complex.div_im Complex.div_im
 
 /-! ### Field instance and lemmas -/
 
-noncomputable instance instField : Field ℂ :=
-{ qsmul := fun n z => n • z
-  qsmul_eq_mul' := fun n z => ext_iff.2 <| by simp [Rat.smul_def, smul_re, smul_im]
-  ratCast_mk := fun n d hd h2 => by ext <;> simp [Field.ratCast_mk]
-  inv := Inv.inv
+noncomputable instance instField : Field ℂ where
   mul_inv_cancel := @Complex.mul_inv_cancel
-  inv_zero := Complex.inv_zero }
+  inv_zero := Complex.inv_zero
+  ratCast_def q := by ext <;> simp [Rat.cast_def, div_re, div_im, mul_div_mul_comm]
+  qsmul := (· • ·)
+  qsmul_def n z := ext_iff.2 <| by simp [Rat.smul_def, smul_re, smul_im]
 #align complex.field Complex.instField
+
+@[simp, norm_cast]
+lemma ofReal_qsmul (q : ℚ) (r : ℝ) : ofReal' (q • r) = q • r := by simp [Rat.smul_def]
 
 section
 set_option linter.deprecated false
@@ -842,14 +827,6 @@ set_option linter.uppercaseLean3 false in
 #align complex.I_zpow_bit1 Complex.I_zpow_bit1
 
 end
-
-theorem div_re (z w : ℂ) : (z / w).re = z.re * w.re / normSq w + z.im * w.im / normSq w := by
-  simp [div_eq_mul_inv, mul_assoc, sub_eq_add_neg]
-#align complex.div_re Complex.div_re
-
-theorem div_im (z w : ℂ) : (z / w).im = z.im * w.re / normSq w - z.re * w.im / normSq w := by
-  simp [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, add_comm]
-#align complex.div_im Complex.div_im
 
 theorem conj_inv (x : ℂ) : conj x⁻¹ = (conj x)⁻¹ :=
   star_inv' _
