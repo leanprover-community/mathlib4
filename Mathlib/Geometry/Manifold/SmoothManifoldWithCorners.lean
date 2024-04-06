@@ -128,6 +128,7 @@ open Set Filter Function
 
 open scoped Manifold Filter Topology
 
+/-- The extended natural number `∞` -/
 scoped[Manifold] notation "∞" => (⊤ : ℕ∞)
 
 /-! ### Models with corners. -/

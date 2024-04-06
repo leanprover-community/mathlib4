@@ -1308,6 +1308,7 @@ theorem lift_lt_aleph0 {c : Cardinal.{u}} : lift.{v} c < ℵ₀ ↔ c < ℵ₀ :
 #align cardinal.lift_lt_aleph_0 Cardinal.lift_lt_aleph0
 
 /-! ### Properties about the cast from `ℕ` -/
+section castFromN
 
 -- porting note (#10618): simp can prove this
 -- @[simp]
@@ -1666,8 +1667,8 @@ theorem add_lt_aleph0 {a b : Cardinal} (ha : a < ℵ₀) (hb : b < ℵ₀) : a +
 #align cardinal.add_lt_aleph_0 Cardinal.add_lt_aleph0
 
 theorem add_lt_aleph0_iff {a b : Cardinal} : a + b < ℵ₀ ↔ a < ℵ₀ ∧ b < ℵ₀ :=
-  ⟨fun h => ⟨(self_le_add_right _ _).trans_lt h, (self_le_add_left _ _).trans_lt h⟩, fun ⟨h1, h2⟩ =>
-    add_lt_aleph0 h1 h2⟩
+  ⟨fun h => ⟨(self_le_add_right _ _).trans_lt h, (self_le_add_left _ _).trans_lt h⟩,
+   fun ⟨h1, h2⟩ => add_lt_aleph0 h1 h2⟩
 #align cardinal.add_lt_aleph_0_iff Cardinal.add_lt_aleph0_iff
 
 theorem aleph0_le_add_iff {a b : Cardinal} : ℵ₀ ≤ a + b ↔ ℵ₀ ≤ a ∨ ℵ₀ ≤ b := by
@@ -1829,8 +1830,6 @@ theorem ofNat_add_aleph0 {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n)
 theorem aleph0_add_ofNat {n : ℕ} [Nat.AtLeastTwo n] : ℵ₀ + no_index (OfNat.ofNat n) = ℵ₀ :=
   aleph0_add_nat n
 
-variable {c : Cardinal}
-
 theorem exists_nat_eq_of_le_nat {c : Cardinal} {n : ℕ} (h : c ≤ n) : ∃ m, m ≤ n ∧ c = m := by
   lift c to ℕ using h.trans_lt (nat_lt_aleph0 _)
   exact ⟨c, mod_cast h, rfl⟩
@@ -1843,6 +1842,10 @@ theorem mk_int : #ℤ = ℵ₀ :=
 theorem mk_pNat : #ℕ+ = ℵ₀ :=
   mk_denumerable ℕ+
 #align cardinal.mk_pnat Cardinal.mk_pNat
+
+end castFromN
+
+variable {c : Cardinal}
 
 /-- **König's theorem** -/
 theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f < prod g :=
@@ -1863,6 +1866,9 @@ theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f 
     let ⟨⟨i, a⟩, h⟩ := sG C
     exact hc i a (congr_fun h _)
 #align cardinal.sum_lt_prod Cardinal.sum_lt_prod
+
+/-! Cardinalities of sets: cardinality of empty, finite sets, unions, subsets etc. -/
+section sets
 
 -- porting note (#10618): simp can prove this
 -- @[simp]
@@ -2151,7 +2157,6 @@ theorem mk_union_le_aleph0 {α} {P Q : Set α} :
     ← countable_union]
 #align cardinal.mk_union_le_aleph_0 Cardinal.mk_union_le_aleph0
 
-
 theorem mk_subtype_of_equiv {α β : Type u} (p : β → Prop) (e : α ≃ β) :
     #{ a : α // p (e a) } = #{ b : β // p b } :=
   mk_congr (Equiv.subtypeEquivOfSubtype e)
@@ -2270,6 +2275,10 @@ theorem three_le {α : Type*} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z 
   simpa [not_or] using this
 #align cardinal.three_le Cardinal.three_le
 
+end sets
+
+section powerlt
+
 /-- The function `a ^< b`, defined as the supremum of `a ^ c` for `c < b`. -/
 def powerlt (a b : Cardinal.{u}) : Cardinal.{u} :=
   ⨆ c : Iio b, a ^ (c : Cardinal)
@@ -2322,6 +2331,8 @@ theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 := by
   convert Cardinal.iSup_of_empty _
   exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_lt
 #align cardinal.powerlt_zero Cardinal.powerlt_zero
+
+end powerlt
 
 /-- The cardinality of a nontrivial module over a ring is at least the cardinality of the ring if
 there are no zero divisors (for instance if the ring is a field) -/
