@@ -79,7 +79,7 @@ section NonUnital
 variable [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
 
 theorem associativity_left (a b c : V) (s t : ℤ) : Borcherds_sum_1 R a b c 0 s t =
-    ncoef (Y R (ncoef (Y R a) t b)) s c := by
+    ncoef R (Y R (ncoef R (Y R a) t b)) s c := by
   unfold Borcherds_sum_1
   cases h : (Int.toNat (-t - order R a b)) with
     | zero =>
@@ -96,9 +96,9 @@ theorem associativity_left (a b c : V) (s t : ℤ) : Borcherds_sum_1 R a b c 0 s
 
 theorem associativity_right (a b c : V) (s t : ℤ) : Borcherds_sum_2 R a b c 0 s t +
     Borcherds_sum_3 R a b c 0 s t = Finset.sum (Finset.range (Int.toNat (-s - order R b c)))
-    (fun i ↦ (-1)^i • (Ring.choose (t : ℤ) i) • ncoef (Y R a) (t-i) (ncoef (Y R b) (s+i) c)) +
+    (fun i ↦ (-1)^i • (Ring.choose (t : ℤ) i) • ncoef R (Y R a) (t-i) (ncoef R (Y R b) (s+i) c)) +
     Finset.sum (Finset.range (Int.toNat (- order R a c))) (fun i ↦ (-1: ℤˣ)^(t+i+1) •
-    (Ring.choose t i) • ncoef (Y R b) (s+t-i) (ncoef (Y R a) i c)) := by
+    (Ring.choose t i) • ncoef R (Y R b) (s+t-i) (ncoef R (Y R a) i c)) := by
   unfold Borcherds_sum_2 Borcherds_sum_3
   simp only [neg_zero, zero_sub, zero_add]
 
@@ -109,7 +109,7 @@ theorem Borcherds_id_at_zero_iff_associativity (a b c : V) (s t : ℤ) :
   exact Eq.congr rfl rfl
 
 theorem commutator_right_2 (a b c : V) (r s : ℤ) : Borcherds_sum_2 R a b c r s 0 =
-    ncoef (Y R a) r (ncoef (Y R b) s c) := by
+    ncoef R (Y R a) r (ncoef R (Y R b) s c) := by
   unfold Borcherds_sum_2
   cases h : (Int.toNat (-s - order R b c)) with
   | zero =>
@@ -124,7 +124,7 @@ theorem commutator_right_2 (a b c : V) (r s : ℤ) : Borcherds_sum_2 R a b c r s
       zero_smul, smul_zero]
 
 theorem commutator_right_3 (a b c : V) (r s : ℤ) : Borcherds_sum_3 R a b c r s 0 =
-    -ncoef (Y R b) s (ncoef (Y R a) r c) := by
+    -ncoef R (Y R b) s (ncoef R (Y R a) r c) := by
   unfold Borcherds_sum_3
   cases h : (Int.toNat (-r - order R a c)) with
   | zero =>

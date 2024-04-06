@@ -43,11 +43,11 @@ namespace VertexAlg
 
 /-- We write `ncoef` instead of `coefficient of a vertex operator under normalized indexing`.
 Alternative suggestions welcome. -/
-def ncoef [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
+def ncoef (R) [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
     Module.End R V := coeff A (-n - 1)
 
 theorem coeff_eq_ncoef (A : VertexOperator R V)
-    (n : ℤ) : coeff A n = ncoef A (-n - 1) := by
+    (n : ℤ) : coeff A n = ncoef R A (-n - 1) := by
   rw [ncoef, neg_sub, sub_neg_eq_add, add_sub_cancel_left]
 
 /-- The normal convention for the normalized coefficient of a vertex operator is either `Aₙ` or
@@ -55,7 +55,7 @@ theorem coeff_eq_ncoef (A : VertexOperator R V)
 scoped[VertexAlg] notation A "_[" n "]" => ncoef A n
 
 theorem ncoef_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
-    (h : -n - 1 < HahnSeries.order (A x)) : ncoef A n x = 0 := by
+    (h : -n - 1 < HahnSeries.order (A x)) : ncoef R A n x = 0 := by
   simp only [ncoef, coeff, LinearMap.coe_mk, AddHom.coe_mk]
   exact HahnSeries.coeff_eq_zero_of_lt_order h
 
@@ -86,7 +86,7 @@ noncomputable instance [CommRing R] [AddCommGroup V] [Module R V] : One (VertexO
 
 theorem one : (1 : VertexOperator R V) = HahnSeries.single.linearMap 0 := rfl
 
-theorem one_ncoef_neg_one (x : V) : @ncoef R V _ _ _ 1 (-1) x = x := by
+theorem one_ncoef_neg_one (x : V) : ncoef R 1 (-1) x = x := by
   rw [one]
   unfold ncoef HahnSeries.single.linearMap HahnSeries.single.addMonoidHom HahnSeries.single
     Pi.single Function.update
@@ -121,16 +121,14 @@ section HasseDerivative
 That is, it sends a vector to the `k`th Hasse derivative of the corresponding Laurent series.
 It satisfies `k! * (hasseDeriv k A) = derivative^[k] A`. -/
 @[simps]
-def hasseDeriv (k : ℕ) (A : VertexOperator R V) : VertexOperator R V :=
-  {
-    toFun := fun (x : V) => LaurentSeries.hasseDeriv R k ((HahnModule.of R).symm (A x))
-    map_add' := by
+def hasseDeriv (k : ℕ) (A : VertexOperator R V) : VertexOperator R V where
+  toFun := fun (x : V) => LaurentSeries.hasseDeriv R k ((HahnModule.of R).symm (A x))
+  map_add' := by
       intros
       simp only [map_add, HahnModule.of_symm_add]
-    map_smul' := by
+  map_smul' := by
       intros
       simp only [map_smul, RingHom.id_apply, HahnModule.of_symm_smul]
-  }
 
 theorem hasseDeriv_add (k : ℕ) (A B : VertexOperator R V) : hasseDeriv k (A + B) =
     hasseDeriv k A + hasseDeriv k B := by
@@ -166,13 +164,13 @@ theorem hasseDeriv_coeff (k : ℕ) (A : VertexOperator R V) (n : ℤ) :
   exact rfl
 
 theorem hasseDeriv_ncoef (k : ℕ) (A : VertexOperator R V) (n : ℤ) :
-    ncoef (hasseDeriv k A) n = (Ring.choose (-n - 1 + k) k) • ncoef A (n - k) := by
+    ncoef R (hasseDeriv k A) n = (Ring.choose (-n - 1 + k) k) • ncoef R A (n - k) := by
   simp only [ncoef, hasseDeriv_coeff]
   rw [show -n - 1 + k = -(n - k) - 1 by omega]
 
 theorem hasseDeriv_zero' (A : VertexOperator R V) : hasseDeriv 0 A = A := by
   ext
-  simp_all only [coeff_apply, hasseDeriv_apply, LaurentSeries.hasseDeriv_zero', LinearMap.coe_mk,
+  simp_all only [coeff_apply, hasseDeriv_apply, LaurentSeries.hasseDeriv_zero, LinearMap.coe_mk,
     AddHom.coe_mk]
   exact rfl
 

@@ -30,54 +30,22 @@ In this file we introduce heterogeneous vertex operators using Hahn series.
 
 noncomputable section
 
-variable {Γ : Type*} [OrderedCancelAddCommMonoid Γ] {R : Type*} {V W : Type*} [CommRing R]
-  [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
-
 /-- A heterogeneous `Γ`-vertex operator over a commutator ring `R` is an `R`-linear map from an
 `R`-module `V` to `Γ`-Hahn series with coefficients in an `R`-module `W`.-/
-abbrev HetVertexOperator (Γ : Type*) [OrderedCancelAddCommMonoid Γ] (R : Type*) [CommRing R]
+abbrev HetVertexOperator (Γ : Type*) [PartialOrder Γ] (R : Type*) [CommRing R]
     (V : Type*) (W : Type*) [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W] :=
   V →ₗ[R] (HahnModule Γ R W)
 
 namespace VertexAlg
 
+section
+
+variable {Γ : Type*} [PartialOrder Γ] {R : Type*} {V W : Type*} [CommRing R]
+  [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
+
 @[ext]
 theorem HetVertexOperator.ext (A B : HetVertexOperator Γ R V W) (h : ∀(v : V), A v = B v) :
     A = B := LinearMap.ext h
-
-/-- The scalar multiplication of Hahn series on heterogeneous vertex operators. -/
-def HahnSMul (x : HahnSeries Γ R) (A : HetVertexOperator Γ R V W) :
-    HetVertexOperator Γ R V W where
-  toFun v := x • (A v)
-  map_add' u v := by simp only [map_add, smul_add]
-  map_smul' r v := by
-    simp only [map_smul, RingHom.id_apply]
-    exact (smul_comm r x (A v)).symm
-
-instance instHahnModule : Module (HahnSeries Γ R) (HetVertexOperator Γ R V W) where
-  smul x A := HahnSMul x A
-  one_smul _ := by
-    ext _ _
-    simp only [one_smul]
-  mul_smul _ _ _ := by
-    ext _ _
-    simp only [LinearMap.smul_apply, mul_smul]
-  smul_zero _ := by
-    ext _ _
-    simp only [smul_zero, LinearMap.zero_apply, HahnModule.of_symm_zero, HahnSeries.zero_coeff]
-  smul_add _ _ _ := by
-    ext _ _
-    simp only [smul_add, LinearMap.add_apply, LinearMap.smul_apply, HahnModule.of_symm_add,
-      HahnSeries.add_coeff', Pi.add_apply]
-  add_smul _ _ _ := by
-    ext _ _
-    simp only [LinearMap.smul_apply, LinearMap.add_apply, HahnModule.of_symm_add,
-      HahnSeries.add_coeff', Pi.add_apply]
-    rw [HahnModule.add_smul Module.add_smul]
-    simp only [HahnModule.of_symm_add, HahnSeries.add_coeff', Pi.add_apply]
-  zero_smul _ := by
-    ext _ _
-    simp only [zero_smul, LinearMap.zero_apply, HahnModule.of_symm_zero, HahnSeries.zero_coeff]
 
 /-- The coefficient of a heterogeneous vertex operator, viewed as a formal power series with
 coefficients in linear maps. -/
@@ -119,6 +87,43 @@ def HetVertexOperator.of_coeff (f : Γ → V →ₗ[R] W)
     intros
     simp only [map_smul, RingHom.id_apply]
     exact rfl
+
+end
+
+variable {Γ : Type*} [OrderedCancelAddCommMonoid Γ] {R : Type*} {V W : Type*} [CommRing R]
+  [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
+
+/-- The scalar multiplication of Hahn series on heterogeneous vertex operators. -/
+def HahnSMul (x : HahnSeries Γ R) (A : HetVertexOperator Γ R V W) :
+    HetVertexOperator Γ R V W where
+  toFun v := x • (A v)
+  map_add' u v := by simp only [map_add, smul_add]
+  map_smul' r v := by
+    simp only [map_smul, RingHom.id_apply]
+    exact (smul_comm r x (A v)).symm
+
+instance instHahnModule : Module (HahnSeries Γ R) (HetVertexOperator Γ R V W) where
+  smul x A := HahnSMul x A
+  one_smul _ := by
+    ext _ _
+    simp only [one_smul]
+  mul_smul _ _ _ := by
+    ext _ _
+    simp only [LinearMap.smul_apply, mul_smul]
+  smul_zero _ := by
+    ext _ _
+    simp only [smul_zero, LinearMap.zero_apply, HahnModule.of_symm_zero, HahnSeries.zero_coeff]
+  smul_add _ _ _ := by
+    ext _ _
+    simp only [smul_add, LinearMap.add_apply, LinearMap.smul_apply, HahnModule.of_symm_add,
+      HahnSeries.add_coeff', Pi.add_apply]
+  add_smul _ _ _ := by
+    ext _ _
+    simp only [coeff_apply, LinearMap.smul_apply, LinearMap.add_apply, HahnSeries.add_coeff']
+    rw [HahnModule.add_smul Module.add_smul]
+  zero_smul _ := by
+    ext _ _
+    simp only [zero_smul, LinearMap.zero_apply, HahnModule.of_symm_zero, HahnSeries.zero_coeff]
 
 variable {Γ' : Type*} [OrderedCancelAddCommMonoid Γ']
 

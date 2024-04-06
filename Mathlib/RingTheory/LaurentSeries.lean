@@ -63,12 +63,9 @@ variable [Semiring R] {V : Type*} [AddCommGroup V] [Module R V]
 theorem hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) : (hasseDeriv R k f).coeff n =
     Ring.choose (n + k) k • HahnSeries.coeff f (n + k) := rfl
 
-@[simp]
-theorem hasseDeriv_zero' (f : LaurentSeries V) : hasseDeriv R 0 f = f := by
-  simp only [HahnSeries.ext_iff, hasseDeriv, hasseDeriv, Ring.choose_zero_right]
-  ext
-  simp_rw [Nat.cast_zero, add_zero, one_smul]
-  exact rfl
+theorem hasseDeriv_zero (f : LaurentSeries V) : hasseDeriv R 0 f = f := by
+  simp only [hasseDeriv_apply, Nat.cast_zero, add_zero, Ring.choose_zero_right, one_smul,
+    ofSuppBddBelow]
 
 theorem hasseDeriv_single' (k : ℕ) (n : ℤ) (x : V) :
     hasseDeriv R k (single (n + k) x) = single n ((Ring.choose (n + k) k) • x) := by
@@ -108,7 +105,7 @@ theorem factorial_smul_hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ
     HahnSeries.coeff ((derivative R)^[k] f) n := by
   induction k generalizing f with
   | zero =>
-    rw [Nat.zero_eq, Nat.factorial_zero, hasseDeriv_zero', one_smul, Function.iterate_zero, id_eq]
+    rw [Nat.zero_eq, Nat.factorial_zero, hasseDeriv_zero, one_smul, Function.iterate_zero, id_eq]
   | succ k ih =>
     rw [Function.iterate_succ, Function.comp_apply, ← ih, derivative_apply, @hasseDeriv_comp' R,
       Nat.choose_symm_add, Nat.choose_one_right, Nat.factorial, mul_nsmul]
@@ -318,7 +315,7 @@ theorem coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : PowerSeries 
 #noalign power_series.coe_bit0
 #noalign power_series.coe_bit1
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : LaurentSeries R) = (ofPowerSeries ℤ R f) ^ n :=
   (ofPowerSeries ℤ R).map_pow _ _
 #align power_series.coe_pow PowerSeries.coe_pow

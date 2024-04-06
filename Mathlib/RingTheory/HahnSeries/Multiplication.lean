@@ -102,11 +102,13 @@ theorem ext_iff {Γ R V : Type*} [PartialOrder Γ] [Zero V] [SMul R V]
     (x y : HahnModule Γ R V) : ((of R).symm x).coeff = ((of R).symm y).coeff ↔ x = y := by
   simp_all only [HahnSeries.coeff_inj, EmbeddingLike.apply_eq_iff_eq]
 
-variable [OrderedCancelAddCommMonoid Γ]
-
 section SMul
 
 variable [AddCommMonoid V] [SMul R V]
+
+section
+
+variable [PartialOrder Γ]
 
 instance instAddCommMonoid : AddCommMonoid (HahnModule Γ R V) :=
   inferInstanceAs <| AddCommMonoid (HahnSeries Γ V)
@@ -120,6 +122,14 @@ instance instRSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
 @[simp] theorem of_symm_zero : (of R).symm (0 : HahnModule Γ R V) = 0 := rfl
 @[simp] theorem of_symm_add (x y : HahnModule Γ R V) :
   (of R).symm (x + y) = (of R).symm x + (of R).symm y := rfl
+
+instance instRMod {V} [Semiring R] [AddCommMonoid V] [Module R V] :
+    Module R (HahnModule Γ R V) :=
+  inferInstanceAs <| Module R (HahnSeries Γ V)
+
+end
+
+variable [OrderedCancelAddCommMonoid Γ]
 
 instance instSMul [Zero R] : SMul (HahnSeries Γ R) (HahnModule Γ R V) where
   smul x y := {
@@ -150,11 +160,13 @@ section SMulZeroClass
 
 variable [Zero R] [AddCommMonoid V]
 
-instance instRSMulZeroClass [SMulZeroClass R V] : SMulZeroClass R (HahnModule Γ R V) :=
+instance instRSMulZeroClass [PartialOrder Γ] [SMulZeroClass R V] : SMulZeroClass R (HahnModule Γ R V) :=
   inferInstanceAs <| SMulZeroClass R (HahnSeries Γ V)
 
-@[simp] theorem of_symm_smul [SMulZeroClass R V] (r : R) (x : HahnModule Γ R V) :
+@[simp] theorem of_symm_smul [PartialOrder Γ] [SMulZeroClass R V] (r : R) (x : HahnModule Γ R V) :
   (of R).symm (r • x) = r • (of R).symm x := rfl
+
+variable [OrderedCancelAddCommMonoid Γ]
 
 instance instSMulZeroClass [SMulZeroClass R V] :
     SMulZeroClass (HahnSeries Γ R) (HahnModule Γ R V) where
@@ -186,6 +198,8 @@ theorem smul_coeff_left [SMulWithZero R V] {x : HahnSeries Γ R}
   rw [hb.2 ⟨hb.1.2.1, hb.1.2.2⟩, zero_smul]
 
 end SMulZeroClass
+
+variable [OrderedCancelAddCommMonoid Γ]
 
 section DistribSMul
 
