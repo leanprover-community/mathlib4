@@ -135,9 +135,9 @@ def aux.fooRules.1234 : FooType := fun
 This is implemented via
 
 * an (extensible) syntax category `syntaxRulesHeader` for custom headers like `foo_rules : bar`
-* syntax `syntax_rules (header := $header) (kind := $kind?)`, where `$header:syntaxRulesHeader` is
-  the user-facing syntax (e.g. `foo_rules : bar`)
-* a macro from `syntaxRulesHeader matchAlts` to this internal `syntax_rules` syntax
+* internal syntax `syntax_rules_impl (header := $header) (kind := $kind?)`, where
+  `$header:syntaxRulesHeader` is the user-facing syntax (e.g. `foo_rules : bar`)
+* a macro from any `syntaxRulesHeader matchAlts` to this internal `syntax_rules_impl` syntax
 * an attribute ``@[syntax_rules_header_impl fooRulesHeader]`` on definitions
   ``fooRulesImpl : TSyntax `fooRulesHeader → CommandElabM SyntaxRulesData`` which lets us elaborate
   in a `$header`-dependent way
@@ -145,8 +145,8 @@ This is implemented via
   `syntax_rules_header_impl` so that we can use syntax rules to implement behavior for the headers
   of syntax rules
 * a structure `SyntaxRulesData` which contains all data necessary for implementing the command,
-  including, crucially, the name of an attribute `foo_impl_attr` which `syntax_rules` attaches to
-  definitions constructed from the match alts with the syntax nodekind as a parameter (e.g.
+  including, crucially, the name of an attribute `foo_impl_attr` which `syntax_rules_impl` attaches
+  to definitions constructed from the match alts with the syntax nodekind as a parameter (e.g.
   `@[foo_impl_attr tacticMyTacNode]`)
 
 -/

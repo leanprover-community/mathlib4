@@ -6,7 +6,7 @@ Authors: Thomas R. Murrills
 import Lean
 
 /-!
-# Utilities for commands based on `syntax_rules`
+# Utilities for commands implemented as syntax rules
 
 TODO: better docs throughout
 -/
@@ -43,13 +43,13 @@ def elabNodeKind (id : Ident) (parserNamespace := Name.anonymous) :
     addConstInfo id kind none
   return kind
 
-/-! ## Name structure
+/-! ## `Name` structure
 
-The most common use of `syntax_rules` is to attach a `KeyedDeclsAttribute` to some declaration.
-Such an attribute is keyed by a `Name`. This key is usually the `SyntaxNodeKind`, but sometimes we
-want to key by other things as well (e.g. syntax node kind and a `category` specified by a
-`foo_rules : category` command). In that case, we can use these utilities to systematically pack
-multiple names in one.
+The most common use of the syntax rules API is attaching a `KeyedDeclsAttribute` to some
+declaration. Such an attribute is keyed by a `Name`. This key is usually the `SyntaxNodeKind`, but
+sometimes we want to key by other things as well (e.g. syntax node kind and a `category` specified
+by a `foo_rules : category` command). In that case, we can use these utilities to systematically
+pack multiple names in one.
 -/
 
 namespace Lean.Name

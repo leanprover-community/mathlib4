@@ -6,7 +6,7 @@ Authors: Thomas R. Murrills
 import Lean
 import Mathlib.Command.SyntaxRules.Attr
 
-/-! # Elaborate `syntax_rules`
+/-! # Elaborate `syntax_rules_impl`
 
 TODO: module doc
 -/
@@ -20,12 +20,12 @@ section stx
 /-- TODO: docstring -/
 declare_syntax_cat syntaxRulesHeader
 
---FIXME:we need this since `matchAlts` has on optional argument, which makes it unusable in `syntax`
+--FIXME: we need this since `matchAlts` has on optional argument, which makes it unusable in `stx`
 private def matchAltsStx := Parser.Term.matchAlts
 
 /-- TODO: docstring -/
 syntax (name := syntaxRules) (docComment)? (Parser.Term.«attributes»)? Parser.Term.attrKind
-  "syntax_rules" " (" &"header" ":=" syntaxRulesHeader ")" optKind matchAltsStx : command
+  "syntax_rules_impl" " (" &"header" ":=" syntaxRulesHeader ")" optKind matchAltsStx : command
 
 /-- TODO: docstring? -/
 syntax (name := genericSyntaxRules) syntaxRulesHeader optKind matchAltsStx : command
@@ -33,7 +33,7 @@ syntax (name := genericSyntaxRules) syntaxRulesHeader optKind matchAltsStx : com
 /- TODO: explain -/
 macro_rules
 | `(genericSyntaxRules|$header:syntaxRulesHeader $[(kind := $k:ident)]? $alts:matchAlts) =>
-  `(syntaxRules|syntax_rules (header := $header:syntaxRulesHeader) $[(kind := $k:ident)]?
+  `(syntaxRules|syntax_rules_impl (header := $header:syntaxRulesHeader) $[(kind := $k:ident)]?
     $alts:matchAlts)
 
 end stx
@@ -53,7 +53,7 @@ def elabUnfoldAbbrev : TermElab
     let .defnInfo { hints := .abbrev , value .. } ← getConstInfo name | return t
     return value
 
-/-- The main part of elaborating `syntax_rules`. -/
+/-- The main part of elaborating `syntax_rules_impl`. -/
 def elabSyntaxRulesAux (doc? : Option (TSyntax ``docComment))
     (attrs? : Option (TSepArray ``attrInstance ",")) (attrKind : TSyntax ``attrKind)
     (k : SyntaxNodeKind) (alts : Array (TSyntax ``matchAlt)) :
@@ -100,17 +100,17 @@ def elabSyntaxRulesAux (doc? : Option (TSyntax ``docComment))
         aux_def $(mkIdent auxDefName) $(mkIdent k) : $(mkIdent type) := $(← termOfAlts alts))
 
 --TODO: pass `tk` to elabSyntaxRules for error reporting?
-/-- Elaborates `syntax_rules`. -/
+/-- Elaborates `syntax_rules_impl`. -/
 @[command_elab syntaxRules]
 def elabSyntaxRules : CommandElab :=
   adaptExpander fun stx => match stx with
   | `(command|$[$doc?:docComment]? $[@[$attrs?,*]]? $attrKind:attrKind
-      syntax_rules (header := $header:syntaxRulesHeader) $alts:matchAlt*) =>
-    expandNoKindMacroRulesAux alts "syntax_rules" fun kind? alts =>
+      syntax_rules_impl (header := $header:syntaxRulesHeader) $alts:matchAlt*) =>
+    expandNoKindMacroRulesAux alts "syntax_rules_impl" fun kind? alts =>
       `($[$doc?:docComment]? $[@[$attrs?,*]]? $attrKind:attrKind
-        syntax_rules (header := $header:syntaxRulesHeader) $[(kind := $(mkIdent <$> kind?))]?
+        syntax_rules_impl (header := $header:syntaxRulesHeader) $[(kind := $(mkIdent <$> kind?))]?
         $alts:matchAlt*)
-  | `(command|$[$doc?:docComment]? $[@[$attrs?,*]]? $attrKind:attrKind syntax_rules
+  | `(command|$[$doc?:docComment]? $[@[$attrs?,*]]? $attrKind:attrKind syntax_rules_impl
       (header := $header:syntaxRulesHeader)
       (kind := $kind) $alts:matchAlt*) => do
     let data ← getSyntaxRulesData header
