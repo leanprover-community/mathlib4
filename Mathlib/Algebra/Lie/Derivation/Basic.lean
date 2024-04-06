@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Marbach
 -/
 import Mathlib.Algebra.Lie.Basic
+import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Subalgebra
-import Mathlib.LinearAlgebra.FiniteDimensional
 
 /-!
 # Lie derivations
@@ -294,24 +294,22 @@ end
 
 section
 
-variable {R L : Type*} [Field R] [LieRing L] [LieAlgebra R L]
+variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 
-/-- The linear embedding of Lie derivations into linear endormophisms. -/
-def toLinearMapLinearMap : (LieDerivation R L L) →ₗ[R] (L →ₗ[R] L) where
+/-- The Lie algebra morphism from Lie derivations into linear endormophisms. -/
+def toLinearMapLieHom : LieDerivation R L L →ₗ⁅R⁆ L →ₗ[R] L where
   toFun := toLinearMap
   map_add' := by intro D1 D2; dsimp
   map_smul' := by intro D1 D2; dsimp
+  map_lie' := by intro D1 D2; dsimp
 
-/-- The linear embedding of Lie derivations into linear endormophisms is injective. -/
-lemma toLinearMapLinearMap_injective : Function.Injective ((@toLinearMapLinearMap R L).toFun) := by
-  dsimp [toLinearMapLinearMap]
-  intro D1 D2 h
-  ext a
-  exact congrFun (congrArg DFunLike.coe h) a
+/-- The map from Lie derivations to linear endormophisms is injective. -/
+lemma toLinearMapLieHom_injective : Function.Injective (toLinearMapLieHom R L) :=
+  fun _ _ h ↦ ext fun a ↦ congrFun (congrArg DFunLike.coe h) a
 
-/-- Lie derivations over a finite dimensional Lie algebra form a finite dimensional module. -/
-instance instModuleFinite [Module.Finite R L] : Module.Finite R (LieDerivation R L L) :=
-  FiniteDimensional.of_injective toLinearMapLinearMap toLinearMapLinearMap_injective
+/-- Lie derivations over a Noetherian Lie algebra form a Noetherian module. -/
+instance instNoetherian [IsNoetherian R L] : IsNoetherian R (LieDerivation R L L) :=
+  isNoetherian_of_linearEquiv (LinearEquiv.ofInjective _ (toLinearMapLieHom_injective R L)).symm
 
 end
 
