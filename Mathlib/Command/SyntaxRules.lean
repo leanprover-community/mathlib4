@@ -110,8 +110,8 @@ def aux.fooRules.1234 : FooType := fun
 * ```termOfAlts : Array (TSyntax ``Term.matchAlt) → CommandElabM Term```: this forms the body of
   the declaration from the `matchAlts` supplied to `foo_rules` (after some preprocessing to split
   out different node types). To produce the body in the example, we'd use
-  ``termOfAlts := fun alts => `(term|fun alts:matchAlts*)``. The result (e.g.
-  `fun alts:matchAlts*`, in this case) is elaborated with type `type`. Note that using `match`
+  ``termOfAlts := fun alts => `(term|fun $alts:matchAlt*)``. The resulting term (e.g.
+  `fun $alts:matchAlt*`, in this case) is elaborated with type `type`. Note that using `match`
   instead of `fun` (or anything else that accepts `matchAlts`) as appropriate is perfectly fine.
 * `attrName : Name`: the name of the attribute, here `` `foo_impl_attr ``. This will be
   syntactically inserted into `@[]` followed by the key. This should likely by a
