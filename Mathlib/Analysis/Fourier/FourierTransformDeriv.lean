@@ -157,7 +157,7 @@ lemma hasFDerivAt_fourierChar_smul (v : V) (w : W) :
     HasFDerivAt (fun w' ↦ 𝐞 (-L v w') • f v) (𝐞 (-L v w) • fourierSMulRight L f v) w := by
   have ha : HasFDerivAt (fun w' : W ↦ L v w') (L v) w := ContinuousLinearMap.hasFDerivAt (L v)
   convert ((hasDerivAt_fourierChar (-L v w)).hasFDerivAt.comp w ha.neg).smul_const (f v)
-  ext1 w'
+  ext w' : 1
   simp_rw [fourierSMulRight, ContinuousLinearMap.smul_apply, ContinuousLinearMap.smulRight_apply]
   rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.neg_apply,
     ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, ← smul_assoc, smul_comm,
@@ -226,7 +226,7 @@ lemma fderiv_fourierIntegral [MeasurableSpace V] [BorelSpace V] [SecondCountable
     (hf : Integrable f μ) (hf' : Integrable (fun v : V ↦ ‖v‖ * ‖f v‖) μ) :
     fderiv ℝ (fourierIntegral 𝐞 μ L.toLinearMap₂ f) =
       fourierIntegral 𝐞 μ L.toLinearMap₂ (fourierSMulRight L f) := by
-  ext1 w
+  ext w : 1
   exact (hasFDerivAt_fourierIntegral L hf hf' w).fderiv
 
 lemma differentiable_fourierIntegral [MeasurableSpace V] [BorelSpace V] [SecondCountableTopology V]
@@ -416,41 +416,39 @@ lemma iteratedFDeriv_fourierIntegral {N : ℕ∞}
     (h'f : AEStronglyMeasurable f μ) {n : ℕ} (hn : n ≤ N) :
     iteratedFDeriv ℝ n (fourierIntegral 𝐞 μ L.toLinearMap₂ f) =
       fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ fourierPowSMulRight L f v n) := by
-  ext1 w
+  ext w : 1
   exact ((hasFTaylorSeriesUpTo_fourierIntegral L hf h'f).eq_iteratedFDeriv hn w).symm
 
-/-- The Fourier integral of the derivative of a function is obtained by multiplying the Fourier
-integral of the original function by `-L w v`. -/
+/-- The Fourier integral of the `n`-th derivative of a function is obtained by multiplying the
+Fourier integral of the original function by `(2πI L w ⬝ )^n`. -/
 theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
     {μ : Measure V} [Measure.IsAddHaarMeasure μ] {N : ℕ∞} (hf : ContDiff ℝ N f)
     (h'f : ∀ (n : ℕ), n ≤ N → Integrable (iteratedFDeriv ℝ n f) μ) {n : ℕ} (hn : n ≤ N) :
     fourierIntegral 𝐞 μ L.toLinearMap₂ (iteratedFDeriv ℝ n f)
-      = (fun v ↦ fourierPowSMulRight (-L.flip) (fourierIntegral 𝐞 μ L.toLinearMap₂ f) v n) := by
+      = (fun w ↦ fourierPowSMulRight (-L.flip) (fourierIntegral 𝐞 μ L.toLinearMap₂ f) w n) := by
   induction n with
   | zero =>
-    sorry /-ext w m
+    ext w m
     have I : Integrable (fun v ↦ 𝐞 (- L v w) • iteratedFDeriv ℝ 0 f v) μ :=
       (fourierIntegral_convergent_iff' _ _).2 (h'f 0 bot_le)
     simp only [Nat.zero_eq, fourierIntegral, ContinuousLinearMap.toLinearMap₂_apply,
       integral_apply I, smul_apply, iteratedFDeriv_zero_apply, fourierPowSMulRight_apply, pow_zero,
       Finset.univ_eq_empty, ContinuousLinearMap.neg_apply, ContinuousLinearMap.flip_apply,
       Finset.prod_empty, one_smul]
-    -/
   | succ n ih =>
     ext w m
     -- instance on next line should not be necessary, but proof breaks down without it.
-    let N : NormedSpace ℝ (V [×n]→L[ℝ] E) := by infer_instance
+    let NS : NormedSpace ℝ (V [×n]→L[ℝ] E) := by infer_instance
+    have J : Integrable (fderiv ℝ (iteratedFDeriv ℝ n f)) μ := by
+      specialize h'f (n + 1) hn
+      simp_rw [iteratedFDeriv_succ_eq_comp_left] at h'f
+      let T : (V →L[ℝ] (V [×n]→L[ℝ] E)) ≃L[ℝ] (V [×(n+1)]→L[ℝ] E) :=
+        continuousMultilinearCurryLeftEquiv ℝ (fun (_x : Fin (n + 1)) ↦ V) E
+      apply T.integrable_comp_iff.1
+      exact h'f
     suffices H : (fourierIntegral 𝐞 μ L.toLinearMap₂ (fderiv ℝ (iteratedFDeriv ℝ n f)) w)
           (m 0) (Fin.tail m) =
         (-(2 * π * I)) ^ (n + 1) • (∏ x : Fin (n + 1), -L (m x) w) • ∫ v, 𝐞 (-L v w) • f v ∂μ by
-      sorry
-      /- have J : Integrable (fun a ↦ fderiv ℝ (iteratedFDeriv ℝ n f) a) μ := by
-        specialize h'f (n + 1) hn
-        simp_rw [iteratedFDeriv_succ_eq_comp_left] at h'f
-        let T : (V →L[ℝ] (V [×n]→L[ℝ] E)) ≃L[ℝ] (V [×(n+1)]→L[ℝ] E) :=
-          continuousMultilinearCurryLeftEquiv ℝ (fun (x : Fin (n + 1)) ↦ V) E
-        apply T.integrable_comp_iff.1
-        exact h'f
       have A : ∫ v, 𝐞 (-L v w) • (fderiv ℝ (iteratedFDeriv ℝ n f) v (m 0)) (Fin.tail m) ∂μ
           = (∫ v, 𝐞 (-L v w) • (fderiv ℝ (iteratedFDeriv ℝ n f) v (m 0)) ∂μ) (Fin.tail m) := by
         rw [integral_apply]
@@ -465,11 +463,21 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
         integral_apply ((fourierIntegral_convergent_iff' L w).2 (h'f _ hn)), smul_apply,
         iteratedFDeriv_succ_apply_left, fourierPowSMulRight_apply, ContinuousLinearMap.neg_apply,
         ContinuousLinearMap.flip_apply, A, B]
-      exact H -/
-    sorry
-
-
-#exit
+      exact H
+    have h'n : n < N := lt_of_lt_of_le (by simp [-Nat.cast_succ]) hn
+    rw [fourierIntegral_fderiv]
+    · have A : ∀ (x : ℝ) (v : E), x • v = (x : ℂ) • v := fun x v ↦ rfl
+      simp only [ih h'n.le, fourierSMulRight_apply, ContinuousLinearMap.neg_apply,
+        ContinuousLinearMap.flip_apply, neg_smul, smul_neg, neg_neg, smul_apply,
+        fourierPowSMulRight_apply, A, smul_smul]
+      congr 1
+      have B : ∀ (i : Fin n), Fin.tail m i = m (Fin.succ i) := fun i ↦ rfl
+      simp only [ofReal_prod, ofReal_neg, pow_succ, mul_neg, Fin.prod_univ_succ, neg_mul,
+        ofReal_mul, neg_neg, B]
+      ring
+    · exact h'f n h'n.le
+    · exact hf.differentiable_iteratedFDeriv h'n
+    · exact J
 
 end VectorFourier
 
@@ -503,8 +511,8 @@ Fourier integral of the original function by `2πI ⟪v, w⟫`. -/
 theorem fourierIntegral_fderiv
     (hf : Integrable f) (h'f : Differentiable ℝ f) (hf' : Integrable (fderiv ℝ f)) :
     𝓕 (fderiv ℝ f) = fourierSMulRight (-innerSL ℝ) (𝓕 f) := by
-  have := (innerSL_real_flip V).symm
-  convert VectorFourier.fourierIntegral_fderiv (innerSL ℝ) hf h'f hf'
+  rw [← innerSL_real_flip V]
+  exact VectorFourier.fourierIntegral_fderiv (innerSL ℝ) hf h'f hf'
 
 /-- If `‖v‖^n * ‖f v‖` is integrable, then the Fourier transform of `f` is `C^n`. -/
 theorem contDiff_fourierIntegral {N : ℕ∞}
@@ -519,6 +527,15 @@ theorem iteratedFDeriv_fourierIntegral {N : ℕ∞}
     (h'f : AEStronglyMeasurable f) {n : ℕ} (hn : n ≤ N) :
     iteratedFDeriv ℝ n (𝓕 f) = 𝓕 (fun v ↦ fourierPowSMulRight (innerSL ℝ) f v n) :=
   VectorFourier.iteratedFDeriv_fourierIntegral (innerSL ℝ) hf h'f hn
+
+/-- The Fourier integral of the `n`-th derivative of a function is obtained by multiplying the
+Fourier integral of the original function by `(2πI L w ⬝ )^n`. -/
+theorem fourierIntegral_iteratedFDeriv {N : ℕ∞} (hf : ContDiff ℝ N f)
+    (h'f : ∀ (n : ℕ), n ≤ N → Integrable (iteratedFDeriv ℝ n f)) {n : ℕ} (hn : n ≤ N) :
+    𝓕 (iteratedFDeriv ℝ n f)
+      = (fun w ↦ fourierPowSMulRight (-innerSL ℝ) (𝓕 f) w n) := by
+  rw [← innerSL_real_flip V]
+  exact VectorFourier.fourierIntegral_iteratedFDeriv (innerSL ℝ) hf h'f hn
 
 lemma hasDerivAt_fourierIntegral
     {f : ℝ → E} (hf : Integrable f) (hf' : Integrable (fun x : ℝ ↦ x • f x)) (w : ℝ) :
@@ -572,7 +589,7 @@ theorem iteratedDeriv_fourierIntegral
     {f : ℝ → E} {N : ℕ∞} {n : ℕ}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun x ↦ x^n • f x)) (hn : n ≤ N) :
     iteratedDeriv n (𝓕 f) = 𝓕 (fun x : ℝ ↦ (-2 * π * I * x) ^ n • f x) := by
-  ext1 x
+  ext x : 1
   have I : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖^n * ‖f v‖) := by
     intro n hn
     convert (hf n hn).norm with x
@@ -591,3 +608,13 @@ theorem iteratedDeriv_fourierIntegral
       neg_mul, smul_left_cancel_iff]
   have : y ^ n • f y = ((y ^ n : ℝ) : ℂ) • f y := rfl
   simp only [← neg_mul, this, smul_smul, mul_pow, ofReal_pow, mul_assoc]
+
+theorem fourierIntegral_iteratedDeriv {f : ℝ → E} {N : ℕ∞} {n : ℕ}
+    (hf : ContDiff ℝ N f)
+    (h'f : ∀ (n : ℕ), n ≤ N → Integrable (iteratedDeriv n f)) {n : ℕ} (hn : n ≤ N) :
+    𝓕 (iteratedDeriv n f) = fun (x : ℝ) ↦ (2 * π * I * x) ^ n • (𝓕 f x) := by
+  ext x : 1
+  have : ∀ (n : ℕ), n ≤ N → Integrable (iteratedFDeriv ℝ n f) := by
+    sorry
+  change 𝓕 (fun x ↦ iteratedDeriv n f x) x = _
+  simp_rw [iteratedDeriv]
