@@ -732,8 +732,7 @@ structure CCPropagationHandler where
       a new auxiliary term is created during propagation. -/
   newAuxCCTerm : Expr → MetaM Unit
 
-structure CCStructure where
-  state : CCState
+structure CCStructure extends CCState where
   todo : Array TodoEntry := #[]
   acTodo : Array ACTodoEntry := #[]
   normalizer : Option CCNormalizer := none
@@ -749,10 +748,6 @@ namespace CCM
 def run {α : Type} (x : CCM α) (c : CCStructure) : MetaM (α × CCStructure) := StateRefT'.run x c
 
 @[inline]
-def modifyState (f : CCState → CCState) : CCM Unit :=
-  modify fun cc => { cc with state := f cc.state }
-
-@[inline]
 def modifyTodo (f : Array TodoEntry → Array TodoEntry) : CCM Unit :=
   modify fun cc => { cc with todo := f cc.todo }
 
@@ -763,10 +758,6 @@ def modifyACTodo (f : Array ACTodoEntry → Array ACTodoEntry) : CCM Unit :=
 @[inline]
 def modifyCache (f : ExtCongrTheoremCache → ExtCongrTheoremCache) : CCM Unit :=
   modify fun cc => { cc with cache := f cc.cache }
-
-@[inline]
-def getState : CCM CCState := do
-  return (← get).state
 
 @[inline]
 def getTodo : CCM (Array TodoEntry) := do
@@ -781,7 +772,7 @@ def getCache : CCM ExtCongrTheoremCache := do
   return (← get).cache
 
 def getEntry (e : Expr) : CCM (Option Entry) := do
-  return (← getState).entries.find? e
+  return (← get).entries.find? e
 
 def getGenerationOf (e : Expr) : CCM Nat := do
   if let some it ← getEntry e then
@@ -808,14 +799,14 @@ def pushReflEq (lhs rhs : Expr) : CCM Unit :=
   modifyTodo fun todo => todo.push (lhs, rhs, .refl, false)
 
 def getRoot (e : Expr) : CCM Expr := do
-  return (← getState).root e
+  return (← get).root e
 
 def isCgRoot (e : Expr) : CCM Bool := do
-  return (← getState).isCgRoot e
+  return (← get).isCgRoot e
 
 def addOccurrence (parent child : Expr) (symmTable : Bool) : CCM Unit := do
   let childRoot ← getRoot child
-  modifyState fun ccs =>
+  modify fun ccs =>
     { ccs with
       parents := ccs.parents.alter childRoot fun ps? =>
         let ps := ps?.getD ∅
@@ -925,31 +916,31 @@ def mkExtHCongrTheorem (fn : Expr) (nargs : Nat) : CCM (Option ExtCongrTheorem) 
 def propagateInstImplicit (e : Expr) : CCM Unit := do
   let type ← inferType e
   let type ← normalize type
-  match (← getState).instImplicitReprs.find? type with
+  match (← get).instImplicitReprs.find? type with
   | some l =>
     for e' in l do
       if ← pureIsDefEq e e' then
         pushReflEq e e'
         return
-    modifyState fun ccs =>
+    modify fun ccs =>
       { ccs with instImplicitReprs := ccs.instImplicitReprs.insert type (e :: l) }
   | none =>
-    modifyState fun ccs =>
+    modify fun ccs =>
       { ccs with instImplicitReprs := ccs.instImplicitReprs.insert type [e] }
 
-def setFO (e : Expr) : CCM Unit := do
-  modifyState fun ccs =>
+def setFO (e : Expr) : CCM Unit :=
+  modify fun ccs =>
     { ccs with entries := ccs.entries.modify e fun d => { d with fo := true } }
 
 partial def updateMT (e : Expr) : CCM Unit := do
   let r ← getRoot e
-  let some ps := (← getState).parents.find? r | return
+  let some ps := (← get).parents.find? r | return
   for p in ps do
     let some it ← getEntry p.expr | failure
-    let gmt := (← getState).gmt
+    let gmt := (← get).gmt
     if it.mt < gmt then
       let newIt := { it with mt := gmt }
-      modifyState fun ccs =>
+      modify fun ccs =>
         { ccs with entries := ccs.entries.insert p.expr newIt }
       updateMT p.expr
 
@@ -1261,7 +1252,7 @@ def getPropEqProof (a b : Expr) : CCM Expr := do
   return p
 
 def getInconsistencyProof : CCM (Option Expr) := do
-  guard !(← getState).frozePartitions
+  guard !(← get).frozePartitions
   if let some p ← getEqProof (.const ``True []) (.const ``False []) then
     return some (← mkAppM ``false_of_true_eq_false #[p])
   else
@@ -1302,37 +1293,37 @@ def checkEqTrue (e : Expr) : CCM Unit := do
 def addCongruenceTable (e : Expr) : CCM Unit := do
   guard e.isApp
   let k ← mkCongruencesKey e
-  if let some es := (← getState).congruences.find? k then
+  if let some es := (← get).congruences.find? k then
     for oldE in es do
       if ← isCongruent e oldE then
         -- Found new equivalence: `e ~ oldE`
         -- 1. Update `cgRoot` field for `e`
         let some currEntry ← getEntry e | failure
         let newEntry := { currEntry with cgRoot := oldE }
-        modifyState fun ccs => { ccs with entries := ccs.entries.insert e newEntry }
+        modify fun ccs => { ccs with entries := ccs.entries.insert e newEntry }
         -- 2. Put new equivalence in the todo queue
         -- TODO(Leo): check if the following line is a bottleneck
         let heqProof ← (!·) <$> pureIsDefEq (← inferType e) (← inferType oldE)
         pushTodo e oldE .congr heqProof
         return
-    modifyState fun ccs =>
+    modify fun ccs =>
       { ccs with congruences := ccs.congruences.insert k (e :: es) }
   else
-    modifyState fun ccs =>
+    modify fun ccs =>
       { ccs with congruences := ccs.congruences.insert k [e] }
 
 def addSymmCongruenceTable (e : Expr) : CCM Unit := do
   let some (rel, lhs, rhs) ← e.relSidesIfSymm? | failure
   let k ← mkSymmCongruencesKey lhs rhs
   let newP := (e, rel)
-  if let some ps := (← getState).symmCongruences.find? k then
+  if let some ps := (← get).symmCongruences.find? k then
     for p in ps do
       if ← compareSymm newP p then
         -- Found new equivalence: `e ~ p.1`
         -- 1. Update `cgRoot` field for `e`
         let some currEntry ← getEntry e | failure
         let newEntry := { currEntry with cgRoot := p.1 }
-        modifyState fun ccs => { ccs with entries := ccs.entries.insert e newEntry }
+        modify fun ccs => { ccs with entries := ccs.entries.insert e newEntry }
         -- 2. Put new equivalence in the TODO queue
         -- NOTE(gabriel): support for symmetric relations is pretty much broken,
         -- since it ignores all arguments except the last two ones.
@@ -1342,11 +1333,11 @@ def addSymmCongruenceTable (e : Expr) : CCM Unit := do
           pushEq e p.1 .congr
         checkEqTrue e
         return
-    modifyState fun ccs =>
+    modify fun ccs =>
       { ccs with symmCongruences := ccs.symmCongruences.insert k (newP :: ps) }
     checkEqTrue e
   else
-    modifyState fun ccs =>
+    modify fun ccs =>
       { ccs with symmCongruences := ccs.symmCongruences.insert k [newP] }
     checkEqTrue e
 
@@ -1368,11 +1359,11 @@ def pushSubsingletonEq (a b : Expr) : CCM Unit := do
 def checkNewSubsingletonEq (oldRoot newRoot : Expr) : CCM Unit := do
   guard (← isEqv oldRoot newRoot)
   guard ((← getRoot oldRoot) == newRoot)
-  let some it₁ := (← getState).subsingletonReprs.find? oldRoot | return
-  if let some it₂ := (← getState).subsingletonReprs.find? newRoot then
+  let some it₁ := (← get).subsingletonReprs.find? oldRoot | return
+  if let some it₂ := (← get).subsingletonReprs.find? newRoot then
     pushSubsingletonEq it₁ it₂
   else
-    modifyState fun ccs =>
+    modify fun ccs =>
       { ccs with subsingletonReprs := ccs.subsingletonReprs.insert newRoot it₁ }
 
 def getEqcLambdas (e : Expr) (r : Array Expr) : CCM (Array Expr) := do
@@ -1420,14 +1411,14 @@ def mkNeOfNeOfEq (aNeB₁ b₁ b : Expr) : CCM (Option Expr) := do
 
 def isAC (e : Expr) : CCM (Option Expr) := do
   let .app (.app op _) _ := e | return none
-  let ccs ← getState
+  let ccs ← get
   if let some cop := ccs.canOps.find? op then
     let some b := ccs.opInfo.find? cop
       | throwError "opInfo should contain all canonical operators in canOps"
     return bif b then some cop else none
   for (cop, b) in ccs.opInfo do
     if ← pureIsDefEq op cop then
-      modifyState fun _ => { ccs with canOps := ccs.canOps.insert op cop }
+      modify fun _ => { ccs with canOps := ccs.canOps.insert op cop }
       return bif b then some cop else none
   let b ←
     try
@@ -1438,7 +1429,7 @@ def isAC (e : Expr) : CCM (Option Expr) := do
       pure true
     catch _ =>
       pure false
-  modifyState fun _ =>
+  modify fun _ =>
     { ccs with
       canOps := ccs.canOps.insert op op
       opInfo := ccs.opInfo.insert op b }
@@ -1446,14 +1437,14 @@ def isAC (e : Expr) : CCM (Option Expr) := do
 
 open MessageData in
 def dbgTraceACEq (header : String) (lhs rhs : ACApps) : CCM Unit := do
-  let ccs ← getState
+  let ccs ← get
   trace[Debug.Meta.Tactic.cc.ac]
     group (ofFormat (header ++ .line) ++ ccs.ppACApps lhs ++
       ofFormat (.line ++ "=" ++ .line) ++ ccs.ppACApps rhs)
 
 open MessageData in
 def dbgTraceACState : CCM Unit := do
-  let ccs ← getState
+  let ccs ← get
   trace[Debug.Meta.Tactic.cc.ac] group ("state: " ++ nest 6 ccs.ppAC)
 
 def mkACProof (e₁ e₂ : Expr) : MetaM Expr := do
@@ -1526,7 +1517,7 @@ def simplifyACCore (e lhs rhs : ACApps) (H : DelayedExpr) :
     let r : ACApps := if newArgs.isEmpty then dummy else .mkApps op newArgs
     let newArgs := ACApps.append op rhs newArgs
     let newE := ACApps.mkApps op newArgs
-    let some true := (← getState).opInfo.find? op | failure
+    let some true := (← get).opInfo.find? op | failure
     let newPr ← mkACSimpProof e lhs rhs r newE H
     return (newE, newPr)
 
@@ -1534,7 +1525,7 @@ def simplifyACStep (e : ACApps) : CCM (Option (ACApps × DelayedExpr)) := do
   if let .apps _ args := e then
     for h : i in [:args.size] do
       if i == 0 || (args[i]'h.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) h.2)) then
-        let some ae := (← getState).acEntries.find? (args[i]'h.2) | failure
+        let some ae := (← get).acEntries.find? (args[i]'h.2) | failure
         let occs := ae.RLHSOccs
         let mut Rlhs? : Option ACApps := none
         for Rlhs in occs do
@@ -1542,9 +1533,9 @@ def simplifyACStep (e : ACApps) : CCM (Option (ACApps × DelayedExpr)) := do
             if Rlhs.isSubset e then
               Rlhs? := some Rlhs
         if let some Rlhs := Rlhs? then
-          let some (Rrhs, H) := (← getState).acR.find? Rlhs | failure
+          let some (Rrhs, H) := (← get).acR.find? Rlhs | failure
           return (← simplifyACCore e Rlhs Rrhs H)
-  else if let some p := (← getState).acR.find? e then
+  else if let some p := (← get).acR.find? e then
     return some p
   return none
 
@@ -1557,12 +1548,12 @@ def simplifyAC (e : ACApps) : CCM (Option (ACApps × DelayedExpr)) := do
   return some (curr, pr)
 
 def insertEraseROcc (arg : Expr) (lhs : ACApps) (inLHS isInsert : Bool) : CCM Unit := do
-  let some entry := (← getState).acEntries.find? arg | failure
+  let some entry := (← get).acEntries.find? arg | failure
   let occs := entry.ROccs inLHS
   let newOccs := if isInsert then occs.insert lhs else occs.erase (compare lhs)
   let newEntry :=
     if inLHS then { entry with RLHSOccs := newOccs } else { entry with RRHSOccs := newOccs }
-  modifyState fun ccs => { ccs with acEntries := ccs.acEntries.insert arg newEntry }
+  modify fun ccs => { ccs with acEntries := ccs.acEntries.insert arg newEntry }
 
 def insertEraseROccs (e lhs : ACApps) (inLHS isInsert : Bool) : CCM Unit := do
   match e with
@@ -1601,18 +1592,18 @@ def eraseRRHSOccs (e lhs : ACApps) : CCM Unit :=
 
 open MessageData in
 def composeAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
-  let some x := (← getState).getVarWithLeastRHSOccs lhs | failure
-  let some ent := (← getState).acEntries.find? x | failure
+  let some x := (← get).getVarWithLeastRHSOccs lhs | failure
+  let some ent := (← get).acEntries.find? x | failure
   let occs := ent.RRHSOccs
   for Rlhs in occs do
-    let some (Rrhs, RH) := (← getState).acR.find? Rlhs | failure
+    let some (Rrhs, RH) := (← get).acR.find? Rlhs | failure
     if lhs.isSubset Rrhs then
       let some (newRrhs, RrhsEqNewRrhs) ← simplifyACCore Rrhs lhs rhs H | failure
       let newRH := DelayedExpr.eqTransOpt Rlhs Rrhs newRrhs RH RrhsEqNewRrhs
-      modifyState fun ccs => { ccs with acR := ccs.acR.insert Rlhs (newRrhs, newRH) }
+      modify fun ccs => { ccs with acR := ccs.acR.insert Rlhs (newRrhs, newRH) }
       eraseRRHSOccs Rrhs Rlhs
       insertRRHSOccs newRrhs Rlhs
-      let ccs ← getState
+      let ccs ← get
       let oldRw :=
         paren (ccs.ppACApps Rlhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps Rrhs)
       let newRw :=
@@ -1625,19 +1616,19 @@ def composeAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
 
 open MessageData in
 def collapseAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
-  let some x := (← getState).getVarWithLeastLHSOccs lhs | failure
-  let some ent := (← getState).acEntries.find? x | failure
+  let some x := (← get).getVarWithLeastLHSOccs lhs | failure
+  let some ent := (← get).acEntries.find? x | failure
   let occs := ent.RLHSOccs
   for Rlhs in occs do
     if lhs.isSubset Rlhs then
-      let some (Rrhs, RH) := (← getState).acR.find? Rlhs | failure
+      let some (Rrhs, RH) := (← get).acR.find? Rlhs | failure
       eraseRBHSOccs Rlhs Rrhs
-      modifyState fun ccs => { ccs with acR := ccs.acR.erase Rlhs }
+      modify fun ccs => { ccs with acR := ccs.acR.erase Rlhs }
       let some (newRlhs, RlhsEqNewRlhs) ← simplifyACCore Rlhs lhs rhs H | failure
       let newRlhsEqRlhs := DelayedExpr.eqSymmOpt Rlhs newRlhs RlhsEqNewRlhs
       let newRH := DelayedExpr.eqTransOpt newRlhs Rlhs Rrhs newRlhsEqRlhs RH
       modifyACTodo fun todo => todo.push (newRlhs, Rrhs, newRH)
-      let ccs ← getState
+      let ccs ← get
       let newRw :=
         paren (ccs.ppACApps lhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps rhs)
       let oldRw :=
@@ -1653,12 +1644,12 @@ def superposeAC (ts a : ACApps) (tsEqa : DelayedExpr) : CCM Unit := do
   let .apps op args := ts | return
   for hi : i in [:args.size] do
     if i == 0 || (args[i]'hi.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2)) then
-      let some ent := (← getState).acEntries.find? (args[i]'hi.2) | failure
+      let some ent := (← get).acEntries.find? (args[i]'hi.2) | failure
       let occs := ent.RLHSOccs
       for tr in occs do
         let .apps optr _ := tr | continue
         unless optr == op do continue
-        let some (b, trEqb) := (← getState).acR.find? tr | failure
+        let some (b, trEqb) := (← get).acR.find? tr | failure
         let tArgs := ts.intersection tr #[]
         guard !tArgs.isEmpty
         let t := ACApps.mkApps op tArgs
@@ -1670,10 +1661,10 @@ def superposeAC (ts a : ACApps) (tsEqa : DelayedExpr) : CCM Unit := do
         let r := ACApps.mkApps op rArgs
         let ra := ACApps.mkFlatApps op r a
         let sb := ACApps.mkFlatApps op s b
-        let some true := (← getState).opInfo.find? op | failure
+        let some true := (← get).opInfo.find? op | failure
         let raEqsb ← mkACSuperposeProof ra sb a b r s ts tr tsEqa trEqb
         modifyACTodo fun todo => todo.push (ra, sb, raEqsb)
-        let ccs ← getState
+        let ccs ← get
         let rw₁ :=
           paren (ccs.ppACApps ts ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps a)
         let rw₂ :=
@@ -1731,10 +1722,10 @@ def processAC : CCM Unit := do
     superposeAC lhs rhs H
 
     -- Update R
-    modifyState fun ccs => { ccs with acR := ccs.acR.insert lhs (rhs, H) }
+    modify fun ccs => { ccs with acR := ccs.acR.insert lhs (rhs, H) }
     insertRBHSOccs lhs rhs
 
-    let ccs ← getState
+    let ccs ← get
     let newRw :=
       group (ccs.ppACApps lhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps rhs)
     trace[Debug.Meta.Tactic.cc.ac] group ("new rw: " ++ newRw)
@@ -1752,12 +1743,12 @@ def setACVar (e : Expr) : CCM Unit := do
     addACEq acVar e
   else
     let newRootEntry := { rootEntry with acVar := some e }
-    modifyState fun ccs => { ccs with entries := ccs.entries.insert eRoot newRootEntry }
+    modify fun ccs => { ccs with entries := ccs.entries.insert eRoot newRootEntry }
 
 def internalizeACVar (e : Expr) : CCM Bool := do
-  let ccs ← getState
+  let ccs ← get
   if ccs.acEntries.contains e then return false
-  modifyState fun _ =>
+  modify fun _ =>
     { ccs with
       acEntries := ccs.acEntries.insert e { idx := ccs.nextACIdx }
       nextACIdx := ccs.nextACIdx + 1 }
@@ -1784,11 +1775,11 @@ def internalizeAC (e : Expr) (parent? : Option Expr) : CCM Unit := do
 
   let (args, norme) ← convertAC op e #[]
   let rep := ACApps.mkApps op args
-  let some true := (← getState).opInfo.find? op | failure
+  let some true := (← get).opInfo.find? op | failure
   let some repe := rep.toExpr | failure
   let pr ← mkACProof norme repe
 
-  let ccs ← getState
+  let ccs ← get
   let d := paren (ccs.ppACApps e ++ ofFormat (" :=" ++ Format.line) ++ ofExpr e)
   let r := "new term: " ++ d ++ ofFormat (Format.line ++ "===>" ++ .line) ++ ccs.ppACApps rep
   trace[Debug.Meta.Tactic.cc.ac] group r
@@ -1801,10 +1792,10 @@ mutual
 partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
   if ← isInterpretedValue e then
     mkEntry e true gen
-    if (← getState).values then return -- we treat values as atomic symbols
+    if (← get).values then return -- we treat values as atomic symbols
   else
     mkEntry e false gen
-    if (← getState).values && isValue e then return -- we treat values as atomic symbols
+    if (← get).values && isValue e then return -- we treat values as atomic symbols
   if let some (_, lhs, rhs) ← e.relSidesIfSymm? then
     internalizeCore lhs (some e) gen
     internalizeCore rhs (some e) gen
@@ -1817,7 +1808,7 @@ partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
     guard (apps.size > 0)
     guard (apps.back == e)
     let mut pinfo : List ParamInfo := []
-    let state ← getState
+    let state ← get
     if state.ignoreInstances then
       pinfo := (← getFunInfoNArgs fn apps.size).paramInfo.toList
     if state.hoFns.isSome && fn.isConst && !(state.hoFns.iget.contains fn.constName) then
@@ -1825,7 +1816,7 @@ partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
         let arg := (apps[i]'h.2).appArg!
         addOccurrence e arg false
         if pinfo.head?.any ParamInfo.isInstImplicit then
-          -- We do not recurse on instances when `(← getState).config.ignoreInstances` is `true`.
+          -- We do not recurse on instances when `(← get).config.ignoreInstances` is `true`.
           mkEntry arg false gen
           propagateInstImplicit arg
         else
@@ -1848,7 +1839,7 @@ partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
           addOccurrence (apps[j]'h.2) currArg false
           addOccurrence (apps[j]'h.2) currFn false
         if pinfo.head?.any ParamInfo.isInstImplicit then
-          -- We do not recurse on instances when `(← getState).config.ignoreInstances` is `true`.
+          -- We do not recurse on instances when `(← get).config.ignoreInstances` is `true`.
           mkEntry currArg false gen
           mkEntry currFn false gen
           propagateInstImplicit currArg
@@ -1863,7 +1854,7 @@ partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
 partial def internalizeCore (e : Expr) (parent? : Option Expr) (gen : Nat) : CCM Unit := do
   guard !e.hasLooseBVars
   /- We allow metavariables after partitions have been frozen. -/
-  if e.hasExprMVar && !(← getState).frozePartitions then
+  if e.hasExprMVar && !(← get).frozePartitions then
     return
   /- Check whether `e` has already been internalized. -/
   if (← getEntry e).isNone then
@@ -1901,7 +1892,7 @@ partial def internalizeCore (e : Expr) (parent? : Option Expr) (gen : Nat) : CCM
 
   /- Remark: if should invoke `internalizeAC` even if the test `(← getEntry e).isNone` above failed.
      Reason, the first time `e` was visited, it may have been visited with a different parent. -/
-  if (← getState).ac then
+  if (← get).ac then
     internalizeAC e parent?
 
 partial def propagateIffUp (e : Expr) : CCM Unit := do
@@ -1992,7 +1983,7 @@ partial def propagateImpUp (e : Expr) : CCM Unit := do
       | .forallE _ a (.const ``False []) _ => (true, a)
       | e => (false, e)
     if let (true, arg) := isNot a then
-      if (← getState).em then
+      if (← get).em then
         -- `b = False → (Not a → b) = a`
         pushEq e arg
           (mkApp3 (.const ``not_imp_eq_of_eq_false_right []) arg b (← getEqFalseProof b))
@@ -2040,7 +2031,7 @@ partial def propagateEqUp (e : Expr) : CCM Unit := do
       pushEq e (.const ``False []) (← mkEqFalse aNeB)
 
 partial def propagateUp (e : Expr) : CCM Unit := do
-  if (← getState).inconsistent then return
+  if (← get).inconsistent then return
   if e.isAppOfArity ``Iff 2 then
     propagateIffUp e
   else if e.isAppOfArity ``And 2 then
@@ -2130,25 +2121,26 @@ partial def processSubsingletonElem (e : Expr) : CCM Unit := do
   -- Make sure type has been internalized
   internalizeCore type none (← getGenerationOf e)
   -- Try to find representative
-  if let some it := (← getState).subsingletonReprs.find? type then
+  if let some it := (← get).subsingletonReprs.find? type then
     pushSubsingletonEq e it
   else
-    modifyState fun ccs =>
+    modify fun ccs =>
       { ccs with
         subsingletonReprs := ccs.subsingletonReprs.insert type e }
   let typeRoot ← getRoot type
   if typeRoot == type then return
-  if let some it2 := (← getState).subsingletonReprs.find? typeRoot then
+  if let some it2 := (← get).subsingletonReprs.find? typeRoot then
     pushSubsingletonEq e it2
   else
-    modifyState fun ccs =>
+    modify fun ccs =>
       { ccs with
         subsingletonReprs := ccs.subsingletonReprs.insert typeRoot e }
 
 partial def mkEntry (e : Expr) (interpreted : Bool) (gen : Nat) : CCM Unit := do
   if (← getEntry e).isSome then return
   let constructor ← isConstructorApp e
-  modifyState fun ccs => ccs.mkEntryCore e interpreted constructor gen
+  modify fun ccs =>
+    { ccs with toCCState := ccs.toCCState.mkEntryCore e interpreted constructor gen }
   processSubsingletonElem e
 end
 
@@ -2157,7 +2149,7 @@ def mayPropagate (e : Expr) : Bool :=
     e.isAppOfArity ``Not 1 || e.isArrow || e.isIte
 
 def removeParents (e : Expr) (parentsToPropagate : Array Expr) : CCM (Array Expr) := do
-  let some ps := (← getState).parents.find? e | return parentsToPropagate
+  let some ps := (← get).parents.find? e | return parentsToPropagate
   let mut parentsToPropagate := parentsToPropagate
   for pocc in ps do
     let p := pocc.expr
@@ -2168,24 +2160,24 @@ def removeParents (e : Expr) (parentsToPropagate : Array Expr) : CCM (Array Expr
       if pocc.symmTable then
         let some (rel, lhs, rhs) ← p.relSidesIfSymm? | failure
         let k' ← mkSymmCongruencesKey lhs rhs
-        if let some lst := (← getState).symmCongruences.find? k' then
+        if let some lst := (← get).symmCongruences.find? k' then
           let k := (p, rel)
           let newLst ← lst.filterM fun k₂ => (!·) <$> compareSymm k k₂
           if !newLst.isEmpty then
-            modifyState fun ccs =>
+            modify fun ccs =>
               { ccs with symmCongruences := ccs.symmCongruences.insert k' newLst }
           else
-            modifyState fun ccs =>
+            modify fun ccs =>
               { ccs with symmCongruences := ccs.symmCongruences.erase k' }
       else
         let k' ← mkCongruencesKey p
-        if let some es := (← getState).congruences.find? k' then
+        if let some es := (← get).congruences.find? k' then
           let newEs := es.erase p
           if !newEs.isEmpty then
-            modifyState fun ccs =>
+            modify fun ccs =>
               { ccs with congruences := ccs.congruences.insert k' newEs }
           else
-            modifyState fun ccs =>
+            modify fun ccs =>
               { ccs with congruences := ccs.congruences.erase k' }
   return parentsToPropagate
 
@@ -2212,7 +2204,7 @@ partial def invertTrans (e : Expr) (newFlipped : Bool := false) (newTarget : Opt
       flipped := newFlipped
       target := newTarget
       proof := newProof }
-  modifyState fun ccs => { ccs with entries := ccs.entries.insert e newN }
+  modify fun ccs => { ccs with entries := ccs.entries.insert e newN }
 
 /-- Traverse the `root`'s equivalence class, and collect the function's equivalence class roots. -/
 def collectFnRoots (root : Expr) (fnRoots : Array Expr) : CCM (Array Expr) := do
@@ -2231,7 +2223,7 @@ def collectFnRoots (root : Expr) (fnRoots : Array Expr) : CCM (Array Expr) := do
   return fnRoots
 
 def reinsertParents (e : Expr) : CCM Unit := do
-  let some ps := (← getState).parents.find? e | return
+  let some ps := (← get).parents.find? e | return
   for p in ps do
     trace[Debug.Meta.Tactic.cc] "reinsert parent: {p.expr}"
     if p.expr.isApp then
@@ -2241,7 +2233,7 @@ def reinsertParents (e : Expr) : CCM Unit := do
         addCongruenceTable p.expr
 
 def checkInvariant : CCM Unit := do
-  guard (← getState).checkInvariant
+  guard (← get).checkInvariant
 
 /--
 For each `fnRoot` in `fnRoots` traverse its parents, and look for a parent prefix that is
@@ -2255,7 +2247,7 @@ def propagateBetaToEqc (fnRoots lambdas newLambdaApps : Array Expr) : CCM (Array
   let lambdaRoot ← getRoot lambdas.back
   guard (← lambdas.allM fun l => pure l.isLambda <&&> (· == lambdaRoot) <$> getRoot l)
   for fnRoot in fnRoots do
-    if let some ps := (← getState).parents.find? fnRoot then
+    if let some ps := (← get).parents.find? fnRoot then
       for { expr := p,.. } in ps do
         let mut revArgs : Array Expr := #[]
         let mut it₂ := p
@@ -2367,7 +2359,7 @@ def propagateNotDown (e : Expr) : CCM Unit := do
     let some a := e.not? | failure
     pushEq a (.const ``False [])
       (mkApp2 (.const ``eq_false_of_not_eq_true []) a (← getEqTrueProof e))
-  else if ← (·.em) <$> getState <&&> isEqFalse e then
+  else if ← (·.em) <$> get <&&> isEqFalse e then
     let some a := e.not? | failure
     pushEq a (.const ``True [])
       (mkApp2 (.const ``eq_true_of_not_eq_false []) a (← getEqFalseProof e))
@@ -2429,7 +2421,7 @@ where
     let mut valueInconsistency := false
     if r₁.interpreted && r₂.interpreted then
       if n₁.root.isConstOf ``True || n₂.root.isConstOf ``True then
-        modifyState fun ccs => { ccs with inconsistent := true }
+        modify fun ccs => { ccs with inconsistent := true }
       else if n₁.root.int?.isSome && n₂.root.int?.isSome then
         valueInconsistency := n₁.root.int? != n₂.root.int?
       else
@@ -2453,7 +2445,7 @@ where
         target := e₂
         proof := H
         flipped }
-    modifyState fun ccs => { ccs with entries := ccs.entries.insert e₁ newN₁ }
+    modify fun ccs => { ccs with entries := ccs.entries.insert e₁ newN₁ }
 
     -- The hash code for the parents is going to change
     let parentsToPropagate ← removeParents e₁Root #[]
@@ -2472,7 +2464,7 @@ where
       if propagate then
         toPropagate := toPropagate.push it
       let newItN : Entry := { itN with root := e₂Root }
-      modifyState fun ccs => { ccs with entries := ccs.entries.insert it newItN }
+      modify fun ccs => { ccs with entries := ccs.entries.insert it newItN }
       it := newItN.next
     until it == e₁
 
@@ -2495,7 +2487,7 @@ where
         hasLambdas := r₂.hasLambdas || r₁.hasLambdas
         heqProofs := r₂.heqProofs || heqProof
         acVar := acVar?₂.orElse fun _ => acVar?₁ }
-    modifyState fun ccs =>
+    modify fun ccs =>
       { ccs with
         entries :=
           ccs.entries.insert e₁Root newR₁ |>.insert e₂Root newR₂ }
@@ -2505,49 +2497,49 @@ where
     let lambdaAppsToInternalize ← propagateBetaToEqc fnRoots₁ lambdas₂ lambdaAppsToInternalize
 
     -- copy `e₁Root` parents to `e₂Root`
-    if let some ps₁ := (← getState).parents.find? e₁Root then
+    if let some ps₁ := (← get).parents.find? e₁Root then
       let mut ps₂ : ParentOccSet := ∅
-      if let some it' := (← getState).parents.find? e₂Root then
+      if let some it' := (← get).parents.find? e₂Root then
         ps₂ := it'
       for p in ps₁ do
         if ← pure p.expr.isApp <||> isCgRoot p.expr then
           if !constructorEq && r₂.constructor then
             propagateProjectionConstructor p.expr e₂Root
           ps₂ := ps₂.insert p
-      modifyState fun ccs =>
+      modify fun ccs =>
         { ccs with
           parents := ccs.parents.erase e₁Root |>.insert e₂Root ps₂ }
 
-    if !(← getState).inconsistent then
+    if !(← get).inconsistent then
       if let some acVar₁ := acVar?₁ then
       if let some acVar₂ := acVar?₂ then
         addACEq acVar₁ acVar₂
 
-    if !(← getState).inconsistent && constructorEq then
+    if !(← get).inconsistent && constructorEq then
       propagateConstructorEq e₁Root e₂Root
 
-    if !(← getState).inconsistent && valueInconsistency then
+    if !(← get).inconsistent && valueInconsistency then
       propagateValueInconsistency e₁Root e₂Root
 
-    if !(← getState).inconsistent then
+    if !(← get).inconsistent then
       updateMT e₂Root
       checkNewSubsingletonEq e₁Root e₂Root
 
-    if !(← getState).inconsistent then
+    if !(← get).inconsistent then
       for p in parentsToPropagate do
         propagateUp p
 
-    if !(← getState).inconsistent && !toPropagate.isEmpty then
+    if !(← get).inconsistent && !toPropagate.isEmpty then
       for e in toPropagate do
         propagateDown e
       if let some phandler := (← get).phandler then
         phandler.propagated toPropagate
 
-    if !(← getState).inconsistent then
+    if !(← get).inconsistent then
       for e in lambdaAppsToInternalize do
         internalizeCore e none (← getGenerationOf e)
 
-    let ccs ← getState
+    let ccs ← get
     trace[Meta.Tactic.cc.merge] "{e₁Root} = {e₂Root}"
     trace[Debug.Meta.Tactic.cc] "merged: {e₁Root} = {e₂Root}\n{ccs.ppEqcs}"
     trace[Debug.Meta.Tactic.cc.parentOccs] ccs.ppParentOccs
@@ -2556,7 +2548,7 @@ def processTodo : CCM Unit := do
   repeat
     let todo ← getTodo
     let some (lhs, rhs, H, heqProof) := todo.back? | return
-    if (← getState).inconsistent then
+    if (← get).inconsistent then
       modifyTodo fun _ => #[]
       return
     modifyTodo Array.pop
@@ -2571,7 +2563,7 @@ def addEqvCore (lhs rhs H : Expr) (heqProof : Bool) : CCM Unit := do
   processTodo
 
 def add (type : Expr) (proof : Expr) (gen : Nat) : CCM Unit := do
-  if (← getState).inconsistent then return
+  if (← get).inconsistent then return
   modifyTodo fun _ => #[]
   let (isNeg, p) :=
     match type with
@@ -2632,8 +2624,8 @@ def mkUsingHsCore (cfg : CCConfig) : MetaM CCState := do
   let (_, c) ← CCM.run (ctx.forM fun dcl => do
     unless dcl.isImplementationDetail do
       if ← isProp dcl.type then
-        add dcl.type dcl.toExpr 0) { state := mkCore cfg }
-  return c.state
+        add dcl.type dcl.toExpr 0) { mkCore cfg with }
+  return c.toCCState
 #align cc_state.mk_using_hs_core Mathlib.Tactic.CC.CCState.mkUsingHsCore
 
 /-- Returns the root expression for each equivalence class in the graph.
@@ -2649,8 +2641,8 @@ def incGMT (ccs : CCState) : CCState :=
 
 /-- Add the given expression to the graph. -/
 def internalize (ccs : CCState) (e : Expr) : MetaM CCState := do
-  let (_, c) ← CCM.run (CCM.internalize e 0) { state := ccs }
-  return c.state
+  let (_, c) ← CCM.run (CCM.internalize e 0) { ccs with }
+  return c.toCCState
 #align cc_state.internalize Mathlib.Tactic.CC.CCState.internalize
 
 /-- Add the given proof term as a new rule.
@@ -2659,32 +2651,32 @@ def add (ccs : CCState) (H : Expr) : MetaM CCState := do
   let type ← inferType H
   unless ← isProp type do
     throwError "CCState.add failed, given expression is not a proof term"
-  let (_, c) ← CCM.run (CCM.add type H 0) { state := ccs }
-  return c.state
+  let (_, c) ← CCM.run (CCM.add type H 0) { ccs with }
+  return c.toCCState
 #align cc_state.add Mathlib.Tactic.CC.CCState.add
 
 /-- Check whether two expressions are in the same equivalence class. -/
 def isEqv (ccs : CCState) (e₁ e₂ : Expr) : MetaM Bool := do
-  let (b, _) ← CCM.run (CCM.isEqv e₁ e₂) { state := ccs }
+  let (b, _) ← CCM.run (CCM.isEqv e₁ e₂) { ccs with }
   return b
 #align cc_state.is_eqv Mathlib.Tactic.CC.CCState.isEqv
 
 /-- Check whether two expressions are not in the same equivalence class. -/
 def isNotEqv (ccs : CCState) (e₁ e₂ : Expr) : MetaM Bool := do
-  let (b, _) ← CCM.run (CCM.isNotEqv e₁ e₂) { state := ccs }
+  let (b, _) ← CCM.run (CCM.isNotEqv e₁ e₂) { ccs with }
   return b
 #align cc_state.is_not_eqv Mathlib.Tactic.CC.CCState.isNotEqv
 
 /-- Returns a proof term that the given terms are equivalent in the given `CCState` -/
 def eqvProof (ccs : CCState) (e₁ e₂ : Expr) : MetaM Expr := do
-  let (some r, _) ← CCM.run (CCM.getEqProof e₁ e₂) { state := ccs }
+  let (some r, _) ← CCM.run (CCM.getEqProof e₁ e₂) { ccs with }
     | throwError "CCState.eqvProof failed to build proof"
   return r
 #align cc_state.eqv_proof Mathlib.Tactic.CC.CCState.eqvProof
 
 /-- `proofFor cc e` constructs a proof for e if it is equivalent to true in `CCState` -/
 def proofFor (ccs : CCState) (e : Expr) : MetaM Expr := do
-  let (some r, _) ← CCM.run (CCM.getEqProof e (.const ``True [])) { state := ccs }
+  let (some r, _) ← CCM.run (CCM.getEqProof e (.const ``True [])) { ccs with }
     | throwError "CCState.proofFor failed to build proof"
   mkAppM ``of_eq_true #[r]
 #align cc_state.proof_for Mathlib.Tactic.CC.CCState.proofFor
@@ -2692,14 +2684,14 @@ def proofFor (ccs : CCState) (e : Expr) : MetaM Expr := do
 /-- `refutationFor cc e` constructs a proof for `Not e` if it is equivalent to `False` in `CCState`
 -/
 def refutationFor (ccs : CCState) (e : Expr) : MetaM Expr := do
-  let (some r, _) ← CCM.run (CCM.getEqProof e (.const ``False [])) { state := ccs }
+  let (some r, _) ← CCM.run (CCM.getEqProof e (.const ``False [])) { ccs with }
     | throwError "CCState.refutationFor failed to build proof"
   mkAppM ``not_of_eq_false #[r]
 #align cc_state.refutation_for Mathlib.Tactic.CC.CCState.refutationFor
 
 /-- If the given state is inconsistent, return a proof for `False`. Otherwise fail. -/
 def proofForFalse (ccs : CCState) : MetaM Expr := do
-  let (some pr, _) ← CCM.run CCM.getInconsistencyProof { state := ccs }
+  let (some pr, _) ← CCM.run CCM.getInconsistencyProof { ccs with }
     | throwError "CCState.proofForFalse failed, state is not inconsistent"
   return pr
 #align cc_state.proof_for_false Mathlib.Tactic.CC.CCState.proofForFalse
