@@ -602,8 +602,8 @@ class AddMonoid (M : Type u) extends AddZeroClass M, AddSemigroup M where
   protected nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = x + nsmul n x := by intros; rfl
 #align add_monoid AddMonoid
 
-attribute [instance 150] AddSemigroup.toAdd
-attribute [instance 50] AddZeroClass.toAdd
+attribute [instance 50] AddSemigroup.toAdd
+attribute [instance 150] AddZeroClass.toAdd
 
 #align add_monoid.nsmul_zero' AddMonoid.nsmul_zero
 #align add_monoid.nsmul_succ' AddMonoid.nsmul_succ
@@ -621,6 +621,9 @@ class Monoid (M : Type u) extends MulOneClass M, Semigroup M where
 
 #align monoid.npow_zero' Monoid.npow_zero
 #align monoid.npow_succ' Monoid.npow_succ
+-- are these automatic?
+attribute [instance 50] Semigroup.toMul
+attribute [instance 150] MulOneClass.toMul
 
 -- Bug #660
 attribute [to_additive existing] Monoid.toSemigroup
@@ -688,19 +691,19 @@ section LeftCancelMonoid
 /-- An additive monoid in which addition is left-cancellative.
 Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
 is useful to define the sum over the empty set, so `AddLeftCancelSemigroup` is not enough. -/
-class AddLeftCancelMonoid (M : Type u) extends AddMonoid M, AddLeftCancelSemigroup M
+class AddLeftCancelMonoid (M : Type u) extends AddLeftCancelSemigroup M, AddMonoid M
 #align add_left_cancel_monoid AddLeftCancelMonoid
 
 attribute [instance 75] AddLeftCancelMonoid.toAddMonoid -- See note [lower cancel priority]
 
 /-- A monoid in which multiplication is left-cancellative. -/
 @[to_additive]
-class LeftCancelMonoid (M : Type u) extends Monoid M, LeftCancelSemigroup M
+class LeftCancelMonoid (M : Type u) extends LeftCancelSemigroup M, Monoid M
 #align left_cancel_monoid LeftCancelMonoid
 
 attribute [instance 75] LeftCancelMonoid.toMonoid -- See note [lower cancel priority]
 
-attribute [to_additive existing] LeftCancelMonoid.toLeftCancelSemigroup
+attribute [to_additive existing] LeftCancelMonoid.toMonoid
 
 end LeftCancelMonoid
 
@@ -709,19 +712,19 @@ section RightCancelMonoid
 /-- An additive monoid in which addition is right-cancellative.
 Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
 is useful to define the sum over the empty set, so `AddRightCancelSemigroup` is not enough. -/
-class AddRightCancelMonoid (M : Type u) extends  AddMonoid M, AddRightCancelSemigroup M
+class AddRightCancelMonoid (M : Type u) extends AddRightCancelSemigroup M, AddMonoid M
 #align add_right_cancel_monoid AddRightCancelMonoid
 
 attribute [instance 75] AddRightCancelMonoid.toAddMonoid -- See note [lower cancel priority]
 
 /-- A monoid in which multiplication is right-cancellative. -/
 @[to_additive]
-class RightCancelMonoid (M : Type u) extends Monoid M, RightCancelSemigroup M
+class RightCancelMonoid (M : Type u) extends RightCancelSemigroup M, Monoid M
 #align right_cancel_monoid RightCancelMonoid
 
 attribute [instance 75] RightCancelMonoid.toMonoid -- See note [lower cancel priority]
 
-attribute [to_additive existing] RightCancelMonoid.toRightCancelSemigroup
+attribute [to_additive existing] RightCancelMonoid.toMonoid
 
 end RightCancelMonoid
 

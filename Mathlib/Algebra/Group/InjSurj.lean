@@ -462,7 +462,7 @@ admits a surjective map that preserves `0` and `+` to an additive commutative mo
 protected def commMonoid [CommMonoid M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
     CommMonoid M₂ :=
-  { hf.commSemigroup f mul, hf.monoid f one mul npow with }
+  { hf.monoid f one mul npow, hf.commSemigroup f mul with }
 #align function.surjective.comm_monoid Function.Surjective.commMonoid
 #align function.surjective.add_comm_monoid Function.Surjective.addCommMonoid
 
@@ -556,7 +556,7 @@ protected def commGroup [CommGroup M₁] (f : M₁ → M₂) (hf : Surjective f)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : CommGroup M₂ :=
-  { hf.commMonoid f one mul npow, hf.group f one mul inv div npow zpow with }
+  { hf.group f one mul inv div npow zpow, hf.commMonoid f one mul npow with }
 #align function.surjective.comm_group Function.Surjective.commGroup
 #align function.surjective.add_comm_group Function.Surjective.addCommGroup
 

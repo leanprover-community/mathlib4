@@ -212,11 +212,10 @@ instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) 
 
 @[to_additive]
 instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
-  { npow := fun z a => ⟨Monoid.npow z a.1, Monoid.npow z a.2⟩,
-    npow_zero := fun z => ext (Monoid.npow_zero _) (Monoid.npow_zero _),
-    npow_succ := fun z a => ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
-    one_mul := by simp,
-    mul_one := by simp }
+  { mul_assoc := Semigroup.mul_assoc
+    npow := fun z a => ⟨Monoid.npow z a.1, Monoid.npow z a.2⟩,
+    npow_zero := fun _ => ext (Monoid.npow_zero _) (Monoid.npow_zero _),
+    npow_succ := fun _ _ => ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _) }
 
 @[to_additive Prod.subNegMonoid]
 instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) :=
@@ -265,13 +264,11 @@ instance [RightCancelSemigroup G] [RightCancelSemigroup H] : RightCancelSemigrou
 
 @[to_additive]
 instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) :=
-  { mul_one := by simp,
-    one_mul := by simp }
+  { instMonoid, instLeftCancelSemigroupProd with }
 
 @[to_additive]
 instance [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N) :=
-  { mul_one := by simp,
-    one_mul := by simp }
+  { instMonoid, instRightCancelSemigroupProd with }
 
 @[to_additive]
 instance [CancelMonoid M] [CancelMonoid N] : CancelMonoid (M × N) :=
