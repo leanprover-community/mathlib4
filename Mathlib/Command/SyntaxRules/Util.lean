@@ -11,9 +11,16 @@ import Lean
 TODO: better docs throughout
 -/
 
-open Lean Meta Elab
+open Lean Meta Elab Command
 
-/-! # Syntax nodes -/
+/-! ## `SyntaxRulesData` helpers -/
+
+/-- Convenient for use in the `mkAttr` field of `SyntaxRulesData` when only modifying the `Name`
+key passed to the attribute. Sensitive to the current `ref` for better error reporting. -/
+def mkAttrWithKey (attr key : Name) : CommandElabM (TSyntax `attr) := do
+  `(attr|$(mkIdent attr):ident $(← mkIdentFromRef key):ident)
+
+/-! ## Syntax nodes -/
 
 /-- Resolves `k` to a `SyntaxNodeKind`. Like `Elab.syntaxNodeKindOfAttrParam`, but takes in a
 `Name` argument instead of the whole `attr` syntax. -/
@@ -36,7 +43,7 @@ def elabNodeKind (id : Ident) (parserNamespace := Name.anonymous) :
     addConstInfo id kind none
   return kind
 
-/-! # Name structure
+/-! ## Name structure
 
 The most common use of `syntax_rules` is to attach a `KeyedDeclsAttribute` to some declaration.
 Such an attribute is keyed by a `Name`. This key is usually the `SyntaxNodeKind`, but sometimes we
@@ -44,6 +51,8 @@ want to key by other things as well (e.g. syntax node kind and a `category` spec
 `foo_rules : category` command). In that case, we can use these utilities to systematically pack
 multiple names in one.
 -/
+
+namespace Lean.Name
 
 /-- Encode a pair of names in a single name. `delim` is assumed to be atomic and a string. Macro
 scopes from `n₁` are erased. Note that this cannot be nested. -/
@@ -65,3 +74,5 @@ where
     if b == d then some (a, ns.foldl (fun a b => b.append a) .anonymous) else go d a (ns.push b)
   | .num a b, ns => go d a (ns.push (.num .anonymous b))
   | .anonymous, _ => none
+
+end Lean.Name
