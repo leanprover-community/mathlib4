@@ -71,10 +71,10 @@ namespace WeierstrassCurve.Affine
 variable {R : Type u} [CommRing R] (W : Affine R)
 
 -- Porting note: in Lean 3, this is a `def` under a `derive comm_ring` tag.
--- This generates a reducible instance of `comm_ring` for `coordinate_ring`. In certain
+-- This generates a reducible instance of `CommRing` for `CoordinateRing`. In certain
 -- circumstances this might be extremely slow, because all instances in its definition are unified
 -- exponentially many times. In this case, one solution is to manually add the local attribute
--- `local attribute [irreducible] coordinate_ring.comm_ring` to block this type-level unification.
+-- `local attribute [irreducible] CoordinateRing.CommRing` to block this type-level unification.
 -- In Lean 4, this is no longer an issue and is now an `abbrev`. See Zulip thread:
 -- https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/.E2.9C.94.20class_group.2Emk
 /-- The coordinate ring $R[W] := R[X, Y] / \langle W(X, Y) \rangle$ of `W`. -/
