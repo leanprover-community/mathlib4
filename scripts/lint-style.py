@@ -403,6 +403,75 @@ def test_backtick_extraction():
     print("All tests pass!")
 
 
+# HACK: currently, this reads from local files, which have been generated manually...
+def import_old_files_declarations():
+    # Import input data:
+    # - all align_import statements, looking for filesnames we don't want
+    # - all align statements, to parse out old lemma names
+    # Read in all align_import statements and parse out the name of the old file.
+    old_files = []
+    for line in open('/home/michael/align_imports.txt', 'r', encoding='utf-8'):
+        if not line.startswith("#align_import "):
+            continue
+        line = line[len("#align_import "):]
+        if not " from " in line:
+            continue
+        old_file = line[:line.find(' from ')]
+        old_files.append(old_file)
+    # Read in all #align statements and parse the names of the old and new declaration.
+    aligns = dict()
+    for line in open('/home/michael/all_aligns.txt', 'r', encoding='utf-8'):
+        line = line.strip()
+        if not line.startswith("#align "):
+            continue
+        parts = line.split(' ')
+        if len(parts) != 3:
+            continue
+        _align, old_decl, new_decl = parts
+        aligns[old_decl] = new_decl
+    # For each old declaration, if the new declaration is different
+    # *and* there is no new declaration of the same name, add these to our list.
+    # We do this in two stages; a naive algorithm is extremely slow (quadratic?).
+    old_declarations = []
+    for old, new in aligns.items():
+        if old != new: # and old not in aligns.values():
+            old_declarations.append(old)
+    same = set(aligns.values()).intersection(set(old_declarations))
+    print(f"Found {len(same)} old declarations which occur as a different new declaration:\n{same}")
+    old_declarations = [s for s in old_declarations if s not in same]
+    assert "CommRing" not in old_declarations
+    return old_files, old_declarations
+
+
+''''Check the contents of doc comments in `backticks`: for old file names or Lean declarations.'''
+# FUTURE ideas:
+# - file names exist (parse Mathlib.lean)
+# - enforce normal form for file names
+def lint_backticks_in_comments(lines, path):
+    old_files, old_declarations = import_old_files_declarations()
+    errors = []
+    newlines = []
+    i = 0
+    for line_nr, line in enumerate(lines):
+        i += 1
+        if i == 10 * 1000:
+            print("breaking out")
+            break
+        line=line.strip()
+        s = extract_backticks(line)
+        if s is None:
+            print(f'what, what input did we get: "{line}"')
+            assert False # omit invalid input for now
+        for item in s:
+            if item in old_files:
+                print(f'old file {item} mentioned in line: "{line}"')
+            if item in old_declarations:
+                print(f'old declaration {item} mentioned in line: "{line}"')
+
+        #errors += [(ERR_ARR, line_nr, path)]
+        newlines.append((line_nr, line))
+    return errors, newlines
+
 def output_message(path, line_nr, code, msg):
     if len(exceptions) == 0:
         # we are generating a new exceptions file
