@@ -379,7 +379,7 @@ def Measure.ae {α : Type*} {_m : MeasurableSpace α} (μ : Measure α) : Filter
 This is notation for `Filter.Eventually p (Measure.ae μ)`. -/
 notation3 "∀ᵐ "(...)" ∂"μ", "r:(scoped p => Filter.Eventually p <| Measure.ae μ) => r
 
-/-- `∀ᵐ a ∂μ, p a` means that `p` holds `∂μ`-frequently,
+/-- `∃ᵐ a ∂μ, p a` means that `p` holds `∂μ`-frequently,
 i.e. `p` holds on a set of positive measure.
 
 This is notation for `Filter.Frequently p (Measure.ae μ)`. -/
