@@ -134,8 +134,10 @@ def f := 37
 ```
 displays the info message `Min: 7 Max: 8 StdDev: 14%`.
 -/
-elab "count_heartbeats! " "in" ppLine cmd:command : command => do
-  let n := 10
+elab "count_heartbeats! " n:(num)? "in" ppLine cmd:command : command => do
+  let n := match n with
+           | some j => j.getNat
+           | none => 10
   -- First run the command `n-1` times, reverting the state.
   let counts ← (List.range (n - 1)).mapM fun _ => elabForHeartbeats cmd
   -- Then run once more, keeping the state.
