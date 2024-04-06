@@ -22,7 +22,11 @@ After this, each lemma is checked one by one to see whether it is applicable.
 
 The `RefinedDiscrTree` lookup groups the results by match pattern and gives a score to each pattern.
 This is used to display the results in sections. The sections are ordered by this score.
-Within each section, the lemmas are sorted by `RewriteLemma.lt`.
+Within each section, the lemmas are sorted by
+- number of extra goals
+- left-to-right rewrites come first
+- length of the lemma name
+- alphabetical order of the lemma name
 
 The lemmas are optionally filtered to avoid duplicate rewrites, or trivial rewrites. This
 is controlled by the filter button on the top right of the results.
@@ -30,6 +34,8 @@ is controlled by the filter button on the top right of the results.
 When a rewrite lemma introduces new goals, these are shown after a `⊢`.
 
 -/
+
+/- ### Caching -/
 
 namespace Mathlib.Tactic.LibraryRewrite
 
@@ -41,30 +47,7 @@ structure RewriteLemma where
   name : Name
   /-- `symm` is `true` when rewriting from right to left -/
   symm : Bool
-  /-- The number of arguments that the lemma takes -/
-  numParams : Nat
 deriving BEq, Inhabited
-
-/-- The string length of the lemma name. -/
-def RewriteLemma.length (rwLemma : RewriteLemma) : Nat :=
-  rwLemma.name.toString.length
-
-/--
-We sort lemmas by the following conditions (in order):
-- number of parameters
-- left-to-right rewrites come first
-- length of the name
-- alphabetical order
--/
-def RewriteLemma.lt (a b : RewriteLemma) : Bool :=
-  a.numParams < b.numParams || a.numParams == b.numParams &&
-    (!a.symm && b.symm || a.symm == b.symm &&
-      (a.length < b.length || a.length == b.length &&
-        Name.lt a.name b.name))
-
-instance : LT RewriteLemma := ⟨fun a b => RewriteLemma.lt a b⟩
-instance (a b : RewriteLemma) : Decidable (a < b) :=
-  inferInstanceAs (Decidable (RewriteLemma.lt a b))
 
 /-- Similar to `Name.isBlackListed`. -/
 def isBadDecl (name : Name) (cinfo : ConstantInfo) (env : Environment) : Bool :=
@@ -89,24 +72,18 @@ def matchEqn? (e : Expr) : Option (Expr × Expr) :=
   | none => e.iff?
 
 /-- Try adding the lemma to the `RefinedDiscrTree`. -/
-def updateDiscrTree (d : RefinedDiscrTree RewriteLemma) (name : Name) (cinfo : ConstantInfo) :
-    MetaM (RefinedDiscrTree RewriteLemma) := do
-  if isBadDecl name cinfo (← getEnv) then
-    return d
-  let (vars, _, eqn) ← forallMetaTelescope cinfo.type
-  let some (lhs, rhs) := matchEqn? eqn | return d
+def updateDiscrTree {α} [BEq α] (tree : RefinedDiscrTree α) (l r : α) (type : Expr) :
+    MetaM (RefinedDiscrTree α) := do
+  let (_, _, eqn) ← forallMetaTelescope type
+  let some (lhs, rhs) := matchEqn? eqn | return tree
   -- don't index lemmas of the form `a = ?b` where `?b` is a variable not appearing in `a`
   if let .mvar mvarId := lhs then
     if (rhs.findMVar? (· == mvarId)).isNone then
-      return d
+      return tree
   if let .mvar mvarId := rhs then
     if (lhs.findMVar? (· == mvarId)).isNone then
-      return d
-  d.insertEqn lhs rhs
-    { name, symm := false, numParams := vars.size }
-    { name, symm := true,  numParams := vars.size }
-
-section Cache
+      return tree
+  tree.insertEqn lhs rhs l r
 
 /-- The type of the library rewrite cache. -/
 abbrev RewriteCache := Std.Tactic.Cache (RefinedDiscrTree RewriteLemma)
@@ -116,8 +93,10 @@ def RewriteCache.mk : IO RewriteCache :=
   Std.Tactic.Cache.mk do
     profileitM Exception "rw??: init cache" (← getOptions) do
       let env ← getEnv
-      let tree ← env.constants.map₁.foldM (init := {}) updateDiscrTree
-      return tree.mapArrays (·.qsort (· < ·))
+      env.constants.map₁.foldM (init := {}) fun tree name cinfo =>
+        if isBadDecl name cinfo env then pure tree else updateDiscrTree tree
+          ⟨name, false⟩ ⟨name, true⟩ cinfo.type
+
 
 /-- The file path of the pre-build `RewriteCache` cache -/
 def cachePath : IO System.FilePath := do
@@ -138,13 +117,7 @@ private initialize cachedData : RewriteCache ← unsafe do
 def getCachedRewriteLemmas : MetaM (RefinedDiscrTree RewriteLemma) :=
   cachedData.get
 
-/-- Construct the `RefinedDiscrTree` of all lemmas defined in the current file. -/
-def getLocalRewriteLemmas : MetaM (RefinedDiscrTree (RewriteLemma)) := do
-  let env ← getEnv
-  let tree ← env.constants.map₂.foldlM (init := {}) updateDiscrTree
-  return tree.mapArrays (·.qsort (· < ·))
-
-end Cache
+/- ### Computing the Rewrites -/
 
 /-- An option allowing the user to control which modules will not be considered in library search -/
 register_option librarySearch.excludedModules : String := {
@@ -165,18 +138,20 @@ def containsPrefixOf (names : List Name) (name : Name) : Bool :=
 
 /-- Get all potential rewrite lemmas from the dicrimination tree. Exclude lemmas from modules
 in the `librarySearch.excludedModules` option. -/
-def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Bool)) := do
-  let localResults  ← (← getLocalRewriteLemmas ).getMatchWithScore e (unify := false)
-  let cachedResults ← (← getCachedRewriteLemmas).getMatchWithScore e (unify := false)
+def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma)) := do
+  let cachedResults ← (← getCachedRewriteLemmas).getMatch e (unify := false)
   let excludedModules := getLibrarySearchExcludedModules (← getOptions)
   let env ← getEnv
-  let exclude := Array.filterMap fun rw =>
-    env.const2ModIdx.find? rw.name >>= fun idx =>
-    if containsPrefixOf excludedModules env.header.moduleNames[idx.toNat]! then none else some rw
-  return localResults.map (·.1, true) ++ cachedResults.map ((exclude ·.1, false))
+  return cachedResults.map <|
+    Array.filterMap fun rw =>
+      env.const2ModIdx.find? rw.name >>= fun idx =>
+      if containsPrefixOf excludedModules env.header.moduleNames[idx.toNat]!
+      then none else some rw
 
 /-- A rewrite lemma that has been applied to an expression. -/
-structure Rewrite extends RewriteLemma where
+structure Rewrite where
+  /-- `symm` is `true` when rewriting from right to left -/
+  symm : Bool
   /-- The proof of the rewrite -/
   proof : Expr
   /-- The replacement expression obtained from the rewrite -/
@@ -184,14 +159,13 @@ structure Rewrite extends RewriteLemma where
   /-- The extra goals created by the rewrite -/
   extraGoals : Array (MVarId × BinderInfo)
 
-/-- If `rwLemma` can be used to rewrite `e`, return the rewrite. -/
-def checkLemma (rwLemma : RewriteLemma) (e : Expr) : MetaM (Option Rewrite) := do
-  let thm ← mkConstWithFreshMVarLevels rwLemma.name
+/-- If `thm` can be used to rewrite `e`, return the rewrite. -/
+def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
   withTraceNodeBefore `rw?? (return m!
-    "rewriting {e} by {if rwLemma.symm then "← " else ""}{thm}") do
+    "rewriting {e} by {if symm then "← " else ""}{thm}") do
   let (mvars, binderInfos, eqn) ← forallMetaTelescope (← inferType thm)
   let some (lhs, rhs) := matchEqn? eqn | return none
-  let (lhs, rhs) := if rwLemma.symm then (rhs, lhs) else (lhs, rhs)
+  let (lhs, rhs) := if symm then (rhs, lhs) else (lhs, rhs)
   let unifies ← withTraceNodeBefore `rw?? (return m! "unifying {e} =?= {lhs}")
     (withReducible (isDefEq lhs e))
   unless unifies do return none
@@ -211,26 +185,68 @@ def checkLemma (rwLemma : RewriteLemma) (e : Expr) : MetaM (Option Rewrite) := d
 
   let replacement ← instantiateMVars rhs
   let proof ← instantiateMVars (mkAppN thm mvars)
-  return some { rwLemma with proof, replacement, extraGoals }
+  return some { symm, proof, replacement, extraGoals }
 
 initialize
   registerTraceClass `rw??
 
+/-- Try to rewrite `e` with each of the rewrite lemmas, and sort the resulting rewrites. -/
+def checkAndSortRewriteLemmas (e : Expr) (rewrites : Array RewriteLemma) :
+    MetaM (Array (Rewrite × Name)) := do
+  let rewrites ← rewrites.filterMapM fun rw =>
+    withCatchingRuntimeEx do
+    try withoutCatchingRuntimeEx do
+      let thm ← mkConstWithFreshMVarLevels rw.name
+      OptionT.run do (·, rw.name) <$> checkRewrite thm e rw.symm
+    catch _ =>
+      return none
+  let lt (a b : (Rewrite × Name)) :=
+    a.1.extraGoals.size < b.1.extraGoals.size || a.1.extraGoals.size == b.1.extraGoals.size &&
+      (!a.1.symm && b.1.symm || a.1.symm == b.1.symm &&
+        (a.2.toString.length < b.2.toString.length || a.2.toString.length == b.2.toString.length &&
+          Name.lt a.2 b.2))
+  return rewrites.qsort lt
+
 /-- Return all applicable library rewrites of `e`.
-The `Bool` indicates whether the lemmas are from the current file.
 Note that the result may contain duplicate rewrites. These can be removed with `filterRewrites`. -/
-def getRewrites (e : Expr) : MetaM (Array (Array Rewrite × Bool)) := do
-  let candidates ← getCandidates e
-  candidates.filterMapM fun (candidates, isLocal) => do
-    let rewrites ← candidates.filterMapM fun cand =>
+def getRewrites (e : Expr) : MetaM (Array (Array (Rewrite × Name))) := do
+  (← getCandidates e).mapM (checkAndSortRewriteLemmas e)
+
+/- ### Rewriting by lemmas from the same file -/
+
+/-- Construct the `RefinedDiscrTree` of all lemmas defined in the current file. -/
+def getLocalRewriteLemmas : MetaM (RefinedDiscrTree RewriteLemma) := do
+  let env ← getEnv
+  env.constants.map₂.foldlM (init := {}) fun tree name cinfo =>
+    if isBadDecl name cinfo env then pure tree else updateDiscrTree tree
+      ⟨name, false⟩ ⟨name, true⟩ cinfo.type
+
+
+/-- Same as `getRewrites`, but for lemmas from the current file. -/
+def getLocalRewrites (e : Expr) : MetaM (Array (Array (Rewrite × Name))) := do
+  (← (← getLocalRewriteLemmas).getMatch e (unify := false)).mapM (checkAndSortRewriteLemmas e)
+
+/- ### Rewriting by hypotheses -/
+
+/-- Construct the `RefinedDiscrTree` of all local hypotheses. -/
+def getHypotheses : MetaM (RefinedDiscrTree (FVarId × Bool)) := do
+  let mut tree := {}
+  for decl in ← getLCtx do
+    if !decl.isImplementationDetail then
+      tree ← updateDiscrTree tree (decl.fvarId, false) (decl.fvarId, true) decl.type
+  return tree
+
+/-- Return all applicable hypothesis rewrites of `e`. Similar to `getRewrites`. -/
+def getHypothesisRewrites (e : Expr) : MetaM (Array (Array (Rewrite × FVarId))) := do
+  (← (← getHypotheses).getMatch e (unify := false)).mapM <|
+    Array.filterMapM fun (fvarId, symm) =>
       withCatchingRuntimeEx do
-      try withoutCatchingRuntimeEx <|
-        checkLemma cand e
+      try withoutCatchingRuntimeEx do
+        OptionT.run do (·, fvarId) <$> checkRewrite (.fvar fvarId) e symm
       catch _ =>
         return none
-    if rewrites.isEmpty then
-      return none
-    return (rewrites, isLocal)
+
+/- ### Filtering out duplicate lemmas -/
 
 /-- Get the `BinderInfo`s for the arguments of `mkAppN fn args`. -/
 def getBinderInfos (fn : Expr) (args : Array Expr) : MetaM (Array BinderInfo) := do
@@ -319,7 +335,7 @@ partial def getUnusedMVarName (suggestion : Name) (names : PersistentHashMap Nam
     name
 
 /-- Return the rewrite tactic that performs the rewrite. -/
-def tacticString (rw : Rewrite) (occ : Option Nat) (loc : Option Name)
+def tacticString (rw : Rewrite) (occ : Option Nat) (loc : Option Name) (isLemma : Bool)
     (initNames : PersistentHashMap Name MVarId) : MetaM String := do
   let mut initNames := initNames
   for (mvarId, _) in rw.extraGoals do
@@ -333,13 +349,15 @@ def tacticString (rw : Rewrite) (occ : Option Nat) (loc : Option Name)
         let name := getUnusedMVarName name initNames
         mvarId.setTag name
         initNames := initNames.insert name mvarId
-  let proof ← printRewriteLemma rw.proof !rw.extraGoals.isEmpty
+  let proof ← printRewriteLemma rw.proof (isLemma && !rw.extraGoals.isEmpty)
   return mkRewrite occ rw.symm proof loc
 
 open Widget ProofWidgets Jsx
 
 /-- The structure with all data necessary for rendering a rewrite suggestion -/
-structure RewriteInterface extends RewriteLemma where
+structure RewriteInterface where
+  /-- `symm` is `true` when rewriting from right to left -/
+  symm : Bool
   /-- The rewrite tactic string that performs the rewrite -/
   tactic : String
   /-- The replacement expression obtained from the rewrite -/
@@ -350,65 +368,93 @@ structure RewriteInterface extends RewriteLemma where
   extraGoals : Array CodeWithInfos
   /-- The lemma name with hover information -/
   prettyLemma : CodeWithInfos
+  /-- The type of the lemma -/
+  lemmaType : Expr
 
 /-- Construct the `RewriteInterface` from a `Rewrite`. -/
-def Rewrite.toInterface (rw : Rewrite) (occ : Option Nat) (loc : Option Name)
+def Rewrite.toInterface (rw : Rewrite) (name : Name ⊕ FVarId) (occ : Option Nat) (loc : Option Name)
     (initNames : PersistentHashMap Name MVarId) : MetaM RewriteInterface := do
-  let tactic ← tacticString rw occ loc initNames
+  let tactic ← tacticString rw occ loc (name matches .inl _) initNames
   let replacementString := Format.pretty (← ppExpr rw.replacement)
   let mut extraGoals := #[]
   for (mvarId, bi) in rw.extraGoals do
     if bi.isExplicit then
       let extraGoal ← ppExprTagged (← instantiateMVars (← mvarId.getType))
       extraGoals := extraGoals.push extraGoal
-  let prettyLemma : CodeWithInfos := match ← ppExprTagged (← mkConstWithLevelParams rw.name) with
-    | .tag tag _ => .tag tag (.text s!"{rw.name}")
-    | code => code
-  return { rw with tactic, replacementString, extraGoals, prettyLemma }
+  match name with
+  | .inl name =>
+    let prettyLemma := match ← ppExprTagged (← mkConstWithLevelParams name) with
+      | .tag tag _ => .tag tag (.text s!"{name}")
+      | code => code
+    let lemmaType := (← getConstInfo name).type
+    return { rw with tactic, replacementString, extraGoals, prettyLemma, lemmaType }
+  | .inr fvarId =>
+    let prettyLemma ← ppExprTagged (.fvar fvarId)
+    let lemmaType ← fvarId.getType
+    return { rw with tactic, replacementString, extraGoals, prettyLemma, lemmaType }
+
+/-- The kind of rewrite -/
+inductive Kind where
+  /-- A rewrite with a local hypothesis -/
+  | hypothesis
+  /-- A rewrite with a lemma from the current file -/
+  | fromFile
+  /-- A rewrite with a lemma from an imported file -/
+  | fromCache
 
 /-- Return the Interfaces for rewriting `e`, both filtered and unfiltered. -/
 def getRewriteInterfaces (e : Expr) (occ : Option Nat) (loc : Option Name)
     (initNames : PersistentHashMap Name MVarId) :
-    MetaM (Array (Array RewriteInterface × Bool) × Array (Array RewriteInterface × Bool)) := do
+    MetaM (Array (Array RewriteInterface × Kind) × Array (Array RewriteInterface × Kind)) := do
   let mut dedup := #[]
   let mut all := #[]
-  for (rewrites, isLocal) in ← getRewrites e do
-    let rewrites ← rewrites.mapM (·.toInterface occ loc initNames)
-    all := all.push (rewrites, isLocal)
-    let filtered ← filterRewrites e rewrites (·.replacement)
-    unless filtered.isEmpty do
-      dedup := dedup.push (filtered, isLocal)
+  for rewrites in ← getHypothesisRewrites e do
+    let rewrites ← rewrites.mapM fun (rw, fvarId) => rw.toInterface (.inr fvarId) occ loc initNames
+    all := all.push (rewrites, .hypothesis)
+    dedup := dedup.push (← filterRewrites e rewrites (·.replacement), .hypothesis)
+
+  for rewrites in ← getLocalRewrites e do
+    let rewrites ← rewrites.mapM fun (rw, name) => rw.toInterface (.inl name) occ loc initNames
+    all := all.push (rewrites, .fromFile)
+    dedup := dedup.push (← filterRewrites e rewrites (·.replacement), .fromFile)
+
+  for rewrites in ← getRewrites e do
+    let rewrites ← rewrites.mapM fun (rw, name) => rw.toInterface (.inl name) occ loc initNames
+    all := all.push (rewrites, .fromCache)
+    dedup := dedup.push (← filterRewrites e rewrites (·.replacement), .fromCache)
   return (dedup, all)
 
 /-- Render the matching side of the rewrite lemma.
 This is shown at the header of each section of rewrite results. -/
-def RewriteLemma.pattern {α} (rwLemma : RewriteLemma) (k : Expr → MetaM α) : MetaM α := do
-  let cinfo ← getConstInfo rwLemma.name
-  forallTelescope cinfo.type fun _ e => do
+def pattern {α} (type : Expr) (symm : Bool) (k : Expr → MetaM α) : MetaM α := do
+  forallTelescope type fun _ e => do
     let some (lhs, rhs) := matchEqn? e | throwError "Expected equation, not {indentExpr e}"
-    let side := if rwLemma.symm then rhs else lhs
-    k side
+    k (if symm then rhs else lhs)
 
 /-- Render the given rewrite results. -/
-def renderRewrites (e : Expr) (results : Array (Array RewriteInterface × Bool)) (init : Option Html)
+def renderRewrites (e : Expr) (results : Array (Array RewriteInterface × Kind)) (init : Option Html)
     (range : Lsp.Range) (doc : FileWorker.EditableDocument) (showNames : Bool) : MetaM Html := do
   let htmls ← results.filterMapM (renderSection showNames)
   let htmls := match init with
-      | some html => #[html] ++ htmls
-      | none => htmls
+    | some html => #[html] ++ htmls
+    | none => htmls
   if htmls.isEmpty then
     return <p> No rewrites found for <InteractiveCode fmt={← ppExprTagged e}/> </p>
   else
     return .element "div" #[("style", json% {"marginLeft" : "4px"})] htmls
 where
   /-- Render one section of rewrite results. -/
-  renderSection (showNames : Bool) (sec : Array RewriteInterface × Bool) : MetaM (Option Html) := do
+  renderSection (showNames : Bool) (sec : Array RewriteInterface × Kind) : MetaM (Option Html) := do
     let some head := sec.1[0]? | return none
+    let suffix := match sec.2 with
+      | .hypothesis => " (local hypotheses)"
+      | .fromFile => " (local lemmas)"
+      | .fromCache => ""
     return <details «open»={true}>
       <summary className="mv2 pointer">
         Pattern
-        {← head.pattern (return <InteractiveCode fmt={← ppExprTagged ·}/>)}
-        {.text (if sec.2 then "(local results)" else "")}
+        {← pattern head.lemmaType head.symm (return <InteractiveCode fmt={← ppExprTagged ·}/>)}
+        {.text suffix}
       </summary>
       {renderSectionCore showNames sec.1}
     </details>
@@ -498,25 +544,22 @@ elab stx:"rw??" : tactic => do
     (pure $ json% { replaceRange : $range }) stx
 
 /-- Represent a `Rewrite` as `MessageData`. -/
-private def Rewrite.toMessageData (rw : Rewrite) : MetaM MessageData := do
+private def Rewrite.toMessageData (rw : Rewrite) (name : Name) : MetaM MessageData := do
   let extraGoals ← rw.extraGoals.filterMapM fun (mvarId, bi) => do
     if bi.isExplicit then
       return some m! "⊢ {← mvarId.getType}"
     return none
   let list := [m! "{rw.replacement}"]
       ++ extraGoals.toList
-      ++ [m! "{rw.name}"]
+      ++ [m! "{name}"]
   return .group <| .nest 2 <| "· " ++ .joinSep list "\n"
 
 /-- Represent a section of rewrites as `MessageData`. -/
-private def SectionToMessageData (sec : Array Rewrite × Bool) : MetaM (Option MessageData) := do
-  let rewrites ← sec.1.toList.mapM (·.toMessageData)
+private def SectionToMessageData (sec : Array (Rewrite × Name) × Bool) : MetaM (Option MessageData) := do
+  let rewrites ← sec.1.toList.mapM fun (rw, name) => rw.toMessageData name
   let rewrites : MessageData := .group (.joinSep rewrites "\n")
-  let some head := sec.1[0]? | return none
-  let head ← head.pattern (do
-    let ctx : MessageDataContext :=
-      { env := ← getEnv, mctx := ← getMCtx, lctx := ← getLCtx, opts := ← getOptions }
-    return .withContext ctx m! "{·}")
+  let some (rw, name) := sec.1[0]? | return none
+  let head ← pattern (← getConstInfo name).type rw.symm (addMessageContext m! "{.}")
   return some $ "Pattern " ++ head ++ "\n" ++ rewrites
 
 /-- `#rw?? e` gives all possible rewrites of `e`.
@@ -531,10 +574,11 @@ def elabrw??Command : Command.CommandElab := fun stx =>
     let e ← Term.elabTerm stx[1] none
     Term.synthesizeSyntheticMVarsNoPostponing
     let e ← Term.levelMVarToParam (← instantiateMVars e)
-
-    let rewrites ← getRewrites e
-    let rewrites ← rewrites.mapM fun (rewrites, isLocal) =>
-      return (← filterRewrites e rewrites (·.replacement), isLocal)
+    let mut rewrites := #[]
+    for rws in ← getLocalRewrites e do
+      rewrites := rewrites.push (← filterRewrites e rws (·.1.replacement), true)
+    for rws in ← getRewrites e do
+      rewrites := rewrites.push (← filterRewrites e rws (·.1.replacement), false)
     let sections ← liftMetaM $ rewrites.filterMapM SectionToMessageData
     if sections.isEmpty then
       logInfo m! "No rewrites found for {e}"

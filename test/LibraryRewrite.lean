@@ -141,27 +141,27 @@ Pattern n + m
 Pattern a + b
 · 1 + n
   add_comm
+· max n 1 + min n 1
+  max_add_min
+· min n 1 + max n 1
+  min_add_max
 · n +ᵥ 1
   vadd_eq_add
 · AddOpposite.op 1 +ᵥ n
   op_vadd_eq_add
 · Multiset.sum {n, 1}
   Multiset.sum_pair
-· max n 1 + min n 1
-  max_add_min
-· min n 1 + max n 1
-  min_add_max
 · (addLeftEmbedding n) 1
   addLeftEmbedding_apply
 · (addRightEmbedding 1) n
   addRightEmbedding_apply
-· ?y + n
-  ⊢ AddSemiconjBy n 1 ?y
-  AddSemiconjBy.eq
 · (OrderEmbedding.addLeft n) 1
   OrderEmbedding.addLeft_apply
 · (OrderEmbedding.addRight 1) n
   OrderEmbedding.addRight_apply
+· ?y + n
+  ⊢ AddSemiconjBy n 1 ?y
+  AddSemiconjBy.eq
 · ?a + n - (?a - 1)
   ⊢ 1 ≤ ?a
   add_tsub_tsub_cancel
@@ -256,14 +256,22 @@ Pattern ∑ x in s, f x
 Pattern ∑ x in s, f x
 · Finset.fold (fun x x_1 => x + x_1) 0 (fun x => x + 1) (Finset.range n)
   Finset.sum_eq_fold
+· ∑' (x : ℕ), Set.indicator (↑(Finset.range n)) (fun x => x + 1) x
+  sum_eq_tsum_indicator
 · Multiset.sum (Multiset.map (fun x => x + 1) (Finset.range n).val)
   Finset.sum_eq_multiset_sum
+· Finset.sum (Finset.range n) (fun c => HAdd.hAdd c) 1
+  Finset.sum_apply
 · ∑ x in Finset.attach (Finset.range n), (↑x + 1)
   Finset.sum_attach
 · List.sum (List.map (fun n => n + 1) (Finset.toList (Finset.range n)))
   Finset.sum_to_list
 · ∑ i : { x // x ∈ Finset.range n }, (↑i + 1)
   Finset.sum_coe_sort
+· ∑' (x : { x // x ∈ Finset.range n }), (↑x + 1)
+  Finset.tsum_subtype
+· ∑' (x : ↑↑(Finset.range n)), (↑x + 1)
+  Finset.tsum_subtype'
 · ∑ᶠ (i : ℕ) (_ : i ∈ ↑(Finset.range n)), (i + 1)
   finsum_mem_coe_finset
 · ∑ i : ↑↑(Finset.range n), (↑i + 1)
@@ -272,46 +280,75 @@ Pattern ∑ x in s, f x
   finsum_mem_finset_eq_sum
 · Finset.noncommSum (Finset.range n) (fun n => n + 1) ⋯
   Finset.noncommSum_eq_sum
-· 0
-  ⊢ ∀ x ∈ Finset.range n, x + 1 = 0
-  Finset.sum_eq_zero
-· ∑' (x : ℕ), Set.indicator (↑(Finset.range n)) (fun x => x + 1) x
-  sum_eq_tsum_indicator
-· ∑' (x : { x // x ∈ Finset.range n }), (↑x + 1)
-  Finset.tsum_subtype
-· ∑' (x : ↑↑(Finset.range n)), (↑x + 1)
-  Finset.tsum_subtype'
 · ∑ i in Finset.range n, if i ∈ Finset.range n then i + 1 else 0
   Finset.sum_extend_by_zero
 · ∑ x in Finset.filter (fun x => x + 1 ≠ 0) (Finset.range n), (x + 1)
   Finset.sum_filter_ne_zero
+· 0
+  ⊢ ∀ x ∈ Finset.range n, x + 1 = 0
+  Finset.sum_eq_zero
+· ∑' (b : ℕ), (b + 1)
+  ⊢ ∀ b ∉ Finset.range n, b + 1 = 0
+  tsum_eq_sum
+· Finsupp.sum (Finsupp.indicator (Finset.range n) fun x x => 1) fun x => HAdd.hAdd x
+  ⊢ ∀ a ∈ Finset.range n, a + 0 = 0
+  Finsupp.sum_indicator_index
+· ∑ x in Finset.range n ∩ ?t, (x + 1) + ∑ x in Finset.range n \ ?t, (x + 1)
+  ⊢ Finset ℕ
+  Finset.sum_inter_add_sum_diff
 · ∑ᶠ (i : ℕ), (i + 1)
   ⊢ (Function.support fun i => i + 1) ⊆ ↑(Finset.range n)
   finsum_eq_sum_of_support_subset
 · (Finset.range n).card • ?b
   ⊢ ∀ a ∈ Finset.range n, a + 1 = ?b
   Finset.sum_eq_card_nsmul
-· ∑' (b : ℕ), (b + 1)
-  ⊢ ∀ b ∉ Finset.range n, b + 1 = 0
-  tsum_eq_sum
-· Finset.sum (Finset.range n) (fun c => HAdd.hAdd c) 1
-  Finset.sum_apply
+· ?i + 1 + ∑ x in Finset.range n \ {?i}, (x + 1)
+  ⊢ ?i ∈ Finset.range n
+  Finset.sum_eq_add_sum_diff_singleton
+· ∑ x in Finset.range n \ {?i}, (x + 1) + (?i + 1)
+  ⊢ ?i ∈ Finset.range n
+  Finset.sum_eq_sum_diff_singleton_add
+· ∑ x in Finset.erase (Finset.range n) ?a, (x + 1)
+  ⊢ ?a + 1 = 0
+  Finset.sum_erase
+· ∑ x in Finset.range n \ ?s₁, (x + 1) + ∑ x in ?s₁, (x + 1)
+  ⊢ ?s₁ ⊆ Finset.range n
+  Finset.sum_sdiff
 · ∑ x in Finset.range n, (?σ x + 1)
   ⊢ Equiv.Perm ℕ
   ⊢ {a | ?σ a ≠ a} ⊆ ↑(Finset.range n)
   Equiv.Perm.sum_comp
+· ?a + 1 + ∑ x in Finset.erase (Finset.range n) ?a, (x + 1)
+  ⊢ ?a ∈ Finset.range n
+  Finset.add_sum_erase
+· ∑ x in Finset.erase (Finset.range n) ?a, (x + 1) + (?a + 1)
+  ⊢ ?a ∈ Finset.range n
+  Finset.sum_erase_add
+· Finsupp.sum (Finsupp.onFinset (Finset.range n) (fun a => 1) ?hf) fun a => HAdd.hAdd a
+  ⊢ ∀ (a : ℕ), 1 ≠ 0 → a ∈ Finset.range n
+  ⊢ ∀ (a : ℕ), a + 0 = 0
+  Finsupp.onFinset_sum
+· ∑ x in insert ?a (Finset.range n), (x + 1)
+  ⊢ ?a + 1 = 0
+  Finset.sum_insert_zero
+· ∑ a in Finset.range n ∪ ?s₂, (a + 1)
+  ⊢ ∀ a ∈ ?s₂, a ∉ Finset.range n → a + 1 = 0
+  Finset.sum_union_eq_left
+· ∑ a in ?s₁ ∪ Finset.range n, (a + 1)
+  ⊢ ∀ a ∈ ?s₁, a ∉ Finset.range n → a + 1 = 0
+  Finset.sum_union_eq_right
 · ∑ i in ?t, Set.indicator (↑(Finset.range n)) (fun i => i + 1) i
   ⊢ Finset.range n ⊆ ?t
   Finset.sum_indicator_subset
-· ∑ x in Finset.range n ∩ ?t, (x + 1) + ∑ x in Finset.range n \ ?t, (x + 1)
-  ⊢ Finset ℕ
-  Finset.sum_inter_add_sum_diff
 · ∑ᶠ (i : ℕ) (_ : ?p i), (i + 1)
   ⊢ ∀ {x : ℕ}, x + 1 ≠ 0 → (?p x ↔ x ∈ Finset.range n)
   finsum_cond_eq_sum_of_cond_iff
 · ∑ᶠ (i : ℕ) (_ : i ∈ ?s), (i + 1)
   ⊢ (?s ∩ Function.support fun i => i + 1) = ↑(Finset.range n) ∩ Function.support fun i => i + 1
   finsum_mem_eq_sum_of_inter_support_eq
+· ∑ x in insert ?a (Finset.range n), (x + 1)
+  ⊢ ?a ∉ Finset.range n → ?a + 1 = 0
+  Finset.sum_insert_of_eq_zero_if_not_mem
 · ∑ x in ?s₂, (x + 1)
   ⊢ Finset.range n ⊆ ?s₂
   ⊢ ∀ x ∈ ?s₂, x ∉ Finset.range n → x + 1 = 0
@@ -329,33 +366,6 @@ Pattern ∑ x in s, f x
   ⊢ ?a ∈ Finset.range n
   ⊢ ∀ b ∈ Finset.range n, b ≠ ?a → b + 1 = 0
   Finset.sum_eq_single_of_mem
-· ?i + 1 + ∑ x in Finset.range n \ {?i}, (x + 1)
-  ⊢ ?i ∈ Finset.range n
-  Finset.sum_eq_add_sum_diff_singleton
-· ∑ x in Finset.range n \ {?i}, (x + 1) + (?i + 1)
-  ⊢ ?i ∈ Finset.range n
-  Finset.sum_eq_sum_diff_singleton_add
-· ∑ x in Finset.erase (Finset.range n) ?a, (x + 1)
-  ⊢ ?a + 1 = 0
-  Finset.sum_erase
-· ∑ x in Finset.range n \ ?s₁, (x + 1) + ∑ x in ?s₁, (x + 1)
-  ⊢ ?s₁ ⊆ Finset.range n
-  Finset.sum_sdiff
-· ?a + 1 + ∑ x in Finset.erase (Finset.range n) ?a, (x + 1)
-  ⊢ ?a ∈ Finset.range n
-  Finset.add_sum_erase
-· ∑ x in Finset.erase (Finset.range n) ?a, (x + 1) + (?a + 1)
-  ⊢ ?a ∈ Finset.range n
-  Finset.sum_erase_add
-· ∑ x in insert ?a (Finset.range n), (x + 1)
-  ⊢ ?a + 1 = 0
-  Finset.sum_insert_zero
-· ∑ a in Finset.range n ∪ ?s₂, (a + 1)
-  ⊢ ∀ a ∈ ?s₂, a ∉ Finset.range n → a + 1 = 0
-  Finset.sum_union_eq_left
-· ∑ a in ?s₁ ∪ Finset.range n, (a + 1)
-  ⊢ ∀ a ∈ ?s₁, a ∉ Finset.range n → a + 1 = 0
-  Finset.sum_union_eq_right
 · ∑ x in Finset.preimage (Finset.range n) ?f ⋯, (?f x + 1)
   ⊢ ?ι → ℕ
   ⊢ Set.BijOn ?f (?f ⁻¹' ↑(Finset.range n)) ↑(Finset.range n)
@@ -364,9 +374,14 @@ Pattern ∑ x in s, f x
   ⊢ (?s ∩ Function.support fun i => i + 1) ⊆ ↑(Finset.range n)
   ⊢ ↑(Finset.range n) ⊆ ?s
   finsum_mem_eq_sum_of_subset
-· ∑ x in insert ?a (Finset.range n), (x + 1)
-  ⊢ ?a ∉ Finset.range n → ?a + 1 = 0
-  Finset.sum_insert_of_eq_zero_if_not_mem
+· ∑ x in Finset.range n, Function.update (fun x => x + 1) ?i ?b x
+  ⊢ ?i ∉ Finset.range n
+  ⊢ ℕ
+  Finset.sum_update_of_not_mem
+· ∑ i in ?t, (i + Set.indicator (↑(Finset.range n)) (fun i => 1) i)
+  ⊢ Finset.range n ⊆ ?t
+  ⊢ ∀ (a : ℕ), a + 0 = 0
+  Finset.sum_indicator_subset_of_eq_zero
 · Finset.sum ?s₂ ?g
   ⊢ Finset.range n = ?s₂
   ⊢ ∀ x ∈ ?s₂, x + 1 = ?g x
@@ -384,17 +399,11 @@ Pattern ∑ x in s, f x
   ⊢ ℕ → ℕ
   ⊢ ∀ x ∈ Finset.range n, ¬?p x
   Finset.sum_ite_of_false
-· Finsupp.sum (Finsupp.indicator (Finset.range n) fun x x => 1) fun x => HAdd.hAdd x
-  ⊢ ∀ a ∈ Finset.range n, a + 0 = 0
-  Finsupp.sum_indicator_index
-· ∑ x in Finset.range n, Function.update (fun x => x + 1) ?i ?b x
-  ⊢ ?i ∉ Finset.range n
-  ⊢ ℕ
-  Finset.sum_update_of_not_mem
-· Finsupp.sum (Finsupp.onFinset (Finset.range n) (fun a => 1) ?hf) fun a => HAdd.hAdd a
-  ⊢ ∀ (a : ℕ), 1 ≠ 0 → a ∈ Finset.range n
-  ⊢ ∀ (a : ℕ), a + 0 = 0
-  Finsupp.onFinset_sum
+· ∑ i in ?s₂, ?g i
+  ⊢ Finset.range n ⊆ ?s₂
+  ⊢ ∀ x ∈ ?s₂ \ Finset.range n, ?g x = 0
+  ⊢ ∀ x ∈ Finset.range n, x + 1 = ?g x
+  Finset.sum_subset_zero_on_sdiff
 · ∑ i in ?t, ?g i
   ⊢ ℕ ≃ ?κ
   ⊢ ∀ (i : ℕ), i ∈ Finset.range n ↔ ?e i ∈ ?t
@@ -416,15 +425,6 @@ Pattern ∑ x in s, f x
   ⊢ ?a ≠ ?b
   ⊢ ∀ c ∈ Finset.range n, c ≠ ?a ∧ c ≠ ?b → c + 1 = 0
   Finset.sum_eq_add_of_mem
-· ∑ i in ?s₂, ?g i
-  ⊢ Finset.range n ⊆ ?s₂
-  ⊢ ∀ x ∈ ?s₂ \ Finset.range n, ?g x = 0
-  ⊢ ∀ x ∈ Finset.range n, x + 1 = ?g x
-  Finset.sum_subset_zero_on_sdiff
-· ∑ i in ?t, (i + Set.indicator (↑(Finset.range n)) (fun i => 1) i)
-  ⊢ Finset.range n ⊆ ?t
-  ⊢ ∀ (a : ℕ), a + 0 = 0
-  Finset.sum_indicator_subset_of_eq_zero
 · ∑ i in ?t, ?g i
   ⊢ ℕ → ?κ
   ⊢ Function.Bijective ?e
@@ -494,6 +494,8 @@ Pattern Continuous f
   continuous_def
 · ∀ (b : ℚ), ∀ ε > 0, ∃ δ > 0, ∀ (a : ℚ), dist a b < δ → dist a⁻¹ b⁻¹ < ε
   Metric.continuous_iff
+· Continuous (Rat.cast ∘ Inv.inv)
+  continuous_induced_rng
 · ∀ (a : ℚ), ∀ ε > 0, ∀ᶠ (x : ℚ) in nhds a, dist x⁻¹ a⁻¹ < ε
   Metric.continuous_iff'
 · ∀ (s : Set ℚ), IsClosed s → IsClosed (Inv.inv ⁻¹' s)
@@ -506,6 +508,8 @@ Pattern Continuous f
   continuous_iff_coinduced_le
 · ∀ (x : ℚ), ContinuousAt Inv.inv x
   continuous_iff_continuousAt
+· SeqContinuous Inv.inv
+  continuous_iff_seqContinuous
 · ∀ (b : ℚ), Filter.Tendsto (fun x => (x⁻¹, b⁻¹)) (nhds b) (uniformity ℚ)
   Uniform.continuous_iff'_left
 · ∀ (b : ℚ), Filter.Tendsto (fun x => (b⁻¹, x⁻¹)) (nhds b) (uniformity ℚ)
@@ -514,20 +518,16 @@ Pattern Continuous f
   continuous_iff_continuous_dist
 · ContinuousOn Inv.inv Set.univ
   continuous_iff_continuousOn_univ
-· SeqContinuous Inv.inv
-  continuous_iff_seqContinuous
+· LowerSemicontinuous Inv.inv ∧ UpperSemicontinuous Inv.inv
+  continuous_iff_lower_upperSemicontinuous
 · Continuous (SeparationQuotient.lift Inv.inv ?hf)
   SeparationQuotient.continuous_lift
 · Continuous ?g
   ⊢ ∀ (x : ℚ), x⁻¹ = ?g x
   continuous_congr
-· Continuous (Rat.cast ∘ Inv.inv)
-  continuous_induced_rng
 · Continuous ?g
   ⊢ ∀ (x : ℚ), Inseparable x⁻¹ (?g x)
   continuous_congr_of_inseparable
-· LowerSemicontinuous Inv.inv ∧ UpperSemicontinuous Inv.inv
-  continuous_iff_lower_upperSemicontinuous
 · ∀ s ∈ ?B, IsOpen (Inv.inv ⁻¹' s)
   ⊢ TopologicalSpace.IsTopologicalBasis ?B
   TopologicalSpace.IsTopologicalBasis.continuous_iff

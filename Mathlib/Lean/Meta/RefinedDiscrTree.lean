@@ -572,7 +572,7 @@ def reduceHBinOpAux (args : Array Expr) (lambdas : List FVarId) (instH instPi : 
     rhs := .app rhs arg
   distributeLambdas lambdas type lhs rhs
 where
-  -- (3)
+  /-- (3) `(fun x => f x + g x) = f + g` to get rid of the lambdas in front -/
   distributeLambdas (lambdas : List FVarId) (type lhs rhs : Expr) :
       MetaM (Expr × Expr × Expr × List FVarId) := match lambdas with
     | fvarId :: lambdas => do
@@ -621,7 +621,7 @@ def reduceUnOpAux (args : Array Expr) (lambdas : List FVarId) (instPi : Name) :
     arg  := .app arg arg'
   distributeLambdas lambdas type arg
 where
-  -- (3)
+  /-- (3) `(fun x => (f x)⁻¹) = f⁻¹` to get rid of the lambdas in front -/
   distributeLambdas (lambdas : List FVarId) (type arg : Expr) :
       MetaM (Expr × Expr × List FVarId) := match lambdas with
     | fvarId :: lambdas => do
@@ -1160,6 +1160,11 @@ def getMatchWithScore (d : RefinedDiscrTree α) (e : Expr) (unify : Bool)
   let e ← mkDTExpr e config
   let result := GetUnify.getMatchWithScoreAux d e unify config allowRootStar
   return result.qsort (·.2 > ·.2)
+
+/-- Same as `getMatchWithScore`, but doesn't return the score. -/
+def getMatch (d : RefinedDiscrTree α) (e : Expr) (unify : Bool)
+    (config : WhnfCoreConfig := {}) (allowRootStar := false) : MetaM (Array (Array α)) :=
+  Array.map (·.1) <$> getMatchWithScore d e unify config allowRootStar
 
 /-- Similar to `getMatchWithScore`, but also returns matches with prefixes of `e`.
 We store the score, followed by the number of ignored arguments. -/
