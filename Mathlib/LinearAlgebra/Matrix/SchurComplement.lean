@@ -477,7 +477,7 @@ end CommRing
 
 section StarOrderedRing
 
-variable {𝕜 : Type*} [CommRing 𝕜] [PartialOrder 𝕜] [StarOrderedRing 𝕜]
+variable {𝕜 : Type*} [CommRing 𝕜] [PartialOrder 𝕜] [StarRing 𝕜] [StarOrderedRing 𝕜]
 
 scoped infixl:65 " ⊕ᵥ " => Sum.elim
 

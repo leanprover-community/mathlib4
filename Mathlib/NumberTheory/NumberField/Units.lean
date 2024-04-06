@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.LinearAlgebra.Matrix.Gershgorin
-import Mathlib.NumberTheory.NumberField.ConvexBody
+import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.RingTheory.RootsOfUnity.Basic
 

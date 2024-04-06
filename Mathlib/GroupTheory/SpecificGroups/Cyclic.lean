@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.Totient
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Subgroup.Simple

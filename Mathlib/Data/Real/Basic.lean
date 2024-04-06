@@ -200,8 +200,6 @@ theorem cauchy_ratCast (q : ℚ) : (q : ℝ).cauchy = q :=
   rfl
 #align real.cauchy_rat_cast Real.cauchy_ratCast
 
--- TODO: variables `x y` should be not included in this definition;
--- not sure how to exclude them
 instance commRing : CommRing ℝ := by
   refine' { natCast := fun n => ⟨n⟩
             intCast := fun z => ⟨z⟩
@@ -213,7 +211,7 @@ instance commRing : CommRing ℝ := by
             sub := @Sub.sub ℝ _
             npow := @npowRec ℝ ⟨1⟩ ⟨(· * ·)⟩
             nsmul := @nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩
-            zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩,
+            zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩ (@nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩),
             .. }
   all_goals
     intros
