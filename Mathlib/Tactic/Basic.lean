@@ -10,6 +10,9 @@ import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 
+/-- `exact` expands to `refine`. -/
+macro "exact " t:term : tactic => `(tactic| refine $t)
+
 set_option autoImplicit true
 
 namespace Mathlib.Tactic
