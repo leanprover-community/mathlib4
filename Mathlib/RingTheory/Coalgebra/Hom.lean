@@ -133,12 +133,14 @@ theorem coe_linearMap_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A �
   rfl
 
 @[simp]
-theorem toLinearMap_eq_coe (f : A →ₗc[R] B) : f.toLinearMap = f := rfl
+theorem toLinearMap_eq_coe (f : A →ₗc[R] B) : f.toLinearMap = f :=
+  rfl
 
 @[simp, norm_cast]
 theorem coe_toLinearMap (f : A →ₗc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
   rfl
 
+-- simp can prove this
 @[simp, norm_cast]
 theorem coe_toAddMonoidHom (f : A →ₗc[R] B) : ⇑(f : A →+ B) = f :=
   rfl

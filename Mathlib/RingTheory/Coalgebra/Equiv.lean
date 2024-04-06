@@ -36,7 +36,7 @@ structure CoalgEquiv (R : Type u) [CommSemiring R] (A : Type v) (B : Type w)
   [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
   [CoalgebraStruct R A] [CoalgebraStruct R B] extends A →ₗc[R] B, A ≃ₗ[R] B where
 
-attribute [coe, nolint docBlame] CoalgEquiv.toCoalgHom
+attribute [nolint docBlame] CoalgEquiv.toCoalgHom
 attribute [nolint docBlame] CoalgEquiv.toLinearEquiv
 
 @[inherit_doc CoalgEquiv]
@@ -44,20 +44,25 @@ notation:50 A " ≃ₗc[" R "] " B => CoalgEquiv R A B
 
 /-- `CoalgEquivClass F R A B` asserts `F` is a type of bundled coalgebra equivalences
 from `A` to `B`.  -/
-class CoalgEquivClass (F : Type*) (R A B : outParam (Type*)) [CommSemiring R]
+class CoalgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
     [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B]
     extends CoalgHomClass F R A B, SemilinearEquivClass F (RingHom.id R) A B : Prop
 
 namespace CoalgEquivClass
 
-variable (F : Type*) [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
+variable {F R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
   [Module R A] [Module R B] [CoalgebraStruct R A] [CoalgebraStruct R B]
 
-/- not sure if I need this, or additional instances -/
-instance (priority := 100) [EquivLike F A B] [s : CoalgEquivClass F R A B] :
-    LinearEquivClass F R A B :=
-  { s with }
+/-- Reinterpret an element of a type of coalgebra equivalences as a coalgebra equivalence. -/
+@[coe]
+def coalgEquiv [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) : A ≃ₗc[R] B :=
+  { (f : A →ₗc[R] B), (f : A ≃ₗ[R] B) with }
+
+/-- Reinterpret an element of a type of coalgebra equivalences as a coalgebra equivalence. -/
+instance instCoeToCoalgEquiv
+    [EquivLike F A B] [CoalgEquivClass F R A B] : CoeTC F (A ≃ₗc[R] B) where
+  coe f := coalgEquiv f
 
 end CoalgEquivClass
 
@@ -71,9 +76,6 @@ section
 
 variable [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
   [CoalgebraStruct R A] [CoalgebraStruct R B]
-
-instance : Coe (A ≃ₗc[R] B) (A →ₗc[R] B) :=
-  ⟨toCoalgHom⟩
 
 /-- The equivalence of types underlying a linear equivalence. -/
 def toEquiv : (A ≃ₗc[R] B) → A ≃ B := fun f => f.toLinearEquiv.toEquiv
@@ -89,10 +91,6 @@ theorem toEquiv_inj {e₁ e₂ : A ≃ₗc[R] B} : e₁.toEquiv = e₂.toEquiv �
 
 theorem toCoalgHom_injective : Function.Injective (toCoalgHom : (A ≃ₗc[R] B) → A →ₗc[R] B) :=
   fun _ _ H => toEquiv_injective <| Equiv.ext <| CoalgHom.congr_fun H
-
-@[simp, norm_cast]
-theorem toCoalgHom_inj {e₁ e₂ : A ≃ₗc[R] B} : (↑e₁ : A →ₗc[R] B) = e₂ ↔ e₁ = e₂ :=
-  toCoalgHom_injective.eq_iff
 
 instance : EquivLike (A ≃ₗc[R] B) A B where
   inv := CoalgEquiv.invFun
@@ -110,10 +108,13 @@ instance : CoalgEquivClass (A ≃ₗc[R] B) R A B where
   counit_comp := (·.counit_comp)
   map_comp_comul := (·.map_comp_comul)
 
+@[simp, norm_cast]
+theorem toCoalgHom_inj {e₁ e₂ : A ≃ₗc[R] B} : (↑e₁ : A →ₗc[R] B) = e₂ ↔ e₁ = e₂ :=
+  toCoalgHom_injective.eq_iff
+
 @[simp]
-theorem coe_mk {to_fun inv_fun map_add map_smul ugh ugh2 left_inv right_inv} :
-    (⟨⟨⟨⟨to_fun, map_add⟩, map_smul⟩, ugh, ugh2⟩, inv_fun, left_inv, right_inv⟩ : A ≃ₗc[R] B)
-      = to_fun := rfl
+theorem coe_mk {f h h₀ h₁ h₂ h₃ h₄ h₅} :
+    (⟨⟨⟨⟨f, h⟩, h₀⟩, h₁, h₂⟩, h₃, h₄, h₅⟩ : A ≃ₗc[R] B) = f := rfl
 
 theorem coe_injective : @Function.Injective (A ≃ₗc[R] B) (A → B) CoeFun.coe :=
   DFunLike.coe_injective
@@ -127,16 +128,32 @@ variable [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C] [Module R A] [Mod
 
 variable (e e' : A ≃ₗc[R] B)
 
+/-- See Note [custom simps projection] -/
+def Simps.apply {R : Type u} [CommSemiring R] {α : Type v} {β : Type w}
+    [AddCommMonoid α] [AddCommMonoid β] [Module R α]
+    [Module R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
+    (f : α ≃ₗc[R] β) : α → β := f
+
+initialize_simps_projections CoalgEquiv (toFun → apply)
+
 @[simp, norm_cast]
 theorem coe_coe : ⇑(e : A →ₗc[R] B) = e :=
   rfl
 
 @[simp]
-theorem coe_toEquiv : ⇑(e.toEquiv) = e :=
+theorem toLinearEquiv_eq_coe (f : A ≃ₗc[R] B) : f.toLinearEquiv = f :=
   rfl
 
 @[simp]
-theorem coe_toCoalgHom : ⇑e.toCoalgHom = e :=
+theorem toCoalgHom_eq_coe (f : A ≃ₗc[R] B) : f.toCoalgHom = f :=
+  rfl
+
+@[simp]
+theorem coe_toLinearEquiv : ⇑(e : A ≃ₗ[R] B) = e :=
+  rfl
+
+@[simp]
+theorem coe_toCoalgHom : ⇑(e : A →ₗc[R] B) = e :=
   rfl
 
 theorem toFun_eq_coe : e.toFun = e := rfl
@@ -165,29 +182,31 @@ section
 variable (A R)
 
 /-- The identity map is a coalgebra equivalence. -/
-@[refl, simps! toCoalgHom]
+@[refl, simps!]
 def refl : A ≃ₗc[R] A :=
   { CoalgHom.id R A, LinearEquiv.refl R A with }
 
 end
 
 @[simp]
-theorem refl_toLinearEquiv : (refl R A).toLinearEquiv = LinearEquiv.refl R A := rfl
+theorem refl_toLinearEquiv : refl R A = LinearEquiv.refl R A := rfl
 
 @[simp]
-theorem refl_apply (x : A) : refl R A x = x :=
+theorem refl_toCoalgHom : refl R A = CoalgHom.id R A :=
   rfl
 
 /-- Coalgebra equivalences are symmetric. -/
-@[symm, simps! toCoalgHom]
+@[symm, simps!]
 def symm (e : A ≃ₗc[R] B) : B ≃ₗc[R] A :=
-  { e.toLinearEquiv.symm with
-    counit_comp := (LinearEquiv.comp_toLinearMap_symm_eq _ _).2 e.counit_comp.symm
-    map_comp_comul := by
-      show (TensorProduct.congr e.toLinearEquiv e.toLinearEquiv).symm.toLinearMap ∘ₗ comul
-        = comul ∘ₗ e.toLinearEquiv.symm
-      rw [LinearEquiv.toLinearMap_symm_comp_eq, ← LinearMap.comp_assoc,
-        LinearEquiv.eq_comp_toLinearMap_symm, ← e.map_comp_comul]
+  { (e : A ≃ₗ[R] B).symm with
+    counit_comp' := (LinearEquiv.comp_toLinearMap_symm_eq _ _).2 e.counit_comp.symm
+    map_comp_comul' := by
+      show (TensorProduct.congr (e : A ≃ₗ[R] B) (e : A ≃ₗ[R] B)).symm.toLinearMap ∘ₗ comul
+        = comul ∘ₗ (e : A ≃ₗ[R] B).symm
+      rw [LinearEquiv.toLinearMap_symm_comp_eq]
+      simp only [TensorProduct.congr, ← LinearMap.comp_assoc, ]
+      rw [← LinearMap.comp_assoc,
+        LinearEquiv.eq_comp_toLinearMap_symm, ← CoalgHomClass.map_comp_comul]
       rfl }
 
 @[simp]
