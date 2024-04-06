@@ -57,7 +57,7 @@ def elabUnfoldAbbrev : TermElab
 def elabSyntaxRulesAux (doc? : Option (TSyntax ``docComment))
     (attrs? : Option (TSepArray ``attrInstance ",")) (attrKind : TSyntax ``attrKind)
     (k : SyntaxNodeKind) (alts : Array (TSyntax ``matchAlt)) :
-    SyntaxRuleData → CommandElabM Syntax
+    SyntaxRulesData → CommandElabM Syntax
   | { type, termOfAlts, attrName, mkAttr, cmdName, auxDefName, unfoldTypeAbbrev } => do
     let alts ← alts.mapM fun (alt : TSyntax ``matchAlt) => match alt with
       | `(matchAltExpr| | $pats,* => $rhs) => do
@@ -113,7 +113,7 @@ def elabSyntaxRules : CommandElab :=
   | `(command|$[$doc?:docComment]? $[@[$attrs?,*]]? $attrKind:attrKind syntax_rules
       (header := $header:syntaxRulesHeader)
       (kind := $kind) $alts:matchAlt*) => do
-    let data ← getSyntaxRuleData header
+    let data ← getSyntaxRulesData header
     elabSyntaxRulesAux doc? attrs? attrKind (← resolveSyntaxKind kind.getId) alts data
   | _  => throwUnsupportedSyntax
 

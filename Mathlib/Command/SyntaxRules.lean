@@ -139,12 +139,12 @@ This is implemented via
   the user-facing syntax (e.g. `foo_rules : bar`)
 * a macro from `syntaxRulesHeader matchAlts` to this internal `syntax_rules` syntax
 * an attribute ``@[syntax_rules_header_impl fooRulesHeader]`` on definitions
-  ``fooRulesImpl : TSyntax `fooRulesHeader → CommandElabM SyntaxRuleData`` which lets us elaborate
+  ``fooRulesImpl : TSyntax `fooRulesHeader → CommandElabM SyntaxRulesData`` which lets us elaborate
   in a `$header`-dependent way
 * a convenient bootstrapped wrapper `syntax_rules_header` for the attribute
   `syntax_rules_header_impl` so that we can use syntax rules to implement behavior for the headers
   of syntax rules
-* a structure `SyntaxRuleData` which contains all data necessary for implementing the command,
+* a structure `SyntaxRulesData` which contains all data necessary for implementing the command,
   including, crucially, the name of an attribute `foo_impl_attr` which `syntax_rules` attaches to
   definitions constructed from the match alts with the syntax nodekind as a parameter (e.g.
   `@[foo_impl_attr tacticMyTacNode]`)

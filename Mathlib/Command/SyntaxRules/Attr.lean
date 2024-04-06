@@ -14,11 +14,11 @@ open Lean Meta Elab Parser Command Term Syntax
 
 section data
 
-/-- This data is inferred from the specific `syntaxRuleHeader` command using the
+/-- This data is inferred from the specific `syntaxRulesHeader` command using the
 `syntax_rules_header_impl` attribute and used to guide elaboration.
 
 TODO: docstring -/
-structure SyntaxRuleData where
+structure SyntaxRulesData where
   /-- e.g. `Lean.Elab.Tactic`; the name of the type of the declaration. -/
   type : Name
   /-- e.g. ``fun alts => `(term|fun alts:matchAlts*)``. The result (e.g. `fun alts:matchAlts*`, in
@@ -43,17 +43,17 @@ end data
 section attr
 
 --TODO: should `Syntax` be `TSyntax`?
-/-- An abbreviation for `Syntax → CommandElabM SyntaxRuleData`. The input is the syntax of the
+/-- An abbreviation for `Syntax → CommandElabM SyntaxRulesData`. The input is the syntax of the
 header of a `syntax_rules`-based command (e.g. the syntax `linting_rules : deprecation`), and the
 output is the data necessary for implementing it in terms of `syntax_rules`. -/
-abbrev ToSyntaxRuleData := Syntax → CommandElabM SyntaxRuleData
+abbrev ToSyntaxRulesData := Syntax → CommandElabM SyntaxRulesData
 
 -- TODO: this is not an elaborator, so the message constructed by `mkElabAttribute` using
 -- `"syntax rules header data"` is not quite right
 /-- An attribute for implementing `syntax_rules` headers. TODO: better docs -/
-initialize syntaxRulesHeaderAttr : KeyedDeclsAttribute ToSyntaxRuleData ← unsafe
-  (mkElabAttribute ToSyntaxRuleData .anonymous `syntax_rules_header_impl .anonymous
-    ``ToSyntaxRuleData "syntax rules header data")
+initialize syntaxRulesHeaderAttr : KeyedDeclsAttribute ToSyntaxRulesData ← unsafe
+  (mkElabAttribute ToSyntaxRulesData .anonymous `syntax_rules_header_impl .anonymous
+    ``ToSyntaxRulesData "syntax rules header data")
 
 --TODO:? Should we cargo cult this from `expandNoKindMacroRulesAux`? Or not? No...
 /-
@@ -61,22 +61,22 @@ if k.isStr && k.getString! == "antiquot" then
     k := k.getPrefix
 -/
 
-/-- Aux definition for `getSyntaxRuleData` -/
-private def getSyntaxRuleDataAux (s : Command.State) (ref : Syntax) :
-    List (KeyedDeclsAttribute.AttributeEntry ToSyntaxRuleData) → CommandElabM SyntaxRuleData
+/-- Aux definition for `getSyntaxRulesData` -/
+private def getSyntaxRulesDataAux (s : Command.State) (ref : Syntax) :
+    List (KeyedDeclsAttribute.AttributeEntry ToSyntaxRulesData) → CommandElabM SyntaxRulesData
   | [] => throwError "No @[syntax_rules_header_impl] attribute found for{indentD ref}"
-  | (toSyntaxRuleData::toSyntaxRuleDatas) =>
+  | (toSyntaxRulesData::toSyntaxRulesDatas) =>
     catchInternalId unsupportedSyntaxExceptionId
-      (toSyntaxRuleData.value ref)
-      (fun _ => do set s; getSyntaxRuleDataAux s ref toSyntaxRuleDatas)
+      (toSyntaxRulesData.value ref)
+      (fun _ => do set s; getSyntaxRulesDataAux s ref toSyntaxRulesDatas)
 
-/-- Get the first `SyntaxRuleData` from declarations registered with `@[syntax_rule_header k]`-/
-def getSyntaxRuleData (header : Syntax) : CommandElabM SyntaxRuleData := do
+/-- Get the first `SyntaxRulesData` from declarations registered with `@[syntax_rules_header k]`-/
+def getSyntaxRulesData (header : Syntax) : CommandElabM SyntaxRulesData := do
   let headerKind := header.getKind
   if headerKind == choiceKind then
     --TODO: handle choices by using `forM`? do we ever need to do that?
     throwError "ambiguous syntax node kind {headerKind} for{indentD header}"
   let vals := syntaxRulesHeaderAttr.getEntries (← getEnv) headerKind
-  getSyntaxRuleDataAux (← get) header vals
+  getSyntaxRulesDataAux (← get) header vals
 
 end attr

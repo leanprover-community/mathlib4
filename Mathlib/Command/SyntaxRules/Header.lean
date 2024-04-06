@@ -16,7 +16,7 @@ syntax (name := fooRulesStx) "foo_rules" ":" ident : syntaxRulesHeader
 syntax_rules_header
 | `(fooRulesStx|foo_rules : $id:ident) => do
   ...
-  return (data : SyntaxRuleData)
+  return (data : SyntaxRulesData)
 ```
 -/
 
@@ -28,9 +28,9 @@ syntax (name := syntaxRulesHeaderCmd) "syntax_rules_header" : syntaxRulesHeader
 /-- Bootstrap `@[syntax_rules_header_impl]` to `syntax_rules_header` syntax so that we never have
 to use `@[syntax_rules_header_impl]` when defining `syntax_rules`-based commands directly. -/
 @[syntax_rules_header_impl syntaxRulesHeaderCmd]
-def syntaxRulesHeaderImpl : ToSyntaxRuleData
+def syntaxRulesHeaderImpl : ToSyntaxRulesData
   | `(syntaxRulesHeaderCmd|syntax_rules_header) => return {
-      type := ``ToSyntaxRuleData
+      type := ``ToSyntaxRulesData
       attrName := `syntax_rules_header_impl
       termOfAlts := fun alts => `(term|fun $alts:matchAlt*)
       cmdName := "syntax_rules_header"
