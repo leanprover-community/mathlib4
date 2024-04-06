@@ -146,9 +146,7 @@ theorem head_val' (B : Fin m.succ → n' → α) (j : n') : (vecHead fun i => B 
 
 @[simp, nolint simpNF] -- Porting note: LHS does not simplify.
 theorem tail_val' (B : Fin m.succ → n' → α) (j : n') :
-    (vecTail fun i => B i j) = fun i => vecTail B i j := by
-  ext
-  simp [vecTail]
+    (vecTail fun i => B i j) = fun i => vecTail B i j := rfl
 #align matrix.tail_val' Matrix.tail_val'
 
 section DotProduct
@@ -187,21 +185,18 @@ theorem col_empty (v : Fin 0 → α) : col v = vecEmpty :=
 #align matrix.col_empty Matrix.col_empty
 
 @[simp]
-theorem col_cons (x : α) (u : Fin m → α) : col (vecCons x u) = vecCons (fun _ => x) (col u) := by
+theorem col_cons (x : α) (u : Fin m → α) :
+    col (vecCons x u) = of (vecCons (fun _ => x) (col u)) := by
   ext i j
   refine' Fin.cases _ _ i <;> simp [vecHead, vecTail]
 #align matrix.col_cons Matrix.col_cons
 
 @[simp]
-theorem row_empty : row (vecEmpty : Fin 0 → α) = fun _ => vecEmpty := by
-  ext
-  rfl
+theorem row_empty : row (vecEmpty : Fin 0 → α) = of fun _ => vecEmpty := rfl
 #align matrix.row_empty Matrix.row_empty
 
 @[simp]
-theorem row_cons (x : α) (u : Fin m → α) : row (vecCons x u) = fun _ => vecCons x u := by
-  ext
-  rfl
+theorem row_cons (x : α) (u : Fin m → α) : row (vecCons x u) = of fun _ => vecCons x u := rfl
 #align matrix.row_cons Matrix.row_cons
 
 end ColRow
@@ -350,7 +345,7 @@ theorem empty_vecMulVec (v : Fin 0 → α) (w : n' → α) : vecMulVec v w = ![]
 #align matrix.empty_vec_mul_vec Matrix.empty_vecMulVec
 
 @[simp]
-theorem vecMulVec_empty (v : m' → α) (w : Fin 0 → α) : vecMulVec v w = fun _ => ![] :=
+theorem vecMulVec_empty (v : m' → α) (w : Fin 0 → α) : vecMulVec v w = of fun _ => ![] :=
   funext fun _ => empty_eq _
 #align matrix.vec_mul_vec_empty Matrix.vecMulVec_empty
 
@@ -363,9 +358,7 @@ theorem cons_vecMulVec (x : α) (v : Fin m → α) (w : n' → α) :
 
 @[simp]
 theorem vecMulVec_cons (v : m' → α) (x : α) (w : Fin n → α) :
-    vecMulVec v (vecCons x w) = fun i => v i • vecCons x w := by
-  ext i j
-  rw [vecMulVec_apply, Pi.smul_apply, smul_eq_mul]
+    vecMulVec v (vecCons x w) = of fun i => v i • vecCons x w := rfl
 #align matrix.vec_mul_vec_cons Matrix.vecMulVec_cons
 
 end VecMulVec

@@ -68,10 +68,10 @@ instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M 
       simp,
     zpow_succ' := fun n f => by
       ext x
-      simp [zpow_coe_nat, pow_succ],
+      simp [zpow_natCast, pow_succ],
     zpow_neg' := fun n f => by
       ext x
-      simp [Nat.succ_eq_add_one, zpow_coe_nat, -Int.natCast_add] }
+      simp [Nat.succ_eq_add_one, zpow_natCast, -Int.natCast_add] }
 
 instance AddMonoid.End.instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) :=
   AddMonoidHom.addCommMonoid
@@ -84,7 +84,7 @@ instance AddMonoid.End.instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End 
     right_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => rfl,
     natCast := fun n => n • (1 : AddMonoid.End M),
     natCast_zero := AddMonoid.nsmul_zero _,
-    natCast_succ := fun n => (AddMonoid.nsmul_succ n 1).trans (add_comm _ _) }
+    natCast_succ := fun n => AddMonoid.nsmul_succ n 1 }
 
 /-- See also `AddMonoid.End.natCast_def`. -/
 @[simp]
@@ -113,7 +113,7 @@ instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMono
 instance AddMonoid.End.instRing [AddCommGroup M] : Ring (AddMonoid.End M) :=
   { AddMonoid.End.instSemiring, AddMonoid.End.instAddCommGroup with
     intCast := fun z => z • (1 : AddMonoid.End M),
-    intCast_ofNat := coe_nat_zsmul _,
+    intCast_ofNat := natCast_zsmul _,
     intCast_negSucc := negSucc_zsmul _ }
 
 /-- See also `AddMonoid.End.intCast_def`. -/

@@ -314,7 +314,6 @@ end
 section
 
 variable {B : Type u₁} [Quiver.{v₁ + 1} B] {C : Type u₂} [CategoryStruct.{v₂} C]
-
 variable (F : Prefunctor B C)
 
 /-- Auxiliary definition for `lift`. -/
@@ -341,7 +340,6 @@ end
 section
 
 variable {B : Type u₁} [Quiver.{v₁ + 1} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
-
 variable (F : Prefunctor B C)
 
 /-- Auxiliary definition for `lift`. -/

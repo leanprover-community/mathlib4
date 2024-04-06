@@ -271,11 +271,13 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
     -- where `newTransDeps` is the result of recalculating `transDeps` after breaking the `B -> C`
     -- link.
 
-    -- calculate `newTransDeps[C]`, removing all `B -> C` links from `toRemove`
+    -- calculate `newTransDeps[C]`, removing all `B -> C` links from `toRemove` and adding `toAdd`
     let mut newTransDepsI := 1 <<< i
     for j in s.deps[i]! do
       if !toRemove.contains j then
         newTransDepsI := newTransDepsI ||| s.transDeps[j]!
+    for j in toAdd do
+      newTransDepsI := newTransDepsI ||| s.transDeps[j]!
 
     let mut newTransDeps := s.transDeps.set! i newTransDepsI -- deep copy
     let mut reAdded := #[]
@@ -474,7 +476,7 @@ def main (args : List String) : IO UInt32 := do
         ignoreImport? := (some ignoreImport).filter (!·.isEmpty)
         ignore? := (some ignore).filter (!·.isEmpty)
       }
-      IO.FS.writeFile cfgFile <| toJson cfg |>.pretty
+      IO.FS.writeFile cfgFile <| toJson cfg |>.pretty.push '\n'
 
   if !args.fix then
     -- return error if any issues were found

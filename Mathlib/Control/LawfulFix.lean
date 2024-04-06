@@ -131,7 +131,6 @@ end Fix
 open Fix
 
 variable {α : Type*}
-
 variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)
 
 open OmegaCompletePartialOrder
@@ -271,7 +270,6 @@ variable [∀ x y, OmegaCompletePartialOrder <| γ x y]
 section Curry
 
 variable {f : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) → γ x y}
-
 variable (hc : Continuous f)
 
 theorem uncurry_curry_continuous :

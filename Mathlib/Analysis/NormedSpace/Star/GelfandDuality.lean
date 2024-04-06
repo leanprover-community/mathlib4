@@ -132,7 +132,6 @@ end ComplexBanachAlgebra
 section ComplexCstarAlgebra
 
 variable {A : Type*} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
-
 variable [StarRing A] [CstarRing A] [StarModule ℂ A]
 
 theorem gelfandTransform_map_star (a : A) :
@@ -172,7 +171,7 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
         use star a
         ext1 φ
         dsimp
-        simp only [map_star, IsROrC.star_def] }
+        simp only [map_star, RCLike.star_def] }
   suffices rng = ⊤ from
     fun x => show x ∈ rng from this.symm ▸ StarSubalgebra.mem_top
   /- Because the `gelfandTransform ℂ A` is an isometry, it has closed range, and so by the
@@ -180,7 +179,7 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
     points in `C(characterSpace ℂ A, ℂ)` and is closed under `star`. -/
   have h : rng.topologicalClosure = rng := le_antisymm
     (StarSubalgebra.topologicalClosure_minimal le_rfl
-      (gelfandTransform_isometry A).closedEmbedding.closed_range)
+      (gelfandTransform_isometry A).closedEmbedding.isClosed_range)
     (StarSubalgebra.le_topologicalClosure _)
   refine' h ▸ ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints
     _ (fun _ _ => _)
@@ -304,7 +303,7 @@ V                     V
 Y  --- η Y ---> characterSpace ℂ C(Y, ℂ)
 ```
 -/
-lemma WeakDual.CharacterSpace.homeoEval_naturality {X Y 𝕜 : Type*} [IsROrC 𝕜] [TopologicalSpace X]
+lemma WeakDual.CharacterSpace.homeoEval_naturality {X Y 𝕜 : Type*} [RCLike 𝕜] [TopologicalSpace X]
     [CompactSpace X] [T2Space X] [TopologicalSpace Y] [CompactSpace Y] [T2Space Y] (f : C(X, Y)) :
     (homeoEval Y 𝕜 : C(_, _)).comp f =
       (f.compStarAlgHom' 𝕜 𝕜 |> compContinuousMap).comp (homeoEval X 𝕜 : C(_, _)) :=
