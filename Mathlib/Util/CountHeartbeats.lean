@@ -67,14 +67,14 @@ elab "count_heartbeats " tac:tacticSeq : tactic => do
 /--
 Run a tactic 10 times, counting the heartbeats used, and log the range and standard deviation.
 -/
-elab "count_heartbeats! " n:(num)? "in" ppLine cmd:command : command => do
+elab "count_heartbeats! " n:(num)? "in" ppLine tac:tacticSeq : tactic => do
   let n := match n with
            | some j => j.getNat
            | none => 10
-  -- First run the command `n-1` times, reverting the state.
-  let counts ← (List.range (n - 1)).mapM fun _ => runTacForHeartbeats cmd
+  -- First run the tactic `n-1` times, reverting the state.
+  let counts ← (List.range (n - 1)).mapM fun _ => runTacForHeartbeats tac
   -- Then run once more, keeping the state.
-  let counts := (← runTacForHeartbeats cmd (revert := false)) :: counts
+  let counts := (← runTacForHeartbeats tac (revert := false)) :: counts
   logVariation counts
 
 /--
