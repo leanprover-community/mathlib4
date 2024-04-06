@@ -48,7 +48,7 @@ With these definitions, the statements read as follows, first in a general conte
 * `VectorFourier.hasFDerivAt_fourierIntegral`: the Fourier integral of `f` is differentiable, with
     derivative the Fourier integral of `fourierSMulRight L f`.
 * `VectorFourier.differentiable_fourierIntegral`: the Fourier integral of `f` is differentiable.
-* `VectorFourier.deriv_fourierIntegral`: formula for the derivative of the Fourier integral of `f`.
+* `VectorFourier.fderiv_fourierIntegral`: formula for the derivative of the Fourier integral of `f`.
 * `VectorFourier.fourierIntegral_fderiv`: formula for the Fourier integral of the derivative of `f`.
 * `VectorFourier.hasFTaylorSeriesUpTo_fourierIntegral`: under suitable integrability conditions,
   the Fourier integral of `f` has an explicit Taylor series up to order `N`, given by the Fourier
@@ -277,7 +277,9 @@ def fourierPowSMulRight (f : V → E) (v : V) : FormalMultilinearSeries ℝ W E 
   (- (2 * π * I))^n • ((ContinuousMultilinearMap.mkPiRing ℝ (Fin n) (f v)).compContinuousLinearMap
   (fun _i ↦ L v))
 
-@[simp] lemma fourierPowSMulRight_apply {f : V → E} {v : V} {n : ℕ} {m : Fin n → W} :
+/- Increase the priority to make sure that this lemma is used instead of
+`FormalMultilinearSeries.apply_eq_prod_smul_coeff` even in dimension 1. -/
+@[simp 1100] lemma fourierPowSMulRight_apply {f : V → E} {v : V} {n : ℕ} {m : Fin n → W} :
     fourierPowSMulRight L f v n m = (- (2 * π * I))^n • (∏ i, L v (m i)) • f v := by
   simp [fourierPowSMulRight]
 
@@ -320,12 +322,10 @@ lemma norm_fourierPowSMulRight_le (f : V → E) (v : V) (n : ℕ) :
   _ = (2 * π * ‖L‖) ^ n * ‖v‖ ^ n * ‖f v‖ * ∏ i : Fin n, ‖m i‖ := by
       simp [Finset.prod_mul_distrib, mul_pow]; ring
 
-variable {L}
-
 variable [SecondCountableTopology V] [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
 
 lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierPowSMulRight
-    {n : ℕ} (hf : AEStronglyMeasurable f μ) :
+    (hf : AEStronglyMeasurable f μ) (n : ℕ) :
     AEStronglyMeasurable (fun v ↦ fourierPowSMulRight L f v n) μ := by
   simp_rw [fourierPowSMulRight_eq_comp]
   apply AEStronglyMeasurable.const_smul'
@@ -335,13 +335,10 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierPowSMulRight
 
 lemma integrable_fourierPowSMulRight {n : ℕ} (hf : Integrable (fun v ↦ ‖v‖ ^ n * ‖f v‖) μ)
     (h'f : AEStronglyMeasurable f μ) : Integrable (fun v ↦ fourierPowSMulRight L f v n) μ := by
-  refine (hf.const_mul ((2 * π * ‖L‖) ^ n)).mono' h'f.fourierPowSMulRight ?_
+  refine (hf.const_mul ((2 * π * ‖L‖) ^ n)).mono' (h'f.fourierPowSMulRight L n) ?_
   filter_upwards with v
   exact (norm_fourierPowSMulRight_le L f v n).trans (le_of_eq (by ring))
 
-variable (L)
-
-set_option maxHeartbeats 400000 in
 lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖^n * ‖f v‖) μ)
     (h'f : AEStronglyMeasurable f μ) :
@@ -354,13 +351,13 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
     · simp only [fourierPowSMulRight, pow_zero, one_smul, smul_apply, compContinuousLinearMap_apply,
         mkPiRing_apply, Finset.univ_eq_empty, Finset.prod_empty]
     · simpa only [ContinuousLinearMap.toLinearMap₂_apply, fourierIntegral_convergent_iff'] using
-        integrable_fourierPowSMulRight (hf 0 bot_le) h'f
+        integrable_fourierPowSMulRight L (hf 0 bot_le) h'f
   · intro n hn w
     have I₁ : Integrable (fun v ↦ fourierPowSMulRight L f v n) μ :=
-      integrable_fourierPowSMulRight (hf n hn.le) h'f
+      integrable_fourierPowSMulRight L (hf n hn.le) h'f
     have I₂ : Integrable (fun v ↦ ‖v‖ * ‖fourierPowSMulRight L f v n‖) μ := by
       apply ((hf (n+1) (ENat.add_one_le_of_lt hn)).const_mul ((2 * π * ‖L‖) ^ n)).mono'
-        (continuous_norm.aestronglyMeasurable.mul h'f.fourierPowSMulRight.norm)
+        (continuous_norm.aestronglyMeasurable.mul (h'f.fourierPowSMulRight L n).norm)
       filter_upwards with v
       simp only [Pi.mul_apply, norm_mul, norm_norm]
       calc
@@ -371,11 +368,11 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
     have I₃ : Integrable (fun v ↦ 𝐞 (-L.toLinearMap₂ v w)
         • fourierPowSMulRight L f v (Nat.succ n)) μ := by
       simpa only [ContinuousLinearMap.toLinearMap₂_apply, fourierIntegral_convergent_iff'] using
-        integrable_fourierPowSMulRight (hf (n + 1) (ENat.add_one_le_of_lt hn)) h'f
+        integrable_fourierPowSMulRight L (hf (n + 1) (ENat.add_one_le_of_lt hn)) h'f
     have I₄ : Integrable (fun v ↦ 𝐞 (-L.toLinearMap₂ v w)
         • fourierSMulRight L (fun v ↦ fourierPowSMulRight L f v n) v) μ := by
       simp only [ContinuousLinearMap.toLinearMap₂_apply, fourierIntegral_convergent_iff']
-      apply (I₂.const_mul ((2 * π * ‖L‖))).mono' h'f.fourierPowSMulRight.fourierSMulRight
+      apply (I₂.const_mul ((2 * π * ‖L‖))).mono' (h'f.fourierPowSMulRight L n).fourierSMulRight
       filter_upwards with v
       exact (norm_fourierSMulRight_le _ _ _).trans (le_of_eq (by ring))
     have E : curryLeft
@@ -396,9 +393,9 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
     exact hasFDerivAt_fourierIntegral L I₁ I₂ w
   · intro n hn
     apply fourierIntegral_continuous Real.continuous_fourierChar (by apply L.continuous₂)
-    exact integrable_fourierPowSMulRight (hf n hn) h'f
+    exact integrable_fourierPowSMulRight L (hf n hn) h'f
 
-/-- If `‖v‖^n * ‖f v‖` is integrable for all `n ≤ N`, then the Fourier transform of `f` is `C^n`. -/
+/-- If `‖v‖^n * ‖f v‖` is integrable for all `n ≤ N`, then the Fourier transform of `f` is `C^N`. -/
 theorem contDiff_fourierIntegral {N : ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖^n * ‖f v‖) μ) :
     ContDiff ℝ N (fourierIntegral 𝐞 μ L.toLinearMap₂ f) := by
