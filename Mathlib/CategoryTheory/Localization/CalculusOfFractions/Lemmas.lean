@@ -18,6 +18,7 @@ lemma Functor.full_of_precomp_essSurj (F : D ⥤ E) (L : C ⥤ D) [EssSurj L]
   rw [F.map_comp, F.map_comp, ← hf, assoc, assoc, ← F.map_comp_assoc, ← F.map_comp,
     Iso.inv_hom_id, Iso.inv_hom_id, F.map_id, F.map_id, comp_id, id_comp])
 
+-- should be moved
 lemma Functor.faithful_of_precomp_essSurj (F : D ⥤ E) (L : C ⥤ D) [EssSurj L]
     (h : ∀ ⦃X₁ X₂ : C⦄ (f g : L.obj X₁ ⟶ L.obj X₂), F.map f = F.map g → f = g) :
     Faithful F where

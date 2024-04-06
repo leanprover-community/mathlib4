@@ -19,7 +19,7 @@ variable {A C D D' : Type*} [Category A] [Category C] [Category D] [Category D']
   [Full F] [Faithful F]
   (B : Subcategory C) [ClosedUnderIsomorphisms B.P]
 
-class IsRightLocalizing where
+class IsRightLocalizing : Prop where
   fac {Y : C} {X : A} (φ : Y ⟶ F.obj X) (hY : B.P Y) :
     ∃ (Y' : A) (_ : B.P (F.obj Y')) (a : Y ⟶ F.obj Y') (b : Y' ⟶ X),
       a ≫ F.map b = φ
@@ -108,19 +108,59 @@ noncomputable def full_of_isRightLocalizing : Full F' := by
   erw [e.inv.naturality, e.hom_inv_id_app_assoc]
   rfl
 
---noncomputable def faithful_of_isRightLocalizing : Faithful F' := by
---  sorry
-
+lemma faithful_of_isRightLocalizing : Faithful F' := by
+  have e := Localization.Lifting.iso L' (B.inverseImage F).W (F ⋙ L) F'
+  have := IsTriangulated.of_fully_faithful_triangulated_functor F
+  letI := Localization.preadditive L' (B.inverseImage F).W
+  letI := Localization.functor_additive L' (B.inverseImage F).W
+  letI := Localization.preadditive L B.W
+  letI := Localization.functor_additive L B.W
+  have : (B.inverseImage F).W.HasLeftCalculusOfFractions := inferInstance
+  have : F'.Additive := by
+    rw [Localization.functor_additive_iff L' (B.inverseImage F).W]
+    exact Functor.additive_of_iso e.symm
+  apply F'.faithful_of_precomp_cancel_zero_of_hasLeftCalculusOfFractions L' (B.inverseImage F).W
+  intro X₁ X₂ f hf
+  replace hf : L.map (F.map f) = L.map 0 := by
+    erw [L.map_zero, ← NatIso.naturality_1 e f, hf, zero_comp, comp_zero]
+  rw [MorphismProperty.map_eq_iff_postcomp L B.W] at hf
+  obtain ⟨Z, s, hs, fac⟩ := hf
+  rw [zero_comp] at fac
+  obtain ⟨W, s', hs', t, fac'⟩ := fac_of_isRightLocalizing' F B s hs
+  have hfs' : f ≫ s' = 0 := F.map_injective (by
+    rw [F.map_zero, F.map_comp, ← fac', reassoc_of% fac, zero_comp])
+  have := Localization.inverts L' (B.inverseImage F).W s' hs'
+  rw [← cancel_mono (L'.map s'), zero_comp, ← L'.map_comp, hfs', L'.map_zero]
 
 end
 
 variable {L : C ⥤ D} {L' : A ⥤ D'} {H : D' ⥤ D} (e : L' ⋙ H ≅ F ⋙ L)
-  [Full H] [Faithful H] [L.IsLocalization B.W]
+  [EssSurj L'] [Full H] [Faithful H] [L.IsLocalization B.W]
 
---lemma isLocalization_of_isRightLocalizing : L'.IsLocalization (B.inverseImage F).W := by
---  sorry
-
--- TODO: Verdier, b) p. 131
+lemma isLocalization_of_isRightLocalizing :
+    L'.IsLocalization (B.inverseImage F).W := by
+  have hL' : (B.inverseImage F).W.IsInvertedBy L' := fun X₁ X₂ f hf => by
+    rw [B.mem_inverseImage_W_iff] at hf
+    have : IsIso (H.map (L'.map f)) :=
+      ((MorphismProperty.RespectsIso.isomorphisms D).arrow_mk_iso_iff
+        (Arrow.isoOfNatIso e f)).2 (Localization.inverts L B.W _ hf)
+    apply isIso_of_fully_faithful H
+  let G := Localization.lift _ hL' (B.inverseImage F).W.Q
+  have eG : (B.inverseImage F).W.Q ⋙ G ≅ L' :=
+    Localization.Lifting.iso _ (B.inverseImage F).W _ _
+  have : Localization.Lifting (B.inverseImage F).W.Q (B.inverseImage F).W
+    (F ⋙ L) (G ⋙ H) :=
+    ⟨(Functor.associator _ _ _).symm ≪≫ isoWhiskerRight eG H ≪≫ e⟩
+  have := full_of_isRightLocalizing F B L (B.inverseImage F).W.Q (G ⋙ H)
+  have := faithful_of_isRightLocalizing F B L (B.inverseImage F).W.Q (G ⋙ H)
+  have : EssSurj G :=
+    { mem_essImage := fun X =>
+        ⟨_, ⟨eG.app (L'.objPreimage X) ≪≫ L'.objObjPreimageIso X⟩⟩ }
+  have : Full G := Full.ofCompFaithful G H
+  have : Faithful G := Faithful.of_comp_iso (Iso.refl (G ⋙ H))
+  have := Equivalence.ofFullyFaithfullyEssSurj G
+  exact Functor.IsLocalization.of_equivalence_target (B.inverseImage F).W.Q _ _
+    G.asEquivalence eG
 
 end Triangulated
 
