@@ -170,7 +170,7 @@ lemma fderiv_fourierIntegral
     (hf : Integrable f μ) (hf' : Integrable (fun v : V ↦ ‖v‖ * ‖f v‖) μ) :
     fderiv ℝ (fourierIntegral 𝐞 μ L.toLinearMap₂ f) =
       fourierIntegral 𝐞 μ L.toLinearMap₂ (fourierSMulRight L f) := by
-  ext1 w
+  ext w : 1
   exact (hasFDerivAt_fourierIntegral L hf hf' w).fderiv
 
 lemma differentiable_fourierIntegral
@@ -329,7 +329,7 @@ lemma iteratedFDeriv_fourierIntegral {N : ℕ∞}
     (h'f : AEStronglyMeasurable f μ) {n : ℕ} (hn : n ≤ N) :
     iteratedFDeriv ℝ n (fourierIntegral 𝐞 μ L.toLinearMap₂ f) =
       fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ fourierPowSMulRight L f v n) := by
-  ext1 w
+  ext w : 1
   exact ((hasFTaylorSeriesUpTo_fourierIntegral L hf h'f).eq_iteratedFDeriv hn w).symm
 
 end VectorFourier
@@ -399,13 +399,13 @@ lemma hasDerivAt_fourierIntegral
 theorem deriv_fourierIntegral
     {f : ℝ → E} (hf : Integrable f) (hf' : Integrable (fun x : ℝ ↦ x • f x)) :
     deriv (𝓕 f) = 𝓕 (fun x : ℝ ↦ (-2 * π * I * x) • f x) := by
-  ext1 x
+  ext x : 1
   exact (hasDerivAt_fourierIntegral hf hf' x).deriv
 
 theorem iteratedDeriv_fourierIntegral {f : ℝ → E} {N : ℕ∞} {n : ℕ}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun x ↦ x^n • f x)) (hn : n ≤ N) :
     iteratedDeriv n (𝓕 f) = 𝓕 (fun x : ℝ ↦ (-2 * π * I * x) ^ n • f x) := by
-  ext1 x
+  ext x : 1
   have A (n : ℕ) (hn : n ≤ N) : Integrable (fun v ↦ ‖v‖^n * ‖f v‖) := by
     convert (hf n hn).norm with x
     simp [norm_smul]
