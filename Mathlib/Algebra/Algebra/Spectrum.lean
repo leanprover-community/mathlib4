@@ -515,9 +515,3 @@ protected lemma comp {R₁ R₂ R₃ A : Type*} [CommSemiring R₁] [CommSemirin
     congrm(⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
 
 end SpectrumRestricts
-
-/-- A class for `𝕜`-algebras with a partial order where the ordering is compatible with the
-spectrum. -/
-class NonnegSpectrumClass (𝕜 A : Type*) [OrderedCommRing 𝕜] [Ring A] [PartialOrder A]
-    [Algebra 𝕜 A] : Prop where
-  spectrum_nonneg_of_nonneg : ∀ a : A, 0 ≤ a → ∀ x ∈ spectrum 𝕜 a, 0 ≤ x
