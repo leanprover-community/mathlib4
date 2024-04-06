@@ -195,6 +195,9 @@ theorem Specializes.prod {x₁ x₂ : X} {y₁ y₂ : Y} (hx : x₁ ⤳ x₂) (h
   specializes_prod.2 ⟨hx, hy⟩
 #align specializes.prod Specializes.prod
 
+theorem Specializes.fst {a b : X × Y} (h : a ⤳ b) : a.1 ⤳ b.1 := (specializes_prod.1 h).1
+theorem Specializes.snd {a b : X × Y} (h : a ⤳ b) : a.2 ⤳ b.2 := (specializes_prod.1 h).2
+
 @[simp]
 theorem specializes_pi {f g : ∀ i, π i} : f ⤳ g ↔ ∀ i, f i ⤳ g i := by
   simp only [Specializes, nhds_pi, pi_le_pi]

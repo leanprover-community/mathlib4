@@ -747,7 +747,7 @@ theorem filter_image_mk_not_isDiag [DecidableEq α] (s : Finset α) :
     rw [← h, Sym2.mk_isDiag_iff] at hab
     exact ⟨a, b, ⟨ha, hb, hab⟩, h⟩
   · rintro ⟨a, b, ⟨ha, hb, hab⟩, h⟩
-    rw [Ne.def, ← Sym2.mk_isDiag_iff, h] at hab
+    rw [Ne, ← Sym2.mk_isDiag_iff, h] at hab
     exact ⟨⟨a, b, ⟨ha, hb⟩, h⟩, hab⟩
 #align sym2.filter_image_quotient_mk_not_is_diag Sym2.filter_image_mk_not_isDiag
 

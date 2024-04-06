@@ -154,7 +154,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
       simpa only [sub_pos] using mem_ball_iff_norm.mp hz
     obtain ⟨δ, δpos, hδ⟩ :
       ∃ (δ : ℝ), 0 < δ ∧ ball x δ ∩ s ⊆ {y | ‖f y - f x - (f' x) (y - x)‖ ≤ ε * ‖y - x‖} :=
-      Metric.mem_nhdsWithin_iff.1 ((hf' x xs).isLittleO.def εpos)
+      Metric.mem_nhdsWithin_iff.1 ((hf' x xs).isLittleO.definition εpos)
     obtain ⟨n, hn⟩ : ∃ n, u n < δ := ((tendsto_order.1 u_lim).2 _ δpos).exists
     refine' ⟨n, ⟨z, zT⟩, ⟨xs, _⟩⟩
     intro y hy
@@ -329,7 +329,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
       apply Set.mem_add.2 ⟨A (z - x), _, f z - f x - A (z - x) + f x, _, _⟩
       · apply mem_image_of_mem
         simpa only [dist_eq_norm, mem_closedBall, mem_closedBall_zero_iff, sub_zero] using zr
-      · rw [mem_closedBall_iff_norm, add_sub_cancel]
+      · rw [mem_closedBall_iff_norm, add_sub_cancel_right]
         calc
           ‖f z - f x - A (z - x)‖ ≤ δ * ‖z - x‖ := hf _ zs _ xs
           _ ≤ ε * r := by gcongr
@@ -380,7 +380,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
   have L : Tendsto (fun a => (m : ℝ≥0∞) * (μ s + a)) (𝓝[>] 0) (𝓝 (m * (μ s + 0))) := by
     apply Tendsto.mono_left _ nhdsWithin_le_nhds
     apply ENNReal.Tendsto.const_mul (tendsto_const_nhds.add tendsto_id)
-    simp only [ENNReal.coe_ne_top, Ne.def, or_true_iff, not_false_iff]
+    simp only [ENNReal.coe_ne_top, Ne, or_true_iff, not_false_iff]
   rw [add_zero] at L
   exact ge_of_tendsto L J
 #align measure_theory.add_haar_image_le_mul_of_det_lt MeasureTheory.addHaar_image_le_mul_of_det_lt
@@ -397,7 +397,7 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
   -- `addHaar_image_le_mul_of_det_lt` applied to `f⁻¹` and `A⁻¹`.
   -- exclude first the trivial case where `m = 0`.
   rcases eq_or_lt_of_le (zero_le m) with (rfl | mpos)
-  · apply eventually_of_forall
+  · filter_upwards
     simp only [forall_const, zero_mul, imp_true_iff, zero_le, ENNReal.coe_zero]
   have hA : A.det ≠ 0 := by
     intro h; simp only [h, ENNReal.not_lt_zero, ENNReal.ofReal_zero, abs_zero] at hm
@@ -437,7 +437,7 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
       · simpa only [H, zero_mul] using tendsto_const_nhds
       refine' Tendsto.mul (tendsto_const_nhds.mul _) tendsto_id
       refine' (Tendsto.sub tendsto_const_nhds tendsto_id).inv₀ _
-      simpa only [tsub_zero, inv_eq_zero, Ne.def] using H
+      simpa only [tsub_zero, inv_eq_zero, Ne] using H
     simp only [mul_zero] at this
     exact (tendsto_order.1 this).2 δ₀ δ₀pos
   -- let `δ` be small enough, and `f` approximated by `B` up to `δ`.
@@ -451,8 +451,8 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
     rwa [← F.symm_image_target_eq_source, mul_comm, ← ENNReal.le_div_iff_mul_le, div_eq_mul_inv,
       mul_comm, ← ENNReal.coe_inv mpos.ne']
     · apply Or.inl
-      simpa only [ENNReal.coe_eq_zero, Ne.def] using mpos.ne'
-    · simp only [ENNReal.coe_ne_top, true_or_iff, Ne.def, not_false_iff]
+      simpa only [ENNReal.coe_eq_zero, Ne] using mpos.ne'
+    · simp only [ENNReal.coe_ne_top, true_or_iff, Ne, not_false_iff]
   -- as `f⁻¹` is well approximated by `B⁻¹`, the conclusion follows from `hδ₀`
   -- and our choice of `δ`.
   exact hδ₀ _ _ ((hf'.to_inv h1δ).mono_num h2δ.le)
@@ -493,7 +493,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
       (measure_closedBall_pos μ z εpos).ne'
   obtain ⟨ρ, ρpos, hρ⟩ :
     ∃ ρ > 0, ball x ρ ∩ s ⊆ {y : E | ‖f y - f x - (f' x) (y - x)‖ ≤ ε * ‖y - x‖} :=
-    mem_nhdsWithin_iff.1 ((hf' x xs).isLittleO.def εpos)
+    mem_nhdsWithin_iff.1 ((hf' x xs).isLittleO.definition εpos)
   -- for small enough `r`, the rescaled ball `r • closedBall z ε` is included in the set where
   -- `f y - f x` is well approximated by `f' x (y - x)`.
   have B₂ : ∀ᶠ r in 𝓝[>] (0 : ℝ), {x} + r • closedBall z ε ⊆ ball x ρ := by
@@ -511,7 +511,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
     exact ⟨a, az, by simp only [ha, add_neg_cancel_left]⟩
   have norm_a : ‖a‖ ≤ ‖z‖ + ε :=
     calc
-      ‖a‖ = ‖z + (a - z)‖ := by simp only [add_sub_cancel'_right]
+      ‖a‖ = ‖z + (a - z)‖ := by simp only [add_sub_cancel]
       _ ≤ ‖z‖ + ‖a - z‖ := (norm_add_le _ _)
       _ ≤ ‖z‖ + ε := add_le_add_left (mem_closedBall_iff_norm.1 az) _
   -- use the approximation properties to control `(f' x - A) a`, and then `(f' x - A) z` as `z` is
@@ -522,12 +522,12 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
         simp only [ContinuousLinearMap.map_smul, norm_smul, Real.norm_eq_abs, abs_of_nonneg rpos.le]
       _ = ‖f y - f x - A (y - x) - (f y - f x - (f' x) (y - x))‖ := by
         congr 1
-        simp only [ya, add_sub_cancel', sub_sub_sub_cancel_left, ContinuousLinearMap.coe_sub',
+        simp only [ya, add_sub_cancel_left, sub_sub_sub_cancel_left, ContinuousLinearMap.coe_sub',
           eq_self_iff_true, sub_left_inj, Pi.sub_apply, ContinuousLinearMap.map_smul, smul_sub]
       _ ≤ ‖f y - f x - A (y - x)‖ + ‖f y - f x - (f' x) (y - x)‖ := (norm_sub_le _ _)
       _ ≤ δ * ‖y - x‖ + ε * ‖y - x‖ := (add_le_add (hf _ ys _ xs) (hρ ⟨rρ hy, ys⟩))
       _ = r * (δ + ε) * ‖a‖ := by
-        simp only [ya, add_sub_cancel', norm_smul, Real.norm_eq_abs, abs_of_nonneg rpos.le]
+        simp only [ya, add_sub_cancel_left, norm_smul, Real.norm_eq_abs, abs_of_nonneg rpos.le]
         ring
       _ ≤ r * (δ + ε) * (‖z‖ + ε) :=
         mul_le_mul_of_nonneg_left norm_a (mul_nonneg rpos.le (add_nonneg δ.2 εpos.le))
@@ -959,8 +959,8 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
     have I : (m : ℝ≥0∞) < ENNReal.ofReal |A.det| := by
       simp only [m, ENNReal.ofReal, ENNReal.coe_sub]
       apply ENNReal.sub_lt_self ENNReal.coe_ne_top
-      · simpa only [abs_nonpos_iff, Real.toNNReal_eq_zero, ENNReal.coe_eq_zero, Ne.def] using hA
-      · simp only [εpos.ne', ENNReal.coe_eq_zero, Ne.def, not_false_iff]
+      · simpa only [abs_nonpos_iff, Real.toNNReal_eq_zero, ENNReal.coe_eq_zero, Ne] using hA
+      · simp only [εpos.ne', ENNReal.coe_eq_zero, Ne, not_false_iff]
     rcases ((mul_le_addHaar_image_of_lt_det μ A I).and self_mem_nhdsWithin).exists with ⟨δ, h, δpos⟩
     refine' ⟨min δ δ'', lt_min δpos (half_pos δ'pos), _, _⟩
     · intro B hB
@@ -968,11 +968,11 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
       simp only [le_refl, NNReal.coe_min, min_le_iff, or_true_iff]
     · intro t g htg
       rcases eq_or_ne (μ t) ∞ with (ht | ht)
-      · simp only [ht, εpos.ne', ENNReal.mul_top, ENNReal.coe_eq_zero, le_top, Ne.def,
+      · simp only [ht, εpos.ne', ENNReal.mul_top, ENNReal.coe_eq_zero, le_top, Ne,
           not_false_iff, _root_.add_top]
       have := h t g (htg.mono_num (min_le_left _ _))
       rwa [ENNReal.coe_sub, ENNReal.sub_mul, tsub_le_iff_right] at this
-      simp only [ht, imp_true_iff, Ne.def, not_false_iff]
+      simp only [ht, imp_true_iff, Ne, not_false_iff]
   choose δ hδ using this
   obtain ⟨t, A, t_disj, t_meas, t_cover, ht, -⟩ :
     ∃ (t : ℕ → Set E) (A : ℕ → E →L[ℝ] E),

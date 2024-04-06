@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 -/
 import Mathlib.Algebra.Star.Order
-import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Instances.NNReal
+import Mathlib.Topology.Order.MonotoneContinuity
 
 #align_import data.real.sqrt from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -479,11 +479,11 @@ theorem sqrt_one_add_le (h : -1 ≤ x) : sqrt (1 + x) ≤ 1 + x / 2 := by
     _ ≤ 1 + x + (x / 2) ^ 2 := le_add_of_nonneg_right <| sq_nonneg _
     _ = _ := by ring
 
-/-- Although the instance `IsROrC.toStarOrderedRing` exists, it is locked behind the
+/-- Although the instance `RCLike.toStarOrderedRing` exists, it is locked behind the
 `ComplexOrder` scope because currently the order on `ℂ` is not enabled globally. But we
 want `StarOrderedRing ℝ` to be available globally, so we include this instance separately.
 In addition, providing this instance here makes it available earlier in the import
-hierarchy; otherwise in order to access it we would need to import `Data.IsROrC.Basic` -/
+hierarchy; otherwise in order to access it we would need to import `Analysis.RCLike.Basic` -/
 instance : StarOrderedRing ℝ :=
   StarOrderedRing.ofNonnegIff' add_le_add_left fun r => by
     refine ⟨fun hr => ⟨sqrt r, (mul_self_sqrt hr).symm⟩, ?_⟩

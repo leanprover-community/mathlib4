@@ -337,7 +337,6 @@ theorem extension₂_coe_coe (hf : UniformContinuous <| uncurry f) (a : α) (b :
 end T0Space
 
 variable {f : α → β → γ}
-
 variable [CompleteSpace γ] (f)
 
 theorem uniformContinuous_extension₂ : UniformContinuous₂ (pkg.extend₂ pkg' f) := by

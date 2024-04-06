@@ -203,7 +203,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
       EMetric.totallyBounded_iff.1
         (isCompact_iff_totallyBounded_isComplete.1 (@isCompact_univ α _ _)).1 δ δpos
     -- we first show that any set is well approximated by a subset of `s`.
-    have main : ∀ u : Set α, ∃ (v : _) (_ : v ⊆ s), hausdorffEdist u v ≤ δ := by
+    have main : ∀ u : Set α, ∃ v ⊆ s, hausdorffEdist u v ≤ δ := by
       intro u
       let v := { x : α | x ∈ s ∧ ∃ y ∈ u, edist x y < δ }
       exists v, (fun x hx => hx.1 : v ⊆ s)

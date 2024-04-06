@@ -80,7 +80,6 @@ namespace OreLocalization
 section Monoid
 
 variable {R : Type*} [Monoid R] {S : Submonoid R}
-
 variable (R S) [OreSet S]
 
 @[inherit_doc OreLocalization]
@@ -375,9 +374,7 @@ theorem numerator_isUnit (s : S) : IsUnit (numeratorHom (s : R) : R[S⁻¹]) :=
 section UMP
 
 variable {T : Type*} [Monoid T]
-
 variable (f : R →* T) (fS : S →* Units T)
-
 variable (hf : ∀ s : S, f s = fS s)
 
 /-- The universal lift from a morphism `R →* T`, which maps elements of `S` to units of `T`,
@@ -746,9 +743,7 @@ instance instSemiringOreLocalization : Semiring R[S⁻¹] :=
 section UMP
 
 variable {T : Type*} [Semiring T]
-
 variable (f : R →+* T) (fS : S →* Units T)
-
 variable (hf : ∀ s : S, f s = fS s)
 
 /-- The universal lift from a ring homomorphism `f : R →+* T`, which maps elements in `S` to

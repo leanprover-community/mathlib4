@@ -53,7 +53,7 @@ lemma angle_one_right (hx : x ≠ 0) : angle x 1 = |x.arg| := by simp [angle_eq_
 lemma angle_div_left_eq_angle_mul_right (a x y : ℂ) : angle (x / a) y = angle x (y * a) := by
   obtain rfl | ha := eq_or_ne a 0
   · simp
-  · rw [← angle_mul_right ha, div_mul_cancel _ ha]
+  · rw [← angle_mul_right ha, div_mul_cancel₀ _ ha]
 
 lemma angle_div_right_eq_angle_mul_left (a x y : ℂ) : angle x (y / a) = angle (x * a) y := by
   rw [angle_comm, angle_div_left_eq_angle_mul_right, angle_comm]

@@ -200,8 +200,6 @@ theorem cauchy_ratCast (q : ℚ) : (q : ℝ).cauchy = q :=
   rfl
 #align real.cauchy_rat_cast Real.cauchy_ratCast
 
--- TODO: variables `x y` should be not included in this definition;
--- not sure how to exclude them
 instance commRing : CommRing ℝ := by
   refine' { natCast := fun n => ⟨n⟩
             intCast := fun z => ⟨z⟩
@@ -213,7 +211,7 @@ instance commRing : CommRing ℝ := by
             sub := @Sub.sub ℝ _
             npow := @npowRec ℝ ⟨1⟩ ⟨(· * ·)⟩
             nsmul := @nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩
-            zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩,
+            zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩ (@nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩),
             .. }
   all_goals
     intros
@@ -579,8 +577,8 @@ noncomputable instance : LinearOrderedField ℝ :=
     mul_inv_cancel := by
       rintro ⟨a⟩ h
       rw [mul_comm]
-      simp only [← ofCauchy_inv, ← ofCauchy_mul, ← ofCauchy_one, ← ofCauchy_zero,
-        Ne.def, ofCauchy.injEq] at *
+      simp only [← ofCauchy_inv, ← ofCauchy_mul, ← ofCauchy_one, ← ofCauchy_zero, Ne,
+        ofCauchy.injEq] at *
       exact CauSeq.Completion.inv_mul_cancel h
     inv_zero := by simp [← ofCauchy_zero, ← ofCauchy_inv]
     ratCast := (↑)

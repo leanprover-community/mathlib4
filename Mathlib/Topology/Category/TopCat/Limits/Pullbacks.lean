@@ -308,9 +308,9 @@ theorem pullback_map_openEmbedding_of_open_embeddings {W X Y Z S T : TopCat.{u}}
   · rw [range_pullback_map]
     apply IsOpen.inter <;> apply Continuous.isOpen_preimage
     · apply ContinuousMap.continuous_toFun
-    · exact H₁.open_range
+    · exact H₁.isOpen_range
     · apply ContinuousMap.continuous_toFun
-    · exact H₂.open_range
+    · exact H₂.isOpen_range
 #align Top.pullback_map_open_embedding_of_open_embeddings TopCat.pullback_map_openEmbedding_of_open_embeddings
 
 theorem snd_embedding_of_left_embedding {X Y S : TopCat} {f : X ⟶ S} (H : Embedding f) (g : Y ⟶ S) :

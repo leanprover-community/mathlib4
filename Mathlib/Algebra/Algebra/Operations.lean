@@ -70,13 +70,11 @@ end SubMulAction
 namespace Submodule
 
 variable {ι : Sort uι}
-
 variable {R : Type u} [CommSemiring R]
 
 section Ring
 
 variable {A : Type v} [Semiring A] [Algebra R A]
-
 variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
 
 /-- `1 : Submodule R A` is the submodule R of A. -/
@@ -204,7 +202,6 @@ theorem span_mul_span : span R S * span R T = span R (S * T) :=
 #align submodule.span_mul_span Submodule.span_mul_span
 
 variable {R}
-
 variable (M N P Q)
 
 @[simp]
@@ -461,7 +458,7 @@ theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.
   · exact (h rfl).elim
   · rw [pow_succ, pow_succ, mul_toAddSubmonoid]
     cases n with
-    | zero => rw [pow_zero, pow_zero, mul_one, ← mul_toAddSubmonoid, mul_one]
+    | zero => rw [pow_zero, pow_zero, one_mul, ← mul_toAddSubmonoid, one_mul]
     | succ n => rw [ih n.succ_ne_zero]
 #align submodule.pow_to_add_submonoid Submodule.pow_toAddSubmonoid
 
@@ -477,7 +474,8 @@ theorem le_pow_toAddSubmonoid {n : ℕ} : M.toAddSubmonoid ^ n ≤ (M ^ n).toAdd
 protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n → Prop}
     (algebraMap : ∀ r : R, C 0 (algebraMap _ _ r) (algebraMap_mem r))
     (add : ∀ x y i hx hy, C i x hx → C i y hy → C i (x + y) (add_mem ‹_› ‹_›))
-    (mem_mul : ∀ m (hm : m ∈ M), ∀ (i x hx), C i x hx → C i.succ (m * x) (mul_mem_mul hm hx))
+    (mem_mul : ∀ m (hm : m ∈ M), ∀ (i x hx), C i x hx → C i.succ (m * x)
+      ((pow_succ' M i).symm ▸ (mul_mem_mul hm hx)))
     -- Porting note: swapped argument order to match order of `C`
     {n : ℕ} {x : A}
     (hx : x ∈ M ^ n) : C n x hx := by
@@ -485,6 +483,9 @@ protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n →
   · rw [pow_zero] at hx
     obtain ⟨r, rfl⟩ := hx
     exact algebraMap r
+  revert hx
+  simp_rw [pow_succ']
+  intro hx
   exact
     Submodule.mul_induction_on' (fun m hm x ih => mem_mul _ hm _ _ _ (n_ih ih))
       (fun x hx y hy Cx Cy => add _ _ _ _ _ Cx Cy) hx
@@ -497,7 +498,7 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
     (add : ∀ x y i hx hy, C i x hx → C i y hy → C i (x + y) (add_mem ‹_› ‹_›))
     (mul_mem :
       ∀ i x hx, C i x hx →
-        ∀ m (hm : m ∈ M), C i.succ (x * m) ((pow_succ' M i).symm ▸ mul_mem_mul hx hm))
+        ∀ m (hm : m ∈ M), C i.succ (x * m) (mul_mem_mul hx hm))
     -- Porting note: swapped argument order to match order of `C`
     {n : ℕ} {x : A} (hx : x ∈ M ^ n) : C n x hx := by
   induction' n with n n_ih generalizing x
@@ -505,7 +506,7 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
     obtain ⟨r, rfl⟩ := hx
     exact algebraMap r
   revert hx
-  simp_rw [pow_succ']
+  simp_rw [pow_succ]
   intro hx
   exact
     Submodule.mul_induction_on' (fun m hm x ih => mul_mem _ _ hm (n_ih _) _ ih)
@@ -625,7 +626,6 @@ end Ring
 section CommRing
 
 variable {A : Type v} [CommSemiring A] [Algebra R A]
-
 variable {M N : Submodule R A} {m n : A}
 
 theorem mul_mem_mul_rev (hm : m ∈ M) (hn : n ∈ N) : n * m ∈ M * N :=

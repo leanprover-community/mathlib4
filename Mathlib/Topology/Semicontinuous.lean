@@ -379,9 +379,7 @@ end
 section
 
 variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
-
 variable {δ : Type*} [LinearOrder δ] [TopologicalSpace δ] [OrderTopology δ]
-
 variable {ι : Type*} [TopologicalSpace ι]
 
 theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α → γ}
@@ -961,9 +959,7 @@ end
 section
 
 variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
-
 variable {δ : Type*} [LinearOrder δ] [TopologicalSpace δ] [OrderTopology δ]
-
 variable {ι : Type*} [TopologicalSpace ι]
 
 theorem ContinuousAt.comp_upperSemicontinuousWithinAt {g : γ → δ} {f : α → γ}

@@ -103,7 +103,7 @@ theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Ring 
     rw [hn, SetLike.mem_coe]
     exact AddSubmonoid.zero_mem _
   · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
-    exact SetLike.mem_coe.2 (AddSubmonoid.add_mem _ (AddSubmonoid.subset_closure hi) (ih hj))
+    exact SetLike.mem_coe.2 (AddSubmonoid.add_mem _ (ih hi) (AddSubmonoid.subset_closure hj))
 #align hahn_series.is_pwo_Union_support_powers HahnSeries.isPWO_iUnion_support_powers
 
 section
@@ -423,9 +423,7 @@ def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R
     · dsimp only at h
       rw [dif_pos hb] at h
       exact Set.mem_iUnion.2 ⟨Classical.choose hb, h⟩
-    · contrapose! h
-      rw [dif_neg hb]
-      simp
+    · simp [-Set.mem_range, dif_neg hb] at h
   finite_co_support' g :=
     ((s.finite_co_support g).image f).subset
       (by
@@ -433,8 +431,7 @@ def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R
         by_cases hb : b ∈ Set.range f
         · simp only [Ne.def, Set.mem_setOf_eq, dif_pos hb] at h
           exact ⟨Classical.choose hb, h, Classical.choose_spec hb⟩
-        · contrapose! h
-          simp only [Ne.def, Set.mem_setOf_eq, dif_neg hb, Classical.not_not, zero_coeff])
+        · simp only [Ne.def, Set.mem_setOf_eq, dif_neg hb, zero_coeff, not_true_eq_false] at h)
 #align hahn_series.summable_family.emb_domain HahnSeries.SummableFamily.embDomain
 
 variable (s : SummableFamily Γ R α) (f : α ↪ β) {a : α} {b : β}
@@ -493,10 +490,10 @@ def powers (x : HahnSeries Γ R) (hx : 0 < addVal Γ R x) : SummableFamily Γ R 
     · rintro (_ | n) hn
       · exact Set.mem_union_right _ (Set.mem_singleton 0)
       · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
-        refine' Set.mem_union_left _ ⟨n, Set.mem_iUnion.2 ⟨⟨i, j⟩, Set.mem_iUnion.2 ⟨_, hj⟩⟩, rfl⟩
+        refine' Set.mem_union_left _ ⟨n, Set.mem_iUnion.2 ⟨⟨j, i⟩, Set.mem_iUnion.2 ⟨_, hi⟩⟩, rfl⟩
         simp only [and_true_iff, Set.mem_iUnion, mem_addAntidiagonal, mem_coe, eq_self_iff_true,
           Ne.def, mem_support, Set.mem_setOf_eq]
-        exact ⟨hi, n, hj⟩
+        exact ⟨hj, ⟨n, hi⟩, add_comm j i⟩
 #align hahn_series.summable_family.powers HahnSeries.SummableFamily.powers
 
 variable {x : HahnSeries Γ R} (hx : 0 < addVal Γ R x)
@@ -516,7 +513,7 @@ theorem embDomain_succ_smul_powers :
     rw [Set.mem_range, not_exists]
     exact Nat.succ_ne_zero
   · refine' Eq.trans (embDomain_image _ ⟨Nat.succ, Nat.succ_injective⟩) _
-    simp only [pow_succ, coe_powers, coe_sub, smul_apply, coe_ofFinsupp, Pi.sub_apply]
+    simp only [pow_succ', coe_powers, coe_sub, smul_apply, coe_ofFinsupp, Pi.sub_apply]
     rw [Finsupp.single_eq_of_ne n.succ_ne_zero.symm, sub_zero]
 #align hahn_series.summable_family.emb_domain_succ_smul_powers HahnSeries.SummableFamily.embDomain_succ_smul_powers
 
