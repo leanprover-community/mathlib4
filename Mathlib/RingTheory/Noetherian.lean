@@ -620,8 +620,8 @@ theorem IsNoetherianRing.isNilpotent_nilradical (R : Type*) [CommRing R] [IsNoet
   exact ⟨n, eq_bot_iff.mpr hn⟩
 #align is_noetherian_ring.is_nilpotent_nilradical IsNoetherianRing.isNilpotent_nilradical
 
-theorem isNilpotent_iff_of_Finite (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
-    [Module.Finite R M] (f : M →ₗ[R] M) :
+theorem Module.End.isNilpotent_iff_of_Finite {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+    [Module.Finite R M] {f : M →ₗ[R] M} :
     IsNilpotent f ↔ ∀ m : M, ∃ n : ℕ, (f^n) m = 0 := by
   constructor
   · rintro ⟨n, hn⟩ m
