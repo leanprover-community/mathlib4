@@ -470,14 +470,14 @@ def lint_backticks_in_comments(old_files, old_declarations, lines):
                 if item in ['group', 'rel', 'ring']:
                     continue
                 # FIXME: auto-fixing one replaces one item at a time
-                fixed = line.replace(f'`{item}`', f'`{old_declarations[item]}`')
+                fixed = fixed.replace(f'`{item}`', f'`{old_declarations[item]}`')
                 print(f'old declaration "{item}" mentioned in line: \n{line.strip()}\nfixed line would be\n{fixed.strip()}')
                 errors = True
         newlines.append(fixed)
     return errors, newlines
 
 def test_backtick_linting():
-    decls = dict({'convex' : 'Convex', 'ring' : 'Ring'})
+    decls = dict({'convex' : 'Convex', 'ring' : 'Ring', 'set' : 'Set'})
     def check_fine(input):
         errors, new = lint_backticks_in_comments([], decls, [(0, input)])
         assert not errors, f'Input "{input}" should yield no errors'
@@ -496,6 +496,8 @@ def test_backtick_linting():
     check_fine("My `ring` is fine.")
     check_error("A `convex` set", "A `Convex` set")
     check_error("A convex set, `convex` set", "A convex set, `Convex` set")
+    # Multiple replacements at the same time.
+    check_error("A `convex` `convex` `set`", "A `Convex` `Convex` `Set`")
 
 
 def output_message(path, line_nr, code, msg):
