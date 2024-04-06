@@ -847,7 +847,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
       rw [nthLe_insertNth_add_succ]
       convert nthLe_insertNth_add_succ s x k m.succ (by simpa using hn) using 2
       · simp [Nat.add_assoc, Nat.add_left_comm]
-      · simp [add_left_comm, add_comm]
+      · simp [Nat.add_left_comm, Nat.add_comm]
       · simpa [Nat.succ_add] using hn
 #align list.nodup_permutations'_aux_iff List.nodup_permutations'Aux_iff
 
