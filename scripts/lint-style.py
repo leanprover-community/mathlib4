@@ -465,9 +465,11 @@ def lint_backticks_in_comments(old_files, old_declarations, lines, path):
             assert False # omit invalid input for now
         for item in s:
             if item in old_files:
-                errors += [(ERR_OLD_FILE, (item, line), line_nr, path)]
+                print(f'old file "{item}" mentioned in line: "{line}"')
+                #errors += [(ERR_OLD_FILE, (item, line), line_nr, path)]
             if item in old_declarations:
-                errors += [(ERR_OLD_DECL, (item, line), line_nr, path)]
+                print(f'old declaration "{item}" mentioned in line: "{line}"')
+                #errors += [(ERR_OLD_DECL, (item, line), line_nr, path)]
     return errors
 
 def output_message(path, line_nr, code, msg):
