@@ -178,7 +178,7 @@ theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
   rfl
 #align algebraic_geometry.PresheafedSpace.glue_data.f_inv_app_f_app AlgebraicGeometry.PresheafedSpace.GlueData.f_invApp_f_app
 
-/-- We can prove the `eq` along with the lemma. Thus this is bundled together here, and the
+/-- We can prove the `Eq` along with the lemma. Thus this is bundled together here, and the
 lemma itself is separated below.
 -/
 theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)).carrier) :
@@ -186,7 +186,7 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
       (π₂⁻¹ i, j, k) U ≫ (D.t k i).c.app _ ≫ (D.V (k, i)).presheaf.map (eqToHom eq) =
         (D.t' k i j).c.app _ ≫ (π₁⁻¹ k, j, i) (unop _) := by
   fconstructor
-  -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
+  -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `Eq`
   · delta IsOpenImmersion.openFunctor
     dsimp only [Functor.op, Opens.map, IsOpenMap.functor, unop_op, Opens.coe_mk]
     congr
@@ -415,7 +415,7 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
 theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
     ∃ eq, D.ιInvApp U ≫ D.diagramOverOpenπ U i = (D.U i).presheaf.map (eqToHom eq) := by
   fconstructor
-  -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
+  -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `Eq`
   · congr; ext1; change _ = _ ⁻¹' (_ '' _); ext1 x
     simp only [SetLike.mem_coe, diagram_l, diagram_r, unop_op, Set.mem_preimage, Set.mem_image]
     refine ⟨fun h => ⟨_, h, rfl⟩, ?_⟩
