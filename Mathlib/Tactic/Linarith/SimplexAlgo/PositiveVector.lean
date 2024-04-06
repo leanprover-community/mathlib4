@@ -3,7 +3,8 @@ import Mathlib.Tactic.Linarith.SimplexAlgo.SimplexAlgo
 
 namespace Linarith.SimplexAlgo
 
-def augmentMatrix {n m : Nat} (A : Matrix n m) (strictIndexes : Array Nat) : Matrix (n + 2) (m + 3) := Id.run do
+/- TODO: decribe augmentation -/
+def augmentLP {n m : Nat} (A : Matrix n m) (strictIndexes : List Nat) : Matrix (n + 2) (m + 3) := Id.run do
   let mut objectiveRow : Array Rat := #[-1, 0] ++ (Array.mkArray m 0) ++ #[0]
   for idx in strictIndexes do
     objectiveRow := objectiveRow.set! (idx + 2) 1
@@ -24,20 +25,20 @@ def getVectorFromTable (table : Table) : Array Rat := Id.run do
   return ans
 
 /- Finds non-negative vector v, s.t. Av = 0 and some of its coords from strictCoords are positive -/
-def findPositiveVector {n m : Nat} (A : Matrix n m) (strictIndexes : Array Nat) : Array Rat := Id.run do
+def findPositiveVector {n m : Nat} (A : Matrix n m) (strictIndexes : List Nat) : Array Rat :=
   /- add auxilary constraint and objective function -/
   -- dbg_trace strictIndexes
 
   -- dbg_trace "A"
   -- dbg_trace A.data
 
-  let B := augmentMatrix A strictIndexes
+  let B := augmentLP A strictIndexes
 
   -- dbg_trace "B"
   -- dbg_trace B.data
 
   /- find free & slack variables -/
-  let mut table := Gauss.getInitTable B
+  let table := Gauss.getTable B
 
   -- dbg_trace ""
   -- dbg_trace table.mat.data
@@ -46,9 +47,9 @@ def findPositiveVector {n m : Nat} (A : Matrix n m) (strictIndexes : Array Nat) 
   -- dbg_trace ""
 
   /- run simplex algo -/
-  table ← simplexAlgo.run' table
+  let resTable := simplexAlgo.run' table
 
   /- decode -/
-  return getVectorFromTable table
+  getVectorFromTable resTable
 
 end Linarith.SimplexAlgo

@@ -14,8 +14,8 @@ namespace Linarith.SimplexAlgo.Gauss
 structure GaussState (n m : Nat) where
   mat : Matrix n m
   diag : Array (Nat × Nat)
-  curRow : Nat
-  curCol : Nat
+  currentRow : Nat
+  currentColumn : Nat
 
 abbrev GaussM (n m : Nat) := StateM <| GaussState n m
 
@@ -23,25 +23,31 @@ def run {n m: Nat} {α : Type} (x : GaussM n m α) (mat : Matrix n m): α := Id.
   let s : GaussState n m := {
     mat := mat
     diag := #[]
-    curRow := 0
-    curCol := 0
+    currentRow := 0
+    currentColumn := 0
   }
   return (← x.run s).fst
 
-def isCurrentColumnZero {n m : Nat} : GaussM n m Bool := do
-  for i in [(← get).curRow:n] do
-    if (← get).mat.data[i]![(← get).curCol]! != 0 then
-      return false
-  return true
+def curRow {n m : Nat} : GaussM n m Nat := do
+  return (← get).currentRow
+
+def curCol {n m : Nat} : GaussM n m Nat := do
+  return (← get).currentColumn
 
 def incRow {n m : Nat} : GaussM n m Unit := do
-  set {← get with curRow := (← get).curRow + 1}
+  set {← get with currentRow := (← curRow) + 1}
 
 def incCol {n m : Nat} : GaussM n m Unit := do
-  set {← get with curCol := (← get).curCol + 1}
+  set {← get with currentColumn := (← get).currentColumn + 1}
 
 def pushToDiag {n m : Nat} (i j : Nat) : GaussM n m Unit := do
   set {← get with diag := (← get).diag.push ⟨i, j⟩}
+
+def isCurrentColumnZero {n m : Nat} : GaussM n m Bool := do
+  for i in [← curRow:n] do
+    if (← get).mat.data[i]![← curCol]! != 0 then
+      return false
+  return true
 
 def swapRows {n m : Nat} (i j : Nat) : GaussM n m Unit := do
   let swapped : Matrix n m := ⟨(← get).mat.data.swap! i j⟩
@@ -60,35 +66,35 @@ def divideRow {n m : Nat} (i : Nat) (coef : Rat) : GaussM n m Unit := do
   let subtractedMat : Matrix n m := ⟨(← get).mat.data.set! i new_row⟩
   set {← get with mat := subtractedMat}
 
-def getInitTableImp {n m : Nat} : GaussM n m Table := do
+def getTableImp {n m : Nat} : GaussM n m Table := do
   let mut free : Array Nat := #[]
   let mut bound : Array Nat := #[]
 
-  while (← get).curRow < n && (← get).curCol < m do
+  while (← curRow) < n && (← curCol) < m do
     if ← isCurrentColumnZero then
-      free := free.push (← get).curCol
+      free := free.push (← curCol)
       incCol
       continue
 
-    for i in [(← get).curRow:n] do
-      if (← get).mat.data[i]![(← get).curCol]! != 0 then
-        swapRows (← get).curRow i
+    for i in [← curRow:n] do
+      if (← get).mat.data[i]![← curCol]! != 0 then
+        swapRows (← curRow) i
         break
 
-    divideRow (← get).curRow (← get).mat.data[(← get).curRow]![(← get).curCol]!
+    divideRow (← curRow) (← get).mat.data[← curRow]![← curCol]!
 
     for i in [:n] do
-      if i == (← get).curRow then
+      if i == (← curRow) then
         continue
-      let coef := (← get).mat.data[i]![(← get).curCol]!
-      subtractRow (← get).curRow i coef
+      let coef := (← get).mat.data[i]![← curCol]!
+      subtractRow (← curRow) i coef
 
-    pushToDiag (← get).curRow (← get).curCol
-    bound := bound.push (← get).curCol
+    pushToDiag (← curRow) (← curCol)
+    bound := bound.push (← curCol)
     incRow
     incCol
 
-  for i in [(← get).curCol:m] do
+  for i in [← curCol:m] do
     free := free.push i
 
   let mut ansData : Array (Array Rat) := #[]
@@ -104,7 +110,7 @@ def getInitTableImp {n m : Nat} : GaussM n m Table := do
     mat := ⟨ansData⟩
   }
 
-def getInitTable {n m : Nat} (mat : Matrix n m) : Table := run getInitTableImp mat
+def getTable {n m : Nat} (mat : Matrix n m) : Table := run getTableImp mat
 
 
 end Linarith.SimplexAlgo.Gauss
