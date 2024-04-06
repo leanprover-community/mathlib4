@@ -130,7 +130,7 @@ instance Unique.instTietzeExtension {Y : Type v} [TopologicalSpace Y] [Unique Y]
     TietzeExtension.{u, v} Y where
   exists_restrict_eq' _ _ f := ⟨.const _ default, by ext x; exact Subsingleton.elim _ _⟩
 
-/-- Any retract of a `TietzeExtension` space is one itself.-/
+/-- Any retract of a `TietzeExtension` space is one itself. -/
 theorem TietzeExtension.of_retract {Y : Type v} {Z : Type w} [TopologicalSpace Y]
     [TopologicalSpace Z] [TietzeExtension.{u, w} Z] (ι : C(Y, Z)) (r : C(Z, Y))
     (h : r.comp ι = .id Y) : TietzeExtension.{u, v} Y where
@@ -142,7 +142,7 @@ theorem TietzeExtension.of_retract {Y : Type v} {Z : Type w} [TopologicalSpace Y
     rw [← r.comp_assoc ι, h, f.id_comp] at this
     congrm($this x)
 
-/-- Any homeomorphism from a `TietzeExtension` space is one itself.-/
+/-- Any homeomorphism from a `TietzeExtension` space is one itself. -/
 theorem TietzeExtension.of_homeo {Y : Type v} {Z : Type w} [TopologicalSpace Y]
     [TopologicalSpace Z] [TietzeExtension.{u, w} Z] (e : Y ≃ₜ Z) :
     TietzeExtension.{u, v} Y :=

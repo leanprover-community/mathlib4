@@ -318,14 +318,14 @@ theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
 #align with_seminorms.has_basis_ball WithSeminorms.hasBasis_ball
 
 /-- The `x`-neighbourhoods of a space whose topology is induced by a family of seminorms
-are exactly the sets which contain seminorm balls around `x`.-/
+are exactly the sets which contain seminorm balls around `x`. -/
 theorem WithSeminorms.mem_nhds_iff (hp : WithSeminorms p) (x : E) (U : Set E) :
     U ∈ 𝓝 x ↔ ∃ s : Finset ι, ∃ r > 0, (s.sup p).ball x r ⊆ U := by
   rw [hp.hasBasis_ball.mem_iff, Prod.exists]
 #align with_seminorms.mem_nhds_iff WithSeminorms.mem_nhds_iff
 
 /-- The open sets of a space whose topology is induced by a family of seminorms
-are exactly the sets which contain seminorm balls around all of their points.-/
+are exactly the sets which contain seminorm balls around all of their points. -/
 theorem WithSeminorms.isOpen_iff_mem_balls (hp : WithSeminorms p) (U : Set E) :
     IsOpen U ↔ ∀ x ∈ U, ∃ s : Finset ι, ∃ r > 0, (s.sup p).ball x r ⊆ U := by
   simp_rw [← WithSeminorms.mem_nhds_iff hp _ U, isOpen_iff_mem_nhds]

@@ -1079,7 +1079,7 @@ scoped[Uniformity] notation "UniformContinuous[" u₁ ", " u₂ "]" => @UniformC
 /-- A function `f : α → β` is *uniformly continuous* on `s : Set α` if `(f x, f y)` tends to
 the diagonal as `(x, y)` tends to the diagonal while remaining in `s ×ˢ s`.
 In other words, if `x` is sufficiently close to `y`, then `f x` is close to
-`f y` no matter where `x` and `y` are located in `s`.-/
+`f y` no matter where `x` and `y` are located in `s`. -/
 def UniformContinuousOn [UniformSpace β] (f : α → β) (s : Set α) : Prop :=
   Tendsto (fun x : α × α => (f x.1, f x.2)) (𝓤 α ⊓ 𝓟 (s ×ˢ s)) (𝓤 β)
 #align uniform_continuous_on UniformContinuousOn

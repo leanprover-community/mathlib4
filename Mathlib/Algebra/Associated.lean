@@ -380,7 +380,7 @@ def Associated [Monoid α] (x y : α) : Prop :=
 #align associated Associated
 
 /-- Notation for two elements of a monoid are associated, i.e.
-if one of them is another one multiplied by a unit on the right.-/
+if one of them is another one multiplied by a unit on the right. -/
 local infixl:50 " ~ᵤ " => Associated
 
 namespace Associated

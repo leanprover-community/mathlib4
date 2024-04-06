@@ -155,7 +155,7 @@ theorem one_eq_hSpace_e {G : Type u} [TopologicalSpace G] [Group G] [Topological
 #align topological_group.one_eq_H_space_e TopologicalGroup.one_eq_hSpace_e
 
 /- In the following example we see that the H-space structure on the product of two topological
-groups is definitionally equally to the product H-space-structure of the two groups.-/
+groups is definitionally equally to the product H-space-structure of the two groups. -/
 example {G G' : Type u} [TopologicalSpace G] [Group G] [TopologicalGroup G] [TopologicalSpace G']
     [Group G'] [TopologicalGroup G'] : TopologicalGroup.hSpace (G × G') = HSpace.prod G G' := by
   simp only [HSpace.prod]
@@ -167,7 +167,7 @@ end TopologicalGroup
 namespace unitInterval
 
 /-- `qRight` is analogous to the function `Q` defined on p. 475 of [serre1951] that helps proving
-continuity of `delayReflRight`.-/
+continuity of `delayReflRight`. -/
 def qRight (p : I × I) : I :=
   Set.projIcc 0 1 zero_le_one (2 * p.1 / (1 + p.2))
 #align unit_interval.Q_right unitInterval.qRight
@@ -222,7 +222,7 @@ open unitInterval
 variable {X : Type u} [TopologicalSpace X] {x y : X}
 
 /-- This is the function analogous to the one on p. 475 of [serre1951], defining a homotopy from
-the product path `γ ∧ e` to `γ`.-/
+the product path `γ ∧ e` to `γ`. -/
 def delayReflRight (θ : I) (γ : Path x y) : Path x y where
   toFun t := γ (qRight (t, θ))
   continuous_toFun := γ.continuous.comp (continuous_qRight.comp <| Continuous.Prod.mk_left θ)
@@ -255,7 +255,7 @@ theorem delayReflRight_one (γ : Path x y) : delayReflRight 1 γ = γ := by
 #align path.delay_refl_right_one Path.delayReflRight_one
 
 /-- This is the function on p. 475 of [serre1951], defining a homotopy from a path `γ` to the
-product path `e ∧ γ`.-/
+product path `e ∧ γ`. -/
 def delayReflLeft (θ : I) (γ : Path x y) : Path x y :=
   (delayReflRight θ γ.symm).symm
 #align path.delay_refl_left Path.delayReflLeft

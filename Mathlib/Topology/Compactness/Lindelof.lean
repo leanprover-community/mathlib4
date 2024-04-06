@@ -461,7 +461,7 @@ theorem IsLindeof.compl_mem_coclosedLindelof_of_isClosed (hs : IsLindelof s) (hs
     sᶜ ∈ Filter.coclosedLindelof X :=
   hasBasis_coclosedLindelof.mem_of_mem ⟨hs', hs⟩
 
-/-- X is a Lindelöf space iff every open cover has a countable subcover.-/
+/-- X is a Lindelöf space iff every open cover has a countable subcover. -/
 class LindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- In a Lindelöf space, `Set.univ` is a Lindelöf set. -/
   isLindelof_univ : IsLindelof (univ : Set X)

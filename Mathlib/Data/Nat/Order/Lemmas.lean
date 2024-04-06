@@ -101,13 +101,13 @@ protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ bit1 n := by
   decide
 #align nat.not_two_dvd_bit1 Nat.not_two_dvd_bit1
 
-/-- A natural number `m` divides the sum `m + n` if and only if `m` divides `n`.-/
+/-- A natural number `m` divides the sum `m + n` if and only if `m` divides `n`. -/
 @[simp]
 protected theorem dvd_add_self_left {m n : ℕ} : m ∣ m + n ↔ m ∣ n :=
   Nat.dvd_add_right (dvd_refl m)
 #align nat.dvd_add_self_left Nat.dvd_add_self_left
 
-/-- A natural number `m` divides the sum `n + m` if and only if `m` divides `n`.-/
+/-- A natural number `m` divides the sum `n + m` if and only if `m` divides `n`. -/
 @[simp]
 protected theorem dvd_add_self_right {m n : ℕ} : m ∣ n + m ↔ m ∣ n :=
   Nat.dvd_add_left (dvd_refl m)

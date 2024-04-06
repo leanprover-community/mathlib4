@@ -739,7 +739,7 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
   rcases q.comp_summable_nnreal p Hg.radius_pos Hf.radius_pos with ⟨r, r_pos : 0 < r, hr⟩
   /- We will consider `y` which is smaller than `r` and `rf`, and also small enough that
     `f (x + y)` is close enough to `f x` to be in the disk where `g` is well behaved. Let
-    `min (r, rf, δ)` be this new radius.-/
+    `min (r, rf, δ)` be this new radius. -/
   obtain ⟨δ, δpos, hδ⟩ :
     ∃ δ : ℝ≥0∞, 0 < δ ∧ ∀ {z : E}, z ∈ EMetric.ball x δ → f z ∈ EMetric.ball (f x) rg := by
     have : EMetric.ball (f x) rg ∈ 𝓝 (f x) := EMetric.ball_mem_nhds _ Hg.r_pos
@@ -1183,7 +1183,7 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
     `r`, and the same component of `q`, and the same component of `p`, to the same coordinate of
     `v`. This is true by definition, but at each step one needs to convince Lean that the types
     one considers are the same, using a suitable congruence lemma to avoid dependent type issues.
-    This dance has to be done three times, one for `r`, one for `q` and one for `p`.-/
+    This dance has to be done three times, one for `r`, one for `q` and one for `p`. -/
   apply Finset.sum_congr rfl
   rintro ⟨a, b⟩ _
   dsimp [sigmaEquivSigmaPi]

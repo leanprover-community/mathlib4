@@ -105,7 +105,7 @@ def fromListChain' (x : List α) (x_ne_empty : x ≠ []) (hx : x.Chain' r) : Rel
   step i := List.chain'_iff_get.mp hx i i.2
 
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
-corresponds to each other.-/
+corresponds to each other. -/
 protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} where
   toFun x := ⟨_, x.toList_ne_empty, x.toList_chain'⟩
   invFun x := fromListChain' _ x.2.1 x.2.2
