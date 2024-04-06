@@ -33,10 +33,10 @@ universe u v w u₁ v₁
 `ε_B ∘ f = ε_A` and `(f ⊗ f) ∘ Δ_A = Δ_B ∘ f`. -/
 structure BialgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R]
     [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-    [CoalgebraStruct R A] [CoalgebraStruct R B] extends A →ₗc[R] B, A →ₐ[R] B
+    [CoalgebraStruct R A] [CoalgebraStruct R B] extends A →ₗc[R] B, A →* B
 
-/-- Reinterpret a `BialgHom` as an `AlgHom` -/
-add_decl_doc BialgHom.toAlgHom
+/-- Reinterpret a `BialgHom` as an `MonoidHom` -/
+add_decl_doc BialgHom.toMonoidHom
 
 @[inherit_doc BialgHom]
 infixr:25 " →ₐc " => BialgHom _
@@ -49,7 +49,7 @@ from `A` to `B`.  -/
 class BialgHomClass (F : Type*) (R A B : outParam Type*)
     [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
-    extends CoalgHomClass F R A B, AlgHomClass F R A B : Prop
+    extends CoalgHomClass F R A B, MonoidHomClass F A B : Prop
 
 namespace BialgHomClass
 
@@ -57,6 +57,14 @@ variable {R A B F : Type*} [CommSemiring R]
   [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
   [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
   [BialgHomClass F R A B]
+
+instance (priority := 100) toAlgHomClass : AlgHomClass F R A B where
+  map_mul := map_mul
+  map_one := map_one
+  map_add := map_add
+  map_zero := map_zero
+  commutes := fun c r => by
+    simp only [Algebra.algebraMap_eq_smul_one, map_smul, _root_.map_one]
 
 /-- Turn an element of a type `F` satisfying `BialgHomClass F R A B` into an actual
 `BialgHom`. This is declared as the default coercion from `F` to `A →ₐc[R] B`. -/
@@ -95,8 +103,6 @@ instance bialgHomClass : BialgHomClass (A →ₐc[R] B) R A B where
   map_comp_comul := fun f => f.map_comp_comul
   map_mul := fun f => f.map_mul'
   map_one := fun f => f.map_one'
-  map_zero := fun f => f.map_zero'
-  commutes := fun f => f.commutes'
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
@@ -116,17 +122,17 @@ theorem toFun_eq_coe (f : A →ₐc[R] B) : f.toFun = f :=
   rfl
 
 @[simp]
-theorem coe_mk {f : A →ₗc[R] B} (h h₁ h₂ h₃) : ((⟨f, h, h₁, h₂, h₃⟩ : A →ₐc[R] B) : A → B) = f :=
+theorem coe_mk {f : A →ₗc[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₐc[R] B) : A → B) = f :=
   rfl
 
 @[norm_cast]
-theorem coe_mks {f : A → B} (h₀ h₁ h₂ h₃ h₄ h₅ h₆ h₇) :
-    ⇑(⟨⟨⟨⟨f, h₀⟩, h₁⟩, h₂, h₃⟩, h₄, h₅, h₆, h₇⟩ : A →ₐc[R] B) = f :=
+theorem coe_mks {f : A → B} (h₀ h₁ h₂ h₃ h₄ h₅) :
+    ⇑(⟨⟨⟨⟨f, h₀⟩, h₁⟩, h₂, h₃⟩, h₄, h₅⟩ : A →ₐc[R] B) = f :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_toCoalgHom_mk {f : A →ₗc[R] B} (h h₁ h₂ h₃) :
-    ((⟨f, h, h₁, h₂, h₃⟩ : A →ₐc[R] B) : A →ₗc[R] B) = f := by
+theorem coe_toCoalgHom_mk {f : A →ₗc[R] B} (h h₁) :
+    ((⟨f, h, h₁⟩ : A →ₐc[R] B) : A →ₗc[R] B) = f := by
   rfl
 
 /- which of the next 3 should exist? 1st and 3rd can be proved by `simp` and `norm_cast`.
@@ -185,62 +191,21 @@ theorem ext_of_ring {f g : R →ₐc[R] A} (h : f 1 = g 1) : f = g :=
   coe_linearMap_injective (by ext; assumption)
 
 @[simp]
-theorem mk_coe {f : A →ₐc[R] B} (h₀ h₁ h₂ h₃ h₄ h₅ h₆ h₇) :
-    (⟨⟨⟨⟨f, h₀⟩, h₁⟩, h₂, h₃⟩, h₄, h₅, h₆, h₇⟩ : A →ₐc[R] B) = f :=
+theorem mk_coe {f : A →ₐc[R] B} (h₀ h₁ h₂ h₃ h₄ h₅) :
+    (⟨⟨⟨⟨f, h₀⟩, h₁⟩, h₂, h₃⟩, h₄, h₅⟩ : A →ₐc[R] B) = f :=
   rfl
-
-@[simp]
-theorem counit_comp : Coalgebra.counit ∘ₗ (φ : A →ₗ[R] B) = Coalgebra.counit :=
-  φ.counit_comp'
-
-@[simp]
-theorem map_comp_comul :
-    TensorProduct.map φ φ ∘ₗ Coalgebra.comul = Coalgebra.comul ∘ₗ (φ : A →ₗ[R] B) :=
-  φ.map_comp_comul'
 
 @[simp]
 theorem counitAlgHom_comp {A : Type v} {B : Type w} [Semiring A]
     [Semiring B] [Bialgebra R A] [Bialgebra R B] (φ : A →ₐc[R] B) :
     (counitAlgHom R B).comp (φ : A →ₐ[R] B) = counitAlgHom R A :=
-  AlgHom.toLinearMap_injective (counit_comp φ)
+  AlgHom.toLinearMap_injective φ.counit_comp
 
 @[simp]
 theorem map_comp_comulAlgHom {A : Type v} {B : Type w} [Semiring A]
     [Semiring B] [Bialgebra R A] [Bialgebra R B] (φ : A →ₐc[R] B) :
     (Algebra.TensorProduct.map φ φ).comp (comulAlgHom R A) = (comulAlgHom R B).comp φ :=
-  AlgHom.toLinearMap_injective (map_comp_comul φ)
-
-@[simp]
-theorem counit_comp_apply (x : A) : Coalgebra.counit (φ x) = Coalgebra.counit (R := R) x :=
-  LinearMap.congr_fun φ.counit_comp _
-
-@[simp]
-theorem map_comp_comul_apply (x : A) :
-    TensorProduct.map φ φ (Coalgebra.comul x) = Coalgebra.comul (R := R) (φ x) :=
-  LinearMap.congr_fun φ.map_comp_comul _
-
-protected theorem map_add (r s : A) : φ (r + s) = φ r + φ s :=
-  map_add _ _ _
-
-protected theorem map_mul (r s : A) : φ (r * s) = φ r * φ s :=
-  map_mul  _ _ _
-
-protected theorem map_zero : φ 0 = 0 :=
-  map_zero _
-
-protected theorem map_one : φ 1 = 1 :=
-  map_one _
-
-protected theorem map_smul (r : R) (x : A) : φ (r • x) = r • φ x :=
-  map_smul _ _ _
-
-protected theorem map_sum {ι : Type*} (f : ι → A) (s : Finset ι) :
-    φ (∑ x in s, f x) = ∑ x in s, φ (f x) :=
-  map_sum _ _ _
-
-protected theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A) :
-    φ (f.sum g) = f.sum fun i a => φ (g i a) :=
-  map_finsupp_sum _ _ _
+  AlgHom.toLinearMap_injective φ.map_comp_comul
 
 section
 
@@ -346,11 +311,7 @@ theorem counitBialgHom_toCoalgHom :
 variable {R}
 
 instance subsingleton_to_ring : Subsingleton (A →ₐc[R] R) :=
-  ⟨fun f g => BialgHom.ext fun x => by
-    have hf := LinearMap.ext_iff.1 f.counit_comp x
-    have hg := LinearMap.ext_iff.1 g.counit_comp x
-    simp_all only [LinearMap.coe_comp, BialgHom.coe_toLinearMap, Function.comp_apply,
-      CommSemiring.counit_apply, hf, hg]⟩
+  ⟨fun _ _ => BialgHom.coe_coalgHom_injective (Subsingleton.elim _ _)⟩
 
 @[ext high]
 theorem ext_to_ring (f g : A →ₐc[R] R) : f = g := Subsingleton.elim _ _

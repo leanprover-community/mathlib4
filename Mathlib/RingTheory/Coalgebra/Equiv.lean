@@ -156,6 +156,10 @@ theorem coe_toLinearEquiv : ⇑(e : A ≃ₗ[R] B) = e :=
 theorem coe_toCoalgHom : ⇑(e : A →ₗc[R] B) = e :=
   rfl
 
+@[simp]
+theorem toLinearEquiv_toLinearMap : ((e : A ≃ₗ[R] B) : A →ₗ[R] B) = (e : A →ₗc[R] B) :=
+  rfl
+
 theorem toFun_eq_coe : e.toFun = e := rfl
 
 section
@@ -196,38 +200,30 @@ theorem refl_toCoalgHom : refl R A = CoalgHom.id R A :=
   rfl
 
 /-- Coalgebra equivalences are symmetric. -/
-@[symm, simps!]
+@[symm, simps! apply]
 def symm (e : A ≃ₗc[R] B) : B ≃ₗc[R] A :=
   { (e : A ≃ₗ[R] B).symm with
-    counit_comp' := (LinearEquiv.comp_toLinearMap_symm_eq _ _).2 e.counit_comp.symm
-    map_comp_comul' := by
+    counit_comp := (LinearEquiv.comp_toLinearMap_symm_eq _ _).2 e.counit_comp.symm
+    map_comp_comul := by
       show (TensorProduct.congr (e : A ≃ₗ[R] B) (e : A ≃ₗ[R] B)).symm.toLinearMap ∘ₗ comul
         = comul ∘ₗ (e : A ≃ₗ[R] B).symm
       rw [LinearEquiv.toLinearMap_symm_comp_eq]
-      simp only [TensorProduct.congr, ← LinearMap.comp_assoc, ]
-      rw [← LinearMap.comp_assoc,
-        LinearEquiv.eq_comp_toLinearMap_symm, ← CoalgHomClass.map_comp_comul]
-      rfl }
+      simp only [TensorProduct.congr, toLinearEquiv_toLinearMap,
+        LinearEquiv.ofLinear_toLinearMap, ← LinearMap.comp_assoc, CoalgHomClass.map_comp_comul,
+        LinearEquiv.eq_comp_toLinearMap_symm] }
 
 @[simp]
 theorem symm_toLinearEquiv (e : A ≃ₗc[R] B) :
-    e.symm.toLinearEquiv = e.toLinearEquiv.symm := rfl
+    e.symm = (e : A ≃ₗ[R] B).symm := rfl
 
-/-def Simps.apply {R : Type*} [CommSemiring R]
-    {A : Type*} {B : Type*} [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
-    [CoalgebraStruct R A] [CoalgebraStruct R B]
-    (e : A ≃ₗc[R] B) : A → B :=
-  e
-
+/-- See Note [custom simps projection] -/
 def Simps.symm_apply {R : Type*} [CommSemiring R]
     {A : Type*} {B : Type*} [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B]
     (e : A ≃ₗc[R] B) : B → A :=
   e.symm
 
--- can't get it to work idk why
---initialize_simps_projections CoalgEquiv (toFun → apply, invFun → symm_apply)
--/
+initialize_simps_projections CoalgEquiv (invFun → symm_apply)
 
 @[simp]
 theorem invFun_eq_symm : e.invFun = e.symm :=
@@ -240,16 +236,20 @@ theorem coe_toEquiv_symm : e.toEquiv.symm = e.symm :=
 variable {e₁₂ : A ≃ₗc[R] B} {e₂₃ : B ≃ₗc[R] C}
 
 /-- Coalgebra equivalences are transitive. -/
-@[trans, simps! toCoalgHom]
+@[trans, simps!]
 def trans (e₁₂ : A ≃ₗc[R] B) (e₂₃ : B ≃ₗc[R] C) : A ≃ₗc[R] C :=
-  { e₂₃.toCoalgHom.comp e₁₂.toCoalgHom, e₁₂.toLinearEquiv.trans e₂₃.toLinearEquiv with }
+  { (e₂₃ : B →ₗc[R] C).comp (e₁₂ : A →ₗc[R] B), e₁₂.toLinearEquiv ≪≫ₗ e₂₃.toLinearEquiv with }
 
 @[simp]
 theorem trans_toLinearEquiv :
-  (e₁₂.trans e₂₃).toLinearEquiv = e₁₂.toLinearEquiv ≪≫ₗ e₂₃.toLinearEquiv := rfl
+    (e₁₂.trans e₂₃ : A ≃ₗ[R] C) = (e₁₂ : A ≃ₗ[R] B) ≪≫ₗ e₂₃ := rfl
 
 @[simp]
-theorem coe_toEquiv_trans : e₁₂.toEquiv.trans e₂₃ = (e₁₂.trans e₂₃).toEquiv :=
+theorem trans_toCoalgHom :
+    (e₁₂.trans e₂₃ : A →ₗc[R] C) = e₂₃.comp e₁₂ := rfl
+
+@[simp]
+theorem coe_toEquiv_trans : (e₁₂ : A ≃ B).trans e₂₃ = (e₁₂.trans e₂₃ : A ≃ C) :=
   rfl
 
 end

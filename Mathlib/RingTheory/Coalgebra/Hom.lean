@@ -33,8 +33,8 @@ universe u v w u₁ v₁
 structure CoalgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R]
     [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] extends A →ₗ[R] B where
-  counit_comp' : counit ∘ₗ toLinearMap = counit
-  map_comp_comul' : TensorProduct.map toLinearMap toLinearMap ∘ₗ comul = comul ∘ₗ toLinearMap
+  counit_comp : counit ∘ₗ toLinearMap = counit
+  map_comp_comul : TensorProduct.map toLinearMap toLinearMap ∘ₗ comul = comul ∘ₗ toLinearMap
 
 @[inherit_doc CoalgHom]
 infixr:25 " →ₗc " => CoalgHom _
@@ -52,23 +52,35 @@ class CoalgHomClass (F : Type*) (R A B : outParam Type*)
   map_comp_comul : ∀ f : F, TensorProduct.map (f : A →ₗ[R] B)
     (f : A →ₗ[R] B) ∘ₗ comul = comul ∘ₗ (f : A →ₗ[R] B)
 
+attribute [simp] CoalgHomClass.counit_comp CoalgHomClass.map_comp_comul
+
 namespace CoalgHomClass
 
 variable {R A B F : Type*} [CommSemiring R]
   [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
   [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
+  [CoalgHomClass F R A B]
 
 /-- Turn an element of a type `F` satisfying `CoalgHomClass F R A B` into an actual
 `CoalgHom`. This is declared as the default coercion from `F` to `A →ₗc[R] B`. -/
 @[coe]
-def toCoalgHom {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (f : F) : A →ₗc[R] B :=
+def toCoalgHom (f : F) : A →ₗc[R] B :=
   { (f : A →ₗ[R] B) with
     toFun := f -- why?
-    counit_comp' := CoalgHomClass.counit_comp f
-    map_comp_comul' := CoalgHomClass.map_comp_comul f }
+    counit_comp := CoalgHomClass.counit_comp f
+    map_comp_comul := CoalgHomClass.map_comp_comul f }
 
-instance coeTC {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] : CoeTC F (A →ₗc[R] B) :=
+instance coeTC : CoeTC F (A →ₗc[R] B) :=
   ⟨CoalgHomClass.toCoalgHom⟩
+
+@[simp]
+theorem counit_comp_apply (f : F) (x : A) : counit (f x) = counit (R := R) x :=
+  LinearMap.congr_fun (counit_comp f) _
+
+@[simp]
+theorem map_comp_comul_apply (f : F) (x : A) :
+    TensorProduct.map f f (comul x) = comul (R := R) (f x) :=
+  LinearMap.congr_fun (map_comp_comul f) _
 
 end CoalgHomClass
 
@@ -93,8 +105,8 @@ instance funLike : FunLike (A →ₗc[R] B) A B where
 instance coalgHomClass : CoalgHomClass (A →ₗc[R] B) R A B where
   map_add := fun f => f.map_add'
   map_smulₛₗ := fun f => f.map_smul'
-  counit_comp := fun f => f.counit_comp'
-  map_comp_comul := fun f => f.map_comp_comul'
+  counit_comp := fun f => f.counit_comp
+  map_comp_comul := fun f => f.map_comp_comul
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
@@ -181,47 +193,13 @@ theorem ext_of_ring {f g : R →ₗc[R] A} (h : f 1 = g 1) : f = g :=
 theorem mk_coe {f : A →ₗc[R] B} (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : A →ₗc[R] B) = f :=
   ext fun _ => rfl
 
-@[simp]
-theorem counit_comp : counit ∘ₗ (φ : A →ₗ[R] B) = counit :=
-  φ.counit_comp'
-
-@[simp]
-theorem map_comp_comul : TensorProduct.map φ φ ∘ₗ comul = comul ∘ₗ (φ : A →ₗ[R] B) :=
-  φ.map_comp_comul'
-
-@[simp]
-theorem counit_comp_apply (x : A) : counit (φ x) = counit (R := R) x :=
-  LinearMap.congr_fun φ.counit_comp' _
-
-@[simp]
-theorem map_comp_comul_apply (x : A) :
-    TensorProduct.map φ φ (comul x) = comul (R := R) (φ x) :=
-  LinearMap.congr_fun φ.map_comp_comul' _
-
-protected theorem map_add (r s : A) : φ (r + s) = φ r + φ s :=
-  map_add _ _ _
-
-protected theorem map_zero : φ 0 = 0 :=
-  map_zero _
-
-protected theorem map_smul (r : R) (x : A) : φ (r • x) = r • φ x :=
-  map_smul _ _ _
-
-protected theorem map_sum {ι : Type*} (f : ι → A) (s : Finset ι) :
-    φ (∑ x in s, f x) = ∑ x in s, φ (f x) :=
-  map_sum _ _ _
-
-protected theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A) :
-    φ (f.sum g) = f.sum fun i a => φ (g i a) :=
-  map_finsupp_sum _ _ _
-
 variable (R A)
 
 /-- Identity map as a `CoalgHom`. -/
 @[simps!] protected def id : A →ₗc[R] A :=
 { LinearMap.id with
-  counit_comp' := by ext; rfl
-  map_comp_comul' := by simp only [map_id, LinearMap.id_comp, LinearMap.comp_id] }
+  counit_comp := by ext; rfl
+  map_comp_comul := by simp only [map_id, LinearMap.id_comp, LinearMap.comp_id] }
 
 variable {R A}
 
@@ -235,8 +213,8 @@ theorem id_toLinearMap : (CoalgHom.id R A : A →ₗ[R] A) = LinearMap.id := rfl
 /-- Composition of coalgebra homomorphisms. -/
 @[simps!] def comp (φ₁ : B →ₗc[R] C) (φ₂ : A →ₗc[R] B) : A →ₗc[R] C :=
   { (φ₁ : B →ₗ[R] C) ∘ₗ (φ₂ : A →ₗ[R] B) with
-    counit_comp' := by ext; simp
-    map_comp_comul' := by ext; simp [map_comp] }
+    counit_comp := by ext; simp
+    map_comp_comul := by ext; simp [map_comp] }
 
 @[simp]
 theorem coe_comp (φ₁ : B →ₗc[R] C) (φ₂ : A →ₗc[R] B) : ⇑(φ₁.comp φ₂) = φ₁ ∘ φ₂ := rfl
@@ -304,8 +282,8 @@ variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
 /-- The counit of a coalgebra as a `CoalgHom`. -/
 def counitCoalgHom : A →ₗc[R] R :=
   { counit with
-    counit_comp' := by ext; simp
-    map_comp_comul' := by
+    counit_comp := by ext; simp
+    map_comp_comul := by
       ext
       simp only [LinearMap.coe_comp, Function.comp_apply, CommSemiring.comul_apply,
         ← LinearMap.lTensor_comp_rTensor, rTensor_counit_comul, LinearMap.lTensor_tmul] }
@@ -322,10 +300,10 @@ variable {R}
 
 instance subsingleton_to_ring : Subsingleton (A →ₗc[R] R) :=
   ⟨fun f g => CoalgHom.ext fun x => by
-    have hf := LinearMap.ext_iff.1 f.counit_comp x
-    have hg := LinearMap.ext_iff.1 g.counit_comp x
-    simp_all only [LinearMap.coe_comp, CoalgHom.coe_toLinearMap, Function.comp_apply,
-      CommSemiring.counit_apply, hf, hg]⟩
+    have hf := CoalgHomClass.counit_comp_apply f x
+    have hg := CoalgHomClass.counit_comp_apply g x
+    simp_all only [CoalgHom.toLinearMap_eq_coe, LinearMap.coe_comp, CoalgHom.coe_toLinearMap,
+      Function.comp_apply, CommSemiring.counit_apply]⟩
 
 @[ext high]
 theorem ext_to_ring (f g : A →ₗc[R] R) : f = g := Subsingleton.elim _ _
