@@ -5,20 +5,33 @@ Authors: Xavier Roblot
 -/
 import Mathlib.MeasureTheory.Group.GeometryOfNumbers
 import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding
+import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 
 #align_import number_theory.number_field.canonical_embedding from "leanprover-community/mathlib"@"60da01b41bbe4206f05d34fd70c8dd7498717a30"
 
 /-!
 # Convex Bodies
 
-This file contains theorems about convex bodies on infinite places of a number field.
+The file contains the definitions of several convex bodies lying in the space `ℝ^r₁ × ℂ^r₂`
+associated to a number field of signature `K` and proves several existence theorems by applying
+*Minkowski Convex Body Theorem* to those.
 
 ## Main definitions and results
 
-* `NumberField.mixedEmbedding.exists_ne_zero_mem_ringOfIntegers_lt`: let
-`f : InfinitePlace K → ℝ≥0`, if the product `∏ w, f w` is large enough, then there exists a
-nonzero algebraic integer `a` in `K` such that `w a < f w` for all infinite places `w`.
+* `NumberField.mixedEmbedding.convexBodyLT`: The set of points `x` such that `‖x w‖ < f w` for all
+infinite places `w` with `f : InfinitePlace K → ℝ≥0`.
+
+* `NumberField.mixedEmbedding.convexBodySum`: The set of points `x` such that
+`∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`
+
+* `NumberField.mixedEmbedding.exists_ne_zero_mem_ideal_lt`: Let `I` be a fractional ideal of `K`.
+Assume that `f` is such that `minkowskiBound K I < volume (convexBodyLT K f)`, then there exists a
+nonzero algebraic number `a` in `I` such that `w a < f w` for all infinite places `w`.
+
+* `NumberField.mixedEmbedding.exists_ne_zero_mem_ideal_of_norm_le`: Let `I` be a fractional ideal
+of `K`. Assume that `B` is such that `minkowskiBound K I < volume (convexBodySum K B)` (see
+`convexBodySum_volume` for the computation of this volume), then there exists a nonzero algebraic
+number `a` in `I` such that `|Norm a| < (B / d) ^ d` where `d` is the degree of `K`.
 
 ## Tags
 
@@ -31,6 +44,7 @@ namespace NumberField.mixedEmbedding
 
 open NumberField NumberField.InfinitePlace FiniteDimensional
 
+/-- The space `ℝ^r₁ × ℂ^r₂` with `(r₁, r₂)` the signature of `K`. -/
 local notation "E" K =>
   ({w : InfinitePlace K // IsReal w} → ℝ) × ({w : InfinitePlace K // IsComplex w} → ℂ)
 
@@ -582,6 +596,11 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
       rw [NNReal.coe_one, Real.le_sqrt' zero_lt_one, one_pow]
       set_option tactic.skipAssignedInstances false in norm_num
 
+/-- Let `I` be a fractional ideal of `K`. Assume that `B : ℝ` is such that
+`minkowskiBound K I < volume (convexBodySum K B)` where `convexBodySum K B` is the set of points
+`x` such that `∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B` (see `convexBodySum_volume` for
+the computation of this volume), then there exists a nonzero algebraic number `a` in `I` such
+that `|Norm a| < (B / d) ^ d` where `d` is the degree of `K`. -/
 theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
     (h : (minkowskiBound K I) ≤ volume (convexBodySum K B)) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧
@@ -623,3 +642,5 @@ theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le {B : ℝ}
   exact ⟨a, ha, h_nz, h_bd⟩
 
 end minkowski
+
+end NumberField.mixedEmbedding
