@@ -374,23 +374,27 @@ def Measure.ae {α : Type*} {_m : MeasurableSpace α} (μ : Measure α) : Filter
     measure_mono_null hs ht
 #align measure_theory.measure.ae MeasureTheory.Measure.ae
 
--- mathport name: «expr∀ᵐ ∂ , »
-/-- `∀ᵐ a ∂μ, p a` means that `p a` for a.e. `a`, i.e. `p` holds true away from a null set -/
+/-- `∀ᵐ a ∂μ, p a` means that `p a` for a.e. `a`, i.e. `p` holds true away from a null set.
+
+This is notation for `Filter.Eventually p (Measure.ae μ)`. -/
 notation3 "∀ᵐ "(...)" ∂"μ", "r:(scoped p => Filter.Eventually p <| Measure.ae μ) => r
 
--- mathport name: «expr∃ᵐ ∂ , »
 /-- `∀ᵐ a ∂μ, p a` means that `p` holds `∂μ`-frequently,
-i.e. `p` holds on a set of positive measure -/
+i.e. `p` holds on a set of positive measure.
+
+This is notation for `Filter.Frequently p (Measure.ae μ)`. -/
 notation3 "∃ᵐ "(...)" ∂"μ", "r:(scoped P => Filter.Frequently P <| Measure.ae μ) => r
 
--- mathport name: «expr =ᵐ[ ] »
 /-- `f =ᵐ[μ] g` means `f` and `g` are eventually equal along the a.e. filter,
-i.e. `f=g` away from a null set -/
+i.e. `f=g` away from a null set.
+
+This is notation for `Filter.EventuallyEq (Measure.ae μ) f g`. -/
 notation:50 f " =ᵐ[" μ:50 "] " g:50 => Filter.EventuallyEq (Measure.ae μ) f g
 
--- mathport name: «expr ≤ᵐ[ ] »
 /-- `f ≤ᵐ[μ] g` means `f` is eventually less than `g` along the a.e. filter,
-i.e. `f ≤ g` away from a null set -/
+i.e. `f ≤ g` away from a null set.
+
+This is notation for `Filter.EventuallyLE (Measure.ae μ) f g`. -/
 notation:50 f " ≤ᵐ[" μ:50 "] " g:50 => Filter.EventuallyLE (Measure.ae μ) f g
 
 theorem mem_ae_iff {s : Set α} : s ∈ μ.ae ↔ μ sᶜ = 0 :=
@@ -682,14 +686,16 @@ add_decl_doc volume
 
 section MeasureSpace
 
--- mathport name: «expr∀ᵐ , »
-/-- `∀ᵐ a, p a` means that `p a` for a.e. `a`, i.e. `p` holds true away from a null set -/
+/-- `∀ᵐ a, p a` means that `p a` for a.e. `a`, i.e. `p` holds true away from a null set.
+
+This is notation for `Filter.Eventually P (Measure.ae MeasureSpace.volume)`. -/
 notation3 "∀ᵐ "(...)", "r:(scoped P =>
   Filter.Eventually P <| MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
 
--- mathport name: «expr∃ᵐ , »
 /-- `∃ᵐ a, p a` means that `p` holds frequently, i.e. on a set of positive measure,
-w.r.t. the volume measure -/
+w.r.t. the volume measure.
+
+This is notation for `Filter.Frequently P (Measure.ae MeasureSpace.volume)`. -/
 notation3 "∃ᵐ "(...)", "r:(scoped P =>
   Filter.Frequently P <| MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
 
