@@ -440,7 +440,7 @@ def import_old_files_declarations():
         if old != new: # and old not in aligns.values():
             old_declarations.append(old)
     same = set(aligns.values()).intersection(set(old_declarations))
-    #print(f"Found {len(same)} old declarations which occur as a different new declaration:\n{same}")
+    # print(f"Found {len(same)} old declarations which occur as a different new declaration:\n{same}")
     old_declarations = [s for s in old_declarations if s not in same]
     assert "CommRing" not in old_declarations
     return old_files, old_declarations
