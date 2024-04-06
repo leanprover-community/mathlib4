@@ -212,6 +212,18 @@ lemma cfcₙ_apply_of_not_map_zero {f : R → R} (hf : ¬ f 0 = 0) :
     cfcₙ a f = 0 := by
   rw [cfcₙ_def, dif_neg (not_and_of_not_right _ (not_and_of_not_right _ hf))]
 
+lemma cfcₙHom_eq_cfcₙ_extend {a : A} (g : R → R) (ha : p a) (f : C(σₙ R a, R)₀) :
+    cfcₙHom ha f = cfcₙ a (Function.extend Subtype.val f g) := by
+  have h : f = (σₙ R a).restrict (Function.extend Subtype.val f g) := by
+    ext; simp [Subtype.val_injective.extend_apply]
+  have hg : ContinuousOn (Function.extend Subtype.val f g) (σₙ R a) :=
+    continuousOn_iff_continuous_restrict.mpr <| h ▸ map_continuous f
+  have hg0 : (Function.extend Subtype.val f g) 0 = 0 := by
+    rw [← quasispectrum.coe_zero (R := R) a, Subtype.val_injective.extend_apply]
+    exact map_zero f
+  rw [cfcₙ_apply ..]
+  congr!
+
 variable (R) in
 lemma cfcₙ_id (ha : p a := by cfc_tac) : cfcₙ a (id : R → R) = a :=
   cfcₙ_apply a (id : R → R) ▸ cfcₙHom_id (p := p) ha

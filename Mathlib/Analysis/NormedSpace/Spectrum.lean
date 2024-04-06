@@ -618,6 +618,11 @@ lemma nnreal_iff [Algebra ℝ A] {a : A} :
   · exact .of_subset_range_algebraMap _ _ (fun _ ↦ Real.toNNReal_coe)
       fun x hx ↦ ⟨⟨x, h x hx⟩, rfl⟩
 
+lemma nnreal_of_nonneg {A : Type*} [Ring A] [PartialOrder A] [Algebra ℝ A]
+    [NonnegSpectrumClass ℝ A] {a : A} (ha : 0 ≤ a) :
+    SpectrumRestricts a ContinuousMap.realToNNReal :=
+  nnreal_iff.mpr <| NonnegSpectrumClass.spectrum_nonneg_of_nonneg a ha
+
 lemma real_iff [Algebra ℂ A] {a : A} :
     SpectrumRestricts a Complex.reCLM ↔ ∀ x ∈ spectrum ℂ a, x = x.re := by
   refine ⟨fun h x hx ↦ ?_, fun h ↦ ?_⟩
