@@ -344,6 +344,6 @@ alias ⟨_, of_spectrum_nonneg⟩ := iff_spectrum_nonneg
 end NonnegSpectrumClass
 
 lemma spectrum_nonneg_of_nonneg {𝕜 A : Type*} [LinearOrderedField 𝕜] [Ring A] [PartialOrder A]
-    [Algebra 𝕜 A] [NonnegSpectrumClass 𝕜 A] {a : A} (ha : 0 ≤ a) {x : 𝕜} (hx : x ∈ spectrum 𝕜 a) :
+    [Algebra 𝕜 A] [NonnegSpectrumClass 𝕜 A] ⦃a : A⦄ (ha : 0 ≤ a) ⦃x : 𝕜⦄ (hx : x ∈ spectrum 𝕜 a) :
     0 ≤ x :=
   NonnegSpectrumClass.iff_spectrum_nonneg.mp inferInstance a ha x hx

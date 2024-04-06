@@ -288,8 +288,8 @@ variable {A : Type*} [NormedRing A] [CompleteSpace A]
 variable [PartialOrder A] [StarRing A] [StarOrderedRing A] [CstarRing A]
 variable [NormedAlgebra ℂ A] [StarModule ℂ A]
 
-instance CstarRing.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A where
-  spectrum_nonneg_of_nonneg a ha := by
+instance CstarRing.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A :=
+  .of_spectrum_nonneg fun a ha ↦ by
     rw [StarOrderedRing.nonneg_iff] at ha
     induction ha using AddSubmonoid.closure_induction' with
     | mem x hx =>
