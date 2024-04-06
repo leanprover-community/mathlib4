@@ -239,7 +239,7 @@ theorem HasDerivWithinAt.comp (hh₂ : HasDerivWithinAt h₂ h₂' s' (h x))
 /-- The chain rule.
 
 Note that the function `h₂` is a function on an algebra. If you are looking for the chain rule
-with `h₂` taking values in a vector space, use `HAsDerivAt.scomp`. -/
+with `h₂` taking values in a vector space, use `HasDerivAt.scomp`. -/
 nonrec theorem HasDerivAt.comp (hh₂ : HasDerivAt h₂ h₂' (h x)) (hh : HasDerivAt h h' x) :
     HasDerivAt (h₂ ∘ h) (h₂' * h') x :=
   hh₂.comp x hh hh.continuousAt
@@ -248,7 +248,7 @@ nonrec theorem HasDerivAt.comp (hh₂ : HasDerivAt h₂ h₂' (h x)) (hh : HasDe
 /-- The chain rule.
 
 Note that the function `h₂` is a function on an algebra. If you are looking for the chain rule
-with `h₂` taking values in a vector space, use `HAsDerivAt.scomp_of_eq`. -/
+with `h₂` taking values in a vector space, use `HasDerivAt.scomp_of_eq`. -/
 theorem HasDerivAt.comp_of_eq
     (hh₂ : HasDerivAt h₂ h₂' y) (hh : HasDerivAt h h' x) (hy : y = h x) :
     HasDerivAt (h₂ ∘ h) (h₂' * h') x := by
