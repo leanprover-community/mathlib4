@@ -150,7 +150,7 @@ def set_option_check(lines, path):
             option_prefix = line.strip().split(' ', 2)[1].split('.', 1)[0]
             # forbidden options: pp, profiler, trace
             if option_prefix in {'pp', 'profiler', 'trace'}:
-                errors += [(ERR_OPT, line_nr, path)]
+                errors += [(ERR_OPT, None, line_nr, path)]
                 # skip adding this line to newlines so that we suggest removal
                 continue
         newlines.append((line_nr, line))
@@ -161,10 +161,10 @@ def line_endings_check(lines, path):
     newlines = []
     for line_nr, line in lines:
         if "\r\n" in line:
-            errors += [(ERR_WIN, line_nr, path)]
+            errors += [(ERR_WIN, None, line_nr, path)]
             line = line.replace("\r\n", "\n")
         if line.endswith(" \n"):
-            errors += [(ERR_TWS, line_nr, path)]
+            errors += [(ERR_TWS, None, line_nr, path)]
             line = line.rstrip() + "\n"
         newlines.append((line_nr, line))
     return errors, newlines
@@ -193,12 +193,12 @@ def four_spaces_in_second_line(lines, path):
                 if stripped_next_line.startswith("| ") or line.endswith("where\n"):
                     # Check and fix if the number of leading space is not 2
                     if num_spaces != 2:
-                        errors += [(ERR_IND, next_line_nr, path)]
+                        errors += [(ERR_IND, None, next_line_nr, path)]
                         new_next_line = ' ' * 2 + stripped_next_line
                 # Check and fix if the number of leading spaces is not 4
                 else:
                     if num_spaces != 4:
-                        errors += [(ERR_IND, next_line_nr, path)]
+                        errors += [(ERR_IND, None, next_line_nr, path)]
                         new_next_line = ' ' * 4 + stripped_next_line
         newlines.append((next_line_nr, new_next_line))
     return errors, newlines
@@ -224,7 +224,7 @@ def nonterminal_simp_check(lines, path):
                 # Check if the number of leading spaces is the same
                 if num_spaces == num_next_spaces:
                     # If so, the simp is nonterminal
-                    errors += [(ERR_NSP, line_nr, path)]
+                    errors += [(ERR_NSP, None, line_nr, path)]
                     new_line = line.replace("simp", "simp?")
         newlines.append((line_nr, new_line))
     newlines.append(lines[-1])
@@ -238,7 +238,7 @@ def long_lines_check(lines, path):
         if "http" in line or "#align" in line:
             continue
         if len(line) > 101:
-            errors += [(ERR_LIN, line_nr, path)]
+            errors += [(ERR_LIN, None, line_nr, path)]
     return errors, lines
 
 def import_only_check(lines, path):
@@ -260,14 +260,14 @@ def regular_check(lines, path):
     copy_lines = ""
     for line_nr, line in lines:
         if not copy_started and line == "\n":
-            errors += [(ERR_COP, copy_start_line_nr, path)]
+            errors += [(ERR_COP, None, copy_start_line_nr, path)]
             continue
         if not copy_started and line == "/-\n":
             copy_started = True
             copy_start_line_nr = line_nr
             continue
         if not copy_started:
-            errors += [(ERR_COP, line_nr, path)]
+            errors += [(ERR_COP, None, line_nr, path)]
         if copy_started and not copy_done:
             copy_lines += line
             if "Author" in line:
@@ -278,19 +278,19 @@ def regular_check(lines, path):
                     ("  " in line) or
                     (" and " in line) or
                     (line[-2] == '.')):
-                    errors += [(ERR_AUT, line_nr, path)]
+                    errors += [(ERR_AUT, None, line_nr, path)]
             if line == "-/\n":
                 if ((not "Copyright" in copy_lines) or
                     (not "Apache" in copy_lines) or
                     (not "Authors: " in copy_lines)):
-                    errors += [(ERR_COP, copy_start_line_nr, path)]
+                    errors += [(ERR_COP, None, copy_start_line_nr, path)]
                 copy_done = True
             continue
         if copy_done and line == "\n":
             continue
         words = line.split()
         if words[0] != "import" and words[0] != "--" and words[0] != "/-!" and words[0] != "#align_import":
-            errors += [(ERR_MOD, line_nr, path)]
+            errors += [(ERR_MOD, None, line_nr, path)]
             break
         if words[0] == "/-!":
             break
@@ -305,7 +305,7 @@ def banned_import_check(lines, path):
         if imports[0] != "import":
             break
         if imports[1] in ["Mathlib.Tactic"]:
-            errors += [(ERR_TAC, line_nr, path)]
+            errors += [(ERR_TAC, None, line_nr, path)]
     return errors, lines
 
 def isolated_by_dot_semicolon_check(lines, path):
@@ -318,17 +318,17 @@ def isolated_by_dot_semicolon_check(lines, path):
             # See https://github.com/leanprover-community/mathlib4/pull/3825#discussion_r1186702599
             prev_line = lines[line_nr - 2][1].rstrip()
             if not prev_line.endswith(",") and not re.search(", fun [^,]* (=>|↦)$", prev_line):
-                errors += [(ERR_IBY, line_nr, path)]
+                errors += [(ERR_IBY, None, line_nr, path)]
         if line.lstrip().startswith(". "):
-            errors += [(ERR_DOT, line_nr, path)]
+            errors += [(ERR_DOT, None, line_nr, path)]
             line = line.replace(". ", "· ", 1)
         if line.strip() in (".", "·"):
-            errors += [(ERR_DOT, line_nr, path)]
+            errors += [(ERR_DOT, None, line_nr, path)]
         if " ;" in line:
-            errors += [(ERR_SEM, line_nr, path)]
+            errors += [(ERR_SEM, None, line_nr, path)]
             line = line.replace(" ;", ";")
         if line.lstrip().startswith(":"):
-            errors += [(ERR_CLN, line_nr, path)]
+            errors += [(ERR_CLN, None, line_nr, path)]
         newlines.append((line_nr, line))
     return errors, newlines
 
@@ -343,7 +343,7 @@ def left_arrow_check(lines, path):
         # are used for syntax quotations). Otherwise, insert a space after "←".
         new_line = re.sub(r'←(?:(?=``?\()|(?![%`]))(\S)', r'← \1', line)
         if new_line != line:
-            errors += [(ERR_ARR, line_nr, path)]
+            errors += [(ERR_ARR, None, line_nr, path)]
         newlines.append((line_nr, new_line))
     return errors, newlines
 
@@ -468,7 +468,7 @@ def lint_backticks_in_comments(lines, path):
             if item in old_declarations:
                 print(f'old declaration {item} mentioned in line: "{line}"')
 
-        #errors += [(ERR_ARR, line_nr, path)]
+        #errors += [(ERR_ARR, None, line_nr, path)]
         newlines.append((line_nr, line))
     return errors, newlines
 
@@ -488,7 +488,7 @@ def output_message(path, line_nr, code, msg):
 
 def format_errors(errors):
     global new_exceptions
-    for errno, line_nr, path in errors:
+    for errno, context, line_nr, path in errors:
         if (errno, path.resolve(), None) in exceptions:
             continue
         new_exceptions = True
