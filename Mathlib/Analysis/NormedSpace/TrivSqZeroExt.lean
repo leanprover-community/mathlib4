@@ -54,7 +54,7 @@ variable (𝕜 : Type*) {S R M : Type*}
 
 local notation "tsze" => TrivSqZeroExt
 
-open NormedSpace -- For `NormedSpace.exp`.
+open NormedSpace -- For `exp`.
 
 namespace TrivSqZeroExt
 
@@ -322,7 +322,7 @@ variable [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒ�
 variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
 variable [CompleteSpace R] [CompleteSpace M]
 
--- Evidence that we have sufficient instances on `tsze R N` to make `NormedSpace.exp_add_of_commute` usable
+-- Evidence that we have sufficient instances on `tsze R N` to make `exp_add_of_commute` usable
 example (a b : tsze R M) (h : Commute a b) : exp 𝕜 (a + b) = exp 𝕜 a * exp 𝕜 b :=
   exp_add_of_commute h
 

@@ -19,7 +19,7 @@ In this file, we define `exp 𝕂 : 𝔸 → 𝔸`, the exponential map in a top
 field `𝕂`.
 
 While for most interesting results we need `𝔸` to be normed algebra, we do not require this in the
-definition in order to make `NormedSpace.exp` independent of a particular choice of norm. The definition also
+definition in order to make `exp` independent of a particular choice of norm. The definition also
 does not require that `𝔸` be complete, but we need to assume it for most results.
 
 We then prove some basic results, but we avoid importing derivatives here to minimize dependencies.
@@ -52,14 +52,15 @@ We prove most result for an arbitrary field `𝕂`, and then specialize to `𝕂
 - `NormedSpace.exp_neg` : if `𝔸` is a division ring, then we have `exp 𝕂 (-x) = (exp 𝕂 x)⁻¹`.
 - `exp_sum_of_commute` : the analogous result to `NormedSpace.exp_add_of_commute` for `Finset.sum`.
 - `exp_sum` : the analogous result to `NormedSpace.exp_add` for `Finset.sum`.
-- `NormedSpace.exp_nsmul` : repeated addition in the domain corresponds to repeated multiplication in the
-  codomain.
-- `NormedSpace.exp_zsmul` : repeated addition in the domain corresponds to repeated multiplication in the
-  codomain.
+- `NormedSpace.exp_nsmul` : repeated addition in the domain corresponds to
+  repeated multiplication in the codomain.
+- `NormedSpace.exp_zsmul` : repeated addition in the domain corresponds to
+  repeated multiplication in the codomain.
 
 ### Other useful compatibility results
 
-- `NormedSpace.exp_eq_exp` : if `𝔸` is a normed algebra over two fields `𝕂` and `𝕂'`, then `exp 𝕂 = exp 𝕂' 𝔸`
+- `NormedSpace.exp_eq_exp` : if `𝔸` is a normed algebra over two fields `𝕂` and `𝕂'`,
+  then `exp 𝕂 = exp 𝕂' 𝔸`
 
 ### Notes
 
@@ -78,7 +79,7 @@ open Real
 This is because `exp x` tries the `NormedSpace.exp` function defined here,
 and generates a slow coercion search from `Real` to `Type`, to fit the first argument here.
 We will resolve this slow coercion separately,
-but we want to move `NormedSpace.exp` out of the root namespace in any case to avoid this ambiguity.
+but we want to move `exp` out of the root namespace in any case to avoid this ambiguity.
 
 In the long term is may be possible to replace `Real.exp` and `Complex.exp` with this one.
 
@@ -330,7 +331,7 @@ theorem invOf_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
   letI := invertibleExpOfMemBall hx; convert (rfl : ⅟ (exp 𝕂 x) = _)
 #align inv_of_exp_of_mem_ball NormedSpace.invOf_exp_of_mem_ball
 
-/-- Any continuous ring homomorphism commutes with `NormedSpace.exp`. -/
+/-- Any continuous ring homomorphism commutes with `exp`. -/
 theorem map_exp_of_mem_ball {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹] (f : F) (hf : Continuous f)
     (x : 𝔸) (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     f (exp 𝕂 x) = exp 𝕂 (f x) := by

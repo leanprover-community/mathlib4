@@ -13,7 +13,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 In this file we prove that the radius of convergence of a `FormalMultilinearSeries` is equal to
 $\liminf_{n\to\infty} \frac{1}{\sqrt[n]{‖p n‖}}$. This lemma can't go to `Analysis.Analytic.Basic`
-because this would create a circular dependency once we redefine `NormedSpace.exp` using
+because this would create a circular dependency once we redefine `exp` using
 `FormalMultilinearSeries`.
 -/
 

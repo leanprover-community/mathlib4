@@ -11,7 +11,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 /-!
 # The complex `log` function
 
-Basic properties, relationship with `NormedSpace.exp`.
+Basic properties, relationship with `exp`.
 -/
 
 
@@ -23,7 +23,7 @@ open Set Filter Bornology
 
 open scoped Real Topology ComplexConjugate
 
-/-- Inverse of the `NormedSpace.exp` function. Returns values such that `(log x).im > - π` and `(log x).im ≤ π`.
+/-- Inverse of the `exp` function. Returns values such that `(log x).im > - π` and `(log x).im ≤ π`.
   `log 0 = 0`-/
 -- Porting note: @[pp_nodot] does not exist in mathlib4
 noncomputable def log (x : ℂ) : ℂ :=

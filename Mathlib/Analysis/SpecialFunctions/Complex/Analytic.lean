@@ -11,7 +11,7 @@ import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 /-!
 # Various complex special functions are analytic
 
-`NormedSpace.exp`, `log`, and `cpow` are analytic, since they are differentiable.
+`exp`, `log`, and `cpow` are analytic, since they are differentiable.
 -/
 
 open Complex Set
@@ -20,11 +20,11 @@ open scoped Topology
 variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
 variable {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
 
-/-- `NormedSpace.exp` is entire -/
+/-- `exp` is entire -/
 theorem analyticOn_cexp : AnalyticOn ℂ exp univ := by
   rw [analyticOn_univ_iff_differentiable]; exact differentiable_exp
 
-/-- `NormedSpace.exp` is analytic at any point -/
+/-- `exp` is analytic at any point -/
 theorem analyticAt_cexp : AnalyticAt ℂ exp z :=
   analyticOn_cexp z (mem_univ _)
 
