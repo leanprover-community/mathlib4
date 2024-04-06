@@ -47,7 +47,6 @@ open Topology BigOperators NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
 
--- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc
 
 variable {α β γ δ : Type*}
