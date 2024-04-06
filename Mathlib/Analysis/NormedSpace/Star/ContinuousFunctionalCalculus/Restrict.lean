@@ -137,11 +137,11 @@ lemma cfcHom_eq_restrict (f : C(S, R)) (h_isom : Isometry (algebraMap R S)) {a :
 
 lemma cfc_eq_restrict (f : C(S, R)) (h_isom : Isometry (algebraMap R S)) {a : A} (hpa : p a)
     (hqa : q a) (h : SpectrumRestricts a f) [CompactSpace (spectrum S a)] (g : R → R) :
-    cfc a g = cfc a (fun x ↦ algebraMap R S (g (f x))) := by
+    cfc g a = cfc (fun x ↦ algebraMap R S (g (f x))) a := by
   by_cases hg : ContinuousOn g (spectrum R a)
-  · rw [cfc_apply a g, cfcHom_eq_restrict f h_isom hpa hqa h, SpectrumRestricts.starAlgHom_apply,
+  · rw [cfc_apply g a, cfcHom_eq_restrict f h_isom hpa hqa h, SpectrumRestricts.starAlgHom_apply,
       cfcHom_eq_cfc_extend 0]
-    apply cfc_congr a fun x hx ↦ ?_
+    apply cfc_congr fun x hx ↦ ?_
     lift x to spectrum S a using hx
     simp [Function.comp, Subtype.val_injective.extend_apply]
   · have : ¬ ContinuousOn (fun x ↦ algebraMap R S (g (f x)) : S → S) (spectrum S a) := by

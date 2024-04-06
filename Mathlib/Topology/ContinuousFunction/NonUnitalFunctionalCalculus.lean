@@ -214,7 +214,7 @@ lemma cfcₙ_apply_of_not_map_zero {f : R → R} (a : A) (hf : ¬ f 0 = 0) :
   rw [cfcₙ_def, dif_neg (not_and_of_not_right _ (not_and_of_not_right _ hf))]
 
 lemma cfcₙHom_eq_cfcₙ_extend {a : A} (g : R → R) (ha : p a) (f : C(σₙ R a, R)₀) :
-    cfcₙHom ha f = cfcₙ a (Function.extend Subtype.val f g) := by
+    cfcₙHom ha f = cfcₙ (Function.extend Subtype.val f g) a := by
   have h : f = (σₙ R a).restrict (Function.extend Subtype.val f g) := by
     ext; simp [Subtype.val_injective.extend_apply]
   have hg : ContinuousOn (Function.extend Subtype.val f g) (σₙ R a) :=
