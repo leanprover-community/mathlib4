@@ -813,8 +813,6 @@ noncomputable instance instField : Field ℂ where
 @[simp, norm_cast]
 lemma ofReal_qsmul (q : ℚ) (r : ℝ) : ofReal' (q • r) = q • r := by simp [Rat.smul_def]
 
-end
-
 theorem conj_inv (x : ℂ) : conj x⁻¹ = (conj x)⁻¹ :=
   star_inv' _
 #align complex.conj_inv Complex.conj_inv
