@@ -94,11 +94,11 @@ abbrev RunLintingStep := Syntax → CommandElabM LintingStep
 end lintingflow
 
 /-- An encoded pair of a syntax nodekind and a category. Named arguments to help prevent typos. -/
-private def mkLintingRuleKey (kind cat : Name) := mkSimpleNamePair kind cat
+private def mkLintingRuleKey (kind cat : Name) := kind.mkSimpleNamePair cat
 
 /-- Get the pair of a syntax nodekind and a category from an encoded pair. Named argument to
 prevent typos. -/
-private def ofLintingRuleKey? (kindCat : Name) := ofSimpleNamePair? kindCat
+private def ofLintingRuleKey? (kindCat : Name) := kindCat.ofSimpleNamePair?
 
 section attr
 
@@ -199,8 +199,8 @@ attribute -/
 
 --TODO: move
 
-private def LintingRulesCatImpl.toSyntaxRuleData :
-    LintingRulesCatImpl → SyntaxRuleData
+private def LintingRulesCatImpl.toSyntaxRulesData :
+    LintingRulesCatImpl → SyntaxRulesData
   | { name, OutConst, resolveConst, .. } => {
     type := ``RunLintingStep
     /- recall that `Out : Type`, `resolveConst : Out → CommandElabM LintingStep`, and
@@ -211,8 +211,7 @@ private def LintingRulesCatImpl.toSyntaxRuleData :
         match stx with $alts:matchAlt*
       (unfold_abbrev1% $(mkIdent resolveConst):term) out)
     attrName := `linting_rule -- We can't use an `s`, lest it conflict with the command.
-    -- TODO: pass stx and use as ref? Or just return a `name`?
-    mkKey := some fun kind => mkIdentFromRef <| mkLintingRuleKey kind name
+    mkAttr := fun attr kind => mkAttrWithKey attr <| mkLintingRuleKey kind name
     cmdName := "linting_rules"
     auxDefName := `lintingRules
   }
@@ -274,7 +273,7 @@ syntax_rules_header
   let decl := `LintingRules.Category ++ id.getId
   addConstInfo id decl
   -- show docstring provided for `register_linting_rules_cat ..` on `id`
-  return (← unsafe evalConstCheck LintingRulesCatImpl ``LintingRulesCatImpl decl).toSyntaxRuleData
+  return (← unsafe evalConstCheck LintingRulesCatImpl ``LintingRulesCatImpl decl).toSyntaxRulesData
 
 end attr
 
