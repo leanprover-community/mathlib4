@@ -5,7 +5,6 @@ Authors: Praneeth Kolichala
 -/
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Defs
 import Mathlib.Tactic.Convert
