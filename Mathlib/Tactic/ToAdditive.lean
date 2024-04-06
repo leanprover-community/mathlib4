@@ -90,7 +90,7 @@ that have previously been labeled with `to_additive`.
 
 In the `mul_comm'` example above, `to_additive` maps:
 * `mul_comm'` to `add_comm'`,
-* `comm_semigroup` to `add_comm_semigroup`,
+* `comm_semigroup` to `AddCommSemigroup`,
 * `x * y` to `x + y` and `y * x` to `y + x`, and
 * `comm_semigroup.mul_comm'` to `add_comm_semigroup.add_comm'`.
 
@@ -106,7 +106,7 @@ Examples:
 * `@Mul.mul Nat n m` (i.e. `(n * m : Nat)`) will not change to `+`, since its
   first argument is `Nat`, an identifier not applied to any arguments.
 * `@Mul.mul (α × β) x y` will change to `+`. It's first argument contains only the identifier
-  `prod`, but this is applied to arguments, `α` and `β`.
+  `Prod`, but this is applied to arguments, `α` and `β`.
 * `@Mul.mul (α × Int) x y` will not change to `+`, since its first argument contains `Int`.
 
 The reasoning behind the heuristic is that the first argument is the type which is "additivized",
@@ -457,7 +457,7 @@ structure Config : Type where
   tgt : Name := Name.anonymous
   /-- An optional doc string.-/
   doc : Option String := none
-  /-- If `allowAutoName` is `false` (default) then
+  /-- If `allowAutoName` is `False` (default) then
   `@[to_additive]` will check whether the given name can be auto-generated. -/
   allowAutoName : Bool := false
   /-- The arguments that should be reordered by `to_additive`, using cycle notation. -/
@@ -520,7 +520,7 @@ unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
 `additiveTest e` tests whether the expression `e` contains a constant
 `nm` that is not applied to any arguments, and such that `translations.find?[nm] = none`.
 This is used in `@[to_additive]` for deciding which subexpressions to transform: we only transform
-constants if `additiveTest` applied to their first argument returns `true`.
+constants if `additiveTest` applied to their first argument returns `True`.
 This means we will replace expression applied to e.g. `α` or `α × β`, but not when applied to
 e.g. `ℕ` or `ℝ × α`.
 We ignore all arguments specified by the `ignore` `NameMap`.
@@ -1339,7 +1339,7 @@ that have previously been labeled with `to_additive`.
 
 In the `mul_comm'` example above, `to_additive` maps:
 * `mul_comm'` to `add_comm'`,
-* `comm_semigroup` to `add_comm_semigroup`,
+* `comm_semigroup` to `AddCommSemigroup`,
 * `x * y` to `x + y` and `y * x` to `y + x`, and
 * `comm_semigroup.mul_comm'` to `add_comm_semigroup.add_comm'`.
 
@@ -1355,7 +1355,7 @@ Examples:
 * `@Mul.mul Nat n m` (i.e. `(n * m : Nat)`) will not change to `+`, since its
   first argument is `Nat`, an identifier not applied to any arguments.
 * `@Mul.mul (α × β) x y` will change to `+`. It's first argument contains only the identifier
-  `prod`, but this is applied to arguments, `α` and `β`.
+  `Prod`, but this is applied to arguments, `α` and `β`.
 * `@Mul.mul (α × Int) x y` will not change to `+`, since its first argument contains `Int`.
 
 The reasoning behind the heuristic is that the first argument is the type which is "additivized",

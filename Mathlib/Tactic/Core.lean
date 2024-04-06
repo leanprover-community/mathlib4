@@ -100,7 +100,7 @@ end Lean
 namespace Mathlib.Tactic
 
 -- FIXME: we cannot write this line when `Lean.Parser.Tactic` is open,
--- or it will get an extra `group`
+-- or it will get an extra `Group`
 syntax withArgs := " with" (ppSpace colGt ident)+
 syntax usingArg := " using " term
 
@@ -155,7 +155,7 @@ def getFVarIdAt (goal : MVarId) (id : Syntax) : TacticM FVarId := withRef id do
 If `ids` is specified, elaborate them in the local context of the given goal to obtain the array of
 `FVarId`s.
 
-If `includeImplementationDetails` is `false` (the default), we filter out implementation details
+If `includeImplementationDetails` is `False` (the default), we filter out implementation details
 (`implDecl`s and `auxDecl`s) from the resulting list of `FVarId`s. -/
 def getFVarIdsAt (goal : MVarId) (ids : Option (Array Syntax) := none)
     (includeImplementationDetails : Bool := false) : TacticM (Array FVarId) :=

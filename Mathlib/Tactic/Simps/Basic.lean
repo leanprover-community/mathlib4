@@ -826,7 +826,7 @@ structure Config where
   constructor. Note: was `none` in Lean 3 -/
   rhsMd := TransparencyMode.reducible
   /-- Generated lemmas that are fully applied, i.e. generates equalities between applied functions.
-  Set this to `false` to generate equalities between functions. -/
+  Set this to `False` to generate equalities between functions. -/
   fullyApplied := true
   /-- List of types in which we are not recursing to generate simplification lemmas.
   E.g. if we write `@[simps] def e : α × β ≃ β × α := ...` we will generate `e_apply` and not
@@ -992,7 +992,7 @@ partial def headStructureEtaReduce (e : Expr) : MetaM Expr := do
 partial def addProjections (nm : Name) (type lhs rhs : Expr)
   (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
   (todo : List (String × Syntax)) (toApply : List Nat) : MetaM (Array Name) := do
-  -- we don't want to unfold non-reducible definitions (like `set`) to apply more arguments
+  -- we don't want to unfold non-reducible definitions (like `Set`) to apply more arguments
   trace[simps.debug] "Type of the Expression before normalizing: {type}"
   withTransparency cfg.typeMd <| forallTelescopeReducing type fun typeArgs tgt ↦ withDefault do
   trace[simps.debug] "Type after removing pi's: {tgt}"

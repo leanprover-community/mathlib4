@@ -55,7 +55,7 @@ def nontrivialityByAssumption (g : MVarId) : MetaM Unit := do
 
 /-- Attempts to generate a `Nontrivial α` hypothesis.
 
-The tactic first looks for an instance using `infer_instance`.
+The tactic first looks for an instance using `inferInstance`.
 
 If the goal is an (in)equality, the type `α` is inferred from the goal.
 Otherwise, the type needs to be specified in the tactic invocation, as `nontriviality α`.

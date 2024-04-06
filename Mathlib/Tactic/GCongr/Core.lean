@@ -112,14 +112,14 @@ needed using the syntax `gcongr with i hi`.
 
 ## Variants
 
-The tactic `rel` is a variant of `gcongr`, intended for teaching.  Local hypotheses are not
+The tactic `Rel` is a variant of `gcongr`, intended for teaching.  Local hypotheses are not
 used automatically to resolve main goals, but must be invoked by name:
 ```
 example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) :
     x ^ 2 * a + c ≤ x ^ 2 * b + d := by
   rel [h1, h2]
 ```
-The `rel` tactic is finishing-only: if fails if any main or side goals are not resolved.
+The `Rel` tactic is finishing-only: if fails if any main or side goals are not resolved.
 -/
 
 namespace Mathlib.Tactic.GCongr
@@ -187,7 +187,7 @@ initialize registerBuiltinAttribute {
         let mut mainSubgoals := mainSubgoals
         -- pull out the conclusion `hypTy` of the antecedent, and check whether it is of the form
         -- `lhs₁ _ ... _ ≈ rhs₁ _ ... _` (for a possibly different relation `≈` than the relation
-        -- `rel` above)
+        -- `Rel` above)
         if let .app (.app _ lhs₁) rhs₁ ← whnf hypTy then
           let lhs₁ := lhs₁.getAppFn
           let rhs₁ := rhs₁.getAppFn
@@ -467,7 +467,7 @@ elab "gcongr" template:(colGt term)?
   else
     throwError "gcongr did not make progress"
 
-/-- The `rel` tactic applies "generalized congruence" rules to solve a relational goal by
+/-- The `Rel` tactic applies "generalized congruence" rules to solve a Relational goal by
 "substitution".  For example,
 ```
 example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) :

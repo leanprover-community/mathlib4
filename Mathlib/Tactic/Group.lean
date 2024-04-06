@@ -10,7 +10,7 @@ import Mathlib.Algebra.Group.Commutator
 #align_import tactic.group from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
-# `group` tactic
+# `Group` tactic
 
 Normalizes expressions in the language of groups. The basic idea is to use the simplifier
 to put everything into a product of group powers (`zpow` which takes a group element and an
@@ -32,7 +32,7 @@ open Lean.Parser.Tactic
 open Lean.Elab.Tactic
 
 -- The next three lemmas are not general purpose lemmas, they are intended for use only by
--- the `group` tactic.
+-- the `Group` tactic.
 @[to_additive]
 theorem zpow_trick {G : Type*} [Group G] (a b : G) (n m : ℤ) :
     a * b ^ n * b ^ m = a * b ^ (n + m) := by rw [mul_assoc, ← zpow_add]
@@ -51,7 +51,7 @@ theorem zpow_trick_one' {G : Type*} [Group G] (a b : G) (n : ℤ) :
 #align tactic.group.zpow_trick_one' Mathlib.Tactic.Group.zpow_trick_one'
 #align tactic.group.zsmul_trick_zero' Mathlib.Tactic.Group.zsmul_trick_zero'
 
-/-- Auxiliary tactic for the `group` tactic. Calls the simplifier only. -/
+/-- Auxiliary tactic for the `Group` tactic. Calls the simplifier only. -/
 syntax (name := aux_group₁) "aux_group₁" (location)? : tactic
 
 macro_rules
@@ -67,7 +67,7 @@ macro_rules
       tsub_self, sub_self, add_neg_self, neg_add_self]
   $[at $location]?)
 
-/-- Auxiliary tactic for the `group` tactic. Calls `ring_nf` to normalize exponents. -/
+/-- Auxiliary tactic for the `Group` tactic. Calls `ring_nf` to normalize exponents. -/
 syntax (name := aux_group₂) "aux_group₂" (location)? : tactic
 
 macro_rules

@@ -480,7 +480,7 @@ private partial def DTExpr.hasLooseBVarsAux (i : Nat) : DTExpr → Bool
   | .lam b         => b.hasLooseBVarsAux (i+1)
   | _              => false
 
-/-- Return `true` if `e` contains a loose bound variable. -/
+/-- Return `True` if `e` contains a loose bound variable. -/
 def DTExpr.hasLooseBVars (e : DTExpr) : Bool :=
   e.hasLooseBVarsAux 0
 

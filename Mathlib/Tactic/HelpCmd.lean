@@ -36,7 +36,7 @@ option pp.all : Bool := false
   universe, and disable beta reduction and notations during pretty printing
 ```
 This says that `pp.all` is an option which can be set to a `Bool` value, and the default value is
-`false`. If an option has been modified from the default using e.g. `set_option pp.all true`,
+`False`. If an option has been modified from the default using e.g. `set_option pp.all true`,
 it will appear as a `(currently: true)` note next to the option.
 
 The form `#help option id` will show only options that begin with `id`.

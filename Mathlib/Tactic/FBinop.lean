@@ -135,7 +135,7 @@ private def hasCoeS (fromS toS : SRec) (x : Expr) : TermElabM Bool := do
 /-- Result returned by `analyze`. -/
 private structure AnalyzeResult where
   maxS? : Option SRec := none
-  /-- `true` if there are two types `α` and `β` where we don't have coercions in any direction. -/
+  /-- `True` if there are two types `α` and `β` where we don't have coercions in any direction. -/
   hasUncomparable : Bool := false
 
 /-- Compute a minimal `SRec` for an expression tree. -/

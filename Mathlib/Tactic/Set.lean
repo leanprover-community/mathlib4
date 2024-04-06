@@ -10,7 +10,7 @@ open Lean Elab Elab.Tactic Meta
 
 syntax setArgsRest := ppSpace ident (" : " term)? " := " term (" with " "← "? ident)?
 
--- This is called `setTactic` rather than `set`
+-- This is called `SetTactic` rather than `Set`
 -- as we sometimes refer to `MonadStateOf.set` from inside `Mathlib.Tactic`.
 syntax (name := setTactic) "set" "!"? setArgsRest : tactic
 
