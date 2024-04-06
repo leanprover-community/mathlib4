@@ -43,117 +43,69 @@ namespace LaurentSeries
 
 section HasseDeriv
 
-variable {V : Type*} [AddCommGroup V] [CommRing R] [Module R V]
-
-theorem hasseDerivCoeffEqZero (k : ℕ) (f : LaurentSeries V) (m : ℤ) (h : m < f.order - k) :
-    (fun (n : ℤ) ↦ Ring.choose (n + k) k • HahnSeries.coeff f (n + k)) m = 0 := by
-  simp only
-  rw [@lt_sub_iff_add_lt] at h
-  rw [coeff_eq_zero_of_lt_order h, smul_zero]
-
 /-- The Laurent series given by Hasse derivative. -/
-def hasseDeriv (k : ℕ) (f : LaurentSeries V) : LaurentSeries V :=
-  HahnSeries.ofSuppBddBelow (fun (n : ℤ) => (Ring.choose (n + k) k) • f.coeff (n + k))
-  (forallLTEqZero_supp_BddBelow _ (f.order - k : ℤ) (hasseDerivCoeffEqZero k f))
+@[simps]
+def hasseDeriv (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V] (k : ℕ) :
+    LaurentSeries V →ₗ[R] LaurentSeries V where
+  toFun f := HahnSeries.ofSuppBddBelow
+    (fun (n : ℤ) => (Ring.choose (n + k) k) • f.coeff (n + k))
+    (forallLTEqZero_supp_BddBelow _ (f.order - k : ℤ)
+    (fun _ h_lt ↦ by rw [coeff_eq_zero_of_lt_order <| lt_sub_iff_add_lt.mp h_lt, smul_zero]))
+  map_add' f g := by
+    simp only [ofSuppBddBelow, add_coeff', Pi.add_apply, smul_add]
+    exact rfl
+  map_smul' r f := by
+    ext
+    simp only [ofSuppBddBelow, smul_coeff, RingHom.id_apply, smul_comm r]
 
-theorem hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) : (hasseDeriv k f).coeff n =
+variable [Semiring R] {V : Type*} [AddCommGroup V] [Module R V]
+
+theorem hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) : (hasseDeriv R k f).coeff n =
     Ring.choose (n + k) k • HahnSeries.coeff f (n + k) := rfl
 
 @[simp]
-theorem hasseDeriv_coeff_add (k : ℕ) (f g : LaurentSeries V) (n : ℤ) :
-    HahnSeries.coeff (hasseDeriv k (f + g)) n = HahnSeries.coeff (hasseDeriv k f) n +
-    HahnSeries.coeff (hasseDeriv k g) n := by
-  simp only [hasseDeriv_coeff, add_coeff', Pi.add_apply, smul_add]
-
-@[simp]
-theorem hasseDeriv_coeff_smul {S : Type*} [Monoid S] [DistribMulAction S V] (k : ℕ) (s : S)
-    (f : LaurentSeries V) (n : ℤ) : HahnSeries.coeff (hasseDeriv k (s • f)) n =
-    s • HahnSeries.coeff (hasseDeriv k f) n := by
-  rw [hasseDeriv_coeff, hasseDeriv_coeff, smul_coeff, smul_comm]
-
-theorem hasseDeriv_add (k : ℕ) (f g : LaurentSeries V) : hasseDeriv k (f + g) =
-    hasseDeriv k f + hasseDeriv k g := by
-  ext
-  exact hasseDeriv_coeff_add k f g _
-
-theorem hasseDeriv_smul (k : ℕ) (r : R) (f : LaurentSeries V) : hasseDeriv k (r • f) =
-    r • (hasseDeriv k f) := by
-  ext
-  exact hasseDeriv_coeff_smul k r f _
-
-@[simp]
-theorem hasseDeriv_zero' (f : LaurentSeries V) : hasseDeriv 0 f = f := by
+theorem hasseDeriv_zero' (f : LaurentSeries V) : hasseDeriv R 0 f = f := by
   simp only [HahnSeries.ext_iff, hasseDeriv, hasseDeriv, Ring.choose_zero_right]
   ext
   simp_rw [Nat.cast_zero, add_zero, one_smul]
   exact rfl
 
-/-- The Hasse derivative as a linear map. -/
-def hasseDeriv.linearMap (R) [CommRing R] [Module R V] (k : ℕ) :
-    LaurentSeries V →ₗ[R] LaurentSeries V where
-  toFun := fun f => hasseDeriv k f
-  map_add' := by
-    intros
-    ext
-    simp only [add_coeff', Pi.add_apply, hasseDeriv_coeff_add]
-  map_smul' := by
-    intros
-    ext
-    simp only [RingHom.id_apply, smul_coeff, hasseDeriv_coeff_smul]
-
-@[simp]
-theorem hasseDeriv_apply (k : ℕ) (f : LaurentSeries V) :
-    hasseDeriv.linearMap R k f = hasseDeriv k f := by
-  exact rfl
-
-@[simp]
-theorem hasseDeriv_zero (R) [CommRing R] [Module R V] :
-    @hasseDeriv.linearMap V _ R _ _ 0 = LinearMap.id :=
-  LinearMap.ext <| hasseDeriv_zero'
-
 theorem hasseDeriv_single' (k : ℕ) (n : ℤ) (x : V) :
-    hasseDeriv k (single (n + k) x) = single n ((Ring.choose (n + k) k) • x) := by
-  simp_rw [hasseDeriv, single_coeff, single]
-  ext m
-  simp only [add_left_inj, smul_ite_zero, ne_eq, HahnSeries.ofSuppBddBelow_coeff, ZeroHom.coe_mk]
-  unfold Pi.single Function.update
-  simp_all only [eq_rec_constant, Pi.zero_apply, dite_eq_ite]
+    hasseDeriv R k (single (n + k) x) = single n ((Ring.choose (n + k) k) • x) := by
+  ext
+  simp_rw [hasseDeriv, single, Pi.single]
+  simp only [ZeroHom.coe_mk, LinearMap.coe_mk, AddHom.coe_mk]
+  simp_rw [Function.update_apply, HahnSeries.ofSuppBddBelow_coeff]
+  simp_all only [add_left_inj, Pi.zero_apply, smul_ite, smul_zero]
 
 theorem hasseDeriv_single (k : ℕ) (n : ℤ) (x : V) :
-    hasseDeriv k (single n x) = single (n - k) ((Ring.choose n k) • x) := by
+    hasseDeriv R k (single n x) = single (n - k) ((Ring.choose n k) • x) := by
   rw [← Int.sub_add_cancel n k, hasseDeriv_single', Int.sub_add_cancel n k]
 
 theorem hasseDeriv_comp_coeff (k l : ℕ) (f : LaurentSeries V) (n : ℤ) :
-    HahnSeries.coeff (hasseDeriv k (hasseDeriv l f)) n =
-    HahnSeries.coeff ((Nat.choose (k + l) k) • hasseDeriv (k + l) f) n := by
+    HahnSeries.coeff (hasseDeriv R k (hasseDeriv R l f)) n =
+    HahnSeries.coeff ((Nat.choose (k + l) k) • hasseDeriv R (k + l) f) n := by
   rw [nsmul_eq_smul_cast R, smul_coeff]
   simp only [hasseDeriv_coeff]
   rw [smul_smul, mul_comm, ← Ring.choose_mul' (n + k), add_assoc, Nat.choose_symm_add, Nat.cast_add,
     smul_assoc, ← nsmul_eq_smul_cast]
 
 theorem hasseDeriv_comp' (k l : ℕ) (f : LaurentSeries V) :
-    hasseDeriv k (hasseDeriv l f) = (k + l).choose k • hasseDeriv (k + l) f := by
+    hasseDeriv R k (hasseDeriv R l f) = (k + l).choose k • hasseDeriv R (k + l) f := by
   ext n
   rw [@hasseDeriv_comp_coeff R]
 
-theorem hasseDeriv_comp (R) [CommRing R] [Module R V] (k l : ℕ) :
-    (hasseDeriv.linearMap R k).comp (hasseDeriv.linearMap R l) =
-    (k + l).choose k • (@hasseDeriv.linearMap V _ R _ _ (k + l)) := by
-  ext f n
-  simp_all only [LinearMap.coe_comp, Function.comp_apply, hasseDeriv_apply, nsmul_eq_mul,
-  LinearMap.mul_apply, Module.End.natCast_apply]
-  rw [nsmul_eq_smul_cast R, smul_coeff, @hasseDeriv_comp_coeff R, nsmul_eq_smul_cast R]
-  exact rfl
-
 /-- The derivative of a Laurent series. -/
-def derivative : LaurentSeries V →ₗ[R] LaurentSeries V := hasseDeriv.linearMap R 1
+def derivative (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V] :
+    LaurentSeries V →ₗ[R] LaurentSeries V :=
+  hasseDeriv R 1
 
-theorem derivative_apply (f : LaurentSeries V) : @derivative R V _ _ _ f = hasseDeriv 1 f := by
+theorem derivative_apply (f : LaurentSeries V) : derivative R f = hasseDeriv R 1 f := by
   exact rfl
 
 theorem factorial_smul_hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
-    HahnSeries.coeff (k.factorial • hasseDeriv k f) n =
-    HahnSeries.coeff ((@derivative R V _ _ _)^[k] f) n := by
+    HahnSeries.coeff (k.factorial • hasseDeriv R k f) n =
+    HahnSeries.coeff ((derivative R)^[k] f) n := by
   induction k generalizing f with
   | zero =>
     rw [Nat.zero_eq, Nat.factorial_zero, hasseDeriv_zero', one_smul, Function.iterate_zero, id_eq]
@@ -161,10 +113,10 @@ theorem factorial_smul_hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ
     rw [Function.iterate_succ, Function.comp_apply, ← ih, derivative_apply, @hasseDeriv_comp' R,
       Nat.choose_symm_add, Nat.choose_one_right, Nat.factorial, mul_nsmul]
 
-theorem factorial_smul_hasseDeriv (k : ℕ) :
-    ⇑(k.factorial • hasseDeriv.linearMap R k) = (@derivative R V _ _ _)^[k] := by
-  ext f n
-  exact factorial_smul_hasseDeriv_coeff k f n
+theorem factorial_smul_hasseDeriv (k : ℕ) (f : LaurentSeries V) :
+    ⇑(k.factorial • hasseDeriv R k) f = (derivative R)^[k] f := by
+  ext
+  exact factorial_smul_hasseDeriv_coeff k f _
 
 -- `hasseDeriv_mul`: the "Leibniz rule" `D k (f * g) = ∑ ij in antidiagonal k, D ij.1 f * D ij.2 g`
 

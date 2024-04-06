@@ -102,7 +102,7 @@ theorem min_order_le_order_add {Γ} [Zero Γ] [LinearOrder Γ] {x y : HahnSeries
   exact IsMinWFMinLEWFMinAdd hx hy hxy
 #align hahn_series.min_order_le_order_add HahnSeries.min_order_le_order_add
 
-theorem orderTop_add_eq {Γ} [Zero Γ] [LinearOrder Γ] {x y : HahnSeries Γ R}
+theorem orderTop_add_eq {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
     (hxy : x.orderTop < y.orderTop) : (x + y).orderTop = x.orderTop := by
   have hx : x ≠ 0 := ne_zero_iff_orderTop.mpr <| LT.lt.ne_top hxy
   let g : Γ := WithTop.untop x.orderTop (ne_zero_iff_orderTop.mp hx)
