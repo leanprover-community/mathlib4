@@ -476,7 +476,7 @@ def main (args : List String) : IO UInt32 := do
         ignoreImport? := (some ignoreImport).filter (!·.isEmpty)
         ignore? := (some ignore).filter (!·.isEmpty)
       }
-      IO.FS.writeFile cfgFile <| toJson cfg |>.pretty
+      IO.FS.writeFile cfgFile <| toJson cfg |>.pretty.push '\n'
 
   if !args.fix then
     -- return error if any issues were found

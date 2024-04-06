@@ -253,7 +253,6 @@ theorem weightedSMul_nonneg (s : Set α) (x : ℝ) (hx : 0 ≤ x) : 0 ≤ weight
 
 end WeightedSMul
 
--- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc
 
 namespace SimpleFunc
@@ -565,7 +564,6 @@ def integralCLM : (α →₁ₛ[μ] E) →L[ℝ] E :=
 
 variable {α E μ 𝕜}
 
--- mathport name: simple_func.integral_clm
 local notation "Integral" => integralCLM α E μ
 
 open ContinuousLinearMap
@@ -718,10 +716,8 @@ theorem integral_smul (c : 𝕜) (f : α →₁[μ] E) : integral (c • f) = c 
   exact map_smul (integralCLM' (E := E) 𝕜) c f
 #align measure_theory.L1.integral_smul MeasureTheory.L1.integral_smul
 
--- mathport name: integral_clm
 local notation "Integral" => @integralCLM α E _ _ μ _ _
 
--- mathport name: simple_func.integral_clm'
 local notation "sIntegral" => @SimpleFunc.integralCLM α E _ _ μ _
 
 theorem norm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖ ≤ 1 :=
