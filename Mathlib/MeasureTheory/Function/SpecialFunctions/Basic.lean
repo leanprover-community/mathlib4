@@ -11,7 +11,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 /-!
 # Measurability of real and complex functions
 
-We show that most standard real and complex functions are measurable, notably `NormedSpace.exp`, `cos`, `sin`,
+We show that most standard real and complex functions are measurable, notably `exp`, `cos`, `sin`,
 `cosh`, `sinh`, `log`, `pow`, `arcsin`, `arccos`.
 
 See also `MeasureTheory.Function.SpecialFunctions.Arctan` and

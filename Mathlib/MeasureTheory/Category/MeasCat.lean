@@ -37,7 +37,7 @@ open scoped ENNReal
 
 universe u v
 
-set_option linter.uppercaseLean3 false -- `MeasCat` `Top` `Borel`
+set_option linter.uppercaseLean3 false -- `Meas` `Top` `Borel`
 
 /-- The category of measurable spaces and measurable functions. -/
 def MeasCat : Type (u + 1) :=
