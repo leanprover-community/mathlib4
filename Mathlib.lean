@@ -1387,6 +1387,7 @@ import Mathlib.CategoryTheory.Localization.Adjunction
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrowsTwo
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
+import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Lemmas
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
 import Mathlib.CategoryTheory.Localization.Composition
 import Mathlib.CategoryTheory.Localization.Construction
@@ -1576,6 +1577,7 @@ import Mathlib.CategoryTheory.Triangulated.Adjunction
 import Mathlib.CategoryTheory.Triangulated.Basic
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+import Mathlib.CategoryTheory.Triangulated.LocalizingSubcategory
 import Mathlib.CategoryTheory.Triangulated.Opposite
 import Mathlib.CategoryTheory.Triangulated.Orthogonal
 import Mathlib.CategoryTheory.Triangulated.Pretriangulated
