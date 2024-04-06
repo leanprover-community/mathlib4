@@ -54,6 +54,9 @@ ERR_ARR = 18 # space after "←"
 ERR_NUM_LIN = 19 # file is too large
 ERR_NSP = 20 # non-terminal simp
 
+ERR_OLD_FILE = 21 # comment in backticks mentions a filename from mathlib3
+ERR_OLD_DECL = 22 # comment in backticks mentions a declaration from mathlib3
+
 exceptions = []
 
 SCRIPTS_DIR = Path(__file__).parent.resolve()
@@ -464,11 +467,9 @@ def lint_backticks_in_comments(lines, path):
             assert False # omit invalid input for now
         for item in s:
             if item in old_files:
-                print(f'old file {item} mentioned in line: "{line}"')
+                errors += [(ERR_OLD_FILE, (item, line), line_nr, path)]
             if item in old_declarations:
-                print(f'old declaration {item} mentioned in line: "{line}"')
-
-        #errors += [(ERR_ARR, None, line_nr, path)]
+                errors += [(ERR_OLD_DECL, (item, line), line_nr, path)]
         newlines.append((line_nr, line))
     return errors, newlines
 
@@ -522,6 +523,15 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_ARR", "Missing space after '←'.")
         if errno == ERR_NSP:
             output_message(path, line_nr, "ERR_NSP", "Non-terminal simp. Replace with `simp?` and use the suggested output")
+        if errno == ERR_OLD_FILE:
+            item, line = context
+            # TODO: this output is very brittle; as this is not supposed to land in production,
+            # this is actually fine
+            output_message(path, line_nr, "ERR_OLD_FILE", f'old file {item} mentioned in line: "{line}"')
+        if errno == ERR_OLD_DECL:
+            item, line = context
+            output_message(path, line_nr, "ERR_OLD_DECL", f'old declaration {item} mentioned in line: "{line}"')
+
 
 def lint(path, fix=False):
     global new_exceptions
