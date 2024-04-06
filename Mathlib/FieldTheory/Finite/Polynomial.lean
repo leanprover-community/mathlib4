@@ -183,7 +183,7 @@ noncomputable instance [CommRing K] : Module K (R σ K) :=
 noncomputable instance [CommRing K] : Inhabited (R σ K) :=
   inferInstanceAs (Inhabited (restrictDegree σ K (Fintype.card K - 1)))
 
-/-- Evaluation in the `mv_polynomial.R` subtype. -/
+/-- Evaluation in the `MvPolynomial.R` subtype. -/
 def evalᵢ [CommRing K] : R σ K →ₗ[K] (σ → K) → K :=
   (evalₗ K σ).comp (restrictDegree σ K (Fintype.card K - 1)).subtype
 #align mv_polynomial.evalᵢ MvPolynomial.evalᵢ

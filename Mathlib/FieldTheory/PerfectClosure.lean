@@ -297,7 +297,7 @@ instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
 instance instCommRing : CommRing (PerfectClosure K p) :=
   { instAddCommGroup K p, AddMonoidWithOne.unary,
     (inferInstance : CommMonoid (PerfectClosure K p)) with
-    -- Porting note: added `zero_mul`, `mul_zero`
+    -- Porting note: added `MulZeroClass.zero_mul`, `MulZeroClass.mul_zero`
     zero_mul := fun a => by
       refine Quot.inductionOn a fun ⟨m, x⟩ => ?_
       rw [zero_def, quot_mk_eq_mk, mk_mul_mk]

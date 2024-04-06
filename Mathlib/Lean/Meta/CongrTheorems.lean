@@ -45,7 +45,7 @@ where
       | .eq | .heq =>
         forallBoundedTelescope type (some 3) fun params' type' => do
           let #[x, y, eq] := params' | unreachable!
-          -- See if we can prove `eq` from previous parameters.
+          -- See if we can prove `Eq` from previous parameters.
           let g := (← mkFreshExprMVar (← inferType eq)).mvarId!
           let g ← g.clear eq.fvarId!
           if (← observing? <| prove g params).isSome then
@@ -79,7 +79,7 @@ The functions have type `fType` and the number of arguments is governed by the `
 Each argument produces an `Eq/HEq aᵢ aᵢ'` hypothesis, but we also provide these hypotheses
 the additional facts that the preceding equalities have been proved (unlike in `mkHCongrWithArity`).
 The first two arguments of the resulting theorem are for `f` and `f'`, followed by a proof
-of `f = f'`, unless `fixedFun` is `true` (see below).
+of `f = f'`, unless `fixedFun` is `True` (see below).
 
 When including hypotheses about previous hypotheses, we make use of dependency information
 and only include relevant equalities.
@@ -91,15 +91,15 @@ For the purpose of generating nicer lemmas (to help `to_additive` for example),
 this function supports generating lemmas where certain parameters
 are meant to be fixed:
 
-* If `fixedFun` is `false` (the default) then the lemma starts with three arguments for `f`, `f'`,
-and `h : f = f'`. Otherwise, if `fixedFun` is `true` then the lemma starts with just `f`.
+* If `fixedFun` is `False` (the default) then the lemma starts with three arguments for `f`, `f'`,
+and `h : f = f'`. Otherwise, if `fixedFun` is `True` then the lemma starts with just `f`.
 
-* If the `fixedParams` argument has `true` for a particular argument index, then this is a hint
+* If the `fixedParams` argument has `True` for a particular argument index, then this is a hint
 that the congruence lemma may use the same parameter for both sides of the equality. There is
 no guarantee -- it respects it if the types are equal for that parameter (i.e., if the parameter
 does not depend on non-fixed parameters).
 
-If `forceHEq` is `true` then the conclusion of the generated theorem is a `HEq`.
+If `forceHEq` is `True` then the conclusion of the generated theorem is a `HEq`.
 Otherwise it might be an `Eq` if the equality is homogeneous.
 
 This is the interpretation of the `CongrArgKind`s in the generated congruence theorem:

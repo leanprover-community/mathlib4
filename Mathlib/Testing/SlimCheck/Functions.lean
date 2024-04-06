@@ -92,7 +92,7 @@ def apply [DecidableEq α] : TotalFunction α β → α → β
 
 /-- Implementation of `Repr (TotalFunction α β)`.
 
-Creates a string for a given `finmap` and output, `x₀ ↦ y₀, .. xₙ ↦ yₙ`
+Creates a string for a given `Finmap` and output, `x₀ ↦ y₀, .. xₙ ↦ yₙ`
 for each of the entries. The brackets are provided by the calling function.
 -/
 def reprAux [Repr α] [Repr β] (m : List (Σ _ : α, β)) : String :=
@@ -112,7 +112,7 @@ protected def repr [Repr α] [Repr β] : TotalFunction α β → String
 instance (α : Type u) (β : Type v) [Repr α] [Repr β] : Repr (TotalFunction α β) where
   reprPrec f _ := TotalFunction.repr f
 
-/-- Create a `finmap` from a list of pairs. -/
+/-- Create a `Finmap` from a list of pairs. -/
 def List.toFinmap' (xs : List (α × β)) : List (Σ _ : α, β) :=
   xs.map Prod.toSigma
 #align slim_check.total_function.list.to_finmap' SlimCheck.TotalFunction.List.toFinmap'
@@ -122,9 +122,9 @@ section
 universe ua ub
 variable [SampleableExt.{_,u} α] [SampleableExt.{_,ub} β]
 
--- Porting note: removed, there is no `sizeof` in the new `Sampleable`
+-- Porting note: removed, there is no `SizeOf.sizeOf` in the new `Sampleable`
 
--- /-- Redefine `sizeof` to follow the structure of `sampleable` instances. -/
+-- /-- Redefine `SizeOf.sizeOf` to follow the structure of `sampleable` instances. -/
 -- def Total.sizeof : TotalFunction α β → ℕ
 --   | ⟨m, x⟩ => 1 + @SizeOf.sizeOf _ Sampleable.wf m + SizeOf.sizeOf x
 #noalign slim_check.total_function.total.sizeof
@@ -449,7 +449,7 @@ protected def shrinkPerm {α : Type} [DecidableEq α] :
 #align slim_check.injective_function.shrink_perm SlimCheck.InjectiveFunction.shrinkPerm
 
 
--- Porting note: removed, there is no `sizeof` in the new `Sampleable`
+-- Porting note: removed, there is no `SizeOf.sizeOf` in the new `Sampleable`
 -- instance [SizeOf α] : SizeOf (InjectiveFunction α) :=
 --   ⟨fun ⟨xs, _, _⟩ => SizeOf.sizeOf (xs.map Sigma.fst)⟩
 #noalign slim_check.injective_function.has_sizeof

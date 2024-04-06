@@ -1975,7 +1975,7 @@ variable {Λ : Type*} [Inhabited Λ]
 
 /-- The machine states for a TM1 emulating a TM0 machine. States of the TM0 machine are embedded
 as `normal q` states, but the actual operation is split into two parts, a jump to `act s q`
-followed by the action and a jump to the next `normal` state. -/
+followed by the action and a jump to the next `Normal` state. -/
 inductive Λ'
   | normal : Λ → Λ'
   | act : TM0.Stmt Γ → Λ → Λ'

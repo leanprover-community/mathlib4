@@ -981,7 +981,7 @@ protected def congr {ra : α → α → Prop} {rb : β → β → Prop} (e : α 
 #align quot.congr_mk Quot.congr_mk
 
 /-- Quotients are congruent on equivalences under equality of their relation.
-An alternative is just to use rewriting with `eq`, but then computational proofs get stuck. -/
+An alternative is just to use rewriting with `Eq`, but then computational proofs get stuck. -/
 protected def congrRight {r r' : α → α → Prop} (eq : ∀ a₁ a₂, r a₁ a₂ ↔ r' a₁ a₂) :
     Quot r ≃ Quot r' := Quot.congr (Equiv.refl α) eq
 #align quot.congr_right Quot.congrRight
@@ -1010,7 +1010,7 @@ protected def congr {ra : Setoid α} {rb : Setoid β} (e : α ≃ β)
 #align quotient.congr_mk Quotient.congr_mk
 
 /-- Quotients are congruent on equivalences under equality of their relation.
-An alternative is just to use rewriting with `eq`, but then computational proofs get stuck. -/
+An alternative is just to use rewriting with `Eq`, but then computational proofs get stuck. -/
 protected def congrRight {r r' : Setoid α}
     (eq : ∀ a₁ a₂, @Setoid.r α r a₁ a₂ ↔ @Setoid.r α r' a₁ a₂) : Quotient r ≃ Quotient r' :=
   Quot.congrRight eq

@@ -149,7 +149,7 @@ def prodAssoc (α β γ) : (α × β) × γ ≃ α × β × γ :=
 #align equiv.prod_assoc_symm_apply Equiv.prodAssoc_symm_apply
 #align equiv.prod_assoc_apply Equiv.prodAssoc_apply
 
-/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
+/-- Four-way commutativity of `Prod`. The name matches `mul_mul_mul_comm`. -/
 @[simps apply]
 def prodProdProdComm (α β γ δ : Type*) : (α × β) × γ × δ ≃ (α × γ) × β × δ where
   toFun abcd := ((abcd.1.1, abcd.2.1), (abcd.1.2, abcd.2.2))

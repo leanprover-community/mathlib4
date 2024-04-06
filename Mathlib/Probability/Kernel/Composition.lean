@@ -48,7 +48,7 @@ Kernels built from other kernels:
   kernels.
 * Instances of the form `<class>.<operation>` where class is one of `IsMarkovKernel`,
   `IsFiniteKernel`, `IsSFiniteKernel` and operation is one of `compProd`, `map`, `comap`,
-  `comp`, `prod`. These instances state that the three classes are stable by the various operations.
+  `comp`, `Prod`. These instances state that the three classes are stable by the various operations.
 
 ## Notations
 

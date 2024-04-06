@@ -68,11 +68,11 @@ necessary so `SlimCheck` proceeds to shrink it as much as
 possible. Although equally valid, a smaller counter-example is easier
 for a user to understand and use.
 
-The `Shrinkable` class, , has a `shrink` function so that we can use
+The `Shrinkable` class, , has a `Shrink` function so that we can use
 specialized knowledge while shrinking a value. It is not responsible
 for the whole shrinking process however. It only has to take one step
-in the shrinking process. `SlimCheck` will repeatedly call `shrink`
-until no more steps can be taken. Because `shrink` guarantees that the
+in the shrinking process. `SlimCheck` will repeatedly call `Shrink`
+until no more steps can be taken. Because `Shrink` guarantees that the
 size of the candidates it produces is strictly smaller than the
 argument, we know that `SlimCheck` is guaranteed to terminate.
 

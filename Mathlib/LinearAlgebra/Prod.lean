@@ -769,7 +769,7 @@ variable [Semiring R]
 variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
 variable [Module R M] [Module R M₂] [Module R M₃] [Module R M₄]
 
-/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
+/-- Four-way commutativity of `Prod`. The name matches `mul_mul_mul_comm`. -/
 @[simps apply]
 def prodProdProdComm : ((M × M₂) × M₃ × M₄) ≃ₗ[R] (M × M₃) × M₂ × M₄ :=
   { AddEquiv.prodProdProdComm M M₂ M₃ M₄ with

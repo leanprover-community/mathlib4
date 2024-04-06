@@ -185,7 +185,7 @@ def simpEq (S : Expr → MetaM Simp.Result) (type pf : Expr) : MetaM (Expr × Ex
 def SimpTheorems.contains (d : SimpTheorems) (declName : Name) :=
   d.isLemma (.decl declName) || d.isDeclToUnfold declName
 
-/-- Tests whether `decl` has `simp`-attribute `simpAttr`. Returns `false` is `simpAttr` is not a
+/-- Tests whether `decl` has `simp`-attribute `simpAttr`. Returns `False` is `simpAttr` is not a
 valid simp-attribute. -/
 def isInSimpSet (simpAttr decl : Name) : CoreM Bool := do
   let .some simpDecl ← getSimpExtension? simpAttr | return false

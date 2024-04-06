@@ -639,7 +639,7 @@ end QuadraticForm
 
 Over a commutative ring with an inverse of 2, the theory of quadratic forms is
 basically identical to that of symmetric bilinear forms. The map from quadratic
-forms to bilinear forms giving this identification is called the `associated`
+forms to bilinear forms giving this identification is called the `Associated`
 quadratic form.
 -/
 
@@ -911,9 +911,9 @@ section Associated
 variable [CommSemiring S] [CommRing R] [AddCommGroup M] [Algebra S R] [Module R M]
 variable [Invertible (2 : R)]
 
--- Note:  When possible, rather than writing lemmas about `associated`, write a lemma applying to
+-- Note:  When possible, rather than writing lemmas about `Associated`, write a lemma applying to
 -- the more general `associatedHom` and place it in the previous section.
-/-- `associated` is the linear map that sends a quadratic form over a commutative ring to its
+/-- `Associated` is the linear map that sends a quadratic form over a commutative ring to its
 associated symmetric bilinear form. -/
 abbrev associated : QuadraticForm R M →ₗ[R] BilinForm R M :=
   associatedHom R

@@ -456,7 +456,7 @@ def containsConst (e : Expr) (p : Name → Bool) : Bool :=
   Option.isSome <| e.find? fun | .const n _ => p n | _ => false
 
 /--
-Rewrites `e` via some `eq`, producing a proof `e = e'` for some `e'`.
+Rewrites `e` via some `Eq`, producing a proof `e = e'` for some `e'`.
 
 Rewrites with a fresh metavariable as the ambient goal.
 Fails if the rewrite produces any subgoals.
@@ -467,7 +467,7 @@ def rewrite (e eq : Expr) : MetaM Expr := do
   return eq'
 
 /--
-Rewrites the type of `e` via some `eq`, then moves `e` into the new type via `Eq.mp`.
+Rewrites the type of `e` via some `Eq`, then moves `e` into the new type via `Eq.mp`.
 
 Rewrites with a fresh metavariable as the ambient goal.
 Fails if the rewrite produces any subgoals.

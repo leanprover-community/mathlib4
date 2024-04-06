@@ -96,7 +96,7 @@ theorem iSup_generalizedEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V
     have ih_ER : ⨆ (μ : K) (k : ℕ), f'.generalizedEigenspace μ k = ⊤ :=
       ih (finrank K ER) h_dim_ER f' rfl
     -- The induction hypothesis gives us a statement about subspaces of `ER`. We can transfer this
-    -- to a statement about subspaces of `V` via `submodule.subtype`:
+    -- to a statement about subspaces of `V` via `Submodule.subtype`:
     have ih_ER' : ⨆ (μ : K) (k : ℕ), (f'.generalizedEigenspace μ k).map ER.subtype = ER := by
       simp only [(Submodule.map_iSup _ _).symm, ih_ER, Submodule.map_subtype_top ER]
     -- Moreover, every generalized eigenspace of `f'` is contained in the corresponding generalized

@@ -19,7 +19,7 @@ functions `f : PMF (α → β)`) to get a `PMF β`.
 by allowing the "sum equals 1" constraint to be in terms of `Finset.sum` instead of `tsum`.
 
 `normalize` constructs a `PMF α` by normalizing a function `f : α → ℝ≥0∞` by its sum,
-and `filter` uses this to filter the support of a `PMF` and re-normalize the new distribution.
+and `Filter` uses this to filter the support of a `PMF` and re-normalize the new distribution.
 
 `bernoulli` represents the bernoulli distribution on `Bool`.
 
@@ -301,7 +301,7 @@ end Filter
 
 section bernoulli
 
-/-- A `PMF` which assigns probability `p` to `true` and `1 - p` to `false`. -/
+/-- A `PMF` which assigns probability `p` to `True` and `1 - p` to `False`. -/
 def bernoulli (p : ℝ≥0∞) (h : p ≤ 1) : PMF Bool :=
   ofFintype (fun b => cond b p (1 - p)) (by simp [h])
 #align pmf.bernoulli PMF.bernoulli

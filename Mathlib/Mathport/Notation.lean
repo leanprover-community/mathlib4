@@ -418,7 +418,7 @@ inductive BoundValueType
 
 syntax prettyPrintOpt := "(" &"prettyPrint" " := " (&"true" <|> &"false") ")"
 
-/-- Interpret a `prettyPrintOpt`. The default value is `true`. -/
+/-- Interpret a `prettyPrintOpt`. The default value is `True`. -/
 def getPrettyPrintOpt (opt? : Option (TSyntax ``prettyPrintOpt)) : Bool :=
   if let some opt := opt? then
     match opt with

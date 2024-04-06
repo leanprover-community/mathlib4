@@ -222,7 +222,7 @@ noncomputable def _root_.Shrink.ringEquiv [Small.{v} α] [Ring α] : Shrink.{v} 
   (equivShrink α).symm.ringEquiv
 
 /-- Transfer `Semigroup` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `add_semigroup` across an `Equiv`"]
+@[to_additive (attr := reducible) "Transfer `AddSemigroup` across an `Equiv`"]
 protected def semigroup [Semigroup β] : Semigroup α := by
   let mul := e.mul
   apply e.injective.semigroup _; intros; exact e.apply_symm_apply _
