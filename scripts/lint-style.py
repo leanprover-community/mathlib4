@@ -347,6 +347,62 @@ def left_arrow_check(lines, path):
         newlines.append((line_nr, new_line))
     return errors, newlines
 
+
+'''Return a list of all substrings in `text` enclosed in single backticks.
+Triple backticks are treated as single backticks.
+
+If the input contains an odd number of backticks, we pretend it is followed by a final backtick.
+This function does not look at newlines at all.'''
+def extract_backticks(text):
+    # Replace triple backticks by single ones (as markdown code block use this).
+    text = text.replace("```", "`")
+    # Split the text by single backticks and take the odd-indexed hits.
+    # This means an
+    parts = text.split('`')
+    output = []
+    for (idx, s) in enumerate(parts):
+        if idx % 2 == 1:
+            output.append(s)
+    return output
+
+
+def test_backtick_extraction():
+    def check(input, expected, context=None):
+        actual = extract_backticks(input)
+        if expected != actual:
+            if context:
+                print(context)
+            print(f"mismatch: recognising backticks in input {input} yielded\n"
+                  f"actual result(s) {actual},\nexpected         {expected}")
+    def check_same(inputs, expected):
+        if inputs:
+            last = inputs[-1]
+            inputs = inputs[:-1]
+            for i in inputs:
+                assert extract_backticks(i) == extract_backticks(last), "not the same"
+            check(last, expected, "first input was unexpected")
+    # No backticks.
+    check("", [])
+    check("Basic test without backticks", [])
+    check("Apostrophe won't be seen as backticks.", [])
+
+    # A single backtick is treated as with a trailing backtick.
+    check_same(["A `thing", "A `thing`"], ["thing"])
+    # Backticks twice. We don't care about newlines.
+    check("This `is` not really `a good idea`.", ["is", "a good idea"])
+    check("This `is` not\n really `a \ngood idea`.", ["is", "a \ngood idea"])
+
+    # Triple backticks are replaced first.
+    check("```triple`", ["triple"])
+    check("```lean\ntest```", ["lean\ntest"])
+    check("```six```nine`", ["six", ""])
+    check("```six```nine``", ["six", ""])
+    # Document behaviour with more backticks: this isn't used in practice.
+    check("``````test", [""])
+    check("``````test `one`", ["", "one"])
+    print("All tests pass!")
+
+
 def output_message(path, line_nr, code, msg):
     if len(exceptions) == 0:
         # we are generating a new exceptions file
