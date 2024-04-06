@@ -631,7 +631,7 @@ def principalUnitGroup : Subgroup Kˣ where
     rw [Set.mem_setOf] at ha hb
     refine' lt_of_le_of_lt _ (max_lt hb ha)
     -- Porting note: `sub_add_sub_cancel` needed some help
-    rw [← one_mul (A.valuation (b - 1)), ← A.valuation.map_one_add_of_lt ha, add_sub_cancel'_right,
+    rw [← one_mul (A.valuation (b - 1)), ← A.valuation.map_one_add_of_lt ha, add_sub_cancel,
       ← Valuation.map_mul, mul_sub_one, ← sub_add_sub_cancel (↑(a * b) : K) _ 1]
     exact A.valuation.map_add _ _
   one_mem' := by simp
@@ -641,12 +641,12 @@ def principalUnitGroup : Subgroup Kˣ where
     conv =>
       lhs
       rw [← mul_one (A.valuation _), ← A.valuation.map_one_add_of_lt ha]
-    rwa [add_sub_cancel'_right, ← Valuation.map_mul, sub_mul, Units.inv_mul, ← neg_sub, one_mul,
+    rwa [add_sub_cancel, ← Valuation.map_mul, sub_mul, Units.inv_mul, ← neg_sub, one_mul,
       Valuation.map_neg]
 #align valuation_subring.principal_unit_group ValuationSubring.principalUnitGroup
 
 theorem principal_units_le_units : A.principalUnitGroup ≤ A.unitGroup := fun a h => by
-  simpa only [add_sub_cancel'_right] using A.valuation.map_one_add_of_lt h
+  simpa only [add_sub_cancel] using A.valuation.map_one_add_of_lt h
 #align valuation_subring.principal_units_le_units ValuationSubring.principal_units_le_units
 
 theorem mem_principalUnitGroup_iff (x : Kˣ) :
@@ -662,8 +662,8 @@ theorem principalUnitGroup_le_principalUnitGroup {A B : ValuationSubring K} :
     by_cases h_2 : x⁻¹ + 1 = 0
     · rw [add_eq_zero_iff_eq_neg, inv_eq_iff_eq_inv, inv_neg, inv_one] at h_2
       simpa only [h_2] using B.neg_mem _ B.one_mem
-    · rw [← valuation_le_one_iff, ← not_lt, Valuation.one_lt_val_iff _ h_1, ← add_sub_cancel x⁻¹, ←
-        Units.val_mk0 h_2, ← mem_principalUnitGroup_iff] at hx ⊢
+    · rw [← valuation_le_one_iff, ← not_lt, Valuation.one_lt_val_iff _ h_1,
+        ← add_sub_cancel_right x⁻¹, ← Units.val_mk0 h_2, ← mem_principalUnitGroup_iff] at hx ⊢
       simpa only [hx] using @h (Units.mk0 (x⁻¹ + 1) h_2)
   · intro h x hx
     by_contra h_1; exact not_lt.2 (monotone_mapOfLE _ _ h (not_lt.1 h_1)) hx
@@ -840,6 +840,9 @@ open scoped Pointwise
 theorem smul_mem_pointwise_smul (g : G) (x : K) (S : ValuationSubring K) : x ∈ S → g • x ∈ g • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ g • (S : Set K))
 #align valuation_subring.smul_mem_pointwise_smul ValuationSubring.smul_mem_pointwise_smul
+
+instance : CovariantClass G (ValuationSubring K) HSMul.hSMul LE.le :=
+  ⟨fun _ _ _ => Set.image_subset _⟩
 
 theorem mem_smul_pointwise_iff_exists (g : G) (x : K) (S : ValuationSubring K) :
     x ∈ g • S ↔ ∃ s : K, s ∈ S ∧ g • s = x :=

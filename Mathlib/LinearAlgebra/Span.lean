@@ -326,7 +326,6 @@ theorem sup_span : p ⊔ span R s = span R (p ∪ s) := by rw [Submodule.span_un
 theorem span_sup : span R s ⊔ p = span R (s ∪ p) := by rw [Submodule.span_union, p.span_eq]
 #align submodule.span_sup Submodule.span_sup
 
--- mathport name: «expr ∙ »
 notation:1000
   /- Note that the character `∙` U+2219 used below is different from the scalar multiplication
 character `•` U+2022. -/
@@ -885,7 +884,7 @@ instance : IsModularLattice (Submodule R M) :=
     rcases ha with ⟨⟨b, hb, c, hc, rfl⟩, haz⟩
     rw [mem_sup]
     refine' ⟨b, hb, c, mem_inf.2 ⟨hc, _⟩, rfl⟩
-    rw [← add_sub_cancel c b, add_comm]
+    rw [← add_sub_cancel_right c b, add_comm]
     apply z.sub_mem haz (xz hb)⟩
 
 end AddCommGroup

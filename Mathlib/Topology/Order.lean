@@ -299,7 +299,7 @@ theorem continuous_of_discreteTopology [TopologicalSpace β] {f : α → β} : C
 
 /-- A function to a discrete topological space is continuous if and only if the preimage of every
 singleton is open. -/
-theorem continuous_discrete_rng [TopologicalSpace α] [TopologicalSpace β] [DiscreteTopology β]
+theorem continuous_discrete_rng [TopologicalSpace β] [DiscreteTopology β]
     {f : α → β} : Continuous f ↔ ∀ b : β, IsOpen (f ⁻¹' {b}) :=
   ⟨fun h b => (isOpen_discrete _).preimage h, fun h => ⟨fun s _ => by
     rw [← biUnion_of_singleton s, preimage_iUnion₂]
@@ -863,13 +863,13 @@ theorem map_nhds_induced_of_mem {a : α} (h : range f ∈ 𝓝 (f a)) :
     map f (@nhds α (induced f t) a) = 𝓝 (f a) := by rw [nhds_induced, Filter.map_comap_of_mem h]
 #align map_nhds_induced_of_mem map_nhds_induced_of_mem
 
-theorem closure_induced [t : TopologicalSpace β] {f : α → β} {a : α} {s : Set α} :
+theorem closure_induced {f : α → β} {a : α} {s : Set α} :
     a ∈ @closure α (t.induced f) s ↔ f a ∈ closure (f '' s) := by
   letI := t.induced f
   simp only [mem_closure_iff_frequently, nhds_induced, frequently_comap, mem_image, and_comm]
 #align closure_induced closure_induced
 
-theorem isClosed_induced_iff' [t : TopologicalSpace β] {f : α → β} {s : Set α} :
+theorem isClosed_induced_iff' {f : α → β} {s : Set α} :
     IsClosed[t.induced f] s ↔ ∀ a, f a ∈ closure (f '' s) → a ∈ s := by
   letI := t.induced f
   simp only [← closure_subset_iff_isClosed, subset_def, closure_induced]

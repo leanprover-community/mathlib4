@@ -148,7 +148,7 @@ theorem measureUnivNNReal_eq_zero [IsFiniteMeasure μ] : measureUnivNNReal μ = 
 
 theorem measureUnivNNReal_pos [IsFiniteMeasure μ] (hμ : μ ≠ 0) : 0 < measureUnivNNReal μ := by
   contrapose! hμ
-  simpa [measureUnivNNReal_eq_zero, le_zero_iff] using hμ
+  simpa [measureUnivNNReal_eq_zero, Nat.le_zero] using hμ
 #align measure_theory.measure_univ_nnreal_pos MeasureTheory.measureUnivNNReal_pos
 
 /-- `le_of_add_le_add_left` is normally applicable to `OrderedCancelAddCommMonoid`,
@@ -313,11 +313,10 @@ protected lemma _root_.MeasurableEmbedding.isProbabilityMeasure_comap (hf : Meas
     (hf' : ∀ᵐ a ∂μ, a ∈ range f) : IsProbabilityMeasure (μ.comap f) :=
   isProbabilityMeasure_comap hf.injective hf' hf.measurableSet_image'
 
-instance isProbabilityMeasure_map_up [IsProbabilityMeasure μ] :
+instance isProbabilityMeasure_map_up :
     IsProbabilityMeasure (μ.map ULift.up) := isProbabilityMeasure_map measurable_up.aemeasurable
 
-instance isProbabilityMeasure_comap_down [IsProbabilityMeasure μ] :
-    IsProbabilityMeasure (μ.comap ULift.down) :=
+instance isProbabilityMeasure_comap_down : IsProbabilityMeasure (μ.comap ULift.down) :=
   MeasurableEquiv.ulift.measurableEmbedding.isProbabilityMeasure_comap <| ae_of_all _ <| by
     simp [Function.Surjective.range_eq <| EquivLike.surjective _]
 
@@ -1425,7 +1424,7 @@ variable [TopologicalSpace α] [MeasurableSpace α] {μ : Measure α} {s : Set �
 /-- If `s` is a compact set and `μ` is finite at `𝓝 x` for every `x ∈ s`, then `s` admits an open
 superset of finite measure. -/
 theorem exists_open_superset_measure_lt_top' (h : IsCompact s)
-    (hμ : ∀ x ∈ s, μ.FiniteAtFilter (𝓝 x)) : ∃ (U : _) (_ : U ⊇ s), IsOpen U ∧ μ U < ∞ := by
+    (hμ : ∀ x ∈ s, μ.FiniteAtFilter (𝓝 x)) : ∃ U ⊇ s, IsOpen U ∧ μ U < ∞ := by
   refine' IsCompact.induction_on h _ _ _ _
   · use ∅
     simp [Superset]
@@ -1443,7 +1442,7 @@ theorem exists_open_superset_measure_lt_top' (h : IsCompact s)
 /-- If `s` is a compact set and `μ` is a locally finite measure, then `s` admits an open superset of
 finite measure. -/
 theorem exists_open_superset_measure_lt_top (h : IsCompact s) (μ : Measure α)
-    [IsLocallyFiniteMeasure μ] : ∃ (U : _) (_ : U ⊇ s), IsOpen U ∧ μ U < ∞ :=
+    [IsLocallyFiniteMeasure μ] : ∃ U ⊇ s, IsOpen U ∧ μ U < ∞ :=
   h.exists_open_superset_measure_lt_top' fun x _ => μ.finiteAt_nhds x
 #align is_compact.exists_open_superset_measure_lt_top IsCompact.exists_open_superset_measure_lt_top
 
@@ -1493,13 +1492,13 @@ def MeasureTheory.Measure.finiteSpanningSetsInOpen [TopologicalSpace α] [SigmaC
     μ.FiniteSpanningSetsIn { K | IsOpen K } where
   set n := ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose
   set_mem n :=
-    ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.snd.1
+    ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.2.1
   finite n :=
-    ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.snd.2
+    ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.2.2
   spanning :=
     eq_univ_of_subset
       (iUnion_mono fun n =>
-        ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.fst)
+        ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.1)
       (iUnion_compactCovering α)
 #align measure_theory.measure.finite_spanning_sets_in_open MeasureTheory.Measure.finiteSpanningSetsInOpen
 

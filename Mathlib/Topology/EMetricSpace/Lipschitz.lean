@@ -262,7 +262,7 @@ protected theorem uncurry {f : α → β → γ} {Kα Kβ : ℝ≥0} (hα : ∀ 
 /-- Iterates of a Lipschitz function are Lipschitz. -/
 protected theorem iterate {f : α → α} (hf : LipschitzWith K f) : ∀ n, LipschitzWith (K ^ n) f^[n]
   | 0 => by simpa only [pow_zero] using LipschitzWith.id
-  | n + 1 => by rw [pow_succ']; exact (LipschitzWith.iterate hf n).comp hf
+  | n + 1 => by rw [pow_succ]; exact (LipschitzWith.iterate hf n).comp hf
 #align lipschitz_with.iterate LipschitzWith.iterate
 
 theorem edist_iterate_succ_le_geometric {f : α → α} (hf : LipschitzWith K f) (x n) :
@@ -291,7 +291,7 @@ protected theorem pow_end {f : Function.End α} {K} (h : LipschitzWith K f) :
   | 0 => by simpa only [pow_zero] using LipschitzWith.id
   | n + 1 => by
     rw [pow_succ, pow_succ]
-    exact h.mul_end (LipschitzWith.pow_end h n)
+    exact (LipschitzWith.pow_end h n).mul_end h
 #align lipschitz_with.pow LipschitzWith.pow_end
 
 end LipschitzWith
@@ -364,7 +364,7 @@ protected lemma const (b : β) : LocallyLipschitz (fun _ : α ↦ b) :=
 /-- A locally Lipschitz function is continuous. (The converse is false: for example,
 $x ↦ \sqrt{x}$ is continuous, but not locally Lipschitz at 0.) -/
 protected theorem continuous {f : α → β} (hf : LocallyLipschitz f) : Continuous f := by
-  apply continuous_iff_continuousAt.mpr
+  rw [continuous_iff_continuousAt]
   intro x
   rcases (hf x) with ⟨K, t, ht, hK⟩
   exact (hK.continuousOn).continuousAt ht
@@ -407,7 +407,7 @@ protected theorem pow_end {f : Function.End α} (h : LocallyLipschitz f) :
   | 0 => by simpa only [pow_zero] using LocallyLipschitz.id
   | n + 1 => by
     rw [pow_succ]
-    exact h.mul_end (h.pow_end n)
+    exact (h.pow_end n).mul_end h
 
 end LocallyLipschitz
 

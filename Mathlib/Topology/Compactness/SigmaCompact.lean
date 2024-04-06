@@ -435,7 +435,7 @@ noncomputable def choice (X : Type*) [TopologicalSpace X] [WeaklyLocallyCompactS
     exact iUnion_mono' fun n => ⟨n + 1, subset_union_right _ _⟩
 #align compact_exhaustion.choice CompactExhaustion.choice
 
-noncomputable instance [LocallyCompactSpace X] [SigmaCompactSpace X] :
+noncomputable instance [LocallyCompactSpace X] :
     Inhabited (CompactExhaustion X) :=
   ⟨CompactExhaustion.choice X⟩
 

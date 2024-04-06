@@ -228,7 +228,7 @@ vectors and a third vector add to π. -/
 theorem angle_add_angle_eq_pi_of_angle_eq_pi {x y : V} (z : V) (h : angle x y = π) :
     angle x z + angle y z = π := by
   rcases angle_eq_pi_iff.1 h with ⟨_, ⟨r, ⟨hr, rfl⟩⟩⟩
-  rw [angle_smul_left_of_neg x z hr, angle_neg_left, add_sub_cancel'_right]
+  rw [angle_smul_left_of_neg x z hr, angle_neg_left, add_sub_cancel]
 #align inner_product_geometry.angle_add_angle_eq_pi_of_angle_eq_pi InnerProductGeometry.angle_add_angle_eq_pi_of_angle_eq_pi
 
 /-- Two vectors have inner product 0 if and only if the angle between

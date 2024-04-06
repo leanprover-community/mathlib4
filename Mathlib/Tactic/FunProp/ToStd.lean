@@ -109,7 +109,7 @@ def mkUncurryFun (n : Nat) (f : Expr) : MetaM Expr := do
       do return (n ++ toString (← x.fvarId!.getUserName).eraseMacroScopes)
     let xProdType ← inferType (← mkProdElem xs)
 
-    withLocalDecl xProdName default xProdType λ xProd => do
+    withLocalDecl (.mkSimple xProdName) default xProdType λ xProd => do
       let xs' ← mkProdSplitElem xProd n
       mkLambdaFVars #[xProd] (← mkAppM' f xs').headBeta
 
