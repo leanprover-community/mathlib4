@@ -543,8 +543,9 @@ elab stx:"rw??" : tactic => do
   Widget.savePanelWidgetInfo (hash LibraryRewriteComponent.javascript)
     (pure $ json% { replaceRange : $range }) stx
 
+
 /-- Represent a `Rewrite` as `MessageData`. -/
-private def Rewrite.toMessageData (rw : Rewrite) (name : Name) : MetaM MessageData := do
+def Rewrite.toMessageData (rw : Rewrite) (name : Name) : MetaM MessageData := do
   let extraGoals ← rw.extraGoals.filterMapM fun (mvarId, bi) => do
     if bi.isExplicit then
       return some m! "⊢ {← mvarId.getType}"
@@ -555,7 +556,7 @@ private def Rewrite.toMessageData (rw : Rewrite) (name : Name) : MetaM MessageDa
   return .group <| .nest 2 <| "· " ++ .joinSep list "\n"
 
 /-- Represent a section of rewrites as `MessageData`. -/
-private def SectionToMessageData (sec : Array (Rewrite × Name) × Bool) : MetaM (Option MessageData) := do
+def SectionToMessageData (sec : Array (Rewrite × Name) × Bool) : MetaM (Option MessageData) := do
   let rewrites ← sec.1.toList.mapM fun (rw, name) => rw.toMessageData name
   let rewrites : MessageData := .group (.joinSep rewrites "\n")
   let some (rw, name) := sec.1[0]? | return none

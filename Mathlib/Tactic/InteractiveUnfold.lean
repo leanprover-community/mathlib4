@@ -68,6 +68,7 @@ where
       if let some e ← reduceNative? e then
         return acc.push e
       if let some e ← unfoldProjDefaultInst? e then
+        -- when unfolding a default instance, don't add it to the array of unfolds.
         let e ← whnfCore e
         return ← go e acc
       if let some e ← unfold? e then
