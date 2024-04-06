@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 import Mathlib.Tactic.Linarith.Datatypes
+import Mathlib.Tactic.Linarith.SimplexAlgo.Main
 
 /-!
 # The Fourier-Motzkin elimination procedure
@@ -334,5 +335,43 @@ def FourierMotzkin.produceCertificate : CertificateOracle :=
       (StateT.run (do validate; elimAllVarsM : LinarithM Unit) (mkLinarithData hyps maxVar)) with
   | (Except.ok _) => failure
   | (Except.error contr) => return contr.src.flatten
+
+
+open SimplexAlgo
+
+def myPreprocess (hyps : List Comp) (maxVar : ℕ) : Matrix (maxVar + 1) (hyps.length) × Array Nat := Id.run do
+  let mut mdata : Array (Array Rat) := #[]
+  let mut strictIndexes : Array Nat := #[]
+  for i in [:maxVar + 1] do
+    let newRow : Array ℚ := Array.mk <| hyps.map (fun cmp => cmp.coeffOf i)
+    mdata := mdata.push newRow
+
+  for ⟨i, cmp⟩ in hyps.enum do
+    if cmp.str == Ineq.lt then
+      strictIndexes := strictIndexes.push i
+  return ⟨⟨mdata⟩, strictIndexes⟩
+
+def myPostprocess (vec : Array Rat) : HashMap Nat Nat := Id.run do
+  let mut common_den : Nat := 1
+  for coef in vec do
+    common_den := common_den.lcm coef.den
+
+  let natVec : Array Nat := vec.map (fun x : Rat => (x * common_den).floor.toNat)
+
+  -- dbg_trace s!"vec = {vec}"
+  -- dbg_trace s!"natVec = {natVec}"
+  let mut ans : HashMap Nat Nat := mkHashMap
+
+  for i in [:natVec.size] do
+    if natVec[i]! != 0 then
+      ans := ans.insert i natVec[i]!
+
+  return ans
+
+def SimplexAlgo.produceCertificate : CertificateOracle :=
+  fun hyps maxVar => do
+    let ⟨A, strictIndexes⟩ := myPreprocess hyps maxVar
+    let oup := findPositiveVector A strictIndexes
+    return myPostprocess oup
 
 end Linarith
