@@ -208,7 +208,7 @@ protected theorem mul_right_cancel_iff' {a b c m : ℕ} (hc : c ≠ 0) :
 
 /-- Cancel left multiplication in the modulus.
 
-For cancelling left multiplication on both sides of the `≡`, see `nat.modeq.mul_left_cancel'`. -/
+For cancelling left multiplication on both sides of the `≡`, see `Nat.ModEq.mul_left_cancel'`. -/
 lemma of_mul_left (m : ℕ) (h : a ≡ b [MOD m * n]) : a ≡ b [MOD n] := by
   rw [modEq_iff_dvd] at *
   exact (dvd_mul_left (n : ℤ) (m : ℤ)).trans h
@@ -216,7 +216,7 @@ lemma of_mul_left (m : ℕ) (h : a ≡ b [MOD m * n]) : a ≡ b [MOD n] := by
 
 /-- Cancel right multiplication in the modulus.
 
-For cancelling right multiplication on both sides of the `≡`, see `nat.modeq.mul_right_cancel'`. -/
+For cancelling right multiplication on both sides of the `≡`, see `Nat.ModEq.mul_right_cancel'`. -/
 lemma of_mul_right (m : ℕ) : a ≡ b [MOD n * m] → a ≡ b [MOD n] := mul_comm m n ▸ of_mul_left _
 #align nat.modeq.of_mul_right Nat.ModEq.of_mul_right
 

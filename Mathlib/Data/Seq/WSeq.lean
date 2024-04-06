@@ -322,7 +322,7 @@ def union (s1 s2 : WSeq α) : WSeq α :=
     (s1, s2)
 #align stream.wseq.union Stream'.WSeq.union
 
-/-- Returns `true` if `s` is `nil` and `false` if `s` has an element -/
+/-- Returns `True` if `s` is `nil` and `False` if `s` has an element -/
 def isEmpty (s : WSeq α) : Computation Bool :=
   Computation.map Option.isNone <| head s
 #align stream.wseq.is_empty Stream'.WSeq.isEmpty
@@ -359,7 +359,7 @@ def splitAt (s : WSeq α) (n : ℕ) : Computation (List α × WSeq α) :=
     (n, [], s)
 #align stream.wseq.split_at Stream'.WSeq.splitAt
 
-/-- Returns `true` if any element of `s` satisfies `p` -/
+/-- Returns `True` if any element of `s` satisfies `p` -/
 def any (s : WSeq α) (p : α → Bool) : Computation Bool :=
   Computation.corec
     (fun s : WSeq α =>
@@ -370,7 +370,7 @@ def any (s : WSeq α) (p : α → Bool) : Computation Bool :=
     s
 #align stream.wseq.any Stream'.WSeq.any
 
-/-- Returns `true` if every element of `s` satisfies `p` -/
+/-- Returns `True` if every element of `s` satisfies `p` -/
 def all (s : WSeq α) (p : α → Bool) : Computation Bool :=
   Computation.corec
     (fun s : WSeq α =>

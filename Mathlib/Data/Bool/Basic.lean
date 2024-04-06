@@ -308,7 +308,7 @@ theorem or_le : ∀ {x y z}, x ≤ z → y ≤ z → (x || y) ≤ z := by decide
 
 #align bool.to_nat Bool.toNat
 
-/-- convert a `ℕ` to a `Bool`, `0 -> false`, everything else -> `true` -/
+/-- convert a `ℕ` to a `Bool`, `0 -> false`, everything else -> `True` -/
 def ofNat (n : Nat) : Bool :=
   decide (n ≠ 0)
 #align bool.of_nat Bool.ofNat

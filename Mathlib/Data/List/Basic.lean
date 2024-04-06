@@ -2967,8 +2967,8 @@ theorem Sublist.map (f : α → β) {l₁ l₂ : List α} (s : l₁ <+ l₂) : m
 
 section Filter
 
--- Porting note: Lemmas for `filter` are stated in terms of `p : α → Bool`
--- rather than `p : α → Prop` with `DecidablePred p`, since `filter` itself is.
+-- Porting note: Lemmas for `Filter` are stated in terms of `p : α → Bool`
+-- rather than `p : α → Prop` with `DecidablePred p`, since `Filter` itself is.
 -- Likewise, `if` sometimes becomes `bif`.
 variable {p : α → Bool}
 

@@ -19,7 +19,7 @@ namespace Set
 
 variable {α : Type*} (s : Set α)
 
-/-- `boolIndicator` maps `x` to `true` if `x ∈ s`, else to `false` -/
+/-- `boolIndicator` maps `x` to `True` if `x ∈ s`, else to `False` -/
 noncomputable def boolIndicator (x : α) :=
   @ite _ (x ∈ s) (Classical.propDecidable _) true false
 #align set.bool_indicator Set.boolIndicator

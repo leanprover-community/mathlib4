@@ -445,7 +445,7 @@ namespace Tactic
 
 namespace NormNum
 
-/-- A predicate representing partial progress in a proof of `squarefree`. -/
+/-- A predicate representing partial progress in a proof of `Squarefree`. -/
 def SquarefreeHelper (n k : ℕ) : Prop :=
   0 < k → (∀ m, Nat.Prime m → m ∣ bit1 n → bit1 k ≤ m) → Squarefree (bit1 n)
 #align tactic.norm_num.squarefree_helper Tactic.NormNum.SquarefreeHelper
@@ -607,7 +607,7 @@ unsafe def prove_squarefree (en : expr) (n : ℕ) : tactic expr :=
   | _ => failed
 #align tactic.norm_num.prove_squarefree tactic.norm_num.prove_squarefree
 
-/-- Evaluates the `squarefree` predicate on naturals. -/
+/-- Evaluates the `Squarefree` predicate on naturals. -/
 @[norm_num]
 unsafe def eval_squarefree : expr → tactic (expr × expr)
   | q(@Squarefree ℕ $(inst) $(e)) => do

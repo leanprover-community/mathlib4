@@ -28,7 +28,7 @@ def div2 : ℤ → ℤ
   | -[n +1] => negSucc n.div2
 #align int.div2 Int.div2
 
-/-- `bodd n` returns `true` if `n` is odd-/
+/-- `bodd n` returns `True` if `n` is odd-/
 def bodd : ℤ → Bool
   | (n : ℕ) => n.bodd
   | -[n +1] => not (n.bodd)

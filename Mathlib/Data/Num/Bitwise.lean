@@ -90,8 +90,8 @@ instance : HXor PosNum PosNum Num where hXor := PosNum.lxor
 
 @[simp] lemma lxor_eq_xor (p q : PosNum) : p.lxor q = p ^^^ q := rfl
 
-/-- `a.testBit n` is `true` iff the `n`-th bit (starting from the LSB) in the binary representation
-      of `a` is active. If the size of `a` is less than `n`, this evaluates to `false`. -/
+/-- `a.testBit n` is `True` iff the `n`-th bit (starting from the LSB) in the binary representation
+      of `a` is active. If the size of `a` is less than `n`, this evaluates to `False`. -/
 def testBit : PosNum → Nat → Bool
   | 1, 0 => true
   | 1, _ => false
@@ -208,8 +208,8 @@ instance : HShiftRight Num Nat Num where hShiftRight := Num.shiftr
 
 @[simp] lemma shiftr_eq_shiftRight (p : Num) (n : Nat) : p.shiftr n = p >>> n := rfl
 
-/-- `a.testBit n` is `true` iff the `n`-th bit (starting from the LSB) in the binary representation
-      of `a` is active. If the size of `a` is less than `n`, this evaluates to `false`. -/
+/-- `a.testBit n` is `True` iff the `n`-th bit (starting from the LSB) in the binary representation
+      of `a` is active. If the size of `a` is less than `n`, this evaluates to `False`. -/
 def testBit : Num → Nat → Bool
   | 0, _ => false
   | pos p, n => p.testBit n
@@ -271,7 +271,7 @@ instance : Inhabited SNum :=
   ⟨0⟩
 
 /-!
-The `SNum` representation uses a bit string, essentially a list of 0 (`false`) and 1 (`true`) bits,
+The `SNum` representation uses a bit string, essentially a list of 0 (`False`) and 1 (`True`) bits,
 and the negation of the MSB is sign-extended to all higher bits.
 -/
 
@@ -413,8 +413,8 @@ def rec' {α} (z : Bool → α) (s : Bool → SNum → α → α) : SNum → α 
   drec' z s
 #align snum.rec' SNum.rec'
 
-/-- `SNum.testBit n a` is `true` iff the `n`-th bit (starting from the LSB) of `a` is active.
-      If the size of `a` is less than `n`, this evaluates to `false`. -/
+/-- `SNum.testBit n a` is `True` iff the `n`-th bit (starting from the LSB) of `a` is active.
+      If the size of `a` is less than `n`, this evaluates to `False`. -/
 def testBit : Nat → SNum → Bool
   | 0, p => head p
   | n + 1, p => testBit n (tail p)

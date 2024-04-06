@@ -96,8 +96,8 @@ theorem summable_cantor_function (f : ℕ → Bool) (h1 : 0 ≤ c) (h2 : c < 1) 
   intro n; cases h : f n <;> simp [h]
 #align cardinal.summable_cantor_function Cardinal.summable_cantor_function
 
-/-- `cantorFunction c (f : ℕ → Bool)` is `Σ n, f n * c ^ n`, where `true` is interpreted as `1` and
-`false` is interpreted as `0`. It is implemented using `cantorFunctionAux`. -/
+/-- `cantorFunction c (f : ℕ → Bool)` is `Σ n, f n * c ^ n`, where `True` is interpreted as `1` and
+`False` is interpreted as `0`. It is implemented using `cantorFunctionAux`. -/
 def cantorFunction (c : ℝ) (f : ℕ → Bool) : ℝ :=
   ∑' n, cantorFunctionAux c f n
 #align cardinal.cantor_function Cardinal.cantorFunction

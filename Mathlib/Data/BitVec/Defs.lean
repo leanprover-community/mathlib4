@@ -103,11 +103,11 @@ protected def sgt (x y : BitVec w) : Bool := BitVec.slt y x
 protected def sge (x y : BitVec w) : Bool := BitVec.sle y x
 #align bitvec.sge BitVec.sge
 
-/-! ### Conversion to `nat` and `int` -/
+/-! ### Conversion to `Nat` and `int` -/
 
 #align bitvec.of_nat BitVec.ofNat
 
-/-- `addLsb r b` is `r + r + 1` if `b` is `true` and `r + r` otherwise. -/
+/-- `addLsb r b` is `r + r + 1` if `b` is `True` and `r + r` otherwise. -/
 def addLsb (r : ℕ) (b : Bool) :=
   Nat.bit b r
 #align bitvec.add_lsb BitVec.addLsb

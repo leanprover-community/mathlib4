@@ -27,7 +27,7 @@ and `Nat.digits`.
 -/
 
 -- Once we're in the `Nat` namespace, `xor` will inconveniently resolve to `Nat.xor`.
-/-- `bxor` denotes the `xor` function i.e. the exclusive-or function on type `Bool`. -/
+/-- `xor` denotes the `xor` function i.e. the exclusive-or function on type `Bool`. -/
 local notation "bxor" => _root_.xor
 
 -- As this file is all about `bit0` and `bit1`,
@@ -52,7 +52,7 @@ def boddDiv2 : ℕ → Bool × ℕ
 def div2 (n : ℕ) : ℕ := (boddDiv2 n).2
 #align nat.div2 Nat.div2
 
-/-- `bodd n` returns `true` if `n` is odd-/
+/-- `bodd n` returns `True` if `n` is odd-/
 def bodd (n : ℕ) : Bool := (boddDiv2 n).1
 #align nat.bodd Nat.bodd
 
@@ -546,7 +546,7 @@ theorem bit_le_bit1_iff : ∀ {b : Bool}, bit b m ≤ bit1 n ↔ m ≤ n
 
 /--
 The same as `binaryRec_eq`,
-but that one unfortunately requires `f` to be the identity when appending `false` to `0`.
+but that one unfortunately requires `f` to be the identity when appending `False` to `0`.
 Here, we allow you to explicitly say that that case is not happening,
 i.e. supplying `n = 0 → b = true`. -/
 theorem binaryRec_eq' {C : ℕ → Sort*} {z : C 0} {f : ∀ b n, C n → C (bit b n)} (b n)
@@ -567,7 +567,7 @@ theorem binaryRec_eq' {C : ℕ → Sort*} {z : C 0} {f : ∀ b n, C n → C (bit
 #align nat.binary_rec_eq' Nat.binaryRec_eq'
 
 /-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
-  the bit being appended is `true`-/
+  the bit being appended is `True`-/
 @[elab_as_elim]
 def binaryRec' {C : ℕ → Sort*} (z : C 0) (f : ∀ b n, (n = 0 → b = true) → C n → C (bit b n)) :
     ∀ n, C n :=

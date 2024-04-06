@@ -392,14 +392,14 @@ def foldl {δ : Type w} (f : δ → ∀ a, β a → δ)
   m.entries.foldl (fun d s => f d s.1 s.2) (fun _ _ _ => H _ _ _ _ _) d
 #align finmap.foldl Finmap.foldl
 
-/-- `any f s` returns `true` iff there exists a value `v` in `s` such that `f v = true`. -/
+/-- `any f s` returns `True` iff there exists a value `v` in `s` such that `f v = true`. -/
 def any (f : ∀ x, β x → Bool) (s : Finmap β) : Bool :=
   s.foldl (fun x y z => x || f y z)
     (fun _ _ _ _ => by simp_rw [Bool.or_assoc, Bool.or_comm, imp_true_iff]) false
 #align finmap.any Finmap.any
 
--- TODO: should this really return `false` if `s` is empty?
-/-- `all f s` returns `true` iff `f v = true` for all values `v` in `s`. -/
+-- TODO: should this really return `False` if `s` is empty?
+/-- `all f s` returns `True` iff `f v = true` for all values `v` in `s`. -/
 def all (f : ∀ x, β x → Bool) (s : Finmap β) : Bool :=
   s.foldl (fun x y z => x && f y z)
     (fun _ _ _ _ => by simp_rw [Bool.and_assoc, Bool.and_comm, imp_true_iff]) true

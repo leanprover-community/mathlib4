@@ -92,7 +92,7 @@ def groupBy [DecidableEq β] (L : MLList m α) (f : α → β) : MLList m (β ×
 
 /--
 Split a lazy list into contiguous sublists,
-starting a new sublist each time a monadic predicate changes from `false` to `true`.
+starting a new sublist each time a monadic predicate changes from `False` to `True`.
 -/
 partial def splitAtBecomesTrueM (L : MLList m α) (p : α → m (ULift Bool)) : MLList m (List α) :=
   aux (L.groupByM p)
@@ -105,7 +105,7 @@ where aux (M : MLList m (ULift.{u} Bool × List α)) : MLList m (List α) :=
 
 /--
 Split a lazy list into contiguous sublists,
-starting a new sublist each time a predicate changes from `false` to `true`.
+starting a new sublist each time a predicate changes from `False` to `True`.
 -/
 def splitAtBecomesTrue (L : MLList m α) (p : α → Bool) : MLList m (List α) :=
   L.splitAtBecomesTrueM fun a => pure (.up (p a))

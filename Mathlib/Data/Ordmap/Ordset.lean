@@ -89,7 +89,7 @@ theorem delta_lt_false {a b : ℕ} (h₁ : delta * a < b) (h₂ : delta * b < a)
 /-! ### `singleton` -/
 
 
-/-! ### `size` and `empty` -/
+/-! ### `size` and `Empty` -/
 
 
 /-- O(n). Computes the actual number of elements in the set, ignoring the cached `size` field. -/

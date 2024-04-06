@@ -15,7 +15,7 @@ This file defines `TwoPointing α`, the type of two pointings of `α`. A two-poi
 two distinct terms.
 
 This is morally a Type-valued `Nontrivial`. Another type which is quite close in essence is `Sym2`.
-Categorically speaking, `prod` is a cospan in the category of types. This forms the category of
+Categorically speaking, `Prod` is a cospan in the category of types. This forms the category of
 bipointed types. Two-pointed types form a full subcategory of those.
 
 ## References
@@ -136,7 +136,7 @@ theorem sum_snd : (p.sum q).snd = Sum.inr q.snd :=
   rfl
 #align two_pointing.sum_snd TwoPointing.sum_snd
 
-/-- The `false`, `true` two-pointing of `Bool`. -/
+/-- The `False`, `True` two-pointing of `Bool`. -/
 protected def bool : TwoPointing Bool :=
   ⟨(false, true), Bool.false_ne_true⟩
 #align two_pointing.bool TwoPointing.bool

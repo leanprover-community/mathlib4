@@ -933,7 +933,7 @@ theorem singletonMonoidHom_apply (a : α) : singletonMonoidHom a = {a} :=
 #align finset.singleton_add_monoid_hom_apply Finset.singletonAddMonoidHom_apply
 
 /-- The coercion from `Finset` to `Set` as a `MonoidHom`. -/
-@[to_additive "The coercion from `Finset` to `set` as an `AddMonoidHom`."]
+@[to_additive "The coercion from `Finset` to `Set` as an `AddMonoidHom`."]
 noncomputable def coeMonoidHom : Finset α →* Set α where
   toFun := CoeTC.coe
   map_one' := coe_one
@@ -954,7 +954,7 @@ theorem coeMonoidHom_apply (s : Finset α) : coeMonoidHom s = s :=
 #align finset.coe_add_monoid_hom_apply Finset.coeAddMonoidHom_apply
 
 /-- Lift a `MonoidHom` to `Finset` via `image`. -/
-@[to_additive (attr := simps) "Lift an `add_monoid_hom` to `Finset` via `image`"]
+@[to_additive (attr := simps) "Lift an `AddMonoidHom` to `Finset` via `image`"]
 def imageMonoidHom [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β] (f : F) :
     Finset α →* Finset β :=
   { imageMulHom f, imageOneHom f with }
