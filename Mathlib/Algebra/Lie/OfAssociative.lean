@@ -271,8 +271,8 @@ lemma LieModule.toEndomorphism_pow_lie (x y : L) (z : M) (n : ℕ) :
   | succ n ih =>
     rw [Finset.sum_antidiagonal_choose_succ_nsmul
       (fun i j ↦ ⁅((ad R L x) ^ i) y, ((φ x) ^ j) z⁆) n]
-    simp only [pow_succ, LinearMap.mul_apply, ih, map_sum, map_nsmul, toEndomorphism_lie, nsmul_add,
-      sum_add_distrib]
+    simp only [pow_succ', LinearMap.mul_apply, ih, map_sum, map_nsmul,
+      toEndomorphism_lie, nsmul_add, sum_add_distrib]
     rw [add_comm, add_left_cancel_iff, sum_congr rfl]
     rintro ⟨i, j⟩ hij
     rw [mem_antidiagonal] at hij

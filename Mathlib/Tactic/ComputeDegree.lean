@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Mathlib.Data.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
 /-!
 
@@ -271,7 +271,7 @@ def getCongrLemma (twoH : Name × Name × List Bool) (debug : Bool := false) : N
       | true, true   => ``id
     | _ => ``id
   if debug then
-    let natr := if nam.getString == `trans then nam else nam.getString
+    let natr := if nam.getString == "trans" then nam.toString else nam.getString
     dbg_trace f!"congr lemma: '{natr}'"
     nam
   else

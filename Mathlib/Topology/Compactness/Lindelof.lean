@@ -609,7 +609,7 @@ theorem Inducing.isLindelof_preimage {f : X → Y} (hf : Inducing f) (hf' : IsCl
 /-- The preimage of a Lindelöf set under a closed embedding is a Lindelöf set. -/
 theorem ClosedEmbedding.isLindelof_preimage {f : X → Y} (hf : ClosedEmbedding f)
     {K : Set Y} (hK : IsLindelof K) : IsLindelof (f ⁻¹' K) :=
-  hf.toInducing.isLindelof_preimage (hf.closed_range) hK
+  hf.toInducing.isLindelof_preimage (hf.isClosed_range) hK
 
 /-- A closed embedding is proper, ie, inverse images of Lindelöf sets are contained in Lindelöf.
 Moreover, the preimage of a Lindelöf set is Lindelöf, see `ClosedEmbedding.isLindelof_preimage`. -/
@@ -641,7 +641,7 @@ protected theorem ClosedEmbedding.nonLindelofSpace [NonLindelofSpace X] {f : X �
 
 protected theorem ClosedEmbedding.LindelofSpace [h : LindelofSpace Y] {f : X → Y}
     (hf : ClosedEmbedding f) : LindelofSpace X :=
-  ⟨by rw [hf.toInducing.isLindelof_iff, image_univ]; exact hf.closed_range.isLindelof⟩
+  ⟨by rw [hf.toInducing.isLindelof_iff, image_univ]; exact hf.isClosed_range.isLindelof⟩
 
 /-- Countable topological spaces are Lindelof. -/
 instance (priority := 100) Countable.LindelofSpace [Countable X] : LindelofSpace X where
@@ -719,13 +719,13 @@ instance SecondCountableTopology.ofPseudoMetrizableSpaceLindelofSpace [PseudoMet
       intro z
       have : IsOpen (U z) := Metric.isOpen_ball
       refine IsOpen.mem_nhds this ?hx
-      simp_all only [U, gt_iff_lt, Metric.mem_ball, dist_self, zero_lt_two, mul_pos_iff_of_pos_left]
+      simp only [U, Metric.mem_ball, dist_self, hpos]
     have ⟨t, hct, huniv⟩ := LindelofSpace.elim_nhds_subcover U hU
     refine ⟨t, hct, ?_⟩
     intro z
     have ⟨y, ht, hzy⟩ : ∃ y ∈ t, z ∈ U y := exists_set_mem_of_union_eq_top t (fun i ↦ U i) huniv z
-    use y, ht
-    exact LT.lt.le hzy
+    simp only [Metric.mem_ball, U] at hzy
+    exact ⟨y, ht, hzy.le⟩
   exact Metric.secondCountable_of_almost_dense_set h_dense
 
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)

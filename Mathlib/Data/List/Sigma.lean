@@ -390,7 +390,7 @@ def kerase (a : α) : List (Sigma β) → List (Sigma β) :=
   eraseP fun s => a = s.1
 #align list.kerase List.kerase
 
--- Porting note: removing @[simp], `simp` can prove it
+-- Porting note (#10618): removing @[simp], `simp` can prove it
 theorem kerase_nil {a} : @kerase _ β _ a [] = [] :=
   rfl
 #align list.kerase_nil List.kerase_nil
@@ -669,7 +669,7 @@ theorem sizeOf_dedupKeys {α} {β : α → Type*} [DecidableEq α] [SizeOf (Sigm
   simp only [SizeOf.sizeOf, _sizeOf_1]
   induction' xs with x xs
   · simp [dedupKeys]
-  · simp only [dedupKeys_cons, kinsert_def, add_le_add_iff_left, Sigma.eta]
+  · simp only [dedupKeys_cons, kinsert_def, Nat.add_le_add_iff_left, Sigma.eta]
     trans
     apply sizeOf_kerase
     assumption

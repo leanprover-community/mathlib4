@@ -624,7 +624,7 @@ theorem nontrivial_coe_nodup_iff {l : List α} (hl : l.Nodup) :
   rcases l with (_ | ⟨hd, _ | ⟨hd', tl⟩⟩)
   · simp
   · simp
-  · simp only [mem_cons, exists_prop, mem_coe_iff, List.length, Ne.def, Nat.succ_le_succ_iff,
+  · simp only [mem_cons, exists_prop, mem_coe_iff, List.length, Ne, Nat.succ_le_succ_iff,
       zero_le, iff_true_iff]
     refine' ⟨hd, hd', _, by simp⟩
     simp only [not_or, mem_cons, nodup_cons] at hl
@@ -972,7 +972,7 @@ variable {r : α → α → Prop} {s : Cycle α}
 theorem Chain.imp {r₁ r₂ : α → α → Prop} (H : ∀ a b, r₁ a b → r₂ a b) (p : Chain r₁ s) :
     Chain r₂ s := by
   induction s using Cycle.induction_on
-  · triv
+  · trivial
   · rw [chain_coe_cons] at p ⊢
     exact p.imp H
 #align cycle.chain.imp Cycle.Chain.imp

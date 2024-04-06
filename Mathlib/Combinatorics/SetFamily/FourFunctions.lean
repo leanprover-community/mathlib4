@@ -3,14 +3,15 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Data.Finset.Sups
 import Mathlib.Data.Set.Basic
 import Mathlib.Order.Birkhoff
 import Mathlib.Order.Booleanisation
 import Mathlib.Order.Sublattice
+import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Ring
 
 /-!
@@ -229,8 +230,9 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
     · rw [insert_erase (erase_ne_self.1 fun hs ↦ ?_)]
       rw [hs] at h
       exact h.2 h.1
-  · rw [← sum_union (disjoint_sdiff_self_right.mono inf_le_left inf_le_left), ← inter_distrib_right,
-      union_sdiff_of_subset (powerset_mono.2 <| subset_insert _ _), inter_eq_right.2 h𝒜]
+  · rw [← sum_union (disjoint_sdiff_self_right.mono inf_le_left inf_le_left),
+      ← union_inter_distrib_right, union_sdiff_of_subset (powerset_mono.2 <| subset_insert _ _),
+      inter_eq_right.2 h𝒜]
 
 /-- The **Four Functions Theorem** on a powerset algebra. See `four_functions_theorem` for the
 finite distributive lattice generalisation. -/

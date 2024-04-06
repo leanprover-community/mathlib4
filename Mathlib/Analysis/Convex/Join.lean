@@ -18,8 +18,6 @@ convex hulls of finite sets.
 
 open Set
 
-open BigOperators
-
 variable {ι : Sort*} {𝕜 E : Type*}
 
 section OrderedSemiring
@@ -148,7 +146,7 @@ theorem convexJoin_assoc_aux (s t u : Set E) :
   · exact div_nonneg hb₂.le hab.le
   · rw [← add_div, div_self hab.ne']
   · rw [← add_assoc, ← mul_add, hab₁, mul_one, hab₂]
-  · simp_rw [smul_add, ← mul_smul, mul_div_cancel' _ hab.ne', add_assoc]
+  · simp_rw [smul_add, ← mul_smul, mul_div_cancel₀ _ hab.ne', add_assoc]
 #align convex_join_assoc_aux convexJoin_assoc_aux
 
 theorem convexJoin_assoc (s t u : Set E) :

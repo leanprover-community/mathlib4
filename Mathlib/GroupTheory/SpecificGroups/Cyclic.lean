@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.Totient
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Subgroup.Simple
@@ -217,7 +217,7 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
     rw [← zpow_mod_orderOf] at hk
     have : 0 ≤ (-k % orderOf g : ℤ) := Int.emod_nonneg (-k) (mod_cast ho.orderOf_pos.ne')
     refine' ⟨(-k % orderOf g : ℤ).toNat, _⟩
-    rwa [← zpow_coe_nat, Int.toNat_of_nonneg this]
+    rwa [← zpow_natCast, Int.toNat_of_nonneg this]
 #align infinite.order_of_eq_zero_of_forall_mem_zpowers Infinite.orderOf_eq_zero_of_forall_mem_zpowers
 #align infinite.add_order_of_eq_zero_of_forall_mem_zmultiples Infinite.addOrderOf_eq_zero_of_forall_mem_zmultiples
 
@@ -240,7 +240,7 @@ instance Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup 
         Nat.pos_of_ne_zero fun h => hx₂ <| by
           rw [← hk, Int.natAbs_eq_zero.mp h, zpow_zero], by
             cases' k with k k
-            · rw [Int.ofNat_eq_coe, Int.natAbs_cast k, ← zpow_coe_nat, ← Int.ofNat_eq_coe, hk]
+            · rw [Int.ofNat_eq_coe, Int.natAbs_cast k, ← zpow_natCast, ← Int.ofNat_eq_coe, hk]
               exact hx₁
             · rw [Int.natAbs_negSucc, ← Subgroup.inv_mem_iff H]; simp_all⟩
     ⟨⟨⟨g ^ Nat.find hex, (Nat.find_spec hex).2⟩, fun ⟨x, hx⟩ =>
@@ -255,8 +255,8 @@ instance Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup 
             rw [← zpow_add, Int.emod_add_ediv, hk]; exact hx
         have hk₄ : k % Nat.find hex = (k % Nat.find hex).natAbs := by
           rw [Int.natAbs_of_nonneg
-              (Int.emod_nonneg _ (Int.coe_nat_ne_zero_iff_pos.2 (Nat.find_spec hex).1))]
-        have hk₅ : g ^ (k % Nat.find hex).natAbs ∈ H := by rwa [← zpow_coe_nat, ← hk₄]
+              (Int.emod_nonneg _ (Int.natCast_ne_zero_iff_pos.2 (Nat.find_spec hex).1))]
+        have hk₅ : g ^ (k % Nat.find hex).natAbs ∈ H := by rwa [← zpow_natCast, ← hk₄]
         have hk₆ : (k % (Nat.find hex : ℤ)).natAbs = 0 :=
           by_contradiction fun h =>
             Nat.find_min hex
@@ -299,7 +299,7 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
             have hgmn : g ^ (m * Nat.gcd n (Fintype.card α)) = 1 := by
               rw [pow_mul, hm, ← pow_gcd_card_eq_one_iff]; exact (mem_filter.1 hx).2
             dsimp only
-            rw [zpow_coe_nat, ← pow_mul, Nat.mul_div_cancel_left', hm]
+            rw [zpow_natCast, ← pow_mul, Nat.mul_div_cancel_left', hm]
             refine' Nat.dvd_of_mul_dvd_mul_right (gcd_pos_of_pos_left (Fintype.card α) hn0) _
             conv_lhs =>
               rw [Nat.div_mul_cancel (Nat.gcd_dvd_right _ _), ←
@@ -332,6 +332,21 @@ theorem IsCyclic.exists_monoid_generator [Finite α] [IsCyclic α] :
 #align is_cyclic.exists_monoid_generator IsCyclic.exists_monoid_generator
 #align is_add_cyclic.exists_add_monoid_generator IsAddCyclic.exists_addMonoid_generator
 
+@[to_additive]
+lemma IsCyclic.exists_ofOrder_eq_natCard [h : IsCyclic α] : ∃ g : α, orderOf g = Nat.card α := by
+  obtain ⟨g, hg⟩ := h.exists_generator
+  use g
+  rw [← card_zpowers g, (eq_top_iff' (zpowers g)).mpr hg]
+  exact (Nat.card_congr (Equiv.Set.univ α))
+
+@[to_additive]
+lemma IsCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype [Fintype α] :
+    IsCyclic α ↔ ∃ g : α, orderOf g = Nat.card α := by
+  refine ⟨fun h ↦ h.exists_ofOrder_eq_natCard, fun h ↦ ?_⟩
+  obtain ⟨g, hg⟩ := h
+  refine isCyclic_of_orderOf_eq_card g ?_
+  simp [hg]
+
 section
 
 variable [DecidableEq α] [Fintype α]
@@ -356,9 +371,9 @@ theorem IsCyclic.unique_zpow_zmod (ha : ∀ x : α, x ∈ zpowers a) (x : α) :
     ∃! n : ZMod (Fintype.card α), x = a ^ n.val := by
   obtain ⟨n, rfl⟩ := ha x
   refine ⟨n, (?_ : a ^ n = _), fun y (hy : a ^ n = _) ↦ ?_⟩
-  · rw [← zpow_coe_nat, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
+  · rw [← zpow_natCast, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
       Int.modEq_comm, Int.modEq_iff_add_fac, ← ZMod.int_coe_zmod_eq_iff]
-  · rw [← zpow_coe_nat, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
+  · rw [← zpow_natCast, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
       ← ZMod.int_cast_eq_int_cast_iff] at hy
     simp [hy]
 
@@ -395,7 +410,7 @@ private theorem card_pow_eq_one_eq_orderOf_aux (a : α) :
               mem_filter.2
                 ⟨mem_univ _, by
                   let ⟨i, hi⟩ := b.2
-                  rw [← hi, ← zpow_coe_nat, ← zpow_mul, mul_comm, zpow_mul, zpow_coe_nat,
+                  rw [← hi, ← zpow_natCast, ← zpow_mul, mul_comm, zpow_mul, zpow_natCast,
                     pow_orderOf_eq_one, one_zpow]⟩⟩)
           fun _ _ h => Subtype.eq (Subtype.mk.inj h))
       _ = (univ.filter fun b : α => b ^ orderOf a = 1).card := Fintype.card_ofFinset _ _
@@ -439,7 +454,7 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
   by_contra h0
   -- Must qualify `Finset.card_eq_zero` because of leanprover/lean4#2849
   -- Must specify the argument `α` to avoid mathlib4#10830
-  simp_rw [not_lt, _root_.le_zero_iff (α := ℕ), Finset.card_eq_zero] at h0
+  simp_rw [not_lt, Nat.le_zero, Finset.card_eq_zero] at h0
   apply lt_irrefl c
   calc
     c = ∑ m in c.divisors, (univ.filter fun a : α => orderOf a = m).card := by
