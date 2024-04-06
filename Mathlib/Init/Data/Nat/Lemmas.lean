@@ -215,10 +215,6 @@ protected def ltByCases {a b : ℕ} {C : Sort u} (h₁ : a < b → C) (h₂ : a 
 
 #align nat.mul_le_mul_of_nonneg_right Nat.mul_le_mul_of_nonneg_right
 
-#align nat.mul_lt_mul Nat.mul_lt_mulₓ
-
-#align nat.mul_lt_mul' Nat.mul_lt_mul'ₓ
-
 -- TODO: there are four variations, depending on which variables we assume to be nonneg
 #align nat.mul_le_mul Nat.mul_le_mul
 
@@ -404,8 +400,6 @@ Many lemmas are proven more generally in mathlib `algebra/order/sub` -/
 #align nat.add_sub_cancel_left Nat.add_sub_cancel_left
 
 #align nat.sub_sub Nat.sub_sub
-
-#align nat.le_of_le_of_sub_le_sub_right Nat.le_of_le_of_sub_le_sub_right
 
 #align nat.sub_le_sub_iff_right Nat.sub_le_sub_iff_right
 
