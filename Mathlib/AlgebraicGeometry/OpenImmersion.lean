@@ -851,6 +851,7 @@ namespace AffineOpenCover
 attribute [instance] AffineOpenCover.IsOpen
 
 /-- The open cover associated to an affine open cover. -/
+@[simps]
 def openCover {X : Scheme.{u}} (𝓤 : X.AffineOpenCover) : X.OpenCover where
   J := 𝓤.J
   map := 𝓤.map
