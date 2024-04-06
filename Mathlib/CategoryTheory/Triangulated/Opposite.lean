@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Shift.Opposite
 import Mathlib.CategoryTheory.Shift.Pullback
+import Mathlib.CategoryTheory.Triangulated.Subcategory
 import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Triangulated.Adjunction
 import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
@@ -882,7 +883,56 @@ lemma map_distinguished_op_exact {A : Type*} [Category A] [Abelian A] (F : Cᵒ�
     ((shortComplexOfDistTriangle T hT).op.map F).Exact :=
   F.map_distinguished_exact _ (op_distinguished T hT)
 
-
 end Functor
+
+namespace Triangulated
+
+open Pretriangulated.Opposite Pretriangulated
+
+variable {C}
+variable [HasShift C ℤ] [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
+  [Pretriangulated C]
+
+namespace Subcategory
+
+def op (S : Subcategory C) : Subcategory (Cᵒᵖ) where
+  P := fun X => S.P X.unop
+  zero' := by
+    obtain ⟨Z, hZ, hZ'⟩ := S.zero'
+    exact ⟨Opposite.op Z, hZ.op, hZ'⟩
+  shift X n hX := S.shift _ (-n) hX
+  ext₂' := by
+    rintro T hT h₁ h₃
+    rw [mem_distTriang_op_iff] at hT
+    obtain ⟨X, hX, ⟨e⟩⟩ := S.ext₂' _ hT h₃ h₁
+    exact ⟨Opposite.op X, hX, ⟨e.symm.op⟩⟩
+
+def unop (S : Subcategory Cᵒᵖ) : Subcategory C where
+  P := fun X => S.P (Opposite.op X)
+  zero' := by
+    obtain ⟨Z, hZ, hZ'⟩ := S.zero'
+    exact ⟨Z.unop, hZ.unop, hZ'⟩
+  shift X n hX := by
+    obtain ⟨m, rfl⟩ : ∃ m, n = -m := ⟨-n, by simp⟩
+    exact S.shift _ m hX
+  ext₂' := by
+    rintro T hT h₁ h₃
+    obtain ⟨X, hX, ⟨e⟩⟩ := S.ext₂' _ (op_distinguished _ hT) h₃ h₁
+    exact ⟨Opposite.unop X, hX, ⟨e.symm.unop⟩⟩
+
+@[simp] lemma unop_op (S : Subcategory C) : S.op.unop = S := rfl
+@[simp] lemma op_unop (S : Subcategory Cᵒᵖ) : S.unop.op = S := rfl
+
+instance (S : Subcategory C) [ClosedUnderIsomorphisms S.P] :
+    ClosedUnderIsomorphisms S.op.P where
+  mem_of_iso e := mem_of_iso S.P e.symm.unop
+
+instance (S : Subcategory Cᵒᵖ) [ClosedUnderIsomorphisms S.P] :
+    ClosedUnderIsomorphisms S.unop.P where
+  mem_of_iso e := mem_of_iso S.P e.symm.op
+
+end Subcategory
+
+end Triangulated
 
 end CategoryTheory

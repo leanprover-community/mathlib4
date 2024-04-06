@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Triangulated.Subcategory
+import Mathlib.CategoryTheory.Triangulated.Opposite
 import Mathlib.CategoryTheory.Localization.Triangulated
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Lemmas
 
@@ -65,8 +65,6 @@ lemma IsRightLocalizing.mk'
     rw [Subcategory.W_iff] at hs' ⊢
     obtain ⟨_, _, _, hT'', hV⟩ := hs'
     exact ⟨_, _, _, F.map_distinguished _ hT'', hV⟩
-
-
 
 variable (L : C ⥤ D) [L.IsLocalization B.W] [IsRightLocalizing F B]
 
