@@ -14,7 +14,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 # Integration of specific interval integrals
 
 This file contains proofs of the integrals of various specific functions. This includes:
-* Integrals of simple functions, such as `id`, `pow`, `inv`, `exp`, `log`
+* Integrals of simple functions, such as `id`, `pow`, `inv`, `NormedSpace.exp`, `log`
 * Integrals of some trigonometric functions, such as `sin`, `cos`, `1 / (1 + x^2)`
 * The integral of `cos x ^ 2 - sin x ^ 2`
 * Reduction formulae for the integrals of `sin x ^ n` and `cos x ^ n` for `n ≥ 2`

@@ -19,7 +19,7 @@ In this file, we define `exp 𝕂 : 𝔸 → 𝔸`, the exponential map in a top
 field `𝕂`.
 
 While for most interesting results we need `𝔸` to be normed algebra, we do not require this in the
-definition in order to make `exp` independent of a particular choice of norm. The definition also
+definition in order to make `NormedSpace.exp` independent of a particular choice of norm. The definition also
 does not require that `𝔸` be complete, but we need to assume it for most results.
 
 We then prove some basic results, but we avoid importing derivatives here to minimize dependencies.
@@ -32,34 +32,34 @@ We prove most result for an arbitrary field `𝕂`, and then specialize to `𝕂
 
 ### General case
 
-- `exp_add_of_commute_of_mem_ball` : if `𝕂` has characteristic zero, then given two commuting
+- `NormedSpace.exp_add_of_commute_of_mem_ball` : if `𝕂` has characteristic zero, then given two commuting
   elements `x` and `y` in the disk of convergence, we have
   `exp 𝕂 (x+y) = (exp 𝕂 x) * (exp 𝕂 y)`
-- `exp_add_of_mem_ball` : if `𝕂` has characteristic zero and `𝔸` is commutative, then given two
+- `NormedSpace.exp_add_of_mem_ball` : if `𝕂` has characteristic zero and `𝔸` is commutative, then given two
   elements `x` and `y` in the disk of convergence, we have
   `exp 𝕂 (x+y) = (exp 𝕂 x) * (exp 𝕂 y)`
-- `exp_neg_of_mem_ball` : if `𝕂` has characteristic zero and `𝔸` is a division ring, then given an
+- `NormedSpace.exp_neg_of_mem_ball` : if `𝕂` has characteristic zero and `𝔸` is a division ring, then given an
   element `x` in the disk of convergence, we have `exp 𝕂 (-x) = (exp 𝕂 x)⁻¹`.
 
 ### `𝕂 = ℝ` or `𝕂 = ℂ`
 
 - `expSeries_radius_eq_top` : the `FormalMultilinearSeries` defining `exp 𝕂` has infinite
   radius of convergence
-- `exp_add_of_commute` : given two commuting elements `x` and `y`, we have
+- `NormedSpace.exp_add_of_commute` : given two commuting elements `x` and `y`, we have
   `exp 𝕂 (x+y) = (exp 𝕂 x) * (exp 𝕂 y)`
-- `exp_add` : if `𝔸` is commutative, then we have `exp 𝕂 (x+y) = (exp 𝕂 x) * (exp 𝕂 y)`
+- `NormedSpace.exp_add` : if `𝔸` is commutative, then we have `exp 𝕂 (x+y) = (exp 𝕂 x) * (exp 𝕂 y)`
   for any `x` and `y`
-- `exp_neg` : if `𝔸` is a division ring, then we have `exp 𝕂 (-x) = (exp 𝕂 x)⁻¹`.
-- `exp_sum_of_commute` : the analogous result to `exp_add_of_commute` for `Finset.sum`.
-- `exp_sum` : the analogous result to `exp_add` for `Finset.sum`.
-- `exp_nsmul` : repeated addition in the domain corresponds to repeated multiplication in the
+- `NormedSpace.exp_neg` : if `𝔸` is a division ring, then we have `exp 𝕂 (-x) = (exp 𝕂 x)⁻¹`.
+- `exp_sum_of_commute` : the analogous result to `NormedSpace.exp_add_of_commute` for `Finset.sum`.
+- `exp_sum` : the analogous result to `NormedSpace.exp_add` for `Finset.sum`.
+- `NormedSpace.exp_nsmul` : repeated addition in the domain corresponds to repeated multiplication in the
   codomain.
-- `exp_zsmul` : repeated addition in the domain corresponds to repeated multiplication in the
+- `NormedSpace.exp_zsmul` : repeated addition in the domain corresponds to repeated multiplication in the
   codomain.
 
 ### Other useful compatibility results
 
-- `exp_eq_exp` : if `𝔸` is a normed algebra over two fields `𝕂` and `𝕂'`, then `exp 𝕂 = exp 𝕂' 𝔸`
+- `NormedSpace.exp_eq_exp` : if `𝔸` is a normed algebra over two fields `𝕂` and `𝕂'`, then `exp 𝕂 = exp 𝕂' 𝔸`
 
 ### Notes
 
@@ -75,10 +75,10 @@ open Real
 #time example (x : ℝ) : 0 < exp x      := exp_pos _ -- 250ms
 #time example (x : ℝ) : 0 < Real.exp x := exp_pos _ -- 2ms
 ```
-This is because `exp x` tries the `exp` function defined here,
+This is because `exp x` tries the `NormedSpace.exp` function defined here,
 and generates a slow coercion search from `Real` to `Type`, to fit the first argument here.
 We will resolve this slow coercion separately,
-but we want to move `exp` out of the root namespace in any case to avoid this ambiguity.
+but we want to move `NormedSpace.exp` out of the root namespace in any case to avoid this ambiguity.
 
 In the long term is may be possible to replace `Real.exp` and `Complex.exp` with this one.
 
@@ -330,7 +330,7 @@ theorem invOf_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
   letI := invertibleExpOfMemBall hx; convert (rfl : ⅟ (exp 𝕂 x) = _)
 #align inv_of_exp_of_mem_ball NormedSpace.invOf_exp_of_mem_ball
 
-/-- Any continuous ring homomorphism commutes with `exp`. -/
+/-- Any continuous ring homomorphism commutes with `NormedSpace.exp`. -/
 theorem map_exp_of_mem_ball {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹] (f : F) (hf : Continuous f)
     (x : 𝔸) (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     f (exp 𝕂 x) = exp 𝕂 (f x) := by
@@ -537,7 +537,7 @@ theorem exp_nsmul (n : ℕ) (x : 𝔸) : exp 𝕂 (n • x) = exp 𝕂 x ^ n := 
 
 variable (𝕂)
 
-/-- Any continuous ring homomorphism commutes with `exp`. -/
+/-- Any continuous ring homomorphism commutes with `NormedSpace.exp`. -/
 theorem map_exp {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹] (f : F) (hf : Continuous f) (x : 𝔸) :
     f (exp 𝕂 x) = exp 𝕂 (f x) :=
   map_exp_of_mem_ball f hf x <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
@@ -650,7 +650,7 @@ theorem exp_add {x y : 𝔸} : exp 𝕂 (x + y) = exp 𝕂 x * exp 𝕂 y :=
     ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
 #align exp_add NormedSpace.exp_add
 
-/-- A version of `exp_sum_of_commute` for a commutative Banach-algebra. -/
+/-- A version of `NormedSpace.exp_sum_of_commute` for a commutative Banach-algebra. -/
 theorem exp_sum {ι} (s : Finset ι) (f : ι → 𝔸) : exp 𝕂 (∑ i in s, f i) = ∏ i in s, exp 𝕂 (f i) := by
   rw [exp_sum_of_commute, Finset.noncommProd_eq_prod]
   exact fun i _hi j _hj _ => Commute.all _ _
@@ -687,7 +687,7 @@ theorem exp_ℝ_ℂ_eq_exp_ℂ_ℂ : (exp ℝ : ℂ → ℂ) = exp ℂ :=
   exp_eq_exp ℝ ℂ ℂ
 #align exp_ℝ_ℂ_eq_exp_ℂ_ℂ NormedSpace.exp_ℝ_ℂ_eq_exp_ℂ_ℂ
 
-/-- A version of `Complex.ofReal_exp` for `exp` instead of `Complex.exp` -/
+/-- A version of `Complex.ofReal_exp` for `NormedSpace.exp` instead of `Complex.exp` -/
 @[simp, norm_cast]
 theorem of_real_exp_ℝ_ℝ (r : ℝ) : ↑(exp ℝ r) = exp ℂ (r : ℂ) :=
   (map_exp ℝ (algebraMap ℝ ℂ) (continuous_algebraMap _ _) r).trans (congr_fun exp_ℝ_ℂ_eq_exp_ℂ_ℂ _)

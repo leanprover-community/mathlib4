@@ -71,7 +71,7 @@ not vanish, as in
 example (x : ℝ) (h : 1 + sin x ≠ 0) : DifferentiableAt ℝ (fun x ↦ exp x / (1 + sin x)) x :=
 by simp [h]
 ```
-Of course, these examples only work once `exp`, `cos` and `sin` have been shown to be
+Of course, these examples only work once `NormedSpace.exp`, `cos` and `sin` have been shown to be
 differentiable, in `Analysis.SpecialFunctions.Trigonometric`.
 
 The simplifier is not set up to compute the Fréchet derivative of maps (as these are in general
@@ -102,7 +102,7 @@ many lemmas with the `simp` attribute, for instance those saying that the sum of
 functions is differentiable, as well as their product, their cartesian product, and so on. A notable
 exception is the chain rule: we do not mark as a simp lemma the fact that, if `f` and `g` are
 differentiable, then their composition also is: `simp` would always be able to match this lemma,
-by taking `f` or `g` to be the identity. Instead, for every reasonable function (say, `exp`),
+by taking `f` or `g` to be the identity. Instead, for every reasonable function (say, `NormedSpace.exp`),
 we add a lemma that if `f` is differentiable then so is `(fun x ↦ exp (f x))`. This means adding
 some boilerplate lemmas, but these can also be useful in their own right.
 

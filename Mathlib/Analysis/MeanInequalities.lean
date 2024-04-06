@@ -121,7 +121,7 @@ theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0
     · rw [hzi]
       exact zero_rpow hwi
   -- If all numbers `z i` with non-zero weight are positive, then we apply Jensen's inequality
-  -- for `exp` and numbers `log (z i)` with weights `w i`.
+  -- for `NormedSpace.exp` and numbers `log (z i)` with weights `w i`.
   · simp only [not_exists, not_and, Ne, Classical.not_not] at A
     have := convexOn_exp.map_sum_le hw hw' fun i _ => Set.mem_univ <| log (z i)
     simp only [exp_sum, (· ∘ ·), smul_eq_mul, mul_comm (w _) (log _)] at this

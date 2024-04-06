@@ -15,8 +15,8 @@ import Mathlib.Topology.UniformSpace.Matrix
 /-!
 # Lemmas about the matrix exponential
 
-In this file, we provide results about `exp` on `Matrix`s over a topological or normed algebra.
-Note that generic results over all topological spaces such as `exp_zero` can be used on matrices
+In this file, we provide results about `NormedSpace.exp` on `Matrix`s over a topological or normed algebra.
+Note that generic results over all topological spaces such as `NormedSpace.exp_zero` can be used on matrices
 without issue, so are not repeated here. The topological results specific to matrices are:
 
 * `Matrix.exp_transpose`
@@ -25,14 +25,14 @@ without issue, so are not repeated here. The topological results specific to mat
 * `Matrix.exp_blockDiagonal`
 * `Matrix.exp_blockDiagonal'`
 
-Lemmas like `exp_add_of_commute` require a canonical norm on the type; while there are multiple
+Lemmas like `NormedSpace.exp_add_of_commute` require a canonical norm on the type; while there are multiple
 sensible choices for the norm of a `Matrix` (`Matrix.normedAddCommGroup`,
 `Matrix.frobeniusNormedAddCommGroup`, `Matrix.linftyOpNormedAddCommGroup`), none of them
 are canonical. In an application where a particular norm is chosen using
-`attribute [local instance]`, then the usual lemmas about `exp` are fine. When choosing a norm is
+`attribute [local instance]`, then the usual lemmas about `NormedSpace.exp` are fine. When choosing a norm is
 undesirable, the results in this file can be used.
 
-In this file, we copy across the lemmas about `exp`, but hide the requirement for a norm inside the
+In this file, we copy across the lemmas about `NormedSpace.exp`, but hide the requirement for a norm inside the
 proof.
 
 * `Matrix.exp_add_of_commute`
@@ -62,7 +62,7 @@ results for general rings are instead stated about `Ring.inverse`:
 
 open scoped Matrix BigOperators
 
-open NormedSpace -- For `exp`.
+open NormedSpace -- For `NormedSpace.exp`.
 
 variable (𝕂 : Type*) {m n p : Type*} {n' : m → Type*} {𝔸 : Type*}
 
