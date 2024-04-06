@@ -32,14 +32,14 @@ We prove most result for an arbitrary field `𝕂`, and then specialize to `𝕂
 
 ### General case
 
-- `NormedSpace.exp_add_of_commute_of_mem_ball` : if `𝕂` has characteristic zero, then given two commuting
-  elements `x` and `y` in the disk of convergence, we have
+- `NormedSpace.exp_add_of_commute_of_mem_ball` : if `𝕂` has characteristic zero,
+  then given two commuting elements `x` and `y` in the disk of convergence, we have
   `exp 𝕂 (x+y) = (exp 𝕂 x) * (exp 𝕂 y)`
-- `NormedSpace.exp_add_of_mem_ball` : if `𝕂` has characteristic zero and `𝔸` is commutative, then given two
-  elements `x` and `y` in the disk of convergence, we have
+- `NormedSpace.exp_add_of_mem_ball` : if `𝕂` has characteristic zero and `𝔸` is commutative,
+  then given two elements `x` and `y` in the disk of convergence, we have
   `exp 𝕂 (x+y) = (exp 𝕂 x) * (exp 𝕂 y)`
-- `NormedSpace.exp_neg_of_mem_ball` : if `𝕂` has characteristic zero and `𝔸` is a division ring, then given an
-  element `x` in the disk of convergence, we have `exp 𝕂 (-x) = (exp 𝕂 x)⁻¹`.
+- `NormedSpace.exp_neg_of_mem_ball` : if `𝕂` has characteristic zero and `𝔸` is a division ring,
+  then given an element `x` in the disk of convergence, we have `exp 𝕂 (-x) = (exp 𝕂 x)⁻¹`.
 
 ### `𝕂 = ℝ` or `𝕂 = ℂ`
 
