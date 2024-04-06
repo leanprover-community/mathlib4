@@ -618,4 +618,18 @@ theorem Basis.ofZlatticeBasis_span :
         rw [Submodule.map_span]
     _ = L := by simp [b.span_eq]
 
+theorem Zlattice.isAddFundamentalDomain {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [FiniteDimensional ℝ E] {L : AddSubgroup E} [DiscreteTopology L] [IsZlattice ℝ L] [Finite ι]
+    (b : Basis ι ℤ L) [MeasurableSpace E] [OpensMeasurableSpace E] (μ : MeasureTheory.Measure E) :
+    MeasureTheory.IsAddFundamentalDomain L (Zspan.fundamentalDomain (b.ofZlatticeBasis ℝ)) μ := by
+  convert Zspan.isAddFundamentalDomain (b.ofZlatticeBasis ℝ) μ
+  all_goals exact (b.ofZlatticeBasis_span ℝ).symm
+
+instance instCountable_of_discrete_addSubgroup {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [FiniteDimensional ℝ E] (L : AddSubgroup E) [DiscreteTopology L] [IsZlattice ℝ L] :
+    Countable L := by
+  rw [← (Module.Free.chooseBasis ℤ L).ofZlatticeBasis_span ℝ]
+  change Countable (span ℤ (Set.range (Basis.ofZlatticeBasis ℝ L _)))
+  infer_instance
+
 end Zlattice
