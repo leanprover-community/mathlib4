@@ -8,6 +8,7 @@ import Mathlib.Data.Fintype.Order
 import Mathlib.Algebra.DirectLimit
 import Mathlib.ModelTheory.Quotients
 import Mathlib.ModelTheory.FinitelyGenerated
+import Mathlib.Order.Ideal
 
 #align_import model_theory.direct_limit from "leanprover-community/mathlib"@"f53b23994ac4c13afa38d31195c588a1121d1860"
 
@@ -533,7 +534,217 @@ theorem Equiv_isup_symm_inclusion (i : ι) :
     = of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i := by
   ext x; exact Equiv_isup_symm_inclusion_apply _ x
 
+open Substructure.SubEquivalence
+
+variable [Nonempty ι] [IsDirected ι (· ≤ ·)]
+variable (S : ι →o M ≃ₚ[L] N)
+
+instance : DirectedSystem (fun i ↦ (S i).sub_dom) (fun _ _ h ↦
+  Substructure.inclusion (le_dom (S.monotone h))) where
+  map_self' := fun _ _ _ ↦ rfl
+  map_map' := fun _ _ _ ↦ rfl
+
+instance : DirectedSystem (fun i ↦ (S i).sub_cod) (fun _ _ h ↦
+  Substructure.inclusion (le_cod (S.monotone h))) where
+  map_self' := fun _ _ _ ↦ rfl
+  map_map' := fun _ _ _ ↦ rfl
+
+/-- The limit of a directed system of subequivalences.-/
+noncomputable def subEquiv_limit : M ≃ₚ[L] N where
+  sub_dom := iSup (fun i ↦ (S i).sub_dom)
+  sub_cod := iSup (fun i ↦ (S i).sub_cod)
+  equiv :=
+    (DirectLimit.Equiv_iSup {
+      toFun := (fun i ↦ (S i).sub_cod)
+      monotone' := monotone_cod.comp S.monotone}
+    ).comp
+      ((DirectLimit.equiv_lift L ι (fun i ↦ (S i).sub_dom)
+        (fun _ _ hij ↦ Substructure.inclusion (le_dom (S.monotone hij)))
+        (fun i ↦ (S i).sub_cod)
+        (fun _ _ hij ↦ Substructure.inclusion (le_cod (S.monotone hij)))
+        (fun i ↦ (S i).equiv)
+        (fun _ _ hij _ ↦ equiv_inclusion_apply (S.monotone hij) _)
+      ).comp
+        (DirectLimit.Equiv_iSup {
+          toFun := (fun i ↦ (S i).sub_dom)
+          monotone' := monotone_dom.comp S.monotone}).symm)
+
+@[simp]
+theorem subEquiv_limit_dom : (subEquiv_limit S).sub_dom = iSup (fun x ↦ (S x).sub_dom) := rfl
+
+@[simp]
+theorem subEquiv_limit_cod : (subEquiv_limit S).sub_cod = iSup (fun x ↦ (S x).sub_cod) := rfl
+
+-- the proof is a hack right now, I didn't know how to handle subtle differences in proof terms
+-- that prevented me from just using equalities proved previously
+theorem le_subEquiv_limit : ∀ i, S i ≤ subEquiv_limit S := by
+  intro i
+  refine ⟨by simp; apply le_iSup (f := fun i ↦ (S i).sub_dom), ?_⟩
+  unfold subEquiv_limit
+  ext x
+  simp only [OrderHom.coe_mk, Embedding.comp_apply, Substructure.coe_inclusion,
+    Equiv.coe_toEmbedding, Equiv.comp_apply]
+  refine DirectLimit.Equiv_isup_symm_inclusion_apply
+    { toFun := fun i ↦ (S i).sub_dom
+      monotone' := monotone_dom.comp S.monotone} x ▸ ?_
+  refine DirectLimit.equiv_lift_of L ι (fun i ↦ (S i).sub_dom)
+        (fun _ _ hij ↦ Substructure.inclusion (le_dom (S.monotone hij)))
+      (fun i ↦ (S i).sub_cod)
+      (fun _ _ hij ↦ Substructure.inclusion (le_cod (S.monotone hij)))
+      (fun i ↦ (S i).equiv)
+      (fun _ _ hij _ ↦ equiv_inclusion_apply (S.monotone hij) _)
+      x ▸ ?_
+  rw [DirectLimit.equiv_lift_of]
+  refine DirectLimit.Equiv_isup_of_apply
+    { toFun := fun i ↦ (S i).sub_cod
+      monotone' := monotone_cod.comp S.monotone} ((S i).equiv x) ▸ ?_
+  rw [DirectLimit.Equiv_isup_of_apply]
+  rfl
+
 end DirectLimit
+
+namespace BackAndForth
+
+open Substructure.SubEquivalence
+
+open DirectLimit
+
+
+variable (M) (N) (L)
+
+/-- The type of equivalences between finitely generated substructures. -/
+def FiniteEquiv := {f : M ≃ₚ[L] N // f.sub_dom.FG}
+
+instance : PartialOrder (FiniteEquiv L M N) := Subtype.partialOrder _
+
+instance FiniteEquivToSubEquiv : Coe (FiniteEquiv L M N) (M ≃ₚ[L] N) := {coe := Subtype.val}
+
+variable {M} {N} {L}
+
+theorem FiniteEquiv.subtype_val_monotone : Monotone (Subtype.val : FiniteEquiv L M N → M ≃ₚ[L] N) :=
+  fun _ _ h ↦ Subtype.coe_le_coe.2 h
+
+/-- The cofinal set of finite equivalences with a given element in their domain. -/
+noncomputable def definedAtLeft
+    (h : ∀ f : (M ≃ₚ[L] N), ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom)
+    (m : M) : Order.Cofinal (FiniteEquiv L M N) where
+  carrier := {f | m ∈ f.val.sub_dom}
+  mem_gt := by
+    intro f
+    rcases h f.val f.2 m with ⟨g, f_le_g, m_in_dom⟩
+    have closure_le_dom : (Substructure.closure L (f.val.sub_dom ∪ {m})) ≤ g.sub_dom := by
+      rw [Substructure.closure_le, union_subset_iff]
+      exact ⟨le_dom f_le_g, singleton_subset_iff.2 m_in_dom⟩
+    have closure_fg : (Substructure.closure L (f.val.sub_dom ∪ {m})).FG := by
+      rw [Substructure.closure_union, Substructure.closure_eq]
+      exact Substructure.FG.sup f.property (Substructure.fg_closure_singleton _)
+    use ⟨dom_restrict g closure_le_dom, closure_fg⟩
+    constructor
+    · simp only [union_singleton]
+      exact Substructure.subset_closure <| mem_insert_iff.2 <| Or.inl <| refl m
+    · apply le_dom_restrict
+      rw [Substructure.closure_union]
+      simp only [Substructure.closure_eq, ge_iff_le,
+        Substructure.closure_le, singleton_subset_iff, le_sup_left]
+      exact f_le_g
+
+/-- The cofinal set of finite equivalences with a given element in their codomain. -/
+noncomputable def definedAtRight
+  (h : ∀ f : (M ≃ₚ[L] N), ∀ _ : f.sub_dom.FG, ∀ n : N, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ n ∈ g.sub_cod)
+  (n : N) : Order.Cofinal (FiniteEquiv L M N) where
+  carrier := {f | n ∈ f.val.sub_cod}
+  mem_gt := by
+    intro f
+    rcases h f.val f.2 n with ⟨g, f_le_g, n_in_cod⟩
+    have closure_le_cod : (Substructure.closure L (f.val.sub_cod ∪ {n})) ≤ g.sub_cod := by
+      rw [Substructure.closure_le, union_subset_iff]
+      exact ⟨le_cod f_le_g, singleton_subset_iff.2 n_in_cod⟩
+    have closure_fg : (Substructure.closure L (f.val.sub_cod ∪ {n})).FG := by
+      rw [Substructure.closure_union, Substructure.closure_eq]
+      exact Substructure.FG.sup ((fg_iff f.val).1 f.prop) (Substructure.fg_closure_singleton _)
+    use ⟨cod_restrict g closure_le_cod, (cod_restrict g closure_le_cod).fg_iff.2 closure_fg⟩
+    constructor
+    · simp only [union_singleton]
+      exact Substructure.subset_closure <| mem_insert_iff.2 <| Or.inl <| refl n
+    · apply le_cod_restrict
+      rw [Substructure.closure_union]
+      simp only [Substructure.closure_eq, ge_iff_le,
+        Substructure.closure_le, singleton_subset_iff, le_sup_left]
+      exact f_le_g
+
+theorem back_iff_symm_of_forth :
+    (∀ f : (M ≃ₚ[L] N), ∀ _ : f.sub_dom.FG, ∀ n : N, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ n ∈ g.sub_cod) ↔
+    ∀ f : (N ≃ₚ[L] M), ∀ _ : f.sub_dom.FG, ∀ n : N, ∃ g : (N ≃ₚ[L] M), f ≤ g ∧ n ∈ g.sub_dom := by
+  constructor <;>
+  · intro H f fg x
+    let ⟨g, g_prop⟩ := H f.symm (f.fg_iff.1 fg) x
+    use g.symm
+    convert g_prop
+    exact (symm_le_iff f g).symm
+
+/-- For a countably generated structure `M` and a structure `N`, if any subequivalence
+between finitely generated substructures can be extended to any element in the domain,
+then there exists an embedding of `M` in `N`. -/
+theorem embedding_from_cg (M_cg : Structure.CG L M) (h : (M ≃ₚ[L] N)) (h_fg : h.sub_dom.FG)
+    (H : ∀ f : M ≃ₚ[L] N, ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom) :
+    ∃ f : M ↪[L] N, h ≤ f.toSubEquivalence := by
+  rcases M_cg with ⟨X, _, X_gen⟩
+  have _ : Countable (↑X : Type _) := by simpa only [countable_coe_iff]
+  have _ : Encodable (↑X : Type _) := Encodable.ofCountable _
+  let D : X → Order.Cofinal (FiniteEquiv L M N) := fun x ↦ definedAtLeft H x
+  let S : ℕ →o M ≃ₚ[L] N :=
+    ⟨Subtype.val ∘ (Order.sequenceOfCofinals ⟨h, h_fg⟩ D),
+      FiniteEquiv.subtype_val_monotone.comp (Order.sequenceOfCofinals.monotone _ _)⟩
+  let F := subEquiv_limit S
+  have _ : X ⊆ F.sub_dom := by
+    intro x hx
+    have := Order.sequenceOfCofinals.encode_mem ⟨h, h_fg⟩ D ⟨x, hx⟩
+    exact le_dom
+      (le_subEquiv_limit S (Encodable.encode (⟨x, hx⟩ : X) + 1)) this
+  have isTop : F.sub_dom = ⊤ := by rwa [← top_le_iff, ← X_gen, Substructure.closure_le]
+  exact ⟨dom_top_toEmbedding isTop,
+        by convert (le_subEquiv_limit S 0); apply Embedding.toSubEquivalence_toEmbedding⟩
+
+/-- For two countably generated structure `M` and `N`, if any subequivalence
+between finitely generated substructures can be extended to any element in the domain and to
+any element in the codomain, then there exists an equivalence between `M` and `N`. -/
+theorem equiv_between_cg (M_cg : Structure.CG L M) (N_cg : Structure.CG L N)
+    (h : (M ≃ₚ[L] N)) (h_fg : h.sub_dom.FG)
+    (ext_dom : ∀ f : M ≃ₚ[L] N, ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N),
+      f ≤ g ∧ m ∈ g.sub_dom)
+    (ext_cod : ∀ f : M ≃ₚ[L] N, ∀ _ : f.sub_dom.FG, ∀ n : N, ∃ g : (M ≃ₚ[L] N),
+      f ≤ g ∧ n ∈ g.sub_cod) :
+    ∃ f : M ≃[L] N, h ≤ f.toEmbedding.toSubEquivalence := by
+  rcases M_cg with ⟨X, X_count, X_gen⟩
+  rcases N_cg with ⟨Y, Y_count, Y_gen⟩
+  have _ : Countable (↑X : Type _) := by simpa only [countable_coe_iff]
+  have _ : Encodable (↑X : Type _) := Encodable.ofCountable _
+  have _ : Countable (↑Y : Type _) := by simpa only [countable_coe_iff]
+  have _ : Encodable (↑Y : Type _) := Encodable.ofCountable _
+  let D : Sum X Y → Order.Cofinal (FiniteEquiv L M N) := fun p ↦
+    Sum.recOn p (fun x ↦ definedAtLeft ext_dom x) (fun y ↦ definedAtRight ext_cod y)
+  let S : ℕ →o M ≃ₚ[L] N :=
+    ⟨Subtype.val ∘ (Order.sequenceOfCofinals ⟨h, h_fg⟩ D),
+      FiniteEquiv.subtype_val_monotone.comp (Order.sequenceOfCofinals.monotone _ _)⟩
+  let F := DirectLimit.subEquiv_limit S
+  have _ : X ⊆ F.sub_dom := by
+    intro x hx
+    have := Order.sequenceOfCofinals.encode_mem ⟨h, h_fg⟩ D (Sum.inl ⟨x, hx⟩)
+    exact le_dom
+      (le_subEquiv_limit S (Encodable.encode (Sum.inl (⟨x, hx⟩ : X)) + 1)) this
+  have _ : Y ⊆ F.sub_cod := by
+    intro y hy
+    have := Order.sequenceOfCofinals.encode_mem ⟨h, h_fg⟩ D (Sum.inr ⟨y, hy⟩)
+    exact le_cod
+      (le_subEquiv_limit S (Encodable.encode (Sum.inr (⟨y, hy⟩ : Y)) + 1)) this
+  have dom_top : F.sub_dom = ⊤ := by rwa [← top_le_iff, ← X_gen, Substructure.closure_le]
+  have cod_top : F.sub_cod = ⊤ := by rwa [← top_le_iff, ← Y_gen, Substructure.closure_le]
+  refine ⟨dom_cod_top_toEquiv dom_top cod_top, ?_⟩
+  convert le_subEquiv_limit S 0
+  rw [dom_cod_top_toEquiv_toEmbedding]
+  apply Embedding.toSubEquivalence_toEmbedding
+
+end BackAndForth
 
 end Substructure
 
