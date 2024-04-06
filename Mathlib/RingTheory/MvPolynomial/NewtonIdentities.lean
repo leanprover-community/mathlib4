@@ -24,7 +24,7 @@ from an identity implemented in mathlib as `Finset.sum_involution`. Namely, we u
 cardinality `k`, and `(-1) ^ i * esymm σ R i * psum σ R (k - i)` with the terms of the weight sum
 for which `t.fst` has cardinality `i` for `i < k` , and we thereby derive the main result
 `(-1) ^ k * k * esymm σ R k + ∑ i in range k, (-1) ^ i * esymm σ R i * psum σ R (k - i) = 0` (or
-rather, two equivalent forms which provide direct definitions for `esymm` and `psum` in lower-degree
+rather, two equivalent forms which provide direct definitions for `esymm` and `PSum` in lower-degree
 terms).
 
 ## Main declarations

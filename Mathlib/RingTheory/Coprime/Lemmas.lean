@@ -219,7 +219,7 @@ theorem IsCoprime.pow_left_iff (hm : 0 < m) : IsCoprime (x ^ m) y ↔ IsCoprime 
   refine' ⟨fun h ↦ _, IsCoprime.pow_left⟩
   rw [← Finset.card_range m, ← Finset.prod_const] at h
   exact h.of_prod_left 0 (Finset.mem_range.mpr hm)
-  -- Porting note: I'm not sure why `finset` didn't get corrected automatically to `Finset`
+  -- Porting note: I'm not sure why `Finset` didn't get corrected automatically to `Finset`
   -- by Mathport, nor whether this is an issue
 #align is_coprime.pow_left_iff IsCoprime.pow_left_iff
 

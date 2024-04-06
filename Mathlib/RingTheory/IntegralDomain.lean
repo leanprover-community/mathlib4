@@ -192,7 +192,7 @@ variable [Fintype G]
 
 theorem card_fiber_eq_of_mem_range {H : Type*} [Group H] [DecidableEq H] (f : G →* H) {x y : H}
     (hx : x ∈ Set.range f) (hy : y ∈ Set.range f) :
-    -- Porting note: the `filter` had an index `ₓ` that I removed.
+    -- Porting note: the `Filter` had an index `ₓ` that I removed.
     (univ.filter fun g => f g = x).card = (univ.filter fun g => f g = y).card := by
   rcases hx with ⟨x, rfl⟩
   rcases hy with ⟨y, rfl⟩
