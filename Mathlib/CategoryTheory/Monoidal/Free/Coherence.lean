@@ -63,7 +63,7 @@ end
 
 @[inherit_doc] local notation "F" => FreeMonoidalCategory
 
-@[inherit_doc] local notation "N" => Discrete ∘ NormalMonoidalObject
+local notation "N" => Discrete ∘ NormalMonoidalObject
 
 @[inherit_doc] local infixr:10 " ⟶ᵐ " => Hom
 
