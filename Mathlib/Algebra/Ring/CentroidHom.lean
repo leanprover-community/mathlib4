@@ -647,7 +647,7 @@ theorem toEnd_intCast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
 
 instance instRing : Ring (CentroidHom α) :=
   toEnd_injective.ring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_neg toEnd_sub
-    toEnd_smul toEnd_smul toEnd_pow toEnd_pow toEnd_natCast toEnd_intCast
+    toEnd_smul toEnd_smul toEnd_pow toEnd_natCast toEnd_intCast
 
 end NonUnitalNonAssocRing
 
