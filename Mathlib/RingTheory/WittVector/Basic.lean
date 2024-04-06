@@ -120,10 +120,10 @@ theorem mul : mapFun f (x * y) = mapFun f x * mapFun f y := by map_fun_tac
 theorem neg : mapFun f (-x) = -mapFun f x := by map_fun_tac
 #align witt_vector.map_fun.neg WittVector.mapFun.neg
 
-theorem nsmul (n : ℕ) : mapFun f (n • x) = n • mapFun f x := by map_fun_tac
+theorem nsmul (n : ℕ) (x : WittVector p R) : mapFun f (n • x) = n • mapFun f x := by map_fun_tac
 #align witt_vector.map_fun.nsmul WittVector.mapFun.nsmul
 
-theorem zsmul (z : ℤ) : mapFun f (z • x) = z • mapFun f x := by map_fun_tac
+theorem zsmul (z : ℤ) (x : WittVector p R) : mapFun f (z • x) = z • mapFun f x := by map_fun_tac
 #align witt_vector.map_fun.zsmul WittVector.mapFun.zsmul
 
 theorem pow (n : ℕ) : mapFun f (x ^ n) = mapFun f x ^ n := by map_fun_tac
@@ -209,12 +209,12 @@ private theorem ghostFun_int_cast (i : ℤ) : ghostFun (i : 𝕎 R) = i :=
   show ghostFun i.castDef = _ by
     cases i <;> simp [*, Int.castDef, ghostFun_nat_cast, ghostFun_neg, -Pi.coe_nat, -Pi.coe_int]
 
-private theorem ghostFun_nsmul (m : ℕ) : ghostFun (m • x) = m • ghostFun x := by
+private lemma ghostFun_nsmul (m : ℕ) (x : WittVector p R) : ghostFun (m • x) = m • ghostFun x := by
   --  porting note: I had to add the explicit type ascription.
   --  This could very well be due to my poor tactic writing!
   ghost_fun_tac m • (X 0 : MvPolynomial _ ℤ), ![x.coeff]
 
-private theorem ghostFun_zsmul (m : ℤ) : ghostFun (m • x) = m • ghostFun x := by
+private lemma ghostFun_zsmul (m : ℤ) (x : WittVector p R) : ghostFun (m • x) = m • ghostFun x := by
   --  porting note: I had to add the explicit type ascription.
   --  This could very well be due to my poor tactic writing!
   ghost_fun_tac m • (X 0 : MvPolynomial _ ℤ), ![x.coeff]

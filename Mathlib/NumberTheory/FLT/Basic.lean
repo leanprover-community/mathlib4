@@ -7,6 +7,7 @@ import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Rat.Defs
+import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.TFAE
 
