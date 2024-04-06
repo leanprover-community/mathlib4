@@ -58,7 +58,7 @@ def elabSyntaxRulesAux (doc? : Option (TSyntax ``docComment))
     (attrs? : Option (TSepArray ``attrInstance ",")) (attrKind : TSyntax ``attrKind)
     (k : SyntaxNodeKind) (alts : Array (TSyntax ``matchAlt)) :
     SyntaxRuleData → CommandElabM Syntax
-  | { type, termOfAlts, attrName, mkKey, cmdName, auxDefName, unfoldTypeAbbrev } => do
+  | { type, termOfAlts, attrName, mkAttr, cmdName, auxDefName, unfoldTypeAbbrev } => do
     let alts ← alts.mapM fun (alt : TSyntax ``matchAlt) => match alt with
       | `(matchAltExpr| | $pats,* => $rhs) => do
         let pat := pats.elemsAndSeps[0]!
@@ -81,10 +81,11 @@ def elabSyntaxRulesAux (doc? : Option (TSyntax ``docComment))
             "invalid {cmdName} alternative, unexpected syntax node kind '{k'}'"
       | _ => throwUnsupportedSyntax
     let alts := alts.push (← `(matchAltExpr| | _ => no_error_if_unused% throwUnsupportedSyntax))
-    let k ← if let some mkKey := mkKey then mkKey k else mkIdentFromRef k
     let attrs : (TSyntaxArray ``attrInstance) ← do
-      let attr ←
-        `(attrInstance| $attrKind:attrKind $(mkIdent attrName):ident $k:ident)
+      let attr ← if let some mkAttr := mkAttr then
+          `(attrInstance| $attrKind:attrKind $(← mkAttr attrName k):attr)
+        else
+          `(attrInstance| $attrKind:attrKind $(mkIdent attrName):ident $(← mkIdentFromRef k))
       trace[syntaxRules] "using attribute {attr}"
       pure <| match attrs? with
         | some attrs => attrs.getElems.push attr
@@ -92,11 +93,11 @@ def elabSyntaxRulesAux (doc? : Option (TSyntax ``docComment))
     -- We still want the actual type to be `type`, so that the attribute doesn't get confused.
     if unfoldTypeAbbrev then
       `($[$doc?:docComment]? @[$attrs,*]
-        aux_def $(mkIdent auxDefName) $k : $(mkIdent type) :=
+        aux_def $(mkIdent auxDefName) $(mkIdent k) : $(mkIdent type) :=
           show unfold_abbrev1% $(mkIdent type) from $(← termOfAlts alts))
     else
       `($[$doc?:docComment]? @[$attrs,*]
-        aux_def $(mkIdent auxDefName) $k : $(mkIdent type) := $(← termOfAlts alts))
+        aux_def $(mkIdent auxDefName) $(mkIdent k) : $(mkIdent type) := $(← termOfAlts alts))
 
 --TODO: pass `tk` to elabSyntaxRules for error reporting?
 /-- Elaborates `syntax_rules`. -/
