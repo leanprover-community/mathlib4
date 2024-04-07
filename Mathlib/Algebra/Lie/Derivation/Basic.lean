@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Marbach
 -/
 import Mathlib.Algebra.Lie.Basic
+import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Subalgebra
 
 /-!
@@ -18,15 +19,16 @@ This file defines *Lie derivations* and establishes some basic properties.
 
 ## Main statements
 
-- Two Lie derivations equal on a set are equal on its Lie span.
-- The set of Lie derivations from a Lie algebra to itself is a Lie algebra.
+- `LieDerivation.eqOn_lieSpan`: two Lie derivations equal on a set are equal on its Lie span.
+- `LieDerivation.instLieAlgebra`: the set of Lie derivations from a Lie algebra to itself is a Lie
+algebra.
 
 ## Implementation notes
 
 - Mathematically, a Lie derivation is just a derivation on a Lie algebra. However, the current
-implementation of `Derivation` requires a commutative associative algebra, so is incompatible
-with the setting of Lie algebras. Initially, this file is a copy-pasted adaptation of the
-`RingTheory.Derivation.Basic` file.
+implementation of `RingTheory.Derivation` requires a commutative associative algebra, so is
+incompatible with the setting of Lie algebras. Initially, this file is a copy-pasted adaptation of
+the `RingTheory.Derivation.Basic.lean` file.
 - Since we don't have right actions of Lie algebras, the second term in the Leibniz rule is written
 as `- [b, D a]`. Within Lie algebras, skew symmetry restores the expected definition `[D a, b]`.
 -/
@@ -287,6 +289,27 @@ instance : SMulBracketCommClass R L L := ⟨fun s x y => (lie_smul s x y).symm�
 /-- The set of Lie derivations from a Lie algebra `L` to itself is a Lie algebra. -/
 instance instLieAlgebra : LieAlgebra R (LieDerivation R L L) where
   lie_smul := fun r d e => by ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply]
+
+end
+
+section
+
+variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+
+/-- The Lie algebra morphism from Lie derivations into linear endormophisms. -/
+def toLinearMapLieHom : LieDerivation R L L →ₗ⁅R⁆ L →ₗ[R] L where
+  toFun := toLinearMap
+  map_add' := by intro D1 D2; dsimp
+  map_smul' := by intro D1 D2; dsimp
+  map_lie' := by intro D1 D2; dsimp
+
+/-- The map from Lie derivations to linear endormophisms is injective. -/
+lemma toLinearMapLieHom_injective : Function.Injective (toLinearMapLieHom R L) :=
+  fun _ _ h ↦ ext fun a ↦ congrFun (congrArg DFunLike.coe h) a
+
+/-- Lie derivations over a Noetherian Lie algebra form a Noetherian module. -/
+instance instNoetherian [IsNoetherian R L] : IsNoetherian R (LieDerivation R L L) :=
+  isNoetherian_of_linearEquiv (LinearEquiv.ofInjective _ (toLinearMapLieHom_injective R L)).symm
 
 end
 

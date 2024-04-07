@@ -3,6 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Int.Div
 import Mathlib.Data.PNat.Defs
@@ -271,7 +272,7 @@ theorem inv_coe_int_den_of_pos {a : ℤ} (ha0 : 0 < a) : ((a : ℚ)⁻¹.den : �
 #align rat.inv_coe_int_denom_of_pos Rat.inv_coe_int_den_of_pos
 
 theorem inv_coe_nat_den_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.den = a := by
-  rw [← Int.ofNat_inj, ← Int.cast_ofNat a, inv_coe_int_den_of_pos]
+  rw [← Int.ofNat_inj, ← Int.cast_natCast a, inv_coe_int_den_of_pos]
   rwa [Nat.cast_pos]
 #align rat.inv_coe_nat_denom_of_pos Rat.inv_coe_nat_den_of_pos
 
@@ -313,7 +314,7 @@ protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ
   ⟨fun h _ _ => h _,
    fun h q => by
     have := h q.num q.den
-    rwa [Int.cast_ofNat, num_div_den q] at this⟩
+    rwa [Int.cast_natCast, num_div_den q] at this⟩
 #align rat.forall Rat.forall
 
 protected theorem «exists» {p : ℚ → Prop} : (∃ r, p r) ↔ ∃ a b : ℤ, p (a / b) :=

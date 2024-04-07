@@ -535,7 +535,6 @@ theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient G α)
 
 variable (G) (α)
 
--- mathport name: exprΩ
 local notation "Ω" => orbitRel.Quotient G α
 
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
