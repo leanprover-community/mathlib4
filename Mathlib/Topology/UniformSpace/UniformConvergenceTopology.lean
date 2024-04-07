@@ -235,7 +235,6 @@ protected def filter (𝓕 : Filter <| β × β) : Filter ((α →ᵤ β) × (α
   (UniformFun.basis α β 𝓕).filter
 #align uniform_fun.filter UniformFun.filter
 
--- mathport name: exprΦ
 --local notation "Φ" => fun (α β : Type*) (uvx : ((α →ᵤ β) × (α →ᵤ β)) × α) =>
   --(uvx.fst.fst uvx.2, uvx.1.2 uvx.2)
 
@@ -299,7 +298,6 @@ instance uniformSpace : UniformSpace (α →ᵤ β) :=
 instance topologicalSpace : TopologicalSpace (α →ᵤ β) :=
   inferInstance
 
--- mathport name: «expr𝒰( , , )»
 local notation "𝒰(" α ", " β ", " u ")" => @UniformFun.uniformSpace α β u
 
 /-- By definition, the uniformity of `α →ᵤ β` admits the family `{(f, g) | ∀ x, (f x, g x) ∈ V}`
@@ -540,7 +538,6 @@ namespace UniformOnFun
 variable {α β : Type*} {γ ι : Type*}
 variable {s s' : Set α} {x : α} {p : Filter ι} {g : ι → α}
 
--- mathport name: «expr𝒰( , , )»
 local notation "𝒰(" α ", " β ", " u ")" => @UniformFun.uniformSpace α β u
 
 /-- Basis sets for the uniformity of `𝔖`-convergence: for `S : Set α` and `V : Set (β × β)`,
