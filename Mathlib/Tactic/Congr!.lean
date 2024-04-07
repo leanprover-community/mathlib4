@@ -46,7 +46,7 @@ structure Congr!.Config where
   By default this is `.reducible`, which prevents unfolding of most definitions. -/
   preTransparency : TransparencyMode := TransparencyMode.reducible
   /-- For passes that synthesize a congruence lemma using one side of the equality,
-  we run the pass both for the left-hand side and the right-hand side. If `preferLHS` is `True`
+  we run the pass both for the left-hand side and the right-hand side. If `preferLHS` is `true`
   then we start with the left-hand side.
 
   This can be used to control which side's definitions are expanded when applying the

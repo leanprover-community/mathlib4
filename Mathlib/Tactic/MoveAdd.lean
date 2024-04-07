@@ -166,7 +166,7 @@ Moreover, the function `weight L` is strictly monotone increasing on both
 `{a : α | (a, true) ∈ L}` and `{a : α | (a, false) ∈ L}`,
 in the sense that if `a' = (a, true)` and `b' = (b, true)` are in `L`,
 then `a'` appears before `b'` in `L` if and only if `weight L a < weight L b` and
-similarly for the pairs with second coordinate equal to `False`.
+similarly for the pairs with second coordinate equal to `false`.
 -/
 def weight (L : List (α × Bool)) (a : α) : ℤ :=
   let l := L.length
@@ -178,9 +178,9 @@ def weight (L : List (α × Bool)) (a : α) : ℤ :=
 following the requirements imposed by `instructions : List (α × Bool)`.
 
 These are the requirements:
-* elements of `toReorder` that appear with `True` in `instructions` appear at the
+* elements of `toReorder` that appear with `true` in `instructions` appear at the
   *beginning* of the reordered list, in the order in which they appear in `instructions`;
-* similarly, elements of `toReorder` that appear with `False` in `instructions` appear at the
+* similarly, elements of `toReorder` that appear with `false` in `instructions` appear at the
   *end* of the reordered list, in the order in which they appear in `instructions`;
 * finally, elements of `toReorder` that do not appear in `instructions` appear "in the middle"
   with the order that they had in `toReorder`.
@@ -224,8 +224,8 @@ Such an expression is the result of `prepareOp`.
 
 If `exs` is the list `[e₁, e₂, ..., eₙ]` of `Expr`essions, then `sumList prepOp left_assoc? exs`
 returns
-* `prepOp (prepOp( ... prepOp (prepOp e₁ e₂) e₃) ... eₙ)`, if `left_assoc?` is `False`, and
-* `prepOp e₁ (prepOp e₂ (... prepOp (prepOp eₙ₋₁  eₙ))`, if `left_assoc?` is `True`.
+* `prepOp (prepOp( ... prepOp (prepOp e₁ e₂) e₃) ... eₙ)`, if `left_assoc?` is `false`, and
+* `prepOp e₁ (prepOp e₂ (... prepOp (prepOp eₙ₋₁  eₙ))`, if `left_assoc?` is `true`.
 -/
 partial
 def sumList (prepOp : Expr) (left_assoc? : Bool) : List Expr → Expr
@@ -405,7 +405,7 @@ open Elab Parser Tactic
 terms, each optionally preceded by the arrow `←`.
 It returns an array of triples consisting of
 * the `Expr`ession corresponding to the parsed term,
-* the `Bool`ean `True` if the arrow is present in front of the term,
+* the `Bool`ean `true` if the arrow is present in front of the term,
 * the underlying `Syntax` of the given term.
 
 E.g. convert `[a, ← b, _ * (1 : ℤ)]` to

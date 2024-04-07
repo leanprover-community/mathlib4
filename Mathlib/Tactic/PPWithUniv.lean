@@ -19,7 +19,7 @@ open Lean Parser PrettyPrinter Delaborator SubExpr Elab Command
 
 /--
 Delaborator that prints the current application with universe parameters on the head symbol,
-unless `pp.universes` is explicitly set to `False`.
+unless `pp.universes` is explicitly set to `false`.
 -/
 def delabWithUniv : Delab :=
   whenPPOption (·.get pp.universes.name true) <|
@@ -32,7 +32,7 @@ def delabWithUniv : Delab :=
 /--
 `attribute [pp_with_univ] Ordinal` instructs the pretty-printer to
 print `Ordinal.{u}` with universe parameters by default
-(unless `pp.universes` is explicitly set to `False`).
+(unless `pp.universes` is explicitly set to `false`).
 -/
 syntax (name := ppWithUnivAttr) "pp_with_univ" : attr
 

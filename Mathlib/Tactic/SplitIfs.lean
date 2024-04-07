@@ -88,7 +88,7 @@ private def getNextName (hNames: IO.Ref (List (TSyntax `Lean.binderIdent))) : Me
                 then pure x.getId
                 else pure `_
 
-/-- Returns `True` if the condition or its negation already appears as a hypothesis.
+/-- Returns `true` if the condition or its negation already appears as a hypothesis.
 -/
 private def valueKnown (cond : Expr) : TacticM Bool := do
   let hTypes ← (((← getLCtx).getFVarIds.map mkFVar).mapM inferType : MetaM _)

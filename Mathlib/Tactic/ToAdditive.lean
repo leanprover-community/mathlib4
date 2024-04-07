@@ -457,7 +457,7 @@ structure Config : Type where
   tgt : Name := Name.anonymous
   /-- An optional doc string.-/
   doc : Option String := none
-  /-- If `allowAutoName` is `False` (default) then
+  /-- If `allowAutoName` is `false` (default) then
   `@[to_additive]` will check whether the given name can be auto-generated. -/
   allowAutoName : Bool := false
   /-- The arguments that should be reordered by `to_additive`, using cycle notation. -/
@@ -520,7 +520,7 @@ unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
 `additiveTest e` tests whether the expression `e` contains a constant
 `nm` that is not applied to any arguments, and such that `translations.find?[nm] = none`.
 This is used in `@[to_additive]` for deciding which subexpressions to transform: we only transform
-constants if `additiveTest` applied to their first argument returns `True`.
+constants if `additiveTest` applied to their first argument returns `true`.
 This means we will replace expression applied to e.g. `α` or `α × β`, but not when applied to
 e.g. `ℕ` or `ℝ × α`.
 We ignore all arguments specified by the `ignore` `NameMap`.

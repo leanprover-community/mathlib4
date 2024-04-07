@@ -39,7 +39,7 @@ private def solveLevel (expr : Expr) (path : List Nat) : MetaM SolveReturn := ma
         explicitList := false::explicitList
       descExp := descExp.appFn!
 
-    -- we get the correct `enter` command by subtracting the number of `True`s in our list
+    -- we get the correct `enter` command by subtracting the number of `true`s in our list
     let mut mutablePath := path
     let mut length := count
     explicitList := List.reverse explicitList

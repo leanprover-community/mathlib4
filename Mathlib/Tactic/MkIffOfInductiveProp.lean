@@ -105,7 +105,7 @@ def List.init {α : Type*} : List α → List α
 -/
 structure Shape : Type where
   /-- For each forall-bound variable in the type of the constructor, minus
-  the "params" that apply to the entire inductive type, this list contains `True`
+  the "params" that apply to the entire inductive type, this list contains `true`
   if that variable has been kept after `compactRelation`.
 
   For example, `List.Chain.nil` has type
@@ -230,7 +230,7 @@ match n with
   pure (mvar', fvar1::rest)
 
 /--
-Iterate over two lists, if the first element of the first list is `False`, insert `none` into the
+Iterate over two lists, if the first element of the first list is `false`, insert `none` into the
 result and continue with the tail of first list. Otherwise, wrap the first element of the second
 list with `some` and continue with the tails of both lists. Return when either list is empty.
 

@@ -60,7 +60,7 @@ def elementwiseThms : List Name :=
     ``CategoryTheory.id_apply,
     -- further simplifications if the category is `Type`
     ``forget_hom_Type, ``forall_congr_forget_Type,
-    -- simp can itself simplify trivial equalities into `True`. Adding this lemma makes it
+    -- simp can itself simplify trivial equalities into `true`. Adding this lemma makes it
     -- easier to detect when this has occurred.
     ``implies_true]
 
