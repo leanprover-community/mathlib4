@@ -106,7 +106,8 @@ def syntaxDataLinter : Linter where run := withSetOptionIn fun stx => do
     msg := getRanges t msg
   let dat := msg.toArray.qsort (compare · ·|>.isLT)
   if dat != #[] then
+    let ids ← (getIds stx).mapM fun d => resolveGlobalConstNoOverload d[0]
     Linter.logLint linter.syntaxData stx
-      m!"{getIds stx} {if ! hasDocs stx then "-- no docs" else ""}\n{dat}"
+      m!"{ids} {if ! hasDocs stx then "-- no docs" else ""}\n{dat}"
 
 initialize addLinter syntaxDataLinter
