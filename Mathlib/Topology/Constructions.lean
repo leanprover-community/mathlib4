@@ -545,7 +545,7 @@ theorem nhds_prod_eq {x : X} {y : Y} : 𝓝 (x, y) = 𝓝 x ×ˢ 𝓝 y := by
     (t₂ := TopologicalSpace.induced Prod.snd _), nhds_induced, nhds_induced]
 #align nhds_prod_eq nhds_prod_eq
 
--- Porting note: moved from `topology.continuous_on`
+-- Porting note: moved from `Topology.ContinuousOn`
 theorem nhdsWithin_prod_eq (x : X) (y : Y) (s : Set X) (t : Set Y) :
     𝓝[s ×ˢ t] (x, y) = 𝓝[s] x ×ˢ 𝓝[t] y := by
   simp only [nhdsWithin, nhds_prod_eq, ← prod_inf_prod, prod_principal_principal]
