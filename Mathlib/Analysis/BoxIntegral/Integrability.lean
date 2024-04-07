@@ -141,7 +141,8 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
     exact hJ.2 ▸ Nat.le_ceil _
   refine' (norm_sum_le_of_le _ this).trans _; clear this
   rw [← sum_mul, ← Prepartition.measure_iUnion_toReal]
-  generalize' hm : μ (π.filter fun J => N (π.tag J) = n).iUnion = m
+  let m := μ (π.filter fun J => N (π.tag J) = n).iUnion
+  show m.toReal * ↑n ≤ ↑(δ n)
   have : m < δ n / n := by
     simp only [Measure.restrict_apply (hUo _).measurableSet] at hμU
     refine' (measure_mono _).trans_lt (hμU _)
