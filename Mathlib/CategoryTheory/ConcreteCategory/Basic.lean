@@ -103,7 +103,7 @@ def ConcreteCategory.instFunLike {X Y : C} : FunLike (X ⟶ Y) X Y where
   coe_injective' _ _ h := (forget C).map_injective h
 attribute [local instance] ConcreteCategory.instFunLike
 
-/-- In any concrete category, we can test equality of morphisms by pointwise evaluations.-/
+/-- In any concrete category, we can test equality of morphisms by pointwise evaluations. -/
 @[ext low] -- Porting note: lowered priority
 theorem ConcreteCategory.hom_ext {X Y : C} (f g : X ⟶ Y) (w : ∀ x : X, f x = g x) : f = g := by
   apply @Faithful.map_injective C _ (Type w) _ (forget C) _ X Y

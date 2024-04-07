@@ -1169,6 +1169,7 @@ import Mathlib.CategoryTheory.EffectiveEpi.Basic
 import Mathlib.CategoryTheory.EffectiveEpi.Comp
 import Mathlib.CategoryTheory.EffectiveEpi.Coproduct
 import Mathlib.CategoryTheory.EffectiveEpi.Enough
+import Mathlib.CategoryTheory.EffectiveEpi.Extensive
 import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
 import Mathlib.CategoryTheory.Elements
@@ -1331,6 +1332,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 import Mathlib.CategoryTheory.Limits.SmallComplete
 import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.TypesFiltered
 import Mathlib.CategoryTheory.Limits.Unit
 import Mathlib.CategoryTheory.Limits.VanKampen
 import Mathlib.CategoryTheory.Limits.Yoneda

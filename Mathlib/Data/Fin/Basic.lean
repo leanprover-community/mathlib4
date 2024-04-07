@@ -1042,7 +1042,7 @@ theorem castSucc_zero' [NeZero n] : castSucc (0 : Fin n) = 0 :=
 /-- `castSucc i` is positive when `i` is positive.
 
 The `Fin.castSucc_pos` in `Std` only applies in `Fin (n+1)`.
-This one instead uses a `NeZero n` typeclass hypothesis.-/
+This one instead uses a `NeZero n` typeclass hypothesis. -/
 theorem castSucc_pos' [NeZero n] {i : Fin n} (h : 0 < i) : 0 < castSucc i := by
   simpa [lt_iff_val_lt_val] using h
 #align fin.cast_succ_pos Fin.castSucc_pos'
