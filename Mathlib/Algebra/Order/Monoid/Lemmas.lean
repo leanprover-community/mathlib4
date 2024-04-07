@@ -31,7 +31,7 @@ Almost no monoid is actually present in this file: most assumptions have been ge
 
 
 -- TODO: If possible, uniformize lemma names, taking special care of `'`,
--- after the `ordered`-refactor is done.
+-- after the `Ordered`-refactor is done.
 open Function
 
 variable {α β : Type*}

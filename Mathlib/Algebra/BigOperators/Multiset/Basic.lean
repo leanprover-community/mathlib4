@@ -26,8 +26,8 @@ and sums indexed by finite sets.
 ## Implementation notes
 
 Nov 2022: To speed the Lean 4 port, lemmas requiring extra algebra imports
-(`data.list.big_operators.lemmas` rather than `.basic`) have been moved to a separate file,
-`algebra.big_operators.multiset.lemmas`.  This split does not need to be permanent.
+(`Data.List.BigOperators.Lemmas` rather than `.basic`) have been moved to a separate file,
+`Algebra.BigOperators.Multiset.Lemmas`.  This split does not need to be permanent.
 -/
 
 

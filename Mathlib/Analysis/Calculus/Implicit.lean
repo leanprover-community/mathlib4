@@ -21,7 +21,7 @@ specific implicit function but provides only a little convenience over the inver
 
 Then we define `HasStrictFDerivAt.implicitFunctionDataOfComplemented`: implicit function defined by
 `f (g z y) = z`, where `f : E → F` is a function strictly differentiable at `a` such that its
-derivative `f'` is surjective and has a `complemented` kernel.
+derivative `f'` is surjective and has a `ClosedComplemented` kernel.
 
 Finally, if the codomain of `f` is a finite dimensional space, then we can automatically prove
 that the kernel of `f'` is complemented, hence the only assumptions are `HasStrictFDerivAt`

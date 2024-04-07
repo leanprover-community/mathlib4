@@ -18,15 +18,15 @@ category of abelian groups.
 ## Main definitions
 
 * `AddCommGroupCat.free`: constructs the functor associating to a type `X` the free abelian group
-  with generators `x : X`.
+ with generators `x : X`.
 * `GroupCat.free`: constructs the functor associating to a type `X` the free group with
   generators `x : X`.
 * `abelianize`: constructs the functor which associates to a group `G` its abelianization `Gᵃᵇ`.
 
 ## Main statements
 
-* `AddCommGroupCat.adj`: proves that `AddCommGroupCat.free` is the left adjoint
-  of the forgetful functor from abelian groups to types.
+* `AddCommGroupCat.adj`: proves that `AddCommGroupCat.free` is the left adjoint of
+  the forgetful functor from abelian groups to types.
 * `GroupCat.adj`: proves that `GroupCat.free` is the left adjoint of the forgetful functor
   from groups to types.
 * `abelianizeAdj`: proves that `abelianize` is left adjoint to the forgetful functor from
