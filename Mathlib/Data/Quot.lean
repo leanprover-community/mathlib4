@@ -40,7 +40,6 @@ namespace Quot
 
 variable {ra : α → α → Prop} {rb : β → β → Prop} {φ : Quot ra → Quot rb → Sort*}
 
--- mathport name: mk
 @[inherit_doc Quot.mk]
 local notation3:arg "⟦" a "⟧" => Quot.mk _ a
 

@@ -199,7 +199,6 @@ These inequalities can be used to restate `convexOn` in terms of monotonicity of
 
 variable {f : k → E} {a b r : k}
 
--- mathport name: exprc
 local notation "c" => lineMap a b r
 
 /-- Given `c = lineMap a b r`, `a < c`, the point `(c, f c)` is non-strictly below the
