@@ -238,7 +238,7 @@ theorem refl_toBialgHom : refl R A = BialgHom.id R A :=
   rfl
 
 /-- Bialgebra equivalences are symmetric. -/
-@[symm, simps! apply]
+@[symm]
 def symm (e : A ≃ₐc[R] B) : B ≃ₐc[R] A :=
   { (e : A ≃ₗc[R] B).symm, (e : A ≃* B).symm with }
 
