@@ -8,7 +8,26 @@ import Mathlib.Algebra.Category.CoalgebraCat.MonEquivalence
 /-!
 # Tensor products of coalgebras
 
-Todo: write this.
+Given two `R`-coalgebras `M, N`, we can define a natural comultiplication map
+`Δ : M ⊗[R] N → (M ⊗[R] N) ⊗[R] (M ⊗[R] N)` and counit map `ε : M ⊗[R] N → R` induced by
+the comultiplication and counit maps of `M` and `N`. These `Δ, ε` are declared as linear maps
+in `TensorProduct.instCoalgebraStruct` in `Mathlib.RingTheory.Coalgebra.Basic`.
+
+In this file we show that `Δ, ε` satisfy the axioms of a coalgebra, and also define other data
+in the monoidal structure on `R`-coalgebras, like the tensor product of two coalgebra morphisms
+as a coalgebra morphism.
+
+## Implementation notes
+
+We keep the linear maps underlying `Δ, ε` and other definitions in this file syntactically equal
+to the corresponding definitions for tensor products of modules in the hope that this makes
+life easier. However, to fill in prop fields, we use the API in
+`Mathlib.Algebra.Category.CoalgebraCat.MonEquivalence`. That file defines the monoidal category
+structure on coalgebras induced by an equivalence with monoid objects in the opposite
+category of modules, `CoalgebraCat.instMonoidalCategoryAux`, but we do not declare this as an
+instance - we just use it to prove things. Then, we use the definitions in this file to make a
+monoidal category instance on `CoalgebraCat R` in `Mathlib.Algebra.Category.CoalgebraCat.Monoidal`
+that has simpler data.
 
 -/
 
