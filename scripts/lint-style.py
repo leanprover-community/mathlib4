@@ -429,8 +429,16 @@ def parse_old_files_declarations():
         # Also append just the filename.
         if '.' in old_file:
             filename = old_file.split('.')[-1]
-            if filename not in ['elementwise', 'index', 'type', 'ring']:
+            # These are declaration names in Lean 4. xxx why dist?
+            if filename in ['Born', 'Compactum', 'Fintype', 'Locale', 'Module', 'GroupWithZero', 'UniformSpace',
+                'add', 'mul', 'cofinite', 'closure', 'residual', 'smul', 'dist', 'max', 'abs', 'inv', 'log', 'comap']:
+                continue
+            elif len(filename) == 1:
+                continue
+            # These are tactic names in Lean 4.
+            if filename not in ['continuity', 'elementwise', 'exact', 'ext', 'index', 'type', 'ring']:
                 old_files.append(filename)
+            # TODO: also remove all file names which are declaration names.
     # Read in all #align statements and parse the names of the old and new declaration.
     aligns = dict()
     for line in open('all_aligns.txt', 'r', encoding='utf-8'):
@@ -654,7 +662,7 @@ if not argv:
     exclude = tuple([])#tuple(''.split(' '))
     # Lint all non-excluded files whose module name starts with this.
     # So "Foo.Bar" will lint all files in module "Foo.Bar" and "Foo.Bar.Baz", etc.
-    dir = 'Analysis'
+    dir = 'Topology'
     assert '/' not in dir
     print(f"about to lint all files in directory {dir}")
     files = []
