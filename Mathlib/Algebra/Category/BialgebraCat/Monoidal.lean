@@ -11,7 +11,13 @@ import Mathlib.RingTheory.Bialgebra.TensorProduct
 /-!
 # The monoidal structure on the category of bialgebras
 
-To-do: write this.
+In `Mathlib.RingTheory.Bialgebra.TensorProduct`, given two `R`-bialgebras `A, B`, we define a
+bialgebra instance on `A ⊗[R] B` as well as the tensor product of two `BialgHom`s as a
+`BialgHom`, and the associator and left/right unitors for bialgebras as `BialgEquiv`s.
+In this file, we declare a `MonoidalCategory` instance on the category of bialgebras, with data
+fields given by the definitions in `Mathlib.RingTheory.Bialgebra.TensorProduct`, and Prop
+fields proved by pulling back the `MonoidalCategory` instance on the category of algebras,
+using `Monoidal.induced`.
 
 -/
 
