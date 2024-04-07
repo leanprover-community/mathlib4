@@ -29,14 +29,15 @@ sets).
 
 ## Main definitions
 
-* `ContinuousLinearMap.strongTopology` is the topology mentioned above for an arbitrary `𝔖`.
+* `UniformConvergenceCLM` is a type synonym for `E →SL[σ] F` equipped with the `𝔖`-topology.
+* `UniformConvergenceCLM.instTopologicalSpace` is the topology mentioned above for an arbitrary `𝔖`.
 * `ContinuousLinearMap.topologicalSpace` is the topology of bounded convergence. This is
   declared as an instance.
 
 ## Main statements
 
-* `ContinuousLinearMap.strongTopology.topologicalAddGroup` and
-  `ContinuousLinearMap.strongTopology.continuousSMul` show that the strong topology
+* `UniformConvergenceCLM.instTopologicalAddGroup` and
+  `UniformConvergenceCLM.instContinuousSMul` show that the strong topology
   makes `E →L[𝕜] F` a topological vector space, with the assumptions on `𝔖` mentioned above.
 * `ContinuousLinearMap.topologicalAddGroup` and
   `ContinuousLinearMap.continuousSMul` register these facts as instances for the special
@@ -78,7 +79,7 @@ def UniformConvergenceCLM [TopologicalSpace F] [TopologicalAddGroup F] (_ : Set 
 
 namespace UniformConvergenceCLM
 
-instance funLike [TopologicalSpace F] [TopologicalAddGroup F]
+instance instFunLike [TopologicalSpace F] [TopologicalAddGroup F]
     (𝔖 : Set (Set E)) : FunLike (UniformConvergenceCLM σ F 𝔖) E F :=
   ContinuousLinearMap.funLike
 
