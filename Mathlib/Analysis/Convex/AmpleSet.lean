@@ -57,36 +57,31 @@ theorem ampleSet_univ {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] :
 
 /-- The empty set in a vector space is ample. -/
 @[simp]
-theorem ampleSet_empty : AmpleSet (∅ : Set F) := fun _ h ↦ False.elim h
+theorem ampleSet_empty : AmpleSet (∅ : Set F) := fun _ ↦ False.elim
 
 /-- The union of two ample sets is ample. -/
 theorem AmpleSet.union {s t : Set F} (hs : AmpleSet s) (ht : AmpleSet t) : AmpleSet (s ∪ t) := by
   intro x hx
-  rcases hx with (h | h)
+  rcases hx with (h | h) <;>
   -- The connected component of `x ∈ s` in `s ∪ t` contains the connected component of `x` in `s`,
   -- hence is also full; similarly for `t`.
-  · rw [← Set.univ_subset_iff, ← hs x h]
-    apply convexHull_mono
-    apply connectedComponentIn_mono
-    apply subset_union_left
-  · rw [← Set.univ_subset_iff, ← ht x h]
-    apply convexHull_mono
-    apply connectedComponentIn_mono
-    apply subset_union_right
+  [have hx := hs x h; have hx := ht x h] <;>
+  rw [← Set.univ_subset_iff, ← hx] <;>
+  apply convexHull_mono <;>
+  apply connectedComponentIn_mono <;>
+  [apply subset_union_left; apply subset_union_right]
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E]
 
 /-- Images of ample sets under continuous affine equivalences are ample. -/
 theorem AmpleSet.image {s : Set E} (h : AmpleSet s) (L : E ≃ᵃL[ℝ] F) :
-    AmpleSet (L '' s) := fun x hx ↦ by
-  rw [L.image_eq_preimage] at hx
-  have : L '' connectedComponentIn s (L.symm x) = connectedComponentIn (L '' s) x := by
-    conv_rhs => rw [← L.apply_symm_apply x]
-    exact (L.toHomeomorph).image_connectedComponentIn hx
-  rw [← this]
-  refine (L.toAffineMap.image_convexHull _).symm.trans ?_
-  rw [h (L.symm x) hx, image_univ]
-  exact L.surjective.range_eq
+    AmpleSet (L '' s) := forall_mem_image.mpr fun x hx ↦
+  calc (convexHull ℝ) (connectedComponentIn (L '' s) (L x))
+    _ = (convexHull ℝ) (L '' (connectedComponentIn s x)) :=
+          .symm <| congrArg _ <| L.toHomeomorph.image_connectedComponentIn hx
+    _ = L '' (convexHull ℝ (connectedComponentIn s x)) :=
+          .symm <| L.toAffineMap.image_convexHull _
+    _ = univ := by rw [h x hx, image_univ, L.surjective.range_eq]
 
 /-- Preimages of ample sets under continuous affine equivalences are ample. -/
 theorem AmpleSet.preimage {s : Set F} (h : AmpleSet s) (L : E ≃ᵃL[ℝ] F) : AmpleSet (L ⁻¹' s) := by
