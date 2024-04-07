@@ -480,7 +480,7 @@ def parse_old_files_declarations():
 def lint_backticks_in_comments(old_files, old_declarations, lines):
     errors = False
     newlines = []
-    for _line_nr, line in lines:
+    for line in lines:
         s = extract_backticks(line.rstrip())
         fixed = line
         for item in s:
@@ -598,11 +598,10 @@ def lint(path, old_files, old_declarations, fix=False):
         # We enumerate the lines so that we can report line numbers in the error messages correctly
         # we will modify lines as we go, so we need to keep track of the original line numbers
         lines = f.readlines()
-        enum_lines = enumerate(lines, 1)
-        errors, newlines = lint_backticks_in_comments(old_files, old_declarations, enumerate(lines[:], 1))
-        if fix and errors:
-            path.with_name(path.name + '.bak').write_text("".join(newlines), encoding = "utf8")
-            shutil.move(path.with_name(path.name + '.bak'), path)
+        # This doesn't modify line numbers yet.
+        errors, newlines = lint_backticks_in_comments(old_files, old_declarations, lines)
+        if errors: new_exceptions = True
+        enum_lines = enumerate(newlines, 1)
         newlines = enum_lines
         for error_check in [line_endings_check,
                             four_spaces_in_second_line,
@@ -634,11 +633,10 @@ def lint(path, old_files, old_declarations, fix=False):
             format_errors(errs)
             errs, newlines = banned_import_check(newlines, path)
             format_errors(errs)
-    # Don't fix other errors in parallel, for simplicity.
-    # # if we haven't been asked to fix errors, or there are no errors or no fixes, we're done
-    # if fix and new_exceptions and enum_lines != newlines:
-    #     path.with_name(path.name + '.bak').write_text("".join(l for _,l in newlines), encoding = "utf8")
-    #     shutil.move(path.with_name(path.name + '.bak'), path)
+    # if we haven't been asked to fix errors, or there are no errors or no fixes, we're done
+    if fix and new_exceptions and enum_lines != newlines:
+        path.with_name(path.name + '.bak').write_text("".join(l for _,l in newlines), encoding = "utf8")
+        shutil.move(path.with_name(path.name + '.bak'), path)
 
 fix = "--fix" in sys.argv
 argv = [arg for arg in sys.argv[1:] if arg != "--fix"]
