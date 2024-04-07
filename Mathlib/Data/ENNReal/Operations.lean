@@ -380,7 +380,7 @@ theorem sub_ne_top (ha : a ≠ ∞) : a - b ≠ ∞ := mt sub_eq_top_iff.mp <| m
 
 @[simp, norm_cast]
 theorem nat_cast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℝ≥0∞) := by
-  rw [← coe_nat, Nat.cast_tsub, coe_sub, coe_nat, coe_nat]
+  rw [← coe_natCast, Nat.cast_tsub, coe_sub, coe_natCast, coe_natCast]
 #align ennreal.nat_cast_sub ENNReal.nat_cast_sub
 
 protected theorem sub_eq_of_eq_add (hb : b ≠ ∞) : a = c + b → a - b = c :=

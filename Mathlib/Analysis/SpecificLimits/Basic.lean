@@ -88,7 +88,7 @@ algebra over `ℝ`, e.g., `ℂ`).
 
 TODO: introduce a typeclass saying that `1 / n` tends to 0 at top, making it possible to get this
 statement simultaneously on `ℚ`, `ℝ` and `ℂ`. -/
-theorem tendsto_coe_nat_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [TopologicalSpace 𝕜]
+theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [TopologicalSpace 𝕜]
     [CharZero 𝕜] [Algebra ℝ 𝕜] [ContinuousSMul ℝ 𝕜] [TopologicalDivisionRing 𝕜] (x : 𝕜) :
     Tendsto (fun n : ℕ ↦ (n : 𝕜) / (n + x)) atTop (𝓝 1) := by
   refine' Tendsto.congr' ((eventually_ne_atTop 0).mp (eventually_of_forall fun n hn ↦ _)) _
@@ -105,7 +105,7 @@ theorem tendsto_coe_nat_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [Topolo
     refine' Iff.mpr tendsto_atTop' _
     intros
     simp_all only [comp_apply, map_inv₀, map_natCast]
-#align tendsto_coe_nat_div_add_at_top tendsto_coe_nat_div_add_atTop
+#align tendsto_coe_nat_div_add_at_top tendsto_natCast_div_add_atTop
 
 /-! ### Powers -/
 

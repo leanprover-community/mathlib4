@@ -702,7 +702,7 @@ theorem measure_lt_top_of_isCompact_of_isMulLeftInvariant (U : Set G) (hU : IsOp
     μ K ≤ μ (⋃ (g : G) (_ : g ∈ t), (fun h : G => g * h) ⁻¹' U) := measure_mono hKt
     _ ≤ ∑ g in t, μ ((fun h : G => g * h) ⁻¹' U) := (measure_biUnion_finset_le _ _)
     _ = Finset.card t * μ U := by simp only [measure_preimage_mul, Finset.sum_const, nsmul_eq_mul]
-    _ < ∞ := ENNReal.mul_lt_top (ENNReal.nat_ne_top _) h
+    _ < ∞ := ENNReal.mul_lt_top (ENNReal.natCast_ne_top _) h
 #align measure_theory.measure_lt_top_of_is_compact_of_is_mul_left_invariant MeasureTheory.measure_lt_top_of_isCompact_of_isMulLeftInvariant
 #align measure_theory.measure_lt_top_of_is_compact_of_is_add_left_invariant MeasureTheory.measure_lt_top_of_isCompact_of_isAddLeftInvariant
 

@@ -119,8 +119,8 @@ theorem num_den : ∀ {a : ℚ}, a.num /. a.den = a := divInt_self _
 theorem num_den' {n d h c} : (⟨n, d, h, c⟩ : ℚ) = n /. d := num_den.symm
 #align rat.num_denom' Rat.num_den'
 
-theorem coe_int_eq_divInt (z : ℤ) : (z : ℚ) = z /. 1 := num_den'
-#align rat.coe_int_eq_mk Rat.coe_int_eq_divInt
+theorem intCast_eq_divInt (z : ℤ) : (z : ℚ) = z /. 1 := num_den'
+#align rat.coe_int_eq_mk Rat.intCast_eq_divInt
 
 /-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with rational
 numbers of the form `n /. d` with `0 < d` and coprime `n`, `d`. -/
@@ -345,7 +345,7 @@ instance commRing : CommRing ℚ where
   natCast n := Int.cast n
   natCast_zero := rfl
   natCast_succ n := by
-    simp only [coe_int_eq_divInt, add_def'' one_ne_zero one_ne_zero,
+    simp only [intCast_eq_divInt, add_def'' one_ne_zero one_ne_zero,
       ← divInt_one_one, Nat.cast_add, Nat.cast_one, mul_one]
 
 instance commGroupWithZero : CommGroupWithZero ℚ :=
@@ -489,7 +489,7 @@ protected theorem add_divInt (a b c : ℤ) : (a + b) /. c = a /. c + b /. c :=
 theorem divInt_eq_div (n d : ℤ) : n /. d = (n : ℚ) / d := by
   by_cases d0 : d = 0
   · simp [d0, div_zero]
-  simp [division_def, coe_int_eq_divInt, mul_def' one_ne_zero d0]
+  simp [division_def, intCast_eq_divInt, mul_def' one_ne_zero d0]
 #align rat.mk_eq_div Rat.divInt_eq_div
 
 theorem divInt_mul_divInt_cancel {x : ℤ} (hx : x ≠ 0) (n d : ℤ) : n /. x * (x /. d) = n /. d := by
@@ -509,10 +509,10 @@ theorem divInt_div_divInt_cancel_right {x : ℤ} (hx : x ≠ 0) (n d : ℤ) :
   rw [div_eq_mul_inv, inv_def', mul_comm, divInt_mul_divInt_cancel hx]
 #align rat.mk_div_mk_cancel_right Rat.divInt_div_divInt_cancel_right
 
-theorem coe_int_div_eq_divInt {n d : ℤ} : (n : ℚ) / (d) = n /. d := by
-  repeat' rw [coe_int_eq_divInt]
+theorem intCast_div_eq_divInt {n d : ℤ} : (n : ℚ) / (d) = n /. d := by
+  repeat' rw [intCast_eq_divInt]
   exact divInt_div_divInt_cancel_left one_ne_zero n d
-#align rat.coe_int_div_eq_mk Rat.coe_int_div_eq_divInt
+#align rat.coe_int_div_eq_mk Rat.intCast_div_eq_divInt
 
 -- Porting note: see porting note above about `Int.cast`@[simp]
 theorem num_div_den (r : ℚ) : (r.num : ℚ) / (r.den : ℚ) = r := by
@@ -522,7 +522,7 @@ theorem num_div_den (r : ℚ) : (r.num : ℚ) / (r.den : ℚ) = r := by
 
 theorem coe_int_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : (q.num : ℚ) = q := by
   conv_rhs => rw [← @num_den q, hq]
-  rw [coe_int_eq_divInt]
+  rw [intCast_eq_divInt]
   rfl
 #align rat.coe_int_num_of_denom_eq_one Rat.coe_int_num_of_den_eq_one
 
@@ -538,9 +538,14 @@ instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
   ⟨fun q hq => ⟨q.num, coe_int_num_of_den_eq_one hq⟩⟩
 #align rat.can_lift Rat.canLift
 
-theorem coe_nat_eq_divInt (n : ℕ) : ↑n = n /. 1 := by
-  rw [← Int.cast_natCast, coe_int_eq_divInt]
-#align rat.coe_nat_eq_mk Rat.coe_nat_eq_divInt
+theorem natCast_eq_divInt (n : ℕ) : ↑n = n /. 1 := by
+  rw [← Int.cast_natCast, intCast_eq_divInt]
+#align rat.coe_nat_eq_mk Rat.natCast_eq_divInt
+
+-- 2024-04-05
+@[deprecated] alias coe_int_eq_divInt := intCast_eq_divInt
+@[deprecated] alias coe_int_div_eq_divInt := intCast_div_eq_divInt
+@[deprecated] alias coe_nat_eq_divInt := natCast_eq_divInt
 
 @[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
 #align rat.coe_nat_num Rat.num_natCast
