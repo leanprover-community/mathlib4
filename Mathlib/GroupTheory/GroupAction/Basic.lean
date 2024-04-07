@@ -601,7 +601,7 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff {H : Subgroup G} {x : orbitRel.Qu
     exact MulAction.mem_orbit _ g
   · rcases h with ⟨g, h⟩
     simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, ← orbit.coe_smul,
-             ← Submonoid.smul_def, ← Subtype.ext_iff] at h
+      ← Submonoid.smul_def, ← Subtype.ext_iff] at h
     subst h
     exact MulAction.mem_orbit _ g
 
