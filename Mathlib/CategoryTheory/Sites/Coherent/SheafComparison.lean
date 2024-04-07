@@ -36,11 +36,10 @@ instance : F.IsCoverDense (coherentTopology _) := by
   apply Coverage.saturate.of
   refine ⟨Unit, inferInstance, fun _ => F.effectiveEpiOverObj B,
     fun _ => F.effectiveEpiOver B, ?_ , ?_⟩
-  · funext X f
-    ext
+  · funext; ext -- Do we want `Presieve.ext`?
     refine ⟨fun ⟨⟩ ↦ ⟨()⟩, ?_⟩
     rintro ⟨⟩
-    simp only [Presieve.singleton_eq_iff_domain]
+    simp
   · rw [← effectiveEpi_iff_effectiveEpiFamily]
     infer_instance
 
@@ -100,7 +99,7 @@ variable {C D : Type (u+1)} [LargeCategory C] [LargeCategory D] (F : C ⥤ D)
   [F.PreservesFiniteEffectiveEpiFamilies] [F.ReflectsFiniteEffectiveEpiFamilies]
   [Full F] [Faithful F]
   [Precoherent D]
-  [F.EffectivelyEnough] [F.IsCoverDense (coherentTopology _)]
+  [F.EffectivelyEnough]
 
 /--
 The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompHaus`
@@ -123,7 +122,7 @@ variable {C D : Type (u+1)} [LargeCategory C] [LargeCategory D] (F : C ⥤ D)
   [FinitaryExtensive D] [Preregular D]
   [FinitaryPreExtensive C]
   [PreservesFiniteCoproducts F]
-  [F.EffectivelyEnough] [F.IsCoverDense (coherentTopology _)]
+  [F.EffectivelyEnough]
 
 /--
 The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompHaus`
@@ -148,11 +147,10 @@ instance : F.IsCoverDense (regularTopology _) := by
   refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
   apply Coverage.saturate.of
   refine ⟨F.effectiveEpiOverObj B, F.effectiveEpiOver B, ?_, inferInstance⟩
-  funext X f
-  ext
+  funext; ext -- Do we want `Presieve.ext`?
   refine ⟨fun ⟨⟩ ↦ ⟨()⟩, ?_⟩
   rintro ⟨⟩
-  simp only [Presieve.singleton_eq_iff_domain]
+  simp
 
 theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
     (∃ (Y : C) (π : Y ⟶ X),
@@ -206,7 +204,7 @@ variable {C D : Type (u+1)} [LargeCategory C] [LargeCategory D] (F : C ⥤ D)
   [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis]
   [Full F] [Faithful F]
   [Preregular D]
-  [F.EffectivelyEnough] [F.IsCoverDense (regularTopology _)]
+  [F.EffectivelyEnough]
 
 /--
 The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompHaus`
