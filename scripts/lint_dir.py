@@ -23,4 +23,4 @@ if __name__ == '__main__':
             files.append(line)
     for filename in files:
         path = f"Mathlib/{filename.replace('.', '/')}.lean"
-        lintstyle.lint(Path(path), fix=False)
+        lintstyle.lint(Path(path), fix=True)

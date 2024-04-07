@@ -472,9 +472,8 @@ def lint_backticks_in_comments(old_files, old_declarations, lines):
                 elif item in ['irreducible', 'computable']:
                     # These are keywords, hence should also be left alone.
                     continue
-                # FIXME: auto-fixing one replaces one item at a time
                 fixed = fixed.replace(f'`{item}`', f'`{old_declarations[item]}`')
-                print(f'old declaration "{item}" mentioned in line: \n{line.strip()}\nfixed line would be\n{fixed.strip()}')
+                #print(f'old declaration "{item}" mentioned in line: \n{line.strip()}\nfixed line would be\n{fixed.strip()}')
                 errors = True
         newlines.append(fixed)
     return errors, newlines
@@ -573,7 +572,7 @@ def lint(path, fix=False):
         lines = f.readlines()
         enum_lines = enumerate(lines, 1)
         errors, newlines = lint_backticks_in_comments(old_files, old_declarations, enumerate(lines[:], 1))
-        if errors:
+        if fix and errors:
             path.with_name(path.name + '.bak').write_text("".join(newlines), encoding = "utf8")
             shutil.move(path.with_name(path.name + '.bak'), path)
         newlines = enum_lines
