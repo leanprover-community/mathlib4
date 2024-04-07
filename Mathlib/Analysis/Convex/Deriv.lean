@@ -406,6 +406,18 @@ lemma right_deriv_le_slope (hfc : ConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S
     derivWithin f (Ioi x) x ≤ slope f x y :=
   le_slope_of_hasDerivWithinAt_Ioi hfc hx hy hxy hfd.hasDerivWithinAt
 
+lemma OrdConnected.mem_nhdsWithin_Ioi {α : Type*} [TopologicalSpace α] [LinearOrder α]
+  [OrderTopology α] [NoMaxOrder α] [DenselyOrdered α]
+  {S : Set α} (hS : OrdConnected S) {x y : α} (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) :
+    S ∈ 𝓝[>] x :=
+  mem_nhdsWithin_Ioi_iff_exists_Ioc_subset.2 ⟨y, hxy, Ioc_subset_Icc_self.trans (hS.out hx hy)⟩
+
+lemma OrdConnected.mem_nhdsWithin_Iio {α : Type*} [TopologicalSpace α] [LinearOrder α]
+  [OrderTopology α] [NoMinOrder α] [DenselyOrdered α]
+  {S : Set α} (hS : OrdConnected S) {x y : α} (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) :
+    S ∈ 𝓝[<] y :=
+  mem_nhdsWithin_Iio_iff_exists_Ico_subset.2 ⟨x, hxy, Ico_subset_Icc_self.trans (hS.out hx hy)⟩
+
 /-- If `f : ℝ → ℝ` is convex on `S` and differentiable within `S` at `x`, then the slope of any
 secant line with left endpoint at `x` is bounded below by the derivative of `f` within `S` at `x`.
 
