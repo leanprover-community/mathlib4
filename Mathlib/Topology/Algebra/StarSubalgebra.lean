@@ -185,7 +185,7 @@ end StarSubalgebra
 
 section Elemental
 
-open StarSubalgebra
+open StarSubalgebra StarAlgebra
 
 variable (R : Type*) {A B : Type*} [CommSemiring R] [StarRing R]
 variable [TopologicalSpace A] [Semiring A] [StarRing A] [TopologicalSemiring A]

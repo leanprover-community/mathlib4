@@ -53,7 +53,6 @@ open Matrix BigOperators
 variable {m n : Type*} [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m]
 variable {R : Type v} [CommRing R]
 
--- mathport name: «exprε »
 local notation "ε " σ:arg => ((sign σ : ℤ) : R)
 
 /-- `det` is an `AlternatingMap` in the rows of the matrix. -/
@@ -238,9 +237,14 @@ theorem det_transpose (M : Matrix n n R) : Mᵀ.det = M.det := by
 
 /-- Permuting the columns changes the sign of the determinant. -/
 theorem det_permute (σ : Perm n) (M : Matrix n n R) :
-    (Matrix.det fun i => M (σ i)) = Perm.sign σ * M.det :=
+    (M.submatrix σ id).det = Perm.sign σ * M.det :=
   ((detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_perm M σ).trans (by simp [Units.smul_def])
 #align matrix.det_permute Matrix.det_permute
+
+/-- Permuting the rows changes the sign of the determinant. -/
+theorem det_permute' (σ : Perm n) (M : Matrix n n R) :
+    (M.submatrix id σ).det = Perm.sign σ * M.det := by
+  rw [← det_transpose, transpose_submatrix, det_permute, det_transpose]
 
 /-- Permuting rows and columns with the same equivalence has no effect. -/
 @[simp]
@@ -326,7 +330,7 @@ variable {S : Type w} [CommRing S]
 
 theorem _root_.RingHom.map_det (f : R →+* S) (M : Matrix n n R) :
     f M.det = Matrix.det (f.mapMatrix M) :=
-  by simp [Matrix.det_apply', f.map_sum, f.map_prod]
+  by simp [Matrix.det_apply', map_sum f, map_prod f]
 #align ring_hom.map_det RingHom.map_det
 
 theorem _root_.RingEquiv.map_det (f : R ≃+* S) (M : Matrix n n R) :
@@ -717,8 +721,8 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
   -- `Perm (Fin n.succ)` than the determinant of the submatrix we want,
   -- permute `A` so that we get the correct one.
   have : (-1 : R) ^ (i : ℕ) = (Perm.sign i.cycleRange) := by simp [Fin.sign_cycleRange]
-  rw [Fin.val_succ, pow_succ, this, mul_assoc, mul_assoc, mul_left_comm (ε _), ←
-    det_permute, Matrix.det_apply, Finset.mul_sum, Finset.mul_sum]
+  rw [Fin.val_succ, pow_succ', this, mul_assoc, mul_assoc, mul_left_comm (ε _),
+    ← det_permute, Matrix.det_apply, Finset.mul_sum, Finset.mul_sum]
   -- now we just need to move the corresponding parts to the same place
   refine' Finset.sum_congr rfl fun σ _ => _
   rw [Equiv.Perm.decomposeFin.symm_sign, if_neg (Fin.succ_ne_zero i)]
@@ -756,11 +760,12 @@ theorem det_succ_row {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (i : Fin
   congr
   rw [← det_permute, det_succ_row_zero]
   refine' Finset.sum_congr rfl fun j _ => _
-  rw [mul_assoc, Matrix.submatrix, Matrix.submatrix]
+  rw [mul_assoc, Matrix.submatrix_apply, submatrix_submatrix, id_comp, Function.comp_def, id.def]
   congr
   · rw [Equiv.Perm.inv_def, Fin.cycleRange_symm_zero]
   · ext i' j'
-    rw [Equiv.Perm.inv_def, Fin.cycleRange_symm_succ]
+    rw [Equiv.Perm.inv_def, Matrix.submatrix_apply, Matrix.submatrix_apply,
+      Fin.cycleRange_symm_succ]
 #align matrix.det_succ_row Matrix.det_succ_row
 
 /-- Laplacian expansion of the determinant of an `n+1 × n+1` matrix along column `j`. -/

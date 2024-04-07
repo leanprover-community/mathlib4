@@ -317,7 +317,7 @@ theorem localization_isReduced : LocalizationPreserves fun R hR => IsReduced R :
   obtain ⟨m', hm'⟩ := (IsLocalization.eq_iff_exists M S).mp hx'
   apply_fun (· * (m' : R) ^ n) at hm'
   simp only [mul_assoc, zero_mul, mul_zero] at hm'
-  rw [← mul_left_comm, ← pow_succ, ← mul_pow] at hm'
+  rw [← mul_left_comm, ← pow_succ', ← mul_pow] at hm'
   replace hm' := IsNilpotent.eq_zero ⟨_, hm'.symm⟩
   rw [← (IsLocalization.map_units S m).mul_left_inj, hx, zero_mul,
     IsLocalization.map_eq_zero_iff M]
@@ -472,7 +472,7 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
 #align is_localization.smul_mem_finset_integer_multiple_span IsLocalization.smul_mem_finsetIntegerMultiple_span
 
 /-- If `S` is an `R' = M⁻¹R` algebra, and `x ∈ span R' s`,
-then `t • x ∈ span R s` for some `t : M`.-/
+then `t • x ∈ span R s` for some `t : M`. -/
 theorem multiple_mem_span_of_mem_localization_span [Algebra R' S] [Algebra R S]
     [IsScalarTower R R' S] [IsLocalization M R'] (s : Set S) (x : S)
     (hx : x ∈ Submodule.span R' s) : ∃ t : M, t • x ∈ Submodule.span R s := by
@@ -497,7 +497,7 @@ theorem multiple_mem_span_of_mem_localization_span [Algebra R' S] [Algebra R S]
 #align multiple_mem_span_of_mem_localization_span multiple_mem_span_of_mem_localization_span
 
 /-- If `S` is an `R' = M⁻¹R` algebra, and `x ∈ adjoin R' s`,
-then `t • x ∈ adjoin R s` for some `t : M`.-/
+then `t • x ∈ adjoin R s` for some `t : M`. -/
 theorem multiple_mem_adjoin_of_mem_localization_adjoin [Algebra R' S] [Algebra R S]
     [IsScalarTower R R' S] [IsLocalization M R'] (s : Set S) (x : S)
     (hx : x ∈ Algebra.adjoin R' s) : ∃ t : M, t • x ∈ Algebra.adjoin R s := by

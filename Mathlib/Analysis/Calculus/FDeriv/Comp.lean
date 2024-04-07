@@ -215,7 +215,7 @@ protected theorem HasFDerivAtFilter.iterate {f : E → E} {f' : E →L[𝕜] E}
     HasFDerivAtFilter f^[n] (f' ^ n) x L := by
   induction' n with n ihn
   · exact hasFDerivAtFilter_id x L
-  · rw [Function.iterate_succ, pow_succ']
+  · rw [Function.iterate_succ, pow_succ]
     rw [← hx] at ihn
     exact ihn.comp x hf hL
 #align has_fderiv_at_filter.iterate HasFDerivAtFilter.iterate
@@ -245,7 +245,7 @@ protected theorem HasStrictFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E}
     HasStrictFDerivAt f^[n] (f' ^ n) x := by
   induction' n with n ihn
   · exact hasStrictFDerivAt_id x
-  · rw [Function.iterate_succ, pow_succ']
+  · rw [Function.iterate_succ, pow_succ]
     rw [← hx] at ihn
     exact ihn.comp x hf
 #align has_strict_fderiv_at.iterate HasStrictFDerivAt.iterate
