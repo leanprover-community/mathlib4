@@ -7,7 +7,6 @@ import Mathlib.Probability.Kernel.MeasureCompProd
 import Mathlib.Probability.Kernel.Disintegration.CondCdf
 import Mathlib.Probability.Kernel.Disintegration.Density
 import Mathlib.Probability.Kernel.Disintegration.CdfToKernel
-import Mathlib.Probability.ConditionalProbability
 
 /-!
 # Disintegration of kernels and measures
