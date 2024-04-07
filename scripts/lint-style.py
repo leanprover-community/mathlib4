@@ -10,7 +10,7 @@ which will lint all of the Lean files in the specified directories.
 
 OR: a bare $ python3 ./scripts/lint-style.py will just run all of these.
 You **must** run this script from the root directory of mathlib
-(or fix the file paths in "import_old_files_declarations" to match).
+(or fix the file paths in "parse_old_files_declarations" to match).
 
 The resulting error output will contain one line for each style error
 encountered that isn't in the list of allowed / ignored style exceptions.
@@ -416,7 +416,7 @@ Return a tuple (old_files, old_declarations) consisting of
 - a list of all old files (i.e., mentioned in an align_import statement)
 - a dictionary of all align-ed declarations of the form {old: new}.'''
 # Currently, this reads from local files, which have been pre-generated.
-def import_old_files_declarations():
+def parse_old_files_declarations():
     old_files = []
     for line in open('align_imports.txt', 'r', encoding='utf-8'):
         if not line.startswith("#align_import "):
@@ -636,7 +636,7 @@ if not argv:
         line = line[len(f'import {projectname}.'):].strip()
         if line.startswith(dir) and not line.startswith(exclude):
             files.append(line)
-    old_files, old_declarations = import_old_files_declarations()
+    old_files, old_declarations = parse_old_files_declarations()
     for filename in files:
         path = f"{projectname}/{filename.replace('.', '/')}.lean"
         lint(Path(path), old_files, old_declarations, fix=fix)
