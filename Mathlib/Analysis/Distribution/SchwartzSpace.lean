@@ -811,7 +811,7 @@ def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemper
       rw [← this, Finset.sum_mul]
       refine' Finset.sum_le_sum fun i hi => _
       simp only [one_mul]
-      move_mul [(Nat.choose n i : ℝ), (Nat.choose n (n/2) : ℝ)]
+      move_mul [(Nat.choose n i : ℝ), (Nat.choose n (n / 2) : ℝ)]
       gcongr ?_ * ?_
       swap
       · norm_cast
