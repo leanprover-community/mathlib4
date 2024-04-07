@@ -307,9 +307,8 @@ theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.
     simp [Rat.inv_neg, inv_intCast_den_of_pos lt, abs_of_pos lt]
   · rfl
   · rw [if_neg (by omega)]
-    simp [inv_coe_int_den_of_pos gt, abs_of_pos gt]
-
-#align rat.inv_coe_int_denom Rat.inv_coe_int_den
+    simp [inv_intCast_den_of_pos gt, abs_of_pos gt]
+#align rat.inv_coe_int_denom Rat.inv_intCast_den
 
 @[simp]
 theorem inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a := by
