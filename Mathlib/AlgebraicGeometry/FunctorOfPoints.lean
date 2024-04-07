@@ -31,7 +31,7 @@ which we also prove in this file.
 
 - Notation for `X.functorOfPoints`.
 - `X.functorOfPoints` is a Zariski sheaf for any `X : Scheme`.
-- Characterize the essential immage of `schemeToFunctorOfPoints`.
+- Characterize the essential image of `schemeToFunctorOfPoints`.
 
 -/
 
