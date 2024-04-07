@@ -216,7 +216,7 @@ variable [CompleteSpace E] [CompleteSpace F]
 variable (A : E →L[𝕜] F) {p : Submodule 𝕜 E}
 
 /-- Restricting `A` to a dense submodule and taking the `LinearPMap.adjoint` is the same
-as taking the `continuous_linear_map.adjoint` interpreted as a `linear_pmap`. -/
+as taking the `ContinuousLinearMap.adjoint` interpreted as a `LinearPMap`. -/
 theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
     (A.toPMap p).adjoint = A.adjoint.toPMap ⊤ := by
   ext x y hxy

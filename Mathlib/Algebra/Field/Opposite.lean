@@ -17,9 +17,7 @@ variable {α : Type*}
 
 namespace MulOpposite
 
-@[to_additive]
-instance ratCast [RatCast α] : RatCast αᵐᵒᵖ :=
-  ⟨fun n => op n⟩
+@[to_additive] instance instRatCast [RatCast α] : RatCast αᵐᵒᵖ := ⟨fun q ↦ op q⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem op_ratCast [RatCast α] (q : ℚ) : op (q : α) = q :=
@@ -40,7 +38,7 @@ instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵐᵒ�
 instance instDivisionRing [DivisionRing α] : DivisionRing αᵐᵒᵖ where
   __ := instRing
   __ := instDivisionSemiring
-  ratCast_mk a b hb h := unop_injective <| by rw [unop_ratCast, Rat.cast_def, unop_mul, unop_inv,
+  ratCast_def q := unop_injective <| by rw [unop_ratCast, Rat.cast_def, unop_div,
     unop_natCast, unop_intCast, Int.commute_cast, div_eq_mul_inv]
   qsmul := qsmulRec _
 
@@ -63,9 +61,9 @@ instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵃᵒ�
 instance instDivisionRing [DivisionRing α] : DivisionRing αᵃᵒᵖ where
   __ := instRing
   __ := instDivisionSemiring
-  ratCast_mk a b hb h := unop_injective <| by rw [unop_ratCast, Rat.cast_def, unop_mul, unop_inv,
-    unop_natCast, unop_intCast, div_eq_mul_inv]
-  qsmul := _
+  ratCast_def q := unop_injective <| by rw [unop_ratCast, Rat.cast_def, unop_div, unop_natCast,
+    unop_intCast, div_eq_mul_inv]
+  qsmul := qsmulRec _
 
 instance instSemifield [Semifield α] : Semifield αᵃᵒᵖ where
   __ := instCommSemiring

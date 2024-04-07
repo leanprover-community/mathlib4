@@ -31,7 +31,6 @@ variable {α β : Type*} {m n : Type*} {A : Matrix n n α}
 
 open scoped Matrix
 
--- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner α _ _ x y
 
 section Star

@@ -751,7 +751,7 @@ instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensio
 #align intermediate_field.finite_dimensional_supr_of_finite IntermediateField.finiteDimensional_iSup_of_finite
 
 instance finiteDimensional_iSup_of_finset
-    /-Porting note: changed `h` from `∀ i ∈ s, FiniteDimensional K (t i)` because this caused an
+    /- Porting note: changed `h` from `∀ i ∈ s, FiniteDimensional K (t i)` because this caused an
       error. See `finiteDimensional_iSup_of_finset'` for a stronger version, that was the one
       used in mathlib3.-/
     {s : Finset ι} [∀ i, FiniteDimensional K (t i)] :
@@ -760,7 +760,7 @@ instance finiteDimensional_iSup_of_finset
 #align intermediate_field.finite_dimensional_supr_of_finset IntermediateField.finiteDimensional_iSup_of_finset
 
 theorem finiteDimensional_iSup_of_finset'
-    /-Porting note: this was the mathlib3 version. Using `[h : ...]`, as in mathlib3, causes the
+    /- Porting note: this was the mathlib3 version. Using `[h : ...]`, as in mathlib3, causes the
     error "invalid parametric local instance".-/
     {s : Finset ι} (h : ∀ i ∈ s, FiniteDimensional K (t i)) :
     FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L) :=

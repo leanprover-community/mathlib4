@@ -233,7 +233,6 @@ theorem stabilizer_quotient {G} [Group G] (H : Subgroup G) :
 
 variable (β)
 
--- mathport name: exprΩ
 local notation "Ω" => Quotient <| orbitRel α β
 
 /-- **Class formula** : given `G` a group acting on `X` and `φ` a function mapping each orbit of `X`

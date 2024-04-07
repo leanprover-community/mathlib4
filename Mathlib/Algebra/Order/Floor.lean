@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Set.Intervals.Group
@@ -731,7 +731,7 @@ theorem floor_intCast (z : ℤ) : ⌊(z : α)⌋ = z :=
 
 @[simp]
 theorem floor_natCast (n : ℕ) : ⌊(n : α)⌋ = n :=
-  eq_of_forall_le_iff fun a => by rw [le_floor, ← cast_ofNat, cast_le]
+  eq_of_forall_le_iff fun a => by rw [le_floor, ← cast_natCast, cast_le]
 #align int.floor_nat_cast Int.floor_natCast
 
 @[simp]
@@ -789,7 +789,8 @@ theorem floor_int_add (z : ℤ) (a : α) : ⌊↑z + a⌋ = z + ⌊a⌋ := by
 #align int.floor_int_add Int.floor_int_add
 
 @[simp]
-theorem floor_add_nat (a : α) (n : ℕ) : ⌊a + n⌋ = ⌊a⌋ + n := by rw [← Int.cast_ofNat, floor_add_int]
+theorem floor_add_nat (a : α) (n : ℕ) : ⌊a + n⌋ = ⌊a⌋ + n := by
+  rw [← Int.cast_natCast, floor_add_int]
 #align int.floor_add_nat Int.floor_add_nat
 
 -- See note [no_index around OfNat.ofNat]
@@ -800,7 +801,7 @@ theorem floor_add_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
 
 @[simp]
 theorem floor_nat_add (n : ℕ) (a : α) : ⌊↑n + a⌋ = n + ⌊a⌋ := by
-  rw [← Int.cast_ofNat, floor_int_add]
+  rw [← Int.cast_natCast, floor_int_add]
 #align int.floor_nat_add Int.floor_nat_add
 
 -- See note [no_index around OfNat.ofNat]
@@ -815,7 +816,8 @@ theorem floor_sub_int (a : α) (z : ℤ) : ⌊a - z⌋ = ⌊a⌋ - z :=
 #align int.floor_sub_int Int.floor_sub_int
 
 @[simp]
-theorem floor_sub_nat (a : α) (n : ℕ) : ⌊a - n⌋ = ⌊a⌋ - n := by rw [← Int.cast_ofNat, floor_sub_int]
+theorem floor_sub_nat (a : α) (n : ℕ) : ⌊a - n⌋ = ⌊a⌋ - n := by
+  rw [← Int.cast_natCast, floor_sub_int]
 #align int.floor_sub_nat Int.floor_sub_nat
 
 @[simp] theorem floor_sub_one (a : α) : ⌊a - 1⌋ = ⌊a⌋ - 1 := mod_cast floor_sub_nat a 1
@@ -1151,7 +1153,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
   have : ∀ {l : ℤ}, 0 ≤ l → fract ((l : k) / n) = ↑(l % n) / n := by
     intros l hl
     obtain ⟨l₀, rfl | rfl⟩ := l.eq_nat_or_neg
-    · rw [cast_ofNat, ← natCast_mod, cast_ofNat, fract_div_natCast_eq_div_natCast_mod]
+    · rw [cast_natCast, ← natCast_mod, cast_natCast, fract_div_natCast_eq_div_natCast_mod]
     · rw [Right.nonneg_neg_iff, natCast_nonpos_iff] at hl
       simp [hl, zero_mod]
   obtain ⟨m₀, rfl | rfl⟩ := m.eq_nat_or_neg
@@ -1162,8 +1164,8 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     simpa [m₁, ← @cast_le k, ← div_le_iff hn] using FloorRing.gc_ceil_coe.le_u_l _
   calc
     fract ((Int.cast (-(m₀ : ℤ)) : k) / (n : k))
-      -- Porting note: the `rw [cast_neg, cast_ofNat]` was `push_cast`
-      = fract (-(m₀ : k) / n) := by rw [cast_neg, cast_ofNat]
+      -- Porting note: the `rw [cast_neg, cast_natCast]` was `push_cast`
+      = fract (-(m₀ : k) / n) := by rw [cast_neg, cast_natCast]
     _ = fract ((m₁ : k) / n) := ?_
     _ = Int.cast (m₁ % (n : ℤ)) / Nat.cast n := this hm₁
     _ = Int.cast (-(↑m₀ : ℤ) % ↑n) / Nat.cast n := ?_
@@ -1225,7 +1227,7 @@ theorem ceil_intCast (z : ℤ) : ⌈(z : α)⌉ = z :=
 
 @[simp]
 theorem ceil_natCast (n : ℕ) : ⌈(n : α)⌉ = n :=
-  eq_of_forall_ge_iff fun a => by rw [ceil_le, ← cast_ofNat, cast_le]
+  eq_of_forall_ge_iff fun a => by rw [ceil_le, ← cast_natCast, cast_le]
 #align int.ceil_nat_cast Int.ceil_natCast
 
 -- See note [no_index around OfNat.ofNat]
@@ -1245,7 +1247,7 @@ theorem ceil_add_int (a : α) (z : ℤ) : ⌈a + z⌉ = ⌈a⌉ + z := by
 #align int.ceil_add_int Int.ceil_add_int
 
 @[simp]
-theorem ceil_add_nat (a : α) (n : ℕ) : ⌈a + n⌉ = ⌈a⌉ + n := by rw [← Int.cast_ofNat, ceil_add_int]
+theorem ceil_add_nat (a : α) (n : ℕ) : ⌈a + n⌉ = ⌈a⌉ + n := by rw [← Int.cast_natCast, ceil_add_int]
 #align int.ceil_add_nat Int.ceil_add_nat
 
 @[simp]
@@ -1689,8 +1691,8 @@ instance (priority := 100) FloorRing.toFloorSemiring : FloorSemiring α where
   floor a := ⌊a⌋.toNat
   ceil a := ⌈a⌉.toNat
   floor_of_neg {a} ha := Int.toNat_of_nonpos (Int.floor_nonpos ha.le)
-  gc_floor {a n} ha := by rw [Int.le_toNat (Int.floor_nonneg.2 ha), Int.le_floor, Int.cast_ofNat]
-  gc_ceil a n := by rw [Int.toNat_le, Int.ceil_le, Int.cast_ofNat]
+  gc_floor {a n} ha := by rw [Int.le_toNat (Int.floor_nonneg.2 ha), Int.le_floor, Int.cast_natCast]
+  gc_ceil a n := by rw [Int.toNat_le, Int.ceil_le, Int.cast_natCast]
 #align floor_ring.to_floor_semiring FloorRing.toFloorSemiring
 
 theorem Int.floor_toNat (a : α) : ⌊a⌋.toNat = ⌊a⌋₊ :=
@@ -1722,11 +1724,11 @@ theorem Int.ofNat_ceil_eq_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : ℤ) = ⌈a⌉ := 
 #align nat.cast_ceil_eq_int_ceil Int.ofNat_ceil_eq_ceil
 
 theorem natCast_floor_eq_intCast_floor (ha : 0 ≤ a) : (⌊a⌋₊ : α) = ⌊a⌋ := by
-  rw [← Int.ofNat_floor_eq_floor ha, Int.cast_ofNat]
+  rw [← Int.ofNat_floor_eq_floor ha, Int.cast_natCast]
 #align nat.cast_floor_eq_cast_int_floor natCast_floor_eq_intCast_floor
 
 theorem natCast_ceil_eq_intCast_ceil  (ha : 0 ≤ a) : (⌈a⌉₊ : α) = ⌈a⌉ := by
-  rw [← Int.ofNat_ceil_eq_ceil ha, Int.cast_ofNat]
+  rw [← Int.ofNat_ceil_eq_ceil ha, Int.cast_natCast]
 #align nat.cast_ceil_eq_cast_int_ceil natCast_ceil_eq_intCast_ceil
 
 -- 2024-02-14

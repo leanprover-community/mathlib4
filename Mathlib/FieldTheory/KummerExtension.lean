@@ -497,7 +497,7 @@ lemma autEquivZmod_symm_apply_intCast {ζ : K} (hζ : IsPrimitiveRoot ζ n) (m :
 
 lemma autEquivZmod_symm_apply_natCast {ζ : K} (hζ : IsPrimitiveRoot ζ n) (m : ℕ) :
     (autEquivZmod H L hζ).symm (Multiplicative.ofAdd (m : ZMod n)) α = ζ ^ m • α := by
-  simpa only [Int.cast_ofNat, zpow_natCast] using autEquivZmod_symm_apply_intCast H L hα hζ m
+  simpa only [Int.cast_natCast, zpow_natCast] using autEquivZmod_symm_apply_intCast H L hα hζ m
 
 lemma isCyclic_of_isSplittingField_X_pow_sub_C : IsCyclic (L ≃ₐ[K] L) :=
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
