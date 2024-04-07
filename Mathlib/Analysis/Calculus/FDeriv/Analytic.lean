@@ -180,7 +180,7 @@ variable {p : FormalMultilinearSeries 𝕜 E F} {r : ℝ≥0∞} {n : ℕ}
 variable {f : E → F} {x : E} {s : Set E}
 
 /-! The case of continuously polynomial functions. We get the same differentiability
-results as for analytic functions, but without the assumptions that `F` is complete.-/
+results as for analytic functions, but without the assumptions that `F` is complete. -/
 
 theorem HasFiniteFPowerSeriesOnBall.differentiableOn
     (h : HasFiniteFPowerSeriesOnBall f p x n r) : DifferentiableOn 𝕜 f (EMetric.ball x r) :=

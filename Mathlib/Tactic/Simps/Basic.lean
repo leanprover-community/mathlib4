@@ -520,7 +520,7 @@ def getCompositeOfProjections (structName : Name) (proj : String) : MetaM (Expr 
 /-- Get the default `ParsedProjectionData` for structure `str`.
   It first returns the direct fields of the structure in the right order, and then
   all (non-subobject fields) of all parent structures. The subobject fields are precisely the
-  non-default fields.-/
+  non-default fields. -/
 def mkParsedProjectionData (structName : Name) : CoreM (Array ParsedProjectionData) := do
   let env ← getEnv
   let projs := getStructureFields env structName
@@ -796,7 +796,7 @@ composite of multiple projections).
 -/
 
 /-- Parse a rule for `initialize_simps_projections`. It is `<name>→<name>`, `-<name>`, `+<name>`
-  or `as_prefix <name>`.-/
+  or `as_prefix <name>`. -/
 def elabSimpsRule : Syntax → CommandElabM ProjectionRule
   | `(simpsRule| $id1 → $id2)   => return .rename id1.getId id1.raw id2.getId id2.raw
   | `(simpsRule| - $id)         => return .erase id.getId id.raw

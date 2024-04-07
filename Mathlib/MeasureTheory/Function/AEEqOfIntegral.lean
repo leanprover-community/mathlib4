@@ -563,7 +563,7 @@ theorem Integrable.ae_eq_of_forall_set_integral_eq (f g : α → E) (hf : Integr
 variable {β : Type*} [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β]
 
 /-- If an integrable function has zero integral on all closed sets, then it is zero
-almost everwhere.-/
+almost everwhere. -/
 lemma ae_eq_zero_of_forall_set_integral_isClosed_eq_zero {μ : Measure β} {f : β → E}
     (hf : Integrable f μ) (h'f : ∀ (s : Set β), IsClosed s → ∫ x in s, f x ∂μ = 0) :
     f =ᵐ[μ] 0 := by

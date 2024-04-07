@@ -1057,7 +1057,7 @@ theorem tsum_add_one_eq_top {f : ℕ → ℝ≥0∞} (hf : ∑' n, f n = ∞) (h
 #align ennreal.tsum_add_one_eq_top ENNReal.tsum_add_one_eq_top
 
 /-- A sum of extended nonnegative reals which is finite can have only finitely many terms
-above any positive threshold.-/
+above any positive threshold. -/
 theorem finite_const_le_of_tsum_ne_top {ι : Type*} {a : ι → ℝ≥0∞} (tsum_ne_top : ∑' i, a i ≠ ∞)
     {ε : ℝ≥0∞} (ε_ne_zero : ε ≠ 0) : { i : ι | ε ≤ a i }.Finite := by
   by_contra h

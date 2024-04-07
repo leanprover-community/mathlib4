@@ -298,7 +298,7 @@ theorem exists_model_card_eq (h : ∃ M : ModelType.{u, v, max u v} T, Infinite 
 variable (T)
 
 /-- A theory models a (bounded) formula when any of its nonempty models realizes that formula on all
-  inputs.-/
+  inputs. -/
 def ModelsBoundedFormula (φ : L.BoundedFormula α n) : Prop :=
   ∀ (M : ModelType.{u, v, max u v} T) (v : α → M) (xs : Fin n → M), φ.Realize v xs
 #align first_order.language.Theory.models_bounded_formula FirstOrder.Language.Theory.ModelsBoundedFormula

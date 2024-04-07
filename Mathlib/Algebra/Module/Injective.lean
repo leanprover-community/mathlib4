@@ -259,14 +259,14 @@ set_option align.precheck false in
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_adjoin.aux1 Module.Baer.extensionOfMax_adjoin.aux1
 
-/-- If `x ∈ M ⊔ ⟨y⟩`, then `x = m + r • y`, `fst` pick an arbitrary such `m`.-/
+/-- If `x ∈ M ⊔ ⟨y⟩`, then `x = m + r • y`, `fst` pick an arbitrary such `m`. -/
 def ExtensionOfMaxAdjoin.fst {y : N} (x : supExtensionOfMaxSingleton i f y) :
     (extensionOfMax i f).domain :=
   (extensionOfMax_adjoin.aux1 i x).choose
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_adjoin.fst Module.Baer.ExtensionOfMaxAdjoin.fst
 
-/-- If `x ∈ M ⊔ ⟨y⟩`, then `x = m + r • y`, `snd` pick an arbitrary such `r`.-/
+/-- If `x ∈ M ⊔ ⟨y⟩`, then `x = m + r • y`, `snd` pick an arbitrary such `r`. -/
 def ExtensionOfMaxAdjoin.snd {y : N} (x : supExtensionOfMaxSingleton i f y) : R :=
   (extensionOfMax_adjoin.aux1 i x).choose_spec.choose
 set_option linter.uppercaseLean3 false in
@@ -453,7 +453,7 @@ theorem extension_property_addMonoidHom (h : Module.Baer ℤ Q)
   ⟨g', congr(LinearMap.toAddMonoidHom $hg')⟩
 
 /-- **Baer's criterion** for injective module : a Baer module is an injective module, i.e. if every
-linear map from an ideal can be extended, then the module is injective.-/
+linear map from an ideal can be extended, then the module is injective. -/
 protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q where
   out := fun X Y _ _ _ _ i hi f ↦ by
     obtain ⟨h, H⟩ := Module.Baer.extension_property h i hi f

@@ -858,7 +858,7 @@ Textbooks generally require an additional regularity assumption to ensure nice b
 arbitrary locally compact groups. Use `[IsHaarMeasure μ] [Regular μ]` or
 `[IsHaarMeasure μ] [InnerRegular μ]` in these situations. Note that a Haar measure in our
 sense is automatically regular and inner regular on second countable locally compact groups, as
-checked just below this definition.-/
+checked just below this definition. -/
 @[to_additive existing]
 class IsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] [MeasurableSpace G]
   (μ : Measure G) extends IsFiniteMeasureOnCompacts μ, IsMulLeftInvariant μ, IsOpenPosMeasure μ :
@@ -917,7 +917,7 @@ theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*} [Group
 #align measure_theory.measure.is_add_haar_measure_map MeasureTheory.Measure.isAddHaarMeasure_map
 
 /-- The image of a finite Haar measure under a continuous surjective group homomorphism is again
-a Haar measure. See also `isHaarMeasure_map`.-/
+a Haar measure. See also `isHaarMeasure_map`. -/
 @[to_additive
 "The image of a finite additive Haar measure under a continuous surjective additive group
 homomorphism is again an additive Haar measure. See also `isAddHaarMeasure_map`."]

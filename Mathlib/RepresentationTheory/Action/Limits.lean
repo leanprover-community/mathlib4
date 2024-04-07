@@ -40,7 +40,7 @@ instance [HasFiniteLimits V] : HasFiniteLimits (Action V G) where
 instance [HasLimits V] : HasLimits (Action V G) :=
   Adjunction.has_limits_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
-/-- If `V` has limits of shape `J`, so does `Action V G`.-/
+/-- If `V` has limits of shape `J`, so does `Action V G`. -/
 instance hasLimitsOfShape {J : Type w₁} [Category.{w₂} J] [HasLimitsOfShape J V] :
     HasLimitsOfShape J (Action V G) :=
   Adjunction.hasLimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
@@ -56,7 +56,7 @@ instance [HasFiniteColimits V] : HasFiniteColimits (Action V G) where
 instance [HasColimits V] : HasColimits (Action V G) :=
   Adjunction.has_colimits_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
-/-- If `V` has colimits of shape `J`, so does `Action V G`.-/
+/-- If `V` has colimits of shape `J`, so does `Action V G`. -/
 instance hasColimitsOfShape {J : Type w₁} [Category.{w₂} J]
     [HasColimitsOfShape J V] : HasColimitsOfShape J (Action V G) :=
   Adjunction.hasColimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
@@ -68,7 +68,7 @@ section Preservation
 variable {C : Type t₁} [Category.{t₂} C]
 
 /-- `F : C ⥤ SingleObj G ⥤ V` preserves the limit of some `K : J ⥤ C` if it does
-evaluated at `SingleObj.star G`.-/
+evaluated at `SingleObj.star G`. -/
 private def SingleObj.preservesLimit (F : C ⥤ SingleObj G ⥤ V)
     {J : Type w₁} [Category.{w₂} J] (K : J ⥤ C)
     (h : PreservesLimit K (F ⋙ (evaluation (SingleObj G) V).obj (SingleObj.star G))) :
@@ -107,7 +107,7 @@ def preservesLimitsOfSizeOfPreserves (F : C ⥤ Action V G)
   exact PreservesLimitsOfSize.preservesLimitsOfShape
 
 /-- `F : C ⥤ SingleObj G ⥤ V` preserves the colimit of some `K : J ⥤ C` if it does
-evaluated at `SingleObj.star G`.-/
+evaluated at `SingleObj.star G`. -/
 private def SingleObj.preservesColimit (F : C ⥤ SingleObj G ⥤ V)
     {J : Type w₁} [Category.{w₂} J] (K : J ⥤ C)
     (h : PreservesColimit K (F ⋙ (evaluation (SingleObj G) V).obj (SingleObj.star G))) :
