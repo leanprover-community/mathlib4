@@ -160,7 +160,7 @@ lemma localizerMorphism_lift_map_on_resolutions {X Y : HomotopyCategory.Plus C} 
     (X' : (localizerMorphism C).RightResolution X) (Y' : (localizerMorphism C).RightResolution Y) :
     ∃ (ψ : X'.X₁ ⟶ Y'.X₁), X'.w ≫ (localizerMorphism C).functor.map ψ = φ ≫ Y'.w := by
   let F := ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh)
-  have := DerivedCategory.Plus.Qh_inverts C _ X'.hw
+  have := Localization.inverts (DerivedCategory.Plus.Qh) _ _ X'.hw
   obtain ⟨γ, hγ⟩ := F.map_surjective (inv (DerivedCategory.Plus.Qh.map X'.w) ≫ DerivedCategory.Plus.Qh.map φ ≫ DerivedCategory.Plus.Qh.map Y'.w)
   refine' ⟨γ, (DerivedCategory.Plus.Qh_map_bijective_of_isKInjective _ _ _).1 _⟩
   · dsimp [localizerMorphism]
@@ -189,8 +189,8 @@ instance [EnoughInjectives C] (X : HomotopyCategory.Plus C) :
       replace hφ := DerivedCategory.Plus.Qh.congr_map hφ
       dsimp at hφ
       rw [Functor.map_comp] at hφ
-      have := DerivedCategory.Plus.Qh_inverts C Y.w Y.hw
-      have := DerivedCategory.Plus.Qh_inverts C Z.w Z.hw
+      have := Localization.inverts (DerivedCategory.Plus.Qh) _ _ Y.hw
+      have := Localization.inverts (DerivedCategory.Plus.Qh) _ _ Z.hw
       exact IsIso.of_isIso_fac_left hφ
     have hφ' : IsIso φ := isIso_of_reflects_iso φ
       ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh)

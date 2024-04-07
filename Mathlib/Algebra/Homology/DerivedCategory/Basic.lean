@@ -92,6 +92,10 @@ lemma quotient_obj_mem_subcategoryAcyclic_iff_exactAt (K : CochainComplex C ℤ)
   simp only [HomologicalComplex.exactAt_iff_isZero_homology]
   exact ((homologyFunctorFactors C (ComplexShape.up ℤ) n).app K).isZero_iff
 
+lemma quotient_obj_mem_subcategoryAcyclic_iff_acyclic (K : CochainComplex C ℤ) :
+    (subcategoryAcyclic C).P ((quotient _ _).obj K) ↔ K.Acyclic := by
+  apply quotient_obj_mem_subcategoryAcyclic_iff_exactAt
+
 variable (C)
 
 lemma quasiIso_eq_subcategoryAcyclic_W :

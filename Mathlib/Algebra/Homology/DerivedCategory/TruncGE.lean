@@ -357,7 +357,7 @@ lemma quasiIso_isInvertedBy_functorTruncGE_comp_Q (n : ℤ) :
   rw [DerivedCategory.isIso_Q_map_iff_quasiIso, quasiIso_truncGEmap_iff]
   infer_instance
 
-instance (n : ℤ)  : (K.truncGE n).IsStrictlyGE n := ⟨K.isZero_truncGEX n⟩
+instance (n : ℤ) : (K.truncGE n).IsStrictlyGE n := ⟨K.isZero_truncGEX n⟩
 
 instance (n i : ℤ) [K.IsStrictlyLE i] : (K.truncGE n).IsStrictlyLE i := ⟨fun j hj => by
   by_cases hj' : j < n
@@ -401,6 +401,23 @@ instance (n : ℤ) [K.IsStrictlyGE n] : IsIso (K.truncGEπ n) := by
   infer_instance
 
 variable {C}
+
+lemma acyclic_truncGE_iff (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+    (K.truncGE n₁).Acyclic ↔ K.IsLE n₀ := by
+  constructor
+  · intro hK
+    refine' ⟨fun i hi => _⟩
+    have := K.isIso_homologyMap_truncGEπ n₁ i (by omega)
+    exact IsZero.of_iso ((hK i).isZero_homology) (asIso (homologyMap (K.truncGEπ n₁) i))
+  · intro _ i
+    by_cases hi : i ≤ n₀
+    · rw [exactAt_iff_isZero_homology]
+      apply isZero_homology_truncGE
+      omega
+    · rw [exactAt_iff_isZero_homology]
+      have := K.isIso_homologyMap_truncGEπ n₁ i (by omega)
+      exact IsZero.of_iso (K.isZero_of_isLE n₀ _ (by omega))
+        (asIso (homologyMap (K.truncGEπ n₁) i)).symm
 
 end CochainComplex
 
