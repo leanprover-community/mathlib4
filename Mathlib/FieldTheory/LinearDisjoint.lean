@@ -269,15 +269,15 @@ theorem linearDisjoint_symm : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
 
 variable (A) in
 theorem LinearDisjoint.of_self_right : A.LinearDisjoint F :=
-  Submodule.LinearDisjoint.of_self_right _
+  Subalgebra.LinearDisjoint.of_bot_right _
 
 variable (A) in
 theorem LinearDisjoint.of_bot_right : A.LinearDisjoint (⊥ : IntermediateField F E) :=
-  linearDisjoint_def'.2 (Submodule.LinearDisjoint.of_self_right _)
+  linearDisjoint_def'.2 (Subalgebra.LinearDisjoint.of_bot_right _)
 
 variable (F E L) in
 theorem LinearDisjoint.of_bot_left : (⊥ : IntermediateField F E).LinearDisjoint L :=
-  Submodule.LinearDisjoint.of_self_left _
+  Subalgebra.LinearDisjoint.of_bot_left _
 
 -- theorem LinearDisjoint.of_le_right {B' : IntermediateField F E} (H : A.LinearDisjoint B)
 --     (h : B' ≤ B) : A.LinearDisjoint B' := fun a ha ↦
