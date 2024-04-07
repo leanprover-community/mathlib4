@@ -5,7 +5,8 @@ Authors: Praneeth Kolichala
 -/
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Bool.Basic
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Nat.Defs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.GeneralizeProofs
@@ -90,7 +91,7 @@ lemma mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
   have := congr_arg bodd (mod_add_div n 2)
   simp? [not]  at this
        says simp only [bodd_add, bodd_mul, bodd_succ, not, bodd_zero, Bool.false_and,
-      Bool.bne_false] at this
+      Bool.xor_false] at this
   have _ : ∀ b, and false b = false := by
     intro b
     cases b <;> rfl
