@@ -37,7 +37,7 @@ theorem exists_mul_self (x : ℚ) : (∃ q, q * q = x) ↔ Rat.sqrt x * Rat.sqrt
 theorem sqrt_nonneg (q : ℚ) : 0 ≤ Rat.sqrt q :=
   nonneg_iff_zero_le.1 <|
     (divInt_nonneg _ <|
-          Int.coe_nat_pos.2 <|
+          Int.natCast_pos.2 <|
             Nat.pos_of_ne_zero fun H => q.den_nz <| Nat.sqrt_eq_zero.1 H).2 <|
       Int.natCast_nonneg _
 #align rat.sqrt_nonneg Rat.sqrt_nonneg
