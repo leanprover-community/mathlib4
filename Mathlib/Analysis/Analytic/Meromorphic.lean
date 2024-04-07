@@ -93,7 +93,7 @@ lemma congr {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hfg : f =ᶠ
   filter_upwards [hfg] with z hz
   rcases eq_or_ne z x with rfl | hn
   · simp
-  · rw [hz (Set.mem_compl_singleton_iff.mp hn), pow_succ, mul_smul]
+  · rw [hz (Set.mem_compl_singleton_iff.mp hn), pow_succ', mul_smul]
 
 lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt f⁻¹ x := by
   rcases hf with ⟨m, hf⟩
@@ -112,14 +112,14 @@ lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicA
     refine ⟨n + 1, (this.smul <| hg_an.inv hg_ne).congr ?_⟩
     filter_upwards [hg_eq, hg_an.continuousAt.eventually_ne hg_ne] with z hfg hg_ne'
     rcases eq_or_ne z x with rfl | hz_ne
-    · simp only [sub_self, pow_succ, zero_mul, zero_smul]
+    · simp only [sub_self, pow_succ, mul_zero, zero_smul]
     · simp_rw [smul_eq_mul] at hfg ⊢
       have aux1 : f z ≠ 0 := by
         have : (z - x) ^ n * g z ≠ 0 := mul_ne_zero (pow_ne_zero _ (sub_ne_zero.mpr hz_ne)) hg_ne'
         rw [← hfg, mul_ne_zero_iff] at this
         exact this.2
       field_simp [sub_ne_zero.mpr hz_ne]
-      rw [pow_succ, mul_assoc, hfg]
+      rw [pow_succ', mul_assoc, hfg]
       ring
 
 @[simp]
@@ -134,7 +134,7 @@ lemma div {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : Meromo
 lemma pow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℕ) : MeromorphicAt (f ^ n) x := by
   induction' n with m hm
   · simpa only [Nat.zero_eq, pow_zero] using MeromorphicAt.const 1 x
-  · simpa only [pow_succ'] using hm.mul hf
+  · simpa only [pow_succ] using hm.mul hf
 
 lemma zpow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicAt (f ^ n) x := by
   induction' n with m m

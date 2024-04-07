@@ -8,6 +8,7 @@ import Mathlib.Order.Filter.Pointwise
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Algebra.Group.ULift
 
 #align_import topology.algebra.monoid from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 
@@ -70,6 +71,13 @@ theorem continuous_mul : Continuous fun p : M × M => p.1 * p.2 :=
   ContinuousMul.continuous_mul
 #align continuous_mul continuous_mul
 #align continuous_add continuous_add
+
+@[to_additive]
+instance : ContinuousMul (ULift.{u} M) := by
+  constructor
+  apply continuous_uLift_up.comp
+  exact continuous_mul.comp₂ (continuous_uLift_down.comp continuous_fst)
+    (continuous_uLift_down.comp continuous_snd)
 
 @[to_additive]
 instance ContinuousMul.to_continuousSMul : ContinuousSMul M M :=
@@ -563,7 +571,7 @@ theorem continuousOn_list_prod {f : ι → X → M} (l : List ι) {t : Set X}
 theorem continuous_pow : ∀ n : ℕ, Continuous fun a : M => a ^ n
   | 0 => by simpa using continuous_const
   | k + 1 => by
-    simp only [pow_succ]
+    simp only [pow_succ']
     exact continuous_id.mul (continuous_pow _)
 #align continuous_pow continuous_pow
 #align continuous_nsmul continuous_nsmul
@@ -640,7 +648,7 @@ theorem Filter.tendsto_cocompact_mul_left {a b : M} (ha : b * a = 1) :
   simp only [comp_mul_left, ha, one_mul]
   exact Filter.tendsto_id
   -- Porting note: changed proof, original proof was:
-  /-refine' Filter.Tendsto.of_tendsto_comp _ (Filter.comap_cocompact_le (continuous_mul_left b))
+  /- refine' Filter.Tendsto.of_tendsto_comp _ (Filter.comap_cocompact_le (continuous_mul_left b))
   convert Filter.tendsto_id
   ext x
   simp [ha]-/

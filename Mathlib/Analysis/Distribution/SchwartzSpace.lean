@@ -164,7 +164,7 @@ theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
   refine' ⟨1, (Filter.eventually_ge_atTop 1).mono fun x hx => _⟩
   rw [one_mul, Real.norm_of_nonneg (Real.rpow_nonneg (zero_le_one.trans hx) _),
     Real.norm_of_nonneg (zpow_nonneg (zero_le_one.trans hx) _), ← Real.rpow_int_cast, Int.cast_neg,
-    Int.cast_ofNat]
+    Int.cast_natCast]
   exact Real.rpow_le_rpow_of_exponent_le hx hk
 set_option linter.uppercaseLean3 false in
 #align schwartz_map.is_O_cocompact_rpow SchwartzMap.isBigO_cocompact_rpow
@@ -838,7 +838,7 @@ end Multiplication
 section Comp
 
 variable (𝕜)
-variable [IsROrC 𝕜]
+variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
 variable [NormedAddCommGroup G] [NormedSpace ℝ G]
 variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
@@ -918,7 +918,7 @@ section Derivatives
 
 
 variable (𝕜)
-variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
@@ -1026,7 +1026,7 @@ section Integration
 
 open Real Complex Filter MeasureTheory MeasureTheory.Measure FiniteDimensional
 
-variable [IsROrC 𝕜]
+variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [NormedSpace 𝕜 V]
 variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D]
@@ -1115,7 +1115,7 @@ def toContinuousMap (f : 𝓢(E, F)) : C(E, F) :=
 #align schwartz_map.to_continuous_map SchwartzMap.toContinuousMap
 
 variable (𝕜 E F)
-variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The inclusion map from Schwartz functions to bounded continuous functions as a continuous linear
 map. -/
@@ -1198,7 +1198,7 @@ def toZeroAtInfty (f : 𝓢(E, F)) : C₀(E, F) where
   rfl
 
 variable (𝕜 E F)
-variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The inclusion map from Schwartz functions to continuous functions vanishing at infinity as a
 continuous linear map. -/

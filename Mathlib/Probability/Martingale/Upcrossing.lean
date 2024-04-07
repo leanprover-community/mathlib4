@@ -563,7 +563,7 @@ theorem upcrossingsBefore_lt_of_exists_upcrossing (hab : a < b) {N₁ N₂ : ℕ
       rw [upperCrossingTime_eq_upperCrossingTime_of_lt (hN₁.trans (hN₂.trans <| Nat.le_succ _))
         this]
       exact this.le
-    · rw [not_lt, le_zero_iff] at hN
+    · rw [not_lt, Nat.le_zero] at hN
       rw [hN, upcrossingsBefore_zero, upperCrossingTime_zero]
       rfl
 #align measure_theory.upcrossings_before_lt_of_exists_upcrossing MeasureTheory.upcrossingsBefore_lt_of_exists_upcrossing

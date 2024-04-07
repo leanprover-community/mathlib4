@@ -7,7 +7,7 @@ import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Ring.Nat
 
 #align_import data.nat.cast.basic from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
@@ -65,13 +65,13 @@ def castRingHom : ℕ →+* α :=
 lemma _root_.nsmul_eq_mul' (a : α) (n : ℕ) : n • a = a * n := by
   induction n with
   | zero => rw [zero_nsmul, Nat.cast_zero, mul_zero]
-  | succ n ih => rw [succ_nsmul', ih, Nat.cast_succ, mul_add, mul_one]
+  | succ n ih => rw [succ_nsmul, ih, Nat.cast_succ, mul_add, mul_one]
 #align nsmul_eq_mul' nsmul_eq_mul'
 
 @[simp] lemma _root_.nsmul_eq_mul (n : ℕ) (a : α) : n • a = n * a := by
   induction n with
   | zero => rw [zero_nsmul, Nat.cast_zero, zero_mul]
-  | succ n ih => rw [succ_nsmul', ih, Nat.cast_succ, add_mul, one_mul]
+  | succ n ih => rw [succ_nsmul, ih, Nat.cast_succ, add_mul, one_mul]
 #align nsmul_eq_mul nsmul_eq_mul
 
 end NonAssocSemiring
@@ -85,10 +85,10 @@ lemma cast_pow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n) = (m ^ n : α)
   | n + 1 => by rw [_root_.pow_succ', _root_.pow_succ', cast_mul, cast_pow m n]
 #align nat.cast_pow Nat.cast_pow
 
-lemma coe_nat_dvd (h : m ∣ n) : (m : α) ∣ (n : α) := map_dvd (Nat.castRingHom α) h
-#align nat.coe_nat_dvd Nat.coe_nat_dvd
+lemma cast_dvd_cast (h : m ∣ n) : (m : α) ∣ (n : α) := map_dvd (Nat.castRingHom α) h
+#align nat.coe_nat_dvd Nat.cast_dvd_cast
 
-alias _root_.Dvd.dvd.natCast := coe_nat_dvd
+alias _root_.Dvd.dvd.natCast := cast_dvd_cast
 
 end Semiring
 end Nat

@@ -498,14 +498,14 @@ theorem singularPart_add_withDensity_rnDeriv_eq [c.HaveLebesgueDecomposition μ]
   ext i hi : 1
   rw [VectorMeasure.add_apply, SignedMeasure.toComplexMeasure_apply]
   apply Complex.ext
-  · rw [Complex.add_re, withDensityᵥ_apply (c.integrable_rnDeriv μ) hi, ← IsROrC.re_eq_complex_re,
-      ← integral_re (c.integrable_rnDeriv μ).integrableOn, IsROrC.re_eq_complex_re,
+  · rw [Complex.add_re, withDensityᵥ_apply (c.integrable_rnDeriv μ) hi, ← RCLike.re_eq_complex_re,
+      ← integral_re (c.integrable_rnDeriv μ).integrableOn, RCLike.re_eq_complex_re,
       ← withDensityᵥ_apply _ hi]
     · change (c.re.singularPart μ + μ.withDensityᵥ (c.re.rnDeriv μ)) i = _
       rw [c.re.singularPart_add_withDensity_rnDeriv_eq μ]
     · exact SignedMeasure.integrable_rnDeriv _ _
-  · rw [Complex.add_im, withDensityᵥ_apply (c.integrable_rnDeriv μ) hi, ← IsROrC.im_eq_complex_im,
-      ← integral_im (c.integrable_rnDeriv μ).integrableOn, IsROrC.im_eq_complex_im,
+  · rw [Complex.add_im, withDensityᵥ_apply (c.integrable_rnDeriv μ) hi, ← RCLike.im_eq_complex_im,
+      ← integral_im (c.integrable_rnDeriv μ).integrableOn, RCLike.im_eq_complex_im,
       ← withDensityᵥ_apply _ hi]
     · change (c.im.singularPart μ + μ.withDensityᵥ (c.im.rnDeriv μ)) i = _
       rw [c.im.singularPart_add_withDensity_rnDeriv_eq μ]
