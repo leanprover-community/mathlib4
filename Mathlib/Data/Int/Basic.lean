@@ -70,7 +70,7 @@ theorem cast_mul {α : Type*} [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) 
 
 lemma cast_Nat_cast {n : ℕ} {R : Type*} [AddGroupWithOne R] :
     (Int.cast (Nat.cast n) : R) = Nat.cast n :=
-  Int.cast_ofNat _
+  Int.cast_natCast _
 
 @[simp, norm_cast] lemma cast_pow {R : Type*} [Ring R] (n : ℤ) (m : ℕ) :
     ↑(n ^ m) = (n ^ m : R) := by
