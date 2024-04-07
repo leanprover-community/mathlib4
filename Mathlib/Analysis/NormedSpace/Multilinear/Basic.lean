@@ -718,7 +718,7 @@ end RestrictScalars
 For a less precise but more usable version, see `norm_image_sub_le`. The bound reads
 `‖f m - f m'‖ ≤
   ‖f‖ * ‖m 1 - m' 1‖ * max ‖m 2‖ ‖m' 2‖ * max ‖m 3‖ ‖m' 3‖ * ... * max ‖m n‖ ‖m' n‖ + ...`,
-where the other terms in the sum are the same products where `1` is replaced by any `i`.-/
+where the other terms in the sum are the same products where `1` is replaced by any `i`. -/
 theorem norm_image_sub_le' [DecidableEq ι] (m₁ m₂ : ∀ i, E i) :
     ‖f m₁ - f m₂‖ ≤ ‖f‖ * ∑ i, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ :=
   f.toMultilinearMap.norm_image_sub_le_of_bound' (norm_nonneg _) f.le_opNorm _ _
@@ -726,7 +726,7 @@ theorem norm_image_sub_le' [DecidableEq ι] (m₁ m₂ : ∀ i, E i) :
 
 /-- The difference `f m₁ - f m₂` is controlled in terms of `‖f‖` and `‖m₁ - m₂‖`, less precise
 version. For a more precise but less usable version, see `norm_image_sub_le'`.
-The bound is `‖f m - f m'‖ ≤ ‖f‖ * card ι * ‖m - m'‖ * (max ‖m‖ ‖m'‖) ^ (card ι - 1)`.-/
+The bound is `‖f m - f m'‖ ≤ ‖f‖ * card ι * ‖m - m'‖ * (max ‖m‖ ‖m'‖) ^ (card ι - 1)`. -/
 theorem norm_image_sub_le (m₁ m₂ : ∀ i, E i) :
     ‖f m₁ - f m₂‖ ≤ ‖f‖ * Fintype.card ι * max ‖m₁‖ ‖m₂‖ ^ (Fintype.card ι - 1) * ‖m₁ - m₂‖ :=
   f.toMultilinearMap.norm_image_sub_le_of_bound (norm_nonneg _) f.le_opNorm _ _
@@ -1355,7 +1355,7 @@ section Norm
 namespace ContinuousMultilinearMap
 
 /-! Results that are only true if the target space is a `NormedAddCommGroup` (and not just a
-`SeminormedAddCommGroup`).-/
+`SeminormedAddCommGroup`). -/
 
 variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} {G' : Type wG'} [Fintype ι]
   [NontriviallyNormedField 𝕜] [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
@@ -1485,7 +1485,7 @@ end Norm
 section Norm
 
 /-! Results that are only true if the source is a `NormedAddCommGroup` (and not just a
-`SeminormedAddCommGroup`).-/
+`SeminormedAddCommGroup`). -/
 
 variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} [Fintype ι]
   [NontriviallyNormedField 𝕜] [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]

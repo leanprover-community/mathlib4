@@ -753,7 +753,7 @@ theorem DenseRange.topologicalClosure_map_subgroup [Group H] [TopologicalSpace H
 #align dense_range.topological_closure_map_subgroup DenseRange.topologicalClosure_map_subgroup
 #align dense_range.topological_closure_map_add_subgroup DenseRange.topologicalClosure_map_addSubgroup
 
-/-- The topological closure of a normal subgroup is normal.-/
+/-- The topological closure of a normal subgroup is normal. -/
 @[to_additive "The topological closure of a normal additive subgroup is normal."]
 theorem Subgroup.is_normal_topologicalClosure {G : Type*} [TopologicalSpace G] [Group G]
     [TopologicalGroup G] (N : Subgroup G) [N.Normal] : (Subgroup.topologicalClosure N).Normal where

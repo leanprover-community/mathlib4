@@ -6,7 +6,7 @@ Authors: Praneeth Kolichala
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Bool.Basic
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Nat.Defs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.GeneralizeProofs
@@ -234,7 +234,7 @@ def bits : ℕ → List Bool :=
 
 /--`ldiff a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
-  boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result.-/
+  boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
 def ldiff : ℕ → ℕ → ℕ :=
   bitwise fun a b => a && not b
 #align nat.ldiff Nat.ldiff
