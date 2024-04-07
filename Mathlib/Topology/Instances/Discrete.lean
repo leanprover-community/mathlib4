@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Order.SuccPred.Basic
-import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.BasicFoo
 import Mathlib.Topology.Metrizable.Uniformity
 
 #align_import topology.instances.discrete from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
