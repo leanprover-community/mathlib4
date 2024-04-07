@@ -35,7 +35,7 @@ When a rewrite lemma introduces new goals, these are shown after a `⊢`.
 
 -/
 
-/- ### Caching -/
+/-! ### Caching -/
 
 namespace Mathlib.Tactic.LibraryRewrite
 
@@ -117,7 +117,7 @@ private initialize cachedData : RewriteCache ← unsafe do
 def getCachedRewriteLemmas : MetaM (RefinedDiscrTree RewriteLemma) :=
   cachedData.get
 
-/- ### Computing the Rewrites -/
+/-! ### Computing the Rewrites -/
 
 /-- An option allowing the user to control which modules will not be considered in library search -/
 register_option librarySearch.excludedModules : String := {
@@ -212,7 +212,7 @@ Note that the result may contain duplicate rewrites. These can be removed with `
 def getRewrites (e : Expr) : MetaM (Array (Array (Rewrite × Name))) := do
   (← getCandidates e).mapM (checkAndSortRewriteLemmas e)
 
-/- ### Rewriting by lemmas from the same file -/
+/-! ### Rewriting by lemmas from the same file -/
 
 /-- Construct the `RefinedDiscrTree` of all lemmas defined in the current file. -/
 def getLocalRewriteLemmas : MetaM (RefinedDiscrTree RewriteLemma) := do
@@ -226,7 +226,7 @@ def getLocalRewriteLemmas : MetaM (RefinedDiscrTree RewriteLemma) := do
 def getLocalRewrites (e : Expr) : MetaM (Array (Array (Rewrite × Name))) := do
   (← (← getLocalRewriteLemmas).getMatch e (unify := false)).mapM (checkAndSortRewriteLemmas e)
 
-/- ### Rewriting by hypotheses -/
+/-! ### Rewriting by hypotheses -/
 
 /-- Construct the `RefinedDiscrTree` of all local hypotheses. -/
 def getHypotheses : MetaM (RefinedDiscrTree (FVarId × Bool)) := do
@@ -246,7 +246,7 @@ def getHypothesisRewrites (e : Expr) : MetaM (Array (Array (Rewrite × FVarId)))
       catch _ =>
         return none
 
-/- ### Filtering out duplicate lemmas -/
+/-! ### Filtering out duplicate lemmas -/
 
 /-- Get the `BinderInfo`s for the arguments of `mkAppN fn args`. -/
 def getBinderInfos (fn : Expr) (args : Array Expr) : MetaM (Array BinderInfo) := do
