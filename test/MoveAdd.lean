@@ -1,6 +1,6 @@
 import Mathlib.Tactic.MoveAdd
 import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Algebra.Group.Nat
+import Mathlib.Algebra.Ring.Nat
 
 universe u
 

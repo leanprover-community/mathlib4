@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Group.Nat
+import Mathlib.Algebra.Ring.Nat
 -- import Mathlib.Data.Set.Basic
 
 private axiom test_sorry : ∀ {α}, α
