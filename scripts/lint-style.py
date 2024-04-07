@@ -426,6 +426,11 @@ def parse_old_files_declarations():
             continue
         old_file = line[:line.find(' from ')]
         old_files.append(old_file)
+        # Also append just the filename.
+        if '.' in old_file:
+            filename = old_file.split('.')[-1]
+            if filename not in ['elementwise', 'index', 'type', 'ring']:
+                old_files.append(filename)
     # Read in all #align statements and parse the names of the old and new declaration.
     aligns = dict()
     for line in open('all_aligns.txt', 'r', encoding='utf-8'):
@@ -437,6 +442,14 @@ def parse_old_files_declarations():
             continue
         _align, old_decl, new_decl = parts
         aligns[old_decl] = new_decl
+        # If the old and new name have the same number of components,
+        # also just look for the lemma names.
+        # Insert these **after** the previous declaration, so a longer path is found first.
+        n = old_decl.count('.')
+        if n >= 3 and new_decl.count('.') == n:
+            old_parts = old_decl.split('.')
+            new_parts = new_decl.split('.')
+            aligns['.'.join(old_parts[1:])] = '.'.join(new_parts[-1])
     # For each old declaration, if the new declaration is different
     # *and* there is no new declaration of the same name, add these to our list.
     # We do this in two stages; a naive algorithm is extremely slow (quadratic?).
@@ -483,7 +496,12 @@ def lint_backticks_in_comments(old_files, old_declarations, lines):
     return errors, newlines
 
 def test_backtick_linting():
-    decls = dict({'convex' : 'Convex', 'ring' : 'Ring', 'set' : 'Set'})
+    decls = dict({
+        'convex' : 'Convex', 'ring' : 'Ring', 'set' : 'Set',
+        'long.decl_name' : 'Long.declName',
+        'a.long.name' : 'A.Long.Module.name',
+        'long.decl.name_two' : 'Long.Decl.nameTwo'
+    })
     def check_fine(input):
         errors, new = lint_backticks_in_comments([], decls, [(0, input)])
         assert not errors, f'Input "{input}" should yield no errors'
@@ -504,6 +522,15 @@ def test_backtick_linting():
     check_error("A convex set, `convex` set", "A convex set, `Convex` set")
     # Multiple replacements at the same time.
     check_error("A `convex` `convex` `set`", "A `Convex` `Convex` `Set`")
+    # Declarations with module paths: the full declaration is replaced in full;
+    # omitting the trailing module is also treated.
+    check_error("A `long.decl_name` is transformed", "A `Long.declName` is transformed")
+    check_error("Also `long.decl.name_two`", "Also `Long.Decl.nameTwo`")
+    check_error("Also `decl.name_two`", "Also `Decl.nameTwo`")
+    # But not the last part (too many false positives, for now).
+    check_fine("A bare `decl_name` is left invariant.")
+    # Different numbers of components are also left alone, for now.
+    check_fine("`a.long.name` aligned to more components")
 
 
 def output_message(path, line_nr, code, msg):
@@ -624,10 +651,10 @@ for filename in argv:
 # (we allow restricting to and excluding subdirectories, hard-coded for now).
 if not argv:
     # Exclude all files whose name starts with one of these.
-    exclude = tuple(''.split(' '))
+    exclude = tuple([])#tuple(''.split(' '))
     # Lint all non-excluded files whose module name starts with this.
     # So "Foo.Bar" will lint all files in module "Foo.Bar" and "Foo.Bar.Baz", etc.
-    dir = 'Utils'
+    dir = 'Topology'
     assert '/' not in dir
     print(f"about to lint all files in directory {dir}")
     files = []
@@ -639,7 +666,7 @@ if not argv:
     old_files, old_declarations = parse_old_files_declarations()
     for filename in files:
         path = f"{projectname}/{filename.replace('.', '/')}.lean"
-        lint(Path(path), old_files, old_declarations, fix=fix)
+        lint(Path(path), old_files, old_declarations, fix=False)
 
 if new_exceptions:
     exit(1)
