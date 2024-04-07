@@ -53,6 +53,8 @@ noncomputable def eigenvectorBasis : OrthonormalBasis n 𝕜 (EuclideanSpace �
     (Fintype.equivOfCardEq (Fintype.card_fin _))
 #align matrix.is_hermitian.eigenvector_basis Matrix.IsHermitian.eigenvectorBasis
 
+theorem mulVec_eigenvectorBasis :
+
 /-- A matrix whose columns are an orthonormal basis of eigenvectors of a hermitian matrix. -/
 noncomputable def eigenvectorMatrix : Matrix n n 𝕜 :=
   (PiLp.basisFun _ 𝕜 n).toMatrix (eigenvectorBasis hA).toBasis
