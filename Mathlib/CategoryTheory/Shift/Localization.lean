@@ -58,17 +58,19 @@ variable [W.IsCompatibleWithShift A]
 that is compatible with the shift by a monoid `A` on `C`, this is the induced
 shift on the category `D`. -/
 noncomputable def HasShift.localized : HasShift D A :=
+  letI := Localization.fullWhiskeringLeftFunctor L W D
+  have := Localization.faithful_whiskeringLeftFunctor L W D
   HasShift.induced L A
     (fun a => Localization.lift (shiftFunctor C a ⋙ L)
       (MorphismProperty.IsCompatibleWithShift.shiftFunctor_comp_inverts L W a) L)
     (fun _ => Localization.fac _ _ _)
-    ⟨⟨(inferInstance : Full (Localization.whiskeringLeftFunctor' L W D))⟩,
-      (inferInstance : Faithful (Localization.whiskeringLeftFunctor' L W D))⟩
 
 /-- The localization functor `L : C ⥤ D` is compatible with the shift. -/
 noncomputable def Functor.CommShift.localized :
     @Functor.CommShift _ _ _ _ L A _ _ (HasShift.localized L W A) :=
-  Functor.CommShift.ofInduced _ _ _ _ _
+  letI := Localization.fullWhiskeringLeftFunctor L W D
+  have := Localization.faithful_whiskeringLeftFunctor L W D
+  Functor.CommShift.ofInduced _ _ _ _
 
 attribute [irreducible] HasShift.localized Functor.CommShift.localized
 
