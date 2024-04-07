@@ -678,4 +678,56 @@ noncomputable def overFinIso (hc : Fintype.card V = n) : G ≃g G.overFin hc := 
 
 end Finite
 
+section CrossEdges
+
+variable (K : Set V)
+
+/-- The graph formed by retaining only those edges from `K` to `Kᶜ`. -/
+def crossEdges : SimpleGraph V where
+  Adj a b := G.Adj a b ∧ ¬(a ∈ K ↔ b ∈ K)
+  symm a b := by dsimp only; rw [adj_comm]; aesop
+
+@[simp]
+lemma crossEdges_empty : G.crossEdges ∅ = ⊥ := by
+  ext a b; simp only [crossEdges]; tauto
+
+lemma crossEdges_compl : G.crossEdges K = G.crossEdges Kᶜ := by
+  ext a b; simp only [crossEdges]; tauto
+
+lemma mem_image_induce_edgeSet_iff :
+    s(u, v) ∈ Sym2.map (↑) '' (G.induce K).edgeSet ↔ G.Adj u v ∧ u ∈ K ∧ v ∈ K := by
+  rw [Set.mem_image]
+  refine' ⟨fun h ↦ _, fun ⟨ha, hu, hv⟩ ↦ _⟩
+  · obtain ⟨⟨x, y⟩, h1, h2⟩ := h
+    rw [Sym2.map_pair_eq] at h2
+    rw [mem_edgeSet, comap_adj, Function.Embedding.coe_subtype, ← mem_edgeSet, h2] at h1
+    refine' ⟨h1, _⟩
+    rw [Sym2.eq_iff] at h2
+    cases' h2 with c c <;> simp [← c.1, ← c.2]
+  · use s(⟨u, hu⟩, ⟨v, hv⟩)
+    simp [ha]
+
+theorem edgeSet_decompose : G.edgeSet = (G.crossEdges K).edgeSet ∪
+    Sym2.map (↑) '' (G.induce K).edgeSet ∪ Sym2.map (↑) '' (G.induce Kᶜ).edgeSet := by
+  ext e
+  refine' e.inductionOn _
+  intro x y
+  simp_rw [Set.mem_union, mem_edgeSet, mem_image_induce_edgeSet_iff, crossEdges]
+  tauto
+
+theorem edgeSet_decompose_disjoint :
+    Disjoint (G.crossEdges K).edgeSet (Sym2.map (↑) '' (G.induce K).edgeSet) ∧
+    Disjoint (G.crossEdges K).edgeSet (Sym2.map (↑) '' (G.induce Kᶜ).edgeSet) ∧
+    Disjoint (Sym2.map ((↑) : K → V) '' (G.induce K).edgeSet)
+      (Sym2.map (↑) '' (G.induce Kᶜ).edgeSet) := by
+  refine' ⟨_, _, _⟩ <;>
+  · rw [Set.disjoint_left]
+    intro e
+    refine' e.inductionOn _
+    intro x y
+    simp only [mem_edgeSet, mem_image_induce_edgeSet_iff, crossEdges]
+    tauto
+
+end CrossEdges
+
 end SimpleGraph

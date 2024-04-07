@@ -179,3 +179,57 @@ theorem card_edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.
   rw [G.edgeFinset_sup_edge hn h, card_cons]
 
 end AddEdge
+
+section CrossEdges
+
+variable [Fintype V] [DecidableRel G.Adj] (K : Finset V)
+
+instance : DecidableRel (G.crossEdges K).Adj := by simp only [crossEdges]; infer_instance
+
+theorem edgeFinset_decompose : G.edgeFinset = (G.crossEdges K).edgeFinset ∪
+    (G.induce K).edgeFinset.image (Sym2.map (↑)) ∪
+    (G.induce Kᶜ).edgeFinset.image (Sym2.map (↑)) := by
+  simp only [edgeFinset, G.edgeSet_decompose K, Set.toFinset_union, Set.toFinset_image]
+
+theorem edgeFinset_decompose_disjoint :
+    Disjoint (G.crossEdges K).edgeFinset ((G.induce K).edgeFinset.image (Sym2.map (↑))) ∧
+    Disjoint (G.crossEdges K).edgeFinset ((G.induce Kᶜ).edgeFinset.image (Sym2.map (↑))) ∧
+    Disjoint ((G.induce K).edgeFinset.image (Sym2.map ((↑) : K → V)))
+      ((G.induce Kᶜ).edgeFinset.image (Sym2.map (↑))) := by
+  simp_rw [edgeFinset, ← Set.toFinset_image, Set.disjoint_toFinset]
+  exact G.edgeSet_decompose_disjoint K
+
+theorem edgeFinset_decompose_card : G.edgeFinset.card = (G.crossEdges K).edgeFinset.card +
+    (G.induce K).edgeFinset.card + (G.induce Kᶜ).edgeFinset.card := by
+  obtain ⟨d1, d2, d3⟩ := G.edgeFinset_decompose_disjoint K
+  rw [G.edgeFinset_decompose K, card_union_of_disjoint, card_union_of_disjoint d1,
+    add_assoc, add_assoc]
+  · congr 2 <;> exact card_image_of_injective _ (fun a b ↦ a.inductionOn₂ b (by simp))
+  · exact disjoint_union_left.mpr ⟨d2, d3⟩
+
+theorem crossEdges_edgeFinset : (G.crossEdges K).edgeFinset =
+    Kᶜ.biUnion fun b ↦ (K.filter (G.Adj · b)).map (Sym2.congrEmb b) := by
+  ext e; refine' e.inductionOn _; intro a b
+  simp_rw [crossEdges, mem_biUnion, Set.mem_toFinset, mem_edgeSet, Sym2.congrEmb, mem_map,
+    mem_filter, Function.Embedding.coeFn_mk, Sym2.eq_iff, mem_compl]
+  constructor
+  · rw [and_imp]; intro j s; push_neg at s
+    cases' s with h h
+    · use b, h.2, a, ⟨h.1, j⟩; tauto
+    · use a, h.1, b, ⟨h.2, j.symm⟩; tauto
+  · simp only [forall_exists_index, and_imp]
+    intro a' ma b' mb e q
+    cases' q with h h
+    · rw [h.1, h.2, adj_comm] at e; aesop
+    · rw [h.1, h.2] at e; aesop
+
+open BigOperators in
+theorem crossEdges_edgeFinset_card : (G.crossEdges K).edgeFinset.card =
+    ∑ b in Kᶜ, (K.filter (G.Adj · b)).card := by
+  rw [crossEdges_edgeFinset, card_biUnion]
+  · simp
+  · simp_rw [disjoint_iff_ne, mem_map, mem_filter, forall_exists_index, and_imp,
+      Sym2.congrEmb, Function.Embedding.coeFn_mk]
+    aesop
+
+end CrossEdges
