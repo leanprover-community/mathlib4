@@ -302,9 +302,6 @@ end
 
 end Functor
 
-/- -/
-
-
 namespace Equivalence
 
 variable {C D : Type*} [Category C] [Category D] (e : C ≌ D)
