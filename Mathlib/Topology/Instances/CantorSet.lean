@@ -69,10 +69,8 @@ lemma zero_mem_preCantorSet (n : ℕ) : 0 ∈ preCantorSet n := by
 theorem zero_mem_cantorSet : 0 ∈ cantorSet := by simp [cantorSet, zero_mem_preCantorSet]
 
 /-- The ternary Cantor set is a subset of [0,1]. -/
-lemma cantorSet_subset_unitInterval : cantorSet ⊆ Set.Icc 0 1 := by
-  intro x hx
-  simp only [cantorSet, Set.iInf_eq_iInter, Set.mem_iInter] at hx
-  exact hx 0
+lemma cantorSet_subset_unitInterval : cantorSet ⊆ Set.Icc 0 1 :=
+  Set.iInter_subset _ 0
 
 /-- The ternary Cantor set is closed. -/
 lemma isClosed_cantorSet : IsClosed cantorSet := by
