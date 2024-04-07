@@ -166,7 +166,7 @@ Moreover, the function `weight L` is strictly monotone increasing on both
 `{a : α | (a, true) ∈ L}` and `{a : α | (a, false) ∈ L}`,
 in the sense that if `a' = (a, true)` and `b' = (b, true)` are in `L`,
 then `a'` appears before `b'` in `L` if and only if `weight L a < weight L b` and
-similarly for the pairs with second coordinate equal to `false`.
+similarly for the pairs with second coordinate equal to `False`.
 -/
 def weight (L : List (α × Bool)) (a : α) : ℤ :=
   let l := L.length
@@ -178,9 +178,9 @@ def weight (L : List (α × Bool)) (a : α) : ℤ :=
 following the requirements imposed by `instructions : List (α × Bool)`.
 
 These are the requirements:
-* elements of `toReorder` that appear with `true` in `instructions` appear at the
+* elements of `toReorder` that appear with `True` in `instructions` appear at the
   *beginning* of the reordered list, in the order in which they appear in `instructions`;
-* similarly, elements of `toReorder` that appear with `false` in `instructions` appear at the
+* similarly, elements of `toReorder` that appear with `False` in `instructions` appear at the
   *end* of the reordered list, in the order in which they appear in `instructions`;
 * finally, elements of `toReorder` that do not appear in `instructions` appear "in the middle"
   with the order that they had in `toReorder`.
@@ -203,13 +203,13 @@ def reorderUsing (toReorder : List α) (instructions : List (α × Bool)) : List
 
 end reorder
 
-/-- `prepareOp sum` takes an `Expr`ession as input.  It assumes that `sum` is a well-formed
+/-- `prepareOp sum` takes an `Expr`ession as input.  It assumes that `Sum` is a well-formed
 term representing a repeated application of a binary operation and that the summands are the
 last two arguments passed to the operation.
 It returns the expression consisting of the operation with all its arguments already applied,
 except for the last two.
 This is similar to `Lean.Meta.mkAdd, Lean.Meta.mkMul`, except that the resulting operation is
-primed to work with operands of the same type as the ones already appearing in `sum`.
+primed to work with operands of the same type as the ones already appearing in `Sum`.
 
 This is useful to rearrange the operands.
 -/
@@ -224,8 +224,8 @@ Such an expression is the result of `prepareOp`.
 
 If `exs` is the list `[e₁, e₂, ..., eₙ]` of `Expr`essions, then `sumList prepOp left_assoc? exs`
 returns
-* `prepOp (prepOp( ... prepOp (prepOp e₁ e₂) e₃) ... eₙ)`, if `left_assoc?` is `false`, and
-* `prepOp e₁ (prepOp e₂ (... prepOp (prepOp eₙ₋₁  eₙ))`, if `left_assoc?` is `true`.
+* `prepOp (prepOp( ... prepOp (prepOp e₁ e₂) e₃) ... eₙ)`, if `left_assoc?` is `False`, and
+* `prepOp e₁ (prepOp e₂ (... prepOp (prepOp eₙ₋₁  eₙ))`, if `left_assoc?` is `True`.
 -/
 partial
 def sumList (prepOp : Expr) (left_assoc? : Bool) : List Expr → Expr
@@ -244,7 +244,7 @@ open Meta
 variable (op : Name)
 
 variable (R : Expr) in
-/-- If `sum` is an expression consisting of repeated applications of `op`, then `getAddends`
+/-- If `Sum` is an expression consisting of repeated applications of `op`, then `getAddends`
 returns the Array of those recursively determined arguments whose type is DefEq to `R`. -/
 partial def getAddends (sum : Expr) : MetaM (Array Expr) := do
   if sum.isAppOf op then
@@ -253,7 +253,7 @@ partial def getAddends (sum : Expr) : MetaM (Array Expr) := do
     return new.foldl Array.append  #[]
   else return #[sum]
 
-/-- Recursively compute the Array of `getAddends` Arrays by recursing into the expression `sum`
+/-- Recursively compute the Array of `getAddends` Arrays by recursing into the expression `Sum`
 looking for instance of the operation `op`.
 
 Possibly returns duplicates!
@@ -405,7 +405,7 @@ open Elab Parser Tactic
 terms, each optionally preceded by the arrow `←`.
 It returns an array of triples consisting of
 * the `Expr`ession corresponding to the parsed term,
-* the `Bool`ean `true` if the arrow is present in front of the term,
+* the `Bool`ean `True` if the arrow is present in front of the term,
 * the underlying `Syntax` of the given term.
 
 E.g. convert `[a, ← b, _ * (1 : ℤ)]` to

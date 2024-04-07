@@ -9,7 +9,7 @@ import Std.Data.Bool
 /-!
 # Boolean operations
 
-In Lean 3 this file contained the definitions of `cond`, `bor`, `band` and `bnot`,
+In Lean 3 this file contained the definitions of `cond`, `or`, `and` and `not`,
 the boolean functions. These are now in Lean 4 core or Std (as `cond`, `or`, `and`, `not`, `xor`).
 -/
 

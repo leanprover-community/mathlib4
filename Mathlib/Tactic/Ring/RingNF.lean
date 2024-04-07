@@ -87,7 +87,7 @@ abbrev M := ReaderT Context AtomM
 /--
 A tactic in the `RingNF.M` monad which will simplify expression `parent` to a normal form.
 * `root`: true if this is a direct call to the function.
-  `RingNF.M.run` sets this to `false` in recursive mode.
+  `RingNF.M.run` sets this to `False` in recursive mode.
 -/
 def rewrite (parent : Expr) (root := true) : M Simp.Result :=
   fun nctx rctx s ↦ do

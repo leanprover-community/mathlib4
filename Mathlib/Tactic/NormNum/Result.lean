@@ -19,7 +19,7 @@ or rational number coerced into that ring.
 
 We then define `Result e`, which contains a proof that a typed expression `e : Q($α)`
 is equal to the coercion of an explicit natural number, integer, or rational number,
-or is either `true` or `false`.
+or is either `True` or `False`.
 
 -/
 
@@ -183,7 +183,7 @@ theorem IsInt.nonneg_to_eq {α} [Ring α] {n}
 /--
 Assert that an element of a ring is equal to `num / denom`
 (and `denom` is invertible so that this makes sense).
-We will usually also have `num` and `denom` coprime,
+We will usually also have `Num` and `denom` coprime,
 although this is not part of the definition.
 -/
 inductive IsRat [Ring α] (a : α) (num : ℤ) (denom : ℕ) : Prop
@@ -437,8 +437,8 @@ def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.
 
 /-- Given `Mathlib.Meta.NormNum.Result.isBool p b`, this is the type of `p`.
   Note that `BoolResult p b` is definitionally equal to `Expr`, and if you write `match b with ...`,
-  then in the `true` branch `BoolResult p true` is reducibly equal to `Q($p)` and
-  in the `false` branch it is reducibly equal to `Q(¬ $p)`. -/
+  then in the `True` branch `BoolResult p true` is reducibly equal to `Q($p)` and
+  in the `False` branch it is reducibly equal to `Q(¬ $p)`. -/
 @[reducible]
 def BoolResult (p : Q(Prop)) (b : Bool) : Type :=
   Q(Bool.rec (¬ $p) ($p) $b)

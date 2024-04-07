@@ -499,13 +499,13 @@ section
 variable {α β γ : TypeVec.{u} n}
 variable (p : α ⟹ «repeat» n Prop) (r : α ⊗ α ⟹ «repeat» n Prop)
 
-/-- left projection of a `prod` vector -/
+/-- left projection of a `Prod` vector -/
 def prod.fst : ∀ {n} {α β : TypeVec.{u} n}, α ⊗ β ⟹ α
   | succ _, α, β, Fin2.fs i => @prod.fst _ (drop α) (drop β) i
   | succ _, _, _, Fin2.fz => Prod.fst
 #align typevec.prod.fst TypeVec.prod.fst
 
-/-- right projection of a `prod` vector -/
+/-- right projection of a `Prod` vector -/
 def prod.snd : ∀ {n} {α β : TypeVec.{u} n}, α ⊗ β ⟹ β
   | succ _, α, β, Fin2.fs i => @prod.snd _ (drop α) (drop β) i
   | succ _, _, _, Fin2.fz => Prod.snd
@@ -517,7 +517,7 @@ def prod.diag : ∀ {n} {α : TypeVec.{u} n}, α ⟹ α ⊗ α
   | succ _, _, Fin2.fz, x => (x, x)
 #align typevec.prod.diag TypeVec.prod.diag
 
-/-- constructor for `prod` -/
+/-- constructor for `Prod` -/
 def prod.mk : ∀ {n} {α β : TypeVec.{u} n} (i : Fin2 n), α i → β i → (α ⊗ β) i
   | succ _, α, β, Fin2.fs i => mk (α := fun i => α i.fs) (β := fun i => β i.fs) i
   | succ _, _, _, Fin2.fz   => Prod.mk
@@ -542,7 +542,7 @@ theorem prod_snd_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
   apply i_ih
 #align typevec.prod_snd_mk TypeVec.prod_snd_mk
 
-/-- `prod` is functorial -/
+/-- `Prod` is functorial -/
 protected def prod.map : ∀ {n} {α α' β β' : TypeVec.{u} n}, α ⟹ β → α' ⟹ β' → α ⊗ α' ⟹ β ⊗ β'
   | succ _, α, α', β, β', x, y, Fin2.fs _, a =>
     @prod.map _ (drop α) (drop α') (drop β) (drop β') (dropFun x) (dropFun y) _ a

@@ -35,31 +35,31 @@ I've added many of the declarations to `nolints.json`.
 If you clean up this file, please add documentation to classes that we are keeping.
 
 Mario made the following analysis of uses in mathlib3:
-* `is_symm_op`: unused except for some instances
-* `is_commutative`: used a fair amount via some theorems about folds
-  (also assuming `is_associative`)
-* `is_associative`: ditto, also used in `noncomm_fold`
-* `is_left_id`, `is_right_id`: unused except in the mathlib class `is_unital` and in `mono`
+* `IsSymmOp`: unused except for some instances
+* `Std.Commutative`: used a fair amount via some theorems about folds
+  (also assuming `Std.Associative`)
+* `Std.Associative`: ditto, also used in `noncomm_fold`
+* `Std.LawfulLeftIdentity`, `Std.LawfulRightIdentity`: unused except in the mathlib class `is_unital` and in `mono`
   (which looks like it could use `is_unital`)
 * `is_left_null`, `is_right_null`: unused
-* `is_left_cancel`, `is_right_cancel`: unused except for instances
-* `is_idempotent`: this one is actually used to prove things not directly about `is_idempotent`
+* `IsLeftCancel`, `IsRightCancel`: unused except for instances
+* `Std.IdempotentOp`: this one is actually used to prove things not directly about `Std.IdempotentOp`
 * `is_left_distrib`, `is_right_distrib`, `is_left_inv`, `is_right_inv`, `is_cond_left_inv`,
   `is_cond_right_inv`: unused
-* `is_distinct`: unused (although we reinvented this one as `nontrivial`)
-* `is_irrefl`, `is_refl`, `is_symm`, `is_trans`: significant usage
-* `is_asymm`, `is_antisymm`, `is_total`, `is_strict_order`: a lot of uses but all in order theory
+* `is_distinct`: unused (although we reinvented this one as `Nontrivial`)
+* `IsIrrefl`, `IsRefl`, `IsSymm`, `IsTrans`: significant usage
+* `IsAsymm`, `IsAntisymm`, `IsTotal`, `IsStrictOrder`: a lot of uses but all in order theory
   and it's unclear how much could not be transferred to another typeclass
-* `is_preorder`: unused except for instances
-  (except `antisymmetrization`, maybe it could be transferred)
-* `is_total_preorder`, `is_partial_order`: unused except for instances
-* `is_linear_order`: unused except for instances
-* `is_equiv`: unused except for instances (most uses can use `equivalence` instead)
+* `IsPreorder`: unused except for instances
+  (except `Antisymmetrization`, maybe it could be transferred)
+* `IsTotalPreorder`, `IsPartialOrder`: unused except for instances
+* `IsLinearOrder`: unused except for instances
+* `IsEquiv`: unused except for instances (most uses can use `equivalence` instead)
 * `is_per`: unused
-* `is_incomp_trans`: unused
-* `is_strict_weak_order`: significant usage (most of it on `rbmap`, could be transferred)
-* `is_trichotomous`: some usage
-* `is_strict_total_order`: looks like the only usage is in `rbmap` again
+* `IsIncompTrans`: unused
+* `IsStrictWeakOrder`: significant usage (most of it on `rbmap`, could be transferred)
+* `IsTrichotomous`: some usage
+* `IsStrictTotalOrder`: looks like the only usage is in `rbmap` again
 -/
 
 set_option autoImplicit true

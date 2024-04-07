@@ -58,7 +58,7 @@ protected def scheme (X : LocallyRingedSpace)
     refine' SheafedSpace.forgetToPresheafedSpace.preimageIso _
     apply PresheafedSpace.IsOpenImmersion.isoOfRangeEq (PresheafedSpace.ofRestrict _ _) f.1
     · exact Subtype.range_coe_subtype
-    · exact Opens.openEmbedding _ -- Porting note (#11187): was `infer_instance`
+    · exact Opens.openEmbedding _ -- Porting note (#11187): was `inferInstance`
 #align algebraic_geometry.LocallyRingedSpace.IsOpenImmersion.Scheme AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.scheme
 
 end LocallyRingedSpace.IsOpenImmersion
@@ -523,7 +523,7 @@ instance pullback_snd_of_left : IsOpenImmersion (pullback.snd : pullback f g ⟶
 
 instance pullback_fst_of_right : IsOpenImmersion (pullback.fst : pullback g f ⟶ _) := by
   rw [← pullbackSymmetry_hom_comp_snd]
-  -- Porting note: was just `infer_instance`, it is a bit weird that no explicit class instance is
+  -- Porting note: was just `inferInstance`, it is a bit weird that no explicit class instance is
   -- provided but still class inference fail to find this
   exact LocallyRingedSpace.IsOpenImmersion.comp (H := inferInstance) _
 #align algebraic_geometry.IsOpenImmersion.pullback_fst_of_right AlgebraicGeometry.IsOpenImmersion.pullback_fst_of_right
@@ -532,7 +532,7 @@ instance pullback_to_base [IsOpenImmersion g] :
     IsOpenImmersion (limit.π (cospan f g) WalkingCospan.one) := by
   rw [← limit.w (cospan f g) WalkingCospan.Hom.inl]
   change IsOpenImmersion (_ ≫ f)
-  -- Porting note: was just `infer_instance`, it is a bit weird that no explicit class instance is
+  -- Porting note: was just `inferInstance`, it is a bit weird that no explicit class instance is
   -- provided but still class inference fail to find this
   exact LocallyRingedSpace.IsOpenImmersion.comp (H := inferInstance) _
 #align algebraic_geometry.IsOpenImmersion.pullback_to_base AlgebraicGeometry.IsOpenImmersion.pullback_to_base

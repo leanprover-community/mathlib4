@@ -353,12 +353,12 @@ optional arguments:
   it will only unfold `reducible` definitions.
 * If `splitHypotheses` is true, `linarith` will split conjunctions in the context into separate
   hypotheses.
-* If `splitNe` is `true`, `linarith` will case split on disequality hypotheses.
+* If `splitNe` is `True`, `linarith` will case split on disequality hypotheses.
   For a given `x ≠ y` hypothesis, `linarith` is run with both `x < y` and `x > y`,
   and so this runs linarith exponentially many times with respect to the number of
-  disequality hypotheses. (`false` by default.)
-* If `exfalso` is `false`, `linarith` will fail when the goal is neither an inequality nor `False`.
-  (`true` by default.)
+  disequality hypotheses. (False by default.)
+* If `exfalso` is false, `linarith` will fail when the goal is neither an inequality nor `False`.
+  (True by default.)
 * `restrict_type` (not yet implemented in mathlib4)
   will only use hypotheses that are inequalities over `tp`. This is useful
   if you have e.g. both integer and rational valued inequalities in the local context, which can

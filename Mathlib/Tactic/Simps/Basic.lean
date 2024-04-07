@@ -826,7 +826,7 @@ structure Config where
   constructor. Note: was `none` in Lean 3 -/
   rhsMd := TransparencyMode.reducible
   /-- Generated lemmas that are fully applied, i.e. generates equalities between applied functions.
-  Set this to `false` to generate equalities between functions. -/
+  Set this to `False` to generate equalities between functions. -/
   fullyApplied := true
   /-- List of types in which we are not recursing to generate simplification lemmas.
   E.g. if we write `@[simps] def e : α × β ≃ β × α := ...` we will generate `e_apply` and not

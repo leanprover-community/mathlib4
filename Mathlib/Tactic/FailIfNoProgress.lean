@@ -36,8 +36,8 @@ or the local context at reducible transparency. -/
 syntax (name := failIfNoProgress) "fail_if_no_progress " tacticSeq : tactic
 
 /-- `lctxIsDefEq l₁ l₂` compares two lists of `Option LocalDecl`s (as returned from e.g.
-`(← (← getMainGoal).getDecl).lctx.decls.toList`). It returns `true` if they have the same
-local declarations in the same order (up to defeq, without setting mvars), and `false` otherwise.
+`(← (← getMainGoal).getDecl).lctx.decls.toList`). It returns `True` if they have the same
+local declarations in the same order (up to defeq, without setting mvars), and `False` otherwise.
 
 Assumption: this function is run with one of the local contexts as the current `MetaM` local
 context, and one of the two lists consists of the `LocalDecl`s of that context. -/

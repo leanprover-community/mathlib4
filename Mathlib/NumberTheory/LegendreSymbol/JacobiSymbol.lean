@@ -544,7 +544,7 @@ We follow the implementation as in `Mathlib.Tactic.NormNum.LegendreSymbol`.
 
 open NumberTheorySymbols jacobiSym
 
-/-- Computes `J(a | b)` (or `-J(a | b)` if `flip` is set to `true`) given assumptions, by reducing
+/-- Computes `J(a | b)` (or `-J(a | b)` if `flip` is set to `True`) given assumptions, by reducing
 `a` to odd by repeated division and then using quadratic reciprocity to swap `a`, `b`. -/
 private def fastJacobiSymAux (a b : ℕ) (flip : Bool) (ha0 : a > 0) : ℤ :=
   if ha4 : a % 4 = 0 then
