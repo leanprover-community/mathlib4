@@ -97,7 +97,7 @@ lemma deriv_fourierChar (x : ℝ) : deriv (𝐞 · : ℝ → ℂ) x = 2 * π * I
 variable {V W : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
   [NormedAddCommGroup W] [NormedSpace ℝ W] (L : V →L[ℝ] W →L[ℝ] ℝ)
 
-lemma hasDerivAt_fourierChar_neg_bilinear_right (v : V) (w : W) :
+lemma hasFDerivAt_fourierChar_neg_bilinear_right (v : V) (w : W) :
     HasFDerivAt (fun w ↦ (𝐞 (-L v w) : ℂ))
       ((-2 * π * I * 𝐞 (-L v w)) • (ofRealCLM ∘L (L v))) w := by
   have ha : HasFDerivAt (fun w' : W ↦ L v w') (L v) w := ContinuousLinearMap.hasFDerivAt (L v)
@@ -111,26 +111,26 @@ lemma hasDerivAt_fourierChar_neg_bilinear_right (v : V) (w : W) :
 
 lemma fderiv_fourierChar_neg_bilinear_right_apply (v : V) (w y : W) :
     fderiv ℝ (fun w ↦ (𝐞 (-L v w) : ℂ)) w y = -2 * π * I * L v y * 𝐞 (-L v w) := by
-  simp [(hasDerivAt_fourierChar_neg_bilinear_right L v w).fderiv]
+  simp [(hasFDerivAt_fourierChar_neg_bilinear_right L v w).fderiv]
   ring
 
 lemma differentiable_fourierChar_neg_bilinear_right (v : V) :
     Differentiable ℝ (fun w ↦ (𝐞 (-L v w) : ℂ)) :=
-  fun w ↦ (hasDerivAt_fourierChar_neg_bilinear_right L v w).differentiableAt
+  fun w ↦ (hasFDerivAt_fourierChar_neg_bilinear_right L v w).differentiableAt
 
-lemma hasDerivAt_fourierChar_neg_bilinear_left (v : V) (w : W) :
+lemma hasFDerivAt_fourierChar_neg_bilinear_left (v : V) (w : W) :
     HasFDerivAt (fun v ↦ (𝐞 (-L v w) : ℂ))
       ((-2 * π * I * 𝐞 (-L v w)) • (ofRealCLM ∘L (L.flip w))) v :=
-  hasDerivAt_fourierChar_neg_bilinear_right L.flip w v
+  hasFDerivAt_fourierChar_neg_bilinear_right L.flip w v
 
 lemma fderiv_fourierChar_neg_bilinear_left_apply (v y : V) (w : W) :
     fderiv ℝ (fun v ↦ (𝐞 (-L v w) : ℂ)) v y = -2 * π * I * L y w * 𝐞 (-L v w) := by
-  simp [(hasDerivAt_fourierChar_neg_bilinear_left L v w).fderiv]
+  simp [(hasFDerivAt_fourierChar_neg_bilinear_left L v w).fderiv]
   ring
 
 lemma differentiable_fourierChar_neg_bilinear_left (w : W) :
     Differentiable ℝ (fun v ↦ (𝐞 (-L v w) : ℂ)) :=
-  fun v ↦ (hasDerivAt_fourierChar_neg_bilinear_left L v w).differentiableAt
+  fun v ↦ (hasFDerivAt_fourierChar_neg_bilinear_left L v w).differentiableAt
 
 end Real
 
@@ -614,3 +614,5 @@ theorem fourierIntegral_iteratedDeriv {f : ℝ → E} {N : ℕ∞} {n : ℕ} (hf
   change 𝓕 (fun x ↦ iteratedDeriv n f x) x = _
   simp_rw [iteratedDeriv, B, fourierIntegral_iteratedFDeriv hf A hn]
   simp [C, smul_smul, ← mul_pow]
+
+end Real

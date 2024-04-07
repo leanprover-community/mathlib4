@@ -119,7 +119,7 @@ end Defs
 section Continuous
 
 /- In this section we assume 𝕜, V, W have topologies, and L, e are continuous (but f needn't be).
-   This is used to ensure that `e [-L v w]` is (ae strongly) measurable. We could get away with
+   This is used to ensure that `e (-L v w` is (ae strongly) measurable. We could get away with
    imposing only a measurable-space structure on 𝕜 (it doesn't have to be the Borel sigma-algebra of
    a topology); but it seems hard to imagine cases where this extra generality would be useful, and
    allowing it would complicate matters in the most important use cases.
@@ -240,6 +240,38 @@ end Fubini
 
 end VectorFourier
 
+namespace VectorFourier
+
+variable {𝕜 ι E F V W : Type*} [Fintype ι] [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup V] [NormedSpace 𝕜 V] [MeasurableSpace V] [BorelSpace V]
+  [NormedAddCommGroup W] [NormedSpace 𝕜 W] [MeasurableSpace W] [BorelSpace W]
+  {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →L[𝕜] W →L[𝕜] 𝕜}
+  [NormedAddCommGroup F] [NormedSpace ℝ F]
+  [NormedAddCommGroup E] [NormedSpace ℂ E]
+  {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace ℝ (M i)]
+
+theorem fourierIntegral_continuousLinearMap_apply
+    {f : V → (F →L[ℝ] E)} {a : F} {w : W} (he : Continuous e) (hf : Integrable f μ) :
+    fourierIntegral e μ L.toLinearMap₂ f w a =
+      fourierIntegral e μ L.toLinearMap₂ (fun x ↦ f x a) w := by
+  rw [fourierIntegral, ContinuousLinearMap.integral_apply]
+  · rfl
+  · apply (fourierIntegral_convergent_iff he _ _).2 hf
+    exact L.continuous₂
+
+theorem fourierIntegral_continuousMultilinearMap_apply
+    {f : V → (ContinuousMultilinearMap ℝ M E)} {m : (i : ι) → M i} {w : W} (he : Continuous e)
+    (hf : Integrable f μ) :
+    fourierIntegral e μ L.toLinearMap₂ f w m =
+      fourierIntegral e μ L.toLinearMap₂ (fun x ↦ f x m) w := by
+  rw [fourierIntegral, ContinuousMultilinearMap.integral_apply]
+  · rfl
+  · apply (fourierIntegral_convergent_iff he _ _).2 hf
+    exact L.continuous₂
+
+end VectorFourier
+
+
 /-! ## Fourier theory for functions on `𝕜` -/
 
 
@@ -330,6 +362,30 @@ theorem fourierIntegral_convergent_iff' {V W : Type*} [NormedAddCommGroup V] [No
     Integrable (fun v : V ↦ 𝐞 (- L v w) • f v) μ ↔ Integrable f μ :=
   VectorFourier.fourierIntegral_convergent_iff (E := E) (L := L.toLinearMap₂)
     continuous_fourierChar L.continuous₂ _
+
+section Apply
+
+variable {ι F V W : Type*} [Fintype ι]
+  [NormedAddCommGroup V] [NormedSpace ℝ V] [MeasurableSpace V] [BorelSpace V]
+  [NormedAddCommGroup W] [NormedSpace ℝ W] [MeasurableSpace W] [BorelSpace W]
+  {μ : Measure V} {L : V →L[ℝ] W →L[ℝ] ℝ}
+  [NormedAddCommGroup F] [NormedSpace ℝ F]
+  [NormedAddCommGroup E] [NormedSpace ℂ E]
+  {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace ℝ (M i)]
+
+theorem fourierIntegral_continuousLinearMap_apply
+    {f : V → (F →L[ℝ] E)} {a : F} {w : W} (hf : Integrable f μ) :
+    VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ f w a =
+      VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ (fun x ↦ f x a) w :=
+  VectorFourier.fourierIntegral_continuousLinearMap_apply continuous_fourierChar hf
+
+theorem fourierIntegral_continuousMultilinearMap_apply
+    {f : V → (ContinuousMultilinearMap ℝ M E)} {m : (i : ι) → M i} {w : W} (hf : Integrable f μ) :
+    VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ f w m =
+      VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ (fun x ↦ f x m) w :=
+  VectorFourier.fourierIntegral_continuousMultilinearMap_apply continuous_fourierChar hf
+
+end Apply
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
   {V : Type*} [NormedAddCommGroup V]
