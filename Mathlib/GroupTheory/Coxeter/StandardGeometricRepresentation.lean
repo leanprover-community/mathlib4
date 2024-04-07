@@ -175,13 +175,13 @@ theorem orthoReflection_eq_orthoReflection_iff {v v' : V} (hv : ⟪v, v⟫ = 1) 
     norm_num at h₁
     use ⟪v, v'⟫
   · rintro ⟨μ, rfl⟩
-    simp only [SMulHomClass.map_smul, LinearMap.smul_apply, smul_eq_mul] at hv'
+    simp only [map_smul, LinearMap.smul_apply, smul_eq_mul] at hv'
     simp only [map_smul, smul_apply, smul_eq_mul, hv, mul_one] at hv'
     -- hv': μ * μ = 1
     apply LinearMap.ext
     intro w
     dsimp [orthoReflection]
-    rw [smul_smul, SMulHomClass.map_smul, LinearMap.smul_apply, smul_eq_mul, mul_assoc 2,
+    rw [smul_smul, map_smul, LinearMap.smul_apply, smul_eq_mul, mul_assoc 2,
         mul_comm _ μ, ← mul_assoc μ, hv']
     simp
 
@@ -193,7 +193,7 @@ theorem standardBilinForm_compl₁₂_orthoReflection {v : V} (hv : ⟪v, v⟫ =
   apply LinearMap.ext
   intro w'
   dsimp [orthoReflection]
-  simp only [map_sub, SMulHomClass.map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]
+  simp only [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]
   simp only [← M.isSymm_standardBilinForm.eq v w, RingHom.id_apply, hv]
   ring
 
@@ -228,7 +228,7 @@ theorem orthoReflection_mul_orthoReflection_pow_apply {v v' : V} (k : ℕ)
     simp only [map_sub, map_add, map_smul]
     dsimp [orthoReflection]
     simp only [map_sub, map_add, map_smul, smul_sub, smul_add, smul_smul, hv, hv',
-      SMulHomClass.map_smul, LinearMap.smul_apply]
+      map_smul, LinearMap.smul_apply]
 
     /- Move all terms to the left-hand side. -/
     apply sub_eq_zero.mp
