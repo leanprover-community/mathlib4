@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Data.Nat.Order.Lemmas
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Nat.Units
 import Mathlib.Tactic.NthRewrite
 
 #align_import data.nat.gcd.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"

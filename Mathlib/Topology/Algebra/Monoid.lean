@@ -648,7 +648,7 @@ theorem Filter.tendsto_cocompact_mul_left {a b : M} (ha : b * a = 1) :
   simp only [comp_mul_left, ha, one_mul]
   exact Filter.tendsto_id
   -- Porting note: changed proof, original proof was:
-  /-refine' Filter.Tendsto.of_tendsto_comp _ (Filter.comap_cocompact_le (continuous_mul_left b))
+  /- refine' Filter.Tendsto.of_tendsto_comp _ (Filter.comap_cocompact_le (continuous_mul_left b))
   convert Filter.tendsto_id
   ext x
   simp [ha]-/
