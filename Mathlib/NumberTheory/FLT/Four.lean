@@ -59,7 +59,7 @@ theorem ne_zero {a b c : ℤ} (h : Fermat42 a b c) : c ≠ 0 := by
   apply ne_zero_pow two_ne_zero _; apply ne_of_gt
   rw [← h.2.2, (by ring : a ^ 4 + b ^ 4 = (a ^ 2) ^ 2 + (b ^ 2) ^ 2)]
   exact
-    add_pos (sq_pos_of_ne_zero _ (pow_ne_zero 2 h.1)) (sq_pos_of_ne_zero _ (pow_ne_zero 2 h.2.1))
+    add_pos (sq_pos_of_ne_zero (pow_ne_zero 2 h.1)) (sq_pos_of_ne_zero (pow_ne_zero 2 h.2.1))
 #align fermat_42.ne_zero Fermat42.ne_zero
 
 /-- We say a solution to `a ^ 4 + b ^ 4 = c ^ 2` is minimal if there is no other solution with
