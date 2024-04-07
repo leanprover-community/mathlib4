@@ -3,6 +3,7 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Order.LocallyFinite
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.Hom.Basic
