@@ -312,7 +312,7 @@ section
 
 variable (R R' S S')
 
-/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
+/-- Four-way commutativity of `Prod`. The name matches `mul_mul_mul_comm`. -/
 @[simps apply]
 def prodProdProdComm : (R × R') × S × S' ≃+* (R × S) × R' × S' :=
   { AddEquiv.prodProdProdComm R R' S S', MulEquiv.prodProdProdComm R R' S S' with
