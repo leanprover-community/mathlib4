@@ -1028,6 +1028,10 @@ theorem piLp_equiv_toEuclideanLin (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜
   rfl
 #align matrix.pi_Lp_equiv_to_euclidean_lin Matrix.piLp_equiv_toEuclideanLin
 
+theorem toEuclideanLin_apply (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :
+    toEuclideanLin M v =
+    (WithLp.equiv 2 (m → 𝕜)).symm (M *ᵥ (WithLp.equiv 2 (n → 𝕜)) v) := rfl
+
 -- `Matrix.toEuclideanLin` is the same as `Matrix.toLin` applied to `PiLp.basisFun`,
 theorem toEuclideanLin_eq_toLin :
     (toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] _) =
