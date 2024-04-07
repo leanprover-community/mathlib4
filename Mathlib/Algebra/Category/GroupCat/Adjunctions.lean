@@ -25,10 +25,10 @@ category of abelian groups.
 
 ## Main statements
 
-* `AddCommGroupCat.adj`: proves that `AddCommGroupCat.free` is the left adjoint of the forgetful functor
-  from abelian groups to types.
-* `GroupCat.adj`: proves that `GroupCat.free` is the left adjoint of the forgetful functor from groups to
-  types.
+* `AddCommGroupCat.adj`: proves that `AddCommGroupCat.free` is the left adjoint
+  of the forgetful functor from abelian groups to types.
+* `GroupCat.adj`: proves that `GroupCat.free` is the left adjoint of the forgetful functor
+  from groups to types.
 * `abelianizeAdj`: proves that `abelianize` is left adjoint to the forgetful functor from
   abelian groups to groups.
 -/
