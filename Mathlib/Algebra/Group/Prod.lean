@@ -747,9 +747,9 @@ section
 
 variable (M N M' N')
 
-/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
+/-- Four-way commutativity of `Prod`. The name matches `mul_mul_mul_comm`. -/
 @[to_additive (attr := simps apply) prodProdProdComm
-    "Four-way commutativity of `prod`.\nThe name matches `mul_mul_mul_comm`"]
+    "Four-way commutativity of `Prod`.\nThe name matches `mul_mul_mul_comm`"]
 def prodProdProdComm : (M × N) × M' × N' ≃* (M × M') × N × N' :=
   { Equiv.prodProdProdComm M N M' N' with
     toFun := fun mnmn => ((mnmn.1.1, mnmn.2.1), (mnmn.1.2, mnmn.2.2))
