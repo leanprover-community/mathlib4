@@ -43,17 +43,15 @@ lemma quarters_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n ∧ 3/4 ∈ p
   induction n with
   | zero =>
     simp only [preCantorSet_zero, inv_nonneg]
-    refine ⟨⟨ ?_, ?_⟩, ?_, ?_⟩ <;> linarith
-
+    refine ⟨⟨ ?_, ?_⟩, ?_, ?_⟩ <;> norm_num
   | succ n ih =>
     apply And.intro
-    · -- goal: 1/4 ∈ preCantorSet n
-      -- follows by the inductive hyphothesis, since 3/4 ∈ preCantorSet (n-1)
-      exact Or.inl ⟨3/4, ih.2, by simp only; linarith ⟩
-
-    · -- goal: 3/4 ∈ preCantorSet n
-      -- follows by the inductive hyphothesis, since 1/4 ∈ preCantorSet (n-1)
-      exact Or.inr ⟨1/4, ih.1, by simp only; linarith ⟩
+    · -- goal: 1 / 4 ∈ preCantorSet (n + 1)
+      -- follows by the inductive hyphothesis, since 3 / 4 ∈ preCantorSet n
+      exact Or.inl ⟨3 / 4, ih.2, by norm_num⟩
+    · -- goal: 3 / 4 ∈ preCantorSet (n + 1)
+      -- follows by the inductive hyphothesis, since 1 / 4 ∈ preCantorSet n
+      exact Or.inr ⟨1 / 4, ih.1, by norm_num⟩
 
 lemma quarter_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n := (quarters_mem_preCantorSet n).1
 
