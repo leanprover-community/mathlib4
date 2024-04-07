@@ -46,6 +46,22 @@ def getIds : Syntax → Array Syntax
     ((args.map fun a => getIds a).foldl (· ++ ·) #[stx]).filter (·.getKind == ``declId)
   | _ => default
 
+abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
+  -- Scott's `isSubstantive` filter
+  |>.insert `null
+  |>.insert ``cdot
+  |>.insert ``cdotTk
+  |>.insert ``Lean.Parser.Term.byTactic
+  |>.insert ``Lean.Parser.Tactic.tacticSeq
+  |>.insert ``Lean.Parser.Tactic.tacticSeq1Indented
+  |>.insert ``Lean.Parser.Tactic.«tactic_<;>_»
+  |>.insert ``Lean.Parser.Tactic.paren
+  -- further exclusions
+  |>.insert `by
+  |>.insert `«;»
+  |>.insert `«]»
+  |>.insert `«<;>»
+
 /-- scans the input `InfoTree` and accumulates `SyntaxNodeKinds` and `Range`s in a `HashSet`. -/
 partial
 def getRanges :
@@ -55,10 +71,14 @@ def getRanges :
     Id.run do
     let mut tot : HashSet (SyntaxNodeKind × String.Range) := .empty
     for r in rargs do
-      for (a, b) in r.toArray do tot := tot.insert (a, b)
+      for (a, b) in r.toArray do
+        if !exclusions.contains a then
+          tot := tot.insert (a, b)
     if let .ofTacticInfo i := k then
       let stx := i.stx
-      if let some rg := stx.getRange? then tot := tot.insert (stx.getKind, rg)
+      if let .original .. := stx.getHeadInfo then  -- make sure that the syntax is `original`
+        if let some rg := stx.getRange? then  -- and that it has a `Range`
+          tot := tot.insert (stx.getKind, rg)
       tot
     else tot
   | .context _ t, col => getRanges t col
