@@ -16,12 +16,12 @@ import Mathlib.Topology.Separation
 Radon's theorem states that any affine dependent set can be partitioned into two sets whose convex
 hulls intersect.
 
-As a corollary, we prove Helly's theorem, that is a basic result in discrete geometry on the
+As a corollary, we prove Helly's theorem, which is a basic result in discrete geometry on the
 intersection of convex sets. Let `X₁, ⋯, Xₙ` be a finite family of convex sets in `ℝᵈ` with
-`n ≥ d + 1`. The theorem states that if any `d + 1` sets from this family intersect, then the whole
-family intersect. For the infinite family of sets it is not true, as example of `Set.Ioo 0 1/n` for
-`n : ℕ` shows. But the statement is true, if we assume compactness of sets (see
-`Convex.helly_theorem_infinite`)
+`n ≥ d + 1`. The theorem states that if any `d + 1` sets from this family intersect nontrivially,
+then the whole family intersect nontrivially. For the infinite family of sets it is not true, as
+example of `Set.Ioo 0 (1 / n)` for `n : ℕ` shows. But the statement is true, if we assume
+compactness of sets (see `Convex.helly_theorem_infinite`)
 
 ## Tags
 
