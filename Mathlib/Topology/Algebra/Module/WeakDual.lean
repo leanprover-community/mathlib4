@@ -308,6 +308,28 @@ instance instContinuousAdd : ContinuousAdd (WeakSpace 𝕜 E) :=
   WeakBilin.instContinuousAdd (topDualPairing 𝕜 E).flip
 
 
+variable [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]
+
+/-- A continuous linear map from `E` to `F` is still continuous when `E` and `F` are equipped with
+their weak topologies. -/
+def map (f : E →L[𝕜] F) : WeakSpace 𝕜 E →L[𝕜] WeakSpace 𝕜 F :=
+  { f with
+    cont :=
+      WeakBilin.continuous_of_continuous_eval _ fun l => WeakBilin.eval_continuous _ (l ∘L f) }
+#align weak_space.map WeakSpace.map
+
+theorem map_apply (f : E →L[𝕜] F) (x : E) : WeakSpace.map f x = f x :=
+  rfl
+#align weak_space.map_apply WeakSpace.map_apply
+
+@[simp]
+theorem coe_map (f : E →L[𝕜] F) : (WeakSpace.map f : E → F) = f :=
+  rfl
+#align weak_space.coe_map WeakSpace.coe_map
+
+
+end WeakSpace
+
 variable (𝕜 E) in
 /-- There is a canonical map `E → WeakSpace 𝕜 E` (the "identity"
 mapping). It is a linear equivalence. -/
@@ -331,25 +353,6 @@ theorem continuousLinearMapToWeakSpace_bijective :
     Function.Bijective (continuousLinearMapToWeakSpace 𝕜 E) :=
   (toWeakSpace 𝕜 E).bijective
 
-variable [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]
-
-/-- A continuous linear map from `E` to `F` is still continuous when `E` and `F` are equipped with
-their weak topologies. -/
-def map (f : E →L[𝕜] F) : WeakSpace 𝕜 E →L[𝕜] WeakSpace 𝕜 F :=
-  { f with
-    cont :=
-      WeakBilin.continuous_of_continuous_eval _ fun l => WeakBilin.eval_continuous _ (l ∘L f) }
-#align weak_space.map WeakSpace.map
-
-theorem map_apply (f : E →L[𝕜] F) (x : E) : WeakSpace.map f x = f x :=
-  rfl
-#align weak_space.map_apply WeakSpace.map_apply
-
-@[simp]
-theorem coe_map (f : E →L[𝕜] F) : (WeakSpace.map f : E → F) = f :=
-  rfl
-#align weak_space.coe_map WeakSpace.coe_map
-
 /-- The canonical map from `WeakSpace 𝕜 E` to `E` is an open map. -/
 theorem isOpenMap_toWeakSpace_symm : IsOpenMap (toWeakSpace 𝕜 E).symm :=
   IsOpenMap.of_inverse (continuousLinearMapToWeakSpace 𝕜 E).cont
@@ -358,9 +361,7 @@ theorem isOpenMap_toWeakSpace_symm : IsOpenMap (toWeakSpace 𝕜 E).symm :=
 /-- A set in `E` which is open in the weak topology is open. -/
 theorem isOpen_of_isOpen (V : Set E)
     (hV : IsOpen ((continuousLinearMapToWeakSpace 𝕜 E) '' V : Set (WeakSpace 𝕜 E))) : IsOpen V := by
-  simpa [Set.image_image] using isOpenMap_inv_toWeakSpace _ hV
-
-end WeakSpace
+  simpa [Set.image_image] using isOpenMap_toWeakSpace_symm _ hV
 
 theorem tendsto_iff_forall_eval_tendsto_topDualPairing {l : Filter α} {f : α → WeakDual 𝕜 E}
     {x : WeakDual 𝕜 E} :
