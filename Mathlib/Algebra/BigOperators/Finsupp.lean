@@ -35,7 +35,7 @@ variable {β M M' N P G H R S : Type*}
 namespace Finsupp
 
 /-!
-### Declarations about `Sum` and `Prod`
+### Declarations about `Finsupp.sum` and `Finsupp.prod`
 
 In most of this section, the domain `β` is assumed to be an `AddMonoid`.
 -/

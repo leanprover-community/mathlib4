@@ -18,7 +18,7 @@ we have `image_le_kernel f g w : imageSubobject f ≤ kernelSubobject g`
 
 We define `homology' f g w` of such a pair as the cokernel of `imageToKernel f g w`.
 
-Note: As part of the transition to the new homology API, `homology'` is temporarily
+Note: As part of the transition to the new homology API, `homology` is temporarily
 renamed `homology'`. It is planned that this definition shall be removed and replaced by
 `ShortComplex.homology`.
 
@@ -371,7 +371,7 @@ variable {A B C : V} {f : A ⟶ B} {g : B ⟶ C} (w : f ≫ g = 0) {f' : A ⟶ B
   (w' : f' ≫ g' = 0) [HasKernels V] [HasCokernels V] [HasImages V] [HasImageMaps V]
 
 -- Porting note: removed the private auxiliary tactic which becomes unnecessary
---/-- Custom tactic to golf and speedup boring proofs in `homology'.congr`. -/
+--/-- Custom tactic to golf and speedup boring proofs in `homology.congr`. -/
 --private unsafe def aux_tac : tactic Unit :=
 --  sorry
 
