@@ -404,8 +404,8 @@ lemma map_comp : map (φ ≫ ψ) c₁₂ = map φ c₁₂ ≫ map ψ c₁₂ := 
   apply (HomologicalComplex.forget _ _).map_injective
   exact GradedObject.mapMap_comp (toGradedObjectMap φ) (toGradedObjectMap ψ) _
 
-/-- The morphism `K.total c₁₂ ⟶ L.total c₁₂` of homological complexes induced
-by a morphism of bicomplexes `K ⟶ L`. -/
+/-- The isomorphism `K.total c₁₂ ≅ L.total c₁₂` of homological complexes induced
+by an isomorphism of bicomplexes `K ≅ L`. -/
 @[simps]
 noncomputable def mapIso : K.total c₁₂ ≅ L.total c₁₂ where
   hom := map e.hom _
