@@ -134,6 +134,21 @@ theorem Convex.helly_theorem (F : ι → Set E) {hF_fin : Finite ι}
         exact fun h' ↦ hj (h' ▸ hi)
       · apply Set.Nonempty.some_mem
 
+/-- The set version of `Convex.helly_theorem`. -/
+theorem Convex.helly_theorem_set (F : Set (Set E)) {hF_fin : Set.Finite F}
+    (h_convex : ∀ X ∈ F, Convex 𝕜 X)
+    (h_inter : ∀ G : Set (Set E), (G ⊆ F) → (ncard G ≤ (finrank 𝕜 E) + 1) →
+    (⋂₀ G).Nonempty) : (⋂₀ F).Nonempty := by
+  rw [show ⋂₀ F = ⋂ X : F, ↑X by ext; simp]
+  apply Convex.helly_theorem (F := fun x : F => x.val) (𝕜 := 𝕜)
+  · exact fun X ↦ h_convex X (by simp)
+  · intro G _
+    let G' : Set (Set E) := Subtype.val '' G
+    rw [show ⋂ i ∈ G, ↑i = ⋂₀ G' by simp [G']]
+    apply h_inter G' (by simp [G'])
+    rwa [ncard_image_of_injective G Subtype.val_injective]
+  · exact hF_fin
+
 /-- The version of `Convex.helly_theorem` for infinite families with additional compactness
 assumption. -/
 theorem Convex.helly_theorem_infinite [TopologicalSpace E] [T2Space E] (F : ι → Set E)
