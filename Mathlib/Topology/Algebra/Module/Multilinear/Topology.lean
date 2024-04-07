@@ -30,7 +30,7 @@ def toUniformOnFun [TopologicalSpace F] (f : ContinuousMultilinearMap 𝕜 E F) 
   UniformOnFun.ofFun _ f
 
 @[simp]
-lemma toUniofrmOnFun_toFun [TopologicalSpace F] (f : ContinuousMultilinearMap 𝕜 E F) :
+lemma toUniformOnFun_toFun [TopologicalSpace F] (f : ContinuousMultilinearMap 𝕜 E F) :
     UniformOnFun.toFun _ f.toUniformOnFun = f :=
   rfl
 
