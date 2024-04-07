@@ -1839,13 +1839,12 @@ import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Int.Log
 import Mathlib.Data.Int.ModEq
-import Mathlib.Algebra.Group.Int
 import Mathlib.Data.Int.NatPrime
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Int.Order.Units
 import Mathlib.Data.Int.Parity
 import Mathlib.Data.Int.Range
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Data.Int.Ring
 import Mathlib.Data.Int.Sqrt
 import Mathlib.Data.Int.Star
 import Mathlib.Data.Int.SuccPred
@@ -1992,7 +1991,6 @@ import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.MaxPowDiv
 import Mathlib.Data.Nat.ModEq
-import Mathlib.Algebra.Group.Nat
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.Nat.Nth
 import Mathlib.Data.Nat.Order.Lemmas
@@ -2004,7 +2002,7 @@ import Mathlib.Data.Nat.Periodic
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.PrimeNormNum
-import Mathlib.Algebra.Ring.Nat
+import Mathlib.Data.Nat.Semiring
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Sqrt
