@@ -322,7 +322,7 @@
   "Mathlib.Data.Multiset.Bind": ["Mathlib.GroupTheory.GroupAction.Defs"],
   "Mathlib.Data.List.TFAE": ["Std.Tactic.Classical"],
   "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertNth"],
-  "Mathlib.Data.List.EditDistance.Defs": ["Mathlib.Data.Nat.Basic"],
+  "Mathlib.Data.List.EditDistance.Defs": ["Mathlib.Algebra.Ring.Nat"],
   "Mathlib.Data.List.Basic": ["Mathlib.Data.Option.Basic", "Mathlib.Init.Core"],
   "Mathlib.Data.Finset.Basic": ["Mathlib.Data.Finset.Attr"],
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],

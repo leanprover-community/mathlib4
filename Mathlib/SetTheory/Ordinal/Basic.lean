@@ -836,7 +836,6 @@ def omega : Ordinal.{u} :=
   lift <| @type ℕ (· < ·) _
 #align ordinal.omega Ordinal.omega
 
--- mathport name: ordinal.omega
 @[inherit_doc]
 scoped notation "ω" => Ordinal.omega
 
