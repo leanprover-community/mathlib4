@@ -195,7 +195,9 @@ import Mathlib.Algebra.Group.Hom.CompTypeclasses
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.Group.InjSurj
+import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.Group.MinimalAxioms
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Algebra.Group.NatPowAssoc
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.OrderSynonym
@@ -431,8 +433,10 @@ import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.DenselyOrdered
 import Mathlib.Algebra.Order.Group.InjSurj
 import Mathlib.Algebra.Order.Group.Instances
+import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Algebra.Order.Group.Lattice
 import Mathlib.Algebra.Order.Group.MinMax
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.Algebra.Order.Group.Prod
@@ -479,7 +483,9 @@ import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Algebra.Order.Ring.Cone
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.InjSurj
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Order.Ring.Lemmas
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Algebra.Order.Ring.WithTop
@@ -559,7 +565,9 @@ import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Algebra.Ring.InjSurj
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Algebra.Ring.MinimalAxioms
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.Ring.OrderSynonym
 import Mathlib.Algebra.Ring.Pi
@@ -1806,7 +1814,6 @@ import Mathlib.Data.HashMap
 import Mathlib.Data.Holor
 import Mathlib.Data.Int.AbsoluteValue
 import Mathlib.Data.Int.Associated
-import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Bitwise
 import Mathlib.Data.Int.CardIntervalMod
 import Mathlib.Data.Int.Cast.Basic
@@ -1827,7 +1834,6 @@ import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Int.Log
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Int.NatPrime
-import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Int.Order.Units
 import Mathlib.Data.Int.Parity
@@ -1931,7 +1937,6 @@ import Mathlib.Data.Multiset.Sym
 import Mathlib.Data.NNRat.BigOperators
 import Mathlib.Data.NNRat.Defs
 import Mathlib.Data.NNRat.Lemmas
-import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Cast.Basic
@@ -1981,7 +1986,6 @@ import Mathlib.Data.Nat.MaxPowDiv
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.Nat.Nth
-import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Pairing

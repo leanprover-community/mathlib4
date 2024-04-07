@@ -33,7 +33,7 @@ This file contains basic results on Fourier series for functions on the additive
   monomials `fourier n`.
 * `fourierCoeff f n`, for `f : AddCircle T → E` (with `E` a complete normed `ℂ`-vector space), is
   the `n`-th Fourier coefficient of `f`, defined as an integral over `AddCircle T`. The lemma
-  `fourierCoeff_eq_interval_integral` expresses this as an integral over `[a, a + T]` for any real
+  `fourierCoeff_eq_intervalIntegral` expresses this as an integral over `[a, a + T]` for any real
   `a`.
 * `fourierCoeffOn`, for `f : ℝ → E` and `a < b` reals, is the `n`-th Fourier
   coefficient of the unique periodic function of period `b - a` which agrees with `f` on `(a, b]`.

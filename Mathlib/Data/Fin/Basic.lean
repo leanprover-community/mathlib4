@@ -5,7 +5,7 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Order.RelIso.Basic
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Order.Hom.Set
 import Std.Data.Fin.Lemmas
 
