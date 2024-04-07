@@ -909,7 +909,7 @@ structure IsTrail {u v : V} (p : G.Walk u v) : Prop where
 #align simple_graph.walk.is_trail_def SimpleGraph.Walk.isTrail_def
 
 /-- A *path* is a walk with no repeating vertices.
-Use `simple_graph.walk.is_path.mk'` for a simpler constructor. -/
+Use `SimpleGraph.Walk.IsPath.mk'` for a simpler constructor. -/
 structure IsPath {u v : V} (p : G.Walk u v) extends IsTrail p : Prop where
   support_nodup : p.support.Nodup
 #align simple_graph.walk.is_path SimpleGraph.Walk.IsPath
