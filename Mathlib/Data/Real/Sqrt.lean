@@ -130,7 +130,7 @@ noncomputable def sqrt (x : ℝ) : ℝ :=
   NNReal.sqrt (Real.toNNReal x)
 #align real.sqrt Real.sqrt
 
-/-quotient.lift_on x
+/- quotient.lift_on x
   (λ f, mk ⟨sqrt_aux f, (sqrt_aux_converges f).fst⟩)
   (λ f g e, begin
     rcases sqrt_aux_converges f with ⟨hf, x, x0, xf, xs⟩,
