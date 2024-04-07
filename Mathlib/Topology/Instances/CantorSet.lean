@@ -73,8 +73,8 @@ lemma cantorSet_subset_unitInterval : cantorSet ⊆ Set.Icc 0 1 :=
 
 /-- The ternary Cantor set is closed. -/
 lemma isClosed_cantorSet : IsClosed cantorSet := by
-  let f := Homeomorph.mulLeft₀ (1/3:ℝ) (by norm_num)
-  let g := (Homeomorph.addLeft (2:ℝ)).trans f
+  let f := Homeomorph.mulLeft₀ (1 / 3 : ℝ) (by norm_num)
+  let g := (Homeomorph.addLeft (2 : ℝ)).trans f
   apply isClosed_iInter
   intro n
   induction n with
