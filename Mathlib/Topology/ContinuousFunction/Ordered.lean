@@ -6,6 +6,7 @@ Authors: Scott Morrison, Shing Tak Lam
 import Mathlib.Topology.Algebra.Order.ProjIcc
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Order.Lattice
+import Mathlib.Topology.Order.Basic
 
 #align_import topology.continuous_function.ordered from "leanprover-community/mathlib"@"84dc0bd6619acaea625086d6f53cb35cdd554219"
 
