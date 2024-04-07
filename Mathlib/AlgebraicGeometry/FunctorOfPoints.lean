@@ -39,7 +39,7 @@ noncomputable section
 
 namespace AlgebraicGeometry
 
-universe u
+universe v u
 
 open CategoryTheory
 
@@ -127,5 +127,28 @@ instance fullFunctorOfPoints : Full schemeToFunctor where
     let ⟨w,hw⟩ := Scheme.Spec.map_surjective (ι.app j ≫ Limits.pullback.snd)
     simp only [← Category.assoc, ← hw]
     exact congr_fun (f.naturality w.unop) (X.affineCover.map j.fst) |>.symm
+
+def isBasicOpen {A B : CommRingCat.{u}} (ι : A ⟶ B) (f : A) : Prop :=
+  letI : Algebra A B := RingHom.toAlgebra ι
+  IsLocalization.Away f B
+
+structure indexedZariskiCover (A : CommRingCat.{u}) where
+  J : Type v
+  B : J → CommRingCat.{u}
+  f : J → A
+  ι (j : J) : A ⟶ B j
+  isLocalizationAt (j : J) : isBasicOpen (ι j) (f j)
+  covers : Ideal.span (Set.range f) = ⊤
+
+theorem functorOfPoints_zariski_descent
+    (X : Scheme.{u})
+    (A : CommRingCat.{u})
+    (𝓤 : indexedZariskiCover.{u} A)
+    (b : (j : 𝓤.J) → X.functorOfPoints.obj (𝓤.B j))
+    (hb : ∀ (i j : 𝓤.J) (C : CommRingCat.{u})
+      (ιi : 𝓤.B i ⟶ C) (ιj : 𝓤.B j ⟶ C) (w : 𝓤.ι i ≫ ιi = 𝓤.ι j ≫ ιj),
+      X.functorOfPoints.map ιi (b i) = X.functorOfPoints.map ιj (b j)) :
+    ∃ a : X.functorOfPoints.obj A, ∀ j, X.functorOfPoints.map (𝓤.ι j) a = b j := by
+  sorry
 
 end AlgebraicGeometry
