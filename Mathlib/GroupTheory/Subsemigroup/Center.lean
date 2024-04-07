@@ -199,13 +199,13 @@ theorem ofNat_mem_center [NonAssocSemiring M] (n : ℕ) [n.AtLeastTwo] :
 theorem intCast_mem_center [NonAssocRing M] (n : ℤ) : (n : M) ∈ Set.center M where
   comm _ := by rw [Int.commute_cast]
   left_assoc _ _ := match n with
-    | (n : ℕ) => by rw [Int.cast_ofNat, (natCast_mem_center _ n).left_assoc _ _]
+    | (n : ℕ) => by rw [Int.cast_natCast, (natCast_mem_center _ n).left_assoc _ _]
     | Int.negSucc n => by
       rw [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, add_mul, add_mul, add_mul,
         neg_mul, one_mul, neg_mul 1, one_mul, ← neg_mul, add_right_inj, neg_mul,
         (natCast_mem_center _ n).left_assoc _ _, neg_mul, neg_mul]
   mid_assoc _ _ := match n with
-    | (n : ℕ) => by rw [Int.cast_ofNat, (natCast_mem_center _ n).mid_assoc _ _]
+    | (n : ℕ) => by rw [Int.cast_natCast, (natCast_mem_center _ n).mid_assoc _ _]
     | Int.negSucc n => by
         simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev]
         rw [add_mul, mul_add, add_mul, mul_add, neg_mul, one_mul]
@@ -213,7 +213,7 @@ theorem intCast_mem_center [NonAssocRing M] (n : ℤ) : (n : M) ∈ Set.center M
         rw [(natCast_mem_center _ n).mid_assoc _ _]
         simp only [mul_neg]
   right_assoc _ _ := match n with
-    | (n : ℕ) => by rw [Int.cast_ofNat, (natCast_mem_center _ n).right_assoc _ _]
+    | (n : ℕ) => by rw [Int.cast_natCast, (natCast_mem_center _ n).right_assoc _ _]
     | Int.negSucc n => by
         simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev]
         rw [mul_add, mul_add, mul_add, mul_neg, mul_one, mul_neg, mul_neg, mul_one, mul_neg,
