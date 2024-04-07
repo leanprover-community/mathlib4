@@ -737,7 +737,7 @@ lemma image_basicOpen_eq_basicOpen (a : A) (i : ℕ) :
 end toSpec
 
 variable {𝒜} in
-/--The continuous function `Spec A⁰_f → Proj|D(f)` by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}` where
+/-- The continuous function `Spec A⁰_f → Proj|D(f)` by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}` where
 `m` is the degree of `f`.-/
 def fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     (Spec.T (A⁰_ f)) ⟶ (Proj.T| (pbo f)) where

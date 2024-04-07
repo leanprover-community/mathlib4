@@ -3,8 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Ring.Hom.Basic
-import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Data.Nat.Cast.Order
 
@@ -108,7 +109,7 @@ section Ring
 variable [Ring α]
 
 @[simp] lemma _root_.zsmul_eq_mul (a : α) : ∀ n : ℤ, n • a = n * a
-  | (n : ℕ) => by rw [natCast_zsmul, nsmul_eq_mul, Int.cast_ofNat]
+  | (n : ℕ) => by rw [natCast_zsmul, nsmul_eq_mul, Int.cast_natCast]
   | -[n+1] => by simp [Nat.cast_succ, neg_add_rev, Int.cast_negSucc, add_mul]
 #align zsmul_eq_mul zsmul_eq_mul
 
@@ -122,7 +123,7 @@ theorem cast_mono [OrderedRing α] : Monotone (fun x : ℤ => (x : α)) := by
   intro m n h
   rw [← sub_nonneg] at h
   lift n - m to ℕ using h with k hk
-  rw [← sub_nonneg, ← cast_sub, ← hk, cast_ofNat]
+  rw [← sub_nonneg, ← cast_sub, ← hk, cast_natCast]
   exact k.cast_nonneg
 #align int.cast_mono Int.cast_mono
 
@@ -214,7 +215,7 @@ theorem nneg_mul_add_sq_of_abs_le_one {x : α} (hx : |x| ≤ 1) : (0 : α) ≤ n
 theorem cast_natAbs : (n.natAbs : α) = |n| := by
   cases n
   · simp
-  · rw [abs_eq_natAbs, natAbs_negSucc, cast_succ, cast_ofNat, cast_succ]
+  · rw [abs_eq_natAbs, natAbs_negSucc, cast_succ, cast_natCast, cast_succ]
 #align int.cast_nat_abs Int.cast_natAbs
 
 end LinearOrderedRing

@@ -11,7 +11,8 @@ import Mathlib.MeasureTheory.Integral.SetIntegral
 
 /-! # `L^2` space
 
-If `E` is an inner product space over `𝕜` (`ℝ` or `ℂ`), then `Lp E 2 μ` (defined in `lp_space.lean`)
+If `E` is an inner product space over `𝕜` (`ℝ` or `ℂ`), then `Lp E 2 μ`
+(defined in `MeasureTheory.Function.LpSpace`)
 is also an inner product space, with inner product defined as `inner f g = ∫ a, ⟪f a, g a⟫ ∂μ`.
 
 ### Main results
@@ -20,7 +21,7 @@ is also an inner product space, with inner product defined as `inner f g = ∫ a
   belongs to `Lp 𝕜 1 μ`.
 * `integrable_inner` : for `f` and `g` in `Lp E 2 μ`, the pointwise inner product
  `fun x ↦ ⟪f x, g x⟫` is integrable.
-* `L2.inner_product_space` : `Lp E 2 μ` is an inner product space.
+* `L2.innerProductSpace` : `Lp E 2 μ` is an inner product space.
 
 -/
 

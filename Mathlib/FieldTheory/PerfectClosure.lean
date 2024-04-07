@@ -375,7 +375,7 @@ theorem natCast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
 #align perfect_closure.nat_cast PerfectClosure.natCast
 
 theorem intCast (x : ℤ) : (x : PerfectClosure K p) = mk K p (0, x) := by
-  induction x <;> simp only [Int.ofNat_eq_coe, Int.cast_ofNat, Int.cast_negSucc, natCast K p 0]
+  induction x <;> simp only [Int.ofNat_eq_coe, Int.cast_natCast, Int.cast_negSucc, natCast K p 0]
   rfl
 #align perfect_closure.int_cast PerfectClosure.intCast
 

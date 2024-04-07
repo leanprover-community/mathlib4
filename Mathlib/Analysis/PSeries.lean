@@ -233,7 +233,7 @@ theorem summable_one_div_int_pow {p : ℕ} :
   refine ⟨fun h ↦ summable_one_div_nat_pow.mp (h.comp_injective Nat.cast_injective),
     fun h ↦ .of_nat_of_neg (summable_one_div_nat_pow.mpr h)
       (((summable_one_div_nat_pow.mpr h).mul_left <| 1 / (-1 : ℝ) ^ p).congr fun n ↦ ?_)⟩
-  rw [Int.cast_neg, Int.cast_ofNat, neg_eq_neg_one_mul (n : ℝ), mul_pow, mul_one_div, div_div]
+  rw [Int.cast_neg, Int.cast_natCast, neg_eq_neg_one_mul (n : ℝ), mul_pow, mul_one_div, div_div]
 #align real.summable_one_div_int_pow Real.summable_one_div_int_pow
 
 theorem summable_abs_int_rpow {b : ℝ} (hb : 1 < b) :
@@ -241,7 +241,7 @@ theorem summable_abs_int_rpow {b : ℝ} (hb : 1 < b) :
   apply Summable.of_nat_of_neg
   on_goal 2 => simp_rw [Int.cast_neg, abs_neg]
   all_goals
-    simp_rw [Int.cast_ofNat, fun n : ℕ => abs_of_nonneg (n.cast_nonneg : 0 ≤ (n : ℝ))]
+    simp_rw [Int.cast_natCast, fun n : ℕ => abs_of_nonneg (n.cast_nonneg : 0 ≤ (n : ℝ))]
     rwa [summable_nat_rpow, neg_lt_neg_iff]
 #align real.summable_abs_int_rpow Real.summable_abs_int_rpow
 
@@ -391,6 +391,6 @@ lemma Real.summable_one_div_nat_add_rpow (a : ℝ) (s : ℝ) :
 lemma Real.summable_one_div_int_add_rpow (a : ℝ) (s : ℝ) :
     Summable (fun n : ℤ ↦ 1 / |n + a| ^ s) ↔ 1 < s := by
   simp_rw [summable_int_iff_summable_nat_and_neg, ← abs_neg (↑(-_ : ℤ) + a), neg_add,
-    Int.cast_neg, neg_neg, Int.cast_ofNat, summable_one_div_nat_add_rpow, and_self]
+    Int.cast_neg, neg_neg, Int.cast_natCast, summable_one_div_nat_add_rpow, and_self]
 
 end shifted

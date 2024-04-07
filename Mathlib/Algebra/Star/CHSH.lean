@@ -205,7 +205,7 @@ theorem tsirelson_inequality [OrderedRing R] [StarRing R] [StarOrderedRing R] [A
     -- all terms coincide, but the last one. Simplify all other terms
     simp only [M]
     simp only [neg_mul, one_mul, mul_inv_cancel_of_invertible, Int.cast_one, add_assoc, add_comm,
-      add_left_comm, one_smul, Int.cast_neg, neg_smul, Int.intCast_ofNat]
+      add_left_comm, one_smul, Int.cast_neg, neg_smul, Int.cast_natCast]
     simp only [← add_assoc, ← add_smul]
     -- just look at the coefficients now:
     congr
