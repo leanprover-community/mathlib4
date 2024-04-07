@@ -400,6 +400,7 @@ import Mathlib.Algebra.MvPolynomial.Variables
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Algebra.Order.AddTorsor
 import Mathlib.Algebra.Order.Algebra
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
