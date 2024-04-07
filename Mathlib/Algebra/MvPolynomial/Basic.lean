@@ -429,7 +429,7 @@ theorem induction_on' {P : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
     fun a b f _ha _hb hPf => h2 _ _ (h1 _ _) hPf
 #align mv_polynomial.induction_on' MvPolynomial.induction_on'
 
-/-- Similar to `MvPolynomial.induction_on` but only a weak form of `h_add` is required.-/
+/-- Similar to `MvPolynomial.induction_on` but only a weak form of `h_add` is required. -/
 theorem induction_on''' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h_C : ∀ a, M (C a))
     (h_add_weak :
       ∀ (a : σ →₀ ℕ) (b : R) (f : (σ →₀ ℕ) →₀ R),
@@ -439,7 +439,7 @@ theorem induction_on''' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
   Finsupp.induction p (C_0.rec <| h_C 0) h_add_weak
 #align mv_polynomial.induction_on''' MvPolynomial.induction_on'''
 
-/-- Similar to `MvPolynomial.induction_on` but only a yet weaker form of `h_add` is required.-/
+/-- Similar to `MvPolynomial.induction_on` but only a yet weaker form of `h_add` is required. -/
 theorem induction_on'' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h_C : ∀ a, M (C a))
     (h_add_weak :
       ∀ (a : σ →₀ ℕ) (b : R) (f : (σ →₀ ℕ) →₀ R),
@@ -451,7 +451,7 @@ theorem induction_on'' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) 
     h_add_weak a b f ha hb hf <| induction_on_monomial h_C h_X a b
 #align mv_polynomial.induction_on'' MvPolynomial.induction_on''
 
-/-- Analog of `Polynomial.induction_on`.-/
+/-- Analog of `Polynomial.induction_on`. -/
 @[recursor 5]
 theorem induction_on {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h_C : ∀ a, M (C a))
     (h_add : ∀ p q, M p → M q → M (p + q)) (h_X : ∀ p n, M p → M (p * X n)) : M p :=

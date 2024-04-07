@@ -183,5 +183,5 @@ instance count.isFiniteMeasure [Finite α] :
     IsFiniteMeasure (Measure.count : Measure α) :=
   ⟨by
     cases nonempty_fintype α
-    simpa [Measure.count_apply, tsum_fintype] using (ENNReal.nat_ne_top _).lt_top⟩
+    simpa [Measure.count_apply, tsum_fintype] using (ENNReal.natCast_ne_top _).lt_top⟩
 #align measure_theory.measure.count.is_finite_measure MeasureTheory.Measure.count.isFiniteMeasure
