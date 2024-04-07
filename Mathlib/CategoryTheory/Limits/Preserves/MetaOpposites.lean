@@ -4,10 +4,212 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Opposites
+import Mathlib.CategoryTheory.Limits.Creates
 
 open CategoryTheory
 
-open Lean Meta Qq Lean.Elab.Command
+open Lean Meta Qq Elab Command Term
+
+/-
+{C : Type u₁} →
+  [inst : Category.{v₁, u₁} C] →
+    {D : Type u₂} →
+      [inst_1 : Category.{v₂, u₂} D] →
+        {J : Type w} →
+          [inst_2 : Category.{w', w} J] →
+            (K : J ⥤ Cᵒᵖ) → (F : C ⥤ D) →
+            [inst_3 : Limits.PreservesColimit K.leftOp F] → Limits.PreservesLimit K F.op
+-/
+
+open CategoryTheory.Limits
+
+section
+
+universe w w' v₁ v₂ u₁ u₂
+variable {C : Type u₁} [Category.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D]
+variable {J : Type w} [Category.{w'} J]
+
+def preservesLimitOp (K : J ⥤ Cᵒᵖ) (F : C ⥤ D) [PreservesColimit K.leftOp F] :
+    PreservesLimit K F.op where
+  preserves {c} hc := by
+    let opCocone : Cocone K.leftOp := coconeLeftOpOfCone c
+    let opCoconeIsColimit : IsColimit opCocone := isColimitCoconeLeftOpOfCone _ hc
+
+    let mappedOpCocone : Cocone (K.leftOp ⋙ F) := F.mapCocone opCocone
+    let mappedOpConeIsColimit : IsColimit mappedOpCocone := isColimitOfPreserves F opCoconeIsColimit
+
+    let unopMappedOpCocone : Cone (K.leftOp ⋙ F).rightOp := coneRightOpOfCocone mappedOpCocone
+    let isLimitUnopMappedOpCocone : IsLimit unopMappedOpCocone :=
+      isLimitConeRightOpOfCocone _ mappedOpConeIsColimit
+
+    let functorsMatchUp : (K.leftOp ⋙ F).rightOp ≅ K ⋙ F.op :=
+      NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
+
+    let matchedUnopMappedOpCocone : Cone (K ⋙ F.op) :=
+      (Cones.postcompose functorsMatchUp.hom).obj unopMappedOpCocone
+    let isLimitMatchedUnopMappedOpCocone : IsLimit matchedUnopMappedOpCocone :=
+      (IsLimit.postcomposeHomEquiv functorsMatchUp _).symm isLimitUnopMappedOpCocone
+
+    let coneMatches : matchedUnopMappedOpCocone ≅ F.op.mapCone c :=
+      Cones.ext (Iso.refl _) (by aesop_cat)
+    exact IsLimit.ofIsoLimit isLimitMatchedUnopMappedOpCocone coneMatches
+
+def reflectsLimitOp (K : J ⥤ Cᵒᵖ) (F : C ⥤ D) [ReflectsColimit K.leftOp F] :
+    ReflectsLimit K F.op where
+  reflects {c} hc := by
+    let opCocone : Cocone (K ⋙ F.op).leftOp := coconeLeftOpOfCone (F.op.mapCone c)
+    let opCoconeIsColimit : IsColimit opCocone := isColimitCoconeLeftOpOfCone _ hc
+
+    let functorsMatchUp : (K ⋙ F.op).leftOp ≅ K.leftOp ⋙ F :=
+      NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
+
+    let matchedOpCocone : Cocone (K.leftOp ⋙ F) :=
+      (Cocones.precompose functorsMatchUp.hom).obj opCocone
+    let isColimitMatchedOpCocone : IsColimit matchedOpCocone :=
+      (IsColimit.precomposeHomEquiv functorsMatchUp _).symm opCoconeIsColimit
+
+    let opCoconeUpstairs : Cocone K.leftOp := coconeLeftOpOfCone c
+
+    let coconeMatches : matchedOpCocone ≅ F.mapCocone opCoconeUpstairs :=
+      Cocones.ext (Iso.refl _) (by aesop_cat)
+
+    let isColimitMapOpCoconeUpstairs : IsColimit (F.mapCocone opCoconeUpstairs) :=
+      IsColimit.ofIsoColimit isColimitMatchedOpCocone coconeMatches
+
+    let isColimitOpCoconeUpstairs : IsColimit opCoconeUpstairs :=
+      isColimitOfReflects _ isColimitMapOpCoconeUpstairs
+
+    let unopOpConeUpstairs : Cone K := coneOfCoconeLeftOp opCoconeUpstairs
+    let isLimitUnopOpConeUpstairs : IsLimit unopOpConeUpstairs :=
+      isLimitConeOfCoconeLeftOp _ isColimitOpCoconeUpstairs
+
+    let coneMatches : unopOpConeUpstairs ≅ c :=
+      Cones.ext (Iso.refl _)
+
+    exact IsLimit.ofIsoLimit isLimitUnopOpConeUpstairs coneMatches
+
+def createsLimitOp (K : J ⥤ Cᵒᵖ) (F : C ⥤ D) [CreatesColimit K.leftOp F] :
+    CreatesLimit K F.op :=
+  { reflectsLimitOp K F with
+    lifts := fun c {hc} =>
+      let opCocone : Cocone (K ⋙ F.op).leftOp := coconeLeftOpOfCone c;
+      let opCoconeIsColimit : IsColimit opCocone := isColimitCoconeLeftOpOfCone _ hc;
+
+      let functorsMatchUp : (K ⋙ F.op).leftOp ≅ K.leftOp ⋙ F :=
+        NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat);
+
+      let matchedOpCocone : Cocone (K.leftOp ⋙ F) :=
+        (Cocones.precompose functorsMatchUp.hom).obj opCocone;
+      let isColimitMatchedOpCocone : IsColimit matchedOpCocone :=
+        (IsColimit.precomposeHomEquiv functorsMatchUp _).symm opCoconeIsColimit;
+
+      let liftedCocone : Cocone K.leftOp := liftColimit isColimitMatchedOpCocone;
+      { liftedCone := coneOfCoconeLeftOp liftedCocone
+        validLift := by
+          let i := liftedColimitMapsToOriginal isColimitMatchedOpCocone
+
+
+          sorry
+         } }
+
+
+end
+
+
+structure ReflectedCategory where mk' ::
+  cat : Term
+  opp : Term
+  isOpp : Bool
+
+def ReflectedCategory.mk (C : CommandElabM Term) : CommandElabM ReflectedCategory := do
+  return ⟨← C, ← `($(← C)ᵒᵖ), false⟩
+
+def ReflectedCategory.op : ReflectedCategory → ReflectedCategory
+  | ⟨cat, opp, isOpp⟩ => ⟨opp, cat, !isOpp⟩
+
+instance : Coe ReflectedCategory Term where
+  coe := ReflectedCategory.cat
+
+structure ReflectedFunctor where mk' ::
+  dom : ReflectedCategory
+  cod : ReflectedCategory
+  self : Term
+  opp : Term
+
+def getFunctorOpposite (F : Term) (C : ReflectedCategory) (D : ReflectedCategory) :
+    CommandElabM Term :=
+  match C.isOpp, D.isOpp with
+  | false, false => `($(F).op)
+  | false, true  => `($(F).leftOp)
+  | true,  false => `($(F).rightOp)
+  | true,  true  => `($(F).unop)
+
+def oppositeFunctorDeclarationName (C : ReflectedCategory) (D : ReflectedCategory) : String :=
+  match C.isOpp, D.isOpp with
+  | false, false => "Op"
+  | false, true  => "LeftOp"
+  | true,  false => "RightOp"
+  | true,  true  => "Unop"
+
+def ReflectedFunctor.mk (F : CommandElabM Term) (C : ReflectedCategory) (D : ReflectedCategory) :
+    CommandElabM ReflectedFunctor := do
+  return ⟨C, D, ← F, ← getFunctorOpposite (← F) C D⟩
+
+def ReflectedFunctor.op : ReflectedFunctor → ReflectedFunctor
+  | ⟨dom, cod, self, opp⟩ => ⟨dom.op, cod.op, opp, self⟩
+
+instance : Coe ReflectedFunctor Term where
+  coe := ReflectedFunctor.self
+
+def preservesLimit : Bool → CommandElabM Term
+  | false => `(PreservesLimit)
+  | true => `(PreservesColimit)
+
+section
+
+universe w w' v₁ v₂ u₁ u₂
+variable {C : Type u₁} [Category.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D]
+variable {J : Type w} [Category.{w'} J]
+
+def mySyntax (n : Name) (C D J : ReflectedCategory) (K F : ReflectedFunctor) (proof : Term) :
+    CommandElabM Syntax :=
+  `(/-- This is a docstring. -/
+    def $(mkIdent n) (K : $(J) ⥤ $(C.op)) (F : $(C) ⥤ $(D)) [PreservesColimit $(K.op) $(F)] :
+        PreservesLimit $(K) $(F.op) := $proof)
+
+elab "adds" : command => do
+  let C' ← ReflectedCategory.mk `(C)
+  let D' ← ReflectedCategory.mk `(D)
+  let J ← ReflectedCategory.mk `(J)
+  for C in [C', C'.op] do
+    for D in [D', D'.op] do
+      for backward in [false, true] do
+        let K ← ReflectedFunctor.mk `(K) J C.op
+        let F ← ReflectedFunctor.mk `(F) C D
+        let colimit := false
+        let innerName := "preserves" ++ (if colimit then "Colimit" else "Limit")
+          ++ (if backward then "Of" else "") ++ oppositeFunctorDeclarationName C D
+        let name : Name := .str (.str (.str .anonymous "CategoryTheory") "Limits") innerName
+        elabCommand (← mySyntax name C D J K F (← `(sorry)))
+
+adds
+
+end
+
+
+
+open Lean in
+run_cmd
+  logInfo (← `(command|
+    /-- doc-strings are ok -/
+    def $(mkIdent `newOne) := 1
+    -- but comments are not
+  ))
+
+#check newOne
+  -- liftCoreM <| MetaM.run' addOppositePreservationStatements
 
 /-- Contains information about a category that a theorem quantifies over. -/
 structure CategoryData where
@@ -75,7 +277,7 @@ def oppositeFunctorName : CategoryWithPolarity → CategoryWithPolarity → Stri
   | ⟨_, true⟩, ⟨_, false⟩ => "rightOp"
   | ⟨_, true⟩, ⟨_, true⟩ => "unop"
 
-def oppositeFunctorDeclarationName : CategoryWithPolarity → CategoryWithPolarity → String
+def oppositeFunctorDeclarationName' : CategoryWithPolarity → CategoryWithPolarity → String
   | ⟨_, false⟩, ⟨_, false⟩ => "Op"
   | ⟨_, false⟩, ⟨_, true⟩ => "LeftOp"
   | ⟨_, true⟩, ⟨_, false⟩ => "RightOp"
@@ -124,7 +326,7 @@ def addPreservesLimit (J : CategoryData) (C D : CategoryWithPolarity) (colimit b
             J.type, J.cat, K.functor, F.functor, inst] targetType
         let proof ← mkSorry statement false
         let innerName := "preserves" ++ (if colimit then "Colimit" else "Limit")
-          ++ (if backward then "Of" else "") ++ oppositeFunctorDeclarationName C' D
+          ++ (if backward then "Of" else "") ++ oppositeFunctorDeclarationName' C' D
         let name : Name := .str (.str (.str .anonymous "CategoryTheory") "Limits") innerName
         addDecl <| .defnDecl {
           name := name
