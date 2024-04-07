@@ -34,8 +34,9 @@ theorem cast_inj [CharZero α] : ∀ {m n : ℚ}, (m : α) = n ↔ m = n
     rw [mk'_eq_divInt, mk'_eq_divInt] at h ⊢
     rw [cast_divInt_of_ne_zero, cast_divInt_of_ne_zero] at h <;> simp [d₁0, d₂0] at h ⊢
     rwa [eq_div_iff_mul_eq d₂a, division_def, mul_assoc, (d₁.cast_commute (d₂ : α)).inv_left₀.eq, ←
-      mul_assoc, ← division_def, eq_comm, eq_div_iff_mul_eq d₁a, eq_comm, ← Int.cast_ofNat d₁, ←
-      Int.cast_mul, ← Int.cast_ofNat d₂, ← Int.cast_mul, Int.cast_inj, ← mkRat_eq_iff d₁0 d₂0] at h
+      mul_assoc, ← division_def, eq_comm, eq_div_iff_mul_eq d₁a, eq_comm, ← Int.cast_natCast d₁, ←
+      Int.cast_mul, ← Int.cast_natCast d₂, ← Int.cast_mul, Int.cast_inj, ← mkRat_eq_iff d₁0 d₂0]
+      at h
 #align rat.cast_inj Rat.cast_inj
 
 theorem cast_injective [CharZero α] : Function.Injective ((↑) : ℚ → α)

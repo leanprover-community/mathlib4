@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Rat.Init
 
 #align_import data.rat.defs from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
@@ -500,8 +501,7 @@ theorem coe_int_div_eq_divInt {n d : ℤ} : (n : ℚ) / (d) = n /. d := by
 
 -- Porting note: see porting note above about `Int.cast`@[simp]
 theorem num_div_den (r : ℚ) : (r.num : ℚ) / (r.den : ℚ) = r := by
-  rw [← Int.cast_ofNat]
-  erw [← divInt_eq_div, num_divInt_den]
+  rw [← Int.cast_natCast]; erw [← divInt_eq_div, num_divInt_den]
 #align rat.num_div_denom Rat.num_div_den
 
 theorem coe_int_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : (q.num : ℚ) = q := by
@@ -523,7 +523,7 @@ instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
 #align rat.can_lift Rat.canLift
 
 theorem coe_nat_eq_divInt (n : ℕ) : ↑n = n /. 1 := by
-  rw [← Int.cast_ofNat, coe_int_eq_divInt]
+  rw [← Int.cast_natCast, coe_int_eq_divInt]
 #align rat.coe_nat_eq_mk Rat.coe_nat_eq_divInt
 
 @[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
@@ -545,6 +545,7 @@ theorem coe_int_inj (m n : ℤ) : (m : ℚ) = n ↔ m = n :=
 end Casts
 
 theorem mkRat_eq_div (n : ℤ) (d : ℕ) : mkRat n d = n / d := by
-  simp only [mkRat_eq, divInt_eq_div, Int.cast_ofNat]
+  simp only [mkRat_eq, divInt_eq_div, Int.cast_natCast]
 
 end Rat
+#minimize_imports
