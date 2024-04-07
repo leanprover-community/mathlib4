@@ -78,8 +78,7 @@ lemma isClosed_cantorSet : IsClosed cantorSet := by
   apply isClosed_iInter
   intro n
   induction n with
-  | zero =>
-    exact isClosed_Icc
+  | zero => exact isClosed_Icc
   | succ n ih =>
     refine IsClosed.union ?_ ?_
     · simpa [f, div_eq_inv_mul] using f.closedEmbedding.closed_iff_image_closed.mp ih
