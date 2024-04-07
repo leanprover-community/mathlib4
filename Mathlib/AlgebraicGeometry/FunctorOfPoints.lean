@@ -100,7 +100,6 @@ def homOfFunctorOfPoints {X Y : Scheme.{u}} (f : X.functorOfPoints ⟶ Y.functor
     rw [← hi, ← hj]
     simp_rw [hfst, hsnd, Category.assoc, Limits.pullback.condition]
 
-set_option pp.universes true in
 instance functorOfPointsFull : Full schemeToFunctor where
   preimage f := homOfFunctorOfPoints f
   witness := by
