@@ -10,7 +10,9 @@ import Mathlib.RingTheory.TensorProduct.Basic
 /-!
 # Tensor products of bialgebras
 
-To-do: write this.
+We define the data in the monoidal structure on the category of bialgebras - e.g. the bialgebra
+instance on a tensor product of bialgebras, and the tensor product of two `BialgHom`s as a
+`BialgHom`. This is done by combining the corresponding API for coalgebras and algebras.
 
 -/
 
