@@ -140,15 +140,38 @@ structure indexedZariskiCover (A : CommRingCat.{u}) where
   isLocalizationAt (j : J) : isBasicOpen (ι j) (f j)
   covers : Ideal.span (Set.range f) = ⊤
 
-theorem functorOfPoints_zariski_descent
-    (X : Scheme.{u})
-    (A : CommRingCat.{u})
+def indexedZariskiCover.affineOpenCover {A : CommRingCat.{u}} (𝓤 : indexedZariskiCover A) :
+    (Scheme.Spec.obj <| .op A).AffineOpenCover where
+  J := 𝓤.J
+  obj := 𝓤.B
+  map j := Scheme.Spec.map <| 𝓤.ι j |>.op
+  f := sorry
+  Covers := sorry
+  IsOpen j := sorry -- Scheme.basic_open_isOpenImmersion _
+
+theorem indexedZariskiCover.desc
+    {X : Scheme.{u}}
+    {A : CommRingCat.{u}}
     (𝓤 : indexedZariskiCover.{u} A)
     (b : (j : 𝓤.J) → X.functorOfPoints.obj (𝓤.B j))
     (hb : ∀ (i j : 𝓤.J) (C : CommRingCat.{u})
-      (ιi : 𝓤.B i ⟶ C) (ιj : 𝓤.B j ⟶ C) (w : 𝓤.ι i ≫ ιi = 𝓤.ι j ≫ ιj),
+      (ιi : 𝓤.B i ⟶ C) (ιj : 𝓤.B j ⟶ C),
+      𝓤.ι i ≫ ιi = 𝓤.ι j ≫ ιj →
       X.functorOfPoints.map ιi (b i) = X.functorOfPoints.map ιj (b j)) :
-    ∃ a : X.functorOfPoints.obj A, ∀ j, X.functorOfPoints.map (𝓤.ι j) a = b j := by
-  sorry
+    X.functorOfPoints.obj A :=
+  𝓤.affineOpenCover.openCover.glueMorphisms b <| sorry
+
+lemma indexedZariskiCover.restirct_desc
+    {X : Scheme.{u}}
+    {A : CommRingCat.{u}}
+    (𝓤 : indexedZariskiCover.{u} A)
+    (b : (j : 𝓤.J) → X.functorOfPoints.obj (𝓤.B j))
+    (hb : ∀ (i j : 𝓤.J) (C : CommRingCat.{u})
+      (ιi : 𝓤.B i ⟶ C) (ιj : 𝓤.B j ⟶ C),
+      𝓤.ι i ≫ ιi = 𝓤.ι j ≫ ιj →
+      X.functorOfPoints.map ιi (b i) = X.functorOfPoints.map ιj (b j)) (j : 𝓤.J) :
+    X.functorOfPoints.map (𝓤.ι j) (𝓤.desc b hb) = b _ := by
+  unfold indexedZariskiCover.desc
+  apply Scheme.OpenCover.ι_glueMorphisms
 
 end AlgebraicGeometry
