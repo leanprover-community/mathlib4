@@ -221,7 +221,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     generalize' h : (sigmaIsoSigma.{u, u} D.V).hom x = x'
     obtain ⟨⟨i, j⟩, y⟩ := x'
     unfold InvImage MultispanIndex.fstSigmaMap MultispanIndex.sndSigmaMap
-    simp only [Opens.inclusion_apply, TopCat.comp_app, sigmaIsoSigma_inv_apply,
+    simp only [forget_map_eq_coe, Opens.inclusion_apply, TopCat.comp_app, sigmaIsoSigma_inv_apply,
       Cofan.mk_ι_app]
     rw [← comp_apply, colimit.ι_desc, ← comp_apply, colimit.ι_desc]
     erw [sigmaIsoSigma_hom_ι_apply, sigmaIsoSigma_hom_ι_apply]

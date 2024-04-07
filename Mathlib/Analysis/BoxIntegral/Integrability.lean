@@ -144,10 +144,11 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   generalize' hm : μ (π.filter fun J => N (π.tag J) = n).iUnion = m
   have : m < δ n / n := by
     simp only [Measure.restrict_apply (hUo _).measurableSet] at hμU
-    refine' hm ▸ (measure_mono _).trans_lt (hμU _)
+    refine' (measure_mono _).trans_lt (hμU _)
     simp only [Set.subset_def, TaggedPrepartition.mem_iUnion, TaggedPrepartition.mem_filter]
     rintro x ⟨J, ⟨hJ, rfl⟩, hx⟩
     exact ⟨hrU _ (hπ.1 _ hJ (Box.coe_subset_Icc hx)), π.le_of_mem' J hJ hx⟩
+  clear_value m
   lift m to ℝ≥0 using ne_top_of_lt this
   rw [ENNReal.coe_toReal, ← NNReal.coe_nat_cast, ← NNReal.coe_mul, NNReal.coe_le_coe, ←
     ENNReal.coe_le_coe, ENNReal.coe_mul, ENNReal.coe_nat, mul_comm]
