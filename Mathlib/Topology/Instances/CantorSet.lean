@@ -55,9 +55,8 @@ lemma quarters_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n ∧ 3/4 ∈ p
 
 lemma quarter_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n := (quarters_mem_preCantorSet n).1
 
-theorem quarter_mem_cantorSet : 1/4 ∈ cantorSet := by
-  simp only [cantorSet,iInf, Set.sInf_eq_sInter, Set.sInter_range, Set.mem_iInter]
-  exact quarter_mem_preCantorSet
+theorem quarter_mem_cantorSet : 1/4 ∈ cantorSet :=
+  Set.mem_iInter.mpr quarter_mem_preCantorSet
 
 lemma zero_mem_preCantorSet (n : ℕ) : 0 ∈ preCantorSet n := by
   induction n with
