@@ -68,10 +68,10 @@ variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] (
   [AddCommGroup F'] [Module ℝ F'] [TopologicalSpace E] [TopologicalSpace E'] (F)
 
 /-- Given `E` and `F` two topological vector spaces and `𝔖 : Set (Set E)`, then
-`strongTopology σ F 𝔖` is the "topology of uniform convergence on the elements of `𝔖`" on
-`E →L[𝕜] F`.
+`UniformConvergenceCLM σ F 𝔖` is a type synonym of `E →SL[σ] F` equipped with the "topology of
+uniform convergence on the elements of `𝔖`".
 
-If the continuous linear image of any element of `𝔖` is bounded, this makes `E →L[𝕜] F` a
+If the continuous linear image of any element of `𝔖` is bounded, this makes `E →SL[σ] F` a
 topological vector space. -/
 @[nolint unusedArguments]
 def UniformConvergenceCLM [TopologicalSpace F] [TopologicalAddGroup F] (_ : Set (Set E)) :=
