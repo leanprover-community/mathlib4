@@ -21,7 +21,7 @@ variable (R : Type u) [CommRing R]
 
 /-- Objects in the category of `R`-coalgebras. -/
 structure CoalgebraCat where
-/-- the underlying type of an object in `CoalgebraCat R` -/
+  /-- the underlying type of an object in `CoalgebraCat R` -/
   carrier : Type v
   [isAddCommGroup : AddCommGroup carrier]
   [isModule : Module R carrier]
