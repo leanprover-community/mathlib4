@@ -66,7 +66,7 @@ theorem to_nat_to_int (n : PosNum) : ((n : ℕ) : ℤ) = n :=
 
 @[simp, norm_cast]
 theorem cast_to_int [AddGroupWithOne α] (n : PosNum) : ((n : ℤ) : α) = n := by
-  rw [← to_nat_to_int, Int.cast_ofNat, cast_to_nat]
+  rw [← to_nat_to_int, Int.cast_natCast, cast_to_nat]
 #align pos_num.cast_to_int PosNum.cast_to_int
 
 theorem succ_to_nat : ∀ n, (succ n : ℕ) = n + 1
@@ -467,7 +467,7 @@ theorem to_nat_to_int (n : Num) : ((n : ℕ) : ℤ) = n :=
 
 @[simp, norm_cast]
 theorem cast_to_int {α} [AddGroupWithOne α] (n : Num) : ((n : ℤ) : α) = n := by
-  rw [← to_nat_to_int, Int.cast_ofNat, cast_to_nat]
+  rw [← to_nat_to_int, Int.cast_natCast, cast_to_nat]
 #align num.cast_to_int Num.cast_to_int
 
 theorem to_of_nat : ∀ n : ℕ, ((n : Num) : ℕ) = n
@@ -1536,7 +1536,7 @@ theorem of_int_cast [AddGroupWithOne α] (n : ℤ) : ((n : ZNum) : α) = n := by
 
 @[simp, norm_cast]
 theorem of_nat_cast [AddGroupWithOne α] (n : ℕ) : ((n : ZNum) : α) = n := by
-  rw [← Int.cast_ofNat, of_int_cast, Int.cast_ofNat]
+  rw [← Int.cast_natCast, of_int_cast, Int.cast_natCast]
 #align znum.of_nat_cast ZNum.of_nat_cast
 
 @[simp, norm_cast]

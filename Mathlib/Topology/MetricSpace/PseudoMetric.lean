@@ -1150,7 +1150,7 @@ end Metric
 
 open Metric
 
-/-Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
+/- Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
 we need to show that the uniform structure coming from the edistance and the
 distance coincide. -/
 
