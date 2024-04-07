@@ -574,7 +574,8 @@ variable {α : Type*} [MeasurableSpace α] {μ : Measure α} {f : α → ℝ}
 For an integrable a.e.-nonnegative real-valued function `f`, the Bochner integral of `f` can be
 written (roughly speaking) as: `∫ f ∂μ = ∫ t in 0..∞, μ {ω | f(ω) > t}`.
 
-See `MeasureTheory.lintegral_eq_lintegral_meas_lt` for a version with Lebesgue integral `∫⁻` instead. -/
+See `MeasureTheory.lintegral_eq_lintegral_meas_lt` for a version with Lebesgue integral `∫⁻`
+instead. -/
 theorem Integrable.integral_eq_integral_meas_lt
     (f_intble : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) :
     ∫ ω, f ω ∂μ = ∫ t in Set.Ioi 0, ENNReal.toReal (μ {a : α | t < f a}) := by
