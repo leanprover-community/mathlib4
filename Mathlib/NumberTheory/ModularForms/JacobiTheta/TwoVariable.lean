@@ -337,9 +337,11 @@ lemma hasDerivAt_jacobiTheta₂_fst (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
   -- This proof is annoyingly fiddly, because of the need to commute "evaluation at a point"
   -- through infinite sums of continuous linear maps.
   let eval_fst_CLM : (ℂ × ℂ →L[ℂ] ℂ) →L[ℂ] ℂ :=
-  { toFun := fun f ↦ f (1, 0),
-    map_add' := by simp,
-    map_smul' := by simp }
+  { toFun := fun f ↦ f (1, 0)
+    cont := continuous_id'.clm_apply continuous_const
+    map_add' := by simp only [ContinuousLinearMap.add_apply, forall_const]
+    map_smul' := by simp only [ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul,
+      RingHom.id_apply, forall_const] }
   have step1: HasSum (fun n ↦ (jacobiTheta₂_term_fderiv n z τ) (1, 0))
       ((jacobiTheta₂_fderiv z τ) (1, 0)) := by
     apply eval_fst_CLM.hasSum (hasSum_jacobiTheta₂_term_fderiv z hτ)
@@ -403,7 +405,8 @@ lemma jacobiTheta₂_conj (z τ : ℂ) :
     conj (jacobiTheta₂ z τ) = jacobiTheta₂ (conj z) (-conj τ) := by
   rw [← jacobiTheta₂_neg_left, jacobiTheta₂, conj_tsum]
   congr 2 with n
-  simp [jacobiTheta₂_term, ← Complex.exp_conj, Complex.conj_ofReal]
+  simp only [jacobiTheta₂_term, mul_neg, ← exp_conj, map_add, map_neg, map_mul, map_ofNat,
+    conj_ofReal, conj_I, map_intCast, neg_mul, neg_neg, map_pow]
 
 lemma jacobiTheta₂'_add_right (z τ : ℂ) : jacobiTheta₂' z (τ + 2) = jacobiTheta₂' z τ := by
   refine tsum_congr (fun n ↦ ?_)
@@ -414,8 +417,9 @@ lemma jacobiTheta₂'_add_right (z τ : ℂ) : jacobiTheta₂' z (τ + 2) = jaco
 
 lemma jacobiTheta₂'_add_left (z τ : ℂ) : jacobiTheta₂' (z + 1) τ = jacobiTheta₂' z τ := by
   unfold jacobiTheta₂' jacobiTheta₂'_term jacobiTheta₂_term
-  congr 1 with n
-  simp_rw [mul_add, Complex.exp_add, mul_one, mul_comm _ (n : ℂ), exp_int_mul_two_pi_mul_I, mul_one]
+  refine tsum_congr (fun n ↦ ?_)
+  simp only [mul_add, Complex.exp_add, mul_one, mul_comm _ (n : ℂ), exp_int_mul_two_pi_mul_I,
+    mul_one]
 
 lemma jacobiTheta₂'_add_left' (z τ : ℂ) :
     jacobiTheta₂' (z + τ) τ =
@@ -431,9 +435,9 @@ lemma jacobiTheta₂'_add_left' (z τ : ℂ) :
     congr 2
     ring
   rw [jacobiTheta₂', funext this, tsum_mul_left, ← (Equiv.subRight (1 : ℤ)).tsum_eq]
-  simp_rw [Equiv.subRight_apply, sub_add_cancel, tsum_sub (hasSum_jacobiTheta₂'_term z hτ).summable
+  simp only [jacobiTheta₂, jacobiTheta₂', Equiv.subRight_apply, sub_add_cancel,
+    tsum_sub (hasSum_jacobiTheta₂'_term z hτ).summable
     ((hasSum_jacobiTheta₂_term z hτ).summable.mul_left _), tsum_mul_left]
-  rfl
 
 lemma jacobiTheta₂'_neg_left (z τ : ℂ) : jacobiTheta₂' (-z) τ = -jacobiTheta₂' z τ := by
   rw [jacobiTheta₂', jacobiTheta₂', ← tsum_neg, ← (Equiv.neg ℤ).tsum_eq]
@@ -518,6 +522,7 @@ theorem jacobiTheta₂'_functional_equation (z τ : ℂ) :
     rw [deriv_mul _ hj.differentiableAt]
     exact (((differentiableAt_pow 2).const_mul _).mul_const _).cexp
   _ = _ := by
-    erw [hj.deriv, deriv_cexp (((differentiableAt_pow _).const_mul _).mul_const _), mul_comm,
-      deriv_mul_const_field, deriv_const_mul_field, deriv_pow]
+    rw [hj.deriv]
+    erw [deriv_cexp (((differentiableAt_pow _).const_mul _).mul_const _)]
+    rw [mul_comm, deriv_mul_const_field, deriv_const_mul_field, deriv_pow]
     ring_nf
