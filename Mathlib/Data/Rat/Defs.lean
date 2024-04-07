@@ -548,4 +548,3 @@ theorem mkRat_eq_div (n : ℤ) (d : ℕ) : mkRat n d = n / d := by
   simp only [mkRat_eq, divInt_eq_div, Int.cast_natCast]
 
 end Rat
-#minimize_imports
