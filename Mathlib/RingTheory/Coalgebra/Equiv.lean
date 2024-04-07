@@ -254,4 +254,52 @@ theorem coe_toEquiv_trans : (e₁₂ : A ≃ B).trans e₂₃ = (e₁₂.trans e
 
 end
 end AddCommMonoid
+
+variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
+  [AddCommMonoid B] [Module R B] [CoalgebraStruct R B]
+
+/-- Let `A` be an `R`-coalgebra and let `B` be an `R`-module with a `CoalgebraStruct`.
+A linear equivalence `A ≃ₗ[R] B` that respects the `CoalgebraStruct`s defines an `R`-coalgebra
+structure on `B`. -/
+@[reducible] def toCoalgebra (f : A ≃ₗc[R] B) :
+    Coalgebra R B where
+  coassoc := by
+    simp only [← ((f : A ≃ₗ[R] B).comp_toLinearMap_symm_eq _ _).2 f.map_comp_comul,
+      ← LinearMap.comp_assoc]
+    congr 1
+    simp only [toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe, CoalgHomClass.map_comp_comul,
+      LinearMap.lTensor_comp_map]
+    simp only [← toLinearEquiv_toLinearMap, LinearMap.comp_assoc, LinearEquiv.comp_coe,
+      LinearEquiv.symm_trans_self, LinearEquiv.refl_toLinearMap, LinearMap.comp_id,
+      LinearMap.rTensor_comp_map]
+    simp_rw [toLinearEquiv_toLinearMap, ← CoalgHomClass.map_comp_comul (f : A →ₗc[R] B),
+      ← LinearMap.map_comp_lTensor, LinearMap.comp_assoc, ← Coalgebra.coassoc,
+      ← LinearMap.comp_assoc, TensorProduct.map_map_comp_assoc_eq]
+    simp only [LinearMap.comp_assoc, LinearMap.map_comp_rTensor, CoalgHomClass.map_comp_comul]
+  rTensor_counit_comp_comul := by
+    simp only [(f.toLinearEquiv.eq_comp_toLinearMap_symm _ _).2 f.counit_comp,
+       ← (f.toLinearEquiv.comp_toLinearMap_symm_eq _ _).2 f.map_comp_comul,
+       ← LinearMap.comp_assoc, LinearMap.rTensor_comp_map]
+    simp only [toLinearEquiv_eq_coe, toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe,
+      ← toLinearEquiv_toLinearMap, LinearMap.comp_assoc, LinearEquiv.comp_coe,
+      LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap, LinearMap.comp_id,
+      ← LinearMap.lTensor_comp_rTensor, ← LinearMap.comp_assoc _ Coalgebra.comul,
+      Coalgebra.rTensor_counit_comp_comul]
+    ext
+    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+      TensorProduct.mk_apply, LinearMap.lTensor_tmul, LinearEquiv.apply_symm_apply]
+  lTensor_counit_comp_comul := by
+      simp only [(f.toLinearEquiv.eq_comp_toLinearMap_symm _ _).2 f.counit_comp,
+        ← (f.toLinearEquiv.comp_toLinearMap_symm_eq _ _).2 f.map_comp_comul,
+        ← LinearMap.comp_assoc, LinearMap.lTensor_comp_map]
+      simp only [toLinearEquiv_eq_coe, toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe,
+        ← toLinearEquiv_toLinearMap, LinearMap.comp_assoc, LinearEquiv.comp_coe,
+        LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap, LinearMap.comp_id,
+        ← LinearMap.rTensor_comp_lTensor, ← LinearMap.comp_assoc _ Coalgebra.comul,
+        Coalgebra.lTensor_counit_comp_comul]
+      ext
+      simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+        LinearMap.flip_apply, TensorProduct.mk_apply, LinearMap.rTensor_tmul,
+        LinearEquiv.apply_symm_apply]
+
 end CoalgEquiv
