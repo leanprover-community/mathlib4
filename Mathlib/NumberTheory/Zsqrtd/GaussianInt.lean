@@ -176,7 +176,7 @@ theorem abs_coe_nat_norm (x : ℤ[i]) : (x.norm.natAbs : ℤ) = x.norm :=
 
 @[simp]
 theorem nat_cast_natAbs_norm {α : Type*} [Ring α] (x : ℤ[i]) : (x.norm.natAbs : α) = x.norm := by
-  rw [← Int.cast_ofNat, abs_coe_nat_norm]
+  rw [← Int.cast_natCast, abs_coe_nat_norm]
 #align gaussian_int.nat_cast_nat_abs_norm GaussianInt.nat_cast_natAbs_norm
 
 theorem natAbs_norm_eq (x : ℤ[i]) :
@@ -294,7 +294,7 @@ theorem sq_add_sq_of_nat_prime_of_not_irreducible (p : ℕ) [hp : Fact p.Prime]
   let ⟨a, b, hpab, hau, hbu⟩ := hab
   have hnap : (norm a).natAbs = p :=
     ((hp.1.mul_eq_prime_sq_iff (mt norm_eq_one_iff.1 hau) (mt norm_eq_one_iff.1 hbu)).1 <| by
-        rw [← Int.coe_nat_inj', Int.coe_nat_pow, sq, ← @norm_nat_cast (-1), hpab]; simp).1
+        rw [← Int.natCast_inj, Int.coe_nat_pow, sq, ← @norm_nat_cast (-1), hpab]; simp).1
   ⟨a.re.natAbs, a.im.natAbs, by simpa [natAbs_norm_eq, sq] using hnap⟩
 #align gaussian_int.sq_add_sq_of_nat_prime_of_not_irreducible GaussianInt.sq_add_sq_of_nat_prime_of_not_irreducible
 

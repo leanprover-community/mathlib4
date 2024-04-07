@@ -51,12 +51,12 @@ Then the rest is usual set theory.
 
 ## Notes
 
-To avoid confusion between the Lean `set` and the ZFC `Set`, docstrings in this file refer to them
-respectively as "`set`" and "ZFC set".
+To avoid confusion between the Lean `Set` and the ZFC `Set`, docstrings in this file refer to them
+respectively as "`Set`" and "ZFC set".
 
 ## TODO
 
-Prove `Set.map_definable_aux` computably.
+Prove `ZFSet.mapDefinableAux` computably.
 -/
 
 -- Porting note: Lean 3 uses `Set` for `ZFSet`.
@@ -295,7 +295,7 @@ theorem mem_irrefl (x : PSet) : x ∉ x :=
   irrefl x
 #align pSet.mem_irrefl PSet.mem_irrefl
 
-/-- Convert a pre-set to a `set` of pre-sets. -/
+/-- Convert a pre-set to a `Set` of pre-sets. -/
 def toSet (u : PSet.{u}) : Set PSet.{u} :=
   { x | x ∈ u }
 #align pSet.to_set PSet.toSet
@@ -682,7 +682,7 @@ theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
   Iff.rfl
 #align Set.mk_mem_iff ZFSet.mk_mem_iff
 
-/-- Convert a ZFC set into a `set` of ZFC sets -/
+/-- Convert a ZFC set into a `Set` of ZFC sets -/
 def toSet (u : ZFSet.{u}) : Set ZFSet.{u} :=
   { x | x ∈ u }
 #align Set.to_set ZFSet.toSet

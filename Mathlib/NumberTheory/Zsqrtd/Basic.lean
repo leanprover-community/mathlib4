@@ -178,8 +178,8 @@ instance addCommGroup : AddCommGroup (ℤ√d) := by
     zero := (0 : ℤ√d)
     sub := fun a b => a + -b
     neg := Neg.neg
-    zsmul := @zsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩
     nsmul := @nsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩
+    zsmul := @zsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩ (@nsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩)
     add_assoc := ?_
     zero_add := ?_
     add_zero := ?_
@@ -584,11 +584,11 @@ theorem norm_eq_one_iff {x : ℤ√d} : x.norm.natAbs = 1 ↔ IsUnit x :=
       (le_total 0 (norm x)).casesOn
         (fun hx =>
           ⟨star x, by
-            rwa [← Int.coe_nat_inj', Int.natAbs_of_nonneg hx, ← @Int.cast_inj (ℤ√d) _ _,
+            rwa [← Int.natCast_inj, Int.natAbs_of_nonneg hx, ← @Int.cast_inj (ℤ√d) _ _,
               norm_eq_mul_conj, eq_comm] at h⟩)
         fun hx =>
           ⟨-star x, by
-            rwa [← Int.coe_nat_inj', Int.ofNat_natAbs_of_nonpos hx, ← @Int.cast_inj (ℤ√d) _ _,
+            rwa [← Int.natCast_inj, Int.ofNat_natAbs_of_nonpos hx, ← @Int.cast_inj (ℤ√d) _ _,
               Int.cast_neg, norm_eq_mul_conj, neg_mul_eq_mul_neg, eq_comm] at h⟩,
     fun h => by
     let ⟨y, hy⟩ := isUnit_iff_dvd_one.1 h
@@ -603,7 +603,7 @@ theorem isUnit_iff_norm_isUnit {d : ℤ} (z : ℤ√d) : IsUnit z ↔ IsUnit z.n
 #align zsqrtd.is_unit_iff_norm_is_unit Zsqrtd.isUnit_iff_norm_isUnit
 
 theorem norm_eq_one_iff' {d : ℤ} (hd : d ≤ 0) (z : ℤ√d) : z.norm = 1 ↔ IsUnit z := by
-  rw [← norm_eq_one_iff, ← Int.coe_nat_inj', Int.natAbs_of_nonneg (norm_nonneg hd z), Int.ofNat_one]
+  rw [← norm_eq_one_iff, ← Int.natCast_inj, Int.natAbs_of_nonneg (norm_nonneg hd z), Int.ofNat_one]
 #align zsqrtd.norm_eq_one_iff' Zsqrtd.norm_eq_one_iff'
 
 theorem norm_eq_zero_iff {d : ℤ} (hd : d < 0) (z : ℤ√d) : z.norm = 0 ↔ z = 0 := by
@@ -792,7 +792,7 @@ protected theorem add_lt_add_left (a b : ℤ√d) (h : a < b) (c) : c + a < c + 
 #align zsqrtd.add_lt_add_left Zsqrtd.add_lt_add_left
 
 theorem nonneg_smul {a : ℤ√d} {n : ℕ} (ha : Nonneg a) : Nonneg ((n : ℤ√d) * a) := by
-  rw [← Int.cast_ofNat n]
+  rw [← Int.cast_natCast n]
   exact
     match a, nonneg_cases ha, ha with
     | _, ⟨x, y, Or.inl rfl⟩, _ => by rw [smul_val]; trivial
@@ -817,7 +817,7 @@ theorem nonneg_muld {a : ℤ√d} (ha : Nonneg a) : Nonneg (sqrtd * a) :=
 
 theorem nonneg_mul_lem {x y : ℕ} {a : ℤ√d} (ha : Nonneg a) : Nonneg (⟨x, y⟩ * a) := by
   have : (⟨x, y⟩ * a : ℤ√d) = (x : ℤ√d) * a + sqrtd * ((y : ℤ√d) * a) := by
-    rw [decompose, right_distrib, mul_assoc, Int.cast_ofNat, Int.cast_ofNat]
+    rw [decompose, right_distrib, mul_assoc, Int.cast_natCast, Int.cast_natCast]
   rw [this]
   exact (nonneg_smul ha).add (nonneg_muld <| nonneg_smul ha)
 #align zsqrtd.nonneg_mul_lem Zsqrtd.nonneg_mul_lem

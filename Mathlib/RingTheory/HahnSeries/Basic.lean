@@ -135,7 +135,7 @@ def of_iterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries �
       rw [hn] at hf
       exact hf rfl
     sorry
--- See Mathlib.Data.MvPolynomial.Monad for join and bind operations
+-- See Mathlib.Algebra.MvPolynomial.Monad for join and bind operations
 need a monotone pair. have:
 nonrec theorem IsPWO.exists_monotone_subseq (h : s.IsPWO) (f : ℕ → α) (hf : ∀ n, f n ∈ s) :
     ∃ g : ℕ ↪o ℕ, Monotone (f ∘ g) :=
@@ -358,7 +358,7 @@ theorem suppBddBelow_supp_PWO (f : Γ → R) (hf : BddBelow (Function.support f)
 
 theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀(m : Γ), m < n → f m = 0) :
     BddBelow (Function.support f) := by
-  unfold BddBelow Set.Nonempty lowerBounds
+  simp only [BddBelow, Set.Nonempty, lowerBounds]
   use n
   intro m hm
   rw [Function.mem_support, ne_eq] at hm
