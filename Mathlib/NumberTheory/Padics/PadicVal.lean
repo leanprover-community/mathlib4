@@ -330,11 +330,11 @@ protected theorem defn (p : ℕ) [hp : Fact p.Prime] {q : ℚ} {n d : ℤ} (hqz 
   rw [multiplicity.mul' (Nat.prime_iff_prime_int.1 hp.1),
     multiplicity.mul' (Nat.prime_iff_prime_int.1 hp.1)]
   rw [Nat.cast_add, Nat.cast_add]
-  simp_rw [Int.coe_nat_multiplicity p q.den]
+  simp_rw [Int.natCast_multiplicity p q.den]
   ring
   -- Porting note: was
   -- simp only [hc1, hc2, multiplicity.mul' (Nat.prime_iff_prime_int.1 hp.1),
-  --   hp.1.ne_one, hqz, pos_iff_ne_zero, Int.coe_nat_multiplicity p q.den
+  --   hp.1.ne_one, hqz, pos_iff_ne_zero, Int.natCast_multiplicity p q.den
 #align padic_val_rat.defn padicValRat.defn
 
 /-- A rewrite lemma for `padicValRat p (q * r)` with conditions `q ≠ 0`, `r ≠ 0`. -/
