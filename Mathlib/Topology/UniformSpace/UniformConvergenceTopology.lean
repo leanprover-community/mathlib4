@@ -167,10 +167,10 @@ instance [Nonempty β] : Nonempty (α →ᵤ β) := Pi.instNonempty
 
 instance [Nonempty β] : Nonempty (α →ᵤ[𝔖] β) := Pi.instNonempty
 
-instance {α β} [Subsingleton β] : Subsingleton (α →ᵤ β) :=
+instance [Subsingleton β] : Subsingleton (α →ᵤ β) :=
   instSubsingletonForAll
 
-instance {α β 𝔖} [Subsingleton β] : Subsingleton (α →ᵤ[𝔖] β) :=
+instance [Subsingleton β] : Subsingleton (α →ᵤ[𝔖] β) :=
   instSubsingletonForAll
 
 /-- Reinterpret `f : α → β` as an element of `α →ᵤ β`. -/

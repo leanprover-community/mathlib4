@@ -42,8 +42,7 @@ a family of compact subsets of `X`, and `α` is a uniform space.
 
 * A lot of statements assume `∀ K ∈ 𝔖, EquicontinuousOn F K` instead of the more natural
   `EquicontinuousOn F (⋃₀ 𝔖)`. This is in order to keep the most generality, as the first statement
-  is strictly weaker, but this may well be completely useless so we might want to change this in
-  the future.
+  is strictly weaker.
 
 * In Bourbaki, the usual Arzela-Ascoli compactness theorem follows from a similar total boundedness
   result. Here we go directly for the compactness result, which is the most useful in practice, but
@@ -68,9 +67,9 @@ a family of compact subsets of `X`, and `α` is a uniform space.
 equicontinuity, uniform convergence, ascoli
 -/
 
-open Set Filter Uniformity Topology TopologicalSpace Function UniformConvergence
+open Set Filter Uniformity Topology Function UniformConvergence
 
-variable {ι X Y α β : Type*} [TopologicalSpace X] [u : UniformSpace α] [UniformSpace β]
+variable {ι X Y α β : Type*} [TopologicalSpace X] [UniformSpace α] [UniformSpace β]
 variable {F : ι → X → α} {G : ι → β → α}
 
 /-- Let `X` be a compact topological space, `α` a uniform space, and `F : ι → (X → α)` an
