@@ -279,13 +279,12 @@ theorem inv_coe_nat_den_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.den = a 
 
 @[simp]
 theorem inv_coe_int_num (a : ℤ) : (a : ℚ)⁻¹.num = Int.sign a := by
-  induction a using Int.induction_on
-  · simp only [Int.cast_zero, inv_zero, num_ofNat, Int.sign_zero]
-  · simp only [Int.ofNat_add_one_out, Int.cast_ofNat, Nat.zero_lt_succ, inv_coe_nat_num_of_pos,
-      Nat.cast_pos, Int.sign_eq_one_of_pos]
-  · simp only [← Int.negSucc_coe', Int.negSucc_coe, Nat.cast_add, Nat.cast_one,
-      Int.ofNat_add_one_out, Int.cast_neg, Int.cast_ofNat, Rat.inv_neg, neg_num, Nat.zero_lt_succ,
-      inv_coe_nat_num_of_pos, Int.reduceNeg, Int.sign_neg, Nat.cast_pos, Int.sign_eq_one_of_pos]
+  rcases lt_trichotomy a 0 with lt | rfl | gt
+  · obtain ⟨a, rfl⟩ : ∃ b, -b = a := ⟨-a, a.neg_neg⟩
+    simp at lt
+    simp [Rat.inv_neg, inv_coe_int_num_of_pos lt, (Int.sign_eq_one_iff_pos _).mpr lt]
+  · rfl
+  · simp [inv_coe_int_num_of_pos gt, (Int.sign_eq_one_iff_pos _).mpr gt]
 #align rat.inv_coe_int_num Rat.inv_coe_int_num
 
 @[simp]
@@ -299,14 +298,15 @@ theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℚ)
 
 @[simp]
 theorem inv_coe_int_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.natAbs := by
-  induction a using Int.induction_on
-  · simp only [Int.cast_zero, inv_zero, den_ofNat, ↓reduceIte]
-  · simp only [Int.ofNat_add_one_out, Int.cast_ofNat, Nat.zero_lt_succ, inv_coe_nat_den_of_pos,
-      Nat.cast_eq_zero, Nat.succ_ne_zero, ↓reduceIte, Int.natAbs_ofNat]
-  · simp only [← Int.negSucc_coe', Int.negSucc_coe, Nat.cast_add, Nat.cast_one,
-      Int.ofNat_add_one_out, Int.cast_neg, Int.cast_ofNat, Rat.inv_neg, neg_den, Nat.zero_lt_succ,
-      inv_coe_nat_den_of_pos, neg_eq_zero, Nat.cast_eq_zero, Nat.succ_ne_zero, ↓reduceIte,
-      Int.natAbs_neg, Int.natAbs_ofNat]
+  rw [← Int.ofNat_inj]
+  rcases lt_trichotomy a 0 with lt | rfl | gt
+  · obtain ⟨a, rfl⟩ : ∃ b, -b = a := ⟨-a, a.neg_neg⟩
+    simp at lt
+    rw [if_neg (by omega)]
+    simp [Rat.inv_neg, inv_coe_int_den_of_pos lt, abs_of_pos lt]
+  · rfl
+  · rw [if_neg (by omega)]
+    simp [inv_coe_int_den_of_pos gt, abs_of_pos gt]
 
 #align rat.inv_coe_int_denom Rat.inv_coe_int_den
 
