@@ -176,7 +176,7 @@ theorem abs_coe_nat_norm (x : ℤ[i]) : (x.norm.natAbs : ℤ) = x.norm :=
 
 @[simp]
 theorem nat_cast_natAbs_norm {α : Type*} [Ring α] (x : ℤ[i]) : (x.norm.natAbs : α) = x.norm := by
-  rw [← Int.cast_ofNat, abs_coe_nat_norm]
+  rw [← Int.cast_natCast, abs_coe_nat_norm]
 #align gaussian_int.nat_cast_nat_abs_norm GaussianInt.nat_cast_natAbs_norm
 
 theorem natAbs_norm_eq (x : ℤ[i]) :

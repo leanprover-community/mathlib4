@@ -515,7 +515,7 @@ theorem coe_int_div_eq_divInt {n d : ℤ} : (n : ℚ) / (d) = n /. d := by
 
 -- Porting note: see porting note above about `Int.cast`@[simp]
 theorem num_div_den (r : ℚ) : (r.num : ℚ) / (r.den : ℚ) = r := by
-  rw [← Int.cast_ofNat]
+  rw [← Int.cast_natCast]
   erw [← divInt_eq_div, num_den]
 #align rat.num_div_denom Rat.num_div_den
 
@@ -538,7 +538,7 @@ instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
 #align rat.can_lift Rat.canLift
 
 theorem coe_nat_eq_divInt (n : ℕ) : ↑n = n /. 1 := by
-  rw [← Int.cast_ofNat, coe_int_eq_divInt]
+  rw [← Int.cast_natCast, coe_int_eq_divInt]
 #align rat.coe_nat_eq_mk Rat.coe_nat_eq_divInt
 
 @[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
