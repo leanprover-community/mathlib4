@@ -417,28 +417,6 @@ Return a tuple (old_files, old_declarations) consisting of
 - a dictionary of all align-ed declarations of the form {old: new}.'''
 # Currently, this reads from local files, which have been pre-generated.
 def parse_old_files_declarations():
-    old_files = []
-    for line in open('align_imports.txt', 'r', encoding='utf-8'):
-        if not line.startswith("#align_import "):
-            continue
-        line = line[len("#align_import "):]
-        if not " from " in line:
-            continue
-        old_file = line[:line.find(' from ')]
-        old_files.append(old_file)
-        # Also append just the filename.
-        if '.' in old_file:
-            filename = old_file.split('.')[-1]
-            # These are declaration names in Lean 4. xxx why dist?
-            if filename in ['Born', 'Compactum', 'Fintype', 'Locale', 'Module', 'GroupWithZero', 'UniformSpace',
-                'add', 'mul', 'cofinite', 'closure', 'residual', 'smul', 'dist', 'max', 'abs', 'inv', 'log', 'comap']:
-                continue
-            elif len(filename) == 1:
-                continue
-            # These are tactic names in Lean 4.
-            if filename not in ['continuity', 'elementwise', 'exact', 'ext', 'index', 'type', 'ring']:
-                old_files.append(filename)
-            # TODO: also remove all file names which are declaration names.
     # Read in all #align statements and parse the names of the old and new declaration.
     aligns = dict()
     for line in open('all_aligns.txt', 'r', encoding='utf-8'):
@@ -450,27 +428,49 @@ def parse_old_files_declarations():
             continue
         _align, old_decl, new_decl = parts
         aligns[old_decl] = new_decl
-        # If the old and new name have the same number of components,
-        # also just look for the lemma names.
-        # Insert these **after** the previous declaration, so a longer path is found first.
-        n = old_decl.count('.')
-        if n >= 3 and new_decl.count('.') == n:
-            old_parts = old_decl.split('.')
-            new_parts = new_decl.split('.')
-            aligns['.'.join(old_parts[1:])] = '.'.join(new_parts[-1])
+    # Just the names of the new declarations.
+    new_decl_names = [s.split('.')[-1] for s in aligns.values()]
+    old_files = []
+    for line in open('align_imports.txt', 'r', encoding='utf-8'):
+        if not line.startswith("#align_import ") or " from " not in line:
+            continue
+        line = line[len("#align_import "):]
+        old_file = line[:line.find(' from ')]
+        old_files.append(old_file)
+        # Also append just the filename.
+        if '.' in old_file:
+            filename = old_file.split('.')[-1]
+            # In a few cases, an old filename can legitimately appear in Lean 4 code: skip these.
+            # tactic names and/or keywords
+            if filename in ['continuity', 'elementwise', 'exact', 'ext', 'index', 'type', 'ring',
+                            'instances']:
+                continue
+            # names of new "align"ed declarations
+            elif filename in new_decl_names:
+                continue
+            old_files.append(filename)
     # For each old declaration, if the new declaration is different
     # *and* there is no new declaration of the same name, add these to our list.
-    # We do this in two stages; a naive algorithm is extremely slow (quadratic?).
+    # We do this in two stages; a naive algorithm is *much* slower.
     old_declarations = []
     for old, new in aligns.items():
-        if old != new: # and old not in aligns.values():
+        if old != new:
             old_declarations.append(old)
     same = set(aligns.values()).intersection(set(old_declarations))
     # print(f"Found {len(same)} old declarations which occur as a different new declaration:\n{same}")
     old_declarations = [s for s in old_declarations if s not in same]
-    old_declarations = dict(
+    old_decl_dict = dict(
         (d, aligns[d]) for d in old_declarations
     )
+    # If the old and new name have the same number of components,
+    # also just look for the lemma names.
+    # Insert these **after** the previous declaration, so a longer path is found first.
+    for decl in old_declarations:
+        if decl.count('.') >= 3:
+            new = aligns[decl]
+            if new.count('.') == decl.count('.'):
+                old_parts = old.split('.')
+                old_decl_dict['.'.join(old_parts[1:])] = '.'.join(new.split('.')[1:])
     return old_files, old_declarations
 
 
