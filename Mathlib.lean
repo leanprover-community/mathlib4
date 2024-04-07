@@ -1844,7 +1844,6 @@ import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Int.Order.Units
 import Mathlib.Data.Int.Parity
 import Mathlib.Data.Int.Range
-import Mathlib.Data.Int.Ring
 import Mathlib.Data.Int.Sqrt
 import Mathlib.Data.Int.Star
 import Mathlib.Data.Int.SuccPred
@@ -2002,7 +2001,6 @@ import Mathlib.Data.Nat.Periodic
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.PrimeNormNum
-import Mathlib.Data.Nat.Semiring
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Sqrt
