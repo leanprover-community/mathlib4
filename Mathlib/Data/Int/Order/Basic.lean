@@ -62,7 +62,7 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
 #align int.coe_nat_abs Int.natCast_natAbs
 
 lemma _root_.Nat.cast_natAbs {α : Type*} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| := by
-  rw [← natCast_natAbs, Int.cast_ofNat]
+  rw [← natCast_natAbs, Int.cast_natCast]
 #align nat.cast_nat_abs Nat.cast_natAbs
 
 theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; rfl

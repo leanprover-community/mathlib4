@@ -18,7 +18,7 @@ In a complete (semi)normed group,
   there exists a finite set `s` such that the sum `∑ i in t, f i` over any finite set `t` disjoint
   with `s` has norm less than `ε`;
 
-- `summable_of_norm_bounded`, `summable_of_norm_bounded_eventually`: if `‖f i‖` is bounded above by
+- `summable_of_norm_bounded`, `Summable.of_norm_bounded_eventually`: if `‖f i‖` is bounded above by
   a summable series `∑' i, g i`, then `∑' i, f i` is summable as well; the same is true if the
   inequality hold only off some finite set.
 
