@@ -164,7 +164,7 @@ theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
   refine' ⟨1, (Filter.eventually_ge_atTop 1).mono fun x hx => _⟩
   rw [one_mul, Real.norm_of_nonneg (Real.rpow_nonneg (zero_le_one.trans hx) _),
     Real.norm_of_nonneg (zpow_nonneg (zero_le_one.trans hx) _), ← Real.rpow_int_cast, Int.cast_neg,
-    Int.cast_ofNat]
+    Int.cast_natCast]
   exact Real.rpow_le_rpow_of_exponent_le hx hk
 set_option linter.uppercaseLean3 false in
 #align schwartz_map.is_O_cocompact_rpow SchwartzMap.isBigO_cocompact_rpow

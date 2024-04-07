@@ -209,7 +209,7 @@ be replaced with a proof that uses Gaussian reduction or argues via linear combi
 
 section StarOrderedField
 
-variable [Fintype m] [Field R] [PartialOrder R] [StarOrderedRing R]
+variable [Fintype m] [Field R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
 
 theorem ker_mulVecLin_conjTranspose_mul_self (A : Matrix m n R) :
     LinearMap.ker (Aᴴ * A).mulVecLin = LinearMap.ker (mulVecLin A) := by
