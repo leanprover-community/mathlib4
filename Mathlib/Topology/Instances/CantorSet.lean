@@ -82,12 +82,8 @@ lemma isClosed_cantorSet : IsClosed cantorSet := by
     exact isClosed_Icc
   | succ n ih =>
     refine IsClosed.union ?_ ?_
-    · refine (ClosedEmbedding.closed_iff_image_closed ?succ.refine_1.hf).mp ih
-      convert f.closedEmbedding using 2
-      simp [f, div_eq_inv_mul]
-    · refine (ClosedEmbedding.closed_iff_image_closed ?succ.refine_2.hf).mp ih
-      convert g.closedEmbedding using 2
-      simp [g, f, div_eq_inv_mul]
+    · simpa [f, div_eq_inv_mul] using f.closedEmbedding.closed_iff_image_closed.mp ih
+    · simpa [g, f, div_eq_inv_mul] using g.closedEmbedding.closed_iff_image_closed.mp ih
 
 /-- The ternary Cantor set is compact. -/
 lemma isCompact_cantorSet : IsCompact cantorSet :=
