@@ -179,7 +179,7 @@ def MonCat.units : MonCat.{u} ⥤ GroupCat.{u} where
   map_comp _ _ := MonoidHom.ext fun _ => Units.ext rfl
 #align Mon.units MonCat.units
 
-/-- The forgetful-units adjunction between `Group` and `MonCat`. -/
+/-- The forgetful-units adjunction between `GroupCat` and `MonCat`. -/
 def GroupCat.forget₂MonAdj : forget₂ GroupCat MonCat ⊣ MonCat.units.{u} where
   homEquiv X Y :=
     { toFun := fun f => MonoidHom.toHomUnits f
@@ -208,7 +208,7 @@ def CommMonCat.units : CommMonCat.{u} ⥤ CommGroupCat.{u} where
   map_comp _ _ := MonoidHom.ext fun _ => Units.ext rfl
 #align CommMon.units CommMonCat.units
 
-/-- The forgetful-units adjunction between `CommGroup` and `CommMonCat`. -/
+/-- The forgetful-units adjunction between `CommGroupCat` and `CommMonCat`. -/
 def CommGroupCat.forget₂CommMonAdj : forget₂ CommGroupCat CommMonCat ⊣ CommMonCat.units.{u} where
   homEquiv X Y :=
     { toFun := fun f => MonoidHom.toHomUnits f

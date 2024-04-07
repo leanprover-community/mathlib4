@@ -441,11 +441,11 @@ set_option linter.uppercaseLean3 false in
 #align add_equiv_iso_AddGroup_iso addEquivIsoAddGroupIso
 
 /-- "additive equivalences between `AddGroup`s are the same
-as (isomorphic to) isomorphisms in `AddGroup` -/
+as (isomorphic to) isomorphisms in `AddGroupCat` -/
 add_decl_doc addEquivIsoAddGroupIso
 
 /-- multiplicative equivalences between `CommGroup`s are the same as (isomorphic to) isomorphisms
-in `CommGroup` -/
+in `CommGroupCat` -/
 @[to_additive]
 def mulEquivIsoCommGroupIso {X Y : CommGroupCat.{u}} : X ≃* Y ≅ X ≅ Y where
   hom e := e.toCommGroupCatIso

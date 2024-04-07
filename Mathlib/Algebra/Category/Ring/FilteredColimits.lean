@@ -57,7 +57,7 @@ set_option linter.uppercaseLean3 false in
 
 variable [IsFiltered J]
 
-/-- The colimit of `F ⋙ forget₂ SemiRing Mon` in the category `MonCat`.
+/-- The colimit of `F ⋙ forget₂ SemiRingCat MonCat` in the category `MonCat`.
 In the following, we will show that this has the structure of a semiring.
 -/
 abbrev R : MonCatMax.{v, u} :=
