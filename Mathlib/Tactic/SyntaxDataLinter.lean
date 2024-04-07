@@ -3,6 +3,7 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+import Lean.Elab.App
 import Lean.Elab.Command
 import Lean.Linter.Util
 
@@ -64,12 +65,33 @@ abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
 
 /-- scans the input `InfoTree` and accumulates `SyntaxNodeKinds` and `Range`s in a `HashSet`. -/
 partial
+def getTerms :
+    InfoTree → HashSet (Expr × String.Range) → HashSet (Expr × String.Range)
+  | .node k args, col =>
+    let rargs := (args.map (getTerms · col)).toArray
+    Id.run do
+    let mut tot := col
+    for r in rargs do
+      for (a, rg) in r do
+          tot := tot.insert (a, rg)
+    if let .ofTermInfo i := k then
+      let stx := i.stx
+      if let .original .. := stx.getHeadInfo then  -- make sure that the syntax is `original`
+        if let some rg := stx.getRange? then  -- and that it has a `Range`
+          tot := tot.insert (i.expr, rg)
+      tot
+    else tot
+  | .context _ t, col => getTerms t col
+  | _, _ => default
+
+/-- scans the input `InfoTree` and accumulates `SyntaxNodeKinds` and `Range`s in a `HashSet`. -/
+partial
 def getRanges :
     InfoTree → HashSet (SyntaxNodeKind × String.Range) → HashSet (SyntaxNodeKind × String.Range)
   | .node k args, col =>
     let rargs := (args.map (getRanges · col)).toArray
     Id.run do
-    let mut tot : HashSet (SyntaxNodeKind × String.Range) := .empty
+    let mut tot := col
     for r in rargs do
       for (a, b) in r.toArray do
         if !exclusions.contains a then
@@ -103,6 +125,8 @@ def syntaxDataLinter : Linter where run := withSetOptionIn fun stx => do
   let _ : Ord (SyntaxNodeKind × String.Range) := lexOrd
   let mut msg := .empty
   for t in trees.toArray do
+--    let dIds := getTerms t .empty
+--    dbg_trace "{dIds.toArray}"
     msg := getRanges t msg
   let dat := msg.toArray.qsort (compare · ·|>.isLT)
   if dat != #[] then
