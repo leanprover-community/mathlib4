@@ -877,8 +877,7 @@ theorem t2Space_of_covering [T2Space β] (h : ⋃₀ 𝔖 = univ) : T2Space (α 
     exact separated_by_continuous (uniformContinuous_eval_of_mem β 𝔖 hxs hs).continuous hx
 #align uniform_on_fun.t2_space_of_covering UniformOnFun.t2Space_of_covering
 
-/-- The restriction map `(⋃₀ 𝔖).restrict ∘ UniformOnFun.toFun 𝔖` from `α →ᵤ[𝔖] β` to `⋃₀ 𝔖 → β` is
-uniformly continuous. -/
+/-- The restriction map from `α →ᵤ[𝔖] β` to `⋃₀ 𝔖 → β` is uniformly continuous. -/
 theorem uniformContinuous_restrict_toFun :
     UniformContinuous ((⋃₀ 𝔖).restrict ∘ toFun 𝔖 : (α →ᵤ[𝔖] β) → ⋃₀ 𝔖 → β) := by
   rw [uniformContinuous_pi]
