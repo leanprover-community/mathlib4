@@ -67,7 +67,6 @@ theorem ae_eq_zero_of_forall_inner [NormedAddCommGroup E] [InnerProductSpace �
   exact @isClosed_property ℕ E _ s (fun c => inner c (f x) = (0 : 𝕜)) hs h_closed (fun n => hx n) _
 #align measure_theory.ae_eq_zero_of_forall_inner MeasureTheory.ae_eq_zero_of_forall_inner
 
--- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => y x
 
 variable (𝕜)
@@ -564,7 +563,7 @@ theorem Integrable.ae_eq_of_forall_set_integral_eq (f g : α → E) (hf : Integr
 variable {β : Type*} [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β]
 
 /-- If an integrable function has zero integral on all closed sets, then it is zero
-almost everwhere.-/
+almost everwhere. -/
 lemma ae_eq_zero_of_forall_set_integral_isClosed_eq_zero {μ : Measure β} {f : β → E}
     (hf : Integrable f μ) (h'f : ∀ (s : Set β), IsClosed s → ∫ x in s, f x ∂μ = 0) :
     f =ᵐ[μ] 0 := by

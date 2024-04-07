@@ -3,6 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Int.Div
 import Mathlib.Data.PNat.Defs
@@ -271,16 +272,18 @@ theorem inv_coe_int_den_of_pos {a : ℤ} (ha0 : 0 < a) : ((a : ℚ)⁻¹.den : �
 #align rat.inv_coe_int_denom_of_pos Rat.inv_coe_int_den_of_pos
 
 theorem inv_coe_nat_den_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.den = a := by
-  rw [← Int.ofNat_inj, ← Int.cast_ofNat a, inv_coe_int_den_of_pos]
+  rw [← Int.ofNat_inj, ← Int.cast_natCast a, inv_coe_int_den_of_pos]
   rwa [Nat.cast_pos]
 #align rat.inv_coe_nat_denom_of_pos Rat.inv_coe_nat_den_of_pos
 
 @[simp]
 theorem inv_coe_int_num (a : ℤ) : (a : ℚ)⁻¹.num = Int.sign a := by
-  induction a using Int.induction_on <;>
-    simp [← Int.negSucc_coe', Int.negSucc_coe, -neg_add_rev, Rat.inv_neg, Int.ofNat_add_one_out,
-      -Nat.cast_succ, inv_coe_nat_num_of_pos, -Int.cast_negSucc, @eq_comm ℤ 1,
-      Int.sign_eq_one_of_pos, ofInt_eq_cast]
+  rcases lt_trichotomy a 0 with lt | rfl | gt
+  · obtain ⟨a, rfl⟩ : ∃ b, -b = a := ⟨-a, a.neg_neg⟩
+    simp at lt
+    simp [Rat.inv_neg, inv_coe_int_num_of_pos lt, (Int.sign_eq_one_iff_pos _).mpr lt]
+  · rfl
+  · simp [inv_coe_int_num_of_pos gt, (Int.sign_eq_one_iff_pos _).mpr gt]
 #align rat.inv_coe_int_num Rat.inv_coe_int_num
 
 @[simp]
@@ -294,9 +297,15 @@ theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℚ)
 
 @[simp]
 theorem inv_coe_int_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.natAbs := by
-  induction a using Int.induction_on <;>
-    simp [← Int.negSucc_coe', Int.negSucc_coe, -neg_add_rev, Rat.inv_neg, Int.ofNat_add_one_out,
-      -Nat.cast_succ, inv_coe_nat_den_of_pos, -Int.cast_negSucc, ofInt_eq_cast]
+  rw [← Int.ofNat_inj]
+  rcases lt_trichotomy a 0 with lt | rfl | gt
+  · obtain ⟨a, rfl⟩ : ∃ b, -b = a := ⟨-a, a.neg_neg⟩
+    simp at lt
+    rw [if_neg (by omega)]
+    simp [Rat.inv_neg, inv_coe_int_den_of_pos lt, abs_of_pos lt]
+  · rfl
+  · rw [if_neg (by omega)]
+    simp [inv_coe_int_den_of_pos gt, abs_of_pos gt]
 #align rat.inv_coe_int_denom Rat.inv_coe_int_den
 
 @[simp]
@@ -313,7 +322,7 @@ protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ
   ⟨fun h _ _ => h _,
    fun h q => by
     have := h q.num q.den
-    rwa [Int.cast_ofNat, num_div_den q] at this⟩
+    rwa [Int.cast_natCast, num_div_den q] at this⟩
 #align rat.forall Rat.forall
 
 protected theorem «exists» {p : ℚ → Prop} : (∃ r, p r) ↔ ∃ a b : ℤ, p (a / b) :=

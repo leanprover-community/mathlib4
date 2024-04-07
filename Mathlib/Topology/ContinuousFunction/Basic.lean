@@ -594,7 +594,7 @@ instance : Coe (α ≃ₜ β) C(α, β) :=
   ⟨Homeomorph.toContinuousMap⟩
 
 -- Porting note: Syntactic tautology
-/-theorem toContinuousMap_as_coe : f.toContinuousMap = f :=
+/- theorem toContinuousMap_as_coe : f.toContinuousMap = f :=
   rfl
 -/
 #noalign homeomorph.to_continuous_map_as_coe

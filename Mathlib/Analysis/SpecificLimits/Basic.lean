@@ -380,7 +380,7 @@ variable [PseudoEMetricSpace α] (r C : ℝ≥0∞) (hr : r < 1) (hC : C ≠ ⊤
   (hu : ∀ n, edist (f n) (f (n + 1)) ≤ C * r ^ n)
 
 /-- If `edist (f n) (f (n+1))` is bounded by `C * r^n`, `C ≠ ∞`, `r < 1`,
-then `f` is a Cauchy sequence.-/
+then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_geometric : CauchySeq f := by
   refine' cauchySeq_of_edist_le_of_tsum_ne_top _ hu _
   rw [ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
@@ -410,7 +410,7 @@ section EdistLeGeometricTwo
 variable [PseudoEMetricSpace α] (C : ℝ≥0∞) (hC : C ≠ ⊤) {f : ℕ → α}
   (hu : ∀ n, edist (f n) (f (n + 1)) ≤ C / 2 ^ n) {a : α} (ha : Tendsto f atTop (𝓝 a))
 
-/-- If `edist (f n) (f (n+1))` is bounded by `C * 2^-n`, then `f` is a Cauchy sequence.-/
+/-- If `edist (f n) (f (n+1))` is bounded by `C * 2^-n`, then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_geometric_two : CauchySeq f := by
   simp only [div_eq_mul_inv, ENNReal.inv_pow] at hu
   refine' cauchySeq_of_edist_le_geometric 2⁻¹ C _ hC hu

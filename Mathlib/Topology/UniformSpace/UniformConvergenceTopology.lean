@@ -235,7 +235,6 @@ protected def filter (𝓕 : Filter <| β × β) : Filter ((α →ᵤ β) × (α
   (UniformFun.basis α β 𝓕).filter
 #align uniform_fun.filter UniformFun.filter
 
--- mathport name: exprΦ
 --local notation "Φ" => fun (α β : Type*) (uvx : ((α →ᵤ β) × (α →ᵤ β)) × α) =>
   --(uvx.fst.fst uvx.2, uvx.1.2 uvx.2)
 
@@ -299,7 +298,6 @@ instance uniformSpace : UniformSpace (α →ᵤ β) :=
 instance topologicalSpace : TopologicalSpace (α →ᵤ β) :=
   inferInstance
 
--- mathport name: «expr𝒰( , , )»
 local notation "𝒰(" α ", " β ", " u ")" => @UniformFun.uniformSpace α β u
 
 /-- By definition, the uniformity of `α →ᵤ β` admits the family `{(f, g) | ∀ x, (f x, g x) ∈ V}`
@@ -540,7 +538,6 @@ namespace UniformOnFun
 variable {α β : Type*} {γ ι : Type*}
 variable {s s' : Set α} {x : α} {p : Filter ι} {g : ι → α}
 
--- mathport name: «expr𝒰( , , )»
 local notation "𝒰(" α ", " β ", " u ")" => @UniformFun.uniformSpace α β u
 
 /-- Basis sets for the uniformity of `𝔖`-convergence: for `S : Set α` and `V : Set (β × β)`,
@@ -555,7 +552,7 @@ protected def gen (𝔖) (S : Set α) (V : Set (β × β)) : Set ((α →ᵤ[�
 `UniformOnFun.gen 𝔖 S V = (S.restrict × S.restrict) ⁻¹' (UniformFun.gen S β V)`.
 This is the crucial fact for proving that the family `UniformOnFun.gen S V` for `S ∈ 𝔖` and
 `V ∈ 𝓤 β` is indeed a basis for the uniformity `α →ᵤ[𝔖] β` endowed with `𝒱(α, β, 𝔖, uβ)`
-the uniform structure of `𝔖`-convergence, as defined in `UniformOnFun.uniform_space`. -/
+the uniform structure of `𝔖`-convergence, as defined in `UniformOnFun.uniformSpace`. -/
 protected theorem gen_eq_preimage_restrict {𝔖} (S : Set α) (V : Set (β × β)) :
     UniformOnFun.gen 𝔖 S V =
       Prod.map (S.restrict ∘ UniformFun.toFun) (S.restrict ∘ UniformFun.toFun) ⁻¹'

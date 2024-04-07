@@ -46,7 +46,6 @@ diamonds, as `Fintype` carries data.
 
 variable {K : Type*} {R : Type*}
 
--- mathport name: exprq
 local notation "q" => Fintype.card K
 
 open Finset
