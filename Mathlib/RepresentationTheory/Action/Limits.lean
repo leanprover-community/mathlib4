@@ -206,7 +206,7 @@ section HasZeroMorphisms
 variable [HasZeroMorphisms V]
 
 -- porting note (#10688): in order to ease automation, the `Zero` instance is introduced separately,
--- and the lemma `zero_hom` was moved just below
+-- and the lemma `ZeroHom` was moved just below
 instance {X Y : Action V G} : Zero (X ⟶ Y) := ⟨0, by aesop_cat⟩
 
 @[simp]
