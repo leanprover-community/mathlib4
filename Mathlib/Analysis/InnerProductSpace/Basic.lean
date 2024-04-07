@@ -1821,6 +1821,11 @@ theorem innerSLFlip_apply (x y : E) : innerSLFlip 𝕜 x y = ⟪y, x⟫ :=
 set_option linter.uppercaseLean3 false in
 #align innerSL_flip_apply innerSLFlip_apply
 
+variable (F) in
+@[simp] lemma innerSL_real_flip : (innerSL ℝ (E := F)).flip = innerSL ℝ := by
+  ext v w
+  exact real_inner_comm _ _
+
 variable {𝕜}
 
 namespace ContinuousLinearMap

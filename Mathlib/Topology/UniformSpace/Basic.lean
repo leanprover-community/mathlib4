@@ -1667,7 +1667,7 @@ theorem uniformContinuous_sInf_dom₂ {α β γ} {f : α → β → γ} {uas : S
     (ha : ua ∈ uas) (hb : ub ∈ ubs) (hf : UniformContinuous fun p : α × β => f p.1 p.2) : by
       haveI := sInf uas; haveI := sInf ubs;
         exact @UniformContinuous _ _ _ uc fun p : α × β => f p.1 p.2 := by
-  -- proof essentially copied from `continuous_Inf_dom`
+  -- proof essentially copied from `continuous_sInf_dom`
   let _ : UniformSpace (α × β) := instUniformSpaceProd
   have ha := uniformContinuous_sInf_dom ha uniformContinuous_id
   have hb := uniformContinuous_sInf_dom hb uniformContinuous_id

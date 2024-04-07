@@ -41,7 +41,7 @@ open scoped BigOperators
 variable {k : Type u} [Field k]
 
 namespace FdRep
-set_option linter.uppercaseLean3 false -- `fdRep`
+set_option linter.uppercaseLean3 false -- `FdRep`
 
 section Monoid
 
