@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 
 Coinductive formalization of unbounded computations.
 -/
+import Mathlib.Data.Nat.Find
 import Mathlib.Data.Stream.Init
 import Mathlib.Tactic.Common
 
