@@ -2045,7 +2045,7 @@ to a commutative monoid. Suppose that `f x = 1` outside of the range of `g`. The
 `atTop.map (fun s ↦ ∏ i in s, f (g i))` and `atTop.map (fun s ↦ ∏ i in s, f i)` coincide.
 
 The additive version of this lemma is used to prove the equality `∑' x, f (g x) = ∑' y, f y` under
-the same assumptions.-/
+the same assumptions. -/
 @[to_additive]
 theorem Function.Injective.map_atTop_finset_prod_eq [CommMonoid α] {g : γ → β}
     (hg : Function.Injective g) {f : β → α} (hf : ∀ x, x ∉ Set.range g → f x = 1) :
@@ -2071,5 +2071,5 @@ to an additive commutative monoid. Suppose that `f x = 0` outside of the range o
 filters `atTop.map (fun s ↦ ∑ i in s, f (g i))` and `atTop.map (fun s ↦ ∑ i in s, f i)` coincide.
 
 This lemma is used to prove the equality `∑' x, f (g x) = ∑' y, f y` under
-the same assumptions.-/
+the same assumptions. -/
 add_decl_doc Function.Injective.map_atTop_finset_sum_eq

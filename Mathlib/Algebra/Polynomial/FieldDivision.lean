@@ -283,7 +283,7 @@ theorem isUnit_iff_degree_eq_zero : IsUnit p ↔ degree p = 0 :=
         rw [← C_mul, _root_.mul_inv_cancel hc, C_1]⟩⟩
 #align polynomial.is_unit_iff_degree_eq_zero Polynomial.isUnit_iff_degree_eq_zero
 
-/-- Division of polynomials. See `Polynomial.divByMonic` for more details.-/
+/-- Division of polynomials. See `Polynomial.divByMonic` for more details. -/
 def div (p q : R[X]) :=
   C (leadingCoeff q)⁻¹ * (p /ₘ (q * C (leadingCoeff q)⁻¹))
 #align polynomial.div Polynomial.div

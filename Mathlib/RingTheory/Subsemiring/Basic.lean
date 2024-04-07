@@ -183,7 +183,7 @@ theorem ext {S T : Subsemiring R} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
 #align subsemiring.ext Subsemiring.ext
 
 /-- Copy of a subsemiring with a new `carrier` equal to the old one. Useful to fix definitional
-equalities.-/
+equalities. -/
 protected def copy (S : Subsemiring R) (s : Set R) (hs : s = ↑S) : Subsemiring R :=
   { S.toAddSubmonoid.copy s hs, S.toSubmonoid.copy s hs with carrier := s }
 #align subsemiring.copy Subsemiring.copy
@@ -543,7 +543,7 @@ theorem map_rangeS : f.rangeS.map g = (g.comp f).rangeS := by
 
 /-- The range of a morphism of semirings is a fintype, if the domain is a fintype.
 Note: this instance can form a diamond with `Subtype.fintype` in the
-  presence of `Fintype S`.-/
+  presence of `Fintype S`. -/
 instance fintypeRangeS [Fintype R] [DecidableEq S] (f : R →+* S) : Fintype (rangeS f) :=
   Set.fintypeRange f
 #align ring_hom.fintype_srange RingHom.fintypeRangeS
