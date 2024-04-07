@@ -51,7 +51,7 @@ instance orderedRing : OrderedRing ℤ :=
 /-! ### Miscellaneous lemmas -/
 
 lemma _root_.Nat.cast_natAbs {α : Type*} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| := by
-  rw [← natCast_natAbs, Int.cast_ofNat]
+  rw [← natCast_natAbs, Int.cast_natCast]
 #align nat.cast_nat_abs Nat.cast_natAbs
 
 lemma sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign = n.sign := by

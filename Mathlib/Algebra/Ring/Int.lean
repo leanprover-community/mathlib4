@@ -70,7 +70,7 @@ instance instDistrib      : Distrib ℤ      := by infer_instance
 
 lemma cast_Nat_cast {n : ℕ} {R : Type*} [AddGroupWithOne R] :
     (Int.cast (Nat.cast n) : R) = Nat.cast n :=
-  Int.cast_ofNat _
+  Int.cast_natCast _
 
 end Int
 

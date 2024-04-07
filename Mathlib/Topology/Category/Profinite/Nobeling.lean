@@ -71,7 +71,7 @@ In this section we define the relevant projection maps and prove some compatibil
 ### Main definitions
 
 * Let `J : I → Prop`. Then `Proj J : (I → Bool) → (I → Bool)` is the projection mapping everything
-  that satisfies `J i` to itself, and everything else to `false`.
+  that satisfies `J i` to itself, and everything else to `False`.
 
 * The image of `C` under `Proj J` is denoted `π C J` and the corresponding map `C → π C J` is called
   `ProjRestrict`. If `J` implies `K` we have a map `ProjRestricts : π C K → π C J`.
@@ -83,7 +83,7 @@ In this section we define the relevant projection maps and prove some compatibil
 variable (J K L : I → Prop) [∀ i, Decidable (J i)] [∀ i, Decidable (K i)] [∀ i, Decidable (L i)]
 
 /--
-The projection mapping everything that satisfies `J i` to itself, and everything else to `false`
+The projection mapping everything that satisfies `J i` to itself, and everything else to `False`
 -/
 def Proj : (I → Bool) → (I → Bool) :=
   fun c i ↦ if J i then c i else false
@@ -1161,10 +1161,10 @@ variable {o : Ordinal} (hC : IsClosed C) (hsC : contained C (Order.succ o))
 
 section ExactSequence
 
-/-- The subset of `C` consisting of those elements whose `o`-th entry is `false`. -/
+/-- The subset of `C` consisting of those elements whose `o`-th entry is `False`. -/
 def C0 := C ∩ {f | f (term I ho) = false}
 
-/-- The subset of `C` consisting of those elements whose `o`-th entry is `true`. -/
+/-- The subset of `C` consisting of those elements whose `o`-th entry is `True`. -/
 def C1 := C ∩ {f | f (term I ho) = true}
 
 theorem isClosed_C0 : IsClosed (C0 C ho) := by
@@ -1198,7 +1198,7 @@ theorem contained_C' : contained (C' C ho) o := fun f hf i hi ↦ contained_C1 C
 
 variable (o)
 
-/-- Swapping the `o`-th coordinate to `true`. -/
+/-- Swapping the `o`-th coordinate to `True`. -/
 noncomputable
 def SwapTrue : (I → Bool) → I → Bool :=
   fun f i ↦ if ord I i = o then true else f i

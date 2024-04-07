@@ -51,23 +51,12 @@ instance commMonoid : CommMonoid ℕ where
 These also prevent non-computable instances being used to construct these instances non-computably.
 -/
 
-instance addMonoid : AddMonoid ℕ :=
-  inferInstance
-
-instance monoid : Monoid ℕ :=
-  inferInstance
-
-instance commSemigroup : CommSemigroup ℕ :=
-  inferInstance
-
-instance semigroup : Semigroup ℕ :=
-  inferInstance
-
-instance addCommSemigroup : AddCommSemigroup ℕ :=
-  inferInstance
-
-instance addSemigroup : AddSemigroup ℕ :=
-  inferInstance
+instance addMonoid        : AddMonoid ℕ        := by infer_instance
+instance monoid           : Monoid ℕ           := by infer_instance
+instance commSemigroup    : CommSemigroup ℕ    := by infer_instance
+instance semigroup        : Semigroup ℕ        := by infer_instance
+instance addCommSemigroup : AddCommSemigroup ℕ := by infer_instance
+instance addSemigroup     : AddSemigroup ℕ     := by infer_instance
 
 /-! ### Miscellaneous lemmas -/
 
