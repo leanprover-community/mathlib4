@@ -127,7 +127,7 @@ variable [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C] [Module R A] [Mod
 variable (e e' : A ≃ₗc[R] B)
 
 /-- See Note [custom simps projection] -/
-def Simps.apply {R : Type u} [CommSemiring R] {α : Type v} {β : Type w}
+def Simps.apply {R : Type*} [CommSemiring R] {α β : Type*}
     [AddCommMonoid α] [AddCommMonoid β] [Module R α]
     [Module R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
     (f : α ≃ₗc[R] β) : α → β := f
