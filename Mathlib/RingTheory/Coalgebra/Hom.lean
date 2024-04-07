@@ -27,7 +27,7 @@ open TensorProduct Coalgebra BigOperators
 
 universe u v w
 
-/-- Given `R`-modules `A, B` with comultiplcation maps `Δ_A, Δ_B` and counit maps
+/-- Given `R`-modules `A, B` with comultiplication maps `Δ_A, Δ_B` and counit maps
 `ε_A, ε_B`, an `R`-coalgebra homomorphism `A →ₗc[R] B` is an `R`-linear map `f` such that
 `ε_B ∘ f = ε_A` and `(f ⊗ f) ∘ Δ_A = Δ_B ∘ f`. -/
 structure CoalgHom (R A B : Type*) [CommSemiring R]
@@ -70,8 +70,7 @@ def toCoalgHom (f : F) : A →ₗc[R] B :=
     counit_comp := CoalgHomClass.counit_comp f
     map_comp_comul := CoalgHomClass.map_comp_comul f }
 
--- should this be `CoeHead` as in `SemilinearMapClass.instCoeToSemilinearMap` from #10758?
-instance coeTC : CoeTC F (A →ₗc[R] B) :=
+instance instCoeToCoalgHom : CoeHead F (A →ₗc[R] B) :=
   ⟨CoalgHomClass.toCoalgHom⟩
 
 @[simp]
