@@ -351,7 +351,7 @@ theorem coe_map (f : E →L[𝕜] F) : (WeakSpace.map f : E → F) = f :=
 #align weak_space.coe_map WeakSpace.coe_map
 
 /-- The canonical map from `WeakSpace 𝕜 E` to `E` is an open map. -/
-theorem isOpenMap_inv_toWeakSpace : IsOpenMap (toWeakSpace 𝕜 E).symm :=
+theorem isOpenMap_toWeakSpace_symm : IsOpenMap (toWeakSpace 𝕜 E).symm :=
   IsOpenMap.of_inverse (continuousLinearMapToWeakSpace 𝕜 E).cont
     (toWeakSpace 𝕜 E).left_inv (toWeakSpace 𝕜 E).right_inv
 
