@@ -101,6 +101,7 @@ def rightUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (M ⊗[R] R) ≅ M :=
   (LinearEquiv.toModuleIso (TensorProduct.rid R M) : of R (M ⊗ R) ≅ of R M).trans (ofSelfIso M)
 #align Module.monoidal_category.right_unitor ModuleCat.MonoidalCategory.rightUnitor
 
+@[simps (config := .lemmasOnly)]
 instance : MonoidalCategoryStruct (ModuleCat.{u} R) where
   tensorObj := tensorObj
   whiskerLeft := whiskerLeft
