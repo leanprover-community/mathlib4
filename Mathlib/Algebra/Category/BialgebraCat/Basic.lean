@@ -22,7 +22,7 @@ variable (R : Type u) [CommRing R]
 
 /-- Objects in the category of `R`-bialgebras. -/
 structure BialgebraCat where
-/-- the underlying type of an object in `BialgebraCat R` -/
+  /-- the underlying type of an object in `BialgebraCat R` -/
   carrier : Type v
   [isRing : Ring carrier]
   [isBialgebra : Bialgebra R carrier]
