@@ -199,14 +199,14 @@ abbrev BialgEquiv.toBialgebraIso' {M N : BialgebraCat.{v} R} (i : M ≃ₐc[R] N
 /-- Build an isomorphism in the category `BialgebraCat R` from a `BialgEquiv`
 between bialgebras. -/
 abbrev BialgEquiv.toBialgebraIso'Left
-    {X₁ : BialgebraCat.{v} R} [Ring X₂] [Module R X₂] [Bialgebra R X₂]
+    {X₁ : BialgebraCat.{v} R} [Ring X₂] [Bialgebra R X₂]
     (e : X₁ ≃ₐc[R] X₂) : X₁ ≅ BialgebraCat.of R X₂ :=
   e.toBialgebraIso
 
 /-- Build an isomorphism in the category `BialgebraCat R` from a `BialgEquiv`
 between bialgebras. -/
 abbrev BialgEquiv.toBialgebraIso'Right
-    [Ring X₁] [Module R X₁] [Bialgebra R X₁] {X₂ : BialgebraCat.{v} R}
+    [Ring X₁] [Bialgebra R X₁] {X₂ : BialgebraCat.{v} R}
     (e : X₁ ≃ₐc[R] X₂) : BialgebraCat.of R X₁ ≅ X₂ :=
   e.toBialgebraIso
 
