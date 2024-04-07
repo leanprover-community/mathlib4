@@ -55,32 +55,44 @@ attribute [local ext] Complex.ext
 -- Test that the `SMul ℚ ℂ` instance is correct.
 example : (Complex.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
 
+/- The priority of the following instances has been manually lowered, as when they don't apply
+they lead Lean to a very costly path, and most often they don't apply (most actions on `ℂ` don't
+come from actions on `ℝ`). See #11980-/
+
+-- priority manually adjusted in #11980
 instance (priority := 90) [SMul R ℝ] [SMul S ℝ] [SMulCommClass R S ℝ] : SMulCommClass R S ℂ where
   smul_comm r s x := by ext <;> simp [smul_re, smul_im, smul_comm]
 
+-- priority manually adjusted in #11980
 instance (priority := 90) [SMul R S] [SMul R ℝ] [SMul S ℝ] [IsScalarTower R S ℝ] :
     IsScalarTower R S ℂ where
   smul_assoc r s x := by ext <;> simp [smul_re, smul_im, smul_assoc]
 
+-- priority manually adjusted in #11980
 instance (priority := 90) [SMul R ℝ] [SMul Rᵐᵒᵖ ℝ] [IsCentralScalar R ℝ] :
     IsCentralScalar R ℂ where
   op_smul_eq_smul r x := by ext <;> simp [smul_re, smul_im, op_smul_eq_smul]
 
+-- priority manually adjusted in #11980
 instance (priority := 90) mulAction [Monoid R] [MulAction R ℝ] : MulAction R ℂ where
   one_smul x := by ext <;> simp [smul_re, smul_im, one_smul]
   mul_smul r s x := by ext <;> simp [smul_re, smul_im, mul_smul]
 
+-- priority manually adjusted in #11980
 instance (priority := 90) distribSMul [DistribSMul R ℝ] : DistribSMul R ℂ where
   smul_add r x y := by ext <;> simp [smul_re, smul_im, smul_add]
   smul_zero r := by ext <;> simp [smul_re, smul_im, smul_zero]
 
+-- priority manually adjusted in #11980
 instance (priority := 90) [Semiring R] [DistribMulAction R ℝ] : DistribMulAction R ℂ :=
   { Complex.distribSMul, Complex.mulAction with }
 
+-- priority manually adjusted in #11980
 instance (priority := 100) instModule [Semiring R] [Module R ℝ] : Module R ℂ where
   add_smul r s x := by ext <;> simp [smul_re, smul_im, add_smul]
   zero_smul r := by ext <;> simp [smul_re, smul_im, zero_smul]
 
+-- priority manually adjusted in #11980
 instance (priority := 95) [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ :=
   { Complex.ofReal.comp (algebraMap R ℝ) with
     smul := (· • ·)
