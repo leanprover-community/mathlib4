@@ -598,7 +598,7 @@ theorem padicValNat_mul_pow_right {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Pri
   rw [mul_comm (p^n) (q^m)]
   exact padicValNat_mul_pow_left m n neq
 
-/-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t `p`.-/
+/-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t `p`. -/
 lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
   rcases n with _ | n
   · simp

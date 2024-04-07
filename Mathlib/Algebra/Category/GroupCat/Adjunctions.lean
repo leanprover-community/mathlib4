@@ -153,7 +153,7 @@ def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
     apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr; rfl
 #align abelianize abelianize
 
-/-- The abelianization-forgetful adjuction from `Group` to `CommGroup`.-/
+/-- The abelianization-forgetful adjuction from `Group` to `CommGroup`. -/
 def abelianizeAdj : abelianize ⊣ forget₂ CommGroupCat.{u} GroupCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun G A => Abelianization.lift.symm

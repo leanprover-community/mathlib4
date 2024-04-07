@@ -154,19 +154,19 @@ theorem xn_one : xn a1 1 = a := by simp
 theorem yn_one : yn a1 1 = 1 := by simp
 #align pell.yn_one Pell.yn_one
 
-/-- The Pell `x` sequence, considered as an integer sequence.-/
+/-- The Pell `x` sequence, considered as an integer sequence. -/
 def xz (n : ℕ) : ℤ :=
   xn a1 n
 #align pell.xz Pell.xz
 
-/-- The Pell `y` sequence, considered as an integer sequence.-/
+/-- The Pell `y` sequence, considered as an integer sequence. -/
 def yz (n : ℕ) : ℤ :=
   yn a1 n
 #align pell.yz Pell.yz
 
 section
 
-/-- The element `a` such that `d = a ^ 2 - 1`, considered as an integer.-/
+/-- The element `a` such that `d = a ^ 2 - 1`, considered as an integer. -/
 def az (a : ℕ) : ℤ :=
   a
 #align pell.az Pell.az

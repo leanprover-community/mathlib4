@@ -345,7 +345,7 @@ theorem one_lt_val_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : 1 < v x �
   simpa using (inv_lt_inv₀ (v.ne_zero_iff.2 h) one_ne_zero).symm
 #align valuation.one_lt_val_iff Valuation.one_lt_val_iff
 
-/-- The subgroup of elements whose valuation is less than a certain unit.-/
+/-- The subgroup of elements whose valuation is less than a certain unit. -/
 def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
   carrier := { x | v x < γ }
   zero_mem' := by simp

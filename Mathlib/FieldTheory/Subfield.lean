@@ -555,7 +555,7 @@ theorem map_fieldRange : f.fieldRange.map g = (g.comp f).fieldRange := by
 
 /-- The range of a morphism of fields is a fintype, if the domain is a fintype.
 
-Note that this instance can cause a diamond with `Subtype.Fintype` if `L` is also a fintype.-/
+Note that this instance can cause a diamond with `Subtype.Fintype` if `L` is also a fintype. -/
 instance fintypeFieldRange [Fintype K] [DecidableEq L] (f : K →+* L) : Fintype f.fieldRange :=
   Set.fintypeRange f
 #align ring_hom.fintype_field_range RingHom.fintypeFieldRange

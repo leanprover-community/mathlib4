@@ -123,7 +123,7 @@ theorem eventually_measure_lt_top [IsLocallyFiniteMeasure μ] (x : α) :
 #align vitali_family.eventually_measure_lt_top VitaliFamily.eventually_measure_lt_top
 
 /-- If two measures `ρ` and `ν` have, at every point of a set `s`, arbitrarily small sets in a
-Vitali family satisfying `ρ a ≤ ν a`, then `ρ s ≤ ν s` if `ρ ≪ μ`.-/
+Vitali family satisfying `ρ a ≤ ν a`, then `ρ s ≤ ν s` if `ρ ≪ μ`. -/
 theorem measure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α] {ρ : Measure α}
     (ν : Measure α) [IsLocallyFiniteMeasure ν] (hρ : ρ ≪ μ) (s : Set α)
     (hs : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, ρ a ≤ ν a) : ρ s ≤ ν s := by
@@ -904,7 +904,7 @@ theorem eventually_filterAt_integrableOn (x : α) {f : α → E} (hf : LocallyIn
   exact hw.mono_set ha
 
 /-- *Lebesgue differentiation theorem*: for almost every point `x`, the
-average of `‖f y - f x‖` on `a` tends to `0` as `a` shrinks to `x` along a Vitali family.-/
+average of `‖f y - f x‖` on `a` tends to `0` as `a` shrinks to `x` along a Vitali family. -/
 theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ) :
     ∀ᵐ x ∂μ, Tendsto (fun a => ⨍ y in a, ‖f y - f x‖ ∂μ) (v.filterAt x) (𝓝 0) := by
   filter_upwards [v.ae_tendsto_lintegral_nnnorm_sub_div hf] with x hx
@@ -921,7 +921,7 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ)
   rfl
 
 /-- *Lebesgue differentiation theorem*: for almost every point `x`, the
-average of `f` on `a` tends to `f x` as `a` shrinks to `x` along a Vitali family.-/
+average of `f` on `a` tends to `f x` as `a` shrinks to `x` along a Vitali family. -/
 theorem ae_tendsto_average [NormedSpace ℝ E] [CompleteSpace E] {f : α → E}
     (hf : LocallyIntegrable f μ) :
     ∀ᵐ x ∂μ, Tendsto (fun a => ⨍ y in a, f y ∂μ) (v.filterAt x) (𝓝 (f x)) := by

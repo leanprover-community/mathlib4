@@ -199,7 +199,7 @@ section Geometric
 variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
   [NormOneClass A]
 
-/-- The geometric series `1 + x + x ^ 2 + ...` as a `FormalMultilinearSeries`.-/
+/-- The geometric series `1 + x + x ^ 2 + ...` as a `FormalMultilinearSeries`. -/
 def formalMultilinearSeries_geometric : FormalMultilinearSeries 𝕜 A A :=
   fun n ↦ ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n A
 
