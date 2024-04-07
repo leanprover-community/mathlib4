@@ -4,96 +4,103 @@ open Linarith.SimplexAlgo.Gauss
 
 namespace Linarith.SimplexAlgo
 
+inductive SimplexAlgoException
+| Unfeasible : SimplexAlgoException
+
 structure SimplexAlgoState where
   table : Table
-  status : String
 
-abbrev SimplexAlgoM := StateM SimplexAlgoState
+abbrev SimplexAlgoM := ExceptT SimplexAlgoException <| StateM SimplexAlgoState
 
-def SimplexAlgoM.run' {α : Type} (x : SimplexAlgoM α) (table : Table) : α := Id.run do
-  pure (← x.run (⟨table, "Running"⟩ : SimplexAlgoState)).fst
-
+/-- Given indexes `bvarIdx` and `fvarIdx` of exiting and entering variables in `bound` and `free`
+arrays, performs pivot operation, i.e. expresses one through the other and makes free one basic and
+vice versa. -/
 def doPivotOperation (bvarIdx fvarIdx : Nat) : SimplexAlgoM Unit := do
-  let mut newCurRow := (← get).table.mat.data[bvarIdx]!
+  let mut newCurRow := (← get).table.mat[bvarIdx]!
   newCurRow := newCurRow.set! fvarIdx (-1)
-  let intersectCoef := (← get).table.mat.data[bvarIdx]![fvarIdx]!
-  newCurRow := newCurRow.map (fun x => -x / intersectCoef)
+  let intersectCoef := (← get).table.mat[bvarIdx]![fvarIdx]!
+  newCurRow := newCurRow.map (- · / intersectCoef)
 
   let mut newData : Array (Array Rat) := #[]
-  for i in [:(← get).table.bound.size] do
+  for i in [:(← get).table.basic.size] do
     if i == bvarIdx then
       newData := newData.push newCurRow
       continue
     let mut newRow : Array Rat := #[]
     for j in [:(← get).table.free.size] do
       if j == fvarIdx then
-        newRow := newRow.push <| (← get).table.mat.data[i]![fvarIdx]! / intersectCoef
+        newRow := newRow.push <| (← get).table.mat[i]![fvarIdx]! / intersectCoef
         continue
       newRow := newRow.push <|
-        (← get).table.mat.data[i]![j]!
-        - (← get).table.mat.data[i]![fvarIdx]! * (← get).table.mat.data[bvarIdx]![j]! / intersectCoef
+        (← get).table.mat[i]![j]!
+        - (← get).table.mat[i]![fvarIdx]! * (← get).table.mat[bvarIdx]![j]! / intersectCoef
     newData := newData.push newRow
 
-  let newBound := (← get).table.bound.set! bvarIdx (← get).table.free[fvarIdx]!
-  let newFree := (← get).table.free.set! fvarIdx (← get).table.bound[bvarIdx]!
+  let newBasic := (← get).table.basic.set! bvarIdx (← get).table.free[fvarIdx]!
+  let newFree := (← get).table.free.set! fvarIdx (← get).table.basic[bvarIdx]!
 
-  let newMat : Matrix newBound.size newFree.size := ⟨newData⟩
-  set ({← get with table := ⟨newBound, newFree, newMat⟩} : SimplexAlgoState)
+  let newMat : Matrix newBasic.size newFree.size := ⟨newData⟩
+  set ({← get with table := ⟨newBasic, newFree, newMat⟩} : SimplexAlgoState)
 
-/- check if we found solution -/
+/-- Check if we found solution. -/
 def checkSuccess : SimplexAlgoM Bool := do
-  if (← get).table.mat.data[0]!.back <= 0 then
+  if (← get).table.mat[0]!.back <= 0 then
     return false
   for row in (← get).table.mat.data do
     if row.back < 0 then
       return false
   return true
 
-def getPivots : SimplexAlgoM (Nat × Nat) := do
+/-- Choose entering and exiting variables using Bland's rule that guarantees that the Simplex
+Algorithm terminates. -/
+def choosePivots : SimplexAlgoM (Nat × Nat) := do
+  /- Entering variable: choose among the variables with a positive coefficient in the objective
+  function, the one with the smallest index (in the initial indexing). -/
   let mut fvarIdxOpt : Option Nat := .none
-  -- let mut maxCoef := (← get).table.mat.data[0]![0]!
-  for i in [:(← get).table.mat.data[0]!.size - 1] do
-    -- let elem := (← get).table.mat.data[0]![i]!
-    -- if (← get).table.mat.data[0]![i]! > maxCoef then
-    --   maxCoef := elem
-    --   fvarIdx := i
-    if (← get).table.mat.data[0]![i]! > 0 then
+  let mut minIdx := 0
+  for i in [:(← get).table.mat[0]!.size - 1] do
+    if (← get).table.mat[0]![i]! > 0 && (fvarIdxOpt.isNone || (← get).table.free[i]! < minIdx) then
       fvarIdxOpt := i
-      break
+      minIdx := (← get).table.free[i]!
 
-  if fvarIdxOpt.isNone then
-    set {← get with status := "Unfeasible"}
+  /- If there is no such variable the solution does not exist for sure. -/
+  match fvarIdxOpt with
+  | .none =>
+    throw SimplexAlgoException.Unfeasible
     return ⟨0, 0⟩
-  let fvarIdx := fvarIdxOpt.get!
+  | .some fvarIdx =>
 
+  /- Exiting variable: choose the variable imposing the strictest limit on the increase of the
+  entering variable, breaking ties by choosing the variable with smallest index. -/
   let mut bvarIdxOpt : Option Nat := .none
   let mut minCoef := 0
+  minIdx := 0
   for i in [1:(← get).table.mat.data.size] do
-    if (← get).table.mat.data[i]![fvarIdx]! >= 0 then
+    if (← get).table.mat[i]![fvarIdx]! >= 0 then
       continue
-    let coef := -(← get).table.mat.data[i]!.back / (← get).table.mat.data[i]![fvarIdx]!
-    if bvarIdxOpt.isNone || coef < minCoef then
-      minCoef := coef
+    let coef := -(← get).table.mat[i]!.back / (← get).table.mat[i]![fvarIdx]!
+    if bvarIdxOpt.isNone || coef < minCoef || (coef == minCoef && (← get).table.basic[i]! < minIdx) then
       bvarIdxOpt := i
+      minCoef := coef
+      minIdx := (← get).table.basic[i]!
   let bvarIdx := bvarIdxOpt.get!
 
   return ⟨bvarIdx, fvarIdx⟩
 
-def simplexAlgo : SimplexAlgoM Table := do
-  while true do
-    -- dbg_trace ""
-    -- dbg_trace (← get).table.mat.data
-    -- dbg_trace (← get).table.bound
-    -- dbg_trace (← get).table.free
+def runSimplexAlgoImp : SimplexAlgoM Unit := do
+  while True do
     if ← checkSuccess then
-      set {← get with status := "Finished"}
-      return (← get).table
-    let ⟨bvarIdx, fvarIdx⟩ := ← getPivots
-    -- dbg_trace bvarIdx
-    -- dbg_trace fvarIdx
-    if (← get).status == "Unfeasible" then
-      return (← get).table
+      return
+    let ⟨bvarIdx, fvarIdx⟩ ← try
+      choosePivots
+    catch _ => -- unfeasible
+      return
     doPivotOperation bvarIdx fvarIdx
-  return (← get).table
+  return
+
+/-- Runs Simplex Algorithm strarting with `initTable`. It always terminates, finding solution if
+such exists. Returns the table obtained at the last step. -/
+def runSimplexAlgo (initTable : Table) : Table := Id.run do
+  return (← runSimplexAlgoImp.run ⟨initTable⟩).snd.table
 
 end Linarith.SimplexAlgo

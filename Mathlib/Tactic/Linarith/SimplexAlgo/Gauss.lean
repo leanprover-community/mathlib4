@@ -1,28 +1,23 @@
-import Std.Data.Rat.Basic
-
-structure Linarith.SimplexAlgo.Matrix (n m : Nat) where
-  data : Array (Array Rat)
-deriving Repr
-
-structure Linarith.SimplexAlgo.Table where
-  bound : Array Nat
-  free : Array Nat
-  mat : Matrix bound.size free.size
+import Mathlib.Tactic.Linarith.SimplexAlgo.Datatypes
 
 namespace Linarith.SimplexAlgo.Gauss
 
+/-- State for `GaussM` monad.
+-/
 structure GaussState (n m : Nat) where
   mat : Matrix n m
-  diag : Array (Nat × Nat)
+  /-- Positions of units corresponding to basic variables in the `mat`. Used to obtain `Table` from
+  the processed matrix. -/
+  basicPositions : Array (Nat × Nat)
   currentRow : Nat
   currentColumn : Nat
 
 abbrev GaussM (n m : Nat) := StateM <| GaussState n m
 
-def run {n m: Nat} {α : Type} (x : GaussM n m α) (mat : Matrix n m): α := Id.run do
+def GaussM.run' {n m: Nat} {α : Type} (x : GaussM n m α) (mat : Matrix n m): α := Id.run do
   let s : GaussState n m := {
     mat := mat
-    diag := #[]
+    basicPositions := #[]
     currentRow := 0
     currentColumn := 0
   }
@@ -40,57 +35,58 @@ def incRow {n m : Nat} : GaussM n m Unit := do
 def incCol {n m : Nat} : GaussM n m Unit := do
   set {← get with currentColumn := (← get).currentColumn + 1}
 
-def pushToDiag {n m : Nat} (i j : Nat) : GaussM n m Unit := do
-  set {← get with diag := (← get).diag.push ⟨i, j⟩}
+def pushToBasicPos {n m : Nat} (i j : Nat) : GaussM n m Unit := do
+  set {← get with basicPositions := (← get).basicPositions.push ⟨i, j⟩}
 
-def isCurrentColumnZero {n m : Nat} : GaussM n m Bool := do
+/-- Find the first row starting from the current column with nonzero element in current column. -/
+def findNonzeroRow {n m : Nat} : GaussM n m <| Option Nat := do
   for i in [← curRow:n] do
-    if (← get).mat.data[i]![← curCol]! != 0 then
-      return false
-  return true
+    if (← get).mat[i]![← curCol]! != 0 then
+      return i
+  return .none
 
+/-- Swap two rows. -/
 def swapRows {n m : Nat} (i j : Nat) : GaussM n m Unit := do
+  if i == j then
+    return
   let swapped : Matrix n m := ⟨(← get).mat.data.swap! i j⟩
   set {← get with mat := swapped}
 
-/- subtract i-th row * coef from j-th row -/
+/-- Subtract i-th row * coef from j-th row. -/
 def subtractRow {n m : Nat} (i j : Nat) (coef : Rat) : GaussM n m Unit := do
-  let mut new_row : Array Rat := #[]
-  for k in [:m] do
-    new_row := new_row.push <| (← get).mat.data[j]![k]! - coef * (← get).mat.data[i]![k]!
+  let new_row := (← get).mat[j]!.zip (← get).mat[i]! |>.map fun ⟨x, y⟩ => x - coef * y
   let subtractedMat : Matrix n m := ⟨(← get).mat.data.set! j new_row⟩
   set {← get with mat := subtractedMat}
 
+/-- Divide row by coef. -/
 def divideRow {n m : Nat} (i : Nat) (coef : Rat) : GaussM n m Unit := do
-  let new_row : Array Rat := (← get).mat.data[i]!.map (fun x => x / coef)
+  let new_row : Array Rat := (← get).mat[i]!.map (· / coef)
   let subtractedMat : Matrix n m := ⟨(← get).mat.data.set! i new_row⟩
   set {← get with mat := subtractedMat}
 
 def getTableImp {n m : Nat} : GaussM n m Table := do
   let mut free : Array Nat := #[]
-  let mut bound : Array Nat := #[]
+  let mut basic : Array Nat := #[]
 
   while (← curRow) < n && (← curCol) < m do
-    if ← isCurrentColumnZero then
+    match ← findNonzeroRow with
+    | .none =>
       free := free.push (← curCol)
       incCol
       continue
+    | .some rowToSwap =>
+      swapRows (← curRow) rowToSwap
 
-    for i in [← curRow:n] do
-      if (← get).mat.data[i]![← curCol]! != 0 then
-        swapRows (← curRow) i
-        break
-
-    divideRow (← curRow) (← get).mat.data[← curRow]![← curCol]!
+    divideRow (← curRow) (← get).mat[← curRow]![← curCol]!
 
     for i in [:n] do
       if i == (← curRow) then
         continue
-      let coef := (← get).mat.data[i]![← curCol]!
+      let coef := (← get).mat[i]![← curCol]!
       subtractRow (← curRow) i coef
 
-    pushToDiag (← curRow) (← curCol)
-    bound := bound.push (← curCol)
+    pushToBasicPos (← curRow) (← curCol)
+    basic := basic.push (← curCol)
     incRow
     incCol
 
@@ -98,19 +94,21 @@ def getTableImp {n m : Nat} : GaussM n m Table := do
     free := free.push i
 
   let mut ansData : Array (Array Rat) := #[]
-  for ⟨row, _⟩ in (← get).diag do
+  for ⟨row, _⟩ in (← get).basicPositions do
     let mut newRow := #[]
     for f in free do
-      newRow := newRow.push <| -(← get).mat.data[row]![f]!
+      newRow := newRow.push <| -(← get).mat[row]![f]!
     ansData := ansData.push newRow
 
   return {
     free := free
-    bound := bound
+    basic := basic
     mat := ⟨ansData⟩
   }
 
-def getTable {n m : Nat} (mat : Matrix n m) : Table := run getTableImp mat
-
+/-- Given matrix `A`, this function solves the linear equation `A x = 0` and returns the
+solution as a table where some variables are free and others (basic) variable are expressed as
+linear combinations of free variables. -/
+def getTable {n m : Nat} (A : Matrix n m) : Table := getTableImp.run' A
 
 end Linarith.SimplexAlgo.Gauss
