@@ -1928,7 +1928,8 @@ theorem norm_coe_nat (n : ℕ) : ‖(n : ℤ)‖ = n := by simp [Int.norm_eq_abs
 theorem _root_.NNReal.natCast_natAbs (n : ℤ) : (n.natAbs : ℝ≥0) = ‖n‖₊ :=
   NNReal.eq <|
     calc
-      ((n.natAbs : ℝ≥0) : ℝ) = (n.natAbs : ℤ) := by simp only [Int.cast_ofNat, NNReal.coe_nat_cast]
+      ((n.natAbs : ℝ≥0) : ℝ) = (n.natAbs : ℤ) := by
+        simp only [Int.cast_natCast, NNReal.coe_nat_cast]
       _ = |(n : ℝ)| := by simp only [Int.natCast_natAbs, Int.cast_abs]
       _ = ‖n‖ := (norm_eq_abs n).symm
 #align nnreal.coe_nat_abs NNReal.natCast_natAbs
@@ -2733,10 +2734,10 @@ choice of norm in the multiplicative `SeminormedGroup E` case.
 We could repeat this instance to provide a `[SeminormedGroup E] : SeminormedGroup Eᵃᵒᵖ` instance,
 but that case would likely never be used.
 -/
-instance seminormedAddGroup [SeminormedAddGroup E] : SeminormedAddGroup Eᵐᵒᵖ where
+instance instSeminormedAddGroup [SeminormedAddGroup E] : SeminormedAddGroup Eᵐᵒᵖ where
+  __ := instPseudoMetricSpace
   norm x := ‖x.unop‖
   dist_eq _ _ := dist_eq_norm _ _
-  toPseudoMetricSpace := MulOpposite.instPseudoMetricSpace
 
 theorem norm_op [SeminormedAddGroup E] (a : E) : ‖MulOpposite.op a‖ = ‖a‖ :=
   rfl
@@ -2754,16 +2755,16 @@ theorem nnnorm_unop [SeminormedAddGroup E] (a : Eᵐᵒᵖ) : ‖MulOpposite.uno
   rfl
 #align mul_opposite.nnnorm_unop MulOpposite.nnnorm_unop
 
-instance normedAddGroup [NormedAddGroup E] : NormedAddGroup Eᵐᵒᵖ :=
-  { MulOpposite.seminormedAddGroup with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+instance instNormedAddGroup [NormedAddGroup E] : NormedAddGroup Eᵐᵒᵖ where
+  __ := instMetricSpace
+  __ := instSeminormedAddGroup
 
-instance seminormedAddCommGroup [SeminormedAddCommGroup E] : SeminormedAddCommGroup Eᵐᵒᵖ where
+instance instSeminormedAddCommGroup [SeminormedAddCommGroup E] : SeminormedAddCommGroup Eᵐᵒᵖ where
   dist_eq _ _ := dist_eq_norm _ _
 
-instance normedAddCommGroup [NormedAddCommGroup E] : NormedAddCommGroup Eᵐᵒᵖ :=
-  { MulOpposite.seminormedAddCommGroup with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+instance instNormedAddCommGroup [NormedAddCommGroup E] : NormedAddCommGroup Eᵐᵒᵖ where
+  __ := instSeminormedAddCommGroup
+  __ := instNormedAddGroup
 
 end MulOpposite
 
