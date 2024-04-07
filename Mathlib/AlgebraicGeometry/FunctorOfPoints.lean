@@ -72,7 +72,7 @@ def schemeToFunctor : Scheme.{u} ⥤ CommRingCat.{u} ⥤ Type u where
   obj X := X.functorOfPoints
   map f := Scheme.mapFunctorOfPoints f
 
-instance : Faithful schemeToFunctor where
+instance faithfulFunctorOfPoints : Faithful schemeToFunctor where
   map_injective := by
     intro X Y f g h
     let 𝓤 := X.affineOpenCover
@@ -100,7 +100,7 @@ def homOfFunctorOfPoints {X Y : Scheme.{u}} (f : X.functorOfPoints ⟶ Y.functor
     rw [← hi, ← hj]
     simp_rw [hfst, hsnd, Category.assoc, Limits.pullback.condition]
 
-instance functorOfPointsFull : Full schemeToFunctor where
+instance fullFunctorOfPoints : Full schemeToFunctor where
   preimage f := homOfFunctorOfPoints f
   witness := by
     intro X Y f
