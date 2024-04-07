@@ -830,7 +830,6 @@ theorem le_iff' : v ≤ w ↔ ∀ i, v i ≤ w i := by
 
 end
 
--- mathport name: vector_measure.restrict
 set_option quotPrecheck false in -- Porting note: error message suggested to do this
 scoped[MeasureTheory]
   notation:50 v " ≤[" i:50 "] " w:50 =>
@@ -1042,7 +1041,6 @@ def AbsolutelyContinuous (v : VectorMeasure α M) (w : VectorMeasure α N) :=
   ∀ ⦃s : Set α⦄, w s = 0 → v s = 0
 #align measure_theory.vector_measure.absolutely_continuous MeasureTheory.VectorMeasure.AbsolutelyContinuous
 
--- mathport name: vector_measure.absolutely_continuous
 @[inherit_doc VectorMeasure.AbsolutelyContinuous]
 scoped[MeasureTheory] infixl:50 " ≪ᵥ " => MeasureTheory.VectorMeasure.AbsolutelyContinuous
 

@@ -46,7 +46,7 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-set_option linter.uppercaseLean3 false -- `fdRep`
+set_option linter.uppercaseLean3 false -- `FdRep`
 
 /-- The category of finite dimensional `k`-linear representations of a monoid `G`. -/
 abbrev FdRep (k G : Type u) [Field k] [Monoid G] :=

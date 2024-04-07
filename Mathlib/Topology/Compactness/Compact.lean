@@ -419,7 +419,7 @@ theorem IsCompact.mem_prod_nhdsSet_of_forall {K : Set Y} {l : Filter X} {s : Set
     (hK : IsCompact K) (hs : ∀ y ∈ K, s ∈ l ×ˢ 𝓝 y) : s ∈ l ×ˢ 𝓝ˢ K :=
   (hK.prod_nhdsSet_eq_biSup l).symm ▸ by simpa using hs
 
--- TODO: Is there a way to prove directly the `inf` version and then deduce the `prod` one ?
+-- TODO: Is there a way to prove directly the `inf` version and then deduce the `Prod` one ?
 -- That would seem a bit more natural.
 theorem IsCompact.nhdsSet_inf_eq_biSup {K : Set X} (hK : IsCompact K) (l : Filter X) :
     (𝓝ˢ K) ⊓ l = ⨆ x ∈ K, 𝓝 x ⊓ l := by

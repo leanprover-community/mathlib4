@@ -99,14 +99,14 @@ if `a ≤ b`. `Nat` version of `Int.Ico_filter_modEq_card`. -/
 theorem Ico_filter_modEq_card (v : ℕ) : ((Ico a b).filter (· ≡ v [MOD r])).card =
     max (⌈(b - v) / (r : ℚ)⌉ - ⌈(a - v) / (r : ℚ)⌉) 0 := by
   simp_rw [← Ico_filter_modEq_cast _ _ ▸ card_map _,
-    Int.Ico_filter_modEq_card _ _ (cast_lt.mpr hr), Int.cast_ofNat]
+    Int.Ico_filter_modEq_card _ _ (cast_lt.mpr hr), Int.cast_natCast]
 
 /-- There are `⌊(b - v) / r⌋ - ⌊(a - v) / r⌋` numbers congruent to `v` mod `r` in `(a, b]`,
 if `a ≤ b`. `Nat` version of `Int.Ioc_filter_modEq_card`. -/
 theorem Ioc_filter_modEq_card (v : ℕ) : ((Ioc a b).filter (· ≡ v [MOD r])).card =
     max (⌊(b - v) / (r : ℚ)⌋ - ⌊(a - v) / (r : ℚ)⌋) 0 := by
   simp_rw [← Ioc_filter_modEq_cast _ _ ▸ card_map _,
-    Int.Ioc_filter_modEq_card _ _ (cast_lt.mpr hr), Int.cast_ofNat]
+    Int.Ioc_filter_modEq_card _ _ (cast_lt.mpr hr), Int.cast_natCast]
 
 /-- There are `⌈(b - v % r) / r⌉` numbers in `[0, b)` congruent to `v` mod `r`. -/
 theorem count_modEq_card_eq_ceil (v : ℕ) :
