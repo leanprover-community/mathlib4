@@ -654,7 +654,7 @@ if not argv:
     exclude = tuple([])#tuple(''.split(' '))
     # Lint all non-excluded files whose module name starts with this.
     # So "Foo.Bar" will lint all files in module "Foo.Bar" and "Foo.Bar.Baz", etc.
-    dir = 'Topology'
+    dir = 'Analysis'
     assert '/' not in dir
     print(f"about to lint all files in directory {dir}")
     files = []

@@ -15,7 +15,7 @@ import Mathlib.Topology.UniformSpace.Matrix
 /-!
 # Lemmas about the matrix exponential
 
-In this file, we provide results about `exp` on `Matrix`s over a topological or normed algebra.
+In this file, we provide results about `NormedSpace.exp` on `Matrix`s over a topological or normed algebra.
 Note that generic results over all topological spaces such as `NormedSpace.exp_zero`
 can be used on matrices without issue, so are not repeated here.
 The topological results specific to matrices are:
@@ -63,7 +63,7 @@ results for general rings are instead stated about `Ring.inverse`:
 
 open scoped Matrix BigOperators
 
-open NormedSpace -- For `exp`.
+open NormedSpace -- For `NormedSpace.exp`.
 
 variable (𝕂 : Type*) {m n p : Type*} {n' : m → Type*} {𝔸 : Type*}
 
