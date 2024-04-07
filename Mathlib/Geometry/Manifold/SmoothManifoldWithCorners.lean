@@ -53,10 +53,10 @@ but add these assumptions later as needed. (Quite a few results still do not req
 
 As specific examples of models with corners, we define (in `Geometry.Manifold.Instances.Real`)
 * `modelWithCornersSelf ℝ (EuclideanSpace (Fin n))` for the model space used to define
-  `n`-dimensional real manifolds without boundary (with notation `𝓡 n` in the locale `manifold`)
+  `n`-dimensional real manifolds without boundary (with notation `𝓡 n` in the locale `Manifold`)
 * `ModelWithCorners ℝ (EuclideanSpace (Fin n)) (EuclideanHalfSpace n)` for the model space
   used to define `n`-dimensional real manifolds with boundary (with notation `𝓡∂ n` in the locale
-  `manifold`)
+  `Manifold`)
 * `ModelWithCorners ℝ (EuclideanSpace (Fin n)) (EuclideanQuadrant n)` for the model space used
   to define `n`-dimensional real manifolds with corners
 
