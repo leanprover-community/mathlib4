@@ -943,12 +943,14 @@ def Scheme.OpenCover.fromAffineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) 
   idx j := j.fst
   app j := (𝓤.obj j.fst).affineCover.map _
 
+/-- The left inclusion of the intersection of two open covers. -/
 @[simps]
 def Scheme.OpenCover.inl {X : Scheme.{u}} (𝓤₁ 𝓤₂ : Scheme.OpenCover.{v} X) :
     𝓤₁.inter 𝓤₂ ⟶ 𝓤₁ where
   idx j := j.fst
   app j := Limits.pullback.fst
 
+/-- The right inclusion of the intersection of two open covers. -/
 @[simps]
 def Scheme.OpenCover.inr {X : Scheme.{u}} (𝓤₁ 𝓤₂ : Scheme.OpenCover.{v} X) :
     𝓤₁.inter 𝓤₂ ⟶ 𝓤₂ where
