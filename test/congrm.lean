@@ -1,4 +1,4 @@
-import Mathlib.Data.Nat.Monoid
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Data.Fintype.Card
 import Mathlib.Tactic.Congrm
 

@@ -1,4 +1,4 @@
-import Mathlib.Data.Nat.Monoid
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Tactic.GeneralizeProofs
 
 private axiom test_sorry : ∀ {α}, α

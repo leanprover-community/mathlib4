@@ -6,7 +6,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Group.Hom.Ring
-import Mathlib.Data.Int.Monoid
+import Mathlib.Algebra.Group.Int
 import Mathlib.Data.NNRat.Defs
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.GroupTheory.GroupAction.Pi

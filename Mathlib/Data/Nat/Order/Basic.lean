@@ -5,7 +5,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Monoid.WithZero
 import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Data.Nat.Semiring
+import Mathlib.Algebra.Ring.Nat
 
 #align_import data.nat.order.basic from "leanprover-community/mathlib"@"3ed3f98a1e836241990d3d308f1577e434977130"
 
