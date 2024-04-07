@@ -21,7 +21,7 @@ This file defines the Cantor ternary set and proves a few properties.
   * `cantorSet`: The ternary Cantor set, defined as the intersection of all pre-Cantor sets.
 -/
 
-/-- We define the preCantorSet as the preimages under the iterations of some functions. -/
+/-- We define the preCantorSet as the images under the iterations of some functions. -/
 def preCantorSet : ℕ → Set ℝ
   | 0 => Set.Icc 0 1
   | n + 1 => (· / 3) '' preCantorSet n ∪ (fun x ↦ (2 + x) / 3) '' preCantorSet n
@@ -71,18 +71,22 @@ theorem zero_mem_cantorSet : 0 ∈ cantorSet := by simp [cantorSet, zero_mem_pre
 lemma cantorSet_subset_unitInterval : cantorSet ⊆ Set.Icc 0 1 :=
   Set.iInter_subset _ 0
 
-/-- The ternary Cantor set is closed. -/
-lemma isClosed_cantorSet : IsClosed cantorSet := by
+/-- The preCantor sets are closed. -/
+lemma isClosed_preCantorSet (n : ℕ): IsClosed (preCantorSet n) := by
   let f := Homeomorph.mulLeft₀ (1 / 3 : ℝ) (by norm_num)
   let g := (Homeomorph.addLeft (2 : ℝ)).trans f
-  apply isClosed_iInter
-  intro n
   induction n with
   | zero => exact isClosed_Icc
   | succ n ih =>
     refine IsClosed.union ?_ ?_
     · simpa [f, div_eq_inv_mul] using f.closedEmbedding.closed_iff_image_closed.mp ih
     · simpa [g, f, div_eq_inv_mul] using g.closedEmbedding.closed_iff_image_closed.mp ih
+
+/-- The ternary Cantor set is closed. -/
+lemma isClosed_cantorSet : IsClosed cantorSet := by
+  apply isClosed_iInter
+  intro n
+  apply isClosed_preCantorSet n
 
 /-- The ternary Cantor set is compact. -/
 lemma isCompact_cantorSet : IsCompact cantorSet :=
