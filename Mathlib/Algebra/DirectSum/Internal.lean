@@ -71,7 +71,7 @@ theorem SetLike.nat_cast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R
 theorem SetLike.int_cast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
     [AddSubgroupClass σ R] (A : ι → σ) [SetLike.GradedOne A] (z : ℤ) : (z : R) ∈ A 0 := by
   induction z
-  · rw [Int.ofNat_eq_coe, Int.cast_ofNat]
+  · rw [Int.ofNat_eq_coe, Int.cast_natCast]
     exact SetLike.nat_cast_mem_graded _ _
   · rw [Int.cast_negSucc]
     exact neg_mem (SetLike.nat_cast_mem_graded _ _)
@@ -122,7 +122,7 @@ instance gring [AddMonoid ι] [Ring R] [SetLike σ R] [AddSubgroupClass σ R] (A
     [SetLike.GradedMonoid A] : DirectSum.GRing fun i => A i :=
   { SetLike.gsemiring A with
     intCast := fun z => ⟨z, SetLike.int_cast_mem_graded _ _⟩
-    intCast_ofNat := fun _n => Subtype.ext <| Int.cast_ofNat _
+    intCast_ofNat := fun _n => Subtype.ext <| Int.cast_natCast _
     intCast_negSucc_ofNat := fun n => Subtype.ext <| Int.cast_negSucc n }
 #align set_like.gring SetLike.gring
 

@@ -103,32 +103,32 @@ open ProjectiveSpectrum.StructureSheaf
 -- Porting note: currently require lack of hygiene to use in variable declarations
 -- maybe all make into notation3?
 set_option hygiene false
--- `Proj` as a locally ringed space
+/-- `Proj` as a locally ringed space -/
 local notation3 "Proj" => Proj.toLocallyRingedSpace 𝒜
 
--- the underlying topological space of `Proj`
+/-- The underlying topological space of `Proj` -/
 local notation3 "Proj.T" => PresheafedSpace.carrier <| SheafedSpace.toPresheafedSpace
   <| LocallyRingedSpace.toSheafedSpace <| Proj.toLocallyRingedSpace 𝒜
 
--- `Proj` restrict to some open set
+/-- `Proj` restrict to some open set -/
 macro "Proj| " U:term : term =>
   `((Proj.toLocallyRingedSpace 𝒜).restrict (Opens.openEmbedding (X := Proj.T) ($U : Opens Proj.T)))
 
--- the underlying topological space of `Proj` restricted to some open set
+/-- the underlying topological space of `Proj` restricted to some open set -/
 local notation "Proj.T| " U => PresheafedSpace.carrier <| SheafedSpace.toPresheafedSpace
   <| LocallyRingedSpace.toSheafedSpace
     <| (LocallyRingedSpace.restrict Proj (Opens.openEmbedding (X := Proj.T) (U : Opens Proj.T)))
 
--- basic open sets in `Proj`
+/-- basic open sets in `Proj` -/
 local notation "pbo " x => ProjectiveSpectrum.basicOpen 𝒜 x
 
--- basic open sets in `Spec`
+/-- basic open sets in `Spec` -/
 local notation "sbo " f => PrimeSpectrum.basicOpen f
 
--- `Spec` as a locally ringed space
+/-- `Spec` as a locally ringed space -/
 local notation3 "Spec " ring => Spec.locallyRingedSpaceObj (CommRingCat.of ring)
 
--- the underlying topological space of `Spec`
+/-- the underlying topological space of `Spec` -/
 local notation "Spec.T " ring =>
   (Spec.locallyRingedSpaceObj (CommRingCat.of ring)).toSheafedSpace.toPresheafedSpace.1
 
@@ -194,10 +194,8 @@ theorem MemCarrier.clear_denominator [DecidableEq (Away f)] {z : A⁰_ f} (hz : 
   MemCarrier.clear_denominator' x <| (mem_carrier_iff x z).mpr hz
 #align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec.mem_carrier.clear_denominator AlgebraicGeometry.ProjIsoSpecTopComponent.ToSpec.MemCarrier.clear_denominator
 
-/--
-For `x : pbo f`
-The ideal `A⁰_f ∩ span {g / 1 | g ∈ x}` is equal to `span {a/f^n | a ∈ x and deg(a) = deg(f^n)}`
--/
+/-- For `x : pbo f`, the ideal `A⁰_f ∩ span {g / 1 | g ∈ x}`
+is equal to `span {a/f^n | a ∈ x and deg(a) = deg(f^n)}`. -/
 lemma carrier_eq_span :
     carrier x =
     Ideal.span { z : HomogeneousLocalization.Away 𝒜 f |
@@ -370,9 +368,8 @@ end ToSpec
 
 section
 
-/-- The continuous function between the basic open set `D(f)` in `Proj` to the corresponding basic
-open set in `Spec A⁰_f`.
--/
+/-- The continuous function from the basic open set `D(f)` in `Proj`
+to the corresponding basic open set in `Spec A⁰_f`. -/
 def toSpec (f : A) : (Proj.T| pbo f) ⟶ Spec.T A⁰_ f where
   toFun := ToSpec.toFun f
   continuous_toFun := by
@@ -608,8 +605,7 @@ theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
         · first | exact hnx | exact hny
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.carrier.as_ideal.prime AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.carrier.asIdeal.prime
 
-/-- The function `Spec A⁰_f → Proj|D(f)` by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`.
--/
+/-- The function `Spec A⁰_f → Proj|D(f)` sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`. -/
 def toFun : (Spec.T A⁰_ f) → Proj.T| pbo f := fun q =>
   ⟨⟨carrier.asHomogeneousIdeal f_deg hm q, carrier.asIdeal.prime f_deg hm q,
       carrier.relevant f_deg hm q⟩,
@@ -741,7 +737,7 @@ lemma image_basicOpen_eq_basicOpen (a : A) (i : ℕ) :
 end toSpec
 
 variable {𝒜} in
-/--The continuous function `Spec A⁰_f → Proj|D(f)` by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}` where
+/-- The continuous function `Spec A⁰_f → Proj|D(f)` by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}` where
 `m` is the degree of `f`.-/
 def fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     (Spec.T (A⁰_ f)) ⟶ (Proj.T| (pbo f)) where

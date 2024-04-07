@@ -29,15 +29,12 @@ import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.List.Basic
-import Mathlib.Algebra.BigOperators.List.Defs
 import Mathlib.Algebra.BigOperators.List.Lemmas
 import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Algebra.BigOperators.Multiset.Lemmas
-import Mathlib.Algebra.BigOperators.Multiset.Order
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Algebra.BigOperators.Option
-import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
@@ -155,6 +152,7 @@ import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Expr
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Field.Equiv
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Field.MinimalAxioms
 import Mathlib.Algebra.Field.Opposite
@@ -197,7 +195,9 @@ import Mathlib.Algebra.Group.Hom.CompTypeclasses
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.Group.InjSurj
+import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.Group.MinimalAxioms
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Algebra.Group.NatPowAssoc
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.OrderSynonym
@@ -404,6 +404,12 @@ import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Algebra
 import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.BigOperators.Group.List
+import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.BigOperators.Ring.List
+import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
 import Mathlib.Algebra.Order.CauSeq.Basic
 import Mathlib.Algebra.Order.CauSeq.BigOperators
 import Mathlib.Algebra.Order.CauSeq.Completion
@@ -427,8 +433,10 @@ import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.DenselyOrdered
 import Mathlib.Algebra.Order.Group.InjSurj
 import Mathlib.Algebra.Order.Group.Instances
+import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Algebra.Order.Group.Lattice
 import Mathlib.Algebra.Order.Group.MinMax
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.Algebra.Order.Group.Prod
@@ -475,7 +483,9 @@ import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Algebra.Order.Ring.Cone
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.InjSurj
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Order.Ring.Lemmas
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Algebra.Order.Ring.WithTop
@@ -555,7 +565,9 @@ import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Algebra.Ring.InjSurj
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Algebra.Ring.MinimalAxioms
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.Ring.OrderSynonym
 import Mathlib.Algebra.Ring.Pi
@@ -1445,6 +1457,8 @@ import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 import Mathlib.CategoryTheory.Sites.Coherent.CoverDense
 import Mathlib.CategoryTheory.Sites.Coherent.Equivalence
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
+import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
+import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
 import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
 import Mathlib.CategoryTheory.Sites.CompatiblePlus
@@ -1800,7 +1814,6 @@ import Mathlib.Data.HashMap
 import Mathlib.Data.Holor
 import Mathlib.Data.Int.AbsoluteValue
 import Mathlib.Data.Int.Associated
-import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Bitwise
 import Mathlib.Data.Int.CardIntervalMod
 import Mathlib.Data.Int.Cast.Basic
@@ -1821,7 +1834,6 @@ import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Int.Log
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Int.NatPrime
-import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Int.Order.Units
 import Mathlib.Data.Int.Parity
@@ -1833,7 +1845,6 @@ import Mathlib.Data.Int.Units
 import Mathlib.Data.LazyList.Basic
 import Mathlib.Data.List.AList
 import Mathlib.Data.List.Basic
-import Mathlib.Data.List.Card
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Cycle
@@ -1847,7 +1858,6 @@ import Mathlib.Data.List.EditDistance.Defs
 import Mathlib.Data.List.EditDistance.Estimator
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.List.Forall2
-import Mathlib.Data.List.Func
 import Mathlib.Data.List.GetD
 import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Infix
@@ -1927,7 +1937,6 @@ import Mathlib.Data.Multiset.Sym
 import Mathlib.Data.NNRat.BigOperators
 import Mathlib.Data.NNRat.Defs
 import Mathlib.Data.NNRat.Lemmas
-import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Cast.Basic
@@ -1976,7 +1985,6 @@ import Mathlib.Data.Nat.MaxPowDiv
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.Nat.Nth
-import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Pairing
@@ -2512,6 +2520,7 @@ import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 import Mathlib.LinearAlgebra.AffineSpace.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Basis
 import Mathlib.LinearAlgebra.AffineSpace.Combination
+import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.LinearAlgebra.AffineSpace.Independent
 import Mathlib.LinearAlgebra.AffineSpace.Matrix
@@ -3004,9 +3013,9 @@ import Mathlib.NumberTheory.ModularForms.SlashActions
 import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 import Mathlib.NumberTheory.Multiplicity
 import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding
+import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 import Mathlib.NumberTheory.NumberField.ClassNumber
-import Mathlib.NumberTheory.NumberField.ConvexBody
 import Mathlib.NumberTheory.NumberField.Discriminant
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.FractionalIdeal

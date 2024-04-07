@@ -390,24 +390,20 @@ instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaxim
   PrincipalIdealRing.isMaximal_of_irreducible <| Fact.out
 #align adjoin_root.span_maximal_of_irreducible AdjoinRoot.span_maximal_of_irreducible
 
-noncomputable instance field [Fact (Irreducible f)] : Field (AdjoinRoot f) :=
-  { Quotient.groupWithZero (span {f} : Ideal K[X]) with
-    toCommRing := AdjoinRoot.instCommRing f
-    ratCast := fun a => of f (a : K)
-    ratCast_mk := fun a b h1 h2 => by
-      letI : GroupWithZero (AdjoinRoot f) := Ideal.Quotient.groupWithZero _
-      -- Porting note: was
-      -- `rw [Rat.cast_mk' (K := ℚ), _root_.map_mul, _root_.map_intCast, map_inv₀, map_natCast]`
-      convert_to ((Rat.mk' a b h1 h2 : K) : AdjoinRoot f) = ((↑a * (↑b)⁻¹ : K) : AdjoinRoot f)
-      · simp only [_root_.map_mul, map_intCast, map_inv₀, map_natCast]
-      · simp only [Rat.cast_mk', _root_.map_mul, map_intCast, map_inv₀, map_natCast]
-    qsmul := (· • ·)
-    qsmul_eq_mul' := fun a x =>
-      -- Porting note: I gave the explicit motive and changed `rw` to `simp`.
-      AdjoinRoot.induction_on (C := fun y => a • y = (of f) a * y) x fun p => by
-        simp only [smul_mk, of, RingHom.comp_apply, ← (mk f).map_mul, Polynomial.rat_smul_eq_C_mul]
-  }
-#align adjoin_root.field AdjoinRoot.field
+noncomputable instance instGroupWithZero [Fact (Irreducible f)] : GroupWithZero (AdjoinRoot f) :=
+  Quotient.groupWithZero (span {f} : Ideal K[X])
+
+noncomputable instance instField [Fact (Irreducible f)] : Field (AdjoinRoot f) where
+  __ := instCommRing _
+  __ := instGroupWithZero
+  ratCast_def q := by
+    rw [← map_natCast (of f), ← map_intCast (of f), ← map_div₀, ← Rat.cast_def]; rfl
+  qsmul := (· • ·)
+  qsmul_def q x :=
+    -- Porting note: I gave the explicit motive and changed `rw` to `simp`.
+    AdjoinRoot.induction_on (C := fun y ↦ q • y = (of f) q * y) x fun p ↦ by
+      simp only [smul_mk, of, RingHom.comp_apply, ← (mk f).map_mul, Polynomial.rat_smul_eq_C_mul]
+#align adjoin_root.field AdjoinRoot.instField
 
 theorem coe_injective (h : degree f ≠ 0) : Function.Injective ((↑) : K → AdjoinRoot f) :=
   have := AdjoinRoot.nontrivial f h

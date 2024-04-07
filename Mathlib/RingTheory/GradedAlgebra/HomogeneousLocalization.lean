@@ -340,7 +340,7 @@ instance : SMul α (HomogeneousLocalization 𝒜 x) where
     convert congr_arg (fun z : at x => m • z) h <;> rw [Localization.smul_mk]
 
 @[simp]
-theorem smul_val (y : HomogeneousLocalization 𝒜 x) (n : α) : (n • y).val = n • y.val := by
+theorem smul_val (n : α) (y : HomogeneousLocalization 𝒜 x) : (n • y).val = n • y.val := by
   induction y using Quotient.inductionOn
   change Localization.mk _ _ = n • Localization.mk _ _
   dsimp only

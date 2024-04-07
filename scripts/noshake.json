@@ -300,7 +300,9 @@
    "Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic"],
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
-  "Mathlib.NumberTheory.Harmonic.Defs": ["Mathlib.Algebra.Order.Field.Basic"],
+  "Mathlib.NumberTheory.Harmonic.Defs":
+  ["Mathlib.Algebra.Order.BigOperators.Ring.Finset",
+   "Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.NumberTheory.ArithmeticFunction": ["Mathlib.Tactic.ArithMult"],
   "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Equiv.Defs": ["Mathlib.Init.Data.Bool.Lemmas"],
@@ -318,8 +320,9 @@
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
   "Mathlib.Data.Rat.Init": ["Std.Data.Rat.Basic"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.GroupTheory.GroupAction.Defs"],
+  "Mathlib.Data.List.TFAE": ["Std.Tactic.Classical"],
   "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertNth"],
-  "Mathlib.Data.List.EditDistance.Defs": ["Mathlib.Data.Nat.Basic"],
+  "Mathlib.Data.List.EditDistance.Defs": ["Mathlib.Algebra.Ring.Nat"],
   "Mathlib.Data.List.Basic": ["Mathlib.Data.Option.Basic", "Mathlib.Init.Core"],
   "Mathlib.Data.Finset.Basic": ["Mathlib.Data.Finset.Attr"],
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],
@@ -336,6 +339,7 @@
   ["Mathlib.GroupTheory.Subgroup.Order", "Mathlib.GroupTheory.Submonoid.Order"],
   "Mathlib.Algebra.Module.LinearMap.Basic": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
+  "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Algebra.Category.Ring.Basic":
   ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
   "Mathlib.Algebra.Algebra.Subalgebra.Order":

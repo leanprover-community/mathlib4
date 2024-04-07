@@ -3,11 +3,12 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Rat.Init
-import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Data.Int.Order.Basic
-import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Rat.Init
 
 #align_import data.rat.defs from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 
@@ -89,6 +90,8 @@ lemma num_eq_zero {q : ℚ} : q.num = 0 ↔ q = 0 := by
   · exact congr_arg num
 
 lemma num_ne_zero {q : ℚ} : q.num ≠ 0 ↔ q ≠ 0 := num_eq_zero.not
+
+@[simp] lemma den_ne_zero (q : ℚ) : q.den ≠ 0 := q.den_pos.ne'
 
 @[simp]
 theorem divInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
@@ -313,7 +316,7 @@ protected theorem inv_mul_cancel (h : a ≠ 0) : a⁻¹ * a = 1 :=
 
 /-! At this point in the import hierarchy we have not defined the `Field` typeclass.
 Instead we'll instantiate `CommRing` and `CommGroupWithZero` at this point.
-The `Rat.field` instance and any field-specific lemmas can be found in `Mathlib.Data.Rat.Basic`.
+The `Rat.instField` instance and any field-specific lemmas can be found in `Mathlib.Data.Rat.Basic`.
 -/
 
 instance commRing : CommRing ℚ where
@@ -457,11 +460,9 @@ theorem divInt_ne_zero_of_ne_zero {n d : ℤ} (h : n ≠ 0) (hd : d ≠ 0) : n /
 #align rat.mk_ne_zero_of_ne_zero Rat.divInt_ne_zero_of_ne_zero
 
 theorem mul_num_den (q r : ℚ) : q * r = q.num * r.num /. ↑(q.den * r.den) := by
-  have hq' : (↑q.den : ℤ) ≠ 0 := by have := den_nz q; simpa
-  have hr' : (↑r.den : ℤ) ≠ 0 := by have := den_nz r; simpa
   suffices q.num /. ↑q.den * (r.num /. ↑r.den) = q.num * r.num /. ↑(q.den * r.den) by
     simpa [num_den] using this
-  simp [mul_def' hq' hr']
+  simp [mul_def']
 #align rat.mul_num_denom Rat.mul_num_den
 
 theorem div_num_den (q r : ℚ) : q / r = q.num * r.den /. (q.den * r.num) :=
@@ -473,7 +474,7 @@ theorem div_num_den (q r : ℚ) : q / r = q.num * r.den /. (q.den * r.num) :=
       q / r = q * r⁻¹ := div_eq_mul_inv q r
       _ = q.num /. q.den * (r.num /. r.den)⁻¹ := by simp [num_den]
       _ = q.num /. q.den * (r.den /. r.num) := by rw [inv_def']
-      _ = q.num * r.den /. (q.den * r.num) := mul_def' (by simpa using den_nz q) hr
+      _ = q.num * r.den /. (q.den * r.num) := mul_def' (by simp) hr
 #align rat.div_num_denom Rat.div_num_den
 
 section Casts
@@ -515,7 +516,7 @@ theorem coe_int_div_eq_divInt {n d : ℤ} : (n : ℚ) / (d) = n /. d := by
 
 -- Porting note: see porting note above about `Int.cast`@[simp]
 theorem num_div_den (r : ℚ) : (r.num : ℚ) / (r.den : ℚ) = r := by
-  rw [← Int.cast_ofNat]
+  rw [← Int.cast_natCast]
   erw [← divInt_eq_div, num_den]
 #align rat.num_div_denom Rat.num_div_den
 
@@ -538,7 +539,7 @@ instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
 #align rat.can_lift Rat.canLift
 
 theorem coe_nat_eq_divInt (n : ℕ) : ↑n = n /. 1 := by
-  rw [← Int.cast_ofNat, coe_int_eq_divInt]
+  rw [← Int.cast_natCast, coe_int_eq_divInt]
 #align rat.coe_nat_eq_mk Rat.coe_nat_eq_divInt
 
 @[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
