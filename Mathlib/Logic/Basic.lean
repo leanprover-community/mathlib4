@@ -1056,13 +1056,8 @@ theorem BEx.intro (a : α) (h₁ : p a) (h₂ : P a h₁) : ∃ (x : _) (h : p x
   ⟨a, h₁, h₂⟩
 #align bex.intro BEx.intro
 
-theorem forall_mem_congr (H : ∀ x h, P x h ↔ Q x h) : (∀ x h, P x h) ↔ ∀ x h, Q x h :=
-  forall_congr' fun x ↦ forall_congr' (H x)
-#align ball_congr forall_mem_congr
-
-theorem exists_mem_congr (H : ∀ x h, P x h ↔ Q x h) : (∃ x h, P x h) ↔ ∃ x h, Q x h :=
-  exists_congr fun x ↦ exists_congr (H x)
-#align bex_congr exists_mem_congr
+#align ball_congr forall₂_congr
+#align bex_congr exists₂_congr
 
 @[deprecated exists_eq_left] -- 2024-04-06
 theorem bex_eq_left {a : α} : (∃ (x : _) (_ : x = a), p x) ↔ p a := by
@@ -1070,8 +1065,8 @@ theorem bex_eq_left {a : α} : (∃ (x : _) (_ : x = a), p x) ↔ p a := by
 #align bex_eq_left bex_eq_left
 
 -- 2024-04-06
-@[deprecated] alias ball_congr := forall_mem_congr
-@[deprecated] alias bex_congr := exists_mem_congr
+@[deprecated] alias ball_congr := forall₂_congr
+@[deprecated] alias bex_congr := exists₂_congr
 
 theorem BAll.imp_right (H : ∀ x h, P x h → Q x h) (h₁ : ∀ x h, P x h) (x h) : Q x h :=
   H _ _ <| h₁ _ _
