@@ -5,6 +5,7 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
+import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.IsLocalHomeomorph
 
 #align_import analysis.special_functions.complex.circle from "leanprover-community/mathlib"@"f333194f5ecd1482191452c5ea60b37d4d6afa08"
@@ -71,27 +72,6 @@ noncomputable def argEquiv : circle ≃ Ioc (-π) π where
   left_inv _ := argPartialEquiv.left_inv trivial
   right_inv x := Subtype.ext <| argPartialEquiv.right_inv x.2
 #align circle.arg_equiv circle.argEquiv
-
-/-- `Complex.arg ∘ (↑)` and `expMapCircle` define a partial equivalence between `circle` and `ℝ`
-with `source = Set.univ` and `target = Set.Ioo (-π) π`. -/
-@[simps (config := .asFn)]
-noncomputable def argPartialHomeomorph : PartialHomeomorph circle ℝ :=
-  { toFun := arg ∘ (↑)
-    invFun := expMapCircle
-    source := {expMapCircle π}ᶜ
-    target := Set.Ioo (-π) π
-    map_source' :=
-      fun x h ↦ let h' := arg_mem_Ioc x; ⟨h'.1, lt_of_le_of_ne h'.2 (h ∘ arg_eq_pi_iff.mp)⟩
-    map_target' :=
-      fun x h h' ↦ h.2.ne ((arg_expMapCircle h.1 h.2.le).symm.trans (arg_eq_pi_iff.mpr h'))
-    left_inv' := fun x _ ↦ expMapCircle_arg x
-    right_inv' := fun x hx ↦ arg_expMapCircle hx.1 hx.2.le
-    open_source := isOpen_compl_singleton
-    open_target := isOpen_Ioo
-    continuousOn_toFun := ContinuousAt.continuousOn fun x h ↦ (continuousAt_arg
-        (mem_slitPlane_iff_arg.mpr ⟨mt arg_eq_pi_iff.mp h, ne_zero_of_mem_circle x⟩)).comp
-          continuousAt_subtype_val
-    continuousOn_invFun := Continuous.continuousOn (by continuity) }
 
 end circle
 
@@ -176,17 +156,79 @@ theorem Real.Angle.arg_expMapCircle (θ : Real.Angle) :
     Real.Angle.cos_coe, ← Real.Angle.sin_coe, arg_cos_add_sin_mul_I_coe_angle]
 #align real.angle.arg_exp_map_circle Real.Angle.arg_expMapCircle
 
+namespace AddCircle
+
+variable {T : ℝ}
+
+/-! ### Map from `AddCircle` to `Circle` -/
+
+theorem scaled_exp_map_periodic : Function.Periodic (fun x => expMapCircle (2 * π / T * x)) T := by
+  -- The case T = 0 is not interesting, but it is true, so we prove it to save hypotheses
+  rcases eq_or_ne T 0 with (rfl | hT)
+  · intro x; simp
+  · intro x; simp_rw [mul_add]; rw [div_mul_cancel _ hT, periodic_expMapCircle]
+#align add_circle.scaled_exp_map_periodic AddCircle.scaled_exp_map_periodic
+
+/-- The canonical map `fun x => exp (2 π i x / T)` from `ℝ / ℤ • T` to the unit circle in `ℂ`.
+If `T = 0` we understand this as the constant function 1. -/
+noncomputable def toCircle : AddCircle T → circle :=
+  (@scaled_exp_map_periodic T).lift
+#align add_circle.to_circle AddCircle.toCircle
+
+/-- The canonical map `fun x => exp (2 π i x / T)` from `ℝ / ℤ • T` to the unit circle in `ℂ`.
+If `T = 0` we understand this as the constant function 1. -/
+noncomputable def toCircleHomeomorph : AddCircle T ≃ₜ circle :=
+  { toFun := (@scaled_exp_map_periodic T).lift
+    invFun := fun x ↦ (2 * π / T)⁻¹ * Complex.arg x
+    left_inv := by
+      intro x
+      simp only
+      have key : ∃ y : ℝ, x = y := sorry
+      change ↑((2 * π / T)⁻¹ * arg ↑(_)) = x
+      change ↑((2 * π / T)⁻¹ * arg ↑(expMapCircle (2 * π / T * x))) = x
+      change ↑((_ : ℝ) * (_ : ℝ)) = _
+    right_inv := sorry
+    continuous_toFun := sorry
+    continuous_invFun := sorry }
+
+theorem toCircle_add (x : AddCircle T) (y : AddCircle T) :
+    @toCircle T (x + y) = toCircle x * toCircle y := by
+  induction x using QuotientAddGroup.induction_on'
+  induction y using QuotientAddGroup.induction_on'
+  rw [← QuotientAddGroup.mk_add]
+  simp_rw [toCircle, Function.Periodic.lift_coe, mul_add, expMapCircle_add]
+#align add_circle.to_circle_add AddCircle.toCircle_add
+
+theorem continuous_toCircle : Continuous (@toCircle T) :=
+  continuous_coinduced_dom.mpr (expMapCircle.continuous.comp <| continuous_const.mul continuous_id')
+#align add_circle.continuous_to_circle AddCircle.continuous_toCircle
+
+theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := by
+  intro a b h
+  induction a using QuotientAddGroup.induction_on'
+  induction b using QuotientAddGroup.induction_on'
+  simp_rw [toCircle, Function.Periodic.lift_coe] at h
+  obtain ⟨m, hm⟩ := expMapCircle_eq_expMapCircle.mp h.symm
+  rw [QuotientAddGroup.eq]; simp_rw [AddSubgroup.mem_zmultiples_iff, zsmul_eq_mul]
+  use m
+  field_simp at hm
+  rw [← mul_right_inj' Real.two_pi_pos.ne']
+  linarith
+#align add_circle.injective_to_circle AddCircle.injective_toCircle
+
+end AddCircle
+
 -- todo: upgrade this to `IsCoveringMap expMapCircle`.
 lemma isLocalHomeomorph_expMapCircle : IsLocalHomeomorph expMapCircle := by
-  intro t
-  let e1 : PartialHomeomorph ℝ circle := circle.argPartialHomeomorph.symm
-  let e2 : PartialHomeomorph ℝ ℝ := ((Homeomorph.addRight t).toPartialHomeomorphOfImageEq
-    (Ioo (-π) π) isOpen_Ioo (Ioo (-π + t) (π + t)) (image_add_const_Ioo t (-π) π)).symm
-  let e3 : PartialHomeomorph circle circle :=
-    (Homeomorph.mulRight (expMapCircle t)).toPartialHomeomorphOfImageEq
-      {expMapCircle π}ᶜ isOpen_compl_singleton {expMapCircle (π + t)}ᶜ
-        (by rw [image_compl_eq (Homeomorph.bijective _), image_singleton,
-          Homeomorph.coe_mulRight, expMapCircle_add])
-  let e4 : PartialHomeomorph ℝ circle := e2.trans' (e1.trans' e3 rfl) rfl
-  exact ⟨e4, ⟨add_lt_of_neg_left t (neg_neg_of_pos pi_pos), lt_add_of_pos_left t pi_pos⟩,
-    funext fun x ↦ (congrArg _ (sub_add_cancel x t).symm).trans (expMapCircle_add (x - t) t)⟩
+  let T : ℝ := 1
+  have : Fact (0 < T) := ⟨one_pos⟩
+  have key : expMapCircle = AddCircle.toCircle (T := T) ∘ ((↑) : ℝ → AddCircle T) ∘ (fun x ↦ (2 * π / T)⁻¹ * x) := by
+    ext x
+    congr
+    exact (mul_inv_cancel_left₀ (by positivity) x).symm
+  rw [key]
+  refine' IsLocalHomeomorph.comp _ (IsLocalHomeomorph.comp (AddCircle.isLocalHomeomorph_coe T)
+    (Homeomorph.mulLeft₀ ((2 * π / T)⁻¹) (by positivity)).isLocalHomeomorph)
+
+  sorry
+  -- have key := AddCircle.IsLocalHomeomorph_coe

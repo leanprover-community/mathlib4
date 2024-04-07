@@ -11,6 +11,7 @@ import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.Connected.PathConnected
+import Mathlib.Topology.Covering
 
 #align_import topology.instances.add_circle from "leanprover-community/mathlib"@"213b0cff7bc5ab6696ee07cceec80829ce42efec"
 
@@ -266,6 +267,35 @@ theorem continuousAt_equivIoc : ContinuousAt (equivIoc p a) x := by
   rw [ContinuousAt, Filter.Tendsto, QuotientAddGroup.nhds_eq, Filter.map_map]
   exact (continuousAt_toIocMod hp.out a hx).codRestrict _
 #align add_circle.continuous_at_equiv_Ioc AddCircle.continuousAt_equivIoc
+
+def partialHomeomorphCoe [DiscreteTopology (zmultiples p)] : PartialHomeomorph 𝕜 (AddCircle p) :=
+  { toFun := (↑)
+    invFun := fun x ↦ equivIco p a x
+    source := Ioo a (a + p)
+    target := {↑a}ᶜ
+    map_source' := by
+      intro x hx hx'
+      exact hx.1.ne' ((coe_eq_coe_iff_of_mem_Ico (Ioo_subset_Ico_self hx)
+        (left_mem_Ico.mpr (lt_add_of_pos_right a hp.out))).mp hx')
+    map_target' := by
+      intro x hx
+      exact (eq_left_or_mem_Ioo_of_mem_Ico (equivIco p a x).2).resolve_left
+        (hx ∘ ((equivIco p a).symm_apply_apply x).symm.trans ∘ congrArg _)
+    left_inv' :=
+      fun x hx ↦ congrArg _ ((equivIco p a).apply_symm_apply ⟨x, Ioo_subset_Ico_self hx⟩)
+    right_inv' := fun x _ ↦ (equivIco p a).symm_apply_apply x
+    open_source := isOpen_Ioo
+    open_target := isOpen_compl_singleton
+    continuousOn_toFun := (AddCircle.continuous_mk' p).continuousOn
+    continuousOn_invFun := by
+      exact ContinuousAt.continuousOn
+        (fun _ ↦ continuousAt_subtype_val.comp ∘ continuousAt_equivIco p a) }
+
+lemma isLocalHomeomorph_coe [DiscreteTopology (zmultiples p)] [DenselyOrdered 𝕜] :
+    IsLocalHomeomorph ((↑) : 𝕜 → AddCircle p) := by
+  intro a
+  obtain ⟨b, hb⟩ := nonempty_Ioo_subtype (sub_lt_self a hp.out)
+  exact ⟨partialHomeomorphCoe p b, ⟨hb.2, lt_add_of_sub_right_lt hb.1⟩, rfl⟩
 
 end Continuity
 
