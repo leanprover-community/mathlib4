@@ -614,8 +614,7 @@ the topology of uniform convergence. -/
 protected theorem topologicalSpace_eq :
     UniformOnFun.topologicalSpace α β 𝔖 =
       ⨅ (s : Set α) (_ : s ∈ 𝔖), TopologicalSpace.induced
-        (UniformFun.ofFun ∘ s.restrict ∘ toFun 𝔖)
-        (UniformFun.topologicalSpace s β) := by
+        (UniformFun.ofFun ∘ s.restrict ∘ toFun 𝔖) (UniformFun.topologicalSpace s β) := by
   simp only [UniformOnFun.topologicalSpace, UniformSpace.toTopologicalSpace_iInf]
   rfl
 #align uniform_on_fun.topological_space_eq UniformOnFun.topologicalSpace_eq
