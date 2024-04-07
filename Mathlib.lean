@@ -3974,10 +3974,14 @@ import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.Order.Bounded
 import Mathlib.Topology.Order.Category.AlexDisc
 import Mathlib.Topology.Order.Category.FrameAdjunction
+import Mathlib.Topology.Order.DenselyOrdered
 import Mathlib.Topology.Order.Hom.Basic
 import Mathlib.Topology.Order.Hom.Esakia
+import Mathlib.Topology.Order.IsLUB
 import Mathlib.Topology.Order.Lattice
+import Mathlib.Topology.Order.LeftRightNhds
 import Mathlib.Topology.Order.LowerUpperTopology
+import Mathlib.Topology.Order.Monotone
 import Mathlib.Topology.Order.NhdsSet
 import Mathlib.Topology.Order.OrderClosed
 import Mathlib.Topology.Order.PartialSups
