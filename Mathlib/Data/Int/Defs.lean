@@ -14,6 +14,14 @@ import Mathlib.Tactic.Convert
 # Basic operations on the integers
 
 This file contains some basic lemmas about integers.
+
+See note [foundational algebra order theory].
+
+## TODO
+
+Split this file into:
+* `Data.Int.Init` (or maybe `Data.Int.Std`?) for lemmas that could go to Std
+* `Data.Int.Basic` for the lemmas that require mathlib definitions
 -/
 
 open Nat
@@ -66,6 +74,15 @@ instance instNontrivialInt : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
 @[norm_cast]
 protected lemma natCast_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
+
+lemma natCast_eq_zero {n : ℕ} : (n : ℤ) = 0 ↔ n = 0 := by omega
+#align int.coe_nat_eq_zero Int.natCast_eq_zero
+
+lemma natCast_ne_zero {n : ℕ} : (n : ℤ) ≠ 0 ↔ n ≠ 0 := by omega
+#align int.coe_nat_ne_zero Int.natCast_ne_zero
+
+lemma natCast_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n := by omega
+#align int.coe_nat_ne_zero_iff_pos Int.natCast_ne_zero_iff_pos
 
 #align int.neg_succ_not_nonneg Int.negSucc_not_nonneg
 #align int.neg_succ_not_pos Int.negSucc_not_pos
@@ -202,6 +219,13 @@ lemma natAbs_ne_zero_of_ne_zero : ∀ {a : ℤ}, a ≠ 0 → natAbs a ≠ 0 := n
 #align int.nat_abs_lt_nat_abs_of_nonneg_of_lt Int.natAbs_lt_natAbs_of_nonneg_of_lt
 #align int.nat_abs_eq_nat_abs_iff Int.natAbs_eq_natAbs_iff
 #align int.nat_abs_eq_iff Int.natAbs_eq_iff
+
+lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by
+  simp [Int.pow_succ, Int.pow_zero, Int.natAbs_mul_self']
+#align int.nat_abs_sq Int.natAbs_sq
+
+alias natAbs_pow_two := natAbs_sq
+#align int.nat_abs_pow_two Int.natAbs_pow_two
 
 /-! ### `/`  -/
 
