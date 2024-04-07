@@ -8,6 +8,10 @@ Sample usage:
 
 which will lint all of the Lean files in the specified directories.
 
+OR: a bare $ python3 ./scripts/lint-style.py will just run all of these.
+You **must** run this script from the root directory of mathlib
+(or fix the file paths in "import_old_files_declarations" to match).
+
 The resulting error output will contain one line for each style error
 encountered that isn't in the list of allowed / ignored style exceptions.
 
@@ -411,7 +415,7 @@ def test_backtick_extraction():
 Return a tuple (old_files, old_declarations) consisting of
 - a list of all old files (i.e., mentioned in an align_import statement)
 - a dictionary of all align-ed declarations of the form {old: new}.'''
-# HACK: currently, this reads from local files, which have been pre-generated...
+# Currently, this reads from local files, which have been pre-generated.
 def import_old_files_declarations():
     old_files = []
     for line in open('align_imports.txt', 'r', encoding='utf-8'):
@@ -561,10 +565,8 @@ def format_errors(errors):
             item, line = context
             output_message(path, line_nr, "ERR_OLD_DECL", f'old declaration {item} mentioned in line: "{line}"')
 
-# XXX: is there a more elegant way?
-old_files, old_declarations = import_old_files_declarations()
 
-def lint(path, fix=False):
+def lint(path, old_files, old_declarations, fix=False):
     global new_exceptions
     with path.open(encoding="utf-8", newline="") as f:
         # We enumerate the lines so that we can report line numbers in the error messages correctly
@@ -613,10 +615,31 @@ def lint(path, fix=False):
     #     shutil.move(path.with_name(path.name + '.bak'), path)
 
 fix = "--fix" in sys.argv
-argv = (arg for arg in sys.argv[1:] if arg != "--fix")
+argv = [arg for arg in sys.argv[1:] if arg != "--fix"]
 
 for filename in argv:
     lint(Path(filename), fix=fix)
+
+# If no single file was passed, lint all files in the project
+# (we allow restricting to and excluding subdirectories, hard-coded for now).
+if not argv:
+    # Exclude all files whose name starts with one of these.
+    exclude = tuple(''.split(' '))
+    # Lint all non-excluded files whose module name starts with this.
+    # So "Foo.Bar" will lint all files in module "Foo.Bar" and "Foo.Bar.Baz", etc.
+    dir = 'Utils'
+    assert '/' not in dir
+    print(f"about to lint all files in directory {dir}")
+    files = []
+    projectname = 'Mathlib'
+    for line in open(f'{projectname}.lean', 'r', encoding='utf-8'):
+        line = line[len(f'import {projectname}.'):].strip()
+        if line.startswith(dir) and not line.startswith(exclude):
+            files.append(line)
+    old_files, old_declarations = import_old_files_declarations()
+    for filename in files:
+        path = f"{projectname}/{filename.replace('.', '/')}.lean"
+        lint(Path(path), old_files, old_declarations, fix=fix)
 
 if new_exceptions:
     exit(1)
