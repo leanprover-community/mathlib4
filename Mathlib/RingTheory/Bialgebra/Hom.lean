@@ -73,7 +73,8 @@ def toBialgHom {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f : F) : A �
   { CoalgHomClass.toCoalgHom f, AlgHomClass.toAlgHom f with
     toFun := f }
 
-instance coeTC {F : Type*} [FunLike F A B] [BialgHomClass F R A B] : CoeTC F (A →ₐc[R] B) :=
+instance instCoeToBialgHom {F : Type*} [FunLike F A B] [BialgHomClass F R A B] :
+    CoeHead F (A →ₐc[R] B) :=
   ⟨BialgHomClass.toBialgHom⟩
 
 end BialgHomClass
@@ -193,16 +194,18 @@ theorem mk_coe {f : A →ₐc[R] B} (h₀ h₁ h₂ h₃ h₄ h₅) :
   rfl
 
 @[simp]
-theorem counitAlgHom_comp {A B : Type*} [Semiring A]
-    [Semiring B] [Bialgebra R A] [Bialgebra R B] (φ : A →ₐc[R] B) :
-    (counitAlgHom R B).comp (φ : A →ₐ[R] B) = counitAlgHom R A :=
-  AlgHom.toLinearMap_injective φ.counit_comp
+theorem counitAlgHom_comp {F A B : Type*} [Semiring A]
+    [Semiring B] [Bialgebra R A] [Bialgebra R B]
+    [FunLike F A B] [BialgHomClass F R A B] (f : F) :
+    (counitAlgHom R B).comp (f : A →ₐ[R] B) = counitAlgHom R A :=
+  AlgHom.toLinearMap_injective (CoalgHomClass.counit_comp f)
 
 @[simp]
-theorem map_comp_comulAlgHom {A B : Type*} [Semiring A]
-    [Semiring B] [Bialgebra R A] [Bialgebra R B] (φ : A →ₐc[R] B) :
-    (Algebra.TensorProduct.map φ φ).comp (comulAlgHom R A) = (comulAlgHom R B).comp φ :=
-  AlgHom.toLinearMap_injective φ.map_comp_comul
+theorem map_comp_comulAlgHom {F A B : Type*} [Semiring A]
+    [Semiring B] [Bialgebra R A] [Bialgebra R B]
+    [FunLike F A B] [BialgHomClass F R A B] (f : F) :
+    (Algebra.TensorProduct.map f f).comp (comulAlgHom R A) = (comulAlgHom R B).comp f :=
+  AlgHom.toLinearMap_injective (CoalgHomClass.map_comp_comul f)
 
 section
 
