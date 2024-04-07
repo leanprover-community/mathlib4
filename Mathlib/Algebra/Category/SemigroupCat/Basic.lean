@@ -305,7 +305,7 @@ def mulEquivIsoSemigroupCatIso {X Y : Type u} [Semigroup X] [Semigroup Y] :
 #align add_equiv_iso_AddSemigroup_iso addEquivIsoAddSemigroupCatIso
 
 @[to_additive]
-instance MagmaCat.forgetReflectsIsos : ReflectsIsomorphisms (forget MagmaCat.{u}) where
+instance MagmaCat.forgetReflectsIsos : (forget MagmaCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget MagmaCat).map f)
     let e : X ≃* Y := { f, i.toEquiv with }
@@ -314,7 +314,7 @@ instance MagmaCat.forgetReflectsIsos : ReflectsIsomorphisms (forget MagmaCat.{u}
 #align AddMagma.forget_reflects_isos AddMagmaCat.forgetReflectsIsos
 
 @[to_additive]
-instance SemigroupCat.forgetReflectsIsos : ReflectsIsomorphisms (forget SemigroupCat.{u}) where
+instance SemigroupCat.forgetReflectsIsos : (forget SemigroupCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget SemigroupCat).map f)
     let e : X ≃* Y := { f, i.toEquiv with }
@@ -326,7 +326,7 @@ instance SemigroupCat.forgetReflectsIsos : ReflectsIsomorphisms (forget Semigrou
 -- automatically reflects isomorphisms
 -- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
 @[to_additive]
-instance SemigroupCat.forget₂Full : Full (forget₂ SemigroupCat MagmaCat) where preimage f := f
+instance SemigroupCat.forget₂Full : (forget₂ SemigroupCat MagmaCat).Full where preimage f := f
 
 /-!
 Once we've shown that the forgetful functors to type reflect isomorphisms,
@@ -334,4 +334,4 @@ we automatically obtain that the `forget₂` functors between our concrete categ
 reflect isomorphisms.
 -/
 
-example : ReflectsIsomorphisms (forget₂ SemigroupCat MagmaCat) := inferInstance
+example : (forget₂ SemigroupCat MagmaCat).ReflectsIsomorphisms := inferInstance
