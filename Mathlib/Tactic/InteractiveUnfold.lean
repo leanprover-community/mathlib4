@@ -99,11 +99,19 @@ def mkRewrite (occ : Option Nat) (symm : Bool) (rewrite : String)
   let symm := if symm then "← " else ""
   s! "rw{cfg} [{symm}{rewrite}]{loc}"
 
-/-- Return a string representation of the expression suitable for pasting into the editor. -/
+/--
+Return a string of the expression suitable for pasting into the editor.
+
+We ignore any options set by the user.
+
+We set `pp.universes` to false because new universe level metavariables are not understood
+by the elaborator.
+
+We set `pp.unicode.fun` to true as per Mathlib convention.
+-/
 def PasteString (e : Expr) : MetaM String :=
   withOptions (fun _ => Options.empty
     |>.setBool `pp.universes false
-    |>.setBool `pp.match false
     |>.setBool `pp.unicode.fun true) do
   return Format.pretty (← Meta.ppExpr e) (width := 90) (indent := 2)
 
