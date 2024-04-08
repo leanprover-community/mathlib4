@@ -63,6 +63,14 @@ instance : (quasiIso A).IsMultiplicative := by
   dsimp only [quasiIso]
   infer_instance
 
+instance : (quasiIso A).IsCompatibleWithShift ℤ where
+  condition a := by
+    ext X Y f
+    refine' Iff.trans _ (MorphismProperty.IsCompatibleWithShift.iff
+      (HomotopyCategory.quasiIso A (ComplexShape.up ℤ)) ((ι A).map f) a)
+    exact (quasiIso_respectsIso A).arrow_mk_iso_iff
+      (Arrow.isoOfNatIso ((ι A).commShiftIso a) (Arrow.mk f))
+
 end Plus
 
 end HomotopyCategory

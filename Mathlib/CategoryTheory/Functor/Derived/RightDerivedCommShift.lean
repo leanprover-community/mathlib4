@@ -130,7 +130,7 @@ lemma comp_commShiftIso_hom (a : A) (X : C):
   simpa using (rightDerivedNatTrans_app _ _ (precomposeShiftNatTrans RF α a)
       (postcomposeShiftNatTrans RF α _) W (F.commShiftIso _).hom X)
 
-lemma natTrans_commShift :
+instance natTrans_commShift :
     letI := commShift RF α W A
     NatTrans.CommShift α A :=
   letI := commShift RF α W A

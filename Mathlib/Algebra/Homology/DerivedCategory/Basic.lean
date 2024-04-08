@@ -103,6 +103,14 @@ lemma quasiIso_eq_subcategoryAcyclic_W :
   ext K L f
   exact ((homologyFunctor C (ComplexShape.up ℤ) 0).mem_homologicalKernel_W_iff f).symm
 
+instance : (quasiIso C (ComplexShape.up ℤ)).IsCompatibleWithShift ℤ := by
+  rw [quasiIso_eq_subcategoryAcyclic_W]
+  infer_instance
+
+lemma quasiIso_respectsIso : (quasiIso C (ComplexShape.up ℤ)).RespectsIso := by
+  rw [quasiIso_eq_subcategoryAcyclic_W]
+  apply Triangulated.Subcategory.respectsIso_W
+
 end HomotopyCategory
 
 /-- The assumption that a localized category for

@@ -2,13 +2,16 @@ import Mathlib.Algebra.Homology.DerivedCategory.Plus
 import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Existence
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Triangulated
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.Algebra.Homology.Factorizations.CM5a
+
+universe w₁ w₂
 
 open CategoryTheory Limits ZeroObject Category
 
 variable (C D : Type*) [Category C] [Category D] [Abelian C] [Abelian D]
-  [HasDerivedCategory C] [HasDerivedCategory D]
+  [HasDerivedCategory.{w₁} C] [HasDerivedCategory.{w₂} D]
   {H : Type*} [Category H]
 
 namespace CategoryTheory
@@ -93,6 +96,14 @@ noncomputable instance : CatCommSq (localizerMorphism C).functor
     (𝟭 (HomotopyCategory.Plus (Injectives C)))
     DerivedCategory.Plus.Qh ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh) :=
   ⟨Iso.refl _⟩
+
+noncomputable instance : (Injectives.localizerMorphism C).functor.CommShift ℤ := by
+  dsimp
+  infer_instance
+
+instance : (Injectives.localizerMorphism C).functor.IsTriangulated := by
+  dsimp
+  infer_instance
 
 variable {C}
 
@@ -266,6 +277,19 @@ instance (X : HomotopyCategory.Plus (Injectives C)) :
       ((Injectives.ι C).mapHomotopyCategoryPlus.obj X)) := by
   dsimp only [rightDerivedFunctorPlus, rightDerivedFunctorPlusUnit]
   infer_instance
+
+noncomputable instance : F.rightDerivedFunctorPlus.CommShift ℤ :=
+  IsRightDerivedFunctor.commShift F.rightDerivedFunctorPlus F.rightDerivedFunctorPlusUnit
+    (HomotopyCategory.Plus.quasiIso C) ℤ
+
+noncomputable instance : NatTrans.CommShift F.rightDerivedFunctorPlusUnit ℤ := by
+  infer_instance
+
+instance : F.rightDerivedFunctorPlus.IsTriangulated :=
+  LocalizerMorphism.isTriangulated_of_isRightDerivedFunctor
+    (Φ := (Injectives.localizerMorphism C))
+    (hF := MorphismProperty.isomorphisms_isInvertedBy _)
+    (α := F.rightDerivedFunctorPlusUnit)
 
 noncomputable def rightDerived' (n : ℕ) : C ⥤ D :=
   DerivedCategory.Plus.singleFunctor C 0 ⋙ F.rightDerivedFunctorPlus ⋙

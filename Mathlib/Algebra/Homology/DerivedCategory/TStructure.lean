@@ -4,6 +4,8 @@ import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
 
 open CategoryTheory Category Pretriangulated Triangulated Limits Preadditive
 
+universe w
+
 namespace CategoryTheory
 
 lemma Full.ofCompLeft {C D E : Type _} [Category C] [Category D] [Category E]
@@ -37,7 +39,7 @@ end CategoryTheory
 
 namespace DerivedCategory
 
-variable {C : Type _} [Category C] [Abelian C] [HasDerivedCategory C]
+variable {C : Type _} [Category C] [Abelian C] [HasDerivedCategory.{w} C]
 
 namespace TStructure
 

@@ -132,6 +132,10 @@ noncomputable abbrev singleFunctor (n : ℤ) : C ⥤ Plus C := (singleFunctors C
 noncomputable def homologyFunctor (n : ℤ) : Plus C ⥤ C :=
     Plus.ι ⋙ DerivedCategory.homologyFunctor C n
 
+instance : EssSurj (Qh (C := C)).mapArrow :=
+  Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions _
+    (HomotopyCategory.Plus.subcategoryAcyclic C).W
+
 end Plus
 
 end DerivedCategory
