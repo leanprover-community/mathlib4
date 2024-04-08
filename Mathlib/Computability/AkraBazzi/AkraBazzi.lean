@@ -6,7 +6,6 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Computability.AkraBazzi.GrowsPolynomially
 import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
@@ -77,12 +76,10 @@ satisfies the recurrence
 with appropriate conditions on the various parameters.
 -/
 
-variable {α : Type*} [Fintype α] [Nonempty α]
-
 /-- An Akra-Bazzi recurrence is a function that satisfies the recurrence
 `T n = (∑ i, a i * T (r i n)) + g n`. -/
-structure AkraBazziRecurrence (T : ℕ → ℝ) (g : ℝ → ℝ) (a : α → ℝ)
-    (b : α → ℝ) (r : α → ℕ → ℕ) where
+structure AkraBazziRecurrence {α : Type*} [Fintype α] [Nonempty α]
+    (T : ℕ → ℝ) (g : ℝ → ℝ) (a : α → ℝ) (b : α → ℝ) (r : α → ℕ → ℕ) where
   /-- Point below which the recurrence is in the base case -/
   n₀ : ℕ
   /-- `n₀` is always `> 0` -/
@@ -108,8 +105,9 @@ structure AkraBazziRecurrence (T : ℕ → ℝ) (g : ℝ → ℝ) (a : α → �
 
 namespace AkraBazziRecurrence
 
-variable {T : ℕ → ℝ} {g : ℝ → ℝ} {a b : α → ℝ} {r : α → ℕ → ℕ}
-  (R : AkraBazziRecurrence T g a b r)
+section min_max
+
+variable {α : Type*} [Finite α] [Nonempty α]
 
 /-- Smallest `b i` -/
 noncomputable def min_bi (b : α → ℝ) : α :=
@@ -120,12 +118,17 @@ noncomputable def max_bi (b : α → ℝ) : α :=
   Classical.choose <| Finite.exists_max b
 
 @[aesop safe apply]
-lemma min_bi_le : ∀ i, b (min_bi b) ≤ b i :=
-  Classical.choose_spec (Finite.exists_min b)
+lemma min_bi_le {b : α → ℝ} (i : α) : b (min_bi b) ≤ b i :=
+  Classical.choose_spec (Finite.exists_min b) i
 
 @[aesop safe apply]
-lemma max_bi_le : ∀ i, b i ≤ b (max_bi b) :=
-  Classical.choose_spec (Finite.exists_max b)
+lemma max_bi_le {b : α → ℝ} (i : α) : b i ≤ b (max_bi b) :=
+  Classical.choose_spec (Finite.exists_max b) i
+
+end min_max
+
+variable {α : Type*} [Fintype α] [Nonempty α] {T : ℕ → ℝ} {g : ℝ → ℝ} {a b : α → ℝ} {r : α → ℕ → ℕ}
+  (R : AkraBazziRecurrence T g a b r)
 
 lemma dist_r_b' : ∀ᶠ n in atTop, ∀ i, ‖(r i n : ℝ) - b i * n‖ ≤ n / log n ^ 2 := by
   rw [Filter.eventually_all]
@@ -152,7 +155,7 @@ lemma eventually_b_le_r : ∀ᶠ (n:ℕ) in atTop, ∀ i, (b i : ℝ) * n - (n /
   have h₁ : 0 ≤ b i := le_of_lt <| R.b_pos _
   rw [sub_le_iff_le_add, add_comm, ← sub_le_iff_le_add]
   calc (b i : ℝ) * n - r i n = ‖b i * n‖ - ‖(r i n : ℝ)‖ := by
-                            simp only [norm_mul, IsROrC.norm_natCast, sub_left_inj,
+                            simp only [norm_mul, RCLike.norm_natCast, sub_left_inj,
                                        Nat.cast_eq_zero, Real.norm_of_nonneg h₁]
                          _ ≤ ‖(b i * n : ℝ) - r i n‖ := norm_sub_norm_le _ _
                          _ = ‖(r i n : ℝ) - b i * n‖ := norm_sub_rev _ _
@@ -204,7 +207,7 @@ lemma eventually_r_ge (C : ℝ) : ∀ᶠ (n:ℕ) in atTop, ∀ i, C ≤ r i n :=
   intro i
   calc C = c * (C / c) := by
             rw [← mul_div_assoc]
-            exact (mul_div_cancel_left _ (by positivity)).symm
+            exact (mul_div_cancel_left₀ _ (by positivity)).symm
        _ ≤ c * ⌈C / c⌉₊ := by gcongr; simp [Nat.le_ceil]
        _ ≤ c * n := by gcongr
        _ ≤ r i n := hn₂ i

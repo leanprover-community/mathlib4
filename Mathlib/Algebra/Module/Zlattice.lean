@@ -302,6 +302,11 @@ theorem discreteTopology_pi_basisFun [Finite ι] :
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] (b : Basis ι ℝ E)
 
+theorem fundamentalDomain_subset_parallelepiped [Fintype ι] :
+    fundamentalDomain b ⊆ parallelepiped b := by
+  rw [fundamentalDomain, parallelepiped_basis_eq, Set.setOf_subset_setOf]
+  exact fun _ h i ↦ Set.Ico_subset_Icc_self (h i)
+
 instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
   have h : Set.MapsTo b.equivFun (span ℤ (Set.range b)) (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
     intro _ hx
@@ -310,9 +315,8 @@ instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
   · exact discreteTopology_pi_basisFun
   · refine Subtype.map_injective _ (Basis.equivFun b).injective
 
-instance [Fintype ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup := by
-  change DiscreteTopology (span ℤ (Set.range b))
-  infer_instance
+instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup :=
+  inferInstanceAs <| DiscreteTopology (span ℤ (Set.range b))
 
 @[measurability]
 theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :
@@ -365,6 +369,30 @@ theorem volume_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis ι ℝ
     mul_one, ← Matrix.det_transpose]
   rfl
 
+theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ : Measure E)
+    [BorelSpace E] [Measure.IsAddHaarMeasure μ] :
+    fundamentalDomain b =ᵐ[μ] parallelepiped b := by
+  classical
+  have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
+  rw [← measure_symmDiff_eq_zero_iff, symmDiff_of_le (fundamentalDomain_subset_parallelepiped b)]
+  suffices (parallelepiped b \ fundamentalDomain b) ⊆ ⋃ i,
+      AffineSubspace.mk' (b i) (span ℝ (b '' (Set.univ \ {i}))) by
+    refine measure_mono_null this
+      (measure_iUnion_null_iff.mpr fun i ↦ Measure.addHaar_affineSubspace μ _ ?_)
+    refine (ne_of_mem_of_not_mem' (AffineSubspace.mem_top _ _ 0)
+      (AffineSubspace.mem_mk'_iff_vsub_mem.not.mpr ?_)).symm
+    simp_rw [vsub_eq_sub, zero_sub, neg_mem_iff]
+    exact linearIndependent_iff_not_mem_span.mp b.linearIndependent i
+  intro x hx
+  simp_rw [parallelepiped_basis_eq, Set.mem_Icc, Set.mem_diff, Set.mem_setOf_eq,
+    mem_fundamentalDomain, Set.mem_Ico, not_forall, not_and, not_lt] at hx
+  obtain ⟨i, hi⟩ := hx.2
+  have : b.repr x i = 1 := le_antisymm (hx.1 i).2 (hi (hx.1 i).1)
+  rw [← b.sum_repr x, ← Finset.sum_erase_add _ _ (Finset.mem_univ i), this, one_smul, ← vadd_eq_add]
+  refine Set.mem_iUnion.mpr ⟨i, AffineSubspace.vadd_mem_mk' _
+    (sum_smul_mem _ _ (fun i hi ↦ Submodule.subset_span ?_))⟩
+  exact ⟨i, ⟨Set.mem_diff_singleton.mpr ⟨trivial, Finset.ne_of_mem_erase hi⟩, rfl⟩⟩
+
 end Real
 
 end Zspan
@@ -382,7 +410,7 @@ class IsZlattice (K : Type*) [NormedField K] {E : Type*} [NormedAddCommGroup E] 
   span_top : span K (L : Set E) = ⊤
 
 theorem _root_.Zspan.isZlattice {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [Fintype ι] (b : Basis ι ℝ E) :
+    [Finite ι] (b : Basis ι ℝ E) :
     IsZlattice ℝ (span ℤ (Set.range b)).toAddSubgroup where
   span_top := Zspan.span_top b
 
@@ -549,5 +577,45 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
     -- and thus `finrank K E ≤ card b = finrank ℤ L`
     rw [← topEquiv.finrank_eq, ← h_spanE]
     convert finrank_span_le_card (R := K) (Set.range b)
+
+open Module
+
+variable {ι : Type*} [hs : IsZlattice K L] (b : Basis ι ℤ L)
+/-- Any `ℤ`-basis of `L` is also a `K`-basis of `E`. -/
+def Basis.ofZlatticeBasis :
+    Basis ι K E := by
+  have : Finite ℤ L := Zlattice.module_finite K L
+  have : Free ℤ L := Zlattice.module_free K L
+  let e :=  Basis.indexEquiv (Free.chooseBasis ℤ L) b
+  have : Fintype ι := Fintype.ofEquiv _ e
+  refine basisOfTopLeSpanOfCardEqFinrank (L.subtype.toIntLinearMap ∘ b) ?_ ?_
+  · rw [← span_span_of_tower ℤ, Set.range_comp, ← map_span, Basis.span_eq, Submodule.map_top,
+      top_le_iff, AddMonoidHom.coe_toIntLinearMap_range, AddSubgroup.subtype_range,
+      AddSubgroup.coe_toIntSubmodule, hs.span_top]
+  · rw [← Fintype.card_congr e, ← finrank_eq_card_chooseBasisIndex, Zlattice.rank K L]
+
+@[simp]
+theorem Basis.ofZlatticeBasis_apply (i : ι) :
+    b.ofZlatticeBasis K L i =  b i := by simp [Basis.ofZlatticeBasis]
+
+@[simp]
+theorem Basis.ofZlatticeBasis_repr_apply (x : L) (i : ι) :
+    (b.ofZlatticeBasis K L).repr x i = b.repr x i := by
+  suffices ((b.ofZlatticeBasis K L).repr.toLinearMap.restrictScalars ℤ) ∘ₗ L.subtype.toIntLinearMap
+      = Finsupp.mapRange.linearMap (Algebra.linearMap ℤ K) ∘ₗ b.repr.toLinearMap by
+    exact DFunLike.congr_fun (LinearMap.congr_fun this x) i
+  refine Basis.ext b fun i ↦ ?_
+  simp_rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
+    LinearEquiv.coe_coe, AddMonoidHom.coe_toIntLinearMap, AddSubgroup.coeSubtype,
+    ← b.ofZlatticeBasis_apply K, repr_self, Finsupp.mapRange.linearMap_apply,
+    Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
+
+theorem Basis.ofZlatticeBasis_span :
+    (span ℤ (Set.range (b.ofZlatticeBasis K))).toAddSubgroup = L := by
+  calc (span ℤ (Set.range (b.ofZlatticeBasis K))).toAddSubgroup
+    _ = (span ℤ (L.subtype.toIntLinearMap '' (Set.range b))).toAddSubgroup := by congr; ext; simp
+    _ = (map L.subtype.toIntLinearMap (span ℤ (Set.range b))).toAddSubgroup := by
+        rw [Submodule.map_span]
+    _ = L := by simp [b.span_eq]
 
 end Zlattice

@@ -53,7 +53,7 @@ variable [Module 𝕜 E] [Module 𝕜 F]
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 /-- The (absolute) polar of `s : Set E` is given by the set of all `y : F` such that `‖B x y‖ ≤ 1`
-for all `x ∈ s`.-/
+for all `x ∈ s`. -/
 def polar (s : Set E) : Set F :=
   { y : F | ∀ x ∈ s, ‖B x y‖ ≤ 1 }
 #align linear_map.polar LinearMap.polar

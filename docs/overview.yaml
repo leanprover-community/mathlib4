@@ -273,7 +273,7 @@ Analysis:
     absolutely convergent series in Banach spaces: 'Summable.of_norm'
     Hahn-Banach theorem: 'exists_extension_norm_eq'
     isometric inclusion in double dual: 'NormedSpace.inclusionInDoubleDualLi'
-    completeness of spaces of bounded continuous functions: 'BoundedContinuousFunction.instCompleteSpaceBoundedContinuousFunctionToUniformSpaceInstPseudoMetricSpaceBoundedContinuousFunction'
+    completeness of spaces of bounded continuous functions: 'BoundedContinuousFunction.instCompleteSpace'
 
   Hilbert spaces:
     Inner product space, over $R$ or $C$: 'InnerProductSpace'

@@ -86,7 +86,8 @@ instance : Preregular Profinite where
     obtain ⟨z,hz⟩ := hπ (f y)
     exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
 
-example : Precoherent Profinite.{u} := inferInstance
+-- Was an `example`, but that made the linter complain about unused imports
+instance : Precoherent Profinite.{u} := inferInstance
 
 -- TODO: prove this for `Type*`
 open List in
