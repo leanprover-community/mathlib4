@@ -49,7 +49,7 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
 
 * `IsClosed.exists_closed_singleton`: Given a closed set `S` in a compact T₀ space,
   there is some `x ∈ S` such that `{x}` is closed.
-* `exists_open_singleton_of_open_finite`: Given an open finite set `S` in a T₀ space,
+* `exists_isOpen_singleton_of_isOpen_finite`: Given an open finite set `S` in a T₀ space,
   there is some `x ∈ S` such that `{x}` is open.
 
 ### T₁ spaces

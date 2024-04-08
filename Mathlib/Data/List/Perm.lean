@@ -5,12 +5,10 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Dedup
-import Mathlib.Data.List.Permutation
-import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.InsertNth
 import Mathlib.Data.List.Lattice
+import Mathlib.Data.List.Permutation
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.List.Count
 
 #align_import data.list.perm from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
@@ -25,6 +23,8 @@ another.
 The notation `~` is used for permutation equivalence.
 -/
 
+-- Make sure we don't import algebra
+assert_not_exists Monoid
 
 open Nat
 
@@ -137,7 +137,6 @@ open Relator
 
 variable {γ : Type*} {δ : Type*} {r : α → β → Prop} {p : γ → δ → Prop}
 
--- mathport name: «expr ∘r »
 local infixr:80 " ∘r " => Relation.Comp
 
 theorem perm_comp_perm : (Perm ∘r Perm : List α → List α → Prop) = Perm := by
@@ -283,10 +282,8 @@ section
 
 variable {op : α → α → α} [IA : Std.Associative op] [IC : Std.Commutative op]
 
--- mathport name: op
 local notation a " * " b => op a b
 
--- mathport name: foldl
 local notation l " <*> " a => foldl op a l
 
 theorem Perm.fold_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : (l₁ <*> a) = l₂ <*> a :=
@@ -294,42 +291,6 @@ theorem Perm.fold_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : (l₁
 #align list.perm.fold_op_eq List.Perm.fold_op_eq
 
 end
-
-section CommMonoid
-
-/-- If elements of a list commute with each other, then their product does not
-depend on the order of elements. -/
-@[to_additive
-      "If elements of a list additively commute with each other, then their sum does not
-      depend on the order of elements."]
-theorem Perm.prod_eq' [M : Monoid α] {l₁ l₂ : List α} (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) :
-    l₁.prod = l₂.prod := by
-  refine h.foldl_eq' ?_ _
-  apply Pairwise.forall_of_forall
-  · intro x y h z
-    exact (h z).symm
-  · intros; rfl
-  · apply hc.imp
-    intro a b h z
-    rw [mul_assoc z, mul_assoc z, h]
-#align list.perm.prod_eq' List.Perm.prod_eq'
-#align list.perm.sum_eq' List.Perm.sum_eq'
-
-variable [CommMonoid α]
-
-@[to_additive]
-theorem Perm.prod_eq {l₁ l₂ : List α} (h : Perm l₁ l₂) : prod l₁ = prod l₂ :=
-  h.fold_op_eq
-#align list.perm.prod_eq List.Perm.prod_eq
-#align list.perm.sum_eq List.Perm.sum_eq
-
-@[to_additive]
-theorem prod_reverse (l : List α) : prod l.reverse = prod l :=
-  (reverse_perm l).prod_eq
-#align list.prod_reverse List.prod_reverse
-#align list.sum_reverse List.sum_reverse
-
-end CommMonoid
 
 #align list.perm_inv_core List.perm_inv_core
 
@@ -672,12 +633,12 @@ theorem length_permutationsAux :
   refine' permutationsAux.rec (by simp) _
   intro t ts is IH1 IH2
   have IH2 : length (permutationsAux is nil) + 1 = is.length ! := by simpa using IH2
-  simp? [Nat.factorial, Nat.add_succ, mul_comm] at IH1 says
-    simp only [factorial, add_eq, add_zero, mul_comm] at IH1
+  simp? [Nat.factorial, Nat.add_succ, Nat.mul_comm] at IH1 says
+    simp only [factorial, add_eq, Nat.add_zero, Nat.mul_comm] at IH1
   rw [permutationsAux_cons,
     length_foldr_permutationsAux2' _ _ _ _ _ fun l m => (perm_of_mem_permutations m).length_eq,
-    permutations, length, length, IH2, Nat.succ_add, Nat.factorial_succ, mul_comm (_ + 1),
-    ← Nat.succ_eq_add_one, ← IH1, add_comm (_ * _), add_assoc, Nat.mul_succ, mul_comm]
+    permutations, length, length, IH2, Nat.succ_add, Nat.factorial_succ, Nat.mul_comm (_ + 1),
+    ← Nat.succ_eq_add_one, ← IH1, Nat.add_comm (_ * _), Nat.add_assoc, Nat.mul_succ, Nat.mul_comm]
 #align list.length_permutations_aux List.length_permutationsAux
 
 theorem length_permutations (l : List α) : length (permutations l) = (length l)! :=
@@ -803,7 +764,7 @@ theorem nthLe_permutations'Aux (s : List α) (x : α) (n : ℕ)
     (hn : n < length (permutations'Aux x s)) :
     (permutations'Aux x s).nthLe n hn = s.insertNth n x := by
   induction' s with y s IH generalizing n
-  · simp only [length, zero_add, Nat.lt_one_iff] at hn
+  · simp only [length, Nat.zero_add, Nat.lt_one_iff] at hn
     simp [hn]
   · cases n
     · simp [nthLe]
@@ -820,7 +781,7 @@ theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
       simpa [takeWhile, Nat.succ_inj', DecEq_eq] using IH _
     · rw [takeWhile]
       simp only [mem_map, cons.injEq, Ne.symm hx, false_and, and_false, exists_false,
-        not_false_iff, count_eq_zero_of_not_mem, zero_add, hx, decide_False, length_nil]
+        not_false_iff, count_eq_zero_of_not_mem, Nat.zero_add, hx, decide_False, length_nil]
 #align list.count_permutations'_aux_self List.count_permutations'Aux_self
 
 @[simp]
@@ -886,7 +847,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
       rw [nthLe_insertNth_add_succ]
       convert nthLe_insertNth_add_succ s x k m.succ (by simpa using hn) using 2
       · simp [Nat.add_succ, Nat.succ_add]
-      · simp [add_left_comm, add_comm]
+      · simp [Nat.add_left_comm, Nat.add_comm]
       · simpa [Nat.succ_add] using hn
 #align list.nodup_permutations'_aux_iff List.nodup_permutations'Aux_iff
 

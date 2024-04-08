@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys
 -/
 import Mathlib.Data.Nat.Interval
-import Mathlib.Data.Nat.Sqrt
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
 

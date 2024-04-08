@@ -127,7 +127,7 @@ variable (ν : Measure G) [IsMulLeftInvariant ν] [IsMulRightInvariant ν]
 
 /-- If `μ` on `G ⧸ Γ` satisfies `QuotientMeasureEqMeasurePreimage` relative to a both left- and
   right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a left-invariant
-  measure.-/
+  measure. -/
 @[to_additive "If `μ` on `G ⧸ Γ` satisfies `AddQuotientMeasureEqMeasurePreimage` relative to a both
   left- and right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a
   left-invariant measure."]
