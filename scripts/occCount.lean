@@ -10,7 +10,7 @@ def failWith {α} (msg : String) (exitCode : UInt8 := 1) : IO α := do
   (← IO.getStderr).putStrLn msg
   IO.Process.exit exitCode
 
-def modPrefixes : List Name := [`Init]
+def modPrefixes : List Name := [`Init, `Lean]
 
 def act' (fileNames : List String) : CoreM Unit := do
   let env ← getEnv
@@ -24,6 +24,8 @@ def act' (fileNames : List String) : CoreM Unit := do
         unless modPrefixes.any (·.isPrefixOf mod) do return counts
         if (docStringExt.find? env n).isSome then return counts
         if (builtinDocStrings.find? n).isSome then return counts
+        if let some ci := env.find? n then
+          if ci matches .thmInfo .. then return counts
         return counts.insert (mod,n) (counts.findD (mod,n) 0 + info.usages.size)
 
   counts.toArray.qsort (·.2 > ·.2) |>.forM fun ((mod,n), count) =>
