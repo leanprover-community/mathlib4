@@ -134,7 +134,20 @@ def IsBasicOpen {A B : CommRingCat.{u}} (ι : A ⟶ B) (f : A) : Prop :=
 
 lemma isOpenImmersion_of_isBasicOpen
     {A B : CommRingCat.{u}} (ι : A ⟶ B) (f : A) (h : IsBasicOpen ι f) :
-    IsOpenImmersion (Scheme.Spec.map ι.op) := sorry
+    IsOpenImmersion (Scheme.Spec.map ι.op) := by
+  let _ : Algebra A B := RingHom.toAlgebra ι
+  let _ : IsLocalization.Away f B := h
+  let e' : Localization.Away f ≃ₐ[A] B := Localization.algEquiv _ B
+  let B' := CommRingCat.of <| Localization.Away f
+  let e : B' ≅ B := e'.toRingEquiv.toCommRingCatIso
+  let ι' : A ⟶ B' := algebraMap A <| Localization.Away f
+  have : ι = ι' ≫ e.hom := by
+    ext t
+    exact AlgHom.commutes e'.toAlgHom t |>.symm
+  rw [this]
+  simp only [op_comp, Functor.map_comp]
+  suffices IsOpenImmersion (Scheme.Spec.map ι'.op) from inferInstance
+  apply Scheme.basic_open_isOpenImmersion
 
 structure indexedZariskiCover (A : CommRingCat.{u}) where
   J : Type v
