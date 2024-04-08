@@ -536,7 +536,7 @@ theorem measure_closure_of_null_frontier {μ : Measure α'} {s : Set α'} (h : �
   measure_congr (closure_ae_eq_of_null_frontier h)
 #align measure_closure_of_null_frontier measure_closure_of_null_frontier
 
-instance separatesPoints_of_opensMeasurableSpace_of_t0Space [T0Space α] :
+instance separatesPointsOfOpensMeasurableSpaceOfT0Space [T0Space α] :
     MeasurableSpace.SeparatesPoints α where
   separates x y := by
     contrapose!
