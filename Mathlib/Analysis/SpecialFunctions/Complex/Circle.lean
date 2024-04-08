@@ -47,9 +47,6 @@ theorem expMapCircle_arg (z : circle) : expMapCircle (arg z) = z :=
 
 namespace circle
 
-theorem arg_eq_pi_iff {z : circle} : arg z = π ↔ z = expMapCircle π :=
-  ⟨fun h ↦ h ▸ (expMapCircle_arg z).symm, fun h ↦ h ▸ arg_expMapCircle (neg_lt_self pi_pos) le_rfl⟩
-
 /-- `Complex.arg ∘ (↑)` and `expMapCircle` define a partial equivalence between `circle` and `ℝ`
 with `source = Set.univ` and `target = Set.Ioc (-π) π`. -/
 @[simps (config := .asFn)]
@@ -174,9 +171,6 @@ If `T = 0` we understand this as the constant function 1. -/
 noncomputable def toCircle : AddCircle T → circle :=
   (@scaled_exp_map_periodic T).lift
 #align add_circle.to_circle AddCircle.toCircle
-
-@[simp]
-theorem toCircle_coe (x : ℝ) : @toCircle T x = expMapCircle (2 * π / T * x) := rfl
 
 theorem toCircle_add (x : AddCircle T) (y : AddCircle T) :
     @toCircle T (x + y) = toCircle x * toCircle y := by
