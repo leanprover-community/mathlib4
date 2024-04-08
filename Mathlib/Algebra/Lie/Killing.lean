@@ -592,7 +592,7 @@ lemma ker_weight_inf_rootSpaceProductNegSelf_eq_bot [CharZero K] (α : weight K 
 
 end IsKilling
 
-section LieAlgebraEquiv
+section LieEquiv
 
 variable {R L L' : Type*} [Field R]
   [LieRing L] [LieAlgebra R L]
@@ -631,7 +631,9 @@ lemma isKilling_of_equiv [h : IsKilling R L] (e : L ≃ₗ⁅R⁆ L') : IsKillin
     rw [hx]
     exact LinearMap.map_zero₂ (killingForm R L') y
 
-end LieAlgebraEquiv
+alias _root_.LieEquiv.isKilling := LieAlgebra.isKilling_of_equiv
+
+end LieEquiv
 
 end LieAlgebra
 
