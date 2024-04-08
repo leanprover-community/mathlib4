@@ -213,7 +213,7 @@ theorem le_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
     · intro h₁
       cases' eq_or_lt_of_le h₁ with h h
       · exact ⟨_, h.symm⟩
-      rw [derivFamily_limit _ l, ← not_le, bsup_le_iff, not_ball] at h
+      rw [derivFamily_limit _ l, ← not_le, bsup_le_iff, not_forall₂] at h
       exact
         let ⟨o', h, hl⟩ := h
         IH o' h (le_of_not_le hl),

@@ -296,7 +296,7 @@ theorem coe_direction_eq_vsub_set_left {s : AffineSubspace k P} {p : P} (hp : p 
     (s.direction : Set V) = (p -ᵥ ·) '' s := by
   ext v
   rw [SetLike.mem_coe, ← Submodule.neg_mem_iff, ← SetLike.mem_coe,
-    coe_direction_eq_vsub_set_right hp, Set.mem_image_iff_bex, Set.mem_image_iff_bex]
+    coe_direction_eq_vsub_set_right hp, Set.mem_image, Set.mem_image]
   conv_lhs =>
     congr
     ext
@@ -1547,8 +1547,8 @@ theorem coe_map (s : AffineSubspace k P₁) : (s.map f : Set P₂) = f '' s :=
 
 @[simp]
 theorem mem_map {f : P₁ →ᵃ[k] P₂} {x : P₂} {s : AffineSubspace k P₁} :
-    x ∈ s.map f ↔ ∃ y ∈ s, f y = x := by
-  simpa only [bex_def] using mem_image_iff_bex
+    x ∈ s.map f ↔ ∃ y ∈ s, f y = x :=
+  Iff.rfl
 #align affine_subspace.mem_map AffineSubspace.mem_map
 
 theorem mem_map_of_mem {x : P₁} {s : AffineSubspace k P₁} (h : x ∈ s) : f x ∈ s.map f :=

@@ -768,7 +768,7 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
     simpa using hφ.tendsto (0, y₁)
   have lim := lim2.comp lim1
   rw [tendsto_prod_self_iff] at lim
-  simp_rw [ball_mem_comm]
+  simp_rw [forall_mem_comm]
   exact lim W' W'_nhd
 #noalign dense_inducing.extend_Z_bilin_aux
 
