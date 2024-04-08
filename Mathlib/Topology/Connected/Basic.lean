@@ -938,7 +938,7 @@ theorem frontier_eq_empty_iff [PreconnectedSpace α] {s : Set α} :
 
 theorem nonempty_frontier_iff [PreconnectedSpace α] {s : Set α} :
     (frontier s).Nonempty ↔ s.Nonempty ∧ s ≠ univ := by
-  simp only [nonempty_iff_ne_empty, Ne.def, frontier_eq_empty_iff, not_or]
+  simp only [nonempty_iff_ne_empty, Ne, frontier_eq_empty_iff, not_or]
 #align nonempty_frontier_iff nonempty_frontier_iff
 
 theorem Subtype.preconnectedSpace {s : Set α} (h : IsPreconnected s) : PreconnectedSpace s where
@@ -1095,11 +1095,9 @@ theorem isPreconnected_iff_subset_of_disjoint_closed :
     exact h ⟨y, hys, hyu⟩ ⟨x, hxs, hxv⟩
   · rw [isPreconnected_closed_iff]
     intro u v hu hv hs hsu hsv
-    rw [nonempty_iff_ne_empty]
-    intro H
-    specialize h u v hu hv hs H
-    contrapose H
-    apply Nonempty.ne_empty
+    by_contra H
+    specialize h u v hu hv hs (Set.not_nonempty_iff_eq_empty.mp H)
+    apply H
     cases' h with h h
     · rcases hsv with ⟨x, hxs, hxv⟩
       exact ⟨x, hxs, ⟨h hxs, hxv⟩⟩

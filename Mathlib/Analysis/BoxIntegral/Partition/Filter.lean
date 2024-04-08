@@ -34,15 +34,15 @@ the corresponding integral, or in the proofs of its properties. We equip
 
 The structure `BoxIntegral.IntegrationParams` has 3 boolean fields with the following meaning:
 
-* `bRiemann`: the value `true` means that the filter corresponds to a Riemann-style integral, i.e.
+* `bRiemann`: the value `True` means that the filter corresponds to a Riemann-style integral, i.e.
   in the definition of integrability we require a constant upper estimate `r` on the size of boxes
-  of a tagged partition; the value `false` means that the estimate may depend on the position of the
+  of a tagged partition; the value `False` means that the estimate may depend on the position of the
   tag.
 
-* `bHenstock`: the value `true` means that we require that each tag belongs to its own closed box;
-  the value `false` means that we only require that tags belong to the ambient box.
+* `bHenstock`: the value `True` means that we require that each tag belongs to its own closed box;
+  the value `False` means that we only require that tags belong to the ambient box.
 
-* `bDistortion`: the value `true` means that `r` can depend on the maximal ratio of sides of the
+* `bDistortion`: the value `True` means that `r` can depend on the maximal ratio of sides of the
   same box of a partition. Presence of this case make quite a few proofs harder but we can prove the
   divergence theorem only for the filter `BoxIntegral.IntegrationParams.GP = ⊥ =
   {bRiemann := false, bHenstock := true, bDistortion := true}`.
@@ -183,15 +183,15 @@ open TaggedPrepartition
 /-- An `IntegrationParams` is a structure holding 3 boolean values used to define a filter to be
 used in the definition of a box-integrable function.
 
-* `bRiemann`: the value `true` means that the filter corresponds to a Riemann-style integral, i.e.
+* `bRiemann`: the value `True` means that the filter corresponds to a Riemann-style integral, i.e.
   in the definition of integrability we require a constant upper estimate `r` on the size of boxes
-  of a tagged partition; the value `false` means that the estimate may depend on the position of the
+  of a tagged partition; the value `False` means that the estimate may depend on the position of the
   tag.
 
-* `bHenstock`: the value `true` means that we require that each tag belongs to its own closed box;
-  the value `false` means that we only require that tags belong to the ambient box.
+* `bHenstock`: the value `True` means that we require that each tag belongs to its own closed box;
+  the value `False` means that we only require that tags belong to the ambient box.
 
-* `bDistortion`: the value `true` means that `r` can depend on the maximal ratio of sides of the
+* `bDistortion`: the value `True` means that `r` can depend on the maximal ratio of sides of the
   same box of a partition. Presence of this case makes quite a few proofs harder but we can prove
   the divergence theorem only for the filter `BoxIntegral.IntegrationParams.GP = ⊥ =
   {bRiemann := false, bHenstock := true, bDistortion := true}`.

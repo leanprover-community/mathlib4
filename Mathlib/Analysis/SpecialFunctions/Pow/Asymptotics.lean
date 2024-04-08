@@ -349,7 +349,7 @@ theorem isLittleO_log_rpow_rpow_atTop {s : ℝ} (r : ℝ) (hs : 0 < s) :
       ((isLittleO_log_rpow_atTop H).rpow hr <|
         (_root_.tendsto_rpow_atTop H).eventually <| eventually_ge_atTop 0)
     _ =ᶠ[atTop] fun x => x ^ s :=
-      (eventually_ge_atTop 0).mono fun x hx => by simp only [← rpow_mul hx, div_mul_cancel _ hr.ne']
+      (eventually_ge_atTop 0).mono fun x hx ↦ by simp only [← rpow_mul hx, div_mul_cancel₀ _ hr.ne']
 #align is_o_log_rpow_rpow_at_top isLittleO_log_rpow_rpow_atTop
 
 theorem isLittleO_abs_log_rpow_rpow_nhds_zero {s : ℝ} (r : ℝ) (hs : s < 0) :
