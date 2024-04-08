@@ -203,7 +203,7 @@ theorem mem_range_of_exists_le_of_exists_ge [PreconnectedSpace X] {c : α} {f : 
 
 In this section we prove the following results:
 
-* `IsPreconnected.ordConnected`: any preconnected set `s` in a linear order is `ordConnected`,
+* `IsPreconnected.ordConnected`: any preconnected set `s` in a linear order is `OrdConnected`,
   i.e. `a ∈ s` and `b ∈ s` imply `Icc a b ⊆ s`;
 
 * `IsPreconnected.mem_intervals`: any preconnected set `s` in a conditionally complete linear order
@@ -335,7 +335,7 @@ theorem setOf_isPreconnected_subset_of_ordered :
 /-!
 ### Intervals are connected
 
-In this section we prove that a closed interval (hence, any `ordConnected` set) in a dense
+In this section we prove that a closed interval (hence, any `OrdConnected` set) in a dense
 conditionally complete linear order is preconnected.
 -/
 
