@@ -16,6 +16,9 @@ import ImportGraph.Imports
 -- Hopefully `lake` will be able to handle tests later.
 import ProofWidgets
 
+-- Import Mathlib-specific linters.
+import Mathlib.Linter.Lint
+
 -- Now import all tactics defined in Mathlib that do not require theory files.
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.ApplyCongr
@@ -60,7 +63,6 @@ import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.Lift
-import Mathlib.Linter.Lint
 import Mathlib.Tactic.MkIffOfInductiveProp
 -- NormNum imports `Algebra.Order.Invertible`, `Data.Int.Basic`, `Data.Nat.Cast.Commute`
 -- import Mathlib.Tactic.NormNum.Basic
@@ -119,6 +121,9 @@ thereby making tactics widely available without needing specific imports.
 
 We include some commented out imports here, with an explanation of their theory requirements,
 to save some time for anyone wondering why they are not here.
+
+We also import theory-free linters, commands, and utilities which are useful to have low in the 
+import hierarchy.
 -/
 
 /-!
