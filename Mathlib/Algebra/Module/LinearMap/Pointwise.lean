@@ -5,6 +5,10 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
   Frédéric Dupuis, Heather Macbeth
 -/
 
+import Mathlib.GroupTheory.GroupAction.Pointwise
+
+#exit
+
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Data.Set.Pointwise.SMul
 
