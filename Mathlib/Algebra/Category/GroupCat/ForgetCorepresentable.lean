@@ -76,22 +76,22 @@ def fromULiftIntEquiv (α : Type u) [AddGroup α] : (ULift.{u} ℤ →+ α) ≃ 
 
 end AddMonoidHom
 
-/-- The forget functor `GroupCat.{u} ⥤ Type u` is representable. -/
+/-- The forget functor `GroupCat.{u} ⥤ Type u` is corepresentable. -/
 def GroupCat.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} (Multiplicative ℤ)))) ≅ forget GroupCat.{u} :=
   (NatIso.ofComponents (fun M => (MonoidHom.fromULiftMultiplicativeIntEquiv M.α).toIso))
 
-/-- The forget functor `CommGroupCat.{u} ⥤ Type u` is representable. -/
+/-- The forget functor `CommGroupCat.{u} ⥤ Type u` is corepresentable. -/
 def CommGroupCat.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} (Multiplicative ℤ)))) ≅ forget CommGroupCat.{u} :=
   (NatIso.ofComponents (fun M => (MonoidHom.fromULiftMultiplicativeIntEquiv M.α).toIso))
 
-/-- The forget functor `AddGroupCat.{u} ⥤ Type u` is representable. -/
+/-- The forget functor `AddGroupCat.{u} ⥤ Type u` is corepresentable. -/
 def AddGroupCat.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} ℤ))) ≅ forget AddGroupCat.{u} :=
   (NatIso.ofComponents (fun M => (AddMonoidHom.fromULiftIntEquiv M.α).toIso))
 
-/-- The forget functor `AddCommGroupCat.{u} ⥤ Type u` is representable. -/
+/-- The forget functor `AddCommGroupCat.{u} ⥤ Type u` is corepresentable. -/
 def AddCommGroupCat.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} ℤ))) ≅ forget AddCommGroupCat.{u} :=
   (NatIso.ofComponents (fun M => (AddMonoidHom.fromULiftIntEquiv M.α).toIso))
