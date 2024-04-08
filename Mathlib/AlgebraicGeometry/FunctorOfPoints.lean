@@ -157,13 +157,29 @@ structure indexedZariskiCover (A : CommRingCat.{u}) where
   isLocalizationAt (j : J) : IsBasicOpen (ι j) (f j)
   covers : Ideal.span (Set.range f) = ⊤
 
+lemma indexedZariskiCover.exists_index
+    {A : CommRingCat.{u}} (𝓤 : indexedZariskiCover A)
+    (p : PrimeSpectrum A) : ∃ j : 𝓤.J, 𝓤.f j ∉ p.asIdeal := by
+  by_contra! h
+  apply p.IsPrime.ne_top
+  suffices ⊤ ≤ p.asIdeal from Submodule.eq_top_iff'.mpr fun x ↦ this trivial
+  rw [← 𝓤.covers, Ideal.span_le]
+  rintro j ⟨j,rfl⟩
+  apply h
+
 def indexedZariskiCover.affineOpenCover {A : CommRingCat.{u}} (𝓤 : indexedZariskiCover A) :
     (Scheme.Spec.obj <| .op A).AffineOpenCover where
   J := 𝓤.J
   obj := 𝓤.B
   map j := Scheme.Spec.map <| 𝓤.ι j |>.op
-  f := sorry
-  Covers := sorry
+  f := fun (p : PrimeSpectrum A) => (𝓤.exists_index p).choose
+  Covers := fun (p : PrimeSpectrum A) => by
+    let j := (𝓤.exists_index p).choose
+    let _ : Algebra A (𝓤.B j) := RingHom.toAlgebra <| 𝓤.ι j
+    let _ : IsLocalization.Away (𝓤.f j) (𝓤.B j) := 𝓤.isLocalizationAt j
+    change p ∈ Set.range ⇑(PrimeSpectrum.comap (algebraMap A (𝓤.B j)))
+    rw [PrimeSpectrum.localization_away_comap_range (𝓤.B j) (𝓤.f j)]
+    exact (𝓤.exists_index p).choose_spec
   IsOpen j := isOpenImmersion_of_isBasicOpen _ (𝓤.f j) (𝓤.isLocalizationAt _)
 
 theorem indexedZariskiCover.desc
