@@ -3,10 +3,13 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Infix
 
 /-!
 # Basic properties of `List.eraseIdx`
+
+`List.eraseIdx l k` erases `k`-th element of `l : List α`.
+If `k ≥ length l`, then it returns `l`.
 -/
 
 namespace List
@@ -14,19 +17,17 @@ namespace List
 variable {α β : Type*}
 
 @[simp]
-theorem length_eraseIdx : ∀ {k} {l : List α}, k < length l → length (eraseIdx l k) = length l - 1
-  | 0, a::l, _ => rfl
-  | k + 1, a::b::l, h => by
-    rw [length_cons, Nat.succ_lt_succ_iff] at h
-    rw [eraseIdx, length_cons, length_eraseIdx h]
-    rfl
+theorem length_eraseIdx {k} {l : List α} (h : k < length l) :
+    length (eraseIdx l k) = length l - 1 := calc
+  _ = min k (length l) + (length l - (k + 1)) := by simp [eraseIdx_eq_take_drop_succ]
+  _ = length l - 1 := by omega
 
 @[simp] theorem eraseIdx_zero (l : List α) : eraseIdx l 0 = tail l := by cases l <;> rfl
 
-theorem eraseIdx_sublist : ∀ (l : List α) (k : ℕ), eraseIdx l k <+ l
-  | [], _ => .refl _
-  | a::l, 0 => sublist_cons a l
-  | a::l, n + 1 => .cons₂ a <| eraseIdx_sublist l n
+theorem eraseIdx_sublist (l : List α) (k : ℕ) : eraseIdx l k <+ l := calc
+  eraseIdx l k = take k l ++ drop (k + 1) l := eraseIdx_eq_take_drop_succ ..
+  _ <+ take k l ++ drop k l := _
+  _ = l := _
 
 theorem eraseIdx_subset (l : List α) (k : ℕ) : eraseIdx l k ⊆ l := (eraseIdx_sublist l k).subset
 
