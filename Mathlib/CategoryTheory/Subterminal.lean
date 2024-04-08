@@ -97,7 +97,7 @@ The converse of `isSubterminal_of_isIso_diag`.
 theorem IsSubterminal.isIso_diag (hA : IsSubterminal A) [HasBinaryProduct A A] : IsIso (diag A) :=
   ⟨⟨Limits.prod.fst,
       ⟨by simp, by
-        rw [IsSubterminal.def'] at hA
+        rw [IsSubterminal.def] at hA
         aesop_cat⟩⟩⟩
 #align category_theory.is_subterminal.is_iso_diag CategoryTheory.IsSubterminal.isIso_diag
 

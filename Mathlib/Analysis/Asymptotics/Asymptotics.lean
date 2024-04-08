@@ -278,7 +278,7 @@ theorem isLittleO_iff_nat_mul_le_aux (h₀ : (∀ x, 0 ≤ ‖f x‖) ∨ ∀ x,
     f =o[l] g ↔ ∀ n : ℕ, ∀ᶠ x in l, ↑n * ‖f x‖ ≤ ‖g x‖ := by
   constructor
   · rintro H (_ | n)
-    · refine' (H.definition one_pos).mono fun x h₀' => _
+    · refine' (H.def one_pos).mono fun x h₀' => _
       rw [Nat.cast_zero, zero_mul]
       refine' h₀.elim (fun hf => (hf x).trans _) fun hg => hg x
       rwa [one_mul] at h₀'

@@ -409,7 +409,7 @@ theorem splits_of_splits_id {f : K[X]} : Splits (RingHom.id K) f → Splits i f 
     fun a p ha0 hp ih hfi =>
     splits_mul _
       (splits_of_degree_eq_one _
-        ((splits_of_splits_mul _ (mul_ne_zero hp.1 ha0) hfi).1.def'.resolve_left hp.1 hp.irreducible
+        ((splits_of_splits_mul _ (mul_ne_zero hp.1 ha0) hfi).1.def.resolve_left hp.1 hp.irreducible
           (by rw [map_id])))
       (ih (splits_of_splits_mul _ (mul_ne_zero hp.1 ha0) hfi).2)
 #align polynomial.splits_of_splits_id Polynomial.splits_of_splits_id

@@ -1385,11 +1385,11 @@ alias ⟨Hereditarily.def, _⟩ := hereditarily_iff
 #align Set.hereditarily.def ZFSet.Hereditarily.def
 
 theorem Hereditarily.self (h : x.Hereditarily p) : p x :=
-  h.def'.1
+  h.def.1
 #align Set.hereditarily.self ZFSet.Hereditarily.self
 
 theorem Hereditarily.mem (h : x.Hereditarily p) (hy : y ∈ x) : y.Hereditarily p :=
-  h.def'.2 _ hy
+  h.def.2 _ hy
 #align Set.hereditarily.mem ZFSet.Hereditarily.mem
 
 theorem Hereditarily.empty : Hereditarily p x → p ∅ := by
