@@ -228,7 +228,7 @@ theorem SameCycle.exists_pow_eq' [Finite α] : SameCycle f x y → ∃ i < order
   classical
     rintro ⟨k, rfl⟩
     use (k % orderOf f).natAbs
-    have h₀ := Int.coe_nat_pos.mpr (orderOf_pos f)
+    have h₀ := Int.natCast_pos.mpr (orderOf_pos f)
     have h₁ := Int.emod_nonneg k h₀.ne'
     rw [← zpow_natCast, Int.natAbs_of_nonneg h₁, zpow_mod_orderOf]
     refine' ⟨_, by rfl⟩

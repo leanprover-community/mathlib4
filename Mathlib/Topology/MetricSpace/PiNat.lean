@@ -199,7 +199,7 @@ open List
 /-- In the case where `E` has constant value `α`,
 the cylinder `cylinder x n` can be identified with the element of `List α`
 consisting of the first `n` entries of `x`. See `cylinder_eq_res`.
-We call this list `res x n`, the restriction of `x` to `n`.-/
+We call this list `res x n`, the restriction of `x` to `n`. -/
 def res (x : ℕ → α) : ℕ → List α
   | 0 => nil
   | Nat.succ n => x n :: res x n
@@ -219,7 +219,7 @@ theorem res_succ (x : ℕ → α) (n : ℕ) : res x n.succ = x n :: res x n :=
 theorem res_length (x : ℕ → α) (n : ℕ) : (res x n).length = n := by induction n <;> simp [*]
 #align pi_nat.res_length PiNat.res_length
 
-/-- The restrictions of `x` and `y` to `n` are equal if and only if `x m = y m` for all `m < n`.-/
+/-- The restrictions of `x` and `y` to `n` are equal if and only if `x m = y m` for all `m < n`. -/
 theorem res_eq_res {x y : ℕ → α} {n : ℕ} :
     res x n = res y n ↔ ∀ ⦃m⦄, m < n → x m = y m := by
   constructor <;> intro h <;> induction' n with n ih; · simp
@@ -243,7 +243,7 @@ theorem res_injective : Injective (@res α) := by
   rw [h]
 #align pi_nat.res_injective PiNat.res_injective
 
-/-- `cylinder x n` is equal to the set of sequences `y` with the same restriction to `n` as `x`.-/
+/-- `cylinder x n` is equal to the set of sequences `y` with the same restriction to `n` as `x`. -/
 theorem cylinder_eq_res (x : ℕ → α) (n : ℕ) :
     cylinder x n = { y | res y n = res x n } := by
   ext y

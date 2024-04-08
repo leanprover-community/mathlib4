@@ -198,7 +198,7 @@ local notation "TM" => TangentBundle I M
 
 section TangentBundleInstances
 
-/- In general, the definition of tangent_space is not reducible, so that type class inference
+/- In general, the definition of `TangentSpace` is not reducible, so that type class inference
 does not pick wrong instances. In this section, we record the right instances for
 them, noting in particular that the tangent bundle is a smooth manifold. -/
 section

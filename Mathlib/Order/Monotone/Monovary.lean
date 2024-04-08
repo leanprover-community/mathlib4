@@ -312,7 +312,7 @@ end PartialOrder
 
 variable [LinearOrder ι]
 
-/-Porting note: Due to a bug in `alias`, many of the below lemmas have dot notation removed in the
+/- Porting note: Due to a bug in `alias`, many of the below lemmas have dot notation removed in the
 proof-/
 
 protected theorem Monotone.monovary (hf : Monotone f) (hg : Monotone g) : Monovary f g :=

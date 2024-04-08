@@ -22,7 +22,7 @@ nonempty interior.
 * `Basis.addHaar` is the Lebesgue measure associated to a basis, giving measure `1` to the
 corresponding parallelepiped.
 
-In particular, we declare a `measure_space` instance on any finite-dimensional inner product space,
+In particular, we declare a `MeasureSpace` instance on any finite-dimensional inner product space,
 by using the Lebesgue measure associated to some orthonormal basis (which is in fact independent
 of the basis).
 -/
@@ -324,7 +324,7 @@ instance Real.measureSpace : MeasureSpace ℝ := by infer_instance
 
 /-! # Miscellaneous instances for `EuclideanSpace`
 
-In combination with `measureSpaceOfInnerProductSpace`, these put a `measure_space` structure
+In combination with `measureSpaceOfInnerProductSpace`, these put a `MeasureSpace` structure
 on `EuclideanSpace`. -/
 
 

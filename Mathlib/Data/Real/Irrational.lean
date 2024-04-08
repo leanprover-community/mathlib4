@@ -94,7 +94,7 @@ theorem irrational_sqrt_of_multiplicity_odd (m : ℤ) (hm : 0 < m) (p : ℕ) [hp
 #align irrational_sqrt_of_multiplicity_odd irrational_sqrt_of_multiplicity_odd
 
 theorem Nat.Prime.irrational_sqrt {p : ℕ} (hp : Nat.Prime p) : Irrational (Real.sqrt p) :=
-  @irrational_sqrt_of_multiplicity_odd p (Int.coe_nat_pos.2 hp.pos) p ⟨hp⟩ <| by
+  @irrational_sqrt_of_multiplicity_odd p (Int.natCast_pos.2 hp.pos) p ⟨hp⟩ <| by
     simp [multiplicity.multiplicity_self
       (mt isUnit_iff_dvd_one.1 (mt Int.natCast_dvd_natCast.1 hp.not_dvd_one))]
 #align nat.prime.irrational_sqrt Nat.Prime.irrational_sqrt
