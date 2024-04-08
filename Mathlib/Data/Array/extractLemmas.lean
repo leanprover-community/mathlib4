@@ -56,16 +56,14 @@ theorem extract_succ_start {l: Array α} (h: i < l.size):
 
 theorem extract_succ_stop_aux {α: Type u_1}
     {j i: Nat} {l: Array α} {h1: j < l.size} (h2: i ≤ j) :
-    extract.loop l (Nat.succ j - i) i #[] = extract.loop l (j - i) i #[] ++ #[l[j]'h1] :=
-  if h3: i = j
-  then by
-    rw [h3]
+    extract.loop l (Nat.succ j - i) i #[] = extract.loop l (j - i) i #[] ++ #[l[j]'h1] := by
+  by_cases h3: i = j
+  · rw [h3]
     simp only [Nat.succ_eq_one_add, Nat.add_sub_cancel, Nat.sub_self]
     unfold extract.loop
     simp only [h1, get_eq_getElem, dite_eq_ite, ite_self, nil_append, ↓reduceDite]
     exact extract_loop_zero l (push #[] l[j]) (j + 1)
-  else by
-    unfold extract.loop
+  · unfold extract.loop
     have h4 : i < l.size := Nat.lt_of_le_of_lt h2 h1
     simp only [h4, ↓reduceDite, get_eq_getElem]
     have h5 : Nat.succ j - i = (j - i).succ := Nat.succ_sub h2
@@ -104,11 +102,11 @@ theorem extract_loop_take_middle {b c: List α }: ∀ a e : List α ,
   · rename_i h t tih
     unfold extract.loop
     intro a e
-    have :List.length a < List.length a + Nat.succ (List.length t + List.length c) := by
+    have hl:List.length a < List.length a + Nat.succ (List.length t + List.length c) := by
       refine Nat.lt_add_of_pos_right ?h
       exact Nat.zero_lt_succ (List.length t + List.length c)
     simp only [List.append_assoc, List.cons_append, size_mk, List.length_append, List.length_cons,
-      this, ↓reduceDite, get_eq_getElem, List.getElem_eq_get]
+      hl, ↓reduceDite, get_eq_getElem, List.getElem_eq_get]
     have h1 := tih (a ++ [h] ) (e ++ [h])
     have h2 :  [] ++ t = t := by simp only [List.nil_append]
     simp only [List.append_assoc, List.cons_append, List.length_append,
@@ -224,25 +222,25 @@ theorem extract_extract_aux {a : Array α } : (s1 + s2 ≤ a.size) →
       refine Nat.add_le_add ?h₁ ?h₂
       simp only [Nat.le_refl]
       exact Nat.le_of_not_ge h4
-    have :a.extract s1 e1 = a.extract s1 (s1 + s2) ++ a.extract (s1 + s2) e1 := by
+    have happend1 : a.extract s1 e1 = a.extract s1 (s1 + s2) ++ a.extract (s1 + s2) e1 := by
       refine extract_mid_split ?h1 ?h2 h3
       exact Nat.le_add_right s1 s2
       apply Nat.le_trans hle1 h2
-    have hs1 : s2 ≥ size (extract a s1 (s1 + s2)) := by
+    have hsize1: s2 ≥ size (extract a s1 (s1 + s2)) := by
       rw [size_extract_to_stop h1, Nat.add_comm, Nat.add_sub_cancel]
       exact Nat.le_refl s2
-    rw [this, extract_append_right hs1]
+    rw [happend1, extract_append_right hsize1]
     simp only [size_extract, h1, Nat.min_eq_left]
-    have : (s1 + s2 - s1) = s2 := by
+    have hs: (s1 + s2 - s1) = s2 := by
       rw [Nat.add_comm, Nat.add_sub_cancel]
-    rw [this, Nat.sub_self]
-    have : a.extract (s1 + s2) e1 =
+    rw [hs, Nat.sub_self]
+    have happend2: a.extract (s1 + s2) e1 =
       a.extract (s1 + s2) (s1 + e2) ++ a.extract (s1 + e2) e1 := by
       apply extract_mid_split hle1 h2 h3
-    have hs2 : e2 - s2 = size (extract a (s1 + s2) (s1 + e2)) := by
+    have hsize2: e2 - s2 = size (extract a (s1 + s2) (s1 + e2)) := by
       rw [size_extract_to_stop (Nat.le_trans h2 h3),
        Nat.sub_add_eq, Nat.add_comm, Nat.add_sub_cancel]
-    rw [this, extract_append_left (Nat.le_of_eq hs2), extract_self hs2]
+    rw [happend2, extract_append_left (Nat.le_of_eq hsize2), extract_self hsize2]
 
 theorem extract_extract {a : Array α } (h1 : s1 + s2 ≤ a.size)
     (h2 : s1 + e2 ≤ e1) :
