@@ -326,7 +326,6 @@ theorem coe_map (f : E →L[𝕜] F) : (WeakSpace.map f : E → F) = f :=
   rfl
 #align weak_space.coe_map WeakSpace.coe_map
 
-
 end WeakSpace
 
 variable (𝕜 E) in
