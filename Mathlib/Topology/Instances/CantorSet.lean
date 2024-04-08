@@ -83,10 +83,8 @@ lemma isClosed_preCantorSet (n : ℕ): IsClosed (preCantorSet n) := by
     · simpa [g, f, div_eq_inv_mul] using g.closedEmbedding.closed_iff_image_closed.mp ih
 
 /-- The ternary Cantor set is closed. -/
-lemma isClosed_cantorSet : IsClosed cantorSet := by
-  apply isClosed_iInter
-  intro n
-  apply isClosed_preCantorSet n
+lemma isClosed_cantorSet : IsClosed cantorSet :=
+  isClosed_iInter isClosed_preCantorSet
 
 /-- The ternary Cantor set is compact. -/
 lemma isCompact_cantorSet : IsCompact cantorSet :=
