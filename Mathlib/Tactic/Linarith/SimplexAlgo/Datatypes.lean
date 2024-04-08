@@ -22,6 +22,7 @@ Note: we avoid using `Mathlib.Data.Matrix` because it is far more efficient to s
 entries than function between `Fin`-s.
 -/
 structure Matrix (n m : Nat) where
+  /-- The content of the matrix. -/
   data : Array (Array Rat)
   -- hn_pos : n > 0
   -- hm_pos : m > 0
@@ -37,8 +38,11 @@ instance (n m : Nat) : GetElem (Matrix n m) Nat (Array Rat) fun _ i => i < n whe
 variable `bound[i]` as a linear combination of variables from `free`.
 -/
 structure Table where
+  /-- Array containig the basic variables' indexes -/
   basic : Array Nat
+  /-- Array containig the free variables' indexes -/
   free : Array Nat
+  /-- Matrix of coefficients the basic variables expressed through the free ones. -/
   mat : Matrix basic.size free.size
 
 end Linarith.SimplexAlgo

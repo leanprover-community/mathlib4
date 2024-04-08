@@ -20,8 +20,10 @@ inductive SimplexAlgoException
 
 /-- The mutable state for the `SimplexAlgoM` monad. -/
 structure SimplexAlgoState where
+  /-- Current table. -/
   table : Table
 
+/-- The monad for the Simplex Algorithm. -/
 abbrev SimplexAlgoM := ExceptT SimplexAlgoException <| StateM SimplexAlgoState
 
 /--
@@ -66,7 +68,7 @@ def checkSuccess : SimplexAlgoM Bool := do
   return true
 
 /--
-Choose entering and exiting variables using Bland's rule that guarantees that the Simplex
+Chooses entering and exiting variables using Bland's rule that guarantees that the Simplex
 Algorithm terminates.
 -/
 def choosePivots : SimplexAlgoM (Nat × Nat) := do
