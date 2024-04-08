@@ -460,12 +460,10 @@ theorem isSeparator_def (G : C) :
     fun hG X Y f g hfg => hG _ _ fun h => hfg _ (Set.mem_singleton _) _⟩
 #align category_theory.is_separator_def CategoryTheory.isSeparator_def
 
--- Adaptation note: 2024-03-15
--- Renamed to avoid the reserved name `IsSeparator.def`.
-theorem IsSeparator.def' {G : C} :
+theorem IsSeparator.def {G : C} :
     IsSeparator G → ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), (∀ h : G ⟶ X, h ≫ f = h ≫ g) → f = g :=
   (isSeparator_def _).1
-#align category_theory.is_separator.def CategoryTheory.IsSeparator.def'
+#align category_theory.is_separator.def CategoryTheory.IsSeparator.def
 
 theorem isCoseparator_def (G : C) :
     IsCoseparator G ↔ ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), (∀ h : Y ⟶ G, f ≫ h = g ≫ h) → f = g :=
@@ -476,12 +474,10 @@ theorem isCoseparator_def (G : C) :
     fun hG X Y f g hfg => hG _ _ fun h => hfg _ (Set.mem_singleton _) _⟩
 #align category_theory.is_coseparator_def CategoryTheory.isCoseparator_def
 
--- Adaptation note: 2024-03-15
--- Renamed to avoid the reserved name `IsCoseparator.def`.
-theorem IsCoseparator.def' {G : C} :
+theorem IsCoseparator.def {G : C} :
     IsCoseparator G → ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), (∀ h : Y ⟶ G, f ≫ h = g ≫ h) → f = g :=
   (isCoseparator_def _).1
-#align category_theory.is_coseparator.def CategoryTheory.IsCoseparator.def'
+#align category_theory.is_coseparator.def CategoryTheory.IsCoseparator.def
 
 theorem isDetector_def (G : C) :
     IsDetector G ↔ ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ h : G ⟶ Y, ∃! h', h' ≫ f = h) → IsIso f :=
@@ -492,12 +488,10 @@ theorem isDetector_def (G : C) :
     fun hG X Y f hf => hG _ fun h => hf _ (Set.mem_singleton _) _⟩
 #align category_theory.is_detector_def CategoryTheory.isDetector_def
 
--- Adaptation note: 2024-03-15
--- Renamed to avoid the reserved name `IsDetector.def`.
-theorem IsDetector.def' {G : C} :
+theorem IsDetector.def {G : C} :
     IsDetector G → ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ h : G ⟶ Y, ∃! h', h' ≫ f = h) → IsIso f :=
   (isDetector_def _).1
-#align category_theory.is_detector.def CategoryTheory.IsDetector.def'
+#align category_theory.is_detector.def CategoryTheory.IsDetector.def
 
 theorem isCodetector_def (G : C) :
     IsCodetector G ↔ ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ h : X ⟶ G, ∃! h', f ≫ h' = h) → IsIso f :=
@@ -508,12 +502,10 @@ theorem isCodetector_def (G : C) :
     fun hG X Y f hf => hG _ fun h => hf _ (Set.mem_singleton _) _⟩
 #align category_theory.is_codetector_def CategoryTheory.isCodetector_def
 
--- Adaptation note: 2024-03-15
--- Renamed to avoid the reserved name `IsCodetector.def`.
-theorem IsCodetector.def' {G : C} :
+theorem IsCodetector.def {G : C} :
     IsCodetector G → ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ h : X ⟶ G, ∃! h', f ≫ h' = h) → IsIso f :=
   (isCodetector_def _).1
-#align category_theory.is_codetector.def CategoryTheory.IsCodetector.def'
+#align category_theory.is_codetector.def CategoryTheory.IsCodetector.def
 
 theorem isSeparator_iff_faithful_coyoneda_obj (G : C) :
     IsSeparator G ↔ Faithful (coyoneda.obj (op G)) :=

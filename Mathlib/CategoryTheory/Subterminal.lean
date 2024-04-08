@@ -45,11 +45,9 @@ def IsSubterminal (A : C) : Prop :=
   ∀ ⦃Z : C⦄ (f g : Z ⟶ A), f = g
 #align category_theory.is_subterminal CategoryTheory.IsSubterminal
 
--- Adaptation note: 2024-03-15
--- Renamed to avoid the reserved name `IsSubterminal.def`.
-theorem IsSubterminal.def' : IsSubterminal A ↔ ∀ ⦃Z : C⦄ (f g : Z ⟶ A), f = g :=
+theorem IsSubterminal.def : IsSubterminal A ↔ ∀ ⦃Z : C⦄ (f g : Z ⟶ A), f = g :=
   Iff.rfl
-#align category_theory.is_subterminal.def CategoryTheory.IsSubterminal.def'
+#align category_theory.is_subterminal.def CategoryTheory.IsSubterminal.def
 
 /-- If `A` is subterminal, the unique morphism from it to a terminal object is a monomorphism.
 The converse of `isSubterminal_of_mono_isTerminal_from`.

@@ -233,12 +233,10 @@ theorem splits_iff (f : K[X]) :
 #align polynomial.splits_iff Polynomial.splits_iff
 
 /-- This lemma is for polynomials over a field. -/
--- Adaptation note: 2024-03-15
--- Renamed to avoid the reserved name `Splits.def`.
-theorem Splits.def' {i : K →+* L} {f : K[X]} (h : Splits i f) :
+theorem Splits.def {i : K →+* L} {f : K[X]} (h : Splits i f) :
     f = 0 ∨ ∀ {g : L[X]}, Irreducible g → g ∣ f.map i → degree g = 1 :=
   (splits_iff i f).mp h
-#align polynomial.splits.def Polynomial.Splits.def'
+#align polynomial.splits.def Polynomial.Splits.def
 
 theorem splits_of_splits_mul {f g : K[X]} (hfg : f * g ≠ 0) (h : Splits i (f * g)) :
     Splits i f ∧ Splits i g :=
