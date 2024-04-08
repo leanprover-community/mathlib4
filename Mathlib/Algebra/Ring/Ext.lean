@@ -47,7 +47,7 @@ namespace Distrib
   rcases inst₁ with @⟨⟨⟩, ⟨⟩⟩
   rcases inst₂ with @⟨⟨⟩, ⟨⟩⟩
   -- Prove equality of parts using function extensionality.
-  congr <;> (apply funext₂; assumption)
+  congr
 
 theorem ext_iff (inst₁ inst₂ : Distrib R) :
     inst₁ = inst₂ ↔
@@ -68,7 +68,7 @@ namespace NonUnitalNonAssocSemiring
   rcases inst₁ with @⟨_, ⟨⟩⟩
   rcases inst₂ with @⟨_, ⟨⟩⟩
   -- Prove equality of parts using already-proved extensionality lemmas.
-  congr <;> (ext; apply_assumption)
+  congr; ext : 1; assumption
 
 theorem toDistrib_injective : Function.Injective (@toDistrib R) := by
   intro _ _ h
@@ -112,7 +112,7 @@ end NonUnitalSemiring
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_one : (letI := inst₁; One.one : R) = (letI := inst₂; One.one : R)) :
     inst₁ = inst₂ := by
-  have h_monoid : inst₁.toAddMonoid = inst₂.toAddMonoid := by ext; apply h_add
+  have h_monoid : inst₁.toAddMonoid = inst₂.toAddMonoid := by ext : 1; exact h_add
   have h_zero' : inst₁.toZero = inst₂.toZero := congrArg (·.toZero) h_monoid
   have h_one' : inst₁.toOne = inst₂.toOne :=
     congrArg One.mk h_one
@@ -146,18 +146,17 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
   have h : inst₁.toNonUnitalNonAssocSemiring = inst₂.toNonUnitalNonAssocSemiring := by
-    ext <;> apply_assumption
+    ext : 1 <;> assumption
   have h_zero : (inst₁.toMulZeroClass).toZero.zero = (inst₂.toMulZeroClass).toZero.zero :=
     congrArg (fun inst => (inst.toMulZeroClass).toZero.zero) h
   have h_one' : (inst₁.toMulZeroOneClass).toMulOneClass.toOne
                 = (inst₂.toMulZeroOneClass).toMulOneClass.toOne :=
-    congrArg (@MulOneClass.toOne R) <| by
-      ext; apply h_mul
+    congrArg (@MulOneClass.toOne R) <| by ext : 1; exact h_mul
   have h_one : (inst₁.toMulZeroOneClass).toMulOneClass.toOne.one
                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne.one :=
     congrArg (@One.one R) h_one'
   have : inst₁.toAddCommMonoidWithOne = inst₂.toAddCommMonoidWithOne :=
-    by ext <;> apply_assumption
+    by ext : 1 <;> assumption
   have : inst₁.toNatCast = inst₂.toNatCast :=
     congrArg (·.toNatCast) this
   -- Split into `NonUnitalNonAssocSemiring`, `One` and `natCast` instances.
@@ -186,7 +185,7 @@ namespace NonUnitalNonAssocRing
     inst₁ = inst₂ := by
   -- Split into `AddCommGroup` instance, `mul` function and properties.
   rcases inst₁ with @⟨_, ⟨⟩⟩; rcases inst₂ with @⟨_, ⟨⟩⟩
-  congr <;> (ext; apply_assumption)
+  congr; (ext : 1; assumption)
 
 theorem toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
@@ -212,7 +211,7 @@ namespace NonUnitalRing
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
   have : inst₁.toNonUnitalNonAssocRing = inst₂.toNonUnitalNonAssocRing := by
-    ext <;> apply_assumption
+    ext : 1 <;> assumption
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
   congr
@@ -246,7 +245,7 @@ end NonUnitalRing
   have : inst₁.toAddMonoidWithOne = inst₂.toAddMonoidWithOne :=
     AddMonoidWithOne.ext h_add h_one
   have : inst₁.toNatCast = inst₂.toNatCast := congrArg (·.toNatCast) this
-  have h_group : inst₁.toAddGroup = inst₂.toAddGroup := by ext; apply h_add
+  have h_group : inst₁.toAddGroup = inst₂.toAddGroup := by ext : 1; exact h_add
   -- Extract equality of necessary substructures from h_group
   injection h_group with h_group; injection h_group
   have : inst₁.toIntCast.intCast = inst₂.toIntCast.intCast := by
@@ -261,7 +260,7 @@ end NonUnitalRing
     (h_one : (letI := inst₁; One.one : R) = (letI := inst₂; One.one)) :
     inst₁ = inst₂ := by
   have : inst₁.toAddCommGroup = inst₂.toAddCommGroup :=
-    AddCommGroup.ext (funext₂ h_add)
+    AddCommGroup.ext h_add
   have : inst₁.toAddGroupWithOne = inst₂.toAddGroupWithOne :=
     AddGroupWithOne.ext h_add h_one
   injection this with _ h_addMonoidWithOne; injection h_addMonoidWithOne
@@ -275,9 +274,9 @@ namespace NonAssocRing
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
   have h₁ : inst₁.toNonUnitalNonAssocRing = inst₂.toNonUnitalNonAssocRing := by
-    ext <;> apply_assumption
+    ext : 1 <;> assumption
   have h₂ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
-    ext <;> apply_assumption
+    ext : 1 <;> assumption
   -- Mathematically non-trivial fact: `intCast` is determined by the rest.
   have h₃ : inst₁.toAddCommGroupWithOne = inst₂.toAddCommGroupWithOne :=
     AddCommGroupWithOne.ext h_add (congrArg (·.toOne.one) h₂)
@@ -313,11 +312,11 @@ namespace Semiring
     inst₁ = inst₂ := by
   -- Show that enough substructures are equal.
   have h₁ : inst₁.toNonUnitalSemiring = inst₂.toNonUnitalSemiring := by
-    ext <;> apply_assumption
+    ext : 1 <;> assumption
   have h₂ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
-    ext <;> apply_assumption
+    ext : 1 <;> assumption
   have h₃ : (inst₁.toMonoidWithZero).toMonoid = (inst₂.toMonoidWithZero).toMonoid := by
-    ext; apply h_mul
+    ext : 1; exact h_mul
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
   congr <;> solve| injection h₁ | injection h₂ | injection h₃
@@ -353,14 +352,14 @@ namespace Ring
     inst₁ = inst₂ := by
   -- Show that enough substructures are equal.
   have h₁ : inst₁.toSemiring = inst₂.toSemiring := by
-    ext <;> apply_assumption
+    ext : 1 <;> assumption
   have h₂ : inst₁.toNonAssocRing = inst₂.toNonAssocRing := by
-    ext <;> apply_assumption
+    ext : 1 <;> assumption
   /- We prove that the `SubNegMonoid`s are equal because they are one
   field away from `Sub` and `Neg`, enabling use of `injection`. -/
   have h₃ : (inst₁.toAddCommGroup).toAddGroup.toSubNegMonoid
             = (inst₂.toAddCommGroup).toAddGroup.toSubNegMonoid :=
-    congrArg (@AddGroup.toSubNegMonoid R) <| by ext; apply h_add
+    congrArg (@AddGroup.toSubNegMonoid R) <| by ext : 1; exact h_add
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
   congr <;> solve | injection h₂ | injection h₃
