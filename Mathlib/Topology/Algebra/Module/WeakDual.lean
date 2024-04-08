@@ -307,7 +307,6 @@ instance instTopologicalSpace : TopologicalSpace (WeakSpace 𝕜 E) :=
 instance instContinuousAdd : ContinuousAdd (WeakSpace 𝕜 E) :=
   WeakBilin.instContinuousAdd (topDualPairing 𝕜 E).flip
 
-
 variable [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]
 
 /-- A continuous linear map from `E` to `F` is still continuous when `E` and `F` are equipped with
