@@ -591,10 +591,9 @@ variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 
 This is a stronger version of `MulSemiringAction.toRingHom` and
 `DistribMulAction.toLinearMap`. -/
-@[simps]
+@[simps!]
 def toAlgHom (m : M) : A →ₐ[R] A :=
   { MulSemiringAction.toRingHom _ _ m with
-    toFun := fun a => m • a
     commutes' := smul_algebraMap _ }
 #align mul_semiring_action.to_alg_hom MulSemiringAction.toAlgHom
 
