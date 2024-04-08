@@ -51,8 +51,8 @@ namespace Distrib
 
 theorem ext_iff (inst₁ inst₂ : Distrib R) :
     inst₁ = inst₂ ↔
-      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
-      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y) ∧
+      (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end Distrib
@@ -78,8 +78,8 @@ theorem toDistrib_injective : Function.Injective (@toDistrib R) := by
 
 theorem ext_iff (inst₁ inst₂ : NonUnitalNonAssocSemiring R) :
     inst₁ = inst₂ ↔
-      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
-      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y) ∧
+      (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonUnitalNonAssocSemiring
@@ -100,8 +100,8 @@ theorem toNonUnitalNonAssocSemiring_injective :
 
 theorem ext_iff (inst₁ inst₂ : NonUnitalSemiring R) :
     inst₁ = inst₂ ↔
-      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
-      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y) ∧
+      (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonUnitalSemiring
@@ -171,8 +171,8 @@ theorem toNonUnitalNonAssocSemiring_injective :
 
 theorem ext_iff (inst₁ inst₂ : NonAssocSemiring R) :
     inst₁ = inst₂ ↔
-      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
-      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y) ∧
+      (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonAssocSemiring
@@ -198,8 +198,8 @@ theorem toNonUnitalNonAssocSemiring_injective :
 
 theorem ext_iff (inst₁ inst₂ : NonUnitalNonAssocRing R) :
     inst₁ = inst₂ ↔
-      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
-      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y) ∧
+      (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonUnitalNonAssocRing
@@ -231,8 +231,8 @@ theorem toNonUnitalNonAssocring_injective :
 
 theorem ext_iff (inst₁ inst₂ : NonUnitalRing R) :
     inst₁ = inst₂ ↔
-      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
-      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y) ∧
+      (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonUnitalRing
@@ -298,8 +298,8 @@ theorem toNonUnitalNonAssocring_injective :
 
 theorem ext_iff (inst₁ inst₂ : NonAssocRing R) :
     inst₁ = inst₂ ↔
-      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
-      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y) ∧
+      (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonAssocRing
@@ -338,8 +338,8 @@ theorem toNonAssocSemiring_injective :
 
 theorem ext_iff (inst₁ inst₂ : Semiring R) :
     inst₁ = inst₂ ↔
-      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
-      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y) ∧
+      (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end Semiring
@@ -386,8 +386,8 @@ theorem toSemiring_injective :
 
 theorem ext_iff (inst₁ inst₂ : Ring R) :
     inst₁ = inst₂ ↔
-      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
-      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y) ∧
+      (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext ·)⟩
 
 end Ring
@@ -408,8 +408,8 @@ theorem toNonUnitalNonAssocSemiring_injective :
 
 theorem ext_iff (inst₁ inst₂ : NonUnitalNonAssocCommSemiring R) :
     inst₁ = inst₂ ↔
-      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
-      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y) ∧
+      (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonUnitalNonAssocCommSemiring
@@ -430,8 +430,8 @@ theorem toNonUnitalSemiring_injective :
 
 theorem ext_iff (inst₁ inst₂ : NonUnitalCommSemiring R) :
     inst₁ = inst₂ ↔
-      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
-      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y) ∧
+      (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonUnitalCommSemiring
@@ -454,8 +454,8 @@ theorem toNonUnitalNonAssocRing_injective :
 
 theorem ext_iff (inst₁ inst₂ : NonUnitalNonAssocCommRing R) :
     inst₁ = inst₂ ↔
-      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
-      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y) ∧
+      (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonUnitalNonAssocCommRing
@@ -476,8 +476,8 @@ theorem toNonUnitalRing_injective :
 
 theorem ext_iff (inst₁ inst₂ : NonUnitalCommRing R) :
     inst₁ = inst₂ ↔
-      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
-      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y) ∧
+      (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonUnitalCommRing
@@ -500,8 +500,8 @@ theorem toSemiring_injective :
 
 theorem ext_iff (inst₁ inst₂ : CommSemiring R) :
     inst₁ = inst₂ ↔
-      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
-      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y) ∧
+      (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end CommSemiring
@@ -520,8 +520,8 @@ theorem toRing_injective : Function.Injective (@toRing R) := by
 
 theorem ext_iff (inst₁ inst₂ : CommRing R) :
     inst₁ = inst₂ ↔
-      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
-      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y) ∧
+      (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext ·)⟩
 
 end CommRing
