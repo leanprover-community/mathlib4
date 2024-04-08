@@ -69,7 +69,7 @@ suggests the replacement
 example {m n : Nat} (h : m = n) : 0 + m = n := by
   suffices m = n by
       rewrite [Nat.zero_add]
-      assumption
+      exact this
   assumption
 ```
 -/
