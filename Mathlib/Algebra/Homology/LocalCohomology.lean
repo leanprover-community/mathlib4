@@ -119,7 +119,6 @@ end
 section
 
 variable {R : Type max u v v'} [CommRing R] {D : Type v} [SmallCategory D]
-
 variable {E : Type v'} [SmallCategory E] (I' : E ⥤ D) (I : D ⥤ Ideal R)
 
 /-- Local cohomology along a composition of diagrams. -/
@@ -227,7 +226,7 @@ variable {I J K : Ideal R}
 /-- The lemma below essentially says that `idealPowersToSelfLERadical I` is initial in
 `selfLERadicalDiagram I`.
 
-PORTING NOTE: This lemma should probably be moved to `Mathlib/RingTheory/Finiteness`
+Porting note: This lemma should probably be moved to `Mathlib/RingTheory/Finiteness`
 to be near `Ideal.exists_radical_pow_le_of_fg`, which it generalizes. -/
 theorem Ideal.exists_pow_le_of_le_radical_of_fG (hIJ : I ≤ J.radical) (hJ : J.radical.FG) :
     ∃ k : ℕ, I ^ k ≤ J := by

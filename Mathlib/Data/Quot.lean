@@ -40,7 +40,6 @@ namespace Quot
 
 variable {ra : α → α → Prop} {rb : β → β → Prop} {φ : Quot ra → Quot rb → Sort*}
 
--- mathport name: mk
 @[inherit_doc Quot.mk]
 local notation3:arg "⟦" a "⟧" => Quot.mk _ a
 
@@ -216,7 +215,6 @@ end Quot
 namespace Quotient
 
 variable [sa : Setoid α] [sb : Setoid β]
-
 variable {φ : Quotient sa → Quotient sb → Sort*}
 
 -- Porting note: in mathlib3 this notation took the Setoid as an instance-implicit argument,

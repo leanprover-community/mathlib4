@@ -101,7 +101,6 @@ end TendstoInMeasure
 section ExistsSeqTendstoAe
 
 variable [MetricSpace E]
-
 variable {f : ℕ → α → E} {g : α → E}
 
 /-- Auxiliary lemma for `tendstoInMeasure_of_tendsto_ae`. -/
@@ -268,7 +267,6 @@ end AEMeasurableOf
 section TendstoInMeasureOf
 
 variable [NormedAddCommGroup E] {p : ℝ≥0∞}
-
 variable {f : ι → α → E} {g : α → E}
 
 /-- This lemma is superceded by `MeasureTheory.tendstoInMeasure_of_tendsto_snorm` where we

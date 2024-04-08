@@ -39,19 +39,12 @@ open TensorProduct
 section IsTensorProduct
 
 variable {R : Type*} [CommSemiring R]
-
 variable {M₁ M₂ M M' : Type*}
-
 variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M] [AddCommMonoid M']
-
 variable [Module R M₁] [Module R M₂] [Module R M] [Module R M']
-
 variable (f : M₁ →ₗ[R] M₂ →ₗ[R] M)
-
 variable {N₁ N₂ N : Type*} [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N]
-
 variable [Module R N₁] [Module R N₂] [Module R N]
-
 variable {g : N₁ →ₗ[R] N₂ →ₗ[R] N}
 
 /-- Given a bilinear map `f : M₁ →ₗ[R] M₂ →ₗ[R] M`, `IsTensorProduct f` means that
@@ -139,11 +132,8 @@ end IsTensorProduct
 section IsBaseChange
 
 variable {R : Type*} {M : Type v₁} {N : Type v₂} (S : Type v₃)
-
 variable [AddCommMonoid M] [AddCommMonoid N] [CommSemiring R]
-
 variable [CommSemiring S] [Algebra R S] [Module R M] [Module R N] [Module S N] [IsScalarTower R S N]
-
 variable (f : M →ₗ[R] N)
 
 /-- Given an `R`-algebra `S` and an `R`-module `M`, an `S`-module `N` together with a map
@@ -157,9 +147,7 @@ def IsBaseChange : Prop :=
 -- Porting note: split `variable`
 variable {S f}
 variable (h : IsBaseChange S f)
-
 variable {P Q : Type*} [AddCommMonoid P] [Module R P]
-
 variable [AddCommMonoid Q] [Module S Q]
 
 section
@@ -325,9 +313,7 @@ theorem IsBaseChange.ofEquiv (e : M ≃ₗ[R] N) : IsBaseChange R e.toLinearMap 
 #align is_base_change.of_equiv IsBaseChange.ofEquiv
 
 variable {T O : Type*} [CommSemiring T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-
 variable [AddCommMonoid O] [Module R O] [Module S O] [Module T O] [IsScalarTower S T O]
-
 variable [IsScalarTower R S O] [IsScalarTower R T O]
 
 theorem IsBaseChange.comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {g : N →ₗ[S] O}
@@ -356,9 +342,7 @@ theorem IsBaseChange.comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {g : N →
 #align is_base_change.comp IsBaseChange.comp
 
 variable {R' S' : Type*} [CommSemiring R'] [CommSemiring S']
-
 variable [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
-
 variable [IsScalarTower R R' S'] [IsScalarTower R S S']
 
 open IsScalarTower (toAlgHom)

@@ -389,7 +389,7 @@ theorem toLinearEquiv_toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) :
   rfl
 #align linear_equiv.to_linear_equiv_to_continuous_linear_equiv LinearEquiv.toLinearEquiv_toContinuousLinearEquiv
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem toLinearEquiv_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
     e.toContinuousLinearEquiv.symm.toLinearEquiv = e.symm := by
   ext x
@@ -553,7 +553,7 @@ theorem LinearMap.closedEmbedding_of_injective [FiniteDimensional 𝕜 E] {f : E
     (hf : LinearMap.ker f = ⊥) : ClosedEmbedding f :=
   let g := LinearEquiv.ofInjective f (LinearMap.ker_eq_bot.mp hf)
   { embedding_subtype_val.comp g.toContinuousLinearEquiv.toHomeomorph.embedding with
-    closed_range := by
+    isClosed_range := by
       haveI := f.finiteDimensional_range
       simpa [LinearMap.range_coe f] using f.range.closed_of_finiteDimensional }
 #align linear_equiv.closed_embedding_of_injective LinearMap.closedEmbedding_of_injective

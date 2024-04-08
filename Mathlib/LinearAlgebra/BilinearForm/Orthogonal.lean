@@ -17,10 +17,8 @@ Given any term `B` of type `BilinForm`, due to a coercion, can use
 the notation `B x y` to refer to the function field, ie. `B x y = B.bilin x y`.
 
 In this file we use the following type variables:
- - `M`, `M'`, ... are modules over the semiring `R`,
- - `M₁`, `M₁'`, ... are modules over the ring `R₁`,
- - `M₂`, `M₂'`, ... are modules over the commutative semiring `R₂`,
- - `M₃`, `M₃'`, ... are modules over the commutative ring `R₃`,
+ - `M`, `M'`, ... are modules over the commutative semiring `R`,
+ - `M₁`, `M₁'`, ... are modules over the commutative ring `R₁`,
  - `V`, ... is a vector space over the field `K`.
 
 ## References
@@ -37,20 +35,10 @@ open BigOperators
 
 universe u v w
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-
-variable {R₁ : Type*} {M₁ : Type*} [Ring R₁] [AddCommGroup M₁] [Module R₁ M₁]
-
-variable {R₂ : Type*} {M₂ : Type*} [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
-
-variable {R₃ : Type*} {M₃ : Type*} [CommRing R₃] [AddCommGroup M₃] [Module R₃ M₃]
-
+variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
 variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
-
-variable {M₂' M₂'' : Type*}
-variable [AddCommMonoid M₂'] [AddCommMonoid M₂''] [Module R₂ M₂'] [Module R₂ M₂'']
-
-variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁} {B₂ : BilinForm R₂ M₂}
+variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁}
 
 namespace BilinForm
 
@@ -104,8 +92,7 @@ set_option linter.uppercaseLean3 false in
 
 section
 
-variable {R₄ M₄ : Type*} [Ring R₄] [IsDomain R₄]
-
+variable {R₄ M₄ : Type*} [CommRing R₄] [IsDomain R₄]
 variable [AddCommGroup M₄] [Module R₄ M₄] {G : BilinForm R₄ M₄}
 
 @[simp]
@@ -223,8 +210,7 @@ theorem isCompl_span_singleton_orthogonal {B : BilinForm K V} {x : V} (hx : ¬B.
 end Orthogonal
 
 variable {M₂' : Type*}
-
-variable [AddCommMonoid M₂'] [Module R₂ M₂']
+variable [AddCommMonoid M₂'] [Module R M₂']
 
 /-- The restriction of a reflexive bilinear form `B` onto a submodule `W` is
 nondegenerate if `Disjoint W (B.orthogonal W)`. -/

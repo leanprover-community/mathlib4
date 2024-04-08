@@ -38,8 +38,8 @@ open Function Set
 
 open Affine
 
-/-- An affine equivalence is an equivalence between affine spaces such that both forward
-and inverse maps are affine.
+/-- An affine equivalence, denoted `P₁ ≃ᵃ[k] P₂`, is an equivalence between affine spaces
+such that both forward and inverse maps are affine.
 
 We define it using an `Equiv` for the map and a `LinearEquiv` for the linear part in order
 to allow affine equivalences with good definitional equalities. -/

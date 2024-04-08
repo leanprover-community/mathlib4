@@ -113,7 +113,6 @@ theorem fish_assoc {α β γ φ} (f : α → m β) (g : β → m γ) (h : γ →
 #align fish_assoc fish_assoc
 
 variable {β' γ' : Type v}
-
 variable {m' : Type v → Type w} [Monad m']
 
 /-- Takes a value `β` and `List α` and accumulates pairs according to a monadic function `f`.

@@ -22,7 +22,7 @@ nonempty interior.
 * `Basis.addHaar` is the Lebesgue measure associated to a basis, giving measure `1` to the
 corresponding parallelepiped.
 
-In particular, we declare a `measure_space` instance on any finite-dimensional inner product space,
+In particular, we declare a `MeasureSpace` instance on any finite-dimensional inner product space,
 by using the Lebesgue measure associated to some orthonormal basis (which is in fact independent
 of the basis).
 -/
@@ -34,7 +34,11 @@ open scoped BigOperators Pointwise
 
 noncomputable section
 
-variable {ι ι' E F : Type*} [Fintype ι] [Fintype ι']
+variable {ι ι' E F : Type*}
+
+section Fintype
+
+variable [Fintype ι] [Fintype ι']
 
 section AddCommGroup
 
@@ -49,6 +53,16 @@ theorem mem_parallelepiped_iff (v : ι → E) (x : E) :
     x ∈ parallelepiped v ↔ ∃ t ∈ Icc (0 : ι → ℝ) 1, x = ∑ i, t i • v i := by
   simp [parallelepiped, eq_comm]
 #align mem_parallelepiped_iff mem_parallelepiped_iff
+
+theorem parallelepiped_basis_eq (b : Basis ι ℝ E) :
+    parallelepiped b = {x | ∀ i, b.repr x i ∈ Set.Icc 0 1} := by
+  classical
+  ext x
+  simp_rw [mem_parallelepiped_iff, mem_setOf_eq, b.ext_elem_iff, _root_.map_sum,
+    _root_.map_smul, Finset.sum_apply', Basis.repr_self, Finsupp.smul_single, smul_eq_mul,
+    mul_one, Finsupp.single_apply, Finset.sum_ite_eq', Finset.mem_univ, ite_true, mem_Icc,
+    Pi.le_def, Pi.zero_apply, Pi.one_apply, ← forall_and]
+  aesop
 
 theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
     f '' parallelepiped v = parallelepiped (f ∘ v) := by
@@ -164,7 +178,7 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
       rcases eq_or_ne (a i) 0 with hai | hai
       · rw [hai, inf_idem, sup_idem, ← le_antisymm_iff] at h
         rw [hai, ← h, zero_div, zero_mul]
-      · rw [div_mul_cancel _ hai]
+      · rw [div_mul_cancel₀ _ hai]
 #align parallelepiped_single parallelepiped_single
 
 end AddCommGroup
@@ -288,6 +302,8 @@ theorem Basis.prod_addHaar (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
 
 end NormedSpace
 
+end Fintype
+
 /-- A finite dimensional inner product space has a canonical measure, the Lebesgue measure giving
 volume `1` to the parallelepiped spanned by any orthonormal basis. We define the measure using
 some arbitrary choice of orthonormal basis. The fact that it works with any orthonormal basis
@@ -308,7 +324,7 @@ instance Real.measureSpace : MeasureSpace ℝ := by infer_instance
 
 /-! # Miscellaneous instances for `EuclideanSpace`
 
-In combination with `measureSpaceOfInnerProductSpace`, these put a `measure_space` structure
+In combination with `measureSpaceOfInnerProductSpace`, these put a `MeasureSpace` structure
 on `EuclideanSpace`. -/
 
 
@@ -319,7 +335,7 @@ variable (ι)
 -- TODO: do we want these instances for `PiLp` too?
 instance : MeasurableSpace (EuclideanSpace ℝ ι) := MeasurableSpace.pi
 
-instance : BorelSpace (EuclideanSpace ℝ ι) := Pi.borelSpace
+instance [Finite ι] : BorelSpace (EuclideanSpace ℝ ι) := Pi.borelSpace
 
 /-- `WithLp.equiv` as a `MeasurableEquiv`. -/
 @[simps toEquiv]

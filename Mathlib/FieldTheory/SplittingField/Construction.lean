@@ -90,7 +90,7 @@ theorem X_sub_C_mul_removeFactor (f : K[X]) (hf : f.natDegree ≠ 0) :
   let ⟨g, hg⟩ := factor_dvd_of_natDegree_ne_zero hf
   apply (mul_divByMonic_eq_iff_isRoot
     (R := AdjoinRoot f.factor) (a := AdjoinRoot.root f.factor)).mpr
-  rw [IsRoot.def, eval_map, hg, eval₂_mul, ← hg, AdjoinRoot.eval₂_root, zero_mul]
+  rw [IsRoot.definition, eval_map, hg, eval₂_mul, ← hg, AdjoinRoot.eval₂_root, zero_mul]
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_sub_C_mul_remove_factor Polynomial.X_sub_C_mul_removeFactor
 
@@ -267,34 +267,22 @@ def algEquivSplittingFieldAux (f : K[X]) : SplittingField f ≃ₐ[K] SplittingF
   Ideal.quotientKerAlgEquivOfSurjective fun x => ⟨MvPolynomial.X x, by simp⟩
 #align polynomial.splitting_field.alg_equiv_splitting_field_aux Polynomial.SplittingField.algEquivSplittingFieldAux
 
-instance : Field (SplittingField f) :=
+instance instGroupWithZero : GroupWithZero (SplittingField f) :=
   let e := algEquivSplittingFieldAux f
-  { toCommRing := SplittingField.commRing f
-    ratCast := fun a => algebraMap K _ (a : K)
-    inv := fun a => e.symm (e a)⁻¹
-    qsmul := (· • ·)
-    qsmul_eq_mul' := fun a x =>
-      Quotient.inductionOn x (fun p => congr_arg Quotient.mk''
-        (by ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]))
-    ratCast_mk := fun a b h1 h2 => by
-      apply_fun e
-      change e (algebraMap K _ _) = _
-      simp only [map_ratCast, map_natCast, map_mul, map_intCast, AlgEquiv.commutes,
-        AlgEquiv.apply_symm_apply]
-      apply Field.ratCast_mk
-    exists_pair_ne := ⟨e.symm 0, e.symm 1, fun w => zero_ne_one ((e.symm).injective w)⟩
-    mul_inv_cancel := fun a w => by
-      -- This could surely be golfed.
-      apply_fun e
-      have : e a ≠ 0 := fun w' => by
-        apply w
-        simp? at w' says
-          simp only [AddEquivClass.map_eq_zero_iff] at w'
-        exact w'
-      simp only [map_mul, AlgEquiv.apply_symm_apply, ne_eq, AddEquivClass.map_eq_zero_iff, map_one]
-      rw [mul_inv_cancel]
-      assumption
-    inv_zero := by simp }
+  { inv := fun a ↦ e.symm (e a)⁻¹
+    inv_zero := by simp
+    mul_inv_cancel := fun a ha ↦ e.injective $ by simp [(AddEquivClass.map_ne_zero_iff _).2 ha]
+    __ := e.surjective.nontrivial }
+
+instance instField : Field (SplittingField f) where
+  __ := commRing _
+  __ := instGroupWithZero _
+  ratCast q := algebraMap K _ q
+  ratCast_def q := by
+    change algebraMap K _ _ = _; rw [Rat.cast_def, map_div₀, map_intCast, map_natCast]
+  qsmul := (· • ·)
+  qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' $ by
+    ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
 
 instance instCharZero [CharZero K] : CharZero (SplittingField f) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
@@ -351,7 +339,6 @@ namespace IsSplittingField
 
 variable (K L)
 variable [Algebra K L]
-
 variable {K}
 
 instance (f : K[X]) : FiniteDimensional K f.SplittingField :=
