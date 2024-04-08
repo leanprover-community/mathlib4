@@ -13,7 +13,7 @@ import Mathlib.Logic.Encodable.Lattice
 This file contains lemmas about `HasSum`, `Summable`, `tsum`, `HasProd`, `Multipliable`, `tprod`
 applied to the important special cases where the domain is `ℕ` or `ℤ`. For instance, we prove the
 formula `∑ i in range k, f i + ∑' i, f (i + k) = ∑' i, f i`, in `sum_add_tsum_nat_add`, as well as
-several results relating sums and products on `ℕ` and `ℤ`.
+several results relating sums and products on `ℕ` to sums and products on `ℤ`.
 -/
 
 noncomputable section
