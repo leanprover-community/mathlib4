@@ -146,7 +146,7 @@ theorem T_eq_X_mul_T_sub_pol_U : ∀ n : ℕ, T R (n + 2) = X * T R (n + 1) - (1
     have h₁ := T_add_two R (n + 1)
     have h₂ := T_add_two R (n + 2)
     have h₃ := U_add_two R n
-    linear_combination (-(X:R[X]) ^ 2 + 1) * h₃ + h₂ - (X:R[X]) * h₁ - 1 * H₂ + 2 * (X:R[X]) * H₁
+    linear_combination (-(X:R[X]) ^ 2 + 1) * h₃ + h₂ - (X:R[X]) * h₁ - H₂ + 2 * (X:R[X]) * H₁
 #align polynomial.chebyshev.T_eq_X_mul_T_sub_pol_U Polynomial.Chebyshev.T_eq_X_mul_T_sub_pol_U
 
 theorem one_sub_X_sq_mul_U_eq_pol_in_T (n : ℕ) :
