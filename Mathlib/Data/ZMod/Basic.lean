@@ -215,7 +215,7 @@ theorem int_cast_zmod_cast (a : ZMod n) : ((cast a : ℤ) : ZMod n) = a := by
   cases n
   · simp [ZMod.cast, ZMod]
   · dsimp [ZMod.cast, ZMod]
-    erw [Int.cast_ofNat, Fin.cast_val_eq_self]
+    erw [Int.cast_natCast, Fin.cast_val_eq_self]
 #align zmod.int_cast_zmod_cast ZMod.int_cast_zmod_cast
 
 theorem int_cast_rightInverse : Function.RightInverse (cast : ZMod n → ℤ) ((↑) : ℤ → ZMod n) :=
@@ -524,7 +524,7 @@ theorem val_int_cast {n : ℕ} (a : ℤ) [NeZero n] : ↑(a : ZMod n).val = a % 
   have hle : (0 : ℤ) ≤ ↑(a : ZMod n).val := Int.natCast_nonneg _
   have hlt : ↑(a : ZMod n).val < (n : ℤ) := Int.ofNat_lt.mpr (ZMod.val_lt a)
   refine' (Int.emod_eq_of_lt hle hlt).symm.trans _
-  rw [← ZMod.int_cast_eq_int_cast_iff', Int.cast_ofNat, ZMod.nat_cast_val, ZMod.cast_id]
+  rw [← ZMod.int_cast_eq_int_cast_iff', Int.cast_natCast, ZMod.nat_cast_val, ZMod.cast_id]
 #align zmod.val_int_cast ZMod.val_int_cast
 
 theorem coe_int_cast {n : ℕ} (a : ℤ) : cast (a : ZMod n) = a % n := by
@@ -581,7 +581,7 @@ theorem int_coe_zmod_eq_iff (p : ℕ) (n : ℤ) (z : ZMod p) [NeZero p] :
     refine' ⟨n / p, _⟩
     rw [val_int_cast, Int.emod_add_ediv]
   · rintro ⟨k, rfl⟩
-    rw [Int.cast_add, Int.cast_mul, Int.cast_ofNat, Int.cast_ofNat, nat_cast_val,
+    rw [Int.cast_add, Int.cast_mul, Int.cast_natCast, Int.cast_natCast, nat_cast_val,
       ZMod.nat_cast_self, zero_mul, add_zero, cast_id]
 #align zmod.int_coe_zmod_eq_iff ZMod.int_coe_zmod_eq_iff
 
@@ -625,7 +625,7 @@ theorem cast_zmod_eq_zero_iff_of_le {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ZM
 
 @[simp]
 theorem nat_cast_toNat (p : ℕ) : ∀ {z : ℤ} (_h : 0 ≤ z), (z.toNat : ZMod p) = z
-  | (n : ℕ), _h => by simp only [Int.cast_ofNat, Int.toNat_natCast]
+  | (n : ℕ), _h => by simp only [Int.cast_natCast, Int.toNat_natCast]
   | Int.negSucc n, h => by simp at h
 #align zmod.nat_cast_to_nat ZMod.nat_cast_toNat
 
@@ -924,7 +924,7 @@ theorem neg_eq_self_mod_two (a : ZMod 2) : -a = a := by
 @[simp]
 theorem natAbs_mod_two (a : ℤ) : (a.natAbs : ZMod 2) = a := by
   cases a
-  · simp only [Int.natAbs_ofNat, Int.cast_ofNat, Int.ofNat_eq_coe]
+  · simp only [Int.natAbs_ofNat, Int.cast_natCast, Int.ofNat_eq_coe]
   · simp only [neg_eq_self_mod_two, Nat.cast_succ, Int.natAbs, Int.cast_negSucc]
 #align zmod.nat_abs_mod_two ZMod.natAbs_mod_two
 
@@ -1043,8 +1043,9 @@ theorem coe_valMinAbs : ∀ {n : ℕ} (x : ZMod n), (x.valMinAbs : ZMod n) = x
   | k@(n + 1), x => by
     rw [valMinAbs_def_pos]
     split_ifs
-    · rw [Int.cast_ofNat, nat_cast_zmod_val]
-    · rw [Int.cast_sub, Int.cast_ofNat, nat_cast_zmod_val, Int.cast_ofNat, nat_cast_self, sub_zero]
+    · rw [Int.cast_natCast, nat_cast_zmod_val]
+    · rw [Int.cast_sub, Int.cast_natCast, nat_cast_zmod_val, Int.cast_natCast, nat_cast_self,
+        sub_zero]
 #align zmod.coe_val_min_abs ZMod.coe_valMinAbs
 
 theorem injective_valMinAbs {n : ℕ} : (valMinAbs : ZMod n → ℤ).Injective :=
@@ -1132,8 +1133,8 @@ theorem nat_cast_natAbs_valMinAbs {n : ℕ} [NeZero n] (a : ZMod n) :
   rw [valMinAbs_def_pos]
   split_ifs
   · rw [Int.natAbs_ofNat, nat_cast_zmod_val]
-  · rw [← Int.cast_ofNat, Int.ofNat_natAbs_of_nonpos this, Int.cast_neg, Int.cast_sub,
-      Int.cast_ofNat, Int.cast_ofNat, nat_cast_self, sub_zero, nat_cast_zmod_val]
+  · rw [← Int.cast_natCast, Int.ofNat_natAbs_of_nonpos this, Int.cast_neg, Int.cast_sub,
+      Int.cast_natCast, Int.cast_natCast, nat_cast_self, sub_zero, nat_cast_zmod_val]
 #align zmod.nat_cast_nat_abs_val_min_abs ZMod.nat_cast_natAbs_valMinAbs
 
 theorem valMinAbs_neg_of_ne_half {n : ℕ} {a : ZMod n} (ha : 2 * a.val ≠ n) :

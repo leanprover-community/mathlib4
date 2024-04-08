@@ -429,14 +429,14 @@ theorem convexBodySum_volume :
       (fun hx => (convexBodySumFun_eq_zero_iff _).mp hx)
       (fun r x => le_of_eq (convexBodySumFun_smul r x)) zero_lt_one]
     simp_rw [mixedEmbedding.finrank, div_one, Gamma_nat_eq_factorial, ofReal_div_of_pos
-      (Nat.cast_pos.mpr (Nat.factorial_pos _)), Real.rpow_one, ofReal_coe_nat]
+      (Nat.cast_pos.mpr (Nat.factorial_pos _)), Real.rpow_one, ofReal_natCast]
     suffices ∫ x : E K, exp (-convexBodySumFun x) =
         (2:ℝ) ^ NrRealPlaces K * (π / 2) ^ NrComplexPlaces K by
       rw [this, convexBodySumFactor, ofReal_mul (by positivity), ofReal_pow zero_le_two,
         ofReal_pow (by positivity), ofReal_div_of_pos zero_lt_two, ofReal_ofNat,
         ← NNReal.coe_real_pi, ofReal_coe_nnreal, coe_div (Nat.cast_ne_zero.mpr
         (Nat.factorial_ne_zero _)), coe_mul, coe_pow, coe_pow, coe_ofNat, coe_div two_ne_zero,
-        coe_ofNat, coe_nat]
+        coe_ofNat, coe_natCast]
     calc
       _ = (∫ x : {w : InfinitePlace K // IsReal w} → ℝ, ∏ w, exp (- ‖x w‖)) *
               (∫ x : {w : InfinitePlace K // IsComplex w} → ℂ, ∏ w, exp (- 2 * ‖x w‖)) := by

@@ -88,7 +88,7 @@ def nonZeroDivisors (R : Type*) [MonoidWithZero R] : Submonoid R where
 scoped[nonZeroDivisors] notation:9000 R "⁰" => nonZeroDivisors R
 
 /-- Let `R` be a monoid with zero and `M` an additive monoid with an `R`-action, then the collection
-of non-zero smul-divisors forms a submonoid. These elements are also called `M`-regular.-/
+of non-zero smul-divisors forms a submonoid. These elements are also called `M`-regular. -/
 def nonZeroSMulDivisors (R : Type*) [MonoidWithZero R] (M : Type _) [Zero M] [MulAction R M] :
     Submonoid R where
   carrier := { r | ∀ m : M, r • m = 0 → m = 0}

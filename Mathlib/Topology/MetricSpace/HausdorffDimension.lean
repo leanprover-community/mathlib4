@@ -518,7 +518,7 @@ theorem dimH_ball_pi (x : ι → ℝ) {r : ℝ} (hr : 0 < r) :
   cases isEmpty_or_nonempty ι
   · rwa [dimH_subsingleton, eq_comm, Nat.cast_eq_zero, Fintype.card_eq_zero_iff]
     exact fun x _ y _ => Subsingleton.elim x y
-  · rw [← ENNReal.coe_nat]
+  · rw [← ENNReal.coe_natCast]
     have : μH[Fintype.card ι] (Metric.ball x r) = ENNReal.ofReal ((2 * r) ^ Fintype.card ι) := by
       rw [hausdorffMeasure_pi_real, Real.volume_pi_ball _ hr]
     refine dimH_of_hausdorffMeasure_ne_zero_ne_top ?_ ?_ <;> rw [NNReal.coe_nat_cast, this]

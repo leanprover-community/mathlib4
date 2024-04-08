@@ -1117,7 +1117,7 @@ theorem acc_iff_cluster (x : X) (F : Filter X) : AccPt x F ↔ ClusterPt x (𝓟
   rw [AccPt, nhdsWithin, ClusterPt, inf_assoc]
 #align acc_iff_cluster acc_iff_cluster
 
-/-- `x` is an accumulation point of a set `C` iff it is a cluster point of `C ∖ {x}`.-/
+/-- `x` is an accumulation point of a set `C` iff it is a cluster point of `C ∖ {x}`. -/
 theorem acc_principal_iff_cluster (x : X) (C : Set X) :
     AccPt x (𝓟 C) ↔ ClusterPt x (𝓟 (C \ {x})) := by
   rw [acc_iff_cluster, inf_principal, inter_comm, diff_eq]
@@ -1131,7 +1131,7 @@ theorem accPt_iff_nhds (x : X) (C : Set X) : AccPt x (𝓟 C) ↔ ∀ U ∈ 𝓝
 #align acc_pt_iff_nhds accPt_iff_nhds
 
 /-- `x` is an accumulation point of a set `C` iff
-there are points near `x` in `C` and different from `x`.-/
+there are points near `x` in `C` and different from `x`. -/
 theorem accPt_iff_frequently (x : X) (C : Set X) : AccPt x (𝓟 C) ↔ ∃ᶠ y in 𝓝 x, y ≠ x ∧ y ∈ C := by
   simp [acc_principal_iff_cluster, clusterPt_principal_iff_frequently, and_comm]
 #align acc_pt_iff_frequently accPt_iff_frequently

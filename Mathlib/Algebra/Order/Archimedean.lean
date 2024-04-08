@@ -162,7 +162,7 @@ variable [StrictOrderedRing α] [Archimedean α]
 
 theorem exists_int_gt (x : α) : ∃ n : ℤ, x < n :=
   let ⟨n, h⟩ := exists_nat_gt x
-  ⟨n, by rwa [Int.cast_ofNat]⟩
+  ⟨n, by rwa [Int.cast_natCast]⟩
 #align exists_int_gt exists_int_gt
 
 theorem exists_int_lt (x : α) : ∃ n : ℤ, (n : α) < x :=
@@ -299,7 +299,7 @@ theorem exists_rat_btwn {x y : α} (h : x < y) : ∃ q : ℚ, x < q ∧ (q : α)
   · rw [Rat.coe_int_den, Nat.cast_one]
     exact one_ne_zero
   · intro H
-    rw [Rat.num_natCast, Int.cast_ofNat, Nat.cast_eq_zero] at H
+    rw [Rat.num_natCast, Int.cast_natCast, Nat.cast_eq_zero] at H
     subst H
     cases n0
   · rw [Rat.den_natCast, Nat.cast_one]

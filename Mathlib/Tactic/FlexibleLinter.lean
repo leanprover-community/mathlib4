@@ -195,8 +195,8 @@ def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.flexible 
 /-- `Stained.toFMVarId mv lctx st` takes a metavariable `mv`, a local context `lctx` and
 a `Stained` `st` and returns the array of pairs `(FVarId, mv)`s that `lctx` assigns to `st`
 (the second component is always `mv`):
-* if `st` "is" a `Name`, returns the singleton of the `FVarId` with the name carried by `st`,
-* if `st` is `.goal`, returns the singleton `#[default]`,
+* if `st` "is" a `Name`, returns the singleton of the `FVarId` with the name carried by `st`;
+* if `st` is `.goal`, returns the singleton `#[default]`;
 * if `st` is `.wildcard`, returns the array of all the `FVarId`s in `lctx` with also `default`
   (to keep track of the `goal`).
 -/
@@ -211,8 +211,8 @@ def Stained.toFMVarId (mv : MVarId) (lctx: LocalContext) : Stained → Array (FV
 because we do not want the linter to spend time on them.
 The nodes that they contain will be visited by the linter anyway. -/
 def combinatorLike : HashSet Name :=
-  { -- "continuators": these typically wrap other tactics inside them. the linter ignores the
-    -- wrapper, but does recurse into the enclosed tactics
+  { -- "continuators": these typically wrap other tactics inside them.
+    -- The linter ignores the wrapper, but does recurse into the enclosed tactics
     ``Lean.Parser.Tactic.tacticSeq1Indented,
     ``Lean.Parser.Tactic.tacticSeq,
     ``Lean.Parser.Term.byTactic,
@@ -225,7 +225,8 @@ def combinatorLike : HashSet Name :=
     ``cdotTk,
     ``cdot,
     -- "stopper tactics": their effect is analogous to "continuators", but they do not wrap
-    -- other tactics inside them
+    -- other tactics inside them.  Some are "finishing" tactics, so there really is nothing beyond
+    -- them in their branch of the InfoTree.
     ``Lean.Parser.Tactic.tacticSorry,
     ``Lean.Parser.Tactic.tacticRepeat_,
     ``Lean.Parser.Tactic.tacticStop_,
@@ -234,15 +235,15 @@ def combinatorLike : HashSet Name :=
     `Mathlib.Tactic.RingNF.ringNF }
 
 /-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
-  `simp`, `simp_all`, `simpa`, `dsimp`, `rfl`, `omega`, `abel`, `ring`, `linarith`, `nlinarith`,
-  `norm_cast`, `aesop`, `tauto`, `split`, `split_ifs`.
+  `simp`, `simp_all`, `simpa`, `dsimp`, `constructor`, `congr`, `done`, `rfl`, `omega`, `abel`,
+  `ring`, `linarith`, `nlinarith`, `norm_cast`, `aesop`, `tauto`, `fun_prop`, `split`, `split_ifs`.
 -/
 def followers : HashSet Name :=
   { ``Lean.Parser.Tactic.simp,
-    ``Lean.Parser.Tactic.constructor,
     ``Lean.Parser.Tactic.simpAll,
     ``Lean.Parser.Tactic.simpa,
     ``Lean.Parser.Tactic.dsimp,
+    ``Lean.Parser.Tactic.constructor,
     ``Lean.Parser.Tactic.congr,
     ``Lean.Parser.Tactic.done,
     ``Lean.Parser.Tactic.tacticRfl,
@@ -263,7 +264,7 @@ the tactic will use the goal as well: this heuristic works well with `exact`, `r
 For tactics such as `cases` this is not true: for these tactics, `usesGoal?` yields `false. -/
 def usesGoal? : SyntaxNodeKind → Bool
   | ``Lean.Parser.Tactic.cases => false
-  | `Mathlib.Tactic.cases'     => false
+  | `Mathlib.Tactic.cases' => false
   | ``Lean.Parser.Tactic.obtain => false
   | ``Lean.Parser.Tactic.tacticHave_ => false
   | ``Lean.Parser.Tactic.rcases => false

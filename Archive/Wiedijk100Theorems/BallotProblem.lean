@@ -403,13 +403,13 @@ theorem ballot_problem :
     rw [ballot_problem' q p qp]
     rw [ENNReal.toReal_div, ← Nat.cast_add, ← Nat.cast_add, ENNReal.toReal_nat,
       ENNReal.toReal_sub_of_le, ENNReal.toReal_nat, ENNReal.toReal_nat]
-    exacts [Nat.cast_le.2 qp.le, ENNReal.nat_ne_top _]
+    exacts [Nat.cast_le.2 qp.le, ENNReal.natCast_ne_top _]
   rwa [ENNReal.toReal_eq_toReal (measure_lt_top _ _).ne] at this
   · simp only [Ne, ENNReal.div_eq_top, tsub_eq_zero_iff_le, Nat.cast_le, not_le,
-      add_eq_zero_iff, Nat.cast_eq_zero, ENNReal.add_eq_top, ENNReal.nat_ne_top, or_self_iff,
+      add_eq_zero_iff, Nat.cast_eq_zero, ENNReal.add_eq_top, ENNReal.natCast_ne_top, or_self_iff,
       not_false_iff, and_true_iff]
     push_neg
-    exact ⟨fun _ _ => by linarith, (lt_of_le_of_lt tsub_le_self (ENNReal.nat_ne_top p).lt_top).ne⟩
+    exact ⟨fun _ _ => by linarith, (tsub_le_self.trans_lt (ENNReal.natCast_ne_top p).lt_top).ne⟩
 #align ballot.ballot_problem Ballot.ballot_problem
 
 end Ballot

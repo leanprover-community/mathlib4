@@ -245,7 +245,7 @@ instance (priority := 100) CompatibleSMul.isScalarTower [SMul R' R] [IsScalarTow
     exact Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.of_smul _ _ _⟩
 #align tensor_product.compatible_smul.is_scalar_tower TensorProduct.CompatibleSMul.isScalarTower
 
-/-- `smul` can be moved from one side of the product to the other .-/
+/-- `smul` can be moved from one side of the product to the other . -/
 theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m : M) (n : N) :
     (r • m) ⊗ₜ n = m ⊗ₜ[R] (r • n) :=
   CompatibleSMul.smul_tmul _ _ _
