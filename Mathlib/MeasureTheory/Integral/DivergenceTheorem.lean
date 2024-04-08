@@ -374,7 +374,7 @@ interval and is differentiable off a countable set `s`.
 
 See also
 
-* `interval_integral.integral_eq_sub_of_has_deriv_right_of_le` for a version that only assumes right
+* `intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le` for a version that only assumes right
 differentiability of `f`;
 
 * `MeasureTheory.integral_eq_of_hasDerivWithinAt_off_countable` for a version that works both
@@ -413,7 +413,7 @@ theorem integral_eq_of_hasDerivWithinAt_off_countable_of_le (f f' : ℝ → E) {
 /-- **Fundamental theorem of calculus, part 2**. This version assumes that `f` is continuous on the
 interval and is differentiable off a countable set `s`.
 
-See also `measure_theory.interval_integral.integral_eq_sub_of_has_deriv_right` for a version that
+See also `intervalIntegral.integral_eq_sub_of_hasDeriv_right` for a version that
 only assumes right differentiability of `f`.
 -/
 theorem integral_eq_of_hasDerivWithinAt_off_countable (f f' : ℝ → E) {a b : ℝ} {s : Set ℝ}

@@ -23,7 +23,7 @@ open Rat
 
 theorem num_dvd (a) {b : ℤ} (b0 : b ≠ 0) : (a /. b).num ∣ a := by
   cases' e : a /. b with n d h c
-  rw [Rat.num_den', divInt_eq_iff b0 (ne_of_gt (Int.coe_nat_pos.2 (Nat.pos_of_ne_zero h)))] at e
+  rw [Rat.num_den', divInt_eq_iff b0 (ne_of_gt (Int.natCast_pos.2 (Nat.pos_of_ne_zero h)))] at e
   refine Int.natAbs_dvd.1 <| Int.dvd_natAbs.1 <| Int.natCast_dvd_natCast.2 <|
     c.dvd_of_dvd_mul_right ?_
   have := congr_arg Int.natAbs e
@@ -33,7 +33,7 @@ theorem num_dvd (a) {b : ℤ} (b0 : b ≠ 0) : (a /. b).num ∣ a := by
 theorem den_dvd (a b : ℤ) : ((a /. b).den : ℤ) ∣ b := by
   by_cases b0 : b = 0; · simp [b0]
   cases' e : a /. b with n d h c
-  rw [num_den', divInt_eq_iff b0 (ne_of_gt (Int.coe_nat_pos.2 (Nat.pos_of_ne_zero h)))] at e
+  rw [num_den', divInt_eq_iff b0 (ne_of_gt (Int.natCast_pos.2 (Nat.pos_of_ne_zero h)))] at e
   refine' Int.dvd_natAbs.1 <| Int.natCast_dvd_natCast.2 <| c.symm.dvd_of_dvd_mul_left _
   rw [← Int.natAbs_mul, ← Int.natCast_dvd_natCast, Int.dvd_natAbs, ← e]; simp
 #align rat.denom_dvd Rat.den_dvd
@@ -188,7 +188,7 @@ protected theorem inv_neg (q : ℚ) : (-q)⁻¹ = -q⁻¹ := by
 theorem mul_den_eq_num {q : ℚ} : q * q.den = q.num := by
   suffices (q.num /. ↑q.den) * (↑q.den /. 1) = q.num /. 1 by
     conv => pattern (occs := 1) q; (rw [← @num_den q])
-    simp only [coe_int_eq_divInt, coe_nat_eq_divInt, num_den] at this ⊢; assumption
+    simp only [intCast_eq_divInt, natCast_eq_divInt, num_den] at this ⊢; assumption
   have : (q.den : ℤ) ≠ 0 := ne_of_gt (mod_cast q.pos)
   rw [Rat.mul_def' this one_ne_zero, mul_comm (q.den : ℤ) 1, divInt_mul_right this]
 #align rat.mul_denom_eq_num Rat.mul_den_eq_num
@@ -228,87 +228,109 @@ theorem div_int_inj {a b c d : ℤ} (hb0 : 0 < b) (hd0 : 0 < d) (h1 : Nat.Coprim
 #align rat.div_int_inj Rat.div_int_inj
 
 @[norm_cast]
-theorem coe_int_div_self (n : ℤ) : ((n / n : ℤ) : ℚ) = n / n := by
+theorem intCast_div_self (n : ℤ) : ((n / n : ℤ) : ℚ) = n / n := by
   by_cases hn : n = 0
   · subst hn
     simp only [Int.cast_zero, Int.zero_div, zero_div, Int.ediv_zero]
   · have : (n : ℚ) ≠ 0 := by rwa [← coe_int_inj] at hn
     simp only [Int.ediv_self hn, Int.cast_one, Ne, not_false_iff, div_self this]
-#align rat.coe_int_div_self Rat.coe_int_div_self
+#align rat.coe_int_div_self Rat.intCast_div_self
 
 @[norm_cast]
-theorem coe_nat_div_self (n : ℕ) : ((n / n : ℕ) : ℚ) = n / n :=
-  coe_int_div_self n
-#align rat.coe_nat_div_self Rat.coe_nat_div_self
+theorem natCast_div_self (n : ℕ) : ((n / n : ℕ) : ℚ) = n / n :=
+  intCast_div_self n
+#align rat.coe_nat_div_self Rat.natCast_div_self
 
-theorem coe_int_div (a b : ℤ) (h : b ∣ a) : ((a / b : ℤ) : ℚ) = a / b := by
+theorem intCast_div (a b : ℤ) (h : b ∣ a) : ((a / b : ℤ) : ℚ) = a / b := by
   rcases h with ⟨c, rfl⟩
   rw [mul_comm b, Int.mul_ediv_assoc c (dvd_refl b), Int.cast_mul,
-    coe_int_div_self, Int.cast_mul, mul_div_assoc]
-#align rat.coe_int_div Rat.coe_int_div
+    intCast_div_self, Int.cast_mul, mul_div_assoc]
+#align rat.coe_int_div Rat.intCast_div
 
-theorem coe_nat_div (a b : ℕ) (h : b ∣ a) : ((a / b : ℕ) : ℚ) = a / b := by
+theorem natCast_div (a b : ℕ) (h : b ∣ a) : ((a / b : ℕ) : ℚ) = a / b := by
   rcases h with ⟨c, rfl⟩
   simp only [mul_comm b, Nat.mul_div_assoc c (dvd_refl b), Nat.cast_mul, mul_div_assoc,
-    coe_nat_div_self]
-#align rat.coe_nat_div Rat.coe_nat_div
+    natCast_div_self]
+#align rat.coe_nat_div Rat.natCast_div
 
-theorem inv_coe_int_num_of_pos {a : ℤ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 := by
+theorem inv_intCast_num_of_pos {a : ℤ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 := by
   rw [← ofInt_eq_cast, ofInt, mk_eq_divInt, Rat.inv_def', divInt_eq_div, Nat.cast_one]
   apply num_div_eq_of_coprime ha0
   rw [Int.natAbs_one]
   exact Nat.coprime_one_left _
-#align rat.inv_coe_int_num_of_pos Rat.inv_coe_int_num_of_pos
+#align rat.inv_coe_int_num_of_pos Rat.inv_intCast_num_of_pos
 
-theorem inv_coe_nat_num_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 :=
-  inv_coe_int_num_of_pos (mod_cast ha0 : 0 < (a : ℤ))
-#align rat.inv_coe_nat_num_of_pos Rat.inv_coe_nat_num_of_pos
+theorem inv_natCast_num_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 :=
+  inv_intCast_num_of_pos (mod_cast ha0 : 0 < (a : ℤ))
+#align rat.inv_coe_nat_num_of_pos Rat.inv_natCast_num_of_pos
 
-theorem inv_coe_int_den_of_pos {a : ℤ} (ha0 : 0 < a) : ((a : ℚ)⁻¹.den : ℤ) = a := by
+theorem inv_intCast_den_of_pos {a : ℤ} (ha0 : 0 < a) : ((a : ℚ)⁻¹.den : ℤ) = a := by
   rw [← ofInt_eq_cast, ofInt, mk_eq_divInt, Rat.inv_def', divInt_eq_div, Nat.cast_one]
   apply den_div_eq_of_coprime ha0
   rw [Int.natAbs_one]
   exact Nat.coprime_one_left _
-#align rat.inv_coe_int_denom_of_pos Rat.inv_coe_int_den_of_pos
+#align rat.inv_coe_int_denom_of_pos Rat.inv_intCast_den_of_pos
 
-theorem inv_coe_nat_den_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.den = a := by
-  rw [← Int.ofNat_inj, ← Int.cast_natCast a, inv_coe_int_den_of_pos]
+theorem inv_natCast_den_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.den = a := by
+  rw [← Int.ofNat_inj, ← Int.cast_natCast a, inv_intCast_den_of_pos]
   rwa [Nat.cast_pos]
-#align rat.inv_coe_nat_denom_of_pos Rat.inv_coe_nat_den_of_pos
+#align rat.inv_coe_nat_denom_of_pos Rat.inv_natCast_den_of_pos
 
 @[simp]
-theorem inv_coe_int_num (a : ℤ) : (a : ℚ)⁻¹.num = Int.sign a := by
-  induction a using Int.induction_on <;>
-    simp [← Int.negSucc_coe', Int.negSucc_coe, -neg_add_rev, Rat.inv_neg, Int.ofNat_add_one_out,
-      -Nat.cast_succ, inv_coe_nat_num_of_pos, -Int.cast_negSucc, @eq_comm ℤ 1,
-      Int.sign_eq_one_of_pos, ofInt_eq_cast]
-#align rat.inv_coe_int_num Rat.inv_coe_int_num
+theorem inv_intCast_num (a : ℤ) : (a : ℚ)⁻¹.num = Int.sign a := by
+  rcases lt_trichotomy a 0 with lt | rfl | gt
+  · obtain ⟨a, rfl⟩ : ∃ b, -b = a := ⟨-a, a.neg_neg⟩
+    simp at lt
+    simp [Rat.inv_neg, inv_intCast_num_of_pos lt, (Int.sign_eq_one_iff_pos _).mpr lt]
+  · rfl
+  · simp [inv_intCast_num_of_pos gt, (Int.sign_eq_one_iff_pos _).mpr gt]
+#align rat.inv_coe_int_num Rat.inv_intCast_num
 
 @[simp]
-theorem inv_coe_nat_num (a : ℕ) : (a : ℚ)⁻¹.num = Int.sign a :=
-  inv_coe_int_num a
-#align rat.inv_coe_nat_num Rat.inv_coe_nat_num
+theorem inv_natCast_num (a : ℕ) : (a : ℚ)⁻¹.num = Int.sign a :=
+  inv_intCast_num a
+#align rat.inv_coe_nat_num Rat.inv_natCast_num
 
 @[simp]
 theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℚ))⁻¹.num = 1 :=
-  inv_coe_nat_num_of_pos (NeZero.pos a)
+  inv_natCast_num_of_pos (NeZero.pos a)
 
 @[simp]
-theorem inv_coe_int_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.natAbs := by
-  induction a using Int.induction_on <;>
-    simp [← Int.negSucc_coe', Int.negSucc_coe, -neg_add_rev, Rat.inv_neg, Int.ofNat_add_one_out,
-      -Nat.cast_succ, inv_coe_nat_den_of_pos, -Int.cast_negSucc, ofInt_eq_cast]
-#align rat.inv_coe_int_denom Rat.inv_coe_int_den
+theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.natAbs := by
+  rw [← Int.ofNat_inj]
+  rcases lt_trichotomy a 0 with lt | rfl | gt
+  · obtain ⟨a, rfl⟩ : ∃ b, -b = a := ⟨-a, a.neg_neg⟩
+    simp at lt
+    rw [if_neg (by omega)]
+    simp [Rat.inv_neg, inv_intCast_den_of_pos lt, abs_of_pos lt]
+  · rfl
+  · rw [if_neg (by omega)]
+    simp [inv_intCast_den_of_pos gt, abs_of_pos gt]
+#align rat.inv_coe_int_denom Rat.inv_intCast_den
 
 @[simp]
-theorem inv_coe_nat_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a := by
-  simpa [-inv_coe_int_den, ofInt_eq_cast] using inv_coe_int_den a
-#align rat.inv_coe_nat_denom Rat.inv_coe_nat_den
+theorem inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a := by
+  simpa [-inv_intCast_den, ofInt_eq_cast] using inv_intCast_den a
+#align rat.inv_coe_nat_denom Rat.inv_natCast_den
+
+-- 2024-04-05
+@[deprecated] alias coe_int_div_self := intCast_div_self
+@[deprecated] alias coe_nat_div_self := natCast_div_self
+@[deprecated] alias coe_int_div := intCast_div
+@[deprecated] alias coe_nat_div := natCast_div
+@[deprecated] alias inv_coe_int_num_of_pos := inv_intCast_num_of_pos
+@[deprecated] alias inv_coe_nat_num_of_pos := inv_natCast_num_of_pos
+@[deprecated] alias inv_coe_int_den_of_pos := inv_intCast_den_of_pos
+@[deprecated] alias inv_coe_nat_den_of_pos := inv_natCast_den_of_pos
+@[deprecated] alias inv_coe_int_num := inv_intCast_num
+@[deprecated] alias inv_coe_nat_num := inv_natCast_num
+@[deprecated] alias inv_coe_int_den := inv_intCast_den
+@[deprecated] alias inv_coe_nat_den := inv_natCast_den
 
 @[simp]
 theorem inv_ofNat_den (a : ℕ) [a.AtLeastTwo] :
     (no_index (OfNat.ofNat a : ℚ))⁻¹.den = OfNat.ofNat a :=
-  inv_coe_nat_den_of_pos (NeZero.pos a)
+  inv_natCast_den_of_pos (NeZero.pos a)
 
 protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ, p (a / b) :=
   ⟨fun h _ _ => h _,
