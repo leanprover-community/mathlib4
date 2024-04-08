@@ -51,13 +51,13 @@ but add these assumptions later as needed. (Quite a few results still do not req
   we register them as `PartialEquiv`s.
   `extChartAt I x` is the canonical such partial equiv around `x`.
 
-As specific examples of models with corners, we define (in the file `real_instances.lean`)
+As specific examples of models with corners, we define (in `Geometry.Manifold.Instances.Real`)
 * `modelWithCornersSelf ℝ (EuclideanSpace (Fin n))` for the model space used to define
   `n`-dimensional real manifolds without boundary (with notation `𝓡 n` in the locale `manifold`)
-* `ModelWithCorners ℝ (EuclideanSpace (Fin n)) (euclidean_half_space n)` for the model space
+* `ModelWithCorners ℝ (EuclideanSpace (Fin n)) (EuclideanHalfSpace n)` for the model space
   used to define `n`-dimensional real manifolds with boundary (with notation `𝓡∂ n` in the locale
   `manifold`)
-* `ModelWithCorners ℝ (EuclideanSpace (Fin n)) (euclidean_quadrant n)` for the model space used
+* `ModelWithCorners ℝ (EuclideanSpace (Fin n)) (EuclideanQuadrant n)` for the model space used
   to define `n`-dimensional real manifolds with corners
 
 With these definitions at hand, to invoke an `n`-dimensional real manifold without boundary,
@@ -1597,7 +1597,7 @@ theorem extChartAt_self_apply {x y : H} : extChartAt I x y = I y :=
 #align ext_chart_at_self_apply extChartAt_self_apply
 
 /-- In the case of the manifold structure on a vector space, the extended charts are just the
-identity.-/
+identity. -/
 theorem extChartAt_model_space_eq_id (x : E) : extChartAt 𝓘(𝕜, E) x = PartialEquiv.refl E := by
   simp only [mfld_simps]
 #align ext_chart_at_model_space_eq_id extChartAt_model_space_eq_id

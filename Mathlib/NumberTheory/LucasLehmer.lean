@@ -346,9 +346,12 @@ set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.coe_mul LucasLehmer.X.coe_mul
 
 @[norm_cast]
-theorem coe_nat (n : ℕ) : ((n : ℤ) : X q) = (n : X q) := by ext <;> simp
+theorem coe_natCast (n : ℕ) : ((n : ℤ) : X q) = (n : X q) := by ext <;> simp
 set_option linter.uppercaseLean3 false in
-#align lucas_lehmer.X.coe_nat LucasLehmer.X.coe_nat
+#align lucas_lehmer.X.coe_nat LucasLehmer.X.coe_natCast
+
+-- 2024-04-05
+@[deprecated] alias coe_nat := coe_natCast
 
 /-- The cardinality of `X` is `q^2`. -/
 theorem card_eq : Fintype.card (X q) = q ^ 2 := by

@@ -49,6 +49,8 @@ jobs:
               printf 'Creating tag %s from the current state of the nightly-testing branch.' "nightly-testing-${version}"
               git tag "nightly-testing-${version}"
               git push origin "nightly-testing-${version}"
+              hash=$(git rev-parse "nightly-testing-${version}")
+              curl -X POST "http://speed.lean-fro.org/mathlib4/api/commit/e7b27246-a3e6-496a-b552-ff4b45c7236e/$hash" -u admin:${{ secrets.SPEED }}
           fi
         else
           echo "Error: The file lean-toolchain does not contain the expected pattern."

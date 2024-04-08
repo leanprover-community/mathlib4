@@ -54,7 +54,7 @@ class UniformGroup (α : Type*) [UniformSpace α] [Group α] : Prop where
 #align uniform_group UniformGroup
 
 /-- A uniform additive group is an additive group in which addition
-  and negation are uniformly continuous.-/
+  and negation are uniformly continuous. -/
 class UniformAddGroup (α : Type*) [UniformSpace α] [AddGroup α] : Prop where
   uniformContinuous_sub : UniformContinuous fun p : α × α => p.1 - p.2
 #align uniform_add_group UniformAddGroup

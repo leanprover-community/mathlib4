@@ -770,7 +770,7 @@ theorem aemeasurable_toNNReal_abs_det_fderivWithin (hs : MeasurableSet s)
 #align measure_theory.ae_measurable_to_nnreal_abs_det_fderiv_within MeasureTheory.aemeasurable_toNNReal_abs_det_fderivWithin
 
 /-- If a function is differentiable and injective on a measurable set,
-then the image is measurable.-/
+then the image is measurable. -/
 theorem measurable_image_of_fderivWithin (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) : MeasurableSet (f '' s) :=
   haveI : DifferentiableOn ℝ f s := fun x hx => (hf' x hx).differentiableWithinAt
