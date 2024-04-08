@@ -237,32 +237,20 @@ variable (R)
 
 /-- The product of two Chebyshev polynomials is the sum of two other Chebyshev polynomials. -/
 theorem mul_T : ∀ m k, 2 * T R m * T R (m + k) = T R (2 * m + k) + T R k
-  | 0 => by simp [two_mul, add_mul]
-  | 1 => by simp [add_comm]
-  | m + 2 => by
-    intro k
-    -- clean up the `T` nat indices in the goal
-    suffices 2 * T R (m + 2) * T R (m + k + 2) = T R (2 * m + k + 4) + T R k by
-      have h_nat₁ : 2 * (m + 2) + k = 2 * m + k + 4 := by ring
-      have h_nat₂ : m + 2 + k = m + k + 2 := by ring
-      simpa [h_nat₁, h_nat₂] using this
-    -- clean up the `T` nat indices in the inductive hypothesis applied to `m + 1` and `k + 1`
-    have H₁ : 2 * T R (m + 1) * T R (m + k + 2) = T R (2 * m + k + 3) + T R (k + 1) := by
-      have h_nat₁ : m + 1 + (k + 1) = m + k + 2 := by ring
-      have h_nat₂ : 2 * (m + 1) + (k + 1) = 2 * m + k + 3 := by ring
-      simpa [h_nat₁, h_nat₂] using mul_T (m + 1) (k + 1)
-    -- clean up the `T` nat indices in the inductive hypothesis applied to `m` and `k + 2`
-    have H₂ : 2 * T R m * T R (m + k + 2) = T R (2 * m + k + 2) + T R (k + 2) := by
-      have h_nat₁ : 2 * m + (k + 2) = 2 * m + k + 2 := by simp [add_assoc]
-      have h_nat₂ : m + (k + 2) = m + k + 2 := by simp [add_assoc]
-      simpa [h_nat₁, h_nat₂] using mul_T m (k + 2)
+  | 0, _ => by simp [two_mul, add_mul]
+  | 1, _ => by simp [add_comm]
+  | m + 2, k => by
+    -- state the inductive hypothesis for a few useful indices
+    have H₁ := mul_T (m + 1) (k + 1)
+    have H₂ := mul_T m (k + 2)
     -- state the `T` recurrence relation for a few useful indices
     have h₁ := T_add_two R m
-    have h₂ : T R (2 * m + k + 4) = 2 * X * T R (2 * m + k + 3) - T R (2 * m + k + 2) :=
-      T_add_two R (2 * m + k + 2)
+    have h₂ := T_add_two R (2 * m + k + 2)
     have h₃ := T_add_two R k
+    -- clean up the `T` nat indices
+    ring_nf at H₁ H₂ h₁ h₂ h₃ ⊢
     -- the desired identity is an appropriate linear combination of H₁, H₂, h₁, h₂, h₃
-    linear_combination 2 * T R (m + k + 2) * h₁ + 2 * (X : R[X]) * H₁ - H₂ - h₂ - h₃
+    linear_combination 2 * T R (2 + m + k) * h₁ + 2 * (X : R[X]) * H₁ - H₂ - h₂ - h₃
 #align polynomial.chebyshev.mul_T Polynomial.Chebyshev.mul_T
 
 /-- The `(m * n)`-th Chebyshev polynomial is the composition of the `m`-th and `n`-th -/
