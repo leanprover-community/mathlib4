@@ -185,7 +185,7 @@ local notation "ext_iff" => @RCLike.ext_iff 𝕜 _
 local postfix:90 "†" => starRingEnd _
 
 /-- Inner product defined by the `InnerProductSpace.Core` structure. We can't reuse
-`inner_product_space.core.to_has_inner` because it takes `InnerProductSpace.Core` as an explicit
+`InnerProductSpace.Core.toInner` because it takes `InnerProductSpace.Core` as an explicit
 argument. -/
 def toInner' : Inner 𝕜 F :=
   c.toInner
@@ -1820,6 +1820,11 @@ theorem innerSLFlip_apply (x y : E) : innerSLFlip 𝕜 x y = ⟪y, x⟫ :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align innerSL_flip_apply innerSLFlip_apply
+
+variable (F) in
+@[simp] lemma innerSL_real_flip : (innerSL ℝ (E := F)).flip = innerSL ℝ := by
+  ext v w
+  exact real_inner_comm _ _
 
 variable {𝕜}
 

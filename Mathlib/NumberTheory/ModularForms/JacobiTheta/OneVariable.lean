@@ -50,7 +50,7 @@ theorem jacobiTheta_S_smul (τ : ℍ) :
   erw [div_self]
   rw [one_mul, UpperHalfPlane.coe_mk, inv_neg, neg_div, one_div]
   · rfl
-  · rw [Ne.def, cpow_eq_zero_iff, not_and_or]
+  · rw [Ne, cpow_eq_zero_iff, not_and_or]
     exact Or.inl <| mul_ne_zero (neg_ne_zero.mpr I_ne_zero) h0
 set_option linter.uppercaseLean3 false in
 #align jacobi_theta_S_smul jacobiTheta_S_smul
@@ -97,7 +97,7 @@ theorem hasSum_nat_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
     HasSum (fun n : ℕ => cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)) ((jacobiTheta τ - 1) / 2) := by
   have := (summable_exp_mul_sq hτ).hasSum.sum_nat_of_sum_int
   rw [← hasSum_nat_add_iff' 1] at this
-  simp_rw [Finset.sum_range_one, Int.cast_neg, Int.cast_ofNat, Nat.cast_zero, neg_zero,
+  simp_rw [Finset.sum_range_one, Int.cast_neg, Int.cast_natCast, Nat.cast_zero, neg_zero,
     Int.cast_zero, sq (0 : ℂ), mul_zero, zero_mul, neg_sq, ← mul_two,
     Complex.exp_zero, add_sub_assoc, (by norm_num : (1 : ℂ) - 1 * 2 = -1), ← sub_eq_add_neg,
     Nat.cast_add, Nat.cast_one] at this

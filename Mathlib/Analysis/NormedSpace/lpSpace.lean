@@ -890,7 +890,7 @@ theorem _root_.nat_cast_memℓp_infty (n : ℕ) : Memℓp (n : ∀ i, B i) ∞ :
 #align nat_cast_mem_ℓp_infty nat_cast_memℓp_infty
 
 theorem _root_.int_cast_memℓp_infty (z : ℤ) : Memℓp (z : ∀ i, B i) ∞ :=
-  coe_int_mem (lpInftySubring B) z
+  intCast_mem (lpInftySubring B) z
 #align int_cast_mem_ℓp_infty int_cast_memℓp_infty
 
 @[simp]
@@ -1191,7 +1191,7 @@ theorem tendsto_lp_of_tendsto_pi {F : ℕ → lp E p} (hF : CauchySeq F) {f : lp
   refine' norm_le_of_tendsto (hn.mono fun k hk => hk.le) _
   rw [tendsto_pi_nhds]
   intro a
-  exact (hf.apply a).const_sub (F n a)
+  exact (hf.apply_nhds a).const_sub (F n a)
 #align lp.tendsto_lp_of_tendsto_pi lp.tendsto_lp_of_tendsto_pi
 
 variable [∀ a, CompleteSpace (E a)]

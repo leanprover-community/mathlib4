@@ -332,7 +332,7 @@ instance : Full (sheafToPresheaf J A) where preimage f := ⟨f⟩
 instance : Faithful (sheafToPresheaf J A) where
 
 /-- This is stated as a lemma to prevent class search from forming a loop since a sheaf morphism is
-monic if and only if it is monic as a presheaf morphism (under suitable assumption).-/
+monic if and only if it is monic as a presheaf morphism (under suitable assumption). -/
 theorem Sheaf.Hom.mono_of_presheaf_mono {F G : Sheaf J A} (f : F ⟶ G) [h : Mono f.1] : Mono f :=
   (sheafToPresheaf J A).mono_of_mono_map h
 set_option linter.uppercaseLean3 false in
