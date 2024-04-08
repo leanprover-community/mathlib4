@@ -62,7 +62,10 @@ jobs:
 ## until here
 
       - name: Run lake exe cache get
-        run: lake exe cache get
+        run: |
+          lake exe cache get
+          lake build
+
 
       - name: Check environments using lean4checker
         id: lean4checker
