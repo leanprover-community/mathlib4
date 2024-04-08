@@ -1,10 +1,6 @@
 # https://chat.openai.com/share/26102e95-ac9c-4d03-a000-73e4f6cee8cd
 name: lean4checker Workflow
 
-on:
-  schedule:
-    - cron: '0 0 * * *' # Runs at 00:00 UTC every day
-
 jobs:
   check-lean4checker:
     runs-on: ubuntu-latest
