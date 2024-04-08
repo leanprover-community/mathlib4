@@ -83,8 +83,7 @@ elab "suffa " tk:"!"? tac:tacticSeq : tactic => do
                     | some _ => `(tactic| convert $ithis:term)
   let stxa : TSyntax ``tacticSeq := ⟨combine tac conclusion⟩
   let suffTac ← `(tacticSeq| suffices $stx by $stxa)
-  let sug : Suggestion := { suggestion := suffTac }
-  addSuggestion (← getRef) sug
+  addSuggestion (← getRef) { suggestion := suffTac }
   evalTactic tac
 
 macro "suffa!" tac:tacticSeq : tactic => `(tactic| suffa ! $tac)
