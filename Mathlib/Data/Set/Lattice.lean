@@ -1542,7 +1542,7 @@ theorem InjOn.image_iInter_eq [Nonempty ι] {s : ι → Set α} {f : α → β} 
     (f '' ⋂ i, s i) = ⋂ i, f '' s i := by
   inhabit ι
   refine' Subset.antisymm (image_iInter_subset s f) fun y hy => _
-  simp only [mem_iInter, mem_image_iff_bex] at hy
+  simp only [mem_iInter, mem_image] at hy
   choose x hx hy using hy
   refine' ⟨x default, mem_iInter.2 fun i => _, hy _⟩
   suffices x default = x i by
