@@ -79,7 +79,6 @@ namespace CategoryTheory
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
-
 variable {D : Type u₂} [Category.{v₂} D]
 
 /-!

@@ -123,7 +123,6 @@ protected def singleton (a : α) : Ordnode α :=
   node 1 nil a nil
 #align ordnode.singleton Ordnode.singleton
 
--- mathport name: «exprι »
 local prefix:arg "ι" => Ordnode.singleton
 
 instance : Singleton α (Ordnode α) :=
@@ -138,13 +137,15 @@ def size : Ordnode α → ℕ
   | node sz _ _ _ => sz
 #align ordnode.size Ordnode.size
 
-theorem size_nil : size (nil : Ordnode α) = 0 :=
-  rfl
-theorem size_node (sz : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) : size (node sz l x r) = sz :=
-  rfl
+-- Adaptation note:
+-- During the port we marked these lemmas with `@[eqns]` to emulate the old Lean 3 behaviour.
+-- See https://github.com/leanprover-community/mathlib4/issues/11647
 
-attribute [eqns size_nil size_node] size
-attribute [simp] size
+@[simp] theorem size_nil : size (nil : Ordnode α) = 0 :=
+  rfl
+@[simp] theorem size_node (sz : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) :
+    size (node sz l x r) = sz :=
+  rfl
 
 /-- O(1). Is the set empty?
 
@@ -1349,7 +1350,7 @@ def ofList' : List α → Ordnode α
 Equivalent elements are selected with a preference for smaller source elements.
 
     image (fun x ↦ x + 2) {1, 2, 4} = {3, 4, 6}
-    image (λ x : ℕ, x - 2) {1, 2, 4} = {0, 2} -/
+    image (fun x : ℕ ↦ x - 2) {1, 2, 4} = {0, 2} -/
 def image {α β} [LE β] [@DecidableRel β (· ≤ ·)] (f : α → β) (t : Ordnode α) : Ordnode β :=
   ofList (t.toList.map f)
 #align ordnode.image Ordnode.image

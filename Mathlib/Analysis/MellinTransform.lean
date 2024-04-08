@@ -81,7 +81,7 @@ theorem MellinConvergent.comp_mul_left {f : ℝ → E} {s : ℂ} {a : ℝ} (ha :
       ((a : ℂ) ^ (s - 1) • fun t : ℝ => (t : ℂ) ^ (s - 1) • f (a * t)) (Ioi 0) := fun t ht ↦ by
     simp only [ofReal_mul, mul_cpow_ofReal_nonneg ha.le (le_of_lt ht), mul_smul, Pi.smul_apply]
   have h2 : (a : ℂ) ^ (s - 1) ≠ 0 := by
-    rw [Ne.def, cpow_eq_zero_iff, not_and_or, ofReal_eq_zero]
+    rw [Ne, cpow_eq_zero_iff, not_and_or, ofReal_eq_zero]
     exact Or.inl ha.ne'
   rw [MellinConvergent, MellinConvergent, ← this, integrableOn_congr_fun h1 measurableSet_Ioi,
     IntegrableOn, IntegrableOn, integrable_smul_iff h2]
@@ -95,15 +95,24 @@ theorem MellinConvergent.comp_rpow {f : ℝ → E} {s : ℂ} {a : ℝ} (ha : a �
   dsimp only [Pi.smul_apply]
   rw [← Complex.coe_smul (t ^ (a - 1)), ← mul_smul, ← cpow_mul_ofReal_nonneg (le_of_lt ht),
     ofReal_cpow (le_of_lt ht), ← cpow_add _ _ (ofReal_ne_zero.mpr (ne_of_gt ht)), ofReal_sub,
-    ofReal_one, mul_sub, mul_div_cancel' _ (ofReal_ne_zero.mpr ha), mul_one, add_comm, ←
+    ofReal_one, mul_sub, mul_div_cancel₀ _ (ofReal_ne_zero.mpr ha), mul_one, add_comm, ←
     add_sub_assoc, sub_add_cancel]
 #align mellin_convergent.comp_rpow MellinConvergent.comp_rpow
+
+/-- A function `f` is `VerticalIntegrable` at `σ` if `y ↦ f(σ + yi)` is integrable. -/
+def Complex.VerticalIntegrable (f : ℂ → E) (σ : ℝ) (μ : Measure ℝ := by volume_tac) : Prop :=
+  Integrable (fun (y : ℝ) ↦ f (σ + y * I)) μ
 
 /-- The Mellin transform of a function `f` (for a complex exponent `s`), defined as the integral of
 `t ^ (s - 1) • f` over `Ioi 0`. -/
 def mellin (f : ℝ → E) (s : ℂ) : E :=
   ∫ t : ℝ in Ioi 0, (t : ℂ) ^ (s - 1) • f t
 #align mellin mellin
+
+/-- The Mellin inverse transform of a function `f`, defined as `1 / (2π)` times
+the integral of `y ↦ x ^ -(σ + yi) • f (σ + yi)`. -/
+def mellinInv (σ : ℝ) (f : ℂ → E) (x : ℝ) : E :=
+  (1 / (2 * π)) • ∫ y : ℝ, (x : ℂ) ^ (-(σ + y * I)) • f (σ + y * I)
 
 -- next few lemmas don't require convergence of the Mellin transform (they are just 0 = 0 otherwise)
 theorem mellin_cpow_smul (f : ℝ → E) (s a : ℂ) :
@@ -137,7 +146,7 @@ theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
     real_smul]
   rw [ofReal_cpow (le_of_lt ht), ← cpow_mul_ofReal_nonneg (le_of_lt ht), ←
     cpow_add _ _ (ofReal_ne_zero.mpr <| ne_of_gt ht), ofReal_sub, ofReal_one, mul_sub,
-    mul_div_cancel' _ (ofReal_ne_zero.mpr ha), add_comm, ← add_sub_assoc, mul_one, sub_add_cancel]
+    mul_div_cancel₀ _ (ofReal_ne_zero.mpr ha), add_comm, ← add_sub_assoc, mul_one, sub_add_cancel]
 #align mellin_comp_rpow mellin_comp_rpow
 
 theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
@@ -149,7 +158,7 @@ theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
     dsimp only
     rw [ofReal_mul, mul_cpow_ofReal_nonneg ha.le (le_of_lt ht), ← mul_smul,
       (by ring : 1 - s = -(s - 1)), cpow_neg, inv_mul_cancel_left₀]
-    rw [Ne.def, cpow_eq_zero_iff, ofReal_eq_zero, not_and_or]
+    rw [Ne, cpow_eq_zero_iff, ofReal_eq_zero, not_and_or]
     exact Or.inl ha.ne'
   rw [set_integral_congr measurableSet_Ioi this, integral_smul,
     integral_comp_mul_left_Ioi (fun u ↦ (u : ℂ) ^ (s - 1) • f u) _ ha,
@@ -312,7 +321,7 @@ theorem isBigO_rpow_top_log_smul [NormedSpace ℝ E] {a b : ℝ} {f : ℝ → E}
       (eventually_of_forall fun t => by rfl)
       ((eventually_gt_atTop 0).mp (eventually_of_forall fun t ht => _))
   simp only
-  rw [smul_eq_mul, ← rpow_add ht, ← sub_eq_add_neg, sub_eq_add_neg a, add_sub_cancel']
+  rw [smul_eq_mul, ← rpow_add ht, ← sub_eq_add_neg, sub_eq_add_neg a, add_sub_cancel_left]
 set_option linter.uppercaseLean3 false in
 #align is_O_rpow_top_log_smul isBigO_rpow_top_log_smul
 
@@ -339,7 +348,7 @@ set_option linter.uppercaseLean3 false in
 /-- Suppose `f` is locally integrable on `(0, ∞)`, is `O(x ^ (-a))` as `x → ∞`, and is
 `O(x ^ (-b))` as `x → 0`. Then its Mellin transform is differentiable on the domain `b < re s < a`,
 with derivative equal to the Mellin transform of `log • f`. -/
-theorem mellin_hasDerivAt_of_isBigO_rpow [CompleteSpace E] [NormedSpace ℂ E] {a b : ℝ}
+theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
     {f : ℝ → E} {s : ℂ} (hfc : LocallyIntegrableOn f (Ioi 0)) (hf_top : f =O[atTop] (· ^ (-a)))
     (hs_top : s.re < a) (hf_bot : f =O[𝓝[>] 0] (· ^ (-b))) (hs_bot : b < s.re) :
     MellinConvergent (fun t => log t • f t) s ∧
@@ -421,7 +430,7 @@ set_option linter.uppercaseLean3 false in
 /-- Suppose `f` is locally integrable on `(0, ∞)`, is `O(x ^ (-a))` as `x → ∞`, and is
 `O(x ^ (-b))` as `x → 0`. Then its Mellin transform is differentiable on the domain `b < re s < a`.
 -/
-theorem mellin_differentiableAt_of_isBigO_rpow [CompleteSpace E] [NormedSpace ℂ E] {a b : ℝ}
+theorem mellin_differentiableAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
     {f : ℝ → E} {s : ℂ} (hfc : LocallyIntegrableOn f <| Ioi 0)
     (hf_top : f =O[atTop] (· ^ (-a))) (hs_top : s.re < a)
     (hf_bot : f =O[𝓝[>] 0] (· ^ (-b))) (hs_bot : b < s.re) :
@@ -446,7 +455,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- If `f` is locally integrable, decays exponentially at infinity, and is `O(x ^ (-b))` at 0, then
 its Mellin transform is holomorphic on `b < s.re`. -/
-theorem mellin_differentiableAt_of_isBigO_rpow_exp [CompleteSpace E] [NormedSpace ℂ E] {a b : ℝ}
+theorem mellin_differentiableAt_of_isBigO_rpow_exp [NormedSpace ℂ E] {a b : ℝ}
     (ha : 0 < a) {f : ℝ → E} {s : ℂ} (hfc : LocallyIntegrableOn f <| Ioi 0)
     (hf_top : f =O[atTop] fun t => exp (-a * t)) (hf_bot : f =O[𝓝[>] 0] (· ^ (-b)))
     (hs_bot : b < s.re) : DifferentiableAt ℂ (mellin f) s :=

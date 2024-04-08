@@ -43,7 +43,6 @@ open scoped BigOperators Affine
 section AffineIndependent
 
 variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
-
 variable [AffineSpace V P] {ι : Type*}
 
 /-- An indexed family is said to be affinely independent if no
@@ -565,7 +564,6 @@ end AffineIndependent
 section DivisionRing
 
 variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
-
 variable [AffineSpace V P] {ι : Type*}
 
 /-- An affinely independent set of points can be extended to such a
@@ -741,7 +739,6 @@ end DivisionRing
 section Ordered
 
 variable {k : Type*} {V : Type*} {P : Type*} [LinearOrderedRing k] [AddCommGroup V]
-
 variable [Module k V] [AffineSpace V P] {ι : Type*}
 
 attribute [local instance] LinearOrderedRing.decidableLT
@@ -793,7 +790,6 @@ end Ordered
 namespace Affine
 
 variable (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGroup V] [Module k V]
-
 variable [AffineSpace V P]
 
 /-- A `Simplex k P n` is a collection of `n + 1` affinely
@@ -965,7 +961,7 @@ theorem centroid_eq_iff [CharZero k] {n : ℕ} (s : Simplex k P n) {fs₁ fs₂ 
   specialize ha i
   have key : ∀ n : ℕ, (n : k) + 1 ≠ 0 := fun n h => by norm_cast at h
   -- we should be able to golf this to
-  -- `refine ⟨fun hi => decidable.by_contradiction (λ hni, _), ...⟩`,
+  -- `refine ⟨fun hi ↦ decidable.by_contradiction (fun hni ↦ ?_), ...⟩`,
   -- but for some unknown reason it doesn't work.
   constructor <;> intro hi <;> by_contra hni
   · simp [hni, hi, key] at ha

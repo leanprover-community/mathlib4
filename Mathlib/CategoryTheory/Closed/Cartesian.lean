@@ -84,7 +84,6 @@ def CartesianClosed.mk (C : Type u) [Category.{v} C] [HasFiniteProducts C]
   ⟨fun X => ⟨h X⟩⟩
 
 variable {C : Type u} [Category.{v} C] (A B : C) {X X' Y Y' Z : C}
-
 variable [HasFiniteProducts C] [Exponentiable A]
 
 /-- This is (-)^A. -/
@@ -341,7 +340,6 @@ def powZero {I : C} (t : IsInitial I) [CartesianClosed C] : I ⟹ B ≅ ⊤_ C w
   hom := default
   inv := CartesianClosed.curry ((mulZero t).hom ≫ t.to _)
   hom_inv_id := by
-    -- Porting note: mathport thought that the `mulZero` here was `mul_zero`!
     rw [← curry_natural_left, curry_eq_iff, ← cancel_epi (mulZero t).inv]
     apply t.hom_ext
 #align category_theory.pow_zero CategoryTheory.powZero
@@ -433,7 +431,6 @@ def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClos
             apply isoWhiskerRight e.counitIso (prod.functor.obj X ⋙ e.inverse ⋙ e.functor) ≪≫ _
             change prod.functor.obj X ⋙ e.inverse ⋙ e.functor ≅ prod.functor.obj X
             apply isoWhiskerLeft (prod.functor.obj X) e.counitIso
-          skip
           apply Adjunction.leftAdjointOfNatIso this }
 #align category_theory.cartesian_closed_of_equiv CategoryTheory.cartesianClosedOfEquiv
 

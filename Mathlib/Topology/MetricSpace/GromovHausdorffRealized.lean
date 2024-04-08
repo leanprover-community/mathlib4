@@ -457,7 +457,7 @@ attribute [local instance] premetricOptimalGHDist
 /-- A metric space which realizes the optimal coupling between `X` and `Y` -/
 -- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 def OptimalGHCoupling : Type _ :=
-  @UniformSpace.SeparationQuotient (X ⊕ Y) (premetricOptimalGHDist X Y).toUniformSpace
+  @SeparationQuotient (X ⊕ Y) (premetricOptimalGHDist X Y).toUniformSpace.toTopologicalSpace
 #align Gromov_Hausdorff.optimal_GH_coupling GromovHausdorff.OptimalGHCoupling
 
 instance : MetricSpace (OptimalGHCoupling X Y) := by

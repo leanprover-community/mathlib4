@@ -51,7 +51,6 @@ inductively defined relation `FreeAlgebra.Rel`. Explicitly, the construction inv
 
 
 variable (R : Type*) [CommSemiring R]
-
 variable (X : Type*)
 
 namespace FreeAlgebra
@@ -238,7 +237,7 @@ instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
   nsmul_succ n := by
     rintro ⟨a⟩
     dsimp only [HSMul.hSMul, instSMul, Quot.map]
-    rw [map_add, map_one, add_comm, mk_mul, mk_mul, ← one_add_mul (_ : FreeAlgebra R X)]
+    rw [map_add, map_one, mk_mul, mk_mul, ← add_one_mul (_ : FreeAlgebra R X)]
     congr 1
     exact Quot.sound Rel.add_scalar
 

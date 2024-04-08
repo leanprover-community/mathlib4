@@ -166,7 +166,7 @@ theorem scaled_exp_map_periodic : Function.Periodic (fun x => expMapCircle (2 * 
   -- The case T = 0 is not interesting, but it is true, so we prove it to save hypotheses
   rcases eq_or_ne T 0 with (rfl | hT)
   · intro x; simp
-  · intro x; simp_rw [mul_add]; rw [div_mul_cancel _ hT, periodic_expMapCircle]
+  · intro x; simp_rw [mul_add]; rw [div_mul_cancel₀ _ hT, periodic_expMapCircle]
 #align add_circle.scaled_exp_map_periodic AddCircle.scaled_exp_map_periodic
 
 /-- The canonical map `fun x => exp (2 π i x / T)` from `ℝ / ℤ • T` to the unit circle in `ℂ`.

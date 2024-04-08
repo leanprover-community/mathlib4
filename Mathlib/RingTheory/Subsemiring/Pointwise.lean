@@ -36,7 +36,7 @@ variable [Monoid M] [Semiring R] [MulSemiringAction M R]
 
 /-- The action on a subsemiring corresponding to applying the action to every element.
 
-This is available as an instance in the `pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseMulAction : MulAction M (Subsemiring R)
     where
   smul a S := S.map (MulSemiringAction.toRingHom _ _ a)
@@ -68,6 +68,9 @@ theorem pointwise_smul_toAddSubmonoid (m : M) (S : Subsemiring R) :
 theorem smul_mem_pointwise_smul (m : M) (r : R) (S : Subsemiring R) : r ∈ S → m • r ∈ m • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set R))
 #align subsemiring.smul_mem_pointwise_smul Subsemiring.smul_mem_pointwise_smul
+
+instance : CovariantClass M (Subsemiring R) HSMul.hSMul LE.le :=
+  ⟨fun _ _ => image_subset _⟩
 
 theorem mem_smul_pointwise_iff_exists (m : M) (r : R) (S : Subsemiring R) :
     r ∈ m • S ↔ ∃ s : R, s ∈ S ∧ m • s = r :=
@@ -174,4 +177,3 @@ theorem le_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) {S T : Subsemiring R} :
 end GroupWithZero
 
 end Subsemiring
-

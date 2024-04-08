@@ -43,7 +43,6 @@ namespace CategoryTheory
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
-
 variable {D : Type u₂} [Category.{v₂} D]
 
 /-- The category of monomorphisms into `X` as a full subcategory of the over category.
@@ -367,7 +366,7 @@ def image : Over X ⥤ MonoOver X where
   map {f g} k := by
     apply (forget X).preimage _
     apply Over.homMk _ _
-    refine'
+    exact
       image.lift
         { I := Limits.image _
           m := image.ι g.hom
@@ -388,7 +387,7 @@ def imageForgetAdj : image ⊣ forget X :=
             apply image.fac
           invFun := fun k => by
             refine' Over.homMk _ _
-            refine'
+            exact
               image.lift
                 { I := g.obj.left
                   m := g.arrow

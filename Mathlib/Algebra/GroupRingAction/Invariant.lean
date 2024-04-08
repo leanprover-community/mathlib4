@@ -14,7 +14,6 @@ import Mathlib.RingTheory.Subring.Basic
 section Ring
 
 variable (M R : Type*) [Monoid M] [Ring R] [MulSemiringAction M R]
-
 variable (S : Subring R)
 
 open MulAction
@@ -42,9 +41,7 @@ end Ring
 section
 
 variable (M : Type*) [Monoid M]
-
 variable {R' : Type*} [Ring R'] [MulSemiringAction M R']
-
 variable (U : Subring R') [IsInvariantSubring M U]
 
 /-- The canonical inclusion from an invariant subring. -/

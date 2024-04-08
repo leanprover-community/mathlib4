@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Heather Macbeth
 -/
 import Mathlib.Topology.FiberBundle.Trivialization
+import Mathlib.Topology.Order.LeftRightNhds
 
 #align_import topology.fiber_bundle.basic from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
@@ -711,7 +712,7 @@ theorem mem_localTrivAt_baseSet (b : B) : b ∈ (Z.localTrivAt b).baseSet := by
   exact Z.mem_baseSet_at b
 #align fiber_bundle_core.mem_local_triv_at_base_set FiberBundleCore.mem_localTrivAt_baseSet
 
--- Porting note: was @[simp, mfld_simps], now `simp` can prove it
+-- Porting note (#10618): was @[simp, mfld_simps], now `simp` can prove it
 theorem mk_mem_localTrivAt_source : (⟨b, a⟩ : Z.TotalSpace) ∈ (Z.localTrivAt b).source := by
   simp only [mfld_simps]
 #align fiber_bundle_core.mem_source_at FiberBundleCore.mem_localTrivAt_source

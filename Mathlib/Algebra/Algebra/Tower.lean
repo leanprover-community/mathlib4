@@ -33,7 +33,6 @@ namespace Algebra
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
-
 variable {A}
 
 
@@ -83,9 +82,7 @@ namespace IsScalarTower
 section Module
 
 variable [CommSemiring R] [Semiring A] [Algebra R A]
-
 variable [MulAction A M]
-
 variable {R} {M}
 
 theorem algebraMap_smul [SMul R M] [IsScalarTower R A M] (r : R) (x : M) :
@@ -107,9 +104,7 @@ end Module
 section Semiring
 
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
-
 variable [Algebra R S] [Algebra S A] [Algebra S B]
-
 variable {R S A}
 
 theorem of_algebraMap_eq [Algebra R A]
@@ -124,9 +119,7 @@ theorem of_algebraMap_eq' [Algebra R A]
 #align is_scalar_tower.of_algebra_map_eq' IsScalarTower.of_algebraMap_eq'
 
 variable (R S A)
-
 variable [Algebra R A] [Algebra R B]
-
 variable [IsScalarTower R S A] [IsScalarTower R S B]
 
 theorem algebraMap_eq : algebraMap R A = (algebraMap S A).comp (algebraMap R S) :=
@@ -199,13 +192,9 @@ end IsScalarTower
 section Homs
 
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
-
 variable [Algebra R S] [Algebra S A] [Algebra S B]
-
 variable [Algebra R A] [Algebra R B]
-
 variable [IsScalarTower R S A] [IsScalarTower R S B]
-
 variable {A S B}
 
 open IsScalarTower
@@ -271,9 +260,7 @@ end Homs
 namespace Submodule
 
 variable {M}
-
 variable [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M]
-
 variable [Module R M] [Module A M] [IsScalarTower R A M]
 
 /-- If `A` is an `R`-algebra such that the induced morphism `R →+* A` is surjective, then the
@@ -302,7 +289,6 @@ namespace Submodule
 section Module
 
 variable [Semiring R] [Semiring S] [AddCommMonoid A]
-
 variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
 open IsScalarTower
@@ -345,7 +331,6 @@ end Module
 section Algebra
 
 variable [CommSemiring R] [Semiring S] [AddCommMonoid A]
-
 variable [Algebra R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
 /-- A variant of `Submodule.span_image` for `algebraMap`. -/

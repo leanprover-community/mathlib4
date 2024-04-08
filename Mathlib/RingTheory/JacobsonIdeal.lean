@@ -104,11 +104,11 @@ theorem mem_jacobson_iff {x : R} : x ∈ jacobson I ↔ ∀ y, ∃ z, z * y * x 
         let ⟨r, hr⟩ := mem_span_singleton'.1 hq
         ⟨r, by
           -- Porting note: supply `mul_add_one` with explicit variables
-          rw [mul_assoc, ← mul_add_one r (y * x), hr, ← hpq, ← neg_sub, add_sub_cancel]
+          rw [mul_assoc, ← mul_add_one r (y * x), hr, ← hpq, ← neg_sub, add_sub_cancel_right]
           exact I.neg_mem hpi⟩)
       fun hxy : I ⊔ span {y * x + 1} ≠ ⊤ => let ⟨M, hm1, hm2⟩ := exists_le_maximal _ hxy
       suffices x ∉ M from (this <| mem_sInf.1 hx ⟨le_trans le_sup_left hm2, hm1⟩).elim
-      fun hxm => hm1.1.1 <| (eq_top_iff_one _).2 <| add_sub_cancel' (y * x) 1 ▸
+      fun hxm => hm1.1.1 <| (eq_top_iff_one _).2 <| add_sub_cancel_left (y * x) 1 ▸
         M.sub_mem (le_sup_right.trans hm2 <| subset_span rfl) (M.mul_mem_left _ hxm),
     fun hx => mem_sInf.2 fun M ⟨him, hm⟩ => by_contradiction fun hxm =>
       let ⟨y, i, hi, df⟩ := hm.exists_inv hxm
@@ -386,7 +386,8 @@ theorem IsLocal.mem_jacobson_or_exists_inv {I : Ideal R} (hi : IsLocal I) (x : R
     (fun h : I ⊔ span {x} = ⊤ =>
       let ⟨p, hpi, q, hq, hpq⟩ := Submodule.mem_sup.1 ((eq_top_iff_one _).1 h)
       let ⟨r, hr⟩ := mem_span_singleton.1 hq
-      Or.inr ⟨r, by rw [← hpq, mul_comm, ← hr, ← neg_sub, add_sub_cancel]; exact I.neg_mem hpi⟩)
+      Or.inr ⟨r, by
+        rw [← hpq, mul_comm, ← hr, ← neg_sub, add_sub_cancel_right]; exact I.neg_mem hpi⟩)
     fun h : I ⊔ span {x} ≠ ⊤ =>
     Or.inl <|
       le_trans le_sup_right (hi.le_jacobson le_sup_left h) <| mem_span_singleton.2 <| dvd_refl x

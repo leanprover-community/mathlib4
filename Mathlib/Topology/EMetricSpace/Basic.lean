@@ -47,6 +47,7 @@ theorem uniformity_dist_of_mem_uniformity [LinearOrder β] {U : Filter (α × α
 #align uniformity_dist_of_mem_uniformity uniformity_dist_of_mem_uniformity
 
 /-- `EDist α` means that `α` is equipped with an extended distance. -/
+@[ext]
 class EDist (α : Type*) where
   edist : α → α → ℝ≥0∞
 #align has_edist EDist
@@ -89,6 +90,16 @@ attribute [instance] PseudoEMetricSpace.toUniformSpace
 
 /- Pseudoemetric spaces are less common than metric spaces. Therefore, we work in a dedicated
 namespace, while notions associated to metric spaces are mostly in the root namespace. -/
+
+/-- Two pseudo emetric space structures with the same edistance function coincide. -/
+@[ext]
+protected theorem PseudoEMetricSpace.ext {α : Type*} {m m' : PseudoEMetricSpace α}
+    (h : m.toEDist = m'.toEDist) : m = m' := by
+  cases' m with ed  _ _ _ U hU
+  cases' m' with ed' _ _ _ U' hU'
+  congr 1
+  exact UniformSpace.ext (((show ed = ed' from h) ▸ hU).trans hU'.symm)
+
 variable [PseudoEMetricSpace α]
 
 export PseudoEMetricSpace (edist_self edist_comm edist_triangle)
@@ -254,7 +265,7 @@ theorem uniformity_basis_edist_nnreal_le :
 
 theorem uniformity_basis_edist_inv_nat :
     (𝓤 α).HasBasis (fun _ => True) fun n : ℕ => { p : α × α | edist p.1 p.2 < (↑n)⁻¹ } :=
-  EMetric.mk_uniformity_basis (fun n _ => ENNReal.inv_pos.2 <| ENNReal.nat_ne_top n) fun _ε ε₀ =>
+  EMetric.mk_uniformity_basis (fun n _ ↦ ENNReal.inv_pos.2 <| ENNReal.natCast_ne_top n) fun _ε ε₀ ↦
     let ⟨n, hn⟩ := ENNReal.exists_inv_nat_lt (ne_of_gt ε₀)
     ⟨n, trivial, le_of_lt hn⟩
 #align uniformity_basis_edist_inv_nat uniformity_basis_edist_inv_nat
@@ -940,7 +951,7 @@ theorem diam_iUnion_mem_option {ι : Type*} (o : Option ι) (s : ι → Set α) 
 
 theorem diam_insert : diam (insert x s) = max (⨆ y ∈ s, edist x y) (diam s) :=
   eq_of_forall_ge_iff fun d => by
-    simp only [diam_le_iff, ball_insert_iff, edist_self, edist_comm x, max_le_iff, iSup_le_iff,
+    simp only [diam_le_iff, forall_mem_insert, edist_self, edist_comm x, max_le_iff, iSup_le_iff,
       zero_le, true_and_iff, forall_and, and_self_iff, ← and_assoc]
 #align emetric.diam_insert EMetric.diam_insert
 
@@ -1015,6 +1026,15 @@ class EMetricSpace (α : Type u) extends PseudoEMetricSpace α : Type u where
   eq_of_edist_eq_zero : ∀ {x y : α}, edist x y = 0 → x = y
 #align emetric_space EMetricSpace
 
+@[ext]
+protected theorem EMetricSpace.ext
+    {α : Type*} {m m' : EMetricSpace α} (h : m.toEDist = m'.toEDist) : m = m' := by
+  cases m
+  cases m'
+  congr
+  ext1
+  assumption
+
 variable {γ : Type w} [EMetricSpace γ]
 
 export EMetricSpace (eq_of_edist_eq_zero)
@@ -1044,10 +1064,9 @@ theorem eq_of_forall_edist_le {x y : γ} (h : ∀ ε > 0, edist x y ≤ ε) : x 
 
 -- see Note [lower instance priority]
 /-- An emetric space is separated -/
-instance (priority := 100) to_separated : SeparatedSpace γ :=
-  separated_def.2 fun _ _ h =>
-    eq_of_forall_edist_le fun _ ε0 => le_of_lt (h _ (edist_mem_uniformity ε0))
-#align to_separated to_separated
+instance (priority := 100) EMetricSpace.instT0Space : T0Space γ where
+  t0 _ _ h := eq_of_edist_eq_zero <| inseparable_iff.1 h
+#align to_separated EMetricSpace.instT0Space
 
 /-- A map between emetric spaces is a uniform embedding if and only if the edistance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y` and conversely. -/
@@ -1150,7 +1169,7 @@ theorem diam_eq_zero_iff : diam s = 0 ↔ s.Subsingleton :=
 #align emetric.diam_eq_zero_iff EMetric.diam_eq_zero_iff
 
 theorem diam_pos_iff : 0 < diam s ↔ s.Nontrivial := by
-  simp only [pos_iff_ne_zero, Ne.def, diam_eq_zero_iff, Set.not_subsingleton_iff]
+  simp only [pos_iff_ne_zero, Ne, diam_eq_zero_iff, Set.not_subsingleton_iff]
 
 theorem diam_pos_iff' : 0 < diam s ↔ ∃ x ∈ s, ∃ y ∈ s, x ≠ y := by
   simp only [diam_pos_iff, Set.Nontrivial, exists_prop]
@@ -1164,30 +1183,24 @@ end EMetric
 ### Separation quotient
 -/
 
-instance [PseudoEMetricSpace X] : EDist (UniformSpace.SeparationQuotient X) where
-  edist x y := Quotient.liftOn₂' x y edist fun _ _ _ _ hx hy =>
-    edist_congr
-      (EMetric.inseparable_iff.1 <| separationRel_iff_inseparable.1 hx)
-      (EMetric.inseparable_iff.1 <| separationRel_iff_inseparable.1 hy)
+instance [PseudoEMetricSpace X] : EDist (SeparationQuotient X) where
+  edist := SeparationQuotient.lift₂ edist fun _ _ _ _ hx hy =>
+    edist_congr (EMetric.inseparable_iff.1 hx) (EMetric.inseparable_iff.1 hy)
 
-@[simp] theorem UniformSpace.SeparationQuotient.edist_mk [PseudoEMetricSpace X] (x y : X) :
-    @edist (UniformSpace.SeparationQuotient X) _ (Quot.mk _ x) (Quot.mk _ y) = edist x y :=
+@[simp] theorem SeparationQuotient.edist_mk [PseudoEMetricSpace X] (x y : X) :
+    edist (mk x) (mk y) = edist x y :=
   rfl
-#align uniform_space.separation_quotient.edist_mk UniformSpace.SeparationQuotient.edist_mk
+#align uniform_space.separation_quotient.edist_mk SeparationQuotient.edist_mk
 
-instance [PseudoEMetricSpace X] : EMetricSpace (UniformSpace.SeparationQuotient X) :=
-  @EMetricSpace.ofT0PseudoEMetricSpace (UniformSpace.SeparationQuotient X)
-    { edist_self := fun x => Quotient.inductionOn' x edist_self,
-      edist_comm := fun x y => Quotient.inductionOn₂' x y edist_comm,
-      edist_triangle := fun x y z => Quotient.inductionOn₃' x y z edist_triangle,
+open SeparationQuotient in
+instance [PseudoEMetricSpace X] : EMetricSpace (SeparationQuotient X) :=
+  @EMetricSpace.ofT0PseudoEMetricSpace (SeparationQuotient X)
+    { edist_self := surjective_mk.forall.2 edist_self,
+      edist_comm := surjective_mk.forall₂.2 edist_comm,
+      edist_triangle := surjective_mk.forall₃.2 edist_triangle,
       toUniformSpace := inferInstance,
-      uniformity_edist := (uniformity_basis_edist.map _).eq_biInf.trans <| iInf_congr fun ε =>
-        iInf_congr fun _ => congr_arg 𝓟 <| by
-          ext ⟨⟨x⟩, ⟨y⟩⟩
-          refine ⟨?_, fun h => ⟨(x, y), h, rfl⟩⟩
-          rintro ⟨⟨x', y'⟩, h', h⟩
-          simp only [Prod.ext_iff] at h
-          rwa [← h.1, ← h.2] } _
+      uniformity_edist := comap_injective (surjective_mk.Prod_map surjective_mk) <| by
+        simp [comap_mk_uniformity, PseudoEMetricSpace.uniformity_edist] } _
 
 /-!
 ### `Additive`, `Multiplicative`
