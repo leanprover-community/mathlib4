@@ -132,6 +132,11 @@ def IsBasicOpen {A B : CommRingCat.{u}} (ι : A ⟶ B) (f : A) : Prop :=
   letI : Algebra A B := RingHom.toAlgebra ι
   IsLocalization.Away f B
 
+lemma IsBasicOpen.pushout {A A' B : CommRingCat.{u}} (ι : A ⟶ B) (f : A)
+    (h : IsBasicOpen ι f) (g : A ⟶ A') :
+    IsBasicOpen (Limits.pushout.inl : A' ⟶ Limits.pushout g ι) (g f) :=
+  sorry
+
 lemma isOpenImmersion_isBasicOpen
     {A B : CommRingCat.{u}} (ι : A ⟶ B) (f : A) (h : IsBasicOpen ι f) :
     IsOpenImmersion (Scheme.Spec.map ι.op) := by
@@ -154,8 +159,34 @@ structure indexedZariskiCover (A : CommRingCat.{u}) where
   B : J → CommRingCat.{u}
   f : J → A
   ι (j : J) : A ⟶ B j
-  isLocalizationAt (j : J) : IsBasicOpen (ι j) (f j)
+  isBasicOpen (j : J) : IsBasicOpen (ι j) (f j)
   covers : Ideal.span (Set.range f) = ⊤
+
+def indexedZariskiCover.pushout
+    {A A' : CommRingCat.{u}} (𝓤 : indexedZariskiCover A) (g : A ⟶ A') :
+    indexedZariskiCover A' where
+  J := 𝓤.J
+  B j := Limits.pushout g (𝓤.ι j)
+  f j := g (𝓤.f j)
+  ι j := Limits.pushout.inl
+  isBasicOpen j := IsBasicOpen.pushout _ _ (𝓤.isBasicOpen _) _
+  covers := by
+    have aux := 𝓤.covers
+    apply_fun Ideal.map g at aux
+    have : Ideal.map g ⊤ = ⊤ := by -- TODO: This should me a lemma...
+      rw [Ideal.eq_top_iff_one]
+      apply Ideal.subset_span
+      use 1
+      simp
+    rw [this] at aux
+    have : Ideal.map g (Ideal.span (Set.range 𝓤.f)) = -- TODO: This should be a lemma...
+        Ideal.span (Set.range fun j => g (𝓤.f j)) := by
+      rw [Ideal.map_span, Set.image_eq_range]
+      congr
+      ext a
+      refine ⟨fun ⟨⟨_,j,rfl⟩,hx⟩ => ⟨j, hx⟩, fun ⟨j,hx⟩ => ⟨⟨_, j, rfl⟩, hx⟩⟩
+    rw [this] at aux
+    exact aux
 
 lemma indexedZariskiCover.exists_index
     {A : CommRingCat.{u}} (𝓤 : indexedZariskiCover A)
@@ -176,11 +207,11 @@ def indexedZariskiCover.affineOpenCover {A : CommRingCat.{u}} (𝓤 : indexedZar
   Covers := fun (p : PrimeSpectrum A) => by
     let j := (𝓤.exists_index p).choose
     let _ : Algebra A (𝓤.B j) := RingHom.toAlgebra <| 𝓤.ι j
-    let _ : IsLocalization.Away (𝓤.f j) (𝓤.B j) := 𝓤.isLocalizationAt j
+    let _ : IsLocalization.Away (𝓤.f j) (𝓤.B j) := 𝓤.isBasicOpen j
     change p ∈ Set.range ⇑(PrimeSpectrum.comap (algebraMap A (𝓤.B j)))
     rw [PrimeSpectrum.localization_away_comap_range (𝓤.B j) (𝓤.f j)]
     exact (𝓤.exists_index p).choose_spec
-  IsOpen j := isOpenImmersion_isBasicOpen _ (𝓤.f j) (𝓤.isLocalizationAt _)
+  IsOpen j := isOpenImmersion_isBasicOpen _ (𝓤.f j) (𝓤.isBasicOpen _)
 
 theorem indexedZariskiCover.desc
     {X : Scheme.{u}}
@@ -236,7 +267,17 @@ def zariskiCoverage : Coverage (CommRingCat.{u}ᵒᵖ) where
   covering B := { S |
     ∃ (𝓤 : indexedZariskiCover.{u} B.unop),
       S = Presieve.ofArrows (fun j => .op <| 𝓤.B j) (fun j => (𝓤.ι j).op) }
-  pullback := sorry
+  pullback := by
+    rintro ⟨A⟩ ⟨B⟩ ⟨f⟩ S ⟨𝓤,rfl⟩
+    dsimp at f 𝓤
+    let 𝓥 := 𝓤.pushout f
+    let T : Presieve (Opposite.op B) :=
+        Presieve.ofArrows (fun j => .op (𝓥.B j)) (fun j => (𝓥.ι j).op)
+    refine ⟨T, ⟨𝓥,rfl⟩, ?_⟩
+    rintro _ _ ⟨j⟩
+    refine ⟨.op (𝓤.B j), Limits.pushout.inr.op, (𝓤.ι j).op, .mk j, ?_⟩
+    rw [← op_comp, ← Limits.pushout.condition]
+    rfl
 
 def zariskiTopology : GrothendieckTopology (CommRingCat.{u}ᵒᵖ) :=
   zariskiCoverage.toGrothendieck
