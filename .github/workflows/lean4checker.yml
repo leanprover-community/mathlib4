@@ -1,6 +1,15 @@
 # https://chat.openai.com/share/26102e95-ac9c-4d03-a000-73e4f6cee8cd
 name: lean4checker Workflow
 
+on: push
+#  schedule:
+#    - cron: '0 0 * * *' # Runs at 00:00 UTC every day
+
+build:
+  if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
+  name: BuildJOB_NAME
+
+
 jobs:
   check-lean4checker:
     runs-on: ubuntu-latest
