@@ -17,11 +17,12 @@ This file defines the Cantor ternary set and proves a few properties.
 ## Main Definitions
 
 * `preCantorSet n`: The order `n` pre-Cantor set, defined inductively as the union of the images
-  under the functions `(· ‌/ 3)` and `(2 * · / 3)`, with `preCantorSet 0 := Set.Icc 0 1`
-  * `cantorSet`: The ternary Cantor set, defined as the intersection of all pre-Cantor sets.
+  under the functions `(· / 3)` and `(2 * · / 3)`, with `preCantorSet 0 := Set.Icc 0 1`, i.e.
+  `preCantorSet 0` is the unit interval [0,1].
+* `cantorSet`: The ternary Cantor set, defined as the intersection of all pre-Cantor sets.
 -/
 
-/-- We define the preCantorSet as the images under the iterations of some functions. -/
+/-- The definition of preCantorSet, as explained above. -/
 def preCantorSet : ℕ → Set ℝ
   | 0 => Set.Icc 0 1
   | n + 1 => (· / 3) '' preCantorSet n ∪ (fun x ↦ (2 + x) / 3) '' preCantorSet n
