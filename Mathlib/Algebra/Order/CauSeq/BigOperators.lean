@@ -172,7 +172,7 @@ lemma of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥
     _ = a - l • ε + ε := by
       conv =>
         rhs
-        rw [← Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero hl0), succ_nsmul', sub_add,
+        rw [← Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero hl0), succ_nsmul, sub_add,
           add_sub_cancel_right]
     _ < f j + ε := add_lt_add_right (hl j (le_trans hi.1 hj)) _
 #align is_cau_of_decreasing_bounded IsCauSeq.of_decreasing_bounded
@@ -197,7 +197,7 @@ lemma geo_series [Nontrivial β] (x : β) (hx1 : abv x < 1) :
     refine' div_nonneg (sub_nonneg.2 _) (sub_nonneg.2 <| le_of_lt hx1)
     exact pow_le_one _ (by positivity) hx1.le
   · intro n _
-    rw [← one_mul (abv x ^ n), pow_succ]
+    rw [← one_mul (abv x ^ n), pow_succ']
     gcongr
 #align is_cau_geo_series IsCauSeq.geo_series
 
@@ -222,7 +222,7 @@ lemma series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (hr1
     positivity
   · have kn : k + n.succ ≥ n.succ := by
       rw [← zero_add n.succ]; exact add_le_add (Nat.zero_le _) (by simp)
-    erw [hk, Nat.succ_add, pow_succ' r, ← mul_assoc]
+    erw [hk, Nat.succ_add, pow_succ r, ← mul_assoc]
     refine
       le_trans (by rw [mul_comm] <;> exact h _ (Nat.le_of_succ_le kn))
         (mul_le_mul_of_nonneg_right ?_ hr0)

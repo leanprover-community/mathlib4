@@ -340,11 +340,11 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
       simp_rw [Fin.forall_iff, Fin.ext_iff] at ih
       ext
       simp_rw [Fin.sum_univ_succ, Fin.val_zero, Fin.val_succ, pow_zero, Nat.div_one,
-        mul_one, pow_succ, ← Nat.div_div_eq_div_mul, mul_left_comm _ m, ← mul_sum]
+        mul_one, pow_succ', ← Nat.div_div_eq_div_mul, mul_left_comm _ m, ← mul_sum]
       rw [ih _ (Nat.div_lt_of_lt_mul ?_), Nat.mod_add_div]
       -- Porting note: replaces `a.is_lt` in the wildcard above. Caused by a refactor of the `npow`
       -- instance for `Fin`.
-      exact a.is_lt.trans_eq (pow_succ _ _)
+      exact a.is_lt.trans_eq (pow_succ' _ _)
 #align fin_function_fin_equiv finFunctionFinEquiv
 
 theorem finFunctionFinEquiv_apply {m n : ℕ} (f : Fin n → Fin m) :

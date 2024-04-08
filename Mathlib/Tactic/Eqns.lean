@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 import Lean.Meta.Eqns
 import Std.Lean.NameMapAttribute
-import Std.Tactic.Lint.Basic
-import Lean.Server.CodeActions.Attr
+import Lean.Elab.Exception
+import Lean.Elab.InfoTree.Main
 
 /-! # The `@[eqns]` attribute
 

@@ -3,7 +3,7 @@ Copyright (c) 2023 Luke Mantle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Mantle
 -/
-import Mathlib.Data.Polynomial.Derivative
+import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Nat.Factorial.DoubleFactorial
 
@@ -173,7 +173,7 @@ theorem coeff_hermite_explicit :
       -- Factor out (-1)'s.
       rw [mul_comm (↑k + _ : ℤ), sub_eq_add_neg]
       nth_rw 3 [neg_eq_neg_one_mul]
-      simp only [mul_assoc, ← mul_add, pow_succ]
+      simp only [mul_assoc, ← mul_add, pow_succ']
       congr 2
       -- Factor out double factorials.
       norm_cast

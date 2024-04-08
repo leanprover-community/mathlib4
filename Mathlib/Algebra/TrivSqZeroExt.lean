@@ -66,7 +66,6 @@ def TrivSqZeroExt (R : Type u) (M : Type v) :=
   R × M
 #align triv_sq_zero_ext TrivSqZeroExt
 
--- mathport name: exprtsze
 local notation "tsze" => TrivSqZeroExt
 
 open scoped BigOperators RightActions
@@ -549,7 +548,7 @@ theorem inl_nat_cast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (inl n : tsz
 instance addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsze R M) :=
   { TrivSqZeroExt.addGroup, TrivSqZeroExt.addMonoidWithOne with
     intCast := fun z => inl z
-    intCast_ofNat := fun _n => ext (Int.cast_ofNat _) rfl
+    intCast_ofNat := fun _n => ext (Int.cast_natCast _) rfl
     intCast_negSucc := fun _n => ext (Int.cast_negSucc _) neg_zero.symm }
 
 @[simp]
@@ -638,7 +637,7 @@ where
     intro n
     induction' n with n ih
     · simp
-    · rw [pow_succ', op_mul, mul_smul, mul_smul, ← h, smul_comm (_ : R) (op x.fst) x.snd, ih]
+    · rw [pow_succ, op_mul, mul_smul, mul_smul, ← h, smul_comm (_ : R) (op x.fst) x.snd, ih]
 #align triv_sq_zero_ext.snd_pow_of_smul_comm TrivSqZeroExt.snd_pow_of_smul_comm
 
 theorem snd_pow_of_smul_comm' [Monoid R] [AddMonoid M] [DistribMulAction R M]

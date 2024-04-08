@@ -1029,7 +1029,7 @@ protected theorem Homeomorph.measurable (h : α ≃ₜ γ) : Measurable h :=
   h.continuous.measurable
 #align homeomorph.measurable Homeomorph.measurable
 
-/-- A homeomorphism between two Borel spaces is a measurable equivalence.-/
+/-- A homeomorphism between two Borel spaces is a measurable equivalence. -/
 def Homeomorph.toMeasurableEquiv (h : γ ≃ₜ γ₂) : γ ≃ᵐ γ₂ where
   measurable_toFun := h.measurable
   measurable_invFun := h.symm.measurable
@@ -1636,7 +1636,7 @@ instance Rat.borelSpace : BorelSpace ℚ :=
   ⟨borel_eq_top_of_countable.symm⟩
 #align rat.borel_space Rat.borelSpace
 
-/- Instances on `Real` and `Complex` are special cases of `IsROrC` but without these instances,
+/- Instances on `Real` and `Complex` are special cases of `RCLike` but without these instances,
 Lean fails to prove `BorelSpace (ι → ℝ)`, so we leave them here. -/
 instance Real.measurableSpace : MeasurableSpace ℝ :=
   borel ℝ

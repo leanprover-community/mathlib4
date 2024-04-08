@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Data.Int.CharZero
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Rat.Order
 import Mathlib.Tactic.Positivity.Core

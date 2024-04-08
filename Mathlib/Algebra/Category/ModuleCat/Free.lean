@@ -105,14 +105,14 @@ theorem span_exact (huv : u ∘ Sum.inl = S.f ∘ v)
     rw [hS.moduleCat_range_eq_ker]
     simp only [LinearMap.mem_ker, map_sub, sub_eq_zero]
     rw [← hm, map_finsupp_sum]
-    simp only [Function.comp_apply, SMulHomClass.map_smul]
+    simp only [Function.comp_apply, map_smul]
   obtain ⟨n, hnm⟩ := hsub
   have hn : n ∈ span R (range v) := hv mem_top
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hn
   obtain ⟨cn, hn⟩ := hn
   rw [← hn, map_finsupp_sum] at hnm
   rw [← sub_add_cancel m m', ← hnm,]
-  simp only [SMulHomClass.map_smul]
+  simp only [map_smul]
   have hn' : (Finsupp.sum cn fun a b ↦ b • S.f (v a)) =
       (Finsupp.sum cn fun a b ↦ b • u (Sum.inl a)) :=
     by congr; ext a b; change b • (S.f ∘ v) a = _; rw [← huv]; rfl
@@ -149,7 +149,7 @@ def Basis.ofShortExact
     (span_rightExact hS'.exact (le_of_eq (bN.span_eq.symm)) (le_of_eq (bP.span_eq.symm)) hS'.epi_g)
 
 /-- In a short exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0`, if `X₁` and `X₃` are free,
-then `X₂` is free.-/
+then `X₂` is free. -/
 theorem free_shortExact [Module.Free R S.X₁] [Module.Free R S.X₃] :
     Module.Free R S.X₂ :=
   Module.Free.of_basis (Basis.ofShortExact hS' (Module.Free.chooseBasis R S.X₁)

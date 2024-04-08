@@ -909,7 +909,7 @@ structure IsTrail {u v : V} (p : G.Walk u v) : Prop where
 #align simple_graph.walk.is_trail_def SimpleGraph.Walk.isTrail_def
 
 /-- A *path* is a walk with no repeating vertices.
-Use `simple_graph.walk.is_path.mk'` for a simpler constructor. -/
+Use `SimpleGraph.Walk.IsPath.mk'` for a simpler constructor. -/
 structure IsPath {u v : V} (p : G.Walk u v) extends IsTrail p : Prop where
   support_nodup : p.support.Nodup
 #align simple_graph.walk.is_path SimpleGraph.Walk.IsPath
@@ -1656,7 +1656,7 @@ alias ⟨_, map_isTrail_of_injective⟩ := map_isTrail_iff_of_injective
 
 theorem map_isCycle_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective f) :
     (p.map f).IsCycle ↔ p.IsCycle := by
-  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, Ne.def, map_eq_nil_iff,
+  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, Ne, map_eq_nil_iff,
     support_map, ← List.map_tail, List.nodup_map_iff hinj]
 #align simple_graph.walk.map_is_cycle_iff_of_injective SimpleGraph.Walk.map_isCycle_iff_of_injective
 
