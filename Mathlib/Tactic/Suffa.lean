@@ -74,7 +74,7 @@ example {m n : Nat} (h : m = n) : 0 + m = n := by
   assumption
 ```
 -/
-elab "suffa " tk:"!"? tac:tacticSeq : tactic => do
+elab (name := suffaTac) "suffa " tk:"!"? tac:tacticSeq : tactic => do
   let finalTgt ← getTargetAfterTac tac
   let stx ← Meta.Tactic.TryThis.delabToRefinableSyntax finalTgt
   let ithis : Syntax.Term := ⟨mkIdent `this⟩
@@ -86,4 +86,5 @@ elab "suffa " tk:"!"? tac:tacticSeq : tactic => do
   addSuggestion (← getRef) { suggestion := suffTac }
   evalTactic tac
 
+@[inherit_doc suffaTac]
 macro "suffa!" tac:tacticSeq : tactic => `(tactic| suffa ! $tac)
