@@ -177,6 +177,10 @@ def arrow : LocalizerMorphism W₁.arrow W₂.arrow where
   functor := Φ.functor.mapArrow
   map := fun _ _ _ ⟨hf₁, hf₂⟩ => ⟨Φ.map _ hf₁, Φ.map _ hf₂⟩
 
+instance IsLocalizedEquivalence.isLocalization [Φ.IsLocalizedEquivalence] :
+    (Φ.functor ⋙ L₂).IsLocalization W₁ :=
+  Functor.IsLocalization.of_iso _ ((Φ.catCommSq W₁.Q L₂).iso).symm
+
 end LocalizerMorphism
 
 end CategoryTheory

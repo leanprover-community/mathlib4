@@ -5,6 +5,31 @@ namespace CategoryTheory
 
 open Category
 
+namespace MorphismProperty
+
+variable {C : Type*} [Category C]
+  (W : MorphismProperty C) {A : Type*} [AddGroup A] [HasShift C A]
+  [W.IsCompatibleWithShift A] (a : A)
+
+@[simps]
+def localizerMorphismOfIsCompatibleWithShift :
+    LocalizerMorphism W W where
+  functor := shiftFunctor C a
+  map _ _ f hf := (IsCompatibleWithShift.iff W f a).2 hf
+
+noncomputable instance :
+    IsEquivalence (W.localizerMorphismOfIsCompatibleWithShift a).functor := by
+  dsimp
+  infer_instance
+
+instance : (W.localizerMorphismOfIsCompatibleWithShift a).IsLocalizedEquivalence := by
+  apply LocalizerMorphism.IsLocalizedEquivalence.of_equivalence
+  intro X Y f hf
+  exact ⟨_, _, f⟦-a⟧', (IsCompatibleWithShift.iff W f _).2 hf,
+    ⟨Arrow.isoOfNatIso (shiftEquiv C a).counitIso (Arrow.mk f)⟩⟩
+
+end MorphismProperty
+
 namespace Functor
 
 variable {C D H : Type*} [Category C] [Category D] [Category H]
@@ -14,7 +39,6 @@ variable {C D H : Type*} [Category C] [Category D] [Category H]
   [RF.IsRightDerivedFunctor α W]
   (A : Type*) [AddGroup A] [HasShift C A] [HasShift D A] [HasShift H A]
   [W.IsCompatibleWithShift A] [F.CommShift A] [L.CommShift A]
-
 
 namespace IsRightDerivedFunctor
 
@@ -32,17 +56,15 @@ def postcomposeShiftNatTrans :
     F ⋙ shiftFunctor D a ⟶ L ⋙ (RF ⋙ shiftFunctor D a) :=
   whiskerRight α (shiftFunctor D a) ≫ (Functor.associator _ _ _).hom
 
-/-instance :
-    (shiftFunctor H a ⋙ RF).IsRightDerivedFunctor (precomposeShiftNatTrans RF α a) W := by
-  have : RF.IsRightDerivedFunctor α W := inferInstance
-  rw [isRightDerivedFunctor_iff_isLeftKanExtension] at this ⊢
-  sorry
+instance :
+    (shiftFunctor H a ⋙ RF).IsRightDerivedFunctor (precomposeShiftNatTrans RF α a) W :=
+  ((W.localizerMorphismOfIsCompatibleWithShift a).isRightDerivedFunctor_iff_precomp L L
+    (shiftFunctor H a) (L.commShiftIso a) α (precomposeShiftNatTrans RF α a) (Iso.refl _)
+    (Iso.refl _) (by aesop_cat)).2 inferInstance
 
 instance :
     (RF ⋙ shiftFunctor D a).IsRightDerivedFunctor (postcomposeShiftNatTrans RF α a) W := by
-  have : RF.IsRightDerivedFunctor α W := inferInstance
-  rw [isRightDerivedFunctor_iff_isLeftKanExtension] at this ⊢
-  sorry-/
+  apply isRightDerivedFunctor_postcomp
 
 variable (A)
 
