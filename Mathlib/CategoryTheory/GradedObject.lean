@@ -435,8 +435,7 @@ def cofanMapObjComp : X.CofanMapObjFun r k :=
 In other words, if we have, for all `j : J` such that `hj : q j = k`,
 a colimit cofan `c j hj` which computes the coproduct of the `X i` such that `p i = j`,
 and also a colimit cofan which computes the coproduct of the points of these `c j hj`, then
-the point of this latter cofan computes the coproduct of the `X i` such that `r i = k`.
-.-/
+the point of this latter cofan computes the coproduct of the `X i` such that `r i = k`. -/
 @[simp]
 def isColimitCofanMapObjComp :
     IsColimit (cofanMapObjComp X p q r hpqr k c c') :=

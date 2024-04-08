@@ -67,16 +67,16 @@ variable {F α β : Type*}
 `floor : α → ℕ` satisfying `∀ (n : ℕ) (x : α), n ≤ ⌊x⌋ ↔ (n : α) ≤ x)`.
 Note that many lemmas require a `LinearOrder`. Please see the above `TODO`. -/
 class FloorSemiring (α) [OrderedSemiring α] where
-  /-- `FloorSemiring.floor a` computes the greatest natural `n` such that `(n : α) ≤ a`.-/
+  /-- `FloorSemiring.floor a` computes the greatest natural `n` such that `(n : α) ≤ a`. -/
   floor : α → ℕ
-  /-- `FloorSemiring.ceil a` computes the least natural `n` such that `a ≤ (n : α)`.-/
+  /-- `FloorSemiring.ceil a` computes the least natural `n` such that `a ≤ (n : α)`. -/
   ceil : α → ℕ
-  /-- `FloorSemiring.floor` of a negative element is zero.-/
+  /-- `FloorSemiring.floor` of a negative element is zero. -/
   floor_of_neg {a : α} (ha : a < 0) : floor a = 0
   /-- A natural number `n` is smaller than `FloorSemiring.floor a` iff its coercion to `α` is
-  smaller than `a`.-/
+  smaller than `a`. -/
   gc_floor {a : α} {n : ℕ} (ha : 0 ≤ a) : n ≤ floor a ↔ (n : α) ≤ a
-  /-- `FloorSemiring.ceil` is the lower adjoint of the coercion `↑ : ℕ → α`.-/
+  /-- `FloorSemiring.ceil` is the lower adjoint of the coercion `↑ : ℕ → α`. -/
   gc_ceil : GaloisConnection ceil (↑)
 #align floor_semiring FloorSemiring
 
@@ -585,13 +585,13 @@ theorem subsingleton_floorSemiring {α} [LinearOrderedSemiring α] :
 `floor : α → ℤ` satisfying `∀ (z : ℤ) (a : α), z ≤ floor a ↔ (z : α) ≤ a)`.
 -/
 class FloorRing (α) [LinearOrderedRing α] where
-  /-- `FloorRing.floor a` computes the greatest integer `z` such that `(z : α) ≤ a`.-/
+  /-- `FloorRing.floor a` computes the greatest integer `z` such that `(z : α) ≤ a`. -/
   floor : α → ℤ
-  /-- `FloorRing.ceil a` computes the least integer `z` such that `a ≤ (z : α)`.-/
+  /-- `FloorRing.ceil a` computes the least integer `z` such that `a ≤ (z : α)`. -/
   ceil : α → ℤ
-  /-- `FloorRing.ceil` is the upper adjoint of the coercion `↑ : ℤ → α`.-/
+  /-- `FloorRing.ceil` is the upper adjoint of the coercion `↑ : ℤ → α`. -/
   gc_coe_floor : GaloisConnection (↑) floor
-  /-- `FloorRing.ceil` is the lower adjoint of the coercion `↑ : ℤ → α`.-/
+  /-- `FloorRing.ceil` is the lower adjoint of the coercion `↑ : ℤ → α`. -/
   gc_ceil_coe : GaloisConnection ceil (↑)
 #align floor_ring FloorRing
 

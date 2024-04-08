@@ -252,6 +252,7 @@ import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.Augment
 import Mathlib.Algebra.Homology.Bifunctor
 import Mathlib.Algebra.Homology.BifunctorHomotopy
+import Mathlib.Algebra.Homology.BifunctorShift
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Homology.ComplexShapeSigns
 import Mathlib.Algebra.Homology.ConcreteCategory
@@ -1175,6 +1176,7 @@ import Mathlib.CategoryTheory.EffectiveEpi.Basic
 import Mathlib.CategoryTheory.EffectiveEpi.Comp
 import Mathlib.CategoryTheory.EffectiveEpi.Coproduct
 import Mathlib.CategoryTheory.EffectiveEpi.Enough
+import Mathlib.CategoryTheory.EffectiveEpi.Extensive
 import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
 import Mathlib.CategoryTheory.Elements
@@ -1337,6 +1339,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 import Mathlib.CategoryTheory.Limits.SmallComplete
 import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.TypesFiltered
 import Mathlib.CategoryTheory.Limits.Unit
 import Mathlib.CategoryTheory.Limits.VanKampen
 import Mathlib.CategoryTheory.Limits.Yoneda
@@ -1981,7 +1984,6 @@ import Mathlib.Data.Nat.Factorization.Root
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Data.Nat.Fib.Zeckendorf
-import Mathlib.Data.Nat.ForSqrt
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Data.Nat.Hyperoperation
@@ -2003,7 +2005,6 @@ import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Size
-import Mathlib.Data.Nat.Sqrt
 import Mathlib.Data.Nat.SqrtNormNum
 import Mathlib.Data.Nat.Squarefree
 import Mathlib.Data.Nat.SuccPred
@@ -4067,6 +4068,7 @@ import Mathlib.Topology.Tactic
 import Mathlib.Topology.TietzeExtension
 import Mathlib.Topology.UniformSpace.AbsoluteValue
 import Mathlib.Topology.UniformSpace.AbstractCompletion
+import Mathlib.Topology.UniformSpace.Ascoli
 import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Topology.UniformSpace.Compact

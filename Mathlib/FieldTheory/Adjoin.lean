@@ -753,7 +753,7 @@ instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensio
 instance finiteDimensional_iSup_of_finset
     /- Porting note: changed `h` from `∀ i ∈ s, FiniteDimensional K (t i)` because this caused an
       error. See `finiteDimensional_iSup_of_finset'` for a stronger version, that was the one
-      used in mathlib3.-/
+      used in mathlib3. -/
     {s : Finset ι} [∀ i, FiniteDimensional K (t i)] :
     FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L) :=
   iSup_subtype'' s t ▸ IntermediateField.finiteDimensional_iSup_of_finite
@@ -761,7 +761,7 @@ instance finiteDimensional_iSup_of_finset
 
 theorem finiteDimensional_iSup_of_finset'
     /- Porting note: this was the mathlib3 version. Using `[h : ...]`, as in mathlib3, causes the
-    error "invalid parametric local instance".-/
+    error "invalid parametric local instance". -/
     {s : Finset ι} (h : ∀ i ∈ s, FiniteDimensional K (t i)) :
     FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L) :=
   have := Subtype.forall'.mp h
@@ -945,14 +945,18 @@ theorem adjoin_one : F⟮(1 : E)⟯ = ⊥ :=
 #align intermediate_field.adjoin_one IntermediateField.adjoin_one
 
 @[simp]
-theorem adjoin_int (n : ℤ) : F⟮(n : E)⟯ = ⊥ := by
-  exact adjoin_simple_eq_bot_iff.mpr (coe_int_mem ⊥ n)
-#align intermediate_field.adjoin_int IntermediateField.adjoin_int
+theorem adjoin_intCast (n : ℤ) : F⟮(n : E)⟯ = ⊥ := by
+  exact adjoin_simple_eq_bot_iff.mpr (intCast_mem ⊥ n)
+#align intermediate_field.adjoin_int IntermediateField.adjoin_intCast
 
 @[simp]
-theorem adjoin_nat (n : ℕ) : F⟮(n : E)⟯ = ⊥ :=
-  adjoin_simple_eq_bot_iff.mpr (coe_nat_mem ⊥ n)
-#align intermediate_field.adjoin_nat IntermediateField.adjoin_nat
+theorem adjoin_natCast (n : ℕ) : F⟮(n : E)⟯ = ⊥ :=
+  adjoin_simple_eq_bot_iff.mpr (natCast_mem ⊥ n)
+#align intermediate_field.adjoin_nat IntermediateField.adjoin_natCast
+
+-- 2024-04-05
+@[deprecated] alias adjoin_int := adjoin_intCast
+@[deprecated] alias adjoin_nat := adjoin_natCast
 
 section AdjoinRank
 

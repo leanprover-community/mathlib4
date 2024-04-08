@@ -270,7 +270,7 @@ theorem prod_add_ordered [LinearOrder ι] [CommSemiring α] (s : Finset ι) (f g
 #align finset.prod_add_ordered Finset.prod_add_ordered
 
 /-- Summing `a^s.card * b^(n-s.card)` over all finite subsets `s` of a `Finset`
-gives `(a + b)^s.card`.-/
+gives `(a + b)^s.card`. -/
 theorem sum_pow_mul_eq_add_pow (a b : α) (s : Finset ι) :
     (∑ t in s.powerset, a ^ t.card * b ^ (s.card - t.card)) = (a + b) ^ s.card := by
   classical

@@ -126,7 +126,7 @@ theorem ext {S T : NonUnitalSubsemiring R} (h : ∀ x, x ∈ S ↔ x ∈ T) : S 
 #align non_unital_subsemiring.ext NonUnitalSubsemiring.ext
 
 /-- Copy of a non-unital subsemiring with a new `carrier` equal to the old one. Useful to fix
-definitional equalities.-/
+definitional equalities. -/
 protected def copy (S : NonUnitalSubsemiring R) (s : Set R) (hs : s = ↑S) :
     NonUnitalSubsemiring R :=
   { S.toAddSubmonoid.copy s hs, S.toSubsemigroup.copy s hs with carrier := s }
