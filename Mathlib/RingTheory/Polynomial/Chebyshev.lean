@@ -242,7 +242,7 @@ theorem T_mul : ∀ m n, T R (m * n) = (T R m).comp (T R n)
     have H₂ := T_mul m n
     have H₃ := mul_T R n (m * n)
     have h := congr_arg (comp · (T R n)) <| T_add_two R m
-    simp only [sub_comp, mul_comp, ofNat_comp, Nat.cast_ofNat, X_comp] at h
+    simp only [sub_comp, mul_comp, ofNat_comp, X_comp] at h
     ring_nf at *
     linear_combination - H₂ - h - H₃ + 2 * T R n * H₁
 #align polynomial.chebyshev.T_mul Polynomial.Chebyshev.T_mul
