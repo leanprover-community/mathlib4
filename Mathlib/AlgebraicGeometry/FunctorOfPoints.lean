@@ -6,6 +6,7 @@ Authors: Adam Topaz
 import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
+import Mathlib.CategoryTheory.Sites.Coverage
 
 /-!
 
@@ -30,7 +31,6 @@ which we also prove in this file.
 ## Projects
 
 - Notation for `X.functorOfPoints`.
-- `X.functorOfPoints` is a Zariski sheaf for any `X : Scheme`.
 - Characterize the essential image of `schemeToFunctorOfPoints`.
 
 -/
@@ -132,7 +132,7 @@ def IsBasicOpen {A B : CommRingCat.{u}} (ι : A ⟶ B) (f : A) : Prop :=
   letI : Algebra A B := RingHom.toAlgebra ι
   IsLocalization.Away f B
 
-lemma isOpenImmersion_of_isBasicOpen
+lemma isOpenImmersion_isBasicOpen
     {A B : CommRingCat.{u}} (ι : A ⟶ B) (f : A) (h : IsBasicOpen ι f) :
     IsOpenImmersion (Scheme.Spec.map ι.op) := by
   let _ : Algebra A B := RingHom.toAlgebra ι
@@ -180,7 +180,7 @@ def indexedZariskiCover.affineOpenCover {A : CommRingCat.{u}} (𝓤 : indexedZar
     change p ∈ Set.range ⇑(PrimeSpectrum.comap (algebraMap A (𝓤.B j)))
     rw [PrimeSpectrum.localization_away_comap_range (𝓤.B j) (𝓤.f j)]
     exact (𝓤.exists_index p).choose_spec
-  IsOpen j := isOpenImmersion_of_isBasicOpen _ (𝓤.f j) (𝓤.isLocalizationAt _)
+  IsOpen j := isOpenImmersion_isBasicOpen _ (𝓤.f j) (𝓤.isLocalizationAt _)
 
 theorem indexedZariskiCover.desc
     {X : Scheme.{u}}
@@ -231,5 +231,65 @@ lemma indexedZariskiCover.hom_ext
     (h : ∀ j : 𝓤.J, X.functorOfPoints.map (𝓤.ι j) f = X.functorOfPoints.map (𝓤.ι j) g) :
     f = g :=
   𝓤.affineOpenCover.openCover.hom_ext _ _ h
+
+def zariskiCoverage : Coverage (CommRingCat.{u}ᵒᵖ) where
+  covering B := { S |
+    ∃ (𝓤 : indexedZariskiCover.{u} B.unop),
+      S = Presieve.ofArrows (fun j => .op <| 𝓤.B j) (fun j => (𝓤.ι j).op) }
+  pullback := sorry
+
+def zariskiTopology : GrothendieckTopology (CommRingCat.{u}ᵒᵖ) :=
+  zariskiCoverage.toGrothendieck
+
+lemma Scheme.isSheaf (X : Scheme.{u}) :
+    Presheaf.IsSheaf zariskiTopology (unopUnop _ ⋙ X.functorOfPoints) := by
+  dsimp [zariskiTopology]
+  rw [isSheaf_iff_isSheaf_of_type, Presieve.isSheaf_coverage]
+  rintro B S ⟨𝓤,rfl⟩ x hx
+  let b : (j : 𝓤.J) → X.functorOfPoints.obj (𝓤.B j) := fun j => x (𝓤.ι j).op <| .mk _
+  have hb : ∀ (i j : 𝓤.J) (C : CommRingCat.{u})
+      (ιi : 𝓤.B i ⟶ C) (ιj : 𝓤.B j ⟶ C),
+      𝓤.ι i ≫ ιi = 𝓤.ι j ≫ ιj →
+      X.functorOfPoints.map ιi (b i) = X.functorOfPoints.map ιj (b j) := by
+    intro i j C ιi ιj h
+    apply hx
+    apply_fun (fun q => q.op) at h
+    exact h
+  let t := 𝓤.desc b hb
+  refine ⟨t,?_,?_⟩
+  · rintro X f ⟨j⟩
+    apply indexedZariskiCover.restirct_desc
+  · intro e he
+    apply indexedZariskiCover.hom_ext
+    intro j
+    have := he (𝓤.ι j).op (.mk j)
+    dsimp at this ⊢
+    rw [this]
+    have := 𝓤.restirct_desc b hb j
+    dsimp [t] at this ⊢
+    rw [this]
+
+@[simps]
+def schemeToSheaf : Scheme ⥤ Sheaf zariskiTopology.{u} (Type u) where
+  obj X := ⟨unopUnop _ ⋙ X.functorOfPoints, X.isSheaf⟩
+  map f := .mk <| whiskerLeft _ <| Scheme.mapFunctorOfPoints f
+  --map_id := _
+  --map_comp := _
+
+instance : Faithful schemeToSheaf where
+  map_injective := by
+    intro X Y f g h
+    apply schemeToFunctor.map_injective
+    apply_fun (fun e => whiskerLeft (opOp _) e.val) at h
+    exact h
+
+instance : Full schemeToSheaf where
+  preimage f := Full.preimage (F := schemeToFunctor) (whiskerLeft (opOp _) f.val)
+  witness f := by
+    apply Sheaf.Hom.ext
+    have := Full.witness (F := schemeToFunctor) (whiskerLeft (opOp _) f.val)
+    dsimp at this ⊢
+    rw [this]
+    rfl
 
 end AlgebraicGeometry
