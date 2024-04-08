@@ -7,6 +7,7 @@ import Mathlib.Order.LocallyFinite
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.Hom.Basic
 import Mathlib.Data.Countable.Basic
+import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Logic.Encodable.Basic
 
 #align_import order.succ_pred.linear_locally_finite from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
