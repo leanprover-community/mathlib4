@@ -159,6 +159,7 @@ lemma IsBasicOpen.pushout {A A' B : CommRingCat.{u}} (ι : A ⟶ B) (f : A)
     symm
     apply Algebra.smul_def
   apply IsBasicOpen.comp_iso h' (e := e)
+  sorry
 
 lemma isOpenImmersion_isBasicOpen
     {A B : CommRingCat.{u}} (ι : A ⟶ B) (f : A) (h : IsBasicOpen ι f) :
