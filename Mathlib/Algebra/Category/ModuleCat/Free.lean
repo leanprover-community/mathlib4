@@ -149,7 +149,7 @@ def Basis.ofShortExact
     (span_rightExact hS'.exact (le_of_eq (bN.span_eq.symm)) (le_of_eq (bP.span_eq.symm)) hS'.epi_g)
 
 /-- In a short exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0`, if `X₁` and `X₃` are free,
-then `X₂` is free.-/
+then `X₂` is free. -/
 theorem free_shortExact [Module.Free R S.X₁] [Module.Free R S.X₃] :
     Module.Free R S.X₂ :=
   Module.Free.of_basis (Basis.ofShortExact hS' (Module.Free.chooseBasis R S.X₁)

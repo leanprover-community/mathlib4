@@ -669,7 +669,7 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
     -- Porting note: `simpa` failed, but this is indeed `rfl`
     rfl
   · simp only [Category.comp_id, Category.id_comp]
-  -- Porting note: this `IsIso` instance was `inferInstance`
+  -- Porting note: this `IsIso` instance was `infer_instance`
   · apply IsIso.comp_isIso
 #align algebraic_geometry.Scheme.pullback.open_cover_of_base' AlgebraicGeometry.Scheme.Pullback.openCoverOfBase'
 

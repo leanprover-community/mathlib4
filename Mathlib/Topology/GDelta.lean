@@ -296,7 +296,7 @@ lemma IsClosed.isNowhereDense_iff {s : Set X} (hs : IsClosed s) :
     IsNowhereDense s ↔ interior s = ∅ := by
   rw [IsNowhereDense, IsClosed.closure_eq hs]
 
-/-- If a set `s` is nowhere dense, so is its closure.-/
+/-- If a set `s` is nowhere dense, so is its closure. -/
 protected lemma IsNowhereDense.closure {s : Set X} (hs : IsNowhereDense s) :
     IsNowhereDense (closure s) := by
   rwa [IsNowhereDense, closure_closure]
