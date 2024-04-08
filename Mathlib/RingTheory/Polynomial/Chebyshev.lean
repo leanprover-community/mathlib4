@@ -130,7 +130,6 @@ theorem U_eq_X_mul_U_add_T : ∀ n : ℕ, U R (n + 1) = X * U R n + T R (n + 1)
     have h₁ := U_add_two R (n + 1)
     have h₂ := U_add_two R n
     have h₃ := T_add_two R (n + 1)
-    ring_nf at *
     linear_combination -h₃ - (X:R[X]) * h₂ + h₁ + 2 * (X:R[X]) * H₁ - H₂
 #align polynomial.chebyshev.U_eq_X_mul_U_add_T Polynomial.Chebyshev.U_eq_X_mul_U_add_T
 
@@ -147,7 +146,6 @@ theorem T_eq_X_mul_T_sub_pol_U : ∀ n : ℕ, T R (n + 2) = X * T R (n + 1) - (1
     have h₁ := T_add_two R (n + 1)
     have h₂ := T_add_two R (n + 2)
     have h₃ := U_add_two R n
-    ring_nf at *
     linear_combination (-(X:R[X]) ^ 2 + 1) * h₃ + h₂ - (X:R[X]) * h₁ - 1 * H₂ + 2 * (X:R[X]) * H₁
 #align polynomial.chebyshev.T_eq_X_mul_T_sub_pol_U Polynomial.Chebyshev.T_eq_X_mul_T_sub_pol_U
 
@@ -160,26 +158,20 @@ variable {R S}
 
 @[simp]
 theorem map_T (f : R →+* S) : ∀ n : ℕ, map f (T R n) = T S n
-  | 0 => by simp only [T_zero, Polynomial.map_one]
-  | 1 => by simp only [T_one, map_X]
-  | n + 2 => by
-    simp only [T_add_two, Polynomial.map_mul, Polynomial.map_sub, map_X, Polynomial.map_add,
-      Polynomial.map_one, Polynomial.map_ofNat, map_T]
+  | 0 => by simp
+  | 1 => by simp
+  | n + 2 => by simp [map_T]
 #align polynomial.chebyshev.map_T Polynomial.Chebyshev.map_T
 
 @[simp]
 theorem map_U (f : R →+* S) : ∀ n : ℕ, map f (U R n) = U S n
-  | 0 => by simp only [U_zero, Polynomial.map_one]
-  | 1 => by
-    simp [U_one, map_X, Polynomial.map_mul, Polynomial.map_add, Polynomial.map_one]
-  | n + 2 => by
-    simp only [U_add_two, Polynomial.map_mul, Polynomial.map_sub, map_X, Polynomial.map_add,
-      Polynomial.map_one, map_U]
-    norm_num
+  | 0 => by simp
+  | 1 => by simp
+  | n + 2 => by simp [map_U]
 #align polynomial.chebyshev.map_U Polynomial.Chebyshev.map_U
 
 theorem T_derivative_eq_U : ∀ n : ℕ, derivative (T R (n + 1)) = (n + 1) * U R n
-  | 0 => by simp only [T_one, U_zero, derivative_X, Nat.cast_zero, zero_add, mul_one]
+  | 0 => by simp
   | 1 => by
     simp [T_two, U_one, derivative_sub, derivative_one, derivative_mul, derivative_X_pow, add_mul]
   | n + 2 => by
@@ -190,7 +182,6 @@ theorem T_derivative_eq_U : ∀ n : ℕ, derivative (T R (n + 1)) = (n + 1) * U 
     have H₃ := T_eq_U_sub_X_mul_U R (n + 1)
     have H₄ := U_add_two R n
     push_cast at *
-    ring_nf at *
     linear_combination 2 * (X:R[X]) * H₁ + (-n - 1) * H₄ + 2 * H₃ - H₂ + h
 #align polynomial.chebyshev.T_derivative_eq_U Polynomial.Chebyshev.T_derivative_eq_U
 
@@ -199,7 +190,6 @@ theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℕ) :
   have H₁ := one_sub_X_sq_mul_U_eq_pol_in_T R n
   have H₂ := T_derivative_eq_U (R := R) n
   have h₁ := T_add_two R n
-  ring_nf at *
   linear_combination (-n - 1) * h₁ + (-(X:R[X]) ^ 2 + 1) * H₂ + (n + 1) * H₁
 #align polynomial.chebyshev.one_sub_X_sq_mul_derivative_T_eq_poly_in_T Polynomial.Chebyshev.one_sub_X_sq_mul_derivative_T_eq_poly_in_T
 
