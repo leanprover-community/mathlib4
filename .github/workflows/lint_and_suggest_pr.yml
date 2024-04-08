@@ -26,10 +26,15 @@ jobs:
         run: |
           ./scripts/lint-style.sh --fix
 
-      - name: suggester / lint-style
-        uses: reviewdog/action-suggester@v1
-        with:
-          tool_name: lint-style
+      # This is failing with
+      #   reviewdog: fail to get diff: GET https://api.github.com/repos/leanprover-community/mathlib4/pulls/11997: 406
+      #   Sorry, the diff exceeded the maximum number of files (300).
+      #   Consider using 'List pull requests files' API or locally cloning the repository instead.
+      #   [{Resource:PullRequest Field:diff Code:too_large Message:}]
+      # - name: suggester / lint-style
+      #   uses: reviewdog/action-suggester@v1
+      #   with:
+      #     tool_name: lint-style
 
       - name: Install bibtool
         run: |
@@ -73,7 +78,12 @@ jobs:
         run: |
           git ls-files 'Archive/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Archive.lean
 
-      - name: suggester / import list
-        uses: reviewdog/action-suggester@v1
-        with:
-          tool_name: imports
+      # This is failing with
+      #   reviewdog: fail to get diff: GET https://api.github.com/repos/leanprover-community/mathlib4/pulls/11997: 406
+      #   Sorry, the diff exceeded the maximum number of files (300).
+      #   Consider using 'List pull requests files' API or locally cloning the repository instead.
+      #   [{Resource:PullRequest Field:diff Code:too_large Message:}]
+      # - name: suggester / import list
+      #   uses: reviewdog/action-suggester@v1
+      #   with:
+      #     tool_name: imports
