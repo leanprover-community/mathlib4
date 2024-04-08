@@ -44,13 +44,6 @@ open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
 
 open scoped Topology ENNReal
 
-/-- This lemma exists for finsets, but not for sets currently. porting note: move to
-data.set.basic after the port. -/
-theorem Set.disjoint_sdiff_inter {α : Type*} (s t : Set α) : Disjoint (s \ t) (s ∩ t) :=
-  disjoint_of_subset_right (inter_subset_right _ _) disjoint_sdiff_left
-#align set.disjoint_sdiff_inter Set.disjoint_sdiff_inter
-
-
 /-!
 ### General convergent result for integrals against a sequence of peak functions
 -/
