@@ -60,6 +60,10 @@ lean_exe checkYaml where
   srcDir := "scripts"
   supportInterpreter := true
 
+lean_exe occCount where
+  srcDir := "scripts"
+  supportInterpreter := true
+
 /-- `lake exe shake` checks files for unnecessary imports. -/
 lean_exe shake where
   root := `Shake.Main
