@@ -62,12 +62,6 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
   rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology CompHaus) F G,
     isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
 
-noncomputable
-instance {A B : Type*} [Category A] [Category B] (F : B ⥤ A) (E : A)  [PreservesFiniteProducts F] :
-    PreservesFiniteProducts (F ⋙ coyoneda.obj (op E)) :=
-  ⟨fun J _ ↦ @compPreservesLimitsOfShape _ _ _ _ _ _ _ _ F (coyoneda.obj (op E))
-    (PreservesFiniteProducts.preserves J) ((preservesLimitsOfSizeShrink _).preservesLimitsOfShape)⟩
-
 end CompHaus
 
 namespace Profinite

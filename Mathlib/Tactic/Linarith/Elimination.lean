@@ -110,7 +110,7 @@ structure PComp : Type where
   effective : RBSet ℕ Ord.compare
   /-- The variables which have been *implicitly eliminated*.
   These are variables that appear in the historical set,
-  do not appear in `c` itself, and are not in `effective.-/
+  do not appear in `c` itself, and are not in `effective. -/
   implicit : RBSet ℕ Ord.compare
   /-- The union of all variables appearing in those original assumptions
   which appear in the `history` set. -/

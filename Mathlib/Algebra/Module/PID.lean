@@ -73,7 +73,7 @@ theorem Submodule.isSemisimple_torsionBy_of_irreducible {a : R} (h : Irreducible
   exact Module.Submodule.complementedLattice
 
 /-- A finitely generated torsion module over a PID is an internal direct sum of its
-`p i ^ e i`-torsion submodules for some primes `p i` and numbers `e i`.-/
+`p i ^ e i`-torsion submodules for some primes `p i` and numbers `e i`. -/
 theorem Submodule.isInternal_prime_power_torsion_of_pid [Module.Finite R M]
     (hM : Module.IsTorsion R M) :
     DirectSum.IsInternal fun p : (factors (⊤ : Submodule R M).annihilator).toFinset =>
@@ -87,7 +87,7 @@ theorem Submodule.isInternal_prime_power_torsion_of_pid [Module.Finite R M]
 #align submodule.is_internal_prime_power_torsion_of_pid Submodule.isInternal_prime_power_torsion_of_pid
 
 /-- A finitely generated torsion module over a PID is an internal direct sum of its
-`p i ^ e i`-torsion submodules for some primes `p i` and numbers `e i`.-/
+`p i ^ e i`-torsion submodules for some primes `p i` and numbers `e i`. -/
 theorem Submodule.exists_isInternal_prime_power_torsion_of_pid [Module.Finite R M]
     (hM : Module.IsTorsion R M) :
     ∃ (ι : Type u) (_ : Fintype ι) (_ : DecidableEq ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i)
@@ -171,7 +171,7 @@ theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ 
 open Finset Multiset
 
 /-- A finitely generated `p ^ ∞`-torsion module over a PID is isomorphic to a direct sum of some
-  `R ⧸ R ∙ (p ^ e i)` for some `e i`.-/
+  `R ⧸ R ∙ (p ^ e i)` for some `e i`. -/
 theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoid.powers p))
     [h' : Module.Finite R N] :
     ∃ (d : ℕ) (k : Fin d → ℕ), Nonempty <| N ≃ₗ[R] ⨁ i : Fin d, R ⧸ R ∙ p ^ (k i : ℕ) := by
@@ -238,7 +238,7 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
 end PTorsion
 
 /-- A finitely generated torsion module over a PID is isomorphic to a direct sum of some
-  `R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers.-/
+  `R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers. -/
 theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTorsion R N) :
     ∃ (ι : Type u) (_ : Fintype ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i) (e : ι → ℕ),
       Nonempty <| N ≃ₗ[R] ⨁ i : ι, R ⧸ R ∙ p i ^ e i := by
@@ -266,7 +266,7 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTor
 
 /-- **Structure theorem of finitely generated modules over a PID** : A finitely generated
   module over a PID is isomorphic to the product of a free module and a direct sum of some
-  `R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers.-/
+  `R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers. -/
 theorem equiv_free_prod_directSum [h' : Module.Finite R N] :
     ∃ (n : ℕ) (ι : Type u) (_ : Fintype ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i) (e : ι → ℕ),
       Nonempty <| N ≃ₗ[R] (Fin n →₀ R) × ⨁ i : ι, R ⧸ R ∙ p i ^ e i := by
