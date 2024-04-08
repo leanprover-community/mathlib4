@@ -63,7 +63,7 @@ jobs:
           rm -rf .lake/packages/proofwidgets/.lake/build/lib
           rm -rf .lake/packages/proofwidgets/.lake/build/ir
           # also build MathlibExtras
-          lake build -KCI MathlibExtras
+          #lake build -KCI MathlibExtras
 
       - name: Check environments using lean4checker
         id: lean4checker
