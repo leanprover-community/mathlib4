@@ -27,10 +27,10 @@ sometimes we don't need them to prove extensionality.
 semiring, ring, extensionality
 -/
 
-local macro:65 lhs:term:65 "+[" type:term ", " inst:term "]" rhs:term:66 : term =>
-  `(term| (letI := $inst; ($lhs : $type) + ($rhs : $type) : $type))
-local macro:70 lhs:term:70 "*[" type:term ", " inst:term "]" rhs:term:71 : term =>
-  `(term| (letI := $inst; ($lhs : $type) * ($rhs : $type) : $type))
+local macro:max "local_hAdd[" type:term ", " inst:term "]" : term =>
+  `(term| (letI := $inst; HAdd.hAdd : $type → $type → $type))
+local macro:max "local_hMul[" type:term ", " inst:term "]" : term =>
+  `(term| (letI := $inst; HMul.hMul : $type → $type → $type))
 
 universe u
 
