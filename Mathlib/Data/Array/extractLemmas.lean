@@ -3,7 +3,7 @@ Copyright (c) 2024 Jiecheng Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiecheng Zhao
 -/
-import Std.Data.Array
+import Std.Data.Array.Lemmas
 /-!
 # lemmas about Array.extract
 
@@ -91,64 +91,6 @@ theorem size_extract_to_stop {a: Array α} : (e ≤ a.size) → (a.extract s e).
   intro h1
   simp only [size_extract]
   rw [Nat.min_eq_left h1]
-
-theorem extract_loop_take_middle {b c: List α }: ∀ a e : List α ,
-    Array.extract.loop {data := (a ++ b ++ c)}
-    b.length a.length {data := e} = {data := (e ++ b)} := by
-  induction b
-  · unfold extract.loop
-    simp only [List.append_nil, size_mk, List.length_append, List.length_nil, dite_eq_ite, ite_self,
-      forall_const]
-  · rename_i h t tih
-    unfold extract.loop
-    intro a e
-    have hl:List.length a < List.length a + Nat.succ (List.length t + List.length c) := by
-      refine Nat.lt_add_of_pos_right ?h
-      exact Nat.zero_lt_succ (List.length t + List.length c)
-    simp only [List.append_assoc, List.cons_append, size_mk, List.length_append, List.length_cons,
-      hl, ↓reduceDite, get_eq_getElem, List.getElem_eq_get]
-    have h1 := tih (a ++ [h] ) (e ++ [h])
-    have h2 :  [] ++ t = t := by simp only [List.nil_append]
-    simp only [List.append_assoc, List.cons_append, List.length_append,
-      List.length_singleton, h2] at h1
-    rw [← h1]
-    refine
-      congrArg (extract.loop { data := a ++ h :: (t ++ c) } (List.length t) (List.length a + 1))
-        ?cons.h
-    simp only [push, List.concat_eq_append, mk.injEq, List.append_cancel_left_eq, List.cons.injEq,
-      and_true]
-    exact List.get_of_append rfl rfl
-
-theorem append_eq_data_append {b c: Array α } :
-    b ++ c = {data := b.data ++ c.data} := by
-  apply ext'
-  simp only [append_data]
-
-theorem extract_take_middle {l: Array α} (a b c: Array α ):
-    l = a ++ b ++ c → i = a.size → j = a.size + b.size → l.extract i j = b := by
-  intro h3 h4 h5
-  unfold extract
-  have h2: j ≤ l.size := by
-    rw [h3, size_append, size_append, h5]
-    exact Nat.le_add_right (size a + size b) (size c)
-  simp only [h2, Nat.min_eq_left, Nat.sub_eq, mkEmpty_eq]
-  simp only [size] at h4 h5
-  have h6: l = {data := a.data ++ b.data ++ c.data} := by
-    rw [h3, append_eq_data_append, append_eq_data_append]
-  rw [← nil_append b, h6, h5, h4, Nat.add_comm, Nat.add_sub_cancel,
-    extract_loop_take_middle]
-  simp only [data_toArray, List.nil_append, nil_append]
-
-theorem extract_self {a: Array α } {al: Nat}: (al = a.size) → Array.extract a 0 al = a := by
-  intro h1
-  rw [extract_take_middle #[] a #[] ]
-  simp only [nil_append, append_nil]
-  exact rfl
-  simp only [h1, size_toArray, List.length_nil, Nat.zero_add]
-
-@[simp]
-theorem extract_self' {a: Array α } : Array.extract a 0 a.size = a := by
-  exact extract_self rfl
 
 theorem extract_mid_split {a: Array α} (h1: i ≤ j)  (h2 : j ≤ k) (h3: k ≤ a.size):
     a.extract i k = a.extract i j ++ a.extract j k := by
@@ -240,7 +182,7 @@ theorem extract_extract_aux {a : Array α } : (s1 + s2 ≤ a.size) →
     have hsize2: e2 - s2 = size (extract a (s1 + s2) (s1 + e2)) := by
       rw [size_extract_to_stop (Nat.le_trans h2 h3),
        Nat.sub_add_eq, Nat.add_comm, Nat.add_sub_cancel]
-    rw [happend2, extract_append_left (Nat.le_of_eq hsize2), extract_self hsize2]
+    rw [happend2, extract_append_left (Nat.le_of_eq hsize2),hsize2, extract_all]
 
 theorem extract_extract {a : Array α } (h1 : s1 + s2 ≤ a.size)
     (h2 : s1 + e2 ≤ e1) :
