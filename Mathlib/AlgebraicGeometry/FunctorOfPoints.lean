@@ -194,4 +194,13 @@ lemma indexedZariskiCover.restirct_desc
   unfold indexedZariskiCover.desc
   apply Scheme.OpenCover.ι_glueMorphisms
 
+lemma indexedZariskiCover.hom_ext
+    {X : Scheme.{u}}
+    {A : CommRingCat.{u}}
+    (𝓤 : indexedZariskiCover.{u} A)
+    (f g : X.functorOfPoints.obj A)
+    (h : ∀ j : 𝓤.J, X.functorOfPoints.map (𝓤.ι j) f = X.functorOfPoints.map (𝓤.ι j) g) :
+    f = g :=
+  𝓤.affineOpenCover.openCover.hom_ext _ _ h
+
 end AlgebraicGeometry
