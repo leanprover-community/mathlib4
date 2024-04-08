@@ -81,7 +81,7 @@ theorem Invariant.def (hκ : Invariant κ μ) : μ.bind κ = μ :=
 #align probability_theory.kernel.invariant.def ProbabilityTheory.kernel.Invariant.def
 
 theorem Invariant.comp_const (hκ : Invariant κ μ) : κ ∘ₖ const α μ = const α μ := by
-  rw [← const_bind_eq_comp_const κ μ, hκ.def']
+  rw [← const_bind_eq_comp_const κ μ, hκ.def]
 #align probability_theory.kernel.invariant.comp_const ProbabilityTheory.kernel.Invariant.comp_const
 
 theorem Invariant.comp [IsSFiniteKernel κ] (hκ : Invariant κ μ) (hη : Invariant η μ) :
