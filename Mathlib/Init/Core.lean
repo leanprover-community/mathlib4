@@ -55,7 +55,6 @@ set_option autoImplicit true
 -- TODO
 -- attribute [elab_as_elim, subst] Eq.subst
 
-attribute [refl] Eq.refl
 attribute [trans] Eq.trans
 attribute [symm] Eq.symm
 

@@ -189,7 +189,7 @@ def ring_lmap_equiv_selfₗ : (𝕜 →L[𝕜] E) ≃ₗ[𝕜] E where
   invFun := (ContinuousLinearMap.id 𝕜 𝕜).smulRight
   map_smul' := fun a f ↦ by simp only [coe_smul', Pi.smul_apply, RingHom.id_apply]
   map_add' := fun f g ↦ by simp only [add_apply]
-  left_inv := fun f ↦ by ext; simp only [smulRight_apply, coe_id', id.def, one_smul]
+  left_inv := fun f ↦ by ext; simp only [smulRight_apply, coe_id', _root_.id, one_smul]
   right_inv := fun m ↦ by simp only [smulRight_apply, id_apply, one_smul]
 
 /-- If `M` is a normed space over `𝕜`, then the space of maps `𝕜 →L[𝕜] M` is linearly isometrically

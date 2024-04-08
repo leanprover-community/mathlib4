@@ -439,7 +439,7 @@ def equivCongr (e : α ≃ β) : Sym α n ≃ Sym β n where
 /-- "Attach" a proof that `a ∈ s` to each element `a` in `s` to produce
 an element of the symmetric power on `{x // x ∈ s}`. -/
 def attach (s : Sym α n) : Sym { x // x ∈ s } n :=
-  ⟨s.val.attach, by conv_rhs => rw [← s.2, ← Multiset.card_attach]⟩
+  ⟨s.val.attach, by (conv_rhs => rw [← s.2, ← Multiset.card_attach]);rfl⟩
 #align sym.attach Sym.attach
 
 @[simp]

@@ -1247,15 +1247,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : BilinForm K V} (h
   refine' ⟨b, _⟩
   · rw [Basis.coe_mkFinCons]
     intro j i
-    -- FIXME nightly-testing
-    -- Proof failing
-    -- sorry
     refine' Fin.cases _ (fun i => _) i <;> refine' Fin.cases _ (fun j => _) j <;> intro hij <;>
-      -- Adaptation note: nightly-2024-03-16
-      -- Previously `Function.onFun` unfolded in the following `simp only`,
-      -- but now needs a separate `rw`.
-      -- This may be a bug: a no import minimization may be required.
-      (try rw [Function.onFun]) <;>
       simp only [Function.onFun, Fin.cons_zero, Fin.cons_succ, Function.comp_apply]
     · exact (hij rfl).elim
     · rw [IsOrtho, ← hB₂]

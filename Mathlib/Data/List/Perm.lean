@@ -634,7 +634,7 @@ theorem length_permutationsAux :
   refine' permutationsAux.rec (by simp) _
   intro t ts is IH1 IH2
   have IH2 : length (permutationsAux is nil) + 1 = is.length ! := by simpa using IH2
-  simp only [factorial, mul_comm, add_eq] at IH1
+  simp only [factorial, Nat.mul_comm, add_eq] at IH1
   rw [permutationsAux_cons,
     length_foldr_permutationsAux2' _ _ _ _ _ fun l m => (perm_of_mem_permutations m).length_eq,
     permutations, length, length, IH2, Nat.succ_add, Nat.factorial_succ, Nat.mul_comm (_ + 1),
@@ -847,45 +847,8 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
       rw [nthLe_insertNth_add_succ]
       convert nthLe_insertNth_add_succ s x k m.succ (by simpa using hn) using 2
       · simp [Nat.add_assoc, Nat.add_left_comm]
-      · simp [add_left_comm, add_comm]
+      · simp [Nat.add_left_comm, Nat.add_comm]
       · simpa [Nat.succ_add] using hn
-  rw [(permutations_perm_permutations' s).nodup_iff]
-  induction' hs with x l h h' IH
-  · simp
-  · rw [permutations']
-    rw [nodup_bind]
-    constructor
-    · intro ys hy
-      rw [mem_permutations'] at hy
-      rw [nodup_permutations'Aux_iff, hy.mem_iff]
-      exact fun H => h x H rfl
-    · refine' IH.pairwise_of_forall_ne fun as ha bs hb H => _
-      rw [disjoint_iff_ne]
-      rintro a ha' b hb' rfl
-      obtain ⟨⟨n, hn⟩, hn'⟩ := get_of_mem ha'
-      obtain ⟨⟨m, hm⟩, hm'⟩ := get_of_mem hb'
-      rw [mem_permutations'] at ha hb
-      have hl : as.length = bs.length := (ha.trans hb.symm).length_eq
-      simp only [Nat.lt_succ_iff, length_permutations'Aux] at hn hm
-      rw [← nthLe, nthLe_permutations'Aux] at hn' hm'
-      have hx :
-        nthLe (insertNth n x as) m (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff, hl]) = x :=
-        by simp [hn', ← hm', hm]
-      have hx' :
-        nthLe (insertNth m x bs) n (by rwa [length_insertNth _ _ hm, Nat.lt_succ_iff, ← hl]) =
-          x :=
-        by simp [hm', ← hn', hn]
-      rcases lt_trichotomy n m with (ht | ht | ht)
-      · suffices x ∈ bs by exact h x (hb.subset this) rfl
-        rw [← hx', nthLe_insertNth_of_lt _ _ _ _ ht (ht.trans_le hm)]
-        exact nthLe_mem _ _ _
-      · simp only [ht] at hm' hn'
-        rw [← hm'] at hn'
-        exact H (insertNth_injective _ _ hn')
-      · suffices x ∈ as by exact h x (ha.subset this) rfl
-        rw [← hx, nthLe_insertNth_of_lt _ _ _ _ ht (ht.trans_le hn)]
-        exact nthLe_mem _ _ _
-#align list.nodup_permutations List.nodup_permutations
 
 -- TODO: `nodup s.permutations ↔ nodup s`
 -- TODO: `count s s.permutations = (zip_with count s s.tails).prod`

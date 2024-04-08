@@ -218,7 +218,7 @@ theorem isBigO_atTop_zetaKernel₁ : IsBigO atTop zetaKernel₁ fun t => exp (-�
     rw [tendsto_comap_iff]
     convert tendsto_id
     ext1 t
-    rw [Function.comp_apply, mul_I_im, ofReal_re, id.def]
+    rw [Function.comp_apply, mul_I_im, ofReal_re, id]
   convert ((h.norm_left.comp_tendsto h').congr' (eventually_of_mem (Ioi_mem_atTop 0) fun t ht => _)
         (eventually_of_mem (Ioi_mem_atTop 0) fun t _ => _)).of_norm_left (E' := ℂ)
   · rw [Function.comp_apply, ← zetaKernel₁_eq_jacobiTheta ht]
@@ -377,12 +377,12 @@ theorem differentiableAt_riemannZeta {s : ℂ} (hs' : s ≠ 1) : DifferentiableA
     · refine Tendsto.mono_left ?_ nhdsWithin_le_nhds
       have : ContinuousAt riemannCompletedZeta₀ 0 :=
         differentiable_completed_zeta₀.continuous.continuousAt
-      simpa only [id.def, mul_zero] using Tendsto.mul this tendsto_id
+      simpa only [id, mul_zero] using Tendsto.mul this tendsto_id
     · refine tendsto_const_nhds.congr' (eventuallyEq_of_mem self_mem_nhdsWithin fun t ht => ?_)
       simp_rw [one_div_mul_cancel ht]
     · refine Tendsto.mono_left ?_ nhdsWithin_le_nhds
       suffices ContinuousAt (fun z : ℂ => 1 / (z - 1)) 0 by
-        simpa only [id.def, mul_zero] using Tendsto.mul this tendsto_id
+        simpa only [id, mul_zero] using Tendsto.mul this tendsto_id
       refine continuousAt_const.div (continuousAt_id.sub continuousAt_const) ?_
       simpa only [zero_sub] using neg_ne_zero.mpr one_ne_zero
   -- Now the main proof.
@@ -574,7 +574,7 @@ theorem zeta_eq_tsum_one_div_nat_add_one_cpow {s : ℂ} (hs : 1 < re s) :
   · apply Gamma_ne_zero_of_re_pos
     rw [div_eq_mul_inv, mul_comm, show (2⁻¹ : ℂ) = (2⁻¹ : ℝ) by norm_num, re_ofReal_mul]
     exact mul_pos (inv_pos_of_pos two_pos) (zero_lt_one.trans hs)
-  · rw [Ne, cpow_eq_zero_iff, not_and_or, ← Ne, ofReal_ne_zero]
+  · rw [Ne, cpow_eq_zero_iff, not_and_or, ← Ne.eq_def, ofReal_ne_zero]
     exact Or.inl pi_pos.ne'
 #align zeta_eq_tsum_one_div_nat_add_one_cpow zeta_eq_tsum_one_div_nat_add_one_cpow
 
@@ -753,7 +753,7 @@ theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
       exact lt_of_le_of_lt
         (by set_option tactic.skipAssignedInstances false in norm_num : (-n : ℤ) ≤ 0)
         (by positivity)
-    · rw [(by norm_cast : 2 * (m : ℂ) + 2 = ↑(2 * m + 2)), Ne, Nat.cast_eq_one]; norm_num
+    · rw [(by norm_cast : 2 * (m : ℂ) + 2 = ↑(2 * m + 2)), Ne, Nat.cast_eq_one]; omega
     -- get rid of sine term
     rw [show Complex.sin (↑π * (1 - (2 * ↑m + 2)) / 2) = -(-1 : ℂ) ^ m by
         rw [(by field_simp; ring : (π : ℂ) * (1 - (2 * ↑m + 2)) / 2 = π / 2 - (π * m + π))]

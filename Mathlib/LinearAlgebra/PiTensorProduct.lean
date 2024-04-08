@@ -317,6 +317,7 @@ theorem tprod_eq_tprodCoeff_one :
 theorem tprodCoeff_eq_smul_tprod (z : R) (f : Π i, s i) : tprodCoeff R z f = z • tprod R f := by
   have : z = z • (1 : R) := by simp only [mul_one, Algebra.id.smul_eq_mul]
   conv_lhs => rw [this]
+  rfl
 #align pi_tensor_product.tprod_coeff_eq_smul_tprod PiTensorProduct.tprodCoeff_eq_smul_tprod
 
 /-- The image of an element `p` of `FreeAddMonoid (R × Π i, s i)` in the `PiTensorProduct` is

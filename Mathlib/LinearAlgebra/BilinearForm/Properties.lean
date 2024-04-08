@@ -534,6 +534,7 @@ theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinF
 theorem symmCompOfNondegenerate_left_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
     (b₂ : B₂.Nondegenerate) (v w : V) : B₂ (symmCompOfNondegenerate B₁ B₂ b₂ w) v = B₁ w v := by
   conv_lhs => rw [← BilinForm.toLin_apply, comp_symmCompOfNondegenerate_apply]
+  rfl
 #align bilin_form.symm_comp_of_nondegenerate_left_apply BilinForm.symmCompOfNondegenerate_left_apply
 
 /-- Given the nondegenerate bilinear form `B` and the linear map `φ`,

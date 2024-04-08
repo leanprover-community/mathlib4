@@ -356,21 +356,24 @@ theorem map_div_right_ae (μ : Measure G) [IsMulRightInvariant μ] (x : G) :
 @[to_additive]
 theorem eventually_mul_left_iff (μ : Measure G) [IsMulLeftInvariant μ] (t : G) {p : G → Prop} :
     (∀ᵐ x ∂μ, p (t * x)) ↔ ∀ᵐ x ∂μ, p x := by
-  conv_rhs => rw [Filter.Eventually, ← map_mul_left_ae μ t]; rfl
+  conv_rhs => rw [Filter.Eventually, ← map_mul_left_ae μ t]
+  rfl
 #align measure_theory.eventually_mul_left_iff MeasureTheory.eventually_mul_left_iff
 #align measure_theory.eventually_add_left_iff MeasureTheory.eventually_add_left_iff
 
 @[to_additive]
 theorem eventually_mul_right_iff (μ : Measure G) [IsMulRightInvariant μ] (t : G) {p : G → Prop} :
     (∀ᵐ x ∂μ, p (x * t)) ↔ ∀ᵐ x ∂μ, p x := by
-  conv_rhs => rw [Filter.Eventually, ← map_mul_right_ae μ t]; rfl
+  conv_rhs => rw [Filter.Eventually, ← map_mul_right_ae μ t]
+  rfl
 #align measure_theory.eventually_mul_right_iff MeasureTheory.eventually_mul_right_iff
 #align measure_theory.eventually_add_right_iff MeasureTheory.eventually_add_right_iff
 
 @[to_additive]
 theorem eventually_div_right_iff (μ : Measure G) [IsMulRightInvariant μ] (t : G) {p : G → Prop} :
     (∀ᵐ x ∂μ, p (x / t)) ↔ ∀ᵐ x ∂μ, p x := by
-  conv_rhs => rw [Filter.Eventually, ← map_div_right_ae μ t]; rfl
+  conv_rhs => rw [Filter.Eventually, ← map_div_right_ae μ t]
+  rfl
 #align measure_theory.eventually_div_right_iff MeasureTheory.eventually_div_right_iff
 #align measure_theory.eventually_sub_right_iff MeasureTheory.eventually_sub_right_iff
 
@@ -751,7 +754,7 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
   have M : ∀ n, μ (L n) = (n + 1 : ℕ) * μ K := by
     intro n
     induction' n with n IH
-    · simp only [L, one_mul, Nat.cast_one, iterate_zero, id.def, Nat.zero_eq, Nat.zero_add]
+    · simp only [L, one_mul, Nat.cast_one, iterate_zero, id, Nat.zero_eq, Nat.zero_add]
     · calc
         μ (L (n + 1)) = μ (L n) + μ (g (L n) • K) := by
           simp_rw [L, iterate_succ']

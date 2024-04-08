@@ -37,6 +37,7 @@ theorem sum_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → N} :
 theorem prod_antidiagonal_swap {n : ℕ} {f : ℕ × ℕ → M} :
     ∏ p in antidiagonal n, f p.swap = ∏ p in antidiagonal n, f p := by
   conv_lhs => rw [← map_swap_antidiagonal, Finset.prod_map]
+  rfl
 #align finset.nat.prod_antidiagonal_swap Finset.Nat.prod_antidiagonal_swap
 #align finset.nat.sum_antidiagonal_swap Finset.Nat.sum_antidiagonal_swap
 

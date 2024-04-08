@@ -101,7 +101,7 @@ def weightedTotalDegree (w : σ → M) (p : MvPolynomial σ R) : M :=
 /-- This lemma relates `weightedTotalDegree` and `weightedTotalDegree'`. -/
 theorem weightedTotalDegree_coe (w : σ → M) (p : MvPolynomial σ R) (hp : p ≠ 0) :
     weightedTotalDegree' w p = ↑(weightedTotalDegree w p) := by
-  rw [Ne, ← weightedTotalDegree'_eq_bot_iff w p, ← Ne, WithBot.ne_bot_iff_exists] at hp
+  rw [Ne, ← weightedTotalDegree'_eq_bot_iff w p, ← Ne.eq_def, WithBot.ne_bot_iff_exists] at hp
   obtain ⟨m, hm⟩ := hp
   apply le_antisymm
   · simp only [weightedTotalDegree, weightedTotalDegree', Finset.sup_le_iff, WithBot.coe_le_coe]

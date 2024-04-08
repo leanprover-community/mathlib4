@@ -71,7 +71,7 @@ theorem t_fst_fst (i j : 𝒰.J) : t 𝒰 f g i j ≫ pullback.fst ≫ pullback.
     hasPullback_assoc_symm (𝒰.map j) (𝒰.map i) (𝒰.map i ≫ f) g
   haveI : HasPullback (pullback.snd ≫ 𝒰.map j ≫ f) g :=
     hasPullback_assoc_symm (𝒰.map i) (𝒰.map j) (𝒰.map j ≫ f) g
-  simp only [Category.assoc, id.def, pullbackSymmetry_hom_comp_fst_assoc,
+  simp only [Category.assoc, id, pullbackSymmetry_hom_comp_fst_assoc,
     pullbackAssoc_hom_snd_fst, pullback.lift_fst_assoc, pullbackSymmetry_hom_comp_snd,
     pullbackAssoc_inv_fst_fst, pullbackSymmetry_hom_comp_fst]
 #align algebraic_geometry.Scheme.pullback.t_fst_fst AlgebraicGeometry.Scheme.Pullback.t_fst_fst
@@ -85,7 +85,7 @@ theorem t_fst_snd (i j : 𝒰.J) :
     hasPullback_assoc_symm (𝒰.map j) (𝒰.map i) (𝒰.map i ≫ f) g
   haveI : HasPullback (pullback.snd ≫ 𝒰.map j ≫ f) g :=
     hasPullback_assoc_symm (𝒰.map i) (𝒰.map j) (𝒰.map j ≫ f) g
-  simp only [pullbackSymmetry_hom_comp_snd_assoc, Category.comp_id, Category.assoc, id.def,
+  simp only [pullbackSymmetry_hom_comp_snd_assoc, Category.comp_id, Category.assoc, id,
     pullbackSymmetry_hom_comp_fst_assoc, pullbackAssoc_hom_snd_snd, pullback.lift_snd,
     pullbackAssoc_inv_snd]
 #align algebraic_geometry.Scheme.pullback.t_fst_snd AlgebraicGeometry.Scheme.Pullback.t_fst_snd
@@ -98,7 +98,7 @@ theorem t_snd (i j : 𝒰.J) : t 𝒰 f g i j ≫ pullback.snd = pullback.fst �
     hasPullback_assoc_symm (𝒰.map j) (𝒰.map i) (𝒰.map i ≫ f) g
   haveI : HasPullback (pullback.snd ≫ 𝒰.map j ≫ f) g :=
     hasPullback_assoc_symm (𝒰.map i) (𝒰.map j) (𝒰.map j ≫ f) g
-  simp only [pullbackSymmetry_hom_comp_snd_assoc, Category.assoc, id.def,
+  simp only [pullbackSymmetry_hom_comp_snd_assoc, Category.assoc, id,
     pullbackSymmetry_hom_comp_snd, pullbackAssoc_hom_fst, pullback.lift_fst_assoc,
     pullbackSymmetry_hom_comp_fst, pullbackAssoc_inv_fst_snd]
 #align algebraic_geometry.Scheme.pullback.t_snd AlgebraicGeometry.Scheme.Pullback.t_snd
@@ -661,10 +661,14 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
       (𝒰.map i) pullback.snd pullback.snd g pullback.condition.symm pullback.condition.symm
       (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
       (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
+  -- Adaptation note: nightly-2024-04-01
+  -- Previously we just had `(limit.isoLimitCone ⟨_, this⟩).inv` inlined in the `refine'` below.
+  -- Now that doesn't type check,
+  -- and we need to introduce a `let` with a manual type annotation on the source of the morphism.
+  let h : pullback pullback.snd pullback.snd ⟶ _ := (limit.isoLimitCone ⟨_, this⟩).inv
   refine'
     @openCoverOfIsIso
-      (f := (pullbackSymmetry _ _).hom ≫
-        (limit.isoLimitCone ⟨_, this⟩).inv ≫ pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) _ _) ?_
+      (f := (pullbackSymmetry _ _).hom ≫ h ≫ pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) _ _) ?_
   · simp only [Category.comp_id, Category.id_comp, ← pullback.condition]
     -- Porting note: `simpa` failed, but this is indeed `rfl`
     rfl
@@ -685,7 +689,8 @@ def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
       (fun i =>
         pullback.map _ _ _ _ pullback.fst pullback.fst (𝒰.map i) pullback.condition.symm
           pullback.condition.symm)
-      ((Equiv.prodPUnit 𝒰.J).symm.trans (Equiv.sigmaEquivProd 𝒰.J PUnit).symm) fun _ => Iso.refl _
+      ((Equiv.prodPUnit 𝒰.J).symm.trans (Equiv.sigmaEquivProd 𝒰.J PUnit).symm)
+        fun _ => Iso.refl _
   intro i
   -- Porting note: deviated from original proof a bit so that it won't timeout.
   rw [Iso.refl_hom, Category.id_comp, openCoverOfBase'_map]

@@ -387,6 +387,7 @@ theorem coe_eq : ((↑) : FreeRing α → FreeCommRing α) =
     FreeMonoid.recOn L rfl fun hd tl ih => by
       rw [(FreeMonoid.lift _).map_mul, FreeMonoid.lift_eval_of, ih]
       conv_lhs => reduce
+      rfl
 #align free_ring.coe_eq FreeRing.coe_eq
 
 /-- If α has size at most 1 then the natural map from the free ring on `α` to the

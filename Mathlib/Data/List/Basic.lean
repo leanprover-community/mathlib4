@@ -3,7 +3,6 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.List.Defs
@@ -1235,9 +1234,6 @@ theorem get?_eq_some' {l : List α} {n a} : get? l n = some a ↔ ∃ h, nthLe l
 @[deprecated get_mem]
 theorem nthLe_mem (l : List α) (n h) : nthLe l n h ∈ l := get_mem ..
 #align list.nth_le_mem List.nthLe_mem
-
-theorem nthLe_congr {l : List α} {n p : ℕ} {h : n < length l} (hnp : n = p) :
-    nthLe l n h = nthLe l p (hnp ▸ h) := by simp [hnp]
 
 #align list.nth_mem List.get?_mem
 
@@ -3057,7 +3053,7 @@ lemma filter_attach (l : List α) (p : α → Bool) :
     (l.attach.filter fun x => p x : List {x // x ∈ l}) =
       (l.filter p).attach.map (Subtype.map id fun x => mem_of_mem_filter) :=
   map_injective_iff.2 Subtype.coe_injective <| by
-    simp_rw [map_map, (· ∘ ·), Subtype.map, id.def, ← Function.comp_apply (g := Subtype.val),
+    simp_rw [map_map, (· ∘ ·), Subtype.map, id, ← Function.comp_apply (g := Subtype.val),
       ← map_filter, attach_map_val]
 #align list.filter_attach List.filter_attach
 

@@ -82,4 +82,5 @@ theorem Quotient.finChoice_eq {ι : Type*} [DecidableEq ι] [Fintype ι] {α : �
     tactic =>
       change _ = ⟦fun i _ => f i⟧
       exact Quotient.inductionOn (@Finset.univ ι _).1 fun l => Quotient.finChoiceAux_eq _ _
+  rfl
 #align quotient.fin_choice_eq Quotient.finChoice_eq

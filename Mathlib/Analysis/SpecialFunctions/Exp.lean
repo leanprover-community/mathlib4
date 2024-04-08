@@ -443,7 +443,9 @@ end Real
 
 namespace Complex
 
-@[simp]
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+@[simp, nolint simpNF]
 theorem comap_exp_cobounded : comap exp (cobounded ℂ) = comap re atTop :=
   calc
     comap exp (cobounded ℂ) = comap re (comap Real.exp atTop) := by

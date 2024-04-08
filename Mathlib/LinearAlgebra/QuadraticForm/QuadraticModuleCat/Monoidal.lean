@@ -76,6 +76,9 @@ theorem forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
     (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (α_ X Y Z).inv =
       (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).inv := rfl
 
+-- Adaptation note: nightly-2024-04-01
+-- This maxHeartbeats was not needed previously.
+set_option maxHeartbeats 400000 in
 noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
   Monoidal.induced
     (forget₂ (QuadraticModuleCat R) (ModuleCat R))

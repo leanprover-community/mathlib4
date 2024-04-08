@@ -106,6 +106,7 @@ theorem mem_degreeLT {n : ℕ} {f : R[X]} : f ∈ degreeLT R n ↔ degree f < n 
     simp only [mem_support_iff]
     intro b
     rw [Nat.cast_withBot, WithBot.coe_lt_coe, lt_iff_not_le, Ne, not_imp_not]
+  rfl
 #align polynomial.mem_degree_lt Polynomial.mem_degreeLT
 
 @[mono]
