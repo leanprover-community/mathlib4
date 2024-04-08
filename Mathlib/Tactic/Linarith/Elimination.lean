@@ -338,20 +338,25 @@ def FourierMotzkin.produceCertificate : CertificateOracle :=
 
 namespace SimplexAlgo
 
-def preprocess (hyps : List Comp) (maxVar : ℕ) : Matrix (maxVar + 1) (hyps.length) × List Nat := Id.run do
-  let mut mdata : Array (Array ℚ) := #[]
-  for i in [:maxVar + 1] do
-    let newRow : Array ℚ := Array.mk <| hyps.map (·.coeffOf i)
-    mdata := mdata.push newRow
-
+/-- Preprocess the goal to pass it to `findPositiveVector`. -/
+def preprocess (hyps : List Comp) (maxVar : ℕ) : Matrix (maxVar + 1) (hyps.length) × List Nat :=
+  let mdata : Array (Array ℚ) := Array.ofFn fun i : Fin (maxVar + 1) =>
+    Array.mk <| hyps.map (·.coeffOf i)
   let strictIndexes : List ℕ := hyps.findIdxs (·.str == Ineq.lt)
-  return ⟨⟨mdata⟩, strictIndexes⟩
+  ⟨⟨mdata⟩, strictIndexes⟩
 
+/-- Extract the certificate from the `vec` found by `findPositiveVector`. -/
 def postprocess (vec : Array ℚ) : HashMap ℕ ℕ :=
   let common_den : ℕ := vec.foldl (fun acc item => acc.lcm item.den) 1
   let vecNat : Array ℕ := vec.map (fun x : ℚ => (x * common_den).floor.toNat)
   HashMap.ofList <| vecNat.toList.enum.filter (fun ⟨_, item⟩ => item != 0)
 
+/--
+`produceCertificate hyps vars` tries to derive a contradiction from the comparisons in `hyps`
+by eliminating all variables ≤ `maxVar`.
+If successful, it returns a map `coeff : ℕ → ℕ` as a certificate.
+This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`.
+-/
 def produceCertificate : CertificateOracle :=
   fun hyps maxVar => do
     let ⟨A, strictIndexes⟩ := preprocess hyps maxVar

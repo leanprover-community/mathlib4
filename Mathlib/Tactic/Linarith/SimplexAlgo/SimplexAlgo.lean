@@ -1,20 +1,34 @@
-import Mathlib.Tactic.Linarith.SimplexAlgo.Gauss
+/-
+Copyright (c) 2024 Vasily Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasily Nesterov
+-/
+import Mathlib.Tactic.Linarith.SimplexAlgo.Datatypes
 
-open Linarith.SimplexAlgo.Gauss
+/-!
+# Simplex Algorithm
+
+To obtain required vector in `Linarith.SimplexAlgo.findPositiveVector` we run the Simplex Algorithm.
+We use Bland's rule for pivoting, which guarantees that the algorithm terminates.
+-/
 
 namespace Linarith.SimplexAlgo
 
+/-- An exception in the `SimplexAlgoM` monad. -/
 inductive SimplexAlgoException
 | Unfeasible : SimplexAlgoException
 
+/-- The mutable state for the `SimplexAlgoM` monad. -/
 structure SimplexAlgoState where
   table : Table
 
 abbrev SimplexAlgoM := ExceptT SimplexAlgoException <| StateM SimplexAlgoState
 
-/-- Given indexes `bvarIdx` and `fvarIdx` of exiting and entering variables in `bound` and `free`
-arrays, performs pivot operation, i.e. expresses one through the other and makes free one basic and
-vice versa. -/
+/--
+Given indexes `bvarIdx` and `fvarIdx` of exiting and entering variables in `bound` and `free`
+arrays, performs pivot operation, i.e. expresses one through the other and makes the free one basic
+and vice versa.
+-/
 def doPivotOperation (bvarIdx fvarIdx : Nat) : SimplexAlgoM Unit := do
   let mut newCurRow := (← get).table.mat[bvarIdx]!
   newCurRow := newCurRow.set! fvarIdx (-1)
@@ -42,7 +56,7 @@ def doPivotOperation (bvarIdx fvarIdx : Nat) : SimplexAlgoM Unit := do
   let newMat : Matrix newBasic.size newFree.size := ⟨newData⟩
   set ({← get with table := ⟨newBasic, newFree, newMat⟩} : SimplexAlgoState)
 
-/-- Check if we found solution. -/
+/-- Check if the solution is found. -/
 def checkSuccess : SimplexAlgoM Bool := do
   if (← get).table.mat[0]!.back <= 0 then
     return false
@@ -51,8 +65,10 @@ def checkSuccess : SimplexAlgoM Bool := do
       return false
   return true
 
-/-- Choose entering and exiting variables using Bland's rule that guarantees that the Simplex
-Algorithm terminates. -/
+/--
+Choose entering and exiting variables using Bland's rule that guarantees that the Simplex
+Algorithm terminates.
+-/
 def choosePivots : SimplexAlgoM (Nat × Nat) := do
   /- Entering variable: choose among the variables with a positive coefficient in the objective
   function, the one with the smallest index (in the initial indexing). -/
@@ -79,7 +95,8 @@ def choosePivots : SimplexAlgoM (Nat × Nat) := do
     if (← get).table.mat[i]![fvarIdx]! >= 0 then
       continue
     let coef := -(← get).table.mat[i]!.back / (← get).table.mat[i]![fvarIdx]!
-    if bvarIdxOpt.isNone || coef < minCoef || (coef == minCoef && (← get).table.basic[i]! < minIdx) then
+    if bvarIdxOpt.isNone || coef < minCoef ||
+        (coef == minCoef && (← get).table.basic[i]! < minIdx) then
       bvarIdxOpt := i
       minCoef := coef
       minIdx := (← get).table.basic[i]!
@@ -87,6 +104,7 @@ def choosePivots : SimplexAlgoM (Nat × Nat) := do
 
   return ⟨bvarIdx, fvarIdx⟩
 
+/-- Implementation of `runSimplexAlgo` in `SimplexAlgoM` monad. -/
 def runSimplexAlgoImp : SimplexAlgoM Unit := do
   while True do
     if ← checkSuccess then
@@ -98,8 +116,10 @@ def runSimplexAlgoImp : SimplexAlgoM Unit := do
     doPivotOperation bvarIdx fvarIdx
   return
 
-/-- Runs Simplex Algorithm strarting with `initTable`. It always terminates, finding solution if
-such exists. Returns the table obtained at the last step. -/
+/--
+Runs Simplex Algorithm strarting with `initTable`. It always terminates, finding solution if
+such exists. Returns the table obtained at the last step.
+-/
 def runSimplexAlgo (initTable : Table) : Table := Id.run do
   return (← runSimplexAlgoImp.run ⟨initTable⟩).snd.table
 

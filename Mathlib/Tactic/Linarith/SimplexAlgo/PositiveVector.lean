@@ -1,5 +1,20 @@
-import Mathlib.Tactic.Linarith.SimplexAlgo.Gauss
+/-
+Copyright (c) 2024 Vasily Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasily Nesterov
+-/
 import Mathlib.Tactic.Linarith.SimplexAlgo.SimplexAlgo
+import Mathlib.Tactic.Linarith.SimplexAlgo.Gauss
+
+/-!
+# `linarith` certificate search a LP problem
+
+`linarith` certificate search can easily be reduced to this LP problem: given the matrix `A` and the
+list `strictIndexes`, find the non-negative vector `v` such that some of its coordinates from
+the `strictIndexes` are posivie and `A v = 0`.
+
+The function `findPositiveVector` solves this problem.
+-/
 
 namespace Linarith.SimplexAlgo
 
@@ -24,7 +39,8 @@ after them. We place `z` between `f` and `x` because in this case `z` will be ba
 `Gauss.getTable` produce table with non-negative last column, meaning that we are starting from
 a feasible point.
 -/
-def stateLP {n m : Nat} (A : Matrix n m) (strictIndexes : List Nat) : Matrix (n + 2) (m + 3) := Id.run do
+def stateLP {n m : Nat} (A : Matrix n m) (strictIndexes : List Nat) : Matrix (n + 2) (m + 3) :=
+  Id.run do
   let mut objectiveRow : Array Rat := #[-1, 0] ++ (Array.mkArray m 0) ++ #[0]
   for idx in strictIndexes do
     objectiveRow := objectiveRow.set! (idx + 2) 1 -- +2 due to shifting by `f` and `z`
@@ -44,8 +60,8 @@ def exctractSolution (table : Table) : Array Rat := Id.run do
 
   return ans
 
-/-- Finds non-negative vector `v`, s.t. `A v = 0` and some of its coordinates from `strictCoords` are
-positive, in the case such `v` exists. -/
+/-- Finds non-negative vector `v`, s.t. `A v = 0` and some of its coordinates from `strictCoords`
+are positive, in the case such `v` exists. -/
 def findPositiveVector {n m : Nat} (A : Matrix n m) (strictIndexes : List Nat) : Array Rat :=
   /- State the linear programming problem. -/
   let B := stateLP A strictIndexes
