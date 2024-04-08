@@ -133,10 +133,9 @@ theorem continuous_of_continuous_eval {g : α → E →SLₛ[σ] F}
 def _root_.ContinousLinearMap.toPointwiseConvergenceCLM : (E →SL[σ] F) →L[𝕜₂] (E →SLₛ[σ] F) where
   toLinearMap := LinearMap.id
   cont := by
-    apply continuous_of_continuous_eval
-    intro x
-    change (Continuous (· x))
-    --exact ContinuousLinearMap.continuous
+    apply continuous_id_of_le
+    unfold ContinuousLinearMap.topologicalSpace
+    exact topologicalSpace_mono
     sorry
 
 variable (𝕜 E) in
