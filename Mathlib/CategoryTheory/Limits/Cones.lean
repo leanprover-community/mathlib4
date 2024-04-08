@@ -746,7 +746,7 @@ def mapCoconeMorphism {c c' : Cocone F} (f : c ⟶ c') : H.mapCocone c ⟶ H.map
 #align category_theory.functor.map_cocone_morphism CategoryTheory.Functor.mapCoconeMorphism
 
 /-- If `H` is an equivalence, we invert `H.mapCone` and get a cone for `F` from a cone
-for `F ⋙ H`.-/
+for `F ⋙ H`. -/
 def mapConeInv [IsEquivalence H] (c : Cone (F ⋙ H)) : Cone F :=
   (Limits.Cones.functorialityEquivalence F (asEquivalence H)).inverse.obj c
 #align category_theory.functor.map_cone_inv CategoryTheory.Functor.mapConeInv
@@ -764,7 +764,7 @@ def mapConeInvMapCone {F : J ⥤ D} (H : D ⥤ C) [IsEquivalence H] (c : Cone F)
 #align category_theory.functor.map_cone_inv_map_cone CategoryTheory.Functor.mapConeInvMapCone
 
 /-- If `H` is an equivalence, we invert `H.mapCone` and get a cone for `F` from a cone
-for `F ⋙ H`.-/
+for `F ⋙ H`. -/
 def mapCoconeInv [IsEquivalence H] (c : Cocone (F ⋙ H)) : Cocone F :=
   (Limits.Cocones.functorialityEquivalence F (asEquivalence H)).inverse.obj c
 #align category_theory.functor.map_cocone_inv CategoryTheory.Functor.mapCoconeInv
