@@ -20,6 +20,7 @@ See the tactic docs for an example.
 * Better support for `fvar`s.
 * Allow `suff ... at ...`?
 * Allow `suff_all ...`?
+* If the last tactic in the sequence is `simp`, use `simpa` in the suggestion?
 -/
 
 namespace Mathlib.Tactic.Suffa
