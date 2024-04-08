@@ -5,7 +5,6 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
-import Mathlib.Topology.Instances.AddCircle
 
 #align_import analysis.special_functions.complex.circle from "leanprover-community/mathlib"@"f333194f5ecd1482191452c5ea60b37d4d6afa08"
 
