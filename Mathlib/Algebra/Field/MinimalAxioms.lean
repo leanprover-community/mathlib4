@@ -19,7 +19,7 @@ a minimum number of equalities.
 
 -/
 
-set_option autoImplicit true
+universe u
 
 /-- Define a `Field` structure on a Type by proving a minimized set of axioms.
 Note that this uses the default definitions for `npow`, `nsmul`, `zsmul`, `div` and `sub`

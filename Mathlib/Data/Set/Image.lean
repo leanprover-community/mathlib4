@@ -236,12 +236,12 @@ theorem exists_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
 
 #align set.ball_image_of_ball Set.ball_image_of_ball
 
-@[deprecated forall_mem_image]
+@[deprecated forall_mem_image] -- 2024-02-21
 theorem mem_image_elim {f : α → β} {s : Set α} {C : β → Prop} (h : ∀ x : α, x ∈ s → C (f x)) :
     ∀ {y : β}, y ∈ f '' s → C y := forall_mem_image.2 h _
 #align set.mem_image_elim Set.mem_image_elim
 
-@[deprecated forall_mem_image]
+@[deprecated forall_mem_image] -- 2024-02-21
 theorem mem_image_elim_on {f : α → β} {s : Set α} {C : β → Prop} {y : β} (h_y : y ∈ f '' s)
     (h : ∀ x : α, x ∈ s → C (f x)) : C y := forall_mem_image.2 h _ h_y
 #align set.mem_image_elim_on Set.mem_image_elim_on
@@ -250,16 +250,7 @@ theorem mem_image_elim_on {f : α → β} {s : Set α} {C : β → Prop} {y : β
 @[congr]
 theorem image_congr {f g : α → β} {s : Set α} (h : ∀ a ∈ s, f a = g a) : f '' s = g '' s := by
   ext x
-  rw [mem_image, mem_image]
-  exact {
-    mp := by
-      rintro ⟨a, ha1, ha2⟩
-      exact ⟨a, ⟨ha1, (h a ha1) ▸ ha2⟩⟩,
-    mpr := by
-      rintro ⟨a, ha1, ha2⟩
-      exact ⟨a, ⟨ha1, (h a ha1) ▸ ha2⟩⟩
-  }
-  -- safe [ext_iff, iff_def]
+  exact exists_congr fun a ↦ and_congr_right fun ha ↦ by rw [h a ha]
 #align set.image_congr Set.image_congr
 
 /-- A common special case of `image_congr` -/
@@ -662,6 +653,8 @@ variable {f : ι → α} {s t : Set α}
 theorem forall_mem_range {p : α → Prop} : (∀ a ∈ range f, p a) ↔ ∀ i, p (f i) := by simp
 #align set.forall_range_iff Set.forall_mem_range
 
+@[deprecated] alias forall_range_iff := forall_mem_range -- 2024-02-21
+
 theorem forall_subtype_range_iff {p : range f → Prop} :
     (∀ a : range f, p a) ↔ ∀ i, p ⟨f i, mem_range_self _⟩ :=
   ⟨fun H i => H _, fun H ⟨y, i, hi⟩ => by
@@ -672,8 +665,8 @@ theorem forall_subtype_range_iff {p : range f → Prop} :
 theorem exists_range_iff {p : α → Prop} : (∃ a ∈ range f, p a) ↔ ∃ i, p (f i) := by simp
 #align set.exists_range_iff Set.exists_range_iff
 
-theorem exists_range_iff' {p : α → Prop} : (∃ a, a ∈ range f ∧ p a) ↔ ∃ i, p (f i) := by
-  simpa only [exists_prop] using exists_range_iff
+@[deprecated] -- 2024-03-10
+alias exists_range_iff' := exists_range_iff
 #align set.exists_range_iff' Set.exists_range_iff'
 
 theorem exists_subtype_range_iff {p : range f → Prop} :
@@ -688,7 +681,6 @@ theorem range_iff_surjective : range f = univ ↔ Surjective f :=
   eq_univ_iff_forall
 #align set.range_iff_surjective Set.range_iff_surjective
 
--- Porting note: Lean4 unfolds `Surjective` here, ruining dot notation
 alias ⟨_, _root_.Function.Surjective.range_eq⟩ := range_iff_surjective
 #align function.surjective.range_eq Function.Surjective.range_eq
 
@@ -949,7 +941,7 @@ theorem compl_range_inr : (range (Sum.inr : β → Sum α β))ᶜ = range (Sum.i
 
 theorem image_preimage_inl_union_image_preimage_inr (s : Set (Sum α β)) :
     Sum.inl '' (Sum.inl ⁻¹' s) ∪ Sum.inr '' (Sum.inr ⁻¹' s) = s := by
-  rw [image_preimage_eq_inter_range, image_preimage_eq_inter_range, ← inter_distrib_left,
+  rw [image_preimage_eq_inter_range, image_preimage_eq_inter_range, ← inter_union_distrib_left,
     range_inl_union_range_inr, inter_univ]
 #align set.image_preimage_inl_union_image_preimage_inr Set.image_preimage_inl_union_image_preimage_inr
 

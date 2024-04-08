@@ -29,7 +29,6 @@ namespace CategoryTheory
 open CategoryTheory.Limits
 
 variable {C : Type*} [Category C]
-
 variable [Preadditive C]
 
 -- See also `epi_of_nonzero_to_simple`, which does not require `Preadditive C`.
@@ -93,7 +92,7 @@ theorem finrank_hom_simple_simple_eq_zero_of_not_iso [HasKernels C] [Linear 𝕜
   haveI :=
     subsingleton_of_forall_eq (0 : X ⟶ Y) fun f => by
       have p := not_congr (isIso_iff_nonzero f)
-      simp only [Classical.not_not, Ne.def] at p
+      simp only [Classical.not_not, Ne] at p
       exact p.mp fun _ => h (asIso f)
   finrank_zero_of_subsingleton
 #align category_theory.finrank_hom_simple_simple_eq_zero_of_not_iso CategoryTheory.finrank_hom_simple_simple_eq_zero_of_not_iso
@@ -101,7 +100,6 @@ theorem finrank_hom_simple_simple_eq_zero_of_not_iso [HasKernels C] [Linear 𝕜
 end
 
 variable (𝕜 : Type*) [Field 𝕜]
-
 variable [IsAlgClosed 𝕜] [Linear 𝕜 C]
 
 -- Porting note: the defeq issue in lean3 described below is no longer a problem in Lean4.
@@ -127,7 +125,7 @@ theorem finrank_endomorphism_eq_one {X : C} (isIso_iff_nonzero : ∀ f : X ⟶ X
   have : FiniteDimensional 𝕜 (End X) := I
   obtain ⟨c, nu⟩ := spectrum.nonempty_of_isAlgClosed_of_finiteDimensional 𝕜 (End.of f)
   use c
-  rw [spectrum.mem_iff, IsUnit.sub_iff, isUnit_iff_isIso, isIso_iff_nonzero, Ne.def,
+  rw [spectrum.mem_iff, IsUnit.sub_iff, isUnit_iff_isIso, isIso_iff_nonzero, Ne,
     Classical.not_not, sub_eq_zero, Algebra.algebraMap_eq_smul_one] at nu
   exact nu.symm
 #align category_theory.finrank_endomorphism_eq_one CategoryTheory.finrank_endomorphism_eq_one

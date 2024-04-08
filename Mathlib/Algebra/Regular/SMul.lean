@@ -127,7 +127,6 @@ end SMul
 section Monoid
 
 variable [Monoid R] [MulAction R M]
-
 variable (M)
 
 /-- One is always `M`-regular. -/
@@ -152,14 +151,14 @@ theorem of_mul_eq_one (h : a * b = 1) : IsSMulRegular M b :=
 theorem pow (n : ℕ) (ra : IsSMulRegular M a) : IsSMulRegular M (a ^ n) := by
   induction' n with n hn
   · rw [pow_zero]; simp only [one]
-  · rw [pow_succ]
+  · rw [pow_succ']
     exact (ra.smul_iff (a ^ n)).mpr hn
 #align is_smul_regular.pow IsSMulRegular.pow
 
 /-- An element `a` is `M`-regular if and only if a positive power of `a` is `M`-regular. -/
 theorem pow_iff {n : ℕ} (n0 : 0 < n) : IsSMulRegular M (a ^ n) ↔ IsSMulRegular M a := by
   refine' ⟨_, pow n⟩
-  rw [← Nat.succ_pred_eq_of_pos n0, pow_succ', ← smul_eq_mul]
+  rw [← Nat.succ_pred_eq_of_pos n0, pow_succ, ← smul_eq_mul]
   exact of_smul _
 #align is_smul_regular.pow_iff IsSMulRegular.pow_iff
 

@@ -77,8 +77,7 @@ theorem exact_iff : Exact f g ↔ f ≫ g = 0 ∧ kernel.ι g ≫ cokernel.π f 
     · refine kernel.lift (cokernel.π f) u ?_ ≫ (imageIsoImage f).hom ≫ (imageSubobjectIso _).inv
       rw [← kernel.lift_ι g u hu, Category.assoc, h.2, comp_zero]
     · aesop_cat
-    · intros
-      rw [← cancel_mono (imageSubobject f).arrow, h]
+    · rw [← cancel_mono (imageSubobject f).arrow, h]
       simp
 #align category_theory.abelian.exact_iff CategoryTheory.Abelian.exact_iff
 
@@ -326,7 +325,6 @@ namespace Functor
 section
 
 variable {D : Type u₂} [Category.{v₂} D] [Abelian D]
-
 variable (F : C ⥤ D) [PreservesZeroMorphisms F]
 
 instance (priority := 100) reflectsExactSequencesOfPreservesZeroMorphismsOfFaithful [Faithful F] :
@@ -352,9 +350,7 @@ namespace Functor
 open Limits Abelian
 
 variable {A : Type u₁} {B : Type u₂} [Category.{v₁} A] [Category.{v₂} B]
-
 variable [Abelian A] [Abelian B]
-
 variable (L : A ⥤ B)
 
 section

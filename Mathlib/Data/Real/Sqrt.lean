@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 -/
 import Mathlib.Algebra.Star.Order
-import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Instances.NNReal
+import Mathlib.Topology.Order.MonotoneContinuity
 
 #align_import data.real.sqrt from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -26,9 +26,7 @@ theory of inverses of strictly monotone functions to prove that `NNReal.sqrt x` 
 effect, `NNReal.sqrt` is a bundled `OrderIso`, so for `NNReal` numbers we get continuity as well as
 theorems like `NNReal.sqrt x ≤ y ↔ x ≤ y * y` for free.
 
-Then we define `Real.sqrt x` to be `NNReal.sqrt (Real.toNNReal x)`. We also define a Cauchy sequence
-`Real.sqrtAux (f : CauSeq ℚ abs)` which converges to `Real.sqrt (mk f)` but do not prove (yet) that
-this sequence actually converges to `Real.sqrt (mk f)`.
+Then we define `Real.sqrt x` to be `NNReal.sqrt (Real.toNNReal x)`.
 
 ## Tags
 
@@ -126,42 +124,13 @@ end NNReal
 
 namespace Real
 
-/-- An auxiliary sequence of rational numbers that converges to `Real.sqrt (mk f)`.
-Currently this sequence is not used in `mathlib`.  -/
-def sqrtAux (f : CauSeq ℚ abs) : ℕ → ℚ
-  | 0 => mkRat (f 0).num.toNat.sqrt (f 0).den.sqrt
-  | n + 1 =>
-    let s := sqrtAux f n
-    max 0 <| (s + f (n + 1) / s) / 2
-#align real.sqrt_aux Real.sqrtAux
-
-theorem sqrtAux_nonneg (f : CauSeq ℚ abs) : ∀ i : ℕ, 0 ≤ sqrtAux f i
-  | 0 => by
-    rw [sqrtAux, Rat.mkRat_eq, Rat.divInt_eq_div]; apply div_nonneg <;>
-      exact Int.cast_nonneg.2 (Int.ofNat_nonneg _)
-  | n + 1 => le_max_left _ _
-#align real.sqrt_aux_nonneg Real.sqrtAux_nonneg
-
-/- TODO(Mario): finish the proof
-theorem sqrt_aux_converges (f : cau_seq ℚ abs) : ∃ h x, 0 ≤ x ∧ x * x = max 0 (mk f) ∧
-    mk ⟨sqrt_aux f, h⟩ = x :=
-begin
-  rcases sqrt_exists (le_max_left 0 (mk f)) with ⟨x, x0, hx⟩,
-  suffices : ∃ h, mk ⟨sqrt_aux f, h⟩ = x,
-  { exact this.imp (λ h e, ⟨x, x0, hx, e⟩) },
-  apply of_near,
-
-  rsuffices ⟨δ, δ0, hδ⟩ : ∃ δ > 0, ∀ i, abs (↑(sqrt_aux f i) - x) < δ / 2 ^ i,
-  { intros }
-end -/
-
 -- Porting note (#11215): TODO: was @[pp_nodot]
 /-- The square root of a real number. This returns 0 for negative inputs. -/
 noncomputable def sqrt (x : ℝ) : ℝ :=
   NNReal.sqrt (Real.toNNReal x)
 #align real.sqrt Real.sqrt
 
-/-quotient.lift_on x
+/- quotient.lift_on x
   (λ f, mk ⟨sqrt_aux f, (sqrt_aux_converges f).fst⟩)
   (λ f g e, begin
     rcases sqrt_aux_converges f with ⟨hf, x, x0, xf, xs⟩,
@@ -479,11 +448,11 @@ theorem sqrt_one_add_le (h : -1 ≤ x) : sqrt (1 + x) ≤ 1 + x / 2 := by
     _ ≤ 1 + x + (x / 2) ^ 2 := le_add_of_nonneg_right <| sq_nonneg _
     _ = _ := by ring
 
-/-- Although the instance `IsROrC.toStarOrderedRing` exists, it is locked behind the
+/-- Although the instance `RCLike.toStarOrderedRing` exists, it is locked behind the
 `ComplexOrder` scope because currently the order on `ℂ` is not enabled globally. But we
 want `StarOrderedRing ℝ` to be available globally, so we include this instance separately.
 In addition, providing this instance here makes it available earlier in the import
-hierarchy; otherwise in order to access it we would need to import `Data.IsROrC.Basic` -/
+hierarchy; otherwise in order to access it we would need to import `Analysis.RCLike.Basic` -/
 instance : StarOrderedRing ℝ :=
   StarOrderedRing.ofNonnegIff' add_le_add_left fun r => by
     refine ⟨fun hr => ⟨sqrt r, (mul_self_sqrt hr).symm⟩, ?_⟩

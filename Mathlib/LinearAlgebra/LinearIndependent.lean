@@ -91,7 +91,6 @@ variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
 section Module
 
 variable {v : ι → M}
-
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid M'']
 variable [Module R M] [Module R M'] [Module R M'']
 variable {a b : R} {x y : M}
@@ -518,8 +517,7 @@ theorem linearIndependent_iUnion_of_directed {η : Type*} {s : η → Set M} (hs
     (h : ∀ i, LinearIndependent R (fun x => x : s i → M)) :
     LinearIndependent R (fun x => x : (⋃ i, s i) → M) := by
   by_cases hη : Nonempty η
-  · skip
-    refine' linearIndependent_of_finite (⋃ i, s i) fun t ht ft => _
+  · refine' linearIndependent_of_finite (⋃ i, s i) fun t ht ft => _
     rcases finite_subset_iUnion ft ht with ⟨I, fi, hI⟩
     rcases hs.finset_le fi.toFinset with ⟨i, hi⟩
     exact (h i).mono (Subset.trans hI <| iUnion₂_subset fun j hj => hi j (fi.mem_toFinset.2 hj))
@@ -1242,9 +1240,7 @@ end Module
 section Nontrivial
 
 variable [Ring R] [Nontrivial R] [AddCommGroup M] [AddCommGroup M']
-
 variable [Module R M] [NoZeroSMulDivisors R M] [Module R M']
-
 variable {v : ι → M} {s t : Set M} {x y z : M}
 
 theorem linearIndependent_unique_iff (v : ι → M) [Unique ι] :
@@ -1275,9 +1271,7 @@ These can be considered generalizations of properties of linear independence in 
 section Module
 
 variable [DivisionRing K] [AddCommGroup V] [AddCommGroup V']
-
 variable [Module K V] [Module K V']
-
 variable {v : ι → V} {s t : Set V} {x y z : V}
 
 open Submodule

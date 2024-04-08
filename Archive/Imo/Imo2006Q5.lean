@@ -3,7 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Data.Polynomial.RingDivision
+import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Dynamics.PeriodicPts
 
 #align_import imo.imo2006_q5 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
@@ -150,8 +150,9 @@ theorem imo2006_q5' {P : Polynomial ℤ} (hP : 1 < P.natDegree) :
   -- Otherwise, take a, b with P(a) = b, P(b) = a, a ≠ b.
   · rcases Finset.not_subset.1 H with ⟨a, ha, hab⟩
     replace ha := isRoot_of_mem_roots (Multiset.mem_toFinset.1 ha)
-    rw [IsRoot.def, eval_sub, eval_comp, eval_X, sub_eq_zero] at ha
-    rw [Multiset.mem_toFinset, mem_roots hPX', IsRoot.def, eval_sub, eval_X, sub_eq_zero] at hab
+    rw [IsRoot.definition, eval_sub, eval_comp, eval_X, sub_eq_zero] at ha
+    rw [Multiset.mem_toFinset, mem_roots hPX', IsRoot.definition, eval_sub, eval_X, sub_eq_zero]
+      at hab
     set b := P.eval a
     -- More auxiliary lemmas on degrees.
     have hPab : (P + (X : ℤ[X]) - a - b).natDegree = P.natDegree := by
@@ -175,9 +176,9 @@ theorem imo2006_q5' {P : Polynomial ℤ} (hP : 1 < P.natDegree) :
     · -- Let t be a root of P(P(t)) - t, define u = P(t).
       intro t ht
       replace ht := isRoot_of_mem_roots (Multiset.mem_toFinset.1 ht)
-      rw [IsRoot.def, eval_sub, eval_comp, eval_X, sub_eq_zero] at ht
-      simp only [mem_roots hPab', sub_eq_iff_eq_add, Multiset.mem_toFinset, IsRoot.def, eval_sub,
-        eval_add, eval_X, eval_C, eval_int_cast, Int.cast_id, zero_add]
+      rw [IsRoot.definition, eval_sub, eval_comp, eval_X, sub_eq_zero] at ht
+      simp only [mem_roots hPab', sub_eq_iff_eq_add, Multiset.mem_toFinset, IsRoot.definition,
+        eval_sub, eval_add, eval_X, eval_C, eval_int_cast, Int.cast_id, zero_add]
       -- An auxiliary lemma proved earlier implies we only need to show |t - a| = |u - b| and
       -- |t - b| = |u - a|. We prove this by establishing that each side of either equation divides
       -- the other.
@@ -200,7 +201,8 @@ theorem imo2006_q5 {P : Polynomial ℤ} (hP : 1 < P.natDegree) {k : ℕ} (hk : 0
   have hP' : P.comp P - X ≠ 0 := by
     simpa [Nat.iterate] using Polynomial.iterate_comp_sub_X_ne hP zero_lt_two
   replace ht := isRoot_of_mem_roots (Multiset.mem_toFinset.1 ht)
-  rw [IsRoot.def, eval_sub, iterate_comp_eval, eval_X, sub_eq_zero] at ht
-  rw [Multiset.mem_toFinset, mem_roots hP', IsRoot.def, eval_sub, eval_comp, eval_X, sub_eq_zero]
+  rw [IsRoot.definition, eval_sub, iterate_comp_eval, eval_X, sub_eq_zero] at ht
+  rw [Multiset.mem_toFinset, mem_roots hP', IsRoot.definition, eval_sub, eval_comp, eval_X,
+    sub_eq_zero]
   exact Polynomial.isPeriodicPt_eval_two ⟨k, hk, ht⟩
 #align imo2006_q5 imo2006_q5

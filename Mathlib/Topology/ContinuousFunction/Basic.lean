@@ -580,7 +580,6 @@ end Lift
 namespace Homeomorph
 
 variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
-
 variable (f : α ≃ₜ β) (g : β ≃ₜ γ)
 
 /-- The forward direction of a homeomorphism, as a bundled continuous map. -/
@@ -595,7 +594,7 @@ instance : Coe (α ≃ₜ β) C(α, β) :=
   ⟨Homeomorph.toContinuousMap⟩
 
 -- Porting note: Syntactic tautology
-/-theorem toContinuousMap_as_coe : f.toContinuousMap = f :=
+/- theorem toContinuousMap_as_coe : f.toContinuousMap = f :=
   rfl
 -/
 #noalign homeomorph.to_continuous_map_as_coe

@@ -108,7 +108,7 @@ theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) 
     -- Porting note: used to be `ext y`
     rename_i n_ih a f y h₁
     suffices (fun x => truncate (y x)) = f
-      by simp [this]; try (exact HEq.rfl;)
+      by simp [this]
     funext y
 
     apply n_ih
@@ -116,7 +116,6 @@ theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) 
 #align pfunctor.approx.truncate_eq_of_agree PFunctor.Approx.truncate_eq_of_agree
 
 variable {X : Type w}
-
 variable (f : X → F X)
 
 /-- `sCorec f i n` creates an approximation of height `n`
@@ -224,9 +223,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.ext' PFunctor.M.ext'
 
 variable {X : Type*}
-
 variable (f : X → F X)
-
 variable {F}
 
 /-- Corecursor for the M-type defined by `F`. -/

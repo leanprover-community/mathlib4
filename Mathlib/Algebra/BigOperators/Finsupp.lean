@@ -6,7 +6,7 @@ Authors: Kenny Lau
 import Mathlib.Data.Finsupp.Indicator
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.GroupTheory.Submonoid.Membership
@@ -27,19 +27,15 @@ open Finset Function
 open BigOperators
 
 variable {α ι γ A B C : Type*} [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C]
-
 variable {t : ι → A → C} (h0 : ∀ i, t i 0 = 0) (h1 : ∀ i x y, t i (x + y) = t i x + t i y)
-
 variable {s : Finset α} {f : α → ι →₀ A} (i : ι)
-
 variable (g : ι →₀ A) (k : ι → A → γ → B) (x : γ)
-
 variable {β M M' N P G H R S : Type*}
 
 namespace Finsupp
 
 /-!
-### Declarations about `sum` and `prod`
+### Declarations about `Finsupp.sum` and `Finsupp.prod`
 
 In most of this section, the domain `β` is assumed to be an `AddMonoid`.
 -/
@@ -410,7 +406,7 @@ if `h` is an additive-to-multiplicative homomorphism.
 This is a more specialized version of `Finsupp.prod_add_index` with simpler hypotheses. -/
 @[to_additive
       "Taking the sum under `h` is an additive homomorphism of finsupps,if `h` is an additive
-      homomorphism. This is a more specific version of `finsupp.sum_add_index` with simpler
+      homomorphism. This is a more specific version of `Finsupp.sum_add_index` with simpler
       hypotheses."]
 theorem prod_add_index' [AddZeroClass M] [CommMonoid N] {f g : α →₀ M} {h : α → M → N}
     (h_zero : ∀ a, h a 0 = 1) (h_add : ∀ a b₁ b₂, h a (b₁ + b₂) = h a b₁ * h a b₂) :

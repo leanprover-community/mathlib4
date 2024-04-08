@@ -80,7 +80,6 @@ def unitClosed : Closed (𝟙_ C) where
 #align category_theory.unit_closed CategoryTheory.unitClosed
 
 variable (A B : C) {X X' Y Y' Z : C}
-
 variable [Closed A]
 
 /-- This is the internal hom `A ⟶[C] -`.

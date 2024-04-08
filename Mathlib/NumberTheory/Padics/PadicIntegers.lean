@@ -182,10 +182,13 @@ instance : CharZero ℤ_[p] where
   cast_injective m n h := Nat.cast_injective (by rw [Subtype.ext_iff] at h; norm_cast at h)
 
 @[norm_cast] -- @[simp] -- Porting note: not in simpNF
-theorem coe_int_eq (z1 z2 : ℤ) : (z1 : ℤ_[p]) = z2 ↔ z1 = z2 := by
+theorem intCast_eq (z1 z2 : ℤ) : (z1 : ℤ_[p]) = z2 ↔ z1 = z2 := by
   suffices (z1 : ℚ_[p]) = z2 ↔ z1 = z2 from Iff.trans (by norm_cast) this
   norm_cast
-#align padic_int.coe_int_eq PadicInt.coe_int_eq
+#align padic_int.coe_int_eq PadicInt.intCast_eq
+
+-- 2024-04-05
+@[deprecated] alias coe_int_eq := intCast_eq
 
 /-- A sequence of integers that is Cauchy with respect to the `p`-adic norm converges to a `p`-adic
 integer. -/
@@ -332,7 +335,7 @@ theorem exists_pow_neg_lt {ε : ℝ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℝ) ^ (
   obtain ⟨k, hk⟩ := exists_nat_gt ε⁻¹
   use k
   rw [← inv_lt_inv hε (_root_.zpow_pos_of_pos _ _)]
-  · rw [zpow_neg, inv_inv, zpow_coe_nat]
+  · rw [zpow_neg, inv_inv, zpow_natCast]
     apply lt_of_lt_of_le hk
     norm_cast
     apply le_of_lt
@@ -500,7 +503,7 @@ theorem unitCoeff_spec {x : ℤ_[p]} (hx : x ≠ 0) :
     · simp
     · exact mod_cast hp.1.ne_zero
   convert repr using 2
-  rw [← zpow_coe_nat, Int.natAbs_of_nonneg (valuation_nonneg x)]
+  rw [← zpow_natCast, Int.natAbs_of_nonneg (valuation_nonneg x)]
 #align padic_int.unit_coeff_spec PadicInt.unitCoeff_spec
 
 end Units
@@ -514,7 +517,7 @@ theorem norm_le_pow_iff_le_valuation (x : ℤ_[p]) (hx : x ≠ 0) (n : ℕ) :
     ‖x‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ ↑n ≤ x.valuation := by
   rw [norm_eq_pow_val hx]
   lift x.valuation to ℕ using x.valuation_nonneg with k
-  simp only [Int.ofNat_le, zpow_neg, zpow_coe_nat]
+  simp only [Int.ofNat_le, zpow_neg, zpow_natCast]
   have aux : ∀ m : ℕ, 0 < (p : ℝ) ^ m := by
     intro m
     refine pow_pos ?_ m
@@ -547,7 +550,7 @@ theorem norm_le_pow_iff_mem_span_pow (x : ℤ_[p]) (n : ℕ) :
     ‖x‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ x ∈ (Ideal.span {(p : ℤ_[p]) ^ n} : Ideal ℤ_[p]) := by
   by_cases hx : x = 0
   · subst hx
-    simp only [norm_zero, zpow_neg, zpow_coe_nat, inv_nonneg, iff_true_iff, Submodule.zero_mem]
+    simp only [norm_zero, zpow_neg, zpow_natCast, inv_nonneg, iff_true_iff, Submodule.zero_mem]
     exact mod_cast Nat.zero_le _
   rw [norm_le_pow_iff_le_valuation x hx, mem_span_pow_iff_le_valuation x hx]
 #align padic_int.norm_le_pow_iff_mem_span_pow PadicInt.norm_le_pow_iff_mem_span_pow

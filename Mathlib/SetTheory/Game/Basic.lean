@@ -3,11 +3,11 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison, Apurva Nakade
 -/
-import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Ring.Int
 import Mathlib.SetTheory.Game.PGame
 import Mathlib.Tactic.Abel
 
-#align_import set_theory.game.basic from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
+#align_import set_theory.game.basic from "leanprover-community/mathlib"@"8900d545017cd21961daa2a1734bb658ef52c618"
 
 /-!
 # Combinatorial games.
@@ -49,7 +49,7 @@ abbrev Game :=
 
 namespace Game
 
--- Porting note: added this definition
+-- Porting note (#11445): added this definition
 /-- Negation of games. -/
 instance : Neg Game where
   neg := Quot.map Neg.neg <| fun _ _ => (neg_equiv_neg_iff).2
@@ -201,6 +201,30 @@ instance orderedAddCommGroup : OrderedAddCommGroup Game :=
   { Game.instAddCommGroupWithOneGame, Game.instPartialOrderGame with
     add_le_add_left := @add_le_add_left _ _ _ Game.covariantClass_add_le }
 #align game.ordered_add_comm_group SetTheory.Game.orderedAddCommGroup
+
+/-- A small family of games is bounded above. -/
+lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) :
+    BddAbove (Set.range f) := by
+  obtain ⟨x, hx⟩ := PGame.bddAbove_range_of_small (Quotient.out ∘ f)
+  refine ⟨⟦x⟧, Set.forall_mem_range.2 fun i ↦ ?_⟩
+  simpa [PGame.le_iff_game_le] using hx $ Set.mem_range_self i
+
+/-- A small set of games is bounded above. -/
+lemma bddAbove_of_small (s : Set Game.{u}) [Small.{u} s] : BddAbove s := by
+  simpa using bddAbove_range_of_small (Subtype.val : s → Game.{u})
+#align game.bdd_above_of_small SetTheory.Game.bddAbove_of_small
+
+/-- A small family of games is bounded below. -/
+lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) :
+    BddBelow (Set.range f) := by
+  obtain ⟨x, hx⟩ := PGame.bddBelow_range_of_small (Quotient.out ∘ f)
+  refine ⟨⟦x⟧, Set.forall_mem_range.2 fun i ↦ ?_⟩
+  simpa [PGame.le_iff_game_le] using hx $ Set.mem_range_self i
+
+/-- A small set of games is bounded below. -/
+lemma bddBelow_of_small (s : Set Game.{u}) [Small.{u} s] : BddBelow s := by
+  simpa using bddBelow_range_of_small (Subtype.val : s → Game.{u})
+#align game.bdd_below_of_small SetTheory.Game.bddBelow_of_small
 
 end Game
 
@@ -399,7 +423,6 @@ def mulCommRelabelling (x y : PGame.{u}) : x * y ≡r y * x :=
         (mulCommRelabelling _ _).addCongr (mulCommRelabelling _ _)).subCongr
         (mulCommRelabelling _ _) }
   termination_by (x, y)
-  decreasing_by all_goals pgame_wf_tac
 #align pgame.mul_comm_relabelling SetTheory.PGame.mulCommRelabelling
 
 theorem quot_mul_comm (x y : PGame.{u}) : (⟦x * y⟧ : Game) = ⟦y * x⟧ :=
@@ -479,7 +502,6 @@ def negMulRelabelling (x y : PGame.{u}) : -x * y ≡r -(x * y) :=
         change -(mk xl xr xL xR * _) ≡r _
         exact (negMulRelabelling _ _).symm
   termination_by (x, y)
-  decreasing_by all_goals pgame_wf_tac
 #align pgame.neg_mul_relabelling SetTheory.PGame.negMulRelabelling
 
 @[simp]
@@ -593,7 +615,6 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
         rw [quot_left_distrib (xR i) (mk yl yr yL yR) (zL k)]
         abel
   termination_by (x, y, z)
-  decreasing_by all_goals pgame_wf_tac
 #align pgame.quot_left_distrib SetTheory.PGame.quot_left_distrib
 
 /-- `x * (y + z)` is equivalent to `x * y + x * z.`-/
@@ -636,8 +657,7 @@ def mulOneRelabelling : ∀ x : PGame.{u}, x * 1 ≡r x
     refine ⟨(Equiv.sumEmpty _ _).trans (Equiv.prodPUnit _),
       (Equiv.emptySum _ _).trans (Equiv.prodPUnit _), ?_, ?_⟩ <;>
     (try rintro (⟨i, ⟨⟩⟩ | ⟨i, ⟨⟩⟩)) <;>
-    { (try intro i)
-      dsimp
+    { dsimp
       apply (Relabelling.subCongr (Relabelling.refl _) (mulZeroRelabelling _)).trans
       rw [sub_zero]
       exact (addZeroRelabelling _).trans <|
@@ -818,7 +838,6 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
         rw [quot_mul_assoc (xR i) (yL j) (zL k)]
         abel
   termination_by (x, y, z)
-  decreasing_by all_goals pgame_wf_tac
 #align pgame.quot_mul_assoc SetTheory.PGame.quot_mul_assoc
 
 /-- `x * y * z` is equivalent to `x * (y * z).`-/

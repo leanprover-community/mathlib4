@@ -64,7 +64,7 @@ hf.directedOn_range.sSup_le <| Set.forall_mem_range.2 ha
 lemma CompletePartialOrder.scottContinuous {f : α → β} :
     ScottContinuous f ↔
     ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (. ≤ .) d → IsLUB (f '' d) (f (sSup d)) := by
-  refine' ⟨λ h d hd₁ hd₂ ↦ h hd₁ hd₂ hd₂.isLUB_sSup, λ h d hne hd a hda ↦ _⟩
+  refine' ⟨fun h d hd₁ hd₂ ↦ h hd₁ hd₂ hd₂.isLUB_sSup, fun h d hne hd a hda ↦ ?_⟩
   rw [hda.unique hd.isLUB_sSup]
   exact h hne hd
 

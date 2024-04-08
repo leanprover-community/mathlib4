@@ -3,12 +3,12 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.Algebra.MvPolynomial.Supported
 import Mathlib.LinearAlgebra.LinearIndependent
-import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.Data.MvPolynomial.Supported
+import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Algebraic
-import Mathlib.Data.MvPolynomial.Equiv
+import Mathlib.RingTheory.MvPolynomial.Basic
 
 #align_import ring_theory.algebraic_independent from "leanprover-community/mathlib"@"949dc57e616a621462062668c9f39e4e17b64b69"
 
@@ -50,15 +50,10 @@ open BigOperators
 universe x u v w
 
 variable {ι : Type*} {ι' : Type*} (R : Type*) {K : Type*}
-
 variable {A : Type*} {A' A'' : Type*} {V : Type u} {V' : Type*}
-
 variable (x : ι → A)
-
 variable [CommRing R] [CommRing A] [CommRing A'] [CommRing A'']
-
 variable [Algebra R A] [Algebra R A'] [Algebra R A'']
-
 variable {a b : R}
 
 /-- `AlgebraicIndependent R x` states the family of elements `x`
@@ -560,7 +555,7 @@ section Field
 
 variable [Field K] [Algebra K A]
 
-/-Porting note: removing `simp`, not in simp normal form. Could make `Function.Injective f` a
+/- Porting note: removing `simp`, not in simp normal form. Could make `Function.Injective f` a
 simp lemma when `f` is a field hom, and then simp would prove this -/
 theorem algebraicIndependent_empty_type [IsEmpty ι] [Nontrivial A] : AlgebraicIndependent K x := by
   rw [algebraicIndependent_empty_type_iff]

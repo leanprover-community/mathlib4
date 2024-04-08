@@ -47,7 +47,6 @@ open scoped Classical Topology ENNReal Cardinal
 
 set_option linter.uppercaseLean3 false
 
--- mathport name: exprℓ_infty_ℝ
 local notation "ℓ_infty_ℝ" => lp (fun n : ℕ => ℝ) ∞
 
 universe u v w
@@ -438,7 +437,6 @@ instance : MetricSpace GHSpace where
               hausdorffDist (p.1 : Set ℓ_infty_ℝ) p.2) ∘
             Prod.swap ''
           { a | ⟦a⟧ = x } ×ˢ { b | ⟦b⟧ = y } := by
-      congr
       funext
       simp only [comp_apply, Prod.fst_swap, Prod.snd_swap]
       congr
@@ -525,7 +523,7 @@ end GHSpace
 end GromovHausdorff
 
 /-- In particular, nonempty compacts of a metric space map to `GHSpace`.
-    We register this in the topological_space namespace to take advantage
+    We register this in the `TopologicalSpace` namespace to take advantage
     of the notation `p.toGHSpace`. -/
 def TopologicalSpace.NonemptyCompacts.toGHSpace {X : Type u} [MetricSpace X]
     (p : NonemptyCompacts X) : GromovHausdorff.GHSpace :=

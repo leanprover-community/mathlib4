@@ -20,9 +20,6 @@ We introduce the bundled categories:
 along with the relevant forgetful functors between them.
 -/
 
-set_option autoImplicit true
-
-
 universe u v
 
 open CategoryTheory
@@ -102,7 +99,8 @@ lemma coe_id {X : MonCat} : (𝟙 X : X → X) = id := rfl
 lemma coe_comp {X Y Z : MonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 -- porting note (#10756): added lemma
-@[to_additive (attr := simp)] lemma forget_map (f : X ⟶ Y) : (forget MonCat).map f = f := rfl
+@[to_additive (attr := simp)] lemma forget_map {X Y : MonCat} (f : X ⟶ Y) :
+    (forget MonCat).map f = f := rfl
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : MonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -242,7 +240,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommMon.of AddCommMonCat.of
 
-/-- Construct a bundled `AddCommMon` from the underlying type and typeclass. -/
+/-- Construct a bundled `AddCommMonCat` from the underlying type and typeclass. -/
 add_decl_doc AddCommMonCat.of
 
 @[to_additive]

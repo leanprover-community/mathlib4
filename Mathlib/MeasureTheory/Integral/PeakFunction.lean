@@ -160,7 +160,7 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_tendsto_aux
         apply set_integral_mono_set
         · exact I.norm.mul_const _
         · exact eventually_of_forall fun x => mul_nonneg (norm_nonneg _) δpos.le
-        · apply eventually_of_forall ut
+        · exact eventually_of_forall ut
       _ = ∫ x in t, φ i x * δ ∂μ := by
         apply set_integral_congr ht fun x hx => ?_
         rw [Real.norm_of_nonneg (hφpos _ (hts hx))]
@@ -180,8 +180,8 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_tendsto_aux
       _ ≤ δ * ∫ x in s, ‖g x‖ ∂μ := by
         rw [integral_mul_left]
         apply mul_le_mul_of_nonneg_left (set_integral_mono_set hmg.norm _ _) δpos.le
-        · exact eventually_of_forall fun x => norm_nonneg _
-        · apply eventually_of_forall; exact diff_subset s u
+        · filter_upwards with x using norm_nonneg _
+        · filter_upwards using diff_subset s u
   calc
     ‖∫ x in s, φ i x • g x ∂μ‖ =
       ‖(∫ x in s \ u, φ i x • g x ∂μ) + ∫ x in s ∩ u, φ i x • g x ∂μ‖ := by

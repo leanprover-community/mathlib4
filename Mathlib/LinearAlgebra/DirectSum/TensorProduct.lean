@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.Algebra.DirectSum.Module
 
 #align_import linear_algebra.direct_sum.tensor_product from "leanprover-community/mathlib"@"9b9d125b7be0930f564a68f1d73ace10cf46064d"
@@ -36,17 +36,11 @@ open LinearMap
 attribute [local ext] TensorProduct.ext
 
 variable (R : Type u) [CommSemiring R]
-
 variable {ι₁ : Type v₁} {ι₂ : Type v₂}
-
 variable [DecidableEq ι₁] [DecidableEq ι₂]
-
 variable (M₁ : ι₁ → Type w₁) (M₁' : Type w₁') (M₂ : ι₂ → Type w₂) (M₂' : Type w₂')
-
 variable [∀ i₁, AddCommMonoid (M₁ i₁)] [AddCommMonoid M₁']
-
 variable [∀ i₂, AddCommMonoid (M₂ i₂)] [AddCommMonoid M₂']
-
 variable [∀ i₁, Module R (M₁ i₁)] [Module R M₁'] [∀ i₂, Module R (M₂ i₂)] [Module R M₂']
 
 
