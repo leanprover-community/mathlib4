@@ -22,7 +22,7 @@ instance (priority := 100) Countable.toSmall (α : Type v) [Countable α] : Smal
   let ⟨_, hf⟩ := exists_injective_nat α
   small_of_injective hf
 #align small_of_countable Countable.toSmall
-#align small_of_fintype Countable.toSmall
+#align small_of_fintype Countable.toSmallₓ -- this alignment clashes with the one above
 
 @[deprecated, nolint defLemma] -- 2024-03-20
 alias small_of_countable := Countable.toSmall

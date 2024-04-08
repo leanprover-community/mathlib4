@@ -54,7 +54,7 @@ namespace LieModule
 open Set Function LieAlgebra TensorProduct TensorProduct.LieModule
 open scoped BigOperators TensorProduct
 
-section notation_weight_space_of
+section notation_weightSpaceOf
 
 /-- Until we define `LieModule.weightSpaceOf`, it is useful to have some notation as follows: -/
 local notation3 "𝕎("M", " χ", " x")" => (toEndomorphism R L M x).maximalGeneralizedEigenspace χ
@@ -156,7 +156,7 @@ def weightSpaceOf (χ : R) (x : L) : LieSubmodule R L M :=
       rw [← zero_add χ]
       exact lie_mem_maxGenEigenspace_toEndomorphism (by simp) hm }
 
-end notation_weight_space_of
+end notation_weightSpaceOf
 
 variable (M)
 
@@ -261,7 +261,7 @@ lemma weightSpace_zero_normalizer_eq_self :
   intro y
   obtain ⟨k, hk⟩ := hm y y
   use k + 1
-  simpa [pow_succ', LinearMap.mul_eq_comp]
+  simpa [pow_succ, LinearMap.mul_eq_comp]
 
 lemma iSup_ucs_le_weightSpace_zero :
     ⨆ k, (⊥ : LieSubmodule R L M).ucs k ≤ weightSpace M (0 : L → R) := by
@@ -320,7 +320,7 @@ lemma mem_posFittingCompOf (x : L) (m : M) :
     exact this n k
   intro m l
   induction' l with l ih; simp
-  simp only [lowerCentralSeries_succ, pow_succ, LinearMap.mul_apply]
+  simp only [lowerCentralSeries_succ, pow_succ', LinearMap.mul_apply]
   exact LieSubmodule.lie_mem_lie _ ⊤ (LieSubmodule.mem_top x) ih
 
 @[simp] lemma posFittingCompOf_eq_bot_of_isNilpotent

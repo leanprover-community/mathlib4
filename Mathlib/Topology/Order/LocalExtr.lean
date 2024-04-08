@@ -283,7 +283,6 @@ nonrec theorem IsLocalMax.bicomp_mono [Preorder δ] {op : β → γ → δ}
   hf.bicomp_mono hop hg
 #align is_local_max.bicomp_mono IsLocalMax.bicomp_mono
 
--- No `extr` version because we need `hf` and `hg` to be of the same kind
 nonrec theorem IsLocalMinOn.bicomp_mono [Preorder δ] {op : β → γ → δ}
     (hop : ((· ≤ ·) ⇒ (· ≤ ·) ⇒ (· ≤ ·)) op op) (hf : IsLocalMinOn f s a) {g : α → γ}
     (hg : IsLocalMinOn g s a) : IsLocalMinOn (fun x => op (f x) (g x)) s a :=

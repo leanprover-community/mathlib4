@@ -228,7 +228,7 @@ theorem SameCycle.exists_pow_eq' [Finite α] : SameCycle f x y → ∃ i < order
   classical
     rintro ⟨k, rfl⟩
     use (k % orderOf f).natAbs
-    have h₀ := Int.coe_nat_pos.mpr (orderOf_pos f)
+    have h₀ := Int.natCast_pos.mpr (orderOf_pos f)
     have h₁ := Int.emod_nonneg k h₀.ne'
     rw [← zpow_natCast, Int.natAbs_of_nonneg h₁, zpow_mod_orderOf]
     refine' ⟨_, by rfl⟩
@@ -249,12 +249,12 @@ instance [Fintype α] [DecidableEq α] (f : Perm α) : DecidableRel (SameCycle f
   decidable_of_iff (∃ n ∈ List.range (Fintype.card (Perm α)), (f ^ n) x = y)
     ⟨fun ⟨n, _, hn⟩ => ⟨n, hn⟩, fun ⟨i, hi⟩ => ⟨(i % orderOf f).natAbs,
       List.mem_range.2 (Int.ofNat_lt.1 <| by
-        rw [Int.natAbs_of_nonneg (Int.emod_nonneg _ <| Int.coe_nat_ne_zero.2 (orderOf_pos _).ne')]
-        · refine' (Int.emod_lt _ <| Int.coe_nat_ne_zero_iff_pos.2 <| orderOf_pos _).trans_le _
+        rw [Int.natAbs_of_nonneg (Int.emod_nonneg _ <| Int.natCast_ne_zero.2 (orderOf_pos _).ne')]
+        · refine' (Int.emod_lt _ <| Int.natCast_ne_zero_iff_pos.2 <| orderOf_pos _).trans_le _
           simp [orderOf_le_card_univ]),
       by
         rw [← zpow_natCast, Int.natAbs_of_nonneg (Int.emod_nonneg _ <|
-          Int.coe_nat_ne_zero_iff_pos.2 <| orderOf_pos _), zpow_mod_orderOf, hi]⟩⟩
+          Int.natCast_ne_zero_iff_pos.2 <| orderOf_pos _), zpow_mod_orderOf, hi]⟩⟩
 
 end SameCycle
 
@@ -340,7 +340,7 @@ theorem IsCycle.exists_pow_eq (hf : IsCycle f) (hx : f x ≠ x) (hy : f y ≠ y)
   let ⟨n, hn⟩ := hf.exists_zpow_eq hx hy
   classical exact
       ⟨(n % orderOf f).toNat, by
-        {have := n.emod_nonneg (Int.coe_nat_ne_zero.mpr (ne_of_gt (orderOf_pos f)))
+        {have := n.emod_nonneg (Int.natCast_ne_zero.mpr (ne_of_gt (orderOf_pos f)))
          rwa [← zpow_natCast, Int.toNat_of_nonneg this, zpow_mod_orderOf]}⟩
 #align equiv.perm.is_cycle.exists_pow_eq Equiv.Perm.IsCycle.exists_pow_eq
 
@@ -427,11 +427,11 @@ theorem isCycle_swap_mul_aux₁ {α : Type*} [DecidableEq α] :
       else
         have : f b ≠ b ∧ b ≠ x := ne_and_ne_of_swap_mul_apply_ne_self hb
         have hb' : (swap x (f x) * f) (f⁻¹ b) ≠ f⁻¹ b := by
-          rw [mul_apply, apply_inv_self, swap_apply_of_ne_of_ne this.2 (Ne.symm hfbx), Ne.def, ←
+          rw [mul_apply, apply_inv_self, swap_apply_of_ne_of_ne this.2 (Ne.symm hfbx), Ne, ←
             f.injective.eq_iff, apply_inv_self]
           exact this.1
         let ⟨i, hi⟩ := hn hb' (f.injective <| by
-          rw [apply_inv_self]; rwa [pow_succ, mul_apply] at h)
+          rw [apply_inv_self]; rwa [pow_succ', mul_apply] at h)
         ⟨i + 1, by
           rw [add_comm, zpow_add, mul_apply, hi, zpow_one, mul_apply, apply_inv_self,
             swap_apply_of_ne_of_ne (ne_and_ne_of_swap_mul_apply_ne_self hb).2 (Ne.symm hfbx)]⟩
@@ -450,14 +450,13 @@ theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
         have hb : (swap x (f⁻¹ x) * f⁻¹) (f⁻¹ b) ≠ f⁻¹ b := by
           rw [mul_apply, swap_apply_def]
           split_ifs <;>
-              simp only [inv_eq_iff_eq, Perm.mul_apply, zpow_negSucc,
-                Ne.def, Perm.apply_inv_self] at
-                * <;> tauto
+            simp only [inv_eq_iff_eq, Perm.mul_apply, zpow_negSucc, Ne, Perm.apply_inv_self] at *
+              <;> tauto
         let ⟨i, hi⟩ :=
           isCycle_swap_mul_aux₁ n hb
             (show (f⁻¹ ^ n) (f⁻¹ x) = f⁻¹ b by
               rw [← zpow_natCast, ← h, ← mul_apply, ← mul_apply, ← mul_apply, zpow_negSucc,
-                ← inv_pow, pow_succ', mul_assoc, mul_assoc, inv_mul_self, mul_one, zpow_natCast,
+                ← inv_pow, pow_succ, mul_assoc, mul_assoc, inv_mul_self, mul_one, zpow_natCast,
                 ← pow_succ', ← pow_succ])
         have h : (swap x (f⁻¹ x) * f⁻¹) (f x) = f⁻¹ x := by
           rw [mul_apply, inv_apply_self, swap_apply_left]
@@ -735,15 +734,14 @@ theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : σ.support.car
   intro x hx
   simp only [Perm.mul_apply, Equiv.trans_apply, Equiv.sumCongr_apply]
   obtain ⟨n, rfl⟩ := hσ.exists_pow_eq (Classical.choose_spec hσ).1 (mem_support.1 hx)
-  apply
-    Eq.trans _
-      (congr rfl (congr rfl (congr rfl (congr rfl (hσ.zpowersEquivSupport_symm_apply n).symm))))
-  apply (congr rfl (congr rfl (congr rfl (hσ.zpowersEquivSupport_symm_apply (n + 1))))).trans _
+  erw [hσ.zpowersEquivSupport_symm_apply n]
+  simp only [← Perm.mul_apply, ← pow_succ']
+  erw [hσ.zpowersEquivSupport_symm_apply (n + 1)]
   -- This used to be a `simp only` before leanprover/lean4#2644
-  erw [zpowersEquivZPowers_apply, zpowersEquivZPowers_apply]
-  dsimp
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [pow_succ, Perm.mul_apply]
+  erw [zpowersEquivZPowers_apply, zpowersEquivZPowers_apply, zpowersEquivSupport_apply]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  simp_rw [pow_succ', Perm.mul_apply]
+  rfl
 #align equiv.perm.is_cycle.is_conj Equiv.Perm.IsCycle.isConj
 
 theorem IsCycle.isConj_iff (hσ : IsCycle σ) (hτ : IsCycle τ) :
@@ -894,10 +892,10 @@ theorem IsCycleOn.pow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ 
 
 theorem IsCycleOn.zpow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) :
     ∀ {n : ℤ}, (f ^ n) a = a ↔ (s.card : ℤ) ∣ n
-  | Int.ofNat n => (hf.pow_apply_eq ha).trans Int.coe_nat_dvd.symm
+  | Int.ofNat n => (hf.pow_apply_eq ha).trans Int.natCast_dvd_natCast.symm
   | Int.negSucc n => by
     rw [zpow_negSucc, ← inv_pow]
-    exact (hf.inv.pow_apply_eq ha).trans (dvd_neg.trans Int.coe_nat_dvd).symm
+    exact (hf.inv.pow_apply_eq ha).trans (dvd_neg.trans Int.natCast_dvd_natCast).symm
 #align equiv.perm.is_cycle_on.zpow_apply_eq Equiv.Perm.IsCycleOn.zpow_apply_eq
 
 theorem IsCycleOn.pow_apply_eq_pow_apply {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s)

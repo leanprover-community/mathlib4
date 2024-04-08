@@ -360,10 +360,10 @@ lemma f_modif_aux2 {s : ℂ} (hs : P.k < re s) :
         - P.ε • (∫ (x : ℝ) in Ioc 0 1, (x : ℂ) ^ (s - P.k - 1)) • P.g₀ := by
     rw [integral_sub, integral_smul, integral_smul_const, integral_smul_const]
     · apply Integrable.smul_const
-      rw [← integrableOn_def, ← intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one]
+      rw [← IntegrableOn, ← intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one]
       exact intervalIntegral.intervalIntegrable_cpow' h_re1
     · refine (Integrable.smul_const ?_ _).smul _
-      rw [← integrableOn_def, ← intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one]
+      rw [← IntegrableOn, ← intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one]
       exact intervalIntegral.intervalIntegrable_cpow' h_re2
   _ = _ := by simp_rw [← intervalIntegral.integral_of_le zero_le_one,
       integral_cpow (Or.inl h_re1), integral_cpow (Or.inl h_re2), ofReal_zero, ofReal_one,

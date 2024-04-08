@@ -57,7 +57,7 @@ extension to a (unital) algebra homomorphism from `Unitization R A` to `B`.
 
 
 /-- The minimal unitization of a non-unital `R`-algebra `A`. This is just a type synonym for
-`R × A`.-/
+`R × A`. -/
 def Unitization (R A : Type*) :=
   R × A
 #align unitization Unitization
@@ -735,8 +735,8 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ :A →ₙₐ[R] C) : Unitization R A →
 def lift : (A →ₙₐ[R] C) ≃ (Unitization R A →ₐ[R] C) where
   toFun := NonUnitalAlgHom.toAlgHom
   invFun φ := φ.toNonUnitalAlgHom.comp (inrNonUnitalAlgHom R A)
-  left_inv φ := by ext; simp
-  right_inv φ := Unitization.algHom_ext' <| by ext; simp
+  left_inv φ := by ext; simp [NonUnitalAlgHomClass.toNonUnitalAlgHom]
+  right_inv φ := by ext; simp [NonUnitalAlgHomClass.toNonUnitalAlgHom]
 #align unitization.lift Unitization.lift
 
 theorem lift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
@@ -777,9 +777,11 @@ def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
       simp [map_star] }
   invFun := fun φ ↦ φ.toNonUnitalStarAlgHom.comp (inrNonUnitalStarAlgHom R A),
   left_inv := fun φ => by ext; simp,
-  right_inv := fun φ => Unitization.algHom_ext'' <| by simp }
+  right_inv := fun φ => Unitization.algHom_ext'' <| by
+    simp }
 
-@[simp]
+-- Note (#6057) : tagging simpNF because linter complains
+@[simp high, nolint simpNF]
 theorem starLift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
     Unitization.lift.symm φ a = φ a :=
   rfl
