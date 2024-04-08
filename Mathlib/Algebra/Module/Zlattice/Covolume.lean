@@ -17,6 +17,9 @@ Let `L` be a `ℤ`-lattice `L` defined as a discrete `AddSubgroup E` that spans 
 * `Zlattice.covolume`: the covolume of `L` defined as the volume of an arbitrary fundamental
 domain of `L`.
 
+* `Zlattice.covolume_eq_measure_fundamentalDomain`: the covolume of `L` does not depend on the
+choice of the fundamental domain of `L`.
+
 * `Zlattice.covolume_eq_det`: if `L` is a lattice in `ℝ^n`, then its covolume is the absolute
 value of the determinant of any `ℤ`-basis of `L`.
 
@@ -34,12 +37,6 @@ variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
 variable [ProperSpace E] [MeasurableSpace E]
 variable (L : AddSubgroup E) [DiscreteTopology L] [IsZlattice K L]
-
--- theorem toto [MeasurableSpace E] (μ : Measure E := by volume_tac) :
---     HasAddFundamentalDomain L E μ := sorry
-
--- instance [MeasureSpace E] : HasAddFundamentalDomain L E (volume : Measure E) :=
---   toto L _
 
 /-- The covolume of a `ℤ`-lattice is the volume of some fundamental domain; see
 `Zlattice.covolume_eq_volume` for the proof that the volume does not depend on the choice of
@@ -80,9 +77,12 @@ theorem covolume_eq_det_mul_measure {ι : Type*} [Fintype ι] [DecidableEq ι] (
 
 theorem covolume_eq_det {ι : Type*} [Fintype ι] [DecidableEq ι] (L : AddSubgroup (ι → ℝ))
     [DiscreteTopology L] [IsZlattice ℝ L] (b : Basis ι ℤ L) :
-    covolume L = |(Matrix.of (b.ofZlatticeBasis ℝ)).det| := by
+    covolume L = |(Matrix.of ((↑) ∘ b)).det| := by
   rw [covolume_eq_measure_fundamentalDomain L volume (isAddFundamentalDomain b volume),
     Zspan.volume_fundamentalDomain, ENNReal.toReal_ofReal (by positivity)]
+  congr
+  ext1
+  exact b.ofZlatticeBasis_apply ℝ L _
 
 end Real
 
