@@ -1079,6 +1079,13 @@ theorem tensorTensorTensorComm_symm :
   by ext; rfl
 #align tensor_product.tensor_tensor_tensor_comm_symm TensorProduct.tensorTensorTensorComm_symm
 
+theorem tensorTensorTensorComm_comp_map {V W : Type*}
+    [AddCommMonoid V] [AddCommMonoid W] [Module R V] [Module R W]
+    (f : M →ₗ[R] S) (g : N →ₗ[R] T) (h : P →ₗ[R] V) (j : Q →ₗ[R] W) :
+    tensorTensorTensorComm R S T V W ∘ₗ map (map f g) (map h j)
+      = map (map f h) (map g j) ∘ₗ tensorTensorTensorComm R M N P Q :=
+  ext_fourfold' fun _ _ _ _ => rfl
+
 variable (M N P Q)
 
 /-- This special case is useful for describing the interplay between `dualTensorHomEquiv` and
@@ -1126,6 +1133,10 @@ def rTensor (f : N →ₗ[R] P) : N ⊗[R] M →ₗ[R] P ⊗[R] M :=
 #align linear_map.rtensor LinearMap.rTensor
 
 variable (g : P →ₗ[R] Q) (f : N →ₗ[R] P)
+
+theorem lTensor_def : f.lTensor M = TensorProduct.map LinearMap.id f := rfl
+
+theorem rTensor_def : f.rTensor M = TensorProduct.map f LinearMap.id := rfl
 
 @[simp]
 theorem lTensor_tmul (m : M) (n : N) : f.lTensor M (m ⊗ₜ n) = m ⊗ₜ f n :=

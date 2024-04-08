@@ -1303,4 +1303,24 @@ theorem smul_def (a : A) (b : B) (m : M) : a ⊗ₜ[R] b • m = a • b • m :
   rfl
 #align tensor_product.algebra.smul_def TensorProduct.Algebra.smul_def
 
+section Lemmas
+-- bit random, should maybe extend the section
+
+theorem linearMap_comp_mul' :
+    Algebra.linearMap R (A ⊗[R] B) ∘ₗ LinearMap.mul' R R
+      = map (Algebra.linearMap R A) (Algebra.linearMap R B) := by
+  ext
+  simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars, map_tmul,
+    Algebra.linearMap_apply, _root_.map_one, LinearMap.coe_comp, Function.comp_apply,
+    LinearMap.mul'_apply, mul_one, Algebra.TensorProduct.one_def]
+
+@[simp]
+theorem mul'_comp_tensorTensorTensorComm :
+    LinearMap.mul' R (A ⊗[R] B) ∘ₗ tensorTensorTensorComm R A A B B
+      = map (LinearMap.mul' R A) (LinearMap.mul' R B) := by
+  ext
+  rfl
+
+end Lemmas
+
 end TensorProduct.Algebra
