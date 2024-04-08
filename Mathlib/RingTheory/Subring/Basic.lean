@@ -87,13 +87,16 @@ instance (priority := 100) SubringClass.addSubgroupClass (S : Type*) (R : Type u
 variable [SetLike S R] [hSR : SubringClass S R] (s : S)
 
 @[aesop safe apply (rule_sets := [SetLike])]
-theorem coe_int_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zsmul_mem, one_mem]
-#align coe_int_mem coe_int_mem
+theorem intCast_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zsmul_mem, one_mem]
+#align coe_int_mem intCast_mem
+
+-- 2024-04-05
+@[deprecated _root_.intCast_mem] alias coe_int_mem := intCast_mem
 
 namespace SubringClass
 
 instance (priority := 75) toHasIntCast : IntCast s :=
-  ⟨fun n => ⟨n, coe_int_mem s n⟩⟩
+  ⟨fun n => ⟨n, intCast_mem s n⟩⟩
 #align subring_class.to_has_int_cast SubringClass.toHasIntCast
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
@@ -705,7 +708,7 @@ instance : CompleteLattice (Subring R) :=
     bot := ⊥
     bot_le := fun s _x hx =>
       let ⟨n, hn⟩ := mem_bot.1 hx
-      hn ▸ coe_int_mem s n
+      hn ▸ intCast_mem s n
     top := ⊤
     le_top := fun _s _x _hx => trivial
     inf := (· ⊓ ·)

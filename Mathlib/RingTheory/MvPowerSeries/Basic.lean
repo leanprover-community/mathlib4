@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
 
+import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Data.Finset.PiAntidiagonal
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.Tactic.Linarith
-import Mathlib.Data.Finset.PiAntidiagonal
-import Mathlib.Data.MvPolynomial.Basic
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 
@@ -54,7 +54,7 @@ open BigOperators
 open Finset (antidiagonal mem_antidiagonal)
 
 /-- Multivariate formal power series, where `σ` is the index set of the variables
-and `R` is the coefficient ring.-/
+and `R` is the coefficient ring. -/
 def MvPowerSeries (σ : Type*) (R : Type*) :=
   (σ →₀ ℕ) → R
 #align mv_power_series MvPowerSeries
@@ -107,21 +107,21 @@ def monomial (n : σ →₀ ℕ) : R →ₗ[R] MvPowerSeries σ R :=
   LinearMap.stdBasis R (fun _ ↦ R) n
 #align mv_power_series.monomial MvPowerSeries.monomial
 
-/-- The `n`th coefficient of a multivariate formal power series.-/
+/-- The `n`th coefficient of a multivariate formal power series. -/
 def coeff (n : σ →₀ ℕ) : MvPowerSeries σ R →ₗ[R] R :=
   LinearMap.proj n
 #align mv_power_series.coeff MvPowerSeries.coeff
 
 variable {R}
 
-/-- Two multivariate formal power series are equal if all their coefficients are equal.-/
+/-- Two multivariate formal power series are equal if all their coefficients are equal. -/
 @[ext]
 theorem ext {φ ψ} (h : ∀ n : σ →₀ ℕ, coeff R n φ = coeff R n ψ) : φ = ψ :=
   funext h
 #align mv_power_series.ext MvPowerSeries.ext
 
 /-- Two multivariate formal power series are equal
- if and only if all their coefficients are equal.-/
+ if and only if all their coefficients are equal. -/
 theorem ext_iff {φ ψ : MvPowerSeries σ R} : φ = ψ ↔ ∀ n : σ →₀ ℕ, coeff R n φ = coeff R n ψ :=
   Function.funext_iff
 #align mv_power_series.ext_iff MvPowerSeries.ext_iff
@@ -336,7 +336,7 @@ theorem monomial_mul_monomial (m n : σ →₀ ℕ) (a b : R) :
 
 variable (σ) (R)
 
-/-- The constant multivariate formal power series.-/
+/-- The constant multivariate formal power series. -/
 def C : R →+* MvPowerSeries σ R :=
   { monomial R (0 : σ →₀ ℕ) with
     map_one' := rfl
@@ -369,7 +369,7 @@ theorem coeff_zero_C (a : R) : coeff R (0 : σ →₀ ℕ) (C σ R a) = a :=
 set_option linter.uppercaseLean3 false in
 #align mv_power_series.coeff_zero_C MvPowerSeries.coeff_zero_C
 
-/-- The variables of the multivariate formal power series ring.-/
+/-- The variables of the multivariate formal power series ring. -/
 def X (s : σ) : MvPowerSeries σ R :=
   monomial R (single s 1) 1
 set_option linter.uppercaseLean3 false in
@@ -414,7 +414,7 @@ set_option linter.uppercaseLean3 false in
 theorem X_pow_eq (s : σ) (n : ℕ) : (X s : MvPowerSeries σ R) ^ n = monomial R (single s n) 1 := by
   induction' n with n ih
   · simp
-  · rw [pow_succ', ih, Nat.succ_eq_add_one, Finsupp.single_add, X, monomial_mul_monomial, one_mul]
+  · rw [pow_succ, ih, Nat.succ_eq_add_one, Finsupp.single_add, X, monomial_mul_monomial, one_mul]
 set_option linter.uppercaseLean3 false in
 #align mv_power_series.X_pow_eq MvPowerSeries.X_pow_eq
 
@@ -449,7 +449,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (σ) (R)
 
-/-- The constant coefficient of a formal power series.-/
+/-- The constant coefficient of a formal power series. -/
 def constantCoeff : MvPowerSeries σ R →+* R :=
   { coeff R (0 : σ →₀ ℕ) with
     toFun := coeff R (0 : σ →₀ ℕ)
@@ -501,7 +501,7 @@ set_option linter.uppercaseLean3 false in
 #align mv_power_series.constant_coeff_X MvPowerSeries.constantCoeff_X
 
 /-- If a multivariate formal power series is invertible,
- then so is its constant coefficient.-/
+ then so is its constant coefficient. -/
 theorem isUnit_constantCoeff (φ : MvPowerSeries σ R) (h : IsUnit φ) :
     IsUnit (constantCoeff σ R φ) :=
   h.map _
@@ -544,7 +544,7 @@ variable {S T : Type*} [Semiring R] [Semiring S] [Semiring T]
 variable (f : R →+* S) (g : S →+* T)
 variable (σ)
 
-/-- The map between multivariate formal power series induced by a map on the coefficients.-/
+/-- The map between multivariate formal power series induced by a map on the coefficients. -/
 def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
   toFun φ n := f <| coeff R n φ
   map_zero' := ext fun _n => f.map_zero
@@ -753,7 +753,7 @@ theorem algebraMap_apply {r : R} :
 instance [Nonempty σ] [Nontrivial R] : Nontrivial (Subalgebra R (MvPowerSeries σ R)) :=
   ⟨⟨⊥, ⊤, by
       classical
-      rw [Ne.def, SetLike.ext_iff, not_forall]
+      rw [Ne, SetLike.ext_iff, not_forall]
       inhabit σ
       refine' ⟨X default, _⟩
       simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top]
@@ -774,12 +774,12 @@ open Finsupp
 variable {σ : Type*} {R : Type*} [CommSemiring R] (φ ψ : MvPolynomial σ R)
 
 -- Porting note: added so we can add the `@[coe]` attribute
-/-- The natural inclusion from multivariate polynomials into multivariate formal power series.-/
+/-- The natural inclusion from multivariate polynomials into multivariate formal power series. -/
 @[coe]
 def toMvPowerSeries : MvPolynomial σ R → MvPowerSeries σ R :=
   fun φ n => coeff n φ
 
-/-- The natural inclusion from multivariate polynomials into multivariate formal power series.-/
+/-- The natural inclusion from multivariate polynomials into multivariate formal power series. -/
 instance coeToMvPowerSeries : Coe (MvPolynomial σ R) (MvPowerSeries σ R) :=
   ⟨toMvPowerSeries⟩
 #align mv_polynomial.coe_to_mv_power_series MvPolynomial.coeToMvPowerSeries

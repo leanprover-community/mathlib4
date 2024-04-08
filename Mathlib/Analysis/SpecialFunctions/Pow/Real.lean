@@ -49,7 +49,7 @@ theorem rpow_def (x y : ℝ) : x ^ y = ((x : ℂ) ^ (y : ℂ)).re := rfl
 theorem rpow_def_of_nonneg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) :
     x ^ y = if x = 0 then if y = 0 then 1 else 0 else exp (log x * y) := by
   simp only [rpow_def, Complex.cpow_def]; split_ifs <;>
-  simp_all [(Complex.ofReal_log hx).symm, -Complex.ofReal_mul, -IsROrC.ofReal_mul,
+  simp_all [(Complex.ofReal_log hx).symm, -Complex.ofReal_mul, -RCLike.ofReal_mul,
       (Complex.ofReal_mul _ _).symm, Complex.exp_ofReal_re, Complex.ofReal_eq_zero]
 #align real.rpow_def_of_nonneg Real.rpow_def_of_nonneg
 
@@ -1008,7 +1008,7 @@ theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
     IsRat (a ^ b) num den := by
   rwa [pb.out, Real.rpow_int_cast]
 
-/-- Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals.-/
+/-- Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals. -/
 @[norm_num (_ : ℝ) ^ (_ : ℝ)]
 def evalRPow : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℝ))) (b : Q(ℝ)) ← Lean.Meta.whnfR e | failure
