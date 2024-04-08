@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.GCDMonoid.Finset
-import Mathlib.Data.Polynomial.FieldDivision
-import Mathlib.Data.Polynomial.EraseLead
-import Mathlib.Data.Polynomial.CancelLeads
+import Mathlib.Algebra.Polynomial.CancelLeads
+import Mathlib.Algebra.Polynomial.EraseLead
+import Mathlib.Algebra.Polynomial.FieldDivision
 
 #align_import ring_theory.polynomial.content from "leanprover-community/mathlib"@"7a030ab8eb5d99f05a891dccc49c5b5b90c947d3"
 
@@ -111,7 +111,7 @@ theorem content_X_mul {p : R[X]} : content (X * p) = content p := by
   refine' congr rfl _
   have h : (X * p).support = p.support.map ⟨Nat.succ, Nat.succ_injective⟩ := by
     ext a
-    simp only [exists_prop, Finset.mem_map, Function.Embedding.coeFn_mk, Ne.def, mem_support_iff]
+    simp only [exists_prop, Finset.mem_map, Function.Embedding.coeFn_mk, Ne, mem_support_iff]
     cases' a with a
     · simp [coeff_X_mul_zero, Nat.succ_ne_zero]
     rw [mul_comm, coeff_mul_X]
@@ -134,7 +134,7 @@ set_option linter.uppercaseLean3 false in
 theorem content_X_pow {k : ℕ} : content ((X : R[X]) ^ k) = 1 := by
   induction' k with k hi
   · simp
-  rw [pow_succ, content_X_mul, hi]
+  rw [pow_succ', content_X_mul, hi]
 set_option linter.uppercaseLean3 false in
 #align polynomial.content_X_pow Polynomial.content_X_pow
 
@@ -189,7 +189,7 @@ theorem content_eq_gcd_range_of_lt (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
     apply content_dvd_coeff _
   · apply Finset.gcd_mono
     intro i
-    simp only [Nat.lt_succ_iff, mem_support_iff, Ne.def, Finset.mem_range]
+    simp only [Nat.lt_succ_iff, mem_support_iff, Ne, Finset.mem_range]
     contrapose!
     intro h1
     apply coeff_eq_zero_of_natDegree_lt (lt_of_lt_of_le h h1)
@@ -393,11 +393,11 @@ theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
       content_eq_gcd_leadingCoeff_content_eraseLead, content_primPart]
     · rw [← heq, degree_mul, WithBot.add_lt_add_iff_right]
       · apply degree_erase_lt p.primPart_ne_zero
-      · rw [Ne.def, degree_eq_bot]
+      · rw [Ne, degree_eq_bot]
         apply q.primPart_ne_zero
     · rw [mul_comm, ← heq, degree_mul, WithBot.add_lt_add_iff_left]
       · apply degree_erase_lt q.primPart_ne_zero
-      · rw [Ne.def, degree_eq_bot]
+      · rw [Ne, degree_eq_bot]
         apply p.primPart_ne_zero
 #align polynomial.content_mul Polynomial.content_mul
 
@@ -409,7 +409,7 @@ theorem IsPrimitive.mul {p q : R[X]} (hp : p.IsPrimitive) (hq : q.IsPrimitive) :
 @[simp]
 theorem primPart_mul {p q : R[X]} (h0 : p * q ≠ 0) :
     (p * q).primPart = p.primPart * q.primPart := by
-  rw [Ne.def, ← content_eq_zero_iff, ← C_eq_zero] at h0
+  rw [Ne, ← content_eq_zero_iff, ← C_eq_zero] at h0
   apply mul_left_cancel₀ h0
   conv_lhs =>
     rw [← (p * q).eq_C_content_mul_primPart, p.eq_C_content_mul_primPart,
@@ -462,7 +462,7 @@ theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (h
     have h :=
       dvd_add rcs (Dvd.intro_left (C (leadingCoeff s) * X ^ (natDegree s - natDegree r)) rfl)
     have hC0 := rprim.ne_zero
-    rw [Ne.def, ← leadingCoeff_eq_zero, ← C_eq_zero] at hC0
+    rw [Ne, ← leadingCoeff_eq_zero, ← C_eq_zero] at hC0
     rw [sub_add_cancel, ← rprim.dvd_primPart_iff_dvd (mul_ne_zero hC0 s0)] at h
     rcases isUnit_primPart_C r.leadingCoeff with ⟨u, hu⟩
     apply h.trans (Associated.symm ⟨u, _⟩).dvd

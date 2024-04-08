@@ -110,7 +110,7 @@ protected theorem dist_triangle (a b c : ℍ) : dist a c ≤ dist a b + dist b c
     div_mul_eq_mul_div]
   · gcongr
     exact EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist (a : ℂ) b c (conj (b : ℂ))
-  · rw [dist_comm, dist_pos, Ne.def, Complex.conj_eq_iff_im]
+  · rw [dist_comm, dist_pos, Ne, Complex.conj_eq_iff_im]
     exact b.im_ne_zero
 #align upper_half_plane.dist_triangle UpperHalfPlane.dist_triangle
 
@@ -364,7 +364,7 @@ theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry (a • · : ℍ �
   exact mul_div_mul_left _ _ (mt _root_.abs_eq_zero.1 a.2.ne')
 #align upper_half_plane.isometry_pos_mul UpperHalfPlane.isometry_pos_mul
 
-/-- `SL(2, ℝ)` acts on the upper half plane as an isometry.-/
+/-- `SL(2, ℝ)` acts on the upper half plane as an isometry. -/
 instance : IsometricSMul SL(2, ℝ) ℍ :=
   ⟨fun g => by
     have h₀ : Isometry (fun z => ModularGroup.S • z : ℍ → ℍ) :=
