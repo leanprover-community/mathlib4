@@ -128,16 +128,20 @@ instance fullFunctorOfPoints : Full schemeToFunctor where
     simp only [← Category.assoc, ← hw]
     exact congr_fun (f.naturality w.unop) (X.affineCover.map j.fst) |>.symm
 
-def isBasicOpen {A B : CommRingCat.{u}} (ι : A ⟶ B) (f : A) : Prop :=
+def IsBasicOpen {A B : CommRingCat.{u}} (ι : A ⟶ B) (f : A) : Prop :=
   letI : Algebra A B := RingHom.toAlgebra ι
   IsLocalization.Away f B
+
+lemma isOpenImmersion_of_isBasicOpen
+    {A B : CommRingCat.{u}} (ι : A ⟶ B) (f : A) (h : IsBasicOpen ι f) :
+    IsOpenImmersion (Scheme.Spec.map ι.op) := sorry
 
 structure indexedZariskiCover (A : CommRingCat.{u}) where
   J : Type v
   B : J → CommRingCat.{u}
   f : J → A
   ι (j : J) : A ⟶ B j
-  isLocalizationAt (j : J) : isBasicOpen (ι j) (f j)
+  isLocalizationAt (j : J) : IsBasicOpen (ι j) (f j)
   covers : Ideal.span (Set.range f) = ⊤
 
 def indexedZariskiCover.affineOpenCover {A : CommRingCat.{u}} (𝓤 : indexedZariskiCover A) :
@@ -147,7 +151,7 @@ def indexedZariskiCover.affineOpenCover {A : CommRingCat.{u}} (𝓤 : indexedZar
   map j := Scheme.Spec.map <| 𝓤.ι j |>.op
   f := sorry
   Covers := sorry
-  IsOpen j := sorry -- Scheme.basic_open_isOpenImmersion _
+  IsOpen j := isOpenImmersion_of_isBasicOpen _ (𝓤.f j) (𝓤.isLocalizationAt _)
 
 theorem indexedZariskiCover.desc
     {X : Scheme.{u}}
@@ -159,7 +163,23 @@ theorem indexedZariskiCover.desc
       𝓤.ι i ≫ ιi = 𝓤.ι j ≫ ιj →
       X.functorOfPoints.map ιi (b i) = X.functorOfPoints.map ιj (b j)) :
     X.functorOfPoints.obj A :=
-  𝓤.affineOpenCover.openCover.glueMorphisms b <| sorry
+  𝓤.affineOpenCover.openCover.glueMorphisms b <| by
+    intro i j
+    apply schemeToFunctor.map_injective
+    ext A e : 3
+    dsimp at e ⊢
+    simp only [← Category.assoc]
+    obtain ⟨fst,hfst⟩ := Scheme.Spec.map_surjective (e ≫ Limits.pullback.fst)
+    obtain ⟨snd,hsnd⟩ := Scheme.Spec.map_surjective (e ≫ Limits.pullback.snd)
+    rw [← hfst, ← hsnd]
+    apply hb
+    apply Quiver.Hom.op_inj
+    apply Scheme.Spec.map_injective
+    simp only [Opposite.unop_op, op_comp, Functor.map_comp]
+    show Scheme.Spec.map fst ≫ _ = Scheme.Spec.map snd ≫ _
+    simp_rw [hfst, hsnd, Category.assoc]
+    congr 1
+    exact Limits.pullback.condition
 
 lemma indexedZariskiCover.restirct_desc
     {X : Scheme.{u}}
