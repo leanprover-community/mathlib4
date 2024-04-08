@@ -122,7 +122,7 @@ thereby making tactics widely available without needing specific imports.
 We include some commented out imports here, with an explanation of their theory requirements,
 to save some time for anyone wondering why they are not here.
 
-We also import theory-free linters, commands, and utilities which are useful to have low in the 
+We also import theory-free linters, commands, and utilities which are useful to have low in the
 import hierarchy.
 -/
 
