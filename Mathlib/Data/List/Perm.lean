@@ -849,10 +849,6 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
       · simp [Nat.add_assoc, Nat.add_left_comm]
       · simp [Nat.add_left_comm, Nat.add_comm]
       · simpa [Nat.succ_add] using hn
-#align list.nodup_permutations'_aux_iff List.nodup_permutations'Aux_iff
-
-set_option linter.deprecated false in
-theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations := by
   rw [(permutations_perm_permutations' s).nodup_iff]
   induction' hs with x l h h' IH
   · simp
