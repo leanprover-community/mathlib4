@@ -315,7 +315,6 @@ lemma gloug {f : V → E} {K : ℕ∞} {C : ℝ} (hf : ContDiff ℝ K f) (n : �
       (ContinuousMultilinearMap.mkPiAlgebra ℝ (Fin n) ℝ)) fun x ↦ L y := by
     apply (ContinuousMultilinearMap.contDiff _).comp
     exact contDiff_pi.2 (fun _ ↦ L.contDiff)
-
   simp_rw [fourierPowSMulRight_eq_comp]
   rw [iteratedFDeriv_const_smul_apply', norm_smul (β := V [×k]→L[ℝ] (W [×n]→L[ℝ] E))]; swap
   · exact (smulRightL ℝ (fun (_ : Fin n) ↦ W) E).isBoundedBilinearMap.contDiff.comp₂ (A.of_le hk)
@@ -323,8 +322,9 @@ lemma gloug {f : V → E} {K : ℕ∞} {C : ℝ} (hf : ContDiff ℝ K f) (n : �
   simp only [norm_pow, norm_neg, norm_mul, RCLike.norm_ofNat, Complex.norm_eq_abs, abs_ofReal,
     _root_.abs_of_nonneg pi_nonneg, abs_I, mul_one]
   gcongr
-  apply (ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear_of_le_one _ A hf _ hk _).trans; swap
-  · apply ContinuousMultilinearMap.norm_smulRightL_le
+  apply (ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear_of_le_one _ A hf _
+    hk ContinuousMultilinearMap.norm_smulRightL_le).trans
+
 
 --  have Z := (smulRightL ℝ (fun (x : Fin n) ↦ W) E).norm_iteratedFDeriv_le_of_bilinear_of_le_one
 --    (smulRightL ℝ (fun (x : Fin n) ↦ W) E)
