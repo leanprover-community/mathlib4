@@ -107,6 +107,7 @@ lemma proj_comp_transitionMapLE'' {n m : ℕ} (h : n ≤ m) :
   rw [← S.proj_comp_transitionMapLE' h]
   rfl
 
+@[simps]
 def natTrans_nat_mk {C : Type*} [Category C] {F G : ℕ ⥤ C} (f : (n : ℕ) → F.obj n ⟶ G.obj n)
     (w : ∀ n, F.map (homOfLE (Nat.le_succ _)) ≫ f (n + 1) = f n ≫ G.map (homOfLE (Nat.le_succ _))) :
     F ⟶ G where
@@ -124,7 +125,9 @@ def natTrans_nat_mk {C : Type*} [Category C] {F G : ℕ ⥤ C} (f : (n : ℕ) �
       rw [w k, ← Category.assoc, ih (homOfLE _)]
       simp
 
-def natTrans_nat_op_mk {C : Type*} [Category C] {F G : ℕᵒᵖ ⥤ C} (f : (n : ℕ) → F.obj ⟨n⟩ ⟶ G.obj ⟨n⟩)
+@[simps]
+def natTrans_nat_op_mk {C : Type*} [Category C] {F G : ℕᵒᵖ ⥤ C}
+    (f : (n : ℕ) → F.obj ⟨n⟩ ⟶ G.obj ⟨n⟩)
     (w : ∀ n, F.map ⟨homOfLE (Nat.le_succ _)⟩ ≫ f n = f (n + 1) ≫ G.map ⟨homOfLE (Nat.le_succ _)⟩) :
     F ⟶ G where
   app := fun ⟨n⟩ ↦ f n
@@ -146,12 +149,27 @@ def natTrans_nat_op_mk {C : Type*} [Category C] {F G : ℕᵒᵖ ⥤ C} (f : (n 
       rw [this, Category.assoc]
       rfl
 
+-- lemma natTrans_nat_op_mk_comp {C : Type*} [Category C] {F G H : ℕᵒᵖ ⥤ C}
+--     (f : (n : ℕ) → F.obj ⟨n⟩ ⟶ G.obj ⟨n⟩) (g : (n : ℕ) → G.obj ⟨n⟩ ⟶ H.obj ⟨n⟩)
+--     (w : ∀ n, F.map ⟨homOfLE (Nat.le_succ _)⟩ ≫ f n = f (n + 1) ≫ G.map ⟨homOfLE (Nat.le_succ _)⟩)
+--     (w' : ∀ n, G.map ⟨homOfLE (Nat.le_succ _)⟩ ≫ g n = g (n + 1) ≫ H.map ⟨homOfLE (Nat.le_succ _)⟩)
+--     (n : ℕ) :
+--     (natTrans_nat_op_mk f w).app ⟨n⟩ ≫ (natTrans_nat_op_mk g w).app ⟨n⟩ =
+
 def fromProfinite {X : Profinite} {Y : LightProfinite}
     (f : (n : ℕ) → X ⟶ (Y.component n).toProfinite)
     (w : ∀ n, Y.transitionMap n ∘ f (n + 1) = f n) : X ⟶ Y.toProfinite :=
   let c : Cone (Y.diagram ⋙ FintypeCat.toProfinite) := ⟨X, natTrans_nat_op_mk f
     (by intro n; ext; exact congrFun (w n).symm _)⟩
   Y.isLimit.lift c
+
+def fromProfiniteLE {X : Profinite} {Y : LightProfinite} (m : ℕ)
+    (f : (n : ℕ) → m ≤ n → (X ⟶ (Y.component n).toProfinite))
+    (w : ∀ n (h : m ≤ n), Y.transitionMap n ∘ f (n + 1) (h.trans (Nat.le_succ n)) = f n h) :
+    X ⟶ Y.toProfinite := by
+  refine fromProfinite ?_ ?_
+  intro n
+  all_goals sorry-- by_cases h : m ≤ n
 
 abbrev fromProfinite' {X : Profinite} {Y : LightProfinite}
     (f : (n : ℕ) → LocallyConstant X (Y.diagram.obj ⟨n⟩))
@@ -198,6 +216,8 @@ lemma homMk_injective {X : Profinite} {Y : LightProfinite}
 
 theorem ext' {Y : LightProfinite} {a b : Y} (h : ∀ n, Y.proj n a = Y.proj n b) : a = b :=
   ext fun n ↦ h n.unop
+
+-- theorem hom_ext {X Y : LightProfinite} (f g : X ⟶ Y) (h ∀ )
 
 lemma homMk_surjective {X : Profinite} {Y : LightProfinite}
     (f : (n : ℕ) → X ⟶ (Y.component n).toProfinite)
