@@ -25,14 +25,14 @@ noncomputable instance instHopfAlgebra : HopfAlgebra R (A ⊗[R] B) :=
       simp only [instCoalgebraStruct_comul, instCoalgebraStruct_counit, LinearMap.rTensor_def,
         ← map_id, ← LinearMap.comp_assoc (map _ _), ← tensorTensorTensorComm_comp_map,
         Algebra.mul'_comp_tensorTensorTensorComm, ← map_comp]
-      simp only [← rTensor_def, LinearMap.comp_assoc, mul_antipode_rTensor_comul, map_comp,
-        Algebra.linearMap_comp_mul']
+      simp only [← LinearMap.rTensor_def, LinearMap.comp_assoc, mul_antipode_rTensor_comul,
+        map_comp, Algebra.linearMap_comp_mul']
     mul_antipode_lTensor_comul := by
       simp only [instCoalgebraStruct_comul, instCoalgebraStruct_counit, LinearMap.lTensor_def,
         ← map_id, ← LinearMap.comp_assoc (map _ _), ← tensorTensorTensorComm_comp_map,
         Algebra.mul'_comp_tensorTensorTensorComm, ← map_comp]
-      simp only [← lTensor_def, LinearMap.comp_assoc, mul_antipode_lTensor_comul, map_comp,
-        Algebra.linearMap_comp_mul'] }
+      simp only [← LinearMap.lTensor_def, LinearMap.comp_assoc, mul_antipode_lTensor_comul,
+        map_comp, Algebra.linearMap_comp_mul'] }
 
 @[simp]
 theorem antipode_def :
