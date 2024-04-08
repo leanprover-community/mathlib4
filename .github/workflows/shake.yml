@@ -25,9 +25,9 @@ jobs:
         id: git-check
         run: |
           if [[ $(git status --porcelain) ]]; then
-            echo "changes=true" >> $GITHUB_OUTPUT
+            echo "changes=true" >> "$GITHUB_OUTPUT"
           else
-            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "changes=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Configure git user
