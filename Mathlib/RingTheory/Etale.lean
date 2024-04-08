@@ -10,6 +10,8 @@ universe u
 open TensorProduct
 namespace Algebra
 
+
+--Definitions smooth, unramified, etale
 variable (R : Type u)
 
 class Smooth [CommSemiring R] (A : Type u) [Semiring A] [Algebra R A] : Prop where
@@ -70,9 +72,9 @@ theorem Smooth.of_equiv [Smooth R A] (e : A ≃ₐ[R] B) : Smooth R B where
   formallySmooth := FormallySmooth.of_equiv e
   finitePresentation := FinitePresentation.equiv Smooth.finitePresentation e
 
-theorem Unramified.of_equiv [Etale R A] (e : A ≃ₐ[R] B) : Unramified R B where
+theorem Unramified.of_equiv [Unramified R A] (e : A ≃ₐ[R] B) : Unramified R B where
   formallyUnramified := FormallyUnramified.of_equiv e
-  finitePresentation := FinitePresentation.equiv Etale.finitePresentation e
+  finitePresentation := FinitePresentation.equiv Unramified.finitePresentation e
 
 theorem Etale.of_equiv [Etale R A] (e : A ≃ₐ[R] B) : Etale R B where
   formallyEtale := FormallyEtale.of_equiv e
@@ -83,10 +85,19 @@ end
 
 section
 
-variable (A : Type u) [CommRing A] [Algebra R A] [Etale R A]
+variable (A : Type u) [CommRing A] [Algebra R A]
 variable (B : Type u) [CommRing B] [Algebra R B]
 
-instance Etale.baseChange : Etale B (B ⊗[R] A) where
+
+instance Smooth.baseChange [Smooth R A]: Smooth B (B ⊗[R] A) where
+  formallySmooth := FormallySmooth.base_change B
+  finitePresentation := FinitePresentation.baseChange _ finitePresentation
+
+instance Unramified.baseChange [Unramified R A]: Unramified B (B ⊗[R] A) where
+  formallyUnramified := FormallyUnramified.base_change B
+  finitePresentation := FinitePresentation.baseChange _ finitePresentation
+
+instance Etale.baseChange [Etale R A] : Etale B (B ⊗[R] A) where
   formallyEtale := FormallyEtale.base_change B
   finitePresentation := FinitePresentation.baseChange _ finitePresentation
 
@@ -109,6 +120,7 @@ end
 
 --TODO
 -- 2. Localization R -> R_M is etale for M finitely generated
+
 -- 3. If R=k is a field, A is etale iff A is a finite product of fields
 --    this is a nice goal, I am afraid we need dimension theory for this (at least that's what the SP does)
 --    but maybe there is a direct way
