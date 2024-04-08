@@ -78,7 +78,7 @@ irreducible_def singularPart (μ ν : Measure α) : Measure α :=
 
 /-- If a pair of measures `HaveLebesgueDecomposition`, then `rnDeriv` chooses the
 measurable function from `HaveLebesgueDecomposition`, otherwise it returns the zero function.
-For sigma-finite measures, `μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν)`.-/
+For sigma-finite measures, `μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν)`. -/
 @[pp_dot]
 irreducible_def rnDeriv (μ ν : Measure α) : α → ℝ≥0∞ :=
   if h : HaveLebesgueDecomposition μ ν then (Classical.choose h.lebesgue_decomposition).2 else 0
@@ -238,6 +238,11 @@ theorem singularPart_zero (ν : Measure α) : (0 : Measure α).singularPart ν =
   singularPart_eq_zero_of_ac (AbsolutelyContinuous.zero _)
 #align measure_theory.measure.singular_part_zero MeasureTheory.Measure.singularPart_zero
 
+@[simp]
+lemma singularPart_zero_right (μ : Measure α) : μ.singularPart 0 = μ := by
+  conv_rhs => rw [haveLebesgueDecomposition_add μ 0]
+  simp
+
 lemma singularPart_eq_zero (μ ν : Measure α) [μ.HaveLebesgueDecomposition ν] :
     μ.singularPart ν = 0 ↔ μ ≪ ν := by
   have h_dec := haveLebesgueDecomposition_add μ ν
@@ -305,6 +310,12 @@ lemma singularPart_eq_self [μ.HaveLebesgueDecomposition ν] : μ.singularPart �
     exact mutuallySingular_singularPart _ _
   · conv_rhs => rw [h_dec]
     rw [(withDensity_rnDeriv_eq_zero _ _).mpr h, add_zero]
+
+@[simp]
+lemma singularPart_singularPart (μ ν : Measure α) :
+    (μ.singularPart ν).singularPart ν = μ.singularPart ν := by
+  rw [Measure.singularPart_eq_self]
+  exact Measure.mutuallySingular_singularPart _ _
 
 instance singularPart.instIsFiniteMeasure [IsFiniteMeasure μ] :
     IsFiniteMeasure (μ.singularPart ν) :=
@@ -462,6 +473,16 @@ theorem singularPart_add (μ₁ μ₂ ν : Measure α) [HaveLebesgueDecompositio
     ← haveLebesgueDecomposition_add μ₂ ν]
 #align measure_theory.measure.singular_part_add MeasureTheory.Measure.singularPart_add
 
+lemma singularPart_restrict (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
+    {s : Set α} (hs : MeasurableSet s) :
+    (μ.restrict s).singularPart ν = (μ.singularPart ν).restrict s := by
+  refine (Measure.eq_singularPart (f := s.indicator (μ.rnDeriv ν)) ?_ ?_ ?_).symm
+  · exact (μ.measurable_rnDeriv ν).indicator hs
+  · exact (Measure.mutuallySingular_singularPart μ ν).restrict s
+  · ext t
+    rw [withDensity_indicator hs, ← restrict_withDensity hs, ← Measure.restrict_add,
+      ← μ.haveLebesgueDecomposition_add ν]
+
 /-- Given measures `μ` and `ν`, if `s` is a measure mutually singular to `ν` and `f` is a
 measurable function such that `μ = s + fν`, then `f = μ.rnDeriv ν`.
 
@@ -544,6 +565,14 @@ theorem rnDeriv_withDensity (ν : Measure α) [SigmaFinite ν] {f : α → ℝ�
     (ν.withDensity f).rnDeriv ν =ᵐ[ν] f :=
   rnDeriv_withDensity₀ ν hf.aemeasurable
 #align measure_theory.measure.rn_deriv_with_density MeasureTheory.Measure.rnDeriv_withDensity
+
+lemma rnDeriv_restrict (μ ν : Measure α) [HaveLebesgueDecomposition μ ν] [SigmaFinite ν]
+    {s : Set α} (hs : MeasurableSet s) :
+    (μ.restrict s).rnDeriv ν =ᵐ[ν] s.indicator (μ.rnDeriv ν) := by
+  refine (eq_rnDeriv (s := (μ.restrict s).singularPart ν)
+    ((measurable_rnDeriv _ _).indicator hs) (mutuallySingular_singularPart _ _) ?_).symm
+  rw [singularPart_restrict _ _ hs, withDensity_indicator hs, ← restrict_withDensity hs,
+    ← Measure.restrict_add, ← μ.haveLebesgueDecomposition_add ν]
 
 /-- The Radon-Nikodym derivative of the restriction of a measure to a measurable set is the
 indicator function of this set. -/

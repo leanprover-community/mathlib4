@@ -268,7 +268,6 @@ section Bisim
 
 variable (R : Computation α → Computation α → Prop)
 
--- mathport name: «expr ~ »
 /-- bisimilarity relation-/
 local infixl:50 " ~ " => R
 
@@ -427,7 +426,6 @@ def Promises (s : Computation α) (a : α) : Prop :=
   ∀ ⦃a'⦄, a' ∈ s → a = a'
 #align computation.promises Computation.Promises
 
--- mathport name: «expr ~> »
 /-- `Promises s a`, or `s ~> a`, asserts that although the computation `s`
   may not terminate, if it does, then the result is `a`. -/
 scoped infixl:50 " ~> " => Promises
@@ -966,7 +964,6 @@ def Equiv (c₁ c₂ : Computation α) : Prop :=
   ∀ a, a ∈ c₁ ↔ a ∈ c₂
 #align computation.equiv Computation.Equiv
 
--- mathport name: «expr ~ »
 /-- equivalence relation for computations-/
 scoped infixl:50 " ~ " => Equiv
 
