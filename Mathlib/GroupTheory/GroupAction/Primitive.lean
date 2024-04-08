@@ -17,7 +17,9 @@ import Jordan.Mathlib.Commutators
 import Mathlib.GroupTheory.MaximalSubgroups
 import Mathlib.GroupTheory.GroupAction.Transitive
 import Mathlib.GroupTheory.GroupAction.Blocks
+import Mathlib.GroupTheory.GroupAction.Transitive
 
+import Mathlib.Data.Nat.Prime
 
 /-
 import Mathlib.Data.Setoid.Partition
@@ -29,7 +31,6 @@ import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Commutator
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Data.Set.Pointwise.Basic
-import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Card
@@ -122,13 +123,13 @@ class IsQuasipreprimitive [Group G] [MulAction G X] extends IsPretransitive G X 
 
 variable {G X}
 
-theorem IsPreprimitive.has_trivial_blocks [SMul G X] (h : IsPreprimitive G X) {B : Set X}
-    (hB : IsBlock G B) : B.Subsingleton ∨ B = ⊤ := by apply h.has_trivial_blocks'; exact hB
-#align is_preprimitive.has_trivial_blocks IsPreprimitive.has_trivial_blocks
+namespace IsPreprimitive
 
-theorem IsPreprimitive.on_subsingleton [SMul G X] [Nonempty G] [Subsingleton X] :
-    IsPreprimitive G X :=
-  by
+theorem has_trivial_blocks [SMul G X] (h : IsPreprimitive G X) {B : Set X}
+    (hB : IsBlock G B) : B.Subsingleton ∨ B = ⊤ := by apply h.has_trivial_blocks'; exact hB
+
+theorem on_subsingleton [SMul G X] [Nonempty G] [Subsingleton X] :
+    IsPreprimitive G X := by
   have : IsPretransitive G X := by
     apply IsPretransitive.mk
     intro x y
@@ -139,52 +140,14 @@ theorem IsPreprimitive.on_subsingleton [SMul G X] [Nonempty G] [Subsingleton X] 
   intro B _
   left
   exact Set.subsingleton_of_subsingleton
-#align is_preprimitive.on_subsingleton IsPreprimitive.on_subsingleton
-
-theorem IsTrivialBlock.of_card_le_2 [Fintype X] (hX : Fintype.card X ≤ 2) (B : Set X) :
-    IsTrivialBlock B := by
-  classical
-  cases' le_or_lt (Fintype.card B) 1 with h1 h1
-  · apply Or.intro_left
-    rw [← Set.subsingleton_coe, ← Fintype.card_le_one_iff_subsingleton]
-    exact h1
-  · apply Or.intro_right
-    rw [Set.top_eq_univ, ← set_fintype_card_eq_univ_iff]
-    exact le_antisymm (set_fintype_card_le_univ B) (le_trans hX h1)
-#align is_trivial_block.of_card_le_2 IsTrivialBlock.of_card_le_2
 
 variable [Group G] [MulAction G X]
 
 open scoped BigOperators Pointwise
 
-theorem isTrivialBlock_of_block {B : Set X} (g : G) (hB : IsTrivialBlock B) :
-    IsTrivialBlock (g • B) := by
-  cases hB with
-  | inl hB =>
-    left
-    apply Set.Subsingleton.image hB
-  | inr hB =>
-    apply Or.intro_right
-    rw [hB, eq_top_iff]
-    intro x _
-    rw [Set.mem_smul_set_iff_inv_smul_mem]
-    exact Set.mem_univ _
-#align is_trivial_block_of_block isTrivialBlock_of_block
-
-theorem isTrivialBlock_of_block_iff {B : Set X} (g : G) :
-    IsTrivialBlock B ↔ IsTrivialBlock (g • B) :=
-  by
-  constructor
-  exact isTrivialBlock_of_block g
-  · intro hgB
-    rw [← inv_smul_smul g B]
-    apply isTrivialBlock_of_block
-    exact hgB
-#align is_trivial_block_of_block_iff isTrivialBlock_of_block_iff
-
-theorem IsPreprimitive.mk_mem [htGX : IsPretransitive G X] (a : X)
-    (H : ∀ (B : Set X) (_ : a ∈ B) (_ : IsBlock G B), IsTrivialBlock B) : IsPreprimitive G X :=
-  by
+theorem mk_mem' [htGX : IsPretransitive G X] (a : X)
+    (H : ∀ (B : Set X) (_ : a ∈ B) (_ : IsBlock G B), IsTrivialBlock B) :
+    IsPreprimitive G X := by
   apply IsPreprimitive.mk
   intro B hB
   cases Set.eq_empty_or_nonempty B with
@@ -192,16 +155,15 @@ theorem IsPreprimitive.mk_mem [htGX : IsPretransitive G X] (a : X)
   | inr h =>
     obtain ⟨b, hb⟩ := h
     obtain ⟨g, hg⟩ := exists_smul_eq G b a
-    rw [isTrivialBlock_of_block_iff g]
+    rw [← IsTrivialBlock.smul_iff g]
     refine' H (g • B) _ (IsBlock_of_block g hB)
     use b
-#align is_preprimitive.mk_mem IsPreprimitive.mk_mem
 
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic) (based condition) -/
-theorem IsPreprimitive.mk_mem' {a : X} (ha : a ∉ fixedPoints G X)
-      (H : ∀ (B : Set X) (_ : a ∈ B) (_ : IsBlock G B), IsTrivialBlock B) :
-      IsPreprimitive G X := by
+theorem mk_mem {a : X} (ha : a ∉ fixedPoints G X)
+    (H : ∀ (B : Set X) (_ : a ∈ B) (_ : IsBlock G B), IsTrivialBlock B) :
+    IsPreprimitive G X := by
   have : IsPretransitive G X := by
     rw [IsPretransitive.mk_base_iff a]
     cases' H (orbit G a) (mem_orbit_self a) (IsBlock_of_orbit a) with H H
@@ -219,23 +181,25 @@ theorem IsPreprimitive.mk_mem' {a : X} (ha : a ∉ fixedPoints G X)
   | inr h =>
     obtain ⟨b, hb⟩ := h
     obtain ⟨g, hg⟩ := exists_smul_eq G b a
-    rw [isTrivialBlock_of_block_iff g]
+    rw [← IsTrivialBlock.smul_iff g]
     refine' H (g • B) _ (IsBlock_of_block g hB)
     use b
 #align is_preprimitive.mk_mem' IsPreprimitive.mk_mem'
 
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic) -/
-theorem IsPreprimitive.mk' (Hnt : fixedPoints G X ≠ ⊤)
+theorem mk' (Hnt : fixedPoints G X ≠ ⊤)
     (H : ∀ (B : Set X) (_ : IsBlock G B), IsTrivialBlock B) :
     IsPreprimitive G X := by
   simp only [Set.top_eq_univ, Set.ne_univ_iff_exists_not_mem] at Hnt
   obtain ⟨a, ha⟩ := Hnt
-  exact IsPreprimitive.mk_mem' ha (fun B _ ↦ H B)
+  exact mk_mem ha (fun B _ ↦ H B)
 
-end Primitive
+end IsPreprimitive
 
 section EquivariantMap
+
+section Monoid
 
 variable {M : Type _} [Monoid M] {α : Type _} [MulAction M α]
 
@@ -260,7 +224,14 @@ theorem isTrivialBlock_of_injective_map {φ : M → N} {f : α →ₑ[φ] β}
   apply Or.intro_right; simp only [hB, Set.top_eq_univ]; apply Set.preimage_univ
 #align is_trivial_block_of_injective_map isTrivialBlock_of_injective_map
 
--- TODO : relax multiplicativity of φ here
+end Monoid
+
+section Group
+variable {M : Type _} [Group M] {α : Type _} [MulAction M α]
+
+variable {N β : Type _} [Group N] [MulAction N β]
+
+-- TODO : generalize to φ : M → N
 theorem isPreprimitive_of_surjective_map {φ : M →* N} {f : α →ₑ[φ] β}
     (hf : Function.Surjective f)
     (h : IsPreprimitive M α) : IsPreprimitive N β := by
@@ -273,38 +244,23 @@ theorem isPreprimitive_of_surjective_map {φ : M →* N} {f : α →ₑ[φ] β}
     apply h.has_trivial_blocks
     exact IsBlock_preimage f hB
 
-theorem isPreprimitive_of_bijective_map_iff {φ : M → N} {f : α →ₑ[φ] β} (hφ : Function.Surjective φ)
-    (hf : Function.Bijective f) : IsPreprimitive M α ↔ IsPreprimitive N β :=
-  by
-  constructor
-  apply isPreprimitive_of_surjective_map hf.surjective
-  · intro hN
-    haveI := (isPretransitive.of_bijective_map_iff hφ hf).mpr hN.toIsPretransitive
-    apply IsPreprimitive.mk
-    · intro B hB
-      rw [← Set.preimage_image_eq B hf.injective]
-      apply isTrivialBlock_of_injective_map hf.injective
-      apply hN.has_trivial_blocks
-      apply IsBlock_image f hφ hf.injective
-      exact hB
-#align is_preprimitive_of_bijective_map_iff isPreprimitive_of_bijective_map_iff
-
-theorem isPreprimitive_of_bijective_map_iff' (φ : M → N) (f : α →ₑ[φ] β)
+-- TODO : generalize to φ : M → N
+theorem IsPreprimitive.iff_of_bijective_map {φ : M →* N} {f : α →ₑ[φ] β}
     (hφ : Function.Surjective φ) (hf : Function.Bijective f) :
-    IsPreprimitive M α ↔ IsPreprimitive N β :=
-  by
+    IsPreprimitive M α ↔ IsPreprimitive N β := by
   constructor
   apply isPreprimitive_of_surjective_map hf.surjective
-  · intro hN
-    haveI := (isPretransitive.of_bijective_map_iff hφ hf).mpr hN.toIsPretransitive
-    apply IsPreprimitive.mk
-    · intro B hB
-      rw [← Set.preimage_image_eq B hf.injective]
-      apply isTrivialBlock_of_injective_map hf.injective
-      apply hN.has_trivial_blocks
-      apply IsBlock_image f hφ hf.injective
-      exact hB
-#align is_preprimitive_of_bijective_map_iff' isPreprimitive_of_bijective_map_iff'
+  intro hN
+  haveI := (IsPretransitive.iff_of_bijective_map hφ hf).mpr hN.toIsPretransitive
+  apply IsPreprimitive.mk
+  · intro B hB
+    rw [← Set.preimage_image_eq B hf.injective]
+    apply isTrivialBlock_of_injective_map hf.injective
+    apply hN.has_trivial_blocks
+    apply IsBlock_image f hφ hf.injective
+    exact hB
+
+end Group
 
 end EquivariantMap
 
@@ -314,8 +270,8 @@ variable (G : Type _) [Group G] {X : Type _} [MulAction G X]
 
 open scoped BigOperators Pointwise
 
-instance Block.boundedOrderOfMem (a : X) : BoundedOrder { B : Set X // a ∈ B ∧ IsBlock G B }
-    where
+instance Block.boundedOrderOfMem (a : X) :
+    BoundedOrder { B : Set X // a ∈ B ∧ IsBlock G B } where
   top := ⟨⊤, by rw [Set.top_eq_univ]; apply Set.mem_univ, top_IsBlock X⟩
   le_top := by
     rintro ⟨B, ha, hB⟩
@@ -325,20 +281,17 @@ instance Block.boundedOrderOfMem (a : X) : BoundedOrder { B : Set X // a ∈ B �
     rintro ⟨B, ha, hB⟩
     simp only [Subtype.mk_le_mk, Set.le_eq_subset, Set.singleton_subset_iff]
     exact ha
-#align block.bounded_order_of_mem Block.boundedOrderOfMem
 
-theorem Block.boundedOrderOfMem.top_eq (a : X) : ((Block.boundedOrderOfMem G a).top : Set X) = ⊤ :=
+theorem Block.boundedOrderOfMem.top_eq (a : X) :
+    ((Block.boundedOrderOfMem G a).top : Set X) = ⊤ :=
   rfl
-#align block.bounded_order_of_mem.top_eq Block.boundedOrderOfMem.top_eq
 
 theorem Block.boundedOrderOfMem.bot_eq (a : X) :
     ((Block.boundedOrderOfMem G a).bot : Set X) = {a} :=
   rfl
-#align block.bounded_order_of_mem.bot_eq Block.boundedOrderOfMem.bot_eq
 
 theorem Block.mem_is_nontrivial_order_of_nontrivial [Nontrivial X] (a : X) :
-    Nontrivial { B : Set X // a ∈ B ∧ IsBlock G B } :=
-  by
+    Nontrivial { B : Set X // a ∈ B ∧ IsBlock G B } := by
   rw [nontrivial_iff]
   use (Block.boundedOrderOfMem G a).bot
   use (Block.boundedOrderOfMem G a).top
@@ -347,16 +300,14 @@ theorem Block.mem_is_nontrivial_order_of_nontrivial [Nontrivial X] (a : X) :
   simp only [Block.boundedOrderOfMem.top_eq, Block.boundedOrderOfMem.bot_eq] at h
   obtain ⟨b, hb⟩ := exists_ne a
   apply hb
-  rw [← Set.mem_singleton_iff]
-  rw [h]
-  rw [Set.top_eq_univ]; apply Set.mem_univ
-#align block.mem_is_nontrivial_order_of_nontrivial Block.mem_is_nontrivial_order_of_nontrivial
+  rw [← Set.mem_singleton_iff, h, Set.top_eq_univ]
+  apply Set.mem_univ
 
 /-- A pretransitive action on a nontrivial type is preprimitive iff
 the set of blocks containing a given element is a simple order -/
-theorem isPreprimitive_iff_isSimpleOrder_blocks [htGX : IsPretransitive G X] [Nontrivial X]
-    (a : X) : IsPreprimitive G X ↔ IsSimpleOrder { B : Set X // a ∈ B ∧ IsBlock G B } :=
-  by
+theorem isPreprimitive_iff_isSimpleOrder_blocks
+    [htGX : IsPretransitive G X] [Nontrivial X] (a : X) :
+    IsPreprimitive G X ↔ IsSimpleOrder { B : Set X // a ∈ B ∧ IsBlock G B } := by
   haveI : Nontrivial { B : Set X // a ∈ B ∧ IsBlock G B } :=
     Block.mem_is_nontrivial_order_of_nontrivial G a
   constructor
@@ -374,32 +325,29 @@ theorem isPreprimitive_iff_isSimpleOrder_blocks [htGX : IsPretransitive G X] [No
       change B = ↑(Block.boundedOrderOfMem G a).top
       exact h
   · intro h; let h_bot_or_top := h.eq_bot_or_eq_top
-    apply IsPreprimitive.mk_mem a
+    apply IsPreprimitive.mk_mem' a
     intro B haB hB
     cases' h_bot_or_top ⟨B, haB, hB⟩ with hB' hB' <;>
       simp only [← Subtype.coe_inj, Subtype.coe_mk] at hB'
     · left; rw [hB']; exact Set.subsingleton_singleton
     · right; rw [hB']; rfl
-#align is_preprimitive_iff_is_simple_order_blocks isPreprimitive_iff_isSimpleOrder_blocks
 
-/-- An pretransitive action is preprimitive
+/-- A pretransitive action is preprimitive
   iff the stabilizer of any point is a maximal subgroup (Wielandt, th. 7.5) -/
-theorem maximal_stabilizer_iff_preprimitive [htGX : IsPretransitive G X] [hnX : Nontrivial X]
-    (a : X) : (stabilizer G a).IsMaximal ↔ IsPreprimitive G X :=
-  by
+theorem maximal_stabilizer_iff_preprimitive
+    [htGX : IsPretransitive G X] [hnX : Nontrivial X] (a : X) :
+    (stabilizer G a).IsMaximal ↔ IsPreprimitive G X := by
   rw [isPreprimitive_iff_isSimpleOrder_blocks G a, Subgroup.isMaximal_def, ← Set.isSimpleOrder_Ici_iff_isCoatom]
   simp only [isSimpleOrder_iff_isCoatom_bot]
   rw [← OrderIso.isCoatom_iff (stabilizerBlockEquiv G a), OrderIso.map_bot]
-#align maximal_stabilizer_iff_preprimitive maximal_stabilizer_iff_preprimitive
 
 /-- In a preprimitive action, stabilizers are maximal subgroups -/
-theorem hasMaximalStabilizersOfPreprimitive [hnX : Nontrivial X] (hpGX : IsPreprimitive G X)
-    (a : X) : (stabilizer G a).IsMaximal :=
-  by
+theorem hasMaximalStabilizersOfPreprimitive
+    [hnX : Nontrivial X] (hpGX : IsPreprimitive G X) (a : X) :
+    (stabilizer G a).IsMaximal := by
   haveI : IsPretransitive G X := hpGX.toIsPretransitive
   rw [maximal_stabilizer_iff_preprimitive]
   exact hpGX
-#align has_maximal_stabilizers_of_preprimitive hasMaximalStabilizersOfPreprimitive
 
 end Stabilizer
 
@@ -419,21 +367,17 @@ theorem isnontrivial_of_nontrivial_action {N : Subgroup M} (h : fixedPoints N α
   intro g
   rw [subsingleton_iff] at hα
   apply hα
-#align isnontrivial_of_nontrivial_action isnontrivial_of_nontrivial_action
 
 /-- In a preprimitive action,
   any normal subgroup that acts nontrivially is pretransitive
   (Wielandt, th. 7.1)-/
-theorem IsPreprimitive.isQuasipreprimitive (hGX : IsPreprimitive M α) : IsQuasipreprimitive M α :=
-  by
+theorem IsPreprimitive.isQuasipreprimitive (hGX : IsPreprimitive M α) :
+    IsQuasipreprimitive M α := by
   apply IsQuasipreprimitive.mk
   intro N hN hNX
-  have : ∃ x : α, x ∉ fixedPoints N α :=
-    by
-    rw [← Set.ne_univ_iff_exists_not_mem, ← Set.top_eq_univ]
-    exact hNX
-  obtain ⟨a, ha⟩ := this
-  rw [← MulAction.orbit.isPretransitive_iff a]
+  rw [Set.top_eq_univ, Set.ne_univ_iff_exists_not_mem] at hNX
+  obtain ⟨a, ha⟩ := hNX
+  rw [IsPretransitive.iff_orbit_eq_top a]
   apply Or.resolve_left (hGX.has_trivial_blocks (orbit.IsBlock_of_normal hN a))
   intro h
   apply ha; simp only [mem_fixedPoints]; intro n
@@ -441,95 +385,6 @@ theorem IsPreprimitive.isQuasipreprimitive (hGX : IsPreprimitive M α) : IsQuasi
   suffices orbit N a = {a} by rw [← this]; use n
   · ext b
     rw [Set.Subsingleton.eq_singleton_of_mem h (MulAction.mem_orbit_self a)]
-#align is_preprimitive.is_quasipreprimitive IsPreprimitive.isQuasipreprimitive
-
-/-
-/-- If the action of M on α is primitive,
-then for any normal subgroup N that acts nontrivially,
-any a : α, the groups N and (stabilizer G a) generate M.
--/
-lemma prim_to_full (is_prim: is_preprimitive M α)
-  (a: α) (N : subgroup M) (nN : subgroup.normal N) (hNX : mul_action.fixed_points N α ≠ ⊤) :
-  N ⊔ (mul_action.stabilizer M a) = ⊤ :=
-begin
-  haveI : is_pretransitive M α := is_prim.to_is_pretransitive,
-  let is_pretrans := is_prim.to_is_pretransitive.exists_smul_eq,
-  haveI : nontrivial α := isnontrivial_of_nontrivial_action hNX,
-  -- Using that stabilizers are maximal, we reduce the assertion to contradicting
-  -- an inclusion N ≤ stabilizer M a
-  rw [← maximal_stabilizer_iff_preprimitive M a, subgroup.is_maximal_def, is_coatom] at is_prim,
-  apply is_prim.right (N ⊔ (mul_action.stabilizer M a)),
-  rw right_lt_sup, intro hz,
-  -- The contradiction come from the hypothesis that N acts nontrivially
-  apply hNX,
-  -- Synthetically, N = g • N • g⁻¹ is contained in stabilizer M (g • a),
-  -- so acts trivially in g • a.
-  -- Using transitivity of the action, we get that N acts trivially
-  -- (This is done by hand)
-  rw [mul_action.fixed_points, set.top_eq_univ],
-  apply set.eq_univ_of_forall,
-  intro y, rw set.mem_set_of_eq, rintro ⟨g, hg⟩,
-  change g • y = y,
-  obtain ⟨h, hy⟩ := is_pretrans y a,
-  rw smul_eq_iff_eq_inv_smul at hy,
-  rw hy,
-  rw ← smul_eq_iff_eq_inv_smul,
-  simp only [← mul_smul, ← mul_assoc],
-  rw ← mul_action.mem_stabilizer_iff,
-  apply hz,
-  apply nN.conj_mem g _ h,
-  exact hg
-end
-
-lemma normal_core_of_stabilizer_acts_trivially (trans: is_pretransitive M α) (a: α) :
-  mul_action.fixed_points (stabilizer M a).normal_core α = ⊤  :=
-begin
-  let trans_eq := trans.exists_smul_eq,
-  rw eq_top_iff,
-/-  apply (fixing_subgroup_fixed_points_gc M α).le_u,
-  simp only [set.top_eq_univ, function.comp_app, order_dual.to_dual_le],
--/
-  intros x _,
-  rw mem_fixed_points, rintro ⟨g, hg⟩,
-  change g • x = x,
-  obtain ⟨k, hk⟩ := trans_eq x a,
-  rw smul_eq_iff_eq_inv_smul at hk,
-  rw hk,
-  rw ← smul_eq_iff_eq_inv_smul,
-  simp only [← mul_smul, ← mul_assoc],
-  rw ← mem_stabilizer_iff,
-  apply subgroup.normal_core_le,
-  apply (stabilizer M a).normal_core_normal.conj_mem,
-  exact hg
-end
-
-example (N K : subgroup M) (h : K < K ⊔ N) : ¬ (N ≤ K) :=
-begin
-exact left_lt_sup.mp h
-end
-
-
-lemma prim_to_full' (is_prim: is_preprimitive M α)
-  (a: α) {N : subgroup M} (nN : subgroup.normal N) (hNX : mul_action.fixed_points N α ≠ ⊤) :
-  N ⊔ (mul_action.stabilizer M a) = ⊤ :=
-begin
-  haveI : is_pretransitive M α := is_prim.to_is_pretransitive,
-  resetI,
-  let is_pretrans := is_prim.to_is_pretransitive.exists_smul_eq,
-  haveI : nontrivial α := isnontrivial_of_nontrivial_action hNX,
-  let is_prim' := id is_prim,
-  rw [← maximal_stabilizer_iff_preprimitive M a, subgroup.is_maximal_def, is_coatom] at is_prim,
-  apply is_prim.right (N ⊔ (mul_action.stabilizer M a)),
-  rw right_lt_sup, intro hz, apply hNX,
-  rw ← N.normal_core_eq_self,
-  rw eq_top_iff,
-  refine le_trans _ ((fixed_points_subgroup_antitone M α) (subgroup.normal_core_mono hz)),
-  simp only,
-  rw normal_core_of_stabilizer_acts_trivially is_prim'.to_is_pretransitive,
-  exact le_of_eq rfl
-end
-
--/
 
 end Normal
 
@@ -541,49 +396,10 @@ variable {N β : Type _} [Group N] [MulAction N β]
 
 open scoped BigOperators Pointwise
 
-/- lemma Set.nontrivial_iff_not_ncard_le_one {α : Type _} [Finite α] (B : Set α) :
-    Set.Nontrivial B ↔ ¬(Set.ncard B ≤ 1) := by
-  rw [not_le, Set.one_lt_ncard_iff]
-  constructor
-  all_goals {
-    rintro ⟨a, ha, b, hb, hab⟩
-    exact ⟨a, b, ha, hb, hab⟩ }
-
-lemma Set.nontrivial_iff_not_encard_le_one {α : Type _} (B : Set α) :
-    Set.Nontrivial B ↔ ¬(Set.encard B ≤ 1) := by
-  rw [not_le, Set.one_lt_encard_iff]
-  constructor
-  all_goals {
-    rintro ⟨a, ha, b, hb, hab⟩
-    exact ⟨a, b, ha, hb, hab⟩ }
-
-lemma Set.subsingleton_iff_ncard_le_one {α : Type _} [Finite α] (B : Set α) :
-  Set.Subsingleton B ↔ Set.ncard B ≤ 1 := by
-  rw [← Set.not_nontrivial_iff, not_iff_comm, ← Set.nontrivial_iff_not_ncard_le_one]
-
-lemma Set.subsingleton_iff_encard_le_one {α : Type _} (B : Set α) :
-  Set.Subsingleton B ↔ Set.encard B ≤ 1 := by
-  rw [← Set.not_nontrivial_iff, not_iff_comm, ← Set.nontrivial_iff_not_encard_le_one]
-
-example (n m : ℕ) (h : n + m = n) : m = 0 := by
-  exact Nat.add_left_cancel h
-
-lemma Set.eq_top_iff_ncard {α : Type _} [Fintype α] (B : Set α) :
-    B = ⊤ ↔ Set.ncard B = Fintype.card α := by
-  rw [top_eq_univ, ← Set.compl_empty_iff, ← Set.ncard_eq_zero]
-  rw [← Nat.card_eq_fintype_card]
-  rw [← Set.ncard_add_ncard_compl B]
-  constructor
-  · intro H
-    rw [H, add_zero]
-  · intro H
-    exact Nat.add_left_cancel H.symm
- -/
-
 /-- A pretransitive action on a set of prime order is preprimitive -/
-theorem isPreprimitive_of_prime [Fintype α] [hGX : IsPretransitive M α]
-    (hp : Nat.Prime (Fintype.card α)) : IsPreprimitive M α :=
-  by
+theorem isPreprimitive_of_prime [Finite α] [hGX : IsPretransitive M α]
+    (hp : Nat.Prime (Nat.card α)) :
+    IsPreprimitive M α := by
   classical
   apply IsPreprimitive.mk
   intro B hB
@@ -591,18 +407,21 @@ theorem isPreprimitive_of_prime [Fintype α] [hGX : IsPretransitive M α]
   · apply Or.intro_left
     exact hB'
   · apply Or.intro_right
-    suffices Set.ncard B = 1 ∨ Set.ncard B = Fintype.card α by
+    suffices Set.ncard B = 1 ∨ Set.ncard B = Nat.card α by
       cases' this with h h
       · exfalso
-        rw [← Set.one_lt_ncard_iff_nontrivial, ← not_le] at hB'
-        exact hB' (le_of_eq h)
-      · rw [Set.eq_top_iff_ncard]
-        exact h
+        rw [Set.ncard_eq_one] at h
+        obtain ⟨a, rfl⟩ := h
+        exact Set.not_nontrivial_singleton hB'
+      · -- make a lemma out of this?
+        simp only [Set.top_eq_univ, Set.subset_univ]
+        apply Set.eq_of_subset_of_ncard_le
+        apply Set.subset_univ
+        rw [h, Set.ncard_univ]
+        exact Set.finite_univ
     rw [← Nat.dvd_prime hp]
-    simp only [← Nat.card_eq_fintype_card]
     apply ncard_of_block_divides hB
     exact Set.Nontrivial.nonempty hB'
-#align is_preprimitive_of_prime isPreprimitive_of_prime
 
 section
 
@@ -686,14 +505,18 @@ theorem isPreprimitive_of_large_image [Fintype β] [htβ : IsPretransitive N β]
 theorem isPreprimitive_of_large_image
     [Fintype β] [htβ : IsPretransitive N β] {φ : M → N}
     {f : α →ₑ[φ] β} (hM : IsPreprimitive M α)
-    (hf' : Fintype.card β < 2 * Set.ncard (Set.range f)) : IsPreprimitive N β :=  by
+    (hf' : Fintype.card β < 2 * Set.ncard (Set.range f)) :
+    IsPreprimitive N β :=  by
   -- classical
   apply IsPreprimitive.mk
   intro B hB
   dsimp only [IsTrivialBlock]
-  rw [or_iff_not_imp_right]
-  intro hB_ne_top
-  rw [Set.subsingleton_iff_ncard_le_one, ← Nat.lt_succ]
+  rcases Set.subsingleton_or_nontrivial B with (hB | hB)
+  · left; exact hB
+  right
+  have := Setoid.IsPartition.card_set_eq_sum_parts (Set.range f)
+      (IsBlockSystem.of_block hB hB_ne).left
+  /-
   cases' Set.eq_empty_or_nonempty B with hBe hB_ne
   · rw [hBe]
     simp only [Set.ncard_empty, Nat.succ_pos']
@@ -711,10 +534,11 @@ theorem isPreprimitive_of_large_image
   -- · rw [Nat.lt_succ_iff, Set.ncard_le_one_iff] at this
   --   intro x hx y hy
   --   exact this hx hy
+-/
 
   -- We reduce to proving that
   -- Fintype.card (Set.range f) ≤ Fintype.card (Set.range (λ g, g • B))
-  apply lt_of_mul_lt_mul_right (lt_of_le_of_lt _ hf') (Nat.zero_le _)
+  have := lt_of_mul_lt_mul_right (lt_of_le_of_lt _ hf') (Nat.zero_le _)
   simp only [← Nat.card_eq_fintype_card, ← ncard_block_mul_ncard_orbit_eq hB hB_ne]
   apply Nat.mul_le_mul_left _
   -- We reduce to proving that

@@ -97,13 +97,11 @@ theorem IsBlock_of_fixed {B : Set X} (hfB : IsFixedBlock G B) : IsBlock G B :=
   intro g g'
   apply Or.intro_left
   rw [hfB g, hfB g']
-#align mul_action.is_block_of_fixed MulAction.IsBlock_of_fixed
 
 variable (X)
 
 /-- The empty set is a block -/
-theorem bot_IsBlock : IsBlock G (⊥ : Set X) :=
-  by
+theorem bot_IsBlock : IsBlock G (⊥ : Set X) := by
   rw [IsBlock.def]
   intro g g'; apply Or.intro_left
   simp only [Set.bot_eq_empty, Set.smul_set_empty]
@@ -111,8 +109,7 @@ theorem bot_IsBlock : IsBlock G (⊥ : Set X) :=
 
 variable {X}
 
-theorem singleton_IsBlock (a : X) : IsBlock G ({a} : Set X) :=
-  by
+theorem singleton_IsBlock (a : X) : IsBlock G ({a} : Set X) := by
   rw [IsBlock.def]
   intro g g'
   simp only [Set.smul_set_singleton, Set.singleton_eq_singleton_iff, Set.disjoint_singleton, Ne.def]
@@ -126,14 +123,51 @@ theorem subsingleton_IsBlock {B : Set X} (hB : B.Subsingleton) : IsBlock G B := 
   | inr h => obtain ⟨a, ha⟩ := h; rw [ha]; apply singleton_IsBlock
 #align mul_action.subsingleton_is_block MulAction.subsingleton_IsBlock
 
+/-- In a finite set of cardinality ≤ 2, all blocks are trivial -/
+theorem IsTrivialBlock.of_card_le_two [Finite X] (hX : Nat.card X ≤ 2)
+    (B : Set X) : IsTrivialBlock B := by
+  classical
+  cases' le_or_lt (Set.ncard B) 1 with h1 h1
+  · left
+    rw [Set.ncard_le_one_iff_eq] at h1
+    rcases h1 with (h0 | h1)
+    · simp only [h0, Set.subsingleton_empty]
+    · rcases h1 with ⟨a, rfl⟩
+      simp only [Set.subsingleton_singleton]
+  · right
+    apply Set.eq_of_subset_of_ncard_le le_top
+    · simp only [Set.top_eq_univ, Set.ncard_univ]
+      exact le_trans hX (Nat.succ_le.mp h1)
+
 end SMul
 
 section Group
 
 variable {G : Type _} [Group G] {X : Type _} [MulAction G X]
 
-theorem IsBlock.def_one {B : Set X} : IsBlock G B ↔ ∀ g : G, g • B = B ∨ Disjoint (g • B) B :=
-  by
+theorem IsTrivialBlock.smul {B : Set X} (g : G) (hB : IsTrivialBlock B) :
+    IsTrivialBlock (g • B) := by
+  cases hB with
+  | inl hB =>
+    left
+    apply Set.Subsingleton.image hB
+  | inr hB =>
+    apply Or.intro_right
+    rw [hB, eq_top_iff]
+    intro x _
+    rw [Set.mem_smul_set_iff_inv_smul_mem]
+    exact Set.mem_univ _
+
+theorem IsTrivialBlock.smul_iff {B : Set X} (g : G) :
+    IsTrivialBlock (g • B) ↔ IsTrivialBlock B := by
+  constructor
+  · intro hg
+    convert hg.smul g⁻¹
+    simp only [inv_smul_smul]
+  exact IsTrivialBlock.smul g
+
+theorem IsBlock.def_one {B : Set X} :
+    IsBlock G B ↔ ∀ g : G, g • B = B ∨ Disjoint (g • B) B := by
   rw [IsBlock.def]; constructor
   · intro hB g
     simpa only [one_smul] using hB g 1
@@ -155,7 +189,6 @@ theorem IsBlock.def_one {B : Set X} : IsBlock G B ↔ ∀ g : G, g • B = B ∨
       simp only [← Set.mem_smul_set_iff_inv_smul_mem]
       rw [← smul_smul]; rw [smul_inv_smul]
       exact ⟨hx, hx'⟩
-#align mul_action.is_block.def_one MulAction.IsBlock.def_one
 
 theorem IsBlock.mk_notempty_one {B : Set X} :
     IsBlock G B ↔ ∀ g : G, g • B ∩ B ≠ ∅ → g • B = B := by
@@ -164,10 +197,7 @@ theorem IsBlock.mk_notempty_one {B : Set X} :
   intro g
   rw [Set.disjoint_iff_inter_eq_empty]
   exact or_iff_not_imp_right
-#align mul_action.is_block.mk_notempty_one MulAction.IsBlock.mk_notempty_one
 
-example (α : Type) (p q : α → Prop) (hp : ∀ a, p a ↔ q a) :
-   (∀ a, p a) ↔ (∀ a, q a) := by exact forall_congr' hp
 theorem IsBlock.mk_mem {B : Set X} :
     IsBlock G B ↔
       ∀ (g : G) (a : X) (_ : a ∈ B) (_ : g • a ∈ B), g • B = B := by
@@ -255,6 +285,7 @@ theorem Subgroup.IsBlock {H : Subgroup G} {B : Set X} (hfB : IsBlock G B) : IsBl
   simpa only using IsBlock.def_one.mp hfB g
 #align mul_action.subgroup.is_block MulAction.Subgroup.IsBlock
 
+-- TODO: Generalize to φ : H → G
 theorem IsBlock_preimage {H Y : Type _} [Group H] [MulAction H Y]
     {φ : H →* G} (j : Y →ₑ[φ] X) {B : Set X} (hB : IsBlock G B) :
     IsBlock H (j ⁻¹' B) := by
