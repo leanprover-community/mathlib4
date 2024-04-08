@@ -83,15 +83,22 @@ instance instFunLike [TopologicalSpace F] [TopologicalAddGroup F]
     (𝔖 : Set (Set E)) : FunLike (UniformConvergenceCLM σ F 𝔖) E F :=
   ContinuousLinearMap.funLike
 
-instance continuousSemilinearMapClass [TopologicalSpace F] [TopologicalAddGroup F]
+instance instContinuousSemilinearMapClass [TopologicalSpace F] [TopologicalAddGroup F]
     (𝔖 : Set (Set E)) : ContinuousSemilinearMapClass (UniformConvergenceCLM σ F 𝔖) σ E F :=
   ContinuousLinearMap.continuousSemilinearMapClass
 
-instance instTopologicalSpace [TopologicalSpace F]
-    [TopologicalAddGroup F] (𝔖 : Set (Set E)) : TopologicalSpace (UniformConvergenceCLM σ F 𝔖) :=
+instance instTopologicalSpace [TopologicalSpace F] [TopologicalAddGroup F] (𝔖 : Set (Set E)) :
+    TopologicalSpace (UniformConvergenceCLM σ F 𝔖) :=
   (@UniformOnFun.topologicalSpace E F (TopologicalAddGroup.toUniformSpace F) 𝔖).induced
     (DFunLike.coe : (UniformConvergenceCLM σ F 𝔖) → (E →ᵤ[𝔖] F))
 #align continuous_linear_map.strong_topology UniformConvergenceCLM.instTopologicalSpace
+
+theorem topologicalSpace_eq [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
+    instTopologicalSpace σ F 𝔖 = TopologicalSpace.induced DFunLike.coe
+      (UniformOnFun.topologicalSpace E F 𝔖) := by
+  rw [instTopologicalSpace]
+  congr
+  exact UniformAddGroup.toUniformSpace_eq
 
 /-- The uniform structure associated with `ContinuousLinearMap.strongTopology`. We make sure
 that this has nice definitional properties. -/
@@ -114,8 +121,7 @@ theorem uniformity_toTopologicalSpace_eq [UniformSpace F] [UniformAddGroup F] (�
   rfl
 #align continuous_linear_map.strong_uniformity_topology_eq UniformConvergenceCLM.uniformity_toTopologicalSpace_eq
 
-theorem uniformEmbedding_coeFn [UniformSpace F] [UniformAddGroup F]
-    (𝔖 : Set (Set E)) :
+theorem uniformEmbedding_coeFn [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
     UniformEmbedding (α := UniformConvergenceCLM σ F 𝔖) (β := E →ᵤ[𝔖] F) DFunLike.coe :=
   ⟨⟨rfl⟩, DFunLike.coe_injective⟩
 #align continuous_linear_map.strong_uniformity.uniform_embedding_coe_fn UniformConvergenceCLM.uniformEmbedding_coeFn
