@@ -1034,6 +1034,22 @@ lemma inv_op_smul_set_distrib (a : α) (s : Set α) : (op a • s)⁻¹ = a⁻¹
 lemma smul_set_disjoint_iff : Disjoint (a • s) (a • t) ↔ Disjoint s t := by
   simp [disjoint_iff, ← smul_set_inter]
 
+example (a : α) (s : Set β) : a • s = (fun b ↦ a • b) '' s := by
+  rw [@image_smul]
+
+@[to_additive]
+lemma smul_set_iInter {ι : Type*} (a : α) (s : ι → Set β) :
+    (a • ⋂ i, s i) = ⋂ i, a • s i := by
+  obtain _ | _ := isEmpty_or_nonempty ι
+  · refine' Eq.trans _ (Set.iInter_of_empty _).symm
+    rw [Set.iInter_of_empty]
+    exact Set.smul_set_univ
+  · rw [← image_smul, Set.InjOn.image_iInter_eq ?_]
+    simp only [image_smul]
+    apply Function.Injective.injOn
+    intro x y
+    simp only [smul_left_cancel_iff, imp_self]
+
 end Group
 
 section GroupWithZero
