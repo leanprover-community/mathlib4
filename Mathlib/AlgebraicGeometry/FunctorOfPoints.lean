@@ -132,10 +132,33 @@ def IsBasicOpen {A B : CommRingCat.{u}} (ι : A ⟶ B) (f : A) : Prop :=
   letI : Algebra A B := RingHom.toAlgebra ι
   IsLocalization.Away f B
 
+lemma IsBasicOpen.comp_iso {A B B' : CommRingCat.{u}}
+    {ι : A ⟶ B} {f : A}
+    {ι' : A ⟶ B'}
+    (h : IsBasicOpen ι f) (e : B ≅ B') (w : ι ≫ e.hom = ι') :
+    IsBasicOpen ι' f := sorry
+
+open TensorProduct in
 lemma IsBasicOpen.pushout {A A' B : CommRingCat.{u}} (ι : A ⟶ B) (f : A)
     (h : IsBasicOpen ι f) (g : A ⟶ A') :
-    IsBasicOpen (Limits.pushout.inl : A' ⟶ Limits.pushout g ι) (g f) :=
-  sorry
+    IsBasicOpen (Limits.pushout.inl : A' ⟶ Limits.pushout g ι) (g f) := by
+  let _ : Algebra A B := ι.toAlgebra
+  let _ : Algebra A A' := g.toAlgebra
+  have : IsLocalization.Away f B := h
+  let C := A' ⊗[A] B
+  have h' : IsLocalization.Away (g f) C := by
+    sorry
+  let e : .of C ≅ Limits.pushout g ι :=
+    (CommRingCat.pushoutCoconeIsColimit _ _).coconePointUniqueUpToIso <|
+    Limits.colimit.isColimit _
+  let ι' : A' ⟶ .of C := algebraMap A' C
+  let h' : IsBasicOpen ι' (g f) := by
+    dsimp [IsBasicOpen]
+    convert h'
+    ext
+    symm
+    apply Algebra.smul_def
+  apply IsBasicOpen.comp_iso h' (e := e)
 
 lemma isOpenImmersion_isBasicOpen
     {A B : CommRingCat.{u}} (ι : A ⟶ B) (f : A) (h : IsBasicOpen ι f) :
