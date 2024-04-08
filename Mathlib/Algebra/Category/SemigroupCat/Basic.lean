@@ -262,9 +262,9 @@ end
 
 namespace CategoryTheory.Iso
 
-/-- Build a `MulEquiv` from an isomorphism in the category `Magma`. -/
+/-- Build a `MulEquiv` from an isomorphism in the category `MagmaCat`. -/
 @[to_additive
-      "Build an `AddEquiv` from an isomorphism in the category `AddMagma`."]
+      "Build an `AddEquiv` from an isomorphism in the category `AddMagmaCat`."]
 def magmaCatIsoToMulEquiv {X Y : MagmaCat} (i : X ≅ Y) : X ≃* Y :=
   MulHom.toMulEquiv i.hom i.inv i.hom_inv_id i.inv_hom_id
 #align category_theory.iso.Magma_iso_to_mul_equiv CategoryTheory.Iso.magmaCatIsoToMulEquiv
@@ -281,10 +281,10 @@ def semigroupCatIsoToMulEquiv {X Y : SemigroupCat} (i : X ≅ Y) : X ≃* Y :=
 end CategoryTheory.Iso
 
 /-- multiplicative equivalences between `Mul`s are the same as (isomorphic to) isomorphisms
-in `Magma` -/
+in `MagmaCat` -/
 @[to_additive
     "additive equivalences between `Add`s are the same
-    as (isomorphic to) isomorphisms in `AddMagma`"]
+    as (isomorphic to) isomorphisms in `AddMagmaCat`"]
 def mulEquivIsoMagmaIso {X Y : Type u} [Mul X] [Mul Y] :
     X ≃* Y ≅ MagmaCat.of X ≅ MagmaCat.of Y where
   hom e := e.toMagmaCatIso

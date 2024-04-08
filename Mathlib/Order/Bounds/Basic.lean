@@ -937,7 +937,7 @@ protected theorem BddAbove.insert [IsDirected α (· ≤ ·)] {s : Set α} (a : 
   bddAbove_insert.2
 #align bdd_above.insert BddAbove.insert
 
-/-- Adding a point to a set preserves its boundedness below.-/
+/-- Adding a point to a set preserves its boundedness below. -/
 @[simp]
 theorem bddBelow_insert [IsDirected α (· ≥ ·)] {s : Set α} {a : α} :
     BddBelow (insert a s) ↔ BddBelow s := by

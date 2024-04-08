@@ -372,7 +372,7 @@ theorem signAux3_symm_trans_trans [Finite α] [DecidableEq β] [Finite β] (f : 
 
 /-- `SignType.sign` of a permutation returns the signature or parity of a permutation, `1` for even
 permutations, `-1` for odd permutations. It is the unique surjective group homomorphism from
-`Perm α` to the group with two elements.-/
+`Perm α` to the group with two elements. -/
 def sign [Fintype α] : Perm α →* ℤˣ :=
   MonoidHom.mk' (fun f => signAux3 f mem_univ) fun f g => (signAux3_mul_and_swap f g _ mem_univ).1
 #align equiv.perm.sign Equiv.Perm.sign

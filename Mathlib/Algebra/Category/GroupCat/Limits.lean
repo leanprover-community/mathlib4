@@ -503,7 +503,7 @@ set_option linter.uppercaseLean3 false in
 -- Porting note: explicitly add what to be synthesized under `simps!`, because other lemmas
 -- automatically generated is not in normal form
 /-- The categorical kernel inclusion for `f : G ⟶ H`, as an object over `G`,
-agrees with the `subtype` map.
+agrees with the `AddSubgroup.subtype` map.
 -/
 @[simps! hom_left_apply_coe inv_left_apply]
 def kernelIsoKerOver {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :

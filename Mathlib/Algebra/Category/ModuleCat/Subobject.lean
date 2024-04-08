@@ -35,7 +35,7 @@ set_option linter.uppercaseLean3 false -- `Module`
 variable {R : Type u} [Ring R] (M : ModuleCat.{v} R)
 
 /-- The categorical subobjects of a module `M` are in one-to-one correspondence with its
-    submodules.-/
+    submodules. -/
 noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
   OrderIso.symm
     { invFun := fun S => LinearMap.range S.arrow

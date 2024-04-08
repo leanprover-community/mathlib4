@@ -112,7 +112,7 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
 
 /-- The functor which maps undefined values to a new point. This makes the maps total and creates
 pointed types. This is the noncomputable part of the equivalence `PartialFunEquivPointed`. It can't
-be computable because `= Option.none` is decidable while the domain of a general `part` isn't. -/
+be computable because `= Option.none` is decidable while the domain of a general `Part` isn't. -/
 @[simps obj map]
 noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by
   classical

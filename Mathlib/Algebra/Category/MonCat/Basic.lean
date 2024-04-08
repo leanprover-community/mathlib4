@@ -240,7 +240,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommMon.of AddCommMonCat.of
 
-/-- Construct a bundled `AddCommMon` from the underlying type and typeclass. -/
+/-- Construct a bundled `AddCommMonCat` from the underlying type and typeclass. -/
 add_decl_doc AddCommMonCat.of
 
 @[to_additive]

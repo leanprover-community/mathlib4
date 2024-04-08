@@ -120,7 +120,7 @@ theorem prodCongr_symm (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
 #align equiv.prod_congr_symm Equiv.prodCongr_symm
 
 /-- Type product is commutative up to an equivalence: `α × β ≃ β × α`. This is `Prod.swap` as an
-equivalence.-/
+equivalence. -/
 def prodComm (α β) : α × β ≃ β × α :=
   ⟨Prod.swap, Prod.swap, Prod.swap_swap, Prod.swap_swap⟩
 #align equiv.prod_comm Equiv.prodComm

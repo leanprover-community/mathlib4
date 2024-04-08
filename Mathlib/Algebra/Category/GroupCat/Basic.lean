@@ -440,12 +440,12 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align add_equiv_iso_AddGroup_iso addEquivIsoAddGroupIso
 
-/-- "additive equivalences between `add_group`s are the same
-as (isomorphic to) isomorphisms in `AddGroup` -/
+/-- Additive equivalences between `AddGroup`s are the same
+as (isomorphic to) isomorphisms in `AddGroupCat`. -/
 add_decl_doc addEquivIsoAddGroupIso
 
-/-- multiplicative equivalences between `comm_group`s are the same as (isomorphic to) isomorphisms
-in `CommGroup` -/
+/-- Multiplicative equivalences between `CommGroup`s are the same as (isomorphic to) isomorphisms
+in `CommGroupCat`. -/
 @[to_additive]
 def mulEquivIsoCommGroupIso {X Y : CommGroupCat.{u}} : X ≃* Y ≅ X ≅ Y where
   hom e := e.toCommGroupCatIso
@@ -455,8 +455,8 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align add_equiv_iso_AddCommGroup_iso addEquivIsoAddCommGroupIso
 
-/-- additive equivalences between `AddCommGroup`s are
-the same as (isomorphic to) isomorphisms in `AddCommGroup` -/
+/-- Additive equivalences between `AddCommGroup`s are
+the same as (isomorphic to) isomorphisms in `AddCommGroupCat`. -/
 add_decl_doc addEquivIsoAddCommGroupIso
 
 namespace CategoryTheory.Aut
@@ -475,7 +475,7 @@ def isoPerm {α : Type u} : GroupCat.of (Aut α) ≅ GroupCat.of (Equiv.Perm α)
 set_option linter.uppercaseLean3 false in
 #align category_theory.Aut.iso_perm CategoryTheory.Aut.isoPerm
 
-/-- The (unbundled) group of automorphisms of a type is `mul_equiv` to the (unbundled) group
+/-- The (unbundled) group of automorphisms of a type is `MulEquiv` to the (unbundled) group
 of permutations. -/
 def mulEquivPerm {α : Type u} : Aut α ≃* Equiv.Perm α :=
   isoPerm.groupIsoToMulEquiv

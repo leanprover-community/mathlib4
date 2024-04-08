@@ -1050,13 +1050,13 @@ variable (K)
 
 -- Porting note: relax assumptions, swap LHS with RHS
 /-- If the orthogonal projection to `K` is well-defined, then a vector splits as the sum of its
-orthogonal projections onto a complete submodule `K` and onto the orthogonal complement of `K`.-/
+orthogonal projections onto a complete submodule `K` and onto the orthogonal complement of `K`. -/
 theorem orthogonalProjection_add_orthogonalProjection_orthogonal [HasOrthogonalProjection K]
     (w : E) : (orthogonalProjection K w : E) + (orthogonalProjection Kᗮ w : E) = w := by
   simp
 #align eq_sum_orthogonal_projection_self_orthogonal_complement orthogonalProjection_add_orthogonalProjection_orthogonalₓ
 
-/-- The Pythagorean theorem, for an orthogonal projection.-/
+/-- The Pythagorean theorem, for an orthogonal projection. -/
 theorem norm_sq_eq_add_norm_sq_projection (x : E) (S : Submodule 𝕜 E) [HasOrthogonalProjection S] :
     ‖x‖ ^ 2 = ‖orthogonalProjection S x‖ ^ 2 + ‖orthogonalProjection Sᗮ x‖ ^ 2 :=
   calc

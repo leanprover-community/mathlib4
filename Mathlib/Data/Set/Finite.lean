@@ -1667,12 +1667,12 @@ section
 
 variable [Preorder α] [IsDirected α (· ≤ ·)] [Nonempty α] {s : Set α}
 
-/-- A finite set is bounded above.-/
+/-- A finite set is bounded above. -/
 protected theorem Finite.bddAbove (hs : s.Finite) : BddAbove s :=
   Finite.induction_on hs bddAbove_empty fun _ _ h => h.insert _
 #align set.finite.bdd_above Set.Finite.bddAbove
 
-/-- A finite union of sets which are all bounded above is still bounded above.-/
+/-- A finite union of sets which are all bounded above is still bounded above. -/
 theorem Finite.bddAbove_biUnion {I : Set β} {S : β → Set α} (H : I.Finite) :
     BddAbove (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddAbove (S i) :=
   Finite.induction_on H (by simp only [biUnion_empty, bddAbove_empty, ball_empty_iff])
@@ -1689,12 +1689,12 @@ section
 
 variable [Preorder α] [IsDirected α (· ≥ ·)] [Nonempty α] {s : Set α}
 
-/-- A finite set is bounded below.-/
+/-- A finite set is bounded below. -/
 protected theorem Finite.bddBelow (hs : s.Finite) : BddBelow s :=
   @Finite.bddAbove αᵒᵈ _ _ _ _ hs
 #align set.finite.bdd_below Set.Finite.bddBelow
 
-/-- A finite union of sets which are all bounded below is still bounded below.-/
+/-- A finite union of sets which are all bounded below is still bounded below. -/
 theorem Finite.bddBelow_biUnion {I : Set β} {S : β → Set α} (H : I.Finite) :
     BddBelow (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddBelow (S i) :=
   @Finite.bddAbove_biUnion αᵒᵈ _ _ _ _ _ _ H

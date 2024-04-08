@@ -3,10 +3,10 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
 -/
+import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.Data.Int.Basic
 import Mathlib.Data.Set.Basic
 
 #align_import category_theory.graded_object from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
@@ -435,8 +435,7 @@ def cofanMapObjComp : X.CofanMapObjFun r k :=
 In other words, if we have, for all `j : J` such that `hj : q j = k`,
 a colimit cofan `c j hj` which computes the coproduct of the `X i` such that `p i = j`,
 and also a colimit cofan which computes the coproduct of the points of these `c j hj`, then
-the point of this latter cofan computes the coproduct of the `X i` such that `r i = k`.
-.-/
+the point of this latter cofan computes the coproduct of the `X i` such that `r i = k`. -/
 @[simp]
 def isColimitCofanMapObjComp :
     IsColimit (cofanMapObjComp X p q r hpqr k c c') :=

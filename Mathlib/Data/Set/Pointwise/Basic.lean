@@ -8,7 +8,7 @@ import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Opposites
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.Common
 
@@ -819,7 +819,7 @@ end Div
 open Pointwise
 
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Set`. See
-note [pointwise nat action].-/
+note [pointwise nat action]. -/
 protected def NSMul [Zero α] [Add α] : SMul ℕ (Set α) :=
   ⟨nsmulRec⟩
 #align set.has_nsmul Set.NSMul
