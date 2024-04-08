@@ -5,9 +5,9 @@ on: push
 #  schedule:
 #    - cron: '0 0 * * *' # Runs at 00:00 UTC every day
 
-build:
-  if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
-  name: BuildJOB_NAME
+#build:
+#  if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
+#  name: BuildJOB_NAME
 
 
 jobs:
