@@ -15,7 +15,7 @@ This file describes the relation between bilinear forms and linear maps.
 
 ## TODO
 
-A lot of this file is now pointless folowing the replacement of the dedicated `_root_.BilinForm`
+A lot of this file is now redundant following the replacement of the dedicated `_root_.BilinForm`
 structure with `LinearMap.BilinForm`, which is just an alias for `M →ₗ[R] M →ₗ[R] R`. For example
 `LinearMap.BilinForm.toLinHom` is now just the identity map. This pointless code should be removed
 in the future.
