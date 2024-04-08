@@ -63,7 +63,7 @@ abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert `«]»
   |>.insert `«<;>»
 
-/-- scans the input `InfoTree` and accumulates `SyntaxNodeKinds` and `Range`s in a `HashSet`. -/
+/-- scans the input `InfoTree` and accumulates `Expr`s and `Range`s in a `HashSet`. -/
 partial
 def getTerms :
     InfoTree → HashSet (Expr × String.Range) → HashSet (Expr × String.Range)
@@ -84,7 +84,7 @@ def getTerms :
   | .context _ t, col => getTerms t col
   | _, _ => default
 
-/-- scans the input `InfoTree` and accumulates `SyntaxNodeKinds` and `Range`s in a `HashSet`. -/
+/-- scans the input `InfoTree` and accumulates `SyntaxNodeKind`s and `Range`s in a `HashSet`. -/
 partial
 def getRanges :
     InfoTree → HashSet (SyntaxNodeKind × String.Range) → HashSet (SyntaxNodeKind × String.Range)
@@ -93,9 +93,9 @@ def getRanges :
     Id.run do
     let mut tot := col
     for r in rargs do
-      for (a, b) in r.toArray do
+      for (a, rg) in r.toArray do
         if !exclusions.contains a then
-          tot := tot.insert (a, b)
+          tot := tot.insert (a, rg)
     if let .ofTacticInfo i := k then
       let stx := i.stx
       if let .original .. := stx.getHeadInfo then  -- make sure that the syntax is `original`
