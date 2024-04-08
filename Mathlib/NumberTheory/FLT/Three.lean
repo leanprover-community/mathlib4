@@ -28,7 +28,7 @@ private lemma cube_of_not_dvd {n : ℕ} (h : ¬ 3 ∣ n) :
   apply cube_of_castHom_ne_zero
   rwa [map_natCast, Ne, Fin.nat_cast_eq_zero]
 
-/--If `a b c : ℕ` are such that `¬ 3 ∣ a * b * c`, then `a ^ 3 + b ^ 3 ≠ c ^ 3`. -/
+/-- If `a b c : ℕ` are such that `¬ 3 ∣ a * b * c`, then `a ^ 3 + b ^ 3 ≠ c ^ 3`. -/
 theorem fermatLastTheoremThree_case_1 {a b c : ℕ} (hdvd : ¬ 3 ∣ a * b * c) :
     a ^ 3 + b ^ 3 ≠ c ^ 3 := by
   simp_rw [Nat.prime_three.dvd_mul, not_or] at hdvd

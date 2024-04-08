@@ -287,7 +287,7 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
     · rintro ⟨s, hs, rfl⟩
       rw [Finset.mem_powerset, ← Finset.val_le_iff, Multiset.toFinset_val] at hs
       have hs0 : s.val.prod ≠ 0 := by
-        rw [Ne.def, Multiset.prod_eq_zero_iff]
+        rw [Ne, Multiset.prod_eq_zero_iff]
         intro con
         apply
           not_irreducible_zero
@@ -376,7 +376,7 @@ and generalizes to arbitrary commutative monoids. See `Squarefree.of_mul_left` a
 theorem squarefree_mul {m n : ℕ} (hmn : m.Coprime n) :
     Squarefree (m * n) ↔ Squarefree m ∧ Squarefree n := by
   simp only [squarefree_iff_prime_squarefree, ← sq, ← forall_and]
-  refine' ball_congr fun p hp => _
+  refine' forall₂_congr fun p hp => _
   simp only [hmn.isPrimePow_dvd_mul (hp.isPrimePow.pow two_ne_zero), not_or]
 #align nat.squarefree_mul Nat.squarefree_mul
 

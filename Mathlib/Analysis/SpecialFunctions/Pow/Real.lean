@@ -1008,7 +1008,7 @@ theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
     IsRat (a ^ b) num den := by
   rwa [pb.out, Real.rpow_int_cast]
 
-/-- Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals.-/
+/-- Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals. -/
 @[norm_num (_ : ℝ) ^ (_ : ℝ)]
 def evalRPow : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℝ))) (b : Q(ℝ)) ← Lean.Meta.whnfR e | failure

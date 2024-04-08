@@ -6,7 +6,7 @@ Authors: Yury Kudryashov, Heather Macbeth
 import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Analysis.NormedSpace.Extend
-import Mathlib.Data.RCLike.Lemmas
+import Mathlib.Analysis.RCLike.Lemmas
 
 #align_import analysis.normed_space.hahn_banach.extension from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
 

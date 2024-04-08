@@ -71,7 +71,7 @@ lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
   let y' : ℝ≥0 := ⟨y, hy⟩
   let a' : ℝ≥0 := ⟨a, ha.le⟩
   let b' : ℝ≥0 := ⟨b, hb.le⟩
-  have hxy' : x' ≠ y' := Subtype.ne_of_val_ne hxy
+  have hxy' : x' ≠ y' := Subtype.coe_ne_coe.1 hxy
   have hab' : a' + b' = 1 := by ext; simp [a', b', hab]
   exact_mod_cast (NNReal.strictConcaveOn_rpow hp₀ hp₁).2 (Set.mem_univ x') (Set.mem_univ y')
     hxy' (mod_cast ha) (mod_cast hb) hab'

@@ -7,7 +7,7 @@ import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
 import Mathlib.Analysis.InnerProductSpace.Symmetric
 import Mathlib.Analysis.NormedSpace.RCLike
-import Mathlib.Data.RCLike.Lemmas
+import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.Algebra.DirectSum.Decomposition
 
 #align_import analysis.inner_product_space.projection from "leanprover-community/mathlib"@"0b7c740e25651db0ba63648fbae9f9d6f941e31b"
@@ -54,10 +54,7 @@ variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
 
--- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
-
--- mathport name: exprabsR
 local notation "absR" => abs
 
 /-! ### Orthogonal projection in inner product spaces -/
@@ -1053,13 +1050,13 @@ variable (K)
 
 -- Porting note: relax assumptions, swap LHS with RHS
 /-- If the orthogonal projection to `K` is well-defined, then a vector splits as the sum of its
-orthogonal projections onto a complete submodule `K` and onto the orthogonal complement of `K`.-/
+orthogonal projections onto a complete submodule `K` and onto the orthogonal complement of `K`. -/
 theorem orthogonalProjection_add_orthogonalProjection_orthogonal [HasOrthogonalProjection K]
     (w : E) : (orthogonalProjection K w : E) + (orthogonalProjection Kᗮ w : E) = w := by
   simp
 #align eq_sum_orthogonal_projection_self_orthogonal_complement orthogonalProjection_add_orthogonalProjection_orthogonalₓ
 
-/-- The Pythagorean theorem, for an orthogonal projection.-/
+/-- The Pythagorean theorem, for an orthogonal projection. -/
 theorem norm_sq_eq_add_norm_sq_projection (x : E) (S : Submodule 𝕜 E) [HasOrthogonalProjection S] :
     ‖x‖ ^ 2 = ‖orthogonalProjection S x‖ ^ 2 + ‖orthogonalProjection Sᗮ x‖ ^ 2 :=
   calc
