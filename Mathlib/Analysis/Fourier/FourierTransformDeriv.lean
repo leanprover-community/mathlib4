@@ -323,9 +323,8 @@ lemma gloug {f : V → E} {K : ℕ∞} {C : ℝ} (hf : ContDiff ℝ K f) (n : �
   simp only [norm_pow, norm_neg, norm_mul, RCLike.norm_ofNat, Complex.norm_eq_abs, abs_ofReal,
     _root_.abs_of_nonneg pi_nonneg, abs_I, mul_one]
   gcongr
-  apply (ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear_of_le_one _ A hf _ hk _).trans
-  sorry
-  have Z := ContinuousLinearMap.norm_smulRightL_le
+  apply (ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear_of_le_one _ A hf _ hk _).trans; swap
+  · apply ContinuousMultilinearMap.norm_smulRightL_le
 
 --  have Z := (smulRightL ℝ (fun (x : Fin n) ↦ W) E).norm_iteratedFDeriv_le_of_bilinear_of_le_one
 --    (smulRightL ℝ (fun (x : Fin n) ↦ W) E)
