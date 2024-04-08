@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Order.SupIndep
 import Mathlib.Order.Atoms
 import Mathlib.Data.Fintype.Powerset
@@ -362,15 +363,12 @@ theorem exists_le_of_le {a b : α} {P Q : Finpartition a} (h : P ≤ Q) (hb : b 
 #align finpartition.exists_le_of_le Finpartition.exists_le_of_le
 
 theorem card_mono {a : α} {P Q : Finpartition a} (h : P ≤ Q) : Q.parts.card ≤ P.parts.card := by
-  classical
-    have : ∀ b ∈ Q.parts, ∃ c ∈ P.parts, c ≤ b := fun b ↦ exists_le_of_le h
-    choose f hP hf using this
-    rw [← card_attach]
-    refine' card_le_card_of_inj_on (fun b ↦ f _ b.2) (fun b _ ↦ hP _ b.2) fun b _ c _ h ↦ _
-    exact
-      Subtype.coe_injective
-        (Q.disjoint.elim b.2 c.2 fun H ↦
-          P.ne_bot (hP _ b.2) <| disjoint_self.1 <| H.mono (hf _ b.2) <| h.le.trans <| hf _ c.2)
+  have : ∀ b ∈ Q.parts, ∃ c ∈ P.parts, c ≤ b := fun b ↦ exists_le_of_le h
+  choose f hP hf using this
+  rw [← card_attach]
+  refine' card_le_card_of_inj_on (fun b ↦ f _ b.2) (fun b _ ↦ hP _ b.2) fun b _ c _ h ↦ _
+  exact Subtype.coe_injective (Q.disjoint.elim b.2 c.2 fun H ↦
+    P.ne_bot (hP _ b.2) <| disjoint_self.1 <| H.mono (hf _ b.2) <| h.le.trans <| hf _ c.2)
 #align finpartition.card_mono Finpartition.card_mono
 
 variable [DecidableEq α] {a b c : α}
@@ -544,6 +542,15 @@ theorem parts_bot (s : Finset α) :
   rfl
 #align finpartition.parts_bot Finpartition.parts_bot
 
+@[simp]
+theorem part_bot (ha : a ∈ s) : (⊥ : Finpartition s).part a = {a} := by
+  have h₁ := (⊥ : Finpartition s).part_mem ha
+  have h₂ := (⊥ : Finpartition s).mem_part ha
+  rw [parts_bot, mem_map, Embedding.coeFn_mk] at h₁
+  obtain ⟨b, _, sb⟩ := h₁
+  rw [← sb, mem_singleton] at h₂
+  simp only [sb, h₂]
+
 theorem card_bot (s : Finset α) : (⊥ : Finpartition s).parts.card = s.card :=
   Finset.card_map _
 #align finpartition.card_bot Finpartition.card_bot
@@ -560,10 +567,33 @@ instance (s : Finset α) : OrderBot (Finpartition s) :=
       obtain ⟨t, ht, hat⟩ := P.exists_mem ha
       exact ⟨t, ht, singleton_subset_iff.2 hat⟩ }
 
-theorem card_parts_le_card (P : Finpartition s) : P.parts.card ≤ s.card := by
+theorem card_parts_le_card : P.parts.card ≤ s.card := by
   rw [← card_bot s]
   exact card_mono bot_le
 #align finpartition.card_parts_le_card Finpartition.card_parts_le_card
+
+theorem eq_bot_iff : P.parts.card = s.card ↔ P = ⊥ := by
+  constructor <;> intro h
+  · have hc : ∀ p ∈ P.parts, p.card = 1 := by
+      contrapose! h
+      obtain ⟨c, hc, nc⟩ := h
+      refine' (Nat.lt_or_gt.mpr (Or.inl _))
+      rw [← P.sum_card_parts, card_eq_sum_ones]
+      have l : ∀ p ∈ P.parts, 1 ≤ p.card := fun p hp ↦ card_pos.mpr (P.nonempty_of_mem_parts hp)
+      exact sum_lt_sum l ⟨c, hc, lt_of_le_of_ne (l c hc) nc.symm⟩
+    replace hc : ∀ p ∈ P.parts, ∃ c ∈ s, {c} = p := fun p hp ↦ by
+      obtain ⟨c, hc⟩ := card_eq_one.mp (hc p hp)
+      exact ⟨c, singleton_subset_iff.mp (hc ▸ P.le hp), hc.symm⟩
+    ext p
+    simp_rw [parts_bot, mem_map, Embedding.coeFn_mk]
+    refine' ⟨fun c ↦ hc p c, fun k ↦ _⟩
+    obtain ⟨c, hc1, hc2⟩ := k
+    obtain ⟨d, hd1, hd2⟩ := hc (P.part c) (P.part_mem hc1)
+    have r := P.mem_part hc1
+    rw [← hd2, mem_singleton] at r; subst r
+    rw [← hc2, hd2]
+    exact P.part_mem hc1
+  · rw [h, parts_bot, card_map]
 
 variable [Fintype α]
 
