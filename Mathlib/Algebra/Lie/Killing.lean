@@ -592,6 +592,47 @@ lemma ker_weight_inf_rootSpaceProductNegSelf_eq_bot [CharZero K] (α : weight K 
 
 end IsKilling
 
+section LieAlgebraEquiv
+
+variable {R L L' : Type*} [Field R]
+  [LieRing L] [LieAlgebra R L]
+  [LieRing L'] [LieAlgebra R L']
+
+/-- Given an equivalence `e` of Lie algebras from `L` to `L'`, and elements `x y : L`, the
+respective Killing forms of `L` and `L'` satisfy `κ'(e x, e y) = κ(x, y)`. -/
+lemma killingForm_of_equiv_apply (e : L ≃ₗ⁅R⁆ L') (x y : L) :
+    killingForm R L' (e x) (e y) = killingForm R L x y := by
+  simp_rw [LieModule.traceForm_apply_apply]
+  rw [← ad, ← ad]
+  simp_rw [← LieAlgebra.conj_ad_apply]
+  rw [← LinearEquiv.conj_comp]
+  rw [LinearMap.trace_conj']
+
+/-- Given a Killing Lie algebra `L`, if `L'` is isomorphic to `L`, then `L'` is Killing too. -/
+lemma isKilling_of_equiv [h : IsKilling R L] (e : L ≃ₗ⁅R⁆ L') : IsKilling R L' := by
+  constructor
+  ext x'
+  rw [LieIdeal.mem_killingCompl]
+  constructor
+  case mp =>
+    intro hx'
+    -- Given x' in the kernel of the Killing form over L', we will use the hypothesis to show that
+    -- e⁻¹(x') is in the kernel of the Killing form over L, so is zero, x' is zero.
+    have hx : ∀ y ∈ (⊤ : Submodule R L), killingForm R L (e.symm x') y = 0 := by
+      intro y hy
+      rw [← killingForm_of_equiv_apply e]
+      rw [LieEquiv.apply_symm_apply]
+      exact hx' (e y) hy
+    apply (LieIdeal.mem_killingCompl R L ⊤).mpr at hx
+    rw [h.killingCompl_top_eq_bot] at hx
+    exact (LinearEquiv.map_eq_zero_iff e.symm.toLinearEquiv (x := x')).mp hx
+  case mpr =>
+    intro hx y _
+    rw [hx]
+    exact LinearMap.map_zero₂ (killingForm R L') y
+
+end LieAlgebraEquiv
+
 end LieAlgebra
 
 end Field
