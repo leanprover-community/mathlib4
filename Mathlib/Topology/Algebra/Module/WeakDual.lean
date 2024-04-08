@@ -359,7 +359,7 @@ theorem isOpenMap_toWeakSpace_symm : IsOpenMap (toWeakSpace 𝕜 E).symm :=
     (toWeakSpace 𝕜 E).left_inv (toWeakSpace 𝕜 E).right_inv
 
 /-- A set in `E` which is open in the weak topology is open. -/
-theorem isOpen_of_isOpen (V : Set E)
+theorem WeakSpace.isOpen_of_isOpen (V : Set E)
     (hV : IsOpen ((continuousLinearMapToWeakSpace 𝕜 E) '' V : Set (WeakSpace 𝕜 E))) : IsOpen V := by
   simpa [Set.image_image] using isOpenMap_toWeakSpace_symm _ hV
 
