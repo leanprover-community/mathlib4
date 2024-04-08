@@ -3,8 +3,9 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Benjamin Davidson
 -/
-import Mathlib.Data.Nat.Parity
 import Mathlib.Algebra.Ring.Int
+import Mathlib.Data.Int.Sqrt
+import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.Abel
 
 #align_import data.int.parity from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
@@ -94,6 +95,11 @@ theorem two_dvd_ne_zero : ¬2 ∣ n ↔ n % 2 = 1 :=
 instance : DecidablePred (Even : ℤ → Prop) := fun _ => decidable_of_iff _ even_iff.symm
 
 instance : DecidablePred (Odd : ℤ → Prop) := fun _ => decidable_of_iff _ odd_iff_not_even.symm
+
+/-- `IsSquare` can be decided on `ℤ` by checking against the square root. -/
+instance : DecidablePred (IsSquare : ℤ → Prop) :=
+  fun m ↦ decidable_of_iff' (sqrt m * sqrt m = m) <| by
+    simp_rw [← exists_mul_self m, IsSquare, eq_comm]
 
 @[simp]
 theorem not_even_one : ¬Even (1 : ℤ) := by
