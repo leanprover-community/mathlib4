@@ -411,7 +411,7 @@ theorem nnnorm_pow_le' (a : α) : ∀ {n : ℕ}, 0 < n → ‖a ^ n‖₊ ≤ �
 #align nnnorm_pow_le' nnnorm_pow_le'
 
 /-- If `α` is a seminormed ring with `‖1‖₊ = 1`, then `‖a ^ n‖₊ ≤ ‖a‖₊ ^ n`.
-See also `nnnorm_pow_le'`.-/
+See also `nnnorm_pow_le'`. -/
 theorem nnnorm_pow_le [NormOneClass α] (a : α) (n : ℕ) : ‖a ^ n‖₊ ≤ ‖a‖₊ ^ n :=
   Nat.recOn n (by simp only [Nat.zero_eq, pow_zero, nnnorm_one, le_rfl])
     fun k _hk => nnnorm_pow_le' a k.succ_pos
@@ -422,7 +422,8 @@ theorem norm_pow_le' (a : α) {n : ℕ} (h : 0 < n) : ‖a ^ n‖ ≤ ‖a‖ ^ 
   simpa only [NNReal.coe_pow, coe_nnnorm] using NNReal.coe_mono (nnnorm_pow_le' a h)
 #align norm_pow_le' norm_pow_le'
 
-/-- If `α` is a seminormed ring with `‖1‖ = 1`, then `‖a ^ n‖ ≤ ‖a‖ ^ n`. See also `norm_pow_le'`.-/
+/-- If `α` is a seminormed ring with `‖1‖ = 1`, then `‖a ^ n‖ ≤ ‖a‖ ^ n`.
+See also `norm_pow_le'`. -/
 theorem norm_pow_le [NormOneClass α] (a : α) (n : ℕ) : ‖a ^ n‖ ≤ ‖a‖ ^ n :=
   Nat.recOn n (by simp only [Nat.zero_eq, pow_zero, norm_one, le_rfl])
     fun n _hn => norm_pow_le' a n.succ_pos
