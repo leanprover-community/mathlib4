@@ -106,7 +106,7 @@ Examples:
 * `@Mul.mul Nat n m` (i.e. `(n * m : Nat)`) will not change to `+`, since its
   first argument is `Nat`, an identifier not applied to any arguments.
 * `@Mul.mul (α × β) x y` will change to `+`. It's first argument contains only the identifier
-  `prod`, but this is applied to arguments, `α` and `β`.
+  `Prod`, but this is applied to arguments, `α` and `β`.
 * `@Mul.mul (α × Int) x y` will not change to `+`, since its first argument contains `Int`.
 
 The reasoning behind the heuristic is that the first argument is the type which is "additivized",
@@ -453,9 +453,9 @@ structure Config : Type where
   /-- View the trace of the to_additive procedure.
   Equivalent to `set_option trace.to_additive true`. -/
   trace : Bool := false
-  /-- The name of the target (the additive declaration).-/
+  /-- The name of the target (the additive declaration). -/
   tgt : Name := Name.anonymous
-  /-- An optional doc string.-/
+  /-- An optional doc string. -/
   doc : Option String := none
   /-- If `allowAutoName` is `false` (default) then
   `@[to_additive]` will check whether the given name can be auto-generated. -/
@@ -636,7 +636,7 @@ where /-- Implementation of `applyReplacementFun`. -/
       return some <| .proj n₁ idx <| ← r e
     | _ => return none
 
-/-- Eta expands `e` at most `n` times.-/
+/-- Eta expands `e` at most `n` times. -/
 def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
   forallBoundedTelescope (← inferType e) (some n) fun xs _ ↦ mkLambdaFVars xs (mkAppN e xs)
 
@@ -1355,7 +1355,7 @@ Examples:
 * `@Mul.mul Nat n m` (i.e. `(n * m : Nat)`) will not change to `+`, since its
   first argument is `Nat`, an identifier not applied to any arguments.
 * `@Mul.mul (α × β) x y` will change to `+`. It's first argument contains only the identifier
-  `prod`, but this is applied to arguments, `α` and `β`.
+  `Prod`, but this is applied to arguments, `α` and `β`.
 * `@Mul.mul (α × Int) x y` will not change to `+`, since its first argument contains `Int`.
 
 The reasoning behind the heuristic is that the first argument is the type which is "additivized",

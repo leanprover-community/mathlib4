@@ -3,10 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Order.Sub.Canonical
 import Mathlib.Data.List.Perm
-import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Set.List
 import Mathlib.Init.Quot
 import Mathlib.Order.Hom.Basic

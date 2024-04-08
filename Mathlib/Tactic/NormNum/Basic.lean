@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Thomas Murrills
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.HaveI
 import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Tactic.Clear!
 import Mathlib.Data.Nat.Cast.Basic

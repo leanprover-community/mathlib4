@@ -170,13 +170,16 @@ theorem norm_pos {x : ℤ[i]} : 0 < norm x ↔ x ≠ 0 := by
   rw [lt_iff_le_and_ne, Ne, eq_comm, norm_eq_zero]; simp [norm_nonneg]
 #align gaussian_int.norm_pos GaussianInt.norm_pos
 
-theorem abs_coe_nat_norm (x : ℤ[i]) : (x.norm.natAbs : ℤ) = x.norm :=
+theorem abs_natCast_norm (x : ℤ[i]) : (x.norm.natAbs : ℤ) = x.norm :=
   Int.natAbs_of_nonneg (norm_nonneg _)
-#align gaussian_int.abs_coe_nat_norm GaussianInt.abs_coe_nat_norm
+#align gaussian_int.abs_coe_nat_norm GaussianInt.abs_natCast_norm
+
+-- 2024-04-05
+@[deprecated] alias abs_coe_nat_norm := abs_natCast_norm
 
 @[simp]
 theorem nat_cast_natAbs_norm {α : Type*} [Ring α] (x : ℤ[i]) : (x.norm.natAbs : α) = x.norm := by
-  rw [← Int.cast_natCast, abs_coe_nat_norm]
+  rw [← Int.cast_natCast, abs_natCast_norm]
 #align gaussian_int.nat_cast_nat_abs_norm GaussianInt.nat_cast_natAbs_norm
 
 theorem natAbs_norm_eq (x : ℤ[i]) :
@@ -258,7 +261,7 @@ theorem norm_le_norm_mul_left (x : ℤ[i]) {y : ℤ[i]} (hy : y ≠ 0) :
     (norm x).natAbs ≤ (norm (x * y)).natAbs := by
   rw [Zsqrtd.norm_mul, Int.natAbs_mul]
   exact le_mul_of_one_le_right (Nat.zero_le _) (Int.ofNat_le.1 (by
-    rw [abs_coe_nat_norm]
+    rw [abs_natCast_norm]
     exact Int.add_one_le_of_lt (norm_pos.2 hy)))
 #align gaussian_int.norm_le_norm_mul_left GaussianInt.norm_le_norm_mul_left
 
