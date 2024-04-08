@@ -702,7 +702,7 @@ theorem measure_lt_top_of_isCompact_of_isMulLeftInvariant (U : Set G) (hU : IsOp
     μ K ≤ μ (⋃ (g : G) (_ : g ∈ t), (fun h : G => g * h) ⁻¹' U) := measure_mono hKt
     _ ≤ ∑ g in t, μ ((fun h : G => g * h) ⁻¹' U) := (measure_biUnion_finset_le _ _)
     _ = Finset.card t * μ U := by simp only [measure_preimage_mul, Finset.sum_const, nsmul_eq_mul]
-    _ < ∞ := ENNReal.mul_lt_top (ENNReal.nat_ne_top _) h
+    _ < ∞ := ENNReal.mul_lt_top (ENNReal.natCast_ne_top _) h
 #align measure_theory.measure_lt_top_of_is_compact_of_is_mul_left_invariant MeasureTheory.measure_lt_top_of_isCompact_of_isMulLeftInvariant
 #align measure_theory.measure_lt_top_of_is_compact_of_is_add_left_invariant MeasureTheory.measure_lt_top_of_isCompact_of_isAddLeftInvariant
 
@@ -855,7 +855,7 @@ Textbooks generally require an additional regularity assumption to ensure nice b
 arbitrary locally compact groups. Use `[IsHaarMeasure μ] [Regular μ]` or
 `[IsHaarMeasure μ] [InnerRegular μ]` in these situations. Note that a Haar measure in our
 sense is automatically regular and inner regular on second countable locally compact groups, as
-checked just below this definition.-/
+checked just below this definition. -/
 @[to_additive existing]
 class IsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] [MeasurableSpace G]
   (μ : Measure G) extends IsFiniteMeasureOnCompacts μ, IsMulLeftInvariant μ, IsOpenPosMeasure μ :
@@ -914,7 +914,7 @@ theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*} [Group
 #align measure_theory.measure.is_add_haar_measure_map MeasureTheory.Measure.isAddHaarMeasure_map
 
 /-- The image of a finite Haar measure under a continuous surjective group homomorphism is again
-a Haar measure. See also `isHaarMeasure_map`.-/
+a Haar measure. See also `isHaarMeasure_map`. -/
 @[to_additive
 "The image of a finite additive Haar measure under a continuous surjective additive group
 homomorphism is again an additive Haar measure. See also `isAddHaarMeasure_map`."]

@@ -32,11 +32,8 @@ private lemma cube_of_not_dvd {n : ℤ} (h : ¬ 3 ∣ n) :
   apply cube_of_castHom_ne_zero
   rwa [map_intCast, Ne, ZMod.int_cast_zmod_eq_zero_iff_dvd]
 
-/--
-  Let `a`, `b` and `c` be in `ℤ`.
-  If `¬ 3 ∣ a * b * c`, then `a ^ 3 + b ^ 3 ≠ c ^ 3`.
--/
-theorem fermatLastTheoremThree_case1 {a b c : ℤ} (hdvd : ¬ 3 ∣ a * b * c) :
+/-- If `a b c : ℕ` are such that `¬ 3 ∣ a * b * c`, then `a ^ 3 + b ^ 3 ≠ c ^ 3`. -/
+theorem fermatLastTheoremThree_case_1 {a b c : ℕ} (hdvd : ¬ 3 ∣ a * b * c) :
     a ^ 3 + b ^ 3 ≠ c ^ 3 := by
   simp_rw [Int.prime_three.dvd_mul, not_or] at hdvd
   apply mt (congrArg (Int.cast : ℤ → ZMod 9))
