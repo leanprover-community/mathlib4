@@ -6,6 +6,7 @@ Authors: Damiano Testa
 import Lean.Elab.App
 import Lean.Elab.Command
 import Lean.Linter.Util
+import Std.Data.Array.Merge
 
 /-!
 #  The "syntax data" linter
@@ -16,6 +17,10 @@ def revLexOrd {α β} [Ord α] [Ord β] : Ord (α × β) where
   compare p1 p2 := match compare p1.2 p2.2 with
     | .eq => compare p1.1 p2.1
     | o   => o
+
+/-- print a range as the pair `(beginning, end)`. -/
+local instance : ToString String.Range where
+  toString rg := s!"{(rg.start, rg.stop)}"
 
 open Lean Elab Parser Command
 
@@ -106,12 +111,13 @@ def getRanges :
   | .context _ t, col => getRanges t col
   | _, _ => default
 
-/-- print a range as the pair `(beginning, end)`. -/
-local instance : ToString String.Range where
-  toString rg := s!"{(rg.start, rg.stop)}"
-
 /-- Gets the value of the `linter.syntaxData` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.syntaxData o
+
+def _root_.List.condense {α β} [BEq α] [Inhabited β] [BEq β] [Hashable β] (i : List (α × β)) :
+    HashMap β (Array α) :=
+  let init := (i.map Prod.fst).toArray
+  init.groupByKey (fun a => (i.lookup a).get!)
 
 /-- The main implementation of the terminal refine linter. -/
 def syntaxDataLinter : Linter where run := withSetOptionIn fun stx => do
@@ -121,17 +127,24 @@ def syntaxDataLinter : Linter where run := withSetOptionIn fun stx => do
     return
   let trees ← getInfoTrees
   let _ : Ord SyntaxNodeKind := ⟨(compare ·.toString ·.toString)⟩
+  let _ : Ord Expr := ⟨fun e f => compare (toString e) (toString f)⟩
   let _ : Ord String.Range := ⟨(compare ·.start.byteIdx ·.start.byteIdx)⟩
-  let _ : Ord (SyntaxNodeKind × String.Range) := lexOrd
-  let mut msg := .empty
+  let _ := @lexOrd
+  let mut tacMsg := .empty
+  let mut exprMsg := .empty
   for t in trees.toArray do
---    let dIds := getTerms t .empty
---    dbg_trace "{dIds.toArray}"
-    msg := getRanges t msg
-  let dat := msg.toArray.qsort (compare · ·|>.isLT)
-  if dat != #[] then
+    exprMsg := getTerms t exprMsg
+    tacMsg := getRanges t tacMsg
+  let tacDat  := tacMsg.toArray.qsort (compare · ·|>.isLT)
+  let _exprDat := exprMsg.toArray.qsort (compare · ·|>.isLT)
+  let exprDat := (exprMsg.toList.map fun (a, b) => (b, a)).condense.toArray.qsort
+    (fun (a, _) (b, _) => compare a b|>.isLT)
+  let exprDat := exprDat.map fun (a, b) => (a, b.sortAndDeduplicate)
+  if tacDat != #[] then
     let ids ← (getIds stx).mapM fun d => resolveGlobalConstNoOverload d[0]
-    Linter.logLint linter.syntaxData stx
-      m!"{ids} {if ! hasDocs stx then "-- no docs" else ""}\n{dat}"
+    let docs? := if ! hasDocs stx then "-- no docs" else ""
+    Linter.logLint linter.syntaxData stx <|
+      m!"{ids} {docs?}\nTactic info:" ++ indentD m!"{tacDat}" ++
+                       "\nExpr info:" ++ indentD m!"{exprDat}"
 
 initialize addLinter syntaxDataLinter
