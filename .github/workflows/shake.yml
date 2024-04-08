@@ -24,28 +24,28 @@ jobs:
       - name: Check for local changes
         id: git-check
         run: |
-          if [[ `git status --porcelain` ]]; then
-            echo "::set-output name=changes::true"
+          if [[ $(git status --porcelain) ]]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=changes::false"
+            echo "changes=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Configure git user
-        if: steps.git-check.outputs.changes == 'true'
+        if: ${{ steps.git-check.outputs.changes == 'true' }}
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
       - name: Commit local changes and create PR
-        if: steps.git-check.outputs.changes == 'true'
+        if: ${{ steps.git-check.outputs.changes == 'true' }}
         run: |
           DATE=$(date +%Y-%m-%d)
           BRANCH="shake-$DATE"
-          git checkout -b $BRANCH
+          git checkout -b "$BRANCH"
           git add .
           git commit -m "Automated shake fixes for $DATE"
-          git push origin $BRANCH
-          gh pr create --base master --head $BRANCH --title "Automated shake fixes for $DATE" --body "This PR contains automated fixes from running shake." --label "auto-merge-after-CI"
+          git push origin "$BRANCH"
+          gh pr create --base master --head "$BRANCH" --title "Automated shake fixes for $DATE" --body "This PR contains automated fixes from running shake." --label "auto-merge-after-CI"
 
       - name: Post failure message on Zulip
         if: failure()
