@@ -1352,6 +1352,11 @@ lemma Pi.induced_restrict (S : Set ι) :
   simp (config := { unfoldPartialApp := true }) [← iInf_subtype'', ← induced_precomp' ((↑) : S → ι),
     Set.restrict]
 
+lemma Pi.induced_restrict_sUnion (𝔖 : Set (Set ι)) :
+    induced (⋃₀ 𝔖).restrict (Pi.topologicalSpace (Y := fun i : (⋃₀ 𝔖) ↦ π i)) =
+    ⨅ S ∈ 𝔖, induced S.restrict Pi.topologicalSpace := by
+  simp_rw [Pi.induced_restrict, iInf_sUnion]
+
 theorem Filter.Tendsto.update [DecidableEq ι] {l : Filter Y} {f : Y → ∀ i, π i} {x : ∀ i, π i}
     (hf : Tendsto f l (𝓝 x)) (i : ι) {g : Y → π i} {xi : π i} (hg : Tendsto g l (𝓝 xi)) :
     Tendsto (fun a => update (f a) i (g a)) l (𝓝 <| update x i xi) :=

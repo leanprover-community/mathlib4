@@ -165,7 +165,7 @@ instance setoid : Setoid PSet :=
 #align pSet.setoid PSet.setoid
 
 /-- A pre-set is a subset of another pre-set if every element of the first family is extensionally
-equivalent to some element of the second family.-/
+equivalent to some element of the second family. -/
 protected def Subset (x y : PSet) : Prop :=
   ∀ a, ∃ b, Equiv (x.Func a) (y.Func b)
 #align pSet.subset PSet.Subset

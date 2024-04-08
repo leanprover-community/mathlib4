@@ -888,7 +888,7 @@ instance semiring [ContinuousAdd M₁] : Semiring (M₁ →L[R₁] M₁) where
   natCast_succ n := AddMonoid.nsmul_succ n (1 : M₁ →L[R₁] M₁)
 #align continuous_linear_map.semiring ContinuousLinearMap.semiring
 
-/-- `ContinuousLinearMap.toLinearMap` as a `RingHom`.-/
+/-- `ContinuousLinearMap.toLinearMap` as a `RingHom`. -/
 @[simps]
 def toLinearMapRingHom [ContinuousAdd M₁] : (M₁ →L[R₁] M₁) →+* M₁ →ₗ[R₁] M₁ where
   toFun := toLinearMap
@@ -1258,7 +1258,7 @@ variable (R₁)
 variable [ContinuousSMul R₁ M₁]
 
 /-- Given an element `x` of a topological space `M` over a semiring `R`, the natural continuous
-linear map from `R` to `M` by taking multiples of `x`.-/
+linear map from `R` to `M` by taking multiples of `x`. -/
 def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁
     where
   toLinearMap := LinearMap.toSpanSingleton R₁ M₁ x
