@@ -1097,17 +1097,6 @@ theorem IsOpenMap.restrict {f : X → Y} (hf : IsOpenMap f) {s : Set X} (hs : Is
   hf.comp hs.isOpenMap_subtype_val
 #align is_open_map.restrict IsOpenMap.restrict
 
-lemma IsClosedMap.restrictPreimage {f : X → Y} (hcl : IsClosedMap f) (T : Set Y) :
-    IsClosedMap (T.restrictPreimage f) := by
-  rw [isClosedMap_iff_clusterPt] at hcl ⊢
-  intro A ⟨y, hyT⟩ hy
-  rw [Set.restrictPreimage, MapClusterPt, ← inducing_subtype_val.mapClusterPt_iff, MapClusterPt,
-      map_map, MapsTo.restrict_commutes, ← map_map, ← MapClusterPt, map_principal] at hy
-  rcases hcl _ y hy with ⟨x, hxy, hx⟩
-  have hxT : f x ∈ T := hxy ▸ hyT
-  refine ⟨⟨x, hxT⟩, Subtype.ext hxy, ?_⟩
-  rwa [← inducing_subtype_val.mapClusterPt_iff, MapClusterPt, map_principal]
-
 nonrec theorem IsClosed.closedEmbedding_subtype_val {s : Set X} (hs : IsClosed s) :
     ClosedEmbedding ((↑) : s → X) :=
   closedEmbedding_subtype_val hs
@@ -1362,6 +1351,11 @@ lemma Pi.induced_restrict (S : Set ι) :
     ⨅ i ∈ S, induced (eval i) (T i) := by
   simp (config := { unfoldPartialApp := true }) [← iInf_subtype'', ← induced_precomp' ((↑) : S → ι),
     Set.restrict]
+
+lemma Pi.induced_restrict_sUnion (𝔖 : Set (Set ι)) :
+    induced (⋃₀ 𝔖).restrict (Pi.topologicalSpace (Y := fun i : (⋃₀ 𝔖) ↦ π i)) =
+    ⨅ S ∈ 𝔖, induced S.restrict Pi.topologicalSpace := by
+  simp_rw [Pi.induced_restrict, iInf_sUnion]
 
 theorem Filter.Tendsto.update [DecidableEq ι] {l : Filter Y} {f : Y → ∀ i, π i} {x : ∀ i, π i}
     (hf : Tendsto f l (𝓝 x)) (i : ι) {g : Y → π i} {xi : π i} (hg : Tendsto g l (𝓝 xi)) :
