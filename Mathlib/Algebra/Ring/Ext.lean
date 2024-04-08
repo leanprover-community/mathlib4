@@ -5,7 +5,6 @@ Authors: Raghuram Sundararajan
 -/
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Group.Ext
--- import Mathlib
 
 /-!
 # Extensionality lemmas for rings and similar structures
