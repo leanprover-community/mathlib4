@@ -17,13 +17,13 @@ We prove the formula for the derivative of `Real.Gamma` at a positive integer:
 
 -/
 
-open Real Set Filter Topology
+open Nat Set Filter Topology
 
-open Nat
+namespace Real
 
 /-- Explicit formula for the derivative of the Gamma function at integers, in terms of harmonic
 numbers and the Euler-Mascheroni constant `γ`. -/
-lemma Real.deriv_Gamma_nat (n : ℕ) :
+lemma deriv_Gamma_nat (n : ℕ) :
     deriv Gamma (n + 1) = (n)! * (-eulerMascheroniConstant + harmonic n) := by
   /- This follows from two properties of the function `f n = log (Gamma n)`:
   firstly, the elementary computation that `deriv f (n + 1) = deriv f n + 1 / n`, so that
@@ -77,6 +77,8 @@ lemma Real.deriv_Gamma_nat (n : ℕ) :
     rw [sub_le_iff_le_add', ← sub_eq_add_neg, le_sub_iff_add_le', ← hder_nat]
     exact derivUB n
 
-lemma Real.eulerMascheroniConstant_eq_neg_deriv : eulerMascheroniConstant = -deriv Gamma 1 := by
+lemma eulerMascheroniConstant_eq_neg_deriv : eulerMascheroniConstant = -deriv Gamma 1 := by
   rw [show (1 : ℝ) = ↑(0 : ℕ) + 1 by simp, deriv_Gamma_nat 0]
   simp
+
+end Real
