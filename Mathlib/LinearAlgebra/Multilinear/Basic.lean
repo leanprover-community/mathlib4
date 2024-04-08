@@ -1004,6 +1004,25 @@ variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid 
 section
 variable {M₁' : ι → Type*} [Π i, AddCommMonoid (M₁' i)] [Π i, Module R (M₁' i)]
 
+
+instance : Module R (MultilinearMap R M₁ M₂) := by
+
+def glouglou (f : MultilinearMap R M₁ M₂) (P : ι → Prop) [DecidablePred P] :
+   MultilinearMap R (fun (i : {a : ι // ¬ P a}) => M₁ i)
+     (MultilinearMap R (fun (i : {a : ι // P a}) => M₁ i) M₂) :=
+  { toFun := fun z ↦ domDomRestrict f P z
+    map_add' := by
+      intro h m z x y
+      ext v
+      simp
+
+    map_smul' := sorry
+
+  }
+
+
+#exit
+
 /-- If `f` is a collection of linear maps, then the construction `MultilinearMap.compLinearMap`
 sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g`. -/
 @[simps] def compLinearMapₗ (f : Π (i : ι), M₁ i →ₗ[R] M₁' i) :
