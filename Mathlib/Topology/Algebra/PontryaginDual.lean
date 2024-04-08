@@ -65,9 +65,9 @@ instance [LocallyCompactSpace G] : LocallyCompactSpace (PontryaginDual G) := by
   · intro n x h1 h2
     rw [hVn] at h1 h2 ⊢
     rwa [Submonoid.coe_mul, Complex.arg_mul (ne_zero_of_mem_circle x) (ne_zero_of_mem_circle x),
-      ← two_mul, abs_mul, abs_two, ← lt_div_iff' two_pos, div_div, ← pow_succ'] at h2
+      ← two_mul, abs_mul, abs_two, ← lt_div_iff' two_pos, div_div, ← pow_succ] at h2
     clear h2
-    rw [lt_div_iff' (pow_pos two_pos _), ← abs_two, pow_succ', mul_assoc, ← abs_mul, abs_two] at h1
+    rw [lt_div_iff' (pow_pos two_pos _), ← abs_two, pow_succ, mul_assoc, ← abs_mul, abs_two] at h1
     rw [← two_mul]
     apply Set.Ioo_subset_Ioc_self
     rw [Set.mem_Ioo, ← abs_lt]
