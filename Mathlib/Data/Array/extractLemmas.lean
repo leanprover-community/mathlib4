@@ -16,7 +16,7 @@ namespace Array
 theorem extract_overflow_eq_extract_to_stop {a : Array α} :
     (a.size ≤ l) →  a.extract p l = a.extract p a.size := by
   intro h
-  simp [extract, Nat.min_eq_right h]
+  simp only [extract, Nat.min_eq_right h, Nat.sub_eq, mkEmpty_eq, Nat.min_self]
 
 @[simp]
 theorem extract_zero_length {a : Array α} :
@@ -74,7 +74,7 @@ theorem extract_succ_stop_aux {α: Type u_1}
       rw [Nat.succ_eq_add_one]
       refine (Nat.sub_eq_iff_eq_add ?h).mp rfl
       exact (Nat.le_sub_iff_add_le' h2).mpr h6
-    simp [h5, h7]
+    simp only [h5, h7]
     have h8: Nat.succ (j - (i + 1)) = Nat.succ j - (i + 1) := by
       rw [Nat.succ_eq_add_one, Nat.succ_eq_add_one, Nat.sub_add_comm]
       exact h6
@@ -117,7 +117,8 @@ theorem extract_loop_take_middle {b c: List α }: ∀ a e : List α ,
     refine
       congrArg (extract.loop { data := a ++ h :: (t ++ c) } (List.length t) (List.length a + 1))
         ?cons.h
-    simp [push]
+    simp only [push, List.concat_eq_append, mk.injEq, List.append_cancel_left_eq, List.cons.injEq,
+      and_true]
     exact List.get_of_append rfl rfl
 
 theorem append_eq_data_append {b c: Array α } :
