@@ -70,7 +70,6 @@ namespace Isometry
 section PseudoEmetricIsometry
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-
 variable {f : α → β} {x y z : α} {s : Set α}
 
 /-- An isometry preserves edistances. -/

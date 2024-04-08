@@ -161,7 +161,7 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
     _ ≤ (G.nonuniformWitness ε U V).card - ↑2 ^ (P.parts.card - 1) * m := by
       refine' sub_le_sub_left _ _
       have : (2 : ℝ) ^ P.parts.card = ↑2 ^ (P.parts.card - 1) * 2 := by
-        rw [← _root_.pow_succ', tsub_add_cancel_of_le (succ_le_iff.2 hP₁)]
+        rw [← _root_.pow_succ, tsub_add_cancel_of_le (succ_le_iff.2 hP₁)]
       rw [← mul_div_right_comm, this, mul_right_comm _ (2 : ℝ), mul_assoc, le_div_iff]
       refine' mul_le_mul_of_nonneg_left _ (by positivity)
       exact (G.le_card_nonuniformWitness hunif).trans
@@ -227,7 +227,7 @@ private theorem one_sub_le_m_div_m_add_one_sq [Nonempty α]
     (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5) :
     ↑1 - ε ^ 5 / ↑50 ≤ (m / (m + 1 : ℝ)) ^ 2 := by
   have : (m : ℝ) / (m + 1) = 1 - 1 / (m + 1) := by
-    rw [one_sub_div coe_m_add_one_pos.ne', add_sub_cancel]
+    rw [one_sub_div coe_m_add_one_pos.ne', add_sub_cancel_right]
   rw [this, sub_sq, one_pow, mul_one]
   refine' le_trans _ (le_add_of_nonneg_right <| sq_nonneg _)
   rw [sub_le_sub_iff_left, ← le_div_iff' (show (0 : ℝ) < 2 by norm_num), div_div,

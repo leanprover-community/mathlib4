@@ -151,7 +151,7 @@ theorem mem_pi {f : Π₀ i, Finset (α i)} {g : Π₀ i, α i} : g ∈ f.pi ↔
 @[simp]
 theorem card_pi (f : Π₀ i, Finset (α i)) : f.pi.card = f.prod fun i => (f i).card := by
   rw [pi, card_dfinsupp]
-  exact Finset.prod_congr rfl fun i _ => by simp only [Pi.nat_apply, Nat.cast_id]
+  exact Finset.prod_congr rfl fun i _ => by simp only [Pi.natCast_apply, Nat.cast_id]
 #align dfinsupp.card_pi DFinsupp.card_pi
 
 end Pi
@@ -159,7 +159,6 @@ end Pi
 section PartialOrder
 
 variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
-
 variable [∀ i, PartialOrder (α i)] [∀ i, Zero (α i)] [∀ i, LocallyFiniteOrder (α i)]
 
 instance instLocallyFiniteOrder : LocallyFiniteOrder (Π₀ i, α i) :=
@@ -206,9 +205,7 @@ end Lattice
 section CanonicallyOrdered
 
 variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
-
 variable [∀ i, CanonicallyOrderedAddCommMonoid (α i)] [∀ i, LocallyFiniteOrder (α i)]
-
 variable (f : Π₀ i, α i)
 
 theorem card_Iic : (Iic f).card = ∏ i in f.support, (Iic (f i)).card := by

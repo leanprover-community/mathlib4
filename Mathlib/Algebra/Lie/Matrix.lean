@@ -35,7 +35,6 @@ section Matrices
 open scoped Matrix
 
 variable {R : Type u} [CommRing R]
-
 variable {n : Type w} [DecidableEq n] [Fintype n]
 
 /-- The natural equivalence between linear endomorphisms of finite free modules and square matrices

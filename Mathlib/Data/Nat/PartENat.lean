@@ -687,21 +687,43 @@ instance : Coe ℕ∞ PartENat := ⟨ofENat⟩
 example (n : ℕ) : ((n : ℕ∞) : PartENat) = ↑n := rfl
 
 -- Porting note (#10756): new lemma
-@[simp]
-lemma ofENat_none : ofENat Option.none = ⊤ := rfl
+@[simp, norm_cast]
+lemma ofENat_top : ofENat ⊤ = ⊤ := rfl
 
 -- Porting note (#10756): new lemma
-@[simp]
-lemma ofENat_some (n : ℕ) : ofENat (Option.some n) = ↑n := rfl
+@[simp, norm_cast]
+lemma ofENat_coe (n : ℕ) : ofENat n = n := rfl
+
+@[simp, norm_cast]
+theorem ofENat_zero : ofENat 0 = 0 := rfl
+
+@[simp, norm_cast]
+theorem ofENat_one : ofENat 1 = 1 := rfl
+
+@[simp, norm_cast]
+theorem ofENat_ofNat (n : Nat) [n.AtLeastTwo] : ofENat (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+  rfl
 
 -- Porting note (#10756): new theorem
 @[simp, norm_cast]
 theorem toWithTop_ofENat (n : ℕ∞) {_ : Decidable (n : PartENat).Dom} : toWithTop (↑n) = n := by
-  induction n with
-  | none => simp; rfl
-  | some n =>
-    simp only [toWithTop_natCast', ofENat_some]
-    rfl
+  cases n using ENat.recTopCoe with
+  | top => simp
+  | coe n => simp
+
+@[simp, norm_cast]
+theorem ofENat_toWithTop (x : PartENat) {_ : Decidable (x : PartENat).Dom} : toWithTop x = x := by
+  induction x using PartENat.casesOn <;> simp
+
+@[simp, norm_cast]
+theorem ofENat_le {x y : ℕ∞} : ofENat x ≤ ofENat y ↔ x ≤ y := by
+  classical
+  rw [← toWithTop_le, toWithTop_ofENat, toWithTop_ofENat]
+
+@[simp, norm_cast]
+theorem ofENat_lt {x y : ℕ∞} : ofENat x < ofENat y ↔ x < y := by
+  classical
+  rw [← toWithTop_lt, toWithTop_ofENat, toWithTop_ofENat]
 
 section WithTopEquiv
 
@@ -717,97 +739,74 @@ theorem toWithTop_add {x y : PartENat} : toWithTop (x + y) = toWithTop x + toWit
   · simp_rw [toWithTop_natCast', ← Nat.cast_add, toWithTop_natCast', forall_const]
 #align part_enat.to_with_top_add PartENat.toWithTop_add
 
--- Porting note: The old proof of `right_inv` didn't work.
--- (`by cases x; simp [with_top_equiv._match_1]; refl`)
--- In order to get it to work, I introduced some new statements (see above),
--- in particular `toWithTop_ofENat`.
 /-- `Equiv` between `PartENat` and `ℕ∞` (for the order isomorphism see
 `withTopOrderIso`). -/
+@[simps]
 noncomputable def withTopEquiv : PartENat ≃ ℕ∞ where
   toFun x := toWithTop x
   invFun x := ↑x
-  left_inv x := by
-    induction x using PartENat.casesOn <;>
-    simp <;>
-    rfl
-  right_inv x := by
-    simp [toWithTop_ofENat]
+  left_inv x := by simp
+  right_inv x := by simp
 #align part_enat.with_top_equiv PartENat.withTopEquiv
 
-@[simp]
-theorem withTopEquiv_top : withTopEquiv ⊤ = ⊤ :=
-  toWithTop_top'
+theorem withTopEquiv_top : withTopEquiv ⊤ = ⊤ := by
+  simp
 #align part_enat.with_top_equiv_top PartENat.withTopEquiv_top
 
-@[simp]
-theorem withTopEquiv_natCast (n : Nat) : withTopEquiv n = n :=
-  toWithTop_natCast' _
+theorem withTopEquiv_natCast (n : Nat) : withTopEquiv n = n := by
+  simp
 #align part_enat.with_top_equiv_coe PartENat.withTopEquiv_natCast
 
-@[simp]
 theorem withTopEquiv_zero : withTopEquiv 0 = 0 := by
-  simpa only [Nat.cast_zero] using withTopEquiv_natCast 0
+  simp
 #align part_enat.with_top_equiv_zero PartENat.withTopEquiv_zero
 
-@[simp]
 theorem withTopEquiv_one : withTopEquiv 1 = 1 := by
-  simpa only [Nat.cast_one] using withTopEquiv_natCast 1
+  simp
 
-@[simp]
 theorem withTopEquiv_ofNat (n : Nat) [n.AtLeastTwo] :
-    withTopEquiv (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
-  withTopEquiv_natCast n
+    withTopEquiv (no_index (OfNat.ofNat n)) = OfNat.ofNat n := by
+  simp
 
-@[simp]
-theorem withTopEquiv_le {x y : PartENat} : withTopEquiv x ≤ withTopEquiv y ↔ x ≤ y :=
-  toWithTop_le
+theorem withTopEquiv_le {x y : PartENat} : withTopEquiv x ≤ withTopEquiv y ↔ x ≤ y := by
+  simp
 #align part_enat.with_top_equiv_le PartENat.withTopEquiv_le
 
-@[simp]
-theorem withTopEquiv_lt {x y : PartENat} : withTopEquiv x < withTopEquiv y ↔ x < y :=
-  toWithTop_lt
+theorem withTopEquiv_lt {x y : PartENat} : withTopEquiv x < withTopEquiv y ↔ x < y := by
+  simp
 #align part_enat.with_top_equiv_lt PartENat.withTopEquiv_lt
 
-/-- `to_WithTop` induces an order isomorphism between `PartENat` and `ℕ∞`. -/
-noncomputable def withTopOrderIso : PartENat ≃o ℕ∞ :=
-  { withTopEquiv with map_rel_iff' := @fun _ _ => withTopEquiv_le }
-#align part_enat.with_top_order_iso PartENat.withTopOrderIso
-
-@[simp]
-theorem withTopEquiv_symm_top : withTopEquiv.symm ⊤ = ⊤ :=
-  rfl
+theorem withTopEquiv_symm_top : withTopEquiv.symm ⊤ = ⊤ := by
+  simp
 #align part_enat.with_top_equiv_symm_top PartENat.withTopEquiv_symm_top
 
-@[simp]
-theorem withTopEquiv_symm_coe (n : Nat) : withTopEquiv.symm n = n :=
-  rfl
+theorem withTopEquiv_symm_coe (n : Nat) : withTopEquiv.symm n = n := by
+  simp
 #align part_enat.with_top_equiv_symm_coe PartENat.withTopEquiv_symm_coe
 
-@[simp]
-theorem withTopEquiv_symm_zero : withTopEquiv.symm 0 = 0 :=
-  rfl
+theorem withTopEquiv_symm_zero : withTopEquiv.symm 0 = 0 := by
+  simp
 #align part_enat.with_top_equiv_symm_zero PartENat.withTopEquiv_symm_zero
 
-@[simp]
-theorem withTopEquiv_symm_one : withTopEquiv.symm 1 = 1 :=
-  rfl
+theorem withTopEquiv_symm_one : withTopEquiv.symm 1 = 1 := by
+  simp
 
-@[simp]
 theorem withTopEquiv_symm_ofNat (n : Nat) [n.AtLeastTwo] :
-    withTopEquiv.symm (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
-  rfl
+    withTopEquiv.symm (no_index (OfNat.ofNat n)) = OfNat.ofNat n := by
+  simp
 
-@[simp]
 theorem withTopEquiv_symm_le {x y : ℕ∞} : withTopEquiv.symm x ≤ withTopEquiv.symm y ↔ x ≤ y := by
-  rw [← withTopEquiv_le]
   simp
 #align part_enat.with_top_equiv_symm_le PartENat.withTopEquiv_symm_le
 
-@[simp]
 theorem withTopEquiv_symm_lt {x y : ℕ∞} : withTopEquiv.symm x < withTopEquiv.symm y ↔ x < y := by
-  rw [← withTopEquiv_lt]
   simp
 #align part_enat.with_top_equiv_symm_lt PartENat.withTopEquiv_symm_lt
+
+/-- `toWithTop` induces an order isomorphism between `PartENat` and `ℕ∞`. -/
+noncomputable def withTopOrderIso : PartENat ≃o ℕ∞ :=
+  { withTopEquiv with map_rel_iff' := @fun _ _ => withTopEquiv_le }
+#align part_enat.with_top_order_iso PartENat.withTopOrderIso
 
 /-- `toWithTop` induces an additive monoid isomorphism between `PartENat` and `ℕ∞`. -/
 noncomputable def withTopAddEquiv : PartENat ≃+ ℕ∞ :=

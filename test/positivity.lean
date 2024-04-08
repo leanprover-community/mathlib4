@@ -3,6 +3,7 @@ import Mathlib.Data.Real.Sqrt
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.MeasureTheory.Integral.Bochner
 
 /-! # Tests for the `positivity` tactic
 
@@ -345,6 +346,22 @@ example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ) < r := by positivity
 -- example {α : Type _} [OrderedRing α] {n : ℤ} : 0 ≤ ((n ^ 2 : ℤ) : α) := by positivity
 -- example {r : ℝ≥0} : 0 ≤ ((r : ℝ) : ereal) := by positivity
 -- example {r : ℝ≥0} : 0 < ((r + 1 : ℝ) : ereal) := by positivity
+
+/- ## Integrals -/
+
+section Integral
+
+open MeasureTheory
+
+variable {D : Type*} [NormedAddCommGroup D] [NormedSpace ℝ D]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace D] [BorelSpace D]
+  (μ : Measure D)
+
+example (f : D → E) : 0 ≤ ∫ x, ‖f x‖ ∂μ := by positivity
+example (f g : D → E) : 0 ≤ ∫ x, ‖f x‖ + ‖g x‖ ∂μ := by positivity
+example (f : D → E) (c : ℝ) (hc : 0 < c): 0 ≤ ∫ x, c * ‖f x‖ ∂μ := by positivity
+
+end Integral
 
 /-! ## Big operators -/
 

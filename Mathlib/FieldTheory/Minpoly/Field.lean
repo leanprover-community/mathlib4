@@ -3,7 +3,7 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin
 -/
-import Mathlib.Data.Polynomial.FieldDivision
+import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.RingTheory.Algebraic
 
@@ -25,7 +25,6 @@ open Polynomial Set Function minpoly
 namespace minpoly
 
 variable {A B : Type*}
-
 variable (A) [Field A]
 
 section Ring
@@ -57,8 +56,7 @@ theorem unique {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0)
   have hx : IsIntegral A x := ⟨p, pmonic, hp⟩
   symm; apply eq_of_sub_eq_zero
   by_contra hnz
-  have hd := degree_le_of_ne_zero A x hnz (by simp [hp])
-  contrapose! hd
+  apply degree_le_of_ne_zero A x hnz (by simp [hp]) |>.not_lt
   apply degree_sub_lt _ (minpoly.ne_zero hx)
   · rw [(monic hx).leadingCoeff, pmonic.leadingCoeff]
   · exact le_antisymm (min A x pmonic hp) (pmin (minpoly A x) (monic hx) (aeval A x))
@@ -71,11 +69,10 @@ theorem dvd {p : A[X]} (hp : Polynomial.aeval x p = 0) : minpoly A x ∣ p := by
   by_cases hp0 : p = 0
   · simp only [hp0, dvd_zero]
   have hx : IsIntegral A x := IsAlgebraic.isIntegral ⟨p, hp0, hp⟩
-  rw [← dvd_iff_modByMonic_eq_zero (monic hx)]
+  rw [← modByMonic_eq_zero_iff_dvd (monic hx)]
   by_contra hnz
-  have hd := degree_le_of_ne_zero A x hnz
-    ((aeval_modByMonic_eq_self_of_root (monic hx) (aeval _ _)).trans hp)
-  contrapose! hd
+  apply degree_le_of_ne_zero A x hnz
+    ((aeval_modByMonic_eq_self_of_root (monic hx) (aeval _ _)).trans hp) |>.not_lt
   exact degree_modByMonic_lt _ (monic hx)
 #align minpoly.dvd minpoly.dvd
 
@@ -184,7 +181,8 @@ def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
 
 theorem aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
   intro f g h
-  suffices (f : E →ₗ[F] K) = g by rwa [DFunLike.ext'_iff] at this ⊢
+  -- needs explicit coercion on the RHS
+  suffices (f : E →ₗ[F] K) = (g : E →ₗ[F] K) by rwa [DFunLike.ext'_iff] at this ⊢
   rw [funext_iff] at h
   exact LinearMap.ext_on (FiniteDimensional.finBasis F E).span_eq fun e he =>
     Subtype.ext_iff.mp (h ⟨e, he⟩)
@@ -234,7 +232,6 @@ end Ring
 section IsDomain
 
 variable [Ring B] [IsDomain B] [Algebra A B]
-
 variable {A} {x : B}
 
 /-- A minimal polynomial is prime. -/
@@ -304,11 +301,12 @@ lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) 
 lemma minpoly_algHom_toLinearMap (σ : L →ₐ[K] L) (hσ : IsOfFinOrder σ) :
     minpoly K σ.toLinearMap = X ^ (orderOf σ) - C 1 := by
   have : orderOf σ = orderOf (AlgEquiv.algHomUnitsEquiv _ _ hσ.unit) := by
-    erw [orderOf_injective (AlgEquiv.algHomUnitsEquiv K L)
-      (AlgEquiv.algHomUnitsEquiv K L).injective]
-    rw [← orderOf_units]
-    rfl
-  rw [this, ← minpoly_algEquiv_toLinearMap]; rfl
-  rwa [← orderOf_pos_iff, ← this, orderOf_pos_iff]
+    rw [← MonoidHom.coe_coe, orderOf_injective (AlgEquiv.algHomUnitsEquiv K L)
+      (AlgEquiv.algHomUnitsEquiv K L).injective, ← orderOf_units, IsOfFinOrder.val_unit]
+  rw [this, ← minpoly_algEquiv_toLinearMap]
+  · apply congr_arg
+    ext
+    simp
+  · rwa [← orderOf_pos_iff, ← this, orderOf_pos_iff]
 
 end AlgHom

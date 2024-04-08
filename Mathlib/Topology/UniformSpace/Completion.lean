@@ -39,7 +39,7 @@ In this file we introduce the following concepts:
 This formalization is mostly based on
   N. Bourbaki: General Topology
   I. M. James: Topologies and Uniformities
-From a slightly different perspective in order to reuse material in topology.uniform_space.basic.
+From a slightly different perspective in order to reuse material in `Topology.UniformSpace.Basic`.
 -/
 
 
@@ -68,9 +68,7 @@ namespace CauchyFilter
 section
 
 variable {α : Type u} [UniformSpace α]
-
 variable {β : Type v} {γ : Type w}
-
 variable [UniformSpace β] [UniformSpace γ]
 
 instance (f : CauchyFilter α) : NeBot f.1 := f.2.1

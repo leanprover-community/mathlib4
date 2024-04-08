@@ -40,7 +40,6 @@ namespace ModuleCat.FilteredColimits
 section
 
 variable {R : Type u} [Ring R] {J : Type v} [SmallCategory J] [IsFiltered J]
-
 variable (F : J ⥤ ModuleCatMax.{v, u, u} R)
 
 /-- The colimit of `F ⋙ forget₂ (ModuleCat R) AddCommGroupCat` in the category `AddCommGroupCat`.

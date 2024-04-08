@@ -29,14 +29,15 @@ sets).
 
 ## Main definitions
 
-* `ContinuousLinearMap.strongTopology` is the topology mentioned above for an arbitrary `𝔖`.
+* `UniformConvergenceCLM` is a type synonym for `E →SL[σ] F` equipped with the `𝔖`-topology.
+* `UniformConvergenceCLM.instTopologicalSpace` is the topology mentioned above for an arbitrary `𝔖`.
 * `ContinuousLinearMap.topologicalSpace` is the topology of bounded convergence. This is
   declared as an instance.
 
 ## Main statements
 
-* `ContinuousLinearMap.strongTopology.topologicalAddGroup` and
-  `ContinuousLinearMap.strongTopology.continuousSMul` show that the strong topology
+* `UniformConvergenceCLM.instTopologicalAddGroup` and
+  `UniformConvergenceCLM.instContinuousSMul` show that the strong topology
   makes `E →L[𝕜] F` a topological vector space, with the assumptions on `𝔖` mentioned above.
 * `ContinuousLinearMap.topologicalAddGroup` and
   `ContinuousLinearMap.continuousSMul` register these facts as instances for the special
@@ -67,10 +68,10 @@ variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] (
   [AddCommGroup F'] [Module ℝ F'] [TopologicalSpace E] [TopologicalSpace E'] (F)
 
 /-- Given `E` and `F` two topological vector spaces and `𝔖 : Set (Set E)`, then
-`strongTopology σ F 𝔖` is the "topology of uniform convergence on the elements of `𝔖`" on
-`E →L[𝕜] F`.
+`UniformConvergenceCLM σ F 𝔖` is a type synonym of `E →SL[σ] F` equipped with the "topology of
+uniform convergence on the elements of `𝔖`".
 
-If the continuous linear image of any element of `𝔖` is bounded, this makes `E →L[𝕜] F` a
+If the continuous linear image of any element of `𝔖` is bounded, this makes `E →SL[σ] F` a
 topological vector space. -/
 @[nolint unusedArguments]
 def UniformConvergenceCLM [TopologicalSpace F] [TopologicalAddGroup F] (_ : Set (Set E)) :=
@@ -78,7 +79,7 @@ def UniformConvergenceCLM [TopologicalSpace F] [TopologicalAddGroup F] (_ : Set 
 
 namespace UniformConvergenceCLM
 
-instance funLike [TopologicalSpace F] [TopologicalAddGroup F]
+instance instFunLike [TopologicalSpace F] [TopologicalAddGroup F]
     (𝔖 : Set (Set E)) : FunLike (UniformConvergenceCLM σ F 𝔖) E F :=
   ContinuousLinearMap.funLike
 
@@ -332,6 +333,9 @@ variable {𝕜 : Type*} [NormedField 𝕜] {E F G : Type*}
 
 /-- Send a continuous bilinear map to an abstract bilinear map (forgetting continuity). -/
 def toLinearMap₂ (L : E →L[𝕜] F →L[𝕜] G) : E →ₗ[𝕜] F →ₗ[𝕜] G := (coeLM 𝕜).comp L.toLinearMap
+
+@[simp] lemma toLinearMap₂_apply (L : E →L[𝕜] F →L[𝕜] G) (v : E) (w : F) :
+    L.toLinearMap₂ v w = L v w := rfl
 
 end BilinearMaps
 

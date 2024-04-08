@@ -31,7 +31,7 @@ for `Set α`, and some more set constructions.
   `f ⁻¹ y ⊆ s`.
 * `Set.seq`: Union of the image of a set under a **seq**uence of functions. `seq s t` is the union
   of `f '' t` over all `f ∈ s`, where `t : Set α` and `s : Set (α → β)`.
-* `Set.iUnion_eq_sigma_of_disjoint`: Equivalence between `⋃ i, t i` and `Σ i, t i`, where `t` is an
+* `Set.unionEqSigmaOfDisjoint`: Equivalence between `⋃ i, t i` and `Σ i, t i`, where `t` is an
   indexed family of disjoint sets.
 
 ## Naming convention
@@ -273,7 +273,7 @@ theorem subset_iInter_iff {s : Set α} {t : ι → Set α} : (s ⊆ ⋂ i, t i) 
 #align set.subset_Inter_iff Set.subset_iInter_iff
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
--- Porting note: removing `simp`. `simp` can prove it
+-- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem subset_iInter₂_iff {s : Set α} {t : ∀ i, κ i → Set α} :
     (s ⊆ ⋂ (i) (j), t i j) ↔ ∀ i j, s ⊆ t i j := by simp_rw [subset_iInter_iff]
 #align set.subset_Inter₂_iff Set.subset_iInter₂_iff
@@ -685,7 +685,7 @@ theorem nonempty_iUnion : (⋃ i, s i).Nonempty ↔ ∃ i, (s i).Nonempty := by
   simp [nonempty_iff_ne_empty]
 #align set.nonempty_Union Set.nonempty_iUnion
 
--- Porting note: removing `simp`. `simp` can prove it
+-- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem nonempty_biUnion {t : Set α} {s : α → Set β} :
     (⋃ i ∈ t, s i).Nonempty ↔ ∃ i ∈ t, (s i).Nonempty := by simp
 #align set.nonempty_bUnion Set.nonempty_biUnion
@@ -1226,7 +1226,7 @@ theorem nonempty_iInter {f : ι → Set α} : (⋂ i, f i).Nonempty ↔ ∃ x, �
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 -- classical
--- Porting note: removing `simp`. `simp` can prove it
+-- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem nonempty_iInter₂ {s : ∀ i, κ i → Set α} :
     (⋂ (i) (j), s i j).Nonempty ↔ ∃ a, ∀ i j, a ∈ s i j := by
   simp
@@ -1513,7 +1513,7 @@ theorem injective_iff_injective_of_iUnion_eq_univ :
     Injective f ↔ ∀ i, Injective ((U i).restrictPreimage f) := by
   refine' ⟨fun H i => (U i).restrictPreimage_injective H, fun H x y e => _⟩
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp
-      (show f x ∈ Set.iUnion U by rw [hU]; triv)
+      (show f x ∈ Set.iUnion U by rw [hU]; trivial)
   injection @H i ⟨x, hi⟩ ⟨y, show f y ∈ U i from e ▸ hi⟩ (Subtype.ext e)
 #align set.injective_iff_injective_of_Union_eq_univ Set.injective_iff_injective_of_iUnion_eq_univ
 
@@ -1522,7 +1522,7 @@ theorem surjective_iff_surjective_of_iUnion_eq_univ :
   refine' ⟨fun H i => (U i).restrictPreimage_surjective H, fun H x => _⟩
   obtain ⟨i, hi⟩ :=
     Set.mem_iUnion.mp
-      (show x ∈ Set.iUnion U by rw [hU]; triv)
+      (show x ∈ Set.iUnion U by rw [hU]; trivial)
   exact ⟨_, congr_arg Subtype.val (H i ⟨x, hi⟩).choose_spec⟩
 #align set.surjective_iff_surjective_of_Union_eq_univ Set.surjective_iff_surjective_of_iUnion_eq_univ
 
@@ -1733,6 +1733,15 @@ theorem preimage_iUnion {f : α → β} {s : ι → Set β} : (f ⁻¹' ⋃ i, s
 theorem preimage_iUnion₂ {f : α → β} {s : ∀ i, κ i → Set β} :
     (f ⁻¹' ⋃ (i) (j), s i j) = ⋃ (i) (j), f ⁻¹' s i j := by simp_rw [preimage_iUnion]
 #align set.preimage_Union₂ Set.preimage_iUnion₂
+
+theorem image_sUnion {f : α → β} {s : Set (Set α)} : (f '' ⋃₀ s) = ⋃₀ (image f '' s) := by
+  ext b
+  simp only [mem_image, mem_sUnion, exists_prop, sUnion_image, mem_iUnion]
+  constructor
+  · rintro ⟨a, ⟨t, ht₁, ht₂⟩, rfl⟩
+    exact ⟨t, ht₁, a, ht₂, rfl⟩
+  · rintro ⟨t, ht₁, a, ht₂, rfl⟩
+    exact ⟨a, ⟨t, ht₁, ht₂⟩, rfl⟩
 
 @[simp]
 theorem preimage_sUnion {f : α → β} {s : Set (Set β)} : f ⁻¹' ⋃₀s = ⋃ t ∈ s, f ⁻¹' t := by
@@ -2077,14 +2086,14 @@ theorem disjoint_iUnion_right {ι : Sort*} {s : ι → Set α} :
 #align set.disjoint_Union_right Set.disjoint_iUnion_right
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
--- Porting note: removing `simp`. `simp` can prove it
+-- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem disjoint_iUnion₂_left {s : ∀ i, κ i → Set α} {t : Set α} :
     Disjoint (⋃ (i) (j), s i j) t ↔ ∀ i j, Disjoint (s i j) t :=
   iSup₂_disjoint_iff
 #align set.disjoint_Union₂_left Set.disjoint_iUnion₂_left
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
--- Porting note: removing `simp`. `simp` can prove it
+-- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem disjoint_iUnion₂_right {s : Set α} {t : ∀ i, κ i → Set α} :
     Disjoint s (⋃ (i) (j), t i j) ↔ ∀ i j, Disjoint s (t i j) :=
   disjoint_iSup₂_iff
@@ -2216,7 +2225,7 @@ theorem _root_.Antitone.iInter_nat_add {f : ℕ → Set α} (hf : Antitone f) (k
   hf.iInf_nat_add k
 #align antitone.Inter_nat_add Antitone.iInter_nat_add
 
-/-Porting note: removing `simp`. LHS does not simplify. Possible linter bug. Zulip discussion:
+/- Porting note: removing `simp`. LHS does not simplify. Possible linter bug. Zulip discussion:
 https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/complete_lattice.20and.20has_sup/near/316497982
 -/
 theorem iUnion_iInter_ge_nat_add (f : ℕ → Set α) (k : ℕ) :

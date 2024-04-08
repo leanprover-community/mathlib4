@@ -3,7 +3,7 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Order.ProjIcc
+import Mathlib.Topology.Order.ProjIcc
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.UnitInterval
 
@@ -1065,7 +1065,7 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
     · use Path.refl (p' 0)
       · constructor
         · rintro i hi
-          rw [le_zero_iff.mp hi]
+          rw [Nat.le_zero.mp hi]
           exact ⟨0, rfl⟩
         · rw [range_subset_iff]
           rintro _x
