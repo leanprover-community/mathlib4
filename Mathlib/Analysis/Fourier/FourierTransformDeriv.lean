@@ -8,6 +8,7 @@ import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
+import Mathlib.Analysis.Calculus.ContDiff.Bounds
 
 /-!
 # Derivatives of the Fourier transform
@@ -305,11 +306,31 @@ lemma _root_.ContDiff.fourierPowSMulRight {f : V → E} {k : ℕ∞} (hf : ContD
   exact contDiff_pi.2 (fun _ ↦ L.contDiff)
 
 
+#check ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear_of_le_one
+
 lemma gloug {f : V → E} {K : ℕ∞} {C : ℝ} (hf : ContDiff ℝ K f) (n : ℕ) {k : ℕ} (hk : k ≤ K)
     {v : V} (hv : ∀ i ≤ k, ‖iteratedFDeriv ℝ i f v‖ ≤ C) :
-    ‖iteratedFDeriv ℝ k (fun v ↦ fourierPowSMulRight L f v n) v‖ ≤ 2 * (max 1 ‖v‖) ^ n * C := by
+    ‖iteratedFDeriv ℝ k (fun v ↦ fourierPowSMulRight L f v n) v‖ ≤ (2 * π) ^ n * ‖v‖^n := by
+  have A : ContDiff ℝ K fun y ↦ (compContinuousLinearMapLRight
+      (ContinuousMultilinearMap.mkPiAlgebra ℝ (Fin n) ℝ)) fun x ↦ L y := by
+    apply (ContinuousMultilinearMap.contDiff _).comp
+    exact contDiff_pi.2 (fun _ ↦ L.contDiff)
+
   simp_rw [fourierPowSMulRight_eq_comp]
-  rw [iteratedFDeriv_const_smul_apply' (a := (-(2 * ↑π * I)) ^ n)]
+  rw [iteratedFDeriv_const_smul_apply', norm_smul (β := V [×k]→L[ℝ] (W [×n]→L[ℝ] E))]; swap
+  · exact (smulRightL ℝ (fun (_ : Fin n) ↦ W) E).isBoundedBilinearMap.contDiff.comp₂ (A.of_le hk)
+      (hf.of_le hk)
+  simp only [norm_pow, norm_neg, norm_mul, RCLike.norm_ofNat, Complex.norm_eq_abs, abs_ofReal,
+    _root_.abs_of_nonneg pi_nonneg, abs_I, mul_one]
+  gcongr
+  apply (ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear_of_le_one _ A hf _ hk _).trans
+  sorry
+  have Z := ContinuousLinearMap.norm_smulRightL_le
+
+--  have Z := (smulRightL ℝ (fun (x : Fin n) ↦ W) E).norm_iteratedFDeriv_le_of_bilinear_of_le_one
+--    (smulRightL ℝ (fun (x : Fin n) ↦ W) E)
+
+
 
 #exit
 
