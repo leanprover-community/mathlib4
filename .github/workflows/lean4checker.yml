@@ -36,43 +36,44 @@ jobs:
           cd ..
           lake env lean4checker/.lake/build/bin/lean4checker
 
-      - name: Post success message on Zulip
-        if: success()
-        uses: zulip/github-actions-zulip/send-message@v1
-        with:
-          api-key: ${{ secrets.ZULIP_API_KEY }}
-          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
-          organization-url: 'https://leanprover.zulipchat.com'
-          to: 'mathlib reviewers'
-          type: 'stream'
-          topic: 'lean4checker'
-          content: |
-            ✅ lean4checker succeeded on ${{ github.sha }}
-
-      - name: Post failure message on Zulip
-        if: failure()
-        uses: zulip/github-actions-zulip/send-message@v1
-        with:
-          api-key: ${{ secrets.ZULIP_API_KEY }}
-          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
-          organization-url: 'https://leanprover.zulipchat.com'
-          to: 'mathlib reviewers'
-          type: 'stream'
-          topic: 'lean4checker failure'
-          content: |
-            ❌ lean4checker failed on ${{ github.sha }}
-        continue-on-error: true
-
-      - name: Post failure message on Zulip main topic
-        if: failure()
-        uses: zulip/github-actions-zulip/send-message@v1
-        with:
-          api-key: ${{ secrets.ZULIP_API_KEY }}
-          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
-          organization-url: 'https://leanprover.zulipchat.com'
-          to: 'mathlib reviewers'
-          type: 'stream'
-          topic: 'lean4checker'
-          content: |
-            ❌ lean4checker failed on ${{ github.sha }}
-        continue-on-error: true
+#      - name: Post success message on Zulip
+#        if: success()
+#        uses: zulip/github-actions-zulip/send-message@v1
+#        with:
+#          api-key: ${{ secrets.ZULIP_API_KEY }}
+#          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+#          organization-url: 'https://leanprover.zulipchat.com'
+#          to: 'mathlib reviewers'
+#          type: 'stream'
+#          topic: 'lean4checker'
+#          content: |
+#            ✅ lean4checker succeeded on ${{ github.sha }}
+#
+#      - name: Post failure message on Zulip
+#        if: failure()
+#        uses: zulip/github-actions-zulip/send-message@v1
+#        with:
+#          api-key: ${{ secrets.ZULIP_API_KEY }}
+#          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+#          organization-url: 'https://leanprover.zulipchat.com'
+#          to: 'mathlib reviewers'
+#          type: 'stream'
+#          topic: 'lean4checker failure'
+#          content: |
+#            ❌ lean4checker failed on ${{ github.sha }}
+#        continue-on-error: true
+#
+#      - name: Post failure message on Zulip main topic
+#        if: failure()
+#        uses: zulip/github-actions-zulip/send-message@v1
+#        with:
+#          api-key: ${{ secrets.ZULIP_API_KEY }}
+#          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+#          organization-url: 'https://leanprover.zulipchat.com'
+#          to: 'mathlib reviewers'
+#          type: 'stream'
+#          topic: 'lean4checker'
+#          content: |
+#            ❌ lean4checker failed on ${{ github.sha }}
+#        continue-on-error: true
+#
