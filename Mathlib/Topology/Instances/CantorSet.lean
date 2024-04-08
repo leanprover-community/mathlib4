@@ -23,8 +23,8 @@ This file defines the Cantor ternary set and proves a few properties.
 -/
 
 /-- The order `n` pre-Cantor set, defined starting from `[0, 1]` and successively removing the
-    middle third of each interval. Formally, after the order `n+1` pre-Cantor set is the
-    union of the images under the functions `(· / 3)` and `(2 * · / 3)` of ``preCantorSet n``.
+    middle third of each interval. Formally, the order `n + 1` pre-Cantor set is the
+    union of the images under the functions `(· / 3)` and `(2 * · / 3)` of `preCantorSet n`.
 -/
 def preCantorSet : ℕ → Set ℝ
   | 0 => Set.Icc 0 1
