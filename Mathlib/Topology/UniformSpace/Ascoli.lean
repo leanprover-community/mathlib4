@@ -483,6 +483,7 @@ theorem ArzelaAscoli.isCompact_closure_of_closedEmbedding [TopologicalSpace ι] 
     fun K hK x hx ↦ (cls_pointwiseCompact K hK x hx).imp fun Q hQ ↦ ⟨hQ.1, by simpa using hQ.2⟩
 
 /-- A version of the **Arzela-Ascoli theorem**.
+
 If an equicontinuous family of continuous functions is compact in the pointwise topology, then it
 is compact in the compact open topology. -/
 theorem ArzelaAscoli.isCompact_of_equicontinuous
