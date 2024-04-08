@@ -373,22 +373,21 @@ variable {ι F V W : Type*} [Fintype ι]
   [NormedAddCommGroup E] [NormedSpace ℂ E]
   {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace ℝ (M i)]
 
-theorem fourierIntegral_continuousLinearMap_apply
+theorem fourierIntegral_continuousLinearMap_apply'
     {f : V → (F →L[ℝ] E)} {a : F} {w : W} (hf : Integrable f μ) :
     VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ f w a =
       VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ (fun x ↦ f x a) w :=
   VectorFourier.fourierIntegral_continuousLinearMap_apply continuous_fourierChar hf
 
-theorem fourierIntegral_continuousMultilinearMap_apply
-    {f : V → (ContinuousMultilinearMap ℝ M E)} {m : (i : ι) → M i} {w : W} (hf : Integrable f μ) :
+theorem fourierIntegral_continuousMultilinearMap_apply'
+    {f : V → ContinuousMultilinearMap ℝ M E} {m : (i : ι) → M i} {w : W} (hf : Integrable f μ) :
     VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ f w m =
       VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ (fun x ↦ f x m) w :=
   VectorFourier.fourierIntegral_continuousMultilinearMap_apply continuous_fourierChar hf
 
 end Apply
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
-  {V : Type*} [NormedAddCommGroup V]
+variable {V : Type*} [NormedAddCommGroup V]
   [InnerProductSpace ℝ V] [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
   {W : Type*} [NormedAddCommGroup W]
   [InnerProductSpace ℝ W] [MeasurableSpace W] [BorelSpace W] [FiniteDimensional ℝ W]
@@ -456,5 +455,17 @@ theorem fourierIntegral_real_eq_integral_exp_smul (f : ℝ → E) (w : ℝ) :
 @[simp] theorem fourierIntegral_convergent_iff {μ : Measure V} {f : V → E} (w : V) :
     Integrable (fun v : V ↦ 𝐞 (- ⟪v, w⟫) • f v) μ ↔ Integrable f μ :=
   fourierIntegral_convergent_iff' (innerSL ℝ) w
+
+theorem fourierIntegral_continuousLinearMap_apply
+    {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {f : V → (F →L[ℝ] E)} {a : F} {v : V} (hf : Integrable f) :
+    𝓕 f v a = 𝓕 (fun x ↦ f x a) v :=
+  fourierIntegral_continuousLinearMap_apply' (L := innerSL ℝ) hf
+
+theorem fourierIntegral_continuousMultilinearMap_apply {ι : Type*} [Fintype ι]
+    {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace ℝ (M i)]
+    {f : V → ContinuousMultilinearMap ℝ M E} {m : (i : ι) → M i} {v : V} (hf : Integrable f) :
+    𝓕 f v m = 𝓕 (fun x ↦ f x m) v :=
+  fourierIntegral_continuousMultilinearMap_apply' (L := innerSL ℝ) hf
 
 end Real
