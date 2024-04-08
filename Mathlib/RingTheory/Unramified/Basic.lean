@@ -96,8 +96,6 @@ theorem FormallyUnramified.lift_unique' [FormallyUnramified R A] {C : Type u} [C
   FormallyUnramified.ext' _ hf g₁ g₂ (AlgHom.congr_fun h)
 #align algebra.formally_unramified.lift_unique' Algebra.FormallyUnramified.lift_unique'
 
-variable {C : Type u} [CommRing C] [Algebra R C]
-
 end
 
 section OfEquiv
