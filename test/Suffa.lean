@@ -3,7 +3,7 @@ import Mathlib.Tactic.Suffa
 /--
 info: Try this: suffices 1 = 0 by
     rw [Nat.zero_add]
-    assumption
+    exact this
 -/
 #guard_msgs in
 example {h : False} : 0 + 1 = 0 := by
@@ -14,7 +14,7 @@ example {h : False} : 0 + 1 = 0 := by
 /--
 info: Try this: suffices False by
     rw [Nat.zero_add]
-    simp; assumption
+    simp; exact this
 -/
 #guard_msgs in
 example {h : False} : 0 + 1 = 0 := by
@@ -26,7 +26,7 @@ example {h : False} : 0 + 1 = 0 := by
 info: Try this: suffices False by
     rw [Nat.zero_add]
     simp
-    assumption
+    exact this
 -/
 #guard_msgs in
 example {h : False} : 0 + 1 = 0 := by

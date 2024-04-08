@@ -12,6 +12,11 @@ import Lean.Meta.Tactic.TryThis
 of the form `suffices [target_after_tac] by tac; assumption`.
 
 See the tactic docs for an example.
+
+##  TODO
+* Better support for `fvar`s.
+* Allow `suff ... at ...`?
+* Allow `suff_all ...`?
 -/
 
 namespace Mathlib.Tactic.Suffa
@@ -66,7 +71,7 @@ example {m n : Nat} (h : m = n) : 0 + m = n := by
 elab "suffa " tac:tacticSeq : tactic => do
   let finalTgt ← getTargetAfterTac tac
   let stx ← Meta.Tactic.TryThis.delabToRefinableSyntax finalTgt
-  let stxa : TSyntax ``tacticSeq := ⟨combine tac (← `(tactic| assumption))⟩
+  let stxa : TSyntax ``tacticSeq := ⟨combine tac (← `(tactic| exact $(mkIdent `this)))⟩
   let suffTac ← `(tacticSeq| suffices $stx by $stxa)
   let sug : Suggestion := { suggestion := suffTac }
   addSuggestion (← getRef) sug
