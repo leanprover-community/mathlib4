@@ -3,12 +3,10 @@ Copyright (c) 2023 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
+import Mathlib.Topology.Separation
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Data.Set.Card
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Tactic.Linarith
-import Mathlib.Topology.Compactness.Compact
-import Mathlib.Topology.Separation
 
 /-!
 # Radon's theorem on convex sets
@@ -67,18 +65,17 @@ variable [FiniteDimensional 𝕜 E]
 
 /-- **Helly's theorem on convex sets**: If `F` is a finite family of convex sets in a vector space
 of finite dimension `d`, and any `d + 1` sets of `F` intersect, then all sets of `F` intersect. -/
-theorem Convex.helly_theorem (F : ι → Set E) {hF_fin : Finite ι}
+theorem Convex.helly_theorem (F : ι → Set E) [Finite ι]
     (h_convex : ∀ i : ι, Convex 𝕜 (F i))
-    (h_inter : ∀ I : Set ι, (ncard I ≤ (finrank 𝕜 E) + 1) →
-    (⋂ i ∈ I, F i).Nonempty) : (⋂ i : ι, F i).Nonempty := by
+    (h_inter : ∀ I : Set ι, ncard I ≤ (finrank 𝕜 E) + 1 → (⋂ i ∈ I, F i).Nonempty) :
+    (⋂ i : ι, F i).Nonempty := by
   by_cases h_card : Nat.card ι < (finrank 𝕜 E) + 1
   · rw [show ⋂ i, F i = ⋂ i ∈ Set.univ, F i by simp]
     apply h_inter Set.univ
     rw [Set.ncard_univ]
     exact le_of_lt h_card
-  · obtain ⟨n, hn⟩ : ∃ n : ℕ, Nat.card ι = n := ⟨Nat.card ι, rfl⟩ -- for induction on ncard F
-    simp only [not_lt] at h_card
-    rw [hn] at h_card
+  · generalize hn : Nat.card ι = n
+    rw [not_lt, hn] at h_card
     induction' n, h_card using Nat.le_induction with k h_card hk generalizing ι
     · rw [show ⋂ i, F i = ⋂ i ∈ Set.univ, F i by simp]
       apply h_inter Set.univ
@@ -100,11 +97,10 @@ theorem Convex.helly_theorem (F : ι → Set E) {hF_fin : Finite ι}
           · rw [Set.ncard_univ]
             omega
           · trivial
-        · exact Subtype.finite
       /- This family of vectors is not affine independent because the number of them exceeds the
       dimension of the space. -/
       have h2 : ¬AffineIndependent 𝕜 a := by
-        have : Fintype ι := by exact Fintype.ofFinite ι -- for instance inferring
+        have : Fintype ι := Fintype.ofFinite ι -- for instance inferring
         rw [← finrank_vectorSpan_le_iff_not_affineIndependent 𝕜 a (n := (k - 1))]
         · exact (Submodule.finrank_le (vectorSpan 𝕜 (Set.range a))).trans (Nat.le_pred_of_lt h_card)
         · rw [Fintype.card_eq_nat_card]; omega
@@ -135,11 +131,12 @@ theorem Convex.helly_theorem (F : ι → Set E) {hF_fin : Finite ι}
       · apply Set.Nonempty.some_mem
 
 /-- The set version of `Convex.helly_theorem`. -/
-theorem Convex.helly_theorem_set (F : Set (Set E)) {hF_fin : Set.Finite F}
+theorem Convex.helly_theorem_set {F : Set (Set E)} (hF_fin : Set.Finite F)
     (h_convex : ∀ X ∈ F, Convex 𝕜 X)
-    (h_inter : ∀ G : Set (Set E), (G ⊆ F) → (ncard G ≤ (finrank 𝕜 E) + 1) →
+    (h_inter : ∀ G : Set (Set E), (G ⊆ F) → ncard G ≤ (finrank 𝕜 E) + 1 →
     (⋂₀ G).Nonempty) : (⋂₀ F).Nonempty := by
   rw [show ⋂₀ F = ⋂ X : F, ↑X by ext; simp]
+  have : Finite F := hF_fin -- for instance inferring
   apply Convex.helly_theorem (F := fun x : F => x.val) (𝕜 := 𝕜)
   · exact fun X ↦ h_convex X (by simp)
   · intro G _
@@ -147,37 +144,40 @@ theorem Convex.helly_theorem_set (F : Set (Set E)) {hF_fin : Set.Finite F}
     rw [show ⋂ i ∈ G, ↑i = ⋂₀ G' by simp [G']]
     apply h_inter G' (by simp [G'])
     rwa [ncard_image_of_injective G Subtype.val_injective]
-  · exact hF_fin
 
-/-- The version of `Convex.helly_theorem` for infinite families with additional compactness
-assumption. -/
+/-- The version of `Convex.helly_theorem` that includes an additional compactness assumption, and is
+not restricted to finite families. -/
 theorem Convex.helly_theorem_infinite [TopologicalSpace E] [T2Space E] (F : ι → Set E)
-    (h_convex : ∀ i : ι, Convex 𝕜 (F i)) (h_compact : ∀ i : ι, IsCompact (F i)) (h_inf : Infinite ι)
-    (h_inter : ∀ I : Set ι, I.Finite → (ncard I ≤ (finrank 𝕜 E) + 1) →
-    (⋂ i ∈ I, F i).Nonempty) : (⋂ i : ι, F i).Nonempty := by
-    /- By the finite version of theorem, every finite subfamily has an intersection. -/
-    have h1 (I : Set ι) (hI_fin : I.Finite) : (⋂ i ∈ I, F i).Nonempty := by
-      rw [show ⋂ i ∈ I, F i = ⋂ i : I, F ↑i by simp only [iInter_coe_set]]
-      apply Convex.helly_theorem (ι := I) (fun i : I ↦ F i) (𝕜 := 𝕜)
-      · simp only [Subtype.forall]; exact fun a _ ↦ h_convex a
-      · intro J hJ_card
-        rw [show ⋂ i ∈ J, F ↑i = ⋂ i ∈ Subtype.val '' J, F i by
-          simp only [Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right,
-          iInter_exists, iInter_coe_set]]
-        have hJ_fin : J.Finite := by
-          have : Finite ↑I := hI_fin
-          exact toFinite J
-        apply h_inter J
-        · exact Finite.image Subtype.val hJ_fin
-        · exact le_trans (Set.ncard_image_le (hs := hJ_fin)) hJ_card
-      · exact hI_fin
-    /- The following is a clumsy proof that family of compact sets with the finite intersection
-    property has a nonempty intersection -/
-    have i0 : ι := Nonempty.some h_inf.nonempty
-    rw [show ⋂ i, F i = (F i0) ∩ (⋂ i, F i) by aesop]
-    apply IsCompact.inter_iInter_nonempty
-    · exact h_compact i0
-    · intro i
-      exact (h_compact i).isClosed
-    · intro I
-      simpa using (h1 ({i0} ∪ I))
+    (h_convex : ∀ i : ι, Convex 𝕜 (F i)) (h_compact : ∀ i : ι, IsCompact (F i))
+    (h_inter : ∀ I : Set ι, I.Finite → ncard I ≤ (finrank 𝕜 E) + 1 → (⋂ i ∈ I, F i).Nonempty) :
+    (⋂ i : ι, F i).Nonempty := by
+  /- If `ι` is empty the statement is trivial. -/
+  cases' isEmpty_or_nonempty ι with _ h_nonempty
+  simp only [iInter_of_empty, Set.univ_nonempty]
+
+  /- By the finite version of theorem, every finite subfamily has an intersection. -/
+  have h1 (I : Set ι) (hI_fin : I.Finite) : (⋂ i ∈ I, F i).Nonempty := by
+    rw [show ⋂ i ∈ I, F i = ⋂ i : I, F ↑i by simp only [iInter_coe_set]]
+    have : Finite I := hI_fin -- for instance inferring
+    apply Convex.helly_theorem (ι := I) (fun i : I ↦ F i) (𝕜 := 𝕜)
+    · simp only [Subtype.forall]; exact fun a _ ↦ h_convex a
+    · intro J hJ_card
+      rw [show ⋂ i ∈ J, F ↑i = ⋂ i ∈ Subtype.val '' J, F i by
+        simp only [Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right,
+        iInter_exists, iInter_coe_set]]
+      have hJ_fin : J.Finite := by
+        have : Finite ↑I := hI_fin
+        exact toFinite J
+      apply h_inter J
+      · exact Finite.image Subtype.val hJ_fin
+      · exact le_trans (Set.ncard_image_le (hs := hJ_fin)) hJ_card
+  /- The following is a clumsy proof that family of compact sets with the finite intersection
+  property has a nonempty intersection -/
+  have i0 : ι := Nonempty.some h_nonempty
+  rw [show ⋂ i, F i = (F i0) ∩ (⋂ i, F i) by aesop]
+  apply IsCompact.inter_iInter_nonempty
+  · exact h_compact i0
+  · intro i
+    exact (h_compact i).isClosed
+  · intro I
+    simpa using (h1 ({i0} ∪ I))
