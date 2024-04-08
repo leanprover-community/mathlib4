@@ -530,6 +530,23 @@ theorem map_smul_univ [Fintype ι] (c : ι → R) (m : ∀ i, M₁ i) :
   f.toMultilinearMap.map_smul_univ _ _
 #align continuous_multilinear_map.map_smul_univ ContinuousMultilinearMap.map_smul_univ
 
+/-- The iterated derivative of a multilinear map `f` at the point `x`, it is a multilinear map
+of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
+to `∑ f (x₁, (v_{i_1})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one
+of the `(vᵢ)ⱼ`, where each `vᵢ` has to be used exactly once.
+The sum is parameterized by the embeddings of `Fin k` in the index type `ι` (or, equivalently,
+by the subsets `s` of `ι` of cardinal `k` and then the bijections between `Fin k` and `s`). -/
+noncomputable def iteratedFDeriv [Fintype ι] [ContinuousAdd M₂]
+    (f : ContinuousMultilinearMap R M₁ M₂) (k : ℕ) (x : (i : ι) → M₁ i) :
+    ContinuousMultilinearMap R (fun (_ : Fin k) ↦ (∀ i, M₁ i)) M₂ where
+  __ := f.toMultilinearMap.iteratedFDeriv k x
+  cont := by
+    apply continuous_finset_sum _ (fun s _ ↦ ?_)
+    apply continuous_finset_sum _ (fun e _ ↦ ?_)
+    apply Continuous.comp _ (by fun_prop)
+    apply f.cont.comp (continuous_pi (fun i ↦ ?_))
+    split <;> fun_prop
+
 end CommSemiring
 
 section DistribMulAction

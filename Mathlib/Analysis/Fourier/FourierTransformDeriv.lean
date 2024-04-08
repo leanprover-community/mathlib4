@@ -311,6 +311,17 @@ lemma _root_.ContDiff.fourierPowSMulRight {f : V → E} {k : ℕ∞} (hf : ContD
 lemma gloug {f : V → E} {K : ℕ∞} {C : ℝ} (hf : ContDiff ℝ K f) (n : ℕ) {k : ℕ} (hk : k ≤ K)
     {v : V} (hv : ∀ i ≤ k, ‖iteratedFDeriv ℝ i f v‖ ≤ C) :
     ‖iteratedFDeriv ℝ k (fun v ↦ fourierPowSMulRight L f v n) v‖ ≤ (2 * π) ^ n * ‖v‖^n := by
+  have : ‖iteratedFDeriv ℝ k
+      (fun y ↦ (compContinuousLinearMapLRight (ContinuousMultilinearMap.mkPiAlgebra ℝ (Fin n) ℝ)) fun x ↦ L y)
+      v‖ ≤ 12 := by
+    apply opNorm_le_bound
+    · positivity
+    intro m
+    simp
+
+
+#exit
+
   have A : ContDiff ℝ K fun y ↦ (compContinuousLinearMapLRight
       (ContinuousMultilinearMap.mkPiAlgebra ℝ (Fin n) ℝ)) fun x ↦ L y := by
     apply (ContinuousMultilinearMap.contDiff _).comp
