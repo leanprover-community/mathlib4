@@ -37,8 +37,9 @@ open Submodule
 /-- Given a reflexive bilinear form `B` on `V` and a subspace `W ⊆ V`, the kernel of the restriction
 of `B` (viewed as a linear map from `V` to linear forms over `V`) to `W` is `W ⊓ Vᗮ`, as subspaces
 of `V`. -/
-theorem toLin_restrict_ker_eq_inf_orthogonal (B : LinearMap.BilinForm K V) (W : Subspace K V)
-    (b : B.IsRefl) : (B.domRestrict W).ker.map W.subtype = (W ⊓ (orthogonalBilin ⊤ B) : Subspace K V) := by
+theorem toLin_restrict_ker_eq_inf_orthogonal
+    (B : LinearMap.BilinForm K V) (W : Subspace K V) (b : B.IsRefl) :
+    (B.domRestrict W).ker.map W.subtype = (W ⊓ (orthogonalBilin ⊤ B) : Subspace K V) := by
   ext x; constructor <;> intro hx
   · rcases hx with ⟨⟨x, hx⟩, hker, rfl⟩
     erw [LinearMap.mem_ker] at hker
@@ -74,7 +75,8 @@ open FiniteDimensional
 
 /-- Given a reflexive bilinear form `B` on a vector space `V` of finite dimension, and a subspace
 `W ⊆ V`, one has `dim(W) + dim(Wᗮ) = dim(V) + dim(W ⊓ Wᗮ)`. -/
-theorem finrank_add_finrank_orthogonal {B : LinearMap.BilinForm K V} {W : Subspace K V} (b₁ : B.IsRefl) :
+theorem finrank_add_finrank_orthogonal
+    {B : LinearMap.BilinForm K V} {W : Subspace K V} (b₁ : B.IsRefl) :
     finrank K W + finrank K (orthogonalBilin W B) =
       finrank K V + finrank K (W ⊓ (orthogonalBilin ⊤ B) : Subspace K V) := by
   rw [← toLin_restrict_ker_eq_inf_orthogonal _ _ b₁, ←
@@ -87,8 +89,9 @@ theorem finrank_add_finrank_orthogonal {B : LinearMap.BilinForm K V} {W : Subspa
 
 /-- In a finite dimensional setting, if the restriction of a reflexive bilinear form `B` on `V` to a
 subspace `W ⊆ V` is nondegenerate, then `V = W ⊕ Wᗮ`. -/
-theorem restrict_nondegenerate_of_isCompl_orthogonal {B : LinearMap.BilinForm K V} {W : Subspace K V}
-    (b₁ : B.IsRefl) (b₂ : (restrictBilinear W B).Nondegenerate) : IsCompl W (orthogonalBilin W B) := by
+theorem restrict_nondegenerate_of_isCompl_orthogonal {B : LinearMap.BilinForm K V}
+    {W : Subspace K V} (b₁ : B.IsRefl) (b₂ : (restrictBilinear W B).Nondegenerate) :
+    IsCompl W (orthogonalBilin W B) := by
   have : W ⊓ (orthogonalBilin W B) = ⊥ := by
     rw [eq_bot_iff]
     intro x hx
