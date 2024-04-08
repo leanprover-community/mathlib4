@@ -4,12 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Lean.Meta.Tactic.TryThis
+import Mathlib.Tactic.Convert
 
 /-!
 #  The `suffa` tactic
 
 `suffa tac` runs the tactic sequence `tac` and returns a `Try this:` suggestion
-of the form `suffices [target_after_tac] by tac; assumption`.
+of the form `suffices [target_after_tac] by tac; exact this`.
+
+There is also a `!`-flag, where `suffa! tac` tries `convert this` instead of `exact this`.
 
 See the tactic docs for an example.
 
@@ -51,7 +54,9 @@ def getTargetAfterTac (revert : Bool := true) : TacticM Expr := do
 
 open Meta.Tactic.TryThis in
 /-- `suffa tac` runs the tactic sequence `tac` and returns a `Try this:` suggestion
-of the form `suffices [target_after_tac] by tac; assumption`.
+of the form `suffices [target_after_tac] by tac; exact this`.
+
+The form `suffa! tac` replaces the conclusion with `convert this`.
 
 For example
 ```lean
@@ -68,11 +73,17 @@ example {m n : Nat} (h : m = n) : 0 + m = n := by
   assumption
 ```
 -/
-elab "suffa " tac:tacticSeq : tactic => do
+elab "suffa " tk:"!"? tac:tacticSeq : tactic => do
   let finalTgt ← getTargetAfterTac tac
   let stx ← Meta.Tactic.TryThis.delabToRefinableSyntax finalTgt
-  let stxa : TSyntax ``tacticSeq := ⟨combine tac (← `(tactic| exact $(mkIdent `this)))⟩
+  let ithis : Syntax.Term := ⟨mkIdent `this⟩
+  let conclusion ← match tk with
+                    | none   => `(tactic| exact $ithis)
+                    | some _ => `(tactic| convert $ithis:term)
+  let stxa : TSyntax ``tacticSeq := ⟨combine tac conclusion⟩
   let suffTac ← `(tacticSeq| suffices $stx by $stxa)
   let sug : Suggestion := { suggestion := suffTac }
   addSuggestion (← getRef) sug
   evalTactic tac
+
+macro "suffa!" tac:tacticSeq : tactic => `(tactic| suffa ! $tac)
