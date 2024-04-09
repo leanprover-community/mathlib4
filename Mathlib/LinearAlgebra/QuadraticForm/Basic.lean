@@ -784,18 +784,13 @@ theorem polarBilin_toQuadraticMap : polarBilin (toQuadraticMap B) = B + flip B :
     toQuadraticMap (polarBilin Q) = 2 • Q :=
   QuadraticMap.ext fun x => (polar_self _ x).trans <| by simp
 
-theorem  _root_.QuadraticMap.polarBilin_injective (h : Invertible (2 : R)) :
-    Function.Injective (polarBilin : QuadraticMap R M N → _) :=
-  fun Q₁ Q₂ h₁₂ => QuadraticMap.ext fun x => by
-  have e1 : 2 • Q₁ x = 2 • Q₂ x := by
-    simpa using DFunLike.congr_fun (congr_arg toQuadraticMap h₁₂) x
-  calc
-    Q₁ x = (⅟(2 : R) * 2) • Q₁ x := by rw [invOf_mul_self', one_smul]
-    _ = ⅟(2 : R) • ((2 : R) • Q₁ x) := by rw [mul_smul]
-    _ = ⅟(2 : R) • (2 • Q₁ x) := by rw [two_smul, ← two_smul ℕ]
-    _ = ⅟(2 : R) • (2 • Q₂ x) := by rw [e1]
-    _ = ⅟(2 : R) • ((2 : R) • Q₂ x) := by rw [two_smul ℕ, two_smul]
-    _ = Q₂ x := by rw [← mul_smul, invOf_mul_self', one_smul]
+theorem _root_.QuadraticMap.polarBilin_injective (h : IsUnit (2 : R)) :
+    Function.Injective (polarBilin : QuadraticMap R M N → _) := by
+  intro Q₁ Q₂ h₁₂
+  apply h.smul_left_cancel.mp
+  rw [show (2 : R) = (2 : ℕ) by rfl]
+  simp_rw [← nsmul_eq_smul_cast R, ← QuadraticMap.toQuadraticMap_polarBilin]
+  exact congrArg toQuadraticMap h₁₂
 
 section
 
