@@ -159,7 +159,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem PInfty_add_QInfty : (PInfty : K[X] ⟶ _) + QInfty = 𝟙 _ := by
   dsimp only [QInfty]
-  simp only [add_sub_cancel'_right]
+  simp only [add_sub_cancel]
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_add_Q_infty AlgebraicTopology.DoldKan.PInfty_add_QInfty
 

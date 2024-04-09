@@ -32,7 +32,7 @@ section Basic
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
-/-- `Module.Free R M` is the statement that the `R`-module `M` is free.-/
+/-- `Module.Free R M` is the statement that the `R`-module `M` is free. -/
 class Module.Free : Prop where
   exists_basis : Nonempty <| (I : Type v) × Basis I R M
 #align module.free Module.Free
@@ -68,7 +68,6 @@ namespace Module.Free
 section Semiring
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
-
 variable [AddCommMonoid N] [Module R N]
 
 /-- If `Module.Free R M` then `ChooseBasisIndex R M` is the `ι` which indexes the basis

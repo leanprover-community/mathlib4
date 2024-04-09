@@ -40,11 +40,8 @@ open TensorProduct BigOperators
 section CommSemiring
 
 variable [CommSemiring R]
-
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
-
 variable [Module R M] [Module R N] [Module R P] [Module R Q]
-
 variable [DecidableEq ι] [Fintype ι] (b : Basis ι R M)
 
 -- Porting note: doesn't like implicit ring in the tensor product
@@ -133,7 +130,7 @@ theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (
 
 /-- As a matrix, `dualTensorHom` evaluated on a basis element of `M* ⊗ N` is a matrix with a
 single one and zeros elsewhere -/
-theorem toMatrix_dualTensorHom {m : Type*} {n : Type*} [Fintype m] [Fintype n] [DecidableEq m]
+theorem toMatrix_dualTensorHom {m : Type*} {n : Type*} [Fintype m] [Finite n] [DecidableEq m]
     [DecidableEq n] (bM : Basis m R M) (bN : Basis n R N) (j : m) (i : n) :
     toMatrix bM bN (dualTensorHom R M N (bM.coord j ⊗ₜ bN i)) = stdBasisMatrix i j 1 := by
   ext i' j'
@@ -148,13 +145,9 @@ end CommSemiring
 section CommRing
 
 variable [CommRing R]
-
 variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [AddCommGroup Q]
-
 variable [Module R M] [Module R N] [Module R P] [Module R Q]
-
 variable [DecidableEq ι] [Fintype ι] (b : Basis ι R M)
-
 variable {R M N P Q}
 
 /-- If `M` is free, the natural linear map $M^* ⊗ N → Hom(M, N)$ is an equivalence. This function
@@ -203,7 +196,6 @@ theorem dualTensorHomEquivOfBasis_symm_cancel_right (x : M →ₗ[R] N) :
 #align dual_tensor_hom_equiv_of_basis_symm_cancel_right dualTensorHomEquivOfBasis_symm_cancel_right
 
 variable (R M N P Q)
-
 variable [Module.Free R M] [Module.Finite R M]
 
 /-- If `M` is finite free, the natural map $M^* ⊗ N → Hom(M, N)$ is an
@@ -226,11 +218,8 @@ open Module TensorProduct LinearMap
 section CommRing
 
 variable [CommRing R]
-
 variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [AddCommGroup Q]
-
 variable [Module R M] [Module R N] [Module R P] [Module R Q]
-
 variable [Free R M] [Finite R M] [Free R N] [Finite R N] [Nontrivial R]
 
 /-- When `M` is a finite free module, the map `lTensorHomToHomLTensor` is an equivalence. Note

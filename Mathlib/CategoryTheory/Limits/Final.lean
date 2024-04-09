@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Comma.StructuredArrow
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.PUnit
 
@@ -78,7 +79,6 @@ open CategoryTheory.Limits
 section ArbitraryUniverse
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
 
 /--
@@ -831,7 +831,6 @@ section Filtered
 open Functor
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
 
 /-- Final functors preserve filteredness.

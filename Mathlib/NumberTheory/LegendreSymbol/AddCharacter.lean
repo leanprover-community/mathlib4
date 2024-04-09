@@ -115,16 +115,12 @@ variable {C : Type v} [CommMonoid C]
 
 section ZModCharDef
 
-open Multiplicative
--- so we can write simply `toAdd`, which we need here again
 
 /-- We can define an additive character on `ZMod n` when we have an `n`th root of unity `ζ : C`. -/
 def zmodChar (n : ℕ+) {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) : AddChar (ZMod n) C where
-  toFun := fun a : Multiplicative (ZMod n) => ζ ^ a.toAdd.val
-  map_one' := by simp only [toAdd_one, ZMod.val_zero, pow_zero]
-  map_mul' x y := by
-    dsimp only
-    rw [toAdd_mul, ← pow_add, ZMod.val_add (toAdd x) (toAdd y), ← pow_eq_pow_mod _ hζ]
+  toFun a := ζ ^ a.val
+  map_zero_one' := by simp only [ZMod.val_zero, pow_zero]
+  map_add_mul' x y := by simp only [ZMod.val_add, ← pow_eq_pow_mod _ hζ, ← pow_add]
 #align add_char.zmod_char AddChar.zmodChar
 
 /-- The additive character on `ZMod n` defined using `ζ` sends `a` to `ζ^a`. -/
@@ -197,12 +193,11 @@ end Additive
 ### Existence of a primitive additive character on a finite field
 -/
 
-
 /-- There is a primitive additive character on the finite field `F` if the characteristic
 of the target is different from that of `F`.
 We obtain it as the composition of the trace from `F` to `ZMod p` with a primitive
 additive character on `ZMod p`, where `p` is the characteristic of `F`. -/
-noncomputable def primitiveCharFiniteField (F F' : Type*) [Field F] [Fintype F] [Field F']
+noncomputable def primitiveCharFiniteField (F F' : Type*) [Field F] [Finite F] [Field F']
     (h : ringChar F' ≠ ringChar F) : PrimitiveAddChar F F' := by
   let p := ringChar F
   haveI hp : Fact p.Prime := ⟨CharP.char_is_prime F _⟩
@@ -214,7 +209,7 @@ noncomputable def primitiveCharFiniteField (F F' : Type*) [Field F] [Fintype F] 
       exact fun hf => Nat.Prime.ne_zero hp.1 (zero_dvd_iff.mp hf)
   let ψ := primitiveZModChar pp F' (neZero_iff.mp (NeZero.of_not_dvd F' hp₂))
   letI : Algebra (ZMod p) F := ZMod.algebra _ _
-  let ψ' := ψ.char.comp (AddMonoidHom.toMultiplicative (Algebra.trace (ZMod p) F).toAddMonoidHom)
+  let ψ' := ψ.char.compAddMonoidHom (Algebra.trace (ZMod p) F).toAddMonoidHom
   have hψ' : IsNontrivial ψ' := by
     obtain ⟨a, ha⟩ := FiniteField.trace_to_zmod_nondegenerate F one_ne_zero
     rw [one_mul] at ha

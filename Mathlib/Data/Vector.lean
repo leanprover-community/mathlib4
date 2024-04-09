@@ -8,7 +8,7 @@ import Std.Data.List.Basic
 import Std.Data.List.Lemmas
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 
 #align_import data.vector from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 
@@ -25,7 +25,6 @@ def Vector (α : Type u) (n : ℕ) :=
 namespace Vector
 
 variable {α : Type u} {β : Type v} {φ : Type w}
-
 variable {n : ℕ}
 
 instance [DecidableEq α] : DecidableEq (Vector α n) :=

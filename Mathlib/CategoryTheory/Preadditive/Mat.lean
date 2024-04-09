@@ -301,7 +301,7 @@ end Functor
 namespace Mat_
 
 /-- The embedding of `C` into `Mat_ C` as one-by-one matrices.
-(We index the summands by `punit`.) -/
+(We index the summands by `PUnit`.) -/
 @[simps]
 def embedding : C ⥤ Mat_ C where
   obj X := ⟨PUnit, fun _ => X⟩

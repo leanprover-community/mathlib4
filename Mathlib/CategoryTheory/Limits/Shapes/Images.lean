@@ -65,7 +65,6 @@ open CategoryTheory.Limits.WalkingParallelPair
 namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X Y : C} (f : X ⟶ Y)
 
 /-- A factorisation of a morphism `f = e ≫ m`, with `m` monic. -/
@@ -494,7 +493,7 @@ def image.eqToHom (h : f = f') : image f ⟶ image f' :=
 instance (h : f = f') : IsIso (image.eqToHom h) :=
   ⟨⟨image.eqToHom h.symm,
       ⟨(cancel_mono (image.ι f)).1 (by
-          -- Porting note: added let's for used to be a simp[image.eqToHom]
+          -- Porting note: added let's for used to be a simp [image.eqToHom]
           let F : MonoFactorisation f' :=
             ⟨image f, image.ι f, factorThruImage f, (by aesop_cat)⟩
           dsimp [image.eqToHom]
@@ -503,7 +502,7 @@ instance (h : f = f') : IsIso (image.eqToHom h) :=
             ⟨image f', image.ι f', factorThruImage f', (by aesop_cat)⟩
           rw [image.lift_fac F'] ),
         (cancel_mono (image.ι f')).1 (by
-          -- Porting note: added let's for used to be a simp[image.eqToHom]
+          -- Porting note: added let's for used to be a simp [image.eqToHom]
           let F' : MonoFactorisation f :=
             ⟨image f', image.ι f', factorThruImage f', (by aesop_cat)⟩
           dsimp [image.eqToHom]
@@ -807,7 +806,6 @@ theorem image.map_homMk'_ι {X Y P Q : C} {k : X ⟶ Y} [HasImage k] {l : P ⟶ 
 section
 
 variable {h : Arrow C} [HasImage h.hom] (sq' : g ⟶ h)
-
 variable [HasImageMap sq']
 
 /-- Image maps for composable commutative squares induce an image map in the composite square. -/
@@ -1006,7 +1004,6 @@ instance (priority := 100) hasStrongEpiImages_of_hasPullbacks_of_hasEqualizers [
 end HasStrongEpiImages
 
 variable [HasStrongEpiMonoFactorisations C]
-
 variable {X Y : C} {f : X ⟶ Y}
 
 /--

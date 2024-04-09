@@ -219,7 +219,7 @@ instance quotient : IsSemisimpleModule R (M ⧸ m) :=
   .congr (m.quotientEquivOfIsCompl P compl)
 
 -- does not work as an instance, not sure why
-protected theorem range [IsSemisimpleModule R M] (f : M →ₗ[R] N) : IsSemisimpleModule R (range f) :=
+protected theorem range (f : M →ₗ[R] N) : IsSemisimpleModule R (range f) :=
   .congr (quotKerEquivRange _).symm
 
 section

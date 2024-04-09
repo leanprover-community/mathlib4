@@ -46,7 +46,6 @@ variable {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {𝕜₂ : Type*} [
   (σ : 𝕜₁ →+* 𝕜₂) [iσ : RingHomIsometric σ]
 
 variable {B : Type*}
-
 variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜₁ F₁] (E₁ : B → Type*)
   [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜₁ (E₁ x)] [TopologicalSpace (TotalSpace F₁ E₁)]
 
@@ -71,7 +70,6 @@ instance Bundle.ContinuousLinearMap.module [∀ x, TopologicalSpace (E₁ x)]
 #align bundle.continuous_linear_map.module Bundle.ContinuousLinearMap.module
 
 variable {E₁ E₂}
-
 variable [TopologicalSpace B] (e₁ e₁' : Trivialization F₁ (π F₁ E₁))
   (e₂ e₂' : Trivialization F₂ (π F₂ E₂))
 
@@ -89,9 +87,7 @@ def continuousLinearMapCoordChange [e₁.IsLinear 𝕜₁] [e₁'.IsLinear 𝕜�
 #align pretrivialization.continuous_linear_map_coord_change Pretrivialization.continuousLinearMapCoordChange
 
 variable {σ e₁ e₁' e₂ e₂'}
-
 variable [∀ x, TopologicalSpace (E₁ x)] [FiberBundle F₁ E₁]
-
 variable [∀ x, TopologicalSpace (E₂ x)] [ita : ∀ x, TopologicalAddGroup (E₂ x)] [FiberBundle F₂ E₂]
 
 theorem continuousOn_continuousLinearMapCoordChange [VectorBundle 𝕜₁ F₁ E₁] [VectorBundle 𝕜₂ F₂ E₂]
@@ -206,11 +202,8 @@ end Pretrivialization
 open Pretrivialization
 
 variable (F₁ E₁ F₂ E₂)
-
 variable [∀ x : B, TopologicalSpace (E₁ x)] [FiberBundle F₁ E₁] [VectorBundle 𝕜₁ F₁ E₁]
-
 variable [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₂ E₂] [VectorBundle 𝕜₂ F₂ E₂]
-
 variable [∀ x, TopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜₂ (E₂ x)]
 
 /-- The continuous `σ`-semilinear maps between two topological vector bundles form a

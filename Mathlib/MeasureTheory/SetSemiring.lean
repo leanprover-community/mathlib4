@@ -166,14 +166,14 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
   have hJ'_subset : ↑J' ⊆ C := by
     intro u
     simp only [J' ,Subtype.coe_mk, univ_eq_attach, coe_biUnion, mem_coe, mem_attach, iUnion_true,
-      mem_iUnion, Finset.exists_coe, bex_imp]
+      mem_iUnion, Finset.exists_coe, exists₂_imp]
     intro v hv huvt
     exact hJu_subset v (h_ss hv) huvt
   refine ⟨J', hJ'_subset, ?_, ?_⟩
   · rw [Finset.coe_biUnion]
     refine PairwiseDisjoint.biUnion ?_ ?_
     · simp only [univ_eq_attach, mem_coe, id.def, iSup_eq_iUnion]
-      simp_rw [PairwiseDisjoint, Set.Pairwise, Function.onFun]
+      simp_rw [PairwiseDisjoint, Set.Pairwise]
       intro x _ y _ hxy
       have hxy_disj : Disjoint (x : Set α) y := by
         by_contra h_contra

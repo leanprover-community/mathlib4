@@ -207,6 +207,7 @@ variable {f : α → β} {s t : Set α}
 -- Porting note: `Set.image` is already defined in `Init.Set`
 #align set.image Set.image
 
+@[deprecated mem_image] -- 2024-03-23
 theorem mem_image_iff_bex {f : α → β} {s : Set α} {y : β} :
     y ∈ f '' s ↔ ∃ (x : _) (_ : x ∈ s), f x = y :=
   bex_def.symm
@@ -941,7 +942,7 @@ theorem compl_range_inr : (range (Sum.inr : β → Sum α β))ᶜ = range (Sum.i
 
 theorem image_preimage_inl_union_image_preimage_inr (s : Set (Sum α β)) :
     Sum.inl '' (Sum.inl ⁻¹' s) ∪ Sum.inr '' (Sum.inr ⁻¹' s) = s := by
-  rw [image_preimage_eq_inter_range, image_preimage_eq_inter_range, ← inter_distrib_left,
+  rw [image_preimage_eq_inter_range, image_preimage_eq_inter_range, ← inter_union_distrib_left,
     range_inl_union_range_inr, inter_univ]
 #align set.image_preimage_inl_union_image_preimage_inr Set.image_preimage_inl_union_image_preimage_inr
 

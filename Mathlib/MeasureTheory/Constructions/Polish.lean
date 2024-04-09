@@ -73,7 +73,7 @@ the natural topology in a space is non-Polish.
 
 To endow a standard Borel space `α` with a compatible Polish topology, use
 `letI := upgradeStandardBorel α`. One can then use `eq_borel_upgradeStandardBorel α` to
-rewrite the `MeasurableSpace α` instance to `borel α t`, where `t` is the new topology.-/
+rewrite the `MeasurableSpace α` instance to `borel α t`, where `t` is the new topology. -/
 class StandardBorelSpace [MeasurableSpace α] : Prop where
   /-- There exists a compatible Polish topology. -/
   polish : ∃ _ : TopologicalSpace α, BorelSpace α ∧ PolishSpace α
@@ -96,7 +96,7 @@ def upgradeStandardBorel [MeasurableSpace α] [h : StandardBorelSpace α] :
   constructor
 
 /-- The `MeasurableSpace α` instance on a `StandardBorelSpace` `α` is equal to
-the borel sets of `upgradeStandardBorel α`.-/
+the borel sets of `upgradeStandardBorel α`. -/
 theorem eq_borel_upgradeStandardBorel [MeasurableSpace α] [StandardBorelSpace α] :
     ‹MeasurableSpace α› = @borel _ (upgradeStandardBorel α).toTopologicalSpace :=
   @BorelSpace.measurable_eq _ (upgradeStandardBorel α).toTopologicalSpace _
@@ -204,7 +204,6 @@ theorem analyticSet_iff_exists_polishSpace_range {s : Set α} :
       exact range_eq_empty _
     · exact ⟨ℕ → ℕ, inferInstance, inferInstance, h⟩
   · rintro ⟨β, h, h', f, f_cont, f_range⟩
-    skip
     rw [← f_range]
     exact analyticSet_range_of_polishSpace f_cont
 #align measure_theory.analytic_set_iff_exists_polish_space_range MeasureTheory.analyticSet_iff_exists_polishSpace_range
@@ -213,7 +212,6 @@ theorem analyticSet_iff_exists_polishSpace_range {s : Set α} :
 theorem AnalyticSet.image_of_continuousOn {β : Type*} [TopologicalSpace β] {s : Set α}
     (hs : AnalyticSet s) {f : α → β} (hf : ContinuousOn f s) : AnalyticSet (f '' s) := by
   rcases analyticSet_iff_exists_polishSpace_range.1 hs with ⟨γ, γtop, γpolish, g, g_cont, gs⟩
-  skip
   have : f '' s = range (f ∘ g) := by rw [range_comp, gs]
   rw [this]
   apply analyticSet_range_of_polishSpace
@@ -237,7 +235,6 @@ theorem AnalyticSet.iInter [hι : Nonempty ι] [Countable ι] [T2Space α] {s : 
     the range of `x ↦ f 0 (x 0)` on `t` is exactly `⋂ n, s n`, so this set is analytic. -/
   choose β hβ h'β f f_cont f_range using fun n =>
     analyticSet_iff_exists_polishSpace_range.1 (hs n)
-  skip
   let γ := ∀ n, β n
   let t : Set γ := ⋂ n, { x | f n (x n) = f i₀ (x i₀) }
   have t_closed : IsClosed t := by
@@ -634,6 +631,16 @@ instance Quotient.borelSpace {X : Type*} [TopologicalSpace X] [PolishSpace X] [M
   ⟨continuous_quotient_mk'.map_eq_borel (surjective_quotient_mk' _)⟩
 #align quotient.borel_space Quotient.borelSpace
 
+/-- When the subgroup `N < G` is not necessarily `Normal`, we have a `CosetSpace` as opposed
+to `QuotientGroup` (the next `instance`).
+TODO: typeclass inference should normally find this, but currently doesn't.
+E.g., `MeasurableSMul G (G ⧸ Γ)` fails to synthesize, even though `G ⧸ Γ` is the quotient
+of `G` by the action of `Γ`; it seems unable to pick up the `BorelSpace` instance. -/
+@[to_additive AddCosetSpace.borelSpace]
+instance CosetSpace.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] [Group G]
+    [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [T2Space (G ⧸ N)]
+    [SecondCountableTopology (G ⧸ N)] : BorelSpace (G ⧸ N) := Quotient.borelSpace
+
 @[to_additive]
 instance QuotientGroup.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] [Group G]
     [TopologicalGroup G] [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [N.Normal]
@@ -895,7 +902,7 @@ theorem _root_.Measurable.measurableEmbedding [OpensMeasurableSpace β]
     measurableSet_image' := fun _u hu => hu.image_of_measurable_injOn f_meas (f_inj.injOn _) }
 #align measurable.measurable_embedding Measurable.measurableEmbedding
 
-/-- If one Polish topology on a type refines another, they have the same Borel sets.-/
+/-- If one Polish topology on a type refines another, they have the same Borel sets. -/
 theorem borel_eq_borel_of_le {t t' : TopologicalSpace γ}
     (ht : PolishSpace (h := t)) (ht' : PolishSpace (h := t')) (hle : t ≤ t') :
     @borel _ t = @borel _ t' := by
@@ -992,11 +999,10 @@ end StandardBorelSpace
 namespace PolishSpace
 
 variable {β : Type*}
-
 variable [MeasurableSpace α] [MeasurableSpace β] [StandardBorelSpace α] [StandardBorelSpace β]
 
 /-- If two standard Borel spaces admit Borel measurable injections to one another,
-then they are Borel isomorphic.-/
+then they are Borel isomorphic. -/
 noncomputable def borelSchroederBernstein {f : α → β} {g : β → α} (fmeas : Measurable f)
     (finj : Function.Injective f) (gmeas : Measurable g) (ginj : Function.Injective g) : α ≃ᵐ β :=
   letI := upgradeStandardBorel α
@@ -1004,25 +1010,26 @@ noncomputable def borelSchroederBernstein {f : α → β} {g : β → α} (fmeas
   (fmeas.measurableEmbedding finj).schroederBernstein (gmeas.measurableEmbedding ginj)
 #align polish_space.borel_schroeder_bernstein PolishSpace.borelSchroederBernstein
 
-/-- Any uncountable standard Borel space is Borel isomorphic to the Cantor space `ℕ → Bool`.-/
+/-- Any uncountable standard Borel space is Borel isomorphic to the Cantor space `ℕ → Bool`. -/
 noncomputable def measurableEquivNatBoolOfNotCountable (h : ¬Countable α) : α ≃ᵐ (ℕ → Bool) := by
   apply Nonempty.some
   letI := upgradeStandardBorel α
   obtain ⟨f, -, fcts, finj⟩ :=
     isClosed_univ.exists_nat_bool_injection_of_not_countable
       (by rwa [← countable_coe_iff, (Equiv.Set.univ _).countable_iff])
-  obtain ⟨g, gmeas, ginj⟩ := MeasurableSpace.measurable_injection_nat_bool_of_countablyGenerated α
+  obtain ⟨g, gmeas, ginj⟩ :=
+    MeasurableSpace.measurable_injection_nat_bool_of_hasCountableSeparatingOn α
   exact ⟨borelSchroederBernstein gmeas ginj fcts.measurable finj⟩
 #align polish_space.measurable_equiv_nat_bool_of_not_countable PolishSpace.measurableEquivNatBoolOfNotCountable
 
 /-- The **Borel Isomorphism Theorem**: Any two uncountable standard Borel spaces are
-Borel isomorphic.-/
+Borel isomorphic. -/
 noncomputable def measurableEquivOfNotCountable (hα : ¬Countable α) (hβ : ¬Countable β) : α ≃ᵐ β :=
   (measurableEquivNatBoolOfNotCountable hα).trans (measurableEquivNatBoolOfNotCountable hβ).symm
 #align polish_space.measurable_equiv_of_not_countable PolishSpace.measurableEquivOfNotCountable
 
 /-- The **Borel Isomorphism Theorem**: If two standard Borel spaces have the same cardinality,
-they are Borel isomorphic.-/
+they are Borel isomorphic. -/
 noncomputable def Equiv.measurableEquiv (e : α ≃ β) : α ≃ᵐ β := by
   by_cases h : Countable α
   · letI := Countable.of_equiv α e
@@ -1048,7 +1055,7 @@ theorem exists_nat_measurableEquiv_range_coe_fin_of_finite [Finite α] :
 theorem measurableEquiv_range_coe_nat_of_infinite_of_countable [Infinite α] [Countable α] :
     Nonempty (α ≃ᵐ range ((↑) : ℕ → ℝ)) := by
   have : PolishSpace (range ((↑) : ℕ → ℝ)) :=
-    Nat.closedEmbedding_coe_real.isClosedMap.closed_range.polishSpace
+    Nat.closedEmbedding_coe_real.isClosedMap.isClosed_range.polishSpace
   refine' ⟨PolishSpace.Equiv.measurableEquiv _⟩
   refine' (nonempty_equiv_of_countable.some : α ≃ ℕ).trans _
   exact Equiv.ofInjective ((↑) : ℕ → ℝ) Nat.cast_injective

@@ -36,21 +36,13 @@ open scoped BigOperators
 section EuclideanDomain
 
 variable {R S : Type*} (K L : Type*) [EuclideanDomain R] [CommRing S] [IsDomain S]
-
 variable [Field K] [Field L]
-
 variable [Algebra R K] [IsFractionRing R K]
-
 variable [Algebra K L] [FiniteDimensional K L] [IsSeparable K L]
-
 variable [algRL : Algebra R L] [IsScalarTower R K L]
-
 variable [Algebra R S] [Algebra S L]
-
 variable [ist : IsScalarTower R S L] [iic : IsIntegralClosure S R L]
-
 variable (abv : AbsoluteValue R ℤ)
-
 variable {ι : Type*} [DecidableEq ι] [Fintype ι] (bS : Basis ι R S)
 
 /-- If `b` is an `R`-basis of `S` of cardinality `n`, then `normBound abv b` is an integer
@@ -77,8 +69,8 @@ theorem normBound_pos : 0 < normBound abv bS := by
     ext j k
     simp [h, DMatrix.zero_apply]
   simp only [normBound, Algebra.smul_def, eq_natCast]
-  refine' mul_pos (Int.coe_nat_pos.mpr (Nat.factorial_pos _)) _
-  refine' pow_pos (mul_pos (Int.coe_nat_pos.mpr (Fintype.card_pos_iff.mpr ⟨i⟩)) _) _
+  refine' mul_pos (Int.natCast_pos.mpr (Nat.factorial_pos _)) _
+  refine' pow_pos (mul_pos (Int.natCast_pos.mpr (Fintype.card_pos_iff.mpr ⟨i⟩)) _) _
   refine' lt_of_lt_of_le (abv.pos hijk) (Finset.le_max' _ _ _)
   exact Finset.mem_image.mpr ⟨⟨i, j, k⟩, Finset.mem_univ _, rfl⟩
 #align class_group.norm_bound_pos ClassGroup.normBound_pos
@@ -195,7 +187,7 @@ theorem mem_finsetApprox {x : R} :
     simp at hx
   · rintro ⟨i, j, hij, rfl⟩
     refine' ⟨_, ⟨i, j⟩, Finset.mem_univ _, rfl⟩
-    rw [Ne.def, sub_eq_zero]
+    rw [Ne, sub_eq_zero]
     exact fun h => hij ((distinctElems bS adm).injective h)
 #align class_group.mem_finset_approx ClassGroup.mem_finsetApprox
 
@@ -217,7 +209,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
                 ≤ abv b ^ (Fintype.card ι : ℝ) := by
     have := normBound_pos abv bS
     have := abv.nonneg b
-    rw [ε_eq, Algebra.smul_def, eq_intCast, mul_rpow, ← rpow_mul, div_mul_cancel, rpow_neg_one,
+    rw [ε_eq, Algebra.smul_def, eq_intCast, mul_rpow, ← rpow_mul, div_mul_cancel₀, rpow_neg_one,
       mul_left_comm, mul_inv_cancel, mul_one, rpow_nat_cast] <;>
       try norm_cast; omega
     · exact Iff.mpr Int.cast_nonneg this
@@ -366,7 +358,7 @@ noncomputable def fintypeOfAdmissibleOfAlgebraic [IsDedekindDomain S]
       { J // J ∣ Ideal.span ({algebraMap R S (∏ m : R in finsetApprox bS adm, m)} : Set S) }
       (UniqueFactorizationMonoid.fintypeSubtypeDvd _
         (by
-          rw [Ne.def, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
+          rw [Ne, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
           exact prod_finsetApprox_ne_zero bS adm))
       ((Equiv.refl _).subtypeEquiv fun I =>
         Ideal.dvd_iff_le.trans (by

@@ -164,8 +164,9 @@ set_option autoImplicit true
 
 open Set
 
-/-- A predicate `P` on sets satisfies the exchange property if, for all `X` and `Y` satisfying `P`
-  and all `a ∈ X \ Y`, there exists `b ∈ Y \ X` so that swapping `a` for `b` in `X` maintains `P`.-/
+/-- A predicate `P` on sets satisfies the **exchange property** if,
+  for all `X` and `Y` satisfying `P` and all `a ∈ X \ Y`, there exists `b ∈ Y \ X` so that
+  swapping `a` for `b` in `X` maintains `P`. -/
 def Matroid.ExchangeProperty {α : Type _} (P : Set α → Prop) : Prop :=
   ∀ X Y, P X → P Y → ∀ a ∈ X \ Y, ∃ b ∈ Y \ X, P (insert b (X \ {a}))
 
@@ -442,7 +443,7 @@ theorem base_compl_iff_mem_maximals_disjoint_base (hB : B ⊆ M.E := by aesop_ma
     fun I hI B' ⟨hB', hIB'⟩ hBI ↦ hBI.antisymm _⟩, fun ⟨⟨B', hB', hBB'⟩,h⟩ ↦ _⟩
   · rw [hB'.eq_of_subset_base h, ← subset_compl_iff_disjoint_right, diff_eq, compl_inter,
       compl_compl] at hIB'
-    · exact fun e he ↦  (hIB' he).elim (fun h' ↦ (h' (hI he)).elim) id
+    · exact fun e he ↦ (hIB' he).elim (fun h' ↦ (h' (hI he)).elim) id
     rw [subset_diff, and_iff_right hB'.subset_ground, disjoint_comm]
     exact disjoint_of_subset_left hBI hIB'
   rw [h (diff_subset M.E B') B' ⟨hB', disjoint_sdiff_left⟩]
@@ -553,7 +554,7 @@ theorem Indep.base_of_maximal (hI : M.Indep I) (h : ∀ J, M.Indep J → I ⊆ J
   base_iff_maximal_indep.mpr ⟨hI,h⟩
 
 theorem Base.dep_of_ssubset (hB : M.Base B) (h : B ⊂ X) (hX : X ⊆ M.E := by aesop_mat) : M.Dep X :=
-  ⟨λ hX ↦ h.ne (hB.eq_of_subset_indep hX h.subset), hX⟩
+  ⟨fun hX ↦ h.ne (hB.eq_of_subset_indep hX h.subset), hX⟩
 
 theorem Base.dep_of_insert (hB : M.Base B) (heB : e ∉ B) (he : e ∈ M.E := by aesop_mat) :
     M.Dep (insert e B) := hB.dep_of_ssubset (ssubset_insert heB) (insert_subset he hB.subset_ground)

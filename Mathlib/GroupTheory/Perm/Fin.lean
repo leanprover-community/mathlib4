@@ -123,9 +123,9 @@ theorem isCycle_finRotate {n : ℕ} : IsCycle (finRotate (n + 2)) := by
   refine' ⟨0, by simp, fun x hx' => ⟨x, _⟩⟩
   clear hx'
   cases' x with x hx
-  rw [zpow_coe_nat, Fin.ext_iff, Fin.val_mk]
+  rw [zpow_natCast, Fin.ext_iff, Fin.val_mk]
   induction' x with x ih; · rfl
-  rw [pow_succ, Perm.mul_apply, coe_finRotate_of_ne_last, ih (lt_trans x.lt_succ_self hx)]
+  rw [pow_succ', Perm.mul_apply, coe_finRotate_of_ne_last, ih (lt_trans x.lt_succ_self hx)]
   rw [Ne.def, Fin.ext_iff, ih (lt_trans x.lt_succ_self hx), Fin.val_last]
   exact ne_of_lt (Nat.lt_of_succ_lt_succ hx)
 #align is_cycle_fin_rotate isCycle_finRotate
