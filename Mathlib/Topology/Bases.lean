@@ -677,9 +677,31 @@ class _root_.FirstCountableTopology : Prop where
 
 attribute [instance] FirstCountableTopology.nhds_generated_countable
 
-namespace FirstCountableTopology
+/-- If `β` is a first-countable space, then its induced topology via `f` on `α` is also
+first-countable. -/
+theorem firstCountableTopology_induced (α β : Type*) [t : TopologicalSpace β]
+    [FirstCountableTopology β] (f : α → β) : @FirstCountableTopology α (t.induced f) :=
+  let _ := t.induced f;
+  ⟨fun x ↦ nhds_induced f x ▸ inferInstance⟩
 
 variable {α}
+
+instance Subtype.firstCountableTopology (s : Set α) [FirstCountableTopology α] :
+    FirstCountableTopology s :=
+  firstCountableTopology_induced s α (↑)
+
+protected theorem _root_.Inducing.firstCountableTopology {β : Type*}
+    [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : Inducing f) :
+    FirstCountableTopology α := by
+  rw [hf.1]
+  exact firstCountableTopology_induced α β f
+
+protected theorem _root_.Embedding.firstCountableTopology {β : Type*}
+    [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : Embedding f) :
+    FirstCountableTopology α :=
+  hf.1.firstCountableTopology
+
+namespace FirstCountableTopology
 
 /-- In a first-countable space, a cluster point `x` of a sequence
 is the limit of some subsequence. -/
@@ -689,8 +711,6 @@ theorem tendsto_subseq [FirstCountableTopology α] {u : ℕ → α} {x : α}
 #align topological_space.first_countable_topology.tendsto_subseq TopologicalSpace.FirstCountableTopology.tendsto_subseq
 
 end FirstCountableTopology
-
-variable {α}
 
 instance {β} [TopologicalSpace β] [FirstCountableTopology α] [FirstCountableTopology β] :
     FirstCountableTopology (α × β) :=
@@ -813,7 +833,7 @@ lemma secondCountableTopology_iInf {ι} [Countable ι] {t : ι → TopologicalSp
   exact SecondCountableTopology.mk' <|
     countable_iUnion fun i => @countable_countableBasis _ (t i) (ht i)
 
--- TODO: more fine grained instances for first_countable_topology, separable_space, t2_space, ...
+-- TODO: more fine grained instances for `FirstCountableTopology`, `SeparableSpace`, `T2Space`, ...
 instance {β : Type*} [TopologicalSpace β] [SecondCountableTopology α] [SecondCountableTopology β] :
     SecondCountableTopology (α × β) :=
   ((isBasis_countableBasis α).prod (isBasis_countableBasis β)).secondCountableTopology <|

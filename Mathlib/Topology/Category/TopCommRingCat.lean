@@ -21,7 +21,7 @@ universe u
 
 open CategoryTheory
 
-set_option linter.uppercaseLean3 false -- `TopCommRing`
+set_option linter.uppercaseLean3 false -- `TopCommRingCat`
 
 /-- A bundled topological commutative ring. -/
 structure TopCommRingCat where
