@@ -19,7 +19,7 @@ We also show the (co)yoneda embeddings preserve limits and jointly reflect them.
 
 open Opposite CategoryTheory Limits
 
-universe w v u
+universe w v u t
 
 namespace CategoryTheory
 
@@ -72,20 +72,37 @@ variable {C : Type u} [Category.{v} C]
 
 open Limits
 
+instance yonedaPreservesLimit (X : C) {J : Type w} [Category.{t} J] (K : J ⥤ Cᵒᵖ) :
+    PreservesLimit K (yoneda.obj X) where
+  preserves := fun {c} t =>
+    { lift := fun s x =>
+        Quiver.Hom.unop (t.lift ⟨op X, fun j => (s.π.app j x).op, fun j₁ j₂ α => by
+          simp [← s.w α]⟩)
+      fac := fun s j => funext fun x => Quiver.Hom.op_inj (t.fac _ _)
+      uniq := fun s m w =>
+        funext fun x => by
+          refine Quiver.Hom.op_inj (t.uniq ⟨op X, _, _⟩ _ fun j => ?_)
+          exact Quiver.Hom.unop_inj (congrFun (w j) x) }
+
 /-- The yoneda embedding `yoneda.obj X : Cᵒᵖ ⥤ Type v` for `X : C` preserves limits. -/
 instance yonedaPreservesLimits (X : C) : PreservesLimits (yoneda.obj X) where
-  preservesLimitsOfShape {J} 𝒥 :=
-    { preservesLimit := fun {K} =>
-        { preserves := fun {c} t =>
-            { lift := fun s x =>
-                Quiver.Hom.unop (t.lift ⟨op X, fun j => (s.π.app j x).op, fun j₁ j₂ α => by
-                  simp [← s.w α]⟩)
-              fac := fun s j => funext fun x => Quiver.Hom.op_inj (t.fac _ _)
-              uniq := fun s m w =>
-                funext fun x => by
-                  refine Quiver.Hom.op_inj (t.uniq ⟨op X, _, _⟩ _ fun j => ?_)
-                  exact Quiver.Hom.unop_inj (congrFun (w j) x) } } }
+  preservesLimitsOfShape {J} 𝒥 := { }
 #align category_theory.yoneda_preserves_limits CategoryTheory.yonedaPreservesLimits
+
+instance coyonedaPreservesLimit (X : Cᵒᵖ) {J : Type w} [Category.{t} J] (K : J ⥤ C) :
+    PreservesLimit K (coyoneda.obj X) where
+  preserves := fun {c} t =>
+    { lift := fun s x =>
+        t.lift
+          ⟨unop X, fun j => s.π.app j x, fun j₁ j₂ α => by
+            dsimp
+            simp [← s.w α]⟩
+      -- See library note [dsimp, simp]
+      fac := fun s j => funext fun x => t.fac _ _
+      uniq := fun s m w =>
+        funext fun x => by
+          refine' t.uniq ⟨unop X, _⟩ _ fun j => _
+          exact congrFun (w j) x }
 
 /-- The coyoneda embedding `coyoneda.obj X : C ⥤ Type v` for `X : Cᵒᵖ` preserves limits. -/
 instance coyonedaPreservesLimits (X : Cᵒᵖ) : PreservesLimits (coyoneda.obj X) where
@@ -138,26 +155,32 @@ def coyonedaJointlyReflectsLimits (J : Type w) [SmallCategory J] (K : J ⥤ C) (
       exact w j }
 #align category_theory.coyoneda_jointly_reflects_limits CategoryTheory.coyonedaJointlyReflectsLimits
 
-variable {D : Type u} [SmallCategory D]
-
-instance yonedaFunctorPreservesLimits : PreservesLimits (@yoneda D _) := by
-  apply preservesLimitsOfEvaluation
-  intro K
-  change PreservesLimits (coyoneda.obj K)
+instance yonedaFunctorPreservesLimit (J : Type w) [Category.{t} J] (K : J ⥤ C) :
+    PreservesLimit K yoneda := by
+  apply preservesLimitOfEvaluation
+  intro k
+  change PreservesLimit K (coyoneda.obj k)
   infer_instance
+
+instance yonedaFunctorPreservesLimits : PreservesLimits (@yoneda C _) where
+  preservesLimitsOfShape := { }
 #align category_theory.yoneda_functor_preserves_limits CategoryTheory.yonedaFunctorPreservesLimits
 
-instance coyonedaFunctorPreservesLimits : PreservesLimits (@coyoneda D _) := by
-  apply preservesLimitsOfEvaluation
-  intro K
-  change PreservesLimits (yoneda.obj K)
+instance coyonedaFunctorPreservesLimit (J : Type w) [Category.{t} J] (K : J ⥤ Cᵒᵖ) :
+    PreservesLimit K coyoneda := by
+  apply preservesLimitOfEvaluation
+  intro k
+  change PreservesLimit K (yoneda.obj k)
   infer_instance
+
+instance coyonedaFunctorPreservesLimits : PreservesLimits (@coyoneda C _) where
+  preservesLimitsOfShape := { }
 #align category_theory.coyoneda_functor_preserves_limits CategoryTheory.coyonedaFunctorPreservesLimits
 
-instance yonedaFunctorReflectsLimits : ReflectsLimits (@yoneda D _) := inferInstance
+instance yonedaFunctorReflectsLimits : ReflectsLimits (@yoneda C _) := inferInstance
 #align category_theory.yoneda_functor_reflects_limits CategoryTheory.yonedaFunctorReflectsLimits
 
-instance coyonedaFunctorReflectsLimits : ReflectsLimits (@coyoneda D _) := inferInstance
+instance coyonedaFunctorReflectsLimits : ReflectsLimits (@coyoneda C _) := inferInstance
 #align category_theory.coyoneda_functor_reflects_limits CategoryTheory.coyonedaFunctorReflectsLimits
 
 end CategoryTheory
