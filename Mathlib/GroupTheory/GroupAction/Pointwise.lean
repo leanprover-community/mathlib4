@@ -14,7 +14,8 @@ import Mathlib.GroupTheory.GroupAction.Hom
 - `image_smul_setₛₗ` and `image_smul_setₛₗ` : under a `σ`-equivariant map,
 one has `h '' (c • s) = (σ c) • h '' s`.
 
-- `preimage_smul_setₛₗ`, `preimage_smul_setₛₗ`, `preimage_smul_set` :
+- `preimage_smul_setₛₗ`, `preimage_smul_setₛₗ`, `preimage_smul_set` and
+`preimage_smul_set'` :
 one has `h ⁻¹' (σ c • s) = c • h⁻¹' s`
 
 -/
