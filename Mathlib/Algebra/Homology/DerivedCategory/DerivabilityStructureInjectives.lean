@@ -5,6 +5,7 @@ import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Existence
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Triangulated
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.Algebra.Homology.Factorizations.CM5a
+import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
 
 universe w₁ w₂
 
@@ -294,6 +295,58 @@ instance : F.rightDerivedFunctorPlus.IsTriangulated :=
 noncomputable def rightDerived' (n : ℕ) : C ⥤ D :=
   DerivedCategory.Plus.singleFunctor C 0 ⋙ F.rightDerivedFunctorPlus ⋙
     DerivedCategory.Plus.homologyFunctor D n
+
+instance (n : ℕ) : (F.rightDerived' n).Additive := by
+  dsimp [rightDerived']
+  infer_instance
+
+section
+variable (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁) {S : ShortComplex C} (hS : S.ShortExact)
+
+open DerivedCategory.Plus.TStructure
+
+noncomputable def rightDerivedδ :
+    (F.rightDerived' n₀).obj S.X₃ ⟶ (F.rightDerived' n₁).obj S.X₁ :=
+  (DerivedCategory.Plus.homologyFunctor D 0).homologySequenceδ
+    (F.rightDerivedFunctorPlus.mapTriangle.obj (t.heartShortExactTriangle _ hS)) n₀ n₁ (by omega)
+
+lemma rightDerived_exact₂ :
+    (ShortComplex.mk ((F.rightDerived' n₀).map S.f)
+      ((F.rightDerived' n₀).map S.g)
+      (by rw [← Functor.map_comp, S.zero, Functor.map_zero])).Exact :=
+  (DerivedCategory.Plus.homologyFunctor D 0).homologySequence_exact₂ _
+    (F.rightDerivedFunctorPlus.map_distinguished _
+      (t.heartShortExactTriangle_distinguished _ hS)) _
+
+@[reassoc (attr := simp)]
+lemma rightDerivedδ_comp :
+    F.rightDerivedδ n₀ n₁ h hS ≫ (F.rightDerived' n₁).map S.f = 0 :=
+  (DerivedCategory.Plus.homologyFunctor D 0).homologySequenceδ_comp
+    _ (F.rightDerivedFunctorPlus.map_distinguished _
+      (t.heartShortExactTriangle_distinguished _ hS)) _ _ _
+
+@[reassoc (attr := simp)]
+lemma comp_rightDerivedδ :
+    (F.rightDerived' n₀).map S.g ≫ F.rightDerivedδ n₀ n₁ h hS = 0 :=
+  (DerivedCategory.Plus.homologyFunctor D 0).comp_homologySequenceδ
+    _ (F.rightDerivedFunctorPlus.map_distinguished _
+      (t.heartShortExactTriangle_distinguished _ hS)) _ _ _
+
+lemma rightDerived_exact₁ :
+    (ShortComplex.mk (F.rightDerivedδ n₀ n₁ h hS) ((F.rightDerived' n₁).map S.f)
+      (by simp)).Exact :=
+  (DerivedCategory.Plus.homologyFunctor D 0).homologySequence_exact₁ _
+    (F.rightDerivedFunctorPlus.map_distinguished _
+      (t.heartShortExactTriangle_distinguished _ hS)) _ _ _
+
+lemma rightDerived_exact₃ :
+    (ShortComplex.mk ((F.rightDerived' n₀).map S.g) (F.rightDerivedδ n₀ n₁ h hS)
+      (by simp)).Exact :=
+  (DerivedCategory.Plus.homologyFunctor D 0).homologySequence_exact₃ _
+    (F.rightDerivedFunctorPlus.map_distinguished _
+      (t.heartShortExactTriangle_distinguished _ hS)) _ _ _
+
+end
 
 end
 

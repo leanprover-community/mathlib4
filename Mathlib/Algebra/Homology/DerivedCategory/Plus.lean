@@ -129,12 +129,33 @@ noncomputable def singleFunctors : SingleFunctors C (Plus C) ℤ :=
 
 noncomputable abbrev singleFunctor (n : ℤ) : C ⥤ Plus C := (singleFunctors C).functor n
 
+noncomputable def singleFunctorιIso (n : ℤ) :
+    singleFunctor C n ⋙ Plus.ι ≅ DerivedCategory.singleFunctor C n := by
+  apply SingleFunctors.liftFunctorCompIso
+
+instance (n : ℤ) : (singleFunctor C n).Additive := by
+  dsimp [singleFunctor, singleFunctors]
+  infer_instance
+
 noncomputable def homologyFunctor (n : ℤ) : Plus C ⥤ C :=
     Plus.ι ⋙ DerivedCategory.homologyFunctor C n
+
+instance (n : ℤ) : (homologyFunctor C n).IsHomological := by
+  dsimp [homologyFunctor]
+  infer_instance
 
 instance : EssSurj (Qh (C := C)).mapArrow :=
   Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions _
     (HomotopyCategory.Plus.subcategoryAcyclic C).W
+
+variable {C}
+
+abbrev TStructure.t : TStructure (DerivedCategory.Plus C) :=
+  (DerivedCategory.TStructure.t (C := C)).plus.tStructure DerivedCategory.TStructure.t
+
+noncomputable instance : (DerivedCategory.Plus.homologyFunctor C 0).ShiftSequence  ℤ := by
+  dsimp [homologyFunctor]
+  infer_instance
 
 end Plus
 

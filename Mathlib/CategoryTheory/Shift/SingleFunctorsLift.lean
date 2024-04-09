@@ -1,4 +1,5 @@
 import Mathlib.CategoryTheory.Shift.SingleFunctors
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 namespace CategoryTheory
 
@@ -53,6 +54,17 @@ def lift : SingleFunctors C D A where
       ← (shiftFunctor E n).map_comp_assoc ((hΦ a').inv.app X),
       Iso.inv_hom_id_app, Functor.map_id, id_comp]
     rfl
+
+def liftFunctorCompIso (a : A) :
+    (lift F G Φ hΦ).functor a ⋙ G ≅ F.functor a :=
+  hΦ a
+
+instance [Preadditive C] [Preadditive D] [Preadditive E] [G.Additive] (a : A)
+    [(F.functor a).Additive] : ((lift F G Φ hΦ).functor a).Additive := by
+  have : ((lift F G Φ hΦ).functor a ⋙ G).Additive := by
+    rw [Functor.additive_iff_of_iso (liftFunctorCompIso F G Φ hΦ a)]
+    infer_instance
+  exact Functor.additive_of_comp_faithful _ G
 
 -- TODO after postcomposition with `G`, `lift` becomes isomorphic to `F`
 
