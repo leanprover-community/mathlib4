@@ -38,16 +38,16 @@ def curCol {n m : Nat} : GaussM n m Nat := do
   return (← get).currentColumn
 
 /-- Increments current row. -/
-def incRow {n m : Nat} : GaussM n m Unit := do
-  set {← get with currentRow := (← curRow) + 1}
+def incRow {n m : Nat} : GaussM n m Unit :=
+  modify fun s => {s with currentRow := s.currentRow + 1}
 
 /-- Increments current column. -/
-def incCol {n m : Nat} : GaussM n m Unit := do
-  set {← get with currentColumn := (← get).currentColumn + 1}
+def incCol {n m : Nat} : GaussM n m Unit :=
+  modify fun s => {s with currentColumn := s.currentColumn + 1}
 
 /-- Pushes position to `basicPositions`. -/
-def pushToBasicPos {n m : Nat} (i j : Nat) : GaussM n m Unit := do
-  set {← get with basicPositions := (← get).basicPositions.push ⟨i, j⟩}
+def pushToBasicPos {n m : Nat} (i j : Nat) : GaussM n m Unit :=
+  modify fun s => {s with basicPositions := s.basicPositions.push ⟨i, j⟩}
 
 /-- Finds the first row starting from the current column with nonzero element in current column. -/
 def findNonzeroRow {n m : Nat} : GaussM n m <| Option Nat := do
@@ -60,20 +60,23 @@ def findNonzeroRow {n m : Nat} : GaussM n m <| Option Nat := do
 def swapRows {n m : Nat} (i j : Nat) : GaussM n m Unit := do
   if i == j then
     return
-  let swapped : Matrix n m := ⟨(← get).mat.data.swap! i j⟩
-  set {← get with mat := swapped}
+  modify fun s =>
+    let swapped : Matrix n m := ⟨s.mat.data.swap! i j⟩
+    {s with mat := swapped}
 
 /-- Subtracts `i`-th row * `coef` from `j`-th row. -/
-def subtractRow {n m : Nat} (i j : Nat) (coef : Rat) : GaussM n m Unit := do
-  let new_row := (← get).mat[j]!.zip (← get).mat[i]! |>.map fun ⟨x, y⟩ => x - coef * y
-  let subtractedMat : Matrix n m := ⟨(← get).mat.data.set! j new_row⟩
-  set {← get with mat := subtractedMat}
+def subtractRow {n m : Nat} (i j : Nat) (coef : Rat) : GaussM n m Unit :=
+  modify fun s =>
+    let new_row := s.mat[j]!.zip s.mat[i]! |>.map fun ⟨x, y⟩ => x - coef * y
+    let subtractedMat : Matrix n m := ⟨s.mat.data.set! j new_row⟩
+    {s with mat := subtractedMat}
 
 /-- Divides row by `coef`. -/
-def divideRow {n m : Nat} (i : Nat) (coef : Rat) : GaussM n m Unit := do
-  let new_row : Array Rat := (← get).mat[i]!.map (· / coef)
-  let subtractedMat : Matrix n m := ⟨(← get).mat.data.set! i new_row⟩
-  set {← get with mat := subtractedMat}
+def divideRow {n m : Nat} (i : Nat) (coef : Rat) : GaussM n m Unit :=
+  modify fun s =>
+    let new_row : Array Rat := s.mat[i]!.map (· / coef)
+    let subtractedMat : Matrix n m := ⟨s.mat.data.set! i new_row⟩
+    {s with mat := subtractedMat}
 
 /-- Implementation of `getTable` in `GaussM` monad. -/
 def getTableImp {n m : Nat} : GaussM n m Table := do

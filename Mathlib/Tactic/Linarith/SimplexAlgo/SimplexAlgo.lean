@@ -16,7 +16,7 @@ namespace Linarith.SimplexAlgo
 
 /-- An exception in the `SimplexAlgoM` monad. -/
 inductive SimplexAlgoException
-| Unfeasible : SimplexAlgoException
+| infeasible : SimplexAlgoException
 
 /-- The mutable state for the `SimplexAlgoM` monad. -/
 structure SimplexAlgoState where
@@ -84,7 +84,7 @@ def choosePivots : SimplexAlgoM (Nat × Nat) := do
   /- If there is no such variable the solution does not exist for sure. -/
   match fvarIdxOpt with
   | .none =>
-    throw SimplexAlgoException.Unfeasible
+    throw SimplexAlgoException.infeasible
     return ⟨0, 0⟩
   | .some fvarIdx =>
 
@@ -113,8 +113,7 @@ def runSimplexAlgoImp : SimplexAlgoM Unit := do
       return
     let ⟨bvarIdx, fvarIdx⟩ ← try
       choosePivots
-    catch _ => -- unfeasible
-      return
+    catch | .infeasible => return
     doPivotOperation bvarIdx fvarIdx
   return
 
