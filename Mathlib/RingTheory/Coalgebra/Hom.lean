@@ -66,7 +66,7 @@ variable {R A B F : Type*} [CommSemiring R]
 @[coe]
 def toCoalgHom (f : F) : A →ₗc[R] B :=
   { (f : A →ₗ[R] B) with
-    toFun := f -- is this necessary? Emulating `AlgHomClass.toAlgHom`
+    toFun := f
     counit_comp := CoalgHomClass.counit_comp f
     map_comp_comul := CoalgHomClass.map_comp_comul f }
 
@@ -194,9 +194,9 @@ variable (R A)
 
 /-- Identity map as a `CoalgHom`. -/
 @[simps!] protected def id : A →ₗc[R] A :=
-{ LinearMap.id with
-  counit_comp := by ext; rfl
-  map_comp_comul := by simp only [map_id, LinearMap.id_comp, LinearMap.comp_id] }
+  { LinearMap.id with
+    counit_comp := by ext; rfl
+    map_comp_comul := by simp only [map_id, LinearMap.id_comp, LinearMap.comp_id] }
 
 variable {R A}
 
