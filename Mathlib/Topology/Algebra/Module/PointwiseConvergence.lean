@@ -96,21 +96,24 @@ theorem tendsto_iff_forall_tendsto {p : Filter ι} {a : ι → E →SLₚₜ[σ]
     intro x _hx
     exact h x u hu
 
-variable [ContinuousConstSMul 𝕜₂ F]
-
 variable (σ E F) in
 /-- Coercion from `E →SLₚₜ[σ] F` to `E →ₛₗ[σ] F` as a `𝕜₂`-linear map. -/
-def coeLinearMap : (E →SLₚₜ[σ] F) →ₗ[𝕜₂] E →ₛₗ[σ] F where
-  toFun := ContinuousLinearMap.toLinearMap
-  map_add' := ContinuousLinearMap.coe_add
-  map_smul' := ContinuousLinearMap.coe_smul
+@[simps!]
+def coeLMₛₗ [ContinuousConstSMul 𝕜₂ F] : (E →SLₚₜ[σ] F) →ₗ[𝕜₂] E →ₛₗ[σ] F :=
+  ContinuousLinearMap.coeLMₛₗ σ
+
+variable (𝕜 E F) in
+/-- Coercion from `E →Lₚₜ[𝕜] F` to `E →ₗ[𝕜] F` as a `𝕜`-linear map. -/
+@[simps!]
+def coeLM [ContinuousConstSMul 𝕜 F] : (E →Lₚₜ[𝕜] F) →ₗ[𝕜] E →ₗ[𝕜] F := ContinuousLinearMap.coeLM 𝕜
 
 variable (σ F) in
 /-- The evaluation map `(f : E →SLₚₜ[σ] F) ↦ f a` for `a : E` as a continuous linear map. -/
-def evalCLM (a : E) : (E →SLₚₜ[σ] F) →L[𝕜₂] F where
-  toLinearMap := (coeLinearMap σ E F).flip a
+@[simps!]
+def evalCLM [ContinuousConstSMul 𝕜₂ F] (a : E) : (E →SLₚₜ[σ] F) →L[𝕜₂] F where
+  toLinearMap := (coeLMₛₗ σ E F).flip a
   cont := by
-    change Continuous ((coeLinearMap σ E F).flip a)
+    change Continuous ((coeLMₛₗ σ E F).flip a)
     apply continuous_of_continuousAt_zero
     unfold ContinuousAt
     simp only [map_zero]
@@ -132,14 +135,16 @@ theorem continuous_of_continuous_eval {g : α → E →SLₚₜ[σ] F}
   exact (h x).continuousAt
 
 /-- The topology of bounded convergence is stronger than the topology of pointwise convergence. -/
-def _root_.ContinousLinearMap.toPointwiseConvergenceCLM [ContinuousSMul 𝕜₁ E] :
-    (E →SL[σ] F) →L[𝕜₂] (E →SLₚₜ[σ] F) where
+@[simps!]
+def _root_.ContinousLinearMap.toPointwiseConvergenceCLM [ContinuousSMul 𝕜₁ E]
+    [ContinuousConstSMul 𝕜₂ F] : (E →SL[σ] F) →L[𝕜₂] (E →SLₚₜ[σ] F) where
   toLinearMap := LinearMap.id
   cont := continuous_id_of_le
     (UniformConvergenceCLM.topologicalSpace_mono _ _ fun _ ↦ Set.Finite.isVonNBounded)
 
 variable (𝕜 E) in
 /-- The topology of pointwise convergence on `E →Lₚₜ[𝕜] 𝕜` coincides with the weak-* topology. -/
+@[simps!]
 def equivWeakDual : (E →Lₚₜ[𝕜] 𝕜) ≃L[𝕜] WeakDual 𝕜 E where
   toLinearEquiv := LinearEquiv.refl 𝕜 (E →L[𝕜] 𝕜)
   continuous_toFun :=
