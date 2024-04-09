@@ -48,7 +48,7 @@ variable (C : Type*) [Category C] [Abelian C]
 structure SpectralSequence where
   page' (r : ℤ) (hr : r₀ ≤ r) : HomologicalComplex C (c r)
   iso' (r r' : ℤ) (hrr' : r + 1 = r') (pq : ι) (hr : r₀ ≤ r) :
-    (page' r hr).homology pq ≅ (page' r' (by linarith)).X pq
+    (page' r hr).homology pq ≅ (page' r' (by omega)).X pq
 
 namespace SpectralSequence
 
