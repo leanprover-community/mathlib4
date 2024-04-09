@@ -400,7 +400,7 @@ theorem coeff_zero_X_mul (φ : R⟦X⟧) : coeff R 0 (X * φ) = 0 := by simp
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_zero_X_mul PowerSeries.coeff_zero_X_mul
 
--- The following section duplicates the api of `data.polynomial.coeff` and should attempt to keep
+-- The following section duplicates the API of `Data.Polynomial.Coeff` and should attempt to keep
 -- up to date with that
 section
 
