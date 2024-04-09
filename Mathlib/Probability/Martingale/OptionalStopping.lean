@@ -186,7 +186,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       intro ω hω
       rw [Set.mem_setOf_eq] at hω
       have : hitting f {y : ℝ | ↑ε ≤ y} 0 n ω = n := by
-        classical simp only [hitting, Set.mem_setOf_eq, exists_prop, Pi.coe_nat, Nat.cast_id,
+        classical simp only [hitting, Set.mem_setOf_eq, exists_prop, Pi.natCast_def, Nat.cast_id,
           ite_eq_right_iff, forall_exists_index, and_imp]
         intro m hm hεm
         exact False.elim
@@ -215,7 +215,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       refine' ENNReal.ofReal_le_ofReal _
       rw [← stoppedValue_const f n]
       exact hsub.expected_stoppedValue_mono (hitting_isStoppingTime hsub.adapted measurableSet_Ici)
-        (isStoppingTime_const _ _) (fun ω => hitting_le ω) (fun _ => le_rfl : ∀ _, n ≤ n)
+        (isStoppingTime_const _ _) (fun ω => hitting_le ω) (fun _ => le_refl n)
 #align measure_theory.maximal_ineq MeasureTheory.maximal_ineq
 
 end Maximal

@@ -3,7 +3,7 @@ Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Basic
 
 #align_import order.well_founded from "leanprover-community/mathlib"@"2c84c2c5496117349007d97104e7bbb471381592"
 
@@ -104,7 +104,7 @@ protected theorem lt_sup {r : α → α → Prop} (wf : WellFounded r) {s : Set 
 
 section
 
-open Classical
+open scoped Classical
 
 /-- A successor of an element `x` in a well-founded order is a minimal element `y` such that
 `x < y` if one exists. Otherwise it is `x` itself. -/
@@ -171,7 +171,7 @@ theorem eq_strictMono_iff_eq_range {f g : β → γ} (hf : StrictMono f) (hg : S
 #align well_founded.eq_strict_mono_iff_eq_range WellFounded.eq_strictMono_iff_eq_range
 
 theorem self_le_of_strictMono {f : β → β} (hf : StrictMono f) : ∀ n, n ≤ f n := by
-  by_contra' h₁
+  by_contra! h₁
   have h₂ := h.min_mem _ h₁
   exact h.not_lt_min _ h₁ (hf h₂) h₂
 #align well_founded.self_le_of_strict_mono WellFounded.self_le_of_strictMono
@@ -210,7 +210,7 @@ theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f h s hs ∈ s :=
   WellFounded.min_mem _ _ _
 #align function.argmin_on_mem Function.argminOn_mem
 
---Porting note: @[simp] removed as it will never apply
+-- Porting note (#11119): @[simp] removed as it will never apply
 theorem not_lt_argminOn (s : Set α) {a : α} (ha : a ∈ s)
     (hs : s.Nonempty := Set.nonempty_of_mem ha) : ¬f a < f (argminOn f h s hs) :=
   WellFounded.not_lt_min (InvImage.wf f h) s hs ha
@@ -222,12 +222,12 @@ section LinearOrder
 
 variable [LinearOrder β] (h : WellFounded ((· < ·) : β → β → Prop))
 
---Porting note: @[simp] removed as it will never apply
+-- Porting note (#11119): @[simp] removed as it will never apply
 theorem argmin_le (a : α) [Nonempty α] : f (argmin f h) ≤ f a :=
   not_lt.mp <| not_lt_argmin f h a
 #align function.argmin_le Function.argmin_le
 
---Porting note: @[simp] removed as it will never apply
+-- Porting note (#11119): @[simp] removed as it will never apply
 theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) (hs : s.Nonempty := Set.nonempty_of_mem ha) :
     f (argminOn f h s hs) ≤ f a :=
   not_lt.mp <| not_lt_argminOn f h s ha hs

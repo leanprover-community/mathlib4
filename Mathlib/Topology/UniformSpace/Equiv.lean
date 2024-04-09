@@ -57,7 +57,7 @@ instance : EquivLike (α ≃ᵤ β) α β where
   inv := fun h => h.toEquiv.symm
   left_inv := fun h => h.left_inv
   right_inv := fun h => h.right_inv
-  coe_injective' := fun _ _ H _ => toEquiv_injective <| FunLike.ext' H
+  coe_injective' := fun _ _ H _ => toEquiv_injective <| DFunLike.ext' H
 
 @[simp]
 theorem uniformEquiv_mk_coe (a : Equiv α β) (b c) : (UniformEquiv.mk a b c : α → β) = a :=
@@ -212,7 +212,7 @@ theorem self_comp_symm (h : α ≃ᵤ β) : (h : α → β) ∘ h.symm = id :=
   funext h.apply_symm_apply
 #align uniform_equiv.self_comp_symm UniformEquiv.self_comp_symm
 
--- @[simp] -- Porting note: `simp` can prove this `simp only [Equiv.range_eq_univ]`
+-- @[simp] -- Porting note (#10618): `simp` can prove this `simp only [Equiv.range_eq_univ]`
 theorem range_coe (h : α ≃ᵤ β) : range h = univ :=
   h.surjective.range_eq
 #align uniform_equiv.range_coe UniformEquiv.range_coe
@@ -225,12 +225,12 @@ theorem preimage_symm (h : α ≃ᵤ β) : preimage h.symm = image h :=
   (funext h.toEquiv.image_eq_preimage).symm
 #align uniform_equiv.preimage_symm UniformEquiv.preimage_symm
 
--- @[simp] -- Porting note: `simp` can prove this `simp only [Equiv.image_preimage]`
+-- @[simp] -- Porting note (#10618): `simp` can prove this `simp only [Equiv.image_preimage]`
 theorem image_preimage (h : α ≃ᵤ β) (s : Set β) : h '' (h ⁻¹' s) = s :=
   h.toEquiv.image_preimage s
 #align uniform_equiv.image_preimage UniformEquiv.image_preimage
 
---@[simp] -- Porting note: `simp` can prove this `simp only [Equiv.preimage_image]`
+--@[simp] -- Porting note (#10618): `simp` can prove this `simp only [Equiv.preimage_image]`
 theorem preimage_image (h : α ≃ᵤ β) (s : Set α) : h ⁻¹' (h '' s) = s :=
   h.toEquiv.preimage_image s
 #align uniform_equiv.preimage_image UniformEquiv.preimage_image
@@ -348,7 +348,7 @@ theorem coe_punitProd : ⇑(punitProd α) = Prod.snd :=
 @[simps! apply toEquiv]
 def piCongrLeft {ι ι' : Type*} {β : ι' → Type*} [∀ j, UniformSpace (β j)]
     (e : ι ≃ ι') : (∀ i, β (e i)) ≃ᵤ ∀ j, β j where
-  uniformContinuous_toFun := uniformContinuous_pi.mpr <| e.forall_congr_left.mp <| fun i ↦ by
+  uniformContinuous_toFun := uniformContinuous_pi.mpr <| e.forall_congr_left.mp fun i ↦ by
     simpa only [Equiv.toFun_as_coe, Equiv.piCongrLeft_apply_apply] using
       Pi.uniformContinuous_proj _ i
   uniformContinuous_invFun := Pi.uniformContinuous_precomp' _ e

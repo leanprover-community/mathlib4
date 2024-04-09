@@ -3,10 +3,11 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.SMulWithZero
-import Mathlib.Algebra.Order.Monoid.MinMax
+import Mathlib.Order.Hom.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 
 #align_import algebra.tropical.basic from "leanprover-community/mathlib"@"9116dd6709f303dcf781632e15fdef382b0fc579"
 
@@ -99,7 +100,7 @@ theorem untrop_trop (x : R) : untrop (trop x) = x :=
   rfl
 #align tropical.untrop_trop Tropical.untrop_trop
 
---Porting note: New attribute seems to fix things
+-- Porting note: New attribute seems to fix things
 attribute [irreducible] Tropical
 
 theorem leftInverse_trop : Function.LeftInverse (trop : R → Tropical R) untrop :=
@@ -239,12 +240,12 @@ theorem trop_top [Top R] : trop (⊤ : R) = 0 :=
 
 @[simp]
 theorem trop_coe_ne_zero (x : R) : trop (x : WithTop R) ≠ 0 :=
-  fun.
+  nofun
 #align tropical.trop_coe_ne_zero Tropical.trop_coe_ne_zero
 
 @[simp]
 theorem zero_ne_trop_coe (x : R) : (0 : Tropical (WithTop R)) ≠ trop x :=
-  fun.
+  nofun
 #align tropical.zero_ne_trop_coe Tropical.zero_ne_trop_coe
 
 @[simp]
@@ -290,9 +291,11 @@ instance instLinearOrderTropical : LinearOrder (Tropical R) :=
     le_total := fun a b => le_total (untrop a) (untrop b)
     decidableLE := Tropical.decidableLE
     max := fun a b => trop (max (untrop a) (untrop b))
-    max_def := fun a b => untrop_injective (by simp [max_def]; split_ifs <;> simp)
+    max_def := fun a b => untrop_injective (by
+      simp only [max_def, untrop_le_iff, untrop_trop]; split_ifs <;> simp)
     min := (· + ·)
-    min_def := fun a b => untrop_injective (by simp [min_def]; split_ifs <;> simp) }
+    min_def := fun a b => untrop_injective (by
+      simp only [untrop_add, min_def, untrop_le_iff]; split_ifs <;> simp) }
 
 @[simp]
 theorem untrop_sup (x y : Tropical R) : untrop (x ⊔ y) = untrop x ⊔ untrop y :=
@@ -340,7 +343,7 @@ theorem add_eq_right_iff {x y : Tropical R} : x + y = y ↔ y ≤ x := by
   rw [trop_add_def, trop_eq_iff_eq_untrop, ← untrop_le_iff, min_eq_right_iff]
 #align tropical.add_eq_right_iff Tropical.add_eq_right_iff
 
---Porting note: removing `simp`. `simp` can prove it
+-- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem add_self (x : Tropical R) : x + x = x :=
   untrop_injective (min_eq_right le_rfl)
 #align tropical.add_self Tropical.add_self
@@ -370,7 +373,8 @@ theorem add_eq_zero_iff {a b : Tropical (WithTop R)} : a + b = 0 ↔ a = 0 ∧ b
 instance instAddCommMonoidTropical [OrderTop R] : AddCommMonoid (Tropical R) :=
   { instZeroTropical, instAddCommSemigroupTropical with
     zero_add := fun _ => untrop_injective (min_top_left _)
-    add_zero := fun _ => untrop_injective (min_top_right _) }
+    add_zero := fun _ => untrop_injective (min_top_right _)
+    nsmul := nsmulRec }
 
 end Order
 
@@ -512,10 +516,10 @@ instance covariant_swap_mul [LE R] [Add R] [CovariantClass R R (Function.swap (�
 
 instance covariant_add [LinearOrder R] : CovariantClass (Tropical R) (Tropical R) (· + ·) (· ≤ ·) :=
   ⟨fun x y z h => by
-    cases' le_total x y with hx hy
+    rcases le_total x y with hx | hy
     · rw [add_eq_left hx, add_eq_left (hx.trans h)]
     · rw [add_eq_right hy]
-      cases' le_total x z with hx hx
+      rcases le_total x z with hx | hx
       · rwa [add_eq_left hx]
       · rwa [add_eq_right hx]⟩
 #align tropical.covariant_add Tropical.covariant_add
@@ -543,9 +547,9 @@ instance instDistribTropical [LinearOrder R] [Add R] [CovariantClass R R (· + �
 theorem add_pow [LinearOrder R] [AddMonoid R] [CovariantClass R R (· + ·) (· ≤ ·)]
     [CovariantClass R R (Function.swap (· + ·)) (· ≤ ·)] (x y : Tropical R) (n : ℕ) :
     (x + y) ^ n = x ^ n + y ^ n := by
-  cases' le_total x y with h h
-  · rw [add_eq_left h, add_eq_left (pow_le_pow_of_le_left' h _)]
-  · rw [add_eq_right h, add_eq_right (pow_le_pow_of_le_left' h _)]
+  rcases le_total x y with h | h
+  · rw [add_eq_left h, add_eq_left (pow_le_pow_left' h _)]
+  · rw [add_eq_right h, add_eq_right (pow_le_pow_left' h _)]
 #align tropical.add_pow Tropical.add_pow
 
 end Distrib
@@ -573,7 +577,7 @@ theorem succ_nsmul {R} [LinearOrder R] [OrderTop R] (x : Tropical R) (n : ℕ) :
 -- Requires `zero_eq_bot` to be true
 -- lemma add_eq_zero_iff {a b : tropical R} :
 --   a + b = 1 ↔ a = 1 ∨ b = 1 := sorry
---Porting note: removing @[simp], `simp` can prove it
+-- Porting note (#10618): removing @[simp], `simp` can prove it
 theorem mul_eq_zero_iff {R : Type*} [LinearOrderedAddCommMonoid R] {a b : Tropical (WithTop R)} :
     a * b = 0 ↔ a = 0 ∨ b = 0 := by simp [← untrop_inj_iff, WithTop.add_eq_top]
 #align tropical.mul_eq_zero_iff Tropical.mul_eq_zero_iff

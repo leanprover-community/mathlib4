@@ -30,7 +30,6 @@ which seems less often useful.
 
 universe v u
 
-noncomputable section
 
 namespace CategoryTheory
 
@@ -152,11 +151,15 @@ def IsLimit.assoc {X Y Z : C} {sXY : BinaryFan X Y} (P : IsLimit sXY) {sYZ : Bin
     rintro ⟨⟨⟩⟩ <;> simp
     · exact w ⟨WalkingPair.left⟩
     · specialize w ⟨WalkingPair.right⟩
-      simp at w
+      simp? at w says
+        simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
+          Functor.const_obj_obj, pair_obj_left] at w
       rw [← w]
       simp
     · specialize w ⟨WalkingPair.right⟩
-      simp at w
+      simp? at w says
+        simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
+          Functor.const_obj_obj, pair_obj_left] at w
       rw [← w]
       simp
 #align category_theory.limits.is_limit.assoc CategoryTheory.Limits.IsLimit.assoc
@@ -183,19 +186,10 @@ def BinaryFan.associatorOfLimitCone (L : ∀ X Y : C, LimitCone (pair X Y)) (X Y
 /-- Construct a left unitor from specified limit cones.
 -/
 @[simps]
-def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s)
+def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{0} C)} (P : IsLimit s)
     {t : BinaryFan s.pt X} (Q : IsLimit t) : t.pt ≅ X where
   hom := t.snd
-  inv :=
-    Q.lift
-      (BinaryFan.mk
-        (P.lift
-          { pt := X, π :=
-            -- Porting note: there is something fishy here:
-            -- `PEmpty.rec x x` should not even typecheck.
-            { app := fun x => Discrete.rec (fun x => PEmpty.rec.{_, v+1} x x) x } })
-        (𝟙 X))
-  -- Porting note: this should be automatable:
+  inv := Q.lift <| BinaryFan.mk (P.lift ⟨_, fun x => x.as.elim, fun {x} => x.as.elim⟩) (𝟙 _)
   hom_inv_id := by
     apply Q.hom_ext
     rintro ⟨⟨⟩⟩
@@ -207,18 +201,10 @@ def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s
 /-- Construct a right unitor from specified limit cones.
 -/
 @[simps]
-def BinaryFan.rightUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s)
+def BinaryFan.rightUnitor {X : C} {s : Cone (Functor.empty.{0} C)} (P : IsLimit s)
     {t : BinaryFan X s.pt} (Q : IsLimit t) : t.pt ≅ X where
   hom := t.fst
-  inv :=
-    Q.lift
-      (BinaryFan.mk (𝟙 X)
-        (P.lift
-          { pt := X
-            π :=
-            -- Porting note: there is something fishy here:
-            -- `PEmpty.rec x x` should not even typecheck.
-            { app := fun x => Discrete.rec (fun x => PEmpty.rec.{_, v+1} x x) x } }))
+  inv := Q.lift <| BinaryFan.mk (𝟙 _) <| P.lift ⟨_, fun x => x.as.elim, fun {x} => x.as.elim⟩
   hom_inv_id := by
     apply Q.hom_ext
     rintro ⟨⟨⟩⟩
@@ -239,9 +225,7 @@ section
 -- attribute [local tidy] tactic.case_bash
 
 variable {C}
-
-variable (𝒯 : LimitCone (Functor.empty.{v} C))
-
+variable (𝒯 : LimitCone (Functor.empty.{0} C))
 variable (ℬ : ∀ X Y : C, LimitCone (pair X Y))
 
 namespace MonoidalOfChosenFiniteProducts
@@ -363,7 +347,7 @@ This is an implementation detail for `SymmetricOfChosenFiniteProducts`.
 -- Porting note: no `has_nonempty_instance` linter.
 -- @[nolint has_nonempty_instance]
 @[nolint unusedArguments]
-def MonoidalOfChosenFiniteProductsSynonym (_𝒯 : LimitCone (Functor.empty.{v} C))
+def MonoidalOfChosenFiniteProductsSynonym (_𝒯 : LimitCone (Functor.empty.{0} C))
     (_ℬ : ∀ X Y : C, LimitCone (pair X Y)) :=
   C
 #align category_theory.monoidal_of_chosen_finite_products.monoidal_of_chosen_finite_products_synonym CategoryTheory.MonoidalOfChosenFiniteProducts.MonoidalOfChosenFiniteProductsSynonym

@@ -69,7 +69,7 @@ theorem arsinh_zero : arsinh 0 = 0 := by simp [arsinh]
 theorem arsinh_neg (x : ℝ) : arsinh (-x) = -arsinh x := by
   rw [← exp_eq_exp, exp_arsinh, exp_neg, exp_arsinh]
   apply eq_inv_of_mul_eq_one_left
-  rw [neg_sq, neg_add_eq_sub, add_comm x, mul_comm, ← sq_sub_sq, sq_sqrt, add_sub_cancel]
+  rw [neg_sq, neg_add_eq_sub, add_comm x, mul_comm, ← sq_sub_sq, sq_sqrt, add_sub_cancel_right]
   exact add_nonneg zero_le_one (sq_nonneg _)
 #align real.arsinh_neg Real.arsinh_neg
 
@@ -148,6 +148,8 @@ theorem arsinh_le_arsinh : arsinh x ≤ arsinh y ↔ x ≤ y :=
   sinhOrderIso.symm.le_iff_le
 #align real.arsinh_le_arsinh Real.arsinh_le_arsinh
 
+@[gcongr] protected alias ⟨_, GCongr.arsinh_le_arsinh⟩ := arsinh_le_arsinh
+
 @[simp]
 theorem arsinh_lt_arsinh : arsinh x < arsinh y ↔ x < y :=
   sinhOrderIso.symm.lt_iff_lt
@@ -177,7 +179,7 @@ theorem arsinh_neg_iff : arsinh x < 0 ↔ x < 0 :=
 #align real.arsinh_neg_iff Real.arsinh_neg_iff
 
 theorem hasStrictDerivAt_arsinh (x : ℝ) : HasStrictDerivAt arsinh (sqrt (1 + x ^ 2))⁻¹ x := by
-  convert sinhHomeomorph.toLocalHomeomorph.hasStrictDerivAt_symm (mem_univ x) (cosh_pos _).ne'
+  convert sinhHomeomorph.toPartialHomeomorph.hasStrictDerivAt_symm (mem_univ x) (cosh_pos _).ne'
     (hasStrictDerivAt_sinh _) using 2
   exact (cosh_arsinh _).symm
 #align real.has_strict_deriv_at_arsinh Real.hasStrictDerivAt_arsinh

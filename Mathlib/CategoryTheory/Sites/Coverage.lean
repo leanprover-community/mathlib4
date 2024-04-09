@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 
-import Mathlib.CategoryTheory.Sites.SheafOfTypes
+import Mathlib.CategoryTheory.Sites.Sheaf
 
 /-!
 
@@ -49,7 +49,9 @@ set_option autoImplicit true
 
 namespace CategoryTheory
 
-variable {C : Type _} [Category C]
+variable {C D : Type _} [Category C] [Category D]
+
+open Limits
 
 namespace Presieve
 
@@ -338,7 +340,7 @@ theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
       · apply H; assumption
       · intro Z g _
         obtain ⟨R, hR1, hR2⟩ := K.pullback g _ hT1
-        refine ⟨R, (H _ hR1).isSeparatedFor, hR2⟩
+        exact ⟨R, (H _ hR1).isSeparatedFor, hR2⟩
     | top => intros; simpa using Presieve.isSheafFor_top_sieve _
     | transitive X R S _ _ H1 H2 =>
       intro Y f
@@ -369,7 +371,7 @@ theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
         intro ZZ gg hgg
         simp only [← types_comp_apply]
         rw [← P.map_comp, ← P.map_comp, ← op_comp, ← op_comp, hz, hz]
-        · dsimp; congr 1; simp only [Category.assoc, h]
+        · dsimp [y]; congr 1; simp only [Category.assoc, h]
         · simpa [reassoc_of% h] using hgg
         · simpa using hgg
       obtain ⟨t, ht⟩ := H1' f q hq
@@ -402,5 +404,24 @@ theorem isSheaf_sup (K L : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
   · exact h.2 R hR
 
 end Presieve
+
+namespace Presheaf
+
+theorem isSheaf_iff_isLimit_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ D) :
+    Presheaf.IsSheaf (toGrothendieck _ K) P ↔ ∀ ⦃X : C⦄ (R : Presieve X),
+      R ∈ K.covering X →
+        Nonempty (IsLimit (P.mapCone (Sieve.generate R).arrows.cocone.op)) := by
+  simp only [Presheaf.IsSheaf, Presieve.isSheaf_coverage, isLimit_iff_isSheafFor,
+    ← Presieve.isSheafFor_iff_generate]
+  aesop
+
+theorem isSheaf_sup (K L : Coverage C) (P : Cᵒᵖ ⥤ D) :
+    (IsSheaf ((K ⊔ L).toGrothendieck C)) P ↔
+    (IsSheaf (K.toGrothendieck C)) P ∧ (IsSheaf (L.toGrothendieck C)) P :=
+  ⟨fun h ↦ ⟨fun E ↦ ((Presieve.isSheaf_sup K L _).mp (h E)).1, fun E ↦
+    ((Presieve.isSheaf_sup K L _).mp (h E)).2⟩,
+      fun ⟨h₁, h₂⟩ E ↦ (Presieve.isSheaf_sup K L _).mpr ⟨h₁ E, h₂ E⟩⟩
+
+end Presheaf
 
 end CategoryTheory

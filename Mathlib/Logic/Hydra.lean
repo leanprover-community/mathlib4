@@ -125,9 +125,9 @@ theorem cutExpand_fibration (r : α → α → Prop) :
   assuming `r` is irreflexive. -/
 theorem acc_of_singleton [IsIrrefl α r] {s : Multiset α} (hs : ∀ a ∈ s, Acc (CutExpand r) {a}) :
     Acc (CutExpand r) s := by
-  induction s using Multiset.induction
-  case empty => exact Acc.intro 0 fun s h ↦ (not_cutExpand_zero s h).elim
-  case cons a s ihs =>
+  induction s using Multiset.induction with
+  | empty => exact Acc.intro 0 fun s h ↦ (not_cutExpand_zero s h).elim
+  | @cons a s ihs =>
     rw [← s.singleton_add a]
     rw [forall_mem_cons] at hs
     exact (hs.1.prod_gameAdd <| ihs fun a ha ↦ hs.2 a ha).of_fibration _ (cutExpand_fibration r)

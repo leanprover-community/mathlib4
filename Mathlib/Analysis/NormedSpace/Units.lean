@@ -76,7 +76,7 @@ def ofNearby (x : Rˣ) (y : R) (h : ‖y - x‖ < ‖(↑x⁻¹ : R)‖⁻¹) : 
 /-- The group of units of a complete normed ring is an open subset of the ring. -/
 protected theorem isOpen : IsOpen { x : R | IsUnit x } := by
   nontriviality R
-  apply Metric.isOpen_iff.mpr
+  rw [Metric.isOpen_iff]
   rintro _ ⟨x, rfl⟩
   refine' ⟨‖(↑x⁻¹ : R)‖⁻¹, _root_.inv_pos.mpr (Units.norm_pos x⁻¹), fun y hy ↦ _⟩
   rw [mem_ball_iff_norm] at hy
@@ -106,7 +106,8 @@ end nonunits
 
 namespace NormedRing
 
-open Classical BigOperators
+open scoped Classical
+open BigOperators
 
 open Asymptotics Filter Metric Finset Ring
 
@@ -128,7 +129,7 @@ theorem inverse_add (x : Rˣ) :
 
 theorem inverse_one_sub_nth_order' (n : ℕ) {t : R} (ht : ‖t‖ < 1) :
     inverse ((1 : R) - t) = (∑ i in range n, t ^ i) + t ^ n * inverse (1 - t) :=
-  have := NormedRing.summable_geometric_of_norm_lt_1 t ht
+  have := NormedRing.summable_geometric_of_norm_lt_one t ht
   calc inverse (1 - t) = ∑' i : ℕ, t ^ i := inverse_one_sub t ht
     _ = ∑ i in range n, t ^ i + ∑' i : ℕ, t ^ (i + n) := (sum_add_tsum_nat_add _ this).symm
     _ = (∑ i in range n, t ^ i) + t ^ n * inverse (1 - t) := by
@@ -165,7 +166,7 @@ theorem inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t
     linarith
   simp only [inverse_one_sub t ht', norm_one, mul_one, Set.mem_setOf_eq]
   change ‖∑' n : ℕ, t ^ n‖ ≤ _
-  have := NormedRing.tsum_geometric_of_norm_lt_1 t ht'
+  have := NormedRing.tsum_geometric_of_norm_lt_one t ht'
   have : (1 - ‖t‖)⁻¹ ≤ 2 := by
     rw [← inv_inv (2 : ℝ)]
     refine' inv_le_inv_of_le (by norm_num) _
@@ -190,7 +191,7 @@ theorem inverse_add_norm_diff_nth_order (x : Rˣ) (n : ℕ) :
     (fun t : R => inverse (↑x + t) - (∑ i in range n, (-↑x⁻¹ * t) ^ i) * ↑x⁻¹) =O[𝓝 (0 : R)]
       fun t => ‖t‖ ^ n := by
   refine EventuallyEq.trans_isBigO (.sub (inverse_add_nth_order x n) (.refl _ _)) ?_
-  simp only [add_sub_cancel']
+  simp only [add_sub_cancel_left]
   refine ((isBigO_refl _ _).norm_right.mul (inverse_add_norm x)).trans ?_
   simp only [mul_one, isBigO_norm_left]
   exact ((isBigO_refl _ _).norm_right.const_mul_left _).pow _
@@ -232,7 +233,7 @@ embedding in `R × R`) to `R` is an open embedding. -/
 theorem openEmbedding_val : OpenEmbedding (val : Rˣ → R) where
   toEmbedding := embedding_val_mk'
     (fun _ ⟨u, hu⟩ ↦ hu ▸ (inverse_continuousAt u).continuousWithinAt) Ring.inverse_unit
-  open_range := Units.isOpen
+  isOpen_range := Units.isOpen
 #align units.open_embedding_coe Units.openEmbedding_val
 
 /-- In a normed ring, the coercion from `Rˣ` (equipped with the induced topology from the
@@ -248,13 +249,14 @@ namespace Ideal
 /-- An ideal which contains an element within `1` of `1 : R` is the unit ideal. -/
 theorem eq_top_of_norm_lt_one (I : Ideal R) {x : R} (hxI : x ∈ I) (hx : ‖1 - x‖ < 1) : I = ⊤ :=
   let u := Units.oneSub (1 - x) hx
-  I.eq_top_iff_one.mpr <| by simpa only [show u.inv * x = 1 by simp] using I.mul_mem_left u.inv hxI
+  I.eq_top_iff_one.mpr <| by
+    simpa only [show u.inv * x = 1 by simp [u]] using I.mul_mem_left u.inv hxI
 #align ideal.eq_top_of_norm_lt_one Ideal.eq_top_of_norm_lt_one
 
 /-- The `Ideal.closure` of a proper ideal in a complete normed ring is proper. -/
 theorem closure_ne_top (I : Ideal R) (hI : I ≠ ⊤) : I.closure ≠ ⊤ := by
   have h := closure_minimal (coe_subset_nonunits hI) nonunits.isClosed
-  simpa only [I.closure.eq_top_iff_one, Ne.def] using mt (@h 1) one_not_mem_nonunits
+  simpa only [I.closure.eq_top_iff_one, Ne] using mt (@h 1) one_not_mem_nonunits
 #align ideal.closure_ne_top Ideal.closure_ne_top
 
 /-- The `Ideal.closure` of a maximal ideal in a complete normed ring is the ideal itself. -/

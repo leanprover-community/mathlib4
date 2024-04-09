@@ -223,6 +223,11 @@ noncomputable def P := pullback S.L₁.g S.v₀₁.τ₃
 /-- The canonical map `P ⟶ L₂.X₂`. -/
 noncomputable def φ₂ : S.P ⟶ S.L₂.X₂ := pullback.fst ≫ S.v₁₂.τ₂
 
+@[reassoc (attr := simp)]
+lemma lift_φ₂ {A : C} (a : A ⟶ S.L₁.X₂) (b : A ⟶ S.L₀.X₃) (h : a ≫ S.L₁.g = b ≫ S.v₀₁.τ₃) :
+    pullback.lift a b h ≫ S.φ₂ = a ≫ S.v₁₂.τ₂ := by
+  simp [φ₂]
+
 /-- The canonical map `P ⟶ L₂.X₁`. -/
 noncomputable def φ₁ : S.P ⟶ S.L₂.X₁ :=
   S.L₂_exact.lift S.φ₂
@@ -314,11 +319,11 @@ lemma L₁'_exact : S.L₁'.Exact := by
   let x₂' := x₁ ≫ S.L₁.f
   let x₂ := π₂ ≫ p ≫ pullback.fst
   have hx₂' : (x₂ - x₂') ≫ S.v₁₂.τ₂ = 0 := by
-    simp only [sub_comp, assoc, ← S.v₁₂.comm₁₂, ← reassoc_of% hx₁, φ₂, φ₁_L₂_f, sub_self]
+    simp only [x₂, x₂', sub_comp, assoc, ← S.v₁₂.comm₁₂, ← reassoc_of% hx₁, φ₂, φ₁_L₂_f, sub_self]
   let k₂ : A₂ ⟶ S.L₀.X₂ := S.exact_C₂_up.lift _ hx₂'
   have hk₂ : k₂ ≫ S.v₀₁.τ₂ = x₂ - x₂' := S.exact_C₂_up.lift_f _ _
   have hk₂' : k₂ ≫ S.L₀.g = π₂ ≫ p ≫ pullback.snd := by
-    simp only [← cancel_mono S.v₀₁.τ₃, assoc, ← S.v₀₁.comm₂₃, reassoc_of% hk₂,
+    simp only [x₂, x₂', ← cancel_mono S.v₀₁.τ₃, assoc, ← S.v₀₁.comm₂₃, reassoc_of% hk₂,
       sub_comp, S.L₁.zero, comp_zero, sub_zero, pullback.condition]
   exact ⟨A₂, π₂ ≫ π₁, epi_comp _ _, k₂, by simp only [assoc, L₁'_f, ← hk₂', hp]⟩
 
@@ -361,6 +366,15 @@ lemma snake_lemma : S.composableArrows.Exact :=
     (exact_of_δ₀ S.L₁'_exact.exact_toComposableArrows
     (exact_of_δ₀ S.L₂'_exact.exact_toComposableArrows
     S.L₃_exact.exact_toComposableArrows))
+
+lemma δ_eq {A : C} (x₃ : A ⟶ S.L₀.X₃) (x₂ : A ⟶ S.L₁.X₂) (x₁ : A ⟶ S.L₂.X₁)
+    (h₂ : x₂ ≫ S.L₁.g = x₃ ≫ S.v₀₁.τ₃) (h₁ : x₁ ≫ S.L₂.f = x₂ ≫ S.v₁₂.τ₂) :
+    x₃ ≫ S.δ = x₁ ≫ S.v₂₃.τ₁ := by
+  have H := (pullback.lift x₂ x₃ h₂) ≫= S.snd_δ
+  rw [pullback.lift_snd_assoc] at H
+  rw [H, ← assoc]
+  congr 1
+  simp only [← cancel_mono S.L₂.f, assoc, φ₁_L₂_f, lift_φ₂, h₁]
 
 variable (S₁ S₂ S₃ : SnakeInput C)
 
