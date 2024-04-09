@@ -1217,7 +1217,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 /--
 A bilinear form is separating left if the quadratic form it is associated with is anisotropic.
 -/
-theorem separatingLeft_of_anisotropic {B : BilinMap R M R} (hB : B.toQuadraticMap.Anisotropic) :
+theorem separatingLeft_of_anisotropic {B : BilinForm R M} (hB : B.toQuadraticMap.Anisotropic) :
     B.SeparatingLeft := fun x hx => hB _ (hx x)
 #align bilin_form.nondegenerate_of_anisotropic LinearMap.BilinForm.separatingLeft_of_anisotropic
 
