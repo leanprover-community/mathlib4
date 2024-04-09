@@ -363,8 +363,8 @@ section LeadingTerm
 
 variable [LinearOrder Γ]
 
-theorem orderTop_le_orderTop_add [AddMonoid R] {x y : HahnSeries Γ R} (h : x.orderTop ≤ y.orderTop) :
-    x.orderTop ≤ (x + y).orderTop :=
+theorem orderTop_le_orderTop_add [AddMonoid R] {x y : HahnSeries Γ R}
+    (h : x.orderTop ≤ y.orderTop) : x.orderTop ≤ (x + y).orderTop :=
   le_of_eq_of_le (min_eq_left h).symm min_orderTop_le_orderTop_add
 
 theorem nonzero_of_nonzero_add_leading [AddMonoid R] {x y : HahnSeries Γ R}
