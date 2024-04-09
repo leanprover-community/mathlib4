@@ -557,7 +557,7 @@ section Comp
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 variable {N' : Type v} [AddCommMonoid N'] [Module R N']
 
-/-- Compose the quadratic map with a linear function. -/
+/-- Compose the quadratic map with a linear function on the right. -/
 def comp (Q : QuadraticMap R N' N) (f : M →ₗ[R] N') : QuadraticMap R M N where
   toFun x := Q (f x)
   toFun_smul a x := by simp only [map_smul, f.map_smul]
