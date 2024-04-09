@@ -41,7 +41,7 @@ theorem numDerangements_tendsto_inv_e :
     rw [Real.exp_eq_exp_ℝ]
     exact expSeries_div_hasSum_exp ℝ (-1 : ℝ)
   intro n
-  rw [← Int.cast_ofNat, numDerangements_sum]
+  rw [← Int.cast_natCast, numDerangements_sum]
   push_cast
   rw [Finset.sum_div]
   -- get down to individual terms

@@ -1680,7 +1680,7 @@ theorem preimage_mul_sphere (a b : E) (r : ℝ) : (b * ·) ⁻¹' sphere a r = s
 @[to_additive norm_nsmul_le]
 theorem norm_pow_le_mul_norm (n : ℕ) (a : E) : ‖a ^ n‖ ≤ n * ‖a‖ := by
   induction' n with n ih; · simp
-  simpa only [pow_succ', Nat.cast_succ, add_mul, one_mul] using norm_mul_le_of_le ih le_rfl
+  simpa only [pow_succ, Nat.cast_succ, add_mul, one_mul] using norm_mul_le_of_le ih le_rfl
 #align norm_pow_le_mul_norm norm_pow_le_mul_norm
 #align norm_nsmul_le norm_nsmul_le
 
@@ -1854,14 +1854,18 @@ theorem le_norm_self (r : ℝ) : r ≤ ‖r‖ :=
 #align real.le_norm_self Real.le_norm_self
 
 -- Porting note (#10618): `simp` can prove this
-theorem norm_coe_nat (n : ℕ) : ‖(n : ℝ)‖ = n :=
+theorem norm_natCast (n : ℕ) : ‖(n : ℝ)‖ = n :=
   abs_of_nonneg n.cast_nonneg
-#align real.norm_coe_nat Real.norm_coe_nat
+#align real.norm_coe_nat Real.norm_natCast
 
 @[simp]
-theorem nnnorm_coe_nat (n : ℕ) : ‖(n : ℝ)‖₊ = n :=
-  NNReal.eq <| norm_coe_nat _
-#align real.nnnorm_coe_nat Real.nnnorm_coe_nat
+theorem nnnorm_natCast (n : ℕ) : ‖(n : ℝ)‖₊ = n :=
+  NNReal.eq <| norm_natCast _
+#align real.nnnorm_coe_nat Real.nnnorm_natCast
+
+-- 2024-04-05
+@[deprecated] alias norm_coe_nat := norm_natCast
+@[deprecated] alias nnnorm_coe_nat := nnnorm_natCast
 
 -- Porting note (#10618): `simp` can prove this
 theorem norm_two : ‖(2 : ℝ)‖ = 2 :=
@@ -1917,25 +1921,28 @@ theorem norm_cast_real (m : ℤ) : ‖(m : ℝ)‖ = ‖m‖ :=
   rfl
 #align int.norm_cast_real Int.norm_cast_real
 
-theorem norm_eq_abs (n : ℤ) : ‖n‖ = |n| :=
-  show ‖(n : ℝ)‖ = |n| by rw [Real.norm_eq_abs, cast_abs]
--- Porting note: I'm not sure why this isn't `rfl` anymore, but I suspect it's about coercions
+theorem norm_eq_abs (n : ℤ) : ‖n‖ = |(n : ℝ)| :=
+  rfl
 #align int.norm_eq_abs Int.norm_eq_abs
 
 @[simp]
-theorem norm_coe_nat (n : ℕ) : ‖(n : ℤ)‖ = n := by simp [Int.norm_eq_abs]
-#align int.norm_coe_nat Int.norm_coe_nat
+theorem norm_natCast (n : ℕ) : ‖(n : ℤ)‖ = n := by simp [Int.norm_eq_abs]
+#align int.norm_coe_nat Int.norm_natCast
 
-theorem _root_.NNReal.coe_natAbs (n : ℤ) : (n.natAbs : ℝ≥0) = ‖n‖₊ :=
+-- 2024-04-05
+@[deprecated] alias norm_coe_nat := norm_natCast
+
+theorem _root_.NNReal.natCast_natAbs (n : ℤ) : (n.natAbs : ℝ≥0) = ‖n‖₊ :=
   NNReal.eq <|
     calc
-      ((n.natAbs : ℝ≥0) : ℝ) = (n.natAbs : ℤ) := by simp only [Int.cast_ofNat, NNReal.coe_nat_cast]
-      _ = |n| := by simp only [Int.coe_natAbs, Int.cast_abs]
+      ((n.natAbs : ℝ≥0) : ℝ) = (n.natAbs : ℤ) := by
+        simp only [Int.cast_natCast, NNReal.coe_nat_cast]
+      _ = |(n : ℝ)| := by simp only [Int.natCast_natAbs, Int.cast_abs]
       _ = ‖n‖ := (norm_eq_abs n).symm
-#align nnreal.coe_nat_abs NNReal.coe_natAbs
+#align nnreal.coe_nat_abs NNReal.natCast_natAbs
 
 theorem abs_le_floor_nnreal_iff (z : ℤ) (c : ℝ≥0) : |z| ≤ ⌊c⌋₊ ↔ ‖z‖₊ ≤ c := by
-  rw [Int.abs_eq_natAbs, Int.ofNat_le, Nat.le_floor_iff (zero_le c), NNReal.coe_natAbs z]
+  rw [Int.abs_eq_natAbs, Int.ofNat_le, Nat.le_floor_iff (zero_le c), NNReal.natCast_natAbs z]
 #align int.abs_le_floor_nnreal_iff Int.abs_le_floor_nnreal_iff
 
 end Int
@@ -2734,10 +2741,10 @@ choice of norm in the multiplicative `SeminormedGroup E` case.
 We could repeat this instance to provide a `[SeminormedGroup E] : SeminormedGroup Eᵃᵒᵖ` instance,
 but that case would likely never be used.
 -/
-instance seminormedAddGroup [SeminormedAddGroup E] : SeminormedAddGroup Eᵐᵒᵖ where
+instance instSeminormedAddGroup [SeminormedAddGroup E] : SeminormedAddGroup Eᵐᵒᵖ where
+  __ := instPseudoMetricSpace
   norm x := ‖x.unop‖
   dist_eq _ _ := dist_eq_norm _ _
-  toPseudoMetricSpace := MulOpposite.instPseudoMetricSpace
 
 theorem norm_op [SeminormedAddGroup E] (a : E) : ‖MulOpposite.op a‖ = ‖a‖ :=
   rfl
@@ -2755,16 +2762,16 @@ theorem nnnorm_unop [SeminormedAddGroup E] (a : Eᵐᵒᵖ) : ‖MulOpposite.uno
   rfl
 #align mul_opposite.nnnorm_unop MulOpposite.nnnorm_unop
 
-instance normedAddGroup [NormedAddGroup E] : NormedAddGroup Eᵐᵒᵖ :=
-  { MulOpposite.seminormedAddGroup with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+instance instNormedAddGroup [NormedAddGroup E] : NormedAddGroup Eᵐᵒᵖ where
+  __ := instMetricSpace
+  __ := instSeminormedAddGroup
 
-instance seminormedAddCommGroup [SeminormedAddCommGroup E] : SeminormedAddCommGroup Eᵐᵒᵖ where
+instance instSeminormedAddCommGroup [SeminormedAddCommGroup E] : SeminormedAddCommGroup Eᵐᵒᵖ where
   dist_eq _ _ := dist_eq_norm _ _
 
-instance normedAddCommGroup [NormedAddCommGroup E] : NormedAddCommGroup Eᵐᵒᵖ :=
-  { MulOpposite.seminormedAddCommGroup with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+instance instNormedAddCommGroup [NormedAddCommGroup E] : NormedAddCommGroup Eᵐᵒᵖ where
+  __ := instSeminormedAddCommGroup
+  __ := instNormedAddGroup
 
 end MulOpposite
 

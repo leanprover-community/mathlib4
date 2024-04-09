@@ -6,6 +6,7 @@ Authors: Patrick Massot, Yury Kudryashov
 import Mathlib.Topology.Order.LocalExtr
 import Mathlib.Topology.Order.IntermediateValue
 import Mathlib.Topology.Support
+import Mathlib.Topology.Order.IsLUB
 
 #align_import topology.algebra.order.compact from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
 
