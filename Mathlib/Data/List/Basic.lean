@@ -3,18 +3,17 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Init.Data.List.Instances
-import Mathlib.Init.Data.Bool.Lemmas
-import Mathlib.Init.Data.List.Lemmas
-import Mathlib.Data.Nat.Defs
-import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Bool.Basic
+import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.List.Defs
+import Mathlib.Init.Data.List.Basic
+import Mathlib.Init.Data.List.Instances
+import Mathlib.Init.Data.List.Lemmas
+import Mathlib.Logic.Unique
 import Mathlib.Order.Basic
 import Std.Data.List.Lemmas
 import Mathlib.Tactic.Common
-import Mathlib.Init.Data.List.Basic
 
 #align_import data.list.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
@@ -22,11 +21,13 @@ import Mathlib.Init.Data.List.Basic
 # Basic properties of lists
 -/
 
+assert_not_exists Set.range
+assert_not_exists GroupWithZero
+assert_not_exists Ring
+
 open Function
 
 open Nat hiding one_pos
-
-assert_not_exists Set.range
 
 namespace List
 
@@ -273,8 +274,6 @@ theorem forall_mem_of_forall_mem_cons {p : α → Prop} {a : α} {l : List α} (
 
 #align list.forall_mem_append List.forall_mem_append
 
-theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
-  nofun
 #align list.not_exists_mem_nil List.not_exists_mem_nilₓ -- bExists change
 
 -- Porting note: bExists in Lean3 and And in Lean4
@@ -396,6 +395,18 @@ theorem cons_eq_append_iff {a b c : List α} {x : α} :
 @[deprecated] alias append_right_cancel := append_cancel_right -- deprecated since 2024-01-18
 #align list.append_right_cancel List.append_cancel_right
 
+@[simp] theorem append_left_eq_self {x y : List α} : x ++ y = y ↔ x = [] := by
+  rw [← append_left_inj (s₁ := x), nil_append]
+
+@[simp] theorem self_eq_append_left {x y : List α} : y = x ++ y ↔ x = [] := by
+  rw [eq_comm, append_left_eq_self]
+
+@[simp] theorem append_right_eq_self {x y : List α} : x ++ y = x ↔ y = [] := by
+  rw [← append_right_inj (t₁ := y), append_nil]
+
+@[simp] theorem self_eq_append_right {x y : List α} : x = x ++ y ↔ y = [] := by
+  rw [eq_comm, append_right_eq_self]
+
 theorem append_right_injective (s : List α) : Injective fun t ↦ s ++ t :=
   fun _ _ ↦ append_cancel_left
 #align list.append_right_injective List.append_right_injective
@@ -435,7 +446,7 @@ theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length
 #align list.eq_replicate List.eq_replicate
 
 theorem replicate_add (m n) (a : α) : replicate (m + n) a = replicate m a ++ replicate n a := by
-  induction m <;> simp [*, zero_add, succ_add, replicate]
+  induction m <;> simp [*, succ_add, replicate]
 #align list.replicate_add List.replicate_add
 
 theorem replicate_succ' (n) (a : α) : replicate (n + 1) a = replicate n a ++ [a] :=
@@ -485,6 +496,9 @@ theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
 @[simp] theorem replicate_left_inj {a : α} {n m : ℕ} : replicate n a = replicate m a ↔ n = m :=
   (replicate_left_injective a).eq_iff
 #align list.replicate_left_inj List.replicate_left_inj
+
+@[simp] theorem head_replicate (n : ℕ) (a : α) (h) : head (replicate n a) h = a := by
+  cases n <;> simp at h ⊢
 
 /-! ### pure -/
 
@@ -538,6 +552,9 @@ attribute [local simp] reverseAux
 theorem reverse_cons' (a : α) (l : List α) : reverse (a :: l) = concat (reverse l) a := by
   simp only [reverse_cons, concat_eq_append]
 #align list.reverse_cons' List.reverse_cons'
+
+theorem reverse_concat' (l : List α) (a : α) : (l ++ [a]).reverse = a :: l.reverse := by
+  rw [reverse_append]; rfl
 
 -- Porting note (#10618): simp can prove this
 -- @[simp]
@@ -769,6 +786,9 @@ theorem getLast?_append {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?)
 #align list.last'_append List.getLast?_append
 
 /-! ### head(!?) and tail -/
+
+@[simp] theorem head_cons_tail (x : List α) (h : x ≠ []) : x.head h :: x.tail = x := by
+  cases x <;> simp at h ⊢
 
 theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).iget := by cases l <;> rfl
 #align list.head_eq_head' List.head!_eq_head?
@@ -1176,7 +1196,7 @@ theorem indexOf_append_of_mem {a : α} (h : a ∈ l₁) : indexOf a (l₁ ++ l�
 theorem indexOf_append_of_not_mem {a : α} (h : a ∉ l₁) :
     indexOf a (l₁ ++ l₂) = l₁.length + indexOf a l₂ := by
   induction' l₁ with d₁ t₁ ih
-  · rw [List.nil_append, List.length, zero_add]
+  · rw [List.nil_append, List.length, Nat.zero_add]
   rw [List.cons_append, indexOf_cons_ne _ (ne_of_not_mem_cons h).symm, List.length,
     ih (not_mem_of_not_mem_cons h), Nat.succ_add]
 #align list.index_of_append_of_not_mem List.indexOf_append_of_not_mem
@@ -1348,6 +1368,33 @@ theorem take_one_drop_eq_of_lt_length' {l : List α} {n : ℕ} (h : n < l.length
 
 #align list.ext List.ext
 
+-- TODO one may rename ext in the standard library, and it is also not clear
+-- which of ext_get?, ext_get?', ext_get should be @[ext], if any
+alias ext_get? := ext
+
+theorem ext_get?' {l₁ l₂ : List α} (h' : ∀ n < max l₁.length l₂.length, l₁.get? n = l₂.get? n) :
+    l₁ = l₂ := by
+  apply ext
+  intro n
+  rcases Nat.lt_or_ge n <| max l₁.length l₂.length with hn | hn
+  · exact h' n hn
+  · simp_all [Nat.max_le, get?_eq_none.mpr]
+
+theorem ext_get?_iff {l₁ l₂ : List α} : l₁ = l₂ ↔ ∀ n, l₁.get? n = l₂.get? n :=
+  ⟨by rintro rfl _; rfl, ext_get?⟩
+
+theorem ext_get_iff {l₁ l₂ : List α} :
+    l₁ = l₂ ↔ l₁.length = l₂.length ∧ ∀ n h₁ h₂, get l₁ ⟨n, h₁⟩ = get l₂ ⟨n, h₂⟩ := by
+  constructor
+  · rintro rfl
+    exact ⟨rfl, fun _ _ _ ↦ rfl⟩
+  · intro ⟨h₁, h₂⟩
+    exact ext_get h₁ h₂
+
+theorem ext_get?_iff' {l₁ l₂ : List α} : l₁ = l₂ ↔
+    ∀ n < max l₁.length l₂.length, l₁.get? n = l₂.get? n :=
+  ⟨by rintro rfl _ _; rfl, ext_get?'⟩
+
 @[deprecated ext_get]
 theorem ext_nthLe {l₁ l₂ : List α} (hl : length l₁ = length l₂)
     (h : ∀ n h₁ h₂, nthLe l₁ n h₁ = nthLe l₂ n h₂) : l₁ = l₂ :=
@@ -1395,14 +1442,11 @@ theorem get_reverse_aux₂ :
   | [], r, i, h1, h2 => absurd h2 (Nat.not_lt_zero _)
   | a :: l, r, 0, h1, _ => by
     have aux := get_reverse_aux₁ l (a :: r) 0
-    rw [zero_add] at aux
+    rw [Nat.zero_add] at aux
     exact aux _ (zero_lt_succ _)
   | a :: l, r, i + 1, h1, h2 => by
     have aux := get_reverse_aux₂ l (a :: r) i
-    have heq :=
-      calc
-        length (a :: l) - 1 - (i + 1) = length l - (1 + i) := by rw [add_comm]; rfl
-        _ = length l - 1 - i := by omega
+    have heq : length (a :: l) - 1 - (i + 1) = length l - 1 - i := by rw [length]; omega
     rw [← heq] at aux
     apply aux
 #align list.nth_le_reverse_aux2 List.get_reverse_aux₂
@@ -1468,7 +1512,7 @@ theorem modifyNthTail_modifyNthTail_le {f g : List α → List α} (m n : ℕ) (
     (l.modifyNthTail f n).modifyNthTail g m =
       l.modifyNthTail (fun l => (f l).modifyNthTail g (m - n)) n := by
   rcases Nat.exists_eq_add_of_le h with ⟨m, rfl⟩
-  rw [add_comm, modifyNthTail_modifyNthTail, Nat.add_sub_cancel]
+  rw [Nat.add_comm, modifyNthTail_modifyNthTail, Nat.add_sub_cancel]
 #align list.modify_nth_tail_modify_nth_tail_le List.modifyNthTail_modifyNthTail_le
 
 theorem modifyNthTail_modifyNthTail_same {f g : List α → List α} (n : ℕ) (l : List α) :
@@ -2188,11 +2232,11 @@ theorem nthLe_succ_scanl {i : ℕ} {h : i + 1 < (scanl f b l).length} :
     · simp [scanl_cons, singleton_append, nthLe_zero_scanl, nthLe_cons]
   | succ i hi =>
     cases l
-    · simp only [length, zero_add] at h
+    · simp only [length] at h
       exact absurd h (by omega)
     · simp_rw [scanl_cons]
       rw [nthLe_append_right]
-      · simp only [length, zero_add 1, succ_add_sub_one, hi]; rfl
+      · simp only [length, Nat.zero_add 1, succ_add_sub_one, hi]; rfl
       · simp only [length_singleton]; omega
 #align list.nth_le_succ_scanl List.nthLe_succ_scanl
 
@@ -3292,7 +3336,7 @@ theorem enumFrom_get? :
 
 @[simp]
 theorem enum_get? : ∀ (l : List α) (n), get? (enum l) n = (fun a => (n, a)) <$> get? l n := by
-  simp only [enum, enumFrom_get?, zero_add]; intros; trivial
+  simp only [enum, enumFrom_get?, Nat.zero_add]; intros; trivial
 #align list.enum_nth List.enum_get?
 
 @[simp]
@@ -3354,7 +3398,7 @@ theorem enumFrom_append (xs ys : List α) (n : ℕ) :
   induction' xs with x xs IH generalizing ys n
   · simp
   · rw [cons_append, enumFrom_cons, IH, ← cons_append, ← enumFrom_cons, length, Nat.add_right_comm,
-      add_assoc]
+      Nat.add_assoc]
 #align list.enum_from_append List.enumFrom_append
 
 theorem enum_append (xs ys : List α) : enum (xs ++ ys) = enum xs ++ enumFrom xs.length ys := by
@@ -3363,7 +3407,7 @@ theorem enum_append (xs ys : List α) : enum (xs ++ ys) = enum xs ++ enumFrom xs
 
 theorem map_fst_add_enumFrom_eq_enumFrom (l : List α) (n k : ℕ) :
     map (Prod.map (· + n) id) (enumFrom k l) = enumFrom (n + k) l := by
-  induction l generalizing n k <;> [rfl; simp_all [add_assoc, add_comm k]]
+  induction l generalizing n k <;> [rfl; simp_all [Nat.add_assoc, Nat.add_comm k]]
 #align list.map_fst_add_enum_from_eq_enum_from List.map_fst_add_enumFrom_eq_enumFrom
 
 theorem map_fst_add_enum_eq_enumFrom (l : List α) (n : ℕ) :
@@ -3373,7 +3417,7 @@ theorem map_fst_add_enum_eq_enumFrom (l : List α) (n : ℕ) :
 
 theorem enumFrom_cons' (n : ℕ) (x : α) (xs : List α) :
     enumFrom n (x :: xs) = (n, x) :: (enumFrom n xs).map (Prod.map Nat.succ id) := by
-  rw [enumFrom_cons, add_comm, ← map_fst_add_enumFrom_eq_enumFrom]
+  rw [enumFrom_cons, Nat.add_comm, ← map_fst_add_enumFrom_eq_enumFrom]
 #align list.enum_from_cons' List.enumFrom_cons'
 
 theorem enum_cons' (x : α) (xs : List α) :
@@ -3411,7 +3455,7 @@ theorem get_enum (l : List α) (i : Fin l.enum.length)
     (hi : i < l.length := (by simpa using i.2)) :
     l.enum.get i = (i.1, l.get ⟨i, hi⟩) := by
   convert get_enumFrom _ _ i
-  exact (zero_add _).symm
+  exact (Nat.zero_add _).symm
 
 set_option linter.deprecated false in
 @[deprecated get_enum]

@@ -206,7 +206,7 @@ theorem isUnit_det_transpose (h : IsUnit A.det) : IsUnit Aᵀ.det := by
 /-! ### A noncomputable `Inv` instance  -/
 
 
-/-- The inverse of a square matrix, when it is invertible (and zero otherwise).-/
+/-- The inverse of a square matrix, when it is invertible (and zero otherwise). -/
 noncomputable instance inv : Inv (Matrix n n α) :=
   ⟨fun A => Ring.inverse A.det • A.adjugate⟩
 

@@ -95,7 +95,6 @@ def oreDiv (r : R) (s : S) : R[S⁻¹] :=
   Quotient.mk' (r, s)
 #align ore_localization.ore_div OreLocalization.oreDiv
 
--- mathport name: «expr /ₒ »
 @[inherit_doc]
 infixl:70 " /ₒ " => oreDiv
 
