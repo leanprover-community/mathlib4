@@ -320,7 +320,7 @@ theorem tendsto_integral_exp_smul_cocompact (μ : Measure V) [μ.IsAddHaarMeasur
   · exact (ContinuousLinearEquiv.symm_apply_apply A v).symm
 #align tendsto_integral_exp_smul_cocompact tendsto_integral_exp_smul_cocompact
 
-open TopologicalSpace
+open ContinuousLinearMap
 
 /-- The Riemann-Lebesgue lemma, formulated in terms of `VectorFourier.fourierIntegral` (with the
 pairing in the definition of `fourierIntegral` taken to be the canonical pairing between `V` and

@@ -40,7 +40,7 @@ dual, Fréchet-Riesz
 noncomputable section
 
 open scoped Classical
-open ComplexConjugate TopologicalSpace
+open ComplexConjugate ContinuousLinearMap
 
 universe u v
 
@@ -56,8 +56,8 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 local postfix:90 "†" => starRingEnd _
 
 /-- An element `x` of an inner product space `E` induces an element of the dual space
-`TopologicalSpace.Dual 𝕜 E`, the map `fun y => ⟪x, y⟫`; moreover this operation is a
-conjugate-linear isometric embedding of `E` into `TopologicalSpace.Dual 𝕜 E`.
+`ContinuousLinearMap.Dual 𝕜 E`, the map `fun y => ⟪x, y⟫`; moreover this operation is a
+conjugate-linear isometric embedding of `E` into `ContinuousLinearMap.Dual 𝕜 E`.
 If `E` is complete, this operation is surjective, hence a conjugate-linear isometric equivalence;
 see `toDual`.
 -/
@@ -160,7 +160,7 @@ theorem toDual_symm_apply {x : E} {y : Dual 𝕜 E} : ⟪(toDual 𝕜 E).symm y,
 #align inner_product_space.to_dual_symm_apply InnerProductSpace.toDual_symm_apply
 
 /-- Maps a bounded sesquilinear form to its continuous linear map,
-given by interpreting the form as a map `B : E →L⋆[𝕜] Dual 𝕜 E`
+given by interpreting the form as a map `B : E →L⋆[𝕜] ContinuousLinearMap.Dual 𝕜 E`
 and dualizing the result using `toDual`.
 -/
 def continuousLinearMapOfBilin (B : E →L⋆[𝕜] E →L[𝕜] 𝕜) : E →L[𝕜] E :=

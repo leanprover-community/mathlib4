@@ -30,6 +30,8 @@ that the concrete definition is equivalent to a *-closed subalgebra which is wea
 
 universe u v
 
+open ContinuousLinearMap
+
 /-- Sakai's definition of a von Neumann algebra as a C^* algebra with a Banach space predual.
 
 So that we can unambiguously talk about these "abstract" von Neumann algebras
@@ -49,7 +51,7 @@ class WStarAlgebra (M : Type u) [NormedRing M] [StarRing M] [CstarRing M] [Modul
   to the `WStarAlgebra`. -/
   exists_predual :
     ∃ (X : Type u) (_ : NormedAddCommGroup X) (_ : NormedSpace ℂ X) (_ : CompleteSpace X),
-      Nonempty (TopologicalSpace.Dual ℂ X ≃ₗᵢ⋆[ℂ] M)
+      Nonempty (Dual ℂ X ≃ₗᵢ⋆[ℂ] M)
 #align wstar_algebra WStarAlgebra
 
 -- TODO: Without this, `VonNeumannAlgebra` times out. Why?

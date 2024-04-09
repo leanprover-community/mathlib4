@@ -39,7 +39,7 @@ dual
 noncomputable section
 
 open scoped Classical
-open Topology Bornology TopologicalSpace
+open Topology Bornology ContinuousLinearMap
 
 universe u v
 
