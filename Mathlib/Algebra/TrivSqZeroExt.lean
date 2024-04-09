@@ -548,7 +548,7 @@ theorem inl_nat_cast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (inl n : tsz
 instance addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsze R M) :=
   { TrivSqZeroExt.addGroup, TrivSqZeroExt.addMonoidWithOne with
     intCast := fun z => inl z
-    intCast_ofNat := fun _n => ext (Int.cast_ofNat _) rfl
+    intCast_ofNat := fun _n => ext (Int.cast_natCast _) rfl
     intCast_negSucc := fun _n => ext (Int.cast_negSucc _) neg_zero.symm }
 
 @[simp]

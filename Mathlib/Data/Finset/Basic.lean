@@ -501,9 +501,10 @@ alias ⟨_, Nonempty.to_set⟩ := coe_nonempty
 alias ⟨_, Nonempty.coe_sort⟩ := nonempty_coe_sort
 #align finset.nonempty.coe_sort Finset.Nonempty.coe_sort
 
-theorem Nonempty.bex {s : Finset α} (h : s.Nonempty) : ∃ x : α, x ∈ s :=
+theorem Nonempty.exists_mem {s : Finset α} (h : s.Nonempty) : ∃ x : α, x ∈ s :=
   h
-#align finset.nonempty.bex Finset.Nonempty.bex
+#align finset.nonempty.bex Finset.Nonempty.exists_mem
+@[deprecated] alias Nonempty.bex := Nonempty.exists_mem -- 2024-03-23
 
 theorem Nonempty.mono {s t : Finset α} (hst : s ⊆ t) (hs : s.Nonempty) : t.Nonempty :=
   Set.Nonempty.mono hst hs
@@ -3138,7 +3139,7 @@ theorem toFinset_eq_singleton_iff (s : Multiset α) (a : α) :
       rw [← mem_toFinset, H, Finset.mem_singleton] at hy
       exact hy.symm
     have hx' : x ∉ s := fun h' ↦ hx <| by rwa [← mem_toFinset, H, Finset.mem_singleton] at h'
-    simp_rw [count_eq_zero_of_not_mem hx', hx, ite_false, mul_zero]
+    simp_rw [count_eq_zero_of_not_mem hx', hx, ite_false, Nat.mul_zero]
   simpa only [toFinset_nsmul _ _ H.1, toFinset_singleton] using congr($(H.2).toFinset)
 
 @[simp]
