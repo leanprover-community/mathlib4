@@ -265,7 +265,7 @@ theorem uniformity_basis_edist_nnreal_le :
 
 theorem uniformity_basis_edist_inv_nat :
     (𝓤 α).HasBasis (fun _ => True) fun n : ℕ => { p : α × α | edist p.1 p.2 < (↑n)⁻¹ } :=
-  EMetric.mk_uniformity_basis (fun n _ => ENNReal.inv_pos.2 <| ENNReal.nat_ne_top n) fun _ε ε₀ =>
+  EMetric.mk_uniformity_basis (fun n _ ↦ ENNReal.inv_pos.2 <| ENNReal.natCast_ne_top n) fun _ε ε₀ ↦
     let ⟨n, hn⟩ := ENNReal.exists_inv_nat_lt (ne_of_gt ε₀)
     ⟨n, trivial, le_of_lt hn⟩
 #align uniformity_basis_edist_inv_nat uniformity_basis_edist_inv_nat
@@ -951,7 +951,7 @@ theorem diam_iUnion_mem_option {ι : Type*} (o : Option ι) (s : ι → Set α) 
 
 theorem diam_insert : diam (insert x s) = max (⨆ y ∈ s, edist x y) (diam s) :=
   eq_of_forall_ge_iff fun d => by
-    simp only [diam_le_iff, ball_insert_iff, edist_self, edist_comm x, max_le_iff, iSup_le_iff,
+    simp only [diam_le_iff, forall_mem_insert, edist_self, edist_comm x, max_le_iff, iSup_le_iff,
       zero_le, true_and_iff, forall_and, and_self_iff, ← and_assoc]
 #align emetric.diam_insert EMetric.diam_insert
 

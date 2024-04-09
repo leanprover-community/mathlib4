@@ -10,8 +10,8 @@ import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Topology.Algebra.Group.Basic
-import Mathlib.Topology.Order.Basic
 import Mathlib.Data.Set.Lattice
+import Mathlib.Topology.Order.Monotone
 
 #align_import topology.algebra.order.liminf_limsup from "leanprover-community/mathlib"@"ce64cd319bb6b3e82f31c2d38e79080d377be451"
 

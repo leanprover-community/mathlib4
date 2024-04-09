@@ -261,7 +261,7 @@ instance Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup 
           by_contradiction fun h =>
             Nat.find_min hex
               (Int.ofNat_lt.1 <| by
-                rw [← hk₄]; exact Int.emod_lt_of_pos _ (Int.coe_nat_pos.2 (Nat.find_spec hex).1))
+                rw [← hk₄]; exact Int.emod_lt_of_pos _ (Int.natCast_pos.2 (Nat.find_spec hex).1))
               ⟨Nat.pos_of_ne_zero h, hk₅⟩
         ⟨k / (Nat.find hex : ℤ),
           Subtype.ext_iff_val.2

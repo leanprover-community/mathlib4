@@ -209,7 +209,7 @@ theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite [SigmaFinite μ] {f g : 
       exact eventually_le_of_tendsto_lt hx this
     have L2 : ∀ᶠ n : ℕ in (atTop : Filter ℕ), g x ≤ (n : ℝ≥0) :=
       haveI : Tendsto (fun n : ℕ => ((n : ℝ≥0) : ℝ≥0∞)) atTop (𝓝 ∞) := by
-        simp only [ENNReal.coe_nat]
+        simp only [ENNReal.coe_natCast]
         exact ENNReal.tendsto_nat_nhds_top
       eventually_ge_of_tendsto_gt (hx.trans_le le_top) this
     apply Set.mem_iUnion.2
@@ -563,7 +563,7 @@ theorem Integrable.ae_eq_of_forall_set_integral_eq (f g : α → E) (hf : Integr
 variable {β : Type*} [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β]
 
 /-- If an integrable function has zero integral on all closed sets, then it is zero
-almost everwhere.-/
+almost everwhere. -/
 lemma ae_eq_zero_of_forall_set_integral_isClosed_eq_zero {μ : Measure β} {f : β → E}
     (hf : Integrable f μ) (h'f : ∀ (s : Set β), IsClosed s → ∫ x in s, f x ∂μ = 0) :
     f =ᵐ[μ] 0 := by
