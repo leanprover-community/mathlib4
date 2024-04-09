@@ -3,7 +3,7 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Polynomial.Taylor
+import Mathlib.Algebra.Polynomial.Taylor
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.LinearAlgebra.AdicCompletion
 
@@ -184,7 +184,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
       let c : ℕ → R := fun n => Nat.recOn n a₀ fun _ b => b - f.eval b * Ring.inverse (f'.eval b)
       have hc : ∀ n, c (n + 1) = c n - f.eval (c n) * Ring.inverse (f'.eval (c n)) := by
         intro n
-        simp only [Nat.rec_add_one]
+        simp only [c, Nat.rec_add_one]
       -- we now spend some time determining properties of the sequence `c : ℕ → R`
       -- `hc_mod`: for every `n`, we have `c n ≡ a₀ [SMOD I]`
       -- `hf'c`  : for every `n`, `f'.eval (c n)` is a unit

@@ -180,7 +180,7 @@ protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort*
   rfl
 #align category_theory.action_category.cases CategoryTheory.ActionCategory.cases
 
--- porting note: added to ease the proof of `uncurry`
+-- Porting note: added to ease the proof of `uncurry`
 lemma cases' ⦃a' b' : ActionCategory G X⦄ (f : a' ⟶ b') :
     ∃ (a b : X) (g : G) (ha : a' = a) (hb : b' = b) (hg : a = g⁻¹ • b),
       f = eqToHom (by rw [ha, hg]) ≫ homOfPair b g ≫ eqToHom (by rw [hb]) := by
@@ -199,7 +199,6 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
     rfl
   { toFun := fun g => ⟨fun b => F.map (homOfPair b g), g⟩
     map_one' := by
-      congr
       dsimp
       ext1
       ext b
@@ -207,7 +206,6 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
       rfl
     map_mul' := by
       intro g h
-      congr
       ext b
       exact F_map_eq.symm.trans (F.map_comp (homOfPair (g⁻¹ • b) h) (homOfPair b g))
       rfl }
@@ -225,7 +223,7 @@ def uncurry (F : G →* (X → H) ⋊[mulAutArrow] G) (sane : ∀ g, (F g).right
     rw [F.map_one]
     rfl
   map_comp f g := by
-    -- porting note: I was not able to use `ActionCategory.cases` here,
+    -- Porting note: I was not able to use `ActionCategory.cases` here,
     -- but `ActionCategory.cases'` seems as good; the original proof was:
     -- intro x y z f g; revert y z g
     -- refine' action_category.cases _

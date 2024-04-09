@@ -3,10 +3,9 @@ Copyright (c) 2020 Kexing Ying and Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Function.Finite
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Data.Set.Basic
 
 #align_import algebra.big_operators.finprod from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
@@ -89,7 +88,7 @@ section
 
 /- Note: we use classical logic only for these definitions, to ensure that we do not write lemmas
 with `Classical.dec` in their statement. -/
-open Classical
+open scoped Classical
 
 /-- Sum of `f x` as `x` ranges over the elements of the support of `f`, if it's finite. Zero
 otherwise. -/
@@ -1191,7 +1190,7 @@ theorem finprod_prod_comm (s : Finset β) (f : α → β → M)
       (s.finite_toSet.biUnion fun b hb => h b (Finset.mem_coe.1 hb)).toFinset := by
     rw [Finite.coe_toFinset]
     intro x hx
-    simp only [exists_prop, mem_iUnion, Ne.def, mem_mulSupport, Finset.mem_coe]
+    simp only [exists_prop, mem_iUnion, Ne, mem_mulSupport, Finset.mem_coe]
     contrapose! hx
     rw [mem_mulSupport, not_not, Finset.prod_congr rfl hx, Finset.prod_const_one]
   rw [finprod_eq_prod_of_mulSupport_subset _ hU, Finset.prod_comm]

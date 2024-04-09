@@ -112,7 +112,7 @@ theorem Filter.Eventually.rat_cast_atBot [LinearOrderedField R] [Archimedean R] 
     (h : ∀ᶠ (x:R) in atBot, p x) : ∀ᶠ (n:ℚ) in atBot, p n := by
   rw [← Rat.comap_cast_atBot (R := R)]; exact h.comap _
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem atTop_hasAntitoneBasis_of_archimedean [OrderedSemiring R] [Archimedean R] :
     (atTop : Filter R).HasAntitoneBasis fun n : ℕ => Ici n :=
   hasAntitoneBasis_atTop.comp_mono Nat.mono_cast tendsto_nat_cast_atTop_atTop
@@ -122,7 +122,7 @@ theorem atTop_hasCountableBasis_of_archimedean [StrictOrderedSemiring R] [Archim
   ⟨atTop_hasAntitoneBasis_of_archimedean.1, to_countable _⟩
 #align at_top_countable_basis_of_archimedean atTop_hasCountableBasis_of_archimedean
 
--- porting note: todo: generalize to a `StrictOrderedRing`
+-- Porting note (#11215): TODO: generalize to a `StrictOrderedRing`
 theorem atBot_hasCountableBasis_of_archimedean [LinearOrderedRing R] [Archimedean R] :
     (atBot : Filter R).HasCountableBasis (fun _ : ℤ => True) fun m => Iic m :=
   { countable := to_countable _

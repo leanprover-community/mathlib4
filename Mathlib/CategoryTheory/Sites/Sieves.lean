@@ -34,7 +34,6 @@ namespace CategoryTheory
 open Category Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
-
 variable {X Y Z : C} (f : Y ⟶ X)
 
 /-- A set of arrows all with codomain `X`. -/
@@ -51,10 +50,19 @@ namespace Presieve
 noncomputable instance : Inhabited (Presieve X) :=
   ⟨⊤⟩
 
+/-- The full subcategory of the over category `C/X` consisting of arrows which belong to a
+    presieve on `X`. -/
+abbrev category {X : C} (P : Presieve X) :=
+  FullSubcategory fun f : Over X => P f.hom
+
+/-- Construct an object of `P.category`. -/
+abbrev categoryMk {X : C} (P : Presieve X) {Y : C} (f : Y ⟶ X) (hf : P f) : P.category :=
+  ⟨Over.mk f, hf⟩
+
 /-- Given a sieve `S` on `X : C`, its associated diagram `S.diagram` is defined to be
     the natural functor from the full subcategory of the over category `C/X` consisting
     of arrows in `S` to `C`. -/
-abbrev diagram (S : Presieve X) : (FullSubcategory fun f : Over X => S f.hom) ⥤ C :=
+abbrev diagram (S : Presieve X) : S.category ⥤ C :=
   fullSubcategoryInclusion _ ⋙ Over.forget X
 #align category_theory.presieve.diagram CategoryTheory.Presieve.diagram
 
@@ -78,7 +86,7 @@ theorem bind_comp {S : Presieve X} {R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f �
   ⟨_, _, _, h₁, h₂, rfl⟩
 #align category_theory.presieve.bind_comp CategoryTheory.Presieve.bind_comp
 
--- porting note: it seems the definition of `Presieve` must be unfolded in order to define
+-- Porting note: it seems the definition of `Presieve` must be unfolded in order to define
 --   this inductive type, it was thus renamed `singleton'`
 -- Note we can't make this into `HasSingleton` because of the out-param.
 /-- The singleton presieve.  -/
@@ -212,7 +220,7 @@ def functorPushforward (S : Presieve X) : Presieve (F.obj X) := fun Y f =>
   ∃ (Z : C) (g : Z ⟶ X) (h : Y ⟶ F.obj Z), S g ∧ f = h ≫ F.map g
 #align category_theory.presieve.functor_pushforward CategoryTheory.Presieve.functorPushforward
 
---porting note: removed @[nolint hasNonemptyInstance]
+-- Porting note: removed @[nolint hasNonemptyInstance]
 /-- An auxiliary definition in order to fix the choice of the preimages between various definitions.
 -/
 structure FunctorPushforwardStructure (S : Presieve X) {Y} (f : Y ⟶ F.obj X) where
@@ -265,8 +273,6 @@ structure Sieve {C : Type u₁} [Category.{v₁} C] (X : C) where
   /-- stability by precomposition -/
   downward_closed : ∀ {Y Z f} (_ : arrows f) (g : Z ⟶ Y), arrows (g ≫ f)
 #align category_theory.sieve CategoryTheory.Sieve
-
-attribute [pp_dot] Sieve.arrows
 
 namespace Sieve
 

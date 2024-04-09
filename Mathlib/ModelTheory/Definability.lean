@@ -194,11 +194,11 @@ theorem definable_iff_finitely_definable :
     rintro ⟨φ, rfl⟩
     let A0 := (φ.freeVarFinset.preimage Sum.inl
       (Function.Injective.injOn Sum.inl_injective _)).image Subtype.val
-    have hA0 : (A0 : Set M) ⊆ A := by simp
+    have hA0 : (A0 : Set M) ⊆ A := by simp [A0]
     refine ⟨A0, hA0, (φ.restrictFreeVar
       (Set.inclusion (Set.Subset.refl _))).relabel ?_, ?_⟩
     · rintro ⟨a | a, ha⟩
-      · exact Sum.inl (Sum.inl ⟨a, by simpa using ha⟩)
+      · exact Sum.inl (Sum.inl ⟨a, by simpa [A0] using ha⟩)
       · exact Sum.inl (Sum.inr a)
     · ext v
       simp only [Formula.Realize, BoundedFormula.realize_relabel,

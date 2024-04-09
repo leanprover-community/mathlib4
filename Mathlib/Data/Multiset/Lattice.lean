@@ -46,8 +46,7 @@ theorem sup_cons (a : α) (s : Multiset α) : (a ::ₘ s).sup = a ⊔ s.sup :=
 #align multiset.sup_cons Multiset.sup_cons
 
 @[simp]
-theorem sup_singleton {a : α} : ({a} : Multiset α).sup = a :=
-  sup_bot_eq
+theorem sup_singleton {a : α} : ({a} : Multiset α).sup = a := sup_bot_eq _
 #align multiset.sup_singleton Multiset.sup_singleton
 
 @[simp]
@@ -131,8 +130,7 @@ theorem inf_cons (a : α) (s : Multiset α) : (a ::ₘ s).inf = a ⊓ s.inf :=
 #align multiset.inf_cons Multiset.inf_cons
 
 @[simp]
-theorem inf_singleton {a : α} : ({a} : Multiset α).inf = a :=
-  inf_top_eq
+theorem inf_singleton {a : α} : ({a} : Multiset α).inf = a := inf_top_eq _
 #align multiset.inf_singleton Multiset.inf_singleton
 
 @[simp]

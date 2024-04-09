@@ -35,7 +35,7 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Run the case checker action
       - name: Check Case Sensitivity
@@ -46,7 +46,7 @@ jobs:
 
       - name: install Python
         if: ${{ 'bors' == 'ubuntu-latest' }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.8
 
@@ -73,7 +73,7 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: update Mathlib.lean
         run: |
@@ -107,7 +107,7 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: update workflows
         run: |
@@ -128,7 +128,11 @@ jobs:
           # Delete all but the 5 most recent toolchains.
           # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
           # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
-          cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +6 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"' || true
+          if cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +6 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"'; then
+              : # Do nothing on success
+          else
+              : # Do nothing on failure, but suppress errors
+          fi
 
       # The Hoskinson runners may not have jq installed, so do that now.
       - name: 'Setup jq'
@@ -139,9 +143,9 @@ jobs:
           set -o pipefail
           curl -sSfL https://github.com/leanprover/elan/releases/download/v3.0.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
           ./elan-init -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # We update `Mathlib.lean` as a convenience here,
       # but verify that this didn't change anything in the `check_imported` job.
@@ -151,9 +155,9 @@ jobs:
 
       - name: If using a lean-pr-release toolchain, uninstall
         run: |
-          if [[ `cat lean-toolchain` =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
-            echo "Uninstalling transient toolchain `cat lean-toolchain`"
-            elan toolchain uninstall `cat lean-toolchain`
+          if [[ $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
+            printf 'Uninstalling transient toolchain %s\n' "$(cat lean-toolchain)"
+            elan toolchain uninstall "$(cat lean-toolchain)"
           fi
 
       - name: print lean and lake versions
@@ -187,11 +191,6 @@ jobs:
           run: |
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build -KCI | tee stdout.log"
 
-      - name: check for noisy stdout lines
-        id: noisy
-        run: |
-          ! grep --after-context=1 "stdout:" stdout.log
-
       - name: build library_search cache
         run: lake build -KCI MathlibExtras
 
@@ -214,7 +213,7 @@ jobs:
         run: |
           # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
           # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
-          if [[ ! `cat lean-toolchain` =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
+          if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
             lake exe cache clean!
             rm -rf .lake/build/lib/Mathlib
             lake exe cache get || (sleep 1; lake exe cache get)
@@ -240,7 +239,7 @@ jobs:
           # storing and transferring oleans over the network.
           # Hopefully a future re-implementation of `cache` will obviate the present need for this hack.
           lake exe cache get Archive.lean
-          lake build Archive
+          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build Archive | tee --append stdout.log"
           lake exe cache put Archive.lean
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
@@ -250,12 +249,18 @@ jobs:
         id: counterexamples
         run: |
           lake exe cache get Counterexamples.lean
-          lake build Counterexamples
+          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build Counterexamples | tee --append stdout.log"
           lake exe cache put Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
+      - name: check for noisy stdout lines
+        id: noisy
+        run: |
+          grep --after-context=1 "stdout" stdout.log && ret=0
+          grep --after-context=1 "stderr" stdout.log && new=0
+          if [ "${ret}" == "0" ] || [ "${new}"  == "0" ]; then return 1; fi
       - name: check declarations in db files
         run: |
           python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
@@ -267,14 +272,12 @@ jobs:
           rm import_graph.dot
 
       - name: test mathlib
+        id: test
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
           linters: gcc
           run: |
             bash -o pipefail -c "
-            # Tests use parts of ProofWidgets not imported by Mathlib.
-            # Ensure everything has been built.
-            lake build ProofWidgets
             make -k -j 8 test"
 
       - name: check for unused imports
@@ -285,6 +288,7 @@ jobs:
           run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
       - name: lint mathlib
+        if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
@@ -296,7 +300,7 @@ jobs:
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
-          git checkout toolchain/v4.6.0-rc1
+          git checkout toolchain/v4.7.0
           # Now that the git hash is embedded in each olean,
           # we need to compile lean4checker on the same toolchain
           cp ../lean-toolchain .
@@ -327,7 +331,7 @@ jobs:
     needs: [style_lint, build, check_imported]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - id: PR
         uses: 8BitJonny/gh-get-current-pr@2.2.0

@@ -130,7 +130,7 @@ and the homogeneous `linearYonedaObjResolution`. -/
         (linearYonedaObjResolution A).d n (n + 1) ≫
           (diagonalHomEquiv (n + 1) A).toModuleIso.hom := by
   ext f g
-/- Porting note: broken proof was
+/- Porting note (#11039): broken proof was
   simp only [ModuleCat.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     LinearEquiv.toModuleIso_inv, linearYonedaObjResolution_d_apply, LinearEquiv.toModuleIso_hom,
     diagonalHomEquiv_apply, Action.comp_hom, Resolution.d_eq k G n,
@@ -183,7 +183,7 @@ which calculates the group cohomology of `A`. -/
 noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
     (fun n => inhomogeneousCochains.d n A) fun n => by
-/- Porting note: broken proof was
+/- Porting note (#11039): broken proof was
     ext x y
     have := LinearMap.ext_iff.1 ((linearYonedaObjResolution A).d_comp_d n (n + 1) (n + 2))
     simp only [ModuleCat.coe_comp, Function.comp_apply] at this

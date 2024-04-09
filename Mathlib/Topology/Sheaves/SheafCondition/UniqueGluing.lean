@@ -155,7 +155,6 @@ section
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 variable [HasLimits C] [ReflectsIsomorphisms (forget C)] [PreservesLimits (forget C)]
-
 variable {X : TopCat.{v}} (F : Presheaf C X) {ι : Type v} (U : ι → Opens X)
 
 /-- For presheaves valued in a concrete category, whose forgetful functor reflects isomorphisms and
@@ -182,9 +181,7 @@ section
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 variable [HasLimits C] [ReflectsIsomorphisms (ConcreteCategory.forget (C := C))]
-
 variable [PreservesLimits (ConcreteCategory.forget (C := C))]
-
 variable {X : TopCat.{v}} (F : Sheaf C X) {ι : Type v} (U : ι → Opens X)
 
 /-- A more convenient way of obtaining a unique gluing of sections for a sheaf.
@@ -221,7 +218,7 @@ theorem eq_of_locally_eq (s t : F.1.obj (op (iSup U)))
   let sf : ∀ i : ι, F.1.obj (op (U i)) := fun i => F.1.map (Opens.leSupr U i).op s
   have sf_compatible : IsCompatible _ U sf := by
     intro i j
-    simp_rw [← comp_apply, ← F.1.map_comp]
+    simp_rw [sf, ← comp_apply, ← F.1.map_comp]
     rfl
   obtain ⟨gl, -, gl_uniq⟩ := F.existsUnique_gluing U sf sf_compatible
   trans gl

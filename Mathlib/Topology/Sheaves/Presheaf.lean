@@ -42,7 +42,7 @@ variable (C : Type u) [Category.{v} C]
 namespace TopCat
 
 /-- The category of `C`-valued presheaves on a (bundled) topological space `X`. -/
--- porting note: was @[nolint has_nonempty_instance]
+-- Porting note: was @[nolint has_nonempty_instance]
 def Presheaf (X : TopCat.{w}) : Type max u v w :=
   (Opens X)ᵒᵖ ⥤ C
 set_option linter.uppercaseLean3 false in
@@ -58,7 +58,7 @@ namespace Presheaf
 @[simp] theorem comp_app {P Q R : Presheaf C X} (f : P ⟶ Q) (g : Q ⟶ R) :
     (f ≫ g).app U = f.app U ≫ g.app U := rfl
 
--- Porting note: added an `ext` lemma,
+-- Porting note (#10756): added an `ext` lemma,
 -- since `NatTrans.ext` can not see through the definition of `Presheaf`.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]

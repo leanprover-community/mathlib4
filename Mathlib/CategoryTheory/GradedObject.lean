@@ -3,10 +3,10 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
 -/
+import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.Data.Int.Basic
 import Mathlib.Data.Set.Basic
 
 #align_import category_theory.graded_object from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
@@ -121,12 +121,12 @@ section
 
 variable (C)
 
--- porting note: added to ease the port
+-- Porting note: added to ease the port
 /-- Pull back an `I`-graded object in `C` to a `J`-graded object along a function `J → I`. -/
 abbrev comap {I J : Type*} (h : J → I) : GradedObject I C ⥤ GradedObject J C :=
   Pi.comap (fun _ => C) h
 
--- porting note: added to ease the port, this is a special case of `Functor.eqToHom_proj`
+-- Porting note: added to ease the port, this is a special case of `Functor.eqToHom_proj`
 @[simp]
 theorem eqToHom_proj {x x' : GradedObject I C} (h : x = x') (i : I) :
     (eqToHom h : x ⟶ x') i = eqToHom (Function.funext_iff.mp h i) := by
@@ -227,9 +227,7 @@ namespace GradedObject
 -- Since we're typically interested in grading by ℤ or a finite group, this should be okay.
 -- If you're grading by things in higher universes, have fun!
 variable (β : Type)
-
 variable (C : Type u) [Category.{v} C]
-
 variable [HasCoproducts.{0} C]
 
 section
@@ -265,7 +263,6 @@ namespace GradedObject
 noncomputable section
 
 variable (β : Type)
-
 variable (C : Type (u + 1)) [LargeCategory C] [ConcreteCategory C] [HasCoproducts.{0} C]
   [HasZeroMorphisms C]
 
@@ -438,8 +435,7 @@ def cofanMapObjComp : X.CofanMapObjFun r k :=
 In other words, if we have, for all `j : J` such that `hj : q j = k`,
 a colimit cofan `c j hj` which computes the coproduct of the `X i` such that `p i = j`,
 and also a colimit cofan which computes the coproduct of the points of these `c j hj`, then
-the point of this latter cofan computes the coproduct of the `X i` such that `r i = k`.
-.-/
+the point of this latter cofan computes the coproduct of the `X i` such that `r i = k`. -/
 @[simp]
 def isColimitCofanMapObjComp :
     IsColimit (cofanMapObjComp X p q r hpqr k c c') :=

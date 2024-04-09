@@ -30,7 +30,6 @@ open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
 namespace SheafedSpace
 
 variable {C : Type u} [Category.{v} C] [HasLimits C]
-
 variable {J : Type v} [Category.{v} J] (F : J ⥤ SheafedSpace.{_, _, v} C)
 
 theorem isColimit_exists_rep {c : Cocone F} (hc : IsColimit c) (x : c.pt) :
@@ -149,7 +148,7 @@ instance coequalizer_π_app_isLocalRingHom
   rw [← PreservesCoequalizer.iso_hom] at this
   erw [SheafedSpace.congr_app this.symm (op U)]
   rw [PresheafedSpace.comp_c_app, ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]
-  -- Porting note: this instance has to be manually added
+  -- Porting note (#10754): this instance has to be manually added
   haveI : IsIso (PreservesCoequalizer.iso SheafedSpace.forgetToPresheafedSpace f.val g.val).hom.c :=
     PresheafedSpace.c_isIso_of_iso _
   infer_instance
@@ -175,7 +174,6 @@ are local ring homs.
 
 
 variable (U : Opens (coequalizer f.1 g.1).carrier)
-
 variable (s : (coequalizer f.1 g.1).presheaf.obj (op U))
 
 /-- (Implementation). The basic open set of the section `π꙳ s`. -/
@@ -204,7 +202,7 @@ theorem imageBasicOpen_image_preimage :
     delta imageBasicOpen
     rw [preimage_basicOpen f, preimage_basicOpen g]
     dsimp only [Functor.op, unop_op]
-    -- Porting note: change `rw` to `erw`
+    -- Porting note (#11224): change `rw` to `erw`
     erw [← comp_apply, ← SheafedSpace.comp_c_app', ← comp_apply, ← SheafedSpace.comp_c_app',
       SheafedSpace.congr_app (coequalizer.condition f.1 g.1), comp_apply,
       X.toRingedSpace.basicOpen_res]
@@ -220,7 +218,7 @@ theorem imageBasicOpen_image_open :
   erw [← coe_comp]
   rw [PreservesCoequalizer.iso_hom, ι_comp_coequalizerComparison]
   dsimp only [SheafedSpace.forget]
-  -- Porting note: change `rw` to `erw`
+  -- Porting note (#11224): change `rw` to `erw`
   erw [imageBasicOpen_image_preimage]
   exact (imageBasicOpen f g U s).2
 #align algebraic_geometry.LocallyRingedSpace.has_coequalizer.image_basic_open_image_open AlgebraicGeometry.LocallyRingedSpace.HasCoequalizer.imageBasicOpen_image_open
@@ -249,7 +247,7 @@ instance coequalizer_π_stalk_isLocalRingHom (x : Y) :
   rw [← isUnit_map_iff ((coequalizer.π f.val g.val : _).c.app _), ← comp_apply,
     NatTrans.naturality, comp_apply, TopCat.Presheaf.pushforwardObj_map, ←
     isUnit_map_iff (Y.presheaf.map (eqToHom hV').op)]
-  -- Porting note: change `rw` to `erw`
+  -- Porting note (#11224): change `rw` to `erw`
   erw [← comp_apply, ← comp_apply, ← Y.presheaf.map_comp]
   convert @RingedSpace.isUnit_res_basicOpen Y.toRingedSpace (unop _)
       (((coequalizer.π f.val g.val).c.app (op U)) s)

@@ -67,7 +67,7 @@ namespace WithTerminal
 variable {C}
 
 /-- Morphisms for `WithTerminal C`. -/
--- porting note: unsupported `nolint has_nonempty_instance`
+-- Porting note: unsupported `nolint has_nonempty_instance`
 @[simp]
 def Hom : WithTerminal C → WithTerminal C → Type v
   | of X, of Y => X ⟶ Y
@@ -367,7 +367,7 @@ namespace WithInitial
 variable {C}
 
 /-- Morphisms for `WithInitial C`. -/
--- porting note: unsupported `nolint has_nonempty_instance`
+-- Porting note: unsupported `nolint has_nonempty_instance`
 @[simp]
 def Hom : WithInitial C → WithInitial C → Type v
   | of X, of Y => X ⟶ Y

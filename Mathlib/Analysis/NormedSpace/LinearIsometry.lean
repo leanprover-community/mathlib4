@@ -129,7 +129,7 @@ theorem diam_range [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) :
   (SemilinearIsometryClass.isometry f).diam_range
 #align semilinear_isometry_class.diam_range SemilinearIsometryClass.diam_range
 
-instance (priority := 100) SemilinearIsometryClass.toContinuousSemilinearMapClass
+instance (priority := 100) toContinuousSemilinearMapClass
     [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] : ContinuousSemilinearMapClass 𝓕 σ₁₂ E E₂ where
   map_continuous := SemilinearIsometryClass.continuous
 
@@ -533,7 +533,7 @@ namespace SemilinearIsometryEquivClass
 variable (𝓕)
 
 -- `σ₂₁` becomes a metavariable, but it's OK since it's an outparam
-instance (priority := 100) SemilinearIsometryEquivClass.toSemilinearIsometryClass [EquivLike 𝓕 E E₂]
+instance (priority := 100) toSemilinearIsometryClass [EquivLike 𝓕 E E₂]
     [s : SemilinearIsometryEquivClass 𝓕 σ₁₂ E E₂] : SemilinearIsometryClass 𝓕 σ₁₂ E E₂ :=
   { s with }
 
@@ -1148,7 +1148,9 @@ def prodAssoc [Module R E₂] [Module R E₃] : (E × E₂) × E₃ ≃ₗᵢ[R]
     toFun := Equiv.prodAssoc E E₂ E₃
     invFun := (Equiv.prodAssoc E E₂ E₃).symm
     map_add' := by simp [-_root_.map_add] --  Fix timeout from #8386
-    map_smul' := by simp
+    map_smul' := by -- was `by simp` before #6057 caused that to time out.
+      rintro m ⟨⟨e, f⟩, g⟩
+      simp only [Prod.smul_mk, Equiv.prodAssoc_apply, RingHom.id_apply]
     norm_map' := by
       rintro ⟨⟨e, f⟩, g⟩
       simp only [LinearEquiv.coe_mk, Equiv.prodAssoc_apply, Prod.norm_def, max_assoc] }
@@ -1174,7 +1176,6 @@ def ofTop {R : Type*} [Ring R] [Module R E] (p : Submodule R E) (hp : p = ⊤) :
 #align linear_isometry_equiv.of_top LinearIsometryEquiv.ofTop
 
 variable {R E E₂ E₃} {R' : Type*} [Ring R']
-
 variable [Module R' E] (p q : Submodule R' E)
 
 /-- `LinearEquiv.ofEq` as a `LinearIsometryEquiv`. -/
@@ -1195,7 +1196,7 @@ theorem ofEq_symm (h : p = q) : (ofEq p q h).symm = ofEq q p h.symm :=
 #align linear_isometry_equiv.of_eq_symm LinearIsometryEquiv.ofEq_symm
 
 @[simp]
-theorem ofEq_rfl : ofEq p p rfl = LinearIsometryEquiv.refl R' p := by funext; rfl
+theorem ofEq_rfl : ofEq p p rfl = LinearIsometryEquiv.refl R' p := rfl
 #align linear_isometry_equiv.of_eq_rfl LinearIsometryEquiv.ofEq_rfl
 
 end LinearIsometryEquiv

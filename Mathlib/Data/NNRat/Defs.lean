@@ -39,7 +39,6 @@ def NNRat := { q : ℚ // 0 ≤ q } deriving
 -- instead of `deriving` them
 instance : OrderedSub NNRat := Nonneg.orderedSub
 
--- mathport name: nnrat
 scoped[NNRat] notation "ℚ≥0" => NNRat
 
 namespace NNRat
@@ -87,6 +86,9 @@ theorem ne_iff {x y : ℚ≥0} : (x : ℚ) ≠ (y : ℚ) ↔ x ≠ y :=
 theorem coe_mk (q : ℚ) (hq) : ((⟨q, hq⟩ : ℚ≥0) : ℚ) = q :=
   rfl
 #align nnrat.coe_mk NNRat.coe_mk
+
+lemma «forall» {p : ℚ≥0 → Prop} : (∀ q, p q) ↔ ∀ q hq, p ⟨q, hq⟩ := Subtype.forall
+lemma «exists» {p : ℚ≥0 → Prop} : (∃ q, p q) ↔ ∃ q hq, p ⟨q, hq⟩ := Subtype.exists
 
 /-- Reinterpret a rational number `q` as a non-negative rational number. Returns `0` if `q ≤ 0`. -/
 def _root_.Rat.toNNRat (q : ℚ) : ℚ≥0 :=
@@ -194,13 +196,17 @@ def coeHom : ℚ≥0 →+* ℚ where
 
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : (↑(↑n : ℚ≥0) : ℚ) = n :=
-  map_natCast coeHom n
+  rfl
 #align nnrat.coe_nat_cast NNRat.coe_natCast
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem mk_coe_nat (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ≥0) n :=
-  ext (coe_natCast n).symm
-#align nnrat.mk_coe_nat NNRat.mk_coe_nat
+theorem mk_natCast (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ≥0) n :=
+  rfl
+#align nnrat.mk_coe_nat NNRat.mk_natCast
+
+-- 2024-04-05
+@[deprecated] alias mk_coe_nat := mk_natCast
 
 @[simp]
 theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=
@@ -328,7 +334,7 @@ theorem lt_toNNRat_iff_coe_lt {q : ℚ≥0} : q < toNNRat p ↔ ↑q < p :=
 
 theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := by
   rcases le_total 0 q with hq | hq
-  · ext <;> simp [toNNRat, hp, hq, max_eq_left, mul_nonneg]
+  · ext; simp [toNNRat, hp, hq, max_eq_left, mul_nonneg]
   · have hpq := mul_nonpos_of_nonneg_of_nonpos hp hq
     rw [toNNRat_eq_zero.2 hq, toNNRat_eq_zero.2 hpq, mul_zero]
 #align rat.to_nnrat_mul Rat.toNNRat_mul
@@ -378,7 +384,7 @@ theorem natAbs_num_coe : (q : ℚ).num.natAbs = q.num := rfl
 @[simp, norm_cast] lemma den_natCast (n : ℕ) : den n = 1 := rfl
 
 theorem ext_num_den (hn : p.num = q.num) (hd : p.den = q.den) : p = q := by
-  ext
+  refine ext <| Rat.ext ?_ ?_
   · apply (Int.natAbs_inj_of_nonneg_of_nonneg _ _).1 hn
     exact Rat.num_nonneg.2 p.2
     exact Rat.num_nonneg.2 q.2

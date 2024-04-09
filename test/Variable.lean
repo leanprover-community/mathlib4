@@ -3,8 +3,6 @@ import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain
-import Std.Tactic.GuardMsgs
-
 set_option autoImplicit true
 namespace Tests
 

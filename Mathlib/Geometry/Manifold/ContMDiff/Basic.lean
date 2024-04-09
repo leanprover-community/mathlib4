@@ -56,10 +56,10 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
   refine' ⟨hg.1.comp hf.1 st, _⟩
   set e := extChartAt I x
   set e' := extChartAt I' (f x)
-  have : e' (f x) = (writtenInExtChartAt I I' x f) (e x) := by simp only [mfld_simps]
+  have : e' (f x) = (writtenInExtChartAt I I' x f) (e x) := by simp only [e, e', mfld_simps]
   rw [this] at hg
   have A : ∀ᶠ y in 𝓝[e.symm ⁻¹' s ∩ range I] e x, f (e.symm y) ∈ t ∧ f (e.symm y) ∈ e'.source := by
-    simp only [← map_extChartAt_nhdsWithin, eventually_map]
+    simp only [e, ← map_extChartAt_nhdsWithin, eventually_map]
     filter_upwards [hf.1.tendsto (extChartAt_source_mem_nhds I' (f x)),
       inter_mem_nhdsWithin s (extChartAt_source_mem_nhds I x)]
     rintro x' (hfx' : f x' ∈ e'.source) ⟨hx's, hx'⟩
@@ -74,7 +74,7 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
   · filter_upwards [A]
     rintro x' ⟨-, hfx'⟩
     simp only [*, (· ∘ ·), writtenInExtChartAt, e'.left_inv]
-  · simp only [writtenInExtChartAt, (· ∘ ·), mem_extChartAt_source, e.left_inv, e'.left_inv]
+  · simp only [e, e', writtenInExtChartAt, (· ∘ ·), mem_extChartAt_source, e.left_inv, e'.left_inv]
 #align cont_mdiff_within_at.comp ContMDiffWithinAt.comp
 
 /-- See note [comp_of_eq lemmas] -/

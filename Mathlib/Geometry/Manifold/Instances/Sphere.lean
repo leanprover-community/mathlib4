@@ -193,7 +193,7 @@ theorem stereoInvFun_apply (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
 
 theorem stereoInvFun_ne_north_pole (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
     stereoInvFun hv w ≠ (⟨v, by simp [hv]⟩ : sphere (0 : E) 1) := by
-  refine' Subtype.ne_of_val_ne _
+  refine' Subtype.coe_ne_coe.1 _
   rw [← inner_lt_one_iff_real_of_norm_one _ hv]
   · have hw : ⟪v, w⟫_ℝ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
     have hw' : (‖(w : E)‖ ^ 2 + 4)⁻¹ * (‖(w : E)‖ ^ 2 - 4) < 1 := by
@@ -253,7 +253,7 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     ring
   convert
     congr_arg₂ Add.add (congr_arg (fun t => t • (y : E)) h₁) (congr_arg (fun t => t • v) h₂) using 1
-  · simp [inner_add_right, inner_smul_right, hvy, real_inner_self_eq_norm_mul_norm, hv, mul_smul,
+  · simp [a, inner_add_right, inner_smul_right, hvy, real_inner_self_eq_norm_mul_norm, hv, mul_smul,
       mul_pow, Real.norm_eq_abs, sq_abs, norm_smul]
     -- Porting note: used to be simp only [split, add_comm] but get maxRec errors
     · rw [split, add_comm]
@@ -458,9 +458,7 @@ theorem contMDiff_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
 #align cont_mdiff_coe_sphere contMDiff_coe_sphere
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-
 variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ F H}
-
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
 
 /-- If a `ContMDiff` function `f : M → E`, where `M` is some manifold, takes values in the

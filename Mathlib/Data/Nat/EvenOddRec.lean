@@ -8,7 +8,7 @@ import Mathlib.Data.Nat.Parity
 #align_import data.nat.even_odd_rec from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 /-! # A recursion principle based on even and odd numbers. -/
 
--- porting note: TODO:
+-- Porting note (#11215): TODO:
 -- Remove dependence on deprecated definitions bit0, bit1.
 set_option linter.deprecated false
 

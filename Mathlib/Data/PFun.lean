@@ -369,9 +369,8 @@ theorem fixInduction'_stop {C : α → Sort*} {f : α →. Sum β α} {b : β} {
   unfold fixInduction'
   rw [fixInduction_spec]
   -- Porting note: the explicit motive required because `simp` behaves differently
-  refine' Eq.rec (motive := fun x e =>
-      Sum.casesOn (motive := fun y => (f a).get (dom_of_mem_fix h) = y → C a) x _ _
-      (Eq.trans (Part.get_eq_of_mem fa (dom_of_mem_fix h)) e) = hbase a fa) _
+  refine' Eq.rec (motive := fun x e ↦
+      Sum.casesOn x _ _ (Eq.trans (Part.get_eq_of_mem fa (dom_of_mem_fix h)) e) = hbase a fa) _
     (Part.get_eq_of_mem fa (dom_of_mem_fix h)).symm
   simp
 #align pfun.fix_induction'_stop PFun.fixInduction'_stop
@@ -487,7 +486,7 @@ theorem mem_core_res (f : α → β) (s : Set α) (t : Set β) (x : α) :
 
 section
 
-open Classical
+open scoped Classical
 
 theorem core_res (f : α → β) (s : Set α) (t : Set β) : (res f s).core t = sᶜ ∪ f ⁻¹' t := by
   ext x
@@ -516,7 +515,7 @@ theorem preimage_eq (f : α →. β) (s : Set β) : f.preimage s = f.core s ∩ 
 #align pfun.preimage_eq PFun.preimage_eq
 
 theorem core_eq (f : α →. β) (s : Set β) : f.core s = f.preimage s ∪ f.Domᶜ := by
-  rw [preimage_eq, Set.union_distrib_right, Set.union_comm (Dom f), Set.compl_union_self,
+  rw [preimage_eq, Set.inter_union_distrib_right, Set.union_comm (Dom f), Set.compl_union_self,
     Set.inter_univ, Set.union_eq_self_of_subset_right (f.compl_dom_subset_core s)]
 #align pfun.core_eq PFun.core_eq
 
@@ -695,16 +694,16 @@ theorem prodLift_fst_comp_snd_comp (f : α →. γ) (g : β →. δ) :
 
 @[simp]
 theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=
-  ext fun _ _ => by simp [eq_comm]
+  ext fun _ _ ↦ by simp [eq_comm]
 #align pfun.prod_map_id_id PFun.prodMap_id_id
 
 @[simp]
 theorem prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →. ε) (g₂ : ε →. ι) :
     (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) := -- by
-  -- Porting note: was `by tidy`, below is a golf'd version of the `tidy?` proof
-  ext <| λ ⟨_, _⟩ ⟨_, _⟩ =>
-  ⟨λ ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩ => ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩,
-   λ ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩ => ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩⟩
+  -- Porting note: was `by tidy`, below is a golfed version of the `tidy?` proof
+  ext <| fun ⟨_, _⟩ ⟨_, _⟩ ↦
+  ⟨fun ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩ ↦ ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩,
+   fun ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩ ↦ ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩⟩
 #align pfun.prod_map_comp_comp PFun.prodMap_comp_comp
 
 end PFun
