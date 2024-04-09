@@ -219,6 +219,7 @@ private noncomputable def homeomorphCircle' : AddCircle (2 * π) ≃ₜ circle :
         (continuousAt_subtype_val)).comp
         (continuous_mul_right x⁻¹).continuousAt) }
 
+/-- The homeomorphism between `AddCircle` and `circle`. -/
 noncomputable def homeomorphCircle (hT : T ≠ 0) : AddCircle T ≃ₜ circle :=
   (homeomorphAddCircle T (2 * π) hT (by positivity)).trans homeomorphCircle'
 

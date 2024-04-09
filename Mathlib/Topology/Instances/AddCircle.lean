@@ -268,6 +268,7 @@ theorem continuousAt_equivIoc : ContinuousAt (equivIoc p a) x := by
   exact (continuousAt_toIocMod hp.out a hx).codRestrict _
 #align add_circle.continuous_at_equiv_Ioc AddCircle.continuousAt_equivIoc
 
+/-- The quotient map `𝕜 → AddCircle p` as a partial homeomorphism. -/
 def partialHomeomorphCoe [DiscreteTopology (zmultiples p)] : PartialHomeomorph 𝕜 (AddCircle p) :=
   { toFun := (↑)
     invFun := fun x ↦ equivIco p a x
