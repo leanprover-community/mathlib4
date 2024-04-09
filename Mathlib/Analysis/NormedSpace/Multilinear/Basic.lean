@@ -792,6 +792,9 @@ variable {𝕜 E G}
 lemma apply_apply {m : ∀ i, E i} {c : ContinuousMultilinearMap 𝕜 E G} :
     (apply 𝕜 E G m) c = c m := rfl
 
+
+
+
 end ContinuousMultilinearMap
 
 /-- If a continuous multilinear map is constructed from a multilinear map via the constructor
@@ -1347,6 +1350,47 @@ theorem compContinuousLinearMapEquivL_apply (g : ContinuousMultilinearMap 𝕜 E
       g.compContinuousLinearMap fun i => (f i : E i →L[𝕜] E₁ i) :=
   rfl
 #align continuous_multilinear_map.comp_continuous_linear_map_equivL_apply ContinuousMultilinearMap.compContinuousLinearMapEquivL_apply
+
+open Classical in
+/-- One of the components of the iterated derivative of a continuous multilinear map.
+Given a bijection `e` between a type `α` (typically `Fin k`) and a subset `s` of `ι`, this
+component is a continuous multilinear map of `k` vectors `v₁, ..., vₖ`, mapping them
+to `f (x₁, (v_{e 2})₂, x₃, ...)`, where at indices `i` in `s` one uses the vector `v_{e i}`
+and otherwise one uses a reference vector `x`. This is continuous multilinear in the components
+of `x` outside of `s`, and in the `v_j`. -/
+noncomputable def iteratedDerivComponent {α : Type*} [DecidableEq α] [Fintype α]
+    (f : ContinuousMultilinearMap 𝕜 E₁ G) (s : Finset ι) (e : α ≃ s) :
+    ContinuousMultilinearMap 𝕜 (fun (i : {a : ι // a ∉ s}) ↦ E₁ i)
+      (ContinuousMultilinearMap 𝕜 (fun (_ : α) ↦ (∀ i, E₁ i)) G) :=
+  (f.toMultilinearMap.iteratedDerivComponent s e).mkContinuousMultilinear (‖f‖) <| by
+    intro x m
+    simp only [MultilinearMap.iteratedDerivComponent, MultilinearMap.domDomRestrictₗ,
+      MultilinearMap.coe_mk, MultilinearMap.domDomRestrict_apply, coe_coe]
+    apply (f.le_opNorm _).trans _
+    rw [← prod_compl_mul_prod s, mul_assoc]
+    gcongr
+    · apply prod_nonneg (fun i _ ↦ norm_nonneg _)
+    · apply prod_nonneg (fun i _ ↦ norm_nonneg _)
+    · apply le_of_eq
+      have : ∀ x, x ∈ sᶜ ↔ (fun x ↦ x ∉ s) x := by simp only [mem_compl, implies_true]
+      rw [prod_subtype _ this]
+      congr with i
+      simp [i.2]
+    · have : ∀ x, x ∈ s ↔ (fun x ↦ x ∈ s) x := by simp only [mem_compl, implies_true]
+      rw [prod_subtype (F := by infer_instance) _ this, ← Equiv.prod_comp e.symm]
+      apply Finset.prod_le_prod (fun i _ ↦ norm_nonneg _) (fun i _ ↦ ?_)
+      simpa only [i.2, ↓reduceDite, Subtype.coe_eta] using norm_le_pi_norm (m (e.symm i)) ↑i
+
+open Classical in
+/-- The iterated derivative of a continuous multilinear map `f` at the point `x`, it is a
+continuous multilinear map of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
+to `∑ f (x₁, (v_{i_1})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one
+of the `(vᵢ)ⱼ`, where each `vᵢ` has to be used exactly once.
+The sum is parameterized by the embeddings of `Fin k` in the index type `ι` (or, equivalently,
+by the subsets `s` of `ι` of cardinal `k` and then the bijections between `Fin k` and `s`). -/
+def iteratedFDeriv (f : ContinuousMultilinearMap 𝕜 E₁ G) (k : ℕ) (x : (i : ι) → E₁ i) :
+    ContinuousMultilinearMap 𝕜 (fun (_ : Fin k) ↦ (∀ i, E₁ i)) G :=
+  ∑ s : Finset ι, ∑ e : Fin k ≃ s, iteratedDerivComponent f s e (fun i ↦ x i)
 
 end ContinuousMultilinearMap
 
