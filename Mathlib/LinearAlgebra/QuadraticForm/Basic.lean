@@ -920,7 +920,7 @@ instance canLift :
 
 /-- There exists a non-null vector with respect to any quadratic form `Q` whose associated
 bilinear form is non-zero, i.e. there exists `x` such that `Q x ≠ 0`. -/
-theorem exists_QuadraticMap_ne_zero {Q : QuadraticMap R M R}
+theorem exists_quadraticForm_ne_zero {Q : QuadraticForm R M}
     -- Porting note: added implicit argument
     (hB₁ : associated' (R := R) Q ≠ 0) :
     ∃ x, Q x ≠ 0 := by
