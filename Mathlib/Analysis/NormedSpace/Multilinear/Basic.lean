@@ -72,6 +72,8 @@ We use the following type variables in this file:
 * `G`, `G'` : normed vector spaces over `𝕜`.
 -/
 
+lemma bla (n : ℕ) : 0 ≤ n := by exact?
+
 
 universe u v v' wE wE₁ wE' wEi wG wG'
 
@@ -1381,6 +1383,14 @@ noncomputable def iteratedFDerivComponent {α : Type*} [DecidableEq α] [Fintype
       apply Finset.prod_le_prod (fun i _ ↦ norm_nonneg _) (fun i _ ↦ ?_)
       simpa only [i.2, ↓reduceDite, Subtype.coe_eta] using norm_le_pi_norm (m (e.symm i)) ↑i
 
+variable (𝕜) in
+def glouk (p : ι → Prop) : ((i : ι) → E₁ i) →L[𝕜] ((i : Subtype p) → E₁ i) :=
+  { toFun := fun v i ↦ v i
+    map_add' := by intros; ext; simp
+    map_smul' := by intros; ext; simp
+    cont := by continuity }
+
+
 open Classical in
 /-- The iterated derivative of a continuous multilinear map `f` at the point `x`, it is a
 continuous multilinear map of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
@@ -1390,7 +1400,7 @@ The sum is parameterized by the embeddings of `Fin k` in the index type `ι` (or
 by the subsets `s` of `ι` of cardinal `k` and then the bijections between `Fin k` and `s`). -/
 def iteratedFDeriv (f : ContinuousMultilinearMap 𝕜 E₁ G) (k : ℕ) (x : (i : ι) → E₁ i) :
     ContinuousMultilinearMap 𝕜 (fun (_ : Fin k) ↦ (∀ i, E₁ i)) G :=
-  ∑ s : Finset ι, ∑ e : Fin k ≃ s, iteratedFDerivComponent f s e (fun i ↦ x i)
+  ∑ s in univ.powersetCard k, ∑ e : Fin k ≃ s, iteratedFDerivComponent f s e (glouk 𝕜 _ x)
 
 end ContinuousMultilinearMap
 

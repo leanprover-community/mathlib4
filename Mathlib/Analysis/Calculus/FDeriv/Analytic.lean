@@ -7,6 +7,8 @@ import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Analytic.CPolynomial
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.ContDiff.Defs
+import Mathlib.Analysis.Calculus.FDeriv.Add
+import Mathlib.Logic.Equiv.Fintype
 
 #align_import analysis.calculus.fderiv_analytic from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
@@ -347,13 +349,202 @@ protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x)
   convert f.hasFiniteFPowerSeriesOnBall.hasFDerivAt (y := x) ENNReal.coe_lt_top
   rw [zero_add]
 
-theorem glou : HasFTaylorSeriesUpTo ⊤ f (fun v n ↦ f.iteratedFDeriv n v) := by
-  constructor
-  · intro x
-    simp [iteratedFDeriv]
+lemma foo (n : ℕ) : 0 ≤ n := by exact?
 
+#check HasFDerivAt.sum
+
+open scoped BigOperators
+open Finset
+
+#check Function.Embedding.toEquivRange
+
+open Classical
+noncomputable def boo_to (n : ℕ) :
+    (Finset.sigma ((univ : Finset ι).powersetCard n.succ)
+        (fun (s : Finset ι) ↦ (univ : Finset (Fin n.succ ≃ s))))
+    → Finset.sigma ((univ : Finset ι).powersetCard n)
+       (fun (s : Finset ι) ↦ (univ : Finset ((Fin n ≃ s) × {i // i ∉ s}))) := by
+  rintro ⟨⟨s, f⟩, p⟩
+  let e_emb : Fin n ↪ ι :=
+    Fin.castSuccEmb.toEmbedding.trans (f.toEmbedding.trans (Function.Embedding.subtype _))
+  let t := (Set.range e_emb).toFinset
+  let e : Fin n ≃ t := by
+    convert e_emb.toEquivRange
+    simp [t]
+    rfl
+  have : t.card = n := card_eq_of_equiv_fin e.symm
+  have : (f n : ι) ∉ t := by
+    simp only [Fin.cast_nat_eq_last, Set.toFinset_range, Fin.castSuccEmb_toEmbedding, mem_image,
+      mem_univ, Function.Embedding.trans_apply, Function.Embedding.coeFn_mk,
+      Equiv.coe_toEmbedding, Function.Embedding.coe_subtype, true_and, not_exists, t, e_emb]
+    intro j
+    exact Subtype.val_injective.ne (f.injective.ne (Fin.castSucc_lt_last j).ne)
+  exact ⟨⟨t, ⟨e, ⟨f n, this⟩⟩⟩, by simpa using card_eq_of_equiv_fin e.symm⟩
+
+noncomputable def boo_inv (n : ℕ) :
+    (Finset.sigma ((univ : Finset ι).powersetCard n)
+       (fun (s : Finset ι) ↦ (univ : Finset ((Fin n ≃ s) × {i // i ∉ s}))))
+    → Finset.sigma ((univ : Finset ι).powersetCard n.succ)
+        (fun (s : Finset ι) ↦ (univ : Finset (Fin n.succ ≃ s))) := by
+  rintro ⟨⟨s, ⟨e, i⟩⟩, p⟩
+  let f0 : Fin (n+1) → ι := fun k ↦ if hk : k.1 < n then e ⟨k.1, hk⟩ else i
+  have f_inj : Function.Injective f0 := by
+    intro k l hkl
+    by_cases hk : k.1 < n <;> by_cases hl : l.1 < n <;>
+      simp only [hk, ↓reduceDite, hl, f0] at hkl
+    · apply Fin.eq_of_val_eq
+      simpa using e.injective (Subtype.val_injective hkl)
+    · have : (i : ι) ∈ s := by rw [← hkl]; exact coe_mem _
+      exact (i.2 this).elim
+    · have : (i : ι) ∈ s := by rw [hkl]; exact coe_mem _
+      exact (i.2 this).elim
+    · omega
+  let f_emb : Fin (n + 1) ↪ ι := ⟨f0, f_inj⟩
+  let t := (Set.range f_emb).toFinset
+  let f : Fin (n + 1) ≃ t := by
+    convert f_emb.toEquivRange
+    simp [t]
+    rfl
+  have : t.card = n + 1 := card_eq_of_equiv_fin f.symm
+  refine ⟨⟨t, f⟩, ?_⟩
+  simpa only [mem_sigma, mem_powersetCard, subset_univ, true_and, mem_univ, and_true] using
+    card_eq_of_equiv_fin f.symm
+
+open Nat
+
+lemma blou {s : Type*} [Fintype s] (n : ℕ) (hs : Fintype.card s = n) :
+    Fintype.card (Fin n ≃ s) = n.factorial := by
+  conv_rhs => rw [← Fintype.card_fin n]
+  apply Fintype.card_equiv
+  exact (Fintype.equivFinOfCardEq hs).symm
+
+lemma zou {α : Type*} [Fintype α] : (univ : Finset α).card = Fintype.card α := by exact?
+
+lemma bork (n : ℕ) :
+    let B := Finset.sigma ((univ : Finset ι).powersetCard n.succ)
+        (fun (s : Finset ι) ↦ (univ : Finset (Fin n.succ ≃ s)))
+    let C := Finset.sigma ((univ : Finset ι).powersetCard n)
+       (fun (s : Finset ι) ↦ (univ : Finset ((Fin n ≃ s) × {i // i ∉ s})))
+    B.card = C.card := by
+  simp only [card_sigma]
+  change ∑ s in (univ : Finset ι).powersetCard (succ n) , (univ : Finset (Fin n.succ ≃ s)).card =
+    ∑ s in (univ : Finset ι).powersetCard n, (univ : Finset ((Fin n ≃ s) × {i // i ∉ s})).card
+  calc
+  ∑ s in (univ : Finset ι).powersetCard (succ n) , (univ : Finset (Fin n.succ ≃ s)).card
+  _ = ∑ s in (univ : Finset ι).powersetCard (succ n), (n + 1).factorial := by
+    apply sum_congr rfl (fun s hs ↦ ?_)
+    simp at hs
+    rw [Finset.card_univ, blou (n + 1)]
+  _ = _ := sorry
 
 #exit
+
+open Classical in
+noncomputable def boo (n : ℕ) :
+    let B := Finset.sigma ((univ : Finset ι).powersetCard n.succ)
+        (fun (s : Finset ι) ↦ (univ : Finset (Fin n.succ ≃ s)))
+    let C := Finset.sigma ((univ : Finset ι).powersetCard n)
+       (fun (s : Finset ι) ↦ (univ : Finset ((Fin n ≃ s) × {i // i ∉ s})))
+    B ≃ C :=
+  { toFun := boo_to n
+    invFun := boo_inv n
+    left_inv := by
+      rintro ⟨⟨s, f⟩, p⟩
+      simp only [boo_inv, boo_to, Fin.castSuccEmb_toEmbedding, id_eq, eq_mpr_eq_cast,
+        Function.Embedding.coeFn_mk, Subtype.mk.injEq, Sigma.mk.inj_iff, Fin.cast_nat_eq_last,
+        Set.toFinset_range]
+      refine ⟨?_, ?_⟩
+    right_inv := sorry
+  }
+
+#exit
+
+      let t : Finset ι := Finset.image (fun i ↦ f i) (Finset.Ico (0 : Fin n.succ) n)
+      let e : Fin n ≃ t := by
+        have A : ∀ (j : Fin n), (f j : ι) ∈ t := by
+          intro j
+          simp only [Fin.coe_eq_castSucc, Fin.cast_nat_eq_last, mem_image, mem_Ico, Fin.zero_le,
+            true_and, t]
+          exact ⟨j, by simpa only [Fin.coe_eq_castSucc, and_true] using j.2⟩
+        apply Equiv.ofBijective (fun i ↦ ⟨f i, A i⟩)
+        refine ⟨?_, ?_⟩
+        · intro x y hxy
+          simp at hxy
+          exact Fin.castSucc_inj.mp (f.injective (Subtype.val_injective hxy))
+        · rintro ⟨w, hw⟩
+          simp only [Fin.cast_nat_eq_last, mem_image, mem_Ico, Fin.zero_le, true_and, t] at hw
+
+      have fnt : (f n : ι) ∉ t := by
+        simp only [Fin.cast_nat_eq_last, mem_image, mem_Ico, Fin.zero_le, true_and, not_exists,
+          not_and, t]
+        intro j hj
+        exact Subtype.val_injective.ne (f.injective.ne hj.ne)
+      refine ⟨⟨t, (?_, ⟨f n, fnt⟩)⟩, ?_⟩
+
+
+
+
+    invFun := sorry
+    left_inv := sorry
+    right_inv := sorry
+  }
+
+#exit
+
+theorem glou : HasFTaylorSeriesUpTo ⊤ f (fun v n ↦ f.iteratedFDeriv n v) := by
+  classical
+  constructor
+  · sorry /-intro y
+    simp only [iteratedFDeriv, Finset.powersetCard_zero, iteratedFDerivComponent,
+      MultilinearMap.iteratedFDerivComponent, MultilinearMap.domDomRestrictₗ, MultilinearMap.coe_mk,
+      MultilinearMap.domDomRestrict_apply, coe_coe, Finset.sum_singleton,
+      Fintype.univ_ofSubsingleton, Fintype.card_ofIsEmpty, List.finRange_zero, List.length_nil,
+      Finset.empty_val, Equiv.symm_symm,
+      Function.Embedding.coeFn_mk, Equiv.equivCongr_refl_left, Equiv.Perm.one_trans,
+      Finset.not_mem_empty, ↓reduceDite, uncurry0_apply, Matrix.zero_empty,
+      MultilinearMap.mkContinuousMultilinear_apply] -/
+  · intro n hn x
+    suffices H : curryLeft (iteratedFDeriv f (Nat.succ n) x) =
+        (∑ s in univ.powersetCard n, ∑ e : Fin n ≃ s,
+          ((iteratedFDerivComponent f s e).linearDeriv (glouk 𝕜 _ x)) ∘L (glouk 𝕜 _)) by sorry
+      /- have A : HasFDerivAt (iteratedFDeriv f n)
+          (∑ s in univ.powersetCard n, ∑ e : Fin n ≃ s,
+            ((iteratedFDerivComponent f s e).linearDeriv (glouk 𝕜 _ x)) ∘L (glouk 𝕜 _)) x := by
+        apply HasFDerivAt.sum (fun s hs ↦ ?_)
+        apply HasFDerivAt.sum (fun e he ↦ ?_)
+        exact (ContinuousMultilinearMap.hasFDerivAt _ _).comp x (ContinuousLinearMap.hasFDerivAt _)
+      rwa [← H] at A -/
+    ext v m
+    simp only [curryLeft_apply, ContinuousLinearMap.coe_sum', ContinuousLinearMap.coe_comp',
+      Finset.sum_apply, Function.comp_apply, linearDeriv_apply, sum_apply]
+    simp only [iteratedFDeriv, iteratedFDerivComponent, MultilinearMap.iteratedFDerivComponent,
+      MultilinearMap.domDomRestrictₗ, MultilinearMap.coe_mk, MultilinearMap.domDomRestrict_apply,
+      coe_coe, MultilinearMap.mkContinuousMultilinear_apply, sum_apply,
+      MultilinearMap.mkContinuousMultilinear_apply, MultilinearMap.coe_mk]
+    simp_rw [← sum_product']
+    simp only [Finset.sum_sigma', univ_product_univ]
+    let B := Finset.sigma ((univ : Finset ι).powersetCard n.succ)
+      (fun (s : Finset ι) ↦ (univ : Finset (Fin n.succ ≃ s)))
+    let C := Finset.sigma ((univ : Finset ι).powersetCard n)
+      (fun (s : Finset ι) ↦ (univ : Finset ((Fin n ≃ s) × {i // i ∉ s})))
+    change ∑ a in B, _ = ∑ a in C, _
+  · sorry /-intro n hn
+    apply continuous_finset_sum _ (fun s hs ↦ ?_)
+    apply continuous_finset_sum _ (fun e he ↦ ?_)
+    exact (ContinuousMultilinearMap.coe_continuous _).comp (ContinuousLinearMap.continuous _) -/
+
+#exit
+
+Finset.sigma.{u_2, u_1} {ι : Type u_1} {α : ι → Type u_2} (s : Finset ι) (t : (i : ι) → Finset (α i)) :
+  Finset ((i : ι) × α i)
+
+@Finset.sigma (Finset ι) (fun i ↦ Fin (Nat.succ n) ≃ { x // x ∈ i })
+  (powersetCard (Nat.succ n) univ)
+  fun a ↦ univ : Finset ((i : Finset ι) × (Fin (Nat.succ n) ≃ { x // x ∈ i }))
+
+@Finset.sigma (Finset ι) (fun i ↦ (Fin n ≃ { x // x ∈ i }) × { a // a ∉ i }) (powersetCard n univ)
+  fun a ↦ univ : Finset ((i : Finset ι) × (Fin n ≃ { x // x ∈ i }) × { a // a ∉ i })
+
 
 lemma cPolynomialAt : CPolynomialAt 𝕜 f x :=
   f.hasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem
