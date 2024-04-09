@@ -280,11 +280,9 @@ of proper map is equivalent to the good definition
 theorem properMap_of_naiveProper_T2_FirstCountable
     [T2Space X] [FirstCountableTopology X]
     [T2Space Y] [FirstCountableTopology Y]
-    (f : X → Y) (hcont: Continuous f):
-    (∀ (K : Set Y), (IsCompact K → IsCompact (f ⁻¹' K)))
-    → IsProperMap f
-    := by
-  intro h
+    (f : X → Y) (hcont: Continuous f)
+    (h : ∀ (K : Set Y), (IsCompact K → IsCompact (f ⁻¹' K))) : IsProperMap f := by
+  --intro h
   -- a map is proper iff it is closed and the fibers are compacts
   rw [isProperMap_iff_isClosedMap_and_compact_fibers]
   refine ⟨(by assumption), ?_, ?_ ⟩
@@ -299,14 +297,15 @@ theorem properMap_of_naiveProper_T2_FirstCountable
     have s'_in_U := fun n ↦ (hs n).1
     have seq_factor : seq = f ∘ s' := by
       ext n
-      simp
+      --simp?
       rw [<-(hs n).2]
+      rfl
     -- the sequence and its limit is compact, so is its preimage by properness
     set cluster_seq := (insert y (Set.range seq))
     have preim_comp := h cluster_seq (Tendsto.isCompact_insert_range seq_conv)
     have s'_im : ∀ n, s' n ∈ (Set.preimage f cluster_seq) := by
       intro n
-      simp
+      --simp
       change (f ∘ s') n ∈ cluster_seq
       rw [<-seq_factor]
       right
@@ -314,29 +313,25 @@ theorem properMap_of_naiveProper_T2_FirstCountable
     -- by compactness we have a converging subsequence
     obtain ⟨a, _, φ, hstrict, htendsto ⟩ := IsCompact.tendsto_subseq preim_comp s'_im
     -- tedious rewriting
-    have fs'_tendsto := tendsTo_comp_continuous htendsto hcont
-    simp at fs'_tendsto
-    change Tendsto ((f ∘ s') ∘ φ) _ _ at fs'_tendsto
+    have fs'_tendsto : Tendsto ((f ∘ s') ∘ φ) atTop (𝓝 (f a)) :=
+      tendsTo_comp_continuous htendsto hcont
     rw [<- seq_factor] at fs'_tendsto
-    -- subsequence still converges
     replace hconv := seq_conv.comp (StrictMono.tendsto_atTop hstrict)
     have aU : a ∈ U := by
       -- a closed set is sequencially closed
       have hUseq := IsClosed.isSeqClosed closed_U
       have hs3 : ∀ c, (s' ∘ φ) c ∈ U := by
         intro c
-        simp
+        simp only [Function.comp_apply]
         specialize s'_in_U (φ c)
         assumption
       -- the limit of s' ∘ φ is still in U
       specialize hUseq hs3 htendsto
       assumption
-    use a
-    constructor
-    · assumption
+    use a, aU
+    --constructor
+    --· assumption
     -- by uniqueness of limits, y=f(a)
-    · rw [tendsto_nhds_unique hconv fs'_tendsto]
+    rw [tendsto_nhds_unique hconv fs'_tendsto]
   · intro y
-    specialize h {y}
-    apply h
-    exact isCompact_singleton
+    exact h {y} isCompact_singleton
