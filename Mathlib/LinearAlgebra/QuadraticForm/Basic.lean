@@ -240,10 +240,8 @@ theorem map_add_add_add_map (x y z : M) :
 #align quadratic_form.map_add_add_add_map QuadraticMap.map_add_add_add_map
 
 theorem map_add_self (x : M) : Q (x + x) = 4 • Q x := by
-  rw [← one_smul R x, ← add_smul, map_smul]
-  rw [← three_add_one_eq_four, ← two_add_one_eq_three, ← one_add_one_eq_two]
-  rw [add_mul, mul_add, one_mul, ← add_assoc, one_smul R x]
-  rw [add_smul, add_smul, add_smul, add_smul, add_smul, add_smul, one_smul, one_smul]
+  rw [← two_smul R x, map_smul, nsmul_eq_smul_cast R]
+  norm_num
 #align quadratic_form.map_add_self QuadraticMap.map_add_self
 
 -- Porting note: removed @[simp] because it is superseded by `ZeroHomClass.map_zero`
