@@ -105,7 +105,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     refine' bE.1.to_hasBasis _ _
     · intro n _
       use n + 1
-      simp only [Ne.def, Nat.succ_ne_zero, not_false_iff, Nat.cast_add, Nat.cast_one, true_and_iff]
+      simp only [Ne, Nat.succ_ne_zero, not_false_iff, Nat.cast_add, Nat.cast_one, true_and_iff]
       -- `b (n + 1) ⊆ b n` follows from `Antitone`.
       have h : b (n + 1) ⊆ b n := bE.2 (by simp)
       refine' _root_.trans _ h
@@ -142,7 +142,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     rcases hu n h with ⟨y, hy, hu1⟩
     convert hy
     rw [← hu1, ← mul_smul]
-    simp only [h, mul_inv_cancel, Ne.def, Nat.cast_eq_zero, not_false_iff, one_smul]
+    simp only [h, mul_inv_cancel, Ne, Nat.cast_eq_zero, not_false_iff, one_smul]
   -- The image `(fun n ↦ n • u n)` is von Neumann bounded:
   have h_bounded : IsVonNBounded 𝕜 (Set.range fun n : ℕ => (n : 𝕜) • u n) :=
     h_tendsto.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
@@ -154,14 +154,14 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     rw [RCLike.norm_natCast]
     exact hn.le
   have hn' : 0 < ‖(n : 𝕜')‖ := lt_of_lt_of_le hr h1
-  rw [norm_pos_iff, Ne.def, Nat.cast_eq_zero] at hn'
+  rw [norm_pos_iff, Ne, Nat.cast_eq_zero] at hn'
   have h'' : f (u n) ∈ V := by
     simp only [Set.image_subset_iff] at h'
     specialize h' (n : 𝕜') h1 (Set.mem_range_self n)
     simp only [Set.mem_preimage, LinearMap.map_smulₛₗ, map_natCast] at h'
     rcases h' with ⟨y, hy, h'⟩
     apply_fun fun y : F => (n : 𝕜')⁻¹ • y at h'
-    simp only [hn', inv_smul_smul₀, Ne.def, Nat.cast_eq_zero, not_false_iff] at h'
+    simp only [hn', inv_smul_smul₀, Ne, Nat.cast_eq_zero, not_false_iff] at h'
     rwa [← h']
   exact hu' n hn' h''
 #align linear_map.continuous_at_zero_of_locally_bounded LinearMap.continuousAt_zero_of_locally_bounded

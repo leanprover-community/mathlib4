@@ -938,7 +938,7 @@ theorem frontier_eq_empty_iff [PreconnectedSpace α] {s : Set α} :
 
 theorem nonempty_frontier_iff [PreconnectedSpace α] {s : Set α} :
     (frontier s).Nonempty ↔ s.Nonempty ∧ s ≠ univ := by
-  simp only [nonempty_iff_ne_empty, Ne.def, frontier_eq_empty_iff, not_or]
+  simp only [nonempty_iff_ne_empty, Ne, frontier_eq_empty_iff, not_or]
 #align nonempty_frontier_iff nonempty_frontier_iff
 
 theorem Subtype.preconnectedSpace {s : Set α} (h : IsPreconnected s) : PreconnectedSpace s where
@@ -1057,7 +1057,7 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
   · induction U using Finset.induction_on with
     | empty => exact absurd (by simpa using hsU) hne.not_subset_empty
     | @insert u U uU IH =>
-      simp only [← ball_cond_comm, Finset.forall_mem_insert, Finset.exists_mem_insert,
+      simp only [← forall_cond_comm, Finset.forall_mem_insert, Finset.exists_mem_insert,
         Finset.coe_insert, sUnion_insert, implies_true, true_and] at *
       refine (h _ hUo.1 (⋃₀ ↑U) (isOpen_sUnion hUo.2) hsU ?_).imp_right ?_
       · refine subset_empty_iff.1 fun x ⟨hxs, hxu, v, hvU, hxv⟩ => ?_

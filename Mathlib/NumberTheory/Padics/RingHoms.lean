@@ -98,15 +98,15 @@ theorem isUnit_den (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) : IsUnit (r.den : �
     simp only [← norm_int_lt_one_iff_dvd, ← padic_norm_e_of_padicInt]
     exact ⟨key, norm_denom_lt⟩
   apply hp_prime.1.not_dvd_one
-  rwa [← r.reduced.gcd_eq_one, Nat.dvd_gcd_iff, ← Int.coe_nat_dvd_left, ← Int.coe_nat_dvd]
+  rwa [← r.reduced.gcd_eq_one, Nat.dvd_gcd_iff, ← Int.natCast_dvd, ← Int.natCast_dvd_natCast]
 #align padic_int.is_unit_denom PadicInt.isUnit_den
 
 theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
     ↑p ∣ r.num - r.num * r.den.gcdA p % p * ↑r.den := by
   rw [← ZMod.int_cast_zmod_eq_zero_iff_dvd]
-  simp only [Int.cast_ofNat, ZMod.nat_cast_mod, Int.cast_mul, Int.cast_sub]
+  simp only [Int.cast_natCast, ZMod.nat_cast_mod, Int.cast_mul, Int.cast_sub]
   have := congr_arg (fun x => x % p : ℤ → ZMod p) (gcd_eq_gcd_ab r.den p)
-  simp only [Int.cast_ofNat, CharP.cast_eq_zero, EuclideanDomain.mod_zero, Int.cast_add,
+  simp only [Int.cast_natCast, CharP.cast_eq_zero, EuclideanDomain.mod_zero, Int.cast_add,
     Int.cast_mul, zero_mul, add_zero] at this
   push_cast
   rw [mul_right_comm, mul_assoc, ← this]
@@ -115,7 +115,7 @@ theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
     simp only [mul_one, cast_one, sub_self]
   apply Coprime.symm
   apply (coprime_or_dvd_of_prime hp_prime.1 _).resolve_right
-  rw [← Int.coe_nat_dvd, ← norm_int_lt_one_iff_dvd, not_lt]
+  rw [← Int.natCast_dvd_natCast, ← norm_int_lt_one_iff_dvd, not_lt]
   apply ge_of_eq
   rw [← isUnit_iff]
   exact isUnit_den r h
@@ -126,7 +126,7 @@ theorem norm_sub_modPart (h : ‖(r : ℚ_[p])‖ ≤ 1) : ‖(⟨r, h⟩ - modP
   rw [norm_lt_one_iff_dvd, ← (isUnit_den r h).dvd_mul_right]
   suffices ↑p ∣ r.num - n * r.den by
     convert (Int.castRingHom ℤ_[p]).map_dvd this
-    simp only [sub_mul, Int.cast_ofNat, eq_intCast, Int.cast_mul, sub_left_inj, Int.cast_sub]
+    simp only [sub_mul, Int.cast_natCast, eq_intCast, Int.cast_mul, sub_left_inj, Int.cast_sub]
     apply Subtype.coe_injective
     simp only [coe_mul, Subtype.coe_mk, coe_nat_cast]
     rw_mod_cast [@Rat.mul_den_eq_num r]
@@ -164,7 +164,7 @@ theorem zmod_congr_of_sub_mem_max_ideal (x : ℤ_[p]) (m n : ℕ) (hm : x - m �
   specialize this hm hn
   apply_fun ZMod.castHom (show p ∣ p ^ 1 by rw [pow_one]) (ZMod p) at this
   simp only [map_intCast] at this
-  simpa only [Int.cast_ofNat] using this
+  simpa only [Int.cast_natCast] using this
 #align padic_int.zmod_congr_of_sub_mem_max_ideal PadicInt.zmod_congr_of_sub_mem_max_ideal
 
 variable (x : ℤ_[p])

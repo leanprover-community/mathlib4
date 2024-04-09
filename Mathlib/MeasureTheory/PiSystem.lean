@@ -549,7 +549,7 @@ structure DynkinSystem (α : Type*) where
   /-- A Dynkin system is closed under complementation. -/
   has_compl : ∀ {a}, Has a → Has aᶜ
   /-- A Dynkin system is closed under countable union of pairwise disjoint sets. Use a more general
-  `MeasurableSpace.DynkinSystem.has_iUnion` instead.-/
+  `MeasurableSpace.DynkinSystem.has_iUnion` instead. -/
   has_iUnion_nat : ∀ {f : ℕ → Set α}, Pairwise (Disjoint on f) → (∀ i, Has (f i)) → Has (⋃ i, f i)
 #align measurable_space.dynkin_system MeasurableSpace.DynkinSystem
 

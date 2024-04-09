@@ -20,7 +20,7 @@ namespace GeneralizedContinuedFraction
 
 variable {K : Type*} {g : GeneralizedContinuedFraction K} {n m : ℕ}
 
-/-- If a gcf terminated at position `n`, it also terminated at `m ≥ n`.-/
+/-- If a gcf terminated at position `n`, it also terminated at `m ≥ n`. -/
 theorem terminated_stable (n_le_m : n ≤ m) (terminated_at_n : g.TerminatedAt n) :
     g.TerminatedAt m :=
   g.s.terminated_stable n_le_m terminated_at_n

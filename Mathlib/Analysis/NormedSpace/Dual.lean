@@ -138,7 +138,7 @@ theorem eq_iff_forall_dual_eq {x y : E} : x = y ↔ ∀ g : Dual 𝕜 E, g x = g
   simp [sub_eq_zero]
 #align normed_space.eq_iff_forall_dual_eq NormedSpace.eq_iff_forall_dual_eq
 
-/-- The inclusion of a normed space in its double dual is an isometry onto its image.-/
+/-- The inclusion of a normed space in its double dual is an isometry onto its image. -/
 def inclusionInDoubleDualLi : E →ₗᵢ[𝕜] Dual 𝕜 (Dual 𝕜 E) :=
   { inclusionInDoubleDual 𝕜 E with
     norm_map' := by
@@ -209,7 +209,7 @@ theorem smul_mem_polar {s : Set E} {x' : Dual 𝕜 E} {c : 𝕜} (hc : ∀ z, z 
     rw [eq z]
     apply mul_le_mul (le_of_eq rfl) (hc z hzs) (norm_nonneg _) (norm_nonneg _)
   have cancel : ‖c⁻¹‖ * ‖c‖ = 1 := by
-    simp only [c_zero, norm_eq_zero, Ne.def, not_false_iff, inv_mul_cancel, norm_inv]
+    simp only [c_zero, norm_eq_zero, Ne, not_false_iff, inv_mul_cancel, norm_inv]
   rwa [cancel] at le
 #align normed_space.smul_mem_polar NormedSpace.smul_mem_polar
 

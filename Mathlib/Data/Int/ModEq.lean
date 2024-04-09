@@ -75,9 +75,9 @@ end ModEq
 theorem modEq_comm : a ≡ b [ZMOD n] ↔ b ≡ a [ZMOD n] := ⟨ModEq.symm, ModEq.symm⟩
 #align int.modeq_comm Int.modEq_comm
 
-theorem coe_nat_modEq_iff {a b n : ℕ} : a ≡ b [ZMOD n] ↔ a ≡ b [MOD n] := by
-  unfold ModEq Nat.ModEq; rw [← Int.ofNat_inj]; simp [coe_nat_mod]
-#align int.coe_nat_modeq_iff Int.coe_nat_modEq_iff
+theorem natCast_modEq_iff {a b n : ℕ} : a ≡ b [ZMOD n] ↔ a ≡ b [MOD n] := by
+  unfold ModEq Nat.ModEq; rw [← Int.ofNat_inj]; simp [natCast_mod]
+#align int.coe_nat_modeq_iff Int.natCast_modEq_iff
 
 theorem modEq_zero_iff_dvd : a ≡ 0 [ZMOD n] ↔ n ∣ a := by
   rw [ModEq, zero_emod, dvd_iff_emod_eq_zero]
@@ -267,8 +267,8 @@ theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℤ} (hmn : m.natAbs.Coprime n.
     a ≡ b [ZMOD m] ∧ a ≡ b [ZMOD n] ↔ a ≡ b [ZMOD m * n] :=
   ⟨fun h => by
     rw [modEq_iff_dvd, modEq_iff_dvd] at h
-    rw [modEq_iff_dvd, ← natAbs_dvd, ← dvd_natAbs, coe_nat_dvd, natAbs_mul]
-    refine' hmn.mul_dvd_of_dvd_of_dvd _ _ <;> rw [← coe_nat_dvd, natAbs_dvd, dvd_natAbs] <;>
+    rw [modEq_iff_dvd, ← natAbs_dvd, ← dvd_natAbs, natCast_dvd_natCast, natAbs_mul]
+    refine' hmn.mul_dvd_of_dvd_of_dvd _ _ <;> rw [← natCast_dvd_natCast, natAbs_dvd, dvd_natAbs] <;>
       tauto,
     fun h => ⟨h.of_mul_right _, h.of_mul_left _⟩⟩
 #align int.modeq_and_modeq_iff_modeq_mul Int.modEq_and_modEq_iff_modEq_mul
@@ -324,5 +324,8 @@ theorem mod_mul_right_mod (a b c : ℤ) : a % (b * c) % b = a % b :=
 theorem mod_mul_left_mod (a b c : ℤ) : a % (b * c) % c = a % c :=
   (mod_modEq _ _).of_mul_left _
 #align int.mod_mul_left_mod Int.mod_mul_left_mod
+
+-- 2024-04-02
+@[deprecated] alias coe_nat_modEq_iff := natCast_modEq_iff
 
 end Int

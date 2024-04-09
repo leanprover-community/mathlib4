@@ -123,7 +123,7 @@ theorem ext {S T : NonUnitalSubsemiring R} (h : ∀ x, x ∈ S ↔ x ∈ T) : S 
 #align non_unital_subsemiring.ext NonUnitalSubsemiring.ext
 
 /-- Copy of a non-unital subsemiring with a new `carrier` equal to the old one. Useful to fix
-definitional equalities.-/
+definitional equalities. -/
 protected def copy (S : NonUnitalSubsemiring R) (s : Set R) (hs : s = ↑S) :
     NonUnitalSubsemiring R :=
   { S.toAddSubmonoid.copy s hs, S.toSubsemigroup.copy s hs with carrier := s }
@@ -303,9 +303,8 @@ theorem coe_map (f : F) (s : NonUnitalSubsemiring R) : (s.map f : Set S) = f '' 
 #align non_unital_subsemiring.coe_map NonUnitalSubsemiring.coe_map
 
 @[simp]
-theorem mem_map {f : F} {s : NonUnitalSubsemiring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := by
-  convert Set.mem_image_iff_bex
-  simp
+theorem mem_map {f : F} {s : NonUnitalSubsemiring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y :=
+  Iff.rfl
 #align non_unital_subsemiring.mem_map NonUnitalSubsemiring.mem_map
 
 @[simp]
