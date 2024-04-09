@@ -563,6 +563,33 @@ lemma inverseImage_W_isInverted {E : Type*} [Category E]
 
 end
 
+section
+
+variable {D : Type*} [Category D] [Preadditive D] [HasZeroObject D] [HasShift D ℤ]
+  [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
+  {F G : C ⥤ D} [F.CommShift ℤ] [G.CommShift ℤ] [F.IsTriangulated]
+  [G.IsTriangulated] (τ : F ⟶ G) [NatTrans.CommShift τ ℤ]
+
+def ofNatTrans : Subcategory C :=
+  Subcategory.mk' (fun X => IsIso (τ.app X))
+    ⟨0, by rw [comp_zero, ← F.map_id, id_zero, F.map_zero],
+        by rw [zero_comp, ← G.map_id, id_zero, G.map_zero]⟩
+    (fun X n (_ : IsIso (τ.app X)) => by
+      dsimp
+      rw [NatTrans.CommShift.app_shift τ n]
+      infer_instance)
+    (fun T hT h₁ h₃ => by
+      exact Pretriangulated.isIso₂_of_isIso₁₃ (by
+        refine' (Pretriangulated.Triangle.homMk _ _ (τ.app _) (τ.app _) (τ.app _) (by simp) (by simp)
+          (by simp [NatTrans.CommShift.comm_app τ])))
+        (F.map_distinguished _ hT) (G.map_distinguished _ hT) (by exact h₁) (by exact h₃))
+
+instance : ClosedUnderIsomorphisms (ofNatTrans τ).P := by
+  dsimp [ofNatTrans]
+  infer_instance
+
+end
+
 end Subcategory
 
 end Triangulated
