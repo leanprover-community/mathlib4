@@ -39,7 +39,6 @@ def NNRat := { q : ℚ // 0 ≤ q } deriving
 -- instead of `deriving` them
 instance : OrderedSub NNRat := Nonneg.orderedSub
 
--- mathport name: nnrat
 scoped[NNRat] notation "ℚ≥0" => NNRat
 
 namespace NNRat
@@ -202,9 +201,12 @@ theorem coe_natCast (n : ℕ) : (↑(↑n : ℚ≥0) : ℚ) = n :=
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem mk_coe_nat (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ≥0) n :=
+theorem mk_natCast (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ≥0) n :=
   rfl
-#align nnrat.mk_coe_nat NNRat.mk_coe_nat
+#align nnrat.mk_coe_nat NNRat.mk_natCast
+
+-- 2024-04-05
+@[deprecated] alias mk_coe_nat := mk_natCast
 
 @[simp]
 theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=

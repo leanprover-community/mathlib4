@@ -327,26 +327,6 @@ theorem Nat.factors_multiset_prod_of_irreducible {s : Multiset ℕ}
   exact not_irreducible_zero (h 0 con)
 #align nat.factors_multiset_prod_of_irreducible Nat.factors_multiset_prod_of_irreducible
 
-namespace multiplicity
-
-theorem finite_int_iff_natAbs_finite {a b : ℤ} : Finite a b ↔ Finite a.natAbs b.natAbs := by
-  simp only [finite_def, ← Int.natAbs_dvd_natAbs, Int.natAbs_pow]
-#align multiplicity.finite_int_iff_nat_abs_finite multiplicity.finite_int_iff_natAbs_finite
-
-theorem finite_int_iff {a b : ℤ} : Finite a b ↔ a.natAbs ≠ 1 ∧ b ≠ 0 := by
-  rw [finite_int_iff_natAbs_finite, finite_nat_iff, pos_iff_ne_zero, Int.natAbs_ne_zero]
-#align multiplicity.finite_int_iff multiplicity.finite_int_iff
-
-instance decidableNat : DecidableRel fun a b : ℕ => (multiplicity a b).Dom := fun _ _ =>
-  decidable_of_iff _ finite_nat_iff.symm
-#align multiplicity.decidable_nat multiplicity.decidableNat
-
-instance decidableInt : DecidableRel fun a b : ℤ => (multiplicity a b).Dom := fun _ _ =>
-  decidable_of_iff _ finite_int_iff.symm
-#align multiplicity.decidable_int multiplicity.decidableInt
-
-end multiplicity
-
 theorem induction_on_primes {P : ℕ → Prop} (h₀ : P 0) (h₁ : P 1)
     (h : ∀ p a : ℕ, p.Prime → P a → P (p * a)) (n : ℕ) : P n := by
   apply UniqueFactorizationMonoid.induction_on_prime

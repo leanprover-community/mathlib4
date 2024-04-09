@@ -3,9 +3,10 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Data.Int.Interval
+import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
-import Mathlib.RingTheory.Localization.FractionRing
 
 #align_import ring_theory.laurent_series from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
@@ -14,11 +15,15 @@ import Mathlib.RingTheory.Localization.FractionRing
 
 ## Main Definitions
 * Defines `LaurentSeries` as an abbreviation for `HahnSeries ℤ`.
+* Defines `hasseDeriv` of a Laurent series with coefficients in a module over a ring.
 * Provides a coercion `PowerSeries R` into `LaurentSeries R` given by
   `HahnSeries.ofPowerSeries`.
 * Defines `LaurentSeries.powerSeriesPart`
 * Defines the localization map `LaurentSeries.of_powerSeries_localization` which evaluates to
   `HahnSeries.ofPowerSeries`.
+
+## Main Results
+* Basic properties of Hasse derivatives
 
 -/
 
@@ -26,8 +31,6 @@ open scoped Classical
 open HahnSeries BigOperators Polynomial
 
 noncomputable section
-
-universe u
 
 /-- A `LaurentSeries` is implemented as a `HahnSeries` with value group `ℤ`. -/
 abbrev LaurentSeries (R : Type*) [Zero R] :=
@@ -37,6 +40,30 @@ abbrev LaurentSeries (R : Type*) [Zero R] :=
 variable {R : Type*}
 
 namespace LaurentSeries
+
+section HasseDeriv
+
+/-- The Hasse derivative of Laurent series, as a linear map. -/
+@[simps]
+def hasseDeriv (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V] (k : ℕ) :
+    LaurentSeries V →ₗ[R] LaurentSeries V where
+  toFun f := HahnSeries.ofSuppBddBelow (fun (n : ℤ) => (Ring.choose (n + k) k) • f.coeff (n + k))
+    (forallLTEqZero_supp_BddBelow _ (f.order - k : ℤ)
+    (fun _ h_lt ↦ by rw [coeff_eq_zero_of_lt_order <| lt_sub_iff_add_lt.mp h_lt, smul_zero]))
+  map_add' f g := by
+    simp only [ofSuppBddBelow, add_coeff', Pi.add_apply, smul_add]
+    exact rfl
+  map_smul' r f := by
+    ext
+    simp only [ofSuppBddBelow, smul_coeff, RingHom.id_apply, smul_comm r]
+
+variable [Semiring R] {V : Type*} [AddCommGroup V] [Module R V]
+
+theorem hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
+    (hasseDeriv R k f).coeff n = Ring.choose (n + k) k • f.coeff (n + k) :=
+  rfl
+
+end HasseDeriv
 
 section Semiring
 
@@ -155,9 +182,7 @@ instance of_powerSeries_localization [CommRing R] :
     exact ⟨1, rfl⟩
 #align laurent_series.of_power_series_localization LaurentSeries.of_powerSeries_localization
 
--- Porting note: this instance is needed
-local instance {K : Type u} [Field K] : MonoidWithZero (HahnSeries ℤ K) := inferInstance in
-instance {K : Type u} [Field K] : IsFractionRing (PowerSeries K) (LaurentSeries K) :=
+instance {K : Type*} [Field K] : IsFractionRing (PowerSeries K) (LaurentSeries K) :=
   IsLocalization.of_le (Submonoid.powers (PowerSeries.X : PowerSeries K)) _
     (powers_le_nonZeroDivisors_of_noZeroDivisors PowerSeries.X_ne_zero) fun _ hf =>
     isUnit_of_mem_nonZeroDivisors <| map_mem_nonZeroDivisors _ HahnSeries.ofPowerSeries_injective hf
@@ -236,7 +261,7 @@ theorem coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : PowerSeries 
 #noalign power_series.coe_bit0
 #noalign power_series.coe_bit1
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : LaurentSeries R) = (ofPowerSeries ℤ R f) ^ n :=
   (ofPowerSeries ℤ R).map_pow _ _
 #align power_series.coe_pow PowerSeries.coe_pow

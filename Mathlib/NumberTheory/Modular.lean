@@ -192,7 +192,7 @@ def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
 #align modular_group.lc_row0_extend ModularGroup.lcRow0Extend
 
 /-- The map `lcRow0` is proper, that is, preimages of cocompact sets are finite in
-`[[* , *], [c, d]]`.-/
+`[[* , *], [c, d]]`. -/
 theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     Tendsto (fun g : { g : SL(2, ℤ) // (↑ₘg) 1 = cd } => lcRow0 cd ↑(↑g : SL(2, ℝ))) cofinite
       (cocompact ℝ) := by

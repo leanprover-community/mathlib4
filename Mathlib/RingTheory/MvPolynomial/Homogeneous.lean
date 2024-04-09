@@ -5,10 +5,10 @@ Authors: Johan Commelin, Eric Wieser
 -/
 import Mathlib.Algebra.DirectSum.Internal
 import Mathlib.Algebra.GradedMonoid
-import Mathlib.Data.MvPolynomial.CommRing
-import Mathlib.Data.MvPolynomial.Equiv
-import Mathlib.Data.MvPolynomial.Variables
-import Mathlib.Data.Polynomial.RingDivision
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.Algebra.MvPolynomial.Variables
+import Mathlib.Algebra.Polynomial.RingDivision
 
 #align_import ring_theory.mv_polynomial.homogeneous from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 

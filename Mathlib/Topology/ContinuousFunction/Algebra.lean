@@ -145,7 +145,7 @@ instance instPow [Monoid β] [ContinuousMul β] : Pow C(α, β) ℕ :=
   ⟨fun f n => ⟨(⇑f) ^ n, f.continuous.pow n⟩⟩
 #align continuous_map.has_pow ContinuousMap.instPow
 
-@[to_additive (attr := norm_cast)]
+@[to_additive (attr := norm_cast) (reorder := 7 8)]
 theorem coe_pow [Monoid β] [ContinuousMul β] (f : C(α, β)) (n : ℕ) : ⇑(f ^ n) = (⇑f) ^ n :=
   rfl
 #align continuous_map.coe_pow ContinuousMap.coe_pow
@@ -232,7 +232,7 @@ instance instZPow [Group β] [TopologicalGroup β] : Pow C(α, β) ℤ where
   pow f z := ⟨(⇑f) ^ z, f.continuous.zpow z⟩
 #align continuous_map.has_zpow ContinuousMap.instZPow
 
-@[to_additive (attr := norm_cast)]
+@[to_additive (attr := norm_cast) (reorder := 7 8)]
 theorem coe_zpow [Group β] [TopologicalGroup β] (f : C(α, β)) (z : ℤ) : ⇑(f ^ z) = (⇑f) ^ z :=
   rfl
 #align continuous_map.coe_zpow ContinuousMap.coe_zpow
@@ -522,7 +522,8 @@ instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CommSemiring β]
     [TopologicalSemiring β] : CommSemiring C(α, β) :=
-  coe_injective.commSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_nat_cast
+  coe_injective.commSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow
+    coe_nat_cast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalCommRing β]
     [TopologicalRing β] : NonUnitalCommRing C(α, β) :=
@@ -684,7 +685,7 @@ section AlgebraStructure
 
 In this section we show that continuous functions valued in a topological algebra `A` over a ring
 `R` inherit the structure of an algebra. Note that the hypothesis that `A` is a topological algebra
-is obtained by requiring that `A` be both a `ContinuousSMul` and a `TopologicalSemiring`.-/
+is obtained by requiring that `A` be both a `ContinuousSMul` and a `TopologicalSemiring`. -/
 
 
 section Subtype

@@ -869,7 +869,7 @@ is to recursively uncurry. For instance `f : α → β → γ → δ` will be tu
 class HasUncurry (α : Type*) (β : outParam (Type*)) (γ : outParam (Type*)) where
   /-- Uncurrying operator. The most generic use is to recursively uncurry. For instance
   `f : α → β → γ → δ` will be turned into `↿f : α × β × γ → δ`. One can also add instances
-  for bundled maps.-/
+  for bundled maps. -/
   uncurry : α → β → γ
 #align function.has_uncurry Function.HasUncurry
 
@@ -1071,7 +1071,7 @@ theorem cast_bijective {α β : Sort _} (h : α = β) : Function.Bijective (cast
 #align cast_bijective cast_bijective
 
 /-! Note these lemmas apply to `Type*` not `Sort*`, as the latter interferes with `simp`, and
-is trivial anyway.-/
+is trivial anyway. -/
 
 
 @[simp]

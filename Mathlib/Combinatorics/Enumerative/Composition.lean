@@ -3,9 +3,9 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Finset.Sort
-import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Set.Basic
 
 #align_import combinatorics.composition from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
@@ -308,7 +308,7 @@ theorem coe_embedding (i : Fin c.length) (j : Fin (c.blocksFun i)) :
 #align composition.coe_embedding Composition.coe_embedding
 
 /-- `index_exists` asserts there is some `i` with `j < c.size_up_to (i+1)`.
-In the next definition `index` we use `nat.find` to produce the minimal such index.
+In the next definition `index` we use `Nat.find` to produce the minimal such index.
 -/
 theorem index_exists {j : ℕ} (h : j < n) : ∃ i : ℕ, j < c.sizeUpTo i.succ ∧ i < c.length := by
   have n_pos : 0 < n := lt_of_le_of_lt (zero_le j) h

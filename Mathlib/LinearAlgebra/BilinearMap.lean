@@ -200,7 +200,7 @@ variable [SMul S' S] [IsScalarTower S' S N] [IsScalarTower S' S Pₗ]
 variable [SMul R' R] [IsScalarTower R' R M] [IsScalarTower R' R Pₗ]
 
 /-- If `B : M → N → Pₗ` is `R`-`S` bilinear and `R'` and `S'` are compatible scalar multiplications,
-then the restriction of scalars is a `R'`-`S'` bilinear map.-/
+then the restriction of scalars is a `R'`-`S'` bilinear map. -/
 @[simps!]
 def restrictScalars₁₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N →ₗ[S'] Pₗ :=
   LinearMap.mk₂' R' S'

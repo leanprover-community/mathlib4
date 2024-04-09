@@ -94,16 +94,13 @@ add_decl_doc LinearMap.toMulActionHom
 add_decl_doc LinearMap.toAddHom
 #align linear_map.to_add_hom LinearMap.toAddHom
 
--- mathport name: «expr →ₛₗ[ ] »
 /-- `M →ₛₗ[σ] N` is the type of `σ`-semilinear maps from `M` to `N`. -/
 notation:25 M " →ₛₗ[" σ:25 "] " M₂:0 => LinearMap σ M M₂
 
 /-- `M →ₗ[R] N` is the type of `R`-linear maps from `M` to `N`. -/
--- mathport name: «expr →ₗ[ ] »
 notation:25 M " →ₗ[" R:25 "] " M₂:0 => LinearMap (RingHom.id R) M M₂
 
 /-- `M →ₗ⋆[R] N` is the type of `R`-conjugate-linear maps from `M` to `N`. -/
--- mathport name: «expr →ₗ⋆[ ] »
 notation:25 M " →ₗ⋆[" R:25 "] " M₂:0 => LinearMap (starRingEnd R) M M₂
 
 /-- `SemilinearMapClass F σ M M₂` asserts `F` is a type of bundled `σ`-semilinear maps `M → M₂`.
