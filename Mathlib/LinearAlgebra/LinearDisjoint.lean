@@ -186,7 +186,7 @@ theorem lTensorOne'_apply
 This generalizes `TensorProduct.lid` as `i(R)` is not necessarily isomorphic to `R`. -/
 def lTensorOne : (1 : Submodule R S) ⊗[R] N ≃ₗ[R] N := by
   refine LinearEquiv.ofLinear N.lTensorOne'
-    (TensorProduct.mk R (1 : Submodule R S) N ⟨1, Submodule.one_le.1 (le_refl _)⟩) ?_ ?_
+    (TensorProduct.mk R (1 : Submodule R S) N ⟨1, one_le.1 (le_refl _)⟩) ?_ ?_
   · ext; simp [lTensorOne']
   · ext r n
     obtain ⟨_, y, rfl⟩ := r
@@ -204,7 +204,7 @@ theorem lTensorOne_apply
   N.lTensorOne'_apply y n
 
 theorem lTensorOne_symm_apply (n : N) :
-    N.lTensorOne.symm n = ⟨1, Submodule.one_le.1 (le_refl _)⟩ ⊗ₜ[R] n := rfl
+    N.lTensorOne.symm n = ⟨1, one_le.1 (le_refl _)⟩ ⊗ₜ[R] n := rfl
 
 /-- If `M` is a submodule in an algebra `S` over `R`, there is the natural map
 `M ⊗[R] i(R) →ₗ[R] M` induced by multiplication in `S`, here `i : R → S` is the structure map. -/
@@ -232,7 +232,7 @@ This generalizes `TensorProduct.rid` as `i(R)` is not necessarily isomorphic to 
 def rTensorOne : M ⊗[R] (1 : Submodule R S) ≃ₗ[R] M := by
   refine LinearEquiv.ofLinear M.rTensorOne'
     ((TensorProduct.comm R _ _).toLinearMap ∘ₗ TensorProduct.mk R
-      (1 : Submodule R S) M ⟨1, Submodule.one_le.1 (le_refl _)⟩) ?_ ?_
+      (1 : Submodule R S) M ⟨1, one_le.1 (le_refl _)⟩) ?_ ?_
   · ext; simp [rTensorOne']
   · ext m r
     obtain ⟨_, y, rfl⟩ := r
@@ -250,7 +250,7 @@ theorem rTensorOne_apply
   M.rTensorOne'_apply y m
 
 theorem rTensorOne_symm_apply (m : M) :
-    M.rTensorOne.symm m = m ⊗ₜ[R] ⟨1, Submodule.one_le.1 (le_refl _)⟩ := rfl
+    M.rTensorOne.symm m = m ⊗ₜ[R] ⟨1, one_le.1 (le_refl _)⟩ := rfl
 
 namespace LinearDisjoint
 
@@ -259,7 +259,7 @@ variable {M} in
 `S` which maps `{ n_i }` to the sum of `m_i * n_i`. -/
 def mulLeftMap {ι : Type*} (m : ι → M) : (ι →₀ N) →ₗ[R] S :=
   mulMap M N ∘ₗ LinearMap.rTensor N (Finsupp.total ι M R m) ∘ₗ
-    TensorProduct.finsuppScalarLeft.symm.toLinearMap
+    (TensorProduct.finsuppScalarLeft R N ι).symm.toLinearMap
 
 variable {M N} in
 @[simp]
@@ -282,7 +282,7 @@ variable {N} in
 `S` which maps `{ m_i }` to the sum of `m_i * n_i`. -/
 def mulRightMap {ι : Type*} (n : ι → N) : (ι →₀ M) →ₗ[R] S :=
   mulMap M N ∘ₗ LinearMap.lTensor M (Finsupp.total ι N R n) ∘ₗ
-    TensorProduct.finsuppScalarRight.symm.toLinearMap
+    (TensorProduct.finsuppScalarRight R M ι).symm.toLinearMap
 
 variable {M N} in
 @[simp]
@@ -311,6 +311,11 @@ protected def LinearDisjoint : Prop := Function.Injective (mulMap M N)
 variable {M N}
 
 theorem LinearDisjoint.injective (H : M.LinearDisjoint N) : Function.Injective (mulMap M N) := H
+
+@[nontriviality]
+theorem LinearDisjoint.of_subsingleton [Subsingleton R] : M.LinearDisjoint N := by
+  haveI : Subsingleton S := Module.subsingleton R S
+  exact Function.injective_of_subsingleton _
 
 /-- Linearly disjoint is preserved by taking multiplicative opposite. -/
 theorem linearDisjoint_op :
@@ -364,14 +369,6 @@ theorem of_map_linearIndependent_right' {ι : Type*} (n : Basis ι R N)
     LinearEquiv.coe_coe, EquivLike.injective_comp] at H
   exact H
 
--- TODO: remove once #11598 is merged
-theorem _root_.finsuppTensorFinsupp'_symm_single (R ι κ : Type*) [CommSemiring R] (i : ι × κ)
-    (r₁ r₂ : R) :
-    (finsuppTensorFinsupp' R ι κ).symm (Finsupp.single i (r₁ * r₂)) =
-      Finsupp.single i.1 r₁ ⊗ₜ Finsupp.single i.2 r₂ :=
-  Prod.casesOn i fun _ _ =>
-    (LinearEquiv.symm_apply_eq _).2 (finsuppTensorFinsupp'_single_tmul_single ..).symm
-
 theorem of_map_linearIndependent_mul' {κ ι : Type*} (m : Basis κ R M) (n : Basis ι R N)
     (H : Function.Injective (Finsupp.total (κ × ι) S R fun i ↦ m i.1 * n i.2)) :
     M.LinearDisjoint N := by
@@ -380,10 +377,7 @@ theorem of_map_linearIndependent_mul' {κ ι : Type*} (m : Basis κ R M) (n : Ba
   let i := mulMap M N ∘ₗ (i0.trans i1.symm).toLinearMap
   have : i = Finsupp.total (κ × ι) S R fun i ↦ m i.1 * n i.2 := by
     ext x
-    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, Finsupp.lsingle_apply,
-      LinearEquiv.trans_apply, Finsupp.total_single, one_smul, i, i0]
-    rw [show (1 : R) = 1 * 1 by simp, finsuppTensorFinsupp'_symm_single]
-    simp [i1]
+    simp [i, i0, i1, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
   simp_rw [← this, i, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.injective_comp] at H
   exact H
 
@@ -501,9 +495,9 @@ theorem map_linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat
     {ι : Type*} {m : ι → M} (hm : LinearIndependent R m) : LinearMap.ker (mulLeftMap N m) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
   let f := mulMap M N ∘ₗ LinearMap.rTensor N (Finsupp.total ι M R m)
-  refine (TensorProduct.finsuppScalarLeft.symm.toEquiv.injective_comp f).2 ?_
+  refine ((TensorProduct.finsuppScalarLeft R N ι).symm.toEquiv.injective_comp f).2 ?_
   rw [LinearIndependent, LinearMap.ker_eq_bot] at hm
-  exact H.injective.comp (Module.Flat.preserves_injective_linearMap (M := N) _ hm)
+  exact H.injective.comp (Module.Flat.rTensor_preserves_injective_linearMap (M := N) _ hm)
 
 theorem of_map_linearIndependent_left {ι : Type*} (m : Basis ι R M)
     (H : LinearMap.ker (mulLeftMap N m) = ⊥) : M.LinearDisjoint N := by
@@ -511,25 +505,14 @@ theorem of_map_linearIndependent_left {ι : Type*} (m : Basis ι R M)
   letI : AddCommGroup (ι →₀ N) := Finsupp.instAddCommGroup
   exact of_map_linearIndependent_left' M N m (LinearMap.ker_eq_bot.1 H)
 
--- TODO: remove once #11748 is merged
-theorem _root_.Module.Flat.preserves_injective_linearMap'
-    {R : Type u} {M : Type v} [CommRing R] [AddCommGroup M] [Module R M]
-    {N : Type w} [AddCommGroup N] [Module R N] {M' : Type*} [AddCommGroup M'] [Module R M']
-    [Module.Flat R N] (L : M →ₗ[R] M') (hL : Function.Injective L) :
-    Function.Injective (LinearMap.lTensor N L) := by
-  -- rw [Module.Flat.lTensor_inj_iff_rTensor_inj]
-  simp_rw [← LinearMap.comm_comp_rTensor_comp_comm_eq, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    EmbeddingLike.comp_injective, EquivLike.injective_comp]
-  exact Module.Flat.preserves_injective_linearMap L hL
-
 variable {M N} in
 theorem map_linearIndependent_right_of_flat (H : M.LinearDisjoint N) [Module.Flat R M]
     {ι : Type*} {n : ι → N} (hn : LinearIndependent R n) : LinearMap.ker (mulRightMap M n) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
   let f := mulMap M N ∘ₗ LinearMap.lTensor M (Finsupp.total ι N R n)
-  refine (TensorProduct.finsuppScalarRight.symm.toEquiv.injective_comp f).2 ?_
+  refine ((TensorProduct.finsuppScalarRight R M ι).symm.toEquiv.injective_comp f).2 ?_
   rw [LinearIndependent, LinearMap.ker_eq_bot] at hn
-  exact H.injective.comp (Module.Flat.preserves_injective_linearMap' (N := M) _ hn)
+  exact H.injective.comp (Module.Flat.lTensor_preserves_injective_linearMap (M := M) _ hn)
 
 theorem of_map_linearIndependent_right {ι : Type*} (n : Basis ι R N)
     (H : LinearMap.ker (mulRightMap M n) = ⊥) : M.LinearDisjoint N := by
@@ -546,15 +529,12 @@ theorem map_linearIndependent_mul_of_flat_left (H : M.LinearDisjoint N) [Module.
   let i1 := LinearMap.rTensor (ι →₀ R) (Finsupp.total κ M R m)
   let i2 := LinearMap.lTensor M (Finsupp.total ι N R n)
   let i := mulMap M N ∘ₗ i2 ∘ₗ i1 ∘ₗ i0.toLinearMap
-  have h1 : Function.Injective i1 := Module.Flat.preserves_injective_linearMap _ hm
-  have h2 : Function.Injective i2 := Module.Flat.preserves_injective_linearMap' _ hn
+  have h1 : Function.Injective i1 := Module.Flat.rTensor_preserves_injective_linearMap _ hm
+  have h2 : Function.Injective i2 := Module.Flat.lTensor_preserves_injective_linearMap _ hn
   have h : Function.Injective i := H.injective.comp h2 |>.comp h1 |>.comp i0.injective
   have : i = Finsupp.total (κ × ι) S R fun i ↦ (m i.1).1 * (n i.2).1 := by
     ext x
-    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, Finsupp.lsingle_apply,
-      Finsupp.total_single, one_smul, i, i0]
-    rw [show (1 : R) = 1 * 1 by simp, finsuppTensorFinsupp'_symm_single]
-    simp [i1, i2]
+    simp [i, i0, i1, i2, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
   rwa [this] at h
 
 variable {M N} in
@@ -566,15 +546,12 @@ theorem map_linearIndependent_mul_of_flat_right (H : M.LinearDisjoint N) [Module
   let i1 := LinearMap.lTensor (κ →₀ R) (Finsupp.total ι N R n)
   let i2 := LinearMap.rTensor N (Finsupp.total κ M R m)
   let i := mulMap M N ∘ₗ i2 ∘ₗ i1 ∘ₗ i0.toLinearMap
-  have h1 : Function.Injective i1 := Module.Flat.preserves_injective_linearMap' _ hn
-  have h2 : Function.Injective i2 := Module.Flat.preserves_injective_linearMap _ hm
+  have h1 : Function.Injective i1 := Module.Flat.lTensor_preserves_injective_linearMap _ hn
+  have h2 : Function.Injective i2 := Module.Flat.rTensor_preserves_injective_linearMap _ hm
   have h : Function.Injective i := H.injective.comp h2 |>.comp h1 |>.comp i0.injective
   have : i = Finsupp.total (κ × ι) S R fun i ↦ (m i.1).1 * (n i.2).1 := by
     ext x
-    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, Finsupp.lsingle_apply,
-      Finsupp.total_single, one_smul, i, i0]
-    rw [show (1 : R) = 1 * 1 by simp, finsuppTensorFinsupp'_symm_single]
-    simp [i1, i2]
+    simp [i, i0, i1, i2, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
   rwa [this] at h
 
 variable {M N} in
@@ -594,18 +571,18 @@ theorem of_map_linearIndependent_mul {κ ι : Type*} (m : Basis κ R M) (n : Bas
 variable {M N} in
 theorem of_le_left_of_flat (H : M.LinearDisjoint N) {M' : Submodule R S}
     (h : M' ≤ M) [Module.Flat R N] : M'.LinearDisjoint N := by
-  let i := mulMap M N ∘ₗ (Submodule.inclusion h).rTensor N
+  let i := mulMap M N ∘ₗ (inclusion h).rTensor N
   have hi : Function.Injective i := H.injective.comp <|
-    Module.Flat.preserves_injective_linearMap _ <| Submodule.inclusion_injective h
+    Module.Flat.rTensor_preserves_injective_linearMap _ <| inclusion_injective h
   have : i = mulMap M' N := by ext; simp [i]
   rwa [this] at hi
 
 variable {M N} in
 theorem of_le_right_of_flat (H : M.LinearDisjoint N) {N' : Submodule R S}
     (h : N' ≤ N) [Module.Flat R M] : M.LinearDisjoint N' := by
-  let i := mulMap M N ∘ₗ (Submodule.inclusion h).lTensor M
+  let i := mulMap M N ∘ₗ (inclusion h).lTensor M
   have hi : Function.Injective i := H.injective.comp <|
-    Module.Flat.preserves_injective_linearMap' _ <| Submodule.inclusion_injective h
+    Module.Flat.lTensor_preserves_injective_linearMap _ <| inclusion_injective h
   have : i = mulMap M N' := by ext; simp [i]
   rwa [this] at hi
 
@@ -637,9 +614,9 @@ variable [Nontrivial R]
 
 theorem not_linearIndependent_pair_of_commute_of_flat_left [Module.Flat R M]
     (a b : ↥(M ⊓ N)) (hc : Commute a.1 b.1) : ¬LinearIndependent R ![a, b] := fun h ↦ by
-  let n : Fin 2 → N := (Submodule.inclusion inf_le_right) ∘ ![a, b]
+  let n : Fin 2 → N := (inclusion inf_le_right) ∘ ![a, b]
   have hn : LinearIndependent R n := h.map' _
-    (LinearMap.ker_eq_bot_of_injective (Submodule.inclusion_injective _))
+    (LinearMap.ker_eq_bot_of_injective (inclusion_injective _))
   -- need this instance otherwise it only has semigroup structure
   letI : AddCommGroup (Fin 2 →₀ M) := Finsupp.instAddCommGroup
   let m : Fin 2 →₀ M := .single 0 ⟨b.1, b.2.1⟩ - .single 1 ⟨a.1, a.2.1⟩
@@ -652,9 +629,9 @@ theorem not_linearIndependent_pair_of_commute_of_flat_left [Module.Flat R M]
 
 theorem not_linearIndependent_pair_of_commute_of_flat_right [Module.Flat R N]
     (a b : ↥(M ⊓ N)) (hc : Commute a.1 b.1) : ¬LinearIndependent R ![a, b] := fun h ↦ by
-  let m : Fin 2 → M := (Submodule.inclusion inf_le_left) ∘ ![a, b]
+  let m : Fin 2 → M := (inclusion inf_le_left) ∘ ![a, b]
   have hm : LinearIndependent R m := h.map' _
-    (LinearMap.ker_eq_bot_of_injective (Submodule.inclusion_injective _))
+    (LinearMap.ker_eq_bot_of_injective (inclusion_injective _))
   -- need this instance otherwise it only has semigroup structure
   letI : AddCommGroup (Fin 2 →₀ N) := Finsupp.instAddCommGroup
   let n : Fin 2 →₀ N := .single 0 ⟨b.1, b.2.2⟩ - .single 1 ⟨a.1, a.2.2⟩
