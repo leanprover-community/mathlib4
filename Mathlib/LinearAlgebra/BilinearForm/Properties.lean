@@ -55,7 +55,7 @@ namespace BilinForm
 
 /-- The proposition that a bilinear form is reflexive -/
 def IsRefl (B : BilinForm R M) : Prop := LinearMap.IsRefl (toLin B)
-#align bilin_form.is_refl BilinForm.IsRefl
+#align bilin_form.is_refl LinearMap.BilinForm.IsRefl
 
 namespace IsRefl
 
@@ -93,7 +93,7 @@ theorem isRefl_neg {B : BilinForm R₁ M₁} : (-B).IsRefl ↔ B.IsRefl :=
 
 /-- The proposition that a bilinear form is symmetric -/
 def IsSymm (B : BilinForm R M) : Prop := LinearMap.IsSymm (toLin B)
-#align bilin_form.is_symm BilinForm.IsSymm
+#align bilin_form.is_symm LinearMap.BilinForm.IsSymm
 
 namespace IsSymm
 
@@ -165,7 +165,7 @@ theorem neg_eq (H : B₁.IsAlt) (x y : M₁) : -B₁ x y = B₁ y x := by
 theorem isRefl (H : B₁.IsAlt) : B₁.IsRefl := by
   apply LinearMap.IsAlt.isRefl
   exact H
-#align bilin_form.is_alt.is_refl BilinForm.IsAlt.isRefl
+#align bilin_form.is_alt.is_refl LinearMap.BilinForm.IsAlt.isRefl
 
 protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) : (B₁ + B₂).IsAlt :=
   fun x => (congr_arg₂ (· + ·) (hB₁ x) (hB₂ x) : _).trans <| add_zero _
@@ -489,7 +489,7 @@ theorem apply_dualBasis_left (B : BilinForm K V) (hB : B.Nondegenerate) (b : Bas
 theorem apply_dualBasis_right (B : BilinForm K V) (hB : B.Nondegenerate) (sym : B.IsSymm)
     (b : Basis ι K V) (i j) : B (b i) (B.dualBasis hB b j) = if i = j then 1 else 0 := by
   rw [sym.eq, apply_dualBasis_left]
-#align bilin_form.apply_dual_basis_right BilinForm.apply_dualBasis_right
+#align bilin_form.apply_dual_basis_right LinearMap.BilinForm.apply_dualBasis_right
 
 @[simp]
 lemma dualBasis_dualBasis_flip (B : BilinForm K V) (hB : B.Nondegenerate) {ι}

@@ -279,7 +279,7 @@ theorem toLin_restrict_ker_eq_inf_orthogonal (B : BilinForm K V) (W : Subspace K
     constructor
     · simp [hx]
     · intro y _
-      rw [IsOrtho, b]
+      rw [IsOrtho, b.eq_zero]
       change (B.domRestrict W) ⟨x, hx⟩ y = 0
       rw [hker]
       rfl
@@ -364,7 +364,7 @@ theorem restrictOrthogonalSpanSingletonNondegenerate (B : BilinForm K V) (b₁ :
   rcases Submodule.mem_sup.1 this with ⟨y, hy, z, hz, rfl⟩
   specialize hm ⟨z, hz⟩
   rw [restrict] at hm
-  erw [add_right, show B m.1 y = 0 by rw [b₂]; exact m.2 y hy, hm, add_zero]
+  erw [add_right, show B m.1 y = 0 by rw [b₂.eq_zero]; exact m.2 y hy, hm, add_zero]
 #align bilin_form.restrict_orthogonal_span_singleton_nondegenerate LinearMap.BilinForm.restrictOrthogonalSpanSingletonNondegenerate
 
 end BilinForm
