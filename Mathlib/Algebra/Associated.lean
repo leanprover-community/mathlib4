@@ -380,7 +380,7 @@ def Associated [Monoid α] (x y : α) : Prop :=
 #align associated Associated
 
 /-- Notation for two elements of a monoid are associated, i.e.
-if one of them is another one multiplied by a unit on the right.-/
+if one of them is another one multiplied by a unit on the right. -/
 local infixl:50 " ~ᵤ " => Associated
 
 namespace Associated
@@ -818,6 +818,9 @@ theorem quot_mk_eq_mk [Monoid α] (a : α) : Quot.mk Setoid.r a = Associates.mk 
 theorem quot_out [Monoid α] (a : Associates α) : Associates.mk (Quot.out a) = a := by
   rw [← quot_mk_eq_mk, Quot.out_eq]
 #align associates.quot_out Associates.quot_outₓ
+
+theorem mk_quot_out [Monoid α] (a : α) : Quot.out (Associates.mk a) ~ᵤ a := by
+  rw [← Associates.mk_eq_mk_iff_associated, Associates.quot_out]
 
 theorem forall_associated [Monoid α] {p : Associates α → Prop} :
     (∀ a, p a) ↔ ∀ a, p (Associates.mk a) :=

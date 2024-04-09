@@ -5,7 +5,7 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Order.RelIso.Basic
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Order.Hom.Set
 import Std.Data.Fin.Lemmas
 
@@ -333,7 +333,7 @@ The `Fin.pos_iff_ne_zero` in `Std` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
-  rw [← val_fin_lt, val_zero', _root_.pos_iff_ne_zero, Ne.def, Ne.def, ext_iff, val_zero']
+  rw [← val_fin_lt, val_zero', _root_.pos_iff_ne_zero, Ne, Ne, ext_iff, val_zero']
 #align fin.pos_iff_ne_zero Fin.pos_iff_ne_zero'
 
 #align fin.eq_zero_or_eq_succ Fin.eq_zero_or_eq_succ
@@ -1042,7 +1042,7 @@ theorem castSucc_zero' [NeZero n] : castSucc (0 : Fin n) = 0 :=
 /-- `castSucc i` is positive when `i` is positive.
 
 The `Fin.castSucc_pos` in `Std` only applies in `Fin (n+1)`.
-This one instead uses a `NeZero n` typeclass hypothesis.-/
+This one instead uses a `NeZero n` typeclass hypothesis. -/
 theorem castSucc_pos' [NeZero n] {i : Fin n} (h : 0 < i) : 0 < castSucc i := by
   simpa [lt_iff_val_lt_val] using h
 #align fin.cast_succ_pos Fin.castSucc_pos'

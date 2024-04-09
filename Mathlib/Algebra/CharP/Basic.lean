@@ -145,10 +145,10 @@ theorem CharP.int_cast_eq_zero_iff [AddGroupWithOne R] (p : ℕ) [CharP R p] (a 
   rcases lt_trichotomy a 0 with (h | rfl | h)
   · rw [← neg_eq_zero, ← Int.cast_neg, ← dvd_neg]
     lift -a to ℕ using neg_nonneg.mpr (le_of_lt h) with b
-    rw [Int.cast_ofNat, CharP.cast_eq_zero_iff R p, Int.coe_nat_dvd]
+    rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
   · simp only [Int.cast_zero, eq_self_iff_true, dvd_zero]
   · lift a to ℕ using le_of_lt h with b
-    rw [Int.cast_ofNat, CharP.cast_eq_zero_iff R p, Int.coe_nat_dvd]
+    rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
 #align char_p.int_cast_eq_zero_iff CharP.int_cast_eq_zero_iff
 
 theorem CharP.intCast_eq_intCast [AddGroupWithOne R] (p : ℕ) [CharP R p] {a b : ℤ} :
@@ -513,7 +513,7 @@ section
 /-- We have `2 ≠ 0` in a nontrivial ring whose characteristic is not `2`. -/
 protected theorem Ring.two_ne_zero {R : Type*} [NonAssocSemiring R] [Nontrivial R]
     (hR : ringChar R ≠ 2) : (2 : R) ≠ 0 := by
-  rw [Ne.def, (by norm_cast : (2 : R) = (2 : ℕ)), ringChar.spec, Nat.dvd_prime Nat.prime_two]
+  rw [Ne, (by norm_cast : (2 : R) = (2 : ℕ)), ringChar.spec, Nat.dvd_prime Nat.prime_two]
   exact mt (or_iff_left hR).mp CharP.ringChar_ne_one
 #align ring.two_ne_zero Ring.two_ne_zero
 

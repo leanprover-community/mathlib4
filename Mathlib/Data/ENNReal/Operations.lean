@@ -271,7 +271,7 @@ theorem mul_pos (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b :=
   rcases n.eq_zero_or_pos with rfl | (hn : 0 < n)
   · simp
   · induction a using recTopCoe
-    · simp only [Ne.def, hn.ne', top_pow hn, not_false_eq_true, and_self]
+    · simp only [Ne, hn.ne', top_pow hn, not_false_eq_true, and_self]
     · simp only [← coe_pow, coe_ne_top, false_and]
 #align ennreal.pow_eq_top_iff ENNReal.pow_eq_top_iff
 
@@ -380,7 +380,7 @@ theorem sub_ne_top (ha : a ≠ ∞) : a - b ≠ ∞ := mt sub_eq_top_iff.mp <| m
 
 @[simp, norm_cast]
 theorem nat_cast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℝ≥0∞) := by
-  rw [← coe_nat, Nat.cast_tsub, coe_sub, coe_nat, coe_nat]
+  rw [← coe_natCast, Nat.cast_tsub, coe_sub, coe_natCast, coe_natCast]
 #align ennreal.nat_cast_sub ENNReal.nat_cast_sub
 
 protected theorem sub_eq_of_eq_add (hb : b ≠ ∞) : a = c + b → a - b = c :=

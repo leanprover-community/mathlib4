@@ -69,8 +69,8 @@ theorem normBound_pos : 0 < normBound abv bS := by
     ext j k
     simp [h, DMatrix.zero_apply]
   simp only [normBound, Algebra.smul_def, eq_natCast]
-  refine' mul_pos (Int.coe_nat_pos.mpr (Nat.factorial_pos _)) _
-  refine' pow_pos (mul_pos (Int.coe_nat_pos.mpr (Fintype.card_pos_iff.mpr ⟨i⟩)) _) _
+  refine' mul_pos (Int.natCast_pos.mpr (Nat.factorial_pos _)) _
+  refine' pow_pos (mul_pos (Int.natCast_pos.mpr (Fintype.card_pos_iff.mpr ⟨i⟩)) _) _
   refine' lt_of_lt_of_le (abv.pos hijk) (Finset.le_max' _ _ _)
   exact Finset.mem_image.mpr ⟨⟨i, j, k⟩, Finset.mem_univ _, rfl⟩
 #align class_group.norm_bound_pos ClassGroup.normBound_pos
@@ -187,7 +187,7 @@ theorem mem_finsetApprox {x : R} :
     simp at hx
   · rintro ⟨i, j, hij, rfl⟩
     refine' ⟨_, ⟨i, j⟩, Finset.mem_univ _, rfl⟩
-    rw [Ne.def, sub_eq_zero]
+    rw [Ne, sub_eq_zero]
     exact fun h => hij ((distinctElems bS adm).injective h)
 #align class_group.mem_finset_approx ClassGroup.mem_finsetApprox
 
@@ -358,7 +358,7 @@ noncomputable def fintypeOfAdmissibleOfAlgebraic [IsDedekindDomain S]
       { J // J ∣ Ideal.span ({algebraMap R S (∏ m : R in finsetApprox bS adm, m)} : Set S) }
       (UniqueFactorizationMonoid.fintypeSubtypeDvd _
         (by
-          rw [Ne.def, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
+          rw [Ne, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
           exact prod_finsetApprox_ne_zero bS adm))
       ((Equiv.refl _).subtypeEquiv fun I =>
         Ideal.dvd_iff_le.trans (by

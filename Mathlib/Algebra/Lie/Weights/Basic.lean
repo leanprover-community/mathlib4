@@ -54,7 +54,7 @@ namespace LieModule
 open Set Function LieAlgebra TensorProduct TensorProduct.LieModule
 open scoped BigOperators TensorProduct
 
-section notation_weight_space_of
+section notation_weightSpaceOf
 
 /-- Until we define `LieModule.weightSpaceOf`, it is useful to have some notation as follows: -/
 local notation3 "𝕎("M", " χ", " x")" => (toEndomorphism R L M x).maximalGeneralizedEigenspace χ
@@ -156,7 +156,7 @@ def weightSpaceOf (χ : R) (x : L) : LieSubmodule R L M :=
       rw [← zero_add χ]
       exact lie_mem_maxGenEigenspace_toEndomorphism (by simp) hm }
 
-end notation_weight_space_of
+end notation_weightSpaceOf
 
 variable (M)
 

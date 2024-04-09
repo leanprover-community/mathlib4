@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.RCLike.Lemmas
+import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 
 #align_import measure_theory.function.special_functions.is_R_or_C from "leanprover-community/mathlib"@"83a66c8775fa14ee5180c85cab98e970956401ad"

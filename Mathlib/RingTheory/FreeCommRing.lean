@@ -3,8 +3,8 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Johan Commelin
 -/
-import Mathlib.Data.MvPolynomial.Equiv
-import Mathlib.Data.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Logic.Equiv.Functor
 import Mathlib.RingTheory.FreeRing
 

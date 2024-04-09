@@ -400,7 +400,7 @@ instance : AddCommGroupWithOne ℍ[R,c₁,c₂] where
   natCast_zero := by simp
   natCast_succ := by simp
   intCast n := ((n : R) : ℍ[R,c₁,c₂])
-  intCast_ofNat _ := congr_arg coe (Int.cast_ofNat _)
+  intCast_ofNat _ := congr_arg coe (Int.cast_natCast _)
   intCast_negSucc n := by
     change coe _ = -coe _
     rw [Int.cast_negSucc, coe_neg]
@@ -760,7 +760,6 @@ def Quaternion (R : Type*) [One R] [Neg R] :=
   QuaternionAlgebra R (-1) (-1)
 #align quaternion Quaternion
 
--- mathport name: quaternion
 scoped[Quaternion] notation "ℍ[" R "]" => Quaternion R
 
 /-- The equivalence between the quaternions over `R` and `R × R × R × R`. -/
@@ -1374,50 +1373,28 @@ theorem coe_zpow (x : R) (z : ℤ) : ((x ^ z : R) : ℍ[R]) = (x : ℍ[R]) ^ z :
   map_zpow₀ (algebraMap R ℍ[R]) x z
 #align quaternion.coe_zpow Quaternion.coe_zpow
 
--- Porting note: split from `DivisionRing` instance
-instance : RatCast ℍ[R] where
-  ratCast := fun q => ↑(q : R)
+instance instRatCast : RatCast ℍ[R] where ratCast q := (q : R)
 
-@[simp, norm_cast]
-theorem rat_cast_re (q : ℚ) : (q : ℍ[R]).re = q :=
-  rfl
+@[simp, norm_cast] lemma rat_cast_re (q : ℚ) : (q : ℍ[R]).re = q := rfl
+@[simp, norm_cast] lemma rat_cast_im (q : ℚ) : (q : ℍ[R]).im = 0 := rfl
+@[simp, norm_cast] lemma rat_cast_imI (q : ℚ) : (q : ℍ[R]).imI = 0 := rfl
+@[simp, norm_cast] lemma rat_cast_imJ (q : ℚ) : (q : ℍ[R]).imJ = 0 := rfl
+@[simp, norm_cast] lemma rat_cast_imK (q : ℚ) : (q : ℍ[R]).imK = 0 := rfl
 #align quaternion.rat_cast_re Quaternion.rat_cast_re
-
-@[simp, norm_cast]
-theorem rat_cast_imI (q : ℚ) : (q : ℍ[R]).imI = 0 :=
-  rfl
+#align quaternion.rat_cast_im Quaternion.rat_cast_im
 #align quaternion.rat_cast_im_i Quaternion.rat_cast_imI
-
-@[simp, norm_cast]
-theorem rat_cast_imJ (q : ℚ) : (q : ℍ[R]).imJ = 0 :=
-  rfl
 #align quaternion.rat_cast_im_j Quaternion.rat_cast_imJ
-
-@[simp, norm_cast]
-theorem rat_cast_imK (q : ℚ) : (q : ℍ[R]).imK = 0 :=
-  rfl
 #align quaternion.rat_cast_im_k Quaternion.rat_cast_imK
 
-@[simp, norm_cast]
-theorem rat_cast_im (q : ℚ) : (q : ℍ[R]).im = 0 :=
-  rfl
-#align quaternion.rat_cast_im Quaternion.rat_cast_im
-
-@[norm_cast]
-theorem coe_rat_cast (q : ℚ) : ↑(q : R) = (q : ℍ[R]) :=
-  rfl
+@[norm_cast] lemma coe_rat_cast (q : ℚ) : ↑(q : R) = (q : ℍ[R]) := rfl
 #align quaternion.coe_rat_cast Quaternion.coe_rat_cast
 
--- Porting note: moved below `coe_rat_cast`, as `coe_rat_cast` is needed in the `rw`s
-instance : DivisionRing ℍ[R] :=
-  { Quaternion.instGroupWithZero,
-    Quaternion.instRing with
-    ratCast_mk := fun n d hd h => by
-      rw [← coe_rat_cast, Rat.cast_mk', coe_mul, coe_int_cast, coe_inv, coe_nat_cast]
-    qsmul := (· • ·)
-    qsmul_eq_mul' := fun q x => by
-      rw [← coe_rat_cast, coe_mul_eq_smul]
-      ext <;> exact DivisionRing.qsmul_eq_mul' _ _ }
+instance instDivisionRing : DivisionRing ℍ[R] where
+  __ := Quaternion.instGroupWithZero
+  __ := Quaternion.instRing
+  ratCast_def q := by rw [← coe_rat_cast, Rat.cast_def, coe_div, coe_int_cast, coe_nat_cast]
+  qsmul := (· • ·)
+  qsmul_def q x := by rw [← coe_rat_cast, coe_mul_eq_smul]; ext <;> exact Rat.smul_def _ _
 
 --@[simp] Porting note (#10618): `simp` can prove it
 theorem normSq_inv : normSq a⁻¹ = (normSq a)⁻¹ :=
