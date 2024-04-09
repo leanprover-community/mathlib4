@@ -1413,13 +1413,13 @@ lemma comm_trans_lTensor_trans_comm_eq (g : N ≃ₗ[R] P) :
 theorem lTensor_trans : (f ≪≫ₗ g).lTensor M = f.lTensor M ≪≫ₗ g.lTensor M :=
   toLinearMap_injective <| LinearMap.lTensor_comp M _ _
 
-theorem lTensor_trans_apply : (f ≪≫ₗ g).lTensor M x = (g.lTensor M) ((f.lTensor M) x) :=
+theorem lTensor_trans_apply : (f ≪≫ₗ g).lTensor M x = g.lTensor M (f.lTensor M x) :=
   LinearMap.lTensor_comp_apply M _ _ x
 
 theorem rTensor_trans : (f ≪≫ₗ g).rTensor M = f.rTensor M ≪≫ₗ g.rTensor M :=
   toLinearMap_injective <| LinearMap.rTensor_comp M _ _
 
-theorem rTensor_trans_apply : (f ≪≫ₗ g).rTensor M y = (g.rTensor M) ((f.rTensor M) y) :=
+theorem rTensor_trans_apply : (f ≪≫ₗ g).rTensor M y = g.rTensor M (f.rTensor M y) :=
   LinearMap.rTensor_comp_apply M _ _ y
 
 theorem lTensor_mul (f g : N ≃ₗ[R] N) : (f * g).lTensor M = f.lTensor M * g.lTensor M :=
