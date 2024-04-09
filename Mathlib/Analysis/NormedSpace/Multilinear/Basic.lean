@@ -1369,16 +1369,16 @@ noncomputable def iteratedFDerivComponent {α : Type*} [DecidableEq α] [Fintype
     simp only [MultilinearMap.iteratedFDerivComponent, MultilinearMap.domDomRestrictₗ,
       MultilinearMap.coe_mk, MultilinearMap.domDomRestrict_apply, coe_coe]
     apply (f.le_opNorm _).trans _
-    rw [← prod_compl_mul_prod s, mul_assoc]
+    rw [← prod_compl_mul_prod s.toFinset, mul_assoc]
     gcongr
     · apply prod_nonneg (fun i _ ↦ norm_nonneg _)
     · apply prod_nonneg (fun i _ ↦ norm_nonneg _)
     · apply le_of_eq
-      have : ∀ x, x ∈ sᶜ ↔ (fun x ↦ x ∉ s) x := by simp only [mem_compl, implies_true]
+      have : ∀ x, x ∈ s.toFinsetᶜ ↔ (fun x ↦ x ∉ s) x := by simp
       rw [prod_subtype _ this]
       congr with i
       simp [i.2]
-    · have : ∀ x, x ∈ s ↔ (fun x ↦ x ∈ s) x := by simp only [mem_compl, implies_true]
+    · have : ∀ x, x ∈ s.toFinset ↔ (fun x ↦ x ∈ s) x := by simp
       rw [prod_subtype (F := by infer_instance) _ this, ← Equiv.prod_comp e.symm]
       apply Finset.prod_le_prod (fun i _ ↦ norm_nonneg _) (fun i _ ↦ ?_)
       simpa only [i.2, ↓reduceDite, Subtype.coe_eta] using norm_le_pi_norm (m (e.symm i)) ↑i
