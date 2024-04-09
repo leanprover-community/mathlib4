@@ -28,7 +28,7 @@ This file defines torsion groups, i.e. groups where all elements have finite ord
 ## Implementation
 
 All torsion monoids are really groups (which is proven here as `Monoid.IsTorsion.group`), but since
-the definition can be stated on monoids it is implemented on `monoid` to match other declarations in
+the definition can be stated on monoids it is implemented on `Monoid` to match other declarations in
 the group theory library.
 
 ## Tags
@@ -365,7 +365,7 @@ variable {G}
 @[to_additive (attr := simp) "An additive monoid is not torsion free if any
   nontrivial element has finite order."]
 theorem not_isTorsionFree_iff : ¬IsTorsionFree G ↔ ∃ g : G, g ≠ 1 ∧ IsOfFinOrder g := by
-  simp_rw [IsTorsionFree, Ne.def, not_forall, Classical.not_not, exists_prop]
+  simp_rw [IsTorsionFree, Ne, not_forall, Classical.not_not, exists_prop]
 #align monoid.not_is_torsion_free_iff Monoid.not_isTorsionFree_iff
 #align add_monoid.not_is_torsion_free_iff AddMonoid.not_isTorsionFree_iff
 

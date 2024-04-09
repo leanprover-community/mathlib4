@@ -11,7 +11,8 @@ import Mathlib.MeasureTheory.Integral.SetIntegral
 
 /-! # `L^2` space
 
-If `E` is an inner product space over `𝕜` (`ℝ` or `ℂ`), then `Lp E 2 μ` (defined in `lp_space.lean`)
+If `E` is an inner product space over `𝕜` (`ℝ` or `ℂ`), then `Lp E 2 μ`
+(defined in `MeasureTheory.Function.LpSpace`)
 is also an inner product space, with inner product defined as `inner f g = ∫ a, ⟪f a, g a⟫ ∂μ`.
 
 ### Main results
@@ -20,7 +21,7 @@ is also an inner product space, with inner product defined as `inner f g = ∫ a
   belongs to `Lp 𝕜 1 μ`.
 * `integrable_inner` : for `f` and `g` in `Lp E 2 μ`, the pointwise inner product
  `fun x ↦ ⟪f x, g x⟫` is integrable.
-* `L2.inner_product_space` : `Lp E 2 μ` is an inner product space.
+* `L2.innerProductSpace` : `Lp E 2 μ` is an inner product space.
 
 -/
 
@@ -63,7 +64,6 @@ section InnerProductSpace
 variable {α : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
 variable {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
--- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
 theorem Memℒp.const_inner (c : E) {f : α → E} (hf : Memℒp f p μ) : Memℒp (fun a => ⟪c, f a⟫) p μ :=
@@ -95,7 +95,6 @@ theorem _root_.integral_inner {f : α → E} (hf : Integrable f μ) (c : E) :
 
 variable (𝕜)
 
--- mathport name: inner_with_explicit
 -- variable binder update doesn't work for lemmas which refer to `𝕜` only via the notation
 -- Porting note: removed because it causes ambiguity in the lemma below
 -- local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
@@ -112,7 +111,6 @@ namespace L2
 variable {α E F 𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
   [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
 
--- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 theorem snorm_rpow_two_norm_lt_top (f : Lp F 2 μ) : snorm (fun x => ‖f x‖ ^ (2 : ℝ)) 1 μ < ∞ := by
@@ -284,7 +282,6 @@ variable (μ : Measure α) [IsFiniteMeasure μ]
 
 open scoped BoundedContinuousFunction ComplexConjugate
 
--- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 (α →₂[μ] 𝕜) _ x y
 
 -- Porting note: added `(E := 𝕜)`

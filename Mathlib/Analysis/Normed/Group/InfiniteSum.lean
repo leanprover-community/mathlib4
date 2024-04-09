@@ -18,7 +18,7 @@ In a complete (semi)normed group,
   there exists a finite set `s` such that the sum `∑ i in t, f i` over any finite set `t` disjoint
   with `s` has norm less than `ε`;
 
-- `summable_of_norm_bounded`, `summable_of_norm_bounded_eventually`: if `‖f i‖` is bounded above by
+- `summable_of_norm_bounded`, `Summable.of_norm_bounded_eventually`: if `‖f i‖` is bounded above by
   a summable series `∑' i, g i`, then `∑' i, f i` is summable as well; the same is true if the
   inequality hold only off some finite set.
 
@@ -40,7 +40,7 @@ variable {ι α E F : Type*} [SeminormedAddCommGroup E] [SeminormedAddCommGroup 
 theorem cauchySeq_finset_iff_vanishing_norm {f : ι → E} :
     (CauchySeq fun s : Finset ι => ∑ i in s, f i) ↔
       ∀ ε > (0 : ℝ), ∃ s : Finset ι, ∀ t, Disjoint t s → ‖∑ i in t, f i‖ < ε := by
-  rw [cauchySeq_finset_iff_vanishing, nhds_basis_ball.forall_iff]
+  rw [cauchySeq_finset_iff_sum_vanishing, nhds_basis_ball.forall_iff]
   · simp only [ball_zero_eq, Set.mem_setOf_eq]
   · rintro s t hst ⟨s', hs'⟩
     exact ⟨s', fun t' ht' => hst <| hs' _ ht'⟩

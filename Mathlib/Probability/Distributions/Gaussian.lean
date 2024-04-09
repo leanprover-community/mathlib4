@@ -58,7 +58,7 @@ lemma gaussianPDFReal_pos (μ : ℝ) (v : ℝ≥0) (x : ℝ) (hv : v ≠ 0) : 0 
   rw [gaussianPDFReal]
   positivity
 
-/--The gaussian pdf is nonnegative. -/
+/-- The gaussian pdf is nonnegative. -/
 lemma gaussianPDFReal_nonneg (μ : ℝ) (v : ℝ≥0) (x : ℝ) : 0 ≤ gaussianPDFReal μ v x := by
   rw [gaussianPDFReal]
   positivity
