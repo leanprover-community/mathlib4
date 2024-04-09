@@ -601,3 +601,27 @@ example (h : False): True := by
 example (x : Nat) : 0 ≤ x ^ 9890 := by
   fail_if_success linarith -- this should not stack overflow
   apply zero_le
+
+/-- [#8875](https://github.com/leanprover-community/mathlib4/issues/8875) -/
+example (a b c d e : ℚ)
+    (ha : 2 * a + b + c + d + e = 4)
+    (hb : a + 2 * b + c + d + e = 5)
+    (hc : a + b + 2 * c + d + e = 6)
+    (hd : a + b + c + 2 * d + e = 7)
+    (he : a + b + c + d + 2 * e = 8) :
+    e = 3 := by
+  linarith
+
+/-- [#2717](https://github.com/leanprover-community/mathlib4/issues/2717) -/
+example :
+  (3 * x4 - x3 - x2 - x1 : ℚ) < 0 →
+  x5 - x4 < 0 →
+  2 * (x5 - x4) < 0 →
+  -x6 + x3 < 0 →
+  -x6 + x2 < 0 →
+  2 * (x6 - x5) < 0 →
+  x8 - x7 < 0 →
+  -x8 + x2 < 0 →
+  -x8 + x7 - x5 + x1 < 0 →
+  x7 - x5 < 0 →
+  False := by intros; linarith
