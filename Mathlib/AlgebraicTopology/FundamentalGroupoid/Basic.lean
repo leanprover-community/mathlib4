@@ -271,7 +271,7 @@ end Path
 subsequently put a `CategoryTheory.Groupoid` structure on it. -/
 @[ext]
 structure FundamentalGroupoid (X : Type u) where
-  /-- View a term of `FundamentalGroupoid X` as a term of `X`.-/
+  /-- View a term of `FundamentalGroupoid X` as a term of `X`. -/
   as : X
 #align fundamental_groupoid FundamentalGroupoid
 

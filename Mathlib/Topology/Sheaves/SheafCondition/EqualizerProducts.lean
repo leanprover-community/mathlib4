@@ -17,7 +17,7 @@ e.g. as in https://stacks.math.columbia.edu/tag/0072
 in terms of an equalizer diagram where the two objects are
 `∏ F.obj (U i)` and `∏ F.obj (U i) ⊓ (U j)`.
 
-We show that this sheaf condition is equivalent to the `pairwise_intersections` sheaf condition when
+We show that this sheaf condition is equivalent to the "pairwise intersections" sheaf condition when
 the presheaf is valued in a category with products, and thereby equivalent to the default sheaf
 condition.
 -/
@@ -211,8 +211,8 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_sheaf_equalizer_products TopCat.Presheaf.IsSheafEqualizerProducts
 
 /-!
-The remainder of this file shows that the equalizer_products sheaf condition is equivalent
-to the pairwise_intersections sheaf condition.
+The remainder of this file shows that the "equalizer products" sheaf condition is equivalent
+to the "pairwise intersections" sheaf condition.
 -/
 
 

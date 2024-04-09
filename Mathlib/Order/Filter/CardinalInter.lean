@@ -276,7 +276,7 @@ instance cardinalInterFilter_sup (l₁ l₂ : Filter α) {c₁ c₂ : Cardinal.{
 variable (g : Set (Set α))
 
 /-- `Filter.CardinalGenerateSets c g` is the (sets of the)
-greatest `cardinalInterFilter c` containing `g`.-/
+greatest `cardinalInterFilter c` containing `g`. -/
 inductive CardinalGenerateSets : Set α → Prop
   | basic {s : Set α} : s ∈ g → CardinalGenerateSets s
   | univ : CardinalGenerateSets univ
@@ -284,7 +284,7 @@ inductive CardinalGenerateSets : Set α → Prop
   | sInter {S : Set (Set α)} :
     (#S < c) → (∀ s ∈ S, CardinalGenerateSets s) → CardinalGenerateSets (⋂₀ S)
 
-/-- `Filter.cardinalGenerate c g` is the greatest `cardinalInterFilter c` containing `g`.-/
+/-- `Filter.cardinalGenerate c g` is the greatest `cardinalInterFilter c` containing `g`. -/
 def cardinalGenerate (hc : 2 < c) : Filter α :=
   ofCardinalInter (CardinalGenerateSets g) hc (fun _ => CardinalGenerateSets.sInter) fun _ _ =>
     CardinalGenerateSets.superset
@@ -329,7 +329,7 @@ theorem le_cardinalGenerate_iff_of_cardinalInterFilter {f : Filter α} [Cardinal
   · exact mem_of_superset ih st
   exact (cardinal_sInter_mem Sct).mpr ih
 
-/-- `cardinalGenerate g hc` is the greatest `cardinalInterFilter c` containing `g`.-/
+/-- `cardinalGenerate g hc` is the greatest `cardinalInterFilter c` containing `g`. -/
 theorem cardinalGenerate_isGreatest (hc : 2 < c) :
     IsGreatest { f : Filter α | CardinalInterFilter f c ∧ g ⊆ f.sets } (cardinalGenerate g hc) := by
   refine ⟨⟨cardinalInter_ofCardinalGenerate _ _, fun s => CardinalGenerateSets.basic⟩, ?_⟩

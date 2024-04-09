@@ -76,7 +76,7 @@ instance instAddGroupWithOne [AddGroupWithOne α] : AddGroupWithOne αᵐᵒᵖ 
   toAddMonoidWithOne := instAddMonoidWithOne
   toIntCast := instIntCast
   __ := instAddGroup
-  intCast_ofNat n := show op ((n : ℤ) : α) = op (n : α) by rw [Int.cast_ofNat]
+  intCast_ofNat n := show op ((n : ℤ) : α) = op (n : α) by rw [Int.cast_natCast]
   intCast_negSucc n := show op _ = op (-unop (op ((n + 1 : ℕ) : α))) by simp
 
 instance instAddCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne αᵐᵒᵖ where
@@ -388,7 +388,7 @@ instance instAddCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne 
   toIntCast := instIntCast
   toAddCommGroup := instAddCommGroup
   __ := instAddCommMonoidWithOne
-  intCast_ofNat _ := congr_arg op <| Int.cast_ofNat _
+  intCast_ofNat _ := congr_arg op <| Int.cast_natCast _
   intCast_negSucc _ := congr_arg op <| Int.cast_negSucc _
 
 /-- The function `AddOpposite.op` is a multiplicative equivalence. -/
