@@ -193,7 +193,7 @@ def PolyL2.InnerProductSpaceCore : InnerProductSpace.Core ℝ (PolyL2 s) where
     rw [mul_comm (q.eval _) (p.eval _)]
   nonneg_re := by
     intro p
-    simp only [IsROrC.re_to_real, PolyL2.inner_def, IntervalWithMeasure.dot]
+    simp only [PolyL2.inner_def, IntervalWithMeasure.dot]
     apply intervalIntegral.integral_nonneg (le_of_lt s.hab)
     intro x
     intro _
@@ -202,7 +202,7 @@ def PolyL2.InnerProductSpaceCore : InnerProductSpace.Core ℝ (PolyL2 s) where
     exact sq_nonneg (p.eval x)
   definite := by
     intro p
-    simp only [IsROrC.re_to_real, PolyL2.inner_def, IntervalWithMeasure.dot]
+    simp only [PolyL2.inner_def, IntervalWithMeasure.dot]
     intro hi0
 
     by_contra hpn0
@@ -221,7 +221,7 @@ def PolyL2.InnerProductSpaceCore : InnerProductSpace.Core ℝ (PolyL2 s) where
 
   add_left := by
     intro p q r
-    simp only [IsROrC.re_to_real, PolyL2.inner_def, IntervalWithMeasure.dot]
+    simp only [PolyL2.inner_def, IntervalWithMeasure.dot]
     rw [← intervalIntegral.integral_add]
     apply intervalIntegral.integral_congr
     unfold EqOn
@@ -236,7 +236,7 @@ def PolyL2.InnerProductSpaceCore : InnerProductSpace.Core ℝ (PolyL2 s) where
   smul_left := by
     intro p q
     intro α
-    simp only [IsROrC.re_to_real, PolyL2.inner_def, IntervalWithMeasure.dot, conj_trivial]
+    simp only [PolyL2.inner_def, IntervalWithMeasure.dot, conj_trivial]
     rw [← intervalIntegral.integral_const_mul]
     apply intervalIntegral.integral_congr
     unfold EqOn
@@ -606,7 +606,7 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) :
     let internal_roots : Multiset ℝ :=
       Multiset.filter (fun r => r ∈ Ioo s.a s.b) (OrthoPoly s n).roots
     have his : internal_roots ≤ (OrthoPoly s n).roots := by
-      simp only [Set.mem_Ioo, Multiset.filter_le]
+      apply Multiset.filter_le
     have hd := ((Multiset.prod_X_sub_C_dvd_iff_le_roots OrthoPoly_ne_zero) internal_roots).mpr his
     have ⟨r, hf⟩ := dvd_def.mpr hd
 
@@ -681,11 +681,10 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) :
       ).toFinset
 
     have hoc : odd_roots.card < n := by
-      simp only [count_roots, Multiset.toFinset_filter]
-      rw [Finset.filter_comm]
       apply lt_of_le_of_lt _ hlt
       apply Finset.card_mono
-      simp only [Finset.le_eq_subset, Finset.filter_subset]
+      apply Finset.filter_subset_filter _
+      simp only [count_roots, Multiset.toFinset_filter, filter_subset]
 
     let po : ℝ[X] := Finset.prod odd_roots (fun μ : ℝ => X - C μ)
 
@@ -703,6 +702,7 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) :
 
       have ⟨q, hq2⟩ : ∃q : ℝ[X], q * q =
           Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots) * po := by
+        dsimp [po, internal_roots, odd_roots]
         simp only [count_roots, Multiset.toFinset_filter]
         rw [Finset.prod_eq_multiset_prod]
         rw [← Multiset.prod_add]
@@ -814,7 +814,7 @@ theorem OrthoPoly_factorization (s : IntervalWithMeasure) (n : ℕ) : ∃a : ℝ
     (OrthoPoly s n) = a • Finset.prod (OrthoPoly_internal_roots s n) (fun μ ↦(X - C μ : ℝ[X])) := by
   let internal_roots := OrthoPoly_internal_roots s n
   have his : internal_roots.val ≤ (OrthoPoly s n).roots := by
-    simp only
+    dsimp [internal_roots]
     unfold OrthoPoly_internal_roots
     simp only [filter_val, Multiset.toFinset_val]
     apply le_trans _ (Multiset.dedup_le (OrthoPoly s n).roots)
@@ -834,7 +834,7 @@ theorem OrthoPoly_factorization (s : IntervalWithMeasure) (n : ℕ) : ∃a : ℝ
     rw [OrthoPoly_internal_roots_eq] at this
     nth_rewrite 2 [← zero_add (↑n : WithBot ℕ)] at this
     apply WithBot.add_right_cancel _ this
-    simp only [ne_eq, WithBot.nat_ne_bot, not_false_eq_true]
+    simp only [ne_eq, WithBot.natCast_ne_bot, not_false_eq_true]
 
   have := Polynomial.degree_le_zero_iff.mp (Eq.le hrd)
   use coeff r 0
@@ -970,7 +970,6 @@ theorem Quadrature.is_interp (q : Quadrature) (s : IntervalWithMeasure)
   unfold exact at hex
   have := hex p this
   unfold nint at this
-  simp only at this
   have hev (x y : q.nodes) : eval ↑y (Lagrange.basis q.nodes id ↑x) = if x = y then 1 else 0 := by
     by_cases h : x = y
     simp [h]
@@ -1042,7 +1041,6 @@ theorem Quadrature.pos_weights (q : Quadrature) (s : IntervalWithMeasure)
   rw [sum_ite_eq] at hpos
   simp only [Finset.mem_univ, ↓reduceIte, gt_iff_lt] at hpos
   have : p.eval ↑x > 0 := by
-    simp only
     rw [eval_prod]
     apply Finset.prod_pos
     intro y hy
@@ -1078,7 +1076,7 @@ theorem Quadrature.Gaussian_exact (s : IntervalWithMeasure) (n : ℕ) (hpos : 0 
   intro p hpdeg
   let a : ℝ[X] := C (Polynomial.leadingCoeff (OrthoPoly s n))⁻¹ * (OrthoPoly s n)
   have hmonic: Polynomial.Monic a := by
-    simp only
+    dsimp [Monic, a]
     rw [mul_comm]
     apply Polynomial.monic_mul_leadingCoeff_inv
     apply OrthoPoly_ne_zero
@@ -1087,14 +1085,13 @@ theorem Quadrature.Gaussian_exact (s : IntervalWithMeasure) (n : ℕ) (hpos : 0 
     simp only [ne_eq, inv_eq_zero, leadingCoeff_eq_zero]
     exact OrthoPoly_ne_zero
   have hadeg : degree a = n := by
-    simp only
     rw [degree_mul]
     simp [OrthoPoly_deg, Polynomial.degree_C hcoeffne0]
 
   have : degree (p/ₘa) ≤ ↑(n-1) := by
     have : p/ₘa * a = (p - p%ₘa):= by
       nth_rw 2 [← hdiv]
-      rw [add_comm, add_sub_cancel, mul_comm]
+      rw [add_sub_assoc, add_sub_cancel, mul_comm]
     have somma : degree (p/ₘa) + degree a = degree (p - p%ₘa) := by
       have : degree (p/ₘa * a) = degree (p - p%ₘa) := congrArg degree this
       rw [Polynomial.degree_mul] at this
@@ -1114,7 +1111,7 @@ theorem Quadrature.Gaussian_exact (s : IntervalWithMeasure) (n : ℕ) (hpos : 0 
     have hqdeg : degree (p /ₘ a) + ↑n ≤ ↑(2 * n - 1) := LE.le.trans lemax hpdeg
     rw [← Nat.sub_one_add_self] at hqdeg
     have : degree (p /ₘ a) ≤ ↑(n - 1) := by
-      apply ((WithBot.add_le_add_iff_right (WithBot.nat_ne_bot n)).mp)
+      apply ((WithBot.add_le_add_iff_right (WithBot.natCast_ne_bot n)).mp)
       exact hqdeg
     exact this
 
@@ -1123,13 +1120,11 @@ theorem Quadrature.Gaussian_exact (s : IntervalWithMeasure) (n : ℕ) (hpos : 0 
   have hdegmod : degree (p%ₘa) < n := by
     rw [← hadeg]
     apply Polynomial.degree_modByMonic_lt
-    simp only
     apply hmonic
 
   have : nint (Gaussian s n) p = nint (Gaussian s n) (p %ₘ a) := by
     unfold nint Gaussian
     nth_rw 1 [← hdiv]
-    simp only
     apply Finset.sum_congr
     simp only
     intro x _
