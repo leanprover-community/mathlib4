@@ -50,7 +50,7 @@ lemma isStrictlyGE_of_iso [K.IsStrictlyGE n] : L.IsStrictlyGE n := ⟨fun i hi =
   IsZero.of_iso (K.isZero_of_isStrictlyGE n i hi)
     ((eval _ _ i).mapIso e.symm)⟩
 
-variable(K)
+variable (K)
 
 lemma exists_iso_single [HasZeroObject C] (n : ℤ) [K.IsStrictlyGE n] [K.IsStrictlyLE n] :
     ∃ (M : C), Nonempty (K ≅ (single _ _ n).obj M) := by

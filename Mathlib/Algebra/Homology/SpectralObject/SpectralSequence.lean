@@ -1079,7 +1079,8 @@ lemma isZero₂_of_isFirstQuadrant (i j : ℤt) (hij : i ≤ j) (n : ℤ) (hi : 
     IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
   IsFirstQuadrant.isZero₂ i j hij n hi
 
-noncomputable abbrev E₂SpectralSequence := Y.spectralSequence mkDataE₂Cohomological
+noncomputable abbrev E₂SpectralSequence : E₂CohomologicalSpectralSequence C :=
+  Y.spectralSequence mkDataE₂Cohomological
 
 example (r : ℤ) [Y.E₂SpectralSequence.HasPage r] (p q : ℤ) (hq : q < 0) :
     IsZero ((Y.E₂SpectralSequence.page r).X ⟨p, q⟩) := by

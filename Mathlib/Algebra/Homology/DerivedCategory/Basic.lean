@@ -319,7 +319,6 @@ noncomputable def homologyFunctorFactorsh (n : ℤ) : Qh ⋙ homologyFunctor C n
     HomotopyCategory.homologyFunctor _ _ n :=
   HomologicalComplexUpToQuasiIso.homologyFunctorFactorsh C (ComplexShape.up ℤ) n
 
-
 noncomputable def singleFunctorCompHomologyFunctorIso (n : ℤ) :
     singleFunctor C n ⋙ homologyFunctor C n ≅ 𝟭 C :=
   isoWhiskerRight ((SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostCompQIso C)) _ ≪≫ Functor.associator _ _ _ ≪≫

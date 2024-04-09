@@ -153,9 +153,39 @@ variable {C}
 abbrev TStructure.t : TStructure (DerivedCategory.Plus C) :=
   (DerivedCategory.TStructure.t (C := C)).plus.tStructure DerivedCategory.TStructure.t
 
+lemma isGE_ι_obj_iff (X : DerivedCategory.Plus C) (n : ℤ) :
+    DerivedCategory.TStructure.t.IsGE (ι.obj X) n ↔ TStructure.t.IsGE X n := by
+  constructor
+  all_goals exact fun h => ⟨h.1⟩
+
+lemma isLE_ι_obj_iff (X : DerivedCategory.Plus C) (n : ℤ) :
+    DerivedCategory.TStructure.t.IsLE (ι.obj X) n ↔ TStructure.t.IsLE X n := by
+  constructor
+  all_goals exact fun h => ⟨h.1⟩
+
 noncomputable instance : (DerivedCategory.Plus.homologyFunctor C 0).ShiftSequence  ℤ := by
   dsimp [homologyFunctor]
   infer_instance
+
+instance (X : C) (n : ℤ) : TStructure.t.IsGE ((singleFunctor C n).obj X) n := by
+  rw [← isGE_ι_obj_iff]
+  change DerivedCategory.TStructure.t.IsGE ((DerivedCategory.singleFunctor C n).obj X) n
+  infer_instance
+
+instance (X : C) (n : ℤ) : TStructure.t.IsLE ((singleFunctor C n).obj X) n := by
+  rw [← isLE_ι_obj_iff]
+  change DerivedCategory.TStructure.t.IsLE ((DerivedCategory.singleFunctor C n).obj X) n
+  infer_instance
+
+lemma isZero_homology_of_isGE
+    (X : DerivedCategory.Plus C) (n : ℤ) [hX : TStructure.t.IsGE X n] (i : ℤ) (hi : i < n) :
+    IsZero ((homologyFunctor C i).obj X) :=
+  hX.1.1 i hi
+
+lemma isZero_homology_of_isLE
+    (X : DerivedCategory.Plus C) (n : ℤ) [hX : TStructure.t.IsLE X n] (i : ℤ) (hi : n < i) :
+    IsZero ((homologyFunctor C i).obj X) :=
+  hX.1.1 i hi
 
 end Plus
 

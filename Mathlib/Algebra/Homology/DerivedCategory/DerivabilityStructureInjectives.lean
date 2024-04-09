@@ -292,6 +292,43 @@ instance : F.rightDerivedFunctorPlus.IsTriangulated :=
     (hF := MorphismProperty.isomorphisms_isInvertedBy _)
     (α := F.rightDerivedFunctorPlusUnit)
 
+section
+
+open DerivedCategory.Plus.TStructure
+
+instance : F.rightDerivedFunctorPlus.RightTExact t t where
+  objGE X n hX := by
+    obtain ⟨K, hK, ⟨e⟩⟩ : ∃ (K : CochainComplex C ℤ) (hK : K.IsStrictlyGE n),
+        Nonempty (X ≅ DerivedCategory.Plus.Qh.obj ⟨⟨K⟩, n, hK⟩) := by
+      have : (DerivedCategory.Plus.ι.obj X).IsGE n := hX.1
+      obtain ⟨Y, _, ⟨e⟩⟩ := DerivedCategory.exists_iso_Q_obj_of_isGE
+        (DerivedCategory.Plus.ι.obj X) n
+      refine' ⟨Y, inferInstance, ⟨DerivedCategory.Plus.ι.preimageIso e⟩⟩
+    let r := Injectives.rightResolution_localizerMorphism K n
+    have e' : (DerivedCategory.Plus.ι.obj (DerivedCategory.Plus.Qh.obj
+        ((mapHomotopyCategoryPlus F).obj
+          ((mapHomotopyCategoryPlus (Injectives.ι C)).obj r.X₁)))) ≅
+      DerivedCategory.Q.obj ((F.mapHomologicalComplex _).obj (K.injectiveResolution n)) :=
+      (DerivedCategory.Plus.QhCompιIsoιCompQh D).app _ ≪≫
+        (DerivedCategory.quotientCompQhIso D).app _
+    have : t.IsGE ((mapHomotopyCategoryPlus F ⋙ DerivedCategory.Plus.Qh).obj
+        ((mapHomotopyCategoryPlus (Injectives.ι C)).obj r.X₁)) n := by
+      rw [← DerivedCategory.Plus.isGE_ι_obj_iff]
+      exact DerivedCategory.TStructure.t.isGE_of_iso e'.symm n
+    have : IsIso (DerivedCategory.Plus.Qh.map r.w) := Localization.inverts _ _ _ r.hw
+    have : t.IsGE ((rightDerivedFunctorPlus F).obj (DerivedCategory.Plus.Qh.obj
+      ((Injectives.localizerMorphism C).functor.obj r.X₁))) n :=
+      t.isGE_of_iso (asIso (F.rightDerivedFunctorPlusUnit.app
+        ((Injectives.ι C).mapHomotopyCategoryPlus.obj r.X₁))) n
+    apply (t.isGE_of_iso (F.rightDerivedFunctorPlus.mapIso
+      (e ≪≫ asIso (DerivedCategory.Plus.Qh.map r.w)).symm))
+
+instance (K : DerivedCategory.Plus C) (n : ℤ) [t.IsGE K n] :
+    t.IsGE (F.rightDerivedFunctorPlus.obj K) n :=
+  F.rightDerivedFunctorPlus.isGE_obj t t K n
+
+end
+
 noncomputable def rightDerived' (n : ℕ) : C ⥤ D :=
   DerivedCategory.Plus.singleFunctor C 0 ⋙ F.rightDerivedFunctorPlus ⋙
     DerivedCategory.Plus.homologyFunctor D n

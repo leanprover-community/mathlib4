@@ -424,6 +424,10 @@ noncomputable instance : (t : TStructure (DerivedCategory C)).HasHomology₀ whe
   iso := isoWhiskerRight (homologyFunctorIsotruncLE₀GE₀ToHeart C) _ ≪≫
     truncLE₀GE₀ToHeartιHeart
 
+-- `DerivedCategory.IsGE` should be defined as an abbreviation of `t.IsGE`...
+instance (X : DerivedCategory C) (n : ℤ) [X.IsGE n] : t.IsGE X n := ⟨by assumption⟩
+instance (X : DerivedCategory C) (n : ℤ) [X.IsLE n] : t.IsLE X n := ⟨by assumption⟩
+
 noncomputable instance : (t : TStructure (DerivedCategory C)).homology₀.ShiftSequence ℤ :=
   (inferInstance : (homologyFunctor C 0).ShiftSequence ℤ)
 

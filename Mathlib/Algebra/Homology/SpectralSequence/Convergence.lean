@@ -393,6 +393,19 @@ lemma comp_π (i : WithBot (α n)) (j : α n) (hij : i < j) (pq : ι) (hpq : s.p
     homOfLE (s.pred_le n j) by rfl, h.filtration.map_comp, assoc,
     h.comp_π' _ j rfl pq hpq, comp_zero]
 
+def ofIso {Y : C} (e : X ≅ Y) : E.StronglyConvergesToInDegree s n Y where
+  hasPageInfinityAt := h.hasPageInfinityAt
+  filtration' := h.filtration' ⋙ MonoOver.map e.hom
+  exists_isZero' := h.exists_isZero'
+  exists_isIso' := by
+    obtain ⟨j, hj⟩ := h.exists_isIso'
+    dsimp at hj
+    exact ⟨j, by dsimp; infer_instance⟩
+  π' := h.π'
+  epi_π' := h.epi_π'
+  comp_π' := h.comp_π'
+  exact_π' := h.exact_π'
+
 section
 
 variable (i : WithBot (α n)) (j : α n) (hij : s.pred n j = i)
