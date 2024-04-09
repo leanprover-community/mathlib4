@@ -105,6 +105,16 @@ noncomputable instance [Full F] [Faithful F] : Full F.mapHomotopyCategoryPlus wh
 noncomputable instance [Full F] [Faithful F] : Faithful F.mapHomotopyCategoryPlus where
   map_injective h := (F.mapHomotopyCategory _).map_injective h
 
+
+def mapHomotopyCategoryPlusCompIso {E : Type*} [Category E] [Preadditive E] [HasZeroObject E]
+    [HasBinaryBiproducts E]
+    {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e : F ⋙ G ≅ H)
+    [F.Additive] [G.Additive] [H.Additive] :
+    H.mapHomotopyCategoryPlus ≅ F.mapHomotopyCategoryPlus ⋙ G.mapHomotopyCategoryPlus :=
+  natIsoOfCompFullyFaithful (HomotopyCategory.Plus.ι E)
+    (isoWhiskerLeft (HomotopyCategory.Plus.ι C)
+      (mapHomotopyCategoryCompIso e (ComplexShape.up ℤ)))
+
 end Functor
 
 end CategoryTheory

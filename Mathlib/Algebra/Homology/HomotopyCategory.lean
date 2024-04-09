@@ -328,6 +328,13 @@ instance (F : V ⥤ W) [F.Additive] [Full F] [Faithful F] : Full (F.mapHomotopyC
     obtain ⟨g : K ⟶ L, rfl⟩ := (F.mapHomologicalComplex c).map_surjective f
     exact ⟨(HomotopyCategory.quotient V c).map g, rfl⟩)
 
+def Functor.mapHomotopyCategoryCompIso {W' : Type*} [Category W'] [Preadditive W']
+    {F : V ⥤ W} {G : W ⥤ W'} {H : V ⥤ W'} (e : F ⋙ G ≅ H)
+    [F.Additive] [G.Additive] [H.Additive] (c : ComplexShape ι) :
+    H.mapHomotopyCategory c ≅ F.mapHomotopyCategory c ⋙ G.mapHomotopyCategory c :=
+  Quotient.natIsoLift _ (isoWhiskerRight (Functor.mapHomologicalComplexCompIso e c)
+    (HomotopyCategory.quotient W' c))
+
 section
 
 variable {c}

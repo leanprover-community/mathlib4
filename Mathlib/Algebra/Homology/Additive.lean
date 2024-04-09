@@ -249,6 +249,13 @@ def NatIso.mapHomologicalComplex {F G : V ⥤ W} [F.Additive] [G.Additive] (α :
     NatTrans.mapHomologicalComplex_id]
 #align category_theory.nat_iso.map_homological_complex CategoryTheory.NatIso.mapHomologicalComplex
 
+@[simps!]
+def Functor.mapHomologicalComplexCompIso {W' : Type*} [Category W'] [Preadditive W']
+    {F : V ⥤ W} {G : W ⥤ W'} {H : V ⥤ W'} (e : F ⋙ G ≅ H)
+    [F.Additive] [G.Additive] [H.Additive] (c : ComplexShape ι) :
+    H.mapHomologicalComplex c ≅ F.mapHomologicalComplex c ⋙ G.mapHomologicalComplex c :=
+  NatIso.mapHomologicalComplex e.symm c
+
 /-- An equivalence of categories induces an equivalences between the respective categories
 of homological complex.
 -/
