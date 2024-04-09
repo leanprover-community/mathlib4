@@ -120,17 +120,6 @@ protected theorem coe_coe {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (f
     ⇑(f : A →ₗc[R] B) = f :=
   rfl
 
--- removed @[simp], linter complains
-theorem toFun_eq_coe (f : A →ₗc[R] B) : f.toFun = f := rfl
-
--- are the next 2 declarations necessary? Can already coerce to an `AddMonoidHom`
-/-- The `AddMonoidHom` underlying a coalgebra homomorphism. -/
-@[coe]
-def toAddMonoidHom' (f : A →ₗc[R] B) : A →+ B := (f : A →ₗ[R] B)
-
-instance coeOutAddMonoidHom : CoeOut (A →ₗc[R] B) (A →+ B) :=
-  ⟨CoalgHom.toAddMonoidHom'⟩
-
 @[simp]
 theorem coe_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₗc[R] B) : A → B) = f :=
   rfl
@@ -151,8 +140,7 @@ theorem toLinearMap_eq_coe (f : A →ₗc[R] B) : f.toLinearMap = f :=
 theorem coe_toLinearMap (f : A →ₗc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
   rfl
 
--- simp can prove this
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_toAddMonoidHom (f : A →ₗc[R] B) : ⇑(f : A →+ B) = f :=
   rfl
 
@@ -255,20 +243,6 @@ theorem mul_apply (φ ψ : A →ₗc[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
   rfl
 
 end
-
-section AddCommGroup
-
-variable [CommSemiring R] [AddCommGroup A] [AddCommGroup B] [Module R A] [Module R B]
-
-variable [CoalgebraStruct R A] [CoalgebraStruct R B] (φ : A →ₗc[R] B)
-
-protected theorem map_neg (x) : φ (-x) = -φ x :=
-  map_neg _ _
-
-protected theorem map_sub (x y) : φ (x - y) = φ x - φ y :=
-  map_sub _ _ _
-
-end AddCommGroup
 
 end CoalgHom
 
