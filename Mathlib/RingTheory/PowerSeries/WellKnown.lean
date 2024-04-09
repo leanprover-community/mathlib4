@@ -76,8 +76,8 @@ theorem mk_one_pow_eq_mk_choose_add :
   | succ d hd =>
       rw [pow_add, pow_one, mul_comm, show Nat.succ d = d + 1 by rfl, ext_iff]; exact λ n ↦ by
         rw [hd, coeff_mul]; simp only [coeff_mk, one_mul]; rw [Nat.succ_add, Nat.choose_succ_succ,
-        ← Finset.sum_antidiagonal_choose_add]; exact (Nat.cast_sum (Finset.antidiagonal n)
-        fun x ↦ Nat.choose (d + x.2) d).symm
+        ← Finset.sum_antidiagonal_choose_add]; exact (Nat.cast_sum (Finset.antidiagonal n) fun x ↦
+        Nat.choose (d + x.2) d).symm
 
 /--
 The power series `mk fun n => Nat.choose (d + n) d`,
@@ -94,7 +94,7 @@ noncomputable def invOneSubPow : S⟦X⟧ˣ where
         · subst hn; simp only [coeff_zero_eq_constantCoeff, map_mul, map_sub, map_one,
           constantCoeff_X, sub_zero, one_mul, coeff_one, ↓reduceIte]; rfl
         · rw [sub_mul]; simp only [one_mul, map_sub, coeff_mk, coeff_one, hn, ↓reduceIte];
-          rw [show n = (n - 1) + 1 by exact (Nat.succ_pred hn).symm, PowerSeries.coeff_succ_X_mul];
+          rw [show n = n - 1 + 1 by exact (Nat.succ_pred hn).symm, PowerSeries.coeff_succ_X_mul];
           simp only [coeff_mk, sub_self]]
     exact one_pow (d + 1)
   inv_val := by
@@ -105,7 +105,7 @@ noncomputable def invOneSubPow : S⟦X⟧ˣ where
         · subst hn; simp only [coeff_zero_eq_constantCoeff, map_mul, map_sub, map_one,
           constantCoeff_X, sub_zero, one_mul, coeff_one, ↓reduceIte]; rfl
         · rw [sub_mul]; simp only [one_mul, map_sub, coeff_mk, coeff_one, hn, ↓reduceIte];
-          rw [show n = (n - 1) + 1 by exact (Nat.succ_pred hn).symm, PowerSeries.coeff_succ_X_mul];
+          rw [show n = n - 1 + 1 by exact (Nat.succ_pred hn).symm, PowerSeries.coeff_succ_X_mul];
           simp only [coeff_mk, sub_self]]
     exact one_pow (d + 1)
 

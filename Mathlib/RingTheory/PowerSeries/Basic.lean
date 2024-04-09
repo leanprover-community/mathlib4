@@ -1081,10 +1081,12 @@ protected theorem mul_inv_rev (φ ψ : MvPowerSeries σ k) :
 #align mv_power_series.mul_inv_rev MvPowerSeries.mul_inv_rev
 
 theorem pow_inv_eq_inv_pow (φ : MvPowerSeries σ k) (d : ℕ) : (φ ^ d)⁻¹ = φ⁻¹ ^ d := by
-  induction' d with d hd
-  · simp only [Nat.zero_eq, pow_zero, mul_one]; rw [MvPowerSeries.inv_eq_iff_mul_eq_one];
-    exact MvPowerSeries.one_mul 1; simp only [map_one, ne_eq, one_ne_zero, not_false_eq_true]
-  · rw [show φ⁻¹ ^ (d + 1) = φ⁻¹ * (φ⁻¹ ^ d) by rfl, ← hd, ← MvPowerSeries.mul_inv_rev, pow_succ']
+  induction d with
+  | zero =>
+      simp only [Nat.zero_eq, pow_zero, mul_one]; rw [MvPowerSeries.inv_eq_iff_mul_eq_one];
+      exact MvPowerSeries.one_mul 1; simp only [map_one, ne_eq, one_ne_zero, not_false_eq_true]
+  | succ d hd => rw [show φ⁻¹ ^ (d + 1) = φ⁻¹ * (φ⁻¹ ^ d) by rfl, ← hd,
+                 ← MvPowerSeries.mul_inv_rev, pow_succ']
 
 instance : InvOneClass (MvPowerSeries σ k) :=
   { inferInstanceAs (One (MvPowerSeries σ k)),
@@ -2325,11 +2327,11 @@ protected theorem mul_inv_rev (φ ψ : PowerSeries k) : (φ * ψ)⁻¹ = ψ⁻¹
 #align power_series.mul_inv_rev PowerSeries.mul_inv_rev
 
 theorem pow_inv_eq_inv_pow (φ : PowerSeries k) (d : ℕ) : (φ ^ d)⁻¹ = φ⁻¹ ^ d := by
-  induction' d with d hd
-  · rw [inv_eq_iff_mul_eq_one]
-    simp only [Nat.zero_eq, pow_zero, mul_one]
-    exact ne_zero_of_eq_one rfl
-  · rw [show φ⁻¹ ^ (d + 1) = φ⁻¹ * (φ⁻¹ ^ d) by rfl, ← hd, ← PowerSeries.mul_inv_rev, pow_succ']
+  induction d with
+  | zero => rw [inv_eq_iff_mul_eq_one]; simp only [Nat.zero_eq, pow_zero, mul_one]
+            exact ne_zero_of_eq_one rfl
+  | succ d hd => rw [show φ⁻¹ ^ (d + 1) = φ⁻¹ * (φ⁻¹ ^ d) by rfl, ← hd, ← PowerSeries.mul_inv_rev,
+                 pow_succ']
 
 instance : InvOneClass (PowerSeries k) :=
   { inferInstanceAs <| InvOneClass <| MvPowerSeries Unit k with }

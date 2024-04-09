@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Polynomial.Hilbert
 import Mathlib.Algebra.HilbertSerre.Theorem
 
 /-!
-# Hilbert Polynomial
+# Hilbert Polynomials
 
 -/
 
@@ -182,7 +182,7 @@ theorem additiveFunction_val_eq_hilbertPolynomial_eval
       let m : Set.Ici (Polynomial.natDegree (numeratorPolynomial' 𝒜 ℳ μ S h)) := ⟨n, Nat.le_of_lt
         <| Nat.lt_of_le_of_lt (natDegree_numeratorPolynomial'_le 𝒜 ℳ μ S h) hn⟩
       rw [show @Nat.cast ℚ Semiring.toNatCast n = (m : ℚ) by simp only,
-        ← mul_invOneSubPow_coeff_eq_hilbert_eval _ _ _ (le_trans
+        ← coeff_mul_invOneSubPow_eq_hilbert_eval _ _ _ (le_trans
         (natDegree_numeratorPolynomial'_le 𝒜 ℳ μ S h) <| Nat.lt_succ.mp (Nat.le.step hn)),
         show one_sub⁻¹ ^ (S.toFinset.card - rootMultiplicity 1 (numeratorPolynomial 𝒜 ℳ μ S)) =
         invOneSubPow (S.toFinset.card - rootMultiplicity 1 (numeratorPolynomial 𝒜 ℳ μ S) - 1) by
