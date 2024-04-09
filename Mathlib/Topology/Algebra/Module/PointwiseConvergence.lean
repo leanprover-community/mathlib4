@@ -136,7 +136,7 @@ def _root_.ContinousLinearMap.toPointwiseConvergenceCLM [ContinuousSMul 𝕜₁ 
     (E →SL[σ] F) →L[𝕜₂] (E →SLₚₜ[σ] F) where
   toLinearMap := LinearMap.id
   cont := continuous_id_of_le
-    (UniformConvergenceCLM.topologicalSpace_mono _ _ fun _ ↦ Bornology.isVonNBounded_finite)
+    (UniformConvergenceCLM.topologicalSpace_mono _ _ fun _ ↦ Set.Finite.isVonNBounded)
 
 variable (𝕜 E) in
 /-- The topology of pointwise convergence on `E →Lₚₜ[𝕜] 𝕜` coincides with the weak-* topology. -/
