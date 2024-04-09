@@ -18,15 +18,15 @@ ordinals from mathlib. It still allows an approximation scheme indexed over the 
 
 ## Main definitions
 
-* `OrdinalApprox.lfpApprox`: The ordinal approximation of
-  the least fixed point of a bundled monotone function.
-* `OrdinalApprox.gfpApprox`: The ordinal approximation of
-  the greatest fixed point of a bundled monotone function.
+* `OrdinalApprox.lfpApprox`: The ordinal approximation of the least fixed point
+  greater or equal then an initial value of a bundled monotone function.
+* `OrdinalApprox.gfpApprox`: The ordinal approximation of the greatest fixed point
+  less or equal then an initial value of a bundled monotone function.
 
 ## Main theorems
-* `OrdinalApprox.lfpApprox_is_lfp`: The approximation of
+* `OrdinalApprox.lfp_mem_range_lfpApprox`: The approximation of
   the least fixed point eventually reaches the least fixed point
-* `OrdinalApprox.gfpApprox_is_gfp`: The approximation of
+* `OrdinalApprox.gfp_mem_range_gfpApprox`: The approximation of
   the greatest fixed point eventually reaches the greatest fixed point
 
 ## References
@@ -68,7 +68,7 @@ variable [CompleteLattice α] (f : α →o α) (x : α)
 open Function fixedPoints Cardinal Order OrderHom
 
 set_option linter.unusedVariables false in
-/-- Ordinal approximants of the least fixed points greater then an initial value x -/
+/-- Ordinal approximants of the least fixed point greater then an initial value x -/
 def lfpApprox (a : Ordinal.{u}) : α :=
   sSup ({ f (lfpApprox b) | (b : Ordinal) (h : b < a) } ∪ {x})
 termination_by a
@@ -112,7 +112,7 @@ theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
     simp only [Set.mem_setOf_eq]
     use a
 
-/-- The ordinal approximants of the least fixed points are stabilizing
+/-- The ordinal approximants of the least fixed point are stabilizing
   when reaching a fixed point of f -/
 theorem lfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_init : x ≤ f x) (h_ab : a ≤ b)
     (h: lfpApprox f x a ∈ fixedPoints f) : lfpApprox f x b = lfpApprox f x a := by
@@ -173,7 +173,8 @@ theorem lfpApprox_ord_mem_fixedPoint (h_init : x ≤ f x) :
     exact lfpApprox_mem_fixedPoints_of_eq f x h_init
       (h_nab.symm.lt_of_le h_ba) (le_of_lt h_b) (h_fab.symm)
 
-/-- Every value of the ordinal approximants are less or equal than every fixed point of f -/
+/-- Every value of the ordinal approximants are less or equal than every fixed point of f greater
+  then the initial value -/
 theorem lfpApprox_le_of_mem_fixedPoints {a : α}
     (h_a : a ∈ fixedPoints f) (h_le_init : x ≤ a) (i : Ordinal) : lfpApprox f x i ≤ a := by
   induction i using Ordinal.induction with
@@ -211,7 +212,7 @@ theorem lfp_mem_range_lfpApprox : lfp f ∈ Set.range (lfpApprox f ⊥) := by
   exact lfpApprox_ord_eq_lfp f
 
 set_option linter.unusedVariables false in
-/-- Ordinal approximants of the greatest fixed points -/
+/-- Ordinal approximants of the greatest fixed point -/
 def gfpApprox (a : Ordinal.{u}) : α :=
   sInf ({ f (gfpApprox b) | (b : Ordinal) (h : b < a) } ∪ {x})
 termination_by a
@@ -227,7 +228,7 @@ theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
     gfpApprox f x (a+1) = f (gfpApprox f x a) :=
   lfpApprox_add_one (OrderHom.dual f) x h a
 
-/-- The ordinal approximants of the least fixed points are stabilizing
+/-- The ordinal approximants of the least fixed point are stabilizing
   when reaching a fixed point of f -/
 theorem gfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_init : f x ≤ x) (h_ab : a ≤ b)
     (h: gfpApprox f x a ∈ fixedPoints f) : gfpApprox f x b = gfpApprox f x a :=
@@ -244,10 +245,11 @@ lemma gfpApprox_ord_mem_fixedPoint (h_init : f x ≤ x) :
     gfpApprox f x (ord <| succ #α) ∈ fixedPoints f :=
   lfpApprox_ord_mem_fixedPoint (OrderHom.dual f) x h_init
 
-/-- Every value of the ordinal approximants are greater or equal than every fixed point of f -/
+/-- Every value of the ordinal approximants are greater or equal than every fixed point of f
+  that is smaller then the initial value -/
 lemma le_gfpApprox_of_mem_fixedPoints {a : α}
-    (h_a : a ∈ fixedPoints f) (h_init_le : a ≤ x) (i : Ordinal) : a ≤ gfpApprox f x i:=
-  lfpApprox_le_of_mem_fixedPoints (OrderHom.dual f) x h_a h_init_le i
+    (h_a : a ∈ fixedPoints f) (h_le_init : a ≤ x) (i : Ordinal) : a ≤ gfpApprox f x i:=
+  lfpApprox_le_of_mem_fixedPoints (OrderHom.dual f) x h_a h_le_init i
 
 /-- The greatest fixed point of f is reached after the successor of the domains cardinality -/
 theorem gfpApprox_ord_eq_gfp : gfpApprox f ⊤ (ord <| succ #α) = gfp f :=
