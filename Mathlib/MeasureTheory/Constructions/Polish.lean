@@ -631,6 +631,16 @@ instance Quotient.borelSpace {X : Type*} [TopologicalSpace X] [PolishSpace X] [M
   ⟨continuous_quotient_mk'.map_eq_borel (surjective_quotient_mk' _)⟩
 #align quotient.borel_space Quotient.borelSpace
 
+/-- When the subgroup `N < G` is not necessarily `Normal`, we have a `CosetSpace` as opposed
+to `QuotientGroup` (the next `instance`).
+TODO: typeclass inference should normally find this, but currently doesn't.
+E.g., `MeasurableSMul G (G ⧸ Γ)` fails to synthesize, even though `G ⧸ Γ` is the quotient
+of `G` by the action of `Γ`; it seems unable to pick up the `BorelSpace` instance. -/
+@[to_additive AddCosetSpace.borelSpace]
+instance CosetSpace.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] [Group G]
+    [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [T2Space (G ⧸ N)]
+    [SecondCountableTopology (G ⧸ N)] : BorelSpace (G ⧸ N) := Quotient.borelSpace
+
 @[to_additive]
 instance QuotientGroup.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] [Group G]
     [TopologicalGroup G] [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [N.Normal]
@@ -1007,7 +1017,8 @@ noncomputable def measurableEquivNatBoolOfNotCountable (h : ¬Countable α) : α
   obtain ⟨f, -, fcts, finj⟩ :=
     isClosed_univ.exists_nat_bool_injection_of_not_countable
       (by rwa [← countable_coe_iff, (Equiv.Set.univ _).countable_iff])
-  obtain ⟨g, gmeas, ginj⟩ := MeasurableSpace.measurable_injection_nat_bool_of_countablyGenerated α
+  obtain ⟨g, gmeas, ginj⟩ :=
+    MeasurableSpace.measurable_injection_nat_bool_of_hasCountableSeparatingOn α
   exact ⟨borelSchroederBernstein gmeas ginj fcts.measurable finj⟩
 #align polish_space.measurable_equiv_nat_bool_of_not_countable PolishSpace.measurableEquivNatBoolOfNotCountable
 

@@ -18,7 +18,7 @@ These lemmas are in a separate file to the definition of `IsCoprime` or `IsRelPr
 as they require more imports.
 
 Notably, this includes lemmas about `Finset.prod` as this requires importing BigOperators, and
-lemmas about `HasPow` since these are easiest to prove via `Finset.prod`.
+lemmas about `Pow` since these are easiest to prove via `Finset.prod`.
 
 -/
 
@@ -124,7 +124,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
       Pairwise (IsCoprime on fun i : t ↦ s i) := by
   refine' h.cons_induction _ _
   · simp only [sum_singleton, Finset.sdiff_self, prod_empty, mul_one, exists_apply_eq,
-               Pairwise, Ne.def, true_iff_iff]
+               Pairwise, Ne, true_iff_iff]
     rintro a ⟨i, hi⟩ ⟨j, hj⟩ h
     rw [Finset.mem_singleton] at hi hj
     simp [hi, hj] at h

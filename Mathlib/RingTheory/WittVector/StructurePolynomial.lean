@@ -261,7 +261,7 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
   rw [this]
   rw [Nat.cast_mul, Nat.cast_pow, Nat.cast_pow]
   apply mul_dvd_mul_left ((p : MvPolynomial (idx × ℕ) ℤ) ^ k)
-  rw [show p ^ (n + 1 - k) = p * p ^ (n - k) by rw [← pow_succ, ← tsub_add_eq_add_tsub hk]]
+  rw [show p ^ (n + 1 - k) = p * p ^ (n - k) by rw [← pow_succ', ← tsub_add_eq_add_tsub hk]]
   rw [pow_mul]
   -- the machine!
   apply dvd_sub_pow_of_dvd_sub

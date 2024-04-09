@@ -1648,7 +1648,7 @@ theorem IsBigOWith.pow' {f : α → R} {g : α → 𝕜} (h : IsBigOWith c l f g
       l (fun x => f x ^ n) fun x => g x ^ n
   | 0 => by simpa using isBigOWith_const_const (1 : R) (one_ne_zero' 𝕜) l
   | 1 => by simpa
-  | n + 2 => by simpa [pow_succ] using h.mul (IsBigOWith.pow' h (n + 1))
+  | n + 2 => by simpa [pow_succ] using (IsBigOWith.pow' h (n + 1)).mul h
 #align asymptotics.is_O_with.pow' Asymptotics.IsBigOWith.pow'
 
 theorem IsBigOWith.pow [NormOneClass R] {f : α → R} {g : α → 𝕜} (h : IsBigOWith c l f g) :
@@ -1687,7 +1687,7 @@ theorem IsLittleO.pow {f : α → R} {g : α → 𝕜} (h : f =o[l] g) {n : ℕ}
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn.ne'; clear hn
   induction' n with n ihn
   · simpa only [Nat.zero_eq, ← Nat.one_eq_succ_zero, pow_one]
-  · convert h.mul ihn <;> simp [pow_succ]
+  · convert ihn.mul h <;> simp [pow_succ]
 #align asymptotics.is_o.pow Asymptotics.IsLittleO.pow
 
 theorem IsLittleO.of_pow {f : α → 𝕜} {g : α → R} {n : ℕ} (h : (f ^ n) =o[l] (g ^ n)) (hn : n ≠ 0) :
