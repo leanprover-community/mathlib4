@@ -12,9 +12,8 @@ import Mathlib.Analysis.LocallyConvex.Polar
 /-!
 # The topological dual of a normed space
 
-In this file we define the topological dual `NormedSpace.Dual` of a normed space, and the
-continuous linear map `NormedSpace.inclusionInDoubleDual` from a normed space into its double
-dual.
+In this file we define the continuous linear map `NormedSpace.inclusionInDoubleDual` from a
+normed space into its double dual.
 
 For base field `𝕜 = ℝ` or `𝕜 = ℂ`, this map is actually an isometric embedding; we provide a
 version `NormedSpace.inclusionInDoubleDualLi` of the map which is of type a bundled linear

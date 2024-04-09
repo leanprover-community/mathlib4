@@ -13,12 +13,12 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
 
 Let `E` be a normed space over a field `𝕜`. This file is concerned with properties of the weak-*
 topology on the dual of `E`. By the dual, we mean either of the type synonyms
-`ContinuousLinearMap.Dual 𝕜 E` or `WeakDual 𝕜 E`, depending on whether it is viewed as equipped with its
-usual operator norm topology or the weak-* topology.
+`ContinuousLinearMap.Dual 𝕜 E` or `WeakDual 𝕜 E`, depending on whether it is viewed as equipped with
+its usual operator norm topology or the weak-* topology.
 
-It is shown that the canonical mapping `ContinuousLinearMap.Dual 𝕜 E → WeakDual 𝕜 E` is continuous, and
-as a consequence the weak-* topology is coarser than the topology obtained from the operator norm
-(dual norm).
+It is shown that the canonical mapping `ContinuousLinearMap.Dual 𝕜 E → WeakDual 𝕜 E` is continuous,
+and as a consequence the weak-* topology is coarser than the topology obtained from the operator
+norm (dual norm).
 
 In this file, we also establish the Banach-Alaoglu theorem about the compactness of closed balls
 in the dual of `E` (as well as sets of somewhat more general form) with respect to the weak-*
@@ -28,16 +28,16 @@ topology.
 
 The main definitions concern the canonical mapping `Dual 𝕜 E → WeakDual 𝕜 E`.
 
-* `ContinuousLinearMap.Dual.toWeakDual` and `WeakDual.toNormedDual`: Linear equivalences from
-  `dual 𝕜 E` to `WeakDual 𝕜 E` and in the converse direction.
-* `ContinuousLinearMap.Dual.continuousLinearMapToWeakDual`: A continuous linear mapping from
-  `Dual 𝕜 E` to `WeakDual 𝕜 E` (same as `ContinuousLinearMap.Dual.toWeakDual` but different bundled
-  data).
+* `NormedSpace.Dual.toWeakDual` and `WeakDual.toNormedDual`: Linear equivalences from
+  `ContinuousLinearMap.Dual 𝕜 E` to `WeakDual 𝕜 E` and in the converse direction.
+* `NormedSpace.Dual.continuousLinearMapToWeakDual`: A continuous linear mapping from
+  `ContinuousLinearMap.Dual 𝕜 E` to `WeakDual 𝕜 E` (same as `NormedSpace.Dual.toWeakDual`
+  but different bundled data).
 
 ## Main results
 
-The first main result concerns the comparison of the operator norm topology on `dual 𝕜 E` and the
-weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
+The first main result concerns the comparison of the operator norm topology on
+`ContinuousLinearMap.Dual 𝕜 E` and the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
 * `dual_norm_topology_le_weak_dual_topology`: The weak-* topology on the dual of a normed space is
   coarser (not necessarily strictly) than the operator norm topology.
 * `WeakDual.isCompact_polar` (a version of the Banach-Alaoglu theorem): The polar set of a
@@ -64,8 +64,8 @@ No new notation is introduced.
 
 Weak-* topology is defined generally in the file `Topology.Algebra.Module.WeakDual`.
 
-When `E` is a normed space, the duals `Dual 𝕜 E` and `WeakDual 𝕜 E` are type synonyms with
-different topology instances.
+When `E` is a normed space, the duals `ContinuousLinearMap.Dual 𝕜 E` and `WeakDual 𝕜 E` are type
+synonyms with different topology instances.
 
 For the proof of Banach-Alaoglu theorem, the weak dual of `E` is embedded in the space of
 functions `E → 𝕜` with the topology of pointwise convergence.
@@ -153,7 +153,7 @@ end NormedSpace
 
 namespace WeakDual
 
-open NormedSpace TopologicalSpace
+open NormedSpace ContinuousLinearMap
 
 /-- For normed spaces `E`, there is a canonical map `WeakDual 𝕜 E → Dual 𝕜 E` (the "identity"
 mapping). It is a linear equivalence. Here it is implemented as the inverse of the linear
