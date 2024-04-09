@@ -252,11 +252,15 @@ theorem zero_iff_orderTop {x : HahnSeries Γ R} : x = 0 ↔ orderTop x = ⊤ := 
   exact ne_zero_iff_orderTop.mp
 
 theorem untop_orderTop_of_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) :
-    WithTop.untop x.orderTop (ne_zero_iff_orderTop.mp hx) = x.orderTop :=
-    WithTop.coe_untop (orderTop x) (ne_zero_iff_orderTop.mp hx)
+    WithTop.untop x.orderTop (ne_zero_iff_orderTop.mp hx) =
+      x.isWF_support.min (support_nonempty_iff.2 hx) :=
+    WithTop.coe_inj.mp ((WithTop.coe_untop (orderTop x) (ne_zero_iff_orderTop.mp hx)).trans
+      (orderTop_of_ne hx))
 
-theorem coeff_orderTop_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) {g : Γ}
-    (hg : x.orderTop = g) : x.coeff g ≠ 0 := by
+theorem coeff_orderTop_ne {x : HahnSeries Γ R} {g : Γ} (hg : x.orderTop = g) :
+    x.coeff g ≠ 0 := by
+  have h : orderTop x ≠ ⊤ := by simp_all only [ne_eq, WithTop.coe_ne_top, not_false_eq_true]
+  have hx : x ≠ 0 := ne_zero_iff_orderTop.mpr h
   rw [orderTop_of_ne hx, WithTop.coe_eq_coe] at hg
   rw [← hg]
   exact x.isWF_support.min_mem (support_nonempty_iff.2 hx)
