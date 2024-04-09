@@ -247,6 +247,7 @@ import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.Augment
 import Mathlib.Algebra.Homology.Bifunctor
 import Mathlib.Algebra.Homology.BifunctorHomotopy
+import Mathlib.Algebra.Homology.BifunctorShift
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Homology.ComplexShapeSigns
 import Mathlib.Algebra.Homology.ConcreteCategory
@@ -1169,6 +1170,7 @@ import Mathlib.CategoryTheory.EffectiveEpi.Basic
 import Mathlib.CategoryTheory.EffectiveEpi.Comp
 import Mathlib.CategoryTheory.EffectiveEpi.Coproduct
 import Mathlib.CategoryTheory.EffectiveEpi.Enough
+import Mathlib.CategoryTheory.EffectiveEpi.Extensive
 import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
 import Mathlib.CategoryTheory.Elements
@@ -1976,7 +1978,6 @@ import Mathlib.Data.Nat.Factorization.Root
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Data.Nat.Fib.Zeckendorf
-import Mathlib.Data.Nat.ForSqrt
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Data.Nat.Hyperoperation
@@ -1998,7 +1999,6 @@ import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Size
-import Mathlib.Data.Nat.Sqrt
 import Mathlib.Data.Nat.SqrtNormNum
 import Mathlib.Data.Nat.Squarefree
 import Mathlib.Data.Nat.SuccPred
@@ -3313,7 +3313,7 @@ import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 import Mathlib.RingTheory.Discriminant
 import Mathlib.RingTheory.EisensteinCriterion
-import Mathlib.RingTheory.Etale
+import Mathlib.RingTheory.Etale.Basic
 import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.Filtration
 import Mathlib.RingTheory.FinitePresentation
@@ -3454,6 +3454,7 @@ import Mathlib.RingTheory.RootsOfUnity.Basic
 import Mathlib.RingTheory.RootsOfUnity.Complex
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.SimpleModule
+import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.RingTheory.Subring.Basic
 import Mathlib.RingTheory.Subring.Order
 import Mathlib.RingTheory.Subring.Pointwise
@@ -3464,6 +3465,7 @@ import Mathlib.RingTheory.Subsemiring.Pointwise
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.Trace
 import Mathlib.RingTheory.UniqueFactorizationDomain
+import Mathlib.RingTheory.Unramified.Basic
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.Integers
@@ -3923,6 +3925,7 @@ import Mathlib.Topology.Homotopy.Product
 import Mathlib.Topology.IndicatorConstPointwise
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Instances.AddCircle
+import Mathlib.Topology.Instances.CantorSet
 import Mathlib.Topology.Instances.Complex
 import Mathlib.Topology.Instances.Discrete
 import Mathlib.Topology.Instances.ENNReal
@@ -3993,17 +3996,21 @@ import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.Order.Bounded
 import Mathlib.Topology.Order.Category.AlexDisc
 import Mathlib.Topology.Order.Category.FrameAdjunction
+import Mathlib.Topology.Order.DenselyOrdered
 import Mathlib.Topology.Order.ExtendFrom
 import Mathlib.Topology.Order.ExtrClosure
 import Mathlib.Topology.Order.Filter
 import Mathlib.Topology.Order.Hom.Basic
 import Mathlib.Topology.Order.Hom.Esakia
 import Mathlib.Topology.Order.IntermediateValue
+import Mathlib.Topology.Order.IsLUB
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Order.LeftRight
 import Mathlib.Topology.Order.LeftRightLim
+import Mathlib.Topology.Order.LeftRightNhds
 import Mathlib.Topology.Order.LocalExtr
 import Mathlib.Topology.Order.LowerUpperTopology
+import Mathlib.Topology.Order.Monotone
 import Mathlib.Topology.Order.MonotoneContinuity
 import Mathlib.Topology.Order.MonotoneConvergence
 import Mathlib.Topology.Order.NhdsSet
@@ -4060,6 +4067,7 @@ import Mathlib.Topology.Tactic
 import Mathlib.Topology.TietzeExtension
 import Mathlib.Topology.UniformSpace.AbsoluteValue
 import Mathlib.Topology.UniformSpace.AbstractCompletion
+import Mathlib.Topology.UniformSpace.Ascoli
 import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Topology.UniformSpace.Compact

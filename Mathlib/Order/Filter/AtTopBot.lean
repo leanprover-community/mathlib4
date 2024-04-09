@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.MinMax
@@ -1570,12 +1571,12 @@ theorem eventually_atTop_prod_self [SemilatticeSup α] [Nonempty α] {p : α × 
 
 theorem eventually_atBot_prod_self' [SemilatticeInf α] [Nonempty α] {p : α × α → Prop} :
     (∀ᶠ x in atBot, p x) ↔ ∃ a, ∀ k ≤ a, ∀ l ≤ a, p (k, l) := by
-  simp only [eventually_atBot_prod_self, ball_cond_comm]
+  simp only [eventually_atBot_prod_self, forall_cond_comm]
 #align filter.eventually_at_bot_prod_self' Filter.eventually_atBot_prod_self'
 
 theorem eventually_atTop_prod_self' [SemilatticeSup α] [Nonempty α] {p : α × α → Prop} :
     (∀ᶠ x in atTop, p x) ↔ ∃ a, ∀ k ≥ a, ∀ l ≥ a, p (k, l) := by
-  simp only [eventually_atTop_prod_self, ball_cond_comm]
+  simp only [eventually_atTop_prod_self, forall_cond_comm]
 #align filter.eventually_at_top_prod_self' Filter.eventually_atTop_prod_self'
 
 theorem eventually_atTop_curry [SemilatticeSup α] [SemilatticeSup β] {p : α × β → Prop}
