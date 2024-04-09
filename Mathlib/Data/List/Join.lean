@@ -188,7 +188,7 @@ theorem join_drop_length_sub_one {L : List (List α)} (h : L ≠ []) :
 /-- We can rebracket `x ++ (l₁ ++ x) ++ (l₂ ++ x) ++ ... ++ (lₙ ++ x)` to
 `(x ++ l₁) ++ (x ++ l₂) ++ ... ++ (x ++ lₙ) ++ x` where `L = [l₁, l₂, ..., lₙ]`. -/
 theorem append_join_map_append (L : List (List α)) (x : List α) :
-    x ++ (List.map (fun l => l ++ x) L).join = (List.map (fun l => x ++ l) L).join ++ x := by
+    x ++ (L.map (· ++ x)).join = (L.map (x ++ ·)).join ++ x := by
   induction' L with _ _ ih
   · rw [map_nil, join, append_nil, map_nil, join, nil_append]
   · rw [map_cons, join, map_cons, join, append_assoc, ih, append_assoc, append_assoc]
@@ -196,7 +196,7 @@ theorem append_join_map_append (L : List (List α)) (x : List α) :
 
 /-- Reversing a join is the same as reversing the order of parts and reversing all parts. -/
 theorem reverse_join (L : List (List α)) :
-    L.join.reverse = (List.map List.reverse L).reverse.join := by
+    L.join.reverse = (L.map reverse).reverse.join := by
   induction' L with _ _ ih
   · rfl
   · rw [join, reverse_append, ih, map_cons, reverse_cons', join_concat]
@@ -204,14 +204,14 @@ theorem reverse_join (L : List (List α)) :
 
 /-- Joining a reverse is the same as reversing all parts and reversing the joined result. -/
 theorem join_reverse (L : List (List α)) :
-    L.reverse.join = (List.map List.reverse L).join.reverse := by
+    L.reverse.join = (L.map reverse).join.reverse := by
   simpa [reverse_reverse, map_reverse] using congr_arg List.reverse (reverse_join L.reverse)
 #align list.join_reverse List.join_reverse
 
-/-- Any member of `l : List (List α))` is a sublist of `l.join` -/
-lemma sublist_join (l : List (List α)) {s : List α} (hs : s ∈ l) :
-    List.Sublist s (l.join) := by
-  induction l with
+/-- Any member of `L : List (List α))` is a sublist of `L.join` -/
+lemma sublist_join (L : List (List α)) {s : List α} (hs : s ∈ L) :
+    s.Sublist L.join := by
+  induction L with
   | nil =>
     exfalso
     exact not_mem_nil s hs

@@ -3,8 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Int.Order.Basic
 import Mathlib.Logic.Equiv.Defs
 
 #align_import logic.equiv.fin from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
@@ -513,7 +514,7 @@ def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
 See `Int.ediv_emod_unique` for a similar propositional statement. -/
 @[simps]
 def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
-  -- TODO: could cast from int directly if we import `data.zmod.defs`, though there are few lemmas
+  -- TODO: could cast from int directly if we import `Data.ZMod.Defs`, though there are few lemmas
   -- about that coercion.
   toFun a := (a / n, ↑(a.natMod n))
   invFun p := p.1 * n + ↑p.2

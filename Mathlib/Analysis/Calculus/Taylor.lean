@@ -136,7 +136,8 @@ theorem continuousOn_taylorWithinEval {f : ℝ → E} {x : ℝ} {n : ℕ} {s : S
   simp only [WithTop.coe_le_coe, Nat.cast_le, Nat.lt_succ_iff.mp hi]
 #align continuous_on_taylor_within_eval continuousOn_taylorWithinEval
 
-/-- Helper lemma for calculating the derivative of the monomial that appears in Taylor expansions.-/
+/-- Helper lemma for calculating the derivative of the monomial that appears in Taylor
+expansions. -/
 theorem monomial_has_deriv_aux (t x : ℝ) (n : ℕ) :
     HasDerivAt (fun y => (x - y) ^ (n + 1)) (-(n + 1) * (x - t) ^ n) t := by
   simp_rw [sub_eq_neg_add]

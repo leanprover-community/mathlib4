@@ -475,7 +475,7 @@ theorem tendsto_exp_comap_re_atTop : Tendsto exp (comap re atTop) (cobounded ℂ
   comap_exp_cobounded ▸ tendsto_comap
 #align complex.tendsto_exp_comap_re_at_top Complex.tendsto_exp_comap_re_atTop
 
-/-- `Complex.exp z → 0` as `Complex.re z → -∞`.-/
+/-- `Complex.exp z → 0` as `Complex.re z → -∞`. -/
 theorem tendsto_exp_comap_re_atBot : Tendsto exp (comap re atBot) (𝓝 0) :=
   comap_exp_nhds_zero ▸ tendsto_comap
 #align complex.tendsto_exp_comap_re_at_bot Complex.tendsto_exp_comap_re_atBot

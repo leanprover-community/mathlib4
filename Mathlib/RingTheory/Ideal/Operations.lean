@@ -1340,7 +1340,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
         rw [Finset.coe_empty, Set.biUnion_empty, Set.subset_empty_iff] at h
         have : (I : Set R) ≠ ∅ := Set.Nonempty.ne_empty (Set.nonempty_of_mem I.zero_mem)
         exact absurd h this
-      · cases' hsne.bex with i his
+      · cases' hsne with i his
         obtain ⟨t, _, rfl⟩ : ∃ t, i ∉ t ∧ insert i t = s :=
           ⟨s.erase i, Finset.not_mem_erase i s, Finset.insert_erase his⟩
         have hp' : ∀ j ∈ t, IsPrime (f j) := by
@@ -2119,7 +2119,7 @@ def ker : Ideal R :=
   Ideal.comap f ⊥
 #align ring_hom.ker RingHom.ker
 
-/-- An element is in the kernel if and only if it maps to zero.-/
+/-- An element is in the kernel if and only if it maps to zero. -/
 theorem mem_ker {r} : r ∈ ker f ↔ f r = 0 := by rw [ker, Ideal.mem_comap, Submodule.mem_bot]
 #align ring_hom.mem_ker RingHom.mem_ker
 
@@ -2135,7 +2135,7 @@ theorem comap_ker (f : S →+* R) (g : T →+* S) : f.ker.comap g = ker (f.comp 
   rw [RingHom.ker_eq_comap_bot, Ideal.comap_comap, RingHom.ker_eq_comap_bot]
 #align ring_hom.comap_ker RingHom.comap_ker
 
-/-- If the target is not the zero ring, then one is not in the kernel.-/
+/-- If the target is not the zero ring, then one is not in the kernel. -/
 theorem not_one_mem_ker [Nontrivial S] (f : F) : (1 : R) ∉ ker f := by
   rw [mem_ker, map_one]
   exact one_ne_zero
