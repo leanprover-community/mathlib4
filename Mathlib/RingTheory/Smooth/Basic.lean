@@ -6,7 +6,9 @@ Authors: Andrew Yang
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.QuotientNilpotent
 import Mathlib.RingTheory.TensorProduct.Basic
-
+import Mathlib.RingTheory.FinitePresentation
+import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 #align_import ring_theory.etale from "leanprover-community/mathlib"@"73f96237417835f148a1f7bc1ff55f67119b7166"
 
 /-!
@@ -16,16 +18,16 @@ import Mathlib.RingTheory.TensorProduct.Basic
 An `R`-algebra `A` is formally smooth if for every `R`-algebra,
 every square-zero ideal `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists
 at least one lift `A →ₐ[R] B`.
+It is smooth if it is formally smooth and of finite presentation.
 
-We show that the property extends onto nilpotent ideals, and that these properties are stable
-under `R`-algebra homomorphisms and compositions.
+We show that the property of being formally smooth extends onto nilpotent ideals,
+and that it is stable under `R`-algebra homomorphisms and compositions.
 
-## TODO:
+We show that smoothness is stable under compositions.
 
-- Define smooth morphisms
-
+# TODO
+add base change
 -/
-
 
 -- Porting note: added to make the syntax work below.
 open scoped TensorProduct
@@ -49,6 +51,16 @@ class FormallySmooth : Prop where
       ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
         Function.Surjective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I)
 #align algebra.formally_smooth Algebra.FormallySmooth
+
+/-- An `R` algebra `A` is smooth if it is formally smooth and of finite presentation. -/
+class Smooth [CommSemiring R] (A : Type u) [Semiring A] [Algebra R A] : Prop where
+  formallySmooth : FormallySmooth R A
+  finitePresentation : FinitePresentation R A
+
+namespace Smooth
+attribute [instance] formallySmooth
+end Smooth
+
 
 variable {R A}
 
@@ -140,6 +152,14 @@ theorem FormallySmooth.of_equiv [FormallySmooth R A] (e : A ≃ₐ[R] B) : Forma
     AlgHom.comp_id]
 #align algebra.formally_smooth.of_equiv Algebra.FormallySmooth.of_equiv
 
+-- If `e : A ≃ₐ[R] B` and `A` is  smooth, then so is `B`.
+variable (R: Type u) [CommRing R]
+variable (A B: Type u) [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
+
+theorem Smooth.of_equiv [Smooth R A] (e : A ≃ₐ[R] B) : Smooth R B where
+  formallySmooth := FormallySmooth.of_equiv e
+  finitePresentation := FinitePresentation.equiv Smooth.finitePresentation e
+
 end OfEquiv
 
 section Polynomial
@@ -182,6 +202,17 @@ theorem FormallySmooth.comp [FormallySmooth R A] [FormallySmooth A B] : Formally
   apply_fun AlgHom.restrictScalars R at e'
   exact ⟨f''.restrictScalars _, e'.trans (AlgHom.ext fun _ => rfl)⟩
 #align algebra.formally_smooth.comp Algebra.FormallySmooth.comp
+
+
+variable (R: Type u) [CommRing R]
+variable (A: Type u) [CommRing A] [Algebra R A]
+variable (B: Type u) [CommRing B] [Algebra A B]
+variable [Algebra R B] [IsScalarTower R A B]
+
+theorem Smooth.comp [Smooth R A] [Smooth A B]: Smooth R B where
+  formallySmooth := FormallySmooth.comp R A B
+  finitePresentation := FinitePresentation.trans (A := A) Smooth.finitePresentation
+    Smooth.finitePresentation
 
 end Comp
 
@@ -341,5 +372,17 @@ theorem FormallySmooth.localization_map [FormallySmooth R S] : FormallySmooth R�
 #align algebra.formally_smooth.localization_map Algebra.FormallySmooth.localization_map
 
 end Localization
+
+section
+variable (R : Type u) [CommRing R]
+variable (r : R)
+variable (A : Type u) [CommRing A] [Algebra R A] [IsLocalization.Away r A]
+
+theorem Smooth.of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Smooth R A where
+  formallySmooth := Algebra.FormallySmooth.of_isLocalization (Submonoid.powers r)
+  finitePresentation := IsLocalization.Away.finitePresentation r
+
+end
+
 
 end Algebra

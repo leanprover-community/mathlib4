@@ -5,7 +5,9 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.QuotientNilpotent
 import Mathlib.RingTheory.TensorProduct.Basic
-
+import Mathlib.RingTheory.FinitePresentation
+import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 #align_import ring_theory.etale from "leanprover-community/mathlib"@"73f96237417835f148a1f7bc1ff55f67119b7166"
 
 /-!
@@ -15,16 +17,16 @@ import Mathlib.RingTheory.TensorProduct.Basic
 An `R`-algebra `A` is formally unramified if for every `R`-algebra,
 every square-zero ideal `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists
 at most one lift `A →ₐ[R] B`.
+It is unramified if it is formally unramified and of finite presentation.
 
-We show that the property extends onto nilpotent ideals, and that these properties are stable
+We show that the property extends onto nilpotent ideals, and that it is stable
 under `R`-algebra homomorphisms and compositions.
 
-## TODO:
+We show that being unramified is stable under compositions.
 
-- Define unramified morphisms
-
+# TODO
+add base change
 -/
-
 
 -- Porting note: added to make the syntax work below.
 open scoped TensorProduct
@@ -48,6 +50,14 @@ class FormallyUnramified : Prop where
       ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
         Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I)
 #align algebra.formally_unramified Algebra.FormallyUnramified
+
+class Unramified [CommSemiring R] (A : Type u) [Semiring A] [Algebra R A] : Prop where
+  formallyUnramified : FormallyUnramified R A
+  finitePresentation : FinitePresentation R A
+
+namespace Unramified
+attribute [instance] formallyUnramified
+end Unramified
 
 variable {R A}
 
@@ -113,6 +123,13 @@ theorem FormallyUnramified.of_equiv [FormallyUnramified R A] (e : A ≃ₐ[R] B)
   rw [← AlgHom.comp_assoc, e', AlgHom.comp_assoc]
 #align algebra.formally_unramified.of_equiv Algebra.FormallyUnramified.of_equiv
 
+variable (R: Type u) [CommRing R]
+variable (A B: Type u) [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
+
+theorem Unramified.of_equiv [Unramified R A] (e : A ≃ₐ[R] B) : Unramified R B where
+  formallyUnramified := FormallyUnramified.of_equiv e
+  finitePresentation := FinitePresentation.equiv Unramified.finitePresentation e
+
 end OfEquiv
 
 section Comp
@@ -147,6 +164,16 @@ theorem FormallyUnramified.of_comp [FormallyUnramified R B] : FormallyUnramified
   intro x
   exact AlgHom.congr_fun e' x
 #align algebra.formally_unramified.of_comp Algebra.FormallyUnramified.of_comp
+
+variable (R: Type u) [CommRing R]
+variable (A: Type u) [CommRing A] [Algebra R A]
+variable (B: Type u) [CommRing B] [Algebra A B]
+variable [Algebra R B] [IsScalarTower R A B]
+
+theorem Unframified.comp [Unramified R A] [Unramified A B]: Unramified R B where
+  formallyUnramified := FormallyUnramified.comp R A B
+  finitePresentation := FinitePresentation.trans (A := A) Unramified.finitePresentation
+    Unramified.finitePresentation
 
 end Comp
 
@@ -213,5 +240,16 @@ theorem FormallyUnramified.localization_map [FormallyUnramified R S] :
 #align algebra.formally_unramified.localization_map Algebra.FormallyUnramified.localization_map
 
 end Localization
+
+section
+variable (R : Type u) [CommRing R]
+variable (r : R)
+variable (A : Type u) [CommRing A] [Algebra R A] [IsLocalization.Away r A]
+
+theorem Unramified.of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Unramified R A where
+  formallyUnramified := Algebra.FormallyUnramified.of_isLocalization (Submonoid.powers r)
+  finitePresentation := IsLocalization.Away.finitePresentation r
+
+end
 
 end Algebra

@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.RingTheory.QuotientNilpotent
 import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.RingTheory.Unramified.Basic
+import Mathlib.RingTheory.Unramified.Derivations
 
 #align_import ring_theory.etale from "leanprover-community/mathlib"@"73f96237417835f148a1f7bc1ff55f67119b7166"
 
@@ -50,6 +51,14 @@ class FormallyEtale : Prop where
         Function.Bijective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I)
 #align algebra.formally_etale Algebra.FormallyEtale
 
+class Etale [CommSemiring R] (A : Type u) [Semiring A] [Algebra R A] : Prop where
+  formallyEtale : FormallyEtale R A
+  finitePresentation : FinitePresentation R A
+
+namespace Etale
+attribute [instance] formallyEtale
+end Etale
+
 variable {R A}
 
 theorem FormallyEtale.iff_unramified_and_smooth :
@@ -84,6 +93,13 @@ theorem FormallyEtale.of_equiv [FormallyEtale R A] (e : A ≃ₐ[R] B) : Formall
     ⟨FormallyUnramified.of_equiv e, FormallySmooth.of_equiv e⟩
 #align algebra.formally_etale.of_equiv Algebra.FormallyEtale.of_equiv
 
+variable (R: Type u) [CommRing R]
+variable (A B: Type u) [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
+
+theorem Etale.of_equiv [Etale R A] (e : A ≃ₐ[R] B) : Etale R B where
+  formallyEtale := FormallyEtale.of_equiv e
+  finitePresentation := FinitePresentation.equiv Etale.finitePresentation e
+
 end OfEquiv
 
 section Comp
@@ -96,6 +112,16 @@ theorem FormallyEtale.comp [FormallyEtale R A] [FormallyEtale A B] : FormallyEta
   FormallyEtale.iff_unramified_and_smooth.mpr
     ⟨FormallyUnramified.comp R A B, FormallySmooth.comp R A B⟩
 #align algebra.formally_etale.comp Algebra.FormallyEtale.comp
+
+variable (R: Type u) [CommRing R]
+variable (A: Type u) [CommRing A] [Algebra R A]
+variable (B: Type u) [CommRing B] [Algebra A B]
+variable [Algebra R B] [IsScalarTower R A B]
+
+theorem Etale.comp [Etale R A] [Etale A B]: Etale R B where
+  formallyEtale := FormallyEtale.comp R A B
+  finitePresentation := FinitePresentation.trans (A := A) Etale.finitePresentation
+    Etale.finitePresentation
 
 end Comp
 
@@ -112,6 +138,18 @@ instance FormallyEtale.base_change [FormallyEtale R A] : FormallyEtale B (B ⊗[
 #align algebra.formally_etale.base_change Algebra.FormallyEtale.base_change
 
 end BaseChange
+
+section
+
+variable (R : Type u) [CommRing R]
+variable (A : Type u) [CommRing A] [Algebra R A]
+variable (B : Type u) [CommRing B] [Algebra R B]
+
+theorem Etale.Subsingleton_kaehlerDifferential [Etale R A] : Subsingleton (Ω[A⁄R]) := by
+  rw [← Algebra.FormallyUnramified.iff_subsingleton_kaehlerDifferential]
+  exact FormallyEtale.to_unramified
+
+end
 
 section Localization
 
@@ -141,5 +179,16 @@ theorem FormallyEtale.localization_map [FormallyEtale R S] : FormallyEtale Rₘ 
 #align algebra.formally_etale.localization_map Algebra.FormallyEtale.localization_map
 
 end Localization
+
+section
+variable (R : Type u) [CommRing R]
+variable (r : R)
+variable (A : Type u) [CommRing A] [Algebra R A] [IsLocalization.Away r A]
+
+theorem Etale.of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Etale R A where
+  formallyEtale := Algebra.FormallyEtale.of_isLocalization (Submonoid.powers r)
+  finitePresentation := IsLocalization.Away.finitePresentation r
+
+end
 
 end Algebra
