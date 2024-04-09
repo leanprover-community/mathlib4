@@ -152,18 +152,27 @@ lemma homMk_comp_proj {X Y : LightProfinite} (f : (n : ℕ) → X ⟶ Y.componen
   erw [Y.isLimit.fac]
   rfl
 
+def extracted_1 (n : ℕ) : of (limitFunctor M L i map) ⟶ L.obj { unop := n } := sorry
+
+def limitCone' : Cone L :=
+  L.nat_op_cone_mk (of <| limitFunctor M L i map) (fun n ↦ extracted_1 _ _ _ _ n) sorry
+
 def limitCone : Cone L where
   pt := of <| limitFunctor M L i map
   π := by
     refine natTrans_nat_op_mk ?_ ?_
     · intro n
-      refine homMk ?_ ?_
+      let f := fun m : ℕ ↦ m - n
+      have hf : Monotone f := fun _ _ h ↦ Nat.sub_le_sub_right h n
+      have hf' : ∀ m, (∃ a, m ≤ f a) := fun m ↦ ⟨m + n, (by simp [f])⟩
+      refine (homMk ?_ ?_) ≫ (reindexIso _ f hf hf').inv
       · intro m
-        exact (_ : LightProfinite).proj (max m n) ≫
+        refine (_ : LightProfinite).proj m ≫
           fintypeCatToLightProfinite.map
-            (compose_n (fun k ↦ (L.obj ⟨k⟩).diagram.obj ⟨max m n⟩) (fun k ↦ map k (max m n))
-              (le_max_right _ _) ≫
-            transitionMapLE _ (le_max_left m n))
+            (compose_n (fun k ↦ (L.obj ⟨k⟩).diagram.obj ⟨m⟩) (fun k ↦ map k (m))
+              (Nat.sub_le m n) ≫ ?_)
+        simp [reindex, f]
+        sorry
       · sorry
     · intro m
       simp only [Functor.const_obj_obj, Functor.const_obj_map, Nat.op_diagonal_obj,

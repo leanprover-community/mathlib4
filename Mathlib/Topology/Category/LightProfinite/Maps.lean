@@ -1,4 +1,5 @@
 import Mathlib.Topology.Category.LightProfinite.IsLight
+import Mathlib.Topology.Category.LightProfinite.Reindex
 import Mathlib.CategoryTheory.Limits.FintypeCat
 
 open CategoryTheory Limits Function Profinite
@@ -106,48 +107,6 @@ lemma proj_comp_transitionMapLE'' {n m : ℕ} (h : n ≤ m) :
     S.transitionMapLE h ∘ S.proj m  = S.proj n := by
   rw [← S.proj_comp_transitionMapLE' h]
   rfl
-
-@[simps]
-def natTrans_nat_mk {C : Type*} [Category C] {F G : ℕ ⥤ C} (f : (n : ℕ) → F.obj n ⟶ G.obj n)
-    (w : ∀ n, F.map (homOfLE (Nat.le_succ _)) ≫ f (n + 1) = f n ≫ G.map (homOfLE (Nat.le_succ _))) :
-    F ⟶ G where
-  app n := f n
-  naturality n m h := by
-    have h' : n ≤ m := leOfHom h
-    induction h' with
-    | refl =>
-      change F.map (𝟙 _) ≫ _ = _ ≫ G.map (𝟙 _)
-      simp
-    | @step k a ih =>
-      have a' : n ≤ k := a
-      have : h = homOfLE a' ≫ homOfLE (Nat.le_succ k) := rfl
-      simp only [this, Functor.map_comp, Category.assoc]
-      rw [w k, ← Category.assoc, ih (homOfLE _)]
-      simp
-
-@[simps]
-def natTrans_nat_op_mk {C : Type*} [Category C] {F G : ℕᵒᵖ ⥤ C}
-    (f : (n : ℕ) → F.obj ⟨n⟩ ⟶ G.obj ⟨n⟩)
-    (w : ∀ n, F.map ⟨homOfLE (Nat.le_succ _)⟩ ≫ f n = f (n + 1) ≫ G.map ⟨homOfLE (Nat.le_succ _)⟩) :
-    F ⟶ G where
-  app := fun ⟨n⟩ ↦ f n
-  naturality := by
-    intro ⟨n⟩ ⟨m⟩ h
-    have h' : m ≤ n := leOfHom h.unop
-    induction h' with
-    | refl =>
-      change F.map (𝟙 _) ≫ _ = _ ≫ G.map (𝟙 _)
-      simp
-    | @step k a ih =>
-      have a' : m ≤ k := a
-      have : h = (homOfLE a' ≫ homOfLE (Nat.le_succ k)).op := rfl
-      rw [op_comp] at this
-      simp only [this, Functor.map_comp, Category.assoc]
-      rw [ih, ← Category.assoc]
-      have := w k
-      change F.map (homOfLE _).op ≫ _ = _ at this
-      rw [this, Category.assoc]
-      rfl
 
 -- lemma natTrans_nat_op_mk_comp {C : Type*} [Category C] {F G H : ℕᵒᵖ ⥤ C}
 --     (f : (n : ℕ) → F.obj ⟨n⟩ ⟶ G.obj ⟨n⟩) (g : (n : ℕ) → G.obj ⟨n⟩ ⟶ H.obj ⟨n⟩)
@@ -271,3 +230,24 @@ lemma eq_homMk {X Y : LightProfinite} (f : X ⟶ Y) :
   simp only [Functor.comp_obj, CategoryTheory.comp_apply, homMk', homMk, fromProfinite,
     locallyConstant_of_hom, concreteCategory_forget_obj, LocallyConstant.coe_mk, IsLimit.fac]
   rfl
+
+universe u
+
+variable (X : LightProfinite.{u}) (f : ℕ → ℕ) (hf : Monotone f) (hf' : ∀ n, (∃ m, n ≤ f m))
+
+noncomputable section
+
+def reindex : LightProfinite where
+  diagram := (Nat.functor f hf).op ⋙ X.diagram
+  cone := X.cone.whisker (Nat.functor f hf).op
+  isLimit := ((initial f hf hf').isLimitWhiskerEquiv _).symm X.isLimit
+
+def reindexIso : X ≅ X.reindex f hf hf' :=
+  isoMk <| (initial f hf hf').conePointsIsoWhisker X.isLimit
+
+variable {X}
+
+@[simps!]
+def reindexHomMk {Y : Profinite} (g : (n : ℕ) → Y ⟶ (X.component (f n)).toProfinite)
+    (w : ∀ n, X.transitionMapLE (hf (Nat.le_succ n)) ∘ g (n + 1) = g n) : Y ⟶ X.toProfinite :=
+  fromProfinite (Y := X.reindex f hf hf') g w ≫ lightToProfinite.map (X.reindexIso f hf hf' |>.inv)

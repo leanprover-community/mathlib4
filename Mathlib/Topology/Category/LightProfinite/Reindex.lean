@@ -80,26 +80,108 @@ def Nat.functor_mk' (f : ℕ → C) (h : (n : ℕ) → f n ⟶ f (n + 1)) :
 
 -- instance : HasLimit F := sorry
 
-end CategoryTheory
+@[simps]
+def natTrans_nat_mk {F G : ℕ ⥤ C} (f : (n : ℕ) → F.obj n ⟶ G.obj n)
+    (w : ∀ n, F.map (homOfLE (Nat.le_succ _)) ≫ f (n + 1) = f n ≫ G.map (homOfLE (Nat.le_succ _))) :
+    F ⟶ G where
+  app n := f n
+  naturality n m h := by
+    have h' : n ≤ m := leOfHom h
+    induction h' with
+    | refl =>
+      change F.map (𝟙 _) ≫ _ = _ ≫ G.map (𝟙 _)
+      simp
+    | @step k a ih =>
+      have a' : n ≤ k := a
+      have : h = homOfLE a' ≫ homOfLE (Nat.le_succ k) := rfl
+      simp only [this, Functor.map_comp, Category.assoc]
+      rw [w k, ← Category.assoc, ih (homOfLE _)]
+      simp
 
-namespace LightProfinite
+@[simps]
+def natTrans_nat_op_mk {F G : ℕᵒᵖ ⥤ C}
+    (f : (n : ℕ) → F.obj ⟨n⟩ ⟶ G.obj ⟨n⟩)
+    (w : ∀ n, F.map ⟨homOfLE (Nat.le_succ _)⟩ ≫ f n = f (n + 1) ≫ G.map ⟨homOfLE (Nat.le_succ _)⟩) :
+    F ⟶ G where
+  app := fun ⟨n⟩ ↦ f n
+  naturality := by
+    intro ⟨n⟩ ⟨m⟩ h
+    have h' : m ≤ n := leOfHom h.unop
+    induction h' with
+    | refl =>
+      change F.map (𝟙 _) ≫ _ = _ ≫ G.map (𝟙 _)
+      simp
+    | @step k a ih =>
+      have a' : m ≤ k := a
+      have : h = (homOfLE a' ≫ homOfLE (Nat.le_succ k)).op := rfl
+      rw [op_comp] at this
+      simp only [this, Functor.map_comp, Category.assoc]
+      rw [ih, ← Category.assoc]
+      have := w k
+      change F.map (homOfLE _).op ≫ _ = _ at this
+      rw [this, Category.assoc]
+      rfl
 
-variable (X : LightProfinite.{u}) (f : ℕ → ℕ) (hf : Monotone f) (hf' : ∀ n, (∃ m, n ≤ f m))
+@[simps]
+def Functor.nat_op_cone_mk (F : ℕᵒᵖ ⥤ C) (X : C) (f : (n : ℕ) → X ⟶ F.obj ⟨n⟩)
+    (h : ∀ n, f (n+1) ≫ F.map (homOfLE (Nat.le_succ n)).op = f n) : Cone F where
+  pt := X
+  π := natTrans_nat_op_mk f fun n ↦ (by simpa using (h n).symm)
+
+variable (g : ℕ → ℕ) (hg : Monotone g) (hg' : ∀ n, (∃ m, n ≤ g m))
 
 @[simps!]
-def Nat.functor : ℕ ⥤ ℕ := Nat.functor_mk' f (fun n ↦ homOfLE (hf (Nat.le_succ n)))
+def Nat.functor : ℕ ⥤ ℕ := Nat.functor_mk' g (fun n ↦ homOfLE (hg (Nat.le_succ n)))
 
-lemma final : (Nat.functor f hf).Final := by
+lemma final : (Nat.functor g hg).Final := by
   rw [Functor.final_iff_of_isFiltered]
   refine ⟨fun n ↦ ?_, fun _ _ ↦ ⟨_, 𝟙 _, rfl⟩⟩
-  obtain ⟨m, hm⟩ := hf' n
+  obtain ⟨m, hm⟩ := hg' n
   exact ⟨m, ⟨homOfLE hm⟩⟩
 
-lemma initial : (Nat.functor f hf).op.Initial :=
-  have := final f hf hf'
+lemma initial : (Nat.functor g hg).op.Initial :=
+  have := final g hg hg'
   Functor.initial_op_of_final _
 
-noncomputable def reindex : LightProfinite where
-  diagram := (Nat.functor f hf).op ⋙ X.diagram
-  cone := X.cone.whisker (Nat.functor f hf).op
-  isLimit := ((initial f hf hf').isLimitWhiskerEquiv _).symm X.isLimit
+
+@[simps!]
+noncomputable
+def Functor.nat_op_cone_mk' (F : ℕᵒᵖ ⥤ C) (X : C) (f : (n : ℕ) → (X ⟶ F.obj ⟨g n⟩))
+    (h : ∀ n, f (n+1) ≫ F.map (homOfLE (hg (Nat.le_succ n))).op = f n) : Cone F :=
+  have := initial g hg hg'
+  (Functor.Initial.conesEquiv (Nat.functor g hg).op _).functor.obj
+    (Functor.nat_op_cone_mk _ X f h)
+
+def f_initial (F : ℕᵒᵖ ⥤ C) (X : C) (m : ℕ) (f : (n : ℕ) → m ≤ n → (X ⟶ F.obj ⟨n⟩)) :
+    let g := fun n : ℕ ↦ max m n
+    -- have hg : Monotone g := fun _ _ h ↦ max_le_max_left _ h
+    -- have hg' : ∀ n, ∃ a, n ≤ g a := fun n ↦ ⟨n, le_max_right _ _⟩
+    (n : ℕ) → X ⟶ F.obj ⟨g n⟩ := fun n ↦ f (max m n) (le_max_left _ _)
+
+lemma h_initial (F : ℕᵒᵖ ⥤ C) (X : C) (m : ℕ) (f : (n : ℕ) → m ≤ n → (X ⟶ F.obj ⟨n⟩))
+    (h : ∀ n (h : m ≤ n), f (n+1) (h.trans (Nat.le_succ n)) ≫
+      F.map (homOfLE (Nat.le_succ n)).op = f n h) :
+    let g := fun n : ℕ ↦ max m n
+    have hg : Monotone g := fun _ _ h ↦ max_le_max_left _ h
+    have hg' : ∀ n, ∃ a, n ≤ g a := fun n ↦ ⟨n, le_max_right _ _⟩
+    ∀ n, f_initial F X m f (n+1) ≫ F.map (homOfLE (hg (Nat.le_succ n))).op =
+      f_initial F X m f n := by
+  intro g hg hg' n
+  simp [f_initial]
+  induction m with
+  | zero =>
+    have hh : ∀ k, max 0 k = k := by simp
+    change _ ≫ F.map ((eqToHom (hh (n+1))).op ≫
+      (homOfLE (Nat.le_succ n)).op ≫ (eqToHom (hh n)).op) = _
+    simp only [Nat.zero_eq, op_id, eqToHom_op, Functor.map_comp, eqToHom_map, ← Category.assoc]
+    simp only [Nat.zero_eq, ge_iff_le, zero_le, max_eq_right, eqToHom_naturality, Category.assoc]
+    -- have : f (n + 1) (zero_le (n+1)) = eqToHom _ ≫ f _ _ := sorry
+    have : F.obj ⟨n⟩ = F.obj ⟨max 0 n⟩ := by simp
+    have : f (max 0 n) (zero_le _) = f n (zero_le _) ≫ eqToHom this := by
+      simp only [ge_iff_le, zero_le, max_eq_right, ← eqToHom_map]
+      rw [← h n, ← h (max 0 n)]
+      sorry
+    sorry
+  | succ n ih => sorry
+
+end CategoryTheory
