@@ -3,6 +3,7 @@ Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Reid Barton
 -/
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Filtered.Basic
 
@@ -56,8 +57,9 @@ theorem eqvGen_quot_rel_of_rel (x y : Σ j, F.obj j) :
 
 --attribute [local elab_without_expected_type] nat_trans.app
 
-/-- Recognizing filtered colimits of types. -/
-noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x = t.ι.app i xi)
+/-- Recognizing filtered colimits of types (auxiliary definition). See
+`Limits.Types.FilteredColimit.isColimitOf` for a version without the `HasColimit F` assumption. -/
+noncomputable def isColimitOf' (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x = t.ι.app i xi)
     (hinj :
       ∀ i j xi xj,
         t.ι.app i xi = t.ι.app j xj → ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj) :
@@ -86,7 +88,24 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
       apply Colimit.ι_desc_apply
   · intro j
     apply colimit.ι_desc
-#align category_theory.limits.types.filtered_colimit.is_colimit_of CategoryTheory.Limits.Types.FilteredColimit.isColimitOf
+#align category_theory.limits.types.filtered_colimit.is_colimit_of CategoryTheory.Limits.Types.FilteredColimit.isColimitOf'
+
+/-- Recognizing filtered colimits of types. -/
+noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x = t.ι.app i xi)
+    (hinj :
+      ∀ i j xi xj,
+        t.ι.app i xi = t.ι.app j xj → ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj) :
+    IsColimit t := by
+  apply isColimitOfReflects (uliftFunctor.{max v u, u})
+  apply Types.FilteredColimit.isColimitOf'.{v, max v u, w}
+    (F ⋙ uliftFunctor.{max v u, u}) (uliftFunctor.mapCocone t)
+  · intro (x : ULift t.pt)
+    obtain ⟨i, xi, h⟩ := hsurj x.down
+    exact ⟨i, ULift.up xi, congrArg ULift.up h⟩
+  · intro i j (xi : ULift (F.obj i)) (xj : ULift (F.obj j))
+      (h : ULift.up (t.ι.app i xi.down) = ULift.up (t.ι.app j xj.down))
+    obtain ⟨k, f, g, hfg⟩ := hinj i j xi.down xj.down (congrArg ULift.down h)
+    exact ⟨k, f, g, congrArg ULift.up hfg⟩
 
 variable [IsFilteredOrEmpty J]
 
