@@ -45,7 +45,7 @@ Generally useful lemmas which are not related to integrals:
 -/
 
 
-open MeasureTheory TopologicalSpace NormedSpace Filter
+open MeasureTheory ContinuousLinearMap TopologicalSpace NormedSpace Filter
 
 open scoped ENNReal NNReal MeasureTheory Topology
 

@@ -62,9 +62,7 @@ weak-star, weak dual, duality
 
 noncomputable section
 
-open Filter
-
-open Topology
+open Filter ContinuousLinearMap Topology
 
 variable {α 𝕜 𝕝 R E F M : Type*}
 
