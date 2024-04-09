@@ -633,7 +633,6 @@ theorem det_traceForm_ne_zero [IsSeparable K L] [DecidableEq ι] (b : Basis ι K
 
 variable (K L)
 
--- separatingLeft_of_det_ne_zero
 theorem traceForm_separatingLeft [FiniteDimensional K L] [IsSeparable K L] :
     (traceForm K L).SeparatingLeft :=
   separatingLeft_of_det_ne_zero _ (det_traceForm_ne_zero (FiniteDimensional.finBasis K L))
