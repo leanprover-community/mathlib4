@@ -123,7 +123,7 @@ theorem integralClosure_eq_bot_iff : integralClosure R K = ⊥ ↔ IsIntegrallyC
 #align is_integrally_closed.integral_closure_eq_bot_iff IsIntegrallyClosed.integralClosure_eq_bot_iff
 
 @[simp]
-theorem pow_dvd_pow_iff {n : ℕ} (hn : n ≠ 0) {a b : R} : a ^ n ∣  b ^ n ↔ a ∣ b  := by
+theorem pow_dvd_pow_iff {n : ℕ} (hn : n ≠ 0) {a b : R} : a ^ n ∣ b ^ n ↔ a ∣ b  := by
   refine ⟨fun ⟨x, hx⟩ ↦ ?_, fun h ↦ pow_dvd_pow_of_dvd h n⟩
   by_cases ha : a = 0
   · simpa [ha, hn] using hx
