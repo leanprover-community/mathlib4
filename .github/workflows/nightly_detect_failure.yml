@@ -50,7 +50,7 @@ jobs:
               git tag "nightly-testing-${version}"
               git push origin "nightly-testing-${version}"
               hash=$(git rev-parse "nightly-testing-${version}")
-              curl -X POST "http://speed.lean-fro.org/mathlib4/api/commit/e7b27246-a3e6-496a-b552-ff4b45c7236e/$hash" -u admin:${{ secrets.SPEED }}
+              #curl -X POST "http://speed.lean-fro.org/mathlib4/api/commit/e7b27246-a3e6-496a-b552-ff4b45c7236e/$hash" -u admin:${{ secrets.SPEED }}
           fi
         else
           echo "Error: The file lean-toolchain does not contain the expected pattern."
@@ -97,11 +97,6 @@ jobs:
         }
         response = client.get_messages(request)
         messages = response['messages']
-        if messages:
-            print("Latest message is:")
-            print(messages[0])
-        else:
-            print("No messages!")
         if not messages or messages[0]['content'] != "✅ The latest CI for Mathlib's branch#nightly-testing has succeeded!":
             # Post the success message
             request = {
