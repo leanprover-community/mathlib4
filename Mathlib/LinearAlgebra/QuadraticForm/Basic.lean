@@ -1325,7 +1325,7 @@ The weights are applied using `•`; typically this definition is used either wi
 `[Algebra S R]`, although this is stated more generally. -/
 def weightedSumSquares [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] [SMulCommClass R S R]
     (w : ι → S) : QuadraticMap R (ι → R) R :=
-  ∑ i : ι, w i • (proj (R:=R) (n:=ι) i i)
+  ∑ i : ι, w i • (proj (R := R) (n := ι) i i)
 #align quadratic_form.weighted_sum_squares QuadraticMap.weightedSumSquares
 
 end
