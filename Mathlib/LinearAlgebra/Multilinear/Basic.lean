@@ -10,6 +10,7 @@ import Mathlib.Data.Fintype.Sort
 import Mathlib.Data.List.FinRange
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.Data.Fintype.Perm
+import Mathlib.Logic.Equiv.Fintype
 
 #align_import linear_algebra.multilinear.basic from "leanprover-community/mathlib"@"78fdf68dcd2fdb3fe64c0dd6f88926a49418a6ea"
 
@@ -1042,7 +1043,7 @@ def domDomRestrictₗ (f : MultilinearMap R M₁ M₂) (P : ι → Prop) [Decida
     simp [domDomRestrict_aux_right]
 
 lemma iteratedFDeriv_aux {α : Type*} [DecidableEq α]
-    (s : Finset ι) [DecidableEq { x // x ∈ s }] (e : α ≃ s)
+    (s : Set ι) [DecidableEq { x // x ∈ s }] (e : α ≃ s)
     (m : α → ((i : ι) → M₁ i)) (i : α) (z : (i : ι) → M₁ i) :
     (fun i_1 ↦ update m i z (e.symm i_1) i_1) =
       (fun i_1 ↦ update (fun j ↦ m (e.symm j) j) (e i) (z (e i)) i_1) := by
@@ -1063,7 +1064,7 @@ to `f (x₁, (v_{e 2})₂, x₃, ...)`, where at indices `i` in `s` one uses the
 and otherwise one uses a reference vector `x`. This is multilinear in the components of `x` outside
 of `s`, and in the `v_j`. -/
 noncomputable def iteratedFDerivComponent {α : Type*} [DecidableEq α]
-    (f : MultilinearMap R M₁ M₂) (s : Finset ι) (e : α ≃ s) :
+    (f : MultilinearMap R M₁ M₂) {s : Set ι} (e : α ≃ s) :
     MultilinearMap R (fun (i : {a : ι // a ∉ s}) ↦ M₁ i)
       (MultilinearMap R (fun (_ : α) ↦ (∀ i, M₁ i)) M₂) where
   toFun := fun z ↦
@@ -1085,7 +1086,7 @@ For the continuous version, see `ContinuousMultilinearMap.iteratedFDeriv`. -/
 noncomputable def iteratedFDeriv [Fintype ι]
     (f : MultilinearMap R M₁ M₂) (k : ℕ) (x : (i : ι) → M₁ i) :
     MultilinearMap R (fun (_ : Fin k) ↦ (∀ i, M₁ i)) M₂ :=
-  ∑ s : Finset ι, ∑ e : Fin k ≃ s, iteratedFDerivComponent f s e (fun i ↦ x i)
+  ∑ e : Fin k ↪ ι, iteratedFDerivComponent f e.toEquivRange (fun i ↦ x i)
 
 /-- If `f` is a collection of linear maps, then the construction `MultilinearMap.compLinearMap`
 sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g`. -/

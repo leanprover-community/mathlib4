@@ -1361,10 +1361,10 @@ to `f (x₁, (v_{e 2})₂, x₃, ...)`, where at indices `i` in `s` one uses the
 and otherwise one uses a reference vector `x`. This is continuous multilinear in the components
 of `x` outside of `s`, and in the `v_j`. -/
 noncomputable def iteratedFDerivComponent {α : Type*} [DecidableEq α] [Fintype α]
-    (f : ContinuousMultilinearMap 𝕜 E₁ G) (s : Finset ι) (e : α ≃ s) :
+    (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) :
     ContinuousMultilinearMap 𝕜 (fun (i : {a : ι // a ∉ s}) ↦ E₁ i)
       (ContinuousMultilinearMap 𝕜 (fun (_ : α) ↦ (∀ i, E₁ i)) G) :=
-  (f.toMultilinearMap.iteratedFDerivComponent s e).mkContinuousMultilinear (‖f‖) <| by
+  (f.toMultilinearMap.iteratedFDerivComponent e).mkContinuousMultilinear (‖f‖) <| by
     intro x m
     simp only [MultilinearMap.iteratedFDerivComponent, MultilinearMap.domDomRestrictₗ,
       MultilinearMap.coe_mk, MultilinearMap.domDomRestrict_apply, coe_coe]
@@ -1390,7 +1390,6 @@ def glouk (p : ι → Prop) : ((i : ι) → E₁ i) →L[𝕜] ((i : Subtype p) 
     map_smul' := by intros; ext; simp
     cont := by continuity }
 
-
 open Classical in
 /-- The iterated derivative of a continuous multilinear map `f` at the point `x`, it is a
 continuous multilinear map of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
@@ -1400,7 +1399,9 @@ The sum is parameterized by the embeddings of `Fin k` in the index type `ι` (or
 by the subsets `s` of `ι` of cardinal `k` and then the bijections between `Fin k` and `s`). -/
 def iteratedFDeriv (f : ContinuousMultilinearMap 𝕜 E₁ G) (k : ℕ) (x : (i : ι) → E₁ i) :
     ContinuousMultilinearMap 𝕜 (fun (_ : Fin k) ↦ (∀ i, E₁ i)) G :=
-  ∑ s in univ.powersetCard k, ∑ e : Fin k ≃ s, iteratedFDerivComponent f s e (glouk 𝕜 _ x)
+  ∑ e : Fin k ↪ ι, iteratedFDerivComponent f e.toEquivRange (glouk 𝕜 _ x)
+
+  -- ∑ s in univ.powersetCard k, ∑ e : Fin k ≃ s, iteratedFDerivComponent f s e (glouk 𝕜 _ x)
 
 end ContinuousMultilinearMap
 
