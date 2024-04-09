@@ -65,14 +65,16 @@ theorem map_invUnitsSub (f : R →+* S) (u : Rˣ) :
 
 #align power_series.map_inv_units_sub PowerSeries.map_invUnitsSub
 
-theorem mk_one_pow_eq_mk_choose_add {S : Type _} [CommRing S] (d : ℕ) :
+section invOneSubPow
+
+variable {S : Type _} [CommRing S] (d : ℕ)
+
+theorem mk_one_pow_eq_mk_choose_add :
     (@mk S fun _ ↦ 1) ^ (d + 1) = @mk S fun n ↦ Nat.choose (d + n) d := by
   induction d with
-  | zero => simp only [Nat.zero_eq, zero_add, pow_one, Nat.choose_zero_right]
-            rw [← Nat.coe_castRingHom, RingHom.map_one]
+  | zero => simp only [Nat.zero_eq, zero_add, pow_one, Nat.choose_zero_right, Nat.cast_one]
   | succ d hd =>
-      rw [pow_add, pow_one, mul_comm, show Nat.succ d = d + 1 by rfl, PowerSeries.ext_iff]
-      exact λ n ↦ by
+      rw [pow_add, pow_one, mul_comm, show Nat.succ d = d + 1 by rfl, ext_iff]; exact λ n ↦ by
         rw [hd, coeff_mul]; simp only [coeff_mk, one_mul]; rw [Nat.succ_add, Nat.choose_succ_succ,
         ← Finset.sum_antidiagonal_choose_add]; exact (Nat.cast_sum (Finset.antidiagonal n)
         fun x ↦ Nat.choose (d + x.2) d).symm
@@ -81,7 +83,7 @@ theorem mk_one_pow_eq_mk_choose_add {S : Type _} [CommRing S] (d : ℕ) :
 The power series `mk fun n => Nat.choose (d + n) d`,
 whose multiplicative inverse is `(1 - X) ^ (d + 1)`.
 -/
-noncomputable def invOneSubPow {S : Type _} [CommRing S] (d : ℕ) : (PowerSeries S)ˣ where
+noncomputable def invOneSubPow : S⟦X⟧ˣ where
   val := mk fun n => Nat.choose (d + n) d
   inv := (1 - X) ^ (d + 1)
   val_inv := by
@@ -107,15 +109,40 @@ noncomputable def invOneSubPow {S : Type _} [CommRing S] (d : ℕ) : (PowerSerie
           simp only [coeff_mk, sub_self]]
     exact one_pow (d + 1)
 
-theorem invOneSubPow_eq_inv_one_sub_pow (d : ℕ) :
-    invOneSubPow d = ⟨1 - PowerSeries.X, invOfUnit (1 - PowerSeries.X) 1,
-    @PowerSeries.mul_invOfUnit ℤ _ (1 - PowerSeries.X) 1 <| by
+theorem invOneSubPow_val_eq_mk_choose_add :
+    (invOneSubPow d).val = (mk fun n => Nat.choose (d + n) d : S⟦X⟧) := rfl
+
+theorem invOneSubPow_val_zero_eq_invUnitSub_one :
+    (invOneSubPow 0).val = invUnitsSub (1 : Sˣ) := by
+  rw [invOneSubPow, invUnitsSub]
+  simp only [zero_add, Nat.choose_zero_right, Nat.cast_one, one_pow, divp_one]
+
+theorem invOneSubPow_eq_inv_one_sub_pow :
+    invOneSubPow d = ⟨1 - X, invOfUnit (1 - X) 1, @mul_invOfUnit S _ (1 - X) 1 <| by
     simp only [map_sub, map_one, constantCoeff_X, sub_zero, Units.val_one], by
-    rw [mul_comm]; exact @PowerSeries.mul_invOfUnit ℤ _ (1 - PowerSeries.X) 1 <| by
+    rw [mul_comm]; exact @mul_invOfUnit S _ (1 - X) 1 <| by
       simp only [map_sub, map_one, constantCoeff_X, sub_zero, Units.val_one]⟩⁻¹ ^ (d + 1) := by
   rw [inv_pow]; exact (DivisionMonoid.inv_eq_of_mul _ (invOneSubPow d) <| by
   rw [← Units.val_eq_one, Units.val_mul, Units.val_pow_eq_pow_val];
   exact (invOneSubPow d).inv_val).symm
+
+theorem invOneSubPow_val_mul_one_sub_pow_eq_one :
+    (invOneSubPow d).val * ((1 - X : S⟦X⟧) ^ (d + 1)) = 1 :=
+  (invOneSubPow d).val_inv
+
+theorem one_sub_pow_mul_invOneSubPow_val_eq_one :
+    ((1 - X : S⟦X⟧) ^ (d + 1)) * (invOneSubPow d).val = 1 :=
+  (invOneSubPow d).inv_val
+
+theorem mk_choose_add_mul_one_sub_pow_eq_one :
+    (mk fun n => Nat.choose (d + n) d : S⟦X⟧) * ((1 - X) ^ (d + 1)) = 1 :=
+  (invOneSubPow d).val_inv
+
+theorem one_sub_pow_mul_mk_choose_add_eq_one :
+    ((1 - X) ^ (d + 1)) * (mk fun n => Nat.choose (d + n) d : S⟦X⟧) = 1 :=
+  (invOneSubPow d).inv_val
+
+end invOneSubPow
 
 end Ring
 

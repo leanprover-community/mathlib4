@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Kenny Lau, Fangming Li
+Authors: Johan Commelin, Kenny Lau
 -/
 import Mathlib.Data.Finsupp.Interval
 import Mathlib.Data.MvPolynomial.Basic
