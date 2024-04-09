@@ -50,7 +50,7 @@ theorem not_injective_limitation_set : ¬ InjOn g (Iio (ord <| succ #α)) := by
   intro h_inj
   have h := lift_mk_le_lift_mk_of_injective <| injOn_iff_injective.1 h_inj
   have mk_initialSeg_subtype :
-      #(Iio (ord <| succ #α)) = lift.{u+1, u} (succ #α) := by
+      #(Iio (ord <| succ #α)) = lift (succ #α) := by
     simpa only [coe_setOf, card_typein, card_ord] using mk_initialSeg (ord <| succ #α)
   rw [mk_initialSeg_subtype, lift_lift, lift_le] at h
   exact not_le_of_lt (Order.lt_succ #α) h
@@ -236,7 +236,7 @@ theorem gfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_init : f x ≤ x) (h_
 
 /-- There are distinct ordinals smaller than the successor of the domains cardinals with
   equal value -/
-theorem exists_grpApprox_eq_gfpApprox : ∃ a < ord <| succ #α, ∃ b < ord <| succ #α,
+theorem exists_gfpApprox_eq_gfpApprox : ∃ a < ord <| succ #α, ∃ b < ord <| succ #α,
     a ≠ b ∧ gfpApprox f x a = gfpApprox f x b :=
   exists_lfpApprox_eq_lfpApprox (OrderHom.dual f) x
 
