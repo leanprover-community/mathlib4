@@ -7,7 +7,6 @@ import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Discriminant
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.NumberTheory.KummerDedekind
-import Mathlib.LinearAlgebra.SesquilinearForm.DualLattice
 
 /-!
 # The different ideal

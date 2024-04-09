@@ -8,7 +8,6 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Trace
-import Mathlib.LinearAlgebra.SesquilinearForm.DualLattice
 
 #align_import ring_theory.dedekind_domain.integral_closure from "leanprover-community/mathlib"@"4cf7ca0e69e048b006674cf4499e5c7d296a89e0"
 

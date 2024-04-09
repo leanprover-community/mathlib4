@@ -14,7 +14,7 @@ import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.FieldTheory.Galois
 import Mathlib.RingTheory.PowerBasis
 import Mathlib.FieldTheory.Minpoly.MinpolyDiv
-import Mathlib.LinearAlgebra.SesquilinearForm.Properties
+import Mathlib.LinearAlgebra.BilinearForm.DualLattice
 
 #align_import ring_theory.trace from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
