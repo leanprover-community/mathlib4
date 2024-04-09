@@ -9,6 +9,24 @@ import Mathlib.Algebra.HilbertSerre.Theorem
 /-!
 # Hilbert Polynomials
 
+Remember the assumptions in the file `Mathlib/Algebra/HilbertSerre/Theorem.lean`:
+`universe u`
+`variable {A M : Type u} [CommRing A] [AddCommGroup M] [Module A M]`
+`variable [noetherian_ring : IsNoetherianRing A] [finite_module : Module.Finite A M]`
+`variable (𝒜 : ℕ → AddSubgroup A) [GradedRing 𝒜]`
+`variable (ℳ : ℕ → AddSubgroup M) [SetLike.GradedSMul 𝒜 ℳ] [DirectSum.Decomposition ℳ]`
+`variable (μ : (FGModuleCat (𝒜 0)) ⟹+ ℤ)`
+`variable (S : generatingSetOverBaseRing 𝒜)`
+
+This file inherits all the above settings. With an additional assumption
+`hS : ∀ (i : S.toFinset), S.deg i.2 = 1`, the main things achieved in this file are:
+1. formalising the Hilbert polynomial `HilbertSerre.hilbertPolynomial 𝒜 ℳ μ S : Polynomial ℚ`;
+2. proving that for any large enough `n : ℕ`, the value of the Hilbert polynomial at `n` is equal
+   to the value of the additive function `μ` at `ℳ n`;
+3. showing that the polynomial `h` satisfying the above property (i.e. for any large enough
+   `n : ℕ`, the value of `h` at `n` equals the value of `μ` at `ℳ n`) is unique;
+4. proving a theorem `HilbertSerre.natDegree_hilbertPolynomial`, which tells us the specific
+   degree of any non-zero Hilbert polynomial.
 -/
 
 universe u
@@ -19,12 +37,8 @@ variable (ℳ : ℕ → AddSubgroup M) [SetLike.GradedSMul 𝒜 ℳ] [DirectSum.
 variable (μ : (FGModuleCat (𝒜 0)) ⟹+ ℤ)
 variable (S : generatingSetOverBaseRing 𝒜) (hS : ∀ (i : S.toFinset), S.deg i.2 = 1)
 
-open GradedRing.finite_algebra_over_degree_zero_subring
-open GradedModule.finite_module_over_degree_zero_subring
-open CategoryTheory.Limits
 open BigOperators
 open PowerSeries
-
 
 namespace generatingSetOverBaseRing
 
@@ -212,7 +226,7 @@ lemma coeff_S_card_sub_eq_one (x : ℕ) :
     Finset.prod_const] at hcoeff
   rw [hcoeff, Polynomial.coeff_one]; simp only [one_ne_zero, ↓reduceIte, add_zero, one_pow]
 
-theorem hilbertPolynomial_natDegree_eq_sub (hhP : hilbertPolynomial 𝒜 ℳ μ S ≠ 0) :
+theorem natDegree_hilbertPolynomial (hhP : hilbertPolynomial 𝒜 ℳ μ S ≠ 0) :
     (hilbertPolynomial 𝒜 ℳ μ S).natDegree =
     S.toFinset.card - (Polynomial.rootMultiplicity 1 (numeratorPolynomial 𝒜 ℳ μ S)) - 1 := by
   by_cases h : numeratorPolynomial 𝒜 ℳ μ S = 0
