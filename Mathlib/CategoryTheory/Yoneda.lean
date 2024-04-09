@@ -591,7 +591,8 @@ variable {C}
 given by the Coyoneda lemma.
 -/
 @[simps!]
-def coyonedaSections (X : Cᵒᵖ) (F : C ⥤ Type v₁) : (coyoneda.obj X ⟶ F) ≅ ULift.{u₁} (F.obj X.unop) :=
+def coyonedaSections (X : Cᵒᵖ) (F : C ⥤ Type v₁) :
+    (coyoneda.obj X ⟶ F) ≅ ULift.{u₁} (F.obj X.unop) :=
   (coyonedaLemma C).app (X.unop, F)
 
 /-- We have a type-level equivalence between natural transformations from the coyoneda embedding
@@ -609,8 +610,8 @@ theorem coyonedaEquiv_symm_app_apply {X : Cᵒᵖ} {F : C ⥤ Type v₁} (x : F.
     (f : X.unop ⟶ Y) : (coyonedaEquiv.symm x).app Y f = F.map f x :=
   rfl
 
-theorem coyonedaEquiv_naturality {X Y : Cᵒᵖ} {F : C ⥤ Type v₁} (f : coyoneda.obj X ⟶ F) (g : Y ⟶ X) :
-    F.map g.unop (coyonedaEquiv f) = coyonedaEquiv (coyoneda.map g ≫ f) := by
+theorem coyonedaEquiv_naturality {X Y : Cᵒᵖ} {F : C ⥤ Type v₁} (f : coyoneda.obj X ⟶ F)
+    (g : Y ⟶ X) : F.map g.unop (coyonedaEquiv f) = coyonedaEquiv (coyoneda.map g ≫ f) := by
   change (f.app X.unop ≫ F.map g.unop) (𝟙 X.unop) = f.app Y.unop (g.unop ≫ 𝟙 Y.unop)
   rw [← f.naturality]
   dsimp
@@ -630,7 +631,8 @@ lemma coyonedaEquiv_comp' {X : C} {F G : C ⥤ Type v₁} (α : coyoneda.obj (op
 
 -- This lemma has always been bad, but leanprover/lean4#2644 made `simp` start noticing
 @[simp, nolint simpNF]
-lemma coyonedaEquiv_coyoneda_map {X Y : Cᵒᵖ} (f : X ⟶ Y) : coyonedaEquiv (coyoneda.map f) = f.unop := by
+lemma coyonedaEquiv_coyoneda_map {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    coyonedaEquiv (coyoneda.map f) = f.unop := by
   rw [coyonedaEquiv_apply]
   simp
 
