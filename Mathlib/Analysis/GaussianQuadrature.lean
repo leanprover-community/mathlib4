@@ -187,7 +187,7 @@ def PolyL2.InnerProductSpaceCore : InnerProductSpace.Core ℝ (PolyL2 s) where
     simp only [conj_trivial, inner_def, IntervalWithMeasure.dot]
     apply intervalIntegral.integral_congr
     unfold EqOn
-    simp
+    simp only [eval_mul]
     intro x
     intro _
     rw [mul_comm (q.eval _) (p.eval _)]
@@ -225,7 +225,7 @@ def PolyL2.InnerProductSpaceCore : InnerProductSpace.Core ℝ (PolyL2 s) where
     rw [← intervalIntegral.integral_add]
     apply intervalIntegral.integral_congr
     unfold EqOn
-    simp
+    simp only [eval_mul]
     intro x
     intro _
     rw [Polynomial.eval_add]
