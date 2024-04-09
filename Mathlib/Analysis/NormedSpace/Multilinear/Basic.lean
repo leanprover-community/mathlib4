@@ -1364,7 +1364,7 @@ noncomputable def iteratedFDerivComponent {α : Type*} [DecidableEq α] [Fintype
       (ContinuousMultilinearMap 𝕜 (fun (_ : α) ↦ (∀ i, E₁ i)) G) :=
   (f.toMultilinearMap.iteratedFDerivComponent s e).mkContinuousMultilinear (‖f‖) <| by
     intro x m
-    simp only [MultilinearMap.iteratedDerivComponent, MultilinearMap.domDomRestrictₗ,
+    simp only [MultilinearMap.iteratedFDerivComponent, MultilinearMap.domDomRestrictₗ,
       MultilinearMap.coe_mk, MultilinearMap.domDomRestrict_apply, coe_coe]
     apply (f.le_opNorm _).trans _
     rw [← prod_compl_mul_prod s, mul_assoc]
