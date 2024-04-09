@@ -67,9 +67,9 @@ variable [FiniteDimensional 𝕜 E]
 of finite dimension `d`, and any `d + 1` sets of `F` intersect, then all sets of `F` intersect. -/
 theorem Convex.helly_theorem (F : ι → Set E) [Finite ι]
     (h_convex : ∀ i : ι, Convex 𝕜 (F i))
-    (h_inter : ∀ I : Set ι, ncard I ≤ (finrank 𝕜 E) + 1 → (⋂ i ∈ I, F i).Nonempty) :
+    (h_inter : ∀ I : Set ι, ncard I ≤ finrank 𝕜 E + 1 → (⋂ i ∈ I, F i).Nonempty) :
     (⋂ i : ι, F i).Nonempty := by
-  by_cases h_card : Nat.card ι < (finrank 𝕜 E) + 1
+  by_cases h_card : Nat.card ι < finrank 𝕜 E + 1
   · rw [show ⋂ i, F i = ⋂ i ∈ Set.univ, F i by simp]
     apply h_inter Set.univ
     rw [Set.ncard_univ]
@@ -90,7 +90,7 @@ theorem Convex.helly_theorem (F : ι → Set E) [Finite ι]
         apply hk (F := F')
         · exact fun i ↦ h_convex ↑i
         · intro J hJ_card
-          rw [show (⋂ i ∈ J, F' i) = (⋂ i ∈ Subtype.val '' J, F i) by simp]
+          rw [show ⋂ i ∈ J, F' i = ⋂ i ∈ Subtype.val '' J, F i by simp]
           apply h_inter
           exact le_trans Set.ncard_image_le hJ_card
         · rw [Nat.card_coe_set_eq ι', Set.ncard_diff_singleton_of_mem]
@@ -133,8 +133,8 @@ theorem Convex.helly_theorem (F : ι → Set E) [Finite ι]
 /-- The set version of `Convex.helly_theorem`. -/
 theorem Convex.helly_theorem_set {F : Set (Set E)} (hF_fin : Set.Finite F)
     (h_convex : ∀ X ∈ F, Convex 𝕜 X)
-    (h_inter : ∀ G : Set (Set E), (G ⊆ F) → ncard G ≤ (finrank 𝕜 E) + 1 →
-    (⋂₀ G).Nonempty) : (⋂₀ F).Nonempty := by
+    (h_inter : ∀ G : Set (Set E), G ⊆ F → ncard G ≤ finrank 𝕜 E + 1 → (⋂₀ G).Nonempty) : 
+    (⋂₀ F).Nonempty := by
   rw [show ⋂₀ F = ⋂ X : F, ↑X by ext; simp]
   have : Finite F := hF_fin -- for instance inferring
   apply Convex.helly_theorem (F := fun x : F => x.val) (𝕜 := 𝕜)
@@ -149,7 +149,7 @@ theorem Convex.helly_theorem_set {F : Set (Set E)} (hF_fin : Set.Finite F)
 not restricted to finite families. -/
 theorem Convex.helly_theorem_infinite [TopologicalSpace E] [T2Space E] (F : ι → Set E)
     (h_convex : ∀ i : ι, Convex 𝕜 (F i)) (h_compact : ∀ i : ι, IsCompact (F i))
-    (h_inter : ∀ I : Set ι, I.Finite → ncard I ≤ (finrank 𝕜 E) + 1 → (⋂ i ∈ I, F i).Nonempty) :
+    (h_inter : ∀ I : Set ι, I.Finite → ncard I ≤ finrank 𝕜 E + 1 → (⋂ i ∈ I, F i).Nonempty) :
     (⋂ i : ι, F i).Nonempty := by
   /- If `ι` is empty the statement is trivial. -/
   cases' isEmpty_or_nonempty ι with _ h_nonempty
@@ -174,10 +174,10 @@ theorem Convex.helly_theorem_infinite [TopologicalSpace E] [T2Space E] (F : ι �
   /- The following is a clumsy proof that family of compact sets with the finite intersection
   property has a nonempty intersection -/
   have i0 : ι := Nonempty.some h_nonempty
-  rw [show ⋂ i, F i = (F i0) ∩ (⋂ i, F i) by aesop]
+  rw [show ⋂ i, F i = F i0 ∩ ⋂ i, F i by aesop]
   apply IsCompact.inter_iInter_nonempty
   · exact h_compact i0
   · intro i
     exact (h_compact i).isClosed
   · intro I
-    simpa using (h1 ({i0} ∪ I))
+    simpa using h1 ({i0} ∪ I)
