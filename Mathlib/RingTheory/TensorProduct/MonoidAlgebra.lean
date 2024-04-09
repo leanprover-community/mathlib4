@@ -8,13 +8,12 @@ import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Data.Finsupp.Defs
 
 /-! # TensorProduct of a monoid algebra
 
-This file consists of three sections, the first two will have to be moved
+This file consists of two sections, the first one will have to be moved
 somewhere else.
-
-## two lemmas about `Finsupp.single`
 
 ## functoriality for `MonoidAlgebra`
 
@@ -41,29 +40,6 @@ It remains to prove that this is a functor.
 -/
 
 variable {α R M N P : Type*}
-
-/- section Finsupp
-
-variable [DecidableEq α]
-namespace Finsupp
-
-lemma apply_single [AddCommMonoid N] [AddCommMonoid P]
-    (e : N →+ P) (a : α) (n : N) (b : α) :
-    e ((single a n) b) = single a (e n) b := by
-  simp only [single_apply]
-  split_ifs; rfl; exact map_zero e
-
-lemma mapRange.addMonoidHom_apply_single
-    [AddCommMonoid N] [AddCommMonoid P] (e : N →+ P) (a : α) (n : N) :
-    mapRange.addMonoidHom e (single a n) = single a (e n) := by
-    simp only [addMonoidHom_apply, mapRange_single]
-
-#find_home! Finsupp.apply_single
-#find_home! Finsupp.mapRange.addMonoidHom_apply_single
-end Finsupp
-
-end Finsupp
--/
 
 section Functoriality
 
