@@ -5,16 +5,21 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
   Frédéric Dupuis, Heather Macbeth, Antoine Chambert-Loir
 -/
 
-import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
 # Pointwise actions of equivariant maps
+
+- `image_smul_setₛₗ` and `image_smul_setₛₗ` : under a `σ`-equivariant map,
+one has `h '' (c • s) = (σ c) • h '' s`.
+
+- `preimage_smul_setₛₗ`, `preimage_smul_setₛₗ`, `preimage_smul_set` :
+one has `h ⁻¹' (σ c • s) = c • h⁻¹' s`
+
 -/
 
 open Set Pointwise
-
 
 variable {R S : Type*} (M M₁ M₂ N : Type*)
 
@@ -22,9 +27,6 @@ section Monoid
 
 variable [Monoid R] [Monoid S]
 variable {G : Type*} (σ : G)
--- variable [Semiring R] [Semiring S] (σ : R →+* S)
--- variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid N]
--- variable [Module R M] [Module R M₁] [Module R M₂] [Module S N]
 variable [MulAction R M] [MulAction S N] [MulAction R M₁] [MulAction R M₂]
 variable {F : Type*} (h : F)
 
@@ -49,7 +51,17 @@ theorem preimage_smul_setₛₗ
     _ = c • h ⁻¹' s := by simp only [← map_smulₛₗ h, ← preimage_smul_inv]; rfl
 #align preimage_smul_setₛₗ preimage_smul_setₛₗ
 
+/-- Translation of preimage is contained in preimage of translation -/
+theorem smul_preimage_set_leₛₗ
+    [FunLike G R S] [FunLike F M N] [MulActionSemiHomClass F σ M N]
+    {c : R} (t : Set N) :
+    c • h ⁻¹' t ⊆ h ⁻¹' (σ c • t) := by
+  rintro x ⟨y, hy, rfl⟩
+  refine ⟨h y, hy, (by rw [map_smulₛₗ])⟩
+
 variable (R)
+
+-- Bug : It should be possible to fill in `@id R`
 
 @[simp] -- This can be safely removed as a `@[simp]` lemma if `image_smul_setₛₗ` is readded.
 theorem image_smul_set [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂]
@@ -59,18 +71,11 @@ theorem image_smul_set [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂]
   image_smul_setₛₗ _ _ (MonoidHom.id R) h c s
 #align image_smul_set image_smul_set
 
-/-- Translation of preimage is contained in preimage of translation -/
-theorem preimage_smul_setₛₗ_le
-    [FunLike G R S] [FunLike F M N] [MulActionSemiHomClass F σ M N]
-    {c : R} (t : Set N) :
-    c • h ⁻¹' t ⊆ h ⁻¹' (σ c • t) := by
-  rintro x ⟨y, hy, rfl⟩
-  refine ⟨h y, hy, (by rw [map_smulₛₗ])⟩
-
-theorem preimage_smul_set_le
+theorem smul_preimage_set_le
     [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂]
-    {c : R} (t : Set M₂) : c • h ⁻¹' t ⊆ h ⁻¹' (c • t) :=
-  preimage_smul_setₛₗ_le _ _ _ (MonoidHom.id R) h t
+    {c : R} (t : Set M₂) :
+    c • h ⁻¹' t ⊆ h ⁻¹' (c • t) :=
+  smul_preimage_set_leₛₗ _ _ (MonoidHom.id R) h t
 
 theorem preimage_smul_set [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂]
     {c : R} (hc : IsUnit c) (s : Set M₂) :
@@ -111,9 +116,7 @@ theorem preimage_smul_setₛₗ'
     rw [mem_preimage, ← hm', map_smulₛₗ]
     use h m'
 
-
-
-
+variable (R)
 
 -- There's a bug here, it should be possible to insert `@id R`
 theorem preimage_smul_set' [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂]
