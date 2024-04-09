@@ -18,8 +18,12 @@ import Mathlib.LinearAlgebra.SesquilinearForm.DualLattice
 Properly develop the material in the context of lattices.
 -/
 
+open LinearMap (BilinForm)
+
 variable {R S M} [CommRing R] [Field S] [AddCommGroup M]
 variable [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
+
+namespace LinearMap
 
 namespace BilinForm
 

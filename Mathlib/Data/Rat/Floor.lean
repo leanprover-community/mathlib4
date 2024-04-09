@@ -44,7 +44,7 @@ protected theorem le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z :
     have h' := Int.ofNat_lt.2 (Nat.pos_of_ne_zero h)
     conv =>
       rhs
-      rw [coe_int_eq_divInt, Rat.le_def zero_lt_one h', mul_one]
+      rw [intCast_eq_divInt, Rat.le_def zero_lt_one h', mul_one]
     exact Int.le_ediv_iff_mul_le h'
 #align rat.le_floor Rat.le_floor
 
@@ -63,8 +63,8 @@ theorem floor_int_div_nat_eq_div {n : ℤ} {d : ℕ} : ⌊(↑n : ℚ) / (↑d :
     rw [q_eq]
     exact mod_cast @Rat.exists_eq_mul_div_num_and_eq_mul_div_den n d (mod_cast hd.ne')
   rw [n_eq_c_mul_num, d_eq_c_mul_denom]
-  refine' (Int.mul_ediv_mul_of_pos _ _ <| pos_of_mul_pos_left _ <| Int.coe_nat_nonneg q.den).symm
-  rwa [← d_eq_c_mul_denom, Int.coe_nat_pos]
+  refine' (Int.mul_ediv_mul_of_pos _ _ <| pos_of_mul_pos_left _ <| Int.natCast_nonneg q.den).symm
+  rwa [← d_eq_c_mul_denom, Int.natCast_pos]
 #align rat.floor_int_div_nat_eq_div Rat.floor_int_div_nat_eq_div
 
 @[simp, norm_cast]

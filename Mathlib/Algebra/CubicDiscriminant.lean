@@ -3,7 +3,7 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Data.Polynomial.Splits
+import Mathlib.Algebra.Polynomial.Splits
 
 #align_import algebra.cubic_discriminant from "leanprover-community/mathlib"@"930133160e24036d5242039fe4972407cd4f1222"
 

@@ -245,7 +245,7 @@ instance (priority := 100) CompatibleSMul.isScalarTower [SMul R' R] [IsScalarTow
     exact Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.of_smul _ _ _⟩
 #align tensor_product.compatible_smul.is_scalar_tower TensorProduct.CompatibleSMul.isScalarTower
 
-/-- `smul` can be moved from one side of the product to the other .-/
+/-- `smul` can be moved from one side of the product to the other . -/
 theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m : M) (n : N) :
     (r • m) ⊗ₜ n = m ⊗ₜ[R] (r • n) :=
   CompatibleSMul.smul_tmul _ _ _
@@ -334,13 +334,13 @@ protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • 
 #align tensor_product.add_smul TensorProduct.add_smul
 
 instance addMonoid : AddMonoid (M ⊗[R] N) :=
-{ TensorProduct.addZeroClass _ _ with
-  toAddSemigroup := TensorProduct.addSemigroup _ _
-  toZero := (TensorProduct.addZeroClass _ _).toZero
-  nsmul := fun n v => n • v
-  nsmul_zero := by simp [TensorProduct.zero_smul]
-  nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
-    forall_const] }
+  { TensorProduct.addZeroClass _ _ with
+    toAddSemigroup := TensorProduct.addSemigroup _ _
+    toZero := (TensorProduct.addZeroClass _ _).toZero
+    nsmul := fun n v => n • v
+    nsmul_zero := by simp [TensorProduct.zero_smul]
+    nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
+      forall_const] }
 
 instance addCommMonoid : AddCommMonoid (M ⊗[R] N) :=
   { TensorProduct.addCommSemigroup _ _ with
@@ -1156,6 +1156,21 @@ lemma comm_comp_lTensor_comp_comm_eq (g : N →ₗ[R] P) :
     TensorProduct.comm R Q P ∘ₗ lTensor Q g ∘ₗ TensorProduct.comm R N Q =
       rTensor Q g :=
   TensorProduct.ext rfl
+
+/-- Given a linear map `f : N → P`, `f ⊗ M` is injective if and only if `M ⊗ f` is injective. -/
+theorem lTensor_inj_iff_rTensor_inj :
+    Function.Injective (lTensor M f) ↔ Function.Injective (rTensor M f) := by
+  simp [← comm_comp_rTensor_comp_comm_eq]
+
+/-- Given a linear map `f : N → P`, `f ⊗ M` is surjective if and only if `M ⊗ f` is surjective. -/
+theorem lTensor_surj_iff_rTensor_surj :
+    Function.Surjective (lTensor M f) ↔ Function.Surjective (rTensor M f) := by
+  simp [← comm_comp_rTensor_comp_comm_eq]
+
+/-- Given a linear map `f : N → P`, `f ⊗ M` is bijective if and only if `M ⊗ f` is bijective. -/
+theorem lTensor_bij_iff_rTensor_bij :
+    Function.Bijective (lTensor M f) ↔ Function.Bijective (rTensor M f) := by
+  simp [← comm_comp_rTensor_comp_comm_eq]
 
 open TensorProduct
 
