@@ -914,7 +914,7 @@ abbrev associated' : QuadraticMap R M R →ₗ[ℤ] BilinMap R M R :=
 
 /-- Symmetric bilinear forms can be lifted to quadratic forms -/
 instance canLift :
-    CanLift (BilinMap R M R) (QuadraticMap R M R) (associatedHom ℕ) LinearMap.IsSymm where
+    CanLift (BilinMap R M R) (QuadraticForm R M) (associatedHom ℕ) LinearMap.IsSymm where
   prf B hB := ⟨B.toQuadraticMap, associated_left_inverse _ hB⟩
 #align quadratic_form.can_lift QuadraticMap.canLift
 
