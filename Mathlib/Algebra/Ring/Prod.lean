@@ -106,12 +106,12 @@ namespace NonUnitalRingHom
 
 variable (R S) [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
 
-/-- Given non-unital semirings `R`, `S`, the natural projection homomorphism from `R × S` to `R`.-/
+/-- Given non-unital semirings `R`, `S`, the natural projection homomorphism from `R × S` to `R`. -/
 def fst : R × S →ₙ+* R :=
   { MulHom.fst R S, AddMonoidHom.fst R S with toFun := Prod.fst }
 #align non_unital_ring_hom.fst NonUnitalRingHom.fst
 
-/-- Given non-unital semirings `R`, `S`, the natural projection homomorphism from `R × S` to `S`.-/
+/-- Given non-unital semirings `R`, `S`, the natural projection homomorphism from `R × S` to `S`. -/
 def snd : R × S →ₙ+* S :=
   { MulHom.snd R S, AddMonoidHom.snd R S with toFun := Prod.snd }
 #align non_unital_ring_hom.snd NonUnitalRingHom.snd
@@ -192,12 +192,12 @@ namespace RingHom
 
 variable (R S) [NonAssocSemiring R] [NonAssocSemiring S]
 
-/-- Given semirings `R`, `S`, the natural projection homomorphism from `R × S` to `R`.-/
+/-- Given semirings `R`, `S`, the natural projection homomorphism from `R × S` to `R`. -/
 def fst : R × S →+* R :=
   { MonoidHom.fst R S, AddMonoidHom.fst R S with toFun := Prod.fst }
 #align ring_hom.fst RingHom.fst
 
-/-- Given semirings `R`, `S`, the natural projection homomorphism from `R × S` to `S`.-/
+/-- Given semirings `R`, `S`, the natural projection homomorphism from `R × S` to `S`. -/
 def snd : R × S →+* S :=
   { MonoidHom.snd R S, AddMonoidHom.snd R S with toFun := Prod.snd }
 #align ring_hom.snd RingHom.snd
@@ -312,7 +312,7 @@ section
 
 variable (R R' S S')
 
-/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
+/-- Four-way commutativity of `Prod`. The name matches `mul_mul_mul_comm`. -/
 @[simps apply]
 def prodProdProdComm : (R × R') × S × S' ≃+* (R × S) × R' × S' :=
   { AddEquiv.prodProdProdComm R R' S S', MulEquiv.prodProdProdComm R R' S S' with

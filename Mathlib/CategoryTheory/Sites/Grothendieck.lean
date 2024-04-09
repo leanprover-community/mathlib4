@@ -426,7 +426,7 @@ instance : Coe (J.Cover X) (Sieve X) :=
 /-
 Porting note (#11445): Added this def as a replacement for the "dangerous" `Coe` above.
 -/
-/-- The sieve associated to a term of `J.Cover X`.-/
+/-- The sieve associated to a term of `J.Cover X`. -/
 def sieve (S : J.Cover X) : Sieve X := S.1
 
 /-

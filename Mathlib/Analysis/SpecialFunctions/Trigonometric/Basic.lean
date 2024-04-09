@@ -5,6 +5,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 -/
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Tactic.Positivity.Core
+import Mathlib.Algebra.GroupPower.NegOnePow
 
 #align_import analysis.special_functions.trigonometric.basic from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 
@@ -247,7 +248,7 @@ theorem sin_antiperiodic : Function.Antiperiodic sin π := by simp [sin_add]
 #align real.sin_antiperiodic Real.sin_antiperiodic
 
 theorem sin_periodic : Function.Periodic sin (2 * π) :=
-  sin_antiperiodic.periodic
+  sin_antiperiodic.periodic_two_mul
 #align real.sin_periodic Real.sin_periodic
 
 @[simp]
@@ -320,11 +321,29 @@ theorem sin_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : sin (n * (2 * π) - x) = -s
   sin_neg x ▸ sin_periodic.int_mul_sub_eq n
 #align real.sin_int_mul_two_pi_sub Real.sin_int_mul_two_pi_sub
 
+theorem sin_add_int_mul_pi (x : ℝ) (n : ℤ) : sin (x + n * π) = (-1) ^ n * sin x :=
+  n.coe_negOnePow ℝ ▸ sin_antiperiodic.add_int_mul_eq n
+
+theorem sin_add_nat_mul_pi (x : ℝ) (n : ℕ) : sin (x + n * π) = (-1) ^ n * sin x :=
+  sin_antiperiodic.add_nat_mul_eq n
+
+theorem sin_sub_int_mul_pi (x : ℝ) (n : ℤ) : sin (x - n * π) = (-1) ^ n * sin x :=
+  n.coe_negOnePow ℝ ▸ sin_antiperiodic.sub_int_mul_eq n
+
+theorem sin_sub_nat_mul_pi (x : ℝ) (n : ℕ) : sin (x - n * π) = (-1) ^ n * sin x :=
+  sin_antiperiodic.sub_nat_mul_eq n
+
+theorem sin_int_mul_pi_sub (x : ℝ) (n : ℤ) : sin (n * π - x) = -((-1) ^ n * sin x) := by
+  simpa only [sin_neg, mul_neg, Int.coe_negOnePow] using sin_antiperiodic.int_mul_sub_eq n
+
+theorem sin_nat_mul_pi_sub (x : ℝ) (n : ℕ) : sin (n * π - x) = -((-1) ^ n * sin x) := by
+  simpa only [sin_neg, mul_neg] using sin_antiperiodic.nat_mul_sub_eq n
+
 theorem cos_antiperiodic : Function.Antiperiodic cos π := by simp [cos_add]
 #align real.cos_antiperiodic Real.cos_antiperiodic
 
 theorem cos_periodic : Function.Periodic cos (2 * π) :=
-  cos_antiperiodic.periodic
+  cos_antiperiodic.periodic_two_mul
 #align real.cos_periodic Real.cos_periodic
 
 @[simp]
@@ -396,6 +415,24 @@ theorem cos_nat_mul_two_pi_sub (x : ℝ) (n : ℕ) : cos (n * (2 * π) - x) = co
 theorem cos_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : cos (n * (2 * π) - x) = cos x :=
   cos_neg x ▸ cos_periodic.int_mul_sub_eq n
 #align real.cos_int_mul_two_pi_sub Real.cos_int_mul_two_pi_sub
+
+theorem cos_add_int_mul_pi (x : ℝ) (n : ℤ) : cos (x + n * π) = (-1) ^ n * cos x :=
+  n.coe_negOnePow ℝ ▸ cos_antiperiodic.add_int_mul_eq n
+
+theorem cos_add_nat_mul_pi (x : ℝ) (n : ℕ) : cos (x + n * π) = (-1) ^ n * cos x :=
+  cos_antiperiodic.add_nat_mul_eq n
+
+theorem cos_sub_int_mul_pi (x : ℝ) (n : ℤ) : cos (x - n * π) = (-1) ^ n * cos x :=
+  n.coe_negOnePow ℝ ▸ cos_antiperiodic.sub_int_mul_eq n
+
+theorem cos_sub_nat_mul_pi (x : ℝ) (n : ℕ) : cos (x - n * π) = (-1) ^ n * cos x :=
+  cos_antiperiodic.sub_nat_mul_eq n
+
+theorem cos_int_mul_pi_sub (x : ℝ) (n : ℤ) : cos (n * π - x) = (-1) ^ n * cos x :=
+  n.coe_negOnePow ℝ ▸ cos_neg x ▸ cos_antiperiodic.int_mul_sub_eq n
+
+theorem cos_nat_mul_pi_sub (x : ℝ) (n : ℕ) : cos (n * π - x) = (-1) ^ n * cos x :=
+  cos_neg x ▸ cos_antiperiodic.nat_mul_sub_eq n
 
 -- Porting note (#10618): was @[simp], but simp can prove it
 theorem cos_nat_mul_two_pi_add_pi (n : ℕ) : cos (n * (2 * π) + π) = -1 := by
@@ -1114,7 +1151,7 @@ theorem sin_antiperiodic : Function.Antiperiodic sin π := by simp [sin_add]
 #align complex.sin_antiperiodic Complex.sin_antiperiodic
 
 theorem sin_periodic : Function.Periodic sin (2 * π) :=
-  sin_antiperiodic.periodic
+  sin_antiperiodic.periodic_two_mul
 #align complex.sin_periodic Complex.sin_periodic
 
 theorem sin_add_pi (x : ℂ) : sin (x + π) = -sin x :=
@@ -1177,7 +1214,7 @@ theorem cos_antiperiodic : Function.Antiperiodic cos π := by simp [cos_add]
 #align complex.cos_antiperiodic Complex.cos_antiperiodic
 
 theorem cos_periodic : Function.Periodic cos (2 * π) :=
-  cos_antiperiodic.periodic
+  cos_antiperiodic.periodic_two_mul
 #align complex.cos_periodic Complex.cos_periodic
 
 theorem cos_add_pi (x : ℂ) : cos (x + π) = -cos x :=
@@ -1327,7 +1364,7 @@ theorem exp_antiperiodic : Function.Antiperiodic exp (π * I) := by simp [exp_ad
 #align complex.exp_antiperiodic Complex.exp_antiperiodic
 
 theorem exp_periodic : Function.Periodic exp (2 * π * I) :=
-  (mul_assoc (2 : ℂ) π I).symm ▸ exp_antiperiodic.periodic
+  (mul_assoc (2 : ℂ) π I).symm ▸ exp_antiperiodic.periodic_two_mul
 #align complex.exp_periodic Complex.exp_periodic
 
 theorem exp_mul_I_antiperiodic : Function.Antiperiodic (fun x => exp (x * I)) π := by
@@ -1336,7 +1373,7 @@ set_option linter.uppercaseLean3 false in
 #align complex.exp_mul_I_antiperiodic Complex.exp_mul_I_antiperiodic
 
 theorem exp_mul_I_periodic : Function.Periodic (fun x => exp (x * I)) (2 * π) :=
-  exp_mul_I_antiperiodic.periodic
+  exp_mul_I_antiperiodic.periodic_two_mul
 set_option linter.uppercaseLean3 false in
 #align complex.exp_mul_I_periodic Complex.exp_mul_I_periodic
 
