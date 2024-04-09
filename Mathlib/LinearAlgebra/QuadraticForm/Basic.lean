@@ -928,7 +928,7 @@ theorem exists_quadraticForm_ne_zero {Q : QuadraticForm R M}
   intro h
   apply hB₁
   rw [(QuadraticMap.ext h : Q = 0), LinearMap.map_zero]
-#align quadratic_form.exists_quadratic_form_ne_zero QuadraticMap.exists_QuadraticMap_ne_zero
+#align quadratic_form.exists_quadratic_form_ne_zero QuadraticMap.exists_quadraticForm_ne_zero
 
 end AssociatedHom
 
