@@ -843,9 +843,9 @@ theorem upcrossings_lt_top_iff :
   constructor <;> rintro ⟨k, hk⟩
   · obtain ⟨m, hm⟩ := exists_nat_ge k
     refine' ⟨m, fun N => Nat.cast_le.1 ((hk N).trans _)⟩
-    rwa [← ENNReal.coe_nat, ENNReal.coe_le_coe]
+    rwa [← ENNReal.coe_natCast, ENNReal.coe_le_coe]
   · refine' ⟨k, fun N => _⟩
-    simp only [ENNReal.coe_nat, Nat.cast_le, hk N]
+    simp only [ENNReal.coe_natCast, Nat.cast_le, hk N]
 #align measure_theory.upcrossings_lt_top_iff MeasureTheory.upcrossings_lt_top_iff
 
 /-- A variant of Doob's upcrossing estimate obtained by taking the supremum on both sides. -/

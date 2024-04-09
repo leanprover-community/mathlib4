@@ -72,7 +72,7 @@ variable [Module R M] [Module R P] [Module R N]
 
 open IsArtinian
 
-/-Porting note: added this version with `R` and `M` explicit because infer kinds are unsupported in
+/- Porting note: added this version with `R` and `M` explicit because infer kinds are unsupported in
 Lean 4-/
 theorem IsArtinian.wellFounded_submodule_lt (R M) [Semiring R] [AddCommMonoid M] [Module R M]
     [IsArtinian R M] : WellFounded ((· < ·) : Submodule R M → Submodule R M → Prop) :=
