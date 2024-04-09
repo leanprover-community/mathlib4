@@ -13,26 +13,25 @@ import Mathlib.Topology.Algebra.Module.WeakDual
 
 * `PointwiseConvergenceCLM`: Type synonym of `E →SL[σ] F` equipped with the uniform convergence
 topology on finite sets.
+* `PointwiseConvergenceCLM.evalCLM`: The evaluation map `(f : E →SLₚₜ[σ] F) ↦ f a` for fixed `a : E`
+as a continuous linear map.
+* `ContinousLinearMap.toPointwiseConvergenceCLM`: The canonical map from `E →SL[σ] F` to
+`E →SLₚₜ[σ] F` as a continuous linear map. This is the statement that bounded convergence is
+stronger than pointwise convergence.
+* `PointwiseConvergenceCLM.equivWeakDual`: The continuous equivalence between `E →Lₚₜ[𝕜] 𝕜` and
+`WeakDual 𝕜 E`.
 
 ## Main statements
 
-* `fooBar_unique`
+* `PointwiseConvergenceCLM.tendsto_iff_forall_tendsto`: In the topology of pointwise convergence,
+`a` converges to `a₀` iff for every `x : E` the map `a · x` converges to `a₀ x`.
+* `PointwiseConvergenceCLM.continuous_of_continuous_eval`: A map to `g : α → E →SLₚₜ[σ] F` is
+continuous if for every `x : E` the evaluation `g · x` is continuous.
 
 ## Notation
 
+* `E →SLₚₜ[σ] F` is space of continuous linear maps equipped with pointwise convergence topology.
 
-
-## Implementation details
-
-
-
-## References
-
-* [F. Bar, *Quuxes*][bibkey]
-
-## Tags
-
-Foobars, barfoos
 -/
 
 /-! ### Topology of pointwise convergence -/
@@ -47,8 +46,9 @@ variable {E F : Type*} [AddCommGroup E] [TopologicalSpace E]
 open Topology
 
 variable (σ E F) in
-/-- The space of continuous linear maps equipped with the topology of pointwise/simple convergence,
-sometimes also called the strong operator topology.
+/-- The space of continuous linear maps equipped with the topology of pointwise convergence,
+sometimes also called the *strong operator topology*. We avoid this terminology since so many other
+things share similar names, and using "pointwise convergence" in the name is more informative.
 
 This topology is also known as the weak*-topology in the case that `σ = RingHom.id 𝕜` and `F = 𝕜` -/
 @[reducible]
@@ -75,7 +75,7 @@ protected theorem hasBasis_nhds_zero [TopologicalSpace F] [TopologicalAddGroup F
       fun SV => { f : E →SLₚₜ[σ] F | ∀ x ∈ SV.1, f x ∈ SV.2 } :=
   PointwiseConvergenceCLM.hasBasis_nhds_zero_of_basis (𝓝 0).basis_sets
 
-/-- In the topology of pointwise convergence, `a` converges to `a₀` iff for every `x : E`
+/-- In the topology of pointwise convergence, `a` converges to `a₀` iff for every `x : E` the map
 `a · x` converges to `a₀ x`. -/
 theorem tendsto_iff_forall_tendsto {p : Filter ι} {a : ι → E →SLₚₜ[σ] F} {a₀ : E →SLₚₜ[σ] F} :
     Filter.Tendsto a p (𝓝 a₀) ↔ ∀ x : E, Filter.Tendsto (a · x) p (𝓝 (a₀ x)) := by
@@ -99,18 +99,18 @@ theorem tendsto_iff_forall_tendsto {p : Filter ι} {a : ι → E →SLₚₜ[σ]
 variable [ContinuousConstSMul 𝕜₂ F]
 
 variable (σ E F) in
-/-- Coercion from `E →Lₚₜ[𝕜] F` to `E →ₗ[𝕜] F` as a `𝕜`-linear map. -/
-def coeLM : (E →SLₚₜ[σ] F) →ₗ[𝕜₂] E →ₛₗ[σ] F where
+/-- Coercion from `E →SLₚₜ[σ] F` to `E →ₛₗ[σ] F` as a `𝕜₂`-linear map. -/
+def coeLinearMap : (E →SLₚₜ[σ] F) →ₗ[𝕜₂] E →ₛₗ[σ] F where
   toFun := ContinuousLinearMap.toLinearMap
   map_add' := ContinuousLinearMap.coe_add
   map_smul' := ContinuousLinearMap.coe_smul
 
 variable (σ F) in
-/-- The evaluation map `(f : E →Lₚₜ[𝕜] F) ↦ f a` for `a : E` as a continuous linear map. -/
+/-- The evaluation map `(f : E →SLₚₜ[σ] F) ↦ f a` for `a : E` as a continuous linear map. -/
 def evalCLM (a : E) : (E →SLₚₜ[σ] F) →L[𝕜₂] F where
-  toLinearMap := (coeLM σ E F).flip a
+  toLinearMap := (coeLinearMap σ E F).flip a
   cont := by
-    change Continuous ((coeLM σ E F).flip a)
+    change Continuous ((coeLinearMap σ E F).flip a)
     apply continuous_of_continuousAt_zero
     unfold ContinuousAt
     simp only [map_zero]
@@ -120,8 +120,10 @@ def evalCLM (a : E) : (E →SLₚₜ[σ] F) →L[𝕜₂] F where
     simp only [hs, and_true, Set.mem_singleton_iff, forall_eq]
     exact ⟨Set.finite_singleton _, fun _ hy ↦ by rwa [Set.mem_setOf_eq] at hy⟩
 
+/-- A map to `E →SLₚₜ[σ] F` is continuous if for every `x : E` the evaluation `g · x` is
+continuous. -/
 theorem continuous_of_continuous_eval {g : α → E →SLₚₜ[σ] F}
-    (h : ∀ y, Continuous fun a ↦ (g a) y) : Continuous g := by
+    (h : ∀ x, Continuous (g · x)) : Continuous g := by
   rw [continuous_iff_continuousAt]
   intro f
   unfold ContinuousAt
@@ -129,26 +131,19 @@ theorem continuous_of_continuous_eval {g : α → E →SLₚₜ[σ] F}
   intro x
   exact (h x).continuousAt
 
-variable [ContinuousSMul 𝕜₁ E] in
-def _root_.ContinousLinearMap.toPointwiseConvergenceCLM : (E →SL[σ] F) →L[𝕜₂] (E →SLₚₜ[σ] F) where
+/-- The topology of bounded convergence is stronger than the topology of pointwise convergence. -/
+def _root_.ContinousLinearMap.toPointwiseConvergenceCLM [ContinuousSMul 𝕜₁ E] :
+    (E →SL[σ] F) →L[𝕜₂] (E →SLₚₜ[σ] F) where
   toLinearMap := LinearMap.id
-  cont := by
-    apply continuous_id_of_le
-    apply UniformConvergenceCLM.topologicalSpace_mono
-    intro s hs
-    exact Bornology.isVonNBounded_finite hs
+  cont := continuous_id_of_le
+    (UniformConvergenceCLM.topologicalSpace_mono _ _ fun _ ↦ Bornology.isVonNBounded_finite)
 
 variable (𝕜 E) in
 /-- The topology of pointwise convergence on `E →Lₚₜ[𝕜] 𝕜` coincides with the weak-* topology. -/
 def equivWeakDual : (E →Lₚₜ[𝕜] 𝕜) ≃L[𝕜] WeakDual 𝕜 E where
   toLinearEquiv := LinearEquiv.refl 𝕜 (E →L[𝕜] 𝕜)
-  continuous_toFun := by
-    apply WeakDual.continuous_of_continuous_eval
-    intro y
-    apply (evalCLM (RingHom.id 𝕜) 𝕜 y).continuous
-  continuous_invFun := by
-    apply continuous_of_continuous_eval
-    intro y
-    apply WeakBilin.eval_continuous
+  continuous_toFun :=
+    WeakDual.continuous_of_continuous_eval (fun y ↦ (evalCLM _ 𝕜 y).continuous)
+  continuous_invFun := continuous_of_continuous_eval (WeakBilin.eval_continuous _)
 
 end PointwiseConvergenceCLM
