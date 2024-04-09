@@ -1132,7 +1132,6 @@ The determinant of the matrix is the discriminant of the quadratic form.
 
 variable {n : Type w} [Fintype n] [DecidableEq n]
 variable [CommRing R] [AddCommMonoid M] [Module R M]
-
 variable (M : Matrix n n R)
 
 /-- `M.toQuadraticMap'` is the map `fun x ↦ col x * M * row x` as a quadratic form. -/
