@@ -219,7 +219,7 @@ theorem Char.card_pow_card {F : Type*} [Field F] [Fintype F] {F' : Type*} [Field
   obtain ⟨n', hp', hc'⟩ := FiniteField.card F' (ringChar F')
   let ψ := primitiveCharFiniteField F F' hch₁
   -- Porting note: this was a `let` but then Lean would time out at
-  -- unification so it is changed to as `set` and `FF'` is replaced by its
+  -- unification so it is changed to a `set` and `FF'` is replaced by its
   -- definition before unification
   set FF' := CyclotomicField ψ.n F' with FF'_def
   have hchar := Algebra.ringChar_eq F' FF'
