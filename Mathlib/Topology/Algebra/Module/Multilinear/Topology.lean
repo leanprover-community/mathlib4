@@ -12,7 +12,7 @@ import Mathlib.Topology.Algebra.UniformConvergence
 In this file we define `TopologicalSpace` and `UniformSpace` structures
 on `ContinuousMultilinearMap 𝕜 E F`,
 where `E i` is a family of vector spaces over `𝕜` with topologies
-ane `F` is a topological vector space.
+and `F` is a topological vector space.
 -/
 open Bornology Set
 open scoped Topology UniformConvergence Filter
@@ -34,10 +34,15 @@ lemma toUniformOnFun_toFun [TopologicalSpace F] (f : ContinuousMultilinearMap �
     UniformOnFun.toFun _ f.toUniformOnFun = f :=
   rfl
 
-instance instUniformSpace [TopologicalSpace F] [TopologicalAddGroup F] :
+instance instTopologicalSpace [TopologicalSpace F] [TopologicalAddGroup F] :
+    TopologicalSpace (ContinuousMultilinearMap 𝕜 E F) :=
+  .induced toUniformOnFun <|
+    @UniformOnFun.topologicalSpace _ _ (TopologicalAddGroup.toUniformSpace F) _
+
+instance instUniformSpace [UniformSpace F] [UniformAddGroup F] :
     UniformSpace (ContinuousMultilinearMap 𝕜 E F) :=
-  letI := TopologicalAddGroup.toUniformSpace F
-  .comap toUniformOnFun inferInstance
+  .replaceTopology (.comap toUniformOnFun <| UniformOnFun.uniformSpace _ _ _) <| by
+    rw [instTopologicalSpace, UniformAddGroup.toUniformSpace_eq]; rfl
 
 section UniformAddGroup
 
@@ -46,7 +51,7 @@ variable [UniformSpace F] [UniformAddGroup F]
 lemma uniformEmbedding_toUniformOnFun :
     UniformEmbedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) where
   inj := DFunLike.coe_injective
-  comap_uniformity := by rw [uniformity_comap, UniformAddGroup.toUniformSpace_eq]; rfl
+  comap_uniformity := rfl
 
 lemma embedding_toUniformOnFun : Embedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) :=
   uniformEmbedding_toUniformOnFun.embedding
@@ -60,23 +65,19 @@ theorem uniformContinuous_eval_const [∀ i, ContinuousSMul 𝕜 (E i)] (x : Π 
     UniformContinuous fun f : ContinuousMultilinearMap 𝕜 E F ↦ f x :=
   uniformContinuous_pi.1 uniformContinuous_coe_fun x
 
-end UniformAddGroup
-
-variable [TopologicalSpace F] [TopologicalAddGroup F]
-
 instance : UniformAddGroup (ContinuousMultilinearMap 𝕜 E F) :=
   let φ : ContinuousMultilinearMap 𝕜 E F →+ (Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F :=
     { toFun := toUniformOnFun, map_add' := fun _ _ ↦ rfl, map_zero' := rfl }
-  letI := TopologicalAddGroup.toUniformSpace F
-  haveI := comm_topologicalAddGroup_is_uniform (G := F)
   uniformEmbedding_toUniformOnFun.uniformAddGroup φ
 
 instance {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜 M F]
     [ContinuousConstSMul M F] : UniformContinuousConstSMul M (ContinuousMultilinearMap 𝕜 E F) :=
-  letI := TopologicalAddGroup.toUniformSpace F
-  haveI := comm_topologicalAddGroup_is_uniform (G := F)
   haveI := uniformContinuousConstSMul_of_continuousConstSMul M F
   uniformEmbedding_toUniformOnFun.uniformContinuousConstSMul fun _ _ ↦ rfl
+
+end UniformAddGroup
+
+variable [TopologicalSpace F] [TopologicalAddGroup F]
 
 instance [ContinuousSMul 𝕜 F] : ContinuousSMul 𝕜 (ContinuousMultilinearMap 𝕜 E F) :=
   letI := TopologicalAddGroup.toUniformSpace F
