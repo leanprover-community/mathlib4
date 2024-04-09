@@ -133,7 +133,7 @@ theorem Convex.helly_theorem (F : ι → Set E) [Finite ι]
 /-- The set version of `Convex.helly_theorem`. -/
 theorem Convex.helly_theorem_set {F : Set (Set E)} (hF_fin : Set.Finite F)
     (h_convex : ∀ X ∈ F, Convex 𝕜 X)
-    (h_inter : ∀ G : Set (Set E), G ⊆ F → ncard G ≤ finrank 𝕜 E + 1 → (⋂₀ G).Nonempty) : 
+    (h_inter : ∀ G : Set (Set E), G ⊆ F → ncard G ≤ finrank 𝕜 E + 1 → (⋂₀ G).Nonempty) :
     (⋂₀ F).Nonempty := by
   rw [show ⋂₀ F = ⋂ X : F, ↑X by ext; simp]
   have : Finite F := hF_fin -- for instance inferring
