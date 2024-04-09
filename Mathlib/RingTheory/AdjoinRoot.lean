@@ -699,8 +699,8 @@ end Field
 end Equiv
 
 -- Porting note: consider splitting the file here.  In the current mathlib3, the only result
--- that depends any of these lemmas is
--- `normalized_factors_map_equiv_normalized_factors_min_poly_mk` in `number_theory.kummer_dedekind`
+-- that depends any of these lemmas was
+-- `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` in `NumberTheory.KummerDedekind`
 -- that uses
 -- `PowerBasis.quotientEquivQuotientMinpolyMap == PowerBasis.quotientEquivQuotientMinpolyMap`
 section
