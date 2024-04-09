@@ -128,7 +128,7 @@ theorem adjoin_induction' {p : adjoin R s → Prop} (mem : ∀ (x) (h : x ∈ s)
 #align algebra.adjoin_induction' Algebra.adjoin_induction'
 
 @[elab_as_elim]
-theorem adjoin_induction'' {x : A} (hx : x ∈ Algebra.adjoin R s)
+theorem adjoin_induction'' {x : A} (hx : x ∈ adjoin R s)
     {p : (x : A) → x ∈ adjoin R s → Prop} (mem : ∀ x (h : x ∈ s), p x (subset_adjoin h))
     (algebraMap : ∀ (r : R), p (algebraMap R A r) (algebraMap_mem _ r))
     (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
