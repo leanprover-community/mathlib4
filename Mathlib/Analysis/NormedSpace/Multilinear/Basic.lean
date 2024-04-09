@@ -1358,11 +1358,11 @@ component is a continuous multilinear map of `k` vectors `v₁, ..., vₖ`, mapp
 to `f (x₁, (v_{e 2})₂, x₃, ...)`, where at indices `i` in `s` one uses the vector `v_{e i}`
 and otherwise one uses a reference vector `x`. This is continuous multilinear in the components
 of `x` outside of `s`, and in the `v_j`. -/
-noncomputable def iteratedDerivComponent {α : Type*} [DecidableEq α] [Fintype α]
+noncomputable def iteratedFDerivComponent {α : Type*} [DecidableEq α] [Fintype α]
     (f : ContinuousMultilinearMap 𝕜 E₁ G) (s : Finset ι) (e : α ≃ s) :
     ContinuousMultilinearMap 𝕜 (fun (i : {a : ι // a ∉ s}) ↦ E₁ i)
       (ContinuousMultilinearMap 𝕜 (fun (_ : α) ↦ (∀ i, E₁ i)) G) :=
-  (f.toMultilinearMap.iteratedDerivComponent s e).mkContinuousMultilinear (‖f‖) <| by
+  (f.toMultilinearMap.iteratedFDerivComponent s e).mkContinuousMultilinear (‖f‖) <| by
     intro x m
     simp only [MultilinearMap.iteratedDerivComponent, MultilinearMap.domDomRestrictₗ,
       MultilinearMap.coe_mk, MultilinearMap.domDomRestrict_apply, coe_coe]
@@ -1390,7 +1390,7 @@ The sum is parameterized by the embeddings of `Fin k` in the index type `ι` (or
 by the subsets `s` of `ι` of cardinal `k` and then the bijections between `Fin k` and `s`). -/
 def iteratedFDeriv (f : ContinuousMultilinearMap 𝕜 E₁ G) (k : ℕ) (x : (i : ι) → E₁ i) :
     ContinuousMultilinearMap 𝕜 (fun (_ : Fin k) ↦ (∀ i, E₁ i)) G :=
-  ∑ s : Finset ι, ∑ e : Fin k ≃ s, iteratedDerivComponent f s e (fun i ↦ x i)
+  ∑ s : Finset ι, ∑ e : Fin k ≃ s, iteratedFDerivComponent f s e (fun i ↦ x i)
 
 end ContinuousMultilinearMap
 

@@ -1062,7 +1062,7 @@ of `k` vectors `v₁, ..., vₖ`, mapping them
 to `f (x₁, (v_{e 2})₂, x₃, ...)`, where at indices `i` in `s` one uses the vector `v_{e i}`
 and otherwise one uses a reference vector `x`. This is multilinear in the components of `x` outside
 of `s`, and in the `v_j`. -/
-noncomputable def iteratedDerivComponent {α : Type*} [DecidableEq α]
+noncomputable def iteratedFDerivComponent {α : Type*} [DecidableEq α]
     (f : MultilinearMap R M₁ M₂) (s : Finset ι) (e : α ≃ s) :
     MultilinearMap R (fun (i : {a : ι // a ∉ s}) ↦ M₁ i)
       (MultilinearMap R (fun (_ : α) ↦ (∀ i, M₁ i)) M₂) where
@@ -1085,7 +1085,7 @@ For the continuous version, see `ContinuousMultilinearMap.iteratedFDeriv`. -/
 noncomputable def iteratedFDeriv [Fintype ι]
     (f : MultilinearMap R M₁ M₂) (k : ℕ) (x : (i : ι) → M₁ i) :
     MultilinearMap R (fun (_ : Fin k) ↦ (∀ i, M₁ i)) M₂ :=
-  ∑ s : Finset ι, ∑ e : Fin k ≃ s, iteratedDerivComponent f s e (fun i ↦ x i)
+  ∑ s : Finset ι, ∑ e : Fin k ≃ s, iteratedFDerivComponent f s e (fun i ↦ x i)
 
 /-- If `f` is a collection of linear maps, then the construction `MultilinearMap.compLinearMap`
 sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g`. -/

@@ -347,6 +347,14 @@ protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x)
   convert f.hasFiniteFPowerSeriesOnBall.hasFDerivAt (y := x) ENNReal.coe_lt_top
   rw [zero_add]
 
+theorem glou : HasFTaylorSeriesUpTo ⊤ f (fun v n ↦ f.iteratedFDeriv n v) := by
+  constructor
+  · intro x
+    simp [iteratedFDeriv]
+
+
+#exit
+
 lemma cPolynomialAt : CPolynomialAt 𝕜 f x :=
   f.hasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem
     (by simp only [Metric.emetric_ball_top, Set.mem_univ])
