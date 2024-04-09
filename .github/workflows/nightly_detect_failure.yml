@@ -97,6 +97,11 @@ jobs:
         }
         response = client.get_messages(request)
         messages = response['messages']
+        if messages:
+            print("Latest message is:")
+            print(messages[0])
+        else:
+            print("No messages!")
         if not messages or messages[0]['content'] != "✅ The latest CI for Mathlib's branch#nightly-testing has succeeded!":
             # Post the success message
             request = {
