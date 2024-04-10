@@ -85,7 +85,7 @@ theorem preimage_smul_setₛₗ_of_units
 
 /-- `preimage_smul_setₛₗ` in the context of a `MonoidHom` -/
 theorem MonoidHom.preimage_smul_setₛₗ (σ : R →* S)
-  {F : Type*} [FunLike F M N] [MulActionSemiHomClass F ⇑σ M N]
+    {F : Type*} [FunLike F M N] [MulActionSemiHomClass F ⇑σ M N]
   {c : R} (hc : IsUnit c) (s : Set N) :
     h ⁻¹' (σ c • s) = c • h ⁻¹' s := by
   apply preimage_smul_setₛₗ_of_units σ h c s hc
