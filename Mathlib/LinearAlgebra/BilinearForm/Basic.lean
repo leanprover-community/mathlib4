@@ -265,15 +265,15 @@ theorem flip_flip :
 
 /-- The `flip` of a bilinear form over a commutative ring, obtained by exchanging the left and
 right arguments. -/
-abbrev flip : BilinForm R M ≃ₗ[R] BilinForm R M :=
-  flipHom
+abbrev flip (B : BilinForm R M) :=
+  flipHom B
 #align bilin_form.flip LinearMap.BilinForm.flip
 
 end flip
 
 /-- The restriction of a bilinear form on a submodule. -/
 @[simps! apply]
-def restrict (B : BilinForm R M) (W : Submodule R M) : BilinForm R W :=
+abbrev restrict (B : BilinForm R M) (W : Submodule R M) : BilinForm R W :=
   LinearMap.domRestrict₁₂ B W W
 #align bilin_form.restrict LinearMap.BilinForm.restrict
 
