@@ -163,7 +163,6 @@ lemma isIso_rightDerivedFunctorPlusUnit_app_of_bounded
     dsimp
     simp only [image_preimage, assoc, Iso.inv_hom_id_app, comp_obj, map_id, comp_id, id_comp]
     apply comp_id
-  let φ : K' ⟶ L' := (HomotopyCategory.quotient C _).map (K.πStupidTrunc e₁)
   have : IsIso (F.rightDerivedFunctorPlusUnit.app L') := by
     apply isIso_rightDerivedFunctorPlusUnit_app_of_bounded _ _ a (n + 1)
     intro i hi hi'
@@ -171,10 +170,10 @@ lemma isIso_rightDerivedFunctorPlusUnit_app_of_bounded
       (Functor.mapIso _ (asIso' (K.isIso_πStupidTrunc_f (n + 1) i hi')))).1 (hK i hi)
 
   have h₁ : IsIso ((DerivedCategory.Plus.homologyFunctor D n).map
-      ((F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).map φ)) := by
+      ((F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).map T'.mor₂)) := by
     sorry
   have h₂ : IsIso ((DerivedCategory.Plus.homologyFunctor D n).map
-    ((DerivedCategory.Plus.Qh ⋙ F.rightDerivedFunctorPlus).map φ)) := sorry
+    ((DerivedCategory.Plus.Qh ⋙ F.rightDerivedFunctorPlus).map T'.mor₂)) := sorry
 
   have e'' : Arrow.mk ((DerivedCategory.Plus.homologyFunctor D n).map
     ((F.rightDerivedFunctorPlusUnit).app K')) ≅
@@ -183,7 +182,7 @@ lemma isIso_rightDerivedFunctorPlusUnit_app_of_bounded
       dsimp
       simp only [← Functor.map_comp]
       congr 1
-      exact F.rightDerivedFunctorPlusUnit.naturality φ)
+      exact F.rightDerivedFunctorPlusUnit.naturality T'.mor₂)
   apply ((MorphismProperty.RespectsIso.isomorphisms D).arrow_mk_iso_iff e'').2
   change IsIso _
   infer_instance-/
