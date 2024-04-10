@@ -5,10 +5,11 @@ Authors: Antoine Chambert-Loir
 
 -/
 
-import Mathlib.GroupTheory.GroupAction.Pointwise
-import Mathlib.Data.Setoid.Partition
 import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Data.Set.Card
+import Mathlib.Data.Setoid.Partition
 import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.Subgroup.Actions
 
@@ -271,7 +272,7 @@ theorem IsBlock.preimage {H Y : Type*} [Group H] [MulAction H Y]
     exact Disjoint.preimage _ hdis
 
 theorem IsBlock.image {H Y : Type*} [Group H] [MulAction H Y]
-    {φ : G →* H} (j : X →ₑ[φ] Y)
+    {φ : G → H} (j : X →ₑ[φ] Y)
     (hφ : Function.Surjective φ) (hj : Function.Injective j)
     {B : Set X} (hB : IsBlock G B) :
     IsBlock H (j '' B) := by
@@ -374,7 +375,7 @@ theorem IsBlock.of_subgroup_of_conjugate {B : Set X} {H : Subgroup G} (hB : IsBl
   simp only [inv_mul_cancel_right]
 
 /-- A translate of a block is a block -/
-theorem IsBlock.translate {B : Set X} (g : G) (hB : IsBlock G B) :
+theorem IsBlock.smul {B : Set X} (g : G) (hB : IsBlock G B) :
     IsBlock G (g • B) := by
   rw [IsBlock.iff_of_top] at hB ⊢
   suffices Subgroup.map (MulEquiv.toMonoidHom (MulAut.conj g)) ⊤ = ⊤ by
@@ -426,7 +427,7 @@ theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
       use a
       rw [hg']
       exact ⟨hg, ha⟩
-  rintro B' ⟨g, rfl⟩; exact hB.translate g
+  rintro B' ⟨g, rfl⟩; exact hB.smul g
 
 section Normal
 
