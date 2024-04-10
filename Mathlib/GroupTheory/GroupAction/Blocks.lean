@@ -648,12 +648,8 @@ theorem IsBlock.ncard_of_block_divides [Finite X] [IsPretransitive G X] {B : Set
     Set.ncard B ∣ Nat.card X :=
   Dvd.intro _ (hB.ncard_block_mul_ncard_orbit_eq hB_ne)
 
-example (n : ℕ) (h0 : 0 < n) (h2 : n < 2) : n = 1 := by
-  apply Nat.eq_of_le_of_lt_succ h0 h2
-
-
 /-- A too large block is equal to ⊤ -/
-theorem is_top_of_large_block [hfX : Finite X] [hGX : IsPretransitive G X] {B : Set X}
+theorem IsBlock.is_top_of_large_block [hfX : Finite X] [hGX : IsPretransitive G X] {B : Set X}
     (hB : IsBlock G B) (hB' : Nat.card X < Set.ncard B * 2) : B = ⊤ := by
   classical
   letI := Fintype.ofFinite X
