@@ -286,7 +286,7 @@ theorem IsBlock.iff_of_subtype_val {C : SubMulAction G X} {B : Set C} :
   simp only [IsBlock.def_one]
   apply forall_congr'
   intro g
-  erw [← image_smul_set _ _ C.inclusion g B]
+  erw [← image_smul_set _ _ _ C.inclusion g B]
   apply or_congr (Set.image_eq_image Subtype.coe_injective).symm
   simp only [Set.disjoint_iff, Set.subset_empty_iff]
   erw [←
