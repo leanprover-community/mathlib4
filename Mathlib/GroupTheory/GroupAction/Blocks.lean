@@ -469,7 +469,7 @@ theorem IsBlock.of_orbit' {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
     IsBlock G (MulAction.orbit H a) := by
   rw [IsBlock.mk_subset]; intro g b
   rintro ⟨h, rfl⟩
-  simp
+  simp?
   intro hb'
   suffices g ∈ H by
     rw [← Subgroup.coe_mk H g this, ← Subgroup.smul_def]
