@@ -16,7 +16,8 @@ differential relations.
 ## Main results
 - `ampleSet_empty` and `ampleSet_univ`: the empty set and `univ` are ample
 - `AmpleSet.union`: the union of two ample sets is ample
-- `AmpleSet.{pre}image`: being ample is invariant under continuous affine equivalences
+- `AmpleSet.{pre}image`: being ample is invariant under continuous affine equivalences;
+  `AmpleSet.{pre}image_iff` are "iff" versions of these
 - `AmpleSet.vadd`: in particular, ample-ness is invariant under affine translations
 
 ## TODO
@@ -97,3 +98,9 @@ theorem AmpleSet.preimage {s : Set F} (h : AmpleSet s) (L : E ≃ᵃL[ℝ] F) : 
 theorem AmpleSet.preimage_iff {s : Set F} (L : E ≃ᵃL[ℝ] F) :
     AmpleSet (L ⁻¹' s) ↔ AmpleSet s :=
   ⟨fun h ↦ L.image_preimage s ▸ h.image L, fun h ↦ h.preimage L⟩
+
+open scoped Pointwise
+/-- Affine translations of ample sets are ample. -/
+theorem AmpleSet.vadd [ContinuousAdd E] {s : Set E} (h : AmpleSet s) {y : E} :
+    AmpleSet (y +ᵥ s) :=
+  h.image (ContinuousAffineEquiv.constVAdd ℝ E y)
