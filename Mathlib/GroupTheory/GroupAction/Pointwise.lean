@@ -81,35 +81,32 @@ theorem preimage_smul_setₛₗ_of_units
   apply preimage_smul_setₛₗ'
   · exact (MulAction.smul_bijective_of_is_unit hc).surjective
   · exact (MulAction.smul_bijective_of_is_unit hc').injective
-#align preimage_smul_setₛₗ preimage_smul_setₛₗ
+#align preimage_smul_setₛₗ preimage_smul_setₛₗ_of_units
 
 /-- `preimage_smul_setₛₗ` in the context of a `MonoidHom` -/
 theorem MonoidHom.preimage_smul_setₛₗ (σ : R →* S)
-    {F : Type*} [FunLike F M N] [MulActionSemiHomClass F ⇑σ M N]
-  {c : R} (hc : IsUnit c) (s : Set N) :
-    h ⁻¹' (σ c • s) = c • h ⁻¹' s := by
-  apply preimage_smul_setₛₗ_of_units σ h c s hc
-  · sorry
+    {F : Type*} [FunLike F M N] [MulActionSemiHomClass F ⇑σ M N] (h : F)
+    {c : R} (hc : IsUnit c) (s : Set N) :
+    h ⁻¹' (σ c • s) = c • h ⁻¹' s :=
+  preimage_smul_setₛₗ_of_units M N σ h hc (IsUnit.map σ hc) s
 
 /-- `preimage_smul_setₛₗ` in the context of a `MonoidHomClass` -/
 theorem MonoidHomClass.preimage_smul_setₛₗ_of_units
     {G : Type*} [FunLike G R S] [MonoidHomClass G R S] (σ : G)
-  [MulAction R M] [MulAction S N]
-  {F : Type*} [FunLike F M N] [MulActionSemiHomClass F σ M N]
-  {c : R} (hc : IsUnit c) (s : Set N) :
+    [MulAction R M] [MulAction S N]
+    {F : Type*} [FunLike F M N] [MulActionSemiHomClass F σ M N] (h : F)
+    {c : R} (hc : IsUnit c) (s : Set N) :
     h ⁻¹' (σ c • s) = c • h ⁻¹' s :=
- MonoidHom.preimage_smul_setₛₗ (σ : R →* S) h c s hc
+ MonoidHom.preimage_smul_setₛₗ _ _ (σ : R →* S) h hc s
 
 /-- `preimage_smul_setₛₗ` in the context of a groups -/
 theorem Group.preimage_smul_setₛₗ
     {R S : Type*} [Group R] [Group S] (σ : R → S)
     [MulAction R M] [MulAction S N]
-    {F : Type*} [FunLike F M N] [MulActionSemiHomClass F σ M N]
+    {F : Type*} [FunLike F M N] [MulActionSemiHomClass F σ M N] (h : F)
     (c : R) (s : Set N) :
     h ⁻¹' (σ c • s) = c • h ⁻¹' s :=
- preimage_smul_setₛₗ_of_units σ h c s hc (Group.isUnit _) (Group.isUnit _)
-
-variable (R)
+ preimage_smul_setₛₗ_of_units _ _ _ _ (Group.isUnit _) (Group.isUnit _) s
 
 @[simp] -- This can be safely removed as a `@[simp]` lemma if `image_smul_setₛₗ` is readded.
 theorem image_smul_set [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂]
@@ -127,11 +124,13 @@ theorem smul_preimage_set_le
 theorem preimage_smul_set [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂]
     {c : R} (hc : IsUnit c) (s : Set M₂) :
     h ⁻¹' (c • s) = c • h ⁻¹' s :=
-  preimage_smul_setₛₗ _ _ _ h hc hc s
+  preimage_smul_setₛₗ_of_units _ _ _ h hc hc s
 #align preimage_smul_set preimage_smul_set
 
-theorem Group.preimage_smul_set [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂]
+theorem Group.preimage_smul_set
+    {R : Type*} [Group R] (M₁ M₂ : Type*)
+    [MulAction R M₁] [MulAction R M₂]
+    {F : Type*} [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂] (h : F)
     (c : R) (s : Set M₂) :
     h ⁻¹' (c • s) = c • h ⁻¹' s :=
-  preimage_smul_set _ _ _ h (Group.isUnit ) s
-#align preimage_smul_set preimage_smul_set
+  _root_.preimage_smul_set M₁ M₂ h (Group.isUnit c) s
