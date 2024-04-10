@@ -435,7 +435,7 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
   · intro hx
     rw [Set.mem_iUnion] at hx
     obtain ⟨g, u, hu₁, hu₂⟩ := hx
-    rw [Set.mem_preimage, Set.mem_image_iff_bex]
+    rw [Set.mem_preimage, Set.mem_image]
     refine' ⟨g⁻¹ • a, _, by simp only [f, Quotient.eq']; use g⁻¹⟩
     rw [← hu₂]
     convert hu₁
@@ -688,8 +688,7 @@ variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
 /-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions.-/
 theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
-  H ≤ stabilizer G s ↔ ∀ g ∈ H, g • s ⊆ s :=
-  by
+    H ≤ stabilizer G s ↔ ∀ g ∈ H, g • s ⊆ s := by
   constructor
   · intro hyp g hg
     apply Eq.subset
@@ -720,7 +719,8 @@ theorem mem_stabilizer_of_finite_iff_smul_le (s : Set α) (hs : s.Finite) (g : G
     suffices (g • s).toFinset = Finset.map ⟨_, MulAction.injective g⟩ hs.toFinset by
       rw [this, Finset.card_map, Set.toFinite_toFinset]
     rw [← Finset.coe_inj]
-    simp only [Set.coe_toFinset, Set.toFinite_toFinset, Finset.coe_map, Function.Embedding.coeFn_mk, Set.image_smul]
+    simp only [Set.coe_toFinset, Set.toFinite_toFinset, Finset.coe_map,
+      Function.Embedding.coeFn_mk, Set.image_smul]
 
 /-- To prove membership to stabilizer of a *finite set*, it is enough to prove one inclusion. -/
 theorem mem_stabilizer_of_finite_iff_le_smul (s : Set α) (hs : s.Finite) (g : G) :
