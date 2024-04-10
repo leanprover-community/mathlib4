@@ -8,7 +8,6 @@ Authors: Antoine Chambert-Loir
 import Mathlib.GroupTheory.MaximalSubgroups
 import Mathlib.GroupTheory.GroupAction.Blocks
 import Mathlib.GroupTheory.GroupAction.Transitive
-import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Setoid.Partition
 
 /-!

@@ -682,7 +682,6 @@ theorem IsBlock.is_subsingleton [Finite X] [IsPretransitive G X]
     {B : Set X} (hB : IsBlock G B)
     (hB' : Nat.card X < 2 * Set.ncard (Set.range fun g : G => (g • B : Set X))) :
     B.Subsingleton := by
-  have := Fintype.ofFinite X
   suffices Set.ncard B < 2 by
     rw [Nat.lt_succ_iff, Set.ncard_le_one_iff_eq] at this
     cases this with
