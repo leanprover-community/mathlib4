@@ -71,12 +71,15 @@ theorem unop {W X Y Z : Cᵒᵖ} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : 
   ⟨by simp only [← unop_comp, p.w]⟩
 #align category_theory.comm_sq.unop CategoryTheory.CommSq.unop
 
+theorem vert_inv {g : W ≅ Y} {h : X ≅ Z} (p : CommSq f g.hom h.hom i) :
+    CommSq i g.inv h.inv f :=
+  ⟨by rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp, p.w]⟩
+
 end CommSq
 
 namespace Functor
 
 variable {D : Type*} [Category D]
-
 variable (F : C ⥤ D) {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
 theorem map_commSq (s : CommSq f g h i) : CommSq (F.map f) (F.map g) (F.map h) (F.map i) :=
@@ -105,7 +108,7 @@ variable {A B X Y : C} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
 
 The datum of a lift in a commutative square, i.e. an up-right-diagonal
 morphism which makes both triangles commute. -/
--- Porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 @[ext]
 structure LiftStruct (sq : CommSq f i p g) where
   /-- The lift. -/

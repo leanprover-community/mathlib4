@@ -128,7 +128,6 @@ instance AddGroup.intSMulWithZero [AddGroup M] : SMulWithZero ℤ M where
 section MonoidWithZero
 
 variable [MonoidWithZero R] [MonoidWithZero R'] [Zero M]
-
 variable (R M)
 
 /-- An action of a monoid with zero `R` on a Type `M`, also with `0`, extends `MulAction` and
@@ -156,12 +155,12 @@ instance MonoidWithZero.toMulActionWithZero : MulActionWithZero R R :=
 /-- Like `MonoidWithZero.toMulActionWithZero`, but multiplies on the right. See also
 `Semiring.toOppositeModule` -/
 instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero Rᵐᵒᵖ R :=
-  { MulZeroClass.toOppositeSMulWithZero R, Monoid.toOppositeMulAction R with }
+  { MulZeroClass.toOppositeSMulWithZero R, Monoid.toOppositeMulAction with }
 #align monoid_with_zero.to_opposite_mul_action_with_zero MonoidWithZero.toOppositeMulActionWithZero
 
 protected lemma MulActionWithZero.subsingleton
     [MulActionWithZero R M] [Subsingleton R] : Subsingleton M :=
-  ⟨λ x y => by
+  ⟨fun x y => by
     rw [← one_smul R x, ← one_smul R y, Subsingleton.elim (1 : R) 0, zero_smul, zero_smul]⟩
 #align mul_action_with_zero.subsingleton MulActionWithZero.subsingleton
 
@@ -229,3 +228,8 @@ def smulMonoidWithZeroHom {α β : Type*} [MonoidWithZero α] [MulZeroOneClass �
   { smulMonoidHom with map_zero' := smul_zero _ }
 #align smul_monoid_with_zero_hom smulMonoidWithZeroHom
 #align smul_monoid_with_zero_hom_apply smulMonoidWithZeroHom_apply
+
+-- This instance seems a bit incongruous in this file, but `#find_home!` told me to put it here.
+instance NonUnitalNonAssocSemiring.toDistribSMul [NonUnitalNonAssocSemiring R] :
+    DistribSMul R R where
+  smul_add := mul_add

@@ -24,7 +24,8 @@ In this file we define two filters on `Π i, α i` and prove some basic properti
 
 open Set Function
 
-open Classical Filter
+open scoped Classical
+open Filter
 
 namespace Filter
 
@@ -51,6 +52,11 @@ theorem tendsto_pi {β : Type*} {m : β → ∀ i, α i} {l : Filter β} :
     Tendsto m l (pi f) ↔ ∀ i, Tendsto (fun x => m x i) l (f i) := by
   simp only [pi, tendsto_iInf, tendsto_comap_iff]; rfl
 #align filter.tendsto_pi Filter.tendsto_pi
+
+/-- If a function tends to a product `Filter.pi f` of filters, then its `i`-th component tends to
+`f i`. See also `Filter.Tendsto.apply_nhds` for the special case of converging to a point in a
+product of topological spaces. -/
+alias ⟨Tendsto.apply, _⟩ := tendsto_pi
 
 theorem le_pi {g : Filter (∀ i, α i)} : g ≤ pi f ↔ ∀ i, Tendsto (eval i) g (f i) :=
   tendsto_pi

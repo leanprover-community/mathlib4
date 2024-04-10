@@ -47,7 +47,6 @@ def boxProd (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α × β) w
   loopless x := by simp
 #align simple_graph.box_prod SimpleGraph.boxProd
 
--- mathport name: «expr □ »
 /-- Box product of simple graphs. It relates `(a₁, b)` and `(a₂, b)` if `G` relates `a₁` and `a₂`,
 and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
 infixl:70 " □ " => boxProd
@@ -57,12 +56,12 @@ theorem boxProd_adj : (G □ H).Adj x y ↔ G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Ad
   Iff.rfl
 #align simple_graph.box_prod_adj SimpleGraph.boxProd_adj
 
---@[simp] porting note: `simp` can prove
+--@[simp] Porting note (#10618): `simp` can prove
 theorem boxProd_adj_left : (G □ H).Adj (a₁, b) (a₂, b) ↔ G.Adj a₁ a₂ := by
   simp only [boxProd_adj, and_true, SimpleGraph.irrefl, false_and, or_false]
 #align simple_graph.box_prod_adj_left SimpleGraph.boxProd_adj_left
 
---@[simp] porting note: `simp` can prove
+--@[simp] Porting note (#10618): `simp` can prove
 theorem boxProd_adj_right : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b₂ := by
   simp only [boxProd_adj, SimpleGraph.irrefl, false_and, and_true, false_or]
 #align simple_graph.box_prod_adj_right SimpleGraph.boxProd_adj_right

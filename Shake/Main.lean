@@ -96,10 +96,21 @@ structure State where
   /-- Maps a constant name to the module index containing it. -/
   constToIdx : HashMap Name USize := {}
 
+/-- Returns `true` if this is a constant whose body should not be considered for dependency
+tracking purposes. -/
+def isBlacklisted (name : Name) : Bool :=
+  -- Compiler-produced definitions are skipped, because they can sometimes pick up spurious
+  -- dependencies due to specializations in unrelated files. Even if we remove these modules
+  -- from the import path, the compiler will still just find another way to compile the definition.
+  if let .str _ "_cstage2" := name then true else
+  if let .str _ "_cstage1" := name then true else
+  false
+
 /-- Calculates the value of the `needs[i]` bitset for a given module `mod`.
 Bit `j` is set in the result if some constant from module `j` is used in this module. -/
 def calcNeeds (constToIdx : HashMap Name USize) (mod : ModuleData) : Bitset :=
   mod.constants.foldl (init := 0) fun deps ci =>
+    if isBlacklisted ci.name then deps else
     let deps := visitExpr ci.type deps
     match ci.value? with
     | some e => visitExpr e deps
@@ -271,11 +282,13 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
     -- where `newTransDeps` is the result of recalculating `transDeps` after breaking the `B -> C`
     -- link.
 
-    -- calculate `newTransDeps[C]`, removing all `B -> C` links from `toRemove`
+    -- calculate `newTransDeps[C]`, removing all `B -> C` links from `toRemove` and adding `toAdd`
     let mut newTransDepsI := 1 <<< i
     for j in s.deps[i]! do
       if !toRemove.contains j then
         newTransDepsI := newTransDepsI ||| s.transDeps[j]!
+    for j in toAdd do
+      newTransDepsI := newTransDepsI ||| s.transDeps[j]!
 
     let mut newTransDeps := s.transDeps.set! i newTransDepsI -- deep copy
     let mut reAdded := #[]
@@ -474,7 +487,7 @@ def main (args : List String) : IO UInt32 := do
         ignoreImport? := (some ignoreImport).filter (!·.isEmpty)
         ignore? := (some ignore).filter (!·.isEmpty)
       }
-      IO.FS.writeFile cfgFile <| toJson cfg |>.pretty
+      IO.FS.writeFile cfgFile <| toJson cfg |>.pretty.push '\n'
 
   if !args.fix then
     -- return error if any issues were found

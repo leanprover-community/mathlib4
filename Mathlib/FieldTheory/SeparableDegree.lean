@@ -126,7 +126,6 @@ noncomputable section
 universe u v w
 
 variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
-
 variable (K : Type w) [Field K] [Algebra F K]
 
 namespace Field
@@ -181,7 +180,6 @@ theorem finSepDegree_bot : finSepDegree F (⊥ : IntermediateField F E) = 1 := b
 section Tower
 
 variable {F}
-
 variable [Algebra E K] [IsScalarTower F E K]
 
 @[simp]
@@ -257,7 +255,6 @@ end Field
 namespace Polynomial
 
 variable {F E}
-
 variable (f : F[X])
 
 /-- The separable degree `Polynomial.natSepDegree` of a polynomial is a natural number,
@@ -343,6 +340,11 @@ theorem natSepDegree_eq_of_isAlgClosed [IsAlgClosed E] :
     f.natSepDegree = (f.aroots E).toFinset.card :=
   natSepDegree_eq_of_splits f (IsAlgClosed.splits_codomain f)
 
+variable (E) in
+theorem natSepDegree_map : (f.map (algebraMap F E)).natSepDegree = f.natSepDegree := by
+  simp_rw [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure E), aroots_def, map_map]
+  rfl
+
 @[simp]
 theorem natSepDegree_C_mul {x : F} (hx : x ≠ 0) :
     (C x * f).natSepDegree = f.natSepDegree := by
@@ -359,6 +361,9 @@ theorem natSepDegree_pow {n : ℕ} : (f ^ n).natSepDegree = if n = 0 then 0 else
   by_cases h : n = 0
   · simp only [h, zero_smul, Multiset.toFinset_zero, Finset.card_empty, ite_true]
   simp only [h, Multiset.toFinset_nsmul _ n h, ite_false]
+
+theorem natSepDegree_pow_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
+    (f ^ n).natSepDegree = f.natSepDegree := by simp_rw [natSepDegree_pow, hn, ite_false]
 
 theorem natSepDegree_X_pow {n : ℕ} : (X ^ n : F[X]).natSepDegree = if n = 0 then 0 else 1 := by
   simp only [natSepDegree_pow, natSepDegree_X]
@@ -378,6 +383,42 @@ theorem natSepDegree_mul (g : F[X]) :
   simp_rw [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_mul h, Multiset.toFinset_add]
   exact Finset.card_union_le _ _
 
+theorem natSepDegree_mul_eq_iff (g : F[X]) :
+    (f * g).natSepDegree = f.natSepDegree + g.natSepDegree ↔ (f = 0 ∧ g = 0) ∨ IsCoprime f g := by
+  by_cases h : f * g = 0
+  · rw [mul_eq_zero] at h
+    wlog hf : f = 0 generalizing f g
+    · simpa only [mul_comm, add_comm, and_comm,
+        isCoprime_comm] using this g f h.symm (h.resolve_left hf)
+    rw [hf, zero_mul, natSepDegree_zero, zero_add, isCoprime_zero_left, isUnit_iff, eq_comm,
+      natSepDegree_eq_zero_iff, natDegree_eq_zero]
+    refine ⟨fun ⟨x, h⟩ ↦ ?_, ?_⟩
+    · by_cases hx : x = 0
+      · exact .inl ⟨rfl, by rw [← h, hx, map_zero]⟩
+      exact .inr ⟨x, Ne.isUnit hx, h⟩
+    rintro (⟨-, h⟩ | ⟨x, -, h⟩)
+    · exact ⟨0, by rw [h, map_zero]⟩
+    exact ⟨x, h⟩
+  simp_rw [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_mul h, Multiset.toFinset_add,
+    Finset.card_union_eq_card_add_card, Finset.disjoint_iff_ne, Multiset.mem_toFinset, mem_aroots]
+  rw [mul_eq_zero, not_or] at h
+  refine ⟨fun H ↦ .inr (isCoprime_of_irreducible_dvd (not_and.2 fun _ ↦ h.2)
+    fun u hu ⟨v, hf⟩ ⟨w, hg⟩ ↦ ?_), ?_⟩
+  · obtain ⟨x, hx⟩ := IsAlgClosed.exists_aeval_eq_zero
+      (AlgebraicClosure F) _ (degree_pos_of_irreducible hu).ne'
+    exact H x ⟨h.1, by simpa only [map_mul, hx, zero_mul] using congr(aeval x $hf)⟩
+      x ⟨h.2, by simpa only [map_mul, hx, zero_mul] using congr(aeval x $hg)⟩ rfl
+  rintro (⟨rfl, rfl⟩ | hc)
+  · exact (h.1 rfl).elim
+  rintro x hf _ hg rfl
+  obtain ⟨u, v, hfg⟩ := hc
+  simpa only [map_add, map_mul, map_one, hf.2, hg.2, mul_zero, add_zero,
+    zero_ne_one] using congr(aeval x $hfg)
+
+theorem natSepDegree_mul_of_isCoprime (g : F[X]) (hc : IsCoprime f g) :
+    (f * g).natSepDegree = f.natSepDegree + g.natSepDegree :=
+  (natSepDegree_mul_eq_iff f g).2 (.inr hc)
+
 theorem natSepDegree_le_of_dvd (g : F[X]) (h1 : f ∣ g) (h2 : g ≠ 0) :
     f.natSepDegree ≤ g.natSepDegree := by
   simp_rw [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F)]
@@ -395,7 +436,7 @@ theorem natSepDegree_expand (q : ℕ) [hF : ExpChar F q] {n : ℕ} :
     Fintype.card_coe] using Fintype.card_eq.2
       ⟨(f.map (algebraMap F (AlgebraicClosure F))).rootsExpandPowEquivRoots q n⟩
 
-theorem natSepDegree_X_pow_char_sub_C (q : ℕ) [ExpChar F q] (n : ℕ) (y : F) :
+theorem natSepDegree_X_pow_char_pow_sub_C (q : ℕ) [ExpChar F q] (n : ℕ) (y : F) :
     (X ^ q ^ n - C y).natSepDegree = 1 := by
   rw [← expand_X, ← expand_C (q ^ n), ← map_sub, natSepDegree_expand, natSepDegree_X_sub_C]
 
@@ -419,7 +460,6 @@ end Polynomial
 namespace Irreducible
 
 variable {F}
-
 variable {f : F[X]}
 
 /-- The separable degree of an irreducible polynomial divides its degree. -/
@@ -449,14 +489,90 @@ separable degree one if and only if it is of the form `X ^ (q ^ n) - C y`
 for some `n : ℕ` and `y : F`. -/
 theorem natSepDegree_eq_one_iff_of_monic (q : ℕ) [ExpChar F q] (hm : f.Monic)
     (hi : Irreducible f) : f.natSepDegree = 1 ↔ ∃ (n : ℕ) (y : F), f = X ^ q ^ n - C y := by
-  simp only [hi.natSepDegree_eq_one_iff_of_monic' q hm, map_sub, expand_X, expand_C]
+  simp_rw [hi.natSepDegree_eq_one_iff_of_monic' q hm, map_sub, expand_X, expand_C]
 
 end Irreducible
+
+namespace Polynomial
+
+namespace Monic
+
+variable {F}
+variable {f : F[X]}
+
+alias natSepDegree_eq_one_iff_of_irreducible' := Irreducible.natSepDegree_eq_one_iff_of_monic'
+
+alias natSepDegree_eq_one_iff_of_irreducible := Irreducible.natSepDegree_eq_one_iff_of_monic
+
+/-- If a monic polynomial of separable degree one splits, then it is of form `(X - C y) ^ m` for
+some non-zero natural number `m` and some element `y` of `F`. -/
+theorem eq_X_sub_C_pow_of_natSepDegree_eq_one_of_splits (hm : f.Monic)
+    (hs : f.Splits (RingHom.id F))
+    (h : f.natSepDegree = 1) : ∃ (m : ℕ) (y : F), m ≠ 0 ∧ f = (X - C y) ^ m := by
+  have h1 := eq_prod_roots_of_monic_of_splits_id hm hs
+  have h2 := (natSepDegree_eq_of_splits f hs).symm
+  rw [h, aroots_def, Algebra.id.map_eq_id, map_id, Multiset.toFinset_card_eq_one_iff] at h2
+  obtain ⟨h2, y, h3⟩ := h2
+  exact ⟨_, y, h2, by rwa [h3, Multiset.map_nsmul, Multiset.map_singleton, Multiset.prod_nsmul,
+    Multiset.prod_singleton] at h1⟩
+
+/-- If a monic irreducible polynomial over a field `F` of exponential characteristic `q` has
+separable degree one, then it is of the form `X ^ (q ^ n) - C y` for some natural number `n`,
+and some element `y` of `F`, such that either `n = 0` or `y` has no `q`-th root in `F`. -/
+theorem eq_X_pow_char_pow_sub_C_of_natSepDegree_eq_one_of_irreducible (q : ℕ) [ExpChar F q]
+    (hm : f.Monic) (hi : Irreducible f) (h : f.natSepDegree = 1) : ∃ (n : ℕ) (y : F),
+      (n = 0 ∨ y ∉ (frobenius F q).range) ∧ f = X ^ q ^ n - C y := by
+  obtain ⟨n, y, hf⟩ := (hm.natSepDegree_eq_one_iff_of_irreducible q hi).1 h
+  cases id ‹ExpChar F q› with
+  | zero =>
+    simp_rw [one_pow, pow_one] at hf ⊢
+    exact ⟨0, y, .inl rfl, hf⟩
+  | prime hq =>
+    refine ⟨n, y, (em _).imp id fun hn ⟨z, hy⟩ ↦ ?_, hf⟩
+    haveI := expChar_of_injective_ringHom (R := F) C_injective q
+    rw [hf, ← Nat.succ_pred hn, pow_succ, pow_mul, ← hy, frobenius_def, map_pow,
+      ← sub_pow_expChar] at hi
+    exact not_irreducible_pow hq.ne_one hi
+
+/-- If a monic polynomial over a field `F` of exponential characteristic `q` has separable degree
+one, then it is of the form `(X ^ (q ^ n) - C y) ^ m` for some non-zero natural number `m`,
+some natural number `n`, and some element `y` of `F`, such that either `n = 0` or `y` has no
+`q`-th root in `F`. -/
+theorem eq_X_pow_char_pow_sub_C_pow_of_natSepDegree_eq_one (q : ℕ) [ExpChar F q] (hm : f.Monic)
+    (h : f.natSepDegree = 1) : ∃ (m n : ℕ) (y : F),
+      m ≠ 0 ∧ (n = 0 ∨ y ∉ (frobenius F q).range) ∧ f = (X ^ q ^ n - C y) ^ m := by
+  obtain ⟨p, hM, hI, hf⟩ := exists_monic_irreducible_factor _ <| not_isUnit_of_natDegree_pos _
+    <| Nat.pos_of_ne_zero <| (natSepDegree_ne_zero_iff _).1 (h.symm ▸ Nat.one_ne_zero)
+  have hD := (h ▸ natSepDegree_le_of_dvd p f hf hm.ne_zero).antisymm <|
+    Nat.pos_of_ne_zero <| (natSepDegree_ne_zero_iff _).2 hI.natDegree_pos.ne'
+  obtain ⟨n, y, H, hp⟩ := hM.eq_X_pow_char_pow_sub_C_of_natSepDegree_eq_one_of_irreducible q hI hD
+  have hF := multiplicity_finite_of_degree_pos_of_monic (degree_pos_of_irreducible hI) hM hm.ne_zero
+  have hne := (multiplicity.pos_of_dvd hF hf).ne'
+  refine ⟨_, n, y, hne, H, ?_⟩
+  obtain ⟨c, hf, H⟩ := multiplicity.exists_eq_pow_mul_and_not_dvd hF
+  rw [hf, natSepDegree_mul_of_isCoprime _ c <| IsCoprime.pow_left <|
+    (hI.coprime_or_dvd c).resolve_right H, natSepDegree_pow_of_ne_zero _ hne, hD,
+    add_right_eq_self, natSepDegree_eq_zero_iff] at h
+  simpa only [eq_one_of_monic_natDegree_zero ((hM.pow _).of_mul_monic_left (hf ▸ hm)) h,
+    mul_one, ← hp] using hf
+
+/-- A monic polynomial over a field `F` of exponential characteristic `q` has separable degree one
+if and only if it is of the form `(X ^ (q ^ n) - C y) ^ m` for some non-zero natural number `m`,
+some natural number `n`, and some element `y` of `F`. -/
+theorem natSepDegree_eq_one_iff (q : ℕ) [ExpChar F q] (hm : f.Monic) :
+    f.natSepDegree = 1 ↔ ∃ (m n : ℕ) (y : F), m ≠ 0 ∧ f = (X ^ q ^ n - C y) ^ m := by
+  refine ⟨fun h ↦ ?_, fun ⟨m, n, y, hm, h⟩ ↦ ?_⟩
+  · obtain ⟨m, n, y, hm, -, h⟩ := hm.eq_X_pow_char_pow_sub_C_pow_of_natSepDegree_eq_one q h
+    exact ⟨m, n, y, hm, h⟩
+  simp_rw [h, natSepDegree_pow, hm, ite_false, natSepDegree_X_pow_char_pow_sub_C]
+
+end Monic
+
+end Polynomial
 
 namespace minpoly
 
 variable {F E}
-
 variable (q : ℕ) [hF : ExpChar F q] {x : E}
 
 /-- The minimal polynomial of an element of `E / F` of exponential characteristic `q` has
@@ -489,7 +605,7 @@ theorem natSepDegree_eq_one_iff_pow_mem : (minpoly F x).natSepDegree = 1 ↔
     exact ⟨n, y, hx ▸ aeval F x⟩
   have hnezero := X_pow_sub_C_ne_zero (expChar_pow_pos F q n) y
   refine ((natSepDegree_le_of_dvd _ _ (minpoly.dvd F x h) hnezero).trans_eq <|
-    natSepDegree_X_pow_char_sub_C q n y).antisymm ?_
+    natSepDegree_X_pow_char_pow_sub_C q n y).antisymm ?_
   rw [Nat.one_le_iff_ne_zero, natSepDegree_ne_zero_iff, ← Nat.one_le_iff_ne_zero]
   exact minpoly.natDegree_pos <| IsAlgebraic.isIntegral ⟨_, hnezero, h⟩
 
@@ -599,6 +715,8 @@ theorem finSepDegree_eq_finrank_of_isSeparable [IsSeparable F E] :
   rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M (Algebra.IsAlgebraic.of_finite L M),
     FiniteDimensional.finrank_mul_finrank F L M] at heq
 
+alias _root_.IsSeparable.finSepDegree_eq := finSepDegree_eq_finrank_of_isSeparable
+
 /-- If `E / F` is a finite extension, then its separable degree is equal to its degree if and
 only if it is a separable extension. -/
 theorem finSepDegree_eq_finrank_iff [FiniteDimensional F E] :
@@ -634,7 +752,7 @@ variable {E K} in
 `x : K` is separable over `E`, then it's also separable over `F`. -/
 theorem Polynomial.Separable.comap_minpoly_of_isSeparable [Algebra E K] [IsScalarTower F E K]
     [IsSeparable F E] {x : K} (hsep : (minpoly E x).Separable) : (minpoly F x).Separable := by
-  let f := minpoly E x
+  set f := minpoly E x with hf
   let E' : IntermediateField F E := adjoin F f.frange
   haveI : FiniteDimensional F E' := finiteDimensional_adjoin fun x _ ↦ IsSeparable.isIntegral F x
   let g : E'[X] := f.toSubring E'.toSubring (subset_adjoin F _)
@@ -642,7 +760,7 @@ theorem Polynomial.Separable.comap_minpoly_of_isSeparable [Algebra E K] [IsScala
   clear_value g
   have hx : x ∈ restrictScalars F E'⟮x⟯ := mem_adjoin_simple_self _ x
   have hzero : aeval x g = 0 := by
-    simpa only [← h, aeval_map_algebraMap] using minpoly.aeval E x
+    simpa only [← hf, ← h, aeval_map_algebraMap] using minpoly.aeval E x
   have halg : IsIntegral E' x :=
     isIntegral_trans (IsSeparable.isAlgebraic F E).isIntegral _ hsep.isIntegral |>.tower_top
   simp_rw [← h, separable_map] at hsep
@@ -705,3 +823,21 @@ theorem separable_inv (x : E) (hx : (minpoly F x).Separable) : (minpoly F x⁻¹
   separable_of_mem_isSeparable F E <| F⟮x⟯.inv_mem <| mem_adjoin_simple_self F x
 
 end Field
+
+/-- A field is a perfect field (which means that any irreducible polynomial is separable)
+if and only if every separable degree one polynomial splits. -/
+theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
+    PerfectField F ↔ ∀ f : F[X], f.natSepDegree = 1 → f.Splits (RingHom.id F) := by
+  refine ⟨fun ⟨h⟩ f hf ↦ or_iff_not_imp_left.2 fun hn g hg hd ↦ ?_, fun h ↦ ?_⟩
+  · rw [map_id] at hn hd
+    have := natSepDegree_le_of_dvd g f hd hn
+    rw [hf, (h hg).natSepDegree_eq_natDegree] at this
+    exact (degree_eq_iff_natDegree_eq_of_pos one_pos).2 <| this.antisymm <|
+      natDegree_pos_iff_degree_pos.2 (degree_pos_of_irreducible hg)
+  obtain ⟨p, _⟩ := ExpChar.exists F
+  haveI := PerfectRing.ofSurjective F p fun x ↦ by
+    obtain ⟨y, hy⟩ := exists_root_of_splits _
+      (h _ (pow_one p ▸ natSepDegree_X_pow_char_pow_sub_C p 1 x))
+      ((degree_X_pow_sub_C (expChar_pos F p) x).symm ▸ Nat.cast_pos.2 (expChar_pos F p)).ne'
+    exact ⟨y, by rwa [← eval, eval_sub, eval_pow, eval_X, eval_C, sub_eq_zero] at hy⟩
+  exact PerfectRing.toPerfectField F p

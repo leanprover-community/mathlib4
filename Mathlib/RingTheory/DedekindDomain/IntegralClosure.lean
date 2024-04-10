@@ -58,11 +58,8 @@ open Algebra
 open scoped BigOperators
 
 variable [Algebra A K] [IsFractionRing A K]
-
 variable (L : Type*) [Field L] (C : Type*) [CommRing C]
-
 variable [Algebra K L] [Algebra A L] [IsScalarTower A K L]
-
 variable [Algebra C L] [IsIntegralClosure C A L] [Algebra A C] [IsScalarTower A C L]
 
 /- If `L` is an algebraic extension of `K = Frac(A)` and `L` has no zero smul divisors by `A`,
@@ -92,17 +89,17 @@ theorem IsIntegralClosure.isLocalization_of_isSeparable [IsSeparable K L] :
 #align is_integral_closure.is_localization IsIntegralClosure.isLocalization_of_isSeparable
 
 variable [FiniteDimensional K L]
-
 variable {A K L}
 
 theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type*} [Fintype ι]
     [DecidableEq ι] (b : Basis ι K L) (hb_int : ∀ i, IsIntegral A (b i)) [IsIntegrallyClosed A] :
     LinearMap.range ((Algebra.linearMap C L).restrictScalars A) ≤
     Submodule.span A (Set.range <| (traceForm K L).dualBasis (traceForm_nondegenerate K L) b) := by
-  rw [← BilinForm.dualSubmodule_span_of_basis, ← BilinForm.le_flip_dualSubmodule,
-    Submodule.span_le]
+  rw [← LinearMap.BilinForm.dualSubmodule_span_of_basis,
+    ← LinearMap.BilinForm.le_flip_dualSubmodule, Submodule.span_le]
   rintro _ ⟨i, rfl⟩ _ ⟨y, rfl⟩
-  simp only [LinearMap.coe_restrictScalars, linearMap_apply, BilinForm.flip_apply, traceForm_apply]
+  simp only [LinearMap.coe_restrictScalars, linearMap_apply, LinearMap.BilinForm.flip_apply,
+    traceForm_apply]
   refine IsIntegrallyClosed.isIntegral_iff.mp ?_
   exact isIntegral_trace ((IsIntegralClosure.isIntegral A L y).algebraMap.mul (hb_int i))
 #align is_integral_closure.range_le_span_dual_basis IsIntegralClosure.range_le_span_dualBasis
@@ -261,7 +258,6 @@ theorem integralClosure.isDedekindDomain [IsDedekindDomain A] :
 #align integral_closure.is_dedekind_domain integralClosure.isDedekindDomain
 
 variable [Algebra (FractionRing A) L] [IsScalarTower A (FractionRing A) L]
-
 variable [FiniteDimensional (FractionRing A) L] [IsSeparable (FractionRing A) L]
 
 /- If `L` is a finite separable extension of `Frac(A)`, where `A` is a Dedekind domain,

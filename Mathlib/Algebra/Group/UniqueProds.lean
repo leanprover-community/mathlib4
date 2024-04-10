@@ -310,7 +310,6 @@ variable (G : Type u) (H : Type v) [Mul G] [Mul H]
 
 private abbrev I : Bool → Type max u v := Bool.rec (ULift.{v} G) (ULift.{u} H)
 @[to_additive] private instance : ∀ b, Mul (I G H b) := Bool.rec ULift.mul ULift.mul
-@[to_additive] private instance : Mul (∀ b, I G H b) := inferInstance
 @[to_additive] private def Prod.upMulHom : G × H →ₙ* ∀ b, I G H b :=
   ⟨fun x ↦ Bool.rec ⟨x.1⟩ ⟨x.2⟩, fun x y ↦ by ext (_|_) <;> rfl⟩
 @[to_additive] private def downMulHom : ULift G →ₙ* G := ⟨ULift.down, fun _ _ ↦ rfl⟩
@@ -399,11 +398,11 @@ open MulOpposite in
     obtain ⟨a, ha, b, hb, hu⟩ := uniqueMul_of_nonempty hc.1 hc.2.1
     let C := A.map ⟨_, mul_right_injective a⁻¹⟩ -- C = a⁻¹A
     let D := B.map ⟨_, mul_left_injective b⁻¹⟩  -- D = Bb⁻¹
-    have hcard : 1 < C.card ∨ 1 < D.card; · simp_rw [card_map]; exact hc.2.2
+    have hcard : 1 < C.card ∨ 1 < D.card := by simp_rw [C, D, card_map]; exact hc.2.2
     have hC : 1 ∈ C := mem_map.mpr ⟨a, ha, inv_mul_self a⟩
     have hD : 1 ∈ D := mem_map.mpr ⟨b, hb, mul_inv_self b⟩
-    suffices : ∃ c ∈ C, ∃ d ∈ D, (c ≠ 1 ∨ d ≠ 1) ∧ UniqueMul C D c d
-    · simp_rw [mem_product]
+    suffices ∃ c ∈ C, ∃ d ∈ D, (c ≠ 1 ∨ d ≠ 1) ∧ UniqueMul C D c d by
+      simp_rw [mem_product]
       obtain ⟨c, hc, d, hd, hne, hu'⟩ := this
       obtain ⟨a0, ha0, rfl⟩ := mem_map.mp hc
       obtain ⟨b0, hb0, rfl⟩ := mem_map.mp hd
@@ -591,8 +590,8 @@ instance (priority := 100) of_covariant_right [IsRightCancelMul G]
     rw [← card_product] at hc
     obtain ⟨a0, ha0, b0, hb0, he0⟩ := mem_mul.mp (max'_mem _ <| hA.mul hB)
     obtain ⟨a1, ha1, b1, hb1, he1⟩ := mem_mul.mp (min'_mem _ <| hA.mul hB)
-    have : UniqueMul A B a0 b0
-    · intro a b ha hb he
+    have : UniqueMul A B a0 b0 := by
+      intro a b ha hb he
       obtain hl | rfl | hl := lt_trichotomy b b0
       · exact ((he0 ▸ he ▸ mul_lt_mul_left' hl a).not_le <| le_max' _ _ <| mul_mem_mul ha hb0).elim
       · exact ⟨mul_right_cancel he, rfl⟩

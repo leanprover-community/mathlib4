@@ -67,7 +67,7 @@ theorem log_stirlingSeq_formula (n : ℕ) :
   · simp
   · rw [stirlingSeq, log_div, log_mul, sqrt_eq_rpow, log_rpow, Real.log_pow, tsub_tsub]
       <;> positivity
--- porting note: generalized from `n.succ` to `n`
+-- Porting note: generalized from `n.succ` to `n`
 #align stirling.log_stirling_seq_formula Stirling.log_stirlingSeq_formulaₓ
 
 /-- The sequence `log (stirlingSeq (m + 1)) - log (stirlingSeq (m + 2))` has the series expansion
@@ -78,7 +78,7 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
       (log (stirlingSeq (m + 1)) - log (stirlingSeq (m + 2))) := by
   change HasSum
     ((fun b : ℕ => (1:ℝ) / ((2:ℝ) * b + (1:ℝ)) * (((1:ℝ) / (2 * (m + 1 :) + 1)) ^ 2) ^ b) ∘ succ) _
-  refine' (hasSum_nat_add_iff (a := _ - _) -- Porting note: must give implicit arguments
+  refine' (hasSum_nat_add_iff (g := _ - _) -- Porting note: must give implicit arguments
     (f := (fun b : ℕ => ↑1 / (↑2 * b + ↑1) * (((1:ℝ) / (2 * ↑(m + 1) + 1)) ^ 2) ^ b)) 1).mpr _
   convert (hasSum_log_one_add_inv <|
     cast_pos.mpr (succ_pos m)).mul_left ((↑(m + 1) : ℝ) + 1 / 2) using 1
@@ -108,7 +108,7 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
   have g : HasSum (fun k : ℕ => (((1:ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1))
       (((1:ℝ) / (2 * ↑(n + 1) + 1)) ^ 2 / (↑1 - ((1:ℝ) / (2 * ↑(n + 1) + 1)) ^ 2)) := by
     have := (hasSum_geometric_of_lt_one h_nonneg ?_).mul_left (((1:ℝ) / (2 * ↑(n + 1) + 1)) ^ 2)
-    · simp_rw [← _root_.pow_succ] at this
+    · simp_rw [← _root_.pow_succ'] at this
       exact this
     rw [one_div, inv_pow]
     exact inv_lt_one (one_lt_pow ((lt_add_iff_pos_left 1).mpr <| by positivity) two_ne_zero)
@@ -120,6 +120,10 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
   exact hasSum_le hab (log_stirlingSeq_diff_hasSum n) g
 #align stirling.log_stirling_seq_diff_le_geo_sum Stirling.log_stirlingSeq_diff_le_geo_sum
 
+-- Adaptation note: after v4.7.0-rc1, there is a performance problem in `field_simp`.
+-- (Part of the code was ignoring the `maxDischargeDepth` setting: now that we have to increase it,
+-- other paths becomes slow.)
+set_option maxHeartbeats 400000 in
 /-- We have the bound `log (stirlingSeq n) - log (stirlingSeq (n+1))` ≤ 1/(4 n^2)
 -/
 theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
@@ -137,7 +141,7 @@ theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
   rw [div_le_div_right h₃]
   ring_nf
   norm_cast
-  linarith
+  omega
 #align stirling.log_stirling_seq_sub_log_stirling_seq_succ Stirling.log_stirlingSeq_sub_log_stirlingSeq_succ
 
 /-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 1/4 * ∑' 1/k^2`  -/

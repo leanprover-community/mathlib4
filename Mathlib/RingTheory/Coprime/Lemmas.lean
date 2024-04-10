@@ -18,7 +18,7 @@ These lemmas are in a separate file to the definition of `IsCoprime` or `IsRelPr
 as they require more imports.
 
 Notably, this includes lemmas about `Finset.prod` as this requires importing BigOperators, and
-lemmas about `HasPow` since these are easiest to prove via `Finset.prod`.
+lemmas about `Pow` since these are easiest to prove via `Finset.prod`.
 
 -/
 
@@ -52,7 +52,7 @@ alias ⟨IsCoprime.nat_coprime, Nat.Coprime.isCoprime⟩ := Nat.isCoprime_iff_co
 theorem Nat.Coprime.cast {R : Type*} [CommRing R] {a b : ℕ} (h : Nat.Coprime a b) :
     IsCoprime (a : R) (b : R) := by
   rw [← isCoprime_iff_coprime] at h
-  rw [← Int.cast_ofNat a, ← Int.cast_ofNat b]
+  rw [← Int.cast_natCast a, ← Int.cast_natCast b]
   exact IsCoprime.intCast h
 
 theorem ne_zero_or_ne_zero_of_nat_coprime {A : Type u} [CommRing A] [Nontrivial A] {a b : ℕ}
@@ -92,7 +92,7 @@ theorem IsCoprime.of_prod_right (H1 : IsCoprime x (∏ i in t, s i)) (i : I) (hi
   IsCoprime.prod_right_iff.1 H1 i hit
 #align is_coprime.of_prod_right IsCoprime.of_prod_right
 
--- porting note: removed names of things due to linter, but they seem helpful
+-- Porting note: removed names of things due to linter, but they seem helpful
 theorem Finset.prod_dvd_of_coprime :
     (t : Set I).Pairwise (IsCoprime on s) → (∀ i ∈ t, s i ∣ z) → (∏ x in t, s x) ∣ z := by
   classical
@@ -124,7 +124,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
       Pairwise (IsCoprime on fun i : t ↦ s i) := by
   refine' h.cons_induction _ _
   · simp only [sum_singleton, Finset.sdiff_self, prod_empty, mul_one, exists_apply_eq,
-               Pairwise, Ne.def, true_iff_iff]
+               Pairwise, Ne, true_iff_iff]
     rintro a ⟨i, hi⟩ ⟨j, hj⟩ h
     rw [Finset.mem_singleton] at hi hj
     simp [hi, hj] at h
@@ -132,7 +132,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
   rw [pairwise_cons']
   have mem : ∀ x ∈ t, a ∈ insert a t \ {x} := fun x hx ↦ by
     rw [mem_sdiff, mem_singleton]
-    refine ⟨mem_insert_self _ _, fun ha ↦ hat (ha ▸ hx)⟩
+    exact ⟨mem_insert_self _ _, fun ha ↦ hat (ha ▸ hx)⟩
   constructor
   · rintro ⟨μ, hμ⟩
     rw [sum_cons, cons_eq_insert, sdiff_singleton_eq_erase, erase_insert hat] at hμ
@@ -141,7 +141,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
         @if_pos _ _ h.choose_spec R (_ * _) 0, ← sum_pi_single', ← sum_add_distrib] at hμ
       rw [← hμ, sum_congr rfl]
       intro x hx
-      dsimp -- porting note: terms were showing as sort of `HAdd.hadd` instead of `+`
+      dsimp -- Porting note: terms were showing as sort of `HAdd.hadd` instead of `+`
       -- this whole proof pretty much breaks and has to be rewritten from scratch
       rw [add_mul]
       congr 1
@@ -186,14 +186,14 @@ theorem exists_sum_eq_one_iff_pairwise_coprime' [Fintype I] [Nonempty I] [Decida
   simp only [Function.onFun, pairwise_subtype_iff_pairwise_finset', coe_univ, Set.pairwise_univ]
 #align exists_sum_eq_one_iff_pairwise_coprime' exists_sum_eq_one_iff_pairwise_coprime'
 
--- porting note: a lot of the capitalization wasn't working
+-- Porting note: a lot of the capitalization wasn't working
 theorem pairwise_coprime_iff_coprime_prod [DecidableEq I] :
     Pairwise (IsCoprime on fun i : t ↦ s i) ↔ ∀ i ∈ t, IsCoprime (s i) (∏ j in t \ {i}, s j) := by
   refine' ⟨fun hp i hi ↦ IsCoprime.prod_right_iff.mpr fun j hj ↦ ?_, fun hp ↦ ?_⟩
   · rw [Finset.mem_sdiff, Finset.mem_singleton] at hj
     obtain ⟨hj, ji⟩ := hj
     refine @hp ⟨i, hi⟩ ⟨j, hj⟩ fun h ↦ ji (congrArg Subtype.val h).symm
-    -- porting note: is there a better way compared to the old `congr_arg coe h`?
+    -- Porting note: is there a better way compared to the old `congr_arg coe h`?
   · rintro ⟨i, hi⟩ ⟨j, hj⟩ h
     apply IsCoprime.prod_right_iff.mp (hp i hi)
     exact Finset.mem_sdiff.mpr ⟨hj, fun f ↦ h <| Subtype.ext (Finset.mem_singleton.mp f).symm⟩
@@ -219,7 +219,7 @@ theorem IsCoprime.pow_left_iff (hm : 0 < m) : IsCoprime (x ^ m) y ↔ IsCoprime 
   refine' ⟨fun h ↦ _, IsCoprime.pow_left⟩
   rw [← Finset.card_range m, ← Finset.prod_const] at h
   exact h.of_prod_left 0 (Finset.mem_range.mpr hm)
-  -- porting note: I'm not sure why `finset` didn't get corrected automatically to `Finset`
+  -- Porting note: I'm not sure why `finset` didn't get corrected automatically to `Finset`
   -- by Mathport, nor whether this is an issue
 #align is_coprime.pow_left_iff IsCoprime.pow_left_iff
 
@@ -288,7 +288,7 @@ theorem pairwise_isRelPrime_iff_isRelPrime_prod [DecidableEq I] :
   refine' ⟨fun hp i hi ↦ IsRelPrime.prod_right_iff.mpr fun j hj ↦ ?_, fun hp ↦ ?_⟩
   · rw [Finset.mem_sdiff, Finset.mem_singleton] at hj
     obtain ⟨hj, ji⟩ := hj
-    refine @hp ⟨i, hi⟩ ⟨j, hj⟩ fun h ↦ ji (congrArg Subtype.val h).symm
+    exact @hp ⟨i, hi⟩ ⟨j, hj⟩ fun h ↦ ji (congrArg Subtype.val h).symm
   · rintro ⟨i, hi⟩ ⟨j, hj⟩ h
     apply IsRelPrime.prod_right_iff.mp (hp i hi)
     exact Finset.mem_sdiff.mpr ⟨hj, fun f ↦ h <| Subtype.ext (Finset.mem_singleton.mp f).symm⟩

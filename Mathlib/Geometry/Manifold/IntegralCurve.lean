@@ -266,7 +266,7 @@ lemma IsIntegralCurveAt.comp_mul_ne_zero (hγ : IsIntegralCurveAt γ v t₀) {a 
   convert h.comp_mul a
   ext t
   rw [mem_setOf_eq, Metric.mem_ball, Metric.mem_ball, Real.dist_eq, Real.dist_eq,
-    lt_div_iff (abs_pos.mpr ha), ← abs_mul, sub_mul, div_mul_cancel _ ha]
+    lt_div_iff (abs_pos.mpr ha), ← abs_mul, sub_mul, div_mul_cancel₀ _ ha]
 
 lemma isIntegralCurveAt_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
@@ -275,7 +275,7 @@ lemma isIntegralCurveAt_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
   · ext t
     simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
-  · simp only [div_inv_eq_mul, div_mul_cancel _ ha]
+  · simp only [div_inv_eq_mul, div_mul_cancel₀ _ ha]
 
 lemma IsIntegralCurve.comp_mul (hγ : IsIntegralCurve γ v) (a : ℝ) :
     IsIntegralCurve (γ ∘ (· * a)) (a • v) := by
@@ -444,7 +444,7 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
     ⟨t₀, ⟨ht₀, ⟨h, ht₀⟩⟩⟩
   · -- is this really the most convenient way to pass to subtype topology?
     -- TODO: shorten this when better API around subtype topology exists
-    rw [hs, ← Subtype.image_preimage_val, ← Subtype.image_preimage_val,
+    rw [hs, inter_comm, ← Subtype.image_preimage_val, inter_comm, ← Subtype.image_preimage_val,
       image_subset_image_iff Subtype.val_injective, preimage_setOf_eq]
     intros t ht
     rw [mem_preimage, ← closure_subtype] at ht
@@ -508,7 +508,7 @@ lemma IsIntegralCurve.periodic_of_eq [BoundarylessManifold I M]
   intro t
   apply congrFun <|
     isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless (t₀ := b) hv (hγ.comp_add _) hγ _
-  rw [comp_apply, add_sub_cancel'_right, heq]
+  rw [comp_apply, add_sub_cancel, heq]
 
 /-- A global integral curve is injective xor periodic with positive period. -/
 lemma IsIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]

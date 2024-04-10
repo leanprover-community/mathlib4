@@ -67,15 +67,13 @@ For now, the definitions assume `S` is commutative, so the choice doesn't matter
 universe u v w z
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-
 variable [Algebra R S] [Algebra R T]
-
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
-
 variable {ι κ : Type w} [Fintype ι]
 
 open FiniteDimensional
 
+open LinearMap (BilinForm)
 open LinearMap
 
 open Matrix
@@ -87,10 +85,9 @@ open scoped Matrix
 namespace Algebra
 
 variable (b : Basis ι R S)
-
 variable (R S)
 
-/-- The trace of an element `s` of an `R`-algebra is the trace of `(*) s`,
+/-- The trace of an element `s` of an `R`-algebra is the trace of `(s * ·)`,
 as an `R`-linear map. -/
 noncomputable def trace : S →ₗ[R] R :=
   (LinearMap.trace R S).comp (lmul R S).toLinearMap
@@ -121,7 +118,7 @@ theorem trace_algebraMap_of_basis (x : R) : trace R S (algebraMap R S x) = Finty
   haveI := Classical.decEq ι
   rw [trace_apply, LinearMap.trace_eq_matrix_trace R b, Matrix.trace]
   convert Finset.sum_const x
-  -- Porting note: was `simp [-coe_lmul_eq_mul]`.
+  -- porting note (#10745): was `simp [-coe_lmul_eq_mul]`.
   simp only [AlgHom.commutes, toMatrix_algebraMap, diag_apply, scalar_apply, diagonal_apply_eq]
 
 #align algebra.trace_algebra_map_of_basis Algebra.trace_algebraMap_of_basis
@@ -156,7 +153,7 @@ theorem trace_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*}
 #align algebra.trace_trace_of_basis Algebra.trace_trace_of_basis
 
 theorem trace_comp_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*} [Finite ι]
-    [Fintype κ] (b : Basis ι R S) (c : Basis κ S T) :
+    [Finite κ] (b : Basis ι R S) (c : Basis κ S T) :
     (trace R S).comp ((trace S T).restrictScalars R) = trace R T := by
   ext
   rw [LinearMap.comp_apply, LinearMap.restrictScalars_apply, trace_trace_of_basis b c]
@@ -231,7 +228,6 @@ section EqSumRoots
 open Algebra Polynomial
 
 variable {F : Type*} [Field F]
-
 variable [Algebra K S] [Algebra K F]
 
 /-- Given `pb : PowerBasis K S`, the trace of `pb.gen` is `-(minpoly K pb.gen).nextCoeff`. -/
@@ -311,7 +307,6 @@ theorem trace_eq_sum_roots [FiniteDimensional K L] {x : L}
 end EqSumRoots
 
 variable {F : Type*} [Field F]
-
 variable [Algebra R L] [Algebra L F] [Algebra R F] [IsScalarTower R L F]
 
 open Polynomial
@@ -454,7 +449,6 @@ section DetNeZero
 namespace Algebra
 
 variable (A : Type u) {B : Type v} (C : Type z)
-
 variable [CommRing A] [CommRing B] [Algebra A B] [CommRing C] [Algebra A C]
 
 open Finset
@@ -502,8 +496,7 @@ theorem traceMatrix_of_matrix_mulVec [Fintype κ] (b : κ → B) (P : Matrix κ 
     traceMatrix A (P.map (algebraMap A B) *ᵥ b) = P * traceMatrix A b * Pᵀ := by
   refine' AddEquiv.injective (transposeAddEquiv κ κ A) _
   rw [transposeAddEquiv_apply, transposeAddEquiv_apply, ← vecMul_transpose, ← transpose_map,
-    traceMatrix_of_matrix_vecMul, transpose_transpose, transpose_mul, transpose_transpose,
-    transpose_mul]
+    traceMatrix_of_matrix_vecMul, transpose_transpose]
 #align algebra.trace_matrix_of_matrix_mul_vec Algebra.traceMatrix_of_matrix_mulVec
 
 theorem traceMatrix_of_basis [Fintype κ] [DecidableEq κ] (b : Basis κ A B) :
@@ -572,11 +565,8 @@ theorem embeddingsMatrixReindex_eq_vandermonde (pb : PowerBasis A B)
 section Field
 
 variable (K) (E : Type z) [Field E]
-
 variable [Algebra K E]
-
 variable [Module.Finite K L] [IsSeparable K L] [IsAlgClosed E]
-
 variable (b : κ → L) (pb : PowerBasis K L)
 
 theorem traceMatrix_eq_embeddingsMatrix_mul_trans :
@@ -684,8 +674,9 @@ lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [IsSeparable K L
   simp only [AlgEquiv.toAlgHom_eq_coe, Polynomial.map_smul, map_div₀,
     map_pow, RingHom.coe_coe, AlgHom.coe_coe, finset_sum_coeff, coeff_smul, coeff_map, smul_eq_mul,
     coeff_X_pow, ← Fin.ext_iff, @eq_comm _ i] at this
-  rw [PowerBasis.coe_basis, Algebra.traceForm_apply, RingHom.map_ite_one_zero,
-  ← this, trace_eq_sum_embeddings (E := AlgebraicClosure K)]
+  rw [PowerBasis.coe_basis]
+  simp only [RingHom.map_ite_one_zero, traceForm_apply]
+  rw [← this, trace_eq_sum_embeddings (E := AlgebraicClosure K)]
   apply Finset.sum_congr rfl
   intro σ _
   simp only [_root_.map_mul, map_div₀, map_pow]

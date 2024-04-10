@@ -51,7 +51,7 @@ variable {X X' : Type*} {Y Y' : Type*} {Z Z' : Type*}
   [TopologicalSpace Z] [TopologicalSpace Z']
 
 /-- Partial homeomorphisms, defined on open subsets of the space -/
--- porting note: commented @[nolint has_nonempty_instance]
+-- Porting note: commented @[nolint has_nonempty_instance]
 structure PartialHomeomorph (X : Type*) (Y : Type*) [TopologicalSpace X]
   [TopologicalSpace Y] extends PartialEquiv X Y where
   open_source : IsOpen source
@@ -1189,7 +1189,7 @@ theorem continuousAt_iff_continuousAt_comp_right {f : Y → Z} {x : Y} (h : x �
 on the right is continuous on the corresponding set. -/
 theorem continuousOn_iff_continuousOn_comp_right {f : Y → Z} {s : Set Y} (h : s ⊆ e.target) :
     ContinuousOn f s ↔ ContinuousOn (f ∘ e) (e.source ∩ e ⁻¹' s) := by
-  simp only [← e.symm_image_eq_source_inter_preimage h, ContinuousOn, ball_image_iff]
+  simp only [← e.symm_image_eq_source_inter_preimage h, ContinuousOn, forall_mem_image]
   refine' forall₂_congr fun x hx => _
   rw [e.continuousWithinAt_iff_continuousWithinAt_comp_right (h hx),
     e.symm_image_eq_source_inter_preimage h, inter_comm, continuousWithinAt_inter]
@@ -1246,7 +1246,7 @@ def homeomorphOfImageSubsetSource {s : Set X} {t : Set Y} (hs : s ⊆ e.source) 
     s ≃ₜ t :=
   have h₁ : MapsTo e s t := mapsTo'.2 ht.subset
   have h₂ : t ⊆ e.target := ht ▸ e.image_source_eq_target ▸ image_subset e hs
-  have h₃ : MapsTo e.symm t s := ht ▸ ball_image_iff.2 fun _x hx =>
+  have h₃ : MapsTo e.symm t s := ht ▸ forall_mem_image.2 fun _x hx =>
       (e.left_inv (hs hx)).symm ▸ hx
   { toFun := MapsTo.restrict e s t h₁
     invFun := MapsTo.restrict e.symm t s h₃
@@ -1257,7 +1257,7 @@ def homeomorphOfImageSubsetSource {s : Set X} {t : Set Y} (hs : s ⊆ e.source) 
 #align local_homeomorph.homeomorph_of_image_subset_source PartialHomeomorph.homeomorphOfImageSubsetSource
 
 /-- A partial homeomorphism defines a homeomorphism between its source and target. -/
-@[simps!] -- porting note: new `simps`
+@[simps!] -- Porting note: new `simps`
 def toHomeomorphSourceTarget : e.source ≃ₜ e.target :=
   e.homeomorphOfImageSubsetSource subset_rfl e.image_source_eq_target
 #align local_homeomorph.to_homeomorph_source_target PartialHomeomorph.toHomeomorphSourceTarget
@@ -1276,7 +1276,8 @@ theorem nhds_eq_comap_inf_principal {x} (hx : x ∈ e.source) :
 
 /-- If a partial homeomorphism has source and target equal to univ, then it induces a homeomorphism
 between the whole spaces, expressed in this definition. -/
-@[simps (config := mfld_cfg) apply symm_apply] -- porting note: todo: add a `PartialEquiv` version
+@[simps (config := mfld_cfg) apply symm_apply]
+-- Porting note (#11215): TODO: add a `PartialEquiv` version
 def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set X)) (h' : e.target = univ) :
     X ≃ₜ Y where
   toFun := e
@@ -1463,7 +1464,6 @@ section subtypeRestr
 open TopologicalSpace
 
 variable (e : PartialHomeomorph X Y)
-
 variable {s : Opens X} (hs : Nonempty s)
 
 /-- The restriction of a partial homeomorphism `e` to an open subset `s` of the domain type

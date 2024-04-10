@@ -19,8 +19,8 @@ of `WithTop.some`.
 
 open Set
 
--- porting notes: was `deriving instance` but "default handlers have not been implemented yet"
--- porting notes: `noncomputable` through 'Nat.instConditionallyCompleteLinearOrderBotNat'
+-- Porting note: was `deriving instance` but "default handlers have not been implemented yet"
+-- Porting note: `noncomputable` through 'Nat.instConditionallyCompleteLinearOrderBotNat'
 noncomputable instance : CompleteLinearOrder ENat :=
   inferInstanceAs (CompleteLinearOrder (WithTop ℕ))
 
@@ -32,7 +32,7 @@ lemma iSup_coe_ne_top : ⨆ i, (f i : ℕ∞) ≠ ⊤ ↔ BddAbove (range f) := 
 lemma iSup_coe_lt_top : ⨆ i, (f i : ℕ∞) < ⊤ ↔ BddAbove (range f) := WithTop.iSup_coe_lt_top
 lemma iInf_coe_eq_top : ⨅ i, (f i : ℕ∞) = ⊤ ↔ IsEmpty ι := WithTop.iInf_coe_eq_top
 lemma iInf_coe_ne_top : ⨅ i, (f i : ℕ∞) ≠ ⊤ ↔ Nonempty ι := by
-  rw [Ne.def, iInf_coe_eq_top, not_isEmpty_iff]
+  rw [Ne, iInf_coe_eq_top, not_isEmpty_iff]
 lemma iInf_coe_lt_top : ⨅ i, (f i : ℕ∞) < ⊤ ↔ Nonempty ι := WithTop.iInf_coe_lt_top
 
 lemma coe_sSup : BddAbove s → ↑(sSup s) = ⨆ a ∈ s, (a : ℕ∞) := WithTop.coe_sSup

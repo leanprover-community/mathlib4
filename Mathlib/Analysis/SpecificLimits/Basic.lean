@@ -22,9 +22,11 @@ instances of these such as `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 
 noncomputable section
 
-open Classical Set Function Filter Finset Metric
+open scoped Classical
+open Set Function Filter Finset Metric
 
-open Classical Topology Nat BigOperators uniformity NNReal ENNReal
+open scoped Classical
+open Topology Nat BigOperators uniformity NNReal ENNReal
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 
@@ -86,7 +88,7 @@ algebra over `ℝ`, e.g., `ℂ`).
 
 TODO: introduce a typeclass saying that `1 / n` tends to 0 at top, making it possible to get this
 statement simultaneously on `ℚ`, `ℝ` and `ℂ`. -/
-theorem tendsto_coe_nat_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [TopologicalSpace 𝕜]
+theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [TopologicalSpace 𝕜]
     [CharZero 𝕜] [Algebra ℝ 𝕜] [ContinuousSMul ℝ 𝕜] [TopologicalDivisionRing 𝕜] (x : 𝕜) :
     Tendsto (fun n : ℕ ↦ (n : 𝕜) / (n + x)) atTop (𝓝 1) := by
   refine' Tendsto.congr' ((eventually_ne_atTop 0).mp (eventually_of_forall fun n hn ↦ _)) _
@@ -103,7 +105,7 @@ theorem tendsto_coe_nat_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [Topolo
     refine' Iff.mpr tendsto_atTop' _
     intros
     simp_all only [comp_apply, map_inv₀, map_natCast]
-#align tendsto_coe_nat_div_add_at_top tendsto_coe_nat_div_add_atTop
+#align tendsto_coe_nat_div_add_at_top tendsto_natCast_div_add_atTop
 
 /-! ### Powers -/
 
@@ -175,26 +177,26 @@ theorem geom_lt {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) {n : ℕ} (hn : 0 < n
     (h : ∀ k < n, c * u k < u (k + 1)) : c ^ n * u 0 < u n := by
   apply (monotone_mul_left_of_nonneg hc).seq_pos_lt_seq_of_le_of_lt hn _ _ h
   · simp
-  · simp [_root_.pow_succ, mul_assoc, le_refl]
+  · simp [_root_.pow_succ', mul_assoc, le_refl]
 #align geom_lt geom_lt
 
 theorem geom_le {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) (n : ℕ) (h : ∀ k < n, c * u k ≤ u (k + 1)) :
     c ^ n * u 0 ≤ u n := by
   apply (monotone_mul_left_of_nonneg hc).seq_le_seq n _ _ h <;>
-    simp [_root_.pow_succ, mul_assoc, le_refl]
+    simp [_root_.pow_succ', mul_assoc, le_refl]
 #align geom_le geom_le
 
 theorem lt_geom {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) {n : ℕ} (hn : 0 < n)
     (h : ∀ k < n, u (k + 1) < c * u k) : u n < c ^ n * u 0 := by
   apply (monotone_mul_left_of_nonneg hc).seq_pos_lt_seq_of_lt_of_le hn _ h _
   · simp
-  · simp [_root_.pow_succ, mul_assoc, le_refl]
+  · simp [_root_.pow_succ', mul_assoc, le_refl]
 #align lt_geom lt_geom
 
 theorem le_geom {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) (n : ℕ) (h : ∀ k < n, u (k + 1) ≤ c * u k) :
     u n ≤ c ^ n * u 0 := by
   apply (monotone_mul_left_of_nonneg hc).seq_le_seq n _ h _ <;>
-    simp [_root_.pow_succ, mul_assoc, le_refl]
+    simp [_root_.pow_succ', mul_assoc, le_refl]
 #align le_geom le_geom
 
 /-- If a sequence `v` of real numbers satisfies `k * v n ≤ v (n+1)` with `1 < k`,
@@ -214,6 +216,12 @@ theorem NNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0} (hr : r < 1) 
 @[deprecated] alias NNReal.tendsto_pow_atTop_nhds_0_of_lt_1 :=
   NNReal.tendsto_pow_atTop_nhds_zero_of_lt_one
 
+@[simp]
+protected theorem NNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0} :
+    Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) ↔ r < 1 :=
+  ⟨fun h => by simpa [coe_pow, coe_zero, abs_eq, coe_lt_one, val_eq_coe] using
+    tendsto_pow_atTop_nhds_zero_iff.mp <| tendsto_coe.mpr h, tendsto_pow_atTop_nhds_zero_of_lt_one⟩
+
 theorem ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0∞} (hr : r < 1) :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) := by
   rcases ENNReal.lt_iff_exists_coe.1 hr with ⟨r, rfl, hr'⟩
@@ -223,6 +231,17 @@ theorem ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0∞} (hr : r <
 #align ennreal.tendsto_pow_at_top_nhds_0_of_lt_1 ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one
 @[deprecated] alias ENNReal.tendsto_pow_atTop_nhds_0_of_lt_1 :=
   ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one
+
+@[simp]
+protected theorem ENNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0∞} :
+    Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) ↔ r < 1 := by
+  refine ⟨fun h ↦ ?_, tendsto_pow_atTop_nhds_zero_of_lt_one⟩
+  lift r to NNReal
+  · refine fun hr ↦ top_ne_zero (tendsto_nhds_unique (EventuallyEq.tendsto ?_) (hr ▸ h))
+    exact eventually_atTop.mpr ⟨1, fun _ hn ↦ pow_eq_top_iff.mpr ⟨rfl, Nat.pos_iff_ne_zero.mp hn⟩⟩
+  rw [← coe_zero] at h
+  norm_cast at h ⊢
+  exact NNReal.tendsto_pow_atTop_nhds_zero_iff.mp h
 
 /-! ### Geometric series-/
 
@@ -361,7 +380,7 @@ variable [PseudoEMetricSpace α] (r C : ℝ≥0∞) (hr : r < 1) (hC : C ≠ ⊤
   (hu : ∀ n, edist (f n) (f (n + 1)) ≤ C * r ^ n)
 
 /-- If `edist (f n) (f (n+1))` is bounded by `C * r^n`, `C ≠ ∞`, `r < 1`,
-then `f` is a Cauchy sequence.-/
+then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_geometric : CauchySeq f := by
   refine' cauchySeq_of_edist_le_of_tsum_ne_top _ hu _
   rw [ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
@@ -391,7 +410,7 @@ section EdistLeGeometricTwo
 variable [PseudoEMetricSpace α] (C : ℝ≥0∞) (hC : C ≠ ⊤) {f : ℕ → α}
   (hu : ∀ n, edist (f n) (f (n + 1)) ≤ C / 2 ^ n) {a : α} (ha : Tendsto f atTop (𝓝 a))
 
-/-- If `edist (f n) (f (n+1))` is bounded by `C * 2^-n`, then `f` is a Cauchy sequence.-/
+/-- If `edist (f n) (f (n+1))` is bounded by `C * 2^-n`, then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_geometric_two : CauchySeq f := by
   simp only [div_eq_mul_inv, ENNReal.inv_pow] at hu
   refine' cauchySeq_of_edist_le_geometric 2⁻¹ C _ hC hu
@@ -585,7 +604,7 @@ end ENNReal
 
 
 theorem factorial_tendsto_atTop : Tendsto Nat.factorial atTop atTop :=
-  tendsto_atTop_atTop_of_monotone Nat.monotone_factorial fun n ↦ ⟨n, n.self_le_factorial⟩
+  tendsto_atTop_atTop_of_monotone (fun _ _ ↦ Nat.factorial_le) fun n ↦ ⟨n, n.self_le_factorial⟩
 #align factorial_tendsto_at_top factorial_tendsto_atTop
 
 theorem tendsto_factorial_div_pow_self_atTop :
@@ -609,7 +628,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
       · positivity
       · refine' (div_le_one <| mod_cast hn).mpr _
         norm_cast
-        linarith)
+        omega)
 #align tendsto_factorial_div_pow_self_at_top tendsto_factorial_div_pow_self_atTop
 
 /-!
@@ -623,6 +642,11 @@ theorem tendsto_nat_floor_atTop {α : Type*} [LinearOrderedSemiring α] [FloorSe
     Tendsto (fun x : α ↦ ⌊x⌋₊) atTop atTop :=
   Nat.floor_mono.tendsto_atTop_atTop fun x ↦ ⟨max 0 (x + 1), by simp [Nat.le_floor_iff]⟩
 #align tendsto_nat_floor_at_top tendsto_nat_floor_atTop
+
+lemma tendsto_nat_ceil_atTop {α : Type*} [LinearOrderedSemiring α] [FloorSemiring α] :
+    Tendsto (fun x : α ↦ ⌈x⌉₊) atTop atTop := by
+  refine Nat.ceil_mono.tendsto_atTop_atTop (fun x ↦ ⟨x, ?_⟩)
+  simp only [Nat.ceil_natCast, le_refl]
 
 lemma tendsto_nat_floor_mul_atTop {α : Type _} [LinearOrderedSemifield α] [FloorSemiring α]
     [Archimedean α] (a : α) (ha : 0 < a) : Tendsto (fun (x:ℕ) => ⌊a * x⌋₊) atTop atTop :=
@@ -669,7 +693,7 @@ theorem tendsto_nat_ceil_div_atTop : Tendsto (fun x ↦ (⌈x⌉₊ : R) / x) at
   simpa using tendsto_nat_ceil_mul_div_atTop (zero_le_one' R)
 #align tendsto_nat_ceil_div_at_top tendsto_nat_ceil_div_atTop
 
-lemma Nat.tendsto_div_const_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (λ x ↦ x / n) atTop atTop := by
+lemma Nat.tendsto_div_const_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (· / n) atTop atTop := by
   rw [Tendsto, map_div_atTop_eq_nat n hn.bot_lt]
 
 end

@@ -41,7 +41,7 @@ theorem imo2011_q3 (f : ℝ → ℝ) (hf : ∀ x y, f (x + y) ≤ y * f x + f (f
     let s := (x * f x - f (f x)) / f x
     have hm : min 0 s - 1 < s := (sub_one_lt _).trans_le (min_le_right 0 s)
     have hml : min 0 s - 1 < 0 := (sub_one_lt _).trans_le (min_le_left 0 s)
-    suffices : f (min 0 s - 1) < 0; exact not_le.mpr this (h_f_nonneg_of_pos (min 0 s - 1) hml)
+    suffices f (min 0 s - 1) < 0 from not_le.mpr this (h_f_nonneg_of_pos (min 0 s - 1) hml)
     have hp : 0 < f x := not_le.mp h_suppose_not
     calc
       f (min 0 s - 1) ≤ (min 0 s - 1) * f x - x * f x + f (f x) := hxt x (min 0 s - 1)

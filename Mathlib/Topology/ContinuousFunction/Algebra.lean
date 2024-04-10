@@ -41,7 +41,6 @@ one should use `C(α, β)` with the appropriate instance of the structure.
 namespace ContinuousFunctions
 
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-
 variable {f g : { f : α → β | Continuous f }}
 
 instance : CoeFun { f : α → β | Continuous f } fun _ => α → β :=
@@ -52,7 +51,6 @@ end ContinuousFunctions
 namespace ContinuousMap
 
 variable {α : Type*} {β : Type*} {γ : Type*}
-
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 /-! ### `mul` and `add` -/
@@ -147,7 +145,7 @@ instance instPow [Monoid β] [ContinuousMul β] : Pow C(α, β) ℕ :=
   ⟨fun f n => ⟨(⇑f) ^ n, f.continuous.pow n⟩⟩
 #align continuous_map.has_pow ContinuousMap.instPow
 
-@[to_additive (attr := norm_cast)]
+@[to_additive (attr := norm_cast) (reorder := 7 8)]
 theorem coe_pow [Monoid β] [ContinuousMul β] (f : C(α, β)) (n : ℕ) : ⇑(f ^ n) = (⇑f) ^ n :=
   rfl
 #align continuous_map.coe_pow ContinuousMap.coe_pow
@@ -234,7 +232,7 @@ instance instZPow [Group β] [TopologicalGroup β] : Pow C(α, β) ℤ where
   pow f z := ⟨(⇑f) ^ z, f.continuous.zpow z⟩
 #align continuous_map.has_zpow ContinuousMap.instZPow
 
-@[to_additive (attr := norm_cast)]
+@[to_additive (attr := norm_cast) (reorder := 7 8)]
 theorem coe_zpow [Group β] [TopologicalGroup β] (f : C(α, β)) (z : ℤ) : ⇑(f ^ z) = (⇑f) ^ z :=
   rfl
 #align continuous_map.coe_zpow ContinuousMap.coe_zpow
@@ -524,7 +522,8 @@ instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CommSemiring β]
     [TopologicalSemiring β] : CommSemiring C(α, β) :=
-  coe_injective.commSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_nat_cast
+  coe_injective.commSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow
+    coe_nat_cast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalCommRing β]
     [TopologicalRing β] : NonUnitalCommRing C(α, β) :=
@@ -572,11 +571,8 @@ topological semiring `R` inherit the structure of a module.
 section Subtype
 
 variable (α : Type*) [TopologicalSpace α]
-
 variable (R : Type*) [Semiring R]
-
 variable (M : Type*) [TopologicalSpace M] [AddCommGroup M]
-
 variable [Module R M] [ContinuousConstSMul R M] [TopologicalAddGroup M]
 
 /-- The `R`-submodule of continuous maps `α → M`. -/
@@ -653,9 +649,7 @@ instance [Monoid R] [AddMonoid M] [DistribMulAction R M] [ContinuousAdd M]
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂]
-
 variable [ContinuousAdd M] [Module R M] [ContinuousConstSMul R M]
-
 variable [ContinuousAdd M₂] [Module R M₂] [ContinuousConstSMul R M₂]
 
 instance module : Module R C(α, M) :=
@@ -691,7 +685,7 @@ section AlgebraStructure
 
 In this section we show that continuous functions valued in a topological algebra `A` over a ring
 `R` inherit the structure of an algebra. Note that the hypothesis that `A` is a topological algebra
-is obtained by requiring that `A` be both a `ContinuousSMul` and a `TopologicalSemiring`.-/
+is obtained by requiring that `A` be both a `ContinuousSMul` and a `TopologicalSemiring`. -/
 
 
 section Subtype
@@ -749,27 +743,17 @@ protected def AlgHom.compLeftContinuous {α : Type*} [TopologicalSpace α] (g : 
 
 variable (A)
 
-/-- Precomposition of functions into a normed ring by a continuous map is an algebra homomorphism.
--/
+/-- Precomposition of functions into a topological semiring by a continuous map is an algebra
+homomorphism. -/
 @[simps]
 def ContinuousMap.compRightAlgHom {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     (f : C(α, β)) : C(β, A) →ₐ[R] C(α, A) where
   toFun g := g.comp f
-  map_zero' := by
-    ext
-    rfl
-  map_add' g₁ g₂ := by
-    ext
-    rfl
-  map_one' := by
-    ext
-    rfl
-  map_mul' g₁ g₂ := by
-    ext
-    rfl
-  commutes' r := by
-    ext
-    rfl
+  map_zero' := ext fun _ ↦ rfl
+  map_add'  _ _ := ext fun _ ↦ rfl
+  map_one' := ext fun _ ↦ rfl
+  map_mul' _ _ := ext fun _ ↦ rfl
+  commutes' _ := ext fun _ ↦ rfl
 #align continuous_map.comp_right_alg_hom ContinuousMap.compRightAlgHom
 
 variable {A}
@@ -804,7 +788,6 @@ theorem algebraMap_apply (k : R) (a : α) : algebraMap R C(α, A) k a = k • (1
 #align algebra_map_apply algebraMap_apply
 
 variable {𝕜 : Type*} [TopologicalSpace 𝕜]
-
 variable (s : Set C(α, 𝕜)) (f : s) (x : α)
 
 /-- A set of continuous maps "separates points strongly"
@@ -835,7 +818,7 @@ theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h
     (s : Set C(α, 𝕜)).SeparatesPointsStrongly := fun v x y => by
   by_cases n : x = y
   · subst n
-    refine' ⟨_, (v x • (1 : s) : s).prop, mul_one _, mul_one _⟩
+    exact ⟨_, (v x • (1 : s) : s).prop, mul_one _, mul_one _⟩
   obtain ⟨_, ⟨f, hf, rfl⟩, hxy⟩ := h n
   replace hxy : f x - f y ≠ 0 := sub_ne_zero_of_ne hxy
   let a := v x
@@ -843,8 +826,8 @@ theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h
   let f' : s :=
     ((b - a) * (f x - f y)⁻¹) • (algebraMap _ s (f x) - (⟨f, hf⟩ : s)) + algebraMap _ s a
   refine' ⟨f', f'.prop, _, _⟩
-  · simp
-  · simp [inv_mul_cancel_right₀ hxy]
+  · simp [f']
+  · simp [f', inv_mul_cancel_right₀ hxy]
 #align subalgebra.separates_points.strongly Subalgebra.SeparatesPoints.strongly
 
 end ContinuousMap
@@ -912,7 +895,6 @@ namespace ContinuousMap
 section Lattice
 
 variable {α : Type*} [TopologicalSpace α]
-
 variable {β : Type*} [TopologicalSpace β]
 
 /-! `C(α, β)`is a lattice ordered group -/
@@ -957,7 +939,6 @@ is a ⋆-module over `R`.
 section StarStructure
 
 variable {R α β : Type*}
-
 variable [TopologicalSpace α] [TopologicalSpace β]
 
 section Star
@@ -1108,11 +1089,8 @@ end ContinuousMap
 namespace Homeomorph
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-
 variable (𝕜 : Type*) [CommSemiring 𝕜]
-
 variable (A : Type*) [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [StarRing A]
-
 variable [ContinuousStar A] [Algebra 𝕜 A]
 
 /-- `ContinuousMap.compStarAlgHom'` as a `StarAlgEquiv` when the continuous map `f` is

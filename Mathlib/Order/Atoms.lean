@@ -263,7 +263,7 @@ variable [PartialOrder α] (α)
 /-- A lattice is atomic iff every element other than `⊥` has an atom below it. -/
 @[mk_iff]
 class IsAtomic [OrderBot α] : Prop where
-  /--Every element other than `⊥` has an atom below it. -/
+  /-- Every element other than `⊥` has an atom below it. -/
   eq_bot_or_exists_atom_le : ∀ b : α, b = ⊥ ∨ ∃ a : α, IsAtom a ∧ a ≤ b
 #align is_atomic IsAtomic
 #align is_atomic_iff isAtomic_iff
@@ -271,7 +271,7 @@ class IsAtomic [OrderBot α] : Prop where
 /-- A lattice is coatomic iff every element other than `⊤` has a coatom above it. -/
 @[mk_iff]
 class IsCoatomic [OrderTop α] : Prop where
-  /--Every element other than `⊤` has an atom above it. -/
+  /-- Every element other than `⊤` has an atom above it. -/
   eq_top_or_exists_le_coatom : ∀ b : α, b = ⊤ ∨ ∃ a : α, IsCoatom a ∧ b ≤ a
 #align is_coatomic IsCoatomic
 #align is_coatomic_iff isCoatomic_iff
@@ -399,14 +399,14 @@ variable (α) [CompleteLattice α]
 
 /-- A lattice is atomistic iff every element is a `sSup` of a set of atoms. -/
 class IsAtomistic : Prop where
-  /--Every element is a `sSup` of a set of atoms. -/
+  /-- Every element is a `sSup` of a set of atoms. -/
   eq_sSup_atoms : ∀ b : α, ∃ s : Set α, b = sSup s ∧ ∀ a, a ∈ s → IsAtom a
 #align is_atomistic IsAtomistic
 #align is_atomistic.eq_Sup_atoms IsAtomistic.eq_sSup_atoms
 
 /-- A lattice is coatomistic iff every element is an `sInf` of a set of coatoms. -/
 class IsCoatomistic : Prop where
-  /--Every element is a `sInf` of a set of coatoms. -/
+  /-- Every element is a `sInf` of a set of coatoms. -/
   eq_sInf_coatoms : ∀ b : α, ∃ s : Set α, b = sInf s ∧ ∀ a, a ∈ s → IsCoatom a
 #align is_coatomistic IsCoatomistic
 #align is_coatomistic.eq_Inf_coatoms IsCoatomistic.eq_sInf_coatoms
@@ -685,7 +685,7 @@ end DecidableEq
 
 variable [Lattice α] [BoundedOrder α] [IsSimpleOrder α]
 
-open Classical
+open scoped Classical
 
 /-- A simple `BoundedOrder` is also complete. -/
 protected noncomputable def completeLattice : CompleteLattice α :=
@@ -717,12 +717,11 @@ protected noncomputable def completeLattice : CompleteLattice α :=
 
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/
 protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :=
-  { IsSimpleOrder.completeLattice,
-    IsSimpleOrder.booleanAlgebra with
+  { __ := IsSimpleOrder.completeLattice
+    __ := IsSimpleOrder.booleanAlgebra
     iInf_sup_le_sup_sInf := fun x s => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · simp only [bot_sup_eq, ← sInf_eq_iInf]
-        exact le_rfl
+      · simp [bot_sup_eq, ← sInf_eq_iInf]
       · simp only [top_le_iff, top_sup_eq, iInf_top, le_sInf_iff, le_refl]
     inf_sSup_le_iSup_inf := fun x s => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
@@ -731,13 +730,17 @@ protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :
         exact le_rfl }
 #align is_simple_order.complete_boolean_algebra IsSimpleOrder.completeBooleanAlgebra
 
+instance : ComplementedLattice α :=
+  letI := IsSimpleOrder.completeBooleanAlgebra (α := α); inferInstance
+
 end IsSimpleOrder
 
 namespace IsSimpleOrder
 
 variable [CompleteLattice α] [IsSimpleOrder α]
 
---set_option default_priority 100 --Porting note: not supported, done for each instance individually
+--set_option default_priority 100
+-- Porting note: not supported, done for each instance individually
 
 instance (priority := 100) : IsAtomistic α :=
   ⟨fun b =>
@@ -1004,7 +1007,7 @@ theorem isAtom_iff {f : ∀ i, π i} [∀ i, PartialOrder (π i)] [∀ i, OrderB
     have ⟨hgf, k, hgfk⟩ := Pi.lt_def.1 hgf
     obtain rfl : i = k := of_not_not fun hki => by rw [hbot _ (Ne.symm hki)] at hgfk; simp at hgfk
     if hij : j = i then subst hij; refine hlt _ hgfk else
-    refine eq_bot_iff.2 <| le_trans (hgf _) (eq_bot_iff.1 (hbot _ hij))
+    exact eq_bot_iff.2 <| le_trans (hgf _) (eq_bot_iff.1 (hbot _ hij))
   case mp =>
     rintro ⟨hbot, h⟩
     have ⟨i, hbot⟩ : ∃ i, f i ≠ ⊥ := by rw [ne_eq, Pi.eq_bot_iff, not_forall] at hbot; exact hbot
@@ -1045,7 +1048,7 @@ instance isAtomic [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)] [∀ i, 
   eq_bot_or_exists_atom_le b := or_iff_not_imp_left.2 fun h =>
     have ⟨i, hi⟩ : ∃ i, b i ≠ ⊥ := not_forall.1 (h.imp Pi.eq_bot_iff.2)
     have ⟨a, ha, hab⟩ := (eq_bot_or_exists_atom_le (b i)).resolve_left hi
-    have : DecidableEq ι := open Classical in inferInstance
+    have : DecidableEq ι := open scoped Classical in inferInstance
     ⟨Function.update ⊥ i a, isAtom_single ha, update_le_iff.2 ⟨hab, by simp⟩⟩
 
 instance isCoatomic [∀ i, PartialOrder (π i)] [∀ i, OrderTop (π i)] [∀ i, IsCoatomic (π i)] :

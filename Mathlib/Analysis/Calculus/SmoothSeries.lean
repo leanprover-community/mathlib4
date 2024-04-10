@@ -28,13 +28,12 @@ open Set Metric TopologicalSpace Function Asymptotics Filter
 
 open scoped Topology NNReal BigOperators
 
-variable {α β 𝕜 E F : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {α β 𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [CompleteSpace F] {u : α → ℝ}
 
 /-! ### Differentiability -/
 
 variable [NormedSpace 𝕜 F]
-
 variable {f : α → E → F} {f' : α → E → E →L[𝕜] F} {g : α → 𝕜 → F} {g' : α → 𝕜 → F} {v : ℕ → α → ℝ}
   {s : Set E} {t : Set 𝕜} {x₀ x : E} {y₀ y : 𝕜} {N : ℕ∞}
 
@@ -49,7 +48,7 @@ theorem summable_of_summable_hasFDerivAt_of_isPreconnected (hu : Summable u) (hs
   rw [summable_iff_cauchySeq_finset] at hf0 ⊢
   have A : UniformCauchySeqOn (fun t : Finset α => fun x => ∑ i in t, f' i x) atTop s :=
     (tendstoUniformlyOn_tsum hu hf').uniformCauchySeqOn
-  -- porting note: Lean 4 failed to find `f` by unification
+  -- Porting note: Lean 4 failed to find `f` by unification
   refine cauchy_map_of_uniformCauchySeqOn_fderiv (f := fun t x ↦ ∑ i in t, f i x)
     hs h's A (fun t y hy => ?_) hx₀ hx hf0
   exact HasFDerivAt.sum fun i _ => hf i y hy
@@ -125,7 +124,7 @@ then the series is differentiable and its derivative is the sum of the derivativ
 theorem hasFDerivAt_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (f' n x) x)
     (hf' : ∀ n x, ‖f' n x‖ ≤ u n) (hf0 : Summable fun n => f n x₀) (x : E) :
     HasFDerivAt (fun y => ∑' n, f n y) (∑' n, f' n x) x := by
-  let : NormedSpace ℝ E; exact NormedSpace.restrictScalars ℝ 𝕜 _
+  let A : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   exact hasFDerivAt_tsum_of_isPreconnected hu isOpen_univ isPreconnected_univ
     (fun n x _ => hf n x) (fun n x _ => hf' n x) (mem_univ _) hf0 (mem_univ _)
 #align has_fderiv_at_tsum hasFDerivAt_tsum
@@ -290,8 +289,7 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
       (hv k (hk.trans hm)).subtype _
     refine' contDiff_tsum (fun i => (hf i).of_le hm) h'u _
     rintro k ⟨i, hi⟩ x hk
-    dsimp
-    simp only [Finite.mem_toFinset, mem_setOf_eq, Finset.mem_range, not_forall, not_le,
+    simp only [t, T, Finite.mem_toFinset, mem_setOf_eq, Finset.mem_range, not_forall, not_le,
       exists_prop, not_exists, not_and, not_lt] at hi
     exact hi k (Nat.lt_succ_iff.2 (WithTop.coe_le_coe.1 hk)) x
 #align cont_diff_tsum_of_eventually contDiff_tsum_of_eventually

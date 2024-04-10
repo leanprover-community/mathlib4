@@ -44,7 +44,7 @@ theorem AffineSubspace.isClosed_direction_iff (s : AffineSubspace 𝕜 Q) :
 @[simp]
 theorem dist_center_homothety (p₁ p₂ : P) (c : 𝕜) :
     dist p₁ (homothety p₁ c p₂) = ‖c‖ * dist p₁ p₂ := by
-  -- Porting note: was `simp [homothety_def, norm_smul, ← dist_eq_norm_vsub, dist_comm]`
+  -- porting note (#10745): was `simp [homothety_def, norm_smul, ← dist_eq_norm_vsub, dist_comm]`
   rw [homothety_def, dist_eq_norm_vsub V]
   simp [norm_smul, ← dist_eq_norm_vsub V, dist_comm]
 #align dist_center_homothety dist_center_homothety
@@ -212,9 +212,8 @@ theorem nndist_right_midpoint (p₁ p₂ : P) :
 theorem dist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
     dist (midpoint 𝕜 p₁ p₂) (midpoint 𝕜 p₃ p₄) ≤ (dist p₁ p₃ + dist p₂ p₄) / ‖(2 : 𝕜)‖ := by
   rw [dist_eq_norm_vsub V, dist_eq_norm_vsub V, dist_eq_norm_vsub V, midpoint_vsub_midpoint]
-  try infer_instance
   rw [midpoint_eq_smul_add, norm_smul, invOf_eq_inv, norm_inv, ← div_eq_inv_mul]
-  exact div_le_div_of_le (norm_nonneg _) (norm_add_le _ _)
+  exact div_le_div_of_nonneg_right (norm_add_le _ _) (norm_nonneg _)
 #align dist_midpoint_midpoint_le' dist_midpoint_midpoint_le'
 
 theorem nndist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
@@ -300,9 +299,44 @@ def AffineMap.ofMapMidpoint (f : P → Q) (h : ∀ x y, f (midpoint ℝ x y) = m
   AffineMap.mk' f (↑((AddMonoidHom.ofMapMidpoint ℝ ℝ
     ((AffineEquiv.vaddConst ℝ (f <| c)).symm ∘ f ∘ AffineEquiv.vaddConst ℝ c) (by simp)
     fun x y => by -- Porting note: was `by simp [h]`
-      simp only [Function.comp_apply, AffineEquiv.vaddConst_apply, AffineEquiv.vaddConst_symm_apply]
+      simp only [c, Function.comp_apply, AffineEquiv.vaddConst_apply,
+        AffineEquiv.vaddConst_symm_apply]
       conv_lhs => rw [(midpoint_self ℝ (Classical.arbitrary P)).symm, midpoint_vadd_midpoint, h, h,
           midpoint_vsub_midpoint]).toRealLinearMap <| by
         apply_rules [Continuous.vadd, Continuous.vsub, continuous_const, hfc.comp, continuous_id]))
     c fun p => by simp
 #align affine_map.of_map_midpoint AffineMap.ofMapMidpoint
+
+end
+
+section
+
+open Dilation
+
+variable {𝕜 E : Type*} [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
+variable [Module 𝕜 E] [BoundedSMul 𝕜 E] {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
+
+-- TODO: define `ContinuousAffineEquiv` and reimplement this as one of those.
+/-- Scaling by an element `k` of the scalar ring as a `DilationEquiv` with ratio `‖k‖₊`, mapping
+from a normed space to a normed torsor over that space sending `0` to `c`. -/
+@[simps]
+def DilationEquiv.smulTorsor (c : P) {k : 𝕜} (hk : k ≠ 0) : E ≃ᵈ P where
+  toFun := (k • · +ᵥ c)
+  invFun := k⁻¹ • (· -ᵥ c)
+  left_inv x := by simp [inv_smul_smul₀ hk]
+  right_inv p := by simp [smul_inv_smul₀ hk]
+  edist_eq' := ⟨‖k‖₊, nnnorm_ne_zero_iff.mpr hk, fun x y ↦ by
+    rw [show edist (k • x +ᵥ c) (k • y +ᵥ c) = _ from (IsometryEquiv.vaddConst c).isometry ..]
+    exact edist_smul₀ ..⟩
+
+@[simp]
+lemma DilationEquiv.smulTorsor_ratio {c : P} {k : 𝕜} (hk : k ≠ 0) {x y : E}
+    (h : dist x y ≠ 0) : ratio (smulTorsor c hk) = ‖k‖₊ :=
+  Eq.symm <| ratio_unique_of_dist_ne_zero h <| by simp [dist_eq_norm, ← smul_sub, norm_smul]
+
+@[simp]
+lemma DilationEquiv.smulTorsor_preimage_ball {c : P} {k : 𝕜} (hk : k ≠ 0) :
+    smulTorsor c hk ⁻¹' (Metric.ball c ‖k‖) = Metric.ball (0 : E) 1 := by
+  aesop (add simp norm_smul)
+
+end

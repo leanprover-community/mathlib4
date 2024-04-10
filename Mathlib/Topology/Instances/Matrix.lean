@@ -195,7 +195,7 @@ theorem Continuous.matrix_det [Fintype n] [DecidableEq n] [CommRing R] [Topologi
     {A : X → Matrix n n R} (hA : Continuous A) : Continuous fun x => (A x).det := by
   simp_rw [Matrix.det_apply]
   refine' continuous_finset_sum _ fun l _ => Continuous.const_smul _ _
-  refine' continuous_finset_prod _ fun l _ => hA.matrix_elem _ _
+  exact continuous_finset_prod _ fun l _ => hA.matrix_elem _ _
 #align continuous.matrix_det Continuous.matrix_det
 
 @[continuity]
