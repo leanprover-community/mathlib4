@@ -424,7 +424,8 @@ theorem opCoproductIsoProduct'_comp_self {c c' : Cofan Z} {f : Fan (op <| Z ·)}
   apply hc'.hom_ext
   intro ⟨j⟩
   change c'.inj _ ≫ _ = _
-  simp
+  simp only [unop_op, unop_comp, Discrete.functor_obj, const_obj_obj, Iso.op_inv,
+    Quiver.Hom.unop_op, IsColimit.comp_coconePointUniqueUpToIso_inv]
   apply Quiver.Hom.op_inj
   simp only [op_comp, op_unop, Quiver.Hom.op_unop, Category.assoc,
     opCoproductIsoProduct'_inv_comp_inj]

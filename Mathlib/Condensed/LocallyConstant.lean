@@ -79,6 +79,8 @@ instance indexSetFinite : Finite (Set.range f) := by
 
 def σ : Set.range f → Type u := fun x ↦ f ⁻¹' {x.val}
 
+-- def α : Type u := Set.range (fun (x : Set.range f) ↦ f ⁻¹' {x.val})
+
 instance (x : Set.range f) : TopologicalSpace (σ f x) :=
   (inferInstance : TopologicalSpace (f ⁻¹' {x.val}))
 
