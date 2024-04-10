@@ -5,11 +5,9 @@ Authors: Antoine Chambert-Loir
 
 -/
 
-import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.Data.Setoid.Partition
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Data.Set.Card
 import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.Subgroup.Actions
 
