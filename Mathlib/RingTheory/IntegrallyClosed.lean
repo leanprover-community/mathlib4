@@ -168,23 +168,24 @@ variable (R)
 theorem integralClosure_eq_bot [NoZeroSMulDivisors R A] [Nontrivial A] : integralClosure R A = ⊥ :=
   (integralClosure_eq_bot_iff A (NoZeroSMulDivisors.algebraMap_injective _ _)).mpr ‹_›
 
-variable {R A} (S S' : Type*) [CommRing S] [CommRing S']
-
-/-- If `R` is the integral closure of `S` in `A` and `S'` is an integral extension of `S`,
-then `R` is also the integral closure of `S'` in `A`. -/
-lemma IsIntegralClosure.tower_top
-    [Algebra S A] [Algebra S' A] [Algebra S S'] [IsScalarTower S S' A]
-    [IsIntegralClosure R S A] (hSS' : Algebra.IsIntegral S S') :
-    IsIntegralClosure R S' A :=
-  ⟨IsIntegralClosure.algebraMap_injective _ S _,
-   fun hx => (IsIntegralClosure.isIntegral_iff (R := S)).mp (isIntegral_trans hSS' _ hx),
-   fun hx => ((IsIntegralClosure.isIntegral_iff (R := S) (B := A)).mpr hx).tower_top⟩
+variable {A} {B : Type*} [CommRing B]
 
 /-- If `R` is the integral closure of `S` in `A`, then it is integrally closed in `A`. -/
-lemma of_isIntegralClosure [Algebra S R] [Algebra S A] [IsScalarTower S R A]
-    [IsIntegralClosure R S A] :
-    IsIntegrallyClosedIn R A :=
-  IsIntegralClosure.tower_top S _ (IsIntegralClosure.isIntegral _ A)
+lemma of_isIntegralClosure [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+    [IsIntegralClosure A R B] :
+    IsIntegrallyClosedIn A B :=
+  IsIntegralClosure.tower_top (IsIntegralClosure.isIntegral R B)
+
+variable {R}
+
+lemma _root_.IsIntegralClosure.of_isIntegrallyClosedIn
+    [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+    [IsIntegrallyClosedIn A B] (hRA : Algebra.IsIntegral R A) :
+    IsIntegralClosure A R B := by
+  refine ⟨IsIntegralClosure.algebraMap_injective _ A _, fun {x} ↦
+    ⟨fun hx ↦ IsIntegralClosure.isIntegral_iff.mp (IsIntegral.tower_top (A := A) hx), ?_⟩⟩
+  rintro ⟨y, rfl⟩
+  exact IsIntegral.map (IsScalarTower.toAlgHom A A B) (hRA y)
 
 end IsIntegrallyClosedIn
 
@@ -215,15 +216,6 @@ theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [Alg
     (hx : x ^ n ∈ S) : ∃ y : S, algebraMap S K y = x :=
   IsIntegrallyClosedIn.exists_algebraMap_eq_of_pow_mem_subalgebra hn hx
 #align is_integrally_closed.exists_algebra_map_eq_of_pow_mem_subalgebra IsIntegrallyClosed.exists_algebraMap_eq_of_pow_mem_subalgebra
-
-lemma _root_.IsIntegralClosure.of_isIntegrallyClosedIn {S R A : Type*} [CommRing S] [CommRing R]
-    [CommRing A] [Algebra S R] [Algebra S A] [Algebra R A]
-    [IsScalarTower S R A] [IsIntegrallyClosedIn R A] (hRS : Algebra.IsIntegral S R) :
-    IsIntegralClosure R S A := by
-  refine ⟨IsIntegralClosure.algebraMap_injective _ R _, fun {x} ↦
-    ⟨fun hx ↦ IsIntegralClosure.isIntegral_iff.mp (IsIntegral.tower_top (A := R) hx), ?_⟩⟩
-  rintro ⟨y, rfl⟩
-  exact IsIntegral.map (IsScalarTower.toAlgHom S R A) (hRS y)
 
 variable (R S K)
 
