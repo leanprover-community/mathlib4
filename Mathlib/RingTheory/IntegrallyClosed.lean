@@ -106,18 +106,25 @@ theorem isIntegrallyClosed_iff_isIntegralClosure : IsIntegrallyClosed R ↔ IsIn
   isIntegrallyClosed_iff_isIntegrallyClosedIn K
 #align is_integrally_closed_iff_is_integral_closure isIntegrallyClosed_iff_isIntegralClosure
 
+/-- `R` is integrally closed in `A` iff all integral elements of `A` are also elements of `R`. -/
+theorem isIntegrallyClosedIn_iff {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] :
+    IsIntegrallyClosedIn R A ↔
+      Function.Injective (algebraMap R A) ∧
+        ∀ {x : A}, IsIntegral R x → ∃ y, algebraMap R A y = x := by
+  constructor
+  · rintro ⟨_, cl⟩
+    aesop
+  · rintro ⟨inj, cl⟩
+    refine ⟨inj, by aesop, ?_⟩
+    rintro ⟨y, rfl⟩
+    apply isIntegral_algebraMap
+
 /-- `R` is integrally closed iff all integral elements of its fraction field `K`
 are also elements of `R`. -/
 theorem isIntegrallyClosed_iff :
     IsIntegrallyClosed R ↔ ∀ {x : K}, IsIntegral R x → ∃ y, algebraMap R K y = x := by
-  rw [isIntegrallyClosed_iff_isIntegrallyClosedIn K]
-  constructor
-  · rintro ⟨_, cl⟩
-    aesop
-  · rintro cl
-    refine ⟨IsFractionRing.injective R K, by aesop, ?_⟩
-    rintro ⟨y, rfl⟩
-    apply isIntegral_algebraMap
+  simp [isIntegrallyClosed_iff_isIntegrallyClosedIn K, isIntegrallyClosedIn_iff,
+        IsFractionRing.injective R K]
 #align is_integrally_closed_iff isIntegrallyClosed_iff
 
 end Iff
@@ -193,13 +200,19 @@ theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [Alg
 
 variable (R S K)
 
-lemma _root_.IsIntegralClosure.of_isIntegrallyClosed
-    [Algebra S R] [Algebra S K] [IsScalarTower S R K] (hRS : Algebra.IsIntegral S R) :
-    IsIntegralClosure R S K := by
-  refine ⟨IsLocalization.injective _ le_rfl, fun {x} ↦
+lemma _root_.IsIntegralClosure.of_isIntegrallyClosedIn {S R A : Type*} [CommRing S] [CommRing R]
+    [CommRing A] [Algebra S R] [Algebra S A] [Algebra R A]
+    [IsScalarTower S R A] [IsIntegrallyClosedIn R A] (hRS : Algebra.IsIntegral S R) :
+    IsIntegralClosure R S A := by
+  refine ⟨IsIntegralClosure.algebraMap_injective _ R _, fun {x} ↦
     ⟨fun hx ↦ IsIntegralClosure.isIntegral_iff.mp (IsIntegral.tower_top (A := R) hx), ?_⟩⟩
   rintro ⟨y, rfl⟩
-  exact IsIntegral.map (IsScalarTower.toAlgHom S R K) (hRS y)
+  exact IsIntegral.map (IsScalarTower.toAlgHom S R A) (hRS y)
+
+lemma _root_.IsIntegralClosure.of_isIntegrallyClosed
+    [Algebra S R] [Algebra S K] [IsScalarTower S R K] (hRS : Algebra.IsIntegral S R) :
+    IsIntegralClosure R S K :=
+  IsIntegralClosure.of_isIntegrallyClosedIn hRS
 
 variable {R}
 
