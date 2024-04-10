@@ -65,7 +65,7 @@ numbers all of whose prime factors are in `s`. -/
 def factoredNumbers (s : Finset ℕ) : Set ℕ := {m | m ≠ 0 ∧ ∀ p ∈ factors m, p ∈ s}
 
 lemma mem_factoredNumbers {s : Finset ℕ} {m : ℕ} :
-     m ∈ factoredNumbers s ↔ m ≠ 0 ∧ ∀ p ∈ factors m, p ∈ s :=
+    m ∈ factoredNumbers s ↔ m ≠ 0 ∧ ∀ p ∈ factors m, p ∈ s :=
   Iff.rfl
 
 /-- Membership in `Nat.factoredNumbers n` is decidable. -/
@@ -218,12 +218,12 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp: p.Prime) (hs : p
 
 @[simp]
 lemma equivProdNatFactoredNumbers_apply {s : Finset ℕ} {m p e : ℕ} (hp: p.Prime) (hs : p ∉ s)
-      (hm : m ∈ factoredNumbers s) :
+    (hm : m ∈ factoredNumbers s) :
     equivProdNatFactoredNumbers hp hs (e, ⟨m, hm⟩) = p ^ e * m := rfl
 
 @[simp]
 lemma equivProdNatFactoredNumbers_apply' {s : Finset ℕ} {p : ℕ} (hp: p.Prime) (hs : p ∉ s)
-      (x : ℕ × factoredNumbers s) :
+    (x : ℕ × factoredNumbers s) :
     equivProdNatFactoredNumbers hp hs x = p ^ x.1 * x.2 := rfl
 
 
