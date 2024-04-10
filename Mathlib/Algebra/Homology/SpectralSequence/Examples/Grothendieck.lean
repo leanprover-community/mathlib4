@@ -15,6 +15,14 @@ variable {A B C : Type _} [Category A] [Category B] [Category C]
   (F : A ⥤ B) [F.Additive] [EnoughInjectives A]
   (G : B ⥤ C) [G.Additive] [EnoughInjectives B] (X : A)
 
+variable [∀ (I : Injectives A),
+  IsIso (G.rightDerivedFunctorPlusUnit.app
+    ((HomotopyCategory.Plus.singleFunctor B 0).obj (F.obj ((Injectives.ι A).obj I))))]
+
+noncomputable example : (F ⋙ G).rightDerivedFunctorPlus ≅
+    F.rightDerivedFunctorPlus ⋙ G.rightDerivedFunctorPlus :=
+  asIso (Functor.rightDerivedFunctorPlusCompNatTrans (Iso.refl (F ⋙ G)))
+
 instance : (G.rightDerivedFunctorPlus ⋙ homologyFunctor C 0).VanishesOnGEOne t where
   isZero' K hK := isZero_homology_of_isGE (G.rightDerivedFunctorPlus.obj K) 1 0 (by omega)
 
@@ -36,20 +44,12 @@ noncomputable def convergesAt' (n : ℕ) :
         G.rightDerivedFunctorPlus ⋙ homologyFunctor C (n : ℤ)).obj X) := by
   apply TStructure.spectralSequenceNatStronglyConvergesTo
 
-variable [∀ (I : Injectives A),
-  IsIso (G.rightDerivedFunctorPlusUnit.app
-    ((HomotopyCategory.Plus.singleFunctor B 0).obj (F.obj ((Injectives.ι A).obj I))))]
-
-/-noncomputable example : (F ⋙ G).rightDerivedFunctorPlus ≅
-    F.rightDerivedFunctorPlus ⋙ G.rightDerivedFunctorPlus :=
-  asIso (Functor.rightDerivedFunctorPlusCompNatTrans (Iso.refl (F ⋙ G)))
-
 noncomputable def convergesAt (n : ℕ) :
     (grothendieckSpectralSequence F G X).StronglyConvergesToInDegree
       CohomologicalSpectralSequenceNat.stripes n
       (((F ⋙ G).rightDerived' n).obj X) :=
   (convergesAt' F G X n).ofIso ((homologyFunctor C n).mapIso
-      ((asIso (Functor.rightDerivedFunctorPlusCompNatTrans (Iso.refl _))).symm.app _))-/
+      ((asIso (Functor.rightDerivedFunctorPlusCompNatTrans (Iso.refl _))).symm.app _))
 
 end Plus
 

@@ -1,6 +1,7 @@
 import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInjectives
 import Mathlib.Algebra.Homology.HomotopyCategory.Devissage
 import Mathlib.CategoryTheory.Functor.Derived.RightDerivedComposition
+import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
 
 open CategoryTheory Category Limits
 
@@ -128,7 +129,7 @@ lemma isIso_rightDerivedFunctorPlusUnit_app_of_bounded
   change (Triangulated.Subcategory.ofNatTrans (F.rightDerivedFunctorPlusUnit)).P _ at hK
   simpa only [← Triangulated.Subcategory.mem_map_iff _ (HomotopyCategory.Plus.ι C)] using hK
 
-/-lemma isIso_rightDerivedFunctorPlusUnit_app
+lemma isIso_rightDerivedFunctorPlusUnit_app
     (K : CochainComplex C ℤ) (a : ℤ) [ha : K.IsStrictlyGE a]
     (hK : ∀ (i : ℤ) (_ : a ≤ i),
       IsIso (F.rightDerivedFunctorPlusUnit.app
@@ -169,11 +170,25 @@ lemma isIso_rightDerivedFunctorPlusUnit_app_of_bounded
     exact (NatTrans.isIso_app_iff_of_iso _
       (Functor.mapIso _ (asIso' (K.isIso_πStupidTrunc_f (n + 1) i hi')))).1 (hK i hi)
 
+  have : t.IsGE (DerivedCategory.Plus.Qh.obj M') (n + 2) := by
+    rw [← DerivedCategory.Plus.isGE_ι_obj_iff]
+    apply DerivedCategory.TStructure.t.isGE_of_iso
+      ((DerivedCategory.quotientCompQhIso C).symm.app (K.stupidTrunc e₂)) (n + 2)
+  have : t.IsGE (DerivedCategory.Plus.Qh.obj (F.mapHomotopyCategoryPlus.obj M')) (n + 2) := by
+    rw [← DerivedCategory.Plus.isGE_ι_obj_iff]
+    exact DerivedCategory.TStructure.t.isGE_of_iso
+      (show DerivedCategory.Q.obj ((F.mapHomologicalComplex _).obj (K.stupidTrunc e₂)) ≅ _ from
+        (DerivedCategory.quotientCompQhIso D).app _) _
   have h₁ : IsIso ((DerivedCategory.Plus.homologyFunctor D n).map
-      ((F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).map T'.mor₂)) := by
-    sorry
+      ((F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).map T'.mor₂)) :=
+    t.isIso_homologyFunctor_map_mor₂_of_isGE _
+      ((F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).map_distinguished _ hT')
+      n (n + 2) (by omega) (by dsimp; infer_instance)
   have h₂ : IsIso ((DerivedCategory.Plus.homologyFunctor D n).map
-    ((DerivedCategory.Plus.Qh ⋙ F.rightDerivedFunctorPlus).map T'.mor₂)) := sorry
+    ((DerivedCategory.Plus.Qh ⋙ F.rightDerivedFunctorPlus).map T'.mor₂)) :=
+    t.isIso_homologyFunctor_map_mor₂_of_isGE _
+      ((DerivedCategory.Plus.Qh ⋙ F.rightDerivedFunctorPlus).map_distinguished _ hT')
+      n (n + 2) (by omega) (by dsimp; infer_instance)
 
   have e'' : Arrow.mk ((DerivedCategory.Plus.homologyFunctor D n).map
     ((F.rightDerivedFunctorPlusUnit).app K')) ≅
@@ -185,7 +200,7 @@ lemma isIso_rightDerivedFunctorPlusUnit_app_of_bounded
       exact F.rightDerivedFunctorPlusUnit.naturality T'.mor₂)
   apply ((MorphismProperty.RespectsIso.isomorphisms D).arrow_mk_iso_iff e'').2
   change IsIso _
-  infer_instance-/
+  infer_instance
 
 end
 
@@ -294,7 +309,7 @@ lemma isIso_rightDerivedFunctorPlusCompNatTrans'
   · apply h
   · infer_instance
 
-/-instance isIso_rightDerivedFunctorPlusCompNatTrans
+instance isIso_rightDerivedFunctorPlusCompNatTrans
     [hFG : ∀ (I : Injectives C), IsIso (G.rightDerivedFunctorPlusUnit.app
         ((HomotopyCategory.Plus.singleFunctor D 0).obj (F.obj ((Injectives.ι C).obj I))))] :
     IsIso (rightDerivedFunctorPlusCompNatTrans e) := by
@@ -302,7 +317,7 @@ lemma isIso_rightDerivedFunctorPlusCompNatTrans'
   rintro ⟨⟨K⟩, n, hK⟩
   exact G.isIso_rightDerivedFunctorPlusUnit_app
     (((Injectives.ι C ⋙ F).mapHomologicalComplex (ComplexShape.up ℤ)).obj K) n
-    (fun i _ => hFG _)-/
+    (fun i _ => hFG _)
 
 end
 

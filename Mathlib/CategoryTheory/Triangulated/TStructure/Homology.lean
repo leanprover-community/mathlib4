@@ -1105,6 +1105,31 @@ noncomputable def shiftSpectralObjectω₁IsoHomologyιHeart :
 
 end
 
+section
+
+variable [t.HasHeart] [t.HasHomology₀] [(homology₀ t).ShiftSequence  ℤ]
+  (T : Triangle C) (hT : T ∈ distTriang C)
+
+lemma mono_homologyFunctor_map_mor₂ (n : ℤ) (h : IsZero ((t.homology n).obj T.obj₁)):
+    Mono ((t.homology n).map T.mor₂) :=
+  (t.homology_exact₂ T hT n).mono_g (h.eq_of_src _ _)
+
+lemma epi_homologyFunctor_map_mor₂ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
+    (h : IsZero ((t.homology n₁).obj T.obj₁)):
+    Epi ((t.homology n₀).map T.mor₂) :=
+  (t.homology_exact₃ T hT _ _ hn₁).epi_f (h.eq_of_tgt _ _)
+
+lemma isIso_homologyFunctor_map_mor₂_of_isGE (n : ℤ) (a : ℤ) (h : n + 2 ≤ a)
+    (h : t.IsGE T.obj₁ a) :
+    IsIso ((t.homology n).map T.mor₂) := by
+  have := t.mono_homologyFunctor_map_mor₂ T hT n
+    (t.isZero_homology_of_isGE _ _ a (by omega))
+  have := t.epi_homologyFunctor_map_mor₂ T hT n _ rfl
+    (t.isZero_homology_of_isGE _ _ a (by omega))
+  apply isIso_of_mono_of_epi
+
+end
+
 end TStructure
 
 end Triangulated
