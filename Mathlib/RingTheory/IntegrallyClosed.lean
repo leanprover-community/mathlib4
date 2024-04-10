@@ -168,6 +168,24 @@ variable (R)
 theorem integralClosure_eq_bot [NoZeroSMulDivisors R A] [Nontrivial A] : integralClosure R A = ⊥ :=
   (integralClosure_eq_bot_iff A (NoZeroSMulDivisors.algebraMap_injective _ _)).mpr ‹_›
 
+variable {R A} (S S' : Type*) [CommRing S] [CommRing S']
+
+/-- If `R` is the integral closure of `S` in `A` and `S'` is an integral extension of `S`,
+then `R` is also the integral closure of `S'` in `A`. -/
+lemma IsIntegralClosure.tower_top
+    [Algebra S A] [Algebra S' A] [Algebra S S'] [IsScalarTower S S' A]
+    [IsIntegralClosure R S A] (hSS' : Algebra.IsIntegral S S') :
+    IsIntegralClosure R S' A :=
+  ⟨IsIntegralClosure.algebraMap_injective _ S _,
+   fun hx => (IsIntegralClosure.isIntegral_iff (R := S)).mp (isIntegral_trans hSS' _ hx),
+   fun hx => ((IsIntegralClosure.isIntegral_iff (R := S) (B := A)).mpr hx).tower_top⟩
+
+/-- If `R` is the integral closure of `S` in `A`, then it is integrally closed in `A`. -/
+lemma of_isIntegralClosure [Algebra S R] [Algebra S A] [IsScalarTower S R A]
+    [IsIntegralClosure R S A] :
+    IsIntegrallyClosedIn R A :=
+  IsIntegralClosure.tower_top S _ (IsIntegralClosure.isIntegral _ A)
+
 end IsIntegrallyClosedIn
 
 namespace IsIntegrallyClosed
@@ -198,8 +216,6 @@ theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [Alg
   IsIntegrallyClosedIn.exists_algebraMap_eq_of_pow_mem_subalgebra hn hx
 #align is_integrally_closed.exists_algebra_map_eq_of_pow_mem_subalgebra IsIntegrallyClosed.exists_algebraMap_eq_of_pow_mem_subalgebra
 
-variable (R S K)
-
 lemma _root_.IsIntegralClosure.of_isIntegrallyClosedIn {S R A : Type*} [CommRing S] [CommRing R]
     [CommRing A] [Algebra S R] [Algebra S A] [Algebra R A]
     [IsScalarTower S R A] [IsIntegrallyClosedIn R A] (hRS : Algebra.IsIntegral S R) :
@@ -208,6 +224,8 @@ lemma _root_.IsIntegralClosure.of_isIntegrallyClosedIn {S R A : Type*} [CommRing
     ⟨fun hx ↦ IsIntegralClosure.isIntegral_iff.mp (IsIntegral.tower_top (A := R) hx), ?_⟩⟩
   rintro ⟨y, rfl⟩
   exact IsIntegral.map (IsScalarTower.toAlgHom S R A) (hRS y)
+
+variable (R S K)
 
 lemma _root_.IsIntegralClosure.of_isIntegrallyClosed
     [Algebra S R] [Algebra S K] [IsScalarTower S R K] (hRS : Algebra.IsIntegral S R) :
