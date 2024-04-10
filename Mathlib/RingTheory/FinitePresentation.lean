@@ -214,7 +214,8 @@ theorem mvPolynomial_of_finitePresentation (hfp : FinitePresentation.{w₁, w₂
 theorem trans [Algebra A B] [IsScalarTower R A B] [hfpA : FinitePresentation R A]
     [hfpB : FinitePresentation A B] : FinitePresentation R B := by
   obtain ⟨n, I, e, hfg⟩ := iff.1 hfpB
-  exact equiv (hfp := (mvPolynomial_of_finitePresentation hfpA _).quotient hfg) (e.restrictScalars R)
+  exact equiv (hfp := (mvPolynomial_of_finitePresentation hfpA _).quotient hfg)
+    (e.restrictScalars R)
 #align algebra.finite_presentation.trans Algebra.FinitePresentation.trans
 
 open MvPolynomial
