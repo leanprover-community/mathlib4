@@ -125,7 +125,7 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero α] :
   simp only [Set.mem_setOf_eq, exists_prop, and_imp, Multiset.prod_cons, Multiset.mem_cons,
     forall_eq_or_imp]
   intros a s hind x y _ hprime hprime₂ hprod
-  cases' hprime.dvd_mul.1 (Dvd.intro _ hprod) with h₁ h₂
+  rcases hprime.dvd_mul.1 (Dvd.intro _ hprod) with h₁ | h₂
   · rcases h₁ with ⟨c, h₁⟩
     rw [h₁, mul_assoc] at hprod
     have hprod₂ := mul_left_cancel₀ (hprime.ne_zero) hprod
