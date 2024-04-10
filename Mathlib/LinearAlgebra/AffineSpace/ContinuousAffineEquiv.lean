@@ -214,20 +214,18 @@ protected theorem image_symm_eq_preimage (e : P₁ ≃ᵃL[k] P₂) (s : Set P�
   rw [e.symm.image_eq_preimage, e.symm_symm]
 
 @[simp]
-theorem symm_image_image (e : P₁ ≃ᵃL[k] P₂) (s : Set P₁) : e.symm '' (e '' s) = s :=
-  e.toEquiv.symm_image_image s
-
-@[simp]
-theorem image_symm_image (e : P₁ ≃ᵃL[k] P₂) (s : Set P₂) : e '' (e.symm '' s) = s :=
-  e.symm.symm_image_image s
-
-@[simp]
 theorem image_preimage (e : P₁ ≃ᵃL[k] P₂) (s : Set P₂) : e '' (e ⁻¹' s) = s :=
   e.surjective.image_preimage s
 
 @[simp]
 theorem preimage_image (e : P₁ ≃ᵃL[k] P₂) (s : Set P₁) : e ⁻¹' (e '' s) = s :=
   e.injective.preimage_image s
+
+theorem symm_image_image (e : P₁ ≃ᵃL[k] P₂) (s : Set P₁) : e.symm '' (e '' s) = s :=
+  e.toEquiv.symm_image_image s
+
+theorem image_symm_image (e : P₁ ≃ᵃL[k] P₂) (s : Set P₂) : e '' (e.symm '' s) = s :=
+  e.symm.symm_image_image s
 
 @[simp]
 theorem refl_symm : (refl k P₁).symm = refl k P₁ :=
