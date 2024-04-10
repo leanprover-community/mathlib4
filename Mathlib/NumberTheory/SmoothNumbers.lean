@@ -105,11 +105,11 @@ lemma ne_zero_of_mem_factoredNumbers {s : Finset ℕ} {m : ℕ} (h : m ∈ facto
   h.1
 
 @[simp]
-lemma factoredNumbers_empty : factoredNumbers ⊥ = {1} := by
+lemma factoredNumbers_empty : factoredNumbers ∅ = {1} := by
   ext m
-  simp only [Set.mem_singleton_iff, mem_factoredNumbers, Finset.bot_eq_empty, Finset.not_mem_empty,
-    ← List.eq_nil_iff_forall_not_mem, factors_eq_nil, and_or_left, not_and_self_iff, false_or,
-    ne_and_eq_iff_right zero_ne_one]
+  simp only [mem_factoredNumbers, Finset.not_mem_empty, ← List.eq_nil_iff_forall_not_mem,
+    factors_eq_nil, and_or_left, not_and_self_iff, ne_and_eq_iff_right zero_ne_one, false_or,
+    Set.mem_singleton_iff]
 
 /-- The product of the prime factors of `n` that are in `s` is an `s`-factored number. -/
 lemma prod_mem_factoredNumbers (s : Finset ℕ) (n : ℕ) :
@@ -267,8 +267,7 @@ lemma ne_zero_of_mem_smoothNumbers {n m : ℕ} (h : m ∈ smoothNumbers n) : m �
 
 @[simp]
 lemma smoothNumbers_zero : smoothNumbers 0 = {1} := by
-  simp only [smoothNumbers_eq_factoredNumbers, Finset.range_zero, ← Finset.bot_eq_empty,
-    factoredNumbers_empty]
+  simp only [smoothNumbers_eq_factoredNumbers, Finset.range_zero, factoredNumbers_empty]
 
 /-- The product of the prime factors of `n` that are less than `N` is an `N`-smooth number. -/
 lemma prod_mem_smoothNumbers (n N : ℕ) : (n.factors.filter (· < N)).prod ∈ smoothNumbers N := by
