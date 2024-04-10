@@ -919,6 +919,20 @@ theorem Antitone.strictAnti_iff_injective (hf : Antitone f) : StrictAnti f ↔ I
   ⟨fun h ↦ h.injective, hf.strictAnti_of_injective⟩
 #align antitone.strict_anti_iff_injective Antitone.strictAnti_iff_injective
 
+/-- If a monotone function is equal at two points, it is equal between all of them -/
+theorem Monotone.eq_of_le_of_le {a₁ a₂ : α} (h_mon : Monotone f) (h_fa : f a₁ = f a₂) {i : α}
+    (h₁ : a₁ ≤ i) (h₂ : i ≤ a₂) : f i = f a₁ := by
+  apply le_antisymm
+  · rw [h_fa]; exact h_mon h₂
+  · exact h_mon h₁
+
+/-- If an antitone function is equal at two points, it is equal between all of them -/
+theorem Antitone.eq_of_le_of_le {a₁ a₂ : α} (h_anti : Antitone f) (h_fa : f a₁ = f a₂) {i : α}
+    (h₁ : a₁ ≤ i) (h₂ : i ≤ a₂) : f i = f a₁ := by
+  apply le_antisymm
+  · exact h_anti h₁
+  · rw [h_fa]; exact h_anti h₂
+
 end PartialOrder
 
 variable [LinearOrder β] {f : α → β} {s : Set α} {x y : α}
