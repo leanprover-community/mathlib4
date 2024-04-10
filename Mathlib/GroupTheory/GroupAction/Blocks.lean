@@ -5,6 +5,8 @@ Authors: Antoine Chambert-Loir
 
 -/
 
+import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Data.Set.Card
 import Mathlib.Data.Setoid.Partition
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Pointwise
@@ -479,7 +481,7 @@ theorem IsBlock.of_orbit' {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
     IsBlock G (MulAction.orbit H a) := by
   rw [IsBlock.mk_subset]; intro g b
   rintro ⟨h, rfl⟩
-  simp?
+  simp only [Set.le_eq_subset]
   intro hb'
   suffices g ∈ H by
     rw [← Subgroup.coe_mk H g this, ← Subgroup.smul_def]
@@ -716,7 +718,7 @@ theorem IsBlock.of_subset [IsPretransitive G X] (a : X) (B : Set X) (hfB : B.Fin
     apply Set.Finite.subset (Set.Finite.map _ hfB) (hB'₀ k ⟨b, hb, hk⟩)
   have hag : ∀ g : G, a ∈ g • B' → B' ≤ g • B' :=  by
     intro g hg x hx
-    -- a = g • b; b ∈ B' ; a ∈ k • B → b ∈ k • B
+    -- a = g • b; b ∈ B'; a ∈ k • B → b ∈ k • B
     use g⁻¹ • x
     constructor
     · apply Set.mem_biInter; intro k; rintro (hk : a ∈ k • B)
