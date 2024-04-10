@@ -93,7 +93,7 @@ theorem MonoidHom.preimage_smul_setₛₗ (σ : R →* S)
 
 /-- `preimage_smul_setₛₗ` in the context of a `MonoidHomClass` -/
 theorem MonoidHomClass.preimage_smul_setₛₗ_of_units
-  {G : Type*} [FunLike G R S] [MonoidHomClass G R S] (σ : G)
+    {G : Type*} [FunLike G R S] [MonoidHomClass G R S] (σ : G)
   [MulAction R M] [MulAction S N]
   {F : Type*} [FunLike F M N] [MulActionSemiHomClass F σ M N]
   {c : R} (hc : IsUnit c) (s : Set N) :
