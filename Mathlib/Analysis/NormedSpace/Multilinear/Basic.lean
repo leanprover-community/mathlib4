@@ -1409,7 +1409,7 @@ to `∑ f (x₁, (v_{i_1})₂, x₃, ...)`, where at each index `j` one uses eit
 of the `(vᵢ)ⱼ`, where each `vᵢ` has to be used exactly once.
 The sum is parameterized by the embeddings of `Fin k` in the index type `ι` (or, equivalently,
 by the subsets `s` of `ι` of cardinal `k` and then the bijections between `Fin k` and `s`). -/
-def iteratedFDeriv (f : ContinuousMultilinearMap 𝕜 E₁ G) (k : ℕ) (x : (i : ι) → E₁ i) :
+protected def iteratedFDeriv (f : ContinuousMultilinearMap 𝕜 E₁ G) (k : ℕ) (x : (i : ι) → E₁ i) :
     ContinuousMultilinearMap 𝕜 (fun (_ : Fin k) ↦ (∀ i, E₁ i)) G :=
   ∑ e : Fin k ↪ ι, iteratedFDerivComponent f e.toEquivRange (Pi.compRightL 𝕜 Subtype.val x)
 
