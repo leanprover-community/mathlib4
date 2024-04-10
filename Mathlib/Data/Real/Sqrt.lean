@@ -219,11 +219,11 @@ theorem sqrt_sq_eq_abs (x : ℝ) : √(x ^ 2) = |x| := by rw [sq, sqrt_mul_self_
 #align real.sqrt_sq_eq_abs Real.sqrt_sq_eq_abs
 
 @[simp]
-theorem sqrt_zero : √(0 : ℝ) = 0 := by simp [Real.sqrt]
+theorem sqrt_zero : √0 = 0 := by simp [Real.sqrt]
 #align real.sqrt_zero Real.sqrt_zero
 
 @[simp]
-theorem sqrt_one : √(1 : ℝ) = 1 := by simp [Real.sqrt]
+theorem sqrt_one : √1 = 1 := by simp [Real.sqrt]
 #align real.sqrt_one Real.sqrt_one
 
 @[simp]
