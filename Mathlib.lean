@@ -352,7 +352,6 @@ import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Module.LinearMap.End
-import Mathlib.Algebra.Module.LinearMap.Pointwise
 import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.Algebra.Module.MinimalAxioms
 import Mathlib.Algebra.Module.Opposites
@@ -2366,6 +2365,7 @@ import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.GroupTheory.FreeGroup.NielsenSchreier
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.BigOperators
+import Mathlib.GroupTheory.GroupAction.Blocks
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.DomAct.ActionHom
@@ -2379,6 +2379,7 @@ import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.GroupTheory.GroupAction.Option
 import Mathlib.GroupTheory.GroupAction.Period
 import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.Prod
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.GroupAction.Ring
