@@ -10,6 +10,8 @@ import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.Subgroup.Actions
+import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Data.Set.Card
 
 /-! # Blocks
 
@@ -716,7 +718,7 @@ theorem IsBlock.of_subset [IsPretransitive G X] (a : X) (B : Set X) (hfB : B.Fin
     apply Set.Finite.subset (Set.Finite.map _ hfB) (hB'₀ k ⟨b, hb, hk⟩)
   have hag : ∀ g : G, a ∈ g • B' → B' ≤ g • B' :=  by
     intro g hg x hx
-    -- a = g • b; b ∈ B' ; a ∈ k • B → b ∈ k • B
+    -- a = g • b; b ∈ B'; a ∈ k • B → b ∈ k • B
     use g⁻¹ • x
     constructor
     · apply Set.mem_biInter; intro k; rintro (hk : a ∈ k • B)
