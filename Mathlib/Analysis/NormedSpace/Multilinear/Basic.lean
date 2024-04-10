@@ -72,8 +72,10 @@ We use the following type variables in this file:
 * `G`, `G'` : normed vector spaces over `𝕜`.
 -/
 
-lemma bla (n : ℕ) : 0 ≤ n := by exact?
 
+instance {α β : Type*} [IsEmpty α] : Unique (α ↪ β) where
+  default := ⟨isEmptyElim, Function.injective_of_subsingleton _⟩
+  uniq := by intro; ext v; exact isEmptyElim v
 
 universe u v v' wE wE₁ wE' wEi wG wG'
 
@@ -1408,7 +1410,11 @@ continuous multilinear map of `k` vectors `v₁, ..., vₖ` (with the same type 
 to `∑ f (x₁, (v_{i_1})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one
 of the `(vᵢ)ⱼ`, where each `vᵢ` has to be used exactly once.
 The sum is parameterized by the embeddings of `Fin k` in the index type `ι` (or, equivalently,
-by the subsets `s` of `ι` of cardinal `k` and then the bijections between `Fin k` and `s`). -/
+by the subsets `s` of `ι` of cardinal `k` and then the bijections between `Fin k` and `s`).
+
+The fact that this is indeed the iterated Fréchet derivative is proved in
+`ContinuousMultilinearMap.iteratedFDeriv_eq`.
+-/
 protected def iteratedFDeriv (f : ContinuousMultilinearMap 𝕜 E₁ G) (k : ℕ) (x : (i : ι) → E₁ i) :
     ContinuousMultilinearMap 𝕜 (fun (_ : Fin k) ↦ (∀ i, E₁ i)) G :=
   ∑ e : Fin k ↪ ι, iteratedFDerivComponent f e.toEquivRange (Pi.compRightL 𝕜 Subtype.val x)

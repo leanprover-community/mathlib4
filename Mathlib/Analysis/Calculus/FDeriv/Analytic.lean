@@ -411,30 +411,26 @@ lemma succ_embeddingFinSuccEquivSigma_fst_symm_apply [DecidableEq ι]
   simp_rw [this]
   simp
 
-instance {α β : Type*} [IsEmpty α] : Unique (α ↪ β) where
-  default := ⟨isEmptyElim, Function.injective_of_subsingleton _⟩
-  uniq := by intro; ext v; exact isEmptyElim v
-
 theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
     HasFTaylorSeriesUpTo ⊤ f (fun v n ↦ f.iteratedFDeriv n v) := by
   classical
   constructor
-  · simp [iteratedFDeriv]
+  · simp [ContinuousMultilinearMap.iteratedFDeriv]
   · intro n _hn x
-    suffices H : curryLeft (iteratedFDeriv f (Nat.succ n) x) = (∑ e : Fin n ↪ ι,
+    suffices H : curryLeft (f.iteratedFDeriv (Nat.succ n) x) = (∑ e : Fin n ↪ ι,
           ((iteratedFDerivComponent f e.toEquivRange).linearDeriv
             (Pi.compRightL 𝕜 Subtype.val x)) ∘L (Pi.compRightL 𝕜 Subtype.val)) by
-      have A : HasFDerivAt (iteratedFDeriv f n) (∑ e : Fin n ↪ ι,
+      have A : HasFDerivAt (f.iteratedFDeriv n) (∑ e : Fin n ↪ ι,
           ((iteratedFDerivComponent f e.toEquivRange).linearDeriv (Pi.compRightL 𝕜 Subtype.val x))
             ∘L (Pi.compRightL 𝕜 Subtype.val)) x := by
         apply HasFDerivAt.sum (fun s _hs ↦ ?_)
         exact (ContinuousMultilinearMap.hasFDerivAt _ _).comp x (ContinuousLinearMap.hasFDerivAt _)
       rwa [← H] at A
     ext v m
-    simp only [iteratedFDeriv, curryLeft_apply, sum_apply, iteratedFDerivComponent_apply,
+    simp only [ContinuousMultilinearMap.iteratedFDeriv, curryLeft_apply, sum_apply,
+      iteratedFDerivComponent_apply, Finset.univ_sigma_univ,
       Pi.compRightL_apply, ContinuousLinearMap.coe_sum', ContinuousLinearMap.coe_comp',
-      Finset.sum_apply, Function.comp_apply, linearDeriv_apply, Finset.sum_sigma',
-      Finset.univ_sigma_univ]
+      Finset.sum_apply, Function.comp_apply, linearDeriv_apply, Finset.sum_sigma']
     rw [← (embeddingFinSuccEquivSigma n).sum_comp]
     congr with e
     congr with k
@@ -471,8 +467,11 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
     exact (ContinuousMultilinearMap.coe_continuous _).comp (ContinuousLinearMap.continuous _)
 
 theorem iteratedFDeriv_eq (n : ℕ) :
-    iteratedFDeriv 𝕜 n f x = f.iteratedFDeriv n x := by
-  have Z := f.hasFTaylorSeriesUpTo_iteratedFDeriv
+    iteratedFDeriv 𝕜 n f = f.iteratedFDeriv n := by
+  ext x : 1
+  exact (f.hasFTaylorSeriesUpTo_iteratedFDeriv.eq_iteratedFDeriv (m := n) le_top x).symm
+
+
 
 lemma cPolynomialAt : CPolynomialAt 𝕜 f x :=
   f.hasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem

@@ -32,6 +32,7 @@ structure Embedding (α : Sort*) (β : Sort*) where
 /-- An embedding, a.k.a. a bundled injective function. -/
 infixr:25 " ↪ " => Embedding
 
+
 instance {α : Sort u} {β : Sort v} : FunLike (α ↪ β) α β where
   coe := Embedding.toFun
   coe_injective' f g h := by { cases f; cases g; congr }
@@ -113,6 +114,10 @@ theorem coe_injective {α β} : @Injective (α ↪ β) (α → β) (fun f ↦ �
 theorem ext {α β} {f g : Embedding α β} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 #align function.embedding.ext Function.Embedding.ext
+
+instance {α β} [IsEmpty α] : Unique (α ↪ β) where
+  default := ⟨isEmptyElim, Function.injective_of_subsingleton _⟩
+  uniq := by intro; ext v; exact isEmptyElim v
 
 -- Porting note : in Lean 3 `DFunLike.ext_iff.symm` works
 theorem ext_iff {α β} {f g : Embedding α β} : (∀ x, f x = g x) ↔ f = g :=
