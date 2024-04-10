@@ -20,7 +20,8 @@ Given `SMul G X`, an action of a type `G` on a type `X`, we define
 - the predicate `IsBlock G B` states that `B : Set X` is a block,
 which means that the sets `g • B`, for `g ∈ G` form a partition of `X`.
 
-- a bunch of lemmas that give example of “trivial” blocks : ⊥, ⊤, singletons, orbits…
+- a bunch of lemmas that give examples of “trivial” blocks : ⊥, ⊤, singletons,
+and non trivial blocks: orbit of the group, orbit of a normal subgroup…
 
 The non-existence of nontrivial blocks is the definition of primitive actions.
 
@@ -249,9 +250,9 @@ theorem IsBlock.preimage {H Y : Type*} [Group H] [MulAction H Y]
   intro g
   cases' IsBlock.def_one.mp hB (φ g) with heq hdis
   · left
-    rw [← preimage_smul_setₛₗ Y X φ j (Group.isUnit _) (Group.isUnit _), heq]
+    rw [← Group.preimage_smul_setₛₗ Y X φ j, heq]
   · right
-    rw [← preimage_smul_setₛₗ Y X φ j (Group.isUnit _) (Group.isUnit _)]
+    rw [← Group.preimage_smul_setₛₗ Y X φ j]
     exact Disjoint.preimage _ hdis
 
 theorem IsBlock.image {H Y : Type*} [Group H] [MulAction H Y]
@@ -283,7 +284,7 @@ theorem IsBlock.iff_of_subtype_val {C : SubMulAction G X} {B : Set C} :
   simp only [IsBlock.def_one]
   apply forall_congr'
   intro g
-  erw [← image_smul_set _ _ _ C.inclusion g B]
+  erw [← image_smul_set _ _ C.inclusion g B]
   apply or_congr (Set.image_eq_image Subtype.coe_injective).symm
   simp only [Set.disjoint_iff, Set.subset_empty_iff]
   erw [←
