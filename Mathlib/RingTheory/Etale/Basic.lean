@@ -16,14 +16,17 @@ import Mathlib.RingTheory.Unramified.Basic
 An `R`-algebra `A` is formally étale if for every `R`-algebra,
 every square-zero ideal `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists
 exactly one lift `A →ₐ[R] B`.
-`A` is étale over `R` if it is formally étale and finitely presented.
+It is étale if it is formally étale and of finite presentation.
 
 We show that the property extends onto nilpotent ideals, and that these properties are stable
 under `R`-algebra homomorphisms and compositions.
 
+We show that étale is stable under algebra isomorphisms, composition and
+localization at an element.
+
 ## TODO:
 
-- Show that étale morphisms are stable under base change.
+- Show that étale is stable under base change.
 
 -/
 
@@ -189,7 +192,7 @@ theorem comp [Etale R A] [Etale A B] : Etale R B where
 
 end Comp
 
-/-- Localization at an element preserves being étale. -/
+/-- Localization at an element is étale. -/
 theorem of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Etale R A where
   formallyEtale := Algebra.FormallyEtale.of_isLocalization (Submonoid.powers r)
   finitePresentation := IsLocalization.Away.finitePresentation r

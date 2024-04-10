@@ -23,7 +23,9 @@ It is smooth if it is formally smooth and of finite presentation.
 We show that the property of being formally smooth extends onto nilpotent ideals,
 and that it is stable under `R`-algebra homomorphisms and compositions.
 
-We show that smoothness is stable under compositions.
+We show that smooth is stable under algebra isomorphisms, composition and
+localization at an element.
+
 
 # TODO
 
@@ -372,7 +374,7 @@ theorem of_equiv [Smooth R A] (e : A ≃ₐ[R] B) : Smooth R B where
   formallySmooth := FormallySmooth.of_equiv e
   finitePresentation := FinitePresentation.equiv Smooth.finitePresentation e
 
-/-- Localization at an element preserves being unramified. -/
+/-- Localization at an element is smooth. -/
 theorem of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Smooth R A where
   formallySmooth := Algebra.FormallySmooth.of_isLocalization (Submonoid.powers r)
   finitePresentation := IsLocalization.Away.finitePresentation r
