@@ -11,12 +11,20 @@ import Mathlib.GroupTheory.GroupAction.Hom
 /-!
 # Pointwise actions of equivariant maps
 
-- `image_smul_setₛₗ` and `image_smul_setₛₗ` : under a `σ`-equivariant map,
-one has `h '' (c • s) = (σ c) • h '' s`.
+- `image_smul_setₛₗ` : under a `σ`-equivariant map,
+  one has `h '' (c • s) = (σ c) • h '' s`.
 
-- `preimage_smul_setₛₗ'`, `preimage_smul_setₛₗ`, `preimage_smul_set`
-`preimage_smul_set` :
-one has `h ⁻¹' (σ c • s) = c • h⁻¹' s`
+- `preimage_smul_setₛₗ'` is a general version of the equality
+  `h ⁻¹' (σ c • s) = c • h⁻¹' s`.
+  It requires that `c` acts surjectively and `σ c` acts injectively and
+is provided with specific versions:
+  - `preimage_smul_setₛₗ_of_units` when `c` and `σ c` are units
+  - `preimage_smul_setₛₗ` when `σ` belongs to a `MonoidHomClass`and `c` is a unit
+  - `MonoidHom.preimage_smul_setₛₗ` when `σ` is a `MonoidHom` and `c` is a unit
+  - `Group.preimage_smul_setₛₗ` : when the types of `c` and `σ c` are groups.
+
+- `image_smul_set`, `preimage_smul_set` and `Group.preimage_smul_set` are
+the variants when `σ` is the identity.
 
 -/
 
@@ -73,17 +81,40 @@ theorem preimage_smul_setₛₗ'
     exact hn
   · exact smul_preimage_set_leₛₗ  M N σ h c s
 
-/-- General version of `preimage_smul_setₛₗ` -/
-theorem preimage_smul_setₛₗ
+/-- `preimage_smul_setₛₗ` when both scalars act by unit -/
+theorem preimage_smul_setₛₗ_of_units
     [FunLike F M N] [MulActionSemiHomClass F σ M N]
     {c : R} (hc : IsUnit c) (hc' : IsUnit (σ c)) (s : Set N) :
     h ⁻¹' (σ c • s) = c • h ⁻¹' s := by
   apply preimage_smul_setₛₗ'
   · exact (MulAction.smul_bijective_of_is_unit hc).surjective
   · exact (MulAction.smul_bijective_of_is_unit hc').injective
-#align preimage_smul_setₛₗ preimage_smul_setₛₗ
+#align preimage_smul_setₛₗ preimage_smul_setₛₗ_of_units
 
-variable (R)
+/-- `preimage_smul_setₛₗ` in the context of a `MonoidHom` -/
+theorem MonoidHom.preimage_smul_setₛₗ (σ : R →* S)
+    {F : Type*} [FunLike F M N] [MulActionSemiHomClass F ⇑σ M N] (h : F)
+    {c : R} (hc : IsUnit c) (s : Set N) :
+    h ⁻¹' (σ c • s) = c • h ⁻¹' s :=
+  preimage_smul_setₛₗ_of_units M N σ h hc (IsUnit.map σ hc) s
+
+/-- `preimage_smul_setₛₗ` in the context of a `MonoidHomClass` -/
+theorem preimage_smul_setₛₗ
+    {G : Type*} [FunLike G R S] [MonoidHomClass G R S] (σ : G)
+    [MulAction R M] [MulAction S N]
+    {F : Type*} [FunLike F M N] [MulActionSemiHomClass F σ M N] (h : F)
+    {c : R} (hc : IsUnit c) (s : Set N) :
+    h ⁻¹' (σ c • s) = c • h ⁻¹' s :=
+ MonoidHom.preimage_smul_setₛₗ _ _ (σ : R →* S) h hc s
+
+/-- `preimage_smul_setₛₗ` in the context of a groups -/
+theorem Group.preimage_smul_setₛₗ
+    {R S : Type*} [Group R] [Group S] (σ : R → S)
+    [MulAction R M] [MulAction S N]
+    {F : Type*} [FunLike F M N] [MulActionSemiHomClass F σ M N] (h : F)
+    (c : R) (s : Set N) :
+    h ⁻¹' (σ c • s) = c • h ⁻¹' s :=
+ preimage_smul_setₛₗ_of_units _ _ _ _ (Group.isUnit _) (Group.isUnit _) s
 
 @[simp] -- This can be safely removed as a `@[simp]` lemma if `image_smul_setₛₗ` is readded.
 theorem image_smul_set [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂]
@@ -101,5 +132,13 @@ theorem smul_preimage_set_le
 theorem preimage_smul_set [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂]
     {c : R} (hc : IsUnit c) (s : Set M₂) :
     h ⁻¹' (c • s) = c • h ⁻¹' s :=
-  preimage_smul_setₛₗ _ _ _ h hc hc s
+  preimage_smul_setₛₗ_of_units _ _ _ h hc hc s
 #align preimage_smul_set preimage_smul_set
+
+theorem Group.preimage_smul_set
+    {R : Type*} [Group R] (M₁ M₂ : Type*)
+    [MulAction R M₁] [MulAction R M₂]
+    {F : Type*} [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂] (h : F)
+    (c : R) (s : Set M₂) :
+    h ⁻¹' (c • s) = c • h ⁻¹' s :=
+  _root_.preimage_smul_set M₁ M₂ h (Group.isUnit c) s
