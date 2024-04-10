@@ -319,16 +319,16 @@ theorem sqrt_pos : 0 < √x ↔ 0 < x :=
 alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 #align real.sqrt_pos_of_pos Real.sqrt_pos_of_pos
 
-lemma sqrt_le_sqrt_iff' (hx : 0 < x) : x.sqrt ≤ y.sqrt ↔ x ≤ y := by
+lemma sqrt_le_sqrt_iff' (hx : 0 < x) : √x ≤ √y ↔ x ≤ y := by
   obtain hy | hy := le_total y 0
   · exact iff_of_false ((sqrt_eq_zero_of_nonpos hy).trans_lt $ sqrt_pos.2 hx).not_le
       (hy.trans_lt hx).not_le
   · exact sqrt_le_sqrt_iff hy
 
-@[simp] lemma one_le_sqrt : 1 ≤ x.sqrt ↔ 1 ≤ x := by
+@[simp] lemma one_le_sqrt : 1 ≤ √x ↔ 1 ≤ x := by
   rw [← sqrt_one, sqrt_le_sqrt_iff' zero_lt_one, sqrt_one]
 
-@[simp] lemma sqrt_le_one : x.sqrt ≤ 1 ↔ x ≤ 1 := by
+@[simp] lemma sqrt_le_one : √x ≤ 1 ↔ x ≤ 1 := by
   rw [← sqrt_one, sqrt_le_sqrt_iff zero_le_one, sqrt_one]
 
 end Real
@@ -352,10 +352,10 @@ def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: a square root is nonnegative, and is strictly positive if
 its input is. -/
-@[positivity Real.sqrt _]
+@[positivity √ _]
 def evalSqrt : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(Real.sqrt $a) =>
+  | 0, ~q(ℝ), ~q(√$a) =>
     let ra ← catchNone <| core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
     match ra with
@@ -446,7 +446,7 @@ theorem real_sqrt_le_nat_sqrt_succ {a : ℕ} : √(a : ℝ) ≤ Nat.sqrt a + 1 :
 #align real.real_sqrt_le_nat_sqrt_succ Real.real_sqrt_le_nat_sqrt_succ
 
 /-- Bernoulli's inequality for exponent `1 / 2`, stated using `sqrt`. -/
-theorem sqrt_one_add_le (h : -1 ≤ x) : sqrt (1 + x) ≤ 1 + x / 2 := by
+theorem sqrt_one_add_le (h : -1 ≤ x) : √(1 + x) ≤ 1 + x / 2 := by
   refine sqrt_le_iff.mpr ⟨by linarith, ?_⟩
   calc 1 + x
     _ ≤ 1 + x + (x / 2) ^ 2 := le_add_of_nonneg_right <| sq_nonneg _
@@ -526,13 +526,13 @@ open Finset
 
 /-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ`. -/
 lemma sum_mul_le_sqrt_mul_sqrt (s : Finset ι) (f g : ι → ℝ) :
-    ∑ i in s, f i * g i ≤ sqrt (∑ i in s, f i ^ 2) * sqrt (∑ i in s, g i ^ 2) :=
+    ∑ i in s, f i * g i ≤ √(∑ i in s, f i ^ 2) * √(∑ i in s, g i ^ 2) :=
   (le_sqrt_of_sq_le <| sum_mul_sq_le_sq_mul_sq _ _ _).trans_eq <| sqrt_mul
     (sum_nonneg fun _ _ ↦ by positivity) _
 
 /-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ`. -/
 lemma sum_sqrt_mul_sqrt_le (s : Finset ι) (hf : ∀ i, 0 ≤ f i) (hg : ∀ i, 0 ≤ g i) :
-    ∑ i in s, sqrt (f i) * sqrt (g i) ≤ sqrt (∑ i in s, f i) * sqrt (∑ i in s, g i) := by
-  simpa [*] using sum_mul_le_sqrt_mul_sqrt _ (fun x ↦ sqrt (f x)) (fun x ↦ sqrt (g x))
+    ∑ i in s, √(f i) * √(g i) ≤ √(∑ i in s, f i) * √(∑ i in s, g i) := by
+  simpa [*] using sum_mul_le_sqrt_mul_sqrt _ (fun x ↦ √(f x)) (fun x ↦ √(g x))
 
 end Real
