@@ -4,39 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 
 -/
-/-
-import Jordan.Mathlib.Stabilizer
-import Jordan.Mathlib.Pretransitive
-import Jordan.Mathlib.Set
-import Jordan.Mathlib.Partitions
-import Jordan.SubMulActions
-import Jordan.Mathlib.Commutators
--/
 
--- import Jordan.EquivariantMap
 import Mathlib.GroupTheory.MaximalSubgroups
-import Mathlib.GroupTheory.GroupAction.Transitive
 import Mathlib.GroupTheory.GroupAction.Blocks
 import Mathlib.GroupTheory.GroupAction.Transitive
-
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Setoid.Partition
-
-/-
-import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.GroupTheory.Subgroup.Pointwise
-import Mathlib.GroupTheory.Subgroup.Simple
-import Mathlib.GroupTheory.Abelianization
-import Mathlib.GroupTheory.Commutator
-import Mathlib.GroupTheory.QuotientGroup
-import Mathlib.Data.Set.Pointwise.Basic
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Fintype.Card
-import Mathlib.Data.Finset.Card
-import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Data.Set.Card
--/
 
 /-!
 # Primitive actions
@@ -62,7 +35,8 @@ a structure that says that the `mul_action`
 of the group `G` on the type `X` is *quasipreprimitive*,
 namely, normal subgroups of `G` which act nontrivially act pretransitively.
 
-- We prove some straightforward theorems that relate preprimitivity under equivariant maps, for images and preimages.
+- We prove some straightforward theorems that relate preprimitivity
+  under equivariant maps, for images and preimages.
 
 ## Relation with stabilizers
 
@@ -351,7 +325,8 @@ theorem isPreprimitive_iff_isSimpleOrder_blocks
 theorem maximal_stabilizer_iff_preprimitive
     [htGX : IsPretransitive G X] [hnX : Nontrivial X] (a : X) :
     (stabilizer G a).IsMaximal ↔ IsPreprimitive G X := by
-  rw [isPreprimitive_iff_isSimpleOrder_blocks G a, Subgroup.isMaximal_def, ← Set.isSimpleOrder_Ici_iff_isCoatom]
+  rw [isPreprimitive_iff_isSimpleOrder_blocks G a, Subgroup.isMaximal_def,
+    ← Set.isSimpleOrder_Ici_iff_isCoatom]
   simp only [isSimpleOrder_iff_isCoatom_bot]
   rw [← OrderIso.isCoatom_iff (block_stabilizerOrderIso G a), OrderIso.map_bot]
 
