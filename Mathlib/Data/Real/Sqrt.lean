@@ -122,15 +122,16 @@ end NNReal
 
 namespace Real
 
--- Porting note (#11215): TODO: was @[pp_nodot]
-/-- The square root of a real number. This returns 0 for negative inputs. -/
+/-- The square root of a real number. This returns 0 for negative inputs.
+
+This has notation `√x`. Note that `√x⁻¹` is parsed as `√(x⁻¹)`. -/
 noncomputable def sqrt (x : ℝ) : ℝ :=
   NNReal.sqrt (Real.toNNReal x)
 #align real.sqrt Real.sqrt
 
 -- TODO: replace this with a typeclass
 @[inherit_doc]
-notation "√" x:max => Real.sqrt x
+prefix:max "√" => Real.sqrt
 
 /- quotient.lift_on x
   (λ f, mk ⟨sqrt_aux f, (sqrt_aux_converges f).fst⟩)
@@ -153,11 +154,7 @@ theorem continuous_sqrt : Continuous (√· : ℝ → ℝ) :=
   NNReal.continuous_coe.comp <| NNReal.continuous_sqrt.comp continuous_real_toNNReal
 #align real.continuous_sqrt Real.continuous_sqrt
 
-theorem sqrt_eq_zero' : √x = 0 ↔ x ≤ 0 := by
-  rw [Real.sqrt, NNReal.coe_eq_zero, NNReal.sqrt_eq_zero, Real.toNNReal_eq_zero]
-#align real.sqrt_eq_zero' Real.sqrt_eq_zero'
-
-theorem sqrt_eq_zero_of_nonpos (h : x ≤ 0) : √x = 0 := sqrt_eq_zero'.2 h
+theorem sqrt_eq_zero_of_nonpos (h : x ≤ 0) : sqrt x = 0 := by simp [sqrt, Real.toNNReal_eq_zero.2 h]
 #align real.sqrt_eq_zero_of_nonpos Real.sqrt_eq_zero_of_nonpos
 
 theorem sqrt_nonneg (x : ℝ) : 0 ≤ √x :=
@@ -252,7 +249,7 @@ theorem sqrt_lt_sqrt (hx : 0 ≤ x) (h : x < y) : √x < √y :=
 #align real.sqrt_lt_sqrt Real.sqrt_lt_sqrt
 
 theorem sqrt_le_left (hy : 0 ≤ y) : √x ≤ y ↔ x ≤ y ^ 2 := by
-  rw [Real.sqrt, ← Real.le_toNNReal_iff_coe_le hy, NNReal.sqrt_le_iff_le_sq, sq, ← Real.toNNReal_mul hy,
+  rw [sqrt, ← Real.le_toNNReal_iff_coe_le hy, NNReal.sqrt_le_iff_le_sq, sq, ← Real.toNNReal_mul hy,
     Real.toNNReal_le_toNNReal_iff (mul_self_nonneg y), sq]
 #align real.sqrt_le_left Real.sqrt_le_left
 
@@ -306,6 +303,10 @@ theorem sqrt_inj (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = √y ↔ x = y := by
 @[simp]
 theorem sqrt_eq_zero (h : 0 ≤ x) : √x = 0 ↔ x = 0 := by simpa using sqrt_inj h le_rfl
 #align real.sqrt_eq_zero Real.sqrt_eq_zero
+
+theorem sqrt_eq_zero' : √x = 0 ↔ x ≤ 0 := by
+  rw [sqrt, NNReal.coe_eq_zero, NNReal.sqrt_eq_zero, Real.toNNReal_eq_zero]
+#align real.sqrt_eq_zero' Real.sqrt_eq_zero'
 
 theorem sqrt_ne_zero (h : 0 ≤ x) : √x ≠ 0 ↔ x ≠ 0 := by rw [not_iff_not, sqrt_eq_zero h]
 #align real.sqrt_ne_zero Real.sqrt_ne_zero
