@@ -220,7 +220,7 @@ decreasing_by exact h
 theorem gfpApprox_antitone : Antitone (gfpApprox f x) :=
   lfpApprox_monotone (OrderHom.dual f) x
 
-theorem gfpApprox_le {a : Ordinal}: (gfpApprox f x a) ≤ x :=
+theorem gfpApprox_le {a : Ordinal}: gfpApprox f x a ≤ x :=
   le_lfpApprox (OrderHom.dual f) x
 
 theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
