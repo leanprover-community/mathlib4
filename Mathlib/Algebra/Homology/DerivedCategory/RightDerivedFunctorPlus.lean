@@ -1,5 +1,31 @@
 import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInjectives
+import Mathlib.Algebra.Homology.HomotopyCategory.Devissage
 import Mathlib.CategoryTheory.Functor.Derived.RightDerivedComposition
+
+open CategoryTheory Category Limits
+
+def HomotopyCategory.Plus.mk {C : Type*} [Category C] [Preadditive C] [HasZeroObject C]
+    [HasBinaryBiproducts C] (K : CochainComplex C ℤ) (hK : ∃ n, K.IsStrictlyGE n):
+    HomotopyCategory.Plus C :=
+  ⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, hK.choose, hK.choose_spec⟩
+
+namespace CochainComplex
+
+variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C]
+
+open ComplexShape
+
+lemma isIso_πStupidTrunc_f (K : CochainComplex C ℤ) (n i : ℤ) (hi : i ≤ n) :
+    IsIso ((K.πStupidTrunc (embeddingUpIntLE n)).f i) := by
+  have ⟨k, hk⟩ := Int.eq_add_ofNat_of_le hi
+  exact HomologicalComplex.isIso_πStupidTrunc_f K _ (i := k) (by dsimp; omega)
+
+lemma isIso_ιStupidTrunc_f (K : CochainComplex C ℤ) (n i : ℤ) (hi : n ≤ i) :
+    IsIso ((K.ιStupidTrunc (embeddingUpIntGE n)).f i) := by
+  have ⟨k, hk⟩ := Int.eq_add_ofNat_of_le hi
+  exact HomologicalComplex.isIso_ιStupidTrunc_f K _ (i := k) (by dsimp; omega)
+
+end CochainComplex
 
 namespace CategoryTheory
 
@@ -31,7 +57,7 @@ instance :
   infer_instance
 
 instance (X : HomotopyCategory.Plus (Injectives C)) :
-    IsIso (F.rightDerivedFunctorPlusUnit.app
+    IsIso  (F.rightDerivedFunctorPlusUnit.app
       ((Injectives.ι C).mapHomotopyCategoryPlus.obj X)) := by
   dsimp only [rightDerivedFunctorPlus, rightDerivedFunctorPlusUnit]
   infer_instance
@@ -83,6 +109,84 @@ instance : F.rightDerivedFunctorPlus.RightTExact t t where
 instance (K : DerivedCategory.Plus C) (n : ℤ) [t.IsGE K n] :
     t.IsGE (F.rightDerivedFunctorPlus.obj K) n :=
   F.rightDerivedFunctorPlus.isGE_obj t t K n
+
+lemma isIso_rightDerivedFunctorPlusUnit_app_of_bounded
+    (K : CochainComplex C ℤ) (a b : ℤ) [ha : K.IsStrictlyGE a] [K.IsStrictlyLE b]
+    (hK : ∀ (i : ℤ) (_ : a ≤ i) (_ : i ≤ b),
+      IsIso (F.rightDerivedFunctorPlusUnit.app
+        ((HomotopyCategory.Plus.singleFunctor C 0).obj (K.X i)))) :
+    IsIso (F.rightDerivedFunctorPlusUnit.app
+      ⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, a, ha⟩) := by
+  let S := (Triangulated.Subcategory.ofNatTrans (F.rightDerivedFunctorPlusUnit)).map (HomotopyCategory.Plus.ι C)
+  suffices S.P ((HomotopyCategory.quotient _ _).obj K) by
+    change (Triangulated.Subcategory.ofNatTrans (F.rightDerivedFunctorPlusUnit)).P _
+    rw [← Triangulated.Subcategory.mem_map_iff _ (HomotopyCategory.Plus.ι C)]
+    exact this
+  apply HomotopyCategory.mem_subcategory_of_strictly_bounded _ _ a b
+  intro i ha hb
+  replace hK := hK i ha hb
+  change (Triangulated.Subcategory.ofNatTrans (F.rightDerivedFunctorPlusUnit)).P _ at hK
+  simpa only [← Triangulated.Subcategory.mem_map_iff _ (HomotopyCategory.Plus.ι C)] using hK
+
+/-lemma isIso_rightDerivedFunctorPlusUnit_app
+    (K : CochainComplex C ℤ) (a : ℤ) [ha : K.IsStrictlyGE a]
+    (hK : ∀ (i : ℤ) (_ : a ≤ i),
+      IsIso (F.rightDerivedFunctorPlusUnit.app
+        ((HomotopyCategory.Plus.singleFunctor C 0).obj (K.X i)))) :
+    IsIso (F.rightDerivedFunctorPlusUnit.app
+      (HomotopyCategory.Plus.mk K ⟨a, inferInstance⟩)) := by
+  rw [DerivedCategory.Plus.isIso_iff]
+  intro n
+  let e₁ := ComplexShape.embeddingUpIntLE (n + 1)
+  let e₂ := ComplexShape.embeddingUpIntGE (n + 2)
+  let K' := HomotopyCategory.Plus.mk K ⟨a, inferInstance⟩
+  let L' := HomotopyCategory.Plus.mk (K.stupidTrunc e₁) ⟨a, inferInstance⟩
+  let M' := HomotopyCategory.Plus.mk (K.stupidTrunc e₂) ⟨a, inferInstance⟩
+  let T := CochainComplex.trianglehOfDegreewiseSplit _
+      (K.shortComplexStupidTruncSplitting
+        (ComplexShape.Embedding.embeddingUpInt_areComplementary (n + 1) (n + 2) (by omega)))
+  have hT : T ∈ distTriang _ := by
+    apply HomotopyCategory.trianglehOfDegreewiseSplit_distinguished
+  let T' : Pretriangulated.Triangle (HomotopyCategory.Plus C) :=
+    { obj₁ := M'
+      obj₂ := K'
+      obj₃ := L'
+      mor₁ := (HomotopyCategory.Plus.ι _).preimage T.mor₁
+      mor₂ := (HomotopyCategory.Plus.ι _).preimage T.mor₂
+      mor₃ := (HomotopyCategory.Plus.ι _).preimage (T.mor₃ ≫
+        ((HomotopyCategory.Plus.ι C).commShiftIso (1 : ℤ)).inv.app M') }
+  have hT' : T' ∈ distTriang _ := by
+    rw [← (HomotopyCategory.Plus.ι C).map_distinguished_iff]
+    refine Pretriangulated.isomorphic_distinguished _ hT _
+      (Pretriangulated.Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
+      (by simp) (by simp) ?_)
+    dsimp
+    simp only [image_preimage, assoc, Iso.inv_hom_id_app, comp_obj, map_id, comp_id, id_comp]
+    apply comp_id
+  let φ : K' ⟶ L' := (HomotopyCategory.quotient C _).map (K.πStupidTrunc e₁)
+  have : IsIso (F.rightDerivedFunctorPlusUnit.app L') := by
+    apply isIso_rightDerivedFunctorPlusUnit_app_of_bounded _ _ a (n + 1)
+    intro i hi hi'
+    exact (NatTrans.isIso_app_iff_of_iso _
+      (Functor.mapIso _ (asIso' (K.isIso_πStupidTrunc_f (n + 1) i hi')))).1 (hK i hi)
+
+  have h₁ : IsIso ((DerivedCategory.Plus.homologyFunctor D n).map
+      ((F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).map φ)) := by
+    sorry
+  have h₂ : IsIso ((DerivedCategory.Plus.homologyFunctor D n).map
+    ((DerivedCategory.Plus.Qh ⋙ F.rightDerivedFunctorPlus).map φ)) := sorry
+
+  have e'' : Arrow.mk ((DerivedCategory.Plus.homologyFunctor D n).map
+    ((F.rightDerivedFunctorPlusUnit).app K')) ≅
+      Arrow.mk ((DerivedCategory.Plus.homologyFunctor D n).map
+        ((F.rightDerivedFunctorPlusUnit).app L')) := Arrow.isoMk (asIso' h₁) (asIso' h₂) (by
+      dsimp
+      simp only [← Functor.map_comp]
+      congr 1
+      exact F.rightDerivedFunctorPlusUnit.naturality φ)
+  apply ((MorphismProperty.RespectsIso.isomorphisms D).arrow_mk_iso_iff e'').2
+  change IsIso _
+  infer_instance-/
 
 end
 
@@ -165,7 +269,7 @@ lemma isIso_rightDerivedFunctorPlusCompNatTrans_app (K : HomotopyCategory.Plus C
     DerivedCategory.Plus.Qh (HomotopyCategory.Plus.quasiIso C)
     F.rightDerivedFunctorPlusUnit G.rightDerivedFunctorPlusUnit H.rightDerivedFunctorPlusUnit K
 
-lemma isIso_rightDerivedFunctorPlusCompNatTrans
+lemma isIso_rightDerivedFunctorPlusCompNatTrans'
     (h : ∀ (K : HomotopyCategory.Plus (Injectives C)),
       IsIso (G.rightDerivedFunctorPlusUnit.app
         ((Injectives.ι C ⋙ F).mapHomotopyCategoryPlus.obj K))) :
@@ -190,6 +294,16 @@ lemma isIso_rightDerivedFunctorPlusCompNatTrans
   · infer_instance
   · apply h
   · infer_instance
+
+/-instance isIso_rightDerivedFunctorPlusCompNatTrans
+    [hFG : ∀ (I : Injectives C), IsIso (G.rightDerivedFunctorPlusUnit.app
+        ((HomotopyCategory.Plus.singleFunctor D 0).obj (F.obj ((Injectives.ι C).obj I))))] :
+    IsIso (rightDerivedFunctorPlusCompNatTrans e) := by
+  apply isIso_rightDerivedFunctorPlusCompNatTrans'
+  rintro ⟨⟨K⟩, n, hK⟩
+  exact G.isIso_rightDerivedFunctorPlusUnit_app
+    (((Injectives.ι C ⋙ F).mapHomologicalComplex (ComplexShape.up ℤ)).obj K) n
+    (fun i _ => hFG _)-/
 
 end
 

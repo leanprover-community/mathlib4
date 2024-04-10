@@ -36,20 +36,20 @@ noncomputable def convergesAt' (n : ℕ) :
         G.rightDerivedFunctorPlus ⋙ homologyFunctor C (n : ℤ)).obj X) := by
   apply TStructure.spectralSequenceNatStronglyConvergesTo
 
-variable (hFG : ∀ (K : HomotopyCategory.Plus (Injectives A)),
-  IsIso (G.rightDerivedFunctorPlusUnit.app ((Injectives.ι A ⋙ F).mapHomotopyCategoryPlus.obj K)))
+variable [∀ (I : Injectives A),
+  IsIso (G.rightDerivedFunctorPlusUnit.app
+    ((HomotopyCategory.Plus.singleFunctor B 0).obj (F.obj ((Injectives.ι A).obj I))))]
 
-noncomputable example : (F ⋙ G).rightDerivedFunctorPlus ≅
+/-noncomputable example : (F ⋙ G).rightDerivedFunctorPlus ≅
     F.rightDerivedFunctorPlus ⋙ G.rightDerivedFunctorPlus :=
-  @asIso _ _ _ _ _ ((Functor.isIso_rightDerivedFunctorPlusCompNatTrans (Iso.refl (F ⋙ G)) hFG))
+  asIso (Functor.rightDerivedFunctorPlusCompNatTrans (Iso.refl (F ⋙ G)))
 
 noncomputable def convergesAt (n : ℕ) :
     (grothendieckSpectralSequence F G X).StronglyConvergesToInDegree
       CohomologicalSpectralSequenceNat.stripes n
       (((F ⋙ G).rightDerived' n).obj X) :=
-  have := Functor.isIso_rightDerivedFunctorPlusCompNatTrans (Iso.refl (F ⋙ G)) hFG
   (convergesAt' F G X n).ofIso ((homologyFunctor C n).mapIso
-      ((asIso (Functor.rightDerivedFunctorPlusCompNatTrans (Iso.refl _))).symm.app _))
+      ((asIso (Functor.rightDerivedFunctorPlusCompNatTrans (Iso.refl _))).symm.app _))-/
 
 end Plus
 

@@ -593,6 +593,28 @@ instance : ClosedUnderIsomorphisms (ofNatTrans τ).P := by
 
 end
 
+section
+
+variable {D : Type*} [Category D] [HasZeroObject D] [Preadditive D]
+    [HasShift D ℤ] [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
+    (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] [Full F] [Faithful F]
+
+def map : Subcategory D := essImage (S.ι ⋙ F)
+
+instance : ClosedUnderIsomorphisms (S.map F).P := by
+  dsimp [map]
+  infer_instance
+
+lemma mem_map_iff (X : C) [ClosedUnderIsomorphisms S.P] :
+    (S.map F).P (F.obj X) ↔ S.P X := by
+  constructor
+  · rintro ⟨⟨Y, hX⟩, ⟨e⟩⟩
+    exact mem_of_iso _ (F.preimageIso e) hX
+  · intro hX
+    exact ⟨⟨X, hX⟩, ⟨Iso.refl _⟩⟩
+
+end
+
 end Subcategory
 
 end Triangulated

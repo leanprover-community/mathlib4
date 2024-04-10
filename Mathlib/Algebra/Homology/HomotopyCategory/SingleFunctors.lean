@@ -91,6 +91,6 @@ noncomputable def singleFunctorPostCompQuotientIso (n : ℤ) :
     singleFunctor C n ≅ CochainComplex.singleFunctor C n ⋙ quotient _ _ :=
   (SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostCompQuotientIso C)
 
-attribute [irreducible] singleFunctors singleFunctorsPostCompQuotientIso
+--attribute [irreducible] singleFunctors singleFunctorsPostCompQuotientIso
 
 end HomotopyCategory

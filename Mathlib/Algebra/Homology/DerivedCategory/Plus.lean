@@ -187,6 +187,17 @@ lemma isZero_homology_of_isLE
     IsZero ((homologyFunctor C i).obj X) :=
   hX.1.1 i hi
 
+lemma isIso_iff {X Y : DerivedCategory.Plus C} (f : X ⟶ Y) :
+    IsIso f ↔ ∀ (n : ℤ), IsIso ((homologyFunctor C n).map f) := by
+  constructor
+  · intro _ n
+    infer_instance
+  · intro h
+    have : IsIso (ι.map f) := by
+      rw [DerivedCategory.isIso_iff]
+      exact h
+    apply isIso_of_fully_faithful ι
+
 end Plus
 
 end DerivedCategory

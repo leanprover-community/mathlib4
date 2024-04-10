@@ -1,6 +1,8 @@
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
+import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 import Mathlib.Algebra.Homology.DerivedCategory.IsLE
 import Mathlib.CategoryTheory.Triangulated.Subcategory
+import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
 
 open CategoryTheory Category Limits Triangulated ZeroObject Pretriangulated
 
@@ -70,6 +72,24 @@ instance : (quasiIso A).IsCompatibleWithShift ℤ where
       (HomotopyCategory.quasiIso A (ComplexShape.up ℤ)) ((ι A).map f) a)
     exact (quasiIso_respectsIso A).arrow_mk_iso_iff
       (Arrow.isoOfNatIso ((ι A).commShiftIso a) (Arrow.mk f))
+
+noncomputable def singleFunctors : SingleFunctors C (Plus C) ℤ :=
+  SingleFunctors.lift (HomotopyCategory.singleFunctors C) (ι C)
+    (fun n => (subcategoryPlus C).lift (singleFunctor C n) (fun X => by
+      refine' ⟨n, _⟩
+      change ((CochainComplex.singleFunctor C n).obj X).IsStrictlyGE n
+      infer_instance))
+    (fun n => Iso.refl _)
+
+noncomputable abbrev singleFunctor (n : ℤ) : C ⥤ Plus C := (singleFunctors C).functor n
+
+noncomputable def singleFunctorιIso (n : ℤ) :
+    singleFunctor C n ⋙ ι C ≅ HomotopyCategory.singleFunctor C n := by
+  apply SingleFunctors.liftFunctorCompIso
+
+instance (n : ℤ) : (singleFunctor C n).Additive := by
+  dsimp [singleFunctor, singleFunctors]
+  infer_instance
 
 end Plus
 
