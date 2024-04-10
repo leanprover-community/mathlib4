@@ -11,12 +11,19 @@ import Mathlib.GroupTheory.GroupAction.Hom
 /-!
 # Pointwise actions of equivariant maps
 
-- `image_smul_setₛₗ` and `image_smul_setₛₗ` : under a `σ`-equivariant map,
+- `image_smul_setₛₗ` : under a `σ`-equivariant map,
 one has `h '' (c • s) = (σ c) • h '' s`.
 
-- `preimage_smul_setₛₗ'`, `preimage_smul_setₛₗ`, `preimage_smul_set`
-`preimage_smul_set` :
-one has `h ⁻¹' (σ c • s) = c • h⁻¹' s`
+- `preimage_smul_setₛₗ'` is a general version of the equality `h ⁻¹' (σ c • s) = c • h⁻¹' s`. It requires that `c` acts surjectively
+and `σ c` acts injectively.
+It is provided with specific versions:
+- `preimage_smul_setₛₗ_of_units` requires that `c` and `σ c` are units
+- `MonoidHom.preimage_smul_setₛₗ` requires that `σ` is a `MonoidHom` and `c` is a unit
+- `MonoidHomClass.preimage_smul_setₛₗ` requires that `σ` belongs to a `MonoidHomClass`and that `c` is a unit
+- `Group.preimage_smul_setₛₗ` requires that the types of `c` and `σ c` are groups
+
+- `image_smul_set`, `preimage_smul_set` and `Group.preimage_smul_set` are
+the variants when `σ` is the identity.
 
 -/
 
