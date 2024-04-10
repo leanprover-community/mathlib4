@@ -6,7 +6,6 @@ Authors: Andrew Yang
 import Mathlib.RingTheory.QuotientNilpotent
 import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.RingTheory.Unramified.Basic
-import Mathlib.RingTheory.Unramified.Derivations
 
 #align_import ring_theory.etale from "leanprover-community/mathlib"@"73f96237417835f148a1f7bc1ff55f67119b7166"
 
