@@ -186,9 +186,9 @@ theorem tsirelson_inequality [OrderedRing R] [StarRing R] [StarOrderedRing R] [A
   -- abel will create `ℤ` multiplication. We will `simp` them away to `ℝ` multiplication.
   have M : ∀ (m : ℤ) (a : ℝ) (x : R), m • a • x = ((m : ℝ) * a) • x := fun m a x => by
     rw [zsmul_eq_smul_cast ℝ, ← mul_smul]
-  let P := √2⁻¹ • (A₁ + A₀) - B₀
-  let Q := √2⁻¹ • (A₁ - A₀) + B₁
-  have w : √2 ^ 3 • (1 : R) - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁ = √2⁻¹ • (P ^ 2 + Q ^ 2) := by
+  let P := (√2)⁻¹ • (A₁ + A₀) - B₀
+  let Q := (√2)⁻¹ • (A₁ - A₀) + B₁
+  have w : √2 ^ 3 • (1 : R) - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁ = (√2)⁻¹ • (P ^ 2 + Q ^ 2) := by
     dsimp [P, Q]
     -- distribute out all the powers and products appearing on the RHS
     simp only [sq, sub_mul, mul_sub, add_mul, mul_add, smul_add, smul_sub]
@@ -208,7 +208,7 @@ theorem tsirelson_inequality [OrderedRing R] [StarRing R] [StarOrderedRing R] [A
     -- just look at the coefficients now:
     congr
     exact mul_left_cancel₀ (by norm_num) tsirelson_inequality_aux
-  have pos : 0 ≤ √2⁻¹ • (P ^ 2 + Q ^ 2) := by
+  have pos : 0 ≤ (√2)⁻¹ • (P ^ 2 + Q ^ 2) := by
     have P_sa : star P = P := by
       simp only [P, star_smul, star_add, star_sub, star_id_of_comm, T.A₀_sa, T.A₁_sa, T.B₀_sa,
         T.B₁_sa]
