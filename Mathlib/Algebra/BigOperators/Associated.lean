@@ -81,6 +81,11 @@ theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero α] {p : α}
       exact ⟨q, Multiset.mem_cons.2 (Or.inr hq₁), hq₂⟩
 #align exists_associated_mem_of_dvd_prod exists_associated_mem_of_dvd_prod
 
+--TODO: change the definitions to
+--def IsDivisorClosed  {α : Type*}  [Monoid α] (S : Submonoid α) := sorry
+--def Submonoid.divisor_closure  {α : Type*}  [Monoid α] (S : Set α) : Submonoid α := sorry
+--where Submonoid.divisor_closure is defined using sInf
+
 /-- The divisor closure of a submonoid S is defined as the set of elements b ∈ S such that every
 divisor a ∈ H of b lies in S when it is multiplied by a unit. -/
 def Submonoid.divisor_closure [Monoid α] (S : Submonoid α) :=
