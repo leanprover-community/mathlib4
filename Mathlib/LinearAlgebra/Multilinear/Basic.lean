@@ -1028,8 +1028,8 @@ from the elements satisfying `P` to the multilinear maps on elements not satisfy
 In other words, splitting the variables into two subsets one gets a multilinear maps into
 multilinear maps. -/
 def domDomRestrictₗ (f : MultilinearMap R M₁ M₂) (P : ι → Prop) [DecidablePred P] :
-   MultilinearMap R (fun (i : {a : ι // ¬ P a}) => M₁ i)
-     (MultilinearMap R (fun (i : {a : ι // P a}) => M₁ i) M₂) where
+    MultilinearMap R (fun (i : {a : ι // ¬ P a}) => M₁ i)
+      (MultilinearMap R (fun (i : {a : ι // P a}) => M₁ i) M₂) where
   toFun := fun z ↦ domDomRestrict f P z
   map_add' := by
     intro h m i x y
@@ -1056,7 +1056,6 @@ lemma iteratedFDeriv_aux {α : Type*} [DecidableEq α]
       simp at hne
     · exact hne.symm
 
-open Classical in
 /-- One of the components of the iterated derivative of a multilinear map. Given a bijection `e`
 between a type `α` (typically `Fin k`) and a subset `s` of `ι`, this component is a multilinear map
 of `k` vectors `v₁, ..., vₖ`, mapping them
@@ -1064,19 +1063,19 @@ to `f (x₁, (v_{e 2})₂, x₃, ...)`, where at indices `i` in `s` one uses the
 and otherwise one uses a reference vector `x`. This is multilinear in the components of `x` outside
 of `s`, and in the `v_j`. -/
 noncomputable def iteratedFDerivComponent {α : Type*} [DecidableEq α]
-    (f : MultilinearMap R M₁ M₂) {s : Set ι} (e : α ≃ s) :
+    (f : MultilinearMap R M₁ M₂) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)] :
     MultilinearMap R (fun (i : {a : ι // a ∉ s}) ↦ M₁ i)
       (MultilinearMap R (fun (_ : α) ↦ (∀ i, M₁ i)) M₂) where
   toFun := fun z ↦
     { toFun := fun v ↦ domDomRestrictₗ f (fun i ↦ i ∈ s) z (fun i ↦ v (e.symm i) i)
-      map_add' := by simp [iteratedFDeriv_aux]
-      map_smul' := by simp [iteratedFDeriv_aux] }
+      map_add' := by classical!; simp [iteratedFDeriv_aux]
+      map_smul' := by classical!; simp [iteratedFDeriv_aux] }
   map_add' := by intros; ext; simp
   map_smul' := by intros; ext; simp
 
 open Classical in
-/-- The iterated derivative of a multilinear map `f` at the point `x`, it is a multilinear map
-of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
+/-- The `k`-th iterated derivative of a multilinear map `f` at the point `x`. It is a multilinear
+map of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
 to `∑ f (x₁, (v_{i_1})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one
 of the `(vᵢ)ⱼ`, where each `vᵢ` has to be used exactly once.
 The sum is parameterized by the embeddings of `Fin k` in the index type `ι` (or, equivalently,
