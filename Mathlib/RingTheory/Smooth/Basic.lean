@@ -26,7 +26,9 @@ and that it is stable under `R`-algebra homomorphisms and compositions.
 We show that smoothness is stable under compositions.
 
 # TODO
-add base change
+
+- Show that smooth is stable under base change.
+
 -/
 
 -- Porting note: added to make the syntax work below.
@@ -40,7 +42,6 @@ section
 
 variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [Semiring A] [Algebra R A]
-variable {B : Type u} [CommRing B] [Algebra R B] (I : Ideal B)
 
 /-- An `R` algebra `A` is formally smooth if for every `R`-algebra, every square-zero ideal
 `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at least one lift `A →ₐ[R] B`. -/
@@ -52,19 +53,17 @@ class FormallySmooth : Prop where
         Function.Surjective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I)
 #align algebra.formally_smooth Algebra.FormallySmooth
 
-/-- An `R` algebra `A` is smooth if it is formally smooth and of finite presentation. -/
-class Smooth [CommSemiring R] (A : Type u) [Semiring A] [Algebra R A] : Prop where
-  formallySmooth : FormallySmooth R A
-  finitePresentation : FinitePresentation R A
+end
 
-namespace Smooth
-attribute [instance] formallySmooth
-end Smooth
+namespace FormallySmooth
 
+section
 
-variable {R A}
+variable {R : Type u} [CommSemiring R]
+variable {A : Type u} [Semiring A] [Algebra R A]
+variable {B : Type u} [CommRing B] [Algebra R B] (I : Ideal B)
 
-theorem FormallySmooth.exists_lift {B : Type u} [CommRing B] [_RB : Algebra R B]
+theorem exists_lift {B : Type u} [CommRing B] [_RB : Algebra R B]
     [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I) (g : A →ₐ[R] B ⧸ I) :
     ∃ f : A →ₐ[R] B, (Ideal.Quotient.mkₐ R I).comp f = g := by
   revert g
@@ -89,19 +88,19 @@ theorem FormallySmooth.exists_lift {B : Type u} [CommRing B] [_RB : Algebra R B]
 
 /-- For a formally smooth `R`-algebra `A` and a map `f : A →ₐ[R] B ⧸ I` with `I` square-zero,
 this is an arbitrary lift `A →ₐ[R] B`. -/
-noncomputable def FormallySmooth.lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
+noncomputable def lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
     (g : A →ₐ[R] B ⧸ I) : A →ₐ[R] B :=
   (FormallySmooth.exists_lift I hI g).choose
 #align algebra.formally_smooth.lift Algebra.FormallySmooth.lift
 
 @[simp]
-theorem FormallySmooth.comp_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
+theorem comp_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
     (g : A →ₐ[R] B ⧸ I) : (Ideal.Quotient.mkₐ R I).comp (FormallySmooth.lift I hI g) = g :=
   (FormallySmooth.exists_lift I hI g).choose_spec
 #align algebra.formally_smooth.comp_lift Algebra.FormallySmooth.comp_lift
 
 @[simp]
-theorem FormallySmooth.mk_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
+theorem mk_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
     (g : A →ₐ[R] B ⧸ I) (x : A) : Ideal.Quotient.mk I (FormallySmooth.lift I hI g x) = g x :=
   AlgHom.congr_fun (FormallySmooth.comp_lift I hI g : _) x
 #align algebra.formally_smooth.mk_lift Algebra.FormallySmooth.mk_lift
@@ -110,14 +109,14 @@ variable {C : Type u} [CommRing C] [Algebra R C]
 
 /-- For a formally smooth `R`-algebra `A` and a map `f : A →ₐ[R] B ⧸ I` with `I` nilpotent,
 this is an arbitrary lift `A →ₐ[R] B`. -/
-noncomputable def FormallySmooth.liftOfSurjective [FormallySmooth R A] (f : A →ₐ[R] C)
+noncomputable def liftOfSurjective [FormallySmooth R A] (f : A →ₐ[R] C)
     (g : B →ₐ[R] C) (hg : Function.Surjective g) (hg' : IsNilpotent <| RingHom.ker (g : B →+* C)) :
     A →ₐ[R] B :=
   FormallySmooth.lift _ hg' ((Ideal.quotientKerAlgEquivOfSurjective hg).symm.toAlgHom.comp f)
 #align algebra.formally_smooth.lift_of_surjective Algebra.FormallySmooth.liftOfSurjective
 
 @[simp]
-theorem FormallySmooth.liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ[R] C) (g : B →ₐ[R] C)
+theorem liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     (hg : Function.Surjective g) (hg' : IsNilpotent <| RingHom.ker (g : B →+* C)) (x : A) :
     g (FormallySmooth.liftOfSurjective f g hg hg' x) = f x := by
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).symm.injective
@@ -131,7 +130,7 @@ theorem FormallySmooth.liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ
 #align algebra.formally_smooth.lift_of_surjective_apply Algebra.FormallySmooth.liftOfSurjective_apply
 
 @[simp]
-theorem FormallySmooth.comp_liftOfSurjective [FormallySmooth R A] (f : A →ₐ[R] C) (g : B →ₐ[R] C)
+theorem comp_liftOfSurjective [FormallySmooth R A] (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     (hg : Function.Surjective g) (hg' : IsNilpotent <| RingHom.ker (g : B →+* C)) :
     g.comp (FormallySmooth.liftOfSurjective f g hg hg') = f :=
   AlgHom.ext (FormallySmooth.liftOfSurjective_apply f g hg hg')
@@ -144,21 +143,13 @@ section OfEquiv
 variable {R : Type u} [CommSemiring R]
 variable {A B : Type u} [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
-theorem FormallySmooth.of_equiv [FormallySmooth R A] (e : A ≃ₐ[R] B) : FormallySmooth R B := by
+theorem of_equiv [FormallySmooth R A] (e : A ≃ₐ[R] B) : FormallySmooth R B := by
   constructor
   intro C _ _ I hI f
   use (FormallySmooth.lift I ⟨2, hI⟩ (f.comp e : A →ₐ[R] C ⧸ I)).comp e.symm
   rw [← AlgHom.comp_assoc, FormallySmooth.comp_lift, AlgHom.comp_assoc, AlgEquiv.comp_symm,
     AlgHom.comp_id]
 #align algebra.formally_smooth.of_equiv Algebra.FormallySmooth.of_equiv
-
--- If `e : A ≃ₐ[R] B` and `A` is  smooth, then so is `B`.
-variable (R: Type u) [CommRing R]
-variable (A B: Type u) [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
-
-theorem Smooth.of_equiv [Smooth R A] (e : A ≃ₐ[R] B) : Smooth R B where
-  formallySmooth := FormallySmooth.of_equiv e
-  finitePresentation := FinitePresentation.equiv Smooth.finitePresentation e
 
 end OfEquiv
 
@@ -168,7 +159,7 @@ open scoped Polynomial
 
 variable (R : Type u) [CommSemiring R]
 
-instance FormallySmooth.mvPolynomial (σ : Type u) : FormallySmooth R (MvPolynomial σ R) := by
+instance mvPolynomial (σ : Type u) : FormallySmooth R (MvPolynomial σ R) := by
   constructor
   intro C _ _ I _ f
   have : ∀ s : σ, ∃ c : C, Ideal.Quotient.mk I c = f (MvPolynomial.X s) := fun s =>
@@ -180,7 +171,7 @@ instance FormallySmooth.mvPolynomial (σ : Type u) : FormallySmooth R (MvPolynom
   rfl
 #align algebra.formally_smooth.mv_polynomial Algebra.FormallySmooth.mvPolynomial
 
-instance FormallySmooth.polynomial : FormallySmooth R R[X] :=
+instance polynomial : FormallySmooth R R[X] :=
   FormallySmooth.of_equiv (MvPolynomial.pUnitAlgEquiv R)
 #align algebra.formally_smooth.polynomial Algebra.FormallySmooth.polynomial
 
@@ -192,7 +183,7 @@ variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [CommSemiring A] [Algebra R A]
 variable (B : Type u) [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
 
-theorem FormallySmooth.comp [FormallySmooth R A] [FormallySmooth A B] : FormallySmooth R B := by
+theorem comp [FormallySmooth R A] [FormallySmooth A B] : FormallySmooth R B := by
   constructor
   intro C _ _ I hI f
   obtain ⟨f', e⟩ := FormallySmooth.comp_surjective I hI (f.comp (IsScalarTower.toAlgHom R A B))
@@ -204,16 +195,6 @@ theorem FormallySmooth.comp [FormallySmooth R A] [FormallySmooth A B] : Formally
 #align algebra.formally_smooth.comp Algebra.FormallySmooth.comp
 
 
-variable (R: Type u) [CommRing R]
-variable (A: Type u) [CommRing A] [Algebra R A]
-variable (B: Type u) [CommRing B] [Algebra A B]
-variable [Algebra R B] [IsScalarTower R A B]
-
-theorem Smooth.comp [Smooth R A] [Smooth A B]: Smooth R B where
-  formallySmooth := FormallySmooth.comp R A B
-  finitePresentation := FinitePresentation.trans (A := A) Smooth.finitePresentation
-    Smooth.finitePresentation
-
 end Comp
 
 section OfSurjective
@@ -222,7 +203,7 @@ variable {R S : Type u} [CommRing R] [CommSemiring S]
 variable {P A : Type u} [CommRing A] [Algebra R A] [CommRing P] [Algebra R P]
 variable (I : Ideal P) (f : P →ₐ[R] A) (hf : Function.Surjective f)
 
-theorem FormallySmooth.of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (RingHom.ker f.toRingHom) ^ 2)
+theorem of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (RingHom.ker f.toRingHom) ^ 2)
     (hg : f.kerSquareLift.comp g = AlgHom.id R A) : FormallySmooth R A := by
   constructor
   intro C _ _ I hI i
@@ -248,7 +229,7 @@ then `A` is formally smooth over `R` iff the surjection `P ⧸ J ^ 2 →ₐ[R] A
 
 Geometric intuition: we require that a first-order thickening of `Spec A` inside `Spec P` admits
 a retraction. -/
-theorem FormallySmooth.iff_split_surjection [FormallySmooth R P] :
+theorem iff_split_surjection [FormallySmooth R P] :
     FormallySmooth R A ↔ ∃ g, f.kerSquareLift.comp g = AlgHom.id R A := by
   constructor
   · intro
@@ -283,14 +264,6 @@ theorem FormallySmooth.iff_split_surjection [FormallySmooth R P] :
 
 end OfSurjective
 
-section UnramifiedDerivation
-
-open scoped TensorProduct
-
-variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
-
-end UnramifiedDerivation
-
 section BaseChange
 
 open scoped TensorProduct
@@ -299,7 +272,7 @@ variable {R : Type u} [CommSemiring R]
 variable {A : Type u} [Semiring A] [Algebra R A]
 variable (B : Type u) [CommSemiring B] [Algebra R B]
 
-instance FormallySmooth.base_change [FormallySmooth R A] : FormallySmooth B (B ⊗[R] A) := by
+instance base_change [FormallySmooth R A] : FormallySmooth B (B ⊗[R] A) := by
   constructor
   intro C _ _ I hI f
   letI := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
@@ -326,7 +299,7 @@ variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
 -- Porting note: no longer supported
 -- attribute [local elab_as_elim] Ideal.IsNilpotent.induction_on
 
-theorem FormallySmooth.of_isLocalization : FormallySmooth R Rₘ := by
+theorem of_isLocalization : FormallySmooth R Rₘ := by
   constructor
   intro Q _ _ I e f
   have : ∀ x : M, IsUnit (algebraMap R Q x) := by
@@ -343,7 +316,7 @@ theorem FormallySmooth.of_isLocalization : FormallySmooth R Rₘ := by
   simp
 #align algebra.formally_smooth.of_is_localization Algebra.FormallySmooth.of_isLocalization
 
-theorem FormallySmooth.localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := by
+theorem localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := by
   constructor
   intro Q _ _ I e f
   letI := ((algebraMap Rₘ Q).comp (algebraMap R Rₘ)).toAlgebra
@@ -365,7 +338,7 @@ theorem FormallySmooth.localization_base [FormallySmooth R Sₘ] : FormallySmoot
   simp [f]
 #align algebra.formally_smooth.localization_base Algebra.FormallySmooth.localization_base
 
-theorem FormallySmooth.localization_map [FormallySmooth R S] : FormallySmooth Rₘ Sₘ := by
+theorem localization_map [FormallySmooth R S] : FormallySmooth Rₘ Sₘ := by
   haveI : FormallySmooth S Sₘ := FormallySmooth.of_isLocalization (M.map (algebraMap R S))
   haveI : FormallySmooth R Sₘ := FormallySmooth.comp R S Sₘ
   exact FormallySmooth.localization_base M
@@ -373,16 +346,50 @@ theorem FormallySmooth.localization_map [FormallySmooth R S] : FormallySmooth R�
 
 end Localization
 
-section
-variable (R : Type u) [CommRing R]
-variable (r : R)
-variable (A : Type u) [CommRing A] [Algebra R A] [IsLocalization.Away r A]
+end FormallySmooth
 
-theorem Smooth.of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Smooth R A where
-  formallySmooth := Algebra.FormallySmooth.of_isLocalization (Submonoid.powers r)
-  finitePresentation := IsLocalization.Away.finitePresentation r
+section
+
+variable (R : Type u) [CommSemiring R]
+variable (A : Type u) [Semiring A] [Algebra R A]
+
+/-- An `R` algebra `A` is smooth if it is formally smooth and of finite presentation. -/
+class Smooth [CommSemiring R] (A : Type u) [Semiring A] [Algebra R A] : Prop where
+  formallySmooth : FormallySmooth R A
+  finitePresentation : FinitePresentation R A
 
 end
 
+namespace Smooth
+
+attribute [instance] formallySmooth
+
+variable {R : Type u} [CommRing R]
+variable {A B : Type u} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
+
+/-- Being smooth is transported via algebra isomorphisms. -/
+theorem of_equiv [Smooth R A] (e : A ≃ₐ[R] B) : Smooth R B where
+  formallySmooth := FormallySmooth.of_equiv e
+  finitePresentation := FinitePresentation.equiv Smooth.finitePresentation e
+
+/-- Localization at an element preserves being unramified. -/
+theorem of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Smooth R A where
+  formallySmooth := Algebra.FormallySmooth.of_isLocalization (Submonoid.powers r)
+  finitePresentation := IsLocalization.Away.finitePresentation r
+
+section Comp
+
+variable (R A B)
+variable [Algebra A B] [IsScalarTower R A B]
+
+/-- Smooth is stable under composition. -/
+theorem comp [Smooth R A] [Smooth A B]: Smooth R B where
+  formallySmooth := FormallySmooth.comp R A B
+  finitePresentation := FinitePresentation.trans (A := A) Smooth.finitePresentation
+    Smooth.finitePresentation
+
+end Comp
+
+end Smooth
 
 end Algebra

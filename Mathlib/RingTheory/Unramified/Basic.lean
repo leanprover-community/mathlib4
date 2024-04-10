@@ -8,7 +8,6 @@ import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.FinitePresentation
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
-#align_import ring_theory.etale from "leanprover-community/mathlib"@"73f96237417835f148a1f7bc1ff55f67119b7166"
 
 /-!
 
@@ -25,7 +24,9 @@ under `R`-algebra homomorphisms and compositions.
 We show that being unramified is stable under compositions.
 
 # TODO
-add base change
+
+- show that unramified is stable under base change and localizations at f.g. monoids
+
 -/
 
 -- Porting note: added to make the syntax work below.
@@ -39,7 +40,6 @@ section
 
 variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [Semiring A] [Algebra R A]
-variable {B : Type u} [CommRing B] [Algebra R B] (I : Ideal B)
 
 /-- An `R`-algebra `A` is formally unramified if for every `R`-algebra, every square-zero ideal
 `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at most one lift `A →ₐ[R] B`. -/
@@ -51,17 +51,17 @@ class FormallyUnramified : Prop where
         Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I)
 #align algebra.formally_unramified Algebra.FormallyUnramified
 
-class Unramified [CommSemiring R] (A : Type u) [Semiring A] [Algebra R A] : Prop where
-  formallyUnramified : FormallyUnramified R A
-  finitePresentation : FinitePresentation R A
+end
 
-namespace Unramified
-attribute [instance] formallyUnramified
-end Unramified
+namespace FormallyUnramified
 
-variable {R A}
+section
 
-theorem FormallyUnramified.lift_unique {B : Type u} [CommRing B] [_RB : Algebra R B]
+variable {R : Type u} [CommSemiring R]
+variable {A : Type u} [Semiring A] [Algebra R A]
+variable {B : Type u} [CommRing B] [Algebra R B] (I : Ideal B)
+
+theorem lift_unique {B : Type u} [CommRing B] [_RB : Algebra R B]
     [FormallyUnramified R A] (I : Ideal B) (hI : IsNilpotent I) (g₁ g₂ : A →ₐ[R] B)
     (h : (Ideal.Quotient.mkₐ R I).comp g₁ = (Ideal.Quotient.mkₐ R I).comp g₂) : g₁ = g₂ := by
   revert g₁ g₂
@@ -78,12 +78,12 @@ theorem FormallyUnramified.lift_unique {B : Type u} [CommRing B] [_RB : Algebra 
     rwa [Ideal.Quotient.eq, ← map_sub, Ideal.mem_quotient_iff_mem hIJ, ← Ideal.Quotient.eq]
 #align algebra.formally_unramified.lift_unique Algebra.FormallyUnramified.lift_unique
 
-theorem FormallyUnramified.ext [FormallyUnramified R A] (hI : IsNilpotent I) {g₁ g₂ : A →ₐ[R] B}
+theorem ext [FormallyUnramified R A] (hI : IsNilpotent I) {g₁ g₂ : A →ₐ[R] B}
     (H : ∀ x, Ideal.Quotient.mk I (g₁ x) = Ideal.Quotient.mk I (g₂ x)) : g₁ = g₂ :=
   FormallyUnramified.lift_unique I hI g₁ g₂ (AlgHom.ext H)
 #align algebra.formally_unramified.ext Algebra.FormallyUnramified.ext
 
-theorem FormallyUnramified.lift_unique_of_ringHom [FormallyUnramified R A] {C : Type u} [CommRing C]
+theorem lift_unique_of_ringHom [FormallyUnramified R A] {C : Type u} [CommRing C]
     (f : B →+* C) (hf : IsNilpotent <| RingHom.ker f) (g₁ g₂ : A →ₐ[R] B)
     (h : f.comp ↑g₁ = f.comp (g₂ : A →+* B)) : g₁ = g₂ :=
   FormallyUnramified.lift_unique _ hf _ _
@@ -94,13 +94,13 @@ theorem FormallyUnramified.lift_unique_of_ringHom [FormallyUnramified R A] {C : 
         RingHom.mem_ker, map_sub, sub_eq_zero])
 #align algebra.formally_unramified.lift_unique_of_ring_hom Algebra.FormallyUnramified.lift_unique_of_ringHom
 
-theorem FormallyUnramified.ext' [FormallyUnramified R A] {C : Type u} [CommRing C] (f : B →+* C)
+theorem ext' [FormallyUnramified R A] {C : Type u} [CommRing C] (f : B →+* C)
     (hf : IsNilpotent <| RingHom.ker f) (g₁ g₂ : A →ₐ[R] B) (h : ∀ x, f (g₁ x) = f (g₂ x)) :
     g₁ = g₂ :=
   FormallyUnramified.lift_unique_of_ringHom f hf g₁ g₂ (RingHom.ext h)
 #align algebra.formally_unramified.ext' Algebra.FormallyUnramified.ext'
 
-theorem FormallyUnramified.lift_unique' [FormallyUnramified R A] {C : Type u} [CommRing C]
+theorem lift_unique' [FormallyUnramified R A] {C : Type u} [CommRing C]
     [Algebra R C] (f : B →ₐ[R] C) (hf : IsNilpotent <| RingHom.ker (f : B →+* C))
     (g₁ g₂ : A →ₐ[R] B) (h : f.comp g₁ = f.comp g₂) : g₁ = g₂ :=
   FormallyUnramified.ext' _ hf g₁ g₂ (AlgHom.congr_fun h)
@@ -113,7 +113,7 @@ section OfEquiv
 variable {R : Type u} [CommSemiring R]
 variable {A B : Type u} [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
-theorem FormallyUnramified.of_equiv [FormallyUnramified R A] (e : A ≃ₐ[R] B) :
+theorem of_equiv [FormallyUnramified R A] (e : A ≃ₐ[R] B) :
     FormallyUnramified R B := by
   constructor
   intro C _ _ I hI f₁ f₂ e'
@@ -123,13 +123,6 @@ theorem FormallyUnramified.of_equiv [FormallyUnramified R A] (e : A ≃ₐ[R] B)
   rw [← AlgHom.comp_assoc, e', AlgHom.comp_assoc]
 #align algebra.formally_unramified.of_equiv Algebra.FormallyUnramified.of_equiv
 
-variable (R: Type u) [CommRing R]
-variable (A B: Type u) [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
-
-theorem Unramified.of_equiv [Unramified R A] (e : A ≃ₐ[R] B) : Unramified R B where
-  formallyUnramified := FormallyUnramified.of_equiv e
-  finitePresentation := FinitePresentation.equiv Unramified.finitePresentation e
-
 end OfEquiv
 
 section Comp
@@ -138,7 +131,7 @@ variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [CommSemiring A] [Algebra R A]
 variable (B : Type u) [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
 
-theorem FormallyUnramified.comp [FormallyUnramified R A] [FormallyUnramified A B] :
+theorem comp [FormallyUnramified R A] [FormallyUnramified A B] :
     FormallyUnramified R B := by
   constructor
   intro C _ _ I hI f₁ f₂ e
@@ -154,7 +147,7 @@ theorem FormallyUnramified.comp [FormallyUnramified R A] [FormallyUnramified A B
   exact FormallyUnramified.ext I ⟨2, hI⟩ (AlgHom.congr_fun e)
 #align algebra.formally_unramified.comp Algebra.FormallyUnramified.comp
 
-theorem FormallyUnramified.of_comp [FormallyUnramified R B] : FormallyUnramified A B := by
+theorem of_comp [FormallyUnramified R B] : FormallyUnramified A B := by
   constructor
   intro Q _ _ I e f₁ f₂ e'
   letI := ((algebraMap A Q).comp (algebraMap R A)).toAlgebra
@@ -164,16 +157,6 @@ theorem FormallyUnramified.of_comp [FormallyUnramified R B] : FormallyUnramified
   intro x
   exact AlgHom.congr_fun e' x
 #align algebra.formally_unramified.of_comp Algebra.FormallyUnramified.of_comp
-
-variable (R: Type u) [CommRing R]
-variable (A: Type u) [CommRing A] [Algebra R A]
-variable (B: Type u) [CommRing B] [Algebra A B]
-variable [Algebra R B] [IsScalarTower R A B]
-
-theorem Unframified.comp [Unramified R A] [Unramified A B]: Unramified R B where
-  formallyUnramified := FormallyUnramified.comp R A B
-  finitePresentation := FinitePresentation.trans (A := A) Unramified.finitePresentation
-    Unramified.finitePresentation
 
 end Comp
 
@@ -185,7 +168,7 @@ variable {R : Type u} [CommSemiring R]
 variable {A : Type u} [Semiring A] [Algebra R A]
 variable (B : Type u) [CommSemiring B] [Algebra R B]
 
-instance FormallyUnramified.base_change [FormallyUnramified R A] :
+instance base_change [FormallyUnramified R A] :
     FormallyUnramified B (B ⊗[R] A) := by
   constructor
   intro C _ _ I hI f₁ f₂ e
@@ -210,7 +193,7 @@ variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
 -- attribute [local elab_as_elim] Ideal.IsNilpotent.induction_on
 
 /-- This holds in general for epimorphisms. -/
-theorem FormallyUnramified.of_isLocalization : FormallyUnramified R Rₘ := by
+theorem of_isLocalization : FormallyUnramified R Rₘ := by
   constructor
   intro Q _ _ I _ f₁ f₂ _
   apply AlgHom.coe_ringHom_injective
@@ -225,13 +208,13 @@ consistency. See `Algebra.FormallyUnramified.of_comp` instead.
  The intended use is for copying proofs between `Formally{Unramified, Smooth, Etale}`
  without the need to change anything (including removing redundant arguments). -/
 -- @[nolint unusedArguments] -- Porting note: removed
-theorem FormallyUnramified.localization_base [FormallyUnramified R Sₘ] : FormallyUnramified Rₘ Sₘ :=
+theorem localization_base [FormallyUnramified R Sₘ] : FormallyUnramified Rₘ Sₘ :=
   -- Porting note: added
   let _ := M
   FormallyUnramified.of_comp R Rₘ Sₘ
 #align algebra.formally_unramified.localization_base Algebra.FormallyUnramified.localization_base
 
-theorem FormallyUnramified.localization_map [FormallyUnramified R S] :
+theorem localization_map [FormallyUnramified R S] :
     FormallyUnramified Rₘ Sₘ := by
   haveI : FormallyUnramified S Sₘ :=
     FormallyUnramified.of_isLocalization (M.map (algebraMap R S))
@@ -241,15 +224,50 @@ theorem FormallyUnramified.localization_map [FormallyUnramified R S] :
 
 end Localization
 
-section
-variable (R : Type u) [CommRing R]
-variable (r : R)
-variable (A : Type u) [CommRing A] [Algebra R A] [IsLocalization.Away r A]
+end FormallyUnramified
 
-theorem Unramified.of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Unramified R A where
+section
+
+variable (R : Type u) [CommSemiring R]
+variable (A : Type u) [Semiring A] [Algebra R A]
+
+/-- An `R`-algebra `A` is unramified if it is formally unramified and of finite presentation. -/
+class Unramified : Prop where
+  formallyUnramified : FormallyUnramified R A := by infer_instance
+  finitePresentation : FinitePresentation R A
+
+end
+
+namespace Unramified
+
+attribute [instance] formallyUnramified
+
+variable {R : Type u} [CommRing R]
+variable {A B : Type u} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
+
+/-- Being unramified is transported via algebra isomorphisms. -/
+theorem of_equiv [Unramified R A] (e : A ≃ₐ[R] B) : Unramified R B where
+  formallyUnramified := FormallyUnramified.of_equiv e
+  finitePresentation := FinitePresentation.equiv Unramified.finitePresentation e
+
+/-- Localization at an element preserves being unramified. -/
+theorem of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Unramified R A where
   formallyUnramified := Algebra.FormallyUnramified.of_isLocalization (Submonoid.powers r)
   finitePresentation := IsLocalization.Away.finitePresentation r
 
-end
+section Comp
+
+variable (R A B)
+variable [Algebra A B] [IsScalarTower R A B]
+
+/-- Unramified is stable under composition. -/
+theorem comp [Unramified R A] [Unramified A B] : Unramified R B where
+  formallyUnramified := FormallyUnramified.comp R A B
+  finitePresentation := FinitePresentation.trans (A := A) Unramified.finitePresentation
+    Unramified.finitePresentation
+
+end Comp
+
+end Unramified
 
 end Algebra
