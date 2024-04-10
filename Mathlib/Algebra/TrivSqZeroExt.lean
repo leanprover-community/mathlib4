@@ -435,6 +435,9 @@ instance one [One R] [Zero M] : One (tsze R M) :=
 instance mul [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] : Mul (tsze R M) :=
   ⟨fun x y => (x.1 * y.1, x.1 •> y.2 + x.2 <• y.1)⟩
 
+instance div [Sub M] [Mul R] [Div R] [HDiv M R M] [SMul Rᵐᵒᵖ M] [SMul R M] : Div (tsze R M) :=
+  ⟨fun ⟨a, b⟩ ⟨c, d⟩ => ⟨(a/c), (b<•c - a•>d)/(c*c)⟩⟩
+
 @[simp]
 theorem fst_one [One R] [Zero M] : (1 : tsze R M).fst = 1 :=
   rfl
