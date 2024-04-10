@@ -501,7 +501,6 @@ theorem IsPreprimitive.image_of_card
   apply Nat.mul_le_mul_left
   -- We reduce to proving that (set.range f ∩ g • B).ncard ≤ 1 for every g
   rw [(hB.isBlockSystem hB').left.ncard_eq_finsum]
---   suffices ∀ (t : Set.Elem (Set.range (fun (g : N) ↦ g • B))), Set.ncard (Set.range ⇑f ∩ t.val) ≤ 1 by
   rw [finsum_eq_finset_sum_of_support_subset]
   apply le_trans (Finset.sum_le_card_nsmul _ _ 1 _)
   simp only [smul_eq_mul, mul_one]
@@ -518,7 +517,7 @@ theorem IsPreprimitive.image_of_card
   -- It suffices to prove that the preimage is subsingleton
   rw [← Set.image_preimage_eq_range_inter]
   apply Set.Subsingleton.image
- -- Since the action of M on α is primitive, it suffices to prove that
+  -- Since the action of M on α is primitive, it suffices to prove that
   -- the preimage is a block which is not ⊤
   apply Or.resolve_right (hM.has_trivial_blocks ((hB.smul g).preimage f))
   intro h
