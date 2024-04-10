@@ -86,6 +86,7 @@ divisor a ∈ H of b lies in S when it is multiplied by a unit. -/
 def Submonoid.divisor_closure [Monoid α] (S : Submonoid α) :=
   {b ∈ S | ∀ (a : α) (_ : ∃ k, b = a*k), ∃ z ∈ S, a ~ᵤ z}
 
+/-- A submonoid is said to be divisor-closed if it is equal to its divisor closure. -/
 def Submonoid.divisor_closed [Monoid α] (S : Submonoid α) : Prop := S = S.divisor_closure
 
 theorem top_divisor_closed [Monoid α] : (⊤ : Submonoid α).divisor_closed := by
