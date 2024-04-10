@@ -217,7 +217,7 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp: p.Prime) (hs : p
     exact filter_append_perm (· ∈ s) (factors m)
 
 @[simp]
-lemma equivProdNatFactoredNumbers_apply {s : Finset ℕ} {m p e : ℕ} (hp: p.Prime) (hs : p ∉ s)
+lemma equivProdNatFactoredNumbers_apply {s : Finset ℕ} {p e m : ℕ} (hp: p.Prime) (hs : p ∉ s)
     (hm : m ∈ factoredNumbers s) :
     equivProdNatFactoredNumbers hp hs (e, ⟨m, hm⟩) = p ^ e * m := rfl
 
@@ -335,14 +335,6 @@ lemma equivProdNatSmoothNumbers_apply {p e m : ℕ} (hp: p.Prime) (hm : m ∈ p.
 lemma equivProdNatSmoothNumbers_apply' {p : ℕ} (hp: p.Prime) (x : ℕ × p.smoothNumbers) :
     equivProdNatSmoothNumbers hp x = p ^ x.1 * x.2 := rfl
 
-/-- The `k`-smooth numbers up to and including `N` as a `Finset` -/
-def smoothNumbersUpTo (N k : ℕ) : Finset ℕ :=
-    (Finset.range N.succ).filter (· ∈ smoothNumbers k)
-
-lemma mem_smoothNumbersUpTo {N k n : ℕ} :
-    n ∈ smoothNumbersUpTo N k ↔ n ≤ N ∧ n ∈ smoothNumbers k := by
-  simp [smoothNumbersUpTo, lt_succ]
-
 
 /-!
 ### Smooth and rough numbers up to a bound
@@ -350,6 +342,14 @@ lemma mem_smoothNumbersUpTo {N k n : ℕ} :
 We consider the sets of smooth and non-smooth ("rough") positive natural numbers `≤ N`
 and prove bounds for their sizes.
 -/
+
+/-- The `k`-smooth numbers up to and including `N` as a `Finset` -/
+def smoothNumbersUpTo (N k : ℕ) : Finset ℕ :=
+    (Finset.range N.succ).filter (· ∈ smoothNumbers k)
+
+lemma mem_smoothNumbersUpTo {N k n : ℕ} :
+    n ∈ smoothNumbersUpTo N k ↔ n ≤ N ∧ n ∈ smoothNumbers k := by
+  simp [smoothNumbersUpTo, lt_succ]
 
 /-- The positive non-`k`-smooth (so "`k`-rough") numbers up to and including `N` as a `Finset` -/
 def roughNumbersUpTo (N k : ℕ) : Finset ℕ :=
