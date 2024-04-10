@@ -5,6 +5,8 @@ Authors: Antoine Chambert-Loir
 
 -/
 
+import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Data.Set.Card
 import Mathlib.Data.Setoid.Partition
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Pointwise
@@ -298,7 +300,7 @@ theorem IsBlock.iff_of_subtype_val {C : SubMulAction G X} {B : Set C} :
   simp only [IsBlock.def_one]
   apply forall_congr'
   intro g
-  erw [← image_smul_set _ _ C.inclusion g B]
+  erw [← image_smul_set _ _ _ C.inclusion g B]
   apply or_congr (Set.image_eq_image Subtype.coe_injective).symm
   simp only [Set.disjoint_iff, Set.subset_empty_iff]
   erw [←
@@ -479,7 +481,7 @@ theorem IsBlock.of_orbit' {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
     IsBlock G (MulAction.orbit H a) := by
   rw [IsBlock.mk_subset]; intro g b
   rintro ⟨h, rfl⟩
-  simp?
+  simp only [Set.le_eq_subset]
   intro hb'
   suffices g ∈ H by
     rw [← Subgroup.coe_mk H g this, ← Subgroup.smul_def]
@@ -656,7 +658,9 @@ theorem IsBlock.is_top_of_large_block [hfX : Finite X] [hGX : IsPretransitive G 
   · exfalso; rw [hB_e] at hB'
     simp only [Set.ncard_empty, zero_mul, gt_iff_lt, not_lt_zero'] at hB'
   -- case when B is not empty
-  rw [Set.top_eq_univ, ← Set.toFinset_inj, Set.toFinset_univ, ← Finset.card_eq_iff_eq_univ, ← Set.ncard_eq_toFinset_card', ← Nat.card_eq_fintype_card]
+  rw [Set.top_eq_univ, ← Set.toFinset_inj, Set.toFinset_univ,
+    ← Finset.card_eq_iff_eq_univ, ← Set.ncard_eq_toFinset_card',
+    ← Nat.card_eq_fintype_card]
   obtain ⟨k, h⟩ := hB.ncard_of_block_divides hB_ne
   suffices k = 1 by
     simp only [h, this, mul_one]
@@ -699,7 +703,7 @@ theorem IsBlock.of_subset [IsPretransitive G X] (a : X) (B : Set X) (hfB : B.Fin
       rw [this]; apply top_IsBlock
     simp only [Set.iInter_eq_univ]
     intro k hk; exfalso
-    rw [hfB_e] at hk ; simpa only [Set.smul_set_empty] using hk
+    rw [hfB_e] at hk; simpa only [Set.smul_set_empty] using hk
 
   have hB'₀ : ∀ (k : G) (_ : a ∈ k • B), B' ≤ k • B := by
     intro k hk
@@ -710,7 +714,7 @@ theorem IsBlock.of_subset [IsPretransitive G X] (a : X) (B : Set X) (hfB : B.Fin
     apply Set.Finite.subset (Set.Finite.map _ hfB) (hB'₀ k ⟨b, hb, hk⟩)
   have hag : ∀ g : G, a ∈ g • B' → B' ≤ g • B' :=  by
     intro g hg x hx
-    -- a = g • b ; b ∈ B' ; a ∈ k • B → b ∈ k • B
+    -- a = g • b; b ∈ B'; a ∈ k • B → b ∈ k • B
     use g⁻¹ • x
     constructor
     · apply Set.mem_biInter; intro k; rintro (hk : a ∈ k • B)
@@ -738,8 +742,7 @@ theorem IsBlock.of_subset [IsPretransitive G X] (a : X) (B : Set X) (hfB : B.Fin
   have hak : a ∈ k⁻¹ • B' := by
     refine ⟨b, hb, ?_⟩
     simp only [← hk, inv_smul_smul]
-  have hagk : a ∈ (k⁻¹ * g) • B' :=
-    by
+  have hagk : a ∈ (k⁻¹ * g) • B' := by
     rw [mul_smul, Set.mem_smul_set_iff_inv_smul_mem, inv_inv, hk]
     exact hb'
   have hkB' : B' = k⁻¹ • B' := hag' k⁻¹ hak
