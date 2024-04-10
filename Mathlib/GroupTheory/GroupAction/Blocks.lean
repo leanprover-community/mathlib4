@@ -511,7 +511,7 @@ theorem IsBlock.orbit_stabilizer_eq
     let z := mem_stabilizer_iff.mp (SetLike.coe_mem k)
     rw [← Subgroup.smul_def] at z
     let zk : k • a ∈ k • B := Set.smul_mem_smul_set_iff.mpr ha
-    rw [z] at zk ; exact zk
+    rw [z] at zk; exact zk
   · intro hx
     obtain ⟨k, rfl⟩ := exists_smul_eq G a x
     suffices k ∈ stabilizer G B by
