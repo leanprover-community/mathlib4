@@ -25,6 +25,10 @@ and non trivial blocks: orbit of the group, orbit of a normal subgroup…
 
 The non-existence of nontrivial blocks is the definition of primitive actions.
 
+## References
+
+We follow [wieland1964].
+
 -/
 
 open scoped BigOperators Pointwise
