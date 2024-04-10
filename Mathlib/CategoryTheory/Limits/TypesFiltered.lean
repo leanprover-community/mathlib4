@@ -96,16 +96,23 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
       ∀ i j xi xj,
         t.ι.app i xi = t.ι.app j xj → ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj) :
     IsColimit t := by
-  apply isColimitOfReflects (uliftFunctor.{max v u, u})
-  apply Types.FilteredColimit.isColimitOf'.{v, max v u, w}
-    (F ⋙ uliftFunctor.{max v u, u}) (uliftFunctor.mapCocone t)
-  · intro (x : ULift t.pt)
-    obtain ⟨i, xi, h⟩ := hsurj x.down
-    exact ⟨i, ULift.up xi, congrArg ULift.up h⟩
-  · intro i j (xi : ULift (F.obj i)) (xj : ULift (F.obj j))
-      (h : ULift.up (t.ι.app i xi.down) = ULift.up (t.ι.app j xj.down))
-    obtain ⟨k, f, g, hfg⟩ := hinj i j xi.down xj.down (congrArg ULift.down h)
-    exact ⟨k, f, g, congrArg ULift.up hfg⟩
+  let α : t.pt → J := fun x => (hsurj x).choose
+  let f : ∀ (x : t.pt), F.obj (α x) := fun x => (hsurj x).choose_spec.choose
+  have hf : ∀ (x : t.pt), x = t.ι.app _ (f x) := fun x => (hsurj x).choose_spec.choose_spec
+  exact
+    { desc := fun s x => s.ι.app _ (f x)
+      fac := fun s j => by
+        ext y
+        obtain ⟨k, l, g, eq⟩ := hinj _ _ _ _ (hf (t.ι.app j y))
+        have h := congr_fun (s.ι.naturality g) (f (t.ι.app j y))
+        have h' := congr_fun (s.ι.naturality l) y
+        dsimp at h h' ⊢
+        rw [← h, ← eq, h']
+      uniq := fun s m hm => by
+        ext x
+        dsimp
+        nth_rw 1 [hf x]
+        rw [← hm, types_comp_apply] }
 
 variable [IsFilteredOrEmpty J]
 
