@@ -68,9 +68,9 @@ variable {M α}
   has an Iwasawa structure, then any normal subgroup that acts nontrivially
   contains the group of commutators. -/
 theorem IwasawaStructure.commutator_le
-      (is_qprim : IsQuasipreprimitive M α) (IwaS : IwasawaStructure M α)
-      {N : Subgroup M} (nN : N.Normal) (hNX : MulAction.fixedPoints N α ≠ ⊤) :
-      commutator M ≤ N := by
+    (is_qprim : IsQuasipreprimitive M α) (IwaS : IwasawaStructure M α)
+    {N : Subgroup M} (nN : N.Normal) (hNX : MulAction.fixedPoints N α ≠ ⊤) :
+    commutator M ≤ N := by
   have is_transN := is_qprim.pretransitive_of_normal nN hNX
   have ntα : Nontrivial α := isnontrivial_of_nontrivial_action hNX
   obtain a : α := Nontrivial.to_nonempty.some
