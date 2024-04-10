@@ -814,6 +814,7 @@ theorem getLast!_eq_getLast_of_ne_nil [Inhabited α] {l : List α} (h : l ≠ []
   | [] => contradiction
   | a :: as => rfl
 
+@[simp]
 theorem getLast!_reverse [Inhabited α] (l : List α) : l.reverse.getLast! = l.head! := by
   match l with
   | [] => rfl
