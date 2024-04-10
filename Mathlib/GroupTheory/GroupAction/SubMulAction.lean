@@ -25,6 +25,7 @@ For most uses, typically `Submodule R M` is more powerful.
 * `SubMulAction.mulAction'` - the `MulAction S M` transferred to the subtype when
   `IsScalarTower S R M`.
 * `SubMulAction.isScalarTower` - the `IsScalarTower S R M` transferred to the subtype.
+* `SubMulAction.inclusion` — the inclusion of a submulaction, as an equivariant map
 
 ## Tags
 
@@ -419,5 +420,37 @@ variable (p : SubMulAction R M) {s : S} {x y : M}
 theorem smul_mem_iff (s0 : s ≠ 0) : s • x ∈ p ↔ x ∈ p :=
   p.smul_mem_iff' (Units.mk0 s s0)
 #align sub_mul_action.smul_mem_iff SubMulAction.smul_mem_iff
+
+end SubMulAction
+
+namespace SubMulAction
+
+/- The inclusion of a SubMulaction, as an equivariant map -/
+variable {M α : Type*} [Monoid M] [MulAction M α]
+
+
+/-- The inclusion of a SubMulAction into the ambient set, as an equivariant map -/
+def inclusion (s : SubMulAction M α) : s →[M] α where
+-- The inclusion map of the inclusion of a SubMulAction
+  toFun := fun x => x.val
+-- The commutation property
+  map_smul' _ _ := rfl
+
+theorem inclusion.toFun_eq_coe (s : SubMulAction M α) :
+    s.inclusion.toFun = fun x => x.val := rfl
+
+lemma image_inclusion (s : SubMulAction M α) :
+    Set.range s.inclusion = s.carrier  := by
+  ext a
+  simp only [Set.mem_range, Subtype.exists, mem_carrier, SetLike.mem_coe]
+  constructor
+  · rintro ⟨a, h, rfl⟩; exact h
+  · exact fun h ↦ ⟨a, h, rfl⟩
+
+lemma inclusion_injective (s : SubMulAction M α) :
+    Function.Injective s.inclusion := by
+  rintro ⟨a, ha⟩ ⟨b, hb⟩ h
+  simp only [Subtype.mk.injEq]
+  exact h
 
 end SubMulAction
