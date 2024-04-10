@@ -429,7 +429,11 @@ lemma roughNumbersUpTo_eq_biUnion (N k) :
     fun h₁ h₂ h₃ ↦ (le_of_dvd (Nat.pos_of_ne_zero h₁) h₂).trans_lt h₃
   have H₂ : m ≠ 0 → p ∣ m → ¬ m < p :=
     fun h₁ h₂ ↦ not_lt.mpr <| le_of_dvd (Nat.pos_of_ne_zero h₁) h₂
-  tauto -- ~ 6300 heartbeats
+  constructor
+  · rintro ⟨h₁, h₂, _, h₄, h₅, h₆⟩
+    exact ⟨⟨⟨H₁ h₂ h₅ h₁, h₄⟩, fun h _ ↦ h₆ h⟩, h₁, h₂, h₅⟩
+  · rintro ⟨⟨⟨_, h₂⟩, h₃⟩, h₄, h₅, h₆⟩
+    exact ⟨h₄, h₅, H₂ h₅ h₆, h₂, h₆, fun h ↦ h₃ h h₂⟩
 
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by the sum of `⌊N/p⌋`
 over the primes `k ≤ p ≤ N`. -/
