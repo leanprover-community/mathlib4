@@ -361,11 +361,13 @@ lemma smoothNumbersUpTo_card_add_roughNumbersUpTo_card (N k : ℕ) :
     ← Finset.card_union_of_disjoint <| Finset.disjoint_filter.mpr fun n _ hn₂ h ↦ h.2 hn₂,
     Finset.filter_union_right]
   suffices Finset.card (Finset.filter (fun x ↦ x ≠ 0) (Finset.range (succ N))) = N by
-    convert this with n
-    have hn : n ∈ smoothNumbers k → n ≠ 0 := ne_zero_of_mem_smoothNumbers
-    tauto
+    have hn' (n) : n ∈ smoothNumbers k ∨ n ≠ 0 ∧ n ∉ smoothNumbers k ↔ n ≠ 0 := by
+      have : n ∈ smoothNumbers k → n ≠ 0 := ne_zero_of_mem_smoothNumbers
+      refine ⟨fun H ↦ Or.elim H this fun H ↦ H.1, fun H ↦ ?_⟩
+      simp only [ne_eq, H, not_false_eq_true, true_and, or_not]
+    rwa [Finset.filter_congr (s := Finset.range (succ N)) fun n _ ↦ hn' n]
   rw [Finset.filter_ne', Finset.card_erase_of_mem <| Finset.mem_range_succ_iff.mpr <| zero_le N]
-  simp
+  simp only [Finset.card_range, succ_sub_succ_eq_sub, tsub_zero]
 
 /-- A `k`-smooth number can be written as a square times a product of distinct primes `< k`. -/
 lemma eq_prod_primes_mul_sq_of_mem_smoothNumbers {n k : ℕ} (h : n ∈ smoothNumbers k) :
@@ -408,7 +410,8 @@ lemma smoothNumbersUpTo_card_le (N k : ℕ) :
     (smoothNumbersUpTo N k).card ≤ 2 ^ k.primesBelow.card * N.sqrt := by
   convert (Finset.card_le_card <| smoothNumbersUpTo_subset_image N k).trans <|
     Finset.card_image_le
-  simp
+  simp only [Finset.card_product, Finset.card_powerset, Finset.mem_range, zero_lt_succ,
+    Finset.card_erase_of_mem, Finset.card_range, succ_sub_succ_eq_sub, tsub_zero]
 
 /-- The set of `k`-rough numbers `≤ N` can be written as the union of the sets of multiples `≤ N`
 of primes `k ≤ p ≤ N`. -/
@@ -427,7 +430,7 @@ lemma roughNumbersUpTo_eq_biUnion (N k) :
     fun h₁ h₂ h₃ ↦ (le_of_dvd (Nat.pos_of_ne_zero h₁) h₂).trans_lt h₃
   have H₂ : m ≠ 0 → p ∣ m → ¬ m < p :=
     fun h₁ h₂ ↦ not_lt.mpr <| le_of_dvd (Nat.pos_of_ne_zero h₁) h₂
-  tauto
+  tauto -- ~ 6300 heartbeats
 
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by the sum of `⌊N/p⌋`
 over the primes `k ≤ p ≤ N`. -/
