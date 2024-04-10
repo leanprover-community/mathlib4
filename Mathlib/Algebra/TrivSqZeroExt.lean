@@ -460,6 +460,16 @@ theorem snd_mul [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] (x₁ x₂ : tsze
   rfl
 #align triv_sq_zero_ext.snd_mul TrivSqZeroExt.snd_mul
 
+@[simp]
+theorem fst_div [Sub M] [Mul R] [Div R] [HDiv M R M] [SMul Rᵐᵒᵖ M] [SMul R M] (x₁ x₂ : tsze R M) :
+    (x₁ / x₂).fst = x₁.fst / x₂.fst :=
+  rfl
+
+@[simp]
+theorem snd_div [Sub M] [Mul R] [Div R] [HDiv M R M] [SMul Rᵐᵒᵖ M] [SMul R M] (x₁ x₂ : tsze R M) :
+    (x₁ / x₂).snd = (x₁.snd <• x₂.fst - x₁.fst •> x₂.snd) / (x₂.fst * x₂.fst):=
+  rfl
+
 section
 
 variable (M)
