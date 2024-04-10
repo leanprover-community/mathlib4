@@ -116,6 +116,9 @@ lemma zero [ClosedUnderIsomorphisms S.P] : S.P 0 := by
   obtain ⟨X, hX, mem⟩ := S.zero'
   exact mem_of_iso _ hX.isoZero mem
 
+lemma mem_of_isZero [ClosedUnderIsomorphisms S.P] (X : C) (hX : IsZero X) : S.P X :=
+  mem_of_iso _ hX.isoZero.symm S.zero
+
 /-- The closure under isomorphisms of a triangulated subcategory. -/
 def isoClosure : Subcategory C where
   P := CategoryTheory.isoClosure S.P

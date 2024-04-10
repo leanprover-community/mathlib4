@@ -299,6 +299,7 @@ import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Homology.HomotopyCategory
 import Mathlib.Algebra.Homology.HomotopyCategory.Cylinder
 import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
+import Mathlib.Algebra.Homology.HomotopyCategory.Devissage
 import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
 import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexTriangulated

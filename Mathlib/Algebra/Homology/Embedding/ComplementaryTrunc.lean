@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
+import Mathlib.Algebra.Homology.Embedding.StupidTrunc
 
 lemma Int.exists_eq_add_nat_of_le (a b : ℤ) (hab : a ≤ b) :
     ∃ (k : ℕ), b = a + k := by
@@ -41,6 +42,73 @@ lemma exists_i₁ (i : ι) (hi : ∀ i₂, e₂.f i₂ ≠ i) :
 lemma exists_i₂ (i : ι) (hi : ∀ i₁, e₁.f i₁ ≠ i) :
     ∃ i₂, i = e₂.f i₂ :=
   ac.symm.exists_i₁ i hi
+
+variable (e₁ e₂) in
+@[simp]
+def fromSum : ι₁ ⊕ ι₂ → ι
+  | Sum.inl i₁ => e₁.f i₁
+  | Sum.inr i₂ => e₂.f i₂
+
+def fromSum_bijective : Function.Bijective (fromSum e₁ e₂) := by
+  constructor
+  · rintro (i₁ | i₂) (j₁ | j₂) h
+    · obtain rfl := e₁.injective_f h
+      rfl
+    · exfalso
+      exact ac.disjoint _ _ h
+    · exfalso
+      exact ac.disjoint _ _ h.symm
+    · obtain rfl := e₂.injective_f h
+      rfl
+  · intro n
+    obtain ⟨i₁, rfl⟩ | ⟨i₂, rfl⟩ := ac.union n
+    · exact ⟨Sum.inl i₁, rfl⟩
+    · exact ⟨Sum.inr i₂, rfl⟩
+
+noncomputable def equiv : ι₁ ⊕ ι₂ ≃ ι := Equiv.ofBijective _ (ac.fromSum_bijective)
+
+@[simp] lemma equiv_inl (i₁ : ι₁) : ac.equiv (Sum.inl i₁) = e₁.f i₁ := rfl
+@[simp] lemma equiv_inr (i₂ : ι₂) : ac.equiv (Sum.inr i₂) = e₂.f i₂ := rfl
+
+section
+
+variable {X : ι → Type*} (x₁ : ∀ i₁, X (e₁.f i₁)) (x₂ : ∀ i₂, X (e₂.f i₂))
+
+variable (X) in
+def aux (i j : ι) (hij : i = j) : X i ≃ X j := by
+  subst hij
+  rfl
+
+@[simp]
+lemma aux_trans {i j k : ι} (hij : i = j) (hjk : j = k) (x : X i):
+    aux X j k hjk (aux X i j hij x) = aux X i k (hij.trans hjk) x := by
+  subst hij hjk
+  rfl
+
+def desc' : ∀ (i : ι₁ ⊕ ι₂), X (ac.equiv i)
+  | Sum.inl i₁ => x₁ i₁
+  | Sum.inr i₂ => x₂ i₂
+
+lemma desc'_inl (i : ι₁ ⊕ ι₂) (i₁ : ι₁) (h : Sum.inl i₁ = i) :
+    ac.desc' x₁ x₂ i = aux _ _ _ (by subst h; simp) (x₁ i₁) := by subst h; rfl
+
+lemma desc'_inr (i : ι₁ ⊕ ι₂) (i₂ : ι₂) (h : Sum.inr i₂ = i) :
+    ac.desc' x₁ x₂ i = aux _ _ _ (by subst h; simp) (x₂ i₂) := by subst h; rfl
+
+
+noncomputable def desc (i : ι) : X i := aux _ _ _ (by simp) (ac.desc' x₁ x₂ (ac.equiv.symm i))
+
+lemma desc_inl (i₁ : ι₁) : ac.desc x₁ x₂ (e₁.f i₁) = x₁ i₁ := by
+  dsimp [desc]
+  rw [ac.desc'_inl _ _ _ i₁ (ac.equiv.injective (by simp)), aux_trans]
+  rfl
+
+lemma desc_inr (i₂ : ι₂) : ac.desc x₁ x₂ (e₂.f i₂) = x₂ i₂ := by
+  dsimp [desc]
+  rw [ac.desc'_inr _ _ _ i₂ (ac.equiv.injective (by simp)), aux_trans]
+  rfl
+
+end
 
 variable (K L : HomologicalComplex C c)
 
@@ -182,6 +250,8 @@ end ComplexShape
 
 namespace HomologicalComplex
 
+section
+
 variable {C : Type*} [Category C] [Abelian C]
 
 variable (K : HomologicalComplex C c) {e₁ : c₁.Embedding c} {e₂ : c₂.Embedding c}
@@ -207,5 +277,62 @@ instance : QuasiIso (K.shortComplexTruncLEX₃ToTruncGE ac) where
         (K.shortComplexTruncLEX₃ToTruncGE ac), g_shortComplexTruncLEX₃ToTruncGE]
       dsimp
       infer_instance
+
+end
+
+section
+
+variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C]
+
+variable (K : HomologicalComplex C c) {e₁ : c₁.Embedding c} {e₂ : c₂.Embedding c}
+  [e₁.IsTruncLE] [e₂.IsTruncGE] (ac : e₁.AreComplementary e₂)
+
+lemma ιStupidTrunc_πStupidTrunc :
+    K.ιStupidTrunc e₂ ≫ K.πStupidTrunc e₁ = 0 := by
+  ext n
+  have h₁ : (K.stupidTrunc e₂).IsStrictlySupportedOutside e₁ := by
+    rw [ac.isStrictlySupportedOutside₁_iff]
+    infer_instance
+  have h₂ : (K.stupidTrunc e₁).IsStrictlySupportedOutside e₂ := by
+    rw [ac.isStrictlySupportedOutside₂_iff]
+    infer_instance
+  obtain ⟨i₁, rfl⟩ | ⟨i₂, rfl⟩ := ac.union n
+  · apply IsZero.eq_of_src
+    apply h₁.isZero
+  · apply IsZero.eq_of_tgt
+    apply h₂.isZero
+
+@[simps]
+noncomputable def shortComplexStupidTrunc : ShortComplex (HomologicalComplex C c) :=
+  ShortComplex.mk (K.ιStupidTrunc e₂) (K.πStupidTrunc e₁) (K.ιStupidTrunc_πStupidTrunc ac)
+
+noncomputable def shortComplexStupidTruncSplitting₁ (n : ι₁) :
+    ((K.shortComplexStupidTrunc ac).map (eval C _ (e₁.f n))).Splitting where
+  r := 0
+  s := (asIso ((K.πStupidTrunc e₁).f (e₁.f n))).inv
+  f_r := by
+    apply IsZero.eq_of_src
+    dsimp
+    apply IsStrictlySupportedOutside.isZero (e := e₁)
+    rw [ac.isStrictlySupportedOutside₁_iff]
+    infer_instance
+
+noncomputable def shortComplexStupidTruncSplitting₂ (n : ι₂) :
+    ((K.shortComplexStupidTrunc ac).map (eval C _ (e₂.f n))).Splitting where
+  r := (asIso ((K.ιStupidTrunc e₂).f (e₂.f n))).inv
+  s := 0
+  s_g := by
+    apply IsZero.eq_of_src
+    dsimp
+    apply IsStrictlySupportedOutside.isZero (e := e₂)
+    rw [ac.isStrictlySupportedOutside₂_iff]
+    infer_instance
+
+noncomputable def shortComplexStupidTruncSplitting (n : ι) :
+    ((K.shortComplexStupidTrunc ac).map (eval C _ n)).Splitting := by
+  apply ac.desc (K.shortComplexStupidTruncSplitting₁ ac)
+    (K.shortComplexStupidTruncSplitting₂ ac) n
+
+end
 
 end HomologicalComplex

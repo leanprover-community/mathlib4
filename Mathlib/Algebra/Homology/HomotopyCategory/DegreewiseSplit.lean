@@ -222,4 +222,10 @@ lemma distinguished_iff_iso_trianglehOfDegreewiseSplit
         CochainComplex.trianglehOfDegreewiseSplitRotateRotateIso S σ)
     exact ⟨_, _, _, ⟨Iso.refl _⟩⟩
 
+lemma trianglehOfDegreewiseSplit_distinguished (S : ShortComplex (CochainComplex C ℤ))
+  (σ : ∀ n, (S.map (HomologicalComplex.eval C _ n)).Splitting) :
+    CochainComplex.trianglehOfDegreewiseSplit S σ ∈ distTriang _ := by
+  rw [distinguished_iff_iso_trianglehOfDegreewiseSplit]
+  exact ⟨S, σ, ⟨Iso.refl _⟩⟩
+
 end HomotopyCategory

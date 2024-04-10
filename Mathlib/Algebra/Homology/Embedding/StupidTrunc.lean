@@ -16,6 +16,10 @@ variable (K L M : HomologicalComplex C c') (φ : K ⟶ L) (φ' : L ⟶ M)
 
 noncomputable def stupidTrunc : HomologicalComplex C c' := ((K.restriction e).extend e)
 
+instance : IsStrictlySupported (K.stupidTrunc e) e := by
+  dsimp [stupidTrunc]
+  infer_instance
+
 noncomputable def stupidTruncXIso {i : ι} {i' : ι'} (hi' : e.f i = i') :
     (K.stupidTrunc e).X i' ≅ K.X i' :=
   (K.restriction e).extendXIso e hi' ≪≫ eqToIso (by subst hi'; rfl)
@@ -92,7 +96,7 @@ instance (i : ι) : IsIso ((K.ιStupidTrunc e).f (e.f i)) :=
 variable {K L}
 
 @[reassoc (attr := simp)]
-lemma ιStudicTrunc_naturality :
+lemma ιStupicTrunc_naturality :
     stupidTruncMap φ e ≫ L.ιStupidTrunc e = K.ιStupidTrunc e ≫ φ := by
   ext i'
   by_cases hi' : ∃ i, e.f i = i'
@@ -141,7 +145,7 @@ instance (i : ι) : IsIso ((K.πStupidTrunc e).f (e.f i)) :=
 variable {K L}
 
 @[reassoc (attr := simp)]
-lemma πStudicTrunc_naturality :
+lemma πStupicTrunc_naturality :
     K.πStupidTrunc e ≫ stupidTruncMap φ e = φ ≫ L.πStupidTrunc e := by
   ext i'
   by_cases hi' : ∃ i, e.f i = i'

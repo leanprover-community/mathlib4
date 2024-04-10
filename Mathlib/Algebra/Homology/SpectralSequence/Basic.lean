@@ -2,12 +2,6 @@ import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Tactic.Linarith
 
-lemma Int.eq_add_ofNat_of_le {i j : ℤ} (hij : i ≤ j) :
-    ∃ (d : ℕ), j = i + d := by
-  have h : 0 ≤ j - i := by linarith
-  obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le h
-  exact ⟨d, by linarith⟩
-
 namespace ComplexShape
 
 def spectralSequenceNat (u : ℤ × ℤ) : ComplexShape (ℕ × ℕ) where
