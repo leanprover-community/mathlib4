@@ -10,6 +10,12 @@ example (h : a / 5 + b / 4 < c) : 4*a + 5*b < 20*c := by
   cancel_denoms at h
   exact h
 
+-- found by automated testing
+example (h : a > 0) : a / 5 > 0 := by
+  have := 0
+  cancel_denoms
+  exact h
+
 example (h : a > 0) : a / 5 > 0 := by
   cancel_denoms
   exact h
