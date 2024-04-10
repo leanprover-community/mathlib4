@@ -57,39 +57,6 @@ theorem eqvGen_quot_rel_of_rel (x y : Σ j, F.obj j) :
 
 --attribute [local elab_without_expected_type] nat_trans.app
 
-/-- Recognizing filtered colimits of types (auxiliary definition). See
-`Limits.Types.FilteredColimit.isColimitOf` for a version without the `HasColimit F` assumption. -/
-noncomputable def isColimitOf' (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x = t.ι.app i xi)
-    (hinj :
-      ∀ i j xi xj,
-        t.ι.app i xi = t.ι.app j xj → ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj) :
-    IsColimit t := by
-  -- Strategy: Prove that the map from "the" colimit of F (defined above) to t.X
-  -- is a bijection.
-  apply IsColimit.ofIsoColimit (colimit.isColimit F)
-  refine' Cocones.ext (Equiv.toIso (Equiv.ofBijective _ _)) _
-  · exact colimit.desc F t
-  · constructor
-    · show Function.Injective _
-      intro a b h
-      rcases jointly_surjective F (colimit.isColimit F) a with ⟨i, xi, rfl⟩
-      rcases jointly_surjective F (colimit.isColimit F) b with ⟨j, xj, rfl⟩
-      replace h : (colimit.ι F i ≫ colimit.desc F t) xi = (colimit.ι F j ≫ colimit.desc F t) xj := h
-      rw [colimit.ι_desc, colimit.ι_desc] at h
-      rcases hinj i j xi xj h with ⟨k, f, g, h'⟩
-      change colimit.ι F i xi = colimit.ι F j xj
-      rw [← colimit.w F f, ← colimit.w F g]
-      change colimit.ι F k (F.map f xi) = colimit.ι F k (F.map g xj)
-      rw [h']
-    · show Function.Surjective _
-      intro x
-      rcases hsurj x with ⟨i, xi, rfl⟩
-      use colimit.ι F i xi
-      apply Colimit.ι_desc_apply
-  · intro j
-    apply colimit.ι_desc
-#align category_theory.limits.types.filtered_colimit.is_colimit_of CategoryTheory.Limits.Types.FilteredColimit.isColimitOf'
-
 /-- Recognizing filtered colimits of types. -/
 noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x = t.ι.app i xi)
     (hinj :
