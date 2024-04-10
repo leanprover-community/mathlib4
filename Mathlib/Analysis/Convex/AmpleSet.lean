@@ -83,7 +83,17 @@ theorem AmpleSet.image {s : Set E} (h : AmpleSet s) (L : E ≃ᵃL[ℝ] F) :
           .symm <| L.toAffineMap.image_convexHull _
     _ = univ := by rw [h x hx, image_univ, L.surjective.range_eq]
 
+/-- A set is ample iff its image under a continuous affine equivalence is. -/
+theorem AmpleSet.image_iff {s : Set E} (L : E ≃ᵃL[ℝ] F) :
+    AmpleSet (L '' s) ↔ AmpleSet s :=
+  ⟨fun h ↦ (L.symm_image_image s) ▸ h.image L.symm, fun h ↦ h.image L⟩
+
 /-- Preimages of ample sets under continuous affine equivalences are ample. -/
 theorem AmpleSet.preimage {s : Set F} (h : AmpleSet s) (L : E ≃ᵃL[ℝ] F) : AmpleSet (L ⁻¹' s) := by
   rw [← L.image_symm_eq_preimage]
   exact h.image L.symm
+
+/-- A set is ample iff its pre-image under a continuous affine equivalence is. -/
+theorem AmpleSet.preimage_iff {s : Set F} (L : E ≃ᵃL[ℝ] F) :
+    AmpleSet (L ⁻¹' s) ↔ AmpleSet s :=
+  ⟨fun h ↦ L.image_preimage s ▸ h.image L, fun h ↦ h.preimage L⟩
