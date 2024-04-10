@@ -5,8 +5,6 @@ Authors: Antoine Chambert-Loir
 
 -/
 
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Data.Set.Card
 import Mathlib.Data.Setoid.Partition
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Pointwise
@@ -481,7 +479,7 @@ theorem IsBlock.of_orbit' {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
     IsBlock G (MulAction.orbit H a) := by
   rw [IsBlock.mk_subset]; intro g b
   rintro ⟨h, rfl⟩
-  simp
+  simp?
   intro hb'
   suffices g ∈ H by
     rw [← Subgroup.coe_mk H g this, ← Subgroup.smul_def]
@@ -523,7 +521,7 @@ theorem IsBlock.orbit_stabilizer_eq
     let z := mem_stabilizer_iff.mp (SetLike.coe_mem k)
     rw [← Subgroup.smul_def] at z
     let zk : k • a ∈ k • B := Set.smul_mem_smul_set_iff.mpr ha
-    rw [z] at zk ; exact zk
+    rw [z] at zk; exact zk
   · intro hx
     obtain ⟨k, rfl⟩ := exists_smul_eq G a x
     suffices k ∈ stabilizer G B by
@@ -563,7 +561,7 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
   invFun := fun ⟨H, hH⟩ =>
     ⟨MulAction.orbit H a, MulAction.mem_orbit_self a, IsBlock.of_orbit' hH⟩
   left_inv := fun ⟨B, ha, hB⟩ =>
-    (id (propext Subtype.mk_eq_mk)).mpr (hB.orbit_stabilizer_eq ha) -- block_of_stabilizer_of_block hB ha)
+    (id (propext Subtype.mk_eq_mk)).mpr (hB.orbit_stabilizer_eq ha)
   right_inv := fun ⟨H, hH⟩ =>
     (id (propext Subtype.mk_eq_mk)).mpr (stabilizer_orbit_eq hH)
   map_rel_iff' := by
@@ -648,12 +646,8 @@ theorem IsBlock.ncard_of_block_divides [Finite X] [IsPretransitive G X] {B : Set
     Set.ncard B ∣ Nat.card X :=
   Dvd.intro _ (hB.ncard_block_mul_ncard_orbit_eq hB_ne)
 
-example (n : ℕ) (h0 : 0 < n) (h2 : n < 2) : n = 1 := by
-  apply Nat.eq_of_le_of_lt_succ h0 h2
-
-
 /-- A too large block is equal to ⊤ -/
-theorem is_top_of_large_block [hfX : Finite X] [hGX : IsPretransitive G X] {B : Set X}
+theorem IsBlock.is_top_of_large_block [hfX : Finite X] [hGX : IsPretransitive G X] {B : Set X}
     (hB : IsBlock G B) (hB' : Nat.card X < Set.ncard B * 2) : B = ⊤ := by
   classical
   letI := Fintype.ofFinite X
