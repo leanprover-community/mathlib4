@@ -1082,7 +1082,7 @@ The sum is parameterized by the embeddings of `Fin k` in the index type `ι` (or
 by the subsets `s` of `ι` of cardinal `k` and then the bijections between `Fin k` and `s`).
 
 For the continuous version, see `ContinuousMultilinearMap.iteratedFDeriv`. -/
-noncomputable protected def iteratedFDeriv [Fintype ι]
+protected noncomputable def iteratedFDeriv [Fintype ι]
     (f : MultilinearMap R M₁ M₂) (k : ℕ) (x : (i : ι) → M₁ i) :
     MultilinearMap R (fun (_ : Fin k) ↦ (∀ i, M₁ i)) M₂ :=
   ∑ e : Fin k ↪ ι, iteratedFDerivComponent f e.toEquivRange (fun i ↦ x i)
