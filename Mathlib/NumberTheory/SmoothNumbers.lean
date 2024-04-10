@@ -89,7 +89,7 @@ lemma mem_factoredNumbers_iff_forall_le {s : Finset ℕ} {m : ℕ} :
   simp_rw [mem_factoredNumbers, mem_factors']
   exact ⟨fun ⟨H₀, H₁⟩ ↦ ⟨H₀, fun p _ hp₂ hp₃ ↦ H₁ p ⟨hp₂, hp₃, H₀⟩⟩,
     fun ⟨H₀, H₁⟩ ↦
-      ⟨H₀, fun p ⟨hp₁, hp₂, hp₃⟩ ↦ H₁ p (Nat.le_of_dvd (Nat.pos_of_ne_zero hp₃) hp₂) hp₁ hp₂⟩⟩
+      ⟨H₀, fun p ⟨hp₁, hp₂, hp₃⟩ ↦ H₁ p (le_of_dvd (Nat.pos_of_ne_zero hp₃) hp₂) hp₁ hp₂⟩⟩
 
 /-- `m` is `s`-factored if and only if all prime divisors of `m` are in `s`. -/
 lemma mem_factoredNumbers' {s : Finset ℕ} {m : ℕ} :
@@ -255,7 +255,7 @@ lemma mem_smoothNumbers_of_dvd {n m k : ℕ} (h : m ∈ smoothNumbers n) (h' : k
 
 /-- `m` is `n`-smooth if and only if `m` is nonzero and all prime divisors `≤ m` of `m`
 are less than `n`. -/
-lemma mem_smoothNumbers_iff_forall_le  {n m : ℕ} :
+lemma mem_smoothNumbers_iff_forall_le {n m : ℕ} :
     m ∈ smoothNumbers n ↔ m ≠ 0 ∧ ∀ p ≤ m, p.Prime → p ∣ m → p < n := by
   simp only [smoothNumbers_eq_factoredNumbers, mem_factoredNumbers_iff_forall_le, Finset.mem_range]
 
