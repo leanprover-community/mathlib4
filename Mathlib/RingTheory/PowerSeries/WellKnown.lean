@@ -126,6 +126,9 @@ theorem invOneSubPow_eq_inv_one_sub_pow :
   rw [← Units.val_eq_one, Units.val_mul, Units.val_pow_eq_pow_val];
   exact (invOneSubPow d).inv_val).symm
 
+theorem invOneSubPow_inv_eq_one_sub_pow :
+    (invOneSubPow d).inv = (1 - X : S⟦X⟧) ^ (d + 1) := rfl
+
 theorem invOneSubPow_val_mul_one_sub_pow_eq_one :
     (invOneSubPow d).val * ((1 - X : S⟦X⟧) ^ (d + 1)) = 1 :=
   (invOneSubPow d).val_inv
