@@ -281,7 +281,7 @@ theorem scalar_eq_coe_self_center
   scalar_eq_self_of_mem_center A.property i
 
 /-- The center of a special linear group of degree `n` is the subgroup of scalar matrices, for which
-the scalars are the `n`-th roots of unity.-/
+the scalars are the `n`-th roots of unity. -/
 theorem mem_center_iff {A : SpecialLinearGroup n R} :
     A ∈ center (SpecialLinearGroup n R) ↔ ∃ (r : R), r ^ (Fintype.card n) = 1 ∧ scalar n r = A := by
   rcases isEmpty_or_nonempty n with hn | ⟨⟨i⟩⟩; · exact ⟨by aesop, by simp [Subsingleton.elim A 1]⟩

@@ -1799,7 +1799,7 @@ def piFinsetUnion [DecidableEq δ'] {s t : Finset δ'} (h : Disjoint s t) :
     .piCongrLeft (fun i : ↥(s ∪ t) ↦ π i) e
 
 /-- If `s` is a measurable set in a measurable space, that space is equivalent
-to the sum of `s` and `sᶜ`.-/
+to the sum of `s` and `sᶜ`. -/
 def sumCompl {s : Set α} [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
     s ⊕ (sᶜ : Set α) ≃ᵐ α where
   toEquiv := .sumCompl (· ∈ s)
@@ -1881,7 +1881,7 @@ theorem of_measurable_inverse (hf₁ : Measurable f) (hf₂ : MeasurableSet (ran
 open scoped Classical
 
 /-- The **measurable Schröder-Bernstein Theorem**: given measurable embeddings
-`α → β` and `β → α`, we can find a measurable equivalence `α ≃ᵐ β`.-/
+`α → β` and `β → α`, we can find a measurable equivalence `α ≃ᵐ β`. -/
 noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : MeasurableEmbedding f)
     (hg : MeasurableEmbedding g) : α ≃ᵐ β := by
   let F : Set α → Set α := fun A => (g '' (f '' A)ᶜ)ᶜ

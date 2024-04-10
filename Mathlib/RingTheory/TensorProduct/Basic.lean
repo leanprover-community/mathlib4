@@ -1114,7 +1114,7 @@ namespace LinearMap
 open Algebra.TensorProduct
 
 variable {R M₁ M₂ ι ι₂ : Type*} (A : Type*)
-  [Fintype ι] [Fintype ι₂] [DecidableEq ι] [DecidableEq ι₂]
+  [Fintype ι] [Finite ι₂] [DecidableEq ι] [DecidableEq ι₂]
   [CommSemiring R] [CommSemiring A] [Algebra R A]
   [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
 

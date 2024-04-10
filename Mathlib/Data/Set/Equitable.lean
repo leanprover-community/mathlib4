@@ -7,6 +7,8 @@ import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Data.Set.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Ring.Nat
+import Mathlib.Data.Set.Basic
 
 #align_import data.set.equitable from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 

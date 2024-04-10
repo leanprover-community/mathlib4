@@ -485,7 +485,7 @@ instance natCast [NatCast M] : NatCast (Germ l M) where
   natCast n := (n : α → M)
 
 @[simp]
-theorem coe_nat [NatCast M] (n : ℕ) : ((fun _ ↦ n : α → M) : Germ l M) = n := rfl
+theorem natCast_def [NatCast M] (n : ℕ) : ((fun _ ↦ n : α → M) : Germ l M) = n := rfl
 
 @[simp, norm_cast]
 theorem const_nat [NatCast M] (n : ℕ) : ((n : M) : Germ l M) = n := rfl
@@ -506,7 +506,11 @@ instance intCast [IntCast M] : IntCast (Germ l M) where
   intCast n := (n : α → M)
 
 @[simp]
-theorem coe_int [IntCast M] (n : ℤ) : ((fun _ ↦ n : α → M) : Germ l M) = n := rfl
+theorem intCast_def [IntCast M] (n : ℤ) : ((fun _ ↦ n : α → M) : Germ l M) = n := rfl
+
+-- 2024-04-05
+@[deprecated] alias coe_nat := natCast_def
+@[deprecated] alias coe_int := intCast_def
 
 instance addMonoidWithOne [AddMonoidWithOne M] : AddMonoidWithOne (Germ l M) :=
   { natCast, addMonoid, one with

@@ -648,7 +648,7 @@ theorem Filter.tendsto_cocompact_mul_left {a b : M} (ha : b * a = 1) :
   simp only [comp_mul_left, ha, one_mul]
   exact Filter.tendsto_id
   -- Porting note: changed proof, original proof was:
-  /-refine' Filter.Tendsto.of_tendsto_comp _ (Filter.comap_cocompact_le (continuous_mul_left b))
+  /- refine' Filter.Tendsto.of_tendsto_comp _ (Filter.comap_cocompact_le (continuous_mul_left b))
   convert Filter.tendsto_id
   ext x
   simp [ha]-/
@@ -681,7 +681,7 @@ instance (priority := 100) IsScalarTower.continuousConstSMul {R A : Type*} [Mono
 /-- If the action of `R` on `A` commutes with left-multiplication, then continuous multiplication
 implies continuous scalar multiplication by constants.
 
-Notably, this instances applies when `R = Aᵐᵒᵖ`.-/
+Notably, this instances applies when `R = Aᵐᵒᵖ`. -/
 @[to_additive "If the action of `R` on `A` commutes with left-addition, then
 continuous addition implies continuous affine addition by constants.
 
