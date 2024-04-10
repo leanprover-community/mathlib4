@@ -273,7 +273,7 @@ end flip
 
 /-- The restriction of a bilinear form on a submodule. -/
 @[simps! apply]
-abbrev restrict (B : BilinForm R M) (W : Submodule R M) : BilinForm R W :=
+def restrict (B : BilinForm R M) (W : Submodule R M) : BilinForm R W :=
   LinearMap.domRestrict₁₂ B W W
 #align bilin_form.restrict LinearMap.BilinForm.restrict
 
