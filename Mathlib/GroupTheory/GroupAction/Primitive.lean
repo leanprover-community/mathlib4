@@ -248,35 +248,6 @@ end IsPreprimitive
 
 section EquivariantMap
 
-section Monoid
-
-variable {M : Type*} [Monoid M] {α : Type*} [MulAction M α]
-
-variable {N β : Type*} [Monoid N] [MulAction N β]
-
-theorem isTrivialBlock_of_surjective_map {φ : M → N} {f : α →ₑ[φ] β}
-    (hf : Function.Surjective f)
-    {B : Set α} (hB : IsTrivialBlock B) :
-    IsTrivialBlock (f '' B) := by
-  cases' hB with hB hB
-  · apply Or.intro_left; apply Set.Subsingleton.image hB
-  · apply Or.intro_right; rw [hB]
-    simp only [Set.top_eq_univ, Set.image_univ, Set.range_iff_surjective]
-    exact hf
-
-theorem isTrivialBlock_of_injective_map {φ : M → N} {f : α →ₑ[φ] β}
-    (hf : Function.Injective f)
-    {B : Set β} (hB : IsTrivialBlock B) :
-    IsTrivialBlock (f ⁻¹' B) := by
-  cases' hB with hB hB
-  apply Or.intro_left; exact Set.Subsingleton.preimage hB hf
-  apply Or.intro_right; simp only [hB, Set.top_eq_univ]; apply Set.preimage_univ
-#align is_trivial_block_of_injective_map isTrivialBlock_of_injective_map
-
-end Monoid
-
-section Group
-
 variable {M : Type*} [Group M] {α : Type*} [MulAction M α]
 variable {N β : Type*} [Group N] [MulAction N β]
 variable {φ : M → N} {f : α →ₑ[φ] β}
@@ -302,10 +273,8 @@ theorem IsPreprimitive.iff_of_bijective
   apply IsPreprimitive.mk
   · intro B hB
     rw [← Set.preimage_image_eq B hf.injective]
-    apply isTrivialBlock_of_injective_map hf.injective
+    apply IsTrivialBlock.preimage hf.injective
     exact hN.has_trivial_blocks (hB.image f hφ hf.injective)
-
-end Group
 
 end EquivariantMap
 
