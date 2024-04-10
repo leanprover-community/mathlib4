@@ -1042,6 +1042,17 @@ theorem Sublist.cons_cons {l₁ l₂ : List α} (a : α) (s : l₁ <+ l₂) : a 
 #align list.sublist_append_left List.sublist_append_left
 #align list.sublist_append_right List.sublist_append_right
 
+lemma cons_sublist_append_iff_right {a : α} {l : List α} (ha : a ∉ l₁) :
+    a :: l <+ l₁ ++ l₂ ↔ a :: l <+ l₂ := by
+  constructor
+  · intro hyp
+    induction l₁ with
+    | nil => exact hyp
+    | cons a _ ih =>
+      apply ih (ha ∘ Mem.tail a)
+      cases hyp <;> aesop
+  · exact sublist_append_of_sublist_right
+
 theorem sublist_cons_of_sublist (a : α) {l₁ l₂ : List α} : l₁ <+ l₂ → l₁ <+ a :: l₂ :=
   Sublist.cons _
 #align list.sublist_cons_of_sublist List.sublist_cons_of_sublist
