@@ -84,11 +84,10 @@ theorem lfpApprox_monotone : Monotone (lfpApprox f x) := by
   use a'
   exact ⟨lt_of_lt_of_le h' h, rfl⟩
 
-theorem init_le_lfpApprox {a : Ordinal}: x ≤ (lfpApprox f x a) := by
+theorem le_lfpApprox {a : Ordinal} : x ≤ lfpApprox f x a := by
   unfold lfpApprox
   apply le_sSup
   simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, true_or]
-
 
 theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
     lfpApprox f x (a+1) = f (lfpApprox f x a) := by
@@ -101,7 +100,7 @@ theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
     apply And.intro
     · apply le_trans h
       apply Monotone.imp f.monotone
-      exact init_le_lfpApprox f x
+      exact le_lfpApprox f x
     · intros a' h
       apply f.2; apply lfpApprox_monotone; exact h
   · conv => right; unfold lfpApprox
@@ -123,7 +122,7 @@ theorem lfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_init : x ≤ f x) (h_
     apply sSup_le
     simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq,
       forall_eq_or_imp, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-    apply And.intro (init_le_lfpApprox f x)
+    apply And.intro (le_lfpApprox f x)
     intro a' ha'b
     by_cases haa : a' < a
     · rw [← lfpApprox_add_one f x h_init]
@@ -221,8 +220,8 @@ decreasing_by exact h
 theorem gfpApprox_antitone : Antitone (gfpApprox f x) :=
   lfpApprox_monotone (OrderHom.dual f) x
 
-theorem gfpApprox_le_init {a : Ordinal}: (gfpApprox f x a) ≤ x :=
-  init_le_lfpApprox (OrderHom.dual f) x
+theorem gfpApprox_le {a : Ordinal}: (gfpApprox f x a) ≤ x :=
+  le_lfpApprox (OrderHom.dual f) x
 
 theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
     gfpApprox f x (a+1) = f (gfpApprox f x a) :=
