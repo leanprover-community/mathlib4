@@ -5,13 +5,13 @@ Authors: Antoine Chambert-Loir
 
 -/
 
+import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Data.Set.Card
 import Mathlib.Data.Setoid.Partition
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.Subgroup.Actions
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Data.Set.Card
 
 /-! # Blocks
 
