@@ -5,11 +5,9 @@ Authors: Antoine Chambert-Loir
 
 -/
 
-import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.Data.Setoid.Partition
--- import Mathlib.Algebra.BigOperators.Finprod
--- import Mathlib.Data.Set.Card
 import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.Subgroup.Actions
 
@@ -551,7 +549,7 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
   invFun := fun ⟨H, hH⟩ =>
     ⟨MulAction.orbit H a, MulAction.mem_orbit_self a, IsBlock.of_orbit' hH⟩
   left_inv := fun ⟨B, ha, hB⟩ =>
-    (id (propext Subtype.mk_eq_mk)).mpr (hB.orbit_stabilizer_eq ha) -- block_of_stabilizer_of_block hB ha)
+    (id (propext Subtype.mk_eq_mk)).mpr (hB.orbit_stabilizer_eq ha)
   right_inv := fun ⟨H, hH⟩ =>
     (id (propext Subtype.mk_eq_mk)).mpr (stabilizer_orbit_eq hH)
   map_rel_iff' := by
