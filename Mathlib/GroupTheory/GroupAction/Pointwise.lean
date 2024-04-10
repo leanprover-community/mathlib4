@@ -19,8 +19,8 @@ import Mathlib.GroupTheory.GroupAction.Hom
   It requires that `c` acts surjectively and `σ c` acts injectively and
 is provided with specific versions:
   - `preimage_smul_setₛₗ_of_units` when `c` and `σ c` are units
+  - `preimage_smul_setₛₗ` when `σ` belongs to a `MonoidHomClass`and `c` is a unit
   - `MonoidHom.preimage_smul_setₛₗ` when `σ` is a `MonoidHom` and `c` is a unit
-  - `MonoidHomClass.preimage_smul_setₛₗ` when `σ` belongs to a `MonoidHomClass`and `c` is a unit
   - `Group.preimage_smul_setₛₗ` : when the types of `c` and `σ c` are groups.
 
 - `image_smul_set`, `preimage_smul_set` and `Group.preimage_smul_set` are
@@ -99,7 +99,7 @@ theorem MonoidHom.preimage_smul_setₛₗ (σ : R →* S)
   preimage_smul_setₛₗ_of_units M N σ h hc (IsUnit.map σ hc) s
 
 /-- `preimage_smul_setₛₗ` in the context of a `MonoidHomClass` -/
-theorem MonoidHomClass.preimage_smul_setₛₗ_of_units
+theorem preimage_smul_setₛₗ
     {G : Type*} [FunLike G R S] [MonoidHomClass G R S] (σ : G)
     [MulAction R M] [MulAction S N]
     {F : Type*} [FunLike F M N] [MulActionSemiHomClass F σ M N] (h : F)
