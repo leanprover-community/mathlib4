@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Data.Finsupp.Basic
 import Mathlib.LinearAlgebra.Finsupp
 
 #align_import algebra.monoid_algebra.basic from "leanprover-community/mathlib"@"949dc57e616a621462062668c9f39e4e17b64b69"
@@ -701,7 +702,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
         -- Porting note: `dsimp` is required for beta reduction.
         dsimp only []
         rw [Finsupp.smul_sum, sum_smul_index']
-        · simp_rw [smul_assoc]
+        · simp_rw [smul_assoc, MonoidHom.id_apply]
         · intro m
           exact zero_smul k (f m)
       map_mul' := fun a₁ a₂ => by
@@ -1335,8 +1336,6 @@ instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring k[G] :=
     nsmul_succ := by
       intros
       refine Finsupp.ext fun _ => ?_
-      -- Porting note: The definition of `nsmul_succ` is different, so next line is required.
-      simp only [fun n => Nat.add_comm n 1]
       simp [-nsmul_eq_mul, add_smul] }
 #align add_monoid_algebra.non_unital_non_assoc_semiring AddMonoidAlgebra.nonUnitalNonAssocSemiring
 
@@ -1580,7 +1579,7 @@ theorem single_pow [AddMonoid G] {a : G} {b : k} : ∀ n : ℕ, single a b ^ n =
     simp only [pow_zero, zero_nsmul]
     rfl
   | n + 1 => by
-    rw [pow_succ, pow_succ, single_pow n, single_mul_single, add_comm, add_nsmul, one_nsmul]
+    rw [pow_succ, pow_succ, single_pow n, single_mul_single, add_nsmul, one_nsmul]
 #align add_monoid_algebra.single_pow AddMonoidAlgebra.single_pow
 
 /-- Like `Finsupp.mapDomain_zero`, but for the `1` we define in this file -/

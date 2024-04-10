@@ -8,7 +8,6 @@ import Mathlib.Algebra.Associated
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Nat.PartENat
 import Mathlib.Tactic.Linarith
-import Mathlib.Data.Nat.Pow
 
 #align_import ring_theory.multiplicity from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -65,7 +64,7 @@ theorem not_dvd_one_of_finite_one_right {a : α} : Finite a 1 → ¬a ∣ 1 := f
 #align multiplicity.not_dvd_one_of_finite_one_right multiplicity.not_dvd_one_of_finite_one_right
 
 @[norm_cast]
-theorem Int.coe_nat_multiplicity (a b : ℕ) : multiplicity (a : ℤ) (b : ℤ) = multiplicity a b := by
+theorem Int.natCast_multiplicity (a b : ℕ) : multiplicity (a : ℤ) (b : ℤ) = multiplicity a b := by
   apply Part.ext'
   · rw [← @finite_iff_dom ℕ, @finite_def ℕ, ← @finite_iff_dom ℤ, @finite_def ℤ]
     norm_cast
@@ -74,7 +73,10 @@ theorem Int.coe_nat_multiplicity (a b : ℕ) : multiplicity (a : ℤ) (b : ℤ) 
       · apply Nat.find_mono
         norm_cast
         simp
-#align multiplicity.int.coe_nat_multiplicity multiplicity.Int.coe_nat_multiplicity
+#align multiplicity.int.coe_nat_multiplicity multiplicity.Int.natCast_multiplicity
+
+-- 2024-04-05
+@[deprecated] alias Int.coe_nat_multiplicity := Int.natCast_multiplicity
 
 theorem not_finite_iff_forall {a b : α} : ¬Finite a b ↔ ∀ n : ℕ, a ^ n ∣ b :=
   ⟨fun h n =>
@@ -226,7 +228,7 @@ theorem exists_eq_pow_mul_and_not_dvd {a b : α} (hfin : Finite a b) :
   obtain ⟨c, hc⟩ := multiplicity.pow_multiplicity_dvd hfin
   refine' ⟨c, hc, _⟩
   rintro ⟨k, hk⟩
-  rw [hk, ← mul_assoc, ← _root_.pow_succ'] at hc
+  rw [hk, ← mul_assoc, ← _root_.pow_succ] at hc
   have h₁ : a ^ ((multiplicity a b).get hfin + 1) ∣ b := ⟨k, hc⟩
   exact (multiplicity.eq_coe_iff.1 (by simp)).2 h₁
 #align multiplicity.exists_eq_pow_mul_and_not_dvd multiplicity.exists_eq_pow_mul_and_not_dvd
@@ -288,7 +290,7 @@ theorem dvd_iff_multiplicity_pos {a b : α} : (0 : PartENat) < multiplicity a b 
 
 theorem finite_nat_iff {a b : ℕ} : Finite a b ↔ a ≠ 1 ∧ 0 < b := by
   rw [← not_iff_not, not_finite_iff_forall, not_and_or, Ne.def, Classical.not_not, not_lt,
-    le_zero_iff]
+    Nat.le_zero]
   exact
     ⟨fun h =>
       or_iff_not_imp_right.2 fun hb =>
@@ -435,8 +437,8 @@ protected theorem neg (a b : α) : multiplicity a (-b) = multiplicity a b :=
 
 theorem Int.natAbs (a : ℕ) (b : ℤ) : multiplicity a b.natAbs = multiplicity (a : ℤ) b := by
   cases' Int.natAbs_eq b with h h <;> conv_rhs => rw [h]
-  · rw [Int.coe_nat_multiplicity]
-  · rw [multiplicity.neg, Int.coe_nat_multiplicity]
+  · rw [Int.natCast_multiplicity]
+  · rw [multiplicity.neg, Int.natCast_multiplicity]
 #align multiplicity.int.nat_abs multiplicity.Int.natAbs
 
 theorem multiplicity_add_of_gt {p a b : α} (h : multiplicity p b < multiplicity p a) :
@@ -524,7 +526,7 @@ theorem finite_mul_iff {p a b : α} (hp : Prime p) : Finite p (a * b) ↔ Finite
 
 theorem finite_pow {p a : α} (hp : Prime p) : ∀ {k : ℕ} (_ : Finite p a), Finite p (a ^ k)
   | 0, _ => ⟨0, by simp [mt isUnit_iff_dvd_one.2 hp.2.1]⟩
-  | k + 1, ha => by rw [_root_.pow_succ]; exact finite_mul hp ha (finite_pow hp ha)
+  | k + 1, ha => by rw [_root_.pow_succ']; exact finite_mul hp ha (finite_pow hp ha)
 #align multiplicity.finite_pow multiplicity.finite_pow
 
 variable [DecidableRel ((· ∣ ·) : α → α → Prop)]
@@ -605,7 +607,7 @@ protected theorem pow' {p a : α} (hp : Prime p) (ha : Finite p a) :
   intro k
   induction' k with k hk
   · simp [one_right hp.not_unit]
-  · have : multiplicity p (a ^ (k + 1)) = multiplicity p (a * a ^ k) := by rw [_root_.pow_succ]
+  · have : multiplicity p (a ^ (k + 1)) = multiplicity p (a * a ^ k) := by rw [_root_.pow_succ']
     rw [succ_eq_add_one, get_eq_get_of_eq _ _ this,
       multiplicity.mul' hp, hk, add_mul, one_mul, add_comm]
 #align multiplicity.pow' multiplicity.pow'
@@ -648,3 +650,23 @@ theorem multiplicity_eq_zero_of_coprime {p a b : ℕ} (hp : p ≠ 1)
 #align multiplicity_eq_zero_of_coprime multiplicity_eq_zero_of_coprime
 
 end Nat
+
+namespace multiplicity
+
+theorem finite_int_iff_natAbs_finite {a b : ℤ} : Finite a b ↔ Finite a.natAbs b.natAbs := by
+  simp only [finite_def, ← Int.natAbs_dvd_natAbs, Int.natAbs_pow]
+#align multiplicity.finite_int_iff_nat_abs_finite multiplicity.finite_int_iff_natAbs_finite
+
+theorem finite_int_iff {a b : ℤ} : Finite a b ↔ a.natAbs ≠ 1 ∧ b ≠ 0 := by
+  rw [finite_int_iff_natAbs_finite, finite_nat_iff, pos_iff_ne_zero, Int.natAbs_ne_zero]
+#align multiplicity.finite_int_iff multiplicity.finite_int_iff
+
+instance decidableNat : DecidableRel fun a b : ℕ => (multiplicity a b).Dom := fun _ _ =>
+  decidable_of_iff _ finite_nat_iff.symm
+#align multiplicity.decidable_nat multiplicity.decidableNat
+
+instance decidableInt : DecidableRel fun a b : ℤ => (multiplicity a b).Dom := fun _ _ =>
+  decidable_of_iff _ finite_int_iff.symm
+#align multiplicity.decidable_int multiplicity.decidableInt
+
+end multiplicity

@@ -183,9 +183,9 @@ lemma eq_zero_of_mem_weightSpace_mem_posFitting [LieAlgebra.IsNilpotent R L]
     | succ k ih =>
     intro m n
     replace hB : ∀ m, B m (φ x n) = (- 1 : R) • B (φ x m) n := by simp [hB]
-    have : (-1 : R) ^ k • (-1 : R) = (-1 : R) ^ (k + 1) := by rw [pow_succ' (-1 : R), smul_eq_mul]
-    conv_lhs => rw [pow_succ', LinearMap.mul_eq_comp, LinearMap.comp_apply, ih, hB,
-      ← (φ x).comp_apply, ← LinearMap.mul_eq_comp, ← pow_succ, ← smul_assoc, this]
+    have : (-1 : R) ^ k • (-1 : R) = (-1 : R) ^ (k + 1) := by rw [pow_succ (-1 : R), smul_eq_mul]
+    conv_lhs => rw [pow_succ, LinearMap.mul_eq_comp, LinearMap.comp_apply, ih, hB,
+      ← (φ x).comp_apply, ← LinearMap.mul_eq_comp, ← pow_succ', ← smul_assoc, this]
   suffices ∀ (x : L) m, m ∈ posFittingCompOf R M x → B m₀ m = 0 by
     apply LieSubmodule.iSup_induction _ hm₁ this (map_zero _)
     aesop
@@ -332,6 +332,10 @@ variable [Module.Free R L] [Module.Finite R L]
 
 This is a specialisation of `LieModule.traceForm` to the adjoint representation of `L`. -/
 noncomputable abbrev killingForm : LinearMap.BilinForm R L := LieModule.traceForm R L L
+
+open LieAlgebra in
+lemma killingForm_apply_apply (x y : L) : killingForm R L x y = trace R L (ad R L x ∘ₗ ad R L y) :=
+  LieModule.traceForm_apply_apply R L L x y
 
 lemma killingForm_eq_zero_of_mem_zeroRoot_mem_posFitting
     (H : LieSubalgebra R L) [LieAlgebra.IsNilpotent R H]
@@ -591,6 +595,36 @@ lemma ker_weight_inf_rootSpaceProductNegSelf_eq_bot [CharZero K] (α : weight K 
   exact eq_zero_of_apply_eq_zero_of_mem_rootSpaceProductNegSelf x α hαx hx
 
 end IsKilling
+
+section LieEquiv
+
+variable {R L}
+variable {L' : Type*} [LieRing L'] [LieAlgebra R L']
+
+/-- Given an equivalence `e` of Lie algebras from `L` to `L'`, and elements `x y : L`, the
+respective Killing forms of `L` and `L'` satisfy `κ'(e x, e y) = κ(x, y)`. -/
+@[simp] lemma killingForm_of_equiv_apply (e : L ≃ₗ⁅R⁆ L') (x y : L) :
+    killingForm R L' (e x) (e y) = killingForm R L x y := by
+  simp_rw [killingForm_apply_apply, ← LieAlgebra.conj_ad_apply, ← LinearEquiv.conj_comp,
+    LinearMap.trace_conj']
+
+/-- Given a Killing Lie algebra `L`, if `L'` is isomorphic to `L`, then `L'` is Killing too. -/
+lemma isKilling_of_equiv [IsKilling R L] (e : L ≃ₗ⁅R⁆ L') : IsKilling R L' := by
+  constructor;
+  ext x'
+  rw [LieIdeal.mem_killingCompl]
+  refine ⟨fun hx' ↦ ?_, fun hx y _ ↦ hx ▸ LinearMap.map_zero₂ (killingForm R L') y⟩
+  suffices e.symm x' ∈ LinearMap.ker (killingForm R L) by
+    rw [IsKilling.ker_killingForm_eq_bot] at this
+    simpa using (e : L ≃ₗ[R] L').congr_arg this
+  ext y
+  replace hx' : ∀ y', killingForm R L' x' y' = 0 := by simpa using hx'
+  specialize hx' (e y)
+  rwa [← e.apply_symm_apply x', killingForm_of_equiv_apply] at hx'
+
+alias _root_.LieEquiv.isKilling := LieAlgebra.isKilling_of_equiv
+
+end LieEquiv
 
 end LieAlgebra
 
