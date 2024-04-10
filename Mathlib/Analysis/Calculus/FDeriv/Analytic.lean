@@ -348,86 +348,18 @@ protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x)
   convert f.hasFiniteFPowerSeriesOnBall.hasFDerivAt (y := x) ENNReal.coe_lt_top
   rw [zero_add]
 
-lemma foo (n : ℕ) : 0 ≤ n := by exact?
-
-#check HasFDerivAt.sum
-
 open scoped BigOperators
 open Finset (univ)
 
-#check Function.Embedding.toEquivRange
+section
 
-/-
-open Classical
-noncomputable def boo_to (n : ℕ) :
-    (Finset.sigma ((univ : Finset ι).powersetCard n.succ)
-        (fun (s : Finset ι) ↦ (univ : Finset (Fin n.succ ≃ s))))
-    → Finset.sigma ((univ : Finset ι).powersetCard n)
-       (fun (s : Finset ι) ↦ (univ : Finset ((Fin n ≃ s) × {i // i ∉ s}))) := by
-  rintro ⟨⟨s, f⟩, p⟩
-  let e_emb : Fin n ↪ ι :=
-    Fin.castSuccEmb.toEmbedding.trans (f.toEmbedding.trans (Function.Embedding.subtype _))
-  let t := (Set.range e_emb).toFinset
-  let e : Fin n ≃ t := by
-    convert e_emb.toEquivRange
-    simp [t]
-    rfl
-  have : t.card = n := Finset.card_eq_of_equiv_fin e.symm
-  have : (f n : ι) ∉ t := by
-    simp only [Fin.cast_nat_eq_last, Set.toFinset_range, Fin.castSuccEmb_toEmbedding, mem_image,
-      mem_univ, Function.Embedding.trans_apply, Function.Embedding.coeFn_mk,
-      Equiv.coe_toEmbedding, Function.Embedding.coe_subtype, true_and, not_exists, t, e_emb]
-    intro j
-    exact Subtype.val_injective.ne (f.injective.ne (Fin.castSucc_lt_last j).ne)
-  exact ⟨⟨t, ⟨e, ⟨f n, this⟩⟩⟩, by simpa using card_eq_of_equiv_fin e.symm⟩
+def embeddingFinSuccEquivSigmaToFun (n : ℕ) :
+    (Fin (n+1) ↪ ι) → (Σ (e : Fin n ↪ ι), {i // i ∉ Set.range e}) :=
+  fun e ↦ ⟨(Fin.succEmb n).toEmbedding.trans e, ⟨e 0, by simp⟩⟩
 
-noncomputable def boo_inv (n : ℕ) :
-    (Finset.sigma ((univ : Finset ι).powersetCard n)
-       (fun (s : Finset ι) ↦ (univ : Finset ((Fin n ≃ s) × {i // i ∉ s}))))
-    → Finset.sigma ((univ : Finset ι).powersetCard n.succ)
-        (fun (s : Finset ι) ↦ (univ : Finset (Fin n.succ ≃ s))) := by
-  rintro ⟨⟨s, ⟨e, i⟩⟩, p⟩
-  let f0 : Fin (n+1) → ι := fun k ↦ if hk : k.1 < n then e ⟨k.1, hk⟩ else i
-  have f_inj : Function.Injective f0 := by
-    intro k l hkl
-    by_cases hk : k.1 < n <;> by_cases hl : l.1 < n <;>
-      simp only [hk, ↓reduceDite, hl, f0] at hkl
-    · apply Fin.eq_of_val_eq
-      simpa using e.injective (Subtype.val_injective hkl)
-    · have : (i : ι) ∈ s := by rw [← hkl]; exact coe_mem _
-      exact (i.2 this).elim
-    · have : (i : ι) ∈ s := by rw [hkl]; exact coe_mem _
-      exact (i.2 this).elim
-    · omega
-  let f_emb : Fin (n + 1) ↪ ι := ⟨f0, f_inj⟩
-  let t := (Set.range f_emb).toFinset
-  let f : Fin (n + 1) ≃ t := by
-    convert f_emb.toEquivRange
-    simp [t]
-    rfl
-  have : t.card = n + 1 := card_eq_of_equiv_fin f.symm
-  refine ⟨⟨t, f⟩, ?_⟩
-  simpa only [mem_sigma, mem_powersetCard, subset_univ, true_and, mem_univ, and_true] using
-    card_eq_of_equiv_fin f.symm
-
-lemma blou {s : Type*} [Fintype s] (n : ℕ) (hs : Fintype.card s = n) :
-    Fintype.card (Fin n ≃ s) = n.factorial := by
-  conv_rhs => rw [← Fintype.card_fin n]
-  apply Fintype.card_equiv
-  exact (Fintype.equivFinOfCardEq hs).symm
-
-lemma zou {α : Type*} [Fintype α] : (univ : Finset α).card = Fintype.card α := by exact?
--/
-
-variable [DecidableEq ι]
-
-def piou_to (n : ℕ) : (Fin (n+1) ↪ ι) → (Finset.sigma (univ : Finset (Fin n ↪ ι))
-      (fun (e : Fin n ↪ ι) ↦ (univ : Finset {a_1 // a_1 ∉ Set.range e}))) :=
-  fun e ↦ ⟨⟨(Fin.succEmb n).toEmbedding.trans e, ⟨e 0, by simp⟩⟩, by simp⟩
-
-def piou_inv (n : ℕ) : (Finset.sigma (univ : Finset (Fin n ↪ ι))
-    (fun (e : Fin n ↪ ι) ↦ (univ : Finset {a_1 // a_1 ∉ Set.range e}))) → (Fin (n+1) ↪ ι) := by
-  rintro ⟨⟨f, ⟨i, hi⟩⟩, hfi⟩
+def embeddingFinSuccEquivSigmaInvFun (n : ℕ) :
+    (Σ (e : Fin n ↪ ι), {i // i ∉ Set.range e}) → (Fin (n+1) ↪ ι) := by
+  rintro ⟨f, ⟨i, hi⟩⟩
   refine ⟨fun j ↦ if h : j = 0 then i else f (Fin.pred j h), ?_⟩
   simp only [Set.mem_range, not_exists] at hi
   intro k l hkl
@@ -437,111 +369,115 @@ def piou_inv (n : ℕ) : (Finset.sigma (univ : Finset (Fin n ↪ ι))
   · exact (hi _ hkl).elim
   · simpa using f.injective hkl
 
-def piou (n : ℕ) : (Fin (n+1) ↪ ι) ≃ (Finset.sigma (univ : Finset (Fin n ↪ ι))
-    (fun (e : Fin n ↪ ι) ↦ (univ : Finset {a_1 // a_1 ∉ Set.range e}))) where
-  toFun := piou_to n
-  invFun := piou_inv n
+/-- An embedding `e : Fin (n+1) ↪ ι` corresponds to an embedding `f : Fin n ↪ ι` (corresponding
+the last `n` coordinates of `e`) together with a value not taken by `f` (corresponding to `e 0`). -/
+def embeddingFinSuccEquivSigma (n : ℕ) :
+    (Fin (n+1) ↪ ι) ≃ (Σ (e : Fin n ↪ ι), {i // i ∉ Set.range e}) where
+  toFun := embeddingFinSuccEquivSigmaToFun n
+  invFun := embeddingFinSuccEquivSigmaInvFun n
   left_inv := by
     intro e
-    simp only [piou_to, piou_inv, Fin.castSuccEmb_toEmbedding, Function.Embedding.trans_apply,
-      Function.Embedding.coeFn_mk, Fin.castSucc_mk, Fin.eta, Fin.cast_nat_eq_last, dite_eq_ite]
+    simp only [embeddingFinSuccEquivSigmaToFun, Fin.cast_nat_eq_last, dite_eq_ite,
+      embeddingFinSuccEquivSigmaInvFun, Fin.castSuccEmb_toEmbedding,
+      Function.Embedding.trans_apply, Function.Embedding.coeFn_mk, Fin.castSucc_mk, Fin.eta]
     ext j
     by_cases hj : j = 0
     · simp [hj]
     · simp [hj]
   right_inv := by
-    rintro ⟨⟨f, ⟨i, hi⟩⟩, hfi⟩
-    simp only [Finset.univ_sigma_univ, piou_to, piou_inv, Function.Embedding.coeFn_mk, ↓reduceDite,
+    rintro ⟨f, ⟨i, hi⟩⟩
+    simp only [Finset.univ_sigma_univ, embeddingFinSuccEquivSigmaToFun,
+      embeddingFinSuccEquivSigmaInvFun, Function.Embedding.coeFn_mk, ↓reduceDite,
       Subtype.mk.injEq, Sigma.mk.inj_iff, heq_eq_eq, and_true]
     ext j
     simp [Fin.succ_ne_zero]
 
-@[simp] lemma piou_symm_apply {n : ℕ} (p : Finset.sigma (univ : Finset (Fin n ↪ ι))
-    (fun (e : Fin n ↪ ι) ↦ (univ : Finset {a_1 // a_1 ∉ Set.range e}))) (k : Fin (n + 1)) :
-    (piou n).symm p k = if h : k = 0 then p.1.2.1 else p.1.1 (Fin.pred k h) := rfl
+lemma embeddingFinSuccEquivSigma_fst {n : ℕ} (e : Fin (n+1) ↪ ι) :
+    ((embeddingFinSuccEquivSigma n e).1 : Fin n → ι) = e ∘ Fin.succ := rfl
 
-lemma range_piou_symm {n : ℕ} (p : Finset.sigma (univ : Finset (Fin n ↪ ι))
-    (fun (e : Fin n ↪ ι) ↦ (univ : Finset {a_1 // a_1 ∉ Set.range e}))) :
-    Set.range ((piou n).symm p) = Set.range p.1.1 ∪ {p.1.2.1} := by
-  apply subset_antisymm
-  · rintro - ⟨i, rfl⟩
-    rw [piou_symm_apply]
-    split <;> simp
-  · apply Set.union_subset
-    · rintro - ⟨i, rfl⟩
-      simp only [Finset.univ_sigma_univ, Set.mem_range]
-      exact ⟨Fin.succ i, rfl⟩
-    · simp only [Finset.univ_sigma_univ, Set.singleton_subset_iff, Set.mem_range]
-      exact ⟨0, rfl⟩
+lemma embeddingFinSuccEquivSigma_snd {n : ℕ} (e : Fin (n+1) ↪ ι) :
+    ((embeddingFinSuccEquivSigma n e).2 : ι) = e 0 := rfl
 
-@[simp] lemma range_image_piou {n : ℕ} (e : Fin (n+1) ↪ ι) :
-    Set.range (piou n e).1.1 = e '' (Set.Ici 1) := sorry
+lemma succ_embeddingFinSuccEquivSigma_fst_symm_apply [DecidableEq ι]
+    {n : ℕ} (e : Fin (n+1) ↪ ι) {k : ι}
+    (h'k : k ∈ Set.range (embeddingFinSuccEquivSigma n e).1) (hk : k ∈ Set.range e) :
+    Fin.succ ((embeddingFinSuccEquivSigma n e).1.toEquivRange.symm ⟨k, h'k⟩)
+      = e.toEquivRange.symm ⟨k, hk⟩ := by
+  rcases hk with ⟨j, rfl⟩
+  have hj : j ≠ 0 := by
+    rintro rfl
+    simp [embeddingFinSuccEquivSigma_fst] at h'k
+  simp only [Function.Embedding.toEquivRange_symm_apply_self]
+  have : e j = (embeddingFinSuccEquivSigma n e).1 (Fin.pred j hj) := by
+    simp [embeddingFinSuccEquivSigma_fst]
+  simp_rw [this]
+  simp
 
-#check Fin.cons
+end
+
+instance {α β : Type*} [IsEmpty α] : Unique (α ↪ β) where
+  default := ⟨isEmptyElim, Function.injective_of_subsingleton _⟩
+  uniq := by intro; ext v; exact isEmptyElim v
 
 theorem glou : HasFTaylorSeriesUpTo ⊤ f (fun v n ↦ f.iteratedFDeriv n v) := by
+  classical
   constructor
-  · sorry /-intro y
-    simp only [iteratedFDeriv, Finset.powersetCard_zero, iteratedFDerivComponent,
-      MultilinearMap.iteratedFDerivComponent, MultilinearMap.domDomRestrictₗ, MultilinearMap.coe_mk,
-      MultilinearMap.domDomRestrict_apply, coe_coe, Finset.sum_singleton,
-      Fintype.univ_ofSubsingleton, Fintype.card_ofIsEmpty, List.finRange_zero, List.length_nil,
-      Finset.empty_val, Equiv.symm_symm,
-      Function.Embedding.coeFn_mk, Equiv.equivCongr_refl_left, Equiv.Perm.one_trans,
-      Finset.not_mem_empty, ↓reduceDite, uncurry0_apply, Matrix.zero_empty,
-      MultilinearMap.mkContinuousMultilinear_apply] -/
-  · intro n hn x
-    suffices H : curryLeft (iteratedFDeriv f (Nat.succ n) x) = (∑ e : Fin n ↪ ι,
-          ((iteratedFDerivComponent f e.toEquivRange).linearDeriv (glouk 𝕜 _ x)) ∘L (glouk 𝕜 _)) by
-      sorry /-have A : HasFDerivAt (iteratedFDeriv f n) (∑ e : Fin n ↪ ι,
-          ((iteratedFDerivComponent f e.toEquivRange).linearDeriv (glouk 𝕜 _ x))
-            ∘L (glouk 𝕜 _)) x := by
-        apply HasFDerivAt.sum (fun s hs ↦ ?_)
-        exact (ContinuousMultilinearMap.hasFDerivAt _ _).comp x (ContinuousLinearMap.hasFDerivAt _)
-      rwa [← H] at A -/
-    ext v m
-    simp only [curryLeft_apply, ContinuousLinearMap.coe_sum', ContinuousLinearMap.coe_comp',
-      Finset.sum_apply, Function.comp_apply, linearDeriv_apply, sum_apply]
-    simp only [iteratedFDeriv, iteratedFDerivComponent, MultilinearMap.iteratedFDerivComponent,
-      MultilinearMap.domDomRestrictₗ, MultilinearMap.coe_mk, MultilinearMap.domDomRestrict_apply,
-      coe_coe, MultilinearMap.mkContinuousMultilinear_apply, sum_apply, Finset.sum_sigma',
-      MultilinearMap.mkContinuousMultilinear_apply, MultilinearMap.coe_mk]
-    conv_rhs => rw [← Finset.sum_coe_sort, ← (piou n).sum_comp]
-    congr with e
-    congr with k
-    dsimp
-    by_cases hk : k ∈ Set.range (piou n e).1.1
-    · have hk' : k ∈ Set.range e := sorry
-      rw [dite_cond_eq_true, dite_cond_eq_true]; rotate_left
-      · simpa using hk
-      · simpa using hk'
-
-
-
-
-
+  · intro y
+    simp [iteratedFDeriv]
+    --simp [iteratedFDeriv, glouk, iteratedFDerivComponent, MultilinearMap.iteratedFDerivComponent,
+    --  MultilinearMap.domDomRestrictₗ]
 
 #exit
 
-    rw [← (piou n).symm.sum_comp]
-    conv_rhs => rw [← Finset.sum_coe_sort]
-    congr with enj
-    simp_rw [range_piou_symm]
-    let f := (piou n).symm enj
-    --rcases enj with ⟨⟨e, ⟨j, hj⟩⟩, -⟩
+  · intro n _hn x
+    suffices H : curryLeft (iteratedFDeriv f (Nat.succ n) x) = (∑ e : Fin n ↪ ι,
+          ((iteratedFDerivComponent f e.toEquivRange).linearDeriv (glouk 𝕜 _ x)) ∘L (glouk 𝕜 _)) by
+      have A : HasFDerivAt (iteratedFDeriv f n) (∑ e : Fin n ↪ ι,
+          ((iteratedFDerivComponent f e.toEquivRange).linearDeriv (glouk 𝕜 _ x))
+            ∘L (glouk 𝕜 _)) x := by
+        apply HasFDerivAt.sum (fun s _hs ↦ ?_)
+        exact (ContinuousMultilinearMap.hasFDerivAt _ _).comp x (ContinuousLinearMap.hasFDerivAt _)
+      rwa [← H] at A
+    ext v m
+    simp only [iteratedFDeriv, iteratedFDerivComponent, MultilinearMap.iteratedFDerivComponent,
+      MultilinearMap.domDomRestrictₗ, MultilinearMap.coe_mk, MultilinearMap.domDomRestrict_apply,
+      coe_coe, curryLeft_apply, sum_apply, MultilinearMap.mkContinuousMultilinear_apply,
+      ContinuousLinearMap.coe_sum', ContinuousLinearMap.coe_comp', Finset.sum_apply,
+      Function.comp_apply, linearDeriv_apply, Finset.sum_sigma', Finset.univ_sigma_univ]
+    rw [← (embeddingFinSuccEquivSigma n).sum_comp]
+    congr with e
     congr with k
-    dsimp only [Finset.univ_sigma_univ]
-    by_cases hk : k ∈ Set.range enj.1.1
-    · simp only [Set.union_singleton, Set.mem_insert_iff, hk, or_true, ↓reduceDite]
-
-
-
-
-
-  · sorry /-intro n hn
-    apply continuous_finset_sum _ (fun s hs ↦ ?_)
-    apply continuous_finset_sum _ (fun e he ↦ ?_)
-    exact (ContinuousMultilinearMap.coe_continuous _).comp (ContinuousLinearMap.continuous _) -/
+    by_cases hke : k ∈ Set.range e
+    · simp only [hke, ↓reduceDite]
+      by_cases hkf : k ∈ Set.range (embeddingFinSuccEquivSigma n e).1
+      · simp only [hkf, ↓reduceDite, ← succ_embeddingFinSuccEquivSigma_fst_symm_apply e hkf hke,
+          Fin.cons_succ]
+      · simp only [hkf, ↓reduceDite]
+        obtain rfl : k = e 0 := by
+          rcases hke with ⟨j, rfl⟩
+          congr
+          simpa [embeddingFinSuccEquivSigma_fst] using hkf
+        simp only [Function.Embedding.toEquivRange_symm_apply_self, Fin.cons_zero,
+          glouk, ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.update]
+        split_ifs with h
+        · congr!
+        · exfalso
+          apply h
+          simp_rw [← embeddingFinSuccEquivSigma_snd e]
+    · have hkf : k ∉ Set.range (embeddingFinSuccEquivSigma n e).1 := by
+        contrapose! hke
+        rw [embeddingFinSuccEquivSigma_fst] at hke
+        exact Set.range_comp_subset_range _ _ hke
+      simp only [hke, hkf, ↓reduceDite]
+      simp only [glouk, ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
+      rw [Function.update_noteq]
+      contrapose! hke
+      have hk : k = (embeddingFinSuccEquivSigma n e).2 := Subtype.ext_iff_val.1 hke
+      rw [hk, embeddingFinSuccEquivSigma_snd e]
+      apply Set.mem_range_self
+  · intro n _hn
+    apply continuous_finset_sum _ (fun e _he ↦ ?_)
+    exact (ContinuousMultilinearMap.coe_continuous _).comp (ContinuousLinearMap.continuous _)
 
 #exit
 

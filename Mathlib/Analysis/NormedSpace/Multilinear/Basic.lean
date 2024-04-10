@@ -1353,15 +1353,14 @@ theorem compContinuousLinearMapEquivL_apply (g : ContinuousMultilinearMap 𝕜 E
   rfl
 #align continuous_multilinear_map.comp_continuous_linear_map_equivL_apply ContinuousMultilinearMap.compContinuousLinearMapEquivL_apply
 
-open Classical in
 /-- One of the components of the iterated derivative of a continuous multilinear map.
 Given a bijection `e` between a type `α` (typically `Fin k`) and a subset `s` of `ι`, this
 component is a continuous multilinear map of `k` vectors `v₁, ..., vₖ`, mapping them
 to `f (x₁, (v_{e 2})₂, x₃, ...)`, where at indices `i` in `s` one uses the vector `v_{e i}`
 and otherwise one uses a reference vector `x`. This is continuous multilinear in the components
 of `x` outside of `s`, and in the `v_j`. -/
-noncomputable def iteratedFDerivComponent {α : Type*} [DecidableEq α] [Fintype α]
-    (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) :
+noncomputable def iteratedFDerivComponent {α : Type*} [DecidableEq α] [Fintype α] [DecidableEq ι]
+    (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)] :
     ContinuousMultilinearMap 𝕜 (fun (i : {a : ι // a ∉ s}) ↦ E₁ i)
       (ContinuousMultilinearMap 𝕜 (fun (_ : α) ↦ (∀ i, E₁ i)) G) :=
   (f.toMultilinearMap.iteratedFDerivComponent e).mkContinuousMultilinear (‖f‖) <| by
@@ -1383,15 +1382,28 @@ noncomputable def iteratedFDerivComponent {α : Type*} [DecidableEq α] [Fintype
       apply Finset.prod_le_prod (fun i _ ↦ norm_nonneg _) (fun i _ ↦ ?_)
       simpa only [i.2, ↓reduceDite, Subtype.coe_eta] using norm_le_pi_norm (m (e.symm i)) ↑i
 
+@[simp] lemma iteratedFDerivComponent_apply {α : Type*} [DecidableEq α] [Fintype α] [DecidableEq ι]
+    (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)]
+    (v : ∀ i : {a : ι // a ∉ s}, E₁ i) (w : α → (∀ i, E₁ i)) :
+    f.iteratedFDerivComponent e v w =
+      f (fun j ↦ if h : j ∈ s then w (e.symm ⟨j, h⟩) j else v ⟨j, h⟩) := by
+  simp [iteratedFDerivComponent, MultilinearMap.iteratedFDerivComponent,
+    MultilinearMap.domDomRestrictₗ]
+
 variable (𝕜) in
-def glouk (p : ι → Prop) : ((i : ι) → E₁ i) →L[𝕜] ((i : Subtype p) → E₁ i) :=
-  { toFun := fun v i ↦ v i
-    map_add' := by intros; ext; simp
-    map_smul' := by intros; ext; simp
-    cont := by continuity }
+/-- Given a function `f : α → ι`, it induces a continuous linear function by right composition on
+product types. For `f = Subtype.val`, this corresponds to forgetting some set of variables. -/
+def Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → E₁ i) →L[𝕜] ((i : α) → E₁ (f i)) where
+  toFun := fun v i ↦ v (f i)
+  map_add' := by intros; ext; simp
+  map_smul' := by intros; ext; simp
+  cont := by continuity
+
+@[simp] lemma Pi.compRightL_apply {α : Type*} (f : α → ι) (v : (i : ι) → E₁ i) (i : α) :
+    Pi.compRightL 𝕜 f v i = v (f i) := rfl
 
 open Classical in
-/-- The iterated derivative of a continuous multilinear map `f` at the point `x`, it is a
+/-- The `k`-thi terated derivative of a continuous multilinear map `f` at the point `x`. It is a
 continuous multilinear map of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
 to `∑ f (x₁, (v_{i_1})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one
 of the `(vᵢ)ⱼ`, where each `vᵢ` has to be used exactly once.
@@ -1399,9 +1411,7 @@ The sum is parameterized by the embeddings of `Fin k` in the index type `ι` (or
 by the subsets `s` of `ι` of cardinal `k` and then the bijections between `Fin k` and `s`). -/
 def iteratedFDeriv (f : ContinuousMultilinearMap 𝕜 E₁ G) (k : ℕ) (x : (i : ι) → E₁ i) :
     ContinuousMultilinearMap 𝕜 (fun (_ : Fin k) ↦ (∀ i, E₁ i)) G :=
-  ∑ e : Fin k ↪ ι, iteratedFDerivComponent f e.toEquivRange (glouk 𝕜 _ x)
-
-  -- ∑ s in univ.powersetCard k, ∑ e : Fin k ≃ s, iteratedFDerivComponent f s e (glouk 𝕜 _ x)
+  ∑ e : Fin k ↪ ι, iteratedFDerivComponent f e.toEquivRange (Pi.compRightL 𝕜 Subtype.val x)
 
 end ContinuousMultilinearMap
 
