@@ -116,6 +116,8 @@ theorem Group.preimage_smul_setₛₗ
     h ⁻¹' (σ c • s) = c • h ⁻¹' s :=
  preimage_smul_setₛₗ_of_units _ _ _ _ (Group.isUnit _) (Group.isUnit _) s
 
+variable (R)
+
 @[simp] -- This can be safely removed as a `@[simp]` lemma if `image_smul_setₛₗ` is readded.
 theorem image_smul_set [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂]
     (c : R) (s : Set M₁) :
@@ -141,4 +143,4 @@ theorem Group.preimage_smul_set
     {F : Type*} [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂] (h : F)
     (c : R) (s : Set M₂) :
     h ⁻¹' (c • s) = c • h ⁻¹' s :=
-  _root_.preimage_smul_set M₁ M₂ h (Group.isUnit c) s
+  _root_.preimage_smul_set R M₁ M₂ h (Group.isUnit c) s
