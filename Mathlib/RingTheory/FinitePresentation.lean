@@ -128,7 +128,7 @@ variable {R}
 
 /-- The quotient of a finitely presented algebra by a finitely generated ideal is finitely
 presented. -/
-protected instance quotient {I : Ideal A} (h : I.FG) [hfp : FinitePresentation R A] :
+protected theorem quotient {I : Ideal A} (h : I.FG) [hfp : FinitePresentation R A] :
     FinitePresentation R (A ⧸ I) where
   out := by
     obtain ⟨n, f, hf⟩ := hfp.out
