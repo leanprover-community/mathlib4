@@ -126,6 +126,8 @@ def addPropHaves (tac : TSyntax ``tacticSeq) (toHave : Array LocalDecl) :
 
 end tactic_modifications
 
+section tactic_tests
+
 /-- A generic testing of a tactic sequence.
 It returns a message informing about errors and successes. -/
 def testTactic (tac : TSyntax ``tacticSeq) (test : MessageData)
@@ -174,21 +176,6 @@ withoutModifyingState do withMainContext do
   let (t1, _repls) ← addPropHaves tac (props.map Prod.snd)
   testTactic ⟨t1⟩ m!"'have's{indentD t1}" m!"missing instantiateMVars? {t1}"
 
-/-- if a declaration contains one of these `SyntaxNodeKind`s, then likely the automated testing
-will fail, but would not be an indication of a bug. -/
-abbrev nonTesters : HashSet SyntaxNodeKind := HashSet.empty
---  |>.insert ``Lean.guardMsgsCmd  -- <--- does not actually work
-  |>.insert ``Lean.Parser.Tactic.guardTarget
-  |>.insert ``Lean.Parser.Tactic.guardHyp
-
-/-- checks whether the input `Syntax` contains a `SyntaxNodeKind` in `nonTesters`. -/
--- `import Std.Data.Array.Basic`; `··· (args.attach.map (test? ·.1)).all (·)` fixes the partial
-partial
-def test? : Syntax → (c : HashSet SyntaxNodeKind := nonTesters) → Bool
-  | .node _ k args, c =>
-    if c.contains k then false else (args.map (test? · c)).all (·)
-  | _, _ => true
-
 /-- `test tacSeq` runs the standard meta-programming tests on the tactic sequence `tacSeq`.
 If the `!`-flag is not present, then it reverts the state, otherwise it leaves the state as
 it is after the tactic sequence.
@@ -203,6 +190,23 @@ elab (name := testTac) "test " tk:"!"? tac:tacticSeq : tactic => do
 
 @[inherit_doc testTac]
 macro "test! " tac:tacticSeq : tactic => `(tactic| test ! $tac)
+
+end tactic_tests
+
+/-- if a declaration contains one of these `SyntaxNodeKind`s, then likely the automated testing
+will fail, but would not be an indication of a bug. -/
+abbrev nonTesters : HashSet SyntaxNodeKind := HashSet.empty
+--  |>.insert ``Lean.guardMsgsCmd  -- <--- does not actually work
+  |>.insert ``Lean.Parser.Tactic.guardTarget
+  |>.insert ``Lean.Parser.Tactic.guardHyp
+
+/-- checks whether the input `Syntax` contains a `SyntaxNodeKind` in `nonTesters`. -/
+-- `import Std.Data.Array.Basic`; `··· (args.attach.map (test? ·.1)).all (·)` fixes the partial
+partial
+def test? : Syntax → (c : HashSet SyntaxNodeKind := nonTesters) → Bool
+  | .node _ k args, c =>
+    if c.contains k then false else (args.map (test? · c)).all (·)
+  | _, _ => true
 
 /-- converts
 * `theorem x ...` to  `some (example ... , x)`,
