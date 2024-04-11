@@ -67,10 +67,18 @@ lemma mulVec_eigenvectorBasis (j : n) :
     congr(⇑$((isHermitian_iff_isSymmetric.1 hA).apply_eigenvectorBasis
      finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
 
-/-- A matrix whose columns are an orthonormal basis of eigenvectors of a hermitian matrix. -/
-noncomputable def eigenvectorMatrix : Matrix n n 𝕜 :=
-  (PiLp.basisFun _ 𝕜 n).toMatrix (eigenvectorBasis hA).toBasis
-#align matrix.is_hermitian.eigenvector_matrix Matrix.IsHermitian.eigenvectorMatrix
+/--Unitary matrix whose columns are Orthonormal Basis of Eigenvectors of Hermitian Matrix-/
+noncomputable def eigenvectorUnitary {𝕜 : Type*} [RCLike 𝕜] {n : Type*}
+    [Fintype n]{A : Matrix n n 𝕜} [DecidableEq n] (hA : Matrix.IsHermitian A) :
+    Matrix.unitaryGroup n 𝕜 :=
+    ⟨(EuclideanSpace.basisFun n 𝕜).toBasis.toMatrix (hA.eigenvectorBasis).toBasis,
+    OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary
+    (EuclideanSpace.basisFun n 𝕜) (eigenvectorBasis hA)⟩
+
+--/-- A matrix whose columns are an orthonormal basis of eigenvectors of a hermitian matrix. -/
+--noncomputable def eigenvectorMatrix : Matrix n n 𝕜 :=
+--  (PiLp.basisFun _ 𝕜 n).toMatrix (eigenvectorBasis hA).toBasis
+--#align matrix.is_hermitian.eigenvector_matrix Matrix.IsHermitian.eigenvectorMatrix
 
 /-- The inverse of `eigenvectorMatrix` -/
 noncomputable def eigenvectorMatrixInv : Matrix n n 𝕜 :=
