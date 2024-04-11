@@ -24,6 +24,9 @@ By default, `set_option linter.linterTest true` skips any declaration that conta
 `SyntaxNodeKind`s in `nonTesters` (typically, something involved in flow-control, such as
 `guard_hyp` or `guard_target`), since the tests may not be too reliable on them.
 
+If you want to skip a declaration, there is a convenience `untest` macro:
+`untext cmd` expands to `set_option linter.linterTest false in cmd`.
+
 TODO:
 * Automatically ignore `#guard_cmd`s?
 * Pretty printing of types in `have`s, `let`s, `set`s?
@@ -286,6 +289,7 @@ def linterTest : Linter where run := withSetOptionIn fun cmd => do
 
 initialize addLinter linterTest
 
+/-- a convenience macro expanding to `set_option linter.linterTest false in`. -/
 macro "untest " cmd:command : command => `(command| set_option linter.linterTest false in $cmd)
 
 initialize registerTraceClass `Tactic.tests
