@@ -69,6 +69,9 @@ We also give specialized versions of the one-dimensional real derivative (and it
 in `Real.deriv_fourierIntegral` and `Real.iteratedDeriv_fourierIntegral`.
 -/
 
+
+lemma touk (n : ℕ) : 0 ≤ n := by exact?
+
 noncomputable section
 
 open Real Complex MeasureTheory Filter TopologicalSpace
@@ -305,44 +308,15 @@ lemma _root_.ContDiff.fourierPowSMulRight {f : V → E} {k : ℕ∞} (hf : ContD
   apply (ContinuousMultilinearMap.contDiff _).comp
   exact contDiff_pi.2 (fun _ ↦ L.contDiff)
 
-
-#check ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear_of_le_one
-
-lemma gloug {f : V → E} {K : ℕ∞} {C : ℝ} (hf : ContDiff ℝ K f) (n : ℕ) {k : ℕ} (hk : k ≤ K)
-    {v : V} (hv : ∀ i ≤ k, ‖iteratedFDeriv ℝ i f v‖ ≤ C) :
-    ‖iteratedFDeriv ℝ k (fun v ↦ fourierPowSMulRight L f v n) v‖ ≤ (2 * π) ^ n * ‖v‖^n := by
-  have : ‖iteratedFDeriv ℝ k
-      (fun y ↦ (compContinuousLinearMapLRight (ContinuousMultilinearMap.mkPiAlgebra ℝ (Fin n) ℝ)) fun x ↦ L y)
-      v‖ ≤ 12 := by
-    apply opNorm_le_bound
-    · positivity
-    intro m
-    simp
-
-
-#exit
-
-  have A : ContDiff ℝ K fun y ↦ (compContinuousLinearMapLRight
-      (ContinuousMultilinearMap.mkPiAlgebra ℝ (Fin n) ℝ)) fun x ↦ L y := by
-    apply (ContinuousMultilinearMap.contDiff _).comp
-    exact contDiff_pi.2 (fun _ ↦ L.contDiff)
-  simp_rw [fourierPowSMulRight_eq_comp]
-  rw [iteratedFDeriv_const_smul_apply', norm_smul (β := V [×k]→L[ℝ] (W [×n]→L[ℝ] E))]; swap
-  · exact (smulRightL ℝ (fun (_ : Fin n) ↦ W) E).isBoundedBilinearMap.contDiff.comp₂ (A.of_le hk)
-      (hf.of_le hk)
-  simp only [norm_pow, norm_neg, norm_mul, RCLike.norm_ofNat, Complex.norm_eq_abs, abs_ofReal,
-    _root_.abs_of_nonneg pi_nonneg, abs_I, mul_one]
-  gcongr
-  apply (ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear_of_le_one _ A hf _
-    hk ContinuousMultilinearMap.norm_smulRightL_le).trans
-
-
---  have Z := (smulRightL ℝ (fun (x : Fin n) ↦ W) E).norm_iteratedFDeriv_le_of_bilinear_of_le_one
---    (smulRightL ℝ (fun (x : Fin n) ↦ W) E)
-
-
-
-#exit
+lemma ContinuousLinearMap.norm_pi_le_of_le {ι : Type*} {𝕜 : Type*} [Fintype ι]
+    [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)] {C : ℝ}
+    {L : (i : ι) → (E →L[𝕜] M i)} (hL : ∀ i, ‖L i‖ ≤ C) (hC : 0 ≤ C) :
+    ‖ContinuousLinearMap.pi L‖ ≤ C := by
+  apply ContinuousLinearMap.opNorm_le_bound _ (by positivity) (fun x ↦ ?_)
+  simp only [ContinuousLinearMap.coe_pi']
+  refine (pi_norm_le_iff_of_nonneg (by positivity)).mpr (fun i ↦ ?_)
+  exact (L i).le_of_opNorm_le_of_le (hL i) le_rfl
 
 lemma norm_fourierPowSMulRight_le (f : V → E) (v : V) (n : ℕ) :
     ‖fourierPowSMulRight L f v n‖ ≤ (2 * π * ‖L‖) ^ n * ‖v‖ ^ n * ‖f v‖ := by
@@ -357,6 +331,79 @@ lemma norm_fourierPowSMulRight_le (f : V → E) (v : V) (n : ℕ) :
       · exact L.le_opNorm₂ v (m i)
   _ = (2 * π * ‖L‖) ^ n * ‖v‖ ^ n * ‖f v‖ * ∏ i : Fin n, ‖m i‖ := by
       simp [Finset.prod_mul_distrib, mul_pow]; ring
+
+/-- The iterated derivative of a function multiplied by `(L v ⬝) ^ n` can be controlled in terms
+of the iterated derivatives of the initial function. -/
+lemma norm_iteratedFDeriv_fourierPowSMulRight
+    {f : V → E} {K : ℕ∞} {C : ℝ} (hf : ContDiff ℝ K f) {n : ℕ} {k : ℕ} (hk : k ≤ K)
+    {v : V} (hv : ∀ i ≤ k, ∀ j ≤ n, ‖v‖ ^ j * ‖iteratedFDeriv ℝ i f v‖ ≤ C) :
+    ‖iteratedFDeriv ℝ k (fun v ↦ fourierPowSMulRight L f v n) v‖ ≤
+      (2 * π) ^ n * (2 * n + 2) ^ k * ‖L‖ ^ n * C := by
+  let T : (W →L[ℝ] ℝ) [×n]→L[ℝ] (W [×n]→L[ℝ] ℝ) :=
+    compContinuousLinearMapLRight (ContinuousMultilinearMap.mkPiAlgebra ℝ (Fin n) ℝ)
+  have I₁ m : ‖iteratedFDeriv ℝ m T (fun _ ↦ L v)‖ ≤
+      Nat.descFactorial n m * 1 * (‖L‖ * ‖v‖) ^ (n - m) := by
+    have : ‖T‖ ≤ 1 := by
+      apply (norm_compContinuousLinearMapLRight_le _ _).trans
+      simp only [norm_mkPiAlgebra, le_refl]
+    apply (ContinuousMultilinearMap.norm_iteratedFDeriv_le _ _ _).trans
+    simp only [Fintype.card_fin]
+    gcongr
+    refine (pi_norm_le_iff_of_nonneg (by positivity)).mpr (fun _i ↦ ?_)
+    exact ContinuousLinearMap.le_opNorm _ _
+  have I₂ m : ‖iteratedFDeriv ℝ m (T ∘ (ContinuousLinearMap.pi (fun (_i : Fin n) ↦ L))) v‖ ≤
+      (Nat.descFactorial n m * 1 * (‖L‖ * ‖v‖) ^ (n - m)) * ‖L‖^m := by
+    rw [ContinuousLinearMap.iteratedFDeriv_comp_right _ (ContinuousMultilinearMap.contDiff _)
+      _ le_top]
+    apply (norm_compContinuousLinearMap_le _ _).trans
+    simp only [Finset.prod_const, Finset.card_fin]
+    gcongr
+    · exact I₁ m
+    · exact ContinuousLinearMap.norm_pi_le_of_le (fun _i ↦ le_rfl) (norm_nonneg _)
+  have I₃ m : ‖iteratedFDeriv ℝ m (T ∘ (ContinuousLinearMap.pi (fun (_i : Fin n) ↦ L))) v‖ ≤
+      Nat.descFactorial n m * ‖L‖ ^ n * ‖v‖ ^ (n - m) := by
+    apply (I₂ m).trans (le_of_eq _)
+    rcases le_or_lt m n with hm|hm
+    · have : ‖L‖ ^ n = ‖L‖ ^ (m + (n - m)) := by congr; omega
+      rw [this, pow_add]
+      ring
+    · simp [Nat.descFactorial_eq_zero_iff_lt.mpr hm]
+  have A : ContDiff ℝ K fun y ↦ T fun _ ↦ L y := by
+    apply (ContinuousMultilinearMap.contDiff _).comp
+    exact contDiff_pi.2 (fun _ ↦ L.contDiff)
+  simp_rw [fourierPowSMulRight_eq_comp]
+  rw [iteratedFDeriv_const_smul_apply', norm_smul (β := V [×k]→L[ℝ] (W [×n]→L[ℝ] E))]; swap
+  · exact (smulRightL ℝ (fun (_ : Fin n) ↦ W) E).isBoundedBilinearMap.contDiff.comp₂ (A.of_le hk)
+      (hf.of_le hk)
+  simp only [norm_pow, norm_neg, norm_mul, RCLike.norm_ofNat, Complex.norm_eq_abs, abs_ofReal,
+    _root_.abs_of_nonneg pi_nonneg, abs_I, mul_one, mul_assoc]
+  gcongr
+  apply (ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear_of_le_one _ A hf _
+    hk ContinuousMultilinearMap.norm_smulRightL_le).trans
+  calc
+  ∑ i in Finset.range (k + 1),
+    Nat.choose k i * ‖iteratedFDeriv ℝ i (fun (y : V) ↦ T (fun _ ↦ L y)) v‖ *
+      ‖iteratedFDeriv ℝ (k - i) f v‖
+    ≤ ∑ i in Finset.range (k + 1),
+      Nat.choose k i * (Nat.descFactorial n i * ‖L‖ ^ n * ‖v‖ ^ (n - i)) *
+        ‖iteratedFDeriv ℝ (k - i) f v‖ := by
+    gcongr with i _hi
+    exact I₃ i
+  _ = ∑ i in Finset.range (k + 1), (Nat.choose k i * Nat.descFactorial n i * ‖L‖ ^ n) *
+        (‖v‖ ^ (n - i) * ‖iteratedFDeriv ℝ (k - i) f v‖) := by
+    congr with i
+    ring
+  _ ≤ ∑ i in Finset.range (k + 1), (Nat.choose k i * (n + 1 : ℕ) ^ k * ‖L‖ ^ n) * C := by
+    gcongr with i hi
+    · rw [← Nat.cast_pow, Nat.cast_le]
+      calc Nat.descFactorial n i ≤ n ^ i := Nat.descFactorial_le_pow _ _
+      _ ≤ (n + 1) ^ i := pow_le_pow_left (by omega) (by omega) i
+      _ ≤ (n + 1) ^ k := pow_le_pow_right (by omega) (Finset.mem_range_succ_iff.mp hi)
+    · exact hv _ (by omega) _ (by omega)
+  _ = (2 * n + 2) ^ k * (‖L‖^n * C) := by
+    simp only [← Finset.sum_mul, ← Nat.cast_sum, Nat.sum_range_choose]
+    simp [← mul_pow, mul_add, ← mul_assoc]
+
 
 variable [SecondCountableTopology V] [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
 
