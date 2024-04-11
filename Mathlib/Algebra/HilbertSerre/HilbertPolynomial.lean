@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Polynomial.Hilbert
 import Mathlib.Algebra.HilbertSerre.Theorem
 
 /-!
-# Hilbert Polynomials
+# Hilbert polynomials
 
 Remember the assumptions in the file `Mathlib/Algebra/HilbertSerre/Theorem.lean`:
 `universe u`
