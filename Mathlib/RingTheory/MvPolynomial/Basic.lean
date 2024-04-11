@@ -91,13 +91,13 @@ theorem restrictSupport_mono {s t : Set (σ →₀ ℕ)} (h : s ⊆ t) :
 
 variable (σ)
 
-/-- The submodule of polynomials of total degree less than or equal to `m`.-/
+/-- The submodule of polynomials of total degree less than or equal to `m`. -/
 def restrictTotalDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
   restrictSupport R { n | (n.sum fun _ e => e) ≤ m }
 #align mv_polynomial.restrict_total_degree MvPolynomial.restrictTotalDegree
 
 /-- The submodule of polynomials such that the degree with respect to each individual variable is
-less than or equal to `m`.-/
+less than or equal to `m`. -/
 def restrictDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
   restrictSupport R { n | ∀ i, n i ≤ m }
 #align mv_polynomial.restrict_degree MvPolynomial.restrictDegree

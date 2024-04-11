@@ -330,11 +330,11 @@ protected theorem defn (p : ℕ) [hp : Fact p.Prime] {q : ℚ} {n d : ℤ} (hqz 
   rw [multiplicity.mul' (Nat.prime_iff_prime_int.1 hp.1),
     multiplicity.mul' (Nat.prime_iff_prime_int.1 hp.1)]
   rw [Nat.cast_add, Nat.cast_add]
-  simp_rw [Int.coe_nat_multiplicity p q.den]
+  simp_rw [Int.natCast_multiplicity p q.den]
   ring
   -- Porting note: was
   -- simp only [hc1, hc2, multiplicity.mul' (Nat.prime_iff_prime_int.1 hp.1),
-  --   hp.1.ne_one, hqz, pos_iff_ne_zero, Int.coe_nat_multiplicity p q.den
+  --   hp.1.ne_one, hqz, pos_iff_ne_zero, Int.natCast_multiplicity p q.den
 #align padic_val_rat.defn padicValRat.defn
 
 /-- A rewrite lemma for `padicValRat p (q * r)` with conditions `q ≠ 0`, `r ≠ 0`. -/
@@ -584,7 +584,21 @@ theorem padicValNat_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (ne
     (not_congr (Iff.symm (prime_dvd_prime_iff_eq hp.1 hq.1))).mp neq
 #align padic_val_nat_primes padicValNat_primes
 
-/-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t `p`.-/
+theorem padicValNat_prime_prime_pow {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
+    (n : ℕ) (neq : p ≠ q) : padicValNat p (q ^ n) = 0 := by
+  rw [padicValNat.pow _ <| Nat.Prime.ne_zero hq.elim, padicValNat_primes neq, mul_zero]
+
+theorem padicValNat_mul_pow_left {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
+    (n m : ℕ) (neq : p ≠ q) : padicValNat p (p^n * q^m) = n := by
+  rw [padicValNat.mul (NeZero.ne' (p^n)).symm (NeZero.ne' (q^m)).symm,
+    padicValNat.prime_pow, padicValNat_prime_prime_pow m neq, add_zero]
+
+theorem padicValNat_mul_pow_right {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
+    (n m : ℕ) (neq : q ≠ p) : padicValNat q (p^n * q^m) = m := by
+  rw [mul_comm (p^n) (q^m)]
+  exact padicValNat_mul_pow_left m n neq
+
+/-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t `p`. -/
 lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
   rcases n with _ | n
   · simp

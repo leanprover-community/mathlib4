@@ -232,7 +232,7 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
   intro s hs
   rcases exists_preimage_norm_le f surj with ⟨C, Cpos, hC⟩
   refine' isOpen_iff.2 fun y yfs => _
-  rcases mem_image_iff_bex.1 yfs with ⟨x, xs, fxy⟩
+  rcases yfs with ⟨x, xs, fxy⟩
   rcases isOpen_iff.1 hs x xs with ⟨ε, εpos, hε⟩
   refine' ⟨ε / C, div_pos εpos Cpos, fun z hz => _⟩
   rcases hC (z - y) with ⟨w, wim, wnorm⟩

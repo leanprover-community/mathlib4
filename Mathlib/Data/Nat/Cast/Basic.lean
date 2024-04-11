@@ -7,7 +7,7 @@ import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Ring.Nat
 
 #align_import data.nat.cast.basic from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
@@ -313,14 +313,18 @@ variable {π : α → Type*} [∀ a, NatCast (π a)]
 Was `by refine_struct { .. } <;> pi_instance_derive_field` -/
 instance natCast : NatCast (∀ a, π a) := { natCast := fun n _ ↦ n }
 
-theorem nat_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
+theorem natCast_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
   rfl
-#align pi.nat_apply Pi.nat_apply
+#align pi.nat_apply Pi.natCast_apply
 
 @[simp]
-theorem coe_nat (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
+theorem natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
   rfl
-#align pi.coe_nat Pi.coe_nat
+#align pi.coe_nat Pi.natCast_def
+
+-- 2024-04-05
+@[deprecated] alias nat_apply := natCast_apply
+@[deprecated] alias coe_nat := natCast_def
 
 @[simp]
 theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl
