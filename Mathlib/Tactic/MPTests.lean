@@ -116,7 +116,7 @@ def addLetsOrSets (lets? unLet? : Bool) (tac : TSyntax ``tacticSeq) (toSet : Arr
                else `(tactic| set $nid : $dtyp := $nid)
     repls := repls.push next
   if unLet? then repls := repls.push (← `(tactic| unfold_let))
-  return (tac.insertMany repls, repls)
+  return (← addDone (tac.insertMany repls), repls)
 
 /-- adds at the beginning of the tactic sequence `tac` lines like `have new := old`,
 where `old` is the username of each local declaration in `toHave`.
@@ -184,7 +184,6 @@ withoutModifyingState do withMainContext do
       d.kind == .default && d.type.ctorName != "sort" && !(← inferType d.type).isProp
   let toSet := nonSort.map Prod.snd
   let (ntac, repls) ← addLetsOrSets lets? unLet? tac toSet
---  let ntac ← addDone ntac
   testTactic ntac m!"{if lets? then "'let's" else "'set's"} {repls}" m!"missing withContext? {ntac}"
 
 /-- The standard test for `instantiateMVars`: adds `have h' := h`, for every `Prop`-valued
@@ -197,7 +196,6 @@ withoutModifyingState do withMainContext do
   let carr := ctx.fvarIdToDecl.toArray.qsort (·.1.name.toString < ·.1.name.toString)
   let props ← carr.filterM fun d => return d.2.kind == .default && ((← inferType d.2.type).isProp)
   let (t1, _repls) ← addPropHaves tac (props.map Prod.snd)
---  let t1 ← addDone t1
   testTactic ⟨t1⟩ m!"'have's{indentD t1}" m!"missing instantiateMVars? {t1}"
 
 /-- `test tacSeq` runs the standard meta-programming tests on the tactic sequence `tacSeq`.

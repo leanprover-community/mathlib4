@@ -24,6 +24,7 @@ warning: missing withContext?
   let _d : ?a✝¹ := _d
   guard_target = _
   exact 0
+  done
 -/
 #guard_msgs in
 #test
@@ -90,6 +91,12 @@ warning: is mdata correctly handled?
   buggy_exact h
   done
 ---
+warning: missing withContext?
+
+  let j : ?a✝ := j
+  buggy_exact h
+  done
+---
 warning: missing instantiateMVars?
 
   have h__h__0 := h
@@ -99,7 +106,7 @@ warning: missing instantiateMVars?
 info:
 [Tactic.tests] ❌ 'have := 0'
 [Tactic.tests] ✅ 'set's [set j : ?a✝ := j]
-[Tactic.tests] ✅ 'let's [let j : ?a✝ := j]
+[Tactic.tests] ❌ 'let's [let j : ?a✝ := j]
 [Tactic.tests] ❌ 'have's
         have h__h__0 := h
         buggy_exact h__h__0
@@ -264,6 +271,12 @@ set_option linter.linterTest true
 warning: is mdata correctly handled?
 
   have := 0
+  buggy_exact h
+  done
+---
+warning: missing withContext?
+
+  let _j : ?a✝ := _j
   buggy_exact h
   done
 ---
