@@ -2,7 +2,6 @@ import Mathlib.Algebra.Group.Nat
 import Mathlib.Tactic.MoveAdd
 import Mathlib.Tactic.MPTests
 
-import Mathlib.adomaniLeanUtils.inspect
 section exclude
 
 set_option linter.linterTest true in
