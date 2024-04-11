@@ -18,6 +18,7 @@ A function expressible as a power series at a point has a Frechet derivative the
 Also the special case in terms of `deriv` when the domain is 1-dimensional.
 -/
 
+lemma foo (n : ℕ) : 0 ≤ n := by exact?
 
 open Filter Asymptotics
 
@@ -351,63 +352,18 @@ protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x)
 open scoped BigOperators
 open Finset (univ)
 
-def embeddingFinSuccEquivSigmaToFun (n : ℕ) :
-    (Fin (n+1) ↪ ι) → (Σ (e : Fin n ↪ ι), {i // i ∉ Set.range e}) :=
-  fun e ↦ ⟨(Fin.succEmb n).toEmbedding.trans e, ⟨e 0, by simp⟩⟩
-
-def embeddingFinSuccEquivSigmaInvFun (n : ℕ) :
-    (Σ (e : Fin n ↪ ι), {i // i ∉ Set.range e}) → (Fin (n+1) ↪ ι) := by
-  rintro ⟨f, ⟨i, hi⟩⟩
-  refine ⟨fun j ↦ if h : j = 0 then i else f (Fin.pred j h), ?_⟩
-  simp only [Set.mem_range, not_exists] at hi
-  intro k l hkl
-  by_cases hk : k = 0 <;> by_cases hl : l = 0 <;> simp only [hk, ↓reduceDite, hl] at hkl
-  · omega
-  · exact (hi _ hkl.symm).elim
-  · exact (hi _ hkl).elim
-  · simpa using f.injective hkl
-
-/-- An embedding `e : Fin (n+1) ↪ ι` corresponds to an embedding `f : Fin n ↪ ι` (corresponding
-the last `n` coordinates of `e`) together with a value not taken by `f` (corresponding to `e 0`). -/
-def embeddingFinSuccEquivSigma (n : ℕ) :
-    (Fin (n+1) ↪ ι) ≃ (Σ (e : Fin n ↪ ι), {i // i ∉ Set.range e}) where
-  toFun := embeddingFinSuccEquivSigmaToFun n
-  invFun := embeddingFinSuccEquivSigmaInvFun n
-  left_inv := by
-    intro e
-    simp only [embeddingFinSuccEquivSigmaToFun, Fin.cast_nat_eq_last, dite_eq_ite,
-      embeddingFinSuccEquivSigmaInvFun, Fin.castSuccEmb_toEmbedding,
-      Function.Embedding.trans_apply, Function.Embedding.coeFn_mk, Fin.castSucc_mk, Fin.eta]
-    ext j
-    by_cases hj : j = 0
-    · simp [hj]
-    · simp [hj]
-  right_inv := by
-    rintro ⟨f, ⟨i, hi⟩⟩
-    simp only [Finset.univ_sigma_univ, embeddingFinSuccEquivSigmaToFun,
-      embeddingFinSuccEquivSigmaInvFun, Function.Embedding.coeFn_mk, ↓reduceDite,
-      Subtype.mk.injEq, Sigma.mk.inj_iff, heq_eq_eq, and_true]
-    ext j
-    simp [Fin.succ_ne_zero]
-
-lemma embeddingFinSuccEquivSigma_fst {n : ℕ} (e : Fin (n+1) ↪ ι) :
-    ((embeddingFinSuccEquivSigma n e).1 : Fin n → ι) = e ∘ Fin.succ := rfl
-
-lemma embeddingFinSuccEquivSigma_snd {n : ℕ} (e : Fin (n+1) ↪ ι) :
-    ((embeddingFinSuccEquivSigma n e).2 : ι) = e 0 := rfl
-
-lemma succ_embeddingFinSuccEquivSigma_fst_symm_apply [DecidableEq ι]
+lemma _root_.Equiv.succ_embeddingFinSucc_fst_symm_apply {ι : Type*} [DecidableEq ι]
     {n : ℕ} (e : Fin (n+1) ↪ ι) {k : ι}
-    (h'k : k ∈ Set.range (embeddingFinSuccEquivSigma n e).1) (hk : k ∈ Set.range e) :
-    Fin.succ ((embeddingFinSuccEquivSigma n e).1.toEquivRange.symm ⟨k, h'k⟩)
+    (h'k : k ∈ Set.range (Equiv.embeddingFinSucc n ι e).1) (hk : k ∈ Set.range e) :
+    Fin.succ ((Equiv.embeddingFinSucc n ι e).1.toEquivRange.symm ⟨k, h'k⟩)
       = e.toEquivRange.symm ⟨k, hk⟩ := by
   rcases hk with ⟨j, rfl⟩
   have hj : j ≠ 0 := by
     rintro rfl
-    simp [embeddingFinSuccEquivSigma_fst] at h'k
+    simp [finSuccEmbeddingEquiv_fst] at h'k
   simp only [Function.Embedding.toEquivRange_symm_apply_self]
-  have : e j = (embeddingFinSuccEquivSigma n e).1 (Fin.pred j hj) := by
-    simp [embeddingFinSuccEquivSigma_fst]
+  have : e j = (finSuccEmbeddingEquiv n e).1 (Fin.pred j hj) := by
+    simp [finSuccEmbeddingEquiv_fst]
   simp_rw [this]
   simp
 
@@ -431,36 +387,36 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
       iteratedFDerivComponent_apply, Finset.univ_sigma_univ,
       Pi.compRightL_apply, ContinuousLinearMap.coe_sum', ContinuousLinearMap.coe_comp',
       Finset.sum_apply, Function.comp_apply, linearDeriv_apply, Finset.sum_sigma']
-    rw [← (embeddingFinSuccEquivSigma n).sum_comp]
+    rw [← (finSuccEmbeddingEquiv n).sum_comp]
     congr with e
     congr with k
     by_cases hke : k ∈ Set.range e
     · simp only [hke, ↓reduceDite]
-      by_cases hkf : k ∈ Set.range (embeddingFinSuccEquivSigma n e).1
-      · simp only [hkf, ↓reduceDite, ← succ_embeddingFinSuccEquivSigma_fst_symm_apply e hkf hke,
+      by_cases hkf : k ∈ Set.range (finSuccEmbeddingEquiv n e).1
+      · simp only [hkf, ↓reduceDite, ← succ_finSuccEmbeddingEquiv_fst_symm_apply e hkf hke,
           Fin.cons_succ]
       · simp only [hkf, ↓reduceDite]
         obtain rfl : k = e 0 := by
           rcases hke with ⟨j, rfl⟩
           congr
-          simpa [embeddingFinSuccEquivSigma_fst] using hkf
+          simpa [finSuccEmbeddingEquiv_fst] using hkf
         simp only [Function.Embedding.toEquivRange_symm_apply_self, Fin.cons_zero, Function.update,
           Pi.compRightL_apply, dite_eq_ite]
         split_ifs with h
         · congr!
         · exfalso
           apply h
-          simp_rw [← embeddingFinSuccEquivSigma_snd e]
-    · have hkf : k ∉ Set.range (embeddingFinSuccEquivSigma n e).1 := by
+          simp_rw [← finSuccEmbeddingEquiv_snd e]
+    · have hkf : k ∉ Set.range (finSuccEmbeddingEquiv n e).1 := by
         contrapose! hke
-        rw [embeddingFinSuccEquivSigma_fst] at hke
+        rw [finSuccEmbeddingEquiv_fst] at hke
         exact Set.range_comp_subset_range _ _ hke
       simp only [hke, hkf, ↓reduceDite]
       simp only [Pi.compRightL, ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
       rw [Function.update_noteq]
       contrapose! hke
-      have hk : k = (embeddingFinSuccEquivSigma n e).2 := Subtype.ext_iff_val.1 hke
-      rw [hk, embeddingFinSuccEquivSigma_snd e]
+      have hk : k = (finSuccEmbeddingEquiv n e).2 := Subtype.ext_iff_val.1 hke
+      rw [hk, finSuccEmbeddingEquiv_snd e]
       apply Set.mem_range_self
   · intro n _hn
     apply continuous_finset_sum _ (fun e _he ↦ ?_)
