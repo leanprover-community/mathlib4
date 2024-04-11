@@ -113,7 +113,7 @@ variable (X : CondensedSet.{u}) {α : Type u} [Finite α] (σ : α → Type u)
 
 def sigmaComparison : X.val.obj ⟨(CompHaus.of ((a : α) × σ a))⟩ ⟶
     ((a : α) → X.val.obj ⟨CompHaus.of (σ a)⟩) :=
-  fun x a ↦ X.val.map ⟨(Sigma.mk a), continuous_sigmaMk⟩ x
+  fun x a ↦ X.val.map ⟨Sigma.mk a, continuous_sigmaMk⟩ x
 
 noncomputable instance : PreservesLimitsOfShape (Discrete α) X.val :=
   let α' := (Countable.toSmall α).equiv_small.choose
