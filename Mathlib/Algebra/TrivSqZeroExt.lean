@@ -435,9 +435,6 @@ instance one [One R] [Zero M] : One (tsze R M) :=
 instance mul [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] : Mul (tsze R M) :=
   ⟨fun x y => (x.1 * y.1, x.1 •> y.2 + x.2 <• y.1)⟩
 
-instance div [Sub M] [Mul R] [Div R] [HDiv M R M] [SMul Rᵐᵒᵖ M] [SMul R M] : Div (tsze R M) :=
-  ⟨fun a b => (a.1 / b.1, (a.2 <• b.1 - a.1 •> b.2) / (b.1 * b.1))⟩
-
 @[simp]
 theorem fst_one [One R] [Zero M] : (1 : tsze R M).fst = 1 :=
   rfl
@@ -459,16 +456,6 @@ theorem snd_mul [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] (x₁ x₂ : tsze
     (x₁ * x₂).snd = x₁.fst •> x₂.snd + x₁.snd <• x₂.fst :=
   rfl
 #align triv_sq_zero_ext.snd_mul TrivSqZeroExt.snd_mul
-
-@[simp]
-theorem fst_div [Sub M] [Mul R] [Div R] [HDiv M R M] [SMul Rᵐᵒᵖ M] [SMul R M] (x₁ x₂ : tsze R M) :
-    (x₁ / x₂).fst = x₁.fst / x₂.fst :=
-  rfl
-
-@[simp]
-theorem snd_div [Sub M] [Mul R] [Div R] [HDiv M R M] [SMul Rᵐᵒᵖ M] [SMul R M] (x₁ x₂ : tsze R M) :
-    (x₁ / x₂).snd = (x₁.snd <• x₂.fst - x₁.fst •> x₂.snd) / (x₂.fst * x₂.fst):=
-  rfl
 
 section
 
@@ -750,6 +737,25 @@ def inlHom [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] : R
 #align triv_sq_zero_ext.inl_hom TrivSqZeroExt.inlHom
 
 end Mul
+
+section Div
+
+variable {R : Type u} {M : Type v}
+
+instance div [Sub M] [Mul R] [Div R] [HDiv M R M] [SMul Rᵐᵒᵖ M] [SMul R M] : Div (tsze R M) :=
+  ⟨fun a b => (a.1 / b.1, (a.2 <• b.1 - a.1 •> b.2) / (b.1 * b.1))⟩
+
+@[simp]
+theorem fst_div [Sub M] [Mul R] [Div R] [HDiv M R M] [SMul Rᵐᵒᵖ M] [SMul R M] (x₁ x₂ : tsze R M) :
+    (x₁ / x₂).fst = x₁.fst / x₂.fst :=
+  rfl
+
+@[simp]
+theorem snd_div [Sub M] [Mul R] [Div R] [HDiv M R M] [SMul Rᵐᵒᵖ M] [SMul R M] (x₁ x₂ : tsze R M) :
+    (x₁ / x₂).snd = (x₁.snd <• x₂.fst - x₁.fst •> x₂.snd) / (x₂.fst * x₂.fst):=
+  rfl
+
+end Div
 
 section Algebra
 
