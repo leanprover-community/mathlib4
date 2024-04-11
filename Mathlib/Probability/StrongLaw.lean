@@ -384,15 +384,15 @@ theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonn
 
 end MomentEstimates
 
+/-! Proof of the strong law of large numbers (almost sure version, assuming only
+pairwise independence) for nonnegative random variables, following Etemadi's proof. -/
 section StrongLawNonneg
 
-/- This paragraph proves the strong law of large numbers (almost sure version, assuming only
-pairwise independence) for nonnegative random variables, following Etemadi's proof. -/
 variable (X : ℕ → Ω → ℝ) (hint : Integrable (X 0))
   (hindep : Pairwise fun i j => IndepFun (X i) (X j)) (hident : ∀ i, IdentDistrib (X i) (X 0))
   (hnonneg : ∀ i ω, 0 ≤ X i ω)
 
-/- The truncation of `Xᵢ` up to `i` satisfies the strong law of large numbers (with respect to
+/-- The truncation of `Xᵢ` up to `i` satisfies the strong law of large numbers (with respect to
 the truncated expectation) along the sequence `c^n`, for any `c > 1`, up to a given `ε > 0`.
 This follows from a variance control. -/
 theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : ∀ᵐ ω, ∀ᶠ n : ℕ in atTop,
