@@ -10,7 +10,6 @@ import Std.Lean.PersistentHashMap
 import Std.Lean.Syntax
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Set
-import Std
 
 /-!
 #  A testing linter
