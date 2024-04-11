@@ -163,7 +163,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
     positivity
     -- third goal : `Tendsto (fun (n : ℕ) => √(b n)) atTop (𝓝 0)`
     suffices Tendsto (fun x ↦ √(8 * δ * x + 4 * x * x) : ℝ → ℝ) (𝓝 0) (𝓝 0)
-      from this.comp tendsto_one_div_add_atTop_nhds_0_nat
+      from this.comp tendsto_one_div_add_atTop_nhds_zero_nat
     exact Continuous.tendsto' (by continuity) _ _ (by simp)
   -- Step 3: By completeness of `K`, let `w : ℕ → K` converge to some `v : K`.
   -- Prove that it satisfies all requirements.
