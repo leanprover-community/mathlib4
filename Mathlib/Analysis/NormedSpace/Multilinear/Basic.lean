@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 import Mathlib.Logic.Embedding.Basic
+import Mathlib.Data.Fintype.CardEmbedding
 
 #align_import analysis.normed_space.multilinear from "leanprover-community/mathlib"@"f40476639bac089693a489c9e354ebd75dc0f886"
 
@@ -94,6 +95,10 @@ variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {n : ℕ} {E : ι → Typ
 We relate continuity of multilinear maps to the inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖`, in
 both directions. Along the way, we prove useful bounds on the difference `‖f m₁ - f m₂‖`.
 -/
+
+
+lemma foo (n : ℕ) : 0 ≤ n := by exact?
+
 
 namespace MultilinearMap
 
@@ -1391,27 +1396,22 @@ noncomputable def iteratedFDerivComponent {α : Type*} [DecidableEq α] [Fintype
   simp [iteratedFDerivComponent, MultilinearMap.iteratedFDerivComponent,
     MultilinearMap.domDomRestrictₗ]
 
-lemma foo (n : ℕ) : 0 ≤ n := by exact?
-
 lemma norm_iteratedFDerivComponent_le {α : Type*} [DecidableEq α] [Fintype α] [DecidableEq ι]
     (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)]
-    (x : (i : {a : ι // a ∉ s}) → E₁ i) :
-    ‖f.iteratedFDerivComponent e x‖ ≤ ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := calc
-  ‖f.iteratedFDerivComponent e x‖
-    ≤ ‖f.iteratedFDerivComponent e‖ * ∏ i, ‖x i‖ := ContinuousMultilinearMap.le_opNorm _ _
-  _ ≤ ‖f‖ * ∏ i : {a : ι // a ∉ s}, ‖x‖ := by
+    (x : (i : ι) → E₁ i) :
+    ‖f.iteratedFDerivComponent e (fun i ↦ x i)‖
+      ≤ ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := calc
+  ‖f.iteratedFDerivComponent e (fun i ↦ x i)‖
+    ≤ ‖f.iteratedFDerivComponent e‖ * ∏ i : {a : ι // a ∉ s}, ‖x i‖ :=
+      ContinuousMultilinearMap.le_opNorm _ _
+  _ ≤ ‖f‖ * ∏ _i : {a : ι // a ∉ s}, ‖x‖ := by
       gcongr
-      · apply prod_nonneg (fun i hi ↦ norm_nonneg _)
+      · apply prod_nonneg (fun i _hi ↦ norm_nonneg _)
       · apply MultilinearMap.mkContinuousMultilinear_norm_le _ (norm_nonneg _)
-      · exact fun i hi ↦ norm_nonneg _
+      · exact fun i _hi ↦ norm_nonneg _
       · apply norm_le_pi_norm
   _ = ‖f‖ * ‖x‖ ^ (Fintype.card {a : ι // a ∉ s}) := by rw [prod_const, card_univ]
-  _ = ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := by
-      simp
-      have : Fintype.card s = Fintype.card α := by exact?
-
-
-#exit
+  _ = ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := by simp [Fintype.card_congr e]
 
 variable (𝕜) in
 /-- Given a function `f : α → ι`, it induces a continuous linear function by right composition on
@@ -1439,6 +1439,22 @@ The fact that this is indeed the iterated Fréchet derivative is proved in
 protected def iteratedFDeriv (f : ContinuousMultilinearMap 𝕜 E₁ G) (k : ℕ) (x : (i : ι) → E₁ i) :
     ContinuousMultilinearMap 𝕜 (fun (_ : Fin k) ↦ (∀ i, E₁ i)) G :=
   ∑ e : Fin k ↪ ι, iteratedFDerivComponent f e.toEquivRange (Pi.compRightL 𝕜 Subtype.val x)
+
+/-- Controlling the norm of `f.iteratedFDeriv` when `f` is continuous multilinear. For the same
+bound on the iterated derivative of `f` in the calculus sense,
+see `ContinuousMultilinearMap.norm_iteratedFDeriv_le`. -/
+lemma norm_iteratedFDeriv_le' (f : ContinuousMultilinearMap 𝕜 E₁ G) (k : ℕ) (x : (i : ι) → E₁ i) :
+    ‖f.iteratedFDeriv k x‖
+      ≤ Nat.descFactorial (Fintype.card ι) k * ‖f‖ * ‖x‖ ^ (Fintype.card ι - k) := by
+  classical
+  calc
+  ‖f.iteratedFDeriv k x‖
+    ≤ ∑ e : Fin k ↪ ι, ‖iteratedFDerivComponent f e.toEquivRange (fun i ↦ x i)‖ := norm_sum_le _ _
+  _ ≤ ∑ _e : Fin k ↪ ι, ‖f‖ * ‖x‖ ^ (Fintype.card ι - k) := by
+    gcongr with e _he
+    simpa using norm_iteratedFDerivComponent_le f e.toEquivRange x
+  _ = Nat.descFactorial (Fintype.card ι) k * ‖f‖ * ‖x‖ ^ (Fintype.card ι - k) := by
+    simp [card_univ, mul_assoc]
 
 end ContinuousMultilinearMap
 
