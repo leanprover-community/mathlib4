@@ -137,13 +137,8 @@ theorem colimitLimitToLimitColimit_injective :
     ext j
     -- Now it's just a calculation using `W` and `w`.
     simp only [Functor.comp_map, Limit.map_π_apply, curry_obj_map_app, swap_map]
-    rw [← W _ _ (fH j)]
-    rw [← W _ _ (gH j)]
-    -- Porting note: this was `simp [w]` in lean 3; this is presumably a confluence issue
-    rw [lim_map, lim_map, Limit.map_π_apply, Limit.map_π_apply, Functor.map_comp,
-      Functor.map_comp, FunctorToTypes.comp, FunctorToTypes.comp, curry_obj_map_app,
-      curry_obj_map_app, curry_obj_map_app, Functor.comp_map, Functor.comp_map,
-      Functor.comp_map, swap_map, swap_map, swap_map, w]
+    rw [← W _ _ (fH j), ← W _ _ (gH j)]
+    simp [w]
 #align category_theory.limits.colimit_limit_to_limit_colimit_injective CategoryTheory.Limits.colimitLimitToLimitColimit_injective
 
 end

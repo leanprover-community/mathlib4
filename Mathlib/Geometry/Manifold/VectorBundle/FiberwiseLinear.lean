@@ -257,7 +257,6 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
     simp_rw [ContinuousLinearEquiv.symm_symm]
     exact hφ
   id_mem' := by
-    simp_rw [mem_iUnion]
     refine ⟨fun _ ↦ ContinuousLinearEquiv.refl 𝕜 F, univ, isOpen_univ, smoothOn_const,
       smoothOn_const, ⟨?_, fun b _hb ↦ rfl⟩⟩
     simp only [FiberwiseLinear.partialHomeomorph, PartialHomeomorph.refl_partialEquiv,
