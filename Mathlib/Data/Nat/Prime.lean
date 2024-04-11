@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Associated
-import Mathlib.Algebra.Parity
 import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Data.Int.Units
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Nat.Sqrt
+import Mathlib.Data.Nat.Parity
 import Mathlib.Order.Bounds.Basic
 
 #align_import data.nat.prime from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
@@ -39,10 +38,11 @@ open Bool Subtype
 open Nat
 
 namespace Nat
+variable {n : ℕ}
 
 /-- `Nat.Prime p` means that `p` is a prime number, that is, a natural number
   at least 2 whose only divisors are `p` and `1`. -/
--- Porting note: removed @[pp_nodot]
+-- Porting note (#11180): removed @[pp_nodot]
 def Prime (p : ℕ) :=
   Irreducible p
 #align nat.prime Nat.Prime
@@ -174,11 +174,13 @@ theorem prime_two : Prime 2 := by decide
 theorem prime_three : Prime 3 := by decide
 #align nat.prime_three Nat.prime_three
 
+theorem prime_five : Prime 5 := by decide
+
 theorem Prime.five_le_of_ne_two_of_ne_three {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2)
     (h_three : p ≠ 3) : 5 ≤ p := by
   by_contra! h
   revert h_two h_three hp
-  -- Porting note: was `decide!`
+  -- Porting note (#11043): was `decide!`
   match p with
   | 0 => decide
   | 1 => decide
@@ -292,7 +294,7 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     · exact ⟨k2, dk, a⟩
     · refine'
         have := minFac_lemma n k h
-        minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [e, left_distrib]) fun m m2 d => _
+        minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [k, e, left_distrib]) fun m m2 d => _
       rcases Nat.eq_or_lt_of_le (a m m2 d) with me | ml
       · subst me
         contradiction
@@ -433,7 +435,7 @@ theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
     have ub := minFac_le_of_dvd (le_refl 2) h
     have lb := minFac_pos n
     refine ub.eq_or_lt.resolve_right fun h' => ?_
-    have := le_antisymm (Nat.succ_le_of_lt lb) (lt_succ_iff.mp h')
+    have := le_antisymm (Nat.succ_le_of_lt lb) (Nat.lt_succ_iff.mp h')
     rw [eq_comm, Nat.minFac_eq_one_iff] at this
     subst this
     exact not_lt_of_le (le_of_dvd zero_lt_one h) one_lt_two
@@ -563,6 +565,14 @@ theorem Prime.dvd_mul {p m n : ℕ} (pp : Prime p) : p ∣ m * n ↔ p ∣ m ∨
 theorem Prime.not_dvd_mul {p m n : ℕ} (pp : Prime p) (Hm : ¬p ∣ m) (Hn : ¬p ∣ n) : ¬p ∣ m * n :=
   mt pp.dvd_mul.1 <| by simp [Hm, Hn]
 #align nat.prime.not_dvd_mul Nat.Prime.not_dvd_mul
+
+@[simp] lemma coprime_two_left : Coprime 2 n ↔ Odd n := by
+  rw [prime_two.coprime_iff_not_dvd, odd_iff_not_even, even_iff_two_dvd]
+
+@[simp] lemma coprime_two_right : n.Coprime 2 ↔ Odd n := coprime_comm.trans coprime_two_left
+
+alias ⟨Coprime.odd_of_left, _root_.Odd.coprime_two_left⟩ := coprime_two_left
+alias ⟨Coprime.odd_of_right, _root_.Odd.coprime_two_right⟩ := coprime_two_right
 
 theorem prime_iff {p : ℕ} : p.Prime ↔ _root_.Prime p :=
   ⟨fun h => ⟨h.ne_zero, h.not_unit, fun _ _ => h.dvd_mul.mp⟩, Prime.irreducible⟩
@@ -702,7 +712,7 @@ theorem ne_one_iff_exists_prime_dvd : ∀ {n}, n ≠ 1 ↔ ∃ p : ℕ, p.Prime 
   | n + 2 => by
     let a := n + 2
     let ha : a ≠ 1 := Nat.succ_succ_ne_one n
-    simp only [true_iff_iff, Ne.def, not_false_iff, ha]
+    simp only [true_iff_iff, Ne, not_false_iff, ha]
     exact ⟨a.minFac, Nat.minFac_prime ha, a.minFac_dvd⟩
 #align nat.ne_one_iff_exists_prime_dvd Nat.ne_one_iff_exists_prime_dvd
 
@@ -721,21 +731,21 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul {p : ℕ} (p_prime : Prime p) {
   have hpd4 : p ∣ m / p ^ k * (n / p ^ l) := by simpa [Nat.div_mul_div_comm hpm hpn] using hpd3
   have hpd5 : p ∣ m / p ^ k ∨ p ∣ n / p ^ l :=
     (Prime.dvd_mul p_prime).1 hpd4
-  suffices p ^ k * p ∣ m ∨ p ^ l * p ∣ n by rwa [_root_.pow_succ', _root_.pow_succ']
+  suffices p ^ k * p ∣ m ∨ p ^ l * p ∣ n by rwa [_root_.pow_succ, _root_.pow_succ]
   exact hpd5.elim (fun h : p ∣ m / p ^ k => Or.inl <| mul_dvd_of_dvd_div hpm h)
     fun h : p ∣ n / p ^ l => Or.inr <| mul_dvd_of_dvd_div hpn h
 #align nat.succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul Nat.succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul
 
 theorem prime_iff_prime_int {p : ℕ} : p.Prime ↔ _root_.Prime (p : ℤ) :=
   ⟨fun hp =>
-    ⟨Int.coe_nat_ne_zero_iff_pos.2 hp.pos, mt Int.isUnit_iff_natAbs_eq.1 hp.ne_one, fun a b h => by
-      rw [← Int.dvd_natAbs, Int.coe_nat_dvd, Int.natAbs_mul, hp.dvd_mul] at h
-      rwa [← Int.dvd_natAbs, Int.coe_nat_dvd, ← Int.dvd_natAbs, Int.coe_nat_dvd]⟩,
+    ⟨Int.natCast_ne_zero_iff_pos.2 hp.pos, mt Int.isUnit_iff_natAbs_eq.1 hp.ne_one, fun a b h => by
+      rw [← Int.dvd_natAbs, Int.natCast_dvd_natCast, Int.natAbs_mul, hp.dvd_mul] at h
+      rwa [← Int.dvd_natAbs, Int.natCast_dvd_natCast, ← Int.dvd_natAbs, Int.natCast_dvd_natCast]⟩,
     fun hp =>
     Nat.prime_iff.2
-      ⟨Int.coe_nat_ne_zero.1 hp.1,
+      ⟨Int.natCast_ne_zero.1 hp.1,
         (mt Nat.isUnit_iff.1) fun h => by simp [h, not_prime_one] at hp, fun a b => by
-        simpa only [Int.coe_nat_dvd, (Int.ofNat_mul _ _).symm] using hp.2.2 a b⟩⟩
+        simpa only [Int.natCast_dvd_natCast, (Int.ofNat_mul _ _).symm] using hp.2.2 a b⟩⟩
 #align nat.prime_iff_prime_int Nat.prime_iff_prime_int
 
 /-- Two prime powers with positive exponents are equal only when the primes and the

@@ -27,7 +27,7 @@ open Simplicial NNReal BigOperators Classical CategoryTheory
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
--- porting note: added, should be moved
+-- Porting note: added, should be moved
 instance (x : SimplexCategory) : Fintype (ConcreteCategory.forget.obj x) :=
   inferInstanceAs (Fintype (Fin _))
 

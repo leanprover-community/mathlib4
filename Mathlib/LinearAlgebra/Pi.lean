@@ -32,7 +32,6 @@ It contains theorems relating these to each other, as well as to `LinearMap.ker`
 universe u v w x y z u' v' w' x' y'
 
 variable {R : Type u} {K : Type u'} {M : Type v} {V : Type v'} {M₂ : Type w} {V₂ : Type w'}
-
 variable {M₃ : Type y} {V₃ : Type y'} {M₄ : Type z} {ι : Type x} {ι' : Type x'}
 
 open Function Submodule
@@ -349,11 +348,8 @@ end Submodule
 namespace LinearEquiv
 
 variable [Semiring R] {φ ψ χ : ι → Type*}
-
 variable [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
-
 variable [(i : ι) → AddCommMonoid (ψ i)] [(i : ι) → Module R (ψ i)]
-
 variable [(i : ι) → AddCommMonoid (χ i)] [(i : ι) → Module R (χ i)]
 
 /-- Combine a family of linear equivalences into a linear equivalence of `pi`-types.
@@ -558,7 +554,6 @@ section Fin
 section Semiring
 
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-
 variable [Module R M] [Module R M₂] [Module R M₃]
 
 /-- The linear map defeq to `Matrix.vecEmpty` -/
@@ -596,7 +591,6 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-
 variable [Module R M] [Module R M₂] [Module R M₃]
 
 /-- The empty bilinear map defeq to `Matrix.vecEmpty` -/

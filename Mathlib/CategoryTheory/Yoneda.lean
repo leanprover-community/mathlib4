@@ -138,7 +138,7 @@ theorem isIso {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso (coyoneda.map f)] : IsIso f :
   isIso_of_fully_faithful coyoneda f
 #align category_theory.coyoneda.is_iso CategoryTheory.Coyoneda.isIso
 
-/-- The identity functor on `Type` is isomorphic to the coyoneda functor coming from `punit`. -/
+/-- The identity functor on `Type` is isomorphic to the coyoneda functor coming from `PUnit`. -/
 def punitIso : coyoneda.obj (Opposite.op PUnit) ≅ 𝟭 (Type v₁) :=
   NatIso.ofComponents fun X =>
     { hom := fun f => f ⟨⟩
@@ -183,7 +183,6 @@ instance {X : Cᵒᵖ} : Corepresentable (coyoneda.obj X) where
 section Representable
 
 variable (F : Cᵒᵖ ⥤ Type v₁)
-
 variable [F.Representable]
 
 /-- The representing object for the representable functor `F`. -/
@@ -232,7 +231,6 @@ end Representable
 section Corepresentable
 
 variable (F : C ⥤ Type v₁)
-
 variable [F.Corepresentable]
 
 /-- The representing object for the corepresentable functor `F`. -/
@@ -385,7 +383,7 @@ def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C where
 variable {C}
 
 /-- The isomorphism between `yoneda.obj X ⟶ F` and `F.obj (op X)`
-(we need to insert a `ulift` to get the universes right!)
+(we need to insert a `ULift` to get the universes right!)
 given by the Yoneda lemma.
 -/
 @[simps!]

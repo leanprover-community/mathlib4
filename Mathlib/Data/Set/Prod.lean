@@ -181,7 +181,8 @@ theorem insert_prod : insert a s ×ˢ t = Prod.mk a '' t ∪ s ×ˢ t := by
 
 theorem prod_insert : s ×ˢ insert b t = (fun a => (a, b)) '' s ∪ s ×ˢ t := by
   ext ⟨x, y⟩
-  -- Porting note: was `simp (config := { contextual := true }) [image, iff_def, or_imp, Imp.swap]`
+  -- porting note (#10745):
+  -- was `simp (config := { contextual := true }) [image, iff_def, or_imp, Imp.swap]`
   simp only [mem_prod, mem_insert_iff, image, mem_union, mem_setOf_eq, Prod.mk.injEq]
   refine ⟨fun h => ?_, fun h => ?_⟩
   · obtain ⟨hx, rfl|hy⟩ := h
@@ -413,7 +414,7 @@ theorem prod_eq_prod_iff :
     rintro ⟨rfl, rfl⟩
     exact prod_eq_empty_iff.mp h
   rw [prod_eq_prod_iff_of_nonempty h]
-  rw [nonempty_iff_ne_empty, Ne.def, prod_eq_empty_iff] at h
+  rw [nonempty_iff_ne_empty, Ne, prod_eq_empty_iff] at h
   simp_rw [h, false_and_iff, or_false_iff]
 #align set.prod_eq_prod_iff Set.prod_eq_prod_iff
 
@@ -510,7 +511,20 @@ theorem diag_image (s : Set α) : (fun x => (x, x)) '' s = diagonal α ∩ s ×�
     exact mem_image_of_mem _ h2x.1
 #align set.diag_image Set.diag_image
 
+theorem diagonal_eq_univ_iff : diagonal α = univ ↔ Subsingleton α := by
+  simp only [subsingleton_iff, eq_univ_iff_forall, Prod.forall, mem_diagonal_iff]
+
+theorem diagonal_eq_univ [Subsingleton α] : diagonal α = univ := diagonal_eq_univ_iff.2 ‹_›
+
 end Diagonal
+
+/-- A function is `Function.const α a` for some `a` if and only if `∀ x y, f x = f y`. -/
+theorem range_const_eq_diagonal {α β : Type*} [hβ : Nonempty β] :
+    range (const α) = {f : α → β | ∀ x y, f x = f y} := by
+  refine (range_eq_iff _ _).mpr ⟨fun _ _ _ ↦ rfl, fun f hf ↦ ?_⟩
+  rcases isEmpty_or_nonempty α with h|⟨⟨a⟩⟩
+  · exact hβ.elim fun b ↦ ⟨b, Subsingleton.elim _ _⟩
+  · exact ⟨f a, funext fun x ↦ hf _ _⟩
 
 end Set
 
@@ -914,7 +928,7 @@ theorem eval_image_univ_pi (ht : (pi univ t).Nonempty) :
 theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ t₂ i) ∨ pi s t₁ = ∅ := by
   refine'
     ⟨fun h => or_iff_not_imp_right.2 _, fun h => h.elim pi_mono fun h' => h'.symm ▸ empty_subset _⟩
-  rw [← Ne.def, ← nonempty_iff_ne_empty]
+  rw [← Ne, ← nonempty_iff_ne_empty]
   intro hne i hi
   simpa only [eval_image_pi hi hne, eval_image_pi hi (hne.mono h)] using
     image_subset (fun f : ∀ i, α i => f i) h

@@ -232,7 +232,7 @@ theorem filterAt_basis_closedBall (x : α) :
 
 theorem mem_filterAt_iff {x : α} {s : Set (Set α)} :
     s ∈ v.filterAt x ↔ ∃ ε > (0 : ℝ), ∀ a ∈ v.setsAt x, a ⊆ closedBall x ε → a ∈ s := by
-  simp only [(v.filterAt_basis_closedBall x).mem_iff, ← and_imp]; rfl
+  simp only [(v.filterAt_basis_closedBall x).mem_iff, ← and_imp, subset_def, mem_setOf]
 #align vitali_family.mem_filter_at_iff VitaliFamily.mem_filterAt_iff
 
 instance filterAt_neBot (x : α) : (v.filterAt x).NeBot :=
@@ -266,7 +266,7 @@ theorem eventually_filterAt_measurableSet (x : α) : ∀ᶠ a in v.filterAt x, M
 
 theorem frequently_filterAt_iff {x : α} {P : Set α → Prop} :
     (∃ᶠ a in v.filterAt x, P a) ↔ ∀ ε > (0 : ℝ), ∃ a ∈ v.setsAt x, a ⊆ closedBall x ε ∧ P a := by
-  simp only [(v.filterAt_basis_closedBall x).frequently_iff, ← and_assoc]; rfl
+  simp only [(v.filterAt_basis_closedBall x).frequently_iff, ← and_assoc, subset_def, mem_setOf]
 #align vitali_family.frequently_filter_at_iff VitaliFamily.frequently_filterAt_iff
 
 theorem eventually_filterAt_subset_of_nhds {x : α} {o : Set α} (hx : o ∈ 𝓝 x) :

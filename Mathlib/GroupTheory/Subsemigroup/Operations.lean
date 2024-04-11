@@ -374,8 +374,6 @@ section GaloisCoinsertion
 
 variable {ι : Type*} {f : M →ₙ* N} (hf : Function.Injective f)
 
---include hf
-
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
 @[to_additive " `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. "]
 def gciMapComap : GaloisCoinsertion (map f) (comap f) :=

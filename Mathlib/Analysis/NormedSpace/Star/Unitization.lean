@@ -37,14 +37,14 @@ lemma opNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖ = ‖a‖ := by
   calc ‖mul 𝕜 E (star a) b‖ = ‖(mul 𝕜 E).flip a (star b)‖ := by simpa using norm_star (star b * a)
     _ ≤ ‖(mul 𝕜 E).flip a‖ * ‖b‖ := by simpa using le_opNorm ((mul 𝕜 E).flip a) (star b)
 
-@[deprecated opNorm_mul_flip_apply]
+@[deprecated]
 alias op_norm_mul_flip_apply :=
   opNorm_mul_flip_apply -- deprecated on 2024-02-02
 
 lemma opNNNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖₊ = ‖a‖₊ :=
   Subtype.ext (opNorm_mul_flip_apply 𝕜 a)
 
-@[deprecated opNNNorm_mul_flip_apply]
+@[deprecated]
 alias op_nnnorm_mul_flip_apply :=
   opNNNorm_mul_flip_apply -- deprecated on 2024-02-02
 
@@ -57,7 +57,6 @@ end ContinuousLinearMap
 
 variable [DenselyNormedField 𝕜] [NonUnitalNormedRing E] [StarRing E] [CstarRing E]
 variable [NormedSpace 𝕜 E] [IsScalarTower 𝕜 E E] [SMulCommClass 𝕜 E E]
-
 variable (E)
 
 /-- A C⋆-algebra over a densely normed field is a regular normed algebra. -/
@@ -84,7 +83,6 @@ instance CstarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
 section CStarProperty
 
 variable [StarRing 𝕜] [CstarRing 𝕜] [StarModule 𝕜 E]
-
 variable {E}
 
 /-- This is the key lemma used to establish the instance `Unitization.instCstarRing`

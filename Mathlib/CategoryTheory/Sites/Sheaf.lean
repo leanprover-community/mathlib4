@@ -64,9 +64,7 @@ open Opposite CategoryTheory Category Limits Sieve
 namespace Presheaf
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {A : Type u₂} [Category.{v₂} A]
-
 variable (J : GrothendieckTopology C)
 
 -- We follow https://stacks.math.columbia.edu/tag/00VL definition 00VR
@@ -272,9 +270,7 @@ theorem isSheaf_of_isTerminal {X : A} (hX : IsTerminal X) :
 end Presheaf
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable (J : GrothendieckTopology C)
-
 variable (A : Type u₂) [Category.{v₂} A]
 
 /-- The category of sheaves taking values in `A` on a grothendieck topology. -/
@@ -311,7 +307,7 @@ instance instCategorySheaf : Category (Sheaf J A) where
 instance (X : Sheaf J A) : Inhabited (Hom X X) :=
   ⟨𝟙 X⟩
 
--- porting note: added because `Sheaf.Hom.ext` was not triggered automatically
+-- Porting note: added because `Sheaf.Hom.ext` was not triggered automatically
 @[ext]
 lemma hom_ext {X Y : Sheaf J A} (x y : X ⟶ Y) (h : x.val = y.val) : x = y :=
   Sheaf.Hom.ext _ _ h
@@ -336,7 +332,7 @@ instance : Full (sheafToPresheaf J A) where preimage f := ⟨f⟩
 instance : Faithful (sheafToPresheaf J A) where
 
 /-- This is stated as a lemma to prevent class search from forming a loop since a sheaf morphism is
-monic if and only if it is monic as a presheaf morphism (under suitable assumption).-/
+monic if and only if it is monic as a presheaf morphism (under suitable assumption). -/
 theorem Sheaf.Hom.mono_of_presheaf_mono {F G : Sheaf J A} (f : F ⟶ G) [h : Mono f.1] : Mono f :=
   (sheafToPresheaf J A).mono_of_mono_map h
 set_option linter.uppercaseLean3 false in
@@ -359,7 +355,7 @@ theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
   constructor
   · intro hP
     refine' Presieve.isSheaf_iso J _ (hP PUnit)
-    refine' isoWhiskerLeft _ Coyoneda.punitIso ≪≫ P.rightUnitor
+    exact isoWhiskerLeft _ Coyoneda.punitIso ≪≫ P.rightUnitor
   · intro hP X Y S hS z hz
     refine' ⟨fun x => (hP S hS).amalgamate (fun Z f hf => z f hf x) _, _, _⟩
     · intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ h
@@ -483,11 +479,8 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {A : Type u₂} [Category.{v₂} A]
 variable {A' : Type u₂} [Category.{max v₁ u₁} A']
 variable {B : Type u₃} [Category.{v₃} B]
-
 variable (J : GrothendieckTopology C)
-
 variable {U : C} (R : Presieve U)
-
 variable (P : Cᵒᵖ ⥤ A) (P' : Cᵒᵖ ⥤ A')
 
 section MultiequalizerConditions

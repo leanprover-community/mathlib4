@@ -52,14 +52,14 @@ theorem derivedSeries_succ (n : ℕ) :
   rfl
 #align derived_series_succ derivedSeries_succ
 
--- porting note: had to provide inductive hypothesis explicitly
+-- Porting note: had to provide inductive hypothesis explicitly
 theorem derivedSeries_normal (n : ℕ) : (derivedSeries G n).Normal := by
   induction' n with n ih
   · exact (⊤ : Subgroup G).normal_of_characteristic
   · exact @Subgroup.commutator_normal G _ (derivedSeries G n) (derivedSeries G n) ih ih
 #align derived_series_normal derivedSeries_normal
 
--- porting note: higher simp priority to restore Lean 3 behavior
+-- Porting note: higher simp priority to restore Lean 3 behavior
 @[simp 1100]
 theorem derivedSeries_one : derivedSeries G 1 = commutator G :=
   rfl

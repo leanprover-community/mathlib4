@@ -140,7 +140,7 @@ theorem div_add_mod' (m k : R) : m / k * k + m % k = m := by
 
 theorem mod_eq_sub_mul_div {R : Type*} [EuclideanDomain R] (a b : R) : a % b = a - b * (a / b) :=
   calc
-    a % b = b * (a / b) + a % b - b * (a / b) := (add_sub_cancel' _ _).symm
+    a % b = b * (a / b) + a % b - b * (a / b) := (add_sub_cancel_left _ _).symm
     _ = a - b * (a / b) := by rw [div_add_mod]
 #align euclidean_domain.mod_eq_sub_mul_div EuclideanDomain.mod_eq_sub_mul_div
 
@@ -173,7 +173,7 @@ theorem div_zero (a : R) : a / 0 = 0 :=
 
 section
 
-open Classical
+open scoped Classical
 
 @[elab_as_elim]
 theorem GCD.induction {P : R → R → Prop} (a b : R) (H0 : ∀ x, P 0 x)

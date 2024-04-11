@@ -168,8 +168,8 @@ section
 
 variable {R : Type*} [DivisionRing R] [CharZero R]
 
-@[simp]
-theorem half_add_self (a : R) : (a + a) / 2 = a := by rw [← mul_two, mul_div_cancel a two_ne_zero]
+@[simp] lemma half_add_self (a : R) : (a + a) / 2 = a := by
+  rw [← mul_two, mul_div_cancel_right₀ a two_ne_zero]
 #align half_add_self half_add_self
 
 @[simp]
@@ -189,7 +189,7 @@ namespace WithTop
 instance {R : Type*} [AddMonoidWithOne R] [CharZero R] :
     CharZero (WithTop R) where
   cast_injective m n h := by
-    rwa [← coe_nat, ← coe_nat n, coe_eq_coe, Nat.cast_inj] at h
+    rwa [← coe_natCast, ← coe_natCast n, coe_eq_coe, Nat.cast_inj] at h
 
 end WithTop
 
@@ -198,7 +198,7 @@ namespace WithBot
 instance {R : Type*} [AddMonoidWithOne R] [CharZero R] :
     CharZero (WithBot R) where
   cast_injective m n h := by
-    rwa [← coe_nat, ← coe_nat n, coe_eq_coe, Nat.cast_inj] at h
+    rwa [← coe_natCast, ← coe_natCast n, coe_eq_coe, Nat.cast_inj] at h
 
 end WithBot
 

@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis, Jireh Loreaux
 -/
 
-import Lean
+import Lean.Elab.Tactic.Location
 import Mathlib.Logic.Basic
 import Mathlib.Init.Order.Defs
 import Mathlib.Tactic.Conv
 import Mathlib.Init.Set
+import Lean.Elab.Tactic.Location
 
 set_option autoImplicit true
 
@@ -180,7 +181,10 @@ macro (name := pushNeg) tk:"#push_neg " e:term : command => `(command| #conv%$tk
 def pushNegTarget : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let tgt ← instantiateMVars (← goal.getType)
-  replaceMainGoal [← applySimpResultToTarget goal tgt (← pushNegCore tgt)]
+  let newGoal ← applySimpResultToTarget goal tgt (← pushNegCore tgt)
+  if newGoal == goal then throwError "push_neg made no progress"
+  replaceMainGoal [newGoal]
+
 
 /-- Execute main loop of `push_neg` at a local hypothesis. -/
 def pushNegLocalDecl (fvarId : FVarId) : TacticM Unit := withMainContext do
@@ -190,6 +194,7 @@ def pushNegLocalDecl (fvarId : FVarId) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let myres ← pushNegCore tgt
   let some (_, newGoal) ← applySimpResultToLocalDecl goal fvarId myres False | failure
+  if newGoal == goal then throwError "push_neg made no progress"
   replaceMainGoal [newGoal]
 
 /--

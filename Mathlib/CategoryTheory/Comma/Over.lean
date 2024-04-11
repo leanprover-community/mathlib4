@@ -63,7 +63,7 @@ theorem OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.
   simp only [eq_iff_true_of_subsingleton]
 #align category_theory.over.over_morphism.ext CategoryTheory.Over.OverMorphism.ext
 
--- @[simp] : Porting note : simp can prove this
+-- @[simp] : Porting note (#10618): simp can prove this
 theorem over_right (U : Over X) : U.right = ⟨⟨⟩⟩ := by simp only
 #align category_theory.over.over_right CategoryTheory.Over.over_right
 
@@ -203,7 +203,7 @@ instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
       ((asIso ((forget X).map f)).inv_comp_eq.2 (Over.w f).symm)
     dsimp [forget] at t
     refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
-    repeat (ext; simp)
+    repeat (ext; simp [g])
 #align category_theory.over.forget_reflects_iso CategoryTheory.Over.forget_reflects_iso
 
 /-- The identity over `X` is terminal. -/
@@ -362,7 +362,7 @@ theorem UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right =
   congr; simp only [eq_iff_true_of_subsingleton]
 #align category_theory.under.under_morphism.ext CategoryTheory.Under.UnderMorphism.ext
 
--- @[simp] Porting note: simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem under_left (U : Under X) : U.left = ⟨⟨⟩⟩ := by simp only
 #align category_theory.under.under_left CategoryTheory.Under.under_left
 
@@ -486,7 +486,7 @@ instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
       ((IsIso.comp_inv_eq _).2 (Under.w f).symm)
     dsimp [forget] at t
     refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
-    repeat (ext; simp)
+    repeat (ext; simp [g])
 #align category_theory.under.forget_reflects_iso CategoryTheory.Under.forget_reflects_iso
 
 /-- The identity under `X` is initial. -/

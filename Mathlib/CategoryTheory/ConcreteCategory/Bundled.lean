@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johannes Hölzl, Reid Barton, Sean Leather
 -/
 import Std.Tactic.Lint.Misc
-import Std.Tactic.CoeExt
 import Mathlib.Mathport.Rename
 
 #align_import category_theory.concrete_category.bundled from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
@@ -14,9 +13,10 @@ import Mathlib.Mathport.Rename
 
 `Bundled c` provides a uniform structure for bundling a type equipped with a type class.
 
-We provide `Category` instances for these in `CategoryTheory/ConcreteCategory/UnbundledHom.lean`
+We provide `Category` instances for these in
+`Mathlib/CategoryTheory/ConcreteCategory/UnbundledHom.lean`
 (for categories with unbundled homs, e.g. topological spaces)
-and in `CategoryTheory/ConcreteCategory/BundledHom.lean`
+and in `Mathlib/CategoryTheory/ConcreteCategory/BundledHom.lean`
 (for categories with bundled homs, e.g. monoids).
 -/
 

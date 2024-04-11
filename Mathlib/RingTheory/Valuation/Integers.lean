@@ -23,7 +23,6 @@ namespace Valuation
 section Ring
 
 variable {R : Type u} {Γ₀ : Type v} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
-
 variable (v : Valuation R Γ₀)
 
 /-- The ring of integers under a given valuation is the subring of elements with valuation ≤ 1. -/
@@ -36,14 +35,14 @@ def integer : Subring R where
   neg_mem' {x} hx := by simp only [Set.mem_setOf_eq] at hx; simpa only [Set.mem_setOf_eq, map_neg]
 #align valuation.integer Valuation.integer
 
+lemma mem_integer_iff (r : R) : r ∈ v.integer ↔ v r ≤ 1 := by rfl
+
 end Ring
 
 section CommRing
 
 variable {R : Type u} {Γ₀ : Type v} [CommRing R] [LinearOrderedCommGroupWithZero Γ₀]
-
 variable (v : Valuation R Γ₀)
-
 variable (O : Type w) [CommRing O] [Algebra O R]
 
 /-- Given a valuation v : R → Γ₀ and a ring homomorphism O →+* R, we say that O is the integers of v
@@ -103,7 +102,6 @@ end CommRing
 section Field
 
 variable {F : Type u} {Γ₀ : Type v} [Field F] [LinearOrderedCommGroupWithZero Γ₀]
-
 variable {v : Valuation F Γ₀} {O : Type w} [CommRing O] [Algebra O F] (hv : Integers v O)
 
 namespace Integers
