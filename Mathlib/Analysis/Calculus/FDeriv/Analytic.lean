@@ -22,7 +22,7 @@ lemma foo (n : ℕ) : 0 ≤ n := by exact?
 
 open Filter Asymptotics
 
-open scoped ENNReal
+open scoped ENNReal BigOperators
 
 universe u v
 
@@ -349,9 +349,6 @@ protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x)
   convert f.hasFiniteFPowerSeriesOnBall.hasFDerivAt (y := x) ENNReal.coe_lt_top
   rw [zero_add]
 
-open scoped BigOperators
-open Finset (univ)
-
 lemma _root_.Equiv.succ_embeddingFinSucc_fst_symm_apply {ι : Type*} [DecidableEq ι]
     {n : ℕ} (e : Fin (n+1) ↪ ι) {k : ι}
     (h'k : k ∈ Set.range (Equiv.embeddingFinSucc n ι e).1) (hk : k ∈ Set.range e) :
@@ -360,13 +357,14 @@ lemma _root_.Equiv.succ_embeddingFinSucc_fst_symm_apply {ι : Type*} [DecidableE
   rcases hk with ⟨j, rfl⟩
   have hj : j ≠ 0 := by
     rintro rfl
-    simp [finSuccEmbeddingEquiv_fst] at h'k
+    simp at h'k
   simp only [Function.Embedding.toEquivRange_symm_apply_self]
-  have : e j = (finSuccEmbeddingEquiv n e).1 (Fin.pred j hj) := by
-    simp [finSuccEmbeddingEquiv_fst]
+  have : e j = (Equiv.embeddingFinSucc n ι e).1 (Fin.pred j hj) := by simp
   simp_rw [this]
-  simp
+  simp [-Equiv.embeddingFinSucc_fst]
 
+/-- A continuous multilinear function `f` admits a Taylor series, whose successive terms are given
+by `f.iteratedFDeriv n`. This is the point of the definition of `f.iteratedFDeriv`. -/
 theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
     HasFTaylorSeriesUpTo ⊤ f (fun v n ↦ f.iteratedFDeriv n v) := by
   classical
@@ -387,36 +385,36 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
       iteratedFDerivComponent_apply, Finset.univ_sigma_univ,
       Pi.compRightL_apply, ContinuousLinearMap.coe_sum', ContinuousLinearMap.coe_comp',
       Finset.sum_apply, Function.comp_apply, linearDeriv_apply, Finset.sum_sigma']
-    rw [← (finSuccEmbeddingEquiv n).sum_comp]
+    rw [← (Equiv.embeddingFinSucc n ι).sum_comp]
     congr with e
     congr with k
     by_cases hke : k ∈ Set.range e
     · simp only [hke, ↓reduceDite]
-      by_cases hkf : k ∈ Set.range (finSuccEmbeddingEquiv n e).1
-      · simp only [hkf, ↓reduceDite, ← succ_finSuccEmbeddingEquiv_fst_symm_apply e hkf hke,
+      by_cases hkf : k ∈ Set.range (Equiv.embeddingFinSucc n ι e).1
+      · simp only [hkf, ↓reduceDite, ← Equiv.succ_embeddingFinSucc_fst_symm_apply e hkf hke,
           Fin.cons_succ]
       · simp only [hkf, ↓reduceDite]
         obtain rfl : k = e 0 := by
           rcases hke with ⟨j, rfl⟩
           congr
-          simpa [finSuccEmbeddingEquiv_fst] using hkf
+          simpa using hkf
         simp only [Function.Embedding.toEquivRange_symm_apply_self, Fin.cons_zero, Function.update,
           Pi.compRightL_apply, dite_eq_ite]
         split_ifs with h
         · congr!
         · exfalso
           apply h
-          simp_rw [← finSuccEmbeddingEquiv_snd e]
-    · have hkf : k ∉ Set.range (finSuccEmbeddingEquiv n e).1 := by
+          simp_rw [← Equiv.embeddingFinSucc_snd e]
+    · have hkf : k ∉ Set.range (Equiv.embeddingFinSucc n ι e).1 := by
         contrapose! hke
-        rw [finSuccEmbeddingEquiv_fst] at hke
+        rw [Equiv.embeddingFinSucc_fst] at hke
         exact Set.range_comp_subset_range _ _ hke
       simp only [hke, hkf, ↓reduceDite]
       simp only [Pi.compRightL, ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
       rw [Function.update_noteq]
       contrapose! hke
-      have hk : k = (finSuccEmbeddingEquiv n e).2 := Subtype.ext_iff_val.1 hke
-      rw [hk, finSuccEmbeddingEquiv_snd e]
+      have hk : k = (Equiv.embeddingFinSucc n ι e).2 := Subtype.ext_iff_val.1 hke
+      rw [hk, Equiv.embeddingFinSucc_snd e]
       apply Set.mem_range_self
   · intro n _hn
     apply continuous_finset_sum _ (fun e _he ↦ ?_)
