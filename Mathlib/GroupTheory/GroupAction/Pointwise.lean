@@ -37,8 +37,8 @@ theorem MulAction.smul_bijective_of_is_unit
   rw [Function.bijective_iff_has_inverse]
   use (fun (a : α) ↦ m⁻¹ • a)
   constructor
-  intro x; simp [← Units.smul_def]
-  intro x; simp [← Units.smul_def]
+  · intro x; simp [← Units.smul_def]
+  · intro x; simp [← Units.smul_def]
 
 variable {R S : Type*} (M M₁ M₂ N : Type*)
 
