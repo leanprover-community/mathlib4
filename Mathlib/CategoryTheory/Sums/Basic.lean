@@ -187,6 +187,34 @@ def sum (F : A ⥤ B) (G : C ⥤ D) : Sum A C ⥤ Sum B D
     | inr X, inr Y, inr Z, f, g => by erw [G.map_comp]; rfl
 #align category_theory.functor.sum CategoryTheory.Functor.sum
 
+/-- Similar to `sum`, but both functors land in the same category `C` -/
+def sum' (F : A ⥤ C) (G : B ⥤ C) : Sum A B ⥤ C
+    where
+  obj X :=
+    match X with
+    | inl X => F.obj X
+    | inr X => G.obj X
+  map := @fun X Y f =>
+    match X, Y, f with
+    | inl _, inl _, f => F.map f
+    | inr _, inr _, f => G.map f
+  map_id := @fun X => by cases X <;> erw [Functor.map_id]
+  map_comp := @fun X Y Z f g =>
+    match X, Y, Z, f, g with
+    | inl _, inl _, inl _, f, g => by erw [F.map_comp]
+    | inr _, inr _, inr _, f, g => by erw [G.map_comp]
+
+/-- The sum `F.sum' G` precomposed with the left inclusion functor is isomorphic to `F` -/
+@[simps!]
+def inl_sum' (F : A ⥤ C) (G : B ⥤ C) : Sum.inl_ _ _ ⋙ F.sum' G ≅ F :=
+  NatIso.ofComponents fun X => Iso.refl _
+
+/-- The sum `F.sum' G` precomposed with the right inclusion functor is isomorphic to `G` -/
+@[simps!]
+def inr_sum' (F : A ⥤ C) (G : B ⥤ C) : Sum.inr_ _ _ ⋙ F.sum' G ≅ G :=
+  NatIso.ofComponents fun X => Iso.refl _
+
+
 @[simp]
 theorem sum_obj_inl (F : A ⥤ B) (G : C ⥤ D) (a : A) : (F.sum G).obj (inl a) = inl (F.obj a) :=
   rfl
