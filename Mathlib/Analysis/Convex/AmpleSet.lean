@@ -104,3 +104,9 @@ open scoped Pointwise
 theorem AmpleSet.vadd [ContinuousAdd E] {s : Set E} (h : AmpleSet s) {y : E} :
     AmpleSet (y +ᵥ s) :=
   h.image (ContinuousAffineEquiv.constVAdd ℝ E y)
+
+theorem AmpleSet.vadd_iff [ContinuousAdd E] {s : Set E} {y : E} :
+    AmpleSet (y +ᵥ s) ↔ AmpleSet s := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.vadd⟩
+  convert h.vadd (E := E) (y := -y)
+  rw [neg_vadd_vadd]
