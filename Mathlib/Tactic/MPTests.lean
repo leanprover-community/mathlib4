@@ -174,6 +174,21 @@ withoutModifyingState do withMainContext do
   let (t1, _repls) ← addPropHaves tac (props.map Prod.snd)
   testTactic ⟨t1⟩ m!"'have's{indentD t1}" m!"missing instantiateMVars? {t1}"
 
+/-- if a declaration contains one of these `SyntaxNodeKind`s, then likely the automated testing
+will fail, but would not be an indication of a bug. -/
+abbrev nonTesters : HashSet SyntaxNodeKind := HashSet.empty
+--  |>.insert ``Lean.guardMsgsCmd  -- <--- does not actually work
+  |>.insert ``Lean.Parser.Tactic.guardTarget
+  |>.insert ``Lean.Parser.Tactic.guardHyp
+
+/-- checks whether the input `Syntax` contains a `SyntaxNodeKind` in `nonTesters`. -/
+-- `import Std.Data.Array.Basic`; `··· (args.attach.map (test? ·.1)).all (·)` fixes the partial
+partial
+def test? : Syntax → (c : HashSet SyntaxNodeKind := nonTesters) → Bool
+  | .node _ k args, c =>
+    if c.contains k then false else (args.map (test? · c)).all (·)
+  | _, _ => true
+
 /-- `test tacSeq` runs the standard meta-programming tests on the tactic sequence `tacSeq`.
 If the `!`-flag is not present, then it reverts the state, otherwise it leaves the state as
 it is after the tactic sequence.
@@ -208,7 +223,7 @@ def toExample {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] :
 /-- `#test cmd` runs the standard meta-programming tests on the declaration `cmd`. -/
 elab "#test " cmd:command : command => do
   if let some (_, id) ← toExample cmd then
-    trace[Tactic.tests] m!"testing {id}"
+    trace[Tactic.tests] m!"testing '{id}'"
   let ncmd ← cmd.replaceM fun x => do
     if x.getKind == ``tacticSeq then
       let xs := ⟨x⟩
@@ -227,10 +242,13 @@ def getLinterTest (o : Options) : Bool := Linter.getLinterValue linter.linterTes
 
 @[inherit_doc linter.linterTest]
 def linterTest : Linter where run := withSetOptionIn fun cmd => do
-  if getLinterTest (← getOptions) then
-    if let some (cmd, _) ← toExample cmd then
-      let cmd := ⟨cmd⟩
-      elabCommand (← `(command| #test $cmd))
+  if getLinterTest (← getOptions) && ! cmd.getKind == ``«command#test_» then
+    if (test? cmd) then
+      if let some (cmd, _) ← toExample cmd then
+        let cmd := ⟨cmd⟩
+        elabCommand (← `(command| #test $cmd))
+    else logInfo "Skipped since it contains some 'guard's\n\n\
+    Use '#test cmd' if you really want to run the test on 'cmd'"
 
 initialize addLinter linterTest
 
