@@ -1,7 +1,7 @@
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Tactic.MoveAdd
 import Mathlib.Tactic.MPTests
-import Mathlib.Tactic.DefEqTransformations
+
 import Mathlib.adomaniLeanUtils.inspect
 section exclude
 
@@ -22,6 +22,16 @@ warning: missing withContext?
 
   let _h : ?a✝ := _h
   let _d : ?a✝¹ := _d
+  guard_target = _
+  exact 0
+  done
+---
+warning: missing withContext?
+
+  let _h : ?a✝ := _h
+  let _d : ?a✝¹ := _d
+  unfold_let  at *
+  unfold_let  at *
   guard_target = _
   exact 0
   done
@@ -103,6 +113,22 @@ warning: missing instantiateMVars?
   buggy_exact h__h__0
   done
 ---
+warning: missing withContext?
+
+  set j : ?a✝ := j
+  unfold_let  at *
+  unfold_let  at *
+  buggy_exact h
+  done
+---
+warning: missing withContext?
+
+  let j : ?a✝ := j
+  unfold_let  at *
+  unfold_let  at *
+  buggy_exact h
+  done
+---
 info:
 [Tactic.tests] ❌ 'have := 0'
 [Tactic.tests] ✅ 'set's [set j : ?a✝ := j]
@@ -111,6 +137,8 @@ info:
         have h__h__0 := h
         buggy_exact h__h__0
         done
+[Tactic.tests] ❌ 'set's [set j : ?a✝ := j, unfold_let  at *, unfold_let  at *]
+[Tactic.tests] ❌ 'let's [let j : ?a✝ := j, unfold_let  at *, unfold_let  at *]
 -/
 #guard_msgs in
 example {j : Bool} {h : True} : True := by
@@ -123,14 +151,29 @@ warning: missing instantiateMVars?
   buggy_exact clearMD h__h__0
   done
 ---
-info:
-[Tactic.tests] ✅ 'have := 0'
+warning: missing withContext?
+
+  unfold_let  at *
+  unfold_let  at *
+  buggy_exact clearMD h
+  done
+---
+warning: missing withContext?
+
+  unfold_let  at *
+  unfold_let  at *
+  buggy_exact clearMD h
+  done
+---
+info: [Tactic.tests] ✅ 'have := 0'
 [Tactic.tests] ✅ 'set's []
 [Tactic.tests] ✅ 'let's []
 [Tactic.tests] ❌ 'have's
         have h__h__0 := h
         buggy_exact clearMD h__h__0
         done
+[Tactic.tests] ❌ 'set's [unfold_let  at *, unfold_let  at *]
+[Tactic.tests] ❌ 'let's [unfold_let  at *, unfold_let  at *]
 -/
 #guard_msgs in
 example {h : True} : True := by
@@ -157,6 +200,8 @@ info:
         have h__h__0 := h
         buggy_exact withMC h__h__0
         done
+[Tactic.tests] ✅ 'set's [unfold_let  at *, unfold_let  at *]
+[Tactic.tests] ✅ 'let's [unfold_let  at *, unfold_let  at *]
 -/
 #guard_msgs in
 example {h : True} : True := by
@@ -177,6 +222,8 @@ info:
         have h__h__0 := h
         buggy_exact clearMD withMC h__h__0
         done
+[Tactic.tests] ✅ 'set's [unfold_let  at *, unfold_let  at *]
+[Tactic.tests] ✅ 'let's [unfold_let  at *, unfold_let  at *]
 -/
 #guard_msgs in
 example {h : True} : True := by
@@ -192,6 +239,10 @@ info:
         move_add [← a]
         rfl
         done
+[Tactic.tests] ✅
+'set's [set a : ?a✝ := a, set b : ?a✝ := b, unfold_let  at *, unfold_let  at *]
+[Tactic.tests] ✅
+'let's [let a : ?a✝ := a, let b : ?a✝ := b, unfold_let  at *, unfold_let  at *]
 -/
 #guard_msgs in
 example {a b : Nat} : 9 + a + b = b + a + 9 := by
@@ -211,6 +262,18 @@ info: [Tactic.tests] testing 'hif'
         have _hn___hn__0 := _hn
         exact .intro
         done
+[Tactic.tests] ✅ 'set's [set _n1 : ?a✝ := _n1,
+     set _m1 : ?a✝ := _m1,
+     set _n : ?a✝ := _n,
+     set _m : ?a✝ := _m,
+     unfold_let  at *,
+     unfold_let  at *]
+[Tactic.tests] ✅ 'let's [let _n1 : ?a✝ := _n1,
+     let _m1 : ?a✝ := _m1,
+     let _n : ?a✝ := _n,
+     let _m : ?a✝ := _m,
+     unfold_let  at *,
+     unfold_let  at *]
 -/
 #guard_msgs in
 #test
@@ -227,6 +290,8 @@ info:
         exact .intro
         skip
         done
+[Tactic.tests] ✅ 'set's [unfold_let  at *, unfold_let  at *]
+[Tactic.tests] ✅ 'let's [unfold_let  at *, unfold_let  at *]
 -/
 #guard_msgs in
 #test
@@ -286,7 +351,22 @@ warning: missing instantiateMVars?
   have h__h__1 := h
   buggy_exact h__h__1
   done
--/
+---
+warning: missing withContext?
+
+  set _j : ?a✝ := _j
+  unfold_let  at *
+  unfold_let  at *
+  buggy_exact h
+  done
+---
+warning: missing withContext?
+
+  let _j : ?a✝ := _j
+  unfold_let  at *
+  unfold_let  at *
+  buggy_exact h
+  done-/
 #guard_msgs in
 example {_j : Bool} {_h2 : True} {h : True} : True := by
   buggy_exact h

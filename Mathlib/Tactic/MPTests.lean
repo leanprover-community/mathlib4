@@ -209,7 +209,7 @@ it is after the tactic sequence.
  -/
 elab (name := testTac) "test " tk:"!"? tac:tacticSeq : tactic => do
   let _ ← for test in [testMData, testFVs false false, testFVs true false, testInstMVs,
-                                  --testFVs false true,  testFVs true true
+                                  testFVs false true,  testFVs true true
                                   ] do
     if let some str := ← test tac then
       logWarningAt (← getRef) str
