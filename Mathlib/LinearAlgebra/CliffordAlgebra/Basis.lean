@@ -14,33 +14,6 @@ This file constructs `CliffordAlgebra.Model ι B`, which is a model for
 `CliffordAlgebra (_ : ι →₀ R)` that also works as a basis.
 -/
 
-#eval List.orderedInsert (· ∣ ·) 2 [1, 3, 4, 6, 2]
-
-/-- For a reflexive relation, insert then erasing is the identity. -/
-theorem List.erase_orderedInsert {α} (r : α → α → Prop)
-    [DecidableRel r] [DecidableEq α] [IsRefl α r] (x : α) (xs : List α) :
-    (xs.orderedInsert r x).erase x = xs := by
-  rw [orderedInsert_eq_take_drop, erase_append_right, List.erase_cons_head,
-    takeWhile_append_dropWhile]
-  intro h
-  replace h := mem_takeWhile_imp h
-  simp [refl x] at h
-
-/-- For an irreflexive relation, insert then erasing is the identity. -/
-theorem List.erase_orderedInsert_of_nmem {α} (r : α → α → Prop)
-    [DecidableRel r] [DecidableEq α] [IsIrrefl α r] (x : α) (xs : List α) (hx : x ∉ xs) :
-    (xs.orderedInsert r x).erase x = xs := by
-  rw [orderedInsert_eq_take_drop, erase_append_right, List.erase_cons_head,
-    takeWhile_append_dropWhile]
-  exact mt ((takeWhile_prefix _).sublist.subset ·) hx
-
-open List in
-theorem List.sublist_orderedInsert {α} (r : α → α → Prop)
-    [DecidableRel r] [DecidableEq α] [IsIrrefl α r] (x : α) (xs : List α) :
-    xs <+ xs.orderedInsert r x := by
-  rw [orderedInsert_eq_take_drop]
-  refine Sublist.trans ?_ (.append_left (.cons _ (.refl _)) _)
-  rw [takeWhile_append_dropWhile]
 namespace List
 
 variable {α : Type*} {r : α → α → Prop} [DecidableRel r]
@@ -284,6 +257,24 @@ def Index.mulOfLt (i : ι) (l : Model.Index ι) (h : ∀ j ∈ l.1, i < j) :
       Finsupp.single_mem_supported R _ <| show _ <+ _ by simp [Index.cons]⟩
 
 open List in
+theorem singleMul_aux₁ {xs ys : List ι} {i j : ι}
+    (hji : j < i)
+    (h : ∀ k ∈ ↑xs, j < k)
+    (hxys : List.erase ys i <+ ↑xs) :
+    ∀ k ∈ ys, j < k := by
+  intro k hk
+  obtain rfl | hij' := eq_or_ne i k
+  · exact hji
+  · exact h _ <|
+      hxys.subset <| (List.mem_erase_of_ne hij'.symm).2 hk
+
+theorem singleMul_aux₂ {xs : List ι} {i j : ι}
+    (hij : i < j)
+    (h : ∀ k ∈ xs, j < k) :
+    ∀ k ∈ j :: xs, i < k :=
+  List.forall_mem_cons.mpr ⟨hij, fun _ hx => hij.trans <| h _ hx⟩
+
+open List in
 /-- Multiply a single vector `i` by a basis element `l`.
 
 The support of the result is `l` with `i` inserted at the appropriate point. -/
@@ -295,8 +286,7 @@ def Index.singleMul (i : ι) (l : Model.Index ι) :
     (cons := fun j xs h ih =>
     ltByCases i j
       (fun hlt : i < j =>
-        mulOfLt B i (cons j xs h) <|
-          forall_mem_cons.mpr ⟨hlt, fun x hx => hlt.trans <| h _ hx⟩)
+        mulOfLt B i (cons j xs h) <| singleMul_aux₂ hlt h)
       (fun heq : i = j =>
         ⟨.single B xs (B i j),
           Finsupp.single_mem_supported _ _  <| (erase_sublist _ _).trans (sublist_cons _ _)⟩)
@@ -305,19 +295,16 @@ def Index.singleMul (i : ι) (l : Model.Index ι) :
         ⟨Model.single B xs (B i j),
           Finsupp.single_mem_supported _ _ <| (erase_sublist _ _).trans (sublist_cons _ _)⟩ -
           (let rest := Model.ofFinsupp.symm ih.1
-          rest.support.attach.sum (fun ⟨js, hjs⟩ =>
-              rest js • (
-                haveI aux : _ <+ xs.val := ih.2 hjs
-                ⟨mulOfLt B j js fun j' hj' => by
-                  obtain rfl | hij' := eq_or_ne i j'
-                  · exact hgt
-                  · exact h _ <|
-                      aux.subset <| (List.mem_erase_of_ne hij'.symm).2 hj',
-                fun i' hi' => show _ <+ _ by
-                  replace hi' := Finsupp.support_single_subset hi'
-                  rw [Finset.mem_singleton] at hi'
-                  rw [hi', Index.cons, erase_cons_tail _ (not_beq_of_ne hgt.ne)]
-                  exact aux.cons₂ _⟩)))))
+          rest.support.attach.sum fun ⟨js, hjs⟩ =>
+            haveI aux : _ <+ xs.val := ih.2 hjs
+            ⟨.single B (.cons j js <| singleMul_aux₁ hgt h aux) (rest js),
+            fun i' hi' => show _ <+ _ by
+              replace hi' := Finsupp.support_single_subset hi'
+              rw [Finset.mem_singleton] at hi'
+              rw [hi', Index.cons, erase_cons_tail _ (not_beq_of_ne hgt.ne)]
+              exact aux.cons₂ _⟩)))
+
+-- The four lemmas defined by the recursion
 
 @[simp]
 lemma Index.singleMul_nil (i : ι) :
@@ -334,7 +321,7 @@ lemma Index.singleMul_cons_same (i : ι) (is) (h) :
 @[simp]
 lemma Index.singleMul_cons_of_lt (i j : ι) (hij : i < j) (l : Model.Index ι) (h) :
     Model.Index.singleMul B i (.cons j l h) =
-      Model.single B (.cons i (.cons j l h) sorry) 1 := by
+      Model.single B (.cons i (.cons j l h) <| singleMul_aux₂ hij h) 1 := by
   erw [Model.Index.singleMul, Index.recOn]
   rw [ltByCases, dif_pos hij]
   dsimp [mulOfLt]
@@ -344,15 +331,18 @@ open scoped BigOperators
 lemma Index.singleMul_cons_of_gt (i j : ι) (hij : i > j) (l : Model.Index ι) (h) :
     Model.Index.singleMul B i (.cons j l h) =
       Model.single B l (B i j) -
-        (Model.ofFinsupp.symm ↑(Model.Index.singleMul B i l : Model ι B)).sum fun js fjs =>
-          Model.single B (.cons i js) fjs
-          := by
+        ( letI rest' := Index.singleMul B i l
+          let rest := ofFinsupp.symm ↑(rest' : Model ι B)
+          ∑ js in rest.support.attach,
+            Model.single B (.cons j js <| singleMul_aux₁ hij h <| rest'.prop js.prop) (rest js)) := by
   erw [Model.Index.singleMul, Index.recOn]
   rw [ltByCases, dif_pos hij, dif_neg hij.not_lt]
   dsimp
   rw [←Model.Index.singleMul]
   simp
 
+-- some trivial consequences
+section
 
 lemma Index.singleMul_single_same (i : ι) :
     Model.Index.singleMul B i (.single i) = B i i • (1 : Model ι B) := by
@@ -364,8 +354,10 @@ lemma Index.singleMul_of_forall_le (i : ι) (l : Model.Index ι) (h) :
   induction l using Model.Index.recOn with
   | nil => simp only [Submodule.comap_coe, singleMul_nil, single_eq_cons]
   | cons j l h' _ih =>
-    rw [singleMul, Index.recOn_cons, ltByCases, dif_pos (h _ <| List.mem_cons_self _ _), mulOfLt]
+    obtain ⟨hij, _⟩ := List.forall_mem_cons.1 h
+    rw [singleMul_cons_of_lt _ _ _ hij]
 
+end
 
 /-- Multiply two basis elements together to get an element of the model. -/
 def Index.mul (l₁ l₂ : Model.Index ι) : Model ι B :=
@@ -374,7 +366,7 @@ def Index.mul (l₁ l₂ : Model.Index ι) : Model ι B :=
     (fun i _ _ x => (Model.ofFinsupp.symm x).sum fun ind val => val • ind.singleMul B i)
 
 @[simp]
-lemma Index.nil_mul_single (is : Model.Index ι) :
+lemma Index.nil_mul (is : Model.Index ι) :
     Model.Index.mul B (.nil) is = .single B is 1 := by
   rw [Model.Index.mul, Index.recOn_nil]
 
@@ -433,10 +425,12 @@ lemma single_mul_single (i j : Model.Index ι) (r s : R):
   change Model.mul _ _ _ = _
   simp [Model.mul]
 
--- Associativity
-lemma single_mul_indexMul (i j k : Model.Index ι) (r : R) :
-    single B i r * j.mul B k = i.mul B j * single B k r :=
-  sorry
+
+  -- induction j using Model.Index.recOn with
+  -- | nil => simp
+  -- | cons j js h ih => 
+  --   simp
+  --   sorry
 
 
 /-! ### Algebraic structure instances -/
@@ -462,6 +456,18 @@ instance : NonAssocRing (Model ι B) where
     suffices (Model.mul B).flip 1 = .id from DFunLike.congr_fun this x
     ext xi
     simp [one_def, ← mul_def]
+
+
+-- Associativity
+lemma single_mul_indexMul (i j k : Model.Index ι) (r : R) :
+    single B i r * j.mul B k = i.mul B j * single B k r := by
+  induction i using Model.Index.recOn with
+  | nil =>
+    simp
+    rw [single_nil_eq_smul_one, smul_one_mul]
+  | cons i is h ih => 
+    rw [Index.cons_mul]
+    sorry
 
 instance : Ring (Model ι B) where
   __ := inferInstanceAs (NonAssocRing (Model ι B))
@@ -521,12 +527,12 @@ def liftToFun (f : (ι →₀ R) →ₗ[R] A)
         LinearMap.toSpanSingleton _ _ (i.val.map fun x => f (Finsupp.single x 1)).prod)
       ∘ₗ (Model.ofFinsupp (B := B)).symm.toLinearMap
   .ofLinearMap aux
-    (by simp)
+    (by simp [aux])
     (by
       rw [LinearMap.map_mul_iff]
       ext xi yi
       dsimp [LinearMap.toSpanSingleton]
-      simp
+      simp [aux]
       sorry)
 
 @[simps! symm_apply]
