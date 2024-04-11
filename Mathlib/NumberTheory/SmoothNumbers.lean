@@ -99,7 +99,7 @@ lemma mem_factoredNumbers' {s : Finset ℕ} {m : ℕ} :
   refine ⟨fun ⟨H₀, H₁⟩ ↦ fun p hp₁ hp₂ ↦ H₁ p (Nat.le_of_dvd (Nat.pos_of_ne_zero H₀) hp₂) hp₁ hp₂,
          fun H ↦ ⟨fun h ↦ lt_irrefl p ?_, fun p _ ↦ H p⟩⟩
   calc
-    p ≤ s.sup id := Finset.le_sup (f := @id ℕ) <| (H p hp₂ <| h.symm ▸ dvd_zero p)
+    p ≤ s.sup id := Finset.le_sup (f := @id ℕ) <| H p hp₂ <| h.symm ▸ dvd_zero p
     _ < 1 + s.sup id := lt_one_add _
     _ ≤ p := hp₁
 
