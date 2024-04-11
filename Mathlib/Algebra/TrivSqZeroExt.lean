@@ -751,11 +751,11 @@ theorem fst_inv [Neg M] [Inv R] [SMul Rᵐᵒᵖ M] [SMul R M] (x : tsze R M) :
 theorem snd_inv [Neg M] [Inv R] [SMul Rᵐᵒᵖ M] [SMul R M] (x : tsze R M) :
   snd x⁻¹ = - ((fst x)⁻¹ •> (snd x <• (fst x)⁻¹)) := rfl
 
-theorem mul_inv_cancel [DivisionRing R] [AddCommGroup M] [Module Rᵐᵒᵖ M] [Module R M] {x : tsze R M} (hx : fst x ≠ 0) :
+theorem TrivEqZeroExt.mul_inv_cancel [DivisionRing R] [AddCommGroup M] [Module Rᵐᵒᵖ M] [Module R M] {x : tsze R M} (hx : fst x ≠ 0) :
   x * x⁻¹ = 1 := by
   ext
-  rw [fst_mul, fst_inv, fst_one, mul_inv_cancel hx]
-  rw [snd_mul, snd_inv, smul_neg, ← smul_assoc, smul_eq_mul, mul_inv_cancel hx, one_smul, fst_inv, add_left_neg, snd_one]
+  rw [fst_mul, fst_inv, fst_one, DivisionRing.mul_inv_cancel (fst x) hx]
+  rw [snd_mul, snd_inv, smul_neg, ← smul_assoc, smul_eq_mul, DivisionRing.mul_inv_cancel (fst x) hx, one_smul, fst_inv, add_left_neg, snd_one]
 
 end Inv
 
