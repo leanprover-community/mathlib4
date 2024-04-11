@@ -3,8 +3,8 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.BigOperators.List.Basic
 import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Data.List.FinRange
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.Submonoid.Basic
