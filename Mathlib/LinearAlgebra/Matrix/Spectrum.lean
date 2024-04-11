@@ -53,15 +53,19 @@ noncomputable def eigenvectorBasis : OrthonormalBasis n 𝕜 (EuclideanSpace �
     (Fintype.equivOfCardEq (Fintype.card_fin _))
 #align matrix.is_hermitian.eigenvector_basis Matrix.IsHermitian.eigenvectorBasis
 
---variable (m: Type*) [Fintype m]
---@[simp]
---theorem toEuclideanLin_apply (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :
---    toEuclideanLin M v =
---    (WithLp.equiv 2 (m → 𝕜)).symm (M *ᵥ (WithLp.equiv 2 (n → 𝕜)) v) := rfl
+variable (m: Type*) [Fintype m]
+@[simp]
+theorem toEuclideanLin_apply (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :
+    toEuclideanLin M v =
+    (WithLp.equiv 2 (m → 𝕜)).symm (M *ᵥ (WithLp.equiv 2 (n → 𝕜)) v) := rfl
 
 lemma mulVec_eigenvectorBasis (j : n) :
    A *ᵥ ⇑(hA.eigenvectorBasis j) =
-        (hA.eigenvalues j) • ⇑(hA.eigenvectorBasis j)  := by sorry
+        (hA.eigenvalues j) • ⇑(hA.eigenvectorBasis j)  := by
+  simpa only [eigenvectorBasis, OrthonormalBasis.reindex_apply, toEuclideanLin_apply,
+    RCLike.real_smul_eq_coe_smul (K := 𝕜)] using
+    congr(⇑$((isHermitian_iff_isSymmetric.1 hA).apply_eigenvectorBasis
+     finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
 
 /-- A matrix whose columns are an orthonormal basis of eigenvectors of a hermitian matrix. -/
 noncomputable def eigenvectorMatrix : Matrix n n 𝕜 :=
@@ -171,16 +175,16 @@ lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := 
 lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
   rw [rank_eq_rank_diagonal hA, Matrix.rank_diagonal]
 
-/-- The entries of `eigenvectorBasis` are eigenvectors. -/
-lemma mulVec_eigenvectorBasis (i : n) :
-    A *ᵥ hA.eigenvectorBasis i = hA.eigenvalues i • hA.eigenvectorBasis i := by
-  have := congr_arg (· * hA.eigenvectorMatrix) hA.spectral_theorem'
-  simp only [mul_assoc, mul_eq_one_comm.mp hA.eigenvectorMatrix_mul_inv, mul_one] at this
-  ext1 j
-  have := congr_fun (congr_fun this j) i
-  simp only [mul_diagonal, Function.comp_apply] at this
-  convert this using 1
-  rw [mul_comm, Pi.smul_apply, RCLike.real_smul_eq_coe_mul, hA.eigenvectorMatrix_apply]
+--/-- The entries of `eigenvectorBasis` are eigenvectors. -/
+--lemma mulVec_eigenvectorBasis (i : n) :
+--    A *ᵥ hA.eigenvectorBasis i = hA.eigenvalues i • hA.eigenvectorBasis i := by
+--  have := congr_arg (· * hA.eigenvectorMatrix) hA.spectral_theorem'
+--  simp only [mul_assoc, mul_eq_one_comm.mp hA.eigenvectorMatrix_mul_inv, mul_one] at this
+--  ext1 j
+--  have := congr_fun (congr_fun this j) i
+--  simp only [mul_diagonal, Function.comp_apply] at this
+--  convert this using 1
+--  rw [mul_comm, Pi.smul_apply, RCLike.real_smul_eq_coe_mul, hA.eigenvectorMatrix_apply]
 
 end DecidableEq
 
