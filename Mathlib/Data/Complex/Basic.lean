@@ -352,6 +352,9 @@ variable {R : Type*} [SMul R ℝ]
 
 /- The useless `0` multiplication in `smul` is to make sure that
 `RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally. -/
+-- priority manually adjusted in #12070, to avoid situations like instance synthesis
+-- of `SMul ℂ ℂ` trying to proceed via `SMul ℂ ℝ`.
+-- See issue #11692.
 instance (priority := 90) instSMulRealComplex : SMul R ℂ where
   smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
 
