@@ -706,35 +706,93 @@ end MonoidAlgebra
 
 end MonoidAlgebra
 
+section Orzech
+
+open Submodule in
+/-- **Orzech's theorem** for finitely generated module: if `R` is a commutative ring,
+`M` and `N` are `R`-modules, `M` is finitely generated, `i : N →ₗ[R] M` is injective,
+`f : N →ₗ[R] M` is surjective, then `f` is also injective.
+This is a consequence of Noetherian case
+(`IsNoetherian.injective_of_surjective_of_injective`), which requires that `M` is a
+Noetherian module, but allows `R` to be non-commutative. The proof of this result from
+Noetherian case is adapted from <https://math.stackexchange.com/a/1066110/235999>. -/
+theorem Module.Finite.injective_of_surjective_of_injective
+    {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [Module.Finite R M]
+    [AddCommGroup N] [Module R N] (i f : N →ₗ[R] M)
+    (hi : Function.Injective i) (hf : Function.Surjective f) : Function.Injective f := by
+  refine LinearMap.ker_eq_bot.1 <| LinearMap.ker_eq_bot'.2 fun n hn ↦ ?_
+  obtain ⟨k, mj, hmj⟩ := exists_fin (R := R) (M := M)
+  rw [← surjective_piEquiv_apply_iff] at hmj
+  obtain ⟨b, hb⟩ := hmj (i n)
+  choose nj hnj using fun j ↦ hf (mj j)
+  choose c hc using fun j ↦ hmj (i (nj j))
+  let A := Subring.closure (Set.range b ∪ Set.range c.uncurry)
+  let N' := span A ({n} ∪ Set.range nj)
+  let M' := span A (Set.range mj)
+  haveI : IsNoetherianRing A := is_noetherian_subring_closure _
+    (.union (Set.finite_range _) (Set.finite_range _))
+  haveI : Module.Finite A M' := span_of_finite A (Set.finite_range _)
+  refine congr($((LinearMap.ker_eq_bot'.1 <| LinearMap.ker_eq_bot.2 <|
+    IsNoetherian.injective_of_surjective_of_injective
+      ((i.restrictScalars A).restrict fun x hx ↦ ?_ : N' →ₗ[A] M')
+      ((f.restrictScalars A).restrict fun x hx ↦ ?_ : N' →ₗ[A] M')
+      (fun _ _ h ↦ injective_subtype _ (hi congr(($h).1)))
+      fun ⟨x, H⟩ ↦ ?_) ⟨n, (subset_span (by simp))⟩ (Subtype.val_injective hn)).1)
+  · refine span_induction hx (fun x hx ↦ ?_) (by simp) (fun x y hx hy ↦ ?_) (fun a x hx ↦ ?_)
+    · change i x ∈ M'
+      simp only [Set.singleton_union, Set.mem_insert_iff, Set.mem_range] at hx
+      rcases hx with hx | ⟨j, rfl⟩
+      · rw [hx, ← hb, piEquiv_apply_apply]
+        refine Submodule.sum_mem _ fun j _ ↦ ?_
+        let b' : A := ⟨b j, Subring.subset_closure (by simp)⟩
+        rw [show b j • mj j = b' • mj j from rfl]
+        exact smul_mem _ _ (subset_span (by simp))
+      · rw [← hc, piEquiv_apply_apply]
+        refine Submodule.sum_mem _ fun j' _ ↦ ?_
+        let c' : A := ⟨c j j', Subring.subset_closure
+          (by simp [show ∃ a b, c a b = c j j' from ⟨j, j', rfl⟩])⟩
+        rw [show c j j' • mj j' = c' • mj j' from rfl]
+        exact smul_mem _ _ (subset_span (by simp))
+    · rw [map_add]; exact add_mem hx hy
+    · rw [map_smul]; exact smul_mem _ _ hx
+  · refine span_induction hx (fun x hx ↦ ?_) (by simp) (fun x y hx hy ↦ ?_) (fun a x hx ↦ ?_)
+    · change f x ∈ M'
+      simp only [Set.singleton_union, Set.mem_insert_iff, Set.mem_range] at hx
+      rcases hx with hx | ⟨j, rfl⟩
+      · rw [hx, hn]; exact zero_mem _
+      · exact subset_span (by simp [hnj])
+    · rw [map_add]; exact add_mem hx hy
+    · rw [map_smul]; exact smul_mem _ _ hx
+  suffices x ∈ LinearMap.range ((f.restrictScalars A).domRestrict N') by
+    obtain ⟨a, ha⟩ := this
+    exact ⟨a, Subtype.val_injective ha⟩
+  refine span_induction H (fun x H ↦ ?_) (zero_mem _) (fun _ _ ↦ add_mem) (fun a _ ↦ smul_mem _ a)
+  obtain ⟨j, rfl⟩ := H
+  exact ⟨⟨nj j, subset_span (by simp)⟩, hnj j⟩
+
+/-- **Orzech's theorem** for finitely generated module: if `R` is a commutative ring,
+`M` is a finitely generated `R`-module, `N` is a submodule, `f : N →ₗ[R] M` is surjective,
+then `f` is also injective. See also `IsNoetherian.injective_of_surjective_of_submodule`. -/
+theorem Module.Finite.injective_of_surjective_of_submodule
+    {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] [Module.Finite R M]
+    {N : Submodule R M} (f : N →ₗ[R] M) (hf : Function.Surjective f) : Function.Injective f :=
+  Module.Finite.injective_of_surjective_of_injective N.subtype f N.injective_subtype hf
+
+end Orzech
+
 section Vasconcelos
 
 /-- A theorem/proof by Vasconcelos, given a finite module `M` over a commutative ring, any
-surjective endomorphism of `M` is also injective. Based on,
-https://math.stackexchange.com/a/239419/31917,
-https://www.ams.org/journals/tran/1969-138-00/S0002-9947-1969-0238839-5/.
+surjective endomorphism of `M` is also injective. The original proof is based on
+<https://math.stackexchange.com/a/239419/31917> and
+<https://www.ams.org/journals/tran/1969-138-00/S0002-9947-1969-0238839-5/>;
+now it is a corollary of `Module.Finite.injective_of_surjective_of_injective`.
 This is similar to `IsNoetherian.injective_of_surjective_endomorphism` but only applies in the
 commutative case, but does not use a Noetherian hypothesis. -/
 theorem Module.Finite.injective_of_surjective_endomorphism {R : Type*} [CommRing R] {M : Type*}
     [AddCommGroup M] [Module R M] [Finite R M] (f : M →ₗ[R] M)
-    (f_surj : Function.Surjective f) : Function.Injective f := by
-  have : (⊤ : Submodule R[X] (AEval' f)) ≤ Ideal.span {(X : R[X])} • ⊤ := by
-    intro a _
-    obtain ⟨y, rfl⟩ := f_surj.comp (AEval'.of f).symm.surjective a
-    rw [Function.comp_apply, ← AEval'.of_symm_X_smul]
-    exact Submodule.smul_mem_smul (Ideal.mem_span_singleton.mpr (dvd_refl _)) trivial
-  obtain ⟨F, hFa, hFb⟩ :=
-    Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul _ (⊤ : Submodule R[X] (AEval' f))
-      (finite_def.mp inferInstance) this
-  rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
-  intro m hm
-  rw [← map_eq_zero_iff (AEval'.of f) (AEval'.of f).injective]
-  set m' := Module.AEval'.of f m
-  rw [Ideal.mem_span_singleton'] at hFa
-  obtain ⟨G, hG⟩ := hFa
-  suffices (F - 1) • m' = 0 by
-    have Fmzero := hFb m' (by simp)
-    rwa [← sub_add_cancel F 1, add_smul, one_smul, this, zero_add] at Fmzero
-  rw [← hG, mul_smul, AEval'.X_smul_of, hm, map_zero, smul_zero]
+    (f_surj : Function.Surjective f) : Function.Injective f :=
+  Module.Finite.injective_of_surjective_of_injective _ f (LinearEquiv.refl _ _).injective f_surj
 #align module.finite.injective_of_surjective_endomorphism Module.Finite.injective_of_surjective_endomorphism
 
 end Vasconcelos
