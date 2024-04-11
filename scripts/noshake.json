@@ -312,6 +312,7 @@
   "Mathlib.Lean.Meta": ["Std.Logic"],
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Defs"],
   "Mathlib.Lean.Expr.Basic": ["Std.Logic"],
+  "Mathlib.Init.Data.Ordering.Basic": ["Std.Classes.Order"],
   "Mathlib.Init.Data.Nat.Lemmas": ["Std.WF"],
   "Mathlib.Init.Data.Nat.GCD": ["Std.Data.Nat.Gcd"],
   "Mathlib.Init.Data.Int.Basic": ["Std.Data.Int.Order"],
