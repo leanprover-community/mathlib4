@@ -96,10 +96,6 @@ We relate continuity of multilinear maps to the inequality `‖f m‖ ≤ C * �
 both directions. Along the way, we prove useful bounds on the difference `‖f m₁ - f m₂‖`.
 -/
 
-
-lemma foo (n : ℕ) : 0 ≤ n := by exact?
-
-
 namespace MultilinearMap
 
 variable (f : MultilinearMap 𝕜 E G)

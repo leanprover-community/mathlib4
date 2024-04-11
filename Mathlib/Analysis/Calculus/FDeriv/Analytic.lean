@@ -471,7 +471,7 @@ theorem iteratedFDeriv_eq (n : ℕ) :
   ext x : 1
   exact (f.hasFTaylorSeriesUpTo_iteratedFDeriv.eq_iteratedFDeriv (m := n) le_top x).symm
 
-theorem norm_iteratedFDeriv_le (n : ℕ) (x : (i : ι) → E₁ i) :
+theorem norm_iteratedFDeriv_le (n : ℕ) (x : (i : ι) → E i) :
     ‖iteratedFDeriv 𝕜 n f x‖
       ≤ Nat.descFactorial (Fintype.card ι) n * ‖f‖ * ‖x‖ ^ (Fintype.card ι - n) := by
   rw [f.iteratedFDeriv_eq]
