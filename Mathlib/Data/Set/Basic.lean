@@ -44,8 +44,6 @@ Definitions in the file:
 * `Nonempty s : Prop` : the predicate `s ≠ ∅`. Note that this is the preferred way to express the
   fact that `s` has an element (see the Implementation Notes).
 
-* `Nontrivial s : Prop` : the predicate saying that `s` has at least two distinct elements.
-
 * `inclusion s₁ s₂ : ↥s₁ → ↥s₂` : the map `↥s₁ → ↥s₂` induced by an inclusion `s₁ ⊆ s₂`.
 
 ## Notation

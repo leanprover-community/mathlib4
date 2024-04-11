@@ -10,6 +10,9 @@ import Mathlib.Data.Set.Basic
 
 Defines the predicate `Subsingleton s : Prop`, saying that `s` has at most one element.
 
+Also defines `Nontrivial s : Prop` : the predicate saying that `s` has at least two distinct
+elements.
+
 -/
 
 open Function
