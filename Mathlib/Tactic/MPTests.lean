@@ -14,9 +14,17 @@ import Mathlib.Tactic.Set
 /-!
 #  A testing linter
 
+In a file with `import Mathlib.Tactic.MPTests`, you can run the tests in a single command
+writing `#test cmd`.
+
+If you want to run the tests on all the files, you write `set_option linter.linterTest true`.
+
+By default, `set_option linter.linterTest true` skips any declaration that contains
+`SyntaxNodeKind`s in `nonTesters` (typically, something involved in flow-control, such as
+`guard_hyp` or `guard_target`), since the tests may not be too reliable on them.
+
 TODO:
 * Automatically ignore `#guard_cmd`s?
-* Automatically ignore proofs that contain `guard`s (`guard_hyp` in `apply_fun`, for instance)?
 * Pretty printing of types in `have`s, `let`s, `set`s?
 -/
 
@@ -200,13 +208,14 @@ abbrev nonTesters : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert ``Lean.Parser.Tactic.guardTarget
   |>.insert ``Lean.Parser.Tactic.guardHyp
 
-/-- checks whether the input `Syntax` contains a `SyntaxNodeKind` in `nonTesters`. -/
--- `import Std.Data.Array.Basic`; `··· (args.attach.map (test? ·.1)).all (·)` fixes the partial
+/-- checks whether the input `Syntax` contains a `SyntaxNodeKind` in `nonTesters` and, if so,
+returns its `atomVal`. -/
 partial
-def test? : Syntax → (c : HashSet SyntaxNodeKind := nonTesters) → Bool
-  | .node _ k args, c =>
-    if c.contains k then false else (args.map (test? · c)).all (·)
-  | _, _ => true
+def test? : Syntax → (c : HashSet SyntaxNodeKind := nonTesters) → Option String
+  | stx@(.node _ k args), c =>
+    if c.contains k then some stx[0].getAtomVal else
+      (args.map (test? · c)).findSome? id
+  | _, _ => none
 
 /-- converts
 * `theorem x ...` to  `some (example ... , x)`,
@@ -247,12 +256,12 @@ def getLinterTest (o : Options) : Bool := Linter.getLinterValue linter.linterTes
 @[inherit_doc linter.linterTest]
 def linterTest : Linter where run := withSetOptionIn fun cmd => do
   if getLinterTest (← getOptions) && ! cmd.getKind == ``«command#test_» then
-    if (test? cmd) then
-      if let some (cmd, _) ← toExample cmd then
-        let cmd := ⟨cmd⟩
-        elabCommand (← `(command| #test $cmd))
-    else logInfo "Skipped since it contains some 'guard's\n\n\
-    Use '#test cmd' if you really want to run the test on 'cmd'"
+    match test? cmd with
+      | none => if let some (cmd, _) ← toExample cmd then
+                  let cmd := ⟨cmd⟩
+                  elabCommand (← `(command| #test $cmd))
+      | some gd => logInfo m!"Skipped since it contains '{gd}'\n\n\
+                              Use '#test cmd' if you really want to run the test on 'cmd'"
 
 initialize addLinter linterTest
 

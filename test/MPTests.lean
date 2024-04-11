@@ -6,16 +6,11 @@ section exclude
 
 set_option linter.linterTest true in
 /--
-info: Skipped since it contains some 'guard's
+info: Skipped since it contains 'guard_target'
 
 Use '#test cmd' if you really want to run the test on 'cmd'
 -/
 #guard_msgs in
-/--
-info: Skipped since it contains some 'guard's
-
-Use '#test cmd' if you really want to run the test on 'cmd'
--/
 example : Nat := by
   guard_target = _
   exact 0
@@ -304,12 +299,12 @@ run_cmd liftTermElabM do
   let stx ← `(tacticSeq| exact .intro)
   let gh := stx.insertMany #[(← `(tactic| guard_hyp h))]
   let gt := stx.insertMany #[(← `(tactic| guard_target = h))]
-  guard <| test? stx && (!test? gh) && (!test? gt)
+  guard <| (test? stx).isNone && (test? gh).isSome && (test? gt).isSome
 
 run_cmd liftTermElabM do
   let stx ← `(command| /-- -/ #guard_msgs in import)
-  guard <| test? stx
+  guard <| (test? stx).isNone
   let stx ← `(command| #guard_msgs in import)
-  guard <| test? stx
+  guard <| (test? stx).isNone
 
 end testing_internals
