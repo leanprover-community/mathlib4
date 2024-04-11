@@ -7,7 +7,6 @@ import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Set.Basic
 
 #align_import combinatorics.composition from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 

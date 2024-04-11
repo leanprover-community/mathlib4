@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Set.Basic
 
 #align_import combinatorics.double_counting from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
