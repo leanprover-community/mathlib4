@@ -20,7 +20,7 @@ TODO:
 * Pretty printing of types in `have`s, `let`s, `set`s?
 -/
 
-open Lean Parser Elab Command Tactic
+open Lean Parser Elab Command Meta Tactic
 
 section low_level_syntax
 
@@ -71,18 +71,6 @@ def TSyntax.insertBack (tac : TSyntax ``tacticSeq) (ts : TSyntax `tactic) :
 end Lean
 
 end low_level_syntax
-
-/-- A generic testing of a tactic sequence.
-It returns a message informing about errors and successes. -/
-def testTactic (tac : TSyntax ``tacticSeq) (test : MessageData)
-    (fail success : Option MessageData := none) :
-    TacticM (Option MessageData) := withoutModifyingState do
-  let str ← (do evalTactic tac
-                trace[Tactic.tests] (checkEmoji ++ m!" {test}")
-                return success) <|>
-            (do trace[Tactic.tests] (crossEmoji ++ m!" {test}")
-                return fail)
-  return str
 
 section tactic_modifications
 variable {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m]
@@ -138,13 +126,24 @@ def addPropHaves (tac : TSyntax ``tacticSeq) (toHave : Array LocalDecl) :
 
 end tactic_modifications
 
+/-- A generic testing of a tactic sequence.
+It returns a message informing about errors and successes. -/
+def testTactic (tac : TSyntax ``tacticSeq) (test : MessageData)
+    (fail success : Option MessageData := none) :
+    TacticM (Option MessageData) := withoutModifyingState do
+  let str ← (do evalTactic tac
+                trace[Tactic.tests] (checkEmoji ++ m!" {test}")
+                return success) <|>
+            (do trace[Tactic.tests] (crossEmoji ++ m!" {test}")
+                return fail)
+  return str
+
 /-- The standard test for not handling `mdata`: adds `have := 0`, which introduces
 some metadata in the goal.  This may produce an error. -/
 def testMData (tac : TSyntax ``tacticSeq) : TacticM (Option MessageData) := do
   let fin ← addHaveDone tac
   testTactic fin "'have := 0'" m!"is mdata correctly handled? {fin}"
 
-open Meta in
 /-- The standard test for missing `withContext`: adds `let x := x`, for every variable
 `x` in context.  Since the new `x` was not present in the original metavariable context,
 if `x` is used by the tactic, it might produce an error. -/
@@ -163,7 +162,6 @@ withoutModifyingState do withMainContext do
   let (ntac, repls) ← addLetsOrSets lets? tac toSet
   testTactic ntac m!"{if lets? then "'let's" else "'set's"} {repls}" m!"missing withContext? {ntac}"
 
-open Meta in
 /-- The standard test for `instantiateMVars`: adds `have h' := h`, for every `Prop`-valued
 `h` in context.  Since the new `h'` does not have an explicit Type annotation, it is introduced
 as a metavariable and if it is used by the tactic with un-instantiated mvars, it might
