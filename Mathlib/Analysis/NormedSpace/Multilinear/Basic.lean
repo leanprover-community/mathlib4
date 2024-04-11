@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Topology.Algebra.Module.Multilinear.Basic
+import Mathlib.Logic.Embedding.Basic
 
 #align_import analysis.normed_space.multilinear from "leanprover-community/mathlib"@"f40476639bac089693a489c9e354ebd75dc0f886"
 
@@ -73,9 +74,7 @@ We use the following type variables in this file:
 -/
 
 
-instance {α β : Type*} [IsEmpty α] : Unique (α ↪ β) where
-  default := ⟨isEmptyElim, Function.injective_of_subsingleton _⟩
-  uniq := by intro; ext v; exact isEmptyElim v
+instance {α β : Type*} [IsEmpty α] : Unique (α ↪ β) := by infer_instance
 
 universe u v v' wE wE₁ wE' wEi wG wG'
 
@@ -1391,6 +1390,28 @@ noncomputable def iteratedFDerivComponent {α : Type*} [DecidableEq α] [Fintype
       f (fun j ↦ if h : j ∈ s then w (e.symm ⟨j, h⟩) j else v ⟨j, h⟩) := by
   simp [iteratedFDerivComponent, MultilinearMap.iteratedFDerivComponent,
     MultilinearMap.domDomRestrictₗ]
+
+lemma foo (n : ℕ) : 0 ≤ n := by exact?
+
+lemma norm_iteratedFDerivComponent_le {α : Type*} [DecidableEq α] [Fintype α] [DecidableEq ι]
+    (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)]
+    (x : (i : {a : ι // a ∉ s}) → E₁ i) :
+    ‖f.iteratedFDerivComponent e x‖ ≤ ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := calc
+  ‖f.iteratedFDerivComponent e x‖
+    ≤ ‖f.iteratedFDerivComponent e‖ * ∏ i, ‖x i‖ := ContinuousMultilinearMap.le_opNorm _ _
+  _ ≤ ‖f‖ * ∏ i : {a : ι // a ∉ s}, ‖x‖ := by
+      gcongr
+      · apply prod_nonneg (fun i hi ↦ norm_nonneg _)
+      · apply MultilinearMap.mkContinuousMultilinear_norm_le _ (norm_nonneg _)
+      · exact fun i hi ↦ norm_nonneg _
+      · apply norm_le_pi_norm
+  _ = ‖f‖ * ‖x‖ ^ (Fintype.card {a : ι // a ∉ s}) := by rw [prod_const, card_univ]
+  _ = ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := by
+      simp
+      have : Fintype.card s = Fintype.card α := by exact?
+
+
+#exit
 
 variable (𝕜) in
 /-- Given a function `f : α → ι`, it induces a continuous linear function by right composition on

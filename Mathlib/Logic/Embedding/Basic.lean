@@ -115,7 +115,7 @@ theorem ext {α β} {f g : Embedding α β} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 #align function.embedding.ext Function.Embedding.ext
 
-instance {α β} [IsEmpty α] : Unique (α ↪ β) where
+instance {α β : Sort*} [IsEmpty α] : Unique (α ↪ β) where
   default := ⟨isEmptyElim, Function.injective_of_subsingleton _⟩
   uniq := by intro; ext v; exact isEmptyElim v
 
