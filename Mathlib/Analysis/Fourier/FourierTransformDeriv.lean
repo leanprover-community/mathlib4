@@ -546,16 +546,28 @@ theorem glouglou [FiniteDimensional ℝ V]
     fourierIntegral 𝐞 μ L.toLinearMap₂
       (iteratedFDeriv ℝ n (fun v ↦ fourierPowSMulRight L f v k)) w := by
   rw [fourierIntegral_iteratedFDeriv (N := N) _ (hf.fourierPowSMulRight _ _) _ hn]
-  · congr
+  · sorry /-congr
     rw [iteratedFDeriv_fourierIntegral (N := K) _ _ hf.continuous.aestronglyMeasurable hk]
     intro k hk
-    simpa only [norm_iteratedFDeriv_zero] using h'f k 0 hk bot_le
+    simpa only [norm_iteratedFDeriv_zero] using h'f k 0 hk bot_le -/
   · intro m hm
+    have I : Integrable (fun v ↦ ∑ p in Finset.range (k + 1) ×ˢ Finset.range (m + 1),
+        ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖) μ := by
+      sorry /-apply integrable_finset_sum _ (fun p hp ↦ ?_)
+      simp only [Finset.mem_product, Finset.mem_range_succ_iff] at hp
+      apply h'f _ _ ((Nat.cast_le.2 hp.1).trans hk) ((Nat.cast_le.2 hp.2).trans hm) -/
+    apply (I.const_mul ((2 * π) ^ m * (2 * m + 2) ^ k * ‖L‖ ^ m)).mono'
+      ((hf.fourierPowSMulRight L k).continuous_iteratedFDeriv hm).aestronglyMeasurable
+    filter_upwards with v
+
+
+
 
 
 
 #exit
 
+iteratedFDeriv ℝ m fun v ↦ fourierPowSMulRight L f v k) μ
 
 end VectorFourier
 
