@@ -753,7 +753,7 @@ theorem snd_inv [Neg M] [Inv R] [SMul Rᵐᵒᵖ M] [SMul R M] (x : tsze R M) :
     snd x⁻¹ = - ((fst x)⁻¹ •> (snd x <• (fst x)⁻¹)) :=
       rfl
 
-theorem TrivEqZeroExt.mul_inv_cancel [DivisionRing R] [AddCommGroup M]
+theorem mul_inv_cancel [DivisionRing R] [AddCommGroup M]
     [Module Rᵐᵒᵖ M] [Module R M] {x : tsze R M}
     (hx : fst x ≠ 0) : x * x⁻¹ = 1 := by
       ext
