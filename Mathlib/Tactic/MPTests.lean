@@ -8,6 +8,7 @@ import Std.Data.String.Basic
 import Std.Lean.Expr
 import Std.Lean.PersistentHashMap
 import Std.Lean.Syntax
+import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Set
 
@@ -94,11 +95,17 @@ as a consequence of the `have := 0`. -/
 def addHaveDone (tac : TSyntax ``tacticSeq) : m (TSyntax ``tacticSeq) := do
   addDone (tac.insertMany #[(← `(tactic| have := 0))])
 
+/-- adds `show id _` at the beginning and `done` at the end of the input tactic sequence.
+When evaluating the resulting tactic, the goal has the same `whnf` as the original one, but is
+not the same. -/
+def addShowIdDone (tac : TSyntax ``tacticSeq) : m (TSyntax ``tacticSeq) := do
+  addDone (tac.insertMany #[(← `(tactic| show id _))])
+
 /-- adds at the beginning of the tactic sequence `tac` lines like `set x := x`,
 where `x` is the username of each local declaration in `toSet`.
 These `set`s introduce a layer of separation between the original names of the declarations
 and the current ones.  This may help detect missing `withContext`s. -/
-def addLetsOrSets (lets? : Bool) (tac : TSyntax ``tacticSeq) (toSet : Array LocalDecl) :
+def addLetsOrSets (lets? unLet? : Bool) (tac : TSyntax ``tacticSeq) (toSet : Array LocalDecl) :
     TermElabM (TSyntax ``tacticSeq × Array (TSyntax `tactic)) := do
   let mut repls := #[]
   for d in toSet do
@@ -108,6 +115,7 @@ def addLetsOrSets (lets? : Bool) (tac : TSyntax ``tacticSeq) (toSet : Array Loca
                then `(tactic| let $nid : $dtyp := $nid)
                else `(tactic| set $nid : $dtyp := $nid)
     repls := repls.push next
+  if unLet? then repls := repls.push (← `(tactic| unfold_let))
   return (tac.insertMany repls, repls)
 
 /-- adds at the beginning of the tactic sequence `tac` lines like `have new := old`,
@@ -154,10 +162,16 @@ def testMData (tac : TSyntax ``tacticSeq) : TacticM (Option MessageData) := do
   let fin ← addHaveDone tac
   testTactic fin "'have := 0'" m!"is mdata correctly handled? {fin}"
 
+/-- The standard test for not handling `whnf`: adds `show id _`, which changes the goal
+to a `whnf` equivalent one.  This may produce an error. -/
+def testWhnf (tac : TSyntax ``tacticSeq) : TacticM (Option MessageData) := do
+  let fin ← addShowIdDone tac
+  testTactic fin "'show id _'" m!"is `whnf` correctly handled? {fin}"
+
 /-- The standard test for missing `withContext`: adds `let x := x`, for every variable
 `x` in context.  Since the new `x` was not present in the original metavariable context,
 if `x` is used by the tactic, it might produce an error. -/
-def testFVs (lets? : Bool) (tac : TSyntax ``tacticSeq) : TacticM (Option MessageData) :=
+def testFVs (lets? unLet? : Bool) (tac : TSyntax ``tacticSeq) : TacticM (Option MessageData) :=
 withoutModifyingState do withMainContext do
   let ctx ← getLCtx
   let carr := ctx.fvarIdToDecl.toArray.qsort (·.1.name.toString < ·.1.name.toString)
@@ -169,7 +183,8 @@ withoutModifyingState do withMainContext do
     return d.binderInfo != .instImplicit &&
       d.kind == .default && d.type.ctorName != "sort" && !(← inferType d.type).isProp
   let toSet := nonSort.map Prod.snd
-  let (ntac, repls) ← addLetsOrSets lets? tac toSet
+  let (ntac, repls) ← addLetsOrSets lets? unLet? tac toSet
+--  let ntac ← addDone ntac
   testTactic ntac m!"{if lets? then "'let's" else "'set's"} {repls}" m!"missing withContext? {ntac}"
 
 /-- The standard test for `instantiateMVars`: adds `have h' := h`, for every `Prop`-valued
@@ -182,6 +197,7 @@ withoutModifyingState do withMainContext do
   let carr := ctx.fvarIdToDecl.toArray.qsort (·.1.name.toString < ·.1.name.toString)
   let props ← carr.filterM fun d => return d.2.kind == .default && ((← inferType d.2.type).isProp)
   let (t1, _repls) ← addPropHaves tac (props.map Prod.snd)
+--  let t1 ← addDone t1
   testTactic ⟨t1⟩ m!"'have's{indentD t1}" m!"missing instantiateMVars? {t1}"
 
 /-- `test tacSeq` runs the standard meta-programming tests on the tactic sequence `tacSeq`.
@@ -189,7 +205,9 @@ If the `!`-flag is not present, then it reverts the state, otherwise it leaves t
 it is after the tactic sequence.
  -/
 elab (name := testTac) "test " tk:"!"? tac:tacticSeq : tactic => do
-  let _ ← for test in [testMData, testFVs false, testFVs true, testInstMVs] do
+  let _ ← for test in [testMData, testFVs false false, testFVs true false, testInstMVs,
+                                  --testFVs false true,  testFVs true true
+                                  ] do
     if let some str := ← test tac then
       logWarningAt (← getRef) str
   match tk with
@@ -264,5 +282,7 @@ def linterTest : Linter where run := withSetOptionIn fun cmd => do
                               Use '#test cmd' if you really want to run the test on 'cmd'"
 
 initialize addLinter linterTest
+
+macro "untest " cmd:command : command => `(command| set_option linter.linterTest false in $cmd)
 
 initialize registerTraceClass `Tactic.tests

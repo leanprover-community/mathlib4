@@ -1,7 +1,8 @@
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Tactic.MoveAdd
 import Mathlib.Tactic.MPTests
-
+import Mathlib.Tactic.DefEqTransformations
+import Mathlib.adomaniLeanUtils.inspect
 section exclude
 
 set_option linter.linterTest true in
@@ -37,7 +38,7 @@ section buggy_tactic
 open Lean Elab Command Tactic
 
 /--  a sample tactic that behaves like `exact` but has bugs. -/
-elab "buggy_exact " md:"clearMD"? h:ident : tactic => do
+elab (name := buggyExactTac) "buggy_exact " md:"clearMD"? imv:"instMV"? h:ident : tactic => do
   let ctx ← getLCtx
   let hh := ctx.findFromUserName? h.getId
   match hh with
@@ -46,16 +47,16 @@ elab "buggy_exact " md:"clearMD"? h:ident : tactic => do
       let r ← elabTermEnsuringType h h1.type
       let tgt := if md.isNone then ← getMainTarget else (← getMainTarget).consumeMData
       -- warning: syntactic matching of the target
-      if tgt == h1.type then
+      if tgt == (← if imv.isSome then instantiateMVars h1.type else return h1.type) then
         replaceMainGoal (← (← getMainGoal).apply r)
       else logWarning "goal does not match"
 
-@[inherit_doc tacticBuggy_exactClearMD_]
+@[inherit_doc buggyExactTac]
 elab "buggy_exact " md:"clearMD"? "withMC" h:ident : tactic => withMainContext do
   if md.isSome then evalTactic (← `(tactic| buggy_exact clearMD $h))
   else              evalTactic (← `(tactic| buggy_exact $h))
 
-@[inherit_doc tacticBuggy_exactClearMD_]
+@[inherit_doc buggyExactTac]
 elab "buggy_exact " "withMC" "clearMD" h:ident : tactic => do
   evalTactic (← `(tactic| buggy_exact clearMD $h))
 
