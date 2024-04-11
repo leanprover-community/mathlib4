@@ -143,7 +143,7 @@ jobs:
       uses: actions/github-script@v5
       with:
         script: |
-          const branches = await github.rest.repos.listBranches({
+          const branches = await github.paginate(github.rest.repos.listBranches, {
             owner: context.repo.owner,
             repo: context.repo.repo
           });
@@ -151,6 +151,9 @@ jobs:
             .map(branch => branch.name)
             .filter(name => name.match(/^bump\/v4\.\d+\.0$/))
             .sort((a, b) => b.localeCompare(a, undefined, {numeric: true, sensitivity: 'base'}));
+          if (!bumpBranches.length) {
+            throw new Exception("Did not find any bump/v4.x.0 branch")
+          }
           const latestBranch = bumpBranches[0];
           return latestBranch;
 
