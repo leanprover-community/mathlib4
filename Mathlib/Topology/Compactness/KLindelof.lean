@@ -6,26 +6,28 @@ Authors: Josha Dekker
 import Mathlib.Order.Filter.CardinalInter
 import Mathlib.Topology.ContinuousOn
 /-!
-# K-Lindelöf sets and k-Lindelöf spaces
+# Κ-Lindelöf sets and κ-Lindelöf spaces
+(Note, this is different from k-Lindelöf spaces, e.g.
+  https://topology.pi-base.org/properties/P000128)
 
 ## Main definitions
 
 We define the following properties for sets in a topological space:
 
-* `IsKLindelof k s`: Two definitions are possible here. The more standard definition is that
-every open cover that contains `s` contains a subcover of cardinality less than `k`.
+* `IsKLindelof κ s`: Two definitions are possible here. The more standard definition is that
+every open cover that contains `s` contains a subcover of cardinality less than `κ`.
 We choose for the equivalent definition where we require that every nontrivial CardinalInterFilter
-with cardinality `k` has a clusterpoint.
-Equivalence is established in `isKLindelof_iff_cardinal_subcover` when `k` is regular.
+with cardinality `κ` has a clusterpoint.
+Equivalence is established in `isKLindelof_iff_cardinal_subcover` when `κ` is regular.
 
 TODO: Add the following (in a future PR)
-* `KLindelofSpace X`: `X` is `k`-Lindelöf if it is `k`-Lindelöf as a set.
-* `NonKLindelofSpace`: a space that is not a k-Lindelöf space, e.g. the Long Line.
+* `KLindelofSpace X`: `X` is `κ`-Lindelöf if it is `κ`-Lindelöf as a set.
+* `NonKLindelofSpace`: a space that is not a `κ`-Lindelöf space, e.g. the Long Line.
 
 ## Main results
 
-* `isKLindelof_iff_cardinal_subcover`: A set is Lindelöf iff every open cover has a
-  countable subcover.
+* `isKLindelof_iff_cardinal_subcover`: A set is `κ`-Lindelöf iff every open cover has a
+  subcover of cardinality κ.
 
 ## Implementation details
 
@@ -39,67 +41,67 @@ universe u v
 
 variable {X : Type u} {Y : Type u} {ι : Type u}
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
-variable {k : Cardinal.{u}}
+variable {κ : Cardinal.{u}}
 
 section KLindelof
 
-/-- A set `s` is `k`-Lindelöf if every nontrivial `CardinalInterFilter f k` that contains `s`,
+/-- A set `s` is `κ`-Lindelöf if every nontrivial `CardinalInterFilter f κ` that contains `s`,
   has a clusterpoint in `s`. The filter-free definition is given by
   `isKLindelof_iff_cardinal_subcover`. -/
-def IsKLindelof (k : Cardinal) (s : Set X) :=
-  ∀ ⦃f⦄ [NeBot f] [CardinalInterFilter f k], f ≤ 𝓟 s → ∃ x ∈ s, ClusterPt x f
+def IsKLindelof (κ : Cardinal) (s : Set X) :=
+  ∀ ⦃f⦄ [NeBot f] [CardinalInterFilter f κ], f ≤ 𝓟 s → ∃ x ∈ s, ClusterPt x f
 
-/-- The complement to a `k`-Lindelöf set belongs to a `CardinalInterFilter f k` if it belongs to
+/-- The complement to a `κ`-Lindelöf set belongs to a `CardinalInterFilter f κ` if it belongs to
 each filter `𝓝 x ⊓ f`, `x ∈ s`. -/
-theorem IsKLindelof.compl_mem_sets (hs : IsKLindelof k s) {f : Filter X}
-    [CardinalInterFilter f k] (hf : ∀ x ∈ s, sᶜ ∈ 𝓝 x ⊓ f) : sᶜ ∈ f := by
+theorem IsKLindelof.compl_mem_sets (hs : IsKLindelof κ s) {f : Filter X}
+    [CardinalInterFilter f κ] (hf : ∀ x ∈ s, sᶜ ∈ 𝓝 x ⊓ f) : sᶜ ∈ f := by
   contrapose! hf
   simp only [not_mem_iff_inf_principal_compl, compl_compl, inf_assoc] at hf ⊢
   exact hs inf_le_right
 
-/-- The complement to a `k`-Lindelöf set belongs to a `CardinalInterFilter f k` if each `x ∈ s` has
+/-- The complement to a `κ`-Lindelöf set belongs to a `CardinalInterFilter f κ` if each `x ∈ s` has
 a neighborhood `t` within `s` such that `tᶜ` belongs to `f`. -/
-theorem IsKLindelof.compl_mem_sets_of_nhdsWithin (hs : IsKLindelof k s)
-    {f : Filter X} [CardinalInterFilter f k] (hf : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, tᶜ ∈ f) : sᶜ ∈ f := by
+theorem IsKLindelof.compl_mem_sets_of_nhdsWithin (hs : IsKLindelof κ s)
+    {f : Filter X} [CardinalInterFilter f κ] (hf : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, tᶜ ∈ f) : sᶜ ∈ f := by
   refine hs.compl_mem_sets fun x hx ↦ ?_
   rw [← disjoint_principal_right, disjoint_right_comm, (basis_sets _).disjoint_iff_left]
   exact hf x hx
 
 /-- If `p : Set X → Prop` is stable under restriction and union, and each point `x`
-  of a `k`-Lindelöf set `s` has a neighborhood `t` within `s` such that `p t`, then `p s` holds. -/
+  of a `κ`-Lindelöf set `s` has a neighborhood `t` within `s` such that `p t`, then `p s` holds. -/
 @[elab_as_elim]
-theorem IsKLindelof.induction_on {hk : 2 < k} (hs : IsKLindelof k s) {p : Set X → Prop}
+theorem IsKLindelof.induction_on {hκ: 2 < κ} (hs : IsKLindelof κ s) {p : Set X → Prop}
     (hmono : ∀ ⦃s t⦄, s ⊆ t → p t → p s)
-    (hcardinal_union : ∀ (S : Set (Set X)), (#S < k) → (∀ s ∈ S, p s) → p (⋃₀ S))
+    (hcardinal_union : ∀ (S : Set (Set X)), (#S < κ) → (∀ s ∈ S, p s) → p (⋃₀ S))
     (hnhds : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, p t) : p s := by
-  let f : Filter X := ofCardinalUnion p hk hcardinal_union (fun t ht _ hsub ↦ hmono hsub ht)
+  let f : Filter X := ofCardinalUnion p hκ hcardinal_union (fun t ht _ hsub ↦ hmono hsub ht)
   have : sᶜ ∈ f := hs.compl_mem_sets_of_nhdsWithin (by simpa [f] using hnhds)
   rwa [← compl_compl s]
 
-/-- The intersection of a `k`-Lindelöf set and a closed set is a `k`-Lindelöf set. -/
-theorem IsKLindelof.inter_right (hs : IsKLindelof k s) (ht : IsClosed t) :
-    IsKLindelof k (s ∩ t) := by
+/-- The intersection of a `κ`-Lindelöf set and a closed set is a `κ`-Lindelöf set. -/
+theorem IsKLindelof.inter_right (hs : IsKLindelof κ s) (ht : IsClosed t) :
+    IsKLindelof κ (s ∩ t) := by
   intro f hnf _ hstf
   rw [← inf_principal, le_inf_iff] at hstf
   obtain ⟨x, hsx, hx⟩ : ∃ x ∈ s, ClusterPt x f := hs hstf.1
   have hxt : x ∈ t := ht.mem_of_nhdsWithin_neBot <| hx.mono hstf.2
   exact ⟨x, ⟨hsx, hxt⟩, hx⟩
 
-  /-- The intersection of a closed set and a `k`-Lindelöf set is a `k`-Lindelöf set. -/
-theorem IsKLindelof.inter_left (ht : IsKLindelof k t) (hs : IsClosed s) : IsKLindelof k (s ∩ t) :=
+  /-- The intersection of a closed set and a `κ`-Lindelöf set is a `κ`-Lindelöf set. -/
+theorem IsKLindelof.inter_left (ht : IsKLindelof κ t) (hs : IsClosed s) : IsKLindelof κ (s ∩ t) :=
   inter_comm t s ▸ ht.inter_right hs
 
-  /-- The set difference of a `k`-Lindelöf set and an open set is a `k`-Lindelöf set. -/
-theorem IsKLindelof.diff (hs : IsKLindelof k s) (ht : IsOpen t) : IsKLindelof k (s \ t) :=
+  /-- The set difference of a `κ`-Lindelöf set and an open set is a `κ`-Lindelöf set. -/
+theorem IsKLindelof.diff (hs : IsKLindelof κ s) (ht : IsOpen t) : IsKLindelof κ (s \ t) :=
   hs.inter_right (isClosed_compl_iff.mpr ht)
 
-/-- A closed subset of a `k`-Lindelöf set is a `k`-Lindelöf set. -/
-theorem IsKLindelof.of_isClosed_subset (hs : IsKLindelof k s) (ht : IsClosed t) (h : t ⊆ s) :
-    IsKLindelof k t := inter_eq_self_of_subset_right h ▸ hs.inter_right ht
+/-- A closed subset of a `κ`-Lindelöf set is a `κ`-Lindelöf set. -/
+theorem IsKLindelof.of_isClosed_subset (hs : IsKLindelof κ s) (ht : IsClosed t) (h : t ⊆ s) :
+    IsKLindelof κ t := inter_eq_self_of_subset_right h ▸ hs.inter_right ht
 
-/-- A continuous image of a `k`-Lindelöf set is a `k`-Lindelöf set. -/
-theorem IsKLindelof.image_of_continuousOn {f : X → Y} (hs : IsKLindelof k s)
-    (hf : ContinuousOn f s) : IsKLindelof (X := Y) k (f '' s) := by
+/-- A continuous image of a `κ`-Lindelöf set is a `κ`-Lindelöf set. -/
+theorem IsKLindelof.image_of_continuousOn {f : X → Y} (hs : IsKLindelof κ s)
+    (hf : ContinuousOn f s) : IsKLindelof (X := Y) κ (f '' s) := by
   intro l lne _ ls
   have : NeBot (l.comap f ⊓ 𝓟 s) :=
     comap_inf_principal_neBot_of_image_mem lne (le_principal_iff.1 ls)
@@ -112,13 +114,13 @@ theorem IsKLindelof.image_of_continuousOn {f : X → Y} (hs : IsKLindelof k s)
     ac_rfl
   exact this.neBot
 
-/-- A continuous image of a `k`-Lindelöf set is a `k`-Lindelöf set within the codomain. -/
-theorem IsKLindelof.image {f : X → Y} (hs : IsKLindelof k s) (hf : Continuous f) :
-    IsKLindelof (X := Y) k (f '' s) := hs.image_of_continuousOn hf.continuousOn
+/-- A continuous image of a `κ`-Lindelöf set is a `κ`-Lindelöf set within the codomain. -/
+theorem IsKLindelof.image {f : X → Y} (hs : IsKLindelof κ s) (hf : Continuous f) :
+    IsKLindelof (X := Y) κ (f '' s) := hs.image_of_continuousOn hf.continuousOn
 
 /-- A filter with the countable intersection property that is finer than the principal filter on
-a `k`-Lindelöf set `s` contains any open set that contains all clusterpoints of `f` in `s`. -/
-theorem IsKLindelof.adherence_nhdset {f : Filter X} [CardinalInterFilter f k] (hs : IsKLindelof k s)
+a `κ`-Lindelöf set `s` contains any open set that contains all clusterpoints of `f` in `s`. -/
+theorem IsKLindelof.adherence_nhdset {f : Filter X} [CardinalInterFilter f κ] (hs : IsKLindelof κ s)
     (hf₂ : f ≤ 𝓟 s) (ht₁ : IsOpen t) (ht₂ : ∀ x ∈ s, ClusterPt x f → x ∈ t) : t ∈ f :=
   (eq_or_neBot _).casesOn mem_of_eq_bot fun _ ↦
     let ⟨x, hx, hfx⟩ := @hs (f ⊓ 𝓟 tᶜ) _ _ <| inf_le_of_left_le hf₂
@@ -128,19 +130,19 @@ theorem IsKLindelof.adherence_nhdset {f : Filter X} [CardinalInterFilter f k] (h
     have : 𝓝[tᶜ] x ≠ ⊥ := hfx.of_inf_right.ne
     absurd A this
 
-/-- For every open cover of a `k`-Lindelöf set, there exists a subcover with cardinality less
-than `k`. -/
-theorem IsKLindelof.elim_cardinal_subcover {ι : Type u} (hreg : Cardinal.IsRegular k)
-    (hs : IsKLindelof k s) (U : ι → Set X) (hUo : ∀ i, IsOpen (U i)) (hsU : s ⊆ ⋃ i, U i) :
-    ∃ r : Set ι, (#r < k) ∧ (s ⊆ ⋃ i ∈ r, U i) := by
-  have hk : 2 < k := IsRegular.nat_lt hreg 2
-  have hmono : ∀ ⦃s t : Set X⦄, s ⊆ t → (∃ r : Set ι, (#r < k) ∧ t ⊆ ⋃ i ∈ r, U i)
-      → (∃ r : Set ι, (#r < k) ∧ s ⊆ ⋃ i ∈ r, U i) := by
+/-- For every open cover of a `κ`-Lindelöf set, there exists a subcover with cardinality less
+than `κ`. -/
+theorem IsKLindelof.elim_cardinal_subcover {ι : Type u} (hreg : Cardinal.IsRegular κ)
+    (hs : IsKLindelof κ s) (U : ι → Set X) (hUo : ∀ i, IsOpen (U i)) (hsU : s ⊆ ⋃ i, U i) :
+    ∃ r : Set ι, (#r < κ) ∧ (s ⊆ ⋃ i ∈ r, U i) := by
+  have hκ : 2 < κ := IsRegular.nat_lt hreg 2
+  have hmono : ∀ ⦃s t : Set X⦄, s ⊆ t → (∃ r : Set ι, (#r < κ) ∧ t ⊆ ⋃ i ∈ r, U i)
+      → (∃ r : Set ι, (#r < κ) ∧ s ⊆ ⋃ i ∈ r, U i) := by
     intro s t hst ⟨r, ⟨hrcardinal, hsub⟩⟩
     exact ⟨r, hrcardinal, Subset.trans hst hsub⟩
-  have hcardinal_union : ∀ (S : Set (Set X)), (#S < k)
-      → (∀ s ∈ S, ∃ r : Set ι, (#r < k) ∧ (s ⊆ ⋃ i ∈ r, U i))
-      → ∃ r : Set ι, (#r < k) ∧ (⋃₀ S ⊆ ⋃ i ∈ r, U i) := by
+  have hcardinal_union : ∀ (S : Set (Set X)), (#S < κ)
+      → (∀ s ∈ S, ∃ r : Set ι, (#r < κ) ∧ (s ⊆ ⋃ i ∈ r, U i))
+      → ∃ r : Set ι, (#r < κ) ∧ (⋃₀ S ⊆ ⋃ i ∈ r, U i) := by
     intro S hS hsr
     choose! r hr using hsr
     refine ⟨⋃ s ∈ S, r s, ?_, ?_⟩
@@ -150,18 +152,18 @@ theorem IsKLindelof.elim_cardinal_subcover {ι : Type u} (hreg : Cardinal.IsRegu
     refine sUnion_subset ?h.right.h
     simp only [mem_iUnion, exists_prop, iUnion_exists, biUnion_and']
     exact fun i is x hx ↦ mem_biUnion is ((hr i is).2 hx)
-  have h_nhds : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∃ r : Set ι, (#r < k) ∧ (t ⊆ ⋃ i ∈ r, U i) := by
+  have h_nhds : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∃ r : Set ι, (#r < κ) ∧ (t ⊆ ⋃ i ∈ r, U i) := by
     intro x hx
     let ⟨i, hi⟩ := mem_iUnion.1 (hsU hx)
-    have : 1 < k := IsRegular.nat_lt hreg 1
+    have : 1 < κ := IsRegular.nat_lt hreg 1
     refine ⟨U i, mem_nhdsWithin_of_mem_nhds ((hUo i).mem_nhds hi), {i}, by simp [this], ?_⟩
     simp only [mem_singleton_iff, iUnion_iUnion_eq_left]
     exact subset_rfl
-  exact hs.induction_on (hk := hk) hmono hcardinal_union h_nhds
+  exact hs.induction_on (hκ := hκ) hmono hcardinal_union h_nhds
 
-theorem IsKLindelof.elim_nhds_subcover' (hreg : Cardinal.IsRegular k) (hs : IsKLindelof k s)
+theorem IsKLindelof.elim_nhds_subcover' (hreg : Cardinal.IsRegular κ) (hs : IsKLindelof κ s)
     (U : ∀ x ∈ s, Set X) (hU : ∀ x (hx : x ∈ s), U x ‹x ∈ s› ∈ 𝓝 x) :
-    ∃ t : Set s, (#t < k) ∧ s ⊆ ⋃ x ∈ t, U (x : s) x.2 := by
+    ∃ t : Set s, (#t < κ) ∧ s ⊆ ⋃ x ∈ t, U (x : s) x.2 := by
   have := hs.elim_cardinal_subcover hreg (fun x : s ↦ interior (U x x.2))
     (fun _ ↦ isOpen_interior)
     fun x hx ↦ mem_iUnion.2 ⟨⟨x, hx⟩, mem_interior_iff_mem_nhds.2 <| hU _ _⟩
@@ -173,9 +175,9 @@ theorem IsKLindelof.elim_nhds_subcover' (hreg : Cardinal.IsRegular k) (hs : IsKL
   apply Subset.trans interior_subset
   exact subset_iUnion_of_subset i (subset_iUnion_of_subset hi (Subset.refl _))
 
-theorem IsKLindelof.elim_nhds_subcover (hreg : Cardinal.IsRegular k) (hs : IsKLindelof k s)
+theorem IsKLindelof.elim_nhds_subcover (hreg : Cardinal.IsRegular κ) (hs : IsKLindelof κ s)
     (U : X → Set X) (hU : ∀ x ∈ s, U x ∈ 𝓝 x) :
-    ∃ t : Set X, (#t < k) ∧ (∀ x ∈ t, x ∈ s) ∧ s ⊆ ⋃ x ∈ t, U x := by
+    ∃ t : Set X, (#t < κ) ∧ (∀ x ∈ t, x ∈ s) ∧ s ⊆ ⋃ x ∈ t, U x := by
   let ⟨t, ⟨htc, htsub⟩⟩ := hs.elim_nhds_subcover' hreg (fun x _ ↦ U x) hU
   refine ⟨↑t,  lt_of_le_of_lt Cardinal.mk_image_le htc, ?_⟩
   constructor
@@ -185,10 +187,10 @@ theorem IsKLindelof.elim_nhds_subcover (hreg : Cardinal.IsRegular k) (hs : IsKLi
   · have : ⋃ x ∈ t, U ↑x = ⋃ x ∈ Subtype.val '' t, U x := biUnion_image.symm
     rwa [← this]
 
-/-- The neighborhood filter of a `k`-Lindelöf set is disjoint with a `CardinalInterFilter l k`
+/-- The neighborhood filter of a `κ`-Lindelöf set is disjoint with a `CardinalInterFilter l κ`
 filter if and only if the neighborhood filter of each point of this set is disjoint with `l`. -/
-theorem IsKLindelof.disjoint_nhdsSet_left (hreg : Cardinal.IsRegular k) {l : Filter X}
-    [CardinalInterFilter l k] (hs : IsKLindelof k s) :
+theorem IsKLindelof.disjoint_nhdsSet_left (hreg : Cardinal.IsRegular κ) {l : Filter X}
+    [CardinalInterFilter l κ] (hs : IsKLindelof κ s) :
     Disjoint (𝓝ˢ s) l ↔ ∀ x ∈ s, Disjoint (𝓝 x) l := by
   refine ⟨fun h x hx ↦ h.mono_left <| nhds_le_nhdsSet hx, fun H ↦ ?_⟩
   choose! U hxU hUl using fun x hx ↦ (nhds_basis_opens x).disjoint_iff_left.1 (H x hx)
@@ -200,19 +202,19 @@ theorem IsKLindelof.disjoint_nhdsSet_left (hreg : Cardinal.IsRegular k) {l : Fil
   rw [compl_iUnion₂]
   exact (cardinal_bInter_mem htc).mpr (fun i hi ↦ hUl _ (hts _ hi))
 
-/-- A `CardinalInterFilter l k` filter is disjoint with the neighborhood
-filter of a `k`-Lindelöf set if and only if it is disjoint with the neighborhood filter of each
+/-- A `CardinalInterFilter l κ` filter is disjoint with the neighborhood
+filter of a `κ`-Lindelöf set if and only if it is disjoint with the neighborhood filter of each
 point of this set. -/
-theorem IsKLindelof.disjoint_nhdsSet_right (hreg : Cardinal.IsRegular k) {l : Filter X}
-    [CardinalInterFilter l k] (hs : IsKLindelof k s) :
+theorem IsKLindelof.disjoint_nhdsSet_right (hreg : Cardinal.IsRegular κ) {l : Filter X}
+    [CardinalInterFilter l κ] (hs : IsKLindelof κ s) :
     Disjoint l (𝓝ˢ s) ↔ ∀ x ∈ s, Disjoint l (𝓝 x) := by
   simpa only [disjoint_comm] using (hs.disjoint_nhdsSet_left hreg)
 
-/-- For every family of closed sets whose intersection avoids a `k`-Lindelöf set,
-there exists a subfamil of size less than `k` whose intersection avoids this `k`-Lindelöf set. -/
-theorem IsKLindelof.elim_cardinal_subfamily_closed (hreg : Cardinal.IsRegular k) {ι : Type u}
-    (hs : IsKLindelof k s) (t : ι → Set X) (htc : ∀ i, IsClosed (t i)) (hst : (s ∩ ⋂ i, t i) = ∅) :
-    ∃ u : Set ι, (#u < k) ∧ (s ∩ ⋂ i ∈ u, t i) = ∅ := by
+/-- For every family of closed sets whose intersection avoids a `κ`-Lindelöf set,
+there exists a subfamil of size less than `κ` whose intersection avoids this `κ`-Lindelöf set. -/
+theorem IsKLindelof.elim_cardinal_subfamily_closed (hreg : Cardinal.IsRegular κ) {ι : Type u}
+    (hs : IsKLindelof κ s) (t : ι → Set X) (htc : ∀ i, IsClosed (t i)) (hst : (s ∩ ⋂ i, t i) = ∅) :
+    ∃ u : Set ι, (#u < κ) ∧ (s ∩ ⋂ i ∈ u, t i) = ∅ := by
   let U := tᶜ
   have hUo : ∀ i, IsOpen (U i) := by simp only [U, Pi.compl_apply, isOpen_compl_iff]; exact htc
   have hsU : s ⊆ ⋃ i, U i := by
@@ -228,32 +230,32 @@ theorem IsKLindelof.elim_cardinal_subfamily_closed (hreg : Cardinal.IsRegular k)
   simp only [U, Pi.compl_apply, compl_iUnion, compl_compl] at husub
   exact disjoint_iff_inter_eq_empty.mp (Disjoint.symm husub)
 
-/-- To show that a `k`-Lindelöf set intersects the intersection of a family of closed sets,
-  it is sufficient to show that it intersects every subfamily of cardinality below `k`. -/
-theorem IsKLindelof.inter_iInter_nonempty (hreg : Cardinal.IsRegular k) {ι : Type u}
-    (hs : IsKLindelof k s) (t : ι → Set X) (htc : ∀ i, IsClosed (t i))
-    (hst : ∀ u : Set ι, (#u < k) ∧ (s ∩ ⋂ i ∈ u, t i).Nonempty) : (s ∩ ⋂ i, t i).Nonempty := by
+/-- To show that a `κ`-Lindelöf set intersects the intersection of a family of closed sets,
+  it is sufficient to show that it intersects every subfamily of cardinality below `κ`. -/
+theorem IsKLindelof.inter_iInter_nonempty (hreg : Cardinal.IsRegular κ) {ι : Type u}
+    (hs : IsKLindelof κ s) (t : ι → Set X) (htc : ∀ i, IsClosed (t i))
+    (hst : ∀ u : Set ι, (#u < κ) ∧ (s ∩ ⋂ i ∈ u, t i).Nonempty) : (s ∩ ⋂ i, t i).Nonempty := by
   contrapose! hst
   rcases hs.elim_cardinal_subfamily_closed hreg t htc hst with ⟨u, ⟨_, husub⟩⟩
   exact ⟨u, fun _ ↦ husub⟩
 
-/-- For every open cover of a `k`-Lindelöf set, there exists a subcover of cardinality less than
-`k`. -/
-theorem IsKLindelof.elim_cardinal_subcover_image (hreg : Cardinal.IsRegular k) {b : Set ι}
-    {c : ι → Set X} (hs : IsKLindelof k s) (hc₁ : ∀ i ∈ b, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i ∈ b, c i) :
-    ∃ b', b' ⊆ b ∧ (#b' < k) ∧ s ⊆ ⋃ i ∈ b', c i := by
+/-- For every open cover of a `κ`-Lindelöf set, there exists a subcover of cardinality less than
+`κ`. -/
+theorem IsKLindelof.elim_cardinal_subcover_image (hreg : Cardinal.IsRegular κ) {b : Set ι}
+    {c : ι → Set X} (hs : IsKLindelof κ s) (hc₁ : ∀ i ∈ b, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i ∈ b, c i) :
+    ∃ b', b' ⊆ b ∧ (#b' < κ) ∧ s ⊆ ⋃ i ∈ b', c i := by
   simp only [Subtype.forall', biUnion_eq_iUnion] at hc₁ hc₂
   rcases hs.elim_cardinal_subcover hreg (fun i ↦ c i : b → Set X) hc₁ hc₂ with ⟨d, hd⟩
   refine ⟨Subtype.val '' d, by simp, lt_of_le_of_lt Cardinal.mk_image_le hd.1, ?_⟩
   rw [biUnion_image]
   exact hd.2
 
-/-- A set `s` is `k`-Lindelöf if for every open cover of `s`, there exists a subcover of cardinality
-below `k`. -/
+/-- A set `s` is `κ`-Lindelöf if for every open cover of `s`, there exists a subcover of cardinality
+below `κ`. -/
 theorem isKLindelof_of_cardinal_subcover
     (h : ∀ {ι : Type u} (U : ι → Set X), (∀ i, IsOpen (U i)) → (s ⊆ ⋃ i, U i) →
-    ∃ t : Set ι, (#t < k) ∧ s ⊆ ⋃ i ∈ t, U i) :
-    IsKLindelof k s := fun f hf hfs ↦ by
+    ∃ t : Set ι, (#t < κ) ∧ s ⊆ ⋃ i ∈ t, U i) :
+    IsKLindelof κ s := fun f hf hfs ↦ by
   contrapose! h
   simp only [ClusterPt, not_neBot, ← disjoint_iff, SetCoe.forall',
     (nhds_basis_opens _).disjoint_iff_left] at h
@@ -267,31 +269,31 @@ theorem isKLindelof_of_cardinal_subcover
   simp only [compl_compl] at uninf
   contradiction
 
-/-- A set `s` is `k`-Lindelöf if for every family of closed sets whose intersection avoids `s`,
+/-- A set `s` is `κ`-Lindelöf if for every family of closed sets whose intersection avoids `s`,
 there exists a cardinal subfamily whose intersection avoids `s`. -/
 theorem isKLindelof_of_cardinal_subfamily_closed
     (h :
       ∀ {ι : Type u} (t : ι → Set X), (∀ i, IsClosed (t i)) → (s ∩ ⋂ i, t i) = ∅ →
-        ∃ u : Set ι, (#u < k) ∧ (s ∩ ⋂ i ∈ u, t i) = ∅) :
-    IsKLindelof k s :=
+        ∃ u : Set ι, (#u < κ) ∧ (s ∩ ⋂ i ∈ u, t i) = ∅) :
+    IsKLindelof κ s :=
   isKLindelof_of_cardinal_subcover fun U hUo hsU ↦ by
     rw [← disjoint_compl_right_iff_subset, compl_iUnion, disjoint_iff] at hsU
     rcases h (fun i ↦ (U i)ᶜ) (fun i ↦ (hUo _).isClosed_compl) hsU with ⟨t, ht⟩
     refine ⟨t, ?_⟩
     rwa [← disjoint_compl_right_iff_subset, compl_iUnion₂, disjoint_iff]
 
-/-- A set `s` is `k`Lindelöf if and only if
-for every open cover of `s`, there exists a subcover of cardinality less than `k`. -/
-theorem isKLindelof_iff_cardinal_subcover (hreg : Cardinal.IsRegular k) :
-    IsKLindelof k s ↔ ∀ {ι : Type u} (U : ι → Set X),
-      (∀ i, IsOpen (U i)) → (s ⊆ ⋃ i, U i) → ∃ t : Set ι, (#t < k) ∧ s ⊆ ⋃ i ∈ t, U i :=
+/-- A set `s` is `κ`Lindelöf if and only if
+for every open cover of `s`, there exists a subcover of cardinality less than `κ`. -/
+theorem isKLindelof_iff_cardinal_subcover (hreg : Cardinal.IsRegular κ) :
+    IsKLindelof κ s ↔ ∀ {ι : Type u} (U : ι → Set X),
+      (∀ i, IsOpen (U i)) → (s ⊆ ⋃ i, U i) → ∃ t : Set ι, (#t < κ) ∧ s ⊆ ⋃ i ∈ t, U i :=
   ⟨fun hs ↦ hs.elim_cardinal_subcover hreg, isKLindelof_of_cardinal_subcover⟩
 
-/-- A set `s` is `k`-Lindelöf if and only if
+/-- A set `s` is `κ`-Lindelöf if and only if
 for every family of closed sets whose intersection avoids `s`,
-there exists a subfamily of cardinality below `k` whose intersection avoids `s`. -/
-theorem isKLindelof_iff_cardinal_subfamily_closed (hreg : Cardinal.IsRegular k) :
-    IsKLindelof k s ↔ ∀ {ι : Type u} (t : ι → Set X),
+there exists a subfamily of cardinality below `κ` whose intersection avoids `s`. -/
+theorem isKLindelof_iff_cardinal_subfamily_closed (hreg : Cardinal.IsRegular κ) :
+    IsKLindelof κ s ↔ ∀ {ι : Type u} (t : ι → Set X),
     (∀ i, IsClosed (t i)) → (s ∩ ⋂ i, t i) = ∅
-    → ∃ u : Set ι, (#u < k) ∧ (s ∩ ⋂ i ∈ u, t i) = ∅ :=
+    → ∃ u : Set ι, (#u < κ) ∧ (s ∩ ⋂ i ∈ u, t i) = ∅ :=
   ⟨fun hs ↦ hs.elim_cardinal_subfamily_closed hreg, isKLindelof_of_cardinal_subfamily_closed⟩
