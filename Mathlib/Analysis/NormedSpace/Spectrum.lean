@@ -3,6 +3,7 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Complex.Polynomial
@@ -47,12 +48,12 @@ This file contains the basic theory for the resolvent and spectrum of a Banach a
 
 open scoped ENNReal NNReal
 
-open NormedSpace -- For `exp`.
+open NormedSpace -- For `NormedSpace.exp`.
 
 /-- The *spectral radius* is the supremum of the `nnnorm` (`‖·‖₊`) of elements in the spectrum,
     coerced into an element of `ℝ≥0∞`. Note that it is possible for `spectrum 𝕜 a = ∅`. In this
     case, `spectralRadius a = 0`. It is also possible that `spectrum 𝕜 a` be unbounded (though
-    not for Banach algebras, see `spectrum.is_bounded`, below).  In this case,
+    not for Banach algebras, see `spectrum.isBounded`, below).  In this case,
     `spectralRadius a = ∞`. -/
 noncomputable def spectralRadius (𝕜 : Type*) {A : Type*} [NormedField 𝕜] [Ring A] [Algebra 𝕜 A]
     (a : A) : ℝ≥0∞ :=
@@ -617,6 +618,11 @@ lemma nnreal_iff [Algebra ℝ A] {a : A} :
     exact coe_nonneg x
   · exact .of_subset_range_algebraMap _ _ (fun _ ↦ Real.toNNReal_coe)
       fun x hx ↦ ⟨⟨x, h x hx⟩, rfl⟩
+
+lemma nnreal_of_nonneg {A : Type*} [Ring A] [PartialOrder A] [Algebra ℝ A]
+    [NonnegSpectrumClass ℝ A] {a : A} (ha : 0 ≤ a) :
+    SpectrumRestricts a ContinuousMap.realToNNReal :=
+  nnreal_iff.mpr <| spectrum_nonneg_of_nonneg ha
 
 lemma real_iff [Algebra ℂ A] {a : A} :
     SpectrumRestricts a Complex.reCLM ↔ ∀ x ∈ spectrum ℂ a, x = x.re := by
