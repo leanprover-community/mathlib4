@@ -45,25 +45,6 @@ theorem cmpLE_eq_cmp {α} [Preorder α] [IsTotal α (· ≤ ·)] [@DecidableRel 
 
 namespace Ordering
 
-/-- `Compares o a b` means that `a` and `b` have the ordering relation `o` between them, assuming
-that the relation `a < b` is defined. -/
--- Porting note: we have removed `@[simp]` here in favour of separate simp lemmas,
--- otherwise this definition will unfold to a match.
-def Compares [LT α] : Ordering → α → α → Prop
-  | lt, a, b => a < b
-  | eq, a, b => a = b
-  | gt, a, b => a > b
-#align ordering.compares Ordering.Compares
-
-@[simp]
-lemma compares_lt [LT α] (a b : α) : Compares lt a b = (a < b) := rfl
-
-@[simp]
-lemma compares_eq [LT α] (a b : α) : Compares eq a b = (a = b) := rfl
-
-@[simp]
-lemma compares_gt [LT α] (a b : α) : Compares gt a b = (a > b) := rfl
-
 theorem compares_swap [LT α] {a b : α} {o : Ordering} : o.swap.Compares a b ↔ o.Compares b a := by
   cases o
   · exact Iff.rfl
@@ -138,13 +119,21 @@ theorem compares_iff_of_compares_impl [LinearOrder α] [Preorder β] {a b : α} 
       rwa [ho.inj (h hab)]
 #align ordering.compares_iff_of_compares_impl Ordering.compares_iff_of_compares_impl
 
-theorem swap_orElse (o₁ o₂) : (orElse o₁ o₂).swap = orElse o₁.swap o₂.swap := by
+theorem swap_then (o₁ o₂) : («then» o₁ o₂).swap = o₁.swap.then o₂.swap := by
   cases o₁ <;> rfl
-#align ordering.swap_or_else Ordering.swap_orElse
+#align ordering.swap_or_else Ordering.swap_then
 
-theorem orElse_eq_lt (o₁ o₂) : orElse o₁ o₂ = lt ↔ o₁ = lt ∨ o₁ = eq ∧ o₂ = lt := by
-  cases o₁ <;> cases o₂ <;> exact by decide
-#align ordering.or_else_eq_lt Ordering.orElse_eq_lt
+set_option linter.deprecated false in
+@[deprecated swap_then]
+theorem swap_orElse (o₁ o₂) : (orElse o₁ o₂).swap = orElse o₁.swap o₂.swap := swap_then ..
+
+theorem then_eq_lt (o₁ o₂) : «then» o₁ o₂ = lt ↔ o₁ = lt ∨ o₁ = eq ∧ o₂ = lt := by
+  cases o₁ <;> cases o₂ <;> decide
+#align ordering.or_else_eq_lt Ordering.then_eq_lt
+
+set_option linter.deprecated false in
+@[deprecated then_eq_lt]
+theorem orElse_eq_lt (o₁ o₂) : orElse o₁ o₂ = lt ↔ o₁ = lt ∨ o₁ = eq ∧ o₂ = lt := then_eq_lt ..
 
 end Ordering
 
