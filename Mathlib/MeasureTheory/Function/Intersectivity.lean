@@ -22,7 +22,7 @@ This is in some sense a finitary version of the second Borel-Cantelli lemma.
 ## TODO
 
 Restate the theorem using the upper density of a set of naturals, once we have it. This will make
-`strong_bergelson` be actually strong.
+`bergelson'` be actually strong (and please then rename it to `strong_bergelson`).
 
 Use the ergodic theorem to deduce the refinement of the Poincaré recurrence theorem proved by
 Bergelson.
@@ -37,7 +37,7 @@ variable {ι α : Type*} [MeasurableSpace α] {μ : Measure α} [IsFiniteMeasure
 measure at least `r` has an infinite subset whose finite intersections all have positive volume.
 
 TODO: The infinity of `t` should be strengthened to `t` having positive natural density. -/
-lemma strong_bergelson {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ : r ≠ 0)
+lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ : r ≠ 0)
     (hr : ∀ n, r ≤ μ (s n)) :
   ∃ t : Set ℕ, t.Infinite ∧ ∀ ⦃u⦄, u ⊆ t → u.Finite → 0 < μ (⋂ n ∈ u, s n) := by
   -- We let `M f` be the set on which the norm of `f` exceeds its essential supremum, and `N` be the
@@ -118,11 +118,11 @@ lemma strong_bergelson {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (h
 
 /-- **Bergelson Intersectivity Lemma**: In a finite measure space, a sequence of events that have
 measure at least `r` has an infinite subset whose finite intersections all have positive volume. -/
-lemma weak_bergelson [Infinite ι] {s : ι → Set α} (hs : ∀ i, MeasurableSet (s i)) (hr₀ : r ≠ 0)
+lemma bergelson [Infinite ι] {s : ι → Set α} (hs : ∀ i, MeasurableSet (s i)) (hr₀ : r ≠ 0)
     (hr : ∀ i, r ≤ μ (s i)) :
   ∃ t : Set ι, t.Infinite ∧ ∀ ⦃u⦄, u ⊆ t → u.Finite → 0 < μ (⋂ i ∈ u, s i) := by
   obtain ⟨t, ht, h⟩ := bergelson' (fun n ↦ hs $ Infinite.natEmbedding _ n) hr₀ (fun n ↦ hr _)
-  refine ⟨_, ht.image (Infinite.natEmbedding _).injective.injOn, fun u hut hu ↦
+  refine ⟨_, ht.image $ (Infinite.natEmbedding _).injective.injOn, fun u hut hu ↦
     (h (preimage_subset_of_surjOn (Infinite.natEmbedding _).injective hut) $ hu.preimage
     (Embedding.injective _).injOn).trans_le $ measure_mono $ subset_iInter₂ fun i hi ↦ ?_⟩
   obtain ⟨n, -, rfl⟩ := hut hi
