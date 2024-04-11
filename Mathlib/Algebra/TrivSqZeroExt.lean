@@ -738,24 +738,14 @@ def inlHom [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] : R
 
 end Mul
 
-section Div
+section Inv
 
 variable {R : Type u} {M : Type v}
 
-instance div [Sub M] [Mul R] [Div R] [HDiv M R M] [SMul Rᵐᵒᵖ M] [SMul R M] : Div (tsze R M) :=
-  ⟨fun a b => (a.1 / b.1, (a.2 <• b.1 - a.1 •> b.2) / (b.1 * b.1))⟩
+instance inv [Field R] [Semiring M] [SMul Rᵐᵒᵖ M] [SMul R M] : Inv (tsze R M) :=
+  ⟨fun b => (b.1⁻¹, (b.1 * (b.1 * b.1)⁻¹)  •> (1:M) + (b.2 <• (b.1 * b.1)⁻¹))⟩
 
-@[simp]
-theorem fst_div [Sub M] [Mul R] [Div R] [HDiv M R M] [SMul Rᵐᵒᵖ M] [SMul R M] (x₁ x₂ : tsze R M) :
-    (x₁ / x₂).fst = x₁.fst / x₂.fst :=
-  rfl
-
-@[simp]
-theorem snd_div [Sub M] [Mul R] [Div R] [HDiv M R M] [SMul Rᵐᵒᵖ M] [SMul R M] (x₁ x₂ : tsze R M) :
-    (x₁ / x₂).snd = (x₁.snd <• x₂.fst - x₁.fst •> x₂.snd) / (x₂.fst * x₂.fst):=
-  rfl
-
-end Div
+end Inv
 
 section Algebra
 
