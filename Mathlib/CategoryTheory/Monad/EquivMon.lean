@@ -38,7 +38,7 @@ namespace Monad
 
 attribute [local instance] endofunctorMonoidalCategory
 
-/-- To every `Monad C` we associated a monoid object in `C ⥤ C`.-/
+/-- To every `Monad C` we associated a monoid object in `C ⥤ C`. -/
 @[simps]
 def toMon (M : Monad C) : Mon_ (C ⥤ C) where
   X := (M : C ⥤ C)

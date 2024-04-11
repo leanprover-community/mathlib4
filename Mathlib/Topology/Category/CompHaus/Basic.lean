@@ -39,9 +39,9 @@ structure CompHaus where
   /-- The underlying topological space of an object of `CompHaus`. -/
   toTop : TopCat
   -- Porting note: Renamed field.
-  /-- The underlying topological space is compact.-/
+  /-- The underlying topological space is compact. -/
   [is_compact : CompactSpace toTop]
-  /-- The underlying topological space is T2.-/
+  /-- The underlying topological space is T2. -/
   [is_hausdorff : T2Space toTop]
 set_option linter.uppercaseLean3 false in
 #align CompHaus CompHaus

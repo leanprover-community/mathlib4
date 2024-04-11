@@ -197,6 +197,10 @@ section ContinuousInv
 variable [TopologicalSpace G] [Inv G] [ContinuousInv G]
 
 @[to_additive]
+instance : ContinuousInv (ULift G) :=
+  ⟨continuous_uLift_up.comp (continuous_inv.comp continuous_uLift_down)⟩
+
+@[to_additive]
 theorem continuousOn_inv {s : Set G} : ContinuousOn Inv.inv s :=
   continuous_inv.continuousOn
 #align continuous_on_inv continuousOn_inv
@@ -487,6 +491,8 @@ end Conj
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [TopologicalSpace α] {f : α → G}
   {s : Set α} {x : α}
 
+instance : TopologicalGroup (ULift G) where
+
 section ZPow
 
 @[to_additive (attr := continuity)]
@@ -747,7 +753,7 @@ theorem DenseRange.topologicalClosure_map_subgroup [Group H] [TopologicalSpace H
 #align dense_range.topological_closure_map_subgroup DenseRange.topologicalClosure_map_subgroup
 #align dense_range.topological_closure_map_add_subgroup DenseRange.topologicalClosure_map_addSubgroup
 
-/-- The topological closure of a normal subgroup is normal.-/
+/-- The topological closure of a normal subgroup is normal. -/
 @[to_additive "The topological closure of a normal additive subgroup is normal."]
 theorem Subgroup.is_normal_topologicalClosure {G : Type*} [TopologicalSpace G] [Group G]
     [TopologicalGroup G] (N : Subgroup G) [N.Normal] : (Subgroup.topologicalClosure N).Normal where

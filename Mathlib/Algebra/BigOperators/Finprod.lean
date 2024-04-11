@@ -3,7 +3,7 @@ Copyright (c) 2020 Kexing Ying and Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Function.Finite
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.Set.Subsingleton

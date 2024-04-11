@@ -502,7 +502,7 @@ theorem proj_fiber (x : hs.Quotient) : hs.proj ⁻¹' {x} = s (hs.equivQuotient.
 
 /-- Combine functions with disjoint domains into a new function.
 You can use the regular expression `def.*piecewise` to search for
-other ways to define piecewise functions in mathlib4.-/
+other ways to define piecewise functions in mathlib4. -/
 def piecewise {β : Type*} (f : ι → α → β) : α → β := fun x => f (hs.index x) x
 
 lemma piecewise_apply {β : Type*} {f : ι → α → β} (x : α) : hs.piecewise f x = f (hs.index x) x :=
@@ -512,7 +512,7 @@ open Function
 
 /-- A family of injective functions with pairwise disjoint
 domains and pairwise disjoint ranges can be glued together
-to form an injective function.-/
+to form an injective function. -/
 theorem piecewise_inj {β : Type*} {f : ι → α → β}
     (h_injOn : ∀ i, InjOn (f i) (s i))
     (h_disjoint : PairwiseDisjoint (univ : Set ι) fun i => (f i) '' (s i)) :
@@ -527,7 +527,7 @@ theorem piecewise_inj {β : Type*} {f : ι → α → β}
 
 /-- A family of bijective functions with pairwise disjoint
 domains and pairwise disjoint ranges can be glued together
-to form a bijective function.-/
+to form a bijective function. -/
 theorem piecewise_bij {β : Type*} {f : ι → α → β}
     {t : ι → Set β} (ht : IndexedPartition t)
     (hf : ∀ i, BijOn (f i) (s i) (t i)) :

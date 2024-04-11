@@ -74,7 +74,7 @@ theorem acc_iff_no_decreasing_seq {x} :
       rintro ⟨x, hx⟩
       cases exists_not_acc_lt_of_not_acc hx with
       | intro w h => exact ⟨⟨w, h.1⟩, h.2⟩
-    obtain ⟨f, h⟩ := Classical.axiom_of_choice this
+    choose f h using this
     refine' fun E =>
       by_contradiction fun hx => E.elim' ⟨natGT (fun n => (f^[n] ⟨x, hx⟩).1) fun n => _, 0, rfl⟩
     simp only [Function.iterate_succ']

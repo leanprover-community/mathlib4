@@ -30,7 +30,7 @@ and minimal ones are nilpotent (TODO), hence Cartan subalgebras.
   if it is contained in the Engel subalgebra of all its elements.
 -/
 
-open BigOperators LieAlgebra LieModule
+open LieAlgebra LieModule
 
 variable {R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]

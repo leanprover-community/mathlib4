@@ -100,7 +100,7 @@ theorem norm_fourierIntegral_le_integral_norm (e : AddChar 𝕜 𝕊) (μ : Meas
   simp_rw [norm_circle_smul]
 #align vector_fourier.norm_fourier_integral_le_integral_norm VectorFourier.norm_fourierIntegral_le_integral_norm
 
-/-- The Fourier integral converts right-translation into scalar multiplication by a phase factor.-/
+/-- The Fourier integral converts right-translation into scalar multiplication by a phase factor. -/
 theorem fourierIntegral_comp_add_right [MeasurableAdd V] (e : AddChar 𝕜 𝕊) (μ : Measure V)
     [μ.IsAddRightInvariant] (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (v₀ : V) :
     fourierIntegral e μ L (f ∘ fun v ↦ v + v₀) =
@@ -274,7 +274,8 @@ theorem norm_fourierIntegral_le_integral_norm (e : AddChar 𝕜 𝕊) (μ : Meas
   VectorFourier.norm_fourierIntegral_le_integral_norm _ _ _ _ _
 #align fourier.norm_fourier_integral_le_integral_norm Fourier.norm_fourierIntegral_le_integral_norm
 
-/-- The Fourier transform converts right-translation into scalar multiplication by a phase factor.-/
+/-- The Fourier transform converts right-translation into scalar multiplication by a phase
+factor. -/
 theorem fourierIntegral_comp_add_right [MeasurableAdd 𝕜] (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜)
     [μ.IsAddRightInvariant] (f : 𝕜 → E) (v₀ : 𝕜) :
     fourierIntegral e μ (f ∘ fun v ↦ v + v₀) = fun w ↦ e (v₀ * w) • fourierIntegral e μ f w :=

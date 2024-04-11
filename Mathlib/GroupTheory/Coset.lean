@@ -289,7 +289,7 @@ namespace QuotientGroup
 variable [Group α] (s : Subgroup α)
 
 /-- The equivalence relation corresponding to the partition of a group by left cosets
-of a subgroup.-/
+of a subgroup. -/
 @[to_additive "The equivalence relation corresponding to the partition of a group by left cosets
  of a subgroup."]
 def leftRel : Setoid α :=

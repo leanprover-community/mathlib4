@@ -336,7 +336,7 @@ protected theorem map {n f} {g : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' n f
 #align nat.partrec'.map Nat.Partrec'.map
 
 /-- Analogous to `Nat.Partrec'` for `ℕ`-valued functions, a predicate for partial recursive
-  vector-valued functions.-/
+  vector-valued functions. -/
 def Vec {n m} (f : Vector ℕ n → Vector ℕ m) :=
   ∀ i, Partrec' fun v => (f v).get i
 #align nat.partrec'.vec Nat.Partrec'.Vec

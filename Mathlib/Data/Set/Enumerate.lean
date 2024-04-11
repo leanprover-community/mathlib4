@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Nat.Order.Basic
-import Mathlib.Tactic.Common
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.Common
 
 #align_import data.set.enumerate from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
