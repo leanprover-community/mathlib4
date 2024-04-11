@@ -94,7 +94,6 @@ theorem braiding_tensor_left (X Y Z : C) :
     (β_ (X ⊗ Y) Z).hom  =
       (α_ X Y Z).hom ≫ X ◁ (β_ Y Z).hom ≫ (α_ X Z Y).inv ≫
         (β_ X Z).hom ▷ Y ≫ (α_ Z X Y).hom := by
-  intros
   apply (cancel_epi (α_ X Y Z).inv).1
   apply (cancel_mono (α_ Z X Y).inv).1
   simp [hexagon_reverse]
@@ -104,7 +103,6 @@ theorem braiding_tensor_right (X Y Z : C) :
     (β_ X (Y ⊗ Z)).hom  =
       (α_ X Y Z).inv ≫ (β_ X Y).hom ▷ Z ≫ (α_ Y X Z).hom ≫
         Y ◁ (β_ X Z).hom ≫ (α_ Y Z X).inv := by
-  intros
   apply (cancel_epi (α_ X Y Z).hom).1
   apply (cancel_mono (α_ Y Z X).hom).1
   simp [hexagon_forward]

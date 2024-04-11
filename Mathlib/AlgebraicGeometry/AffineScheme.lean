@@ -220,7 +220,7 @@ theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine
     change SpecΓIdentity.hom.app (X.presheaf.obj <| op ⊤) = _
     rw [← ΓSpec.adjunction_unit_app_app_top X]
     rfl
-  · dsimp; congr
+  · dsimp
     refine' (Scheme.preimage_basicOpen _ _).trans _
     congr 1
     exact IsIso.inv_hom_id_apply _ _
@@ -569,9 +569,7 @@ theorem basicOpen_union_eq_self_iff (s : Set (X.presheaf.obj <| op U)) :
     intro x _
     exact X.basicOpen_le x
   · simp only [Opens.iSup_def, Subtype.coe_mk, Set.preimage_iUnion]
-    -- Porting note: need an extra rewrite here, after simp, it is in `↔` form
-    rw [iff_iff_eq]
-    congr 3
+    congr! 1
     · refine congr_arg (Set.iUnion ·) ?_
       ext1 x
       exact congr_arg Opens.carrier (hU.fromSpec_map_basicOpen _)
@@ -614,9 +612,7 @@ theorem of_affine_open_cover {X : Scheme} (V : X.affineOpens) (S : Set X.affineO
   have : ∀ (x : V.1), ∃ f : X.presheaf.obj <| op V.1,
       ↑x ∈ X.basicOpen f ∧ P (X.affineBasicOpen f) := by
     intro x
-    have : ↑x ∈ (Set.univ : Set X) := trivial
-    rw [← hS] at this
-    obtain ⟨W, hW⟩ := Set.mem_iUnion.mp this
+    obtain ⟨W, hW⟩ := Set.mem_iUnion.mp (by simpa only [← hS] using Set.mem_univ (x : X))
     obtain ⟨f, g, e, hf⟩ := exists_basicOpen_le_affine_inter V.prop W.1.prop x ⟨x.prop, hW⟩
     refine' ⟨f, hf, _⟩
     convert hP₁ _ g (hS' W) using 1

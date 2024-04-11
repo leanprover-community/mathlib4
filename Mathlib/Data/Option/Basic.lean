@@ -235,7 +235,7 @@ theorem pbind_eq_some {f : ∀ a : α, a ∈ x → Option β} {y : β} :
     intro z h
     simp at h
   · simp only [pbind]
-    refine ⟨λ h => ⟨x, rfl, h⟩, ?_⟩
+    refine ⟨fun h ↦ ⟨x, rfl, h⟩, ?_⟩
     rintro ⟨z, H, hz⟩
     simp only [mem_def, Option.some_inj] at H
     simpa [H] using hz
@@ -309,6 +309,15 @@ theorem orElse_none' (x : Option α) : x.orElse (fun _ ↦ none) = x := by cases
 #align option.not_is_some_iff_eq_none Option.not_isSome_iff_eq_none
 
 #align option.ne_none_iff_is_some Option.ne_none_iff_isSome
+
+@[simp]
+theorem isSome_map (f : α → β) (o : Option α) : isSome (o.map f) = isSome o := by
+  cases o <;> rfl
+
+@[simp]
+theorem get_map (f : α → β) {o : Option α} (h : isSome (o.map f)) :
+    (o.map f).get h = f (o.get (by rwa [← isSome_map])) := by
+  cases o <;> [simp at h; rfl]
 
 theorem iget_mem [Inhabited α] : ∀ {o : Option α}, isSome o → o.iget ∈ o
   | some _, _ => rfl

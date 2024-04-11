@@ -428,7 +428,7 @@ lemma single_mul_single (i j : Model.Index ι) (r s : R):
 
   -- induction j using Model.Index.recOn with
   -- | nil => simp
-  -- | cons j js h ih => 
+  -- | cons j js h ih =>
   --   simp
   --   sorry
 
@@ -465,7 +465,7 @@ lemma single_mul_indexMul (i j k : Model.Index ι) (r : R) :
   | nil =>
     simp
     rw [single_nil_eq_smul_one, smul_one_mul]
-  | cons i is h ih => 
+  | cons i is h ih =>
     rw [Index.cons_mul]
     sorry
 

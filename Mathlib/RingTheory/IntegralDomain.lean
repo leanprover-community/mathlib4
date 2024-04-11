@@ -3,9 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes
 -/
-import Mathlib.Data.Polynomial.RingDivision
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Polynomial.RingDivision
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 #align_import ring_theory.integral_domain from "leanprover-community/mathlib"@"6e70e0d419bf686784937d64ed4bfde866ff229e"
 
@@ -96,13 +96,14 @@ variable [Ring R] [IsDomain R] [Fintype R]
 `Mathlib.RingTheory.LittleWedderburn`. -/
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
     DivisionRing R :=
-  { show GroupWithZero R from Fintype.groupWithZeroOfCancel R, ‹Ring R› with }
+  { show GroupWithZero R from Fintype.groupWithZeroOfCancel R, ‹Ring R› with
+    qsmul := qsmulRec _}
 #align fintype.division_ring_of_is_domain Fintype.divisionRingOfIsDomain
 
 /-- Every finite commutative domain is a field. More generally, commutativity is not required: this
 can be found in `Mathlib.RingTheory.LittleWedderburn`. -/
 def Fintype.fieldOfDomain (R) [CommRing R] [IsDomain R] [DecidableEq R] [Fintype R] : Field R :=
-  { Fintype.groupWithZeroOfCancel R, ‹CommRing R› with }
+  { Fintype.divisionRingOfIsDomain R, ‹CommRing R› with }
 #align fintype.field_of_domain Fintype.fieldOfDomain
 
 theorem Finite.isField_of_domain (R) [CommRing R] [IsDomain R] [Finite R] : IsField R := by

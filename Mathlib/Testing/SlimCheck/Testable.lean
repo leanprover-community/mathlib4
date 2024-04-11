@@ -47,9 +47,9 @@ of `Shrinkable MyType` and `SampleableExt MyType`. We can define one as follows:
 
 ```lean
 instance : Shrinkable MyType where
-  shrink := λ ⟨x,y,h⟩ =>
+  shrink := fun ⟨x,y,h⟩ ↦
     let proxy := Shrinkable.shrink (x, y - x)
-    proxy.map (λ ⟨⟨fst, snd⟩, ha⟩ => ⟨⟨fst, fst + snd, sorry⟩, sorry⟩)
+    proxy.map (fun ⟨⟨fst, snd⟩, ha⟩ ↦ ⟨⟨fst, fst + snd, sorry⟩, sorry⟩)
 
 instance : SampleableExt MyType :=
   SampleableExt.mkSelfContained do
@@ -171,8 +171,8 @@ def combine {p q : Prop} : PSum Unit (p → q) → PSum Unit p → PSum Unit q
 
 /-- Combine the test result for properties `p` and `q` to create a test for their conjunction. -/
 def and : TestResult p → TestResult q → TestResult (p ∧ q)
-  | failure h xs n, _ => failure (λ h2 => h h2.left) xs n
-  | _, failure h xs n => failure (λ h2 => h h2.right) xs n
+  | failure h xs n, _ => failure (fun h2 ↦ h h2.left) xs n
+  | _, failure h xs n => failure (fun h2 ↦ h h2.right) xs n
   | success h1, success h2 => success <| combine (combine (PSum.inr And.intro) h1) h2
   | gaveUp n, gaveUp m => gaveUp <| n + m
   | gaveUp n, _ => gaveUp n
@@ -181,7 +181,7 @@ def and : TestResult p → TestResult q → TestResult (p ∧ q)
 /-- Combine the test result for properties `p` and `q` to create a test for their disjunction. -/
 def or : TestResult p → TestResult q → TestResult (p ∨ q)
   | failure h1 xs n, failure h2 ys m =>
-    let h3 := λ h =>
+    let h3 := fun h ↦
       match h with
       | Or.inl h3 => h1 h3
       | Or.inr h3 => h2 h3
@@ -244,16 +244,16 @@ open TestResult
 def runProp (p : Prop) [Testable p] : Configuration → Bool → Gen (TestResult p) := Testable.run
 
 /-- A `dbgTrace` with special formatting -/
-def slimTrace [Pure m] (s : String) : m PUnit := dbgTrace s!"[SlimCheck: {s}]" (λ _ => pure ())
+def slimTrace [Pure m] (s : String) : m PUnit := dbgTrace s!"[SlimCheck: {s}]" (fun _ ↦ pure ())
 
 instance andTestable [Testable p] [Testable q] : Testable (p ∧ q) where
-  run := λ cfg min => do
+  run := fun cfg min ↦ do
     let xp ← runProp p cfg min
     let xq ← runProp q cfg min
     pure <| and xp xq
 
 instance orTestable [Testable p] [Testable q] : Testable (p ∨ q) where
-  run := λ cfg min => do
+  run := fun cfg min ↦ do
     let xp ← runProp p cfg min
     -- As a little performance optimization we can just not run the second
     -- test if the first succeeds
@@ -265,7 +265,7 @@ instance orTestable [Testable p] [Testable q] : Testable (p ∨ q) where
       pure <| or xp xq
 
 instance iffTestable [Testable ((p ∧ q) ∨ (¬ p ∧ ¬ q))] : Testable (p ↔ q) where
-  run := λ cfg min => do
+  run := fun cfg min ↦ do
     let h ← runProp ((p ∧ q) ∨ (¬ p ∧ ¬ q)) cfg min
     pure <| iff iff_iff_and_or_not_and_not h
 
@@ -273,13 +273,13 @@ variable {var : String}
 
 instance decGuardTestable [PrintableProp p] [Decidable p] {β : p → Prop} [∀ h, Testable (β h)] :
     Testable (NamedBinder var <| ∀ h, β h) where
-  run := λ cfg min => do
+  run := fun cfg min ↦ do
     if h : p then
       let res := (runProp (β h) cfg min)
       let s := printProp p
-      (λ r => addInfo s!"guard: {s}" (· <| h) r (PSum.inr <| λ q _ => q)) <$> res
+      (fun r ↦ addInfo s!"guard: {s}" (· <| h) r (PSum.inr <| fun q _ ↦ q)) <$> res
     else if cfg.traceDiscarded || cfg.traceSuccesses then
-      let res := (λ _ => pure <| gaveUp 1)
+      let res := (fun _ ↦ pure <| gaveUp 1)
       let s := printProp p
       slimTrace s!"discard: Guard {s} does not hold"; res
     else
@@ -287,7 +287,7 @@ instance decGuardTestable [PrintableProp p] [Decidable p] {β : p → Prop} [∀
 
 instance forallTypesTestable {f : Type → Prop} [Testable (f Int)] :
     Testable (NamedBinder var <| ∀ x, f x) where
-  run := λ cfg min => do
+  run := fun cfg min ↦ do
     let r ← runProp (f Int) cfg min
     pure <| addVarInfo var "ℤ" (· <| Int) r
 
@@ -354,7 +354,7 @@ def minimize [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg
 bound variable with it. -/
 instance varTestable [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] :
     Testable (NamedBinder var <| ∀ x : α, β x) where
-  run := λ cfg min => do
+  run := fun cfg min ↦ do
     let x ← SampleableExt.sample
     if cfg.traceSuccesses || cfg.traceDiscarded then
       slimTrace s!"{var} := {repr x}"
@@ -375,18 +375,18 @@ instance varTestable [SampleableExt α] {β : α → Prop} [∀ x, Testable (β 
 instance propVarTestable {β : Prop → Prop} [∀ b : Bool, Testable (β b)] :
   Testable (NamedBinder var <| ∀ p : Prop, β p)
 where
-  run := λ cfg min =>
-    imp (λ h (b : Bool) => h b) <$> Testable.runProp (NamedBinder var <| ∀ b : Bool, β b) cfg min
+  run := fun cfg min ↦
+    imp (fun h (b : Bool) ↦ h b) <$> Testable.runProp (NamedBinder var <| ∀ b : Bool, β b) cfg min
 
 instance (priority := high) unusedVarTestable [Nonempty α] [Testable β] :
   Testable (NamedBinder var (α → β))
 where
-  run := λ cfg min => do
+  run := fun cfg min ↦ do
     if cfg.traceDiscarded || cfg.traceSuccesses then
       slimTrace s!"{var} is unused"
     let r ← Testable.runProp β cfg min
     let finalR := addInfo s!"{var} is irrelevant (unused)" id r
-    pure <| imp (· <| Classical.ofNonempty) finalR (PSum.inr <| λ x _ => x)
+    pure <| imp (· <| Classical.ofNonempty) finalR (PSum.inr <| fun x _ ↦ x)
 
 instance (priority := 2000) subtypeVarTestable {p : α → Prop} {β : α → Prop}
     [∀ x, PrintableProp (p x)]
@@ -395,7 +395,7 @@ instance (priority := 2000) subtypeVarTestable {p : α → Prop} {β : α → Pr
     Testable (NamedBinder var <| Π x : α, NamedBinder var' <| p x → β x) where
   run cfg min :=
     letI (x : Subtype p) : Testable (β x) :=
-      { run := fun cfg min => do
+      { run := fun cfg min ↦ do
           let r ← Testable.runProp (β x.val) cfg min
           pure <| addInfo s!"guard: {printProp (p x)} (by construction)" id r (PSum.inr id) }
     do
@@ -404,7 +404,7 @@ instance (priority := 2000) subtypeVarTestable {p : α → Prop} {β : α → Pr
 
 instance (priority := low) decidableTestable {p : Prop} [PrintableProp p] [Decidable p] :
     Testable p where
-  run := λ _ _ =>
+  run := fun _ _ ↦
     if h : p then
       pure <| success (PSum.inr h)
     else
@@ -509,8 +509,8 @@ open Lean
 quantifiers and add `NamedBinder` annotations next to them. -/
 partial def addDecorations (e : Expr) : MetaM Expr :=
   Meta.transform e fun expr => do
-    if not (← Meta.inferType e).isProp then
-      return .continue
+    if not (← Meta.inferType expr).isProp then
+      return .done expr
     else if let Expr.forallE name type body data := expr then
       let newType ← addDecorations type
       let newBody ← Meta.withLocalDecl name data type fun fvar => do

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Pim Otte
 -/
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
 #align_import data.nat.factorial.big_operators from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
@@ -22,6 +22,9 @@ While in terms of semantics they could be in the `Basic.lean` file, importing
 open BigOperators Finset Nat
 
 namespace Nat
+
+lemma monotone_factorial : Monotone factorial := fun _ _ => factorial_le
+#align nat.monotone_factorial Nat.monotone_factorial
 
 variable {α : Type*} (s : Finset α) (f : α → ℕ)
 

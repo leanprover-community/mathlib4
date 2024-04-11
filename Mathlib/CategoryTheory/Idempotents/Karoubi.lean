@@ -164,11 +164,19 @@ instance : Faithful (toKaroubi C) where
 
 variable {C}
 
-@[simps add zero neg]
-instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P ⟶ Q) where
-  add f g :=
-    ⟨f.f + g.f, by rw [add_comp, comp_add, ← f.comm, ← g.comm]⟩
+@[simps add]
+instance instAdd [Preadditive C] {P Q : Karoubi C} : Add (P ⟶ Q) where
+  add f g := ⟨f.f + g.f, by rw [add_comp, comp_add, ← f.comm, ← g.comm]⟩
+
+@[simps neg]
+instance instNeg [Preadditive C] {P Q : Karoubi C} : Neg (P ⟶ Q) where
+  neg f := ⟨-f.f, by simpa only [neg_comp, comp_neg, neg_inj] using f.comm⟩
+
+@[simps zero]
+instance instZero [Preadditive C] {P Q : Karoubi C} : Zero (P ⟶ Q) where
   zero := ⟨0, by simp only [comp_zero, zero_comp]⟩
+
+instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P ⟶ Q) where
   zero_add f := by
     ext
     apply zero_add
@@ -181,10 +189,11 @@ instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P
   add_comm f g := by
     ext
     apply add_comm
-  neg f := ⟨-f.f, by simpa only [neg_comp, comp_neg, neg_inj] using f.comm⟩
   add_left_neg f := by
     ext
     apply add_left_neg
+  zsmul := zsmulRec
+  nsmul := nsmulRec
 
 namespace Karoubi
 

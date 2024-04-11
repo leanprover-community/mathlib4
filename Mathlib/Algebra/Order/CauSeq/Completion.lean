@@ -22,7 +22,6 @@ open CauSeq
 section
 
 variable {α : Type*} [LinearOrderedField α]
-
 variable {β : Type*} [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 
 -- TODO: rename this to `CauSeq.Completion` instead of `CauSeq.Completion.Cauchy`.
@@ -187,7 +186,6 @@ end
 section
 
 variable {α : Type*} [LinearOrderedField α]
-
 variable {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
 
 instance Cauchy.commRing : CommRing (Cauchy abv) :=
@@ -203,7 +201,6 @@ open scoped Classical
 section
 
 variable {α : Type*} [LinearOrderedField α]
-
 variable {β : Type*} [DivisionRing β] {abv : β → α} [IsAbsoluteValue abv]
 
 instance : RatCast (Cauchy abv) :=
@@ -267,19 +264,20 @@ theorem ofRat_inv (x : β) : ofRat x⁻¹ = ((ofRat x)⁻¹ : (Cauchy abv)) :=
     [simp only [const_limZero.1 h, GroupWithZero.inv_zero, const_zero]; rfl]
 #align cau_seq.completion.of_rat_inv CauSeq.Completion.ofRat_inv
 
-/- porting note: This takes a long time to compile.
-   Also needed to rewrite the proof of ratCast_mk due to simp issues -/
+noncomputable instance instDivInvMonoid : DivInvMonoid (Cauchy abv) where
+
+lemma ofRat_div (x y : β) : ofRat (x / y) = (ofRat x / ofRat y : Cauchy abv) := by
+  simp only [div_eq_mul_inv, ofRat_inv, ofRat_mul]
+#align cau_seq.completion.of_rat_div CauSeq.Completion.ofRat_div
+
 /-- The Cauchy completion forms a division ring. -/
 noncomputable instance Cauchy.divisionRing : DivisionRing (Cauchy abv) where
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩
   inv_zero := inv_zero
   mul_inv_cancel x := CauSeq.Completion.mul_inv_cancel
-  ratCast q := ofRat q
-  ratCast_mk n d hd hnd := by rw [← ofRat_ratCast, Rat.cast_mk', ofRat_mul, ofRat_inv]; rfl
-
-theorem ofRat_div (x y : β) : ofRat (x / y) = (ofRat x / ofRat y : Cauchy abv) := by
-  simp only [div_eq_mul_inv, ofRat_inv, ofRat_mul]
-#align cau_seq.completion.of_rat_div CauSeq.Completion.ofRat_div
+  ratCast_def q := by rw [← ofRat_ratCast, Rat.cast_def, ofRat_div, ofRat_natCast, ofRat_intCast]
+  qsmul := (· • ·)
+  qsmul_def q x := Quotient.inductionOn x fun f ↦ congr_arg mk <| ext fun i ↦ Rat.smul_def _ _
 
 /-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.
 
@@ -297,7 +295,6 @@ end
 section
 
 variable {α : Type*} [LinearOrderedField α]
-
 variable {β : Type*} [Field β] {abv : β → α} [IsAbsoluteValue abv]
 
 /-- The Cauchy completion forms a field. -/
@@ -329,7 +326,6 @@ end
 section
 
 variable {β : Type*} [Ring β] {abv : β → α} [IsAbsoluteValue abv]
-
 variable [IsComplete β abv]
 
 theorem complete : ∀ s : CauSeq β abv, ∃ b : β, s ≈ const abv b :=
