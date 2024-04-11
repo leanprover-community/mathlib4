@@ -17,6 +17,7 @@ every open cover that contains `s` contains a subcover of cardinality less than 
 We choose for the equivalent definition where we require that every nontrivial CardinalInterFilter
 with cardinality `k` has a clusterpoint.
 Equivalence is established in `isKLindelof_iff_cardinal_subcover` when `k` is regular.
+
 TODO: Add the following (in a future PR)
 * `KLindelofSpace X`: `X` is `k`-Lindelöf if it is `k`-Lindelöf as a set.
 * `NonKLindelofSpace`: a space that is not a k-Lindelöf space, e.g. the Long Line.
@@ -38,7 +39,7 @@ universe u v
 
 variable {X : Type u} {Y : Type u} {ι : Type u}
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
-variable {k : Cardinal}
+variable {k : Cardinal.{u}}
 
 section KLindelof
 
@@ -116,7 +117,7 @@ theorem IsKLindelof.image {f : X → Y} (hs : IsKLindelof k s) (hf : Continuous 
     IsKLindelof (X := Y) k (f '' s) := hs.image_of_continuousOn hf.continuousOn
 
 /-- A filter with the countable intersection property that is finer than the principal filter on
-a `k`-Lindelöf set `s` contains any open set that contains all clusterpoints of `s`. -/
+a `k`-Lindelöf set `s` contains any open set that contains all clusterpoints of `f` in `s`. -/
 theorem IsKLindelof.adherence_nhdset {f : Filter X} [CardinalInterFilter f k] (hs : IsKLindelof k s)
     (hf₂ : f ≤ 𝓟 s) (ht₁ : IsOpen t) (ht₂ : ∀ x ∈ s, ClusterPt x f → x ∈ t) : t ∈ f :=
   (eq_or_neBot _).casesOn mem_of_eq_bot fun _ ↦
