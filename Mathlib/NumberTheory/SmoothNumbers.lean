@@ -76,7 +76,6 @@ instance (s : Finset ℕ) : DecidablePred (· ∈ factoredNumbers s) :=
 lemma mem_factoredNumbers_of_dvd {s : Finset ℕ} {m k : ℕ} (h : m ∈ factoredNumbers s)
     (h' : k ∣ m) (hk : k ≠ 0) :
     k ∈ factoredNumbers s := by
-  rw [mem_factoredNumbers] at h ⊢
   obtain ⟨h₁, h₂⟩ := h
   refine ⟨hk, fun p hp ↦ h₂ p ?_⟩
   rw [mem_factors <| by assumption] at hp ⊢
@@ -129,7 +128,7 @@ lemma factoredNumbers_insert (s : Finset ℕ) {N : ℕ} (hN : ¬ N.Prime) :
     factoredNumbers (insert N s) = factoredNumbers s := by
   ext m
   refine ⟨fun hm ↦ ⟨hm.1, fun p hp ↦ ?_⟩,
-         fun hm ↦ ⟨hm.1, fun p hp ↦ Finset.mem_insert_of_mem <| hm.2 p hp⟩⟩
+          fun hm ↦ ⟨hm.1, fun p hp ↦ Finset.mem_insert_of_mem <| hm.2 p hp⟩⟩
   exact Finset.mem_of_mem_insert_of_ne (hm.2 p hp) fun h ↦ hN <| h ▸ prime_of_mem_factors hp
 
 @[gcongr] lemma factoredNumbers_mono {s t : Finset ℕ} (hst : s ≤ t) :
@@ -172,7 +171,7 @@ lemma Prime.factoredNumbers_coprime {s : Finset ℕ} {p n : ℕ} (hp : p.Prime) 
 /-- If `f : ℕ → F` is multiplicative on coprime arguments, `p ∉ s` is a prime and `m`
 is `s`-factored, then `f (p^e * m) = f (p^e) * f m`. -/
 lemma factoredNumbers.map_prime_pow_mul {F : Type*} [CommSemiring F] {f : ℕ → F}
-    (hmul : ∀ {m n}, Nat.Coprime m n → f (m * n) = f m * f n) {s : Finset ℕ} {p : ℕ}
+    (hmul : ∀ {m n}, Coprime m n → f (m * n) = f m * f n) {s : Finset ℕ} {p : ℕ}
     (hp : p.Prime) (hs : p ∉ s) (e : ℕ) {m : factoredNumbers s} :
     f (p ^ e * m) = f (p ^ e) * f m :=
   hmul <| Coprime.pow_left _ <| hp.factoredNumbers_coprime hs <| Subtype.mem m
