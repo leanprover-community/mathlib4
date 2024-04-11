@@ -79,6 +79,7 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
         dsimp
         nth_rw 1 [hf x]
         rw [← hm, types_comp_apply] }
+#align category_theory.limits.types.filtered_colimit.is_colimit_of CategoryTheory.Limits.Types.FilteredColimit.isColimitOf
 
 variable [IsFilteredOrEmpty J]
 
