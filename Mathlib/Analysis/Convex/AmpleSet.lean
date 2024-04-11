@@ -91,7 +91,7 @@ theorem image_iff {s : Set E} (L : E ≃ᵃL[ℝ] F) :
     AmpleSet (L '' s) ↔ AmpleSet s :=
   ⟨fun h ↦ (L.symm_image_image s) ▸ h.image L.symm, fun h ↦ h.image L⟩
 
-/-- Preimages of ample sets under continuous affine equivalences are ample. -/
+/-- Pre-images of ample sets under continuous affine equivalences are ample. -/
 theorem preimage {s : Set F} (h : AmpleSet s) (L : E ≃ᵃL[ℝ] F) : AmpleSet (L ⁻¹' s) := by
   rw [← L.image_symm_eq_preimage]
   exact h.image L.symm
@@ -108,6 +108,7 @@ theorem vadd [ContinuousAdd E] {s : Set E} (h : AmpleSet s) {y : E} :
     AmpleSet (y +ᵥ s) :=
   h.image (ContinuousAffineEquiv.constVAdd ℝ E y)
 
+/-- A set is ample iff its affine translation is. -/
 theorem vadd_iff [ContinuousAdd E] {s : Set E} {y : E} :
     AmpleSet (y +ᵥ s) ↔ AmpleSet s :=
   AmpleSet.image_iff (ContinuousAffineEquiv.constVAdd ℝ E y)
