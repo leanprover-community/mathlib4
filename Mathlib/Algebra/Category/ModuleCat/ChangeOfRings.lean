@@ -218,12 +218,13 @@ end
 instance restrictScalarsIsEquivalenceOfRingEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S) :
     IsEquivalence (ModuleCat.restrictScalars e.toRingHom) where
   inverse := ModuleCat.restrictScalars e.symm
-  unitIso := NatIso.ofComponents fun M ↦ LinearEquiv.toModuleIso'
+  unitIso := NatIso.ofComponents (fun M ↦ LinearEquiv.toModuleIso'
     { __ := AddEquiv.refl M
-      map_smul' := fun s m ↦ congr_arg (· • m) (e.right_inv s).symm }
-  counitIso := NatIso.ofComponents fun M ↦ LinearEquiv.toModuleIso'
+      map_smul' := fun s m ↦ congr_arg (· • m) (e.right_inv s).symm }) (by intros; rfl)
+  counitIso := NatIso.ofComponents (fun M ↦ LinearEquiv.toModuleIso'
     { __ := AddEquiv.refl M
-      map_smul' := fun r m ↦ congr_arg (· • (_ : M)) (e.left_inv r) }
+      map_smul' := fun r m ↦ congr_arg (· • (_ : M)) (e.left_inv r)}) (by intros; rfl)
+  functor_unitIso_comp := (by intros; rfl)
 
 open TensorProduct
 
@@ -448,9 +449,12 @@ def HomEquiv.fromRestriction {X : ModuleCat R} {Y : ModuleCat S}
   map_add' := fun y1 y2 : Y =>
     LinearMap.ext fun s : S => by
       -- Porting note: double dsimp seems odd
-      dsimp
+      dsimp only [id_eq, eq_mpr_eq_cast, AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply,
+        RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
+        MonoidHom.toOneHom_coe, MonoidHom.coe_coe, ZeroHom.coe_mk, smul_eq_mul, cast_eq,
+        LinearMap.coe_mk]
       rw [LinearMap.add_apply, LinearMap.coe_mk, LinearMap.coe_mk]
-      dsimp
+      dsimp only [AddHom.coe_mk]
       rw [smul_add, map_add]
   map_smul' := fun (s : S) (y : Y) => LinearMap.ext fun t : S => by
       -- Porting note: used to be simp [mul_smul]
@@ -485,14 +489,17 @@ def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙ coextendScalars 
       { toFun := fun s : S => (s • y : Y)
         map_add' := fun s s' => add_smul _ _ _
         map_smul' := fun r (s : S) => by
-          dsimp
+          dsimp only [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply]
           erw [smul_eq_mul, mul_smul]
           simp }
     map_add' := fun y1 y2 =>
       LinearMap.ext fun s : S => by
         -- Porting note: double dsimp seems odd
         set_option tactic.skipAssignedInstances false in
-        dsimp
+        dsimp only [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply,
+          RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+          MonoidHom.coe_coe, ZeroHom.coe_mk, smul_eq_mul, id_eq, eq_mpr_eq_cast, cast_eq,
+          Functor.comp_obj]
         rw [LinearMap.add_apply, LinearMap.coe_mk, LinearMap.coe_mk, LinearMap.coe_mk]
         dsimp
         rw [smul_add]
@@ -621,7 +628,10 @@ def HomEquiv.evalAt {X : ModuleCat R} {Y : ModuleCat S} (s : S)
     X →ₗ[R] Y :=
   @LinearMap.mk _ _ _ _ (RingHom.id R) X Y _ _ _ (_)
     { toFun := fun x => s • (g x : Y)
-      map_add' := by intros; dsimp; rw [map_add,smul_add] }
+      map_add' := by
+        intros
+        dsimp only
+        rw [map_add,smul_add] }
     (by
       intros r x
       rw [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply,
@@ -641,7 +651,7 @@ def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
     {toFun := fun s => HomEquiv.evalAt f s g, map_add' := fun (s₁ s₂ : S) => ?_,
       map_smul' := fun (r : R) (s : S) => ?_}
     · ext
-      dsimp
+      dsimp only [evalAt_apply, LinearMap.add_apply]
       rw [← add_smul]
     · ext x
       apply mul_smul (f r) s (g x)

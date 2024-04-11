@@ -112,6 +112,9 @@ theorem Injective.ne_iff' (hf : Injective f) {x y : α} {z : β} (h : f y = z) :
   h ▸ hf.ne_iff
 #align function.injective.ne_iff' Function.Injective.ne_iff'
 
+theorem not_injective_iff : ¬ Injective f ↔ ∃ a b, f a = f b ∧ a ≠ b := by
+  simp only [Injective, not_forall, exists_prop]
+
 /-- If the co-domain `β` of an injective function `f : α → β` has decidable equality, then
 the domain `α` also has decidable equality. -/
 protected def Injective.decidableEq [DecidableEq β] (I : Injective f) : DecidableEq α :=
