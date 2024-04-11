@@ -701,7 +701,7 @@ theorem eval_divByMonic_pow_rootMultiplicity_ne_zero {p : R[X]} (a : R) (hp : p 
   exact
     multiplicity.is_greatest'
       (multiplicity_finite_of_degree_pos_of_monic
-        (show (0 : WithBot ℕ) < degree (X - C a) by rw [degree_X_sub_C]; exact by decide)
+        (show (0 : WithBot ℕ) < degree (X - C a) by rw [degree_X_sub_C]; decide)
         (monic_X_sub_C _) hp)
       (Nat.lt_succ_self _) (dvd_of_mul_right_eq _ this)
 #align polynomial.eval_div_by_monic_pow_root_multiplicity_ne_zero Polynomial.eval_divByMonic_pow_rootMultiplicity_ne_zero
