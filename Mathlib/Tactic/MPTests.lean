@@ -115,7 +115,10 @@ def addLetsOrSets (lets? unLet? : Bool) (tac : TSyntax ``tacticSeq) (toSet : Arr
                then `(tactic| let $nid : $dtyp := $nid)
                else `(tactic| set $nid : $dtyp := $nid)
     repls := repls.push next
-  if unLet? then repls := repls.push (← `(tactic| unfold_let))
+  if unLet? then
+    let unf ← `(tactic| unfold_let at *)
+    -- we use `unfold_let` twice, since each time it "reverses" the variables
+    repls := (repls.push unf).push unf
   return (← addDone (tac.insertMany repls), repls)
 
 /-- adds at the beginning of the tactic sequence `tac` lines like `have new := old`,
@@ -179,8 +182,10 @@ withoutModifyingState do withMainContext do
   let mut typs : HashSet Expr := HashSet.empty.insert Typ
   for (_, d) in carr do
     typs := typs.insert (d.type)
-  let nonSort ← carr.filterM fun (_, d) =>
-    return d.binderInfo != .instImplicit &&
+  let nonSort ← carr.filterM fun (_, d) => do
+    let d' := (ctx.findFromUserName? d.userName).get!
+    -- we only duplicate variables that are not shadowed to begin with
+    return d.binderInfo != .instImplicit && (← isDefEq d'.type d.type) &&
       d.kind == .default && d.type.ctorName != "sort" && !(← inferType d.type).isProp
   let toSet := nonSort.map Prod.snd
   let (ntac, repls) ← addLetsOrSets lets? unLet? tac toSet
