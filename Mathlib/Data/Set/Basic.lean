@@ -1575,6 +1575,7 @@ lemma disjoint_sdiff_left : Disjoint (t \ s) s := disjoint_sdiff_self_left
 lemma disjoint_sdiff_right : Disjoint s (t \ s) := disjoint_sdiff_self_right
 #align set.disjoint_sdiff_right Set.disjoint_sdiff_right
 
+-- TODO: prove this in terms of a lattice lemma
 theorem disjoint_sdiff_inter : Disjoint (s \ t) (s ∩ t) :=
   disjoint_of_subset_right (inter_subset_right _ _) disjoint_sdiff_left
 #align set.disjoint_sdiff_inter Set.disjoint_sdiff_inter
