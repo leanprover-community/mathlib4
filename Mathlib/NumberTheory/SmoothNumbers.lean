@@ -97,9 +97,11 @@ lemma mem_factoredNumbers' {s : Finset ℕ} {m : ℕ} :
   obtain ⟨p, hp₁, hp₂⟩ := exists_infinite_primes (1 + Finset.sup s id)
   rw [mem_factoredNumbers_iff_forall_le]
   refine ⟨fun ⟨H₀, H₁⟩ ↦ fun p hp₁ hp₂ ↦ H₁ p (Nat.le_of_dvd (Nat.pos_of_ne_zero H₀) hp₂) hp₁ hp₂,
-         fun H ↦ ⟨fun h ↦ ?_, fun p _ ↦ H p⟩⟩
-  exact ((Finset.le_sup (f := @id ℕ) <| (H p hp₂ <| h.symm ▸ dvd_zero p)).trans_lt (lt_one_add _)
-            |>.trans_le hp₁).false
+         fun H ↦ ⟨fun h ↦ lt_irrefl p ?_, fun p _ ↦ H p⟩⟩
+  calc
+    p ≤ s.sup id := Finset.le_sup (f := @id ℕ) <| (H p hp₂ <| h.symm ▸ dvd_zero p)
+    _ < 1 + s.sup id := lt_one_add _
+    _ ≤ p := hp₁
 
 lemma ne_zero_of_mem_factoredNumbers {s : Finset ℕ} {m : ℕ} (h : m ∈ factoredNumbers s) : m ≠ 0 :=
   h.1
