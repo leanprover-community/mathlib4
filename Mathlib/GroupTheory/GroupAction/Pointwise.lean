@@ -35,7 +35,7 @@ theorem MulAction.smul_bijective_of_is_unit
     Function.Bijective (fun (a : α) ↦ m • a) := by
   lift m to Mˣ using hm
   rw [Function.bijective_iff_has_inverse]
-  use (fun (a : α) ↦ m⁻¹ • a)
+  use fun a ↦ m⁻¹ • a
   constructor
   · intro x; simp [← Units.smul_def]
   · intro x; simp [← Units.smul_def]
@@ -62,7 +62,7 @@ theorem smul_preimage_set_leₛₗ
     (c : R) (t : Set N) :
     c • h ⁻¹' t ⊆ h ⁻¹' (σ c • t) := by
   rintro x ⟨y, hy, rfl⟩
-  refine ⟨h y, hy, (by rw [map_smulₛₗ])⟩
+  exact ⟨h y, hy, by rw [map_smulₛₗ]⟩
 
 /-- General version of `preimage_smul_setₛₗ` -/
 theorem preimage_smul_setₛₗ'
@@ -79,7 +79,7 @@ theorem preimage_smul_setₛₗ'
     rw [map_smulₛₗ] at hn'
     rw [mem_preimage, ← hc' hn']
     exact hn
-  · exact smul_preimage_set_leₛₗ  M N σ h c s
+  · exact smul_preimage_set_leₛₗ M N σ h c s
 
 /-- `preimage_smul_setₛₗ` when both scalars act by unit -/
 theorem preimage_smul_setₛₗ_of_units
