@@ -31,7 +31,7 @@ freely, and `G₃` is the quotient sheaf.)
 if `0 ⟶ Q ⟶ M ⟶ N ⟶ 0` is an exact sequence of abelian sheaves over a scheme `X`
 and `Q` is the underlying sheaf of a quasi-coherent sheaf, then `M(U) ⟶ N(U)`
 is surjective for any affine open `U`.
-* take the colimit of `Cohomology₁ G U` over all covering families `U` (for
+* take the colimit of `OneCohomology G U` over all covering families `U` (for
 a Grothendieck topology)
 
 -/
@@ -140,7 +140,7 @@ end OneCocycle
 
 variable {G U}
 
-/-- The assertion that two cochains in `Cochain₁ G U` are cohomologous via
+/-- The assertion that two cochains in `OneCochain G U` are cohomologous via
 an explicit zero-cochain. -/
 def OneCohomologyRelation (γ₁ γ₂ : OneCochain G U) (α : ZeroCochain G U) : Prop :=
   ∀ (i j : I) ⦃T : C⦄ (a : T ⟶ U i) (b : T ⟶ U j),
