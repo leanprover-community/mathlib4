@@ -351,8 +351,12 @@ instance : Nontrivial ℂ :=
 `RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally. -/
 -- instance made local to avoid situations like instance synthesis
 -- of `SMul ℂ ℂ` trying to proceed via `SMul ℂ ℝ`.
-local instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
+namespace SMul
+scoped instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
   smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
+end SMul
+
+open scoped SMul
 
 section SMul
 
