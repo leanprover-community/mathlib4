@@ -313,6 +313,7 @@ instance : ToMessageData EntryExpr where
   | .ofDExpr _ => m!"[delayed expression]"
 
 instance : Coe Expr EntryExpr := ⟨EntryExpr.ofExpr⟩
+attribute [coe] EntryExpr.ofExpr
 
 /-- Equivalence class data associated with an expression `e`. -/
 structure Entry where
