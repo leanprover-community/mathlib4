@@ -297,11 +297,11 @@ register_option linter.metaTest : Bool := {
 }
 
 /-- Gets the value of the `linter.metaTest` option. -/
-def getmetaTest (o : Options) : Bool := Linter.getLinterValue linter.metaTest o
+def getMetaTest (o : Options) : Bool := Linter.getLinterValue linter.metaTest o
 
 @[inherit_doc linter.metaTest]
 def metaTest : Linter where run := withSetOptionIn fun cmd => do
-  if getmetaTest (← getOptions) && ! cmd.getKind == ``«command#meta_test_» then
+  if getMetaTest (← getOptions) && ! cmd.getKind == ``«command#meta_test_» then
     match test? cmd with
       | none => if let some (cmd, _) ← toExample cmd then
                   let cmd := ⟨cmd⟩
