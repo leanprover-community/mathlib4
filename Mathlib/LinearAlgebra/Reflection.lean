@@ -129,7 +129,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
     intros n
     induction' n with n ih; simp
     have : ((f - g).smulRight x).comp ((n : R) • (f - g).smulRight x) = 0 := by ext; simp [hf₁, hg₁]
-    rw [pow_succ, LinearEquiv.coe_toLinearMap_mul, ih, hu, add_mul, mul_add, mul_add]
+    rw [pow_succ', LinearEquiv.coe_toLinearMap_mul, ih, hu, add_mul, mul_add, mul_add]
     simp_rw [LinearMap.mul_eq_comp, LinearMap.comp_id, LinearMap.id_comp, this, add_zero, add_assoc,
       Nat.cast_succ, add_smul, one_smul]
   suffices IsOfFinOrder u by
@@ -151,7 +151,7 @@ lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
   have hΦ'₁ : Φ'.Finite := finite_range (inclusion Submodule.subset_span)
   have hΦ'₂ : span R Φ' = ⊤ := by simp [Φ']
   let x' : span R Φ := ⟨x, hx'⟩
-  have hx' : x' ≠ 0 := Subtype.ne_of_val_ne hx
+  have hx' : x' ≠ 0 := Subtype.coe_ne_coe.1 hx
   have this : ∀ {F : Dual R M}, MapsTo (preReflection x F) Φ Φ →
       MapsTo (preReflection x' ((span R Φ).subtype.dualMap F)) Φ' Φ' := by
     intro F hF ⟨y, hy⟩ hy'
