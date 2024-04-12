@@ -554,7 +554,7 @@ theorem has_antideriv_at_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0
 #align has_antideriv_at_fourier_neg has_antideriv_at_fourier_neg
 
 /-- Express Fourier coefficients of `f` on an interval in terms of those of its derivative. -/
-theorem fourierCoeffOn_of_hasDerivWithinAt {a b : ℝ} (hab : a < b) {f f' : ℝ → ℂ}
+theorem fourierCoeffOn_of_hasDeriv_right {a b : ℝ} (hab : a < b) {f f' : ℝ → ℂ}
     {n : ℤ} (hn : n ≠ 0)
     (hf : ContinuousOn f [[a, b]])
     (hff' : ∀ x, x ∈ Ioo (min a b) (max a b) → HasDerivWithinAt f (f' x) (Ioi x) x)
@@ -582,13 +582,23 @@ theorem fourierCoeffOn_of_hasDerivWithinAt {a b : ℝ} (hab : a < b) {f f' : ℝ
   · ring
 
 /-- Express Fourier coefficients of `f` on an interval in terms of those of its derivative. -/
+theorem fourierCoeffOn_of_hasDerivAt_Ioo {a b : ℝ} (hab : a < b) {f f' : ℝ → ℂ}
+    {n : ℤ} (hn : n ≠ 0)
+    (hf : ContinuousOn f [[a, b]])
+    (hff' : ∀ x, x ∈ Ioo (min a b) (max a b) → HasDerivAt f (f' x) x)
+    (hf' : IntervalIntegrable f' volume a b) :
+    fourierCoeffOn hab f n = 1 / (-2 * π * I * n) *
+      (fourier (-n) (a : AddCircle (b - a)) * (f b - f a) - (b - a) * fourierCoeffOn hab f' n) :=
+  fourierCoeffOn_of_hasDeriv_right hab hn hf (fun x hx ↦ hff' x hx |>.hasDerivWithinAt) hf'
+
+/-- Express Fourier coefficients of `f` on an interval in terms of those of its derivative. -/
 theorem fourierCoeffOn_of_hasDerivAt {a b : ℝ} (hab : a < b) {f f' : ℝ → ℂ} {n : ℤ} (hn : n ≠ 0)
     (hf : ∀ x, x ∈ [[a, b]] → HasDerivAt f (f' x) x) (hf' : IntervalIntegrable f' volume a b) :
     fourierCoeffOn hab f n = 1 / (-2 * π * I * n) *
       (fourier (-n) (a : AddCircle (b - a)) * (f b - f a) - (b - a) * fourierCoeffOn hab f' n) :=
-  fourierCoeffOn_of_hasDerivWithinAt hab hn
+  fourierCoeffOn_of_hasDerivAt_Ioo hab hn
     (fun x hx ↦ hf x hx |>.continuousAt.continuousWithinAt)
-    (fun x hx ↦ hf x (mem_Icc_of_Ioo hx) |>.hasDerivWithinAt)
+    (fun x hx ↦ hf x <| mem_Icc_of_Ioo hx)
     hf'
 #align fourier_coeff_on_of_has_deriv_at fourierCoeffOn_of_hasDerivAt
 
