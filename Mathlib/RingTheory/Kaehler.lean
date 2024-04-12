@@ -8,7 +8,7 @@ import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.Data.MvPolynomial.PDeriv
-import Mathlib.Algebra.Polynomial.Derivation
+import Mathlib.Data.Polynomial.Derivation
 
 #align_import ring_theory.kaehler from "leanprover-community/mathlib"@"4b92a463033b5587bb011657e25e4710bfca7364"
 
