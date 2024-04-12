@@ -805,6 +805,7 @@ import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.Analysis.Complex.UpperHalfPlane.Metric
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Analysis.ConstantSpeed
+import Mathlib.Analysis.Convex.AmpleSet
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Convex.Body
@@ -3313,7 +3314,7 @@ import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 import Mathlib.RingTheory.Discriminant
 import Mathlib.RingTheory.EisensteinCriterion
-import Mathlib.RingTheory.Etale
+import Mathlib.RingTheory.Etale.Basic
 import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.Filtration
 import Mathlib.RingTheory.FinitePresentation
@@ -3454,6 +3455,7 @@ import Mathlib.RingTheory.RootsOfUnity.Basic
 import Mathlib.RingTheory.RootsOfUnity.Complex
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.SimpleModule
+import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.RingTheory.Subring.Basic
 import Mathlib.RingTheory.Subring.Order
 import Mathlib.RingTheory.Subring.Pointwise
@@ -3464,6 +3466,8 @@ import Mathlib.RingTheory.Subsemiring.Pointwise
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.Trace
 import Mathlib.RingTheory.UniqueFactorizationDomain
+import Mathlib.RingTheory.Unramified.Basic
+import Mathlib.RingTheory.Unramified.Derivations
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.Integers
@@ -3520,6 +3524,7 @@ import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.SetTheory.Ordinal.CantorNormalForm
 import Mathlib.SetTheory.Ordinal.Exponential
 import Mathlib.SetTheory.Ordinal.FixedPoint
+import Mathlib.SetTheory.Ordinal.FixedPointApproximants
 import Mathlib.SetTheory.Ordinal.NaturalOps
 import Mathlib.SetTheory.Ordinal.Notation
 import Mathlib.SetTheory.Ordinal.Principal
@@ -3773,6 +3778,7 @@ import Mathlib.Topology.Algebra.Module.LinearPMap
 import Mathlib.Topology.Algebra.Module.LocallyConvex
 import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
+import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 import Mathlib.Topology.Algebra.Module.Simple
 import Mathlib.Topology.Algebra.Module.Star
 import Mathlib.Topology.Algebra.Module.StrongTopology
@@ -3923,6 +3929,7 @@ import Mathlib.Topology.Homotopy.Product
 import Mathlib.Topology.IndicatorConstPointwise
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Instances.AddCircle
+import Mathlib.Topology.Instances.CantorSet
 import Mathlib.Topology.Instances.Complex
 import Mathlib.Topology.Instances.Discrete
 import Mathlib.Topology.Instances.ENNReal

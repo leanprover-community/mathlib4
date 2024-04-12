@@ -128,13 +128,13 @@ lemma fromRows_ext_iff (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) (B₁ :
     (B₂ : Matrix m₂ n R) :
     fromRows A₁ A₂ = fromRows B₁ B₂ ↔ A₁ = B₁ ∧ A₂ = B₂ := fromRows_inj.eq_iff
 
-/- A column partioned matrix when transposed gives a row partioned matrix with columns of the
+/-- A column partioned matrix when transposed gives a row partioned matrix with columns of the
 initial matrix tranposed to become rows. -/
 lemma transpose_fromColumns (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) :
     transpose (fromColumns A₁ A₂) = fromRows (transpose A₁) (transpose A₂) := by
   ext (i | i) j <;> simp
 
-/- A row partioned matrix when transposed gives a column partioned matrix with rows of the initial
+/-- A row partioned matrix when transposed gives a column partioned matrix with rows of the initial
 matrix tranposed to become columns. -/
 lemma transpose_fromRows (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) :
     transpose (fromRows A₁ A₂) = fromColumns (transpose A₁) (transpose A₂) := by
@@ -252,7 +252,7 @@ lemma fromColumns_mul_fromRows_eq_one_comm (e : n ≃ n₁ ⊕ n₂)
   _ ↔ fromRows B₁ B₂ * fromColumns A₁ A₂ = 1 :=
     (reindex _ _).injective.eq_iff
 
-/- The lemma `fromColumns_mul_fromRows_eq_one_comm` specialized to the case where the index sets n₁
+/-- The lemma `fromColumns_mul_fromRows_eq_one_comm` specialized to the case where the index sets n₁
 and n₂, are the result of subtyping by a predicate and its complement. -/
 lemma equiv_compl_fromColumns_mul_fromRows_eq_one_comm (p : n → Prop)[DecidablePred p]
     (A₁ : Matrix n {i // p i} R) (A₂ : Matrix n {i // ¬p i} R)
@@ -265,15 +265,15 @@ end CommRing
 section Star
 variable [Star R]
 
-/- A column partioned matrix in a Star ring when conjugate transposed gives a row partitioned matrix
-with the columns of the initial matrix conjugate transposed to become rows. -/
+/-- A column partioned matrix in a Star ring when conjugate transposed gives a row partitioned
+matrix with the columns of the initial matrix conjugate transposed to become rows. -/
 lemma conjTranspose_fromColumns_eq_fromRows_conjTranspose (A₁ : Matrix m n₁ R)
     (A₂ : Matrix m n₂ R) :
     conjTranspose (fromColumns A₁ A₂) = fromRows (conjTranspose A₁) (conjTranspose A₂) := by
   ext (_ | _) _ <;> simp
 
-/- A row partioned matrix in a Star ring when conjugate transposed gives a column partitioned matrix
-with the rows of the initial matrix conjugate transposed to become columns. -/
+/-- A row partioned matrix in a Star ring when conjugate transposed gives a column partitioned
+matrix with the rows of the initial matrix conjugate transposed to become columns. -/
 lemma conjTranspose_fromRows_eq_fromColumns_conjTranspose (A₁ : Matrix m₁ n R)
     (A₂ : Matrix m₂ n R) : conjTranspose (fromRows A₁ A₂) =
       fromColumns (conjTranspose A₁) (conjTranspose A₂) := by
