@@ -158,6 +158,7 @@ partial def eraseUsedTactics : InfoTree → M Unit
   | .node i c => do
     if let .ofTacticInfo i := i then
 --      dbg_trace "working on '{i.stx.getKind}': {i.stx}"
+     if let .original .. := i.stx.getHeadInfo then
       let stx := i.stx
       let kind := stx.getKind
       if let some r := stx.getRange? true then
