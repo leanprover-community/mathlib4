@@ -3,7 +3,7 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Bryan Gin-ge Chen
 -/
-import Mathlib.Logic.Relation
+import Mathlib.Logic.Relation.Basic
 import Mathlib.Order.GaloisConnection
 
 #align_import data.setoid.basic from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"

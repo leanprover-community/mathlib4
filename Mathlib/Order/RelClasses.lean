@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
 -/
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Logic.IsEmpty
-import Mathlib.Logic.Relation
+import Mathlib.Logic.Relation.Basic
 import Mathlib.Order.Basic
 
 #align_import order.rel_classes from "leanprover-community/mathlib"@"7413128c3bcb3b0818e3e18720abc9ea3100fb49"

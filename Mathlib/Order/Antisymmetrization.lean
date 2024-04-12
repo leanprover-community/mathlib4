@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.Hom.Basic
-import Mathlib.Logic.Relation
+import Mathlib.Logic.Relation.Basic
 
 #align_import order.antisymmetrization from "leanprover-community/mathlib"@"3353f661228bd27f632c600cd1a58b874d847c90"
 

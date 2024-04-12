@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Set.Function
-import Mathlib.Logic.Relation
+import Mathlib.Logic.Relation.Basic
 import Mathlib.Logic.Pairwise
 
 #align_import data.set.pairwise.basic from "leanprover-community/mathlib"@"c4c2ed622f43768eff32608d4a0f8a6cec1c047d"

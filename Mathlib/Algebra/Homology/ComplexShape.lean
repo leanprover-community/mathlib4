@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Logic.Relation
+import Mathlib.Logic.Relation.Basic
 
 #align_import algebra.homology.complex_shape from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
