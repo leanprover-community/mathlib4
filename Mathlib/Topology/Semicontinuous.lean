@@ -457,6 +457,7 @@ variable {ι : Type*} [TopologicalSpace ι]
 theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α → γ}
     (hg : ContinuousAt g (f x)) (hf : LowerSemicontinuousWithinAt f s x) (gmon : Monotone g) :
     LowerSemicontinuousWithinAt (g ∘ f) s x := by
+  rw [lowerSemicontinuousWithinAt_iff_eventually_lt] at hf ⊢
   intro y hy
   by_cases h : ∃ l, l < f x
   · obtain ⟨z, zlt, hz⟩ : ∃ z < f x, Ioc z (f x) ⊆ g ⁻¹' Ioi y :=
@@ -511,7 +512,7 @@ theorem Continuous.comp_lowerSemicontinuous_antitone {g : γ → δ} {f : α →
 theorem LowerSemicontinuousAt.comp_continuousAt {f : α → β} {g : ι → α} {x : ι}
     (hf : LowerSemicontinuousAt f (g x)) (hg : ContinuousAt g x) :
     LowerSemicontinuousAt (fun x ↦ f (g x)) x :=
-  fun _ lt ↦ hg.eventually (hf _ lt)
+  fun _ lt ↦ hf _ <| hg.frequently lt
 
 theorem LowerSemicontinuousAt.comp_continuousAt_of_eq {f : α → β} {g : ι → α} {y : α} {x : ι}
     (hf : LowerSemicontinuousAt f y) (hg : ContinuousAt g x) (hy : g x = y) :
@@ -540,6 +541,7 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
     (hg : LowerSemicontinuousWithinAt g s x)
     (hcont : ContinuousAt (fun p : γ × γ => p.1 + p.2) (f x, g x)) :
     LowerSemicontinuousWithinAt (fun z => f z + g z) s x := by
+  rw [lowerSemicontinuousWithinAt_iff_eventually_lt] at hf hg ⊢
   intro y hy
   obtain ⟨u, v, u_open, xu, v_open, xv, h⟩ :
     ∃ u v : Set γ,
@@ -716,7 +718,8 @@ theorem lowerSemicontinuousWithinAt_ciSup {f : ι → α → δ'}
     LowerSemicontinuousWithinAt (fun x' => ⨆ i, f i x') s x := by
   cases isEmpty_or_nonempty ι
   · simpa only [iSup_of_empty'] using lowerSemicontinuousWithinAt_const
-  · intro y hy
+  · simp_rw [lowerSemicontinuousWithinAt_iff_eventually_lt] at h ⊢
+    intro y hy
     rcases exists_lt_of_lt_ciSup hy with ⟨i, hi⟩
     filter_upwards [h i y hi, bdd] with y hy hy' using hy.trans_le (le_ciSup hy' i)
 #align lower_semicontinuous_within_at_csupr lowerSemicontinuousWithinAt_ciSup
