@@ -18,9 +18,6 @@ namespace Linarith.SimplexAlgo.Gauss
 structure GaussState (n m : Nat) where
   /-- Current matrix. -/
   mat : Matrix n m
-  /-- Positions of units corresponding to basic variables in the `mat`. Used to obtain `Table` from
-  the processed matrix. -/
-  basicPositions : Array (Nat × Nat)
   /-- Current row. -/
   currentRow : Nat
   /-- Current column. -/
@@ -44,10 +41,6 @@ def incRow {n m : Nat} : GaussM n m Unit :=
 /-- Increments current column. -/
 def incCol {n m : Nat} : GaussM n m Unit :=
   modify fun s => {s with currentColumn := s.currentColumn + 1}
-
-/-- Pushes position to `basicPositions`. -/
-def pushToBasicPos {n m : Nat} (i j : Nat) : GaussM n m Unit :=
-  modify fun s => {s with basicPositions := s.basicPositions.push ⟨i, j⟩}
 
 /-- Finds the first row starting from the current column with nonzero element in current column. -/
 def findNonzeroRow {n m : Nat} : GaussM n m <| Option Nat := do
@@ -100,7 +93,6 @@ def getTableImp {n m : Nat} : GaussM n m Table := do
       let coef := (← get).mat[i]![← curCol]!
       subtractRow (← curRow) i coef
 
-    pushToBasicPos (← curRow) (← curCol)
     basic := basic.push (← curCol)
     incRow
     incCol
@@ -108,12 +100,10 @@ def getTableImp {n m : Nat} : GaussM n m Table := do
   for i in [← curCol:m] do
     free := free.push i
 
-  let mut ansData : Array (Array Rat) := #[]
-  for ⟨row, _⟩ in (← get).basicPositions do
-    let mut newRow := #[]
-    for f in free do
-      newRow := newRow.push <| -(← get).mat[row]![f]!
-    ansData := ansData.push newRow
+  let ansData : Array (Array Rat) := ← do
+    let nRows ← curRow
+    let mat := (← get).mat
+    return Array.ofFn (fun row : Fin nRows => free.map fun f => -mat[row]![f]!)
 
   return {
     free := free
@@ -129,7 +119,6 @@ ones.
 def getTable {n m : Nat} (A : Matrix n m) : Table := Id.run do
   let s : GaussState n m := {
     mat := A
-    basicPositions := #[]
     currentRow := 0
     currentColumn := 0
   }
