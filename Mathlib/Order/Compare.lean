@@ -119,21 +119,15 @@ theorem compares_iff_of_compares_impl [LinearOrder α] [Preorder β] {a b : α} 
       rwa [ho.inj (h hab)]
 #align ordering.compares_iff_of_compares_impl Ordering.compares_iff_of_compares_impl
 
-theorem swap_then (o₁ o₂) : («then» o₁ o₂).swap = o₁.swap.then o₂.swap := by
-  cases o₁ <;> rfl
-#align ordering.swap_or_else Ordering.swap_then
-
 set_option linter.deprecated false in
 @[deprecated swap_then]
 theorem swap_orElse (o₁ o₂) : (orElse o₁ o₂).swap = orElse o₁.swap o₂.swap := swap_then ..
-
-theorem then_eq_lt (o₁ o₂) : «then» o₁ o₂ = lt ↔ o₁ = lt ∨ o₁ = eq ∧ o₂ = lt := by
-  cases o₁ <;> cases o₂ <;> decide
-#align ordering.or_else_eq_lt Ordering.then_eq_lt
+#align ordering.swap_or_else Ordering.swap_then
 
 set_option linter.deprecated false in
 @[deprecated then_eq_lt]
-theorem orElse_eq_lt (o₁ o₂) : orElse o₁ o₂ = lt ↔ o₁ = lt ∨ o₁ = eq ∧ o₂ = lt := then_eq_lt ..
+theorem orElse_eq_lt (o₁ o₂) : orElse o₁ o₂ = lt ↔ o₁ = lt ∨ o₁ = eq ∧ o₂ = lt := then_eq_lt
+#align ordering.or_else_eq_lt Ordering.then_eq_lt
 
 end Ordering
 
