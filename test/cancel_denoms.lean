@@ -68,6 +68,11 @@ end
 section
 variable (a b c d : ℚ)
 
+-- inspired by automated testing
+example : (1 : ℚ) > 0 := by
+  have := 0
+  cancel_denoms
+
 example (h : a / 5 + b / 4 < c) : 4*a + 5*b < 20*c := by
   cancel_denoms at h
   exact h
