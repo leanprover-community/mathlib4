@@ -58,10 +58,10 @@ def Component.ι (j : ConnectedComponents J) : Component j ⥤ J :=
   fullSubcategoryInclusion _
 #align category_theory.component.ι CategoryTheory.Component.ι
 
-instance {j : ConnectedComponents J} : Full (Component.ι (j : ConnectedComponents J)) :=
+instance {j : ConnectedComponents J} : Functor.Full (Component.ι (j : ConnectedComponents J)) :=
   FullSubcategory.full _
 
-instance {j : ConnectedComponents J} : Faithful (Component.ι (j : ConnectedComponents J)) :=
+instance {j : ConnectedComponents J} : Functor.Faithful (Component.ι (j : ConnectedComponents J)) :=
   FullSubcategory.faithful _
 
 /-- Each connected component of the category is nonempty. -/
@@ -127,7 +127,7 @@ theorem inclusion_comp_decomposedTo (j : ConnectedComponents J) :
   rfl
 #align category_theory.inclusion_comp_decomposed_to CategoryTheory.inclusion_comp_decomposedTo
 
-instance : Full (decomposedTo J)
+instance : (decomposedTo J).Full
     where
   preimage := by
     rintro ⟨j', X, hX⟩ ⟨k', Y, hY⟩ f
@@ -145,15 +145,15 @@ instance : Full (decomposedTo J)
     subst this
     rfl
 
-instance : Faithful (decomposedTo J) where
+instance : (decomposedTo J).Faithful where
   map_injective := by
     rintro ⟨_, j, rfl⟩ ⟨_, k, hY⟩ ⟨f⟩ ⟨_⟩ rfl
     rfl
 
-instance : EssSurj (decomposedTo J) where mem_essImage j := ⟨⟨_, j, rfl⟩, ⟨Iso.refl _⟩⟩
+instance : (decomposedTo J).EssSurj where mem_essImage j := ⟨⟨_, j, rfl⟩, ⟨Iso.refl _⟩⟩
 
-instance : IsEquivalence (decomposedTo J) :=
-  Equivalence.ofFullyFaithfullyEssSurj _
+instance : (decomposedTo J).IsEquivalence :=
+  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
 
 -- Porting note: it was originally @[simps (config := { rhsMd := semireducible }) Functor]
 /-- This gives that any category is equivalent to a disjoint union of connected categories. -/

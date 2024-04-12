@@ -185,7 +185,7 @@ jobs:
 
       - name: build mathlib
         id: build
-        uses: liskin/gh-problem-matcher-wrap@v2
+        uses: liskin/gh-problem-matcher-wrap@v3
         with:
           linters: gcc
           run: |
@@ -260,7 +260,8 @@ jobs:
         run: |
           grep --after-context=1 "stdout" stdout.log && ret=0
           grep --after-context=1 "stderr" stdout.log && new=0
-          if [ "${ret}" == "0" ] || [ "${new}"  == "0" ]; then return 1; fi
+          if [ "${ret}" == "0" ] || [ "${new}"  == "0" ]; then exit 1; fi
+
       - name: check declarations in db files
         run: |
           python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
@@ -273,7 +274,7 @@ jobs:
 
       - name: test mathlib
         id: test
-        uses: liskin/gh-problem-matcher-wrap@v2
+        uses: liskin/gh-problem-matcher-wrap@v3
         with:
           linters: gcc
           run: |
@@ -282,7 +283,7 @@ jobs:
 
       - name: check for unused imports
         id: shake
-        uses: liskin/gh-problem-matcher-wrap@v2
+        uses: liskin/gh-problem-matcher-wrap@v3
         with:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
@@ -290,7 +291,7 @@ jobs:
       - name: lint mathlib
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
-        uses: liskin/gh-problem-matcher-wrap@v2
+        uses: liskin/gh-problem-matcher-wrap@v3
         with:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
