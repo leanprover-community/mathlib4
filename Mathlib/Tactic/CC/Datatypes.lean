@@ -86,7 +86,7 @@ structure CCCongrTheorem extends CongrTheorem where
 /-- Automatically generated congruence lemma based on heterogeneous equality.
 
 This returns an annotated version of the result from `Lean.Meta.mkHCongrWithArity`. -/
-def mkExtHCongrWithArity (fn : Expr) (nargs : Nat) :
+def mkCCHCongrWithArity (fn : Expr) (nargs : Nat) :
     MetaM (Option CCCongrTheorem) := do
   let eqCongr ← try mkHCongrWithArity fn nargs catch _ => return none
   let type := eqCongr.type
