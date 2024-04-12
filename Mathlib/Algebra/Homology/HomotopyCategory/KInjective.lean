@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.DerivedCategory.IsLE
+import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 import Mathlib.Algebra.Homology.ShortComplex.Ab
 import Mathlib.CategoryTheory.Triangulated.Orthogonal
 import Mathlib.CategoryTheory.Abelian.InjectiveResolution

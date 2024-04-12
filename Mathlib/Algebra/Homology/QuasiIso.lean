@@ -299,6 +299,11 @@ lemma quasiIsoAt_op_iff (φ : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology
   simp only [quasiIsoAt_iff]
   exact ShortComplex.quasiIso_opMap_iff ((shortComplexFunctor C c i).map φ)
 
+lemma quasiIsoAt_unop_iff {K L : HomologicalComplex Cᵒᵖ c} (φ : K ⟶ L) (i : ι)
+    [K.HasHomology i] [L.HasHomology i] :
+    QuasiIsoAt ((HomologicalComplex.unopFunctor _ _).map φ.op) i ↔ QuasiIsoAt φ i :=
+  (quasiIsoAt_op_iff ((HomologicalComplex.unopFunctor _ _).map φ.op) i).symm
+
 /-- The isomorphism `K.homology i ≅ L.homology i` induced by a morphism `f : K ⟶ L` such
 that `[QuasiIsoAt f i]` holds. -/
 @[simps! hom]

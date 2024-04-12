@@ -36,35 +36,22 @@ variable {ι : Type*} {c : ComplexShape ι} (e : c.Embedding (ComplexShape.up �
   [e.IsRelIff]
 
 instance (K : CochainComplex C ℤ) (n : ℤ) [K.IsStrictlyGE n] :
-    IsStrictlyGE (K.stupidTrunc e) n where
-  isZero j hj := by
-    by_cases hj' : ∃ i, e.f i = j
-    · obtain ⟨i, hi⟩ := hj'
-      exact IsZero.of_iso (K.isZero_of_isStrictlyGE n _ hj) (K.stupidTruncXIso e hi)
-    · apply K.isZero_stupidTrunc_X e _ (by simpa using hj')
+    IsStrictlyGE (K.stupidTrunc e) n := by
+  rw [isStrictlyGE_iff]
+  intro j hj
+  by_cases hj' : ∃ i, e.f i = j
+  · obtain ⟨i, hi⟩ := hj'
+    exact IsZero.of_iso (K.isZero_of_isStrictlyGE n _ hj) (K.stupidTruncXIso e hi)
+  · apply K.isZero_stupidTrunc_X e _ (by simpa using hj')
 
 instance (K : CochainComplex C ℤ) (n : ℤ) [K.IsStrictlyLE n] :
-    IsStrictlyLE (K.stupidTrunc e) n where
-  isZero j hj := by
-    by_cases hj' : ∃ i, e.f i = j
-    · obtain ⟨i, hi⟩ := hj'
-      exact IsZero.of_iso (K.isZero_of_isStrictlyLE n _ hj) (K.stupidTruncXIso e hi)
-    · apply K.isZero_stupidTrunc_X e _ (by simpa using hj')
-
--- CochainComplex.IsStrictlyGE should be an abbrev for `IsSupported`
-instance (K : CochainComplex C ℤ) (n : ℤ)
-    [K.IsStrictlySupported (ComplexShape.embeddingUpIntLE n)] :
-    K.IsStrictlyLE n where
-  isZero i hi :=
-    K.isZero_X_of_isStrictlySupported (ComplexShape.embeddingUpIntLE n) _
-      (fun j => by dsimp; omega)
-
-instance (K : CochainComplex C ℤ) (n : ℤ)
-    [K.IsStrictlySupported (ComplexShape.embeddingUpIntGE n)] :
-    K.IsStrictlyGE n where
-  isZero i hi :=
-    K.isZero_X_of_isStrictlySupported (ComplexShape.embeddingUpIntGE n) _
-      (fun j => by dsimp; omega)
+    IsStrictlyLE (K.stupidTrunc e) n := by
+  rw [isStrictlyLE_iff]
+  intro j hj
+  by_cases hj' : ∃ i, e.f i = j
+  · obtain ⟨i, hi⟩ := hj'
+    exact IsZero.of_iso (K.isZero_of_isStrictlyLE n _ hj) (K.stupidTruncXIso e hi)
+  · apply K.isZero_stupidTrunc_X e _ (by simpa using hj')
 
 end CochainComplex
 

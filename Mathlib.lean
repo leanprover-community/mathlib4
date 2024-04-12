@@ -268,6 +268,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.TruncGE
 import Mathlib.Algebra.Homology.DerivedCategory.TruncLE
 import Mathlib.Algebra.Homology.DifferentialObject
 import Mathlib.Algebra.Homology.Embedding.Basic
+import Mathlib.Algebra.Homology.Embedding.CochainComplex
 import Mathlib.Algebra.Homology.Embedding.ComplementaryTrunc
 import Mathlib.Algebra.Homology.Embedding.Extend
 import Mathlib.Algebra.Homology.Embedding.ExtendHomology
@@ -354,7 +355,6 @@ import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.Algebra.Homology.SpectralObject.Basic
 import Mathlib.Algebra.Homology.SpectralObject.Convergence
-import Mathlib.Algebra.Homology.SpectralObject.ConvergenceOld
 import Mathlib.Algebra.Homology.SpectralObject.Differentials
 import Mathlib.Algebra.Homology.SpectralObject.FirstPage
 import Mathlib.Algebra.Homology.SpectralObject.Homology

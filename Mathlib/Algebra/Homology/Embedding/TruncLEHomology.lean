@@ -34,9 +34,9 @@ end
 section
 
 variable {C : Type*} [Category C] [Abelian C]
-  (K : HomologicalComplex C c') (e : c.Embedding c') [e.IsTruncLE]
+  (K L : HomologicalComplex C c') (e : c.Embedding c') [e.IsTruncLE]
 
-@[simps]
+@[simps X₁ X₂ f]
 noncomputable def shortComplexTruncLE : ShortComplex (HomologicalComplex C c') :=
   ShortComplex.mk (K.ιTruncLE e) _ (cokernel.condition _)
 
@@ -92,7 +92,7 @@ lemma shortComplexTruncLE_X₃_isSupportedOutside :
     · obtain ⟨j', hj'⟩ := hi
       apply ((K.shortComplexTruncLE_shortExact e).homology_exact₃ (e.f i) j' hj').isZero_X₂
       · rw [← cancel_epi (homologyMap (K.ιTruncLE e) (e.f i)), comp_zero]
-        dsimp
+        dsimp [shortComplexTruncLE]
         rw [← homologyMap_comp, cokernel.condition, homologyMap_zero]
       · simp
     · have : IsIso (homologyMap (K.shortComplexTruncLE e).f (e.f i)) :=
@@ -128,6 +128,15 @@ lemma acyclic_ιTruncLE_iff_isSupportedOutside :
     · obtain ⟨i, rfl⟩ := hi'
       simpa only [exactAt_iff_of_quasiIsoAt (K.ιTruncLE e)] using hK.exactAt i
     · exact exactAt_of_isSupported _ e i' (by simpa using hi')
+
+variable {K L}
+
+lemma quasiIso_truncLEMap_iff (φ : K ⟶ L) :
+    QuasiIso (truncLEMap φ e) ↔ ∀ (i : ι) (i' : ι') (_ : e.f i = i'), QuasiIsoAt φ i' := by
+  refine' Iff.trans _ ((quasiIso_truncGEMap_iff ((opFunctor C c').map φ.op) e.op).trans _)
+  · simp only [quasiIso_iff, truncLEMap,
+      ← quasiIsoAt_unop_iff (truncGEMap ((opFunctor C c').map φ.op) e.op)]
+  · simp only [ComplexShape.Embedding.op_f, ← quasiIsoAt_op_iff φ]
 
 end
 

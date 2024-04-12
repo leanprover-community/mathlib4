@@ -1,6 +1,7 @@
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
-import Mathlib.Algebra.Homology.DerivedCategory.IsLE
+import Mathlib.Algebra.Homology.DerivedCategory.Basic
+import Mathlib.Algebra.Homology.Embedding.CochainComplex
 import Mathlib.CategoryTheory.Triangulated.Subcategory
 import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
 
@@ -42,11 +43,13 @@ def subcategoryPlus : Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) whe
     · let n₀ : ℤ := min n₁ n₃ - 1
       have := min_le_left n₁ n₃
       have := min_le_right n₁ n₃
-      have : (CochainComplex.mappingCone f).IsStrictlyGE n₀ := ⟨fun i hi => by
+      have : (CochainComplex.mappingCone f).IsStrictlyGE n₀ := by
+        rw [CochainComplex.isStrictlyGE_iff]
+        intro i hi
         simp only [CochainComplex.mappingCone.isZero_X_iff]
         constructor
         · exact CochainComplex.isZero_of_isStrictlyGE T.obj₃.as n₃ (i + 1) (by omega)
-        · exact CochainComplex.isZero_of_isStrictlyGE T.obj₁.as n₁ (i + 1) (by omega)⟩
+        · exact CochainComplex.isZero_of_isStrictlyGE T.obj₁.as n₁ (i + 1) (by omega)
       exact ⟨_,
         (CochainComplex.mappingCone f).isStrictlyGE_shift n₀ (-1) (n₀ + 1) (by omega)⟩
     · exact (shiftEquiv _ (1 : ℤ)).unitIso.app T.obj₂ ≪≫

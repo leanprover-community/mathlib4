@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.DerivedCategory.IsLE
+/-import Mathlib.Algebra.Homology.DerivedCategory.IsLE
 
 universe w v u
 
@@ -543,3 +543,4 @@ lemma right_fac_of_isStrictlyLE (X Y : CochainComplex C ℤ) (f : Q.obj X ⟶ Q.
       Q.map (CochainComplex.truncLEι X n)), IsIso.hom_inv_id_assoc, assoc, reassoc_of% eq, eq']
 
 end DerivedCategory
+-/

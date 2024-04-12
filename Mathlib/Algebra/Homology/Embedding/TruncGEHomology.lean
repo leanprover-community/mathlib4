@@ -29,8 +29,8 @@ end CategoryTheory.Limits.KernelFork
 
 namespace HomologicalComplex
 
-variable (K : HomologicalComplex C c') (e : c.Embedding c') [e.IsTruncGE]
-  [∀ i', K.HasHomology i']
+variable (K L : HomologicalComplex C c') (φ : K ⟶ L) (e : c.Embedding c') [e.IsTruncGE]
+  [∀ i', K.HasHomology i'] [∀ i', L.HasHomology i']
 
 namespace truncGE'
 
@@ -194,7 +194,7 @@ lemma quasiIso_πTruncGE_iff_isSupported :
     · rw [quasiIsoAt_iff_exactAt (K.πTruncGE e) i']
       all_goals exact exactAt_of_isSupported _ e i' (by simpa using hi')
 
-lemma acyclic_πTruncGE_iff_isSupportedOutside :
+lemma acyclic_truncGE_iff_isSupportedOutside :
     (K.truncGE e).Acyclic ↔ K.IsSupportedOutside e := by
   constructor
   · intro hK
@@ -205,5 +205,25 @@ lemma acyclic_πTruncGE_iff_isSupportedOutside :
     · obtain ⟨i, rfl⟩ := hi'
       simpa only [← exactAt_iff_of_quasiIsoAt (K.πTruncGE e)] using hK.exactAt i
     · exact exactAt_of_isSupported _ e i' (by simpa using hi')
+
+variable {K L}
+
+lemma quasiIso_truncGEMap_iff :
+    QuasiIso (truncGEMap φ e) ↔ ∀ (i : ι) (i' : ι') (_ : e.f i = i'), QuasiIsoAt φ i' := by
+  have : ∀ (i : ι) (i' : ι') (_ : e.f i = i'),
+      QuasiIsoAt (truncGEMap φ e) i' ↔ QuasiIsoAt φ i' := by
+    rintro i _ rfl
+    rw [← quasiIsoAt_iff_comp_left (K.πTruncGE e), πTruncGE_naturality φ e,
+      quasiIsoAt_iff_comp_right]
+  rw [quasiIso_iff]
+  constructor
+  · intro h i i' hi
+    simpa only [← this i i' hi] using h i'
+  · intro h i'
+    by_cases hi' : ∃ i, e.f i = i'
+    · obtain ⟨i, hi⟩ := hi'
+      simpa only [this i i' hi] using h i i' hi
+    · rw [quasiIsoAt_iff_exactAt]
+      all_goals exact exactAt_of_isSupported _ e i' (by simpa using hi')
 
 end HomologicalComplex

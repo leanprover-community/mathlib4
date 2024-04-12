@@ -68,7 +68,9 @@ def liftHomotopyCategoryPlusOfInjective (K : HomotopyCategory.Plus C)
           d_comp_d' := fun i j hij => K.obj.as.d_comp_d' i j hij }⟩
       property := by
         obtain ⟨n, hn⟩ := K.2
-        refine' ⟨n, ⟨fun i hi => _⟩⟩
+        refine' ⟨n, _⟩
+        rw [CochainComplex.isStrictlyGE_iff]
+        intro i hi
         simpa only [IsZero.iff_id_eq_zero] using
           CochainComplex.isZero_of_isStrictlyGE K.obj.as n i hi }
 

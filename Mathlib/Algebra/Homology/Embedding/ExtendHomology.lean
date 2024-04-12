@@ -1,6 +1,6 @@
 import Mathlib.Algebra.Homology.Embedding.Extend
 import Mathlib.Algebra.Homology.Embedding.Limits
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+import Mathlib.Algebra.Homology.QuasiIso
 
 open CategoryTheory Limits Category
 
@@ -336,6 +336,26 @@ lemma extendHomologyIso_inv_homologyι :
       K.homologyι j ≫ (K.extendOpcyclesIso e hj').inv := by
   simp only [← cancel_epi (K.extendHomologyIso e hj').hom,
     Iso.hom_inv_id_assoc, extendHomologyIso_hom_homologyι_assoc, Iso.hom_inv_id, comp_id]
+
+variable {K L}
+
+@[reassoc (attr := simp)]
+lemma extendCyclesIso_hom_naturality :
+    cyclesMap (extendMap φ e) j' ≫ (L.extendCyclesIso e hj').hom =
+      (K.extendCyclesIso e hj').hom ≫ cyclesMap φ j := by
+  simp [← cancel_mono (L.iCycles j), extendMap_f φ e hj']
+
+@[reassoc (attr := simp)]
+lemma extendHomologyIso_hom_naturality :
+    homologyMap (extendMap φ e) j' ≫ (L.extendHomologyIso e hj').hom =
+      (K.extendHomologyIso e hj').hom ≫ homologyMap φ j := by
+  simp [← cancel_epi ((K.extend e).homologyπ _)]
+
+lemma quasiIsoAt_extendMap_iff :
+    QuasiIsoAt (extendMap φ e) j' ↔ QuasiIsoAt φ j := by
+  simp only [quasiIsoAt_iff_isIso_homologyMap]
+  exact (MorphismProperty.RespectsIso.isomorphisms C).arrow_mk_iso_iff
+    (Arrow.isoMk (K.extendHomologyIso e hj') (L.extendHomologyIso e hj'))
 
 end
 

@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.DerivedCategory.Basic
+/-import Mathlib.Algebra.Homology.DerivedCategory.Basic
 
 open CategoryTheory Category Limits Pretriangulated Limits ZeroObject
 
@@ -294,4 +294,4 @@ instance (A : C) (n : ℤ) : IsGE ((singleFunctor C n).obj A) n := by
     ((SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostCompQIso C)).app A
   exact isGE_of_iso e.symm n
 
-end DerivedCategory
+end DerivedCategory-/

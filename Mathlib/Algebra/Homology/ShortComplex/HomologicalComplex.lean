@@ -632,6 +632,11 @@ def ExactAt := (K.sc i).Exact
 lemma exactAt_iff :
     K.ExactAt i ↔ (K.sc i).Exact := by rfl
 
+variable {K i} in
+lemma ExactAt.of_iso (hK : K.ExactAt i) {L : HomologicalComplex C c} (e : K ≅ L) : L.ExactAt i := by
+  rw [exactAt_iff] at hK ⊢
+  exact ShortComplex.exact_of_iso ((shortComplexFunctor C c i).mapIso e) hK
+
 lemma exactAt_iff' (hi : c.prev j = i) (hk : c.next j = k) :
     K.ExactAt j ↔ (K.sc' i j k).Exact :=
   ShortComplex.exact_iff_of_iso (K.isoSc' i j k hi hk)

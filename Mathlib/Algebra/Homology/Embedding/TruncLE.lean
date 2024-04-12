@@ -67,6 +67,15 @@ lemma ιTruncLE_naturality :
   rw [← Functor.map_comp, ← op_comp, πTruncGE_naturality, op_comp, Functor.map_comp]
   rfl
 
+
+instance {ι'' : Type*} {c'' : ComplexShape ι''} (e' : c''.Embedding c')
+    [K.IsStrictlySupported e'] : (K.truncLE e).IsStrictlySupported e' where
+  isZero i' hi' := ((K.op.truncGE e.op).isZero_X_of_isStrictlySupported e'.op i' hi').unop
+
+instance [K.IsStrictlySupported e] : IsIso (K.ιTruncLE e) := by
+  change IsIso ((unopFunctor _ _).map (K.op.πTruncGE e.op).op)
+  infer_instance
+
 end
 
 end HomologicalComplex

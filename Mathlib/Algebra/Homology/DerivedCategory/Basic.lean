@@ -278,6 +278,9 @@ noncomputable def singleFunctorsPostCompQIso :
       SingleFunctors.postCompIsoOfIso
         (CochainComplex.singleFunctors C) (quotientCompQhIso C)
 
+noncomputable def singleFunctorIsoCompQ (n : ℤ) :
+    singleFunctor C n ≅ CochainComplex.singleFunctor C n ⋙ Q := Iso.refl _
+
 /-noncomputable def singleFunctor (n : ℤ) : C ⥤ DerivedCategory C :=
   HomologicalComplex.single _ _ n ⋙ Q
 
@@ -428,6 +431,7 @@ noncomputable def triangleOfSESδ :
       Q.map (CochainComplex.mappingCone.triangle S.f).mor₃ ≫
       (Q.commShiftIso (1 : ℤ)).hom.app S.X₁
 
+@[simps!]
 noncomputable def triangleOfSES : Triangle (DerivedCategory C) :=
   Triangle.mk (Q.map S.f) (Q.map S.g) (triangleOfSESδ hS)
 

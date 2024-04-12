@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.DerivedCategory.IsLE
+/-import Mathlib.Algebra.Homology.DerivedCategory.IsLE
 
 open CategoryTheory Category Limits Preadditive ZeroObject
 
@@ -567,4 +567,4 @@ lemma left_fac_of_isStrictlyGE (X Y : CochainComplex C ℤ) (f : Q.obj X ⟶ Q.o
       ≫ Q.map (CochainComplex.truncGEmap s n)), assoc, IsIso.inv_hom_id, comp_id]
     simp only [eq, IsIso.inv_hom_id_assoc, eq']
 
-end DerivedCategory
+end DerivedCategory-/

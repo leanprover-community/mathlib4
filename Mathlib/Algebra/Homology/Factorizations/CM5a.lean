@@ -1,6 +1,6 @@
 import Mathlib.Algebra.Homology.Factorizations.CM5b
 import Mathlib.Algebra.Homology.HomologySequence
-import Mathlib.Algebra.Homology.DerivedCategory.TruncGE
+import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
 
@@ -811,8 +811,8 @@ instance (p : ℤ) : Injective ((I f n).X p) := by
 noncomputable def π' : (cokernel f).truncGE n ⟶ I f n :=
   (toSingleEquiv _ _ (n-1) n (by simp)).symm ⟨Injective.ι _, by
     apply IsZero.eq_of_src
-    apply isZero_truncGEX
-    linarith⟩
+    apply isZero_of_isStrictlyGE _ n
+    omega⟩
 
 instance : Mono ((π' f n).f n) := by
   simp [π', toSingleEquiv]
@@ -827,7 +827,7 @@ lemma mono_cyclesMap_π' : Mono (cyclesMap (π' f n) n) := by
 lemma mono_homologyMap_π' : Mono (homologyMap (π' f n) n) := by
   have := mono_cyclesMap_π' f n
   have := ((cokernel f).truncGE n).isIso_homologyπ (n-1) n (by simp)
-    (IsZero.eq_of_src (isZero_truncGEX _ _ _ (by linarith)) _ _)
+    (IsZero.eq_of_src (isZero_of_isStrictlyGE _ n _ (by omega)) _ _)
   have := (I f n).isIso_homologyπ  (n-1) n (by simp) (by
       apply IsZero.eq_of_src
       dsimp [I, single]
@@ -839,7 +839,7 @@ lemma mono_homologyMap_π' : Mono (homologyMap (π' f n) n) := by
   rw [← IsIso.inv_hom_id_assoc ((truncGE (cokernel f) n).homologyπ n) (homologyMap (π' f n) n)]
   infer_instance
 
-noncomputable def α : L ⟶ I f n := cokernel.π f ≫ (cokernel f).truncGEπ n ≫ π' f n
+noncomputable def α : L ⟶ I f n := cokernel.π f ≫ (cokernel f).πTruncGE n ≫ π' f n
 
 @[reassoc (attr := simp)]
 lemma f_α : f ≫ α f n = 0 := by simp [α]
@@ -857,7 +857,7 @@ lemma homologyShortComplex'_exact : (homologyShortComplex' f n).Exact := by
   let φ : homologyShortComplex f n ⟶ homologyShortComplex' f n :=
     { τ₁ := 𝟙 _
       τ₂ := 𝟙 _
-      τ₃ := homologyMap ((cokernel f).truncGEπ n ≫ π' f n) n
+      τ₃ := homologyMap ((cokernel f).πTruncGE n ≫ π' f n) n
       comm₂₃ := by
         dsimp
         rw [id_comp, ← homologyMap_comp]
@@ -868,7 +868,6 @@ lemma homologyShortComplex'_exact : (homologyShortComplex' f n).Exact := by
     dsimp
     rw [homologyMap_comp]
     have := mono_homologyMap_π' f n
-    have := (cokernel f).isIso_homologyMap_truncGEπ n n (by rfl)
     infer_instance
   rw [← ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ]
   exact homologyShortComplex_exact f n
@@ -927,7 +926,10 @@ noncomputable def cofFibFactorization : CofFibFactorization f where
 
 variable (hf : ∀ (i : ℤ) (_ : i ≤ n - 1), QuasiIsoAt f i)
 
-lemma isGE_cokernel : (cokernel f).IsGE n := ⟨fun i hi => by
+lemma isGE_cokernel : (cokernel f).IsGE n := by
+  rw [isGE_iff]
+  intro i hi
+  rw [exactAt_iff_isZero_homology]
   apply ((shortExact f).homology_exact₃ i (i+1) (by simp)).isZero_X₂
   · apply ((shortExact f).homology_exact₂ i).epi_f_iff.1
     dsimp
@@ -939,10 +941,10 @@ lemma isGE_cokernel : (cokernel f).IsGE n := ⟨fun i hi => by
     · have := hf (i+1) h
       infer_instance
     · obtain rfl : n = i + 1 := by linarith
-      infer_instance⟩
+      infer_instance
 
-lemma quasiIso_truncGEπ : QuasiIso ((cokernel f).truncGEπ n) := by
-  rw [quasiIso_truncGEπ_iff]
+lemma quasiIso_truncGEπ : QuasiIso ((cokernel f).πTruncGE n) := by
+  rw [quasiIso_πTruncGE_iff]
   exact isGE_cokernel f n hf
 
 variable [HasDerivedCategory C]
@@ -1248,10 +1250,12 @@ lemma CM5a_cof (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] [Mono f] :
   let n₀ := n - 1
   have : K.IsStrictlyGE (n₀ + 1) := K.isStrictlyGE_of_GE (n₀ + 1) (n + 1) (by omega)
   have : L.IsStrictlyGE (n₀ + 1) := L.isStrictlyGE_of_GE (n₀ + 1) n (by omega)
-  have : (CM5aCof.I f n₀).IsStrictlyGE n := ⟨fun q hq =>
-    IsZero.of_iso (L.isZero_of_isStrictlyGE n q hq) (by
+  have : (CM5aCof.I f n₀).IsStrictlyGE n := by
+    rw [isStrictlyGE_iff]
+    intro q hq
+    exact IsZero.of_iso (L.isZero_of_isStrictlyGE n q hq) (by
       have := CM5aCof.isIso_p_f f n₀ q (by omega)
-      exact asIso ((CM5aCof.p f n₀).f q))⟩
+      exact asIso ((CM5aCof.p f n₀).f q))
   exact ⟨_, inferInstance, CM5aCof.i f n₀, CM5aCof.p f n₀, inferInstance, inferInstance,
     CM5aCof.degreewiseEpiWithInjectiveKernel_p f n₀, CM5aCof.fac f n₀⟩
 
@@ -1290,9 +1294,9 @@ lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
   have : L.IsGE n := by
     have hK : K.IsGE n := inferInstance
     rw [← DerivedCategory.isGE_Q_obj_iff] at hK ⊢
-    exact DerivedCategory.isGE_of_iso (asIso (DerivedCategory.Q.map i)) n
-  have : QuasiIso (L.truncGEπ n) := by
-    rw [L.quasiIso_truncGEπ_iff n]
+    exact DerivedCategory.TStructure.t.isGE_of_iso (asIso (DerivedCategory.Q.map i)) n
+  have : QuasiIso (L.πTruncGE n) := by
+    rw [L.quasiIso_πTruncGE_iff n]
     infer_instance
   have : Injective (L.opcycles n) := by
     let S : ShortComplex C := ShortComplex.mk (L.d (n-1) n) (L.pOpcycles n) (by simp)
@@ -1310,17 +1314,16 @@ lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
     have hS : S.ShortExact :=
       { exact := S.exact_of_g_is_cokernel (L.opcyclesIsCokernel (n-1) n (by simp)) }
     exact Injective.direct_factor (hS.splittingOfInjective).s_g
-  -- note: this `i ≫ L.truncGEπ n` is a mono in degrees > n, but it may not be in degree n
-  refine' ⟨L.truncGE n, i ≫ L.truncGEπ n, inferInstance, _, inferInstance⟩
+  -- note: this `i ≫ L.πTruncGE n` is a mono in degrees > n, but it may not be in degree n
+  refine' ⟨L.truncGE n, i ≫ L.πTruncGE n, inferInstance, _, inferInstance⟩
   intro q
   by_cases h : q < n
   · apply Injective.injective_of_isZero
-    apply isZero_truncGEX
-    exact h
+    exact isZero_of_isStrictlyGE _ n _ h
   · simp only [not_lt] at h
     obtain (hq | rfl) := h.lt_or_eq
-    · exact Injective.of_iso (L.truncGEXIsoX n q hq).symm (hL q)
-    · exact Injective.of_iso (L.truncGEXIsoOpcycles n n rfl).symm inferInstance
+    · exact Injective.of_iso (L.truncGEXIso n q hq).symm (hL q)
+    · exact Injective.of_iso (L.truncGEXIsoOpcycles n).symm inferInstance
 
 section
 

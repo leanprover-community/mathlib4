@@ -1,5 +1,5 @@
 import Mathlib.Algebra.Homology.Embedding.HomEquiv
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+import Mathlib.Algebra.Homology.QuasiIso
 
 open CategoryTheory Limits ZeroObject Category
 
@@ -95,6 +95,14 @@ lemma truncGE'_d_eq_fromOpcycles {i j : ι} (hij : c.Rel i j) {i' j' : ι'}
   simp [truncGE'XIso, truncGE'XIsoOpcycles]
 
 noncomputable def truncGE : HomologicalComplex C c' := (K.truncGE' e).extend e
+
+noncomputable def truncGEXIso {i : ι} {i' : ι'} (hi' : e.f i = i') (hi : ¬ e.BoundaryGE i) :
+    (K.truncGE e).X i' ≅ K.X i' :=
+  (K.truncGE' e).extendXIso e hi' ≪≫ K.truncGE'XIso e hi' hi
+
+noncomputable def truncGEXIsoOpcycles {i : ι} {i' : ι'} (hi' : e.f i = i') (hi : e.BoundaryGE i) :
+    (K.truncGE e).X i' ≅ K.opcycles i' :=
+  (K.truncGE' e).extendXIso e hi' ≪≫ K.truncGE'XIsoOpcycles e hi' hi
 
 section
 
@@ -274,6 +282,50 @@ lemma πTruncGE_naturality :
   dsimp [truncGEMap, πTruncGE]
   rw [e.homRestrict_comp_extend, e.homRestrict_liftExtend, e.homRestrict_precomp,
     e.homRestrict_liftExtend, restrictionToTruncGE'_naturality]
+
+instance {ι'' : Type*} {c'' : ComplexShape ι''} (e' : c''.Embedding c')
+    [K.IsStrictlySupported e'] : (K.truncGE e).IsStrictlySupported e' where
+  isZero := by
+    intro i' hi'
+    by_cases hi'' : ∃ i, e.f i = i'
+    · obtain ⟨i, hi⟩ := hi''
+      by_cases hi''' : e.BoundaryGE i
+      · rw [IsZero.iff_id_eq_zero, ← cancel_epi
+          ((K.truncGE' e).extendXIso e hi ≪≫ K.truncGE'XIsoOpcycles e hi hi''').inv,
+          ← cancel_epi (HomologicalComplex.pOpcycles _ _)]
+        apply (K.isZero_X_of_isStrictlySupported e' i' hi').eq_of_src
+      · exact (K.isZero_X_of_isStrictlySupported e' i' hi').of_iso
+          ((K.truncGE' e).extendXIso e hi ≪≫ K.truncGE'XIso e hi hi''')
+    · exact (K.truncGE e).isZero_X_of_isStrictlySupported e _ (by simpa using hi'')
+
+instance [K.IsStrictlySupported e] (i : ι) : IsIso ((K.restrictionToTruncGE' e).f i) := by
+  by_cases hi : e.BoundaryGE i
+  · rw [K.restrictionToTruncGE'_f_eq_pOpcycles_iso_inv e rfl hi]
+    have : IsIso (K.pOpcycles (e.f i)) := K.isIso_pOpcycles _ _ rfl (by
+      obtain ⟨hi₁, hi₂⟩ := hi
+      apply IsZero.eq_of_src
+      apply K.isZero_X_of_isStrictlySupported e
+      intro j hj
+      apply hi₂ j
+      rw [hj]
+      exact hi₁)
+    infer_instance
+  · rw [K.restrictionToTruncGE'_f_eq_iso_inv e rfl hi]
+    infer_instance
+
+instance [K.IsStrictlySupported e] : IsIso (K.πTruncGE e) := by
+  suffices ∀ (i' : ι'), IsIso ((K.πTruncGE e).f i') by
+    apply Hom.isIso_of_components
+  intro i'
+  by_cases hn : ∃ i, e.f i = i'
+  · obtain ⟨i, hi⟩ := hn
+    dsimp [πTruncGE]
+    rw [e.isIso_liftExtend_f_iff _ _ hi]
+    infer_instance
+  · simp only [not_exists] at hn
+    refine' ⟨0, _, _⟩
+    all_goals
+      apply (isZero_X_of_isStrictlySupported _ e i' hn).eq_of_src
 
 end HomologicalComplex
 

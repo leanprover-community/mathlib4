@@ -333,8 +333,7 @@ lemma singleTriangle_distinguished :
     · dsimp [singleδ, e]
       simp only [assoc, ← Functor.map_comp, SingleFunctors.inv_hom_id_hom_app,
         SingleFunctors.postComp_functor, Functor.comp_obj]
-      erw [Functor.map_id, comp_id]
-      rfl)
+      erw [Functor.map_id, comp_id])
 
 lemma eq_singleδ_iff_distinguished
     (α : (singleFunctor C 0).obj S.X₃ ⟶

@@ -42,12 +42,7 @@ namespace Plus
 def Qh : HomotopyCategory.Plus C ⥤ Plus C :=
   t.plus.lift (HomotopyCategory.Plus.ι _ ⋙ DerivedCategory.Qh) (by
     rintro ⟨⟨X⟩, n, h⟩
-    dsimp at h
-    have : (DerivedCategory.Q.obj X).IsGE n := inferInstance
-    refine' ⟨n, ⟨_⟩⟩
-    dsimp [t]
-    change (DerivedCategory.Q.obj X).IsGE n
-    infer_instance)
+    exact ⟨n, t.isGE_of_iso ((quotientCompQhIso C).symm.app X) n⟩)
 
 noncomputable instance : (Qh : _ ⥤ Plus C).CommShift ℤ := by
   dsimp only [Qh]
@@ -79,15 +74,15 @@ instance : IsRightLocalizing (HomotopyCategory.Plus.ι C)
         K.acyclic_truncGE_iff (n - 1) n (by omega)]
       erw [HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_acyclic] at hK
       exact ⟨fun i _ => by simpa only [HomologicalComplex.exactAt_iff_isZero_homology] using hK i⟩
-    have : IsIso (L.truncGEπ n) := by
-      rw [CochainComplex.isIso_truncGEπ_iff]
+    have : IsIso (L.πTruncGE n) := by
+      rw [CochainComplex.isIso_πTruncGE_iff]
       infer_instance
-    refine' ⟨M, hM, (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map (K.truncGEπ n),
+    refine' ⟨M, hM, (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map (K.πTruncGE n),
       (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map
-        (CochainComplex.truncGEmap φ n ≫ inv (L.truncGEπ n)), _⟩
+        (CochainComplex.truncGEMap φ n ≫ inv (L.πTruncGE n)), _⟩
     erw [← (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_comp]
     congr 1
-    rw [← cancel_mono (L.truncGEπ n), CochainComplex.truncGEπ_naturality_assoc,
+    rw [← cancel_mono (L.πTruncGE n), CochainComplex.πTruncGE_naturality_assoc,
       IsIso.hom_inv_id, comp_id]
 
 variable (C)
@@ -100,15 +95,15 @@ instance : EssSurj (Qh (C := C)) := by
     ∃ (K : CochainComplex C ℤ) (_ : K.IsStrictlyGE n),
       Nonempty (DerivedCategory.Q.obj K ≅ X) from ⟨by
         rintro ⟨X, n, hn⟩
-        obtain ⟨K, hK, ⟨e⟩⟩ := this X n hn.mem
-        refine' ⟨⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, n, hK⟩,
-          ⟨Plus.ι.preimageIso e⟩⟩⟩
+        obtain ⟨K, e, h⟩ := hn.mem
+        refine' ⟨⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, n, h⟩,
+          ⟨Plus.ι.preimageIso ((quotientCompQhIso C).app _ ≪≫ e.symm)⟩⟩⟩
   intro X n hn
   have : (Q.objPreimage X).IsGE n := by
     rw [← isGE_Q_obj_iff]
-    apply isGE_of_iso (Q.objObjPreimageIso X).symm
+    apply t.isGE_of_iso (Q.objObjPreimageIso X).symm
   exact ⟨(Q.objPreimage X).truncGE n, inferInstance,
-    ⟨(asIso (Q.map ((Q.objPreimage X).truncGEπ n))).symm ≪≫ Q.objObjPreimageIso X⟩⟩
+    ⟨(asIso (Q.map ((Q.objPreimage X).πTruncGE n))).symm ≪≫ Q.objObjPreimageIso X⟩⟩
 
 instance : Qh.IsLocalization (HomotopyCategory.Plus.subcategoryAcyclic C).W :=
   isLocalization_of_isRightLocalizing (HomotopyCategory.Plus.ι C)
@@ -120,12 +115,9 @@ instance : Qh.IsLocalization (HomotopyCategory.Plus.quasiIso C) := by
 
 noncomputable def singleFunctors : SingleFunctors C (Plus C) ℤ :=
   SingleFunctors.lift (DerivedCategory.singleFunctors C) Plus.ι
-      (fun n => t.plus.lift (DerivedCategory.singleFunctor C n) (fun X => by
-        refine' ⟨n, _⟩
-        constructor
-        change ((singleFunctor C n).obj X).IsGE n
-        infer_instance))
-      (fun n => Iso.refl _)
+      (fun n => t.plus.lift (DerivedCategory.singleFunctor C n)
+      (fun _ => ⟨n, inferInstance⟩))
+      (fun _ => Iso.refl _)
 
 noncomputable abbrev singleFunctor (n : ℤ) : C ⥤ Plus C := (singleFunctors C).functor n
 
@@ -153,39 +145,50 @@ variable {C}
 abbrev TStructure.t : TStructure (DerivedCategory.Plus C) :=
   (DerivedCategory.TStructure.t (C := C)).plus.tStructure DerivedCategory.TStructure.t
 
+abbrev IsGE (X : Plus C) (n : ℤ) : Prop := Plus.TStructure.t.IsGE X n
+abbrev IsLE (X : Plus C) (n : ℤ) : Prop := Plus.TStructure.t.IsLE X n
+
 lemma isGE_ι_obj_iff (X : DerivedCategory.Plus C) (n : ℤ) :
-    DerivedCategory.TStructure.t.IsGE (ι.obj X) n ↔ TStructure.t.IsGE X n := by
+    (ι.obj X).IsGE n ↔ X.IsGE n := by
   constructor
   all_goals exact fun h => ⟨h.1⟩
 
 lemma isLE_ι_obj_iff (X : DerivedCategory.Plus C) (n : ℤ) :
-    DerivedCategory.TStructure.t.IsLE (ι.obj X) n ↔ TStructure.t.IsLE X n := by
+    (ι.obj X).IsLE n ↔ X.IsLE n := by
   constructor
   all_goals exact fun h => ⟨h.1⟩
+
+instance (X : Plus C) (n : ℤ) [X.IsGE n] : (ι.obj X).IsGE n := by
+  rw [isGE_ι_obj_iff]
+  infer_instance
+
+instance (X : Plus C) (n : ℤ) [X.IsLE n] : (ι.obj X).IsLE n := by
+  rw [isLE_ι_obj_iff]
+  infer_instance
 
 noncomputable instance : (DerivedCategory.Plus.homologyFunctor C 0).ShiftSequence  ℤ := by
   dsimp [homologyFunctor]
   infer_instance
 
-instance (X : C) (n : ℤ) : TStructure.t.IsGE ((singleFunctor C n).obj X) n := by
+instance (X : C) (n : ℤ) : ((singleFunctor C n).obj X).IsGE n := by
   rw [← isGE_ι_obj_iff]
   change DerivedCategory.TStructure.t.IsGE ((DerivedCategory.singleFunctor C n).obj X) n
   infer_instance
 
-instance (X : C) (n : ℤ) : TStructure.t.IsLE ((singleFunctor C n).obj X) n := by
+instance (X : C) (n : ℤ) : ((singleFunctor C n).obj X).IsLE n := by
   rw [← isLE_ι_obj_iff]
   change DerivedCategory.TStructure.t.IsLE ((DerivedCategory.singleFunctor C n).obj X) n
   infer_instance
 
 lemma isZero_homology_of_isGE
-    (X : DerivedCategory.Plus C) (n : ℤ) [hX : TStructure.t.IsGE X n] (i : ℤ) (hi : i < n) :
+    (X : DerivedCategory.Plus C) (n : ℤ) [X.IsGE n] (i : ℤ) (hi : i < n) :
     IsZero ((homologyFunctor C i).obj X) :=
-  hX.1.1 i hi
+  (ι.obj X).isZero_of_isGE n i hi
 
 lemma isZero_homology_of_isLE
-    (X : DerivedCategory.Plus C) (n : ℤ) [hX : TStructure.t.IsLE X n] (i : ℤ) (hi : n < i) :
+    (X : DerivedCategory.Plus C) (n : ℤ) [X.IsLE n] (i : ℤ) (hi : n < i) :
     IsZero ((homologyFunctor C i).obj X) :=
-  hX.1.1 i hi
+  (ι.obj X).isZero_of_isLE n i hi
 
 lemma isIso_iff {X Y : DerivedCategory.Plus C} (f : X ⟶ Y) :
     IsIso f ↔ ∀ (n : ℤ), IsIso ((homologyFunctor C n).map f) := by

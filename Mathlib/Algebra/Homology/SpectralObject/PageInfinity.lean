@@ -564,44 +564,6 @@ noncomputable def spectralSequencePageInfinityIso_hom
   subst hi₀ hi₃
   rfl
 
-/-lemma spectralSequence_edgeEpi_compatibility (r : ℤ) [(X.spectralSequence data).HasPage r]
-    (i₀ i₁ i₂ i₃ : ι) (hi₀ : i₀ = X.i₀ data r pq) (hi₁ : i₁ = data.i₁ pq)
-    (hi₂ : i₂ = data.i₂ pq) (hi₃ : i₃ = X.i₃ data r pq)
-    [(X.spectralSequence data).HasEdgeEpiAtFrom pq r] :
-    (X.spectralSequence data).edgeEpi pq r ≫
-    (X.spectralSequencePageInfinityIso data pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₁ i₂ hi₁ hi₂).hom ≫
-      X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ ⊥ i₀ i₁ i₂ ⊤ bot_le (X.le₀₁ data r pq hi₀ hi₁)
-      (X.le₁₂ data pq hi₁ hi₂) le_top =
-      (X.spectralSequencePageXIso data r pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃).hom ≫
-      X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ ⊤ _ _ (X.le₂₃ data r pq hi₂ hi₃) le_top := by
-  let r' := SpectralSequence.rMin (spectralSequence X data) pq
-  by_cases h : r ≤ r'
-  · convert X.spectralSequence_edgeEpiSteps_compatibility data pq _ _ h n₀ n₁ n₂ hn₁ hn₂ hn₁'
-      _ i₀ i₁ i₂ i₃ _ rfl hi₀ hi₁ hi₂ hi₃ rfl =≫
-      X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ (X.i₃ data r' pq) ⊤ _ _ _ le_top using 1
-    · rw [← (X.spectralSequence data).edgeEpiSteps_pageInfinityIso_inv' pq r r' h, assoc, assoc,
-        assoc]
-      congr 1
-      rw [EMapFourδ₁Toδ₀'_EMapFourδ₃Toδ₃']
-      sorry
-    · rw [assoc, X.EMapFourδ₄Toδ₃'_comp ]
-  · simp only [not_le] at h
-    have := (spectralSequence X data).hasEdgeMonoAtFrom_of_GE pq _ _ h.le
-    rw [(X.spectralSequence data).edgeEpi_eq_pageInfinityIso_inv pq r]
-    sorry-/
-
-/-lemma spectralSequence_edgeMono_compatibility (r : ℤ) [(X.spectralSequence data).HasPage r]
-    (i₀ i₁ i₂ i₃ : ι) (hi₀ : i₀ = X.i₀ data r pq) (hi₁ : i₁ = data.i₁ pq)
-    (hi₂ : i₂ = data.i₂ pq) (hi₃ : i₃ = X.i₃ data r pq)
-    [(X.spectralSequence data).HasEdgeMonoAtFrom pq r] :
-    X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ ⊥ i₁ i₂ i₃ ⊤ bot_le (X.le₁₂ data pq hi₁ hi₂) (X.le₂₃ data r pq hi₂ hi₃) le_top ≫
-      (X.spectralSequencePageInfinityIso data pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₁ i₂ hi₁ hi₂).inv ≫
-      (X.spectralSequence data).edgeMono pq r =
-    X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ ⊥ i₀ i₁ i₂ i₃ bot_le (X.le₀₁ data r pq hi₀ hi₁) _ _ ≫
-      (X.spectralSequencePageXIso data r pq n₀ n₁ n₂ hn₁ hn₂ hn₁'
-        i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃).inv := by
-  sorry-/
-
 end
 
 end

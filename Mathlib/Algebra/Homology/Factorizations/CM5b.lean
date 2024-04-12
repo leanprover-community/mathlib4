@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.DerivedCategory.IsLE
+import Mathlib.Algebra.Homology.Embedding.CochainComplex
 import Mathlib.Algebra.Homology.Factorizations.Basic
 
 open CategoryTheory Limits Category Preadditive ZeroObject
@@ -26,19 +26,22 @@ instance (n : ℤ) : Injective ((I K).X n) := by
   simp only [I_X]
   infer_instance
 
-instance (n : ℤ) [K.IsStrictlyGE n] : (I K).IsStrictlyGE n where
-  isZero i hi := Injective.isZero_under _ (K.isZero_of_isStrictlyGE n i hi)
+instance (n : ℤ) [K.IsStrictlyGE n] : (I K).IsStrictlyGE n := by
+  rw [isStrictlyGE_iff]
+  intro i hi
+  exact Injective.isZero_under _ (K.isZero_of_isStrictlyGE n i hi)
 
 instance (n : ℤ) [K.IsStrictlyGE (n+1)] [L.IsStrictlyGE n] :
-    (mappingCone (𝟙 (I K)) ⊞ L).IsStrictlyGE n where
-  isZero i hi := by
-    refine' IsZero.of_iso _ ((HomologicalComplex.eval C (ComplexShape.up ℤ) i).mapBiprod _ _)
-    dsimp
-    simp only [biprod.is_zero_iff, mappingCone.isZero_X_iff, I_X]
-    refine' ⟨⟨_, _⟩, L.isZero_of_isStrictlyGE n i hi⟩
-    all_goals
-      apply (I K).isZero_of_isStrictlyGE (n + 1)
-      linarith
+    (mappingCone (𝟙 (I K)) ⊞ L).IsStrictlyGE n := by
+  rw [isStrictlyGE_iff]
+  intro i hi
+  refine' IsZero.of_iso _ ((HomologicalComplex.eval C (ComplexShape.up ℤ) i).mapBiprod _ _)
+  dsimp
+  simp only [biprod.is_zero_iff, mappingCone.isZero_X_iff, I_X]
+  refine' ⟨⟨_, _⟩, L.isZero_of_isStrictlyGE n i hi⟩
+  all_goals
+    apply (I K).isZero_of_isStrictlyGE (n + 1)
+    omega
 
 noncomputable def p : mappingCone (𝟙 (I K)) ⊞ L ⟶ L := biprod.snd
 

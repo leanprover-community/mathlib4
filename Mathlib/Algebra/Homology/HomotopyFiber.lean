@@ -181,30 +181,6 @@ lemma ι_π₀ : ι ≫ π₀ = 𝟙 K := lift_π₀ _ _ _
 @[reassoc (attr := simp)]
 lemma ι_π₁ : ι ≫ π₁ = 𝟙 K := lift_π₁ _ _ _
 
-/-noncomputable def homotopyEquiv : HomotopyEquiv K (pathObject K) where
-  hom := ι
-  inv := π₀
-  homotopyHomInvId := Homotopy.ofEq (by simp)
-  homotopyInvHomId :=
-    { hom := fun i j =>
-        if hij : j + 1 = i
-        then biprod.snd ≫ (K.prevXIso j i hij).hom ≫ (biprod.inr : K ⟶ K ⊞ K).f j ≫ biprod.inl
-        else 0
-      zero := fun i j (hij : j + 1 ≠ i) => dif_neg hij
-      comm := fun i => by
-        have h : (ComplexShape.up α).Rel i (i+1) := rfl
-        rw [dNext_eq _ h, dif_pos rfl, HomotopyFiber.d_eq _ _ _ rfl]
-        by_cases hi : (ComplexShape.up α).Rel ((ComplexShape.up α).prev i) i
-        · rw [prevD_eq _ hi, dif_pos (by exact hi)]
-          apply biprod.hom_ext
-          · apply biprod.hom_ext'
-            · simp
-              sorry
-            · dsimp
-              sorry
-          · sorry
-        · sorry }-/
-
 end pathObject
 
 end

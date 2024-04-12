@@ -3,6 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-! # Embeddings of complex shapes
@@ -369,15 +370,39 @@ lemma boundaryLE_embeddingUpIntLE_iff (n : ℕ) :
       dsimp at hi
       omega
 
+lemma not_mem_range_embeddingUpIntLE_iff (n : ℤ) :
+    (∀ (i : ℕ), (embeddingUpIntLE p).f i ≠ n) ↔ p < n := by
+  constructor
+  · intro h
+    by_contra!
+    obtain ⟨k, rfl⟩:= Int.eq_add_ofNat_of_le this
+    exact (h k) (by simp)
+  · intros
+    dsimp
+    omega
+
+lemma not_mem_range_embeddingUpIntGE_iff (n : ℤ) :
+    (∀ (i : ℕ), (embeddingUpIntGE p).f i ≠ n) ↔ n < p := by
+  constructor
+  · intro h
+    by_contra!
+    obtain ⟨k, rfl⟩:= Int.eq_add_ofNat_of_le this
+    exact (h k) (by simp)
+  · intros
+    dsimp
+    omega
+
 end ComplexShape
 
-open CategoryTheory Limits
+open CategoryTheory Limits ZeroObject
 
 namespace HomologicalComplex
 
+section
+
 variable {c c'}
 variable {C : Type*} [Category C] [HasZeroMorphisms C]
-  (K : HomologicalComplex C c') (e : c.Embedding c')
+  (K L : HomologicalComplex C c') (e' : K ≅ L) (e : c.Embedding c')
 
 class IsStrictlySupported : Prop where
   isZero (i' : ι') (hi' : ∀ i, e.f i ≠ i') : IsZero (K.X i')
@@ -387,12 +412,21 @@ lemma isZero_X_of_isStrictlySupported [K.IsStrictlySupported e]
     IsZero (K.X i') :=
   IsStrictlySupported.isZero i' hi'
 
+variable {K L} in
+lemma isStrictlySupported_of_iso [K.IsStrictlySupported e] : L.IsStrictlySupported e where
+  isZero i' hi' := (K.isZero_X_of_isStrictlySupported e i' hi').of_iso
+    ((eval _ _ i').mapIso e'.symm)
+
 class IsSupported : Prop where
   exactAt (i' : ι') (hi' : ∀ i, e.f i ≠ i') : K.ExactAt i'
 
 lemma exactAt_of_isSupported [K.IsSupported e] (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
     K.ExactAt i' :=
   IsSupported.exactAt i' hi'
+
+variable {K L} in
+lemma isSupported_of_iso [K.IsSupported e] : L.IsSupported e where
+  exactAt i' hi' := (K.exactAt_of_isSupported e i' hi').of_iso e'
 
 instance [K.IsStrictlySupported e] : K.IsSupported e where
   exactAt i' hi' := by
@@ -411,6 +445,33 @@ lemma IsStrictlySupportedOutside.isSupportedOutside (h : K.IsStrictlySupportedOu
   exactAt i := by
     rw [exactAt_iff]
     exact ShortComplex.exact_of_isZero_X₂ _ (h.isZero i)
+
+instance [HasZeroObject C] : (0 : HomologicalComplex C c').IsStrictlySupported e where
+  isZero i _ := by
+    rw [IsZero.iff_id_eq_zero]
+    change (eval C c' i).map (𝟙 0) = 0
+    rw [id_zero, eval_map, zero_f]
+
+
+instance [K.IsStrictlySupported e] : K.op.IsStrictlySupported e.op where
+  isZero j hj' := (K.isZero_X_of_isStrictlySupported e j hj').op
+
+end
+
+section
+
+variable {c c'}
+variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
+  (F : C ⥤ D) [F.Additive] (K : HomologicalComplex C c') (e : c.Embedding c')
+
+instance [K.IsStrictlySupported e] :
+    ((F.mapHomologicalComplex c').obj K).IsStrictlySupported e where
+  isZero i' hi' := by
+    rw [IsZero.iff_id_eq_zero]
+    dsimp
+    rw [← F.map_id, (K.isZero_X_of_isStrictlySupported e i' hi').eq_of_src (𝟙 _) 0, F.map_zero]
+
+end
 
 end HomologicalComplex
 
