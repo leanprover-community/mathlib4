@@ -780,9 +780,6 @@ theorem getLast?_append {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?)
     exact h
 #align list.last'_append List.getLast?_append
 
-@[simp]
-theorem getLast?_reverse (l : List α) : l.reverse.getLast? = l.head? := by cases l <;> simp
-
 /-! ### getLast! -/
 
 theorem getLast!_eq_getLast_of_ne_nil [Inhabited α] {l : List α} (h : l ≠ []) :
@@ -899,6 +896,13 @@ theorem tail_append_of_ne_nil (l l' : List α) (h : l ≠ []) : (l ++ l').tail =
   · simp
 #align list.tail_append_of_ne_nil List.tail_append_of_ne_nil
 
+theorem get_eq_iff {l : List α} {n : Fin l.length} {x : α} : l.get n = x ↔ l.get? n.1 = some x := by
+  simp [get?_eq_some]
+
+theorem get_eq_get? (l : List α) (i : Fin l.length) :
+    l.get i = (l.get? i).get (by simp [get?_eq_get]) := by
+  simp [get_eq_iff]
+
 @[simp]
 theorem head_reverse_of_ne_nil {l : List α} (hl : l.reverse ≠ []) :
     l.reverse.head hl = l.getLast (by simpa [length_pos] using hl) := by
@@ -920,13 +924,6 @@ theorem subsingleton_of_tail_eq_nil {l : List α} (h : l.tail = []) : l = [] ∨
 
 theorem length_le_one_of_tail_eq_nil {l : List α} (h : l.tail = []) :
     l.length ≤ 1 := by obtain rfl | ⟨x, rfl⟩ := subsingleton_of_tail_eq_nil h <;> simp
-
-theorem get_eq_iff {l : List α} {n : Fin l.length} {x : α} : l.get n = x ↔ l.get? n.1 = some x := by
-  simp [get?_eq_some]
-
-theorem get_eq_get? (l : List α) (i : Fin l.length) :
-    l.get i = (l.get? i).get (by simp [get?_eq_get]) := by
-  simp [get_eq_iff]
 
 section deprecated
 set_option linter.deprecated false -- TODO(Mario): make replacements for theorems in this section
@@ -1095,7 +1092,8 @@ theorem Sublist.cons_cons {l₁ l₂ : List α} (a : α) (s : l₁ <+ l₂) : a 
 #align list.sublist_append_left List.sublist_append_left
 #align list.sublist_append_right List.sublist_append_right
 
-theorem sublist_cons_of_sublist (a : α) (h : l₁ <+ l₂) : l₁ <+ a :: l₂ := h.cons _
+theorem sublist_cons_of_sublist (a : α) {l₁ l₂ : List α} : l₁ <+ l₂ → l₁ <+ a :: l₂ :=
+  Sublist.cons _
 #align list.sublist_cons_of_sublist List.sublist_cons_of_sublist
 
 #align list.sublist_append_of_sublist_left List.sublist_append_of_sublist_left
@@ -1169,7 +1167,8 @@ instance decidableSublist [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable 
   | _ :: _, [] => isFalse fun h => List.noConfusion <| eq_nil_of_sublist_nil h
   | a :: l₁, b :: l₂ =>
     if h : a = b then
-      @decidable_of_decidable_of_iff _ _ (decidableSublist l₁ l₂) <| h ▸ cons_sublist_cons.symm
+      @decidable_of_decidable_of_iff _ _ (decidableSublist l₁ l₂) <|
+        h ▸ ⟨Sublist.cons_cons _, sublist_of_cons_sublist_cons⟩
     else
       @decidable_of_decidable_of_iff _ _ (decidableSublist (a :: l₁) l₂)
         ⟨sublist_cons_of_sublist _, fun s =>
@@ -1409,9 +1408,26 @@ theorem nthLe_cons_length : ∀ (x : α) (xs : List α) (n : ℕ) (h : n = xs.le
 
 theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length) :
     (l.drop n).take 1 = [l.get ⟨n, h⟩] := by
-  rw [drop_eq_get_cons h, take, take]
+  induction' l with x l ih generalizing n
+  · cases h
+  · by_cases h₁ : l = []
+    · subst h₁
+      rw [get_singleton]
+      simp only [length_cons, length_nil, Nat.lt_succ_iff, le_zero_eq] at h
+      subst h
+      simp
+    have h₂ := h
+    rw [length_cons, Nat.lt_succ_iff, le_iff_eq_or_lt] at h₂
+    cases n
+    · simp [get]
+    rw [drop, get]
+    apply ih
 
-#align list.take_one_drop_eq_of_lt_length List.take_one_drop_eq_of_lt_length
+@[deprecated take_one_drop_eq_of_lt_length]
+theorem take_one_drop_eq_of_lt_length' {l : List α} {n : ℕ} (h : n < l.length) :
+    (l.drop n).take 1 = [l.nthLe n h] := take_one_drop_eq_of_lt_length h
+#align list.take_one_drop_eq_of_lt_length List.take_one_drop_eq_of_lt_length'
+
 #align list.ext List.ext
 
 -- TODO one may rename ext in the standard library, and it is also not clear
@@ -1878,11 +1894,17 @@ theorem nthLe_take' (L : List α) {i j : ℕ} (hi : i < (L.take j).length) :
 
 @[simp]
 theorem drop_tail (l : List α) (n : ℕ) : l.tail.drop n = l.drop (n + 1) := by
-  rw [drop_add, drop_one]
+  induction' l <;> simp
 
 theorem cons_get_drop_succ {l : List α} {n} :
-    l.get n :: l.drop (n.1 + 1) = l.drop n.1 :=
-  (drop_eq_get_cons n.2).symm
+    l.get n :: l.drop (n.1 + 1) = l.drop n.1 := by
+  induction' l with hd tl hl
+  · exact absurd n.1.zero_le (not_le_of_lt (nomatch n))
+  · match n with
+    | ⟨0, _⟩ => simp [get]
+    | ⟨n+1, hn⟩ =>
+      simp only [Nat.succ_lt_succ_iff, List.length] at hn
+      simpa [List.get, List.drop] using hl
 
 @[deprecated cons_get_drop_succ] -- 2023-01-05
 theorem cons_nthLe_drop_succ {l : List α} {n : ℕ} (hn : n < l.length) :
@@ -1907,7 +1929,11 @@ set_option linter.deprecated false in
 dropping the first `i` elements. Version designed to rewrite from the big list to the small list. -/
 @[deprecated get_drop] -- 2023-01-05
 theorem nthLe_drop (L : List α) {i j : ℕ} (h : i + j < L.length) :
-    nthLe L (i + j) h = nthLe (L.drop i) j (by rw [length_drop]; omega) := get_drop ..
+    nthLe L (i + j) h = nthLe (L.drop i) j (by
+      have A : i < L.length := lt_of_le_of_lt (Nat.le.intro rfl) h
+      rw [(take_append_drop i L).symm] at h
+      simp_all only [take_append_drop, length_drop, gt_iff_lt]
+      omega) := get_drop ..
 #align list.nth_le_drop List.nthLe_drop
 
 set_option linter.deprecated false in
