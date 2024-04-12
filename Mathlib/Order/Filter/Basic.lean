@@ -1366,6 +1366,9 @@ theorem frequently_true_iff_neBot (f : Filter α) : (∃ᶠ _ in f, True) ↔ Ne
 theorem frequently_false (f : Filter α) : ¬∃ᶠ _ in f, False := by simp
 #align filter.frequently_false Filter.frequently_false
 
+lemma Frequently.out_of_const {l : Filter α} {p : Prop} (H : ∃ᶠ _x in l, p) : p :=
+  let ⟨_, h⟩ := H.exists; h
+
 @[simp]
 theorem frequently_const {f : Filter α} [NeBot f] {p : Prop} : (∃ᶠ _ in f, p) ↔ p :=
   by_cases (fun h : p => by simpa [h] ) fun h => by simp [h]

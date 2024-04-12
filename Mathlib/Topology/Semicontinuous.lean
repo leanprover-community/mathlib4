@@ -72,12 +72,6 @@ open Topology BigOperators ENNReal
 
 open Set Function Filter
 
--- MOVE ME; RENAME ME
-lemma Filter.Frequently.out_of_const {α : Type*} {l : Filter α} {p : Prop}
-    (H : ∃ᶠ _x in l, p) : p :=
-  let ⟨_, h⟩ := H.exists
-  h
-
 variable {α : Type*} [TopologicalSpace α] {β : Type*} [Preorder β] {f g : α → β} {x : α}
   {s t : Set α} {y z : β}
 
