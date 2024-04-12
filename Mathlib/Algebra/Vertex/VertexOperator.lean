@@ -170,7 +170,7 @@ theorem hasseDeriv_ncoef (k : ℕ) (A : VertexOperator R V) (n : ℤ) :
 
 theorem hasseDeriv_zero' (A : VertexOperator R V) : hasseDeriv 0 A = A := by
   ext
-  simp_all only [coeff_apply, hasseDeriv_apply, LaurentSeries.hasseDeriv_zero, LinearMap.coe_mk,
+  simp_all only [coeff_apply, hasseDeriv_apply, LaurentSeries.hasseDeriv_zero', LinearMap.coe_mk,
     AddHom.coe_mk]
   exact rfl
 

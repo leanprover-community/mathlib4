@@ -10,8 +10,8 @@ import Mathlib.Order.WellFoundedSet
 # Ordered AddTorsors
 
 This file defines ordered vector addition and proves some properties.  A motivating example is given
-by cosets `ℤ + α` of `ℤ` in a larger ring such as `ℂ`.  The order compatibility allows for a
-treatment of the `R((z))`-module structure on `(z ^ α) V((z))` for an `R`-module `V`, using the
+by cosets `ℤ + s` of `ℤ` in a larger ring such as `ℂ`.  The order compatibility allows for a
+treatment of the `R((z))`-module structure on `(z ^ s) V((z))` for an `R`-module `V`, using the
 formalism of Hahn series.
 
 ## Definitions
@@ -25,52 +25,79 @@ formalism of Hahn series.
 
 open Function
 
-variable {α β G P : Type*}
+variable {G P : Type*}
 
 /-- An ordered vector addition is a bi-monotone vector addition. -/
-class OrderedVAdd (α β : Type*) [LE α] [LE β] extends VAdd α β where
-  protected vadd_le_vadd_left : ∀ a b : β, a ≤ b → ∀ c : α, c +ᵥ a ≤ c +ᵥ b
-  protected vadd_le_vadd_right : ∀ c d : α, c ≤ d → ∀ a : β, c +ᵥ a ≤ d +ᵥ a
+class OrderedVAdd (G P : Type*) [LE G] [LE P] extends VAdd G P where
+  protected vadd_le_vadd_left : ∀ a b : P, a ≤ b → ∀ c : G, c +ᵥ a ≤ c +ᵥ b
+  protected vadd_le_vadd_right : ∀ c d : G, c ≤ d → ∀ a : P, c +ᵥ a ≤ d +ᵥ a
 
-instance OrderedAddCommMonoid.toOrderedVAdd [OrderedAddCommMonoid α] : OrderedVAdd α α where
+instance OrderedAddCommMonoid.toOrderedVAdd [OrderedAddCommMonoid G] : OrderedVAdd G G where
   vadd := (· + ·)
   vadd_le_vadd_left _ _ := add_le_add_left
   vadd_le_vadd_right _ _ h a := add_le_add_right h a
 
-instance OrderedVAdd.toCovariantClassLeft [LE α] [LE β] [OrderedVAdd α β] :
-    CovariantClass α β (· +ᵥ ·) (· ≤ ·) where
+instance OrderedVAdd.toCovariantClassLeft [LE G] [LE P] [OrderedVAdd G P] :
+    CovariantClass G P (· +ᵥ ·) (· ≤ ·) where
   elim := fun a _ _ bc ↦ OrderedVAdd.vadd_le_vadd_left _ _ bc a
+
+def TopVAdd [DecidableEq G] [DecidableEq P] [LE G] [LE P] [OrderedVAdd G P] (g : WithTop G)
+    (p : WithTop P) : WithTop P :=
+  if hg : g = ⊤ then ⊤ else
+    if hp : p = ⊤ then ⊤ else ↑((WithTop.untop g hg) +ᵥ (WithTop.untop p hp))
+
+/-!
+instance [DecidableEq G] [DecidableEq P] [LE G] [LE P] [OrderedVAdd G P] :
+    OrderedVAdd (WithTop G) (WithTop P) where
+  vadd g p := TopVAdd g p
+  vadd_le_vadd_left := by
+    intro p p' hpp' g
+    by_cases hp : p = ⊤
+    · have hp' : p' = ⊤ := by
+        rw [hp] at hpp'
+
+    sorry
+  vadd_le_vadd_right := by
+    intro g g' hgg' p
+    sorry
+-/
 
 -- lex prod instances? Pi instances?
 
 /-- A vector addition is cancellative if it is pointwise injective on the left and right. -/
-class CancelVAdd (α β : Type*) extends VAdd α β where
-  protected left_cancel : ∀ (a : α) (b c : β), a +ᵥ b = a +ᵥ c → b = c
-  protected right_cancel : ∀ (a b : α) (c : β), a +ᵥ c = b +ᵥ c → a = b
+class CancelVAdd (G P : Type*) extends VAdd G P where
+  protected left_cancel : ∀ (a : G) (b c : P), a +ᵥ b = a +ᵥ c → b = c
+  protected right_cancel : ∀ (a b : G) (c : P), a +ᵥ c = b +ᵥ c → a = b
 
 /-- An ordered cancellative vector addition is an ordered vector addition that is cancellative. -/
-class OrderedCancelVAdd (α β : Type*) [LE α] [LE β] extends
-    OrderedVAdd α β where
-  protected le_of_vadd_le_vadd_left : ∀ (a : α) (b c : β), a +ᵥ b ≤ a +ᵥ c → b ≤ c
-  protected le_of_vadd_le_vadd_right : ∀ (a b : α) (c : β), a +ᵥ c ≤ b +ᵥ c → a ≤ b
+class OrderedCancelVAdd (G P : Type*) [LE G] [LE P] extends
+    OrderedVAdd G P where
+  protected le_of_vadd_le_vadd_left : ∀ (a : G) (b c : P), a +ᵥ b ≤ a +ᵥ c → b ≤ c
+  protected le_of_vadd_le_vadd_right : ∀ (a b : G) (c : P), a +ᵥ c ≤ b +ᵥ c → a ≤ b
 
-instance OrderedCancelVAdd.toCancelVAdd [PartialOrder α] [PartialOrder β] [OrderedCancelVAdd α β] :
-    CancelVAdd α β where
+instance OrderedCancelVAdd.toCancelVAdd [PartialOrder G] [PartialOrder P] [OrderedCancelVAdd G P] :
+    CancelVAdd G P where
   left_cancel a b c h := (OrderedCancelVAdd.le_of_vadd_le_vadd_left a b c h.le).antisymm
     (OrderedCancelVAdd.le_of_vadd_le_vadd_left a c b h.ge)
   right_cancel a b c h := by
     refine (OrderedCancelVAdd.le_of_vadd_le_vadd_right a b c h.le).antisymm ?_
     exact (OrderedCancelVAdd.le_of_vadd_le_vadd_right b a c h.ge)
 
-instance OrderedCancelAddCommMonoid.toOrderedCancelVAdd [OrderedCancelAddCommMonoid α] :
-    OrderedCancelVAdd α α where
-  le_of_vadd_le_vadd_left _ _ _ := le_of_add_le_add_left
-  le_of_vadd_le_vadd_right _ _ _ := le_of_add_le_add_right
+protected def Set.vAdd [VAdd G P] : VAdd (Set G) (Set P) :=
+  ⟨image2 (· +ᵥ ·)⟩
+
+scoped[Pointwise] attribute [instance] Set.vAdd
+
+open Pointwise
+
+theorem Set.vAdd_mem_vAdd [VAdd G P] {s : Set G} {t : Set P} {a : G} {b : P} :
+    a ∈ s → b ∈ t → a +ᵥ b ∈ s +ᵥ t :=
+  Set.mem_image2_of_mem
 
 namespace VAdd
 
-theorem vAdd_lt_vAdd_of_le_of_lt [LE α] [Preorder β] [OrderedCancelVAdd α β]
-    {a b : α} {c d : β} (h₁ : a ≤ b) (h₂ : c < d) :
+theorem vAdd_lt_vAdd_of_le_of_lt [LE G] [Preorder P] [OrderedCancelVAdd G P]
+    {a b : G} {c d : P} (h₁ : a ≤ b) (h₂ : c < d) :
     a +ᵥ c < b +ᵥ d := by
   refine lt_of_le_of_lt (OrderedVAdd.vadd_le_vadd_right a b h₁ c) ?_
   refine lt_of_le_not_le (OrderedVAdd.vadd_le_vadd_left c d (le_of_lt h₂) b) ?_
@@ -79,8 +106,8 @@ theorem vAdd_lt_vAdd_of_le_of_lt [LE α] [Preorder β] [OrderedCancelVAdd α β]
   rw [@lt_iff_le_not_le] at h₂
   simp_all only [not_true_eq_false, and_false]
 
-theorem vAdd_lt_vAdd_of_lt_of_le [Preorder α] [Preorder β] [OrderedCancelVAdd α β]
-    {a b : α} {c d : β} (h₁ : a < b) (h₂ : c ≤ d) :
+theorem vAdd_lt_vAdd_of_lt_of_le [Preorder G] [Preorder P] [OrderedCancelVAdd G P]
+    {a b : G} {c d : P} (h₁ : a < b) (h₂ : c ≤ d) :
     a +ᵥ c < b +ᵥ d := by
   refine lt_of_le_of_lt (OrderedVAdd.vadd_le_vadd_left c d h₂ a) ?_
   refine lt_of_le_not_le (OrderedVAdd.vadd_le_vadd_right a b (le_of_lt h₁) d) ?_
@@ -91,9 +118,29 @@ theorem vAdd_lt_vAdd_of_lt_of_le [Preorder α] [Preorder β] [OrderedCancelVAdd 
 
 end VAdd
 
-instance (priority := 200) OrderedCancelVAdd.toContravariantClassLeLeft [LE α]
-    [LE β] [OrderedCancelVAdd α β] : ContravariantClass α β (· +ᵥ ·) (· ≤ ·) :=
+instance (priority := 200) OrderedCancelVAdd.toContravariantClassLeLeft [LE G]
+    [LE P] [OrderedCancelVAdd G P] : ContravariantClass G P (· +ᵥ ·) (· ≤ ·) :=
   ⟨OrderedCancelVAdd.le_of_vadd_le_vadd_left⟩
+
+/-- An add action is ordered and cancellative if the underlying vector addition is. -/
+class OrderedCancelAddAction (G P : Type*) [OrderedAddCommMonoid G] [LE P] extends
+    OrderedCancelVAdd G P where
+  /-- Zero is a neutral element for `+ᵥ` -/
+  protected zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p
+  /-- Associativity of `+` and `+ᵥ` -/
+  add_vadd : ∀ (g₁ g₂ : G) (p : P), g₁ + g₂ +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)
+
+instance OrderedCancelAddCommMonoid.toOrderedCancelAddAction [OrderedCancelAddCommMonoid G] :
+    OrderedCancelAddAction G G where
+  le_of_vadd_le_vadd_left _ _ _ := le_of_add_le_add_left
+  le_of_vadd_le_vadd_right _ _ _ := le_of_add_le_add_right
+  zero_vadd p := by rw [zero_vadd]
+  add_vadd g g' p := by rw [add_vadd]
+
+instance OrderedCancelAddAction.toAddAction [OrderedAddCommMonoid G] [LE P]
+    [OrderedCancelAddAction G P] : AddAction G P where
+  zero_vadd := OrderedCancelAddAction.zero_vadd
+  add_vadd := OrderedCancelAddAction.add_vadd
 
 /-- An AddTorsor is ordered if vector addition preserves and reflects order. -/
 class OrderedAddTorsor (G : outParam (Type*)) (P : Type*) [outParam <| OrderedAddCommGroup G] [LE P]
@@ -110,11 +157,11 @@ instance instOrderedAddTorsor.toOrderedCancelVAdd {G : outParam (Type*)} {P : Ty
 
 namespace VAdd
 
-variable [VAdd α β] {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {a : β} {x : α × β}
+variable [VAdd G P] {s s₁ s₂ : Set G} {t t₁ t₂ : Set P} {a : P} {x : G × P}
 
 /-- `VAdd.antidiagonal s t a` is the set of all pairs of an element in `s` and an
       element in `t` that add to `a`.-/
-def antidiagonal (s : Set α) (t : Set β) (a : β) : Set (α × β) :=
+def antidiagonal (s : Set G) (t : Set P) (a : P) : Set (G × P) :=
   { x | x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 +ᵥ x.2 = a }
 
 @[simp]
@@ -134,10 +181,10 @@ namespace vAddAntidiagonal
 
 open VAdd
 
-variable {s : Set α} {t : Set β} {a : β}
+variable {s : Set G} {t : Set P} {a : P}
 
-theorem  fst_eq_fst_iff_snd_eq_snd [CancelVAdd α β] {x y : antidiagonal s t a} :
-    (x : α × β).1 = (y : α × β).1 ↔ (x : α × β).2 = (y : α × β).2 :=
+theorem  fst_eq_fst_iff_snd_eq_snd [CancelVAdd G P] {x y : antidiagonal s t a} :
+    (x : G × P).1 = (y : G × P).1 ↔ (x : G × P).2 = (y : G × P).2 :=
   ⟨fun h =>
     CancelVAdd.left_cancel _ _ _
       (y.2.2.2.trans <| by
@@ -149,17 +196,17 @@ theorem  fst_eq_fst_iff_snd_eq_snd [CancelVAdd α β] {x y : antidiagonal s t a}
           rw [← h]
           exact x.2.2.2.symm).symm⟩
 
-variable [PartialOrder α] [PartialOrder β] [OrderedCancelVAdd α β]
+variable [PartialOrder G] [PartialOrder P] [OrderedCancelVAdd G P]
   {x y : antidiagonal s t a}
 
-theorem eq_of_fst_eq_fst (h : (x : α × β).fst = (y : α × β).fst) : x = y :=
+theorem eq_of_fst_eq_fst (h : (x : G × P).fst = (y : G × P).fst) : x = y :=
   Subtype.ext <| Prod.ext h <| fst_eq_fst_iff_snd_eq_snd.1 h
 
-theorem eq_of_snd_eq_snd (h : (x : α × β).snd = (y : α × β).snd) : x = y :=
+theorem eq_of_snd_eq_snd (h : (x : G × P).snd = (y : G × P).snd) : x = y :=
   Subtype.ext <| Prod.ext (fst_eq_fst_iff_snd_eq_snd.2 h) h
 
-theorem eq_of_fst_le_fst_of_snd_le_snd (h₁ : (x : α × β).1 ≤ (y : α × β).1)
-    (h₂ : (x : α × β).2 ≤ (y : α × β).2) : x = y :=
+theorem eq_of_fst_le_fst_of_snd_le_snd (h₁ : (x : G × P).1 ≤ (y : G × P).1)
+    (h₂ : (x : G × P).2 ≤ (y : G × P).2) : x = y :=
   eq_of_fst_eq_fst <|
     h₁.eq_of_not_lt fun hlt =>
       (vAdd_lt_vAdd_of_lt_of_le hlt h₂).ne <|
@@ -171,10 +218,10 @@ theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (antidiagonal s t a)
     hs (Prod.fst ∘ f) fun n => (mem_Antidiagonal.1 (hf n)).1
   have h2 : (antidiagonal s t a).PartiallyWellOrderedOn (Prod.snd ⁻¹'o (· ≤ ·)) := fun f hf =>
     ht (Prod.snd ∘ f) fun n => (mem_Antidiagonal.1 (hf n)).2.1
-  have isrfl : IsRefl (α × β) (Prod.fst ⁻¹'o fun x x_1 ↦ x ≤ x_1) := by
+  have isrfl : IsRefl (G × P) (Prod.fst ⁻¹'o fun x x_1 ↦ x ≤ x_1) := by
     refine { refl := ?refl }
     simp_all only [Order.Preimage, le_refl, Prod.forall, implies_true]
-  have istrns : IsTrans (α × β) (Prod.fst ⁻¹'o fun x x_1 ↦ x ≤ x_1) := by
+  have istrns : IsTrans (G × P) (Prod.fst ⁻¹'o fun x x_1 ↦ x ≤ x_1) := by
     refine { trans := ?trans }
     simp_all only [Order.Preimage, Prod.forall]
     exact fun a _ a_1 _ a_2 _ a_3 a_4 ↦ Preorder.le_trans a a_1 a_2 a_3 a_4
@@ -187,8 +234,8 @@ theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (antidiagonal s t a)
 end vAddAntidiagonal
 
 /-- The vector sum of two monotone functions is monotone. -/
-theorem Monotone.vAdd {γ : Type*} [Preorder α] [Preorder β] [Preorder γ] [OrderedVAdd α β]
-    {f : γ → α} {g : γ → β} (hf : Monotone f) (hg : Monotone g) : Monotone fun x => f x +ᵥ g x :=
+theorem Monotone.vAdd {γ : Type*} [Preorder G] [Preorder P] [Preorder γ] [OrderedVAdd G P]
+    {f : γ → G} {g : γ → P} (hf : Monotone f) (hg : Monotone g) : Monotone fun x => f x +ᵥ g x :=
   fun _ _ hab => (OrderedVAdd.vadd_le_vadd_left _ _ (hg hab) _).trans
     (OrderedVAdd.vadd_le_vadd_right _ _ (hf hab) _)
 
@@ -211,28 +258,30 @@ noncomputable def vAddAntidiagonal [PartialOrder G] [PartialOrder P] [OrderedCan
     {s : Set G} {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) (a : P) : Finset (G × P) :=
   (vAddAntidiagonal.finite_of_isPWO hs ht a).toFinset
 
+@[simp]
 theorem mem_vAddAntidiagonal :
     x ∈ vAddAntidiagonal hs ht a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 +ᵥ x.2 = a := by
   simp only [vAddAntidiagonal, Set.Finite.mem_toFinset, VAdd.antidiagonal]
   exact Set.mem_sep_iff
 
-theorem vAddAntidiagonal_mono_left (h : u ⊆ s) :
+theorem vAddAntidiagonal_mono_left {a : P} {hs : s.IsPWO} {ht : t.IsPWO} (h : u ⊆ s) :
     vAddAntidiagonal hu ht a ⊆ vAddAntidiagonal hs ht a :=
   Set.Finite.toFinset_mono <| VAdd.antidiagonal_mono_left h
 
-theorem vAddAntidiagonal_mono_right (h : v ⊆ t) :
+theorem vAddAntidiagonal_mono_right {a : P} {hs : s.IsPWO} {ht : t.IsPWO} (h : v ⊆ t) :
     vAddAntidiagonal hs hv a ⊆ vAddAntidiagonal hs ht a :=
   Set.Finite.toFinset_mono <| VAdd.antidiagonal_mono_right h
 
-theorem support_vAddAntidiagonal_subset_vAdd :
+theorem support_vAddAntidiagonal_subset_vAdd {hs : s.IsPWO} {ht : t.IsPWO} :
     { a | (vAddAntidiagonal hs ht a).Nonempty } ⊆ ((fun x ↦ x.1 +ᵥ x.2) '' s ×ˢ t) :=
   fun a ⟨b, hb⟩ => by
   rw [mem_vAddAntidiagonal] at hb
   refine (Set.mem_image (fun x ↦ x.1 +ᵥ x.2) (s ×ˢ t) a).mpr (Exists.intro b ?_)
   exact { left := { left := hb.1, right := hb.2.1}, right := hb.2.2 }
 
-theorem isPWO_support_vAddAntidiagonal : { a | (vAddAntidiagonal hs ht a).Nonempty }.IsPWO :=
-  (hs.vAdd ht).mono (support_vAddAntidiagonal_subset_vAdd hs ht)
+theorem isPWO_support_vAddAntidiagonal {hs : s.IsPWO} {ht : t.IsPWO} :
+    { a | (vAddAntidiagonal hs ht a).Nonempty }.IsPWO :=
+  (hs.vAdd ht).mono (support_vAddAntidiagonal_subset_vAdd)
 
 end
 

@@ -18,10 +18,11 @@ In this file we introduce heterogeneous vertex operators using Hahn series.
   products of the form `(X-Y)^n A(X)B(Y)` for all integers `n`, where `(X-Y)^n` is expanded as
   `X^n(1-Y/X)^n` in `R((X))((Y))`
 ## To do:
-* Incorporate CancelVAdd
+* Incorporate OrderedCancelVAdd
 * more API to make ext comparisons easier.
 * formal variable API?
 ## References
+* R. Borcherds
 * G. Mason `Vertex rings and Pierce bundles` ArXiv 1707.00328
 * A. Matsuo, K. Nagatomo `On axioms for a vertex algebra and locality of quantum fields`
   arXiv:hep-th/9706118
@@ -90,6 +91,7 @@ def HetVertexOperator.of_coeff (f : Γ → V →ₗ[R] W)
 
 end
 
+-- Change this to OrderCancelVAdd Γ Γ' !!!
 variable {Γ : Type*} [OrderedCancelAddCommMonoid Γ] {R : Type*} {V W : Type*} [CommRing R]
   [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
 
@@ -100,7 +102,7 @@ def HahnSMul (x : HahnSeries Γ R) (A : HetVertexOperator Γ R V W) :
   map_add' u v := by simp only [map_add, smul_add]
   map_smul' r v := by
     simp only [map_smul, RingHom.id_apply]
-    exact (smul_comm r x (A v)).symm
+    exact (HahnModule.smul_comm r x (A v)).symm
 
 instance instHahnModule : Module (HahnSeries Γ R) (HetVertexOperator Γ R V W) where
   smul x A := HahnSMul x A

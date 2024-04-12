@@ -603,13 +603,16 @@ theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.coeff x.order = 1) :
     simp only [hrx, sub_self, order_zero, le_refl, forall_true_left, and_self]
   have hxy : x = y + (single x.order) (x.coeff x.order) := by exact
     (sub_add_cancel x ((single (order x)) (x.coeff (order x)))).symm
+  have hxy' : x = y + leadingTerm x := by
+    rw [leadingTerm_eq]
+    exact hxy
   have hr' : ∀ (s : R), r * s = 0 → s = 0 :=
     fun s hs => by rw [← one_mul s, ← hr, mul_right_comm, hs, zero_mul]
   have hry : (single (-x.order) r * y).order = -x.order + y.order :=
     order_mul_single_of_nonzero_divisor hr' hy
   have hy' : 0 < (single (-x.order) r * y).order := by
     rw [hry, lt_neg_add_iff_lt]
-    exact order_lt_add_single_support_order hxy hy
+    exact order_lt_add_single_support_order hxy' hy
   simp only [one_minus_single_mul x y r hr hxy, order_neg]
   refine { left := le_of_lt hy', right := fun hxry => ?_ }
   rw [hxry, lt_self_iff_false] at hy'

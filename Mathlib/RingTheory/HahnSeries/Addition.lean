@@ -411,12 +411,15 @@ theorem support_subset_add_single_support : y.support ⊆ x.support := by
   · exact fun hxg => hg (Eq.mp (congrArg (fun r ↦ r = 0)
     (coeff_eq_of_not_orderTop hxy g hgx).symm) hxg)
 
-theorem orderTop_lt_add_single_support_order (hy : y ≠ 0) : x.orderTop < y.orderTop := by
+theorem orderTop_lt_add_single_support_orderTop (hy : y ≠ 0) : x.orderTop < y.orderTop := by
   refine lt_of_le_of_ne ?_ (add_leading_orderTop_ne hxy hy)
-  simp only [orderTop]
-  split <;> rename_i hz
-  · exact ((nonzero_of_nonzero_add_leading hxy hy) hz).elim
-  · exact WithTop.coe_le_coe.mpr <| Set.IsWF.min_le_min_of_subset <|
-      support_subset_add_single_support hxy
+  rw [orderTop_of_ne hy, orderTop_of_ne <| nonzero_of_nonzero_add_leading hxy hy]
+  exact WithTop.coe_le_coe.mpr <| Set.IsWF.min_le_min_of_subset <|
+    support_subset_add_single_support hxy
+
+theorem order_lt_add_single_support_order [Zero Γ] (hy : y ≠ 0) : x.order < y.order := by
+  rw [← WithTop.coe_lt_coe, order_eq_orderTop_of_ne hy, order_eq_orderTop_of_ne <|
+    nonzero_of_nonzero_add_leading hxy hy]
+  exact orderTop_lt_add_single_support_orderTop hxy hy
 
 end LeadingTerm

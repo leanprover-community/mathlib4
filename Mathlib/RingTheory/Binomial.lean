@@ -304,7 +304,7 @@ theorem descPochhammer_eq_factorial_smul_choose [NatPowAssoc R] (r : R) (n : ℕ
     smeval_comp ℤ _ _ r, add_comm_sub, smeval_add, smeval_X, npow_one]
   have h : smeval (1 - n : Polynomial ℤ) r = 1 - n := by
     rw [← C_eq_nat_cast, ← C_1, ← C_sub, smeval_C]
-    simp only [npow_zero, zsmul_eq_mul, Int.cast_sub, Int.cast_one, Int.cast_ofNat, zsmul_one]
+    simp only [npow_zero, zsmul_eq_mul, Int.cast_sub, Int.cast_one, Int.cast_Nat_cast, zsmul_one]
   rw [h, ascPochhammer_smeval_nat_int, add_comm_sub]
 
 theorem choose_zero_right' (r : R) : choose r 0 = (r + 1) ^ 0 := by
@@ -354,7 +354,7 @@ theorem descPochhammer_succ_succ_smeval {S : Type*} [NonAssocRing S] [Pow S ℕ]
   npow_one, npow_zero, one_smul, add_sub_cancel_right, sub_mul, add_mul, add_smul, one_mul]
   rw [← C_eq_nat_cast, smeval_C, npow_zero, add_comm (k • smeval (descPochhammer ℤ k) r) _,
     add_assoc, add_comm (k • smeval (descPochhammer ℤ k) r) _, ← add_assoc,  ← add_sub_assoc,
-    nsmul_eq_mul, zsmul_one, Int.cast_ofNat, sub_add_cancel, add_comm]
+    nsmul_eq_mul, zsmul_one, Int.cast_Nat_cast, sub_add_cancel, add_comm]
 
 theorem choose_succ_succ [NatPowAssoc R] (r:R) (k : ℕ) :
     choose (r+1) (Nat.succ k) = choose r k + choose r (Nat.succ k) := by
@@ -382,7 +382,7 @@ theorem choose_mul [NatPowAssoc R] (r : R) (n k : ℕ) (hkn : k ≤ n) :
     ← descPochhammer_eq_factorial_smul_choose, smul_mul_assoc]
   nth_rw 2 [← Nat.sub_add_cancel hkn]
   rw [add_comm, ← descPochhammer_mul, smeval_mul, smeval_comp, smeval_sub, smeval_X,
-    ← C_eq_nat_cast, smeval_C, npow_one, npow_zero, zsmul_one, Int.cast_ofNat, nsmul_eq_mul]
+    ← C_eq_nat_cast, smeval_C, npow_one, npow_zero, zsmul_one, Int.cast_Nat_cast, nsmul_eq_mul]
 
 theorem choose_mul' [NatPowAssoc R] (r : R) (n k : ℕ) :
     (Nat.choose (n + k) k) • choose (r + k) (n + k) = choose (r + k) k * choose r n := by

@@ -412,16 +412,18 @@ theorem zero_lt_order_of_orderTop {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (h
     0 < x.order := by
   simp_all only [orderTop, order, WithTop.coe_pos, dite_false, ne_eq, not_false_eq_true]
 
-theorem zero_le_order_of_orderTop {x : HahnSeries Γ R} (hx : 0 < x.orderTop) : 0 ≤ x.order := by
+theorem zero_le_order_of_orderTop {x : HahnSeries Γ R} (hx : 0 ≤ x.orderTop) : 0 ≤ x.order := by
   by_cases h : x = 0
   · refine le_of_eq ?_
     simp_all only [orderTop_zero, order_zero]
-  · exact le_of_lt (zero_lt_order_of_orderTop hx h)
+  · rw [order_of_ne h, ← @WithTop.coe_le_coe]
+    rw [orderTop_of_ne h] at hx
+    exact hx
 
 theorem zero_lt_orderTop_iff {x : HahnSeries Γ R} :
     0 < x.orderTop ↔ (0 ≤ x.order ∧ (x.order = 0 → x = 0)) := by
   refine { mp := fun hx => ?_, mpr := fun hx => ?_ }
-  · refine { left := zero_le_order_of_orderTop hx, right := fun hzero => ?_ }
+  · refine { left := zero_le_order_of_orderTop <| le_of_lt hx, right := fun hzero => ?_ }
     by_contra hxne
     have hxlt : 0 < x.order := zero_lt_order_of_orderTop hx hxne
     rw [hzero, lt_self_iff_false] at hxlt
@@ -433,10 +435,16 @@ theorem zero_lt_orderTop_iff {x : HahnSeries Γ R} :
       simp_all only [lt_iff_le_and_ne, dite_false, true_and]
       exact fun h => hx.right h.symm
 
-theorem leadingCoeff_eq [Zero Γ] {x : HahnSeries Γ R} : leadingCoeff x = x.coeff x.order := by
+theorem leadingCoeff_eq [Zero Γ] {x : HahnSeries Γ R} : x.leadingCoeff = x.coeff x.order := by
   by_cases h : x = 0
   · rw [h, leadingCoeff_zero, zero_coeff]
   · rw [leadingCoeff_of_ne h, order_of_ne h]
+
+theorem leadingTerm_eq [Zero Γ] {x : HahnSeries Γ R} :
+    x.leadingTerm = single x.order (x.coeff x.order) := by
+  by_cases h : x = 0
+  · rw [h, leadingTerm_zero, order_zero, zero_coeff, single_eq_zero]
+  · rw [leadingTerm_of_ne h, leadingCoeff_eq, order_of_ne h]
 
 end Order
 
