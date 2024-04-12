@@ -76,7 +76,7 @@ abbrev RBExprMap (α : Type u) := Std.RBMap Expr α compare
 abbrev RBExprSet := Std.RBSet Expr compare
 
 /-- `CongrTheorem`s equiped with additional infos used by congruence closure modules. -/
-structure ExtCongrTheorem extends CongrTheorem where
+structure CCCongrTheorem extends CongrTheorem where
   /-- If `heqResult` is true, then lemma is based on heterogeneous equality
       and the conclusion is a heterogeneous equality. -/
   heqResult : Bool := false
@@ -87,27 +87,27 @@ structure ExtCongrTheorem extends CongrTheorem where
 
 This returns an annotated version of the result from `Lean.Meta.mkHCongrWithArity`. -/
 def mkExtHCongrWithArity (fn : Expr) (nargs : Nat) :
-    MetaM (Option ExtCongrTheorem) := do
+    MetaM (Option CCCongrTheorem) := do
   let eqCongr ← try mkHCongrWithArity fn nargs catch _ => return none
   let type := eqCongr.type
   forallTelescope type fun _ type => do
     guard (type.isEq || type.isHEq)
-    let res₁ : ExtCongrTheorem :=
+    let res₁ : CCCongrTheorem :=
       { eqCongr with
         heqResult := type.isHEq
         hcongrTheorem := true }
     return some res₁
 
-/-- Keys used to find corresponding `ExtCongrTheorem`s. -/
-structure ExtCongrTheoremKey where
-  /-- The function of the given `ExtCongrTheorem`. -/
+/-- Keys used to find corresponding `CCCongrTheorem`s. -/
+structure CCCongrTheoremKey where
+  /-- The function of the given `CCCongrTheorem`. -/
   fn : Expr
   /-- The number of arguments of `fn`. -/
   nargs : Nat
   deriving BEq, Hashable
 
-/-- Caches used to find corresponding `ExtCongrTheorem`s. -/
-abbrev ExtCongrTheoremCache := Std.HashMap ExtCongrTheoremKey (Option ExtCongrTheorem)
+/-- Caches used to find corresponding `CCCongrTheorem`s. -/
+abbrev CCCongrTheoremCache := Std.HashMap CCCongrTheoremKey (Option CCCongrTheorem)
 
 /-- Configs used in congruence closure modules. -/
 structure CCConfig where
@@ -653,7 +653,7 @@ structure CCStructure extends CCState where
   acTodo : Array ACTodoEntry := #[]
   normalizer : Option CCNormalizer := none
   phandler : Option CCPropagationHandler := none
-  cache : ExtCongrTheoremCache := ∅
+  cache : CCCongrTheoremCache := ∅
   deriving Inhabited
 
 end Mathlib.Tactic.CC
