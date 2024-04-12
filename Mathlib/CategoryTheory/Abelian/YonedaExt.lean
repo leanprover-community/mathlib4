@@ -118,11 +118,15 @@ lemma isZero_Z_X_of_ge (a : ℤ) (ha : 1 ≤ a) : IsZero (E.Z.X a) := by
   · simp only [ite_true]
     exact isZero_zero _
 
-instance : E.Z.IsStrictlyLE 0 where
-  isZero a ha := E.isZero_Z_X_of_ge a (by linarith)
+instance : E.Z.IsStrictlyLE 0 := by
+  rw [CochainComplex.isStrictlyLE_iff]
+  intro a ha
+  exact E.isZero_Z_X_of_ge a (by omega)
 
-instance : E.Z.IsStrictlyGE (-n-1) where
-  isZero a ha := E.isZero_Z_X_of_le a (by linarith)
+instance : E.Z.IsStrictlyGE (-n-1) := by
+  rw [CochainComplex.isStrictlyGE_iff]
+  intro a ha
+  exact E.isZero_Z_X_of_le a (by omega)
 
 noncomputable def ZToX₁ : E.Z ⟶ (HomologicalComplex.single C (ComplexShape.up ℤ) 0).obj X₁ :=
   (HomologicalComplex.toSingleEquiv X₁ E.Z (-1) 0 (by simp)).symm
@@ -390,11 +394,16 @@ lemma compShortComplex₄_exact :
 
 def comp : IteratedExtCategory X₁ X₃ n'' where
   K := compK E E'
-  hK₀ := ⟨fun i hi => IsZero.of_iso (E'.K.isZero_of_isStrictlyGE 0 i hi)
-    (compKXIso' E E' i (by linarith))⟩
-  hK₁ := ⟨fun i hi =>
-    IsZero.of_iso (E.K.isZero_of_isStrictlyLE (n+2) (i - n' - 1) (by linarith))
-      (compKXIso E E' i (i - n' - 1) (by linarith) (by linarith))⟩
+  hK₀ := by
+    rw [CochainComplex.isStrictlyGE_iff]
+    intro i hi
+    exact IsZero.of_iso (E'.K.isZero_of_isStrictlyGE 0 i hi)
+      (compKXIso' E E' i (by linarith))
+  hK₁ := by
+    rw [CochainComplex.isStrictlyLE_iff]
+    intro i hi
+    exact IsZero.of_iso (E.K.isZero_of_isStrictlyLE (n+2) (i - n' - 1) (by linarith))
+      (compKXIso E E' i (i - n' - 1) (by linarith) (by linarith))
   hK i := by
     by_cases i ≤ n'
     · have e : (compK E E').sc' (i-1) i (i+1) ≅ E'.K.sc' (i-1) i (i+1) := by
