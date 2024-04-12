@@ -1053,8 +1053,8 @@ theorem sublist_of_cons_sublist_cons {l₁ l₂ : List α} : ∀ {a : α}, a :: 
   | _, Sublist.cons₂ _ s => s
 #align list.sublist_of_cons_sublist_cons List.sublist_of_cons_sublist_cons
 
-theorem cons_sublist_cons_iff {l₁ l₂ : List α} {a : α} : a :: l₁ <+ a :: l₂ ↔ l₁ <+ l₂ :=
-  ⟨sublist_of_cons_sublist_cons, Sublist.cons_cons _⟩
+@[deprecated] -- 2024-04-12
+alias cons_sublist_cons_iff := cons_sublist_cons
 #align list.cons_sublist_cons_iff List.cons_sublist_cons_iff
 
 #align list.append_sublist_append_left List.append_sublist_append_left

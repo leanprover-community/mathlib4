@@ -896,3 +896,16 @@ theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations :
 end Permutations
 
 end List
+
+attribute [simp] List.nil_subperm
+
+@[simp]
+theorem _root_.List.subperm_nil {α : Type*} {l : List α} : List.Subperm l [] ↔ l = [] := by
+  cases l with
+  | nil => simp
+  | cons head tail =>
+    simp only [iff_false]
+    intro h
+    have := h.length_le
+    simp only [List.length_cons, List.length_nil, Nat.succ_ne_zero, ← Nat.not_lt, Nat.zero_lt_succ,
+      not_true_eq_false] at this

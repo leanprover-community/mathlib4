@@ -3,15 +3,10 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
-import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.Data.Nat.GCD.BigOperators
-import Mathlib.Data.Nat.Interval
-import Mathlib.Tactic.IntervalCases
-import Mathlib.Algebra.GroupPower.Order
-import Mathlib.RingTheory.Int.Basic
 
 #align_import data.nat.factorization.basic from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
@@ -67,6 +62,115 @@ theorem factorization_def (n : ℕ) {p : ℕ} (pp : p.Prime) : n.factorization p
   simpa [factorization] using absurd pp
 #align nat.factorization_def Nat.factorization_def
 
+theorem le_multiplicity_iff_replicate_le_normalizedFactors' {a b : ℕ} {n : ℕ} (ha : a.Prime)
+    (hb : b ≠ 0) :
+    ↑n ≤ multiplicity a b ↔ replicate n a <+~ b.factors := by
+  rw [← multiplicity.pow_dvd_iff_le_multiplicity]
+  revert b
+  induction n with
+  | zero => simp
+  | succ n ih =>
+  intro b hb
+  constructor
+  · rintro ⟨c, rfl⟩
+    rw [Ne.def, pow_succ', mul_assoc, mul_eq_zero, not_or] at hb
+    rw [pow_succ', mul_assoc, replicate_succ, (Nat.perm_factors_mul hb.1 hb.2).subperm_left,
+      factors_prime ha, singleton_append, subperm_cons, ← ih hb.2]
+    apply Dvd.intro _ rfl
+  · rw [List.subperm_iff]
+    rintro ⟨u, hu1, hu2⟩
+    rw [← Nat.prod_factors hb, ← hu1.prod_eq]
+    have := hu2.prod_dvd_prod
+    simp only [prod_replicate] at this
+    exact this
+
+-- @[simp]
+-- theorem _root_.List.replicate_eq_nil_iff {α} [DecidableEq α] {a : α} {n : ℕ} : replicate n a = [] ↔ n = 0 := by
+--   constructor
+--   swap
+--   · rintro rfl
+--     simp
+--   contrapose
+--   intro h
+--   obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero h
+--   simp
+-- -- #find_home _root_.List.replicate_eq_nil_iff
+-- theorem _root_.List.replicate_subperm_iff_sublist_1 {α} [DecidableEq α] {a : α} {n : ℕ} {l : List α} :
+--     replicate n a <+ l ↔ n ≤ l.count a := by
+--   induction l generalizing n with
+--   | nil => simp
+--   | cons head tail ih =>
+--     by_cases hhead : head = a
+--     · simp [hhead]
+--       cases n with
+--       | zero => simp
+--       | succ n => simp [Nat.succ_eq_add_one, cons_sublist_cons, ih]
+--     · simp [count_cons, Ne.symm hhead, ← ih]
+--       constructor <;> intro h
+--       swap
+--       · apply sublist_cons_of_sublist _ h
+--       have := List.sublist_or_mem_of_sublist (l := replicate n a) (l₁ := []) (a := head) (l₂ := tail)
+--       simp [h] at this
+--       apply this.resolve_right
+--       simp [mem_replicate, hhead]
+
+-- theorem _root_.List.replicate_subperm_iff_sublist_2 {α} [DecidableEq α] {a : α} {n : ℕ} {l : List α} :
+--     replicate n a <+~ l ↔ n ≤ l.count a := by
+--   induction l generalizing n with
+--   | nil => simp
+--   | cons head tail ih =>
+--     by_cases hhead : head = a
+--     · simp [hhead]
+--       cases n with
+--       | zero => simp
+--       | succ n => simp [Nat.succ_eq_add_one, subperm_cons, ih]
+
+--     · simp [count_cons, Ne.symm hhead, ← ih]
+--       conv_rhs => rw [← subperm_cons head]
+
+--       constructor <;> intro h
+--       swap
+--       · rw [@subperm_cons] at h
+--         refine .trans h ?_
+--         apply List.Subperm.cons_right
+--         exact .refl _
+--       apply List.cons_subperm_of_not_mem_of_mem
+--       · simp [mem_replicate, hhead]
+--       · simp
+--       · exact h
+
+
+-- theorem _root_.List.replicate_subperm_iff_sublist {α} {a : α} {n : ℕ} {l : List α} :
+--     replicate n a <+ l ↔ replicate n a <+~ l := by
+--   classical
+--   rw [replicate_subperm_iff_sublist_1, replicate_subperm_iff_sublist_2]
+  -- refine ⟨List.Sublist.subperm, fun h => ?_⟩
+  -- induction l generalizing n with
+  -- | nil => simpa using h
+  -- | cons head tail ih =>
+  --   by_cases hhead : head = a
+  --   · simp [hhead]
+  --     cases n with
+  --     | zero => simp
+  --     | succ n =>
+  --       simp
+  --       rw [cons_sublist_cons]
+  --       apply ih
+  --       rw [replicate_succ, hhead] at h
+  --       rwa [@subperm_cons] at h
+  --   · apply sublist_cons_of_sublist
+  --     apply ih
+  --     rw [← subperm_cons head]
+  --     apply List.cons_subperm_of_not_mem_of_mem
+  --     · simp [mem_replicate, hhead]
+  --     · simp
+  --     · exact h
+
+-- theorem le_multiplicity_iff_replicate_le_normalizedFactors {a b : ℕ} {n : ℕ} (ha : a.Prime)
+--     (hb : b ≠ 0) :
+--     ↑n ≤ multiplicity a b ↔ replicate n a <+ b.factors := by
+--   rw [List.replicate_subperm_iff_sublist, le_multiplicity_iff_replicate_le_normalizedFactors' ha hb]
+
 /-- We can write both `n.factorization p` and `n.factors.count p` to represent the power
 of `p` in the factorization of `n`: we declare the former to be the simp-normal form. -/
 @[simp]
@@ -77,9 +181,18 @@ theorem factors_count_eq {n p : ℕ} : n.factors.count p = n.factorization p := 
     rw [count_eq_zero_of_not_mem (mt prime_of_mem_factors pp)]
     simp [factorization, pp]
   simp only [factorization, coe_mk, pp, if_true]
-  rw [← PartENat.natCast_inj, padicValNat_def' pp.ne_one hn0,
-    UniqueFactorizationMonoid.multiplicity_eq_count_normalizedFactors pp hn0.ne']
-  simp [factors_eq]
+  rw [← PartENat.natCast_inj, padicValNat_def' pp.ne_one hn0]
+  apply _root_.le_antisymm
+  · rw [le_multiplicity_iff_replicate_le_normalizedFactors' pp hn0.ne']
+    have := List.le_count_iff_replicate_sublist.mp (le_refl (n.factors.count p))
+    exact this.subperm
+  · apply PartENat.le_of_lt_add_one
+    rw [← Nat.cast_one, ← Nat.cast_add, lt_iff_not_ge, ge_iff_le, le_multiplicity_iff_replicate_le_normalizedFactors' pp hn0.ne']
+    intro h
+    have := h.count_le p
+    simp at this
+
+
 #align nat.factors_count_eq Nat.factors_count_eq
 
 theorem factorization_eq_factors_multiset (n : ℕ) :
