@@ -67,9 +67,9 @@ def quotient : HomologicalComplex V c ⥤ HomotopyCategory V c :=
   CategoryTheory.Quotient.functor _
 #align homotopy_category.quotient HomotopyCategory.quotient
 
-instance : Full (quotient V c) := Quotient.fullFunctor _
+instance : (quotient V c).Full := Quotient.fullFunctor _
 
-instance : EssSurj (quotient V c) := Quotient.essSurj_functor _
+instance : (quotient V c).EssSurj := Quotient.essSurj_functor _
 
 instance : (quotient V c).Additive where
 

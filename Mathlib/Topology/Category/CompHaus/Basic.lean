@@ -185,11 +185,11 @@ def compHausToTop : CompHaus.{u} ⥤ TopCat.{u} :=
 set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top compHausToTop
 
-instance : Full compHausToTop :=
-  show Full <| inducedFunctor _ from inferInstance
+instance : compHausToTop.Full  :=
+  show (inducedFunctor _).Full from inferInstance
 
-instance : Faithful compHausToTop :=
-  show Faithful <| inducedFunctor _ from inferInstance
+instance : compHausToTop.Faithful :=
+  show (inducedFunctor _).Faithful from inferInstance
 
 -- Porting note (#10754): Adding instance
 instance (X : CompHaus) : CompactSpace (compHausToTop.obj X) :=
@@ -199,7 +199,7 @@ instance (X : CompHaus) : CompactSpace (compHausToTop.obj X) :=
 instance (X : CompHaus) : T2Space (compHausToTop.obj X) :=
   show T2Space X.toTop from inferInstance
 
-instance CompHaus.forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget CompHaus.{u}) :=
+instance CompHaus.forget_reflectsIsomorphisms : (forget CompHaus.{u}).ReflectsIsomorphisms :=
   ⟨by intro A B f hf; exact CompHaus.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
 set_option linter.uppercaseLean3 false in
 #align CompHaus.forget_reflects_isomorphisms CompHaus.forget_reflectsIsomorphisms

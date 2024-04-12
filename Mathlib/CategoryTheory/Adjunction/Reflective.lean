@@ -33,7 +33,7 @@ variable [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E]
 /--
 A functor is *reflective*, or *a reflective inclusion*, if it is fully faithful and right adjoint.
 -/
-class Reflective (R : D ⥤ C) extends IsRightAdjoint R, Full R, Faithful R
+class Reflective (R : D ⥤ C) extends IsRightAdjoint R, R.Full, R.Faithful
 #align category_theory.reflective CategoryTheory.Reflective
 
 variable {i : D ⥤ C}
@@ -102,7 +102,7 @@ theorem mem_essImage_of_unit_isSplitMono [Reflective i] {A : C}
 
 /-- Composition of reflective functors. -/
 instance Reflective.comp (F : C ⥤ D) (G : D ⥤ E) [Reflective F] [Reflective G] :
-    Reflective (F ⋙ G) where toFaithful := Faithful.comp F G
+    Reflective (F ⋙ G) where
 #align category_theory.reflective.comp CategoryTheory.Reflective.comp
 
 /-- (Implementation) Auxiliary definition for `unitCompPartialBijective`. -/

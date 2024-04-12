@@ -339,7 +339,7 @@ def forget : MonoidalFunctor (Center C) C where
   μ X Y := 𝟙 (X.1 ⊗ Y.1)
 #align category_theory.center.forget CategoryTheory.Center.forget
 
-instance : ReflectsIsomorphisms (forget C).toFunctor where
+instance : (forget C).ReflectsIsomorphisms where
   reflects f i := by dsimp at i; change IsIso (isoMk f).hom; infer_instance
 
 end

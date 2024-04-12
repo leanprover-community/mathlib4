@@ -219,12 +219,12 @@ theorem algebra_iso_of_iso {A B : Algebra T} (f : A ⟶ B) [IsIso f.f] : IsIso f
       by aesop_cat⟩⟩
 #align category_theory.monad.algebra_iso_of_iso CategoryTheory.Monad.algebra_iso_of_iso
 
-instance forget_reflects_iso : ReflectsIsomorphisms T.forget where
+instance forget_reflects_iso : T.forget.ReflectsIsomorphisms where
   -- Porting note: Is this the right approach to introduce instances?
   reflects {_ _} f := fun [IsIso f.f] => algebra_iso_of_iso T f
 #align category_theory.monad.forget_reflects_iso CategoryTheory.Monad.forget_reflects_iso
 
-instance forget_faithful : Faithful T.forget where
+instance forget_faithful : T.forget.Faithful where
 #align category_theory.monad.forget_faithful CategoryTheory.Monad.forget_faithful
 
 /-- Given an algebra morphism whose carrier part is an epimorphism, we get an algebra epimorphism.
@@ -499,12 +499,12 @@ theorem coalgebra_iso_of_iso {A B : Coalgebra G} (f : A ⟶ B) [IsIso f.f] : IsI
       by aesop_cat⟩⟩
 #align category_theory.comonad.coalgebra_iso_of_iso CategoryTheory.Comonad.coalgebra_iso_of_iso
 
-instance forget_reflects_iso : ReflectsIsomorphisms G.forget where
+instance forget_reflects_iso : G.forget.ReflectsIsomorphisms where
   -- Porting note: Is this the right approach to introduce instances?
   reflects {_ _} f := fun [IsIso f.f] => coalgebra_iso_of_iso G f
 #align category_theory.comonad.forget_reflects_iso CategoryTheory.Comonad.forget_reflects_iso
 
-instance forget_faithful : Faithful (forget G) where
+instance forget_faithful : (forget G).Faithful where
 #align category_theory.comonad.forget_faithful CategoryTheory.Comonad.forget_faithful
 
 /-- Given a coalgebra morphism whose carrier part is an epimorphism, we get an algebra epimorphism.

@@ -179,7 +179,7 @@ then `C` is also abelian.
 -/
 def abelianOfEquivalence {C : Type u₁} [Category.{v} C] [Preadditive C] [HasFiniteProducts C]
     {D : Type u₂} [Category.{v} D] [Abelian D] (F : C ⥤ D) [Functor.PreservesZeroMorphisms F]
-    [IsEquivalence F] : Abelian C :=
+    [F.IsEquivalence] : Abelian C :=
   abelianOfAdjunction F F.inv F.asEquivalence.unitIso.symm F.asEquivalence.symm.toAdjunction
 #align category_theory.abelian_of_equivalence CategoryTheory.abelianOfEquivalence
 

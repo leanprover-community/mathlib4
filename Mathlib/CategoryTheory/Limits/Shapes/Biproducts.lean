@@ -159,15 +159,15 @@ def functoriality (G : C ⥤ D) [Functor.PreservesZeroMorphisms G] :
 
 variable (G : C ⥤ D)
 
-instance functorialityFull [Functor.PreservesZeroMorphisms G] [Full G] [Faithful G] :
-    Full (functoriality F G) where
+instance functorialityFull [G.PreservesZeroMorphisms] [G.Full] [G.Faithful] :
+    (functoriality F G).Full where
   preimage t :=
     { hom := G.preimage t.hom
       wι := fun j => G.map_injective (by simpa using t.wι j)
       wπ := fun j => G.map_injective (by simpa using t.wπ j) }
 
-instance functoriality_faithful [Functor.PreservesZeroMorphisms G] [Faithful G] :
-    Faithful (functoriality F G) where
+instance functoriality_faithful [G.PreservesZeroMorphisms] [G.Faithful] :
+    (functoriality F G).Faithful where
   map_injective {_X} {_Y} f g h :=
     BiconeMorphism.ext f g <| G.map_injective <| congr_arg BiconeMorphism.hom h
 
@@ -1252,7 +1252,7 @@ def functoriality : BinaryBicone P Q ⥤ BinaryBicone (F.obj P) (F.obj Q) where
       winl := by simp [-BinaryBiconeMorphism.winl, ← f.winl]
       winr := by simp [-BinaryBiconeMorphism.winr, ← f.winr] }
 
-instance functorialityFull [Full F] [Faithful F] : Full (functoriality P Q F) where
+instance functorialityFull [F.Full] [F.Faithful] : (functoriality P Q F).Full where
   preimage t :=
     { hom := F.preimage t.hom
       winl := F.map_injective (by simpa using t.winl)
@@ -1260,7 +1260,7 @@ instance functorialityFull [Full F] [Faithful F] : Full (functoriality P Q F) wh
       wfst := F.map_injective (by simpa using t.wfst)
       wsnd := F.map_injective (by simpa using t.wsnd) }
 
-instance functoriality_faithful [Faithful F] : Faithful (functoriality P Q F) where
+instance functoriality_faithful [F.Faithful] : (functoriality P Q F).Faithful where
   map_injective {_X} {_Y} f g h :=
     BinaryBiconeMorphism.ext f g <| F.map_injective <| congr_arg BinaryBiconeMorphism.hom h
 

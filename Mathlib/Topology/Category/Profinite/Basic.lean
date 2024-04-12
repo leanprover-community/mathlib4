@@ -141,11 +141,11 @@ def profiniteToCompHaus : Profinite ⥤ CompHaus :=
 -- deriving Full, Faithful
 #align Profinite_to_CompHaus profiniteToCompHaus
 
-instance : Full profiniteToCompHaus :=
-show Full <| inducedFunctor _ from inferInstance
+instance : profiniteToCompHaus.Full :=
+  show (inducedFunctor _).Full from inferInstance
 
-instance : Faithful profiniteToCompHaus :=
-show Faithful <| inducedFunctor _ from inferInstance
+instance : profiniteToCompHaus.Faithful :=
+  show (inducedFunctor _).Faithful from inferInstance
 
 -- Porting note: added, as it is not found otherwise.
 instance {X : Profinite} : TotallyDisconnectedSpace (profiniteToCompHaus.obj X) :=
@@ -160,11 +160,11 @@ def Profinite.toTopCat : Profinite ⥤ TopCat :=
 -- deriving Full, Faithful
 #align Profinite.to_Top Profinite.toTopCat
 
-instance : Full Profinite.toTopCat :=
-show Full <| inducedFunctor _ from inferInstance
+instance : Profinite.toTopCat.Full :=
+  show (inducedFunctor _).Full from inferInstance
 
-instance : Faithful Profinite.toTopCat :=
-show Faithful <| inducedFunctor _ from inferInstance
+instance : Profinite.toTopCat.Faithful :=
+  show (inducedFunctor _).Faithful from inferInstance
 
 @[simp]
 theorem Profinite.to_compHausToTopCat :
@@ -334,7 +334,7 @@ noncomputable def isoOfBijective (bij : Function.Bijective f) : X ≅ Y :=
   asIso f
 #align Profinite.iso_of_bijective Profinite.isoOfBijective
 
-instance forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget Profinite) := by
+instance forget_reflectsIsomorphisms : (forget Profinite).ReflectsIsomorphisms := by
   constructor
   intro A B f hf
   exact Profinite.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)

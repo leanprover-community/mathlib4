@@ -265,9 +265,9 @@ def sheafOfTypesToPresheaf : SheafOfTypes J ⥤ Cᵒᵖ ⥤ Type w where
 set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes_to_presheaf CategoryTheory.sheafOfTypesToPresheaf
 
-instance : Full (sheafOfTypesToPresheaf J) where preimage f := ⟨f⟩
+instance : (sheafOfTypesToPresheaf J).Full where preimage f := ⟨f⟩
 
-instance : Faithful (sheafOfTypesToPresheaf J) where
+instance : (sheafOfTypesToPresheaf J).Faithful where
 
 /--
 The category of sheaves on the bottom (trivial) grothendieck topology is equivalent to the category

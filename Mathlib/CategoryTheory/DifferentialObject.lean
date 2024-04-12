@@ -116,7 +116,7 @@ def forget : DifferentialObject S C ⥤ C where
   map f := f.f
 #align category_theory.differential_object.forget CategoryTheory.DifferentialObject.forget
 
-instance forget_faithful : Faithful (forget S C) where
+instance forget_faithful : (forget S C).Faithful where
 #align category_theory.differential_object.forget_faithful CategoryTheory.DifferentialObject.forget_faithful
 
 variable [(shiftFunctor C (1 : S)).PreservesZeroMorphisms]

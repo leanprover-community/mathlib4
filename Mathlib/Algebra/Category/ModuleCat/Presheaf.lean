@@ -208,7 +208,7 @@ lemma toPresheaf_map_app {P Q : PresheafOfModules R}
 
 instance : (toPresheaf R).Additive where
 
-instance : Faithful (toPresheaf R) where
+instance : (toPresheaf R).Faithful where
   map_injective {P Q} f g h := by
     ext X x
     have eq := congr_app h X

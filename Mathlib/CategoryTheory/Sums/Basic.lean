@@ -151,8 +151,8 @@ def equivalence : Sum C D ≌ Sum D C :=
     (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)))
 #align category_theory.sum.swap.equivalence CategoryTheory.Sum.Swap.equivalence
 
-instance isEquivalence : IsEquivalence (swap C D) :=
-  (by infer_instance : IsEquivalence (equivalence C D).functor)
+instance isEquivalence : (swap C D).IsEquivalence :=
+  (by infer_instance : (equivalence C D).functor.IsEquivalence)
 #align category_theory.sum.swap.is_equivalence CategoryTheory.Sum.Swap.isEquivalence
 
 /-- The double swap on `C ⊕ D` is naturally isomorphic to the identity functor. -/

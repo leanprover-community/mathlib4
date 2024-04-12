@@ -86,7 +86,7 @@ reuse the existing limit."]
 noncomputable instance Forget₂.createsLimit :
     CreatesLimit F (forget₂ GroupCat.{u} MonCat.{u}) :=
   -- Porting note: need to add `forget₂ GrpCat MonCat` reflects isomorphism
-  letI : ReflectsIsomorphisms (forget₂ GroupCat.{u} MonCat.{u}) :=
+  letI : (forget₂ GroupCat.{u} MonCat.{u}).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   createsLimitOfReflectsIso (K := F) (F := (forget₂ GroupCat.{u} MonCat.{u}))
     fun c' t =>
@@ -258,7 +258,7 @@ and then reuse the existing limit.
   and then reuse the existing limit."]
 noncomputable instance Forget₂.createsLimit :
     CreatesLimit F (forget₂ CommGroupCat GroupCat.{u}) :=
-  letI : ReflectsIsomorphisms (forget₂ CommGroupCat.{u} GroupCat.{u}) :=
+  letI : (forget₂ CommGroupCat.{u} GroupCat.{u}).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   letI : Small.{u}
       (Functor.sections ((F ⋙ forget₂ CommGroupCat GroupCat) ⋙ forget GroupCat)) :=

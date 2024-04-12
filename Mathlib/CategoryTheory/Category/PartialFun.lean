@@ -88,7 +88,7 @@ def typeToPartialFun : Type u ⥤ PartialFun where
   map_comp _ _ := PFun.coe_comp _ _
 #align Type_to_PartialFun typeToPartialFun
 
-instance : Faithful typeToPartialFun where
+instance : typeToPartialFun.Faithful where
   map_injective {_ _} := PFun.lift_injective
 
 /-- The functor which deletes the point of a pointed type. In return, this makes the maps partial.

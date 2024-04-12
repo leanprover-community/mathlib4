@@ -248,7 +248,7 @@ The `total` functor taking a graded object to the coproduct of its graded compon
 To prove this, we need to know that the coprojections into the coproduct are monomorphisms,
 which follows from the fact we have zero morphisms and decidable equality for the grading.
 -/
-instance : Faithful (total β C) where
+instance : (total β C).Faithful where
   map_injective {X Y} f g w := by
     ext i
     replace w := Sigma.ι (fun i : β => X i) i ≫= w

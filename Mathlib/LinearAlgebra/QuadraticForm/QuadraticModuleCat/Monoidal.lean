@@ -104,7 +104,7 @@ def toModuleCatMonoidalFunctor : MonoidalFunctor (QuadraticModuleCat.{u} R) (Mod
   unfold instMonoidalCategory
   exact Monoidal.fromInduced (forget₂ (QuadraticModuleCat R) (ModuleCat R)) _
 
-instance : Faithful (toModuleCatMonoidalFunctor R).toFunctor :=
+instance : (toModuleCatMonoidalFunctor R).Faithful :=
   forget₂_faithful _ _
 
 end QuadraticModuleCat
