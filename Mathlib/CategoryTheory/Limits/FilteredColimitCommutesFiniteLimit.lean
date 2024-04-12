@@ -138,7 +138,9 @@ theorem colimitLimitToLimitColimit_injective :
     -- Now it's just a calculation using `W` and `w`.
     simp only [Functor.comp_map, Limit.map_π_apply, curry_obj_map_app, swap_map]
     rw [← W _ _ (fH j), ← W _ _ (gH j)]
-    simp [w]
+    -- Porting note: had to add `Limit.map_π_apply` (which was un-tagged simp since "simp can
+    -- prove it") is this a confluence issue?
+    simp [Limit.map_π_apply, w]
 #align category_theory.limits.colimit_limit_to_limit_colimit_injective CategoryTheory.Limits.colimitLimitToLimitColimit_injective
 
 end
