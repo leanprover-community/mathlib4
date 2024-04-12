@@ -125,6 +125,7 @@ def Set.reProdIm (s t : Set ℝ) : Set ℂ :=
   re ⁻¹' s ∩ im ⁻¹' t
 #align set.re_prod_im Complex.Set.reProdIm
 
+@[inherit_doc]
 infixl:72 " ×ℂ " => Set.reProdIm
 
 theorem mem_reProdIm {z : ℂ} {s t : Set ℝ} : z ∈ s ×ℂ t ↔ z.re ∈ s ∧ z.im ∈ t :=
@@ -355,7 +356,7 @@ namespace SMul
 /-- Scalar multiplication by `R` on `ℝ` extends to `ℂ`. This is used here and in
 `Matlib.Data.Complex.Module` to transfer instances from `ℝ` to `ℂ`, but is not
 needed outside, so we make it scoped. -/
-scoped instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
+@[nolint docBlame] scoped instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
   smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
 
 end SMul
