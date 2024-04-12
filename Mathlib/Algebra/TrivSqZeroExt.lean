@@ -767,19 +767,8 @@ protected theorem inv_mul_cancel [DivisionRing R] [AddCommGroup M]
     (hx : fst x ≠ 0) : x⁻¹ * x = 1 := by
   ext
   · rw [fst_mul, fst_inv, inv_mul_cancel hx, fst_one]
-
-  have op_smul_assoc' : ∀ a : M, ∀ b c : R, (a <• b) <• c = op (b * c) •> a   := by {
-    intro a b c
-    calc
-      _ = op c •> op b •> a := by rfl
-      _ = (op c •>  op b) •> a := by rw [smul_assoc]
-      _ = (op c * op b) •> a := by rw [smul_eq_mul]
-      _ = _ := by rw [← op_mul]
-  }
-
   rw [snd_mul, snd_inv, ← smul_comm, smul_neg]
-
-  rw [op_smul_assoc', inv_mul_cancel hx, op_one, one_smul]
+  rw [op_smul_op_smul, inv_mul_cancel hx, op_one, one_smul]
   rw [add_comm, fst_inv, add_left_neg, snd_one]
 
 end Inv
