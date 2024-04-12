@@ -258,7 +258,6 @@ import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.Algebra.Homology.ConnectShortExact
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInjectives
-import Mathlib.Algebra.Homology.DerivedCategory.IsLE
 import Mathlib.Algebra.Homology.DerivedCategory.LargeExt
 import Mathlib.Algebra.Homology.DerivedCategory.Linear
 import Mathlib.Algebra.Homology.DerivedCategory.Plus
@@ -266,8 +265,6 @@ import Mathlib.Algebra.Homology.DerivedCategory.RightDerivedFunctorPlus
 import Mathlib.Algebra.Homology.DerivedCategory.SmallExt
 import Mathlib.Algebra.Homology.DerivedCategory.SpectralObject
 import Mathlib.Algebra.Homology.DerivedCategory.TStructure
-import Mathlib.Algebra.Homology.DerivedCategory.TruncGE
-import Mathlib.Algebra.Homology.DerivedCategory.TruncLE
 import Mathlib.Algebra.Homology.DifferentialObject
 import Mathlib.Algebra.Homology.Embedding.Basic
 import Mathlib.Algebra.Homology.Embedding.CochainComplex
@@ -371,13 +368,6 @@ import Mathlib.Algebra.Homology.SpectralSequence.Examples.OfTStructure
 import Mathlib.Algebra.Homology.SpectralSequence.LowDegreesExactSequence
 import Mathlib.Algebra.Homology.SpectralSequence.PageInfinity
 import Mathlib.Algebra.Homology.SpectralSequence.ZTilde
-import Mathlib.Algebra.Homology.SpectralSequenceOld.Basic
-import Mathlib.Algebra.Homology.SpectralSequenceOld.Construction
-import Mathlib.Algebra.Homology.SpectralSequenceOld.Examples.Grothendieck
-import Mathlib.Algebra.Homology.SpectralSequenceOld.Examples.OfTStructure
-import Mathlib.Algebra.Homology.SpectralSequenceOld.LowDegreesExactSequence
-import Mathlib.Algebra.Homology.SpectralSequenceOld.SpectralObject
-import Mathlib.Algebra.Homology.SpectralSequenceOld.ZTilde
 import Mathlib.Algebra.Homology.TotalComplex
 import Mathlib.Algebra.Homology.TotalComplexShift
 import Mathlib.Algebra.Homology.TotalComplexSymmetry
@@ -1666,7 +1656,6 @@ import Mathlib.CategoryTheory.Triangulated.Orthogonal
 import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 import Mathlib.CategoryTheory.Triangulated.Rotate
 import Mathlib.CategoryTheory.Triangulated.SpectralObject
-import Mathlib.CategoryTheory.Triangulated.SpectralObjectOld
 import Mathlib.CategoryTheory.Triangulated.Subcategory
 import Mathlib.CategoryTheory.Triangulated.TStructure.AbelianSubcategory
 import Mathlib.CategoryTheory.Triangulated.TStructure.AbstractSpectralObject

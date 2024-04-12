@@ -18,7 +18,7 @@ def localizerMorphismOfIsCompatibleWithShift :
   map _ _ f hf := (IsCompatibleWithShift.iff W f a).2 hf
 
 noncomputable instance :
-    IsEquivalence (W.localizerMorphismOfIsCompatibleWithShift a).functor := by
+    (W.localizerMorphismOfIsCompatibleWithShift a).functor.IsEquivalence := by
   dsimp
   infer_instance
 

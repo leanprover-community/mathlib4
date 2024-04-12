@@ -28,7 +28,7 @@ namespace IsRightDerivabilityStructure
 variable {D₁ D₂ : Type*} [Category D₁] [Category D₂]
   (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
   (F : D₁ ⥤ D₂)
-  [Full F] [Faithful F] [W₁.IsMultiplicative] [W₂.ContainsIdentities]
+  [F.Full] [F.Faithful] [W₁.IsMultiplicative] [W₂.ContainsIdentities]
   [∀ X₂, IsConnected (Φ.RightResolution X₂)]
   [HasRightResolutions Φ.arrow]
 

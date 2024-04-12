@@ -19,7 +19,7 @@ namespace LocalizerMorphism
 variable (Φ : LocalizerMorphism W₁ W₂) [Φ.IsRightDerivabilityStructure]
   [Φ.arrow.HasRightResolutions]
   (F : C₂ ⥤ H) (hF : W₁.IsInvertedBy (Φ.functor ⋙ F))
-  (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂] [EssSurj L₂.mapArrow]
+  (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂] [L₂.mapArrow.EssSurj]
   (RF : D₂ ⥤ H) (α : F ⟶ L₂ ⋙ RF) [RF.IsRightDerivedFunctor α W₂]
   [HasShift C₁ ℤ] [HasShift C₂ ℤ] [HasShift D₂ ℤ] [HasShift H ℤ]
   [HasZeroObject C₁] [HasZeroObject C₂] [HasZeroObject D₂] [HasZeroObject H]

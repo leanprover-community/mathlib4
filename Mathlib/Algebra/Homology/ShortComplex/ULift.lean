@@ -29,13 +29,13 @@ def addEquivULiftFunctorObj (X : AddCommGroupCat.{v'}) :
 
 instance : uliftFunctor.{v, v'}.Additive where
 
-instance : Faithful uliftFunctor.{v, v'} where
+instance : uliftFunctor.{v, v'}.Faithful where
   map_injective {G₁ G₂} f g h := by
     ext x
     change (uliftFunctor.{v, v'}.map f ⟨x⟩).down = (uliftFunctor.{v, v'}.map g ⟨x⟩).down
     rw [h]
 
-instance : Full uliftFunctor.{v, v'} where
+instance : uliftFunctor.{v, v'}.Full where
   preimage {X Y} f := AddMonoidHom.mk' (fun x => (f ⟨x⟩).down) (by
     rintro a b
     dsimp

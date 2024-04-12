@@ -215,21 +215,21 @@ lemma map'_comp {X Y Z : C} {p q r : M} (h : p + q = r)
     · rw [← γhmul_assoc_of_first_degree_eq_zero]
   rw [mk₀_comp, e₂.hom_inv_id, ← one_eq, one_γhmul]
 
-def mapEquiv (X Y : C) (m : M) (F : C ⥤ D) [F.CommShift M] [Full F] [Faithful F] :
+def mapEquiv (X Y : C) (m : M) (F : C ⥤ D) [F.CommShift M] [F.Full] [F.Faithful] :
     ShiftedHom M X Y m ≃ ShiftedHom M (F.obj X) (F.obj Y) m where
   toFun x := x.map F
   invFun y := F.preimage (y ≫ (F.commShiftIso m).inv.app Y)
   left_inv x := by simp [map]
   right_inv y := by simp [map]
 
-def mapAddEquiv (X Y : C) (m : M)  (F : C ⥤ D) [F.CommShift M] [Full F] [Faithful F]
+def mapAddEquiv (X Y : C) (m : M)  (F : C ⥤ D) [F.CommShift M] [F.Full] [F.Faithful]
     [Preadditive C] [Preadditive D] [F.Additive] :
     ShiftedHom M X Y m ≃+ ShiftedHom M (F.obj X) (F.obj Y) m where
   toEquiv := mapEquiv X Y m F
   map_add' _ _ := map_add _ _ _
 
 noncomputable def map'Equiv (F : C ⥤ D) {X Y : C} {X' Y' : D}
-    (e₁ : F.obj X ≅ X') (e₂ : F.obj Y ≅ Y') (m : M) [F.CommShift M] [Full F] [Faithful F] :
+    (e₁ : F.obj X ≅ X') (e₂ : F.obj Y ≅ Y') (m : M) [F.CommShift M] [F.Full] [F.Faithful] :
     ShiftedHom M X Y m ≃ ShiftedHom M X' Y' m where
   toFun x := x.map' F e₁ e₂
   invFun y := (mapEquiv X Y m F).symm ((mk₀ e₁.hom (0 : M) rfl) •[zero_add m] (y •[add_zero m] (mk₀ e₂.inv (0 : M) rfl)))
@@ -253,7 +253,7 @@ noncomputable def map'Equiv (F : C ⥤ D) {X Y : C} {X' Y' : D}
     apply (mapEquiv X Y m F).apply_symm_apply
 
 noncomputable def map'AddEquiv (F : C ⥤ D) {X Y : C} {X' Y' : D}
-    (e₁ : F.obj X ≅ X') (e₂ : F.obj Y ≅ Y') (m : M) [F.CommShift M] [Full F] [Faithful F]
+    (e₁ : F.obj X ≅ X') (e₂ : F.obj Y ≅ Y') (m : M) [F.CommShift M] [F.Full] [F.Faithful]
     [Preadditive C] [Preadditive D] [F.Additive]
     [∀ (a : M), (shiftFunctor D a).Additive] :
     ShiftedHom M X Y m ≃+ ShiftedHom M X' Y' m where

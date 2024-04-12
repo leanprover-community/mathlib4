@@ -171,7 +171,7 @@ noncomputable def isEquivalenceFullSubcategoryLift (S : Set D) (hi : i.essImage 
     rw [← hi] at hX
     obtain ⟨Y, ⟨e⟩⟩ := hX
     exact ⟨Y, ⟨(fullSubcategoryInclusion S).preimageIso e⟩⟩⟩
-  apply Equivalence.ofFullyFaithfullyEssSurj
+  apply Functor.IsEquivalence.ofFullyFaithfullyEssSurj
 
 end Functor
 

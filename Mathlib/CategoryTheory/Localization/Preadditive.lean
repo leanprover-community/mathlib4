@@ -89,7 +89,7 @@ section
 
 variable (J : Type _)
 
-noncomputable def preservesLimitsOfShapeDiscreteOfComp (F : C ⥤ D) (G : D ⥤ E) [EssSurj F]
+noncomputable def preservesLimitsOfShapeDiscreteOfComp (F : C ⥤ D) (G : D ⥤ E) [F.EssSurj]
     [PreservesLimitsOfShape (Discrete J) F] [HasLimitsOfShape (Discrete J) C]
     [PreservesLimitsOfShape (Discrete J) (F ⋙ G)] :
     PreservesLimitsOfShape (Discrete J) G where
@@ -101,7 +101,7 @@ noncomputable def preservesLimitsOfShapeDiscreteOfComp (F : C ⥤ D) (G : D ⥤ 
       exact preservesLimitOfPreservesLimitCone (isLimitOfPreserves F c.2) (isLimitOfPreserves (F ⋙ G) c.2)
     exact preservesLimitOfIsoDiagram G e
 
-lemma preservesFiniteProductsOfComp (F : C ⥤ D) (G : D ⥤ E) [EssSurj F] [HasFiniteProducts C]
+lemma preservesFiniteProductsOfComp (F : C ⥤ D) (G : D ⥤ E) [F.EssSurj] [HasFiniteProducts C]
     [PreservesFiniteProducts F] [PreservesFiniteProducts (F ⋙ G)] :
     PreservesFiniteProducts G where
   preserves J _ := by

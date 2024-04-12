@@ -391,8 +391,8 @@ instance : Category S.category := FullSubcategory.category _
 
 def ι : S.category ⥤ C := fullSubcategoryInclusion _
 
-instance : Full S.ι := FullSubcategory.full _
-instance : Faithful S.ι := FullSubcategory.faithful _
+instance : S.ι.Full := FullSubcategory.full _
+instance : S.ι.Faithful := FullSubcategory.faithful _
 
 instance : Preadditive S.category := by
   dsimp [category]
@@ -466,7 +466,7 @@ section
 
 variable {D : Type*} [Category D] [HasZeroObject D] [Preadditive D]
     [HasShift D ℤ] [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
-    (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] [Full F]
+    (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] [F.Full]
 
 -- note: does not require `[Faithful F]` !
 
@@ -502,11 +502,11 @@ lemma lift_comp_inclusion_eq : S.lift F hF ⋙ S.ι = F :=
 
 def liftCompInclusion : S.lift F hF ⋙ S.ι ≅ F := Iso.refl _
 
-instance [Faithful F] : Faithful (S.lift F hF) :=
-  Faithful.of_comp_iso (S.liftCompInclusion F hF)
+instance [F.Faithful] : (S.lift F hF).Faithful :=
+  Functor.Faithful.of_comp_iso (S.liftCompInclusion F hF)
 
-instance [Full F] : Full (S.lift F hF) :=
-  Full.ofCompFaithfulIso (S.liftCompInclusion F hF)
+instance [F.Full] : (S.lift F hF).Full :=
+  Functor.Full.ofCompFaithfulIso (S.liftCompInclusion F hF)
 
 -- should be generalized
 instance [Preadditive D] [F.Additive] : (S.lift F hF).Additive where
@@ -597,7 +597,7 @@ section
 
 variable {D : Type*} [Category D] [HasZeroObject D] [Preadditive D]
     [HasShift D ℤ] [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
-    (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] [Full F] [Faithful F]
+    (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] [F.Full] [F.Faithful]
 
 def map : Subcategory D := essImage (S.ι ⋙ F)
 

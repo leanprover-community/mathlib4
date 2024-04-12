@@ -203,11 +203,11 @@ noncomputable instance (n : ℤ) :
     (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n ⋙ Qh)
     (shiftFunctor (DerivedCategory C) n) := ⟨(Qh.commShiftIso n).symm⟩
 
-instance : EssSurj (Qh : _ ⥤ DerivedCategory C).mapArrow :=
+instance : (Qh : _ ⥤ DerivedCategory C).mapArrow.EssSurj :=
   Triangulated.Localization.essSurj_mapArrow
     Qh (HomotopyCategory.subcategoryAcyclic C).W
 
-instance : EssSurj (Q : _ ⥤ DerivedCategory C).mapArrow where
+instance : (Q : _ ⥤ DerivedCategory C).mapArrow.EssSurj where
   mem_essImage φ := by
     obtain ⟨⟨K⟩, ⟨L⟩, f, ⟨e⟩⟩ :
         ∃ (K L : HomotopyCategory C (ComplexShape.up ℤ)) (f : K ⟶ L),
@@ -223,10 +223,10 @@ instance : (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)).HasRightCalculusO
   rw [HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W]
   infer_instance
 
-instance : EssSurj (Qh : _ ⥤ DerivedCategory C) :=
+instance : (Qh : _ ⥤ DerivedCategory C).EssSurj :=
   Localization.essSurj _ (HomotopyCategory.quasiIso _ _)
 
-instance : EssSurj (Q : _ ⥤ DerivedCategory C) :=
+instance : (Q : _ ⥤ DerivedCategory C).EssSurj :=
   Localization.essSurj _ (HomologicalComplex.quasiIso _ _)
 
 noncomputable instance : (Q : CochainComplex C ℤ ⥤ _).CommShift ℤ :=
@@ -343,9 +343,9 @@ noncomputable instance :
   Functor.ShiftSequence.induced (homologyFunctorFactorsh C 0) ℤ
     (homologyFunctor C) (homologyFunctorFactorsh C)
       ⟨⟨(inferInstance :
-          Full (Localization.whiskeringLeftFunctor' Qh (HomotopyCategory.quasiIso _ _) C))⟩,
+          (Localization.whiskeringLeftFunctor' Qh (HomotopyCategory.quasiIso _ _) C).Full)⟩,
         (inferInstance :
-          Faithful (Localization.whiskeringLeftFunctor' Qh (HomotopyCategory.quasiIso _ _) C))⟩
+          (Localization.whiskeringLeftFunctor' Qh (HomotopyCategory.quasiIso _ _) C).Faithful)⟩
 
 variable {C}
 

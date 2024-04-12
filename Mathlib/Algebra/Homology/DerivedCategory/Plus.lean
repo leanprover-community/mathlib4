@@ -90,7 +90,7 @@ variable (C)
 noncomputable def QhCompιIsoιCompQh :
     Qh ⋙ Plus.ι ≅ HomotopyCategory.Plus.ι C ⋙ DerivedCategory.Qh := Iso.refl _
 
-instance : EssSurj (Qh (C := C)) := by
+instance : (Qh (C := C)).EssSurj := by
   suffices ∀ (X : DerivedCategory C) (n : ℤ) (_ : X.IsGE n),
     ∃ (K : CochainComplex C ℤ) (_ : K.IsStrictlyGE n),
       Nonempty (DerivedCategory.Q.obj K ≅ X) from ⟨by
@@ -136,7 +136,7 @@ instance (n : ℤ) : (homologyFunctor C n).IsHomological := by
   dsimp [homologyFunctor]
   infer_instance
 
-instance : EssSurj (Qh (C := C)).mapArrow :=
+instance : (Qh (C := C)).mapArrow.EssSurj :=
   Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions _
     (HomotopyCategory.Plus.subcategoryAcyclic C).W
 

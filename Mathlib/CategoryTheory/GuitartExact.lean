@@ -281,12 +281,12 @@ instance [hw : w.GuitartExact] (X₂ : C₂) :
   rw [guitartExact_iff_initial] at hw
   apply hw
 
-instance [IsEquivalence L] [IsEquivalence R] [IsIso w] : GuitartExact w := by
+instance [L.IsEquivalence] [R.IsEquivalence] [IsIso w] : GuitartExact w := by
   rw [guitartExact_iff_initial]
   intro X₂
   have := StructuredArrow.isEquivalencePost X₂ T R
-  have : IsEquivalence (Comma.mapRight _ w : StructuredArrow (R.obj X₂) _ ⥤ StructuredArrow (R.obj X₂) _) :=
-    IsEquivalence.ofEquivalence (Comma.mapRightIso _ (asIso w))
+  have : (Comma.mapRight _ w : StructuredArrow (R.obj X₂) _ ⥤ StructuredArrow (R.obj X₂) _).IsEquivalence :=
+    Functor.IsEquivalence.ofEquivalence (Comma.mapRightIso _ (asIso w))
   have := StructuredArrow.isEquivalencePre (R.obj X₂) L B
   dsimp only [structuredArrowDownwards]
   infer_instance

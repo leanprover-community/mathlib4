@@ -13,7 +13,7 @@ variable {C A : Type*} [Category C] [HasZeroObject C] [Preadditive C] [HasShift 
 
 namespace AbelianSubcategory
 
-variable [Category A] [Preadditive A] {ι : A ⥤ C} [ι.Additive] [Full ι] [Faithful ι]
+variable [Category A] [Preadditive A] {ι : A ⥤ C} [ι.Additive] [ι.Full] [ι.Faithful]
   (hι : ∀ ⦃X Y : A⦄ ⦃n : ℤ⦄ (f : ι.obj X ⟶ (ι.obj Y)⟦n⟧), n < 0 → f = 0)
 
 lemma vanishing_from_positive_shift {X Y : A} {n : ℤ} (f : (ι.obj X)⟦n⟧ ⟶ ι.obj Y)

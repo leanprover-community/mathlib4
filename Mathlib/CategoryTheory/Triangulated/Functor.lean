@@ -280,7 +280,7 @@ open Triangulated
 is also triangulated if tuples of composables arrows in `D` can be lifted to `C`. -/
 lemma isTriangulated_of_essSurj_mapComposableArrows_two
     (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
-    [EssSurj (F.mapComposableArrows 2)] [IsTriangulated C] :
+    [(F.mapComposableArrows 2).EssSurj] [IsTriangulated C] :
     IsTriangulated D := by
   apply IsTriangulated.mk
   intro Y₁ Y₂ Y₃ Z₁₂ Z₂₃ Z₁₃ u₁₂ u₂₃ u₁₃ comm v₁₂ w₁₂ h₁₂ v₂₃ w₂₃ h₂₃ v₁₃ w₁₃ h₁₃
@@ -306,7 +306,7 @@ variable {C D : Type _} [Category C] [Category D]
   (F : C ⥤ D) [F.CommShift ℤ]
 
 lemma IsTriangulated.of_fully_faithful_triangulated_functor
-    [F.IsTriangulated] [Full F] [Faithful F] [IsTriangulated D] :
+    [F.IsTriangulated] [F.Full] [F.Faithful] [IsTriangulated D] :
     IsTriangulated C where
   octahedron_axiom {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ u₁₂ u₂₃ u₁₃} comm
     {v₁₂ w₁₂} h₁₂ {v₂₃ w₂₃} h₂₃ {v₁₃ w₁₃} h₁₃ := by

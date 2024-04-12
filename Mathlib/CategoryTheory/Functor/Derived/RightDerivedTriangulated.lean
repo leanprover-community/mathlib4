@@ -25,7 +25,7 @@ variable {C D H : Type*} [Category C] [Category D] [Category H]
 lemma isTriangulated_of_isRightDerivedFunctor
     (h : ∀ ⦃X Y : H⦄ (f : X ⟶ Y), ∃ (T : Triangle C) (_ : T ∈ distTriang C)
       (_ : IsIso (α.app T.obj₁)) (_ : IsIso (α.app T.obj₂)) (_ : IsIso (α.app T.obj₃)),
-      Nonempty (Arrow.mk (L.map T.mor₁) ≅ Arrow.mk f)): RF.IsTriangulated where
+      Nonempty (Arrow.mk (L.map T.mor₁) ≅ Arrow.mk f)) : RF.IsTriangulated where
   map_distinguished T hT := by
     suffices ∃ (T' : Triangle H) (_ : T ≅ T'), RF.mapTriangle.obj T' ∈ distTriang D by
       obtain ⟨T', e, hT'⟩ := this

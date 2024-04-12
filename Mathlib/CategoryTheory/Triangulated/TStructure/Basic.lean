@@ -305,8 +305,8 @@ class HasHeart where
   [preadditive : Preadditive H]
   ι : H ⥤ C
   additive_ι : ι.Additive := by infer_instance
-  fullι : Full ι := by infer_instance
-  faithful_ι : Faithful ι := by infer_instance
+  fullι : ι.Full := by infer_instance
+  faithful_ι : ι.Faithful := by infer_instance
   hι : ι.essImage = setOf t.heart := by simp
 
 def hasHeartFullSubcategory : t.HasHeart where
@@ -322,8 +322,8 @@ instance : Category t.Heart := ht.cat
 def ιHeart : t.Heart ⥤ C := ht.ι
 
 instance : Preadditive t.Heart := ht.preadditive
-instance : Full t.ιHeart := ht.fullι
-instance : Faithful t.ιHeart := ht.faithful_ι
+instance : t.ιHeart.Full := ht.fullι
+instance : t.ιHeart.Faithful := ht.faithful_ι
 instance : t.ιHeart.Additive := ht.additive_ι
 
 lemma ιHeart_obj_mem (X : t.Heart) : t.heart (t.ιHeart.obj X) := by

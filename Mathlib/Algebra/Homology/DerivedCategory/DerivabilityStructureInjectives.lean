@@ -140,19 +140,19 @@ lemma Qh_map_bijective_ι_mapHomotopyCategoryPlus
 
 variable (C)
 
-noncomputable instance : Full (((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh)) :=
+noncomputable instance : ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).Full :=
   Functor.fullOfSurjective _ (fun K L f => by
     obtain ⟨g, rfl⟩ := (Qh_map_bijective_ι_mapHomotopyCategoryPlus (((ι C).mapHomotopyCategoryPlus).obj K) L).2 f
     obtain ⟨h, rfl⟩ := ((ι C).mapHomotopyCategoryPlus).map_surjective g
     exact ⟨h, rfl⟩)
 
-noncomputable instance : Faithful (((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh)) where
+noncomputable instance : ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).Faithful where
   map_injective {K L} f₁ f₂ hf := by
     apply ((ι C).mapHomotopyCategoryPlus).map_injective
     exact ((Qh_map_bijective_ι_mapHomotopyCategoryPlus
       (((ι C).mapHomotopyCategoryPlus).obj K) L).1 hf)
 
-noncomputable instance : ReflectsIsomorphisms (((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh)) :=
+noncomputable instance : ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).ReflectsIsomorphisms :=
   reflectsIsomorphisms_of_full_and_faithful _
 
 variable {C}
@@ -171,7 +171,7 @@ instance [EnoughInjectives C] : (Injectives.localizerMorphism C).HasRightResolut
   exact ⟨rightResolution_localizerMorphism K n⟩
 
 instance [EnoughInjectives C] :
-    EssSurj ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh) where
+    ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).EssSurj where
   mem_essImage Y := by
     let r : (Injectives.localizerMorphism C).RightResolution
       (DerivedCategory.Plus.Qh.objPreimage Y) := Classical.arbitrary _
@@ -180,8 +180,8 @@ instance [EnoughInjectives C] :
       DerivedCategory.Plus.Qh.objObjPreimageIso Y⟩⟩
 
 noncomputable instance [EnoughInjectives C] :
-    IsEquivalence (((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh)) := by
-  apply Equivalence.ofFullyFaithfullyEssSurj
+    ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).IsEquivalence := by
+  apply Functor.IsEquivalence.ofFullyFaithfullyEssSurj
 
 lemma localizerMorphism_lift_map_on_resolutions {X Y : HomotopyCategory.Plus C} (φ : X ⟶ Y)
     (X' : (localizerMorphism C).RightResolution X) (Y' : (localizerMorphism C).RightResolution Y) :

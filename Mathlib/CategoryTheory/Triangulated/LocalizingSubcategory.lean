@@ -16,7 +16,7 @@ variable {A C D D' : Type*} [Category A] [Category C] [Category D] [Category D']
   [∀ (n : ℤ), (shiftFunctor C n).Additive]
   [Pretriangulated A] [Pretriangulated C] [IsTriangulated C]
   (F : A ⥤ C) [F.CommShift ℤ] [F.IsTriangulated]
-  [Full F] [Faithful F]
+  [F.Full] [F.Faithful]
   (B : Subcategory C) [ClosedUnderIsomorphisms B.P]
 
 class IsRightLocalizing : Prop where
@@ -73,7 +73,7 @@ section
 variable (L' : A ⥤ D') [L'.IsLocalization (B.inverseImage F).W]
   (F' : D' ⥤ D) [Localization.Lifting L' (B.inverseImage F).W (F ⋙ L) F']
 
-noncomputable def full_of_isRightLocalizing : Full F' := by
+noncomputable def full_of_isRightLocalizing : F'.Full := by
   have := Localization.essSurj L' (B.inverseImage F).W
   apply F'.full_of_precomp_essSurj L'
   intro X₁ X₂ φ
@@ -106,7 +106,7 @@ noncomputable def full_of_isRightLocalizing : Full F' := by
   erw [e.inv.naturality, e.hom_inv_id_app_assoc]
   rfl
 
-lemma faithful_of_isRightLocalizing : Faithful F' := by
+lemma faithful_of_isRightLocalizing : F'.Faithful := by
   have e := Localization.Lifting.iso L' (B.inverseImage F).W (F ⋙ L) F'
   have := IsTriangulated.of_fully_faithful_triangulated_functor F
   letI := Localization.preadditive L' (B.inverseImage F).W
@@ -133,7 +133,7 @@ lemma faithful_of_isRightLocalizing : Faithful F' := by
 end
 
 variable {L : C ⥤ D} {L' : A ⥤ D'} {H : D' ⥤ D} (e : L' ⋙ H ≅ F ⋙ L)
-  [EssSurj L'] [Full H] [Faithful H] [L.IsLocalization B.W]
+  [L'.EssSurj] [H.Full] [H.Faithful] [L.IsLocalization B.W]
 
 lemma isLocalization_of_isRightLocalizing :
     L'.IsLocalization (B.inverseImage F).W := by
@@ -151,12 +151,12 @@ lemma isLocalization_of_isRightLocalizing :
     ⟨(Functor.associator _ _ _).symm ≪≫ isoWhiskerRight eG H ≪≫ e⟩
   have := full_of_isRightLocalizing F B L (B.inverseImage F).W.Q (G ⋙ H)
   have := faithful_of_isRightLocalizing F B L (B.inverseImage F).W.Q (G ⋙ H)
-  have : EssSurj G :=
+  have : G.EssSurj :=
     { mem_essImage := fun X =>
         ⟨_, ⟨eG.app (L'.objPreimage X) ≪≫ L'.objObjPreimageIso X⟩⟩ }
-  have : Full G := Full.ofCompFaithful G H
-  have : Faithful G := Faithful.of_comp_iso (Iso.refl (G ⋙ H))
-  have := Equivalence.ofFullyFaithfullyEssSurj G
+  have : G.Full := Functor.Full.ofCompFaithful G H
+  have : G.Faithful := Functor.Faithful.of_comp_iso (Iso.refl (G ⋙ H))
+  have := Functor.IsEquivalence.ofFullyFaithfullyEssSurj G
   exact Functor.IsLocalization.of_equivalence_target (B.inverseImage F).W.Q _ _
     G.asEquivalence eG
 

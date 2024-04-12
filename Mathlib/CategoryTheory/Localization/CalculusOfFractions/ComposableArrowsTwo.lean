@@ -25,7 +25,7 @@ variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProp
   [W.HasLeftCalculusOfFractions] [W.HasRightCalculusOfFractions]
   [L.IsLocalization W]
 
-lemma essSurj_mapComposableArrows_two : EssSurj (L.mapComposableArrows 2) where
+lemma essSurj_mapComposableArrows_two : (L.mapComposableArrows 2).EssSurj where
   mem_essImage Y := by
     obtain ⟨Y₀, Y₁, Y₂, f, g, rfl⟩ := ComposableArrows.mk₂_surjective Y
     have := essSurj L W

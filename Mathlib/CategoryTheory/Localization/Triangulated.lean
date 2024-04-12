@@ -194,7 +194,7 @@ lemma isTriangulated_functor :
     letI : Pretriangulated D := pretriangulated L W; L.IsTriangulated :=
     letI : Pretriangulated D := pretriangulated L W; ⟨fun T hT => ⟨T, Iso.refl _, hT⟩⟩
 
-lemma essSurj_mapArrow : EssSurj L.mapArrow :=
+lemma essSurj_mapArrow : L.mapArrow.EssSurj :=
   essSurj_mapArrow_of_hasLeftCalculusofFractions L W
 
 lemma isTriangulated [W.HasRightCalculusOfFractions] [Pretriangulated D]
@@ -239,7 +239,7 @@ variable {C D : Type _} [Category C] [Category D] [HasZeroObject C] [HasZeroObje
   [Preadditive C] [Preadditive D] [HasShift C ℤ] [HasShift D ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
   [Pretriangulated C] [Pretriangulated D]
-  (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] [EssSurj L.mapArrow]
+  (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] [L.mapArrow.EssSurj]
   [L.CommShift ℤ] [L.IsTriangulated]
 
 lemma distTriang_iff (T : Triangle D) :

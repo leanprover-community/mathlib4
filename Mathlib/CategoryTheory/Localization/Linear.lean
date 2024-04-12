@@ -62,7 +62,7 @@ lemma functor_linear_iff (F : C ⥤ E) (G : D ⥤ E) [Lifting L W F G]
   constructor
   · intro
     have : (L ⋙ G).Linear R := Functor.linear_of_iso R (Lifting.iso L W F G).symm
-    have : EssSurj L := Localization.essSurj L W
+    have := Localization.essSurj L W
     rw [Functor.linear_iff]
     intro X r
     have e := L.objObjPreimageIso X

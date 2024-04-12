@@ -272,7 +272,7 @@ variable (L X' Y') in
 /-- The abelian group structure on morphisms in `D`, when `L : C ⥤ D` is a localization
 functor, `C` is preadditive and there is a left calculus of fractions. -/
 noncomputable def addCommGroup : AddCommGroup (X' ⟶ Y') := by
-  have : EssSurj L := Localization.essSurj L W
+  have := Localization.essSurj L W
   letI := addCommGroup' L W (L.objPreimage X') (L.objPreimage Y')
   exact Equiv.addCommGroup (homEquiv (L.objObjPreimageIso X') (L.objObjPreimageIso Y'))
 

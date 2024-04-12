@@ -187,15 +187,15 @@ instance Functor.mapHomologicalComplex_reflects_iso (F : V ⥤ W) [F.Additive]
 #align category_theory.functor.map_homological_complex_reflects_iso CategoryTheory.Functor.mapHomologicalComplex_reflects_iso
 
 
-instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [Faithful F] :
-    Faithful (F.mapHomologicalComplex c) where
+instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [F.Faithful] :
+    (F.mapHomologicalComplex c).Faithful where
   map_injective {K L} f₁ f₂ h := by
     ext n
     apply F.map_injective
     exact (HomologicalComplex.eval W c n).congr_map h
 
-instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [Faithful F] [Full F] :
-    Full (F.mapHomologicalComplex c) where
+instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [F.Faithful] [F.Full] :
+    (F.mapHomologicalComplex c).Full where
   preimage {X Y} f :=
     { f := fun n => F.preimage (f.f n)
       comm' := by
@@ -301,8 +301,12 @@ noncomputable def singleMapHomologicalComplex (F : V ⥤ W) [F.Additive] (c : Co
     single V c j ⋙ F.mapHomologicalComplex _ ≅ F ⋙ single W c j :=
   NatIso.ofComponents
     (fun X =>
-      { hom := { f := fun i => if h : i = j then eqToHom (by simp [h]) else 0 }
-        inv := { f := fun i => if h : i = j then eqToHom (by simp [h]) else 0 }
+      { hom :=
+          { f := fun i => if h : i = j then eqToHom (by simp [h]) else 0
+            comm' := by intros; simp [F.map_zero] }
+        inv :=
+          { f := fun i => if h : i = j then eqToHom (by simp [h]) else 0
+            comm' := by intros; simp [F.map_zero] }
         hom_inv_id := by
           ext i
           dsimp

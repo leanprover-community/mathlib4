@@ -98,12 +98,12 @@ instance [HasZeroObject V] : HasZeroObject (HomotopyCategory V c) :=
 
 variable {V c}
 
-instance : Full (quotient V c) := Functor.fullOfSurjective _ (fun X Y f => by
+instance : (quotient V c).Full := Functor.fullOfSurjective _ (fun X Y f => by
   obtain ⟨f⟩ := f
   exact ⟨f, rfl⟩)
 
-instance : EssSurj (quotient V c) := by
-  change EssSurj (Quotient.functor _)
+instance : (quotient V c).EssSurj := by
+  change (Quotient.functor _).EssSurj
   infer_instance
 
 lemma quotient_obj_surjective (C : HomotopyCategory V c) : ∃ (K : HomologicalComplex V c),
@@ -321,7 +321,7 @@ theorem NatTrans.mapHomotopyCategory_comp (c : ComplexShape ι) {F G H : V ⥤ W
       NatTrans.mapHomotopyCategory α c ≫ NatTrans.mapHomotopyCategory β c := by aesop_cat
 #align category_theory.nat_trans.map_homotopy_category_comp CategoryTheory.NatTrans.mapHomotopyCategory_comp
 
-instance (F : V ⥤ W) [F.Additive] [Full F] [Faithful F] : Full (F.mapHomotopyCategory c) :=
+instance (F : V ⥤ W) [F.Additive] [F.Full] [F.Faithful] : (F.mapHomotopyCategory c).Full :=
   Functor.fullOfSurjective _ (by
     rintro ⟨K⟩ ⟨L⟩ --⟨f⟩
     rintro ⟨f⟩
@@ -338,7 +338,7 @@ def Functor.mapHomotopyCategoryCompIso {W' : Type*} [Category W'] [Preadditive W
 section
 
 variable {c}
-variable (F : V ⥤ W) [F.Additive] [Full F] [Faithful F]
+variable (F : V ⥤ W) [F.Additive] [F.Full] [F.Faithful]
 
 def Functor.preimageHomotopy {K L : HomologicalComplex V c} (f₁ f₂ : K ⟶ L)
     (H : Homotopy ((F.mapHomologicalComplex c).map f₁) ((F.mapHomologicalComplex c).map f₂)) :
@@ -357,7 +357,7 @@ def Functor.preimageHomotopy {K L : HomologicalComplex V c} (f₁ f₂ : K ⟶ L
           · dsimp [toPrev]
             simp) }
 
-instance : Faithful (F.mapHomotopyCategory c) where
+instance : (F.mapHomotopyCategory c).Faithful where
   map_injective := by
     rintro ⟨K⟩ ⟨L⟩ f₁ f₂ h
     obtain ⟨f₁, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f₁
