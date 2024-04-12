@@ -71,7 +71,7 @@ def toLinHom : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R := LinearMap.id
 #align bilin_form.to_lin_hom LinearMap.BilinForm.toLinHom
 
 @[deprecated]
-theorem toLin'_apply (A : BilinForm R M) (x : M) : toLinHom (M := M) A x = A x :=
+theorem toLin'_apply (A : BilinForm R M) (x : M) : A x = A x :=
   rfl
 #align bilin_form.to_lin'_apply LinearMap.BilinForm.toLin'_apply
 
@@ -121,6 +121,7 @@ This is an auxiliary definition for the full linear equivalence `LinearMap.toBil
 def LinearMap.toBilinAux (f : M →ₗ[R] M →ₗ[R] R) : BilinForm R M := f
 #align linear_map.to_bilin_aux LinearMap.toBilinAux
 
+set_option linter.deprecated false in
 /-- Bilinear forms are linearly equivalent to maps with two arguments that are linear in both. -/
 @[deprecated]
 def LinearMap.BilinForm.toLin : BilinForm R M ≃ₗ[R] M →ₗ[R] M →ₗ[R] R :=
@@ -130,6 +131,7 @@ def LinearMap.BilinForm.toLin : BilinForm R M ≃ₗ[R] M →ₗ[R] M →ₗ[R] 
     right_inv := fun _ => rfl }
 #align bilin_form.to_lin LinearMap.BilinForm.toLin
 
+set_option linter.deprecated false in
 /-- A map with two arguments that is linear in both is linearly equivalent to bilinear form. -/
 @[deprecated]
 def LinearMap.toBilin : (M →ₗ[R] M →ₗ[R] R) ≃ₗ[R] BilinForm R M :=
@@ -138,16 +140,18 @@ def LinearMap.toBilin : (M →ₗ[R] M →ₗ[R] R) ≃ₗ[R] BilinForm R M :=
 
 @[simp]
 theorem LinearMap.toBilinAux_eq (f : M →ₗ[R] M →ₗ[R] R) :
-    LinearMap.toBilinAux f = LinearMap.toBilin f :=
+    LinearMap.toBilinAux f = f :=
   rfl
 #align linear_map.to_bilin_aux_eq LinearMap.toBilinAux_eq
 
+set_option linter.deprecated false in
 @[simp]
 theorem LinearMap.toBilin_symm :
     (LinearMap.toBilin.symm : BilinForm R M ≃ₗ[R] _) = BilinForm.toLin :=
   rfl
 #align linear_map.to_bilin_symm LinearMap.toBilin_symm
 
+set_option linter.deprecated false in
 @[simp]
 theorem BilinForm.toLin_symm :
     (BilinForm.toLin.symm : _ ≃ₗ[R] BilinForm R M) = LinearMap.toBilin :=
@@ -156,11 +160,11 @@ theorem BilinForm.toLin_symm :
 
 @[simp]
 theorem LinearMap.toBilin_apply (f : M →ₗ[R] M →ₗ[R] R) (x y : M) :
-    toBilin f x y = f x y :=
+    f x y = f x y :=
   rfl
 
 @[simp]
-theorem BilinForm.toLin_apply (x : M) : BilinForm.toLin B x = B x :=
+theorem BilinForm.toLin_apply (x : M) : B x = B x :=
   rfl
 #align bilin_form.to_lin_apply BilinForm.toLin_apply
 
