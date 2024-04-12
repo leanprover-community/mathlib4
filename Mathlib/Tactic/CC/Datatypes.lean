@@ -27,11 +27,14 @@ open Lean Meta Elab Tactic Std
 
 namespace Mathlib.Tactic.CC
 
-/-- Return true if `e` represents a value (numeral, character, or string). -/
+/-- Return true if `e` represents a constant value (numeral, character, or string). -/
 def isValue (e : Expr) : Bool :=
   e.int?.isSome || e.isCharLit || e.isStringLit
 
-/-- Return true if `e` represents a value (nat/int numereal, character, or string). -/
+/-- Return true if `e` represents a value (nat/int numeral, character, or string).
+
+In addition to the conditions in `Mathlib.Tactic.CC.isValue`, this also checks that
+kernel computation can compare the values for equality. -/
 def isInterpretedValue (e : Expr) : MetaM Bool := do
   if e.isCharLit || e.isStringLit then
     return true
@@ -48,11 +51,13 @@ def liftFromEq (R : Name) (H : Expr) : MetaM Expr := do
   -- `HType : @Eq A a _`
   let some (A, a, _) := HType.eq?
     | throwError "failed to build liftFromEq equality proof expected: {H}"
+  -- `motive : (x : _) → a = x → Prop := fun x h => R a x`
   let motive ←
     withLocalDeclD `x A fun x => do
       let hType ← mkEq a x
       withLocalDeclD `h hType fun h =>
         mkRel R a x >>= mkLambdaFVars #[x, h]
+  -- `minor : R a a := by rfl`
   let minor ← do
     let mt ← mkRel R a a
     let m ← mkFreshExprSyntheticOpaqueMVar mt
@@ -78,7 +83,9 @@ structure ExtCongrTheorem extends CongrTheorem where
   /-- If `hcongrTheorem` is true, then lemma was created using `mkHCongrWithArity`. -/
   hcongrTheorem : Bool := false
 
-/-- Automatically generated congruence lemma based on heterogeneous equality. -/
+/-- Automatically generated congruence lemma based on heterogeneous equality.
+
+This returns an annotated version of the result from `Lean.Meta.mkHCongrWithArity`. -/
 def mkExtHCongrWithArity (fn : Expr) (nargs : Nat) :
     MetaM (Option ExtCongrTheorem) := do
   let eqCongr ← try mkHCongrWithArity fn nargs catch _ => return none
@@ -106,7 +113,7 @@ abbrev ExtCongrTheoremCache := Std.HashMap ExtCongrTheoremKey (Option ExtCongrTh
 structure CCConfig where
   /-- If `true`, congruence closure will treat implicit instance arguments as constants. -/
   ignoreInstances : Bool := true
-  /-- If `true`, congruence closure modulo AC. -/
+  /-- If `true`, congruence closure modulo Associativity and Commutativity. -/
   ac : Bool := true
   /-- If `hoFns` is `some fns`, then full (and more expensive) support for higher-order functions is
      *only* considered for the functions in fns and local functions. The performance overhead is
@@ -125,13 +132,17 @@ structure CCConfig where
 inductive ACApps where
   /-- An `ACApps` of just an `Expr`. -/
   | ofExpr (e : Expr) : ACApps
-  /-- An `ACApps` of applications of a binary operator. `args` are assumed to be sorted. -/
+  /-- An `ACApps` of applications of a binary operator. `args` are assumed to be sorted.
+
+    See also `ACApps.mkApps` if `args` are not yet sorted. -/
   | apps (op : Expr) (args : Array Expr) : ACApps
   deriving Inhabited, BEq
 
 instance : Coe Expr ACApps := ⟨ACApps.ofExpr⟩
+attribute [coe] ACApps.ofExpr
 
-/-- Ordering on `ACApps`. -/
+/-- Ordering on `ACApps` sorts `.ofExpr` before `.apps`, and sorts `.apps` by function symbol,
+  then by shortlex order. -/
 scoped instance : Ord ACApps where
   compare
     | .ofExpr a, .ofExpr b => compare a b
@@ -145,7 +156,9 @@ scoped instance : Ord ACApps where
         return .eq
 
 /-- Return true iff `e₁` is a "subset" of `e₂`.
-    Example: The result is `true` for `e₁ := a*a*a*b*d` and `e₂ := a*a*a*a*b*b*c*d*d` -/
+
+Example: The result is `true` for `e₁ := a*a*a*b*d` and `e₂ := a*a*a*a*b*b*c*d*d`.
+The result is also `true` for `e₁ := a` and `e₂ := a*a*a*b*c`. -/
 def ACApps.isSubset : (e₁ e₂ : ACApps) → Bool
   | .ofExpr a, .ofExpr b => a == b
   | .ofExpr a, .apps _ args => args.contains a
@@ -166,11 +179,11 @@ def ACApps.isSubset : (e₁ e₂ : ACApps) → Bool
       else false
     else false
 
-/-- Store in `r` `e₁ \ e₂`.
-    Example: given `e₁ := a*a*a*a*b*b*c*d*d*d` and `e₂ := a*a*a*b*b*d`,
-    the result is `#[a, c, d, d]`
+/-- Appends elements of the set difference `e₁ \ e₂` to `r`.
+Example: given `e₁ := a*a*a*a*b*b*c*d*d*d` and `e₂ := a*a*a*b*b*d`,
+the result is `#[a, c, d, d]`
 
-    Precondition: `e₂.isSubset e₁` -/
+Precondition: `e₂.isSubset e₁` -/
 def ACApps.diff (e₁ e₂ : ACApps) (r : Array Expr) : Array Expr :=
   match e₁ with
   | .apps op₁ args₁ => Id.run do
@@ -231,6 +244,8 @@ def ACApps.mkApps (op : Expr) (args : Array Expr) : ACApps :=
 def ACApps.mkFlatApps (op : Expr) (e₁ e₂ : ACApps) : ACApps :=
   let newArgs := ACApps.append op e₁ #[]
   let newArgs := ACApps.append op e₂ newArgs
+  -- TODO: this does a full sort but `newArgs` consists of two sorted subarrays,
+  -- so if we want to optimize this, some form of merge sort might be faster.
   ACApps.mkApps op newArgs
 
 /-- Converts an `ACApps` to an `Expr`. This returns `none` when the empty applications are given. -/
@@ -273,6 +288,7 @@ inductive DelayedExpr where
   deriving Inhabited
 
 instance : Coe Expr DelayedExpr := ⟨DelayedExpr.ofExpr⟩
+attribute [coe] DelayedExpr.ofExpr
 
 /-- This is used as a proof term in `Entry`s instead of `Expr`. -/
 inductive EntryExpr
@@ -336,8 +352,6 @@ structure Entry where
       round of heuristic instantiation. The field `mt` records the last time any proper descendant
       of of thie entry was involved in a merge. -/
   mt : Nat
-  /-- Porting note: Currently meaningless. Consider removing this field. -/
-  generation : Nat
   deriving Inhabited
 
 /-- Stores equivalence class data associated with an expression `e`. -/
@@ -428,8 +442,9 @@ attribute [inherit_doc Entries] CCState.entries
 attribute [inherit_doc SubsingletonReprs] CCState.subsingletonReprs
 attribute [inherit_doc InstImplicitReprs] CCState.instImplicitReprs
 
-def CCState.mkEntryCore (ccs : CCState) (e : Expr) (interpreted : Bool) (constructor : Bool)
-    (gen : Nat) : CCState :=
+/-- Update the `CCState` by constructing and inserting a new `Entry`. -/
+def CCState.mkEntryCore (ccs : CCState) (e : Expr) (interpreted : Bool) (constructor : Bool) :
+    CCState :=
   assert! ccs.entries.find? e |>.isNone
   let n : Entry :=
     { next := e
@@ -442,8 +457,7 @@ def CCState.mkEntryCore (ccs : CCState) (e : Expr) (interpreted : Bool) (constru
       hasLambdas := e.isLambda
       heqProofs := false
       mt := ccs.gmt
-      fo := false
-      generation := gen }
+      fo := false }
   { ccs with entries := ccs.entries.insert e n }
 
 namespace CCState
@@ -471,7 +485,7 @@ def isCgRoot (ccs : CCState) (e : Expr) : Bool :=
 #align cc_state.is_cg_root Mathlib.Tactic.CC.CCState.isCgRoot
 
 /--
-"Modification Time". The field `mt` is used to implement the mod-time optimization introduce by the
+"Modification Time". The field `mt` is used to implement the mod-time optimization introduced by the
 Simplify theorem prover. The basic idea is to introduce a counter `gmt` that records the number of
 heuristic instantiation that have occurred in the current branch. It is incremented after each round
 of heuristic instantiation. The field `mt` records the last time any proper descendant of of thie
@@ -482,12 +496,16 @@ def mt (ccs : CCState) (e : Expr) : Nat :=
   | none => ccs.gmt
 #align cc_state.mt Mathlib.Tactic.CC.CCState.mt
 
+/-- Is the expression in an equivalence class with only one element (namely, itself)? -/
 def inSingletonEqc (ccs : CCState) (e : Expr) : Bool :=
   match ccs.entries.find? e with
   | some it => it.next == e
   | none => true
 #align cc_state.in_singlenton_eqc Mathlib.Tactic.CC.CCState.inSingletonEqc
 
+/-- Append to `roots` all the roots of equivalence classes in `ccs`.
+
+If `nonsingletonOnly` is true, we skip all the singleton equivalence classes. -/
 def getRoots (ccs : CCState) (roots : Array Expr) (nonsingletonOnly : Bool) : Array Expr :=
   Id.run do
     let mut roots := roots

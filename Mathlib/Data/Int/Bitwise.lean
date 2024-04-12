@@ -513,9 +513,9 @@ theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<
         by dsimp; simp [← Nat.shiftLeft_sub _ , Nat.add_sub_cancel_left])
       fun i n => by
         dsimp
-        simp only [Nat.shiftLeft'_false, Nat.shiftRight_add, le_refl, ← Nat.shiftLeft_sub,
-          Nat.sub_eq_zero_of_le, Nat.shiftLeft_zero]
-        rfl
+        simp_rw [negSucc_eq, shiftLeft_neg, Nat.shiftLeft'_false, Nat.shiftRight_add,
+          ← Nat.shiftLeft_sub _ le_rfl, Nat.sub_self, Nat.shiftLeft_zero, ← shiftRight_coe_nat,
+          ← shiftRight_add, Nat.cast_one]
   | -[m+1], n, -[k+1] =>
     subNatNat_elim n k.succ
       (fun n k i => -[m+1] <<< i = -[(Nat.shiftLeft' true m n) >>> k+1])
@@ -523,8 +523,8 @@ theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<
         congr_arg negSucc <| by
           rw [← Nat.shiftLeft'_sub, Nat.add_sub_cancel_left]; apply Nat.le_add_right)
       fun i n =>
-      congr_arg negSucc <| by rw [add_assoc, Nat.shiftRight_add, ← Nat.shiftLeft'_sub, Nat.sub_self]
-      <;> rfl
+      congr_arg negSucc <| by rw [add_assoc, Nat.shiftRight_add, ← Nat.shiftLeft'_sub _ _ le_rfl,
+          Nat.sub_self, Nat.shiftLeft']
 #align int.shiftl_add Int.shiftLeft_add
 
 theorem shiftLeft_sub (m : ℤ) (n : ℕ) (k : ℤ) : m <<< (n - k) = (m <<< (n : ℤ)) >>> k :=

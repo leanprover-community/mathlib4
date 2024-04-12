@@ -245,61 +245,61 @@ def CoheytingAlgebra.ofHNot [DistribLattice α] [BoundedOrder α] (hnot : α →
   top_sdiff _ := top_inf_eq _
 #align coheyting_algebra.of_hnot CoheytingAlgebra.ofHNot
 
-section GeneralizedHeytingAlgebra
-
-variable [GeneralizedHeytingAlgebra α] {a b c d : α}
-
-/- In this section, we'll give interpretations of these results in the Heyting algebra model of
+/-! In this section, we'll give interpretations of these results in the Heyting algebra model of
 intuitionistic logic,- where `≤` can be interpreted as "validates", `⇨` as "implies", `⊓` as "and",
 `⊔` as "or", `⊥` as "false" and `⊤` as "true". Note that we confuse `→` and `⊢` because those are
 the same in this logic.
 
 See also `Prop.heytingAlgebra`. -/
--- `p → q → r ↔ p ∧ q → r`
+section GeneralizedHeytingAlgebra
+
+variable [GeneralizedHeytingAlgebra α] {a b c d : α}
+
+/-- `p → q → r ↔ p ∧ q → r` -/
 @[simp]
 theorem le_himp_iff : a ≤ b ⇨ c ↔ a ⊓ b ≤ c :=
   GeneralizedHeytingAlgebra.le_himp_iff _ _ _
 #align le_himp_iff le_himp_iff
 
--- `p → q → r ↔ q ∧ p → r`
+/-- `p → q → r ↔ q ∧ p → r` -/
 theorem le_himp_iff' : a ≤ b ⇨ c ↔ b ⊓ a ≤ c := by rw [le_himp_iff, inf_comm]
 #align le_himp_iff' le_himp_iff'
 
--- `p → q → r ↔ q → p → r`
+/-- `p → q → r ↔ q → p → r` -/
 theorem le_himp_comm : a ≤ b ⇨ c ↔ b ≤ a ⇨ c := by rw [le_himp_iff, le_himp_iff']
 #align le_himp_comm le_himp_comm
 
--- `p → q → p`
+/-- `p → q → p` -/
 theorem le_himp : a ≤ b ⇨ a :=
   le_himp_iff.2 inf_le_left
 #align le_himp le_himp
 
--- `p → p → q ↔ p → q`
+/-- `p → p → q ↔ p → q` -/
 theorem le_himp_iff_left : a ≤ a ⇨ b ↔ a ≤ b := by rw [le_himp_iff, inf_idem]
 #align le_himp_iff_left le_himp_iff_left
 
--- `p → p`
+/-- `p → p` -/
 @[simp]
 theorem himp_self : a ⇨ a = ⊤ :=
   top_le_iff.1 <| le_himp_iff.2 inf_le_right
 #align himp_self himp_self
 
--- `(p → q) ∧ p → q`
+/-- `(p → q) ∧ p → q` -/
 theorem himp_inf_le : (a ⇨ b) ⊓ a ≤ b :=
   le_himp_iff.1 le_rfl
 #align himp_inf_le himp_inf_le
 
--- `p ∧ (p → q) → q`
+/-- `p ∧ (p → q) → q` -/
 theorem inf_himp_le : a ⊓ (a ⇨ b) ≤ b := by rw [inf_comm, ← le_himp_iff]
 #align inf_himp_le inf_himp_le
 
--- `p ∧ (p → q) ↔ p ∧ q`
+/-- `p ∧ (p → q) ↔ p ∧ q` -/
 @[simp]
 theorem inf_himp (a b : α) : a ⊓ (a ⇨ b) = a ⊓ b :=
   le_antisymm (le_inf inf_le_left <| by rw [inf_comm, ← le_himp_iff]) <| inf_le_inf_left _ le_himp
 #align inf_himp inf_himp
 
--- `(p → q) ∧ p ↔ q ∧ p`
+/-- `(p → q) ∧ p ↔ q ∧ p` -/
 @[simp]
 theorem himp_inf_self (a b : α) : (a ⇨ b) ⊓ a = b ⊓ a := by rw [inf_comm, inf_himp, inf_comm]
 #align himp_inf_self himp_inf_self
@@ -310,7 +310,7 @@ an implication holds iff the conclusion follows from the hypothesis. -/
 theorem himp_eq_top_iff : a ⇨ b = ⊤ ↔ a ≤ b := by rw [← top_le_iff, le_himp_iff, top_inf_eq]
 #align himp_eq_top_iff himp_eq_top_iff
 
--- `p → true`, `true → p ↔ p`
+/-- `p → true`, `true → p ↔ p` -/
 @[simp]
 theorem himp_top : a ⇨ ⊤ = ⊤ :=
   himp_eq_top_iff.2 le_top
@@ -321,12 +321,12 @@ theorem top_himp : ⊤ ⇨ a = a :=
   eq_of_forall_le_iff fun b => by rw [le_himp_iff, inf_top_eq]
 #align top_himp top_himp
 
--- `p → q → r ↔ p ∧ q → r`
+/-- `p → q → r ↔ p ∧ q → r` -/
 theorem himp_himp (a b c : α) : a ⇨ b ⇨ c = a ⊓ b ⇨ c :=
   eq_of_forall_le_iff fun d => by simp_rw [le_himp_iff, inf_assoc]
 #align himp_himp himp_himp
 
--- `(q → r) → (p → q) → q → r`
+/-- `(q → r) → (p → q) → q → r` -/
 theorem himp_le_himp_himp_himp : b ⇨ c ≤ (a ⇨ b) ⇨ a ⇨ c := by
   rw [le_himp_iff, le_himp_iff, inf_assoc, himp_inf_self, ← inf_assoc, himp_inf_self, inf_assoc]
   exact inf_le_left
@@ -336,7 +336,7 @@ theorem himp_le_himp_himp_himp : b ⇨ c ≤ (a ⇨ b) ⇨ a ⇨ c := by
 theorem himp_inf_himp_inf_le : (b ⇨ c) ⊓ (a ⇨ b) ⊓ a ≤ c := by
   simpa using @himp_le_himp_himp_himp
 
--- `p → q → r ↔ q → p → r`
+/-- `p → q → r ↔ q → p → r` -/
 theorem himp_left_comm (a b c : α) : a ⇨ b ⇨ c = b ⇨ a ⇨ c := by simp_rw [himp_himp, inf_comm]
 #align himp_left_comm himp_left_comm
 
