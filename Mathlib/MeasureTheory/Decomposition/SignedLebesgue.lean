@@ -75,7 +75,7 @@ theorem not_haveLebesgueDecomposition_iff (s : SignedMeasure α) (μ : Measure �
   ⟨fun h => not_or_of_imp fun hp hn => h ⟨hp, hn⟩, fun h hl => (not_and_or.2 h) ⟨hl.1, hl.2⟩⟩
 #align measure_theory.signed_measure.not_have_lebesgue_decomposition_iff MeasureTheory.SignedMeasure.not_haveLebesgueDecomposition_iff
 
--- `infer_instance` directly does not work
+-- `inferInstance` directly does not work
 -- see Note [lower instance priority]
 instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite (s : SignedMeasure α)
     (μ : Measure α) [SigmaFinite μ] : s.HaveLebesgueDecomposition μ where
@@ -498,14 +498,14 @@ theorem singularPart_add_withDensity_rnDeriv_eq [c.HaveLebesgueDecomposition μ]
   ext i hi : 1
   rw [VectorMeasure.add_apply, SignedMeasure.toComplexMeasure_apply]
   apply Complex.ext
-  · rw [Complex.add_re, withDensityᵥ_apply (c.integrable_rnDeriv μ) hi, ← IsROrC.re_eq_complex_re,
-      ← integral_re (c.integrable_rnDeriv μ).integrableOn, IsROrC.re_eq_complex_re,
+  · rw [Complex.add_re, withDensityᵥ_apply (c.integrable_rnDeriv μ) hi, ← RCLike.re_eq_complex_re,
+      ← integral_re (c.integrable_rnDeriv μ).integrableOn, RCLike.re_eq_complex_re,
       ← withDensityᵥ_apply _ hi]
     · change (c.re.singularPart μ + μ.withDensityᵥ (c.re.rnDeriv μ)) i = _
       rw [c.re.singularPart_add_withDensity_rnDeriv_eq μ]
     · exact SignedMeasure.integrable_rnDeriv _ _
-  · rw [Complex.add_im, withDensityᵥ_apply (c.integrable_rnDeriv μ) hi, ← IsROrC.im_eq_complex_im,
-      ← integral_im (c.integrable_rnDeriv μ).integrableOn, IsROrC.im_eq_complex_im,
+  · rw [Complex.add_im, withDensityᵥ_apply (c.integrable_rnDeriv μ) hi, ← RCLike.im_eq_complex_im,
+      ← integral_im (c.integrable_rnDeriv μ).integrableOn, RCLike.im_eq_complex_im,
       ← withDensityᵥ_apply _ hi]
     · change (c.im.singularPart μ + μ.withDensityᵥ (c.im.rnDeriv μ)) i = _
       rw [c.im.singularPart_add_withDensity_rnDeriv_eq μ]
