@@ -13,10 +13,10 @@ import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Set
 
 /-!
-#  A testing linter
+#  A meta-testing linter
 
-In a file with `import Mathlib.Tactic.MPTests`, you can run the tests in a single command
-writing `#test cmd`.
+In a file with `import Mathlib.Tactic.MetaTesting`, you can run the tests in a single command
+writing `#meta_test cmd`.
 
 If you want to run the tests on all the files, you write `set_option linter.linterTest true`.
 
@@ -259,8 +259,8 @@ def toExample {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] :
     return some (← `($dm:declModifiers example $ds $dv:declVal), mkIdent `example)
   | _ => return none
 
-/-- `#test cmd` runs the standard meta-programming tests on the declaration `cmd`. -/
-elab "#test " cmd:command : command => do
+/-- `#meta_test cmd` runs the standard meta-programming tests on the declaration `cmd`. -/
+elab "#meta_test " cmd:command : command => do
   if let some (_, id) ← toExample cmd then
     trace[Tactic.tests] m!"testing '{id}'"
   let ncmd ← cmd.replaceM fun x => do
@@ -281,13 +281,13 @@ def getLinterTest (o : Options) : Bool := Linter.getLinterValue linter.linterTes
 
 @[inherit_doc linter.linterTest]
 def linterTest : Linter where run := withSetOptionIn fun cmd => do
-  if getLinterTest (← getOptions) && ! cmd.getKind == ``«command#test_» then
+  if getLinterTest (← getOptions) && ! cmd.getKind == ``«command#meta_test_» then
     match test? cmd with
       | none => if let some (cmd, _) ← toExample cmd then
                   let cmd := ⟨cmd⟩
-                  elabCommand (← `(command| #test $cmd))
+                  elabCommand (← `(command| #meta_test $cmd))
       | some gd => logInfo m!"Skipped since it contains '{gd}'\n\n\
-                              Use '#test cmd' if you really want to run the test on 'cmd'"
+                              Use '#meta_test cmd' if you really want to run the test on 'cmd'"
 
 initialize addLinter linterTest
 

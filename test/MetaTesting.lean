@@ -1,6 +1,6 @@
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Tactic.MoveAdd
-import Mathlib.Tactic.MPTests
+import Mathlib.Tactic.MetaTesting
 
 section exclude
 
@@ -8,7 +8,7 @@ set_option linter.linterTest true in
 /--
 info: Skipped since it contains 'guard_target'
 
-Use '#test cmd' if you really want to run the test on 'cmd'
+Use '#meta_test cmd' if you really want to run the test on 'cmd'
 -/
 #guard_msgs in
 example : Nat := by
@@ -36,7 +36,7 @@ warning: missing withContext?
   done
 -/
 #guard_msgs in
-#test
+#meta_test
 example (_h : {_a : Int} → Nat → Nat) (_d : Nat) : Nat := by
   guard_target = _
   exact 0
@@ -275,7 +275,7 @@ info: [Tactic.tests] testing 'hif'
      unfold_let  at *]
 -/
 #guard_msgs in
-#test
+#meta_test
 theorem hif {_n1 _m1 : Nat} {_n _m : Int} (_hn : _n + _m = 0) : True := by
   exact .intro
 
@@ -293,7 +293,7 @@ info:
 [Tactic.tests] ✅ 'let's [unfold_let  at *, unfold_let  at *]
 -/
 #guard_msgs in
-#test
+#meta_test
 example : True := by
   exact .intro
   skip
