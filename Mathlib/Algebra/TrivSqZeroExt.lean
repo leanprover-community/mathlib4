@@ -7,9 +7,6 @@ import Mathlib.Algebra.Algebra.Basic
 import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.LinearAlgebra.Prod
 
-import Mathlib.Tactic
-
-
 #align_import algebra.triv_sq_zero_ext from "leanprover-community/mathlib"@"ce7e9d53d4bbc38065db3b595cd5bd73c323bc1d"
 
 /-!
