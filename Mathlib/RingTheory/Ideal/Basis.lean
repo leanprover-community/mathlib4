@@ -3,8 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.LinearAlgebra.Basis
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Basic
 
 #align_import ring_theory.ideal.operations from "leanprover-community/mathlib"@"e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74"
 
