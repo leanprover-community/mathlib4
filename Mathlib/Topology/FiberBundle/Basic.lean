@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Heather Macbeth
 -/
 import Mathlib.Topology.FiberBundle.Trivialization
+import Mathlib.Topology.Order.LeftRightNhds
 
 #align_import topology.fiber_bundle.basic from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 

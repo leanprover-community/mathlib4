@@ -12,7 +12,7 @@ import Mathlib.Data.Set.MulAntidiagonal
 
 We construct the `Finset` of all pairs
 of an element in `s` and an element in `t` that multiply to `a`,
-given that `s` and `t` are well-ordered.-/
+given that `s` and `t` are well-ordered. -/
 
 
 namespace Set
@@ -128,4 +128,3 @@ theorem mulAntidiagonal_min_mul_min {α} [LinearOrderedCancelCommMonoid α] {s t
 #align finset.add_antidiagonal_min_add_min Finset.addAntidiagonal_min_add_min
 
 end Finset
-

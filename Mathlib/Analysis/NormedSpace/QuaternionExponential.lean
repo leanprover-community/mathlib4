@@ -10,9 +10,9 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 #align_import analysis.normed_space.quaternion_exponential from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
-# Lemmas about `exp` on `Quaternion`s
+# Lemmas about `NormedSpace.exp` on `Quaternion`s
 
-This file contains results about `exp` on `Quaternion ℝ`.
+This file contains results about `NormedSpace.exp` on `Quaternion ℝ`.
 
 ## Main results
 
@@ -66,7 +66,7 @@ theorem expSeries_odd_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ
   have hqn := norm_ne_zero_iff.mpr hq0
   let k : ℝ := ↑(2 * n + 1)!
   calc
-    k⁻¹ • q ^ (2 * n + 1) = k⁻¹ • ((-normSq q) ^ n * q) := by rw [pow_succ', pow_mul, hq2]
+    k⁻¹ • q ^ (2 * n + 1) = k⁻¹ • ((-normSq q) ^ n * q) := by rw [pow_succ, pow_mul, hq2]
     _ = k⁻¹ • ((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n)) • q := ?_
     _ = ((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n + 1) / k / ‖q‖) • q := ?_
   · congr 1
@@ -74,7 +74,7 @@ theorem expSeries_odd_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ
     norm_cast
   · rw [smul_smul]
     congr 1
-    simp_rw [pow_succ', mul_div_assoc, div_div_cancel_left' hqn]
+    simp_rw [pow_succ, mul_div_assoc, div_div_cancel_left' hqn]
     ring
 
 /-- Auxiliary result; if the power series corresponding to `Real.cos` and `Real.sin` evaluated
@@ -137,7 +137,7 @@ theorem normSq_exp (q : ℍ[ℝ]) : normSq (exp ℝ q) = exp ℝ q.re ^ 2 :=
 #align quaternion.norm_sq_exp Quaternion.normSq_exp
 
 /-- Note that this implies that exponentials of pure imaginary quaternions are unit quaternions
-since in that case the RHS is `1` via `exp_zero` and `norm_one`. -/
+since in that case the RHS is `1` via `NormedSpace.exp_zero` and `norm_one`. -/
 @[simp]
 theorem norm_exp (q : ℍ[ℝ]) : ‖exp ℝ q‖ = ‖exp ℝ q.re‖ := by
   rw [norm_eq_sqrt_real_inner (exp ℝ q), inner_self, normSq_exp, Real.sqrt_sq_eq_abs,

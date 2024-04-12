@@ -58,7 +58,7 @@ theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X
   rfl
 #align category_theory.discrete.mk_as CategoryTheory.Discrete.mk_as
 
-/-- `Discrete α` is equivalent to the original type `α`.-/
+/-- `Discrete α` is equivalent to the original type `α`. -/
 @[simps]
 def discreteEquiv {α : Type u₁} : Discrete α ≃ α where
   toFun := Discrete.as
@@ -169,7 +169,7 @@ instance {I : Type u₁} {i j : Discrete I} (f : i ⟶ j) : IsIso f :=
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 
-/-- Any function `I → C` gives a functor `Discrete I ⥤ C`.-/
+/-- Any function `I → C` gives a functor `Discrete I ⥤ C`. -/
 def functor {I : Type u₁} (F : I → C) : Discrete I ⥤ C where
   obj := F ∘ Discrete.as
   map {X Y} f := by
