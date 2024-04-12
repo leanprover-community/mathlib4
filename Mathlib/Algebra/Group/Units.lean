@@ -187,14 +187,22 @@ theorem copy_eq (u : αˣ) (val hv inv hi) : u.copy val hv inv hi = u :=
 #align units.copy_eq Units.copy_eq
 #align add_units.copy_eq AddUnits.copy_eq
 
-/-- Units of a monoid form have a multiplication and multiplicative identity. -/
-@[to_additive "Additive units of an additive monoid have an addition and an additive identity."]
-instance instMulOneClass : MulOneClass αˣ where
+/-- Units of a monoid have an induced multiplication. -/
+@[to_additive "Additive units of an additive monoid have an induced addition."]
+instance : Mul αˣ where
   mul u₁ u₂ :=
     ⟨u₁.val * u₂.val, u₂.inv * u₁.inv,
       by rw [mul_assoc, ← mul_assoc u₂.val, val_inv, one_mul, val_inv],
       by rw [mul_assoc, ← mul_assoc u₁.inv, inv_val, one_mul, inv_val]⟩
+
+/-- Units of a monoid have a unit -/
+@[to_additive "Additive units of an additive monoid have a zero."]
+instance : One αˣ where
   one := ⟨1, 1, one_mul 1, one_mul 1⟩
+
+/-- Units of a monoid have a multiplication and multiplicative identity. -/
+@[to_additive "Additive units of an additive monoid have an addition and an additive identity."]
+instance instMulOneClass : MulOneClass αˣ where
   one_mul u := ext <| one_mul (u : α)
   mul_one u := ext <| mul_one (u : α)
 
@@ -202,7 +210,6 @@ instance instMulOneClass : MulOneClass αˣ where
 @[to_additive "Additive units of an additive monoid are inhabited because `0` is an additive unit."]
 instance : Inhabited αˣ :=
   ⟨1⟩
-
 
 /-- Units of a monoid have a representation of the base value in the `Monoid`. -/
 @[to_additive "Additive units of an additive monoid have a representation of the base value in
@@ -378,23 +385,29 @@ instance instMonoid : Monoid αˣ :=
     npow_zero := fun a ↦ by ext; simp
     npow_succ := fun n a ↦ by ext; simp [pow_succ] }
 
+/-- Units of a monoid have division -/
+@[to_additive "Additive units of an additive monoid have subtraction."]
+instance : Div αˣ where
+  div := fun a b ↦
+    { val := a * b⁻¹
+      inv := b * a⁻¹
+      val_inv := by rw [mul_assoc, inv_mul_cancel_left, mul_inv]
+      inv_val := by rw [mul_assoc, inv_mul_cancel_left, mul_inv] }
+
+/-- Units of a monoid form a `DivInvMonoid`. -/
+@[to_additive "Additive units of an additive monoid form a `SubNegMonoid`."]
+instance instDivInvMonoid : DivInvMonoid αˣ where
+  zpow := fun n a ↦ match n, a with
+    | Int.ofNat n, a => a ^ n
+    | Int.negSucc n, a => (a ^ n.succ)⁻¹
+  zpow_zero' := fun a ↦ by simp
+  zpow_succ' := fun n a ↦ by simp [pow_succ]
+  zpow_neg' := fun n a ↦ by simp
+
 /-- Units of a monoid form a group. -/
 @[to_additive "Additive units of an additive monoid form an additive group."]
-instance instGroup : Group αˣ :=
-  { (inferInstance : Monoid αˣ) with
-    inv := Inv.inv
-    mul_left_inv := fun u => ext u.inv_val
-    div := fun a b ↦
-      { val := a * b⁻¹
-        inv := b * a⁻¹
-        val_inv := by rw [mul_assoc, inv_mul_cancel_left, mul_inv]
-        inv_val := by rw [mul_assoc, inv_mul_cancel_left, mul_inv] }
-    zpow := fun n a ↦ match n, a with
-      | Int.ofNat n, a => a ^ n
-      | Int.negSucc n, a => (a ^ n.succ)⁻¹
-    zpow_zero' := fun a ↦ by simp
-    zpow_succ' := fun n a ↦ by simp [pow_succ]
-    zpow_neg' := fun n a ↦ by simp }
+instance instGroup : Group αˣ where
+  mul_left_inv := fun u => ext u.inv_val
 
 /-- Units of a commutative monoid form a commutative group. -/
 @[to_additive "Additive units of an additive commutative monoid form
@@ -667,9 +680,7 @@ instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
 /-- A subsingleton `Monoid` has a unique unit. -/
 @[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]
 instance [Monoid M] [Subsingleton M] : Unique Mˣ where
-  default := 1
   uniq a := Units.val_eq_one.mp <| Subsingleton.elim (a : M) 1
-
 
 @[to_additive (attr := simp)]
 protected theorem Units.isUnit [Monoid M] (u : Mˣ) : IsUnit (u : M) :=
@@ -1179,10 +1190,14 @@ section NoncomputableDefs
 
 variable {M : Type*}
 
+/-- Constructs an inv operation for a `Monoid` consisting only of units. -/
+noncomputable def invOfIsUnit [Monoid M] (h : ∀ a : M, IsUnit a) : Inv M where
+  inv := fun a => ↑(h a).unit⁻¹
+
 /-- Constructs a `Group` structure on a `Monoid` consisting only of units. -/
 noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Group M :=
   { hM with
-    inv := fun a => ↑(h a).unit⁻¹,
+    toInv := invOfIsUnit h,
     mul_left_inv := fun a => by
       change ↑(h a).unit⁻¹ * a = 1
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }
@@ -1191,7 +1206,7 @@ noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Grou
 /-- Constructs a `CommGroup` structure on a `CommMonoid` consisting only of units. -/
 noncomputable def commGroupOfIsUnit [hM : CommMonoid M] (h : ∀ a : M, IsUnit a) : CommGroup M :=
   { hM with
-    inv := fun a => ↑(h a).unit⁻¹,
+    toInv := invOfIsUnit h,
     mul_left_inv := fun a => by
       change ↑(h a).unit⁻¹ * a = 1
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }

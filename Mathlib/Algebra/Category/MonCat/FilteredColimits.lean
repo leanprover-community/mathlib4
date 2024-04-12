@@ -6,7 +6,7 @@ Authors: Justus Springer
 import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.TypesFiltered
 
 #align_import algebra.category.Mon.filtered_colimits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -324,7 +324,7 @@ def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt where
 #align AddMon.filtered_colimits.colimit_desc AddMonCat.FilteredColimits.colimitDesc
 
 /-- The proposed colimit cocone is a colimit in `MonCat`. -/
-@[to_additive "The proposed colimit cocone is a colimit in `AddMon`."]
+@[to_additive "The proposed colimit cocone is a colimit in `AddMonCat`."]
 def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   desc := colimitDesc.{v, u} F
   fac t j := MonoidHom.ext fun x => congr_fun ((Types.TypeMax.colimitCoconeIsColimit.{v, u}
@@ -401,7 +401,7 @@ noncomputable def colimitCocone : Cocone F where
 #align AddCommMon.filtered_colimits.colimit_cocone AddCommMonCat.FilteredColimits.colimitCocone
 
 /-- The proposed colimit cocone is a colimit in `CommMonCat`. -/
-@[to_additive "The proposed colimit cocone is a colimit in `AddCommMon`."]
+@[to_additive "The proposed colimit cocone is a colimit in `AddCommMonCat`."]
 def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   desc t :=
     MonCat.FilteredColimits.colimitDesc.{v, u} (F ⋙ forget₂ CommMonCat MonCat.{max v u})

@@ -107,8 +107,8 @@ def whiskeringRight : (D ⥤ E) ⥤ (C ⥤ D) ⥤ C ⥤ E where
 
 variable {C} {D} {E}
 
-instance faithful_whiskeringRight_obj {F : D ⥤ E} [Faithful F] :
-    Faithful ((whiskeringRight C D E).obj F) where
+instance faithful_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] :
+    ((whiskeringRight C D E).obj F).Faithful where
   map_injective hαβ := by
     ext X
     exact (F.map_injective <| congr_fun (congr_arg NatTrans.app hαβ) X)

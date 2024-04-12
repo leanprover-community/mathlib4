@@ -191,18 +191,16 @@ alias ⟨IsLittleO.bound, IsLittleO.of_bound⟩ := isLittleO_iff
 #align asymptotics.is_o.bound Asymptotics.IsLittleO.bound
 #align asymptotics.is_o.of_bound Asymptotics.IsLittleO.of_bound
 
--- Adaptation note: 2024-03-15: this was called `def`.
--- Should lean be changed to allow that as a name again?
-theorem IsLittleO.definition (h : f =o[l] g) (hc : 0 < c) : ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ :=
+theorem IsLittleO.def (h : f =o[l] g) (hc : 0 < c) : ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ :=
   isLittleO_iff.1 h hc
-#align asymptotics.is_o.def Asymptotics.IsLittleO.definition
+#align asymptotics.is_o.def Asymptotics.IsLittleO.def
 
 theorem IsLittleO.def' (h : f =o[l] g) (hc : 0 < c) : IsBigOWith c l f g :=
   isBigOWith_iff.2 <| isLittleO_iff.1 h hc
 #align asymptotics.is_o.def' Asymptotics.IsLittleO.def'
 
 theorem IsLittleO.eventuallyLE (h : f =o[l] g) : ∀ᶠ x in l, ‖f x‖ ≤ ‖g x‖ := by
-  simpa using h.definition zero_lt_one
+  simpa using h.def zero_lt_one
 
 end Defs
 
@@ -280,7 +278,7 @@ theorem isLittleO_iff_nat_mul_le_aux (h₀ : (∀ x, 0 ≤ ‖f x‖) ∨ ∀ x,
     f =o[l] g ↔ ∀ n : ℕ, ∀ᶠ x in l, ↑n * ‖f x‖ ≤ ‖g x‖ := by
   constructor
   · rintro H (_ | n)
-    · refine' (H.definition one_pos).mono fun x h₀' => _
+    · refine' (H.def one_pos).mono fun x h₀' => _
       rw [Nat.cast_zero, zero_mul]
       refine' h₀.elim (fun hf => (hf x).trans _) fun hg => hg x
       rwa [one_mul] at h₀'
@@ -1648,7 +1646,7 @@ theorem IsBigOWith.pow' {f : α → R} {g : α → 𝕜} (h : IsBigOWith c l f g
       l (fun x => f x ^ n) fun x => g x ^ n
   | 0 => by simpa using isBigOWith_const_const (1 : R) (one_ne_zero' 𝕜) l
   | 1 => by simpa
-  | n + 2 => by simpa [pow_succ] using h.mul (IsBigOWith.pow' h (n + 1))
+  | n + 2 => by simpa [pow_succ] using (IsBigOWith.pow' h (n + 1)).mul h
 #align asymptotics.is_O_with.pow' Asymptotics.IsBigOWith.pow'
 
 theorem IsBigOWith.pow [NormOneClass R] {f : α → R} {g : α → 𝕜} (h : IsBigOWith c l f g) :
@@ -1687,7 +1685,7 @@ theorem IsLittleO.pow {f : α → R} {g : α → 𝕜} (h : f =o[l] g) {n : ℕ}
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn.ne'; clear hn
   induction' n with n ihn
   · simpa only [Nat.zero_eq, ← Nat.one_eq_succ_zero, pow_one]
-  · convert h.mul ihn <;> simp [pow_succ]
+  · convert ihn.mul h <;> simp [pow_succ]
 #align asymptotics.is_o.pow Asymptotics.IsLittleO.pow
 
 theorem IsLittleO.of_pow {f : α → 𝕜} {g : α → R} {n : ℕ} (h : (f ^ n) =o[l] (g ^ n)) (hn : n ≠ 0) :

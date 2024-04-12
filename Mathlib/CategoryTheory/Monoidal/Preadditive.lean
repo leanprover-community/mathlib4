@@ -80,7 +80,7 @@ instance tensoringRight_additive (X : C) : ((tensoringRight C).obj X).Additive w
 /-- A faithful additive monoidal functor to a monoidal preadditive category
 ensures that the domain is monoidal preadditive. -/
 theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [MonoidalCategory D]
-    (F : MonoidalFunctor D C) [Faithful F.toFunctor] [F.toFunctor.Additive] :
+    (F : MonoidalFunctor D C) [F.Faithful] [F.Additive] :
     MonoidalPreadditive D :=
   { whiskerLeft_zero := by
       intros
