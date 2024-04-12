@@ -20,6 +20,19 @@ writing `#meta_test cmd`.
 
 If you want to run the tests on all the files, you write `set_option linter.metaTest true`.
 
+The underlying principle to the meta-testing is that some combinations of tactics change
+the state in a subtle way and most tactics are expected to be able to handle these changes.
+
+For instance,
+* adding `have := 0` introduces meta-data in the goal;
+* adding `have h := h`, where `h` is an existing hypothesis creates a copy of `h` with
+  an "unstantiated metavariable";
+* adding `have h' := h`, where `h` is an existing hypothesis add an `h'` that was not present in
+  the initial `LocalContext`.
+
+Most tactics should be unaffected by such details.
+The tests in this file try to test for such robustness.
+
 By default, `set_option linter.metaTest true` skips any declaration that contains
 `SyntaxNodeKind`s in `nonTesters` (typically, something involved in flow-control, such as
 `guard_hyp` or `guard_target`), since the tests may not be too reliable on them.
