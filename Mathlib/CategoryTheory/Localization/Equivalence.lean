@@ -52,8 +52,8 @@ lemma equivalence_counitIso_app (X : C₂) :
   rw [comp_id]
 
 /-- Basic constructor of an equivalence between localized categories -/
-noncomputable def isEquivalence : IsEquivalence G' :=
-  IsEquivalence.ofEquivalence (equivalence L₁ W₁ L₂ W₂ G G' F F' α β)
+noncomputable def isEquivalence : G'.IsEquivalence :=
+  Functor.IsEquivalence.ofEquivalence (equivalence L₁ W₁ L₂ W₂ G G' F F' α β)
 
 end Localization
 

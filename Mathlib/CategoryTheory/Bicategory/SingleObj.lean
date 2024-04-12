@@ -87,7 +87,7 @@ when we promote a monoidal category to a single object bicategory,
 and the original monoidal category.
 -/
 noncomputable def endMonoidalStarFunctorIsEquivalence :
-    IsEquivalence (endMonoidalStarFunctor C).toFunctor where
+    (endMonoidalStarFunctor C).IsEquivalence where
   inverse :=
     { obj := fun X => X
       map := fun f => f }

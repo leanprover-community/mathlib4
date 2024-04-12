@@ -90,9 +90,9 @@ theorem exists_root_sum_quadratic [Fintype R] {f g : R[X]} (hf2 : degree f = 2) 
       _ < natDegree f * (univ.image fun x : R => eval x f).card +
             natDegree (-g) * (univ.image fun x : R => eval x (-g)).card :=
         (add_lt_add_of_lt_of_le
-          (lt_of_le_of_ne (card_image_polynomial_eval (by rw [hf2]; exact by decide))
+          (lt_of_le_of_ne (card_image_polynomial_eval (by rw [hf2]; decide))
             (mt (congr_arg (· % 2)) (by simp [natDegree_eq_of_degree_eq_some hf2, hR])))
-          (card_image_polynomial_eval (by rw [degree_neg, hg2]; exact by decide)))
+          (card_image_polynomial_eval (by rw [degree_neg, hg2]; decide)))
       _ = 2 * ((univ.image fun x : R => eval x f) ∪ univ.image fun x : R => eval x (-g)).card := by
         rw [card_union_of_disjoint hd];
           simp [natDegree_eq_of_degree_eq_some hf2, natDegree_eq_of_degree_eq_some hg2, mul_add]

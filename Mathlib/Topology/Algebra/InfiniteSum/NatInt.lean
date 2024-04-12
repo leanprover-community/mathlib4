@@ -8,12 +8,12 @@ import Mathlib.Topology.Algebra.InfiniteSum.Group
 import Mathlib.Logic.Encodable.Lattice
 
 /-!
-# Infinite sums over `ℕ` and `ℤ`
+# Infinite sums and products over `ℕ` and `ℤ`
 
-This file contains lemmas about `HasSum`, `Summable`, `tsum`, `HasProd`, `Multipliable`, `tprod`
+This file contains lemmas about `HasSum`, `Summable`, `tsum`, `HasProd`, `Multipliable`, and `tprod`
 applied to the important special cases where the domain is `ℕ` or `ℤ`. For instance, we prove the
 formula `∑ i in range k, f i + ∑' i, f (i + k) = ∑' i, f i`, in `sum_add_tsum_nat_add`, as well as
-several results relating sums on `ℕ` and `ℤ`.
+several results relating sums and products on `ℕ` to sums and products on `ℤ`.
 -/
 
 noncomputable section

@@ -90,7 +90,7 @@ reuse the existing limit."]
 noncomputable instance Forget₂.createsLimit :
     CreatesLimit F (forget₂ GroupCat.{u} MonCat.{u}) :=
   -- Porting note: need to add `forget₂ GrpCat MonCat` reflects isomorphism
-  letI : ReflectsIsomorphisms (forget₂ GroupCat.{u} MonCat.{u}) :=
+  letI : (forget₂ GroupCat.{u} MonCat.{u}).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   createsLimitOfReflectsIso (K := F) (F := (forget₂ GroupCat.{u} MonCat.{u}))
     fun c' t =>
@@ -263,7 +263,7 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.limit_add_comm_group AddCommGroupCat.limitAddCommGroup
 
 @[to_additive]
-instance : ReflectsIsomorphisms (forget₂ CommGroupCat.{u} GroupCat.{u}) :=
+instance : (forget₂ CommGroupCat.{u} GroupCat.{u}).ReflectsIsomorphisms :=
     reflectsIsomorphisms_forget₂ _ _
 
 /-- We show that the forgetful functor `CommGroupCat ⥤ GroupCat` creates limits.
