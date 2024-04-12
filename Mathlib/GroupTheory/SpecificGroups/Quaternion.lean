@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Tactic.IntervalCases
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
@@ -183,7 +183,6 @@ theorem a_one_pow (k : ℕ) : (a 1 : QuaternionGroup n) ^ k = a k := by
   · rw [pow_succ, IH, a_mul_a]
     congr 1
     norm_cast
-    rw [Nat.one_add]
 #align quaternion_group.a_one_pow QuaternionGroup.a_one_pow
 
 -- @[simp] -- Porting note: simp changes this to `a 0 = 1`, so this is no longer a good simp lemma.
@@ -199,8 +198,8 @@ theorem xa_sq (i : ZMod (2 * n)) : xa i ^ 2 = a n := by simp [sq]
 
 @[simp]
 theorem xa_pow_four (i : ZMod (2 * n)) : xa i ^ 4 = 1 := by
-  rw [pow_succ, pow_succ, sq, xa_mul_xa, xa_mul_a, xa_mul_xa, add_sub_cancel_right, add_sub_assoc,
-    add_sub_cancel_left]
+  rw [pow_succ, pow_succ, sq, xa_mul_xa, a_mul_xa, xa_mul_xa,
+    add_sub_cancel_right, add_sub_assoc, sub_sub_cancel]
   norm_cast
   rw [← two_mul]
   simp [one_def]

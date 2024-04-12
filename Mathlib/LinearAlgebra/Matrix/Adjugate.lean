@@ -385,7 +385,7 @@ theorem det_adjugate (A : Matrix n n α) : (adjugate A).det = A.det ^ (Fintype.c
   calc
     A'.det * A'.adjugate.det = (A' * adjugate A').det := (det_mul _ _).symm
     _ = A'.det ^ Fintype.card n := by rw [mul_adjugate, det_smul, det_one, mul_one]
-    _ = A'.det * A'.det ^ (Fintype.card n - 1) := by rw [← pow_succ, h_card]
+    _ = A'.det * A'.det ^ (Fintype.card n - 1) := by rw [← pow_succ', h_card]
 #align matrix.det_adjugate Matrix.det_adjugate
 
 @[simp]
@@ -510,7 +510,7 @@ theorem adjugate_mul_distrib (A B : Matrix n n α) : adjugate (A * B) = adjugate
   have hu : ∀ M : Matrix n n α, IsRegular (g M).det := by
     intro M
     refine' Polynomial.Monic.isRegular _
-    simp only [g, Polynomial.Monic.def', ← Polynomial.leadingCoeff_det_X_one_add_C M, add_comm]
+    simp only [g, Polynomial.Monic.def, ← Polynomial.leadingCoeff_det_X_one_add_C M, add_comm]
   rw [← f'_adj, ← f'_adj, ← f'_adj, ← f'.map_mul, ←
     adjugate_mul_distrib_aux _ _ (hu A).left (hu B).left, RingHom.map_adjugate,
     RingHom.map_adjugate, f'_inv, f'_g_mul]
@@ -554,7 +554,7 @@ theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
     mul_left_cancel₀ (det_mvPolynomialX_ne_zero n ℤ)
   apply is_reg.matrix
   simp only
-  rw [smul_smul, ← pow_succ, h_card', det_smul_adjugate_adjugate]
+  rw [smul_smul, ← pow_succ', h_card', det_smul_adjugate_adjugate]
 #align matrix.adjugate_adjugate Matrix.adjugate_adjugate
 
 /-- A weaker version of `Matrix.adjugate_adjugate` that uses `Nontrivial`. -/
