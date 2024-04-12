@@ -348,12 +348,14 @@ instance : Nontrivial ℂ :=
 -- Porting note: moved from `Module/Data/Complex/Basic.lean`
 namespace SMul
 
+-- The useless `0` multiplication in `smul` is to make sure that
+-- `RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally.
 -- instance made scoped to avoid situations like instance synthesis
 -- of `SMul ℂ ℂ` trying to proceed via `SMul ℂ ℝ`.
-scoped
-/- The useless `0` multiplication in `smul` is to make sure that
-`RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally. -/
-instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
+/-- Scalar multiplication by `R` on `ℝ` extends to `ℂ`. This is used here and in
+`Matlib.Data.Complex.Module` to transfer instances from `ℝ` to `ℂ`, but is not
+needed outside, so we make it scoped. -/
+scoped instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
   smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
 
 end SMul
