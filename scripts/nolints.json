@@ -1174,7 +1174,6 @@
  ["docBlame", "Mathlib.Tactic.CC.CCM.addEqvStep.go"],
  ["docBlame", "Mathlib.Tactic.CC.CCM.propagateConstructorEq.go"],
  ["docBlame", "Lean.MVarId.cc"],
- ["docBlame", "Lean.MVarId.ccCore"],
  ["docBlame", "Mathlib.Tactic.CC.CCState.eqcOf"],
  ["docBlame", "Mathlib.Tactic.CC.CCState.eqcOfCore"],
  ["docBlame", "Mathlib.Tactic.CC.CCState.eqcSize"],

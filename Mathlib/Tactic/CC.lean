@@ -198,7 +198,7 @@ def mfoldEqc {α} {m : Type → Type} [Monad m] (s : CCState) (e : Expr) (a : α
 
 end CCState
 
-def _root_.Lean.MVarId.ccCore (m : MVarId) (cfg : CCConfig) : MetaM Unit := do
+def _root_.Lean.MVarId.cc (m : MVarId) (cfg : CCConfig := {}) : MetaM Unit := do
   let (_, m) ← m.intros
   m.withContext do
     let s ← CCState.mkUsingHsCore cfg
@@ -219,12 +219,17 @@ def _root_.Lean.MVarId.ccCore (m : MVarId) (cfg : CCConfig) : MetaM Unit := do
           throwError m!"cc tactic failed, equivalence classes: {s}"
         else
           throwError "cc tactic failed"
-#align tactic.cc_core Lean.MVarId.ccCore
-
-def _root_.Lean.MVarId.cc (m : MVarId) : MetaM Unit :=
-  m.ccCore {}
+#align tactic.cc_core Lean.MVarId.cc
 #align tactic.cc Lean.MVarId.cc
+#align tactic.cc_dbg_core Lean.MVarId.cc
+#align tactic.cc_dbg Lean.MVarId.cc
 
+/--
+Allow elaboration of `CCConfig` arguments to tactics.
+-/
+declare_config_elab elabCCConfig CCConfig
+
+open Parser.Tactic in
 /--
 The congruence closure tactic `cc` tries to solve the goal by chaining
 equalities from context and applying congruence (i.e. if `a = b`, then `f a = f b`).
@@ -266,12 +271,9 @@ Journal of the ACM (1980)
 [Congruence closure in intensional type theory](https://leanprover.github.io/papers/congr.pdf)
 (de Moura, Selsam IJCAR 2016).
 -/
-elab (name := _root_.Mathlib.Tactic.cc) "cc" : tactic =>
-  withMainContext <| liftMetaFinishingTactic (·.cc)
-
-#noalign tactic.cc_dbg_core
-
-#noalign tactic.cc_dbg
+elab (name := _root_.Mathlib.Tactic.cc) "cc" cfg:(config)? : tactic => do
+  let cfg ← elabCCConfig (mkOptionalNode cfg)
+  withMainContext <| liftMetaFinishingTactic (·.cc cfg)
 
 #align tactic.ac_refl Lean.Meta.AC.acRflTactic
 

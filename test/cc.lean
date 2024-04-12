@@ -4,7 +4,7 @@ import Mathlib.Data.Set.Basic
 
 set_option linter.unusedVariables false
 
-section cc1
+section CC1
 
 open Mathlib.Tactic.CC
 
@@ -97,9 +97,9 @@ example (a b c : Nat) : a = b → c = b → f₁ (f₁ a b) (g₁ c) = f₁ (f�
 example (a b c d e x y : Nat) : a = b → a = x → b = y → c = d → c = e → c = b → a = e := by
   cc
 
-end cc1
+end CC1
 
-section cc2
+section CC2
 
 axiom f₂ (a b : Nat) : a > b → Nat
 axiom g₂ : Nat → Nat
@@ -133,9 +133,9 @@ example (a b c d : Prop) (x y z : Nat)
       ((if (a ∧ c ∧ a) then x else y) = (if (b ∧ d ∧ b) then y else x)) := by
   cc
 
-end cc2
+end CC2
 
-section cc3
+section CC3
 
 example (a b : Nat) : (a = b ↔ a = b) := by
   cc
@@ -206,9 +206,9 @@ example (a b c : Nat) (f : Nat → Nat) : HEq a b → b = c → f a = f c := by
 example (a b c d : Nat) (f : Nat → Nat) : HEq a b → b = c → HEq c (f d) → f a = f (f d) := by
   cc
 
-end cc3
+end CC3
 
-section cc4
+section CC4
 
 universe u
 
@@ -227,9 +227,9 @@ example (n1 n2 n3 : Nat) (v1 w1 v : Vector Nat n1) (w1' : Vector Nat n3) (v2 w2 
       app v1 v2 = app v w := by
   cc
 
-end cc4
+end CC4
 
-section cc5
+section CC5
 namespace LocalAxioms
 
 axiom A : Type
@@ -305,9 +305,9 @@ example : HEq a1 (y a2) → HEq a2 (z a3) → HEq a3 (x a1) →
   cc
 
 end LocalAxioms
-end cc5
+end CC5
 
-section cc6
+section CC6
 
 example (a b c a' b' c' : Nat) : a = a' → b = b' → c = c' → a + b + c + a = a' + b' + c' + a' := by
   cc
@@ -327,9 +327,9 @@ example (C : Nat → Type) (f : (n : _) → C n → C n) (n m : Nat) (c : C n) (
     HEq (f n) (f m) → HEq c d → HEq n m → HEq (f n c) (f m d) := by
   cc
 
-end cc6
+end CC6
 
-section cc7
+section CC7
 
 example (f g : {α : Type} → α → α → α) (h : Nat → Nat) (a b : Nat) :
     h = f a → h b = f a b := by
@@ -348,9 +348,9 @@ example (f : Nat → Nat → Nat) (a b c d : Nat) :
         HEq c d → HEq (f a) (f b) → HEq (f a c) (f b d) := by
   cc
 
-end cc7
+end CC7
 
-section cc_ac1
+section CCAC1
 
 example (a b c : Nat) (f : Nat → Nat) : f (a + b + c) = f (c + b + a) := by
   cc
@@ -358,16 +358,16 @@ example (a b c : Nat) (f : Nat → Nat) : f (a + b + c) = f (c + b + a) := by
 example (a b c : Nat) (f : Nat → Nat) : a + b = c → f (c + c) = f (a + b + c) := by
   cc
 
-end cc_ac1
+end CCAC1
 
-section cc_ac2
+section CCAC2
 
 example (a b c d : Nat) (f : Nat → Nat → Nat) : b + a = d → f (a + b + c) a = f (c + d) a := by
   cc
 
-end cc_ac2
+end CCAC2
 
-section cc_ac3
+section CCAC3
 
 example (a b c d e : Nat) (f : Nat → Nat → Nat) :
     b + a = d → b + c = e → f (a + b + c) (a + b + c) = f (c + d) (a + e) := by
@@ -390,9 +390,9 @@ lemma ex₁ (a b c d e : α) (f : α → α → α) :
   cc
 end
 
-end cc_ac3
+end CCAC3
 
-section cc_ac4
+section CCAC4
 
 section
 universe u
@@ -404,9 +404,9 @@ example (a b c d₁ d₂ e₁ e₂ : Set α) (f : Set α → Set α → Set α) 
   cc
 end
 
-end cc_ac4
+end CCAC4
 
-section cc_ac5
+section CCAC5
 
 universe u
 
@@ -427,9 +427,9 @@ example (y1 y2 y3 x2 x3 x4 x5 x6 : α) :
       (y2 + y1) = (y1 + y3)*(x6*x3) := by
   cc
 
-end cc_ac5
+end CCAC5
 
-section cc_constructors
+section CCConstructors
 
 example (a b : Nat) (s t : List Nat) : a :: s = b :: t → a ≠ b → False := by
   cc
@@ -487,9 +487,9 @@ example (α : Type u) (a b c d : α) (n : Nat) (s t : Vec α n) :
     Vec.cons a (Vec.cons a s) = Vec.cons a (Vec.cons b t) → b ≠ c → c = a → False := by
   cc
 
-end cc_constructors
+end CCConstructors
 
-section cc_proj
+section CCProj
 
 example (a b c d : Nat) (f : Nat → Nat × Nat) : (f d).1 ≠ a → f d = (b, c) → b = a → False := by
   cc
@@ -500,9 +500,9 @@ def ex₂ (a b c d : Nat) (f : Nat → Nat × Nat) : (f d).2 ≠ a → f d = (b,
 example (a b c : Nat) (f : Nat → Nat) : (f b, c).1 ≠ f a → f b = f c → a = c → False := by
   cc
 
-end cc_proj
+end CCProj
 
-section cc_value
+section CCValue
 
 example (a b : Nat) : a = 1 → b = 2 → a = b → False := by
   cc
@@ -519,4 +519,4 @@ example (a b : String) : a = "hello" → b = "world" → a = b → False := by
 example (a b c : String) : a = c → a = "hello" → c = "world" → c = b → False := by
   cc
 
-end cc_value
+end CCValue
