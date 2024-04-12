@@ -1542,7 +1542,7 @@ theorem InjOn.image_iInter_eq [Nonempty ι] {s : ι → Set α} {f : α → β} 
     (f '' ⋂ i, s i) = ⋂ i, f '' s i := by
   inhabit ι
   refine' Subset.antisymm (image_iInter_subset s f) fun y hy => _
-  simp only [mem_iInter, mem_image_iff_bex] at hy
+  simp only [mem_iInter, mem_image] at hy
   choose x hx hy using hy
   refine' ⟨x default, mem_iInter.2 fun i => _, hy _⟩
   suffices x default = x i by
@@ -2225,7 +2225,7 @@ theorem _root_.Antitone.iInter_nat_add {f : ℕ → Set α} (hf : Antitone f) (k
   hf.iInf_nat_add k
 #align antitone.Inter_nat_add Antitone.iInter_nat_add
 
-/-Porting note: removing `simp`. LHS does not simplify. Possible linter bug. Zulip discussion:
+/- Porting note: removing `simp`. LHS does not simplify. Possible linter bug. Zulip discussion:
 https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/complete_lattice.20and.20has_sup/near/316497982
 -/
 theorem iUnion_iInter_ge_nat_add (f : ℕ → Set α) (k : ℕ) :

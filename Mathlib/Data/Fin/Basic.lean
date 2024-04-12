@@ -5,7 +5,7 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Order.RelIso.Basic
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Order.Hom.Set
 import Std.Data.Fin.Lemmas
 
@@ -1042,7 +1042,7 @@ theorem castSucc_zero' [NeZero n] : castSucc (0 : Fin n) = 0 :=
 /-- `castSucc i` is positive when `i` is positive.
 
 The `Fin.castSucc_pos` in `Std` only applies in `Fin (n+1)`.
-This one instead uses a `NeZero n` typeclass hypothesis.-/
+This one instead uses a `NeZero n` typeclass hypothesis. -/
 theorem castSucc_pos' [NeZero n] {i : Fin n} (h : 0 < i) : 0 < castSucc i := by
   simpa [lt_iff_val_lt_val] using h
 #align fin.cast_succ_pos Fin.castSucc_pos'
@@ -1088,7 +1088,7 @@ theorem coe_eq_castSucc {a : Fin n} : (a : Fin (n + 1)) = castSucc a := by
 #align fin.coe_eq_cast_succ Fin.coe_eq_castSucc
 
 theorem coe_succ_lt_iff_lt {n : ℕ} {j k : Fin n} : (j : Fin <| n + 1) < k ↔ j < k := by
-  simp only [coe_eq_castSucc]; rfl
+  simp only [coe_eq_castSucc, castSucc_lt_castSucc_iff]
 
 #align fin.coe_succ_eq_succ Fin.coeSucc_eq_succ
 
