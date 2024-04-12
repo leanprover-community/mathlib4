@@ -118,7 +118,7 @@ set_option linter.uppercaseLean3 false in
 
 (We could work over ℤ[⅟2] if we wanted to!)
 -/
-theorem CHSH_inequality_of_comm [OrderedCommRing R] [StarOrderedRing R] [Algebra ℝ R]
+theorem CHSH_inequality_of_comm [OrderedCommRing R] [StarRing R] [StarOrderedRing R] [Algebra ℝ R]
     [OrderedSMul ℝ R] (A₀ A₁ B₀ B₁ : R) (T : IsCHSHTuple A₀ A₁ B₀ B₁) :
     A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2 := by
   let P := 2 - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁
@@ -145,7 +145,6 @@ which we hide in a namespace as they are unlikely to be useful elsewhere.
 -/
 
 
--- mathport name: «expr√2»
 local notation "√2" => (Real.sqrt 2 : ℝ)
 
 namespace TsirelsonInequality
@@ -183,8 +182,8 @@ of the difference.
 
 (We could work over `ℤ[2^(1/2), 2^(-1/2)]` if we really wanted to!)
 -/
-theorem tsirelson_inequality [OrderedRing R] [StarOrderedRing R] [Algebra ℝ R] [OrderedSMul ℝ R]
-    [StarModule ℝ R] (A₀ A₁ B₀ B₁ : R) (T : IsCHSHTuple A₀ A₁ B₀ B₁) :
+theorem tsirelson_inequality [OrderedRing R] [StarRing R] [StarOrderedRing R] [Algebra ℝ R]
+    [OrderedSMul ℝ R] [StarModule ℝ R] (A₀ A₁ B₀ B₁ : R) (T : IsCHSHTuple A₀ A₁ B₀ B₁) :
     A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ √2 ^ 3 • (1 : R) := by
   -- abel will create `ℤ` multiplication. We will `simp` them away to `ℝ` multiplication.
   have M : ∀ (m : ℤ) (a : ℝ) (x : R), m • a • x = ((m : ℝ) * a) • x := fun m a x => by
@@ -206,7 +205,7 @@ theorem tsirelson_inequality [OrderedRing R] [StarOrderedRing R] [Algebra ℝ R]
     -- all terms coincide, but the last one. Simplify all other terms
     simp only [M]
     simp only [neg_mul, one_mul, mul_inv_cancel_of_invertible, Int.cast_one, add_assoc, add_comm,
-      add_left_comm, one_smul, Int.cast_neg, neg_smul, Int.int_cast_ofNat]
+      add_left_comm, one_smul, Int.cast_neg, neg_smul, Int.cast_ofNat]
     simp only [← add_assoc, ← add_smul]
     -- just look at the coefficients now:
     congr

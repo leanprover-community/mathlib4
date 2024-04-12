@@ -18,7 +18,7 @@ These lemmas are in a separate file to the definition of `IsCoprime` or `IsRelPr
 as they require more imports.
 
 Notably, this includes lemmas about `Finset.prod` as this requires importing BigOperators, and
-lemmas about `HasPow` since these are easiest to prove via `Finset.prod`.
+lemmas about `Pow` since these are easiest to prove via `Finset.prod`.
 
 -/
 
@@ -52,7 +52,7 @@ alias ⟨IsCoprime.nat_coprime, Nat.Coprime.isCoprime⟩ := Nat.isCoprime_iff_co
 theorem Nat.Coprime.cast {R : Type*} [CommRing R] {a b : ℕ} (h : Nat.Coprime a b) :
     IsCoprime (a : R) (b : R) := by
   rw [← isCoprime_iff_coprime] at h
-  rw [← Int.cast_ofNat a, ← Int.cast_ofNat b]
+  rw [← Int.cast_natCast a, ← Int.cast_natCast b]
   exact IsCoprime.intCast h
 
 theorem ne_zero_or_ne_zero_of_nat_coprime {A : Type u} [CommRing A] [Nontrivial A] {a b : ℕ}

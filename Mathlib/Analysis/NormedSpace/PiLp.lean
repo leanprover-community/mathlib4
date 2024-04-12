@@ -76,6 +76,11 @@ abbrev PiLp (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) : Type _ :=
   WithLp p (∀ i : ι, α i)
 #align pi_Lp PiLp
 
+/-The following should not be a `FunLike` instance because then the coercion `⇑` would get
+unfolded to `FunLike.coe` instead of `WithLp.equiv`. -/
+instance (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) : CoeFun (PiLp p α) (fun _ ↦ (i : ι) → α i) where
+  coe := WithLp.equiv p _
+
 instance (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) [∀ i, Inhabited (α i)] : Inhabited (PiLp p α) :=
   ⟨fun _ => default⟩
 
@@ -434,7 +439,7 @@ theorem antilipschitzWith_equiv_aux :
         simp only [nsmul_eq_mul, Finset.card_univ, ENNReal.rpow_one, Finset.sum_const,
           ENNReal.mul_rpow_of_nonneg _ _ nonneg, ← ENNReal.rpow_mul, cancel]
         have : (Fintype.card ι : ℝ≥0∞) = (Fintype.card ι : ℝ≥0) :=
-          (ENNReal.coe_nat (Fintype.card ι)).symm
+          (ENNReal.coe_natCast (Fintype.card ι)).symm
         rw [this, ENNReal.coe_rpow_of_nonneg _ nonneg]
 #align pi_Lp.antilipschitz_with_equiv_aux PiLp.antilipschitzWith_equiv_aux
 
@@ -609,7 +614,7 @@ end Linfty
 theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
     [∀ i, SeminormedAddCommGroup (β i)] (n : ℕ) (h : p = n) (f : PiLp p β) :
     ‖f‖ = (∑ i, ‖f i‖ ^ n) ^ (1 / (n : ℝ)) := by
-  have := p.toReal_pos_iff_ne_top.mpr (ne_of_eq_of_ne h <| ENNReal.nat_ne_top n)
+  have := p.toReal_pos_iff_ne_top.mpr (ne_of_eq_of_ne h <| ENNReal.natCast_ne_top n)
   simp only [one_div, h, Real.rpow_nat_cast, ENNReal.toReal_nat, eq_self_iff_true, Finset.sum_congr,
     norm_eq_sum this]
 #align pi_Lp.norm_eq_of_nat PiLp.norm_eq_of_nat

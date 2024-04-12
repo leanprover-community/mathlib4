@@ -143,7 +143,7 @@ theorem swap_orElse (o₁ o₂) : (orElse o₁ o₂).swap = orElse o₁.swap o�
 #align ordering.swap_or_else Ordering.swap_orElse
 
 theorem orElse_eq_lt (o₁ o₂) : orElse o₁ o₂ = lt ↔ o₁ = lt ∨ o₁ = eq ∧ o₂ = lt := by
-  cases o₁ <;> cases o₂ <;> exact by decide
+  cases o₁ <;> cases o₂ <;> decide
 #align ordering.or_else_eq_lt Ordering.orElse_eq_lt
 
 end Ordering

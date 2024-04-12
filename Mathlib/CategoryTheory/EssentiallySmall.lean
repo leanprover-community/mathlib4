@@ -100,7 +100,7 @@ instance (C : Type u) [Category.{v} C] [LocallySmall.{w} C] (X Y : C) : Small (X
   LocallySmall.hom_small X Y
 
 theorem locallySmall_of_faithful {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
-    (F : C ⥤ D) [Faithful F] [LocallySmall.{w} D] : LocallySmall.{w} C where
+    (F : C ⥤ D) [F.Faithful] [LocallySmall.{w} D] : LocallySmall.{w} C where
   hom_small {_ _} := small_of_injective F.map_injective
 
 theorem locallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
