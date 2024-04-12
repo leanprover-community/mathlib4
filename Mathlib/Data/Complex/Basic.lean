@@ -346,17 +346,17 @@ instance : Nontrivial ℂ :=
   pullback_nonzero re rfl rfl
 
 -- Porting note: moved from `Module/Data/Complex/Basic.lean`
-section SMul
-
-variable {R : Type*} [SMul R ℝ]
 
 /- The useless `0` multiplication in `smul` is to make sure that
 `RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally. -/
--- priority manually adjusted in #12070, to avoid situations like instance synthesis
+-- instance made local to avoid situations like instance synthesis
 -- of `SMul ℂ ℂ` trying to proceed via `SMul ℂ ℝ`.
--- See issue #11692.
-instance (priority := 90) instSMulRealComplex : SMul R ℂ where
+local instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
   smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
+
+section SMul
+
+variable {R : Type*} [SMul R ℝ]
 
 theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re := by simp [(· • ·), SMul.smul]
 #align complex.smul_re Complex.smul_re
