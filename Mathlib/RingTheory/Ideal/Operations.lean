@@ -5,13 +5,9 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Order.Group.Action
 
 #align_import ring_theory.ideal.operations from "leanprover-community/mathlib"@"e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74"
 
