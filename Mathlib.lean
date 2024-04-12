@@ -2740,6 +2740,7 @@ import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation.Basic
+import Mathlib.Logic.Relation.Chain
 import Mathlib.Logic.Relator
 import Mathlib.Logic.Small.Basic
 import Mathlib.Logic.Small.Defs
