@@ -317,7 +317,6 @@ theorem Set.Countable.isLindelof_biUnion {s : Set ι} {f : ι → Set X} (hs : s
     intro x hx
     exact mem_biUnion is ((hr i is).2 hx)
 
-
 theorem Set.Finite.isLindelof_biUnion {s : Set ι} {f : ι → Set X} (hs : s.Finite)
     (hf : ∀ i ∈ s, IsLindelof (f i)) : IsLindelof (⋃ i ∈ s, f i) :=
   Set.Countable.isLindelof_biUnion (countable hs) hf
@@ -363,7 +362,7 @@ theorem IsLindelof.union (hs : IsLindelof s) (ht : IsLindelof t) : IsLindelof (s
 protected theorem IsLindelof.insert (hs : IsLindelof s) (a) : IsLindelof (insert a s) :=
   isLindelof_singleton.union hs
 
-/-- If `X` has a basis consisting of compact opens, then an open set in `X` is compact open iff
+/-- If `X` has a basis consisting of countable opens, then an open set in `X` is countable open iff
 it is a finite union of some elements in the basis -/
 theorem isLindelof_open_iff_eq_countable_iUnion_of_isTopologicalBasis (b : ι → Set X)
     (hb : IsTopologicalBasis (Set.range b)) (hb' : ∀ i, IsLindelof (b i)) (U : Set X) :
@@ -445,18 +444,18 @@ theorem hasBasis_coclosedLindelof :
   exact ⟨s ∪ t, ⟨⟨hs₁.union ht₁, hs₂.union ht₂⟩, compl_subset_compl.2 (subset_union_left _ _),
     compl_subset_compl.2 (subset_union_right _ _)⟩⟩
 
-theorem mem_coclosedLindelof : s ∈ coclosedLindelof X ↔
+theorem mem_coclosed_Lindelof : s ∈ coclosedLindelof X ↔
     ∃ t, IsClosed t ∧ IsLindelof t ∧ tᶜ ⊆ s := by
   simp only [hasBasis_coclosedLindelof.mem_iff, and_assoc]
 
 theorem mem_coclosed_Lindelof' : s ∈ coclosedLindelof X ↔
     ∃ t, IsClosed t ∧ IsLindelof t ∧ sᶜ ⊆ t := by
-  simp only [mem_coclosedLindelof, compl_subset_comm]
+  simp only [mem_coclosed_Lindelof, compl_subset_comm]
 
 theorem coLindelof_le_coclosedLindelof : coLindelof X ≤ coclosedLindelof X :=
   iInf_mono fun _ => le_iInf fun _ => le_rfl
 
-theorem IsLindeof.compl_mem_coclosedLindelof_of_isClosed (hs : IsLindelof s) (hs' : IsClosed s) :
+theorem IsLindelof.compl_mem_coclosedLindelof_of_isClosed (hs : IsLindelof s) (hs' : IsClosed s) :
     sᶜ ∈ Filter.coclosedLindelof X :=
   hasBasis_coclosedLindelof.mem_of_mem ⟨hs', hs⟩
 
@@ -550,10 +549,6 @@ theorem Filter.coLindelof_neBot_iff : NeBot (Filter.coLindelof X) ↔ NonLindelo
 theorem not_LindelofSpace_iff : ¬LindelofSpace X ↔ NonLindelofSpace X :=
   ⟨fun h₁ => ⟨fun h₂ => h₁ ⟨h₂⟩⟩, fun ⟨h₁⟩ ⟨h₂⟩ => h₁ h₂⟩
 
-/-- A compact space `X` is Lindelöf.  -/
-instance (priority := 100) [CompactSpace X] : LindelofSpace X :=
-  { isLindelof_univ := isCompact_univ.isLindelof}
-
 theorem countable_of_Lindelof_of_discrete [LindelofSpace X] [DiscreteTopology X] : Countable X :=
   countable_univ_iff.mp isLindelof_univ.countable_of_discrete
 
@@ -586,7 +581,7 @@ theorem isLindelof_diagonal [LindelofSpace X] : IsLindelof (diagonal X) :=
   @range_diag X ▸ isLindelof_range (continuous_id.prod_mk continuous_id)
 
 /-- If `f : X → Y` is an `Inducing` map, the image `f '' s` of a set `s` is Lindelöf
-  if and only if `s` is compact. -/
+  if and only if `s` is Lindelöf. -/
 theorem Inducing.isLindelof_iff {f : X → Y} (hf : Inducing f) :
     IsLindelof s ↔ IsLindelof (f '' s) := by
   refine ⟨fun hs => hs.image hf.continuous, fun hs F F_ne_bot _ F_le => ?_⟩
