@@ -30,13 +30,13 @@ def map : Comma L R ⥤ Comma L' R' where
         dsimp
         rw [← F.map_comp_assoc, ← F.map_comp_assoc, φ.w] }
 
-instance faithful_map [Faithful F₁] [Faithful F₂] : Faithful (map α β) where
+instance faithful_map [F₁.Faithful] [F₂.Faithful] : (map α β).Faithful where
   map_injective {X Y} f g h := by
     ext
     · exact F₁.map_injective (congr_arg CommaMorphism.left h)
     · exact F₂.map_injective (congr_arg CommaMorphism.right h)
 
-instance fullMap [Faithful F] [Full F₁] [Full F₂] [IsIso α] [IsIso β] : Full (map α β) where
+instance fullMap [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (map α β).Full where
   preimage {X Y} φ :=
     { left := F₁.preimage φ.left
       right := F₂.preimage φ.right
@@ -48,8 +48,8 @@ instance fullMap [Faithful F] [Full F₁] [Full F₂] [IsIso α] [IsIso β] : Fu
         rw [F₁.image_preimage, F₂.image_preimage]
         simpa using φ.w) }
 
-instance essSurj_map [EssSurj F₁] [EssSurj F₂] [Full F] [IsIso α] [IsIso β] :
-    EssSurj (map α β) where
+instance essSurj_map [F₁.EssSurj] [F₂.EssSurj] [F.Full] [IsIso α] [IsIso β] :
+    (map α β).EssSurj where
   mem_essImage X :=
     ⟨{  left := F₁.objPreimage X.left
         right := F₂.objPreimage X.right
@@ -62,10 +62,10 @@ instance essSurj_map [EssSurj F₁] [EssSurj F₂] [Full F] [IsIso α] [IsIso β
               rw [← R'.map_comp, Iso.inv_hom_id, R'.map_id, comp_id])⟩⟩
 
 noncomputable instance isEquivalenceMap
-    [Faithful F₁] [Faithful F₂] [Faithful F] [Full F₁] [Full F₂]
-    [EssSurj F₁] [EssSurj F₂] [Full F] [IsIso α] [IsIso β] :
-    IsEquivalence (map α β) := by
-  apply Equivalence.ofFullyFaithfullyEssSurj
+    [F₁.Faithful] [F₂.Faithful] [F.Faithful] [F₁.Full] [F₂.Full]
+    [F₁.EssSurj] [F₂.EssSurj] [F.Full] [IsIso α] [IsIso β] :
+    (map α β).IsEquivalence := by
+  apply Functor.IsEquivalence.ofFullyFaithfullyEssSurj
 
 end Comma
 
@@ -83,7 +83,7 @@ variable {L : D} {R : C ⥤ D} {L' : D'} {R' : C' ⥤ D'}
 def map₂ : StructuredArrow L R ⥤ StructuredArrow L' R' :=
   Comma.map (F₁ := 𝟭 (Discrete PUnit)) (Discrete.natTrans (fun _ => α)) β
 
-instance faithful_map₂ [Faithful F] : Faithful (map₂ α β) := by
+instance faithful_map₂ [F.Faithful] : (map₂ α β).Faithful := by
   apply Comma.faithful_map
 
 instance {I : Type*} {F G : Discrete I ⥤ C} (f : ∀ i, F.obj i ⟶ G.obj i)
@@ -92,15 +92,15 @@ instance {I : Type*} {F G : Discrete I ⥤ C} (f : ∀ i, F.obj i ⟶ G.obj i)
   change IsIso (Discrete.natIso (fun i => asIso (f i))).hom
   infer_instance
 
-instance fullMap₂ [Faithful G] [Full F] [IsIso α] [IsIso β] : Full (map₂ α β) := by
+instance fullMap₂ [G.Faithful] [F.Full] [IsIso α] [IsIso β] : (map₂ α β).Full := by
   apply Comma.fullMap
 
-instance essSurj_map₂ [EssSurj F] [Full G] [IsIso α] [IsIso β] : EssSurj (map₂ α β) := by
+instance essSurj_map₂ [F.EssSurj] [G.Full] [IsIso α] [IsIso β] : (map₂ α β).EssSurj := by
   apply Comma.essSurj_map
 
 noncomputable instance isEquivalenceMap₂
-    [Faithful F] [Faithful G] [EssSurj F] [Full F] [Full G] [IsIso α] [IsIso β] :
-    IsEquivalence (map₂ α β) := by
+    [F.Faithful] [G.Faithful] [F.EssSurj] [F.Full] [G.Full] [IsIso α] [IsIso β] :
+    (map₂ α β).IsEquivalence := by
   apply Comma.isEquivalenceMap
 
 end StructuredArrow
