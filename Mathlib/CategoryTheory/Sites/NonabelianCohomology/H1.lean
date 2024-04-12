@@ -11,9 +11,12 @@ In this file, we shall define the cohomology in degree 1 of a sheaf
 of groups (TODO).
 
 Currently, given a presheaf of groups `G : Cᵒᵖ ⥤ GroupCat` and a family
-of objects `U : I → C`, we define 1-cochains/1-cocycles with values
+of objects `U : I → C`, we define 1-cochains/1-cocycles/H^1 with values
 in `G` over `U`. (This definition neither requires the assumption that `G`
 is a sheaf, nor that `U` covers the terminal object.)
+As we do not assume that `G` is a presheaf of abelian groups, this
+cohomology theory is only defined in low degrees; in the abelian
+case, it would be a particular case of Čech cohomology (TODO).
 
 ## TODO
 
@@ -110,7 +113,7 @@ instance : Group (Cochain₁ G U) where
 
 end Cochain₁
 
-/-- A 1-cocycle is a 1-cochain which satisfies a cocycle condition. -/
+/-- A 1-cocycle is a 1-cochain which satisfies the cocycle condition. -/
 structure Cocycle₁ extends Cochain₁ G U where
   ev_trans (i j k : I) ⦃T : C⦄ (a : T ⟶ U i) (b : T ⟶ U j) (c : T ⟶ U k) :
       ev i j a b * ev j k b c = ev i k a c := by aesop
