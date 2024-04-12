@@ -537,7 +537,7 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
     · exact hf.differentiable_iteratedFDeriv h'n
     · exact J
 
-theorem glouglou [FiniteDimensional ℝ V]
+theorem fourierPowSMulRight_iteratedFDeriv_fourierIntegral [FiniteDimensional ℝ V]
     {μ : Measure V} [Measure.IsAddHaarMeasure μ] {K N : ℕ∞} (hf : ContDiff ℝ N f)
     (h'f : ∀ (k n : ℕ), k ≤ K → n ≤ N → Integrable (fun v ↦ ‖v‖^k * ‖iteratedFDeriv ℝ n f v‖) μ)
     {k n : ℕ} (hk : k ≤ K) (hn : n ≤ N) {w : W} :
@@ -546,28 +546,90 @@ theorem glouglou [FiniteDimensional ℝ V]
     fourierIntegral 𝐞 μ L.toLinearMap₂
       (iteratedFDeriv ℝ n (fun v ↦ fourierPowSMulRight L f v k)) w := by
   rw [fourierIntegral_iteratedFDeriv (N := N) _ (hf.fourierPowSMulRight _ _) _ hn]
-  · sorry /-congr
+  · congr
     rw [iteratedFDeriv_fourierIntegral (N := K) _ _ hf.continuous.aestronglyMeasurable hk]
     intro k hk
-    simpa only [norm_iteratedFDeriv_zero] using h'f k 0 hk bot_le -/
+    simpa only [norm_iteratedFDeriv_zero] using h'f k 0 hk bot_le
   · intro m hm
     have I : Integrable (fun v ↦ ∑ p in Finset.range (k + 1) ×ˢ Finset.range (m + 1),
         ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖) μ := by
-      sorry /-apply integrable_finset_sum _ (fun p hp ↦ ?_)
+      apply integrable_finset_sum _ (fun p hp ↦ ?_)
       simp only [Finset.mem_product, Finset.mem_range_succ_iff] at hp
-      apply h'f _ _ ((Nat.cast_le.2 hp.1).trans hk) ((Nat.cast_le.2 hp.2).trans hm) -/
-    apply (I.const_mul ((2 * π) ^ m * (2 * m + 2) ^ k * ‖L‖ ^ m)).mono'
+      apply h'f _ _ ((Nat.cast_le.2 hp.1).trans hk) ((Nat.cast_le.2 hp.2).trans hm)
+    apply (I.const_mul ((2 * π) ^ k * (2 * k + 2) ^ m * ‖L‖ ^ k)).mono'
       ((hf.fourierPowSMulRight L k).continuous_iteratedFDeriv hm).aestronglyMeasurable
     filter_upwards with v
+    apply norm_iteratedFDeriv_fourierPowSMulRight _ hf hm _
+    intro i hi j hj
+    apply Finset.single_le_sum (f := fun p ↦ ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖) (a := (j, i))
+    · intro i _hi
+      positivity
+    · simp only [Finset.mem_product, Finset.mem_range_succ_iff]
+      exact ⟨hj, hi⟩
 
+theorem norm_fourierPowSMulRight_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
+    {μ : Measure V} [Measure.IsAddHaarMeasure μ] {K N : ℕ∞} (hf : ContDiff ℝ N f)
+    (h'f : ∀ (k n : ℕ), k ≤ K → n ≤ N → Integrable (fun v ↦ ‖v‖^k * ‖iteratedFDeriv ℝ n f v‖) μ)
+    {k n : ℕ} (hk : k ≤ K) (hn : n ≤ N) {w : W} :
+    ‖fourierPowSMulRight (-L.flip)
+      (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n‖ ≤
+    (2 * π) ^ k * (2 * k + 2) ^ n * ‖L‖ ^ k * ∑ p in Finset.range (k + 1) ×ˢ Finset.range (n + 1),
+      ∫ v, ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖ ∂μ := by
+  rw [fourierPowSMulRight_iteratedFDeriv_fourierIntegral L hf h'f hk hn]
+  apply (norm_fourierIntegral_le_integral_norm _ _ _ _ _).trans
+  rw [← integral_finset_sum, ← integral_mul_left]; swap
+  · intro p hp
+    simp only [Finset.mem_product, Finset.mem_range_succ_iff] at hp
+    exact h'f _ _ (le_trans (by simpa using hp.1) hk) (le_trans (by simpa using hp.2) hn)
+  apply integral_mono_of_nonneg
+  · filter_upwards with v using norm_nonneg _
+  · apply Integrable.const_mul
+    apply integrable_finset_sum _ (fun p hp ↦ ?_)
+    simp only [Finset.mem_product, Finset.mem_range_succ_iff] at hp
+    apply h'f _ _ ((Nat.cast_le.2 hp.1).trans hk) ((Nat.cast_le.2 hp.2).trans hn)
+  · filter_upwards with v
+    apply norm_iteratedFDeriv_fourierPowSMulRight _ hf hn _
+    intro i hi j hj
+    apply Finset.single_le_sum (f := fun p ↦ ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖) (a := (j, i))
+    · intro i _hi
+      positivity
+    · simp only [Finset.mem_product, Finset.mem_range_succ_iff]
+      exact ⟨hj, hi⟩
 
-
-
-
-
-#exit
-
-iteratedFDeriv ℝ m fun v ↦ fourierPowSMulRight L f v k) μ
+lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
+    {μ : Measure V} [Measure.IsAddHaarMeasure μ] {K N : ℕ∞} (hf : ContDiff ℝ N f)
+    (h'f : ∀ (k n : ℕ), k ≤ K → n ≤ N → Integrable (fun v ↦ ‖v‖^k * ‖iteratedFDeriv ℝ n f v‖) μ)
+    {k n : ℕ} (hk : k ≤ K) (hn : n ≤ N) (v : V) (w : W) :
+    |L v w| ^ n * ‖(iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w‖ ≤
+      ‖v‖ ^ n * (2 * π * ‖L‖) ^ k * (2 * k + 2) ^ n *
+        ∑ p in Finset.range (k + 1) ×ˢ Finset.range (n + 1),
+          ∫ v, ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖ ∂μ := calc
+  |L v w| ^ n * ‖(iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w‖ ≤
+    (2 * π) ^ n * (|L v w| ^ n * ‖iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f) w‖) := by
+    apply le_mul_of_one_le_left (by positivity)
+    apply one_le_pow_of_one_le
+    linarith [one_le_pi_div_two]
+  _ = ‖fourierPowSMulRight (-L.flip)
+        (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n (fun i ↦ v)‖ := by
+    simp only [fourierPowSMulRight_apply, ContinuousLinearMap.neg_apply,
+      ContinuousLinearMap.flip_apply, Finset.prod_const, Finset.card_fin, norm_smul, norm_pow,
+      norm_neg, norm_mul, RCLike.norm_ofNat, Complex.norm_eq_abs, abs_ofReal,
+      _root_.abs_of_nonneg pi_nonneg, abs_I, mul_one, Real.norm_eq_abs]
+  _ ≤ ‖fourierPowSMulRight (-L.flip)
+        (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n‖ * ∏ i : Fin n, ‖v‖ :=
+    le_opNorm _ _
+  _ ≤ ((2 * π) ^ k * (2 * k + 2) ^ n * ‖L‖ ^ k *
+      ∑ p in Finset.range (k + 1) ×ˢ Finset.range (n + 1),
+        ∫ v, ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖ ∂μ) * ‖v‖ ^ n := by
+    gcongr
+    · apply Finset.prod_nonneg (fun i _hi ↦ norm_nonneg _)
+    · apply norm_fourierPowSMulRight_iteratedFDeriv_fourierIntegral_le _ hf h'f hk hn
+    · simp
+  _ = ‖v‖ ^ n * (2 * π * ‖L‖) ^ k * (2 * k + 2) ^ n *
+        ∑ p in Finset.range (k + 1) ×ˢ Finset.range (n + 1),
+          ∫ v, ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖ ∂μ := by
+    simp [mul_pow]
+    ring
 
 end VectorFourier
 
@@ -626,6 +688,37 @@ theorem fourierIntegral_iteratedFDeriv {N : ℕ∞} (hf : ContDiff ℝ N f)
       = (fun w ↦ fourierPowSMulRight (-innerSL ℝ) (𝓕 f) w n) := by
   rw [← innerSL_real_flip V]
   exact VectorFourier.fourierIntegral_iteratedFDeriv (innerSL ℝ) hf h'f hn
+
+
+lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
+    {K N : ℕ∞} (hf : ContDiff ℝ N f)
+    (h'f : ∀ (k n : ℕ), k ≤ K → n ≤ N → Integrable (fun v ↦ ‖v‖^k * ‖iteratedFDeriv ℝ n f v‖))
+    {k n : ℕ} (hk : k ≤ K) (hn : n ≤ N) (w : V) :
+    ‖w‖ ^ n * ‖iteratedFDeriv ℝ k (𝓕 f) w‖ ≤ (2 * π) ^ k * (2 * k + 2) ^ n *
+      ∑ p in Finset.range (k + 1) ×ˢ Finset.range (n + 1),
+        ∫ v, ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖ := by
+  have Z := VectorFourier.pow_mul_norm_iteratedFDeriv_fourierIntegral_le (innerSL ℝ) hf h'f hk hn
+    w w
+  simp only [innerSL_apply _ w w, real_inner_self_eq_norm_sq w, _root_.abs_pow, abs_norm,
+    mul_assoc] at Z
+  rw [pow_two, mul_pow, mul_assoc] at Z
+  rw [mul_le_mul_left] at Z
+  · apply Z.trans
+    conv_rhs => rw [← mul_one π]
+    simp only [mul_assoc]
+    gcongr
+    exact?
+
+
+
+
+
+
+
+
+#exit
+
+
 
 lemma hasDerivAt_fourierIntegral
     {f : ℝ → E} (hf : Integrable f) (hf' : Integrable (fun x : ℝ ↦ x • f x)) (w : ℝ) :
