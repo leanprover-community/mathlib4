@@ -736,9 +736,10 @@ theorem Module.Finite.injective_of_surjective_of_injective
       ((i.restrictScalars A).restrict fun x hx ↦ ?_ : N' →ₗ[A] M')
       ((f.restrictScalars A).restrict fun x hx ↦ ?_ : N' →ₗ[A] M')
       (fun _ _ h ↦ injective_subtype _ (hi congr(($h).1)))
-      fun ⟨x, H⟩ ↦ ?_) ⟨n, (subset_span (by simp))⟩ (Subtype.val_injective hn)).1)
-  · refine span_induction hx (fun x hx ↦ ?_) (by simp) (fun x y hx hy ↦ ?_) (fun a x hx ↦ ?_)
-    · change i x ∈ M'
+      fun ⟨x, hx⟩ ↦ ?_) ⟨n, (subset_span (by simp))⟩ (Subtype.val_injective hn)).1)
+  · induction hx using span_induction' with
+    | mem x hx =>
+      change i x ∈ M'
       simp only [Set.singleton_union, Set.mem_insert_iff, Set.mem_range] at hx
       rcases hx with hx | ⟨j, rfl⟩
       · rw [hx, ← hb, piEquiv_apply_apply]
@@ -752,22 +753,29 @@ theorem Module.Finite.injective_of_surjective_of_injective
           (by simp [show ∃ a b, c a b = c j j' from ⟨j, j', rfl⟩])⟩
         rw [show c j j' • mj j' = c' • mj j' from rfl]
         exact smul_mem _ _ (subset_span (by simp))
-    · rw [map_add]; exact add_mem hx hy
-    · rw [map_smul]; exact smul_mem _ _ hx
-  · refine span_induction hx (fun x hx ↦ ?_) (by simp) (fun x y hx hy ↦ ?_) (fun a x hx ↦ ?_)
-    · change f x ∈ M'
+    | zero => simp
+    | add x _ y _ hx hy => rw [map_add]; exact add_mem hx hy
+    | smul a x _ hx => rw [map_smul]; exact smul_mem _ _ hx
+  · induction hx using span_induction' with
+    | mem x hx =>
+      change f x ∈ M'
       simp only [Set.singleton_union, Set.mem_insert_iff, Set.mem_range] at hx
       rcases hx with hx | ⟨j, rfl⟩
       · rw [hx, hn]; exact zero_mem _
       · exact subset_span (by simp [hnj])
-    · rw [map_add]; exact add_mem hx hy
-    · rw [map_smul]; exact smul_mem _ _ hx
+    | zero => simp
+    | add x _ y _ hx hy => rw [map_add]; exact add_mem hx hy
+    | smul a x _ hx => rw [map_smul]; exact smul_mem _ _ hx
   suffices x ∈ LinearMap.range ((f.restrictScalars A).domRestrict N') by
     obtain ⟨a, ha⟩ := this
     exact ⟨a, Subtype.val_injective ha⟩
-  refine span_induction H (fun x H ↦ ?_) (zero_mem _) (fun _ _ ↦ add_mem) (fun a _ ↦ smul_mem _ a)
-  obtain ⟨j, rfl⟩ := H
-  exact ⟨⟨nj j, subset_span (by simp)⟩, hnj j⟩
+  induction hx using span_induction' with
+  | mem x hx =>
+    obtain ⟨j, rfl⟩ := hx
+    exact ⟨⟨nj j, subset_span (by simp)⟩, hnj j⟩
+  | zero => exact zero_mem _
+  | add x _ y _ hx hy => exact add_mem hx hy
+  | smul a x _ hx => exact smul_mem _ a hx
 
 /-- **Orzech's theorem** for finitely generated module: if `R` is a commutative ring,
 `M` is a finitely generated `R`-module, `N` is a submodule, `f : N →ₗ[R] M` is surjective,
