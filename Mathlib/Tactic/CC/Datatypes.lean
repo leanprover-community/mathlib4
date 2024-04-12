@@ -201,7 +201,7 @@ def ACApps.diff (e₁ e₂ : ACApps) (r : Array Expr) : Array Expr :=
         else
           r := r.push args₁[i]!
     return r
-  | .ofExpr _ => if e₂ == e then r else r.push e
+  | .ofExpr e => if e₂ == e then r else r.push e
 
 /-- Appends arguments of `e` to `r`. -/
 def ACApps.append (op : Expr) (e : ACApps) (r : Array Expr) : Array Expr :=
