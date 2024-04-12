@@ -768,21 +768,19 @@ protected theorem inv_mul_cancel [DivisionRing R] [AddCommGroup M]
   ext
   · rw [fst_mul, fst_inv, inv_mul_cancel hx, fst_one]
 
-  have op_smul_smul : ((fst x)⁻¹ •> (snd x <• (fst x)⁻¹)) <• fst x  = (fst x)⁻¹ •> ((snd x <• (fst x)⁻¹) <• fst x) := by rw [smul_comm]
-  have op_smul_assoc' : (snd x <• (fst x)⁻¹ <• fst x) = (op ((fst x)⁻¹ * fst x)) •> snd x := by {
+  have op_smul_assoc' : ∀ a : M, ∀ b c : R, (a <• b) <• c = op (b * c) •> a   := by {
+    intro a b c
     calc
-      _ = op (fst x) •> op ((fst x)⁻¹) •> snd x := rfl
-      _ = (op (fst x) •> op ((fst x)⁻¹)) •> snd x := by rw [smul_assoc]
-      _ = (op (fst x) * op ((fst x)⁻¹)) •> snd x := by rw [smul_eq_mul]
+      _ = op c •> op b •> a := by rfl
+      _ = (op c •>  op b) •> a := by rw [smul_assoc]
+      _ = (op c * op b) •> a := by rw [smul_eq_mul]
       _ = _ := by rw [← op_mul]
   }
-  have op_smul_one : (snd x) <• (1:R) = snd x := by simp only [op_one, one_smul]
 
-  rw [snd_mul, snd_inv]
-  simp [op]
+  rw [snd_mul, snd_inv, ← smul_comm, smul_neg]
 
-  rw [← op, op_smul_smul, op_smul_assoc', inv_mul_cancel hx]
-  rw [op_smul_one, add_comm, fst_inv, add_left_neg]
+  rw [op_smul_assoc', inv_mul_cancel hx, op_one, one_smul]
+  rw [add_comm, fst_inv, add_left_neg, snd_one]
 
 end Inv
 
