@@ -6,7 +6,6 @@ Authors: Jz Pan
 import Mathlib.LinearAlgebra.LinearDisjoint
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.Adjoin.Field
 
 /-!
 
@@ -34,6 +33,8 @@ linearly disjoint, linearly independent, tensor product
 
 open scoped Classical TensorProduct
 
+open FiniteDimensional
+
 noncomputable section
 
 universe u v w
@@ -53,6 +54,10 @@ then `A` and `B` are linearly disjoint, if they are linearly disjoint as submodu
 protected def LinearDisjoint : Prop := (toSubmodule A).LinearDisjoint (toSubmodule B)
 
 variable {A B}
+
+@[nontriviality]
+theorem LinearDisjoint.of_subsingleton [Subsingleton R] : A.LinearDisjoint B :=
+  Submodule.LinearDisjoint.of_subsingleton
 
 /-- Linearly disjoint is symmetric if elements in the module commute. -/
 theorem LinearDisjoint.symm_of_commute (H : A.LinearDisjoint B)
@@ -118,6 +123,15 @@ theorem mulMap_comm : mulMap B A = (mulMap A B).comp (Algebra.TensorProduct.comm
 theorem mulMap_range : (A.mulMap B).range = A ⊔ B := by
   simp_rw [mulMap, Algebra.TensorProduct.productMap_range, Subalgebra.range_val]
 
+/-- If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, there is the natural map
+`A ⊗[R] B →ₐ[R] A ⊔ B` induced by multiplication in `S`,
+which is surjective (`Subalgebra.mulMap'_surjective`). -/
+def mulMap' := (equivOfEq _ _ (mulMap_range A B)).toAlgHom.comp (mulMap A B).rangeRestrict
+
+theorem mulMap'_surjective : Function.Surjective (mulMap' A B) := by
+  simp_rw [mulMap', AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
+    EquivLike.comp_surjective, AlgHom.rangeRestrict_surjective]
+
 namespace LinearDisjoint
 
 variable {A B}
@@ -132,9 +146,8 @@ def mulMap := (AlgEquiv.ofInjective (A.mulMap B) H).trans (equivOfEq _ _ (mulMap
 @[simp]
 theorem coe_mulMap_tmul (a : A) (b : B) : (H.mulMap (a ⊗ₜ[R] b) : S) = a.1 * b.1 := rfl
 
-theorem sup_free_of_free [Module.Free R A] [Module.Free R B] : Module.Free R ↥(A ⊔ B) := by
-  haveI := Module.Free.tensor R A B
-  exact Module.Free.of_equiv H.mulMap.toLinearEquiv
+theorem sup_free_of_free [Module.Free R A] [Module.Free R B] : Module.Free R ↥(A ⊔ B) :=
+  Module.Free.of_equiv H.mulMap.toLinearEquiv
 
 end LinearDisjoint
 
@@ -364,6 +377,17 @@ section CommRing
 
 namespace LinearDisjoint
 
+-- TODO: remove once #12025 is merged
+instance _root_.Subalgebra.finite_bot {F E : Type*} [CommSemiring F] [Semiring E] [Algebra F E] :
+    Module.Finite F (⊥ : Subalgebra F E) := Module.Finite.range (Algebra.linearMap F E)
+
+-- TODO: remove once #12025 is merged
+theorem _root_.Subalgebra.finite_sup {K L : Type*} [CommRing K] [CommRing L] [Algebra K L]
+    (E1 E2 : Subalgebra K L) [Module.Finite K E1] [Module.Finite K E2] :
+    Module.Finite K ↥(E1 ⊔ E2) := by
+  rw [← E1.range_val, ← E2.range_val, ← Algebra.TensorProduct.productMap_range]
+  exact Module.Finite.range (Algebra.TensorProduct.productMap E1.val E2.val).toLinearMap
+
 variable [CommRing R] [CommRing S] [Algebra R S]
 
 variable (A B : Subalgebra R S)
@@ -397,14 +421,57 @@ theorem rank_eq_one_of_flat_of_self_of_inj (H : A.LinearDisjoint A) [Module.Flat
     (hinj : Function.Injective (algebraMap R S)) : Module.rank R A = 1 :=
   H.rank_eq_one_of_commute_of_flat_of_self_of_inj (fun _ _ ↦ mul_comm _ _) hinj
 
+-- TODO: move to suitable place
+variable (A B) in
+theorem _root_.Subalgebra.rank_sup_le_of_free [Module.Free R A] [Module.Free R B] :
+    Module.rank R ↥(A ⊔ B) ≤ Module.rank R A * Module.rank R B := by
+  nontriviality R
+  rw [← rank_tensorProduct', ← mulMap_range]
+  exact rank_range_le (A.mulMap B).toLinearMap
+
+-- TODO: move to suitable place
+variable (A B) in
+theorem _root_.Subalgebra.finrank_sup_le_of_free [Module.Free R A] [Module.Free R B]
+    [Module.Finite R A] [Module.Finite R B] :
+    finrank R ↥(A ⊔ B) ≤ finrank R A * finrank R B := by
+  nontriviality R using finrank
+  rw [← finrank_tensorProduct, ← mulMap_range]
+  exact (A.mulMap B).toLinearMap.finrank_range_le
+
 theorem rank_sup_of_free [Module.Free R A] [Module.Free R B] :
     Module.rank R ↥(A ⊔ B) = Module.rank R A * Module.rank R B := by
   nontriviality R
-  have := (H.mulMap.symm.toLinearEquiv ≪≫ₗ
-    TensorProduct.congr (Module.Free.repr R A) (Module.Free.repr R B) ≪≫ₗ
-    finsuppTensorFinsupp' R _ _).lift_rank_eq
-  simpa only [rank_finsupp_self, ← Cardinal.mul_def, Cardinal.lift_lift,
-    ← Module.Free.rank_eq_card_chooseBasisIndex, Cardinal.lift_inj] using this
+  rw [← rank_tensorProduct', H.mulMap.toLinearEquiv.rank_eq]
+
+theorem finrank_sup_of_free [Module.Free R A] [Module.Free R B] :
+    finrank R ↥(A ⊔ B) = finrank R A * finrank R B := by
+  simpa only [map_mul] using congr(Cardinal.toNat $(H.rank_sup_of_free))
+
+/-- TODO: remove once #12076 is merged -/
+axiom _root_.Module.Finite.injective_of_surjective_of_injective
+    {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [Module.Finite R M]
+    [AddCommGroup N] [Module R N] (i f : N →ₗ[R] M)
+    (hi : Function.Injective i) (hf : Function.Surjective f) : Function.Injective f
+
+/-- TODO: remove once #9626 is merged -/
+axiom _root_.exists_linearIndependent_of_le_finrank
+    {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    {n : ℕ} (hn : n ≤ finrank R M) :
+    ∃ f : Fin n → M, LinearIndependent R f
+
+theorem of_finrank_sup_of_free [Module.Free R A] [Module.Free R B]
+    [Module.Finite R A] [Module.Finite R B]
+    (H : finrank R ↥(A ⊔ B) = finrank R A * finrank R B) : A.LinearDisjoint B := by
+  nontriviality R
+  rw [← finrank_tensorProduct] at H
+  obtain ⟨j, hj⟩ := exists_linearIndependent_of_le_finrank H.ge
+  rw [LinearIndependent, LinearMap.ker_eq_bot] at hj
+  let j' := Finsupp.total _ ↥(A ⊔ B) R j ∘ₗ
+    (LinearEquiv.ofFinrankEq (A ⊗[R] B) _ (by simp)).toLinearMap
+  replace hj : Function.Injective j' := by simpa [j']
+  have hf : Function.Surjective (mulMap' A B).toLinearMap := mulMap'_surjective A B
+  haveI := Subalgebra.finite_sup A B
+  exact Subtype.val_injective.comp (Module.Finite.injective_of_surjective_of_injective j' _ hj hf)
 
 /-- If `A` and `B` are linearly disjoint, if `A` is free and `B` is flat,
 then `[B[A] : B] = [A : R]`. See also `Subalgebra.adjoin_rank_le`. -/
