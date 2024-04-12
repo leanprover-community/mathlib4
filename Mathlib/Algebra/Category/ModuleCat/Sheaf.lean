@@ -69,10 +69,10 @@ def forget : SheafOfModules.{v} R ⥤ PresheafOfModules R.val where
   obj F := F.val
   map φ := φ.val
 
-instance : Faithful (forget R) where
+instance : (forget R).Faithful where
   map_injective h := by ext1; exact h
 
-instance : Full (forget R) where
+instance : (forget R).Full where
   preimage φ := ⟨φ⟩
 
 end SheafOfModules
