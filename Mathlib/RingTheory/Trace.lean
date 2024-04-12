@@ -195,7 +195,7 @@ variable (R S)
 It is a symmetric bilinear form and is nondegenerate if the extension is separable. -/
 noncomputable def traceForm : BilinForm R S :=
 -- Porting note: dot notation `().toBilin` does not work anymore.
-  LinearMap.toBilin (LinearMap.compr₂ (lmul R S).toLinearMap (trace R S))
+  LinearMap.compr₂ (lmul R S).toLinearMap (trace R S)
 #align algebra.trace_form Algebra.traceForm
 
 variable {S}
