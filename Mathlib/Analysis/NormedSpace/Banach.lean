@@ -411,6 +411,14 @@ theorem ofBijective_apply_symm_apply (f : E →SL[σ] F) (hinj : ker f = ⊥)
   (ofBijective f hinj hsurj).apply_symm_apply y
 #align continuous_linear_equiv.of_bijective_apply_symm_apply ContinuousLinearEquiv.ofBijective_apply_symm_apply
 
+lemma _root_.ContinuousLinearMap.isUnit_iff_bijective {f : E →L[𝕜] E} :
+    IsUnit f ↔ Bijective f := by
+  constructor
+  · rintro ⟨f, rfl⟩
+    exact ofUnit f |>.bijective
+  · refine fun h ↦ ⟨toUnit <| .ofBijective f ?_ ?_, rfl⟩ <;>
+    simp only [LinearMap.range_eq_top, LinearMapClass.ker_eq_bot, h.1, h.2]
+
 end ContinuousLinearEquiv
 
 namespace ContinuousLinearMap
@@ -569,14 +577,6 @@ lemma bijective_iff_dense_range_and_antilipschitz (f : E →SL[σ] F) :
 lemma _root_.AntilipschitzWith.completeSpace_range_clm {f : E →SL[σ] F} {c : ℝ≥0}
     (hf : AntilipschitzWith c f) : CompleteSpace (LinearMap.range f) :=
   IsClosed.completeSpace_coe <| hf.isClosed_range f.uniformContinuous
-
-lemma isUnit_iff_bijective {f : E →L[𝕜] E} : IsUnit f ↔ Bijective f := by
-  constructor
-  · rintro ⟨f, rfl⟩
-    exact ContinuousLinearEquiv.ofUnit f |>.bijective
-  · intro h
-    refine ⟨ContinuousLinearEquiv.toUnit <| .ofBijective f ?_ ?_, rfl⟩ <;>
-    simp only [LinearMap.range_eq_top, LinearMapClass.ker_eq_bot, h.1, h.2]
 
 end ContinuousLinearMap
 
