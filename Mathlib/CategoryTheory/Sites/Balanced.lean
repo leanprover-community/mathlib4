@@ -31,7 +31,7 @@ open Limits
 variable {C : Type u} [Category.{v} C]
   {D : Type u'} [Category.{v'} D] [ConcreteCategory.{w} D]
   [(forget D).PreservesMonomorphisms] [HasLimitsOfShape WalkingCospan D]
-  [ReflectsIsomorphisms (forget D)] {J : GrothendieckTopology C}
+  [(forget D).ReflectsIsomorphisms] {J : GrothendieckTopology C}
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
