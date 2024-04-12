@@ -386,7 +386,7 @@ example {_j : Bool} {_h2 : True} {h : True} : True := by
 end trace_is_true
 
 section testing_internals
-open Lean Elab Parser Command Tactic
+open Lean Elab Parser Command Mathlib Tactic MetaTesting
 
 run_cmd liftTermElabM do
   let stx ← `(tacticSeq| exact .intro)

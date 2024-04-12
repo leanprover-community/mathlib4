@@ -98,34 +98,42 @@ end Lean
 
 end low_level_syntax
 
+namespace Mathlib.Tactic.MetaTesting
+
 section tactic_modifications
 variable {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m]
 
-/-- adds `done` at the end of the given tactic sequence. -/
+/-- `addDone tac` adds `done` at the end of the tactic sequence `tac`. -/
 def addDone (tac : TSyntax ``tacticSeq) : m (TSyntax ``tacticSeq) :=
   return tac.insertBack (← `(tactic| done))
   --return ⟨tac.raw.insertRight 0 (← `(tactic| done))⟩
 
-/-- adds `have := 0` at the beginning and `done` at the end of the input tactic sequence.
+/-- `addHaveDone tac` adds `have := 0` at the beginning and `done` at the end of the
+input tactic sequence `tac`.
 When evaluating the resulting tactic, the goal acquires `mdata`
 as a consequence of the `have := 0`. -/
 def addHaveDone (tac : TSyntax ``tacticSeq) : m (TSyntax ``tacticSeq) := do
   addDone (tac.insertMany #[(← `(tactic| have := 0))])
 
-/-- adds `show id _` at the beginning and `done` at the end of the input tactic sequence.
+/-- `addShowIdDone tac` adds `show id _` at the beginning and `done` at the end of the
+input tactic sequence `tac`.
 When evaluating the resulting tactic, the goal has the same `whnf` as the original one, but is
 not the same. -/
 def addShowIdDone (tac : TSyntax ``tacticSeq) : m (TSyntax ``tacticSeq) := do
   addDone (tac.insertMany #[(← `(tactic| show id _))])
 
-/-- adds at the beginning of the tactic sequence `tac` lines like `set x := x`,
-where `x` is the username of each local declaration in `toSet`.
-These `set`s introduce a layer of separation between the original names of the declarations
+/-- `addLetsOrSets lets? unLet? tac ldecls` adds at the beginning of the tactic sequence
+`tac` either `set x := x` or `let x := x`, optionally followed by `unfold let at *`,
+where `x` is the username of each local declaration in `ldecls`.
+Whether we add `let` or `set` is decided by the `Bool`ean `lets?` and whether we `unfold` them
+is decided by the `Bool`ean `unLet?`.
+
+These `let/set`s introduce a layer of separation between the original names of the declarations
 and the current ones.  This may help detect missing `withContext`s. -/
-def addLetsOrSets (lets? unLet? : Bool) (tac : TSyntax ``tacticSeq) (toSet : Array LocalDecl) :
+def addLetsOrSets (lets? unLet? : Bool) (tac : TSyntax ``tacticSeq) (ldecls : Array LocalDecl) :
     TermElabM (TSyntax ``tacticSeq × Array (TSyntax `tactic)) := do
   let mut repls := #[]
-  for d in toSet do
+  for d in ldecls do
     let nid := mkIdent d.userName
     let dtyp := ⟨← d.type.toSyntax⟩
     let next ← if lets?
@@ -139,17 +147,18 @@ def addLetsOrSets (lets? unLet? : Bool) (tac : TSyntax ``tacticSeq) (toSet : Arr
     repls := (repls.push unf).push unf
   return (← addDone (tac.insertMany repls), repls)
 
-/-- adds at the beginning of the tactic sequence `tac` lines like `have new := old`,
-where `old` is the username of each local declaration in `toHave`.
+/-- `addPropHaves tac ldecls` adds at the beginning of the tactic sequence `tac` lines like
+`have new := old`, where `old` is the username of each local declaration in `ldecls`.
 It also replaces all `old` names with the `new` ones in `tac`.
+
 These `have`s introduce the "same" local declarations, but inside a metavariable,
 creating a layer of separation between the original names of the declarations
 and the current ones.  This may help detect missing `instantiateMVars`. -/
-def addPropHaves (tac : TSyntax ``tacticSeq) (toHave : Array LocalDecl) :
+def addPropHaves (tac : TSyntax ``tacticSeq) (ldecls : Array LocalDecl) :
     TermElabM (TSyntax ``tacticSeq × Array (TSyntax `tactic)) := do
   let mut (t1, repls) := (tac, #[])
-  for i in [:toHave.size] do
-    let decl := toHave[i]!
+  for i in [:ldecls.size] do
+    let decl := ldecls[i]!
     let oldId := mkIdent decl.userName
     let str := decl.userName.toString ++ "__"++ decl.userName.toString ++ "__" ++ (toString i)
     -- prefer to `let newId := mkIdent (← mkFreshId)` that also requires `[MonadNameGenerator m]`
@@ -177,19 +186,19 @@ def testTactic (tac : TSyntax ``tacticSeq) (test : MessageData)
                 return fail)
   return str
 
-/-- The standard test for not handling `mdata`: adds `have := 0`, which introduces
+/-- A test for not handling `mdata`: adds `have := 0`, which introduces
 some metadata in the goal.  This may produce an error. -/
 def testMData (tac : TSyntax ``tacticSeq) : TacticM (Option MessageData) := do
   let fin ← addHaveDone tac
   testTactic fin "'have := 0'" m!"is mdata correctly handled? {fin}"
 
-/-- The standard test for not handling `whnf`: adds `show id _`, which changes the goal
+/-- A test for not handling `whnf`: adds `show id _`, which changes the goal
 to a `whnf` equivalent one.  This may produce an error. -/
 def testWhnf (tac : TSyntax ``tacticSeq) : TacticM (Option MessageData) := do
   let fin ← addShowIdDone tac
   testTactic fin "'show id _'" m!"is `whnf` correctly handled? {fin}"
 
-/-- The standard test for missing `withContext`: adds `let x := x`, for every variable
+/-- A test for missing `withContext`: adds `let x := x`, for every variable
 `x` in context.  Since the new `x` was not present in the original metavariable context,
 if `x` is used by the tactic, it might produce an error. -/
 def testFVs (lets? unLet? : Bool) (tac : TSyntax ``tacticSeq) : TacticM (Option MessageData) :=
@@ -209,7 +218,7 @@ withoutModifyingState do withMainContext do
   let (ntac, repls) ← addLetsOrSets lets? unLet? tac toSet
   testTactic ntac m!"{if lets? then "'let's" else "'set's"} {repls}" m!"missing withContext? {ntac}"
 
-/-- The standard test for `instantiateMVars`: adds `have h' := h`, for every `Prop`-valued
+/-- A test for `instantiateMVars`: adds `have h' := h`, for every `Prop`-valued
 `h` in context.  Since the new `h'` does not have an explicit Type annotation, it is introduced
 as a metavariable and if it is used by the tactic with un-instantiated mvars, it might
 produce an error. -/
@@ -221,10 +230,9 @@ withoutModifyingState do withMainContext do
   let (t1, _repls) ← addPropHaves tac (props.map Prod.snd)
   testTactic ⟨t1⟩ m!"'have's{indentD t1}" m!"missing instantiateMVars? {t1}"
 
-/-- `test tacSeq` runs the standard meta-programming tests on the tactic sequence `tacSeq`.
+/-- `test tacSeq` runs some standard meta-programming tests on the tactic sequence `tacSeq`.
 If the `!`-flag is not present, then it reverts the state, otherwise it leaves the state as
-it is after the tactic sequence.
- -/
+it is after the tactic sequence. -/
 elab (name := testTac) "test " tk:"!"? tac:tacticSeq : tactic => do
   let _ ← for test in [testMData, testFVs false false, testFVs true false, testInstMVs,
                                   testFVs false true,  testFVs true true
@@ -240,8 +248,8 @@ macro "test! " tac:tacticSeq : tactic => `(tactic| test ! $tac)
 
 end tactic_tests
 
-/-- if a declaration contains one of these `SyntaxNodeKind`s, then likely the automated testing
-will fail, but would not be an indication of a bug. -/
+/-- `nonTesters` contains `SyntaxNodeKind`s of declarations that likely to not pass the automated
+testing, but that would not be an indication of a bug. -/
 abbrev nonTesters : HashSet SyntaxNodeKind := HashSet.empty
 --  |>.insert ``Lean.guardMsgsCmd  -- <--- does not actually work
   |>.insert ``Lean.Parser.Tactic.guardTarget
@@ -303,10 +311,11 @@ def metaTest : Linter where run := withSetOptionIn fun cmd => do
       | some gd => logInfo m!"Skipped since it contains '{gd}'\n\n\
                               Use '#meta_test cmd' if you really want to run the test on 'cmd'"
 
+/-- `#unmeta_test` is a convenience macro expanding to `set_option linter.metaTest false in`. -/
+macro "#unmeta_test " cmd:command : command => `(command| set_option linter.metaTest false in $cmd)
+
 initialize addLinter metaTest
 
-/-- a convenience macro expanding to `set_option linter.metaTest false in`. -/
-macro "#unmeta_test " cmd:command : command =>
-  `(command| set_option linter.metaTest false in $cmd)
-
 initialize registerTraceClass `Tactic.tests
+
+end Mathlib.Tactic.MetaTesting
