@@ -230,8 +230,8 @@
   "Mathlib.Tactic.Nontriviality.Core": ["Mathlib.Logic.Nontrivial.Basic"],
   "Mathlib.Tactic.MoveAdd":
   ["Mathlib.Algebra.Group.Basic", "Mathlib.Init.Order.LinearOrder"],
+  "Mathlib.Tactic.MetaTesting": ["Std.Data.String.Basic"],
   "Mathlib.Tactic.Measurability": ["Mathlib.Tactic.Measurability.Init"],
-  "Mathlib.Tactic.MPTests": ["Std.Data.String.Basic"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
   "Mathlib.Tactic.IrreducibleDef": ["Mathlib.Data.Subtype"],
   "Mathlib.Tactic.Group": ["Mathlib.Algebra.Group.Commutator"],
