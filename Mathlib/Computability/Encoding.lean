@@ -210,8 +210,7 @@ def unaryFinEncodingNat : FinEncoding ℕ where
 #align computability.unary_fin_encoding_nat Computability.unaryFinEncodingNat
 
 /-- An encoding function of bool in bool. -/
-def encodeBool : Bool → List Bool :=
-  List.ret
+def encodeBool : Bool → List Bool := pure
 #align computability.encode_bool Computability.encodeBool
 
 /-- A decoding function from `List Bool` to bool. -/
@@ -220,7 +219,7 @@ def decodeBool : List Bool → Bool
   | _ => Inhabited.default
 #align computability.decode_bool Computability.decodeBool
 
-theorem decode_encodeBool : ∀ b, decodeBool (encodeBool b) = b := fun b => Bool.casesOn b rfl rfl
+theorem decode_encodeBool (b : Bool) : decodeBool (encodeBool b) = b := rfl
 #align computability.decode_encode_bool Computability.decode_encodeBool
 
 /-- A fin_encoding of bool in bool. -/

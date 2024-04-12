@@ -190,7 +190,7 @@ lemma mul_comp [MulOneClass P] (g₁ g₂ : M →* N) (f : P →* M) :
 #align add_monoid_hom.add_comp AddMonoidHom.add_comp
 
 @[to_additive]
-lemma comp_mul [CommMonoid N] [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
+lemma comp_mul [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
     g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
   ext; simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
 #align monoid_hom.comp_mul MonoidHom.comp_mul

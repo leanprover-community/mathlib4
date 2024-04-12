@@ -45,9 +45,7 @@ namespace CategoryTheory.Limits
 universe w' w₂' w w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable {J : Type w} [Category.{w'} J] {K : J ⥤ C}
 
 /-- A functor `F` preserves limits of `K` (written as `PreservesLimit K F`)
@@ -196,7 +194,6 @@ instance [HasColimit K] {F : C ⥤ D} [PreservesColimit K F] : HasColimit (K ⋙
 section
 
 variable {E : Type u₃} [ℰ : Category.{v₃} E]
-
 variable (F : C ⥤ D) (G : D ⥤ E)
 
 -- Porting note: made this global by removing local
@@ -540,7 +537,6 @@ instance idReflectsColimits : ReflectsColimitsOfSize.{w, w'} (𝟭 C) where
 section
 
 variable {E : Type u₃} [ℰ : Category.{v₃} E]
-
 variable (F : C ⥤ D) (G : D ⥤ E)
 
 instance compReflectsLimit [ReflectsLimit K F] [ReflectsLimit (K ⋙ F) G] :

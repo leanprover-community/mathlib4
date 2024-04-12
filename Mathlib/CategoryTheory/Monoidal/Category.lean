@@ -125,7 +125,7 @@ scoped notation "𝟙_ " C:max => (MonoidalCategoryStruct.tensorUnit : C)
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Used to ensure that `𝟙_` notation is used, as the ascription makes this not automatic. -/
 @[delab app.CategoryTheory.MonoidalCategoryStruct.tensorUnit]
-def delabTensorUnit : Delab := whenPPOption getPPNotation do
+def delabTensorUnit : Delab := whenPPOption getPPNotation <| withOverApp 3 do
   let e ← getExpr
   guard <| e.isAppOfArity ``MonoidalCategoryStruct.tensorUnit 3
   let C ← withNaryArg 0 delab
@@ -999,7 +999,6 @@ section
 universe v₁ v₂ u₁ u₂
 
 variable (C₁ : Type u₁) [Category.{v₁} C₁] [MonoidalCategory.{v₁} C₁]
-
 variable (C₂ : Type u₂) [Category.{v₂} C₂] [MonoidalCategory.{v₂} C₂]
 
 attribute [local simp] associator_naturality leftUnitor_naturality rightUnitor_naturality pentagon

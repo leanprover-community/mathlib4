@@ -54,7 +54,6 @@ open Set
 section
 
 variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
-
 variable [AffineSpace V P]
 
 /-- The submodule spanning the differences of a (possibly empty) set of points. -/
@@ -297,7 +296,7 @@ theorem coe_direction_eq_vsub_set_left {s : AffineSubspace k P} {p : P} (hp : p 
     (s.direction : Set V) = (p -ᵥ ·) '' s := by
   ext v
   rw [SetLike.mem_coe, ← Submodule.neg_mem_iff, ← SetLike.mem_coe,
-    coe_direction_eq_vsub_set_right hp, Set.mem_image_iff_bex, Set.mem_image_iff_bex]
+    coe_direction_eq_vsub_set_right hp, Set.mem_image, Set.mem_image]
   conv_lhs =>
     congr
     ext
@@ -1230,9 +1229,7 @@ theorem affineSpan_coe_preimage_eq_top (A : Set P) [Nonempty A] :
     affineSpan k (((↑) : affineSpan k A → P) ⁻¹' A) = ⊤ := by
   rw [eq_top_iff]
   rintro ⟨x, hx⟩ -
-  refine' affineSpan_induction' (fun y hy => _) (fun c u hu v hv w hw => _) hx
-      (p := fun y hy => ⟨y, hy⟩ ∈ (affineSpan k (((↑) : {z // z ∈ affineSpan k A} → P) ⁻¹' A)))
-  -- Porting note: Lean couldn't infer the motive
+  refine affineSpan_induction' (fun y hy ↦ ?_) (fun c u hu v hv w hw ↦ ?_) hx
   · exact subset_affineSpan _ _ hy
   · exact AffineSubspace.smul_vsub_vadd_mem _ _
 #align affine_span_coe_preimage_eq_top affineSpan_coe_preimage_eq_top
@@ -1514,11 +1511,8 @@ end AffineSubspace
 section MapComap
 
 variable {k V₁ P₁ V₂ P₂ V₃ P₃ : Type*} [Ring k]
-
 variable [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁]
-
 variable [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
-
 variable [AddCommGroup V₃] [Module k V₃] [AddTorsor V₃ P₃]
 
 section
@@ -1553,8 +1547,8 @@ theorem coe_map (s : AffineSubspace k P₁) : (s.map f : Set P₂) = f '' s :=
 
 @[simp]
 theorem mem_map {f : P₁ →ᵃ[k] P₂} {x : P₂} {s : AffineSubspace k P₁} :
-    x ∈ s.map f ↔ ∃ y ∈ s, f y = x := by
-  simpa only [bex_def] using mem_image_iff_bex
+    x ∈ s.map f ↔ ∃ y ∈ s, f y = x :=
+  Iff.rfl
 #align affine_subspace.mem_map AffineSubspace.mem_map
 
 theorem mem_map_of_mem {x : P₁} {s : AffineSubspace k P₁} (h : x ∈ s) : f x ∈ s.map f :=
@@ -1798,7 +1792,6 @@ namespace AffineSubspace
 open AffineEquiv
 
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
-
 variable [AffineSpace V P]
 
 /-- Two affine subspaces are parallel if one is related to the other by adding the same vector

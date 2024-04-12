@@ -105,7 +105,7 @@ The integral closure condition is independent of the choice of field of fraction
 use `isDedekindRing_iff` to prove `IsDedekindRing` for a given `fraction_map`.
 -/
 class IsDedekindRing
-  extends IsNoetherian A A, DimensionLEOne A, IsIntegrallyClosed A : Prop
+  extends IsNoetherian A A, DimensionLEOne A, IsIntegralClosure A A (FractionRing A) : Prop
 
 /-- An integral domain is a Dedekind domain if and only if it is
 Noetherian, has dimension ≤ 1, and is integrally closed in a given fraction field.

@@ -8,6 +8,7 @@ import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Multiset.Lattice
+import Mathlib.Data.Set.Lattice
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Hom.Lattice
 
@@ -1289,7 +1290,7 @@ theorem lt_sup'_iff : a < s.sup' H f ↔ ∃ b ∈ s, a < f b := by
 @[simp]
 theorem sup'_lt_iff : s.sup' H f < a ↔ ∀ i ∈ s, f i < a := by
   rw [← WithBot.coe_lt_coe, coe_sup', Finset.sup_lt_iff (WithBot.bot_lt_coe a)]
-  exact ball_congr (fun _ _ => WithBot.coe_lt_coe)
+  exact forall₂_congr (fun _ _ => WithBot.coe_lt_coe)
 #align finset.sup'_lt_iff Finset.sup'_lt_iff
 
 @[simp]

@@ -248,7 +248,7 @@ lemma abs_sub_addNSMul_le (hδ : 0 ≤ δ) {t : Icc a b} (n : ℕ)
     (|t - addNSMul h δ n| : α) ≤ δ :=
   (abs_eq_self.2 <| sub_nonneg.2 ht.1).trans_le <| (sub_le_sub_right (by exact ht.2) _).trans <|
     (le_abs_self _).trans <| (abs_projIcc_sub_projIcc h).trans <| by
-      rw [add_sub_add_comm, sub_self, zero_add, succ_nsmul, add_sub_cancel]
+      rw [add_sub_add_comm, sub_self, zero_add, succ_nsmul', add_sub_cancel_right]
       exact (abs_eq_self.mpr hδ).le
 
 end Set.Icc

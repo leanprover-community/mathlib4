@@ -61,7 +61,7 @@ theorem _root_.isRoot_of_unity_iff (h : 0 < n) (R : Type*) [CommRing R] [IsDomai
       prod_cyclotomic_eq_X_pow_sub_one h, isRoot_prod]
 #align is_root_of_unity_iff isRoot_of_unity_iff
 
-/-- Any `n`-th primitive root of unity is a root of `cyclotomic n R`.-/
+/-- Any `n`-th primitive root of unity is a root of `cyclotomic n R`. -/
 theorem _root_.IsPrimitiveRoot.isRoot_cyclotomic (hpos : 0 < n) {μ : R} (h : IsPrimitiveRoot μ n) :
     IsRoot (cyclotomic n R) μ := by
   rw [← mem_roots (cyclotomic_ne_zero n R), cyclotomic_eq_prod_X_sub_primitiveRoots h,
@@ -95,9 +95,8 @@ private theorem isRoot_cyclotomic_iff' {n : ℕ} {K : Type*} [Field K] {μ : K} 
   rw [← Finset.prod_sdiff hni, Finset.prod_pair key.ne, hk, hj] at this
   have hn := (X_pow_sub_one_separable_iff.mpr <| NeZero.natCast_ne n K).squarefree
   rw [← this, Squarefree] at hn
-  contrapose! hn
-  refine' ⟨X - C μ, ⟨(∏ x in n.divisors \ {i, n}, cyclotomic x K) * k * j, by ring⟩, _⟩
-  simp [Polynomial.isUnit_iff_degree_eq_zero]
+  specialize hn (X - C μ) ⟨(∏ x in n.divisors \ {i, n}, cyclotomic x K) * k * j, by ring⟩
+  simp [Polynomial.isUnit_iff_degree_eq_zero] at hn
 
 theorem isRoot_cyclotomic_iff [NeZero (n : R)] {μ : R} :
     IsRoot (cyclotomic n R) μ ↔ IsPrimitiveRoot μ n := by

@@ -34,9 +34,7 @@ namespace CategoryTheory
 universe v v₂ u u₂
 
 variable {C : Type u} [Category.{v} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable {A B : C} {f g : A ⟶ B}
 
 /-- The pair `f g : A ⟶ B` is reflexive if there is a morphism `B ⟶ A` which is a section for both.

@@ -120,7 +120,7 @@ theorem prodCongr_symm (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
 #align equiv.prod_congr_symm Equiv.prodCongr_symm
 
 /-- Type product is commutative up to an equivalence: `α × β ≃ β × α`. This is `Prod.swap` as an
-equivalence.-/
+equivalence. -/
 def prodComm (α β) : α × β ≃ β × α :=
   ⟨Prod.swap, Prod.swap, Prod.swap_swap, Prod.swap_swap⟩
 #align equiv.prod_comm Equiv.prodComm
@@ -616,7 +616,6 @@ def subtypeCongr {p q : α → Prop} [DecidablePred p] [DecidablePred q]
 #align equiv.subtype_congr Equiv.subtypeCongr
 
 variable {p : ε → Prop} [DecidablePred p]
-
 variable (ep ep' : Perm { a // p a }) (en en' : Perm { a // ¬p a })
 
 /-- Combining permutations on `ε` that permute only inside or outside the subtype

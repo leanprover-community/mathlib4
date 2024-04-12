@@ -3,9 +3,9 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Data.Nat.Cast.Field
 
 #align_import oxford_invariants.«2021summer».week3_p1 from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
@@ -137,7 +137,7 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
         rw [Finset.sum_range_succ, hb, Finset.mul_sum]
         congr; ext i
         rw [← mul_div_assoc, ← mul_div_right_comm, mul_div_assoc,
-          mul_div_cancel _ (a_pos _ <| Nat.le_succ _).ne', mul_comm]
+          mul_div_cancel_right₀ _ (a_pos _ <| Nat.le_succ _).ne', mul_comm]
   -- Check the divisibility condition
   · rw [mul_tsub, ← mul_assoc, Nat.mul_div_cancel' ha, add_mul, Nat.mul_div_cancel' han,
       add_tsub_tsub_cancel ha₀, add_tsub_cancel_right]

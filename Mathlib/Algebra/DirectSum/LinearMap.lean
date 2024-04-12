@@ -18,17 +18,20 @@ domain and codomain.
 
 open Set BigOperators DirectSum
 
-variable {ι R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-  {N : ι → Submodule R M} [DecidableEq ι] (h : IsInternal N)
-
 namespace LinearMap
+
+variable {ι R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {N : ι → Submodule R M}
+
+section IsInternal
+
+variable [DecidableEq ι] (h : IsInternal N)
 
 /-- If a linear map `f : M₁ → M₂` respects direct sum decompositions of `M₁` and `M₂`, then it has a
 block diagonal matrix with respect to bases compatible with the direct sum decompositions. -/
 lemma toMatrix_directSum_collectedBasis_eq_blockDiagonal' {R M₁ M₂ : Type*} [CommSemiring R]
     [AddCommMonoid M₁] [Module R M₁] {N₁ : ι → Submodule R M₁} (h₁ : IsInternal N₁)
     [AddCommMonoid M₂] [Module R M₂] {N₂ : ι → Submodule R M₂} (h₂ : IsInternal N₂)
-    {κ₁ κ₂ : ι → Type*} [∀ i, Fintype (κ₁ i)] [∀ i, Fintype (κ₂ i)] [∀ i, DecidableEq (κ₁ i)]
+    {κ₁ κ₂ : ι → Type*} [∀ i, Fintype (κ₁ i)] [∀ i, Finite (κ₂ i)] [∀ i, DecidableEq (κ₁ i)]
     [Fintype ι] (b₁ : (i : ι) → Basis (κ₁ i) R (N₁ i)) (b₂ : (i : ι) → Basis (κ₂ i) R (N₂ i))
     {f : M₁ →ₗ[R] M₂} (hf : ∀ i, MapsTo f (N₁ i) (N₂ i)) :
     toMatrix (h₁.collectedBasis b₁) (h₂.collectedBasis b₂) f =
@@ -125,16 +128,20 @@ lemma mapsTo_biSup_of_mapsTo (s : Set ι) {f : Module.End R M} (hf : ∀ i, Maps
   suffices (⨆ i ∈ s, N i).map f ≤ ⨆ i ∈ s, N i from Submodule.map_le_iff_le_comap.mp this
   simpa only [Submodule.map_iSup] using iSup₂_mono <| fun i _ ↦ hf i
 
+end IsInternal
+
 /-- The trace of an endomorphism of a direct sum is the sum of the traces on each component.
 
 Note that it is important the statement gives the user definitional control over `p` since the
 _type_ of the term `trace R p (f.restrict hp')` depends on `p`. -/
 lemma trace_eq_sum_trace_restrict_of_eq_biSup
+    [∀ i, Module.Finite R (N i)] [∀ i, Module.Free R (N i)]
     (s : Finset ι) (h : CompleteLattice.Independent <| fun i : s ↦ N i)
     {f : Module.End R M} (hf : ∀ i, MapsTo f (N i) (N i))
     (p : Submodule R M) (hp : p = ⨆ i ∈ s, N i)
     (hp' : MapsTo f p p := hp ▸ mapsTo_biSup_of_mapsTo (s : Set ι) hf) :
     trace R p (f.restrict hp') = ∑ i in s, trace R (N i) (f.restrict (hf i)) := by
+  classical
   let N' : s → Submodule R p := fun i ↦ (N i).comap p.subtype
   replace h : IsInternal N' := hp ▸ isInternal_biSup_submodule_of_independent (s : Set ι) h
   have hf' : ∀ i, MapsTo (restrict f hp') (N' i) (N' i) := fun i x hx' ↦ by simpa using hf i hx'
@@ -143,6 +150,6 @@ lemma trace_eq_sum_trace_restrict_of_eq_biSup
   have _i2 : ∀ i, Module.Free R (N' i) := fun i ↦ Module.Free.of_equiv (e i).symm
   rw [trace_eq_sum_trace_restrict h hf', ← s.sum_coe_sort]
   have : ∀ i : s, f.restrict (hf i) = (e i).conj ((f.restrict hp').restrict (hf' i)) := fun _ ↦ rfl
-  exact Finset.sum_congr rfl <| by simp [this]
+  simp [this]
 
 end LinearMap
