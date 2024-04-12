@@ -86,7 +86,7 @@ reuse the existing limit."]
 noncomputable instance Forget₂.createsLimit :
     CreatesLimit F (forget₂ GroupCat.{u} MonCat.{u}) :=
   -- Porting note: need to add `forget₂ GrpCat MonCat` reflects isomorphism
-  letI : ReflectsIsomorphisms (forget₂ GroupCat.{u} MonCat.{u}) :=
+  letI : (forget₂ GroupCat.{u} MonCat.{u}).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   createsLimitOfReflectsIso (K := F) (F := (forget₂ GroupCat.{u} MonCat.{u}))
     fun c' t =>
@@ -258,7 +258,7 @@ and then reuse the existing limit.
   and then reuse the existing limit."]
 noncomputable instance Forget₂.createsLimit :
     CreatesLimit F (forget₂ CommGroupCat GroupCat.{u}) :=
-  letI : ReflectsIsomorphisms (forget₂ CommGroupCat.{u} GroupCat.{u}) :=
+  letI : (forget₂ CommGroupCat.{u} GroupCat.{u}).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   letI : Small.{u}
       (Functor.sections ((F ⋙ forget₂ CommGroupCat GroupCat) ⋙ forget GroupCat)) :=
@@ -503,7 +503,7 @@ set_option linter.uppercaseLean3 false in
 -- Porting note: explicitly add what to be synthesized under `simps!`, because other lemmas
 -- automatically generated is not in normal form
 /-- The categorical kernel inclusion for `f : G ⟶ H`, as an object over `G`,
-agrees with the `subtype` map.
+agrees with the `AddSubgroup.subtype` map.
 -/
 @[simps! hom_left_apply_coe inv_left_apply]
 def kernelIsoKerOver {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
