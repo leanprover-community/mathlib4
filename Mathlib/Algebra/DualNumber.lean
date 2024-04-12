@@ -85,7 +85,8 @@ theorem eps_mul_eps [Semiring R] : (ε * ε : R[ε]) = 0 :=
 #align dual_number.eps_mul_eps DualNumber.eps_mul_eps
 
 @[simp]
-theorem eps_inv [DivisionRing R] : (ε : R[ε])⁻¹ = (0 : R[ε]) := TrivSqZeroExt.inv_inr
+theorem eps_inv [DivisionRing R] : (ε : R[ε])⁻¹ = (0 : R[ε]) :=
+  TrivSqZeroExt.inv_inr
 
 @[simp]
 theorem one_inv [DivisionRing R] : (inl 1 : R[ε])⁻¹ = (inl 1 : R[ε]) := by
