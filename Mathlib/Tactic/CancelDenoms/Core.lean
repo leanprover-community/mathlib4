@@ -260,7 +260,6 @@ In the case of `LT`, `LE`, `GE`, and `GT` an order on the type is needed, in the
 it is not, the final component of the return value tracks this.
 -/
 def findCompLemma (e : Expr) : Option (Expr × Expr × Name × Bool) :=
-  if let .mdata _ e := e then findCompLemma e else
   match e.getAppFnArgs with
   | (``LT.lt, #[_, _, a, b]) => (a, b, ``cancel_factors_lt, true)
   | (``LE.le, #[_, _, a, b]) => (a, b, ``cancel_factors_le, true)
@@ -329,7 +328,7 @@ open Elab Tactic
 
 def cancelDenominatorsAt (fvar : FVarId) : TacticM Unit := do
   let t ← instantiateMVars (← fvar.getDecl).type
-  let (new, eqPrf) ← CancelDenoms.cancelDenominatorsInType t.consumeMData
+  let (new, eqPrf) ← CancelDenoms.cancelDenominatorsInType t
   liftMetaTactic' fun g => do
     let res ← g.replaceLocalDecl fvar new eqPrf
     return res.mvarId
