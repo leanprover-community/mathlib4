@@ -139,34 +139,34 @@ def LinearMap.toBilin : (M →ₗ[R] M →ₗ[R] R) ≃ₗ[R] BilinForm R M :=
   BilinForm.toLin.symm
 #align linear_map.to_bilin LinearMap.toBilin
 
-@[simp, deprecated]
+@[deprecated]
 theorem LinearMap.toBilinAux_eq (f : M →ₗ[R] M →ₗ[R] R) :
     LinearMap.toBilinAux f = f :=
   rfl
 #align linear_map.to_bilin_aux_eq LinearMap.toBilinAux_eq
 
 set_option linter.deprecated false in
-@[simp, deprecated]
+@[deprecated]
 theorem LinearMap.toBilin_symm :
     (LinearMap.toBilin.symm : BilinForm R M ≃ₗ[R] _) = BilinForm.toLin :=
   rfl
 #align linear_map.to_bilin_symm LinearMap.toBilin_symm
 
 set_option linter.deprecated false in
-@[simp, deprecated]
+@[deprecated]
 theorem BilinForm.toLin_symm :
     (BilinForm.toLin.symm : _ ≃ₗ[R] BilinForm R M) = LinearMap.toBilin :=
   LinearMap.toBilin.symm_symm
 #align bilin_form.to_lin_symm BilinForm.toLin_symm
 
 set_option linter.deprecated false in
-@[simp, deprecated]
+@[deprecated]
 theorem LinearMap.toBilin_apply (f : M →ₗ[R] M →ₗ[R] R) (x y : M) :
     toBilin f x y = f x y :=
   rfl
 
 set_option linter.deprecated false in
-@[simp, deprecated]
+@[deprecated]
 theorem BilinForm.toLin_apply (x : M) : BilinForm.toLin B x = B x :=
   rfl
 #align bilin_form.to_lin_apply BilinForm.toLin_apply
@@ -194,6 +194,7 @@ section Comp
 variable {M' : Type w} [AddCommMonoid M'] [Module R M']
 
 /-- Apply a linear map on the left and right argument of a bilinear form. -/
+@[deprecated]
 def comp (B : BilinForm R M') (l r : M →ₗ[R] M') : BilinForm R M := B.compl₁₂ l r
 #align bilin_form.comp LinearMap.BilinForm.comp
 
