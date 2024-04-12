@@ -88,7 +88,7 @@ section dual
         ← inter_eq_self_of_subset_left hB''.subset_ground, inter_right_comm, inter_assoc]
 
       calc _ ⊆ _ := inter_subset_inter_right _ hssJ
-           _ ⊆ _ := by rw [inter_distrib_left, hdj.symm.inter_eq, union_empty]
+           _ ⊆ _ := by rw [inter_union_distrib_left, hdj.symm.inter_eq, union_empty]
            _ ⊆ _ := inter_subset_right _ _
 
     obtain ⟨B₁,hB₁,hI'B₁,hB₁I⟩ := (hB'.indep.subset hI').exists_base_subset_union_base hB''
@@ -188,7 +188,7 @@ theorem Base.compl_inter_basis_of_inter_basis (hB : M.Base B) (hBX : M.Basis (B 
     and_iff_left ((inter_subset_left _ _).trans (diff_subset _ _))]
   refine' fun B' hB' ↦ by_contra (fun hem ↦ _)
   rw [nonempty_iff_ne_empty, not_ne_iff, ← union_singleton, diff_inter_diff,
-   inter_distrib_right, union_empty_iff, singleton_inter_eq_empty, diff_eq,
+   union_inter_distrib_right, union_empty_iff, singleton_inter_eq_empty, diff_eq,
    inter_right_comm, inter_eq_self_of_subset_right hB'.subset_ground, ← diff_eq,
    diff_eq_empty] at hem
   obtain ⟨f, hfb, hBf⟩ := hB.exchange hB' ⟨he.2, hem.2⟩
@@ -247,7 +247,7 @@ theorem coindep_iff_subset_compl_base : M.Coindep X ↔ ∃ B, M.Base B ∧ X �
   exact ⟨fun ⟨⟨B, hB, _, hBX⟩, hX⟩ ↦ ⟨B, hB, hX, hBX.symm⟩,
     fun ⟨B, hB, hXE, hXB⟩ ↦ ⟨⟨B, hB, hB.subset_ground,  hXB.symm⟩, hXE⟩⟩
 
-@[aesop unsafe 10% (rule_sets [Matroid])]
+@[aesop unsafe 10% (rule_sets := [Matroid])]
 theorem Coindep.subset_ground (hX : M.Coindep X) : X ⊆ M.E :=
   hX.indep.subset_ground
 

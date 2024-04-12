@@ -66,7 +66,6 @@ end Nat.Partrec
 namespace Partrec
 
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 open Computable Part
@@ -85,7 +84,7 @@ theorem merge' {f g : α →. σ} (hf : Partrec f) (hg : Partrec g) :
       fun a => _⟩
   have : ∀ x ∈ k' a, x ∈ f a ∨ x ∈ g a := by
     intro x h'
-    simp only [exists_prop, mem_coe, mem_bind_iff, Option.mem_def] at h'
+    simp only [k', exists_prop, mem_coe, mem_bind_iff, Option.mem_def] at h'
     obtain ⟨n, hn, hx⟩ := h'
     have := (H _).1 _ hn
     simp [mem_decode₂, encode_injective.eq_iff] at this
@@ -168,7 +167,6 @@ theorem ComputablePred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : Com
 namespace ComputablePred
 
 variable {α : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable σ]
 
 open Nat.Partrec (Code)
@@ -203,19 +201,12 @@ theorem to_re {p : α → Prop} (hp : ComputablePred p) : RePred p := by
 /-- **Rice's Theorem** -/
 theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C) {f g} (hf : Nat.Partrec f)
     (hg : Nat.Partrec g) (fC : f ∈ C) : g ∈ C := by
-  cases' h with _ h; skip
+  cases' h with _ h
   obtain ⟨c, e⟩ :=
     fixed_point₂
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂
           ((Partrec.nat_iff.2 hf).comp snd).to₂).to₂
-  simp? at e says simp only [Bool.cond_decide] at e
-  by_cases H : eval c ∈ C
-  · simp only [H, if_true] at e
-    change (fun b => g b) ∈ C
-    rwa [← e]
-  · simp only [H, if_false] at e
-    rw [e] at H
-    contradiction
+  aesop
 #align computable_pred.rice ComputablePred.rice
 
 theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C ↔ cg ∈ C)) :
@@ -345,7 +336,7 @@ protected theorem map {n f} {g : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' n f
 #align nat.partrec'.map Nat.Partrec'.map
 
 /-- Analogous to `Nat.Partrec'` for `ℕ`-valued functions, a predicate for partial recursive
-  vector-valued functions.-/
+  vector-valued functions. -/
 def Vec {n m} (f : Vector ℕ n → Vector ℕ m) :=
   ∀ i, Partrec' fun v => (f v).get i
 #align nat.partrec'.vec Nat.Partrec'.Vec
@@ -405,7 +396,7 @@ theorem of_part : ∀ {n f}, _root_.Partrec f → @Partrec' n f :=
         (Part.ofOption (decode (α := Vector ℕ n) n₁)).bind (fun a => Part.map encode (f a))
       exact
         (comp₁ g (this g hf) (prim Nat.Primrec'.encode)).of_eq fun i => by
-          dsimp only; simp [encodek, Part.map_id']
+          dsimp only [g]; simp [encodek, Part.map_id']
     fun f hf => by
     obtain ⟨c, rfl⟩ := exists_code.1 hf
     simpa [eval_eq_rfindOpt] using

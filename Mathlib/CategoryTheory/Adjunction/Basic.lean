@@ -78,7 +78,6 @@ structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
 #align category_theory.adjunction.hom_equiv_counit CategoryTheory.Adjunction.homEquiv_counit
 #align category_theory.adjunction.hom_equiv_counit' CategoryTheory.Adjunction.homEquiv_counit
 
--- mathport name: «expr ⊣ »
 /-- The notation `F ⊣ G` stands for `Adjunction F G` representing that `F` is left adjoint to `G` -/
 infixl:15 " ⊣ " => Adjunction
 
@@ -122,7 +121,7 @@ def Adjunction.ofRightAdjoint (right : C ⥤ D) [IsRightAdjoint right] :
 
 namespace Adjunction
 
--- porting note: Workaround not needed in Lean 4
+-- Porting note: Workaround not needed in Lean 4
 -- restate_axiom homEquiv_unit'
 
 -- restate_axiom homEquiv_counit'
@@ -494,13 +493,11 @@ section ConstructLeft
 -- Hom(X, GY) natural in Y. The action of F on morphisms can be
 -- constructed from this data.
 variable {F_obj : C → D}
-
 variable (e : ∀ X Y, (F_obj X ⟶ Y) ≃ (X ⟶ G.obj Y))
-
 variable (he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.map g)
 
 private theorem he' {X Y Y'} (f g) : (e X Y').symm (f ≫ G.map g) = (e X Y).symm f ≫ g := by
-  intros; rw [Equiv.symm_apply_eq, he]; simp
+  rw [Equiv.symm_apply_eq, he]; simp
 -- #align category_theory.adjunction.he' category_theory.adjunction.he'
 
 /-- Construct a left adjoint functor to `G`, given the functor's value on objects `F_obj` and
@@ -541,13 +538,11 @@ section ConstructRight
 
 -- Construction of a right adjoint, analogous to the above.
 variable {G_obj : D → C}
-
 variable (e : ∀ X Y, (F.obj X ⟶ Y) ≃ (X ⟶ G_obj Y))
-
 variable (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y g)
 
 private theorem he'' {X' X Y} (f g) : F.map f ≫ (e X Y).symm g = (e X' Y).symm (f ≫ g) := by
-  intros; rw [Equiv.eq_symm_apply, he]; simp
+  rw [Equiv.eq_symm_apply, he]; simp
 -- #align category_theory.adjunction.he' category_theory.adjunction.he'
 
 /-- Construct a right adjoint functor to `F`, given the functor's value on objects `G_obj` and

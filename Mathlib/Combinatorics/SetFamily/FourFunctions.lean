@@ -3,14 +3,15 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Data.Finset.Sups
 import Mathlib.Data.Set.Basic
 import Mathlib.Order.Birkhoff
 import Mathlib.Order.Booleanisation
 import Mathlib.Order.Sublattice
+import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Ring
 
 /-!
@@ -229,8 +230,9 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
     · rw [insert_erase (erase_ne_self.1 fun hs ↦ ?_)]
       rw [hs] at h
       exact h.2 h.1
-  · rw [← sum_union (disjoint_sdiff_self_right.mono inf_le_left inf_le_left), ← inter_distrib_right,
-      union_sdiff_of_subset (powerset_mono.2 <| subset_insert _ _), inter_eq_right.2 h𝒜]
+  · rw [← sum_union (disjoint_sdiff_self_right.mono inf_le_left inf_le_left),
+      ← union_inter_distrib_right, union_sdiff_of_subset (powerset_mono.2 <| subset_insert _ _),
+      inter_eq_right.2 h𝒜]
 
 /-- The **Four Functions Theorem** on a powerset algebra. See `four_functions_theorem` for the
 finite distributive lattice generalisation. -/
@@ -273,10 +275,10 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
   set s' : Finset L := s.preimage (↑) <| Subtype.coe_injective.injOn _
   set t' : Finset L := t.preimage (↑) <| Subtype.coe_injective.injOn _
   have hs' : s'.map ⟨L.subtype, Subtype.coe_injective⟩ = s := by
-    simp [map_eq_image, image_preimage, filter_eq_self]
+    simp [s', map_eq_image, image_preimage, filter_eq_self]
     exact fun a ha ↦ subset_latticeClosure <| Set.subset_union_left _ _ ha
   have ht' : t'.map ⟨L.subtype, Subtype.coe_injective⟩ = t := by
-    simp [map_eq_image, image_preimage, filter_eq_self]
+    simp [t', map_eq_image, image_preimage, filter_eq_self]
     exact fun a ha ↦ subset_latticeClosure <| Set.subset_union_right _ _ ha
   clear_value s' t'
   obtain ⟨β, _, _, g, hg⟩ := exists_birkhoff_representation L

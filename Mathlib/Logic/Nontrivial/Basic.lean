@@ -22,7 +22,7 @@ Results about `Nontrivial`.
 
 variable {α : Type*} {β : Type*}
 
-open Classical
+open scoped Classical
 
 -- `x` and `y` are explicit here, as they are often needed to guide typechecking of `h`.
 theorem nontrivial_of_lt [Preorder α] (x y : α) (h : x < y) : Nontrivial α :=
@@ -40,7 +40,7 @@ theorem nontrivial_iff_lt [LinearOrder α] : Nontrivial α ↔ ∃ x y : α, x <
 
 theorem Subtype.nontrivial_iff_exists_ne (p : α → Prop) (x : Subtype p) :
     Nontrivial (Subtype p) ↔ ∃ (y : α) (_ : p y), y ≠ x := by
-  simp only [_root_.nontrivial_iff_exists_ne x, Subtype.exists, Ne.def, Subtype.ext_iff]
+  simp only [_root_.nontrivial_iff_exists_ne x, Subtype.exists, Ne, Subtype.ext_iff]
 #align subtype.nontrivial_iff_exists_ne Subtype.nontrivial_iff_exists_ne
 
 /-- An inhabited type is either nontrivial, or has a unique element. -/
@@ -57,7 +57,7 @@ noncomputable def nontrivialPSumUnique (α : Type*) [Inhabited α] :
 
 instance Option.nontrivial [Nonempty α] : Nontrivial (Option α) := by
   inhabit α
-  exact ⟨none, some default, fun .⟩
+  exact ⟨none, some default, nofun⟩
 
 /-- Pushforward a `Nontrivial` instance along an injective function. -/
 protected theorem Function.Injective.nontrivial [Nontrivial α] {f : α → β}

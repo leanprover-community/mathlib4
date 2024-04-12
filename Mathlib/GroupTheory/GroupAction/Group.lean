@@ -87,7 +87,7 @@ def AddAction.toPermHom (α : Type*) [AddGroup α] [AddAction α β] :
 
 /-- The tautological action by `Equiv.Perm α` on `α`.
 
-This generalizes `Function.End.applyMulAction`.-/
+This generalizes `Function.End.applyMulAction`. -/
 instance Equiv.Perm.applyMulAction (α : Type*) : MulAction (Equiv.Perm α) α where
   smul f a := f a
   one_smul _ := rfl
@@ -182,7 +182,6 @@ end Group
 section Monoid
 
 variable [Monoid α] [MulAction α β]
-
 variable (c : α) (x y : β) [Invertible c]
 
 @[simp]
@@ -269,7 +268,6 @@ section DistribMulAction
 section Group
 
 variable [Group α] [AddMonoid β] [DistribMulAction α β]
-
 variable (β)
 
 /-- Each element of the group defines an additive monoid isomorphism.
@@ -322,7 +320,6 @@ end DistribMulAction
 section MulDistribMulAction
 
 variable [Group α] [Monoid β] [MulDistribMulAction α β]
-
 variable (β)
 
 /-- Each element of the group defines a multiplicative monoid isomorphism.

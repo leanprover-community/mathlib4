@@ -35,7 +35,7 @@ The construction is described in Dupuis, Lewis, and Macbeth,
 
 ## Notation
 
-This file introduces notation in the locale `isocrystal`.
+This file introduces notation in the locale `Isocrystal`.
 * `K(p, k)`: `FractionRing (WittVector p k)`
 * `φ(p, k)`: `WittVector.FractionRing.frobeniusRingHom p k`
 * `M →ᶠˡ[p, k] M₂`: `LinearMap (WittVector.FractionRing.frobeniusRingHom p k) M M₂`
@@ -62,7 +62,6 @@ open FiniteDimensional
 namespace WittVector
 
 variable (p : ℕ) [Fact p.Prime]
-
 variable (k : Type*) [CommRing k]
 
 scoped[Isocrystal] notation "K(" p ", " k ")" => FractionRing (WittVector p k)
@@ -118,9 +117,7 @@ class Isocrystal (V : Type*) [AddCommGroup V] extends Module K(p, k) V where
 open WittVector
 
 variable (V : Type*) [AddCommGroup V] [Isocrystal p k V]
-
 variable (V₂ : Type*) [AddCommGroup V₂] [Isocrystal p k V₂]
-
 variable {V}
 
 /--
@@ -231,7 +228,7 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
   -- Porting note: `refine'` below gets confused when this is inlined.
   let E := (LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F
   refine' ⟨⟨E, _⟩⟩
-  simp only
+  simp only [E]
   intro c
   rw [LinearEquiv.trans_apply, LinearEquiv.trans_apply, LinearEquiv.smulOfNeZero_apply,
     LinearEquiv.smulOfNeZero_apply, LinearEquiv.map_smul, LinearEquiv.map_smul]

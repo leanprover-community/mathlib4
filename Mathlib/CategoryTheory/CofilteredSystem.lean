@@ -96,7 +96,7 @@ theorem nonempty_sections_of_finite_cofiltered_system {J : Type u} [Category.{w}
   use fun j => (u ⟨j⟩).down
   intro j j' f
   have h := @hu (⟨j⟩ : J') (⟨j'⟩ : J') (ULift.up f)
-  simp only [AsSmall.down, Functor.comp_map, uliftFunctor_map, Functor.op_map] at h
+  simp only [F', down, AsSmall.down, Functor.comp_map, uliftFunctor_map, Functor.op_map] at h
   simp_rw [← h]
 #align nonempty_sections_of_finite_cofiltered_system nonempty_sections_of_finite_cofiltered_system
 
@@ -185,11 +185,15 @@ def toPreimages : J ⥤ Type v where
     rw [← mem_preimage, preimage_preimage, mem_preimage]
     convert h (g ≫ f); rw [F.map_comp]; rfl
   map_id j := by
-    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_id]
+    -- Adaptation note: nightly-2024-03-16: simp was
+    -- simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_id]
+    simp only [MapsTo.restrict, Subtype.map_def, F.map_id]
     ext
     rfl
   map_comp f g := by
-    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_comp]
+    -- Adaptation note: nightly-2024-03-16: simp was
+    -- simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_comp]
+    simp only [MapsTo.restrict, Subtype.map_def, F.map_comp]
     rfl
 #align category_theory.functor.to_preimages CategoryTheory.Functor.toPreimages
 
@@ -272,11 +276,15 @@ def toEventualRanges : J ⥤ Type v where
   obj j := F.eventualRange j
   map f := (F.eventualRange_mapsTo f).restrict _ _ _
   map_id i := by
-    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_id]
+    -- Adaptation note: nightly-2024-03-16: simp was
+    -- simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_id]
+    simp only [MapsTo.restrict, Subtype.map_def, F.map_id]
     ext
     rfl
   map_comp _ _ := by
-    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_comp]
+    -- Adaptation note: nightly-2024-03-16: simp was
+    -- simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_comp]
+    simp only [MapsTo.restrict, Subtype.map_def, F.map_comp]
     rfl
 #align category_theory.functor.to_eventual_ranges CategoryTheory.Functor.toEventualRanges
 

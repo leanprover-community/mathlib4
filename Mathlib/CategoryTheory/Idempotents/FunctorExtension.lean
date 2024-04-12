@@ -237,7 +237,7 @@ noncomputable instance : IsEquivalence (functorExtension C D) := by
   rw [← karoubiUniversal_functor_eq]
   infer_instance
 
--- porting note: added to avoid a timeout in the following definition
+-- Porting note: added to avoid a timeout in the following definition
 lemma isEquivalence_whiskeringLeft_obj_toKaroubi_aux :
     ((whiskeringLeft C (Karoubi C) D).obj (toKaroubi C) ⋙
       (whiskeringRight C D (Karoubi D)).obj (toKaroubi D) ⋙

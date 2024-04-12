@@ -77,13 +77,13 @@ theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroupCat.of 
   rfl
 #align SemiNormedGroup.coe_of SemiNormedGroupCat.coe_of
 
--- Porting note : marked with high priority to short circuit simplifier's path
+-- Porting note: marked with high priority to short circuit simplifier's path
 @[simp (high)]
 theorem coe_id (V : SemiNormedGroupCat) : (𝟙 V : V → V) = id :=
   rfl
 #align SemiNormedGroup.coe_id SemiNormedGroupCat.coe_id
 
--- Porting note : marked with high priority to short circuit simplifier's path
+-- Porting note: marked with high priority to short circuit simplifier's path
 @[simp (high)]
 theorem coe_comp {M N K : SemiNormedGroupCat} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : M → K) = g ∘ f :=
@@ -210,13 +210,13 @@ theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroupCat₁.
   rfl
 #align SemiNormedGroup₁.coe_of SemiNormedGroupCat₁.coe_of
 
--- Porting note : marked with high priority to short circuit simplifier's path
+-- Porting note: marked with high priority to short circuit simplifier's path
 @[simp (high)]
 theorem coe_id (V : SemiNormedGroupCat₁) : ⇑(𝟙 V) = id :=
   rfl
 #align SemiNormedGroup₁.coe_id SemiNormedGroupCat₁.coe_id
 
--- Porting note : marked with high priority to short circuit simplifier's path
+-- Porting note: marked with high priority to short circuit simplifier's path
 @[simp (high)]
 theorem coe_comp {M N K : SemiNormedGroupCat₁} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : M → K) = g ∘ f :=

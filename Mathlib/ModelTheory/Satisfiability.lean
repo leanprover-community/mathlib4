@@ -298,13 +298,12 @@ theorem exists_model_card_eq (h : ∃ M : ModelType.{u, v, max u v} T, Infinite 
 variable (T)
 
 /-- A theory models a (bounded) formula when any of its nonempty models realizes that formula on all
-  inputs.-/
+  inputs. -/
 def ModelsBoundedFormula (φ : L.BoundedFormula α n) : Prop :=
   ∀ (M : ModelType.{u, v, max u v} T) (v : α → M) (xs : Fin n → M), φ.Realize v xs
 #align first_order.language.Theory.models_bounded_formula FirstOrder.Language.Theory.ModelsBoundedFormula
 
 -- Porting note: In Lean3 it was `⊨` but ambiguous.
--- mathport name: models_bounded_formula
 @[inherit_doc FirstOrder.Language.Theory.ModelsBoundedFormula]
 infixl:51 " ⊨ᵇ " => ModelsBoundedFormula -- input using \|= or \vDash, but not using \models
 
@@ -570,7 +569,6 @@ theorem ex_semanticallyEquivalent_not_all_not (φ : L.BoundedFormula α (n + 1))
 
 theorem semanticallyEquivalent_all_liftAt : T.SemanticallyEquivalent φ (φ.liftAt 1 n).all :=
   fun M v xs => by
-  skip
   rw [realize_iff, realize_all_liftAt_one_self]
 #align first_order.language.bounded_formula.semantically_equivalent_all_lift_at FirstOrder.Language.BoundedFormula.semanticallyEquivalent_all_liftAt
 

@@ -340,7 +340,7 @@ partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := g
       else
         return {s with scopeState := binders}
 
-/- Create a `Term` that represents a matcher for `scoped` notation.
+/-- Create a `Term` that represents a matcher for `scoped` notation.
 Fails in the `OptionT` sense if a matcher couldn't be constructed.
 Also returns a delaborator key like in `mkExprMatcher`.
 Reminder: `$lit:ident : (scoped $scopedId:ident => $scopedTerm:Term)` -/
@@ -530,7 +530,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       boundIdents := boundIdents.insert lit.getId lit
       boundValues := boundValues.insert lit.getId <| lit.1.mkAntiquotNode `term
       boundNames := boundNames.push lit.getId
-    | stx => throwUnsupportedSyntax
+    | _stx => throwUnsupportedSyntax
   if hasScoped && !hasBindersItem then
     throwError "If there is a `scoped` item then there must be a `(...)` item for binders."
 

@@ -8,7 +8,7 @@ import Std.Data.List.Basic
 import Std.Data.List.Lemmas
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 
 #align_import data.vector from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 
@@ -25,7 +25,6 @@ def Vector (α : Type u) (n : ℕ) :=
 namespace Vector
 
 variable {α : Type u} {β : Type v} {φ : Type w}
-
 variable {n : ℕ}
 
 instance [DecidableEq α] : DecidableEq (Vector α n) :=
@@ -188,7 +187,7 @@ final result.
 def mapAccumr (f : α → σ → σ × β) : Vector α n → σ → σ × Vector β n
   | ⟨x, px⟩, c =>
     let res := List.mapAccumr f x c
-    ⟨res.1, res.2, by simp [*]⟩
+    ⟨res.1, res.2, by simp [*, res]⟩
 #align vector.map_accumr Vector.mapAccumr
 
 /-- Runs a function over a pair of vectors returning the intermediate results and a
@@ -198,7 +197,7 @@ def mapAccumr₂ {α β σ φ : Type} (f : α → β → σ → σ × φ) :
     Vector α n → Vector β n → σ → σ × Vector φ n
   | ⟨x, px⟩, ⟨y, py⟩, c =>
     let res := List.mapAccumr₂ f x y c
-    ⟨res.1, res.2, by simp [*]⟩
+    ⟨res.1, res.2, by simp [*, res]⟩
 #align vector.map_accumr₂ Vector.mapAccumr₂
 
 end Accum
