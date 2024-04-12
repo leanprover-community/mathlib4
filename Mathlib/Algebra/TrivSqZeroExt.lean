@@ -771,6 +771,24 @@ protected theorem inv_mul_cancel [DivisionRing R] [AddCommGroup M]
   rw [op_smul_op_smul, inv_mul_cancel hx, op_one, one_smul]
   rw [add_comm, fst_inv, add_left_neg, snd_one]
 
+protected theorem inv_inl [DivisionRing R] [AddCommGroup M]
+    [Module Rᵐᵒᵖ M] [Module R M]
+    {r : R} (hr : r ≠ 0) :
+    (inl r)⁻¹ = (inl (r⁻¹ : R) : tsze R M) := by
+  ext
+  rw [fst_inv]
+  have : (fst (inl r)) * (fst (inl r⁻¹)) = 1 := by
+    rw [← fst_mul (inl r : tsze R M) (inl r⁻¹)]
+    rw [← inl_mul, fst_inl, mul_inv_cancel hr]
+  have : (fst (inl r))⁻¹ * ((fst (inl r)) * (fst (inl r⁻¹))) = (fst (inl r))⁻¹ := by
+    rw [this, mul_one (fst (inl r : tsze R M))⁻¹]
+  rw [← this, ← mul_assoc, inv_mul_cancel, one_mul]
+  rw [fst_inl]
+  exact hr
+
+  rw [snd_inv, snd_inl, snd_inl, fst_inl]
+  rw [smul_zero, smul_zero, neg_zero]
+
 end Inv
 
 section Algebra
