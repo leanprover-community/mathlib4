@@ -196,7 +196,6 @@ def embeddingGL : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
 set_option linter.uppercaseLean3 false in
 #align matrix.unitary_group.embedding_GL Matrix.UnitaryGroup.embeddingGL
 
-
 end UnitaryGroup
 
 section specialUnitaryGroup
