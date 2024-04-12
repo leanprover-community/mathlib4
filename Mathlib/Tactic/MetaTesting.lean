@@ -142,9 +142,7 @@ def addLetsOrSets (lets? unLet? : Bool) (tac : TSyntax ``tacticSeq) (ldecls : Ar
     repls := repls.push next
   if unLet? then
     let unf ← `(tactic| unfold_let at *)
-    -- we use `unfold_let` twice, since each time it "reverses" the variables
-    -- revert this, once #12077 gets merged: thanks Kyle!
-    repls := (repls.push unf).push unf
+    repls := repls.push unf
   return (← addDone (tac.insertMany repls), repls)
 
 /-- `addPropHaves tac ldecls` adds at the beginning of the tactic sequence `tac` lines like
