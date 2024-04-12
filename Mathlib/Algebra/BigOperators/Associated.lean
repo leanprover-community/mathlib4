@@ -81,38 +81,24 @@ theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero α] {p : α}
       exact ⟨q, Multiset.mem_cons.2 (Or.inr hq₁), hq₂⟩
 #align exists_associated_mem_of_dvd_prod exists_associated_mem_of_dvd_prod
 
---TODO: change the definitions to
---def IsDivisorClosed  {α : Type*}  [Monoid α] (S : Submonoid α) := sorry
---def Submonoid.divisor_closure  {α : Type*}  [Monoid α] (S : Set α) : Submonoid α := sorry
---where Submonoid.divisor_closure is defined using sInf
+/-- A submonoid S of a monoid α is said to be divisor-closed if every divisor a ∈ α of some element
+b ∈ S lies in S when it is multiplied by a unit. -/
+def IsDivisorClosed [Monoid α] (S : Submonoid α) :=
+    ∀ b ∈ S, ∀ (a : α) (_ : ∃ k, b = a*k), ∃ z ∈ S, a ~ᵤ z
 
-/-- The divisor closure of a submonoid S is defined as the set of elements b ∈ S such that every
-divisor a ∈ H of b lies in S when it is multiplied by a unit. -/
-def Submonoid.divisor_closure [Monoid α] (S : Submonoid α) :=
-  {b ∈ S | ∀ (a : α) (_ : ∃ k, b = a*k), ∃ z ∈ S, a ~ᵤ z}
+/-- Let α be a monoid. The divisor_closure of a subset s ⊆ α is defined as the intersection of
+all the submonoids which contain s and are divisor-closed. -/
+def Submonoid.divisor_closure [Monoid α] (s : Set α) :=
+    sInf { S : Submonoid α | s ⊆ S ∧ IsDivisorClosed S }
 
-/-- A submonoid is said to be divisor-closed if it is equal to its divisor closure. -/
-def Submonoid.divisor_closed [Monoid α] (S : Submonoid α) : Prop := S = S.divisor_closure
+theorem top_divisor_closed [Monoid α] : IsDivisorClosed (⊤ : Submonoid α) :=
+  fun _ _ a _ => ⟨_, Submonoid.mem_top a, Associated.refl a⟩
 
-theorem top_divisor_closed [Monoid α] : (⊤ : Submonoid α).divisor_closed := by
-  ext x
-  refine' ⟨fun _ => _, fun _ => Submonoid.mem_top x⟩
-  unfold Submonoid.divisor_closure
-  simp only [Submonoid.mem_top, true_and, forall_exists_index, Set.mem_setOf_eq]
-  intros a _ _
-  use a
-
-theorem bot_divisor_closed [CommMonoid α] : (⊥ : Submonoid α).divisor_closed := by
-  ext x
-  refine' ⟨fun hx => _, fun hx => _⟩
-  · unfold Submonoid.divisor_closure
-    simp only [exists_eq_left, forall_exists_index, Set.mem_setOf_eq]
-    refine' ⟨hx, fun _ _ hab => ⟨1, Submonoid.one_mem _, _⟩⟩
-    rw [Submonoid.mem_bot.1 hx] at hab
-    exact associated_one_of_mul_eq_one _ hab.symm
-  · unfold Submonoid.divisor_closure at hx
-    simp only [exists_eq_left, forall_exists_index, Set.mem_setOf_eq] at hx
-    exact hx.1
+theorem bot_divisor_closed [CommMonoid α] : IsDivisorClosed (⊥ : Submonoid α) := by
+  refine' fun _ hb _ ha => ⟨_, (⊥ : Submonoid α).one_mem, _⟩
+  rcases ha with ⟨k, ha⟩
+  rw [Submonoid.mem_bot.1 hb] at ha
+  exact associated_one_of_mul_eq_one _ ha.symm
 
 open Submonoid in
 /-- Let x, y ∈ α. If x * y can be written as a product of prime elements, then x can be written as
@@ -144,17 +130,11 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero α] :
     exact (hind _ _ (mem_closure_of_exists_multiset ⟨_, hprime₂, hprod₂⟩) hprime₂ hprod₂)
 
 theorem Submonoid.closure_divisor_closed [CancelCommMonoidWithZero α] :
-    (closure { r : α | Prime r }).divisor_closed := by
-  ext x
-  refine' ⟨fun hx => _, fun hx => _⟩
-  · unfold divisor_closure
-    simp only [exists_prop, forall_exists_index, Set.mem_setOf_eq]
-    refine' ⟨hx, fun _ _ hab => _⟩
-    rw [hab] at hx
-    rcases (divisor_closure_eq_closure _ _ hx) with ⟨z, ⟨hz₁, hz₂⟩⟩
-    exact ⟨z, hz₁, hz₂⟩
-  · simp only [divisor_closure, exists_prop, forall_exists_index, Set.mem_setOf_eq] at hx
-    exact hx.1
+    IsDivisorClosed (closure { r : α | Prime r }) := by
+  intros _ hb _ ha
+  rcases ha with ⟨k, ha⟩
+  rw [ha] at hb
+  exact divisor_closure_eq_closure _ _ hb
 
 theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero α]
     [∀ a : α, DecidablePred (Associated a)] {s : Multiset α} (n : α) (h : ∀ a ∈ s, Prime a)
