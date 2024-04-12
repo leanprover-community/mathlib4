@@ -66,12 +66,6 @@ def getCache : CCM ExtCongrTheoremCache := do
 def getEntry (e : Expr) : CCM (Option Entry) := do
   return (← get).entries.find? e
 
-def getGenerationOf (e : Expr) : CCM Nat := do
-  if let some it ← getEntry e then
-    return it.generation
-  else
-    return 0
-
 def normalize (e : Expr) : CCM Expr := do
   if let some normalizer := (← get).normalizer then
     normalizer.normalize e
@@ -1076,16 +1070,16 @@ def internalizeAC (e : Expr) (parent? : Option Expr) : CCM Unit := do
   dbgTraceACState
 
 mutual
-partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
+partial def internalizeApp (e : Expr) : CCM Unit := do
   if ← isInterpretedValue e then
-    mkEntry e true gen
+    mkEntry e true
     if (← get).values then return -- we treat values as atomic symbols
   else
-    mkEntry e false gen
+    mkEntry e false
     if (← get).values && isValue e then return -- we treat values as atomic symbols
   if let some (_, lhs, rhs) ← e.relSidesIfSymm? then
-    internalizeCore lhs (some e) gen
-    internalizeCore rhs (some e) gen
+    internalizeCore lhs (some e)
+    internalizeCore rhs (some e)
     addOccurrence e lhs true
     addOccurrence e rhs true
     addSymmCongruenceTable e
@@ -1104,13 +1098,13 @@ partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
         addOccurrence e arg false
         if pinfo.head?.any ParamInfo.isInstImplicit then
           -- We do not recurse on instances when `(← get).config.ignoreInstances` is `true`.
-          mkEntry arg false gen
+          mkEntry arg false
           propagateInstImplicit arg
         else
-          internalizeCore arg (some e) gen
+          internalizeCore arg (some e)
         unless pinfo.isEmpty do
           pinfo := pinfo.tail
-      internalizeCore fn (some e) gen
+      internalizeCore fn (some e)
       addOccurrence e fn false
       setFO e
       addCongruenceTable e
@@ -1121,24 +1115,24 @@ partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
         let curr := apps[i]'h.2
         let .app currFn currArg := curr | unreachable!
         if i < apps.size - 1 then
-          mkEntry curr false gen
+          mkEntry curr false
         for h : j in [i:apps.size] do
           addOccurrence (apps[j]'h.2) currArg false
           addOccurrence (apps[j]'h.2) currFn false
         if pinfo.head?.any ParamInfo.isInstImplicit then
           -- We do not recurse on instances when `(← get).config.ignoreInstances` is `true`.
-          mkEntry currArg false gen
-          mkEntry currFn false gen
+          mkEntry currArg false
+          mkEntry currFn false
           propagateInstImplicit currArg
         else
-          internalizeCore currArg (some e) gen
-          mkEntry currFn false gen
+          internalizeCore currArg (some e)
+          mkEntry currFn false
         unless pinfo.isEmpty do
           pinfo := pinfo.tail
         addCongruenceTable curr
   applySimpleEqvs e
 
-partial def internalizeCore (e : Expr) (parent? : Option Expr) (gen : Nat) : CCM Unit := do
+partial def internalizeCore (e : Expr) (parent? : Option Expr) : CCM Unit := do
   guard !e.hasLooseBVars
   /- We allow metavariables after partitions have been frozen. -/
   if e.hasExprMVar && !(← get).frozePartitions then
@@ -1148,33 +1142,33 @@ partial def internalizeCore (e : Expr) (parent? : Option Expr) (gen : Nat) : CCM
     match e with
     | .bvar _ => unreachable!
     | .sort _ => pure ()
-    | .const _ _ | .mvar _ => mkEntry e false gen
-    | .lam _ _ _ _ | .letE _ _ _ _ _ => mkEntry e false gen
+    | .const _ _ | .mvar _ => mkEntry e false
+    | .lam _ _ _ _ | .letE _ _ _ _ _ => mkEntry e false
     | .fvar f =>
-      mkEntry e false gen
+      mkEntry e false
       if let some v ← f.getValue? then
         pushReflEq e v
     | .mdata _ e' =>
-      mkEntry e false gen
-      internalizeCore e' e gen
+      mkEntry e false
+      internalizeCore e' e
       addOccurrence e e' false
       pushReflEq e e'
     | .forallE _ t b _ =>
       if e.isArrow then
         if ← isProp t <&&> isProp b then
-          internalizeCore t e gen
-          internalizeCore b e gen
+          internalizeCore t e
+          internalizeCore b e
           addOccurrence e t false
           addOccurrence e b false
           propagateImpUp e
       if ← isProp e then
-        mkEntry e false gen
-    | .app _ _ | .lit _ => internalizeApp e gen
+        mkEntry e false
+    | .app _ _ | .lit _ => internalizeApp e
     | .proj sn i pe =>
-      mkEntry e false gen
+      mkEntry e false
       let some fn := (getStructureFields (← getEnv) sn)[i]? | failure
       let e' ← pe.mkDirectProjection fn
-      internalizeApp e' gen
+      internalizeApp e'
       pushReflEq e e'
 
   /- Remark: if should invoke `internalizeAC` even if the test `(← getEntry e).isNone` above failed.
@@ -1277,7 +1271,7 @@ partial def propagateImpUp (e : Expr) : CCM Unit := do
     else
       -- `b = False → (a → b) = Not a`
       let notA := mkApp (.const ``Not []) a
-      internalizeCore notA none (← getGenerationOf e)
+      internalizeCore notA none
       pushEq e notA
         (mkApp3 (.const ``imp_eq_of_eq_false_right []) a b (← getEqFalseProof b))
   else if ← isEqv a b then
@@ -1370,7 +1364,7 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
   if let .app (.app (.app (.const ``Ne [l₁]) α) a) b := e then
     -- `(a ≠ b) = (Not (a = b))`
     let newE := Expr.app (.const ``Not []) (mkApp3 (.const ``Eq [l₁]) α a b)
-    internalizeCore newE none (← getGenerationOf e)
+    internalizeCore newE none
     pushReflEq e newE
 
   if let some r ← e.reduceProjStruct? then
@@ -1381,7 +1375,7 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
     let reducedE := e.headBeta
     if let some phandler := (← get).phandler then
       phandler.newAuxCCTerm reducedE
-    internalizeCore reducedE none (← getGenerationOf e)
+    internalizeCore reducedE none
     pushReflEq e reducedE
 
   let mut revArgs : Array Expr := #[]
@@ -1395,7 +1389,7 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
       let lambdas ← getEqcLambdas rootFn #[]
       let newLambdaApps ← propagateBeta fn revArgs lambdas #[]
       for newApp in newLambdaApps do
-        internalizeCore newApp none (← getGenerationOf e)
+        internalizeCore newApp none
     it := fn
 
   propagateUp e
@@ -1406,7 +1400,7 @@ partial def processSubsingletonElem (e : Expr) : CCM Unit := do
   if ss.isNone then return -- type is not a subsingleton
   let type ← normalize type
   -- Make sure type has been internalized
-  internalizeCore type none (← getGenerationOf e)
+  internalizeCore type none
   -- Try to find representative
   if let some it := (← get).subsingletonReprs.find? type then
     pushSubsingletonEq e it
@@ -1423,11 +1417,11 @@ partial def processSubsingletonElem (e : Expr) : CCM Unit := do
       { ccs with
         subsingletonReprs := ccs.subsingletonReprs.insert typeRoot e }
 
-partial def mkEntry (e : Expr) (interpreted : Bool) (gen : Nat) : CCM Unit := do
+partial def mkEntry (e : Expr) (interpreted : Bool) : CCM Unit := do
   if (← getEntry e).isSome then return
   let constructor ← isConstructorApp e
   modify fun ccs =>
-    { ccs with toCCState := ccs.toCCState.mkEntryCore e interpreted constructor gen }
+    { ccs with toCCState := ccs.toCCState.mkEntryCore e interpreted constructor }
   processSubsingletonElem e
 end
 
@@ -1568,7 +1562,7 @@ def propagateProjectionConstructor (p c : Expr) : CCM Unit := do
         The internalizer will add the new equality. -/
       let pArgs := pArgs.set ⟨mkidx, h⟩ c
       let newP := mkAppN pFn pArgs
-      internalizeCore newP none (← getGenerationOf p)
+      internalizeCore newP none
     else
       return
 
@@ -1660,7 +1654,7 @@ def propagateExistsDown (e : Expr) : CCM Unit := do
   if ← isEqFalse e then
     let hNotE ← mkAppM ``not_of_eq_false #[← getEqFalseProof e]
     let (all, hAll) ← e.forallNot_of_notExists hNotE
-    internalizeCore all none (← getGenerationOf e)
+    internalizeCore all none
     pushEq all (.const ``True []) (← mkEqTrue hAll)
 
 def propagateDown (e : Expr) : CCM Unit := do
@@ -1824,7 +1818,7 @@ where
 
     if !(← get).inconsistent then
       for e in lambdaAppsToInternalize do
-        internalizeCore e none (← getGenerationOf e)
+        internalizeCore e none
 
     let ccs ← get
     trace[Meta.Tactic.cc.merge] "{e₁Root} = {e₂Root}"
@@ -1841,15 +1835,15 @@ def processTodo : CCM Unit := do
     modifyTodo Array.pop
     addEqvStep lhs rhs H heqProof
 
-def internalize (e : Expr) (gen : Nat) : CCM Unit := do
-  internalizeCore e none gen
+def internalize (e : Expr) : CCM Unit := do
+  internalizeCore e none
   processTodo
 
 def addEqvCore (lhs rhs H : Expr) (heqProof : Bool) : CCM Unit := do
   pushTodo lhs rhs H heqProof
   processTodo
 
-def add (type : Expr) (proof : Expr) (gen : Nat) : CCM Unit := do
+def add (type : Expr) (proof : Expr) : CCM Unit := do
   if (← get).inconsistent then return
   modifyTodo fun _ => #[]
   let (isNeg, p) :=
@@ -1862,32 +1856,32 @@ def add (type : Expr) (proof : Expr) (gen : Nat) : CCM Unit := do
   match p with
   | .app (.app (.app (.const ``Eq _) _) lhs) rhs =>
     if isNeg then
-      internalizeCore p none gen
+      internalizeCore p none
       addEqvCore p (.const ``False []) (← mkEqFalse proof) false
     else
-      internalizeCore lhs none gen
-      internalizeCore rhs none gen
+      internalizeCore lhs none
+      internalizeCore rhs none
       addEqvCore lhs rhs proof false
   | .app (.app (.app (.app (.const ``HEq _) _) lhs) _) rhs =>
     if isNeg then
-      internalizeCore p none gen
+      internalizeCore p none
       addEqvCore p (.const ``False []) (← mkEqFalse proof) false
     else
-      internalizeCore lhs none gen
-      internalizeCore rhs none gen
+      internalizeCore lhs none
+      internalizeCore rhs none
       addEqvCore lhs rhs proof true
   | .app (.app (.const ``Iff _) lhs) rhs =>
     if isNeg then
       let neqProof ← mkAppM ``neq_of_not_iff #[proof]
-      internalizeCore p none gen
+      internalizeCore p none
       addEqvCore p (.const ``False []) (← mkEqFalse neqProof) false
     else
-      internalizeCore lhs none gen
-      internalizeCore rhs none gen
+      internalizeCore lhs none
+      internalizeCore rhs none
       addEqvCore lhs rhs (mkApp3 (.const ``propext []) lhs rhs proof) false
   | _ =>
     if ← pure isNeg <||> isProp p then
-      internalizeCore p none gen
+      internalizeCore p none
       if isNeg then
         addEqvCore p (.const ``False []) (← mkEqFalse proof) false
       else

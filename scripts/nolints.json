@@ -1094,7 +1094,6 @@
  ["docBlame", "Mathlib.Tactic.CC.CCM.getEqProof"],
  ["docBlame", "Mathlib.Tactic.CC.CCM.getEqTrueProof"],
  ["docBlame", "Mathlib.Tactic.CC.CCM.getEqcLambdas"],
- ["docBlame", "Mathlib.Tactic.CC.CCM.getGenerationOf"],
  ["docBlame", "Mathlib.Tactic.CC.CCM.getHEqProof"],
  ["docBlame", "Mathlib.Tactic.CC.CCM.getInconsistencyProof"],
  ["docBlame", "Mathlib.Tactic.CC.CCM.getPropEqProof"],
