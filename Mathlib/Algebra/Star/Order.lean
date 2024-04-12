@@ -91,7 +91,7 @@ and obviates the hassle of `AddSubmonoid.closure_induction` when creating those 
 If you are working with a `NonUnitalRing` and not a `NonUnitalSemiring`, see
 `StarOrderedRing.ofNonnegIff` for a more convenient version.
  -/
-lemma ofLEIff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
+lemma of_le_iff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
     (h_le_iff : ∀ x y : R, x ≤ y ↔ ∃ s, y = x + star s * s) : StarOrderedRing R where
   le_iff x y := by
     refine' ⟨fun h => _, _⟩
@@ -105,19 +105,19 @@ lemma ofLEIff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
       · rintro a b ha hb x y rfl
         rw [← add_assoc]
         exact (ha _ _ rfl).trans (hb _ _ rfl)
-#align star_ordered_ring.of_le_iff StarOrderedRing.ofLEIffₓ
+#align star_ordered_ring.of_le_iff StarOrderedRing.of_le_iffₓ
 
 /-- When `R` is a non-unital ring, to construct a `StarOrderedRing` instance it suffices to
 show that the nonnegative elements are precisely those elements in the `AddSubmonoid` generated
 by `star s * s` for `s : R`. -/
-lemma ofNonnegIff [NonUnitalRing R] [PartialOrder R] [StarRing R]
+lemma of_nonneg_iff [NonUnitalRing R] [PartialOrder R] [StarRing R]
     (h_add : ∀ {x y : R}, x ≤ y → ∀ z, z + x ≤ z + y)
     (h_nonneg_iff : ∀ x : R, 0 ≤ x ↔ x ∈ AddSubmonoid.closure (Set.range fun s : R => star s * s)) :
     StarOrderedRing R where
   le_iff x y := by
     haveI : CovariantClass R R (· + ·) (· ≤ ·) := ⟨fun _ _ _ h => h_add h _⟩
     simpa only [← sub_eq_iff_eq_add', sub_nonneg, exists_eq_right'] using h_nonneg_iff (y - x)
-#align star_ordered_ring.of_nonneg_iff StarOrderedRing.ofNonnegIff
+#align star_ordered_ring.of_nonneg_iff StarOrderedRing.of_nonneg_iff
 
 /-- When `R` is a non-unital ring, to construct a `StarOrderedRing` instance it suffices to
 show that the nonnegative elements are precisely those elements of the form `star s * s`
@@ -126,13 +126,13 @@ for `s : R`.
 This is provided for convenience because it holds in many common scenarios (e.g.,`ℝ`, `ℂ`, or
 any C⋆-algebra), and obviates the hassle of `AddSubmonoid.closure_induction` when creating those
 instances. -/
-lemma ofNonnegIff' [NonUnitalRing R] [PartialOrder R] [StarRing R]
+lemma of_nonneg_iff' [NonUnitalRing R] [PartialOrder R] [StarRing R]
     (h_add : ∀ {x y : R}, x ≤ y → ∀ z, z + x ≤ z + y)
     (h_nonneg_iff : ∀ x : R, 0 ≤ x ↔ ∃ s, x = star s * s) : StarOrderedRing R :=
-  ofLEIff <| by
+  of_le_iff <| by
     haveI : CovariantClass R R (· + ·) (· ≤ ·) := ⟨fun _ _ _ h => h_add h _⟩
     simpa [sub_eq_iff_eq_add', sub_nonneg] using fun x y => h_nonneg_iff (y - x)
-#align star_ordered_ring.of_nonneg_iff' StarOrderedRing.ofNonnegIff'
+#align star_ordered_ring.of_nonneg_iff' StarOrderedRing.of_nonneg_iff'
 
 theorem nonneg_iff [NonUnitalSemiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R] {x : R} :
     0 ≤ x ↔ x ∈ AddSubmonoid.closure (Set.range fun s : R => star s * s) := by
