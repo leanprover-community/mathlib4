@@ -18,14 +18,14 @@ import Mathlib.Tactic.Set
 In a file with `import Mathlib.Tactic.MetaTesting`, you can run the tests in a single command
 writing `#meta_test cmd`.
 
-If you want to run the tests on all the files, you write `set_option linter.linterTest true`.
+If you want to run the tests on all the files, you write `set_option linter.metaTest true`.
 
-By default, `set_option linter.linterTest true` skips any declaration that contains
+By default, `set_option linter.metaTest true` skips any declaration that contains
 `SyntaxNodeKind`s in `nonTesters` (typically, something involved in flow-control, such as
 `guard_hyp` or `guard_target`), since the tests may not be too reliable on them.
 
-If you want to skip a declaration, there is a convenience `untest` macro:
-`untext cmd` expands to `set_option linter.linterTest false in cmd`.
+If you want to skip a declaration, there is a convenience `#unmeta_test` macro:
+`#unmeta_test cmd` expands to `set_option linter.metaTest false in cmd`.
 
 TODO:
 * Automatically ignore `#guard_cmd`s?
@@ -270,18 +270,19 @@ elab "#meta_test " cmd:command : command => do
   elabCommand ncmd
 
 /-- The meta-programming test linter modifies tests for tactics, trying to highlight common
-pitfalls: missing `instantiateMVars`, `withContext` or `consumeMData` could be isolated. -/
-register_option linter.linterTest : Bool := {
+pitfalls: missing `instantiateMVars`, `withContext` or `consumeMData` could be discovered
+by the tests. -/
+register_option linter.metaTest : Bool := {
   defValue := false
   descr := "enable the meta-programming test linter"
 }
 
-/-- Gets the value of the `linter.linterTest` option. -/
-def getLinterTest (o : Options) : Bool := Linter.getLinterValue linter.linterTest o
+/-- Gets the value of the `linter.metaTest` option. -/
+def getmetaTest (o : Options) : Bool := Linter.getLinterValue linter.metaTest o
 
-@[inherit_doc linter.linterTest]
-def linterTest : Linter where run := withSetOptionIn fun cmd => do
-  if getLinterTest (← getOptions) && ! cmd.getKind == ``«command#meta_test_» then
+@[inherit_doc linter.metaTest]
+def metaTest : Linter where run := withSetOptionIn fun cmd => do
+  if getmetaTest (← getOptions) && ! cmd.getKind == ``«command#meta_test_» then
     match test? cmd with
       | none => if let some (cmd, _) ← toExample cmd then
                   let cmd := ⟨cmd⟩
@@ -289,9 +290,10 @@ def linterTest : Linter where run := withSetOptionIn fun cmd => do
       | some gd => logInfo m!"Skipped since it contains '{gd}'\n\n\
                               Use '#meta_test cmd' if you really want to run the test on 'cmd'"
 
-initialize addLinter linterTest
+initialize addLinter metaTest
 
-/-- a convenience macro expanding to `set_option linter.linterTest false in`. -/
-macro "untest " cmd:command : command => `(command| set_option linter.linterTest false in $cmd)
+/-- a convenience macro expanding to `set_option linter.metaTest false in`. -/
+macro "#unmeta_test " cmd:command : command =>
+  `(command| set_option linter.metaTest false in $cmd)
 
 initialize registerTraceClass `Tactic.tests

@@ -4,7 +4,7 @@ import Mathlib.Tactic.MetaTesting
 
 section exclude
 
-set_option linter.linterTest true in
+set_option linter.metaTest true in
 /--
 info: Skipped since it contains 'guard_target'
 
@@ -15,7 +15,7 @@ example : Nat := by
   guard_target = _
   exact 0
 
-set_option linter.linterTest true in
+set_option linter.metaTest true in
 /--
 warning: missing withContext?
 
@@ -330,7 +330,7 @@ example {a : Nat} (ha : a = 0) : a = 0 := by
   buggy_exact h
   assumption
 
-set_option linter.linterTest true
+set_option linter.metaTest true
 /--
 warning: is mdata correctly handled?
 
