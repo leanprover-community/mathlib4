@@ -74,9 +74,10 @@ instance (s : Finset ℕ) : DecidablePred (· ∈ factoredNumbers s) :=
 
 /-- A number that divides an `s`-factored number is itself `s`-factored. -/
 lemma mem_factoredNumbers_of_dvd {s : Finset ℕ} {m k : ℕ} (h : m ∈ factoredNumbers s)
-    (h' : k ∣ m) (hk : k ≠ 0) :
+    (h' : k ∣ m) :
     k ∈ factoredNumbers s := by
   obtain ⟨h₁, h₂⟩ := h
+  have hk := ne_zero_of_dvd_ne_zero h₁ h'
   refine ⟨hk, fun p hp ↦ h₂ p ?_⟩
   rw [mem_factors <| by assumption] at hp ⊢
   exact ⟨hp.1, hp.2.trans h'⟩
@@ -249,10 +250,10 @@ instance (n : ℕ) : DecidablePred (· ∈ smoothNumbers n) :=
   inferInstanceAs <| DecidablePred fun x ↦ x ∈ {m | m ≠ 0 ∧ ∀ p ∈ factors m, p < n}
 
 /-- A number that divides an `n`-smooth number is itself `n`-smooth. -/
-lemma mem_smoothNumbers_of_dvd {n m k : ℕ} (h : m ∈ smoothNumbers n) (h' : k ∣ m) (hk : k ≠ 0) :
+lemma mem_smoothNumbers_of_dvd {n m k : ℕ} (h : m ∈ smoothNumbers n) (h' : k ∣ m) :
     k ∈ smoothNumbers n := by
   simp only [smoothNumbers_eq_factoredNumbers] at h ⊢
-  exact mem_factoredNumbers_of_dvd h h' hk
+  exact mem_factoredNumbers_of_dvd h h'
 
 /-- `m` is `n`-smooth if and only if `m` is nonzero and all prime divisors `≤ m` of `m`
 are less than `n`. -/
@@ -373,8 +374,7 @@ lemma smoothNumbersUpTo_card_add_roughNumbersUpTo_card (N k : ℕ) :
 lemma eq_prod_primes_mul_sq_of_mem_smoothNumbers {n k : ℕ} (h : n ∈ smoothNumbers k) :
     ∃ s ∈ k.primesBelow.powerset, ∃ m, n = m ^ 2 * (s.prod id) := by
   obtain ⟨l, m, H₁, H₂⟩ := sq_mul_squarefree n
-  have hl : l ∈ smoothNumbers k :=
-    mem_smoothNumbers_of_dvd h (Dvd.intro_left (m ^ 2) H₁) <| Squarefree.ne_zero H₂
+  have hl : l ∈ smoothNumbers k := mem_smoothNumbers_of_dvd h (Dvd.intro_left (m ^ 2) H₁)
   refine ⟨l.factors.toFinset, ?_,  m, ?_⟩
   · simp only [toFinset_factors, Finset.mem_powerset]
     refine fun p hp ↦ mem_primesBelow.mpr ⟨?_, (mem_primeFactors.mp hp).1⟩
