@@ -344,6 +344,17 @@ theorem range_basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) (v :
 
 end DivisionRing
 
+section Tower
+
+variable (F K A : Type*) [DivisionRing F] [DivisionRing K] [AddCommGroup A]
+variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
+
+theorem trans [FiniteDimensional F K] [FiniteDimensional K A] : FiniteDimensional F A :=
+  Module.Finite.trans K A
+#align finite_dimensional.trans FiniteDimensional.trans
+
+end Tower
+
 end FiniteDimensional
 
 section ZeroRank
