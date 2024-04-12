@@ -46,7 +46,7 @@ noncomputable def stronglyConvergesToInDegree' (n : ℕ) :
         G.rightDerivedFunctorPlus ⋙ homologyFunctor C (n : ℤ)).obj X) := by
   apply TStructure.spectralSequenceNatStronglyConvergesTo
 
-noncomputable def StronglyConvergesTo :
+noncomputable def stronglyConvergesTo :
     (grothendieckSpectralSequence F G X).StronglyConvergesTo
       CohomologicalSpectralSequenceNat.stripes
       (fun n => (((F ⋙ G).rightDerived' n).obj X)) :=
