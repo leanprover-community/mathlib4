@@ -23,7 +23,12 @@ We also investigate higher derivatives: Assuming that `‖v‖^n * ‖f v‖` is
 that the Fourier transform of `f` is `C^n`.
 
 We also study in a parallel way the Fourier transform of the derivative, which is obtained by
-tensoring the Fourier transform of the original function with the bilinear form.
+tensoring the Fourier transform of the original function with the bilinear form. We also get
+results for iterated derivatives.
+
+A consequence of these results is that, if a function is smooth and all its derivatives are
+integrable when multiplied by `‖v‖^k`, then the same goes for the Fourier transform, with
+explicit bounds.
 
 We give specialized versions of these results on inner product spaces (where `L` is the scalar
 product) and on the real line, where we express the one-dimensional derivative in more concrete
@@ -59,6 +64,9 @@ With these definitions, the statements read as follows, first in a general conte
 * `VectorFourier.iteratedFDeriv_fourierIntegral`: under suitable integrability conditions,
   explicit formula for the `n`-th derivative of the Fourier integral of `f`, as the Fourier
   integral of `fun v ↦ fourierPowSMulRight L f v n`.
+* `VectorFourier.pow_mul_norm_iteratedFDeriv_fourierIntegral_le`: explicit bounds for the `n`-th
+  derivative of the Fourier integral multiplied by a power function, in terms of corresponding
+  integrals for the original function.
 
 These statements are then specialized to the case of the usual Fourier transform on
 finite-dimensional inner product spaces with their canonical Lebesgue measure (covering in
@@ -68,9 +76,6 @@ the namespace `Real` in the above statements.
 We also give specialized versions of the one-dimensional real derivative (and iterated derivative)
 in `Real.deriv_fourierIntegral` and `Real.iteratedDeriv_fourierIntegral`.
 -/
-
-
-lemma touk (n : ℕ) : 0 ≤ n := by exact?
 
 noncomputable section
 
@@ -610,13 +615,13 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
     apply one_le_pow_of_one_le
     linarith [one_le_pi_div_two]
   _ = ‖fourierPowSMulRight (-L.flip)
-        (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n (fun i ↦ v)‖ := by
+        (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n (fun _i ↦ v)‖ := by
     simp only [fourierPowSMulRight_apply, ContinuousLinearMap.neg_apply,
       ContinuousLinearMap.flip_apply, Finset.prod_const, Finset.card_fin, norm_smul, norm_pow,
       norm_neg, norm_mul, RCLike.norm_ofNat, Complex.norm_eq_abs, abs_ofReal,
       _root_.abs_of_nonneg pi_nonneg, abs_I, mul_one, Real.norm_eq_abs]
   _ ≤ ‖fourierPowSMulRight (-L.flip)
-        (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n‖ * ∏ i : Fin n, ‖v‖ :=
+        (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n‖ * ∏ _i : Fin n, ‖v‖ :=
     le_opNorm _ _
   _ ≤ ((2 * π) ^ k * (2 * k + 2) ^ n * ‖L‖ ^ k *
       ∑ p in Finset.range (k + 1) ×ˢ Finset.range (n + 1),
@@ -689,7 +694,8 @@ theorem fourierIntegral_iteratedFDeriv {N : ℕ∞} (hf : ContDiff ℝ N f)
   rw [← innerSL_real_flip V]
   exact VectorFourier.fourierIntegral_iteratedFDeriv (innerSL ℝ) hf h'f hn
 
-
+/-- One can bound `‖w‖^n * ‖D^k (𝓕 f) w‖` in terms of integrals of the derivatives of `f` (or order
+at most `n`) multiplied by powers of `v` (of order at most `k`). -/
 lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
     {K N : ℕ∞} (hf : ContDiff ℝ N f)
     (h'f : ∀ (k n : ℕ), k ≤ K → n ≤ N → Integrable (fun v ↦ ‖v‖^k * ‖iteratedFDeriv ℝ n f v‖))
@@ -702,23 +708,24 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
   simp only [innerSL_apply _ w w, real_inner_self_eq_norm_sq w, _root_.abs_pow, abs_norm,
     mul_assoc] at Z
   rw [pow_two, mul_pow, mul_assoc] at Z
+  rcases eq_or_ne n 0 with rfl|hn
+  · simp only [pow_zero, one_mul, mul_one, zero_add, Finset.range_one, Finset.product_singleton,
+      Finset.sum_map, Function.Embedding.coeFn_mk, norm_iteratedFDeriv_zero, ge_iff_le] at Z ⊢
+    apply Z.trans
+    conv_rhs => rw [← mul_one π]
+    gcongr
+    exact norm_innerSL_le _
+  rcases eq_or_ne w 0 with rfl|hw
+  · simp [hn]
+    positivity
   rw [mul_le_mul_left] at Z
   · apply Z.trans
     conv_rhs => rw [← mul_one π]
     simp only [mul_assoc]
     gcongr
-    exact?
-
-
-
-
-
-
-
-
-#exit
-
-
+    exact norm_innerSL_le _
+  · apply pow_pos
+    simp [hw]
 
 lemma hasDerivAt_fourierIntegral
     {f : ℝ → E} (hf : Integrable f) (hf' : Integrable (fun x : ℝ ↦ x • f x)) (w : ℝ) :
