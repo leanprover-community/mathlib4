@@ -356,7 +356,7 @@ namespace SMul
 /-- Scalar multiplication by `R` on `ℝ` extends to `ℂ`. This is used here and in
 `Matlib.Data.Complex.Module` to transfer instances from `ℝ` to `ℂ`, but is not
 needed outside, so we make it scoped. -/
-@[nolint docBlame] scoped instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
+scoped instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
   smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
 
 end SMul
