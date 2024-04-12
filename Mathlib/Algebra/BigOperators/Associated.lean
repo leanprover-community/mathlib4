@@ -91,6 +91,32 @@ all the submonoids which contain s and are divisor-closed. -/
 def Submonoid.divisor_closure [Monoid α] (s : Set α) :=
     sInf { S : Submonoid α | s ⊆ S ∧ IsDivisorClosed S }
 
+theorem Submonoid.subset_divisor_closure [Monoid α] {s : Set α} :
+    s ⊆ (Submonoid.divisor_closure s) := by
+  unfold divisor_closure
+  simp only [coe_sInf, Set.mem_setOf_eq, Set.subset_iInter_iff, and_imp]
+  exact (fun _ hi _ => hi)
+
+theorem Submonoid.divisor_closure_le [Monoid α] {s : Set α} {S : Submonoid α} :
+    s ⊆ S ∧ IsDivisorClosed S → Submonoid.divisor_closure s ≤ S := fun h => sInf_le h
+
+/-- An induction principle for divisor closure membership. If `p` satisfies the four conditions
+below, then `p` holds for all elements of the divisor closure of `s`.
+First condition: `p` holds for `1`.
+Second condition: `p` holds for all elements of `s`.
+Third condition: `p` is preserved under multiplication.
+Fourth condition: If `p` holds for an element x, then each divisor of x is the product of an element
+z for which `p` holds and a unit. -/
+theorem Submonoid.divisor_closure_induction [Monoid α] {s : Set α} {p : α → Prop} {x : α}
+    (h : x ∈ Submonoid.divisor_closure s) (mem : ∀ x ∈ s, p x) (one : p 1)
+    (mul : ∀ x y, p x → p y → p (x*y))
+    (div : ∀ x (_ : p x), ∀ y k (_ : x = y*k), ∃ z ∈ {x | p x}, y ~ᵤ z) : p x := by
+  have := Submonoid.divisor_closure_le (s := s) (S := ⟨⟨_, fun hx hy => mul _ _ hx hy⟩, one⟩)
+  unfold IsDivisorClosed at this
+  simp only [coe_set_mk, Subsemigroup.coe_set_mk, and_imp, mem_mk, Subsemigroup.mem_mk,
+    forall_exists_index] at this
+  exact this mem div h
+
 theorem top_divisor_closed [Monoid α] : IsDivisorClosed (⊤ : Submonoid α) :=
   fun _ _ a _ => ⟨_, Submonoid.mem_top a, Associated.refl a⟩
 
