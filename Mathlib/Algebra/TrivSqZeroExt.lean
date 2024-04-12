@@ -789,6 +789,15 @@ protected theorem inv_inl [DivisionRing R] [AddCommGroup M]
   rw [snd_inv, snd_inl, snd_inl, fst_inl]
   rw [smul_zero, smul_zero, neg_zero]
 
+protected theorem inv_inr [DivisionRing R] [AddCommGroup M]
+    [Module Rᵐᵒᵖ M] [Module R M]
+    {m : M} :
+    (inr m)⁻¹ = (0 : tsze R M) := by
+  ext
+  · rw [fst_inv, fst_inr, fst_zero, inv_zero]
+  rw [snd_inv, snd_inr, fst_inr]
+  rw [inv_zero, zero_smul, snd_zero, neg_zero]
+
 end Inv
 
 section Algebra
