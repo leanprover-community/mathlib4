@@ -742,7 +742,7 @@ section Inv
 
 variable {R : Type u} {M : Type v}
 
-instance inv [Neg M] [Inv R] [SMul Rᵐᵒᵖ M] [SMul R M] : Inv (tsze R M) :=
+instance instInv [Neg M] [Inv R] [SMul Rᵐᵒᵖ M] [SMul R M] : Inv (tsze R M) :=
   ⟨fun b => (b.1⁻¹,  - (b.1⁻¹ •> (b.2 <• b.1⁻¹)))⟩
 
 theorem fst_inv [Neg M] [Inv R] [SMul Rᵐᵒᵖ M] [SMul R M]
