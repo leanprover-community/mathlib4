@@ -390,7 +390,7 @@ set_option linter.uppercaseLean3 false in
 /-- An alternate version of Beck's monadicity theorem. If `G` reflects isomorphisms, preserves
 coequalizers of `G`-split pairs and `C` has coequalizers of `G`-split pairs, then it is monadic.
 -/
-def monadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms [ReflectsIsomorphisms G]
+def monadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms [G.ReflectsIsomorphisms]
     [HasCoequalizerOfIsSplitPair G] [PreservesColimitOfIsSplitPair G] :
     MonadicRightAdjoint G := by
   apply (config := {allowSynthFailures := true}) @monadicOfHasPreservesReflectsGSplitCoequalizers
@@ -405,7 +405,7 @@ end BeckMonadicity
 
 section ReflexiveMonadicity
 
-variable [HasReflexiveCoequalizers D] [ReflectsIsomorphisms G]
+variable [HasReflexiveCoequalizers D] [G.ReflectsIsomorphisms]
 
 -- Porting note: these local notations were not used in this section before
 local notation3 "F" => leftAdjoint G

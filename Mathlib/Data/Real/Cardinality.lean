@@ -87,7 +87,7 @@ theorem cantorFunctionAux_succ (f : ℕ → Bool) :
     (fun n => cantorFunctionAux c f (n + 1)) = fun n =>
       c * cantorFunctionAux c (fun n => f (n + 1)) n := by
   ext n
-  cases h : f (n + 1) <;> simp [h, _root_.pow_succ]
+  cases h : f (n + 1) <;> simp [h, _root_.pow_succ']
 #align cardinal.cantor_function_aux_succ Cardinal.cantorFunctionAux_succ
 
 theorem summable_cantor_function (f : ℕ → Bool) (h1 : 0 ≤ c) (h2 : c < 1) :
