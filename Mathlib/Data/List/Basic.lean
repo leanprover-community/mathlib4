@@ -807,7 +807,7 @@ theorem getLast?_reverse (l : List α) : l.reverse.getLast? = l.head? := by case
 /-! ### getLast! -/
 
 theorem getLast!_eq_getLast_of_ne_nil [Inhabited α] {l : List α} (h : l ≠ []) :
-  l.getLast! = l.getLast h := by
+    l.getLast! = l.getLast h := by
   match l with
   | [] => contradiction
   | a :: as => rfl
@@ -935,8 +935,7 @@ theorem head!_reverse [Inhabited α] (l : List α) : l.reverse.head! = l.getLast
   nth_rewrite 2 [← reverse_reverse l]
   rw [getLast!_reverse]
 
-theorem subsingleton_of_tail_eq_nil {l : List α} (h : l.tail = []) :
-  l = [] ∨ ∃ x, l = [x] := by
+theorem subsingleton_of_tail_eq_nil {l : List α} (h : l.tail = []) : l = [] ∨ ∃ x, l = [x] := by
   match l with
   | [] => simp only [exists_false, or_false]
   | x :: xs =>
