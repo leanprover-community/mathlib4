@@ -170,8 +170,8 @@ instance instSMulZeroClass [SMulZeroClass R V] :
     ext
     simp [smul_coeff]
 
-theorem smul_coeff_right [SMulZeroClass R V] {x : HahnSeries Γ R}
-    {y : HahnModule Γ' R V} {a : Γ'} {s : Set Γ'} (hs : s.IsPWO) (hys : ((of R).symm y).support ⊆ s) :
+theorem smul_coeff_right [SMulZeroClass R V] {x : HahnSeries Γ R} {y : HahnModule Γ' R V} {a : Γ'}
+    {s : Set Γ'} (hs : s.IsPWO) (hys : ((of R).symm y).support ⊆ s) :
     ((of R).symm <| x • y).coeff a =
       ∑ ij in vAddAntidiagonal x.isPWO_support hs a,
         x.coeff ij.fst • ((of R).symm y).coeff ij.snd := by
@@ -287,8 +287,8 @@ theorem zero_smul' [Zero R] [SMulWithZero R V] {x : HahnModule Γ' R V} :
   simp [smul_coeff]
 
 @[simp]
-theorem one_smul' {Γ} [OrderedAddCommMonoid Γ] [OrderedCancelAddAction Γ Γ'] [MonoidWithZero R] [MulActionWithZero R V] {x : HahnModule Γ' R V} :
-    (1 : HahnSeries Γ R) • x = x := by
+theorem one_smul' {Γ} [OrderedAddCommMonoid Γ] [OrderedCancelAddAction Γ Γ'] [MonoidWithZero R]
+    [MulActionWithZero R V] {x : HahnModule Γ' R V} : (1 : HahnSeries Γ R) • x = x := by
   ext g
   exact single_zero_smul_coeff.trans (one_smul R (x.coeff g))
 
@@ -322,9 +322,9 @@ theorem smul_coeff_order_add_order {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Z
   erw [Finset.vAddAntidiagonal_min_vAdd_min, Finset.sum_singleton]
 
 /-!
-theorem smul_coeff_orderTop_add_orderTop {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ'] [OrderedCancelVAdd Γ Γ'] [Zero R]
-    [SMulWithZero R V] {x : HahnSeries Γ R} {y : HahnModule Γ' R V} :
-    ((of R).symm (x • y)).coeff (x.orderTop +ᵥ y.orderTop) =
+theorem smul_coeff_orderTop_add_orderTop {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ']
+    [OrderedCancelVAdd Γ Γ'] [Zero R] [SMulWithZero R V] {x : HahnSeries Γ R}
+    {y : HahnModule Γ' R V} : ((of R).symm (x • y)).coeff (x.orderTop +ᵥ y.orderTop) =
     x.leadingTerm • ((of R).symm y).leadingTerm := by
   by_cases hx : x = 0
   · sorry
@@ -592,7 +592,8 @@ instance instGroupModule {V} [Ring R] [AddCommGroup V] [Module R V] : Module (Ha
   add_smul _ _ _ := add_smul Module.add_smul
   zero_smul _ := zero_smul'
 
-instance SMulCommClass [CommRing R] [Module R V] : SMulCommClass R (HahnSeries Γ R) (HahnModule Γ' R V) where
+instance SMulCommClass [CommRing R] [Module R V] :
+    SMulCommClass R (HahnSeries Γ R) (HahnModule Γ' R V) where
   smul_comm r x y := by
     rw [← single_zero_smul_eq_smul Γ, ← mul_smul', mul_comm, mul_smul', single_zero_smul_eq_smul Γ]
 

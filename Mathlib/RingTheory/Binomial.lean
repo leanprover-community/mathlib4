@@ -314,6 +314,7 @@ theorem choose_zero_right' (r : R) : choose r 0 = (r + 1) ^ 0 := by
   rw [factorial_nsmul_multichoose_eq_ascPochhammer, Nat.factorial_zero, ascPochhammer_zero,
     smeval_one, one_smul, one_smul, Nat.cast_zero, sub_zero]
 
+@[simp]
 theorem choose_zero_right [NatPowAssoc R] (r : R) : choose r 0 = 1 := by
   rw [choose_zero_right', npow_zero]
 

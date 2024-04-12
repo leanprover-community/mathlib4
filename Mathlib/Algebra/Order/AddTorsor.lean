@@ -41,6 +41,7 @@ instance OrderedVAdd.toCovariantClassLeft [LE G] [LE P] [OrderedVAdd G P] :
     CovariantClass G P (· +ᵥ ·) (· ≤ ·) where
   elim := fun a _ _ bc ↦ OrderedVAdd.vadd_le_vadd_left _ _ bc a
 
+/-- Vector addition for WithTop in the ordered case. -/
 def TopVAdd [DecidableEq G] [DecidableEq P] [LE G] [LE P] [OrderedVAdd G P] (g : WithTop G)
     (p : WithTop P) : WithTop P :=
   if hg : g = ⊤ then ⊤ else
@@ -83,6 +84,7 @@ instance OrderedCancelVAdd.toCancelVAdd [PartialOrder G] [PartialOrder P] [Order
     refine (OrderedCancelVAdd.le_of_vadd_le_vadd_right a b c h.le).antisymm ?_
     exact (OrderedCancelVAdd.le_of_vadd_le_vadd_right b a c h.ge)
 
+/-- Vector addition for subsets. -/
 protected def Set.vAdd [VAdd G P] : VAdd (Set G) (Set P) :=
   ⟨image2 (· +ᵥ ·)⟩
 

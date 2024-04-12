@@ -63,12 +63,8 @@ theorem hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
     (hasseDeriv R k f).coeff n = Ring.choose (n + k) k • f.coeff (n + k) :=
   rfl
 
-
-@[simp]
 theorem hasseDeriv_zero' (f : LaurentSeries V) : hasseDeriv R 0 f = f := by
-  simp only [HahnSeries.ext_iff, hasseDeriv, hasseDeriv, Ring.choose_zero_right]
-  ext
-  simp_rw [Nat.cast_zero, add_zero, one_smul]
+  simp only [hasseDeriv_apply, Nat.cast_zero, add_zero, Ring.choose_zero_right, one_smul]
   exact rfl
 
 theorem hasseDeriv_single' (k : ℕ) (n : ℤ) (x : V) :
