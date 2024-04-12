@@ -3,7 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.MvPolynomial.Expand
+import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.RingTheory.MvPolynomial.Basic
 
@@ -133,7 +133,7 @@ def evalₗ [CommSemiring K] : MvPolynomial σ K →ₗ[K] (σ → K) → K wher
 variable [Field K] [Fintype K] [Finite σ]
 
 -- Porting note: `K` and `σ` were implicit in mathlib3, even if they were declared via
--- `variables (K σ)` (I don't understand why). They are now explicit, as expected.
+-- `variable (K σ)` (I don't understand why). They are now explicit, as expected.
 theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).map (evalₗ K σ) = ⊤ := by
   cases nonempty_fintype σ
   refine' top_unique (SetLike.le_def.2 fun e _ => mem_map.2 _)

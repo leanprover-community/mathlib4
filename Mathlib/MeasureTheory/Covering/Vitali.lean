@@ -313,7 +313,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
   -- add up to an arbitrarily small number, say `ε / C`.
   obtain ⟨w, hw⟩ : ∃ w : Finset v, (∑' a : { a // a ∉ w }, μ (B a)) < ε / C :=
     haveI : 0 < ε / C := by
-      simp only [ENNReal.div_pos_iff, εpos.ne', ENNReal.coe_ne_top, Ne.def, not_false_iff,
+      simp only [ENNReal.div_pos_iff, εpos.ne', ENNReal.coe_ne_top, Ne, not_false_iff,
         and_self_iff]
     ((tendsto_order.1 (ENNReal.tendsto_tsum_compl_atTop_zero I.ne)).2 _ this).exists
   -- main property: the points `z` of `s` which are not covered by `u` are contained in the

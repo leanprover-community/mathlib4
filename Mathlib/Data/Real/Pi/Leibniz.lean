@@ -51,7 +51,7 @@ theorem tendsto_sum_pi_div_four :
     rw [Set.mem_Iio] at hy2
     have ny : ‖y‖ < 1 := by rw [norm_eq_abs, abs_lt]; constructor <;> linarith
     rw [← (hasSum_arctan ny).tsum_eq, Function.comp_apply, ← tsum_mul_right]
-    simp_rw [mul_assoc, ← pow_mul, ← pow_succ', div_mul_eq_mul_div]
+    simp_rw [mul_assoc, ← pow_mul, ← pow_succ, div_mul_eq_mul_div]
     norm_cast
   -- But `arctan` is continuous everywhere, so the limit is `arctan 1 = π / 4`
   rwa [tendsto_nhds_unique abel ((continuous_arctan.tendsto 1).mono_left m), arctan_one] at h
