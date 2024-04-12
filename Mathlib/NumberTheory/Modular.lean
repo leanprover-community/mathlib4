@@ -178,7 +178,6 @@ theorem lcRow0_apply (p : Fin 2 → ℤ) (g : Matrix (Fin 2) (Fin 2) ℝ) :
 
 /-- Linear map sending the matrix [a, b; c, d] to the matrix [ac₀ + bd₀, - ad₀ + bc₀; c, d], for
 some fixed `(c₀, d₀)`. -/
--- Porting note: `simpNF` times out, but only in CI where all of `Mathlib` is imported
 @[simps!, nolint simpNF]
 def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     Matrix (Fin 2) (Fin 2) ℝ ≃ₗ[ℝ] Matrix (Fin 2) (Fin 2) ℝ :=
@@ -191,6 +190,9 @@ def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       rw [neg_sq]
       exact hcd.sq_add_sq_ne_zero, LinearEquiv.refl ℝ (Fin 2 → ℝ)]
 #align modular_group.lc_row0_extend ModularGroup.lcRow0Extend
+
+-- `simpNF` times out, but only in CI where all of `Mathlib` is imported
+attribute [nolint simpNF] lcRow0Extend_apply lcRow0Extend_symm_apply
 
 /-- The map `lcRow0` is proper, that is, preimages of cocompact sets are finite in
 `[[* , *], [c, d]]`. -/
