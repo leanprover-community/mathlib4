@@ -62,8 +62,8 @@ noncomputable def HasShift.localized : HasShift D A :=
     (fun a => Localization.lift (shiftFunctor C a ⋙ L)
       (MorphismProperty.IsCompatibleWithShift.shiftFunctor_comp_inverts L W a) L)
     (fun _ => Localization.fac _ _ _)
-    ⟨⟨(inferInstance : Full (Localization.whiskeringLeftFunctor' L W D))⟩,
-      (inferInstance : Faithful (Localization.whiskeringLeftFunctor' L W D))⟩
+    ⟨⟨(inferInstance : (Localization.whiskeringLeftFunctor' L W D).Full)⟩,
+      (inferInstance : (Localization.whiskeringLeftFunctor' L W D).Faithful)⟩
 
 /-- The localization functor `L : C ⥤ D` is compatible with the shift. -/
 noncomputable def Functor.CommShift.localized :
