@@ -3,11 +3,11 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Uthaiwat, Oliver Nash
 -/
-import Mathlib.RingTheory.Nilpotent
-import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.Polynomial.Div
-import Mathlib.Data.Polynomial.Identities
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Div
+import Mathlib.Algebra.Polynomial.Identities
 import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Nilpotent
 import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
@@ -200,7 +200,7 @@ variable {P}
 lemma isUnit_aeval_of_isUnit_aeval_of_isNilpotent_sub
     (hb : IsUnit (aeval b P)) (hab : IsNilpotent (a - b)) :
     IsUnit (aeval a P) := by
-  rw [← add_sub_cancel'_right (aeval b P) (aeval a P)]
+  rw [← add_sub_cancel (aeval b P) (aeval a P)]
   refine IsNilpotent.isUnit_add_left_of_commute ?_ hb (Commute.all _ _)
   exact isNilpotent_aeval_sub_of_isNilpotent_sub P hab
 

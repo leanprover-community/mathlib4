@@ -19,7 +19,7 @@ In this file we show that `CompHaus` has enough projectives.
 Let `X` be a compact Hausdorff space.
 
 * `CompHaus.projective_ultrafilter`: the space `Ultrafilter X` is a projective object
-* `CompHaus.projective_presentation`: the natural map `Ultrafilter X → X`
+* `CompHaus.projectivePresentation`: the natural map `Ultrafilter X → X`
   is a projective presentation
 
 ## Reference

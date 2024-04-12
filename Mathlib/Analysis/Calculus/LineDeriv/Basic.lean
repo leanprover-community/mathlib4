@@ -390,7 +390,7 @@ theorem HasLineDerivAt.le_of_lip' {f : E → F} {f' : F} {x₀ : E} (hf : HasLin
   have A : Continuous (fun (t : 𝕜) ↦ x₀ + t • v) := by continuity
   have : ∀ᶠ x in 𝓝 (x₀ + (0 : 𝕜) • v), ‖f x - f x₀‖ ≤ C * ‖x - x₀‖ := by simpa using hlip
   filter_upwards [(A.continuousAt (x := 0)).preimage_mem_nhds this] with t ht
-  simp only [preimage_setOf_eq, add_sub_cancel', norm_smul, mem_setOf_eq, mul_comm (‖t‖)] at ht
+  simp only [preimage_setOf_eq, add_sub_cancel_left, norm_smul, mem_setOf_eq, mul_comm (‖t‖)] at ht
   simpa [mul_assoc] using ht
 
 /-- Converse to the mean value inequality: if `f` is line differentiable at `x₀` and `C`-lipschitz
@@ -425,7 +425,7 @@ theorem norm_lineDeriv_le_of_lip' {f : E → F} {x₀ : E}
   have A : Continuous (fun (t : 𝕜) ↦ x₀ + t • v) := by continuity
   have : ∀ᶠ x in 𝓝 (x₀ + (0 : 𝕜) • v), ‖f x - f x₀‖ ≤ C * ‖x - x₀‖ := by simpa using hlip
   filter_upwards [(A.continuousAt (x := 0)).preimage_mem_nhds this] with t ht
-  simp only [preimage_setOf_eq, add_sub_cancel', norm_smul, mem_setOf_eq, mul_comm (‖t‖)] at ht
+  simp only [preimage_setOf_eq, add_sub_cancel_left, norm_smul, mem_setOf_eq, mul_comm (‖t‖)] at ht
   simpa [mul_assoc] using ht
 
 /-- Converse to the mean value inequality: if `f` is `C`-lipschitz on a neighborhood of `x₀`

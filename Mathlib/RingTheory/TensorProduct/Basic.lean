@@ -659,7 +659,7 @@ theorem algEquivOfLinearEquivTripleTensorProduct_apply (f h_mul h_one x) :
 #align algebra.tensor_product.alg_equiv_of_linear_equiv_triple_tensor_product_apply Algebra.TensorProduct.algEquivOfLinearEquivTripleTensorProduct_apply
 
 section lift
-variable [IsScalarTower R S A] [IsScalarTower R S C]
+variable [IsScalarTower R S C]
 
 /-- The forward direction of the universal property of tensor products of algebras; any algebra
 morphism from the tensor product can be factored as the product of two algebra morphisms that
@@ -709,9 +709,8 @@ This is `Algebra.TensorProduct.lift` as an equivalence.
 See also `GradedTensorProduct.liftEquiv` for an alternative commutativity requirement for graded
 algebra. -/
 @[simps]
-def liftEquiv [IsScalarTower R S A] [IsScalarTower R S C] :
-    {fg : (A →ₐ[S] C) × (B →ₐ[R] C) // ∀ x y, Commute (fg.1 x) (fg.2 y)}
-      ≃ ((A ⊗[R] B) →ₐ[S] C) where
+def liftEquiv : {fg : (A →ₐ[S] C) × (B →ₐ[R] C) // ∀ x y, Commute (fg.1 x) (fg.2 y)}
+    ≃ ((A ⊗[R] B) →ₐ[S] C) where
   toFun fg := lift fg.val.1 fg.val.2 fg.prop
   invFun f' := ⟨(f'.comp includeLeft, (f'.restrictScalars R).comp includeRight), fun x y =>
     ((Commute.one_right _).tmul (Commute.one_left _)).map f'⟩
@@ -1115,7 +1114,7 @@ namespace LinearMap
 open Algebra.TensorProduct
 
 variable {R M₁ M₂ ι ι₂ : Type*} (A : Type*)
-  [Fintype ι] [Fintype ι₂] [DecidableEq ι] [DecidableEq ι₂]
+  [Fintype ι] [Finite ι₂] [DecidableEq ι] [DecidableEq ι₂]
   [CommSemiring R] [CommSemiring A] [Algebra R A]
   [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
 
@@ -1155,11 +1154,16 @@ theorem endTensorEndAlgHom_apply (f : End A M) (g : End R N) :
 
 end Module
 
+theorem Subalgebra.finite_sup {K L : Type*} [CommRing K] [CommRing L] [Algebra K L]
+    (E1 E2 : Subalgebra K L) [Module.Finite K E1] [Module.Finite K E2] :
+    Module.Finite K ↥(E1 ⊔ E2) := by
+  rw [← E1.range_val, ← E2.range_val, ← Algebra.TensorProduct.productMap_range]
+  exact Module.Finite.range (Algebra.TensorProduct.productMap E1.val E2.val).toLinearMap
+
+@[deprecated Subalgebra.finite_sup] -- 2024-04-11
 theorem Subalgebra.finiteDimensional_sup {K L : Type*} [Field K] [CommRing L] [Algebra K L]
     (E1 E2 : Subalgebra K L) [FiniteDimensional K E1] [FiniteDimensional K E2] :
-    FiniteDimensional K (E1 ⊔ E2 : Subalgebra K L) := by
-  rw [← E1.range_val, ← E2.range_val, ← Algebra.TensorProduct.productMap_range]
-  exact (Algebra.TensorProduct.productMap E1.val E2.val).toLinearMap.finiteDimensional_range
+    FiniteDimensional K (E1 ⊔ E2 : Subalgebra K L) := Subalgebra.finite_sup E1 E2
 #align subalgebra.finite_dimensional_sup Subalgebra.finiteDimensional_sup
 
 namespace TensorProduct.Algebra
