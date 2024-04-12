@@ -86,17 +86,11 @@ structure CCCongrTheorem extends CongrTheorem where
 /-- Automatically generated congruence lemma based on heterogeneous equality.
 
 This returns an annotated version of the result from `Lean.Meta.mkHCongrWithArity`. -/
-def mkCCHCongrWithArity (fn : Expr) (nargs : Nat) :
-    MetaM (Option CCCongrTheorem) := do
+def mkCCHCongrWithArity (fn : Expr) (nargs : Nat) : MetaM (Option CCCongrTheorem) := do
   let eqCongr ← try mkHCongrWithArity fn nargs catch _ => return none
-  let type := eqCongr.type
-  forallTelescope type fun _ type => do
-    guard (type.isEq || type.isHEq)
-    let res₁ : CCCongrTheorem :=
-      { eqCongr with
-        heqResult := type.isHEq
-        hcongrTheorem := true }
-    return some res₁
+  return some { eqCongr with
+    heqResult := true
+    hcongrTheorem := true }
 
 /-- Keys used to find corresponding `CCCongrTheorem`s. -/
 structure CCCongrTheoremKey where
