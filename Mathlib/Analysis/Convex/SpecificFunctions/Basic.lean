@@ -63,7 +63,7 @@ theorem convexOn_exp : ConvexOn ℝ univ exp :=
   strictConvexOn_exp.convexOn
 #align convex_on_exp convexOn_exp
 
-/- `Real.log` is strictly concave on $(0, +∞)$. -/
+/-- `Real.log` is strictly concave on `(0, +∞)`. -/
 theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
   apply strictConcaveOn_of_slope_strict_anti_adjacent (convex_Ioi (0 : ℝ))
   intro x y z (hx : 0 < x) (hz : 0 < z) hxy hyz

@@ -31,7 +31,7 @@ variable {C D E : Type _} [Category C] [Category D] [Category E]
   (F : C ⥤ D) {G : D ⥤ E} {G' : C ⥤ E} (e : F ⋙ G ≅ G')
   {A : Type _} [AddMonoid A] [HasShift C A]
   (s : A → D ⥤ D) (i : ∀ a, F ⋙ s a ≅ shiftFunctor C a ⋙ F)
-  (hF : Nonempty (Full ((whiskeringLeft C D D).obj F)) ∧ Faithful ((whiskeringLeft C D D).obj F))
+  (hF : Nonempty (((whiskeringLeft C D D).obj F).Full ) ∧ ((whiskeringLeft C D D).obj F).Faithful)
 
 namespace HasShift
 

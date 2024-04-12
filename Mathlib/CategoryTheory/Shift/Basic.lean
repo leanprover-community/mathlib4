@@ -460,8 +460,8 @@ abbrev shiftEquiv (n : A) : C ≌ C := shiftEquiv' C n (-n) (add_neg_self n)
 variable (X Y : C) (f : X ⟶ Y)
 
 /-- Shifting by `i` is an equivalence. -/
-instance (i : A) : IsEquivalence (shiftFunctor C i) := by
-  change IsEquivalence (shiftEquiv C i).functor
+instance (i : A) : (shiftFunctor C i).IsEquivalence := by
+  change (shiftEquiv C i).functor.IsEquivalence
   infer_instance
 
 @[simp]
@@ -472,7 +472,7 @@ theorem shiftFunctor_inv (i : A) : (shiftFunctor C i).inv = shiftFunctor C (-i) 
 section
 
 /-- Shifting by `n` is an essentially surjective functor. -/
-instance shiftFunctor_essSurj (i : A) : EssSurj (shiftFunctor C i) :=
+instance shiftFunctor_essSurj (i : A) : (shiftFunctor C i).EssSurj :=
   Equivalence.essSurj_of_equivalence _
 #align category_theory.shift_functor_ess_surj CategoryTheory.shiftFunctor_essSurj
 
@@ -702,7 +702,7 @@ lemma shiftFunctorComm_inv_app_of_add_eq_zero (m n : A) (hmn : m + n = 0) (X : C
 end AddCommMonoid
 
 variable {D : Type*} [Category D] [AddMonoid A] [HasShift D A]
-variable (F : C ⥤ D) [Full F] [Faithful F]
+variable (F : C ⥤ D) [F.Full] [F.Faithful]
 
 section
 

@@ -3,9 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Set.List
+import Mathlib.Algebra.Group.Nat
+import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.Order.Sub.Canonical
 import Mathlib.Data.List.Perm
-import Mathlib.Init.Quot -- Porting note: added import
+import Mathlib.Data.Set.List
+import Mathlib.Init.Quot
 import Mathlib.Order.Hom.Basic
 
 #align_import data.multiset.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
@@ -825,7 +828,7 @@ theorem card_eq_zero {s : Multiset α} : card s = 0 ↔ s = 0 :=
 #align multiset.card_eq_zero Multiset.card_eq_zero
 
 theorem card_pos {s : Multiset α} : 0 < card s ↔ s ≠ 0 :=
-  pos_iff_ne_zero.trans <| not_congr card_eq_zero
+  Nat.pos_iff_ne_zero.trans <| not_congr card_eq_zero
 #align multiset.card_pos Multiset.card_pos
 
 theorem card_pos_iff_exists_mem {s : Multiset α} : 0 < card s ↔ ∃ a, a ∈ s :=
@@ -1729,7 +1732,7 @@ theorem sub_eq_fold_erase (s t : Multiset α) : s - t = foldl erase erase_comm s
 
 @[simp]
 theorem card_sub {s t : Multiset α} (h : t ≤ s) : card (s - t) = card s - card t :=
-  (tsub_eq_of_eq_add_rev <| by rw [add_comm, ← card_add, tsub_add_cancel_of_le h]).symm
+  Nat.eq_sub_of_add_eq $ by rw [← card_add, tsub_add_cancel_of_le h]
 #align multiset.card_sub Multiset.card_sub
 
 /-! ### Union -/
@@ -2511,14 +2514,11 @@ theorem count_eq_zero_of_not_mem {a : α} {s : Multiset α} (h : a ∉ s) : coun
   by_contradiction fun h' => h <| count_pos.1 (Nat.pos_of_ne_zero h')
 #align multiset.count_eq_zero_of_not_mem Multiset.count_eq_zero_of_not_mem
 
-@[simp]
-theorem count_eq_zero {a : α} {s : Multiset α} : count a s = 0 ↔ a ∉ s :=
-  iff_not_comm.1 <| count_pos.symm.trans pos_iff_ne_zero
-#align multiset.count_eq_zero Multiset.count_eq_zero
-
-theorem count_ne_zero {a : α} {s : Multiset α} : count a s ≠ 0 ↔ a ∈ s := by
-  simp [Ne, count_eq_zero]
+lemma count_ne_zero {a : α} : count a s ≠ 0 ↔ a ∈ s := Nat.pos_iff_ne_zero.symm.trans count_pos
 #align multiset.count_ne_zero Multiset.count_ne_zero
+
+@[simp] lemma count_eq_zero {a : α} : count a s = 0 ↔ a ∉ s := count_ne_zero.not_right
+#align multiset.count_eq_zero Multiset.count_eq_zero
 
 theorem count_eq_card {a : α} {s} : count a s = card s ↔ ∀ x ∈ s, a = x := by
   simp [countP_eq_card, count, @eq_comm _ a]
@@ -2559,13 +2559,13 @@ theorem count_sub (a : α) (s t : Multiset α) : count a (s - t) = count a s - c
 
 @[simp]
 theorem count_union (a : α) (s t : Multiset α) : count a (s ∪ t) = max (count a s) (count a t) := by
-  simp [(· ∪ ·), union, tsub_add_eq_max]
+  simp [(· ∪ ·), union, Nat.sub_add_eq_max]
 #align multiset.count_union Multiset.count_union
 
 @[simp]
 theorem count_inter (a : α) (s t : Multiset α) : count a (s ∩ t) = min (count a s) (count a t) := by
   apply @Nat.add_left_cancel (count a (s - t))
-  rw [← count_add, sub_add_inter, count_sub, tsub_add_min]
+  rw [← count_add, sub_add_inter, count_sub, Nat.sub_add_min_cancel]
 #align multiset.count_inter Multiset.count_inter
 
 theorem le_count_iff_replicate_le {a : α} {s : Multiset α} {n : ℕ} :
@@ -2672,7 +2672,7 @@ theorem replicate_inter (n : ℕ) (x : α) (s : Multiset α) :
   rw [count_inter, count_replicate, count_replicate]
   by_cases h : y = x
   · simp only [h, if_true]
-  · simp only [h, if_false, zero_min]
+  · simp only [h, if_false, Nat.zero_min]
 #align multiset.replicate_inter Multiset.replicate_inter
 
 @[simp]
@@ -2931,7 +2931,7 @@ theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t
   · rw [rel_zero_left.mp h]
   · obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp h
     rw [countP_cons, countP_cons, ih hb2]
-    simp only [decide_eq_true_eq, add_right_inj]
+    simp only [decide_eq_true_eq, Nat.add_right_inj]
     exact (if_congr ⟨fun h => _root_.trans h hb1, fun h => _root_.trans h (symm hb1)⟩ rfl rfl)
 #align multiset.rel.countp_eq Multiset.Rel.countP_eq
 
@@ -3090,6 +3090,23 @@ theorem add_eq_union_iff_disjoint [DecidableEq α] {s t : Multiset α} :
   simp_rw [← inter_eq_zero_iff_disjoint, ext, count_add, count_union, count_inter, count_zero,
     Nat.min_eq_zero_iff, Nat.add_eq_max_iff]
 #align multiset.add_eq_union_iff_disjoint Multiset.add_eq_union_iff_disjoint
+
+lemma add_eq_union_left_of_le [DecidableEq α] {s t u : Multiset α} (h : t ≤ s) :
+    u + s = u ∪ t ↔ u.Disjoint s ∧ s = t := by
+  rw [← add_eq_union_iff_disjoint]
+  refine ⟨fun h0 ↦ ?_, ?_⟩
+  · rw [and_iff_right_of_imp]
+    · exact (le_of_add_le_add_left <| h0.trans_le <| union_le_add u t).antisymm h
+    · rintro rfl
+      exact h0
+  · rintro ⟨h0, rfl⟩
+    exact h0
+#align multiset.add_eq_union_left_of_le Multiset.add_eq_union_left_of_le
+
+lemma add_eq_union_right_of_le [DecidableEq α] {x y z : Multiset α} (h : z ≤ y) :
+    x + y = x ∪ z ↔ y = z ∧ x.Disjoint y := by
+  simpa only [and_comm] using add_eq_union_left_of_le h
+#align multiset.add_eq_union_right_of_le Multiset.add_eq_union_right_of_le
 
 theorem disjoint_map_map {f : α → γ} {g : β → γ} {s : Multiset α} {t : Multiset β} :
     Disjoint (s.map f) (t.map g) ↔ ∀ a ∈ s, ∀ b ∈ t, f a ≠ g b := by
