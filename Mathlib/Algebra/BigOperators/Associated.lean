@@ -93,8 +93,7 @@ def Submonoid.divisor_closure [Monoid α] (s : Set α) :=
 
 theorem Submonoid.subset_divisor_closure [Monoid α] {s : Set α} :
     s ⊆ (Submonoid.divisor_closure s) := by
-  unfold divisor_closure
-  simp only [coe_sInf, Set.mem_setOf_eq, Set.subset_iInter_iff, and_imp]
+  simp only [divisor_closure, coe_sInf, Set.mem_setOf_eq, Set.subset_iInter_iff, and_imp]
   exact (fun _ hi _ => hi)
 
 theorem Submonoid.divisor_closure_le [Monoid α] {s : Set α} {S : Submonoid α} :
@@ -112,9 +111,8 @@ theorem Submonoid.divisor_closure_induction [Monoid α] {s : Set α} {p : α →
     (mul : ∀ x y, p x → p y → p (x*y))
     (div : ∀ x (_ : p x), ∀ y k (_ : x = y*k), ∃ z ∈ {x | p x}, y ~ᵤ z) : p x := by
   have := Submonoid.divisor_closure_le (s := s) (S := ⟨⟨_, fun hx hy => mul _ _ hx hy⟩, one⟩)
-  unfold IsDivisorClosed at this
-  simp only [coe_set_mk, Subsemigroup.coe_set_mk, and_imp, mem_mk, Subsemigroup.mem_mk,
-    forall_exists_index] at this
+  simp only [IsDivisorClosed, coe_set_mk, Subsemigroup.coe_set_mk, and_imp, mem_mk,
+    Subsemigroup.mem_mk, forall_exists_index] at this
   exact this mem div h
 
 theorem top_divisor_closed [Monoid α] : IsDivisorClosed (⊤ : Submonoid α) :=
