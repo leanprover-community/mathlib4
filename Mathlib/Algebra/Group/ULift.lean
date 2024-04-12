@@ -223,7 +223,7 @@ instance commGroup [CommGroup α] : CommGroup (ULift α) :=
 instance addGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (ULift α) :=
   { ULift.addMonoidWithOne, ULift.addGroup with
       intCast := (⟨·⟩),
-      intCast_ofNat := fun _ => congr_arg ULift.up (Int.cast_ofNat _),
+      intCast_ofNat := fun _ => congr_arg ULift.up (Int.cast_natCast _),
       intCast_negSucc := fun _ => congr_arg ULift.up (Int.cast_negSucc _) }
 #align ulift.add_group_with_one ULift.addGroupWithOne
 

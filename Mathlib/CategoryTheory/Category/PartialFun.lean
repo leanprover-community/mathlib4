@@ -88,7 +88,7 @@ def typeToPartialFun : Type u ⥤ PartialFun where
   map_comp _ _ := PFun.coe_comp _ _
 #align Type_to_PartialFun typeToPartialFun
 
-instance : Faithful typeToPartialFun where
+instance : typeToPartialFun.Faithful where
   map_injective {_ _} := PFun.lift_injective
 
 /-- The functor which deletes the point of a pointed type. In return, this makes the maps partial.
@@ -112,7 +112,7 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
 
 /-- The functor which maps undefined values to a new point. This makes the maps total and creates
 pointed types. This is the noncomputable part of the equivalence `PartialFunEquivPointed`. It can't
-be computable because `= Option.none` is decidable while the domain of a general `part` isn't. -/
+be computable because `= Option.none` is decidable while the domain of a general `Part` isn't. -/
 @[simps obj map]
 noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by
   classical
