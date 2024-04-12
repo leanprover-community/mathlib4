@@ -65,7 +65,7 @@ With these definitions, the statements read as follows, first in a general conte
   explicit formula for the `n`-th derivative of the Fourier integral of `f`, as the Fourier
   integral of `fun v ↦ fourierPowSMulRight L f v n`.
 * `VectorFourier.pow_mul_norm_iteratedFDeriv_fourierIntegral_le`: explicit bounds for the `n`-th
-  derivative of the Fourier integral multiplied by a power function, in terms of corresponding
+  derivative of the Fourier integral, multiplied by a power function, in terms of corresponding
   integrals for the original function.
 
 These statements are then specialized to the case of the usual Fourier transform on
@@ -609,17 +609,14 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
       ‖v‖ ^ n * (2 * π * ‖L‖) ^ k * (2 * k + 2) ^ n *
         ∑ p in Finset.range (k + 1) ×ˢ Finset.range (n + 1),
           ∫ v, ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖ ∂μ := calc
-  |L v w| ^ n * ‖(iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w‖ ≤
-    (2 * π) ^ n * (|L v w| ^ n * ‖iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f) w‖) := by
+  |L v w| ^ n * ‖(iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w‖ ≤ (2 * π) ^ n
+      * (|L v w| ^ n * ‖iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f) w‖) := by
     apply le_mul_of_one_le_left (by positivity)
     apply one_le_pow_of_one_le
     linarith [one_le_pi_div_two]
   _ = ‖fourierPowSMulRight (-L.flip)
         (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n (fun _i ↦ v)‖ := by
-    simp only [fourierPowSMulRight_apply, ContinuousLinearMap.neg_apply,
-      ContinuousLinearMap.flip_apply, Finset.prod_const, Finset.card_fin, norm_smul, norm_pow,
-      norm_neg, norm_mul, RCLike.norm_ofNat, Complex.norm_eq_abs, abs_ofReal,
-      _root_.abs_of_nonneg pi_nonneg, abs_I, mul_one, Real.norm_eq_abs]
+    simp [norm_smul, _root_.abs_of_nonneg pi_nonneg]
   _ ≤ ‖fourierPowSMulRight (-L.flip)
         (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n‖ * ∏ _i : Fin n, ‖v‖ :=
     le_opNorm _ _
