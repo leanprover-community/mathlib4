@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Data.MvPolynomial.Basic
+import Mathlib.Algebra.MvPolynomial.Basic
 
 #align_import ring_theory.mv_polynomial.weighted_homogeneous from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
@@ -424,7 +424,7 @@ theorem sum_weightedHomogeneousComponent :
   · intro hm
     rw [if_pos rfl]
     simp only [Finite.mem_toFinset, mem_support, Ne, Classical.not_not] at hm
-    have := coeff_weightedHomogeneousComponent (w := w) (weightedDegree' w d) φ d
+    have := coeff_weightedHomogeneousComponent (w := w) (weightedDegree w d) φ d
     rw [hm, if_pos rfl, coeff_zero] at this
     exact this.symm
 #align mv_polynomial.sum_weighted_homogeneous_component MvPolynomial.sum_weightedHomogeneousComponent
