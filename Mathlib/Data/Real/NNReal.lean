@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Field.Canonical.Basic
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
@@ -64,7 +64,6 @@ def NNReal := { r : ℝ // 0 ≤ r } deriving
 
 namespace NNReal
 
--- mathport name: nnreal
 scoped notation "ℝ≥0" => NNReal
 
 noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
@@ -398,9 +397,12 @@ theorem _root_.Real.toNNReal_coe {r : ℝ≥0} : Real.toNNReal r = r :=
 #align real.to_nnreal_coe Real.toNNReal_coe
 
 @[simp]
-theorem mk_coe_nat (n : ℕ) : @Eq ℝ≥0 (⟨(n : ℝ), n.cast_nonneg⟩ : ℝ≥0) n :=
+theorem mk_natCast (n : ℕ) : @Eq ℝ≥0 (⟨(n : ℝ), n.cast_nonneg⟩ : ℝ≥0) n :=
   NNReal.eq (NNReal.coe_nat_cast n).symm
-#align nnreal.mk_coe_nat NNReal.mk_coe_nat
+#align nnreal.mk_coe_nat NNReal.mk_natCast
+
+-- 2024-04-05
+@[deprecated] alias mk_coe_nat := mk_natCast
 
 -- Porting note: place this in the `Real` namespace
 @[simp]

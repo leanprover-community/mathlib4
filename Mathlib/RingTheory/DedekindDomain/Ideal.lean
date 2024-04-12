@@ -294,7 +294,7 @@ theorem isNoetherianRing : IsNoetherianRing A := by
 theorem integrallyClosed : IsIntegrallyClosed A := by
   -- It suffices to show that for integral `x`,
   -- `A[x]` (which is a fractional ideal) is in fact equal to `A`.
-  refine ⟨fun {x hx} => ?_⟩
+  refine (isIntegrallyClosed_iff (FractionRing A)).mpr (fun {x hx} => ?_)
   rw [← Set.mem_range, ← Algebra.mem_bot, ← Subalgebra.mem_toSubmodule, Algebra.toSubmodule_bot,
     Submodule.one_eq_span, ← coe_spanSingleton A⁰ (1 : FractionRing A), spanSingleton_one, ←
     FractionalIdeal.adjoinIntegral_eq_one_of_isUnit x hx (h.isUnit _)]
@@ -1395,7 +1395,7 @@ noncomputable def IsDedekindDomain.quotientEquivPiOfFinsetProdEq {ι : Type*} {s
 #align is_dedekind_domain.quotient_equiv_pi_of_finset_prod_eq IsDedekindDomain.quotientEquivPiOfFinsetProdEq
 
 /-- Corollary of the Chinese remainder theorem: given elements `x i : R / P i ^ e i`,
-we can choose a representative `y : R` such that `y ≡ x i (mod P i ^ e i)`.-/
+we can choose a representative `y : R` such that `y ≡ x i (mod P i ^ e i)`. -/
 theorem IsDedekindDomain.exists_representative_mod_finset {ι : Type*} {s : Finset ι}
     (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (P i))
     (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → P i ≠ P j) (x : ∀ i : s, R ⧸ P i ^ e i) :
@@ -1407,7 +1407,7 @@ theorem IsDedekindDomain.exists_representative_mod_finset {ι : Type*} {s : Fins
 #align is_dedekind_domain.exists_representative_mod_finset IsDedekindDomain.exists_representative_mod_finset
 
 /-- Corollary of the Chinese remainder theorem: given elements `x i : R`,
-we can choose a representative `y : R` such that `y - x i ∈ P i ^ e i`.-/
+we can choose a representative `y : R` such that `y - x i ∈ P i ^ e i`. -/
 theorem IsDedekindDomain.exists_forall_sub_mem_ideal {ι : Type*} {s : Finset ι} (P : ι → Ideal R)
     (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (P i))
     (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → P i ≠ P j) (x : s → R) :
