@@ -18,8 +18,6 @@ A function expressible as a power series at a point has a Frechet derivative the
 Also the special case in terms of `deriv` when the domain is 1-dimensional.
 -/
 
-lemma foo (n : ℕ) : 0 ≤ n := by exact?
-
 open Filter Asymptotics
 
 open scoped ENNReal BigOperators
