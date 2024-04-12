@@ -291,7 +291,7 @@ end Map
 
 section Centralizer
 
-variable (R) -- Porting note: redundant binder annotation update
+variable (R)
 
 /-- The centralizer, or commutant, of the star-closure of a set as a star subalgebra. -/
 def centralizer (s : Set A) : StarSubalgebra R A where
