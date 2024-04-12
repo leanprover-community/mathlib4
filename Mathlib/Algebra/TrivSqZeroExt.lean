@@ -7,6 +7,9 @@ import Mathlib.Algebra.Algebra.Basic
 import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.LinearAlgebra.Prod
 
+import Mathlib.Tactic
+
+
 #align_import algebra.triv_sq_zero_ext from "leanprover-community/mathlib"@"ce7e9d53d4bbc38065db3b595cd5bd73c323bc1d"
 
 /-!
@@ -747,20 +750,42 @@ instance inv [Neg M] [Inv R] [SMul Rᵐᵒᵖ M] [SMul R M] : Inv (tsze R M) :=
 
 theorem fst_inv [Neg M] [Inv R] [SMul Rᵐᵒᵖ M] [SMul R M]
     (x : tsze R M) : fst x⁻¹ = (fst x)⁻¹ :=
-      rfl
+  rfl
 
 theorem snd_inv [Neg M] [Inv R] [SMul Rᵐᵒᵖ M] [SMul R M] (x : tsze R M) :
     snd x⁻¹ = - ((fst x)⁻¹ •> (snd x <• (fst x)⁻¹)) :=
-      rfl
+  rfl
 
-theorem mul_inv_cancel [DivisionRing R] [AddCommGroup M]
+protected theorem mul_inv_cancel [DivisionRing R] [AddCommGroup M]
     [Module Rᵐᵒᵖ M] [Module R M] {x : tsze R M}
     (hx : fst x ≠ 0) : x * x⁻¹ = 1 := by
-      ext
-      · rw [fst_mul, fst_inv, fst_one, DivisionRing.mul_inv_cancel (fst x) hx]
-      rw [snd_mul, snd_inv, smul_neg, ← smul_assoc]
-      rw [smul_eq_mul, DivisionRing.mul_inv_cancel (fst x) hx]
-      rw [one_smul, fst_inv, add_left_neg, snd_one]
+  ext
+  · rw [fst_mul, fst_inv, fst_one, DivisionRing.mul_inv_cancel (fst x) hx]
+  rw [snd_mul, snd_inv, smul_neg, ← smul_assoc]
+  rw [smul_eq_mul, DivisionRing.mul_inv_cancel (fst x) hx]
+  rw [one_smul, fst_inv, add_left_neg, snd_one]
+
+protected theorem inv_mul_cancel [DivisionRing R] [AddCommGroup M]
+    [Module Rᵐᵒᵖ M] [Module R M] [SMulCommClass Rᵐᵒᵖ R M] {x : tsze R M}
+    (hx : fst x ≠ 0) : x⁻¹ * x = 1 := by
+  ext
+  · rw [fst_mul, fst_inv, inv_mul_cancel hx, fst_one]
+
+  have op_smul_smul : ((fst x)⁻¹ •> (snd x <• (fst x)⁻¹)) <• fst x  = (fst x)⁻¹ •> ((snd x <• (fst x)⁻¹) <• fst x) := by rw [smul_comm]
+  have op_smul_assoc' : (snd x <• (fst x)⁻¹ <• fst x) = (op ((fst x)⁻¹ * fst x)) •> snd x := by {
+    calc
+      _ = op (fst x) •> op ((fst x)⁻¹) •> snd x := rfl
+      _ = (op (fst x) •> op ((fst x)⁻¹)) •> snd x := by rw [smul_assoc]
+      _ = (op (fst x) * op ((fst x)⁻¹)) •> snd x := by rw [smul_eq_mul]
+      _ = _ := by rw [← op_mul]
+  }
+  have op_smul_one : (snd x) <• (1:R) = snd x := by simp only [op_one, one_smul]
+
+  rw [snd_mul, snd_inv]
+  simp [op]
+
+  rw [← op, op_smul_smul, op_smul_assoc', inv_mul_cancel hx]
+  rw [op_smul_one, add_comm, fst_inv, add_left_neg]
 
 end Inv
 
