@@ -757,38 +757,29 @@ protected theorem mul_inv_cancel [DivisionRing R] [AddCommGroup M]
     [Module Rᵐᵒᵖ M] [Module R M] {x : tsze R M}
     (hx : fst x ≠ 0) : x * x⁻¹ = 1 := by
   ext
-  · rw [fst_mul, fst_inv, fst_one, DivisionRing.mul_inv_cancel (fst x) hx]
-  rw [snd_mul, snd_inv, smul_neg, ← smul_assoc]
-  rw [smul_eq_mul, DivisionRing.mul_inv_cancel (fst x) hx]
-  rw [one_smul, fst_inv, add_left_neg, snd_one]
+  · rw [fst_mul, fst_inv, fst_one, mul_inv_cancel hx]
+  · rw [snd_mul, snd_inv, snd_one, smul_neg, smul_smul,
+    mul_inv_cancel hx, one_smul, fst_inv,add_left_neg]
+
 
 protected theorem inv_mul_cancel [DivisionRing R] [AddCommGroup M]
     [Module Rᵐᵒᵖ M] [Module R M] [SMulCommClass Rᵐᵒᵖ R M] {x : tsze R M}
     (hx : fst x ≠ 0) : x⁻¹ * x = 1 := by
   ext
   · rw [fst_mul, fst_inv, inv_mul_cancel hx, fst_one]
-  rw [snd_mul, snd_inv, ← smul_comm, smul_neg]
-  rw [op_smul_op_smul, inv_mul_cancel hx, op_one, one_smul]
-  rw [add_comm, fst_inv, add_left_neg, snd_one]
+  · rw [snd_mul, snd_inv, snd_one, smul_neg, smul_comm, op_smul_op_smul,
+    inv_mul_cancel hx, op_one, one_smul, fst_inv, add_right_neg]
+
 
 protected theorem inv_inl [DivisionRing R] [AddCommGroup M]
     [Module Rᵐᵒᵖ M] [Module R M]
-    {r : R} (hr : r ≠ 0) :
+    {r : R} :
     (inl r)⁻¹ = (inl (r⁻¹ : R) : tsze R M) := by
   ext
-  rw [fst_inv]
-  have : (fst (inl r)) * (fst (inl r⁻¹)) = 1 := by
-    rw [← fst_mul (inl r : tsze R M) (inl r⁻¹)]
-    rw [← inl_mul, fst_inl, mul_inv_cancel hr]
-  have : (fst (inl r))⁻¹ * ((fst (inl r)) * (fst (inl r⁻¹))) = (fst (inl r))⁻¹ := by
-    rw [this, mul_one (fst (inl r : tsze R M))⁻¹]
-  rw [← this, ← mul_assoc, inv_mul_cancel, one_mul]
-  rw [fst_inl]
-  exact hr
+  · rw [fst_inv, fst_inl, fst_inl]
+  · rw [snd_inv, fst_inl, snd_inl, snd_inl, smul_zero, smul_zero, neg_zero]
 
-  rw [snd_inv, snd_inl, snd_inl, fst_inl]
-  rw [smul_zero, smul_zero, neg_zero]
-
+@[simp]
 theorem inv_inr [DivisionRing R] [AddCommGroup M]
     [Module Rᵐᵒᵖ M] [Module R M]
     {m : M} :
