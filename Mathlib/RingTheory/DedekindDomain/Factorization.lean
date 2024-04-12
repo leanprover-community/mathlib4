@@ -77,8 +77,7 @@ end FractionalIdeal
 /-! ### Factorization of ideals of Dedekind domains -/
 
 
-variable {R : Type*} [CommRing R] [IsDedekindDomain R] {K : Type*} [Field K]
-  [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
+variable [IsDedekindDomain R] (v : HeightOneSpectrum R)
 
 /-- Given a maximal ideal `v` and an ideal `I` of `R`, `maxPowDividing` returns the maximal
   power of `v` dividing `I`. -/
@@ -337,7 +336,7 @@ theorem count_well_defined {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
     exact (Associates.irreducible_mk _).mpr v.irreducible
   rw [h_a₁J₁, ← div_spanSingleton, ← div_spanSingleton, div_eq_div_iff h_a₁' h_a',
     ← coeIdeal_span_singleton, ← coeIdeal_span_singleton, ← coeIdeal_mul, ← coeIdeal_mul] at h_aJ
-  rw [count, dif_neg hI, sub_eq_sub_iff_add_eq_add, ← ofNat_add, ← ofNat_add, coe_nat_inj',
+  rw [count, dif_neg hI, sub_eq_sub_iff_add_eq_add, ← ofNat_add, ← ofNat_add, natCast_inj,
     ← Associates.count_mul _ _ hv, ← Associates.count_mul _ _ hv, Associates.mk_mul_mk,
     Associates.mk_mul_mk, coeIdeal_injective h_aJ]
   · rw [Ne.def, Associates.mk_eq_zero]; exact h_J_ne_zero
@@ -406,12 +405,12 @@ theorem count_pow (n : ℕ) (I : FractionalIdeal R⁰ K) :
   · rw [pow_zero, ofNat_zero, MulZeroClass.zero_mul, count_one]
   · rw [pow_succ, count_mul']
     by_cases hI : I = 0
-    · have h_neg : ¬(I ≠ 0 ∧ I ^ n ≠ 0) := by
-        rw [not_and, not_not, Ne.def]
+    · have h_neg : ¬(I ^ n ≠ 0 ∧ I ≠ 0) := by
+        rw [not_and', not_not, Ne.def]
         intro h
         exact absurd hI h
       rw [if_neg h_neg, hI, count_zero, MulZeroClass.mul_zero]
-    · rw [if_pos (And.intro hI (pow_ne_zero n hI)), h, Nat.succ_eq_add_one, Nat.cast_add,
+    · rw [if_pos (And.intro (pow_ne_zero n hI) hI), h, Nat.succ_eq_add_one, Nat.cast_add,
         Nat.cast_one]
       ring
 
@@ -450,9 +449,9 @@ theorem count_inv  (I : FractionalIdeal R⁰ K) :
 theorem count_zpow (n : ℤ) (I : FractionalIdeal R⁰ K) :
     count K v (I ^ n) = n * count K v I := by
   cases' n with n
-  · rw [ofNat_eq_coe, zpow_ofNat]
+  · rw [ofNat_eq_coe, zpow_natCast]
     exact count_pow K v n I
-  · rw [negSucc_coe, count_neg_zpow, zpow_ofNat, count_pow]
+  · rw [negSucc_coe, count_neg_zpow, zpow_natCast, count_pow]
     ring
 
 /-- `val_v(v^n) = n` for every `n ∈ ℤ`. -/
@@ -472,7 +471,7 @@ theorem count_maximal_coprime {w : HeightOneSpectrum R} (hw : w ≠ v) :
   have hw' : Irreducible (Associates.mk w.asIdeal) := by apply w.associates_irreducible
   rw [count_well_defined K v hw_ne_zero hw_fact, Ideal.span_singleton_one, ← Ideal.one_eq_top,
     Associates.mk_one, Associates.factors_one, Associates.count_zero hv, ofNat_zero, sub_zero,
-    coe_nat_eq_zero, ← pow_one (Associates.mk w.asIdeal), Associates.factors_prime_pow hw',
+    natCast_eq_zero, ← pow_one (Associates.mk w.asIdeal), Associates.factors_prime_pow hw',
     Associates.count_some hv, Multiset.replicate_one, Multiset.count_eq_zero,
     Multiset.mem_singleton]
   simp only [Subtype.mk.injEq]
