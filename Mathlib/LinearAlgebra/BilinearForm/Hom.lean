@@ -70,8 +70,9 @@ the right. -/
 def toLinHom : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R := LinearMap.id
 #align bilin_form.to_lin_hom LinearMap.BilinForm.toLinHom
 
+set_option linter.deprecated false in
 @[deprecated]
-theorem toLin'_apply (A : BilinForm R M) (x : M) : A x = A x :=
+theorem toLin'_apply (A : BilinForm R M) (x : M) : toLinHom (M := M) A x = A x :=
   rfl
 #align bilin_form.to_lin'_apply LinearMap.BilinForm.toLin'_apply
 
@@ -158,13 +159,15 @@ theorem BilinForm.toLin_symm :
   LinearMap.toBilin.symm_symm
 #align bilin_form.to_lin_symm BilinForm.toLin_symm
 
+set_option linter.deprecated false in
 @[simp]
 theorem LinearMap.toBilin_apply (f : M →ₗ[R] M →ₗ[R] R) (x y : M) :
-    f x y = f x y :=
+    toBilin f x y = f x y :=
   rfl
 
+set_option linter.deprecated false in
 @[simp]
-theorem BilinForm.toLin_apply (x : M) : B x = B x :=
+theorem BilinForm.toLin_apply (x : M) : BilinForm.toLin B x = B x :=
   rfl
 #align bilin_form.to_lin_apply BilinForm.toLin_apply
 
