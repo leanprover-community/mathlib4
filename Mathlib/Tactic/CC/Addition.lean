@@ -48,7 +48,7 @@ def modifyACTodo (f : Array ACTodoEntry → Array ACTodoEntry) : CCM Unit :=
   modify fun cc => { cc with acTodo := f cc.acTodo }
 
 @[inline]
-def modifyCache (f : ExtCongrTheoremCache → ExtCongrTheoremCache) : CCM Unit :=
+def modifyCache (f : CCCongrTheoremCache → CCCongrTheoremCache) : CCM Unit :=
   modify fun cc => { cc with cache := f cc.cache }
 
 @[inline]
@@ -60,7 +60,7 @@ def getACTodo : CCM (Array ACTodoEntry) := do
   return (← get).acTodo
 
 @[inline]
-def getCache : CCM ExtCongrTheoremCache := do
+def getCache : CCM CCCongrTheoremCache := do
   return (← get).cache
 
 def getEntry (e : Expr) : CCM (Option Entry) := do
@@ -159,18 +159,18 @@ def mkSymmCongruencesKey (lhs rhs : Expr) : CCM SymmCongruencesKey := do
   let rhs ← getRoot rhs
   if hash lhs > hash rhs then return { h₁ := rhs, h₂ := lhs } else return { h₁ := lhs, h₂ := rhs }
 
-def mkExtCongrTheorem (e : Expr) : CCM (Option ExtCongrTheorem) := do
+def mkCCCongrTheorem (e : Expr) : CCM (Option CCCongrTheorem) := do
   let fn := e.getAppFn
   let nargs := e.getAppNumArgs
   let cache ← getCache
 
   -- Check if `{ fn, nargs }` is in the cache
-  let key₁ : ExtCongrTheoremKey := { fn, nargs }
+  let key₁ : CCCongrTheoremKey := { fn, nargs }
   if let some it₁ := cache.findEntry? key₁ then
     return it₁.2
 
   -- Try automatically generated congruence lemma with support for heterogeneous equality.
-  let lemm ← mkExtHCongrWithArity fn nargs
+  let lemm ← mkCCHCongrWithArity fn nargs
 
   if let some lemm := lemm then
     modifyCache fun ccc => ccc.insert key₁ (some lemm)
@@ -180,16 +180,16 @@ def mkExtCongrTheorem (e : Expr) : CCM (Option ExtCongrTheorem) := do
   modifyCache fun ccc => ccc.insert key₁ none
   return none
 
-def mkExtHCongrTheorem (fn : Expr) (nargs : Nat) : CCM (Option ExtCongrTheorem) := do
+def mkCCHCongrTheorem (fn : Expr) (nargs : Nat) : CCM (Option CCCongrTheorem) := do
   let cache ← getCache
 
   -- Check if `{ fn, nargs }` is in the cache
-  let key₁ : ExtCongrTheoremKey := { fn, nargs }
+  let key₁ : CCCongrTheoremKey := { fn, nargs }
   if let some it₁ := cache.findEntry? key₁ then
     return it₁.2
 
   -- Try automatically generated congruence lemma with support for heterogeneous equality.
-  let lemm ← mkExtHCongrWithArity fn nargs
+  let lemm ← mkCCHCongrWithArity fn nargs
 
   if let some lemm := lemm then
     modifyCache fun ccc => ccc.insert key₁ (some lemm)
@@ -325,7 +325,7 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
         `lhsFn lhsArgs[0] ... lhsArgs[n-1] = lhsFn rhsArgs[0] ... rhsArgs[n-1]`
      where
         `n := lhsArgs.size` -/
-  let some specLemma ← mkExtHCongrTheorem lhsFn lhsArgs.size | failure
+  let some specLemma ← mkCCHCongrTheorem lhsFn lhsArgs.size | failure
   let mut kindsIt := specLemma.argKinds
   let mut lemmaArgs : Array Expr := #[]
   for hi : i in [:lhsArgs.size] do
@@ -1083,7 +1083,7 @@ partial def internalizeApp (e : Expr) : CCM Unit := do
     addOccurrence e lhs true
     addOccurrence e rhs true
     addSymmCongruenceTable e
-  else if (← mkExtCongrTheorem e).isSome then
+  else if (← mkCCCongrTheorem e).isSome then
     let fn := e.getAppFn
     let apps := e.getAppApps
     guard (apps.size > 0)
