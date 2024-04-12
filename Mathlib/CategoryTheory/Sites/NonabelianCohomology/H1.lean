@@ -46,7 +46,7 @@ namespace PresheafOfGroups
 
 variable (G : Cᵒᵖ ⥤ GroupCat.{w}) {X : C} {I : Type w'} (U : I → C)
 
-/-- A zero cochain consist of a family of sections. -/
+/-- A zero cochain consists of a family of sections. -/
 def Cochain₀ := ∀ (i : I), G.obj (Opposite.op (U i))
 
 instance : Group (Cochain₀ G U) := by
