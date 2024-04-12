@@ -1,7 +1,7 @@
+import Mathlib.Algebra.Group.Nat
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.Data.Nat.Basic
 
 namespace CategoryTheory
 
@@ -80,16 +80,16 @@ lemma toDiscreteNat_obj_eq (A : FreeMonoidalCategory _root_.Unit) :
     rw [← ha, ← hb]
     rfl
 
-instance : EssSurj toDiscreteNat.toFunctor where
+instance : toDiscreteNat.EssSurj where
   mem_essImage := fun ⟨n⟩ =>
     ⟨powerNat (FreeMonoidalCategory.of Unit.unit) n, ⟨eqToIso (by simp)⟩⟩
 
-noncomputable instance : Full toDiscreteNat.toFunctor where
+noncomputable instance : toDiscreteNat.Full where
   preimage {a b} f :=
     a.isoPowerNatOf.hom ≫ eqToHom (by rw [show a.len = b.len by simpa using f.1.1]) ≫
       b.isoPowerNatOf.inv
 
-instance : Faithful toDiscreteNat.toFunctor where
+instance : toDiscreteNat.Faithful where
   map_injective  _ := Subsingleton.elim _ _
 
 @[simps]
@@ -99,8 +99,8 @@ def discreteNatEquivalence : FreeMonoidalCategory _root_.Unit ≌ Discrete ℕ w
   unitIso := NatIso.ofComponents (fun x => isoPowerNatOf x ≪≫ eqToIso (by simp)) (by aesop_cat)
   counitIso := NatIso.ofComponents (fun ⟨n⟩ => eqToIso (by simp)) (by aesop_cat)
 
-noncomputable instance : IsEquivalence toDiscreteNat.toFunctor :=
-  IsEquivalence.ofEquivalence discreteNatEquivalence
+noncomputable instance : toDiscreteNat.IsEquivalence  :=
+  Functor.IsEquivalence.ofEquivalence discreteNatEquivalence
 
 noncomputable def fromDiscreteNat :
     MonoidalFunctor (Discrete ℕ) (FreeMonoidalCategory _root_.Unit) :=
