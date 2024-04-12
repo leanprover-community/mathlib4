@@ -3,11 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Int.GCD
 import Mathlib.Data.Int.Order.Lemmas
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.NormNum.Basic
 
 #align_import data.nat.modeq from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 
@@ -27,6 +26,7 @@ and proves basic properties about it such as the Chinese Remainder Theorem
 ModEq, congruence, mod, MOD, modulo
 -/
 
+assert_not_exists Function.support
 
 namespace Nat
 
@@ -375,7 +375,7 @@ theorem chineseRemainder'_lt_lcm (h : a ≡ b [MOD gcd n m]) (hn : n ≠ 0) (hm 
     ↑(chineseRemainder' h) < lcm n m := by
   dsimp only [chineseRemainder']
   rw [dif_neg hn, dif_neg hm, Subtype.coe_mk, xgcd_val, ← Int.toNat_natCast (lcm n m)]
-  have lcm_pos := Int.coe_nat_pos.mpr (Nat.pos_of_ne_zero (lcm_ne_zero hn hm))
+  have lcm_pos := Int.natCast_pos.mpr (Nat.pos_of_ne_zero (lcm_ne_zero hn hm))
   exact (Int.toNat_lt_toNat lcm_pos).mpr (Int.emod_lt_of_pos _ lcm_pos)
 #align nat.chinese_remainder'_lt_lcm Nat.chineseRemainder'_lt_lcm
 

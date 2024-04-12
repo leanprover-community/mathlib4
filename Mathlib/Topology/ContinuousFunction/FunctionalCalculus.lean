@@ -166,8 +166,8 @@ properties that it is a continuous star algebra homomorphism mapping the (restri
 identity to `a`. This is the necessary tool used to establish `cfcHom_comp` and the more common
 variant `cfc_comp`.
 
-This class has instances, which can be found in `Topology.ContinuousFunction.UniqueCFC`, in each of
-the common cases `ℂ`, `ℝ` and `ℝ≥0` as a consequence of the Stone-Weierstrass theorem, .
+This class has instances, which can be found in `Mathlib.Topology.ContinuousFunction.UniqueCFC`, in
+each of the common cases `ℂ`, `ℝ` and `ℝ≥0` as a consequence of the Stone-Weierstrass theorem.
 
 This class is separate from `ContinuousFunctionalCalculus` primarily because we will later use
 `SpectrumRestricts` to derive an instance of `ContinuousFunctionalCalculus` on a scalar subring
@@ -303,6 +303,15 @@ lemma cfc_apply_of_not_predicate {f : R → R} (a : A) (ha : ¬ p a) :
 lemma cfc_apply_of_not_continuousOn {f : R → R} (a : A) (hf : ¬ ContinuousOn f (spectrum R a)) :
     cfc f a = 0 := by
   rw [cfc_def, dif_neg (not_and_of_not_right _ hf)]
+
+lemma cfcHom_eq_cfc_extend {a : A} (g : R → R) (ha : p a) (f : C(spectrum R a, R)) :
+    cfcHom ha f = cfc (Function.extend Subtype.val f g) a := by
+  have h : f = (spectrum R a).restrict (Function.extend Subtype.val f g) := by
+    ext; simp [Subtype.val_injective.extend_apply]
+  have hg : ContinuousOn (Function.extend Subtype.val f g) (spectrum R a) :=
+    continuousOn_iff_continuous_restrict.mpr <| h ▸ map_continuous f
+  rw [cfc_apply ..]
+  congr!
 
 variable (R) in
 lemma cfc_id : cfc (id : R → R) a = a :=
