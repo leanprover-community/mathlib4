@@ -147,7 +147,7 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo
           });
-          const bumpBranches = branches.data
+          const bumpBranches = branches
             .map(branch => branch.name)
             .filter(name => name.match(/^bump\/v4\.\d+\.0$/))
             .sort((a, b) => b.localeCompare(a, undefined, {numeric: true, sensitivity: 'base'}));
@@ -166,7 +166,7 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             path: 'lean-toolchain',
-            ref: '${{ steps.latest_bump_branch.outputs.result }}'
+            ref: ${{ steps.latest_bump_branch.outputs.result }}
           });
           const content = Buffer.from(response.data.content, 'base64').toString();
           const version = content.match(/leanprover\/lean4:nightly-(\d{4}-\d{2}-\d{2})/)[1];

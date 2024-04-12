@@ -454,13 +454,13 @@ def functoriality : Cone F ⥤ Cone (F ⋙ G) where
       w := fun j => by simp [-ConeMorphism.w, ← f.w j] }
 #align category_theory.limits.cones.functoriality CategoryTheory.Limits.Cones.functoriality
 
-instance functorialityFull [Full G] [Faithful G] : Full (functoriality F G) where
+instance functorialityFull [G.Full] [G.Faithful] : (functoriality F G).Full where
   preimage t :=
     { hom := G.preimage t.hom
       w := fun j => G.map_injective (by simpa using t.w j) }
 #align category_theory.limits.cones.functoriality_full CategoryTheory.Limits.Cones.functorialityFull
 
-instance functoriality_faithful [Faithful G] : Faithful (Cones.functoriality F G) where
+instance functoriality_faithful [G.Faithful] : (Cones.functoriality F G).Faithful where
   map_injective {_X} {_Y} f g h :=
     ConeMorphism.ext f g <| G.map_injective <| congr_arg ConeMorphism.hom h
 #align category_theory.limits.cones.functoriality_faithful CategoryTheory.Limits.Cones.functoriality_faithful
@@ -481,8 +481,8 @@ def functorialityEquivalence (e : C ≌ D) : Cone F ≌ Cone (F ⋙ e.functor) :
 /-- If `F` reflects isomorphisms, then `Cones.functoriality F` reflects isomorphisms
 as well.
 -/
-instance reflects_cone_isomorphism (F : C ⥤ D) [ReflectsIsomorphisms F] (K : J ⥤ C) :
-    ReflectsIsomorphisms (Cones.functoriality K F) := by
+instance reflects_cone_isomorphism (F : C ⥤ D) [F.ReflectsIsomorphisms] (K : J ⥤ C) :
+    (Cones.functoriality K F).ReflectsIsomorphisms := by
   constructor
   intro A B f _
   haveI : IsIso (F.map f.hom) :=
@@ -673,13 +673,13 @@ def functoriality : Cocone F ⥤ Cocone (F ⋙ G) where
       w := by intros; rw [← Functor.map_comp, CoconeMorphism.w] }
 #align category_theory.limits.cocones.functoriality CategoryTheory.Limits.Cocones.functoriality
 
-instance functorialityFull [Full G] [Faithful G] : Full (functoriality F G) where
+instance functorialityFull [G.Full] [G.Faithful] : (functoriality F G).Full where
   preimage t :=
     { hom := G.preimage t.hom
       w := fun j => G.map_injective (by simpa using t.w j) }
 #align category_theory.limits.cocones.functoriality_full CategoryTheory.Limits.Cocones.functorialityFull
 
-instance functoriality_faithful [Faithful G] : Faithful (functoriality F G) where
+instance functoriality_faithful [G.Faithful] : (functoriality F G).Faithful where
   map_injective {_X} {_Y} f g h :=
     CoconeMorphism.ext f g <| G.map_injective <| congr_arg CoconeMorphism.hom h
 #align category_theory.limits.cocones.functoriality_faithful CategoryTheory.Limits.Cocones.functoriality_faithful
@@ -700,8 +700,8 @@ def functorialityEquivalence (e : C ≌ D) : Cocone F ≌ Cocone (F ⋙ e.functo
 /-- If `F` reflects isomorphisms, then `Cocones.functoriality F` reflects isomorphisms
 as well.
 -/
-instance reflects_cocone_isomorphism (F : C ⥤ D) [ReflectsIsomorphisms F] (K : J ⥤ C) :
-    ReflectsIsomorphisms (Cocones.functoriality K F) := by
+instance reflects_cocone_isomorphism (F : C ⥤ D) [F.ReflectsIsomorphisms] (K : J ⥤ C) :
+    (Cocones.functoriality K F).ReflectsIsomorphisms := by
   constructor
   intro A B f _
   haveI : IsIso (F.map f.hom) :=

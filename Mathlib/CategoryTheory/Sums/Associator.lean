@@ -140,12 +140,12 @@ def associativity : Sum (Sum C D) E ≌ Sum C (Sum D E) :=
       (by rintro (_|(_|_)) (_|(_|_)) f <;> first | cases f | aesop_cat))
 #align category_theory.sum.associativity CategoryTheory.sum.associativity
 
-instance associatorIsEquivalence : IsEquivalence (associator C D E) :=
-  (by infer_instance : IsEquivalence (associativity C D E).functor)
+instance associatorIsEquivalence : (associator C D E).IsEquivalence :=
+  (by infer_instance : (associativity C D E).functor.IsEquivalence)
 #align category_theory.sum.associator_is_equivalence CategoryTheory.sum.associatorIsEquivalence
 
-instance inverseAssociatorIsEquivalence : IsEquivalence (inverseAssociator C D E) :=
-  (by infer_instance : IsEquivalence (associativity C D E).inverse)
+instance inverseAssociatorIsEquivalence : (inverseAssociator C D E).IsEquivalence :=
+  (by infer_instance : (associativity C D E).inverse.IsEquivalence)
 #align category_theory.sum.inverse_associator_is_equivalence CategoryTheory.sum.inverseAssociatorIsEquivalence
 
 -- TODO unitors?
