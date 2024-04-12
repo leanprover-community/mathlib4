@@ -597,8 +597,8 @@ isomorphisms, then the functor is an equivalence of categories.
 @[simps!]
 noncomputable def isRightAdjointToIsEquivalence [IsRightAdjoint G]
     [∀ X, IsIso ((Adjunction.ofRightAdjoint G).unit.app X)]
-    [∀ Y, IsIso ((Adjunction.ofRightAdjoint G).counit.app Y)] : IsEquivalence G :=
-  IsEquivalence.ofEquivalenceInverse (Adjunction.ofRightAdjoint G).toEquivalence
+    [∀ Y, IsIso ((Adjunction.ofRightAdjoint G).counit.app Y)] : G.IsEquivalence :=
+  Functor.IsEquivalence.ofEquivalenceInverse (Adjunction.ofRightAdjoint G).toEquivalence
 #align category_theory.adjunction.is_right_adjoint_to_is_equivalence CategoryTheory.Adjunction.isRightAdjointToIsEquivalence
 
 end Adjunction
