@@ -17,7 +17,7 @@ package mathlib where
     if get_config? CI |>.isSome then
       #["-DwarningAsError=true"]
     else
-      #["-DwarningAsError=true"]
+      #[]
 
 /-!
 ## Mathlib dependencies on upstream projects.
