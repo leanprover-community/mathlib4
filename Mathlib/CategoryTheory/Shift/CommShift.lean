@@ -31,7 +31,7 @@ namespace CategoryTheory
 open Category
 
 instance {C D E : Type*} [Category C] [Category D] [Category E] (G : D ⥤ E)
-    [Full G] [Faithful G] : Full ((whiskeringRight C D E).obj G) where
+    [G.Full] [G.Faithful] : ((whiskeringRight C D E).obj G).Full where
   preimage τ :=
     { app := fun X => G.preimage (τ.app X)
       naturality := fun X Y f => by

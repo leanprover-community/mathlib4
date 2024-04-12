@@ -75,7 +75,7 @@ lemma Internal.app_apply {X Y : Internal A C} (f : X ⟶ Y) (T : Cᵒᵖ)
     f.app T x = Y.iso.hom.app T (X.iso.inv.app T x ≫ (Internal.objFunctor A C).map f) :=
   congr_fun (Internal.forget_app f T) x
 
-instance : Faithful (Internal.objFunctor A C) := ⟨fun {_ _ f g h} => by
+instance : (Internal.objFunctor A C).Faithful := ⟨fun {_ _ f g h} => by
   ext : 2
   simp only [Internal.app_apply, h]⟩
 
@@ -91,11 +91,11 @@ lemma Internal.isIso_of_isIso {X Y : Internal A C} (f : X ⟶ Y)
   let e := @asIso (Cᵒᵖ ⥤ A) _ _ _ f
   exact IsIso.of_iso (@Internal.mkIso _ _ _ _ _ X Y e)
 
-instance : ReflectsIsomorphisms (Internal.presheafFunctor A C) :=
+instance : (Internal.presheafFunctor A C).ReflectsIsomorphisms :=
   ⟨fun f hf => IsIso.of_iso (Internal.mkIso (@asIso (Cᵒᵖ ⥤ A) _ _ _ f hf))⟩
 
-instance [ReflectsIsomorphisms (forget A)] :
-    ReflectsIsomorphisms (Internal.objFunctor A C) := ⟨fun {X Y f hf} => by
+instance [(forget A).ReflectsIsomorphisms] :
+    (Internal.objFunctor A C).ReflectsIsomorphisms := ⟨fun {X Y f hf} => by
   have : ∀ (X : Cᵒᵖ), IsIso ((forget A).map (((Internal.presheafFunctor A C).map f).app X)) := by
     intro ⟨X⟩
     rw [Internal.forget_app]
