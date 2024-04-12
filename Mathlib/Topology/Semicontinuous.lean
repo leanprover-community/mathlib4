@@ -289,7 +289,7 @@ theorem LowerSemicontinuous.isClosed_preimage (hf : LowerSemicontinuous f) (y : 
 
 section
 
--- TODO : the results below are equivalences if we have `Topology.IsLower β`.
+-- TODO : the results below are equivalences if we have `Topology.IsUpper β`.
 variable [TopologicalSpace β] [ClosedIicTopology β]
 
 theorem ContinuousWithinAt.lowerSemicontinuousWithinAt (h : ContinuousWithinAt f s x) :
@@ -829,10 +829,37 @@ end
 
 /-! #### Basic dot notation interface for upper semicontinuity -/
 
+theorem upperSemicontinuousWithinAt_iff_le_of_frequently :
+    UpperSemicontinuousWithinAt f s x ↔ ∀ y, (∃ᶠ x' in 𝓝[s] x, y ≤ f x') → y ≤ f x :=
+  Iff.rfl
+
+alias ⟨UpperSemicontinuousWithinAt.le_of_frequently, _⟩ :=
+  upperSemicontinuousWithinAt_iff_le_of_frequently
+
+theorem upperSemicontinuousOn_iff_le_of_frequently :
+    UpperSemicontinuousOn f s ↔ ∀ x ∈ s, ∀ y, (∃ᶠ x' in 𝓝[s] x, y ≤ f x') → y ≤ f x :=
+  Iff.rfl
+
+alias ⟨UpperSemicontinuousOn.le_of_frequently, _⟩ :=
+  upperSemicontinuousOn_iff_le_of_frequently
+
+theorem upperSemicontinuousAt_iff_le_of_frequently :
+    UpperSemicontinuousAt f x ↔ ∀ y, (∃ᶠ x' in 𝓝 x, y ≤ f x') → y ≤ f x :=
+  Iff.rfl
+
+alias ⟨UpperSemicontinuousAt.le_of_frequently, _⟩ :=
+  upperSemicontinuousAt_iff_le_of_frequently
+
+theorem upperSemicontinuous_iff_le_of_frequently :
+    UpperSemicontinuous f ↔ ∀ x y, (∃ᶠ x' in 𝓝 x, y ≤ f x') → y ≤ f x :=
+  Iff.rfl
+
+alias ⟨UpperSemicontinuous.le_of_frequently, _⟩ :=
+  upperSemicontinuous_iff_le_of_frequently
 
 theorem UpperSemicontinuousWithinAt.mono (h : UpperSemicontinuousWithinAt f s x) (hst : t ⊆ s) :
     UpperSemicontinuousWithinAt f t x := fun y hy =>
-  Filter.Eventually.filter_mono (nhdsWithin_mono _ hst) (h y hy)
+  h y <| hy.filter_mono <| nhdsWithin_mono _ hst
 #align upper_semicontinuous_within_at.mono UpperSemicontinuousWithinAt.mono
 
 theorem upperSemicontinuousWithinAt_univ_iff :
@@ -842,7 +869,7 @@ theorem upperSemicontinuousWithinAt_univ_iff :
 
 theorem UpperSemicontinuousAt.upperSemicontinuousWithinAt (s : Set α)
     (h : UpperSemicontinuousAt f x) : UpperSemicontinuousWithinAt f s x := fun y hy =>
-  Filter.Eventually.filter_mono nhdsWithin_le_nhds (h y hy)
+  h y <| hy.filter_mono nhdsWithin_le_nhds
 #align upper_semicontinuous_at.upper_semicontinuous_within_at UpperSemicontinuousAt.upperSemicontinuousWithinAt
 
 theorem UpperSemicontinuousOn.upperSemicontinuousWithinAt (h : UpperSemicontinuousOn f s)
@@ -876,11 +903,11 @@ theorem UpperSemicontinuous.upperSemicontinuousOn (h : UpperSemicontinuous f) (s
 
 
 theorem upperSemicontinuousWithinAt_const : UpperSemicontinuousWithinAt (fun _x => z) s x :=
-  fun _y hy => Filter.eventually_of_forall fun _x => hy
+  fun _y hy ↦ hy.out_of_const
 #align upper_semicontinuous_within_at_const upperSemicontinuousWithinAt_const
 
 theorem upperSemicontinuousAt_const : UpperSemicontinuousAt (fun _x => z) x := fun _y hy =>
-  Filter.eventually_of_forall fun _x => hy
+  hy.out_of_const
 #align upper_semicontinuous_at_const upperSemicontinuousAt_const
 
 theorem upperSemicontinuousOn_const : UpperSemicontinuousOn (fun _x => z) s := fun _x _hx =>
@@ -890,6 +917,97 @@ theorem upperSemicontinuousOn_const : UpperSemicontinuousOn (fun _x => z) s := f
 theorem upperSemicontinuous_const : UpperSemicontinuous fun _x : α => z := fun _x =>
   upperSemicontinuousAt_const
 #align upper_semicontinuous_const upperSemicontinuous_const
+
+/-! #### Characterization in terms of strict order -/
+
+
+section
+
+variable {γ : Type*} [LinearOrder γ]
+
+theorem upperSemicontinuousWithinAt_iff_eventually_lt {f : α → γ} :
+    UpperSemicontinuousWithinAt f s x ↔ (∀ y, f x < y → ∀ᶠ x' in 𝓝[s] x, f x' < y) := by
+  simp_rw [UpperSemicontinuousWithinAt, lt_iff_not_le, ← not_frequently, not_imp_not]
+
+alias ⟨UpperSemicontinuousWithinAt.eventually_lt, _⟩ :=
+  upperSemicontinuousWithinAt_iff_eventually_lt
+
+theorem upperSemicontinuousOn_iff_eventually_lt {f : α → γ} :
+    UpperSemicontinuousOn f s ↔ ∀ x ∈ s, ∀ y, f x < y → ∀ᶠ x' in 𝓝[s] x, f x' < y :=
+  forall₂_congr fun _ _ ↦ upperSemicontinuousWithinAt_iff_eventually_lt
+
+alias ⟨UpperSemicontinuousOn.eventually_lt, _⟩ :=
+  upperSemicontinuousOn_iff_eventually_lt
+
+theorem upperSemicontinuousAt_iff_eventually_lt {f : α → γ} :
+    UpperSemicontinuousAt f x ↔ ∀ y, f x < y → ∀ᶠ x' in 𝓝 x, f x' < y := by
+  simp_rw [UpperSemicontinuousAt, lt_iff_not_le, ← not_frequently, not_imp_not]
+
+alias ⟨UpperSemicontinuousAt.eventually_lt, _⟩ :=
+  upperSemicontinuousAt_iff_eventually_lt
+
+theorem upperSemicontinuous_iff_eventually_lt {f : α → γ} :
+    UpperSemicontinuous f ↔ ∀ x, ∀ y, f x < y → ∀ᶠ x' in 𝓝 x, f x' < y :=
+  forall_congr' fun _ ↦ upperSemicontinuousAt_iff_eventually_lt
+
+alias ⟨UpperSemicontinuous.eventually_lt, _⟩ :=
+  upperSemicontinuous_iff_eventually_lt
+
+end
+
+/-! #### Relationship with continuity -/
+
+
+theorem upperSemicontinuous_iff_isClosed_preimage :
+    UpperSemicontinuous f ↔ ∀ y, IsClosed (f ⁻¹' Ici y) :=
+  ⟨fun H y ↦ isClosed_iff_frequently.mpr fun x ↦ H x y, fun H _x y hx ↦ hx.mem_of_closed (H y)⟩
+#align upper_semicontinuous_iff_is_closed_preimage upperSemicontinuous_iff_isClosed_preimage
+
+theorem UpperSemicontinuous.isClosed_preimage (hf : UpperSemicontinuous f) (y : β) :
+    IsClosed (f ⁻¹' Ici y) :=
+  upperSemicontinuous_iff_isClosed_preimage.1 hf y
+#align upper_semicontinuous.is_closed_preimage UpperSemicontinuous.isClosed_preimage
+
+section
+
+-- TODO : the results below are equivalences if we have `Topology.IsLower β`.
+variable [TopologicalSpace β] [ClosedIciTopology β]
+
+theorem ContinuousWithinAt.upperSemicontinuousWithinAt (h : ContinuousWithinAt f s x) :
+    UpperSemicontinuousWithinAt f s x := fun _y hy ↦ (h.frequently hy).mem_of_closed isClosed_Ici
+#align continuous_within_at.upper_semicontinuous_within_at ContinuousWithinAt.upperSemicontinuousWithinAt
+
+theorem ContinuousAt.upperSemicontinuousAt {f : α → β} (h : ContinuousAt f x) :
+    UpperSemicontinuousAt f x := fun _y hy ↦ (h.frequently hy).mem_of_closed isClosed_Ici
+#align continuous_at.upper_semicontinuous_at ContinuousAt.upperSemicontinuousAt
+
+theorem ContinuousOn.upperSemicontinuousOn {f : α → β} (h : ContinuousOn f s) :
+    UpperSemicontinuousOn f s := fun x hx => (h x hx).upperSemicontinuousWithinAt
+#align continuous_on.upper_semicontinuous_on ContinuousOn.upperSemicontinuousOn
+
+theorem Continuous.upperSemicontinuous {f : α → β} (h : Continuous f) : UpperSemicontinuous f :=
+  fun _x => h.continuousAt.upperSemicontinuousAt
+#align continuous.upper_semicontinuous Continuous.upperSemicontinuous
+
+end
+
+section
+
+variable {γ : Type*} [LinearOrder γ]
+
+theorem upperSemicontinuous_iff_isOpen_preimage {f : α → γ} :
+    UpperSemicontinuous f ↔ ∀ y, IsOpen (f ⁻¹' Iio y) := by
+  rw [upperSemicontinuous_iff_isClosed_preimage]
+  simp only [← isOpen_compl_iff, ← preimage_compl, compl_Ici]
+#align upper_semicontinuous_iff_is_open_preimage upperSemicontinuous_iff_isOpen_preimage
+
+theorem UpperSemicontinuous.isOpen_preimage {f : α → γ} (hf : UpperSemicontinuous f) (y : γ) :
+    IsOpen (f ⁻¹' Iio y) :=
+  upperSemicontinuous_iff_isOpen_preimage.1 hf y
+#align upper_semicontinuous.is_open_preimage UpperSemicontinuous.isOpen_preimage
+
+end
+
 
 /-! #### Indicators -/
 
@@ -937,55 +1055,6 @@ theorem IsClosed.upperSemicontinuousWithinAt_indicator (hs : IsClosed s) (hy : 0
     UpperSemicontinuousWithinAt (indicator s fun _x => y) t x :=
   (hs.upperSemicontinuous_indicator hy).upperSemicontinuousWithinAt t x
 #align is_closed.upper_semicontinuous_within_at_indicator IsClosed.upperSemicontinuousWithinAt_indicator
-
-end
-
-/-! #### Relationship with continuity -/
-
-
-theorem upperSemicontinuous_iff_isOpen_preimage :
-    UpperSemicontinuous f ↔ ∀ y, IsOpen (f ⁻¹' Iio y) :=
-  ⟨fun H y => isOpen_iff_mem_nhds.2 fun x hx => H x y hx, fun H _x y y_lt =>
-    IsOpen.mem_nhds (H y) y_lt⟩
-#align upper_semicontinuous_iff_is_open_preimage upperSemicontinuous_iff_isOpen_preimage
-
-theorem UpperSemicontinuous.isOpen_preimage (hf : UpperSemicontinuous f) (y : β) :
-    IsOpen (f ⁻¹' Iio y) :=
-  upperSemicontinuous_iff_isOpen_preimage.1 hf y
-#align upper_semicontinuous.is_open_preimage UpperSemicontinuous.isOpen_preimage
-
-section
-
-variable {γ : Type*} [LinearOrder γ]
-
-theorem upperSemicontinuous_iff_isClosed_preimage {f : α → γ} :
-    UpperSemicontinuous f ↔ ∀ y, IsClosed (f ⁻¹' Ici y) := by
-  rw [upperSemicontinuous_iff_isOpen_preimage]
-  simp only [← isOpen_compl_iff, ← preimage_compl, compl_Ici]
-#align upper_semicontinuous_iff_is_closed_preimage upperSemicontinuous_iff_isClosed_preimage
-
-theorem UpperSemicontinuous.isClosed_preimage {f : α → γ} (hf : UpperSemicontinuous f) (y : γ) :
-    IsClosed (f ⁻¹' Ici y) :=
-  upperSemicontinuous_iff_isClosed_preimage.1 hf y
-#align upper_semicontinuous.is_closed_preimage UpperSemicontinuous.isClosed_preimage
-
-variable [TopologicalSpace γ] [OrderTopology γ]
-
-theorem ContinuousWithinAt.upperSemicontinuousWithinAt {f : α → γ} (h : ContinuousWithinAt f s x) :
-    UpperSemicontinuousWithinAt f s x := fun _y hy => h (Iio_mem_nhds hy)
-#align continuous_within_at.upper_semicontinuous_within_at ContinuousWithinAt.upperSemicontinuousWithinAt
-
-theorem ContinuousAt.upperSemicontinuousAt {f : α → γ} (h : ContinuousAt f x) :
-    UpperSemicontinuousAt f x := fun _y hy => h (Iio_mem_nhds hy)
-#align continuous_at.upper_semicontinuous_at ContinuousAt.upperSemicontinuousAt
-
-theorem ContinuousOn.upperSemicontinuousOn {f : α → γ} (h : ContinuousOn f s) :
-    UpperSemicontinuousOn f s := fun x hx => (h x hx).upperSemicontinuousWithinAt
-#align continuous_on.upper_semicontinuous_on ContinuousOn.upperSemicontinuousOn
-
-theorem Continuous.upperSemicontinuous {f : α → γ} (h : Continuous f) : UpperSemicontinuous f :=
-  fun _x => h.continuousAt.upperSemicontinuousAt
-#align continuous.upper_semicontinuous Continuous.upperSemicontinuous
 
 end
 
@@ -1083,7 +1152,7 @@ theorem Continuous.comp_upperSemicontinuous_antitone {g : γ → δ} {f : α →
 theorem UpperSemicontinuousAt.comp_continuousAt {f : α → β} {g : ι → α} {x : ι}
     (hf : UpperSemicontinuousAt f (g x)) (hg : ContinuousAt g x) :
     UpperSemicontinuousAt (fun x ↦ f (g x)) x :=
-  fun _ lt ↦ hg.eventually (hf _ lt)
+  fun _ lt ↦ hf _ <| hg.frequently lt
 
 theorem UpperSemicontinuousAt.comp_continuousAt_of_eq {f : α → β} {g : ι → α} {y : α} {x : ι}
     (hf : UpperSemicontinuousAt f y) (hg : ContinuousAt g x) (hy : g x = y) :
@@ -1291,6 +1360,7 @@ theorem continuousWithinAt_iff_lower_upperSemicontinuousWithinAt {f : α → γ}
     ContinuousWithinAt f s x ↔
       LowerSemicontinuousWithinAt f s x ∧ UpperSemicontinuousWithinAt f s x := by
   refine' ⟨fun h => ⟨h.lowerSemicontinuousWithinAt, h.upperSemicontinuousWithinAt⟩, _⟩
+  rw [lowerSemicontinuousWithinAt_iff_eventually_lt, upperSemicontinuousWithinAt_iff_eventually_lt]
   rintro ⟨h₁, h₂⟩
   intro v hv
   simp only [Filter.mem_map]
