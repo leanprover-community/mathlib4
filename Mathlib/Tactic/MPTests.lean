@@ -30,6 +30,7 @@ If you want to skip a declaration, there is a convenience `untest` macro:
 TODO:
 * Automatically ignore `#guard_cmd`s?
 * Pretty printing of types in `have`s, `let`s, `set`s?
+* Deal with `let`s already present in the signature: `unfold_let` will destructure them.
 -/
 
 open Lean Parser Elab Command Meta Tactic
@@ -229,8 +230,8 @@ end tactic_tests
 will fail, but would not be an indication of a bug. -/
 abbrev nonTesters : HashSet SyntaxNodeKind := HashSet.empty
 --  |>.insert ``Lean.guardMsgsCmd  -- <--- does not actually work
-  |>.insert ``Lean.Parser.Tactic.guardTarget
-  |>.insert ``Lean.Parser.Tactic.guardHyp
+--  |>.insert ``Lean.Parser.Tactic.guardTarget
+--  |>.insert ``Lean.Parser.Tactic.guardHyp
 
 /-- checks whether the input `Syntax` contains a `SyntaxNodeKind` in `nonTesters` and, if so,
 returns its `atomVal`. -/
