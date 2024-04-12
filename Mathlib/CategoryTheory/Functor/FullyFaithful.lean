@@ -272,7 +272,6 @@ instance Faithful.id : Faithful (𝟭 C) := { }
 #align category_theory.faithful.id CategoryTheory.Faithful.id
 
 variable {D : Type u₂} [Category.{v₂} D] {E : Type u₃} [Category.{v₃} E]
-
 variable (F F' : C ⥤ D) (G : D ⥤ E)
 
 instance Faithful.comp [Faithful F] [Faithful G] :
@@ -292,7 +291,7 @@ variable {F F'}
 def Full.ofIso [Full F] (α : F ≅ F') :
     Full F' where
   preimage {X Y} f := F.preimage ((α.app X).hom ≫ f ≫ (α.app Y).inv)
-  witness f := by simp [←NatIso.naturality_1 α]
+  witness f := by simp [← NatIso.naturality_1 α]
 #align category_theory.full.of_iso CategoryTheory.Full.ofIso
 
 theorem Faithful.of_iso [Faithful F] (α : F ≅ F') : Faithful F' :=

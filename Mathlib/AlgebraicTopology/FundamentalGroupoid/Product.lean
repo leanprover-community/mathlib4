@@ -54,18 +54,15 @@ theorem proj_map (i : I) (x₀ x₁ : πₓ (TopCat.of (∀ i, X i))) (p : x₀ 
   rfl
 #align fundamental_groupoid_functor.proj_map FundamentalGroupoidFunctor.proj_map
 
--- Porting note: losing the instance with a concrete category again
-instance : (i : I) → TopologicalSpace (πₓ (X i)).α := fun i => TopCat.topologicalSpace_coe (X i)
-
 /-- The map taking the pi product of a family of fundamental groupoids to the fundamental
 groupoid of the pi product. This is actually an isomorphism (see `piIso`)
 -/
 @[simps]
 def piToPiTop : (∀ i, πₓ (X i)) ⥤ πₓ (TopCat.of (∀ i, X i)) where
-  obj g := g
+  obj g := ⟨fun i => (g i).as⟩
   map p := Path.Homotopic.pi p
   map_id x := by
-    change (Path.Homotopic.pi fun i => 𝟙 (x i)) = _
+    change (Path.Homotopic.pi fun i => ⟦_⟧) = _
     simp only [FundamentalGroupoid.id_eq_path_refl, Path.Homotopic.pi_lift]
     rfl
   map_comp f g := (Path.Homotopic.comp_pi_eq_pi_comp f g).symm
@@ -167,7 +164,7 @@ of the two topological spaces. This is in fact an isomorphism (see `prodIso`).
 -/
 @[simps obj]
 def prodToProdTop : πₓ A × πₓ B ⥤ πₓ (TopCat.of (A × B)) where
-  obj g := g
+  obj g := ⟨g.fst.as, g.snd.as⟩
   map {x y} p :=
     match x, y, p with
     | (x₀, x₁), (y₀, y₁), (p₀, p₁) => @Path.Homotopic.prod _ _ (_) (_) _ _ _ _ p₀ p₁
@@ -205,7 +202,7 @@ def prodIso : CategoryTheory.Grpd.of (πₓ A × πₓ B) ≅ πₓ (TopCat.of (
   inv_hom_id := by
     change (projLeft A B).prod' (projRight A B) ⋙ prodToProdTop A B = 𝟭 _
     apply CategoryTheory.Functor.hext
-    · intros; apply Prod.ext <;> simp <;> rfl
+    · intros; apply FundamentalGroupoid.ext; apply Prod.ext <;> simp <;> rfl
     rintro ⟨x₀, x₁⟩ ⟨y₀, y₁⟩ f
     have := Path.Homotopic.prod_projLeft_projRight f
     -- Porting note: was simpa but TopSpace instances might be getting in the way

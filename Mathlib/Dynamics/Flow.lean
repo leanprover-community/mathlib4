@@ -84,7 +84,7 @@ end Invariant
 
 
 /-- A flow on a topological space `α` by an additive topological
-    monoid `τ` is a continuous monoid action of `τ` on `α`.-/
+    monoid `τ` is a continuous monoid action of `τ` on `α`. -/
 structure Flow (τ : Type*) [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd τ] (α : Type*)
   [TopologicalSpace α] where
   toFun : τ → α → α
@@ -178,7 +178,7 @@ def reverse : Flow τ α where
 -- Porting note: Homeomorphism.continuous_invFun : Continuous invFun := by continuity
 @[continuity]
 theorem continuous_toFun (t : τ) : Continuous (ϕ.toFun t) := by
-  rw [←curry_uncurry ϕ.toFun]
+  rw [← curry_uncurry ϕ.toFun]
   apply continuous_curry
   exact ϕ.cont'
 

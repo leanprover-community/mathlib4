@@ -25,7 +25,7 @@ and a measurable set `aeSeqSet hf p`, such that
 
 open MeasureTheory
 
-open Classical
+open scoped Classical
 
 variable {ι : Sort*} {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β] {f : ι → α → β}
   {μ : Measure α} {p : α → (ι → β) → Prop}
@@ -136,5 +136,9 @@ theorem iSup [CompleteLattice β] [Countable ι] (hf : ∀ i, AEMeasurable (f i)
     exact funext fun i => aeSeq_eq_fun_of_mem_aeSeqSet hf hx i
   exact measure_mono_null (Set.compl_subset_compl.mpr h_ss) (measure_compl_aeSeqSet_eq_zero hf hp)
 #align ae_seq.supr aeSeq.iSup
+
+theorem iInf [CompleteLattice β] [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
+    (hp : ∀ᵐ x ∂μ, p x fun n ↦ f n x) : ⨅ n, aeSeq hf p n =ᵐ[μ] ⨅ n, f n :=
+  iSup (β := βᵒᵈ) hf hp
 
 end aeSeq

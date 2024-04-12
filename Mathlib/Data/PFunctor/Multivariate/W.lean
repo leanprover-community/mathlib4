@@ -251,7 +251,7 @@ theorem w_map_wMk {α β : TypeVec n} (g : α ⟹ β) (a : P.A) (f' : P.drop.B a
   show _ = P.wMk a (g ⊚ f') (MvFunctor.map g ∘ f)
   have : MvFunctor.map g ∘ f = fun i => ⟨(f i).fst, g ⊚ (f i).snd⟩ := by
     ext i : 1
-    dsimp [Function.comp]
+    dsimp [Function.comp_def]
     cases f i
     rfl
   rw [this]

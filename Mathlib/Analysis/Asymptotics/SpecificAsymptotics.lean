@@ -5,6 +5,7 @@ Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.NormedSpace.Basic
 
 #align_import analysis.asymptotics.specific_asymptotics from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -12,7 +13,7 @@ import Mathlib.Analysis.Asymptotics.Asymptotics
 # A collection of specific asymptotic results
 
 This file contains specific lemmas about asymptotics which don't have their place in the general
-theory developped in `Analysis.Asymptotics.Asymptotics`.
+theory developed in `Analysis.Asymptotics.Asymptotics`.
 -/
 
 
@@ -52,25 +53,18 @@ theorem pow_div_pow_eventuallyEq_atBot {p q : ℕ} :
   simp [zpow_sub₀ hx.ne]
 #align pow_div_pow_eventually_eq_at_bot pow_div_pow_eventuallyEq_atBot
 
-theorem tendsto_zpow_atTop_atTop {n : ℤ} (hn : 0 < n) :
-    Tendsto (fun x : 𝕜 => x ^ n) atTop atTop := by
-  lift n to ℕ using hn.le
-  simp only [zpow_ofNat]
-  exact tendsto_pow_atTop (Nat.cast_pos.mp hn).ne'
-#align tendsto_zpow_at_top_at_top tendsto_zpow_atTop_atTop
-
 theorem tendsto_pow_div_pow_atTop_atTop {p q : ℕ} (hpq : q < p) :
     Tendsto (fun x : 𝕜 => x ^ p / x ^ q) atTop atTop := by
   rw [tendsto_congr' pow_div_pow_eventuallyEq_atTop]
   apply tendsto_zpow_atTop_atTop
-  linarith
+  omega
 #align tendsto_pow_div_pow_at_top_at_top tendsto_pow_div_pow_atTop_atTop
 
 theorem tendsto_pow_div_pow_atTop_zero [TopologicalSpace 𝕜] [OrderTopology 𝕜] {p q : ℕ}
     (hpq : p < q) : Tendsto (fun x : 𝕜 => x ^ p / x ^ q) atTop (𝓝 0) := by
   rw [tendsto_congr' pow_div_pow_eventuallyEq_atTop]
   apply tendsto_zpow_atTop_zero
-  linarith
+  omega
 #align tendsto_pow_div_pow_at_top_zero tendsto_pow_div_pow_atTop_zero
 
 end LinearOrderedField
@@ -91,7 +85,7 @@ theorem Asymptotics.IsBigO.trans_tendsto_norm_atTop {α : Type*} {u v : α → �
   rcases huv.exists_pos with ⟨c, hc, hcuv⟩
   rw [IsBigOWith] at hcuv
   convert Tendsto.atTop_div_const hc (tendsto_atTop_mono' l hcuv hu)
-  rw [mul_div_cancel_left _ hc.ne.symm]
+  rw [mul_div_cancel_left₀ _ hc.ne.symm]
 set_option linter.uppercaseLean3 false in
 #align asymptotics.is_O.trans_tendsto_norm_at_top Asymptotics.IsBigO.trans_tendsto_norm_atTop
 

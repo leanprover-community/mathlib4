@@ -35,7 +35,6 @@ In this file, we define a `Homotopy` between two `Path`s. In addition, we define
 universe u v
 
 variable {X : Type u} {Y : Type v} [TopologicalSpace X] [TopologicalSpace Y]
-
 variable {x₀ x₁ x₂ x₃ : X}
 
 noncomputable section
@@ -57,7 +56,7 @@ section
 variable {p₀ p₁ : Path x₀ x₁}
 
 theorem coeFn_injective : @Function.Injective (Homotopy p₀ p₁) (I × I → X) (⇑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align path.homotopy.coe_fn_injective Path.Homotopy.coeFn_injective
 
 @[simp]
@@ -117,6 +116,9 @@ theorem symm_symm (F : Homotopy p₀ p₁) : F.symm.symm = F :=
   ContinuousMap.HomotopyRel.symm_symm F
 #align path.homotopy.symm_symm Path.Homotopy.symm_symm
 
+theorem symm_bijective : Function.Bijective (Homotopy.symm : Homotopy p₀ p₁ → Homotopy p₁ p₀) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 /--
 Given `Homotopy p₀ p₁` and `Homotopy p₁ p₂`, we can define a `Homotopy p₀ p₂` by putting the first
 homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
@@ -166,9 +168,9 @@ def hcomp (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) : Homotopy (p₀.tra
   map_one_left x := by simp [Path.trans]
   prop' x t ht := by
     cases' ht with ht ht
-    · norm_num [ht]
+    · set_option tactic.skipAssignedInstances false in norm_num [ht]
     · rw [Set.mem_singleton_iff] at ht
-      norm_num [ht]
+      set_option tactic.skipAssignedInstances false in norm_num [ht]
 #align path.homotopy.hcomp Path.Homotopy.hcomp
 
 theorem hcomp_apply (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (x : I × I) :

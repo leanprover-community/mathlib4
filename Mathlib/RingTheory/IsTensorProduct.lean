@@ -3,7 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Algebra.Module.ULift
 
 #align_import ring_theory.is_tensor_product from "leanprover-community/mathlib"@"c4926d76bb9c5a4a62ed2f03d998081786132105"
@@ -38,20 +38,13 @@ open TensorProduct
 
 section IsTensorProduct
 
-variable {R : Type*} [CommRing R]
-
+variable {R : Type*} [CommSemiring R]
 variable {M₁ M₂ M M' : Type*}
-
 variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M] [AddCommMonoid M']
-
 variable [Module R M₁] [Module R M₂] [Module R M] [Module R M']
-
 variable (f : M₁ →ₗ[R] M₂ →ₗ[R] M)
-
 variable {N₁ N₂ N : Type*} [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N]
-
 variable [Module R N₁] [Module R N₂] [Module R N]
-
 variable {g : N₁ →ₗ[R] N₂ →ₗ[R] N}
 
 /-- Given a bilinear map `f : M₁ →ₗ[R] M₂ →ₗ[R] M`, `IsTensorProduct f` means that
@@ -139,11 +132,8 @@ end IsTensorProduct
 section IsBaseChange
 
 variable {R : Type*} {M : Type v₁} {N : Type v₂} (S : Type v₃)
-
-variable [AddCommMonoid M] [AddCommMonoid N] [CommRing R]
-
-variable [CommRing S] [Algebra R S] [Module R M] [Module R N] [Module S N] [IsScalarTower R S N]
-
+variable [AddCommMonoid M] [AddCommMonoid N] [CommSemiring R]
+variable [CommSemiring S] [Algebra R S] [Module R M] [Module R N] [Module S N] [IsScalarTower R S N]
 variable (f : M →ₗ[R] N)
 
 /-- Given an `R`-algebra `S` and an `R`-module `M`, an `S`-module `N` together with a map
@@ -157,9 +147,7 @@ def IsBaseChange : Prop :=
 -- Porting note: split `variable`
 variable {S f}
 variable (h : IsBaseChange S f)
-
 variable {P Q : Type*} [AddCommMonoid P] [Module R P]
-
 variable [AddCommMonoid Q] [Module S Q]
 
 section
@@ -179,9 +167,7 @@ noncomputable nonrec def IsBaseChange.lift (g : M →ₗ[R] Q) : N →ₗ[S] Q :
       · rw [smul_zero, map_zero, smul_zero]
       · intro s m
         change h.lift F (r • s • f m) = r • h.lift F (s • f m)
-        rw [← mul_smul, hF, hF]
-        rw [mul_smul] -- Porting note: this line does nothing
-        apply mul_smul
+        rw [← mul_smul, hF, hF, mul_smul]
       · intro x₁ x₂ e₁ e₂
         rw [map_add, smul_add, map_add, smul_add, e₁, e₂] }
 #align is_base_change.lift IsBaseChange.lift
@@ -241,7 +227,7 @@ noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
       refine TensorProduct.induction_on x ?_ ?_ ?_
       · rw [smul_zero, map_zero, smul_zero]
       · intro x y
-        -- Porting note: was simp [smul_tmul', Algebra.ofId_apply]
+        -- porting note (#10745): was simp [smul_tmul', Algebra.ofId_apply]
         simp only [Algebra.linearMap_apply, lift.tmul, smul_eq_mul,
           LinearMap.mul_apply, LinearMap.smul_apply, IsTensorProduct.equiv_apply,
           Module.algebraMap_end_apply, _root_.map_mul, smul_tmul', eq_self_iff_true,
@@ -279,7 +265,7 @@ theorem IsBaseChange.of_lift_unique
           TensorProduct.induction_on x _ (fun s' y => smul_assoc s s' _) fun x y hx hy => _ }
     · dsimp; rw [map_zero, smul_zero, map_zero, smul_zero]
     · dsimp at *; rw [smul_add, map_add, map_add, smul_add, hx, hy]
-  simp_rw [FunLike.ext_iff, LinearMap.comp_apply, LinearMap.restrictScalars_apply] at hg
+  simp_rw [DFunLike.ext_iff, LinearMap.comp_apply, LinearMap.restrictScalars_apply] at hg
   let fe : S ⊗[R] M ≃ₗ[S] N :=
     LinearEquiv.ofLinear f'' (ULift.moduleEquiv.toLinearMap.comp g) ?_ ?_
   · exact fe.bijective
@@ -315,8 +301,7 @@ theorem IsBaseChange.ofEquiv (e : M ≃ₗ[R] N) : IsBaseChange R e.toLinearMap 
     ext r q
     show (by let _ := I₂; exact r • q) = (by let _ := I₃; exact r • q)
     dsimp
-    rw [← one_smul R q, smul_smul, ← @smul_assoc _ _ _ (id _) (id _) (id _) I₄, smul_eq_mul,
-      mul_one]
+    rw [← one_smul R q, smul_smul, ← @smul_assoc _ _ _ (id _) (id _) (id _) I₄, smul_eq_mul]
   cases this
   refine'
     ⟨g.comp e.symm.toLinearMap, by
@@ -327,10 +312,8 @@ theorem IsBaseChange.ofEquiv (e : M ≃ₗ[R] N) : IsBaseChange R e.toLinearMap 
   simp
 #align is_base_change.of_equiv IsBaseChange.ofEquiv
 
-variable {T O : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-
+variable {T O : Type*} [CommSemiring T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 variable [AddCommMonoid O] [Module R O] [Module S O] [Module T O] [IsScalarTower S T O]
-
 variable [IsScalarTower R S O] [IsScalarTower R T O]
 
 theorem IsBaseChange.comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {g : N →ₗ[S] O}
@@ -358,10 +341,8 @@ theorem IsBaseChange.comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {g : N →
   rfl
 #align is_base_change.comp IsBaseChange.comp
 
-variable {R' S' : Type*} [CommRing R'] [CommRing S']
-
+variable {R' S' : Type*} [CommSemiring R'] [CommSemiring S']
 variable [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
-
 variable [IsScalarTower R R' S'] [IsScalarTower R S S']
 
 open IsScalarTower (toAlgHom)
@@ -393,7 +374,10 @@ theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPus
     refine TensorProduct.induction_on x ?_ ?_ ?_
     · simp only [smul_zero, map_zero]
     · intro x y
-      simp [smul_tmul', Algebra.smul_def, RingHom.algebraMap_toAlgebra, h.1.equiv_tmul]
+      simp only [smul_tmul', smul_eq_mul, TensorProduct.comm_tmul, smul_def,
+        TensorProduct.algebraMap_apply, id.map_eq_id, RingHom.id_apply, TensorProduct.tmul_mul_tmul,
+        one_mul, h.1.equiv_tmul, AlgHom.toLinearMap_apply, _root_.map_mul,
+        IsScalarTower.coe_toAlgHom']
       ring
     · intro x y hx hy
       rw [map_add, map_add, smul_add, map_add, map_add, hx, hy, smul_add]
@@ -428,9 +412,9 @@ instance TensorProduct.isPushout' {R S T : Type*} [CommRing R] [CommRing S] [Com
 #align tensor_product.is_pushout' TensorProduct.isPushout'
 
 /-- If `S' = S ⊗[R] R'`, then any pair of `R`-algebra homomorphisms `f : S → A` and `g : R' → A`
-such that `f x` and `g y` commutes for all `x, y` descends to a (unique) homomoprhism `S' → A`.
+such that `f x` and `g y` commutes for all `x, y` descends to a (unique) homomorphism `S' → A`.
 -/
---@[simps (config := { isSimp := false }) apply] --Porting note: removed and added by hand
+--@[simps (config := .lemmasOnly) apply] -- Porting note: removed and added by hand
 noncomputable def Algebra.pushoutDesc [H : Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
     [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (hf : ∀ x y, f x * g y = g y * f x) :
     S' →ₐ[R] A := by
@@ -469,7 +453,7 @@ noncomputable def Algebra.pushoutDesc [H : Algebra.IsPushout R S R' S'] {A : Typ
       rw [mul_add, map_add, map_add, mul_add, e₁, e₂]
 #align algebra.pushout_desc Algebra.pushoutDesc
 
---Porting note: was generated by `simps` attribute in Lean3.
+-- Porting note: was generated by `simps` attribute in Lean3.
 theorem Algebra.pushoutDesc_apply [H : Algebra.IsPushout R S R' S'] {A : Type*}
     [Semiring A] [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (hf : ∀ x y, f x * g y = g y * f x)
     (s : S') : by

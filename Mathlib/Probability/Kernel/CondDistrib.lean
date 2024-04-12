@@ -49,7 +49,7 @@ open scoped ENNReal MeasureTheory ProbabilityTheory
 
 namespace ProbabilityTheory
 
-variable {α β Ω F : Type*} [TopologicalSpace Ω] [MeasurableSpace Ω] [PolishSpace Ω] [BorelSpace Ω]
+variable {α β Ω F : Type*} [MeasurableSpace Ω] [StandardBorelSpace Ω]
   [Nonempty Ω] [NormedAddCommGroup F] {mα : MeasurableSpace α} {μ : Measure α} [IsFiniteMeasure μ]
   {X : α → β} {Y : α → Ω}
 
@@ -68,6 +68,15 @@ instance [MeasurableSpace β] : IsMarkovKernel (condDistrib Y X μ) := by
   rw [condDistrib]; infer_instance
 
 variable {mβ : MeasurableSpace β} {s : Set Ω} {t : Set β} {f : β × Ω → F}
+
+/-- If the singleton `{x}` has non-zero mass for `μ.map X`, then for all `s : Set Ω`,
+`condDistrib Y X μ x s = (μ.map X {x})⁻¹ * μ.map (fun a => (X a, Y a)) ({x} ×ˢ s)` . -/
+lemma condDistrib_apply_of_ne_zero [MeasurableSingletonClass β]
+    (hY : Measurable Y) (x : β) (hX : μ.map X {x} ≠ 0) (s : Set Ω) :
+    condDistrib Y X μ x s = (μ.map X {x})⁻¹ * μ.map (fun a => (X a, Y a)) ({x} ×ˢ s) := by
+  rw [condDistrib, condKernel_apply_of_ne_zero _ s]
+  · rw [Measure.fst_map_prod_mk hY]
+  · rwa [Measure.fst_map_prod_mk hY]
 
 section Measurability
 
@@ -109,12 +118,10 @@ end Measurability
 /-- `condDistrib` is a.e. uniquely defined as the kernel satisfying the defining property of
 `condKernel`. -/
 theorem condDistrib_ae_eq_of_measure_eq_compProd (hX : Measurable X) (hY : Measurable Y)
-    (κ : kernel β Ω) [IsFiniteKernel κ]
-    (hκ : μ.map (fun x => (X x, Y x)) =
-      (kernel.const Unit (μ.map X) ⊗ₖ kernel.prodMkLeft Unit κ) ()) :
+    (κ : kernel β Ω) [IsFiniteKernel κ] (hκ : μ.map (fun x => (X x, Y x)) = μ.map X ⊗ₘ κ) :
     ∀ᵐ x ∂μ.map X, κ x = condDistrib Y X μ x := by
-  have heq : μ.map X = (μ.map (fun x => (X x, Y x))).fst
-  · ext s hs
+  have heq : μ.map X = (μ.map (fun x ↦ (X x, Y x))).fst := by
+    ext s hs
     rw [Measure.map_apply hX hs, Measure.fst_apply hs, Measure.map_apply]
     exacts [rfl, Measurable.prod hX hY, measurable_fst hs]
   rw [heq, condDistrib]
@@ -293,8 +300,8 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_mk
     (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) := by
   refine' ⟨fun x => hf.mk f x.2, hf.stronglyMeasurable_mk.comp_measurable measurable_snd, _⟩
-  suffices h : Measure.QuasiMeasurePreserving Prod.snd (μ.map fun ω => (X ω, ω)) μ
-  · exact Measure.QuasiMeasurePreserving.ae_eq h hf.ae_eq_mk
+  suffices h : Measure.QuasiMeasurePreserving Prod.snd (μ.map fun ω ↦ (X ω, ω)) μ from
+    Measure.QuasiMeasurePreserving.ae_eq h hf.ae_eq_mk
   refine' ⟨measurable_snd, Measure.AbsolutelyContinuous.mk fun s hs hμs => _⟩
   rw [Measure.map_apply _ hs]
   swap; · exact measurable_snd

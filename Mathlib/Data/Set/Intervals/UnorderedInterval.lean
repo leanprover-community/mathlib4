@@ -7,7 +7,7 @@ import Mathlib.Data.Set.Intervals.Image
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Tactic.Common
 
-#align_import data.set.intervals.unordered_interval from "leanprover-community/mathlib"@"4020ddee5b4580a409bfda7d2f42726ce86ae674"
+#align_import data.set.intervals.unordered_interval from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
 /-!
 # Intervals without endpoints ordering
@@ -62,7 +62,9 @@ scoped[Interval] notation "[[" a ", " b "]]" => Set.uIcc a b
 
 open Interval
 
-@[simp] lemma dual_uIcc (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] := dual_Icc
+@[simp] lemma dual_uIcc (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] :=
+  -- Note: needed to hint `(α := α)` after #8386 (elaboration order?)
+  dual_Icc (α := α)
 #align set.dual_uIcc Set.dual_uIcc
 
 @[simp]
@@ -81,7 +83,7 @@ lemma uIcc_of_lt (h : a < b) : [[a, b]] = Icc a b := uIcc_of_le h.le
 lemma uIcc_of_gt (h : b < a) : [[a, b]] = Icc b a := uIcc_of_ge h.le
 #align set.uIcc_of_gt Set.uIcc_of_gt
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 -- @[simp]
 lemma uIcc_self : [[a, a]] = {a} := by simp [uIcc]
 #align set.uIcc_self Set.uIcc_self
@@ -187,12 +189,12 @@ variable [Lattice β] {f : α → β} {s : Set α} {a b : α}
 
 lemma _root_.MonotoneOn.mapsTo_uIcc (hf : MonotoneOn f (uIcc a b)) :
     MapsTo f (uIcc a b) (uIcc (f a) (f b)) := by
-  rw [uIcc, uIcc, ←hf.map_sup, ←hf.map_inf] <;>
+  rw [uIcc, uIcc, ← hf.map_sup, ← hf.map_inf] <;>
     apply_rules [left_mem_uIcc, right_mem_uIcc, hf.mapsTo_Icc]
 
 lemma _root_.AntitoneOn.mapsTo_uIcc (hf : AntitoneOn f (uIcc a b)) :
     MapsTo f (uIcc a b) (uIcc (f a) (f b)) := by
-  rw [uIcc, uIcc, ←hf.map_sup, ←hf.map_inf] <;>
+  rw [uIcc, uIcc, ← hf.map_sup, ← hf.map_inf] <;>
     apply_rules [left_mem_uIcc, right_mem_uIcc, hf.mapsTo_Icc]
 
 lemma _root_.Monotone.mapsTo_uIcc (hf : Monotone f) : MapsTo f (uIcc a b) (uIcc (f a) (f b)) :=
@@ -221,9 +223,9 @@ theorem Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
   rfl
 #align set.Icc_min_max Set.Icc_min_max
 
-lemma uIcc_of_not_le (h : ¬a ≤ b) : [[a, b]] = Icc b a := uIcc_of_gt $ lt_of_not_ge h
+lemma uIcc_of_not_le (h : ¬a ≤ b) : [[a, b]] = Icc b a := uIcc_of_gt <| lt_of_not_ge h
 #align set.uIcc_of_not_le Set.uIcc_of_not_le
-lemma uIcc_of_not_ge (h : ¬b ≤ a) : [[a, b]] = Icc a b := uIcc_of_lt $ lt_of_not_ge h
+lemma uIcc_of_not_ge (h : ¬b ≤ a) : [[a, b]] = Icc a b := uIcc_of_lt <| lt_of_not_ge h
 #align set.uIcc_of_not_ge Set.uIcc_of_not_ge
 
 lemma uIcc_eq_union : [[a, b]] = Icc a b ∪ Icc b a := by rw [Icc_union_Icc', max_comm] <;> rfl
@@ -248,9 +250,7 @@ lemma uIcc_subset_uIcc_iff_le :
 /-- A sort of triangle inequality. -/
 lemma uIcc_subset_uIcc_union_uIcc : [[a, c]] ⊆ [[a, b]] ∪ [[b, c]] := fun x => by
   simp only [mem_uIcc, mem_union]
-  cases' le_total a c with h1 h1 <;>
-  cases' le_total x b with h2 h2 <;>
-  tauto
+  rcases le_total x b with h2 | h2 <;> tauto
 #align set.uIcc_subset_uIcc_union_uIcc Set.uIcc_subset_uIcc_union_uIcc
 
 lemma monotone_or_antitone_iff_uIcc :
@@ -268,7 +268,7 @@ lemma monotone_or_antitone_iff_uIcc :
 -- Porting note: mathport expands the syntactic sugar `∀ a b c ∈ s` differently than Lean3
 lemma monotoneOn_or_antitoneOn_iff_uIcc :
     MonotoneOn f s ∨ AntitoneOn f s ↔
-      ∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s) (c) (_ : c ∈ s), c ∈ [[a, b]] → f c ∈ [[f a, f b]] :=
+      ∀ᵉ (a ∈ s) (b ∈ s) (c ∈ s), c ∈ [[a, b]] → f c ∈ [[f a, f b]] :=
   by simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, monotone_or_antitone_iff_uIcc,
     mem_uIcc]
 #align set.monotone_on_or_antitone_on_iff_uIcc Set.monotoneOn_or_antitoneOn_iff_uIcc

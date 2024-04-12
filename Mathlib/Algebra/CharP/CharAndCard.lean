@@ -60,9 +60,9 @@ theorem prime_dvd_char_iff_dvd_card {R : Type*} [CommRing R] [Fintype R] (p : �
   refine'
     ⟨fun h =>
       h.trans <|
-        Int.coe_nat_dvd.mp <|
-          (CharP.int_cast_eq_zero_iff R (ringChar R) (Fintype.card R)).mp <| by
-            exact_mod_cast CharP.cast_card_eq_zero R,
+        Int.natCast_dvd_natCast.mp <|
+          (CharP.int_cast_eq_zero_iff R (ringChar R) (Fintype.card R)).mp <|
+            mod_cast CharP.cast_card_eq_zero R,
       fun h => _⟩
   by_contra h₀
   rcases exists_prime_addOrderOf_dvd_card p h with ⟨r, hr⟩

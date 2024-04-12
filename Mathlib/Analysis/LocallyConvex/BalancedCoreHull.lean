@@ -53,7 +53,7 @@ section SMul
 
 variable (𝕜) [SMul 𝕜 E] {s t : Set E} {x : E}
 
-/-- The largest balanced subset of `s`.-/
+/-- The largest balanced subset of `s`. -/
 def balancedCore (s : Set E) :=
   ⋃₀ { t : Set E | Balanced 𝕜 t ∧ t ⊆ s }
 #align balanced_core balancedCore
@@ -63,7 +63,7 @@ def balancedCoreAux (s : Set E) :=
   ⋂ (r : 𝕜) (_ : 1 ≤ ‖r‖), r • s
 #align balanced_core_aux balancedCoreAux
 
-/-- The smallest balanced superset of `s`.-/
+/-- The smallest balanced superset of `s`. -/
 def balancedHull (s : Set E) :=
   ⋃ (r : 𝕜) (_ : ‖r‖ ≤ 1), r • s
 #align balanced_hull balancedHull
@@ -95,7 +95,7 @@ theorem balancedCore_balanced (s : Set E) : Balanced 𝕜 (balancedCore 𝕜 s) 
 #align balanced_core_balanced balancedCore_balanced
 
 /-- The balanced core of `t` is maximal in the sense that it contains any balanced subset
-`s` of `t`.-/
+`s` of `t`. -/
 theorem Balanced.subset_balancedCore_of_subset (hs : Balanced 𝕜 s) (h : s ⊆ t) :
     s ⊆ balancedCore 𝕜 t :=
   subset_sUnion_of_mem ⟨hs, h⟩
@@ -105,8 +105,8 @@ theorem mem_balancedCoreAux_iff : x ∈ balancedCoreAux 𝕜 s ↔ ∀ r : 𝕜,
   mem_iInter₂
 #align mem_balanced_core_aux_iff mem_balancedCoreAux_iff
 
-theorem mem_balancedHull_iff : x ∈ balancedHull 𝕜 s ↔ ∃ (r : 𝕜) (_ : ‖r‖ ≤ 1), x ∈ r • s :=
-  mem_iUnion₂
+theorem mem_balancedHull_iff : x ∈ balancedHull 𝕜 s ↔ ∃ r : 𝕜, ‖r‖ ≤ 1 ∧ x ∈ r • s := by
+  simp [balancedHull]
 #align mem_balanced_hull_iff mem_balancedHull_iff
 
 /-- The balanced hull of `s` is minimal in the sense that it is contained in any balanced superset
@@ -202,7 +202,7 @@ theorem balancedCore_eq_iInter (hs : (0 : E) ∈ s) :
   exact balancedCore_subset_balancedCoreAux (balancedCore_zero_mem hs)
 #align balanced_core_eq_Inter balancedCore_eq_iInter
 
-theorem subset_balancedCore (ht : (0 : E) ∈ t) (hst : ∀ (a : 𝕜) (_ : ‖a‖ ≤ 1), a • s ⊆ t) :
+theorem subset_balancedCore (ht : (0 : E) ∈ t) (hst : ∀ a : 𝕜, ‖a‖ ≤ 1 → a • s ⊆ t) :
     s ⊆ balancedCore 𝕜 t := by
   rw [balancedCore_eq_iInter ht]
   refine' subset_iInter₂ fun a ha => _
@@ -234,7 +234,7 @@ protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCo
     exact isClosedMap_smul_of_ne_zero ha' U hU
   · have : balancedCore 𝕜 U = ∅ := by
       contrapose! h
-      exact balancedCore_nonempty_iff.mp (Set.nonempty_iff_ne_empty.2 h)
+      exact balancedCore_nonempty_iff.mp h
     rw [this]
     exact isClosed_empty
 #align is_closed.balanced_core IsClosed.balancedCore

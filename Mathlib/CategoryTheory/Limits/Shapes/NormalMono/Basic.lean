@@ -35,7 +35,6 @@ open CategoryTheory.Limits
 universe v₁ v₂ u₁ u₂
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {X Y : C}
 
 section
@@ -54,8 +53,6 @@ class NormalMono (f : X ⟶ Y) where
 attribute [inherit_doc NormalMono] NormalMono.Z NormalMono.g NormalMono.w NormalMono.isLimit
 
 section
-
-attribute [local instance] fullyFaithfulReflectsLimits
 
 attribute [local instance] Equivalence.essSurj_of_equivalence
 
@@ -173,8 +170,6 @@ class NormalEpi (f : X ⟶ Y) where
 attribute [inherit_doc NormalEpi] NormalEpi.W NormalEpi.g NormalEpi.w NormalEpi.isColimit
 
 section
-
-attribute [local instance] fullyFaithfulReflectsColimits
 
 attribute [local instance] Equivalence.essSurj_of_equivalence
 

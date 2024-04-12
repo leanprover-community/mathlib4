@@ -10,6 +10,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.CategoryTheory.Subobject.WellPowered
 import Mathlib.Data.Set.Opposite
+import Mathlib.Data.Set.Basic
 
 #align_import category_theory.generator from "leanprover-community/mathlib"@"f187f1074fa1857c94589cc653c786cadc4c35ff"
 
@@ -337,7 +338,7 @@ theorem eq_of_isDetecting [HasPullbacks C] {𝒢 : Set C} (h𝒢 : IsDetecting �
     (P Q : Subobject X) (h : ∀ G ∈ 𝒢, ∀ {f : G ⟶ X}, P.Factors f ↔ Q.Factors f) : P = Q :=
   calc
     P = P ⊓ Q := Eq.symm <| inf_eq_of_isDetecting h𝒢 _ _ fun G hG _ hf => (h G hG).1 hf
-    _ = Q ⊓ P := inf_comm
+    _ = Q ⊓ P := inf_comm ..
     _ = Q := inf_eq_of_isDetecting h𝒢 _ _ fun G hG _ hf => (h G hG).2 hf
 
 #align category_theory.subobject.eq_of_is_detecting CategoryTheory.Subobject.eq_of_isDetecting
@@ -648,7 +649,7 @@ theorem isCodetector_iff_reflectsIsomorphisms_yoneda_obj (G : C) :
 #align category_theory.is_codetector_iff_reflects_isomorphisms_yoneda_obj CategoryTheory.isCodetector_iff_reflectsIsomorphisms_yoneda_obj
 
 theorem wellPowered_of_isDetector [HasPullbacks C] (G : C) (hG : IsDetector G) : WellPowered C :=
-  -- porting note: added the following `haveI` to prevent universe issues
+  -- Porting note: added the following `haveI` to prevent universe issues
   haveI := small_subsingleton ({G} : Set C)
   wellPowered_of_isDetecting hG
 #align category_theory.well_powered_of_is_detector CategoryTheory.wellPowered_of_isDetector

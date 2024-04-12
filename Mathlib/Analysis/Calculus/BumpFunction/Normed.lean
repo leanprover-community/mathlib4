@@ -132,8 +132,6 @@ theorem integral_le_measure_closedBall : ∫ x, f x ∂μ ≤ (μ (closedBall c 
     simp [measure_closedBall_lt_top]
   _ = (μ (closedBall c f.rOut)).toReal := by simp
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 theorem measure_closedBall_div_le_integral [IsAddHaarMeasure μ] (K : ℝ) (h : f.rOut ≤ K * f.rIn) :
     (μ (closedBall c f.rOut)).toReal / K ^ finrank ℝ E ≤ ∫ x, f x ∂μ := by
   have K_pos : 0 < K := by

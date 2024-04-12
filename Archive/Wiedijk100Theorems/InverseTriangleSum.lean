@@ -5,6 +5,7 @@ Authors: Jalex Stark, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.FieldSimp
 
 #align_import wiedijk_100_theorems.inverse_triangle_sum from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
@@ -27,7 +28,7 @@ open scoped BigOperators
 open Finset
 
 /-- **Sum of the Reciprocals of the Triangular Numbers** -/
-theorem Theorem100.inverse_triangle_sum :
+theorem Theorems100.inverse_triangle_sum :
     ∀ n, ∑ k in range n, (2 : ℚ) / (k * (k + 1)) = if n = 0 then 0 else 2 - (2 : ℚ) / n := by
   refine' sum_range_induction _ _ (if_pos rfl) _
   rintro (_ | n)
@@ -37,4 +38,4 @@ theorem Theorem100.inverse_triangle_sum :
   push_cast
   field_simp
   ring
-#align theorem_100.inverse_triangle_sum Theorem100.inverse_triangle_sum
+#align theorem_100.inverse_triangle_sum Theorems100.inverse_triangle_sum
