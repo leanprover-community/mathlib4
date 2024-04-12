@@ -142,8 +142,8 @@ def forgetMonoidal : MonoidalFunctor (Action V G) V :=
 set_option linter.uppercaseLean3 false in
 #align Action.forget_monoidal Action.forgetMonoidal
 
-instance forgetMonoidal_faithful : Faithful (forgetMonoidal V G).toFunctor := by
-  change Faithful (forget V G); infer_instance
+instance forgetMonoidal_faithful : (forgetMonoidal V G).Faithful := by
+  change (forget V G).Faithful; infer_instance
 set_option linter.uppercaseLean3 false in
 #align Action.forget_monoidal_faithful Action.forgetMonoidal_faithful
 
@@ -162,8 +162,8 @@ def forgetBraided : BraidedFunctor (Action V G) V :=
 set_option linter.uppercaseLean3 false in
 #align Action.forget_braided Action.forgetBraided
 
-instance forgetBraided_faithful : Faithful (forgetBraided V G).toFunctor := by
-  change Faithful (forget V G); infer_instance
+instance forgetBraided_faithful : (forgetBraided V G).Faithful := by
+  change (forget V G).Faithful; infer_instance
 set_option linter.uppercaseLean3 false in
 #align Action.forget_braided_faithful Action.forgetBraided_faithful
 
@@ -194,8 +194,8 @@ def functorCategoryMonoidalEquivalence : MonoidalFunctor (Action V G) (SingleObj
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence Action.functorCategoryMonoidalEquivalence
 
-instance : IsEquivalence (functorCategoryMonoidalEquivalence V G).toFunctor := by
-  change IsEquivalence (Action.functorCategoryEquivalence _ _).functor; infer_instance
+instance : (functorCategoryMonoidalEquivalence V G).IsEquivalence := by
+  change (Action.functorCategoryEquivalence _ _).functor.IsEquivalence; infer_instance
 
 @[simp]
 theorem functorCategoryMonoidalEquivalence.μ_app (A B : Action V G) :

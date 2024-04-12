@@ -67,7 +67,7 @@ def inclusion : Core C ⥤ C where
 #align category_theory.core.inclusion CategoryTheory.Core.inclusion
 
 -- Porting note: This worked without proof before.
-instance : Faithful (inclusion C) where
+instance : (inclusion C).Faithful where
   map_injective := by
     intro _ _
     apply Iso.ext

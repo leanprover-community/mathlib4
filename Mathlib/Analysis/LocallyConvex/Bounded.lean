@@ -310,7 +310,7 @@ variable (𝕜 E)
 /-- The von Neumann bornology defined by the von Neumann bounded sets.
 
 Note that this is not registered as an instance, in order to avoid diamonds with the
-metric bornology.-/
+metric bornology. -/
 @[reducible]
 def vonNBornology : Bornology E :=
   Bornology.ofBounded (setOf (IsVonNBounded 𝕜)) (isVonNBounded_empty 𝕜 E)
