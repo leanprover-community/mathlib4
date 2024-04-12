@@ -68,7 +68,7 @@ open CCM
 
 def mkCore (config : CCConfig) : CCState :=
   let s : CCState := { config with }
-  s.mkEntryCore (.const ``True []) true false 0 |>.mkEntryCore (.const ``False []) true false 0
+  s.mkEntryCore (.const ``True []) true false |>.mkEntryCore (.const ``False []) true false
 #align cc_state.mk_core Mathlib.Tactic.CC.CCState.mkCore
 
 /-- Create a congruence closure state object using the hypotheses in the current goal. -/
@@ -78,7 +78,7 @@ def mkUsingHsCore (cfg : CCConfig) : MetaM CCState := do
   let (_, c) ← CCM.run (ctx.forM fun dcl => do
     unless dcl.isImplementationDetail do
       if ← isProp dcl.type then
-        add dcl.type dcl.toExpr 0) { mkCore cfg with }
+        add dcl.type dcl.toExpr) { mkCore cfg with }
   return c.toCCState
 #align cc_state.mk_using_hs_core Mathlib.Tactic.CC.CCState.mkUsingHsCore
 
@@ -95,7 +95,7 @@ def incGMT (ccs : CCState) : CCState :=
 
 /-- Add the given expression to the graph. -/
 def internalize (ccs : CCState) (e : Expr) : MetaM CCState := do
-  let (_, c) ← CCM.run (CCM.internalize e 0) { ccs with }
+  let (_, c) ← CCM.run (CCM.internalize e) { ccs with }
   return c.toCCState
 #align cc_state.internalize Mathlib.Tactic.CC.CCState.internalize
 
@@ -105,7 +105,7 @@ def add (ccs : CCState) (H : Expr) : MetaM CCState := do
   let type ← inferType H
   unless ← isProp type do
     throwError "CCState.add failed, given expression is not a proof term"
-  let (_, c) ← CCM.run (CCM.add type H 0) { ccs with }
+  let (_, c) ← CCM.run (CCM.add type H) { ccs with }
   return c.toCCState
 #align cc_state.add Mathlib.Tactic.CC.CCState.add
 
