@@ -1361,7 +1361,7 @@ component is a continuous multilinear map of `k` vectors `v₁, ..., vₖ`, mapp
 to `f (x₁, (v_{e 2})₂, x₃, ...)`, where at indices `i` in `s` one uses the vector `v_{e i}`
 and otherwise one uses a reference vector `x`. This is continuous multilinear in the components
 of `x` outside of `s`, and in the `v_j`. -/
-noncomputable def iteratedFDerivComponent {α : Type*} [DecidableEq α] [Fintype α] [DecidableEq ι]
+noncomputable def iteratedFDerivComponent {α : Type*} [Fintype α] [DecidableEq ι]
     (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)] :
     ContinuousMultilinearMap 𝕜 (fun (i : {a : ι // a ∉ s}) ↦ E₁ i)
       (ContinuousMultilinearMap 𝕜 (fun (_ : α) ↦ (∀ i, E₁ i)) G) :=
@@ -1384,7 +1384,7 @@ noncomputable def iteratedFDerivComponent {α : Type*} [DecidableEq α] [Fintype
       apply Finset.prod_le_prod (fun i _ ↦ norm_nonneg _) (fun i _ ↦ ?_)
       simpa only [i.2, ↓reduceDite, Subtype.coe_eta] using norm_le_pi_norm (m (e.symm i)) ↑i
 
-@[simp] lemma iteratedFDerivComponent_apply {α : Type*} [DecidableEq α] [Fintype α] [DecidableEq ι]
+@[simp] lemma iteratedFDerivComponent_apply {α : Type*} [Fintype α] [DecidableEq ι]
     (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)]
     (v : ∀ i : {a : ι // a ∉ s}, E₁ i) (w : α → (∀ i, E₁ i)) :
     f.iteratedFDerivComponent e v w =
@@ -1392,7 +1392,7 @@ noncomputable def iteratedFDerivComponent {α : Type*} [DecidableEq α] [Fintype
   simp [iteratedFDerivComponent, MultilinearMap.iteratedFDerivComponent,
     MultilinearMap.domDomRestrictₗ]
 
-lemma norm_iteratedFDerivComponent_le {α : Type*} [DecidableEq α] [Fintype α] [DecidableEq ι]
+lemma norm_iteratedFDerivComponent_le {α : Type*} [Fintype α] [DecidableEq ι]
     (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)]
     (x : (i : ι) → E₁ i) :
     ‖f.iteratedFDerivComponent e (fun i ↦ x i)‖

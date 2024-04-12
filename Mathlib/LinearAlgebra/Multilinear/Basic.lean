@@ -9,7 +9,6 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Data.List.FinRange
 import Mathlib.LinearAlgebra.Pi
-import Mathlib.Data.Fintype.Perm
 import Mathlib.Logic.Equiv.Fintype
 
 #align_import linear_algebra.multilinear.basic from "leanprover-community/mathlib"@"78fdf68dcd2fdb3fe64c0dd6f88926a49418a6ea"
@@ -1062,7 +1061,7 @@ of `k` vectors `v₁, ..., vₖ`, mapping them
 to `f (x₁, (v_{e 2})₂, x₃, ...)`, where at indices `i` in `s` one uses the vector `v_{e i}`
 and otherwise one uses a reference vector `x`. This is multilinear in the components of `x` outside
 of `s`, and in the `v_j`. -/
-noncomputable def iteratedFDerivComponent {α : Type*} [DecidableEq α]
+noncomputable def iteratedFDerivComponent {α : Type*}
     (f : MultilinearMap R M₁ M₂) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)] :
     MultilinearMap R (fun (i : {a : ι // a ∉ s}) ↦ M₁ i)
       (MultilinearMap R (fun (_ : α) ↦ (∀ i, M₁ i)) M₂) where
