@@ -43,6 +43,9 @@ before and after and see if there is some change.
   The main reason is that `skip` is a common discharger tactic and the linter would
   then always fail whenever the user explicitly chose to pass `skip` as a discharger tactic.
 
+###  TODO
+* The linter seems to be silenced by `set_option ... in`: maybe it should enter `in`s?
+
 ##  Implementation notes
 
 Yet another linter copied from the `unreachableTactic` linter!
@@ -178,7 +181,7 @@ partial def eraseUsedTactics : InfoTree → M Unit
 
 end
 
-/-- Gets the value of the `linter.unused` option. -/
+/-- Gets the value of the `linter.unusedTactic` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.unusedTactic o
 
 /-- The main entry point to the unused tactic linter. -/
