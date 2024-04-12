@@ -354,7 +354,6 @@ lemma toPresheafOfModules_obj (X : Cᵒᵖ) :
 lemma toPresheafOfModules_presheaf_map_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
     M.toPresheafOfModules.presheaf.map f x = M.map f x := rfl
 
-
 end CorePresheafOfModules
 
 variable (R) in
