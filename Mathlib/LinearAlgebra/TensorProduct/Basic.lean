@@ -245,7 +245,7 @@ instance (priority := 100) CompatibleSMul.isScalarTower [SMul R' R] [IsScalarTow
     exact Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.of_smul _ _ _⟩
 #align tensor_product.compatible_smul.is_scalar_tower TensorProduct.CompatibleSMul.isScalarTower
 
-/-- `smul` can be moved from one side of the product to the other .-/
+/-- `smul` can be moved from one side of the product to the other . -/
 theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m : M) (n : N) :
     (r • m) ⊗ₜ n = m ⊗ₜ[R] (r • n) :=
   CompatibleSMul.smul_tmul _ _ _
@@ -334,13 +334,13 @@ protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • 
 #align tensor_product.add_smul TensorProduct.add_smul
 
 instance addMonoid : AddMonoid (M ⊗[R] N) :=
-{ TensorProduct.addZeroClass _ _ with
-  toAddSemigroup := TensorProduct.addSemigroup _ _
-  toZero := (TensorProduct.addZeroClass _ _).toZero
-  nsmul := fun n v => n • v
-  nsmul_zero := by simp [TensorProduct.zero_smul]
-  nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
-    forall_const] }
+  { TensorProduct.addZeroClass _ _ with
+    toAddSemigroup := TensorProduct.addSemigroup _ _
+    toZero := (TensorProduct.addZeroClass _ _).toZero
+    nsmul := fun n v => n • v
+    nsmul_zero := by simp [TensorProduct.zero_smul]
+    nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
+      forall_const] }
 
 instance addCommMonoid : AddCommMonoid (M ⊗[R] N) :=
   { TensorProduct.addCommSemigroup _ _ with

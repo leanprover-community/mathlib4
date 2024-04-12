@@ -205,7 +205,7 @@ theorem cycleType_prime_order {σ : Perm α} (hσ : (orderOf σ).Prime) :
     ∃ n : ℕ, σ.cycleType = Multiset.replicate (n + 1) (orderOf σ) := by
   refine ⟨Multiset.card σ.cycleType - 1, eq_replicate.2 ⟨?_, fun n hn ↦ ?_⟩⟩
   · rw [tsub_add_cancel_of_le]
-    rw [Nat.succ_le_iff, card_cycleType_pos, Ne.def, ← orderOf_eq_one_iff]
+    rw [Nat.succ_le_iff, card_cycleType_pos, Ne, ← orderOf_eq_one_iff]
     exact hσ.ne_one
   · exact (hσ.eq_one_or_self_of_dvd n (dvd_of_mem_cycleType hn)).resolve_left
       (one_lt_of_mem_cycleType hn).ne'
@@ -650,7 +650,7 @@ theorem isThreeCycle_swap_mul_swap_same {a b c : α} (ab : a ≠ b) (ac : a ≠ 
   · simp [ab, ac, bc]
   · simp only [Finset.mem_insert, Finset.mem_singleton] at hx
     rw [mem_support]
-    simp only [Perm.coe_mul, Function.comp_apply, Ne.def]
+    simp only [Perm.coe_mul, Function.comp_apply, Ne]
     obtain rfl | rfl | rfl := hx
     · rw [swap_apply_left, swap_apply_of_ne_of_ne ac.symm bc.symm]
       exact ac.symm

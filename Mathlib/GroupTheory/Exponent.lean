@@ -59,7 +59,7 @@ section Monoid
 variable (G) [Monoid G]
 
 /-- A predicate on a monoid saying that there is a positive integer `n` such that `g ^ n = 1`
-  for all `g`.-/
+  for all `g`. -/
 @[to_additive
       "A predicate on an additive monoid saying that there is a positive integer `n` such\n
       that `n • g = 0` for all `g`."]
@@ -69,7 +69,7 @@ def ExponentExists :=
 #align add_monoid.exponent_exists AddMonoid.ExponentExists
 
 /-- The exponent of a group is the smallest positive integer `n` such that `g ^ n = 1` for all
-  `g ∈ G` if it exists, otherwise it is zero by convention.-/
+  `g ∈ G` if it exists, otherwise it is zero by convention. -/
 @[to_additive
       "The exponent of an additive group is the smallest positive integer `n` such that\n
       `n • g = 0` for all `g ∈ G` if it exists, otherwise it is zero by convention."]
@@ -327,7 +327,7 @@ order `p`. -/
 lemma exponent_eq_prime_iff {G : Type*} [Monoid G] [Nontrivial G] {p : ℕ} (hp : p.Prime) :
     Monoid.exponent G = p ↔ ∀ g : G, g ≠ 1 → orderOf g = p := by
   refine ⟨fun hG g hg ↦ ?_, fun h ↦ dvd_antisymm ?_ ?_⟩
-  · rw [Ne.def, ← orderOf_eq_one_iff] at hg
+  · rw [Ne, ← orderOf_eq_one_iff] at hg
     exact Eq.symm <| (hp.dvd_iff_eq hg).mp <| hG ▸ Monoid.order_dvd_exponent g
   · rw [exponent_dvd]
     intro g
@@ -368,7 +368,7 @@ theorem exponent_ne_zero_iff_range_orderOf_finite (h : ∀ g : G, 0 < orderOf g)
 theorem exponent_eq_zero_iff_range_orderOf_infinite (h : ∀ g : G, 0 < orderOf g) :
     exponent G = 0 ↔ (Set.range (orderOf : G → ℕ)).Infinite := by
   have := exponent_ne_zero_iff_range_orderOf_finite h
-  rwa [Ne.def, not_iff_comm, Iff.comm] at this
+  rwa [Ne, not_iff_comm, Iff.comm] at this
 #align monoid.exponent_eq_zero_iff_range_order_of_infinite Monoid.exponent_eq_zero_iff_range_orderOf_infinite
 #align add_monoid.exponent_eq_zero_iff_range_order_of_infinite AddMonoid.exponent_eq_zero_iff_range_addOrderOf_infinite
 
