@@ -695,6 +695,22 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
   exact getLast_append_singleton _
 #align list.last_replicate_succ List.getLast_replicate_succ
 
+theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
+    (hl' : 0 < l.length := (by simpa [length_pos] using hl)) :
+    l.reverse.getLast hl = l.get ⟨0, hl'⟩ := by
+  match l with
+  | [] => contradiction
+  | a :: as => simp
+#align list.last_reverse List.getLast_reverse
+
+theorem getLast_tail_eq_getLast {l : List α} (h : l.tail ≠ []) :
+    l.tail.getLast h = l.getLast (ne_nil_of_drop_ne_nil ((drop_one l).symm ▸ h)) := by
+  match l with
+  | [] => contradiction
+  | a :: as =>
+    rw [tail_cons] at h
+    simp only [tail_cons, getLast_cons h]
+
 /-! ### getLast? -/
 
 -- Porting note: Moved earlier in file, for use in subsequent lemmas.
@@ -785,7 +801,30 @@ theorem getLast?_append {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?)
     exact h
 #align list.last'_append List.getLast?_append
 
+@[simp]
+theorem getLast?_reverse (l : List α) : l.reverse.getLast? = l.head? := by cases l <;> simp
+
+/-! ### getLast! -/
+
+theorem getLast!_eq_getLast_of_ne_nil [Inhabited α] {l : List α} (h : l ≠ []) :
+  l.getLast! = l.getLast h := by
+  match l with
+  | [] => contradiction
+  | a :: as => rfl
+
+@[simp]
+theorem getLast!_reverse [Inhabited α] (l : List α) : l.reverse.getLast! = l.head! := by
+  match l with
+  | [] => rfl
+  | a :: as => simp [getLast!_eq_getLast_of_ne_nil]; rfl
+
 /-! ### head(!?) and tail -/
+
+theorem get_zero_eq_head_of_ne_nil {l : List α} (h : l ≠ []) :
+    l.get ⟨ 0, length_pos_iff_ne_nil.mpr h ⟩ = l.head h := by
+  match l with
+  | [] => contradiction
+  | a :: as => rfl
 
 @[simp] theorem head_cons_tail (x : List α) (h : x ≠ []) : x.head h :: x.tail = x := by
   cases x <;> simp at h ⊢
@@ -821,6 +860,12 @@ theorem mem_of_mem_head? {x : α} {l : List α} (h : x ∈ l.head?) : x ∈ l :=
 
 #align list.tail_nil List.tail_nil
 #align list.tail_cons List.tail_cons
+
+theorem head_append_of_ne_nil (hl : l₁ ≠ []) :
+    (l₁ ++ l₂).head (by simp [hl]) = l₁.head hl := by
+  match l₁ with
+  | nil => contradiction
+  | cons x xs => rfl
 
 @[simp]
 theorem head!_append [Inhabited α] (t : List α) {s : List α} (h : s ≠ []) :
@@ -874,6 +919,32 @@ theorem tail_append_of_ne_nil (l l' : List α) (h : l ≠ []) : (l ++ l').tail =
   · contradiction
   · simp
 #align list.tail_append_of_ne_nil List.tail_append_of_ne_nil
+
+theorem head_reverse_of_ne_nil {l : List α} (hl : l ≠ []) :
+    l.reverse.head ((not_congr List.reverse_eq_nil_iff).mpr hl) = l.getLast hl := by
+  have : l.getLast hl = l.reverse.reverse.getLast (by simpa) := by
+    simp only [reverse_reverse]
+  rw [this, getLast_reverse]
+  exact (get_zero_eq_head_of_ne_nil _).symm
+
+theorem head?_reverse (l : List α) : l.reverse.head? = l.getLast? := by
+  nth_rewrite 2 [← reverse_reverse l]
+  rw [getLast?_reverse]
+
+theorem head!_reverse [Inhabited α] (l : List α) : l.reverse.head! = l.getLast! := by
+  nth_rewrite 2 [← reverse_reverse l]
+  rw [getLast!_reverse]
+
+theorem subsingleton_of_tail_eq_nil {l : List α} (h : l.tail = []) :
+  l = [] ∨ ∃ x, l = [x] := by
+  match l with
+  | [] => simp only [exists_false, or_false]
+  | x :: xs =>
+    rw [tail_cons] at h
+    simp [h]
+
+theorem length_le_one_of_tail_eq_nil {l : List α} (h : l.tail = []) :
+    l.length ≤ 1 := by rcases subsingleton_of_tail_eq_nil h with rfl | ⟨x, rfl⟩ <;> simp
 
 section deprecated
 set_option linter.deprecated false -- TODO(Mario): make replacements for theorems in this section
@@ -1042,7 +1113,8 @@ theorem Sublist.cons_cons {l₁ l₂ : List α} (a : α) (s : l₁ <+ l₂) : a 
 #align list.sublist_append_left List.sublist_append_left
 #align list.sublist_append_right List.sublist_append_right
 
-theorem sublist_cons_of_sublist (a : α) (h : l₁ <+ l₂) : l₁ <+ a :: l₂ := h.cons _
+theorem sublist_cons_of_sublist (a : α) {l₁ l₂ : List α} : l₁ <+ l₂ → l₁ <+ a :: l₂ :=
+  Sublist.cons _
 #align list.sublist_cons_of_sublist List.sublist_cons_of_sublist
 
 #align list.sublist_append_of_sublist_left List.sublist_append_of_sublist_left
@@ -1104,7 +1176,8 @@ instance decidableSublist [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable 
   | _ :: _, [] => isFalse fun h => List.noConfusion <| eq_nil_of_sublist_nil h
   | a :: l₁, b :: l₂ =>
     if h : a = b then
-      @decidable_of_decidable_of_iff _ _ (decidableSublist l₁ l₂) <| h ▸ cons_sublist_cons.symm
+      @decidable_of_decidable_of_iff _ _ (decidableSublist l₁ l₂) <|
+        h ▸ ⟨Sublist.cons_cons _, sublist_of_cons_sublist_cons⟩
     else
       @decidable_of_decidable_of_iff _ _ (decidableSublist (a :: l₁) l₂)
         ⟨sublist_cons_of_sublist _, fun s =>
@@ -1344,7 +1417,20 @@ theorem nthLe_cons_length : ∀ (x : α) (xs : List α) (n : ℕ) (h : n = xs.le
 
 theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length) :
     (l.drop n).take 1 = [l.get ⟨n, h⟩] := by
-  rw [drop_eq_get_cons h, take, take]
+  induction' l with x l ih generalizing n
+  · cases h
+  · by_cases h₁ : l = []
+    · subst h₁
+      rw [get_singleton]
+      simp only [length_cons, length_nil, Nat.lt_succ_iff, le_zero_eq] at h
+      subst h
+      simp
+    have h₂ := h
+    rw [length_cons, Nat.lt_succ_iff, le_iff_eq_or_lt] at h₂
+    cases n
+    · simp [get]
+    rw [drop, get]
+    apply ih
 
 @[deprecated take_one_drop_eq_of_lt_length]
 theorem take_one_drop_eq_of_lt_length' {l : List α} {n : ℕ} (h : n < l.length) :
@@ -1821,11 +1907,17 @@ theorem nthLe_take' (L : List α) {i j : ℕ} (hi : i < (L.take j).length) :
 
 @[simp]
 theorem drop_tail (l : List α) (n : ℕ) : l.tail.drop n = l.drop (n + 1) := by
-  rw [drop_add, drop_one]
+  induction' l <;> simp
 
 theorem cons_get_drop_succ {l : List α} {n} :
-    l.get n :: l.drop (n.1 + 1) = l.drop n.1 :=
-  (drop_eq_get_cons n.2).symm
+    l.get n :: l.drop (n.1 + 1) = l.drop n.1 := by
+  induction' l with hd tl hl
+  · exact absurd n.1.zero_le (not_le_of_lt (nomatch n))
+  · match n with
+    | ⟨0, _⟩ => simp [get]
+    | ⟨n+1, hn⟩ =>
+      simp only [Nat.succ_lt_succ_iff, List.length] at hn
+      simpa [List.get, List.drop] using hl
 
 @[deprecated cons_get_drop_succ]
 theorem cons_nthLe_drop_succ {l : List α} {n : ℕ} (hn : n < l.length) :
@@ -1850,7 +1942,11 @@ set_option linter.deprecated false in
 dropping the first `i` elements. Version designed to rewrite from the big list to the small list. -/
 @[deprecated get_drop]
 theorem nthLe_drop (L : List α) {i j : ℕ} (h : i + j < L.length) :
-    nthLe L (i + j) h = nthLe (L.drop i) j (by rw [length_drop]; omega) := get_drop ..
+    nthLe L (i + j) h = nthLe (L.drop i) j (by
+      have A : i < L.length := lt_of_le_of_lt (Nat.le.intro rfl) h
+      rw [(take_append_drop i L).symm] at h
+      simp_all only [take_append_drop, length_drop, gt_iff_lt]
+      omega) := get_drop ..
 #align list.nth_le_drop List.nthLe_drop
 
 set_option linter.deprecated false in
@@ -3770,16 +3866,6 @@ instance (p : α → Prop) [DecidablePred p] : DecidablePred (Forall p) := fun _
 end Forall
 
 /-! ### Miscellaneous lemmas -/
-
-theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
-    (hl' : 0 < l.length := (by
-      contrapose! hl
-      simpa [length_eq_zero] using hl)) :
-    l.reverse.getLast hl = l.get ⟨0, hl'⟩ := by
-  rw [getLast_eq_get, get_reverse']
-  · simp
-  · simpa using hl'
-#align list.last_reverse List.getLast_reverse
 
 set_option linter.deprecated false in
 @[deprecated]
