@@ -231,8 +231,8 @@ end tactic_tests
 will fail, but would not be an indication of a bug. -/
 abbrev nonTesters : HashSet SyntaxNodeKind := HashSet.empty
 --  |>.insert ``Lean.guardMsgsCmd  -- <--- does not actually work
---  |>.insert ``Lean.Parser.Tactic.guardTarget
---  |>.insert ``Lean.Parser.Tactic.guardHyp
+  |>.insert ``Lean.Parser.Tactic.guardTarget
+  |>.insert ``Lean.Parser.Tactic.guardHyp
 
 /-- checks whether the input `Syntax` contains a `SyntaxNodeKind` in `nonTesters` and, if so,
 returns its `atomVal`. -/
