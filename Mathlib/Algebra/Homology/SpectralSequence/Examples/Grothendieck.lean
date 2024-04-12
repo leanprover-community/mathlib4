@@ -30,26 +30,30 @@ noncomputable def grothendieckSpectralSequence : E₂CohomologicalSpectralSequen
   TStructure.spectralSequenceNat t (F.rightDerivedFunctorPlus.obj ((singleFunctor A 0).obj X))
     (G.rightDerivedFunctorPlus ⋙ homologyFunctor C 0)
 
+namespace grothendieckSpectralSequence
+
 /-- Computation of `E₂^{p,q}` of the Grothendieck spectral sequence -/
-noncomputable def grothendieckSpectralSequenceE₂Iso (pq : ℕ × ℕ) :
+noncomputable def page₂Iso (pq : ℕ × ℕ) :
   ((grothendieckSpectralSequence F G X).page 2).X pq ≅
     (F.rightDerived' pq.2 ⋙ G.rightDerived' pq.1).obj X :=
   t.spectralSequenceNatE₂Iso (F.rightDerivedFunctorPlus.obj ((singleFunctor A 0).obj X))
     (G.rightDerivedFunctorPlus ⋙ homologyFunctor C 0) pq
 
-noncomputable def convergesAt' (n : ℕ) :
+noncomputable def stronglyConvergesToInDegree' (n : ℕ) :
     (grothendieckSpectralSequence F G X).StronglyConvergesToInDegree
       CohomologicalSpectralSequenceNat.stripes n
       ((singleFunctor A 0 ⋙ F.rightDerivedFunctorPlus ⋙
         G.rightDerivedFunctorPlus ⋙ homologyFunctor C (n : ℤ)).obj X) := by
   apply TStructure.spectralSequenceNatStronglyConvergesTo
 
-noncomputable def convergesAt (n : ℕ) :
-    (grothendieckSpectralSequence F G X).StronglyConvergesToInDegree
-      CohomologicalSpectralSequenceNat.stripes n
-      (((F ⋙ G).rightDerived' n).obj X) :=
-  (convergesAt' F G X n).ofIso ((homologyFunctor C n).mapIso
+noncomputable def StronglyConvergesTo :
+    (grothendieckSpectralSequence F G X).StronglyConvergesTo
+      CohomologicalSpectralSequenceNat.stripes
+      (fun n => (((F ⋙ G).rightDerived' n).obj X)) :=
+  fun n => (stronglyConvergesToInDegree' F G X n).ofIso ((homologyFunctor C n).mapIso
       ((asIso (Functor.rightDerivedFunctorPlusCompNatTrans (Iso.refl _))).symm.app _))
+
+end grothendieckSpectralSequence
 
 end Plus
 
