@@ -160,7 +160,7 @@ lemma refinementsTopology_eq_regularTopology :
 lemma refinementsTopology_subcanonical :
     Sheaf.Subcanonical (refinementsTopology C) := by
   rw [refinementsTopology_eq_regularTopology]
-  exact regularCoverage.subcanonical
+  exact regularTopology.subcanonical
 
 end
 
