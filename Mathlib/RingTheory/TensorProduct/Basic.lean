@@ -1171,8 +1171,8 @@ def TensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
       intro x
       simp only [TensorProductEndₗ, TensorProduct.AlgebraTensorModule.lift_apply,
         TensorProduct.lift.tmul, coe_restrictScalars, coe_mk, AddHom.coe_mk, one_smul,
-        baseChangeHom_apply, baseChange_eq_ltensor, one_apply]
-      erw [lTensor_id, LinearMap.id_apply])
+        baseChangeHom_apply, baseChange_eq_ltensor, one_apply, one_eq_id, lTensor_id,
+        LinearMap.id_apply])
 
 end LinearMap
 
