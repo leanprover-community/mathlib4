@@ -1357,3 +1357,17 @@ theorem lift_comp_castAddHom : (ZMod.lift n f).comp (Int.castAddHom (ZMod n)) = 
 end lift
 
 end ZMod
+
+/-- The range of `(m * · + k)` on natural numbers is the set of elements `≥ k` in the
+residue class of `k` mod `m`. -/
+lemma Nat.range_mul_add (m k : ℕ) :
+    Set.range (fun n : ℕ ↦ m * n + k) = {n : ℕ | (n : ZMod m) = k ∧ k ≤ n} := by
+  ext n
+  simp only [Set.mem_range, Set.mem_setOf_eq]
+  conv => enter [1, 1, y]; rw [add_comm, eq_comm]
+  refine ⟨fun ⟨a, ha⟩ ↦ ⟨?_, le_iff_exists_add.mpr ⟨_, ha⟩⟩, fun ⟨H₁, H₂⟩ ↦ ?_⟩
+  · simpa using congr_arg ((↑) : ℕ → ZMod m) ha
+  · obtain ⟨a, ha⟩ := le_iff_exists_add.mp H₂
+    simp only [ha, Nat.cast_add, add_right_eq_self, ZMod.nat_cast_zmod_eq_zero_iff_dvd] at H₁
+    obtain ⟨b, rfl⟩ := H₁
+    exact ⟨b, ha⟩

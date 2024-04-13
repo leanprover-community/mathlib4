@@ -505,7 +505,7 @@ theorem iSup_ne_top [CompleteLattice α] (f : ℝ≥0∞ → α) :
 
 theorem iInf_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
     ⨅ n, f n = (⨅ n : ℝ≥0, f n) ⊓ f ∞ :=
-  (iInf_option f).trans inf_comm
+  (iInf_option f).trans (inf_comm _ _)
 #align ennreal.infi_ennreal ENNReal.iInf_ennreal
 
 theorem iSup_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :

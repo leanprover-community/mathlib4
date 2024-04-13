@@ -165,7 +165,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : Opens X
     specialize H (X.presheaf.map i.op s)
     erw [Scheme.basicOpen_res] at H
     rw [hs] at H
-    specialize H inf_bot_eq ⟨x, hx⟩
+    specialize H (inf_bot_eq _) ⟨x, hx⟩
     erw [TopCat.Presheaf.germ_res_apply] at H
     exact H
   · rintro X Y f hf

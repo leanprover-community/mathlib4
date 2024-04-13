@@ -453,11 +453,11 @@ theorem sInf_insert {a : α} {s : Set α} : sInf (insert a s) = a ⊓ sInf s :=
 #align Inf_insert sInf_insert
 
 theorem sSup_le_sSup_of_subset_insert_bot (h : s ⊆ insert ⊥ t) : sSup s ≤ sSup t :=
-  le_trans (sSup_le_sSup h) (le_of_eq (_root_.trans sSup_insert bot_sup_eq))
+  (sSup_le_sSup h).trans_eq (sSup_insert.trans (bot_sup_eq _))
 #align Sup_le_Sup_of_subset_insert_bot sSup_le_sSup_of_subset_insert_bot
 
 theorem sInf_le_sInf_of_subset_insert_top (h : s ⊆ insert ⊤ t) : sInf t ≤ sInf s :=
-  le_trans (le_of_eq (_root_.trans top_inf_eq.symm sInf_insert.symm)) (sInf_le_sInf h)
+  (sInf_le_sInf h).trans_eq' (sInf_insert.trans (top_inf_eq _)).symm
 #align Inf_le_Inf_of_subset_insert_top sInf_le_sInf_of_subset_insert_top
 
 @[simp]

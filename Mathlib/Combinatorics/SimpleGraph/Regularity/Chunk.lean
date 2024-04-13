@@ -356,7 +356,7 @@ private theorem edgeDensity_chunk_aux [Nonempty α]
   · refine' (sub_nonpos_of_le <| (sq_le _ _).trans <| hGε.trans _).trans (sq_nonneg _)
     · exact mod_cast G.edgeDensity_nonneg _ _
     · exact mod_cast G.edgeDensity_le_one _ _
-    · exact div_le_div_of_le_left (by sz_positivity) (by norm_num) (by norm_num)
+    · exact div_le_div_of_nonneg_left (by sz_positivity) (by norm_num) (by norm_num)
   rw [← sub_nonneg] at hGε
   have : ↑(G.edgeDensity U V) - ε ^ 5 / ↑50 ≤
       (∑ ab in (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
@@ -393,15 +393,14 @@ private theorem eps_le_card_star_div [Nonempty α] (hPα : P.parts.card * 16 ^ P
   have hm : (0 : ℝ) ≤ 1 - (↑m)⁻¹ := sub_nonneg_of_le (inv_le_one <| one_le_m_coe hPα)
   have hε : 0 ≤ 1 - ε / 10 :=
     sub_nonneg_of_le (div_le_one_of_le (hε₁.trans <| by norm_num) <| by norm_num)
+  have hε₀ : 0 < ε := by sz_positivity
   calc
     4 / 5 * ε = (1 - 1 / 10) * (1 - 9⁻¹) * ε := by norm_num
-    _ ≤ (1 - ε / 10) * (1 - (↑m)⁻¹) * ((G.nonuniformWitness ε U V).card / U.card) :=
-      (mul_le_mul (mul_le_mul (sub_le_sub_left (div_le_div_of_le (by norm_num) hε₁) _)
-        (sub_le_sub_left (inv_le_inv_of_le (by norm_num) <|
-          mod_cast (show 9 ≤ 100 by norm_num).trans
-            (hundred_le_m hPα hPε hε₁)) _) (by norm_num) hε)
-        ((le_div_iff' <| (@cast_pos ℝ _ _ _).2 (P.nonempty_of_mem_parts hU).card_pos).2 <|
-          G.le_card_nonuniformWitness hunif) (by sz_positivity) (by positivity))
+    _ ≤ (1 - ε / 10) * (1 - (↑m)⁻¹) * ((G.nonuniformWitness ε U V).card / U.card) := by
+        gcongr
+        exacts [mod_cast (show 9 ≤ 100 by norm_num).trans (hundred_le_m hPα hPε hε₁),
+          (le_div_iff' <| cast_pos.2 (P.nonempty_of_mem_parts hU).card_pos).2 <|
+           G.le_card_nonuniformWitness hunif]
     _ = (1 - ε / 10) * (G.nonuniformWitness ε U V).card * ((1 - (↑m)⁻¹) / U.card) := by
       rw [mul_assoc, mul_assoc, mul_div_left_comm]
     _ ≤ ((star hP G ε hU V).biUnion id).card * ((1 - (↑m)⁻¹) / U.card) :=
@@ -410,7 +409,7 @@ private theorem eps_le_card_star_div [Nonempty α] (hPα : P.parts.card * 16 ^ P
     _ ≤ (star hP G ε hU V).card * (m + 1) * ((1 - (↑m)⁻¹) / U.card) :=
       (mul_le_mul_of_nonneg_right card_biUnion_star_le_m_add_one_card_star_mul (by positivity))
     _ ≤ (star hP G ε hU V).card * (m + ↑1) * ((↑1 - (↑m)⁻¹) / (↑4 ^ P.parts.card * m)) :=
-      (mul_le_mul_of_nonneg_left (div_le_div_of_le_left hm (by sz_positivity) <|
+      (mul_le_mul_of_nonneg_left (div_le_div_of_nonneg_left hm (by sz_positivity) <|
         pow_mul_m_le_card_part hP hU) (by positivity))
     _ ≤ (star hP G ε hU V).card / ↑4 ^ P.parts.card := by
       rw [mul_assoc, mul_comm ((4 : ℝ) ^ P.parts.card), ← div_div, ← mul_div_assoc, ← mul_comm_div]
@@ -462,9 +461,7 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
     exact this
   have hε' : ε ^ 5 ≤ ε := by
     simpa using pow_le_pow_of_le_one (by sz_positivity) hε₁ (show 1 ≤ 5 by norm_num)
-  have hpr' : |p - r| ≤ ε / 49 := hpr.trans (div_le_div_of_le (by norm_num) hε')
-  have hqt' : |q - t| ≤ ε / 49 := hqt.trans (div_le_div_of_le (by norm_num) hε')
-  rw [abs_sub_le_iff] at hrs hpr' hqt'
+  rw [abs_sub_le_iff] at hrs hpr hqt
   rw [le_abs] at hst ⊢
   cases hst
   left; linarith

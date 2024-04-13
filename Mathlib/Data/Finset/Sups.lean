@@ -186,7 +186,7 @@ lemma map_sups (f : F) (hf) (s t : Finset α) :
     map ⟨f, hf⟩ (s ⊻ t) = map ⟨f, hf⟩ s ⊻ map ⟨f, hf⟩ t := by
   simpa [map_eq_image] using image_sups f s t
 
-lemma subset_sups_self : s ⊆ s ⊻ s := fun _a ha ↦ mem_sups.2 ⟨_, ha, _, ha, sup_idem⟩
+lemma subset_sups_self : s ⊆ s ⊻ s := fun _a ha ↦ mem_sups.2 ⟨_, ha, _, ha, sup_idem _⟩
 lemma sups_subset_self : s ⊻ s ⊆ s ↔ SupClosed (s : Set α) := sups_subset_iff
 @[simp] lemma sups_eq_self : s ⊻ s = s ↔ SupClosed (s : Set α) := by simp [← coe_inj]
 
@@ -209,12 +209,10 @@ theorem image_sup_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊔ 
   image_uncurry_product _ _ _
 #align finset.image_sup_product Finset.image_sup_product
 
-theorem sups_assoc : s ⊻ t ⊻ u = s ⊻ (t ⊻ u) :=
-  image₂_assoc fun _ _ _ => sup_assoc
+theorem sups_assoc : s ⊻ t ⊻ u = s ⊻ (t ⊻ u) := image₂_assoc sup_assoc
 #align finset.sups_assoc Finset.sups_assoc
 
-theorem sups_comm : s ⊻ t = t ⊻ s :=
-  image₂_comm fun _ _ => sup_comm
+theorem sups_comm : s ⊻ t = t ⊻ s := image₂_comm sup_comm
 #align finset.sups_comm Finset.sups_comm
 
 theorem sups_left_comm : s ⊻ (t ⊻ u) = t ⊻ (s ⊻ u) :=
@@ -371,7 +369,7 @@ lemma map_infs (f : F) (hf) (s t : Finset α) :
     map ⟨f, hf⟩ (s ⊼ t) = map ⟨f, hf⟩ s ⊼ map ⟨f, hf⟩ t := by
   simpa [map_eq_image] using image_infs f s t
 
-lemma subset_infs_self : s ⊆ s ⊼ s := fun _a ha ↦ mem_infs.2 ⟨_, ha, _, ha, inf_idem⟩
+lemma subset_infs_self : s ⊆ s ⊼ s := fun _a ha ↦ mem_infs.2 ⟨_, ha, _, ha, inf_idem _⟩
 lemma infs_self_subset : s ⊼ s ⊆ s ↔ InfClosed (s : Set α) := infs_subset_iff
 @[simp] lemma infs_self : s ⊼ s = s ↔ InfClosed (s : Set α) := by simp [← coe_inj]
 
@@ -394,12 +392,10 @@ theorem image_inf_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊓ 
   image_uncurry_product _ _ _
 #align finset.image_inf_product Finset.image_inf_product
 
-theorem infs_assoc : s ⊼ t ⊼ u = s ⊼ (t ⊼ u) :=
-  image₂_assoc fun _ _ _ => inf_assoc
+theorem infs_assoc : s ⊼ t ⊼ u = s ⊼ (t ⊼ u) := image₂_assoc inf_assoc
 #align finset.infs_assoc Finset.infs_assoc
 
-theorem infs_comm : s ⊼ t = t ⊼ s :=
-  image₂_comm fun _ _ => inf_comm
+theorem infs_comm : s ⊼ t = t ⊼ s := image₂_comm inf_comm
 #align finset.infs_comm Finset.infs_comm
 
 theorem infs_left_comm : s ⊼ (t ⊼ u) = t ⊼ (s ⊼ u) :=
@@ -425,19 +421,19 @@ section DistribLattice
 variable [DistribLattice α] (s t u : Finset α)
 
 theorem sups_infs_subset_left : s ⊻ t ⊼ u ⊆ (s ⊻ t) ⊼ (s ⊻ u) :=
-  image₂_distrib_subset_left fun _ _ _ => sup_inf_left
+  image₂_distrib_subset_left sup_inf_left
 #align finset.sups_infs_subset_left Finset.sups_infs_subset_left
 
 theorem sups_infs_subset_right : t ⊼ u ⊻ s ⊆ (t ⊻ s) ⊼ (u ⊻ s) :=
-  image₂_distrib_subset_right fun _ _ _ => sup_inf_right
+  image₂_distrib_subset_right sup_inf_right
 #align finset.sups_infs_subset_right Finset.sups_infs_subset_right
 
 theorem infs_sups_subset_left : s ⊼ (t ⊻ u) ⊆ s ⊼ t ⊻ s ⊼ u :=
-  image₂_distrib_subset_left fun _ _ _ => inf_sup_left
+  image₂_distrib_subset_left inf_sup_left
 #align finset.infs_sups_subset_left Finset.infs_sups_subset_left
 
 theorem infs_sups_subset_right : (t ⊻ u) ⊼ s ⊆ t ⊼ s ⊻ u ⊼ s :=
-  image₂_distrib_subset_right fun _ _ _ => inf_sup_right
+  image₂_distrib_subset_right inf_sup_right
 #align finset.infs_sups_subset_right Finset.infs_sups_subset_right
 
 end DistribLattice
@@ -596,7 +592,7 @@ theorem disjSups_assoc : ∀ s t u : Finset α, s ○ t ○ u = s ○ (t ○ u) 
   simp only [le_eq_subset, disjSups_subset_iff, mem_disjSups]
   rintro s t u _ ⟨a, ha, b, hb, hab, rfl⟩ c hc habc
   rw [disjoint_sup_left] at habc
-  exact ⟨a, ha, _, ⟨b, hb, c, hc, habc.2, rfl⟩, hab.sup_right habc.1, sup_assoc.symm⟩
+  exact ⟨a, ha, _, ⟨b, hb, c, hc, habc.2, rfl⟩, hab.sup_right habc.1, (sup_assoc ..).symm⟩
 #align finset.disj_sups_assoc Finset.disjSups_assoc
 
 theorem disjSups_left_comm : s ○ (t ○ u) = t ○ (s ○ u) := by

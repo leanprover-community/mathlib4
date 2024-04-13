@@ -154,7 +154,7 @@ instance instSemiring : Semiring (Language α) where
 
 @[simp]
 theorem add_self (l : Language α) : l + l = l :=
-  sup_idem
+  sup_idem _
 #align language.add_self Language.add_self
 
 /-- Maps the alphabet of a language. -/

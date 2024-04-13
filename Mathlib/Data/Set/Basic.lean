@@ -859,13 +859,11 @@ theorem union_empty_iff {s t : Set α} : s ∪ t = ∅ ↔ s = ∅ ∧ t = ∅ :
 #align set.union_empty_iff Set.union_empty_iff
 
 @[simp]
-theorem union_univ {s : Set α} : s ∪ univ = univ :=
-  sup_top_eq
+theorem union_univ (s : Set α) : s ∪ univ = univ := sup_top_eq _
 #align set.union_univ Set.union_univ
 
 @[simp]
-theorem univ_union {s : Set α} : univ ∪ s = univ :=
-  top_sup_eq
+theorem univ_union (s : Set α) : univ ∪ s = univ := top_sup_eq _
 #align set.univ_union Set.univ_union
 
 /-! ### Lemmas about intersection -/
@@ -954,6 +952,10 @@ theorem subset_inter_iff {s t r : Set α} : r ⊆ s ∩ t ↔ r ⊆ s ∧ r ⊆ 
 @[simp] lemma inter_eq_right : s ∩ t = t ↔ t ⊆ s := inf_eq_right
 #align set.inter_eq_right_iff_subset Set.inter_eq_right
 
+@[simp] lemma left_eq_inter : s = s ∩ t ↔ s ⊆ t := left_eq_inf
+
+@[simp] lemma right_eq_inter : t = s ∩ t ↔ t ⊆ s := right_eq_inf
+
 theorem inter_eq_self_of_subset_left {s t : Set α} : s ⊆ t → s ∩ t = s :=
   inter_eq_left.mpr
 #align set.inter_eq_self_of_subset_left Set.inter_eq_self_of_subset_left
@@ -979,13 +981,11 @@ theorem inter_eq_inter_iff_right : s ∩ u = t ∩ u ↔ t ∩ u ⊆ s ∧ s ∩
 #align set.inter_eq_inter_iff_right Set.inter_eq_inter_iff_right
 
 @[simp, mfld_simps]
-theorem inter_univ (a : Set α) : a ∩ univ = a :=
-  inf_top_eq
+theorem inter_univ (a : Set α) : a ∩ univ = a := inf_top_eq _
 #align set.inter_univ Set.inter_univ
 
 @[simp, mfld_simps]
-theorem univ_inter (a : Set α) : univ ∩ a = a :=
-  top_inf_eq
+theorem univ_inter (a : Set α) : univ ∩ a = a := top_inf_eq _
 #align set.univ_inter Set.univ_inter
 
 @[gcongr]
@@ -1023,35 +1023,35 @@ theorem setOf_inter_eq_sep (p : α → Prop) (s : Set α) : {a | p a} ∩ s = {a
 
 
 theorem inter_distrib_left (s t u : Set α) : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
-  inf_sup_left
+  inf_sup_left _ _ _
 #align set.inter_distrib_left Set.inter_distrib_left
 
 theorem inter_union_distrib_left {s t u : Set α} : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
-  inf_sup_left
+  inf_sup_left _ _ _
 #align set.inter_union_distrib_left Set.inter_union_distrib_left
 
 theorem inter_distrib_right (s t u : Set α) : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
-  inf_sup_right
+  inf_sup_right _ _ _
 #align set.inter_distrib_right Set.inter_distrib_right
 
 theorem union_inter_distrib_right {s t u : Set α} : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
-  inf_sup_right
+  inf_sup_right _ _ _
 #align set.union_inter_distrib_right Set.union_inter_distrib_right
 
 theorem union_distrib_left (s t u : Set α) : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
-  sup_inf_left
+  sup_inf_left _ _ _
 #align set.union_distrib_left Set.union_distrib_left
 
 theorem union_inter_distrib_left {s t u : Set α} : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
-  sup_inf_left
+  sup_inf_left _ _ _
 #align set.union_inter_distrib_left Set.union_inter_distrib_left
 
 theorem union_distrib_right (s t u : Set α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
-  sup_inf_right
+  sup_inf_right _ _ _
 #align set.union_distrib_right Set.union_distrib_right
 
 theorem inter_union_distrib_right {s t u : Set α} : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
-  sup_inf_right
+  sup_inf_right _ _ _
 #align set.inter_union_distrib_right Set.inter_union_distrib_right
 
 theorem union_union_distrib_left (s t u : Set α) : s ∪ (t ∪ u) = s ∪ t ∪ (s ∪ u) :=

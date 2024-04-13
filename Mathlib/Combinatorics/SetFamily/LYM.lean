@@ -240,7 +240,7 @@ theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
     rw [Iic_eq_Icc, ← Ico_succ_right, bot_eq_zero, Ico_zero_eq_range]
     refine' (sum_le_sum fun r hr => _).trans (sum_card_slice_div_choose_le_one h𝒜)
     rw [mem_range] at hr
-    refine' div_le_div_of_le_left _ _ _ <;> norm_cast
+    refine' div_le_div_of_nonneg_left _ _ _ <;> norm_cast
     · exact Nat.zero_le _
     · exact choose_pos (Nat.lt_succ_iff.1 hr)
     · exact choose_le_middle _ _

@@ -245,9 +245,11 @@ theorem dist_log_im_le (z w : ℍ) : dist (log z.im) (log w.im) ≤ dist z w :=
   calc
     dist (log z.im) (log w.im) = dist (mk ⟨0, z.im⟩ z.im_pos) (mk ⟨0, w.im⟩ w.im_pos) :=
       Eq.symm <| dist_of_re_eq rfl
-    _ ≤ dist z w := mul_le_mul_of_nonneg_left (arsinh_le_arsinh.2 <|
-      div_le_div_of_le (mul_nonneg zero_le_two (sqrt_nonneg _)) <| by
-        simpa [sqrt_sq_eq_abs] using Complex.abs_im_le_abs (z - w)) zero_le_two
+    _ ≤ dist z w := by
+      simp_rw [dist_eq]
+      gcongr
+      · simpa [sqrt_sq_eq_abs] using Complex.abs_im_le_abs (z - w)
+      · simp
 #align upper_half_plane.dist_log_im_le UpperHalfPlane.dist_log_im_le
 
 theorem im_le_im_mul_exp_dist (z w : ℍ) : z.im ≤ w.im * Real.exp (dist z w) := by

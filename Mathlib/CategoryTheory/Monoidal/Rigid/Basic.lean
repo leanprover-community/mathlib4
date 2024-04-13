@@ -119,11 +119,11 @@ lemma evaluation_coevaluation :
 
 lemma coevaluation_evaluation'' :
     Y ◁ η_ X Y ⊗≫ ε_ X Y ▷ Y = ⊗𝟙 := by
-  convert coevaluation_evaluation X Y <;> simp [Mathlib.Tactic.Coherence.monoidalComp]
+  convert coevaluation_evaluation X Y <;> simp [monoidalComp]
 
 lemma evaluation_coevaluation'' :
     η_ X Y ▷ X ⊗≫ X ◁ ε_ X Y = ⊗𝟙 := by
-  convert evaluation_coevaluation X Y <;> simp [Mathlib.Tactic.Coherence.monoidalComp]
+  convert evaluation_coevaluation X Y <;> simp [monoidalComp]
 
 end ExactPairing
 
@@ -532,7 +532,7 @@ def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : Exac
       _ = (λ_ X).hom ≫ (ρ_ X).inv := by
         rw [Iso.hom_inv_id]
         -- coherence failed
-        simp [Mathlib.Tactic.Coherence.monoidalComp]
+        simp [monoidalComp]
   coevaluation_evaluation' := by
     calc
       _ = Y ◁ η_ X' Y ≫ Y ◁ (i.inv ≫ i.hom) ▷ Y ⊗≫ ε_ X' Y ▷ Y := by
@@ -542,7 +542,7 @@ def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : Exac
       _ = _ := by
         rw [coevaluation_evaluation'']
         -- coherence failed
-        simp [Mathlib.Tactic.Coherence.monoidalComp]
+        simp [monoidalComp]
 #align category_theory.exact_pairing_congr_left CategoryTheory.exactPairingCongrLeft
 
 /-- Transport an exact pairing across an isomorphism in the second argument. -/
@@ -558,7 +558,7 @@ def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : Exa
       _ = _ := by
         rw [evaluation_coevaluation'']
         -- coherence failed
-        simp [Mathlib.Tactic.Coherence.monoidalComp]
+        simp [monoidalComp]
   coevaluation_evaluation' :=
     calc
       _ = Y ◁ η_ X Y' ⊗≫ (Y ◁ (X ◁ i.inv) ≫ i.hom ▷ (X ⊗ Y)) ⊗≫ ε_ X Y' ▷ Y := by
@@ -573,7 +573,7 @@ def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : Exa
       _ = (ρ_ Y).hom ≫ (λ_ Y).inv := by
         rw [Iso.hom_inv_id]
         -- coherence failed
-        simp [Mathlib.Tactic.Coherence.monoidalComp]
+        simp [monoidalComp]
 #align category_theory.exact_pairing_congr_right CategoryTheory.exactPairingCongrRight
 
 /-- Transport an exact pairing across isomorphisms. -/

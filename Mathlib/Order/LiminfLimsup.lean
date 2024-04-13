@@ -1170,7 +1170,7 @@ theorem limsup_sdiff (a : α) : limsup u f \ a = limsup (fun b => u b \ a) f := 
 #align filter.limsup_sdiff Filter.limsup_sdiff
 
 theorem liminf_sdiff [NeBot f] (a : α) : liminf u f \ a = liminf (fun b => u b \ a) f := by
-  simp only [sdiff_eq, inf_comm (b := aᶜ), inf_liminf]
+  simp only [sdiff_eq, inf_comm _ aᶜ, inf_liminf]
 #align filter.liminf_sdiff Filter.liminf_sdiff
 
 theorem sdiff_limsup [NeBot f] (a : α) : a \ limsup u f = liminf (fun b => a \ u b) f := by

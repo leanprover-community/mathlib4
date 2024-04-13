@@ -906,6 +906,7 @@ import Mathlib.Analysis.NormedSpace.Spectrum
 import Mathlib.Analysis.NormedSpace.SphereNormEquiv
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus
+import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus.Restrict
 import Mathlib.Analysis.NormedSpace.Star.Exponential
 import Mathlib.Analysis.NormedSpace.Star.GelfandDuality
 import Mathlib.Analysis.NormedSpace.Star.Matrix
@@ -981,6 +982,7 @@ import Mathlib.Analysis.SpecificLimits.IsROrC
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Analysis.Subadditive
 import Mathlib.Analysis.SumIntegralComparisons
+import Mathlib.Analysis.SumOverResidueClass
 import Mathlib.Analysis.VonNeumannAlgebra.Basic
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
@@ -3486,6 +3488,7 @@ import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 import Mathlib.Tactic.CategoryTheory.Coherence
 import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Tactic.CategoryTheory.MonoidalComp
 import Mathlib.Tactic.CategoryTheory.Reassoc
 import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.Change

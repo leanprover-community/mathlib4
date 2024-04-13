@@ -72,7 +72,7 @@ theorem hasDerivAtFilter_iff_tendsto_slope {x : 𝕜} {L : Filter 𝕜} :
 
 theorem hasDerivWithinAt_iff_tendsto_slope :
     HasDerivWithinAt f f' s x ↔ Tendsto (slope f x) (𝓝[s \ {x}] x) (𝓝 f') := by
-  simp only [HasDerivWithinAt, nhdsWithin, diff_eq, inf_assoc.symm, inf_principal.symm]
+  simp only [HasDerivWithinAt, nhdsWithin, diff_eq, ← inf_assoc, inf_principal.symm]
   exact hasDerivAtFilter_iff_tendsto_slope
 #align has_deriv_within_at_iff_tendsto_slope hasDerivWithinAt_iff_tendsto_slope
 
