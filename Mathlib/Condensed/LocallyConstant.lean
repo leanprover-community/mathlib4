@@ -32,12 +32,12 @@ open CategoryTheory Limits Condensed LocallyConstant Opposite
 @[simps]
 def LC : Type (u+1) ⥤ (CompHaus.{u}ᵒᵖ ⥤ Type (u+1)) where
   obj X := {
-    obj := fun ⟨S⟩ => LocallyConstant S X
-    map := fun f g => g.comap' f.unop
-    map_id := fun _ => comap'_id
-    map_comp := fun f g => comap'_comp g.unop f.unop }
+    obj := fun ⟨S⟩ ↦ LocallyConstant S X
+    map := fun f g ↦ g.comap' f.unop
+    map_id := fun _ ↦ comap'_id
+    map_comp := fun f g ↦ comap'_comp g.unop f.unop }
   map f := {
-    app := fun S t => ⟨f ∘ t, t.isLocallyConstant.comp  _⟩ }
+    app := fun S t ↦ t.map f }
 
 @[simps]
 def LC_iso_aux (Y X : Type*) [TopologicalSpace Y] :
@@ -48,8 +48,9 @@ def LC_iso_aux (Y X : Type*) [TopologicalSpace Y] :
     inv := fun f ↦ ⟨f, (IsLocallyConstant.iff_continuous f).mpr f.2⟩ }
 
 def LC_iso (X : Type (u+1)) : LC.obj X ≅ (topCatToCondensed.obj (TopCat.discrete.obj X)).val :=
-  NatIso.ofComponents (fun S => LC_iso_aux _ _) (fun f => by aesop)
+  NatIso.ofComponents (fun S ↦ LC_iso_aux _ _) (fun f ↦ by aesop)
 
+@[simps]
 def LC' : Type (u+1) ⥤ CondensedSet.{u} where
   obj X := {
     val := LC.obj X
@@ -104,8 +105,6 @@ lemma α.mem_iff_eq_image (s : S) (a : α f) : s ∈ a.val ↔ f s = a.image := 
     rw [a.eq_fiber_image]
     exact h
 
-lemma α.exists_eq_image (a : α f) : ∃ s, f s = a.image := a.2.choose.2
-
 def α.preimage (a : α f) : S := a.2.choose.2.choose
 
 lemma α.map_preimage_eq_image (a : α f) : f a.preimage = a.image := a.2.choose.2.choose_spec
@@ -114,63 +113,10 @@ instance : Finite (α f') :=
   have : Finite (Set.range f') := range_finite f'
   Finite.Set.finite_range _
 
-section
-
-variable {X : Type (u+1)} (g : Y → X)
-
--- lemma α.image_comp (a : α (g ∘ f)) : a.image = g (f a.preimage) := sorry
-
-def α.of_map (a : α (g ∘ f)) : α f := α.mk f a.preimage
-
-lemma α.map_eq_image_map (a : α (g ∘ f)) (x : a.1) : g (f x.val) = a.image := by
-  rw [← map_eq_image (g ∘ f) a x]
-  rfl
-
-lemma α.map_preimage_eq_image_map (a : α (g ∘ f)) : g (f a.preimage) = a.image := by
+lemma α.map_preimage_eq_image_map {X : Type (u+1)} (g : Y → X) (a : α (g ∘ f)) :
+    g (f a.preimage) = a.image := by
   rw [← map_preimage_eq_image]
   rfl
-
-lemma α.image_eq_image_mk_map (a : α (g ∘ f)) : a.image = g (α.mk f (a.preimage _)).image := by
-  rw [← map_preimage_eq_image_map, mk_image]
-
-def component_hom_map (a : α (f'.map g)) :
-    CompHaus.of (α.mk f' a.preimage).val ⟶ CompHaus.of a.val where
-  toFun x := ⟨x.val, by
-    obtain hx := x.prop
-    rw [α.mem_iff_eq_image] at hx ⊢
-    simp only [map_apply, Function.comp_apply]
-    rw [hx]
-    rw [← α.map_preimage_eq_image_map]
-    congr
-    rw [α.mk_image]
-    rfl⟩
-  continuous_toFun := Continuous.subtype_mk continuous_induced_dom _
-
-def component_hom_map' (b : α (f'.map g)) (a : α f') (ha : g a.image = b.image) :
-    CompHaus.of a.val ⟶ CompHaus.of b.val where
-  toFun x := ⟨x.val, by
-    rw [α.mem_iff_eq_image, ← ha, map_apply, Function.comp_apply, α.map_eq_image (f := f')]⟩
-  continuous_toFun := Continuous.subtype_mk continuous_induced_dom _
-
-@[simps!]
-def component_hom_map_sigma (b : α (f'.map g)) :
-    CompHaus.of ((a : {x : α f' // g x.image = b.image}) × a.val.val) ⟶ CompHaus.of b.val :=
-  ContinuousMap.sigma (fun a ↦ component_hom_map' f' g b a.1 a.2)
-
--- lemma hom_map_sigma_inj (b : α (f'.map g)) : Function.Injective (component_hom_map_sigma f' g b) := by
---   sorry
-
--- lemma hom_map_sigma_surj (b : α (f'.map g)) :
---     Function.Surjective (component_hom_map_sigma f' g b) := by
---   sorry
-
--- @[simps!]
--- def component_iso_map_sigma (b : α (f'.map g)) :
---     CompHaus.of ((a : {x : α f' // g x.image = b.image}) × a.val.val) ≅ CompHaus.of b.val :=
---   CompHaus.isoOfBijective (component_hom_map_sigma f' g b)
---     ⟨hom_map_sigma_inj _ _ _, hom_map_sigma_surj _ _ _ ⟩
-
-end
 
 variable {T : CompHaus.{u}} (g : T ⟶ S)
 
@@ -221,15 +167,6 @@ def sigmaIncl (a : α f') : CompHaus.of a.val ⟶ S := sigmaIncl' _ _
 section
 
 variable {X : Type (u+1)} (g : Y → X)
-
-def bla (a : α (f'.map g)) (b : α (f'.comap' (sigmaIncl (f'.map g) a))) : α f :=
-  α.mk f (b.preimage).val
-
-theorem extracted_3 (a : α (f'.map g)) (b : α (f'.comap' (sigmaIncl (f'.map g) a))) (x : b.1) :
-    x.val.val ∈ a.val := x.val.prop
-
-theorem extracted_2 (a : α (f'.map g)) (b : α (f'.comap' (sigmaIncl (f'.map g) a))) :
-    (b.preimage).val ∈ a.val := (b.preimage).prop
 
 def extracted_map (a : α (f'.map g)) (b : α (f'.comap' (sigmaIncl (map g f') a))) :
     CompHaus.of b.val ⟶ CompHaus.of (α.mk f' (b.preimage).val).val where
@@ -310,7 +247,7 @@ lemma incl_comap_op {S T : CompHausᵒᵖ} (f : LocallyConstant S.unop (Y.val.ob
   simp
 
 @[simps!]
-def counit_app (Y : CondensedSet.{u}) : LC'.obj (Y.val.obj (op (⊤_ _))) ⟶ Y where
+def counitApp (Y : CondensedSet.{u}) : LC'.obj (Y.val.obj (op (⊤_ _))) ⟶ Y where
   val := {
     app := fun ⟨S⟩ ↦ counit_app_app S Y
     naturality := by
@@ -327,24 +264,11 @@ def counit_app (Y : CondensedSet.{u}) : LC'.obj (Y.val.obj (op (⊤_ _))) ⟶ Y 
         terminal.comp_from, α.image_eq_image_mk]
   }
 
-lemma incl_map {X : Type (u+1)} (g : Y.val.obj (op (⊤_ _)) → X) (a : α (f.map g)) :
-  component_hom_map f g a ≫ sigmaIncl (f.map g) a = sigmaIncl f (α.mk f a.preimage) := rfl
-
-lemma incl_map' {X : Type (u+1)} (g : Y.val.obj (op (⊤_ _)) → X) (b : α (f.map g)) (a : α f)
-    (ha : g a.image = b.image) :
-  component_hom_map' f g b a ha ≫ sigmaIncl (f.map g) b = sigmaIncl f a := rfl
-
-theorem extracted_1 {X : CondensedSet} (g : Y ⟶ X)
-  (a : α ⇑(map (g.val.app (op (⊤_ _))) f))
-  (b : α ⇑(comap' (sigmaIncl (map (g.val.app (op (⊤_ _))) f) a) f)) :
-  (b.preimage).val ∈ a.val := extracted_2 _ _ a b
-
-lemma hom_apply_counit_app_app {X : CondensedSet.{u}} (g : Y ⟶ X) :
-    g.val.app ⟨S⟩ (counit_app_app S Y f) = counit_app_app S X (f.map (g.val.app (op (⊤_ _)))) := by
-  apply locallyConstantCondensed_ext (f.map (g.val.app (op (⊤_ _))))
-  intro a
-  simp only [map_apply]
-  rw [incl_of_counit_app_app]
+theorem hom_apply_counit_app_app {X : CondensedSet.{u}} (g : Y ⟶ X)
+    (a : α (f.map (g.val.app (op (⊤_ CompHaus))))) :
+    X.val.map (sigmaIncl (map (g.val.app (op (⊤_ CompHaus))) f) a).op
+      (g.val.app ⟨S⟩ (counit_app_app S Y f)) =
+        counit_app_app_image (map (g.val.app (op (⊤_ CompHaus))) f) a := by
   apply locallyConstantCondensed_ext' (f.comap' (sigmaIncl _ _))
   intro b
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
@@ -355,24 +279,24 @@ lemma hom_apply_counit_app_app {X : CondensedSet.{u}} (g : Y ⟶ X) :
   change (_ ≫ X.val.map _) _ = (_ ≫ X.val.map _) _
   simp only [← g.val.naturality]
   rw [sigmaIncl_comp_sigmaIncl]
-  simp
+  simp only [comap'_apply, map_apply, CompHaus.coe_of, op_comp, Functor.map_comp, types_comp_apply]
   rw [incl_of_counit_app_app]
   simp only [counit_app_app_image, ← FunctorToTypes.map_comp_apply, ← op_comp,
     terminal.comp_from]
   erw [α.mk_image]
   change (Y.val.map _ ≫ _) _ = (Y.val.map _ ≫ _) _
   simp only [g.val.naturality]
-  simp
+  simp only [types_comp_apply]
   have := α.map_preimage_eq_image (f := g.val.app _ ∘ f) (a := a)
-  simp at this
+  simp only [Function.comp_apply] at this
   rw [this]
   apply congrArg
   erw [← α.mem_iff_eq_image (f := g.val.app _ ∘ f)]
-  exact extracted_1 f g a b
+  exact (b.preimage).prop
 
-
+@[simps]
 def counit : underlying (Type (u+1)) ⋙ LC' ⟶ 𝟭 _ where
-  app := counit_app
+  app := counitApp
   naturality X Y g := by
     apply Sheaf.hom_ext
     simp only [underlying, LC', id_eq, eq_mpr_eq_cast, Functor.comp_obj, Functor.flip_obj_obj,
@@ -380,15 +304,70 @@ def counit : underlying (Type (u+1)) ⋙ LC' ⟶ 𝟭 _ where
       sheafToPresheaf_map, Functor.id_map]
     rw [Sheaf.instCategorySheaf_comp_val, Sheaf.instCategorySheaf_comp_val]
     ext S (f : LocallyConstant _ _)
-    simp only [FunctorToTypes.comp, counit_app_val_app]
+    simp only [FunctorToTypes.comp, counitApp_val_app]
     apply locallyConstantCondensed_ext (f.map (g.val.app (op (⊤_ _))))
     intro a
     simp only [map_apply, op_unop]
     erw [incl_of_counit_app_app]
-    rw [hom_apply_counit_app_app, incl_of_counit_app_app]
+    exact (hom_apply_counit_app_app _ _ _).symm
 
+@[simps]
 def unit : 𝟭 _ ⟶ LC' ⋙ underlying _ where
   app X x := LocallyConstant.const _ x
 
+theorem locallyConstantAdjunction_left_triangle (X : Type (u + 1)) :
+    LC.map (unit.app X) ≫ (counit.app (LC'.obj X)).val = 𝟙 (LC.obj X) := by
+  ext ⟨S⟩ (f : LocallyConstant _ X)
+  simp only [Functor.id_obj, Functor.comp_obj, underlying_obj, FunctorToTypes.comp, NatTrans.id_app,
+    LC_obj_obj, types_id_apply]
+  simp only [counit, counitApp_val_app]
+  apply locallyConstantCondensed_ext' (X := LC'.obj X) (Y := LC'.obj X) (f.map (unit.app X))
+  intro a
+  erw [incl_of_counit_app_app]
+  simp only [LC'_obj_val, LC_obj_obj, unop_op, Functor.id_obj, map_apply, CompHaus.coe_of,
+    counit_app_app_image, LC_obj_map, Quiver.Hom.unop_op]
+  ext x
+  erw [← α.map_eq_image _ a x]
+  rfl
+
+def _root_.CompHaus.isTerminalPUnit : IsTerminal (CompHaus.of PUnit.{u + 1}) :=
+  haveI : ∀ X, Unique (X ⟶ CompHaus.of PUnit.{u + 1}) := fun X =>
+    ⟨⟨⟨fun _ => PUnit.unit, continuous_const⟩⟩, fun f => by ext; aesop⟩
+  Limits.IsTerminal.ofUnique _
+
+def _root_.CompHaus.terminalIsoPunit : ⊤_ CompHaus.{u} ≅ CompHaus.of PUnit :=
+  terminalIsTerminal.uniqueUpToIso CompHaus.isTerminalPUnit
+
+@[simps]
+def locallyConstantAdjunction_aux : Adjunction.CoreUnitCounit LC' (underlying _) where
+  unit := unit
+  counit := counit
+  left_triangle := by
+    ext X
+    simp only [id_eq, eq_mpr_eq_cast, Functor.comp_obj, Functor.id_obj, NatTrans.comp_app,
+      underlying_obj, LC_obj_obj, whiskerRight_app, Functor.associator_hom_app, whiskerLeft_app,
+      Category.id_comp, NatTrans.id_app']
+    apply Sheaf.hom_ext
+    rw [Sheaf.instCategorySheaf_comp_val, Sheaf.instCategorySheaf_id_val]
+    exact locallyConstantAdjunction_left_triangle X
+  right_triangle := by
+    ext X (x : X.val.obj _)
+    simp only [Functor.comp_obj, Functor.id_obj, underlying_obj, counit, FunctorToTypes.comp,
+      whiskerLeft_app, Functor.associator_inv_app, LC'_obj_val, LC_obj_obj, types_id_apply,
+      whiskerRight_app, underlying_map, counitApp_val_app, NatTrans.id_app']
+    apply locallyConstantCondensed_ext (unit.app _ x)
+    intro a
+    erw [incl_of_counit_app_app]
+    simp only [unit, Functor.id_obj, coe_const, counit_app_app_image]
+    let y : ⊤_ CompHaus := CompHaus.terminalIsoPunit.inv ()
+    have := α.map_eq_image _ a ⟨y, by simp [α.mem_iff_eq_image, ← α.map_preimage_eq_image, unit]⟩
+    erw [← this]
+    simp only [unit, Functor.id_obj, coe_const, Function.const_apply]
+    have hh : sigmaIncl (const _ x) a = terminal.from _ := Unique.uniq _ _
+    rw [hh]
+
+@[simps!]
+def locallyConstantAdjunction : LC' ⊣ underlying _ :=
+  Adjunction.mkOfUnitCounit locallyConstantAdjunction_aux
 
 end DiscreteAdjunction

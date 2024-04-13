@@ -34,7 +34,7 @@ The underlying object of a condensed object in `C` is the condensed object eval
 This can be viewed as a sort of forgetful functor from `Condensed C` to `C`
 -/
 @[simps!]
-noncomputable def Condensed.underlying : Condensed.{u} C ⥤ C := (sheafSections _ _).obj (op (⊤_ _))
+noncomputable def Condensed.underlying : Condensed.{u} C ⥤ C := (sheafSections _ _).obj ⟨⊤_ _⟩
 
 /--
 Discreteness is left adjoint to the forgetful functor. When `C` is `Type*`, this is analogous to
