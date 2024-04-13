@@ -200,12 +200,8 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
   erw [← α.naturality (G.preimage _).op]
   erw [← α.naturality (G.preimage _).op]
   refine' congr_fun _ x
-  -- Porting note: these next 3 tactics (simp, rw, simp) were just one big `simp only` in Lean 3
-  -- but I can't get `simp` to do the `rw` line.
-  simp only [Functor.comp_map, ← Category.assoc, Functor.op_map, Quiver.Hom.unop_op]
-  rw [← ℱ.map_comp, ← ℱ.map_comp] -- `simp only [← ℱ.map_comp]` does nothing, even if I add
-  -- the relevant explicit inputs
-  simp only [← op_comp, G.image_preimage]
+  simp only [Functor.comp_map, ← Category.assoc, Functor.op_map, Quiver.Hom.unop_op,
+    ← ℱ.map_comp, ← op_comp, G.image_preimage]
   congr 3
   simp [e]
 #align category_theory.cover_dense.types.pushforward_family_compatible CategoryTheory.Functor.IsCoverDense.Types.pushforwardFamily_compatible

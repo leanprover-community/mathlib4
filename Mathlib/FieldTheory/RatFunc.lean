@@ -1543,7 +1543,7 @@ theorem eval_mul {x y : RatFunc K} (hx : Polynomial.eval₂ f a (denom x) ≠ 0)
     cases mul_eq_zero.mp this <;> contradiction
   rw [div_mul_div_comm, eq_div_iff (mul_ne_zero hx hy), div_eq_mul_inv, mul_right_comm, ←
     div_eq_mul_inv, div_eq_iff hxy]
-  simp only [← Polynomial.eval₂_mul]  -- Porting note: was `repeat' rw [← Polynomial.eval₂_mul]`
+  repeat' rw [← Polynomial.eval₂_mul]
   congr 1
   apply num_denom_mul
 #align ratfunc.eval_mul RatFunc.eval_mul
