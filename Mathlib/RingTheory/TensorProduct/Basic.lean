@@ -1095,13 +1095,20 @@ theorem basis_repr_symm_apply (a : A) (i : ι) :
   simp [Equiv.uniqueProd_symm_apply, basisAux]
 
 @[simp]
-theorem basis_apply (i : ι) :
-    Algebra.TensorProduct.basis A b i = 1 ⊗ₜ b i :=
-  Algebra.TensorProduct.basis_repr_symm_apply b 1 i
+theorem basis_apply (i : ι) : basis A b i = 1 ⊗ₜ b i := basis_repr_symm_apply b 1 i
 
-theorem basis_repr_symm_apply' (a : A) (i : ι) :
-    a • Algebra.TensorProduct.basis A b i = a ⊗ₜ b i := by
+theorem basis_repr_symm_apply' (a : A) (i : ι) : a • basis A b i = a ⊗ₜ b i := by
   simpa using basis_repr_symm_apply b a i
+
+open LinearMap in
+lemma _root_.Basis.baseChange_end [Fintype ι] [DecidableEq ι]
+    (A : Type*) [CommSemiring A] [Algebra R A] (b : Basis ι R M) (ij : ι × ι) :
+    baseChange A (b.end ij) = (basis A b).end ij := by
+  apply (basis A b).ext
+  intro k
+  conv_lhs => simp only [basis_apply, baseChange_tmul]
+  simp_rw [Basis.end_apply_apply, basis_apply]
+  split <;> simp only [TensorProduct.tmul_zero]
 
 end Basis
 

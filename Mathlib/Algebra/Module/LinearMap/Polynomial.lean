@@ -42,22 +42,6 @@ that evaluates on elements `x` of `L` to the characteristic polynomial of `φ x`
 
 open scoped BigOperators Matrix
 
-section Basis
-
-variable {R M ι : Type*} [CommRing R] [AddCommGroup M] [Module R M] [Fintype ι] [DecidableEq ι]
-
--- move to Mathlib.RingTheory.TensorProduct.Basic
-open Algebra.TensorProduct LinearMap in
-lemma Basis.baseChange_end (A : Type*) [CommRing A] [Algebra R A] (b : Basis ι R M) (ij : ι × ι) :
-    baseChange A (b.end ij) = (basis A b).end ij := by
-  apply (basis A b).ext
-  intro k
-  conv_lhs => simp only [basis_apply, baseChange_tmul]
-  simp_rw [end_apply_apply, basis_apply]
-  split <;> simp only [TensorProduct.tmul_zero]
-
-end Basis
-
 namespace Matrix
 
 variable {m n o R S : Type*}
@@ -194,7 +178,8 @@ variable [DecidableEq ιM] (b : Basis ι R L) (bₘ : Basis ιM R M)
 
 open Matrix
 
-/-- Let `L` and `M` be modules over `R`, and let `φ : L →ₗ[R] Module.End R M` be a linear map.
+/-- Let `L` and `M` be finite free modules over `R`,
+and let `φ : L →ₗ[R] Module.End R M` be a linear map.
 Let `b` be a basis of `L` and `bₘ` a basis of `M`.
 Then `LinearMap.polyCharpoly φ b bₘ` is the polynomial that evaluates on elements `x` of `L`
 to the characteristic polynomial of `φ x` acting on `M`.

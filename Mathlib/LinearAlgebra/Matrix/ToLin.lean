@@ -1011,7 +1011,7 @@ end
 
 namespace Basis
 
-variable {R M ι : Type*} [CommRing R] [AddCommGroup M] [Module R M] [Fintype ι] [DecidableEq ι]
+variable {R M ι : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq ι]
 
 /-- The standard basis of the endomorphism algebra of a module
 induced by a basis of the module.
@@ -1043,4 +1043,3 @@ lemma end_apply_apply (b : Basis ι R M) (ij : ι × ι) (k : ι) :
   simp_rw [ite_smul, one_smul, zero_smul, ite_and, Finset.sum_ite_eq, Finset.mem_univ, if_true]
 
 end Basis
-
