@@ -366,7 +366,7 @@ open Set Real
 to the Pell equation `x^2 - d*y^2 = 1`. -/
 theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃ x y : ℤ, x ^ 2 - d * y ^ 2 = 1 ∧ y ≠ 0 := by
-  let ξ : ℝ := sqrt d
+  let ξ : ℝ := √d
   have hξ : Irrational ξ := by
     refine' irrational_nrt_of_notint_nrt 2 d (sq_sqrt <| Int.cast_nonneg.mpr h₀.le) _ two_pos
     rintro ⟨x, hx⟩
