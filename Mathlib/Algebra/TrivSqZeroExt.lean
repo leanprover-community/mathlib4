@@ -770,6 +770,10 @@ theorem inv_inr (m : M) : (inr m)⁻¹ = (0 : tsze R M) := by
   · rw [snd_inv, snd_inr, fst_inr, inv_zero, op_zero, zero_smul, snd_zero, neg_zero]
 
 @[simp]
+protected theorem inv_zero : (0 : tsze R M)⁻¹ = (0 : tsze R M) := by
+  rw [← inl_zero, TrivSqZeroExt.inv_inl, inv_zero]
+
+@[simp]
 protected theorem inv_one : (1 : tsze R M)⁻¹ = (1 : tsze R M) := by
   rw [← inl_one, TrivSqZeroExt.inv_inl, inv_one]
 
@@ -798,6 +802,16 @@ protected theorem mul_inv_rev (a b : tsze R M) :
     obtain hb0 | hb := eq_or_ne (fst b) 0
     · simp [hb0]
     rw [inv_mul_cancel_right₀ ha, mul_inv_cancel_left₀ hb]
+
+protected theorem inv_inv {x : tsze R M} (hx : fst x ≠ 0) : x⁻¹⁻¹ = x :=
+  -- adapted from `Matrix.nonsing_inv_nonsing_inv`
+  calc
+    x⁻¹⁻¹ = 1 * x⁻¹⁻¹ := by rw [one_mul]
+    _ = x * x⁻¹ * x⁻¹⁻¹ := by rw [TrivSqZeroExt.mul_inv_cancel hx]
+    _ = x := by
+      rw [mul_assoc, TrivSqZeroExt.mul_inv_cancel, mul_one]
+      rw [fst_inv]
+      apply inv_ne_zero hx
 
 end DivisionRing
 
