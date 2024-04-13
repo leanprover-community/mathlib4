@@ -598,9 +598,7 @@ theorem det_traceMatrix_ne_zero' [IsSeparable K L] : det (traceMatrix K pb.basis
   rw [RingHom.map_det, RingHom.mapMatrix_apply,
     traceMatrix_eq_embeddingsMatrixReindex_mul_trans K _ _ e,
     embeddingsMatrixReindex_eq_vandermonde, det_mul, det_transpose]
--- Porting note: the following is necessary.
-  haveI := IsDomain.to_noZeroDivisors (AlgebraicClosure L)
-  refine' mt mul_self_eq_zero.mp _
+  refine mt mul_self_eq_zero.mp ?_
   · simp only [det_vandermonde, Finset.prod_eq_zero_iff, not_exists, sub_eq_zero]
     rintro i ⟨_, j, hij, h⟩
     exact (Finset.mem_Ioi.mp hij).ne' (e.injective <| pb.algHom_ext h)
