@@ -473,7 +473,7 @@ open Elab.Tactic Parser.Tactic
 /-- Use `abel_nf` to rewrite the main goal. -/
 def abelNFTarget (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
-  let tgt ← instantiateMVars (← goal.getType)
+  let tgt ← withReducible goal.getType'
   let r ← abelNFCore s cfg tgt
   if r.expr.isConstOf ``True then
     goal.assign (← mkOfEqTrue (← r.getProof))

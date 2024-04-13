@@ -129,7 +129,7 @@ theorem isLittleO_log_abs_re (hl : IsExpCmpFilter l) : (fun z => Real.log (abs z
     (fun z => Real.log (abs z)) =O[l] fun z => Real.log (√2) + Real.log (max z.re |z.im|) :=
       IsBigO.of_bound 1 <|
         (hl.tendsto_re.eventually_ge_atTop 1).mono fun z hz => by
-          have h2 : (0 : ℝ) < √2 := by simp
+          have h2 : 0 < √2 := by simp
           have hz' : 1 ≤ abs z := hz.trans (re_le_abs z)
           have hm₀ : 0 < max z.re |z.im| := lt_max_iff.2 (Or.inl <| one_pos.trans_le hz)
           rw [one_mul, Real.norm_eq_abs, _root_.abs_of_nonneg (Real.log_nonneg hz')]

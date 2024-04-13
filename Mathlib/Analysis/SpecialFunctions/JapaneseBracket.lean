@@ -49,7 +49,7 @@ theorem rpow_neg_one_add_norm_sq_le {r : ℝ} (x : E) (hr : 0 < r) :
     ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2) ≤ (2 : ℝ) ^ (r / 2) * (1 + ‖x‖) ^ (-r) :=
   calc
     ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2)
-      = (2 : ℝ) ^ (r / 2) * ((√(2 : ℝ) * √((1 : ℝ) + ‖x‖ ^ 2)) ^ r)⁻¹ := by
+      = (2 : ℝ) ^ (r / 2) * ((√2 * √((1 : ℝ) + ‖x‖ ^ 2)) ^ r)⁻¹ := by
       rw [rpow_div_two_eq_sqrt, rpow_div_two_eq_sqrt, mul_rpow, mul_inv, rpow_neg,
         mul_inv_cancel_left₀] <;> positivity
     _ ≤ (2 : ℝ) ^ (r / 2) * ((1 + ‖x‖) ^ r)⁻¹ := by

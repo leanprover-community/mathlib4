@@ -123,7 +123,6 @@ end NNReal
 
 namespace Real
 
--- Porting note (#11215): TODO: was @[pp_nodot]
 /-- The square root of a real number. This returns 0 for negative inputs. -/
 noncomputable instance : NthRoot ℝ 2 := ⟨fun x ↦ NNReal.sqrt (Real.toNNReal x)⟩
 #align real.sqrt NthRoot.nthRoot

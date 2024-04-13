@@ -238,7 +238,6 @@ nonrec theorem dist_of_re_eq (h : z.re = w.re) : dist z w = dist (log z.im) (log
   field_simp
   ring
 #align upper_half_plane.dist_of_re_eq UpperHalfPlane.dist_of_re_eq
-
 /-- Hyperbolic distance between two points is greater than or equal to the distance between the
 logarithms of their imaginary parts. -/
 theorem dist_log_im_le (z w : ℍ) : dist (log z.im) (log w.im) ≤ dist z w :=
@@ -247,9 +246,9 @@ theorem dist_log_im_le (z w : ℍ) : dist (log z.im) (log w.im) ≤ dist z w :=
       Eq.symm <| dist_of_re_eq rfl
     _ ≤ dist z w := by
       simp_rw [dist_eq]
+      dsimp only [coe_mk, mk_im]
       gcongr
-      · simpa [sqrt_sq_eq_abs] using Complex.abs_im_le_abs (z - w)
-      · simp
+      simpa [sqrt_sq_eq_abs] using Complex.abs_im_le_abs (z - w)
 #align upper_half_plane.dist_log_im_le UpperHalfPlane.dist_log_im_le
 
 theorem im_le_im_mul_exp_dist (z w : ℍ) : z.im ≤ w.im * Real.exp (dist z w) := by
