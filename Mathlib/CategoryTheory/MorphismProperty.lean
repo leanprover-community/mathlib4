@@ -645,7 +645,7 @@ lemma StableUnderBaseChange.isomorphisms : StableUnderBaseChange (isomorphisms C
 variable {C}
 
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The full subcategory of `C ⥤ D` consisting of functors inverting morphisms in `W` -/
 def FunctorsInverting (W : MorphismProperty C) (D : Type*) [Category D] :=
   FullSubcategory fun F : C ⥤ D => W.IsInvertedBy F
