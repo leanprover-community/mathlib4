@@ -145,9 +145,6 @@ lemma right_ne_zero_of_mem_divisorsAntidiagonal {p : ℕ × ℕ} (hp : p ∈ n.d
     p.2 ≠ 0 :=
   (ne_zero_of_mem_divisorsAntidiagonal hp).2
 
--- Porting note: Redundant binder annotation update
--- variable {n}
-
 theorem divisor_le {m : ℕ} : n ∈ divisors m → n ≤ m := by
   cases' m with m
   · simp

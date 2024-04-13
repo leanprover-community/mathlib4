@@ -84,9 +84,6 @@ inductive Hom₂ : ∀ {a b : FreeBicategory B}, (a ⟶ b) → (a ⟶ b) → Typ
 
 section
 
--- Porting note: commenting out redundant binder annotation update
--- variable {B}
-
 -- The following notations are only used in the definition of `Rel` to simplify the notation.
 local infixr:0 " ≫ " => Hom₂.vcomp
 
@@ -153,9 +150,6 @@ inductive Rel : ∀ {a b : FreeBicategory B} {f g : a ⟶ b}, Hom₂ f g → Hom
 #align category_theory.free_bicategory.rel CategoryTheory.FreeBicategory.Rel
 
 end
-
--- Porting note: commenting out redundant binder annotation update
--- variable {B}
 
 instance homCategory (a b : FreeBicategory B) : Category (a ⟶ b) where
   Hom f g := Quot (@Rel _ _ a b f g)
