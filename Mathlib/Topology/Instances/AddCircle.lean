@@ -239,6 +239,17 @@ theorem liftIoc_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ioc a (a + p))
   rfl
 #align add_circle.lift_Ioc_coe_apply AddCircle.liftIoc_coe_apply
 
+lemma eq_coe_Ico (a : AddCircle p) : ∃ b, b ∈ Ico 0 p ∧ ↑b = a := by
+  let b := QuotientAddGroup.equivIcoMod hp.out 0 a
+  exact ⟨b.1, by simpa only [zero_add] using b.2,
+    (QuotientAddGroup.equivIcoMod hp.out 0).symm_apply_apply a⟩
+
+lemma coe_eq_zero_iff_of_mem_Ico (ha : a ∈ Ico 0 p) :
+    (a : AddCircle p) = 0 ↔ a = 0 := by
+  have h0 : 0 ∈ Ico 0 (0 + p) := by simpa [zero_add, left_mem_Ico] using hp.out
+  have ha' : a ∈ Ico 0 (0 + p) := by rwa [zero_add]
+  rw [← AddCircle.coe_eq_coe_iff_of_mem_Ico ha' h0, QuotientAddGroup.mk_zero]
+
 variable (p a)
 
 section Continuity
@@ -509,18 +520,6 @@ instance instZeroLTOne [StrictOrderedSemiring 𝕜] : Fact ((0 : 𝕜) < 1) := �
 abbrev UnitAddCircle :=
   AddCircle (1 : ℝ)
 #align unit_add_circle UnitAddCircle
-
-lemma UnitAddCircle.eq_coe_Ico (a : UnitAddCircle) : ∃ b : ℝ, b ∈ Ico 0 1 ∧ ↑b = a := by
-  let b := (QuotientAddGroup.equivIcoMod zero_lt_one 0) a
-  exact ⟨b.1, by simpa only [zero_add] using b.2,
-    (QuotientAddGroup.equivIcoMod zero_lt_one 0).symm_apply_apply a⟩
-
-lemma UnitAddCircle.coe_eq_zero_iff_of_mem_Ico {a : ℝ} (ha : a ∈ Ico 0 1) :
-    (a : UnitAddCircle) = 0 ↔ a = 0 := by
-  rw [← AddCircle.coe_eq_coe_iff_of_mem_Ico (hp := ⟨zero_lt_one' ℝ⟩)
-    ((zero_add (1 : ℝ)).symm ▸ ha)
-    ((zero_add (1 : ℝ)).symm ▸ left_mem_Ico.mpr zero_lt_one),
-    QuotientAddGroup.mk_zero]
 
 end UnitAddCircle
 
