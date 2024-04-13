@@ -791,8 +791,8 @@ theorem inv_inr [DivisionRing R] [AddCommGroup M]
 
 @[simp]
 protected theorem inv_one [DivisionRing R][AddCommGroup M]
-    [Module Rᵐᵒᵖ M] [Module R M] : (inl 1 : tsze R M)⁻¹ = (inl 1 : tsze R M) := by
-  rw [TrivSqZeroExt.inv_inl, inv_one]
+    [Module Rᵐᵒᵖ M] [Module R M] : (1 : tsze R M)⁻¹ = (1 : tsze R M) := by
+  rw [← inl_one, TrivSqZeroExt.inv_inl, inv_one]
 
 -- protected theorem mul_inv_rev [DivisionRing R] [AddCommGroup M]
 --     [Module Rᵐᵒᵖ M] [Module R M]
