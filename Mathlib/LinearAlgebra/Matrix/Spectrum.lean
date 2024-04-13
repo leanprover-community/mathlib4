@@ -96,6 +96,11 @@ theorem star_eigenvectorUnitary_mulVec (j : n) :
 Pi.single j 1 := by
 rw [←eigenvectorUnitary_mulVec, mulVec_mulVec, unitary.coe_star_mul_self, one_mulVec]
 
+/-- **Diagonalization theorem**, **spectral theorem** for matrices; A hermitian matrix can be
+diagonalized by a change of basis.
+
+For the spectral theorem on linear maps, see
+`LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply`. -/
 theorem spectral_theorem1 :
     (star (eigenvectorUnitary hA : Matrix n n 𝕜)) * A * (eigenvectorUnitary hA : Matrix n n 𝕜)
      = diagonal (RCLike.ofReal ∘ hA.eigenvalues) := by
@@ -112,6 +117,9 @@ apply PiLp.ext
 intro j
 simp only [PiLp.smul_apply, EuclideanSpace.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
 
+/-- *spectral theorem* (Alternate form for convenience) A hermitian matrix can be can be
+replaced by a diagonal matrix sandwiched between the eigenvector unitaries. This alternate form
+allows direct rewriting of A since: <| A = V D V⁻¹$ -/
 theorem spectral_theorem2 :
         A = (eigenvectorUnitary hA : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ hA.eigenvalues)
         * (star (eigenvectorUnitary hA : Matrix n n 𝕜)) := by
@@ -209,10 +217,10 @@ theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
 /-- *spectral theorem* (Alternate form for convenience) A hermitian matrix can be can be
 replaced by a diagonal matrix sandwiched between the eigenvector matrices. This alternate form
 allows direct rewriting of A since: <| A = V D V⁻¹$ -/
-lemma spectral_theorem' :
-    A = hA.eigenvectorMatrix * diagonal ((↑) ∘ hA.eigenvalues) * hA.eigenvectorMatrixInv := by
-  simpa [ ← Matrix.mul_assoc, hA.eigenvectorMatrix_mul_inv, Matrix.one_mul] using
-    congr_arg (hA.eigenvectorMatrix * ·) hA.spectral_theorem
+--lemma spectral_theorem' :
+--    A = hA.eigenvectorMatrix * diagonal ((↑) ∘ hA.eigenvalues) * hA.eigenvectorMatrixInv := by
+--  simpa [ ← Matrix.mul_assoc, hA.eigenvectorMatrix_mul_inv, Matrix.one_mul] using
+--    congr_arg (hA.eigenvectorMatrix * ·) hA.spectral_theorem
 
 /-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector matrix -/
 lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
