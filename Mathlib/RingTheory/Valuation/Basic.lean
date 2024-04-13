@@ -486,9 +486,7 @@ theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
   · rw [isEquiv_iff_val_eq_one]
     intro h x
     by_cases hx : x = 0
-    · -- Porting note: this proof was `simp only [(zero_iff _).2 hx, zero_ne_one]`
-      rw [(zero_iff _).2 hx, (zero_iff _).2 hx]
-      simp only [zero_ne_one]
+    · simp only [(zero_iff _).2 hx, zero_ne_one]
     constructor
     · intro hh
       by_contra h_1
