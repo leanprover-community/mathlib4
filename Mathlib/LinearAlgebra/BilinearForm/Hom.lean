@@ -379,14 +379,11 @@ theorem ext_basis (h : ∀ i j, B (b i) (b j) = F₂ (b i) (b j)) : B = F₂ :=
   b.ext fun i => b.ext fun j => h i j
 #align bilin_form.ext_basis LinearMap.BilinForm.ext_basis
 
-
-
 /-- Write out `B x y` as a sum over `B (b i) (b j)` if `b` is a basis. -/
 theorem sum_repr_mul_repr_mul (x y : M) :
     ((b.repr x).sum fun i xi => (b.repr y).sum fun j yj => xi • yj • B (b i) (b j)) = B x y := by
   conv_rhs => rw [← b.total_repr x, ← b.total_repr y]
-  simp_rw [Finsupp.total_apply, Finsupp.sum, sum_left, sum_right, map_smul, smul_apply,
-    ← smul_assoc, smul_eq_mul, mul_comm]
+  simp_rw [Finsupp.total_apply, Finsupp.sum, sum_left, sum_right, map_smul₂, map_smul]
 #align bilin_form.sum_repr_mul_repr_mul LinearMap.BilinForm.sum_repr_mul_repr_mul
 
 end Basis

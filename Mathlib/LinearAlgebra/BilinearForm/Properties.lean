@@ -160,8 +160,8 @@ theorem self_eq_zero (H : B.IsAlt) (x : M) : B x x = 0 :=
 
 theorem neg_eq (H : B₁.IsAlt) (x y : M₁) : -B₁ x y = B₁ y x := by
   have H1 : B₁ (x + y) (x + y) = 0 := self_eq_zero H (x + y)
-  rw [map_add, map_add, LinearMap.add_apply, LinearMap.add_apply, self_eq_zero H, self_eq_zero H,
-    zero_add, add_zero, add_comm, add_eq_zero_iff_neg_eq] at H1
+  rw [map_add₂, map_add, map_add, self_eq_zero H, self_eq_zero H, zero_add, add_zero,
+    add_eq_zero_iff_neg_eq] at H1
   exact H1
 #align bilin_form.is_alt.neg_eq LinearMap.BilinForm.IsAlt.neg_eq
 
@@ -239,7 +239,7 @@ theorem isAdjointPair_id : IsAdjointPair B B 1 1 := fun _ _ => rfl
 
 theorem IsAdjointPair.add (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' f' g') :
     IsAdjointPair B B' (f + f') (g + g') := fun x y => by
-  rw [LinearMap.add_apply, LinearMap.add_apply, map_add, LinearMap.add_apply, map_add, h, h']
+  rw [LinearMap.add_apply, LinearMap.add_apply, map_add₂, map_add, h, h']
 #align bilin_form.is_adjoint_pair.add LinearMap.BilinForm.IsAdjointPair.add
 
 variable {M₁' : Type*} [AddCommGroup M₁'] [Module R₁ M₁']
@@ -247,14 +247,14 @@ variable {B₁' : BilinForm R₁ M₁'} {f₁ f₁' : M₁ →ₗ[R₁] M₁'} {
 
 theorem IsAdjointPair.sub (h : IsAdjointPair B₁ B₁' f₁ g₁) (h' : IsAdjointPair B₁ B₁' f₁' g₁') :
     IsAdjointPair B₁ B₁' (f₁ - f₁') (g₁ - g₁') := fun x y => by
-  rw [LinearMap.sub_apply, LinearMap.sub_apply, map_sub, LinearMap.sub_apply, map_sub, h, h']
+  rw [LinearMap.sub_apply, LinearMap.sub_apply, map_sub₂, map_sub, h, h']
 #align bilin_form.is_adjoint_pair.sub LinearMap.BilinForm.IsAdjointPair.sub
 
 variable {B₂' : BilinForm R M'} {f₂ f₂' : M →ₗ[R] M'} {g₂ g₂' : M' →ₗ[R] M}
 
 theorem IsAdjointPair.smul (c : R) (h : IsAdjointPair B B₂' f₂ g₂) :
     IsAdjointPair B B₂' (c • f₂) (c • g₂) := fun x y => by
-  rw [LinearMap.smul_apply, LinearMap.smul_apply, map_smul, LinearMap.smul_apply, map_smul, h]
+  rw [LinearMap.smul_apply, LinearMap.smul_apply, map_smul₂, map_smul, h]
 #align bilin_form.is_adjoint_pair.smul LinearMap.BilinForm.IsAdjointPair.smul
 
 variable {M'' : Type*} [AddCommMonoid M''] [Module R M'']
@@ -426,7 +426,7 @@ theorem compLeft_injective (B : BilinForm R₁ M₁) (b : B.Nondegenerate) :
   ext w
   refine' eq_of_sub_eq_zero (b _ _)
   intro v
-  rw [map_sub, LinearMap.sub_apply,  ← compLeft_apply, ← compLeft_apply, ← h, sub_self]
+  rw [map_sub₂,  ← compLeft_apply, ← compLeft_apply, ← h, sub_self]
 #align bilin_form.comp_left_injective LinearMap.BilinForm.compLeft_injective
 
 theorem isAdjointPair_unique_of_nondegenerate (B : BilinForm R₁ M₁) (b : B.Nondegenerate)

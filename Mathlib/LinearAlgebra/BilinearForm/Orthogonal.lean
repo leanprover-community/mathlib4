@@ -122,13 +122,12 @@ theorem linearIndependent_of_iIsOrtho {n : Type w} {B : BilinForm K V} {v : n �
   classical
     rw [linearIndependent_iff']
     intro s w hs i hi
-    have : B (s.sum fun i : n => w i • v i) (v i) = 0 := by
-      rw [hs, map_zero, LinearMap.zero_apply]
+    have : B (s.sum fun i : n => w i • v i) (v i) = 0 := by rw [hs, map_zero₂]
     have hsum : (s.sum fun j : n => w j * B (v j) (v i)) = w i * B (v i) (v i) := by
       apply Finset.sum_eq_single_of_mem i hi
       intro j _ hij
       rw [iIsOrtho_def.1 hv₁ _ _ hij, mul_zero]
-    simp_rw [sum_left, map_smul, LinearMap.smul_apply, smul_eq_mul, hsum] at this
+    simp_rw [sum_left, map_smul₂, smul_eq_mul, hsum] at this
     exact eq_zero_of_ne_zero_of_mul_right_eq_zero (hv₂ i) this
 set_option linter.uppercaseLean3 false in
 #align bilin_form.linear_independent_of_is_Ortho LinearMap.BilinForm.linearIndependent_of_iIsOrtho
@@ -192,7 +191,7 @@ theorem orthogonal_span_singleton_eq_toLin_ker {B : BilinForm K V} (x : V) :
   constructor
   · exact fun h => h x ⟨1, one_smul _ _⟩
   · rintro h _ ⟨z, rfl⟩
-    rw [IsOrtho, map_smul, LinearMap.smul_apply, smul_eq_zero]
+    rw [IsOrtho, map_smul₂, smul_eq_zero]
     exact Or.intro_right _ h
 #align bilin_form.orthogonal_span_singleton_eq_to_lin_ker LinearMap.BilinForm.orthogonal_span_singleton_eq_toLin_ker
 
@@ -257,8 +256,7 @@ theorem iIsOrtho.nondegenerate_iff_not_isOrtho_basis_self {n : Type w} [Nontrivi
   ext i
   rw [Finsupp.zero_apply]
   specialize hB (v i)
-  simp_rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, sum_left, map_smul,
-    LinearMap.smul_apply] at hB
+  simp_rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, sum_left, map_smul₂] at hB
   rw [Finset.sum_eq_single i] at hB
   · exact eq_zero_of_ne_zero_of_mul_right_eq_zero (ho i) hB
   · intro j _ hij
