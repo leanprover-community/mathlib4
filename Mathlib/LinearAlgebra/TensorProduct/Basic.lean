@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro
 import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.GroupTheory.Congruence
 import Mathlib.LinearAlgebra.Basic
+import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.Tactic.SuppressCompilation
 
 #align_import linear_algebra.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
@@ -510,6 +511,42 @@ theorem exists_eq_tmul_of_forall (x : TensorProduct R M N)
     obtain ⟨m₁, n₁, rfl⟩ := h₁
     obtain ⟨m₂, n₂, rfl⟩ := h₂
     apply h
+
+section Sweedler
+
+open BigOperators
+variable {R M N}
+variable {A : Type*} [AddCommMonoid A] [Module R A]
+variable {F : Type*} [FunLike F A (M ⊗[R] N)] [LinearMapClass F R A (M ⊗[R] N)] (f : F)
+
+lemma exists_apply_eq_sum_tmul (x : A) :
+    ∃ (I : Finset (M ⊗[R] N)) (Δ₁ : M ⊗[R] N → M) (Δ₂ : M ⊗[R] N → N),
+      f x = ∑ i in I, Δ₁ i ⊗ₜ Δ₂ i := by
+  classical
+  have mem1 : f x ∈ (⊤ : Submodule R (M ⊗[R] N)) := ⟨⟩
+  rw [← span_tmul_eq_top, mem_span_set] at mem1
+  obtain ⟨r, hr, (eq1 : ∑ i in r.support, (_ • _) = _)⟩ := mem1
+  choose a a' haa' using hr
+  refine ⟨r.support, fun i ↦ if h : i ∈ r.support then r i • a h else 0,
+    fun i ↦ if h : i ∈ r.support then a' h else 0, eq1 ▸ Finset.sum_congr rfl fun a h ↦
+    by simp only [dif_pos h, ← smul_tmul', haa' h]⟩
+
+/-- an arbitrarily chosen indexing set for comul(a) = ∑ a₁ ⊗ a₂. -/
+noncomputable def ℐ (a : A) : Finset (M ⊗[R] N) := exists_apply_eq_sum_tmul f a |>.choose
+
+/-- an arbitrarily chosen first coordinate for comul(a) = ∑ a₁ ⊗ a₂. -/
+noncomputable def Δ₁ (a : A) : M ⊗[R] N → M :=
+  exists_apply_eq_sum_tmul f a |>.choose_spec.choose
+
+/-- an arbitrarily chosen second coordinate for comul(a) = ∑ a₁ ⊗ a₂. -/
+noncomputable def Δ₂ (a : A) : M ⊗[R] N → N :=
+  exists_apply_eq_sum_tmul f a |>.choose_spec.choose_spec.choose
+
+lemma apply_eq_sum_tmul (a : A) :
+    f a = ∑ i in ℐ f a, Δ₁ f a i ⊗ₜ[R] Δ₂ f a i :=
+  exists_apply_eq_sum_tmul f a |>.choose_spec.choose_spec.choose_spec
+
+end Sweedler
 
 end Module
 
