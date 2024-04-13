@@ -156,6 +156,24 @@ theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
   rw [←det_mul, spectral_theorem3, det_mul, mul_comm, det_diagonal]
   simp_rw [Function.comp_apply]
 
+/-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector matrix -/
+lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
+  conv_lhs => rw [hA.spectral_theorem2]
+  have hG : (hA.eigenvectorUnitary.1) * (star (hA.eigenvectorUnitary.1)) = 1 := by
+          simp only [hA.eigenvectorUnitary.2, unitary.mul_star_self_of_mem]
+  have hE := isUnit_det_of_right_inverse hG
+  have hE1 := isUnit_det_of_left_inverse hG
+  simp only [rank_mul_eq_right_of_isUnit_det (A := hA.eigenvectorUnitary.1)
+      (B := star (hA.eigenvectorUnitary.1)) hE, rank_mul_eq_left_of_isUnit_det
+      (B := hA.eigenvectorUnitary.1) (A := star (hA.eigenvectorUnitary.1)) hE1,
+    rank_diagonal, Function.comp_apply, ne_eq, algebraMap.lift_map_eq_zero_iff]
+
+
+
+/-- rank of a hermitian matrix is the number of nonzero eigenvalues of the hermitian matrix -/
+lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
+  rw [rank_eq_rank_diagonal hA, Matrix.rank_diagonal]
+
 --this one needs some translation work...
 theorem eigenvalues_eq (i : n) :
     hA.eigenvalues i =
@@ -222,18 +240,8 @@ allows direct rewriting of A since: <| A = V D V⁻¹$ -/
 --  simpa [ ← Matrix.mul_assoc, hA.eigenvectorMatrix_mul_inv, Matrix.one_mul] using
 --    congr_arg (hA.eigenvectorMatrix * ·) hA.spectral_theorem
 
-/-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector matrix -/
-lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
-  conv_lhs => rw [hA.spectral_theorem']
-  have hE := isUnit_det_of_invertible (hA.eigenvectorMatrix)
-  have hiE := isUnit_det_of_invertible (hA.eigenvectorMatrixInv)
-  simp only [rank_mul_eq_right_of_isUnit_det hA.eigenvectorMatrix _ hE,
-    rank_mul_eq_left_of_isUnit_det hA.eigenvectorMatrixInv _ hiE,
-    rank_diagonal, Function.comp_apply, ne_eq, algebraMap.lift_map_eq_zero_iff]
 
-/-- rank of a hermitian matrix is the number of nonzero eigenvalues of the hermitian matrix -/
-lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
-  rw [rank_eq_rank_diagonal hA, Matrix.rank_diagonal]
+
 
 
 
