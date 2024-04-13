@@ -138,6 +138,7 @@ theorem ext_iff : B = D ↔ ∀ x y, B x y = D x y :=
 
 instance : Zero (BilinForm R M) := inferInstance
 
+@[deprecated]
 theorem coe_zero : ⇑(0 : BilinForm R M) = 0 :=
   rfl
 #align bilin_form.coe_zero LinearMap.BilinForm.coe_zero
@@ -151,6 +152,7 @@ variable (B D B₁ D₁)
 
 instance : Add (BilinForm R M) := inferInstance
 
+@[deprecated]
 theorem coe_add : ⇑(B + D) = B + D :=
   rfl
 #align bilin_form.coe_add LinearMap.BilinForm.coe_add
@@ -186,6 +188,7 @@ instance : AddCommMonoid (BilinForm R M) := inferInstance
 
 instance : Neg (BilinForm R₁ M₁) := inferInstance
 
+@[deprecated]
 theorem coe_neg : ⇑(-B₁) = -B₁ :=
   rfl
 #align bilin_form.coe_neg LinearMap.BilinForm.coe_neg
@@ -197,6 +200,7 @@ theorem neg_apply (x y : M₁) : (-B₁) x y = -B₁ x y :=
 
 instance : Sub (BilinForm R₁ M₁) := inferInstance
 
+@[deprecated]
 theorem coe_sub : ⇑(B₁ - D₁) = B₁ - D₁ :=
   rfl
 #align bilin_form.coe_sub LinearMap.BilinForm.coe_sub
