@@ -3,9 +3,9 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lorenzo Luccioli, Rémy Degenne, Alexander Bentkamp
 -/
-import Mathlib.Analysis.SpecialFunctions.Gaussian
 import Mathlib.Probability.Notation
 import Mathlib.MeasureTheory.Decomposition.Lebesgue
+import Mathlib.Analysis.SpecialFunctions.Gaussian
 
 /-!
 # Gaussian distributions over ℝ
