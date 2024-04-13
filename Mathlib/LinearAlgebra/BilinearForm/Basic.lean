@@ -85,45 +85,37 @@ theorem add_right (x y z : M) : B x (y + z) = B x y + B x z := map_add _ _ _
 theorem smul_right (a : R) (x y : M) : B x (a • y) = a * B x y := map_smul _ _ _
 #align bilin_form.smul_right LinearMap.BilinForm.smul_right
 
-set_option linter.deprecated false in
 @[deprecated]
 theorem zero_left (x : M) : B 0 x = 0 := map_zero₂ _ _
 #align bilin_form.zero_left LinearMap.BilinForm.zero_left
 
-set_option linter.deprecated false in
 @[deprecated]
 theorem zero_right (x : M) : B x 0 = 0 := map_zero _
 #align bilin_form.zero_right LinearMap.BilinForm.zero_right
 
-set_option linter.deprecated false in
 @[deprecated]
 theorem neg_left (x y : M₁) : B₁ (-x) y = -B₁ x y := map_neg₂ _ _ _
 #align bilin_form.neg_left LinearMap.BilinForm.neg_left
 
-set_option linter.deprecated false in
 @[deprecated]
 theorem neg_right (x y : M₁) : B₁ x (-y) = -B₁ x y := map_neg _ _
 #align bilin_form.neg_right LinearMap.BilinForm.neg_right
 
-set_option linter.deprecated false in
 @[deprecated]
 theorem sub_left (x y z : M₁) : B₁ (x - y) z = B₁ x z - B₁ y z := map_sub₂ _ _ _ _
 #align bilin_form.sub_left LinearMap.BilinForm.sub_left
 
-set_option linter.deprecated false in
 @[deprecated]
 theorem sub_right (x y z : M₁) : B₁ x (y - z) = B₁ x y - B₁ x z := map_sub _ _ _
 #align bilin_form.sub_right LinearMap.BilinForm.sub_right
 
-set_option linter.deprecated false in
 @[deprecated]
 lemma smul_left_of_tower (r : S) (x y : M) : B (r • x) y = r • B x y := by
-  rw [← IsScalarTower.algebraMap_smul R r, smul_left, Algebra.smul_def]
+  rw [← IsScalarTower.algebraMap_smul R r, map_smul₂, smul_eq_mul, Algebra.smul_def]
 
-set_option linter.deprecated false in
 @[deprecated]
 lemma smul_right_of_tower (r : S) (x y : M) : B x (r • y) = r • B x y := by
-  rw [← IsScalarTower.algebraMap_smul R r, smul_right, Algebra.smul_def]
+  rw [← IsScalarTower.algebraMap_smul R r, map_smul, smul_eq_mul, Algebra.smul_def]
 
 variable {D : BilinForm R M} {D₁ : BilinForm R₁ M₁}
 
