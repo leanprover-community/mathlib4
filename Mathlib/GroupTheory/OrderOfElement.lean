@@ -174,8 +174,7 @@ protected lemma IsOfFinOrder.orderOf_pos (h : IsOfFinOrder x) : 0 < orderOf x :=
 
 @[to_additive addOrderOf_nsmul_eq_zero]
 theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
-  -- Porting note: was `convert`, but the `1` in the lemma is equal only after unfolding
-  refine Eq.trans ?_ (isPeriodicPt_minimalPeriod (x * ·) 1)
+  convert Eq.trans _ (isPeriodicPt_minimalPeriod (x * ·) 1)
   -- Porting note: we need a `dsimp` in the middle of the rewrite to do beta reduction
   rw [orderOf, mul_left_iterate]; dsimp; rw [mul_one]
 #align pow_order_of_eq_one pow_orderOf_eq_one
