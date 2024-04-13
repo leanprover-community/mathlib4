@@ -402,8 +402,6 @@ variable {ι : Type*} [Fintype ι] {Fi : ι → Type*} [∀ i, NormedAddCommGrou
 theorem contMDiffWithinAt_pi_space :
     ContMDiffWithinAt I 𝓘(𝕜, ∀ i, Fi i) n φ s x ↔
       ∀ i, ContMDiffWithinAt I 𝓘(𝕜, Fi i) n (fun x => φ x i) s x := by
-  -- Porting note: `simp` fails to apply it on the LHS
-  rw [contMDiffWithinAt_iff]
   simp only [contMDiffWithinAt_iff, continuousWithinAt_pi, contDiffWithinAt_pi, forall_and,
     writtenInExtChartAt, extChartAt_model_space_eq_id, (· ∘ ·), PartialEquiv.refl_coe, id]
 #align cont_mdiff_within_at_pi_space contMDiffWithinAt_pi_space
