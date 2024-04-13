@@ -794,15 +794,18 @@ protected theorem inv_one [DivisionRing R][AddCommGroup M]
     [Module Rᵐᵒᵖ M] [Module R M] : (1 : tsze R M)⁻¹ = (1 : tsze R M) := by
   rw [← inl_one, TrivSqZeroExt.inv_inl, inv_one]
 
--- protected theorem mul_inv_rev [DivisionRing R] [AddCommGroup M]
---     [Module Rᵐᵒᵖ M] [Module R M]
---     (a b : tsze R M) : (a * b)⁻¹ = b⁻¹ * a⁻¹ := by
---     {
---       ext
---       · rw [fst_inv, fst_mul, fst_mul, mul_inv_rev (fst a : R) (fst b : R), fst_inv, fst_inv]
---       rw [snd_inv, snd_mul, snd_mul, fst_mul, mul_inv_rev, mul_smul, smul_distrib_left]
-
---     }
+protected theorem mul_inv_rev [DivisionRing R] [AddCommGroup M]
+    [Module Rᵐᵒᵖ M] [Module R M] [SMulCommClass Rᵐᵒᵖ R M] (a b : tsze R M) :
+    (a * b)⁻¹ = b⁻¹ * a⁻¹ := by
+  ext
+  · rw [fst_inv, fst_mul, fst_mul, mul_inv_rev, fst_inv, fst_inv]
+  · rw [snd_inv, snd_mul, snd_mul, fst_mul, mul_inv_rev, smul_add, op_smul_op_smul]
+    simp only [smul_comm, smul_smul, ← op_mul, smul_add, fst_inv, snd_inv, smul_neg]
+    obtain ha0 | ha := eq_or_ne (fst a) 0
+    · simp [ha0]
+    obtain hb0 | hb := eq_or_ne (fst b) 0
+    · simp [hb0]
+    rw [inv_mul_cancel_right₀ ha, add_comm, mul_inv_cancel_left₀ hb, neg_add]
 
 end Inv
 
