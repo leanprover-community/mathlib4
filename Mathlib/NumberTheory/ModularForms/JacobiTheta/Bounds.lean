@@ -11,13 +11,27 @@ import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
 
 The goal of this file is to establish some technical lemmas about the asymptotics of the sums
 
-`∑' (n : ℕ), (n + a) ^ k * exp (-π * (n + a) ^ 2 * t)`
+`F_nat k a t = ∑' (n : ℕ), (n + a) ^ k * exp (-π * (n + a) ^ 2 * t)`
 
 and
 
-`∑' (n : ℤ), |n + a| ^ k * exp (-π * (n + a) ^ 2 * t).`
+`F_int k a t = ∑' (n : ℤ), |n + a| ^ k * exp (-π * (n + a) ^ 2 * t).`
 
-Here `k : ℕ` and `a : ℝ` are fixed, and we are interested in asymptotics as `t → ∞`.
+Here `k : ℕ` and `a : ℝ` (resp `a : UnitAddCircle`) are fixed, and we are interested in
+asymptotics as `t → ∞`. These results are needed for the theory of Hurwitz zeta functions (and
+hence Dirichlet L-functions, etc).
+
+## Main results
+
+* `HurwitzKernelBounds.isBigO_atTop_F_nat_zero_sub` : for `0 ≤ a`, the function
+  `F_nat 0 a - (if a = 0 then 1 else 0)` decays exponentially at `∞` (i.e. it satisfies
+  `=O[atTop] fun t ↦ exp (-p * t)` for some real `0 < p`).
+* `HurwitzKernelBounds.isBigO_atTop_F_nat_one` : for `0 ≤ a`, the function `F_nat 1 a` decays
+  exponentially at `∞`.
+* `HurwitzKernelBounds.isBigO_atTop_F_int_zero_sub` : for any `a : UnitAddCircle`, the function
+  `F_int 0 a - (if a = 0 then 1 else 0)` decays exponentially at `∞`.
+* `HurwitzKernelBounds.isBigO_atTop_F_int_one`: the function `F_int 1 a` decays exponentially at
+  `∞`.
 -/
 
 open Set Filter Topology Asymptotics Real Classical
@@ -25,6 +39,18 @@ open Set Filter Topology Asymptotics Real Classical
 noncomputable section
 
 namespace HurwitzKernelBounds
+
+section lemmas
+
+lemma isBigO_exp_neg_mul_of_le {c d : ℝ} (hcd : c ≤ d) :
+    (fun t ↦ exp (-d * t)) =O[atTop] fun t ↦ exp (-c * t) := by
+  apply Eventually.isBigO
+  filter_upwards [eventually_gt_atTop 0] with t ht
+  rwa [norm_of_nonneg (exp_pos _).le, exp_le_exp, mul_le_mul_right ht, neg_le_neg_iff]
+
+
+end lemmas
+
 
 section nat
 
@@ -121,6 +147,7 @@ lemma isBigO_atTop_F_nat_zero_sub {a : ℝ} (ha : 0 ≤ a) : ∃ p, 0 < p ∧
 end k_eq_zero
 
 section k_eq_one
+
 /-!
 ## Sum over `ℕ` with `k = 1`
 
@@ -193,19 +220,15 @@ lemma f_int_negSucc (k : ℕ) {a : ℝ} (ha : a ≤ 1) (t : ℝ) (n : ℕ) :
 
 lemma summable_f_int (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_int k a t) := by
   apply Summable.of_norm
-  have := (HasSum.int_rec (summable_f_nat k a ht).hasSum
-    (summable_f_nat k (1 - a) ht).hasSum).summable.norm
-  convert this using 2 with n
-  rcases n with m | m
+  suffices ∀ n, ‖f_int k a t n‖ = ‖(Int.rec (f_nat k a t) (f_nat k (1 - a) t) : ℤ → ℝ) n‖ from
+    funext this ▸ (HasSum.int_rec (summable_f_nat k a ht).hasSum
+      (summable_f_nat k (1 - a) ht).hasSum).summable.norm
+  intro n
+  cases' n with m m
   · simp only [f_int, f_nat, Int.ofNat_eq_coe, Int.cast_natCast, norm_mul, norm_eq_abs, abs_pow,
       abs_abs]
   · simp only [f_int, f_nat, Int.cast_negSucc, norm_mul, norm_eq_abs, abs_pow, abs_abs,
       (by { push_cast; ring } : -↑(m + 1) + a = -(m + (1 - a))), abs_neg, neg_sq]
-
-lemma _root_.UnitAddCircle.eq_coe_Ico (a : UnitAddCircle) : ∃ b : ℝ, b ∈ Ico 0 1 ∧ ↑b = a := by
-  let b := (QuotientAddGroup.equivIcoMod zero_lt_one 0) a
-  exact ⟨b.1, by simpa only [zero_add] using b.2,
-    (QuotientAddGroup.equivIcoMod zero_lt_one 0).symm_apply_apply a⟩
 
 /-- The sum to be bounded (`ℤ` version). -/
 def F_int (k : ℕ) (a : UnitAddCircle) (t : ℝ) : ℝ :=
@@ -220,7 +243,7 @@ lemma F_int_eq_of_mem_Icc (k : ℕ) {a : ℝ} (ha : a ∈ Icc 0 1) {t : ℝ} (ht
   simp only [F_int, F_nat, Function.Periodic.lift_coe]
   convert ((summable_f_nat k a ht).hasSum.int_rec (summable_f_nat k (1 - a) ht).hasSum).tsum_eq
     using 3 with n
-  rcases n with m | m
+  cases' n with m m
   · rw [f_int_ofNat _ ha.1]
   · rw [f_int_negSucc _ ha.2]
 
@@ -228,43 +251,35 @@ lemma isBigO_atTop_F_int_zero_sub (a : UnitAddCircle) : ∃ p, 0 < p ∧
     (fun t ↦ F_int 0 a t - (if a = 0 then 1 else 0)) =O[atTop] fun t ↦ exp (-p * t) := by
   obtain ⟨a, ha, rfl⟩ := a.eq_coe_Ico
   obtain ⟨p, hp, hp'⟩ := isBigO_atTop_F_nat_zero_sub ha.1
-  obtain ⟨n, hn, hn'⟩ := isBigO_atTop_F_nat_zero_sub (sub_nonneg.mpr ha.2.le)
+  obtain ⟨q, hq, hq'⟩ := isBigO_atTop_F_nat_zero_sub (sub_nonneg.mpr ha.2.le)
   have ha' : (a : UnitAddCircle) = 0 ↔ a = 0 := by
     rw [← AddCircle.coe_eq_coe_iff_of_mem_Ico (hp := ⟨zero_lt_one' ℝ⟩), QuotientAddGroup.mk_zero]
     rw [zero_add]; exact ha
     simp
   simp_rw [ha']
-  simp_rw [eq_false_intro (by linarith [ha.2] : 1 - a ≠ 0), if_false, sub_zero] at hn'
-  refine ⟨min p n, lt_min hp hn, ?_⟩
+  simp_rw [eq_false_intro (by linarith [ha.2] : 1 - a ≠ 0), if_false, sub_zero] at hq'
+  refine ⟨_, lt_min hp hq, ?_⟩
   have : (fun t ↦ F_int 0 a t - (if a = 0 then 1 else 0)) =ᶠ[atTop]
       fun t ↦ (F_nat 0 a t - (if a = 0 then 1 else 0)) + F_nat 0 (1 - a) t := by
     filter_upwards [eventually_gt_atTop 0] with t ht
     rw [F_int_eq_of_mem_Icc 0 (Ico_subset_Icc_self ha) ht]
     ring
-  have aux1 {c d : ℝ} (hcd : c ≤ d) : (rexp <| -d * ·) =O[atTop] (rexp <| -c * ·) := by
-    apply Eventually.isBigO
-    filter_upwards [eventually_gt_atTop 0] with t ht
-    rwa [norm_of_nonneg (exp_pos _).le, exp_le_exp, mul_le_mul_right ht, neg_le_neg_iff]
-  refine this.isBigO.trans ((hp'.trans ?_).add (hn'.trans ?_))
-  · exact aux1 (min_le_left _ _)
-  · exact aux1 (min_le_right _ _)
+  refine this.isBigO.trans ((hp'.trans ?_).add (hq'.trans ?_)) <;>
+  apply isBigO_exp_neg_mul_of_le
+  exacts [min_le_left .., min_le_right ..]
 
 lemma isBigO_atTop_F_int_one (a : UnitAddCircle) : ∃ p, 0 < p ∧
     F_int 1 a =O[atTop] fun t ↦ exp (-p * t) := by
   obtain ⟨a, ha, rfl⟩ := a.eq_coe_Ico
   obtain ⟨p, hp, hp'⟩ := isBigO_atTop_F_nat_one ha.1
-  obtain ⟨n, hn, hn'⟩ := isBigO_atTop_F_nat_one (sub_nonneg.mpr ha.2.le)
-  refine ⟨min p n, lt_min hp hn, ?_⟩
+  obtain ⟨q, hq, hq'⟩ := isBigO_atTop_F_nat_one (sub_nonneg.mpr ha.2.le)
+  refine ⟨_, lt_min hp hq, ?_⟩
   have : F_int 1 a =ᶠ[atTop] fun t ↦ F_nat 1 a t + F_nat 1 (1 - a) t := by
     filter_upwards [eventually_gt_atTop 0] with t ht
     exact F_int_eq_of_mem_Icc 1 (Ico_subset_Icc_self ha) ht
-  have aux1 {c d : ℝ} (hcd : c ≤ d) : (rexp <| -d * ·) =O[atTop] (rexp <| -c * ·) := by
-    apply Eventually.isBigO
-    filter_upwards [eventually_gt_atTop 0] with t ht
-    rwa [norm_of_nonneg (exp_pos _).le, exp_le_exp, mul_le_mul_right ht, neg_le_neg_iff]
-  refine this.isBigO.trans ((hp'.trans ?_).add (hn'.trans ?_))
-  · exact aux1 (min_le_left _ _)
-  · exact aux1 (min_le_right _ _)
+  refine this.isBigO.trans ((hp'.trans ?_).add (hq'.trans ?_)) <;>
+  apply isBigO_exp_neg_mul_of_le
+  exacts [min_le_left .., min_le_right ..]
 
 end int
 

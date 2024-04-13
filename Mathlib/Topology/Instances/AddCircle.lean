@@ -500,6 +500,8 @@ instance : ProperlyDiscontinuousVAdd (zmultiples p).op ℝ :=
 
 end AddCircle
 
+section UnitAddCircle
+
 attribute [local instance] Real.fact_zero_lt_one
 
 /- ./././Mathport/Syntax/Translate/Command.lean:328:31: unsupported: @[derive] abbrev -/
@@ -507,6 +509,20 @@ attribute [local instance] Real.fact_zero_lt_one
 abbrev UnitAddCircle :=
   AddCircle (1 : ℝ)
 #align unit_add_circle UnitAddCircle
+
+lemma UnitAddCircle.eq_coe_Ico (a : UnitAddCircle) : ∃ b : ℝ, b ∈ Ico 0 1 ∧ ↑b = a := by
+  let b := (QuotientAddGroup.equivIcoMod zero_lt_one 0) a
+  exact ⟨b.1, by simpa only [zero_add] using b.2,
+    (QuotientAddGroup.equivIcoMod zero_lt_one 0).symm_apply_apply a⟩
+
+lemma UnitAddCircle.coe_eq_zero_iff_of_mem_Ico {a : ℝ} (ha : a ∈ Ico 0 1) :
+    (a : UnitAddCircle) = 0 ↔ a = 0 := by
+  rw [← AddCircle.coe_eq_coe_iff_of_mem_Ico (hp := ⟨zero_lt_one' ℝ⟩)
+    ((zero_add (1 : ℝ)).symm ▸ ha)
+    ((zero_add (1 : ℝ)).symm ▸ left_mem_Ico.mpr zero_lt_one),
+    QuotientAddGroup.mk_zero]
+
+end UnitAddCircle
 
 section IdentifyIccEnds
 
