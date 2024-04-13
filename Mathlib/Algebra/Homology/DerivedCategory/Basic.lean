@@ -48,7 +48,6 @@ instance should be obtained at the beginning of the proof, using the term
 
 ## TODO (@joelriou)
 
-- define the induced homological functor `DerivedCategory C ⥤ C`.
 - construct the distinguished triangle associated to a short exact sequence
 of cochain complexes, and compare the associated connecting homomorphism
 with the one defined in `Algebra.Homology.HomologySequence`.
