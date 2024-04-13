@@ -158,32 +158,57 @@ partial def eraseUsedTactics : InfoTree → M Unit
   | .node i c => do
     if let .ofTacticInfo i := i then
 --      dbg_trace "working on '{i.stx.getKind}': {i.stx}"
-     if let .original .. := i.stx.getHeadInfo then
       let stx := i.stx
-      let kind := stx.getKind
-      if let some r := stx.getRange? true then
-        if allowed.contains kind
-        -- if the tactic is allowed to not change the goals
-        then modify (·.erase r)
-        else
-        --dbg_trace "{kind} {i.goalsAfter.map (·.name)} {i.goalsBefore.map (·.name)}"
-        -- if the goals have changed
-        if i.goalsAfter != i.goalsBefore
-        then modify (·.erase r)
-        -- bespoke check for `swap_var`: the only change that it does is
-        -- in the usernames of local declarations, so we check the names before and after
-        else --dbg_trace "here";
-        if (kind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
-                (getNames i.mctxBefore != getNames i.mctxAfter)
-        then modify (·.erase r)
+      if (match stx.getHeadInfo with | .none => dbg_trace "{(stx.getRange?.isSome, stx)}"; false | _ => true) then
+        let kind := stx.getKind
+        if let some r := stx.getRange? true then
+          if allowed.contains kind
+          -- if the tactic is allowed to not change the goals
+          then modify (·.erase r)
+          else
+          --dbg_trace "{kind} {i.goalsAfter.map (·.name)} {i.goalsBefore.map (·.name)}"
+          -- if the goals have changed
+          if i.goalsAfter != i.goalsBefore
+          then modify (·.erase r)
+          -- bespoke check for `swap_var`: the only change that it does is
+          -- in the usernames of local declarations, so we check the names before and after
+          else --dbg_trace "here";
+          if (kind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
+                  (getNames i.mctxBefore != getNames i.mctxAfter)
+          then modify (·.erase r)
+--      else dbg_trace "{(i.stx.getKind, i.stx.getAtomVal, match i.stx.getHeadInfo with | .none => "none" | _ => "synt")}"; --eraseUsedTacticsList c
     eraseUsedTacticsList c
   | .context _ t => eraseUsedTactics t
   | .hole _ => pure ()
 
 end
 
+abbrev silent : HashSet SyntaxNodeKind := HashSet.empty
+  |>.insert `«;»
+  |>.insert `«<;>»
+  |>.insert `«]»
+  |>.insert ``cdotTk
+  --|>.insert `null
+---
+
 /-- Gets the value of the `linter.unusedTactic` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.unusedTactic o
+
+partial
+def erase : InfoTree → (Array Syntax)
+  | .node i c => Id.run do
+    let mut ars := (← c.toArray.mapM erase).foldl (· ++ ·) #[]
+--    ars := ars.foldl (· ++ ·) #[]
+    if let .ofTacticInfo i := i then
+--      dbg_trace "working on '{i.stx.getKind}': {i.stx}"
+      let stx := i.stx
+      if (!silent.contains stx.getKind) && (match stx.getHeadInfo with
+        | .none => dbg_trace "{(stx.getRange?.isSome, stx)}"; false
+        | .synthetic .. => false
+        | _ => true) then if i.goalsBefore == i.goalsAfter then ars := ars.push stx --logInfo "here"
+    return ars
+  | .context _ t => erase t
+  | .hole _ => #[]
 
 /-- The main entry point to the unused tactic linter. -/
 def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
@@ -191,6 +216,12 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
     return
   if (← get).messages.hasErrors then
     return
+  let trees ← getInfoTrees
+  for t in trees.toArray do
+    for s in erase t do
+      Linter.logLint linter.unusedTactic s m!"'{s}' tactic does nothing '{s.getKind}'"
+
+/-
   let cats := (Parser.parserExtension.getState (← getEnv)).categories
   -- These lookups may fail when the linter is run in a fresh, empty environment
   let some tactics := Parser.ParserCategory.kinds <$> cats.find? `tactic
@@ -210,5 +241,6 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
     if last.start ≤ r.start && r.stop ≤ last.stop then continue
     Linter.logLint linter.unusedTactic stx m!"'{stx}' tactic does nothing"
     last := r
+-/
 
 initialize addLinter unusedTacticLinter
