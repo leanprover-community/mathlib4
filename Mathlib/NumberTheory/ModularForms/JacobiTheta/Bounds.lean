@@ -56,8 +56,8 @@ lemma summable_f_nat (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_na
       Int.cast_natCast, norm_eq_abs, Nat.abs_cast, abs_exp]
     refine mul_le_mul_of_nonneg_left ?_ (pow_nonneg (Nat.cast_nonneg _) _)
     rw [exp_le_exp, ← sub_nonneg]
-    ring_nf
-    rw [← add_mul, ← mul_add (π * t * n)]
+    rw [show -π * (t * n ^ 2 - 2 * (|a| * (t * n))) + -π * (a ^ 2 * t) - -π * ((n + a) ^ 2 * t)
+         = π * t * n * (|a| + a) * 2 by ring]
     refine mul_nonneg (mul_nonneg (by positivity) ?_) two_pos.le
     rw [← neg_le_iff_add_nonneg]
     apply neg_le_abs
@@ -124,7 +124,7 @@ section k_eq_one
 /-!
 ## Sum over `ℕ` with `k = 1`
 
-Here we use comparison with the series `∑ n r ^ n`, where `r = exp (-π * t)`.
+Here we use comparison with the series `∑ n * r ^ n`, where `r = exp (-π * t)`.
 -/
 
 lemma F_nat_one_le {a : ℝ} (ha : 0 ≤ a) {t : ℝ} (ht : 0 < t) :
