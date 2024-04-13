@@ -70,6 +70,8 @@ theorem mul_antipode_lTensor_comul_apply (a : A) :
     algebraMap R A (Coalgebra.counit a) :=
   LinearMap.congr_fun mul_antipode_lTensor_comul a
 
+open BigOperators Coalgebra
+
 lemma sum_antipode_mul_eq_algebraMap_counit (a : A) {ι : Type*} (s : Finset ι) (x y : ι → A)
     (repr : comul a = ∑ i in s, x i ⊗ₜ[R] y i) :
     ∑ i in s, antipode (R := R) (x i) * y i = algebraMap R A (counit a) := by
