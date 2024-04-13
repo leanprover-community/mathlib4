@@ -44,7 +44,8 @@ lemma abstract_comul_exists_repr (x : A) :
 noncomputable def ℐ (a : A) : Finset (A ⊗[R] A) := abstract_comul_exists_repr comul a |>.choose
 
 /-- an arbitrarily chosen first coordinate for comul(a) = ∑ a₁ ⊗ a₂. -/
-noncomputable def Δ₁ (a : A) : A ⊗[R] A → A := abstract_comul_exists_repr comul a |>.choose_spec.choose
+noncomputable def Δ₁ (a : A) : A ⊗[R] A → A :=
+  abstract_comul_exists_repr comul a |>.choose_spec.choose
 
 /-- an arbitrarily chosen second coordinate for comul(a) = ∑ a₁ ⊗ a₂. -/
 noncomputable def Δ₂ (a : A) : A ⊗[R] A → A :=
