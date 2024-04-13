@@ -58,7 +58,7 @@ theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠
     simp only [map.coe_coe, map.map_smul, norm_smul, norm_inv, norm_norm]
     field_simp only [one_mul]
   · ext1
-    -- porting note (#10745): was `simp`; added simp lemma
+    -- porting note (#10745): was `simp`; explicitly supplied simp lemma
     simp [smul_inv_smul₀ minor₁]
 #align is_conformal_map_complex_linear isConformalMap_complex_linear
 
