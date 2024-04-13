@@ -3,7 +3,7 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.MvPolynomial.Monad
+import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
@@ -28,9 +28,9 @@ that evaluates on elements `x` of `L` to the characteristic polynomial of `φ x`
 
 * `Matrix.toMvPolynomial M i`: the family of multivariate polynomials that evaluates on `c : n → R`
   to the dot product of the `i`-th row of `M` with `c`.
+  `Matrix.toMvPolynomial M i` is the sum of the monomials `C (M i j) * X j`.
 * `LinearMap.toMvPolynomial b₁ b₂ f`: a version of `Matrix.toMvPolynomial` for linear maps `f`
   with respect to bases `b₁` and `b₂` of the domain and codomain.
-`Matrix.toMvPolynomial M i` is the sum of the monomials `C (M i j) * X j`.
 * `LinearMap.polyCharpoly`: the multivariate polynomial that evaluates on elements `x` of `L`
   to the characteristic polynomial of `φ x`.
 * `LinearMap.polyCharpoly_map`: the evaluation of `polyCharpoly` on elements `x` of `L`
