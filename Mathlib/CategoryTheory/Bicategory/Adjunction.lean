@@ -229,7 +229,6 @@ def adjointifyCounit (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) : g ≫
 
 theorem adjointifyCounit_left_triangle (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) :
     leftZigzagIso η (adjointifyCounit η ε) = λ_ f ≪≫ (ρ_ f).symm := by
-  with_panel_widgets [GoalTypePanel]
   apply Iso.ext
   dsimp [adjointifyCounit, bicategoricalIsoComp]
   calc
