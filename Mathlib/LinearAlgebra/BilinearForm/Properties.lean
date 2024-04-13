@@ -144,7 +144,7 @@ theorem isSymm_neg {B : BilinForm R₁ M₁} : (-B).IsSymm ↔ B.IsSymm :=
 
 variable (R₂) in
 theorem isSymm_iff_flip : B.IsSymm ↔ flipHom B = B :=
-  (forall₂_congr fun _ _ => by exact eq_comm).trans ext_iff.symm
+  (forall₂_congr fun _ _ => by exact eq_comm).trans ext_iff₂.symm
 #align bilin_form.is_symm_iff_flip' LinearMap.BilinForm.isSymm_iff_flip
 
 /-- The proposition that a bilinear form is alternating -/
@@ -432,7 +432,7 @@ theorem compLeft_injective (B : BilinForm R₁ M₁) (b : B.Nondegenerate) :
 theorem isAdjointPair_unique_of_nondegenerate (B : BilinForm R₁ M₁) (b : B.Nondegenerate)
     (φ ψ₁ ψ₂ : M₁ →ₗ[R₁] M₁) (hψ₁ : IsAdjointPair B B ψ₁ φ) (hψ₂ : IsAdjointPair B B ψ₂ φ) :
     ψ₁ = ψ₂ :=
-  B.compLeft_injective b <| ext fun v w => by rw [compLeft_apply, compLeft_apply, hψ₁, hψ₂]
+  B.compLeft_injective b <| ext₂ fun v w => by rw [compLeft_apply, compLeft_apply, hψ₁, hψ₂]
 #align bilin_form.is_adjoint_pair_unique_of_nondegenerate LinearMap.BilinForm.isAdjointPair_unique_of_nondegenerate
 
 section FiniteDimensional

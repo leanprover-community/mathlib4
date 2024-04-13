@@ -64,6 +64,7 @@ namespace BilinForm
 
 #noalign bilin_form.coe_fn_mk
 
+@[deprecated]
 theorem coeFn_congr : ∀ {x x' y y' : M}, x = x' → y = y' → B x y = B x' y'
   | _, _, _, _, rfl, rfl => rfl
 #align bilin_form.coe_fn_congr LinearMap.BilinForm.coeFn_congr
@@ -135,23 +136,28 @@ lemma smul_right_of_tower (r : S) (x y : M) : B x (r • y) = r • B x y := by
 variable {D : BilinForm R M} {D₁ : BilinForm R₁ M₁}
 
 -- TODO: instantiate `FunLike`
+@[deprecated]
 theorem coe_injective : Function.Injective ((fun B x y => B x y) : BilinForm R M → M → M → R) :=
   fun B D h => by
     ext x y
     apply congrFun₂ h
 #align bilin_form.coe_injective LinearMap.BilinForm.coe_injective
 
-@[ext]
+set_option linter.deprecated false in
+@[deprecated]
 theorem ext (H : ∀ x y : M, B x y = D x y) : B = D :=
   coe_injective <| by
     funext
     exact H _ _
 #align bilin_form.ext LinearMap.BilinForm.ext
 
+@[deprecated]
 theorem congr_fun (h : B = D) (x y : M) : B x y = D x y :=
   h ▸ rfl
 #align bilin_form.congr_fun LinearMap.BilinForm.congr_fun
 
+set_option linter.deprecated false in
+@[deprecated]
 theorem ext_iff : B = D ↔ ∀ x y, B x y = D x y :=
   ⟨congr_fun, ext₂⟩
 #align bilin_form.ext_iff LinearMap.BilinForm.ext_iff
@@ -246,6 +252,7 @@ instance : AddCommGroup (BilinForm R₁ M₁) := inferInstance
 instance : Inhabited (BilinForm R M) := inferInstance
 
 /-- `coeFn` as an `AddMonoidHom` -/
+@[deprecated]
 def coeFnAddMonoidHom : BilinForm R M →+ M → M → R where
   toFun := (fun B x y => B x y)
   map_zero' := rfl
