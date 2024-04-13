@@ -389,8 +389,8 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
   V i := (Opens.toTopCat _).obj (h.V i.1 i.2)
   f i j := (h.V i j).inclusion
   f_id i := by
-    -- Porting note (#BBBBB): added `dsimp only` for beta reduction
-    dsimp only
+    -- Porting note (#BBBBB): additional beta reduction needed
+    beta_reduce
     exact (h.V_id i).symm ▸ IsIso.of_iso (Opens.inclusionTopIso (h.U i))
   f_open := fun i j : h.J => (h.V i j).openEmbedding
   t := h.t
