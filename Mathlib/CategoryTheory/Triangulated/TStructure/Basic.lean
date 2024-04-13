@@ -423,6 +423,14 @@ lemma mem_tStructure_heart_iff (X : S.category) :
     (S.tStructure t).heart X ↔ t.heart X.1 := by
   rfl
 
+lemma tStructure_isLE_iff (X : S.category) (n : ℤ) :
+    (S.tStructure t).IsLE X n ↔ t.IsLE (S.ι.obj X) n :=
+  ⟨fun h => ⟨h.1⟩, fun h => ⟨h.1⟩⟩
+
+lemma tStructure_isGE_iff (X : S.category) (n : ℤ) :
+    (S.tStructure t).IsGE X n ↔ t.IsGE (S.ι.obj X) n :=
+  ⟨fun h => ⟨h.1⟩, fun h => ⟨h.1⟩⟩
+
 end Subcategory
 
 end Triangulated

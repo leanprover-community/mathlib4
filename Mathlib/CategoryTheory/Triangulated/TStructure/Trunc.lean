@@ -982,7 +982,11 @@ instance : ClosedUnderIsomorphisms t.plus.P := by
   dsimp only [plus]
   infer_instance
 
---def bounded : Triangulated.Subcategory C := t.plus ⊓ t.minus
+def bounded : Triangulated.Subcategory C := t.plus.inter t.minus
+
+instance : ClosedUnderIsomorphisms t.bounded.P := by
+  dsimp [bounded]
+  infer_instance
 
 noncomputable def natTransTruncLEOfLE (a b : ℤ) (h : a ≤ b) :
     t.truncLE a ⟶ t.truncLE b :=
@@ -1626,6 +1630,40 @@ lemma HasInducedTStructure.mk' (S : Subcategory C) (t : TStructure C)
     exact TStructure.mem_of_isLE  _ _ _
     exact TStructure.mem_of_isGE  _ _ _
 
+lemma mem_of_hasInductedTStructure (S : Subcategory C) (t : TStructure C)
+    [ClosedUnderIsomorphisms S.P] [S.HasInducedTStructure t]
+    (T : Triangle C) (hT : T ∈ distTriang C)
+    (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (h₁ : t.IsLE T.obj₁ n₀) (h₂ : S.P T.obj₂)
+    (h₃ : t.IsGE T.obj₃ n₁) :
+    S.P T.obj₁ ∧ S.P T.obj₃ := by
+  obtain ⟨e, _⟩ := t.triangle_iso_exists n₀ n₁ (by omega) _ _ hT
+    (S.ι.map_distinguished _ ((S.tStructure t).triangleLEGE_distinguished n₀ n₁ h ⟨_, h₂⟩))
+    (Iso.refl _) inferInstance inferInstance (by
+      dsimp
+      rw [← S.tStructure_isLE_iff]
+      infer_instance) (by
+      dsimp
+      rw [← S.tStructure_isGE_iff]
+      infer_instance)
+  exact ⟨(mem_iff_of_iso S.P (Triangle.π₁.mapIso e)).2 (S.ι_obj_mem _),
+    (mem_iff_of_iso S.P (Triangle.π₃.mapIso e)).2 (S.ι_obj_mem _)⟩
+
+instance (S S' : Subcategory C) (t : TStructure C) [S.HasInducedTStructure t]
+    [S'.HasInducedTStructure t]
+    [ClosedUnderIsomorphisms S.P] [ClosedUnderIsomorphisms S'.P] :
+    (S.inter S').HasInducedTStructure t :=
+  HasInducedTStructure.mk' _ _ (by
+    rintro X ⟨hX, hX'⟩ n
+    exact
+      ⟨⟨(S.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished n _ rfl X) n _ rfl
+        (by dsimp; infer_instance) hX (by dsimp; infer_instance)).1,
+      (S'.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished n _ rfl X) n _ rfl
+        (by dsimp; infer_instance) hX' (by dsimp; infer_instance)).1⟩,
+        ⟨(S.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished (n - 1) n (by omega) X)
+        (n - 1) n (by omega) (by dsimp; infer_instance) hX (by dsimp; infer_instance)).2,
+      (S'.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished (n - 1) n (by omega) X)
+        (n - 1) n (by omega) (by dsimp; infer_instance) hX' (by dsimp; infer_instance)).2⟩⟩)
+
 end Subcategory
 
 instance [IsTriangulated C] : t.plus.HasInducedTStructure t := by
@@ -1637,6 +1675,10 @@ instance [IsTriangulated C] : t.minus.HasInducedTStructure t := by
   apply Subcategory.HasInducedTStructure.mk'
   rintro X ⟨a, _⟩ n
   exact ⟨⟨a, inferInstance⟩, ⟨a, inferInstance⟩⟩
+
+instance [IsTriangulated C] : t.bounded.HasInducedTStructure t := by
+  dsimp [TStructure.bounded]
+  infer_instance
 
 namespace TStructure
 

@@ -6,37 +6,6 @@ open CategoryTheory Category Pretriangulated Triangulated Limits Preadditive
 
 universe w
 
-namespace CategoryTheory
-
-lemma Full.ofCompLeft {C D E : Type _} [Category C] [Category D] [Category E]
-    (F : C ⥤ D) (G : D ⥤ E) (hFG : (F ⋙ G).Full) (hF : F.EssSurj) :
-    G.Full := Functor.fullOfSurjective _ (fun X' Y' f => by
-  let φ : (F ⋙ G).obj _ ⟶ (F ⋙ G).obj _ :=
-    G.map (F.objObjPreimageIso X').hom ≫ f ≫ G.map (F.objObjPreimageIso Y').inv
-  let f' := (F ⋙ G).preimage φ
-  have hf' : G.map (F.map f') = _ := (F ⋙ G).image_preimage φ
-  refine' ⟨(F.objObjPreimageIso X').inv ≫ F.map f' ≫ (F.objObjPreimageIso Y').hom, _⟩
-  rw [G.map_comp, G.map_comp, hf']
-  simp only [φ, Functor.comp_obj, assoc, ← G.map_comp, ← G.map_comp_assoc,
-    Iso.inv_hom_id, G.map_id, id_comp, comp_id])
-
-lemma Faithful.ofCompLeft {C D E : Type _} [Category C] [Category D] [Category E]
-    (F : C ⥤ D) (G : D ⥤ E) (hFG : (F ⋙ G).Faithful) (hF : F.EssSurj) (hF' : F.Full) :
-    G.Faithful where
-  map_injective {X' Y'} := fun f₁ f₂ hf => by
-    obtain ⟨g₁, hg₁⟩ := F.map_surjective
-      ((Functor.objObjPreimageIso F X').hom ≫ f₁ ≫ (Functor.objObjPreimageIso F Y').inv)
-    obtain ⟨g₂, hg₂⟩ := F.map_surjective
-      ((Functor.objObjPreimageIso F X').hom ≫ f₂ ≫ (Functor.objObjPreimageIso F Y').inv)
-    suffices g₁ = g₂ by
-      rw [← cancel_mono (F.objObjPreimageIso Y').inv,
-        ← cancel_epi (F.objObjPreimageIso X').hom, ← hg₁, ← hg₂, this]
-    apply (F ⋙ G).map_injective
-    dsimp
-    simp only [hg₁, hg₂, G.map_comp, hf]
-
-end CategoryTheory
-
 namespace DerivedCategory
 
 variable {C : Type _} [Category C] [Abelian C] [HasDerivedCategory.{w} C]
@@ -452,29 +421,6 @@ noncomputable def truncGELECompHomologyFunctorIso (a b n : ℤ) (ha : a ≤ n) (
       isoWhiskerLeft (t.truncLE b) (truncGECompHomologyFunctorIso C a n ha) ≪≫
       truncLECompHomologyFunctorIso C b n hb
 
-/-noncomputable def homologyCompFunctorIso (q : ℤ) :
-    t.homology' q ⋙ (heartEquivalence C).functor ≅
-      homologyFunctor C q := by
-  refine' (Functor.associator _ _ _).symm ≪≫
-    isoWhiskerRight (t.homologyCompιHeart' q) _ ≪≫
-    Functor.associator _ _ _ ≪≫
-    isoWhiskerLeft _ ((homologyFunctor C 0).shiftIso q 0 q (add_zero q)) ≪≫
-    Functor.associator _ _ _ ≪≫
-    isoWhiskerLeft _ (truncGECompHomologyFunctorIso C q q (by rfl)) ≪≫
-    truncLECompHomologyFunctorIso C q q (by rfl)
-
-noncomputable def homologyIsoHomologyFunctorCompInverse (q : ℤ) :
-    t.homology' q ≅ homologyFunctor C q ⋙ (heartEquivalence C).inverse :=
-  natIsoOfCompFullyFaithful (heartEquivalence C).functor
-    (homologyCompFunctorIso C q ≪≫ (Functor.rightUnitor _).symm ≪≫
-    isoWhiskerLeft _ (heartEquivalence C).counitIso.symm ≪≫ (Functor.associator _ _ _).symm)
-
-noncomputable def homologyιHeart (q : ℤ) :
-    t.homology' q ⋙ t.ιHeart' ≅ homologyFunctor C q ⋙ singleFunctor C 0 :=
-  isoWhiskerRight (homologyIsoHomologyFunctorCompInverse C q) _ ≪≫
-    Functor.associator _ _ _ ≪≫
-    isoWhiskerLeft _ (heartEquivalenceInverseCompιHeart C).symm-/
-
 variable {C}
 
 noncomputable def truncLE₀GE₀ToHeart : DerivedCategory C ⥤ C :=
@@ -510,12 +456,12 @@ variable (C)
 
 abbrev Minus := (t : TStructure (DerivedCategory C)).minus.category
 abbrev Plus := (t : TStructure (DerivedCategory C)).plus.category
---abbrev Bounded := (t : TStructure (DerivedCategory C)).bounded.category
+abbrev Bounded := (t : TStructure (DerivedCategory C)).bounded.category
 
 variable {C}
 
 abbrev Minus.ι : Minus C ⥤ DerivedCategory C := t.minus.ι
 abbrev Plus.ι : Plus C ⥤ DerivedCategory C := t.plus.ι
---abbrev ιBounded : Bounded C ⥤ DerivedCategory C := t.bounded.ι
+abbrev Bounded.ι : Bounded C ⥤ DerivedCategory C := t.bounded.ι
 
 end DerivedCategory

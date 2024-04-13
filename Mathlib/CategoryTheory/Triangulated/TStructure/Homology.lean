@@ -264,6 +264,9 @@ instance : t.plus.ContainsHeart t where
 instance : t.minus.ContainsHeart t where
   subset _ hX := ⟨0, ⟨hX.1⟩⟩
 
+instance : t.bounded.ContainsHeart t where
+  subset _ hX := ⟨⟨0, ⟨hX.2⟩⟩, ⟨0, ⟨hX.1⟩⟩⟩
+
 end Subcategory
 
 namespace TStructure
@@ -272,6 +275,7 @@ variable (t : TStructure C) [IsTriangulated C]
 
 abbrev tPlus := t.plus.tStructure t
 abbrev tMinus := t.minus.tStructure t
+abbrev tBounded := t.bounded.tStructure t
 
 section
 

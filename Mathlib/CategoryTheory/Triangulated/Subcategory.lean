@@ -376,6 +376,21 @@ instance : S.W.IsStableUnderFiniteProducts := by
 
 section
 
+variable (S' : Subcategory C) [ClosedUnderIsomorphisms S.P]
+    [ClosedUnderIsomorphisms S'.P]
+
+def inter : Subcategory C :=
+  mk' (fun X => S.P X ∧ S'.P X) ⟨S.zero, S'.zero⟩
+    (fun X n hX => ⟨S.shift X n hX.1, S'.shift X n hX.2⟩)
+    (fun T hT h₁ h₃ => ⟨S.ext₂ T hT h₁.1 h₃.1, S'.ext₂ T hT h₁.2 h₃.2⟩)
+
+instance : ClosedUnderIsomorphisms (S.inter S').P := by
+  dsimp [inter]
+  infer_instance
+
+end
+section
+
 variable [IsTriangulated C]
 example : Pretriangulated (S.W.Localization) := inferInstance
 example : IsTriangulated (S.W.Localization) := inferInstance
@@ -401,6 +416,8 @@ instance : Preadditive S.category := by
 instance : S.ι.Additive := by
   dsimp [ι, category]
   infer_instance
+
+lemma ι_obj_mem (X : S.category) : S.P (S.ι.obj X) := X.2
 
 noncomputable instance hasShift : HasShift S.category ℤ :=
   hasShiftOfFullyFaithful S.ι (fun n => FullSubcategory.lift _ (S.ι ⋙ shiftFunctor C n)
