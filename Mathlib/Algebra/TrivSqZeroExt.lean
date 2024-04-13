@@ -773,7 +773,7 @@ protected theorem inv_mul_cancel [DivisionRing R] [AddCommGroup M]
 
 protected theorem inv_inl [DivisionRing R] [AddCommGroup M]
     [Module Rᵐᵒᵖ M] [Module R M]
-    {r : R} :
+    (r : R) :
     (inl r)⁻¹ = (inl (r⁻¹ : R) : tsze R M) := by
   ext
   · rw [fst_inv, fst_inl, fst_inl]
@@ -782,12 +782,27 @@ protected theorem inv_inl [DivisionRing R] [AddCommGroup M]
 @[simp]
 theorem inv_inr [DivisionRing R] [AddCommGroup M]
     [Module Rᵐᵒᵖ M] [Module R M]
-    {m : M} :
+    (m : M) :
     (inr m)⁻¹ = (0 : tsze R M) := by
   ext
   · rw [fst_inv, fst_inr, fst_zero, inv_zero]
   rw [snd_inv, snd_inr, fst_inr]
   rw [inv_zero, zero_smul, snd_zero, neg_zero]
+
+@[simp]
+protected theorem inv_one [DivisionRing R][AddCommGroup M]
+    [Module Rᵐᵒᵖ M] [Module R M] : (inl 1 : tsze R M)⁻¹ = (inl 1 : tsze R M) := by
+  rw [TrivSqZeroExt.inv_inl, inv_one]
+
+-- protected theorem mul_inv_rev [DivisionRing R] [AddCommGroup M]
+--     [Module Rᵐᵒᵖ M] [Module R M]
+--     (a b : tsze R M) : (a * b)⁻¹ = b⁻¹ * a⁻¹ := by
+--     {
+--       ext
+--       · rw [fst_inv, fst_mul, fst_mul, mul_inv_rev (fst a : R) (fst b : R), fst_inv, fst_inv]
+--       rw [snd_inv, snd_mul, snd_mul, fst_mul, mul_inv_rev, mul_smul, smul_distrib_left]
+
+--     }
 
 end Inv
 
