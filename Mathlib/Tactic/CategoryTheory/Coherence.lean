@@ -428,7 +428,7 @@ partial def Structural.e : Structural → M Expr
     -- | .id g => mkAppM ``CategoryStruct.id #[← (g.comp f).e]
     | _ => mkAppM ``MonoidalCategoryStruct.whiskerRight #[← η.e, ← f.e]
   | .monoidalCoherence _ _ e => do
-    mkAppOptM ``MonoidalCoherence.hom #[none, none, none, none, none, none, e]
+    mkAppOptM ``MonoidalCoherence.hom #[none, none, none, none, e]
     -- return e
 
 def StructuralAtom.src : StructuralAtom → Mor₁
@@ -536,7 +536,7 @@ partial def structural? (e : Expr) : M Structural := do
   | (``CategoryStruct.id, #[_, f]) => return .id (toMor₁ f)
   | (``MonoidalCategoryStruct.whiskerLeft, #[f, η]) => return .whiskerLeft (toMor₁ f) (← structural? η)
   | (``MonoidalCategoryStruct.whiskerRight, #[η, f]) => return .whiskerRight (← structural? η) (toMor₁ f)
-  | (``MonoidalCoherence.hom, #[_, _, f, g, _, _, inst]) =>
+  | (``MonoidalCoherence.hom, #[_, _, f, g, inst]) =>
     return .monoidalCoherence (toMor₁ f) (toMor₁ g) inst
     -- match structuralAtom? η with
     -- | some η => return .atom η
@@ -771,8 +771,8 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
     let (η_e, pf_η) ← eval η
     let (θ, pf_θ) ← evalWhiskerRightExpr η_e (toMor₁ h)
     return (θ, ← mkAppM ``eval_whiskerRight #[η, ← η_e.e, h, ← θ.e, pf_η, pf_θ])
-  | (``monoidalComp, #[_, _, _, _, _, _, _, _, mα, η, θ]) => do
-    let α₀ ← mkAppOptM ``MonoidalCoherence.hom #[none, none, none, none, none, none, mα]
+  | (``monoidalComp, #[_, _, _, _, _, _, mα, η, θ]) => do
+    let α₀ ← mkAppOptM ``MonoidalCoherence.hom #[none, none, none, none, mα]
     let (η_e, pf_η) ← eval η
     let α₀' ← structural? α₀
     -- | throwError "expected a structural 2-morphism, but got {← ppExpr α₀}"
@@ -1073,6 +1073,8 @@ example : normalize% (X ⊗ Y) ◁ f = sorry := by
 
 #check normalize% (f ≫ g)
 
+#check normalize% f ⊗ g
+
 #guard_expr normalize% X ◁ 𝟙 Y = X ◁ 𝟙 Y
 #guard_expr normalize% 𝟙 X ▷ Y = 𝟙 X ▷ Y
 #guard_expr normalize% X ◁ (f ≫ g) = _ ≫ X ◁ f ≫ _ ≫ X ◁ g ≫ _
@@ -1089,10 +1091,6 @@ example : normalize% (X ⊗ Y) ◁ f = sorry := by
 #guard_expr normalize% (α_ X Y Z).hom = (α_ _ _ _).hom
 #guard_expr normalize% (α_ X Y Z).inv = (α_ _ _ _).inv
 #guard_expr normalize% 𝟙 (X ⊗ Y) = 𝟙 (X ⊗ Y)
-#guard_expr normalize% f ⊗ g = _ ≫ f ▷ _ ≫ _ ≫ _ ◁ g ≫ _
+#guard_expr normalize% f ⊗ g = _ ≫ (f ⊗ g) ≫ _
 variable {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗ V₁) in
 #guard_expr normalize% R V₁ V₂ ▷ V₃ ⊗≫ V₂ ◁ R V₁ V₃ = _ ≫ R V₁ V₂ ▷ V₃ ≫ _ ≫ V₂ ◁ R V₁ V₃ ≫ _
-
-
-example : 5 + 4 = 9 := by
-  ring
