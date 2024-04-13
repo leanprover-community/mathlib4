@@ -81,12 +81,11 @@ theorem snd_mul [Semiring R] (x y : R[ε]) : snd (x * y) = fst x * snd y + snd x
 @[simp]
 theorem eps_mul_eps [Semiring R] : (ε * ε : R[ε]) = 0 :=
   inr_mul_inr _ _ _
-
 #align dual_number.eps_mul_eps DualNumber.eps_mul_eps
 
 @[simp]
-theorem inv_eps [DivisionRing R] : (ε : R[ε])⁻¹ = 0 := by
-  exact TrivSqZeroExt.inv_inr 1
+theorem inv_eps [DivisionRing R] : (ε : R[ε])⁻¹ = 0 :=
+  TrivSqZeroExt.inv_inr 1
 
 @[simp]
 theorem inr_eq_smul_eps [MulZeroOneClass R] (r : R) : inr r = (r • ε : R[ε]) :=
