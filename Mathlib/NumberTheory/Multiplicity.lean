@@ -184,7 +184,7 @@ theorem pow_prime_pow_sub_pow_prime_pow (a : ℕ) :
     multiplicity (↑p) (x ^ p ^ a - y ^ p ^ a) = multiplicity (↑p) (x - y) + a := by
   induction' a with a h_ind
   · rw [Nat.cast_zero, add_zero, pow_zero, pow_one, pow_one]
-  rw [Nat.cast_add, Nat.cast_one, ← add_assoc, ← h_ind, pow_succ', pow_mul, pow_mul]
+  rw [Nat.cast_add, Nat.cast_one, ← add_assoc, ← h_ind, pow_succ, pow_mul, pow_mul]
   apply pow_prime_sub_pow_prime hp hp1
   · rw [← geom_sum₂_mul]
     exact dvd_mul_of_dvd_right hxy _
