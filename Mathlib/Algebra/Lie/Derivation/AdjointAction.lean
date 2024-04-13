@@ -81,8 +81,8 @@ lemma ad_zero : ad R L 0 = 0 := LieHom.map_zero (ad R L)
 lemma ad_apply (x y : L) : ad R L x y = ⁅x, y⁆ := by
   rw [ad, LieHom.coe_mk, inner_apply, lie_neg, lie_skew]
 
-lemma ad_lie (x y z : L) : (ad R L x) ⁅y, z⁆ = ⁅y, ad R L x z⁆ + ⁅ad R L x y, z⁆ := by
-  rw [apply_lie_eq_add (ad R L x)]
+lemma ad_lie (x y z : L) : ad R L x ⁅y, z⁆ = ⁅y, ad R L x z⁆ + ⁅ad R L x y, z⁆ := by
+  rw [apply_lie_eq_add]
 
 /-- For every `x` in the Lie algebra `L`, the derivation `ad(x)` defined in this file, is equal,
 when seen as an endomorphism of `L`, to the one defined in `LieAlgebra.ad`. -/
