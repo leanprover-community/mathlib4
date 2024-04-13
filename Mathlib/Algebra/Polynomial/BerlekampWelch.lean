@@ -1,10 +1,5 @@
 
 
-example : (let i := 2; let j := 1; let k := 2; i + j + k) = 5 := by
-
-  simp only []
-
-
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.Data.Matrix.ColumnRowPartitioned
@@ -49,7 +44,7 @@ noncomputable def BerlekampWelchDecoding {F : Type} [Field F] (m e : ℕ)
   let full_mat : Matrix (Fin n) (Fin (m + e + e)) F :=
     fun i j => ((-A_mat).fromColumns AB_mat) i (finSumFinEquiv.symm j)
   let AB_vec : Fin n → F := fun i => received i * (a i) ^ (e)
-  let qe_vec : Fin n → F := full_mat *ᵥ -AB_vec
+  let qe_vec : Fin n → F := (full_mat)⁻¹ *ᵥ -AB_vec
   let q_vec : Fin (m+e) → F := fun i => qe_vec (finSumFinEquiv (Sum.inl i))
   let e_vec : Fin (e) → F := fun i => qe_vec (finSumFinEquiv (Sum.inr i))
   let e_poly : Polynomial F := X ^ e + List.sum ((List.finRange e).map (fun i => C (e_vec i) * X ^ (i : ℕ)))
