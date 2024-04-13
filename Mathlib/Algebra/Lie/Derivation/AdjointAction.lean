@@ -75,7 +75,6 @@ def ad : L →ₗ⁅R⁆ LieDerivation R L L where
 
 variable {R L}
 
-@[simp]
 lemma ad_zero : ad R L 0 = 0 := LieHom.map_zero (ad R L)
 
 @[simp]
