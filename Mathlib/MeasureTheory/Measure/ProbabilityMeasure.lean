@@ -152,7 +152,7 @@ theorem coeFn_univ (ν : ProbabilityMeasure Ω) : ν univ = 1 :=
 #align measure_theory.probability_measure.coe_fn_univ MeasureTheory.ProbabilityMeasure.coeFn_univ
 
 theorem coeFn_univ_ne_zero (ν : ProbabilityMeasure Ω) : ν univ ≠ 0 := by
-  simp only [coeFn_univ, Ne.def, one_ne_zero, not_false_iff]
+  simp only [coeFn_univ, Ne, one_ne_zero, not_false_iff]
 #align measure_theory.probability_measure.coe_fn_univ_ne_zero MeasureTheory.ProbabilityMeasure.coeFn_univ_ne_zero
 
 /-- A probability measure can be interpreted as a finite measure. -/
@@ -382,14 +382,14 @@ theorem self_eq_mass_smul_normalize : μ = μ.mass • μ.normalize.toFiniteMeas
 
 theorem normalize_eq_of_nonzero (nonzero : μ ≠ 0) (s : Set Ω) : μ.normalize s = μ.mass⁻¹ * μ s := by
   simp only [μ.self_eq_mass_mul_normalize, μ.mass_nonzero_iff.mpr nonzero, inv_mul_cancel_left₀,
-    Ne.def, not_false_iff]
+    Ne, not_false_iff]
 #align measure_theory.finite_measure.normalize_eq_of_nonzero MeasureTheory.FiniteMeasure.normalize_eq_of_nonzero
 
 theorem normalize_eq_inv_mass_smul_of_nonzero (nonzero : μ ≠ 0) :
     μ.normalize.toFiniteMeasure = μ.mass⁻¹ • μ := by
   nth_rw 3 [μ.self_eq_mass_smul_normalize]
   rw [← smul_assoc]
-  simp only [μ.mass_nonzero_iff.mpr nonzero, Algebra.id.smul_eq_mul, inv_mul_cancel, Ne.def,
+  simp only [μ.mass_nonzero_iff.mpr nonzero, Algebra.id.smul_eq_mul, inv_mul_cancel, Ne,
     not_false_iff, one_smul]
 #align measure_theory.finite_measure.normalize_eq_inv_mass_smul_of_nonzero MeasureTheory.FiniteMeasure.normalize_eq_inv_mass_smul_of_nonzero
 

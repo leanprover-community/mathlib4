@@ -3,7 +3,6 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Order.WithZero
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Rat.Defs
 import Mathlib.Order.WellFounded
@@ -208,7 +207,7 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
     clear hk a b
   · -- We will now show that the fibers of the solution set are described by a quadratic equation.
     intro x y
-    rw [← Int.coe_nat_inj', ← sub_eq_zero]
+    rw [← Int.natCast_inj, ← sub_eq_zero]
     apply eq_iff_eq_cancel_right.2
     simp; ring
   · -- Show that the solution set is symmetric in a and b.
@@ -220,7 +219,7 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
   · -- Show that the claim is true if a = b.
     intro x hx
     suffices k ≤ 1 by
-      rw [Nat.le_add_one_iff, le_zero_iff] at this
+      rw [Nat.le_add_one_iff, Nat.le_zero] at this
       rcases this with (rfl | rfl)
       · use 0; simp
       · use 1; simp
@@ -266,7 +265,7 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
     clear hk a b
   · -- We will now show that the fibers of the solution set are described by a quadratic equation.
     intro x y
-    rw [← Int.coe_nat_inj', ← sub_eq_zero]
+    rw [← Int.natCast_inj, ← sub_eq_zero]
     apply eq_iff_eq_cancel_right.2
     simp; ring
   · -- Show that the solution set is symmetric in a and b.
@@ -298,7 +297,7 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
           assumption_mod_cast
   · -- Show the base case.
     intro x y h h_base
-    obtain rfl | rfl : x = 0 ∨ x = 1 := by rwa [Nat.le_add_one_iff, le_zero_iff] at h_base
+    obtain rfl | rfl : x = 0 ∨ x = 1 := by rwa [Nat.le_add_one_iff, Nat.le_zero] at h_base
     · simp at h
     · rw [mul_one, one_mul, add_right_comm] at h
       have y_dvd : y ∣ y * k := dvd_mul_right y k

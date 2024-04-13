@@ -346,9 +346,12 @@ set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.coe_mul LucasLehmer.X.coe_mul
 
 @[norm_cast]
-theorem coe_nat (n : ℕ) : ((n : ℤ) : X q) = (n : X q) := by ext <;> simp
+theorem coe_natCast (n : ℕ) : ((n : ℤ) : X q) = (n : X q) := by ext <;> simp
 set_option linter.uppercaseLean3 false in
-#align lucas_lehmer.X.coe_nat LucasLehmer.X.coe_nat
+#align lucas_lehmer.X.coe_nat LucasLehmer.X.coe_natCast
+
+-- 2024-04-05
+@[deprecated] alias coe_nat := coe_natCast
 
 /-- The cardinality of `X` is `q^2`. -/
 theorem card_eq : Fintype.card (X q) = q ^ 2 := by
@@ -398,7 +401,7 @@ theorem closed_form (i : ℕ) : (s i : X q) = (ω : X q) ^ 2 ^ i + (ωb : X q) ^
       _ = (ω ^ 2 ^ i) ^ 2 + (ωb ^ 2 ^ i) ^ 2 + 2 * (ωb ^ 2 ^ i * ω ^ 2 ^ i) - 2 := by ring
       _ = (ω ^ 2 ^ i) ^ 2 + (ωb ^ 2 ^ i) ^ 2 := by
         rw [← mul_pow ωb ω, ωb_mul_ω, one_pow, mul_one, add_sub_cancel_right]
-      _ = ω ^ 2 ^ (i + 1) + ωb ^ 2 ^ (i + 1) := by rw [← pow_mul, ← pow_mul, _root_.pow_succ']
+      _ = ω ^ 2 ^ (i + 1) + ωb ^ 2 ^ (i + 1) := by rw [← pow_mul, ← pow_mul, _root_.pow_succ]
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.closed_form LucasLehmer.X.closed_form
 
@@ -414,7 +417,7 @@ Here and below, we introduce `p' = p - 2`, in order to avoid using subtraction i
 theorem two_lt_q (p' : ℕ) : 2 < q (p' + 2) := by
   refine (minFac_prime (one_lt_mersenne ?_).ne').two_le.lt_of_ne' ?_
   · exact le_add_left _ _
-  · rw [Ne.def, minFac_eq_two_iff, mersenne, Nat.pow_succ']
+  · rw [Ne, minFac_eq_two_iff, mersenne, Nat.pow_succ']
     exact Nat.two_not_dvd_two_mul_sub_one Nat.one_le_two_pow
 #align lucas_lehmer.two_lt_q LucasLehmer.two_lt_q
 

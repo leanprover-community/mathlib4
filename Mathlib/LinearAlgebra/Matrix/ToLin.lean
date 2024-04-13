@@ -537,8 +537,10 @@ end ToMatrix'
 
 section ToMatrix
 
+section Finite
+
 variable {R : Type*} [CommSemiring R]
-variable {l m n : Type*} [Fintype n] [Fintype m] [DecidableEq n]
+variable {l m n : Type*} [Fintype n] [Finite m] [DecidableEq n]
 variable {M₁ M₂ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
 variable (v₁ : Basis n R M₁) (v₂ : Basis m R M₂)
 
@@ -616,25 +618,6 @@ theorem LinearMap.toMatrix_transpose_apply' (f : M₁ →ₗ[R] M₂) (j : n) :
   LinearMap.toMatrix_transpose_apply v₁ v₂ f j
 #align linear_map.to_matrix_transpose_apply' LinearMap.toMatrix_transpose_apply'
 
-theorem Matrix.toLin_apply (M : Matrix m n R) (v : M₁) :
-    Matrix.toLin v₁ v₂ M v = ∑ j, (M *ᵥ v₁.repr v) j • v₂ j :=
-  show v₂.equivFun.symm (Matrix.toLin' M (v₁.repr v)) = _ by
-    rw [Matrix.toLin'_apply, v₂.equivFun_symm_apply]
-#align matrix.to_lin_apply Matrix.toLin_apply
-
-@[simp]
-theorem Matrix.toLin_self (M : Matrix m n R) (i : n) :
-    Matrix.toLin v₁ v₂ M (v₁ i) = ∑ j, M j i • v₂ j := by
-  rw [Matrix.toLin_apply, Finset.sum_congr rfl fun j _hj ↦ ?_]
-  rw [Basis.repr_self, Matrix.mulVec, dotProduct, Finset.sum_eq_single i, Finsupp.single_eq_same,
-    mul_one]
-  · intro i' _ i'_ne
-    rw [Finsupp.single_eq_of_ne i'_ne.symm, mul_zero]
-  · intros
-    have := Finset.mem_univ i
-    contradiction
-#align matrix.to_lin_self Matrix.toLin_self
-
 /-- This will be a special case of `LinearMap.toMatrix_id_eq_basis_toMatrix`. -/
 theorem LinearMap.toMatrix_id : LinearMap.toMatrix v₁ v₁ id = 1 := by
   ext i j
@@ -651,32 +634,12 @@ theorem Matrix.toLin_one : Matrix.toLin v₁ v₁ 1 = LinearMap.id := by
   rw [← LinearMap.toMatrix_id v₁, Matrix.toLin_toMatrix]
 #align matrix.to_lin_one Matrix.toLin_one
 
-theorem LinearMap.toMatrix_reindexRange [DecidableEq M₁] [DecidableEq M₂] (f : M₁ →ₗ[R] M₂) (k : m)
-    (i : n) :
+theorem LinearMap.toMatrix_reindexRange [DecidableEq M₁] (f : M₁ →ₗ[R] M₂) (k : m) (i : n) :
     LinearMap.toMatrix v₁.reindexRange v₂.reindexRange f ⟨v₂ k, Set.mem_range_self k⟩
         ⟨v₁ i, Set.mem_range_self i⟩ =
-      LinearMap.toMatrix v₁ v₂ f k i :=
-  by simp_rw [LinearMap.toMatrix_apply, Basis.reindexRange_self, Basis.reindexRange_repr]
+      LinearMap.toMatrix v₁ v₂ f k i := by
+  simp_rw [LinearMap.toMatrix_apply, Basis.reindexRange_self, Basis.reindexRange_repr]
 #align linear_map.to_matrix_reindex_range LinearMap.toMatrix_reindexRange
-
-variable {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃] (v₃ : Basis l R M₃)
-
-theorem LinearMap.toMatrix_comp [Fintype l] [DecidableEq m] (f : M₂ →ₗ[R] M₃) (g : M₁ →ₗ[R] M₂) :
-    LinearMap.toMatrix v₁ v₃ (f.comp g) =
-    LinearMap.toMatrix v₂ v₃ f * LinearMap.toMatrix v₁ v₂ g := by
-  simp_rw [LinearMap.toMatrix, LinearEquiv.trans_apply, LinearEquiv.arrowCongr_comp _ v₂.equivFun,
-    LinearMap.toMatrix'_comp]
-#align linear_map.to_matrix_comp LinearMap.toMatrix_comp
-
-theorem LinearMap.toMatrix_mul (f g : M₁ →ₗ[R] M₁) :
-    LinearMap.toMatrix v₁ v₁ (f * g) = LinearMap.toMatrix v₁ v₁ f * LinearMap.toMatrix v₁ v₁ g := by
-  rw [LinearMap.mul_eq_comp, LinearMap.toMatrix_comp v₁ v₁ v₁ f g]
-#align linear_map.to_matrix_mul LinearMap.toMatrix_mul
-
-lemma LinearMap.toMatrix_pow (f : M₁ →ₗ[R] M₁) (k : ℕ) :
-    (toMatrix v₁ v₁ f) ^ k = toMatrix v₁ v₁ (f ^ k) := by
-  induction' k with k ih; simp
-  rw [pow_succ, pow_succ, ih, ← toMatrix_mul]
 
 @[simp]
 theorem LinearMap.toMatrix_algebraMap (x : R) :
@@ -701,7 +664,52 @@ theorem LinearMap.toMatrix_basis_equiv [Fintype l] [DecidableEq l] (b : Basis l 
   simp [LinearMap.toMatrix_apply, Matrix.one_apply, Finsupp.single_apply, eq_comm]
 #align linear_map.to_matrix_basis_equiv LinearMap.toMatrix_basis_equiv
 
-theorem Matrix.toLin_mul [Fintype l] [DecidableEq m] (A : Matrix l m R) (B : Matrix m n R) :
+end Finite
+
+variable {R : Type*} [CommSemiring R]
+variable {l m n : Type*} [Fintype n] [Fintype m] [DecidableEq n]
+variable {M₁ M₂ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
+variable (v₁ : Basis n R M₁) (v₂ : Basis m R M₂)
+
+theorem Matrix.toLin_apply (M : Matrix m n R) (v : M₁) :
+    Matrix.toLin v₁ v₂ M v = ∑ j, (M *ᵥ v₁.repr v) j • v₂ j :=
+  show v₂.equivFun.symm (Matrix.toLin' M (v₁.repr v)) = _ by
+    rw [Matrix.toLin'_apply, v₂.equivFun_symm_apply]
+#align matrix.to_lin_apply Matrix.toLin_apply
+
+@[simp]
+theorem Matrix.toLin_self (M : Matrix m n R) (i : n) :
+    Matrix.toLin v₁ v₂ M (v₁ i) = ∑ j, M j i • v₂ j := by
+  rw [Matrix.toLin_apply, Finset.sum_congr rfl fun j _hj ↦ ?_]
+  rw [Basis.repr_self, Matrix.mulVec, dotProduct, Finset.sum_eq_single i, Finsupp.single_eq_same,
+    mul_one]
+  · intro i' _ i'_ne
+    rw [Finsupp.single_eq_of_ne i'_ne.symm, mul_zero]
+  · intros
+    have := Finset.mem_univ i
+    contradiction
+#align matrix.to_lin_self Matrix.toLin_self
+
+variable {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃] (v₃ : Basis l R M₃)
+
+theorem LinearMap.toMatrix_comp [Finite l] [DecidableEq m] (f : M₂ →ₗ[R] M₃) (g : M₁ →ₗ[R] M₂) :
+    LinearMap.toMatrix v₁ v₃ (f.comp g) =
+    LinearMap.toMatrix v₂ v₃ f * LinearMap.toMatrix v₁ v₂ g := by
+  simp_rw [LinearMap.toMatrix, LinearEquiv.trans_apply, LinearEquiv.arrowCongr_comp _ v₂.equivFun,
+    LinearMap.toMatrix'_comp]
+#align linear_map.to_matrix_comp LinearMap.toMatrix_comp
+
+theorem LinearMap.toMatrix_mul (f g : M₁ →ₗ[R] M₁) :
+    LinearMap.toMatrix v₁ v₁ (f * g) = LinearMap.toMatrix v₁ v₁ f * LinearMap.toMatrix v₁ v₁ g := by
+  rw [LinearMap.mul_eq_comp, LinearMap.toMatrix_comp v₁ v₁ v₁ f g]
+#align linear_map.to_matrix_mul LinearMap.toMatrix_mul
+
+lemma LinearMap.toMatrix_pow (f : M₁ →ₗ[R] M₁) (k : ℕ) :
+    (toMatrix v₁ v₁ f) ^ k = toMatrix v₁ v₁ (f ^ k) := by
+  induction' k with k ih; simp
+  rw [pow_succ, pow_succ, ih, ← toMatrix_mul]
+
+theorem Matrix.toLin_mul [Finite l] [DecidableEq m] (A : Matrix l m R) (B : Matrix m n R) :
     Matrix.toLin v₁ v₃ (A * B) = (Matrix.toLin v₂ v₃ A).comp (Matrix.toLin v₁ v₂ B) := by
   apply (LinearMap.toMatrix v₁ v₃).injective
   haveI : DecidableEq l := fun _ _ ↦ Classical.propDecidable _
@@ -710,7 +718,7 @@ theorem Matrix.toLin_mul [Fintype l] [DecidableEq m] (A : Matrix l m R) (B : Mat
 #align matrix.to_lin_mul Matrix.toLin_mul
 
 /-- Shortcut lemma for `Matrix.toLin_mul` and `LinearMap.comp_apply`. -/
-theorem Matrix.toLin_mul_apply [Fintype l] [DecidableEq m] (A : Matrix l m R) (B : Matrix m n R)
+theorem Matrix.toLin_mul_apply [Finite l] [DecidableEq m] (A : Matrix l m R) (B : Matrix m n R)
     (x) : Matrix.toLin v₁ v₃ (A * B) x = (Matrix.toLin v₂ v₃ A) (Matrix.toLin v₁ v₂ B x) := by
   rw [Matrix.toLin_mul v₁ v₂, LinearMap.comp_apply]
 #align matrix.to_lin_mul_apply Matrix.toLin_mul_apply
@@ -812,14 +820,14 @@ theorem Matrix.toLinAlgEquiv_one : Matrix.toLinAlgEquiv v₁ 1 = LinearMap.id :=
 theorem LinearMap.toMatrixAlgEquiv_reindexRange [DecidableEq M₁] (f : M₁ →ₗ[R] M₁) (k i : n) :
     LinearMap.toMatrixAlgEquiv v₁.reindexRange f
         ⟨v₁ k, Set.mem_range_self k⟩ ⟨v₁ i, Set.mem_range_self i⟩ =
-      LinearMap.toMatrixAlgEquiv v₁ f k i :=
-  by simp_rw [LinearMap.toMatrixAlgEquiv_apply, Basis.reindexRange_self, Basis.reindexRange_repr]
+      LinearMap.toMatrixAlgEquiv v₁ f k i := by
+  simp_rw [LinearMap.toMatrixAlgEquiv_apply, Basis.reindexRange_self, Basis.reindexRange_repr]
 #align linear_map.to_matrix_alg_equiv_reindex_range LinearMap.toMatrixAlgEquiv_reindexRange
 
 theorem LinearMap.toMatrixAlgEquiv_comp (f g : M₁ →ₗ[R] M₁) :
     LinearMap.toMatrixAlgEquiv v₁ (f.comp g) =
-      LinearMap.toMatrixAlgEquiv v₁ f * LinearMap.toMatrixAlgEquiv v₁ g :=
-  by simp [LinearMap.toMatrixAlgEquiv, LinearMap.toMatrix_comp v₁ v₁ v₁ f g]
+      LinearMap.toMatrixAlgEquiv v₁ f * LinearMap.toMatrixAlgEquiv v₁ g := by
+  simp [LinearMap.toMatrixAlgEquiv, LinearMap.toMatrix_comp v₁ v₁ v₁ f g]
 #align linear_map.to_matrix_alg_equiv_comp LinearMap.toMatrixAlgEquiv_comp
 
 theorem LinearMap.toMatrixAlgEquiv_mul (f g : M₁ →ₗ[R] M₁) :
@@ -830,15 +838,15 @@ theorem LinearMap.toMatrixAlgEquiv_mul (f g : M₁ →ₗ[R] M₁) :
 
 theorem Matrix.toLinAlgEquiv_mul (A B : Matrix n n R) :
     Matrix.toLinAlgEquiv v₁ (A * B) =
-      (Matrix.toLinAlgEquiv v₁ A).comp (Matrix.toLinAlgEquiv v₁ B) :=
-  by convert Matrix.toLin_mul v₁ v₁ v₁ A B
+      (Matrix.toLinAlgEquiv v₁ A).comp (Matrix.toLinAlgEquiv v₁ B) := by
+  convert Matrix.toLin_mul v₁ v₁ v₁ A B
 #align matrix.to_lin_alg_equiv_mul Matrix.toLinAlgEquiv_mul
 
 @[simp]
 theorem Matrix.toLin_finTwoProd_apply (a b c d : R) (x : R × R) :
     Matrix.toLin (Basis.finTwoProd R) (Basis.finTwoProd R) !![a, b; c, d] x =
-      (a * x.fst + b * x.snd, c * x.fst + d * x.snd) :=
-  by simp [Matrix.toLin_apply, Matrix.mulVec, Matrix.dotProduct]
+      (a * x.fst + b * x.snd, c * x.fst + d * x.snd) := by
+  simp [Matrix.toLin_apply, Matrix.mulVec, Matrix.dotProduct]
 #align matrix.to_lin_fin_two_prod_apply Matrix.toLin_finTwoProd_apply
 
 theorem Matrix.toLin_finTwoProd (a b c d : R) :
