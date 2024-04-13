@@ -122,7 +122,7 @@ def structuralAtom? (e : Expr) : MetaM (Option StructuralAtom) := do
     | _ => return none
   | _ =>
     match (← whnfR e).getAppFnArgs with
-    | (``MonoidalCoherence.hom, #[_, _, f, g, _, _, inst]) =>
+    | (``MonoidalCoherence.hom, #[_, _, f, g, inst]) =>
       return some <| .monoidalCoherence (← toMor₁ f) (← toMor₁ g) inst
     | _ => return none
 
@@ -482,7 +482,7 @@ partial def eval (e : Expr) : MetaM NormalExpr := do
       evalWhiskerLeftExpr (← toMor₁ f) (← eval η)
     | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, _, _, η, h]) =>
       evalWhiskerRightExpr (← eval η) (← toMor₁ h)
-    | (``monoidalComp, #[C, _, _, _, _, _, _, _, _, η, θ]) =>
+    | (``monoidalComp, #[C, _, _, _, _, _, _, η, θ]) =>
       let η_e ← eval η
       let α₀' ← structuralOfMonoidalComp C e
       let α := NormalExpr.nil <|.atom α₀'

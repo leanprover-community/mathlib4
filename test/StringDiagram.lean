@@ -106,7 +106,7 @@ def StructuralAtom.e : StructuralAtom → M Expr
   | .rightUnitorInv f => do
     mkAppM ``Iso.inv #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
   | .monoidalCoherence _ _ e => do
-    mkAppOptM ``MonoidalCoherence.hom #[none, none, none, none, none, none, e]
+    mkAppOptM ``MonoidalCoherence.hom #[none, none, none, none, e]
 
 /-- Extract a Lean expression from a `Structural` expression. -/
 partial def Structural.e : Structural → M Expr
