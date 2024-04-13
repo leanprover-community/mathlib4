@@ -48,7 +48,7 @@ def Component (j : ConnectedComponents J) : Type u₁ :=
   FullSubcategory fun k => Quotient.mk'' k = j
 #align category_theory.component CategoryTheory.Component
 
-instance {j : ConnectedComponents J} : Category (Component (j : ConnectedComponents J)) :=
+instance {j : ConnectedComponents J} : Category (Component j) :=
   FullSubcategory.category _
 
 -- Porting note: it was originally @[simps (config := { rhsMd := semireducible })]
@@ -58,10 +58,10 @@ def Component.ι (j : ConnectedComponents J) : Component j ⥤ J :=
   fullSubcategoryInclusion _
 #align category_theory.component.ι CategoryTheory.Component.ι
 
-instance {j : ConnectedComponents J} : Functor.Full (Component.ι (j : ConnectedComponents J)) :=
+instance {j : ConnectedComponents J} : Functor.Full (Component.ι j) :=
   FullSubcategory.full _
 
-instance {j : ConnectedComponents J} : Functor.Faithful (Component.ι (j : ConnectedComponents J)) :=
+instance {j : ConnectedComponents J} : Functor.Faithful (Component.ι j) :=
   FullSubcategory.faithful _
 
 /-- Each connected component of the category is nonempty. -/

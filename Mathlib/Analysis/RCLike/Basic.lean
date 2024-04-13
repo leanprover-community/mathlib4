@@ -48,7 +48,6 @@ local notation "𝓚" => algebraMap ℝ _
 
 open ComplexConjugate
 
-set_option autoImplicit true in
 /--
 This typeclass captures properties shared by ℝ and ℂ, with an API that closely matches that of ℂ.
 -/
@@ -72,7 +71,7 @@ class RCLike (K : semiOutParam (Type*)) extends DenselyNormedField K, StarRing K
   mul_im_I_ax : ∀ z : K, im z * im I = im z
   /-- only an instance in the `ComplexOrder` locale -/
   [toPartialOrder : PartialOrder K]
-  le_iff_re_im : z ≤ w ↔ re z ≤ re w ∧ im z = im w
+  le_iff_re_im : ∀ z w : K, z ≤ w ↔ re z ≤ re w ∧ im z = im w
   -- note we cannot put this in the `extends` clause
   [toDecidableEq : DecidableEq K]
 #align is_R_or_C RCLike
@@ -833,7 +832,7 @@ noncomputable instance Real.RCLike : RCLike ℝ where
   norm_sq_eq_def_ax z := by simp only [sq, Real.norm_eq_abs, ← abs_mul, abs_mul_self z, add_zero,
     mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
   mul_im_I_ax _ := by simp only [mul_zero, AddMonoidHom.zero_apply]
-  le_iff_re_im := (and_iff_left rfl).symm
+  le_iff_re_im := fun _ _ ↦ (and_iff_left rfl).symm
 #align real.is_R_or_C Real.RCLike
 
 end Instances
