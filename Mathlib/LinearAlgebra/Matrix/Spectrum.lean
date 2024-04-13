@@ -112,10 +112,20 @@ apply PiLp.ext
 intro j
 simp only [PiLp.smul_apply, EuclideanSpace.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
 
-/-- The inverse of `eigenvectorMatrix` -/
-noncomputable def eigenvectorMatrixInv : Matrix n n 𝕜 :=
-  (eigenvectorBasis hA).toBasis.toMatrix (PiLp.basisFun _ 𝕜 n)
-#align matrix.is_hermitian.eigenvector_matrix_inv Matrix.IsHermitian.eigenvectorMatrixInv
+theorem spectral_theorem2 :
+        A = (eigenvectorUnitary hA : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ hA.eigenvalues)
+        * (star (eigenvectorUnitary hA : Matrix n n 𝕜)) := by
+rw [←spectral_theorem1, mul_assoc, mul_assoc,
+   (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2, mul_one,
+   ←mul_assoc, (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2, one_mul]
+
+
+
+#exit
+--/-- The inverse of `eigenvectorMatrix` -/
+--noncomputable def eigenvectorMatrixInv : Matrix n n 𝕜 :=
+--  (eigenvectorBasis hA).toBasis.toMatrix (PiLp.basisFun _ 𝕜 n)
+--#align matrix.is_hermitian.eigenvector_matrix_inv Matrix.IsHermitian.eigenvectorMatrixInv
 
 theorem eigenvectorMatrix_mul_inv : hA.eigenvectorMatrix * hA.eigenvectorMatrixInv = 1 := by
   apply Basis.toMatrix_mul_toMatrix_flip
@@ -158,6 +168,7 @@ diagonalized by a change of basis.
 
 For the spectral theorem on linear maps, see
 `LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply`. -/
+/-
 theorem spectral_theorem :
     hA.eigenvectorMatrixInv * A = diagonal ((↑) ∘ hA.eigenvalues) * hA.eigenvectorMatrixInv := by
   rw [eigenvectorMatrixInv, PiLp.basis_toMatrix_basisFun_mul]
@@ -174,6 +185,7 @@ theorem spectral_theorem :
     rw [eigenvectorBasis, Basis.toMatrix_apply, OrthonormalBasis.coe_toBasis_repr_apply,
       OrthonormalBasis.repr_reindex, eigenvalues₀, PiLp.basisFun_apply, WithLp.equiv_symm_single]
 #align matrix.is_hermitian.spectral_theorem Matrix.IsHermitian.spectral_theorem
+-/
 
 theorem eigenvalues_eq (i : n) :
     hA.eigenvalues i =
