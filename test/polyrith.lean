@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Dhruv Bhatia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author(s): Dhruv Bhatia, Robert Y. Lewis, Mario Carneiro
+Authors: Dhruv Bhatia, Robert Y. Lewis, Mario Carneiro
 -/
 import Mathlib.Tactic.Polyrith
 
@@ -111,7 +111,7 @@ A full test suite is provided at the bottom of the file.
 
 -- /-! ### Standard Cases over ℤ, ℚ, and ℝ -/
 
--- example (x y : ℤ) (h1 : 3*x + 2*y = 10):
+-- example (x y : ℤ) (h1 : 3*x + 2*y = 10) :
 --   3*x + 2*y = 10 :=
 -- by test_polyrith
 --   "{\"data\":[\"(poly.const 1/1)\"],\"success\":true}"
@@ -181,7 +181,7 @@ A full test suite is provided at the bottom of the file.
 
 -- /-! ### Case with ambiguous identifiers-/
 
--- example («def evil» y : ℤ) (h1 : 3*«def evil» + 2*y = 10):
+-- example («def evil» y : ℤ) (h1 : 3*«def evil» + 2*y = 10) :
 --   3*«def evil» + 2*y = 10 :=
 -- by test_polyrith
 --   "{\"data\":[\"(poly.const 1/1)\"],\"success\":true}"
@@ -192,7 +192,7 @@ A full test suite is provided at the bottom of the file.
 --   "(((3 * var0) + (2 * var1)) - 10)"]
 --   "linear_combination h1"
 
--- example («¥» y : ℤ) (h1 : 3*«¥» + 2*y = 10):
+-- example («¥» y : ℤ) (h1 : 3*«¥» + 2*y = 10) :
 --   «¥» * (3*«¥» + 2*y) = 10 * «¥» :=
 -- by test_polyrith
 --   "{\"data\":[\"(poly.var 0)\"],\"success\":true}"
@@ -274,7 +274,7 @@ A full test suite is provided at the bottom of the file.
 
 -- constant term : ∀ a b : ℚ, a + b = 0
 
--- example (a b c d : ℚ) (h : a + b = 0) (h2: b + c = 0): a + b + c + d = 0 := by
+-- example (a b c d : ℚ) (h : a + b = 0) (h2 : b + c = 0) : a + b + c + d = 0 := by
 --   test_polyrith only [term c d, h]
 --   "{\"data\":[\"(poly.const 1/1)\",\"(poly.const 1/1)\"],\"success\":true}"
 --   ["ff",
@@ -322,7 +322,7 @@ A full test suite is provided at the bottom of the file.
 --   "linear_combination e * h1 + a * h2"
 
 -- example {K : Type*} [Field K] [Invertible 2] [Invertible 3]
---   {ω p q r s t x: K} (hp_nonzero : p ≠ 0) (hr : r ^ 2 = q ^ 2 + p ^ 3) (hs3 : s ^ 3 = q + r)
+--   {ω p q r s t x : K} (hp_nonzero : p ≠ 0) (hr : r ^ 2 = q ^ 2 + p ^ 3) (hs3 : s ^ 3 = q + r)
 --   (ht : t * s = p) (x : K) (H : 1 + ω + ω ^ 2 = 0) :
 --   x ^ 3 + 3 * p * x - 2 * q =
 --     (x - (s - t)) * (x - (s * ω - t * ω ^ 2)) * (x - (s * ω ^ 2 - t * ω)) := by
@@ -453,7 +453,7 @@ A full test suite is provided at the bottom of the file.
 
 /-! ### Standard Cases over ℤ, ℚ, and ℝ -/
 
-example (x y : ℤ) (h1 : 3*x + 2*y = 10): 3*x + 2*y = 10 := by
+example (x y : ℤ) (h1 : 3*x + 2*y = 10) : 3*x + 2*y = 10 := by
   polyrith
 
 example (x y : ℚ) (h1 : x*y + 2*x = 1) (h2 : x = y) : x*y = -2*y + 1 := by
@@ -479,11 +479,11 @@ example (a b c d : ℚ) (h1 : a = 4) (h2 : 3 = b) (h3 : c*3 = d) (h4 : -d = a) :
 
 /-! ### Case with ambiguous identifiers-/
 -- set_option trace.Meta.Tactic.polyrith true
-example («def evil» y : ℤ) (h1 : 3*«def evil» + 2*y = 10):
+example («def evil» y : ℤ) (h1 : 3*«def evil» + 2*y = 10) :
     3*«def evil» + 2*y = 10 := by
   polyrith
 
-example («¥» y : ℤ) (h1 : 3*«¥» + 2*y = 10):
+example («¥» y : ℤ) (h1 : 3*«¥» + 2*y = 10) :
     «¥» * (3*«¥» + 2*y) = 10 * «¥» := by
   polyrith
 
@@ -515,7 +515,7 @@ example (x y z w : ℚ) (hzw : z = w) : x*z + 2*y*z = x*w + 2*y*w := by
 
 axiom term : ∀ a b : ℚ, a + b = 0
 
-example (a b c d : ℚ) (h : a + b = 0) (h2: b + c = 0): a + b + c + d = 0 := by
+example (a b c d : ℚ) (h : a + b = 0) (h2 : b + c = 0) : a + b + c + d = 0 := by
   polyrith only [term c d, h]
 
 axiom qc : ℚ
@@ -536,7 +536,7 @@ example {α} [h : CommRing α] {a b c d e f : α} (h1 : a*d = b*c) (h2 : c*f = e
   polyrith
 
 -- example {K : Type*} [Field K] [Invertible 2] [Invertible 3]
---   {ω p q r s t x: K} (hp_nonzero : p ≠ 0) (hr : r ^ 2 = q ^ 2 + p ^ 3) (hs3 : s ^ 3 = q + r)
+--   {ω p q r s t x : K} (hp_nonzero : p ≠ 0) (hr : r ^ 2 = q ^ 2 + p ^ 3) (hs3 : s ^ 3 = q + r)
 --   (ht : t * s = p) (x : K) (H : 1 + ω + ω ^ 2 = 0) :
 --   x ^ 3 + 3 * p * x - 2 * q =
 --     (x - (s - t)) * (x - (s * ω - t * ω ^ 2)) * (x - (s * ω ^ 2 - t * ω)) := by
@@ -585,7 +585,7 @@ example (a b c : ℤ) (h1 : a = b) (h2 : b = 1) : c * a + b = c * b + 1 := by
   polyrith
   linear_combination c * h1 + h2
 
-example (a b c d : ℚ) (h : a + b = 0) (h2: b + c = 0): a + b + c + d = 0 := by
+example (a b c d : ℚ) (h : a + b = 0) (h2 : b + c = 0) : a + b + c + d = 0 := by
   polyrith only [term c d, h]
   linear_combination term c d + h
 
@@ -602,7 +602,7 @@ example (a b : ℚ) (h : ∀ p q : ℚ, p = q) : 3*a + qc = 3*b + 2*qc := by
 
 /-! ### Standard Cases over ℤ, ℚ, and ℝ -/
 
-example (x y : ℤ) (h1 : 3*x + 2*y = 10):
+example (x y : ℤ) (h1 : 3*x + 2*y = 10) :
     3*x + 2*y = 10 := by
   create_polyrith_test
 
@@ -629,11 +629,11 @@ example (a b c d : ℚ) (h1 : a = 4) (h2 : 3 = b) (h3 : c*3 = d) (h4 : -d = a) :
 
 /-! ### Case with ambiguous identifiers-/
 
-example («def evil» y : ℤ) (h1 : 3*«def evil» + 2*y = 10):
+example («def evil» y : ℤ) (h1 : 3*«def evil» + 2*y = 10) :
     3*«def evil» + 2*y = 10 := by
   create_polyrith_test
 
-example («¥» y : ℤ) (h1 : 3*«¥» + 2*y = 10):
+example («¥» y : ℤ) (h1 : 3*«¥» + 2*y = 10) :
     «¥» * (3*«¥» + 2*y) = 10 * «¥» := by
   create_polyrith_test
 
@@ -663,7 +663,7 @@ example (a b : ℝ) (ha : 2*a = 4) (hab : 2*b = a - b) (hignore : 3 = a + b) :
 
 constant term : ∀ a b : ℚ, a + b = 0
 
-example (a b c d : ℚ) (h : a + b = 0) (h2: b + c = 0): a + b + c + d = 0 := by
+example (a b c d : ℚ) (h : a + b = 0) (h2 : b + c = 0) : a + b + c + d = 0 := by
   create_polyrith_test only [term c d, h]
 
 constants (qc : ℚ) (hqc : qc = 2*qc)
@@ -682,7 +682,7 @@ example {α} [h : CommRing α] {a b c d e f : α} (h1 : a*d = b*c) (h2 : c*f = e
   create_polyrith_test
 
 example {K : Type*} [Field K] [Invertible 2] [Invertible 3]
-  {ω p q r s t x: K} (hp_nonzero : p ≠ 0) (hr : r ^ 2 = q ^ 2 + p ^ 3) (hs3 : s ^ 3 = q + r)
+  {ω p q r s t x : K} (hp_nonzero : p ≠ 0) (hr : r ^ 2 = q ^ 2 + p ^ 3) (hs3 : s ^ 3 = q + r)
   (ht : t * s = p) (x : K) (H : 1 + ω + ω ^ 2 = 0) :
   x ^ 3 + 3 * p * x - 2 * q =
     (x - (s - t)) * (x - (s * ω - t * ω ^ 2)) * (x - (s * ω ^ 2 - t * ω)) := by
