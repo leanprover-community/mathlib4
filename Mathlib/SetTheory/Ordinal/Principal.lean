@@ -149,7 +149,7 @@ theorem principal_add_iff_add_left_eq_self {o : Ordinal} :
 #align ordinal.principal_add_iff_add_left_eq_self Ordinal.principal_add_iff_add_left_eq_self
 
 theorem exists_lt_add_of_not_principal_add {a} (ha : ¬Principal (· + ·) a) :
-    ∃ (b c : _) (_ : b < a) (_ : c < a), b + c = a := by
+    ∃ b c, b < a ∧ c < a ∧ b + c = a := by
   unfold Principal at ha
   push_neg at ha
   rcases ha with ⟨b, c, hb, hc, H⟩

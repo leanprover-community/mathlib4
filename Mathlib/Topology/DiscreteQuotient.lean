@@ -3,6 +3,7 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Adam Topaz
 -/
+import Mathlib.Data.Setoid.Partition
 import Mathlib.Topology.Separation
 import Mathlib.Topology.LocallyConstant.Basic
 
@@ -62,14 +63,14 @@ of finite discrete spaces.
 -/
 
 
-open Set Function
+open Set Function TopologicalSpace
 
 variable {α X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 /-- The type of discrete quotients of a topological space. -/
 @[ext] -- Porting note: in Lean 4, uses projection to `r` instead of `Setoid`.
 structure DiscreteQuotient (X : Type*) [TopologicalSpace X] extends Setoid X where
-  /-- For every point `x`, the set `{ y | Rel x y }` is a clopen set. -/
+  /-- For every point `x`, the set `{ y | Rel x y }` is an open set. -/
   protected isOpen_setOf_rel : ∀ x, IsOpen (setOf (toSetoid.Rel x))
 #align discrete_quotient DiscreteQuotient
 
@@ -393,6 +394,54 @@ theorem exists_of_compat [CompactSpace X] (Qs : (Q : DiscreteQuotient X) → Q)
 instance [CompactSpace X] : Finite S := by
   have : CompactSpace S := Quotient.compactSpace
   rwa [← isCompact_univ_iff, isCompact_iff_finite, finite_univ_iff] at this
+
+variable (X)
+
+open Classical in
+/--
+If `X` is a compact space, then we associate to any discrete quotient on `X` a finite set of
+clopen subsets of `X`, given by the fibers of `proj`.
+
+TODO: prove that these form a partition of `X` 
+-/
+noncomputable def finsetClopens [CompactSpace X]
+    (d : DiscreteQuotient X) : Finset (Clopens X) := have : Fintype d := Fintype.ofFinite _
+  (Set.range (fun (x : d) ↦ ⟨_, d.isClopen_preimage {x}⟩) : Set (Clopens X)).toFinset
+
+/-- A helper lemma to prove that `finsetClopens X` is injective, see `finsetClopens_inj`. -/
+lemma comp_finsetClopens [CompactSpace X] :
+    (Set.image (fun (t : Clopens X) ↦ t.carrier) ∘ Finset.toSet) ∘
+      finsetClopens X = fun ⟨f, _⟩ ↦ f.classes := by
+  ext d
+  simp only [Setoid.classes, Setoid.Rel, Set.mem_setOf_eq, Function.comp_apply,
+    finsetClopens, Set.coe_toFinset, Set.mem_image, Set.mem_range,
+    exists_exists_eq_and]
+  constructor
+  · refine fun ⟨y, h⟩ ↦ ⟨Quotient.out (s := d.toSetoid) y, ?_⟩
+    ext
+    simpa [← h] using Quotient.mk_eq_iff_out (s := d.toSetoid)
+  · exact fun ⟨y, h⟩ ↦ ⟨d.proj y, by ext; simp [h, proj]⟩
+
+/-- `finsetClopens X` is injective. -/
+theorem finsetClopens_inj [CompactSpace X] :
+    (finsetClopens X).Injective := by
+  apply Function.Injective.of_comp (f := Set.image (fun (t : Clopens X) ↦ t.carrier) ∘ Finset.toSet)
+  rw [comp_finsetClopens]
+  intro ⟨_, _⟩ ⟨_, _⟩ h
+  congr
+  rw [Setoid.classes_inj]
+  exact h
+
+/--
+The discrete quotients of a compact space are in bijection with a subtype of the type of
+`Finset (Clopens X)`.
+
+TODO: show that this is precisely those finsets of clopens which form a partition of `X`.
+-/
+noncomputable
+def equivFinsetClopens [CompactSpace X] := Equiv.ofInjective _ (finsetClopens_inj X)
+
+variable {X}
 
 end DiscreteQuotient
 

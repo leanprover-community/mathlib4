@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Function.Indicator
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Data.NNRat.Defs
 import Mathlib.Data.Rat.Field
@@ -82,7 +83,7 @@ variable {p q : ℚ≥0}
 @[simp]
 lemma num_div_den (q : ℚ≥0) : (q.num : ℚ≥0) / q.den = q := by
   ext : 1
-  rw [coe_div, coe_natCast, coe_natCast, num, ← Int.cast_ofNat,
+  rw [coe_div, coe_natCast, coe_natCast, num, ← Int.cast_natCast,
     Int.natAbs_of_nonneg (Rat.num_nonneg.2 q.prop)]
   exact Rat.num_div_den q
 #align nnrat.num_div_denom NNRat.num_div_den

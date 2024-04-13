@@ -57,7 +57,6 @@ integral, torus
 
 
 variable {n : ℕ}
-
 variable {E : Type*} [NormedAddCommGroup E]
 
 noncomputable section
@@ -179,7 +178,7 @@ theorem torusIntegral_sub (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c
   simpa only [sub_eq_add_neg, ← torusIntegral_neg] using torusIntegral_add hf hg.neg
 #align torus_integral_sub torusIntegral_sub
 
-theorem torusIntegral_smul {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [SMulCommClass 𝕜 ℂ E] (a : 𝕜)
+theorem torusIntegral_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [SMulCommClass 𝕜 ℂ E] (a : 𝕜)
     (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) : (∯ x in T(c, R), a • f x) = a • ∯ x in T(c, R), f x := by
   simp only [torusIntegral, integral_smul, ← smul_comm a (_ : ℂ) (_ : E)]
 #align torus_integral_smul torusIntegral_smul

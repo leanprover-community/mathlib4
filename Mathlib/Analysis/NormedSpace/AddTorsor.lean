@@ -70,10 +70,8 @@ theorem nndist_homothety_center (p₁ p₂ : P) (c : 𝕜) :
 theorem dist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
     dist (lineMap p₁ p₂ c₁) (lineMap p₁ p₂ c₂) = dist c₁ c₂ * dist p₁ p₂ := by
   rw [dist_comm p₁ p₂]
-  -- Porting note: was `simp only [lineMap_apply, dist_eq_norm_vsub, vadd_vsub_vadd_cancel_right,`
-  -- `← sub_smul, norm_smul, vsub_eq_sub]`
-  rw [lineMap_apply, lineMap_apply, dist_eq_norm_vsub V, vadd_vsub_vadd_cancel_right,
-    ← sub_smul, norm_smul, ← vsub_eq_sub, ← dist_eq_norm_vsub V, ← dist_eq_norm_vsub 𝕜]
+  simp only [lineMap_apply, dist_eq_norm_vsub, vadd_vsub_vadd_cancel_right,
+    ← sub_smul, norm_smul, vsub_eq_sub]
 #align dist_line_map_line_map dist_lineMap_lineMap
 
 @[simp]
@@ -89,9 +87,7 @@ theorem lipschitzWith_lineMap (p₁ p₂ : P) : LipschitzWith (nndist p₁ p₂)
 
 @[simp]
 theorem dist_lineMap_left (p₁ p₂ : P) (c : 𝕜) : dist (lineMap p₁ p₂ c) p₁ = ‖c‖ * dist p₁ p₂ := by
-  -- Porting note: was
-  -- simpa only [lineMap_apply_zero, dist_zero_right] using dist_lineMap_lineMap p₁ p₂ c 0
-  rw [← dist_zero_right, ← dist_lineMap_lineMap, lineMap_apply_zero]
+  simpa only [lineMap_apply_zero, dist_zero_right] using dist_lineMap_lineMap p₁ p₂ c 0
 #align dist_line_map_left dist_lineMap_left
 
 @[simp]
@@ -114,9 +110,7 @@ theorem nndist_left_lineMap (p₁ p₂ : P) (c : 𝕜) :
 @[simp]
 theorem dist_lineMap_right (p₁ p₂ : P) (c : 𝕜) :
     dist (lineMap p₁ p₂ c) p₂ = ‖1 - c‖ * dist p₁ p₂ := by
-  -- Porting note: was
-  -- `simpa only [lineMap_apply_one, dist_eq_norm'] using dist_lineMap_lineMap p₁ p₂ c 1`
-  rw [← dist_eq_norm', ← dist_lineMap_lineMap, lineMap_apply_one]
+  simpa only [lineMap_apply_one, dist_eq_norm'] using dist_lineMap_lineMap p₁ p₂ c 1
 #align dist_line_map_right dist_lineMap_right
 
 @[simp]
@@ -212,7 +206,6 @@ theorem nndist_right_midpoint (p₁ p₂ : P) :
 theorem dist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
     dist (midpoint 𝕜 p₁ p₂) (midpoint 𝕜 p₃ p₄) ≤ (dist p₁ p₃ + dist p₂ p₄) / ‖(2 : 𝕜)‖ := by
   rw [dist_eq_norm_vsub V, dist_eq_norm_vsub V, dist_eq_norm_vsub V, midpoint_vsub_midpoint]
-  try infer_instance
   rw [midpoint_eq_smul_add, norm_smul, invOf_eq_inv, norm_inv, ← div_eq_inv_mul]
   exact div_le_div_of_nonneg_right (norm_add_le _ _) (norm_nonneg _)
 #align dist_midpoint_midpoint_le' dist_midpoint_midpoint_le'

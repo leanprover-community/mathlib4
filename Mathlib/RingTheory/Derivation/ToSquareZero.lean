@@ -22,7 +22,6 @@ section ToSquareZero
 universe u v w
 
 variable {R : Type u} {A : Type v} {B : Type w} [CommSemiring R] [CommSemiring A] [CommRing B]
-
 variable [Algebra R A] [Algebra R B] (I : Ideal B) (hI : I ^ 2 = ⊥)
 
 /-- If `f₁ f₂ : A →ₐ[R] B` are two lifts of the same `A →ₐ[R] B ⧸ I`,
@@ -125,7 +124,7 @@ def derivationToSquareZeroEquivLift : Derivation R A I ≃
   refine' ⟨fun d => ⟨liftOfDerivationToSquareZero I hI d, _⟩, fun f =>
     (derivationToSquareZeroOfLift I hI f.1 f.2 : _), _, _⟩
   · ext x; exact liftOfDerivationToSquareZero_mk_apply I hI d x
-  · intro d; ext x; exact add_sub_cancel (d x : B) (algebraMap A B x)
+  · intro d; ext x; exact add_sub_cancel_right (d x : B) (algebraMap A B x)
   · rintro ⟨f, hf⟩; ext x; exact sub_add_cancel (f x) (algebraMap A B x)
 #align derivation_to_square_zero_equiv_lift derivationToSquareZeroEquivLift
 

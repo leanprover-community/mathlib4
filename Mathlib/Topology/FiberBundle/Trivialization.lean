@@ -54,7 +54,6 @@ open TopologicalSpace Filter Set Bundle Function
 open scoped Topology Classical Bundle
 
 variable {ι : Type*} {B : Type*} {F : Type*} {E : B → Type*}
-
 variable (F) {Z : Type*} [TopologicalSpace B] [TopologicalSpace F] {proj : Z → B}
 
 /-- This structure contains the information left for a local trivialization (which is implemented
@@ -301,7 +300,7 @@ variable [TopologicalSpace Z] [TopologicalSpace (TotalSpace F E)]
 `proj : Z → B` with fiber `F`, as a partial homeomorphism between `Z` and `B × F` defined between
 two sets of the form `proj ⁻¹' baseSet` and `baseSet × F`, acting trivially on the first coordinate.
 -/
--- Porting note (#11215): TODO: was @[nolint has_nonempty_instance]
+-- Porting note (#5171): was @[nolint has_nonempty_instance]
 structure Trivialization (proj : Z → B) extends PartialHomeomorph Z (B × F) where
   baseSet : Set B
   open_baseSet : IsOpen baseSet

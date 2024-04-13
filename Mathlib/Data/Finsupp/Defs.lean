@@ -215,7 +215,7 @@ theorem support_eq_empty {f : α →₀ M} : f.support = ∅ ↔ f = 0 :=
 #align finsupp.support_eq_empty Finsupp.support_eq_empty
 
 theorem support_nonempty_iff {f : α →₀ M} : f.support.Nonempty ↔ f ≠ 0 := by
-  simp only [Finsupp.support_eq_empty, Finset.nonempty_iff_ne_empty, Ne.def]
+  simp only [Finsupp.support_eq_empty, Finset.nonempty_iff_ne_empty, Ne]
 #align finsupp.support_nonempty_iff Finsupp.support_nonempty_iff
 
 #align finsupp.nonzero_iff_exists Finsupp.ne_iff
@@ -319,7 +319,7 @@ theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b
 
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
-  classical exact Pi.single_eq_same (f := λ _ => M) a b
+  classical exact Pi.single_eq_same (f := fun _ ↦ M) a b
 #align finsupp.single_eq_same Finsupp.single_eq_same
 
 @[simp]
@@ -391,7 +391,7 @@ theorem eq_single_iff {f : α →₀ M} {a b} : f = single a b ↔ f.support ⊆
   refine' ⟨fun h => h.symm ▸ ⟨support_single_subset, single_eq_same⟩, _⟩
   rintro ⟨h, rfl⟩
   ext x
-  by_cases hx : a = x <;> simp only [hx, single_eq_same, single_eq_of_ne, Ne.def, not_false_iff]
+  by_cases hx : a = x <;> simp only [hx, single_eq_same, single_eq_of_ne, Ne, not_false_iff]
   exact not_mem_support_iff.1 (mt (fun hx => (mem_singleton.1 (h hx)).symm) hx)
 #align finsupp.eq_single_iff Finsupp.eq_single_iff
 
@@ -661,6 +661,11 @@ theorem erase_ne {a a' : α} {f : α →₀ M} (h : a' ≠ a) : (f.erase a) a' =
   classical simp only [erase, coe_mk, h, ite_false]
 #align finsupp.erase_ne Finsupp.erase_ne
 
+theorem erase_apply [DecidableEq α] {a a' : α} {f : α →₀ M} :
+    f.erase a a' = if a' = a then 0 else f a' := by
+  rw [erase, coe_mk]
+  convert rfl
+
 @[simp]
 theorem erase_single {a : α} {b : M} : erase a (single a b) = 0 := by
   ext s; by_cases hs : s = a
@@ -838,7 +843,7 @@ theorem mapRange_single {f : M → N} {hf : f 0 = 0} {a : α} {b : M} :
 theorem support_mapRange_of_injective {e : M → N} (he0 : e 0 = 0) (f : ι →₀ M)
     (he : Function.Injective e) : (Finsupp.mapRange e he0 f).support = f.support := by
   ext
-  simp only [Finsupp.mem_support_iff, Ne.def, Finsupp.mapRange_apply]
+  simp only [Finsupp.mem_support_iff, Ne, Finsupp.mapRange_apply]
   exact he.ne_iff' he0
 #align finsupp.support_map_range_of_injective Finsupp.support_mapRange_of_injective
 
@@ -868,10 +873,10 @@ def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
   mem_support_toFun a₂ := by
     dsimp
     split_ifs with h
-    · simp only [h, true_iff_iff, Ne.def]
+    · simp only [h, true_iff_iff, Ne]
       rw [← not_mem_support_iff, not_not]
       classical apply Finset.choose_mem
-    · simp only [h, Ne.def, ne_self_iff_false, not_true_eq_false]
+    · simp only [h, Ne, ne_self_iff_false, not_true_eq_false]
 #align finsupp.emb_domain Finsupp.embDomain
 
 @[simp]

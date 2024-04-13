@@ -3,7 +3,7 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Algebra.Module.LinearMap.Pointwise
+import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.Analysis.LocallyConvex.Basic
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.Seminorm
@@ -57,9 +57,7 @@ section SeminormedRing
 section Zero
 
 variable (𝕜)
-
 variable [SeminormedRing 𝕜] [SMul 𝕜 E] [Zero E]
-
 variable [TopologicalSpace E]
 
 /-- A set `s` is von Neumann bounded if every neighborhood of 0 absorbs `s`. -/
@@ -232,7 +230,6 @@ end sequence
 section NormedField
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 
 /-- Singletons are bounded. -/
@@ -313,7 +310,7 @@ variable (𝕜 E)
 /-- The von Neumann bornology defined by the von Neumann bounded sets.
 
 Note that this is not registered as an instance, in order to avoid diamonds with the
-metric bornology.-/
+metric bornology. -/
 @[reducible]
 def vonNBornology : Bornology E :=
   Bornology.ofBounded (setOf (IsVonNBounded 𝕜)) (isVonNBounded_empty 𝕜 E)
@@ -335,7 +332,6 @@ end Bornology
 section UniformAddGroup
 
 variable (𝕜) [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [UniformSpace E] [UniformAddGroup E] [ContinuousSMul 𝕜 E]
 
 theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :

@@ -294,7 +294,7 @@ theorem mem_toOption {o : Part α} [Decidable o.Dom] {a : α} : a ∈ toOption o
   · exact mt Exists.fst h
 #align part.mem_to_option Part.mem_toOption
 
--- Porting note: New theorem, like `mem_toOption` but with LHS in `simp` normal form
+-- Porting note (#10756): new theorem, like `mem_toOption` but with LHS in `simp` normal form
 @[simp]
 theorem toOption_eq_some_iff {o : Part α} [Decidable o.Dom] {a : α} :
     toOption o = Option.some a ↔ a ∈ o :=
@@ -695,7 +695,7 @@ instance [Union α] : Union (Part α) where union a b := (· ∪ ·) <$> a <*> b
 instance [SDiff α] : SDiff (Part α) where sdiff a b := (· \ ·) <$> a <*> b
 
 section
--- Porting note: new theorems to unfold definitions
+-- Porting note (#10756): new theorems to unfold definitions
 theorem mul_def [Mul α] (a b : Part α) : a * b = bind a fun y ↦ map (y * ·) b := rfl
 theorem one_def [One α] : (1 : Part α) = some 1 := rfl
 theorem inv_def [Inv α] (a : Part α) : a⁻¹ = Part.map (· ⁻¹) a := rfl
@@ -716,7 +716,7 @@ theorem one_mem_one [One α] : (1 : α) ∈ (1 : Part α) :=
 
 @[to_additive]
 theorem mul_mem_mul [Mul α] (a b : Part α) (ma mb : α) (ha : ma ∈ a) (hb : mb ∈ b) :
-    ma * mb ∈ a * b := ⟨⟨ha.1, hb.1⟩, by simp [← ha.2, ← hb.2]; rfl⟩
+    ma * mb ∈ a * b := ⟨⟨ha.1, hb.1⟩, by simp only [← ha.2, ← hb.2]; rfl⟩
 #align part.mul_mem_mul Part.mul_mem_mul
 #align part.add_mem_add Part.add_mem_add
 

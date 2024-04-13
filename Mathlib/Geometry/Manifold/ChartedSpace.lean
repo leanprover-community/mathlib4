@@ -513,7 +513,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     ClosedUnderRestriction G ↔ idRestrGroupoid ≤ G := by
   constructor
   · intro _i
-    apply StructureGroupoid.le_iff.mpr
+    rw [StructureGroupoid.le_iff]
     rintro e ⟨s, hs, hes⟩
     refine' G.mem_of_eqOnSource _ hes
     convert closedUnderRestriction' G.id_mem hs
@@ -827,7 +827,7 @@ end prodChartedSpace
 
 /-- The product of a finite family of charted spaces is naturally a charted space, with the
 canonical construction of the atlas of finite product maps. -/
-instance piChartedSpace {ι : Type*} [Fintype ι] (H : ι → Type*) [∀ i, TopologicalSpace (H i)]
+instance piChartedSpace {ι : Type*} [Finite ι] (H : ι → Type*) [∀ i, TopologicalSpace (H i)]
     (M : ι → Type*) [∀ i, TopologicalSpace (M i)] [∀ i, ChartedSpace (H i) (M i)] :
     ChartedSpace (ModelPi H) (∀ i, M i) where
   atlas := PartialHomeomorph.pi '' Set.pi univ fun _ ↦ atlas (H _) (M _)
@@ -837,7 +837,7 @@ instance piChartedSpace {ι : Type*} [Fintype ι] (H : ι → Type*) [∀ i, Top
 #align pi_charted_space piChartedSpace
 
 @[simp, mfld_simps]
-theorem piChartedSpace_chartAt {ι : Type*} [Fintype ι] (H : ι → Type*)
+theorem piChartedSpace_chartAt {ι : Type*} [Finite ι] (H : ι → Type*)
     [∀ i, TopologicalSpace (H i)] (M : ι → Type*) [∀ i, TopologicalSpace (M i)]
     [∀ i, ChartedSpace (H i) (M i)] (f : ∀ i, M i) :
     chartAt (H := ModelPi H) f = PartialHomeomorph.pi fun i ↦ chartAt (H i) (f i) :=
@@ -853,7 +853,8 @@ end ChartedSpace
 have a topological structure, where the topology would come from the charts. For this, one needs
 charts that are only partial equivs, and continuity properties for their composition.
 This is formalised in `ChartedSpaceCore`. -/
--- @[nolint has_nonempty_instance]  -- Porting note: commented out
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 structure ChartedSpaceCore (H : Type*) [TopologicalSpace H] (M : Type*) where
   atlas : Set (PartialEquiv M H)
   chartAt : M → PartialEquiv M H
@@ -1164,7 +1165,6 @@ namespace TopologicalSpace.Opens
 open TopologicalSpace
 
 variable (G : StructureGroupoid H) [HasGroupoid M G]
-
 variable (s : Opens M)
 
 /-- An open subset of a charted space is naturally a charted space. -/
@@ -1250,7 +1250,8 @@ lemma StructureGroupoid.restriction_in_maximalAtlas {e : PartialHomeomorph M H}
 /-- A `G`-diffeomorphism between two charted spaces is a homeomorphism which, when read in the
 charts, belongs to `G`. We avoid the word diffeomorph as it is too related to the smooth category,
 and use structomorph instead. -/
--- @[nolint has_nonempty_instance]  -- Porting note: commented out
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 structure Structomorph (G : StructureGroupoid H) (M : Type*) (M' : Type*) [TopologicalSpace M]
   [TopologicalSpace M'] [ChartedSpace H M] [ChartedSpace H M'] extends Homeomorph M M' where
   mem_groupoid : ∀ c : PartialHomeomorph M H, ∀ c' : PartialHomeomorph M' H, c ∈ atlas H M →

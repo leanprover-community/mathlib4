@@ -51,12 +51,12 @@ Then the rest is usual set theory.
 
 ## Notes
 
-To avoid confusion between the Lean `set` and the ZFC `Set`, docstrings in this file refer to them
-respectively as "`set`" and "ZFC set".
+To avoid confusion between the Lean `Set` and the ZFC `Set`, docstrings in this file refer to them
+respectively as "`Set`" and "ZFC set".
 
 ## TODO
 
-Prove `Set.map_definable_aux` computably.
+Prove `ZFSet.mapDefinableAux` computably.
 -/
 
 -- Porting note: Lean 3 uses `Set` for `ZFSet`.
@@ -165,7 +165,7 @@ instance setoid : Setoid PSet :=
 #align pSet.setoid PSet.setoid
 
 /-- A pre-set is a subset of another pre-set if every element of the first family is extensionally
-equivalent to some element of the second family.-/
+equivalent to some element of the second family. -/
 protected def Subset (x y : PSet) : Prop :=
   ∀ a, ∃ b, Equiv (x.Func a) (y.Func b)
 #align pSet.subset PSet.Subset
@@ -295,7 +295,7 @@ theorem mem_irrefl (x : PSet) : x ∉ x :=
   irrefl x
 #align pSet.mem_irrefl PSet.mem_irrefl
 
-/-- Convert a pre-set to a `set` of pre-sets. -/
+/-- Convert a pre-set to a `Set` of pre-sets. -/
 def toSet (u : PSet.{u}) : Set PSet.{u} :=
   { x | x ∈ u }
 #align pSet.to_set PSet.toSet
@@ -682,7 +682,7 @@ theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
   Iff.rfl
 #align Set.mk_mem_iff ZFSet.mk_mem_iff
 
-/-- Convert a ZFC set into a `set` of ZFC sets -/
+/-- Convert a ZFC set into a `Set` of ZFC sets -/
 def toSet (u : ZFSet.{u}) : Set ZFSet.{u} :=
   { x | x ∈ u }
 #align Set.to_set ZFSet.toSet
@@ -1787,7 +1787,7 @@ private lemma toSet_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
   (mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out).toSet = s := by
     ext x
     rw [mem_toSet, ← mk_out x, mk_mem_iff, mk_out]
-    refine' ⟨_, λ xs ↦ ⟨equivShrink s (Subtype.mk x xs), _⟩⟩
+    refine' ⟨_, fun xs ↦ ⟨equivShrink s (Subtype.mk x xs), _⟩⟩
     · rintro ⟨b, h2⟩
       rw [← ZFSet.eq, ZFSet.mk_out] at h2
       simp [h2]
@@ -1797,9 +1797,9 @@ private lemma toSet_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
 @[simps apply_coe]
 noncomputable def toSet_equiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} s} where
   toFun x := ⟨x.toSet, x.small_toSet⟩
-  invFun := λ ⟨s, h⟩ ↦ mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u+1} s).symm x).1.out
+  invFun := fun ⟨s, h⟩ ↦ mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u+1} s).symm x).1.out
   left_inv := Function.rightInverse_of_injective_of_leftInverse (by intros x y; simp)
-    λ s ↦ Subtype.coe_injective <| toSet_equiv_aux s.2
+    fun s ↦ Subtype.coe_injective <| toSet_equiv_aux s.2
   right_inv s := Subtype.coe_injective <| toSet_equiv_aux s.2
 
 end ZFSet

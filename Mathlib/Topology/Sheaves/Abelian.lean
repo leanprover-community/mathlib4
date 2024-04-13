@@ -36,9 +36,7 @@ universe w v u
 -- Porting note: `C` was `Type (max v u)`, but making it more universe polymorphic
 --   solves some problems
 variable {C : Type u} [Category.{v} C]
-
 variable {D : Type w} [Category.{max v u} D] [Abelian D]
-
 variable {J : GrothendieckTopology C}
 
 -- Porting note: this `Abelian` instance is no longer necessary,
@@ -54,14 +52,10 @@ instance hasFiniteProductsSheaf : HasFiniteProducts (Sheaf J D) where
 
 -- sheafification assumptions
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
-
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-
 variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
-
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
-
-variable [ReflectsIsomorphisms (forget D)]
+variable [(forget D).ReflectsIsomorphisms]
 
 instance sheafIsAbelian [HasFiniteLimits D] : Abelian (Sheaf J D) :=
   let adj := sheafificationAdjunction J D

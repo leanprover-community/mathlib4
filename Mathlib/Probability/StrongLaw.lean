@@ -201,13 +201,13 @@ integral of the whole function. -/
 theorem tendsto_integral_truncation {f : α → ℝ} (hf : Integrable f μ) :
     Tendsto (fun A => ∫ x, truncation f A x ∂μ) atTop (𝓝 (∫ x, f x ∂μ)) := by
   refine' tendsto_integral_filter_of_dominated_convergence (fun x => abs (f x)) _ _ _ _
-  · exact eventually_of_forall fun A => hf.aestronglyMeasurable.truncation
-  · apply eventually_of_forall fun A => ?_
-    apply eventually_of_forall fun x => ?_
+  · exact eventually_of_forall fun A ↦ hf.aestronglyMeasurable.truncation
+  · filter_upwards with A
+    filter_upwards with x
     rw [Real.norm_eq_abs]
     exact abs_truncation_le_abs_self _ _ _
-  · apply hf.abs
-  · apply eventually_of_forall fun x => ?_
+  · exact hf.abs
+  · filter_upwards with x
     apply tendsto_const_nhds.congr' _
     filter_upwards [Ioi_mem_atTop (abs (f x))] with A hA
     exact (truncation_eq_self hA).symm
@@ -384,15 +384,15 @@ theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonn
 
 end MomentEstimates
 
+/-! Proof of the strong law of large numbers (almost sure version, assuming only
+pairwise independence) for nonnegative random variables, following Etemadi's proof. -/
 section StrongLawNonneg
 
-/- This paragraph proves the strong law of large numbers (almost sure version, assuming only
-pairwise independence) for nonnegative random variables, following Etemadi's proof. -/
 variable (X : ℕ → Ω → ℝ) (hint : Integrable (X 0))
   (hindep : Pairwise fun i j => IndepFun (X i) (X j)) (hident : ∀ i, IdentDistrib (X i) (X 0))
   (hnonneg : ∀ i ω, 0 ≤ X i ω)
 
-/- The truncation of `Xᵢ` up to `i` satisfies the strong law of large numbers (with respect to
+/-- The truncation of `Xᵢ` up to `i` satisfies the strong law of large numbers (with respect to
 the truncated expectation) along the sequence `c^n`, for any `c > 1`, up to a given `ε > 0`.
 This follows from a variance control. -/
 theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : ∀ᵐ ω, ∀ᶠ n : ℕ in atTop,
@@ -780,7 +780,7 @@ lemma strong_law_ae_of_measurable
       norm_add₃_le _ _ _
   _ ≤ (∑ i in Finset.range n, ‖X i ω - Y k i ω‖) / n + δ + δ := by
       gcongr
-      simp only [Function.comp_apply, norm_smul, norm_inv, IsROrC.norm_natCast,
+      simp only [Function.comp_apply, norm_smul, norm_inv, RCLike.norm_natCast,
         div_eq_inv_mul, inv_pos, Nat.cast_pos, inv_lt_zero]
       gcongr
       exact norm_sum_le _ _

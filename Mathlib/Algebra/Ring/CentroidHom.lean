@@ -298,12 +298,12 @@ instance hasNPowNat : Pow (CentroidHom α) ℕ :=
       map_mul_left' := fun a b ↦ by
         induction' n with n ih
         · exact rfl
-        · rw [pow_succ]
+        · rw [pow_succ']
           exact (congr_arg f.toEnd ih).trans (f.map_mul_left' _ _)
       map_mul_right' := fun a b ↦ by
         induction' n with n ih
         · exact rfl
-        · rw [pow_succ]
+        · rw [pow_succ']
           exact (congr_arg f.toEnd ih).trans (f.map_mul_right' _ _)
         }⟩
 #align centroid_hom.has_npow_nat CentroidHom.hasNPowNat
@@ -411,7 +411,7 @@ theorem toEnd_nat_cast (n : ℕ) : (n : CentroidHom α).toEnd = ↑n :=
 
 -- cf `add_monoid.End.semiring`
 instance : Semiring (CentroidHom α) :=
-  toEnd_injective.semiring _ toEnd_zero toEnd_one toEnd_add toEnd_mul (swap toEnd_smul) toEnd_pow
+  toEnd_injective.semiring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_smul toEnd_pow
     toEnd_nat_cast
 
 variable (α) in
@@ -469,7 +469,6 @@ Let `α` be an algebra over `R`, such that the canonical ring homomorphism of `R
 -/
 
 variable {R : Type*}
-
 variable [CommSemiring R]
 variable [Module R α] [SMulCommClass R α α] [IsScalarTower R α α]
 
@@ -648,7 +647,7 @@ theorem toEnd_int_cast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
 
 instance instRing : Ring (CentroidHom α) :=
   toEnd_injective.ring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_neg toEnd_sub
-    (swap toEnd_smul) (swap toEnd_smul) toEnd_pow toEnd_nat_cast toEnd_int_cast
+    toEnd_smul toEnd_smul toEnd_pow toEnd_nat_cast toEnd_int_cast
 
 end NonUnitalNonAssocRing
 

@@ -3,6 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Data.Rat.Field
 import Mathlib.Data.Rat.Lemmas
 
@@ -38,14 +39,18 @@ section WithDivRing
 variable [DivisionRing α]
 
 @[simp, norm_cast]
-theorem cast_coe_int (n : ℤ) : ((n : ℚ) : α) = n :=
+theorem cast_intCast (n : ℤ) : ((n : ℚ) : α) = n :=
   (cast_def _).trans <| show (n / (1 : ℕ) : α) = n by rw [Nat.cast_one, div_one]
-#align rat.cast_coe_int Rat.cast_coe_int
+#align rat.cast_coe_int Rat.cast_intCast
 
 @[simp, norm_cast]
-theorem cast_coe_nat (n : ℕ) : ((n : ℚ) : α) = n := by
-  rw [← Int.cast_ofNat, cast_coe_int, Int.cast_ofNat]
-#align rat.cast_coe_nat Rat.cast_coe_nat
+theorem cast_natCast (n : ℕ) : ((n : ℚ) : α) = n := by
+  rw [← Int.cast_natCast, cast_intCast, Int.cast_natCast]
+#align rat.cast_coe_nat Rat.cast_natCast
+
+-- 2024-03-21
+@[deprecated] alias cast_coe_int := cast_intCast
+@[deprecated] alias cast_coe_nat := cast_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast] lemma cast_ofNat (n : ℕ) [n.AtLeastTwo] :
@@ -54,12 +59,12 @@ theorem cast_coe_nat (n : ℕ) : ((n : ℚ) : α) = n := by
 
 @[simp, norm_cast]
 theorem cast_zero : ((0 : ℚ) : α) = 0 :=
-  (cast_coe_int _).trans Int.cast_zero
+  (cast_intCast _).trans Int.cast_zero
 #align rat.cast_zero Rat.cast_zero
 
 @[simp, norm_cast]
 theorem cast_one : ((1 : ℚ) : α) = 1 :=
-  (cast_coe_int _).trans Int.cast_one
+  (cast_intCast _).trans Int.cast_one
 #align rat.cast_one Rat.cast_one
 
 theorem cast_commute (r : ℚ) (a : α) : Commute (↑r) a := by
@@ -84,13 +89,13 @@ theorem cast_mk_of_ne_zero (a b : ℤ) (b0 : (b : α) ≠ 0) : (a /. b : α) = a
     intro d0
     have dd := den_dvd a b
     cases' show (d : ℤ) ∣ b by rwa [e] at dd with k ke
-    have : (b : α) = (d : α) * (k : α) := by rw [ke, Int.cast_mul, Int.cast_ofNat]
+    have : (b : α) = (d : α) * (k : α) := by rw [ke, Int.cast_mul, Int.cast_natCast]
     rw [d0, zero_mul] at this
     contradiction
   rw [num_den'] at e
   have := congr_arg ((↑) : ℤ → α)
-    ((divInt_eq_iff b0' <| ne_of_gt <| Int.coe_nat_pos.2 h.bot_lt).1 e)
-  rw [Int.cast_mul, Int.cast_mul, Int.cast_ofNat] at this
+    ((divInt_eq_iff b0' <| ne_of_gt <| Int.natCast_pos.2 h.bot_lt).1 e)
+  rw [Int.cast_mul, Int.cast_mul, Int.cast_natCast] at this
   -- Porting note: was `symm`
   apply Eq.symm
   rw [cast_def, div_eq_mul_inv, eq_div_iff_mul_eq d0, mul_assoc, (d.commute_cast _).eq, ← mul_assoc,
@@ -102,9 +107,9 @@ theorem cast_add_of_ne_zero :
     ∀ {m n : ℚ}, (m.den : α) ≠ 0 → (n.den : α) ≠ 0 → ((m + n : ℚ) : α) = m + n
   | ⟨n₁, d₁, h₁, c₁⟩, ⟨n₂, d₂, h₂, c₂⟩ => fun (d₁0 : (d₁ : α) ≠ 0) (d₂0 : (d₂ : α) ≠ 0) => by
     have d₁0' : (d₁ : ℤ) ≠ 0 :=
-      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₁0; exact d₁0 Nat.cast_zero
+      Int.natCast_ne_zero.2 fun e => by rw [e] at d₁0; exact d₁0 Nat.cast_zero
     have d₂0' : (d₂ : ℤ) ≠ 0 :=
-      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₂0; exact d₂0 Nat.cast_zero
+      Int.natCast_ne_zero.2 fun e => by rw [e] at d₂0; exact d₂0 Nat.cast_zero
     rw [num_den', num_den', add_def'' d₁0' d₂0']
     suffices (n₁ * (d₂ * ((d₂ : α)⁻¹ * (d₁ : α)⁻¹)) + n₂ * (d₁ * (d₂ : α)⁻¹) * (d₁ : α)⁻¹ : α)
         = n₁ * (d₁ : α)⁻¹ + n₂ * (d₂ : α)⁻¹ by
@@ -135,9 +140,9 @@ theorem cast_mul_of_ne_zero :
     ∀ {m n : ℚ}, (m.den : α) ≠ 0 → (n.den : α) ≠ 0 → ((m * n : ℚ) : α) = m * n
   | ⟨n₁, d₁, h₁, c₁⟩, ⟨n₂, d₂, h₂, c₂⟩ => fun (d₁0 : (d₁ : α) ≠ 0) (d₂0 : (d₂ : α) ≠ 0) => by
     have d₁0' : (d₁ : ℤ) ≠ 0 :=
-      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₁0; exact d₁0 Nat.cast_zero
+      Int.natCast_ne_zero.2 fun e => by rw [e] at d₁0; exact d₁0 Nat.cast_zero
     have d₂0' : (d₂ : ℤ) ≠ 0 :=
-      Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₂0; exact d₂0 Nat.cast_zero
+      Int.natCast_ne_zero.2 fun e => by rw [e] at d₂0; exact d₂0 Nat.cast_zero
     rw [num_den', num_den', mul_def' d₁0' d₂0']
     suffices (n₁ * (n₂ * (d₂ : α)⁻¹ * (d₁ : α)⁻¹) : α) = n₁ * ((d₁ : α)⁻¹ * (n₂ * (d₂ : α)⁻¹)) by
       rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero, cast_mk_of_ne_zero]
@@ -162,7 +167,7 @@ theorem cast_div_of_ne_zero {m n : ℚ} (md : (m.den : α) ≠ 0) (nn : (n.num :
     apply den_dvd
   have : (n⁻¹.den : α) = 0 → (n.num : α) = 0 := fun h => by
     let ⟨k, e⟩ := this
-    have := congr_arg ((↑) : ℤ → α) e; rwa [Int.cast_mul, Int.cast_ofNat, h, zero_mul] at this
+    have := congr_arg ((↑) : ℤ → α) e; rwa [Int.cast_mul, Int.cast_natCast, h, zero_mul] at this
   rw [division_def, cast_mul_of_ne_zero md (mt this nn), cast_inv_of_ne_zero nn nd, division_def]
 #align rat.cast_div_of_ne_zero Rat.cast_div_of_ne_zero
 
@@ -203,7 +208,7 @@ variable {f g : F}
 /-- If `f` and `g` agree on the integers then they are equal `φ`. -/
 theorem ext_rat' (h : ∀ m : ℤ, f m = g m) : f = g :=
   (DFunLike.ext f g) fun r => by
-    rw [← r.num_div_den, div_eq_mul_inv, map_mul, map_mul, h, ← Int.cast_ofNat,
+    rw [← r.num_div_den, div_eq_mul_inv, map_mul, map_mul, h, ← Int.cast_natCast,
       eq_on_inv₀ f g]
     apply h
 #align monoid_with_zero_hom.ext_rat' MonoidWithZeroHom.ext_rat'

@@ -175,7 +175,7 @@ theorem coe_const (p : P2) : ⇑(const k P1 p) = Function.const P1 p :=
   rfl
 #align affine_map.coe_const AffineMap.coe_const
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem const_apply (p : P2) (q : P1) : (const k P1 p) q = p := rfl
 
@@ -657,7 +657,7 @@ theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = ⇑f.linear + fun _ => 
 are the same. -/
 theorem decomp' (f : V1 →ᵃ[k] V2) : (f.linear : V1 → V2) = ⇑f - fun _ => f 0 := by
   rw [decomp]
-  simp only [LinearMap.map_zero, Pi.add_apply, add_sub_cancel, zero_add]
+  simp only [LinearMap.map_zero, Pi.add_apply, add_sub_cancel_right, zero_add]
 #align affine_map.decomp' AffineMap.decomp'
 
 theorem image_uIcc {k : Type*} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b : k) :
@@ -709,7 +709,6 @@ variable {R k V1 P1 V2 : Type*}
 section Ring
 
 variable [Ring k] [AddCommGroup V1] [AffineSpace V1 P1] [AddCommGroup V2]
-
 variable [Module k V1] [Module k V2]
 
 section DistribMulAction
@@ -762,7 +761,6 @@ end Ring
 section CommRing
 
 variable [CommRing k] [AddCommGroup V1] [AffineSpace V1 P1] [AddCommGroup V2]
-
 variable [Module k V1] [Module k V2]
 
 /-- `homothety c r` is the homothety (also known as dilation) about `c` with scale factor `r`. -/

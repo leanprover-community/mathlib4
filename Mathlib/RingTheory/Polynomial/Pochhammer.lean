@@ -3,11 +3,11 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.Algebra.Polynomial.Degree.Definitions
+import Mathlib.Algebra.Polynomial.Eval
+import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Tactic.Abel
-import Mathlib.Data.Polynomial.Degree.Definitions
-import Mathlib.Data.Polynomial.Eval
-import Mathlib.Data.Polynomial.Monic
-import Mathlib.Data.Polynomial.RingDivision
 
 #align_import ring_theory.polynomial.pochhammer from "leanprover-community/mathlib"@"53b216bcc1146df1c4a0a86877890ea9f1f01589"
 
@@ -344,7 +344,7 @@ theorem descPochhammer_eval_eq_ascPochhammer (r : R) (n : ℕ) :
   induction n with
   | zero => rw [descPochhammer_zero, eval_one, ascPochhammer_zero, eval_one]
   | succ n ih =>
-    rw [Nat.cast_succ, sub_add, add_sub_cancel, descPochhammer_succ_eval, ih,
+    rw [Nat.cast_succ, sub_add, add_sub_cancel_right, descPochhammer_succ_eval, ih,
       ascPochhammer_succ_left, X_mul, eval_mul_X, show (X + 1 : R[X]) =
       (X + 1 : ℕ[X]).map (algebraMap ℕ R) by simp only [Polynomial.map_add, map_X,
       Polynomial.map_one], ascPochhammer_eval_comp, eval₂_add, eval₂_X, eval₂_one]
@@ -376,8 +376,8 @@ theorem descPochhammer_eval_eq_descFactorial (n k : ℕ) :
     rw [descPochhammer_succ_right, Nat.descFactorial_succ, mul_sub, eval_sub, eval_mul_X,
       ← Nat.cast_comm k, eval_nat_cast_mul, ← Nat.cast_comm n, ← sub_mul, ih]
     by_cases h : n < k
-    rw [Nat.descFactorial_eq_zero_iff_lt.mpr h, Nat.cast_zero, mul_zero, mul_zero, Nat.cast_zero]
-    rw [Nat.cast_mul, Nat.cast_sub <| not_lt.mp h]
+    · rw [Nat.descFactorial_eq_zero_iff_lt.mpr h, Nat.cast_zero, mul_zero, mul_zero, Nat.cast_zero]
+    · rw [Nat.cast_mul, Nat.cast_sub <| not_lt.mp h]
 
 theorem descPochhammer_int_eq_ascFactorial (a b : ℕ) :
     (descPochhammer ℤ b).eval (a + b : ℤ) = (a + 1).ascFactorial b := by

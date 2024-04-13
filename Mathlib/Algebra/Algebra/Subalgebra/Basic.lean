@@ -38,9 +38,7 @@ add_decl_doc Subalgebra.toSubsemiring
 namespace Subalgebra
 
 variable {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
-
 variable [CommSemiring R]
-
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
 
 instance : SetLike (Subalgebra R A) A where
@@ -153,9 +151,9 @@ protected theorem nsmul_mem {x : A} (hx : x ∈ S) (n : ℕ) : n • x ∈ S :=
   nsmul_mem hx n
 #align subalgebra.nsmul_mem Subalgebra.nsmul_mem
 
-protected theorem coe_nat_mem (n : ℕ) : (n : A) ∈ S :=
-  coe_nat_mem S n
-#align subalgebra.coe_nat_mem Subalgebra.coe_nat_mem
+protected theorem natCast_mem (n : ℕ) : (n : A) ∈ S :=
+  natCast_mem S n
+#align subalgebra.coe_nat_mem Subalgebra.natCast_mem
 
 protected theorem list_prod_mem {L : List A} (h : ∀ x ∈ L, x ∈ S) : L.prod ∈ S :=
   list_prod_mem h
@@ -204,10 +202,14 @@ protected theorem zsmul_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [Alg
   zsmul_mem hx n
 #align subalgebra.zsmul_mem Subalgebra.zsmul_mem
 
-protected theorem coe_int_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
+protected theorem intCast_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
     (S : Subalgebra R A) (n : ℤ) : (n : A) ∈ S :=
-  coe_int_mem S n
-#align subalgebra.coe_int_mem Subalgebra.coe_int_mem
+  intCast_mem S n
+#align subalgebra.coe_int_mem Subalgebra.intCast_mem
+
+-- 2024-04-05
+@[deprecated natCast_mem] alias coe_nat_mem := Subalgebra.natCast_mem
+@[deprecated intCast_mem] alias coe_int_mem := Subalgebra.intCast_mem
 
 /-- The projection from a subalgebra of `A` to an additive submonoid of `A`. -/
 def toAddSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
@@ -510,7 +512,6 @@ end Subalgebra
 namespace Submodule
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-
 variable (p : Submodule R A)
 
 /-- A submodule containing `1` and closed under multiplication is a subalgebra. -/
@@ -560,11 +561,8 @@ end Submodule
 namespace AlgHom
 
 variable {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
-
 variable [CommSemiring R]
-
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
-
 variable (φ : A →ₐ[R] B)
 
 /-- Range of an `AlgHom` as a subalgebra. -/
@@ -626,14 +624,12 @@ def rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
   f.codRestrict f.range f.mem_range_self
 #align alg_hom.range_restrict AlgHom.rangeRestrict
 
-theorem rangeRestrict_surjective (f : A →ₐ[R] B):
-    Function.Surjective (f.rangeRestrict) :=
+theorem rangeRestrict_surjective (f : A →ₐ[R] B) : Function.Surjective (f.rangeRestrict) :=
   fun ⟨_y, hy⟩ =>
-  let ⟨x, hx⟩ := hy
-  ⟨x, SetCoe.ext hx⟩
+    let ⟨x, hx⟩ := hy
+    ⟨x, SetCoe.ext hx⟩
 
-theorem ker_rangeRestrict (f : A →ₐ[R] B) :
-    RingHom.ker f.rangeRestrict = RingHom.ker f :=
+theorem ker_rangeRestrict (f : A →ₐ[R] B) : RingHom.ker f.rangeRestrict = RingHom.ker f :=
   Ideal.ext fun _ ↦ Subtype.ext_iff
 
 /-- The equalizer of two R-algebra homomorphisms -/
@@ -665,7 +661,6 @@ end AlgHom
 namespace AlgEquiv
 
 variable {R : Type u} {A : Type v} {B : Type w}
-
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 /-- Restrict an algebra homomorphism with a left inverse to an algebra isomorphism to its range.
@@ -726,7 +721,6 @@ end AlgEquiv
 namespace Algebra
 
 variable (R : Type u) {A : Type v} {B : Type w}
-
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- The minimal subalgebra that includes `s`. -/
@@ -950,9 +944,7 @@ namespace Subalgebra
 open Algebra
 
 variable {R : Type u} {A : Type v} {B : Type w}
-
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-
 variable (S : Subalgebra R A)
 
 /-- The top subalgebra is isomorphic to the algebra.
@@ -1443,7 +1435,7 @@ variable {R : Type*} [Semiring R]
 
 /-- A subsemiring is an `ℕ`-subalgebra. -/
 def subalgebraOfSubsemiring (S : Subsemiring R) : Subalgebra ℕ R :=
-  { S with algebraMap_mem' := fun i => coe_nat_mem S i }
+  { S with algebraMap_mem' := fun i => natCast_mem S i }
 #align subalgebra_of_subsemiring subalgebraOfSubsemiring
 
 @[simp]

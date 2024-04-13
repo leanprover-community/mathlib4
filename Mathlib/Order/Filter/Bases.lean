@@ -432,6 +432,13 @@ theorem HasBasis.comp_equiv (h : l.HasBasis p s) (e : ι' ≃ ι) : l.HasBasis (
   h.comp_surjective e.surjective
 #align filter.has_basis.comp_equiv Filter.HasBasis.comp_equiv
 
+theorem HasBasis.to_image_id' (h : l.HasBasis p s) : l.HasBasis (fun t ↦ ∃ i, p i ∧ s i = t) id :=
+  ⟨fun _ ↦ by simp [h.mem_iff]⟩
+
+theorem HasBasis.to_image_id {ι : Type*} {p : ι → Prop} {s : ι → Set α} (h : l.HasBasis p s) :
+    l.HasBasis (· ∈ s '' {i | p i}) id :=
+  h.to_image_id'
+
 /-- If `{s i | p i}` is a basis of a filter `l` and each `s i` includes `s j` such that
 `p j ∧ q j`, then `{s j | p j ∧ q j}` is a basis of `l`. -/
 theorem HasBasis.restrict (h : l.HasBasis p s) {q : ι → Prop}
@@ -850,10 +857,14 @@ structure HasAntitoneBasis (l : Filter α) (s : ι'' → Set α)
   protected antitone : Antitone s
 #align filter.has_antitone_basis Filter.HasAntitoneBasis
 
-theorem HasAntitoneBasis.map {l : Filter α} {s : ι'' → Set α} {m : α → β}
-    (hf : HasAntitoneBasis l s) : HasAntitoneBasis (map m l) fun n => m '' s n :=
+protected theorem HasAntitoneBasis.map {l : Filter α} {s : ι'' → Set α}
+    (hf : HasAntitoneBasis l s) (m : α → β) : HasAntitoneBasis (map m l) (m '' s ·) :=
   ⟨HasBasis.map _ hf.toHasBasis, fun _ _ h => image_subset _ <| hf.2 h⟩
 #align filter.has_antitone_basis.map Filter.HasAntitoneBasis.map
+
+protected theorem HasAntitoneBasis.comap {l : Filter α} {s : ι'' → Set α}
+    (hf : HasAntitoneBasis l s) (m : β → α) : HasAntitoneBasis (comap m l) (m ⁻¹' s ·) :=
+  ⟨hf.1.comap _, fun _ _ h ↦ preimage_mono (hf.2 h)⟩
 
 lemma HasAntitoneBasis.iInf_principal {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirected ι (· ≤ ·)]
     {s : ι → Set α} (hs : Antitone s) : (⨅ i, 𝓟 (s i)).HasAntitoneBasis s :=
@@ -1026,6 +1037,10 @@ theorem HasCountableBasis.isCountablyGenerated {f : Filter α} {p : ι → Prop}
   ⟨⟨{ t | ∃ i, p i ∧ s i = t }, h.countable.image s, h.toHasBasis.eq_generate⟩⟩
 #align filter.has_countable_basis.is_countably_generated Filter.HasCountableBasis.isCountablyGenerated
 
+theorem HasBasis.isCountablyGenerated [Countable ι] {f : Filter α} {p : ι → Prop} {s : ι → Set α}
+    (h : f.HasBasis p s) : f.IsCountablyGenerated :=
+  HasCountableBasis.isCountablyGenerated ⟨h, to_countable _⟩
+
 theorem antitone_seq_of_seq (s : ℕ → Set α) :
     ∃ t : ℕ → Set α, Antitone t ∧ ⨅ i, 𝓟 (s i) = ⨅ i, 𝓟 (t i) := by
   use fun n => ⋂ m ≤ n, s m; constructor
@@ -1128,21 +1143,20 @@ instance Inf.isCountablyGenerated (f g : Filter α) [IsCountablyGenerated f]
 instance map.isCountablyGenerated (l : Filter α) [l.IsCountablyGenerated] (f : α → β) :
     (map f l).IsCountablyGenerated :=
   let ⟨_x, hxl⟩ := l.exists_antitone_basis
-  HasCountableBasis.isCountablyGenerated ⟨hxl.map.1, to_countable _⟩
+  (hxl.map _).isCountablyGenerated
 #align filter.map.is_countably_generated Filter.map.isCountablyGenerated
 
 instance comap.isCountablyGenerated (l : Filter β) [l.IsCountablyGenerated] (f : α → β) :
     (comap f l).IsCountablyGenerated :=
   let ⟨_x, hxl⟩ := l.exists_antitone_basis
-  HasCountableBasis.isCountablyGenerated ⟨hxl.1.comap _, to_countable _⟩
+  (hxl.comap _).isCountablyGenerated
 #align filter.comap.is_countably_generated Filter.comap.isCountablyGenerated
 
 instance Sup.isCountablyGenerated (f g : Filter α) [IsCountablyGenerated f]
     [IsCountablyGenerated g] : IsCountablyGenerated (f ⊔ g) := by
   rcases f.exists_antitone_basis with ⟨s, hs⟩
   rcases g.exists_antitone_basis with ⟨t, ht⟩
-  exact
-    HasCountableBasis.isCountablyGenerated ⟨hs.1.sup ht.1, Set.to_countable _⟩
+  exact HasCountableBasis.isCountablyGenerated ⟨hs.1.sup ht.1, Set.to_countable _⟩
 #align filter.sup.is_countably_generated Filter.Sup.isCountablyGenerated
 
 instance prod.isCountablyGenerated (la : Filter α) (lb : Filter β) [IsCountablyGenerated la]
@@ -1157,7 +1171,7 @@ instance coprod.isCountablyGenerated (la : Filter α) (lb : Filter β) [IsCounta
 
 end IsCountablyGenerated
 
-theorem isCountablyGenerated_seq [Countable β] (x : β → Set α) :
+theorem isCountablyGenerated_seq [Countable ι'] (x : ι' → Set α) :
     IsCountablyGenerated (⨅ i, 𝓟 (x i)) := by
   use range x, countable_range x
   rw [generate_eq_biInf, iInf_range]

@@ -30,7 +30,7 @@ def Irrational (x : ℝ) :=
 #align irrational Irrational
 
 theorem irrational_iff_ne_rational (x : ℝ) : Irrational x ↔ ∀ a b : ℤ, x ≠ a / b := by
-  simp only [Irrational, Rat.forall, cast_mk, not_exists, Set.mem_range, cast_coe_int, cast_div,
+  simp only [Irrational, Rat.forall, cast_mk, not_exists, Set.mem_range, cast_intCast, cast_div,
     eq_comm]
 #align irrational_iff_ne_rational irrational_iff_ne_rational
 
@@ -52,17 +52,17 @@ theorem irrational_nrt_of_notint_nrt {x : ℝ} (n : ℕ) (m : ℤ) (hxr : x ^ n 
   rintro ⟨⟨N, D, P, C⟩, rfl⟩
   rw [← cast_pow] at hxr
   have c1 : ((D : ℤ) : ℝ) ≠ 0 := by
-    rw [Int.cast_ne_zero, Int.coe_nat_ne_zero]
+    rw [Int.cast_ne_zero, Int.natCast_ne_zero]
     exact P
   have c2 : ((D : ℤ) : ℝ) ^ n ≠ 0 := pow_ne_zero _ c1
   rw [num_den', cast_pow, cast_mk, div_pow, div_eq_iff_mul_eq c2, ← Int.cast_pow, ← Int.cast_pow,
     ← Int.cast_mul, Int.cast_inj] at hxr
   have hdivn : (D : ℤ) ^ n ∣ N ^ n := Dvd.intro_left m hxr
-  rw [← Int.dvd_natAbs, ← Int.coe_nat_pow, Int.coe_nat_dvd, Int.natAbs_pow,
+  rw [← Int.dvd_natAbs, ← Int.coe_nat_pow, Int.natCast_dvd_natCast, Int.natAbs_pow,
     Nat.pow_dvd_pow_iff hnpos] at hdivn
   obtain rfl : D = 1 := by rw [← Nat.gcd_eq_right hdivn, C.gcd_eq_one]
   refine' hv ⟨N, _⟩
-  rw [num_den', Int.ofNat_one, divInt_one, cast_coe_int]
+  rw [num_den', Int.ofNat_one, divInt_one, cast_intCast]
 #align irrational_nrt_of_notint_nrt irrational_nrt_of_notint_nrt
 
 /-- If `x^n = m` is an integer and `n` does not divide the `multiplicity p m`, then `x`
@@ -73,9 +73,8 @@ theorem irrational_nrt_of_n_not_dvd_multiplicity {x : ℝ} (n : ℕ) {m : ℤ} (
     Irrational x := by
   rcases Nat.eq_zero_or_pos n with (rfl | hnpos)
   · rw [eq_comm, pow_zero, ← Int.cast_one, Int.cast_inj] at hxr
-    simp [hxr,
-      multiplicity.one_right (mt isUnit_iff_dvd_one.1 (mt Int.coe_nat_dvd.1 hp.1.not_dvd_one)),
-      Nat.zero_mod] at hv
+    simp [hxr, multiplicity.one_right (mt isUnit_iff_dvd_one.1
+      (mt Int.natCast_dvd_natCast.1 hp.1.not_dvd_one)), Nat.zero_mod] at hv
   refine' irrational_nrt_of_notint_nrt _ _ hxr _ hnpos
   rintro ⟨y, rfl⟩
   rw [← Int.cast_pow, Int.cast_inj] at hxr
@@ -89,24 +88,24 @@ theorem irrational_nrt_of_n_not_dvd_multiplicity {x : ℝ} (n : ℕ) {m : ℤ} (
 theorem irrational_sqrt_of_multiplicity_odd (m : ℤ) (hm : 0 < m) (p : ℕ) [hp : Fact p.Prime]
     (Hpv :
       (multiplicity (p : ℤ) m).get (finite_int_iff.2 ⟨hp.1.ne_one, (ne_of_lt hm).symm⟩) % 2 = 1) :
-    Irrational (Real.sqrt m) :=
+    Irrational (√m) :=
   @irrational_nrt_of_n_not_dvd_multiplicity _ 2 _ (Ne.symm (ne_of_lt hm)) p hp
     (sq_sqrt (Int.cast_nonneg.2 <| le_of_lt hm)) (by rw [Hpv]; exact one_ne_zero)
 #align irrational_sqrt_of_multiplicity_odd irrational_sqrt_of_multiplicity_odd
 
-theorem Nat.Prime.irrational_sqrt {p : ℕ} (hp : Nat.Prime p) : Irrational (Real.sqrt p) :=
-  @irrational_sqrt_of_multiplicity_odd p (Int.coe_nat_pos.2 hp.pos) p ⟨hp⟩ <| by
+theorem Nat.Prime.irrational_sqrt {p : ℕ} (hp : Nat.Prime p) : Irrational (√p) :=
+  @irrational_sqrt_of_multiplicity_odd p (Int.natCast_pos.2 hp.pos) p ⟨hp⟩ <| by
     simp [multiplicity.multiplicity_self
-      (mt isUnit_iff_dvd_one.1 (mt Int.coe_nat_dvd.1 hp.not_dvd_one))]
+      (mt isUnit_iff_dvd_one.1 (mt Int.natCast_dvd_natCast.1 hp.not_dvd_one))]
 #align nat.prime.irrational_sqrt Nat.Prime.irrational_sqrt
 
 /-- **Irrationality of the Square Root of 2** -/
-theorem irrational_sqrt_two : Irrational (Real.sqrt 2) := by
+theorem irrational_sqrt_two : Irrational (√2) := by
   simpa using Nat.prime_two.irrational_sqrt
 #align irrational_sqrt_two irrational_sqrt_two
 
 theorem irrational_sqrt_rat_iff (q : ℚ) :
-    Irrational (Real.sqrt q) ↔ Rat.sqrt q * Rat.sqrt q ≠ q ∧ 0 ≤ q :=
+    Irrational (√q) ↔ Rat.sqrt q * Rat.sqrt q ≠ q ∧ 0 ≤ q :=
   if H1 : Rat.sqrt q * Rat.sqrt q = q then
     iff_of_false
       (not_not_intro
@@ -135,7 +134,7 @@ theorem irrational_sqrt_rat_iff (q : ℚ) :
         fun h => H2 h.2
 #align irrational_sqrt_rat_iff irrational_sqrt_rat_iff
 
-instance (q : ℚ) : Decidable (Irrational (Real.sqrt q)) :=
+instance (q : ℚ) : Decidable (Irrational (√q)) :=
   decidable_of_iff' _ (irrational_sqrt_rat_iff q)
 
 /-!
@@ -158,7 +157,7 @@ theorem ne_rat (h : Irrational x) (q : ℚ) : x ≠ q := fun hq => h ⟨q, hq.sy
 #align irrational.ne_rat Irrational.ne_rat
 
 theorem ne_int (h : Irrational x) (m : ℤ) : x ≠ m := by
-  rw [← Rat.cast_coe_int]
+  rw [← Rat.cast_intCast]
   exact h.ne_rat _
 #align irrational.ne_int Irrational.ne_int
 
@@ -220,7 +219,7 @@ theorem add_rat (h : Irrational x) : Irrational (x + q) :=
 #align irrational.add_rat Irrational.add_rat
 
 theorem of_int_add (m : ℤ) (h : Irrational (m + x)) : Irrational x := by
-  rw [← cast_coe_int] at h
+  rw [← cast_intCast] at h
   exact h.of_rat_add m
 #align irrational.of_int_add Irrational.of_int_add
 
@@ -229,7 +228,7 @@ theorem of_add_int (m : ℤ) (h : Irrational (x + m)) : Irrational x :=
 #align irrational.of_add_int Irrational.of_add_int
 
 theorem int_add (h : Irrational x) (m : ℤ) : Irrational (m + x) := by
-  rw [← cast_coe_int]
+  rw [← cast_intCast]
   exact h.rat_add m
 #align irrational.int_add Irrational.int_add
 
@@ -287,19 +286,19 @@ theorem of_rat_sub (h : Irrational (q - x)) : Irrational x :=
 #align irrational.of_rat_sub Irrational.of_rat_sub
 
 theorem sub_int (h : Irrational x) (m : ℤ) : Irrational (x - m) := by
-  simpa only [Rat.cast_coe_int] using h.sub_rat m
+  simpa only [Rat.cast_intCast] using h.sub_rat m
 #align irrational.sub_int Irrational.sub_int
 
 theorem int_sub (h : Irrational x) (m : ℤ) : Irrational (m - x) := by
-  simpa only [Rat.cast_coe_int] using h.rat_sub m
+  simpa only [Rat.cast_intCast] using h.rat_sub m
 #align irrational.int_sub Irrational.int_sub
 
 theorem of_sub_int (m : ℤ) (h : Irrational (x - m)) : Irrational x :=
-  of_sub_rat m <| by rwa [Rat.cast_coe_int]
+  of_sub_rat m <| by rwa [Rat.cast_intCast]
 #align irrational.of_sub_int Irrational.of_sub_int
 
 theorem of_int_sub (m : ℤ) (h : Irrational (m - x)) : Irrational x :=
-  of_rat_sub m <| by rwa [Rat.cast_coe_int]
+  of_rat_sub m <| by rwa [Rat.cast_intCast]
 #align irrational.of_int_sub Irrational.of_int_sub
 
 theorem sub_nat (h : Irrational x) (m : ℕ) : Irrational (x - m) :=
@@ -347,15 +346,15 @@ theorem rat_mul (h : Irrational x) {q : ℚ} (hq : q ≠ 0) : Irrational (q * x)
 #align irrational.rat_mul Irrational.rat_mul
 
 theorem of_mul_int (m : ℤ) (h : Irrational (x * m)) : Irrational x :=
-  of_mul_rat m <| by rwa [cast_coe_int]
+  of_mul_rat m <| by rwa [cast_intCast]
 #align irrational.of_mul_int Irrational.of_mul_int
 
 theorem of_int_mul (m : ℤ) (h : Irrational (m * x)) : Irrational x :=
-  of_rat_mul m <| by rwa [cast_coe_int]
+  of_rat_mul m <| by rwa [cast_intCast]
 #align irrational.of_int_mul Irrational.of_int_mul
 
 theorem mul_int (h : Irrational x) {m : ℤ} (hm : m ≠ 0) : Irrational (x * m) := by
-  rw [← cast_coe_int]
+  rw [← cast_intCast]
   refine' h.mul_rat _
   rwa [Int.cast_ne_zero]
 #align irrational.mul_int Irrational.mul_int
@@ -373,11 +372,11 @@ theorem of_nat_mul (m : ℕ) (h : Irrational (m * x)) : Irrational x :=
 #align irrational.of_nat_mul Irrational.of_nat_mul
 
 theorem mul_nat (h : Irrational x) {m : ℕ} (hm : m ≠ 0) : Irrational (x * m) :=
-  h.mul_int <| Int.coe_nat_ne_zero.2 hm
+  h.mul_int <| Int.natCast_ne_zero.2 hm
 #align irrational.mul_nat Irrational.mul_nat
 
 theorem nat_mul (h : Irrational x) {m : ℕ} (hm : m ≠ 0) : Irrational (m * x) :=
-  h.int_mul <| Int.coe_nat_ne_zero.2 hm
+  h.int_mul <| Int.natCast_ne_zero.2 hm
 #align irrational.nat_mul Irrational.nat_mul
 
 /-!
@@ -431,7 +430,7 @@ theorem int_div (h : Irrational x) {m : ℤ} (hm : m ≠ 0) : Irrational (m / x)
 #align irrational.int_div Irrational.int_div
 
 theorem div_int (h : Irrational x) {m : ℤ} (hm : m ≠ 0) : Irrational (x / m) := by
-  rw [← cast_coe_int]
+  rw [← cast_intCast]
   refine' h.div_rat _
   rwa [Int.cast_ne_zero]
 #align irrational.div_int Irrational.div_int
@@ -449,7 +448,7 @@ theorem nat_div (h : Irrational x) {m : ℕ} (hm : m ≠ 0) : Irrational (m / x)
 #align irrational.nat_div Irrational.nat_div
 
 theorem div_nat (h : Irrational x) {m : ℕ} (hm : m ≠ 0) : Irrational (x / m) :=
-  h.div_int <| by rwa [Int.coe_nat_ne_zero]
+  h.div_int <| by rwa [Int.natCast_ne_zero]
 #align irrational.div_nat Irrational.div_nat
 
 theorem of_one_div (h : Irrational (1 / x)) : Irrational x :=
@@ -471,13 +470,13 @@ theorem of_pow : ∀ n : ℕ, Irrational (x ^ n) → Irrational x
     exact (h ⟨1, cast_one⟩).elim
   | n + 1 => fun h => by
     rw [pow_succ] at h
-    exact h.mul_cases.elim id (of_pow n)
+    exact h.mul_cases.elim (of_pow n) id
 #align irrational.of_pow Irrational.of_pow
 
 open Int in
 theorem of_zpow : ∀ m : ℤ, Irrational (x ^ m) → Irrational x
   | (n : ℕ) => fun h => by
-    rw [zpow_coe_nat] at h
+    rw [zpow_natCast] at h
     exact h.of_pow _
   | -[n+1] => fun h => by
     rw [zpow_negSucc] at h
@@ -605,22 +604,22 @@ theorem irrational_mul_rat_iff : Irrational (x * q) ↔ q ≠ 0 ∧ Irrational x
 
 @[simp]
 theorem irrational_int_mul_iff : Irrational (m * x) ↔ m ≠ 0 ∧ Irrational x := by
-  rw [← cast_coe_int, irrational_rat_mul_iff, Int.cast_ne_zero]
+  rw [← cast_intCast, irrational_rat_mul_iff, Int.cast_ne_zero]
 #align irrational_int_mul_iff irrational_int_mul_iff
 
 @[simp]
 theorem irrational_mul_int_iff : Irrational (x * m) ↔ m ≠ 0 ∧ Irrational x := by
-  rw [← cast_coe_int, irrational_mul_rat_iff, Int.cast_ne_zero]
+  rw [← cast_intCast, irrational_mul_rat_iff, Int.cast_ne_zero]
 #align irrational_mul_int_iff irrational_mul_int_iff
 
 @[simp]
 theorem irrational_nat_mul_iff : Irrational (n * x) ↔ n ≠ 0 ∧ Irrational x := by
-  rw [← cast_coe_nat, irrational_rat_mul_iff, Nat.cast_ne_zero]
+  rw [← cast_natCast, irrational_rat_mul_iff, Nat.cast_ne_zero]
 #align irrational_nat_mul_iff irrational_nat_mul_iff
 
 @[simp]
 theorem irrational_mul_nat_iff : Irrational (x * n) ↔ n ≠ 0 ∧ Irrational x := by
-  rw [← cast_coe_nat, irrational_mul_rat_iff, Nat.cast_ne_zero]
+  rw [← cast_natCast, irrational_mul_rat_iff, Nat.cast_ne_zero]
 #align irrational_mul_nat_iff irrational_mul_nat_iff
 
 @[simp]
@@ -630,7 +629,7 @@ theorem irrational_rat_div_iff : Irrational (q / x) ↔ q ≠ 0 ∧ Irrational x
 
 @[simp]
 theorem irrational_div_rat_iff : Irrational (x / q) ↔ q ≠ 0 ∧ Irrational x := by
-  rw [div_eq_mul_inv, ← cast_inv, irrational_mul_rat_iff, Ne.def, inv_eq_zero]
+  rw [div_eq_mul_inv, ← cast_inv, irrational_mul_rat_iff, Ne, inv_eq_zero]
 #align irrational_div_rat_iff irrational_div_rat_iff
 
 @[simp]
@@ -640,7 +639,7 @@ theorem irrational_int_div_iff : Irrational (m / x) ↔ m ≠ 0 ∧ Irrational x
 
 @[simp]
 theorem irrational_div_int_iff : Irrational (x / m) ↔ m ≠ 0 ∧ Irrational x := by
-  rw [← cast_coe_int, irrational_div_rat_iff, Int.cast_ne_zero]
+  rw [← cast_intCast, irrational_div_rat_iff, Int.cast_ne_zero]
 #align irrational_div_int_iff irrational_div_int_iff
 
 @[simp]
@@ -650,14 +649,13 @@ theorem irrational_nat_div_iff : Irrational (n / x) ↔ n ≠ 0 ∧ Irrational x
 
 @[simp]
 theorem irrational_div_nat_iff : Irrational (x / n) ↔ n ≠ 0 ∧ Irrational x := by
-  rw [← cast_coe_nat, irrational_div_rat_iff, Nat.cast_ne_zero]
+  rw [← cast_natCast, irrational_div_rat_iff, Nat.cast_ne_zero]
 #align irrational_div_nat_iff irrational_div_nat_iff
 
 /-- There is an irrational number `r` between any two reals `x < r < y`. -/
 theorem exists_irrational_btwn {x y : ℝ} (h : x < y) : ∃ r, Irrational r ∧ x < r ∧ r < y :=
-  let ⟨q, ⟨hq1, hq2⟩⟩ := exists_rat_btwn ((sub_lt_sub_iff_right (Real.sqrt 2)).mpr h)
-  ⟨q + Real.sqrt 2, irrational_sqrt_two.rat_add _, sub_lt_iff_lt_add.mp hq1,
-    lt_sub_iff_add_lt.mp hq2⟩
+  let ⟨q, ⟨hq1, hq2⟩⟩ := exists_rat_btwn ((sub_lt_sub_iff_right (√2)).mpr h)
+  ⟨q + √2, irrational_sqrt_two.rat_add _, sub_lt_iff_lt_add.mp hq1, lt_sub_iff_add_lt.mp hq2⟩
 #align exists_irrational_btwn exists_irrational_btwn
 
 end

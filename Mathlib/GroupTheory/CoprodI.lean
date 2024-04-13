@@ -322,7 +322,6 @@ instance (i : ι) : Inhabited (Pair M i) :=
   ⟨⟨1, empty, by tauto⟩⟩
 
 variable {M}
-
 variable [∀ i, DecidableEq (M i)]
 
 /-- Construct a new `Word` without any reduction. The underlying list of
@@ -642,7 +641,7 @@ variable (M)
 /-- A `NeWord M i j` is a representation of a non-empty reduced words where the first letter comes
 from `M i` and the last letter comes from `M j`. It can be constructed from singletons and via
 concatenation, and thus provides a useful induction principle. -/
---@[nolint has_nonempty_instance] Porting note: commented out
+--@[nolint has_nonempty_instance] Porting note(#5171): commented out
 inductive NeWord : ι → ι → Type _
   | singleton : ∀ {i : ι} (x : M i), x ≠ 1 → NeWord i i
   | append : ∀ {i j k l} (_w₁ : NeWord i j) (_hne : j ≠ k) (_w₂ : NeWord k l), NeWord i l
@@ -859,11 +858,8 @@ open Pointwise
 open Cardinal
 
 variable [hnontriv : Nontrivial ι]
-
 variable {G : Type*} [Group G]
-
 variable {H : ι → Type*} [∀ i, Group (H i)]
-
 variable (f : ∀ i, H i →* G)
 
 -- We need many groups or one group with many elements
@@ -871,13 +867,9 @@ variable (hcard : 3 ≤ #ι ∨ ∃ i, 3 ≤ #(H i))
 
 -- A group action on α, and the ping-pong sets
 variable {α : Type*} [MulAction G α]
-
 variable (X : ι → Set α)
-
 variable (hXnonempty : ∀ i, (X i).Nonempty)
-
 variable (hXdisj : Pairwise fun i j => Disjoint (X i) (X j))
-
 variable (hpp : Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X j ⊆ X i)
 
 theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
@@ -1019,24 +1011,16 @@ section PingPongLemma
 open Pointwise Cardinal
 
 variable [Nontrivial ι]
-
 variable {G : Type u_1} [Group G] (a : ι → G)
 
 -- A group action on α, and the ping-pong sets
 variable {α : Type*} [MulAction G α]
-
 variable (X Y : ι → Set α)
-
 variable (hXnonempty : ∀ i, (X i).Nonempty)
-
 variable (hXdisj : Pairwise fun i j => Disjoint (X i) (X j))
-
 variable (hYdisj : Pairwise fun i j => Disjoint (Y i) (Y j))
-
 variable (hXYdisj : ∀ i j, Disjoint (X i) (Y j))
-
 variable (hX : ∀ i, a i • (Y i)ᶜ ⊆ X i)
-
 variable (hY : ∀ i, a⁻¹ i • (X i)ᶜ ⊆ Y i)
 
 /-- The Ping-Pong-Lemma.

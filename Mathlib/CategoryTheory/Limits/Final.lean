@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Comma.StructuredArrow
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.PUnit
 
@@ -78,7 +79,6 @@ open CategoryTheory.Limits
 section ArbitraryUniverse
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
 
 /--
@@ -316,17 +316,9 @@ instance (priority := 100) comp_hasColimit [HasColimit G] : HasColimit (F ⋙ G)
   HasColimit.mk (colimitCoconeComp F (getColimitCocone G))
 #align category_theory.functor.final.comp_has_colimit CategoryTheory.Functor.Final.comp_hasColimit
 
-theorem colimit_pre_is_iso_aux {t : Cocone G} (P : IsColimit t) :
-    ((isColimitWhiskerEquiv F _).symm P).desc (t.whisker F) = 𝟙 t.pt := by
-  dsimp [isColimitWhiskerEquiv]
-  apply P.hom_ext
-  intro j
-  simp
-#align category_theory.functor.final.colimit_pre_is_iso_aux CategoryTheory.Functor.Final.colimit_pre_is_iso_aux
-
 instance colimit_pre_isIso [HasColimit G] : IsIso (colimit.pre G F) := by
   rw [colimit.pre_eq (colimitCoconeComp F (getColimitCocone G)) (getColimitCocone G)]
-  erw [colimit_pre_is_iso_aux]
+  erw [IsColimit.desc_self]
   dsimp
   infer_instance
 #align category_theory.functor.final.colimit_pre_is_iso CategoryTheory.Functor.Final.colimit_pre_isIso
@@ -615,17 +607,9 @@ instance (priority := 100) comp_hasLimit [HasLimit G] : HasLimit (F ⋙ G) :=
   HasLimit.mk (limitConeComp F (getLimitCone G))
 #align category_theory.functor.initial.comp_has_limit CategoryTheory.Functor.Initial.comp_hasLimit
 
-theorem limit_pre_is_iso_aux {t : Cone G} (P : IsLimit t) :
-    ((isLimitWhiskerEquiv F _).symm P).lift (t.whisker F) = 𝟙 t.pt := by
-  change 𝟙 t.pt ≫ P.lift (extendCone.obj (Cone.whisker F t)) = 𝟙 t.pt
-  apply P.hom_ext
-  intro j
-  simp
-#align category_theory.functor.initial.limit_pre_is_iso_aux CategoryTheory.Functor.Initial.limit_pre_is_iso_aux
-
 instance limit_pre_isIso [HasLimit G] : IsIso (limit.pre G F) := by
   rw [limit.pre_eq (limitConeComp F (getLimitCone G)) (getLimitCone G)]
-  erw [limit_pre_is_iso_aux]
+  erw [IsLimit.lift_self]
   dsimp
   infer_instance
 #align category_theory.functor.initial.limit_pre_is_iso CategoryTheory.Functor.Initial.limit_pre_isIso
@@ -768,7 +752,8 @@ theorem final_comp [hF : Final F] [hG : Final G] : Final (F ⋙ G) := by
     final_iff_isIso_colimit_pre] at hF
   rw [final_iff_comp_equivalence G s₃.functor, final_iff_equivalence_comp s₂.inverse,
     final_iff_isIso_colimit_pre] at hG
-  simp only [← colimit.pre_pre]
+  intro H
+  rw [← colimit.pre_pre]
   infer_instance
 
 theorem initial_comp [Initial F] [Initial G] : Initial (F ⋙ G) := by
@@ -788,8 +773,10 @@ theorem final_of_final_comp [hF : Final F] [hFG : Final (F ⋙ G)] : Final G := 
     final_iff_isIso_colimit_pre] at hF
   rw [final_iff_comp_equivalence (F ⋙ G) s₃.functor, final_iff_equivalence_comp s₁.inverse,
     final_natIso_iff _i, final_iff_isIso_colimit_pre] at hFG
-  simp only [← colimit.pre_pre] at hFG
-  exact fun H => IsIso.of_isIso_comp_left (colimit.pre _ (s₁.inverse ⋙ F ⋙ s₂.functor)) _
+  intro H
+  replace hFG := hFG H
+  rw [← colimit.pre_pre] at hFG
+  exact IsIso.of_isIso_comp_left (colimit.pre _ (s₁.inverse ⋙ F ⋙ s₂.functor)) _
 
 theorem initial_of_initial_comp [Initial F] [Initial (F ⋙ G)] : Initial G := by
   suffices Final G.op from initial_of_final_op _
@@ -828,7 +815,6 @@ section Filtered
 open Functor
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
 
 /-- Final functors preserve filteredness.

@@ -51,19 +51,19 @@ but add these assumptions later as needed. (Quite a few results still do not req
   we register them as `PartialEquiv`s.
   `extChartAt I x` is the canonical such partial equiv around `x`.
 
-As specific examples of models with corners, we define (in the file `real_instances.lean`)
+As specific examples of models with corners, we define (in `Geometry.Manifold.Instances.Real`)
 * `modelWithCornersSelf ℝ (EuclideanSpace (Fin n))` for the model space used to define
-  `n`-dimensional real manifolds without boundary (with notation `𝓡 n` in the locale `manifold`)
-* `ModelWithCorners ℝ (EuclideanSpace (Fin n)) (euclidean_half_space n)` for the model space
+  `n`-dimensional real manifolds without boundary (with notation `𝓡 n` in the locale `Manifold`)
+* `ModelWithCorners ℝ (EuclideanSpace (Fin n)) (EuclideanHalfSpace n)` for the model space
   used to define `n`-dimensional real manifolds with boundary (with notation `𝓡∂ n` in the locale
-  `manifold`)
-* `ModelWithCorners ℝ (EuclideanSpace (Fin n)) (euclidean_quadrant n)` for the model space used
+  `Manifold`)
+* `ModelWithCorners ℝ (EuclideanSpace (Fin n)) (EuclideanQuadrant n)` for the model space used
   to define `n`-dimensional real manifolds with corners
 
 With these definitions at hand, to invoke an `n`-dimensional real manifold without boundary,
 one could use
 
-  `variables {n : ℕ} {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace (Fin n)) M]
+  `variable {n : ℕ} {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace (Fin n)) M]
    [SmoothManifoldWithCorners (𝓡 n) M]`.
 
 However, this is not the recommended way: a theorem proved using this assumption would not apply
@@ -74,7 +74,7 @@ In the same way, it would not apply to product manifolds, modelled on
 The right invocation does not focus on one specific construction, but on all constructions sharing
 the right properties, like
 
-  `variables {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  `variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   {I : ModelWithCorners ℝ E E} [I.Boundaryless]
   {M : Type*} [TopologicalSpace M] [ChartedSpace E M] [SmoothManifoldWithCorners I M]`
 
@@ -82,8 +82,8 @@ Here, `I.Boundaryless` is a typeclass property ensuring that there is no boundar
 instance the case for `modelWithCornersSelf`, or products of these). Note that one could consider
 as a natural assumption to only use the trivial model with corners `modelWithCornersSelf ℝ E`,
 but again in product manifolds the natural model with corners will not be this one but the product
-one (and they are not defeq as `(λp : E × F, (p.1, p.2))` is not defeq to the identity). So, it is
-important to use the above incantation to maximize the applicability of theorems.
+one (and they are not defeq as `(fun p : E × F ↦ (p.1, p.2))` is not defeq to the identity).
+So, it is important to use the above incantation to maximize the applicability of theorems.
 
 ## Implementation notes
 
@@ -128,6 +128,7 @@ open Set Filter Function
 
 open scoped Manifold Filter Topology
 
+/-- The extended natural number `∞` -/
 scoped[Manifold] notation "∞" => (⊤ : ℕ∞)
 
 /-! ### Models with corners. -/
@@ -137,7 +138,7 @@ scoped[Manifold] notation "∞" => (⊤ : ℕ∞)
 model vector space `E` over the field `𝕜`. This is all what is needed to
 define a smooth manifold with model space `H`, and model vector space `E`.
 -/
-@[ext] -- Porting note: was nolint has_nonempty_instance
+@[ext] -- Porting note(#5171): was nolint has_nonempty_instance
 structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] extends
     PartialEquiv H E where
@@ -301,9 +302,11 @@ protected theorem closedEmbedding : ClosedEmbedding I :=
   I.leftInverse.closedEmbedding I.continuous_symm I.continuous
 #align model_with_corners.closed_embedding ModelWithCorners.closedEmbedding
 
-theorem closed_range : IsClosed (range I) :=
-  I.closedEmbedding.closed_range
-#align model_with_corners.closed_range ModelWithCorners.closed_range
+theorem isClosed_range : IsClosed (range I) :=
+  I.closedEmbedding.isClosed_range
+#align model_with_corners.closed_range ModelWithCorners.isClosed_range
+
+@[deprecated] alias closed_range := isClosed_range -- 2024-03-17
 
 theorem map_nhds_eq (x : H) : map I (𝓝 x) = 𝓝[range I] I x :=
   I.closedEmbedding.toEmbedding.map_nhds_eq x
@@ -359,7 +362,7 @@ protected theorem locallyCompactSpace [LocallyCompactSpace E] (I : ModelWithCorn
     exact ((compact_basis_nhds (I x)).inf_principal _).map _
   refine' .of_hasBasis this _
   rintro x s ⟨-, hsc⟩
-  exact (hsc.inter_right I.closed_range).image I.continuous_symm
+  exact (hsc.inter_right I.isClosed_range).image I.continuous_symm
 #align model_with_corners.locally_compact ModelWithCorners.locallyCompactSpace
 
 open TopologicalSpace
@@ -650,7 +653,7 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
 instance : ClosedUnderRestriction (contDiffGroupoid n I) :=
   (closedUnderRestriction_iff_id_le _).mpr
     (by
-      apply StructureGroupoid.le_iff.mpr
+      rw [StructureGroupoid.le_iff]
       rintro e ⟨s, hs, hes⟩
       apply (contDiffGroupoid n I).mem_of_eqOnSource' _ _ _ hes
       exact ofSet_mem_contDiffGroupoid n I hs)
@@ -788,7 +791,7 @@ theorem symm_trans_mem_analyticGroupoid (e : PartialHomeomorph M H) :
 instance : ClosedUnderRestriction (analyticGroupoid I) :=
   (closedUnderRestriction_iff_id_le _).mpr
     (by
-      apply StructureGroupoid.le_iff.mpr
+      rw [StructureGroupoid.le_iff]
       rintro e ⟨s, hs, hes⟩
       apply (analyticGroupoid I).mem_of_eqOnSource' _ _ _ hes
       exact ofSet_mem_analyticGroupoid I hs)
@@ -1594,7 +1597,7 @@ theorem extChartAt_self_apply {x y : H} : extChartAt I x y = I y :=
 #align ext_chart_at_self_apply extChartAt_self_apply
 
 /-- In the case of the manifold structure on a vector space, the extended charts are just the
-identity.-/
+identity. -/
 theorem extChartAt_model_space_eq_id (x : E) : extChartAt 𝓘(𝕜, E) x = PartialEquiv.refl E := by
   simp only [mfld_simps]
 #align ext_chart_at_model_space_eq_id extChartAt_model_space_eq_id

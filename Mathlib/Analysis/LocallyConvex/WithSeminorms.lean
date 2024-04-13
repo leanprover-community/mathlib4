@@ -58,7 +58,6 @@ variable {𝕜 𝕜₂ 𝕝 𝕝₂ E F G ι ι' : Type*}
 section FilterBasis
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable (𝕜 E ι)
 
 /-- An abbreviation for indexed families of seminorms. This is mainly to allow for dot-notation. -/
@@ -159,9 +158,9 @@ variable [Nonempty ι]
 theorem basisSets_smul (U) (hU : U ∈ p.basisSets) :
     ∃ V ∈ 𝓝 (0 : 𝕜), ∃ W ∈ p.addGroupFilterBasis.sets, V • W ⊆ U := by
   rcases p.basisSets_iff.mp hU with ⟨s, r, hr, hU⟩
-  refine' ⟨Metric.ball 0 r.sqrt, Metric.ball_mem_nhds 0 (Real.sqrt_pos.mpr hr), _⟩
-  refine' ⟨(s.sup p).ball 0 r.sqrt, p.basisSets_mem s (Real.sqrt_pos.mpr hr), _⟩
-  refine' Set.Subset.trans (ball_smul_ball (s.sup p) r.sqrt r.sqrt) _
+  refine' ⟨Metric.ball 0 √r, Metric.ball_mem_nhds 0 (Real.sqrt_pos.mpr hr), _⟩
+  refine' ⟨(s.sup p).ball 0 √r, p.basisSets_mem s (Real.sqrt_pos.mpr hr), _⟩
+  refine' Set.Subset.trans (ball_smul_ball (s.sup p) √r √r) _
   rw [hU, Real.mul_self_sqrt (le_of_lt hr)]
 #align seminorm_family.basis_sets_smul SeminormFamily.basisSets_smul
 
@@ -215,9 +214,7 @@ section Bounded
 namespace Seminorm
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [NormedField 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
-
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 -- Todo: This should be phrased entirely in terms of the von Neumann bornology.
@@ -278,7 +275,6 @@ theorem WithSeminorms.withSeminorms_eq {p : SeminormFamily 𝕜 E ι} [t : Topol
 #align with_seminorms.with_seminorms_eq WithSeminorms.withSeminorms_eq
 
 variable [TopologicalSpace E]
-
 variable {p : SeminormFamily 𝕜 E ι}
 
 theorem WithSeminorms.topologicalAddGroup (hp : WithSeminorms p) : TopologicalAddGroup E := by
@@ -322,14 +318,14 @@ theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
 #align with_seminorms.has_basis_ball WithSeminorms.hasBasis_ball
 
 /-- The `x`-neighbourhoods of a space whose topology is induced by a family of seminorms
-are exactly the sets which contain seminorm balls around `x`.-/
+are exactly the sets which contain seminorm balls around `x`. -/
 theorem WithSeminorms.mem_nhds_iff (hp : WithSeminorms p) (x : E) (U : Set E) :
     U ∈ 𝓝 x ↔ ∃ s : Finset ι, ∃ r > 0, (s.sup p).ball x r ⊆ U := by
   rw [hp.hasBasis_ball.mem_iff, Prod.exists]
 #align with_seminorms.mem_nhds_iff WithSeminorms.mem_nhds_iff
 
 /-- The open sets of a space whose topology is induced by a family of seminorms
-are exactly the sets which contain seminorm balls around all of their points.-/
+are exactly the sets which contain seminorm balls around all of their points. -/
 theorem WithSeminorms.isOpen_iff_mem_balls (hp : WithSeminorms p) (U : Set E) :
     IsOpen U ↔ ∀ x ∈ U, ∃ s : Finset ι, ∃ r > 0, (s.sup p).ball x r ⊆ U := by
   simp_rw [← WithSeminorms.mem_nhds_iff hp _ U, isOpen_iff_mem_nhds]
@@ -374,7 +370,6 @@ end Topology
 section Tendsto
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Nonempty ι] [TopologicalSpace E]
-
 variable {p : SeminormFamily 𝕜 E ι}
 
 /-- Convergence along filters for `WithSeminorms`.
@@ -409,7 +404,6 @@ end Tendsto
 section TopologicalAddGroup
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [Nonempty ι]
 
 section TopologicalSpace
@@ -504,9 +498,7 @@ end NormedSpace
 section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Nonempty ι]
-
 variable {p : SeminormFamily 𝕜 E ι}
-
 variable [TopologicalSpace E]
 
 theorem WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded {s : Set E} (hp : WithSeminorms p) :
@@ -555,7 +547,7 @@ theorem WithSeminorms.isVonNBounded_iff_seminorm_bounded {s : Set E} (hp : WithS
   by_cases hI : I.Nonempty
   · choose r hr h using hi
     have h' : 0 < I.sup' hI r := by
-      rcases hI.bex with ⟨i, hi⟩
+      rcases hI with ⟨i, hi⟩
       exact lt_of_lt_of_le (hr i) (Finset.le_sup' r hi)
     refine' ⟨I.sup' hI r, h', fun x hx => finset_sup_apply_lt h' fun i hi => _⟩
     refine' lt_of_lt_of_le (h i x hx) _
@@ -584,17 +576,11 @@ section continuous_of_bounded
 namespace Seminorm
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [NormedField 𝕝] [Module 𝕝 E]
-
 variable [NontriviallyNormedField 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
-
 variable [NormedField 𝕝₂] [Module 𝕝₂ F]
-
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
-
 variable {τ₁₂ : 𝕝 →+* 𝕝₂} [RingHomIsometric τ₁₂]
-
 variable [Nonempty ι] [Nonempty ι']
 
 theorem continuous_of_continuous_comp {q : SeminormFamily 𝕝₂ F ι'} [TopologicalSpace E]
@@ -844,7 +830,7 @@ lemma bound_of_continuous [Nonempty ι] [t : TopologicalSpace E] (hp : WithSemin
   -- The inclusion `hε` tells us exactly that `q` is *still* continuous for this new topology
   have : Continuous q :=
     Seminorm.continuous (r := 1) (mem_of_superset (Metric.ball_mem_nhds _ ε_pos) hε)
-  -- Hence we can conclude by applying `bound_of_continuous_normed_space`.
+  -- Hence we can conclude by applying `bound_of_continuous_normedSpace`.
   rcases bound_of_continuous_normedSpace q this with ⟨C, C_pos, hC⟩
   exact ⟨s, ⟨C, C_pos.le⟩, fun H ↦ C_pos.ne.symm (congr_arg NNReal.toReal H), hC⟩
   -- Note that the key ingredient for this proof is that, by scaling arguments hidden in
@@ -899,9 +885,7 @@ end NormedSpace
 section TopologicalConstructions
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [NormedField 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
-
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 /-- The family of seminorms obtained by composing each seminorm by a linear map. -/
@@ -960,9 +944,7 @@ end TopologicalConstructions
 section TopologicalProperties
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Nonempty ι] [Countable ι]
-
 variable {p : SeminormFamily 𝕜 E ι}
-
 variable [TopologicalSpace E]
 
 /-- If the topology of a space is induced by a countable family of seminorms, then the topology
