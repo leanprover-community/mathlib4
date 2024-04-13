@@ -502,7 +502,7 @@ end AddCircle
 
 section UnitAddCircle
 
-attribute [instance] Real.fact_zero_lt_one
+instance instZeroLTOne [StrictOrderedSemiring 𝕜] : Fact ((0 : 𝕜) < 1) := ⟨zero_lt_one⟩
 
 /- ./././Mathport/Syntax/Translate/Command.lean:328:31: unsupported: @[derive] abbrev -/
 /-- The unit circle `ℝ ⧸ ℤ`. -/

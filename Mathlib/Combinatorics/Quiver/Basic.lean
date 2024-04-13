@@ -156,7 +156,7 @@ def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X :=
 #align quiver.hom.unop Quiver.Hom.unop
 
 /-- A type synonym for a quiver with no arrows. -/
--- Porting note: no has_nonempty_instance linter yet
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 def Empty (V : Type u) : Type u := V
 #align quiver.empty Quiver.Empty

@@ -197,7 +197,7 @@ def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map f ⋙ 
 
 end
 
-instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
+instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
   reflects {Y Z} f t := by
     let g : Z ⟶ Y := Over.homMk (inv ((forget X).map f))
       ((asIso ((forget X).map f)).inv_comp_eq.2 (Over.w f).symm)
@@ -210,7 +210,7 @@ instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
 def mkIdTerminal : Limits.IsTerminal (mk (𝟙 X)) :=
   CostructuredArrow.mkIdTerminal
 
-instance forget_faithful : Faithful (forget X) where
+instance forget_faithful : (forget X).Faithful where
 #align category_theory.over.forget_faithful CategoryTheory.Over.forget_faithful
 
 -- TODO: Show the converse holds if `T` has binary products.
@@ -319,18 +319,18 @@ variable {D : Type u₂} [Category.{v₂} D]
 def toOver (F : D ⥤ T) (X : T) : CostructuredArrow F X ⥤ Over X :=
   CostructuredArrow.pre F (𝟭 T) X
 
-instance (F : D ⥤ T) (X : T) [Faithful F] : Faithful (toOver F X) :=
-  show Faithful (CostructuredArrow.pre _ _ _) from inferInstance
+instance (F : D ⥤ T) (X : T) [F.Faithful] : (toOver F X).Faithful :=
+  show (CostructuredArrow.pre _ _ _).Faithful from inferInstance
 
-instance (F : D ⥤ T) (X : T) [Full F] : Full (toOver F X) :=
-  show Full (CostructuredArrow.pre _ _ _) from inferInstance
+instance (F : D ⥤ T) (X : T) [F.Full] : (toOver F X).Full :=
+  show (CostructuredArrow.pre _ _ _).Full from inferInstance
 
-instance (F : D ⥤ T) (X : T) [EssSurj F] : EssSurj (toOver F X) :=
-  show EssSurj (CostructuredArrow.pre _ _ _) from inferInstance
+instance (F : D ⥤ T) (X : T) [F.EssSurj] : (toOver F X).EssSurj :=
+  show (CostructuredArrow.pre _ _ _).EssSurj from inferInstance
 
 /-- An equivalence `F` induces an equivalence `CostructuredArrow F X ≌ Over X`. -/
-noncomputable def isEquivalenceToOver (F : D ⥤ T) (X : T) [IsEquivalence F] :
-    IsEquivalence (toOver F X) :=
+noncomputable def isEquivalenceToOver (F : D ⥤ T) (X : T) [F.IsEquivalence] :
+    (toOver F X).IsEquivalence :=
   CostructuredArrow.isEquivalencePre _ _ _
 
 end CostructuredArrow
@@ -480,7 +480,7 @@ def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map g ⋙ 
 
 end
 
-instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
+instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
   reflects {Y Z} f t := by
     let g : Z ⟶ Y := Under.homMk (inv ((Under.forget X).map f))
       ((IsIso.comp_inv_eq _).2 (Under.w f).symm)
@@ -493,7 +493,7 @@ instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
 def mkIdInitial : Limits.IsInitial (mk (𝟙 X)) :=
   StructuredArrow.mkIdInitial
 
-instance forget_faithful : Faithful (forget X) where
+instance forget_faithful : (forget X).Faithful where
 #align category_theory.under.forget_faithful CategoryTheory.Under.forget_faithful
 
 -- TODO: Show the converse holds if `T` has binary coproducts.
@@ -557,18 +557,18 @@ variable {D : Type u₂} [Category.{v₂} D]
 def toUnder (X : T) (F : D ⥤ T) : StructuredArrow X F ⥤ Under X :=
   StructuredArrow.pre X F (𝟭 T)
 
-instance (X : T) (F : D ⥤ T) [Faithful F] : Faithful (toUnder X F) :=
-  show Faithful (StructuredArrow.pre _ _ _) from inferInstance
+instance (X : T) (F : D ⥤ T) [F.Faithful] : (toUnder X F).Faithful :=
+  show (StructuredArrow.pre _ _ _).Faithful from inferInstance
 
-instance (X : T) (F : D ⥤ T) [Full F] : Full (toUnder X F) :=
-  show Full (StructuredArrow.pre _ _ _) from inferInstance
+instance (X : T) (F : D ⥤ T) [F.Full] : (toUnder X F).Full :=
+  show (StructuredArrow.pre _ _ _).Full from inferInstance
 
-instance (X : T) (F : D ⥤ T) [EssSurj F] : EssSurj (toUnder X F) :=
-  show EssSurj (StructuredArrow.pre _ _ _) from inferInstance
+instance (X : T) (F : D ⥤ T) [F.EssSurj] : (toUnder X F).EssSurj :=
+  show (StructuredArrow.pre _ _ _).EssSurj from inferInstance
 
 /-- An equivalence `F` induces an equivalence `StructuredArrow X F ≌ Under X`. -/
-noncomputable def isEquivalenceToUnder (X : T) (F : D ⥤ T) [IsEquivalence F] :
-    IsEquivalence (toUnder X F) :=
+noncomputable def isEquivalenceToUnder (X : T) (F : D ⥤ T) [F.IsEquivalence] :
+    (toUnder X F).IsEquivalence :=
   StructuredArrow.isEquivalencePre _ _ _
 
 end StructuredArrow
