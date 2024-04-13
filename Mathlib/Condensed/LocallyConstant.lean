@@ -62,7 +62,7 @@ def LC' : Type (u+1) ⥤ CondensedSet.{u} where
   map_id X := by simp only [LC.map_id]; rfl
   map_comp f g := by simp only [LC.map_comp]; rfl
 
-namespace DiscreteAdjunction
+namespace Condensed.locallyConstantDiscrete
 
 variable {S : CompHaus.{u}} {Y : Type (u+1)} (f : S → Y) (f' : LocallyConstant S Y)
 
@@ -339,7 +339,7 @@ def _root_.CompHaus.terminalIsoPunit : ⊤_ CompHaus.{u} ≅ CompHaus.of PUnit :
   terminalIsTerminal.uniqueUpToIso CompHaus.isTerminalPUnit
 
 @[simps]
-def locallyConstantAdjunction_aux : Adjunction.CoreUnitCounit LC' (underlying _) where
+def adjunction' : Adjunction.CoreUnitCounit LC' (underlying _) where
   unit := unit
   counit := counit
   left_triangle := by
@@ -367,7 +367,9 @@ def locallyConstantAdjunction_aux : Adjunction.CoreUnitCounit LC' (underlying _)
     rw [hh]
 
 @[simps!]
-def locallyConstantAdjunction : LC' ⊣ underlying _ :=
-  Adjunction.mkOfUnitCounit locallyConstantAdjunction_aux
+def adjunction : LC' ⊣ underlying _ :=
+  Adjunction.mkOfUnitCounit adjunction'
 
-end DiscreteAdjunction
+def iso : LC' ≅ discrete _ := adjunction.leftAdjointUniq (discrete_underlying_adj _)
+
+end Condensed.locallyConstantDiscrete
