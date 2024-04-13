@@ -323,7 +323,7 @@ def IsSkewAdjoint (f : Module.End R₁ M₁) :=
 theorem isSkewAdjoint_iff_neg_self_adjoint (f : Module.End R₁ M₁) :
     B₁.IsSkewAdjoint f ↔ IsAdjointPair (-B₁) B₁ f f :=
   show (∀ x y, B₁ (f x) y = B₁ x ((-f) y)) ↔ ∀ x y, B₁ (f x) y = (-B₁) x (f y) by
-    simp only [LinearMap.neg_apply, BilinForm.neg_apply, BilinForm.neg_right]
+    simp only [LinearMap.neg_apply, BilinForm.neg_right]
 #align bilin_form.is_skew_adjoint_iff_neg_self_adjoint LinearMap.BilinForm.isSkewAdjoint_iff_neg_self_adjoint
 
 /-- The set of self-adjoint endomorphisms of a module with bilinear form is a submodule. (In fact

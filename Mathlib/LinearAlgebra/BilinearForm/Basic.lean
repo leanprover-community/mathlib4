@@ -143,7 +143,7 @@ theorem coe_zero : ⇑(0 : BilinForm R M) = 0 :=
   rfl
 #align bilin_form.coe_zero LinearMap.BilinForm.coe_zero
 
-@[simp]
+@[deprecated]
 theorem zero_apply (x y : M) : (0 : BilinForm R M) x y = 0 :=
   rfl
 #align bilin_form.zero_apply LinearMap.BilinForm.zero_apply
@@ -157,7 +157,7 @@ theorem coe_add : ⇑(B + D) = B + D :=
   rfl
 #align bilin_form.coe_add LinearMap.BilinForm.coe_add
 
-@[simp]
+@[deprecated]
 theorem add_apply (x y : M) : (B + D) x y = B x y + D x y :=
   rfl
 #align bilin_form.add_apply LinearMap.BilinForm.add_apply
@@ -193,7 +193,7 @@ theorem coe_neg : ⇑(-B₁) = -B₁ :=
   rfl
 #align bilin_form.coe_neg LinearMap.BilinForm.coe_neg
 
-@[simp]
+@[deprecated]
 theorem neg_apply (x y : M₁) : (-B₁) x y = -B₁ x y :=
   rfl
 #align bilin_form.neg_apply LinearMap.BilinForm.neg_apply
@@ -205,7 +205,7 @@ theorem coe_sub : ⇑(B₁ - D₁) = B₁ - D₁ :=
   rfl
 #align bilin_form.coe_sub LinearMap.BilinForm.coe_sub
 
-@[simp]
+@[deprecated]
 theorem sub_apply (x y : M₁) : (B₁ - D₁) x y = B₁ x y - D₁ x y :=
   rfl
 #align bilin_form.sub_apply LinearMap.BilinForm.sub_apply
