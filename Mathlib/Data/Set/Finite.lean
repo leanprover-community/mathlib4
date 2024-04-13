@@ -1758,10 +1758,10 @@ lemma Set.finite_diff_iUnion_Ioo' (s : Set α) : (s \ ⋃ x : s × s, Ioo x.1 x.
 lemma Directed.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} [Nonempty ι]
     {f : ι → Set α} (h : Directed (· ⊆ ·) f) {s : Finset α} (hs : (s : Set α) ⊆ ⋃ i, f i) :
     ∃ i, (s : Set α) ⊆ f i := by
-  induction s using Finset.cons_induction_on with
-  | h₁ => exact ⟨hn.some, by simp only [coe_empty, Set.empty_subset]⟩
-  | h₂ hbt iht =>
-    simp only [coe_cons, Set.insert_subset_iff, Set.mem_iUnion] at hs ⊢
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons hbt iht =>
+    simp only [Finset.coe_cons, Set.insert_subset_iff, Set.mem_iUnion] at hs ⊢
     rcases hs.imp_right iht with ⟨⟨i, hi⟩, j, hj⟩
     rcases h i j with ⟨k, hik, hjk⟩
     exact ⟨k, hik hi, hj.trans hjk⟩
