@@ -130,7 +130,7 @@ set_option linter.uppercaseLean3 false in
 #align mvpfunctor.Wp MvPFunctor.wp
 
 /-- W-type of `P` -/
--- Porting note: used to have @[nolint has_nonempty_instance]
+-- Porting note(#5171): used to have @[nolint has_nonempty_instance]
 def W (α : TypeVec n) : Type _ :=
   P.wp α
 set_option linter.uppercaseLean3 false in
