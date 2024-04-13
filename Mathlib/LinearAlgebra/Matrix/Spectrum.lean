@@ -91,6 +91,11 @@ theorem eigenvectorUnitary_mulVec (j : n) :
 eigenvectorUnitary hA *ᵥ Pi.single j 1 = ⇑(hA.eigenvectorBasis j)
 :=by simp only [mulVec_single, eigenvectorUnitary_apply, mul_one]
 
+theorem star_eigenvectorUnitary_mulVec (j : n) :
+(star (eigenvectorUnitary hA : Matrix n n 𝕜)) *ᵥ ⇑(hA.eigenvectorBasis j) =
+Pi.single j 1 := by
+rw [←eigenvectorUnitary_mulVec, mulVec_mulVec, unitary.coe_star_mul_self, one_mulVec]
+
 --/-- A matrix whose columns are an orthonormal basis of eigenvectors of a hermitian matrix. -/
 --noncomputable def eigenvectorMatrix : Matrix n n 𝕜 :=
 --  (PiLp.basisFun _ 𝕜 n).toMatrix (eigenvectorBasis hA).toBasis
