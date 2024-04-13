@@ -168,7 +168,7 @@ def lift : W.Localization ⥤ D :=
   Quotient.lift (relations W) (liftToPathCategory G hG)
     (by
       rintro ⟨X⟩ ⟨Y⟩ f₁ f₂ r
-      --Porting note: rest of proof was `rcases r with ⟨⟩; tidy`
+      -- Porting note: rest of proof was `rcases r with ⟨⟩; tidy`
       rcases r with (_|_|⟨f,hf⟩|⟨f,hf⟩)
       · aesop_cat
       · aesop_cat
@@ -240,7 +240,7 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
     apply MorphismProperty.top_apply
   · intro
     let G : _ ⥤ W.Localization := Quotient.functor _
-    haveI : Full G := Quotient.fullFunctor _
+    haveI : G.Full := Quotient.fullFunctor _
     suffices ∀ (X₁ X₂ : Paths (LocQuiver W)) (f : X₁ ⟶ X₂), P (G.map f) by
       rcases X with ⟨⟨X⟩⟩
       rcases Y with ⟨⟨Y⟩⟩

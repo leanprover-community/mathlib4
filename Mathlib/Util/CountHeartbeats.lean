@@ -3,8 +3,8 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Std.Lean.CoreM
-import Std.Tactic.TryThis
+import Lean.Util.Heartbeats
+import Lean.Meta.Tactic.TryThis
 
 /-!
 Defines a command wrapper that prints the number of heartbeats used in the enclosed command.
@@ -58,5 +58,5 @@ elab "count_heartbeats " "in" ppLine cmd:command : command => do
       logInfo m!"Used {elapsed} heartbeats, which is greater than the current maximum of {max}."
       let m : TSyntax `num := quote max'
       Command.liftCoreM <| MetaM.run' do
-        Std.Tactic.TryThis.addSuggestion (← getRef)
+        Lean.Meta.Tactic.TryThis.addSuggestion (← getRef)
           (← set_option hygiene false in `(command| set_option maxHeartbeats $m in $cmd))

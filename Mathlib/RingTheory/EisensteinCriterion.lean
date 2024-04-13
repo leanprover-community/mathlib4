@@ -70,7 +70,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.eisenstein_criterion_aux.eval_zero_mem_ideal_of_eq_mul_X_pow Polynomial.EisensteinCriterionAux.eval_zero_mem_ideal_of_eq_mul_X_pow
 
 theorem isUnit_of_natDegree_eq_zero_of_isPrimitive {p q : R[X]}
-    --Porting note: stated using `IsPrimitive` which is defeq to old statement.
+    -- Porting note: stated using `IsPrimitive` which is defeq to old statement.
     (hu : IsPrimitive (p * q)) (hpm : p.natDegree = 0) : IsUnit p := by
   rw [eq_C_of_degree_le_zero (natDegree_eq_zero_iff_degree_le_zero.1 hpm), isUnit_C]
   refine' hu _ _
@@ -108,11 +108,11 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
       exact
         Ideal.mul_mem_mul (eval_zero_mem_ideal_of_eq_mul_X_pow hp hm0.ne')
           (eval_zero_mem_ideal_of_eq_mul_X_pow hq hn0.ne')
-    have hpql0 : (mk P) (p * q).leadingCoeff ≠ 0 := by rwa [Ne.def, eq_zero_iff_mem]
+    have hpql0 : (mk P) (p * q).leadingCoeff ≠ 0 := by rwa [Ne, eq_zero_iff_mem]
     have hp0 : p ≠ 0 := fun h => by
-      simp_all only [zero_mul, eq_self_iff_true, not_true, Ne.def]
+      simp_all only [zero_mul, eq_self_iff_true, not_true, Ne]
     have hq0 : q ≠ 0 := fun h => by
-      simp_all only [eq_self_iff_true, not_true, Ne.def, mul_zero]
+      simp_all only [eq_self_iff_true, not_true, Ne, mul_zero]
     have hbc0 : degree b = 0 ∧ degree c = 0 := by
       apply_fun degree at hbc
       rwa [degree_C hpql0, degree_mul, eq_comm, Nat.WithBot.add_eq_zero_iff] at hbc

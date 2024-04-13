@@ -3,10 +3,11 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Multiset.Sort
+import Mathlib.Data.PNat.Basic
 import Mathlib.Data.PNat.Interval
 import Mathlib.Data.Rat.Order
-import Mathlib.Data.PNat.Basic
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.IntervalCases
 
@@ -41,7 +42,7 @@ in the classification of Dynkin diagrams, root systems, and semisimple Lie algeb
 namespace ADEInequality
 
 open Multiset
--- porting note: ADE is a special name, exceptionally in upper case in Lean3
+-- Porting note: ADE is a special name, exceptionally in upper case in Lean3
 set_option linter.uppercaseLean3 false
 
 /-- `A' q r := {1,q,r}` is a `Multiset ℕ+`

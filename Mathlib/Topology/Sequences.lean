@@ -289,7 +289,7 @@ protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBoun
   contrapose! h
   obtain ⟨u, u_in, hu⟩ : ∃ u : ℕ → X, (∀ n, u n ∈ s) ∧ ∀ n m, m < n → u m ∉ ball (u n) V := by
     simp only [not_subset, mem_iUnion₂, not_exists, exists_prop] at h
-    simpa only [forall_and, ball_image_iff, not_and] using seq_of_forall_finite_exists h
+    simpa only [forall_and, forall_mem_image, not_and] using seq_of_forall_finite_exists h
   refine' ⟨u, u_in, fun x _ φ hφ huφ => _⟩
   obtain ⟨N, hN⟩ : ∃ N, ∀ p q, p ≥ N → q ≥ N → (u (φ p), u (φ q)) ∈ V
   exact huφ.cauchySeq.mem_entourage V_in

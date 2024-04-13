@@ -75,7 +75,7 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
     · simp only [op_comp, X.map_comp, assoc, PInfty_f]
       erw [(HigherFacesVanish.of_P _ _).comp_δ_eq_zero_assoc _ hj₁, zero_comp]
       by_contra
-      exact hj₁ (by simp only [Fin.ext_iff, Fin.val_zero]; omega)
+      exact hj₁ (by simp only [Fin.ext_iff, Fin.val_zero]; linarith)
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_comp_map_mono_eq_zero AlgebraicTopology.DoldKan.PInfty_comp_map_mono_eq_zero
 
@@ -170,7 +170,7 @@ attribute [irreducible] natTrans
 
 end Γ₂N₁
 
--- porting note: removed @[simps] attribute because it was creating timeouts
+-- Porting note: removed @[simps] attribute because it was creating timeouts
 /-- The compatibility isomorphism relating `N₂ ⋙ Γ₂` and `N₁ ⋙ Γ₂`. -/
 def Γ₂N₂ToKaroubiIso : toKaroubi (SimplicialObject C) ⋙ N₂ ⋙ Γ₂ ≅ N₁ ⋙ Γ₂ :=
   (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight toKaroubiCompN₂IsoN₁ Γ₂
@@ -250,7 +250,7 @@ theorem identity_N₂_objectwise (P : Karoubi (SimplicialObject C)) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.identity_N₂_objectwise AlgebraicTopology.DoldKan.identity_N₂_objectwise
 
--- porting note: `Functor.associator` was added to the statement in order to prevent a timeout
+-- Porting note: `Functor.associator` was added to the statement in order to prevent a timeout
 theorem identity_N₂ :
     (𝟙 (N₂ : Karoubi (SimplicialObject C) ⥤ _) ◫ N₂Γ₂.inv) ≫
     (Functor.associator _ _ _).inv ≫ Γ₂N₂.natTrans ◫ 𝟙 (@N₂ C _ _) = 𝟙 N₂ := by

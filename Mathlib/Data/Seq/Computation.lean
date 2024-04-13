@@ -244,7 +244,7 @@ def rmap (f : β → γ) : Sum α β → Sum α γ
 
 attribute [simp] lmap rmap
 
--- porting note: this was far less painful in mathlib3. There seem to be two issues;
+-- Porting note: this was far less painful in mathlib3. There seem to be two issues;
 -- firstly, in mathlib3 we have `corec.F._match_1` and it's the obvious map α ⊕ β → option α.
 -- In mathlib4 we have `Corec.f.match_1` and it's something completely different.
 -- Secondly, the proof that `Stream'.corec' (Corec.f f) (Sum.inr b) 0` is this function
@@ -253,7 +253,7 @@ attribute [simp] lmap rmap
 theorem corec_eq (f : β → Sum α β) (b : β) : destruct (corec f b) = rmap (corec f) (f b) := by
   dsimp [corec, destruct]
   rw [show Stream'.corec' (Corec.f f) (Sum.inr b) 0 =
-    Sum.rec Option.some (λ _ => none) (f b) by
+    Sum.rec Option.some (fun _ ↦ none) (f b) by
     dsimp [Corec.f, Stream'.corec', Stream'.corec, Stream'.map, Stream'.get, Stream'.iterate]
     match (f b) with
     | Sum.inl x => rfl
@@ -271,7 +271,6 @@ section Bisim
 
 variable (R : Computation α → Computation α → Prop)
 
--- mathport name: «expr ~ »
 /-- bisimilarity relation-/
 local infixl:50 " ~ " => R
 
@@ -310,8 +309,7 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
         exact False.elim h
       · rw [destruct_pure, destruct_think] at h
         exact False.elim h
-      · simp at h
-        simp [*]
+      · simp_all
   · exact ⟨s₁, s₂, rfl, rfl, r⟩
 #align computation.eq_of_bisim Computation.eq_of_bisim
 
@@ -431,7 +429,6 @@ def Promises (s : Computation α) (a : α) : Prop :=
   ∀ ⦃a'⦄, a' ∈ s → a = a'
 #align computation.promises Computation.Promises
 
--- mathport name: «expr ~> »
 /-- `Promises s a`, or `s ~> a`, asserts that although the computation `s`
   may not terminate, if it does, then the result is `a`. -/
 scoped infixl:50 " ~> " => Promises
@@ -705,7 +702,7 @@ theorem destruct_map (f : α → β) (s) : destruct (map f s) = lmap f (rmap (ma
 @[simp]
 theorem map_id : ∀ s : Computation α, map id s = s
   | ⟨f, al⟩ => by
-    apply Subtype.eq; simp [map, Function.comp]
+    apply Subtype.eq; simp only [map, comp_apply, id_eq]
     have e : @Option.rec α (fun _ => Option α) none some = id := by ext ⟨⟩ <;> rfl
     have h : ((fun x: Option α => x) = id) := rfl
     simp [e, h, Stream'.map_id]
@@ -970,7 +967,6 @@ def Equiv (c₁ c₂ : Computation α) : Prop :=
   ∀ a, a ∈ c₁ ↔ a ∈ c₂
 #align computation.equiv Computation.Equiv
 
--- mathport name: «expr ~ »
 /-- equivalence relation for computations-/
 scoped infixl:50 " ~ " => Equiv
 
@@ -1238,7 +1234,8 @@ def LiftRelAux (R : α → β → Prop) (C : Computation α → Computation β �
   | Sum.inr ca, Sum.inr cb => C ca cb
 #align computation.lift_rel_aux Computation.LiftRelAux
 
---porting note: was attribute [simp] LiftRelAux but right now `simp` on defs is a Lean 4 catastrophe
+-- Porting note: was attribute [simp] LiftRelAux
+-- but right now `simp` on defs is a Lean 4 catastrophe
 -- Instead we add the equation lemmas and tag them @[simp]
 @[simp] lemma liftRelAux_inl_inl : LiftRelAux R C (Sum.inl a) (Sum.inl b) = R a b := rfl
 @[simp] lemma liftRelAux_inl_inr {cb} :
@@ -1278,8 +1275,8 @@ theorem LiftRelRec.lem {R : α → β → Prop} (C : Computation α → Computat
     (H : ∀ {ca cb}, C ca cb → LiftRelAux R C (destruct ca) (destruct cb)) (ca cb) (Hc : C ca cb) (a)
     (ha : a ∈ ca) : LiftRel R ca cb := by
   revert cb
-  refine' memRecOn (C := (λ ca => ∀ (cb : Computation β), C ca cb → LiftRel R ca cb))
-    ha _ (fun ca' IH => _) <;> intro cb Hc <;> have h := H Hc
+  refine memRecOn (C := (fun ca ↦ ∀ (cb : Computation β), C ca cb → LiftRel R ca cb))
+    ha ?_ (fun ca' IH => ?_) <;> intro cb Hc <;> have h := H Hc
   · simp only [destruct_pure, LiftRelAux.ret_left] at h
     simp [h]
   · simp only [liftRel_think_left]

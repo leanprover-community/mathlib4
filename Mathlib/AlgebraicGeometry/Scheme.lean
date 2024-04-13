@@ -78,10 +78,10 @@ def forgetToLocallyRingedSpace : Scheme ⥤ LocallyRingedSpace :=
 -- deriving Full, Faithful -- Porting note: no delta derive handler, see https://github.com/leanprover-community/mathlib4/issues/5020
 #align algebraic_geometry.Scheme.forget_to_LocallyRingedSpace AlgebraicGeometry.Scheme.forgetToLocallyRingedSpace
 
-instance : Full forgetToLocallyRingedSpace :=
+instance : forgetToLocallyRingedSpace.Full :=
   InducedCategory.full _
 
-instance : Faithful forgetToLocallyRingedSpace :=
+instance : forgetToLocallyRingedSpace.Faithful :=
   InducedCategory.faithful _
 
 @[simp]
@@ -231,7 +231,7 @@ theorem specMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
 
 /-- The spectrum, as a contravariant functor from commutative rings to schemes.
 -/
--- porting note: removed @[simps]
+-- Porting note: removed @[simps]
 -- TODO: We need to decide whether `Spec_obj` or `Spec.obj` the simp-normal form.
 -- We probably want `Spec.obj`, but note
 -- `locallyRingedSpaceObj` is currently the simp-normal form of `toLocallyRingedSpace.obj`.

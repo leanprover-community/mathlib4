@@ -92,7 +92,7 @@ noncomputable def zmultiplesQuotientStabilizerEquiv :
   (ofBijective
           (map _ (stabilizer (zmultiples a) b) (zmultiplesHom (zmultiples a) ⟨a, mem_zmultiples a⟩)
             (by
-              rw [zmultiples_le, mem_comap, mem_stabilizer_iff, zmultiplesHom_apply, coe_nat_zsmul]
+              rw [zmultiples_le, mem_comap, mem_stabilizer_iff, zmultiplesHom_apply, natCast_zsmul]
               simp_rw [← vadd_iterate]
               exact isPeriodicPt_minimalPeriod (a +ᵥ ·) b))
           ⟨by
@@ -168,7 +168,7 @@ theorem _root_.AddAction.orbitZMultiplesEquiv_symm_apply' {α β : Type*} [AddGr
     (AddAction.orbitZMultiplesEquiv a b).symm k =
       k • (⟨a, mem_zmultiples a⟩ : zmultiples a) +ᵥ ⟨b, AddAction.mem_orbit_self b⟩ := by
   rw [AddAction.orbitZMultiplesEquiv_symm_apply, ZMod.coe_int_cast]
-  -- porting note: times out without `a b` explicit
+  -- Porting note: times out without `a b` explicit
   exact Subtype.ext (zsmul_vadd_mod_minimalPeriod a b k)
 #align add_action.orbit_zmultiples_equiv_symm_apply' AddAction.orbitZMultiplesEquiv_symm_apply'
 
@@ -178,7 +178,7 @@ attribute [to_additive existing]
 @[to_additive]
 theorem minimalPeriod_eq_card [Fintype (orbit (zpowers a) b)] :
     minimalPeriod (a • ·) b = Fintype.card (orbit (zpowers a) b) := by
-  -- porting note: added `(_)` to find `Fintype` by unification
+  -- Porting note: added `(_)` to find `Fintype` by unification
   rw [← Fintype.ofEquiv_card (orbitZPowersEquiv a b), @ZMod.card _ (_)]
 #align mul_action.minimal_period_eq_card MulAction.minimalPeriod_eq_card
 #align add_action.minimal_period_eq_card AddAction.minimalPeriod_eq_card

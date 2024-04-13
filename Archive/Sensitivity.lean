@@ -183,11 +183,11 @@ variable (n : ℕ)
 /-! `V n` is a real vector space whose equality relation is computable. -/
 
 
-instance : DecidableEq (V n) := by induction n <;> · dsimp only [V]; skip; infer_instance
+instance : DecidableEq (V n) := by induction n <;> · dsimp only [V]; infer_instance
 
-instance : AddCommGroup (V n) := by induction n <;> · dsimp only [V]; skip; infer_instance
+instance : AddCommGroup (V n) := by induction n <;> · dsimp only [V]; infer_instance
 
-instance : Module ℝ (V n) := by induction n <;> · dsimp only [V]; skip; infer_instance
+instance : Module ℝ (V n) := by induction n <;> · dsimp only [V]; infer_instance
 
 end V
 

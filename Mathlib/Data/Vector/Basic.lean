@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.BigOperators.List.Basic
 import Mathlib.Data.Vector
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
+import Mathlib.Data.List.InsertNth
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 
@@ -67,7 +69,7 @@ theorem eq_cons_iff (a : α) (v : Vector α n.succ) (v' : Vector α n) :
 #align vector.eq_cons_iff Vector.eq_cons_iff
 
 theorem ne_cons_iff (a : α) (v : Vector α n.succ) (v' : Vector α n) :
-    v ≠ a ::ᵥ v' ↔ v.head ≠ a ∨ v.tail ≠ v' := by rw [Ne.def, eq_cons_iff a v v', not_and_or]
+    v ≠ a ::ᵥ v' ↔ v.head ≠ a ∨ v.tail ≠ v' := by rw [Ne, eq_cons_iff a v v', not_and_or]
 #align vector.ne_cons_iff Vector.ne_cons_iff
 
 theorem exists_eq_cons (v : Vector α n.succ) : ∃ (a : α) (as : Vector α n), v = a ::ᵥ as :=
@@ -310,9 +312,7 @@ theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
 section Scan
 
 variable {β : Type*}
-
 variable (f : β → α → β) (b : β)
-
 variable (v : Vector α n)
 
 /-- Construct a `Vector β (n + 1)` from a `Vector α n` by scanning `f : β → α → β`
@@ -661,7 +661,6 @@ namespace Vector
 section Traverse
 
 variable {F G : Type u → Type u}
-
 variable [Applicative F] [Applicative G]
 
 open Applicative Functor
@@ -700,7 +699,6 @@ end
 open Function
 
 variable [LawfulApplicative F] [LawfulApplicative G]
-
 variable {α β γ : Type u}
 
 -- We need to turn off the linter here as
@@ -746,7 +744,7 @@ instance : LawfulTraversable.{u} (flip Vector n) where
   comp_map := by intro _ _ _ _ _ x; cases x; simp! [(· <$> ·)]
   map_const := rfl
 
---Porting note: not porting meta instances
+-- Porting note: not porting meta instances
 -- unsafe instance reflect [reflected_univ.{u}] {α : Type u} [has_reflect α]
 --     [reflected _ α] {n : ℕ} : has_reflect (Vector α n) := fun v =>
 --   @Vector.inductionOn α (fun n => reflected _) n v

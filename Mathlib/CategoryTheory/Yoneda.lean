@@ -75,7 +75,7 @@ theorem naturality {X Y : C} (α : yoneda.obj X ⟶ yoneda.obj Y) {Z Z' : C} (f 
 
 See <https://stacks.math.columbia.edu/tag/001P>.
 -/
-instance yonedaFull : Full (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁) where
+instance yonedaFull : (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁).Full where
   preimage {X} {Y} f := f.app (op X) (𝟙 X)
 #align category_theory.yoneda.yoneda_full CategoryTheory.Yoneda.yonedaFull
 
@@ -83,7 +83,7 @@ instance yonedaFull : Full (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁) where
 
 See <https://stacks.math.columbia.edu/tag/001P>.
 -/
-instance yoneda_faithful : Faithful (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁) where
+instance yoneda_faithful : (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁).Faithful where
   map_injective {X} {Y} f g p := by
     convert congr_fun (congr_app p (op X)) (𝟙 X) using 1 <;> dsimp <;> simp
 #align category_theory.yoneda.yoneda_faithful CategoryTheory.Yoneda.yoneda_faithful
@@ -121,12 +121,12 @@ theorem naturality {X Y : Cᵒᵖ} (α : coyoneda.obj X ⟶ coyoneda.obj Y) {Z Z
   (FunctorToTypes.naturality _ _ α f h).symm
 #align category_theory.coyoneda.naturality CategoryTheory.Coyoneda.naturality
 
-instance coyonedaFull : Full (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁) where
+instance coyonedaFull : (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁).Full where
   preimage {X} _ f := (f.app _ (𝟙 X.unop)).op
   witness {X} {Y} f := by simp only [coyoneda]; aesop_cat
 #align category_theory.coyoneda.coyoneda_full CategoryTheory.Coyoneda.coyonedaFull
 
-instance coyoneda_faithful : Faithful (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁) where
+instance coyoneda_faithful : (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁).Faithful where
   map_injective {X} _ _ _ p := by
     have t := congr_fun (congr_app p X.unop) (𝟙 _)
     simpa using congr_arg Quiver.Hom.op t
@@ -138,7 +138,7 @@ theorem isIso {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso (coyoneda.map f)] : IsIso f :
   isIso_of_fully_faithful coyoneda f
 #align category_theory.coyoneda.is_iso CategoryTheory.Coyoneda.isIso
 
-/-- The identity functor on `Type` is isomorphic to the coyoneda functor coming from `punit`. -/
+/-- The identity functor on `Type` is isomorphic to the coyoneda functor coming from `PUnit`. -/
 def punitIso : coyoneda.obj (Opposite.op PUnit) ≅ 𝟭 (Type v₁) :=
   NatIso.ofComponents fun X =>
     { hom := fun f => f ⟨⟩
@@ -183,7 +183,6 @@ instance {X : Cᵒᵖ} : Corepresentable (coyoneda.obj X) where
 section Representable
 
 variable (F : Cᵒᵖ ⥤ Type v₁)
-
 variable [F.Representable]
 
 /-- The representing object for the representable functor `F`. -/
@@ -232,7 +231,6 @@ end Representable
 section Corepresentable
 
 variable (F : C ⥤ Type v₁)
-
 variable [F.Corepresentable]
 
 /-- The representing object for the corepresentable functor `F`. -/
@@ -385,7 +383,7 @@ def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C where
 variable {C}
 
 /-- The isomorphism between `yoneda.obj X ⟶ F` and `F.obj (op X)`
-(we need to insert a `ulift` to get the universes right!)
+(we need to insert a `ULift` to get the universes right!)
 given by the Yoneda lemma.
 -/
 @[simps!]

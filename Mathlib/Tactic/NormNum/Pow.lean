@@ -197,34 +197,34 @@ def evalPow : NormNumExt where eval {u α} e := do
 theorem isNat_zpow_pos {α : Type*} [DivisionSemiring α] {a : α} {b : ℤ} {nb ne : ℕ}
     (pb : IsNat b nb) (pe' : IsNat (a ^ nb) ne) :
     IsNat (a ^ b) ne := by
-  rwa [pb.out, zpow_coe_nat]
+  rwa [pb.out, zpow_natCast]
 
 theorem isNat_zpow_neg {α : Type*} [DivisionSemiring α] {a : α} {b : ℤ} {nb ne : ℕ}
     (pb : IsInt b (Int.negOfNat nb)) (pe' : IsNat (a ^ nb)⁻¹ ne) :
     IsNat (a ^ b) ne := by
-  rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_coe_nat]
+  rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_natCast]
 
 theorem isInt_zpow_pos {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb ne : ℕ}
     (pb : IsNat b nb) (pe' : IsInt (a ^ nb) (Int.negOfNat ne)) :
     IsInt (a ^ b) (Int.negOfNat ne) := by
-  rwa [pb.out, zpow_coe_nat]
+  rwa [pb.out, zpow_natCast]
 
 theorem isInt_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb ne : ℕ}
     (pb : IsInt b (Int.negOfNat nb)) (pe' : IsInt (a ^ nb)⁻¹ (Int.negOfNat ne)) :
     IsInt (a ^ b) (Int.negOfNat ne) := by
-  rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_coe_nat]
+  rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_natCast]
 
 theorem isRat_zpow_pos {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : ℕ}
     {num : ℤ} {den : ℕ}
     (pb : IsNat b nb) (pe' : IsRat (a^nb) num den) :
     IsRat (a^b) num den := by
-  rwa [pb.out, zpow_coe_nat]
+  rwa [pb.out, zpow_natCast]
 
 theorem isRat_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : ℕ}
     {num : ℤ} {den : ℕ}
     (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat ((a^nb)⁻¹) num den) :
     IsRat (a^b) num den := by
-  rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_coe_nat]
+  rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_natCast]
 
 /-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
 such that `norm_num` successfully recognises both `a` and `b`, with `b : ℤ`. -/

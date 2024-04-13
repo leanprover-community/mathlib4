@@ -154,7 +154,7 @@ theorem toΓSpecCApp_iff
   --pick_goal 5; exact is_localization.to_basic_open _ r
   constructor
   · intro h
-    --Porting Note: Type class problem got stuck, same as above
+    -- Porting note: Type class problem got stuck, same as above
     refine' @IsLocalization.ringHom_ext _ _ _ _ _ _ _ _ loc_inst _ _ _
     exact h
     --pick_goal 5; exact is_localization.to_basic_open _ r; exact h
@@ -298,7 +298,7 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
     apply LocallyRingedSpace.comp_ring_hom_ext
     · ext1 x
       dsimp [Spec.topMap, LocallyRingedSpace.toΓSpecFun]
-      --Porting Note: Had to add the next four lines
+      -- Porting note: Had to add the next four lines
       rw [comp_apply, comp_apply]
       dsimp [toΓSpecBase]
       -- The next six lines were `rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]` before
@@ -344,7 +344,7 @@ theorem right_triangle (R : CommRingCat) :
 #align algebraic_geometry.Γ_Spec.right_triangle AlgebraicGeometry.ΓSpec.right_triangle
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
---Porting Note: `simps` cause a time out, so `Unit` and `counit` will be added manually
+-- Porting note: `simps` cause a time out, so `Unit` and `counit` will be added manually
 def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} :=
   Adjunction.mkOfUnitCounit
     { unit := identityToΓSpec
@@ -386,7 +386,7 @@ theorem adjunction_homEquiv_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     ΓSpec.adjunction.homEquiv X R f = locallyRingedSpaceAdjunction.homEquiv X.1 R f := by
   dsimp [adjunction, Adjunction.restrictFullyFaithful]
   simp only [Category.comp_id, Category.id_comp]
-  rfl --Porting Note: Added
+  rfl -- Porting note: Added
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv_apply AlgebraicGeometry.ΓSpec.adjunction_homEquiv_apply
 
 theorem adjunction_homEquiv (X : Scheme) (R : CommRingCatᵒᵖ) :
@@ -417,6 +417,7 @@ theorem adjunction_unit_app {X : Scheme} :
 -- Porting Note: Commented
 -- attribute [local semireducible] locallyRingedSpaceAdjunction ΓSpec.adjunction
 
+set_option maxHeartbeats 400000 in
 instance isIso_locallyRingedSpaceAdjunction_counit : IsIso locallyRingedSpaceAdjunction.counit := by
   dsimp only [locallyRingedSpaceAdjunction, Adjunction.mkOfUnitCounit_counit]
   -- Porting Note: `dsimp` was unnecessary and had to make this explicit
@@ -482,18 +483,18 @@ instance Spec.preservesLimits : Limits.PreservesLimits Scheme.Spec :=
 #align algebraic_geometry.Spec.preserves_limits AlgebraicGeometry.Spec.preservesLimits
 
 /-- Spec is a full functor. -/
-instance : Full Spec.toLocallyRingedSpace :=
+instance : Spec.toLocallyRingedSpace.Full  :=
   rFullOfCounitIsIso ΓSpec.locallyRingedSpaceAdjunction
 
-instance Spec.full : Full Scheme.Spec :=
+instance Spec.full : Scheme.Spec.Full  :=
   rFullOfCounitIsIso ΓSpec.adjunction
 #align algebraic_geometry.Spec.full AlgebraicGeometry.Spec.full
 
 /-- Spec is a faithful functor. -/
-instance : Faithful Spec.toLocallyRingedSpace :=
+instance : Spec.toLocallyRingedSpace.Faithful :=
   R_faithful_of_counit_isIso ΓSpec.locallyRingedSpaceAdjunction
 
-instance Spec.faithful : Faithful Scheme.Spec :=
+instance Spec.faithful : Scheme.Spec.Faithful :=
   R_faithful_of_counit_isIso ΓSpec.adjunction
 #align algebraic_geometry.Spec.faithful AlgebraicGeometry.Spec.faithful
 

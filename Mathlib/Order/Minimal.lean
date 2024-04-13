@@ -24,9 +24,6 @@ This file defines minimal and maximal of a set with respect to an arbitrary rela
 Do we need a `Finset` version?
 -/
 
-set_option autoImplicit true
-
-
 open Function Set
 
 variable {α : Type*} (r r₁ r₂ : α → α → Prop) (s t : Set α) (a b : α)
@@ -93,6 +90,8 @@ theorem eq_of_mem_minimals (ha : a ∈ minimals r s) (hb : b ∈ s) (h : r b a) 
   antisymm (ha.2 hb h) h
 #align eq_of_mem_minimals eq_of_mem_minimals
 
+set_option autoImplicit true
+
 theorem mem_maximals_iff : x ∈ maximals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r x y → x = y := by
   simp only [maximals, Set.mem_sep_iff, and_congr_right_iff]
   refine' fun _ ↦ ⟨fun h y hys hxy ↦ antisymm hxy (h hys hxy), fun h y hys hxy ↦ _⟩
@@ -144,6 +143,8 @@ theorem minimals_antichain : IsAntichain r (minimals r s) :=
 
 end IsAntisymm
 
+set_option autoImplicit true
+
 theorem mem_minimals_iff_forall_ssubset_not_mem (s : Set (Set α)) :
     x ∈ minimals (· ⊆ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ⊂ x → y ∉ s :=
   mem_minimals_iff_forall_lt_not_mem' (· ⊂ ·)
@@ -160,11 +161,11 @@ theorem mem_maximals_iff_forall_lt_not_mem [PartialOrder α] {s : Set α} :
     x ∈ maximals (· ≤ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, x < y → y ∉ s :=
   mem_maximals_iff_forall_lt_not_mem' (· < ·)
 
--- porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem maximals_of_symm [IsSymm α r] : maximals r s = s :=
   sep_eq_self_iff_mem_true.2 fun _ _ _ _ => symm
 
--- porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem minimals_of_symm [IsSymm α r] : minimals r s = s :=
   sep_eq_self_iff_mem_true.2 fun _ _ _ _ => symm
 
@@ -174,7 +175,7 @@ theorem maximals_eq_minimals [IsSymm α r] : maximals r s = minimals r s := by
 
 variable {r r₁ r₂ s t a}
 
--- porting note: todo: use `h.induction_on`
+-- Porting note (#11215): TODO: use `h.induction_on`
 theorem Set.Subsingleton.maximals_eq (h : s.Subsingleton) : maximals r s = s := by
   rcases h.eq_empty_or_singleton with (rfl | ⟨x, rfl⟩)
   exacts [minimals_empty _, maximals_singleton _ _]
