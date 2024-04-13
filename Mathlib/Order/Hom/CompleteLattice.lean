@@ -205,7 +205,7 @@ instance (priority := 100) OrderIsoClass.tosSupHomClass [CompleteLattice α]
   { show OrderHomClass F α β from inferInstance with
     map_sSup := fun f s =>
       eq_of_forall_ge_iff fun c => by
-        simp only [← le_map_inv_iff, sSup_le_iff, Set.ball_image_iff] }
+        simp only [← le_map_inv_iff, sSup_le_iff, Set.forall_mem_image] }
 #align order_iso_class.to_Sup_hom_class OrderIsoClass.tosSupHomClass
 
 -- See note [lower instance priority]
@@ -214,7 +214,7 @@ instance (priority := 100) OrderIsoClass.tosInfHomClass [CompleteLattice α]
   { show OrderHomClass F α β from inferInstance with
     map_sInf := fun f s =>
       eq_of_forall_le_iff fun c => by
-        simp only [← map_inv_le_iff, le_sInf_iff, Set.ball_image_iff] }
+        simp only [← map_inv_le_iff, le_sInf_iff, Set.forall_mem_image] }
 #align order_iso_class.to_Inf_hom_class OrderIsoClass.tosInfHomClass
 
 -- See note [lower instance priority]
@@ -946,14 +946,8 @@ theorem setPreimage_comp (g : β → γ) (f : α → β) :
 
 end CompleteLatticeHom
 
-theorem Set.image_sSup {f : α → β} (s : Set (Set α)) : f '' sSup s = sSup (image f '' s) := by
-  ext b
-  simp only [sSup_eq_sUnion, mem_image, mem_sUnion, exists_prop, sUnion_image, mem_iUnion]
-  constructor
-  · rintro ⟨a, ⟨t, ht₁, ht₂⟩, rfl⟩
-    exact ⟨t, ht₁, a, ht₂, rfl⟩
-  · rintro ⟨t, ht₁, a, ht₂, rfl⟩
-    exact ⟨a, ⟨t, ht₁, ht₂⟩, rfl⟩
+theorem Set.image_sSup {f : α → β} (s : Set (Set α)) : f '' sSup s = sSup (image f '' s) :=
+  Set.image_sUnion
 #align set.image_Sup Set.image_sSup
 
 /-- Using `Set.image`, a function between types yields a `sSupHom` between their lattices of

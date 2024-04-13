@@ -5,7 +5,8 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Data.Nat.Order.Lemmas
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Nat.Units
 import Mathlib.Tactic.NthRewrite
 
 #align_import data.nat.gcd.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
@@ -243,7 +244,7 @@ theorem coprime_self_sub_right {m n : ℕ} (h : m ≤ n) : Coprime n (n - m) ↔
 theorem coprime_pow_left_iff {n : ℕ} (hn : 0 < n) (a b : ℕ) :
     Nat.Coprime (a ^ n) b ↔ Nat.Coprime a b := by
   obtain ⟨n, rfl⟩ := exists_eq_succ_of_ne_zero hn.ne'
-  rw [pow_succ, Nat.coprime_mul_iff_left]
+  rw [Nat.pow_succ, Nat.coprime_mul_iff_left]
   exact ⟨And.right, fun hab => ⟨hab.pow_left _, hab⟩⟩
 #align nat.coprime_pow_left_iff Nat.coprime_pow_left_iff
 

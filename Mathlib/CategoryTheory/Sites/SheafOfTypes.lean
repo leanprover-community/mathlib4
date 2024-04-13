@@ -58,11 +58,8 @@ open Opposite CategoryTheory Category Limits Sieve
 namespace Presieve
 
 variable {C : Type u} [Category.{v} C]
-
 variable {P : Cᵒᵖ ⥤ Type w}
-
 variable {X : C}
-
 variable (J J₂ : GrothendieckTopology C)
 
 /-- A presheaf is separated for a topology if it is separated for every sieve in the topology. -/
@@ -159,7 +156,6 @@ namespace Sieve
 open Presieve
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X : C}
 
 theorem yonedaFamily_fromCocone_compatible (S : Sieve X) (s : Cocone (diagram S.arrows)) :
@@ -214,7 +210,6 @@ theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
 end Sieve
 
 variable {C : Type u} [Category.{v} C]
-
 variable (J : GrothendieckTopology C)
 
 /-- The category of sheaves on a grothendieck topology. -/
@@ -270,9 +265,9 @@ def sheafOfTypesToPresheaf : SheafOfTypes J ⥤ Cᵒᵖ ⥤ Type w where
 set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes_to_presheaf CategoryTheory.sheafOfTypesToPresheaf
 
-instance : Full (sheafOfTypesToPresheaf J) where preimage f := ⟨f⟩
+instance : (sheafOfTypesToPresheaf J).Full where preimage f := ⟨f⟩
 
-instance : Faithful (sheafOfTypesToPresheaf J) where
+instance : (sheafOfTypesToPresheaf J).Faithful where
 
 /--
 The category of sheaves on the bottom (trivial) grothendieck topology is equivalent to the category

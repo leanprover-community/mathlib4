@@ -45,12 +45,12 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   have hpow_le : ∀ {m n : ℕ}, m ≤ n → (2⁻¹ : ℝ≥0∞) ^ n ≤ 2⁻¹ ^ m := @fun m n h =>
     pow_le_pow_right_of_le_one' (ENNReal.inv_le_one.2 ENNReal.one_lt_two.le) h
   have h2pow : ∀ n : ℕ, 2 * (2⁻¹ : ℝ≥0∞) ^ (n + 1) = 2⁻¹ ^ n := fun n => by
-    simp [pow_succ, ← mul_assoc, ENNReal.mul_inv_cancel two_ne_zero two_ne_top]
+    simp [pow_succ', ← mul_assoc, ENNReal.mul_inv_cancel two_ne_zero two_ne_top]
   -- Consider an open covering `S : Set (Set α)`
   refine' ⟨fun ι s ho hcov => _⟩
   simp only [iUnion_eq_univ_iff] at hcov
   -- choose a well founded order on `S`
-  -- porting note: todo: add lemma that claims `∃ i : LinearOrder ι, WellFoundedLT ι`
+  -- Porting note (#11215): TODO: add lemma that claims `∃ i : LinearOrder ι, WellFoundedLT ι`
   let _ : LinearOrder ι := by classical exact linearOrderOfSTO WellOrderingRel
   have wf : WellFounded ((· < ·) : ι → ι → Prop) := @IsWellFounded.wf ι WellOrderingRel _
   -- Let `ind x` be the minimal index `s : S` such that `x ∈ s`.
@@ -127,13 +127,13 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
       rw [disjoint_iff_inf_le]
       rintro y ⟨hym, hyx⟩
       rcases memD.1 hym with ⟨z, rfl, _hzi, H, hz⟩
-      have : z ∉ ball x (2⁻¹ ^ k) := fun hz' => H n (by linarith) i (hsub hz')
+      have : z ∉ ball x (2⁻¹ ^ k) := fun hz' => H n (by omega) i (hsub hz')
       apply this
       calc
         edist z x ≤ edist y z + edist y x := edist_triangle_left _ _ _
         _ < 2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1) := (ENNReal.add_lt_add hz hyx)
         _ ≤ 2⁻¹ ^ (k + 1) + 2⁻¹ ^ (k + 1) :=
-          (add_le_add (hpow_le <| by linarith) (hpow_le <| by linarith))
+          (add_le_add (hpow_le <| by omega) (hpow_le <| by omega))
         _ = 2⁻¹ ^ k := by rw [← two_mul, h2pow]
     -- For each `m ≤ n + k` there is at most one `j` such that `D m j ∩ B` is nonempty.
     have Hle : ∀ m ≤ n + k, Set.Subsingleton { j | (D m j ∩ B).Nonempty } := by
@@ -165,7 +165,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
     exact not_lt.1 fun hlt => (Hgt I.1 hlt I.2).le_bot hI.choose_spec
 #align emetric.paracompact_space EMetric.instParacompactSpace
 
--- porting note: no longer an instance because `inferInstance` can find it
+-- Porting note: no longer an instance because `inferInstance` can find it
 theorem t4Space [EMetricSpace α] : T4Space α := inferInstance
 #align emetric.normal_of_emetric EMetric.t4Space
 

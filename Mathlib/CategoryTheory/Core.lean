@@ -66,8 +66,8 @@ def inclusion : Core C ⥤ C where
   map f := f.hom
 #align category_theory.core.inclusion CategoryTheory.Core.inclusion
 
--- porting note: This worked without proof before.
-instance : Faithful (inclusion C) where
+-- Porting note: This worked without proof before.
+instance : (inclusion C).Faithful where
   map_injective := by
     intro _ _
     apply Iso.ext

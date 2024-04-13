@@ -23,7 +23,8 @@ We first establish results about arbitrary index types, `ι` and `ι'`, and then
 
 variable {R : Type*} {ι : Type*} {ι' : Type*} [NormedRing R]
 
-open BigOperators Classical
+open scoped Classical
+open BigOperators
 
 open Finset
 

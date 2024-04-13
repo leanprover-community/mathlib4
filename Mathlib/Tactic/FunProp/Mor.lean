@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
 import Lean
-import Std.Tactic.CoeExt
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Tactic.FunProp.ToStd
 
@@ -33,13 +32,13 @@ namespace Mor
 
 /-- Is `name` a coerction from some function space to functiosn? -/
 def isCoeFunName (name : Name) : CoreM Bool := do
-  let .some info ← Std.Tactic.Coe.getCoeFnInfo? name | return false
+  let .some info ← getCoeFnInfo? name | return false
   return info.type == .coeFun
 
 /-- Is `e` a coerction from some function space to functiosn? -/
 def isCoeFun (e : Expr) : MetaM Bool := do
   let .some (name,_) := e.getAppFn.const? | return false
-  let .some info ← Std.Tactic.Coe.getCoeFnInfo? name | return false
+  let .some info ← getCoeFnInfo? name | return false
   return e.getAppNumArgs' + 1 == info.numArgs
 
 /-- Morphism application -/

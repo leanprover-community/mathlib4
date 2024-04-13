@@ -41,7 +41,8 @@ universe u v w w'
 
 open Cardinal Set
 
-open Cardinal FirstOrder Classical
+open scoped Classical
+open Cardinal FirstOrder
 
 namespace FirstOrder
 
@@ -145,7 +146,7 @@ theorem setOf_subset_eq_univ_iff (S : L[[α]].Theory) :
 
 theorem nonempty_iff : Nonempty (T.CompleteType α) ↔ T.IsSatisfiable := by
   rw [← isSatisfiable_onTheory_iff (lhomWithConstants_injective L α)]
-  rw [nonempty_iff_univ_nonempty, nonempty_iff_ne_empty, Ne.def, not_iff_comm,
+  rw [nonempty_iff_univ_nonempty, nonempty_iff_ne_empty, Ne, not_iff_comm,
     ← union_empty ((L.lhomWithConstants α).onTheory T), ← setOf_subset_eq_empty_iff]
   simp
 #align first_order.language.Theory.complete_type.nonempty_iff FirstOrder.Language.Theory.CompleteType.nonempty_iff

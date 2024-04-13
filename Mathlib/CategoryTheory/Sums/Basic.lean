@@ -58,11 +58,11 @@ instance sum : Category.{v₁} (Sum C D) where
     | inr X, inr Y, inr Z, inr W => Category.assoc f g h
 #align category_theory.sum CategoryTheory.sum
 
-@[aesop norm -10 destruct (rule_sets [CategoryTheory])]
+@[aesop norm -10 destruct (rule_sets := [CategoryTheory])]
 theorem hom_inl_inr_false {X : C} {Y : D} (f : Sum.inl X ⟶ Sum.inr Y) : False := by
   cases f
 
-@[aesop norm -10 destruct (rule_sets [CategoryTheory])]
+@[aesop norm -10 destruct (rule_sets := [CategoryTheory])]
 theorem hom_inr_inl_false {X : C} {Y : D} (f : Sum.inr X ⟶ Sum.inl Y) : False := by
   cases f
 
@@ -151,8 +151,8 @@ def equivalence : Sum C D ≌ Sum D C :=
     (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)))
 #align category_theory.sum.swap.equivalence CategoryTheory.Sum.Swap.equivalence
 
-instance isEquivalence : IsEquivalence (swap C D) :=
-  (by infer_instance : IsEquivalence (equivalence C D).functor)
+instance isEquivalence : (swap C D).IsEquivalence :=
+  (by infer_instance : (equivalence C D).functor.IsEquivalence)
 #align category_theory.sum.swap.is_equivalence CategoryTheory.Sum.Swap.isEquivalence
 
 /-- The double swap on `C ⊕ D` is naturally isomorphic to the identity functor. -/

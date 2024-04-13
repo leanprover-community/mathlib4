@@ -141,7 +141,7 @@ protected theorem FiberBundle.extChartAt (x : TotalSpace F E) :
         (extChartAt IB x.proj).prod (PartialEquiv.refl F) := by
   simp_rw [extChartAt, FiberBundle.chartedSpace_chartAt, extend]
   simp only [PartialEquiv.trans_assoc, mfld_simps]
-  -- porting note: should not be needed
+  -- Porting note: should not be needed
   rw [PartialEquiv.prod_trans, PartialEquiv.refl_trans]
 #align fiber_bundle.ext_chart_at FiberBundle.extChartAt
 
@@ -184,7 +184,7 @@ theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x�
   intro hf
   simp_rw [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp,
     PartialEquiv.trans_apply, PartialEquiv.prod_coe, PartialEquiv.refl_coe, extChartAt_self_apply,
-    modelWithCornersSelf_coe, id_def]
+    modelWithCornersSelf_coe, Function.id_def]
   refine (contMDiffWithinAt_prod_iff _).trans (and_congr ?_ Iff.rfl)
   have h1 : (fun x => (f x).proj) ⁻¹' (trivializationAt F E (f x₀).proj).baseSet ∈ 𝓝[s] x₀ :=
     ((FiberBundle.continuous_proj F E).continuousWithinAt.comp hf (mapsTo_image f s))
@@ -279,7 +279,6 @@ variable [NontriviallyNormedField 𝕜] {EB : Type*} [NormedAddCommGroup EB] [No
 section WithTopology
 
 variable [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] (F E)
-
 variable [FiberBundle F E] [VectorBundle 𝕜 F E]
 
 /-- When `B` is a smooth manifold with corners with respect to a model `IB` and `E` is a
@@ -595,9 +594,7 @@ is a smooth vector bundle. -/
 instance smoothVectorBundle : SmoothVectorBundle F Z.Fiber IB where
   smoothOn_coordChangeL := by
     rintro - - ⟨i, rfl⟩ ⟨i', rfl⟩
-    -- Porting note: Originally `Z.smoothOn_coordChange IB i i'`
-    refine'
-      (VectorBundleCore.IsSmooth.smoothOn_coordChange (Z := Z) (IB := IB) i i').congr fun b hb => _
+    refine (Z.smoothOn_coordChange IB i i').congr fun b hb ↦ ?_
     ext v
     exact Z.localTriv_coordChange_eq i i' hb v
 #align vector_bundle_core.smooth_vector_bundle VectorBundleCore.smoothVectorBundle

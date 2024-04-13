@@ -137,7 +137,7 @@ theorem dickson_one_one_eval_add_inv (x y : R) (h : x * y = 1) :
   | n + 2 => by
     simp only [eval_sub, eval_mul, dickson_one_one_eval_add_inv x y h _, eval_X, dickson_add_two,
       C_1, eval_one]
-    conv_lhs => simp only [pow_succ, add_mul, mul_add, h, ← mul_assoc, mul_comm y x, one_mul]
+    conv_lhs => simp only [pow_succ', add_mul, mul_add, h, ← mul_assoc, mul_comm y x, one_mul]
     ring
 #align polynomial.dickson_one_one_eval_add_inv Polynomial.dickson_one_one_eval_add_inv
 
@@ -239,12 +239,12 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
       have hφ : φ ≠ 0 := by
         intro H
         have : φ.eval 0 = 0 := by rw [H, eval_zero]
-        simpa [eval_X, eval_one, eval_pow, eval_sub, sub_zero, eval_add, eval_mul,
+        simpa [φ, eval_X, eval_one, eval_pow, eval_sub, sub_zero, eval_add, eval_mul,
           mul_zero, sq, zero_add, one_ne_zero]
       classical
         convert (φ.roots ∪ {0}).toFinset.finite_toSet using 1
         ext1 y
-        simp only [Multiset.mem_toFinset, Set.mem_setOf_eq, Finset.mem_coe, Multiset.mem_union,
+        simp only [φ, Multiset.mem_toFinset, Set.mem_setOf_eq, Finset.mem_coe, Multiset.mem_union,
           mem_roots hφ, IsRoot, eval_add, eval_sub, eval_pow, eval_mul, eval_X, eval_C, eval_one,
           Multiset.mem_singleton]
         by_cases hy : y = 0
@@ -256,7 +256,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
     -- Finally, we prove the claim that our finite union of finite sets covers all of `K`.
     · apply (Set.eq_univ_of_forall _).symm
       intro x
-      simp only [exists_prop, Set.mem_iUnion, Set.bind_def, Ne.def, Set.mem_setOf_eq]
+      simp only [exists_prop, Set.mem_iUnion, Set.bind_def, Ne, Set.mem_setOf_eq]
       by_cases hx : x = 0
       · simp only [hx, and_true_iff, eq_self_iff_true, inv_zero, or_true_iff]
         exact ⟨_, 1, rfl, one_ne_zero⟩
