@@ -742,6 +742,7 @@ section Inv
 variable {R : Type u} {M : Type v}
 variable [Neg M] [Inv R] [SMul Rᵐᵒᵖ M] [SMul R M]
 
+/-- Inversion of the trivial-square-zero extension, sending $r + m$ to $r^{-1} - r^{-1}mr^{-1}$. -/
 instance instInv : Inv (tsze R M) :=
   ⟨fun b => (b.1⁻¹, -(b.1⁻¹ •> b.2 <• b.1⁻¹))⟩
 
