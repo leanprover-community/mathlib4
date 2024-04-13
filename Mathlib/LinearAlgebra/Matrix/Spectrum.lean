@@ -133,9 +133,6 @@ theorem spectral_theorem3 :
       := by
 rw [←spectral_theorem1, mul_assoc, (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2,
      mul_one]
-/-Definitely we will want to keep these:
-docs#Matrix.IsHermitian.rank_eq_rank_diagonal
-docs#Matrix.IsHermitian.eigenvalues_eq-/
 
 /-- A nonzero Hermitian matrix has an eigenvector with nonzero eigenvalue. -/
 lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
