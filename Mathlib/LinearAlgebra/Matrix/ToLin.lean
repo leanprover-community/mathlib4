@@ -1019,7 +1019,39 @@ end
 
 namespace Basis
 
-variable {R M ι : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq ι]
+variable {R M M₁ M₂ ι ι₁ ι₂ : Type*} [CommSemiring R]
+variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
+variable [Module R M] [Module R M₁] [Module R M₂]
+variable [Fintype ι] [Fintype ι₁] [Fintype ι₂]
+variable [DecidableEq ι] [DecidableEq ι₁] [DecidableEq ι₂]
+variable (b : Basis ι R M) (b₁ : Basis ι₁ R M₁) (b₂ : Basis ι₂ R M₂)
+
+/-- The standard basis of the space linear maps between two modules
+induced by a basis of the domain and codomain.
+
+If `M₁` and `M₂` are modules with basis `b₁` and `b₂` respectively indexed
+by finite types `ι₁` and `ι₂`,
+then `Basis.linearMap b₁ b₂` is the basis of `M₁ →ₗ[R] M₂` indexed by `ι₂ × ι₁`
+where `(i, j)` indexes the linear map that sends `b j` to `b i`
+and sends all other basis vectors to `0`.  -/
+@[simps! (config := .lemmasOnly) repr_apply repr_symm_apply]
+noncomputable
+def linearMap (b₁ : Basis ι₁ R M₁) (b₂ : Basis ι₂ R M₂) :
+    Basis (ι₂ × ι₁) R (M₁ →ₗ[R] M₂) :=
+  (Matrix.stdBasis R ι₂ ι₁).map (LinearMap.toMatrix b₁ b₂).symm
+
+attribute [simp] linearMap_repr_apply
+
+lemma linearMap_apply (ij : ι₂ × ι₁) :
+    (b₁.linearMap b₂ ij) = (Matrix.toLin b₁ b₂) (Matrix.stdBasis R ι₂ ι₁ ij) := by
+  erw [linearMap_repr_symm_apply, Finsupp.total_single, one_smul]
+
+lemma linearMap_apply_apply (ij : ι₂ × ι₁) (k : ι₁) :
+    (b₁.linearMap b₂ ij) (b₁ k) = if ij.2 = k then b₂ ij.1 else 0 := by
+  rcases ij with ⟨i, j⟩
+  rw [linearMap_apply, Matrix.stdBasis_eq_stdBasisMatrix, Matrix.toLin_self]
+  dsimp only [Matrix.stdBasisMatrix]
+  simp_rw [ite_smul, one_smul, zero_smul, ite_and, Finset.sum_ite_eq, Finset.mem_univ, if_true]
 
 /-- The standard basis of the endomorphism algebra of a module
 induced by a basis of the module.
@@ -1028,26 +1060,17 @@ If `M` is a module with basis `b` indexed by a finite type `ι`,
 then `Basis.end b` is the basis of `Module.End R M` indexed by `ι × ι`
 where `(i, j)` indexes the linear map that sends `b j` to `b i`
 and sends all other basis vectors to `0`.  -/
-@[simps! repr_apply]
+@[simps! (config := .lemmasOnly) repr_apply repr_symm_apply]
 noncomputable
-def _root_.Basis.end (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
-  (Matrix.stdBasis R ι ι).map (LinearMap.toMatrix b b).symm
+abbrev _root_.Basis.end (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
+  b.linearMap b
 
--- the left hand side simplifies, so this is a bad simp lemma
-lemma end_repr_symm_apply (b : Basis ι R M) (ij : ι × ι →₀ R) :
-    b.end.repr.symm ij =
-    (Matrix.toLin b b) ((Finsupp.total (ι × ι) (Matrix ι ι R) R (Matrix.stdBasis R ι ι)) ij) :=
-  congrArg (Matrix.toLin b b) (Basis.repr_symm_apply (Matrix.stdBasis R ι ι) ij)
+attribute [simp] end_repr_apply
 
-lemma end_apply (b : Basis ι R M) (ij : ι × ι) :
-    (b.end ij) = (Matrix.toLin b b) (Matrix.stdBasis R ι ι ij) := by
-  erw [end_repr_symm_apply, Finsupp.total_single, one_smul]
+lemma end_apply (ij : ι × ι) : (b.end ij) = (Matrix.toLin b b) (Matrix.stdBasis R ι ι ij) :=
+  linearMap_apply b b ij
 
-lemma end_apply_apply (b : Basis ι R M) (ij : ι × ι) (k : ι) :
-    (b.end ij) (b k) = if ij.2 = k then b ij.1 else 0 := by
-  rcases ij with ⟨i, j⟩
-  rw [end_apply, Matrix.stdBasis_eq_stdBasisMatrix, Matrix.toLin_self]
-  dsimp only [Matrix.stdBasisMatrix]
-  simp_rw [ite_smul, one_smul, zero_smul, ite_and, Finset.sum_ite_eq, Finset.mem_univ, if_true]
+lemma end_apply_apply (ij : ι × ι) (k : ι) : (b.end ij) (b k) = if ij.2 = k then b ij.1 else 0 :=
+  linearMap_apply_apply b b ij k
 
 end Basis
