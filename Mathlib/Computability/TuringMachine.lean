@@ -2688,11 +2688,10 @@ theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
 attribute [local simp] Respects TM2.step TM2.stepAux trNormal
 
 theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
-  -- Porting note: `simp only`s are required for beta reductions.
+  -- Porting note(#BBBBB): additional beta reduction needed
   intro c₁ c₂ h
   cases' h with l v S L hT
   cases' l with l; · constructor
-  simp only [TM2.step, Respects, Option.map_some']
   rsuffices ⟨b, c, r⟩ : ∃ b, _ ∧ Reaches (TM1.step (tr M)) _ _
   · exact ⟨b, c, TransGen.head' rfl r⟩
   simp only [tr]
