@@ -70,13 +70,11 @@ theorem coeFn_congr : ∀ {x x' y y' : M}, x = x' → y = y' → B x y = B x' y'
 #align bilin_form.coe_fn_congr LinearMap.BilinForm.coeFn_congr
 
 @[deprecated]
-theorem add_left (x y z : M) : B (x + y) z = B x z + B y z := by
-  simp only [map_add, LinearMap.add_apply]
+theorem add_left (x y z : M) : B (x + y) z = B x z + B y z := LinearMap.map_add₂ _ _ _ _
 #align bilin_form.add_left LinearMap.BilinForm.add_left
 
 @[deprecated]
-theorem smul_left (a : R) (x y : M) : B (a • x) y = a * B x y := by
-  simp only [map_smul, LinearMap.smul_apply, smul_eq_mul]
+theorem smul_left (a : R) (x y : M) : B (a • x) y = a * B x y := LinearMap.map_smul₂ _ _ _ _
 #align bilin_form.smul_left LinearMap.BilinForm.smul_left
 
 @[deprecated]
@@ -89,38 +87,32 @@ theorem smul_right (a : R) (x y : M) : B x (a • y) = a * B x y := map_smul _ _
 
 set_option linter.deprecated false in
 @[deprecated]
-theorem zero_left (x : M) : B 0 x = 0 := by
-  rw [← @zero_smul R _ _ _ _ (0 : M), smul_left, zero_mul]
+theorem zero_left (x : M) : B 0 x = 0 := LinearMap.map_zero₂ _ _
 #align bilin_form.zero_left LinearMap.BilinForm.zero_left
 
 set_option linter.deprecated false in
 @[deprecated]
-theorem zero_right (x : M) : B x 0 = 0 := by
-  rw [← @zero_smul R _ _ _ _ (0 : M), smul_right, zero_mul]
+theorem zero_right (x : M) : B x 0 = 0 := map_zero _
 #align bilin_form.zero_right LinearMap.BilinForm.zero_right
 
 set_option linter.deprecated false in
 @[deprecated]
-theorem neg_left (x y : M₁) : B₁ (-x) y = -B₁ x y := by
-  rw [← @neg_one_smul R₁ _ _, smul_left, neg_one_mul]
+theorem neg_left (x y : M₁) : B₁ (-x) y = -B₁ x y := LinearMap.map_neg₂ _ _ _
 #align bilin_form.neg_left LinearMap.BilinForm.neg_left
 
 set_option linter.deprecated false in
 @[deprecated]
-theorem neg_right (x y : M₁) : B₁ x (-y) = -B₁ x y := by
-  rw [← @neg_one_smul R₁ _ _, smul_right, neg_one_mul]
+theorem neg_right (x y : M₁) : B₁ x (-y) = -B₁ x y := map_neg _ _
 #align bilin_form.neg_right LinearMap.BilinForm.neg_right
 
 set_option linter.deprecated false in
 @[deprecated]
-theorem sub_left (x y z : M₁) : B₁ (x - y) z = B₁ x z - B₁ y z := by
-  rw [sub_eq_add_neg, sub_eq_add_neg, add_left, neg_left]
+theorem sub_left (x y z : M₁) : B₁ (x - y) z = B₁ x z - B₁ y z := LinearMap.map_sub₂ _ _ _ _
 #align bilin_form.sub_left LinearMap.BilinForm.sub_left
 
 set_option linter.deprecated false in
 @[deprecated]
-theorem sub_right (x y z : M₁) : B₁ x (y - z) = B₁ x y - B₁ x z := by
-  rw [sub_eq_add_neg, sub_eq_add_neg, add_right, neg_right]
+theorem sub_right (x y z : M₁) : B₁ x (y - z) = B₁ x y - B₁ x z := map_sub _ _ _
 #align bilin_form.sub_right LinearMap.BilinForm.sub_right
 
 set_option linter.deprecated false in
