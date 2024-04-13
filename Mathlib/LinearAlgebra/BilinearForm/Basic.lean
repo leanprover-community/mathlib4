@@ -265,8 +265,8 @@ theorem flip_flip :
 
 /-- The `flip` of a bilinear form over a commutative ring, obtained by exchanging the left and
 right arguments. -/
-abbrev flip : BilinForm R M ≃ₗ[R] BilinForm R M :=
-  flipHom
+abbrev flip (B : BilinForm R M) :=
+  flipHom B
 #align bilin_form.flip LinearMap.BilinForm.flip
 
 end flip
