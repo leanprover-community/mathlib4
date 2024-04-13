@@ -96,7 +96,7 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
   is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x : R | v x < γ } ⊆ s
 #align valued Valued
 
--- Porting note: removed
+-- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
 --attribute [nolint dangerous_instance] Valued.toUniformSpace
 
 namespace Valued

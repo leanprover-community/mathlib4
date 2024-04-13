@@ -103,7 +103,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
   have hy0 : y ≠ 0 := dist_orthogonalProjection_ne_zero_of_not_mem hp
   let ycc₂ := (x * x + y * y - cr * cr) / (2 * y)
   let cc₂ := (ycc₂ / y) • (p -ᵥ orthogonalProjection s p : V) +ᵥ cc
-  let cr₂ := Real.sqrt (cr * cr + ycc₂ * ycc₂)
+  let cr₂ := √(cr * cr + ycc₂ * ycc₂)
   use ⟨cc₂, cr₂⟩
   simp (config := { zeta := false, proj := false }) only
   have hpo : p = (1 : ℝ) • (p -ᵥ orthogonalProjection s p : V) +ᵥ (orthogonalProjection s p : P) :=
@@ -149,7 +149,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     -- cases' hu with hucc hucr
     -- substs hucc hucr
     cases' hu
-    have hcr₃val : cr₃ = Real.sqrt (cr * cr + t₃ * y * (t₃ * y)) := by
+    have hcr₃val : cr₃ = √(cr * cr + t₃ * y * (t₃ * y)) := by
       cases' hnps with p0 hp0
       have h' : ↑(⟨cc, hcc₃'⟩ : s) = cc := rfl
       rw [← dist_of_mem_subset_mk_sphere (Set.mem_insert_of_mem _ hp0) hcr₃, hcc₃'', ←

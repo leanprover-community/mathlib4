@@ -100,7 +100,7 @@ protected theorem antisymm (hB : IsExposed 𝕜 A B) (hA : IsExposed 𝕜 B A) :
   hA.subset.antisymm hB.subset
 #align is_exposed.antisymm IsExposed.antisymm
 
-/- `IsExposed` is *not* transitive: Consider a (topologically) open cube with vertices
+/-! `IsExposed` is *not* transitive: Consider a (topologically) open cube with vertices
 `A₀₀₀, ..., A₁₁₁` and add to it the triangle `A₀₀₀A₀₀₁A₀₁₀`. Then `A₀₀₁A₀₁₀` is an exposed subset
 of `A₀₀₀A₀₀₁A₀₁₀` which is an exposed subset of the cube, but `A₀₀₁A₀₁₀` is not itself an exposed
 subset of the cube. -/
