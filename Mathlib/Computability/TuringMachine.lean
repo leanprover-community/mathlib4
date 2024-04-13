@@ -2703,7 +2703,7 @@ theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
   | H₂ a _ IH => exact IH _ hT
   | H₃ p q₁ q₂ IH₁ IH₂ =>
     unfold TM2.stepAux trNormal TM1.stepAux
-    simp only []
+    beta_reduce
     cases p v <;> [exact IH₂ _ hT; exact IH₁ _ hT]
   | H₄ => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
   | H₅ => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
