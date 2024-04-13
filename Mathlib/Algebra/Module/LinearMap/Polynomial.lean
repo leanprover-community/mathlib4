@@ -11,7 +11,7 @@ import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
 /-!
 # Characteristic polynomials of linear families of endomorphisms
 
-The coefficients of the characteristic polynomials of a a linear family of endomorphisms
+The coefficients of the characteristic polynomials of a linear family of endomorphisms
 are homogeneous polynomials in the parameters.
 This result is used in Lie theory
 to establish the existence of regular elements and Cartan subalgebras,
