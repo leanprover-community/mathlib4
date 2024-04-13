@@ -281,36 +281,6 @@ noncomputable def singleFunctorsPostCompQIso :
 noncomputable def singleFunctorIsoCompQ (n : ℤ) :
     singleFunctor C n ≅ CochainComplex.singleFunctor C n ⋙ Q := Iso.refl _
 
-/-noncomputable def singleFunctor (n : ℤ) : C ⥤ DerivedCategory C :=
-  HomologicalComplex.single _ _ n ⋙ Q
-
-instance (n : ℤ) : (singleFunctor C n).Additive := by
-  dsimp only [singleFunctor]
-  infer_instance
-
-noncomputable def singleFunctorShiftIso (n a a' : ℤ) (ha' : n + a = a') :
-    singleFunctor C a' ⋙ shiftFunctor _ n ≅ singleFunctor C a :=
-  Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (Q.commShiftIso n).symm ≪≫
-    (Functor.associator _ _ _).symm ≪≫
-    isoWhiskerRight (CochainComplex.singleShiftIso C n a a' ha') Q
-
-variable {C}
-
-lemma singleFunctorShiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (X : C) :
-    (singleFunctorShiftIso C n a a' ha').hom.app X =
-      (Q.commShiftIso n).inv.app ((HomologicalComplex.single C (ComplexShape.up ℤ) a').obj X) ≫
-        Q.map ((CochainComplex.singleShiftIso C n a a' ha').hom.app X) := by
-  dsimp [singleFunctorShiftIso]
-  erw [id_comp, id_comp]
-
-lemma singleFunctorShiftIso_inv_app (n a a' : ℤ) (ha' : n + a = a') (X : C) :
-    (singleFunctorShiftIso C n a a' ha').inv.app X =
-      Q.map ((CochainComplex.singleShiftIso C n a a' ha').inv.app X) ≫
-      (Q.commShiftIso n).hom.app ((HomologicalComplex.single C (ComplexShape.up ℤ) a').obj X) := by
-  dsimp [singleFunctorShiftIso]
-  erw [comp_id, comp_id]-/
-
-
 noncomputable def homologyFunctor (n : ℤ) : DerivedCategory C ⥤ C :=
   HomologicalComplexUpToQuasiIso.homologyFunctor C (ComplexShape.up ℤ) n
 
