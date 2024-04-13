@@ -512,15 +512,20 @@ theorem has_antideriv_at_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0
 #align has_antideriv_at_fourier_neg has_antideriv_at_fourier_neg
 
 /-- Express Fourier coefficients of `f` on an interval in terms of those of its derivative. -/
-theorem fourierCoeffOn_of_hasDerivAt {a b : ℝ} (hab : a < b) {f f' : ℝ → ℂ} {n : ℤ} (hn : n ≠ 0)
-    (hf : ∀ x, x ∈ [[a, b]] → HasDerivAt f (f' x) x) (hf' : IntervalIntegrable f' volume a b) :
+theorem fourierCoeffOn_of_hasDeriv_right {a b : ℝ} (hab : a < b) {f f' : ℝ → ℂ}
+    {n : ℤ} (hn : n ≠ 0)
+    (hf : ContinuousOn f [[a, b]])
+    (hff' : ∀ x, x ∈ Ioo (min a b) (max a b) → HasDerivWithinAt f (f' x) (Ioi x) x)
+    (hf' : IntervalIntegrable f' volume a b) :
     fourierCoeffOn hab f n = 1 / (-2 * π * I * n) *
       (fourier (-n) (a : AddCircle (b - a)) * (f b - f a) - (b - a) * fourierCoeffOn hab f' n) := by
   rw [← ofReal_sub]
   have hT : Fact (0 < b - a) := ⟨by linarith⟩
   simp_rw [fourierCoeffOn_eq_integral, smul_eq_mul, real_smul, ofReal_div, ofReal_one]
   conv => pattern (occs := 1 2 3) fourier _ _ * _ <;> (rw [mul_comm])
-  rw [integral_mul_deriv_eq_deriv_mul hf (fun x _ => has_antideriv_at_fourier_neg hT hn x) hf'
+  rw [integral_mul_deriv_eq_deriv_mul_of_hasDeriv_right hf
+    (fun x _ ↦ has_antideriv_at_fourier_neg hT hn x |>.continuousAt |>.continuousWithinAt) hff'
+    (fun x _ ↦ has_antideriv_at_fourier_neg hT hn x |>.hasDerivWithinAt) hf'
     (((map_continuous (fourier (-n))).comp (AddCircle.continuous_mk' _)).intervalIntegrable _ _)]
   have : ∀ u v w : ℂ, u * ((b - a : ℝ) / v * w) = (b - a : ℝ) / v * (u * w) := by intros; ring
   conv in intervalIntegral _ _ _ _ => congr; ext; rw [this]
@@ -533,6 +538,26 @@ theorem fourierCoeffOn_of_hasDerivAt {a b : ℝ} (hab : a < b) {f f' : ℝ → �
     rw [div_eq_iff (ofReal_ne_zero.mpr hT.out.ne')]
     ring
   · ring
+
+/-- Express Fourier coefficients of `f` on an interval in terms of those of its derivative. -/
+theorem fourierCoeffOn_of_hasDerivAt_Ioo {a b : ℝ} (hab : a < b) {f f' : ℝ → ℂ}
+    {n : ℤ} (hn : n ≠ 0)
+    (hf : ContinuousOn f [[a, b]])
+    (hff' : ∀ x, x ∈ Ioo (min a b) (max a b) → HasDerivAt f (f' x) x)
+    (hf' : IntervalIntegrable f' volume a b) :
+    fourierCoeffOn hab f n = 1 / (-2 * π * I * n) *
+      (fourier (-n) (a : AddCircle (b - a)) * (f b - f a) - (b - a) * fourierCoeffOn hab f' n) :=
+  fourierCoeffOn_of_hasDeriv_right hab hn hf (fun x hx ↦ hff' x hx |>.hasDerivWithinAt) hf'
+
+/-- Express Fourier coefficients of `f` on an interval in terms of those of its derivative. -/
+theorem fourierCoeffOn_of_hasDerivAt {a b : ℝ} (hab : a < b) {f f' : ℝ → ℂ} {n : ℤ} (hn : n ≠ 0)
+    (hf : ∀ x, x ∈ [[a, b]] → HasDerivAt f (f' x) x) (hf' : IntervalIntegrable f' volume a b) :
+    fourierCoeffOn hab f n = 1 / (-2 * π * I * n) *
+      (fourier (-n) (a : AddCircle (b - a)) * (f b - f a) - (b - a) * fourierCoeffOn hab f' n) :=
+  fourierCoeffOn_of_hasDerivAt_Ioo hab hn
+    (fun x hx ↦ hf x hx |>.continuousAt.continuousWithinAt)
+    (fun x hx ↦ hf x <| mem_Icc_of_Ioo hx)
+    hf'
 #align fourier_coeff_on_of_has_deriv_at fourierCoeffOn_of_hasDerivAt
 
 end deriv
