@@ -181,38 +181,38 @@ open Matrix
 /-- Let `L` and `M` be finite free modules over `R`,
 and let `φ : L →ₗ[R] Module.End R M` be a linear map.
 Let `b` be a basis of `L` and `bₘ` a basis of `M`.
-Then `LinearMap.polyCharpoly φ b bₘ` is the polynomial that evaluates on elements `x` of `L`
+Then `LinearMap.polyCharpolyAux φ b bₘ` is the polynomial that evaluates on elements `x` of `L`
 to the characteristic polynomial of `φ x` acting on `M`.
 
 This definition does not depend on the choice of `bₘ`
-(see `LinearMap.polyCharpoly_basisIndep`). -/
+(see `LinearMap.polyCharpolyAux_basisIndep`). -/
 noncomputable
-def polyCharpoly : Polynomial (MvPolynomial ι R) :=
+def polyCharpolyAux : Polynomial (MvPolynomial ι R) :=
   (charpoly.univ R ιM).map <| MvPolynomial.bind₁ (φ.toMvPolynomial b bₘ.end)
 
-lemma polyCharpoly_monic : (polyCharpoly φ b bₘ).Monic :=
+lemma polyCharpolyAux_monic : (polyCharpolyAux φ b bₘ).Monic :=
   (charpoly.univ_monic R ιM).map _
 
-lemma polyCharpoly_ne_zero [Nontrivial R] : (polyCharpoly φ b bₘ) ≠ 0 :=
-  (polyCharpoly_monic _ _ _).ne_zero
+lemma polyCharpolyAux_ne_zero [Nontrivial R] : (polyCharpolyAux φ b bₘ) ≠ 0 :=
+  (polyCharpolyAux_monic _ _ _).ne_zero
 
 @[simp]
-lemma polyCharpoly_natDegree [Nontrivial R] :
-    (polyCharpoly φ b bₘ).natDegree = Fintype.card ιM := by
-  rw [polyCharpoly, (charpoly.univ_monic _ _).natDegree_map, charpoly.univ_natDegree]
+lemma polyCharpolyAux_natDegree [Nontrivial R] :
+    (polyCharpolyAux φ b bₘ).natDegree = Fintype.card ιM := by
+  rw [polyCharpolyAux, (charpoly.univ_monic _ _).natDegree_map, charpoly.univ_natDegree]
 
-lemma polyCharpoly_coeff_isHomogeneous (i j : ℕ) (hij : i + j = Fintype.card ιM) :
-    ((polyCharpoly φ b bₘ).coeff i).IsHomogeneous j := by
-  rw [polyCharpoly, Polynomial.coeff_map, ← one_mul j]
+lemma polyCharpolyAux_coeff_isHomogeneous (i j : ℕ) (hij : i + j = Fintype.card ιM) :
+    ((polyCharpolyAux φ b bₘ).coeff i).IsHomogeneous j := by
+  rw [polyCharpolyAux, Polynomial.coeff_map, ← one_mul j]
   apply (charpoly.univ_coeff_isHomogeneous _ _ _ _ hij).eval₂
   · exact fun r ↦ MvPolynomial.isHomogeneous_C _ _
   · exact LinearMap.toMvPolynomial_isHomogeneous _ _ _
 
 open Algebra.TensorProduct MvPolynomial in
-lemma polyCharpoly_baseChange (A : Type*) [CommRing A] [Algebra R A] :
-    polyCharpoly (tensorProduct _ _ _ _ ∘ₗ φ.baseChange A) (basis A b) (basis A bₘ) =
-      (polyCharpoly φ b bₘ).map (MvPolynomial.map (algebraMap R A)) := by
-  simp only [polyCharpoly]
+lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
+    polyCharpolyAux (tensorProduct _ _ _ _ ∘ₗ φ.baseChange A) (basis A b) (basis A bₘ) =
+      (polyCharpolyAux φ b bₘ).map (MvPolynomial.map (algebraMap R A)) := by
+  simp only [polyCharpolyAux]
   rw [← charpoly.univ_map_map _ (algebraMap R A)]
   simp only [Polynomial.map_map]
   congr 1
@@ -227,8 +227,8 @@ lemma polyCharpoly_baseChange (A : Type*) [CommRing A] [Algebra R A] :
       rw [this, bind₁_X_right]
     simp only [toMvPolynomial, Matrix.toMvPolynomial]
     suffices ∀ kl,
-      (toMatrix (basis A (Basis.end bₘ)) (Basis.end (basis A bₘ))) (tensorProduct R A M M) ij kl =
-      if kl = ij then 1 else 0 by
+        (toMatrix (basis A bₘ.end) (basis A bₘ).end) (tensorProduct R A M M) ij kl =
+        if kl = ij then 1 else 0 by
       rw [Finset.sum_eq_single ij]
       · rw [this, if_pos rfl, X]
       · rintro kl - H
@@ -242,42 +242,43 @@ lemma polyCharpoly_baseChange (A : Type*) [CommRing A] [Algebra R A] :
     rw [one_smul, Basis.baseChange_end, Basis.repr_self_apply]
 
 open LinearMap in
-lemma polyCharpoly_map_eq_toMatrix_charpoly (x : L) :
-    (polyCharpoly φ b bₘ).map (MvPolynomial.eval (b.repr x)) = (toMatrix bₘ bₘ (φ x)).charpoly := by
-  erw [polyCharpoly, Polynomial.map_map, MvPolynomial.comp_eval₂Hom, charpoly.univ_map_eval₂Hom]
+lemma polyCharpolyAux_map_eq_toMatrix_charpoly (x : L) :
+    (polyCharpolyAux φ b bₘ).map (MvPolynomial.eval (b.repr x)) =
+      (toMatrix bₘ bₘ (φ x)).charpoly := by
+  erw [polyCharpolyAux, Polynomial.map_map, MvPolynomial.comp_eval₂Hom, charpoly.univ_map_eval₂Hom]
   congr
   ext
   rw [of_apply, Function.curry_apply, toMvPolynomial_eval_eq_apply, LinearEquiv.symm_apply_apply]
   rfl
 
-lemma polyCharpoly_map_eq_charpoly [Module.Finite R M] [Module.Free R M]
+lemma polyCharpolyAux_map_eq_charpoly [Module.Finite R M] [Module.Free R M]
     (x : L) :
-    (polyCharpoly φ b bₘ).map (MvPolynomial.eval (b.repr x)) = (φ x).charpoly := by
+    (polyCharpolyAux φ b bₘ).map (MvPolynomial.eval (b.repr x)) = (φ x).charpoly := by
   nontriviality R
-  rw [polyCharpoly_map_eq_toMatrix_charpoly, LinearMap.charpoly_toMatrix]
+  rw [polyCharpolyAux_map_eq_toMatrix_charpoly, LinearMap.charpoly_toMatrix]
 
-lemma polyCharpoly_map_eval [Module.Finite R M] [Module.Free R M]
+lemma polyCharpolyAux_map_eval [Module.Finite R M] [Module.Free R M]
     (x : ι → R) :
-    (polyCharpoly φ b bₘ).map (MvPolynomial.eval x) =
+    (polyCharpolyAux φ b bₘ).map (MvPolynomial.eval x) =
       (φ (b.repr.symm (Finsupp.equivFunOnFinite.symm x))).charpoly := by
-  simp only [← polyCharpoly_map_eq_charpoly φ b bₘ, LinearEquiv.apply_symm_apply,
+  simp only [← polyCharpolyAux_map_eq_charpoly φ b bₘ, LinearEquiv.apply_symm_apply,
     Finsupp.equivFunOnFinite, Equiv.coe_fn_symm_mk, Finsupp.coe_mk]
 
 open Algebra.TensorProduct TensorProduct in
-lemma polyCharpoly_map_aeval
+lemma polyCharpolyAux_map_aeval
     (A : Type*) [CommRing A] [Algebra R A] [Module.Finite A (A ⊗[R] M)] [Module.Free A (A ⊗[R] M)]
     (x : ι → A) :
-    (polyCharpoly φ b bₘ).map (MvPolynomial.aeval x).toRingHom =
+    (polyCharpolyAux φ b bₘ).map (MvPolynomial.aeval x).toRingHom =
       LinearMap.charpoly ((tensorProduct R A M M).comp (baseChange A φ)
         ((basis A b).repr.symm (Finsupp.equivFunOnFinite.symm x))) := by
-  rw [← polyCharpoly_map_eval (tensorProduct R A M M ∘ₗ baseChange A φ) _ (basis A bₘ),
-    polyCharpoly_baseChange, Polynomial.map_map]
+  rw [← polyCharpolyAux_map_eval (tensorProduct R A M M ∘ₗ baseChange A φ) _ (basis A bₘ),
+    polyCharpolyAux_baseChange, Polynomial.map_map]
   congr
   exact DFunLike.ext _ _ fun f ↦ (MvPolynomial.eval_map (algebraMap R A) x f).symm
 
 open Algebra.TensorProduct MvPolynomial in
-lemma polyCharpoly_basisIndep (bₘ' : Basis ιM R M) :
-    polyCharpoly φ b bₘ = polyCharpoly φ b bₘ' := by
+lemma polyCharpolyAux_basisIndep (bₘ' : Basis ιM R M) :
+    polyCharpolyAux φ b bₘ = polyCharpolyAux φ b bₘ' := by
   let f : Polynomial (MvPolynomial ι R) → Polynomial (MvPolynomial ι R) :=
     Polynomial.map (MvPolynomial.aeval X).toRingHom
   have hf : Function.Injective f := by
@@ -289,13 +290,13 @@ lemma polyCharpoly_basisIndep (bₘ' : Basis ιM R M) :
     Module.Finite.of_basis (basis (MvPolynomial ι R) bₘ)
   let _h2 : Module.Free (MvPolynomial ι R) (TensorProduct R (MvPolynomial ι R) M) :=
     Module.Free.of_basis (basis (MvPolynomial ι R) bₘ)
-  simp only [f, polyCharpoly_map_aeval, polyCharpoly_map_aeval]
+  simp only [f, polyCharpolyAux_map_aeval, polyCharpolyAux_map_aeval]
 
 open LinearMap in
-lemma polyCharpoly_eval_eq_toMatrix_charpoly_coeff (x : L) (i : ℕ) :
-    MvPolynomial.eval (b.repr x) ((polyCharpoly φ b bₘ).coeff i) =
+lemma polyCharpolyAux_eval_eq_toMatrix_charpoly_coeff (x : L) (i : ℕ) :
+    MvPolynomial.eval (b.repr x) ((polyCharpolyAux φ b bₘ).coeff i) =
       (toMatrix bₘ bₘ (φ x)).charpoly.coeff i := by
-  simp [← polyCharpoly_map_eq_toMatrix_charpoly φ b bₘ x]
+  simp [← polyCharpolyAux_map_eq_toMatrix_charpoly φ b bₘ x]
 
 end basic
 
@@ -305,14 +306,14 @@ variable [DecidableEq ιM] [Nontrivial R] [Module.Finite R M] [Module.Free R M]
 variable (b : Basis ι R L) (bₘ : Basis ιM R M) (x : L)
 
 @[simp]
-lemma polyCharpoly_map :
-    (polyCharpoly φ b bₘ).map (MvPolynomial.eval (b.repr x)) = (φ x).charpoly := by
-  rw [polyCharpoly_map_eq_toMatrix_charpoly, LinearMap.charpoly_toMatrix]
+lemma polyCharpolyAux_map :
+    (polyCharpolyAux φ b bₘ).map (MvPolynomial.eval (b.repr x)) = (φ x).charpoly := by
+  rw [polyCharpolyAux_map_eq_toMatrix_charpoly, LinearMap.charpoly_toMatrix]
 
 @[simp]
-lemma polyCharpoly_eval (i : ℕ) :
-    MvPolynomial.eval (b.repr x) ((polyCharpoly φ b bₘ).coeff i) = (φ x).charpoly.coeff i := by
-  rw [polyCharpoly_eval_eq_toMatrix_charpoly_coeff, LinearMap.charpoly_toMatrix]
+lemma polyCharpolyAux_eval (i : ℕ) :
+    MvPolynomial.eval (b.repr x) ((polyCharpolyAux φ b bₘ).coeff i) = (φ x).charpoly.coeff i := by
+  rw [polyCharpolyAux_eval_eq_toMatrix_charpoly_coeff, LinearMap.charpoly_toMatrix]
 
 end module
 
