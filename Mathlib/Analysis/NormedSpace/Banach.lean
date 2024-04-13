@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.Baire.Lemmas
 import Mathlib.Topology.Baire.CompleteMetrizable
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Analysis.NormedSpace.AffineIsometry
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 
@@ -411,6 +411,14 @@ theorem ofBijective_apply_symm_apply (f : E →SL[σ] F) (hinj : ker f = ⊥)
   (ofBijective f hinj hsurj).apply_symm_apply y
 #align continuous_linear_equiv.of_bijective_apply_symm_apply ContinuousLinearEquiv.ofBijective_apply_symm_apply
 
+lemma _root_.ContinuousLinearMap.isUnit_iff_bijective {f : E →L[𝕜] E} :
+    IsUnit f ↔ Bijective f := by
+  constructor
+  · rintro ⟨f, rfl⟩
+    exact ofUnit f |>.bijective
+  · refine fun h ↦ ⟨toUnit <| .ofBijective f ?_ ?_, rfl⟩ <;>
+    simp only [LinearMap.range_eq_top, LinearMapClass.ker_eq_bot, h.1, h.2]
+
 end ContinuousLinearEquiv
 
 namespace ContinuousLinearMap
@@ -545,3 +553,31 @@ theorem coe_ofSeqClosedGraph
 end ContinuousLinearMap
 
 end ClosedGraphThm
+
+section BijectivityCriteria
+
+namespace ContinuousLinearMap
+
+variable [CompleteSpace E]
+
+lemma closed_range_of_antilipschitz {f : E →SL[σ] F} {c : ℝ≥0} (hf : AntilipschitzWith c f) :
+    (LinearMap.range f).topologicalClosure = LinearMap.range f :=
+  SetLike.ext'_iff.mpr <| (hf.isClosed_range f.uniformContinuous).closure_eq
+
+open Function
+lemma bijective_iff_dense_range_and_antilipschitz (f : E →SL[σ] F) :
+    Bijective f ↔ (LinearMap.range f).topologicalClosure = ⊤ ∧ ∃ c, AntilipschitzWith c f := by
+  refine ⟨fun h ↦ ⟨?eq_top, ?anti⟩, fun ⟨hd, c, hf⟩ ↦ ⟨hf.injective, ?surj⟩⟩
+  case eq_top => simpa [SetLike.ext'_iff] using h.2.denseRange.closure_eq
+  case anti =>
+    refine ⟨_, ContinuousLinearEquiv.ofBijective f ?_ ?_ |>.antilipschitz⟩ <;>
+    simp only [LinearMap.range_eq_top, LinearMapClass.ker_eq_bot, h.1, h.2]
+  case surj => rwa [← LinearMap.range_eq_top, ← closed_range_of_antilipschitz hf]
+
+lemma _root_.AntilipschitzWith.completeSpace_range_clm {f : E →SL[σ] F} {c : ℝ≥0}
+    (hf : AntilipschitzWith c f) : CompleteSpace (LinearMap.range f) :=
+  IsClosed.completeSpace_coe <| hf.isClosed_range f.uniformContinuous
+
+end ContinuousLinearMap
+
+end BijectivityCriteria
