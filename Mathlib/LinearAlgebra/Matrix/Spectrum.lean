@@ -96,6 +96,55 @@ theorem star_eigenvectorUnitary_mulVec (j : n) :
 Pi.single j 1 := by
 rw [←eigenvectorUnitary_mulVec, mulVec_mulVec, unitary.coe_star_mul_self, one_mulVec]
 
+/-Task 7: prove the spectral theorem again using (approximately) the same technique as before.
+You can choose to prove either A = U * D * star U or star U * A * U = D, whichever you prefer.
+One key thing here: you're going to interpret your matrix as a linear map,
+which vector spaces do you want it to map between?
+Choose a Matrix.toLin variant accordingly.
+Ask me after you've chosen to see if you're getting started correctly.-/
+
+theorem spectral_theorem1 :
+    (star (eigenvectorUnitary hA : Matrix n n 𝕜)) * A * (eigenvectorUnitary hA : Matrix n n 𝕜)
+     = diagonal (RCLike.ofReal ∘ hA.eigenvalues) := by
+apply Matrix.toEuclideanLin.injective
+apply Basis.ext (EuclideanSpace.basisFun n 𝕜).toBasis
+intro i
+rw [toEuclideanLin_apply, toEuclideanLin_apply, OrthonormalBasis.coe_toBasis,
+    EuclideanSpace.basisFun_apply, WithLp.equiv_single, ←mulVec_mulVec,
+    eigenvectorUnitary_mulVec, ←mulVec_mulVec, mulVec_eigenvectorBasis,
+    Matrix.diagonal_mulVec_single, mulVec_smul, star_eigenvectorUnitary_mulVec,
+    RCLike.real_smul_eq_coe_smul (K := 𝕜), WithLp.equiv_symm_smul, WithLp.equiv_symm_single,
+    Function.comp_apply, mul_one, WithLp.equiv_symm_single]
+apply PiLp.ext
+intro j
+simp only [PiLp.smul_apply, EuclideanSpace.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
+
+
+
+
+--mulVec_single and diagonal mulVec_single might be useful...
+--maybe fix the Basis.ext with a PiLp.ext?
+
+
+sorry
+
+
+
+/-
+apply Matrix.toLin'.injective
+apply Basis.ext ((EuclideanSpace.basisFun n 𝕜).toBasis)
+intro i
+rw [Matrix.toLin'_mul,Matrix.toLin'_mul, LinearMap.comp_apply, LinearMap.comp_apply,
+   OrthonormalBasis.coe_toBasis, EuclideanSpace.basisFun_apply, toLin'_apply, toLin'_apply]
+change A *ᵥ ((eigenvectorUnitary hA) : Matrix n n 𝕜) *ᵥ (Pi.single i 1) = _
+rw [eigenvectorUnitary_mulVec]
+change _ = _ *ᵥ ((toLin' _) (Pi.single i 1))
+rw [toLin'_apply, Matrix.diagonal_mulVec_single, mul_one, Function.comp_apply, mulVec_single]
+apply PiLp.ext (p := 2) ?h
+intro j
+rw [eigenvectorUnitary_apply, mul_comm, mulVec_eigenvectorBasis hA i, PiLp.smul_apply,
+   RCLike.real_smul_eq_coe_smul (K := 𝕜), smul_eq_mul, mul_comm]
+-/
 --/-- A matrix whose columns are an orthonormal basis of eigenvectors of a hermitian matrix. -/
 --noncomputable def eigenvectorMatrix : Matrix n n 𝕜 :=
 --  (PiLp.basisFun _ 𝕜 n).toMatrix (eigenvectorBasis hA).toBasis
