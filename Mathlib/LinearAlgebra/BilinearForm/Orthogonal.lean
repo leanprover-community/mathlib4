@@ -59,8 +59,7 @@ theorem isOrtho_def {B : BilinForm R M} {x y : M} : B.IsOrtho x y ↔ B x y = 0 
 theorem isOrtho_zero_left (x : M) : IsOrtho B (0 : M) x := LinearMap.isOrtho_zero_left B x
 #align bilin_form.is_ortho_zero_left LinearMap.BilinForm.isOrtho_zero_left
 
-theorem isOrtho_zero_right (x : M) : IsOrtho B x (0 : M) :=
-  zero_right x
+theorem isOrtho_zero_right (x : M) : IsOrtho B x (0 : M) := LinearMap.isOrtho_zero_right B x
 #align bilin_form.is_ortho_zero_right LinearMap.BilinForm.isOrtho_zero_right
 
 theorem ne_zero_of_not_isOrtho_self {B : BilinForm K V} (x : V) (hx₁ : ¬B.IsOrtho x x) : x ≠ 0 :=
@@ -123,12 +122,13 @@ theorem linearIndependent_of_iIsOrtho {n : Type w} {B : BilinForm K V} {v : n �
   classical
     rw [linearIndependent_iff']
     intro s w hs i hi
-    have : B (s.sum fun i : n => w i • v i) (v i) = 0 := by rw [hs, zero_left]
+    have : B (s.sum fun i : n => w i • v i) (v i) = 0 := by
+      rw [hs, map_zero, LinearMap.zero_apply]
     have hsum : (s.sum fun j : n => w j * B (v j) (v i)) = w i * B (v i) (v i) := by
       apply Finset.sum_eq_single_of_mem i hi
       intro j _ hij
       rw [iIsOrtho_def.1 hv₁ _ _ hij, mul_zero]
-    simp_rw [sum_left, smul_left, hsum] at this
+    simp_rw [sum_left, map_smul, LinearMap.smul_apply, smul_eq_mul, hsum] at this
     exact eq_zero_of_ne_zero_of_mul_right_eq_zero (hv₂ i) this
 set_option linter.uppercaseLean3 false in
 #align bilin_form.linear_independent_of_is_Ortho LinearMap.BilinForm.linearIndependent_of_iIsOrtho
@@ -148,9 +148,9 @@ def orthogonal (B : BilinForm R M) (N : Submodule R M) : Submodule R M where
   carrier := { m | ∀ n ∈ N, IsOrtho B n m }
   zero_mem' x _ := isOrtho_zero_right x
   add_mem' {x y} hx hy n hn := by
-    rw [IsOrtho, add_right, show B n x = 0 from hx n hn, show B n y = 0 from hy n hn, zero_add]
+    rw [IsOrtho, map_add, show B n x = 0 from hx n hn, show B n y = 0 from hy n hn, zero_add]
   smul_mem' c x hx n hn := by
-    rw [IsOrtho, smul_right, show B n x = 0 from hx n hn, mul_zero]
+    rw [IsOrtho, map_smul, show B n x = 0 from hx n hn, smul_zero]
 #align bilin_form.orthogonal LinearMap.BilinForm.orthogonal
 
 variable {N L : Submodule R M}
@@ -178,7 +178,7 @@ theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : �
   · rw [Finset.sum_singleton] at this ⊢
     suffices hμzero : μ x = 0 by rw [hμzero, zero_smul, Submodule.mem_bot]
     change B x (μ x • x) = 0 at this
-    rw [smul_right] at this
+    rw [map_smul] at this
     exact eq_zero_of_ne_zero_of_mul_right_eq_zero hx this
   · rw [Submodule.mem_span]
     exact fun _ hp => hp <| Finset.mem_singleton_self _
@@ -192,7 +192,7 @@ theorem orthogonal_span_singleton_eq_toLin_ker {B : BilinForm K V} (x : V) :
   constructor
   · exact fun h => h x ⟨1, one_smul _ _⟩
   · rintro h _ ⟨z, rfl⟩
-    rw [IsOrtho, smul_left, mul_eq_zero]
+    rw [IsOrtho, map_smul, LinearMap.smul_apply, smul_eq_zero]
     exact Or.intro_right _ h
 #align bilin_form.orthogonal_span_singleton_eq_to_lin_ker LinearMap.BilinForm.orthogonal_span_singleton_eq_toLin_ker
 
@@ -238,7 +238,7 @@ theorem iIsOrtho.not_isOrtho_basis_self_of_nondegenerate {n : Type w} [Nontrivia
   rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, sum_right]
   apply Finset.sum_eq_zero
   rintro j -
-  rw [smul_right]
+  rw [map_smul]
   convert mul_zero (vi j) using 2
   obtain rfl | hij := eq_or_ne i j
   · exact ho
@@ -257,7 +257,8 @@ theorem iIsOrtho.nondegenerate_iff_not_isOrtho_basis_self {n : Type w} [Nontrivi
   ext i
   rw [Finsupp.zero_apply]
   specialize hB (v i)
-  simp_rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, sum_left, smul_left] at hB
+  simp_rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, sum_left, map_smul,
+    LinearMap.smul_apply] at hB
   rw [Finset.sum_eq_single i] at hB
   · exact eq_zero_of_ne_zero_of_mul_right_eq_zero (ho i) hB
   · intro j _ hij
@@ -376,7 +377,7 @@ theorem restrictOrthogonalSpanSingletonNondegenerate (B : BilinForm K V) (b₁ :
   rcases Submodule.mem_sup.1 this with ⟨y, hy, z, hz, rfl⟩
   specialize hm ⟨z, hz⟩
   rw [restrict] at hm
-  erw [add_right, show B m.1 y = 0 by rw [b₂]; exact m.2 y hy, hm, add_zero]
+  erw [map_add, show B m.1 y = 0 by rw [b₂]; exact m.2 y hy, hm, add_zero]
 #align bilin_form.restrict_orthogonal_span_singleton_nondegenerate LinearMap.BilinForm.restrictOrthogonalSpanSingletonNondegenerate
 
 end BilinForm
