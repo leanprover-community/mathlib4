@@ -113,13 +113,6 @@ warning: missing instantiateMVars?
 ---
 warning: missing withContext?
 
-  set j : ?a✝ := j
-  unfold_let  at *
-  buggy_exact h
-  done
----
-warning: missing withContext?
-
   let j : ?a✝ := j
   unfold_let  at *
   buggy_exact h
@@ -133,7 +126,7 @@ info:
         have h__h__0 := h
         buggy_exact h__h__0
         done
-[Tactic.tests] ❌ 'set's [set j : ?a✝ := j, unfold_let  at *]
+[Tactic.tests] ✅ 'set's [set j : ?a✝ := j, unfold_let  at *]
 [Tactic.tests] ❌ 'let's [let j : ?a✝ := j, unfold_let  at *]
 -/
 #guard_msgs in
@@ -147,27 +140,16 @@ warning: missing instantiateMVars?
   buggy_exact clearMD h__h__0
   done
 ---
-warning: missing withContext?
-
-  unfold_let  at *
-  buggy_exact clearMD h
-  done
----
-warning: missing withContext?
-
-  unfold_let  at *
-  buggy_exact clearMD h
-  done
----
-info: [Tactic.tests] ✅ 'have := 0'
+info:
+[Tactic.tests] ✅ 'have := 0'
 [Tactic.tests] ✅ 'set's []
 [Tactic.tests] ✅ 'let's []
 [Tactic.tests] ❌ 'have's
         have h__h__0 := h
         buggy_exact clearMD h__h__0
         done
-[Tactic.tests] ❌ 'set's [unfold_let  at *]
-[Tactic.tests] ❌ 'let's [unfold_let  at *]
+[Tactic.tests] ✅ 'set's [unfold_let  at *]
+[Tactic.tests] ✅ 'let's [unfold_let  at *]
 -/
 #guard_msgs in
 example {h : True} : True := by
@@ -342,13 +324,6 @@ warning: missing instantiateMVars?
   have _h2___h2__0 := _h2
   have h__h__1 := h
   buggy_exact h__h__1
-  done
----
-warning: missing withContext?
-
-  set _j : ?a✝ := _j
-  unfold_let  at *
-  buggy_exact h
   done
 ---
 warning: missing withContext?
