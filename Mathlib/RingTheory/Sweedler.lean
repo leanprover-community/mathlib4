@@ -28,17 +28,9 @@ lemma abstract_comul_exists_repr (x : A) :
   rw [← TensorProduct.span_tmul_eq_top, mem_span_set] at mem1
   obtain ⟨r, hr, (eq1 : ∑ i in r.support, (_ • _) = _)⟩ := mem1
   choose a a' haa' using hr
-  replace eq1 := calc _
-    comul x = ∑ i in r.support, r i • i := eq1.symm
-    _ = ∑ i in r.support.attach, (r i : R) • i.1 := Finset.sum_attach _ _ |>.symm
-    _ = ∑ i in r.support.attach, (r i • a i.2 ⊗ₜ[R] a' i.2) :=
-        Finset.sum_congr rfl fun i _ ↦ congr(r i.1 • $(haa' i.2)).symm
-    _ = ∑ i in r.support.attach, ((r i • a i.2) ⊗ₜ[R] a' i.2) :=
-        Finset.sum_congr rfl fun i _ ↦ TensorProduct.smul_tmul' _ _ _
   refine ⟨r.support, fun i ↦ if h : i ∈ r.support then r i • a h else 0,
-    fun i ↦ if h : i ∈ r.support then a' h else 0, eq1 ▸ ?_⟩
-  conv_rhs => rw [← Finset.sum_attach]
-  exact Finset.sum_congr rfl fun _ _ ↦ (by aesop)
+    fun i ↦ if h : i ∈ r.support then a' h else 0, eq1 ▸ Finset.sum_congr rfl fun a h ↦
+    by simp only [dif_pos h, ← smul_tmul', haa' h]⟩
 
 /-- an arbitrarily chosen indexing set for comul(a) = ∑ a₁ ⊗ a₂. -/
 noncomputable def ℐ (a : A) : Finset (A ⊗[R] A) := abstract_comul_exists_repr comul a |>.choose
