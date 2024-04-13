@@ -879,6 +879,16 @@ protected theorem RingHom.IsIntegral.trans
   Algebra.IsIntegral.trans hf hg
 #align ring_hom.is_integral_trans RingHom.IsIntegral.trans
 
+/-- If `R → A → B` is an algebra tower, `C` is the integral closure of `R` in `B`
+and `A` is integral over `R`, then `C` is the integral closure of `A` in `B`. -/
+lemma IsIntegralClosure.tower_top {B C : Type*} [CommRing C] [CommRing B]
+    [Algebra R B] [Algebra A B] [Algebra C B] [IsScalarTower R A B]
+    [IsIntegralClosure C R B] (hRA : Algebra.IsIntegral R A) :
+    IsIntegralClosure C A B :=
+  ⟨IsIntegralClosure.algebraMap_injective _ R _,
+   fun hx => (IsIntegralClosure.isIntegral_iff).mp (isIntegral_trans hRA _ hx),
+   fun hx => ((IsIntegralClosure.isIntegral_iff (R := R)).mpr hx).tower_top⟩
+
 theorem RingHom.isIntegral_of_surjective (hf : Function.Surjective f) : f.IsIntegral :=
   fun x ↦ (hf x).recOn fun _y hy ↦ hy ▸ f.isIntegralElem_map
 #align ring_hom.is_integral_of_surjective RingHom.isIntegral_of_surjective
