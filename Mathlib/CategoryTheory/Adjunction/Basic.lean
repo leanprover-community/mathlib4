@@ -242,7 +242,7 @@ namespace Adjunction
 See `Adjunction.mkOfHomEquiv`.
 This structure won't typically be used anywhere else.
 -/
--- Porting comment: `has_nonempty_instance` linter doesn't exist (yet?)
+-- Porting note(#5171): `has_nonempty_instance` linter not ported yet
 -- @[nolint has_nonempty_instance]
 structure CoreHomEquiv (F : C ⥤ D) (G : D ⥤ C) where
   /-- The equivalence between `Hom (F X) Y` and `Hom X (G Y)` -/
@@ -304,7 +304,7 @@ end CoreHomEquiv
 See `Adjunction.mkOfUnitCounit`.
 This structure won't typically be used anywhere else.
 -/
--- Porting comment: `has_nonempty_instance` linter doesn't exist (yet?)
+-- Porting note(#5171): `has_nonempty_instance` linter not ported yet
 -- @[nolint has_nonempty_instance]
 structure CoreUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
   /-- The unit of an adjunction between `F` and `G` -/

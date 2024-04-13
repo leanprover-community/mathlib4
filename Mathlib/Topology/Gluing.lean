@@ -82,7 +82,7 @@ that the `U i`'s are open subspaces of the glued space.
 Most of the times it would be easier to use the constructor `TopCat.GlueData.mk'` where the
 conditions are stated in a less categorical way.
 -/
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 structure GlueData extends GlueData TopCat where
   f_open : ∀ i j, OpenEmbedding (f i j)
   f_mono := fun i j => (TopCat.mono_iff_injective _).mpr (f_open i j).toEmbedding.inj
@@ -335,7 +335,7 @@ such that
 
 We can then glue the topological spaces `U i` together by identifying `V i j` with `V j i`.
 -/
--- Porting note: removed `@[nolint has_nonempty_instance]`
+-- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
 structure MkCore where
   {J : Type u}
   U : J → TopCat.{u}

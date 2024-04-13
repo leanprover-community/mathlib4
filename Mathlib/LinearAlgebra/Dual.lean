@@ -751,7 +751,7 @@ def evalUseFiniteInstance : TacticM Unit := do
 elab "use_finite_instance" : tactic => evalUseFiniteInstance
 
 /-- `e` and `ε` have characteristic properties of a basis and its dual -/
--- @[nolint has_nonempty_instance] Porting note (#10927): removed
+-- @[nolint has_nonempty_instance] Porting note (#5171): removed
 structure Module.DualBases (e : ι → M) (ε : ι → Dual R M) : Prop where
   eval : ∀ i j : ι, ε i (e j) = if i = j then 1 else 0
   protected total : ∀ {m : M}, (∀ i, ε i m = 0) → m = 0

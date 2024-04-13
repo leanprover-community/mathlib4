@@ -95,7 +95,7 @@ instance : Inhabited GHSpace :=
   ⟨Quot.mk _ ⟨⟨{0}, isCompact_singleton⟩, singleton_nonempty _⟩⟩
 
 /-- A metric space representative of any abstract point in `GHSpace` -/
--- Porting note: was @[nolint has_nonempty_instance]; why?
+-- Porting note(#5171): linter not yet ported; removed @[nolint has_nonempty_instance]; why?
 def GHSpace.Rep (p : GHSpace) : Type :=
   (Quotient.out p : NonemptyCompacts ℓ_infty_ℝ)
 #align Gromov_Hausdorff.GH_space.rep GromovHausdorff.GHSpace.Rep

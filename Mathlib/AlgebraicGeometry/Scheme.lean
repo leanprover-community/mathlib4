@@ -49,7 +49,7 @@ structure Scheme extends LocallyRingedSpace where
 namespace Scheme
 
 /-- A morphism between schemes is a morphism between the underlying locally ringed spaces. -/
--- @[nolint has_nonempty_instance] -- Porting note: no such linter.
+-- @[nolint has_nonempty_instance] -- Porting note(#5171): linter not ported yet
 def Hom (X Y : Scheme) : Type* :=
   X.toLocallyRingedSpace ⟶ Y.toLocallyRingedSpace
 #align algebraic_geometry.Scheme.hom AlgebraicGeometry.Scheme.Hom
