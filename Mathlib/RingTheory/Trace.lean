@@ -286,7 +286,8 @@ variable (K)
 
 theorem trace_eq_trace_adjoin [FiniteDimensional K L] (x : L) :
     Algebra.trace K L x = finrank K⟮x⟯ L • trace K K⟮x⟯ (AdjoinSimple.gen K x) := by
-  -- Porting note: `conv` was `conv in x => rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]`
+  -- Porting note: `conv` was
+  -- `conv in x => rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]`
   -- and it was after the first `rw`.
   conv =>
     lhs
