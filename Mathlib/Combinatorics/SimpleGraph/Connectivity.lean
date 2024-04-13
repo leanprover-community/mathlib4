@@ -829,9 +829,9 @@ inductive Nil : {v w : V} → G.Walk v w → Prop
 
 variable {u v w : V}
 
-@[simp] lemma nil_nil {u : V} : (nil : G.Walk u u).Nil := Nil.nil
+@[simp] lemma nil_nil : (nil : G.Walk u u).Nil := Nil.nil
 
-@[simp] lemma not_nil_cons {u v w : V} {h : G.Adj u v} {p : G.Walk v w} : ¬ (cons h p).Nil := nofun
+@[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬ (cons h p).Nil := nofun
 
 instance (p : G.Walk v w) : Decidable p.Nil :=
   match p with
@@ -915,10 +915,8 @@ structure IsPath {u v : V} (p : G.Walk u v) extends IsTrail p : Prop where
   support_nodup : p.support.Nodup
 #align simple_graph.walk.is_path SimpleGraph.Walk.IsPath
 
-set_option autoImplicit true
-
 -- Porting note: used to use `extends to_trail : is_trail p` in structure
-protected lemma IsPath.isTrail (h : IsPath p) : IsTrail p := h.toIsTrail
+protected lemma IsPath.isTrail {p : Walk G u v}(h : IsPath p) : IsTrail p := h.toIsTrail
 #align simple_graph.walk.is_path.to_trail SimpleGraph.Walk.IsPath.isTrail
 
 /-- A *circuit* at `u : V` is a nonempty trail beginning and ending at `u`. -/
@@ -929,7 +927,7 @@ structure IsCircuit {u : V} (p : G.Walk u u) extends IsTrail p : Prop where
 #align simple_graph.walk.is_circuit_def SimpleGraph.Walk.isCircuit_def
 
 -- Porting note: used to use `extends to_trail : is_trail p` in structure
-protected lemma IsCircuit.isTrail (h : IsCircuit p) : IsTrail p := h.toIsTrail
+protected lemma IsCircuit.isTrail {p : Walk G u u} (h : IsCircuit p) : IsTrail p := h.toIsTrail
 #align simple_graph.walk.is_circuit.to_trail SimpleGraph.Walk.IsCircuit.isTrail
 
 /-- A *cycle* at `u : V` is a circuit at `u` whose only repeating vertex
@@ -939,7 +937,7 @@ structure IsCycle {u : V} (p : G.Walk u u) extends IsCircuit p : Prop where
 #align simple_graph.walk.is_cycle SimpleGraph.Walk.IsCycle
 
 -- Porting note: used to use `extends to_circuit : is_circuit p` in structure
-protected lemma IsCycle.isCircuit (h : IsCycle p) : IsCircuit p := h.toIsCircuit
+protected lemma IsCycle.isCircuit {p : Walk G u u} (h : IsCycle p) : IsCircuit p := h.toIsCircuit
 #align simple_graph.walk.is_cycle.to_circuit SimpleGraph.Walk.IsCycle.isCircuit
 
 @[simp]
@@ -1044,7 +1042,7 @@ theorem cons_isPath_iff {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
   constructor <;> simp (config := { contextual := true }) [isPath_def]
 #align simple_graph.walk.cons_is_path_iff SimpleGraph.Walk.cons_isPath_iff
 
-protected lemma IsPath.cons (hp : p.IsPath) (hu : u ∉ p.support) {h : G.Adj u v} :
+protected lemma IsPath.cons {p : Walk G v w} (hp : p.IsPath) (hu : u ∉ p.support) {h : G.Adj u v} :
     (cons h p).IsPath :=
   (cons_isPath_iff _ _).2 ⟨hp, hu⟩
 
