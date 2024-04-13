@@ -8,16 +8,12 @@ import Mathlib.CategoryTheory.Bicategory.Free
 #align_import category_theory.bicategory.coherence_tactic from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
 /-!
-# A `coherence` tactic for bicategories, and `⊗≫` (composition up to associators)
+# A `coherence` tactic for bicategories
 
 We provide a `bicategory_coherence` tactic,
 which proves that any two 2-morphisms (with the same source and target)
 in a bicategory which are built out of associators and unitors
 are equal.
-
-We also provide `f ⊗≫ g`, the `bicategoricalComp` operation,
-which automatically inserts associators and unitors as needed
-to make the target of `f` match the source of `g`.
 
 This file mainly deals with the type class setup for the coherence tactic. The actual front end
 tactic is given in `Mathlib.Tactic.CategoryTheory.Coherence` at the same time as the coherence

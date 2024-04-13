@@ -5,6 +5,14 @@ Authors: Yuma Mizuno
 -/
 import Mathlib.CategoryTheory.Bicategory.Basic
 
+/-!
+# Bicategorical composition `⊗≫` (composition up to associators)
+
+We provide `f ⊗≫ g`, the `bicategoricalComp` operation,
+which automatically inserts associators and unitors as needed
+to make the target of `f` match the source of `g`.
+-/
+
 universe w v u
 
 open CategoryTheory Bicategory
@@ -12,10 +20,6 @@ open CategoryTheory Bicategory
 namespace CategoryTheory
 
 variable {B : Type u} [Bicategory.{w, v} B] {a b c d : B}
-
--- open scoped Bicategory
-
-
 
 /-- A typeclass carrying a choice of bicategorical structural isomorphism between two objects.
 Used by the `⊗≫` bicategorical composition operator, and the `coherence` tactic.
@@ -118,13 +122,15 @@ instance right' (f g : a ⟶ b) [BicategoricalCoherence f g] :
 #align category_theory.bicategory.bicategorical_coherence.right' CategoryTheory.BicategoricalCoherence.right'
 
 @[simps]
-instance assoc (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : a ⟶ d) [BicategoricalCoherence (f ≫ g ≫ h) i] :
+instance assoc (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : a ⟶ d)
+    [BicategoricalCoherence (f ≫ g ≫ h) i] :
     BicategoricalCoherence ((f ≫ g) ≫ h) i :=
   ⟨(α_ f g h).hom ≫ ⊗𝟙⟩
 #align category_theory.bicategory.bicategorical_coherence.assoc CategoryTheory.BicategoricalCoherence.assoc
 
 @[simps]
-instance assoc' (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : a ⟶ d) [BicategoricalCoherence i (f ≫ g ≫ h)] :
+instance assoc' (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : a ⟶ d)
+    [BicategoricalCoherence i (f ≫ g ≫ h)] :
     BicategoricalCoherence i ((f ≫ g) ≫ h) :=
   ⟨⊗𝟙 ≫ (α_ f g h).inv⟩
 #align category_theory.bicategory.bicategorical_coherence.assoc' CategoryTheory.BicategoricalCoherence.assoc'
