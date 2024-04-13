@@ -194,7 +194,6 @@ section Comp
 variable {M' : Type w} [AddCommMonoid M'] [Module R M']
 
 /-- Apply a linear map on the left and right argument of a bilinear form. -/
-@[deprecated]
 def comp (B : BilinForm R M') (l r : M →ₗ[R] M') : BilinForm R M := B.compl₁₂ l r
 #align bilin_form.comp LinearMap.BilinForm.comp
 
