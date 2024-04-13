@@ -738,6 +738,92 @@ def inlHom [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] : R
 
 end Mul
 
+section Inv
+variable {R : Type u} {M : Type v}
+variable [Neg M] [Inv R] [SMul Rᵐᵒᵖ M] [SMul R M]
+
+/-- Inversion of the trivial-square-zero extension, sending $r + m$ to $r^{-1} - r^{-1}mr^{-1}$. -/
+instance instInv : Inv (tsze R M) :=
+  ⟨fun b => (b.1⁻¹, -(b.1⁻¹ •> b.2 <• b.1⁻¹))⟩
+
+@[simp] theorem fst_inv (x : tsze R M) : fst x⁻¹ = (fst x)⁻¹ :=
+  rfl
+
+@[simp] theorem snd_inv (x : tsze R M) : snd x⁻¹ = -((fst x)⁻¹ •> snd x <• (fst x)⁻¹) :=
+  rfl
+
+end Inv
+
+section DivisionSemiring
+variable {R : Type u} {M : Type v}
+variable [DivisionSemiring R] [AddCommGroup M] [Module Rᵐᵒᵖ M] [Module R M] [SMulCommClass R Rᵐᵒᵖ M]
+
+protected theorem inv_inl (r : R) :
+    (inl r)⁻¹ = (inl (r⁻¹ : R) : tsze R M) := by
+  ext
+  · rw [fst_inv, fst_inl, fst_inl]
+  · rw [snd_inv, fst_inl, snd_inl, snd_inl, smul_zero, smul_zero, neg_zero]
+
+@[simp]
+theorem inv_inr (m : M) : (inr m)⁻¹ = (0 : tsze R M) := by
+  ext
+  · rw [fst_inv, fst_inr, fst_zero, inv_zero]
+  · rw [snd_inv, snd_inr, fst_inr, inv_zero, op_zero, zero_smul, snd_zero, neg_zero]
+
+@[simp]
+protected theorem inv_zero : (0 : tsze R M)⁻¹ = (0 : tsze R M) := by
+  rw [← inl_zero, TrivSqZeroExt.inv_inl, inv_zero]
+
+@[simp]
+protected theorem inv_one : (1 : tsze R M)⁻¹ = (1 : tsze R M) := by
+  rw [← inl_one, TrivSqZeroExt.inv_inl, inv_one]
+
+protected theorem mul_inv_cancel {x : tsze R M} (hx : fst x ≠ 0) : x * x⁻¹ = 1 := by
+  ext
+  · rw [fst_mul, fst_inv, fst_one, mul_inv_cancel hx]
+  · rw [snd_mul, snd_inv, snd_one, smul_neg, smul_comm, smul_smul, mul_inv_cancel hx, one_smul,
+      fst_inv, add_left_neg]
+
+protected theorem inv_mul_cancel {x : tsze R M} (hx : fst x ≠ 0) : x⁻¹ * x = 1 := by
+  ext
+  · rw [fst_mul, fst_inv, inv_mul_cancel hx, fst_one]
+  · rw [snd_mul, snd_inv, snd_one, smul_neg, op_smul_op_smul, inv_mul_cancel hx, op_one, one_smul,
+      fst_inv, add_right_neg]
+
+protected theorem mul_inv_rev (a b : tsze R M) :
+    (a * b)⁻¹ = b⁻¹ * a⁻¹ := by
+  ext
+  · rw [fst_inv, fst_mul, fst_mul, mul_inv_rev, fst_inv, fst_inv]
+  · simp only [snd_inv, snd_mul, fst_mul, fst_inv]
+    simp only [neg_smul, smul_neg, smul_add]
+    simp_rw [mul_inv_rev, smul_comm (_ : R), op_smul_op_smul, smul_smul, add_comm, neg_add]
+    obtain ha0 | ha := eq_or_ne (fst a) 0
+    · simp [ha0]
+    obtain hb0 | hb := eq_or_ne (fst b) 0
+    · simp [hb0]
+    rw [inv_mul_cancel_right₀ ha, mul_inv_cancel_left₀ hb]
+
+protected theorem inv_inv {x : tsze R M} (hx : fst x ≠ 0) : x⁻¹⁻¹ = x :=
+  -- adapted from `Matrix.nonsing_inv_nonsing_inv`
+  calc
+    x⁻¹⁻¹ = 1 * x⁻¹⁻¹ := by rw [one_mul]
+    _ = x * x⁻¹ * x⁻¹⁻¹ := by rw [TrivSqZeroExt.mul_inv_cancel hx]
+    _ = x := by
+      rw [mul_assoc, TrivSqZeroExt.mul_inv_cancel, mul_one]
+      rw [fst_inv]
+      apply inv_ne_zero hx
+
+end DivisionSemiring
+
+section DivisionRing
+variable {R : Type u} {M : Type v}
+variable [DivisionRing R] [AddCommGroup M] [Module Rᵐᵒᵖ M] [Module R M] [SMulCommClass R Rᵐᵒᵖ M]
+
+protected theorem inv_neg {x : tsze R M} : (-x)⁻¹ = -(x⁻¹) := by
+  ext <;> simp [inv_neg]
+
+end DivisionRing
+
 section Algebra
 
 variable (S : Type*) (R R' : Type u) (M : Type v)
