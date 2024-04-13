@@ -70,11 +70,11 @@ theorem coeFn_congr : ∀ {x x' y y' : M}, x = x' → y = y' → B x y = B x' y'
 #align bilin_form.coe_fn_congr LinearMap.BilinForm.coeFn_congr
 
 @[deprecated]
-theorem add_left (x y z : M) : B (x + y) z = B x z + B y z := LinearMap.map_add₂ _ _ _ _
+theorem add_left (x y z : M) : B (x + y) z = B x z + B y z := map_add₂ _ _ _ _
 #align bilin_form.add_left LinearMap.BilinForm.add_left
 
 @[deprecated]
-theorem smul_left (a : R) (x y : M) : B (a • x) y = a * B x y := LinearMap.map_smul₂ _ _ _ _
+theorem smul_left (a : R) (x y : M) : B (a • x) y = a * B x y := map_smul₂ _ _ _ _
 #align bilin_form.smul_left LinearMap.BilinForm.smul_left
 
 @[deprecated]
@@ -87,7 +87,7 @@ theorem smul_right (a : R) (x y : M) : B x (a • y) = a * B x y := map_smul _ _
 
 set_option linter.deprecated false in
 @[deprecated]
-theorem zero_left (x : M) : B 0 x = 0 := LinearMap.map_zero₂ _ _
+theorem zero_left (x : M) : B 0 x = 0 := map_zero₂ _ _
 #align bilin_form.zero_left LinearMap.BilinForm.zero_left
 
 set_option linter.deprecated false in
@@ -97,7 +97,7 @@ theorem zero_right (x : M) : B x 0 = 0 := map_zero _
 
 set_option linter.deprecated false in
 @[deprecated]
-theorem neg_left (x y : M₁) : B₁ (-x) y = -B₁ x y := LinearMap.map_neg₂ _ _ _
+theorem neg_left (x y : M₁) : B₁ (-x) y = -B₁ x y := map_neg₂ _ _ _
 #align bilin_form.neg_left LinearMap.BilinForm.neg_left
 
 set_option linter.deprecated false in
@@ -107,7 +107,7 @@ theorem neg_right (x y : M₁) : B₁ x (-y) = -B₁ x y := map_neg _ _
 
 set_option linter.deprecated false in
 @[deprecated]
-theorem sub_left (x y z : M₁) : B₁ (x - y) z = B₁ x z - B₁ y z := LinearMap.map_sub₂ _ _ _ _
+theorem sub_left (x y z : M₁) : B₁ (x - y) z = B₁ x z - B₁ y z := map_sub₂ _ _ _ _
 #align bilin_form.sub_left LinearMap.BilinForm.sub_left
 
 set_option linter.deprecated false in
