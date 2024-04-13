@@ -99,14 +99,14 @@ theorem dist_eq (z w : ℂ) : dist z w = abs (z - w) :=
   rfl
 #align complex.dist_eq Complex.dist_eq
 
-theorem dist_eq_re_im (z w : ℂ) : dist z w = Real.sqrt ((z.re - w.re) ^ 2 + (z.im - w.im) ^ 2) := by
+theorem dist_eq_re_im (z w : ℂ) : dist z w = √((z.re - w.re) ^ 2 + (z.im - w.im) ^ 2) := by
   rw [sq, sq]
   rfl
 #align complex.dist_eq_re_im Complex.dist_eq_re_im
 
 @[simp]
 theorem dist_mk (x₁ y₁ x₂ y₂ : ℝ) :
-    dist (mk x₁ y₁) (mk x₂ y₂) = Real.sqrt ((x₁ - x₂) ^ 2 + (y₁ - y₂) ^ 2) :=
+    dist (mk x₁ y₁) (mk x₂ y₂) = √((x₁ - x₂) ^ 2 + (y₁ - y₂) ^ 2) :=
   dist_eq_re_im _ _
 #align complex.dist_mk Complex.dist_mk
 
@@ -243,7 +243,7 @@ instance instT2Space : T2Space ℂ := TopologicalSpace.t2Space_of_metrizableSpac
 /-- The natural `ContinuousLinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
 def equivRealProdCLM : ℂ ≃L[ℝ] ℝ × ℝ :=
-  equivRealProdLm.toContinuousLinearEquivOfBounds 1 (Real.sqrt 2) equivRealProd_apply_le' fun p =>
+  equivRealProdLm.toContinuousLinearEquivOfBounds 1 (√2) equivRealProd_apply_le' fun p =>
     abs_le_sqrt_two_mul_max (equivRealProd.symm p)
 #align complex.equiv_real_prod_clm Complex.equivRealProdCLM
 

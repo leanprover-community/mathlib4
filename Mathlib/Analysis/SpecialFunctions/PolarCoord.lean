@@ -30,7 +30,7 @@ open scoped Real Topology
 It is a homeomorphism between `ℝ^2 - (-∞, 0]` and `(0, +∞) × (-π, π)`. -/
 @[simps]
 def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
-  toFun q := (Real.sqrt (q.1 ^ 2 + q.2 ^ 2), Complex.arg (Complex.equivRealProd.symm q))
+  toFun q := (√(q.1 ^ 2 + q.2 ^ 2), Complex.arg (Complex.equivRealProd.symm q))
   invFun p := (p.1 * cos p.2, p.1 * sin p.2)
   source := {q | 0 < q.1} ∪ {q | q.2 ≠ 0}
   target := Ioi (0 : ℝ) ×ˢ Ioo (-π) π
@@ -68,7 +68,7 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       ring
   left_inv' := by
     rintro ⟨x, y⟩ _
-    have A : sqrt (x ^ 2 + y ^ 2) = Complex.abs (x + y * Complex.I) := by
+    have A : √(x ^ 2 + y ^ 2) = Complex.abs (x + y * Complex.I) := by
       rw [Complex.abs_apply, Complex.normSq_add_mul_I]
     have Z := Complex.abs_mul_cos_add_sin_mul_I (x + y * Complex.I)
     simp only [← Complex.ofReal_cos, ← Complex.ofReal_sin, mul_add, ← Complex.ofReal_mul, ←

@@ -620,7 +620,7 @@ theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
 #align pi_Lp.norm_eq_of_nat PiLp.norm_eq_of_nat
 
 theorem norm_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
-    ‖x‖ = Real.sqrt (∑ i : ι, ‖x i‖ ^ 2) := by
+    ‖x‖ = √(∑ i : ι, ‖x i‖ ^ 2) := by
   rw [norm_eq_of_nat 2 (by norm_cast) _] -- Porting note: was `convert`
   rw [Real.sqrt_eq_rpow]
   norm_cast
@@ -642,7 +642,7 @@ theorem norm_sq_eq_of_L2 (β : ι → Type*) [∀ i, SeminormedAddCommGroup (β 
 #align pi_Lp.norm_sq_eq_of_L2 PiLp.norm_sq_eq_of_L2
 
 theorem dist_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (x y : PiLp 2 β) :
-    dist x y = (∑ i, dist (x i) (y i) ^ 2).sqrt := by
+    dist x y = √(∑ i, dist (x i) (y i) ^ 2) := by
   simp_rw [dist_eq_norm, norm_eq_of_L2, sub_apply]
 #align pi_Lp.dist_eq_of_L2 PiLp.dist_eq_of_L2
 

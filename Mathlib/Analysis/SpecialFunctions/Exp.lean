@@ -171,7 +171,7 @@ namespace Real
 
 variable {α : Type*} {x y z : ℝ} {l : Filter α}
 
-theorem exp_half (x : ℝ) : exp (x / 2) = sqrt (exp x) := by
+theorem exp_half (x : ℝ) : exp (x / 2) = √(exp x) := by
   rw [eq_comm, sqrt_eq_iff_sq_eq, sq, ← exp_add, add_halves] <;> exact (exp_pos _).le
 #align real.exp_half Real.exp_half
 
