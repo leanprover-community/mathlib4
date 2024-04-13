@@ -740,7 +740,7 @@ theorem ncard_eq_of_bijective {n : ℕ} (f : ∀ i, i < n → α)
     rw [← Fintype.card_fin n, ← Nat.card_eq_fintype_card, ← Set.ncard_univ, himage]
     exact ncard_image_of_injOn <| fun i _hi j _hj h ↦ Fin.ext <| f_inj i.val j.val i.is_lt j.is_lt h
   ext x
-  simp
+  simp only [image_univ, mem_range]
   refine ⟨fun hx ↦ ?_, fun ⟨⟨i, hi⟩, hx⟩ ↦ hx ▸ hf' i hi⟩
   obtain ⟨i, hi, rfl⟩ := hf x hx
   use ⟨i, hi⟩
