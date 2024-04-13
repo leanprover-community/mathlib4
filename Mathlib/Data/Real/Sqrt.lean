@@ -249,8 +249,8 @@ theorem sqrt_lt_sqrt (hx : 0 ≤ x) (h : x < y) : √x < √y :=
 #align real.sqrt_lt_sqrt Real.sqrt_lt_sqrt
 
 theorem sqrt_le_left (hy : 0 ≤ y) : √x ≤ y ↔ x ≤ y ^ 2 := by
-  rw [sqrt_def, ← Real.le_toNNReal_iff_coe_le hy, NNReal.sqrt_le_iff_le_sq, sq, ← Real.toNNReal_mul hy,
-    Real.toNNReal_le_toNNReal_iff (mul_self_nonneg y), sq]
+  rw [sqrt_def, ← Real.le_toNNReal_iff_coe_le hy, NNReal.sqrt_le_iff_le_sq, sq,
+    ← Real.toNNReal_mul hy, Real.toNNReal_le_toNNReal_iff (mul_self_nonneg y), sq]
 #align real.sqrt_le_left Real.sqrt_le_left
 
 theorem sqrt_le_iff : √x ≤ y ↔ 0 ≤ y ∧ x ≤ y ^ 2 := by
