@@ -44,7 +44,7 @@ lemma mem_dualSubmodule {N : Submodule R M} {x} :
 lemma le_flip_dualSubmodule {N₁ N₂ : Submodule R M} :
     N₁ ≤ B.flip.dualSubmodule N₂ ↔ N₂ ≤ B.dualSubmodule N₁ := by
   show (∀ (x : M), x ∈ N₁ → _) ↔ ∀ (x : M), x ∈ N₂ → _
-  simp only [mem_dualSubmodule, Submodule.mem_one, flip_apply]
+  simp only [mem_dualSubmodule, Submodule.mem_one, LinearMap.flip_apply]
   exact forall₂_swap
 
 /-- The natural paring of `B.dualSubmodule N` and `N`.

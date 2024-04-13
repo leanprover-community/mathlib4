@@ -143,7 +143,7 @@ theorem isSymm_neg {B : BilinForm R₁ M₁} : (-B).IsSymm ↔ B.IsSymm :=
 #align bilin_form.is_symm_neg LinearMap.BilinForm.isSymm_neg
 
 variable (R₂) in
-theorem isSymm_iff_flip : B.IsSymm ↔ flipHom B = B :=
+theorem isSymm_iff_flip : B.IsSymm ↔ LinearMap.flip B = B :=
   (forall₂_congr fun _ _ => by exact eq_comm).trans ext_iff₂.symm
 #align bilin_form.is_symm_iff_flip' LinearMap.BilinForm.isSymm_iff_flip
 
