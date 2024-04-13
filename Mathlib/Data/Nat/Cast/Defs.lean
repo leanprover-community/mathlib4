@@ -24,10 +24,8 @@ Preferentially, the homomorphism is written as the coercion `Nat.cast`.
 * `Nat.cast`: Canonical homomorphism `ℕ → R`.
 -/
 
-universe u
-
 /-- The numeral `((0+1)+⋯)+1`. -/
-protected def Nat.unaryCast {R : Type u} [One R] [Zero R] [Add R] : ℕ → R
+protected def Nat.unaryCast {R : Type*} [One R] [Zero R] [Add R] : ℕ → R
   | 0 => 0
   | n + 1 => Nat.unaryCast n + 1
 #align nat.unary_cast Nat.unaryCast
@@ -84,7 +82,7 @@ theorem Nat.cast_eq_ofNat {R : Type*} {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
 
 /-- An `AddMonoidWithOne` is an `AddMonoid` with a `1`.
 It also contains data for the unique homomorphism `ℕ → R`. -/
-class AddMonoidWithOne (R : Type u) extends NatCast R, AddMonoid R, One R where
+class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
   natCast := Nat.unaryCast
   /-- The canonical map `ℕ → R` sends `0 : ℕ` to `0 : R`. -/
   natCast_zero : natCast 0 = 0 := by intros; rfl
