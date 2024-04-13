@@ -1135,20 +1135,22 @@ end LinearMap
 
 namespace LinearMap
 
-variable (R A M : Type*) [CommRing R] [CommRing A] [Algebra R A] [AddCommGroup M] [Module R M]
+variable (R A M N : Type*) [CommRing R] [CommRing A] [Algebra R A]
+variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 open Module
 open scoped TensorProduct
 
-/-- The natural linear map $A ⊗ (\text{End}_R M) → \text{End}_A (A ⊗ M)$,
-where `M` is an `R`-module, and `A` an `R`-algebra.
+/-- The natural linear map $A ⊗ \text{Hom}_R(M, N) → \text{Hom}_A (M_A, N_A)$,
+where $M_A$ and $N_A$ are the respective modules over $A$ obtained by extension of scalars.
 
-See `TensorProductEnd` for the same map, bundled as `A`-algebra homomorphism. -/
+See `TensorProductEnd` for this map specialized to endomorphisms,
+and bundled as `A`-algebra homomorphism. -/
 @[simps!]
 noncomputable
-def TensorProductEndₗ : A ⊗[R] (End R M) →ₗ[A] End A (A ⊗[R] M) :=
+def tensorProduct : A ⊗[R] (M →ₗ[R] N) →ₗ[A] (A ⊗[R] M) →ₗ[A] (A ⊗[R] N) :=
   TensorProduct.AlgebraTensorModule.lift <|
-  { toFun := fun a ↦ a • baseChangeHom R A M M
+  { toFun := fun a ↦ a • baseChangeHom R A M N
     map_add' := by simp only [add_smul, forall_true_iff]
     map_smul' := by simp only [smul_assoc, RingHom.id_apply, forall_true_iff] }
 
@@ -1156,20 +1158,20 @@ def TensorProductEndₗ : A ⊗[R] (End R M) →ₗ[A] End A (A ⊗[R] M) :=
 where `M` is an `R`-module, and `A` an `R`-algebra. -/
 @[simps!]
 noncomputable
-def TensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
+def tensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
   Algebra.TensorProduct.algHomOfLinearMapTensorProduct
-    (TensorProductEndₗ R A M)
+    (LinearMap.tensorProduct R A M M)
     (fun a b f g ↦ by
       apply LinearMap.ext
       intro x
-      simp only [TensorProductEndₗ, mul_comm a b, mul_eq_comp,
+      simp only [tensorProduct, mul_comm a b, mul_eq_comp,
         TensorProduct.AlgebraTensorModule.lift_apply, TensorProduct.lift.tmul, coe_restrictScalars,
         coe_mk, AddHom.coe_mk, mul_smul, smul_apply, baseChangeHom_apply, baseChange_comp,
         comp_apply, Algebra.mul_smul_comm, Algebra.smul_mul_assoc])
     (by
       apply LinearMap.ext
       intro x
-      simp only [TensorProductEndₗ, TensorProduct.AlgebraTensorModule.lift_apply,
+      simp only [tensorProduct, TensorProduct.AlgebraTensorModule.lift_apply,
         TensorProduct.lift.tmul, coe_restrictScalars, coe_mk, AddHom.coe_mk, one_smul,
         baseChangeHom_apply, baseChange_eq_ltensor, one_apply, one_eq_id, lTensor_id,
         LinearMap.id_apply])

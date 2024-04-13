@@ -210,7 +210,7 @@ lemma polyCharpoly_coeff_isHomogeneous (i j : ℕ) (hij : i + j = Fintype.card �
 
 open Algebra.TensorProduct MvPolynomial in
 lemma polyCharpoly_baseChange (A : Type*) [CommRing A] [Algebra R A] :
-    polyCharpoly (TensorProductEndₗ _ _ _ ∘ₗ φ.baseChange A) (basis A b) (basis A bₘ) =
+    polyCharpoly (tensorProduct _ _ _ _ ∘ₗ φ.baseChange A) (basis A b) (basis A bₘ) =
       (polyCharpoly φ b bₘ).map (MvPolynomial.map (algebraMap R A)) := by
   simp only [polyCharpoly]
   rw [← charpoly.univ_map_map _ (algebraMap R A)]
@@ -223,11 +223,11 @@ lemma polyCharpoly_baseChange (A : Type*) [CommRing A] [Algebra R A] :
     simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_X, bind₁_X_right]
     classical
     rw [toMvPolynomial_comp _ (basis A (Basis.end bₘ)), ← toMvPolynomial_baseChange]
-    suffices toMvPolynomial (basis A bₘ.end) (basis A bₘ).end (TensorProductEndₗ R A M) ij = X ij by
+    suffices toMvPolynomial (basis A bₘ.end) (basis A bₘ).end (tensorProduct R A M M) ij = X ij by
       rw [this, bind₁_X_right]
     simp only [toMvPolynomial, Matrix.toMvPolynomial]
     suffices ∀ kl,
-      (toMatrix (basis A (Basis.end bₘ)) (Basis.end (basis A bₘ))) (TensorProductEndₗ R A M) ij kl =
+      (toMatrix (basis A (Basis.end bₘ)) (Basis.end (basis A bₘ))) (tensorProduct R A M M) ij kl =
       if kl = ij then 1 else 0 by
       rw [Finset.sum_eq_single ij]
       · rw [this, if_pos rfl, X]
@@ -236,7 +236,7 @@ lemma polyCharpoly_baseChange (A : Type*) [CommRing A] [Algebra R A] :
       · intro h
         exact (h (Finset.mem_univ _)).elim
     intro kl
-    rw [toMatrix_apply, TensorProductEndₗ, TensorProduct.AlgebraTensorModule.lift_apply,
+    rw [toMatrix_apply, tensorProduct, TensorProduct.AlgebraTensorModule.lift_apply,
       basis_apply, TensorProduct.lift.tmul, coe_restrictScalars]
     dsimp only [coe_mk, AddHom.coe_mk, smul_apply, baseChangeHom_apply]
     rw [one_smul, Basis.baseChange_end, Basis.repr_self_apply]
@@ -268,9 +268,9 @@ lemma polyCharpoly_map_aeval
     (A : Type*) [CommRing A] [Algebra R A] [Module.Finite A (A ⊗[R] M)] [Module.Free A (A ⊗[R] M)]
     (x : ι → A) :
     (polyCharpoly φ b bₘ).map (MvPolynomial.aeval x).toRingHom =
-      LinearMap.charpoly ((TensorProductEndₗ R A M).comp (baseChange A φ)
+      LinearMap.charpoly ((tensorProduct R A M M).comp (baseChange A φ)
         ((basis A b).repr.symm (Finsupp.equivFunOnFinite.symm x))) := by
-  rw [← polyCharpoly_map_eval (TensorProductEndₗ R A M ∘ₗ baseChange A φ) _ (basis A bₘ),
+  rw [← polyCharpoly_map_eval (tensorProduct R A M M ∘ₗ baseChange A φ) _ (basis A bₘ),
     polyCharpoly_baseChange, Polynomial.map_map]
   congr
   exact DFunLike.ext _ _ fun f ↦ (MvPolynomial.eval_map (algebraMap R A) x f).symm
