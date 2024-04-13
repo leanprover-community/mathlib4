@@ -125,3 +125,11 @@ def RingHom.germOfContMDiffMap (R : Type*) [CommRing R] [TopologicalSpace R] [Ch
 lemma toSubring_eq_range [SmoothRing I' R] (x : M) :
     smoothGerm.toSubring I I' R x = (RingHom.germOfContMDiffMap I I' R x).range := by
   rfl
+
+/- -- failed to synthesize instance `Semiring ↑(smoothGerm I I' R x)`
+example (x : M) {G : Type*} [AddCommGroup G] [Module 𝕜 G] :
+    Module (smoothGerm I I' R x) (Germ (𝓝 x) G) := by infer_instance -/
+
+-- not thoroughly tested
+--example (x : M) {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] :
+--  Module (Germ (𝓝 x) 𝕜) (Germ (𝓝 x) F) := by infer_instance
