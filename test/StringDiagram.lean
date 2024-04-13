@@ -4,11 +4,10 @@ import ProofWidgets.Component.Panel.GoalTypePanel
 
 /-! ## Example use of string diagram widgets -/
 
+open ProofWidgets CategoryTheory
+
 section MonoidalCategory
 
-open ProofWidgets
-
-open CategoryTheory
 open scoped MonoidalCategory
 
 universe v u
@@ -55,9 +54,24 @@ example {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : f �
     rw [MonoidalCategory.whisker_exchange]
     rw [MonoidalCategory.tensorHom_def]
 
-namespace Mathlib.Tactic.Widget.StringDiagram
+end MonoidalCategory
 
-open Mathlib.Tactic.Coherence
+section Bicategory
+
+open scoped Bicategory
+
+universe w v u
+
+variable {B : Type u} [Bicategory.{w, v} B] {a b c : B}
+
+lemma left_triangle' {f : a ⟶ b} {g : b ⟶ a} (η : 𝟙 a ⟶ f ≫ g) (ε : g ≫ f ⟶ 𝟙 b) (w : False) :
+    η ▷ f ≫ (α_ _ _ _).hom ≫ f ◁ ε = (λ_ _).hom ≫ (ρ_ _).inv := by
+  with_panel_widgets [SelectionPanel]
+    exact w.elim
+
+end Bicategory
+
+namespace Mathlib.Tactic.Widget.StringDiagram
 
 open Lean Meta
 
@@ -105,7 +119,7 @@ def StructuralAtom.e : StructuralAtom → M Expr
     mkAppM ``Iso.hom #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
   | .rightUnitorInv f => do
     mkAppM ``Iso.inv #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
-  | .monoidalCoherence _ _ e => do
+  | .coherence _ _ e => do
     mkAppOptM ``MonoidalCoherence.hom #[none, none, none, none, e]
 
 /-- Extract a Lean expression from a `Structural` expression. -/
@@ -148,6 +162,8 @@ elab "normalize% " t:term:51 : term => do
   let e ← Lean.Elab.Term.elabTerm t none
   M.run (← mkContext e) do
     (← Mathlib.Tactic.Widget.StringDiagram.eval e).e
+
+open scoped MonoidalCategory
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 variable {X Y Z W U V W : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ W)

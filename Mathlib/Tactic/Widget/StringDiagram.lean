@@ -5,7 +5,8 @@ Authors: Yuma Mizuno
 -/
 import ProofWidgets.Component.PenroseDiagram
 import ProofWidgets.Presentation.Expr
-import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.Tactic.CategoryTheory.MonoidalComp
+import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
 /-!
 # String Diagrams
@@ -19,7 +20,6 @@ namespace Mathlib.Tactic.Widget.StringDiagram
 
 open Lean Meta Elab
 open CategoryTheory
-open Mathlib.Tactic.Coherence
 
 /-! ## Normal form of 2-morphisms -/
 
@@ -72,11 +72,45 @@ def isTensorObj? (e : Expr) : MetaM (Option (Expr × Expr)) := do
   else
     return none
 
+/-- Returns `𝟙 a` if the expression `e` is of the form `𝟙 a`. -/
+def isBicategoryId? (e : Expr) : MetaM (Option Expr) := do
+  let v ← mkFreshLevelMVar
+  let u ← mkFreshLevelMVar
+  let B ← mkFreshExprMVar none
+  let instB ← mkFreshExprMVar none
+  let a ← mkFreshExprMVar B
+  let unit := mkAppN (.const ``CategoryStruct.id [v, u]) #[B, instB, a]
+  if ← isDefEq e unit then
+    return ← instantiateMVars unit
+  else
+    return none
+
+/-- Returns `(f, g)` if the expression `e` is of the form `f ≫ g`. -/
+def isBicategoryComp? (e : Expr) : MetaM (Option (Expr × Expr)) := do
+  let v ← mkFreshLevelMVar
+  let u ← mkFreshLevelMVar
+  let B ← mkFreshExprMVar none
+  let a ← mkFreshExprMVar B
+  let b ← mkFreshExprMVar B
+  let c ← mkFreshExprMVar B
+  let f ← mkFreshExprMVar none
+  let g ← mkFreshExprMVar none
+  let instB ← mkFreshExprMVar none
+  let fg := mkAppN (.const ``CategoryStruct.comp [v, u]) #[B, instB, a, b, c, f, g]
+  if ← withDefault <| isDefEq e fg then
+    return (← instantiateMVars f, ← instantiateMVars g)
+  else
+    return none
+
 /-- Construct a `Mor₁` expression from a Lean expression. -/
 partial def toMor₁ (e : Expr) : MetaM Mor₁ := do
   if let some _ ← isTensorUnit? e then
     return Mor₁.id
   else if let some (f, g) ← isTensorObj? e then
+    return (← toMor₁ f).comp (← toMor₁ g)
+  else if let some _ ← isBicategoryId? e then
+    return Mor₁.id
+  else if let some (f, g) ← isBicategoryComp? e then
     return (← toMor₁ f).comp (← toMor₁ g)
   else
     return Mor₁.of ⟨e⟩
@@ -96,7 +130,7 @@ inductive StructuralAtom : Type
   /-- The expression for the inverse of the right unitor `(ρ_ f).inv`. -/
   | rightUnitorInv (f : Mor₁) : StructuralAtom
   /-- Expressions for `α` in the monoidal composition `η ⊗≫ θ := η ≫ α ≫ θ`. -/
-  | monoidalCoherence (f g : Mor₁) (e : Expr) : StructuralAtom
+  | coherence (f g : Mor₁) (e : Expr) : StructuralAtom
   deriving Inhabited
 
 /-- Construct a `StructuralAtom` expression from a Lean expression. -/
@@ -104,26 +138,33 @@ def structuralAtom? (e : Expr) : MetaM (Option StructuralAtom) := do
   match e.getAppFnArgs with
   | (``Iso.hom, #[_, _, _, _, η]) =>
     match (← whnfR η).getAppFnArgs with
-    | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
+    | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h])
+    | (``Bicategory.associator, #[_, _, _, _, _, _, f, g, h]) =>
       return some <| .associator (← toMor₁ f) (← toMor₁ g) (← toMor₁ h)
-    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) =>
+    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f])
+    | (``Bicategory.leftUnitor, #[_, _, _, _, f]) =>
       return some <| .leftUnitor (← toMor₁ f)
-    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) =>
+    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f])
+    | (``Bicategory.rightUnitor, #[_, _, _, _, f]) =>
       return some <| .rightUnitor (← toMor₁ f)
     | _ => return none
   | (``Iso.inv, #[_, _, _, _, η]) =>
     match (← whnfR η).getAppFnArgs with
-    | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
+    | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h])
+    | (``Bicategory.associator, #[_, _, _, _, _, _, f, g, h]) =>
       return some <| .associatorInv (← toMor₁ f) (← toMor₁ g) (← toMor₁ h)
-    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) =>
+    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f])
+    | (``Bicategory.leftUnitor, #[_, _, _, _, f]) =>
       return some <| .leftUnitorInv (← toMor₁ f)
-    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) =>
+    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f])
+    | (``Bicategory.rightUnitor, #[_, _, _, _, f]) =>
       return some <| .rightUnitorInv (← toMor₁ f)
     | _ => return none
   | _ =>
     match (← whnfR e).getAppFnArgs with
-    | (``MonoidalCoherence.hom, #[_, _, f, g, inst]) =>
-      return some <| .monoidalCoherence (← toMor₁ f) (← toMor₁ g) inst
+    | (``MonoidalCoherence.hom, #[_, _, f, g, inst])
+    | (``BicategoricalCoherence.hom, #[_, _, _, _, f, g, inst]) =>
+      return some <| .coherence (← toMor₁ f) (← toMor₁ g) inst
     | _ => return none
 
 /-- Expressions for atomic non-structural 2-morphisms. -/
@@ -234,7 +275,7 @@ def StructuralAtom.src : StructuralAtom → Mor₁
   | .leftUnitorInv f => f
   | .rightUnitor f => f.comp Mor₁.id
   | .rightUnitorInv f => f
-  | .monoidalCoherence f _ _ => f
+  | .coherence f _ _ => f
 
 /-- The codomain of a 2-morphism. -/
 def StructuralAtom.tar : StructuralAtom → Mor₁
@@ -244,7 +285,7 @@ def StructuralAtom.tar : StructuralAtom → Mor₁
   | .leftUnitorInv f => Mor₁.id.comp f
   | .rightUnitor f => f
   | .rightUnitorInv f => f.comp Mor₁.id
-  | .monoidalCoherence _ g _ => g
+  | .coherence _ g _ => g
 
 /-- The domain of a 2-morphism. -/
 def Structural.src : Structural → Mor₁
@@ -311,8 +352,6 @@ return the expression for `α` .-/
 def structuralOfMonoidalComp (C e : Expr) : MetaM StructuralAtom := do
   let v ← mkFreshLevelMVar
   let u ← mkFreshLevelMVar
-  _ ← isDefEq (.sort (.succ v)) (← inferType (← inferType e))
-  _ ← isDefEq (.sort (.succ u)) (← inferType C)
   let W ← mkFreshExprMVar none
   let X ← mkFreshExprMVar none
   let Y ← mkFreshExprMVar none
@@ -478,11 +517,14 @@ partial def eval (e : Expr) : MetaM NormalExpr := do
       let θ_e ← eval θ
       let ηθ ← evalComp η_e θ_e
       return ηθ
-    | (``MonoidalCategoryStruct.whiskerLeft, #[_, _, _, f, _, _, η]) =>
+    | (``MonoidalCategoryStruct.whiskerLeft, #[_, _, _, f, _, _, η])
+    | (``Bicategory.whiskerLeft, #[_, _, _, _, _, f, _, _, η]) =>
       evalWhiskerLeftExpr (← toMor₁ f) (← eval η)
-    | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, _, _, η, h]) =>
+    | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, _, _, η, h])
+    | (``Bicategory.whiskerRight, #[_, _, _, _, _, _, _, η, h]) =>
       evalWhiskerRightExpr (← eval η) (← toMor₁ h)
-    | (``monoidalComp, #[C, _, _, _, _, _, _, η, θ]) =>
+    | (``monoidalComp, #[C, _, _, _, _, _, _, η, θ])
+    | (``bicategoricalComp, #[C, _, _, _, _, _, _, _, _, η, θ]) =>
       let η_e ← eval η
       let α₀' ← structuralOfMonoidalComp C e
       let α := NormalExpr.nil <|.atom α₀'
