@@ -75,6 +75,18 @@ noncomputable def eigenvectorUnitary {𝕜 : Type*} [RCLike 𝕜] {n : Type*}
     OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary
     (EuclideanSpace.basisFun n 𝕜) (eigenvectorBasis hA)⟩
 
+/--The coercion from the subtype eigenvectorUnitary to the underlying matrix-/
+lemma eigenvectorUnitary_coe {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
+    {A : Matrix n n 𝕜} [DecidableEq n] (hA : Matrix.IsHermitian A) :
+    eigenvectorUnitary hA =
+      (EuclideanSpace.basisFun n 𝕜).toBasis.toMatrix (hA.eigenvectorBasis).toBasis :=
+  rfl
+
+@[simp]
+theorem eigenvectorUnitary_apply (i j : n) :
+    eigenvectorUnitary hA i j = ⇑(hA.eigenvectorBasis j) i :=
+  rfl
+
 --/-- A matrix whose columns are an orthonormal basis of eigenvectors of a hermitian matrix. -/
 --noncomputable def eigenvectorMatrix : Matrix n n 𝕜 :=
 --  (PiLp.basisFun _ 𝕜 n).toMatrix (eigenvectorBasis hA).toBasis
