@@ -160,8 +160,8 @@ theorem self_eq_zero (H : B.IsAlt) (x : M) : B x x = 0 :=
 
 theorem neg_eq (H : B₁.IsAlt) (x y : M₁) : -B₁ x y = B₁ y x := by
   have H1 : B₁ (x + y) (x + y) = 0 := self_eq_zero H (x + y)
-  rw [map_add, map_add, LinearMap.add_apply, LinearMap.add_apply, self_eq_zero H, self_eq_zero H, zero_add, add_zero,
-    add_comm, add_eq_zero_iff_neg_eq] at H1
+  rw [map_add, map_add, LinearMap.add_apply, LinearMap.add_apply, self_eq_zero H, self_eq_zero H,
+    zero_add, add_zero, add_comm, add_eq_zero_iff_neg_eq] at H1
   exact H1
 #align bilin_form.is_alt.neg_eq LinearMap.BilinForm.IsAlt.neg_eq
 
