@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Order.WellFounded
 
 /-!
@@ -24,7 +24,7 @@ variable {α : Type*} [LinearOrder α] [IsWellOrder α (· < ·)]
 /-- Given an element `a : α` in a well ordered set, this is the successor of `a`,
 i.e. the smallest element stricly greater than `a` if it exists (or `a` itself otherwise). -/
 noncomputable def wellOrderSucc (a : α) : α :=
-  (@IsWellFounded.wf α (· < ·)).succ a
+  (IsWellFounded.wf (r := (· < ·))).succ a
 
 lemma self_le_wellOrderSucc (a : α) : a ≤ wellOrderSucc a := by
   by_cases h : ∃ b, a < b
@@ -37,10 +37,8 @@ lemma wellOrderSucc_le {a b : α} (ha : a < b) : wellOrderSucc a ≤ b := by
   rw [dif_pos ⟨_, ha⟩]
   exact WellFounded.min_le _ ha
 
-lemma self_lt_wellOrderSucc {a b : α} (h : a < b) : a < wellOrderSucc a := by
-  dsimp [wellOrderSucc, WellFounded.succ]
-  rw [dif_pos ⟨b, h⟩]
-  apply WellFounded.min_mem
+lemma self_lt_wellOrderSucc {a b : α} (h : a < b) : a < wellOrderSucc a :=
+  IsWellFounded.wf.lt_succ ⟨b, h⟩
 
 lemma le_of_lt_wellOrderSucc {a b : α} (h : a < wellOrderSucc b) : a ≤ b := by
   by_contra!
@@ -65,7 +63,7 @@ lemma IsWellOrderLimitElement.bot_lt [OrderBot α] : ⊥ < a := by
     exact IsWellOrderLimitElement.neq_bot a h.symm
   · exact h
 
-variable {a b}
+variable {a}
 
 lemma IsWellOrderLimitElement.wellOrderSucc_lt {b : α} (hb : b < a) :
     wellOrderSucc b < a := by
