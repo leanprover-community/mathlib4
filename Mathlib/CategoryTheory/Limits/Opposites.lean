@@ -416,23 +416,6 @@ theorem opCoproductIsoProduct'_inv_comp_inj {c : Cofan Z} {f : Fan (op <| Z ·)}
     (opCoproductIsoProduct' hc hf).inv ≫ (c.inj b).op = f.proj b :=
   IsLimit.conePointUniqueUpToIso_inv_comp (Cofan.IsColimit.op hc) hf ⟨b⟩
 
-theorem opCoproductIsoProduct'_comp_self {c c' : Cofan Z} {f : Fan (op <| Z ·)}
-    (hc : IsColimit c) (hc' : IsColimit c') (hf : IsLimit f) :
-    (opCoproductIsoProduct' hc hf).hom ≫ (opCoproductIsoProduct' hc' hf).inv =
-    (hc.coconePointUniqueUpToIso hc').op.inv := by
-  apply Quiver.Hom.unop_inj
-  apply hc'.hom_ext
-  intro ⟨j⟩
-  change c'.inj _ ≫ _ = _
-  simp only [unop_op, unop_comp, Discrete.functor_obj, const_obj_obj, Iso.op_inv,
-    Quiver.Hom.unop_op, IsColimit.comp_coconePointUniqueUpToIso_inv]
-  apply Quiver.Hom.op_inj
-  simp only [op_comp, op_unop, Quiver.Hom.op_unop, Category.assoc,
-    opCoproductIsoProduct'_inv_comp_inj]
-  rw [← opCoproductIsoProduct'_inv_comp_inj hc hf]
-  simp only [Iso.hom_inv_id_assoc]
-  rfl
-
 variable (Z) in
 theorem opCoproductIsoProduct_inv_comp_ι (b : α) :
     (opCoproductIsoProduct Z).inv ≫ (Sigma.ι Z b).op = Pi.π (op <| Z ·) b :=
