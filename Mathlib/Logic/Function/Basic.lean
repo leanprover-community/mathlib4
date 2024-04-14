@@ -1011,10 +1011,12 @@ end Sometimes
 
 end Function
 
+variable {α β : Sort*}
+
 /-- A relation `r : α → β → Prop` is "function-like"
 (for each `a` there exists a unique `b` such that `r a b`)
 if and only if it is `(f · = ·)` for some function `f`. -/
-lemma forall_existsUnique_iff {α β : Sort*} {r : α → β → Prop} :
+lemma forall_existsUnique_iff {r : α → β → Prop} :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → β, ∀ {a b}, r a b ↔ f a = b := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · refine ⟨fun a ↦ (h a).choose, fun hr ↦ ?_, fun h' ↦ h' ▸ ?_⟩
@@ -1025,14 +1027,14 @@ lemma forall_existsUnique_iff {α β : Sort*} {r : α → β → Prop} :
 /-- A relation `r : α → β → Prop` is "function-like"
 (for each `a` there exists a unique `b` such that `r a b`)
 if and only if it is `(f · = ·)` for some function `f`. -/
-lemma forall_existsUnique_iff' {α β : Sort*} {r : α → β → Prop} :
+lemma forall_existsUnique_iff' {r : α → β → Prop} :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → β, r = (f · = ·) := by
   simp [forall_existsUnique_iff, Function.funext_iff]
 
 /-- A symmetric relation `r : α → α → Prop` is "function-like"
 (for each `a` there exists a unique `b` such that `r a b`)
 if and only if it is `(f · = ·)` for some involutive function `f`. -/
-protected lemma Symmetric.forall_existsUnique_iff' {α : Sort*} {r : α → α → Prop} (hr : Symmetric r) :
+protected lemma Symmetric.forall_existsUnique_iff' {r : α → α → Prop} (hr : Symmetric r) :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → α, Involutive f ∧ r = (f · = ·) := by
   refine ⟨fun h ↦ ?_, fun ⟨f, _, hf⟩ ↦ forall_existsUnique_iff'.2 ⟨f, hf⟩⟩
   rcases forall_existsUnique_iff'.1 h with ⟨f, rfl : r = _⟩
@@ -1041,7 +1043,7 @@ protected lemma Symmetric.forall_existsUnique_iff' {α : Sort*} {r : α → α �
 /-- A symmetric relation `r : α → α → Prop` is "function-like"
 (for each `a` there exists a unique `b` such that `r a b`)
 if and only if it is `(f · = ·)` for some involutive function `f`. -/
-protected lemma Symmetric.forall_existsUnique_iff {α : Sort*} {r : α → α → Prop} (hr : Symmetric r) :
+protected lemma Symmetric.forall_existsUnique_iff {r : α → α → Prop} (hr : Symmetric r) :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → α, Involutive f ∧ ∀ {a b}, r a b ↔ f a = b := by
   simp [hr.forall_existsUnique_iff', funext_iff]
 
@@ -1051,10 +1053,10 @@ def Set.piecewise {α : Type u} {β : α → Sort v} (s : Set α) (f g : ∀ i, 
   fun i ↦ if i ∈ s then f i else g i
 #align set.piecewise Set.piecewise
 
+
 /-! ### Bijectivity of `Eq.rec`, `Eq.mp`, `Eq.mpr`, and `cast` -/
 
-
-theorem eq_rec_on_bijective {α : Sort*} {C : α → Sort*} :
+theorem eq_rec_on_bijective {C : α → Sort*} :
     ∀ {a a' : α} (h : a = a'), Function.Bijective (@Eq.ndrec _ _ C · _ h)
   | _, _, rfl => ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 #align eq_rec_on_bijective eq_rec_on_bijective
@@ -1079,9 +1081,8 @@ theorem cast_bijective {α β : Sort _} (h : α = β) : Function.Bijective (cast
 /-! Note these lemmas apply to `Type*` not `Sort*`, as the latter interferes with `simp`, and
 is trivial anyway. -/
 
-
 @[simp]
-theorem eq_rec_inj {α : Sort*} {a a' : α} (h : a = a') {C : α → Type*} (x y : C a) :
+theorem eq_rec_inj {a a' : α} (h : a = a') {C : α → Type*} (x y : C a) :
     (Eq.ndrec x h : C a') = Eq.ndrec y h ↔ x = y :=
   (eq_rec_on_bijective h).injective.eq_iff
 #align eq_rec_inj eq_rec_inj
@@ -1091,21 +1092,21 @@ theorem cast_inj {α β : Type u} (h : α = β) {x y : α} : cast h x = cast h y
   (cast_bijective h).injective.eq_iff
 #align cast_inj cast_inj
 
-theorem Function.LeftInverse.eq_rec_eq {α β : Sort*} {γ : β → Sort v} {f : α → β} {g : β → α}
+theorem Function.LeftInverse.eq_rec_eq {γ : β → Sort v} {f : α → β} {g : β → α}
     (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) :
     -- TODO: mathlib3 uses `(congr_arg f (h a)).rec (C (g (f a)))` for LHS
     @Eq.rec β (f (g (f a))) (fun x _ ↦ γ x) (C (g (f a))) (f a) (congr_arg f (h a)) = C a :=
   eq_of_heq <| (eq_rec_heq _ _).trans <| by rw [h]
 #align function.left_inverse.eq_rec_eq Function.LeftInverse.eq_rec_eq
 
-theorem Function.LeftInverse.eq_rec_on_eq {α β : Sort*} {γ : β → Sort v} {f : α → β} {g : β → α}
+theorem Function.LeftInverse.eq_rec_on_eq {γ : β → Sort v} {f : α → β} {g : β → α}
     (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) :
     -- TODO: mathlib3 uses `(congr_arg f (h a)).recOn (C (g (f a)))` for LHS
     @Eq.recOn β (f (g (f a))) (fun x _ ↦ γ x) (f a) (congr_arg f (h a)) (C (g (f a))) = C a :=
   h.eq_rec_eq _ _
 #align function.left_inverse.eq_rec_on_eq Function.LeftInverse.eq_rec_on_eq
 
-theorem Function.LeftInverse.cast_eq {α β : Sort*} {γ : β → Sort v} {f : α → β} {g : β → α}
+theorem Function.LeftInverse.cast_eq {γ : β → Sort v} {f : α → β} {g : β → α}
     (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) :
     cast (congr_arg (fun a ↦ γ (f a)) (h a)) (C (g (f a))) = C a := by
   rw [cast_eq_iff_heq, h]
@@ -1117,7 +1118,7 @@ def Set.SeparatesPoints {α β : Type*} (A : Set (α → β)) : Prop :=
   ∀ ⦃x y : α⦄, x ≠ y → ∃ f ∈ A, (f x : β) ≠ f y
 #align set.separates_points Set.SeparatesPoints
 
-theorem IsSymmOp.flip_eq {α β} (op) [IsSymmOp α β op] : flip op = op :=
+theorem IsSymmOp.flip_eq (op) [IsSymmOp α β op] : flip op = op :=
   funext fun a ↦ funext fun b ↦ (IsSymmOp.symm_op a b).symm
 #align is_symm_op.flip_eq IsSymmOp.flip_eq
 
