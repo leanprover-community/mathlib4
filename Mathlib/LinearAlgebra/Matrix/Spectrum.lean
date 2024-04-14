@@ -128,11 +128,11 @@ rw [←spectral_theorem1, mul_assoc, mul_assoc,
    ←mul_assoc, (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2, one_mul]
 
 theorem spectral_theorem3 :
-      (star (eigenvectorUnitary hA : Matrix n n 𝕜)) * A =
-      diagonal (RCLike.ofReal ∘ hA.eigenvalues) * (star (eigenvectorUnitary hA : Matrix n n 𝕜))
-      := by
-rw [←spectral_theorem1, mul_assoc, (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2,
-     mul_one]
+    (star (eigenvectorUnitary hA : Matrix n n 𝕜)) * A =
+    diagonal (RCLike.ofReal ∘ hA.eigenvalues) * (star (eigenvectorUnitary hA : Matrix n n 𝕜))
+    := by
+  nth_rw 2 [hA.spectral_theorem2]
+  simp [← mul_assoc]
 
 /-- A nonzero Hermitian matrix has an eigenvector with nonzero eigenvalue. -/
 lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
@@ -148,9 +148,9 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
 
 /-- The determinant of a hermitian matrix is the product of its eigenvalues. -/
 theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
-  apply mul_left_cancel₀ (det_ne_zero_of_left_inverse (A := star (eigenvectorUnitary hA).1) (B := (eigenvectorUnitary hA).1) ((Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2))
-  rw [←det_mul, spectral_theorem3, det_mul, mul_comm, det_diagonal]
-  simp_rw [Function.comp_apply]
+  convert congr_arg det hA.spectral_theorem2
+  rw [det_mul_right_comm]
+  simp
 
 /-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector matrix -/
 lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
@@ -159,12 +159,12 @@ lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := 
           simp only [hA.eigenvectorUnitary.2, unitary.mul_star_self_of_mem]
   have hE := isUnit_det_of_right_inverse hG
   have hE1 := isUnit_det_of_left_inverse hG
-  simp only [rank_mul_eq_right_of_isUnit_det (A := hA.eigenvectorUnitary.1)
-      (B := star (hA.eigenvectorUnitary.1)) hE, rank_mul_eq_left_of_isUnit_det
-      (B := hA.eigenvectorUnitary.1) (A := star (hA.eigenvectorUnitary.1)) hE1,
-      rank_diagonal, Function.comp_apply, ne_eq, algebraMap.lift_map_eq_zero_iff]
-  sorry --not sure how to finish this one!
-
+  rw [mul_assoc ,rank_mul_eq_right_of_isUnit_det
+  (B := diagonal (RCLike.ofReal (K := 𝕜) ∘ eigenvalues hA) * (star (hA.eigenvectorUnitary.1)))
+  (A := (hA.eigenvectorUnitary.1)) (hA := hE)]
+  rw [rank_mul_eq_left_of_isUnit_det
+      (B := diagonal (RCLike.ofReal ∘ eigenvalues hA)) (A := star (hA.eigenvectorUnitary.1)) hE1]
+  simp only [rank_diagonal, Function.comp_apply, ne_eq, algebraMap.lift_map_eq_zero_iff]
 
 /-- rank of a hermitian matrix is the number of nonzero eigenvalues of the hermitian matrix -/
 lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
