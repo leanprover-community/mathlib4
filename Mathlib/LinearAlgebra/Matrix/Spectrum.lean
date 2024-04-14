@@ -159,7 +159,7 @@ lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := 
           simp only [hA.eigenvectorUnitary.2, unitary.mul_star_self_of_mem]
   have hE := isUnit_det_of_right_inverse hG
   have hE1 := isUnit_det_of_left_inverse hG
-  rw [mul_assoc ,rank_mul_eq_right_of_isUnit_det
+  rw [mul_assoc, rank_mul_eq_right_of_isUnit_det
   (B := diagonal (RCLike.ofReal (K := 𝕜) ∘ eigenvalues hA) * (star (hA.eigenvectorUnitary.1)))
   (A := (hA.eigenvectorUnitary.1)) (hA := hE)]
   rw [rank_mul_eq_left_of_isUnit_det
