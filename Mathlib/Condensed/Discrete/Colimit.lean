@@ -13,8 +13,8 @@ attribute [local instance] FintypeCat.discreteTopology
 
 namespace Condensed
 
-variable {I : Type u} [Category.{u} I] [IsCofiltered I] (F : I ⥤ FintypeCat.{u})
-    (c : Cone <| F ⋙ toProfinite) (hc : IsLimit c)
+variable {I : Type u} [Category.{u} I] [IsCofiltered I] {F : I ⥤ FintypeCat.{u}}
+    (c : Cone <| F ⋙ toProfinite)
 
 namespace ToStructuredArrow
 
@@ -22,16 +22,13 @@ namespace ToStructuredArrow
 def functor : I ⥤ StructuredArrow c.pt toProfinite where
   obj i := StructuredArrow.mk (c.π.app i)
   map f := StructuredArrow.homMk (F.map f) (c.w f)
-  map_id _ := by
-    simp only [CategoryTheory.Functor.map_id, hom_eq_iff, mk_right, homMk_right, id_right]
-  map_comp _ _ := by simp only [Functor.map_comp, hom_eq_iff, mk_right, homMk_right, comp_right]
-
-def functorIso : functor F c ⋙ StructuredArrow.proj c.pt toProfinite ≅ F := Iso.refl _
 
 def functorOp : Iᵒᵖ ⥤ CostructuredArrow toProfinite.op ⟨c.pt⟩ :=
-  (functor F c).op ⋙ toCostructuredArrow _ _
+  (functor c).op ⋙ toCostructuredArrow _ _
 
-def functorOpIso : functorOp F c ⋙ CostructuredArrow.proj toProfinite.op ⟨c.pt⟩ ≅ F.op := Iso.refl _
+example : functor c ⋙ StructuredArrow.proj c.pt toProfinite ≅ F := Iso.refl _
+
+example : functorOp c ⋙ CostructuredArrow.proj toProfinite.op ⟨c.pt⟩ ≅ F.op := Iso.refl _
 
 -- TODO: PR
 instance : Faithful toProfinite where
@@ -42,21 +39,27 @@ instance : Full toProfinite where
   preimage f := fun x ↦ f x
   witness _ := rfl
 
-theorem functor_initial [∀ i, Epi (c.π.app i)] : Initial (functor F c) := by
-  rw [initial_iff_of_isCofiltered (F := functor F c)]
-  constructor
-  · intro ⟨_, X, (f : c.pt ⟶ _)⟩
-    have : DiscreteTopology (toProfinite.obj X) := by
+variable (hc : IsLimit c)
+
+def _root_.Profinite.exists_hom {X : FintypeCat} (f : c.pt ⟶ toProfinite.obj X) :
+    ∃ (i : I) (g : F.obj i ⟶ X), f = c.π.app i ≫ toProfinite.map g := by
+  have : DiscreteTopology (toProfinite.obj X) := by
       simp only [toProfinite, Profinite.of]
       infer_instance
-    let f' : LocallyConstant c.pt (toProfinite.obj X) := ⟨f, by
-      rw [IsLocallyConstant.iff_continuous]
-      exact f.continuous⟩
-    obtain ⟨i, g, h⟩ := Profinite.exists_locallyConstant.{_, u, u} c hc f'
-    refine ⟨i, ⟨homMk g.toFun ?_⟩⟩
-    ext x
-    have := (LocallyConstant.congr_fun h x).symm
-    exact this
+  let f' : LocallyConstant c.pt (toProfinite.obj X) := ⟨f, by
+    rw [IsLocallyConstant.iff_continuous]
+    exact f.continuous⟩
+  obtain ⟨i, g, h⟩ := Profinite.exists_locallyConstant.{_, u} c hc f'
+  refine ⟨i, g.toFun, ?_⟩
+  ext x
+  exact (LocallyConstant.congr_fun h x)
+
+theorem functor_initial [∀ i, Epi (c.π.app i)] : Initial (functor c) := by
+  rw [initial_iff_of_isCofiltered (F := functor c)]
+  constructor
+  · intro ⟨_, X, (f : c.pt ⟶ _)⟩
+    obtain ⟨i, g, h⟩ := Profinite.exists_hom c hc f
+    refine ⟨i, ⟨homMk g h.symm⟩⟩
   · intro ⟨_, X, (f : c.pt ⟶ _)⟩ i ⟨_, (s : F.obj i ⟶ X), (w : f = c.π.app i ≫ _)⟩
       ⟨_, (s' : F.obj i ⟶ X), (w' : f = c.π.app i ≫ _)⟩
     simp only [functor_obj, functor_map, hom_eq_iff, mk_right, comp_right, homMk_right]
@@ -65,11 +68,11 @@ theorem functor_initial [∀ i, Epi (c.π.app i)] : Initial (functor F c) := by
     rw [w] at w'
     exact toProfinite.map_injective <| Epi.left_cancellation _ _ w'
 
-theorem functorOp_final [∀ i, Epi (c.π.app i)] : Final (functorOp F c) := by
-  have := functor_initial F c hc
+theorem functorOp_final [∀ i, Epi (c.π.app i)] : Final (functorOp c) := by
+  have := functor_initial c hc
   have : IsEquivalence ((toCostructuredArrow toProfinite c.pt)) :=
     (inferInstance : IsEquivalence (structuredArrowOpEquivalence _ _).functor)
-  exact Functor.final_comp (functor F c).op _
+  exact Functor.final_comp (functor c).op _
 
 end Condensed.ToStructuredArrow
 
@@ -81,16 +84,9 @@ namespace Condensed.ColimitLocallyConstant
 
 variable (S : Profinite.{u}) (X : Type (u+1))
 
-def _root_.Profinite.proj (i : DiscreteQuotient S) : C(S, S.diagram.obj i) := by
-  have : DiscreteTopology i := inferInstance
-  refine ⟨i.proj, ?_⟩
-  convert i.proj_continuous
-  exact this.eq_bot.symm
-
-@[simps]
-def LC_cocone : Cocone (S.diagram.op ⋙ profiniteToCompHaus.op ⋙ LC.obj X) where
-  pt := LocallyConstant S X
-  ι := { app := fun i (f : LocallyConstant _ _) ↦ f.comap (S.proj i.unop) }
+@[simps! pt ι_app]
+def LC_cocone : Cocone (S.diagram.op ⋙ profiniteToCompHaus.op ⋙ LC.obj X) :=
+  (profiniteToCompHaus.op ⋙ LC.obj X).mapCocone S.asLimitCone.op
 
 @[simps]
 def LC_cocone' : Cocone
@@ -112,7 +108,7 @@ def LC_cocone' : Cocone
       rfl }
 
 example : LC_cocone S X =
-  (LC_cocone' S X).whisker (ToStructuredArrow.functorOp S.fintypeDiagram S.asLimitCone) := rfl
+  (LC_cocone' S X).whisker (ToStructuredArrow.functorOp S.asLimitCone) := rfl
 
 def can :
     colimit (S.diagram.op ⋙ profiniteToCompHaus.op ⋙ LC.obj X) ⟶ LocallyConstant S X :=
@@ -149,7 +145,7 @@ theorem injective_can : Function.Injective (can S X) := by
 
 theorem surjective_can : Function.Surjective (can S X) := by
   intro f
-  obtain ⟨j, g, hg⟩ := Profinite.exists_locallyConstant.{_, u, u} S.asLimitCone S.asLimit f
+  obtain ⟨j, g, hg⟩ := Profinite.exists_locallyConstant.{_, u} S.asLimitCone S.asLimit f
   refine ⟨colimit.ι (S.diagram.op ⋙ profiniteToCompHaus.op ⋙ LC.obj X) ⟨j⟩ g, ?_⟩
   rw [can, ← types_comp_apply (colimit.ι _ ⟨j⟩)
     (colimit.desc _ (LC_cocone S X)) _]
@@ -157,9 +153,6 @@ theorem surjective_can : Function.Surjective (can S X) := by
   rw [hg]
   simp only [LC_cocone_pt, LC_cocone_ι_app, comp_obj, toProfinite_obj_toCompHaus_toTop_α,
     const_obj_obj]
-  apply DFunLike.ext
-  intro x
-  rfl
 
 theorem bijective_can : Function.Bijective (can S X) :=
   ⟨injective_can _ _, surjective_can _ _⟩
@@ -169,7 +162,7 @@ def loc_const_iso_colimit :
   Equiv.toIso (Equiv.ofBijective (can S X) (bijective_can S X))
 
 def LC_iso_colimit :
-    colimit ((Condensed.ToStructuredArrow.functorOp S.fintypeDiagram S.asLimitCone) ⋙
+    colimit ((Condensed.ToStructuredArrow.functorOp S.asLimitCone) ⋙
       ((CostructuredArrow.proj toProfinite.op ⟨S⟩) ⋙ toProfinite.op ⋙ profiniteToCompHaus.op ⋙
       LC.obj X)) ≅ (profiniteToCompHaus.op ⋙ LC.obj X).obj ⟨S⟩ :=
   loc_const_iso_colimit S X
@@ -179,21 +172,21 @@ instance (S : Profinite) (i : DiscreteQuotient S) : Epi (S.asLimitCone.π.app i)
   exact i.proj_surjective
 
 instance (S : Profinite) : Initial <|
-    Condensed.ToStructuredArrow.functor S.fintypeDiagram S.asLimitCone :=
-  Condensed.ToStructuredArrow.functor_initial S.fintypeDiagram S.asLimitCone S.asLimit
+    Condensed.ToStructuredArrow.functor S.asLimitCone :=
+  Condensed.ToStructuredArrow.functor_initial S.asLimitCone S.asLimit
 
 example (S : Profinite) : Final <|
-    (Condensed.ToStructuredArrow.functor S.fintypeDiagram S.asLimitCone).op := inferInstance
+    (Condensed.ToStructuredArrow.functor S.asLimitCone).op := inferInstance
 
 instance (S : Profinite) : Final <|
-    Condensed.ToStructuredArrow.functorOp S.fintypeDiagram S.asLimitCone :=
-  Condensed.ToStructuredArrow.functorOp_final S.fintypeDiagram S.asLimitCone S.asLimit
+    Condensed.ToStructuredArrow.functorOp S.asLimitCone :=
+  Condensed.ToStructuredArrow.functorOp_final S.asLimitCone S.asLimit
 
 def LC_iso_colimit_lan :
     (lanPresheaf (profiniteToCompHaus.op ⋙ LC.obj X)).obj ⟨S⟩ ≅
     (profiniteToCompHaus.op ⋙ LC.obj X).obj ⟨S⟩ :=
   (Functor.Final.colimitIso
-    (Condensed.ToStructuredArrow.functorOp S.fintypeDiagram S.asLimitCone) _).symm
+    (Condensed.ToStructuredArrow.functorOp S.asLimitCone) _).symm
     ≪≫ LC_iso_colimit S X
 
 lemma LC_iso_colimit_lan_eq_desc :
@@ -229,3 +222,10 @@ def lanPresheaf_iso_LC (X : Type (u+1)) :
   simp only [colimit.ι_desc_assoc, comp_obj, CostructuredArrow.proj_obj, op_obj, Opposite.unop_op,
     profiniteToCompHaus_obj, LC_obj_obj, toProfinite_obj_toCompHaus_toTop_α]
   rfl
+
+def lanCondensedSet' (X : Type (u+1)) : Sheaf (coherentTopology Profinite.{u}) (Type (u+1)) where
+  val := lanPresheaf (profiniteToCompHaus.op ⋙ LC.obj X)
+  cond := sorry
+
+def lanCondensedSet (X : Type (u+1)) : CondensedSet.{u} :=
+  (ProfiniteCompHaus.equivalence _).functor.obj (lanCondensedSet' X)
