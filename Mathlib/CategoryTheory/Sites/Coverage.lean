@@ -47,7 +47,7 @@ the following sources:
 
 namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type _} [Category C] [Category D]
 
 open Limits
 
