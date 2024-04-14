@@ -127,12 +127,8 @@ theorem coe_injective : Function.Injective ((fun B x y => B x y) : BilinForm R M
     apply congrFun₂ h
 #align bilin_form.coe_injective LinearMap.BilinForm.coe_injective
 
-set_option linter.deprecated false in
 @[deprecated ext₂]
-theorem ext (H : ∀ x y : M, B x y = D x y) : B = D :=
-  coe_injective <| by
-    funext
-    exact H _ _
+theorem ext (H : ∀ x y : M, B x y = D x y) : B = D := ext₂ H
 #align bilin_form.ext LinearMap.BilinForm.ext
 
 @[deprecated congr_fun₂]
@@ -144,6 +140,7 @@ set_option linter.deprecated false in
 theorem ext_iff : B = D ↔ ∀ x y, B x y = D x y := ext_iff₂
 #align bilin_form.ext_iff LinearMap.BilinForm.ext_iff
 
+@[deprecated]
 theorem coe_zero : ⇑(0 : BilinForm R M) = 0 :=
   rfl
 #align bilin_form.coe_zero LinearMap.BilinForm.coe_zero
@@ -155,6 +152,7 @@ theorem zero_apply (x y : M) : (0 : BilinForm R M) x y = 0 :=
 
 variable (B D B₁ D₁)
 
+@[deprecated]
 theorem coe_add : ⇑(B + D) = B + D :=
   rfl
 #align bilin_form.coe_add LinearMap.BilinForm.coe_add
