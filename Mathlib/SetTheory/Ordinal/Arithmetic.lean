@@ -803,7 +803,7 @@ theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ 
 #align ordinal.mul_le_of_limit Ordinal.mul_le_of_limit
 
 theorem mul_isNormal {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
-  -- Porting note(#BBBBB): additional beta reduction needed
+  -- Porting note(#12129): additional beta reduction needed
   ⟨fun b => by
       beta_reduce
       rw [mul_succ]

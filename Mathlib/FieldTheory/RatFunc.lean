@@ -607,7 +607,7 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
     RatFunc.liftOn f
       (fun n d => if h : φ d ∈ S[X]⁰ then ofFractionRing (Localization.mk (φ n) ⟨φ d, h⟩) else 0)
       fun {p q p' q'} hq hq' h => by
-      beta_reduce -- Porting note(#BBBBB): force the function to be applied
+      beta_reduce -- Porting note(#12129): force the function to be applied
       rw [dif_pos, dif_pos]
       congr 1 -- Porting note: this was a `rw [ofFractionRing.inj_eq]` which was overkill anyway
       rw [Localization.mk_eq_mk_iff]
@@ -617,12 +617,12 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
       refine' Localization.r_of_eq _
       simpa only [map_mul] using congr_arg φ h
   map_one' := by
-    beta_reduce -- Porting note(#BBBBB): force the function to be applied
+    beta_reduce -- Porting note(#12129): force the function to be applied
     rw [← ofFractionRing_one, ← Localization.mk_one, liftOn_ofFractionRing_mk, dif_pos]
     · simpa using ofFractionRing_one
     · simpa using Submonoid.one_mem _
   map_mul' x y := by
-    beta_reduce -- Porting note(#BBBBB): force the function to be applied
+    beta_reduce -- Porting note(#12129): force the function to be applied
     cases' x with x; cases' y with y
     -- Porting note: added `using Localization.rec` (`Localization.induction_on` didn't work)
     induction' x using Localization.rec with p q
@@ -712,7 +712,7 @@ def liftMonoidWithZeroHom (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.co
     · rfl
     · rfl
   map_zero' := by
-    beta_reduce -- Porting note(#BBBBB): force the function to be applied
+    beta_reduce -- Porting note(#12129): force the function to be applied
     rw [← ofFractionRing_zero, ← Localization.mk_zero (1 : R[X]⁰), liftOn_ofFractionRing_mk]
     simp only [map_zero, zero_div]
 #align ratfunc.lift_monoid_with_zero_hom RatFunc.liftMonoidWithZeroHom

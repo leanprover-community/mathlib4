@@ -42,7 +42,7 @@ variable [Monoid G] {a b x y : G} {n m : ℕ}
 
 section IsOfFinOrder
 
--- Porting note(#BBBBB): additional beta reduction needed
+-- Porting note(#12129): additional beta reduction needed
 @[to_additive]
 theorem isPeriodicPt_mul_iff_pow_eq_one (x : G) : IsPeriodicPt (x * ·) n 1 ↔ x ^ n = 1 := by
   rw [IsPeriodicPt, IsFixedPt, mul_left_iterate]; beta_reduce; rw [mul_one]
@@ -176,7 +176,7 @@ protected lemma IsOfFinOrder.orderOf_pos (h : IsOfFinOrder x) : 0 < orderOf x :=
 theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
   -- Porting note: was `convert`, but the `1` in the lemma is equal only after unfolding
   refine Eq.trans ?_ (isPeriodicPt_minimalPeriod (x * ·) 1)
-  -- Porting note(#BBBBB): additional beta reduction needed in the middle of the rewrite
+  -- Porting note(#12129): additional beta reduction needed in the middle of the rewrite
   rw [orderOf, mul_left_iterate]; beta_reduce; rw [mul_one]
 #align pow_order_of_eq_one pow_orderOf_eq_one
 #align add_order_of_nsmul_eq_zero addOrderOf_nsmul_eq_zero

@@ -699,7 +699,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
     { liftAddHom fun x => (smulAddHom k A).flip (f x) with
       toFun := fun a => a.sum fun m t => t • f m
       map_smul' := fun t' a => by
-        -- Porting note(#BBBBB): additional beta reduction needed
+        -- Porting note(#12129): additional beta reduction needed
         beta_reduce
         rw [Finsupp.smul_sum, sum_smul_index']
         · simp_rw [smul_assoc, MonoidHom.id_apply]
@@ -1038,7 +1038,7 @@ def equivariantOfLinearOfComm : V →ₗ[MonoidAlgebra k G] W where
   toFun := f
   map_add' v v' := by simp
   map_smul' c v := by
-    -- Porting note(#BBBBB): additional beta reduction needed
+    -- Porting note(#12129): additional beta reduction needed
     beta_reduce
     -- Porting note: Was `apply`.
     refine Finsupp.induction c ?_ ?_
@@ -1757,7 +1757,7 @@ protected def AddMonoidAlgebra.toMultiplicative [Semiring k] [Add G] :
       Multiplicative.ofAdd with
     toFun := equivMapDomain Multiplicative.ofAdd
     map_mul' := fun x y => by
-      -- Porting note(#BBBBB): additional beta reduction needed
+      -- Porting note(#12129): additional beta reduction needed
       dsimp only -- beta_reduce-- TODO(MR) there is more! dsimp only []
       repeat' rw [equivMapDomain_eq_mapDomain (M := k)]
       dsimp [Multiplicative.ofAdd]
