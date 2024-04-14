@@ -402,7 +402,6 @@ variable {R M M₂ M₃ M₄}
 section map_mul
 
 variable {A : Type*} [NonUnitalNonAssocSemiring A] [Module R A]
-
 variable {B : Type*} [NonUnitalNonAssocSemiring B] [Module R B]
 
 theorem inl_map_mul (a₁ a₂ : A) :
@@ -424,11 +423,8 @@ end Prod
 namespace LinearMap
 
 variable (R M M₂)
-
 variable [CommSemiring R]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂]
-
 variable [Module R M] [Module R M₂]
 
 /-- `LinearMap.prodMap` as an `AlgHom` -/
@@ -542,9 +538,7 @@ namespace Submodule
 open LinearMap
 
 variable [Semiring R]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂]
-
 variable [Module R M] [Module R M₂]
 
 theorem sup_eq_range (p q : Submodule R M) : p ⊔ q = range (p.subtype.coprod q.subtype) :=
@@ -632,14 +626,14 @@ def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
 #align submodule.fst_equiv Submodule.fstEquiv
 
 theorem fst_map_fst : (Submodule.fst R M M₂).map (LinearMap.fst R M M₂) = ⊤ := by
-  -- Porting note: was `tidy`
+  -- Porting note (#10936): was `tidy`
   rw [eq_top_iff]; rintro x -
   simp only [fst, comap_bot, mem_map, mem_ker, snd_apply, fst_apply,
     Prod.exists, exists_eq_left, exists_eq]
 #align submodule.fst_map_fst Submodule.fst_map_fst
 
 theorem fst_map_snd : (Submodule.fst R M M₂).map (LinearMap.snd R M M₂) = ⊥ := by
-  -- Porting note: was `tidy`
+  -- Porting note (#10936): was `tidy`
   rw [eq_bot_iff]; intro x
   simp only [fst, comap_bot, mem_map, mem_ker, snd_apply, eq_comm, Prod.exists, exists_eq_left,
     exists_const, mem_bot, imp_self]
@@ -668,14 +662,14 @@ def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
 #align submodule.snd_equiv Submodule.sndEquiv
 
 theorem snd_map_fst : (Submodule.snd R M M₂).map (LinearMap.fst R M M₂) = ⊥ := by
-  -- Porting note: was `tidy`
+  -- Porting note (#10936): was `tidy`
   rw [eq_bot_iff]; intro x
   simp only [snd, comap_bot, mem_map, mem_ker, fst_apply, eq_comm, Prod.exists, exists_eq_left,
     exists_const, mem_bot, imp_self]
 #align submodule.snd_map_fst Submodule.snd_map_fst
 
 theorem snd_map_snd : (Submodule.snd R M M₂).map (LinearMap.snd R M M₂) = ⊤ := by
-  -- Porting note: was `tidy`
+  -- Porting note (#10936): was `tidy`
   rw [eq_top_iff]; rintro x -
   simp only [snd, comap_bot, mem_map, mem_ker, snd_apply, fst_apply,
     Prod.exists, exists_eq_right, exists_eq]
@@ -691,7 +685,7 @@ theorem fst_sup_snd : Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂ = ⊤ :=
 #align submodule.fst_sup_snd Submodule.fst_sup_snd
 
 theorem fst_inf_snd : Submodule.fst R M M₂ ⊓ Submodule.snd R M M₂ = ⊥ := by
-  -- Porting note: was `tidy`
+  -- Porting note (#10936): was `tidy`
   rw [eq_bot_iff]; rintro ⟨x, y⟩
   simp only [fst, comap_bot, snd, ge_iff_le, mem_inf, mem_ker, snd_apply, fst_apply, mem_bot,
     Prod.mk_eq_zero, and_comm, imp_self]
@@ -801,13 +795,9 @@ end
 section
 
 variable [Semiring R]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
-
 variable {module_M : Module R M} {module_M₂ : Module R M₂}
-
 variable {module_M₃ : Module R M₃} {module_M₄ : Module R M₄}
-
 variable (e₁ : M ≃ₗ[R] M₂) (e₂ : M₃ ≃ₗ[R] M₄)
 
 /-- Product of linear equivalences; the maps come from `Equiv.prodCongr`. -/
@@ -888,7 +878,7 @@ theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f �
   have : y - x ∈ ker f ⊔ ker g := by simp only [h, mem_top]
   rcases mem_sup.1 this with ⟨x', hx', y', hy', H⟩
   refine' ⟨x' + x, _, _⟩
-  · rwa [add_sub_cancel]
+  · rwa [add_sub_cancel_right]
   · simp [← eq_sub_iff_add_eq.1 H, map_add, add_left_inj, self_eq_add_right, mem_ker.mp hy']
 #align linear_map.range_prod_eq LinearMap.range_prod_eq
 
@@ -920,7 +910,6 @@ noncomputable section Tunnel
 -- (This doesn't work over a semiring: we need to use that `Submodule R M` is a modular lattice,
 -- which requires cancellation.)
 variable [Ring R]
-
 variable {N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 open Function

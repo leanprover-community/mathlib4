@@ -39,7 +39,7 @@ theorem finRange_succ (n : ℕ) :
   apply map_injective_iff.mpr Fin.val_injective
   simp [range_succ, Function.comp_def]
 
--- Porting note : `map_nth_le` moved to `List.finRange_map_get` in Data.List.Range
+-- Porting note: `map_nth_le` moved to `List.finRange_map_get` in Data.List.Range
 
 theorem ofFn_eq_pmap {α n} {f : Fin n → α} :
     ofFn f = pmap (fun i hi => f ⟨i, hi⟩) (range n) fun _ => mem_range.1 := by
@@ -58,7 +58,7 @@ theorem ofFn_eq_map {α n} {f : Fin n → α} : ofFn f = (finRange n).map f := b
 theorem nodup_ofFn_ofInjective {α n} {f : Fin n → α} (hf : Function.Injective f) :
     Nodup (ofFn f) := by
   rw [ofFn_eq_pmap]
-  exact (nodup_range n).pmap fun _ _ _ _ H => Fin.veq_of_eq <| hf H
+  exact (nodup_range n).pmap fun _ _ _ _ H => Fin.val_eq_of_eq <| hf H
 #align list.nodup_of_fn_of_injective List.nodup_ofFn_ofInjective
 
 theorem nodup_ofFn {α n} {f : Fin n → α} : Nodup (ofFn f) ↔ Function.Injective f := by

@@ -163,14 +163,14 @@ def lastFun {α β : TypeVec (n + 1)} (f : α ⟹ β) : last α → last β :=
   f Fin2.fz
 #align typevec.last_fun TypeVec.lastFun
 
--- porting note: Lean wasn't able to infer the motive in term mode
+-- Porting note: Lean wasn't able to infer the motive in term mode
 /-- arrow in the category of `0-length` vectors -/
 def nilFun {α : TypeVec 0} {β : TypeVec 0} : α ⟹ β := fun i => by apply Fin2.elim0 i
 #align typevec.nil_fun TypeVec.nilFun
 
 theorem eq_of_drop_last_eq {α β : TypeVec (n + 1)} {f g : α ⟹ β} (h₀ : dropFun f = dropFun g)
     (h₁ : lastFun f = lastFun g) : f = g := by
-  -- porting note: FIXME: congr_fun h₀ <;> ext1 ⟨⟩ <;> apply_assumption
+  -- Porting note: FIXME: congr_fun h₀ <;> ext1 ⟨⟩ <;> apply_assumption
   refine funext (fun x => ?_)
   cases x
   · apply h₁
@@ -264,7 +264,7 @@ theorem appendFun_comp' {α₀ α₁ α₂ : TypeVec n} {β₀ β₁ β₂ : Typ
 #align typevec.append_fun_comp' TypeVec.appendFun_comp'
 
 theorem nilFun_comp {α₀ : TypeVec 0} (f₀ : α₀ ⟹ Fin2.elim0) : nilFun ⊚ f₀ = f₀ :=
-  funext fun x => by apply Fin2.elim0 x -- porting note: `by apply` is necessary?
+  funext fun x => by apply Fin2.elim0 x -- Porting note: `by apply` is necessary?
 #align typevec.nil_fun_comp TypeVec.nilFun_comp
 
 theorem appendFun_comp_id {α : TypeVec n} {β₀ β₁ β₂ : Type u} (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
@@ -295,7 +295,7 @@ theorem appendFun_id_id {α : TypeVec n} {β : Type*} :
 #align typevec.append_fun_id_id TypeVec.appendFun_id_id
 
 instance subsingleton0 : Subsingleton (TypeVec 0) :=
-  ⟨fun a b => funext fun a => by apply Fin2.elim0 a⟩ -- porting note: `by apply` necessary?
+  ⟨fun a b => funext fun a => by apply Fin2.elim0 a⟩ -- Porting note: `by apply` necessary?
 #align typevec.subsingleton0 TypeVec.subsingleton0
 
 -- Porting note: `simp` attribute `TypeVec` moved to file `Tactic/Attr/Register.lean`
@@ -497,7 +497,6 @@ theorem const_iff_true {α : TypeVec n} {i x p} : ofRepeat (TypeVec.const p α i
 
 section
 variable {α β γ : TypeVec.{u} n}
-
 variable (p : α ⟹ «repeat» n Prop) (r : α ⊗ α ⟹ «repeat» n Prop)
 
 /-- left projection of a `prod` vector -/

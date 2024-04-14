@@ -160,9 +160,9 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
   rw [borel_eq_generateFrom_isClosed]
   refine' MeasurableSpace.generateFrom_le fun t ht => μ.isCaratheodory_iff_le.2 fun s => _
   set S : ℕ → Set X := fun n => {x ∈ s | (↑n)⁻¹ ≤ infEdist x t}
-  have n0 : ∀ {n : ℕ}, (n⁻¹ : ℝ≥0∞) ≠ 0 := fun {n} => ENNReal.inv_ne_zero.2 (ENNReal.nat_ne_top _)
-  have Ssep : ∀ n, IsMetricSeparated (S n) t := fun n =>
-    ⟨n⁻¹, n0, fun x hx y hy => hx.2.trans <| infEdist_le_edist_of_mem hy⟩
+  have Ssep (n) : IsMetricSeparated (S n) t :=
+    ⟨n⁻¹, ENNReal.inv_ne_zero.2 (ENNReal.natCast_ne_top _),
+      fun x hx y hy ↦ hx.2.trans <| infEdist_le_edist_of_mem hy⟩
   have Ssep' : ∀ n, IsMetricSeparated (S n) (s ∩ t) := fun n =>
     (Ssep n).mono Subset.rfl (inter_subset_right _ _)
   have S_sub : ∀ n, S n ⊆ s \ t := fun n =>
@@ -214,7 +214,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
       fun h => (this j i h).symm.mono (fun x hx => by exact ⟨hx.1.1, hx.2⟩) (inter_subset_left _ _)
   intro i j hj
   have A : ((↑(2 * j + r))⁻¹ : ℝ≥0∞) < (↑(2 * i + 1 + r))⁻¹ := by
-    rw [ENNReal.inv_lt_inv, Nat.cast_lt]; linarith
+    rw [ENNReal.inv_lt_inv, Nat.cast_lt]; omega
   refine' ⟨(↑(2 * i + 1 + r))⁻¹ - (↑(2 * j + r))⁻¹, by simpa [tsub_eq_zero_iff_le] using A,
     fun x hx y hy => _⟩
   have : infEdist y t < (↑(2 * j + r))⁻¹ := not_le.1 fun hle => hy.2 ⟨hy.1, hle⟩
@@ -478,8 +478,7 @@ variable [MeasurableSpace X] [BorelSpace X]
 /-- If `c ∉ {0, ∞}` and `m₁ d ≤ c * m₂ d` for `d < ε` for some `ε > 0`
 (we use `≤ᶠ[𝓝[≥] 0]` to state this), then `mkMetric m₁ hm₁ ≤ c • mkMetric m₂ hm₂`. -/
 theorem mkMetric_mono_smul {m₁ m₂ : ℝ≥0∞ → ℝ≥0∞} {c : ℝ≥0∞} (hc : c ≠ ∞) (h0 : c ≠ 0)
-    (hle : m₁ ≤ᶠ[𝓝[≥] 0] c • m₂) : (mkMetric m₁ : Measure X) ≤ c • mkMetric m₂ := by
-  intro s _
+    (hle : m₁ ≤ᶠ[𝓝[≥] 0] c • m₂) : (mkMetric m₁ : Measure X) ≤ c • mkMetric m₂ := fun s ↦ by
   rw [← OuterMeasure.coe_mkMetric, coe_smul, ← OuterMeasure.coe_mkMetric]
   exact OuterMeasure.mkMetric_mono_smul hc h0 hle s
 #align measure_theory.measure.mk_metric_mono_smul MeasureTheory.Measure.mkMetric_mono_smul
@@ -577,7 +576,6 @@ def hausdorffMeasure (d : ℝ) : Measure X :=
   mkMetric fun r => r ^ d
 #align measure_theory.measure.hausdorff_measure MeasureTheory.Measure.hausdorffMeasure
 
--- mathport name: hausdorff_measure
 scoped[MeasureTheory] notation "μH[" d "]" => MeasureTheory.Measure.hausdorffMeasure d
 
 theorem le_hausdorffMeasure (d : ℝ) (μ : Measure X) (ε : ℝ≥0∞) (h₀ : 0 < ε)
@@ -622,7 +620,7 @@ theorem hausdorffMeasure_zero_or_top {d₁ d₂ : ℝ} (h : d₁ < d₂) (s : Se
   intro c hc
   refine' le_iff'.1 (mkMetric_mono_smul ENNReal.coe_ne_top (mod_cast hc) _) s
   have : 0 < ((c : ℝ≥0∞) ^ (d₂ - d₁)⁻¹) := by
-    rw [ENNReal.coe_rpow_of_ne_zero hc, pos_iff_ne_zero, Ne.def, ENNReal.coe_eq_zero,
+    rw [ENNReal.coe_rpow_of_ne_zero hc, pos_iff_ne_zero, Ne, ENNReal.coe_eq_zero,
       NNReal.rpow_eq_zero_iff]
     exact mt And.left hc
   filter_upwards [Ico_mem_nhdsWithin_Ici ⟨le_rfl, this⟩]
@@ -635,7 +633,7 @@ theorem hausdorffMeasure_zero_or_top {d₁ d₂ : ℝ} (h : d₁ < d₂) (s : Se
     · simp only [h₂, ENNReal.zero_rpow_of_pos, zero_le, ENNReal.zero_div, ENNReal.coe_zero]
     · simp only [h.trans_le h₂, ENNReal.div_top, zero_le, ENNReal.zero_rpow_of_neg,
         ENNReal.coe_zero]
-  · have : (r : ℝ≥0∞) ≠ 0 := by simpa only [ENNReal.coe_eq_zero, Ne.def] using hr₀
+  · have : (r : ℝ≥0∞) ≠ 0 := by simpa only [ENNReal.coe_eq_zero, Ne] using hr₀
     rw [← ENNReal.rpow_sub _ _ this ENNReal.coe_ne_top]
     refine' (ENNReal.rpow_lt_rpow hrc (sub_pos.2 h)).le.trans _
     rw [← ENNReal.rpow_mul, inv_mul_cancel (sub_pos.2 h).ne', ENNReal.rpow_one]
@@ -668,9 +666,9 @@ theorem hausdorffMeasure_zero_singleton (x : X) : μH[0] ({x} : Set X) = 1 := by
   · let r : ℕ → ℝ≥0∞ := fun _ => 0
     let t : ℕ → Unit → Set X := fun _ _ => {x}
     have ht : ∀ᶠ n in atTop, ∀ i, diam (t n i) ≤ r n := by
-      simp only [imp_true_iff, eq_self_iff_true, diam_singleton, eventually_atTop,
+      simp only [t, r, imp_true_iff, eq_self_iff_true, diam_singleton, eventually_atTop,
         nonpos_iff_eq_zero, exists_const]
-    simpa [liminf_const] using hausdorffMeasure_le_liminf_sum 0 {x} r tendsto_const_nhds t ht
+    simpa [t, liminf_const] using hausdorffMeasure_le_liminf_sum 0 {x} r tendsto_const_nhds t ht
   · rw [hausdorffMeasure_apply]
     suffices
       (1 : ℝ≥0∞) ≤
@@ -872,7 +870,7 @@ variable {f : X → Y} {d : ℝ}
 theorem hausdorffMeasure_image (hf : Isometry f) (hd : 0 ≤ d ∨ Surjective f) (s : Set X) :
     μH[d] (f '' s) = μH[d] s := by
   simp only [hausdorffMeasure, ← OuterMeasure.coe_mkMetric, ← OuterMeasure.comap_apply]
-  -- porting note: this proof was slightly nicer before the port
+  -- Porting note: this proof was slightly nicer before the port
   simp only [mkMetric_toOuterMeasure]
   have : 0 ≤ d → Monotone fun r : ℝ≥0∞ ↦ r ^ d := by
     exact fun hd x y hxy => ENNReal.rpow_le_rpow hxy hd
@@ -976,13 +974,13 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
     intro f
     refine' diam_pi_le_of_le fun b => _
     simp only [Real.ediam_Icc, add_div, ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr hn), le_refl,
-      add_sub_add_left_eq_sub, add_sub_cancel', ENNReal.ofReal_one, ENNReal.ofReal_coe_nat]
+      add_sub_add_left_eq_sub, add_sub_cancel_left, ENNReal.ofReal_one, ENNReal.ofReal_natCast]
   have C : ∀ᶠ n in atTop, (Set.pi univ fun i : ι => Ioo (a i : ℝ) (b i)) ⊆ ⋃ i : γ n, t n i := by
     refine' eventually_atTop.2 ⟨1, fun n hn => _⟩
     have npos : (0 : ℝ) < n := Nat.cast_pos.2 hn
     intro x hx
     simp only [mem_Ioo, mem_univ_pi] at hx
-    simp only [mem_iUnion, mem_Ioo, mem_univ_pi]
+    simp only [t, mem_iUnion, mem_Ioo, mem_univ_pi]
     let f : γ n := fun i =>
       ⟨⌊(x i - a i) * n⌋₊, by
         apply Nat.floor_lt_ceil_of_lt_of_pos
@@ -1014,7 +1012,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
         exact pow_le_pow_left' (hn i) _
       · isBoundedDefault
     _ = liminf (fun n : ℕ => ∏ i : ι, (⌈((b i : ℝ) - a i) * n⌉₊ : ℝ≥0∞) / n) atTop := by
-      simp only [Finset.card_univ, Nat.cast_prod, one_mul, Fintype.card_fin, Finset.sum_const,
+      simp only [γ, Finset.card_univ, Nat.cast_prod, one_mul, Fintype.card_fin, Finset.sum_const,
         nsmul_eq_mul, Fintype.card_pi, div_eq_mul_inv, Finset.prod_mul_distrib, Finset.prod_const]
     _ = ∏ i : ι, volume (Ioo (a i : ℝ) (b i)) := by
       simp only [Real.volume_Ioo]
@@ -1027,8 +1025,8 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
         apply eventually_atTop.2 ⟨1, fun n hn => _⟩
         intros n hn
         simp only [ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr hn), comp_apply,
-          ENNReal.ofReal_coe_nat]
-      · simp only [ENNReal.ofReal_ne_top, Ne.def, not_false_iff]
+          ENNReal.ofReal_natCast]
+      · simp only [ENNReal.ofReal_ne_top, Ne, not_false_iff]
 #align measure_theory.hausdorff_measure_pi_real MeasureTheory.hausdorffMeasure_pi_real
 
 variable (ι X)
@@ -1080,7 +1078,7 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
   -- break lineMap into pieces
   suffices
       μH[1] ((‖v‖ • ·) '' (LinearMap.toSpanSingleton ℝ E (‖v‖⁻¹ • v) '' s)) = ‖v‖₊ • μH[1] s by
-    -- porting note: proof was shorter, could need some golf
+    -- Porting note: proof was shorter, could need some golf
     simp only [hausdorffMeasure_real, nnreal_smul_coe_apply]
     convert this
     · simp only [image_smul, LinearMap.toSpanSingleton_apply, Set.image_image]
@@ -1102,7 +1100,6 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
 section NormedFieldAffine
 
 variable [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace P]
-
 variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
 /-- Scaling by `c` around `x` scales the measure by `‖c‖₊ ^ d`. -/
@@ -1134,7 +1131,6 @@ end NormedFieldAffine
 section RealAffine
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace P]
-
 variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
 /-- Mapping a set of reals along a line segment scales the measure by the length of a segment.

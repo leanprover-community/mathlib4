@@ -19,6 +19,8 @@ A graph-specialized version is in development and will hopefully be added under 
 sometime soon.
 -/
 
+-- Make sure we haven't imported `Data.Nat.Order.Basic`
+assert_not_exists OrderedSub
 
 universe u v
 
@@ -141,7 +143,7 @@ protected theorem Chain.rel [IsTrans α R] (hl : l.Chain R a) (hb : b ∈ l) : R
 theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
     (∀ h : 0 < length l, R a (get l ⟨0, h⟩)) ∧
       ∀ (i : ℕ) (h : i < l.length - 1),
-        R (get l ⟨i, lt_of_lt_pred h⟩) (get l ⟨i+1, lt_pred_iff.mp h⟩)
+        R (get l ⟨i, by omega⟩) (get l ⟨i+1, by omega⟩)
   | a, [] => iff_of_true (by simp) ⟨fun h => by simp at h, fun _ h => by simp at h⟩
   | a, b :: t => by
     rw [chain_cons, @chain_iff_get _ _ t]
@@ -153,21 +155,21 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
       intro i w
       cases' i with i
       · apply h0
-      · exact h i (lt_pred_iff.2 <| by simpa using w)
+      · exact h i (by simp only [length_cons] at w; omega)
     rintro ⟨h0, h⟩; constructor
     · apply h0
       simp
     constructor
     · apply h 0
     intro i w
-    exact h (i+1) (lt_pred_iff.mp w)
+    exact h (i+1) (by simp only [length_cons]; omega)
 
 set_option linter.deprecated false in
 @[deprecated chain_iff_get]
 theorem chain_iff_nthLe {R} {a : α} {l : List α} : Chain R a l ↔
     (∀ h : 0 < length l, R a (nthLe l 0 h)) ∧
     ∀ (i) (h : i < length l - 1),
-    R (nthLe l i (lt_of_lt_pred h)) (nthLe l (i + 1) (lt_pred_iff.mp h)) :=
+    R (nthLe l i (by omega)) (nthLe l (i + 1) (by omega)) :=
   by rw [chain_iff_get]; simp [nthLe]
 #align list.chain_iff_nth_le List.chain_iff_nthLe
 
@@ -348,14 +350,15 @@ theorem chain'_reverse : ∀ {l}, Chain' R (reverse l) ↔ Chain' (flip R) l
 
 theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
     ∀ (i : ℕ) (h : i < length l - 1),
-      R (get l ⟨i, lt_of_lt_pred h⟩) (get l ⟨i + 1, lt_pred_iff.mp h⟩)
+      R (get l ⟨i, by omega⟩) (get l ⟨i + 1, by omega⟩)
   | [] => iff_of_true (by simp) (fun _ h => by simp at h)
   | [a] => iff_of_true (by simp) (fun _ h => by simp at h)
   | a :: b :: t => by
     rw [← and_forall_succ, chain'_cons, chain'_iff_get]
-    simp only [length_cons, get_cons_succ, Fin.zero_eta, get_cons_zero, zero_add, Fin.mk_one,
-      get_cons_cons_one, succ_sub_succ_eq_sub, nonpos_iff_eq_zero, add_eq_zero_iff, and_false,
-      tsub_zero, add_pos_iff, zero_lt_one, or_true, forall_true_left, and_congr_right_iff]
+    simp only [length_cons, get_cons_succ, Fin.zero_eta, get_cons_zero, Nat.zero_add, Fin.mk_one,
+      get_cons_cons_one, succ_sub_succ_eq_sub, Nat.le_zero, Nat.add_eq_zero_iff, and_false,
+      Nat.sub_zero, Nat.add_pos_iff_pos_or_pos, Nat.zero_lt_one, or_true, forall_true_left,
+      and_congr_right_iff]
     dsimp [succ_sub_one]
     exact fun _ => ⟨fun h i hi => h i (Nat.lt_of_succ_lt_succ hi),
                     fun h i hi => h i (Nat.succ_lt_succ hi)⟩
@@ -364,7 +367,7 @@ set_option linter.deprecated false in
 @[deprecated chain'_iff_get]
 theorem chain'_iff_nthLe {R} {l : List α} : Chain' R l ↔
     ∀ (i) (h : i < length l - 1),
-      R (nthLe l i (lt_of_lt_pred h)) (nthLe l (i + 1) (lt_pred_iff.mp h)) :=
+      R (nthLe l i (by omega)) (nthLe l (i + 1) (by omega)) :=
   chain'_iff_get.trans <| by simp [nthLe]
 #align list.chain'_iff_nth_le List.chain'_iff_nthLe
 
@@ -376,16 +379,16 @@ theorem Chain'.append_overlap {l₁ l₂ l₃ : List α} (h₁ : Chain' R (l₁ 
     simpa only [getLast?_append_of_ne_nil _ hn] using (chain'_append.1 h₂).2.2
 #align list.chain'.append_overlap List.Chain'.append_overlap
 
--- porting note: new
+-- Porting note (#10756): new lemma
 lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
     (Chain' R L.join ↔ (∀ l ∈ L, Chain' R l) ∧
     L.Chain' (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
 | [], _ => by simp
 | [l], _ => by simp [join]
 | (l₁ :: l₂ :: L), hL => by
-    rw [mem_cons, not_or, ← Ne.def] at hL
+    rw [mem_cons, not_or, ← Ne] at hL
     rw [join, chain'_append, chain'_join hL.2, forall_mem_cons, chain'_cons]
-    rw [mem_cons, not_or, ← Ne.def] at hL
+    rw [mem_cons, not_or, ← Ne] at hL
     simp only [forall_mem_cons, and_assoc, join, head?_append_of_ne_nil _ hL.2.1.symm]
     exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
 
@@ -437,7 +440,7 @@ reflexive transitive closure of `r`. The converse of `exists_chain_of_relationRe
 -/
 theorem relationReflTransGen_of_exists_chain (l : List α) (hl₁ : Chain r a l)
     (hl₂ : getLast (a :: l) (cons_ne_nil _ _) = b) : Relation.ReflTransGen r a b :=
---Porting note: `p` behaves like an implicit argument to `Chain.induction_head` but it is explicit.
+-- Porting note: `p` behaves like an implicit argument to `Chain.induction_head` but it is explicit.
   Chain.induction_head l hl₁ hl₂ (fun _ _ => Relation.ReflTransGen.head)
     Relation.ReflTransGen.refl
 #align list.relation_refl_trans_gen_of_exists_chain List.relationReflTransGen_of_exists_chain

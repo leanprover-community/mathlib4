@@ -3,6 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Set.Finite
 import Mathlib.Order.Category.FinPartOrd
@@ -164,7 +165,7 @@ theorem mono_iff_injective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.mono_iff_injective NonemptyFinLinOrd.mono_iff_injective
 
--- porting note: added to ease the following proof
+-- Porting note: added to ease the following proof
 lemma forget_map_apply {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) (a : A) :
     (forget NonemptyFinLinOrd).map f a = (f : OrderHom A B).toFun a := rfl
 
@@ -204,7 +205,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
         exact h₂ (le_of_lt h₁)
       · exfalso
         exact hm a (eq_of_le_of_not_lt h₂ h₁)
-    simp [DFunLike.coe] at h
+    simp [Y, DFunLike.coe] at h
   · intro h
     exact ConcreteCategory.epi_of_surjective f h
 set_option linter.uppercaseLean3 false in
@@ -257,7 +258,7 @@ theorem nonemptyFinLinOrd_dual_comp_forget_to_linOrd :
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd_dual_comp_forget_to_LinOrd nonemptyFinLinOrd_dual_comp_forget_to_linOrd
 
-/-- The forgetful functor `NonemptyFinLinOrd ⥤ FinPartOrd` and `order_dual` commute. -/
+/-- The forgetful functor `NonemptyFinLinOrd ⥤ FinPartOrd` and `OrderDual` commute. -/
 def nonemptyFinLinOrdDualCompForgetToFinPartOrd :
     NonemptyFinLinOrd.dual ⋙ forget₂ NonemptyFinLinOrd FinPartOrd ≅
       forget₂ NonemptyFinLinOrd FinPartOrd ⋙ FinPartOrd.dual

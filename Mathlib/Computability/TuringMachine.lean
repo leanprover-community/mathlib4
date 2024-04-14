@@ -633,7 +633,7 @@ theorem Tape.move_left_nth {Γ} [Inhabited Γ] :
   | ⟨_, L, _⟩, 0 => (ListBlank.nth_zero _).symm
   | ⟨a, L, R⟩, 1 => (ListBlank.nth_zero _).trans (ListBlank.head_cons _ _)
   | ⟨a, L, R⟩, (n + 1 : ℕ) + 1 => by
-    rw [add_sub_cancel]
+    rw [add_sub_cancel_right]
     change (R.cons a).nth (n + 1) = R.nth n
     rw [ListBlank.nth_succ, ListBlank.tail_cons]
 #align turing.tape.move_left_nth Turing.Tape.move_left_nth
@@ -642,7 +642,7 @@ theorem Tape.move_left_nth {Γ} [Inhabited Γ] :
 theorem Tape.move_right_nth {Γ} [Inhabited Γ] (T : Tape Γ) (i : ℤ) :
     (T.move Dir.right).nth i = T.nth (i + 1) := by
   conv => rhs; rw [← T.move_right_left]
-  rw [Tape.move_left_nth, add_sub_cancel]
+  rw [Tape.move_left_nth, add_sub_cancel_right]
 #align turing.tape.move_right_nth Turing.Tape.move_right_nth
 
 @[simp]
@@ -1123,11 +1123,8 @@ end
 section
 
 variable {Γ : Type*} [Inhabited Γ]
-
 variable {Γ' : Type*} [Inhabited Γ']
-
 variable {Λ : Type*} [Inhabited Λ]
-
 variable {Λ' : Type*} [Inhabited Λ']
 
 /-- Map a TM statement across a function. This does nothing to move statements and maps the write
@@ -1304,7 +1301,7 @@ def SupportsStmt (S : Finset Λ) : Stmt₁ → Prop
   | halt => True
 #align turing.TM1.supports_stmt Turing.TM1.SupportsStmt
 
-open Classical
+open scoped Classical
 
 /-- The subterm closure of a statement. -/
 noncomputable def stmts₁ : Stmt₁ → Finset Stmt₁
@@ -1438,9 +1435,7 @@ set_option linter.uppercaseLean3 false
 section
 
 variable {Γ : Type*} [Inhabited Γ]
-
 variable {Λ : Type*} [Inhabited Λ]
-
 variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₁" => TM1.Stmt Γ Λ σ
@@ -1528,7 +1523,7 @@ noncomputable def trStmts (S : Finset Λ) : Finset Λ'₁₀ :=
   (TM1.stmts M S) ×ˢ Finset.univ
 #align turing.TM1to0.tr_stmts Turing.TM1to0.trStmts
 
-open Classical
+open scoped Classical
 
 attribute [local simp] TM1.stmts₁_self
 
@@ -1616,22 +1611,19 @@ section
 
 variable {Γ : Type*} [Inhabited Γ]
 
-theorem exists_enc_dec [Fintype Γ] : ∃ (n : ℕ) (enc : Γ → Vector Bool n) (dec : Vector Bool n → Γ),
+theorem exists_enc_dec [Finite Γ] : ∃ (n : ℕ) (enc : Γ → Vector Bool n) (dec : Vector Bool n → Γ),
     enc default = Vector.replicate n false ∧ ∀ a, dec (enc a) = a := by
-  letI := Classical.decEq Γ
-  let n := Fintype.card Γ
-  obtain ⟨F⟩ := Fintype.truncEquivFin Γ
+  rcases Finite.exists_equiv_fin Γ with ⟨n, ⟨e⟩⟩
+  letI : DecidableEq Γ := e.decidableEq
   let G : Fin n ↪ Fin n → Bool :=
     ⟨fun a b ↦ a = b, fun a b h ↦
       Bool.of_decide_true <| (congr_fun h b).trans <| Bool.decide_true rfl⟩
-  let H := (F.toEmbedding.trans G).trans (Equiv.vectorEquivFin _ _).symm.toEmbedding
-  classical
-    let enc := H.setValue default (Vector.replicate n false)
-    exact ⟨_, enc, Function.invFun enc, H.setValue_eq _ _, Function.leftInverse_invFun enc.2⟩
+  let H := (e.toEmbedding.trans G).trans (Equiv.vectorEquivFin _ _).symm.toEmbedding
+  let enc := H.setValue default (Vector.replicate n false)
+  exact ⟨_, enc, Function.invFun enc, H.setValue_eq _ _, Function.leftInverse_invFun enc.2⟩
 #align turing.TM1to1.exists_enc_dec Turing.TM1to1.exists_enc_dec
 
 variable {Λ : Type*} [Inhabited Λ]
-
 variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₁" => Stmt Γ Λ σ
@@ -1801,7 +1793,7 @@ theorem stepAux_write (q : Stmt'₁) (v : σ) (a b : Γ) (L R : ListBlank Γ) :
   suffices ∀ {L' R'} (l₁ l₂ l₂' : List Bool) (_ : l₂'.length = l₂.length),
       stepAux (write l₂ q) v (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂' R')) =
       stepAux q v (Tape.mk' (L'.append (List.reverseAux l₂ l₁)) R') by
-    refine' this [] _ _ ((enc b).2.trans (enc a).2.symm)
+    exact this [] _ _ ((enc b).2.trans (enc a).2.symm)
   clear a b L R
   intro L' R' l₁ l₂ l₂' e
   induction' l₂ with a l₂ IH generalizing l₁ l₂'
@@ -1877,7 +1869,7 @@ theorem tr_respects {enc₀} :
       simp only [trNormal, stepAux_read dec enc0 encdec]
       apply IH
     | branch p q₁ q₂ IH₁ IH₂ =>
-      simp only [trNormal, stepAux_read dec enc0 encdec, stepAux]
+      simp only [trNormal, stepAux_read dec enc0 encdec, stepAux, Tape.mk'_head]
       cases p R.head v <;> [apply IH₂; apply IH₁]
     | goto l =>
       simp only [trNormal, stepAux_read dec enc0 encdec, stepAux, trCfg, trTape_mk']
@@ -1888,7 +1880,7 @@ theorem tr_respects {enc₀} :
       apply ReflTransGen.refl
 #align turing.TM1to1.tr_respects Turing.TM1to1.tr_respects
 
-open Classical
+open scoped Classical
 
 variable [Fintype Γ]
 
@@ -1936,7 +1928,7 @@ theorem tr_supports {S : Finset Λ} (ss : Supports M S) : Supports (tr enc dec M
     | load a q IH =>
       unfold writes at hw ⊢
       replace IH := IH hs hw
-      refine' ⟨supportsStmt_read _ fun _ ↦ IH.1, IH.2⟩
+      exact ⟨supportsStmt_read _ fun _ ↦ IH.1, IH.2⟩
     | branch p q₁ q₂ IH₁ IH₂ =>
       unfold writes at hw ⊢
       simp only [Finset.mem_union] at hw ⊢
@@ -1979,7 +1971,6 @@ set_option linter.uppercaseLean3 false
 section
 
 variable {Γ : Type*} [Inhabited Γ]
-
 variable {Λ : Type*} [Inhabited Λ]
 
 /-- The machine states for a TM1 emulating a TM0 machine. States of the TM0 machine are embedded
@@ -2172,7 +2163,7 @@ def SupportsStmt (S : Finset Λ) : Stmt₂ → Prop
   | halt => True
 #align turing.TM2.supports_stmt Turing.TM2.SupportsStmt
 
-open Classical
+open scoped Classical
 
 /-- The set of subtree statements in a statement. -/
 noncomputable def stmts₁ : Stmt₂ → Finset Stmt₂
@@ -2334,11 +2325,8 @@ theorem stk_nth_val {K : Type*} {Γ : K → Type*} {L : ListBlank (∀ k, Option
 section
 
 variable {K : Type*} [DecidableEq K]
-
 variable {Γ : K → Type*}
-
 variable {Λ : Type*} [Inhabited Λ]
-
 variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₂" => TM2.Stmt Γ Λ σ
@@ -2529,7 +2517,7 @@ theorem trNormal_run {k : K} (s : StAct₂ k) (q : Stmt₂) :
   cases s <;> rfl
 #align turing.TM2to1.tr_normal_run Turing.TM2to1.trNormal_run
 
-open Classical
+open scoped Classical
 
 /-- The set of machine states accessible from an initial TM2 statement. -/
 noncomputable def trStmts₁ : Stmt₂ → Finset Λ'₂₁

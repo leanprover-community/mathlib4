@@ -45,7 +45,7 @@ theorem setOf_liouvilleWith_subset_aux :
     have hx : x + ↑(-⌊x⌋) ∈ Ico (0 : ℝ) 1 := by
       simp only [Int.floor_le, Int.lt_floor_add_one, add_neg_lt_iff_le_add', zero_add, and_self_iff,
         mem_Ico, Int.cast_neg, le_add_neg_iff_add_le]
-    refine' ⟨-⌊x⌋, n + 1, n.succ_pos, this _ (hxp.add_int _) hx⟩
+    exact ⟨-⌊x⌋, n + 1, n.succ_pos, this _ (hxp.add_int _) hx⟩
   clear hxp x; intro x hxp hx01
   refine' ((hxp.frequently_lt_rpow_neg hn).and_eventually (eventually_ge_atTop 1)).mono _
   rintro b ⟨⟨a, -, hlt⟩, hb⟩
@@ -96,7 +96,7 @@ theorem volume_iUnion_setOf_liouvilleWith :
         measure_biUnion_finset_le _ _
       _ = ↑((b + 1) * (2 / (b : ℝ≥0) ^ r)) := by
         simp only [hB, Int.card_Icc, Finset.sum_const, nsmul_eq_mul, sub_zero, ← Int.ofNat_succ,
-          Int.toNat_coe_nat, ← Nat.cast_succ, ENNReal.coe_mul, ENNReal.coe_nat]
+          Int.toNat_natCast, ← Nat.cast_succ, ENNReal.coe_mul, ENNReal.coe_natCast]
       _ = _ := by
         have : 1 - r ≠ 0 := by linarith
         rw [ENNReal.coe_inj]

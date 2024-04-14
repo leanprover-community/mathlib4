@@ -33,15 +33,15 @@ theorem leftUnitor_tensor'' (X Y : C) :
 #align category_theory.monoidal_category.left_unitor_tensor' CategoryTheory.MonoidalCategory.leftUnitor_tensor''
 
 @[reassoc]
-theorem leftUnitor_tensor (X Y : C) :
+theorem leftUnitor_tensor' (X Y : C) :
     (λ_ (X ⊗ Y)).hom = (α_ (𝟙_ C) X Y).inv ≫ ((λ_ X).hom ⊗ 𝟙 Y) := by
   coherence
-#align category_theory.monoidal_category.left_unitor_tensor CategoryTheory.MonoidalCategory.leftUnitor_tensor
+#align category_theory.monoidal_category.left_unitor_tensor CategoryTheory.MonoidalCategory.leftUnitor_tensor'
 
 @[reassoc]
-theorem leftUnitor_tensor_inv (X Y : C) :
+theorem leftUnitor_tensor_inv' (X Y : C) :
     (λ_ (X ⊗ Y)).inv = ((λ_ X).inv ⊗ 𝟙 Y) ≫ (α_ (𝟙_ C) X Y).hom := by coherence
-#align category_theory.monoidal_category.left_unitor_tensor_inv CategoryTheory.MonoidalCategory.leftUnitor_tensor_inv
+#align category_theory.monoidal_category.left_unitor_tensor_inv CategoryTheory.MonoidalCategory.leftUnitor_tensor_inv'
 
 @[reassoc]
 theorem id_tensor_rightUnitor_inv (X Y : C) : 𝟙 X ⊗ (ρ_ Y).inv = (ρ_ _).inv ≫ (α_ _ _ _).hom := by
@@ -59,12 +59,6 @@ theorem pentagon_inv_inv_hom (W X Y Z : C) :
       (𝟙 W ⊗ (α_ X Y Z).hom) ≫ (α_ W X (Y ⊗ Z)).inv := by
   coherence
 #align category_theory.monoidal_category.pentagon_inv_inv_hom CategoryTheory.MonoidalCategory.pentagon_inv_inv_hom
-
-@[reassoc (attr := simp)]
-theorem triangle_assoc_comp_right_inv (X Y : C) :
-    ((ρ_ X).inv ⊗ 𝟙 Y) ≫ (α_ X (𝟙_ C) Y).hom = 𝟙 X ⊗ (λ_ Y).inv := by
-  coherence
-#align category_theory.monoidal_category.triangle_assoc_comp_right_inv CategoryTheory.MonoidalCategory.triangle_assoc_comp_right_inv
 
 theorem unitors_equal : (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom := by
   coherence

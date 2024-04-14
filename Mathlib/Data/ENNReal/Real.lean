@@ -79,11 +79,12 @@ theorem toReal_le_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal ≤ b.toRe
   norm_cast
 #align ennreal.to_real_le_to_real ENNReal.toReal_le_toReal
 
+@[gcongr]
 theorem toReal_mono (hb : b ≠ ∞) (h : a ≤ b) : a.toReal ≤ b.toReal :=
   (toReal_le_toReal (ne_top_of_le_ne_top hb h) hb).2 h
 #align ennreal.to_real_mono ENNReal.toReal_mono
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem toReal_mono' (h : a ≤ b) (ht : b = ∞ → a = ∞) : a.toReal ≤ b.toReal := by
   rcases eq_or_ne a ∞ with rfl | ha
   · exact toReal_nonneg
@@ -96,15 +97,17 @@ theorem toReal_lt_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal < b.toReal
   norm_cast
 #align ennreal.to_real_lt_to_real ENNReal.toReal_lt_toReal
 
+@[gcongr]
 theorem toReal_strict_mono (hb : b ≠ ∞) (h : a < b) : a.toReal < b.toReal :=
   (toReal_lt_toReal h.ne_top hb).2 h
 #align ennreal.to_real_strict_mono ENNReal.toReal_strict_mono
 
+@[gcongr]
 theorem toNNReal_mono (hb : b ≠ ∞) (h : a ≤ b) : a.toNNReal ≤ b.toNNReal :=
   toReal_mono hb h
 #align ennreal.to_nnreal_mono ENNReal.toNNReal_mono
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 /-- If `a ≤ b + c` and `a = ∞` whenever `b = ∞` or `c = ∞`, then
 `ENNReal.toReal a ≤ ENNReal.toReal b + ENNReal.toReal c`. This lemma is useful to transfer
 triangle-like inequalities from `ENNReal`s to `Real`s. -/
@@ -113,7 +116,7 @@ theorem toReal_le_add' (hle : a ≤ b + c) (hb : b = ∞ → a = ∞) (hc : c = 
   refine le_trans (toReal_mono' hle ?_) toReal_add_le
   simpa only [add_eq_top, or_imp] using And.intro hb hc
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 /-- If `a ≤ b + c`, `b ≠ ∞`, and `c ≠ ∞`, then
 `ENNReal.toReal a ≤ ENNReal.toReal b + ENNReal.toReal c`. This lemma is useful to transfer
 triangle-like inequalities from `ENNReal`s to `Real`s. -/
@@ -172,6 +175,7 @@ theorem toReal_pos {a : ℝ≥0∞} (ha₀ : a ≠ 0) (ha_top : a ≠ ∞) : 0 <
   toReal_pos_iff.mpr ⟨bot_lt_iff_ne_bot.mpr ha₀, lt_top_iff_ne_top.mpr ha_top⟩
 #align ennreal.to_real_pos ENNReal.toReal_pos
 
+@[gcongr]
 theorem ofReal_le_ofReal {p q : ℝ} (h : p ≤ q) : ENNReal.ofReal p ≤ ENNReal.ofReal q := by
   simp [ENNReal.ofReal, Real.toNNReal_le_toNNReal h]
 #align ennreal.of_real_le_of_real ENNReal.ofReal_le_ofReal
@@ -233,9 +237,9 @@ lemma ofReal_lt_one {p : ℝ} : ENNReal.ofReal p < 1 ↔ p < 1 := by
   exact mod_cast ofReal_lt_nat_cast one_ne_zero
 
 @[simp]
-lemma ofReal_lt_ofNat {p : ℝ} {n : ℕ} [h : n.AtLeastTwo] :
+lemma ofReal_lt_ofNat {p : ℝ} {n : ℕ} [n.AtLeastTwo] :
     ENNReal.ofReal p < no_index (OfNat.ofNat n) ↔ p < OfNat.ofNat n :=
-  ofReal_lt_nat_cast h.ne_zero
+  ofReal_lt_nat_cast (NeZero.ne n)
 
 @[simp]
 lemma nat_cast_le_ofReal {n : ℕ} {p : ℝ} (hn : n ≠ 0) : n ≤ ENNReal.ofReal p ↔ n ≤ p := by
@@ -246,9 +250,9 @@ lemma one_le_ofReal {p : ℝ} : 1 ≤ ENNReal.ofReal p ↔ 1 ≤ p := by
   exact mod_cast nat_cast_le_ofReal one_ne_zero
 
 @[simp]
-lemma ofNat_le_ofReal {n : ℕ} [h : n.AtLeastTwo] {p : ℝ} :
+lemma ofNat_le_ofReal {n : ℕ} [n.AtLeastTwo] {p : ℝ} :
     no_index (OfNat.ofNat n) ≤ ENNReal.ofReal p ↔ OfNat.ofNat n ≤ p :=
-  nat_cast_le_ofReal h.ne_zero
+  nat_cast_le_ofReal (NeZero.ne n)
 
 @[simp]
 lemma ofReal_le_nat_cast {r : ℝ} {n : ℕ} : ENNReal.ofReal r ≤ n ↔ r ≤ n :=
@@ -284,9 +288,9 @@ lemma ofReal_eq_one {r : ℝ} : ENNReal.ofReal r = 1 ↔ r = 1 :=
   ENNReal.coe_inj.trans Real.toNNReal_eq_one
 
 @[simp]
-lemma ofReal_eq_ofNat {r : ℝ} {n : ℕ} [h : n.AtLeastTwo] :
+lemma ofReal_eq_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
     ENNReal.ofReal r = no_index (OfNat.ofNat n) ↔ r = OfNat.ofNat n :=
-  ofReal_eq_nat_cast h.ne_zero
+  ofReal_eq_nat_cast (NeZero.ne n)
 
 theorem ofReal_sub (p : ℝ) {q : ℝ} (hq : 0 ≤ q) :
     ENNReal.ofReal (p - q) = ENNReal.ofReal p - ENNReal.ofReal q := by
@@ -347,7 +351,7 @@ theorem ofReal_pow {p : ℝ} (hp : 0 ≤ p) (n : ℕ) : ENNReal.ofReal (p ^ n) =
 #align ennreal.of_real_pow ENNReal.ofReal_pow
 
 theorem ofReal_nsmul {x : ℝ} {n : ℕ} : ENNReal.ofReal (n • x) = n • ENNReal.ofReal x := by
-  simp only [nsmul_eq_mul, ← ofReal_coe_nat n, ← ofReal_mul n.cast_nonneg]
+  simp only [nsmul_eq_mul, ← ofReal_natCast n, ← ofReal_mul n.cast_nonneg]
 #align ennreal.of_real_nsmul ENNReal.ofReal_nsmul
 
 theorem ofReal_inv_of_pos {x : ℝ} (hx : 0 < x) : ENNReal.ofReal x⁻¹ = (ENNReal.ofReal x)⁻¹ := by
@@ -377,7 +381,7 @@ theorem smul_toNNReal (a : ℝ≥0) (b : ℝ≥0∞) : (a • b).toNNReal = a * 
   simp only [ENNReal.toNNReal_mul, ENNReal.toNNReal_coe]
 #align ennreal.smul_to_nnreal ENNReal.smul_toNNReal
 
--- porting note: todo: upgrade to `→*₀`
+-- Porting note (#11215): TODO: upgrade to `→*₀`
 /-- `ENNReal.toNNReal` as a `MonoidHom`. -/
 def toNNRealHom : ℝ≥0∞ →* ℝ≥0 where
   toFun := ENNReal.toNNReal
@@ -396,7 +400,7 @@ theorem toNNReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
   map_prod toNNRealHom _ _
 #align ennreal.to_nnreal_prod ENNReal.toNNReal_prod
 
--- porting note: todo: upgrade to `→*₀`
+-- Porting note (#11215): TODO: upgrade to `→*₀`
 /-- `ENNReal.toReal` as a `MonoidHom`. -/
 def toRealHom : ℝ≥0∞ →* ℝ :=
   (NNReal.toRealHom : ℝ≥0 →* ℝ).comp toNNRealHom
@@ -526,7 +530,7 @@ theorem toNNReal_iInf (hf : ∀ i, f i ≠ ∞) : (iInf f).toNNReal = ⨅ i, (f 
 theorem toNNReal_sInf (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
     (sInf s).toNNReal = sInf (ENNReal.toNNReal '' s) := by
   have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ => hs r rs
-  -- porting note: `← sInf_image'` had to be replaced by `← image_eq_range` as the lemmas are used
+  -- Porting note: `← sInf_image'` had to be replaced by `← image_eq_range` as the lemmas are used
   -- in a different order.
   simpa only [← sInf_range, ← image_eq_range, Subtype.range_coe_subtype] using (toNNReal_iInf hf)
 #align ennreal.to_nnreal_Inf ENNReal.toNNReal_sInf
@@ -542,7 +546,7 @@ theorem toNNReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toNNReal = ⨆ i, (f 
 theorem toNNReal_sSup (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
     (sSup s).toNNReal = sSup (ENNReal.toNNReal '' s) := by
   have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ => hs r rs
-  -- porting note: `← sSup_image'` had to be replaced by `← image_eq_range` as the lemmas are used
+  -- Porting note: `← sSup_image'` had to be replaced by `← image_eq_range` as the lemmas are used
   -- in a different order.
   simpa only [← sSup_range, ← image_eq_range, Subtype.range_coe_subtype] using (toNNReal_iSup hf)
 #align ennreal.to_nnreal_Sup ENNReal.toNNReal_sSup
@@ -658,9 +662,12 @@ theorem sup_eq_zero {a b : ℝ≥0∞} : a ⊔ b = 0 ↔ a = 0 ∧ b = 0 :=
   sup_eq_bot_iff
 #align ennreal.sup_eq_zero ENNReal.sup_eq_zero
 
-theorem iSup_coe_nat : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
+theorem iSup_natCast : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
   (iSup_eq_top _).2 fun _b hb => ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 hb)
-#align ennreal.supr_coe_nat ENNReal.iSup_coe_nat
+#align ennreal.supr_coe_nat ENNReal.iSup_natCast
+
+-- 2024-04-05
+@[deprecated] alias iSup_coe_nat := iSup_natCast
 
 end iSup
 

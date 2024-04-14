@@ -6,7 +6,7 @@ Authors: Eric Wieser
 import Mathlib.Algebra.CharP.Pi
 import Mathlib.Algebra.CharP.Quotient
 import Mathlib.Algebra.CharP.Two
-import Mathlib.Data.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Data.ZMod.Basic
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
@@ -37,6 +37,8 @@ are quadratic forms that cannot be expressed via even non-symmetric bilinear for
 noncomputable section
 
 open scoped BigOperators
+
+open LinearMap (BilinForm)
 
 namespace Q60596
 
@@ -300,6 +302,6 @@ theorem QuadraticForm.not_forall_mem_range_toQuadraticForm.{v} :
   fun h => Q_not_in_range_toQuadraticForm <| by
     let uU := ULift.moduleEquiv (R := K) (M := L)
     obtain ⟨x, hx⟩ := h K (ULift L) (Q.comp uU)
-    refine ⟨x.comp uU.symm uU.symm, ?_⟩
+    refine ⟨x.compl₁₂ uU.symm uU.symm, ?_⟩
     ext
     simp [BilinForm.toQuadraticForm_comp_same, hx]

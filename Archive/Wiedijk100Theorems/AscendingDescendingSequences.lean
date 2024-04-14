@@ -54,8 +54,10 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   -- The singleton sequence is in both of the above collections.
   -- (This is useful to show that the maximum length subsequence is at least 1, and that the set
   -- of subsequences is nonempty.)
-  have inc_i : ∀ i, {i} ∈ inc_sequences_ending_in i := fun i => by simp [StrictMonoOn]
-  have dec_i : ∀ i, {i} ∈ dec_sequences_ending_in i := fun i => by simp [StrictAntiOn]
+  have inc_i : ∀ i, {i} ∈ inc_sequences_ending_in i := fun i => by
+    simp [inc_sequences_ending_in, StrictMonoOn]
+  have dec_i : ∀ i, {i} ∈ dec_sequences_ending_in i := fun i => by
+    simp [dec_sequences_ending_in, StrictAntiOn]
   -- Define the pair of labels: at index `i`, the pair is the maximum length of an increasing
   -- subsequence ending at `i`, paired with the maximum length of a decreasing subsequence ending
   -- at `i`.
@@ -142,7 +144,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   have : image ab univ ⊆ ran := by
     -- First some logical shuffling
     rintro ⟨x₁, x₂⟩
-    simp only [mem_image, exists_prop, mem_range, mem_univ, mem_product, true_and_iff,
+    simp only [ran, mem_image, exists_prop, mem_range, mem_univ, mem_product, true_and_iff,
       Prod.ext_iff]
     rintro ⟨i, rfl, rfl⟩
     specialize q i
@@ -165,7 +167,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   -- To get our contradiction, it suffices to prove `n ≤ r * s`
   apply not_le_of_lt hn
   -- Which follows from considering the cardinalities of the subset above, since `ab` is injective.
-  simpa [Nat.succ_injective, card_image_of_injective, ‹Injective ab›] using card_le_card this
+  simpa [ran, Nat.succ_injective, card_image_of_injective, ‹Injective ab›] using card_le_card this
 #align theorems_100.erdos_szekeres Theorems100.erdos_szekeres
 
 end Theorems100

@@ -96,7 +96,7 @@ theorem dist_vadd_cancel_left (v : V) (x y : P) : dist (v +ᵥ x) (v +ᵥ y) = d
   dist_vadd _ _ _
 #align dist_vadd_cancel_left dist_vadd_cancel_left
 
--- porting note: new
+-- Porting note (#10756): new theorem
 theorem nndist_vadd_cancel_left (v : V) (x y : P) : nndist (v +ᵥ x) (v +ᵥ y) = nndist x y :=
   NNReal.eq <| dist_vadd_cancel_left _ _ _
 
@@ -143,7 +143,7 @@ theorem dist_vsub_cancel_left (x y z : P) : dist (x -ᵥ y) (x -ᵥ z) = dist y 
   rw [dist_eq_norm, vsub_sub_vsub_cancel_left, dist_comm, dist_eq_norm_vsub V]
 #align dist_vsub_cancel_left dist_vsub_cancel_left
 
--- porting note: new
+-- Porting note (#10756): new theorem
 @[simp]
 theorem nndist_vsub_cancel_left (x y z : P) : nndist (x -ᵥ y) (x -ᵥ z) = nndist y z :=
   NNReal.eq <| dist_vsub_cancel_left _ _ _
@@ -190,14 +190,14 @@ theorem nndist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 theorem edist_vadd_vadd_le (v v' : V) (p p' : P) :
     edist (v +ᵥ p) (v' +ᵥ p') ≤ edist v v' + edist p p' := by
   simp only [edist_nndist]
-  norm_cast  -- porting note: was apply_mod_cast
+  norm_cast  -- Porting note: was apply_mod_cast
   apply dist_vadd_vadd_le
 #align edist_vadd_vadd_le edist_vadd_vadd_le
 
 theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     edist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ edist p₁ p₃ + edist p₂ p₄ := by
   simp only [edist_nndist]
-  norm_cast  -- porting note: was apply_mod_cast
+  norm_cast  -- Porting note: was apply_mod_cast
   apply dist_vsub_vsub_le
 #align edist_vsub_vsub_le edist_vsub_vsub_le
 
@@ -206,7 +206,7 @@ is not an instance because it depends on `V` to define a `MetricSpace P`. -/
 def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [SeminormedAddCommGroup V]
     [AddTorsor V P] : PseudoMetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
-  -- porting note: `edist_dist` is no longer an `autoParam`
+  -- Porting note: `edist_dist` is no longer an `autoParam`
   edist_dist _ _ := by simp only [← ENNReal.ofReal_eq_coe_nnreal]
   dist_self x := by simp
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]

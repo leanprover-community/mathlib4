@@ -41,6 +41,7 @@ This file defines a number of uniform `PMF` distributions from various inputs,
 
 open scoped Classical MeasureTheory BigOperators NNReal ENNReal
 
+-- TODO: We can't `open ProbabilityTheory` without opening the `ProbabilityTheory` locale :(
 open TopologicalSpace MeasureTheory.Measure PMF
 
 noncomputable section
@@ -52,7 +53,6 @@ variable {E : Type*} [MeasurableSpace E] {m : Measure E} {μ : Measure E}
 namespace pdf
 
 variable {Ω : Type*}
-
 variable {_ : MeasurableSpace Ω} {ℙ : Measure Ω}
 
 /-- A random variable `X` has uniform distribution on `s` if its push-forward measure is
@@ -75,8 +75,7 @@ theorem aemeasurable {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s �
       Set.univ_inter, smul_eq_mul, ENNReal.inv_mul_cancel hns hnt]
 
 theorem absolutelyContinuous {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) : map X ℙ ≪ μ := by
-  rw [hu]
-  exact ProbabilityTheory.cond_absolutelyContinuous μ
+  rw [hu]; exact ProbabilityTheory.cond_absolutelyContinuous
 
 theorem measure_preimage {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
     (hu : IsUniform X s ℙ μ) {A : Set E} (hA : MeasurableSet A) :
@@ -163,7 +162,7 @@ theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
   set ind := (volume s)⁻¹ • (1 : ℝ → ℝ≥0∞)
   have : ∀ x, ↑‖x‖₊ * s.indicator ind x = s.indicator (fun x => ‖x‖₊ * ind x) x := fun x =>
     (s.indicator_mul_right (fun x => ↑‖x‖₊) ind).symm
-  simp only [this, lintegral_indicator _ hcs.measurableSet, mul_one, Algebra.id.smul_eq_mul,
+  simp only [ind, this, lintegral_indicator _ hcs.measurableSet, mul_one, Algebra.id.smul_eq_mul,
     Pi.one_apply, Pi.smul_apply]
   rw [lintegral_mul_const _ measurable_nnnorm.coe_nnreal_ennreal]
   exact (ENNReal.mul_lt_top (set_lintegral_lt_top_of_isCompact hnt.2 hcs continuous_nnnorm).ne
@@ -230,9 +229,9 @@ def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : PMF α := by
   refine' ofFinset (fun a => if a ∈ s then s.card⁻¹ else 0) s _ _
   · simp only [Finset.sum_ite_mem, Finset.inter_self, Finset.sum_const, nsmul_eq_mul]
     have : (s.card : ℝ≥0∞) ≠ 0 := by
-      simpa only [Ne.def, Nat.cast_eq_zero, Finset.card_eq_zero] using
+      simpa only [Ne, Nat.cast_eq_zero, Finset.card_eq_zero] using
         Finset.nonempty_iff_ne_empty.1 hs
-    refine' ENNReal.mul_inv_cancel this <| ENNReal.nat_ne_top s.card
+    exact ENNReal.mul_inv_cancel this <| ENNReal.natCast_ne_top s.card
   · exact fun x hx => by simp only [hx, if_false]
 #align pmf.uniform_of_finset PMF.uniformOfFinset
 
@@ -358,7 +357,7 @@ def ofMultiset (s : Multiset α) (hs : s ≠ 0) : PMF α :=
         _ = 1 := by
           rw [← Nat.cast_sum, Multiset.toFinset_sum_count_eq s,
             ENNReal.inv_mul_cancel (Nat.cast_ne_zero.2 (hs ∘ Multiset.card_eq_zero.1))
-              (ENNReal.nat_ne_top _)]
+              (ENNReal.natCast_ne_top _)]
         )⟩
 #align pmf.of_multiset PMF.ofMultiset
 
@@ -380,7 +379,7 @@ theorem mem_support_ofMultiset_iff (a : α) : a ∈ (ofMultiset s hs).support �
 
 theorem ofMultiset_apply_of_not_mem {a : α} (ha : a ∉ s) : ofMultiset s hs a = 0 := by
   simpa only [ofMultiset_apply, ENNReal.div_eq_zero_iff, Nat.cast_eq_zero, Multiset.count_eq_zero,
-    ENNReal.nat_ne_top, or_false_iff] using ha
+    ENNReal.natCast_ne_top, or_false_iff] using ha
 #align pmf.of_multiset_apply_of_not_mem PMF.ofMultiset_apply_of_not_mem
 
 section Measure

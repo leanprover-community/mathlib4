@@ -44,7 +44,7 @@ instance coePNatNat : Coe ℕ+ ℕ :=
 instance : Repr ℕ+ :=
   ⟨fun n n' => reprPrec n.1 n'⟩
 
---Porting note: New instance not in Lean3
+--Porting note (#10754): New instance not in Lean3
 instance (n : ℕ) : OfNat ℕ+ (n+1) :=
   ⟨⟨n + 1, Nat.succ_pos n⟩⟩
 
@@ -194,7 +194,7 @@ theorem mk_one {h} : (⟨1, h⟩ : ℕ+) = (1 : ℕ+) :=
   rfl
 #align pnat.mk_one PNat.mk_one
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem one_coe : ((1 : ℕ+) : ℕ) = 1 :=
   rfl
 #align pnat.one_coe PNat.one_coe

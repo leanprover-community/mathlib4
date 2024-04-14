@@ -25,7 +25,7 @@ open CategoryTheory.MonoidalCategory
 
 /-- The type of objects of the opposite (or "reverse") monoidal category.
 Use the notation `Cᴹᵒᵖ`. -/
--- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
+-- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
 structure MonoidalOpposite (C : Type u₁) where
   /-- The object of `MonoidalOpposite C` that represents `x : C`. -/ mop ::
   /-- The object of `C` represented by `x : MonoidalOpposite C`. -/ unmop : C
@@ -174,8 +174,6 @@ end IsIso
 variable [MonoidalCategory.{v₁} C]
 
 open Opposite MonoidalCategory
-
-attribute [local simp] id_tensorHom tensorHom_id
 
 instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   tensorObj X Y := op (unop X ⊗ unop Y)

@@ -19,7 +19,7 @@ universe u₁ u₂ u₃ u₄ u₅
 
 namespace Function
 
--- porting note: fix the universe of `ζ`, it used to be `u₁`
+-- Porting note: fix the universe of `ζ`, it used to be `u₁`
 variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
 
 #align function.comp Function.comp
@@ -28,7 +28,12 @@ attribute [eqns comp_def] comp
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
 
-attribute [eqns flip_def] flip
+-- Adaptation note: nightly-2024-03-16
+-- Because of changes in how equation lemmas are generated,
+-- `@[eqns]` will only work properly when used immediately after the definition
+-- (and when none of the default equation lemmas are needed).
+-- Thus this usage is no longer allowed:
+-- attribute [eqns flip_def] flip
 
 /-- Composition of dependent functions: `(f ∘' g) x = f (g x)`, where type of `g x` depends on `x`
 and type of `f (g x)` depends on `x` and `g x`. -/
@@ -74,12 +79,15 @@ def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ
 def swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
 #align function.swap Function.swap
 
+-- Adaptation note: nightly-2024-03-16: added to replace simp [Function.swap]
+theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
+
 @[reducible, deprecated] -- Deprecated since 13 January 2024
 def app {β : α → Sort u₂} (f : ∀ x, β x) (x : α) : β x :=
   f x
 #align function.app Function.app
 
--- porting note: removed, it was never used
+-- Porting note: removed, it was never used
 -- notation f " -[" op "]- " g => combine f op g
 
 @[simp, mfld_simps]

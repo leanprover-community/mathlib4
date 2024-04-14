@@ -1,6 +1,4 @@
 import Mathlib.Algebra.Group.Defs
-import Std.Tactic.NormCast
-import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 import Mathlib.Util.Time
 import Qq.MetaM
@@ -224,7 +222,7 @@ run_cmd do liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namesp
 section
 
 set_option linter.unusedVariables false
--- porting note : not sure what the tests do, but the linter complains.
+-- Porting note: not sure what the tests do, but the linter complains.
 
 def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f i)]
   [Add I] [Mul L] : true := by trivial
@@ -271,7 +269,7 @@ class FooClass (α) : Prop where
   refle : ∀ a : α, a = a
 
 @[to_additive]
-instance FooClass_one [One α] : FooClass α := ⟨λ _ => rfl⟩
+instance FooClass_one [One α] : FooClass α := ⟨fun _ ↦ rfl⟩
 
 lemma one_fooClass [One α] : FooClass α := by infer_instance
 
