@@ -1631,8 +1631,6 @@ import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
 import Mathlib.Condensed.Functors
 import Mathlib.Condensed.Limits
-import Mathlib.Condensed.LocallyConstant
-import Mathlib.Condensed.PreservesProductExplicit
 import Mathlib.Condensed.Solid
 import Mathlib.Condensed.TopComparison
 import Mathlib.Control.Applicative
