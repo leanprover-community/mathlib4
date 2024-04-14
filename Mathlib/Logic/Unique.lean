@@ -218,7 +218,8 @@ protected theorem Surjective.subsingleton [Subsingleton α] (hf : Surjective f) 
 
 /-- If the domain of a surjective function is a singleton,
 then the codomain is a singleton as well. -/
-protected def Surjective.unique {α : Sort u} (f : α → β) (hf : Surjective f) [Unique.{u} α] : Unique β :=
+protected def Surjective.unique {α : Sort u} (f : α → β) (hf : Surjective f) [Unique.{u} α] :
+    Unique β :=
   @Unique.mk' _ ⟨f default⟩ hf.subsingleton
 #align function.surjective.unique Function.Surjective.unique
 
@@ -238,6 +239,7 @@ end Function
 section Pi
 
 variable {ι : Sort*} {α : ι → Sort*}
+
 /-- Given one value over a unique, we get a dependent function. -/
 def uniqueElim [Unique ι] (x : α (default : ι)) (i : ι) : α i := by
   rw [Unique.eq_default i]
@@ -248,7 +250,8 @@ theorem uniqueElim_default {_ : Unique ι} (x : α (default : ι)) : uniqueElim 
   rfl
 
 @[simp]
-theorem uniqueElim_const {ι β : Sort*} {_ : Unique ι} (x : β) (i : ι) : uniqueElim (α := fun _ ↦ β) x i = x :=
+theorem uniqueElim_const {β : Sort*} {_ : Unique ι} (x : β) (i : ι) :
+    uniqueElim (α := fun _ ↦ β) x i = x :=
   rfl
 
 end Pi

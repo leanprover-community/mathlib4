@@ -350,7 +350,9 @@ alias ⟨Or.rotate, _⟩ := or_rotate
 #align or.rotate Or.rotate
 
 @[deprecated Or.imp]
-theorem or_of_or_of_imp_of_imp {a b c d : Prop} (h₁ : a ∨ b) (h₂ : a → c) (h₃ : b → d) : c ∨ d := Or.imp h₂ h₃ h₁
+theorem or_of_or_of_imp_of_imp {a b c d : Prop} (h₁ : a ∨ b) (h₂ : a → c) (h₃ : b → d) :
+    c ∨ d :=
+  Or.imp h₂ h₃ h₁
 #align or_of_or_of_imp_of_imp or_of_or_of_imp_of_imp
 
 @[deprecated Or.imp_left]
@@ -365,7 +367,8 @@ theorem Or.elim3 {c d : Prop} (h : a ∨ b ∨ c) (ha : a → d) (hb : b → d) 
   Or.elim h ha fun h₂ ↦ Or.elim h₂ hb hc
 #align or.elim3 Or.elim3
 
-theorem Or.imp3 {d e c f : Prop} (had : a → d) (hbe : b → e) (hcf : c → f) : a ∨ b ∨ c → d ∨ e ∨ f :=
+theorem Or.imp3 {d e c f : Prop} (had : a → d) (hbe : b → e) (hcf : c → f) :
+    a ∨ b ∨ c → d ∨ e ∨ f :=
   Or.imp had <| Or.imp hbe hcf
 #align or.imp3 Or.imp3
 
@@ -408,7 +411,8 @@ protected theorem Function.mtr : (¬a → ¬b) → b → a := not_imp_not.mp
 #align decidable.or_iff_not_imp_right Decidable.or_iff_not_imp_rightₓ -- reorder implicits
 #align decidable.imp_iff_or_not Decidable.imp_iff_or_notₓ -- reorder implicits
 
-theorem or_congr_left' {c a b : Prop} (h : ¬c → (a ↔ b)) : a ∨ c ↔ b ∨ c := Decidable.or_congr_left' h
+theorem or_congr_left' {c a b : Prop} (h : ¬c → (a ↔ b)) : a ∨ c ↔ b ∨ c :=
+  Decidable.or_congr_left' h
 #align or_congr_left or_congr_left'
 
 theorem or_congr_right' {c : Prop} (h : ¬a → (b ↔ c)) : a ∨ b ↔ a ∨ c := Decidable.or_congr_right' h
