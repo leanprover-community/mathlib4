@@ -45,11 +45,13 @@ as done in the `elide` and `unelide` tactics. -/
 @[reducible] def hidden {α : Sort*} {a : α} := a
 #align hidden hidden
 
-instance (priority := 10) decidableEq_of_subsingleton {α : Sort*} [Subsingleton α] : DecidableEq α :=
+variable {α : Sort*}
+
+instance (priority := 10) decidableEq_of_subsingleton [Subsingleton α] : DecidableEq α :=
   fun a b ↦ isTrue (Subsingleton.elim a b)
 #align decidable_eq_of_subsingleton decidableEq_of_subsingleton
 
-instance (α : Sort*) [Subsingleton α] (p : α → Prop) : Subsingleton (Subtype p) :=
+instance [Subsingleton α] (p : α → Prop) : Subsingleton (Subtype p) :=
   ⟨fun ⟨x, _⟩ ⟨y, _⟩ ↦ by cases Subsingleton.elim x y; rfl⟩
 
 #align pempty PEmpty
@@ -59,7 +61,7 @@ theorem congr_heq {α β γ : Sort _} {f : α → γ} {g : β → γ} {x : α} {
   cases h₂; cases h₁; rfl
 #align congr_heq congr_heq
 
-theorem congr_arg_heq {α} {β : α → Sort*} (f : ∀ a, β a) :
+theorem congr_arg_heq {β : α → Sort*} (f : ∀ a, β a) :
     ∀ {a₁ a₂ : α}, a₁ = a₂ → HEq (f a₁) (f a₂)
   | _, _, rfl => HEq.rfl
 #align congr_arg_heq congr_arg_heq
@@ -72,23 +74,23 @@ theorem ULift.down_injective {α : Sort _} : Function.Injective (@ULift.down α)
   ⟨fun h ↦ ULift.down_injective h, fun h ↦ by rw [h]⟩
 #align ulift.down_inj ULift.down_inj
 
-theorem PLift.down_injective {α : Sort*} : Function.Injective (@PLift.down α)
+theorem PLift.down_injective : Function.Injective (@PLift.down α)
   | ⟨a⟩, ⟨b⟩, _ => by congr
 #align plift.down_injective PLift.down_injective
 
-@[simp] theorem PLift.down_inj {α : Sort*} {a b : PLift α} : a.down = b.down ↔ a = b :=
+@[simp] theorem PLift.down_inj {a b : PLift α} : a.down = b.down ↔ a = b :=
   ⟨fun h ↦ PLift.down_injective h, fun h ↦ by rw [h]⟩
 #align plift.down_inj PLift.down_inj
 
-@[simp] theorem eq_iff_eq_cancel_left {α : Sort*} {b c : α} : (∀ {a}, a = b ↔ a = c) ↔ b = c :=
+@[simp] theorem eq_iff_eq_cancel_left {b c : α} : (∀ {a}, a = b ↔ a = c) ↔ b = c :=
   ⟨fun h ↦ by rw [← h], fun h a ↦ by rw [h]⟩
 #align eq_iff_eq_cancel_left eq_iff_eq_cancel_left
 
-@[simp] theorem eq_iff_eq_cancel_right {α : Sort*} {a b : α} : (∀ {c}, a = c ↔ b = c) ↔ a = b :=
+@[simp] theorem eq_iff_eq_cancel_right {a b : α} : (∀ {c}, a = c ↔ b = c) ↔ a = b :=
   ⟨fun h ↦ by rw [h], fun h a ↦ by rw [h]⟩
 #align eq_iff_eq_cancel_right eq_iff_eq_cancel_right
 
-lemma ne_and_eq_iff_right {α : Sort*} {a b c : α} (h : b ≠ c) : a ≠ b ∧ a = c ↔ a = c :=
+lemma ne_and_eq_iff_right {a b c : α} (h : b ≠ c) : a ≠ b ∧ a = c ↔ a = c :=
   and_iff_right_of_imp (fun h2 => h2.symm ▸ h.symm)
 #align ne_and_eq_iff_right ne_and_eq_iff_right
 
