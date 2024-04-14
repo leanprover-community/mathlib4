@@ -1425,12 +1425,12 @@ theorem sep_false : { x ∈ s | False } = ∅ :=
 
 --Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem sep_empty (p : α → Prop) : { x ∈ (∅ : Set α) | p x } = ∅ :=
-  empty_inter p
+  empty_inter {x | p x}
 #align set.sep_empty Set.sep_empty
 
 --Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem sep_univ : { x ∈ (univ : Set α) | p x } = { x | p x } :=
-  univ_inter p
+  univ_inter {x | p x}
 #align set.sep_univ Set.sep_univ
 
 @[simp]
@@ -1440,12 +1440,12 @@ theorem sep_union : { x | (x ∈ s ∨ x ∈ t) ∧ p x } = { x ∈ s | p x } �
 
 @[simp]
 theorem sep_inter : { x | (x ∈ s ∧ x ∈ t) ∧ p x } = { x ∈ s | p x } ∩ { x ∈ t | p x } :=
-  inter_inter_distrib_right s t p
+  inter_inter_distrib_right s t {x | p x}
 #align set.sep_inter Set.sep_inter
 
 @[simp]
 theorem sep_and : { x ∈ s | p x ∧ q x } = { x ∈ s | p x } ∩ { x ∈ s | q x } :=
-  inter_inter_distrib_left s p q
+  inter_inter_distrib_left s {x | p x} {x | q x}
 #align set.sep_and Set.sep_and
 
 @[simp]
