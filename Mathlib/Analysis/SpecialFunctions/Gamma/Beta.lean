@@ -32,7 +32,7 @@ refined properties of the Gamma function using these relations.
   `Gamma s * Gamma (1 - s) = π / sin π s`.
 * `Complex.differentiable_one_div_Gamma`: the function `1 / Γ(s)` is differentiable everywhere.
 * `Complex.Gamma_mul_Gamma_add_half`: Legendre's duplication formula
-  `Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * 2 ^ (1 - 2 * s) * sqrt π`.
+  `Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * 2 ^ (1 - 2 * s) * √π`.
 * `Real.Gamma_ne_zero`, `Real.GammaSeq_tendsto_Gamma`,
   `Real.Gamma_mul_Gamma_one_sub`, `Real.Gamma_mul_Gamma_add_half`: real versions of the above.
 -/
@@ -191,12 +191,12 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
   rw [add_sub_cancel_right, add_sub_cancel_right] at h_int
   have int_ev := intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le zero_le_one hc hder h_int
   have hF0 : F 0 = 0 := by
-    simp only [F, mul_eq_zero, ofReal_zero, cpow_eq_zero_iff, eq_self_iff_true, Ne.def,
+    simp only [F, mul_eq_zero, ofReal_zero, cpow_eq_zero_iff, eq_self_iff_true, Ne,
       true_and_iff, sub_zero, one_cpow, one_ne_zero, or_false_iff]
     contrapose! hu; rw [hu, zero_re]
   have hF1 : F 1 = 0 := by
     simp only [F, mul_eq_zero, ofReal_one, one_cpow, one_ne_zero, sub_self, cpow_eq_zero_iff,
-      eq_self_iff_true, Ne.def, true_and_iff, false_or_iff]
+      eq_self_iff_true, Ne, true_and_iff, false_or_iff]
     contrapose! hv; rw [hv, zero_re]
   rw [hF0, hF1, sub_zero, intervalIntegral.integral_sub, intervalIntegral.integral_const_mul,
     intervalIntegral.integral_const_mul] at int_ev
@@ -305,7 +305,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
     · refine' intervalIntegral.intervalIntegrable_cpow' _
       rwa [sub_re, one_re, ← zero_sub, sub_lt_sub_iff_right]
     · apply Continuous.continuousOn
-      exact IsROrC.continuous_ofReal.comp -- Porting note: was `continuity`
+      exact RCLike.continuous_ofReal.comp -- Porting note: was `continuity`
         ((continuous_const.sub (continuous_id'.div_const ↑n)).pow n)
   -- pointwise limit of f
   have f_tends : ∀ x : ℝ, x ∈ Ioi (0 : ℝ) →
@@ -379,7 +379,7 @@ theorem GammaSeq_tendsto_Gamma (s : ℂ) : Tendsto (GammaSeq s) atTop (𝓝 <| G
     conv at this => arg 1; intro n; rw [mul_comm]
     rwa [← mul_one (GammaAux m (s + 1) / s), tendsto_mul_iff_of_ne_zero _ (one_ne_zero' ℂ)] at this
     simp_rw [add_assoc]
-    exact tendsto_coe_nat_div_add_atTop (1 + s)
+    exact tendsto_natCast_div_add_atTop (1 + s)
 #align complex.Gamma_seq_tendsto_Gamma Complex.GammaSeq_tendsto_Gamma
 
 end Complex
@@ -429,14 +429,14 @@ theorem Gamma_mul_Gamma_one_sub (z : ℂ) : Gamma z * Gamma (1 - z) = π / sin (
       neg_eq_iff_eq_neg] at hk
     rw [hk]
     cases k
-    · rw [Int.ofNat_eq_coe, Int.cast_ofNat, Complex.Gamma_neg_nat_eq_zero, zero_mul]
+    · rw [Int.ofNat_eq_coe, Int.cast_natCast, Complex.Gamma_neg_nat_eq_zero, zero_mul]
     · rw [Int.cast_negSucc, neg_neg, Nat.cast_add, Nat.cast_one, add_comm, sub_add_cancel_left,
         Complex.Gamma_neg_nat_eq_zero, mul_zero]
   refine' tendsto_nhds_unique ((GammaSeq_tendsto_Gamma z).mul (GammaSeq_tendsto_Gamma <| 1 - z)) _
   have : ↑π / sin (↑π * z) = 1 * (π / sin (π * z)) := by rw [one_mul]
   convert Tendsto.congr' ((eventually_ne_atTop 0).mp (eventually_of_forall fun n hn =>
     (GammaSeq_mul z hn).symm)) (Tendsto.mul _ _)
-  · convert tendsto_coe_nat_div_add_atTop (1 - z) using 1; ext1 n; rw [add_sub_assoc]
+  · convert tendsto_natCast_div_add_atTop (1 - z) using 1; ext1 n; rw [add_sub_assoc]
   · have : ↑π / sin (↑π * z) = 1 / (sin (π * z) / π) := by field_simp
     convert tendsto_const_nhds.div _ (div_ne_zero hs pi_ne)
     rw [← tendsto_mul_iff_of_ne_zero tendsto_const_nhds pi_ne, div_mul_cancel₀ _ pi_ne]
@@ -568,9 +568,9 @@ do not have to do any special-case handling for the poles of `Γ`.)
 namespace Complex
 
 theorem Gamma_mul_Gamma_add_half (s : ℂ) :
-    Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * (2 : ℂ) ^ (1 - 2 * s) * ↑(Real.sqrt π) := by
+    Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * (2 : ℂ) ^ (1 - 2 * s) * ↑(√π) := by
   suffices (fun z => (Gamma z)⁻¹ * (Gamma (z + 1 / 2))⁻¹) = fun z =>
-      (Gamma (2 * z))⁻¹ * (2 : ℂ) ^ (2 * z - 1) / ↑(Real.sqrt π) by
+      (Gamma (2 * z))⁻¹ * (2 : ℂ) ^ (2 * z - 1) / ↑(√π) by
     convert congr_arg Inv.inv (congr_fun this s) using 1
     · rw [mul_inv, inv_inv, inv_inv]
     · rw [div_eq_mul_inv, mul_inv, mul_inv, inv_inv, inv_inv, ← cpow_neg, neg_sub]
@@ -579,7 +579,7 @@ theorem Gamma_mul_Gamma_add_half (s : ℂ) :
     refine' (differentiable_one_div_Gamma.mul _).differentiableOn
     exact differentiable_one_div_Gamma.comp (differentiable_id.add (differentiable_const _))
   have h2 : AnalyticOn ℂ
-      (fun z => (Gamma (2 * z))⁻¹ * (2 : ℂ) ^ (2 * z - 1) / ↑(Real.sqrt π)) univ := by
+      (fun z => (Gamma (2 * z))⁻¹ * (2 : ℂ) ^ (2 * z - 1) / ↑(√π)) univ := by
     refine' DifferentiableOn.analyticOn _ isOpen_univ
     refine' (Differentiable.mul _ (differentiable_const _)).differentiableOn
     apply Differentiable.mul
@@ -607,7 +607,7 @@ namespace Real
 open Complex
 
 theorem Gamma_mul_Gamma_add_half (s : ℝ) :
-    Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * (2 : ℝ) ^ (1 - 2 * s) * sqrt π := by
+    Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * (2 : ℝ) ^ (1 - 2 * s) * √π := by
   rw [← ofReal_inj]
   simpa only [← Gamma_ofReal, ofReal_cpow zero_le_two, ofReal_mul, ofReal_add, ofReal_div,
     ofReal_sub] using Complex.Gamma_mul_Gamma_add_half ↑s

@@ -215,7 +215,7 @@ theorem add {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (
   rcases p.trichotomy with (rfl | rfl | hp)
   · apply memℓp_zero
     refine' (hf.finite_dsupport.union hg.finite_dsupport).subset fun i => _
-    simp only [Pi.add_apply, Ne.def, Set.mem_union, Set.mem_setOf_eq]
+    simp only [Pi.add_apply, Ne, Set.mem_union, Set.mem_setOf_eq]
     contrapose!
     rintro ⟨hf', hg'⟩
     simp [hf', hg']
@@ -502,9 +502,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
       add_le' := fun f g => by
         rcases p.dichotomy with (rfl | hp')
         · cases isEmpty_or_nonempty α
-          · -- porting note (#10745): was `simp [lp.eq_zero' f]`
-            rw [lp.eq_zero' f]
-            simp only [zero_add, norm_zero, le_refl] -- porting note (#11083): just `simp` was slow
+          · simp only [lp.eq_zero' f, zero_add, norm_zero, le_refl]
           refine' (lp.isLUB_norm (f + g)).2 _
           rintro x ⟨i, rfl⟩
           refine' le_trans _ (add_mem_upperBounds_add
@@ -890,7 +888,7 @@ theorem _root_.nat_cast_memℓp_infty (n : ℕ) : Memℓp (n : ∀ i, B i) ∞ :
 #align nat_cast_mem_ℓp_infty nat_cast_memℓp_infty
 
 theorem _root_.int_cast_memℓp_infty (z : ℤ) : Memℓp (z : ∀ i, B i) ∞ :=
-  coe_int_mem (lpInftySubring B) z
+  intCast_mem (lpInftySubring B) z
 #align int_cast_mem_ℓp_infty int_cast_memℓp_infty
 
 @[simp]
@@ -987,7 +985,7 @@ protected def single (p) (i : α) (a : E i) : lp E p :=
     refine' (memℓp_zero _).of_exponent_ge (zero_le p)
     refine' (Set.finite_singleton i).subset _
     intro j
-    simp only [forall_exists_index, Set.mem_singleton_iff, Ne.def, dite_eq_right_iff,
+    simp only [forall_exists_index, Set.mem_singleton_iff, Ne, dite_eq_right_iff,
       Set.mem_setOf_eq, not_forall]
     rintro rfl
     simp⟩
@@ -1191,7 +1189,7 @@ theorem tendsto_lp_of_tendsto_pi {F : ℕ → lp E p} (hF : CauchySeq F) {f : lp
   refine' norm_le_of_tendsto (hn.mono fun k hk => hk.le) _
   rw [tendsto_pi_nhds]
   intro a
-  exact (hf.apply a).const_sub (F n a)
+  exact (hf.apply_nhds a).const_sub (F n a)
 #align lp.tendsto_lp_of_tendsto_pi lp.tendsto_lp_of_tendsto_pi
 
 variable [∀ a, CompleteSpace (E a)]

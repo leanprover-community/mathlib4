@@ -3,10 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
-import Mathlib.Algebra.Order.WithZero
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Tactic.TFAE
-import Mathlib.Algebra.GroupPower.Order
 
 #align_import ring_theory.valuation.basic from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
@@ -72,7 +71,7 @@ section
 
 variable (F R) (Γ₀ : Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
 
---porting note (#10927): removed @[nolint has_nonempty_instance]
+--porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The type of `Γ₀`-valued valuations on `R`.
 
 When you extend this structure, make sure to extend `ValuationClass`. -/
@@ -346,7 +345,7 @@ theorem one_lt_val_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : 1 < v x �
   simpa using (inv_lt_inv₀ (v.ne_zero_iff.2 h) one_ne_zero).symm
 #align valuation.one_lt_val_iff Valuation.one_lt_val_iff
 
-/-- The subgroup of elements whose valuation is less than a certain unit.-/
+/-- The subgroup of elements whose valuation is less than a certain unit. -/
 def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
   carrier := { x | v x < γ }
   zero_mem' := by simp
@@ -487,9 +486,7 @@ theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
   · rw [isEquiv_iff_val_eq_one]
     intro h x
     by_cases hx : x = 0
-    · -- Porting note: this proof was `simp only [(zero_iff _).2 hx, zero_ne_one]`
-      rw [(zero_iff _).2 hx, (zero_iff _).2 hx]
-      simp only [zero_ne_one]
+    · simp only [(zero_iff _).2 hx, zero_ne_one]
     constructor
     · intro hh
       by_contra h_1
@@ -591,7 +588,7 @@ section AddMonoid
 variable (R) [Ring R] (Γ₀ : Type*) [LinearOrderedAddCommMonoidWithTop Γ₀]
 
 /-- The type of `Γ₀`-valued additive valuations on `R`. -/
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 def AddValuation :=
   Valuation R (Multiplicative Γ₀ᵒᵈ)
 #align add_valuation AddValuation
@@ -885,11 +882,9 @@ end AddValuation
 
 section ValuationNotation
 
--- mathport name: nat.multiplicative_zero
 /-- Notation for `WithZero (Multiplicative ℕ)` -/
 scoped[DiscreteValuation] notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
 
--- mathport name: int.multiplicative_zero
 /-- Notation for `WithZero (Multiplicative ℤ)` -/
 scoped[DiscreteValuation] notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
 

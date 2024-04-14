@@ -16,7 +16,7 @@ import Mathlib.MeasureTheory.Integral.Pi
 # Gaussian integral
 
 We prove various versions of the formula for the Gaussian integral:
-* `integral_gaussian`: for real `b` we have `∫ x:ℝ, exp (-b * x^2) = sqrt (π / b)`.
+* `integral_gaussian`: for real `b` we have `∫ x:ℝ, exp (-b * x^2) = √(π / b)`.
 * `integral_gaussian_complex`: for complex `b` with `0 < re b` we have
   `∫ x:ℝ, exp (-b * x^2) = (π / b) ^ (1 / 2)`.
 * `integral_gaussian_Ioi` and `integral_gaussian_complex_Ioi`: variants for integrals over `Ioi 0`.
@@ -216,7 +216,7 @@ theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
         (tendsto_pow_atTop two_ne_zero))
   convert integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ => (A ↑x).comp_ofReal)
     (integrable_mul_cexp_neg_mul_sq hb).integrableOn B using 1
-  simp only [mul_zero, ofReal_zero, zero_pow, Ne.def, bit0_eq_zero, Nat.one_ne_zero,
+  simp only [mul_zero, ofReal_zero, zero_pow, Ne, bit0_eq_zero, Nat.one_ne_zero,
     not_false_iff, Complex.exp_zero, mul_one, sub_neg_eq_add, zero_add]
 #align integral_mul_cexp_neg_mul_sq integral_mul_cexp_neg_mul_sq
 
@@ -254,7 +254,7 @@ theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
       ring
 #align integral_gaussian_sq_complex integral_gaussian_sq_complex
 
-theorem integral_gaussian (b : ℝ) : ∫ x : ℝ, exp (-b * x ^ 2) = sqrt (π / b) := by
+theorem integral_gaussian (b : ℝ) : ∫ x : ℝ, exp (-b * x ^ 2) = √(π / b) := by
   -- First we deal with the crazy case where `b ≤ 0`: then both sides vanish.
   rcases le_or_lt b 0 with (hb | hb)
   · rw [integral_undef, sqrt_eq_zero_of_nonpos]
@@ -262,8 +262,8 @@ theorem integral_gaussian (b : ℝ) : ∫ x : ℝ, exp (-b * x ^ 2) = sqrt (π /
     · simpa only [not_lt, integrable_exp_neg_mul_sq_iff] using hb
   -- Assume now `b > 0`. Then both sides are non-negative and their squares agree.
   refine' (sq_eq_sq (by positivity) (by positivity)).1 _
-  rw [← ofReal_inj, ofReal_pow, ← coe_algebraMap, IsROrC.algebraMap_eq_ofReal, ← integral_ofReal,
-    sq_sqrt (div_pos pi_pos hb).le, ← IsROrC.algebraMap_eq_ofReal, coe_algebraMap, ofReal_div]
+  rw [← ofReal_inj, ofReal_pow, ← coe_algebraMap, RCLike.algebraMap_eq_ofReal, ← integral_ofReal,
+    sq_sqrt (div_pos pi_pos hb).le, ← RCLike.algebraMap_eq_ofReal, coe_algebraMap, ofReal_div]
   convert integral_gaussian_sq_complex (by rwa [ofReal_re] : 0 < (b : ℂ).re) with _ x
   rw [ofReal_exp, ofReal_mul, ofReal_pow, ofReal_neg]
 #align integral_gaussian integral_gaussian
@@ -306,8 +306,8 @@ theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
     have : ∀ x : ℝ, cexp (-(1 : ℂ) * (x : ℂ) ^ 2) = exp (-(1 : ℝ) * x ^ 2) := by
       intro x
       simp only [ofReal_exp, neg_mul, one_mul, ofReal_neg, ofReal_pow]
-    simp_rw [this, ← coe_algebraMap, IsROrC.algebraMap_eq_ofReal, integral_ofReal,
-      ← IsROrC.algebraMap_eq_ofReal, coe_algebraMap]
+    simp_rw [this, ← coe_algebraMap, RCLike.algebraMap_eq_ofReal, integral_ofReal,
+      ← RCLike.algebraMap_eq_ofReal, coe_algebraMap]
     conv_rhs =>
       congr
       · rw [← ofReal_one, ← ofReal_div]
@@ -323,7 +323,7 @@ theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
     rw [← cpow_add _ _ (div_ne_zero (ofReal_ne_zero.mpr pi_ne_zero) (nv hc))]
     norm_num
   · -- RHS doesn't vanish
-    rw [Ne.def, cpow_eq_zero_iff, not_and_or]
+    rw [Ne, cpow_eq_zero_iff, not_and_or]
     exact Or.inl (div_ne_zero (ofReal_ne_zero.mpr pi_ne_zero) (nv hc))
 #align integral_gaussian_complex integral_gaussian_complex
 
@@ -355,12 +355,12 @@ theorem integral_gaussian_complex_Ioi {b : ℂ} (hb : 0 < re b) :
 
 -- The Gaussian integral on the half-line, `∫ x in Ioi 0, exp (-b * x^2)`, for real `b`.
 theorem integral_gaussian_Ioi (b : ℝ) :
-    ∫ x in Ioi (0 : ℝ), exp (-b * x ^ 2) = sqrt (π / b) / 2 := by
+    ∫ x in Ioi (0 : ℝ), exp (-b * x ^ 2) = √(π / b) / 2 := by
   rcases le_or_lt b 0 with (hb | hb)
   · rw [integral_undef, sqrt_eq_zero_of_nonpos, zero_div]
     exact div_nonpos_of_nonneg_of_nonpos pi_pos.le hb
     rwa [← IntegrableOn, integrableOn_Ioi_exp_neg_mul_sq_iff, not_lt]
-  rw [← IsROrC.ofReal_inj (K := ℂ), ← integral_ofReal, ← IsROrC.algebraMap_eq_ofReal,
+  rw [← RCLike.ofReal_inj (K := ℂ), ← integral_ofReal, ← RCLike.algebraMap_eq_ofReal,
     coe_algebraMap]
   convert integral_gaussian_complex_Ioi (by rwa [ofReal_re] : 0 < (b : ℂ).re)
   · simp
@@ -370,7 +370,7 @@ theorem integral_gaussian_Ioi (b : ℝ) :
 #align integral_gaussian_Ioi integral_gaussian_Ioi
 
 /-- The special-value formula `Γ(1/2) = √π`, which is equivalent to the Gaussian integral. -/
-theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = sqrt π := by
+theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = √π := by
   rw [Gamma_eq_integral one_half_pos, ← integral_comp_rpow_Ioi_of_pos zero_lt_two]
   convert congr_arg (fun x : ℝ => 2 * x) (integral_gaussian_Ioi 1) using 1
   · rw [← integral_mul_left]
@@ -606,7 +606,7 @@ theorem _root_.fourierIntegral_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
   simp_rw [this, integral_cexp_quadratic h, neg_mul, neg_neg]
   congr 2
   · rw [← div_div, div_self <| ofReal_ne_zero.mpr pi_ne_zero, one_div, inv_cpow, ← one_div]
-    rw [Ne.def, arg_eq_pi_iff, not_and_or, not_lt]
+    rw [Ne, arg_eq_pi_iff, not_and_or, not_lt]
     exact Or.inl hb.le
   · field_simp [ofReal_ne_zero.mpr pi_ne_zero]
     ring_nf
@@ -654,7 +654,7 @@ theorem integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
   convert integrable_cexp_neg_mul_sum_add hb (fun i ↦ c * w i) using 3 with v
   simp only [EuclideanSpace.measurableEquiv, MeasurableEquiv.symm_mk, MeasurableEquiv.coe_mk,
     EuclideanSpace.norm_eq, WithLp.equiv_symm_pi_apply, Real.norm_eq_abs, sq_abs, PiLp.inner_apply,
-    IsROrC.inner_apply, conj_trivial, ofReal_sum, ofReal_mul, Finset.mul_sum, neg_mul,
+    RCLike.inner_apply, conj_trivial, ofReal_sum, ofReal_mul, Finset.mul_sum, neg_mul,
     Finset.sum_neg_distrib, mul_assoc, add_left_inj, neg_inj]
   norm_cast
   rw [sq_sqrt]

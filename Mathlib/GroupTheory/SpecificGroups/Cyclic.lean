@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.Totient
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Subgroup.Simple
@@ -255,13 +255,13 @@ instance Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup 
             rw [← zpow_add, Int.emod_add_ediv, hk]; exact hx
         have hk₄ : k % Nat.find hex = (k % Nat.find hex).natAbs := by
           rw [Int.natAbs_of_nonneg
-              (Int.emod_nonneg _ (Int.coe_nat_ne_zero_iff_pos.2 (Nat.find_spec hex).1))]
+              (Int.emod_nonneg _ (Int.natCast_ne_zero_iff_pos.2 (Nat.find_spec hex).1))]
         have hk₅ : g ^ (k % Nat.find hex).natAbs ∈ H := by rwa [← zpow_natCast, ← hk₄]
         have hk₆ : (k % (Nat.find hex : ℤ)).natAbs = 0 :=
           by_contradiction fun h =>
             Nat.find_min hex
               (Int.ofNat_lt.1 <| by
-                rw [← hk₄]; exact Int.emod_lt_of_pos _ (Int.coe_nat_pos.2 (Nat.find_spec hex).1))
+                rw [← hk₄]; exact Int.emod_lt_of_pos _ (Int.natCast_pos.2 (Nat.find_spec hex).1))
               ⟨Nat.pos_of_ne_zero h, hk₅⟩
         ⟨k / (Nat.find hex : ℤ),
           Subtype.ext_iff_val.2
@@ -331,6 +331,21 @@ theorem IsCyclic.exists_monoid_generator [Finite α] [IsCyclic α] :
   exact IsCyclic.exists_generator
 #align is_cyclic.exists_monoid_generator IsCyclic.exists_monoid_generator
 #align is_add_cyclic.exists_add_monoid_generator IsAddCyclic.exists_addMonoid_generator
+
+@[to_additive]
+lemma IsCyclic.exists_ofOrder_eq_natCard [h : IsCyclic α] : ∃ g : α, orderOf g = Nat.card α := by
+  obtain ⟨g, hg⟩ := h.exists_generator
+  use g
+  rw [← card_zpowers g, (eq_top_iff' (zpowers g)).mpr hg]
+  exact Nat.card_congr (Equiv.Set.univ α)
+
+@[to_additive]
+lemma IsCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype [Fintype α] :
+    IsCyclic α ↔ ∃ g : α, orderOf g = Nat.card α := by
+  refine ⟨fun h ↦ h.exists_ofOrder_eq_natCard, fun h ↦ ?_⟩
+  obtain ⟨g, hg⟩ := h
+  refine isCyclic_of_orderOf_eq_card g ?_
+  simp [hg]
 
 section
 
@@ -439,7 +454,7 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
   by_contra h0
   -- Must qualify `Finset.card_eq_zero` because of leanprover/lean4#2849
   -- Must specify the argument `α` to avoid mathlib4#10830
-  simp_rw [not_lt, _root_.le_zero_iff (α := ℕ), Finset.card_eq_zero] at h0
+  simp_rw [not_lt, Nat.le_zero, Finset.card_eq_zero] at h0
   apply lt_irrefl c
   calc
     c = ∑ m in c.divisors, (univ.filter fun a : α => orderOf a = m).card := by
@@ -737,7 +752,7 @@ noncomputable def zmodAddCyclicAddEquiv [AddGroup G] (h : IsAddCyclic G) :
     congr
     rw [← Nat.card_zmultiples]
     exact Nat.card_congr (Equiv.subtypeUnivEquiv surj)
-  exact (Int.quotientZMultiplesNatEquivZMod n)
+  exact Int.quotientZMultiplesNatEquivZMod n
     |>.symm.trans <| QuotientAddGroup.quotientAddEquivOfEq kereq
     |>.symm.trans <| QuotientAddGroup.quotientKerEquivOfSurjective (zmultiplesHom G g) surj
 

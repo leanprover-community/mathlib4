@@ -82,7 +82,7 @@ that the `U i`'s are open subspaces of the glued space.
 Most of the times it would be easier to use the constructor `TopCat.GlueData.mk'` where the
 conditions are stated in a less categorical way.
 -/
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 structure GlueData extends GlueData TopCat where
   f_open : ∀ i j, OpenEmbedding (f i j)
   f_mono := fun i j => (TopCat.mono_iff_injective _).mpr (f_open i j).toEmbedding.inj
@@ -210,18 +210,10 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     rw [← (InvImage.equivalence _ _ D.rel_equiv).eqvGen_iff]
     refine' EqvGen.mono _ (D.eqvGen_of_π_eq h : _)
     rintro _ _ ⟨x⟩
-    rw [← show (sigmaIsoSigma.{u, u} _).inv _ = x from
-        ConcreteCategory.congr_hom (sigmaIsoSigma.{u, u} _).hom_inv_id x]
-  -- Adaption note: v4.7.0-rc1
-  -- The behaviour of `generalize` was changed in https://github.com/leanprover/lean4/pull/3575
-  -- to use transparancy `instances` (rather than `default`)
-  -- `generalize'` is a temporary backwards compatibility shim.
-  -- Hopefully we will be able to refactor this proof to use `generalize` again, and then drop
-  -- `generalize'`.
-    generalize' h : (sigmaIsoSigma.{u, u} D.V).hom x = x'
-    obtain ⟨⟨i, j⟩, y⟩ := x'
+    obtain ⟨⟨⟨i, j⟩, y⟩, rfl⟩ :=
+      (ConcreteCategory.bijective_of_isIso (sigmaIsoSigma.{u, u} _).inv).2 x
     unfold InvImage MultispanIndex.fstSigmaMap MultispanIndex.sndSigmaMap
-    simp only [Opens.inclusion_apply, TopCat.comp_app, sigmaIsoSigma_inv_apply,
+    simp only [forget_map_eq_coe, Opens.inclusion_apply, TopCat.comp_app, sigmaIsoSigma_inv_apply,
       Cofan.mk_ι_app]
     rw [← comp_apply, colimit.ι_desc, ← comp_apply, colimit.ι_desc]
     erw [sigmaIsoSigma_hom_ι_apply, sigmaIsoSigma_hom_ι_apply]
@@ -343,7 +335,7 @@ such that
 
 We can then glue the topological spaces `U i` together by identifying `V i j` with `V j i`.
 -/
--- Porting note: removed `@[nolint has_nonempty_instance]`
+-- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
 structure MkCore where
   {J : Type u}
   U : J → TopCat.{u}

@@ -6,8 +6,8 @@ Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
 import Mathlib.Analysis.InnerProductSpace.Symmetric
-import Mathlib.Analysis.NormedSpace.IsROrC
-import Mathlib.Data.IsROrC.Lemmas
+import Mathlib.Analysis.NormedSpace.RCLike
+import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.Algebra.DirectSum.Decomposition
 
 #align_import analysis.inner_product_space.projection from "leanprover-community/mathlib"@"0b7c740e25651db0ba63648fbae9f9d6f941e31b"
@@ -44,20 +44,17 @@ The Coq code is available at the following address: <http://www.lri.fr/~sboldo/e
 
 noncomputable section
 
-open IsROrC Real Filter
+open RCLike Real Filter
 
 open LinearMap (ker range)
 
 open BigOperators Topology
 
-variable {𝕜 E F : Type*} [IsROrC 𝕜]
+variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
 
--- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
-
--- mathport name: exprabsR
 local notation "absR" => abs
 
 /-! ### Orthogonal projection in inner product spaces -/
@@ -98,13 +95,13 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
     rw [cauchySeq_iff_le_tendsto_0]
     -- splits into three goals
     let b := fun n : ℕ => 8 * δ * (1 / (n + 1)) + 4 * (1 / (n + 1)) * (1 / (n + 1))
-    use fun n => sqrt (b n)
+    use fun n => √(b n)
     constructor
-    -- first goal :  `∀ (n : ℕ), 0 ≤ sqrt (b n)`
+    -- first goal :  `∀ (n : ℕ), 0 ≤ √(b n)`
     intro n
     exact sqrt_nonneg _
     constructor
-    -- second goal : `∀ (n m N : ℕ), N ≤ n → N ≤ m → dist ↑(w n) ↑(w m) ≤ sqrt (b N)`
+    -- second goal : `∀ (n m N : ℕ), N ≤ n → N ≤ m → dist ↑(w n) ↑(w m) ≤ √(b N)`
     intro p q N hp hq
     let wp := (w p : F)
     let wq := (w q : F)
@@ -165,7 +162,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
       _ = 8 * δ * div + 4 * div * div := by ring
     positivity
     -- third goal : `Tendsto (fun (n : ℕ) => √(b n)) atTop (𝓝 0)`
-    suffices Tendsto (fun x ↦ sqrt (8 * δ * x + 4 * x * x) : ℝ → ℝ) (𝓝 0) (𝓝 0)
+    suffices Tendsto (fun x ↦ √(8 * δ * x + 4 * x * x) : ℝ → ℝ) (𝓝 0) (𝓝 0)
       from this.comp tendsto_one_div_add_atTop_nhds_zero_nat
     exact Continuous.tendsto' (by continuity) _ _ (by simp)
   -- Step 3: By completeness of `K`, let `w : ℕ → K` converge to some `v : K`.
@@ -278,7 +275,7 @@ This point `v` is usually called the orthogonal projection of `u` onto `K`.
 -/
 theorem exists_norm_eq_iInf_of_complete_subspace (h : IsComplete (↑K : Set E)) :
     ∀ u : E, ∃ v ∈ K, ‖u - v‖ = ⨅ w : (K : Set E), ‖u - w‖ := by
-  letI : InnerProductSpace ℝ E := InnerProductSpace.isROrCToReal 𝕜 E
+  letI : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
   letI : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
   let K' : Submodule ℝ E := Submodule.restrictScalars ℝ K
   exact exists_norm_eq_iInf_of_complete_convex ⟨0, K'.zero_mem⟩ h K'.convex
@@ -289,7 +286,7 @@ Let `u` be a point in a real inner product space, and let `K` be a nonempty subs
 Then point `v` minimizes the distance `‖u - v‖` over points in `K` if and only if
 for all `w ∈ K`, `⟪u - v, w⟫ = 0` (i.e., `u - v` is orthogonal to the subspace `K`).
 This is superceded by `norm_eq_iInf_iff_inner_eq_zero` that gives the same conclusion over
-any `IsROrC` field.
+any `RCLike` field.
 -/
 theorem norm_eq_iInf_iff_real_inner_eq_zero (K : Submodule ℝ F) {u : F} {v : F} (hv : v ∈ K) :
     (‖u - v‖ = ⨅ w : (↑K : Set F), ‖u - w‖) ↔ ∀ w ∈ K, ⟪u - v, w⟫_ℝ = 0 :=
@@ -336,7 +333,7 @@ for all `w ∈ K`, `⟪u - v, w⟫ = 0` (i.e., `u - v` is orthogonal to the subs
 -/
 theorem norm_eq_iInf_iff_inner_eq_zero {u : E} {v : E} (hv : v ∈ K) :
     (‖u - v‖ = ⨅ w : K, ‖u - w‖) ↔ ∀ w ∈ K, ⟪u - v, w⟫ = 0 := by
-  letI : InnerProductSpace ℝ E := InnerProductSpace.isROrCToReal 𝕜 E
+  letI : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
   letI : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
   let K' : Submodule ℝ E := K.restrictScalars ℝ
   constructor
@@ -1053,13 +1050,13 @@ variable (K)
 
 -- Porting note: relax assumptions, swap LHS with RHS
 /-- If the orthogonal projection to `K` is well-defined, then a vector splits as the sum of its
-orthogonal projections onto a complete submodule `K` and onto the orthogonal complement of `K`.-/
+orthogonal projections onto a complete submodule `K` and onto the orthogonal complement of `K`. -/
 theorem orthogonalProjection_add_orthogonalProjection_orthogonal [HasOrthogonalProjection K]
     (w : E) : (orthogonalProjection K w : E) + (orthogonalProjection Kᗮ w : E) = w := by
   simp
 #align eq_sum_orthogonal_projection_self_orthogonal_complement orthogonalProjection_add_orthogonalProjection_orthogonalₓ
 
-/-- The Pythagorean theorem, for an orthogonal projection.-/
+/-- The Pythagorean theorem, for an orthogonal projection. -/
 theorem norm_sq_eq_add_norm_sq_projection (x : E) (S : Submodule 𝕜 E) [HasOrthogonalProjection S] :
     ‖x‖ ^ 2 = ‖orthogonalProjection S x‖ ^ 2 + ‖orthogonalProjection Sᗮ x‖ ^ 2 :=
   calc
@@ -1119,7 +1116,7 @@ theorem Submodule.finrank_add_inf_finrank_orthogonal {K₁ K₂ : Submodule 𝕜
     [FiniteDimensional 𝕜 K₂] (h : K₁ ≤ K₂) :
     finrank 𝕜 K₁ + finrank 𝕜 (K₁ᗮ ⊓ K₂ : Submodule 𝕜 E) = finrank 𝕜 K₂ := by
   haveI : FiniteDimensional 𝕜 K₁ := Submodule.finiteDimensional_of_le h
-  haveI := proper_isROrC 𝕜 K₁
+  haveI := proper_rclike 𝕜 K₁
   have hd := Submodule.finrank_sup_add_finrank_inf_eq K₁ (K₁ᗮ ⊓ K₂)
   rw [← inf_assoc, (Submodule.orthogonal_disjoint K₁).eq_bot, bot_inf_eq, finrank_bot,
     Submodule.sup_orthogonal_inf_of_completeSpace h] at hd
@@ -1175,7 +1172,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
   · -- Base case: `n = 0`, the fixed subspace is the whole space, so `φ = id`
     refine' ⟨[], rfl.le, show φ = 1 from _⟩
     have : ker (ContinuousLinearMap.id ℝ F - φ) = ⊤ := by
-      rwa [Nat.zero_eq, le_zero_iff, Submodule.finrank_eq_zero,
+      rwa [Nat.zero_eq, Nat.le_zero, Submodule.finrank_eq_zero,
         Submodule.orthogonal_eq_bot_iff] at hn
     symm
     ext x
@@ -1287,7 +1284,7 @@ orthogonal complement. -/
 theorem OrthogonalFamily.isInternal_iff [DecidableEq ι] [FiniteDimensional 𝕜 E]
     {V : ι → Submodule 𝕜 E} (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) :
     DirectSum.IsInternal V ↔ (iSup V)ᗮ = ⊥ :=
-  haveI h := FiniteDimensional.proper_isROrC 𝕜 (↥(iSup V))
+  haveI h := FiniteDimensional.proper_rclike 𝕜 (↥(iSup V))
   hV.isInternal_iff_of_isComplete (completeSpace_coe_iff_isComplete.mp inferInstance)
 #align orthogonal_family.is_internal_iff OrthogonalFamily.isInternal_iff
 
@@ -1439,7 +1436,7 @@ variable [FiniteDimensional 𝕜 E]
 is a basis. -/
 theorem maximal_orthonormal_iff_basis_of_finiteDimensional (hv : Orthonormal 𝕜 ((↑) : v → E)) :
     (∀ u ⊇ v, Orthonormal 𝕜 ((↑) : u → E) → u = v) ↔ ∃ b : Basis v 𝕜 E, ⇑b = ((↑) : v → E) := by
-  haveI := proper_isROrC 𝕜 (span 𝕜 v)
+  haveI := proper_rclike 𝕜 (span 𝕜 v)
   rw [maximal_orthonormal_iff_orthogonalComplement_eq_bot hv]
   rw [Submodule.orthogonal_eq_bot_iff]
   have hv_coe : range ((↑) : v → E) = v := by simp

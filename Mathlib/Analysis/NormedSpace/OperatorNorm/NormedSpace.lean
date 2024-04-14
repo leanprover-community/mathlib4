@@ -46,7 +46,7 @@ theorem bound_of_shell [RingHomIsometric σ₁₂] (f : E →ₛₗ[σ₁₂] F)
   exact SemilinearMapClass.bound_of_shell_semi_normed f ε_pos hc hf (norm_ne_zero_iff.2 hx)
 #align linear_map.bound_of_shell LinearMap.bound_of_shell
 
-/-- `LinearMap.bound_of_ball_bound'` is a version of this lemma over a field satisfying `IsROrC`
+/-- `LinearMap.bound_of_ball_bound'` is a version of this lemma over a field satisfying `RCLike`
 that produces a concrete bound.
 -/
 theorem bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] Fₗ)
@@ -151,7 +151,7 @@ theorem homothety_norm [RingHomIsometric σ₁₂] [Nontrivial E] (f : E →SL[�
 variable (f)
 
 /-- If a continuous linear map is a topology embedding, then it is expands the distances
-by a positive factor.-/
+by a positive factor. -/
 theorem antilipschitz_of_embedding (f : E →L[𝕜] Fₗ) (hf : Embedding f) :
     ∃ K, AntilipschitzWith K f :=
   f.toLinearMap.antilipschitz_of_comap_nhds_le <| map_zero f ▸ (hf.nhds_eq_comap 0).ge

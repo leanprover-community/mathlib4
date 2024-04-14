@@ -529,7 +529,7 @@ macro "smul_tac" : tactic => `(tactic|
     simp only [add_comm, mul_comm, zero_smul, succ_nsmul, zsmul_eq_mul, mul_add, mul_one, mul_zero,
       neg_add, mul_neg,
       Int.ofNat_eq_coe, Int.cast_zero, Int.cast_add, Int.cast_one,
-      Int.cast_negSucc, Int.cast_ofNat, Nat.cast_succ,
+      Int.cast_negSucc, Int.cast_natCast, Nat.cast_succ,
       Localization.mk_zero, Localization.add_mk_self, Localization.neg_mk,
       ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_neg])
 
@@ -1164,7 +1164,7 @@ theorem num_div_dvd (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
     num (algebraMap _ _ p / algebraMap _ _ q) ∣ p := by
   rw [num_div _ q, C_mul_dvd]
   · exact EuclideanDomain.div_dvd_of_dvd (gcd_dvd_left p q)
-  · simpa only [Ne.def, inv_eq_zero, Polynomial.leadingCoeff_eq_zero] using right_div_gcd_ne_zero hq
+  · simpa only [Ne, inv_eq_zero, Polynomial.leadingCoeff_eq_zero] using right_div_gcd_ne_zero hq
 #align ratfunc.num_div_dvd RatFunc.num_div_dvd
 
 /-- A version of `num_div_dvd` with the LHS in simp normal form -/
@@ -1218,7 +1218,7 @@ theorem denom_div_dvd (p q : K[X]) : denom (algebraMap _ _ p / algebraMap _ _ q)
   · simp [hq]
   rw [denom_div _ hq, C_mul_dvd]
   · exact EuclideanDomain.div_dvd_of_dvd (gcd_dvd_right p q)
-  · simpa only [Ne.def, inv_eq_zero, Polynomial.leadingCoeff_eq_zero] using right_div_gcd_ne_zero hq
+  · simpa only [Ne, inv_eq_zero, Polynomial.leadingCoeff_eq_zero] using right_div_gcd_ne_zero hq
 #align ratfunc.denom_div_dvd RatFunc.denom_div_dvd
 
 @[simp]
@@ -1543,7 +1543,7 @@ theorem eval_mul {x y : RatFunc K} (hx : Polynomial.eval₂ f a (denom x) ≠ 0)
     cases mul_eq_zero.mp this <;> contradiction
   rw [div_mul_div_comm, eq_div_iff (mul_ne_zero hx hy), div_eq_mul_inv, mul_right_comm, ←
     div_eq_mul_inv, div_eq_iff hxy]
-  simp only [← Polynomial.eval₂_mul]  -- Porting note: was `repeat' rw [← Polynomial.eval₂_mul]`
+  repeat' rw [← Polynomial.eval₂_mul]
   congr 1
   apply num_denom_mul
 #align ratfunc.eval_mul RatFunc.eval_mul

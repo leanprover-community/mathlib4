@@ -5,7 +5,7 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Order.RelIso.Basic
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Order.Hom.Set
 import Std.Data.Fin.Lemmas
 
@@ -72,8 +72,6 @@ This file expands on the development in the core library.
 
 -/
 
-set_option autoImplicit true
-
 universe u v
 
 open Fin Nat Function
@@ -85,7 +83,7 @@ def finZeroElim {α : Fin 0 → Sort*} (x : Fin 0) : α x :=
 
 namespace Fin
 
-instance : CanLift ℕ (Fin n) Fin.val (· < n) where
+instance {n : ℕ} : CanLift ℕ (Fin n) Fin.val (· < n) where
   prf k hk := ⟨⟨k, hk⟩, rfl⟩
 
 /-- A dependent variant of `Fin.elim0`. -/
@@ -333,7 +331,7 @@ The `Fin.pos_iff_ne_zero` in `Std` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
-  rw [← val_fin_lt, val_zero', _root_.pos_iff_ne_zero, Ne.def, Ne.def, ext_iff, val_zero']
+  rw [← val_fin_lt, val_zero', _root_.pos_iff_ne_zero, Ne, Ne, ext_iff, val_zero']
 #align fin.pos_iff_ne_zero Fin.pos_iff_ne_zero'
 
 #align fin.eq_zero_or_eq_succ Fin.eq_zero_or_eq_succ
@@ -554,7 +552,7 @@ protected theorem zero_add [NeZero n] (k : Fin n) : 0 + k = k := by
   simp [ext_iff, add_def, mod_eq_of_lt (is_lt k)]
 #align fin.zero_add Fin.zero_add
 
-instance [NeZero n] : OfNat (Fin n) a where
+instance {a : ℕ} [NeZero n] : OfNat (Fin n) a where
   ofNat := Fin.ofNat' a (NeZero.pos n)
 
 instance inhabited (n : ℕ) [NeZero n] : Inhabited (Fin n) :=
@@ -571,8 +569,8 @@ theorem default_eq_zero (n : ℕ) [NeZero n] : (default : Fin n) = 0 :=
 
 section from_ad_hoc
 
-@[simp] lemma ofNat'_zero [NeZero n] : (Fin.ofNat' 0 h : Fin n) = 0 := rfl
-@[simp] lemma ofNat'_one [NeZero n] : (Fin.ofNat' 1 h : Fin n) = 1 := rfl
+@[simp] lemma ofNat'_zero {h : 0 < n} [NeZero n] : (Fin.ofNat' 0 h : Fin n) = 0 := rfl
+@[simp] lemma ofNat'_one {h : 0 < n} [NeZero n] : (Fin.ofNat' 1 h : Fin n) = 1 := rfl
 
 end from_ad_hoc
 
@@ -987,12 +985,12 @@ def castSuccEmb : Fin n ↪o Fin (n + 1) :=
 #align fin.cast_succ_lt_cast_succ_iff Fin.castSucc_lt_castSucc_iff
 
 @[simp]
-theorem castSucc_le_castSucc_iff : castSucc a ≤ castSucc b ↔ a ≤ b := Iff.rfl
+theorem castSucc_le_castSucc_iff {a b : Fin n} : castSucc a ≤ castSucc b ↔ a ≤ b := Iff.rfl
 @[simp]
-theorem succ_le_castSucc_iff : succ a ≤ castSucc b ↔ a < b := by
+theorem succ_le_castSucc_iff {a b : Fin n} : succ a ≤ castSucc b ↔ a < b := by
   rw [le_castSucc_iff, succ_lt_succ_iff]
 @[simp]
-theorem castSucc_lt_succ_iff : castSucc a < succ b ↔ a ≤ b := by
+theorem castSucc_lt_succ_iff {a b : Fin n} : castSucc a < succ b ↔ a ≤ b := by
   rw [castSucc_lt_iff_succ_le, succ_le_succ_iff]
 
 theorem le_of_castSucc_lt_of_succ_lt {a b : Fin (n + 1)} {i : Fin n}
@@ -1042,7 +1040,7 @@ theorem castSucc_zero' [NeZero n] : castSucc (0 : Fin n) = 0 :=
 /-- `castSucc i` is positive when `i` is positive.
 
 The `Fin.castSucc_pos` in `Std` only applies in `Fin (n+1)`.
-This one instead uses a `NeZero n` typeclass hypothesis.-/
+This one instead uses a `NeZero n` typeclass hypothesis. -/
 theorem castSucc_pos' [NeZero n] {i : Fin n} (h : 0 < i) : 0 < castSucc i := by
   simpa [lt_iff_val_lt_val] using h
 #align fin.cast_succ_pos Fin.castSucc_pos'
@@ -1088,7 +1086,7 @@ theorem coe_eq_castSucc {a : Fin n} : (a : Fin (n + 1)) = castSucc a := by
 #align fin.coe_eq_cast_succ Fin.coe_eq_castSucc
 
 theorem coe_succ_lt_iff_lt {n : ℕ} {j k : Fin n} : (j : Fin <| n + 1) < k ↔ j < k := by
-  simp only [coe_eq_castSucc]; rfl
+  simp only [coe_eq_castSucc, castSucc_lt_castSucc_iff]
 
 #align fin.coe_succ_eq_succ Fin.coeSucc_eq_succ
 
@@ -1194,11 +1192,11 @@ section Pred
 #align fin.add_nat_sub_nat Fin.addNat_subNat
 #align fin.sub_nat_add_nat Fin.subNat_addNat
 
-theorem strictMono_pred_comp [Preorder α] {f : α → Fin (n + 1)} (hf : ∀ a, f a ≠ 0)
+theorem strictMono_pred_comp {α : Type*} [Preorder α] {f : α → Fin (n + 1)} (hf : ∀ a, f a ≠ 0)
     (hf₂ : StrictMono f) : StrictMono (fun a => pred (f a) (hf a)) :=
     fun _ _ h => pred_lt_pred_iff.2 (hf₂ h)
 
-theorem monotone_pred_comp [Preorder α] {f : α → Fin (n + 1)} (hf : ∀ a, f a ≠ 0)
+theorem monotone_pred_comp {α : Type*} [Preorder α] {f : α → Fin (n + 1)} (hf : ∀ a, f a ≠ 0)
     (hf₂ : Monotone f) : Monotone (fun a => pred (f a) (hf a)) :=
     fun _ _ h => pred_le_pred_iff.2 (hf₂ h)
 
@@ -1211,13 +1209,13 @@ theorem pred_one' [NeZero n] (h := (zero_ne_one' (n := n)).symm) :
 theorem pred_last (h := last_pos'.ne') :
     pred (last (n + 1)) h = last n := by simp_rw [← succ_last, pred_succ]
 
-theorem pred_lt_iff {i : Fin (n + 1)} (hi : i ≠ 0) : pred i hi < j ↔ i < succ j := by
+theorem pred_lt_iff {j : Fin n} {i : Fin (n + 1)} (hi : i ≠ 0) : pred i hi < j ↔ i < succ j := by
   rw [← succ_lt_succ_iff, succ_pred]
-theorem lt_pred_iff {i : Fin (n + 1)} (hi : i ≠ 0) : j < pred i hi ↔ succ j < i := by
+theorem lt_pred_iff {j : Fin n} {i : Fin (n + 1)} (hi : i ≠ 0) : j < pred i hi ↔ succ j < i := by
   rw [← succ_lt_succ_iff, succ_pred]
-theorem pred_le_iff {i : Fin (n + 1)} (hi : i ≠ 0) : pred i hi ≤ j ↔ i ≤ succ j := by
+theorem pred_le_iff {j : Fin n} {i : Fin (n + 1)} (hi : i ≠ 0) : pred i hi ≤ j ↔ i ≤ succ j := by
   rw [← succ_le_succ_iff, succ_pred]
-theorem le_pred_iff {i : Fin (n + 1)} (hi : i ≠ 0) : j ≤ pred i hi ↔ succ j ≤ i := by
+theorem le_pred_iff {j : Fin n} {i : Fin (n + 1)} (hi : i ≠ 0) : j ≤ pred i hi ↔ succ j ≤ i := by
   rw [← succ_le_succ_iff, succ_pred]
 
 theorem castSucc_pred_eq_pred_castSucc {a : Fin (n + 1)} (ha : a ≠ 0)
@@ -1297,27 +1295,27 @@ theorem castPred_le_castPred_iff {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j
 theorem castPred_lt_castPred_iff {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j ≠ last n} :
     castPred i hi < castPred j hj ↔ i < j := Iff.rfl
 
-theorem strictMono_castPred_comp [Preorder α] {f : α → Fin (n + 1)} (hf : ∀ a, f a ≠ last n)
-    (hf₂ : StrictMono f) : StrictMono (fun a => castPred (f a) (hf a)) :=
+theorem strictMono_castPred_comp {α : Type*} [Preorder α] {f : α → Fin (n + 1)}
+    (hf : ∀ a, f a ≠ last n) (hf₂ : StrictMono f) : StrictMono (fun a => castPred (f a) (hf a)) :=
     fun _ _ h => castPred_lt_castPred_iff.2 (hf₂ h)
 
-theorem monotone_castPred_comp [Preorder α] {f : α → Fin (n + 1)} (hf : ∀ a, f a ≠ last n)
-    (hf₂ : Monotone f) : Monotone (fun a => castPred (f a) (hf a)) :=
+theorem monotone_castPred_comp {α : Type*} [Preorder α] {f : α → Fin (n + 1)}
+    (hf : ∀ a, f a ≠ last n) (hf₂ : Monotone f) : Monotone (fun a => castPred (f a) (hf a)) :=
     fun _ _ h => castPred_le_castPred_iff.2 (hf₂ h)
 
-theorem castPred_lt_iff {i : Fin (n + 1)} (hi : i ≠ last n) :
+theorem castPred_lt_iff {j : Fin n} {i : Fin (n + 1)} (hi : i ≠ last n) :
     castPred i hi < j ↔ i < castSucc j := by
   rw [← castSucc_lt_castSucc_iff, castSucc_castPred]
 
-theorem lt_castPred_iff {i : Fin (n + 1)} (hi : i ≠ last n) :
+theorem lt_castPred_iff {j : Fin n} {i : Fin (n + 1)} (hi : i ≠ last n) :
     j < castPred i hi ↔ castSucc j < i := by
   rw [← castSucc_lt_castSucc_iff, castSucc_castPred]
 
-theorem castPred_le_iff {i : Fin (n + 1)} (hi : i ≠ last n) :
+theorem castPred_le_iff {j : Fin n} {i : Fin (n + 1)} (hi : i ≠ last n) :
     castPred i hi ≤ j ↔ i ≤ castSucc j := by
   rw [← castSucc_le_castSucc_iff, castSucc_castPred]
 
-theorem le_castPred_iff {i : Fin (n + 1)} (hi : i ≠ last n) :
+theorem le_castPred_iff {j : Fin n} {i : Fin (n + 1)} (hi : i ≠ last n) :
     j ≤ castPred i hi ↔ castSucc j ≤ i := by
   rw [← castSucc_le_castSucc_iff, castSucc_castPred]
 
@@ -1339,11 +1337,12 @@ theorem castPred_one [NeZero n] (h := one_lt_last.ne) : castPred (1 : Fin (n + 2
   · rfl
 #align fin.cast_pred_one Fin.castPred_one
 
-theorem rev_pred (h : i ≠ 0) (h' := rev_ne_iff.mpr ((rev_last _).symm ▸ h)) :
+theorem rev_pred {i : Fin (n + 1)} (h : i ≠ 0) (h' := rev_ne_iff.mpr ((rev_last _).symm ▸ h)) :
     rev (pred i h) = castPred (rev i) h' := by
   rw [← castSucc_inj, castSucc_castPred, ← rev_succ, succ_pred]
 
-theorem rev_castPred (h : i ≠ last n) (h' := rev_ne_iff.mpr ((rev_zero _).symm ▸ h)) :
+theorem rev_castPred {i : Fin (n + 1)}
+    (h : i ≠ last n) (h' := rev_ne_iff.mpr ((rev_zero _).symm ▸ h)) :
     rev (castPred i h) = pred (rev i) h' := by
   rw [← succ_inj, succ_pred, ← rev_castSucc, castSucc_castPred]
 
@@ -1387,7 +1386,8 @@ theorem pred_lt_castPred_iff {a b : Fin (n + 1)} (ha : a ≠ 0) (hb : b ≠ last
     pred a ha < castPred b hb ↔ a ≤ b := by
   rw [lt_castPred_iff, castSucc_pred_lt_iff ha]
 
-theorem pred_lt_castPred (h₁ : a ≠ 0) (h₂ : a ≠ last n) : pred a h₁ < castPred a h₂ := by
+theorem pred_lt_castPred {a : Fin (n + 1)} (h₁ : a ≠ 0) (h₂ : a ≠ last n) :
+    pred a h₁ < castPred a h₂ := by
   rw [pred_lt_castPred_iff]
 
 end CastPred

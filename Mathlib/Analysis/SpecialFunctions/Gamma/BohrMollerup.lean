@@ -130,7 +130,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
       Memℒp (f c u) (ENNReal.ofReal (1 / c)) (volume.restrict (Ioi 0)) := by
     intro c u hc hu
     have A : ENNReal.ofReal (1 / c) ≠ 0 := by
-      rwa [Ne.def, ENNReal.ofReal_eq_zero, not_le, one_div_pos]
+      rwa [Ne, ENNReal.ofReal_eq_zero, not_le, one_div_pos]
     have B : ENNReal.ofReal (1 / c) ≠ ∞ := ENNReal.ofReal_ne_top
     rw [← memℒp_norm_rpow_iff _ A B, ENNReal.toReal_ofReal (one_div_nonneg.mpr hc.le),
       ENNReal.div_self A B, memℒp_one_iff_integrable]
@@ -444,7 +444,7 @@ multiple of `Gamma`, and we can compute the constant by specialising at `s = 1`.
 
 /-- Auxiliary definition for the doubling formula (we'll show this is equal to `Gamma s`) -/
 def doublingGamma (s : ℝ) : ℝ :=
-  Gamma (s / 2) * Gamma (s / 2 + 1 / 2) * 2 ^ (s - 1) / sqrt π
+  Gamma (s / 2) * Gamma (s / 2 + 1 / 2) * 2 ^ (s - 1) / √π
 #align real.doubling_Gamma Real.doublingGamma
 
 theorem doublingGamma_add_one (s : ℝ) (hs : s ≠ 0) :
@@ -461,10 +461,10 @@ theorem doublingGamma_one : doublingGamma 1 = 1 := by
 
 theorem log_doublingGamma_eq :
     EqOn (log ∘ doublingGamma)
-      (fun s => log (Gamma (s / 2)) + log (Gamma (s / 2 + 1 / 2)) + s * log 2 - log (2 * sqrt π))
+      (fun s => log (Gamma (s / 2)) + log (Gamma (s / 2 + 1 / 2)) + s * log 2 - log (2 * √π))
       (Ioi 0) := by
   intro s hs
-  have h1 : sqrt π ≠ 0 := sqrt_ne_zero'.mpr pi_pos
+  have h1 : √π ≠ 0 := sqrt_ne_zero'.mpr pi_pos
   have h2 : Gamma (s / 2) ≠ 0 := (Gamma_pos_of_pos <| div_pos hs two_pos).ne'
   have h3 : Gamma (s / 2 + 1 / 2) ≠ 0 :=
     (Gamma_pos_of_pos <| add_pos (div_pos hs two_pos) one_half_pos).ne'
@@ -512,7 +512,7 @@ theorem doublingGamma_eq_Gamma {s : ℝ} (hs : 0 < s) : doublingGamma s = Gamma 
 we shall later prove this for all `s` as `Real.Gamma_mul_Gamma_add_half` (superseding this result)
 but this result is needed as an intermediate step. -/
 theorem Gamma_mul_Gamma_add_half_of_pos {s : ℝ} (hs : 0 < s) :
-    Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * 2 ^ (1 - 2 * s) * sqrt π := by
+    Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * 2 ^ (1 - 2 * s) * √π := by
   rw [← doublingGamma_eq_Gamma (mul_pos two_pos hs), doublingGamma,
     mul_div_cancel_left₀ _ (two_ne_zero' ℝ), (by abel : 1 - 2 * s = -(2 * s - 1)),
     rpow_neg zero_le_two]

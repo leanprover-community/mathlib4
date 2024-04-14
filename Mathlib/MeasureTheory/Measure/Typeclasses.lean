@@ -148,7 +148,7 @@ theorem measureUnivNNReal_eq_zero [IsFiniteMeasure μ] : measureUnivNNReal μ = 
 
 theorem measureUnivNNReal_pos [IsFiniteMeasure μ] (hμ : μ ≠ 0) : 0 < measureUnivNNReal μ := by
   contrapose! hμ
-  simpa [measureUnivNNReal_eq_zero, le_zero_iff] using hμ
+  simpa [measureUnivNNReal_eq_zero, Nat.le_zero] using hμ
 #align measure_theory.measure_univ_nnreal_pos MeasureTheory.measureUnivNNReal_pos
 
 /-- `le_of_add_le_add_left` is normally applicable to `OrderedCancelAddCommMonoid`,
@@ -506,7 +506,8 @@ theorem finiteAtBot {m0 : MeasurableSpace α} (μ : Measure α) : μ.FiniteAtFil
   about the sets, such as that they are monotone.
   `SigmaFinite` is defined in terms of this: `μ` is σ-finite if there exists a sequence of
   finite spanning sets in the collection of all measurable sets. -/
--- @[nolint has_nonempty_instance] -- Porting note: deleted
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 structure FiniteSpanningSetsIn {m0 : MeasurableSpace α} (μ : Measure α) (C : Set (Set α)) where
   protected set : ℕ → Set α
   protected set_mem : ∀ i, set i ∈ C

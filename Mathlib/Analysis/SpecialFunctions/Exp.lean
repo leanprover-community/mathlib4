@@ -171,7 +171,7 @@ namespace Real
 
 variable {α : Type*} {x y z : ℝ} {l : Filter α}
 
-theorem exp_half (x : ℝ) : exp (x / 2) = sqrt (exp x) := by
+theorem exp_half (x : ℝ) : exp (x / 2) = √(exp x) := by
   rw [eq_comm, sqrt_eq_iff_sq_eq, sq, ← exp_add, add_halves] <;> exact (exp_pos _).le
 #align real.exp_half Real.exp_half
 
@@ -475,7 +475,7 @@ theorem tendsto_exp_comap_re_atTop : Tendsto exp (comap re atTop) (cobounded ℂ
   comap_exp_cobounded ▸ tendsto_comap
 #align complex.tendsto_exp_comap_re_at_top Complex.tendsto_exp_comap_re_atTop
 
-/-- `Complex.exp z → 0` as `Complex.re z → -∞`.-/
+/-- `Complex.exp z → 0` as `Complex.re z → -∞`. -/
 theorem tendsto_exp_comap_re_atBot : Tendsto exp (comap re atBot) (𝓝 0) :=
   comap_exp_nhds_zero ▸ tendsto_comap
 #align complex.tendsto_exp_comap_re_at_bot Complex.tendsto_exp_comap_re_atBot
