@@ -513,6 +513,31 @@ lemma rpow_mul_intCast (hx : 0 ≤ x) (y : ℝ) (n : ℤ) : x ^ (y * n) = (x ^ y
 /-! Note: lemmas about `(∏ i in s, f i ^ r)` such as `Real.finset_prod_rpow` are proved
 in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 
+/-- `rpow` version of `Finset.prod_pow_eq_pow_sum`. -/
+theorem finset_prod_rpow_eq_rpow_sum
+    {ι} (s : Finset ι) (f : ι → ℝ) (hs : ∀ i ∈ s, 0 ≤ f i) (r : ℝ) (hr : 0 ≤ r) :
+    ∏ i in s, r ^ f i = r ^ (∑ i in s, f i) := by
+  refine' Finset.cons_induction_on s
+    (p := fun s ↦ (∀ i ∈ s, 0 ≤ f i) → ∏ i in s, r ^ f i = r ^ ∑ i in s, f i) _ _ hs
+  · simp only [Finset.prod_empty, sum_empty, rpow_zero, implies_true]
+  · intros a s ha ih hs
+    have h : ∀ i ∈ s, 0 ≤ f i := fun i hi ↦ hs i (Finset.mem_cons.mpr (Or.inr hi))
+    rw [Finset.sum_cons, Finset.prod_cons, ih h, rpow_add_of_nonneg hr ?_ (Finset.sum_nonneg h)]
+    exact hs a (Finset.mem_cons.mpr (Or.inl rfl))
+
+theorem prod_div_rpow_distrib {ι} {s : Finset ι} {f g h : ι → ℝ} (hf : ∀ x ∈ s, 0 ≤ f x)
+    (hg : ∀ x ∈ s, 0 ≤ g x) :
+    ∏ x in s, (f x / g x) ^ (h x) = (∏ x in s, (f x) ^ (h x)) / (∏ x in s, (g x) ^ (h x)) := by
+  revert hf hg
+  apply Finset.cons_induction_on (p := fun s => (∀ x ∈ s, 0 ≤ f x) → (∀ x ∈ s, 0 ≤ g x) →
+    ∏ x in s, (f x / g x) ^ (h x) = (∏ x in s, (f x) ^ (h x)) / (∏ x in s, (g x) ^ (h x)))
+  · simp only [implies_true, Finset.prod_empty, ne_eq, one_ne_zero, not_false_eq_true, div_self]
+  · simp only [Finset.prod_cons, Finset.mem_cons]
+    intro x s _ ih hf hg
+    rw [ih, div_rpow, div_mul_div_comm] <;>
+    intros <;> (first | apply hf | apply hg) <;>
+    first | (left; rfl) | (right; assumption)
+
 /-!
 ## Order and monotonicity
 -/
