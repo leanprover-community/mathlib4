@@ -74,20 +74,11 @@ lemma IsWellOrderLimitElement.wellOrderSucc_lt {b : α} (hb : b < a) :
 
 lemma eq_bot_or_eq_succ_or_isWellOrderLimitElement [OrderBot α] (a : α) :
     a = ⊥ ∨ (∃ b, a = wellOrderSucc b ∧ b < a) ∨ IsWellOrderLimitElement a := by
-  by_cases h₁ : a = ⊥
-  · exact Or.inl (by rw [h₁])
-  · by_cases h₂ : ∃ b, a = wellOrderSucc b ∧ b < a
-    · exact Or.inr (Or.inl h₂)
-    · refine Or.inr (Or.inr (IsWellOrderLimitElement.mk ?_ ?_))
-      · obtain h₃|h₃ := eq_or_lt_of_le (bot_le : ⊥ ≤ a)
-        · exfalso
-          exact h₁ h₃.symm
-        · exact ⟨⊥, h₃⟩
-      · intro b hb
-        obtain h₃|h₃ := eq_or_lt_of_le (wellOrderSucc_le hb)
-        · exfalso
-          exact h₂ ⟨b, h₃.symm, hb⟩
-        · exact ⟨wellOrderSucc b, self_lt_wellOrderSucc hb, h₃⟩
+  refine or_iff_not_imp_left.2 <| fun h₁ ↦ or_iff_not_imp_left.2 <| fun h₂ ↦ ?_
+  refine (IsWellOrderLimitElement.mk ⟨⊥, Ne.bot_lt h₁⟩ fun b hb ↦ ?_)
+  obtain rfl | h₃ := eq_or_lt_of_le (wellOrderSucc_le hb)
+  · exact (h₂ ⟨b, rfl, hb⟩).elim
+  · exact ⟨wellOrderSucc b, self_lt_wellOrderSucc hb, h₃⟩
 
 lemma IsWellOrderLimitElement.neq_succ (a : α) (ha : a < wellOrderSucc a)
     [IsWellOrderLimitElement (wellOrderSucc a)] : False := by
