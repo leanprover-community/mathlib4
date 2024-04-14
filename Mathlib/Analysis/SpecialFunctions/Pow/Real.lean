@@ -515,17 +515,17 @@ in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 
 /-- `rpow` version of `Finset.prod_pow_eq_pow_sum`. -/
 theorem finset_prod_rpow_eq_rpow_sum
-    {ι} (s : Finset ι) (f : ι → ℝ) (hs : ∀ i ∈ s, 0 ≤ f i) (r : ℝ) (hr : 0 ≤ r) :
+    {ι : Type*} (s : Finset ι) {f : ι → ℝ} (hs : ∀ i ∈ s, 0 ≤ f i) {r : ℝ} (hr : 0 ≤ r) :
     ∏ i in s, r ^ f i = r ^ (∑ i in s, f i) := by
-  refine' Finset.cons_induction_on s
-    (p := fun s ↦ (∀ i ∈ s, 0 ≤ f i) → ∏ i in s, r ^ f i = r ^ ∑ i in s, f i) _ _ hs
+  refine Finset.cons_induction_on s
+    (p := fun s ↦ (∀ i ∈ s, 0 ≤ f i) → ∏ i in s, r ^ f i = r ^ ∑ i in s, f i) ?_ ?_ hs
   · simp only [Finset.prod_empty, sum_empty, rpow_zero, implies_true]
   · intros a s ha ih hs
     have h : ∀ i ∈ s, 0 ≤ f i := fun i hi ↦ hs i (Finset.mem_cons.mpr (Or.inr hi))
     rw [Finset.sum_cons, Finset.prod_cons, ih h, rpow_add_of_nonneg hr ?_ (Finset.sum_nonneg h)]
     exact hs a (Finset.mem_cons.mpr (Or.inl rfl))
 
-theorem prod_div_rpow_distrib {ι} {s : Finset ι} {f g h : ι → ℝ} (hf : ∀ x ∈ s, 0 ≤ f x)
+theorem prod_div_rpow_distrib {ι : Type*} {s : Finset ι} {f g h : ι → ℝ} (hf : ∀ x ∈ s, 0 ≤ f x)
     (hg : ∀ x ∈ s, 0 ≤ g x) :
     ∏ x in s, (f x / g x) ^ (h x) = (∏ x in s, (f x) ^ (h x)) / (∏ x in s, (g x) ^ (h x)) := by
   revert hf hg
