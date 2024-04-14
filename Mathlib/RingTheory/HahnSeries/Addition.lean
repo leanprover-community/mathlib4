@@ -198,6 +198,11 @@ theorem sub_coeff {x y : HahnSeries Γ R} {a : Γ} : (x - y).coeff a = x.coeff a
   simp
 #align hahn_series.sub_coeff HahnSeries.sub_coeff
 
+theorem orderTop_neg {x : HahnSeries Γ R} : (-x).orderTop = x.orderTop := by
+  by_cases hx : x = 0
+  · rw [hx, neg_zero]
+  · simp only [orderTop, support_neg, neg_eq_zero]
+
 @[simp]
 theorem order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by
   by_cases hf : f = 0
@@ -233,6 +238,15 @@ instance : SMulZeroClass R (HahnSeries Γ V) :=
       intro
       ext
       simp only [smul_coeff, zero_coeff, smul_zero]}
+
+theorem orderTop_smul_not_lt (r : R) (x : HahnSeries Γ V) : ¬ (r • x).orderTop < x.orderTop := by
+  by_cases hrx : r • x = 0
+  · rw [hrx, orderTop_zero]
+    exact not_top_lt
+  · have hx : x ≠ 0 := right_ne_zero_of_smul hrx
+    simp [orderTop_of_ne hx, orderTop_of_ne hrx]
+    exact Set.IsWF.min_of_subset_not_lt_min
+      (Function.support_smul_subset_right (fun _ => r) x.coeff)
 
 theorem order_smul_not_lt [Zero Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
     ¬ (r • x).order < x.order := by

@@ -410,7 +410,12 @@ theorem coeff_eq_zero_of_lt_order {x : HahnSeries Γ R} {i : Γ} (hi : i < x.ord
 
 theorem zero_lt_order_of_orderTop {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (hxne : x ≠ 0) :
     0 < x.order := by
-  simp_all only [orderTop, order, WithTop.coe_pos, dite_false, ne_eq, not_false_eq_true]
+  simp_all only [orderTop_of_ne hxne, WithTop.coe_pos, ne_eq, order_of_ne hxne]
+
+theorem zero_lt_orderTop_of_order {x : HahnSeries Γ R} (hx : 0 < x.order) : 0 < x.orderTop := by
+  by_cases h : x = 0
+  · simp_all only [order_zero, lt_self_iff_false]
+  · simp_all only [order_of_ne h, orderTop_of_ne h, WithTop.coe_pos]
 
 theorem zero_le_order_of_orderTop {x : HahnSeries Γ R} (hx : 0 ≤ x.orderTop) : 0 ≤ x.order := by
   by_cases h : x = 0
@@ -533,30 +538,13 @@ section LinearOrder
 
 theorem le_orderTop_iff [LinearOrder Γ] [Zero R] {x : HahnSeries Γ R} {i : WithTop Γ} :
     i ≤ x.orderTop ↔ (∀ (j : Γ), j < i → x.coeff j = 0) := by
-  refine { mp := fun hi j hj => coeff_eq_zero_of_lt_orderTop (lt_of_lt_of_le hj hi), mpr := ?mpr }
-  intro hj
+  refine { mp := fun hi j hj =>
+    coeff_eq_zero_of_lt_orderTop (lt_of_lt_of_le hj hi), mpr := fun hj => ?_ }
   by_cases hx : x = 0
-  · have htop : orderTop x = ⊤ := by
-      rw [hx, orderTop_zero]
-    rw [htop]
-    simp only [le_top]
-  · have hit : i ≠ ⊤ := by -- golf or split!
-      intro hi
-      refine hx (HahnSeries.ext x 0 ?_)
-      funext g
-      rw [zero_coeff]
-      refine hj g ?_
-      rw [hi]
-      exact WithTop.coe_lt_top g
-    let i' := WithTop.untop i hit
-    have hi' : i' = i := WithTop.coe_untop i hit
-    rw [← hi', orderTop_of_ne hx, WithTop.coe_le_coe]
-    refine (Set.IsWF.le_min_iff (isWF_support x) (support_nonempty_iff.mpr hx)).mpr ?_
-    intro k hk
-    by_contra hnk
-    refine hk (hj k ?_)
-    rw [← hi', WithTop.coe_lt_coe]
-    exact lt_of_not_ge hnk
+  · simp_all only [zero_coeff, implies_true, orderTop_zero, le_top]
+  · by_contra h
+    specialize hj (x.isWF_support.min (support_nonempty_iff.2 hx))
+    simp_all [not_le, orderTop_of_ne hx, ← leadingCoeff_of_ne hx, leadingCoeff_ne_iff.mp hx]
 
 section LocallyFiniteLinearOrder
 

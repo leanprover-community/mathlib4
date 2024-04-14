@@ -115,7 +115,7 @@ theorem one_ncoef_ite (x : V) (n : ℤ) : @ncoef R V _ _ _ 1 n x = if n = (-1) t
 -/
 section HasseDerivative
 
--- start out with this as a linear map!!!
+-- start out with this as a linear map?
 
 /-- The `k`th Hasse derivative of a vertex operator `∑ A_i X^i` is `∑ (i.choose k) A_i X^(i-k)`.
 That is, it sends a vector to the `k`th Hasse derivative of the corresponding Laurent series.
