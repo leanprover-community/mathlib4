@@ -45,7 +45,7 @@ namespace AlgebraicGeometry
 open Spec (structureSheaf)
 
 /-- The category of affine schemes -/
--- Porting note: removed
+-- Porting note(#5171): linter not ported yet
 -- @[nolint has_nonempty_instance]
 def AffineScheme :=
   Scheme.Spec.EssImageSubcategory
