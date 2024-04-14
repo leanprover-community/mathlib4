@@ -815,42 +815,37 @@ lemma mk_congr_succ_d₂ {S S' : ShortComplex V} (h : S = S') :
   subst h
   simp
 
-section
-
-lemma mkAux_eq_shortComplex_mk_d_comp_d
-    (a b c : ℕ) (hab : a + 1 = b) (hbc : b + 1 = c) :
-    mkAux X₀ X₁ X₂ d₀ d₁ s succ a =
-      ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d c b a) := by
-  subst hab hbc
-  change ShortComplex.mk _ _ (mkAux X₀ X₁ X₂ d₀ d₁ s succ a).zero = _
+lemma mkAux_eq_shortComplex_mk_d_comp_d (n : ℕ) :
+    mkAux X₀ X₁ X₂ d₀ d₁ s succ n =
+      ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n) := by
+  change ShortComplex.mk _ _ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero = _
   dsimp [mk, of, mkAux]
-  congr <;> simp
+  congr
+  · rw [if_pos (by rfl), id_comp]
+  · simp
 
-variable (a b c d : ℕ) (hab : a + 1 = b) (hbc : b + 1 = c) (hcd : c + 1 = d)
+/-- The isomorphism from `(mk X₀ X₁ X₂ d₀ d₁ s succ).X (n + 3)` that is given by
+the inductive construction. -/
+def mkXIso (n : ℕ) :
+    (mk X₀ X₁ X₂ d₀ d₁ s succ).X (n + 3) ≅
+      (succ (ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n))).1 :=
+  eqToIso (by
+    rw [← mk_congr_succ_X₃ succ
+      (mkAux_eq_shortComplex_mk_d_comp_d X₀ X₁ X₂ d₀ d₁ s succ n)]
+    rfl)
 
-def mkXIso  :
-    (mk X₀ X₁ X₂ d₀ d₁ s succ).X d ≅
-      (succ (ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d c b a))).1 := eqToIso (by
-  rw [← mk_congr_succ_X₃ succ
-    (mkAux_eq_shortComplex_mk_d_comp_d X₀ X₁ X₂ d₀ d₁ s succ a b c hab hbc)]
-  subst hab hbc hcd
-  rfl)
-
-def mk_d (a b c d : ℕ) (hab : a + 1 = b) (hbc : b + 1 = c) (hcd : c + 1 = d) :
-    (mk X₀ X₁ X₂ d₀ d₁ s succ).d d c = (mkXIso X₀ X₁ X₂ d₀ d₁ s succ a b c d hab hbc hcd).hom ≫
-      (succ (ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d c b a))).2.1 := by
+lemma mk_d (n : ℕ) :
+    (mk X₀ X₁ X₂ d₀ d₁ s succ).d (n + 3) (n + 2) =
+      (mkXIso X₀ X₁ X₂ d₀ d₁ s succ n).hom ≫ (succ
+        (ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n))).2.1 := by
   have eq := mk_congr_succ_d₂ succ
-    (mkAux_eq_shortComplex_mk_d_comp_d X₀ X₁ X₂ d₀ d₁ s succ a b c hab hbc)
-  subst hab hbc hcd
+    (mkAux_eq_shortComplex_mk_d_comp_d X₀ X₁ X₂ d₀ d₁ s succ n)
   rw [eqToHom_refl, comp_id] at eq
   refine Eq.trans ?_ eq
   dsimp only [mk, of]
-  rw [dif_pos rfl, eqToHom_refl, id_comp]
+  rw [dif_pos (by rfl), eqToHom_refl, id_comp]
   rfl
 
-end
-
--- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
 /-- A simpler inductive constructor for `ℕ`-indexed chain complexes.
 
 You provide explicitly the first differential,
@@ -883,53 +878,30 @@ theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 1 0 = d₀ := by
   rw [if_pos rfl, Category.id_comp]
 #align chain_complex.mk'_d_1_0 ChainComplex.mk'_d_1_0
 
-def mk'XIso (n₀ n₁ n₂ : ℕ) (h₁ : n₀ + 1 = n₁) (h₂ : n₁ + 1 = n₂) :
-    (mk' X₀ X₁ d₀ succ').X n₂ ≅ (succ' ((mk' X₀ X₁ d₀ succ').d n₁ n₀)).1 := by
-  cases' n₀ with n₀
+/-- The isomorphism from `(mk' X₀ X₁ d₀ succ').X (n + 2)` that is given by
+the inductive construction. -/
+def mk'XIso (n : ℕ) :
+    (mk' X₀ X₁ d₀ succ').X (n + 2) ≅ (succ' ((mk' X₀ X₁ d₀ succ').d (n + 1) n)).1 := by
+  obtain _|n := n
   · apply eqToIso
-    obtain rfl : n₁ = 1 := h₁.symm
-    obtain rfl : n₂ = 2 := h₂.symm
     dsimp [mk', mk, of, mkAux]
     rw [if_pos (by omega), id_comp]
-  · exact mkXIso _ _ _ _ _ (succ' d₀).2.2 (fun S => succ' S.f) n₀ (n₀ + 1) n₁ n₂
-      rfl (by omega) (by omega)
+  · exact mkXIso _ _ _ _ _ (succ' d₀).2.2 (fun S => succ' S.f) n
 
 lemma mk'_congr_succ'_d {X Y : V} (f g : X ⟶ Y) (h : f = g) :
     (succ' f).2.1 = eqToHom (by rw [h]) ≫ (succ' g).2.1 := by
   subst h
   simp
 
-lemma mk'_d (n₀ n₁ n₂ : ℕ) (h₁ : n₀ + 1 = n₁) (h₂ : n₁ + 1 = n₂) :
-    (mk' X₀ X₁ d₀ succ').d n₂ n₁ = (mk'XIso X₀ X₁ d₀ succ' n₀ n₁ n₂ h₁ h₂).hom ≫
-      (succ' ((mk' X₀ X₁ d₀ succ').d n₁ n₀)).2.1 := by
-  cases' n₀ with n₀
-  · obtain rfl : n₁ = 1 := h₁.symm
-    obtain rfl : n₂ = 2 := h₂.symm
-    dsimp [mk'XIso, mk']
+lemma mk'_d (n : ℕ) :
+    (mk' X₀ X₁ d₀ succ').d (n + 2) (n + 1) = (mk'XIso X₀ X₁ d₀ succ' n).hom ≫
+      (succ' ((mk' X₀ X₁ d₀ succ').d (n + 1) n)).2.1 := by
+  obtain _|n := n
+  · dsimp [mk'XIso, mk']
     rw [mk_d_2_1]
     apply mk'_congr_succ'_d
-    simp
-  · exact mk_d _ _ _ _ _ _ _ _ _ _ _ rfl (by omega) (by omega)
-
-/- Porting note:
-Downstream constructions using `mk'` (e.g. in `CategoryTheory.Abelian.Projective`)
-have very slow proofs, because of bad simp lemmas.
-It would be better to write good lemmas here if possible, such as
-
-```
-theorem mk'_X_succ (j : ℕ) :
-    (mk' X₀ X₁ d₀ succ').X (j + 2) = (succ' ⟨_, _, (mk' X₀ X₁ d₀ succ').d (j + 1) j⟩).1 := by
-  sorry
-
-theorem mk'_d_succ {i j : ℕ} :
-    (mk' X₀ X₁ d₀ succ').d (j + 2) (j + 1) =
-      eqToHom (mk'_X_succ X₀ X₁ d₀ succ' j) ≫
-      (succ' ⟨_, _, (mk' X₀ X₁ d₀ succ').d (j + 1) j⟩).2.1 :=
-  sorry
-```
-
-These are already tricky, and it may be better to write analogous lemmas for `mk` first.
--/
+    rw [mk_d_1_0]
+  · apply mk_d
 
 end Mk
 

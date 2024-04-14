@@ -10,7 +10,7 @@ lemma CategoryTheory.Limits.kernel.map_id {C : Type*} [Category C] [HasZeroMorph
 
 @[simp]
 lemma CategoryTheory.Limits.kernel.map_zero {C : Type*} [Category C] [HasZeroMorphisms C]
-    {X Y X' Y' : C} (f : X ⟶ Y) (f' : X' ⟶ Y') [HasKernel f]  [HasKernel f'] (q : Y ⟶ Y')
+    {X Y X' Y' : C} (f : X ⟶ Y) (f' : X' ⟶ Y') [HasKernel f] [HasKernel f'] (q : Y ⟶ Y')
     (w : f ≫ q = 0 ≫ f') : kernel.map f f' 0 q w = 0 := by
   simp only [← cancel_mono (kernel.ι f'), lift_ι, comp_zero, zero_comp]
 
@@ -96,8 +96,8 @@ lemma leftResolution'_d_1_0 : (leftResolution' π X).d 1 0 =
   simp [leftResolution'XOneIso, leftResolution'XZeroIso, leftResolution']
 
 noncomputable def leftResolution'XIso (n : ℕ) :
-    (leftResolution' π X).X (n + 2) ≅ F.obj (kernel ((leftResolution' π X).d (n + 1) n)) :=
-  mk'XIso _ _ _ _ _ _ _ rfl rfl
+    (leftResolution' π X).X (n + 2) ≅ F.obj (kernel ((leftResolution' π X).d (n + 1) n)) := by
+  apply mk'XIso
 
 @[simp]
 lemma leftResolution'_d (n : ℕ) :
