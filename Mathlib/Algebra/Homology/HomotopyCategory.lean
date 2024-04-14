@@ -17,9 +17,6 @@ import Mathlib.CategoryTheory.Quotient.Preadditive
 with chain maps identified when they are homotopic.
 -/
 
-set_option autoImplicit true
-
-
 universe v u
 
 open scoped Classical

@@ -337,7 +337,7 @@ lemma IsCyclic.exists_ofOrder_eq_natCard [h : IsCyclic α] : ∃ g : α, orderOf
   obtain ⟨g, hg⟩ := h.exists_generator
   use g
   rw [← card_zpowers g, (eq_top_iff' (zpowers g)).mpr hg]
-  exact (Nat.card_congr (Equiv.Set.univ α))
+  exact Nat.card_congr (Equiv.Set.univ α)
 
 @[to_additive]
 lemma IsCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype [Fintype α] :
@@ -752,7 +752,7 @@ noncomputable def zmodAddCyclicAddEquiv [AddGroup G] (h : IsAddCyclic G) :
     congr
     rw [← Nat.card_zmultiples]
     exact Nat.card_congr (Equiv.subtypeUnivEquiv surj)
-  exact (Int.quotientZMultiplesNatEquivZMod n)
+  exact Int.quotientZMultiplesNatEquivZMod n
     |>.symm.trans <| QuotientAddGroup.quotientAddEquivOfEq kereq
     |>.symm.trans <| QuotientAddGroup.quotientKerEquivOfSurjective (zmultiplesHom G g) surj
 
