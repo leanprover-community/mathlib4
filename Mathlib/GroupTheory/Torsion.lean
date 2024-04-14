@@ -28,7 +28,7 @@ This file defines torsion groups, i.e. groups where all elements have finite ord
 ## Implementation
 
 All torsion monoids are really groups (which is proven here as `Monoid.IsTorsion.group`), but since
-the definition can be stated on monoids it is implemented on `monoid` to match other declarations in
+the definition can be stated on monoids it is implemented on `Monoid` to match other declarations in
 the group theory library.
 
 ## Tags

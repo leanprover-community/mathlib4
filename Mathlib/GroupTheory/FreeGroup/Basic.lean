@@ -946,7 +946,7 @@ section Sum
 variable [AddGroup α] (x y : FreeGroup α)
 
 /-- If `α` is a group, then any function from `α` to `α` extends uniquely to a homomorphism from the
-free group over `α` to `α`. This is the additive version of `prod`. -/
+free group over `α` to `α`. This is the additive version of `Prod`. -/
 def sum : α :=
   @prod (Multiplicative _) _ x
 #align free_group.sum FreeGroup.sum

@@ -112,12 +112,12 @@ theorem iff_rTensor_injective' :
 @[deprecated]
 alias lTensor_inj_iff_rTensor_inj := LinearMap.lTensor_inj_iff_rTensor_inj
 
-/-- The `lTensor`-variant of `iff_rTensor_injective`. .-/
+/-- The `lTensor`-variant of `iff_rTensor_injective`. . -/
 theorem iff_lTensor_injective :
     Module.Flat R M ↔ ∀ ⦃I : Ideal R⦄ (_ : I.FG), Function.Injective (lTensor M I.subtype) := by
   simpa [← comm_comp_rTensor_comp_comm_eq] using Module.Flat.iff_rTensor_injective R M
 
-/-- The `lTensor`-variant of `iff_rTensor_injective'`. .-/
+/-- The `lTensor`-variant of `iff_rTensor_injective'`. . -/
 theorem iff_lTensor_injective' :
     Module.Flat R M ↔ ∀ (I : Ideal R), Function.Injective (lTensor M I.subtype) := by
   simpa [← comm_comp_rTensor_comp_comm_eq] using Module.Flat.iff_rTensor_injective' R M
@@ -228,7 +228,7 @@ theorem iff_characterModule_baer : Flat R M ↔ Module.Baer R (CharacterModule M
   simp_rw [iff_rTensor_injective', Baer, rTensor_injective_iff_lcomp_surjective,
     Surjective, DFunLike.ext_iff, Subtype.forall]; rfl
 
-/-- `CharacterModule M` is an injective module iff `M` is flat.-/
+/-- `CharacterModule M` is an injective module iff `M` is flat. -/
 theorem iff_characterModule_injective [Small.{v} R] :
     Flat R M ↔ Module.Injective R (CharacterModule M) :=
   iff_characterModule_baer.trans Module.Baer.iff_injective

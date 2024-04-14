@@ -69,7 +69,7 @@ variable {R' : Type*} [Semiring R'] [MulSemiringAction R' A] [SMulCommClass R' R
 
 /-- The action on a subalgebra corresponding to applying the action to every element.
 
-This is available as an instance in the `pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseMulAction : MulAction R' (Subalgebra R A)
     where
   smul a S := S.map (MulSemiringAction.toAlgHom _ _ a)

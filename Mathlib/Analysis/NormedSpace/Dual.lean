@@ -138,7 +138,7 @@ theorem eq_iff_forall_dual_eq {x y : E} : x = y ↔ ∀ g : Dual 𝕜 E, g x = g
   simp [sub_eq_zero]
 #align normed_space.eq_iff_forall_dual_eq NormedSpace.eq_iff_forall_dual_eq
 
-/-- The inclusion of a normed space in its double dual is an isometry onto its image.-/
+/-- The inclusion of a normed space in its double dual is an isometry onto its image. -/
 def inclusionInDoubleDualLi : E →ₗᵢ[𝕜] Dual 𝕜 (Dual 𝕜 E) :=
   { inclusionInDoubleDual 𝕜 E with
     norm_map' := by
