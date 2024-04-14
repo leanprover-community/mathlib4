@@ -38,20 +38,24 @@ def ofNatHom : ℕ →+* ℤ :=
 
 -- Porting note: no need to be `@[simp]`, as `Nat.cast_pos` handles this.
 -- @[simp]
-theorem coe_nat_pos {n : ℕ} : (0 : ℤ) < n ↔ 0 < n :=
+theorem natCast_pos {n : ℕ} : (0 : ℤ) < n ↔ 0 < n :=
   Nat.cast_pos
-#align int.coe_nat_pos Int.coe_nat_pos
+#align int.coe_nat_pos Int.natCast_pos
 
-theorem coe_nat_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) :=
-  Int.coe_nat_pos.2 (succ_pos n)
-#align int.coe_nat_succ_pos Int.coe_nat_succ_pos
+theorem natCast_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) :=
+  Int.natCast_pos.2 (succ_pos n)
+#align int.coe_nat_succ_pos Int.natCast_succ_pos
+
+-- 2024-04-05
+@[deprecated] alias coe_nat_pos := natCast_pos
+@[deprecated] alias coe_nat_succ_pos := natCast_succ_pos
 
 lemma toNat_lt' {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.toNat < b ↔ a < b := by
-  rw [← toNat_lt_toNat, toNat_natCast]; exact coe_nat_pos.2 hb.bot_lt
+  rw [← toNat_lt_toNat, toNat_natCast]; exact natCast_pos.2 hb.bot_lt
 #align int.to_nat_lt Int.toNat_lt'
 
 lemma natMod_lt {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.natMod b < b :=
-  (toNat_lt' hb).2 <| emod_lt_of_pos _ <| coe_nat_pos.2 hb.bot_lt
+  (toNat_lt' hb).2 <| emod_lt_of_pos _ <| natCast_pos.2 hb.bot_lt
 #align int.nat_mod_lt Int.natMod_lt
 
 section cast
@@ -517,14 +521,18 @@ variable {π : ι → Type*} [∀ i, IntCast (π i)]
 instance intCast : IntCast (∀ i, π i) :=
   { intCast := fun n _ ↦ n }
 
-theorem int_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
+theorem intCast_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
   rfl
-#align pi.int_apply Pi.int_apply
+#align pi.int_apply Pi.intCast_apply
 
 @[simp]
-theorem coe_int (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
+theorem intCast_def (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
   rfl
-#align pi.coe_int Pi.coe_int
+#align pi.coe_int Pi.intCast_def
+
+-- 2024-04-05
+@[deprecated] alias int_apply := intCast_apply
+@[deprecated] alias coe_int := intCast_def
 
 end Pi
 

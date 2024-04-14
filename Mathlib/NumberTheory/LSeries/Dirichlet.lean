@@ -279,7 +279,7 @@ lemma LSeries_zeta_mul_Lseries_moebius {s : ℂ} (hs : 1 < s.re) : L ↗ζ s * L
     LSeries_delta, Pi.one_apply]
 
 /-- The L-series of the arithmetic function `ζ` does not vanish on the right half-plane
-`re s > 1`.-/
+`re s > 1`. -/
 lemma LSeries_zeta_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : L ↗ζ s ≠ 0 :=
   fun h ↦ by simpa only [h, zero_mul, zero_ne_one] using LSeries_zeta_mul_Lseries_moebius hs
 

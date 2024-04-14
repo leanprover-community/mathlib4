@@ -85,7 +85,7 @@ end gamma_action
 
 section eisSummand
 
-/-- The function on `(Fin 2 → ℤ)` whose sum defines an Eisenstein series.-/
+/-- The function on `(Fin 2 → ℤ)` whose sum defines an Eisenstein series. -/
 def eisSummand (k : ℤ) (v : Fin 2 → ℤ) (z : ℍ) : ℂ := 1 / (v 0 * z.1 + v 1) ^ k
 
 /-- How the `eisSummand` function changes under the Moebius action. -/

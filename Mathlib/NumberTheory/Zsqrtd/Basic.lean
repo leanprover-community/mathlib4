@@ -273,43 +273,52 @@ instance nontrivial : Nontrivial (ℤ√d) :=
   ⟨⟨0, 1, (Zsqrtd.ext_iff 0 1).not.mpr (by simp)⟩⟩
 
 @[simp]
-theorem coe_nat_re (n : ℕ) : (n : ℤ√d).re = n :=
+theorem natCast_re (n : ℕ) : (n : ℤ√d).re = n :=
   rfl
-#align zsqrtd.coe_nat_re Zsqrtd.coe_nat_re
+#align zsqrtd.coe_nat_re Zsqrtd.natCast_re
 
 @[simp]
 theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).re = n :=
   rfl
 
 @[simp]
-theorem coe_nat_im (n : ℕ) : (n : ℤ√d).im = 0 :=
+theorem natCast_im (n : ℕ) : (n : ℤ√d).im = 0 :=
   rfl
-#align zsqrtd.coe_nat_im Zsqrtd.coe_nat_im
+#align zsqrtd.coe_nat_im Zsqrtd.natCast_im
 
 @[simp]
 theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).im = 0 :=
   rfl
 
-theorem coe_nat_val (n : ℕ) : (n : ℤ√d) = ⟨n, 0⟩ :=
+theorem natCast_val (n : ℕ) : (n : ℤ√d) = ⟨n, 0⟩ :=
   rfl
-#align zsqrtd.coe_nat_val Zsqrtd.coe_nat_val
+#align zsqrtd.coe_nat_val Zsqrtd.natCast_val
 
 @[simp]
-theorem coe_int_re (n : ℤ) : (n : ℤ√d).re = n := by cases n <;> rfl
-#align zsqrtd.coe_int_re Zsqrtd.coe_int_re
+theorem intCast_re (n : ℤ) : (n : ℤ√d).re = n := by cases n <;> rfl
+#align zsqrtd.coe_int_re Zsqrtd.intCast_re
 
 @[simp]
-theorem coe_int_im (n : ℤ) : (n : ℤ√d).im = 0 := by cases n <;> rfl
-#align zsqrtd.coe_int_im Zsqrtd.coe_int_im
+theorem intCast_im (n : ℤ) : (n : ℤ√d).im = 0 := by cases n <;> rfl
+#align zsqrtd.coe_int_im Zsqrtd.intCast_im
 
-theorem coe_int_val (n : ℤ) : (n : ℤ√d) = ⟨n, 0⟩ := by ext <;> simp
-#align zsqrtd.coe_int_val Zsqrtd.coe_int_val
+theorem intCast_val (n : ℤ) : (n : ℤ√d) = ⟨n, 0⟩ := by ext <;> simp
+#align zsqrtd.coe_int_val Zsqrtd.intCast_val
 
 instance : CharZero (ℤ√d) where cast_injective m n := by simp [Zsqrtd.ext_iff]
 
 @[simp]
-theorem ofInt_eq_coe (n : ℤ) : (ofInt n : ℤ√d) = n := by ext <;> simp [ofInt_re, ofInt_im]
-#align zsqrtd.of_int_eq_coe Zsqrtd.ofInt_eq_coe
+theorem ofInt_eq_intCast (n : ℤ) : (ofInt n : ℤ√d) = n := by ext <;> simp [ofInt_re, ofInt_im]
+#align zsqrtd.of_int_eq_coe Zsqrtd.ofInt_eq_intCast
+
+-- 2024-04-05
+@[deprecated] alias coe_nat_re := natCast_re
+@[deprecated] alias coe_nat_im := natCast_im
+@[deprecated] alias coe_nat_val := natCast_val
+@[deprecated] alias coe_int_re := intCast_re
+@[deprecated] alias coe_int_im := intCast_im
+@[deprecated] alias coe_int_val := intCast_val
+@[deprecated] alias ofInt_eq_coe := ofInt_eq_intCast
 
 @[simp]
 theorem smul_val (n x y : ℤ) : (n : ℤ√d) * ⟨x, y⟩ = ⟨n * x, n * y⟩ := by ext <;> simp
@@ -359,8 +368,8 @@ protected theorem coe_int_inj {m n : ℤ} (h : (↑m : ℤ√d) = ↑n) : m = n 
 theorem coe_int_dvd_iff (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ z ∣ a.im := by
   constructor
   · rintro ⟨x, rfl⟩
-    simp only [add_zero, coe_int_re, zero_mul, mul_im, dvd_mul_right, and_self_iff,
-      mul_re, mul_zero, coe_int_im]
+    simp only [add_zero, intCast_re, zero_mul, mul_im, dvd_mul_right, and_self_iff,
+      mul_re, mul_zero, intCast_im]
   · rintro ⟨⟨r, hr⟩, ⟨i, hi⟩⟩
     use ⟨r, i⟩
     rw [smul_val, Zsqrtd.ext_iff]
@@ -372,8 +381,8 @@ theorem coe_int_dvd_coe_int (a b : ℤ) : (a : ℤ√d) ∣ b ↔ a ∣ b := by
   rw [coe_int_dvd_iff]
   constructor
   · rintro ⟨hre, -⟩
-    rwa [coe_int_re] at hre
-  · rw [coe_int_re, coe_int_im]
+    rwa [intCast_re] at hre
+  · rw [intCast_re, intCast_im]
     exact fun hc => ⟨hc, dvd_zero a⟩
 #align zsqrtd.coe_int_dvd_coe_int Zsqrtd.coe_int_dvd_coe_int
 
@@ -1068,7 +1077,7 @@ theorem lift_injective [CharZero R] {d : ℤ} (r : { r : R // r * r = ↑d })
   (injective_iff_map_eq_zero (lift r)).mpr fun a ha => by
     have h_inj : Function.Injective ((↑) : ℤ → R) := Int.cast_injective
     suffices lift r a.norm = 0 by
-      simp only [coe_int_re, add_zero, lift_apply_apply, coe_int_im, Int.cast_zero,
+      simp only [intCast_re, add_zero, lift_apply_apply, intCast_im, Int.cast_zero,
         zero_mul] at this
       rwa [← Int.cast_zero, h_inj.eq_iff, norm_eq_zero hd] at this
     rw [norm_eq_mul_conj, RingHom.map_mul, ha, zero_mul]

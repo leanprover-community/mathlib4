@@ -502,9 +502,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
       add_le' := fun f g => by
         rcases p.dichotomy with (rfl | hp')
         · cases isEmpty_or_nonempty α
-          · -- porting note (#10745): was `simp [lp.eq_zero' f]`
-            rw [lp.eq_zero' f]
-            simp only [zero_add, norm_zero, le_refl] -- porting note (#11083): just `simp` was slow
+          · simp only [lp.eq_zero' f, zero_add, norm_zero, le_refl]
           refine' (lp.isLUB_norm (f + g)).2 _
           rintro x ⟨i, rfl⟩
           refine' le_trans _ (add_mem_upperBounds_add
@@ -890,7 +888,7 @@ theorem _root_.natCast_memℓp_infty (n : ℕ) : Memℓp (n : ∀ i, B i) ∞ :=
 #align nat_cast_mem_ℓp_infty natCast_memℓp_infty
 
 theorem _root_.intCast_memℓp_infty (z : ℤ) : Memℓp (z : ∀ i, B i) ∞ :=
-  coe_int_mem (lpInftySubring B) z
+  intCast_mem (lpInftySubring B) z
 #align int_cast_mem_ℓp_infty intCast_memℓp_infty
 
 @[simp]

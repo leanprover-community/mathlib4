@@ -172,8 +172,6 @@ def aeval : R[X] →ₐ[R] A :=
   eval₂AlgHom' (Algebra.ofId _ _) x (Algebra.commutes · _)
 #align polynomial.aeval Polynomial.aeval
 
--- Porting note: removed `variable` due to redundant binder annotation update
-
 @[simp]
 theorem adjoin_X : Algebra.adjoin R ({X} : Set R[X]) = ⊤ := by
   refine' top_unique fun p _hp => _

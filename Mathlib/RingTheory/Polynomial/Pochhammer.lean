@@ -71,7 +71,7 @@ theorem monic_ascPochhammer (n : ℕ) [Nontrivial S] [NoZeroDivisors S] :
   induction' n with n hn
   · simp
   · have : leadingCoeff (X + 1 : S[X]) = 1 := leadingCoeff_X_add_C 1
-    rw [ascPochhammer_succ_left, Monic.def', leadingCoeff_mul,
+    rw [ascPochhammer_succ_left, Monic.def, leadingCoeff_mul,
       leadingCoeff_comp (ne_zero_of_eq_one <| natDegree_X_add_C 1 : natDegree (X + 1) ≠ 0), hn,
       monic_X, one_mul, one_mul, this, one_pow]
 
@@ -265,7 +265,7 @@ theorem monic_descPochhammer (n : ℕ) [Nontrivial R] [NoZeroDivisors R] :
   · simp
   · have h : leadingCoeff (X - 1 : R[X]) = 1 := leadingCoeff_X_sub_C 1
     have : natDegree (X - (1 : R[X])) ≠ 0 := ne_zero_of_eq_one <| natDegree_X_sub_C (1 : R)
-    rw [descPochhammer_succ_left, Monic.def', leadingCoeff_mul, leadingCoeff_comp this, hn, monic_X,
+    rw [descPochhammer_succ_left, Monic.def, leadingCoeff_mul, leadingCoeff_comp this, hn, monic_X,
         one_mul, one_mul, h, one_pow]
 
 section
