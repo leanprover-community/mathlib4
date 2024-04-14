@@ -36,8 +36,6 @@ open Complex MeasureTheory Set intervalIntegral
 
 local notation "𝕌" => UnitAddCircle
 
-attribute [local instance] Real.fact_zero_lt_one
-
 section BernoulliFunProps
 
 /-! Simple properties of the Bernoulli polynomial, as a function `ℝ → ℝ`. -/
@@ -226,7 +224,7 @@ theorem hasSum_one_div_pow_mul_fourier_mul_bernoulliFun {k : ℕ} (hk : 2 ≤ k)
     exact Or.inl two_pi_I_ne_zero
   · exact Nat.cast_ne_zero.mpr (Nat.factorial_ne_zero _)
   · rw [ContinuousMap.coe_mk, Function.comp_apply, ofReal_inj, periodizedBernoulli,
-      AddCircle.liftIco_coe_apply (by rwa [zero_add])]
+      AddCircle.liftIco_coe_apply (show y ∈ Ico 0 (0 + 1) by rwa [zero_add])]
 #align has_sum_one_div_pow_mul_fourier_mul_bernoulli_fun hasSum_one_div_pow_mul_fourier_mul_bernoulliFun
 
 end BernoulliPeriodized
