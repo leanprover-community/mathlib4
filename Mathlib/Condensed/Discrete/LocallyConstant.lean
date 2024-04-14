@@ -1,12 +1,13 @@
-import Mathlib.Condensed.PreservesProductExplicit
 import Mathlib.Condensed.TopComparison
-import Mathlib.Condensed.Discrete
+import Mathlib.Condensed.Discrete.ConstantSheaf
 
 namespace LocallyConstant
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
-/-- Push forward of locally constant maps under any map, by post-composition. -/
+/-- Push forward of locally constant maps under any map, by post-composition.
+
+TODO: PR as change to `LocallyConstant.comap`. -/
 def comap' (f : C(X, Y)) (g : LocallyConstant Y Z) : LocallyConstant X Z :=
   ⟨g ∘ f, g.isLocallyConstant.comp_continuous f.continuous⟩
 
@@ -63,6 +64,54 @@ def LC' : Type (u+1) ⥤ CondensedSet.{u} where
   map_comp f g := by simp only [LC.map_comp]; rfl
 
 namespace Condensed.locallyConstantDiscrete
+
+section
+
+open CompHaus
+
+variable (X : CondensedSet.{u}) {α : Type u} [Finite α] (σ : α → Type u)
+  [∀ a, TopologicalSpace (σ a)] [∀ a, CompactSpace (σ a)] [∀ a, T2Space (σ a)]
+
+def sigmaComparison : X.val.obj ⟨(of ((a : α) × σ a))⟩ ⟶ ((a : α) → X.val.obj ⟨of (σ a)⟩) :=
+  fun x a ↦ X.val.map ⟨Sigma.mk a, continuous_sigmaMk⟩ x
+
+noncomputable instance : PreservesLimitsOfShape (Discrete α) X.val :=
+  let α' := (Countable.toSmall α).equiv_small.choose
+  let e : α ≃ α' := (Countable.toSmall α).equiv_small.choose_spec.some
+  have : Fintype α := Fintype.ofFinite _
+  have : Fintype α' := Fintype.ofEquiv α e
+  have : PreservesFiniteProducts X.val := inferInstance
+  have := this.preserves α'
+  preservesLimitsOfShapeOfEquiv (Discrete.equivalence e.symm) X.val
+
+theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
+    (X.val.mapIso (opCoproductIsoProduct' (finiteCoproduct.isColimit.{u, u} fun a ↦ of (σ a))
+      (productIsProduct fun x ↦ Opposite.op (of (σ x))))).hom ≫
+    (PreservesProduct.iso X.val fun a ↦ ⟨of (σ a)⟩).hom ≫
+    (Types.productIso.{u, u + 1} fun a ↦ X.val.obj ⟨of (σ a)⟩).hom := by
+  ext x a
+  simp only [finiteCoproduct.cocone_pt, Fan.mk_pt, Functor.mapIso_hom,
+    PreservesProduct.iso_hom, types_comp_apply, Types.productIso_hom_comp_eval_apply]
+  have := congrFun (piComparison_comp_π X.val (fun a ↦ ⟨of (σ a)⟩) a)
+  simp only [types_comp_apply] at this
+  rw [this, ← FunctorToTypes.map_comp_apply]
+  simp only [sigmaComparison]
+  apply congrFun
+  congr 2
+  erw [← opCoproductIsoProduct_inv_comp_ι]
+  simp only [coe_of, Opposite.unop_op, unop_comp, Quiver.Hom.unop_op, Category.assoc]
+  change finiteCoproduct.ι.{u, u} (fun a ↦ of (σ a)) _ = _
+  rw [← Sigma.ι_comp_toFiniteCoproduct]
+  congr
+  simp only [opCoproductIsoProduct, ← unop_comp, coproductIsoCoproduct,
+    opCoproductIsoProduct'_comp_self]
+  rfl
+
+instance : IsIso <| sigmaComparison X σ := by
+  rw [sigmaComparison_eq_comp_isos]
+  infer_instance
+
+end
 
 variable {S : CompHaus.{u}} {Y : Type (u+1)} (f : S → Y) (f' : LocallyConstant S Y)
 
@@ -192,17 +241,17 @@ variable {Y : CondensedSet.{u}} (f : LocallyConstant S (Y.val.obj (op (⊤_ _)))
 
 @[elementwise (attr := simp), reassoc]
 lemma sigmaComparison_comp_sigmaIso' (X : CondensedSet.{u}) (a : α f):
-    (X.val.mapIso (sigmaIso f).op).hom ≫ Condensed.sigmaComparison X (σ f) ≫ (fun g ↦ g a) =
+    (X.val.mapIso (sigmaIso f).op).hom ≫ sigmaComparison X (σ f) ≫ (fun g ↦ g a) =
       X.val.map (sigmaIncl f a).op := by
   ext
-  simp only [Functor.mapIso_hom, Iso.op_hom, types_comp_apply, Condensed.sigmaComparison,
+  simp only [Functor.mapIso_hom, Iso.op_hom, types_comp_apply, sigmaComparison,
     CompHaus.coe_of]
   rw [← FunctorToTypes.map_comp_apply]
   congr
 
 -- @[elementwise (attr := simp), reassoc]
 lemma sigmaComparison_comp_sigmaIso (a : α f):
-    (Y.val.mapIso (sigmaIso f).op).hom ≫ Condensed.sigmaComparison Y (σ f) ≫ (fun g ↦ g a) =
+    (Y.val.mapIso (sigmaIso f).op).hom ≫ sigmaComparison Y (σ f) ≫ (fun g ↦ g a) =
       Y.val.map (sigmaIncl f a).op := sigmaComparison_comp_sigmaIso' f Y a
 
 def counit_app_app_image : (a : α f) → Y.val.obj ⟨CompHaus.of <| a.val⟩ :=
@@ -210,13 +259,13 @@ def counit_app_app_image : (a : α f) → Y.val.obj ⟨CompHaus.of <| a.val⟩ :
 
 def counit_app_app (S : CompHaus.{u}) (Y : CondensedSet.{u}) :
     LocallyConstant S (Y.val.obj (op (⊤_ _))) ⟶ Y.val.obj ⟨S⟩ :=
-  fun f ↦ ((inv (Condensed.sigmaComparison Y (σ f))) ≫ (Y.val.mapIso (sigmaIso f).op).inv)
+  fun f ↦ ((inv (sigmaComparison Y (σ f))) ≫ (Y.val.mapIso (sigmaIso f).op).inv)
     (counit_app_app_image f)
 
 lemma locallyConstantCondensed_ext' (X : CondensedSet.{u}) (x y : X.val.obj ⟨S⟩)
     (h : ∀ (a : α f), X.val.map (sigmaIncl f a).op x = X.val.map (sigmaIncl f a).op y) : x = y := by
   apply_fun (X.val.mapIso (sigmaIso f).op).hom using injective_of_mono _
-  apply_fun Condensed.sigmaComparison X (σ f) using injective_of_mono _
+  apply_fun sigmaComparison X (σ f) using injective_of_mono _
   ext a
   specialize h a
   rw [← sigmaComparison_comp_sigmaIso'] at h
@@ -235,7 +284,7 @@ lemma incl_of_counit_app_app (a : α f) :
   simp only [← sigmaComparison_comp_sigmaIso, Functor.mapIso_hom, Iso.op_hom, types_comp_apply]
   simp only [counit_app_app, Functor.mapIso_inv, ← Iso.op_hom, types_comp_apply,
     ← FunctorToTypes.map_comp_apply, Iso.inv_hom_id, FunctorToTypes.map_id_apply,
-    types_iso_inv_comp_apply (i := Condensed.sigmaComparison _ _)]
+    types_iso_inv_comp_apply (i := sigmaComparison _ _)]
 
 lemma incl_comap (a : α (f.comap' g)) : sigmaIncl (f.comap' g) a ≫ g =
     (component_hom f g a) ≫ sigmaIncl f _ := rfl
@@ -335,11 +384,34 @@ def _root_.CompHaus.isTerminalPUnit : IsTerminal (CompHaus.of PUnit.{u + 1}) :=
     ⟨⟨⟨fun _ => PUnit.unit, continuous_const⟩⟩, fun f => by ext; aesop⟩
   Limits.IsTerminal.ofUnique _
 
-def _root_.CompHaus.terminalIsoPunit : ⊤_ CompHaus.{u} ≅ CompHaus.of PUnit :=
+def _root_.CompHaus.terminalIsoPUnit : ⊤_ CompHaus.{u} ≅ CompHaus.of PUnit :=
   terminalIsTerminal.uniqueUpToIso CompHaus.isTerminalPUnit
 
 @[simps]
-def adjunction' : Adjunction.CoreUnitCounit LC' (underlying _) where
+def unitInv : LC' ⋙ underlying _ ⟶ 𝟭 (Type (u+1)) where
+  app X f := f.toFun (CompHaus.terminalIsoPUnit.inv PUnit.unit)
+
+def unitIso : 𝟭 (Type (u+1)) ≅ LC' ⋙ underlying _ where
+  hom := unit
+  inv := unitInv
+  inv_hom_id := by
+    ext
+    simp only [Functor.comp_obj, underlying_obj, LC'_obj_val, LC_obj_obj, FunctorToTypes.comp,
+      unitInv_app, toFun_eq_coe, unit_app, const, NatTrans.id_app, types_id_apply]
+    apply DFunLike.ext
+    intro _
+    simp only [coe_mk, Function.const_apply]
+    congr
+    apply_fun CompHaus.terminalIsoPUnit.hom
+    · rfl
+    · intro _ _ h
+      convert congrArg CompHaus.terminalIsoPUnit.inv h
+      all_goals simp
+
+instance : IsIso unit := (inferInstance : IsIso unitIso.hom)
+
+@[simps]
+def adjunction' : Adjunction.CoreUnitCounit LC' (underlying (Type (u+1))) where
   unit := unit
   counit := counit
   left_triangle := by
@@ -359,7 +431,7 @@ def adjunction' : Adjunction.CoreUnitCounit LC' (underlying _) where
     intro a
     erw [incl_of_counit_app_app]
     simp only [unit, Functor.id_obj, coe_const, counit_app_app_image]
-    let y : ⊤_ CompHaus := CompHaus.terminalIsoPunit.inv ()
+    let y : ⊤_ CompHaus := CompHaus.terminalIsoPUnit.inv PUnit.unit
     have := α.map_eq_image _ a ⟨y, by simp [α.mem_iff_eq_image, ← α.map_preimage_eq_image, unit]⟩
     erw [← this]
     simp only [unit, Functor.id_obj, coe_const, Function.const_apply]
