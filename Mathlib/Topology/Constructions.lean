@@ -319,12 +319,13 @@ section Prod
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
   [TopologicalSpace ε] [TopologicalSpace ζ]
 
--- Porting note (#11215): TODO: Lean 4 fails to deduce implicit args
+theorem continuous_prod_iff {f : X → Y × Z} :
+    Continuous f ↔ Continuous (Prod.fst ∘ f) ∧ Continuous (Prod.snd ∘ f) :=
+  continuous_inf_rng.trans <| continuous_induced_rng.and continuous_induced_rng
+
 @[simp] theorem continuous_prod_mk {f : X → Y} {g : X → Z} :
     (Continuous fun x => (f x, g x)) ↔ Continuous f ∧ Continuous g :=
-  (@continuous_inf_rng X (Y × Z) _ _ (TopologicalSpace.induced Prod.fst _)
-    (TopologicalSpace.induced Prod.snd _)).trans <|
-    continuous_induced_rng.and continuous_induced_rng
+  continuous_prod_iff
 #align continuous_prod_mk continuous_prod_mk
 
 @[continuity]

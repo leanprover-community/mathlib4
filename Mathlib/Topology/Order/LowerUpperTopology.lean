@@ -3,6 +3,7 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
+import Mathlib.Data.Set.Intervals.Pi
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Order.Lattice
@@ -396,17 +397,13 @@ instance instIsLowerProd [Preorder α] [TopologicalSpace α] [IsLower α]
     refine' le_antisymm (le_generateFrom _) _
     · rintro _ ⟨x, rfl⟩
       exact (isClosed_Ici.prod isClosed_Ici).isOpen_compl
-    rw [(IsLower.isTopologicalBasis.prod
-      IsLower.isTopologicalBasis).eq_generateFrom, le_generateFrom_iff_subset_isOpen,
-      image2_subset_iff]
-    rintro _ ⟨s, hs, rfl⟩ _ ⟨t, ht, rfl⟩
-    dsimp
-    simp_rw [coe_upperClosure, compl_iUnion, prod_eq, preimage_iInter, preimage_compl]
-    -- without `let`, `refine` tries to use the product topology and fails
+    simp_rw [← continuous_id_iff_le, @continuous_prod_iff, @IsLower.continuous_iff_Ici]
     let _ : TopologicalSpace (α × β) := lower (α × β)
-    refine (hs.isOpen_biInter fun a _ => ?_).inter (ht.isOpen_biInter fun b _ => ?_)
-    · exact GenerateOpen.basic _ ⟨(a, ⊥), by simp [Ici_prod_eq, prod_univ]⟩
-    · exact GenerateOpen.basic _ ⟨(⊥, b), by simp [Ici_prod_eq, univ_prod]⟩
+    have : IsLower (α × β) := ⟨rfl⟩
+    convert And.intro (fun a ↦ isClosed_Ici (a := (a, (⊥ : β))))
+      (fun b ↦ isClosed_Ici (a := ((⊥ : α), b))) <;>
+    ext ⟨x, y⟩ <;>
+    simp
 
 instance instIsUpperProd [Preorder α] [TopologicalSpace α] [IsUpper α]
     [OrderTop α] [Preorder β] [TopologicalSpace β] [IsUpper β] [OrderTop β] :
@@ -414,6 +411,29 @@ instance instIsUpperProd [Preorder α] [TopologicalSpace α] [IsUpper α]
   topology_eq_upperTopology := by
     suffices IsLower (α × β)ᵒᵈ from IsLower.topology_eq_lowerTopology (α := (α × β)ᵒᵈ)
     exact instIsLowerProd (α := αᵒᵈ) (β := βᵒᵈ)
+
+instance instIsLowerPi {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)]
+    [∀ i, TopologicalSpace (α i)] [∀ i, IsLower (α i)] [∀ i, OrderBot (α i)] :
+    IsLower (Π i, α i) where
+  topology_eq_lowerTopology := by
+    classical
+    refine' le_antisymm (le_generateFrom _) _
+    · rintro _ ⟨x, rfl⟩
+      simpa using isClosed_set_pi fun i (_ : i ∈ univ) ↦ isClosed_Ici (a := x i)
+    simp_rw [← continuous_id_iff_le, @continuous_pi_iff, @IsLower.continuous_iff_Ici]
+    intro i a
+    let _ : TopologicalSpace (Π i, α i) := lower (Π i, α i)
+    have : IsLower (Π i, α i) := ⟨rfl⟩
+    convert isClosed_Ici (a := Function.update ⊥ i a)
+    ext x
+    simp [update_le_iff]
+
+instance instIsUpperPi {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)]
+    [∀ i, TopologicalSpace (α i)] [∀ i, IsUpper (α i)] [∀ i, OrderTop (α i)] :
+    IsUpper (Π i, α i) where
+  topology_eq_upperTopology := by
+    suffices IsLower (Π i, α i)ᵒᵈ from IsLower.topology_eq_lowerTopology (α := (Π i, α i)ᵒᵈ)
+    exact instIsLowerPi (α := fun i ↦ (α i)ᵒᵈ)
 
 section CompleteLattice_IsLower
 
