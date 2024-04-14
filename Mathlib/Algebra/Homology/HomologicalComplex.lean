@@ -807,6 +807,49 @@ theorem mk_d_2_1 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 2 1 = d₁ := by
   rw [if_pos rfl, Category.id_comp]
 #align chain_complex.mk_d_2_0 ChainComplex.mk_d_2_1
 
+lemma mk_congr_succ_X₃ {S S' : ShortComplex V} (h : S = S') :
+    (succ S).1 = (succ S').1 := by rw [h]
+
+lemma mk_congr_succ_d₂ {S S' : ShortComplex V} (h : S = S') :
+    (succ S).2.1 = eqToHom (by subst h; rfl) ≫ (succ S').2.1 ≫ eqToHom (by subst h; rfl) := by
+  subst h
+  simp
+
+section
+
+lemma mkAux_eq_shortComplex_mk_d_comp_d
+    (a b c : ℕ) (hab : a + 1 = b) (hbc : b + 1 = c) :
+    mkAux X₀ X₁ X₂ d₀ d₁ s succ a =
+      ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d c b a) := by
+  subst hab hbc
+  change ShortComplex.mk _ _ (mkAux X₀ X₁ X₂ d₀ d₁ s succ a).zero = _
+  dsimp [mk, of, mkAux]
+  congr <;> simp
+
+variable (a b c d : ℕ) (hab : a + 1 = b) (hbc : b + 1 = c) (hcd : c + 1 = d)
+
+def mkXIso  :
+    (mk X₀ X₁ X₂ d₀ d₁ s succ).X d ≅
+      (succ (ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d c b a))).1 := eqToIso (by
+  rw [← mk_congr_succ_X₃ succ
+    (mkAux_eq_shortComplex_mk_d_comp_d X₀ X₁ X₂ d₀ d₁ s succ a b c hab hbc)]
+  subst hab hbc hcd
+  rfl)
+
+def mk_d (a b c d : ℕ) (hab : a + 1 = b) (hbc : b + 1 = c) (hcd : c + 1 = d) :
+    (mk X₀ X₁ X₂ d₀ d₁ s succ).d d c = (mkXIso X₀ X₁ X₂ d₀ d₁ s succ a b c d hab hbc hcd).hom ≫
+      (succ (ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d c b a))).2.1 := by
+  have eq := mk_congr_succ_d₂ succ
+    (mkAux_eq_shortComplex_mk_d_comp_d X₀ X₁ X₂ d₀ d₁ s succ a b c hab hbc)
+  subst hab hbc hcd
+  rw [eqToHom_refl, comp_id] at eq
+  refine Eq.trans ?_ eq
+  dsimp only [mk, of]
+  rw [dif_pos rfl, eqToHom_refl, id_comp]
+  rfl
+
+end
+
 -- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
 /-- A simpler inductive constructor for `ℕ`-indexed chain complexes.
 
@@ -834,12 +877,39 @@ theorem mk'_X_1 : (mk' X₀ X₁ d₀ succ').X 1 = X₁ :=
 set_option linter.uppercaseLean3 false in
 #align chain_complex.mk'_X_1 ChainComplex.mk'_X_1
 
-
 @[simp]
 theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 1 0 = d₀ := by
   change ite (1 = 0 + 1) (𝟙 X₁ ≫ d₀) 0 = d₀
   rw [if_pos rfl, Category.id_comp]
 #align chain_complex.mk'_d_1_0 ChainComplex.mk'_d_1_0
+
+def mk'XIso (n₀ n₁ n₂ : ℕ) (h₁ : n₀ + 1 = n₁) (h₂ : n₁ + 1 = n₂) :
+    (mk' X₀ X₁ d₀ succ').X n₂ ≅ (succ' ((mk' X₀ X₁ d₀ succ').d n₁ n₀)).1 := by
+  cases' n₀ with n₀
+  · apply eqToIso
+    obtain rfl : n₁ = 1 := h₁.symm
+    obtain rfl : n₂ = 2 := h₂.symm
+    dsimp [mk', mk, of, mkAux]
+    rw [if_pos (by omega), id_comp]
+  · exact mkXIso _ _ _ _ _ (succ' d₀).2.2 (fun S => succ' S.f) n₀ (n₀ + 1) n₁ n₂
+      rfl (by omega) (by omega)
+
+lemma mk'_congr_succ'_d {X Y : V} (f g : X ⟶ Y) (h : f = g) :
+    (succ' f).2.1 = eqToHom (by rw [h]) ≫ (succ' g).2.1 := by
+  subst h
+  simp
+
+lemma mk'_d (n₀ n₁ n₂ : ℕ) (h₁ : n₀ + 1 = n₁) (h₂ : n₁ + 1 = n₂) :
+    (mk' X₀ X₁ d₀ succ').d n₂ n₁ = (mk'XIso X₀ X₁ d₀ succ' n₀ n₁ n₂ h₁ h₂).hom ≫
+      (succ' ((mk' X₀ X₁ d₀ succ').d n₁ n₀)).2.1 := by
+  cases' n₀ with n₀
+  · obtain rfl : n₁ = 1 := h₁.symm
+    obtain rfl : n₂ = 2 := h₂.symm
+    dsimp [mk'XIso, mk']
+    rw [mk_d_2_1]
+    apply mk'_congr_succ'_d
+    simp
+  · exact mk_d _ _ _ _ _ _ _ _ _ _ _ rfl (by omega) (by omega)
 
 /- Porting note:
 Downstream constructions using `mk'` (e.g. in `CategoryTheory.Abelian.Projective`)
