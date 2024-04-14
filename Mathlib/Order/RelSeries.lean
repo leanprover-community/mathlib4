@@ -256,7 +256,7 @@ For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves
 def map (p : RelSeries r) (f : r →r s) : RelSeries s where
   length := p.length
   toFun := f.1.comp p
-  step := (f.2 <| p.step ·)
+  step := (f.2 <| p.step .)
 
 @[simp] lemma map_apply (p : RelSeries r) (f : r →r s) (i : Fin (p.length + 1)) :
     p.map f i = f (p i) := rfl
