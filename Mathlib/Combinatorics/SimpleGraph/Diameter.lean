@@ -13,29 +13,52 @@ This file defines the diameter of a simple graph as the greatest distance betwee
 -/
 
 namespace SimpleGraph
-variable {α : Type*} {G : SimpleGraph α} [Nonempty α]
+variable {α : Type*} {G : SimpleGraph α}
 
 /- The diameter of a simple graph is a greatest distance between any two vertices. -/
 noncomputable def diam (G : SimpleGraph α) : ℕ :=
   sSup {d | ∃ u v : α, d = G.dist u v}
 
-lemma diam_exists : ∃ u v : α, G.dist u v = G.diam := by
+lemma diam_ne_zero_nonempty (h : G.diam ≠ 0) : Nonempty α := by
+  contrapose h
+  unfold diam
+  aesop
+
+lemma not_bddAbove_diam_eq_zero (h : ¬BddAbove {d | ∃ u v : α, d = G.dist u v}) :
+    G.diam = 0 := by
+  apply Set.infinite_of_not_bddAbove at h
+  rw [diam, Set.Infinite.Nat.sSup_eq_zero h]
+
+@[simp]
+lemma diam_exists [Nonempty α] : ∃ u v : α, G.dist u v = G.diam := by
   let s := {d | ∃ u v : α, d = G.dist u v}
   let u := Classical.arbitrary α
-  have h₁: s.Nonempty := by use 0, u, u, dist_self.symm
-  by_cases h₂ : BddAbove s
-  · obtain ⟨u, v, huv⟩ := Nat.sSup_mem h₁ h₂
+  by_cases h : BddAbove s
+  · have : s.Nonempty := ⟨0, u, u, dist_self.symm⟩
+    obtain ⟨u, v, huv⟩ := Nat.sSup_mem this h
     use u, v, huv.symm
-  · apply Set.infinite_of_not_bddAbove at h₂
-    rw [diam, Set.Infinite.Nat.sSup_eq_zero h₂]
+  · rw [not_bddAbove_diam_eq_zero h]
     use u, u, dist_self
 
-
-
-lemma diam_le {n : ℕ} : G.diam ≤ n ↔ ∀ u v: α, G.dist u v ≤ n := by
+lemma diam_eq_zero {n : ℕ} :
+    G.diam = 0 ↔ ¬BddAbove {d | ∃ u v : α, d = G.dist u v} ∨ G = ⊥ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · sorry
-  · sorry
+  · by_cases h' : G = ⊥
+    · apply Or.inr h'
+    · apply Or.inl
+      rw [← edgeSet_eq_empty] at h'
+      have : ∃ u v : α, G.Adj u v := by sorry
+      sorry
+  ·
+    sorry
+
+lemma diam_lt {n : ℕ} : G.diam ≤ n ↔ ∀ u v: α, G.dist u v ≤ n := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · intro u v
+
+    sorry
+  ·
+    sorry
 
 noncomputable def ediam (G : SimpleGraph α) : ℕ∞ :=
   sSup {d | ∃ u v : α, d = G.dist u v}
