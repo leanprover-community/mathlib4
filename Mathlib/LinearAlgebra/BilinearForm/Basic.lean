@@ -144,10 +144,6 @@ set_option linter.deprecated false in
 theorem ext_iff : B = D ↔ ∀ x y, B x y = D x y := ext_iff₂
 #align bilin_form.ext_iff LinearMap.BilinForm.ext_iff
 
-@[deprecated]
-instance : Zero (BilinForm R M) := inferInstance
-
-@[deprecated]
 theorem coe_zero : ⇑(0 : BilinForm R M) = 0 :=
   rfl
 #align bilin_form.coe_zero LinearMap.BilinForm.coe_zero
@@ -159,10 +155,6 @@ theorem zero_apply (x y : M) : (0 : BilinForm R M) x y = 0 :=
 
 variable (B D B₁ D₁)
 
-@[deprecated]
-instance : Add (BilinForm R M) := inferInstance
-
-@[deprecated]
 theorem coe_add : ⇑(B + D) = B + D :=
   rfl
 #align bilin_form.coe_add LinearMap.BilinForm.coe_add
@@ -172,37 +164,8 @@ theorem add_apply (x y : M) : (B + D) x y = B x y + D x y :=
   rfl
 #align bilin_form.add_apply LinearMap.BilinForm.add_apply
 
-/-- `BilinForm R M` inherits the scalar action by `α` on `R` if this is compatible with
-multiplication.
-
-When `R` itself is commutative, this provides an `R`-action via `Algebra.id`. -/
-@[deprecated]
-instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] : SMul α (BilinForm R M) :=
-  inferInstance
-
 #noalign bilin_form.coe_smul
 #noalign bilin_form.smul_apply
-
-@[deprecated]
-instance {α β} [Monoid α] [Monoid β] [DistribMulAction α R] [DistribMulAction β R]
-    [SMulCommClass R α R] [SMulCommClass R β R] [SMulCommClass α β R] :
-    SMulCommClass α β (BilinForm R M) := inferInstance
-
-@[deprecated]
-instance {α β} [Monoid α] [Monoid β] [SMul α β] [DistribMulAction α R] [DistribMulAction β R]
-    [SMulCommClass R α R] [SMulCommClass R β R] [IsScalarTower α β R] :
-    IsScalarTower α β (BilinForm R M) := inferInstance
-
-@[deprecated]
-instance {α} [Monoid α] [DistribMulAction α R] [DistribMulAction αᵐᵒᵖ R]
-    [SMulCommClass R α R] [IsCentralScalar α R] :
-    IsCentralScalar α (BilinForm R M) := inferInstance
-
-@[deprecated]
-instance : AddCommMonoid (BilinForm R M) := inferInstance
-
-@[deprecated]
-instance : Neg (BilinForm R₁ M₁) := inferInstance
 
 @[deprecated]
 theorem coe_neg : ⇑(-B₁) = -B₁ :=
@@ -215,9 +178,6 @@ theorem neg_apply (x y : M₁) : (-B₁) x y = -B₁ x y :=
 #align bilin_form.neg_apply LinearMap.BilinForm.neg_apply
 
 @[deprecated]
-instance : Sub (BilinForm R₁ M₁) := inferInstance
-
-@[deprecated]
 theorem coe_sub : ⇑(B₁ - D₁) = B₁ - D₁ :=
   rfl
 #align bilin_form.coe_sub LinearMap.BilinForm.coe_sub
@@ -227,12 +187,6 @@ theorem sub_apply (x y : M₁) : (B₁ - D₁) x y = B₁ x y - D₁ x y :=
   rfl
 #align bilin_form.sub_apply LinearMap.BilinForm.sub_apply
 
-@[deprecated]
-instance : AddCommGroup (BilinForm R₁ M₁) := inferInstance
-
-@[deprecated]
-instance : Inhabited (BilinForm R M) := inferInstance
-
 /-- `coeFn` as an `AddMonoidHom` -/
 @[deprecated]
 def coeFnAddMonoidHom : BilinForm R M →+ M → M → R where
@@ -240,14 +194,6 @@ def coeFnAddMonoidHom : BilinForm R M →+ M → M → R where
   map_zero' := rfl
   map_add' _ _ := rfl
 #align bilin_form.coe_fn_add_monoid_hom LinearMap.BilinForm.coeFnAddMonoidHom
-
-@[deprecated]
-instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] :
-    DistribMulAction α (BilinForm R M) := inferInstance
-
-@[deprecated]
-instance {α} [CommSemiring α] [Module α R] [SMulCommClass R α R] : Module α (BilinForm R M) :=
-  inferInstance
 
 section flip
 
