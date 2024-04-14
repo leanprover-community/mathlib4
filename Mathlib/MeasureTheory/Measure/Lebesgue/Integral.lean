@@ -17,7 +17,6 @@ open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 section regionBetween
 
 variable {α : Type*}
-
 variable [MeasurableSpace α] {μ : Measure α} {f g : α → ℝ} {s : Set α}
 
 theorem volume_regionBetween_eq_integral' [SigmaFinite μ] (f_int : IntegrableOn f s μ)
@@ -57,17 +56,17 @@ theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] 
     (hf : Summable fun n : ℤ => ‖(f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)‖) :
     Integrable f := by
   refine'
-    @integrable_of_summable_norm_restrict ℝ ℤ E _ volume _ _ _ _ _ _ _ _
+    @integrable_of_summable_norm_restrict ℝ E _ ℤ _ volume _ _ _ _ _ _ _
       (.of_nonneg_of_le
         (fun n : ℤ => mul_nonneg (norm_nonneg
             (f.restrict (⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩ : Compacts ℝ)))
             ENNReal.toReal_nonneg)
         (fun n => _) hf) _
-  -- porting note: `refine` was able to find that on its own before
+  -- Porting note: `refine` was able to find that on its own before
   · intro n
     exact ⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩
-  · simp only [Compacts.coe_mk, Real.volume_Icc, add_sub_cancel', ENNReal.toReal_ofReal zero_le_one,
-      mul_one, norm_le _ (norm_nonneg _)]
+  · simp only [Compacts.coe_mk, Real.volume_Icc, add_sub_cancel_left,
+      ENNReal.toReal_ofReal zero_le_one, mul_one, norm_le _ (norm_nonneg _)]
     intro x
     have := ((f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)).norm_coe_le_norm
         ⟨x - n, ⟨sub_nonneg.mpr x.2.1, sub_le_iff_le_add'.mpr x.2.2⟩⟩

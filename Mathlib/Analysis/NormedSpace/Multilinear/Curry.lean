@@ -650,7 +650,7 @@ theorem curryFinFinset_symm_apply (hk : s.card = k) (hl : sᶜ.card = l)
   rfl
 #align continuous_multilinear_map.curry_fin_finset_symm_apply ContinuousMultilinearMap.curryFinFinset_symm_apply
 
--- @[simp] -- Porting note: simp removed: simp can reduce LHS
+-- @[simp] -- Porting note (#10618): simp removed: simp can reduce LHS
 theorem curryFinFinset_symm_apply_piecewise_const (hk : s.card = k) (hl : sᶜ.card = l)
     (f : G[×k]→L[𝕜] G[×l]→L[𝕜] G') (x y : G) :
     (curryFinFinset 𝕜 G G' hk hl).symm f (s.piecewise (fun _ => x) fun _ => y) =
@@ -665,7 +665,7 @@ theorem curryFinFinset_symm_apply_const (hk : s.card = k) (hl : sᶜ.card = l)
   rfl
 #align continuous_multilinear_map.curry_fin_finset_symm_apply_const ContinuousMultilinearMap.curryFinFinset_symm_apply_const
 
--- @[simp] -- Porting note: simp removed: simp can reduce LHS
+-- @[simp] -- Porting note (#10618): simp removed: simp can reduce LHS
 theorem curryFinFinset_apply_const (hk : s.card = k) (hl : sᶜ.card = l) (f : G[×n]→L[𝕜] G')
     (x y : G) : (curryFinFinset 𝕜 G G' hk hl f (fun _ => x) fun _ => y) =
       f (s.piecewise (fun _ => x) fun _ => y) := by

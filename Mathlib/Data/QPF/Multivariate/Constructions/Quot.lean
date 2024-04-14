@@ -23,17 +23,13 @@ open MvFunctor
 namespace MvQPF
 
 variable {n : ℕ}
-
 variable {F : TypeVec.{u} n → Type u}
 
 section repr
 
 variable [MvFunctor F] [q : MvQPF F]
-
 variable {G : TypeVec.{u} n → Type u} [MvFunctor G]
-
 variable {FG_abs : ∀ {α}, F α → G α}
-
 variable {FG_repr : ∀ {α}, G α → F α}
 
 /-- If `F` is a QPF then `G` is a QPF as well. Can be used to
@@ -65,7 +61,6 @@ instance Quot1.inhabited {α : TypeVec n} [Inhabited <| F α] : Inhabited (Quot1
 #align mvqpf.quot1.inhabited MvQPF.Quot1.inhabited
 
 variable [MvFunctor F] [q : MvQPF F]
-
 variable (Hfunc : ∀ ⦃α β⦄ (a b : F α) (f : α ⟹ β), R a b → R (f <$$> a) (f <$$> b))
 
 /-- `map` of the `Quot1` functor -/

@@ -130,7 +130,7 @@ theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) 
 #align continuous_monoid_hom.to_continuous_map_injective ContinuousMonoidHom.toContinuousMap_injective
 #align continuous_add_monoid_hom.to_continuous_map_injective ContinuousAddMonoidHom.toContinuousMap_injective
 
--- porting note: Removed simps because given definition is not a constructor application
+-- Porting note: Removed simps because given definition is not a constructor application
 /-- Construct a `ContinuousMonoidHom` from a `Continuous` `MonoidHom`. -/
 @[to_additive "Construct a `ContinuousAddMonoidHom` from a `Continuous` `AddMonoidHom`."]
 def mk' (f : A →* B) (hf : Continuous f) : ContinuousMonoidHom A B :=
@@ -293,7 +293,7 @@ lemma range_toContinuousMap :
 theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
     ClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) where
   toEmbedding := embedding_toContinuousMap A B
-  closed_range := by
+  isClosed_range := by
     simp only [range_toContinuousMap, Set.setOf_and, Set.setOf_forall]
     refine .inter (isClosed_singleton.preimage (ContinuousMap.continuous_eval_const 1)) <|
       isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ ?_

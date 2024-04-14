@@ -5,7 +5,7 @@ Authors: Ali Ramsey, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Prod
-import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 # Coalgebras

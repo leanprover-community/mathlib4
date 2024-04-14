@@ -774,7 +774,7 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
       exact fun J hJ => (Finset.mem_filter.1 hJ).2
   /- Now we deal with boxes such that `π.tag J ∉ s`.
     In this case the estimate is straightforward. -/
-  -- porting note: avoided strange elaboration issues by rewriting using `calc`
+  -- Porting note: avoided strange elaboration issues by rewriting using `calc`
   calc
     dist (∑ J in π.boxes.filter (¬tag π · ∈ s), vol J (f (tag π J)))
       (∑ J in π.boxes.filter (¬tag π · ∈ s), g J)

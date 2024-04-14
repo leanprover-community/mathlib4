@@ -71,7 +71,7 @@ initialize registerTraceClass `Meta.Tactic.polyrith
 
 /--
 A datatype representing the semantics of multivariable polynomials.
-Each `poly` can be converted into a string.
+Each `Poly` can be converted into a string.
 -/
 inductive Poly
   | const : ℚ → Poly
@@ -425,5 +425,5 @@ elab_rules : tactic
     match ← polyrith (← getMainGoal) tk.isNone hyps traceMe with
     | .ok stx =>
       replaceMainGoal []
-      if !traceMe then Std.Tactic.TryThis.addSuggestion tk stx
+      if !traceMe then Lean.Meta.Tactic.TryThis.addSuggestion tk stx
     | .error g => replaceMainGoal [g]
