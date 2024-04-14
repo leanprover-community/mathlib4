@@ -121,7 +121,7 @@ variable (U : Comonad C)
 instance [Inhabited C] (U : Comonad C) : Inhabited (Cokleisli U) :=
   ⟨(default : C)⟩
 
-/-- The co-Kleisli category on a comonad `U`.-/
+/-- The co-Kleisli category on a comonad `U`. -/
 instance category : Category (Cokleisli U) where
   Hom := fun X Y : C => (U : C ⥤ C).obj X ⟶ Y
   id X := U.ε.app X

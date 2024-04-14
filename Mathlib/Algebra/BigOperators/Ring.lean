@@ -6,7 +6,6 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.BigOperators.Multiset.Lemmas
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Int.Cast.Lemmas
 
@@ -24,57 +23,17 @@ open scoped BigOperators
 
 variable {ι α β γ : Type*} {κ : ι → Type*} {s s₁ s₂ : Finset ι} {i : ι} {a : α} {f g : ι → α}
 
-section Deprecated
-
-#align monoid_hom.map_prod map_prodₓ
-#align add_monoid_hom.map_sum map_sumₓ
-#align mul_equiv.map_prod map_prodₓ
-#align add_equiv.map_sum map_sumₓ
-
-@[deprecated _root_.map_list_prod]
-protected lemma RingHom.map_list_prod [Semiring β] [Semiring γ] (f : β →+* γ) (l : List β) :
-    f l.prod = (l.map f).prod :=
-  map_list_prod f l
-#align ring_hom.map_list_prod RingHom.map_list_prod
-
-@[deprecated _root_.map_list_sum]
-protected lemma RingHom.map_list_sum [NonAssocSemiring β] [NonAssocSemiring γ] (f : β →+* γ)
-    (l : List β) : f l.sum = (l.map f).sum :=
-  map_list_sum f l
-#align ring_hom.map_list_sum RingHom.map_list_sum
-
-/-- A morphism into the opposite ring acts on the product by acting on the reversed elements. -/
-@[deprecated _root_.unop_map_list_prod]
-protected lemma RingHom.unop_map_list_prod [Semiring β] [Semiring γ] (f : β →+* γᵐᵒᵖ)
-    (l : List β) : MulOpposite.unop (f l.prod) = (l.map (MulOpposite.unop ∘ f)).reverse.prod :=
-  unop_map_list_prod f l
-#align ring_hom.unop_map_list_prod RingHom.unop_map_list_prod
-
-@[deprecated _root_.map_multiset_prod]
-protected lemma RingHom.map_multiset_prod [CommSemiring β] [CommSemiring γ] (f : β →+* γ)
-    (s : Multiset β) : f s.prod = (s.map f).prod :=
-  map_multiset_prod f s
-#align ring_hom.map_multiset_prod RingHom.map_multiset_prod
-
-@[deprecated _root_.map_multiset_sum]
-protected lemma RingHom.map_multiset_sum [NonAssocSemiring β] [NonAssocSemiring γ] (f : β →+* γ)
-    (s : Multiset β) : f s.sum = (s.map f).sum :=
-  map_multiset_sum f s
-#align ring_hom.map_multiset_sum RingHom.map_multiset_sum
-
-@[deprecated _root_.map_prod]
-protected lemma RingHom.map_prod [CommSemiring β] [CommSemiring γ] (g : β →+* γ) (f : α → β)
-    (s : Finset α) : g (∏ x in s, f x) = ∏ x in s, g (f x) :=
-  map_prod g f s
-#align ring_hom.map_prod RingHom.map_prod
-
-@[deprecated _root_.map_sum]
-protected lemma RingHom.map_sum [NonAssocSemiring β] [NonAssocSemiring γ] (g : β →+* γ)
-    (f : α → β) (s : Finset α) : g (∑ x in s, f x) = ∑ x in s, g (f x) :=
-  map_sum g f s
-#align ring_hom.map_sum RingHom.map_sum
-
-end Deprecated
+#align monoid_hom.map_prod map_prod
+#align add_monoid_hom.map_sum map_sum
+#align mul_equiv.map_prod map_prod
+#align add_equiv.map_sum map_sum
+#align ring_hom.map_list_prod map_list_prod
+#align ring_hom.map_list_sum map_list_sum
+#align ring_hom.unop_map_list_prod unop_map_list_prod
+#align ring_hom.map_multiset_prod map_multiset_prod
+#align ring_hom.map_multiset_sum map_multiset_sum
+#align ring_hom.map_prod map_prod
+#align ring_hom.map_sum map_sum
 
 namespace Finset
 
@@ -270,7 +229,7 @@ theorem prod_add_ordered [LinearOrder ι] [CommSemiring α] (s : Finset ι) (f g
 #align finset.prod_add_ordered Finset.prod_add_ordered
 
 /-- Summing `a^s.card * b^(n-s.card)` over all finite subsets `s` of a `Finset`
-gives `(a + b)^s.card`.-/
+gives `(a + b)^s.card`. -/
 theorem sum_pow_mul_eq_add_pow (a b : α) (s : Finset ι) :
     (∑ t in s.powerset, a ^ t.card * b ^ (s.card - t.card)) = (a + b) ^ s.card := by
   classical

@@ -455,7 +455,6 @@ end Semiring
 section Ring
 
 variable [Ring R] [NoZeroDivisors R] [Nontrivial R] [Finite R]
--- Porting note: removed redundant binder annotation update `(R)`
 
 theorem char_is_prime (p : ℕ) [CharP R p] : p.Prime :=
   Or.resolve_right (char_is_prime_or_zero R p) (char_ne_zero_of_finite R p)
@@ -539,7 +538,6 @@ end
 section
 
 variable [NonAssocRing R] [Fintype R] (n : ℕ)
--- Porting note: removed redundant binder annotation update `(R)`
 
 theorem charP_of_ne_zero (hn : Fintype.card R = n) (hR : ∀ i < n, (i : R) = 0 → i = 0) :
     CharP R n :=
@@ -621,7 +619,6 @@ end
 namespace NeZero
 
 variable [AddMonoidWithOne R] {r : R} {n p : ℕ} {a : ℕ+}
--- Porting note: removed redundant binder annotation update `(R)`
 
 theorem of_not_dvd [CharP R p] (h : ¬p ∣ n) : NeZero (n : R) :=
   ⟨(CharP.cast_eq_zero_iff R p n).not.mpr h⟩

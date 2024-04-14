@@ -207,12 +207,12 @@ set_option linter.uppercaseLean3 false in
 def KaehlerDifferential.D : Derivation R S (Ω[S⁄R]) :=
   { toLinearMap := KaehlerDifferential.DLinearMap R S
     map_one_eq_zero' := by
-      dsimp [KaehlerDifferential.DLinearMap_apply]
+      dsimp [KaehlerDifferential.DLinearMap_apply, Ideal.toCotangent_apply]
       congr
       rw [sub_self]
     leibniz' := fun a b => by
       have : LinearMap.CompatibleSMul { x // x ∈ ideal R S } (Ω[S⁄R]) S (S ⊗[R] S) := inferInstance
-      dsimp [KaehlerDifferential.DLinearMap_apply, - Ideal.toCotangent_apply]
+      dsimp [KaehlerDifferential.DLinearMap_apply]
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]),
         ← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]), ← map_add, Ideal.toCotangent_eq, pow_two]

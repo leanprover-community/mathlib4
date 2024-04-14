@@ -62,7 +62,7 @@ class HasShift (C : Type u) (A : Type*) [Category.{v} C] [AddMonoid A] where
   shift : MonoidalFunctor (Discrete A) (C ⥤ C)
 #align category_theory.has_shift CategoryTheory.HasShift
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- A helper structure to construct the shift functor `(Discrete A) ⥤ (C ⥤ C)`. -/
 structure ShiftMkCore where
   /-- the family of shift functors -/
@@ -446,8 +446,8 @@ abbrev shiftEquiv (n : A) : C ≌ C := shiftEquiv' C n (-n) (add_neg_self n)
 variable (X Y : C) (f : X ⟶ Y)
 
 /-- Shifting by `i` is an equivalence. -/
-instance (i : A) : IsEquivalence (shiftFunctor C i) := by
-  change IsEquivalence (shiftEquiv C i).functor
+instance (i : A) : (shiftFunctor C i).IsEquivalence := by
+  change (shiftEquiv C i).functor.IsEquivalence
   infer_instance
 
 @[simp]
@@ -458,7 +458,7 @@ theorem shiftFunctor_inv (i : A) : (shiftFunctor C i).inv = shiftFunctor C (-i) 
 section
 
 /-- Shifting by `n` is an essentially surjective functor. -/
-instance shiftFunctor_essSurj (i : A) : EssSurj (shiftFunctor C i) :=
+instance shiftFunctor_essSurj (i : A) : (shiftFunctor C i).EssSurj :=
   Equivalence.essSurj_of_equivalence _
 #align category_theory.shift_functor_ess_surj CategoryTheory.shiftFunctor_essSurj
 
@@ -670,7 +670,7 @@ lemma shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app (m₁ m₂ m�
 end AddCommMonoid
 
 variable {D : Type*} [Category D] [AddMonoid A] [HasShift D A]
-variable (F : C ⥤ D) [Full F] [Faithful F]
+variable (F : C ⥤ D) [F.Full] [F.Faithful]
 
 section
 

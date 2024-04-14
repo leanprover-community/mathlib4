@@ -54,7 +54,7 @@ section
 /-- A projective presentation of an object `X` consists of an epimorphism `f : P ⟶ X`
 from some projective object `P`.
 -/
--- Porting note: was @[nolint has_nonempty_instance]
+-- Porting note(#5171): was @[nolint has_nonempty_instance]
 structure ProjectivePresentation (X : C) where
   p : C
   [projective : Projective p]
@@ -214,14 +214,13 @@ theorem map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : P
     simp
 #align category_theory.adjunction.map_projective CategoryTheory.Adjunction.map_projective
 
-theorem projective_of_map_projective (adj : F ⊣ G) [Full F] [Faithful F] (P : C)
+theorem projective_of_map_projective (adj : F ⊣ G) [F.Full] [F.Faithful] (P : C)
     (hP : Projective (F.obj P)) : Projective P where
   factors f g _ := by
     haveI := Adjunction.leftAdjointPreservesColimits.{0, 0} adj
     rcases (@hP).1 (F.map f) (F.map g) with ⟨f', hf'⟩
     use adj.unit.app _ ≫ G.map f' ≫ (inv <| adj.unit.app _)
-    refine' Faithful.map_injective (F := F) _
-    simpa
+    exact F.map_injective (by simpa)
 #align category_theory.adjunction.projective_of_map_projective CategoryTheory.Adjunction.projective_of_map_projective
 
 /-- Given an adjunction `F ⊣ G` such that `G` preserves epis, `F` maps a projective presentation of
