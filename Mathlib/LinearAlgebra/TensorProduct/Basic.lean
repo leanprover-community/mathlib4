@@ -863,6 +863,11 @@ def mapIncl (p : Submodule R P) (q : Submodule R Q) : p ⊗[R] q →ₗ[R] P ⊗
   map p.subtype q.subtype
 #align tensor_product.map_incl TensorProduct.mapIncl
 
+lemma range_mapIncl (p : Submodule R P) (q : Submodule R Q) :
+    LinearMap.range (mapIncl p q) = Submodule.span R (Set.image2 (· ⊗ₜ ·) p q) := by
+  rw [mapIncl, map_range_eq_span_tmul]
+  congr; ext; simp
+
 section
 
 variable {P' Q' : Type*}
@@ -873,6 +878,11 @@ theorem map_comp (f₂ : P →ₗ[R] P') (f₁ : M →ₗ[R] P) (g₂ : Q →ₗ
     map (f₂.comp f₁) (g₂.comp g₁) = (map f₂ g₂).comp (map f₁ g₁) :=
   ext' fun _ _ => rfl
 #align tensor_product.map_comp TensorProduct.map_comp
+
+lemma range_mapIncl_mono {p p' : Submodule R P} {q q' : Submodule R Q} (hp : p ≤ p') (hq : q ≤ q') :
+    LinearMap.range (mapIncl p q) ≤ LinearMap.range (mapIncl p' q') := by
+  simp_rw [range_mapIncl]
+  exact Submodule.span_mono (Set.image2_subset hp hq)
 
 theorem lift_comp_map (i : P →ₗ[R] Q →ₗ[R] Q') (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (lift i).comp (map f g) = lift ((i.comp f).compl₂ g) :=
