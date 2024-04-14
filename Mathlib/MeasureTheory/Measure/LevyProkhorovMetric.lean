@@ -299,7 +299,7 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
             <| measure_mono (subset_univ _)
   apply le_trans (set_integral_mono (s := Ioc 0 ‖f‖) ?_ ?_ key)
   rw [integral_add]
-  · apply add_le_add rfl.le
+  · apply add_le_add_left
     simp only [integral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,
                 Real.volume_Ioc, sub_zero, norm_nonneg, toReal_ofReal, smul_eq_mul,
                 (mul_comm _ ε).le]
@@ -371,17 +371,15 @@ lemma continuous_levyProkhorov_to_probabilityMeasure :
       have bound := BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt
                       (Ps n) P (ε := dist (μs n) ν + εs n) ?_ ?_ f ?_
       · refine bound.trans ?_
-        apply (add_le_add hn.le rfl.le).trans
+        apply (add_le_add_right hn.le _).trans
         rw [BoundedContinuousFunction.integral_eq_integral_meas_le]
         · simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
-          rw [add_assoc]
-          have also : (dist (μs n) ν + εs n) * ‖f‖ ≤ δ/2 := by
-            rw [mul_comm]
-            apply (mul_le_mul (a := ‖f‖) rfl.le hn'.le
-                    (by positivity) (by exact norm_nonneg f)).trans (le_of_eq _)
-            field_simp
-            ring
-          apply add_le_add rfl.le <| (add_le_add rfl.le also).trans <| by linarith
+          rw [add_assoc, mul_comm]
+          gcongr
+          calc
+            δ / 2 + ‖f‖ * (dist (μs n) ν + εs n)
+            _ ≤ δ / 2 + ‖f‖ * (‖f‖⁻¹ * δ / 2) := by gcongr
+            _ = δ := by field_simp; ring
         · exact eventually_of_forall f_nn
       · positivity
       · rw [ENNReal.ofReal_add (by positivity) (by positivity), ← add_zero (levyProkhorovEDist _ _)]
@@ -389,18 +387,18 @@ lemma continuous_levyProkhorov_to_probabilityMeasure :
               (le_of_eq ?_) (ofReal_pos.mpr εs_pos)
         rw [LevyProkhorov.dist_def, levyProkhorovDist,
             ofReal_toReal (levyProkhorovEDist_ne_top _ _)]
-        rfl
+        simp only [Ps, P, LevyProkhorov.probabilityMeasure]
       · exact eventually_of_forall f_nn
   · simp only [IsCoboundedUnder, IsCobounded, eventually_map, eventually_atTop,
                ge_iff_le, forall_exists_index]
-    refine ⟨0, fun a i hia ↦ le_trans (integral_nonneg f_nn) (hia i rfl.le)⟩
+    refine ⟨0, fun a i hia ↦ le_trans (integral_nonneg f_nn) (hia i le_rfl)⟩
 
 /-- The topology of the Lévy-Prokhorov metric is finer than the topology of convergence in
 distribution. -/
 theorem levyProkhorov_le_convergenceInDistribution :
     TopologicalSpace.coinduced (LevyProkhorov.probabilityMeasure (Ω := Ω)) inferInstance
       ≤ (inferInstance : TopologicalSpace (ProbabilityMeasure Ω)) :=
-  (continuous_levyProkhorov_to_probabilityMeasure).coinduced_le
+  continuous_levyProkhorov_to_probabilityMeasure.coinduced_le
 
 end Levy_Prokhorov_comparison
 

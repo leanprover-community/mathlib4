@@ -56,7 +56,8 @@ This is a structure, not a class, since the same algebra can have many power bas
 For the common case where `S` is defined by adjoining an integral element to `R`,
 the canonical power basis is given by `{Algebra,IntermediateField}.adjoin.powerBasis`.
 -/
--- @[nolint has_nonempty_instance] -- Porting note: doesn't exist
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 structure PowerBasis (R S : Type*) [CommRing R] [Ring S] [Algebra R S] where
   gen : S
   dim : ℕ
@@ -224,7 +225,7 @@ protected theorem leftMulMatrix (pb : PowerBasis A S) : Algebra.leftMulMatrix pb
   rw [Algebra.leftMulMatrix_apply, ← LinearEquiv.eq_symm_apply, LinearMap.toMatrix_symm]
   refine' pb.basis.ext fun k => _
   simp_rw [Matrix.toLin_self, Matrix.of_apply, pb.basis_eq_pow]
-  apply (pow_succ _ _).symm.trans
+  apply (pow_succ' _ _).symm.trans
   split_ifs with h
   · simp_rw [h, neg_smul, Finset.sum_neg_distrib, eq_neg_iff_add_eq_zero]
     convert pb.aeval_minpolyGen

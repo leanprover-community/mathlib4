@@ -614,9 +614,10 @@ theorem subset_eq_empty {s t : Set α} (h : t ⊆ s) (e : s = ∅) : t = ∅ :=
   subset_empty_iff.1 <| e ▸ h
 #align set.subset_eq_empty Set.subset_eq_empty
 
-theorem ball_empty_iff {p : α → Prop} : (∀ x ∈ (∅ : Set α), p x) ↔ True :=
+theorem forall_mem_empty {p : α → Prop} : (∀ x ∈ (∅ : Set α), p x) ↔ True :=
   iff_true_intro fun _ => False.elim
-#align set.ball_empty_iff Set.ball_empty_iff
+#align set.ball_empty_iff Set.forall_mem_empty
+@[deprecated] alias ball_empty_iff := forall_mem_empty -- 2024-03-23
 
 instance (α : Type u) : IsEmpty.{u + 1} (↥(∅ : Set α)) :=
   ⟨fun x => x.2⟩
@@ -1021,38 +1022,27 @@ theorem setOf_inter_eq_sep (p : α → Prop) (s : Set α) : {a | p a} ∩ s = {a
 
 /-! ### Distributivity laws -/
 
-
-theorem inter_distrib_left (s t u : Set α) : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
+theorem inter_union_distrib_left (s t u : Set α) : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
   inf_sup_left _ _ _
-#align set.inter_distrib_left Set.inter_distrib_left
+#align set.inter_distrib_left Set.inter_union_distrib_left
 
-theorem inter_union_distrib_left {s t u : Set α} : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
-  inf_sup_left _ _ _
-#align set.inter_union_distrib_left Set.inter_union_distrib_left
-
-theorem inter_distrib_right (s t u : Set α) : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
+theorem union_inter_distrib_right (s t u : Set α) : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
   inf_sup_right _ _ _
-#align set.inter_distrib_right Set.inter_distrib_right
+#align set.inter_distrib_right Set.union_inter_distrib_right
 
-theorem union_inter_distrib_right {s t u : Set α} : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
-  inf_sup_right _ _ _
-#align set.union_inter_distrib_right Set.union_inter_distrib_right
-
-theorem union_distrib_left (s t u : Set α) : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
+theorem union_inter_distrib_left (s t u : Set α) : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
   sup_inf_left _ _ _
-#align set.union_distrib_left Set.union_distrib_left
+#align set.union_distrib_left Set.union_inter_distrib_left
 
-theorem union_inter_distrib_left {s t u : Set α} : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
-  sup_inf_left _ _ _
-#align set.union_inter_distrib_left Set.union_inter_distrib_left
-
-theorem union_distrib_right (s t u : Set α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
+theorem inter_union_distrib_right (s t u : Set α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
   sup_inf_right _ _ _
-#align set.union_distrib_right Set.union_distrib_right
+#align set.union_distrib_right Set.inter_union_distrib_right
 
-theorem inter_union_distrib_right {s t u : Set α} : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
-  sup_inf_right _ _ _
-#align set.inter_union_distrib_right Set.inter_union_distrib_right
+-- 2024-03-22
+@[deprecated] alias inter_distrib_left := inter_union_distrib_left
+@[deprecated] alias inter_distrib_right := union_inter_distrib_right
+@[deprecated] alias union_distrib_left := union_inter_distrib_left
+@[deprecated] alias union_distrib_right := inter_union_distrib_right
 
 theorem union_union_distrib_left (s t u : Set α) : s ∪ (t ∪ u) = s ∪ t ∪ (s ∪ u) :=
   sup_sup_distrib_left _ _ _
@@ -1217,15 +1207,17 @@ theorem forall_insert_of_forall {P : α → Prop} {a : α} {s : Set α} (H : ∀
 
 /- Porting note: ∃ x ∈ insert a s, P x is parsed as ∃ x, x ∈ insert a s ∧ P x,
  where in Lean3 it was parsed as `∃ x, ∃ (h : x ∈ insert a s), P x` -/
-theorem bex_insert_iff {P : α → Prop} {a : α} {s : Set α} :
+theorem exists_mem_insert {P : α → Prop} {a : α} {s : Set α} :
     (∃ x ∈ insert a s, P x) ↔ (P a ∨ ∃ x ∈ s, P x) := by
   simp [mem_insert_iff, or_and_right, exists_and_left, exists_or]
-#align set.bex_insert_iff Set.bex_insert_iff
+#align set.bex_insert_iff Set.exists_mem_insert
+@[deprecated] alias bex_insert_iff := exists_mem_insert -- 2024-03-23
 
-theorem ball_insert_iff {P : α → Prop} {a : α} {s : Set α} :
+theorem forall_mem_insert {P : α → Prop} {a : α} {s : Set α} :
     (∀ x ∈ insert a s, P x) ↔ P a ∧ ∀ x ∈ s, P x :=
-  ball_or_left.trans <| and_congr_left' forall_eq
-#align set.ball_insert_iff Set.ball_insert_iff
+  forall₂_or_left.trans <| and_congr_left' forall_eq
+#align set.ball_insert_iff Set.forall_mem_insert
+@[deprecated] alias ball_insert_iff := forall_mem_insert -- 2024-03-23
 
 /-! ### Lemmas about singletons -/
 
@@ -1373,14 +1365,9 @@ theorem pair_comm (a b : α) : ({a, b} : Set α) = {b, a} :=
   union_comm _ _
 #align set.pair_comm Set.pair_comm
 
--- Porting note: first branch after `constructor` used to be by `tauto!`.
 theorem pair_eq_pair_iff {x y z w : α} :
     ({x, y} : Set α) = {z, w} ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
-  simp only [Set.Subset.antisymm_iff, Set.insert_subset_iff, Set.mem_insert_iff,
-    Set.mem_singleton_iff, Set.singleton_subset_iff]
-  constructor
-  · rintro ⟨⟨rfl | rfl, rfl | rfl⟩, ⟨h₁, h₂⟩⟩ <;> simp [h₁, h₂] at * <;> simp [h₁, h₂]
-  · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> simp
+  simp [subset_antisymm_iff, insert_subset_iff]; aesop
 #align set.pair_eq_pair_iff Set.pair_eq_pair_iff
 
 /-! ### Lemmas about sets defined as `{x ∈ s | p x}`. -/
@@ -1438,32 +1425,32 @@ theorem sep_false : { x ∈ s | False } = ∅ :=
 
 --Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem sep_empty (p : α → Prop) : { x ∈ (∅ : Set α) | p x } = ∅ :=
-  empty_inter p
+  empty_inter {x | p x}
 #align set.sep_empty Set.sep_empty
 
 --Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem sep_univ : { x ∈ (univ : Set α) | p x } = { x | p x } :=
-  univ_inter p
+  univ_inter {x | p x}
 #align set.sep_univ Set.sep_univ
 
 @[simp]
 theorem sep_union : { x | (x ∈ s ∨ x ∈ t) ∧ p x } = { x ∈ s | p x } ∪ { x ∈ t | p x } :=
-  union_inter_distrib_right
+  union_inter_distrib_right { x | x ∈ s } { x | x ∈ t } p
 #align set.sep_union Set.sep_union
 
 @[simp]
 theorem sep_inter : { x | (x ∈ s ∧ x ∈ t) ∧ p x } = { x ∈ s | p x } ∩ { x ∈ t | p x } :=
-  inter_inter_distrib_right s t p
+  inter_inter_distrib_right s t {x | p x}
 #align set.sep_inter Set.sep_inter
 
 @[simp]
 theorem sep_and : { x ∈ s | p x ∧ q x } = { x ∈ s | p x } ∩ { x ∈ s | q x } :=
-  inter_inter_distrib_left s p q
+  inter_inter_distrib_left s {x | p x} {x | q x}
 #align set.sep_and Set.sep_and
 
 @[simp]
 theorem sep_or : { x ∈ s | p x ∨ q x } = { x ∈ s | p x } ∪ { x ∈ s | q x } :=
-  inter_union_distrib_left
+  inter_union_distrib_left s p q
 #align set.sep_or Set.sep_or
 
 @[simp]
@@ -1549,7 +1536,7 @@ lemma disjoint_or_nonempty_inter (s t : Set α) : Disjoint s t ∨ (s ∩ t).Non
 #align set.disjoint_or_nonempty_inter Set.disjoint_or_nonempty_inter
 
 lemma disjoint_iff_forall_ne : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ t → a ≠ b := by
-  simp only [Ne.def, disjoint_left, @imp_not_comm _ (_ = _), forall_eq']
+  simp only [Ne, disjoint_left, @imp_not_comm _ (_ = _), forall_eq']
 #align set.disjoint_iff_forall_ne Set.disjoint_iff_forall_ne
 
 alias ⟨_root_.Disjoint.ne_of_mem, _⟩ := disjoint_iff_forall_ne

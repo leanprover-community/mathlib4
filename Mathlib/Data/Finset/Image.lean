@@ -5,8 +5,8 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Embedding
 import Mathlib.Data.Fin.Basic
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Finset.Union
+import Mathlib.Algebra.Order.Ring.Int
 
 #align_import data.finset.image from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
@@ -278,7 +278,7 @@ theorem map_eq_empty : s.map f = ∅ ↔ s = ∅ :=
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem map_nonempty : (s.map f).Nonempty ↔ s.Nonempty := by
-  rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne.def, map_eq_empty]
+  rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne, map_eq_empty]
 #align finset.map_nonempty Finset.map_nonempty
 
 alias ⟨_, Nonempty.map⟩ := map_nonempty
@@ -396,7 +396,7 @@ instance canLift (c) (p) [CanLift β α c p] :
 theorem image_congr (h : (s : Set α).EqOn f g) : Finset.image f s = Finset.image g s := by
   ext
   simp_rw [mem_image, ← bex_def]
-  exact bex_congr fun x hx => by rw [h hx]
+  exact exists₂_congr fun x hx => by rw [h hx]
 #align finset.image_congr Finset.image_congr
 
 theorem _root_.Function.Injective.mem_finset_image (hf : Injective f) :
@@ -659,7 +659,7 @@ theorem disjoint_image {s t : Finset α} {f : α → β} (hf : Injective f) :
 
 theorem image_const {s : Finset α} (h : s.Nonempty) (b : β) : (s.image fun _ => b) = singleton b :=
   ext fun b' => by
-    simp only [mem_image, exists_prop, exists_and_right, h.bex, true_and_iff, mem_singleton,
+    simp only [mem_image, exists_prop, exists_and_right, h.exists_mem, true_and_iff, mem_singleton,
       eq_comm]
 #align finset.image_const Finset.image_const
 

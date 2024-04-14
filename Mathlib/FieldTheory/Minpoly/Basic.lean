@@ -144,7 +144,7 @@ theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
   obtain h | h := hl _ ((minpoly A x).degree_modByMonic_lt hm)
   swap
   · exact (h <| (aeval_modByMonic_eq_self_of_root hm hp).trans <| aeval A x).elim
-  obtain ⟨r, hr⟩ := (dvd_iff_modByMonic_eq_zero hm).1 h
+  obtain ⟨r, hr⟩ := (modByMonic_eq_zero_iff_dvd hm).1 h
   rw [hr]
   have hlead := congr_arg leadingCoeff hr
   rw [mul_comm, leadingCoeff_mul_monic hm, (monic hx).leadingCoeff] at hlead

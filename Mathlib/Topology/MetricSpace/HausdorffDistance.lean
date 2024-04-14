@@ -627,7 +627,7 @@ theorem continuousAt_inv_infDist_pt (h : x ∉ closure s) :
   rcases s.eq_empty_or_nonempty with (rfl | hs)
   · simp only [infDist_empty, continuousAt_const]
   · refine (continuous_infDist_pt s).continuousAt.inv₀ ?_
-    rwa [Ne.def, ← mem_closure_iff_infDist_zero hs]
+    rwa [Ne, ← mem_closure_iff_infDist_zero hs]
 
 /-- The infimum distance is invariant under isometries. -/
 theorem infDist_image (hΦ : Isometry Φ) : infDist (Φ x) (Φ '' t) = infDist x t := by

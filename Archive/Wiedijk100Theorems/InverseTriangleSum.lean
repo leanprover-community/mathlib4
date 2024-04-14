@@ -28,7 +28,7 @@ open scoped BigOperators
 open Finset
 
 /-- **Sum of the Reciprocals of the Triangular Numbers** -/
-theorem Theorem100.inverse_triangle_sum :
+theorem Theorems100.inverse_triangle_sum :
     ∀ n, ∑ k in range n, (2 : ℚ) / (k * (k + 1)) = if n = 0 then 0 else 2 - (2 : ℚ) / n := by
   refine' sum_range_induction _ _ (if_pos rfl) _
   rintro (_ | n)
@@ -38,4 +38,4 @@ theorem Theorem100.inverse_triangle_sum :
   push_cast
   field_simp
   ring
-#align theorem_100.inverse_triangle_sum Theorem100.inverse_triangle_sum
+#align theorem_100.inverse_triangle_sum Theorems100.inverse_triangle_sum

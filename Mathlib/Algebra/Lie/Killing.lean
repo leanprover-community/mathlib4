@@ -11,6 +11,7 @@ import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.Algebra.Lie.Weights.Chain
 import Mathlib.Algebra.Lie.Weights.Linear
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 import Mathlib.LinearAlgebra.PID
 import Mathlib.LinearAlgebra.Trace
 
@@ -36,7 +37,7 @@ We define the trace / Killing form in this file and prove some basic properties.
    form on `L` via the trace form construction.
  * `LieAlgebra.IsKilling`: a typeclass encoding the fact that a Lie algebra has a non-singular
    Killing form.
- * `LieAlgebra.IsKilling.ker_restrictBilinear_eq_bot_of_isCartanSubalgebra`: if the Killing form of
+ * `LieAlgebra.IsKilling.ker_restrict_eq_bot_of_isCartanSubalgebra`: if the Killing form of
    a Lie algebra is non-singular, it remains non-singular when restricted to a Cartan subalgebra.
  * `LieAlgebra.IsKilling.isSemisimple`: if a Lie algebra has non-singular Killing form then it is
    semisimple.
@@ -75,7 +76,7 @@ lemma traceForm_apply_apply (x y : L) :
 lemma traceForm_comm (x y : L) : traceForm R L M x y = traceForm R L M y x :=
   LinearMap.trace_mul_comm R (φ x) (φ y)
 
-@[simp] lemma traceForm_flip : (traceForm R L M).flip = traceForm R L M :=
+@[simp] lemma traceForm_flip : LinearMap.flip (traceForm R L M) = traceForm R L M :=
   Eq.symm <| LinearMap.ext₂ <| traceForm_comm R L M
 
 /-- The trace form of a Lie module is compatible with the action of the Lie algebra.
@@ -183,9 +184,9 @@ lemma eq_zero_of_mem_weightSpace_mem_posFitting [LieAlgebra.IsNilpotent R L]
     | succ k ih =>
     intro m n
     replace hB : ∀ m, B m (φ x n) = (- 1 : R) • B (φ x m) n := by simp [hB]
-    have : (-1 : R) ^ k • (-1 : R) = (-1 : R) ^ (k + 1) := by rw [pow_succ' (-1 : R), smul_eq_mul]
-    conv_lhs => rw [pow_succ', LinearMap.mul_eq_comp, LinearMap.comp_apply, ih, hB,
-      ← (φ x).comp_apply, ← LinearMap.mul_eq_comp, ← pow_succ, ← smul_assoc, this]
+    have : (-1 : R) ^ k • (-1 : R) = (-1 : R) ^ (k + 1) := by rw [pow_succ (-1 : R), smul_eq_mul]
+    conv_lhs => rw [pow_succ, LinearMap.mul_eq_comp, LinearMap.comp_apply, ih, hB,
+      ← (φ x).comp_apply, ← LinearMap.mul_eq_comp, ← pow_succ', ← smul_assoc, this]
   suffices ∀ (x : L) m, m ∈ posFittingCompOf R M x → B m₀ m = 0 by
     apply LieSubmodule.iSup_induction _ hm₁ this (map_zero _)
     aesop
@@ -304,7 +305,7 @@ lemma trace_eq_trace_restrict_of_le_idealizer
   exact fun m ↦ N.lie_mem (h hy m)
 
 lemma traceForm_eq_of_le_idealizer :
-    traceForm R I N = I.restrictBilinear (traceForm R L M) := by
+    traceForm R I N = (traceForm R L M).restrict I := by
   ext ⟨x, hx⟩ ⟨y, hy⟩
   change _ = trace R M (φ x ∘ₗ φ y)
   rw [N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
@@ -332,6 +333,10 @@ variable [Module.Free R L] [Module.Finite R L]
 
 This is a specialisation of `LieModule.traceForm` to the adjoint representation of `L`. -/
 noncomputable abbrev killingForm : LinearMap.BilinForm R L := LieModule.traceForm R L L
+
+open LieAlgebra in
+lemma killingForm_apply_apply (x y : L) : killingForm R L x y = trace R L (ad R L x ∘ₗ ad R L y) :=
+  LieModule.traceForm_apply_apply R L L x y
 
 lemma killingForm_eq_zero_of_mem_zeroRoot_mem_posFitting
     (H : LieSubalgebra R L) [LieAlgebra.IsNilpotent R H]
@@ -375,11 +380,11 @@ lemma coe_killingCompl_top :
 variable [IsDomain R] [IsPrincipalIdealRing R]
 
 lemma killingForm_eq :
-    killingForm R I = I.restrictBilinear (killingForm R L) :=
+    killingForm R I = (killingForm R L).restrict I :=
   LieSubmodule.traceForm_eq_of_le_idealizer I I <| by simp
 
-lemma restrictBilinear_killingForm :
-    I.restrictBilinear (killingForm R L) = LieModule.traceForm R I L :=
+lemma restrict_killingForm :
+    (killingForm R L).restrict I = LieModule.traceForm R I L :=
   rfl
 
 @[simp] lemma le_killingCompl_top_of_isLieAbelian [IsLieAbelian I] :
@@ -414,9 +419,9 @@ variable [IsKilling R L]
 
 /-- If the Killing form of a Lie algebra is non-singular, it remains non-singular when restricted
 to a Cartan subalgebra. -/
-lemma ker_restrictBilinear_eq_bot_of_isCartanSubalgebra
+lemma ker_restrict_eq_bot_of_isCartanSubalgebra
     [IsNoetherian R L] [IsArtinian R L] (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
-    LinearMap.ker (H.restrictBilinear (killingForm R L)) = ⊥ := by
+    LinearMap.ker ((killingForm R L).restrict H) = ⊥ := by
   have h : Codisjoint (rootSpace H 0) (LieModule.posFittingComp R H L) :=
     (LieModule.isCompl_weightSpace_zero_posFittingComp R H L).codisjoint
   replace h : Codisjoint (H : Submodule R L) (LieModule.posFittingComp R H L : Submodule R L) := by
@@ -424,18 +429,18 @@ lemma ker_restrictBilinear_eq_bot_of_isCartanSubalgebra
       LieSubmodule.top_coeSubmodule, rootSpace_zero_eq R L H, LieSubalgebra.coe_toLieSubmodule,
       ← codisjoint_iff] at h
   suffices this : ∀ m₀ ∈ H, ∀ m₁ ∈ LieModule.posFittingComp R H L, killingForm R L m₀ m₁ = 0 by
-    simp [LinearMap.ker_restrictBilinear_eq_of_codisjoint h this]
+    simp [LinearMap.BilinForm.ker_restrict_eq_of_codisjoint h this]
   intro m₀ h₀ m₁ h₁
   exact killingForm_eq_zero_of_mem_zeroRoot_mem_posFitting R L H (le_zeroRootSubalgebra R L H h₀) h₁
 
-lemma restrictBilinear_killingForm (H : LieSubalgebra R L) :
-    H.restrictBilinear (killingForm R L) = LieModule.traceForm R H L :=
+lemma restrict_killingForm (H : LieSubalgebra R L) :
+    (killingForm R L).restrict H = LieModule.traceForm R H L :=
   rfl
 
 @[simp] lemma ker_traceForm_eq_bot_of_isCartanSubalgebra
     [IsNoetherian R L] [IsArtinian R L] (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
     LinearMap.ker (LieModule.traceForm R H L) = ⊥ :=
-  ker_restrictBilinear_eq_bot_of_isCartanSubalgebra R L H
+  ker_restrict_eq_bot_of_isCartanSubalgebra R L H
 
 /-- The converse of this is true over a field of characteristic zero. There are counterexamples
 over fields with positive characteristic. -/
@@ -451,7 +456,7 @@ instance instIsLieAbelianOfIsCartanSubalgebra
     (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
     IsLieAbelian H :=
   LieModule.isLieAbelian_of_ker_traceForm_eq_bot R H L <|
-    ker_restrictBilinear_eq_bot_of_isCartanSubalgebra R L H
+    ker_restrict_eq_bot_of_isCartanSubalgebra R L H
 
 end IsKilling
 
@@ -591,6 +596,36 @@ lemma ker_weight_inf_rootSpaceProductNegSelf_eq_bot [CharZero K] (α : weight K 
   exact eq_zero_of_apply_eq_zero_of_mem_rootSpaceProductNegSelf x α hαx hx
 
 end IsKilling
+
+section LieEquiv
+
+variable {R L}
+variable {L' : Type*} [LieRing L'] [LieAlgebra R L']
+
+/-- Given an equivalence `e` of Lie algebras from `L` to `L'`, and elements `x y : L`, the
+respective Killing forms of `L` and `L'` satisfy `κ'(e x, e y) = κ(x, y)`. -/
+@[simp] lemma killingForm_of_equiv_apply (e : L ≃ₗ⁅R⁆ L') (x y : L) :
+    killingForm R L' (e x) (e y) = killingForm R L x y := by
+  simp_rw [killingForm_apply_apply, ← LieAlgebra.conj_ad_apply, ← LinearEquiv.conj_comp,
+    LinearMap.trace_conj']
+
+/-- Given a Killing Lie algebra `L`, if `L'` is isomorphic to `L`, then `L'` is Killing too. -/
+lemma isKilling_of_equiv [IsKilling R L] (e : L ≃ₗ⁅R⁆ L') : IsKilling R L' := by
+  constructor;
+  ext x'
+  rw [LieIdeal.mem_killingCompl]
+  refine ⟨fun hx' ↦ ?_, fun hx y _ ↦ hx ▸ LinearMap.map_zero₂ (killingForm R L') y⟩
+  suffices e.symm x' ∈ LinearMap.ker (killingForm R L) by
+    rw [IsKilling.ker_killingForm_eq_bot] at this
+    simpa using (e : L ≃ₗ[R] L').congr_arg this
+  ext y
+  replace hx' : ∀ y', killingForm R L' x' y' = 0 := by simpa using hx'
+  specialize hx' (e y)
+  rwa [← e.apply_symm_apply x', killingForm_of_equiv_apply] at hx'
+
+alias _root_.LieEquiv.isKilling := LieAlgebra.isKilling_of_equiv
+
+end LieEquiv
 
 end LieAlgebra
 

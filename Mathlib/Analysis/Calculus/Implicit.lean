@@ -96,7 +96,7 @@ needs to have a complete control over the choice of the implicit function.
 * both functions are strictly differentiable at `a`;
 * the derivatives are surjective;
 * the kernels of the derivatives are complementary subspaces of `E`. -/
--- Porting note: not yet supported @[nolint has_nonempty_instance]
+-- Porting note(#5171): linter not yet ported @[nolint has_nonempty_instance]
 structure ImplicitFunctionData (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] (F : Type*) [NormedAddCommGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace F] (G : Type*) [NormedAddCommGroup G] [NormedSpace 𝕜 G]
@@ -293,7 +293,7 @@ theorem implicitToPartialHomeomorphOfComplemented_apply (hf : HasStrictFDerivAt 
 theorem implicitToPartialHomeomorphOfComplemented_apply_ker (hf : HasStrictFDerivAt f f' a)
     (hf' : range f' = ⊤) (hker : (ker f').ClosedComplemented) (y : ker f') :
     hf.implicitToPartialHomeomorphOfComplemented f f' hf' hker (y + a) = (f (y + a), y) := by
-  simp only [implicitToPartialHomeomorphOfComplemented_apply, add_sub_cancel,
+  simp only [implicitToPartialHomeomorphOfComplemented_apply, add_sub_cancel_right,
     Classical.choose_spec hker]
 #align has_strict_fderiv_at.implicit_to_local_homeomorph_of_complemented_apply_ker HasStrictFDerivAt.implicitToPartialHomeomorphOfComplemented_apply_ker
 

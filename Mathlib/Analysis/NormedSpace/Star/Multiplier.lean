@@ -202,7 +202,7 @@ instance instPow : Pow 𝓜(𝕜, A) ℕ where
       induction' n with k hk generalizing x y
       · rfl
       · rw [Prod.pow_snd, Prod.pow_fst] at hk ⊢
-        rw [pow_succ a.snd, mul_apply, a.central, hk, pow_succ' a.fst, mul_apply]⟩
+        rw [pow_succ' a.snd, mul_apply, a.central, hk, pow_succ a.fst, mul_apply]⟩
 
 instance instInhabited : Inhabited 𝓜(𝕜, A) :=
   ⟨0⟩

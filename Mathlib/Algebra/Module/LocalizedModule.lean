@@ -77,7 +77,7 @@ example {R} [CommSemiring R] (S : Submonoid R) : ⇑(Localization.r' S) = Locali
 /-- If `S` is a multiplicative subset of a ring `R` and `M` an `R`-module, then
 we can localize `M` by `S`.
 -/
--- Porting note: @[nolint has_nonempty_instance]
+-- Porting note(#5171): @[nolint has_nonempty_instance]
 def _root_.LocalizedModule : Type max u v :=
   Quotient (r.setoid S M)
 #align localized_module LocalizedModule
@@ -204,7 +204,7 @@ instance hasNatSMul : SMul ℕ (LocalizedModule S M) where smul n := nsmulRec n
 private theorem nsmul_zero' (x : LocalizedModule S M) : (0 : ℕ) • x = 0 :=
   LocalizedModule.induction_on (fun _ _ => rfl) x
 
-private theorem nsmul_succ' (n : ℕ) (x : LocalizedModule S M) : n.succ • x = x + n • x :=
+private theorem nsmul_succ' (n : ℕ) (x : LocalizedModule S M) : n.succ • x = n • x + x :=
   LocalizedModule.induction_on (fun _ _ => rfl) x
 
 instance : AddCommMonoid (LocalizedModule S M) where
