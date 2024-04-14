@@ -425,7 +425,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
 
 theorem unitLattice_span_eq_top :
     Submodule.span ℝ (unitLattice K : Set ({w : InfinitePlace K // w ≠ w₀} → ℝ)) = ⊤ := by
-  refine le_antisymm (le_top) ?_
+  refine le_antisymm le_top ?_
   -- The standard basis
   let B := Pi.basisFun ℝ {w : InfinitePlace K // w ≠ w₀}
   -- The image by log_embedding of the family of units constructed above

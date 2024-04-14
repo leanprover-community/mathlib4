@@ -398,7 +398,7 @@ distribution. -/
 theorem levyProkhorov_le_convergenceInDistribution :
     TopologicalSpace.coinduced (LevyProkhorov.probabilityMeasure (Ω := Ω)) inferInstance
       ≤ (inferInstance : TopologicalSpace (ProbabilityMeasure Ω)) :=
-  (continuous_levyProkhorov_to_probabilityMeasure).coinduced_le
+  continuous_levyProkhorov_to_probabilityMeasure.coinduced_le
 
 end Levy_Prokhorov_comparison
 

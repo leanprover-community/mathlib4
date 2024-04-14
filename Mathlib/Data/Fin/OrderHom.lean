@@ -455,7 +455,7 @@ theorem predAbove_right_last {i : Fin (n + 1)} : predAbove i (last (n + 1)) = la
 @[simp]
 theorem predAbove_last_castSucc {i : Fin (n + 1)} :
     predAbove (last n) (i.castSucc) = i := by
-  rw [predAbove_of_le_castSucc _ _ ((castSucc_le_castSucc_iff).mpr (le_last _)), castPred_castSucc]
+  rw [predAbove_of_le_castSucc _ _ (castSucc_le_castSucc_iff.mpr (le_last _)), castPred_castSucc]
 @[simp]
 theorem predAbove_last_of_ne_last {i : Fin (n + 2)} (hi : i ≠ last (n + 1)):
     predAbove (last n) i = castPred i hi := by

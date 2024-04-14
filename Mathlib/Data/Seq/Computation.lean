@@ -750,7 +750,7 @@ theorem bind_pure (f : α → β) (s) : bind s (pure ∘ f) = map f s := by
 -- Porting note: used to use `rw [bind_pure]`
 @[simp]
 theorem bind_pure' (s : Computation α) : bind s pure = s := by
-  apply eq_of_bisim fun c₁ c₂ => c₁ = c₂ ∨ ∃ s, c₁ = bind s (pure) ∧ c₂ = s
+  apply eq_of_bisim fun c₁ c₂ => c₁ = c₂ ∨ ∃ s, c₁ = bind s pure ∧ c₂ = s
   · intro c₁ c₂ h
     match c₁, c₂, h with
     | _, c₂, Or.inl (Eq.refl _) => cases' destruct c₂ with b cb <;> simp

@@ -612,7 +612,7 @@ lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
 lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : 0 < n) :
     Nat.log p n = padicValNat p n ↔ n < p ^ (padicValNat p n + 1) := by
   rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by omega⟩), and_iff_right_iff_imp]
-  exact (fun _ => Nat.le_of_dvd hn pow_padicValNat_dvd)
+  exact fun _ => Nat.le_of_dvd hn pow_padicValNat_dvd
 
 lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicValNat 2 (n + 1) := by
   rw [Ne, log_eq_iff (by simp [hn])]
