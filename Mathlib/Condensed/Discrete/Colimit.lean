@@ -56,7 +56,6 @@ theorem functor_initial [∀ i, Epi (c.π.app i)] : Initial (functor F c) := by
     refine ⟨i, ⟨homMk g.toFun ?_⟩⟩
     ext x
     have := (LocallyConstant.congr_fun h x).symm
-    erw [LocallyConstant.coe_comap_apply _ _ (c.π.app i).continuous] at this
     exact this
   · intro ⟨_, X, (f : c.pt ⟶ _)⟩ i ⟨_, (s : F.obj i ⟶ X), (w : f = c.π.app i ≫ _)⟩
       ⟨_, (s' : F.obj i ⟶ X), (w' : f = c.π.app i ≫ _)⟩
@@ -91,14 +90,14 @@ def _root_.Profinite.proj (i : DiscreteQuotient S) : C(S, S.diagram.obj i) := by
 @[simps]
 def LC_cocone : Cocone (S.diagram.op ⋙ profiniteToCompHaus.op ⋙ LC.obj X) where
   pt := LocallyConstant S X
-  ι := { app := fun i (f : LocallyConstant _ _) ↦ f.comap' (S.proj i.unop) }
+  ι := { app := fun i (f : LocallyConstant _ _) ↦ f.comap (S.proj i.unop) }
 
 @[simps]
 def LC_cocone' : Cocone
     (Lan.diagram toProfinite.op (toProfinite.op ⋙ profiniteToCompHaus.op ⋙ LC.obj X) ⟨S⟩) where
   pt := LocallyConstant S X
   ι := {
-    app := fun i (f : LocallyConstant _ _) ↦ f.comap' i.hom.unop
+    app := fun i (f : LocallyConstant _ _) ↦ f.comap i.hom.unop
     naturality := by
       intro i j f
       simp only [LC, comp_obj, CostructuredArrow.proj_obj, op_obj, Opposite.unop_op,
@@ -144,7 +143,7 @@ theorem injective_can : Function.Injective (can S X) := by
   simp only [← ha, ← hb, can,
     ← types_comp_apply (colimit.ι _ i) (colimit.desc _ (LC_cocone S X)) a,
     ← types_comp_apply (colimit.ι _ j) (colimit.desc _ (LC_cocone S X)) b,
-    colimit.ι_desc, LC_cocone_pt, LC_cocone_ι_app, LocallyConstant.comap', comp_obj,
+    colimit.ι_desc, LC_cocone_pt, LC_cocone_ι_app, LocallyConstant.comap, comp_obj,
     toProfinite_obj_toCompHaus_toTop_α, LocallyConstant.mk.injEq] at h
   exact congrFun h _
 
@@ -160,7 +159,6 @@ theorem surjective_can : Function.Surjective (can S X) := by
     const_obj_obj]
   apply DFunLike.ext
   intro x
-  erw [LocallyConstant.coe_comap_apply _ _ (S.asLimitCone.π.app _).continuous]
   rfl
 
 theorem bijective_can : Function.Bijective (can S X) :=

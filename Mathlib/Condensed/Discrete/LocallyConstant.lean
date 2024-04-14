@@ -1,29 +1,6 @@
 import Mathlib.Condensed.TopComparison
 import Mathlib.Condensed.Discrete.ConstantSheaf
 
-namespace LocallyConstant
-
-variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-
-/-- Push forward of locally constant maps under any map, by post-composition.
-
-TODO: PR as change to `LocallyConstant.comap`. -/
-def comap' (f : C(X, Y)) (g : LocallyConstant Y Z) : LocallyConstant X Z :=
-  ⟨g ∘ f, g.isLocallyConstant.comp_continuous f.continuous⟩
-
-@[simp]
-theorem comap'_apply (f : C(X, Y)) (g : LocallyConstant Y Z) : g.comap' f = g ∘ f :=
-  rfl
-
-@[simp]
-theorem comap'_id : comap' (@ContinuousMap.id Y _) = @id (LocallyConstant Y Z) := rfl
-
-@[simp]
-theorem comap'_comp {W : Type*} [TopologicalSpace W] (f : C(W, X)) (g : C(X, Y)) :
-    comap' (Z := Z) (g.comp f) = comap' f ∘ comap' g := by ext; simp
-
-end LocallyConstant
-
 universe u
 
 noncomputable section
@@ -34,9 +11,9 @@ open CategoryTheory Limits Condensed LocallyConstant Opposite
 def LC : Type (u+1) ⥤ (CompHaus.{u}ᵒᵖ ⥤ Type (u+1)) where
   obj X := {
     obj := fun ⟨S⟩ ↦ LocallyConstant S X
-    map := fun f g ↦ g.comap' f.unop
-    map_id := fun _ ↦ comap'_id
-    map_comp := fun f g ↦ comap'_comp g.unop f.unop }
+    map := fun f g ↦ g.comap f.unop
+    map_id := fun _ ↦ comap_id
+    map_comp := fun f g ↦ comap_comp g.unop f.unop }
   map f := {
     app := fun S t ↦ t.map f }
 
@@ -169,18 +146,18 @@ lemma α.map_preimage_eq_image_map {X : Type (u+1)} (g : Y → X) (a : α (g ∘
 
 variable {T : CompHaus.{u}} (g : T ⟶ S)
 
-lemma α.map_eq_image_comap (a : α (f'.comap' g)) (x : a.1) : f' (g x.val) = a.image := by
-  rw [← map_eq_image (f'.comap' g) a x]
+lemma α.map_eq_image_comap (a : α (f'.comap g)) (x : a.1) : f' (g x.val) = a.image := by
+  rw [← map_eq_image (f'.comap g) a x]
   rfl
 
-lemma α.map_preimage_eq_image_comap (a : α (f'.comap' g)) : f' (g a.preimage) = a.image := by
+lemma α.map_preimage_eq_image_comap (a : α (f'.comap g)) : f' (g a.preimage) = a.image := by
   rw [← map_preimage_eq_image]
   rfl
 
-lemma α.image_eq_image_mk (a : α (f'.comap' g)) : a.image = (α.mk f' (g (a.preimage _))).image := by
+lemma α.image_eq_image_mk (a : α (f'.comap g)) : a.image = (α.mk f' (g (a.preimage _))).image := by
   rw [← map_preimage_eq_image_comap, mk_image]
 
-def component_hom (a : α (f'.comap' g)) :
+def component_hom (a : α (f'.comap g)) :
     CompHaus.of a.val ⟶ CompHaus.of (α.mk f' (g a.preimage)).val where
   toFun x := ⟨g x.val, by
     simp only [α.mk, Set.mem_preimage, Set.mem_singleton_iff]
@@ -217,22 +194,22 @@ section
 
 variable {X : Type (u+1)} (g : Y → X)
 
-def extracted_map (a : α (f'.map g)) (b : α (f'.comap' (sigmaIncl (map g f') a))) :
+def extracted_map (a : α (f'.map g)) (b : α (f'.comap (sigmaIncl (map g f') a))) :
     CompHaus.of b.val ⟶ CompHaus.of (α.mk f' (b.preimage).val).val where
   toFun x := ⟨x.val.val, by
     rw [α.mem_iff_eq_image, α.mk_image]
-    simp only [map_apply, CompHaus.coe_of, sigmaIncl, sigmaIncl', comap'_apply,
+    simp only [map_apply, CompHaus.coe_of, sigmaIncl, sigmaIncl', coe_comap,
       ContinuousMap.coe_mk]
     have := x.prop
     rw [α.mem_iff_eq_image] at this
-    simp only [map_apply, CompHaus.coe_of, sigmaIncl, sigmaIncl', comap'_apply,
+    simp only [map_apply, CompHaus.coe_of, sigmaIncl, sigmaIncl', coe_comap,
       ContinuousMap.coe_mk, Function.comp_apply] at this
     rw [this]
     exact (α.map_preimage_eq_image _ _).symm⟩
   continuous_toFun := Continuous.subtype_mk (continuous_induced_dom.comp continuous_induced_dom) _
 
-lemma sigmaIncl_comp_sigmaIncl (a : α (f'.map g)) (b : α (f'.comap' (sigmaIncl (f'.map g) a))) :
-    sigmaIncl (f'.comap' (sigmaIncl (f'.map g) a)) b ≫ sigmaIncl (f'.map g) a =
+lemma sigmaIncl_comp_sigmaIncl (a : α (f'.map g)) (b : α (f'.comap (sigmaIncl (f'.map g) a))) :
+    sigmaIncl (f'.comap (sigmaIncl (f'.map g) a)) b ≫ sigmaIncl (f'.map g) a =
       (extracted_map _ _ a b) ≫ sigmaIncl f' (α.mk f' (b.preimage).val) := rfl
 
 end
@@ -286,11 +263,11 @@ lemma incl_of_counit_app_app (a : α f) :
     ← FunctorToTypes.map_comp_apply, Iso.inv_hom_id, FunctorToTypes.map_id_apply,
     types_iso_inv_comp_apply (i := sigmaComparison _ _)]
 
-lemma incl_comap (a : α (f.comap' g)) : sigmaIncl (f.comap' g) a ≫ g =
+lemma incl_comap (a : α (f.comap g)) : sigmaIncl (f.comap g) a ≫ g =
     (component_hom f g a) ≫ sigmaIncl f _ := rfl
 
 lemma incl_comap_op {S T : CompHausᵒᵖ} (f : LocallyConstant S.unop (Y.val.obj (op (⊤_ _))))
-    (g : S ⟶ T) (a : α (f.comap' g.unop)) : g ≫ (sigmaIncl (f.comap' g.unop) a).op =
+    (g : S ⟶ T) (a : α (f.comap g.unop)) : g ≫ (sigmaIncl (f.comap g.unop) a).op =
     (sigmaIncl f _).op ≫ (component_hom f g.unop a).op := by
   rw [← op_comp, ← incl_comap]
   simp
@@ -303,7 +280,7 @@ def counitApp (Y : CondensedSet.{u}) : LC'.obj (Y.val.obj (op (⊤_ _))) ⟶ Y w
       intro S T g
       simp only [LC', LC]
       ext f
-      apply locallyConstantCondensed_ext (f.comap' g.unop)
+      apply locallyConstantCondensed_ext (f.comap g.unop)
       intro a
       simp only [op_unop, types_comp_apply]
       rw [incl_of_counit_app_app, ← FunctorToTypes.map_comp_apply, incl_comap_op]
@@ -318,7 +295,7 @@ theorem hom_apply_counit_app_app {X : CondensedSet.{u}} (g : Y ⟶ X)
     X.val.map (sigmaIncl (map (g.val.app (op (⊤_ CompHaus))) f) a).op
       (g.val.app ⟨S⟩ (counit_app_app S Y f)) =
         counit_app_app_image (map (g.val.app (op (⊤_ CompHaus))) f) a := by
-  apply locallyConstantCondensed_ext' (f.comap' (sigmaIncl _ _))
+  apply locallyConstantCondensed_ext' (f.comap (sigmaIncl _ _))
   intro b
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
   simp only [counit_app_app_image]
@@ -328,7 +305,7 @@ theorem hom_apply_counit_app_app {X : CondensedSet.{u}} (g : Y ⟶ X)
   change (_ ≫ X.val.map _) _ = (_ ≫ X.val.map _) _
   simp only [← g.val.naturality]
   rw [sigmaIncl_comp_sigmaIncl]
-  simp only [comap'_apply, map_apply, CompHaus.coe_of, op_comp, Functor.map_comp, types_comp_apply]
+  simp only [coe_comap, map_apply, CompHaus.coe_of, op_comp, Functor.map_comp, types_comp_apply]
   rw [incl_of_counit_app_app]
   simp only [counit_app_app_image, ← FunctorToTypes.map_comp_apply, ← op_comp,
     terminal.comp_from]
