@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Rat.Init
 
 #align_import data.rat.defs from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
@@ -255,7 +255,8 @@ protected lemma add_zero : a + 0 = a := by simp [add_def, normalize_eq_mkRat]
 protected lemma zero_add : 0 + a = a := by simp [add_def, normalize_eq_mkRat]
 #align rat.zero_add Rat.zero_add
 
-protected lemma add_comm : a + b = b + a := by simp [add_def, add_comm, mul_comm]
+protected lemma add_comm : a + b = b + a := by
+  simp [add_def, Int.add_comm, Int.mul_comm, Nat.mul_comm]
 #align rat.add_comm Rat.add_comm
 
 protected theorem add_assoc : a + b + c = a + (b + c) :=
@@ -292,7 +293,7 @@ protected theorem mul_assoc : a * b * c = a * (b * c) :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
     numDenCasesOn' b fun n₂ d₂ h₂ =>
       numDenCasesOn' c fun n₃ d₃ h₃ => by
-        simp [h₁, h₂, h₃, mul_ne_zero, mul_comm, mul_assoc, mul_left_comm]
+        simp [h₁, h₂, h₃, mul_ne_zero, Int.mul_comm, Nat.mul_assoc, Int.mul_left_comm]
 #align rat.mul_assoc Rat.mul_assoc
 
 protected theorem add_mul : (a + b) * c = a * c + b * c :=
