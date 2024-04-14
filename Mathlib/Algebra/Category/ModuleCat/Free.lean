@@ -81,7 +81,6 @@ end LinearIndependent
 
 section Span
 
-set_option autoImplicit true in
 /-- In the commutative diagram
 ```
     f     g
@@ -92,7 +91,7 @@ v|     u|     w|
 ```
 where the top row is an exact sequence of modules and the maps on the bottom are `Sum.inl` and
 `Sum.inr`. If `v` spans `X₁` and `w` spans `X₃`, then `u` spans `X₂`. -/
-theorem span_exact (huv : u ∘ Sum.inl = S.f ∘ v)
+theorem span_exact {β : Type*} {u : ι ⊕ β → S.X₂} (huv : u ∘ Sum.inl = S.f ∘ v)
     (hv : ⊤ ≤ span R (range v))
     (hw : ⊤ ≤ span R (range (S.g ∘ u ∘ Sum.inr))) :
     ⊤ ≤ span R (range u) := by

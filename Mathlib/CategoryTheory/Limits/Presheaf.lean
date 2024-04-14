@@ -41,9 +41,6 @@ colimit, representable, presheaf, free cocompletion
 * https://ncatlab.org/nlab/show/Yoneda+extension
 -/
 
-set_option autoImplicit true
-
-
 namespace CategoryTheory
 
 open Category Limits
@@ -151,7 +148,7 @@ theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
 -- `(extendAlongYoneda A).obj P` is definitionally a colimit, and the ext lemma is just
 -- a special case of `CategoryTheory.Limits.colimit.hom_ext`.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
-@[ext] lemma extendAlongYoneda_obj.hom_ext {P : Cᵒᵖ ⥤ Type u₁}
+@[ext] lemma extendAlongYoneda_obj.hom_ext {X : ℰ} {P : Cᵒᵖ ⥤ Type u₁}
     {f f' : (extendAlongYoneda A).obj P ⟶ X}
     (w : ∀ j, colimit.ι ((CategoryOfElements.π P).leftOp ⋙ A) j ≫ f =
       colimit.ι ((CategoryOfElements.π P).leftOp ⋙ A) j ≫ f') : f = f' :=

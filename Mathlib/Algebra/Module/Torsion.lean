@@ -170,13 +170,12 @@ def torsionBySet (s : Set R) : Submodule R M :=
   sInf (torsionBy R M '' s)
 #align submodule.torsion_by_set Submodule.torsionBySet
 
-set_option autoImplicit true in
 -- Porting note: torsion' had metavariables and factoring out this fixed it
 -- perhaps there is a better fix
 /-- The additive submonoid of all elements `x` of `M` such that `a • x = 0`
 for some `a` in `S`. -/
 @[simps!]
-def torsion'AddSubMonoid (S : Type w) [CommMonoid S] [DistribMulAction S M] :
+def torsion'AddSubMonoid (S : Type*) [CommMonoid S] [DistribMulAction S M] :
     AddSubmonoid M where
   carrier := { x | ∃ a : S, a • x = 0 }
   add_mem' := by
@@ -185,11 +184,10 @@ def torsion'AddSubMonoid (S : Type w) [CommMonoid S] [DistribMulAction S M] :
     rw [smul_add, mul_smul, mul_comm, mul_smul, hx, hy, smul_zero, smul_zero, add_zero]
   zero_mem' := ⟨1, smul_zero 1⟩
 
-set_option autoImplicit true in
 /-- The `S`-torsion submodule, containing all elements `x` of `M` such that `a • x = 0` for some
 `a` in `S`. -/
 @[simps!]
-def torsion' (S : Type w) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S R M] :
+def torsion' (S : Type*) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S R M] :
     Submodule R M :=
   { torsion'AddSubMonoid M S with
     smul_mem' := fun a x ⟨b, h⟩ => ⟨b, by rw [smul_comm, h, smul_zero]⟩}
