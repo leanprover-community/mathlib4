@@ -14,10 +14,10 @@ This file defines the *adjoint action* of a Lie algebra on itself, and establish
 
 ## Main definitions
 
-- `LieDerivation.ad` : The adjoint action of a Lie algebra `L` on itself, seen as an homomorphism
-of Lie algebras from `L` to the Lie algebra of its derivations. The adjoint action is also defined
-in the `Mathlib.Algebra.Lie.OfAssociative.lean` file, under the name `LieAlgebra.ad`, as the
-homomorphism with values in the endormophisms of `L`.
+- `LieDerivation.ad`: The adjoint action of a Lie algebra `L` on itself, seen as a morphism of Lie
+algebras from `L` to the Lie algebra of its derivations. The adjoint action is also defined in the
+`Mathlib.Algebra.Lie.OfAssociative.lean` file, under the name `LieAlgebra.ad`, as the morphism with
+values in the endormophisms of `L`.
 
 ## Main statements
 
@@ -29,49 +29,22 @@ homomorphism with values in the endormophisms of `L`.
 
 namespace LieDerivation
 
-section Inner
-
-variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
-    [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-
-/-- The inner derivation from the Lie algebra `L` to the Lie module `M`, associated with the right
-action of an element `m : M`. -/
-def inner (m : M) : LieDerivation R L M where
-  __ := (LieModule.toEndomorphism R L M : L →ₗ[R] Module.End R M).flip m
-  leibniz' := by
-    simp only [LinearMap.flip_apply, LieHom.coe_toLinearMap, LieHom.map_lie, LieHom.lie_apply,
-      LieModule.toEndomorphism_apply_apply, Module.End.lie_apply, forall_const]
-
-variable {R L M}
-
-lemma inner_apply (m : M) (a : L) : inner R L M m a = ⁅a, m⁆ := by
-  simp only [inner, LieDerivation.mk_coe, LinearMap.flip_apply, LieHom.coe_toLinearMap,
-    LieModule.toEndomorphism_apply_apply]
-
-end Inner
-
 section AdjointAction
 
 variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 
-/-- The adjoint action of a Lie algebra `L` on itself, seen as an homomorphism of Lie algebras from
-`L` to the Lie algebra of its derivations. This corresponds to the left action of `L` on itself, ie.
-such that, for `x y : L`, `ad(x) y = ⁅x, y⁆`. See also `LieAlgebra.ad` for the homomorphism with
-values in the endormophisms of `L`. -/
-def ad : L →ₗ⁅R⁆ LieDerivation R L L where
-  toFun := fun m ↦ inner R L L (- m)
-  map_add' := by
-    intro x y; ext a;
-    simp only [neg_add_rev, add_apply, inner_apply, lie_add]
-    abel
-  map_smul' := by
-    intro r x; ext a;
-    simp only [smul_apply, inner_apply, RingHom.id_apply, smul_neg, lie_smul, lie_neg]
-  map_lie' := by
-    intro x y; ext a;
-    simp only [commutator_apply, inner_apply, lie_neg]
-    rw [leibniz_lie, neg_lie, neg_lie, ← lie_skew x]
-    abel
+/-- The adjoint action of a Lie algebra `L` on itself, seen as a morphism of Lie algebras from
+`L` to its derivations.
+Note the minus sign: this is chosen to so that `ad(⁅x, y⁆) = ⁅ad(x), ad(y)⁆)`. -/
+def ad : L →ₗ⁅R⁆ LieDerivation R L L :=
+  { __ := - inner R L L
+    map_lie' := by
+      intro x y
+      ext z
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearMap.neg_apply, coe_neg,
+        Pi.neg_apply, inner_apply_apply, commutator_apply]
+      rw [leibniz_lie, neg_lie, neg_lie, ← lie_skew x]
+      abel }
 
 variable {R L}
 
@@ -79,7 +52,8 @@ lemma ad_zero : ad R L 0 = 0 := LieHom.map_zero (ad R L)
 
 @[simp]
 lemma ad_apply (x y : L) : ad R L x y = ⁅x, y⁆ := by
-  rw [ad, LieHom.coe_mk, inner_apply, lie_neg, lie_skew]
+  rw [ad, LieHom.coe_mk, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearMap.neg_apply, coe_neg,
+    Pi.neg_apply, inner_apply_apply, lie_skew]
 
 lemma ad_lie (x y z : L) : ad R L x ⁅y, z⁆ = ⁅y, ad R L x z⁆ + ⁅ad R L x y, z⁆ := by
   rw [apply_lie_eq_add]
