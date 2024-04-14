@@ -152,7 +152,7 @@ theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
   rw [det_mul_right_comm]
   simp
 
-/-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector matrix -/
+/-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
 lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
   conv_lhs => rw [hA.spectral_theorem2]
   have hG : (hA.eigenvectorUnitary.1) * (star (hA.eigenvectorUnitary.1)) = 1 := by
