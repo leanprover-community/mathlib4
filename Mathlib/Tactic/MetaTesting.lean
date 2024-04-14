@@ -78,11 +78,45 @@ def insertRight (t1 : Syntax) (n : Nat) (t2 : Syntax) : Syntax :=
       t1.insertAt (((args.size + 1)/ 2) - n) t2
     | _ => t1
 
-/-- inserts all the tactics in the array `ts` at the beginning of the tactic sequence `tac`. -/
-def insertMany (tac : Syntax) (ts : Array Syntax) : Syntax :=
-  (Array.range ts.size).foldl (fun l r => l.insertAt r ts[r]!) tac
+/-- inserts all the tactics in the array `ts` at position `n` of the tactic sequence `tac`. -/
+def insertMany (tac : Syntax) (ts : Array Syntax) (n : Nat := 0) : Syntax :=
+  (Array.range ts.size).foldl (fun l r => l.insertAt (n + r) ts[r]!) tac
 
 end Syntax
+
+/--
+Assuming that `tac` is a tactic sequence, extract extract the array of `tactic`s that it contains.
+Note that the "tactic" entries in the output are interleaved with entries that are either `null`
+nodes or nodes corresponding to a semicolon (`;`) separator.
+
+For example
+```lean
+set_option pp.rawOnError true in
+#eval show CommandElabM _ from do
+  let stx ← `(tacticSeq| skip; done)
+  logInfo m!"{stx.getTactics}"
+/-
+[skip,
+ [Error pretty printing syntax: unknown constant ';'. Falling back to raw printer.] ";",
+ done]
+-/
+
+set_option pp.rawOnError true in
+#eval show CommandElabM _ from do
+  let stx ← `(tacticSeq| skip
+                         done)
+  logInfo m!"{stx.getTactics}"
+/-
+[skip,
+ [Error pretty printing syntax: unknown constant 'null'. Falling back to raw printer.] [],
+ done]
+-/
+```
+-/
+def TSyntax.getTactics (tac : TSyntax ``tacticSeq) : Array (TSyntax `tactic) :=
+  match tac.raw with
+    | .node _ ``tacticSeq #[.node _ ``tacticSeq1Indented #[.node _ `null args]] => args.map (⟨·⟩)
+    | _ => #[]
 
 /-- inserts all the tactics in the array `ts` at the beginning of the tactic sequence `tac`. -/
 def TSyntax.insertMany (tac : TSyntax ``tacticSeq) (ts : Array (TSyntax `tactic)) :
@@ -232,8 +266,8 @@ withoutModifyingState do withMainContext do
 If the `!`-flag is not present, then it reverts the state, otherwise it leaves the state as
 it is after the tactic sequence. -/
 elab (name := testTac) "test " tk:"!"? tac:tacticSeq : tactic => do
-  let _ ← for test in [testMData, testFVs false false, testFVs true false, testInstMVs,
-                                  testFVs false true,  testFVs true true
+  for test in [testMData, testFVs false false, testFVs true false, testInstMVs,
+                          testFVs false true,  testFVs true true
                                   ] do
     if let some str := ← test tac then
       logWarningAt (← getRef) str
