@@ -407,9 +407,7 @@ variable (R M Nₗ) in
 protected abbrev BilinMap : Type _ := M →ₗ[R] M →ₗ[R] Nₗ
 
 variable (R M) in
-/-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`.
-
-This should eventually replace `_root_.BilinForm`. -/
+/-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`. -/
 protected abbrev BilinForm : Type _ := LinearMap.BilinMap R M R
 
 end CommSemiring
