@@ -779,7 +779,7 @@ theorem insertNth_apply_succAbove (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i
   split_ifs with hlt
   · generalize_proofs H₁ H₂; revert H₂
     generalize hk : castPred ((succAbove i) j) H₁ = k
-    rw [castPred_succAbove _ _ hlt] at hk; cases hk
+    rw [castPred_succAbove_of_castSucc_lt _ _ hlt] at hk; cases hk
     intro; rfl
   · generalize_proofs H₁ H₂; revert H₂
     generalize hk : pred (succAbove i j) H₁ = k
