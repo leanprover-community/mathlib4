@@ -549,7 +549,7 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
     -- We prove finally that `e ∪ {v}` is not ℤ-linear independent or, equivalently,
     -- not ℚ-linear independent by showing that `v ∈ span ℚ e`.
     rw [LinearIndependent.iff_fractionRing ℤ ℚ,
-      (linearIndependent_insert (Set.not_mem_of_mem_diff hv)),  not_and, not_not]
+        linearIndependent_insert (Set.not_mem_of_mem_diff hv),  not_and, not_not]
     intro _
     -- But that follows from the fact that there exist `n, m : ℕ`, `n ≠ m`
     -- such that `(n - m) • v ∈ span ℤ e` which is true since `n ↦ Zspan.fract e (n • v)`
