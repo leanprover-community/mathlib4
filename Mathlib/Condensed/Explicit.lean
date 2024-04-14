@@ -56,17 +56,11 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
 
 theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
     {A : Type (u+2)} [Category.{u+1} A] (G : A ⥤ Type (u+1))
-    [HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G] (F : CompHaus.{u}ᵒᵖ ⥤ A) :
+    [HasLimits A] [PreservesLimits G] [G.ReflectsIsomorphisms] (F : CompHaus.{u}ᵒᵖ ⥤ A) :
     Presheaf.IsSheaf (coherentTopology CompHaus) F ↔
     Nonempty (PreservesFiniteProducts (F ⋙ G)) ∧ EqualizerCondition (F ⋙ G) := by
   rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology CompHaus) F G,
     isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
-
-noncomputable
-instance {A B : Type*} [Category A] [Category B] (F : B ⥤ A) (E : A)  [PreservesFiniteProducts F] :
-    PreservesFiniteProducts (F ⋙ coyoneda.obj (op E)) :=
-  ⟨fun J _ ↦ @compPreservesLimitsOfShape _ _ _ _ _ _ _ _ F (coyoneda.obj (op E))
-    (PreservesFiniteProducts.preserves J) ((preservesLimitsOfSizeShrink _).preservesLimitsOfShape)⟩
 
 end CompHaus
 
@@ -83,7 +77,7 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
 
 theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
     {A : Type (u+2)} [Category.{u+1} A] (G : A ⥤ Type (u+1))
-    [HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G] (F : Profinite.{u}ᵒᵖ ⥤ A) :
+    [HasLimits A] [PreservesLimits G] [G.ReflectsIsomorphisms] (F : Profinite.{u}ᵒᵖ ⥤ A) :
     Presheaf.IsSheaf (coherentTopology Profinite) F ↔
     Nonempty (PreservesFiniteProducts (F ⋙ G)) ∧ EqualizerCondition (F ⋙ G) := by
   rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology Profinite) F G,
@@ -106,7 +100,7 @@ theorem isSheaf_iff_preservesFiniteProducts
 
 theorem isSheaf_iff_preservesFiniteProducts'
     {A : Type (u+2)} [Category.{u+1} A] (G : A ⥤ Type (u+1))
-    [HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G] (F : Stonean.{u}ᵒᵖ ⥤ A) :
+    [HasLimits A] [PreservesLimits G] [G.ReflectsIsomorphisms] (F : Stonean.{u}ᵒᵖ ⥤ A) :
     Presheaf.IsSheaf (coherentTopology Stonean) F ↔
     Nonempty (PreservesFiniteProducts (F ⋙ G)) := by
   rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology Stonean) F G,
@@ -117,7 +111,7 @@ end Stonean
 namespace Condensed
 
 variable {A : Type (u+2)} [Category.{u+1} A] (G : A ⥤ Type (u+1)) [HasLimits A] [PreservesLimits G]
-    [ReflectsIsomorphisms G]
+    [G.ReflectsIsomorphisms]
 
 /-- The condensed set associated to a finite-product-preserving presheaf on `Stonean`. -/
 noncomputable def ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts F] :

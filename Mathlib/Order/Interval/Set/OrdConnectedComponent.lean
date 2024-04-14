@@ -219,11 +219,10 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
   rcases le_total b x with hbx | hxb
   · exact ha (Icc_subset_uIcc ⟨hab, hbx⟩) hbt
   have h' : x ∈ ordSeparatingSet s t := ⟨mem_iUnion₂.2 ⟨a, has, ha⟩, mem_iUnion₂.2 ⟨b, hbt, hb⟩⟩
-  -- Porting note: lift not implemented yet
-  -- lift x to ordSeparatingSet s t using this
+  lift x to ordSeparatingSet s t using h'
   suffices ordConnectedComponent (ordSeparatingSet s t) x ⊆ [[a, b]] from
-    hsub (this <| ordConnectedProj_mem_ordConnectedComponent _ ⟨x, h'⟩) (mem_range_self _)
-  rintro y (hy : [[x, y]] ⊆ ordSeparatingSet s t)
+    hsub (this <| ordConnectedProj_mem_ordConnectedComponent _ x) (mem_range_self _)
+  rintro y hy
   rw [uIcc_of_le hab, mem_Icc, ← not_lt, ← not_lt]
   have sol1 := fun (hya : y < a) =>
       (disjoint_left (t := ordSeparatingSet s t)).1 disjoint_left_ordSeparatingSet has

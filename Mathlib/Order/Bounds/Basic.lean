@@ -868,7 +868,7 @@ theorem not_bddBelow_univ [NoMinOrder α] : ¬BddBelow (univ : Set α) :=
 
 @[simp]
 theorem upperBounds_empty : upperBounds (∅ : Set α) = univ := by
-  simp only [upperBounds, eq_univ_iff_forall, mem_setOf_eq, ball_empty_iff, forall_true_iff]
+  simp only [upperBounds, eq_univ_iff_forall, mem_setOf_eq, forall_mem_empty, forall_true_iff]
 #align upper_bounds_empty upperBounds_empty
 
 @[simp]
@@ -937,7 +937,7 @@ protected theorem BddAbove.insert [IsDirected α (· ≤ ·)] {s : Set α} (a : 
   bddAbove_insert.2
 #align bdd_above.insert BddAbove.insert
 
-/-- Adding a point to a set preserves its boundedness below.-/
+/-- Adding a point to a set preserves its boundedness below. -/
 @[simp]
 theorem bddBelow_insert [IsDirected α (· ≥ ·)] {s : Set α} {a : α} :
     BddBelow (insert a s) ↔ BddBelow s := by
