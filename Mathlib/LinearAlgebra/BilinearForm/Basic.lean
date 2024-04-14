@@ -212,7 +212,7 @@ instance : Inhabited (BilinForm R M) := inferInstance
 
 /-- `coeFn` as an `AddMonoidHom` -/
 def coeFnAddMonoidHom : BilinForm R M →+ M → M → R where
-  toFun := (fun B x y => B x y)
+  toFun := fun B x y => B x y
   map_zero' := rfl
   map_add' _ _ := rfl
 #align bilin_form.coe_fn_add_monoid_hom LinearMap.BilinForm.coeFnAddMonoidHom

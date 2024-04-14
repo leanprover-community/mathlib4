@@ -249,7 +249,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
       rw [bernstein.probability]
     _ = |∑ k : Fin (n + 1), (f k/ₙ - f x) * bernstein n k x| := by
       simp [bernsteinApproximation, Finset.mul_sum, sub_mul]
-    _ ≤ ∑ k : Fin (n + 1), |(f k/ₙ - f x) * bernstein n k x| := (Finset.abs_sum_le_sum_abs _ _)
+    _ ≤ ∑ k : Fin (n + 1), |(f k/ₙ - f x) * bernstein n k x| := Finset.abs_sum_le_sum_abs _ _
     _ = ∑ k : Fin (n + 1), |f k/ₙ - f x| * bernstein n k x := by
       simp_rw [abs_mul, abs_eq_self.mpr bernstein_nonneg]
     _ = (∑ k in S, |f k/ₙ - f x| * bernstein n k x) + ∑ k in Sᶜ, |f k/ₙ - f x| * bernstein n k x :=

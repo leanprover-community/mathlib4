@@ -377,7 +377,7 @@ theorem map_mod_divByMonic [Ring S] (f : R →+* S) (hq : Monic q) :
       ⟨Eq.symm <| by rw [← Polynomial.map_mul, ← Polynomial.map_add, modByMonic_add_div _ hq],
         calc
           _ ≤ degree (p %ₘ q) := degree_map_le _ _
-          _ < degree q := (degree_modByMonic_lt _ hq)
+          _ < degree q := degree_modByMonic_lt _ hq
           _ = _ :=
             Eq.symm <|
               degree_map_eq_of_leadingCoeff_ne_zero _

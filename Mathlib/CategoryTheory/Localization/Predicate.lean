@@ -195,7 +195,7 @@ def compEquivalenceFromModelInverseIso : L ⋙ (equivalenceFromModel L W).invers
       isoWhiskerRight (qCompEquivalenceFromModelFunctorIso L W).symm _
     _ ≅ W.Q ⋙ (equivalenceFromModel L W).functor ⋙ (equivalenceFromModel L W).inverse :=
       (Functor.associator _ _ _)
-    _ ≅ W.Q ⋙ 𝟭 _ := (isoWhiskerLeft _ (equivalenceFromModel L W).unitIso.symm)
+    _ ≅ W.Q ⋙ 𝟭 _ := isoWhiskerLeft _ (equivalenceFromModel L W).unitIso.symm
     _ ≅ W.Q := Functor.rightUnitor _
 #align category_theory.localization.comp_equivalence_from_model_inverse_iso CategoryTheory.Localization.compEquivalenceFromModelInverseIso
 
