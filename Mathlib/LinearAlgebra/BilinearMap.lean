@@ -412,11 +412,6 @@ variable (R M) in
 This should eventually replace `_root_.BilinForm`. -/
 protected abbrev BilinForm : Type _ := LinearMap.BilinMap R M R
 
-/-- The restriction of a bilinear form to a submodule. -/
-abbrev _root_.Submodule.restrictBilinear (p : Submodule R M) (f : LinearMap.BilinForm R M) :
-    LinearMap.BilinForm R p :=
-  f.compl₁₂ p.subtype p.subtype
-
 end CommSemiring
 
 section CommRing
