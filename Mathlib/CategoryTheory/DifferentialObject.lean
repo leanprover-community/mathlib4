@@ -35,7 +35,7 @@ variable [HasZeroMorphisms C] [HasShift C S]
 /-- A differential object in a category with zero morphisms and a shift is
 an object `obj` equipped with
 a morphism `d : obj ⟶ obj⟦1⟧`, such that `d^2 = 0`. -/
--- Porting note: Removed `@[nolint has_nonempty_instance]`
+-- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
 structure DifferentialObject where
   /-- The underlying object of a differential object. -/
   obj : C
@@ -54,7 +54,7 @@ variable {S C}
 namespace DifferentialObject
 
 /-- A morphism of differential objects is a morphism commuting with the differentials. -/
-@[ext] -- Porting note: Removed `nolint has_nonempty_instance`
+@[ext] -- Porting note(#5171): removed `nolint has_nonempty_instance`
 structure Hom (X Y : DifferentialObject S C) where
   /-- The morphism between underlying objects of the two differentiable objects. -/
   f : X.obj ⟶ Y.obj
