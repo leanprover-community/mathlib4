@@ -158,9 +158,9 @@ variable [Nonempty ι]
 theorem basisSets_smul (U) (hU : U ∈ p.basisSets) :
     ∃ V ∈ 𝓝 (0 : 𝕜), ∃ W ∈ p.addGroupFilterBasis.sets, V • W ⊆ U := by
   rcases p.basisSets_iff.mp hU with ⟨s, r, hr, hU⟩
-  refine' ⟨Metric.ball 0 r.sqrt, Metric.ball_mem_nhds 0 (Real.sqrt_pos.mpr hr), _⟩
-  refine' ⟨(s.sup p).ball 0 r.sqrt, p.basisSets_mem s (Real.sqrt_pos.mpr hr), _⟩
-  refine' Set.Subset.trans (ball_smul_ball (s.sup p) r.sqrt r.sqrt) _
+  refine' ⟨Metric.ball 0 √r, Metric.ball_mem_nhds 0 (Real.sqrt_pos.mpr hr), _⟩
+  refine' ⟨(s.sup p).ball 0 √r, p.basisSets_mem s (Real.sqrt_pos.mpr hr), _⟩
+  refine' Set.Subset.trans (ball_smul_ball (s.sup p) √r √r) _
   rw [hU, Real.mul_self_sqrt (le_of_lt hr)]
 #align seminorm_family.basis_sets_smul SeminormFamily.basisSets_smul
 
@@ -547,7 +547,7 @@ theorem WithSeminorms.isVonNBounded_iff_seminorm_bounded {s : Set E} (hp : WithS
   by_cases hI : I.Nonempty
   · choose r hr h using hi
     have h' : 0 < I.sup' hI r := by
-      rcases hI.bex with ⟨i, hi⟩
+      rcases hI with ⟨i, hi⟩
       exact lt_of_lt_of_le (hr i) (Finset.le_sup' r hi)
     refine' ⟨I.sup' hI r, h', fun x hx => finset_sup_apply_lt h' fun i hi => _⟩
     refine' lt_of_lt_of_le (h i x hx) _

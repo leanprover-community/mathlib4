@@ -1460,8 +1460,6 @@ theorem LinearIndependent.linearIndependent_extend (hs : LinearIndependent K (fu
   hli
 #align linear_independent.linear_independent_extend LinearIndependent.linearIndependent_extend
 
--- variable {K V} -- Porting note: Redundant binder annotation update.
-
 -- TODO(Mario): rewrite?
 theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
     (hs : LinearIndependent K (fun x => x : s → V)) (hst : s ⊆ (span K ↑t : Submodule K V)) :
