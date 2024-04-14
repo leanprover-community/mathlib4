@@ -240,7 +240,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommMon.of AddCommMonCat.of
 
-/-- Construct a bundled `AddCommMon` from the underlying type and typeclass. -/
+/-- Construct a bundled `AddCommMonCat` from the underlying type and typeclass. -/
 add_decl_doc AddCommMonCat.of
 
 @[to_additive]
@@ -402,7 +402,7 @@ the same as (isomorphic to) isomorphisms in `AddCommMonCat` -/
 add_decl_doc addEquivIsoAddCommMonCatIso
 
 @[to_additive]
-instance MonCat.forget_reflects_isos : ReflectsIsomorphisms (forget MonCat.{u}) where
+instance MonCat.forget_reflects_isos : (forget MonCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget MonCat).map f)
     -- Again a problem that exists already creeps into other things leanprover/lean4#2644
@@ -415,7 +415,7 @@ set_option linter.uppercaseLean3 false in
 #align AddMon.forget_reflects_isos AddMonCat.forget_reflects_isos
 
 @[to_additive]
-instance CommMonCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommMonCat.{u}) where
+instance CommMonCat.forget_reflects_isos : (forget CommMonCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommMonCat).map f)
     let e : X ≃* Y := MulEquiv.mk i.toEquiv
@@ -431,6 +431,6 @@ set_option linter.uppercaseLean3 false in
 -- automatically reflects isomorphisms
 -- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
 @[to_additive]
-instance CommMonCat.forget₂Full : Full (forget₂ CommMonCat MonCat) where preimage f := f
+instance CommMonCat.forget₂Full : (forget₂ CommMonCat MonCat).Full where preimage f := f
 
-example : ReflectsIsomorphisms (forget₂ CommMonCat MonCat) := inferInstance
+example : (forget₂ CommMonCat MonCat).ReflectsIsomorphisms := inferInstance

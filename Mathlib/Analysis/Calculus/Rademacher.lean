@@ -270,7 +270,7 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure {f : E → F}
     exact (isCompact_sphere 0 1).elim_finite_subcover_image (fun y _hy ↦ isOpen_ball) this
   have I : ∀ᶠ t in 𝓝 (0 : ℝ), ∀ v ∈ q, ‖f (x + t • v) - f x - t • L v‖ ≤ δ * ‖t‖ := by
     apply (Finite.eventually_all q_fin).2 (fun v hv ↦ ?_)
-    apply Asymptotics.IsLittleO.definition ?_ δpos
+    apply Asymptotics.IsLittleO.def ?_ δpos
     exact hasLineDerivAt_iff_isLittleO_nhds_zero.1 (hL v (hqs hv))
   obtain ⟨r, r_pos, hr⟩ : ∃ (r : ℝ), 0 < r ∧ ∀ (t : ℝ), ‖t‖ < r →
       ∀ v ∈ q, ‖f (x + t • v) - f x - t • L v‖ ≤ δ * ‖t‖ := by

@@ -151,7 +151,7 @@ theorem homothety_norm [RingHomIsometric σ₁₂] [Nontrivial E] (f : E →SL[�
 variable (f)
 
 /-- If a continuous linear map is a topology embedding, then it is expands the distances
-by a positive factor.-/
+by a positive factor. -/
 theorem antilipschitz_of_embedding (f : E →L[𝕜] Fₗ) (hf : Embedding f) :
     ∃ K, AntilipschitzWith K f :=
   f.toLinearMap.antilipschitz_of_comap_nhds_le <| map_zero f ▸ (hf.nhds_eq_comap 0).ge

@@ -853,7 +853,8 @@ end ChartedSpace
 have a topological structure, where the topology would come from the charts. For this, one needs
 charts that are only partial equivs, and continuity properties for their composition.
 This is formalised in `ChartedSpaceCore`. -/
--- @[nolint has_nonempty_instance]  -- Porting note: commented out
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 structure ChartedSpaceCore (H : Type*) [TopologicalSpace H] (M : Type*) where
   atlas : Set (PartialEquiv M H)
   chartAt : M → PartialEquiv M H
@@ -1249,7 +1250,8 @@ lemma StructureGroupoid.restriction_in_maximalAtlas {e : PartialHomeomorph M H}
 /-- A `G`-diffeomorphism between two charted spaces is a homeomorphism which, when read in the
 charts, belongs to `G`. We avoid the word diffeomorph as it is too related to the smooth category,
 and use structomorph instead. -/
--- @[nolint has_nonempty_instance]  -- Porting note: commented out
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 structure Structomorph (G : StructureGroupoid H) (M : Type*) (M' : Type*) [TopologicalSpace M]
   [TopologicalSpace M'] [ChartedSpace H M] [ChartedSpace H M'] extends Homeomorph M M' where
   mem_groupoid : ∀ c : PartialHomeomorph M H, ∀ c' : PartialHomeomorph M' H, c ∈ atlas H M →
