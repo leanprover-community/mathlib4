@@ -1,12 +1,18 @@
 import Mathlib.Algebra.Homology.QuasiIso
 
-open CategoryTheory Category Limits
+open CategoryTheory Category Limits Preadditive
 
 @[simp]
 lemma CategoryTheory.Limits.kernel.map_id {C : Type*} [Category C] [HasZeroMorphisms C]
     {X Y : C} (f : X ⟶ Y) [HasKernel f] (q : Y ⟶ Y)
     (w : f ≫ q = 𝟙 _ ≫ f) : kernel.map f f (𝟙 _) q w = 𝟙 _ := by
   simp only [← cancel_mono (kernel.ι f), lift_ι, comp_id, id_comp]
+
+@[simp]
+lemma CategoryTheory.Limits.kernel.map_zero {C : Type*} [Category C] [HasZeroMorphisms C]
+    {X Y X' Y' : C} (f : X ⟶ Y) (f' : X' ⟶ Y') [HasKernel f]  [HasKernel f'] (q : Y ⟶ Y')
+    (w : f ≫ q = 0 ≫ f') : kernel.map f f' 0 q w = 0 := by
+  simp only [← cancel_mono (kernel.ι f'), lift_ι, comp_zero, zero_comp]
 
 namespace ChainComplex
 
@@ -75,7 +81,7 @@ end
 variable {F : C ⥤ C} (π : F ⟶ 𝟭 C)
 
 variable [HasKernels C]
-variable (X Y Z : C) (φ : X ⟶ Y) (ψ : Y ⟶ Z)
+variable (X Y Z : C) (φ φ' : X ⟶ Y) (ψ : Y ⟶ Z)
 
 noncomputable def leftResolution' : ChainComplex C ℕ :=
   mk' _ _ (π.app X) (fun {X₀ X₁} f =>
@@ -173,8 +179,39 @@ lemma leftResolution'Map_comp :
         congr 2
         simp [← cancel_mono (kernel.ι _)]
 
+variable (K L) in
+@[simp]
+lemma leftResolution'Map_zero [F.PreservesZeroMorphisms] :
+    leftResolution'Map π (0 : K ⟶ L) = 0 := by
+  ext n
+  induction n with
+  | zero => simp
+  | succ n hn =>
+      obtain _|n := n
+      · simp
+      · simp [hn]
+
+@[simp]
+lemma leftResolution'Map_add [F.Additive] :
+    leftResolution'Map π (φ + φ') = leftResolution'Map π φ + leftResolution'Map π φ' := by
+  ext n
+  induction n with
+  | zero => simp
+  | succ n hn =>
+      obtain _|n := n
+      · simp
+      · simp only [leftResolution'Map_f, hn, HomologicalComplex.add_f_apply]
+        rw [← comp_add, ← add_comp, ← F.map_add]
+        congr 3
+        aesop_cat
+
+@[simps]
 noncomputable def leftResolution'Functor : C ⥤ ChainComplex C ℕ where
   obj := leftResolution' π
   map φ := leftResolution'Map π φ
+
+instance [F.PreservesZeroMorphisms] : (leftResolution'Functor π).PreservesZeroMorphisms where
+
+instance [F.Additive] : (leftResolution'Functor π).Additive where
 
 end ChainComplex
