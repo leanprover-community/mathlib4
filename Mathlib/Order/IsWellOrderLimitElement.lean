@@ -59,8 +59,7 @@ lemma IsWellOrderLimitElement.neq_bot [OrderBot α] : a ≠ ⊥ := by
 
 lemma IsWellOrderLimitElement.bot_lt [OrderBot α] : ⊥ < a := by
   obtain h|h := eq_or_lt_of_le (@bot_le _ _ _ a)
-  · exfalso
-    exact IsWellOrderLimitElement.neq_bot a h.symm
+  · exact (IsWellOrderLimitElement.neq_bot a h.symm).elim
   · exact h
 
 variable {a}
