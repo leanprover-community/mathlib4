@@ -125,6 +125,7 @@ def Set.reProdIm (s t : Set ℝ) : Set ℂ :=
   re ⁻¹' s ∩ im ⁻¹' t
 #align set.re_prod_im Complex.Set.reProdIm
 
+@[inherit_doc]
 infixl:72 " ×ℂ " => Set.reProdIm
 
 theorem mem_reProdIm {z : ℂ} {s t : Set ℝ} : z ∈ s ×ℂ t ↔ z.re ∈ s ∧ z.im ∈ t :=
@@ -346,14 +347,25 @@ instance : Nontrivial ℂ :=
   pullback_nonzero re rfl rfl
 
 -- Porting note: moved from `Module/Data/Complex/Basic.lean`
+namespace SMul
+
+-- The useless `0` multiplication in `smul` is to make sure that
+-- `RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally.
+-- instance made scoped to avoid situations like instance synthesis
+-- of `SMul ℂ ℂ` trying to proceed via `SMul ℂ ℝ`.
+/-- Scalar multiplication by `R` on `ℝ` extends to `ℂ`. This is used here and in
+`Matlib.Data.Complex.Module` to transfer instances from `ℝ` to `ℂ`, but is not
+needed outside, so we make it scoped. -/
+scoped instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
+  smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
+
+end SMul
+
+open scoped SMul
+
 section SMul
 
 variable {R : Type*} [SMul R ℝ]
-
-/- The useless `0` multiplication in `smul` is to make sure that
-`RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally. -/
-instance instSMulRealComplex : SMul R ℂ where
-  smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
 
 theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re := by simp [(· • ·), SMul.smul]
 #align complex.smul_re Complex.smul_re

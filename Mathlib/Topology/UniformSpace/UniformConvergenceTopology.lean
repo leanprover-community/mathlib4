@@ -167,6 +167,12 @@ instance [Nonempty β] : Nonempty (α →ᵤ β) := Pi.instNonempty
 
 instance [Nonempty β] : Nonempty (α →ᵤ[𝔖] β) := Pi.instNonempty
 
+instance [Subsingleton β] : Subsingleton (α →ᵤ β) :=
+  instSubsingletonForAll
+
+instance [Subsingleton β] : Subsingleton (α →ᵤ[𝔖] β) :=
+  instSubsingletonForAll
+
 /-- Reinterpret `f : α → β` as an element of `α →ᵤ β`. -/
 def UniformFun.ofFun : (α → β) ≃ (α →ᵤ β) :=
   ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
@@ -867,6 +873,14 @@ theorem t2Space_of_covering [T2Space β] (h : ⋃₀ 𝔖 = univ) : T2Space (α 
     obtain ⟨s, hs, hxs⟩ : ∃ s ∈ 𝔖, x ∈ s := mem_sUnion.mp (h.symm ▸ True.intro)
     exact separated_by_continuous (uniformContinuous_eval_of_mem β 𝔖 hxs hs).continuous hx
 #align uniform_on_fun.t2_space_of_covering UniformOnFun.t2Space_of_covering
+
+/-- The restriction map from `α →ᵤ[𝔖] β` to `⋃₀ 𝔖 → β` is uniformly continuous. -/
+theorem uniformContinuous_restrict_toFun :
+    UniformContinuous ((⋃₀ 𝔖).restrict ∘ toFun 𝔖 : (α →ᵤ[𝔖] β) → ⋃₀ 𝔖 → β) := by
+  rw [uniformContinuous_pi]
+  intro ⟨x, hx⟩
+  obtain ⟨s : Set α, hs : s ∈ 𝔖, hxs : x ∈ s⟩ := mem_sUnion.mpr hx
+  exact uniformContinuous_eval_of_mem β 𝔖 hxs hs
 
 /-- If `𝔖` covers `α`, the natural map `UniformOnFun.toFun` from `α →ᵤ[𝔖] β` to `α → β` is
 uniformly continuous.

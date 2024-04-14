@@ -154,19 +154,19 @@ theorem xn_one : xn a1 1 = a := by simp
 theorem yn_one : yn a1 1 = 1 := by simp
 #align pell.yn_one Pell.yn_one
 
-/-- The Pell `x` sequence, considered as an integer sequence.-/
+/-- The Pell `x` sequence, considered as an integer sequence. -/
 def xz (n : ℕ) : ℤ :=
   xn a1 n
 #align pell.xz Pell.xz
 
-/-- The Pell `y` sequence, considered as an integer sequence.-/
+/-- The Pell `y` sequence, considered as an integer sequence. -/
 def yz (n : ℕ) : ℤ :=
   yn a1 n
 #align pell.yz Pell.yz
 
 section
 
-/-- The element `a` such that `d = a ^ 2 - 1`, considered as an integer.-/
+/-- The element `a` such that `d = a ^ 2 - 1`, considered as an integer. -/
 def az (a : ℕ) : ℤ :=
   a
 #align pell.az Pell.az
@@ -337,7 +337,7 @@ theorem eq_pellZd (b : ℤ√(d a1)) (b1 : 1 ≤ b) (hp : IsPell b) : ∃ n, b =
   let ⟨n, h⟩ := @Zsqrtd.le_arch (d a1) b
   eq_pell_lem a1 n b b1 hp <|
     h.trans <| by
-      rw [Zsqrtd.coe_nat_val]
+      rw [Zsqrtd.natCast_val]
       exact
         Zsqrtd.le_of_le_le (Int.ofNat_le_ofNat_of_le <| le_of_lt <| n_lt_xn _ _)
           (Int.ofNat_zero_le _)
@@ -508,7 +508,7 @@ theorem dvd_of_ysq_dvd {n t} (h : yn a1 n * yn a1 n ∣ yn a1 t) : yn a1 n ∣ t
 theorem pellZd_succ_succ (n) :
     pellZd a1 (n + 2) + pellZd a1 n = (2 * a : ℕ) * pellZd a1 (n + 1) := by
   have : (1 : ℤ√(d a1)) + ⟨a, 1⟩ * ⟨a, 1⟩ = ⟨a, 1⟩ * (2 * a) := by
-    rw [Zsqrtd.coe_nat_val]
+    rw [Zsqrtd.natCast_val]
     change (⟨_, _⟩ : ℤ√(d a1)) = ⟨_, _⟩
     rw [dz_val]
     dsimp [az]

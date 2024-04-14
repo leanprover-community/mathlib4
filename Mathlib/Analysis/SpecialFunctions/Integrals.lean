@@ -873,10 +873,10 @@ theorem integral_sin_sq_mul_cos_sq :
 /-! ### Integral of misc. functions -/
 
 
-theorem integral_sqrt_one_sub_sq : ∫ x in (-1 : ℝ)..1, sqrt (1 - x ^ 2 : ℝ) = π / 2 :=
+theorem integral_sqrt_one_sub_sq : ∫ x in (-1 : ℝ)..1, √(1 - x ^ 2 : ℝ) = π / 2 :=
   calc
-    _ = ∫ x in sin (-(π / 2)).. sin (π / 2), sqrt (1 - x ^ 2 : ℝ) := by rw [sin_neg, sin_pi_div_two]
-    _ = ∫ x in (-(π / 2))..(π / 2), sqrt (1 - sin x ^ 2 : ℝ) * cos x :=
+    _ = ∫ x in sin (-(π / 2)).. sin (π / 2), √(1 - x ^ 2 : ℝ) := by rw [sin_neg, sin_pi_div_two]
+    _ = ∫ x in (-(π / 2))..(π / 2), √(1 - sin x ^ 2 : ℝ) * cos x :=
           (integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos
             (by continuity)).symm
     _ = ∫ x in (-(π / 2))..(π / 2), cos x ^ 2 := by

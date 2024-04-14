@@ -32,9 +32,6 @@ A basic `norm_digits` tactic for proving goals of the form `Nat.digits a b = l` 
 are numerals is not yet ported.
 -/
 
-set_option autoImplicit true
-
-
 namespace Nat
 
 variable {n : ℕ}
@@ -466,7 +463,7 @@ theorem ofDigits_monotone {p q : ℕ} (L : List ℕ) (h : p ≤ q) : ofDigits p 
   · simp only [ofDigits, cast_id, add_le_add_iff_left]
     exact Nat.mul_le_mul h hi
 
-theorem sum_le_ofDigits (L : List ℕ) (h : 1 ≤ p) : L.sum ≤ ofDigits p L :=
+theorem sum_le_ofDigits {p : ℕ} (L : List ℕ) (h : 1 ≤ p) : L.sum ≤ ofDigits p L :=
   (ofDigits_one L).symm ▸ ofDigits_monotone L h
 
 theorem digit_sum_le (p n : ℕ) : List.sum (digits p n) ≤ n := by
@@ -512,7 +509,7 @@ theorem base_pow_length_digits_le (b m : ℕ) (hb : 1 < b) :
 
 /-- Interpreting as a base `p` number and dividing by `p` is the same as interpreting the tail.
 -/
-lemma ofDigits_div_eq_ofDigits_tail (hpos : 0 < p) (digits : List ℕ)
+lemma ofDigits_div_eq_ofDigits_tail {p : ℕ} (hpos : 0 < p) (digits : List ℕ)
     (w₁ : ∀ l ∈ digits, l < p) : ofDigits p digits / p = ofDigits p digits.tail := by
   induction' digits with hd tl
   · simp [ofDigits]
@@ -523,7 +520,7 @@ lemma ofDigits_div_eq_ofDigits_tail (hpos : 0 < p) (digits : List ℕ)
 /-- Interpreting as a base `p` number and dividing by `p^i` is the same as dropping `i`.
 -/
 lemma ofDigits_div_pow_eq_ofDigits_drop
-    (i : ℕ) (hpos : 0 < p) (digits : List ℕ) (w₁ : ∀ l ∈ digits, l < p) :
+    {p : ℕ} (i : ℕ) (hpos : 0 < p) (digits : List ℕ) (w₁ : ∀ l ∈ digits, l < p) :
     ofDigits p digits / p ^ i = ofDigits p (digits.drop i) := by
   induction' i with i hi
   · simp
@@ -533,7 +530,7 @@ lemma ofDigits_div_pow_eq_ofDigits_drop
 
 /-- Dividing `n` by `p^i` is like truncating the first `i` digits of `n` in base `p`.
 -/
-lemma self_div_pow_eq_ofDigits_drop (i n : ℕ) (h : 2 ≤ p):
+lemma self_div_pow_eq_ofDigits_drop {p : ℕ} (i n : ℕ) (h : 2 ≤ p):
     n / p ^ i = ofDigits p ((p.digits n).drop i) := by
   convert ofDigits_div_pow_eq_ofDigits_drop i (zero_lt_of_lt h) (p.digits n)
     (fun l hl ↦ digits_lt_base h hl)
@@ -541,7 +538,7 @@ lemma self_div_pow_eq_ofDigits_drop (i n : ℕ) (h : 2 ≤ p):
 
 open BigOperators Finset
 
-theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits
+theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
     (L : List ℕ) {h_nonempty} (h_ne_zero : L.getLast h_nonempty ≠ 0) (h_lt : ∀ l ∈ L, l < p) :
     (p - 1) * ∑ i in range L.length, (ofDigits p L) / p ^ i.succ = (ofDigits p L) - L.sum := by
   obtain h | rfl | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
@@ -575,7 +572,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits
     · rfl
     · simp [ofDigits]
 
-theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits (n : ℕ) :
+theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
     (p - 1) * ∑ i in range (log p n).succ, n / p ^ i.succ = n - (p.digits n).sum := by
   obtain h | rfl | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
   · rcases eq_or_ne n 0 with rfl | hn

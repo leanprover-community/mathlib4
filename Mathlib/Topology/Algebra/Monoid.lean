@@ -681,7 +681,7 @@ instance (priority := 100) IsScalarTower.continuousConstSMul {R A : Type*} [Mono
 /-- If the action of `R` on `A` commutes with left-multiplication, then continuous multiplication
 implies continuous scalar multiplication by constants.
 
-Notably, this instances applies when `R = Aᵐᵒᵖ`.-/
+Notably, this instances applies when `R = Aᵐᵒᵖ`. -/
 @[to_additive "If the action of `R` on `A` commutes with left-addition, then
 continuous addition implies continuous affine addition by constants.
 

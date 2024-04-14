@@ -109,7 +109,7 @@ when applicable:
   See `Mathlib.Data.Equiv.TransferInstance` for more examples. See also the `transport` tactic.
   ```
   def Equiv.Z (e : α ≃ β) [Z β] : Z α := ...
-  /- When there is a new notion of `Z`-equiv: -/
+  /-- When there is a new notion of `Z`-equiv: -/
   def Equiv.ZEquiv (e : α ≃ β) [Z β] : by { letI := Equiv.Z e, exact α ≃Z β } := ...
   ```
 

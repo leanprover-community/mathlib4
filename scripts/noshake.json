@@ -276,7 +276,8 @@
   "Mathlib.Tactic.DeriveFintype":
   ["Mathlib.Data.Fintype.Basic",
    "Mathlib.Data.Fintype.Sigma",
-   "Mathlib.Data.Fintype.Sum"],
+   "Mathlib.Data.Fintype.Sum",
+   "Mathlib.Tactic.ProxyType"],
   "Mathlib.Tactic.Continuity": ["Mathlib.Tactic.Continuity.Init"],
   "Mathlib.Tactic.Congr!": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Choose": ["Mathlib.Logic.Function.Basic"],
@@ -311,14 +312,18 @@
   "Mathlib.Lean.Meta": ["Std.Logic"],
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Defs"],
   "Mathlib.Lean.Expr.Basic": ["Std.Logic"],
+  "Mathlib.Init.Data.Nat.Lemmas": ["Std.WF"],
   "Mathlib.Init.Data.Nat.GCD": ["Std.Data.Nat.Gcd"],
   "Mathlib.Init.Data.Int.Basic": ["Std.Data.Int.Order"],
   "Mathlib.Init.Core": ["Std.Classes.Dvd"],
   "Mathlib.GroupTheory.Subgroup.Order": ["Mathlib.GroupTheory.Submonoid.Order"],
+  "Mathlib.GroupTheory.MonoidLocalization": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
+  "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Data.Rat.Init": ["Std.Data.Rat.Basic"],
+  "Mathlib.Data.Ordmap.Ordnode": ["Mathlib.Data.Option.Basic"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.GroupTheory.GroupAction.Defs"],
   "Mathlib.Data.List.TFAE": ["Std.Tactic.Classical"],
   "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertNth"],
@@ -332,6 +337,7 @@
   ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
+  "Mathlib.Analysis.Distribution.SchwartzSpace": ["Mathlib.Tactic.MoveAdd"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Basic"],

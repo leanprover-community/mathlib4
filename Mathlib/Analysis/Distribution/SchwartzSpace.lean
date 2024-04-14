@@ -11,6 +11,7 @@ import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 import Mathlib.Topology.Algebra.UniformFilterBasis
+import Mathlib.Tactic.MoveAdd
 
 #align_import analysis.schwartz_space from "leanprover-community/mathlib"@"e137999b2c6f2be388f4cd3bbf8523de1910cd2b"
 
@@ -539,16 +540,14 @@ theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m
   have hk' : Finset.range (k + 1) ⊆ Finset.range (m.1 + 1) := by
     rwa [Finset.range_subset, add_le_add_iff_right]
   refine' le_trans (Finset.sum_le_sum_of_subset_of_nonneg hk' fun _ _ _ => by positivity) _
-  refine' Finset.sum_le_sum fun i hi => _
-  rw [mul_comm (‖x‖ ^ i), mul_assoc]
-  refine' mul_le_mul _ _ (by positivity) (by positivity)
+  gcongr ∑ _i in Finset.range (m.1 + 1), ?_ with i hi
+  move_mul [(Nat.choose k i : ℝ), (Nat.choose m.1 i : ℝ)]
+  gcongr
+  · apply (le_seminorm 𝕜 i n f x).trans
+    apply Seminorm.le_def.1
+    exact Finset.le_sup_of_le (Finset.mem_Iic.2 <|
+      Prod.mk_le_mk.2 ⟨Finset.mem_range_succ_iff.mp hi, hn⟩) le_rfl
   · exact mod_cast Nat.choose_le_choose i hk
-  · trans
-    · exact le_seminorm 𝕜 i n f x
-    · apply Seminorm.le_def.1
-      exact
-        Finset.le_sup_of_le (Finset.mem_Iic.2 <|
-          Prod.mk_le_mk.2 ⟨Finset.mem_range_succ_iff.mp hi, hn⟩) le_rfl
 #align schwartz_map.one_add_le_sup_seminorm_apply SchwartzMap.one_add_le_sup_seminorm_apply
 
 end Seminorms
@@ -625,7 +624,8 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   · simp only [C', Finset.le_sup'_iff, le_max_iff]
     right
     exact ⟨N, hN, rfl.le⟩
-  refine' pow_le_pow_right (by simp only [le_add_iff_nonneg_right, norm_nonneg]) _
+  gcongr
+  · simp
   exact Finset.le_sup hN
 #align function.has_temperate_growth.norm_iterated_fderiv_le_uniform_aux Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux
 
@@ -637,9 +637,8 @@ lemma _root_.Function.HasTemperateGrowth.of_fderiv {f : E → F}
   rcases n with rfl|m
   · exact ⟨k, C, fun x ↦ by simpa using h x⟩
   · rcases h'f.2 m with ⟨k', C', h'⟩
-    refine ⟨k', C', fun x ↦ ?_⟩
-    simpa only [ContinuousLinearMap.strongUniformity_topology_eq, Function.comp_apply,
-      LinearIsometryEquiv.norm_map, iteratedFDeriv_succ_eq_comp_right] using h' x
+    refine ⟨k', C', ?_⟩
+    simpa [iteratedFDeriv_succ_eq_comp_right] using h'
 
 lemma _root_.Function.HasTemperateGrowth.zero :
     Function.HasTemperateGrowth (fun _ : E ↦ (0 : F)) := by
@@ -765,8 +764,8 @@ protected def evalCLM (m : E) : 𝓢(E, E →L[ℝ] F) →L[𝕜] 𝓢(E, F) :=
           (mul_le_mul_of_nonneg_left (norm_iteratedFDeriv_clm_apply_const f.2 le_top)
             (by positivity))
           _
-      rw [← mul_assoc, ← mul_comm ‖m‖, mul_assoc]
-      refine' mul_le_mul_of_nonneg_left _ (norm_nonneg _)
+      move_mul [‖m‖]
+      gcongr ?_ * ‖m‖
       simp only [Finset.sup_singleton, schwartzSeminormFamily_apply, le_seminorm])
 #align schwartz_map.eval_clm SchwartzMap.evalCLM
 
@@ -792,7 +791,6 @@ def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemper
         RingHom.id_apply])
     (fun f => (B.isBoundedBilinearMap.contDiff.restrict_scalars ℝ).comp (f.smooth'.prod hg.1))
     (by
-      -- Porting note: rewrite this proof with `rel_congr`
       rintro ⟨k, n⟩
       rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
       use
@@ -803,34 +801,31 @@ def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemper
       have hnorm_mul :=
         ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear B f.smooth' hg.1 x (n := n) le_top
       refine' le_trans (mul_le_mul_of_nonneg_left hnorm_mul hxk) _
-      rw [← mul_assoc (‖x‖ ^ k), mul_comm (‖x‖ ^ k)]
+      move_mul [← ‖B‖]
       simp_rw [mul_assoc ‖B‖]
-      refine' mul_le_mul_of_nonneg_left _ (by positivity)
+      gcongr _ * ?_
       rw [Finset.mul_sum]
       have : (∑ _x : ℕ in Finset.range (n + 1), (1 : ℝ)) = n + 1 := by simp
-      repeat rw [mul_assoc ((n : ℝ) + 1)]
+      simp_rw [mul_assoc ((n : ℝ) + 1)]
       rw [← this, Finset.sum_mul]
       refine' Finset.sum_le_sum fun i hi => _
       simp only [one_mul]
-      rw [← mul_assoc, mul_comm (‖x‖ ^ k), mul_assoc, mul_assoc, mul_assoc]
-      refine' mul_le_mul _ _ (by positivity) (by positivity)
+      move_mul [(Nat.choose n i : ℝ), (Nat.choose n (n / 2) : ℝ)]
+      gcongr ?_ * ?_
+      swap
       · norm_cast
         exact i.choose_le_middle n
       specialize hgrowth (n - i) (by simp only [tsub_le_self]) x
-      rw [← mul_assoc]
       refine' le_trans (mul_le_mul_of_nonneg_left hgrowth (by positivity)) _
-      rw [mul_comm _ (C * _), mul_assoc, mul_assoc C]
-      refine' mul_le_mul_of_nonneg_left _ hC
-      rw [mul_comm _ (‖x‖ ^ k)]
-      rw [← mul_assoc]
+      move_mul [C]
+      gcongr ?_ * C
       rw [Finset.mem_range_succ_iff] at hi
       change i ≤ (l + k, n).snd at hi
       refine' le_trans _ (one_add_le_sup_seminorm_apply le_rfl hi f x)
-      refine' mul_le_mul_of_nonneg_right _ (norm_nonneg _)
       rw [pow_add]
-      refine' mul_le_mul_of_nonneg_left _ (by positivity)
-      refine' pow_le_pow_left (norm_nonneg _) _ _
-      simp only [zero_le_one, le_add_iff_nonneg_left])
+      move_mul [(1 + ‖x‖) ^ l]
+      gcongr
+      simp)
 #align schwartz_map.bilin_left_clm SchwartzMap.bilinLeftCLM
 
 end Multiplication
@@ -866,11 +861,12 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
       let seminorm_f := ((Finset.Iic (k', n)).sup (schwartzSeminormFamily 𝕜 _ _)) f
       have hg_upper'' : (1 + ‖x‖) ^ (k + l * n) ≤ (1 + Cg) ^ (k + l * n) * (1 + ‖g x‖) ^ k' := by
         rw [pow_mul, ← mul_pow]
-        refine' pow_le_pow_left (by positivity) _ _
+        gcongr
         rw [add_mul]
         refine' add_le_add _ (hg_upper' x)
         nth_rw 1 [← one_mul (1 : ℝ)]
-        refine' mul_le_mul (le_refl _) (one_le_pow_of_one_le _ _) zero_le_one zero_le_one
+        gcongr
+        apply one_le_pow_of_one_le
         simp only [le_add_iff_nonneg_right, norm_nonneg]
       have hbound :
         ∀ i, i ≤ n → ‖iteratedFDeriv ℝ i f (g x)‖ ≤ 2 ^ k' * seminorm_f / (1 + ‖g x‖) ^ k' := by
@@ -885,7 +881,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
         refine' (hgrowth N hN₂ x).trans _
         rw [mul_pow]
         have hN₁' := (lt_of_lt_of_le zero_lt_one hN₁).ne'
-        refine' mul_le_mul _ _ (by positivity) (by positivity)
+        gcongr
         · exact le_trans (by simp [hC]) (le_self_pow (by simp [hC]) hN₁')
         · refine' le_self_pow (one_le_pow_of_one_le _ l) hN₁'
           simp only [le_add_iff_nonneg_right, norm_nonneg]

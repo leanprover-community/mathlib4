@@ -366,7 +366,7 @@ open Set Real
 to the Pell equation `x^2 - d*y^2 = 1`. -/
 theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃ x y : ℤ, x ^ 2 - d * y ^ 2 = 1 ∧ y ≠ 0 := by
-  let ξ : ℝ := sqrt d
+  let ξ : ℝ := √d
   have hξ : Irrational ξ := by
     refine' irrational_nrt_of_notint_nrt 2 d (sq_sqrt <| Int.cast_nonneg.mpr h₀.le) _ two_pos
     rintro ⟨x, hx⟩
@@ -397,7 +397,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     obtain ⟨q, hq⟩ := hm.nonempty
     rw [mem_setOf, sub_eq_zero, mul_comm] at hq
     obtain ⟨a, ha⟩ := (Int.pow_dvd_pow_iff two_pos).mp ⟨d, hq⟩
-    rw [ha, mul_pow, mul_right_inj' (pow_pos (Int.coe_nat_pos.mpr q.pos) 2).ne'] at hq
+    rw [ha, mul_pow, mul_right_inj' (pow_pos (Int.natCast_pos.mpr q.pos) 2).ne'] at hq
     exact hd ⟨a, sq a ▸ hq.symm⟩
   haveI := neZero_iff.mpr (Int.natAbs_ne_zero.mpr hm₀)
   let f : ℚ → ZMod m.natAbs × ZMod m.natAbs := fun q => (q.num, q.den)

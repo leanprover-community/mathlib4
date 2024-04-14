@@ -340,7 +340,7 @@ partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := g
       else
         return {s with scopeState := binders}
 
-/- Create a `Term` that represents a matcher for `scoped` notation.
+/-- Create a `Term` that represents a matcher for `scoped` notation.
 Fails in the `OptionT` sense if a matcher couldn't be constructed.
 Also returns a delaborator key like in `mkExprMatcher`.
 Reminder: `$lit:ident : (scoped $scopedId:ident => $scopedTerm:Term)` -/

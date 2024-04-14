@@ -615,7 +615,7 @@ theorem integrableOn_Ioi_of_intervalIntegral_norm_tendsto (I a : ℝ)
   integrableOn_Ioi_of_intervalIntegral_norm_bounded I' a hfi hb hI'
 #align measure_theory.integrable_on_Ioi_of_interval_integral_norm_tendsto MeasureTheory.integrableOn_Ioi_of_intervalIntegral_norm_tendsto
 
-theorem integrableOn_Ioc_of_interval_integral_norm_bounded {I a₀ b₀ : ℝ}
+theorem integrableOn_Ioc_of_intervalIntegral_norm_bounded {I a₀ b₀ : ℝ}
     (hfi : ∀ i, IntegrableOn f <| Ioc (a i) (b i)) (ha : Tendsto a l <| 𝓝 a₀)
     (hb : Tendsto b l <| 𝓝 b₀) (h : ∀ᶠ i in l, (∫ x in Ioc (a i) (b i), ‖f x‖) ≤ I) :
     IntegrableOn f (Ioc a₀ b₀) := by
@@ -625,19 +625,26 @@ theorem integrableOn_Ioc_of_interval_integral_norm_bounded {I a₀ b₀ : ℝ}
   refine' le_trans (set_integral_mono_set (hfi i).norm _ _) hi <;> apply ae_of_all
   · simp only [Pi.zero_apply, norm_nonneg, forall_const]
   · intro c hc; exact hc.1
-#align measure_theory.integrable_on_Ioc_of_interval_integral_norm_bounded MeasureTheory.integrableOn_Ioc_of_interval_integral_norm_bounded
+#align measure_theory.integrable_on_Ioc_of_interval_integral_norm_bounded MeasureTheory.integrableOn_Ioc_of_intervalIntegral_norm_bounded
 
-theorem integrableOn_Ioc_of_interval_integral_norm_bounded_left {I a₀ b : ℝ}
+theorem integrableOn_Ioc_of_intervalIntegral_norm_bounded_left {I a₀ b : ℝ}
     (hfi : ∀ i, IntegrableOn f <| Ioc (a i) b) (ha : Tendsto a l <| 𝓝 a₀)
     (h : ∀ᶠ i in l, (∫ x in Ioc (a i) b, ‖f x‖) ≤ I) : IntegrableOn f (Ioc a₀ b) :=
-  integrableOn_Ioc_of_interval_integral_norm_bounded hfi ha tendsto_const_nhds h
-#align measure_theory.integrable_on_Ioc_of_interval_integral_norm_bounded_left MeasureTheory.integrableOn_Ioc_of_interval_integral_norm_bounded_left
+  integrableOn_Ioc_of_intervalIntegral_norm_bounded hfi ha tendsto_const_nhds h
+#align measure_theory.integrable_on_Ioc_of_interval_integral_norm_bounded_left MeasureTheory.integrableOn_Ioc_of_intervalIntegral_norm_bounded_left
 
-theorem integrableOn_Ioc_of_interval_integral_norm_bounded_right {I a b₀ : ℝ}
+theorem integrableOn_Ioc_of_intervalIntegral_norm_bounded_right {I a b₀ : ℝ}
     (hfi : ∀ i, IntegrableOn f <| Ioc a (b i)) (hb : Tendsto b l <| 𝓝 b₀)
     (h : ∀ᶠ i in l, (∫ x in Ioc a (b i), ‖f x‖) ≤ I) : IntegrableOn f (Ioc a b₀) :=
-  integrableOn_Ioc_of_interval_integral_norm_bounded hfi tendsto_const_nhds hb h
-#align measure_theory.integrable_on_Ioc_of_interval_integral_norm_bounded_right MeasureTheory.integrableOn_Ioc_of_interval_integral_norm_bounded_right
+  integrableOn_Ioc_of_intervalIntegral_norm_bounded hfi tendsto_const_nhds hb h
+#align measure_theory.integrable_on_Ioc_of_interval_integral_norm_bounded_right MeasureTheory.integrableOn_Ioc_of_intervalIntegral_norm_bounded_right
+
+@[deprecated] alias integrableOn_Ioc_of_interval_integral_norm_bounded :=
+  integrableOn_Ioc_of_intervalIntegral_norm_bounded -- 2024-04-06
+@[deprecated] alias integrableOn_Ioc_of_interval_integral_norm_bounded_left :=
+  integrableOn_Ioc_of_intervalIntegral_norm_bounded_left -- 2024-04-06
+@[deprecated] alias integrableOn_Ioc_of_interval_integral_norm_bounded_right :=
+  integrableOn_Ioc_of_intervalIntegral_norm_bounded_right -- 2024-04-06
 
 end IntegrableOfIntervalIntegral
 
