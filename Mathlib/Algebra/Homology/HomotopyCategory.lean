@@ -17,9 +17,6 @@ import Mathlib.CategoryTheory.Quotient.Preadditive
 with chain maps identified when they are homotopic.
 -/
 
-set_option autoImplicit true
-
-
 universe v u
 
 open scoped Classical
@@ -51,7 +48,7 @@ def HomotopyCategory :=
   CategoryTheory.Quotient (homotopic V c)
 #align homotopy_category HomotopyCategory
 
-instance : Category (HomotopyCategory V v) := by
+instance {v : ComplexShape ι} : Category (HomotopyCategory V v) := by
   dsimp only [HomotopyCategory]
   infer_instance
 

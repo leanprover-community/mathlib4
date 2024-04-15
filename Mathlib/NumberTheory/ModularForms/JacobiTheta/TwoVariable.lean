@@ -509,7 +509,7 @@ theorem jacobiTheta₂'_functional_equation (z τ : ℂ) :
     exact div_pos hτ (normSq_pos.mpr (fun h ↦ lt_irrefl 0 (zero_im ▸ h ▸ hτ)))
   have hj : HasDerivAt (fun w ↦ jacobiTheta₂ (w / τ) (-1 / τ))
       ((1 / τ) * jacobiTheta₂' (z / τ) (-1 / τ)) z := by
-    have := (hasDerivAt_jacobiTheta₂_fst (z / τ) hτ')
+    have := hasDerivAt_jacobiTheta₂_fst (z / τ) hτ'
     simpa only [mul_comm, one_div] using this.comp z (hasDerivAt_mul_const τ⁻¹)
   calc
   _ = deriv (jacobiTheta₂ · τ) z := (hasDerivAt_jacobiTheta₂_fst z hτ).deriv.symm
