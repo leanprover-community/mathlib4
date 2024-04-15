@@ -98,6 +98,13 @@ def fintypeCatToLightProfinite : FintypeCat ⥤ LightProfinite.{u} where
   obj X := X.toLightProfinite
   map f := FintypeCat.toProfinite.map f
 
+instance : fintypeCatToLightProfinite.Faithful where
+  map_injective h := funext fun _ ↦ (DFunLike.ext_iff.mp h) _
+
+instance : fintypeCatToLightProfinite.Full where
+  preimage f := fun x ↦ f x
+  witness _ := rfl
+
 end LightProfinite
 
 noncomputable section EssentiallySmall
