@@ -176,7 +176,7 @@ elab_rules : tactic
 
   let ctx : Simp.Context := {
      simpTheorems := #[thms, thms0]
-     congrTheorems := (← getSimpCongrTheorems)
+     congrTheorems := ← getSimpCongrTheorems
      config := cfg
   }
   let mut r ← elabSimpArgs (sa.getD ⟨.missing⟩) ctx (simprocs := {}) (eraseLocal := false) .simp

@@ -84,7 +84,7 @@ def restrictScalars {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →
 #align category_theory.Module.restrict_scalars ModuleCat.restrictScalars
 
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
-    CategoryTheory.Faithful (restrictScalars.{v} f) where
+    (restrictScalars.{v} f).Faithful where
   map_injective h :=
     LinearMap.ext fun x => by simpa only using DFunLike.congr_fun h x
 
@@ -216,7 +216,7 @@ abbrev restrictScalarsComp := restrictScalarsComp'.{v} f g _ rfl
 end
 
 instance restrictScalarsIsEquivalenceOfRingEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S) :
-    IsEquivalence (ModuleCat.restrictScalars e.toRingHom) where
+    (ModuleCat.restrictScalars e.toRingHom).IsEquivalence where
   inverse := ModuleCat.restrictScalars e.symm
   unitIso := NatIso.ofComponents (fun M ↦ LinearEquiv.toModuleIso'
     { __ := AddEquiv.refl M
@@ -224,7 +224,7 @@ instance restrictScalarsIsEquivalenceOfRingEquiv {R S} [Ring R] [Ring S] (e : R 
   counitIso := NatIso.ofComponents (fun M ↦ LinearEquiv.toModuleIso'
     { __ := AddEquiv.refl M
       map_smul' := fun r m ↦ congr_arg (· • (_ : M)) (e.left_inv r)}) (by intros; rfl)
-  functor_unitIso_comp := (by intros; rfl)
+  functor_unitIso_comp := by intros; rfl
 
 open TensorProduct
 
