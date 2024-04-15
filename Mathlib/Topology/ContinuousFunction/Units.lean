@@ -109,7 +109,8 @@ theorem isUnit_iff_forall_ne_zero (f : C(X, R)) : IsUnit f ↔ ∀ x, f x ≠ 0 
   simp_rw [f.isUnit_iff_forall_isUnit, isUnit_iff_ne_zero]
 #align continuous_map.is_unit_iff_forall_ne_zero ContinuousMap.isUnit_iff_forall_ne_zero
 
-theorem spectrum_eq_preimage_range (f : C(X, R)) : spectrum 𝕜 f = algebraMap _ _ ⁻¹' Set.range f := by
+theorem spectrum_eq_preimage_range (f : C(X, R)) :
+    spectrum 𝕜 f = algebraMap _ _ ⁻¹' Set.range f := by
   ext x
   simp only [spectrum.mem_iff, isUnit_iff_forall_ne_zero, not_forall, sub_apply,
     algebraMap_apply, mul_one, Classical.not_not, Set.mem_range,
