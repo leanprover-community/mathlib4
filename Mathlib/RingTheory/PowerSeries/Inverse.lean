@@ -264,8 +264,10 @@ def Unit_of_divided_by_X_pow_order (f : k⟦X⟧) : k⟦X⟧ˣ :=
       val_inv := divided_by_X_pow_orderInv_right_inv hf
       inv_val := divided_by_X_pow_orderInv_left_inv hf }
 
-theorem isUnit_divided_by_X_pow_order {f : k⟦X⟧} (hf : f ≠ 0) : IsUnit (divided_by_X_pow_order hf) :=
-  ⟨Unit_of_divided_by_X_pow_order f, by simp only [Unit_of_divided_by_X_pow_order, dif_neg hf, Units.val_mk]⟩
+theorem isUnit_divided_by_X_pow_order {f : k⟦X⟧} (hf : f ≠ 0) :
+    IsUnit (divided_by_X_pow_order hf) :=
+  ⟨Unit_of_divided_by_X_pow_order f,
+    by simp only [Unit_of_divided_by_X_pow_order, dif_neg hf, Units.val_mk]⟩
 
 theorem Unit_of_divided_by_X_pow_order_nonzero {f : k⟦X⟧} (hf : f ≠ 0) :
     ↑(Unit_of_divided_by_X_pow_order f) = divided_by_X_pow_order hf := by
