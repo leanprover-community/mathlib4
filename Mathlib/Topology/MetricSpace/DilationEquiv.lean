@@ -42,6 +42,7 @@ end Class
 structure DilationEquiv (X Y : Type*) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
     extends X ≃ Y, Dilation X Y
 
+@[inherit_doc]
 infixl:25 " ≃ᵈ " => DilationEquiv
 
 namespace DilationEquiv

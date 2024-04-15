@@ -994,6 +994,7 @@ set_option linter.uppercaseLean3 false in
 
 end LEquiv
 
+@[inherit_doc]
 scoped[FirstOrder] infixl:88 " =' " => FirstOrder.Language.Term.bdEqual
 -- input \~- or \simeq
 
@@ -1002,12 +1003,15 @@ scoped[FirstOrder] infixr:62 " ⟹ " => FirstOrder.Language.BoundedFormula.imp
 
 scoped[FirstOrder] prefix:110 "∀'" => FirstOrder.Language.BoundedFormula.all
 
+@[inherit_doc]
 scoped[FirstOrder] prefix:arg "∼" => FirstOrder.Language.BoundedFormula.not
 -- input \~, the ASCII character ~ has too low precedence
 
+@[inherit_doc]
 scoped[FirstOrder] infixl:61 " ⇔ " => FirstOrder.Language.BoundedFormula.iff
 -- input \<=>
 
+@[inherit_doc]
 scoped[FirstOrder] prefix:110 "∃'" => FirstOrder.Language.BoundedFormula.ex
 -- input \ex
 

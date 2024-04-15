@@ -42,7 +42,7 @@ def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : �
     (g : ∀ x, β x) : ∀ x, φ (g x) := fun x => f (g x)
 #align function.dcomp Function.dcomp
 
-infixr:80 " ∘' " => Function.dcomp
+@[inherit_doc] infixr:80 " ∘' " => Function.dcomp
 
 @[reducible, deprecated] -- Deprecated since 13 January 2024
 def compRight (f : β → β → β) (g : α → β) : β → α → β := fun b a => f b (g a)

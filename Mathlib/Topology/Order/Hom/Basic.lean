@@ -38,6 +38,7 @@ structure ContinuousOrderHom (α β : Type*) [Preorder α] [Preorder β] [Topolo
   continuous_toFun : Continuous toFun
 #align continuous_order_hom ContinuousOrderHom
 
+@[inherit_doc]
 infixr:25 " →Co " => ContinuousOrderHom
 
 section

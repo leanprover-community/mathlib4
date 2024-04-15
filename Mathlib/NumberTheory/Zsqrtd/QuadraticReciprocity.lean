@@ -24,6 +24,7 @@ open Zsqrtd Complex
 
 open scoped ComplexConjugate
 
+@[inherit_doc]
 local notation "ℤ[i]" => GaussianInt
 
 namespace GaussianInt

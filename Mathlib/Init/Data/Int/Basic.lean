@@ -13,7 +13,7 @@ open Nat
 
 #align int.neg_succ_of_nat Int.negSucc
 
--- @[inherit_doc]
+@[inherit_doc]
 notation "ℤ" => Int
 
 namespace Int

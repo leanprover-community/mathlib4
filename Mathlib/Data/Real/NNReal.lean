@@ -64,7 +64,7 @@ def NNReal := { r : ℝ // 0 ≤ r } deriving
 
 namespace NNReal
 
-scoped notation "ℝ≥0" => NNReal
+@[inherit_doc] scoped notation "ℝ≥0" => NNReal
 
 noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
 instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered

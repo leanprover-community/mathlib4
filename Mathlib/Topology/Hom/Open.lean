@@ -35,6 +35,7 @@ structure ContinuousOpenMap (α β : Type*) [TopologicalSpace α] [TopologicalSp
   map_open' : IsOpenMap toFun
 #align continuous_open_map ContinuousOpenMap
 
+@[inherit_doc]
 infixr:25 " →CO " => ContinuousOpenMap
 
 section

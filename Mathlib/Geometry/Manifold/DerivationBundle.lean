@@ -160,10 +160,10 @@ def fdifferential (f : C^∞⟮I, M; I', M'⟯) (x : M) :
 #align fdifferential fdifferential
 
 -- Standard notation for the differential. The abbreviation is `MId`.
-scoped[Manifold] notation "𝒅" => fdifferential
+@[inherit_doc] scoped[Manifold] notation "𝒅" => fdifferential
 
 -- Standard notation for the differential. The abbreviation is `MId`.
-scoped[Manifold] notation "𝒅ₕ" => hfdifferential
+@[inherit_doc] scoped[Manifold] notation "𝒅ₕ" => hfdifferential
 
 @[simp]
 theorem apply_fdifferential (f : C^∞⟮I, M; I', M'⟯) {x : M} (v : PointDerivation I x)

@@ -113,7 +113,7 @@ def adjoint : (E →L[𝕜] F) ≃ₗᵢ⋆[𝕜] F →L[𝕜] E :=
     ⟨adjointAux A, adjointAux_adjointAux A⟩
 #align continuous_linear_map.adjoint ContinuousLinearMap.adjoint
 
-scoped[InnerProduct] postfix:1000 "†" => ContinuousLinearMap.adjoint
+@[inherit_doc] scoped[InnerProduct] postfix:1000 "†" => ContinuousLinearMap.adjoint
 open InnerProduct
 
 /-- The fundamental property of the adjoint. -/
