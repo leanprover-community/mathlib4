@@ -27,7 +27,7 @@ open Convex Set Metric
 section TopologicalVectorSpace
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E]
-[TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
+  [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
 
 /-- In a real vector space of dimension `> 1`, the complement of any countable set is path
 connected. -/
@@ -171,8 +171,8 @@ end NormedSpace
 
 section
 
-variable {E F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
-  [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [TopologicalAddGroup F] [ContinuousSMul ℝ F]
+variable {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
+  [TopologicalAddGroup F] [ContinuousSMul ℝ F]
 
 /-- Let `E` be a linear subspace in a real vector space.
 If `E` has codimension at least two, its complement is path-connected. -/
