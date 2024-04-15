@@ -13,7 +13,7 @@ import Std.Data.List.Basic
 The `have` vs `let` linter flags uses of `have` to introduce a hypothesis whose Type is not `Prop`.
 -/
 
-open Lean Elab Command
+open Lean Elab Command Meta
 
 namespace Mathlib.Linter
 
@@ -59,11 +59,10 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format))
         -- and the last declaration introduced: the one that `have` created
         let ld := (lc.lastDecl.getD default).type
         -- now, we get the `MetaM` state up and running to find the type of `ld`
-        let res ← Command.liftCoreM do
-          Meta.MetaM.run (ctx := { lctx := lc }) (s := { mctx := mctx }) <| do
-            let typ ← Meta.inferType (← instantiateMVars ld)
+        let res ← liftCoreM do MetaM.run (ctx := { lctx := lc }) (s := { mctx := mctx }) <| do
+            let typ ← inferType (← instantiateMVars ld)
             if ! typ.isProp then
-              return nargs.push (stx, ← Meta.ppExpr ld)
+              return nargs.push (stx, ← ppExpr ld)
             else return nargs
         return res.1
       else return nargs
@@ -74,7 +73,7 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format))
 /-- Gets the value of the `linter.haveLet` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.haveLet o
 
-/-- The main implementation of the terminal refine linter. -/
+/-- The main implementation of the `have` vs `let` linter. -/
 def haveLetLinter : Linter where run := withSetOptionIn fun _stx => do
   unless getLinterHash (← getOptions) && (← getInfoState).enabled do
     return
