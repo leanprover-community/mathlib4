@@ -101,12 +101,13 @@ lemma foo_ext {f g : S ⊗[R] (MvPolynomial ι R ⧸ I) →ₐ[S] T}
 end
 
 variable (I : Ideal (MvPolynomial ι S))
+variable (J : Ideal (MvPolynomial ι R)) (hJ : J ≤ Ideal.comap (MvPolynomial.aeval MvPolynomial.X) I)
 
 noncomputable abbrev bar : Ideal (MvPolynomial ι R) := Ideal.comap (MvPolynomial.aeval MvPolynomial.X) I
 
 local notation "I₀" => bar I
 
-noncomputable def foo : S ⊗[R] (MvPolynomial ι R ⧸ I₀) →ₐ[S] MvPolynomial ι S ⧸ I := by
+noncomputable def foo : S ⊗[R] (MvPolynomial ι R ⧸ J) →ₐ[S] MvPolynomial ι S ⧸ I := by
   fapply Algebra.TensorProduct.lift
   · exact Algebra.ofId _ _
   · let f : MvPolynomial ι R →ₐ[R] MvPolynomial ι S :=
@@ -120,13 +121,13 @@ noncomputable def foo : S ⊗[R] (MvPolynomial ι R ⧸ I₀) →ₐ[S] MvPolyno
     rw [← RingHom.mem_ker]
     change f x ∈ RingHom.ker (Ideal.Quotient.mkₐ R I)
     erw [Ideal.Quotient.mkₐ_ker R I]
-    exact hx
+    exact (hJ hx)
   · intro s p
     apply mul_comm
 
 @[simp]
 lemma foo_mk (i : ι) :
-    (foo (R := R) I) (1 ⊗ₜ[R] (Ideal.Quotient.mk I₀) (MvPolynomial.X i))
+    (foo (R := R) I J hJ) (1 ⊗ₜ[R] (Ideal.Quotient.mk J) (MvPolynomial.X i))
       = Ideal.Quotient.mk I (MvPolynomial.X i) := by
   simp [foo]
 
@@ -177,61 +178,63 @@ lemma barz_aux (p : MvPolynomial ι R) :
   intro i
   simp [f, g]
 
-noncomputable def barzQuot : MvPolynomial ι S →ₐ[S] S ⊗[R] (MvPolynomial ι R ⧸ I₀) :=
-  letI f : S ⊗[R] (MvPolynomial ι R) →ₐ[S] S ⊗[R] (MvPolynomial ι R ⧸ I₀) :=
-    Algebra.TensorProduct.map (AlgHom.id S S) (Ideal.Quotient.mkₐ R I₀)
+noncomputable def barzQuot : MvPolynomial ι S →ₐ[S] S ⊗[R] (MvPolynomial ι R ⧸ J) :=
+  letI f : S ⊗[R] (MvPolynomial ι R) →ₐ[S] S ⊗[R] (MvPolynomial ι R ⧸ J) :=
+    Algebra.TensorProduct.map (AlgHom.id S S) (Ideal.Quotient.mkₐ R J)
   AlgHom.comp f barz
 
 lemma barzQuot_aux (p : MvPolynomial ι R) :
-    barzQuot (R := R) I
-      (MvPolynomial.map (algebraMap R S) p) = 1 ⊗ₜ (Ideal.Quotient.mk I₀ p) := by
+    barzQuot (R := R) J
+      (MvPolynomial.map (algebraMap R S) p) = 1 ⊗ₜ (Ideal.Quotient.mk J p) := by
   simp [barzQuot, AlgHom.coe_comp, Function.comp_apply, barz_aux p]
 
-lemma barzQuot_aux2 (t : MvPolynomial ι S) (h : t ∈ I)
-    (hc : MvPolynomial.coefficients t ⊆ Set.range (algebraMap R S)) :
-    barzQuot (R := R) I t = 0 := by
+variable (hJl : (MvPolynomial.map (algebraMap R S)) ⁻¹' T ⊆ J)
+
+lemma barzQuot_aux2 (t : MvPolynomial ι S) (h : t ∈ T) :
+    barzQuot (R := R) J t = 0 := by
+  have hc : MvPolynomial.coefficients t ⊆ Set.range (algebraMap R S) :=
+    Set.Subset.trans (MvPolynomial.Set.coefficients_in T t h) hcoeffs
   obtain ⟨p, hp⟩ := fooz_aux2 t hc
   rw [← hp, barzQuot_aux]
-  have h1 : (Ideal.Quotient.mk I₀) p = 0 := by
+  have h1 : (Ideal.Quotient.mk J) p = 0 := by
     rw [← RingHom.mem_ker, Ideal.mk_ker]
-    change MvPolynomial.map (algebraMap R S) p ∈ I
+    apply hJl
+    change MvPolynomial.map (algebraMap R S) p ∈ T
     rwa [hp]
   rw [h1, tmul_zero]
 
 set_option synthInstance.maxHeartbeats 30000
 
-noncomputable def fooz : MvPolynomial ι S ⧸ I →ₐ[S] S ⊗[R] (MvPolynomial ι R ⧸ I₀) := by
+noncomputable def fooz : MvPolynomial ι S ⧸ I →ₐ[S] S ⊗[R] (MvPolynomial ι R ⧸ J) := by
   fapply Ideal.Quotient.liftₐ
-  · exact barzQuot I
+  · exact barzQuot J
   · intro x hx
     subst hgen
     refine Submodule.span_induction hx ?_ ?_ ?_ ?_
     · intro x hxinT
-      apply barzQuot_aux2
-      exact Ideal.subset_span hxinT
-      exact Set.Subset.trans (MvPolynomial.Set.coefficients_in T x hxinT) hcoeffs
+      exact barzQuot_aux2 J T hcoeffs hJl x hxinT
     · rw [AlgHom.map_zero]
     · intro x y hx hy
       rw [map_add, hx, hy, add_zero]
     · intro r x hx
-      change (barzQuot (R := R) (Ideal.span T)) (r * x) = 0
+      change (barzQuot (R := R) J) (r * x) = 0
       rw [AlgHom.map_mul, hx, mul_zero]
 
 @[simp]
 lemma fooz_mk' (i : ι) :
-    (fooz I T hgen hcoeffs) ((Ideal.Quotient.mk I) (MvPolynomial.X i)) =
-      1 ⊗ₜ (Ideal.Quotient.mk I₀ (MvPolynomial.X i)) := by
+    (fooz I J hJ T hgen hcoeffs hJl) ((Ideal.Quotient.mk I) (MvPolynomial.X i)) =
+      1 ⊗ₜ (Ideal.Quotient.mk J (MvPolynomial.X i)) := by
   simp [fooz, barzQuot, barz]
 
-instance : IsScalarTower R S (S ⊗[R] (MvPolynomial ι R ⧸ I₀)) := by
-  apply IsScalarTower.of_algebraMap_eq' (R := R) (S := S) (A := S ⊗[R] (MvPolynomial ι R ⧸ I₀))
+instance : IsScalarTower R S (S ⊗[R] (MvPolynomial ι R ⧸ J)) := by
+  apply IsScalarTower.of_algebraMap_eq' (R := R) (S := S) (A := S ⊗[R] (MvPolynomial ι R ⧸ J))
   ext x
   simp
 
-noncomputable def baseChangeIso : (MvPolynomial ι S ⧸ I) ≃ₐ[S] S ⊗[R] (MvPolynomial ι R ⧸ I₀) := by
+noncomputable def baseChangeIso : (MvPolynomial ι S ⧸ I) ≃ₐ[S] S ⊗[R] (MvPolynomial ι R ⧸ J) := by
   fapply AlgEquiv.ofAlgHom
-  · exact fooz I T hgen hcoeffs
-  · exact foo I
+  · exact fooz I J hJ T hgen hcoeffs hJl
+  · exact foo I J hJ
   · apply foo_ext
     intro i
     simp
@@ -244,7 +247,7 @@ noncomputable def baseChangeIso : (MvPolynomial ι S ⧸ I) ≃ₐ[S] S ⊗[R] (
 end
 
 variable (I : Ideal (MvPolynomial ι R)) (S : Set (MvPolynomial ι R))
-  (hgenS : Ideal.span S = I) (hf : Set.Finite S)
+  (hgenS : I = Ideal.span S) (hf : Set.Finite S)
 
 def RingOfDefinition : Subring R :=
   Subalgebra.toSubring (Algebra.adjoin ℤ (MvPolynomial.Set.coefficients S))
@@ -265,4 +268,25 @@ local notation "A₀" => MvPolynomial ι R₀ ⧸ I₀
 --noncomputable local instance : Algebra R₀ A₀ := Ideal.Quotient.algebra R₀
 noncomputable local instance : Module R₀ A₀ := Algebra.toModule
 
-def baseChange : R ⊗[R₀] A₀ ≃ₐ[R] A := sorry
+lemma baseChange_aux : I₀ ≤ Ideal.comap (MvPolynomial.aeval MvPolynomial.X) I := by
+  intro p hp
+  refine Submodule.span_induction hp ?_ ?_ ?_ ?_
+  · intro s hs
+    simp [RingOfDefinition.Set] at hs
+    rw [hgenS]
+    apply Ideal.subset_span
+    exact hs
+  · simp
+  · intro x y hx hy
+    exact Ideal.add_mem _ hx hy
+  · intro a x hx
+    exact Ideal.mul_mem_left _ a hx
+
+noncomputable def baseChange : A ≃ₐ[R] R ⊗[R₀] A₀ := by
+  apply baseChangeIso (T := S) (hgen := hgenS)
+  · exact baseChange_aux I S hgenS
+  · intro r hr
+    use ⟨r, Algebra.subset_adjoin hr⟩
+    rfl
+  · intro p hp
+    exact Ideal.subset_span hp
