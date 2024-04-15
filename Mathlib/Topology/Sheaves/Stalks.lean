@@ -64,9 +64,7 @@ open TopologicalSpace
 open Opposite
 
 variable {C : Type u} [Category.{v} C]
-
 variable [HasColimits.{v} C]
-
 variable {X Y Z : TopCat.{v}}
 
 namespace TopCat.Presheaf
@@ -388,7 +386,6 @@ end stalkSpecializes
 section Concrete
 
 variable {C}
-
 variable [ConcreteCategory.{v} C]
 
 attribute [local instance] ConcreteCategory.hasCoeToSort
@@ -448,7 +445,7 @@ theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} (f : F 
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_functor_map_injective_of_app_injective TopCat.Presheaf.stalkFunctor_map_injective_of_app_injective
 
-variable [HasLimits C] [PreservesLimits (forget C)] [ReflectsIsomorphisms (forget C)]
+variable [HasLimits C] [PreservesLimits (forget C)] [(forget C).ReflectsIsomorphisms]
 
 /-- Let `F` be a sheaf valued in a concrete category, whose forgetful functor reflects isomorphisms,
 preserves limits and filtered colimits. Then two sections who agree on every stalk must be equal.

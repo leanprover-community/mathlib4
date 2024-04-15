@@ -215,7 +215,7 @@ theorem add {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (
   rcases p.trichotomy with (rfl | rfl | hp)
   · apply memℓp_zero
     refine' (hf.finite_dsupport.union hg.finite_dsupport).subset fun i => _
-    simp only [Pi.add_apply, Ne.def, Set.mem_union, Set.mem_setOf_eq]
+    simp only [Pi.add_apply, Ne, Set.mem_union, Set.mem_setOf_eq]
     contrapose!
     rintro ⟨hf', hg'⟩
     simp [hf', hg']
@@ -502,9 +502,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
       add_le' := fun f g => by
         rcases p.dichotomy with (rfl | hp')
         · cases isEmpty_or_nonempty α
-          · -- porting note (#10745): was `simp [lp.eq_zero' f]`
-            rw [lp.eq_zero' f]
-            simp only [zero_add, norm_zero, le_refl] -- porting note (#11083): just `simp` was slow
+          · simp only [lp.eq_zero' f, zero_add, norm_zero, le_refl]
           refine' (lp.isLUB_norm (f + g)).2 _
           rintro x ⟨i, rfl⟩
           refine' le_trans _ (add_mem_upperBounds_add
@@ -602,9 +600,7 @@ end ComparePointwise
 section BoundedSMul
 
 variable {𝕜 : Type*} {𝕜' : Type*}
-
 variable [NormedRing 𝕜] [NormedRing 𝕜']
-
 variable [∀ i, Module 𝕜 (E i)] [∀ i, Module 𝕜' (E i)]
 
 instance : Module 𝕜 (PreLp E) :=
@@ -698,7 +694,6 @@ end BoundedSMul
 section DivisionRing
 
 variable {𝕜 : Type*}
-
 variable [NormedDivisionRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
 
 theorem norm_const_smul (hp : p ≠ 0) {c : 𝕜} (f : lp E p) : ‖c • f‖ = ‖c‖ * ‖f‖ := by
@@ -768,7 +763,6 @@ instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
     · simp only [lp.norm_eq_tsum_rpow h, lp.star_apply, norm_star]
 
 variable {𝕜 : Type*} [Star 𝕜] [NormedRing 𝕜]
-
 variable [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)] [∀ i, StarModule 𝕜 (E i)]
 
 instance : StarModule 𝕜 (lp E p) where
@@ -894,7 +888,7 @@ theorem _root_.nat_cast_memℓp_infty (n : ℕ) : Memℓp (n : ∀ i, B i) ∞ :
 #align nat_cast_mem_ℓp_infty nat_cast_memℓp_infty
 
 theorem _root_.int_cast_memℓp_infty (z : ℤ) : Memℓp (z : ∀ i, B i) ∞ :=
-  coe_int_mem (lpInftySubring B) z
+  intCast_mem (lpInftySubring B) z
 #align int_cast_mem_ℓp_infty int_cast_memℓp_infty
 
 @[simp]
@@ -944,7 +938,6 @@ end NormedCommRing
 section Algebra
 
 variable {I : Type*} {𝕜 : Type*} {B : I → Type*}
-
 variable [NormedField 𝕜] [∀ i, NormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
 
 /-- A variant of `Pi.algebra` that lean can't find otherwise. -/
@@ -984,7 +977,6 @@ end Algebra
 section Single
 
 variable {𝕜 : Type*} [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
-
 variable [DecidableEq α]
 
 /-- The element of `lp E p` which is `a : E i` at the index `i`, and zero elsewhere. -/
@@ -993,7 +985,7 @@ protected def single (p) (i : α) (a : E i) : lp E p :=
     refine' (memℓp_zero _).of_exponent_ge (zero_le p)
     refine' (Set.finite_singleton i).subset _
     intro j
-    simp only [forall_exists_index, Set.mem_singleton_iff, Ne.def, dite_eq_right_iff,
+    simp only [forall_exists_index, Set.mem_singleton_iff, Ne, dite_eq_right_iff,
       Set.mem_setOf_eq, not_forall]
     rintro rfl
     simp⟩
@@ -1174,8 +1166,7 @@ theorem norm_le_of_tendsto {C : ℝ} {F : ι → lp E p} (hCF : ∀ᶠ k in l, �
 /-- If `f` is the pointwise limit of a bounded sequence in `lp E p`, then `f` is in `lp E p`. -/
 theorem memℓp_of_tendsto {F : ι → lp E p} (hF : Bornology.IsBounded (Set.range F)) {f : ∀ a, E a}
     (hf : Tendsto (id fun i => F i : ι → ∀ a, E a) l (𝓝 f)) : Memℓp f p := by
-  obtain ⟨C, _, hCF'⟩ := hF.exists_pos_norm_le
-  have hCF : ∀ k, ‖F k‖ ≤ C := fun k => hCF' _ ⟨k, rfl⟩
+  obtain ⟨C, hCF⟩ : ∃ C, ∀ k, ‖F k‖ ≤ C := hF.exists_norm_le.imp fun _ ↦ Set.forall_mem_range.1
   rcases eq_top_or_lt_top p with (rfl | hp)
   · apply memℓp_infty
     use C
@@ -1198,7 +1189,7 @@ theorem tendsto_lp_of_tendsto_pi {F : ℕ → lp E p} (hF : CauchySeq F) {f : lp
   refine' norm_le_of_tendsto (hn.mono fun k hk => hk.le) _
   rw [tendsto_pi_nhds]
   intro a
-  exact (hf.apply a).const_sub (F n a)
+  exact (hf.apply_nhds a).const_sub (F n a)
 #align lp.tendsto_lp_of_tendsto_pi lp.tendsto_lp_of_tendsto_pi
 
 variable [∀ a, CompleteSpace (E a)]

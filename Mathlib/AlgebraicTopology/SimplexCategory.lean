@@ -89,7 +89,7 @@ protected def rec {F : SimplexCategory → Sort*} (h : ∀ n : ℕ, F [n]) : ∀
   h n.len
 #align simplex_category.rec SimplexCategory.rec
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- Morphisms in the `SimplexCategory`. -/
 protected def Hom (a b : SimplexCategory) :=
   Fin (a.len + 1) →o Fin (b.len + 1)
@@ -146,12 +146,19 @@ def comp {a b c : SimplexCategory} (f : SimplexCategory.Hom b c) (g : SimplexCat
 
 end Hom
 
-@[simps]
 instance smallCategory : SmallCategory.{0} SimplexCategory where
   Hom n m := SimplexCategory.Hom n m
   id m := SimplexCategory.Hom.id _
   comp f g := SimplexCategory.Hom.comp g f
 #align simplex_category.small_category SimplexCategory.smallCategory
+
+@[simp]
+lemma id_toOrderHom (a : SimplexCategory) :
+    Hom.toOrderHom (𝟙 a) = OrderHom.id := rfl
+
+@[simp]
+lemma comp_toOrderHom {a b c: SimplexCategory} (f : a ⟶ b) (g : b ⟶ c) :
+    (f ≫ g).toOrderHom = g.toOrderHom.comp f.toOrderHom := rfl
 
 -- Porting note: added because `Hom.ext'` is not triggered automatically
 @[ext]
@@ -160,13 +167,21 @@ theorem Hom.ext {a b : SimplexCategory} (f g : a ⟶ b) :
   Hom.ext' _ _
 
 /-- The constant morphism from [0]. -/
-def const (x : SimplexCategory) (i : Fin (x.len + 1)) : ([0] : SimplexCategory) ⟶ x :=
+def const (x y : SimplexCategory) (i : Fin (y.len + 1)) : x ⟶ y :=
   Hom.mk <| ⟨fun _ => i, by tauto⟩
 #align simplex_category.const SimplexCategory.const
 
--- Porting note: removed @[simp] as the linter complains
-theorem const_comp (x y : SimplexCategory) (i : Fin (x.len + 1)) (f : x ⟶ y) :
-    const x i ≫ f = const y (f.toOrderHom i) :=
+@[simp]
+lemma const_eq_id : const [0] [0] 0 = 𝟙 _ := by aesop
+
+@[simp]
+lemma const_apply (x y : SimplexCategory) (i : Fin (y.len + 1)) (a : Fin (x.len + 1)) :
+    (const x y i).toOrderHom a = i := rfl
+
+@[simp]
+theorem const_comp (x : SimplexCategory) {y z : SimplexCategory}
+    (f : y ⟶ z) (i : Fin (y.len + 1)) :
+    const x y i ≫ f = const x z (f.toOrderHom i) :=
   rfl
 #align simplex_category.const_comp SimplexCategory.const_comp
 
@@ -448,15 +463,15 @@ theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
 
 namespace SkeletalFunctor
 
-instance : Full skeletalFunctor where
+instance : skeletalFunctor.Full where
   preimage f := SimplexCategory.Hom.mk f
 
-instance : Faithful skeletalFunctor where
+instance : skeletalFunctor.Faithful where
   map_injective {_ _ f g} h := by
     ext1
     exact h
 
-instance : EssSurj skeletalFunctor where
+instance : skeletalFunctor.EssSurj where
   mem_essImage X :=
     ⟨mk (Fintype.card X - 1 : ℕ),
       ⟨by
@@ -475,8 +490,8 @@ instance : EssSurj skeletalFunctor where
         show f (f.symm i) ≤ f (f.symm j)
         simpa only [OrderIso.apply_symm_apply]⟩⟩
 
-noncomputable instance isEquivalence : IsEquivalence skeletalFunctor :=
-  Equivalence.ofFullyFaithfullyEssSurj skeletalFunctor
+noncomputable instance isEquivalence : skeletalFunctor.IsEquivalence :=
+  Functor.IsEquivalence.ofFullyFaithfullyEssSurj skeletalFunctor
 #align simplex_category.skeletal_functor.is_equivalence SimplexCategory.SkeletalFunctor.isEquivalence
 
 end SkeletalFunctor
@@ -517,8 +532,8 @@ def inclusion {n : ℕ} : SimplexCategory.Truncated n ⥤ SimplexCategory :=
   fullSubcategoryInclusion _
 #align simplex_category.truncated.inclusion SimplexCategory.Truncated.inclusion
 
-instance (n : ℕ) : Full (inclusion : Truncated n ⥤ _) := FullSubcategory.full _
-instance (n : ℕ) : Faithful (inclusion : Truncated n ⥤ _) := FullSubcategory.faithful _
+instance (n : ℕ) : (inclusion : Truncated n ⥤ _).Full := FullSubcategory.full _
+instance (n : ℕ) : (inclusion : Truncated n ⥤ _).Faithful := FullSubcategory.faithful _
 
 end Truncated
 
@@ -598,7 +613,7 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
     rw [Fin.lt_iff_val_lt_val] at h ⊢
     simpa only [Fin.val_succ, Fin.coe_castSucc] using Nat.lt.step h
 
-instance : ReflectsIsomorphisms (forget SimplexCategory) :=
+instance : (forget SimplexCategory).ReflectsIsomorphisms :=
   ⟨fun f hf =>
     IsIso.of_iso
       { hom := f
@@ -663,8 +678,8 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
     ∃ θ' : mk n ⟶ Δ', θ = σ i ≫ θ' := by
   use δ i.succ ≫ θ
   ext1; ext1; ext1 x
-  simp only [Hom.toOrderHom_mk, Function.comp_apply, OrderHom.comp_coe, Hom.comp,
-    smallCategory_comp, σ, mkHom, OrderHom.coe_mk]
+  simp only [len_mk, σ, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, OrderHom.comp_coe,
+    OrderHom.coe_mk, Function.comp_apply]
   by_cases h' : x ≤ Fin.castSucc i
   · -- This was not needed before leanprover/lean4#2644
     dsimp
@@ -732,12 +747,9 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
     ext1
     ext1
     ext1 x
-    simp only [Hom.toOrderHom_mk, Function.comp_apply, OrderHom.comp_coe, Hom.comp,
-      smallCategory_comp]
+    simp only [len_mk, Category.assoc, comp_toOrderHom, OrderHom.comp_coe, Function.comp_apply]
     by_cases h' : θ.toOrderHom x ≤ i
     · simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]
-      -- This was not needed before leanprover/lean4#2644
-      dsimp
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [Fin.predAbove_of_le_castSucc _ _ (by rwa [Fin.castSucc_castPred])]
       dsimp [δ]
@@ -746,17 +758,11 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
       · rw [(hi x).le_iff_lt] at h'
         exact h'
     · simp only [not_le] at h'
-      -- The next three tactics used to be a simp only call before leanprover/lean4#2644
-      rw [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk, OrderHom.coe_mk]
-      erw [OrderHom.coe_mk]
+      dsimp [σ, δ]
       erw [Fin.predAbove_of_castSucc_lt _ _ (by rwa [Fin.castSucc_castPred])]
-      dsimp [δ]
       rw [Fin.succAbove_of_le_castSucc i _]
-      -- This was not needed before leanprover/lean4#2644
-      conv_rhs => dsimp
       erw [Fin.succ_pred]
-      simpa only [Fin.le_iff_val_le_val, Fin.coe_castSucc, Fin.coe_pred] using
-        Nat.le_sub_one_of_lt (Fin.lt_iff_val_lt_val.mp h')
+      exact Nat.le_sub_one_of_lt (Fin.lt_iff_val_lt_val.mp h')
   · obtain rfl := le_antisymm (Fin.le_last i) (not_lt.mp h)
     use θ ≫ σ (Fin.last _)
     ext x : 3

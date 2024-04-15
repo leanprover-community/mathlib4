@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Thomas Murrills
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.HaveI
 import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Tactic.Clear!
 import Mathlib.Data.Nat.Cast.Basic
@@ -186,7 +186,7 @@ theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   use this
   have H := (Nat.cast_commute (α := α) da db).invOf_left.invOf_right.right_comm
   have h₁ := congr_arg (↑· * (⅟↑da * ⅟↑db : α)) h₁
-  simp only [Int.cast_add, Int.cast_mul, Int.cast_ofNat, ← mul_assoc,
+  simp only [Int.cast_add, Int.cast_mul, Int.cast_natCast, ← mul_assoc,
     add_mul, mul_mul_invOf_self_cancel] at h₁
   have h₂ := congr_arg (↑nc * ↑· * (⅟↑da * ⅟↑db * ⅟↑dc : α)) h₂
   simp only [H, mul_mul_invOf_self_cancel', Nat.cast_mul, ← mul_assoc] at h₁ h₂
@@ -369,7 +369,7 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   refine ⟨this, ?_⟩
   have H := (Nat.cast_commute (α := α) da db).invOf_left.invOf_right.right_comm
   have h₁ := congr_arg (Int.cast (R := α)) h₁
-  simp only [Int.cast_mul, Int.cast_ofNat] at h₁
+  simp only [Int.cast_mul, Int.cast_natCast] at h₁
   simp only [← mul_assoc, (Nat.cast_commute (α := α) da nb).invOf_left.right_comm, h₁]
   have h₂ := congr_arg (↑nc * ↑· * (⅟↑da * ⅟↑db * ⅟↑dc : α)) h₂
   simp only [Nat.cast_mul, ← mul_assoc] at h₂; rw [H] at h₂
@@ -425,7 +425,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 
 theorem isRat_div [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : ℕ} → IsRat (a * b⁻¹) cn cd →
     IsRat (a / b) cn cd
-  | _, _, _, _, h => by simp [div_eq_mul_inv]; exact h
+  | _, _, _, _, h => by simpa [div_eq_mul_inv] using h
 
 /-- Helper function to synthesize a typed `DivisionRing α` expression. -/
 def inferDivisionRing (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=

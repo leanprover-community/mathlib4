@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Dual
 import Mathlib.Data.Fin.FlagRange
 
 /-!
@@ -78,6 +79,11 @@ theorem flag_le_ker_coord (b : Basis (Fin n) R M) {k : Fin (n + 1)} {l : Fin n}
     (h : k ≤ l.castSucc) : b.flag k ≤ LinearMap.ker (b.coord l) := by
   nontriviality R
   exact b.flag_le_ker_coord_iff.2 h
+
+theorem flag_le_ker_dual (b : Basis (Fin n) R M) (k : Fin n) :
+    b.flag k.castSucc ≤ LinearMap.ker (b.dualBasis k) := by
+  nontriviality R
+  rw [coe_dualBasis, b.flag_le_ker_coord_iff]
 
 end CommRing
 

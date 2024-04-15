@@ -41,6 +41,10 @@ variable {S R : Type*} [AddMonoidWithOne R] [SetLike S R] (s : S)
 theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := by
   induction n <;> simp [zero_mem, add_mem, one_mem, *]
 #align nat_cast_mem natCast_mem
+#align coe_nat_mem natCast_mem
+
+-- 2024-04-05
+@[deprecated] alias coe_nat_mem := natCast_mem
 
 @[aesop safe apply (rule_sets := [SetLike])]
 lemma ofNat_mem [AddSubmonoidWithOneClass S R] (s : S) (n : ℕ) [n.AtLeastTwo] :
@@ -76,11 +80,6 @@ instance (priority := 100) SubsemiringClass.addSubmonoidWithOneClass (S : Type*)
 #align subsemiring_class.add_submonoid_with_one_class SubsemiringClass.addSubmonoidWithOneClass
 
 variable [SetLike S R] [hSR : SubsemiringClass S R] (s : S)
-
-theorem coe_nat_mem (n : ℕ) : (n : R) ∈ s := by
-  rw [← nsmul_one]
-  exact nsmul_mem (one_mem _) _
-#align coe_nat_mem coe_nat_mem
 
 namespace SubsemiringClass
 
@@ -183,7 +182,7 @@ theorem ext {S T : Subsemiring R} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
 #align subsemiring.ext Subsemiring.ext
 
 /-- Copy of a subsemiring with a new `carrier` equal to the old one. Useful to fix definitional
-equalities.-/
+equalities. -/
 protected def copy (S : Subsemiring R) (s : Set R) (hs : s = ↑S) : Subsemiring R :=
   { S.toAddSubmonoid.copy s hs, S.toSubmonoid.copy s hs with carrier := s }
 #align subsemiring.copy Subsemiring.copy
@@ -543,7 +542,7 @@ theorem map_rangeS : f.rangeS.map g = (g.comp f).rangeS := by
 
 /-- The range of a morphism of semirings is a fintype, if the domain is a fintype.
 Note: this instance can form a diamond with `Subtype.fintype` in the
-  presence of `Fintype S`.-/
+  presence of `Fintype S`. -/
 instance fintypeRangeS [Fintype R] [DecidableEq S] (f : R →+* S) : Fintype (rangeS f) :=
   Set.fintypeRange f
 #align ring_hom.fintype_srange RingHom.fintypeRangeS
@@ -617,7 +616,7 @@ instance : CompleteLattice (Subsemiring R) :=
     bot := ⊥
     bot_le := fun s _ hx =>
       let ⟨n, hn⟩ := mem_bot.1 hx
-      hn ▸ coe_nat_mem s n
+      hn ▸ natCast_mem s n
     top := ⊤
     le_top := fun _ _ _ => trivial
     inf := (· ⊓ ·)
@@ -855,26 +854,27 @@ theorem closure_addSubmonoid_closure {s : Set R} :
 of `s`, and is preserved under addition and multiplication, then `p` holds for all elements
 of the closure of `s`. -/
 @[elab_as_elim]
-theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s) (Hs : ∀ x ∈ s, p x)
-    (H0 : p 0) (H1 : p 1) (Hadd : ∀ x y, p x → p y → p (x + y))
-    (Hmul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨⟨⟨p, @Hmul⟩, H1⟩, @Hadd, H0⟩).2 Hs h
+theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x)
+    (zero : p 0) (one : p 1) (add : ∀ x y, p x → p y → p (x + y))
+    (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
+  (@closure_le _ _ _ ⟨⟨⟨p, @mul⟩, one⟩, @add, zero⟩).2 mem h
 #align subsemiring.closure_induction Subsemiring.closure_induction
 
 @[elab_as_elim]
 theorem closure_induction' {s : Set R} {p : ∀ x, x ∈ closure s → Prop}
-    (Hs : ∀ (x) (h : x ∈ s), p x (subset_closure h)) (H0 : p 0 (zero_mem _)) (H1 : p 1 (one_mem _))
-    (Hadd : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
-    (Hmul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+    (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h))
+    (zero : p 0 (zero_mem _)) (one : p 1 (one_mem _))
+    (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
+    (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     {a : R} (ha : a ∈ closure s) : p a ha := by
   refine' Exists.elim _ fun (ha : a ∈ closure s) (hc : p a ha) => hc
   refine'
-    closure_induction ha (fun m hm => ⟨subset_closure hm, Hs m hm⟩) ⟨zero_mem _, H0⟩
-      ⟨one_mem _, H1⟩ ?_ ?_
+    closure_induction ha (fun m hm => ⟨subset_closure hm, mem m hm⟩) ⟨zero_mem _, zero⟩
+      ⟨one_mem _, one⟩ ?_ ?_
   · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
-      ⟨add_mem hx' hy', Hadd _ _ _ _ hx hy⟩)
+      ⟨add_mem hx' hy', add _ _ _ _ hx hy⟩)
   · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
-      ⟨mul_mem hx' hy', Hmul _ _ _ _ hx hy⟩)
+      ⟨mul_mem hx' hy', mul _ _ _ _ hx hy⟩)
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[elab_as_elim]
@@ -1073,9 +1073,7 @@ end Subsemiring
 namespace RingHom
 
 variable [NonAssocSemiring T] {s : Subsemiring R}
-
 variable {σR σS : Type*}
-
 variable [SetLike σR R] [SetLike σS S] [SubsemiringClass σR R] [SubsemiringClass σS S]
 
 open Subsemiring

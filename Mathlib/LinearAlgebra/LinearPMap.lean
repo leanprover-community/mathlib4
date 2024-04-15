@@ -123,17 +123,17 @@ noncomputable def mkSpanSingleton' (x : E) (y : F) (H : ∀ c : R, c • x = 0 �
       rw [← sub_eq_zero, ← sub_smul] at h ⊢
       exact H _ h
     { toFun := fun z => Classical.choose (mem_span_singleton.1 z.prop) • y
-      -- Porting note: `dsimp only []` are required.
+      -- Porting note(#12129): additional beta reduction needed
       -- Porting note: Were `Classical.choose_spec (mem_span_singleton.1 _)`.
       map_add' := fun y z => by
-        dsimp only []
+        beta_reduce
         rw [← add_smul]
         apply H
         simp only [add_smul, sub_smul,
           fun w : R ∙ x => Classical.choose_spec (mem_span_singleton.1 w.prop)]
         apply coe_add
       map_smul' := fun c z => by
-        dsimp only []
+        beta_reduce
         rw [smul_smul]
         apply H
         simp only [mul_smul,
@@ -394,7 +394,6 @@ end Zero
 section SMul
 
 variable {M N : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass R M F]
-
 variable [Monoid N] [DistribMulAction N F] [SMulCommClass R N F]
 
 instance instSMul : SMul M (E →ₗ.[R] F) :=
@@ -487,6 +486,7 @@ instance instAddMonoid : AddMonoid (E →ₗ.[R] F) where
     simp
   add_zero := by
     simp
+  nsmul := nsmulRec
 
 instance instAddCommMonoid : AddCommMonoid (E →ₗ.[R] F) :=
   ⟨fun f g => by
@@ -567,6 +567,7 @@ instance instSubtractionCommMonoid : SubtractionCommMonoid (E →ₗ.[R] F) wher
     simp only [inf_coe, neg_domain, Eq.ndrec, Int.ofNat_eq_coe, add_apply, Subtype.coe_eta,
       ← neg_eq_iff_add_eq_zero] at h'
     rw [h', h]
+  zsmul := zsmulRec
 
 end Sub
 

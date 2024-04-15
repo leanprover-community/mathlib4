@@ -96,7 +96,7 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
   refine' tendsto_integral_filter_of_dominated_convergence
       (fun a => ∑' n, bound n a) _ _ bound_integrable h_lim
   · exact eventually_of_forall fun s => s.aestronglyMeasurable_sum fun n _ => hF_meas n
-  · refine' eventually_of_forall fun s => _
+  · filter_upwards with s
     filter_upwards [eventually_countable_forall.2 h_bound, hb_nonneg, bound_summable]
       with a hFa ha0 has
     calc
@@ -145,7 +145,7 @@ lemma hasSum_integral_of_summable_integral_norm {ι} [Countable ι] {F : ι → 
   have (i : ι) : ∫⁻ (a : α), ‖F i a‖₊ ∂μ = ‖(∫ a : α, ‖F i a‖ ∂μ)‖₊ := by
     rw [lintegral_coe_eq_integral _ (hF_int i).norm, coe_nnreal_eq, coe_nnnorm,
       Real.norm_of_nonneg (integral_nonneg (fun a ↦ norm_nonneg (F i a)))]
-    rfl
+    simp only [coe_nnnorm]
   rw [funext this, ← ENNReal.coe_tsum]
   · apply coe_ne_top
   · simp_rw [← NNReal.summable_coe, coe_nnnorm]
@@ -235,7 +235,7 @@ theorem hasSum_intervalIntegral_of_summable_norm [Countable ι] {f : ι → C(�
   apply hasSum_integral_of_dominated_convergence
     (fun i (x : ℝ) => ‖(f i).restrict ↑(⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖)
     (fun i => (map_continuous <| f i).aestronglyMeasurable)
-  · refine fun i => ae_of_all _ fun x hx => ?_
+  · intro i; filter_upwards with x hx
     apply ContinuousMap.norm_coe_le_norm ((f i).restrict _) ⟨x, _⟩
     exact ⟨hx.1.le, hx.2⟩
   · exact ae_of_all _ fun x _ => hf_sum
@@ -345,20 +345,18 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
     have : IntervalIntegrable (fun x => ‖f x‖) μ b₁ b₂ :=
       IntervalIntegrable.norm (h_int' <| right_mem_Icc.mpr h₁₂)
     refine' continuousWithinAt_of_dominated_interval _ _ this _ <;> clear this
-    · apply Eventually.mono self_mem_nhdsWithin
+    · filter_upwards [self_mem_nhdsWithin]
       intro x hx
       erw [aestronglyMeasurable_indicator_iff, Measure.restrict_restrict, Iic_inter_Ioc_of_le]
       · rw [min₁₂]
         exact (h_int' hx).1.aestronglyMeasurable
       · exact le_max_of_le_right hx.2
       exacts [measurableSet_Iic, measurableSet_Iic]
-    · refine' eventually_of_forall fun x => eventually_of_forall fun t => _
+    · filter_upwards with x; filter_upwards with t
       dsimp [indicator]
       split_ifs <;> simp
     · have : ∀ᵐ t ∂μ, t < b₀ ∨ b₀ < t := by
-        apply Eventually.mono (compl_mem_ae_iff.mpr hb₀)
-        intro x hx
-        exact Ne.lt_or_lt hx
+        filter_upwards [compl_mem_ae_iff.mpr hb₀] with x hx using Ne.lt_or_lt hx
       apply this.mono
       rintro x₀ (hx₀ | hx₀) -
       · have : ∀ᶠ x in 𝓝[Icc b₁ b₂] b₀, {t : ℝ | t ≤ x}.indicator f x₀ = f x₀ := by
@@ -408,7 +406,7 @@ theorem continuousAt_parametric_primitive_of_dominated {F : X → ℝ → E} (bo
       (bound_integrable.mono_set_ae <| eventually_of_forall <| hsub ha₀ hb₀).mono_fun'
         ((hF_meas x).mono_set <| hsub ha₀ hb₀)
         (ae_restrict_of_ae_restrict_of_subset (hsub ha₀ hb₀) hx)
-    rw [intervalIntegral.integral_sub, add_assoc, add_sub_cancel'_right,
+    rw [intervalIntegral.integral_sub, add_assoc, add_sub_cancel,
       intervalIntegral.integral_add_adjacent_intervals]
     · exact hiF hx ha₀ hb₀
     · exact hiF hx hb₀ ht

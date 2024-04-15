@@ -61,9 +61,8 @@ theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f 
 lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f : ∀a, β a} {f' : ∀a, β' a}
     (hα : α = α') (h : ∀a a', HEq a a' → HEq (f a) (f' a')) : HEq f f' := by
   subst hα
-  have : ∀a, HEq (f a) (f' a) := λ a => h a a (HEq.refl a)
-  have : β = β' := by funext a
-                      exact type_eq_of_heq (this a)
+  have : ∀a, HEq (f a) (f' a) := fun a ↦ h a a (HEq.refl a)
+  have : β = β' := by funext a; exact type_eq_of_heq (this a)
   subst this
   apply heq_of_eq
   funext a
@@ -113,6 +112,9 @@ theorem Injective.ne_iff' (hf : Injective f) {x y : α} {z : β} (h : f y = z) :
   h ▸ hf.ne_iff
 #align function.injective.ne_iff' Function.Injective.ne_iff'
 
+theorem not_injective_iff : ¬ Injective f ↔ ∃ a b, f a = f b ∧ a ≠ b := by
+  simp only [Injective, not_forall, exists_prop]
+
 /-- If the co-domain `β` of an injective function `f : α → β` has decidable equality, then
 the domain `α` also has decidable equality. -/
 protected def Injective.decidableEq [DecidableEq β] (I : Injective f) : DecidableEq α :=
@@ -159,7 +161,7 @@ lemma Injective.dite (p : α → Prop) [DecidablePred p]
     {f : {a : α // p a} → β} {f' : {a : α // ¬ p a} → β}
     (hf : Injective f) (hf' : Injective f')
     (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) :
-    Function.Injective (λ x => if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) := fun x₁ x₂ h => by
+    Function.Injective (fun x ↦ if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) := fun x₁ x₂ h => by
  dsimp only at h
  by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
  · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
@@ -291,7 +293,7 @@ theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f
 to `α`. -/
 theorem cantor_injective {α : Type*} (f : Set α → α) : ¬Injective f
   | i => cantor_surjective (fun a ↦ {b | ∀ U, a = f U → U b}) <|
-         RightInverse.surjective (λ U => Set.ext fun _ ↦ ⟨fun h ↦ h U rfl, fun h _ e ↦ i e ▸ h⟩)
+         RightInverse.surjective (fun U ↦ Set.ext fun _ ↦ ⟨fun h ↦ h U rfl, fun h _ e ↦ i e ▸ h⟩)
 #align function.cantor_injective Function.cantor_injective
 
 /-- There is no surjection from `α : Type u` into `Type (max u v)`. This theorem
@@ -597,18 +599,18 @@ lemma forall_update_iff (f : ∀a, β a) {a : α} {b : β a} (p : ∀a, β a →
 #align function.forall_update_iff Function.forall_update_iff
 
 theorem exists_update_iff (f : ∀ a, β a) {a : α} {b : β a} (p : ∀ a, β a → Prop) :
-    (∃ x, p x (update f a b x)) ↔ p a b ∨ ∃ (x : _) (_ : x ≠ a), p x (f x) := by
+    (∃ x, p x (update f a b x)) ↔ p a b ∨ ∃ x ≠ a, p x (f x) := by
   rw [← not_forall_not, forall_update_iff f fun a b ↦ ¬p a b]
   simp [-not_and, not_and_or]
 #align function.exists_update_iff Function.exists_update_iff
 
 theorem update_eq_iff {a : α} {b : β a} {f g : ∀ a, β a} :
-    update f a b = g ↔ b = g a ∧ ∀ (x) (_ : x ≠ a), f x = g x :=
+    update f a b = g ↔ b = g a ∧ ∀ x ≠ a, f x = g x :=
   funext_iff.trans <| forall_update_iff _ fun x y ↦ y = g x
 #align function.update_eq_iff Function.update_eq_iff
 
 theorem eq_update_iff {a : α} {b : β a} {f g : ∀ a, β a} :
-    g = update f a b ↔ g a = b ∧ ∀ (x) (_ : x ≠ a), g x = f x :=
+    g = update f a b ↔ g a = b ∧ ∀ x ≠ a, g x = f x :=
   funext_iff.trans <| forall_update_iff _ fun x y ↦ g x = y
 #align function.eq_update_iff Function.eq_update_iff
 
@@ -807,7 +809,7 @@ namespace FactorsThrough
 
 protected theorem rfl {f : α → β} : FactorsThrough f f := fun _ _ ↦ id
 
-theorem comp_left {f : α → β} {g : α → γ}  (h : FactorsThrough g f) (g' : γ → δ) :
+theorem comp_left {f : α → β} {g : α → γ} (h : FactorsThrough g f) (g' : γ → δ) :
     FactorsThrough (g' ∘ g) f := fun _x _y hxy ↦
   congr_arg g' (h hxy)
 
@@ -870,7 +872,7 @@ is to recursively uncurry. For instance `f : α → β → γ → δ` will be tu
 class HasUncurry (α : Type*) (β : outParam (Type*)) (γ : outParam (Type*)) where
   /-- Uncurrying operator. The most generic use is to recursively uncurry. For instance
   `f : α → β → γ → δ` will be turned into `↿f : α × β × γ → δ`. One can also add instances
-  for bundled maps.-/
+  for bundled maps. -/
   uncurry : α → β → γ
 #align function.has_uncurry Function.HasUncurry
 
@@ -927,6 +929,11 @@ protected theorem eq_iff {x y : α} : f x = y ↔ x = f y :=
 #align function.involutive.eq_iff Function.Involutive.eq_iff
 
 end Involutive
+
+lemma not_involutive : Involutive Not := fun _ ↦ propext not_not
+lemma not_injective : Injective Not := not_involutive.injective
+lemma not_surjective : Surjective Not := not_involutive.surjective
+lemma not_bijective : Bijective Not := not_involutive.bijective
 
 @[simp]
 lemma symmetric_apply_eq_iff {f : α → α} : Symmetric (f · = ·) ↔ Involutive f := by
@@ -1067,7 +1074,7 @@ theorem cast_bijective {α β : Sort _} (h : α = β) : Function.Bijective (cast
 #align cast_bijective cast_bijective
 
 /-! Note these lemmas apply to `Type*` not `Sort*`, as the latter interferes with `simp`, and
-is trivial anyway.-/
+is trivial anyway. -/
 
 
 @[simp]

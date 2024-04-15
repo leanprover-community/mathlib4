@@ -79,7 +79,6 @@ namespace CategoryTheory
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
-
 variable {D : Type u₂} [Category.{v₂} D]
 
 /-!
@@ -565,7 +564,7 @@ theorem pullback_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject Z) :
   exact Quotient.sound ⟨(MonoOver.pullbackComp _ _).app t⟩
 #align category_theory.subobject.pullback_comp CategoryTheory.Subobject.pullback_comp
 
-instance (f : X ⟶ Y) : Faithful (pullback f) where
+instance (f : X ⟶ Y) : (pullback f).Faithful where
 
 end Pullback
 

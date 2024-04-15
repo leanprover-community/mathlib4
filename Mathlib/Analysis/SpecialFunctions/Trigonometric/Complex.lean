@@ -33,7 +33,7 @@ theorem cos_eq_zero_iff {θ : ℂ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1
   have h : (exp (θ * I) + exp (-θ * I)) / 2 = 0 ↔ exp (2 * θ * I) = -1 := by
     rw [@div_eq_iff _ _ (exp (θ * I) + exp (-θ * I)) 2 0 two_ne_zero, zero_mul,
       add_eq_zero_iff_eq_neg, neg_eq_neg_one_mul, ← div_eq_iff (exp_ne_zero _), ← exp_sub]
-    congr 3; ring_nf
+    ring_nf
   rw [cos, h, ← exp_pi_mul_I, exp_eq_exp_iff_exists_int, mul_right_comm]
   refine' exists_congr fun x => _
   refine' (iff_of_eq <| congr_arg _ _).trans (mul_right_inj' <| mul_ne_zero two_ne_zero I_ne_zero)
@@ -202,7 +202,7 @@ theorem cos_surjective : Function.Surjective cos := by
     rintro rfl
     simp only [zero_add, one_ne_zero, mul_zero] at hw
   refine' ⟨log w / I, cos_eq_iff_quadratic.2 _⟩
-  rw [div_mul_cancel _ I_ne_zero, exp_log w₀]
+  rw [div_mul_cancel₀ _ I_ne_zero, exp_log w₀]
   convert hw using 1
   ring
 #align complex.cos_surjective Complex.cos_surjective
