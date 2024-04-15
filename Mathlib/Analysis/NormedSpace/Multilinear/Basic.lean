@@ -952,6 +952,19 @@ def smulRightL : ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] Co
 @[simp] lemma smulRightL_apply (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
   smulRightL 𝕜 E G f z = f.smulRight z := rfl
 
+/-- An auxiliary instance to be able to just state the fact that the norm of `smulRightL` makes
+sense. This shouldn't be needed. TODO: fix typeclass inference. -/
+def seminormedAddCommGroup_aux_for_smulRightL :
+    SeminormedAddCommGroup
+      (ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] ContinuousMultilinearMap 𝕜 E G) :=
+  ContinuousLinearMap.toSeminormedAddCommGroup
+    (F := G →L[𝕜] ContinuousMultilinearMap 𝕜 E G) (σ₁₂ := RingHom.id 𝕜)
+
+attribute [local instance] seminormedAddCommGroup_aux_for_smulRightL
+
+lemma norm_smulRightL_le : ‖smulRightL 𝕜 E G‖ ≤ 1 :=
+  LinearMap.mkContinuous₂_norm_le _ zero_le_one _
+
 variable (𝕜 ι G)
 
 /-- Continuous multilinear maps on `𝕜^n` with values in `G` are in bijection with `G`, as such a
