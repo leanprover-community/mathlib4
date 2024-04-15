@@ -110,12 +110,7 @@ theorem Finset.prod_primes_dvd [CancelCommMonoidWithZero α] [Unique αˣ] {s : 
         (by simpa only [Multiset.map_id', Finset.mem_def] using div)
         (by
           simp only [Multiset.map_id', associated_eq_eq, Multiset.countP_eq_card_filter, ←
-            Multiset.count_eq_card_filter_eq, ← Multiset.nodup_iff_count_le_one, s.nodup]
-          -- Porting note: these lines were not necessary
-          intro a
-          apply le_of_eq_of_le (Multiset.count_eq_card_filter_eq _ _).symm
-          apply Multiset.nodup_iff_count_le_one.mp
-          exact s.nodup)
+            Multiset.count_eq_card_filter_eq, ← Multiset.nodup_iff_count_le_one, s.nodup])
 #align finset.prod_primes_dvd Finset.prod_primes_dvd
 
 namespace Associates
