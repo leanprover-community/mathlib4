@@ -86,7 +86,7 @@ class CstarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
   norm_star_mul_self : ∀ {x : E}, ‖x⋆ * x‖ = ‖x‖ * ‖x‖
 #align cstar_ring CstarRing
 
-instance : CstarRing ℝ where norm_star_mul_self {x} := by simp only [star, id.def, norm_mul]
+instance : CstarRing ℝ where norm_star_mul_self {x} := by simp only [star, id, norm_mul]
 
 namespace CstarRing
 
