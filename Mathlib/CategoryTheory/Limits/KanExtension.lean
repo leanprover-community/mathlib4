@@ -197,15 +197,7 @@ theorem reflective [ι.Full] [ι.Faithful] [∀ X, HasLimitsOfShape (StructuredA
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran.reflective CategoryTheory.Ran.reflective
 
-variable {D}
-
-abbrev self (F : L ⥤ D) [∀ x, HasLimit (Ran.diagram ι (ι ⋙ F) x)] : L ⥤ D :=
-  Ran.loc ι (ι ⋙ F)
-
 end Ran
-
-class IsRightKanExtendedAlong (F : L ⥤ D) [∀ x, HasLimit (Ran.diagram ι (ι ⋙ F) x)] : Prop where
-  isoSelf : Nonempty (F ≅ Ran.self ι F)
 
 namespace Lan
 
@@ -379,15 +371,16 @@ theorem coreflective [ι.Full] [ι.Faithful] [∀ F : S ⥤ D, ∀ x, HasColimit
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan.coreflective CategoryTheory.Lan.coreflective
 
-variable {D}
-
-abbrev self (F : L ⥤ D) [∀ x, HasColimit (Lan.diagram ι (ι ⋙ F) x)] : L ⥤ D :=
-  Lan.loc ι (ι ⋙ F)
-
 end Lan
 
-class IsLeftKanExtendedAlong (F : L ⥤ D) [∀ x, HasColimit (Lan.diagram ι (ι ⋙ F) x)] : Prop where
-  isoSelf : Nonempty (F ≅ Lan.self ι F)
+class IsLeftKanExtendedAlong (F : L ⥤ D) [∀ G : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι G x)] :
+    Prop where
+  isoLan : IsIso <| (Lan.adjunction D ι).counit.app F
 
+attribute [instance] IsLeftKanExtendedAlong.isoLan
+
+abbrev isLeftKanExtendedIso (F : L ⥤ D) [∀ G : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι G x)]
+    [IsLeftKanExtendedAlong ι F] : (lan ι).obj (ι ⋙ F) ≅ F :=
+  asIso <| (Lan.adjunction D ι).counit.app F
 
 end CategoryTheory

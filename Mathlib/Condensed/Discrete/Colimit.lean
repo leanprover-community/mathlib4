@@ -216,7 +216,15 @@ def lanPresheaf_iso_LC (X : Type (u+1)) :
 
 def lanCondensedSet' (X : Type (u+1)) : Sheaf (coherentTopology Profinite.{u}) (Type (u+1)) where
   val := lanPresheaf (profiniteToCompHaus.op ⋙ LC.obj X)
-  cond := sorry
+  cond := by
+    have := ((ProfiniteCompHaus.equivalence _).inverse.obj <| LC'.obj X).cond
+    simp only [ProfiniteCompHaus.equivalence, StoneanProfinite.equivalence,
+      StoneanCompHaus.equivalence, Equivalence.trans_inverse,
+      IsCoverDense.sheafEquivOfCoverPreservingCoverLifting_inverse, sheafPushforwardContinuous,
+      whiskeringLeft_obj_map, Equivalence.symm_inverse,
+      IsCoverDense.sheafEquivOfCoverPreservingCoverLifting_functor, sheafPushforwardCocontinuous,
+      comp_obj, LC'_obj_val] at this
+    sorry -- need better API for relating the sheaf condition on `CompHaus` with `Profinite`...
 
 def lanCondensedSet (X : Type (u+1)) : CondensedSet.{u} :=
   (ProfiniteCompHaus.equivalence _).functor.obj (lanCondensedSet' X)
