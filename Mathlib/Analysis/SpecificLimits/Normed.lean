@@ -172,7 +172,7 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
   -- Add 7 and 8 using 2 → 8 → 7 → 3
   tfae_have 2 → 8
   · rintro ⟨a, ha, H⟩
-    refine' ⟨a, ha, (H.definition zero_lt_one).mono fun n hn ↦ _⟩
+    refine' ⟨a, ha, (H.def zero_lt_one).mono fun n hn ↦ _⟩
     rwa [Real.norm_eq_abs, Real.norm_eq_abs, one_mul, abs_pow, abs_of_pos ha.1] at hn
   tfae_have 8 → 7
   exact fun ⟨a, ha, H⟩ ↦ ⟨a, ha.2, H⟩
@@ -770,7 +770,7 @@ end
 
 /-- The series `∑' n, x ^ n / n!` is summable of any `x : ℝ`. See also `expSeries_div_summable`
 for a version that also works in `ℂ`, and `NormedSpace.expSeries_summable'` for a version
-that works inany normed algebra over `ℝ` or `ℂ`. -/
+that works in any normed algebra over `ℝ` or `ℂ`. -/
 theorem Real.summable_pow_div_factorial (x : ℝ) : Summable (fun n ↦ x ^ n / n ! : ℕ → ℝ) := by
   -- We start with trivial estimates
   have A : (0 : ℝ) < ⌊‖x‖⌋₊ + 1 := zero_lt_one.trans_le (by simp)
