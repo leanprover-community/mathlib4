@@ -6,9 +6,12 @@ variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
 
 namespace HomologicalComplex
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+
+variable {C : Type*} [Category C] [HasZeroObject C]
 
 section
+
+variable [HasZeroMorphisms C]
 
 variable (K L M : HomologicalComplex C c) (φ : K ⟶ L) (φ' : L ⟶ M) (e : c.Embedding c')
 
@@ -189,19 +192,49 @@ lemma extendMap_id_f (i' : ι') : (extendMap (𝟙 K) e).f i' = 𝟙 _ := by
 @[simp]
 lemma extendMap_id : extendMap (𝟙 K) e = 𝟙 _ := by aesop_cat
 
+@[simp]
+lemma extendMap_zero_f (i' : ι') : (extendMap (0 : K ⟶ L) e).f i' = 0 := by
+  by_cases hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, hi⟩ := hi'
+    simp [extendMap_f _ e hi]
+  · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+
+@[simp]
+lemma extendMap_zero : extendMap (0 : K ⟶ L) e = 0 := by aesop_cat
+
 end
 
+section
+
+variable [Preadditive C] {K L : HomologicalComplex C c} (φ φ' : K ⟶ L) (e : c.Embedding c')
+
+@[simp]
+lemma extendMap_add_f (i' : ι') :
+    (extendMap (φ + φ') e).f i' = (extendMap φ e).f i' + (extendMap φ' e).f i' := by
+  by_cases hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, hi⟩ := hi'
+    simp [extendMap_f _ e hi]
+  · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+
+@[simp]
+lemma extendMap_add : extendMap (0 : K ⟶ L) e = 0 := by aesop_cat
+
+end
 
 end HomologicalComplex
 
 namespace ComplexShape.Embedding
 
-variable (e : Embedding c c') (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+variable (e : Embedding c c') (C : Type*) [Category C] [HasZeroObject C]
 
 @[simps]
-noncomputable def extendFunctor :
+noncomputable def extendFunctor [HasZeroMorphisms C] :
     HomologicalComplex C c ⥤ HomologicalComplex C c' where
   obj K := K.extend e
   map φ := HomologicalComplex.extendMap φ e
+
+instance [HasZeroMorphisms C] : (e.extendFunctor C).PreservesZeroMorphisms where
+
+instance [Preadditive C] : (e.extendFunctor C).Additive where
 
 end ComplexShape.Embedding

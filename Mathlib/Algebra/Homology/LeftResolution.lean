@@ -1,4 +1,6 @@
+import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
 import Mathlib.Algebra.Homology.QuasiIso
+import Mathlib.Algebra.Homology.SingleHomology
 
 open CategoryTheory Category Limits Preadditive
 
@@ -13,6 +15,23 @@ lemma CategoryTheory.Limits.kernel.map_zero {C : Type*} [Category C] [HasZeroMor
     {X Y X' Y' : C} (f : X ⟶ Y) (f' : X' ⟶ Y') [HasKernel f] [HasKernel f'] (q : Y ⟶ Y')
     (w : f ≫ q = 0 ≫ f') : kernel.map f f' 0 q w = 0 := by
   simp only [← cancel_mono (kernel.ι f'), lift_ι, comp_zero, zero_comp]
+
+namespace ComplexShape
+
+variable (p : ℕ)
+
+@[simps!]
+def embeddingDownNatGE : Embedding (down ℕ) (down ℕ) :=
+  Embedding.mk' _ _ (fun n => n + p)
+    (fun _ _ h => by dsimp at h; omega)
+    (by dsimp; omega)
+
+instance : (embeddingDownNatGE p).IsRelIff := by dsimp [embeddingDownNatGE]; infer_instance
+
+instance : (embeddingDownNatGE p).IsTruncLE where
+  mem_prev {_ b} h := ⟨b + 1, by dsimp at h ⊢; omega⟩
+
+end ComplexShape
 
 namespace ChainComplex
 
@@ -112,7 +131,7 @@ section
 
 variable [∀ X, Epi (π.app X)]
 
-instance : Epi ((leftResolution' π X).d 1 0) := by
+instance epi_leftResolution'_d_1_0 : Epi ((leftResolution' π X).d 1 0) := by
   rw [leftResolution'_d_1_0]
   infer_instance
 
@@ -213,5 +232,65 @@ noncomputable def leftResolution'Functor : C ⥤ ChainComplex C ℕ where
 instance [F.PreservesZeroMorphisms] : (leftResolution'Functor π).PreservesZeroMorphisms where
 
 instance [F.Additive] : (leftResolution'Functor π).Additive where
+
+noncomputable def leftResolutionFunctor : C ⥤ ChainComplex C ℕ :=
+  leftResolution'Functor π ⋙ (ComplexShape.embeddingDownNatGE 1).restrictionFunctor C
+
+instance [F.PreservesZeroMorphisms] : (leftResolutionFunctor π).PreservesZeroMorphisms := by
+  dsimp only [leftResolutionFunctor]
+  infer_instance
+
+instance [F.Additive] : (leftResolutionFunctor π).Additive := by
+  dsimp only [leftResolutionFunctor]
+  infer_instance
+
+noncomputable def leftResolutionFunctorπ₀ :
+    leftResolutionFunctor π ⋙ HomologicalComplex.eval _ _ 0 ⟶ 𝟭 _ where
+  app K := (leftResolution' π K).d 1 0 ≫ (leftResolution'XZeroIso π K).hom
+  naturality _ _ f := by
+    dsimp [leftResolutionFunctor]
+    rw [leftResolution'Map_f_1]
+    simp
+
+@[reassoc (attr := simp)]
+lemma leftResolutionFunctorπ₀_naturality :
+    ((leftResolutionFunctor π).map φ).f 0 ≫ (leftResolutionFunctorπ₀ π).app Y =
+      (leftResolutionFunctorπ₀ π).app X ≫ φ :=
+  (leftResolutionFunctorπ₀ π).naturality φ
+
+@[reassoc (attr := simp)]
+lemma d_leftResolutionFunctorπ₀_app (n : ℕ) :
+    ((leftResolutionFunctor π).obj X).d n 0 ≫ (leftResolutionFunctorπ₀ π).app X = 0 := by
+  dsimp [leftResolutionFunctor, leftResolutionFunctorπ₀]
+  rw [HomologicalComplex.d_comp_d_assoc, zero_comp]
+
+noncomputable def leftResolutionFunctorπ :
+    leftResolutionFunctor π ⟶ HomologicalComplex.single C _ 0 where
+  app X := (toSingle₀Equiv _ _).symm ⟨(leftResolutionFunctorπ₀ π).app X, by simp⟩
+  naturality X Y φ := (toSingle₀Equiv _ _).injective (by aesop_cat)
+
+variable (X)
+
+lemma leftResolutionFunctorπ₀_obj_exactAt [∀ X, Epi (π.app X)] (n : ℕ) :
+    ((leftResolutionFunctor π).obj X).ExactAt (n + 1) := by
+  have ex := leftResolution'_exactAt π X (n + 1)
+  rw [HomologicalComplex.exactAt_iff' _ (n + 2) (n + 1) n (by simp; rfl) (by simp)]
+  rw [HomologicalComplex.exactAt_iff' _ (n + 3) (n + 2) (n + 1) (by simp; rfl) (by simp)] at ex
+  exact ex
+
+instance [∀ X, Epi (π.app X)] : QuasiIso ((leftResolutionFunctorπ π).app X) := by
+  rw [quasiIso_iff]
+  rintro (_|n)
+  · have ex := (leftResolution'_exactAt π X) 0
+    rw [HomologicalComplex.exactAt_iff' _ 2 1 0 (by simp) (by simp)] at ex
+    rw [ChainComplex.quasiIsoAt₀_iff,
+      ShortComplex.quasiIso_iff_of_zeros' _ (by simp) (by rfl) (by rfl) ]
+    refine (ShortComplex.exact_and_epi_g_iff_of_iso ?_).2 ⟨ex, by dsimp; infer_instance⟩
+    exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
+      (leftResolution'XZeroIso π X).symm (by simp [leftResolutionFunctor])
+      (by simp [leftResolutionFunctorπ, leftResolutionFunctorπ₀])
+  · rw [quasiIsoAt_iff_exactAt]
+    · exact exactAt_succ_single_obj X n
+    · exact (leftResolutionFunctorπ₀_obj_exactAt π X n)
 
 end ChainComplex

@@ -44,12 +44,17 @@ end HomologicalComplex
 
 namespace ComplexShape.Embedding
 
-variable (e : Embedding c c') (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+variable (e : Embedding c c') (C : Type*) [Category C] [HasZeroObject C]
+  [e.IsRelIff]
 
 @[simps]
-noncomputable def restrictionFunctor [e.IsRelIff] :
+noncomputable def restrictionFunctor [HasZeroMorphisms C] :
     HomologicalComplex C c' ⥤ HomologicalComplex C c where
   obj K := K.restriction e
   map φ := HomologicalComplex.restrictionMap φ e
+
+instance [HasZeroMorphisms C] : (e.restrictionFunctor C).PreservesZeroMorphisms where
+
+instance [Preadditive C] : (e.restrictionFunctor C).Additive where
 
 end ComplexShape.Embedding
