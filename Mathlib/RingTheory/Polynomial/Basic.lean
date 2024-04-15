@@ -5,15 +5,15 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.Algebra.GeomSum
-import Mathlib.Data.MvPolynomial.CommRing
-import Mathlib.Data.MvPolynomial.Equiv
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.UniqueFactorizationDomain
 
 #align_import ring_theory.polynomial.basic from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
 /-!
-# Ring-theoretic supplement of Data.Polynomial.
+# Ring-theoretic supplement of Algebra.Polynomial.
 
 ## Main results
 * `MvPolynomial.isDomain`:
@@ -273,7 +273,7 @@ theorem frange_one : frange (1 : R[X]) ⊆ {1} := by
 
 theorem coeff_mem_frange (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n ∈ p.frange := by
   classical
-  simp only [frange, exists_prop, mem_support_iff, (Finset.mem_image), Ne]
+  simp only [frange, exists_prop, mem_support_iff, Finset.mem_image, Ne]
   exact ⟨n, h, rfl⟩
 #align polynomial.coeff_mem_frange Polynomial.coeff_mem_frange
 

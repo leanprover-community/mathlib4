@@ -665,7 +665,8 @@ theorem injective_incl : Function.Injective N.incl := Subtype.coe_injective
 
 variable {N N'} (h : N ≤ N')
 
-/-- Given two nested Lie submodules `N ⊆ N'`, the inclusion `N ↪ N'` is a morphism of Lie modules.-/
+/-- Given two nested Lie submodules `N ⊆ N'`,
+the inclusion `N ↪ N'` is a morphism of Lie modules. -/
 def inclusion : N →ₗ⁅R,L⁆ N' where
   __ := Submodule.inclusion (show N.toSubmodule ≤ N'.toSubmodule from h)
   map_lie' := rfl

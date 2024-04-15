@@ -61,15 +61,15 @@ variable {α β : Type*}
 /-- Order equipped with a sensible successor function. -/
 @[ext]
 class SuccOrder (α : Type*) [Preorder α] where
-  /--Successor function-/
+  /-- Successor function-/
   succ : α → α
-  /--Proof of basic ordering with respect to `succ`-/
+  /-- Proof of basic ordering with respect to `succ`-/
   le_succ : ∀ a, a ≤ succ a
-  /--Proof of interaction between `succ` and maximal element-/
+  /-- Proof of interaction between `succ` and maximal element-/
   max_of_succ_le {a} : succ a ≤ a → IsMax a
-  /--Proof that `succ` satisfies ordering invariants between `LT` and `LE`-/
+  /-- Proof that `succ` satisfies ordering invariants between `LT` and `LE`-/
   succ_le_of_lt {a b} : a < b → succ a ≤ b
-  /--Proof that `succ` satisfies ordering invariants between `LE` and `LT`-/
+  /-- Proof that `succ` satisfies ordering invariants between `LE` and `LT`-/
   le_of_lt_succ {a b} : a < succ b → a ≤ b
 #align succ_order SuccOrder
 #align succ_order.ext_iff SuccOrder.ext_iff
@@ -78,15 +78,15 @@ class SuccOrder (α : Type*) [Preorder α] where
 /-- Order equipped with a sensible predecessor function. -/
 @[ext]
 class PredOrder (α : Type*) [Preorder α] where
-  /--Predecessor function-/
+  /-- Predecessor function-/
   pred : α → α
-  /--Proof of basic ordering with respect to `pred`-/
+  /-- Proof of basic ordering with respect to `pred`-/
   pred_le : ∀ a, pred a ≤ a
-  /--Proof of interaction between `pred` and minimal element-/
+  /-- Proof of interaction between `pred` and minimal element-/
   min_of_le_pred {a} : a ≤ pred a → IsMin a
-  /--Proof that `pred` satisfies ordering invariants between `LT` and `LE`-/
+  /-- Proof that `pred` satisfies ordering invariants between `LT` and `LE`-/
   le_pred_of_lt {a b} : a < b → a ≤ pred b
-  /--Proof that `pred` satisfies ordering invariants between `LE` and `LT`-/
+  /-- Proof that `pred` satisfies ordering invariants between `LE` and `LT`-/
   le_of_pred_lt {a b} : pred a < b → a ≤ b
 #align pred_order PredOrder
 #align pred_order.ext PredOrder.ext

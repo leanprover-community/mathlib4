@@ -74,7 +74,7 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
     · simpa [Finsupp.single_eq_same] using hh ()
 #align power_series.coeff_inv_aux PowerSeries.coeff_inv_aux
 
-/-- A formal power series is invertible if the constant coefficient is invertible.-/
+/-- A formal power series is invertible if the constant coefficient is invertible. -/
 def invOfUnit (φ : R⟦X⟧) (u : Rˣ) : R⟦X⟧ :=
   MvPowerSeries.invOfUnit φ u
 #align power_series.inv_of_unit PowerSeries.invOfUnit

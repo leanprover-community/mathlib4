@@ -90,7 +90,7 @@ theorem map_monotone (f : V ↪ W) : Monotone (SimpleGraph.map f) := by
 adjacency relation.
 This is one of the ways of creating induced graphs. See `SimpleGraph.induce` for a wrapper.
 
-This is surjective when `f` is injective (see `SimpleGraph.comap_surjective`).-/
+This is surjective when `f` is injective (see `SimpleGraph.comap_surjective`). -/
 protected def comap (f : V → W) (G : SimpleGraph W) : SimpleGraph V where
   Adj u v := G.Adj (f u) (f v)
   symm _ _ h := h.symm

@@ -63,9 +63,7 @@ ordered map, ordered set, data structure
 
 -/
 
-set_option autoImplicit true
-
-
+universe u
 
 /- ./././Mathport/Syntax/Translate/Command.lean:355:30: infer kinds are unsupported in Lean 4:
   nil {} -/
@@ -123,7 +121,6 @@ protected def singleton (a : α) : Ordnode α :=
   node 1 nil a nil
 #align ordnode.singleton Ordnode.singleton
 
--- mathport name: «exprι »
 local prefix:arg "ι" => Ordnode.singleton
 
 instance : Singleton α (Ordnode α) :=

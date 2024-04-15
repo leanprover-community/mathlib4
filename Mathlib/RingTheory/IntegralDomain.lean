@@ -3,9 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes
 -/
-import Mathlib.Data.Polynomial.RingDivision
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Polynomial.RingDivision
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 #align_import ring_theory.integral_domain from "leanprover-community/mathlib"@"6e70e0d419bf686784937d64ed4bfde866ff229e"
 
@@ -241,7 +241,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       _ = ∑ b : MonoidHom.range f.toHomUnits, c • ((b : Rˣ) : R) :=
         (Finset.sum_subtype _ (by simp) _)
       _ = c • ∑ b : MonoidHom.range f.toHomUnits, ((b : Rˣ) : R) := smul_sum.symm
-      _ = c • (0 : R) := (congr_arg₂ _ rfl ?_)
+      _ = c • (0 : R) := congr_arg₂ _ rfl ?_
       -- remaining goal 2, proven below
       _ = (0 : R) := smul_zero _
     · -- remaining goal 1
