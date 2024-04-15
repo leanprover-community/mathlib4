@@ -69,21 +69,15 @@ lemma lie_der_ad_eq_ad_der (D : LieDerivation R L L) (x : L) : ⁅D, ad R L x⁆
 variable (R L) in
 /-- The range of the adjoint action homomorphism from a Lie algebra `L` to the Lie algebra of its
 derivations is an ideal of the latter. -/
-lemma ad_isIdealMorphism : LieHom.IsIdealMorphism (ad R L) := by
+lemma ad_isIdealMorphism : (ad R L).IsIdealMorphism := by
   simp_rw [LieHom.isIdealMorphism_iff, lie_der_ad_eq_ad_der]
-  tauto
-
-/-- For every `x` in the Lie algebra `L`, `ad x` is in the ideal range of the adjoint action. -/
-lemma ad_mem_rangeAd (x : L) : ad R L x ∈ (ad R L).idealRange := by
-  rw [LieHom.mem_idealRange_iff (ad R L) (ad_isIdealMorphism R L)]
   tauto
 
 /-- A derivation `D` belongs to the ideal range of the adjoint action iff it is of the form `ad x`
 for some `x` in the Lie algebra `L`. -/
 lemma mem_rangeAd_iff {D : LieDerivation R L L} :
-    D ∈ (ad R L).idealRange ↔ ∃ x : L, D = ad R L x := by
-  rw [LieHom.mem_idealRange_iff (ad R L) (ad_isIdealMorphism R L)]
-  tauto
+    D ∈ (ad R L).idealRange ↔ ∃ x : L, ad R L x = D :=
+  (ad R L).mem_idealRange_iff (ad_isIdealMorphism R L)
 
 end AdjointAction
 
