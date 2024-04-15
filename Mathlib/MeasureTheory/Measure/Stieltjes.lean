@@ -495,23 +495,10 @@ end StieltjesFunction
 
 variable (μ : Measure ℝ) [IsFiniteMeasureOnCompacts μ]
 
--- move, is Mathlib.Data.Real.Basic a good place?
-lemma singleton_eq_inter_Ioo (b : ℝ): {b} = ⋂ (r > 0), Icc (b - r) (b + r) := by
-  apply Subset.antisymm
-  · simp only [gt_iff_lt, subset_iInter_iff, singleton_subset_iff, mem_Icc, tsub_le_iff_right,
-      le_add_iff_nonneg_right, and_self]
-    exact fun i hi ↦ hi.le
-  · intro x hx
-    simp only [gt_iff_lt, mem_iInter, mem_Icc, tsub_le_iff_right] at hx
-    simp only [mem_singleton_iff]
-    apply le_antisymm
-    · exact le_of_forall_pos_le_add (fun r hr ↦ (hx r hr).2)
-    · exact le_of_forall_pos_le_add (fun r hr ↦ (hx r hr).1)
-
 -- TODO: where is a good place to move this?
 lemma tendsto_measure_Icc_nhdsWithin_gt (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝[>] (0 : ℝ)) (𝓝 (μ {b})) := by
-  rw [singleton_eq_inter_Ioo]
+  rw [Real.singleton_eq_inter_Ioo]
   apply tendsto_measure_biInter_gt (fun r hr ↦ measurableSet_Icc)
   · intro r s _rpos hrs
     apply Icc_subset_Icc (by linarith) (by linarith)
