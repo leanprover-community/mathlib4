@@ -5,7 +5,6 @@ Authors: David Loeffler
 -/
 
 import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
-import Mathlib.Analysis.PSeries
 /-!
 # Dirichlet series as Mellin transforms
 
