@@ -115,7 +115,7 @@ section
 
 variable [CommSemiring R]
 
-theorem isHomogeneous_monomial (d : σ →₀ ℕ) (r : R) (n : ℕ) (hn : degree d = n) :
+theorem isHomogeneous_monomial {d : σ →₀ ℕ} (r : R) {n : ℕ} (hn : degree d = n) :
     IsHomogeneous (monomial d r) n := by
   simp_rw [← weightedDegree_one] at hn
   exact isWeightedHomogeneous_monomial 1 d r hn
@@ -162,7 +162,7 @@ namespace IsHomogeneous
 
 variable [CommSemiring R] [CommSemiring S] {φ ψ : MvPolynomial σ R} {m n : ℕ}
 
-theorem coeff_eq_zero (hφ : IsHomogeneous φ n) (d : σ →₀ ℕ) (hd : degree d ≠ n) :
+theorem coeff_eq_zero (hφ : IsHomogeneous φ n) {d : σ →₀ ℕ} (hd : degree d ≠ n) :
     coeff d φ = 0 := by
   simp_rw [← weightedDegree_one] at hd
   exact IsWeightedHomogeneous.coeff_eq_zero hφ d hd
@@ -283,7 +283,7 @@ theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ =
 theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n):
     (rename f φ).IsHomogeneous n := by
   rw [← φ.support_sum_monomial_coeff, map_sum]; simp_rw [rename_monomial]
-  apply IsHomogeneous.sum _ _ _ fun d hd ↦ isHomogeneous_monomial _ _ _ _
+  apply IsHomogeneous.sum _ _ _ fun d hd ↦ isHomogeneous_monomial _ _
   intro d hd
   apply (Finsupp.sum_mapDomain_index_addMonoidHom fun _ ↦ .id ℕ).trans
   convert h (mem_support_iff.mp hd)

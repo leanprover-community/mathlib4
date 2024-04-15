@@ -435,9 +435,10 @@ theorem finsum_weightedHomogeneousComponent :
 
 variable {w}
 
-theorem IsWeightedHomogeneous.weightedHomogeneousComponent_same
-    [DecidableEq M] (m : M) (p : MvPolynomial σ R) (hp : IsWeightedHomogeneous w p m) :
+theorem IsWeightedHomogeneous.weightedHomogeneousComponent_same {m : M} {p : MvPolynomial σ R}
+    (hp : IsWeightedHomogeneous w p m) :
     weightedHomogeneousComponent w m p = p := by
+  classical
   ext x
   rw [coeff_weightedHomogeneousComponent]
   by_cases zero_coeff : coeff x p = 0
@@ -445,9 +446,10 @@ theorem IsWeightedHomogeneous.weightedHomogeneousComponent_same
     rfl; rw [zero_coeff]
   · rw [hp zero_coeff, if_pos]; rfl
 
-theorem IsWeightedHomogeneous.weightedHomogeneousComponent_ne
-    [DecidableEq M] (m n : M) (p : MvPolynomial σ R) (hp : IsWeightedHomogeneous w p m) :
+theorem IsWeightedHomogeneous.weightedHomogeneousComponent_ne {m : M} (n : M)
+    {p : MvPolynomial σ R} (hp : IsWeightedHomogeneous w p m) :
     n ≠ m → weightedHomogeneousComponent w n p = 0 := by
+  classical
   intro hn
   ext x
   rw [coeff_weightedHomogeneousComponent]
@@ -518,6 +520,8 @@ section CanonicallyLinearOrderedMonoid
 
 variable [CanonicallyLinearOrderedAddCommMonoid M] {w : σ → M} (φ : MvPolynomial σ R)
 
+/-- If `w` is a nontorsion weight function, then the finitely supported function `m : σ →₀ ℕ`
+  has weighted degree zero if and only if `∀ x : σ, m x = 0`. -/
 theorem weightedDegree_eq_zero_iff (hw : NonTorsionWeight w) {m : σ →₀ ℕ} :
     weightedDegree w m = 0 ↔ ∀ x : σ, m x = 0 := by
   simp only [weightedDegree, Finsupp.total, LinearMap.toAddMonoidHom_coe, coe_lsum,
@@ -533,6 +537,8 @@ theorem weightedDegree_eq_zero_iff (hw : NonTorsionWeight w) {m : σ →₀ ℕ}
   · intro hax _
     simp only [hax, zero_smul]
 
+/-- A multivatiate polynomial is weighted homogeneous of weighted degree zero if and only if
+  its weighted total degree is equal to zero. -/
 theorem isWeightedHomogeneous_zero_iff_weightedTotalDegree_eq_zero {p : MvPolynomial σ R} :
     IsWeightedHomogeneous w p 0 ↔ p.weightedTotalDegree w = 0 := by
   rw [weightedTotalDegree, ← bot_eq_zero, Finset.sup_eq_bot_iff, bot_eq_zero, IsWeightedHomogeneous]
@@ -540,8 +546,10 @@ theorem isWeightedHomogeneous_zero_iff_weightedTotalDegree_eq_zero {p : MvPolyno
   intro m
   rw [mem_support_iff]
 
+/-- If `w` is a nontorsion weight function, then a multivariate polynomial has weighted total
+  degree zero if and only if for every `m ∈ p.support` and `x : σ`, `m x = 0`. -/
 theorem weightedTotalDegree_eq_zero_iff (hw : NonTorsionWeight w) (p : MvPolynomial σ R) :
-    p.weightedTotalDegree w = 0 ↔ ∀ (m : σ →₀ ℕ) (_ : m ∈ p.support) (x : σ), m x = ⊥ := by
+    p.weightedTotalDegree w = 0 ↔ ∀ (m : σ →₀ ℕ) (_ : m ∈ p.support) (x : σ), m x = 0 := by
   rw [← isWeightedHomogeneous_zero_iff_weightedTotalDegree_eq_zero, IsWeightedHomogeneous]
   apply forall_congr'
   intro m
