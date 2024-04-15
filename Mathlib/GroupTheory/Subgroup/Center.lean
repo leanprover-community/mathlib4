@@ -34,9 +34,6 @@ def center : Subgroup G :=
 #align subgroup.center Subgroup.center
 #align add_subgroup.center AddSubgroup.center
 
-instance center.isCommutative : (center G).IsCommutative :=
-  ⟨⟨fun a b => Subtype.ext (b.2.comm a).symm⟩⟩
-
 @[to_additive]
 theorem coe_center : ↑(center G) = Set.center G :=
   rfl
@@ -104,7 +101,7 @@ def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
       rw [eq_top_iff'] at h
       intro x y
       apply Subgroup.mem_center_iff.mp _ x
-      exact (h y)
+      exact h y
   }
 #align group.comm_group_of_center_eq_top Group.commGroupOfCenterEqTop
 
