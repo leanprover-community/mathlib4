@@ -49,6 +49,16 @@ namespace Injective
 
 variable {M₁ : Type*} {M₂ : Type*} [Mul M₁]
 
+/-- A type endowed with `*` has cancellative multiplication, if it admits an injective map that
+preserves `*` to a type with cancellative multiplication. See note [reducible non-instances]. -/
+@[to_additive (attr := reducible) isCancelAdd "A type endowed with `+` has
+cancellative addition, if it admits an injective map that preserves `+` to a type with
+cancellative addition."]
+protected def isCancelMul [Mul M₂] [IsCancelMul M₂]
+    (f : M₁ → M₂) (hf : Injective f) (mul : ∀ x y, f (x * y) = f x * f y) : IsCancelMul M₁ :=
+  { mul_left_cancel  := fun x y z H => hf <| (mul_right_inj (f x)).1 <| by rw [← mul, ← mul, H]
+    mul_right_cancel := fun x y z H => hf <| (mul_left_inj (f y)).1 <| by rw [← mul, ← mul, H] }
+
 /-- A type endowed with `*` is a semigroup, if it admits an injective map that preserves `*` to
 a semigroup. See note [reducible non-instances]. -/
 @[to_additive (attr := reducible) "A type endowed with `+` is an additive semigroup, if it admits an
