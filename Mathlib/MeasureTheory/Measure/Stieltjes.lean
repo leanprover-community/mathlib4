@@ -495,31 +495,38 @@ end StieltjesFunction
 
 variable (μ : Measure ℝ) [IsFiniteMeasureOnCompacts μ]
 
+-- move to Mathlib.Data.Real.Basic
+lemma singleton_eq_inter_Ioo (b : ℝ): {b} = ⋂ (r > 0), Icc (b - r) (b + r) := by
+  apply Subset.antisymm
+  · simp only [gt_iff_lt, subset_iInter_iff, singleton_subset_iff, mem_Icc, tsub_le_iff_right,
+      le_add_iff_nonneg_right, and_self]
+    exact fun i hi ↦ hi.le
+  · intro x hx
+    simp only [gt_iff_lt, mem_iInter, mem_Icc, tsub_le_iff_right] at hx
+    simp only [mem_singleton_iff]
+    apply le_antisymm
+    · exact le_of_forall_pos_le_add (fun r hr ↦ (hx r hr).2)
+    · exact le_of_forall_pos_le_add (fun r hr ↦ (hx r hr).1)
+
+-- TODO: where is a good place to move this?
 lemma tendsto_measure_Icc_nhdsWithin_gt (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝[>] (0 : ℝ)) (𝓝 (μ {b})) := by
-  have : {b} = ⋂ (r > 0), Icc (b - r) (b + r) := by
-    apply Subset.antisymm
-    · simp only [gt_iff_lt, subset_iInter_iff, singleton_subset_iff, mem_Icc, tsub_le_iff_right,
-        le_add_iff_nonneg_right, and_self]
-      exact fun i hi ↦ hi.le
-    · intro x hx
-      simp only [gt_iff_lt, mem_iInter, mem_Icc, tsub_le_iff_right] at hx
-      simp only [mem_singleton_iff]
-      apply le_antisymm
-      · exact _root_.le_of_forall_pos_le_add (fun r hr ↦ (hx r hr).2)
-      · exact _root_.le_of_forall_pos_le_add (fun r hr ↦ (hx r hr).1)
-  rw [this]
+  rw [singleton_eq_inter_Ioo]
   apply tendsto_measure_biInter_gt (fun r hr ↦ measurableSet_Icc)
   · intro r s _rpos hrs
     apply Icc_subset_Icc (by linarith) (by linarith)
-  · refine ⟨1, zero_lt_one, ?_⟩
-    exact isCompact_Icc.measure_ne_top
+  · exact ⟨1, zero_lt_one, isCompact_Icc.measure_ne_top⟩
 
-lemma tendsto_measure_Icc_nhdsWithin_ge (b : ℝ) :
+-- TODO: move to a better place!
+lemma nhdsWithin_right_eq_nhdsWithin_gt_union_nhdsWithin_singleton :
+    𝓝[≥] (0 : ℝ) = 𝓝[>] (0 : ℝ) ⊔ 𝓝[{0}] 0 := by
+  simp only [union_singleton, Ioi_insert, ← nhdsWithin_union]
+
+-- TODO: is there a better place for this lemma?
+lemma tendsto_measure_Icc_nhdsWithin_right (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝[≥] (0 : ℝ)) (𝓝 (μ {b})) := by
-  have : 𝓝[≥] (0 : ℝ) = 𝓝[>] (0 : ℝ) ⊔ 𝓝[{0}] 0 := by
-    simp only [union_singleton, Ioi_insert, ← nhdsWithin_union]
-  simp only [this, nhdsWithin_singleton, tendsto_sup,
+  simp only [nhdsWithin_right_eq_nhdsWithin_gt_union_nhdsWithin_singleton,
+    nhdsWithin_singleton, tendsto_sup,
     tendsto_measure_Icc_nhdsWithin_gt μ b, true_and, tendsto_pure_left]
   intro s hs
   simpa using mem_of_mem_nhds hs
@@ -531,4 +538,4 @@ lemma tendsto_measure_Icc [NoAtoms μ] (b : ℝ) :
   · apply tendsto_const_nhds.congr'
     filter_upwards [self_mem_nhdsWithin] with r (hr : r < 0)
     rw [Icc_eq_empty (by linarith), OuterMeasure.empty']
-  · simpa only [measure_singleton] using tendsto_measure_Icc_nhdsWithin_ge μ b
+  · simpa only [measure_singleton] using tendsto_measure_Icc_nhdsWithin_right μ b
