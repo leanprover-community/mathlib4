@@ -299,7 +299,7 @@ instance semiring : Semiring R[X] :=
     toMul := Polynomial.mul'
     toZero := Polynomial.zero
     toOne := Polynomial.one
-    nsmul := (. • .)
+    nsmul := (· • ·)
     npow := fun n x => (x ^ n) }
 #align polynomial.semiring Polynomial.semiring
 
@@ -1190,7 +1190,7 @@ instance ring : Ring R[X] :=
     toIntCast := Polynomial.intCast
     toNeg := Polynomial.neg'
     toSub := Polynomial.sub
-    zsmul := ((. • .) : ℤ → R[X] → R[X]) }
+    zsmul := ((· • ·) : ℤ → R[X] → R[X]) }
 #align polynomial.ring Polynomial.ring
 
 @[simp]

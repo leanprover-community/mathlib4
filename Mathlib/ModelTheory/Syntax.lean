@@ -667,11 +667,11 @@ def toFormula : ∀ {n : ℕ}, L.BoundedFormula α n → L.Formula (Sum α (Fin 
 
 /-- take the disjunction of a finite set of formulas -/
 noncomputable def iSup (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
-  (s.toList.map f).foldr (. ⊔ .) ⊥
+  (s.toList.map f).foldr (· ⊔ ·) ⊥
 
 /-- take the conjunction of a finite set of formulas -/
 noncomputable def iInf (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
-  (s.toList.map f).foldr (. ⊓ .) ⊤
+  (s.toList.map f).foldr (· ⊓ ·) ⊤
 
 
 variable {l : ℕ} {φ ψ : L.BoundedFormula α l} {θ : L.BoundedFormula α l.succ}

@@ -532,7 +532,7 @@ namespace Nat
 variable {n : ℕ} {f : α → ℕ}
 
 /-- See also `pow_left_strictMonoOn`. -/
-protected lemma pow_left_strictMono (hn : n ≠ 0) : StrictMono (. ^ n : ℕ → ℕ) :=
+protected lemma pow_left_strictMono (hn : n ≠ 0) : StrictMono (· ^ n : ℕ → ℕ) :=
   fun _ _ h ↦ Nat.pow_lt_pow_left h hn
 #align nat.pow_left_strict_mono Nat.pow_left_strictMono
 
