@@ -570,9 +570,10 @@ theorem Perm.erasep (f : α → Prop) [DecidablePred f] {l₁ l₂ : List α}
 theorem Perm.take_inter {α : Type*} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys)
     (h' : ys.Nodup) : xs.take n ~ ys.inter (xs.take n) := by
   simp only [List.inter]
-  exact Perm.trans (show xs.take n ~ xs.filter (xs.take n).elem by
+  convert Perm.trans (show xs.take n ~ xs.filter (xs.take n).elem by
       conv_lhs => rw [Nodup.take_eq_filter_mem ((Perm.nodup_iff h).2 h')])
     (Perm.filter _ h)
+  simp_rw [← List.elem_iff, Bool.decide_eq_true]
 #align list.perm.take_inter List.Perm.take_inter
 
 theorem Perm.drop_inter {α} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys) (h' : ys.Nodup) :
@@ -634,7 +635,7 @@ theorem length_permutationsAux :
   refine' permutationsAux.rec (by simp) _
   intro t ts is IH1 IH2
   have IH2 : length (permutationsAux is nil) + 1 = is.length ! := by simpa using IH2
-  simp only [factorial, mul_comm, add_eq] at IH1
+  simp only [factorial, Nat.mul_comm, add_eq] at IH1
   rw [permutationsAux_cons,
     length_foldr_permutationsAux2' _ _ _ _ _ fun l m => (perm_of_mem_permutations m).length_eq,
     permutations, length, length, IH2, Nat.succ_add, Nat.factorial_succ, Nat.mul_comm (_ + 1),
@@ -847,8 +848,12 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
       rw [nthLe_insertNth_add_succ]
       convert nthLe_insertNth_add_succ s x k m.succ (by simpa using hn) using 2
       · simp [Nat.add_assoc, Nat.add_left_comm]
-      · simp [add_left_comm, add_comm]
+      · simp [Nat.add_left_comm, Nat.add_comm]
       · simpa [Nat.succ_add] using hn
+#align list.nodup_permutations'_aux_iff List.nodup_permutations'Aux_iff
+
+set_option linter.deprecated false in
+theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations := by
   rw [(permutations_perm_permutations' s).nodup_iff]
   induction' hs with x l h h' IH
   · simp
