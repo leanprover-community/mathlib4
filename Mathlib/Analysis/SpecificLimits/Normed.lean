@@ -77,7 +77,7 @@ theorem tendsto_zero_smul_of_tendsto_zero_of_bounded {ι 𝕜 𝔸 : Type*} [Nor
 #align normed_field.tendsto_zero_smul_of_tendsto_zero_of_bounded NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded
 
 @[simp]
-theorem continuousAt_zpow {𝕜 : Type*} [NormedField 𝕜] {m : ℤ} {x : 𝕜} :
+theorem continuousAt_zpow {𝕜 : Type*} [NontriviallyNormedField 𝕜] {m : ℤ} {x : 𝕜} :
     ContinuousAt (fun x ↦ x ^ m) x ↔ x ≠ 0 ∨ 0 ≤ m := by
   refine' ⟨_, continuousAt_zpow₀ _ _⟩
   contrapose!; rintro ⟨rfl, hm⟩ hc
