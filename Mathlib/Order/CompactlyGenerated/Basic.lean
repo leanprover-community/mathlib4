@@ -135,7 +135,7 @@ theorem isCompactElement_iff_le_of_directed_sSup_le (k : α) :
         apply sSup_le_sSup
         intro x hx
         use {x}
-        simpa only [and_true_iff, id.def, Finset.coe_singleton, eq_self_iff_true,
+        simpa only [and_true_iff, id, Finset.coe_singleton, eq_self_iff_true,
           Finset.sup_singleton, Set.singleton_subset_iff]
       have Sne : S.Nonempty := by
         suffices ⊥ ∈ S from Set.nonempty_of_mem this
@@ -254,7 +254,7 @@ theorem isSupFiniteCompact_iff_all_elements_compact :
   · obtain ⟨t, ⟨hts, htsup⟩⟩ := h (sSup s) s (by rfl)
     have : sSup s = t.sup id := by
       suffices t.sup id ≤ sSup s by apply le_antisymm <;> assumption
-      simp only [id.def, Finset.sup_le_iff]
+      simp only [id, Finset.sup_le_iff]
       intro x hx
       exact le_sSup _ _ (hts hx)
     exact ⟨t, hts, this⟩
