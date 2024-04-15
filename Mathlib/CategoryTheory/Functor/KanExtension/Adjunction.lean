@@ -9,13 +9,12 @@ import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 
 Given a functor `F : C ⥤ D`, we define the left Kan extension functor
 `F.lan : (C ⥤ E) ⥤ (D ⥤ E)` which sends a functor `G : C ⥤ E` to its
-left Kan extension along `F`. This is defined if all such `G` have such
+left Kan extension along `F`. This is defined if all `G` have such
 a left Kan extension. It is shown that if `G` admits a pointwise
 left Kan extension, then `F.lan.obj G` is also a pointwise left
-Kan extension.
-
-It is shown that `F.lan` is the left adjoint to the functor `(D ⥤ E) ⥤ (C ⥤ E)`
-given by the precomposition with `F` (see `Functor.lanAdjunction`).
+Kan extension. It is shown that `F.lan` is the left adjoint to the
+functor `(D ⥤ E) ⥤ (C ⥤ E)` given by the precomposition
+with `F` (see `Functor.lanAdjunction`).
 
 ## TODO
 - dualize the results for right Kan extensions
