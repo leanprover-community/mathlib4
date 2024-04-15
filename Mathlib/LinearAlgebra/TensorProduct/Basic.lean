@@ -884,7 +884,7 @@ attribute [local ext high] ext
 @[simp]
 theorem map_id : map (id : M →ₗ[R] M) (id : N →ₗ[R] N) = .id := by
   ext
-  simp only [mk_apply, id_coe, compr₂_apply, id.def, map_tmul]
+  simp only [mk_apply, id_coe, compr₂_apply, _root_.id, map_tmul]
 #align tensor_product.map_id TensorProduct.map_id
 
 @[simp]
