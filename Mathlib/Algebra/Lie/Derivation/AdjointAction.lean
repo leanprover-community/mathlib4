@@ -53,6 +53,7 @@ variable {R L}
 /-- The definitions `LieDerivation.ad` and `LieAlgebra.ad` agree. -/
 @[simp] lemma coe_ad_apply_eq_ad_apply (x : L) : ad R L x = LieAlgebra.ad R L x := by ext; simp
 
+variable (R L) in
 /-- The kernel of the adjoint action on a Lie algebra is equal to its center. -/
 lemma ad_ker_eq_center : (ad R L).ker = LieAlgebra.center R L := by
   ext x
