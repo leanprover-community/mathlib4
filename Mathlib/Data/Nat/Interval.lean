@@ -323,6 +323,20 @@ theorem image_Ico_mod (n a : ℕ) : (Ico n (n + a)).image (· % a) = range a := 
     · rw [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hia]
 #align nat.image_Ico_mod Nat.image_Ico_mod
 
+theorem card_Icc_filter_dvd {n k : ℕ} (hk : k ≠ 0) : card ((Icc 1 n).filter (k ∣ ·)) = n / k := by
+  suffices (Icc 1 n).filter (k ∣ ·) = image (k * ·) (Icc 1 (n / k)) by
+    rw [this, card_image_of_injective _ (mul_right_injective₀ hk), card_Icc, Nat.add_sub_cancel]
+  ext x
+  simp_rw [mem_filter, mem_image, mem_Icc]
+  constructor <;> intro h
+  · refine ⟨x / k, ⟨?_, ?_⟩, Nat.mul_div_cancel' h.right⟩
+    · exact (Nat.one_le_div_iff hk.bot_lt).mpr <| le_of_dvd h.left.left h.right
+    · exact Nat.div_le_div_right h.left.right
+  · rcases h with ⟨h₁, h₂, rfl⟩
+    refine ⟨?_, dvd_mul_right _ _⟩
+    rw [mul_comm, ← mul_one 1]
+    exact ⟨Nat.mul_le_mul h₂.left (one_le_iff_ne_zero.mpr hk), Nat.mul_le_of_le_div k h₁ n h₂.right⟩
+
 section Multiset
 
 open Multiset
