@@ -148,7 +148,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
         have B : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
         simpa [B] using (ha _ aN').1
       _ = c (N - 1) * l - u (c (N - 1)) + ε * c (N - 1) * l := by ring
-      _ ≤ ε * c (N - 1) + ε * c (N - 1) * l := (add_le_add (ha _ aN').2 le_rfl)
+      _ ≤ ε * c (N - 1) + ε * c (N - 1) * l := add_le_add (ha _ aN').2 le_rfl
       _ = ε * (1 + l) * c (N - 1) := by ring
       _ ≤ ε * (1 + l) * n := by gcongr
   refine' tendsto_order.2 ⟨fun d hd => _, fun d hd => _⟩

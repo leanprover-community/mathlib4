@@ -280,7 +280,7 @@ theorem det_permutation (σ : Perm n) :
 theorem det_smul (A : Matrix n n R) (c : R) : det (c • A) = c ^ Fintype.card n * det A :=
   calc
     det (c • A) = det ((diagonal fun _ => c) * A) := by rw [smul_eq_diagonal_mul]
-    _ = det (diagonal fun _ => c) * det A := (det_mul _ _)
+    _ = det (diagonal fun _ => c) * det A := det_mul _ _
     _ = c ^ Fintype.card n * det A := by simp [card_univ]
 #align matrix.det_smul Matrix.det_smul
 
@@ -434,7 +434,7 @@ theorem det_eq_of_eq_mul_det_one {A B : Matrix n n R} (C : Matrix n n R) (hC : d
     (hA : A = B * C) : det A = det B :=
   calc
     det A = det (B * C) := congr_arg _ hA
-    _ = det B * det C := (det_mul _ _)
+    _ = det B * det C := det_mul _ _
     _ = det B := by rw [hC, mul_one]
 #align matrix.det_eq_of_eq_mul_det_one Matrix.det_eq_of_eq_mul_det_one
 
@@ -442,7 +442,7 @@ theorem det_eq_of_eq_det_one_mul {A B : Matrix n n R} (C : Matrix n n R) (hC : d
     (hA : A = C * B) : det A = det B :=
   calc
     det A = det (C * B) := congr_arg _ hA
-    _ = det C * det B := (det_mul _ _)
+    _ = det C * det B := det_mul _ _
     _ = det B := by rw [hC, one_mul]
 #align matrix.det_eq_of_eq_det_one_mul Matrix.det_eq_of_eq_det_one_mul
 

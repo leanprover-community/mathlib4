@@ -191,7 +191,7 @@ theorem map_relations_eq_reindex_relations (e : B ≃ B') :
     simp only [Set.mem_range, Prod.exists, Function.uncurry_apply_pair, Set.mem_image,
       forall_exists_index]
     intro b1' b2' heq; rw [← heq]
-    use ((FreeGroup.freeGroupCongr e).symm hb')
+    use (FreeGroup.freeGroupCongr e).symm hb'
     exact ⟨by use (e.symm b1'); use (e.symm b2'); aesop, by aesop⟩
 
 /-- Coxeter groups of isomorphic types are isomorphic. -/

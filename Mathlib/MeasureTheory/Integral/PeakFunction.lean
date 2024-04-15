@@ -188,7 +188,7 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_tendsto_aux
       conv_lhs => rw [← diff_union_inter s u]
       rw [integral_union (disjoint_sdiff_inter _ _) (hs.inter u_open.measurableSet)
           (h''i.mono_set (diff_subset _ _)) (h''i.mono_set (inter_subset_left _ _))]
-    _ ≤ ‖∫ x in s \ u, φ i x • g x ∂μ‖ + ‖∫ x in s ∩ u, φ i x • g x ∂μ‖ := (norm_add_le _ _)
+    _ ≤ ‖∫ x in s \ u, φ i x • g x ∂μ‖ + ‖∫ x in s ∩ u, φ i x • g x ∂μ‖ := norm_add_le _ _
     _ ≤ (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ := add_le_add C B
 #align tendsto_set_integral_peak_smul_of_integrable_on_of_continuous_within_at_aux tendsto_set_integral_peak_smul_of_integrableOn_of_tendsto_aux
 @[deprecated] alias tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux :=
@@ -420,7 +420,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable
     (h : Tendsto (fun x ↦ ‖x‖ ^ finrank ℝ F * φ x) (cobounded F) (𝓝 0))
     {g : F → E} (hg : Integrable g μ) (h'g : ContinuousAt g 0) :
     Tendsto (fun (c : ℝ) ↦ ∫ x, (c ^ (finrank ℝ F) * φ (c • x)) • g x ∂μ) atTop (𝓝 (g 0)) := by
-  have I : Integrable φ μ := (integrable_of_integral_eq_one h'φ)
+  have I : Integrable φ μ := integrable_of_integral_eq_one h'φ
   apply tendsto_integral_peak_smul_of_integrable_of_tendsto (t := closedBall 0 1) (x₀ := 0)
   · exact isClosed_ball.measurableSet
   · exact closedBall_mem_nhds _ zero_lt_one

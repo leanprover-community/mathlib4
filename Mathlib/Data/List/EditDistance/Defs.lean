@@ -205,7 +205,7 @@ theorem suffixLevenshtein_nil_nil : (suffixLevenshtein C [] []).1 = [0] := by
 
 -- Not sure if this belongs in the main `List` API, or can stay local.
 theorem List.eq_of_length_one (x : List α) (w : x.length = 1) :
-    have : 0 < x.length := (lt_of_lt_of_eq Nat.zero_lt_one w.symm)
+    have : 0 < x.length := lt_of_lt_of_eq Nat.zero_lt_one w.symm
     x = [x[0]] := by
   match x, w with
   | [r], _ => rfl

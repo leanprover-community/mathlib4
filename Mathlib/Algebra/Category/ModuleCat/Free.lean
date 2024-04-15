@@ -45,7 +45,7 @@ theorem disjoint_span_sum : Disjoint (span R (range (u ∘ Sum.inl)))
     (span R (range (u ∘ Sum.inr))) := by
   rw [huv, disjoint_comm]
   refine' Disjoint.mono_right (span_mono (range_comp_subset_range _ _)) _
-  rw [← LinearMap.range_coe, (span_eq (LinearMap.range S.f)), hS.moduleCat_range_eq_ker]
+  rw [← LinearMap.range_coe, span_eq (LinearMap.range S.f), hS.moduleCat_range_eq_ker]
   exact range_ker_disjoint hw
 
 /-- In the commutative diagram

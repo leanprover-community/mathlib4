@@ -91,7 +91,7 @@ theorem isUnit_den (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) : IsUnit (r.den : �
   have key : ‖(r.num : ℚ_[p])‖ < 1 := by
     calc
       _ = _ := hr.symm
-      _ < 1 * 1 := (mul_lt_mul' h norm_denom_lt (norm_nonneg _) zero_lt_one)
+      _ < 1 * 1 := mul_lt_mul' h norm_denom_lt (norm_nonneg _) zero_lt_one
       _ = 1 := mul_one 1
 
   have : ↑p ∣ r.num ∧ (p : ℤ) ∣ r.den := by

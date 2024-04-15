@@ -432,7 +432,7 @@ theorem irreducible_iff_prime_of_exists_unique_irreducible_factors [CancelCommMo
           calc
             Multiset.prod (p ::ₘ fx) ~ᵤ a * b := by
               rw [hx, Multiset.prod_cons]; exact hfx.2.mul_left _
-            _ ~ᵤ fa.prod * fb.prod := (hfa.2.symm.mul_mul hfb.2.symm)
+            _ ~ᵤ fa.prod * fb.prod := hfa.2.symm.mul_mul hfb.2.symm
             _ = _ := by rw [Multiset.prod_add]
 
         exact

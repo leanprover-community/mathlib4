@@ -71,7 +71,7 @@ lemma IsNilpotent.pow_succ (n : ℕ) {S : Type*} [MonoidWithZero S] {x : S}
 theorem  IsNilpotent.of_pow [MonoidWithZero R] {x : R} {m : ℕ}
     (h : IsNilpotent (x ^ m)) : IsNilpotent x := by
   obtain ⟨n, h⟩ := h
-  use (m*n)
+  use m*n
   rw [← h, pow_mul x m n]
 
 lemma IsNilpotent.pow_of_pos {n} {S : Type*} [MonoidWithZero S] {x : S}

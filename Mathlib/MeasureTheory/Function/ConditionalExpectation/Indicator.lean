@@ -133,7 +133,7 @@ theorem condexp_restrict_ae_eq_restrict (hm : m ≤ m0) [SigmaFinite (μ.trim hm
           ∫ x in t, ((μ.restrict s)[f|m]) x ∂μ.restrict s := by
         rw [integral_indicator (hm _ hs_m), Measure.restrict_restrict (hm _ hs_m),
           Measure.restrict_restrict (hm _ ht), Set.inter_comm]
-      _ = ∫ x in t, f x ∂μ.restrict s := (set_integral_condexp hm hf_int.integrableOn ht)
+      _ = ∫ x in t, f x ∂μ.restrict s := set_integral_condexp hm hf_int.integrableOn ht
       _ = ∫ x in t, s.indicator f x ∂μ := by
         rw [integral_indicator (hm _ hs_m), Measure.restrict_restrict (hm _ hs_m),
           Measure.restrict_restrict (hm _ ht), Set.inter_comm]

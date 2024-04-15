@@ -58,7 +58,7 @@ def LinearMap.clmOfExistsBoundedImage (f : E →ₗ[𝕜] F)
     have : x⁻¹ • V ⊆ f ⁻¹' U :=
       calc
         x⁻¹ • V ⊆ x⁻¹ • f ⁻¹' (f '' V) := Set.smul_set_mono (Set.subset_preimage_image (⇑f) V)
-        _ ⊆ x⁻¹ • f ⁻¹' (x • U) := (Set.smul_set_mono (Set.preimage_mono h))
+        _ ⊆ x⁻¹ • f ⁻¹' (x • U) := Set.smul_set_mono (Set.preimage_mono h)
         _ = f ⁻¹' (x⁻¹ • x • U) := by
           ext
           simp only [Set.mem_inv_smul_set_iff₀ x_ne, Set.mem_preimage, LinearMap.map_smul]

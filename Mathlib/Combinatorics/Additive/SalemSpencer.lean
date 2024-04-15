@@ -381,7 +381,7 @@ theorem mulRothNumber_union_le (s t : Finset α) :
   calc
     mulRothNumber (s ∪ t) = u.card := hcard.symm
     _ = (u ∩ s ∪ u ∩ t).card := by rw [← inter_union_distrib_left, inter_eq_left.2 hus]
-    _ ≤ (u ∩ s).card + (u ∩ t).card := (card_union_le _ _)
+    _ ≤ (u ∩ s).card + (u ∩ t).card := card_union_le _ _
     _ ≤ mulRothNumber s + mulRothNumber t := _root_.add_le_add
       ((hu.mono <| inter_subset_left _ _).le_mulRothNumber <| inter_subset_right _ _)
       ((hu.mono <| inter_subset_left _ _).le_mulRothNumber <| inter_subset_right _ _)

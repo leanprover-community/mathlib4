@@ -179,7 +179,7 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
     toFun := fun s => (S.fst s, S.snd s)
     -- Porting note: continuity failed again here. Lean cannot infer
     -- ContinuousMapClass (X ⟶ Y) X Y for X Y : TopCat which may be one of the problems
-    continuous_toFun := (Continuous.prod_mk)
+    continuous_toFun := Continuous.prod_mk
       (BinaryFan.fst S).continuous_toFun (BinaryFan.snd S).continuous_toFun }
   fac := by
     rintro S (_ | _) <;> {dsimp; ext; rfl}

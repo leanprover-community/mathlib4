@@ -79,7 +79,7 @@ theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli 
   have : (∑ x : ℕ in range n, _root_.bernoulli x * n.choose x * 0 ^ (n - x)) = 0 := by
     apply sum_eq_zero fun x hx => _
     intros x hx
-    have h : x < n := (mem_range.1 hx)
+    have h : x < n := mem_range.1 hx
     simp [tsub_eq_zero_iff_le, h]
   simp [this]
 #align polynomial.bernoulli_eval_zero Polynomial.bernoulli_eval_zero

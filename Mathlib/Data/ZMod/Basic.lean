@@ -695,7 +695,7 @@ instance nontrivial (n : ℕ) [Fact (1 < n)] : Nontrivial (ZMod n) :=
       zero_ne_one <|
         calc
           0 = (0 : ZMod n).val := by rw [val_zero]
-          _ = (1 : ZMod n).val := (congr_arg ZMod.val h)
+          _ = (1 : ZMod n).val := congr_arg ZMod.val h
           _ = 1 := val_one n
           ⟩⟩
 #align zmod.nontrivial ZMod.nontrivial

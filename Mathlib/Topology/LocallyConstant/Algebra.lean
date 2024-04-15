@@ -375,7 +375,7 @@ noncomputable
 def comapRingHom [Semiring Z] (f : X → Y) (hf : Continuous f) :
     LocallyConstant Y Z →+* LocallyConstant X Z where
   toMonoidHom := comapMonoidHom f hf
-  __ := (comapAddMonoidHom f hf)
+  __ := comapAddMonoidHom f hf
 
 /-- `LocallyConstant.comap` as an `AlgHom` -/
 @[simps!]
