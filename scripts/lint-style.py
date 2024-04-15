@@ -418,8 +418,10 @@ def parse_old_files_declarations():
     aligns = dict()
     for line in open('all_aligns.txt', 'r', encoding='utf-8'):
         line = line.strip()
+        # Ignore a Lean comment: this could contain e.g. the mathlib revision
+        # this data was generated from.
         if line.startswith('--'):
-            continue # ignore a comment (with e.g. the mathlib revision this was from)
+            continue
         # Validate input: certain things indicate the input file was not generated
         # carefully enough. Error on these lines and proceed.
         if line.startswith(('#noalign ', '--#align', '-- #align')):
@@ -435,13 +437,15 @@ def parse_old_files_declarations():
         if len(parts) != 3:
             print(f'invalid line, ignoring: "{line}"', file=sys.stderr)
             continue
-        # TODO: strip a trailing ₓ (i.e., in new_decl); add tests for this??
         _align, old_decl, new_decl = parts
+        # Strip a trailing ₓ in the new declaration.
+        new_decl = new_decl.removesuffix('ₓ')
         aligns[old_decl] = new_decl
     # Just the names of the new declarations.
     new_decl_names = [s.split('.')[-1] for s in aligns.values()]
     old_files = []
     for line in open('align_imports.txt', 'r', encoding='utf-8'):
+        # Ignore Lean comments, as above.
         if line.startswith('--'):
             continue
         elif not line.startswith("#align_import ") or " from " not in line:
