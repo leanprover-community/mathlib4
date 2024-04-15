@@ -1104,7 +1104,7 @@ theorem idealRange_eq_map : f.idealRange = LieIdeal.map f ⊤ := by
   rfl
 #align lie_hom.ideal_range_eq_map LieHom.idealRange_eq_map
 
-/-- The condition that the image of a morphism of Lie algebras is an ideal. -/
+/-- The condition that the range of a morphism of Lie algebras is an ideal. -/
 def IsIdealMorphism : Prop :=
   (f.idealRange : LieSubalgebra R L') = f.range
 #align lie_hom.is_ideal_morphism LieHom.IsIdealMorphism
