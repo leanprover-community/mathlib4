@@ -22,14 +22,14 @@ We give the corresonding result for the regular topology as well.
 
 namespace CategoryTheory
 
-open Limits
+open Limits Functor
 
 variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
 
 namespace coherentTopology
 
 variable [F.PreservesFiniteEffectiveEpiFamilies] [F.ReflectsFiniteEffectiveEpiFamilies]
-  [Full F] [Faithful F] [F.EffectivelyEnough] [Precoherent D]
+  [F.Full] [F.Faithful] [F.EffectivelyEnough] [Precoherent D]
 
 instance : F.IsCoverDense (coherentTopology _) := by
   refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
@@ -97,7 +97,7 @@ universe u
 
 variable {C D : Type (u+1)} [LargeCategory C] [LargeCategory D] (F : C ⥤ D)
   [F.PreservesFiniteEffectiveEpiFamilies] [F.ReflectsFiniteEffectiveEpiFamilies]
-  [Full F] [Faithful F]
+  [F.Full] [F.Faithful]
   [Precoherent D]
   [F.EffectivelyEnough]
 
@@ -118,7 +118,7 @@ universe u
 
 variable {C D : Type (u+1)} [LargeCategory C] [LargeCategory D] (F : C ⥤ D)
   [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis]
-  [Full F] [Faithful F]
+  [F.Full] [F.Faithful]
   [FinitaryExtensive D] [Preregular D]
   [FinitaryPreExtensive C]
   [PreservesFiniteCoproducts F]
@@ -140,7 +140,7 @@ end coherentTopology
 
 namespace regularTopology
 
-variable [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis] [Full F] [Faithful F]
+variable [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis] [F.Full] [F.Faithful]
   [F.EffectivelyEnough] [Preregular D]
 
 instance : F.IsCoverDense (regularTopology _) := by
@@ -202,7 +202,7 @@ universe u
 
 variable {C D : Type (u+1)} [LargeCategory C] [LargeCategory D] (F : C ⥤ D)
   [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis]
-  [Full F] [Faithful F]
+  [F.Full] [F.Faithful]
   [Preregular D]
   [F.EffectivelyEnough]
 

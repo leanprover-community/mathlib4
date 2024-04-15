@@ -96,15 +96,38 @@ noncomputable
 def equivalence (A : Type*) [Category.{u+1} A] [HasLimits A] :
     Sheaf (coherentTopology Stonean) A ≌ Sheaf (coherentTopology Profinite) A :=
   coherentTopology.equivalence' Stonean.toProfinite A
-  -- Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting Stonean.toProfinite _ _ _
 
 end StoneanProfinite
+
+namespace ProfiniteCompHaus
+
+instance : profiniteToCompHaus.PreservesEffectiveEpis where
+  preserves f h :=
+    ((CompHaus.effectiveEpi_tfae _).out 0 2).mpr (((Profinite.effectiveEpi_tfae _).out 0 2).mp h)
+
+instance : profiniteToCompHaus.ReflectsEffectiveEpis where
+  reflects f h :=
+    ((Profinite.effectiveEpi_tfae f).out 0 2).mpr (((CompHaus.effectiveEpi_tfae _).out 0 2).mp h)
+
+/--
+An effective presentation of an `X : Profinite` with respect to the inclusion functor from `Stonean`
+-/
+noncomputable def profiniteToCompHausEffectivePresentation (X : CompHaus) :
+    profiniteToCompHaus.EffectivePresentation X where
+  p := Stonean.toProfinite.obj X.presentation
+  f := CompHaus.presentation.π X
+  effectiveEpi := ((CompHaus.effectiveEpi_tfae _).out 0 1).mpr (inferInstance : Epi _)
+
+instance : profiniteToCompHaus.EffectivelyEnough where
+  presentation X := ⟨profiniteToCompHausEffectivePresentation X⟩
 
 /-- The equivalence from coherent sheaves on `Profinite` to coherent sheaves on `CompHaus`
     (i.e. condensed sets). -/
 noncomputable
-def ProfiniteCompHaus.equivalence (A : Type*) [Category.{u+1} A] [HasLimits A] :
+def equivalence (A : Type*) [Category.{u+1} A] [HasLimits A] :
     Sheaf (coherentTopology Profinite) A ≌ Condensed.{u} A :=
-  (StoneanProfinite.equivalence A).symm.trans (StoneanCompHaus.equivalence A)
+  coherentTopology.equivalence' profiniteToCompHaus A
+
+end ProfiniteCompHaus
 
 end Condensed
