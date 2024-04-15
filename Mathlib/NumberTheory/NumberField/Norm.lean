@@ -113,7 +113,7 @@ theorem isUnit_norm [CharZero K] {x : 𝓞 F} : IsUnit (norm K x) ↔ IsUnit x :
       (isUnit_pow_iff (pos_iff_ne_zero.mp finrank_pos)).symm
     _ ↔ IsUnit (norm K (algebraMap (𝓞 F) (𝓞 L) x)) := by
       rw [← norm_norm K F (algebraMap (𝓞 F) (𝓞 L) x), norm_algebraMap F _, map_pow]
-    _ ↔ IsUnit (algebraMap (𝓞 F) (𝓞 L) x) := (isUnit_norm_of_isGalois K)
+    _ ↔ IsUnit (algebraMap (𝓞 F) (𝓞 L) x) := isUnit_norm_of_isGalois K
     _ ↔ IsUnit (norm F (algebraMap (𝓞 F) (𝓞 L) x)) := (isUnit_norm_of_isGalois F).symm
     _ ↔ IsUnit (x ^ finrank F L) := (congr_arg IsUnit (norm_algebraMap F _)).to_iff
     _ ↔ IsUnit x := isUnit_pow_iff (pos_iff_ne_zero.mp finrank_pos)
