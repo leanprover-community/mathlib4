@@ -11,6 +11,10 @@ import Std.Data.List.Basic
 #  The `have` vs `let` linter
 
 The `have` vs `let` linter flags uses of `have` to introduce a hypothesis whose Type is not `Prop`.
+
+TODO:
+* `replace` implies `have`: should it be ignored?
+* `haveI` may need to change to `let/letI`?
 -/
 
 open Lean Elab Command Meta
@@ -32,6 +36,11 @@ def isHave? : Syntax → Bool
   | .node _ ``Lean.Parser.Tactic.tacticHave_ _ => true
   |_ => false
 
+/-- `SyntaxNodeKind`s that imply a `have` but should be ignored anyway. -/
+abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
+  |>.insert `Std.Tactic.classical!
+  |>.insert `Mathlib.Tactic.Tauto.tauto
+
 end haveLet
 
 end Mathlib.Linter
@@ -46,7 +55,7 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format))
     let nargs := (← args.toArray.mapM nonPropHaves).flatten
     if let .ofTacticInfo i := i then
       let stx := i.stx
-      if stx.getKind == `Mathlib.Tactic.Tauto.tauto then return #[] else
+      if exclusions.contains stx.getKind then return #[] else
       if isHave? stx then
         let mctx := i.mctxAfter
         let mvdecls := (i.goalsAfter.map (mctx.decls.find? ·)).reduceOption
