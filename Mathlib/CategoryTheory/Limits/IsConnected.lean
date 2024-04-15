@@ -77,7 +77,7 @@ theorem zigzag_of_eqvGen_quot_rel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
 
 /-- An index category is connected iff the colimit of the constant singleton-valued functor is a
 singleton. -/
-theorem connected_iff_colimit_constPUnitFunctor_iso_pUnit
+theorem isConnected_iff_colimit_constPUnitFunctor_iso_pUnit
     [HasColimit (constPUnitFunctor.{w} C)] :
     IsConnected C ↔ Nonempty (colimit (constPUnitFunctor.{w} C) ≅ PUnit) := by
   refine ⟨fun _ => ⟨colimitConstPUnitIsoPUnit.{w} C⟩, fun ⟨h⟩ => ?_⟩
