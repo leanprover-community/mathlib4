@@ -30,18 +30,9 @@ example : functor c ⋙ StructuredArrow.proj c.pt toProfinite ≅ F := Iso.refl 
 
 example : functorOp c ⋙ CostructuredArrow.proj toProfinite.op ⟨c.pt⟩ ≅ F.op := Iso.refl _
 
--- TODO: PR
-instance : Faithful toProfinite where
-  map_injective h := funext fun _ ↦ (DFunLike.ext_iff.mp h) _
-
--- TODO: PR
-instance : Full toProfinite where
-  preimage f := fun x ↦ f x
-  witness _ := rfl
-
 variable (hc : IsLimit c)
 
-def _root_.Profinite.exists_hom {X : FintypeCat} (f : c.pt ⟶ toProfinite.obj X) :
+lemma _root_.Profinite.exists_hom {X : FintypeCat} (f : c.pt ⟶ toProfinite.obj X) :
     ∃ (i : I) (g : F.obj i ⟶ X), f = c.π.app i ≫ toProfinite.map g := by
   have : DiscreteTopology (toProfinite.obj X) := by
       simp only [toProfinite, Profinite.of]
@@ -70,8 +61,8 @@ theorem functor_initial [∀ i, Epi (c.π.app i)] : Initial (functor c) := by
 
 theorem functorOp_final [∀ i, Epi (c.π.app i)] : Final (functorOp c) := by
   have := functor_initial c hc
-  have : IsEquivalence ((toCostructuredArrow toProfinite c.pt)) :=
-    (inferInstance : IsEquivalence (structuredArrowOpEquivalence _ _).functor)
+  have : ((StructuredArrow.toCostructuredArrow toProfinite c.pt)).IsEquivalence  :=
+    (inferInstance : (structuredArrowOpEquivalence _ _).functor.IsEquivalence )
   exact Functor.final_comp (functor c).op _
 
 end Condensed.ToStructuredArrow
@@ -84,7 +75,7 @@ namespace Condensed.ColimitLocallyConstant
 
 variable (S : Profinite.{u}) (X : Type (u+1))
 
-@[simps! pt ι_app]
+@[simps! pt ι_app ι_app_apply]
 def LC_cocone : Cocone (S.diagram.op ⋙ profiniteToCompHaus.op ⋙ LC.obj X) :=
   (profiniteToCompHaus.op ⋙ LC.obj X).mapCocone S.asLimitCone.op
 
