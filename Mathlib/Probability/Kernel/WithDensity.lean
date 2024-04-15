@@ -260,7 +260,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
   norm_cast
   calc
     fs n a b ≤ min (f a b) (n + 1) := tsub_le_self
-    _ ≤ n + 1 := (min_le_right _ _)
+    _ ≤ n + 1 := min_le_right _ _
     _ = ↑(n + 1) := by norm_cast
 #align probability_theory.kernel.is_s_finite_kernel_with_density_of_is_finite_kernel ProbabilityTheory.kernel.isSFiniteKernel_withDensity_of_isFiniteKernel
 
