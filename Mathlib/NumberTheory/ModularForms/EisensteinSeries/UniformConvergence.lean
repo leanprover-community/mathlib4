@@ -118,10 +118,8 @@ lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x 
       simpa using hx
     have h11 : ((x 0) * ↑z + (x 1)) =
         (((x 0 : ℝ) / (n : ℝ)) * (z : ℂ) + (x 1 : ℝ) / (n : ℝ)) * ((n : ℝ)) := by
-        field_simp
-        rw [← mul_div, div_self]
-        · simp only [mul_one]
-        · norm_cast at *
+        have : (n : ℂ) ≠ 0 := by norm_cast
+        field_simp [this]
     simp only [Nat.cast_max, h11, ofReal_int_cast, map_mul, abs_ofReal, ge_iff_le]
     rw [Real.mul_rpow (by apply apply_nonneg) (by apply abs_nonneg)]
     cases' (div_max_sq_ge_one x hx) with H1 H2
