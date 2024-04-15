@@ -38,27 +38,31 @@ lemma MvPolynomial.coefficients_mem {p : MvPolynomial ι R} (m : ι →₀ ℕ) 
 def MvPolynomial.Set.coefficients (S : Set (MvPolynomial ι R)) : Set R :=
   Set.iUnion (ι := S) (fun (p : S) ↦ p.val.coeff '' p.val.support)
 
-instance (p : MvPolynomial ι R) : Finite (MvPolynomial.coefficients p) :=
-  sorry
+instance (p : MvPolynomial ι R) : Set.Finite (MvPolynomial.coefficients p) := by
+  apply Set.Finite.image
+  change Set.Finite (Finsupp.support p)
+  rw [← Finsupp.fun_support_eq]
+  exact Finsupp.finite_support p
 
-lemma MvPolynomial.Set.coefficients_in' (S : Set (MvPolynomial ι R))
+lemma MvPolynomial.Set.coefficients_in (S : Set (MvPolynomial ι R))
     (p : MvPolynomial ι R) (hS : p ∈ S) :
-    (MvPolynomial.coefficients p) ⊆ MvPolynomial.Set.coefficients S :=
-  sorry
-
-lemma MvPolynomial.Set.coefficients_in (S : Set (MvPolynomial ι R)) (s : MvPolynomial ι R) (hS : s ∈ S)
-    (m : ι →₀ ℕ) : s.coeff m ∈ MvPolynomial.Set.coefficients S :=
-  sorry
+    (MvPolynomial.coefficients p) ⊆ MvPolynomial.Set.coefficients S := by
+  intro r hr
+  obtain ⟨m, hms, hmeq⟩ := hr
+  simp only [MvPolynomial.Set.coefficients, Set.mem_iUnion]
+  use ⟨p, hS⟩
+  use m
 
 variable {S : Type w} [CommRing S] [Algebra R S]
   {T : Type t} [CommRing T] [Algebra R T]
   {T' : Type t} [CommRing T'] [Algebra R T']
 
-lemma AlgHom.cancel_surjective (f g : T →ₐ[R] S) (p : T' →ₐ[R] T) (hf : Function.Surjective p)
-    (heq : f.comp p = g.comp p) : f = g := sorry
-
-lemma TensorProduct.prod_tmul {M : Type*} [Zero M] (f : ι →₀ M) (g : ι → M → T) :
-  (Finsupp.prod f fun i k ↦ (1 : S) ⊗ₜ[R] g i k) = 1 ⊗ₜ[R] Finsupp.prod f g := sorry
+lemma AlgHom.cancel_surjective {f g : T →ₐ[R] S} (p : T' →ₐ[R] T) (hf : Function.Surjective p)
+    (heq : f.comp p = g.comp p) : f = g := by
+  ext x
+  obtain ⟨t', rfl⟩ := hf x
+  change (f.comp p) t' = (g.comp p) t'
+  rw [heq]
 
 section
 
@@ -89,7 +93,7 @@ lemma foo_ext {f g : S ⊗[R] (MvPolynomial ι R ⧸ I) →ₐ[S] T}
     (h : ∀ (i : ι), f (1 ⊗ₜ (Ideal.Quotient.mk I <| MvPolynomial.X i))
       = g (1 ⊗ₜ (Ideal.Quotient.mk I <| MvPolynomial.X i))) : f = g := by
   apply TensorProduct.ext (by ext)
-  apply AlgHom.cancel_surjective _ _ (Ideal.Quotient.mkₐ R I)
+  apply AlgHom.cancel_surjective (Ideal.Quotient.mkₐ R I)
   · exact Ideal.Quotient.mkₐ_surjective R I
   · apply MvPolynomial.algHom_ext
     exact h
@@ -153,51 +157,41 @@ lemma fooz_aux2 (t : MvPolynomial ι S)
 variable (T : Set (MvPolynomial ι S)) (hgen : I = Ideal.span T)
   (hcoeffs : (MvPolynomial.Set.coefficients T) ⊆ (Set.range <| algebraMap R S))
 
-lemma fooz_aux0 (t : MvPolynomial ι S) (h : t ∈ T) (m : ι →₀ ℕ) :
-    ∃ (r : R), (algebraMap R S) r = MvPolynomial.coeff m t :=
-  hcoeffs (MvPolynomial.Set.coefficients_in T t h m)
-
 noncomputable def barz : MvPolynomial ι S →ₐ[S] S ⊗[R] (MvPolynomial ι R) := by
   fapply MvPolynomial.aeval (S₁ := S ⊗[R] (MvPolynomial ι R))
   intro i
   exact 1 ⊗ₜ MvPolynomial.X i
 
-lemma barz_aux (t : MvPolynomial ι S) (p : MvPolynomial ι R)
-    (h : MvPolynomial.map (algebraMap R S) p = t) :
-    barz t = 1 ⊗ₜ p := by
+lemma barz_aux (p : MvPolynomial ι R) :
+    barz (MvPolynomial.map (algebraMap R S) p) = 1 ⊗ₜ p := by
   simp [barz]
-  rw [← h]
   rw [MvPolynomial.aeval_map_algebraMap]
-  refine MvPolynomial.induction_on' p ?_ ?_
-  · intro m a
-    rw [MvPolynomial.aeval_monomial]
-    simp only [← Algebra.smul_def]
-    simp
-    rw [TensorProduct.prod_tmul (R := R) m (fun i k ↦ MvPolynomial.X i ^ k)]
-    simp only [← TensorProduct.tmul_smul]
-    simp only [MvPolynomial.monomial_eq]
-    simp only [Algebra.smul_def]
-    simp only [MvPolynomial.algebraMap_eq]
-  · intro f g hf hg
-    simp
-    rw [hf, hg]
-    rw [TensorProduct.tmul_add]
+  let f : MvPolynomial ι R →ₐ[R] S ⊗[R] MvPolynomial ι R :=
+    MvPolynomial.aeval fun i ↦ (1 : S) ⊗ₜ[R] MvPolynomial.X i
+  let g : MvPolynomial ι R →ₐ[R] S ⊗[R] MvPolynomial ι R :=
+    TensorProduct.includeRight
+  change f p = g p
+  congr
+  simp [f, g]
+  apply MvPolynomial.algHom_ext
+  intro i
+  simp [f, g]
 
 noncomputable def barzQuot : MvPolynomial ι S →ₐ[S] S ⊗[R] (MvPolynomial ι R ⧸ I₀) :=
   letI f : S ⊗[R] (MvPolynomial ι R) →ₐ[S] S ⊗[R] (MvPolynomial ι R ⧸ I₀) :=
     Algebra.TensorProduct.map (AlgHom.id S S) (Ideal.Quotient.mkₐ R I₀)
   AlgHom.comp f barz
 
-lemma barzQuot_aux (t : MvPolynomial ι S) (p : MvPolynomial ι R)
-    (h : MvPolynomial.map (algebraMap R S) p = t) :
-    barzQuot (R := R) I t = 1 ⊗ₜ (Ideal.Quotient.mk I₀ p) := by
-  simp [barzQuot, AlgHom.coe_comp, Function.comp_apply, barz_aux t p h]
+lemma barzQuot_aux (p : MvPolynomial ι R) :
+    barzQuot (R := R) I
+      (MvPolynomial.map (algebraMap R S) p) = 1 ⊗ₜ (Ideal.Quotient.mk I₀ p) := by
+  simp [barzQuot, AlgHom.coe_comp, Function.comp_apply, barz_aux p]
 
 lemma barzQuot_aux2 (t : MvPolynomial ι S) (h : t ∈ I)
     (hc : MvPolynomial.coefficients t ⊆ Set.range (algebraMap R S)) :
     barzQuot (R := R) I t = 0 := by
   obtain ⟨p, hp⟩ := fooz_aux2 t hc
-  rw [barzQuot_aux I t p hp]
+  rw [← hp, barzQuot_aux]
   have h1 : (Ideal.Quotient.mk I₀) p = 0 := by
     rw [← RingHom.mem_ker, Ideal.mk_ker]
     change MvPolynomial.map (algebraMap R S) p ∈ I
@@ -215,7 +209,7 @@ noncomputable def fooz : MvPolynomial ι S ⧸ I →ₐ[S] S ⊗[R] (MvPolynomia
     · intro x hxinT
       apply barzQuot_aux2
       exact Ideal.subset_span hxinT
-      exact Set.Subset.trans (MvPolynomial.Set.coefficients_in' T x hxinT) hcoeffs
+      exact Set.Subset.trans (MvPolynomial.Set.coefficients_in T x hxinT) hcoeffs
     · rw [AlgHom.map_zero]
     · intro x y hx hy
       rw [map_add, hx, hy, add_zero]
@@ -241,7 +235,7 @@ noncomputable def baseChangeIso : (MvPolynomial ι S ⧸ I) ≃ₐ[S] S ⊗[R] (
   · apply foo_ext
     intro i
     simp
-  · apply AlgHom.cancel_surjective _ _ (Ideal.Quotient.mkₐ S I)
+  · apply AlgHom.cancel_surjective (Ideal.Quotient.mkₐ S I)
     exact Ideal.Quotient.mkₐ_surjective S I
     apply MvPolynomial.algHom_ext
     intro i
@@ -259,7 +253,7 @@ local notation "R₀" => RingOfDefinition S
 
 local notation "A" => MvPolynomial ι R ⧸ I
 
-def RingOfDefinition.Set : Set (MvPolynomial ι R₀) := 
+def RingOfDefinition.Set : Set (MvPolynomial ι R₀) :=
   MvPolynomial.map (SubringClass.subtype R₀) ⁻¹' S
 
 local notation "S₀" => RingOfDefinition.Set S
@@ -270,18 +264,5 @@ local notation "A₀" => MvPolynomial ι R₀ ⧸ I₀
 
 --noncomputable local instance : Algebra R₀ A₀ := Ideal.Quotient.algebra R₀
 noncomputable local instance : Module R₀ A₀ := Algebra.toModule
-
-noncomputable def baseChangeHom : R ⊗[R₀] A₀ →ₐ[R] A := by
-  fapply Algebra.TensorProduct.lift
-  · exact Algebra.ofId R (MvPolynomial ι R ⧸ I)
-  · fapply Ideal.Quotient.liftₐ
-    letI f : MvPolynomial ι R₀ →ₐ[R₀] MvPolynomial ι R :=
-      MvPolynomial.aeval MvPolynomial.X
-    letI g : MvPolynomial ι R →ₐ[R₀] MvPolynomial ι R ⧸ I :=
-      Ideal.Quotient.mkₐ R₀ I
-    exact g.comp f
-    intro x hx
-    simp
-    admit
 
 def baseChange : R ⊗[R₀] A₀ ≃ₐ[R] A := sorry
