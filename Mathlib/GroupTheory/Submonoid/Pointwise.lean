@@ -3,6 +3,7 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.Order.WellFoundedSet
@@ -46,7 +47,6 @@ on `Set`s.
 open Set Pointwise
 
 variable {α : Type*} {G : Type*} {M : Type*} {R : Type*} {A : Type*}
-
 variable [Monoid M] [AddMonoid A]
 
 /-! Some lemmas about pointwise multiplication and submonoids. Ideally we put these in
@@ -239,6 +239,9 @@ theorem coe_pointwise_smul (a : α) (S : Submonoid M) : ↑(a • S) = a • (S 
 theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submonoid M) : m ∈ S → a • m ∈ a • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))
 #align submonoid.smul_mem_pointwise_smul Submonoid.smul_mem_pointwise_smul
+
+instance : CovariantClass α (Submonoid M) HSMul.hSMul LE.le :=
+  ⟨fun _ _ => image_subset _⟩
 
 theorem mem_smul_pointwise_iff_exists (m : M) (a : α) (S : Submonoid M) :
     m ∈ a • S ↔ ∃ s : M, s ∈ S ∧ a • s = m :=
@@ -546,7 +549,7 @@ protected theorem mul_induction_on {M N : AddSubmonoid R} {C : R → Prop} {r : 
 #align add_submonoid.mul_induction_on AddSubmonoid.mul_induction_on
 
 -- this proof is copied directly from `Submodule.span_mul_span`
--- porting note: proof rewritten
+-- Porting note: proof rewritten
 theorem closure_mul_closure (S T : Set R) : closure S * closure T = closure (S * T) := by
   apply le_antisymm
   · refine mul_le.2 fun a ha b hb => ?_

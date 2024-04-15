@@ -32,8 +32,6 @@ resulting expression: e.g. `1 * X + 0` becomes `X`.
 -/
 
 open Lean Meta Simp
-open Std.Tactic.NormCast
-open Std.Tactic.Coe
 open Lean.Elab
 open Tactic
 open Qq

@@ -159,8 +159,8 @@ theorem hasBasis_nhds (a : A) :
     constructor
     · rintro ⟨-, ⟨i, rfl⟩, hi⟩
       use i
-      suffices h : { b : A | b - a ∈ B i } = (fun y => a + y) '' ↑(B i)
-      · rw [h]
+      suffices h : { b : A | b - a ∈ B i } = (fun y => a + y) '' ↑(B i) by
+        rw [h]
         assumption
       simp only [image_add_left, neg_add_eq_sub]
       ext b

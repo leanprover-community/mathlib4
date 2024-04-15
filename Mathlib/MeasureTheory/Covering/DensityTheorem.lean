@@ -123,7 +123,7 @@ theorem tendsto_closedBall_filterAt {K : ℝ} {x : α} {ι : Type*} {l : Filter 
       exact (mul_nonneg_iff_left_nonneg_of_pos (mem_Ioi.1 h'j)).1 this
     have δpos := eventually_mem_of_tendsto_nhdsWithin δlim
     replace δlim := tendsto_nhds_of_tendsto_nhdsWithin δlim
-    replace hK : 0 < K + 1; · linarith
+    replace hK : 0 < K + 1 := by linarith
     apply (((Metric.tendsto_nhds.mp δlim _ (div_pos hε hK)).and δpos).and xmem).mono
     rintro j ⟨⟨hjε, hj₀ : 0 < δ j⟩, hx⟩ y hy
     replace hjε : (K + 1) * δ j < ε := by

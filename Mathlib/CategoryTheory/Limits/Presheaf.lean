@@ -3,11 +3,14 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Comma.Presheaf
 import Mathlib.CategoryTheory.Elements
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+import Mathlib.CategoryTheory.Limits.ConeCategory
+import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.Over
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Types
 
@@ -41,9 +44,6 @@ colimit, representable, presheaf, free cocompletion
 * [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
 * https://ncatlab.org/nlab/show/Yoneda+extension
 -/
-
-set_option autoImplicit true
-
 
 namespace CategoryTheory
 
@@ -215,7 +215,7 @@ theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type v₂) :
   rfl
 #align category_theory.colimit_adj.extend_along_yoneda_obj CategoryTheory.ColimitAdj.extendAlongYoneda_obj
 
--- porting note: adding this lemma because lean 4 ext no longer applies all ext lemmas when
+-- Porting note: adding this lemma because lean 4 ext no longer applies all ext lemmas when
 -- stuck (and hence can see through definitional equalities). The previous lemma shows that
 -- `(extendAlongYoneda A).obj P` is definitionally a colimit, and the ext lemma is just
 -- a special case of `CategoryTheory.Limits.colimit.hom_ext`.
@@ -279,7 +279,7 @@ noncomputable def isExtensionAlongYoneda :
         (colimitOfDiagramTerminal (terminalOpOfInitial (isInitial _)) _))
     (by
       intro X Y f
-      -- porting note: this is slightly different to the `change` in mathlib3 which
+      -- Porting note: this is slightly different to the `change` in mathlib3 which
       -- didn't work
       change (colimit.desc _ _ ≫ _) = colimit.desc _ _ ≫ _
       ext
@@ -508,7 +508,9 @@ def tautologicalCocone : Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) whe
   ι := { app := fun X => X.hom }
 
 /-- The tautological cocone with point `P` is a colimit cocone, exhibiting `P` as a colimit of
-    representables. -/
+    representables.
+
+    Proposition 2.6.3(i) in [Kashiwara2006] -/
 def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
   desc := fun s => by
     refine' ⟨fun X t => yonedaEquiv (s.ι.app (CostructuredArrow.mk (yonedaEquiv.symm t))), _⟩
@@ -536,6 +538,33 @@ def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [Equiv.symm_apply_apply, ← yonedaEquiv_comp']
     exact congr_arg _ (h (CostructuredArrow.mk t))
+
+variable {I : Type v₁} [SmallCategory I] (F : I ⥤ C)
+
+/-- Given a functor `F : I ⥤ C`, a cocone `c` on `F ⋙ yoneda : I ⥤ Cᵒᵖ ⥤ Type v₁` induces a
+    functor `I ⥤ CostructuredArrow yoneda c.pt` which maps `i : I` to the leg
+    `yoneda.obj (F.obj i) ⟶ c.pt`. If `c` is a colimit cocone, then that functor is
+    final.
+
+    Proposition 2.6.3(ii) in [Kashiwara2006] -/
+theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsColimit c) :
+    Functor.Final (c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) := by
+  apply Functor.cofinal_of_isTerminal_colimit_comp_yoneda
+
+  suffices IsTerminal (colimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
+      CostructuredArrow.toOver yoneda c.pt)) by
+    apply IsTerminal.isTerminalOfObj (overEquivPresheafCostructuredArrow c.pt).inverse
+    apply IsTerminal.ofIso this
+    refine ?_ ≪≫ (preservesColimitIso (overEquivPresheafCostructuredArrow c.pt).inverse _).symm
+    apply HasColimit.isoOfNatIso
+    exact isoWhiskerLeft _
+      (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow c.pt).isoCompInverse
+
+  apply IsTerminal.ofIso Over.mkIdTerminal
+  let isc : IsColimit ((Over.forget _).mapCocone _) := PreservesColimit.preserves
+    (colimit.isColimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
+      CostructuredArrow.toOver yoneda c.pt))
+  exact Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext fun i => by simp)
 
 end ArbitraryUniverses
 

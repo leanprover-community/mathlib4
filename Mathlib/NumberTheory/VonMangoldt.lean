@@ -29,6 +29,8 @@ to deduce alternative expressions for the von Mangoldt function via Möbius inve
 ## Notation
 
 We use the standard notation `Λ` to represent the von Mangoldt function.
+It is accessible in the locales `ArithmeticFunction` (like the notations for other arithmetic
+functions) and also in the locale `ArithmeticFunction.vonMangoldt`.
 
 -/
 
@@ -57,12 +59,17 @@ In the case when `n` is a prime power, `min_fac` will give the appropriate prime
 smallest prime factor.
 
 In the `ArithmeticFunction` locale, we have the notation `Λ` for this function.
+This is also available in the `ArithmeticFunction.vonMangoldt` locale, allowing for selective
+access to the notation.
 -/
 noncomputable def vonMangoldt : ArithmeticFunction ℝ :=
   ⟨fun n => if IsPrimePow n then Real.log (minFac n) else 0, if_neg not_isPrimePow_zero⟩
 #align nat.arithmetic_function.von_mangoldt ArithmeticFunction.vonMangoldt
 
 @[inherit_doc] scoped[ArithmeticFunction] notation "Λ" => ArithmeticFunction.vonMangoldt
+
+@[inherit_doc] scoped[ArithmeticFunction.vonMangoldt] notation "Λ" =>
+  ArithmeticFunction.vonMangoldt
 
 theorem vonMangoldt_apply {n : ℕ} : Λ n = if IsPrimePow n then Real.log (minFac n) else 0 :=
   rfl
@@ -143,7 +150,7 @@ theorem sum_moebius_mul_log_eq {n : ℕ} : (∑ d in n.divisors, (μ d : ℝ) * 
   have : (∑ i : ℕ in n.divisors, (μ i : ℝ) * -Real.log (n / i : ℕ)) =
       ∑ i : ℕ in n.divisors, ((μ i : ℝ) * Real.log i - μ i * Real.log n) := by
     apply sum_congr rfl
-    simp only [and_imp, Int.cast_eq_zero, mul_eq_mul_left_iff, Ne.def, neg_inj, mem_divisors]
+    simp only [and_imp, Int.cast_eq_zero, mul_eq_mul_left_iff, Ne, neg_inj, mem_divisors]
     intro m mn hn
     have : (m : ℝ) ≠ 0 := by
       rw [cast_ne_zero]

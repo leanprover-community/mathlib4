@@ -142,11 +142,9 @@ example (a b : ℕ) (h : a ≠ b) : a + 1 ≠ b + 1 := by
 
 -- TODO
 -- -- monotonicity will be proved by `mono` in the next example
--- example (a b : ℕ) (h : a ≤ b) : a + 1 ≤ b + 1 :=
--- begin
---   apply_fun (λ n, n+1) at h,
+-- example (a b : ℕ) (h : a ≤ b) : a + 1 ≤ b + 1 := by
+--   apply_fun (fun n ↦ n+1) at h
 --   exact h
--- end
 
 example {n : Type} [Fintype n] {X : Type} [Semiring X]
   (f : Matrix n n X → Matrix n n X) (A B : Matrix n n X) (h : A * B = 0) : f (A * B) = f 0 := by
@@ -254,8 +252,7 @@ example (x : ℕ) : x = x := by
 example : 1 = 1 := by
   let f := fun (x : Nat) => x + 1
   -- clearly false but for demo purposes only
-  have g : ∀ f, Function.Injective f
-  · exact test_sorry
+  have g : ∀ (f : ℕ → ℕ), Function.Injective f := test_sorry
   apply_fun f using (g f)
   rfl
 

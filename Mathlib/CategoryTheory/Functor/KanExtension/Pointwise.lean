@@ -78,7 +78,6 @@ def coconeAtFunctor (Y : D) : LeftExtension L F ⥤ Cocone (CostructuredArrow.pr
 
 variable {L F}
 
-
 /-- A left extension `E : LeftExtension L F` is a pointwise left Kan extension at `Y` when
 `E.coconeAt Y` is a colimit cocone. -/
 def IsPointwiseLeftKanExtensionAt (Y : D) := IsColimit (E.coconeAt Y)
@@ -119,27 +118,30 @@ lemma IsPointwiseLeftKanExtension.hasPointwiseLeftKanExtension :
     HasPointwiseLeftKanExtension L F :=
   fun Y => (h Y).hasPointwiseLeftKanExtensionAt
 
+/-- The (unique) morphism from a pointwise left Kan extension. -/
+def IsPointwiseLeftKanExtension.homFrom (G : LeftExtension L F) : E ⟶ G :=
+  StructuredArrow.homMk
+    { app := fun Y => (h Y).desc (LeftExtension.coconeAt G Y)
+      naturality := fun Y₁ Y₂ φ => (h Y₁).hom_ext (fun X => by
+        rw [(h Y₁).fac_assoc (coconeAt G Y₁) X]
+        simpa using (h Y₂).fac (coconeAt G Y₂) ((CostructuredArrow.map φ).obj X)) }
+    (by
+      ext X
+      simpa using (h (L.obj X)).fac (LeftExtension.coconeAt G _) (CostructuredArrow.mk (𝟙 _)))
+
+lemma IsPointwiseLeftKanExtension.hom_ext {G : LeftExtension L F} {f₁ f₂ : E ⟶ G} : f₁ = f₂ := by
+  ext Y
+  apply (h Y).hom_ext
+  intro X
+  have eq₁ := congr_app (StructuredArrow.w f₁) X.left
+  have eq₂ := congr_app (StructuredArrow.w f₂) X.left
+  dsimp at eq₁ eq₂ ⊢
+  simp only [assoc, NatTrans.naturality]
+  rw [reassoc_of% eq₁, reassoc_of% eq₂]
+
 /-- A pointwise left Kan extension is universal, i.e. it is a left Kan extension. -/
 def IsPointwiseLeftKanExtension.isUniversal : E.IsUniversal :=
-  IsInitial.ofUniqueHom (fun G => StructuredArrow.homMk
-        { app := fun Y => (h Y).desc (LeftExtension.coconeAt G Y)
-          naturality := fun Y₁ Y₂ φ => (h Y₁).hom_ext (fun X => by
-            rw [(h Y₁).fac_assoc (coconeAt G Y₁) X]
-            simpa using (h Y₂).fac (coconeAt G Y₂) ((CostructuredArrow.map φ).obj X)) }
-      (by
-        ext X
-        simpa using (h (L.obj X)).fac (LeftExtension.coconeAt G _) (CostructuredArrow.mk (𝟙 _))))
-    (fun G => by
-      suffices ∀ (m₁ m₂ : E ⟶ G), m₁ = m₂ by intros; apply this
-      intro m₁ m₂
-      ext Y
-      apply (h Y).hom_ext
-      intro X
-      have eq₁ := congr_app (StructuredArrow.w m₁) X.left
-      have eq₂ := congr_app (StructuredArrow.w m₂) X.left
-      dsimp at eq₁ eq₂ ⊢
-      simp only [assoc, NatTrans.naturality]
-      rw [reassoc_of% eq₁, reassoc_of% eq₂])
+  IsInitial.ofUniqueHom h.homFrom (fun _ _ => h.hom_ext)
 
 lemma IsPointwiseLeftKanExtension.isLeftKanExtension :
     E.right.IsLeftKanExtension E.hom where
@@ -185,7 +187,7 @@ noncomputable def pointwiseLeftKanExtension : D ⥤ H where
 noncomputable def pointwiseLeftKanExtensionUnit : F ⟶ L ⋙ pointwiseLeftKanExtension L F where
   app X := colimit.ι (CostructuredArrow.proj L (L.obj X) ⋙ F)
     (CostructuredArrow.mk (𝟙 (L.obj X)))
-  naturality {X₁ X₂} f:= by
+  naturality {X₁ X₂} f := by
     simp only [comp_obj, pointwiseLeftKanExtension_obj, comp_map,
       pointwiseLeftKanExtension_map, colimit.ι_desc, CostructuredArrow.map_mk]
     rw [id_comp]
@@ -201,8 +203,7 @@ noncomputable def pointwiseLeftKanExtensionIsPointwiseLeftKanExtension :
     dsimp
     simp only [comp_id, colimit.ι_desc, CostructuredArrow.map_mk]
     congr 1
-    rw [id_comp]
-    rfl))
+    rw [id_comp, ← CostructuredArrow.eq_mk]))
 
 /-- The functor `pointwiseLeftKanExtension L F` is a left Kan extension of `F` along `L`. -/
 noncomputable def pointwiseLeftKanExtensionIsUniversal :

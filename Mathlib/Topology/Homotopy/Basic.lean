@@ -3,7 +3,7 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Topology.Algebra.Order.ProjIcc
+import Mathlib.Topology.Order.ProjIcc
 import Mathlib.Topology.ContinuousFunction.Ordered
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.UnitInterval
@@ -59,7 +59,6 @@ noncomputable section
 universe u v w x
 
 variable {F : Type*} {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x} {ι : Type*}
-
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace Z']
 
 open unitInterval
@@ -242,8 +241,8 @@ def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁
         (G.continuous.comp (by continuity)).continuousOn _
     rintro x hx
     norm_num [hx]
-  map_zero_left x := by norm_num
-  map_one_left x := by norm_num
+  map_zero_left x := by set_option tactic.skipAssignedInstances false in norm_num
+  map_one_left x := by set_option tactic.skipAssignedInstances false in norm_num
 #align continuous_map.homotopy.trans ContinuousMap.Homotopy.trans
 
 theorem trans_apply {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) (x : I × X) :
@@ -404,7 +403,7 @@ The type of homotopies between `f₀ f₁ : C(X, Y)`, where the intermediate map
 `P : C(X, Y) → Prop`
 -/
 structure HomotopyWith (f₀ f₁ : C(X, Y)) (P : C(X, Y) → Prop) extends Homotopy f₀ f₁ where
-  -- porting note: todo: use `toHomotopy.curry t`
+  -- Porting note (#11215): TODO: use `toHomotopy.curry t`
   /-- the intermediate maps of the homotopy satisfy the property -/
   prop' : ∀ t, P ⟨fun x => toFun (t, x),
     Continuous.comp continuous_toFun (continuous_const.prod_mk continuous_id')⟩
@@ -457,7 +456,7 @@ theorem apply_one (F : HomotopyWith f₀ f₁ P) (x : X) : F (1, x) = f₁ x :=
   F.map_one_left x
 #align continuous_map.homotopy_with.apply_one ContinuousMap.HomotopyWith.apply_one
 
--- porting note: removed `simp`
+-- Porting note: removed `simp`
 theorem coe_toContinuousMap (F : HomotopyWith f₀ f₁ P) : ⇑F.toContinuousMap = F :=
   rfl
 #align continuous_map.homotopy_with.coe_to_continuous_map ContinuousMap.HomotopyWith.coe_toContinuousMap
@@ -559,7 +558,7 @@ namespace HomotopicWith
 
 variable {P : C(X, Y) → Prop}
 
--- porting note: removed @[refl]
+-- Porting note: removed @[refl]
 theorem refl (f : C(X, Y)) (hf : P f) : HomotopicWith f f P :=
   ⟨HomotopyWith.refl f hf⟩
 #align continuous_map.homotopic_with.refl ContinuousMap.HomotopicWith.refl
@@ -695,7 +694,7 @@ variable {S : Set X}
 protected theorem homotopic {f₀ f₁ : C(X, Y)} (h : HomotopicRel f₀ f₁ S) : Homotopic f₀ f₁ :=
   h.map fun F ↦ F.1
 
--- porting note: removed @[refl]
+-- Porting note: removed @[refl]
 theorem refl (f : C(X, Y)) : HomotopicRel f f S :=
   ⟨HomotopyRel.refl f S⟩
 #align continuous_map.homotopic_rel.refl ContinuousMap.HomotopicRel.refl

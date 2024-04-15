@@ -43,8 +43,8 @@ attribute [fun_prop]
 -- product
 attribute [fun_prop]
   AEMeasurable.prod_mk
-  AEMeasurable.fst
-  AEMeasurable.snd
+  -- AEMeasurable.fst
+  -- AEMeasurable.snd
 
 -- algebra
 attribute [fun_prop]

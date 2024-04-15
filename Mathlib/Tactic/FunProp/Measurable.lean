@@ -10,7 +10,6 @@ import Mathlib.Topology.Constructions
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 import Mathlib.Tactic.FunProp
-import Mathlib.Tactic.FunProp.Continuous
 
 /-!
 ## `fun_prop` minimal setup for Measurable

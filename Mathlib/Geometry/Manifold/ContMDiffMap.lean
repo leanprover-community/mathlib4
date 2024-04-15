@@ -63,7 +63,7 @@ protected theorem smooth (f : C^∞⟮I, M; I', M'⟯) : Smooth I I' f :=
   f.prop
 #align cont_mdiff_map.smooth ContMDiffMap.smooth
 
--- porting note: use generic instance instead
+-- Porting note: use generic instance instead
 -- instance : Coe C^n⟮I, M; I', M'⟯ C(M, M') :=
 --   ⟨fun f => ⟨f, f.contMDiff.continuous⟩⟩
 

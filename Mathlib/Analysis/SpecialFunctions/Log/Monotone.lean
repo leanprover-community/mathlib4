@@ -82,7 +82,7 @@ theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
     gcongr
 #align real.log_div_self_rpow_antitone_on Real.log_div_self_rpow_antitoneOn
 
-theorem log_div_sqrt_antitoneOn : AntitoneOn (fun x : ℝ => log x / sqrt x) { x | exp 2 ≤ x } := by
+theorem log_div_sqrt_antitoneOn : AntitoneOn (fun x : ℝ => log x / √x) { x | exp 2 ≤ x } := by
   simp_rw [sqrt_eq_rpow]
   convert @log_div_self_rpow_antitoneOn (1 / 2) (by norm_num)
   norm_num

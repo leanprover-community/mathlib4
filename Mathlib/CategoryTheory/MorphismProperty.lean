@@ -282,7 +282,7 @@ theorem StableUnderBaseChange.baseChange_map [HasPullbacks C] {P : MorphismPrope
     pullbackRightPullbackFstIso Y.hom f g.left ≪≫
       pullback.congrHom (g.w.trans (Category.comp_id _)) rfl
   have : e.inv ≫ pullback.snd = ((baseChange f).map g).left := by
-    ext <;> dsimp <;> simp
+    ext <;> dsimp [e] <;> simp
   rw [← this, hP.respectsIso.cancel_left_isIso]
   exact hP.snd _ _ H
 #align category_theory.morphism_property.stable_under_base_change.base_change_map CategoryTheory.MorphismProperty.StableUnderBaseChange.baseChange_map
@@ -539,7 +539,7 @@ theorem StableUnderComposition.epimorphisms : StableUnderComposition (epimorphis
 variable {C}
 
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The full subcategory of `C ⥤ D` consisting of functors inverting morphisms in `W` -/
 def FunctorsInverting (W : MorphismProperty C) (D : Type*) [Category D] :=
   FullSubcategory fun F : C ⥤ D => W.IsInvertedBy F
@@ -592,7 +592,7 @@ lemma IsInvertedBy.isoClosure_iff (W : MorphismProperty C) (F : C ⥤ D) :
 
 @[simp]
 lemma IsInvertedBy.iff_comp {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
-    (W : MorphismProperty C₁) (F : C₁ ⥤ C₂) (G : C₂ ⥤ C₃) [ReflectsIsomorphisms G] :
+    (W : MorphismProperty C₁) (F : C₁ ⥤ C₂) (G : C₂ ⥤ C₃) [G.ReflectsIsomorphisms] :
     W.IsInvertedBy (F ⋙ G) ↔ W.IsInvertedBy F := by
   constructor
   · intro h X Y f hf
@@ -700,13 +700,13 @@ lemma inverseImage_equivalence_functor_eq_map_inverse
   inverseImage_equivalence_inverse_eq_map_functor Q hQ E.symm
 
 lemma map_inverseImage_eq_of_isEquivalence
-    (P : MorphismProperty D) (hP : P.RespectsIso) (F : C ⥤ D) [IsEquivalence F] :
+    (P : MorphismProperty D) (hP : P.RespectsIso) (F : C ⥤ D) [F.IsEquivalence] :
     (P.inverseImage F).map F = P := by
   erw [P.inverseImage_equivalence_inverse_eq_map_functor hP F.asEquivalence, map_map,
     P.map_eq_of_iso F.asEquivalence.counitIso, map_id _ hP]
 
 lemma inverseImage_map_eq_of_isEquivalence
-    (P : MorphismProperty C) (hP : P.RespectsIso) (F : C ⥤ D) [IsEquivalence F] :
+    (P : MorphismProperty C) (hP : P.RespectsIso) (F : C ⥤ D) [F.IsEquivalence] :
     (P.map F).inverseImage F = P := by
   erw [((P.map F).inverseImage_equivalence_inverse_eq_map_functor
     (P.map_respectsIso F) (F.asEquivalence)), map_map,

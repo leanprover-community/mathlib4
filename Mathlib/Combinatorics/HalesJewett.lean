@@ -60,7 +60,7 @@ combinatorial line, Ramsey theory, arithmetic progression
 -/
 
 
-open Classical
+open scoped Classical
 
 open BigOperators
 
