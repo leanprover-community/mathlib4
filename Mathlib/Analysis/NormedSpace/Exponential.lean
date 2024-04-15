@@ -533,11 +533,7 @@ theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
 theorem exp_nsmul (n : ℕ) (x : 𝔸) : exp 𝕂 (n • x) = exp 𝕂 x ^ n := by
   induction' n with n ih
   · rw [zero_smul, pow_zero, exp_zero]
-<<<<<<< HEAD
   · rw [succ_nsmul, pow_succ, exp_add_of_commute ((Commute.refl x).smul_left n), ih]
-=======
-  · rw [succ_nsmul', pow_succ', exp_add_of_commute ((Commute.refl x).smul_right n), ih]
->>>>>>> origin/bump/v4.8.0
 #align exp_nsmul NormedSpace.exp_nsmul
 
 variable (𝕂)
