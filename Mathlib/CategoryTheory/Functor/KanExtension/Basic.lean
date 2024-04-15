@@ -240,7 +240,7 @@ variable (L L' : C ⥤ H) (iso₁ : L ≅ L') (F F' : C ⥤ D) (e : H ≌ H') (i
 when `e` is an equivalence. -/
 noncomputable def rightExtensionEquivalenceOfPostcomp₁ :
     RightExtension (L ⋙ e.functor) F ≌ RightExtension L F := by
-  have := CostructuredArrow.isEquivalencePre ((whiskeringLeft H H' D).obj e.functor)
+  let _ := CostructuredArrow.isEquivalencePre ((whiskeringLeft H H' D).obj e.functor)
     ((whiskeringLeft C H D).obj L) F
   exact Functor.asEquivalence (CostructuredArrow.pre ((whiskeringLeft H H' D).obj e.functor)
     ((whiskeringLeft C H D).obj L) F)
@@ -253,7 +253,7 @@ lemma hasRightExtension_iff_postcomp₁ :
 when `e` is an equivalence. -/
 noncomputable def leftExtensionEquivalenceOfPostcomp₁ :
     LeftExtension (L ⋙ e.functor) F ≌ LeftExtension L F := by
-  have := StructuredArrow.isEquivalencePre F ((whiskeringLeft H H' D).obj e.functor)
+  let _ := StructuredArrow.isEquivalencePre F ((whiskeringLeft H H' D).obj e.functor)
     ((whiskeringLeft C H D).obj L)
   exact Functor.asEquivalence (StructuredArrow.pre F ((whiskeringLeft H H' D).obj e.functor)
     ((whiskeringLeft C H D).obj L))

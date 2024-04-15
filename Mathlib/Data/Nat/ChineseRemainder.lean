@@ -56,8 +56,8 @@ def chineseRemainderOfList : (l : List ι) → l.Pairwise (Coprime on s) →
   | i :: l, co => by
     have : Coprime (s i) (l.map s).prod := coprime_list_prod_right_iff.mpr
       (by simp; intro j hj; exact (List.pairwise_cons.mp co).1 j hj)
-    have ih := chineseRemainderOfList l co.of_cons
-    have k := chineseRemainder this (a i) ih
+    let ih := chineseRemainderOfList l co.of_cons
+    let k := chineseRemainder this (a i) ih
     exact ⟨k, by
       simp [k.prop.1]; intro j hj
       exact ((modEq_list_prod_iff' co.of_cons).mp k.prop.2 j hj).trans (ih.prop j hj)⟩
