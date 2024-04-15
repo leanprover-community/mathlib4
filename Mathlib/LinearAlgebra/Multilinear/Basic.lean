@@ -9,6 +9,7 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Data.List.FinRange
 import Mathlib.LinearAlgebra.Pi
+import Mathlib.Logic.Equiv.Fintype
 
 #align_import linear_algebra.multilinear.basic from "leanprover-community/mathlib"@"78fdf68dcd2fdb3fe64c0dd6f88926a49418a6ea"
 
@@ -780,6 +781,23 @@ lemma domDomRestrict_aux [DecidableEq ι] (P : ι → Prop) [DecidablePred P]
       rw [Function.update_noteq h'']
     · simp only [h', ne_eq, Subtype.mk.injEq, dite_false]
 
+lemma domDomRestrict_aux_right [DecidableEq ι] (P : ι → Prop) [DecidablePred P]
+    [DecidableEq {a // ¬ P a}]
+    (x : (i : {a // P a}) → M₁ i) (z : (i : {a // ¬ P a}) → M₁ i) (i : {a : ι // ¬ P a})
+    (c : M₁ i) : (fun j ↦ if h : P j then x ⟨j, h⟩ else Function.update z i c ⟨j, h⟩) =
+    Function.update (fun j => if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩) i c := by
+  ext j
+  by_cases h : j = i
+  · rw [h, Function.update_same]
+    simp only [i.2, update_same, dite_false]
+  · rw [Function.update_noteq h]
+    by_cases h' : P j
+    · simp only [h', ne_eq, Subtype.mk.injEq, dite_true]
+    · simp only [h', ne_eq, Subtype.mk.injEq, dite_false]
+      have h'' : ¬ ⟨j, h'⟩ = i :=
+        fun he => by apply_fun (fun x => x.1) at he; exact h he
+      rw [Function.update_noteq h'']
+
 /-- Given a multilinear map `f` on `(i : ι) → M i`, a (decidable) predicate `P` on `ι` and
 an element `z` of `(i : {a // ¬ P a}) → M₁ i`, construct a multilinear map on
 `(i : {a // P a}) → M₁ i)` whose value at `x` is `f` evaluated at the vector with `i`th coordinate
@@ -1003,6 +1021,70 @@ variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid 
 
 section
 variable {M₁' : ι → Type*} [Π i, AddCommMonoid (M₁' i)] [Π i, Module R (M₁' i)]
+
+/-- Given a predicate `P`, one may associate to a multilinear map `f` a multilinear map
+from the elements satisfying `P` to the multilinear maps on elements not satisfying `P`.
+In other words, splitting the variables into two subsets one gets a multilinear maps into
+multilinear maps. -/
+def domDomRestrictₗ (f : MultilinearMap R M₁ M₂) (P : ι → Prop) [DecidablePred P] :
+    MultilinearMap R (fun (i : {a : ι // ¬ P a}) => M₁ i)
+      (MultilinearMap R (fun (i : {a : ι // P a}) => M₁ i) M₂) where
+  toFun := fun z ↦ domDomRestrict f P z
+  map_add' := by
+    intro h m i x y
+    classical
+    ext v
+    simp [domDomRestrict_aux_right]
+  map_smul' := by
+    intro h m i c x
+    classical
+    ext v
+    simp [domDomRestrict_aux_right]
+
+lemma iteratedFDeriv_aux {α : Type*} [DecidableEq α]
+    (s : Set ι) [DecidableEq { x // x ∈ s }] (e : α ≃ s)
+    (m : α → ((i : ι) → M₁ i)) (i : α) (z : (i : ι) → M₁ i) :
+    (fun i_1 ↦ update m i z (e.symm i_1) i_1) =
+      (fun i_1 ↦ update (fun j ↦ m (e.symm j) j) (e i) (z (e i)) i_1) := by
+  ext i_1
+  rcases eq_or_ne i (e.symm i_1) with rfl|hne
+  · rw [Equiv.apply_symm_apply]
+    simp
+  · rw [update_noteq, update_noteq]
+    · rintro rfl
+      simp at hne
+    · exact hne.symm
+
+/-- One of the components of the iterated derivative of a multilinear map. Given a bijection `e`
+between a type `α` (typically `Fin k`) and a subset `s` of `ι`, this component is a multilinear map
+of `k` vectors `v₁, ..., vₖ`, mapping them
+to `f (x₁, (v_{e 2})₂, x₃, ...)`, where at indices `i` in `s` one uses the vector `v_{e i}`
+and otherwise one uses a reference vector `x`. This is multilinear in the components of `x` outside
+of `s`, and in the `v_j`. -/
+noncomputable def iteratedFDerivComponent {α : Type*}
+    (f : MultilinearMap R M₁ M₂) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)] :
+    MultilinearMap R (fun (i : {a : ι // a ∉ s}) ↦ M₁ i)
+      (MultilinearMap R (fun (_ : α) ↦ (∀ i, M₁ i)) M₂) where
+  toFun := fun z ↦
+    { toFun := fun v ↦ domDomRestrictₗ f (fun i ↦ i ∈ s) z (fun i ↦ v (e.symm i) i)
+      map_add' := by classical!; simp [iteratedFDeriv_aux]
+      map_smul' := by classical!; simp [iteratedFDeriv_aux] }
+  map_add' := by intros; ext; simp
+  map_smul' := by intros; ext; simp
+
+open Classical in
+/-- The `k`-th iterated derivative of a multilinear map `f` at the point `x`. It is a multilinear
+map of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
+to `∑ f (x₁, (v_{i_1})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one
+of the `(vᵢ)ⱼ`, where each `vᵢ` has to be used exactly once.
+The sum is parameterized by the embeddings of `Fin k` in the index type `ι` (or, equivalently,
+by the subsets `s` of `ι` of cardinal `k` and then the bijections between `Fin k` and `s`).
+
+For the continuous version, see `ContinuousMultilinearMap.iteratedFDeriv`. -/
+protected noncomputable def iteratedFDeriv [Fintype ι]
+    (f : MultilinearMap R M₁ M₂) (k : ℕ) (x : (i : ι) → M₁ i) :
+    MultilinearMap R (fun (_ : Fin k) ↦ (∀ i, M₁ i)) M₂ :=
+  ∑ e : Fin k ↪ ι, iteratedFDerivComponent f e.toEquivRange (fun i ↦ x i)
 
 /-- If `f` is a collection of linear maps, then the construction `MultilinearMap.compLinearMap`
 sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g`. -/
