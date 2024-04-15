@@ -424,14 +424,26 @@ lemma fourierIntegralInv_eq' (f : V → E) (w : V) :
     𝓕⁻ f w = ∫ v, Complex.exp ((↑(2 * π * ⟪v, w⟫) * Complex.I)) • f v := by
   simp_rw [fourierIntegralInv_eq, Submonoid.smul_def, Real.fourierChar_apply]
 
-lemma fourierIntegralInv_eq_fourierIntegral_neg (f : V → E) (w : V) :
-    𝓕⁻ f w = 𝓕 f (-w) := by
-  simp [fourierIntegral_eq, fourierIntegralInv_eq]
-
 lemma fourierIntegral_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V → E) (w : W) :
     𝓕 (f ∘ A) w = (𝓕 f) (A w) := by
   simp only [fourierIntegral_eq, ← A.inner_map_map, Function.comp_apply, ←
     MeasurePreserving.integral_comp A.measurePreserving A.toHomeomorph.measurableEmbedding]
+
+lemma fourierIntegralInv_eq_fourierIntegral_neg (f : V → E) (w : V) :
+    𝓕⁻ f w = 𝓕 f (-w) := by
+  simp [fourierIntegral_eq, fourierIntegralInv_eq]
+
+lemma fourierIntegralInv_eq_fourierIntegral_comp_neg (f : V → E) :
+    𝓕⁻ f = 𝓕 (fun x ↦ f (-x)) := by
+  ext y
+  rw [fourierIntegralInv_eq_fourierIntegral_neg]
+  change 𝓕 f (LinearIsometryEquiv.neg ℝ y) = 𝓕 (f ∘ LinearIsometryEquiv.neg ℝ) y
+  exact (fourierIntegral_comp_linearIsometry _ _ _).symm
+
+lemma fourierIntegralInv_comm (f : V → E) :
+    𝓕 (𝓕⁻ f) = 𝓕⁻ (𝓕 f) := by
+  conv_rhs => rw [fourierIntegralInv_eq_fourierIntegral_comp_neg]
+  simp_rw [← fourierIntegralInv_eq_fourierIntegral_neg]
 
 lemma fourierIntegralInv_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V → E) (w : W) :
     𝓕⁻ (f ∘ A) w = (𝓕⁻ f) (A w) := by
