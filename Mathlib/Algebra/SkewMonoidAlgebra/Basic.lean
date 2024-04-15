@@ -6,7 +6,7 @@ Authors: María Inés de Frutos Fernández, Xavier Généreux
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Module.BigOperators
-import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.Data.Finsupp.Basic
 
 /-!
 
