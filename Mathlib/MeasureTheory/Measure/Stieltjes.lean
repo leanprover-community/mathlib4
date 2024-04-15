@@ -526,12 +526,9 @@ lemma tendsto_measure_Icc_nhdsWithin_ge (b : ℝ) :
 
 lemma tendsto_measure_Icc [NoAtoms μ] (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝 (0 : ℝ)) (𝓝 0) := by
-  have : 𝓝 (0 : ℝ) = 𝓝[≥] (0 : ℝ) ⊔ 𝓝[<] 0 := by
-    rw [← nhdsWithin_union, union_comm, Iio_union_Ici, nhdsWithin_univ]
-  have A := tendsto_measure_Icc_nhdsWithin_ge μ b
-  simp only [measure_singleton] at A
-  simp only [this, tendsto_sup, A, true_and]
-  apply tendsto_const_nhds.congr'
-  filter_upwards [self_mem_nhdsWithin] with r (hr : r < 0)
-  suffices Icc (b - r) (b + r) = ∅ by simp [this]
-  exact Icc_eq_empty (by linarith)
+  rw [← nhds_left'_sup_nhds_right, tendsto_sup]
+  constructor
+  · apply tendsto_const_nhds.congr'
+    filter_upwards [self_mem_nhdsWithin] with r (hr : r < 0)
+    rw [Icc_eq_empty (by linarith), OuterMeasure.empty']
+  · simpa only [measure_singleton] using tendsto_measure_Icc_nhdsWithin_ge μ b
