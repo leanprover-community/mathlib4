@@ -35,15 +35,14 @@ variable (hc : IsLimit c)
 lemma _root_.Profinite.exists_hom {X : FintypeCat} (f : c.pt ⟶ toProfinite.obj X) :
     ∃ (i : I) (g : F.obj i ⟶ X), f = c.π.app i ≫ toProfinite.map g := by
   have : DiscreteTopology (toProfinite.obj X) := by
-      simp only [toProfinite, Profinite.of]
-      infer_instance
-  let f' : LocallyConstant c.pt (toProfinite.obj X) := ⟨f, by
-    rw [IsLocallyConstant.iff_continuous]
-    exact f.continuous⟩
+    dsimp only [toProfinite, Profinite.of]
+    infer_instance
+  let f' : LocallyConstant c.pt (toProfinite.obj X) :=
+    ⟨f, (IsLocallyConstant.iff_continuous _).mpr f.continuous⟩
   obtain ⟨i, g, h⟩ := Profinite.exists_locallyConstant.{_, u} c hc f'
   refine ⟨i, g.toFun, ?_⟩
   ext x
-  exact (LocallyConstant.congr_fun h x)
+  exact LocallyConstant.congr_fun h x
 
 theorem functor_initial [∀ i, Epi (c.π.app i)] : Initial (functor c) := by
   rw [initial_iff_of_isCofiltered (F := functor c)]
@@ -217,14 +216,8 @@ def lanPresheaf_iso_LC (X : Type (u+1)) :
 def lanCondensedSet' (X : Type (u+1)) : Sheaf (coherentTopology Profinite.{u}) (Type (u+1)) where
   val := lanPresheaf (profiniteToCompHaus.op ⋙ LC.obj X)
   cond := by
-    have := ((ProfiniteCompHaus.equivalence _).inverse.obj <| LC'.obj X).cond
-    simp only [ProfiniteCompHaus.equivalence, StoneanProfinite.equivalence,
-      StoneanCompHaus.equivalence, Equivalence.trans_inverse,
-      IsCoverDense.sheafEquivOfCoverPreservingCoverLifting_inverse, sheafPushforwardContinuous,
-      whiskeringLeft_obj_map, Equivalence.symm_inverse,
-      IsCoverDense.sheafEquivOfCoverPreservingCoverLifting_functor, sheafPushforwardCocontinuous,
-      comp_obj, LC'_obj_val] at this
-    sorry -- need better API for relating the sheaf condition on `CompHaus` with `Profinite`...
+    rw [Presheaf.isSheaf_of_iso_iff (lanPresheaf_iso_LC X)]
+    exact (LC'.obj X).isSheafProfinite
 
 def lanCondensedSet (X : Type (u+1)) : CondensedSet.{u} :=
   (ProfiniteCompHaus.equivalence _).functor.obj (lanCondensedSet' X)
