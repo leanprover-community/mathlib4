@@ -8,8 +8,6 @@ import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.LinearAlgebra.Finsupp
 
-set_option autoImplicit false
-
 /-!
 
 This file presents a skewed version of `Mathlib.Algebra.MonoidAlgebra.Basic`.
@@ -23,6 +21,8 @@ The associativity of the skewed multiplication depends on the `[MulSemiringActio
 In particular, this means that unlike in `Mathlib.Algebra.MonoidAlgebra.Basic`, `G` will
 need to be a monoid for most of our uses.
 -/
+
+set_option autoImplicit false
 
 noncomputable section
 
@@ -597,8 +597,7 @@ theorem liftNC_one {g_hom : Type*} [FunLike g_hom G R] [OneHomClass g_hom G R] (
   simp only [one_def, liftNC_single, AddMonoidHom.coe_coe, map_one, mul_one]
 
 /-- `liftNC` as a `RingHom`, for when `f x` and `g y` commute -/
-def liftNCRingHom (f : k →+* R) (g : G →* R)
-  (h_comm : ∀ {x y}, (f (y • x)) * g y = (g y) * (f x)) :
+def liftNCRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ {x y}, (f (y • x)) * g y = (g y) * (f x)) :
     SkewMonoidAlgebra k G →+* R :=
   { liftNC (f : k →+ R) g with
     map_one' := liftNC_one _ _
@@ -1293,7 +1292,7 @@ def domCongr [AddCommMonoid A] (e : G ≃ H) : (SkewMonoidAlgebra A G) ≃+ Skew
 
 This is `domCongr` as a `LinearEquiv`. -/
 def domLCongr [Semiring k] [AddCommMonoid A] [Module k A] (e : G ≃ H) :
-  (SkewMonoidAlgebra A G) ≃ₗ[k] SkewMonoidAlgebra A H :=
+    (SkewMonoidAlgebra A G) ≃ₗ[k] SkewMonoidAlgebra A H :=
   (domCongr e : (SkewMonoidAlgebra A G) ≃+ (SkewMonoidAlgebra A H)).toLinearEquiv <| by
     simp only [domCongr_apply]
     intro c x
@@ -1425,7 +1424,8 @@ def equivariantOfLinearOfComm [SMulCommClass G k k] : V →ₗ[SkewMonoidAlgebra
 
 @[simp]
 theorem equivariantOfLinearOfComm_apply [SMulCommClass G k k] (v : V) :
-  (equivariantOfLinearOfComm f h) v = f v := rfl
+    (equivariantOfLinearOfComm f h) v = f v :=
+  rfl
 
 end erase
 
