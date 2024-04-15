@@ -3,13 +3,10 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Data.Nat.Totient
+import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Algebra.Ring.AddAut
 import Mathlib.GroupTheory.Divisible
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.Algebra.Order.Floor
-import Mathlib.Algebra.Order.ToIntervalMod
-import Mathlib.Topology.Instances.Real
+import Mathlib.Data.Nat.Totient
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.IsLocalHomeomorph
 
