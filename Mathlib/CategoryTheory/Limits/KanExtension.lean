@@ -101,6 +101,24 @@ def loc (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] : L ⥤ D
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran.loc CategoryTheory.Ran.loc
 
+/-- Given an isomorphism `F ≅ G`, we have `Ran.loc ι F ≅ Ran.loc ι G`. -/
+def locCongr {F G : S ⥤ D} (i : F ≅ G) [I : ∀ x, HasLimit (diagram ι F x)] :
+    haveI : ∀ x, HasLimit (diagram ι G x) := fun x ↦ hasLimitOfIso (isoWhiskerLeft _ i)
+    Ran.loc ι F ≅ Ran.loc ι G :=
+  have J : ∀ x, HasLimit (diagram ι G x) := fun x ↦ hasLimitOfIso (isoWhiskerLeft _ i)
+  NatIso.ofComponents (fun x ↦ HasLimit.isoOfNatIso (isoWhiskerLeft _ i)) (by
+    intro X Y f
+    apply limit.hom_ext
+    intro j
+    simp only [loc_obj, Functor.comp_obj, StructuredArrow.proj, Comma.snd_obj, loc_map,
+      Category.assoc, HasLimit.isoOfNatIso_hom_π, isoWhiskerLeft_hom, whiskerLeft_app]
+    haveI : HasLimit (StructuredArrow.map f ⋙ diagram ι F X) := I _
+    haveI : HasLimit (StructuredArrow.map f ⋙ diagram ι G X) := J _
+    change _ ≫ limit.π (StructuredArrow.map f ⋙ diagram ι F X) j ≫ _ = _ ≫ _ ≫
+      limit.π (StructuredArrow.map f ⋙ diagram ι G X) j
+    simp)
+
+
 /-- An auxiliary definition used to define `Ran` and `Ran.adjunction`. -/
 @[simps]
 def equiv (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] (G : L ⥤ D) :
@@ -190,6 +208,28 @@ theorem reflective [ι.Full] [ι.Faithful] [∀ X, HasLimitsOfShape (StructuredA
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran.reflective CategoryTheory.Ran.reflective
 
+variable {D}
+
+/-- The right Kan extension of a functor along its restriction. -/
+abbrev self (F : L ⥤ D) [∀ x, HasLimit (Ran.diagram ι (ι ⋙ F) x)] : L ⥤ D :=
+  Ran.loc ι (ι ⋙ F)
+
+end Ran
+
+/-- A class describing the property of being right Kan extended along a functor. -/
+class IsRightKanExtendedAlong (F : L ⥤ D) [∀ x, HasLimit (Ran.diagram ι (ι ⋙ F) x)] : Prop where
+  /-- There exists an isomorphism to the right kan extension -/
+  isoSelf : Nonempty (F ≅ Ran.self ι F)
+
+namespace Ran
+
+theorem isRightKanExtendedAlong_of_natIso (F G : L ⥤ D) (i : F ≅ G)
+    [∀ x, HasLimit (Ran.diagram ι (ι ⋙ F) x)] [IsRightKanExtendedAlong ι F]
+    [∀ x, HasLimit (Ran.diagram ι (ι ⋙ G) x)] :
+    IsRightKanExtendedAlong ι G where
+  isoSelf := ⟨i.symm ≪≫ (IsRightKanExtendedAlong.isoSelf (ι := ι) (F := F)).some ≪≫
+    locCongr ι (isoWhiskerLeft ι i)⟩
+
 end Ran
 
 namespace Lan
@@ -259,6 +299,24 @@ def loc (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] : L ⥤ D
     simp
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan.loc CategoryTheory.Lan.loc
+
+/-- Given an isomorphism `F ≅ G`, we have `Lan.loc ι F ≅ Lan.loc ι G`. -/
+def locCongr {F G : S ⥤ D} (i : F ≅ G) [I : ∀ x, HasColimit (diagram ι F x)] :
+    haveI : ∀ x, HasColimit (diagram ι G x) := fun x ↦ hasColimitOfIso (isoWhiskerLeft _ i.symm)
+    Lan.loc ι F ≅ Lan.loc ι G :=
+  have J : ∀ x, HasColimit (diagram ι G x) := fun x ↦ hasColimitOfIso (isoWhiskerLeft _ i.symm)
+  NatIso.ofComponents (fun x ↦ HasColimit.isoOfNatIso (isoWhiskerLeft _ i)) (by
+    intro X Y f
+    apply colimit.hom_ext
+    intro j
+    simp only [Functor.comp_obj, CostructuredArrow.proj, Comma.fst_obj, loc_obj, loc_map,
+      HasColimit.isoOfNatIso_ι_hom_assoc, isoWhiskerLeft_hom, whiskerLeft_app]
+    have : diagram ι F X = CostructuredArrow.map f ⋙ diagram ι F Y := rfl
+    haveI : HasColimit (CostructuredArrow.map f ⋙ diagram ι F Y) := I _
+    haveI : HasColimit (CostructuredArrow.map f ⋙ diagram ι G Y) := J _
+    change colimit.ι (CostructuredArrow.map f ⋙ diagram ι F Y) j ≫ _ =
+      _ ≫ colimit.ι (CostructuredArrow.map f ⋙ diagram ι G Y) j ≫ _
+    simp)
 
 /-- An auxiliary definition used to define `Lan` and `Lan.adjunction`. -/
 @[simps]
@@ -365,6 +423,42 @@ theorem coreflective [ι.Full] [ι.Faithful] [∀ F : S ⥤ D, ∀ x, HasColimit
           (colimitOfDiagramTerminal CostructuredArrow.mkIdTerminal _)).symm
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan.coreflective CategoryTheory.Lan.coreflective
+
+variable {D}
+
+/-- The left Kan extension of a functor along its restriction. -/
+abbrev self (F : L ⥤ D) [∀ x, HasColimit (Lan.diagram ι (ι ⋙ F) x)] : L ⥤ D :=
+  Lan.loc ι (ι ⋙ F)
+
+end Lan
+
+/-- A class describing the property of being left Kan extended along a functor. -/
+class IsLeftKanExtendedAlong (F : L ⥤ D) [∀ x, HasColimit (Lan.diagram ι (ι ⋙ F) x)] : Prop where
+  /-- There exists an isomorphism to the left kan extension -/
+  isoSelf : Nonempty (F ≅ Lan.self ι F)
+
+namespace Lan
+
+theorem isLeftKanExtendedAlong_of_natIso (F G : L ⥤ D) (i : F ≅ G)
+    [∀ x, HasColimit (Lan.diagram ι (ι ⋙ F) x)] [IsLeftKanExtendedAlong ι F]
+    [∀ x, HasColimit (Lan.diagram ι (ι ⋙ G) x)] :
+    IsLeftKanExtendedAlong ι G where
+  isoSelf := ⟨i.symm ≪≫ (IsLeftKanExtendedAlong.isoSelf (ι := ι) (F := F)).some ≪≫
+    locCongr ι (isoWhiskerLeft ι i)⟩
+
+instance (F : L ⥤ D) [∀ G : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι G x)]
+    [IsIso <| (adjunction D ι).counit.app F] : IsLeftKanExtendedAlong ι F where
+  isoSelf := ⟨(asIso <| (adjunction D ι).counit.app F).symm⟩
+
+instance (F : L ⥤ D) [∀ G : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι G x)]
+    [IsLeftKanExtendedAlong ι F] : IsIso <| (adjunction D ι).counit.app F := by
+  simp only [Functor.comp_obj, whiskeringLeft_obj_obj, Functor.id_obj, adjunction, equiv, cocone,
+    CostructuredArrow.proj_obj, Functor.const_obj_obj, Adjunction.adjunctionOfEquivLeft_counit_app,
+    Equiv.coe_fn_symm_mk, NatTrans.id_app]
+  refine @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _ ?_
+  intro x
+  simp only [lan_obj_obj]
+  sorry
 
 end Lan
 
