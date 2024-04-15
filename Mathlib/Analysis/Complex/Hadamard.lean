@@ -428,7 +428,7 @@ end transl
 
 variable (hB : BddAbove ((norm ∘ f) '' (closedStrip 0 1))) (hd : DiffContOnCl ℂ f (strip 0 1))
 
-/-  This condition is required for the limit arguement and is met for example
+/-  This condition is required for the limit argument and is met for example
     when we have `[Nontrivial E]`. -/
 variable [Filter.NeBot (nhdsWithin (0 : E) {0}ᶜ)]
 
