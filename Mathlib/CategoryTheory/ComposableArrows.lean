@@ -510,8 +510,7 @@ lemma hom_ext_succ {F G : ComposableArrows C (n + 1)} {f g : F ⟶ G}
   ext ⟨i, hi⟩
   obtain _ | i := i
   · exact h₀
-  · rw [Nat.succ_eq_add_one] at hi
-    exact congr_app h₁ ⟨i, by valid⟩
+  · exact congr_app h₁ ⟨i, by valid⟩
 
 /-- Inductive construction of isomorphisms in `ComposableArrows C (n + 1)`: in order to
 construct an isomorphism `F ≅ G`, it suffices to provide `α : F.obj' 0 ≅ G.obj' 0` and

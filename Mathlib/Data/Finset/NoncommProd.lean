@@ -53,7 +53,9 @@ theorem noncommFoldr_coe (l : List α) (comm) (b : β) :
     noncommFoldr f (l : Multiset α) comm b = l.foldr f b := by
   simp only [noncommFoldr, coe_foldr, coe_attach, List.attach, Function.comp]
   rw [← List.foldr_map]
-  simp [List.map_pmap, List.pmap_eq_map]
+  -- Adaptation note (2024-04-14): needed `erw` rather than adding this to `simp`.
+  erw [List.map_pmap]
+  simp [List.pmap_eq_map]
 #align multiset.noncomm_foldr_coe Multiset.noncommFoldr_coe
 
 @[simp]
