@@ -95,7 +95,7 @@ theorem f_pos_of_pos {f : ℚ → ℝ} {q : ℚ} (hq : 0 < q)
   have hmul_pos :=
     calc
       (0 : ℝ) < q.num := Int.cast_pos.mpr num_pos
-      _ = ((q.num.natAbs : ℤ) : ℝ) := (congr_arg Int.cast (Int.natAbs_of_nonneg num_pos.le).symm)
+      _ = ((q.num.natAbs : ℤ) : ℝ) := congr_arg Int.cast (Int.natAbs_of_nonneg num_pos.le).symm
       _ ≤ f q.num.natAbs := (H4 q.num.natAbs ((@Int.natAbs_pos q.num).mpr num_pos.ne.symm))
       _ = f q.num := by rw [Nat.cast_natAbs, abs_of_nonneg num_pos.le]
       _ = f (q * q.den) := by rw [← Rat.mul_den_eq_num]
@@ -168,7 +168,7 @@ theorem fixed_point_of_gt_1 {f : ℚ → ℝ} {x : ℚ} (hx : 1 < x)
     calc
       f x + f (a ^ N - x) ≤ f (x + (a ^ N - x)) := H2 x (a ^ N - x) hxp (by positivity)
       _ = f (a ^ N) := by ring_nf
-      _ = a ^ N := (fixed_point_of_pos_nat_pow hNp H1 H4 H5 ha1 hae)
+      _ = a ^ N := fixed_point_of_pos_nat_pow hNp H1 H4 H5 ha1 hae
       _ = x + (a ^ N - x) := by ring
   have heq := h1.antisymm (mod_cast h2)
   linarith [H5 x hx, H5 _ h_big_enough]
@@ -204,12 +204,12 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
         ↑a * 1 = ↑a := mul_one (a : ℝ)
         _ = f a := hae.symm
         _ = f (a * 1) := by rw [mul_one]
-        _ ≤ f a * f 1 := ((H1 a 1) (zero_lt_one.trans ha1) zero_lt_one)
+        _ ≤ f a * f 1 := (H1 a 1) (zero_lt_one.trans ha1) zero_lt_one
         _ = ↑a * f 1 := by rw [hae]
     calc
       (n : ℝ) = (n : ℝ) * 1 := (mul_one _).symm
       _ ≤ (n : ℝ) * f 1 := by gcongr
-      _ ≤ f (n * 1) := (H3 1 zero_lt_one n hn)
+      _ ≤ f (n * 1) := H3 1 zero_lt_one n hn
       _ = f n := by rw [mul_one]
   have H5 : ∀ x : ℚ, 1 < x → (x : ℝ) ≤ f x := by
     intro x hx

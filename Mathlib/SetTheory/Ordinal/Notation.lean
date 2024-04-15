@@ -723,7 +723,7 @@ theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → spli
           repr_sub]
         have := mt repr_inj.1 e0
         refine' Ordinal.add_sub_cancel_of_le _
-        have := (one_le_iff_ne_zero.2 this)
+        have := one_le_iff_ne_zero.2 this
         exact this
       intros
       substs o' m
@@ -1220,7 +1220,7 @@ theorem fastGrowing_two : fastGrowing 2 = fun n => (2 ^ n) * n := by
 end
 
 /-- We can extend the fast growing hierarchy one more step to `ε₀` itself,
-  using `ω^(ω^...^ω^0)` as the fundamental sequence converging to `ε₀` (which is not an `onote`).
+  using `ω^(ω^...^ω^0)` as the fundamental sequence converging to `ε₀` (which is not an `ONote`).
   Extending the fast growing hierarchy beyond this requires a definition of fundamental sequence
   for larger ordinals. -/
 def fastGrowingε₀ (i : ℕ) : ℕ :=
@@ -1270,7 +1270,7 @@ def mk (o : ONote) [h : ONote.NF o] : NONote :=
   (This function is noncomputable because ordinal
   arithmetic is noncomputable. In computational applications
   `NONote` can be used exclusively without reference
-  to `ordinal`, but this function allows for correctness
+  to `Ordinal`, but this function allows for correctness
   results to be stated.) -/
 noncomputable def repr (o : NONote) : Ordinal :=
   o.1.repr

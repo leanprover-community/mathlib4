@@ -346,7 +346,7 @@ proof_wanted IsSemisimpleRing.matrix [Fintype ι] [DecidableEq ι] [IsSemisimple
     IsSemisimpleRing (Matrix ι ι R)
 
 universe u in
-/- The existence part of the Artin–Wedderburn theorem. -/
+/-- The existence part of the Artin–Wedderburn theorem. -/
 proof_wanted isSemisimpleRing_iff_pi_matrix_divisionRing {R : Type u} [Ring R] :
     IsSemisimpleRing R ↔
     ∃ (n : ℕ) (S : Fin n → Type u) (d : Fin n → ℕ) (_ : ∀ i, DivisionRing (S i)),

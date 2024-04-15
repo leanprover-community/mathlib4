@@ -240,14 +240,14 @@ theorem of_int_multiplicity {z : ℤ} (hp : p ≠ 1) (hz : z ≠ 0) :
 
 theorem multiplicity_sub_multiplicity {q : ℚ} (hp : p ≠ 1) (hq : q ≠ 0) :
     padicValRat p q =
-      (multiplicity (p : ℤ) q.num).get (finite_int_iff.2 ⟨hp, Rat.num_ne_zero_of_ne_zero hq⟩) -
+      (multiplicity (p : ℤ) q.num).get (finite_int_iff.2 ⟨hp, Rat.num_ne_zero.2 hq⟩) -
         (multiplicity p q.den).get
           (by
             rw [← finite_iff_dom, finite_nat_iff]
             exact ⟨hp, q.pos⟩) := by
   rw [padicValRat, padicValInt.of_ne_one_ne_zero hp, padicValNat, dif_pos]
   · exact ⟨hp, q.pos⟩
-  · exact Rat.num_ne_zero_of_ne_zero hq
+  · exact Rat.num_ne_zero.2 hq
 #align padic_val_rat.multiplicity_sub_multiplicity padicValRat.multiplicity_sub_multiplicity
 
 /-- The `p`-adic value of an integer `z ≠ 0` is its `p`-adic value as a rational. -/
@@ -330,23 +330,24 @@ protected theorem defn (p : ℕ) [hp : Fact p.Prime] {q : ℚ} {n d : ℤ} (hqz 
   rw [multiplicity.mul' (Nat.prime_iff_prime_int.1 hp.1),
     multiplicity.mul' (Nat.prime_iff_prime_int.1 hp.1)]
   rw [Nat.cast_add, Nat.cast_add]
-  simp_rw [Int.coe_nat_multiplicity p q.den]
+  simp_rw [Int.natCast_multiplicity p q.den]
   ring
   -- Porting note: was
   -- simp only [hc1, hc2, multiplicity.mul' (Nat.prime_iff_prime_int.1 hp.1),
-  --   hp.1.ne_one, hqz, pos_iff_ne_zero, Int.coe_nat_multiplicity p q.den
+  --   hp.1.ne_one, hqz, pos_iff_ne_zero, Int.natCast_multiplicity p q.den
 #align padic_val_rat.defn padicValRat.defn
 
 /-- A rewrite lemma for `padicValRat p (q * r)` with conditions `q ≠ 0`, `r ≠ 0`. -/
 protected theorem mul {q r : ℚ} (hq : q ≠ 0) (hr : r ≠ 0) :
     padicValRat p (q * r) = padicValRat p q + padicValRat p r := by
-  have : q * r = q.num * r.num /. (q.den * r.den) := by rw_mod_cast [Rat.mul_num_den]
-  have hq' : q.num /. q.den ≠ 0 := by rwa [Rat.num_den]
-  have hr' : r.num /. r.den ≠ 0 := by rwa [Rat.num_den]
+  have : q * r = (q.num * r.num) /. (q.den * r.den) := by
+    rw [Rat.mul_def', Rat.mkRat_eq, Nat.cast_mul]
+  have hq' : q.num /. q.den ≠ 0 := by rwa [Rat.num_divInt_den]
+  have hr' : r.num /. r.den ≠ 0 := by rwa [Rat.num_divInt_den]
   have hp' : Prime (p : ℤ) := Nat.prime_iff_prime_int.1 hp.1
   rw [padicValRat.defn p (mul_ne_zero hq hr) this]
   conv_rhs =>
-    rw [← @Rat.num_den q, padicValRat.defn p hq', ← @Rat.num_den r, padicValRat.defn p hr']
+    rw [← q.num_divInt_den, padicValRat.defn p hq', ← r.num_divInt_den, padicValRat.defn p hr']
   rw [multiplicity.mul' hp', multiplicity.mul' hp', Nat.cast_add, Nat.cast_add]
   ring
   -- Porting note: was
@@ -400,17 +401,17 @@ theorem le_padicValRat_add_of_le {q r : ℚ} (hqr : q + r ≠ 0)
   else
     if hr : r = 0 then by simp [hr]
     else by
-      have hqn : q.num ≠ 0 := Rat.num_ne_zero_of_ne_zero hq
+      have hqn : q.num ≠ 0 := Rat.num_ne_zero.2 hq
       have hqd : (q.den : ℤ) ≠ 0 := mod_cast Rat.den_nz _
-      have hrn : r.num ≠ 0 := Rat.num_ne_zero_of_ne_zero hr
+      have hrn : r.num ≠ 0 := Rat.num_ne_zero.2 hr
       have hrd : (r.den : ℤ) ≠ 0 := mod_cast Rat.den_nz _
       have hqreq : q + r = (q.num * r.den + q.den * r.num) /. (q.den * r.den) := Rat.add_num_den _ _
       have hqrd : q.num * r.den + q.den * r.num ≠ 0 := Rat.mk_num_ne_zero_of_ne_zero hqr hqreq
-      conv_lhs => rw [← @Rat.num_den q]
+      conv_lhs => rw [← q.num_divInt_den]
       rw [hqreq, padicValRat_le_padicValRat_iff hqn hqrd hqd (mul_ne_zero hqd hrd), ←
         multiplicity_le_multiplicity_iff, mul_left_comm,
         multiplicity.mul (Nat.prime_iff_prime_int.1 hp.1), add_mul]
-      rw [← @Rat.num_den q, ← @Rat.num_den r, padicValRat_le_padicValRat_iff hqn hrn hqd hrd, ←
+      rw [← q.num_divInt_den, ← r.num_divInt_den, padicValRat_le_padicValRat_iff hqn hrn hqd hrd, ←
         multiplicity_le_multiplicity_iff] at h
       calc
         _ ≤
@@ -584,7 +585,21 @@ theorem padicValNat_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (ne
     (not_congr (Iff.symm (prime_dvd_prime_iff_eq hp.1 hq.1))).mp neq
 #align padic_val_nat_primes padicValNat_primes
 
-/-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t `p`.-/
+theorem padicValNat_prime_prime_pow {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
+    (n : ℕ) (neq : p ≠ q) : padicValNat p (q ^ n) = 0 := by
+  rw [padicValNat.pow _ <| Nat.Prime.ne_zero hq.elim, padicValNat_primes neq, mul_zero]
+
+theorem padicValNat_mul_pow_left {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
+    (n m : ℕ) (neq : p ≠ q) : padicValNat p (p^n * q^m) = n := by
+  rw [padicValNat.mul (NeZero.ne' (p^n)).symm (NeZero.ne' (q^m)).symm,
+    padicValNat.prime_pow, padicValNat_prime_prime_pow m neq, add_zero]
+
+theorem padicValNat_mul_pow_right {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
+    (n m : ℕ) (neq : q ≠ p) : padicValNat q (p^n * q^m) = m := by
+  rw [mul_comm (p^n) (q^m)]
+  exact padicValNat_mul_pow_left m n neq
+
+/-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t `p`. -/
 lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
   rcases n with _ | n
   · simp
@@ -598,7 +613,7 @@ lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
 lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : 0 < n) :
     Nat.log p n = padicValNat p n ↔ n < p ^ (padicValNat p n + 1) := by
   rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by omega⟩), and_iff_right_iff_imp]
-  exact (fun _ => Nat.le_of_dvd hn pow_padicValNat_dvd)
+  exact fun _ => Nat.le_of_dvd hn pow_padicValNat_dvd
 
 lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicValNat 2 (n + 1) := by
   rw [Ne, log_eq_iff (by simp [hn])]

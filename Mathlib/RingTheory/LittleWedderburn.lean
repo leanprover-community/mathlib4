@@ -37,8 +37,7 @@ below proof is free, then the proof works nearly verbatim.
 open scoped BigOperators Polynomial
 open Fintype
 
-/- Everything in this namespace is internal to the proof of Wedderburn's little theorem. -/
-
+/-! Everything in this namespace is internal to the proof of Wedderburn's little theorem. -/
 namespace LittleWedderburn
 
 variable (D : Type*) [DivisionRing D]
