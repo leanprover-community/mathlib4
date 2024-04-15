@@ -26,9 +26,6 @@ Typeclasses `HasWidePullbacks` and `HasFiniteWidePullbacks` assert the existence
 pullbacks and finite wide pullbacks.
 -/
 
-set_option autoImplicit true
-
-
 universe w w' v u
 
 open CategoryTheory CategoryTheory.Limits Opposite
@@ -323,11 +320,9 @@ noncomputable abbrev widePushout (B : C) (objs : J → C) (arrows : ∀ j : J, B
   colimit (WidePushoutShape.wideSpan B objs arrows)
 #align category_theory.limits.wide_pushout CategoryTheory.Limits.widePushout
 
--- variable (C) -- Porting note: Lean had problems with which `C` below. Changed to `D`
-
 namespace WidePullback
 
-variable {D} [Category.{v₂} D] {B : D} {objs : J → D} (arrows : ∀ j : J, objs j ⟶ B)
+variable {C : Type u} [Category.{v} C] {B : C} {objs : J → C} (arrows : ∀ j : J, objs j ⟶ B)
 variable [HasWidePullback B objs arrows]
 
 /-- The `j`-th projection from the pullback. -/
@@ -349,13 +344,13 @@ theorem π_arrow (j : J) : π arrows j ≫ arrows _ = base arrows := by
 variable {arrows}
 
 /-- Lift a collection of morphisms to a morphism to the pullback. -/
-noncomputable abbrev lift {X : D} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j)
+noncomputable abbrev lift {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j)
     (w : ∀ j, fs j ≫ arrows j = f) : X ⟶ widePullback _ _ arrows :=
   limit.lift (WidePullbackShape.wideCospan _ _ _) (WidePullbackShape.mkCone f fs <| w)
 #align category_theory.limits.wide_pullback.lift CategoryTheory.Limits.WidePullback.lift
 
 variable (arrows)
-variable {X : D} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j) (w : ∀ j, fs j ≫ arrows j = f)
+variable {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j) (w : ∀ j, fs j ≫ arrows j = f)
 
 -- Porting note (#10618): simp can prove this so removed simp attribute
 @[reassoc]
@@ -401,7 +396,7 @@ end WidePullback
 
 namespace WidePushout
 
-variable {D} [Category.{v₂} D] {B : D} {objs : J → D} (arrows : ∀ j : J, B ⟶ objs j)
+variable {C : Type u} [Category.{v} C] {B : C} {objs : J → C} (arrows : ∀ j : J, B ⟶ objs j)
 variable [HasWidePushout B objs arrows]
 
 /-- The `j`-th inclusion to the pushout. -/
@@ -425,13 +420,13 @@ attribute [nolint simpNF] WidePushout.arrow_ι WidePushout.arrow_ι_assoc
 variable {arrows}
 
 /-- Descend a collection of morphisms to a morphism from the pushout. -/
-noncomputable abbrev desc {X : D} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X)
+noncomputable abbrev desc {X : C} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X)
     (w : ∀ j, arrows j ≫ fs j = f) : widePushout _ _ arrows ⟶ X :=
   colimit.desc (WidePushoutShape.wideSpan B objs arrows) (WidePushoutShape.mkCocone f fs <| w)
 #align category_theory.limits.wide_pushout.desc CategoryTheory.Limits.WidePushout.desc
 
 variable (arrows)
-variable {X : D} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X) (w : ∀ j, arrows j ≫ fs j = f)
+variable {X : C} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X) (w : ∀ j, arrows j ≫ fs j = f)
 
 -- Porting note (#10618): simp can prove this so removed simp attribute
 @[reassoc]

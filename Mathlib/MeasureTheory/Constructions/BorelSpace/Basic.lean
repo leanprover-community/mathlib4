@@ -1029,7 +1029,7 @@ protected theorem Homeomorph.measurable (h : α ≃ₜ γ) : Measurable h :=
   h.continuous.measurable
 #align homeomorph.measurable Homeomorph.measurable
 
-/-- A homeomorphism between two Borel spaces is a measurable equivalence.-/
+/-- A homeomorphism between two Borel spaces is a measurable equivalence. -/
 def Homeomorph.toMeasurableEquiv (h : γ ≃ₜ γ₂) : γ ≃ᵐ γ₂ where
   measurable_toFun := h.measurable
   measurable_invFun := h.symm.measurable
@@ -1709,7 +1709,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow [MeasurableSpace �
       refine disjoint_left.2 fun x hx h'x => lt_irrefl (f x) ?_
       calc
         f x < (t : ℝ≥0∞) ^ (i + 1) := hx.2.2
-        _ ≤ (t : ℝ≥0∞) ^ j := (ENNReal.zpow_le_of_le (ENNReal.one_le_coe_iff.2 ht.le) h)
+        _ ≤ (t : ℝ≥0∞) ^ j := ENNReal.zpow_le_of_le (ENNReal.one_le_coe_iff.2 ht.le) h
         _ ≤ f x := h'x.2.1
     · intro n
       exact hs.inter (hf measurableSet_Ico)

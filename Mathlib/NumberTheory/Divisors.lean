@@ -3,8 +3,8 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Nat.Interval
 
@@ -132,8 +132,18 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
         Nat.le_mul_of_pos_left _ (Nat.pos_of_ne_zero h.1)⟩
 #align nat.mem_divisors_antidiagonal Nat.mem_divisorsAntidiagonal
 
--- Porting note: Redundant binder annotation update
--- variable {n}
+lemma ne_zero_of_mem_divisorsAntidiagonal {p : ℕ × ℕ} (hp : p ∈ n.divisorsAntidiagonal) :
+    p.1 ≠ 0 ∧ p.2 ≠ 0 := by
+  obtain ⟨hp₁, hp₂⟩ := Nat.mem_divisorsAntidiagonal.mp hp
+  exact mul_ne_zero_iff.mp (hp₁.symm ▸ hp₂)
+
+lemma left_ne_zero_of_mem_divisorsAntidiagonal {p : ℕ × ℕ} (hp : p ∈ n.divisorsAntidiagonal) :
+    p.1 ≠ 0 :=
+  (ne_zero_of_mem_divisorsAntidiagonal hp).1
+
+lemma right_ne_zero_of_mem_divisorsAntidiagonal {p : ℕ × ℕ} (hp : p ∈ n.divisorsAntidiagonal) :
+    p.2 ≠ 0 :=
+  (ne_zero_of_mem_divisorsAntidiagonal hp).2
 
 theorem divisor_le {m : ℕ} : n ∈ divisors m → n ≤ m := by
   cases' m with m

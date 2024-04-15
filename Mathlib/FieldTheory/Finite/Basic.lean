@@ -46,7 +46,6 @@ diamonds, as `Fintype` carries data.
 
 variable {K : Type*} {R : Type*}
 
--- mathport name: exprq
 local notation "q" => Fintype.card K
 
 open Finset
@@ -69,7 +68,7 @@ theorem card_image_polynomial_eval [DecidableEq R] [Fintype R] {p : R[X]} (hp : 
     calc
       _ = (p - C a).roots.toFinset.card :=
         congr_arg card (by simp [Finset.ext_iff, ← mem_roots_sub_C hp])
-      _ ≤ Multiset.card (p - C a).roots := (Multiset.toFinset_card_le _)
+      _ ≤ Multiset.card (p - C a).roots := Multiset.toFinset_card_le _
       _ ≤ _ := card_roots_sub_C' hp)
 #align finite_field.card_image_polynomial_eval FiniteField.card_image_polynomial_eval
 
@@ -87,13 +86,13 @@ theorem exists_root_sum_quadratic [Fintype R] {f g : R[X]} (hf2 : degree f = 2) 
   lt_irrefl (2 * ((univ.image fun x : R => eval x f) ∪ univ.image fun x : R => eval x (-g)).card) <|
     calc 2 * ((univ.image fun x : R => eval x f) ∪ univ.image fun x : R => eval x (-g)).card
         ≤ 2 * Fintype.card R := Nat.mul_le_mul_left _ (Finset.card_le_univ _)
-      _ = Fintype.card R + Fintype.card R := (two_mul _)
+      _ = Fintype.card R + Fintype.card R := two_mul _
       _ < natDegree f * (univ.image fun x : R => eval x f).card +
             natDegree (-g) * (univ.image fun x : R => eval x (-g)).card :=
         (add_lt_add_of_lt_of_le
-          (lt_of_le_of_ne (card_image_polynomial_eval (by rw [hf2]; exact by decide))
+          (lt_of_le_of_ne (card_image_polynomial_eval (by rw [hf2]; decide))
             (mt (congr_arg (· % 2)) (by simp [natDegree_eq_of_degree_eq_some hf2, hR])))
-          (card_image_polynomial_eval (by rw [degree_neg, hg2]; exact by decide)))
+          (card_image_polynomial_eval (by rw [degree_neg, hg2]; decide)))
       _ = 2 * ((univ.image fun x : R => eval x f) ∪ univ.image fun x : R => eval x (-g)).card := by
         rw [card_union_of_disjoint hd];
           simp [natDegree_eq_of_degree_eq_some hf2, natDegree_eq_of_degree_eq_some hg2, mul_add]
@@ -436,7 +435,7 @@ theorem Nat.sq_add_sq_zmodEq (p : ℕ) [Fact p.Prime] (x : ℤ) :
 `ZMod.sq_add_sq` with estimates on `a` and `b`. -/
 theorem Nat.sq_add_sq_modEq (p : ℕ) [Fact p.Prime] (x : ℕ) :
     ∃ a b : ℕ, a ≤ p / 2 ∧ b ≤ p / 2 ∧ a ^ 2 + b ^ 2 ≡ x [MOD p] := by
-  simpa only [← Int.coe_nat_modEq_iff] using Nat.sq_add_sq_zmodEq p x
+  simpa only [← Int.natCast_modEq_iff] using Nat.sq_add_sq_zmodEq p x
 
 namespace CharP
 

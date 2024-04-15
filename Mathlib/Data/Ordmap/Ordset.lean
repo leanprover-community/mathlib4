@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Nat.Dist
+import Mathlib.Data.Nat.Units
 import Mathlib.Data.Ordmap.Ordnode
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith

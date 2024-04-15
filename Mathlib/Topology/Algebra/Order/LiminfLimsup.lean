@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.Support
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Topology.Algebra.Group.Basic
-import Mathlib.Topology.Order.Basic
 import Mathlib.Data.Set.Lattice
+import Mathlib.Topology.Order.Monotone
 
 #align_import topology.algebra.order.liminf_limsup from "leanprover-community/mathlib"@"ce64cd319bb6b3e82f31c2d38e79080d377be451"
 
@@ -362,7 +362,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
         have : (Set.Ioo c F.limsSup).Nonempty := ⟨x, ⟨hx, this⟩⟩
         simp only [hc, Set.not_nonempty_empty] at this
       apply liminf_le_of_frequently_le _ (bdd_above.isBoundedUnder f_decr)
-      exact (B.mono fun x hx ↦ f_decr hx)
+      exact B.mono fun x hx ↦ f_decr hx
     push_neg at h'
     by_contra! H
     have not_bot : ¬ IsBot F.limsSup := fun maybe_bot ↦

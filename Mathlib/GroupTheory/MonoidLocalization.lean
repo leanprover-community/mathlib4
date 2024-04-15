@@ -3,11 +3,11 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Init.Data.Prod
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.Init.Data.Prod
 
 #align_import group_theory.monoid_localization from "leanprover-community/mathlib"@"10ee941346c27bdb5e87bb3535100c0b1f08ac41"
 
@@ -85,7 +85,7 @@ variable {M : Type*} [AddCommMonoid M] (S : AddSubmonoid M) (N : Type*) [AddComm
 
 /-- The type of AddMonoid homomorphisms satisfying the characteristic predicate: if `f : M →+ N`
 satisfies this predicate, then `N` is isomorphic to the localization of `M` at `S`. -/
--- Porting note: This linter does not exist yet
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure LocalizationMap extends AddMonoidHom M N where
   map_add_units' : ∀ y : S, IsAddUnit (toFun y)
@@ -111,7 +111,7 @@ namespace Submonoid
 
 /-- The type of monoid homomorphisms satisfying the characteristic predicate: if `f : M →* N`
 satisfies this predicate, then `N` is isomorphic to the localization of `M` at `S`. -/
--- Porting note: This linter does not exist yet
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure LocalizationMap extends MonoidHom M N where
   map_units' : ∀ y : S, IsUnit (toFun y)
@@ -145,7 +145,7 @@ quotient is the localization of `M` at `S`, defined as the unique congruence rel
 `(1, 1) ∼ (y, y)` under `s`, we have that `(x₁, y₁) ∼ (x₂, y₂)` by `r` implies
 `(x₁, y₁) ∼ (x₂, y₂)` by `s`. -/
 @[to_additive AddLocalization.r
-    "The congruence relation on `M × S`, `M` an `AddCommMonoid` and `S` an `add_submonoid` of `M`,
+    "The congruence relation on `M × S`, `M` an `AddCommMonoid` and `S` an `AddSubmonoid` of `M`,
 whose quotient is the localization of `M` at `S`, defined as the unique congruence relation on
 `M × S` such that for any other congruence relation `s` on `M × S` where for all `y ∈ S`,
 `(0, 0) ∼ (y, y)` under `s`, we have that `(x₁, y₁) ∼ (x₂, y₂)` by `r` implies
@@ -1876,7 +1876,7 @@ theorem LocalizationMap.subsingleton  (f : Submonoid.LocalizationMap S N) (h : 0
 /-- The type of homomorphisms between monoids with zero satisfying the characteristic predicate:
 if `f : M →*₀ N` satisfies this predicate, then `N` is isomorphic to the localization of `M` at
 `S`. -/
--- Porting note: This linter does not exist yet
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure LocalizationWithZeroMap extends LocalizationMap S N where
   map_zero' : toFun 0 = 0

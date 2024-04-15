@@ -80,7 +80,7 @@ def orderIsoSpecializationWithUpperSetTopology (α : Type*) [Preorder α] :
 order. -/
 def homeoWithUpperSetTopologyorderIso (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] :
     α ≃ₜ WithUpperSet (Specialization α) :=
-(toEquiv.trans toUpperSet).toHomeomorph fun s ↦ by simp [Set.preimage_comp]
+  (toEquiv.trans toUpperSet).toHomeomorph fun s ↦ by simp [Set.preimage_comp]
 
 /-- Sends a topological space to its specialisation order. -/
 @[simps]
