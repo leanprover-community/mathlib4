@@ -66,11 +66,11 @@ def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ 
       simp
     · simp [← this]
 
-instance (F : C ⥤ D) [IsEquivalence F] :
+instance (F : C ⥤ D) [F.IsEquivalence] :
     EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a ↦ F.map (π a)) :=
   ⟨⟨effectiveEpiFamilyStructOfEquivalence F.asEquivalence _ _⟩⟩
 
-example {X B : C} (π : X ⟶ B) (F : C ⥤ D) [IsEquivalence F] [EffectiveEpi π] :
+example {X B : C} (π : X ⟶ B) (F : C ⥤ D) [F.IsEquivalence] [EffectiveEpi π] :
     EffectiveEpi <| F.map π := inferInstance
 
 end Equivalence
