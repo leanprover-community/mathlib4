@@ -75,7 +75,7 @@ lemma ad_isIdealMorphism : (ad R L).IsIdealMorphism := by
 
 /-- A derivation `D` belongs to the ideal range of the adjoint action iff it is of the form `ad x`
 for some `x` in the Lie algebra `L`. -/
-lemma mem_rangeAd_iff {D : LieDerivation R L L} :
+lemma mem_ad_idealRange_iff {D : LieDerivation R L L} :
     D ∈ (ad R L).idealRange ↔ ∃ x : L, ad R L x = D :=
   (ad R L).mem_idealRange_iff (ad_isIdealMorphism R L)
 
