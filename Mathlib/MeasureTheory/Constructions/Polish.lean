@@ -73,7 +73,7 @@ the natural topology in a space is non-Polish.
 
 To endow a standard Borel space `α` with a compatible Polish topology, use
 `letI := upgradeStandardBorel α`. One can then use `eq_borel_upgradeStandardBorel α` to
-rewrite the `MeasurableSpace α` instance to `borel α t`, where `t` is the new topology.-/
+rewrite the `MeasurableSpace α` instance to `borel α t`, where `t` is the new topology. -/
 class StandardBorelSpace [MeasurableSpace α] : Prop where
   /-- There exists a compatible Polish topology. -/
   polish : ∃ _ : TopologicalSpace α, BorelSpace α ∧ PolishSpace α
@@ -96,7 +96,7 @@ def upgradeStandardBorel [MeasurableSpace α] [h : StandardBorelSpace α] :
   constructor
 
 /-- The `MeasurableSpace α` instance on a `StandardBorelSpace` `α` is equal to
-the borel sets of `upgradeStandardBorel α`.-/
+the borel sets of `upgradeStandardBorel α`. -/
 theorem eq_borel_upgradeStandardBorel [MeasurableSpace α] [StandardBorelSpace α] :
     ‹MeasurableSpace α› = @borel _ (upgradeStandardBorel α).toTopologicalSpace :=
   @BorelSpace.measurable_eq _ (upgradeStandardBorel α).toTopologicalSpace _
@@ -631,6 +631,16 @@ instance Quotient.borelSpace {X : Type*} [TopologicalSpace X] [PolishSpace X] [M
   ⟨continuous_quotient_mk'.map_eq_borel (surjective_quotient_mk' _)⟩
 #align quotient.borel_space Quotient.borelSpace
 
+/-- When the subgroup `N < G` is not necessarily `Normal`, we have a `CosetSpace` as opposed
+to `QuotientGroup` (the next `instance`).
+TODO: typeclass inference should normally find this, but currently doesn't.
+E.g., `MeasurableSMul G (G ⧸ Γ)` fails to synthesize, even though `G ⧸ Γ` is the quotient
+of `G` by the action of `Γ`; it seems unable to pick up the `BorelSpace` instance. -/
+@[to_additive AddCosetSpace.borelSpace]
+instance CosetSpace.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] [Group G]
+    [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [T2Space (G ⧸ N)]
+    [SecondCountableTopology (G ⧸ N)] : BorelSpace (G ⧸ N) := Quotient.borelSpace
+
 @[to_additive]
 instance QuotientGroup.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] [Group G]
     [TopologicalGroup G] [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [N.Normal]
@@ -892,7 +902,7 @@ theorem _root_.Measurable.measurableEmbedding [OpensMeasurableSpace β]
     measurableSet_image' := fun _u hu => hu.image_of_measurable_injOn f_meas (f_inj.injOn _) }
 #align measurable.measurable_embedding Measurable.measurableEmbedding
 
-/-- If one Polish topology on a type refines another, they have the same Borel sets.-/
+/-- If one Polish topology on a type refines another, they have the same Borel sets. -/
 theorem borel_eq_borel_of_le {t t' : TopologicalSpace γ}
     (ht : PolishSpace (h := t)) (ht' : PolishSpace (h := t')) (hle : t ≤ t') :
     @borel _ t = @borel _ t' := by
@@ -992,7 +1002,7 @@ variable {β : Type*}
 variable [MeasurableSpace α] [MeasurableSpace β] [StandardBorelSpace α] [StandardBorelSpace β]
 
 /-- If two standard Borel spaces admit Borel measurable injections to one another,
-then they are Borel isomorphic.-/
+then they are Borel isomorphic. -/
 noncomputable def borelSchroederBernstein {f : α → β} {g : β → α} (fmeas : Measurable f)
     (finj : Function.Injective f) (gmeas : Measurable g) (ginj : Function.Injective g) : α ≃ᵐ β :=
   letI := upgradeStandardBorel α
@@ -1000,25 +1010,26 @@ noncomputable def borelSchroederBernstein {f : α → β} {g : β → α} (fmeas
   (fmeas.measurableEmbedding finj).schroederBernstein (gmeas.measurableEmbedding ginj)
 #align polish_space.borel_schroeder_bernstein PolishSpace.borelSchroederBernstein
 
-/-- Any uncountable standard Borel space is Borel isomorphic to the Cantor space `ℕ → Bool`.-/
+/-- Any uncountable standard Borel space is Borel isomorphic to the Cantor space `ℕ → Bool`. -/
 noncomputable def measurableEquivNatBoolOfNotCountable (h : ¬Countable α) : α ≃ᵐ (ℕ → Bool) := by
   apply Nonempty.some
   letI := upgradeStandardBorel α
   obtain ⟨f, -, fcts, finj⟩ :=
     isClosed_univ.exists_nat_bool_injection_of_not_countable
       (by rwa [← countable_coe_iff, (Equiv.Set.univ _).countable_iff])
-  obtain ⟨g, gmeas, ginj⟩ := MeasurableSpace.measurable_injection_nat_bool_of_countablyGenerated α
+  obtain ⟨g, gmeas, ginj⟩ :=
+    MeasurableSpace.measurable_injection_nat_bool_of_hasCountableSeparatingOn α
   exact ⟨borelSchroederBernstein gmeas ginj fcts.measurable finj⟩
 #align polish_space.measurable_equiv_nat_bool_of_not_countable PolishSpace.measurableEquivNatBoolOfNotCountable
 
 /-- The **Borel Isomorphism Theorem**: Any two uncountable standard Borel spaces are
-Borel isomorphic.-/
+Borel isomorphic. -/
 noncomputable def measurableEquivOfNotCountable (hα : ¬Countable α) (hβ : ¬Countable β) : α ≃ᵐ β :=
   (measurableEquivNatBoolOfNotCountable hα).trans (measurableEquivNatBoolOfNotCountable hβ).symm
 #align polish_space.measurable_equiv_of_not_countable PolishSpace.measurableEquivOfNotCountable
 
 /-- The **Borel Isomorphism Theorem**: If two standard Borel spaces have the same cardinality,
-they are Borel isomorphic.-/
+they are Borel isomorphic. -/
 noncomputable def Equiv.measurableEquiv (e : α ≃ β) : α ≃ᵐ β := by
   by_cases h : Countable α
   · letI := Countable.of_equiv α e

@@ -54,7 +54,7 @@ def order (φ : R⟦X⟧) : PartENat :=
   if h : φ = 0 then ⊤ else Nat.find (exists_coeff_ne_zero_iff_ne_zero.mpr h)
 #align power_series.order PowerSeries.order
 
-/-- The order of the `0` power series is infinite.-/
+/-- The order of the `0` power series is infinite. -/
 @[simp]
 theorem order_zero : order (0 : R⟦X⟧) = ⊤ :=
   dif_pos rfl
@@ -71,7 +71,7 @@ theorem order_finite_iff_ne_zero : (order φ).Dom ↔ φ ≠ 0 := by
 #align power_series.order_finite_iff_ne_zero PowerSeries.order_finite_iff_ne_zero
 
 /-- If the order of a formal power series is finite,
-then the coefficient indexed by the order is nonzero.-/
+then the coefficient indexed by the order is nonzero. -/
 theorem coeff_order (h : (order φ).Dom) : coeff R (φ.order.get h) φ ≠ 0 := by
   classical
   simp only [order, order_finite_iff_ne_zero.mp h, not_false_iff, dif_neg, PartENat.get_natCast']
@@ -80,7 +80,7 @@ theorem coeff_order (h : (order φ).Dom) : coeff R (φ.order.get h) φ ≠ 0 := 
 #align power_series.coeff_order PowerSeries.coeff_order
 
 /-- If the `n`th coefficient of a formal power series is nonzero,
-then the order of the power series is less than or equal to `n`.-/
+then the order of the power series is less than or equal to `n`. -/
 theorem order_le (n : ℕ) (h : coeff R n φ ≠ 0) : order φ ≤ n := by
   classical
   rw [order, dif_neg]
@@ -90,26 +90,20 @@ theorem order_le (n : ℕ) (h : coeff R n φ ≠ 0) : order φ ≤ n := by
 #align power_series.order_le PowerSeries.order_le
 
 /-- The `n`th coefficient of a formal power series is `0` if `n` is strictly
-smaller than the order of the power series.-/
+smaller than the order of the power series. -/
 theorem coeff_of_lt_order (n : ℕ) (h : ↑n < order φ) : coeff R n φ = 0 := by
   contrapose! h
   exact order_le _ h
 #align power_series.coeff_of_lt_order PowerSeries.coeff_of_lt_order
 
-/-- The `0` power series is the unique power series with infinite order.-/
+/-- The `0` power series is the unique power series with infinite order. -/
 @[simp]
-theorem order_eq_top {φ : R⟦X⟧} : φ.order = ⊤ ↔ φ = 0 := by
-  constructor
-  · intro h
-    ext n
-    rw [(coeff R n).map_zero, coeff_of_lt_order]
-    simp [h]
-  · rintro rfl
-    exact order_zero
+theorem order_eq_top {φ : R⟦X⟧} : φ.order = ⊤ ↔ φ = 0 :=
+  PartENat.not_dom_iff_eq_top.symm.trans order_finite_iff_ne_zero.not_left
 #align power_series.order_eq_top PowerSeries.order_eq_top
 
 /-- The order of a formal power series is at least `n` if
-the `i`th coefficient is `0` for all `i < n`.-/
+the `i`th coefficient is `0` for all `i < n`. -/
 theorem nat_le_order (φ : R⟦X⟧) (n : ℕ) (h : ∀ i < n, coeff R i φ = 0) : ↑n ≤ order φ := by
   by_contra H; rw [not_le] at H
   have : (order φ).Dom := PartENat.dom_of_le_natCast H.le
@@ -118,7 +112,7 @@ theorem nat_le_order (φ : R⟦X⟧) (n : ℕ) (h : ∀ i < n, coeff R i φ = 0)
 #align power_series.nat_le_order PowerSeries.nat_le_order
 
 /-- The order of a formal power series is at least `n` if
-the `i`th coefficient is `0` for all `i < n`.-/
+the `i`th coefficient is `0` for all `i < n`. -/
 theorem le_order (φ : R⟦X⟧) (n : PartENat) (h : ∀ i : ℕ, ↑i < n → coeff R i φ = 0) :
     n ≤ order φ := by
   induction n using PartENat.casesOn
@@ -131,7 +125,7 @@ theorem le_order (φ : R⟦X⟧) (n : PartENat) (h : ∀ i : ℕ, ↑i < n → c
 #align power_series.le_order PowerSeries.le_order
 
 /-- The order of a formal power series is exactly `n` if the `n`th coefficient is nonzero,
-and the `i`th coefficient is `0` for all `i < n`.-/
+and the `i`th coefficient is `0` for all `i < n`. -/
 theorem order_eq_nat {φ : R⟦X⟧} {n : ℕ} :
     order φ = n ↔ coeff R n φ ≠ 0 ∧ ∀ i, i < n → coeff R i φ = 0 := by
   classical
@@ -141,7 +135,7 @@ theorem order_eq_nat {φ : R⟦X⟧} {n : ℕ} :
 #align power_series.order_eq_nat PowerSeries.order_eq_nat
 
 /-- The order of a formal power series is exactly `n` if the `n`th coefficient is nonzero,
-and the `i`th coefficient is `0` for all `i < n`.-/
+and the `i`th coefficient is `0` for all `i < n`. -/
 theorem order_eq {φ : R⟦X⟧} {n : PartENat} :
     order φ = n ↔ (∀ i : ℕ, ↑i = n → coeff R i φ ≠ 0) ∧ ∀ i : ℕ, ↑i < n → coeff R i φ = 0 := by
   induction n using PartENat.casesOn
@@ -159,7 +153,7 @@ theorem order_eq {φ : R⟦X⟧} {n : PartENat} :
 #align power_series.order_eq PowerSeries.order_eq
 
 /-- The order of the sum of two formal power series
- is at least the minimum of their orders.-/
+ is at least the minimum of their orders. -/
 theorem le_order_add (φ ψ : R⟦X⟧) : min (order φ) (order ψ) ≤ order (φ + ψ) := by
   refine' le_order _ _ _
   simp (config := { contextual := true }) [coeff_of_lt_order]
@@ -182,7 +176,7 @@ private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧) (_h : order φ ≠ 
 -- #align power_series.order_add_of_order_eq.aux power_series.order_add_of_order_eq.aux
 
 /-- The order of the sum of two formal power series
- is the minimum of their orders if their orders differ.-/
+ is the minimum of their orders if their orders differ. -/
 theorem order_add_of_order_eq (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
     order (φ + ψ) = order φ ⊓ order ψ := by
   refine' le_antisymm _ (le_order_add _ _)
@@ -194,7 +188,7 @@ theorem order_add_of_order_eq (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
 #align power_series.order_add_of_order_eq PowerSeries.order_add_of_order_eq
 
 /-- The order of the product of two formal power series
- is at least the sum of their orders.-/
+ is at least the sum of their orders. -/
 theorem order_mul_ge (φ ψ : R⟦X⟧) : order φ + order ψ ≤ order (φ * ψ) := by
   apply le_order
   intro n hn; rw [coeff_mul, Finset.sum_eq_zero]
@@ -209,7 +203,7 @@ theorem order_mul_ge (φ ψ : R⟦X⟧) : order φ + order ψ ≤ order (φ * ψ
   rw [← Nat.cast_add, hij]
 #align power_series.order_mul_ge PowerSeries.order_mul_ge
 
-/-- The order of the monomial `a*X^n` is infinite if `a = 0` and `n` otherwise.-/
+/-- The order of the monomial `a*X^n` is infinite if `a = 0` and `n` otherwise. -/
 theorem order_monomial (n : ℕ) (a : R) [Decidable (a = 0)] :
     order (monomial R n a) = if a = 0 then (⊤ : PartENat) else n := by
   split_ifs with h
@@ -223,7 +217,7 @@ theorem order_monomial (n : ℕ) (a : R) [Decidable (a = 0)] :
       exact ne_of_lt hi
 #align power_series.order_monomial PowerSeries.order_monomial
 
-/-- The order of the monomial `a*X^n` is `n` if `a ≠ 0`.-/
+/-- The order of the monomial `a*X^n` is `n` if `a ≠ 0`. -/
 theorem order_monomial_of_ne_zero (n : ℕ) (a : R) (h : a ≠ 0) : order (monomial R n a) = n := by
   classical
   rw [order_monomial, if_neg h]
@@ -305,20 +299,20 @@ section OrderZeroNeOne
 
 variable [Semiring R] [Nontrivial R]
 
-/-- The order of the formal power series `1` is `0`.-/
+/-- The order of the formal power series `1` is `0`. -/
 @[simp]
 theorem order_one : order (1 : R⟦X⟧) = 0 := by
   simpa using order_monomial_of_ne_zero 0 (1 : R) one_ne_zero
 #align power_series.order_one PowerSeries.order_one
 
-/-- The order of the formal power series `X` is `1`.-/
+/-- The order of the formal power series `X` is `1`. -/
 @[simp]
 theorem order_X : order (X : R⟦X⟧) = 1 := by
   simpa only [Nat.cast_one] using order_monomial_of_ne_zero 1 (1 : R) one_ne_zero
 set_option linter.uppercaseLean3 false in
 #align power_series.order_X PowerSeries.order_X
 
-/-- The order of the formal power series `X^n` is `n`.-/
+/-- The order of the formal power series `X^n` is `n`. -/
 @[simp]
 theorem order_X_pow (n : ℕ) : order ((X : R⟦X⟧) ^ n) = n := by
   rw [X_pow_eq, order_monomial_of_ne_zero]
@@ -334,7 +328,7 @@ section OrderIsDomain
 variable [CommRing R] [IsDomain R]
 
 /-- The order of the product of two formal power series over an integral domain
- is the sum of their orders.-/
+ is the sum of their orders. -/
 theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := by
   classical
   simp_rw [order_eq_multiplicity_X]

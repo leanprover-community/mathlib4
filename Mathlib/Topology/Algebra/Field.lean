@@ -6,7 +6,7 @@ Authors: Patrick Massot, Scott Morrison
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.LocalExtr
+import Mathlib.Topology.Order.LocalExtr
 import Mathlib.FieldTheory.Subfield
 
 #align_import topology.algebra.field from "leanprover-community/mathlib"@"c10e724be91096453ee3db13862b9fb9a992fef2"
