@@ -788,7 +788,7 @@ theorem getLast?_append {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?)
 /-! ### head(!?) and tail -/
 
 @[simp]
-theorem head!_nil : ([] : List α).head! = default := rfl
+theorem head!_nil [Inhabited α] : ([] : List α).head! = default := rfl
 
 @[simp] theorem head_cons_tail (x : List α) (h : x ≠ []) : x.head h :: x.tail = x := by
   cases x <;> simp at h ⊢
