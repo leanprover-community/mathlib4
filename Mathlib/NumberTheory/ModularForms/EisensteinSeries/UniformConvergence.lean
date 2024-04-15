@@ -193,7 +193,7 @@ theorem eis_is_bounded_on_box (k n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hx : (x
     refine abs_eq_self.mpr ?_
     apply mul_nonneg (pow_nonneg (r_pos z).le _)
     simp only [Nat.cast_pow, ge_iff_le, Nat.cast_nonneg, pow_nonneg]
-  simp only [map_pow, zpow_coe_nat, H]
+  simp only [map_pow, zpow_natCast, H]
   simpa using this
 
 lemma r_lower_bound_on_slice {A B : ℝ} (h : 0 < B) (z : upperHalfPlaneSlice A B) :
@@ -277,11 +277,11 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
     (1/(r ⟨⟨A, B⟩, hB⟩) ^ k) * ((max (x.1 0).natAbs (x.1 1).natAbs : ℝ) ^ k)⁻¹ := by
     apply (Summable.subtype (summable_upper_bound hk ⟨⟨A, B⟩, hB⟩) (gammaSet N a)).congr
     intro v
-    simp only [zpow_coe_nat, one_div, Function.comp_apply]
+    simp only [zpow_natCast, one_div, Function.comp_apply]
   apply tendstoUniformlyOn_tsum hu
   intro v x hx
   have := eis_is_bounded_on_box k (max (v.1 0).natAbs (v.1 1).natAbs) x v
-  simp only [Nat.cast_max, Int.coe_natAbs, iff_true, zpow_coe_nat, one_div, map_pow,
+  simp only [Nat.cast_max, Int.coe_natAbs, iff_true, zpow_natCast, one_div, map_pow,
     map_mul, abs_ofReal, abs_natCast, mul_inv_rev, eisSummand, norm_inv, norm_pow, norm_eq_abs,
     ge_iff_le] at *
   apply le_trans (this (by simp only [Int.mem_box]))
