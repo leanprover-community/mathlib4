@@ -275,3 +275,56 @@ theorem sort_univ (n : ℕ) : Finset.univ.sort (fun x y : Fin n => x ≤ y) = Li
     (List.pairwise_le_finRange n)
 
 end Fin
+
+section OrderedTuple
+
+variable {α : Type*} [LinearOrder α] {t : ℕ}
+
+/-- For a linearly ordered type, `Fin t ↪o α` is equivalent to the type of `t`-sets. -/
+@[simps] def tupleEquivFinset : (Fin t ↪o α) ≃ {s : Finset α // s.card = t} where
+  toFun f := ⟨Finset.univ.map f.toEmbedding, by simp⟩
+  invFun s := Finset.orderEmbOfFin s.1 s.2
+  left_inv _ := Eq.symm <| Finset.orderEmbOfFin_unique' _ (by simp)
+  right_inv s := by
+    obtain ⟨s,rfl⟩ := s
+    simp only [Finset.map_eq_image, RelEmbedding.coe_toEmbedding, Subtype.mk.injEq]
+    rw [← Finset.coe_inj, ← Finset.range_orderEmbOfFin s rfl]
+    simp
+
+def appendRight (f : Fin t ↪o α) (a : α) (ha : ∀ i, f i < a) : Fin (t+1) ↪o α :=
+  OrderEmbedding.ofStrictMono (Fin.lastCases a f) (
+    Fin.lastCases (fun b h ↦ (h.not_le <| Fin.le_last b).elim)
+      (fun i ↦ Fin.lastCases (by simp [ha]) fun _ hij ↦ by simpa using hij))
+
+@[reducible] def appendRight' (f : Fin (t+1) ↪o α) (a : α) (ha : f (Fin.last t) < a) :
+    Fin (t+2) ↪o α :=
+  appendRight f a (fun i ↦ (f.monotone (Fin.le_last i)).trans_lt ha)
+
+@[simp] theorem appendRight_last (f : Fin t ↪o α) (a : α) (ha : ∀ i, f i < a) :
+    (appendRight f a ha) (Fin.last t) = a := by
+  simp [appendRight]
+
+@[simp] theorem appendRight_castSucc (f : Fin t ↪o α) (a : α) (ha : ∀ i, f i < a) (i : Fin t) :
+    (appendRight f a ha) (Fin.castSucc i) = f i := by
+  simp [appendRight]
+
+@[simp] theorem appendRight_trans (f : Fin t ↪o α) (a : α) (ha : ∀ i, f i < a) (g : α ↪o α) :
+    (appendRight f a ha).trans g = appendRight (f.trans g) (g a) (fun i ↦ by simp [ha]) := by
+  ext x
+  exact Fin.lastCases (i := x) (by simp) (fun i ↦ by simp)
+
+def truncate (f : Fin t ↪o α) {t' : ℕ} (ht' : t' ≤ t) : Fin t' ↪o α :=
+  (Fin.castLEEmb ht').trans f
+
+def eraseRight (f : Fin (t+1) ↪o α) : Fin t ↪o α :=
+  truncate f (Nat.le_add_right t 1)
+
+@[simp] theorem eraseRight_apply_eq (f : Fin (t+1) ↪o α) (i : Fin t) :
+    eraseRight f i = f (Fin.castSucc i) := rfl
+
+@[simp] theorem appendRight_eraseRight (f : Fin (t+1) ↪o α) :
+    appendRight (eraseRight f) (f (Fin.last t))
+      (fun i ↦ f.strictMono (Fin.castSucc_lt_last _)) = f :=
+  RelEmbedding.ext <| Fin.lastCases (by simp) (by simp)
+
+end OrderedTuple

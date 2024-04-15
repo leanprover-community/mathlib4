@@ -273,6 +273,8 @@ def valOrderEmbedding (n) : Fin n ↪o ℕ :=
   ⟨valEmbedding, Iff.rfl⟩
 #align fin.coe_order_embedding Fin.valOrderEmbedding
 
+instance {k : ℕ} : Inhabited (Fin k ↪o ℕ) := ⟨Fin.valOrderEmbedding k⟩
+
 /-- The ordering on `Fin n` is a well order. -/
 instance Lt.isWellOrder (n) : IsWellOrder (Fin n) (· < ·) :=
   (valOrderEmbedding n).isWellOrder
