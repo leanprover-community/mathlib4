@@ -130,4 +130,14 @@ def equivalence (A : Type*) [Category.{u+1} A] [HasLimits A] :
 
 end ProfiniteCompHaus
 
+variable {A : Type*} [Category.{u+1} A] [HasLimits A] (X : Condensed.{u} A)
+
+lemma isSheafProfinite : Presheaf.IsSheaf (coherentTopology Profinite)
+    (profiniteToCompHaus.op ⋙ X.val) :=
+  ((ProfiniteCompHaus.equivalence A).inverse.obj X).cond
+
+lemma isSheafStonean : Presheaf.IsSheaf (coherentTopology Stonean)
+    (Stonean.toCompHaus.op ⋙ X.val) :=
+  ((StoneanCompHaus.equivalence A).inverse.obj X).cond
+
 end Condensed
