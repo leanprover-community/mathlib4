@@ -179,8 +179,8 @@ theorem coeff_monomial (m n : ℕ) (a : R) : coeff R m (monomial R n a) = if m =
   calc
     coeff R m (monomial R n a) = _ := MvPowerSeries.coeff_monomial _ _ _
     _ = if m = n then a else 0 := by simp only [Finsupp.unique_single_eq_iff]
-
 #align power_series.coeff_monomial PowerSeries.coeff_monomial
+
 
 theorem monomial_eq_mk (n : ℕ) (a : R) : monomial R n a = mk fun m => if m = n then a else 0 :=
   ext fun m => by rw [coeff_monomial, coeff_mk]
@@ -399,6 +399,9 @@ set_option linter.uppercaseLean3 false in
 theorem coeff_zero_X_mul (φ : R⟦X⟧) : coeff R 0 (X * φ) = 0 := by simp
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_zero_X_mul PowerSeries.coeff_zero_X_mul
+
+theorem coeff_surj : Function.Surjective (constantCoeff R) :=
+  fun r => ⟨(C R) r, constantCoeff_C r⟩
 
 -- The following section duplicates the API of `Data.Polynomial.Coeff` and should attempt to keep
 -- up to date with that
@@ -655,6 +658,17 @@ section CommRing
 
 variable {A : Type*} [CommRing A]
 
+theorem not_isField [Nontrivial A] : ¬IsField A⟦X⟧ := by
+  nontriviality A
+  rw [Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top]
+  use Ideal.span {X}
+  constructor
+  · rw [bot_lt_iff_ne_bot, Ne.def, Ideal.span_singleton_eq_bot]
+    exact X_ne_zero
+  · rw [lt_top_iff_ne_top, Ne.def, Ideal.eq_top_iff_one, Ideal.mem_span_singleton,
+      X_dvd_iff, constantCoeff_one]
+    exact one_ne_zero
+
 @[simp]
 theorem rescale_X (a : A) : rescale a X = C A a * X := by
   ext
@@ -757,6 +771,9 @@ theorem X_prime : Prime (X : R⟦X⟧) := by
     simpa [map_zero (coeff R 1)] using congr_arg (coeff R 1) h
 set_option linter.uppercaseLean3 false in
 #align power_series.X_prime PowerSeries.X_prime
+
+/-- The variable of the power series ring over an integral domain is irreducible. -/
+theorem X_Irreducible : Irreducible (X : R⟦X⟧) := X_prime.irreducible
 
 theorem rescale_injective {a : R} (ha : a ≠ 0) : Function.Injective (rescale a) := by
   intro p q h
