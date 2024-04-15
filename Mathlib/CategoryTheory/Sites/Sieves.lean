@@ -802,7 +802,7 @@ theorem image_mem_functorPushforward (R : Sieve X) {V} {f : V ⟶ X} (h : R f) :
 #align category_theory.sieve.image_mem_functor_pushforward CategoryTheory.Sieve.image_mem_functorPushforward
 
 /-- When `F` is essentially surjective and full, the galois connection is a galois insertion. -/
-def essSurjFullFunctorGaloisInsertion [EssSurj F] [Full F] (X : C) :
+def essSurjFullFunctorGaloisInsertion [F.EssSurj] [F.Full] (X : C) :
     GaloisInsertion (Sieve.functorPushforward F : Sieve X → Sieve (F.obj X))
       (Sieve.functorPullback F) := by
   apply (functor_galoisConnection F X).toGaloisInsertion
@@ -812,7 +812,7 @@ def essSurjFullFunctorGaloisInsertion [EssSurj F] [Full F] (X : C) :
 #align category_theory.sieve.ess_surj_full_functor_galois_insertion CategoryTheory.Sieve.essSurjFullFunctorGaloisInsertion
 
 /-- When `F` is fully faithful, the galois connection is a galois coinsertion. -/
-def fullyFaithfulFunctorGaloisCoinsertion [Full F] [Faithful F] (X : C) :
+def fullyFaithfulFunctorGaloisCoinsertion [F.Full] [F.Faithful] (X : C) :
     GaloisCoinsertion (Sieve.functorPushforward F : Sieve X → Sieve (F.obj X))
       (Sieve.functorPullback F) := by
   apply (functor_galoisConnection F X).toGaloisCoinsertion

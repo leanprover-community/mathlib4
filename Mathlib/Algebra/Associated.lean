@@ -380,7 +380,7 @@ def Associated [Monoid α] (x y : α) : Prop :=
 #align associated Associated
 
 /-- Notation for two elements of a monoid are associated, i.e.
-if one of them is another one multiplied by a unit on the right.-/
+if one of them is another one multiplied by a unit on the right. -/
 local infixl:50 " ~ᵤ " => Associated
 
 namespace Associated
@@ -538,7 +538,7 @@ theorem Associated.mul_mul [CommMonoid α] {a₁ a₂ b₁ b₂ : α}
 
 theorem Associated.pow_pow [CommMonoid α] {a b : α} {n : ℕ} (h : a ~ᵤ b) : a ^ n ~ᵤ b ^ n := by
   induction' n with n ih
-  · simp only [Nat.zero_eq, pow_zero]; rfl
+  · simp [Associated.refl]
   convert h.mul_mul ih <;> rw [pow_succ']
 #align associated.pow_pow Associated.pow_pow
 
@@ -819,6 +819,9 @@ theorem quot_out [Monoid α] (a : Associates α) : Associates.mk (Quot.out a) = 
   rw [← quot_mk_eq_mk, Quot.out_eq]
 #align associates.quot_out Associates.quot_outₓ
 
+theorem mk_quot_out [Monoid α] (a : α) : Quot.out (Associates.mk a) ~ᵤ a := by
+  rw [← Associates.mk_eq_mk_iff_associated, Associates.quot_out]
+
 theorem forall_associated [Monoid α] {p : Associates α → Prop} :
     (∀ a, p a) ↔ ∀ a, p (Associates.mk a) :=
   Iff.intro (fun h _ => h _) fun h a => Quotient.inductionOn a h
@@ -998,7 +1001,7 @@ theorem dvd_of_mk_le_mk {a b : α} : Associates.mk a ≤ Associates.mk b → a �
 #align associates.dvd_of_mk_le_mk Associates.dvd_of_mk_le_mk
 
 theorem mk_le_mk_of_dvd {a b : α} : a ∣ b → Associates.mk a ≤ Associates.mk b := fun ⟨c, hc⟩ =>
-  ⟨Associates.mk c, by simp only [hc]; rfl⟩
+  ⟨Associates.mk c, by simp only [hc, mk_mul_mk]⟩
 #align associates.mk_le_mk_of_dvd Associates.mk_le_mk_of_dvd
 
 theorem mk_le_mk_iff_dvd_iff {a b : α} : Associates.mk a ≤ Associates.mk b ↔ a ∣ b :=

@@ -341,7 +341,7 @@ theorem tendsto_lintegral_norm_of_dominated_convergence {F : ℕ → α → β} 
         · apply norm_sub_le
         · exact norm_nonneg _
         · exact norm_nonneg _
-      _ ≤ ENNReal.ofReal (bound a) + ENNReal.ofReal (bound a) := (add_le_add h₁ h₂)
+      _ ≤ ENNReal.ofReal (bound a) + ENNReal.ofReal (bound a) := add_le_add h₁ h₂
       _ = b a := by rw [← two_mul]
   -- On the other hand, `F n a --> f a` implies that `‖F n a - f a‖ --> 0`
   have h : ∀ᵐ a ∂μ, Tendsto (fun n => ENNReal.ofReal ‖F n a - f a‖) atTop (𝓝 0) := by
@@ -570,6 +570,11 @@ theorem Integrable.smul_measure {f : α → β} (h : Integrable f μ) {c : ℝ�
   exact h.smul_measure hc
 #align measure_theory.integrable.smul_measure MeasureTheory.Integrable.smul_measure
 
+theorem Integrable.smul_measure_nnreal {f : α → β} (h : Integrable f μ) {c : ℝ≥0} :
+    Integrable f (c • μ) := by
+  apply h.smul_measure
+  simp
+
 theorem integrable_smul_measure {f : α → β} {c : ℝ≥0∞} (h₁ : c ≠ 0) (h₂ : c ≠ ∞) :
     Integrable f (c • μ) ↔ Integrable f μ :=
   ⟨fun h => by
@@ -663,7 +668,7 @@ theorem Integrable.add' {f g : α → β} (hf : Integrable f μ) (hg : Integrabl
         -- After leanprover/lean4#2734, we need to do beta reduction before `exact mod_cast`
         beta_reduce
         exact mod_cast nnnorm_add_le _ _
-    _ = _ := (lintegral_nnnorm_add_left hf.aestronglyMeasurable _)
+    _ = _ := lintegral_nnnorm_add_left hf.aestronglyMeasurable _
     _ < ∞ := add_lt_top.2 ⟨hf.hasFiniteIntegral, hg.hasFiniteIntegral⟩
 #align measure_theory.integrable.add' MeasureTheory.Integrable.add'
 

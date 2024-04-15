@@ -200,7 +200,7 @@ variable [SMul S' S] [IsScalarTower S' S N] [IsScalarTower S' S Pₗ]
 variable [SMul R' R] [IsScalarTower R' R M] [IsScalarTower R' R Pₗ]
 
 /-- If `B : M → N → Pₗ` is `R`-`S` bilinear and `R'` and `S'` are compatible scalar multiplications,
-then the restriction of scalars is a `R'`-`S'` bilinear map.-/
+then the restriction of scalars is a `R'`-`S'` bilinear map. -/
 @[simps!]
 def restrictScalars₁₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N →ₗ[S'] Pₗ :=
   LinearMap.mk₂' R' S'
@@ -403,15 +403,8 @@ theorem lsmul_apply (r : R) (m : M) : lsmul R M r m = r • m := rfl
 #align linear_map.lsmul_apply LinearMap.lsmul_apply
 
 variable (R M) in
-/-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`.
-
-This should eventually replace `_root_.BilinForm`. -/
+/-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`. -/
 protected abbrev BilinForm : Type _ := M →ₗ[R] M →ₗ[R] R
-
-/-- The restriction of a bilinear form to a submodule. -/
-abbrev _root_.Submodule.restrictBilinear (p : Submodule R M) (f : LinearMap.BilinForm R M) :
-    LinearMap.BilinForm R p :=
-  f.compl₁₂ p.subtype p.subtype
 
 end CommSemiring
 
