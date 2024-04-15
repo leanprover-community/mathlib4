@@ -24,31 +24,46 @@ universe w v u
 
 namespace CategoryTheory.Limits.Types
 
-open CategoryTheory.Limits
-open CategoryTheory.Limits.Types
-
 variable (C : Type u) [Category.{v} C]
 
 /-- The functor mapping every object to `PUnit`. -/
-def unitValuedFunctor : C ⥤ Type w := (Functor.const C).obj PUnit.{w + 1}
+def constPUnitFunctor : C ⥤ Type w := (Functor.const C).obj PUnit.{w + 1}
+
+/-- The cocone on `constPUnitFunctor` with cone point `PUnit`. -/
+@[simps]
+def pUnitCocone : Cocone (constPUnitFunctor.{w} C) where
+  pt := PUnit
+  ι := { app := fun X => id }
+
+/-- If `C` is connected, the cocone on `constPUnitFunctor` with cone point `PUnit` is a colimit
+    cocone. -/
+noncomputable def isColimitPUnitCocone [IsConnected C] : IsColimit (pUnitCocone.{w} C) where
+  desc s := s.ι.app Classical.ofNonempty
+  fac s j := by
+    ext ⟨⟩
+    apply constant_of_preserves_morphisms (s.ι.app · PUnit.unit)
+    intros X Y f
+    exact congrFun (s.ι.naturality f).symm PUnit.unit
+  uniq s m h := by
+    ext ⟨⟩
+    simp [← h Classical.ofNonempty]
+
+instance [IsConnected C] : HasColimit (constPUnitFunctor.{w} C) :=
+  ⟨_, isColimitPUnitCocone _⟩
 
 instance instSubsingletonColimitPUnit
-    [IsPreconnected C] [HasColimit (unitValuedFunctor.{w} C)] :
-    Subsingleton (colimit (unitValuedFunctor.{w} C)) where
+    [IsPreconnected C] [HasColimit (constPUnitFunctor.{w} C)] :
+    Subsingleton (colimit (constPUnitFunctor.{w} C)) where
   allEq a b := by
-    obtain ⟨c, ⟨⟩, rfl⟩ :=
-      jointly_surjective_of_isColimit (colimit.isColimit (unitValuedFunctor C)) a
-    obtain ⟨d, ⟨⟩, rfl⟩ :=
-      jointly_surjective_of_isColimit (colimit.isColimit (unitValuedFunctor C)) b
-    apply constant_of_preserves_morphisms (colimit.ι (unitValuedFunctor C) · PUnit.unit)
-    exact fun c d f => colimit_sound'' f rfl
+    obtain ⟨c, ⟨⟩, rfl⟩ := jointly_surjective' a
+    obtain ⟨d, ⟨⟩, rfl⟩ := jointly_surjective' b
+    apply constant_of_preserves_morphisms (colimit.ι (constPUnitFunctor C) · PUnit.unit)
+    exact fun c d f => colimit_sound f rfl
 
 /-- Given a connected index category, the colimit of the constant unit-valued functor is `PUnit`. -/
-noncomputable def colimitConstPUnitIsoPUnit
-    [IsConnected C] [HasColimit (unitValuedFunctor.{w} C)] :
-    colimit (unitValuedFunctor.{w} C) ≅ PUnit.{w + 1} where
-  hom := fun _ => PUnit.unit
-  inv := fun _ => colimit.ι (unitValuedFunctor.{w} C) Classical.ofNonempty PUnit.unit
+noncomputable def colimitConstPUnitIsoPUnit [IsConnected C] :
+    colimit (constPUnitFunctor.{w} C) ≅ PUnit.{w + 1} :=
+  IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (isColimitPUnitCocone.{w} C)
 
 /-- Let `F` be a `Type`-valued functor. If two elements `a : F c` and `b : F d` represent the same
 element of `colimit F`, then `c` and `d` are related by a `Zigzag`. -/
@@ -62,13 +77,13 @@ theorem zigzag_of_eqvGen_quot_rel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
 
 /-- An index category is connected iff the colimit of the constant singleton-valued functor is a
 singleton. -/
-theorem connected_iff_colimit_const_pUnit_iso_pUnit
-    [HasColimit (unitValuedFunctor.{w} C)] :
-    IsConnected C ↔ Nonempty (colimit (unitValuedFunctor.{w} C) ≅ PUnit) := by
+theorem connected_iff_colimit_constPUnitFunctor_iso_pUnit
+    [HasColimit (constPUnitFunctor.{w} C)] :
+    IsConnected C ↔ Nonempty (colimit (constPUnitFunctor.{w} C) ≅ PUnit) := by
   refine ⟨fun _ => ⟨colimitConstPUnitIsoPUnit.{w} C⟩, fun ⟨h⟩ => ?_⟩
   have : Nonempty C := nonempty_of_nonempty_colimit <| Nonempty.map h.inv inferInstance
   refine zigzag_isConnected <| fun c d => ?_
-  refine zigzag_of_eqvGen_quot_rel _ (unitValuedFunctor C) ⟨c, PUnit.unit⟩ ⟨d, PUnit.unit⟩ ?_
+  refine zigzag_of_eqvGen_quot_rel _ (constPUnitFunctor C) ⟨c, PUnit.unit⟩ ⟨d, PUnit.unit⟩ ?_
   exact colimit_eq <| h.toEquiv.injective rfl
 
 end CategoryTheory.Limits.Types
