@@ -144,10 +144,10 @@ lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x 
     rw [Real.mul_rpow (by apply apply_nonneg) (by apply abs_nonneg)]
     cases' (div_max_sq_ge_one x hx) with H1 H2
     · apply mul_le_mul _ (by norm_cast) _ (by apply Real.rpow_nonneg (Complex.abs.nonneg _) k)
-      · simpa using (Real.rpow_le_rpow (r_pos _).le (auxbound1 z (x 1 / n) H1) hk)
+      · simpa [n] using (Real.rpow_le_rpow (r_pos _).le (auxbound1 z (x 1 / n) H1) hk)
       · positivity
     · apply mul_le_mul _ (by norm_cast) _ (by apply Real.rpow_nonneg (Complex.abs.nonneg _) k)
-      · simpa using (Real.rpow_le_rpow (r_pos _).le (auxbound2 z (x 0 / n) H2) hk)
+      · simpa [n] using (Real.rpow_le_rpow (r_pos _).le (auxbound2 z (x 0 / n) H2) hk)
       · positivity
   · simp only [ne_eq, not_not] at hk0
     simp only [hk0, Real.rpow_zero, Nat.cast_max, mul_one, le_refl]
@@ -176,7 +176,7 @@ theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) 
     · simp only [Nat.cast_max]
     · apply Real.rpow_pos_of_pos
       apply Complex.abs.pos (linear_ne_zero ![x 0, x 1] z ?_)
-      have := (Function.comp_inj_ne_zero x _ Int.cast_injective Int.cast_zero (γ := ℝ)).mpr hx2
+      have := (Function.comp_ne_zero_iff x  Int.cast_injective Int.cast_zero (γ := ℝ)).mpr hx2
       rw [← Iff.ne (Function.Injective.eq_iff (Equiv.injective (piFinTwoEquiv fun _ ↦ ℝ)))] at this
       simpa using this
     · apply mul_pos (Real.rpow_pos_of_pos (r_pos z) _)
@@ -252,7 +252,7 @@ lemma summable_upper_bound {k : ℤ} (h : 3 ≤ k) (z : ℍ) : Summable fun (x :
     · simpa using (box n).summable (f ∘ (piFinTwoEquiv _).symm)
     · simp only [Int.mem_box] at hx
       rw [← hx, one_div]
-      norm_cast
+      simp only [Nat.cast_max, one_div, Fin.isValue, Fin.cons_zero, Fin.cons_one, f]
   · intro y
     apply mul_nonneg
     · simp only [one_div, inv_nonneg]
