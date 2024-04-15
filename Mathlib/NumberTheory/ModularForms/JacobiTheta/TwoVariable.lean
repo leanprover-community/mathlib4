@@ -132,8 +132,8 @@ lemma summable_jacobiTheta₂_term_iff (z τ : ℂ) : Summable (jacobiTheta₂_t
         enter [1, n]
         rw [show -π * n ^ 2 * τ.im - 2 * π * n * z.im =
               n * (n * (-π * τ.im) - 2 * π * z.im) by ring]
-      refine tendsto_exp_atTop.comp (tendsto_nat_cast_atTop_atTop.atTop_mul_atTop ?_)
-      exact tendsto_atTop_add_const_right _ _ (tendsto_nat_cast_atTop_atTop.atTop_mul_const
+      refine tendsto_exp_atTop.comp (tendsto_natCast_atTop_atTop.atTop_mul_atTop ?_)
+      exact tendsto_atTop_add_const_right _ _ (tendsto_natCast_atTop_atTop.atTop_mul_const
         (mul_pos_of_neg_of_neg (neg_lt_zero.mpr pi_pos) hτ))
     · -- case im τ = 0: 3-way split according to `im z`
       simp_rw [← summable_norm_iff (E := ℂ), norm_jacobiTheta₂_term, hτ, mul_zero, zero_sub] at h
@@ -144,14 +144,14 @@ lemma summable_jacobiTheta₂_term_iff (z τ : ℂ) : Summable (jacobiTheta₂_t
         refine tendsto_exp_atTop.comp ?_
         simp only [tendsto_neg_atTop_iff, mul_assoc]
         apply Filter.Tendsto.const_mul_atBot two_pos
-        exact (tendsto_nat_cast_atTop_atTop.atTop_mul_neg_const hz).const_mul_atBot pi_pos
+        exact (tendsto_natCast_atTop_atTop.atTop_mul_neg_const hz).const_mul_atBot pi_pos
       · revert h
         simpa only [hz, mul_zero, neg_zero, Real.exp_zero, summable_const_iff] using one_ne_zero
       · have : ((-↑·) : ℕ → ℤ).Injective := fun _ _ ↦ by simp only [neg_inj, Nat.cast_inj, imp_self]
         replace h := (h.comp_injective this).tendsto_atTop_zero
         simp_rw [Function.comp_def, Int.cast_neg, Int.cast_natCast, mul_neg, neg_mul, neg_neg] at h
         refine atTop_neBot.ne (disjoint_self.mp <| h.disjoint (disjoint_nhds_atTop 0) ?_)
-        exact tendsto_exp_atTop.comp ((tendsto_nat_cast_atTop_atTop.const_mul_atTop
+        exact tendsto_exp_atTop.comp ((tendsto_natCast_atTop_atTop.const_mul_atTop
           (mul_pos two_pos pi_pos)).atTop_mul_const hz)
 
 lemma norm_jacobiTheta₂_term_fderiv_le (n : ℤ) (z τ : ℂ) :
