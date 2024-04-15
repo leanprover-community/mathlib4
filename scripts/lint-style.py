@@ -418,19 +418,34 @@ def parse_old_files_declarations():
     aligns = dict()
     for line in open('all_aligns.txt', 'r', encoding='utf-8'):
         line = line.strip()
-        if not line.startswith("#align "):
+        if line.startswith('--'):
+            continue # ignore a comment (with e.g. the mathlib revision this was from)
+        # Validate input: certain things indicate the input file was not generated
+        # carefully enough. Error on these lines and proceed.
+        if line.startswith(('#noalign ', '--#align', '-- #align')):
+            print(f'invalid input line {line}\nensure no #noalign or commented #aligns are present', file=sys.stderr)
             continue
+        elif not line.startswith('#align '):
+            print(f'error: unknown line: {line}', file=sys.stderr)
+            continue
+        # Remove any trailing comments.
+        if '--' in line:
+            line = line[0:line.index('--')].rstrip()
         parts = line.split(' ')
         if len(parts) != 3:
+            print(f'invalid line, ignoring: "{line}"', file=sys.stderr)
             continue
+        # TODO: strip a trailing ₓ (i.e., in new_decl); add tests for this??
         _align, old_decl, new_decl = parts
         aligns[old_decl] = new_decl
     # Just the names of the new declarations.
     new_decl_names = [s.split('.')[-1] for s in aligns.values()]
     old_files = []
     for line in open('align_imports.txt', 'r', encoding='utf-8'):
-        if not line.startswith("#align_import ") or " from " not in line:
+        if line.startswith('--'):
             continue
+        elif not line.startswith("#align_import ") or " from " not in line:
+            print(f'unknown line, ignoring: "{line}"', file=sys.stderr)
         line = line[len("#align_import "):]
         old_file = line[:line.find(' from ')]
         old_files.append(old_file)
