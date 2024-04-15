@@ -115,7 +115,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     rw [Submodule.map_le_iff_le_comap]
     intro y hy
     simp only [Submodule.mem_comap, mem_engel_iff, mem_coe_submodule]
-    use (k+1)
+    use k+1
     clear hk; revert hy
     generalize k+1 = k
     induction k generalizing y with

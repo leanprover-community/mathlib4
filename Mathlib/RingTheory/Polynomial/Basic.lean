@@ -273,7 +273,7 @@ theorem frange_one : frange (1 : R[X]) ⊆ {1} := by
 
 theorem coeff_mem_frange (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n ∈ p.frange := by
   classical
-  simp only [frange, exists_prop, mem_support_iff, (Finset.mem_image), Ne]
+  simp only [frange, exists_prop, mem_support_iff, Finset.mem_image, Ne]
   exact ⟨n, h, rfl⟩
 #align polynomial.coeff_mem_frange Polynomial.coeff_mem_frange
 
