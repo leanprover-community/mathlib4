@@ -46,6 +46,10 @@ theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
 #align subgroup.center_to_submonoid Subgroup.center_toSubmonoid
 #align add_subgroup.center_to_add_submonoid AddSubgroup.center_toAddSubmonoid
 
+instance center.isCommutative : (center G).IsCommutative :=
+  ⟨⟨fun a b => Subtype.ext (b.2.comm a).symm⟩⟩
+#align subgroup.center.is_commutative Subgroup.center.isCommutative
+
 /-- For a group with zero, the center of the units is the same as the units of the center. -/
 @[simps! apply_val_coe symm_apply_coe_val]
 def centerUnitsEquivUnitsCenter (G₀ : Type*) [GroupWithZero G₀] :

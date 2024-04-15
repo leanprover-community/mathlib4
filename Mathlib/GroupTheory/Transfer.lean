@@ -5,6 +5,7 @@ Authors: Thomas Browning
 -/
 import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Sylow
+import Mathlib.GroupTheory.Subgroup.Center
 
 #align_import group_theory.transfer from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
