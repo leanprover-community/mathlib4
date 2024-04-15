@@ -74,9 +74,6 @@ We use the following type variables in this file:
 * `G`, `G'` : normed vector spaces over `𝕜`.
 -/
 
-
-instance {α β : Type*} [IsEmpty α] : Unique (α ↪ β) := by infer_instance
-
 universe u v v' wE wE₁ wE' wEi wG wG'
 
 section Seminorm
@@ -796,9 +793,6 @@ variable {𝕜 E G}
 lemma apply_apply {m : ∀ i, E i} {c : ContinuousMultilinearMap 𝕜 E G} :
     (apply 𝕜 E G m) c = c m := rfl
 
-
-
-
 end ContinuousMultilinearMap
 
 /-- If a continuous multilinear map is constructed from a multilinear map via the constructor
@@ -1409,20 +1403,8 @@ lemma norm_iteratedFDerivComponent_le {α : Type*} [Fintype α] [DecidableEq ι]
   _ = ‖f‖ * ‖x‖ ^ (Fintype.card {a : ι // a ∉ s}) := by rw [prod_const, card_univ]
   _ = ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := by simp [Fintype.card_congr e]
 
-variable (𝕜) in
-/-- Given a function `f : α → ι`, it induces a continuous linear function by right composition on
-product types. For `f = Subtype.val`, this corresponds to forgetting some set of variables. -/
-def Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → E₁ i) →L[𝕜] ((i : α) → E₁ (f i)) where
-  toFun := fun v i ↦ v (f i)
-  map_add' := by intros; ext; simp
-  map_smul' := by intros; ext; simp
-  cont := by continuity
-
-@[simp] lemma Pi.compRightL_apply {α : Type*} (f : α → ι) (v : (i : ι) → E₁ i) (i : α) :
-    Pi.compRightL 𝕜 f v i = v (f i) := rfl
-
 open Classical in
-/-- The `k`-thi terated derivative of a continuous multilinear map `f` at the point `x`. It is a
+/-- The `k`-th iterated derivative of a continuous multilinear map `f` at the point `x`. It is a
 continuous multilinear map of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
 to `∑ f (x₁, (v_{i_1})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one
 of the `(vᵢ)ⱼ`, where each `vᵢ` has to be used exactly once.
@@ -1434,7 +1416,7 @@ The fact that this is indeed the iterated Fréchet derivative is proved in
 -/
 protected def iteratedFDeriv (f : ContinuousMultilinearMap 𝕜 E₁ G) (k : ℕ) (x : (i : ι) → E₁ i) :
     ContinuousMultilinearMap 𝕜 (fun (_ : Fin k) ↦ (∀ i, E₁ i)) G :=
-  ∑ e : Fin k ↪ ι, iteratedFDerivComponent f e.toEquivRange (Pi.compRightL 𝕜 Subtype.val x)
+  ∑ e : Fin k ↪ ι, iteratedFDerivComponent f e.toEquivRange (Pi.compRightL 𝕜 _ Subtype.val x)
 
 /-- Controlling the norm of `f.iteratedFDeriv` when `f` is continuous multilinear. For the same
 bound on the iterated derivative of `f` in the calculus sense,

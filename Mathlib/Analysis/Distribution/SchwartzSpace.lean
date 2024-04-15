@@ -667,8 +667,10 @@ open MeasureTheory FiniteDimensional
 class _root_.MeasureTheory.Measure.HasTemperateGrowth (μ : Measure D) : Prop :=
   exists_integrable : ∃ (n : ℕ), Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ
 
-def _root_.MeasureTheory.Measure.integrablePower (μ : Measure D) [h : μ.HasTemperateGrowth] : ℕ :=
-  h.exists_integrable.choose
+/-- An integer exponent `l` such that `(1 + ‖x‖) ^ (-l)` is integrable if `μ` has
+temperate growth. -/
+def _root_.MeasureTheory.Measure.integrablePower (μ : Measure D) : ℕ :=
+  if h : μ.HasTemperateGrowth then h.exists_integrable.choose else 0
 
 lemma integrable_pow_neg_integrablePower
     (μ : Measure D) [h : μ.HasTemperateGrowth] :
@@ -981,11 +983,10 @@ def compCLMOfAntilipschitz {K : ℝ≥0} {g : D → E}
     apply h'g.le_mul_dist
   _ ≤ K * (‖g x‖ + ‖g 0‖) := by
     gcongr
-    apply norm_sub_le
-
+    exact norm_sub_le _ _
   _ ≤ K * (‖g x‖ + max 1 ‖g 0‖) := by
     gcongr
-    apply le_max_right
+    exact le_max_right _ _
   _ ≤ (K * max 1 ‖g 0‖ : ℝ) * (1 + ‖g x‖) ^ 1 := by
     simp only [mul_add, add_comm (K * ‖g x‖), pow_one, mul_one, add_le_add_iff_left]
     gcongr
