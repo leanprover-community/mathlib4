@@ -66,9 +66,9 @@ Instead of directly providing the data we opt instead for a `Prop` class. In all
 the continuous functional calculus is uniquely determined, and utilizing this approach
 prevents diamonds or problems arising from multiple instances. -/
 class NonUnitalContinuousFunctionalCalculus (R : Type*) {A : Type*} (p : outParam (A → Prop))
-    [Semifield R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-    [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [Module R A] [IsScalarTower R A A]
-    [SMulCommClass R A A] : Prop where
+    [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [TopologicalSemiring R]
+    [ContinuousStar R] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [Module R A]
+    [IsScalarTower R A A] [SMulCommClass R A A] : Prop where
   exists_cfc_of_predicate : ∀ a, p a → ∃ φ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A,
     ClosedEmbedding φ ∧ φ ⟨(ContinuousMap.id R).restrict <| σₙ R a, rfl⟩ = a ∧
       (∀ f, σₙ R (φ f) = Set.range f) ∧ ∀ f, p (φ f)
@@ -81,7 +81,7 @@ and the more common variant `cfcₙ_comp`.
 
 This class will have instances in each of the common cases `ℂ`, `ℝ` and `ℝ≥0` as a consequence of
 the Stone-Weierstrass theorem. -/
-class UniqueNonUnitalContinuousFunctionalCalculus (R A : Type*) [Semifield R] [StarRing R]
+class UniqueNonUnitalContinuousFunctionalCalculus (R A : Type*) [CommSemiring R] [StarRing R]
     [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
     [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] : Prop where
   eq_of_continuous_of_map_id (s : Set R) [CompactSpace s] [Zero s] (h0 : (0 : s) = (0 : R))
@@ -90,7 +90,9 @@ class UniqueNonUnitalContinuousFunctionalCalculus (R A : Type*) [Semifield R] [S
     φ = ψ
   compactSpace_quasispectrum (a : A) : CompactSpace (σₙ R a)
 
-variable {R A : Type*} {p : A → Prop} [Semifield R] [StarRing R] [MetricSpace R]
+section Main
+
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R]
 variable [TopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
 variable [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 variable [NonUnitalContinuousFunctionalCalculus R p]
@@ -224,6 +226,18 @@ lemma cfcₙHom_eq_cfcₙ_extend {a : A} (g : R → R) (ha : p a) (f : C(σₙ R
     exact map_zero f
   rw [cfcₙ_apply ..]
   congr!
+
+lemma cfcₙ_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
+    (haf : ∀ (hf : ContinuousOn f (σₙ R a)) h0 ha, P (cfcₙHom ha ⟨⟨_, hf.restrict⟩, h0⟩)) :
+    P (cfcₙ f a) := by
+  by_cases h : ContinuousOn f (σₙ R a) ∧ f 0 = 0 ∧ p a
+  · rw [cfcₙ_apply f a h.1 h.2.1 h.2.2]
+    exact haf h.1 h.2.1 h.2.2
+  · simp only [not_and_or] at h
+    obtain (h | h | h) := h
+    · rwa [cfcₙ_apply_of_not_continuousOn _ h]
+    · rwa [cfcₙ_apply_of_not_map_zero _ h]
+    · rwa [cfcₙ_apply_of_not_predicate _ h]
 
 variable (R) in
 lemma cfcₙ_id : cfcₙ (id : R → R) a = a :=
@@ -387,6 +401,9 @@ lemma eq_zero_of_quasispectrum_eq_zero (h_spec : σₙ R a ⊆ {0}) (ha : p a :=
   simpa [cfcₙ_id R a] using cfcₙ_congr (a := a) (f := id) (g := fun _ : R ↦ 0) fun x ↦ by simp_all
 
 end CFCn
+
+end Main
+
 section Neg
 
 variable {R A : Type*} {p : A → Prop} [Field R] [StarRing R] [MetricSpace R]
@@ -428,3 +445,148 @@ lemma cfcₙ_comp_neg (hf : ContinuousOn f ((- ·) '' (σₙ R a)) := by cfc_con
   rw [cfcₙ_comp' .., cfcₙ_neg_id _]
 
 end Neg
+
+section Order
+
+section Semiring
+
+instance ContinuousMapZero.instStarOrderedRing {α R : Type*} [TopologicalSpace α] [Zero α]
+    [TopologicalSpace R] [OrderedCommSemiring R] [NoZeroDivisors R] [StarRing R] [StarOrderedRing R]
+    [TopologicalSemiring R] [ContinuousStar R] [StarOrderedRing C(α, R)] :
+    StarOrderedRing C(α, R)₀ where
+  le_iff f g := by
+    have foo (x : R) (hx : star x * x ≤ 0) : x = 0 := by
+      replace hx := le_antisymm hx (star_mul_self_nonneg x)
+      obtain (h | rfl) := mul_eq_zero.mp hx
+      · simpa using congr(star $(h))
+      · rfl
+    rw [le_def, ← ContinuousMap.coe_coe, ← ContinuousMap.coe_coe g, ← ContinuousMap.le_def,
+      StarOrderedRing.le_iff]
+    constructor
+    · rintro ⟨p, hp₁, hp₂⟩
+      induction hp₁ using AddSubmonoid.closure_induction' generalizing f g with
+      | mem s hs =>
+        obtain ⟨s, rfl⟩ := hs
+        have hs₀ : (star s * s) 0 = 0 := by simpa using congr($(hp₂) 0).symm
+        have hs₀' : s 0 = 0 := by
+          obtain (h | h) := mul_eq_zero.mp hs₀
+          · simpa using congr(star $(h))
+          · exact h
+        use ⟨star s * s, by simpa using congr($(hp₂) 0).symm⟩
+        constructor
+        · apply AddSubmonoid.subset_closure
+          exact ⟨⟨s, hs₀'⟩, rfl⟩
+        · ext x
+          simpa using congr($(hp₂) x)
+      | one =>
+        use 0, zero_mem _
+        ext x
+        exact congr($(hp₂) x)
+      | mul p₁ hp₁_mem p₂ hp₂_mem h₁ h₂ =>
+        rw [← add_assoc] at hp₂
+        obtain ⟨p', rfl⟩ := h₂ _
+        sorry
+
+
+
+      --induction hp using AddSubmonoid.closure_induction'
+    · sorry
+
+#exit
+variable {R A : Type*} {p : A → Prop} [OrderedCommSemiring R] [Nontrivial R] [StarRing R]
+variable [StarOrderedRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
+variable [∀ (α) [TopologicalSpace α], StarOrderedRing C(α, R)]
+variable [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
+variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
+variable [NonUnitalContinuousFunctionalCalculus R p] [NonnegSpectrumClass R A]
+
+
+
+
+lemma cfcHomₙ_mono {a : A} (ha : p a) {f g : C(σₙ R a, R)₀} (hfg : f ≤ g) :
+    cfcHomₙ ha f ≤ cfcHomₙ ha g :=
+  OrderHomClass.mono (cfcHomₙ ha) hfg
+
+lemma cfcHomₙ_nonneg_iff {a : A} (ha : p a) {f : C(σₙ R a, R)} :
+    0 ≤ cfcHomₙ ha f ↔ 0 ≤ f := by
+  constructor
+  · exact fun hf x ↦ (cfcHomₙ_map_spectrum ha (R := R) _ ▸ spectrum_nonneg_of_nonneg hf) ⟨x, rfl⟩
+  · simpa using (cfcHomₙ_mono ha (f := 0) (g := f) ·)
+
+lemma cfcₙ_mono {f g : R → R} {a : A} (h : ∀ x ∈ σₙ R a, f x ≤ g x)
+    (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac)
+    (hg : ContinuousOn g (σₙ R a) := by cfc_cont_tac)
+    (hf0 : f 0 = 0) (hg0 : g 0 = 0) :
+    cfcₙ f a ≤ cfcₙ g a := by
+  by_cases ha : p a
+  · rw [cfcₙ_apply f a, cfcₙ_apply g a]
+    exact cfcHomₙ_mono ha fun x ↦ h x.1 x.2
+  · simp only [cfc_apply_of_not_predicate _ ha, le_rfl]
+
+lemma cfc_nonneg_iff (f : R → R) (a : A) (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac)
+    (h0 : f 0 = 0) (ha : p a := by cfc_tac) : 0 ≤ cfcₙ f a ↔ ∀ x ∈ σₙ R a, 0 ≤ f x := by
+  rw [cfcₙ_apply .., cfcHomₙ_nonneg_iff, ContinuousMap.le_def]
+  simp
+
+lemma cfc_nonneg {f : R → R} {a : A} (h : ∀ x ∈ σₙ R a, 0 ≤ f x) :
+    0 ≤ cfcₙ f a := by
+  by_cases hf : ContinuousOn f (σₙ R a)
+  · simpa using cfc_mono h
+  · simp only [cfc_apply_of_not_continuousOn _ hf, le_rfl]
+
+lemma cfc_nonpos (f : R → R) (a : A) (h : ∀ x ∈ σₙ R a, f x ≤ 0) :
+    cfcₙ f a ≤ 0 := by
+  by_cases hf : ContinuousOn f (σₙ R a)
+  · simpa using cfc_mono h
+  · simp only [cfc_apply_of_not_continuousOn _ hf, le_rfl]
+
+lemma cfc_le_algebraMap (f : R → R) (r : R) (a : A) (h : ∀ x ∈ σₙ R a, f x ≤ r)
+    (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
+    cfcₙ f a ≤ algebraMap R A r :=
+  cfc_const r a ▸ cfc_mono h
+
+lemma algebraMap_le_cfcₙ (f : R → R) (r : R) (a : A) (h : ∀ x ∈ σₙ R a, r ≤ f x)
+    (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
+    algebraMap R A r ≤ cfcₙ f a :=
+  cfc_const r a ▸ cfc_mono h
+
+lemma cfc_le_one (f : R → R) (a : A) (h : ∀ x ∈ σₙ R a, f x ≤ 1) : cfcₙ f a ≤ 1 := by
+  apply cfc_cases (· ≤ 1) _ _ (by simpa using star_mul_self_nonneg (1 : A)) fun hf ha ↦ ?_
+  rw [← map_one (cfcHomₙ ha (R := R))]
+  apply cfcHomₙ_mono ha
+  simpa [ContinuousMap.le_def] using h
+
+lemma one_le_cfcₙ (f : R → R) (a : A) (h : ∀ x ∈ σₙ R a, 1 ≤ f x)
+    (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
+    1 ≤ cfcₙ f a := by
+  simpa using algebraMap_le_cfcₙ f 1 a h
+
+end Semiring
+
+section Ring
+
+variable {R A : Type*} {p : A → Prop} [OrderedCommRing R] [StarRing R]
+variable [MetricSpace R] [TopologicalRing R] [ContinuousStar R]
+variable [∀ (α) [TopologicalSpace α], StarOrderedRing C(α, R)]
+variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
+variable [Algebra R A] [StarModule R A] [ContinuousFunctionalCalculus R p]
+variable [NonnegSpectrumClass R A]
+
+lemma cfcHomₙ_le_iff {a : A} (ha : p a) {f g : C(spectrum R a, R)} :
+    cfcHomₙ ha f ≤ cfcHomₙ ha g ↔ f ≤ g := by
+  rw [← sub_nonneg, ← map_sub, cfcHomₙ_nonneg_iff, sub_nonneg]
+
+lemma cfc_le_iff (f g : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
+    (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
+    cfcₙ f a ≤ cfcₙ g a ↔ ∀ x ∈ spectrum R a, f x ≤ g x := by
+  rw [cfc_apply f a, cfc_apply g a, cfcHomₙ_le_iff (show p a from ha), ContinuousMap.le_def]
+  simp
+
+lemma cfc_nonpos_iff (f : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
+    (ha : p a := by cfc_tac) : cfcₙ f a ≤ 0 ↔ ∀ x ∈ spectrum R a, f x ≤ 0 := by
+  simp_rw [← neg_nonneg, ← cfc_neg]
+  exact cfc_nonneg_iff (fun x ↦ -f x) a
+
+end Ring
+
+end Order
