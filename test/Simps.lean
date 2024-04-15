@@ -893,7 +893,7 @@ example (x : Bool) {z} (h : id x = z) : myRingHom x = z := by
 -- set_option trace.simps.debug true
 
 @[to_additive (attr := simps) instAddProd]
-instance {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨fun p q ↦ ⟨p.1 * q.1, p.2 * q.2⟩⟩
+instance instMulProd {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨fun p q ↦ ⟨p.1 * q.1, p.2 * q.2⟩⟩
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
