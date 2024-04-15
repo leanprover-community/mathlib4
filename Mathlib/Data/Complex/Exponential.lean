@@ -1614,7 +1614,7 @@ theorem cos_one_pos : 0 < cos 1 :=
 
 theorem cos_two_neg : cos 2 < 0 :=
   calc cos 2 = cos (2 * 1) := congr_arg cos (mul_one _).symm
-    _ = _ := (Real.cos_two_mul 1)
+    _ = _ := Real.cos_two_mul 1
     _ ≤ 2 * (2 / 3) ^ 2 - 1 := by
       gcongr
       · exact cos_one_pos.le
