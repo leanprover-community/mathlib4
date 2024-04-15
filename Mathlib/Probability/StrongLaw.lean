@@ -192,7 +192,7 @@ theorem integral_truncation_le_integral_of_nonneg (hf : Integrable f μ) (h'f : 
   · exact truncation_nonneg _ (h'f x)
   · calc
       truncation f A x ≤ |truncation f A x| := le_abs_self _
-      _ ≤ |f x| := (abs_truncation_le_abs_self _ _ _)
+      _ ≤ |f x| := abs_truncation_le_abs_self _ _ _
       _ = f x := abs_of_nonneg (h'f x)
 #align probability_theory.integral_truncation_le_integral_of_nonneg ProbabilityTheory.integral_truncation_le_integral_of_nonneg
 

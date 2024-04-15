@@ -159,8 +159,8 @@ theorem infEdist_closure : infEdist x (closure s) = infEdist x s := by
   obtain ⟨z : α, zs : z ∈ s, dyz : edist y z < ↑ε / 2⟩ := EMetric.mem_closure_iff.1 ycs (ε / 2) ε0
   calc
     infEdist x s ≤ edist x z := infEdist_le_edist_of_mem zs
-    _ ≤ edist x y + edist y z := (edist_triangle _ _ _)
-    _ ≤ infEdist x (closure s) + ε / 2 + ε / 2 := (add_le_add (le_of_lt hy) (le_of_lt dyz))
+    _ ≤ edist x y + edist y z := edist_triangle _ _ _
+    _ ≤ infEdist x (closure s) + ε / 2 + ε / 2 := add_le_add (le_of_lt hy) (le_of_lt dyz)
     _ = infEdist x (closure s) + ↑ε := by rw [add_assoc, ENNReal.add_halves]
 #align emetric.inf_edist_closure EMetric.infEdist_closure
 

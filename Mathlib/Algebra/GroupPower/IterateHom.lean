@@ -175,12 +175,13 @@ section Semigroup
 
 variable [Semigroup G] {a b c : G}
 
--- Porting note (#10971): need `dsimp only`, see https://leanprover.zulipchat.com/#narrow/stream/
+-- Porting note(#12129): additional beta reduction needed
+-- see also https://leanprover.zulipchat.com/#narrow/stream/
 -- 287929-mathlib4/topic/dsimp.20before.20rw/near/317063489
 @[to_additive]
 theorem SemiconjBy.function_semiconj_mul_left (h : SemiconjBy a b c) :
     Function.Semiconj (a * ·) (b * ·) (c * ·) := fun j => by
-  dsimp only; rw [← mul_assoc, h.eq, mul_assoc]
+  beta_reduce; rw [← mul_assoc, h.eq, mul_assoc]
 #align semiconj_by.function_semiconj_mul_left SemiconjBy.function_semiconj_mul_left
 #align add_semiconj_by.function_semiconj_add_left AddSemiconjBy.function_semiconj_add_left
 

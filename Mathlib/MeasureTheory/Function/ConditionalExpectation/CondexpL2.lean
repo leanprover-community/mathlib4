@@ -475,7 +475,7 @@ theorem set_integral_condexpL2_indicator (hs : MeasurableSet[m] s) (ht : Measura
     ∫ x in s, (condexpL2 ℝ ℝ hm (indicatorConstLp 2 ht hμt 1) : α → ℝ) x ∂μ =
         ∫ x in s, indicatorConstLp 2 ht hμt (1 : ℝ) x ∂μ :=
       @integral_condexpL2_eq α _ ℝ _ _ _ _ _ _ _ _ _ hm (indicatorConstLp 2 ht hμt (1 : ℝ)) hs hμs
-    _ = (μ (t ∩ s)).toReal • (1 : ℝ) := (set_integral_indicatorConstLp (hm s hs) ht hμt 1)
+    _ = (μ (t ∩ s)).toReal • (1 : ℝ) := set_integral_indicatorConstLp (hm s hs) ht hμt 1
     _ = (μ (t ∩ s)).toReal := by rw [smul_eq_mul, mul_one]
 #align measure_theory.set_integral_condexp_L2_indicator MeasureTheory.set_integral_condexpL2_indicator
 

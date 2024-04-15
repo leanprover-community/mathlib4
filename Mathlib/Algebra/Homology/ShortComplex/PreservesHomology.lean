@@ -763,7 +763,7 @@ instance quasiIso_map_of_preservesLeftHomology
 
 lemma quasiIso_map_iff_of_preservesLeftHomology
     [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂]
-    [ReflectsIsomorphisms F] :
+    [F.ReflectsIsomorphisms] :
     QuasiIso (F.mapShortComplex.map φ) ↔ QuasiIso φ := by
   have γ : LeftHomologyMapData φ S₁.leftHomologyData S₂.leftHomologyData := default
   rw [γ.quasiIso_iff, (γ.map F).quasiIso_iff, LeftHomologyMapData.map_φH]
@@ -785,7 +785,7 @@ instance quasiIso_map_of_preservesRightHomology
 
 lemma quasiIso_map_iff_of_preservesRightHomology
     [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂]
-    [ReflectsIsomorphisms F] :
+    [F.ReflectsIsomorphisms] :
     QuasiIso (F.mapShortComplex.map φ) ↔ QuasiIso φ := by
   have γ : RightHomologyMapData φ S₁.rightHomologyData S₂.rightHomologyData := default
   rw [γ.quasiIso_iff, (γ.map F).quasiIso_iff, RightHomologyMapData.map_φH]
