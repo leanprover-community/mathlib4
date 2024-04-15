@@ -667,6 +667,7 @@ open MeasureTheory FiniteDimensional
 class _root_.MeasureTheory.Measure.HasTemperateGrowth (μ : Measure D) : Prop :=
   exists_integrable : ∃ (n : ℕ), Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ
 
+open Classical in
 /-- An integer exponent `l` such that `(1 + ‖x‖) ^ (-l)` is integrable if `μ` has
 temperate growth. -/
 def _root_.MeasureTheory.Measure.integrablePower (μ : Measure D) : ℕ :=
@@ -674,8 +675,9 @@ def _root_.MeasureTheory.Measure.integrablePower (μ : Measure D) : ℕ :=
 
 lemma integrable_pow_neg_integrablePower
     (μ : Measure D) [h : μ.HasTemperateGrowth] :
-    Integrable (fun x ↦ (1 + ‖x‖) ^ (- (μ.integrablePower : ℝ))) μ :=
-  h.exists_integrable.choose_spec
+    Integrable (fun x ↦ (1 + ‖x‖) ^ (- (μ.integrablePower : ℝ))) μ := by
+  simp [Measure.integrablePower, h]
+  exact h.exists_integrable.choose_spec
 
 instance _root_.MeasureTheory.Measure.IsFiniteMeasure.instHasTemperateGrowth {μ : Measure D}
     [h : IsFiniteMeasure μ] : μ.HasTemperateGrowth := ⟨⟨0, by simp⟩⟩
