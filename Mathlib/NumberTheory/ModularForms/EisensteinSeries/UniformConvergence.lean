@@ -28,18 +28,17 @@ namespace EisensteinSeries
 section bounding_functions
 
 /-- Auxiliary function used for bounding Eisenstein series-/
-def r1 (z : ℍ) : ℝ := ((z.im ^ 2) / (z.re ^ 2 + z.im ^ 2))
+def r1 (z : ℍ) : ℝ := z.im ^ 2 / (z.re ^ 2 + z.im ^ 2)
 
 lemma r1' (z : ℍ) : r1 z = 1 / ((z.re / z.im) ^ 2 + 1) := by
   field_simp [r1, im_pos z]
 
 theorem r1_pos (z : ℍ) : 0 < r1 z := by
-  have H2 : 0 < (z.re ^ 2 + z.im ^ 2) := by
-    apply_rules [pow_pos, add_pos_of_nonneg_of_pos, pow_two_nonneg, z.2]
-  exact div_pos (pow_pos z.im_pos 2) H2
+  dsimp only [r1]
+  positivity
 
 /-- This function is used to give an upper bound on Eisenstein series-/
-def r (z : ℍ) : ℝ := min (z.im) (Real.sqrt (r1 z))
+def r (z : ℍ) : ℝ := min z.im (Real.sqrt (r1 z))
 
 lemma r_pos (z : ℍ) : 0 < r z := by
   simp only [r, lt_min_iff, im_pos, Real.sqrt_pos, r1_pos, and_self]
@@ -55,7 +54,7 @@ lemma r1_aux_bound (z : ℍ) (δ : ℝ) {ε : ℝ} (hε : 1 ≤ ε^2) :
     apply mul_nonneg
     · linarith
     · apply pow_two_nonneg
-  · apply_rules [add_pos_of_nonneg_of_pos, pow_two_nonneg, (pow_pos z.im_pos 2)]
+  · positivity
 
 lemma auxbound1 (z : ℍ) {δ : ℝ} (ε : ℝ) (hδ : 1 ≤ δ ^ 2) : r z ≤ Complex.abs (δ * (z : ℂ) + ε) := by
   rw [r, Complex.abs]
@@ -65,8 +64,8 @@ lemma auxbound1 (z : ℍ) {δ : ℝ} (ε : ℝ) (hδ : 1 ≤ δ ^ 2) : r z ≤ C
       simp only [mul_im, ofReal_re, coe_im, ofReal_im, coe_re, zero_mul, add_zero]
       ring
     rw [Real.le_sqrt', h1]
-    nlinarith
-    exact z.2
+    · nlinarith
+    · exact z.2
   simp only [UpperHalfPlane.coe_im, UpperHalfPlane.coe_re, AbsoluteValue.coe_mk, MulHom.coe_mk,
     min_le_iff] at *
   left
@@ -88,13 +87,10 @@ lemma auxbound2 (z : ℍ) (δ : ℝ) {ε : ℝ} (hε : 1 ≤ ε ^ 2) : r z ≤ C
   exact H1
 
 lemma ne_zero_if_max {x : Fin 2 → ℤ} (hx : x ≠ 0)
-    (h : (max (x 0).natAbs (x 1).natAbs) = (x 0).natAbs) : (x 0) ≠ 0 := by
-  intro h0
-  rw [h0] at h
-  simp only [ne_eq, Int.natAbs_zero, ge_iff_le, zero_le, max_eq_right, Int.natAbs_eq_zero] at *
-  have : x = ![x 0, x 1] := List.ofFn_inj.mp rfl
-  rw [h0, h] at this
-  simp only [this, Matrix.cons_eq_zero_iff, Matrix.zero_empty, and_self, not_true_eq_false] at hx
+    (h : max (x 0).natAbs (x 1).natAbs = (x 0).natAbs) : x 0 ≠ 0 := by
+  contrapose! hx
+  ext x
+  fin_cases x <;> aesop
 
 lemma ne_zero_if_max' {x : Fin 2 → ℤ} (hx : x ≠ 0)
     (h : (max (x 0).natAbs (x 1).natAbs) = (x 1).natAbs) : (x 1) ≠ 0 := by
@@ -107,23 +103,9 @@ lemma ne_zero_if_max' {x : Fin 2 → ℤ} (hx : x ≠ 0)
 lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     (1 : ℝ) ≤ (x 0 / (max (x 0).natAbs (x 1).natAbs)) ^ 2 ∨
       (1 : ℝ) ≤ (x 1 / (max (x 0).natAbs (x 1).natAbs)) ^ 2 := by
-  cases' (max_choice (x 0).natAbs (x 1).natAbs) with H1 H2
-  · left
-    rw [H1, div_pow, Int.cast_natAbs (x 0), Int.cast_abs]
-    have : (x 0 : ℝ) ≠ 0 := by
-      simpa using (ne_zero_if_max hx H1)
-    have h1 : (x 0 : ℝ) ^ 2/(_root_.abs (x 0 : ℝ)) ^ 2 = 1 := by
-      simp only [_root_.sq_abs, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff,
-        this, div_self]
-    exact h1.symm.le
-  · right
-    rw [H2,div_pow, Int.cast_natAbs (x 1), Int.cast_abs]
-    have : (x 1 : ℝ) ≠ 0 := by
-      simpa using (ne_zero_if_max' hx H2)
-    have h1 : (x 1 : ℝ)^2/(_root_.abs (x 1 : ℝ))^2 = 1 := by
-      simp only [_root_.sq_abs, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff,
-        this, div_self]
-    exact h1.symm.le
+  refine (max_choice (x 0).natAbs (x 1).natAbs).imp (fun H1 => ?_) (fun H2 => ?_)
+  · simp [H1, Int.cast_natAbs, ne_zero_if_max hx H1]
+  · simp [H2, Int.cast_natAbs, ne_zero_if_max' hx H2]
 
 lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     ((r z) ^ k) * (max (x 0).natAbs (x 1).natAbs) ^ k ≤
@@ -131,7 +113,7 @@ lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x 
   by_cases hk0 : k ≠ 0
   · let n := max (x 0).natAbs (x 1).natAbs
     have hn0 : n ≠ 0 := by
-      rw [← Iff.ne ((mem_box_eq_zero_iff_eq_zero (α := ℤ × ℤ)) (x 0, x 1) (by simp)),
+      rw [← Iff.ne ((eq_zero_iff_eq_zero_of_mem_box  (α := ℤ × ℤ) (x := ((x 0, x 1)))) (by simp)),
         ← Iff.ne (Function.Injective.eq_iff (Equiv.injective (piFinTwoEquiv fun x ↦ ℤ)))] at *
       simpa using hx
     have h11 : ((x 0) * ↑z + (x 1)) =
@@ -167,7 +149,7 @@ theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) 
       simp only [h1, hn, CharP.cast_eq_zero, mul_zero, le_refl]
   · have hx2 : x ≠ 0 := by
       rw [← Iff.ne (Function.Injective.eq_iff (Equiv.injective (piFinTwoEquiv fun _ ↦ ℤ)))]
-      simpa using (Iff.ne ((mem_box_eq_zero_iff_eq_zero (α := ℤ × ℤ)) (x 0, x 1) hx)).mpr hn
+      simpa using (Iff.ne ((eq_zero_iff_eq_zero_of_mem_box (x := (x 0, x 1))) hx)).mpr hn
     simp only [Int.mem_box] at hx
     rw [Real.rpow_neg (by apply apply_nonneg), Real.rpow_neg ((r_pos z).le),
       Real.rpow_neg (Nat.cast_nonneg n), ← mul_inv, inv_le_inv]
@@ -281,7 +263,7 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
   apply tendstoUniformlyOn_tsum hu
   intro v x hx
   have := eis_is_bounded_on_box k (max (v.1 0).natAbs (v.1 1).natAbs) x v
-  simp only [Nat.cast_max, Int.coe_natAbs, iff_true, zpow_natCast, one_div, map_pow,
+  simp only [Nat.cast_max,Int.natCast_natAbs, iff_true, zpow_natCast, one_div, map_pow,
     map_mul, abs_ofReal, abs_natCast, mul_inv_rev, eisSummand, norm_inv, norm_pow, norm_eq_abs,
     ge_iff_le] at *
   apply le_trans (this (by simp only [Int.mem_box]))

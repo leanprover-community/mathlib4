@@ -394,15 +394,14 @@ def upperHalfPlaneSlice (A B : ℝ) :=
 theorem slice_mem_iff (A B : ℝ) (z : ℍ) :
     z ∈ upperHalfPlaneSlice A B ↔ Complex.abs z.1.1 ≤ A ∧ B ≤ Complex.abs z.1.2 := Iff.rfl
 
-lemma subset_slice_of_isCompact {K : Set ℍ} (hK : IsCompact K) : ∃ A B : ℝ, 0 < B ∧
-    K ⊆ upperHalfPlaneSlice A B := by
+lemma subset_slice_of_isCompact {K : Set ℍ} (hK : IsCompact K) :
+    ∃ A B : ℝ, 0 < B ∧ K ⊆ upperHalfPlaneSlice A B := by
   obtain rfl | hne := K.eq_empty_or_nonempty
-  exact ⟨1, 1, Real.zero_lt_one, by simp⟩
-  have hcts : ContinuousOn (fun t => t.im) K := by
-      apply Continuous.continuousOn UpperHalfPlane.continuous_im
+  · exact ⟨1, 1, Real.zero_lt_one, by simp⟩
+  have hcts : ContinuousOn (fun t => t.im) K := UpperHalfPlane.continuous_im.continuousOn
   obtain ⟨b, _, HB⟩ := IsCompact.exists_isMinOn hK hne hcts
   obtain ⟨r, _, hr2⟩ := Bornology.IsBounded.subset_closedBall_lt hK.isBounded 0 UpperHalfPlane.I
-  refine' ⟨Real.sinh r + Complex.abs ((UpperHalfPlane.center UpperHalfPlane.I r)), b.im, b.2, _⟩
+  refine ⟨Real.sinh r + Complex.abs (UpperHalfPlane.center UpperHalfPlane.I r), b.im, b.2, ?_⟩
   intro z hz
   simp only [I_im, slice_mem_iff, abs_ofReal, ge_iff_le] at *
   constructor
