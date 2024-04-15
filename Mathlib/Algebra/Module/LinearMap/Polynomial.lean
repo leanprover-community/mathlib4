@@ -277,7 +277,8 @@ lemma polyCharpolyAux_map_aeval
   exact DFunLike.ext _ _ fun f ↦ (MvPolynomial.eval_map (algebraMap R A) x f).symm
 
 open Algebra.TensorProduct MvPolynomial in
-lemma polyCharpolyAux_basisIndep (bₘ' : Basis ιM R M) :
+lemma polyCharpolyAux_basisIndep {ιM' : Type*} [Fintype ιM'] [DecidableEq ιM']
+    (bₘ' : Basis ιM' R M) :
     polyCharpolyAux φ b bₘ = polyCharpolyAux φ b bₘ' := by
   let f : Polynomial (MvPolynomial ι R) → Polynomial (MvPolynomial ι R) :=
     Polynomial.map (MvPolynomial.aeval X).toRingHom
@@ -285,7 +286,6 @@ lemma polyCharpolyAux_basisIndep (bₘ' : Basis ιM R M) :
     simp only [f, aeval_X_left, AlgHom.toRingHom_eq_coe, AlgHom.id_toRingHom, Polynomial.map_id]
     exact Polynomial.map_injective (RingHom.id _) Function.injective_id
   apply hf
-  dsimp only
   let _h1 : Module.Finite (MvPolynomial ι R) (TensorProduct R (MvPolynomial ι R) M) :=
     Module.Finite.of_basis (basis (MvPolynomial ι R) bₘ)
   let _h2 : Module.Free (MvPolynomial ι R) (TensorProduct R (MvPolynomial ι R) M) :=
@@ -316,6 +316,44 @@ lemma polyCharpolyAux_eval (i : ℕ) :
   rw [polyCharpolyAux_eval_eq_toMatrix_charpoly_coeff, LinearMap.charpoly_toMatrix]
 
 end module
+
+open FiniteDimensional Matrix
+
+variable [Module.Free R M] [Module.Finite R M] (b : Basis ι R L)
+
+/-- Let `L` and `M` be finite free modules over `R`,
+and let `φ : L →ₗ[R] Module.End R M` be a linear map.
+Let `b` be a basis of `L` and `bₘ` a basis of `M`.
+Then `LinearMap.polyCharpoly φ b` is the polynomial that evaluates on elements `x` of `L`
+to the characteristic polynomial of `φ x` acting on `M`. -/
+noncomputable
+def polyCharpoly : Polynomial (MvPolynomial ι R) :=
+  φ.polyCharpolyAux b (Module.Free.chooseBasis R M)
+
+lemma polyCharpoly_eq_polyCharpolyAux [DecidableEq ιM] (bₘ : Basis ιM R M) :
+    polyCharpoly φ b = φ.polyCharpolyAux b bₘ := by
+  rw [polyCharpoly, φ.polyCharpolyAux_basisIndep b (Module.Free.chooseBasis R M) bₘ]
+
+lemma polyCharpoly_monic : (polyCharpoly φ b).Monic :=
+  (charpoly.univ_monic R _).map _
+
+lemma polyCharpoly_ne_zero [Nontrivial R] : (polyCharpoly φ b) ≠ 0 :=
+  (polyCharpoly_monic _ _).ne_zero
+
+@[simp]
+lemma polyCharpoly_natDegree [Nontrivial R] [StrongRankCondition R] : -- remove [SRC]?
+    (polyCharpoly φ b).natDegree = finrank R M := by
+  rw [polyCharpoly, polyCharpolyAux, (charpoly.univ_monic _ _).natDegree_map,
+    charpoly.univ_natDegree, finrank_eq_card_chooseBasisIndex]
+
+lemma polyCharpoly_coeff_isHomogeneous (i j : ℕ) (hij : i + j = finrank R M)
+    [StrongRankCondition R] : -- remove [SRC]?
+    ((polyCharpoly φ b).coeff i).IsHomogeneous j := by
+  rw [polyCharpoly, polyCharpolyAux, Polynomial.coeff_map, ← one_mul j]
+  apply (charpoly.univ_coeff_isHomogeneous _ _ _ _ _).eval₂
+  · exact fun r ↦ MvPolynomial.isHomogeneous_C _ _
+  · exact LinearMap.toMvPolynomial_isHomogeneous _ _ _
+  · rw [hij, finrank_eq_card_chooseBasisIndex]
 
 end LinearMap
 
