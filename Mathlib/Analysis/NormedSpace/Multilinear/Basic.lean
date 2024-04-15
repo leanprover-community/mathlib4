@@ -958,7 +958,8 @@ sense. This shouldn't be needed. TODO: fix typeclass inference. -/
 def seminormedAddCommGroup_aux_for_smulRightL :
     SeminormedAddCommGroup
       (ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] ContinuousMultilinearMap 𝕜 E G) :=
-  by infer_instance
+  ContinuousLinearMap.toSeminormedAddCommGroup
+    (F := G →L[𝕜] ContinuousMultilinearMap 𝕜 E G) (σ₁₂ := RingHom.id 𝕜)
 
 attribute [local instance] seminormedAddCommGroup_aux_for_smulRightL
 
