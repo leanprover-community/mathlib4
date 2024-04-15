@@ -269,34 +269,35 @@ theorem continuousAt_equivIoc : ContinuousAt (equivIoc p a) x := by
 #align add_circle.continuous_at_equiv_Ioc AddCircle.continuousAt_equivIoc
 
 /-- The quotient map `𝕜 → AddCircle p` as a partial homeomorphism. -/
-def partialHomeomorphCoe [DiscreteTopology (zmultiples p)] : PartialHomeomorph 𝕜 (AddCircle p) :=
-  { toFun := (↑)
-    invFun := fun x ↦ equivIco p a x
-    source := Ioo a (a + p)
-    target := {↑a}ᶜ
-    map_source' := by
-      intro x hx hx'
-      exact hx.1.ne' ((coe_eq_coe_iff_of_mem_Ico (Ioo_subset_Ico_self hx)
-        (left_mem_Ico.mpr (lt_add_of_pos_right a hp.out))).mp hx')
-    map_target' := by
-      intro x hx
-      exact (eq_left_or_mem_Ioo_of_mem_Ico (equivIco p a x).2).resolve_left
-        (hx ∘ ((equivIco p a).symm_apply_apply x).symm.trans ∘ congrArg _)
-    left_inv' :=
-      fun x hx ↦ congrArg _ ((equivIco p a).apply_symm_apply ⟨x, Ioo_subset_Ico_self hx⟩)
-    right_inv' := fun x _ ↦ (equivIco p a).symm_apply_apply x
-    open_source := isOpen_Ioo
-    open_target := isOpen_compl_singleton
-    continuousOn_toFun := (AddCircle.continuous_mk' p).continuousOn
-    continuousOn_invFun := by
-      exact ContinuousAt.continuousOn
-        (fun _ ↦ continuousAt_subtype_val.comp ∘ continuousAt_equivIco p a) }
+def partialHomeomorphCoe [DiscreteTopology (zmultiples p)] :
+    PartialHomeomorph 𝕜 (AddCircle p) where
+  toFun := (↑)
+  invFun := fun x ↦ equivIco p a x
+  source := Ioo a (a + p)
+  target := {↑a}ᶜ
+  map_source' := by
+    intro x hx hx'
+    exact hx.1.ne' ((coe_eq_coe_iff_of_mem_Ico (Ioo_subset_Ico_self hx)
+      (left_mem_Ico.mpr (lt_add_of_pos_right a hp.out))).mp hx')
+  map_target' := by
+    intro x hx
+    exact (eq_left_or_mem_Ioo_of_mem_Ico (equivIco p a x).2).resolve_left
+      (hx ∘ ((equivIco p a).symm_apply_apply x).symm.trans ∘ congrArg _)
+  left_inv' :=
+    fun x hx ↦ congrArg _ ((equivIco p a).apply_symm_apply ⟨x, Ioo_subset_Ico_self hx⟩)
+  right_inv' := fun x _ ↦ (equivIco p a).symm_apply_apply x
+  open_source := isOpen_Ioo
+  open_target := isOpen_compl_singleton
+  continuousOn_toFun := (AddCircle.continuous_mk' p).continuousOn
+  continuousOn_invFun := by
+    exact ContinuousAt.continuousOn
+      (fun _ ↦ continuousAt_subtype_val.comp ∘ continuousAt_equivIco p a)
 
 lemma isLocalHomeomorph_coe [DiscreteTopology (zmultiples p)] [DenselyOrdered 𝕜] :
     IsLocalHomeomorph ((↑) : 𝕜 → AddCircle p) := by
   intro a
-  obtain ⟨b, hb⟩ := nonempty_Ioo_subtype (sub_lt_self a hp.out)
-  exact ⟨partialHomeomorphCoe p b, ⟨hb.2, lt_add_of_sub_right_lt hb.1⟩, rfl⟩
+  obtain ⟨b, hb1, hb2⟩ := exists_between (sub_lt_self a hp.out)
+  exact ⟨partialHomeomorphCoe p b, ⟨hb2, lt_add_of_sub_right_lt hb1⟩, rfl⟩
 
 end Continuity
 

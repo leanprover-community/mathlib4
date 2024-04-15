@@ -195,29 +195,17 @@ theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := 
   linarith
 #align add_circle.injective_to_circle AddCircle.injective_toCircle
 
-private noncomputable def homeomorphCircle' : AddCircle (2 * π) ≃ₜ circle :=
-  { toFun := Real.Angle.expMapCircle
-    invFun := fun x ↦ arg x
-    left_inv := Real.Angle.arg_expMapCircle
-    right_inv := expMapCircle_arg
-    continuous_toFun := continuous_coinduced_dom.mpr expMapCircle.continuous
-    continuous_invFun := by
-      let f : circle → Real.Angle := fun x ↦ arg x
-      change Continuous f
-      have hf : ∀ x y, f (x * y) = f x + f y := by
-        intro x y
-        conv_lhs => rw [← expMapCircle_arg x, ← expMapCircle_arg y, ← expMapCircle_add]
-        exact Real.Angle.arg_expMapCircle (arg x + arg y)
-      rw [continuous_iff_continuousAt]
-      intro x
-      have hg : f = (fun y ↦ y - f x⁻¹) ∘ f ∘ (fun y ↦ y * x⁻¹) := by
-        ext y
-        rw [comp_apply, comp_apply, hf, add_sub_cancel_right]
-      rw [hg]
-      exact (continuous_sub_right (f x⁻¹)).continuousAt.comp
-        (((continuousAt_arg_coe_angle (ne_zero_of_mem_circle _)).comp
-        (continuousAt_subtype_val)).comp
-        (continuous_mul_right x⁻¹).continuousAt) }
+private noncomputable def homeomorphCircle' : AddCircle (2 * π) ≃ₜ circle where
+  toFun := Real.Angle.expMapCircle
+  invFun := fun x ↦ arg x
+  left_inv := Real.Angle.arg_expMapCircle
+  right_inv := expMapCircle_arg
+  continuous_toFun := continuous_coinduced_dom.mpr expMapCircle.continuous
+  continuous_invFun := by
+    rw [continuous_iff_continuousAt]
+    intro x
+    apply (continuousAt_arg_coe_angle (ne_zero_of_mem_circle x)).comp
+      continuousAt_subtype_val
 
 /-- The homeomorphism between `AddCircle` and `circle`. -/
 noncomputable def homeomorphCircle (hT : T ≠ 0) : AddCircle T ≃ₜ circle :=
