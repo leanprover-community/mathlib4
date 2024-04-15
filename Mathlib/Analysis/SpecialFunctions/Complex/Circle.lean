@@ -197,6 +197,7 @@ theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := 
   linarith
 #align add_circle.injective_to_circle AddCircle.injective_toCircle
 
+/-- The homeomorphism between `AddCircle (2 * π)` and `circle`. -/
 noncomputable def homeomorphCircle' : AddCircle (2 * π) ≃ₜ circle where
   toFun := Angle.expMapCircle
   invFun := fun x ↦ arg x
