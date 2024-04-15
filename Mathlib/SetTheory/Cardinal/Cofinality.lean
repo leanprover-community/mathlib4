@@ -765,7 +765,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
       cases' Cardinal.lift_down h with a e
       refine' Quotient.inductionOn a (fun α e => _) e
       cases' Quotient.exact e with f
-      have f := Equiv.ulift.symm.trans f
+      let f := Equiv.ulift.symm.trans f
       let g a := (f a).1
       let o := succ (sup.{u, u} g)
       rcases H o with ⟨b, h, l⟩

@@ -245,7 +245,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
       rw [_root_.pow_zero, Fintype.sum_subsingleton]
       swap
         -- Porting note: Lean cannot infer this instance by itself
-      · have : Zero (Sym α 0) := Sym.instZeroSym
+      · let _ : Zero (Sym α 0) := Sym.instZeroSym
         exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
       convert (@one_mul R _ _).symm
       dsimp only

@@ -1015,10 +1015,10 @@ open QuotientGroup
 @[to_additive]
 theorem orderOf_dvd_card : orderOf x ∣ Fintype.card G := by
   classical
-    have ft_prod : Fintype ((G ⧸ zpowers x) × zpowers x) :=
+    let ft_prod : Fintype ((G ⧸ zpowers x) × zpowers x) :=
       Fintype.ofEquiv G groupEquivQuotientProdSubgroup
-    have ft_s : Fintype (zpowers x) := @Fintype.prodRight _ _ _ ft_prod _
-    have ft_cosets : Fintype (G ⧸ zpowers x) :=
+    let ft_s : Fintype (zpowers x) := @Fintype.prodRight _ _ _ ft_prod _
+    let ft_cosets : Fintype (G ⧸ zpowers x) :=
       @Fintype.prodLeft _ _ _ ft_prod ⟨⟨1, (zpowers x).one_mem⟩⟩
     have eq₁ : Fintype.card G = @Fintype.card _ ft_cosets * @Fintype.card _ ft_s :=
       calc

@@ -250,7 +250,7 @@ theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     G.Colorable n ↔ ∃ C : G.Coloring ℕ, ∀ v, C v < n := by
   constructor
   · rintro hc
-    have C : G.Coloring (Fin n) := hc.toColoring (by simp)
+    let C : G.Coloring (Fin n) := hc.toColoring (by simp)
     let f := Embedding.completeGraph (@Fin.valEmbedding n)
     use f.toHom.comp C
     intro v
@@ -451,8 +451,8 @@ theorem CompleteBipartiteGraph.chromaticNumber {V W : Type*} [Nonempty V] [Nonem
   rw [← Nat.cast_two, chromaticNumber_eq_iff_forall_surjective
     (by simpa using (CompleteBipartiteGraph.bicoloring V W).colorable)]
   intro C b
-  have v := Classical.arbitrary V
-  have w := Classical.arbitrary W
+  let v := Classical.arbitrary V
+  let w := Classical.arbitrary W
   have h : (completeBipartiteGraph V W).Adj (Sum.inl v) (Sum.inr w) := by simp
   by_cases he : C (Sum.inl v) = b
   · exact ⟨_, he⟩
@@ -467,7 +467,7 @@ theorem CompleteBipartiteGraph.chromaticNumber {V W : Type*} [Nonempty V] [Nonem
 theorem IsClique.card_le_of_coloring {s : Finset V} (h : G.IsClique s) [Fintype α]
     (C : G.Coloring α) : s.card ≤ Fintype.card α := by
   rw [isClique_iff_induce_eq] at h
-  have f : G.induce ↑s ↪g G := Embedding.comap (Function.Embedding.subtype fun x => x ∈ ↑s) G
+  let f : G.induce ↑s ↪g G := Embedding.comap (Function.Embedding.subtype fun x => x ∈ ↑s) G
   rw [h] at f
   convert Fintype.card_le_of_injective _ (C.comp f.toHom).injective_of_top_hom using 1
   simp

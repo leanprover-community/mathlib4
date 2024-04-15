@@ -299,7 +299,7 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
           rw [← sUnion_memPartition t n, union_comm, ← sUnion_union, union_diff_cancel hS_subset]
     · intro f h
       choose S hS_subset hS_eq using h
-      have : Fintype (⋃ n, (S n : Set (Set α))) := by
+      let _ : Fintype (⋃ n, (S n : Set (Set α))) := by
         refine (Finite.subset (finite_memPartition t n) ?_).fintype
         simp only [iUnion_subset_iff]
         exact hS_subset

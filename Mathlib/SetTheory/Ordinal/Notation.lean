@@ -405,8 +405,8 @@ theorem nfBelow_iff_topBelow {b} [NF b] : ∀ {o}, NFBelow o (repr b) ↔ NF o �
 instance decidableNF : DecidablePred NF
   | 0 => isTrue NF.zero
   | oadd e n a => by
-    have := decidableNF e
-    have := decidableNF a
+    let _ := decidableNF e
+    let _ := decidableNF a
     apply decidable_of_iff (NF e ∧ NF a ∧ TopBelow e a)
     rw [← and_congr_right fun h => @nfBelow_iff_topBelow _ h _]
     exact ⟨fun ⟨h₁, h₂⟩ => NF.oadd h₁ n h₂, fun h => ⟨h.fst, h.snd'⟩⟩
