@@ -16,6 +16,9 @@ import Mathlib.Analysis.Calculus.FDeriv.Add
 
 A function expressible as a power series at a point has a Frechet derivative there.
 Also the special case in terms of `deriv` when the domain is 1-dimensional.
+
+As an application, we show that continuous multilinear maps are smooth. We also compute their
+iterated derivatives, in `ContinuousMultilinearMap.iteratedFDeriv_eq`.
 -/
 
 open Filter Asymptotics
@@ -371,10 +374,10 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
   · intro n _hn x
     suffices H : curryLeft (f.iteratedFDeriv (Nat.succ n) x) = (∑ e : Fin n ↪ ι,
           ((iteratedFDerivComponent f e.toEquivRange).linearDeriv
-            (Pi.compRightL 𝕜 Subtype.val x)) ∘L (Pi.compRightL 𝕜 Subtype.val)) by
+            (Pi.compRightL 𝕜 _ Subtype.val x)) ∘L (Pi.compRightL 𝕜 _ Subtype.val)) by
       have A : HasFDerivAt (f.iteratedFDeriv n) (∑ e : Fin n ↪ ι,
-          ((iteratedFDerivComponent f e.toEquivRange).linearDeriv (Pi.compRightL 𝕜 Subtype.val x))
-            ∘L (Pi.compRightL 𝕜 Subtype.val)) x := by
+          ((iteratedFDerivComponent f e.toEquivRange).linearDeriv (Pi.compRightL 𝕜 _ Subtype.val x))
+            ∘L (Pi.compRightL 𝕜 _ Subtype.val)) x := by
         apply HasFDerivAt.sum (fun s _hs ↦ ?_)
         exact (ContinuousMultilinearMap.hasFDerivAt _ _).comp x (ContinuousLinearMap.hasFDerivAt _)
       rwa [← H] at A
