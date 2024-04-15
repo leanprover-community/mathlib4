@@ -55,8 +55,8 @@ element of `colimit F`, then `c` and `d` are related by a `Zigzag`. -/
 theorem zigzag_of_eqvGen_quot_rel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
     (h : EqvGen (Quot.Rel F) c d) : Zigzag c.1 d.1 := by
   induction h with
-  | rel _ _ h => exact zigzag_of_hom <| Exists.choose h
-  | refl _ => rfl
+  | rel _ _ h => exact Zigzag.of_hom <| Exists.choose h
+  | refl _ => exact Zigzag.refl _
   | symm _ _ _ ih => exact zigzag_symmetric ih
   | trans _ _ _ _ _ ih₁ ih₂ => exact ih₁.trans ih₂
 

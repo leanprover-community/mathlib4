@@ -401,7 +401,7 @@ protected def addGroupWithOne [AddGroupWithOne β] : AddGroupWithOne α :=
   { e.addMonoidWithOne,
     e.addGroup with
     intCast := fun n => e.symm n
-    intCast_ofNat := fun n => by simp only [Int.cast_ofNat]; rfl
+    intCast_ofNat := fun n => by simp only [Int.cast_natCast]; rfl
     intCast_negSucc := fun n =>
       congr_arg e.symm <| (Int.cast_negSucc _).trans <| congr_arg _ (e.apply_symm_apply _).symm }
 #align equiv.add_group_with_one Equiv.addGroupWithOne
@@ -738,8 +738,18 @@ def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] : by
           symm_apply_apply, algebraMap_def] }
 #align equiv.alg_equiv Equiv.algEquiv
 
+@[simp]
+theorem algEquiv_apply (e : α ≃ β) [Semiring β] [Algebra R β] (a : α) : (algEquiv R e) a = e a :=
+  rfl
+
+theorem algEquiv_symm_apply (e : α ≃ β) [Semiring β] [Algebra R β] (b : β) : by
+    letI := Equiv.semiring e
+    letI := Equiv.algebra R e
+    exact (algEquiv R e).symm b = e.symm b := by intros; rfl
+
 variable (α) in
 /-- Shrink `α` to a smaller universe preserves algebra structure. -/
+@[simps!]
 noncomputable def _root_.Shrink.algEquiv [Small.{v} α] [Semiring α] [Algebra R α] :
     Shrink.{v} α ≃ₐ[R] α :=
   Equiv.algEquiv _ (equivShrink α).symm

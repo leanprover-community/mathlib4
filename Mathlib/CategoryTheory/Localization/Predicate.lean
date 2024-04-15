@@ -170,7 +170,7 @@ def isoOfHom {X Y : C} (f : X ⟶ Y) (hf : W f) : L.obj X ≅ L.obj Y :=
   asIso (L.map f)
 #align category_theory.localization.iso_of_hom CategoryTheory.Localization.isoOfHom
 
-instance : IsEquivalence (Localization.Construction.lift L (inverts L W)) :=
+instance : (Localization.Construction.lift L (inverts L W)).IsEquivalence :=
   (inferInstance : L.IsLocalization W).nonempty_isEquivalence.some
 
 /-- A chosen equivalence of categories `W.Localization ≅ D` for a functor
@@ -195,11 +195,11 @@ def compEquivalenceFromModelInverseIso : L ⋙ (equivalenceFromModel L W).invers
       isoWhiskerRight (qCompEquivalenceFromModelFunctorIso L W).symm _
     _ ≅ W.Q ⋙ (equivalenceFromModel L W).functor ⋙ (equivalenceFromModel L W).inverse :=
       (Functor.associator _ _ _)
-    _ ≅ W.Q ⋙ 𝟭 _ := (isoWhiskerLeft _ (equivalenceFromModel L W).unitIso.symm)
+    _ ≅ W.Q ⋙ 𝟭 _ := isoWhiskerLeft _ (equivalenceFromModel L W).unitIso.symm
     _ ≅ W.Q := Functor.rightUnitor _
 #align category_theory.localization.comp_equivalence_from_model_inverse_iso CategoryTheory.Localization.compEquivalenceFromModelInverseIso
 
-theorem essSurj : EssSurj L :=
+theorem essSurj : L.EssSurj :=
   ⟨fun X =>
     ⟨(Construction.objEquiv W).invFun ((equivalenceFromModel L W).inverse.obj X),
       Nonempty.intro
@@ -214,10 +214,10 @@ def whiskeringLeftFunctor : (D ⥤ E) ⥤ W.FunctorsInverting E :=
     (MorphismProperty.IsInvertedBy.of_comp W L (inverts L W))
 #align category_theory.localization.whiskering_left_functor CategoryTheory.Localization.whiskeringLeftFunctor
 
-instance : IsEquivalence (whiskeringLeftFunctor L W E) := by
+instance : (whiskeringLeftFunctor L W E).IsEquivalence := by
   refine'
-    IsEquivalence.ofIso _
-      (IsEquivalence.ofEquivalence
+    Functor.IsEquivalence.ofIso _
+      (Functor.IsEquivalence.ofEquivalence
         ((Equivalence.congrLeft (equivalenceFromModel L W).symm).trans
           (Construction.whiskeringLeftEquivalence W E)))
   exact
@@ -265,21 +265,21 @@ theorem whiskeringLeftFunctor'_obj (F : D ⥤ E) : (whiskeringLeftFunctor' L W E
   rfl
 #align category_theory.localization.whiskering_left_functor'_obj CategoryTheory.Localization.whiskeringLeftFunctor'_obj
 
-instance : Full (whiskeringLeftFunctor' L W E) := by
+instance : (whiskeringLeftFunctor' L W E).Full := by
   rw [whiskeringLeftFunctor'_eq]
-  apply @Full.comp _ _ _ _ _ _ _ _ ?_ ?_
+  apply @Functor.Full.comp _ _ _ _ _ _ _ _ ?_ ?_
   infer_instance
   apply InducedCategory.full -- why is it not found automatically ???
 
-instance : Faithful (whiskeringLeftFunctor' L W E) := by
+instance : (whiskeringLeftFunctor' L W E).Faithful := by
   rw [whiskeringLeftFunctor'_eq]
-  apply @Faithful.comp _ _ _ _ _ _ _ _ ?_ ?_
+  apply @Functor.Faithful.comp _ _ _ _ _ _ _ _ ?_ ?_
   infer_instance
   apply InducedCategory.faithful -- why is it not found automatically ???
 
 theorem natTrans_ext {F₁ F₂ : D ⥤ E} (τ τ' : F₁ ⟶ F₂)
     (h : ∀ X : C, τ.app (L.obj X) = τ'.app (L.obj X)) : τ = τ' := by
-  haveI : CategoryTheory.EssSurj L := essSurj L W
+  haveI := essSurj L W
   ext Y
   rw [← cancel_epi (F₁.map (L.objObjPreimageIso Y).hom), τ.naturality, τ'.naturality, h]
 #align category_theory.localization.nat_trans_ext CategoryTheory.Localization.natTrans_ext

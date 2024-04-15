@@ -542,7 +542,7 @@ theorem compProd_apply_univ_le (κ : kernel α β) (η : kernel (α × β) γ) [
   calc
     ∫⁻ b, η (a, b) Set.univ ∂κ a ≤ ∫⁻ _, Cη ∂κ a :=
       lintegral_mono fun b => measure_le_bound η (a, b) Set.univ
-    _ = Cη * κ a Set.univ := (MeasureTheory.lintegral_const Cη)
+    _ = Cη * κ a Set.univ := MeasureTheory.lintegral_const Cη
     _ = κ a Set.univ * Cη := mul_comm _ _
 #align probability_theory.kernel.comp_prod_apply_univ_le ProbabilityTheory.kernel.compProd_apply_univ_le
 
@@ -921,6 +921,11 @@ lemma fst_map_prod (κ : kernel α β) {f : β → γ} {g : β → δ}
   · rfl
   · exact measurable_fst hs
 
+lemma fst_map_id_prod (κ : kernel α β) {γ : Type*} {mγ : MeasurableSpace γ}
+    {f : β → γ} (hf : Measurable f) :
+    fst (map κ (fun a ↦ (a, f a)) (measurable_id.prod_mk hf)) = κ := by
+  rw [fst_map_prod _ measurable_id' hf, kernel.map_id']
+
 @[simp]
 lemma fst_compProd (κ : kernel α β) (η : kernel (α × β) γ) [IsSFiniteKernel κ] [IsMarkovKernel η] :
     fst (κ ⊗ₖ η) = κ := by
@@ -988,6 +993,11 @@ lemma snd_map_prod (κ : kernel α β) {f : β → γ} {g : β → δ}
   rw [snd_apply' _ _ hs, map_apply', map_apply' _ _ _ hs]
   · rfl
   · exact measurable_snd hs
+
+lemma snd_map_prod_id (κ : kernel α β) {γ : Type*} {mγ : MeasurableSpace γ}
+    {f : β → γ} (hf : Measurable f) :
+    snd (map κ (fun a ↦ (f a, a)) (hf.prod_mk measurable_id)) = κ := by
+  rw [snd_map_prod _ hf measurable_id', kernel.map_id']
 
 lemma snd_prodMkLeft (δ : Type*) [MeasurableSpace δ] (κ : kernel α (β × γ)) :
     snd (prodMkLeft δ κ) = prodMkLeft δ (snd κ) := rfl

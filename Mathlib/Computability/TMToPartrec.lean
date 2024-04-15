@@ -1240,8 +1240,7 @@ def K'.elim (a b c d : List Γ') : K' → List Γ'
   | K'.stack => d
 #align turing.partrec_to_TM2.K'.elim Turing.PartrecToTM2.K'.elim
 
-/- Porting note: The equation lemma of `elim` simplifies to `match` structures. To prevent this,
-we replace equation lemmas of `elim`. -/
+-- The equation lemma of `elim` simplifies to `match` structures.
 
 theorem K'.elim_main (a b c d) : K'.elim a b c d K'.main = a := rfl
 
@@ -1251,7 +1250,6 @@ theorem K'.elim_aux (a b c d) : K'.elim a b c d K'.aux = c := rfl
 
 theorem K'.elim_stack (a b c d) : K'.elim a b c d K'.stack = d := rfl
 
-attribute [eqns K'.elim_main K'.elim_rev K'.elim_aux K'.elim_stack] K'.elim
 attribute [simp] K'.elim
 
 @[simp]
@@ -1372,7 +1370,7 @@ theorem move₂_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k
       ⟨some q, none, update (update S k₁ (o.elim id List.cons L₂)) k₂ (L₁ ++ S k₂)⟩ := by
   refine' (move_ok h₁.1 e).trans (TransGen.head rfl _)
   simp only [TM2.step, Option.mem_def, TM2.stepAux, id_eq, ne_eq, Option.elim]
-  cases o <;> simp only [Option.elim, id.def]
+  cases o <;> simp only [Option.elim, id]
   · simp only [TM2.stepAux, Option.isSome, cond_false]
     convert move_ok h₁.2.1.symm (splitAtPred_false _) using 2
     simp only [Function.update_comm h₁.1, Function.update_idem]

@@ -406,7 +406,7 @@ theorem continuousAt_parametric_primitive_of_dominated {F : X → ℝ → E} (bo
       (bound_integrable.mono_set_ae <| eventually_of_forall <| hsub ha₀ hb₀).mono_fun'
         ((hF_meas x).mono_set <| hsub ha₀ hb₀)
         (ae_restrict_of_ae_restrict_of_subset (hsub ha₀ hb₀) hx)
-    rw [intervalIntegral.integral_sub, add_assoc, add_sub_cancel'_right,
+    rw [intervalIntegral.integral_sub, add_assoc, add_sub_cancel,
       intervalIntegral.integral_add_adjacent_intervals]
     · exact hiF hx ha₀ hb₀
     · exact hiF hx hb₀ ht

@@ -35,7 +35,7 @@ namespace Real
 variable {b x y : ℝ}
 
 /-- The real logarithm in a given base. As with the natural logarithm, we define `logb b x` to
-be `logb b |x|` for `x < 0`, and `0` for `x = 0`.-/
+be `logb b |x|` for `x < 0`, and `0` for `x = 0`. -/
 -- @[pp_nodot] -- Porting note: removed
 noncomputable def logb (b x : ℝ) : ℝ :=
   log x / log b
@@ -113,6 +113,12 @@ theorem div_logb {a b c : ℝ} (h₁ : c ≠ 0) (h₂ : c ≠ 1) (h₃ : c ≠ -
   div_div_div_cancel_left' _ _ <| log_ne_zero.mpr ⟨h₁, h₂, h₃⟩
 #align real.div_logb Real.div_logb
 
+theorem logb_rpow_eq_mul_logb_of_pos (hx : 0 < x) : logb b (x ^ y) = y * logb b x := by
+  rw [logb, log_rpow hx, logb, mul_div_assoc]
+
+theorem logb_pow {k : ℕ} (hx : 0 < x) : logb b (x ^ k) = k * logb b x := by
+  rw [← rpow_nat_cast, logb_rpow_eq_mul_logb_of_pos hx]
+
 section BPosAndNeOne
 
 variable (b_pos : 0 < b) (b_ne_one : b ≠ 1)
@@ -132,7 +138,7 @@ theorem rpow_logb_eq_abs (hx : x ≠ 0) : b ^ logb b x = |x| := by
   apply log_injOn_pos
   simp only [Set.mem_Ioi]
   apply rpow_pos_of_pos b_pos
-  simp only [abs_pos, mem_Ioi, Ne.def, hx, not_false_iff]
+  simp only [abs_pos, mem_Ioi, Ne, hx, not_false_iff]
   rw [log_rpow b_pos, logb, log_abs]
   field_simp [log_b_ne_zero b_pos b_ne_one]
 #align real.rpow_logb_eq_abs Real.rpow_logb_eq_abs
@@ -147,6 +153,11 @@ theorem rpow_logb_of_neg (hx : x < 0) : b ^ logb b x = -x := by
   rw [rpow_logb_eq_abs b_pos b_ne_one (ne_of_lt hx)]
   exact abs_of_neg hx
 #align real.rpow_logb_of_neg Real.rpow_logb_of_neg
+
+theorem logb_eq_iff_rpow_eq (hy : 0 < y) : logb b y = x ↔ b ^ x = y := by
+  constructor <;> rintro rfl
+  · exact rpow_logb b_pos b_ne_one hy
+  · exact logb_rpow b_pos b_ne_one
 
 theorem surjOn_logb : SurjOn (logb b) (Ioi 0) univ := fun x _ =>
   ⟨rpow b x, rpow_pos_of_pos b_pos x, logb_rpow b_pos b_ne_one⟩
