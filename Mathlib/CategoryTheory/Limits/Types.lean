@@ -24,9 +24,6 @@ and the type `lim Hom(F·, X)`.
 
 -/
 
-set_option autoImplicit true
-
-
 open CategoryTheory CategoryTheory.Limits
 
 universe v u w
@@ -206,7 +203,7 @@ More specifically, when `UnivLE.{v, u}`, the category `Type u` has all `v`-small
 
 See <https://stacks.math.columbia.edu/tag/002U>.
 -/
-instance (priority := 1300) hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w', v} (Type u) where
+instance (priority := 1300) hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} (Type u) where
   has_limits_of_shape _ := { }
 #align category_theory.limits.types.has_limits_of_size CategoryTheory.Limits.Types.hasLimitsOfSize
 
@@ -471,7 +468,7 @@ instance hasColimitsOfShape [Small.{u} J] : HasColimitsOfShape J (Type u) where
 See <https://stacks.math.columbia.edu/tag/002U>.
 -/
 instance (priority := 1300) hasColimitsOfSize [UnivLE.{v, u}] :
-    HasColimitsOfSize.{w', v} (Type u) where
+    HasColimitsOfSize.{w, v} (Type u) where
 #align category_theory.limits.types.has_colimits_of_size CategoryTheory.Limits.Types.hasColimitsOfSize
 
 section instances
