@@ -1628,13 +1628,14 @@ import Mathlib.Computability.TuringMachine
 import Mathlib.Condensed.Abelian
 import Mathlib.Condensed.Adjunctions
 import Mathlib.Condensed.Basic
-import Mathlib.Condensed.Discrete
+import Mathlib.Condensed.Discrete.Colimit
+import Mathlib.Condensed.Discrete.ConstantSheaf
+import Mathlib.Condensed.Discrete.IsDiscrete
+import Mathlib.Condensed.Discrete.LocallyConstant
 import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
 import Mathlib.Condensed.Functors
 import Mathlib.Condensed.Limits
-import Mathlib.Condensed.LocallyConstant
-import Mathlib.Condensed.PreservesProductExplicit
 import Mathlib.Condensed.Solid
 import Mathlib.Condensed.TopComparison
 import Mathlib.Control.Applicative
