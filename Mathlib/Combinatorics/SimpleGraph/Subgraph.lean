@@ -966,9 +966,13 @@ theorem neighborSet_subgraphOfAdj_of_ne_of_ne {u v w : V} (hvw : G.Adj v w) (hv 
 
 theorem neighborSet_subgraphOfAdj [DecidableEq V] {u v w : V} (hvw : G.Adj v w) :
     (G.subgraphOfAdj hvw).neighborSet u = (if u = v then {w} else ∅) ∪ if u = w then {v} else ∅ :=
+<<<<<<< HEAD
   -- Adaptation note: nightly-2024-04-01
   -- Previously `insert_emptyc_eq` wasn't needed in `simp`.
   by split_ifs <;> subst_vars <;> simp [*, insert_emptyc_eq]
+=======
+  by split_ifs <;> subst_vars <;> simp [*, Set.singleton_def]
+>>>>>>> origin/bump/v4.8.0
 #align simple_graph.neighbor_set_subgraph_of_adj SimpleGraph.neighborSet_subgraphOfAdj
 
 theorem singletonSubgraph_fst_le_subgraphOfAdj {u v : V} {h : G.Adj u v} :

@@ -570,9 +570,10 @@ theorem Perm.erasep (f : α → Prop) [DecidablePred f] {l₁ l₂ : List α}
 theorem Perm.take_inter {α : Type*} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys)
     (h' : ys.Nodup) : xs.take n ~ ys.inter (xs.take n) := by
   simp only [List.inter]
-  exact Perm.trans (show xs.take n ~ xs.filter (xs.take n).elem by
+  convert Perm.trans (show xs.take n ~ xs.filter (xs.take n).elem by
       conv_lhs => rw [Nodup.take_eq_filter_mem ((Perm.nodup_iff h).2 h')])
     (Perm.filter _ h)
+  simp_rw [← List.elem_iff, Bool.decide_eq_true]
 #align list.perm.take_inter List.Perm.take_inter
 
 theorem Perm.drop_inter {α} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys) (h' : ys.Nodup) :
@@ -849,6 +850,47 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
       · simp [Nat.add_assoc, Nat.add_left_comm]
       · simp [Nat.add_left_comm, Nat.add_comm]
       · simpa [Nat.succ_add] using hn
+#align list.nodup_permutations'_aux_iff List.nodup_permutations'Aux_iff
+
+set_option linter.deprecated false in
+theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations := by
+  rw [(permutations_perm_permutations' s).nodup_iff]
+  induction' hs with x l h h' IH
+  · simp
+  · rw [permutations']
+    rw [nodup_bind]
+    constructor
+    · intro ys hy
+      rw [mem_permutations'] at hy
+      rw [nodup_permutations'Aux_iff, hy.mem_iff]
+      exact fun H => h x H rfl
+    · refine' IH.pairwise_of_forall_ne fun as ha bs hb H => _
+      rw [disjoint_iff_ne]
+      rintro a ha' b hb' rfl
+      obtain ⟨⟨n, hn⟩, hn'⟩ := get_of_mem ha'
+      obtain ⟨⟨m, hm⟩, hm'⟩ := get_of_mem hb'
+      rw [mem_permutations'] at ha hb
+      have hl : as.length = bs.length := (ha.trans hb.symm).length_eq
+      simp only [Nat.lt_succ_iff, length_permutations'Aux] at hn hm
+      rw [← nthLe, nthLe_permutations'Aux] at hn' hm'
+      have hx :
+        nthLe (insertNth n x as) m (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff, hl]) = x :=
+        by simp [hn', ← hm', hm]
+      have hx' :
+        nthLe (insertNth m x bs) n (by rwa [length_insertNth _ _ hm, Nat.lt_succ_iff, ← hl]) =
+          x :=
+        by simp [hm', ← hn', hn]
+      rcases lt_trichotomy n m with (ht | ht | ht)
+      · suffices x ∈ bs by exact h x (hb.subset this) rfl
+        rw [← hx', nthLe_insertNth_of_lt _ _ _ _ ht (ht.trans_le hm)]
+        exact nthLe_mem _ _ _
+      · simp only [ht] at hm' hn'
+        rw [← hm'] at hn'
+        exact H (insertNth_injective _ _ hn')
+      · suffices x ∈ as by exact h x (ha.subset this) rfl
+        rw [← hx, nthLe_insertNth_of_lt _ _ _ _ ht (ht.trans_le hn)]
+        exact nthLe_mem _ _ _
+#align list.nodup_permutations List.nodup_permutations
 
 -- TODO: `nodup s.permutations ↔ nodup s`
 -- TODO: `count s s.permutations = (zip_with count s s.tails).prod`
