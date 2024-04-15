@@ -397,7 +397,6 @@ Unfortunately, this leads to unbound universes which cannot be solved for during
 `max u v =?= max v ?`.
 The current solution is to wrap `Type max u v` in `TypeMax.{u,v}`
 to expose both universe parameters directly.
-
 Similarly, for other concrete categories for which we need to refer to the maximum of two universes
 (e.g. any category for which we are constructing limits), we need an analogous abbreviation.
 -/
