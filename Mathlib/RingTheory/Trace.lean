@@ -142,13 +142,10 @@ theorem trace_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*}
   cases nonempty_fintype κ
   rw [trace_eq_matrix_trace (b.smul c), trace_eq_matrix_trace b, trace_eq_matrix_trace c,
     Matrix.trace, Matrix.trace, Matrix.trace, ← Finset.univ_product_univ, Finset.sum_product]
-  refine' Finset.sum_congr rfl fun i _ => _
+  refine Finset.sum_congr rfl fun i _ ↦ ?_
   simp only [AlgHom.map_sum, smul_leftMulMatrix, Finset.sum_apply,
-    Matrix.diag]
--- Porting note: the `rw` was inside `simp only`, but it doesn't work anymore.
-  rw [Finset.sum_apply
+    Matrix.diag, Finset.sum_apply
       i (Finset.univ : Finset κ) fun y => leftMulMatrix b (leftMulMatrix c x y y)]
-  apply Finset.sum_apply
 #align algebra.trace_trace_of_basis Algebra.trace_trace_of_basis
 
 theorem trace_comp_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*} [Finite ι]
@@ -434,7 +431,7 @@ theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L
   rw [← Fintype.sum_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
   · rw [← trace_eq_sum_embeddings (AlgebraicClosure L)]
     · simp only [algebraMap_eq_smul_one]
--- Porting note: `smul_one_smul` was in the `simp only`.
+      -- Porting note: `smul_one_smul` was in the `simp only`.
       apply smul_one_smul
   · intro σ
     simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
