@@ -13,9 +13,11 @@ import Std.Classes.RatCast
 #align_import data.rat.init from "leanprover-community/mathlib"@"f340f229b1f461aa1c8ee11e0a172d0a3b301a4a"
 
 /-!
-# Definition of the rational numbers
+# Basic definitions around the rational numbers
 
-Ths file declares `ℚ` notation for the rationals and defines the nonnegative rationals `ℚ≥0`.
+This file declares `ℚ` notation for the rationals and defines the nonnegative rationals `ℚ≥0`.
+
+This file is eligible to upstreaming to Std.
 -/
 
 @[inherit_doc] notation "ℚ" => Rat
