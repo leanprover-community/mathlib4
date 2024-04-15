@@ -454,7 +454,7 @@ theorem isJacobson_polynomial_of_isJacobson (hR : IsJacobson R) : IsJacobson R[X
     refine le_antisymm ?_ le_jacobson
     exact le_trans (le_sup_of_le_left le_rfl) (le_trans (le_of_eq h) (sup_le le_rfl hi'))
   apply isJacobson_polynomial_of_domain R' J
-  exact (eq_zero_of_polynomial_mem_map_range I)
+  exact eq_zero_of_polynomial_mem_map_range I
 #align ideal.polynomial.is_jacobson_polynomial_of_is_jacobson Ideal.Polynomial.isJacobson_polynomial_of_isJacobson
 
 theorem isJacobson_polynomial_iff_isJacobson : IsJacobson R[X] ↔ IsJacobson R := by

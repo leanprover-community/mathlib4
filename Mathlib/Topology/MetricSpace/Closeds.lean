@@ -171,7 +171,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
       ⟨y, hy,
         calc
           edist x y ≤ edist x z + edist z y := edist_triangle _ _ _
-          _ ≤ B n + B n := (add_le_add (le_of_lt Dxz) (le_of_lt Dzy))
+          _ ≤ B n + B n := add_le_add (le_of_lt Dxz) (le_of_lt Dzy)
           _ = 2 * B n := (two_mul _).symm
           ⟩
   -- Deduce from the above inequalities that the distance between `s n` and `t0` is at most `2 B n`.
@@ -288,7 +288,7 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
     have : edist x y < ε :=
       calc
         edist x y ≤ edist x z + edist z y := edist_triangle _ _ _
-        _ < ε / 2 + ε / 2 := (ENNReal.add_lt_add Dxz Dzy)
+        _ < ε / 2 + ε / 2 := ENNReal.add_lt_add Dxz Dzy
         _ = ε := ENNReal.add_halves _
     exact mem_biUnion hy this
 #align emetric.nonempty_compacts.is_closed_in_closeds EMetric.NonemptyCompacts.isClosed_in_closeds
@@ -349,7 +349,7 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
         exists F z, mem_image_of_mem _ za
         calc
           edist x (F z) ≤ edist x z + edist z (F z) := edist_triangle _ _ _
-          _ < δ / 2 + δ / 2 := (ENNReal.add_lt_add Dxz (Fspec z).2)
+          _ < δ / 2 + δ / 2 := ENNReal.add_lt_add Dxz (Fspec z).2
           _ = δ := ENNReal.add_halves _
       -- keep only the points in `b` that are close to point in `t`, yielding a new set `c`
       let c := { y ∈ b | ∃ x ∈ t, edist x y < δ }

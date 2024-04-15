@@ -615,7 +615,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
         simpa only [← sq] using CstarRing.nnnorm_self_mul_star.symm
       _ ≤ ‖b‖₊ * ‖a.fst (star (a.snd b))‖₊ :=
         ((a.central b (star (a.snd b))).symm ▸ nnnorm_mul_le _ _)
-      _ = ‖a.fst (star (a.snd b))‖₊ * ‖b‖₊ := (mul_comm _ _)
+      _ = ‖a.fst (star (a.snd b))‖₊ * ‖b‖₊ := mul_comm _ _
       _ ≤ ‖a.fst‖₊ * ‖a.snd b‖₊ * ‖b‖₊ :=
         nnnorm_star (a.snd b) ▸ mul_le_mul_right' (a.fst.le_opNNNorm _) _
 

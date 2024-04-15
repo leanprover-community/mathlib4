@@ -180,7 +180,7 @@ def adjunction [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran.adjunction CategoryTheory.Ran.adjunction
 
-theorem reflective [Full ι] [Faithful ι] [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
+theorem reflective [ι.Full] [ι.Faithful] [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
     IsIso (adjunction D ι).counit := by
   suffices ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).counit X) by
     apply NatIso.isIso_of_isIso_app
@@ -354,7 +354,7 @@ def adjunction [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] :
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan.adjunction CategoryTheory.Lan.adjunction
 
-theorem coreflective [Full ι] [Faithful ι] [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] :
+theorem coreflective [ι.Full] [ι.Faithful] [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] :
     IsIso (adjunction D ι).unit := by
   suffices ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).unit X) by
     apply NatIso.isIso_of_isIso_app

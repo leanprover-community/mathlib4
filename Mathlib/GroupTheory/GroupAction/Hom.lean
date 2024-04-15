@@ -63,7 +63,7 @@ variable (Z : Type*) [SMul P Z]
 /-- Equivariant functions :
 When `φ : M → N` is a function, and types `X` and `Y` are endowed with actions of `M` and `N`,
 a function `f : X → Y` is `φ`-equivariant if `f (m • x) = (φ m) • (f x)`.  -/
--- Porting note: This linter does not exist yet
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure MulActionHom where
   /-- The underlying function. -/
@@ -626,7 +626,7 @@ variable (T : Type*) [Semiring T] [MulSemiringAction P T]
 -- variable [AddMonoid N'] [DistribMulAction S N']
 
 /-- Equivariant ring homomorphisms. -/
--- Porting note: This linter does not exist yet
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure MulSemiringActionHom extends R →ₑ+[φ] S, R →+* S
 #align mul_semiring_action_hom MulSemiringActionHom

@@ -191,18 +191,16 @@ alias ⟨IsLittleO.bound, IsLittleO.of_bound⟩ := isLittleO_iff
 #align asymptotics.is_o.bound Asymptotics.IsLittleO.bound
 #align asymptotics.is_o.of_bound Asymptotics.IsLittleO.of_bound
 
--- Adaptation note: 2024-03-15: this was called `def`.
--- Should lean be changed to allow that as a name again?
-theorem IsLittleO.definition (h : f =o[l] g) (hc : 0 < c) : ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ :=
+theorem IsLittleO.def (h : f =o[l] g) (hc : 0 < c) : ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ :=
   isLittleO_iff.1 h hc
-#align asymptotics.is_o.def Asymptotics.IsLittleO.definition
+#align asymptotics.is_o.def Asymptotics.IsLittleO.def
 
 theorem IsLittleO.def' (h : f =o[l] g) (hc : 0 < c) : IsBigOWith c l f g :=
   isBigOWith_iff.2 <| isLittleO_iff.1 h hc
 #align asymptotics.is_o.def' Asymptotics.IsLittleO.def'
 
 theorem IsLittleO.eventuallyLE (h : f =o[l] g) : ∀ᶠ x in l, ‖f x‖ ≤ ‖g x‖ := by
-  simpa using h.definition zero_lt_one
+  simpa using h.def zero_lt_one
 
 end Defs
 
@@ -280,7 +278,7 @@ theorem isLittleO_iff_nat_mul_le_aux (h₀ : (∀ x, 0 ≤ ‖f x‖) ∨ ∀ x,
     f =o[l] g ↔ ∀ n : ℕ, ∀ᶠ x in l, ↑n * ‖f x‖ ≤ ‖g x‖ := by
   constructor
   · rintro H (_ | n)
-    · refine' (H.definition one_pos).mono fun x h₀' => _
+    · refine' (H.def one_pos).mono fun x h₀' => _
       rw [Nat.cast_zero, zero_mul]
       refine' h₀.elim (fun hf => (hf x).trans _) fun hg => hg x
       rwa [one_mul] at h₀'

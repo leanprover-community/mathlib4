@@ -826,7 +826,7 @@ theorem pointwise_smul_toSubring (g : G) (S : ValuationSubring K) :
 
 /-- The action on a valuation subring corresponding to applying the action to every element.
 
-This is available as an instance in the `pointwise` locale.
+This is available as an instance in the `Pointwise` locale.
 
 This is a stronger version of `ValuationSubring.pointwiseSMul`. -/
 def pointwiseMulAction : MulAction G (ValuationSubring K) :=

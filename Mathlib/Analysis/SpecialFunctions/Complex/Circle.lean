@@ -150,3 +150,49 @@ theorem Real.Angle.arg_expMapCircle (θ : Real.Angle) :
   rw [Real.Angle.expMapCircle_coe, expMapCircle_apply, exp_mul_I, ← ofReal_cos, ← ofReal_sin, ←
     Real.Angle.cos_coe, ← Real.Angle.sin_coe, arg_cos_add_sin_mul_I_coe_angle]
 #align real.angle.arg_exp_map_circle Real.Angle.arg_expMapCircle
+
+namespace AddCircle
+
+variable {T : ℝ}
+
+/-! ### Map from `AddCircle` to `Circle` -/
+
+theorem scaled_exp_map_periodic : Function.Periodic (fun x => expMapCircle (2 * π / T * x)) T := by
+  -- The case T = 0 is not interesting, but it is true, so we prove it to save hypotheses
+  rcases eq_or_ne T 0 with (rfl | hT)
+  · intro x; simp
+  · intro x; simp_rw [mul_add]; rw [div_mul_cancel₀ _ hT, periodic_expMapCircle]
+#align add_circle.scaled_exp_map_periodic AddCircle.scaled_exp_map_periodic
+
+/-- The canonical map `fun x => exp (2 π i x / T)` from `ℝ / ℤ • T` to the unit circle in `ℂ`.
+If `T = 0` we understand this as the constant function 1. -/
+noncomputable def toCircle : AddCircle T → circle :=
+  (@scaled_exp_map_periodic T).lift
+#align add_circle.to_circle AddCircle.toCircle
+
+theorem toCircle_add (x : AddCircle T) (y : AddCircle T) :
+    @toCircle T (x + y) = toCircle x * toCircle y := by
+  induction x using QuotientAddGroup.induction_on'
+  induction y using QuotientAddGroup.induction_on'
+  rw [← QuotientAddGroup.mk_add]
+  simp_rw [toCircle, Function.Periodic.lift_coe, mul_add, expMapCircle_add]
+#align add_circle.to_circle_add AddCircle.toCircle_add
+
+theorem continuous_toCircle : Continuous (@toCircle T) :=
+  continuous_coinduced_dom.mpr (expMapCircle.continuous.comp <| continuous_const.mul continuous_id')
+#align add_circle.continuous_to_circle AddCircle.continuous_toCircle
+
+theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := by
+  intro a b h
+  induction a using QuotientAddGroup.induction_on'
+  induction b using QuotientAddGroup.induction_on'
+  simp_rw [toCircle, Function.Periodic.lift_coe] at h
+  obtain ⟨m, hm⟩ := expMapCircle_eq_expMapCircle.mp h.symm
+  rw [QuotientAddGroup.eq]; simp_rw [AddSubgroup.mem_zmultiples_iff, zsmul_eq_mul]
+  use m
+  field_simp at hm
+  rw [← mul_right_inj' Real.two_pi_pos.ne']
+  linarith
+#align add_circle.injective_to_circle AddCircle.injective_toCircle
+
+end AddCircle
