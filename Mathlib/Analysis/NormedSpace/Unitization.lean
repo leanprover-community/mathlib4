@@ -100,8 +100,8 @@ theorem splitMul_injective_of_clm_mul_injective
 variable [RegularNormedAlgebra 𝕜 A]
 variable (𝕜 A)
 
-/- In a `RegularNormedAlgebra`, the map `Unitization.splitMul 𝕜 A` is injective. We will use this
-to pull back the norm from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A`. -/
+/-- In a `RegularNormedAlgebra`, the map `Unitization.splitMul 𝕜 A` is injective.
+We will use this to pull back the norm from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A`. -/
 theorem splitMul_injective : Function.Injective (splitMul 𝕜 A) :=
   splitMul_injective_of_clm_mul_injective (isometry_mul 𝕜 A).injective
 
