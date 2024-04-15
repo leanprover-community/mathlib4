@@ -471,9 +471,9 @@ theorem coe_comap_apply (f : C(X, Y)) (g : LocallyConstant Y Z) (x : X) :
     comap f g x = g (f x) := rfl
 
 @[simp]
-theorem comap_id : comap (@id X) = @id (LocallyConstant X Z) := by
+theorem comap_id : comap (ContinuousMap.id X) = @id (LocallyConstant X Z) := by
   ext
-  simp only [continuous_id, id, Function.comp_id, coe_comap]
+  simp
 #align locally_constant.comap_id LocallyConstant.comap_id
 
 theorem comap_comp {W : Type*} [TopologicalSpace W] (f : C(W, X)) (g : C(X, Y)) :
