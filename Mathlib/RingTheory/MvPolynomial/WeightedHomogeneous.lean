@@ -494,7 +494,7 @@ theorem weightedHomogeneousComponent_zero [NoZeroSMulDivisors ℕ M] (hw : ∀ i
   · simp only [coeff_weightedHomogeneousComponent, if_pos, map_zero, coeff_zero_C]
   · rw [coeff_weightedHomogeneousComponent, if_neg, coeff_C, if_neg (Ne.symm hd)]
     simp only [weightedDegree, LinearMap.toAddMonoidHom_coe, Finsupp.total_apply, Finsupp.sum,
-      sum_eq_zero_iff, Finsupp.mem_support_iff, Ne.def, smul_eq_zero, not_forall, not_or,
+      sum_eq_zero_iff, Finsupp.mem_support_iff, Ne, smul_eq_zero, not_forall, not_or,
       and_self_left, exists_prop]
     simp only [DFunLike.ext_iff, Finsupp.coe_zero, Pi.zero_apply, not_forall] at hd
     obtain ⟨i, hi⟩ := hd
