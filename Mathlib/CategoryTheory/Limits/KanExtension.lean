@@ -230,6 +230,10 @@ theorem isRightKanExtendedAlong_of_natIso (F G : L ⥤ D) (i : F ≅ G)
   isoSelf := ⟨i.symm ≪≫ (IsRightKanExtendedAlong.isoSelf (ι := ι) (F := F)).some ≪≫
     locCongr ι (isoWhiskerLeft ι i)⟩
 
+instance (F : L ⥤ D) [∀ X, HasLimitsOfShape (StructuredArrow X ι) D]
+    [IsIso <| (adjunction D ι).unit.app F] : IsRightKanExtendedAlong ι F where
+  isoSelf := ⟨asIso <| (adjunction D ι).unit.app F⟩
+
 end Ran
 
 namespace Lan
@@ -449,16 +453,6 @@ theorem isLeftKanExtendedAlong_of_natIso (F G : L ⥤ D) (i : F ≅ G)
 instance (F : L ⥤ D) [∀ G : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι G x)]
     [IsIso <| (adjunction D ι).counit.app F] : IsLeftKanExtendedAlong ι F where
   isoSelf := ⟨(asIso <| (adjunction D ι).counit.app F).symm⟩
-
-instance (F : L ⥤ D) [∀ G : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι G x)]
-    [IsLeftKanExtendedAlong ι F] : IsIso <| (adjunction D ι).counit.app F := by
-  simp only [Functor.comp_obj, whiskeringLeft_obj_obj, Functor.id_obj, adjunction, equiv, cocone,
-    CostructuredArrow.proj_obj, Functor.const_obj_obj, Adjunction.adjunctionOfEquivLeft_counit_app,
-    Equiv.coe_fn_symm_mk, NatTrans.id_app]
-  refine @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _ ?_
-  intro x
-  simp only [lan_obj_obj]
-  sorry
 
 end Lan
 
