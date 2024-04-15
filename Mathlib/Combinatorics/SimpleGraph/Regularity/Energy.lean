@@ -51,7 +51,7 @@ theorem energy_le_one : P.energy G ≤ 1 :=
       ∑ uv in P.parts.offDiag, G.edgeDensity uv.1 uv.2 ^ 2 ≤ P.parts.offDiag.card • (1 : ℚ) :=
         sum_le_card_nsmul _ _ 1 fun uv _ =>
           (sq_le_one_iff <| G.edgeDensity_nonneg _ _).2 <| G.edgeDensity_le_one _ _
-      _ = P.parts.offDiag.card := (Nat.smul_one_eq_coe _)
+      _ = P.parts.offDiag.card := Nat.smul_one_eq_coe _
       _ ≤ _ := by
         rw [offDiag_card, one_mul]
         norm_cast

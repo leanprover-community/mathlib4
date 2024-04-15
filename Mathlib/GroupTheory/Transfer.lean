@@ -126,7 +126,7 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
     calc
       transfer ϕ g = ∏ q : G ⧸ H, _ := transfer_def ϕ (transferTransversal H g) g
       _ = _ := ((quotientEquivSigmaZMod H g).symm.prod_comp _).symm
-      _ = _ := (Finset.prod_sigma _ _ _)
+      _ = _ := Finset.prod_sigma _ _ _
       _ = _ := by
         refine' Fintype.prod_congr _ _ (fun q => _)
         simp only [quotientEquivSigmaZMod_symm_apply, transferTransversal_apply',

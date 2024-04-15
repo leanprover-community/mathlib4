@@ -777,7 +777,7 @@ instance : SecondCountableTopology GHSpace := by
           rw [mul_inv_cancel (ne_of_gt εpos), one_mul]
         _ = ε * (|ε⁻¹| * |dist x y - dist (Ψ x) (Ψ y)|) := by
           rw [abs_of_nonneg (le_of_lt (inv_pos.2 εpos)), mul_assoc]
-        _ ≤ ε * 1 := (mul_le_mul_of_nonneg_left I (le_of_lt εpos))
+        _ ≤ ε * 1 := mul_le_mul_of_nonneg_left I (le_of_lt εpos)
         _ = ε := mul_one _
   calc
     dist p q = ghDist p.Rep q.Rep := dist_ghDist p q
@@ -947,7 +947,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
           rw [mul_inv_cancel (ne_of_gt εpos), one_mul]
         _ = ε * (|ε⁻¹| * |dist x y - dist (Ψ x) (Ψ y)|) := by
           rw [abs_of_nonneg (le_of_lt (inv_pos.2 εpos)), mul_assoc]
-        _ ≤ ε * 1 := (mul_le_mul_of_nonneg_left I (le_of_lt εpos))
+        _ ≤ ε * 1 := mul_le_mul_of_nonneg_left I (le_of_lt εpos)
         _ = ε := mul_one _
   calc
     dist p q = ghDist p.Rep q.Rep := dist_ghDist p q

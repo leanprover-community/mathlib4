@@ -541,7 +541,7 @@ theorem nilpotent_of_surjective {G' : Type*} [Group G'] [h : IsNilpotent G] (f :
   apply eq_top_iff.mpr
   calc
     ⊤ = f.range := symm (f.range_top_of_surjective hf)
-    _ = Subgroup.map f ⊤ := (MonoidHom.range_eq_map _)
+    _ = Subgroup.map f ⊤ := MonoidHom.range_eq_map _
     _ = Subgroup.map f (upperCentralSeries G n) := by rw [hn]
     _ ≤ upperCentralSeries G' n := upperCentralSeries.map hf n
 
@@ -558,7 +558,7 @@ theorem nilpotencyClass_le_of_surjective {G' : Type*} [Group G'] (f : G →* G')
   rw [eq_top_iff]
   calc
     ⊤ = f.range := symm (f.range_top_of_surjective hf)
-    _ = Subgroup.map f ⊤ := (MonoidHom.range_eq_map _)
+    _ = Subgroup.map f ⊤ := MonoidHom.range_eq_map _
     _ = Subgroup.map f (upperCentralSeries G n) := by rw [hn]
     _ ≤ upperCentralSeries G' n := upperCentralSeries.map hf n
 
@@ -748,9 +748,9 @@ theorem lowerCentralSeries_pi_le (n : ℕ) :
   · simp [pi_top]
   · calc
       lowerCentralSeries (∀ i, Gs i) n.succ = ⁅lowerCentralSeries (∀ i, Gs i) n, ⊤⁆ := rfl
-      _ ≤ ⁅pi fun i => lowerCentralSeries (Gs i) n, ⊤⁆ := (commutator_mono ih (le_refl _))
+      _ ≤ ⁅pi fun i => lowerCentralSeries (Gs i) n, ⊤⁆ := commutator_mono ih (le_refl _)
       _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi, pi_top]
-      _ ≤ pi fun i => ⁅lowerCentralSeries (Gs i) n, ⊤⁆ := (commutator_pi_pi_le _ _)
+      _ ≤ pi fun i => ⁅lowerCentralSeries (Gs i) n, ⊤⁆ := commutator_pi_pi_le _ _
       _ = pi fun i => lowerCentralSeries (Gs i) n.succ := rfl
 
 #align lower_central_series_pi_le lowerCentralSeries_pi_le
@@ -784,7 +784,7 @@ theorem lowerCentralSeries_pi_of_finite [Finite η] (n : ℕ) :
       lowerCentralSeries (∀ i, Gs i) n.succ = ⁅lowerCentralSeries (∀ i, Gs i) n, ⊤⁆ := rfl
       _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, ⊤⁆ := by rw [ih]
       _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi, pi_top]
-      _ = pi fun i => ⁅lowerCentralSeries (Gs i) n, ⊤⁆ := (commutator_pi_pi_of_finite _ _)
+      _ = pi fun i => ⁅lowerCentralSeries (Gs i) n, ⊤⁆ := commutator_pi_pi_of_finite _ _
       _ = pi fun i => lowerCentralSeries (Gs i) n.succ := rfl
 
 #align lower_central_series_pi_of_finite lowerCentralSeries_pi_of_finite

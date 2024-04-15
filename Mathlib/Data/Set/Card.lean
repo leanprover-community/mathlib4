@@ -1075,7 +1075,7 @@ theorem two_lt_ncard (hs : s.Finite := by toFinite_tac) :
 #align set.two_lt_card Set.two_lt_ncard
 
 theorem exists_ne_of_one_lt_ncard (hs : 1 < s.ncard) (a : α) : ∃ b, b ∈ s ∧ b ≠ a := by
-  have hsf := (finite_of_ncard_ne_zero (zero_lt_one.trans hs).ne.symm)
+  have hsf := finite_of_ncard_ne_zero (zero_lt_one.trans hs).ne.symm
   rw [ncard_eq_toFinset_card _ hsf] at hs
   simpa only [Finite.mem_toFinset] using Finset.exists_ne_of_one_lt_card hs a
 #align set.exists_ne_of_one_lt_ncard Set.exists_ne_of_one_lt_ncard

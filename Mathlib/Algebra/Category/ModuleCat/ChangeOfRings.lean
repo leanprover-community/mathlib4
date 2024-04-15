@@ -224,7 +224,7 @@ instance restrictScalarsIsEquivalenceOfRingEquiv {R S} [Ring R] [Ring S] (e : R 
   counitIso := NatIso.ofComponents (fun M ↦ LinearEquiv.toModuleIso'
     { __ := AddEquiv.refl M
       map_smul' := fun r m ↦ congr_arg (· • (_ : M)) (e.left_inv r)}) (by intros; rfl)
-  functor_unitIso_comp := (by intros; rfl)
+  functor_unitIso_comp := by intros; rfl
 
 open TensorProduct
 
