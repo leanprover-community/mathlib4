@@ -179,8 +179,8 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
       · rw [id_eq, ofReal_re]; exact hx.1
     have V : HasDerivAt (fun y : ℂ => (1 - y) ^ v) (-v * (1 - (x : ℂ)) ^ (v - 1)) ↑x := by
       have A := @HasDerivAt.cpow_const _ _ _ v (hasDerivAt_id (1 - (x : ℂ))) (Or.inl ?_)
-      swap; · rw [id.def, sub_re, one_re, ofReal_re, sub_pos]; exact hx.2
-      simp_rw [id.def] at A
+      swap; · rw [id, sub_re, one_re, ofReal_re, sub_pos]; exact hx.2
+      simp_rw [id] at A
       have B : HasDerivAt (fun y : ℂ => 1 - y) (-1) ↑x := by
         apply HasDerivAt.const_sub; apply hasDerivAt_id
       convert HasDerivAt.comp (↑x) A B using 1

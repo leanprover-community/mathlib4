@@ -807,13 +807,13 @@ theorem smul_graph (f : E →ₗ.[R] F) (z : M) :
     rcases h with ⟨y, hy, h⟩
     rw [LinearPMap.smul_apply] at h
     rw [Submodule.mem_map]
-    simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id.def,
+    simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id,
       LinearMap.smul_apply, Prod.mk.inj_iff, Prod.exists, exists_exists_and_eq_and]
     use x_fst, y, hy
   rw [Submodule.mem_map] at h
   rcases h with ⟨x', hx', h⟩
   cases x'
-  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id.def, LinearMap.smul_apply,
+  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id, LinearMap.smul_apply,
     Prod.mk.inj_iff] at h
   rw [mem_graph_iff] at hx' ⊢
   rcases hx' with ⟨y, hy, hx'⟩
@@ -832,13 +832,13 @@ theorem neg_graph (f : E →ₗ.[R] F) :
     rcases h with ⟨y, hy, h⟩
     rw [LinearPMap.neg_apply] at h
     rw [Submodule.mem_map]
-    simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id.def,
+    simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id,
       LinearMap.neg_apply, Prod.mk.inj_iff, Prod.exists, exists_exists_and_eq_and]
     use x_fst, y, hy
   rw [Submodule.mem_map] at h
   rcases h with ⟨x', hx', h⟩
   cases x'
-  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id.def, LinearMap.neg_apply,
+  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id, LinearMap.neg_apply,
     Prod.mk.inj_iff] at h
   rw [mem_graph_iff] at hx' ⊢
   rcases hx' with ⟨y, hy, hx'⟩
