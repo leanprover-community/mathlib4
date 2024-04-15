@@ -485,8 +485,7 @@ def parse_old_files_declarations():
         if decl.count('.') >= 2:
             new = aligns[decl]
             if new.count('.') == decl.count('.'):
-                old_parts = old.split('.')
-                old_decl_dict['.'.join(old_parts[1:])] = '.'.join(new.split('.')[1:])
+                old_decl_dict[decl[decl.index('.') + 1:]] = new[new.index('.') + 1:]
     return old_files, old_decl_dict
 
 
