@@ -5,8 +5,8 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Algebra.Ring.AddAut
-import Mathlib.GroupTheory.Divisible
 import Mathlib.Data.Nat.Totient
+import Mathlib.GroupTheory.Divisible
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.IsLocalHomeomorph
 
