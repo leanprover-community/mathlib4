@@ -216,7 +216,7 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
       norm K (aeval pb.gen (derivative (R := K) (minpoly K pb.gen))) := by
   let E := AlgebraicClosure L
   letI := fun a b : E => Classical.propDecidable (Eq a b)
-  have e : Fin pb.dim ≃ (L →ₐ[K] E) := by
+  let e : Fin pb.dim ≃ (L →ₐ[K] E) := by
     refine' equivOfCardEq _
     rw [Fintype.card_fin, AlgHom.card]
     exact (PowerBasis.finrank pb).symm

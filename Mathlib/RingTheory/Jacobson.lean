@@ -699,7 +699,7 @@ theorem comp_C_integral_of_surjective_of_jacobson {R : Type*} [CommRing R] [IsJa
     {σ : Type*} [Finite σ] {S : Type*} [Field S] (f : MvPolynomial σ R →+* S)
     (hf : Function.Surjective ↑f) : (f.comp C).IsIntegral := by
   cases nonempty_fintype σ
-  have e := (Fintype.equivFin σ).symm
+  let e := (Fintype.equivFin σ).symm
   let f' : MvPolynomial (Fin _) R →+* S := f.comp (renameEquiv R e).toRingEquiv.toRingHom
   have hf' := Function.Surjective.comp hf (renameEquiv R e).surjective
   change Function.Surjective ↑f' at hf'

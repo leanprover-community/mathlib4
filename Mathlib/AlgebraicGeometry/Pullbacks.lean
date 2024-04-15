@@ -523,7 +523,7 @@ def gluedIsLimit : IsLimit (PullbackCone.mk _ _ (p_comm 𝒰 f g)) := by
   apply (𝒰.pullbackCover s.fst).hom_ext
   intro i
   rw [OpenCover.pullbackCover_map]
-  have := pullbackRightPullbackFstIso (p1 𝒰 f g) (𝒰.map i) m ≪≫ pullback.congrHom h₁ rfl
+  let _ := pullbackRightPullbackFstIso (p1 𝒰 f g) (𝒰.map i) m ≪≫ pullback.congrHom h₁ rfl
   erw [(𝒰.pullbackCover s.fst).ι_glueMorphisms]
   rw [←
     cancel_epi
@@ -573,7 +573,7 @@ instance left_affine_comp_pullback_hasPullback {X Y Z : Scheme} (f : X ⟶ Z) (g
   let Xᵢ := pullback f (Z.affineCover.map i)
   let Yᵢ := pullback g (Z.affineCover.map i)
   let W := pullback (pullback.snd : Yᵢ ⟶ _) (pullback.snd : Xᵢ ⟶ _)
-  have :=
+  let this :=
     bigSquareIsPullback (pullback.fst : W ⟶ _) (pullback.fst : Yᵢ ⟶ _) (pullback.snd : Xᵢ ⟶ _)
       (Z.affineCover.map i) pullback.snd pullback.snd g pullback.condition.symm
       pullback.condition.symm (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
@@ -656,7 +656,7 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
   let Xᵢ := pullback f (𝒰.map i)
   let Yᵢ := pullback g (𝒰.map i)
   let W := pullback (pullback.snd : Yᵢ ⟶ _) (pullback.snd : Xᵢ ⟶ _)
-  have :=
+  let this :=
     bigSquareIsPullback (pullback.fst : W ⟶ _) (pullback.fst : Yᵢ ⟶ _) (pullback.snd : Xᵢ ⟶ _)
       (𝒰.map i) pullback.snd pullback.snd g pullback.condition.symm pullback.condition.symm
       (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
