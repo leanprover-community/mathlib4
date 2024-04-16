@@ -352,3 +352,62 @@ lemma IsLower.scottHausdorff_le [IsLower α] : scottHausdorff α ≤ ‹Topologi
       <| IsLower.isLowerSet_of_isOpen h
 
 end Topology
+
+section LinearOrder
+
+variable [CompleteLinearOrder α] [TopologicalSpace α] [Topology.IsScott α]
+
+#check DirSupClosed
+
+/-
+def Ioi (a : α) :=
+  { x | a < x }
+
+  def Iic (b : α) :=
+  { x | x ≤ b }
+
+def DirSupInacc (s : Set α) : Prop :=
+  ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty
+
+def DirSupClosed (s : Set α) : Prop :=
+  ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → d ⊆ s → a ∈ s
+-/
+
+#check Nonempty
+
+lemma test1 (S T : Set α) : S = T ↔ S ≤ T ∧ T ≤ S := by exact le_antisymm_iff
+
+lemma test2 (S : Set α) : (S = ∅) ∨ S.Nonempty := by exact eq_empty_or_nonempty S
+
+lemma test3 : sSup ∅ = (⊥ : α) := by exact sSup_empty
+
+lemma test4 (h : Prop) : true → h ∨ true := by exact fun a ↦ Or.inr a
+
+lemma test (U : Set α) : IsOpen U ↔ (∃ (a : α), U = (Iic a)ᶜ) ∨ U = univ := by
+  constructor
+  · intro hU
+    rcases eq_empty_or_nonempty Uᶜ with eUc | neUc
+    · exact Or.inr (compl_empty_iff.mp eUc)
+    · apply Or.inl
+      let b := sSup Uᶜ
+      use b
+      rw [eq_compl_comm]
+      rw [le_antisymm_iff]
+      constructor
+      . have d1 : DirSupClosed Uᶜ :=
+          (Topology.IsScott.isClosed_iff_isLowerSet_and_dirSupClosed.mp (isClosed_compl_iff.mpr hU)).right
+        have m1 : b ∈ Uᶜ :=
+          (dirSupClosed_iff_forall_sSup.mp d1) neUc (IsChain.directedOn (isChain_of_trichotomous Uᶜ)) (le_refl Uᶜ)
+
+
+
+
+    --have e2 :
+    have e1 : DirSupClosed U := IsUpperSet.dirSupClosed (Topology.IsScott.isUpperSet_of_isOpen hU)
+    --rw [compl_Iic]
+    sorry
+  · intro ⟨a,ha⟩
+    rw [← isClosed_compl_iff, ha, compl_compl]
+    exact Topology.IsScott.isClosed_Iic
+
+end LinearOrder
