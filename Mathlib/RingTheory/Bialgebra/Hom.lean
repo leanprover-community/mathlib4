@@ -20,7 +20,7 @@ homomorphism.
 
 ## Notations
 
-* `A →ₐc[R] B` : `R`-algebra homomorphism from `A` to `B`.
+* `A →ₐc[R] B` : `R`-bialgebra homomorphism from `A` to `B`.
 
 -/
 

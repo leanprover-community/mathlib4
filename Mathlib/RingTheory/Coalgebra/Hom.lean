@@ -19,7 +19,7 @@ homomorphism.
 
 ## Notations
 
-* `A →ₗc[R] B` : `R`-algebra homomorphism from `A` to `B`.
+* `A →ₗc[R] B` : `R`-coalgebra homomorphism from `A` to `B`.
 
 -/
 
