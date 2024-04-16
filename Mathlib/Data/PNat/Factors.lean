@@ -333,7 +333,7 @@ theorem factorMultiset_le_iff {m n : ℕ+} : factorMultiset m ≤ factorMultiset
 
 theorem factorMultiset_le_iff' {m : ℕ+} {v : PrimeMultiset} :
     factorMultiset m ≤ v ↔ m ∣ v.prod := by
-  let h := @factorMultiset_le_iff m v.prod
+  have h := @factorMultiset_le_iff m v.prod
   rw [v.factorMultiset_prod] at h
   exact h
 #align pnat.factor_multiset_le_iff' PNat.factorMultiset_le_iff'
@@ -343,13 +343,13 @@ end PNat
 namespace PrimeMultiset
 
 theorem prod_dvd_iff {u v : PrimeMultiset} : u.prod ∣ v.prod ↔ u ≤ v := by
-  let h := @PNat.factorMultiset_le_iff' u.prod v
+  have h := @PNat.factorMultiset_le_iff' u.prod v
   rw [u.factorMultiset_prod] at h
   exact h.symm
 #align prime_multiset.prod_dvd_iff PrimeMultiset.prod_dvd_iff
 
 theorem prod_dvd_iff' {u : PrimeMultiset} {n : ℕ+} : u.prod ∣ n ↔ u ≤ n.factorMultiset := by
-  let h := @prod_dvd_iff u n.factorMultiset
+  have h := @prod_dvd_iff u n.factorMultiset
   rw [n.prod_factorMultiset] at h
   exact h
 #align prime_multiset.prod_dvd_iff' PrimeMultiset.prod_dvd_iff'

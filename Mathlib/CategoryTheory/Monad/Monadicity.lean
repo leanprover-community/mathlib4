@@ -371,7 +371,7 @@ This is the converse of `createsGSplitOfMonadic`.
 -/
 def monadicOfCreatesGSplitCoequalizers [CreatesColimitOfIsSplitPair G] :
     MonadicRightAdjoint G := by
-  let I {A B} (f g : A ⟶ B) [G.IsSplitPair f g] : HasColimit (parallelPair f g ⋙ G) := by
+  have I {A B} (f g : A ⟶ B) [G.IsSplitPair f g] : HasColimit (parallelPair f g ⋙ G) := by
     apply @hasColimitOfIso _ _ _ _ _ _ ?_ (diagramIsoParallelPair.{v₁} _)
     exact inferInstanceAs <| HasCoequalizer (G.map f) (G.map g)
   apply @monadicOfHasPreservesReflectsGSplitCoequalizers _ _ _ _ _ _ ?_ ?_ ?_

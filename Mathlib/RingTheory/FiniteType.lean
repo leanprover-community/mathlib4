@@ -293,8 +293,8 @@ theorem of_comp_finiteType {f : A →+* B} {g : B →+* C} (h : (g.comp f).Finit
   let _ := f.toAlgebra
   let _ := g.toAlgebra
   let _ := (g.comp f).toAlgebra
-  let _ : IsScalarTower A B C := RestrictScalars.isScalarTower A B C
-  let _ : Algebra.FiniteType A C := h
+  have _ : IsScalarTower A B C := RestrictScalars.isScalarTower A B C
+  have _ : Algebra.FiniteType A C := h
   exact Algebra.FiniteType.of_restrictScalars_finiteType A B C
 #align ring_hom.finite_type.of_comp_finite_type RingHom.FiniteType.of_comp_finiteType
 

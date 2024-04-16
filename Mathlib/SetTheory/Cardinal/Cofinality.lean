@@ -236,7 +236,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
           (fun s : typein ((· < ·) : o.out.α → o.out.α → Prop) ⁻¹' Set.range f =>
             Classical.choose s.prop)
           fun s t hst => by
-          let H := congr_arg f hst
+          have H := congr_arg f hst
           rwa [Classical.choose_spec s.prop, Classical.choose_spec t.prop, typein_inj,
             Subtype.coe_inj] at H)
     have := typein_lt_self a

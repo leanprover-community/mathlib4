@@ -600,7 +600,7 @@ theorem mem_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk v w) 
     t ∈ (p.append p').support ↔ t ∈ p.support ∨ t ∈ p'.support := by
   simp only [mem_support_iff, mem_tail_support_append_iff]
   obtain rfl | h := eq_or_ne t v <;> obtain rfl | h' := eq_or_ne t u <;>
-    (try let _ := h'.symm) <;> simp [*]
+    (try have _ := h'.symm) <;> simp [*]
 #align simple_graph.walk.mem_support_append_iff SimpleGraph.Walk.mem_support_append_iff
 
 @[simp]

@@ -712,7 +712,7 @@ theorem integral_sin_pow_pos : 0 < ∫ x in (0)..π, sin x ^ n := by
 #align integral_sin_pow_pos integral_sin_pow_pos
 
 theorem integral_sin_pow_succ_le : (∫ x in (0)..π, sin x ^ (n + 1)) ≤ ∫ x in (0)..π, sin x ^ n := by
-  let H x h := pow_le_pow_of_le_one (sin_nonneg_of_mem_Icc h) (sin_le_one x) (n.le_add_right 1)
+  have H x h := pow_le_pow_of_le_one (sin_nonneg_of_mem_Icc h) (sin_le_one x) (n.le_add_right 1)
   refine' integral_mono_on pi_pos.le _ _ H <;> exact (continuous_sin.pow _).intervalIntegrable 0 π
 #align integral_sin_pow_succ_le integral_sin_pow_succ_le
 

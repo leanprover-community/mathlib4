@@ -704,7 +704,7 @@ instance : SecondCountableTopology GHSpace := by
       have : x ∈ ⋃ y ∈ s q, ball y ε := (hs q).2 (mem_univ _)
       rcases mem_iUnion₂.1 this with ⟨y, ys, hy⟩
       let i : ℕ := E q ⟨y, ys⟩
-      let hi := ((E q) ⟨y, ys⟩).is_lt
+      have hi := ((E q) ⟨y, ys⟩).is_lt
       have ihi_eq : (⟨i, hi⟩ : Fin (N q)) = (E q) ⟨y, ys⟩ := by rw [Fin.ext_iff, Fin.val_mk]
       have hiq : i < N q := hi
       have hip : i < N p := by rwa [Npq.symm] at hiq
@@ -856,7 +856,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       have : x ∈ ⋃ y ∈ s q, ball y (u n) := (hs q qt) (mem_univ _)
       rcases mem_iUnion₂.1 this with ⟨y, ys, hy⟩
       let i : ℕ := E q ⟨y, ys⟩
-      let hi := ((E q) ⟨y, ys⟩).2
+      have hi := ((E q) ⟨y, ys⟩).2
       have ihi_eq : (⟨i, hi⟩ : Fin (N q)) = (E q) ⟨y, ys⟩ := by rw [Fin.ext_iff, Fin.val_mk]
       have hiq : i < N q := hi
       have hip : i < N p := by rwa [Npq.symm] at hiq

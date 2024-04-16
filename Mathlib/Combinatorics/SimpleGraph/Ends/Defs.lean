@@ -240,7 +240,7 @@ theorem infinite_iff_in_all_ranges {K : Finset V} (C : G.ComponentCompl K) :
     · rintro h Cfin
       obtain ⟨D, e⟩ := h (K ∪ Cfin.toFinset) (Finset.subset_union_left K Cfin.toFinset)
       obtain ⟨v, vD⟩ := D.nonempty
-      let Ddis := D.disjoint_right
+      have Ddis := D.disjoint_right
       simp_rw [Finset.coe_union, Set.Finite.coe_toFinset, Set.disjoint_union_left,
         Set.disjoint_iff] at Ddis
       exact Ddis.right ⟨(ComponentCompl.hom_eq_iff_le _ _ _).mp e vD, vD⟩

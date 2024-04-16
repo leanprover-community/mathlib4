@@ -263,7 +263,7 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
           (measurable_id.prod_map (measurableEmbedding_embeddingReal Ω).measurable)) ⊗ₖ η)
         (MeasurableEmbedding.id.prod_mk (measurableEmbedding_embeddingReal Ω)) := by
   let e := embeddingReal Ω
-  let he := measurableEmbedding_embeddingReal Ω
+  have he := measurableEmbedding_embeddingReal Ω
   let κ' := map κ (Prod.map (id : β → β) e) (measurable_id.prod_map he.measurable)
   have hη' : fst κ' ⊗ₖ η = κ' := hη
   have h_prod_embed : MeasurableEmbedding (Prod.map (id : β → β) e) :=
@@ -312,7 +312,7 @@ lemma compProd_fst_borelMarkovFromReal (κ : kernel α (β × Ω)) [IsSFiniteKer
         (measurable_id.prod_map (measurableEmbedding_embeddingReal Ω).measurable)) :
     fst κ ⊗ₖ borelMarkovFromReal Ω η = κ := by
   let e := embeddingReal Ω
-  let he := measurableEmbedding_embeddingReal Ω
+  have he := measurableEmbedding_embeddingReal Ω
   let κ' := map κ (Prod.map (id : β → β) e) (measurable_id.prod_map he.measurable)
   have hη' : fst κ' ⊗ₖ η = κ' := hη
   have h_prod_embed : MeasurableEmbedding (Prod.map (id : β → β) e) :=

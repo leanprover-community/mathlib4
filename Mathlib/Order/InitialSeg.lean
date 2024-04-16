@@ -144,7 +144,7 @@ instance subsingleton_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl 
 #align initial_seg.subsingleton_of_trichotomous_of_irrefl InitialSeg.subsingleton_of_trichotomous_of_irrefl
 
 instance [IsWellOrder β s] : Subsingleton (r ≼i s) :=
-  ⟨fun a => by let _ := a.isWellFounded; exact Subsingleton.elim a⟩
+  ⟨fun a => by have _ := a.isWellFounded; exact Subsingleton.elim a⟩
 
 protected theorem eq [IsWellOrder β s] (f g : r ≼i s) (a) : f a = g a := by
   rw [Subsingleton.elim f g]

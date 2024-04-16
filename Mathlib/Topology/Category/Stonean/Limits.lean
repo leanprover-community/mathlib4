@@ -345,7 +345,7 @@ instance : PreservesPullbacksOfInclusions Stonean.toProfinite.{u} where
     intros X Y Z f
     apply (config := { allowSynthFailures := true }) preservesPullbackSymmetry
     have : OpenEmbedding (coprod.inl : X ⟶ X ⨿ Y) := Stonean.Sigma.openEmbedding_ι _ _
-    have : CreatesLimit (cospan f _) (Stonean.toProfinite ⋙ Profinite.toTopCat) :=
+    let : CreatesLimit (cospan f _) (Stonean.toProfinite ⋙ Profinite.toTopCat) :=
       Stonean.createsPullbacksOfOpenEmbedding f this
     exact preservesLimitOfReflectsOfPreserves Stonean.toProfinite Profinite.toTopCat
 

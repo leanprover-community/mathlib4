@@ -210,7 +210,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- Since `X` is compact, for every `x` there is some finset `ys t`
   -- so the union of the `U x y` for `y ∈ ys x` still covers everything.
   let ys : X → Finset X := fun x => (CompactSpace.elim_nhds_subcover (U x) (U_nhd_y x)).choose
-  let ys_w : ∀ x, ⋃ y ∈ ys x, U x y = ⊤ := fun x =>
+  have ys_w : ∀ x, ⋃ y ∈ ys x, U x y = ⊤ := fun x =>
     (CompactSpace.elim_nhds_subcover (U x) (U_nhd_y x)).choose_spec
   have ys_nonempty : ∀ x, (ys x).Nonempty := fun x =>
     Set.nonempty_of_union_eq_top_of_nonempty _ _ nX (ys_w x)

@@ -117,7 +117,7 @@ lemma isSheafFor_of_factorsThru
       ← P.map_comp, ← op_comp, ← P.map_comp, ← op_comp]
     apply hx
     simp only [h2, h, Category.assoc]
-  let ⟨_, h2'⟩ := hS
+  have ⟨_, h2'⟩ := hS
   obtain ⟨z, hz⟩ := h2' y hy
   refine ⟨z, fun Y g hg => ?_⟩
   obtain ⟨R, hR1, hR2⟩ := h hg

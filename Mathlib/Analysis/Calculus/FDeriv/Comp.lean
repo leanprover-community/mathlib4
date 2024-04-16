@@ -53,8 +53,8 @@ variable (x)
 theorem HasFDerivAtFilter.comp {g : F → G} {g' : F →L[𝕜] G} {L' : Filter F}
     (hg : HasFDerivAtFilter g g' (f x) L') (hf : HasFDerivAtFilter f f' x L) (hL : Tendsto f L L') :
     HasFDerivAtFilter (g ∘ f) (g'.comp f') x L := by
-  let eq₁ := (g'.isBigO_comp _ _).trans_isLittleO hf.isLittleO
-  let eq₂ := (hg.isLittleO.comp_tendsto hL).trans_isBigO hf.isBigO_sub
+  have eq₁ := (g'.isBigO_comp _ _).trans_isLittleO hf.isLittleO
+  have eq₂ := (hg.isLittleO.comp_tendsto hL).trans_isBigO hf.isBigO_sub
   refine .of_isLittleO <| eq₂.triangle <| eq₁.congr_left fun x' => ?_
   simp
 #align has_fderiv_at_filter.comp HasFDerivAtFilter.comp

@@ -1074,7 +1074,7 @@ lemma isIso_homologyMap_of_isIso_cyclesMap_of_epi {φ : S₁ ⟶ S₂}
   have h : S₂.toCycles ≫ inv (cyclesMap φ) ≫ S₁.homologyπ = 0 := by
     simp only [← cancel_epi φ.τ₁, ← toCycles_naturality_assoc,
       IsIso.hom_inv_id_assoc, toCycles_comp_homologyπ, comp_zero]
-  have ⟨z, hz⟩ := CokernelCofork.IsColimit.desc' S₂.homologyIsCokernel _ h
+  let ⟨z, hz⟩ := CokernelCofork.IsColimit.desc' S₂.homologyIsCokernel _ h
   dsimp at hz
   refine' ⟨⟨z, _, _⟩⟩
   · rw [← cancel_epi S₁.homologyπ, homologyπ_naturality_assoc, hz,
