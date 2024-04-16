@@ -5,15 +5,13 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 
-/-! # The left Kan extension functor
+/-! # The Kan extension functor
 
 Given a functor `F : C ⥤ D`, we define the left Kan extension functor
 `F.lan : (C ⥤ E) ⥤ (D ⥤ E)` which sends a functor `G : C ⥤ E` to its
 left Kan extension along `F`. This is defined if all `G` have such
-a left Kan extension. It is shown that if `G` admits a pointwise
-left Kan extension, then `F.lan.obj G` is also a pointwise left
-Kan extension. It is shown that `F.lan` is the left adjoint to the
-functor `(D ⥤ E) ⥤ (C ⥤ E)` given by the precomposition
+a left Kan extension. It is shown that `F.lan` is the left adjoint to
+the functor `(D ⥤ E) ⥤ (C ⥤ E)` given by the precomposition
 with `F` (see `Functor.lanAdjunction`).
 
 ## TODO
@@ -58,11 +56,15 @@ namespace Functor
 variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
   {E : Type*} [Category E] [∀ (G : C ⥤ E), HasLeftKanExtension F G]
 
+/-- The left Kan extension functor `(C ⥤ E) ⥤ (D ⥤ E)` along a functor `C ⥤ D`. -/
+@[pp_dot]
 noncomputable def lan : (C ⥤ E) ⥤ (D ⥤ E) where
   obj G := leftKanExtension F G
   map {G₁ G₂} φ := descOfIsLeftKanExtension _ (leftKanExtensionUnit F G₁) _
     (φ ≫ leftKanExtensionUnit F G₂)
 
+/-- The natural transformation `G ⟶ F ⋙ (F.lan).obj G`. -/
+@[pp_dot]
 noncomputable def lanUnit : (𝟭 (C ⥤ E)) ⟶ F.lan ⋙ (whiskeringLeft C D E).obj F where
   app G := leftKanExtensionUnit F G
   naturality {G₁ G₂} φ := by ext; simp [lan]
@@ -71,12 +73,18 @@ instance (G : C ⥤ E) : (F.lan.obj G).IsLeftKanExtension (F.lanUnit.app G) := b
   dsimp [lan, lanUnit]
   infer_instance
 
+/-- If there exists a pointwise left Kan extension of `G` along `F`,
+then `F.lan.obj G` is a pointwise left Kan extension of `G`. -/
 noncomputable def isPointwiseLeftKanExtensionLanUnit
     (G : C ⥤ E) [HasPointwiseLeftKanExtension F G] :
     (LeftExtension.mk _ (F.lanUnit.app G)).IsPointwiseLeftKanExtension :=
   isPointwiseLeftKanExtensionOfIsLeftKanExtension (F := G) _ (F.lanUnit.app G)
 
 variable {F} in
+/-- If `α : G ⟶ F ⋙ G'` is a natural transformation which makes `G' : D ⥤ E` a left Kan
+extension of `G : C ⥤ E` along `F C ⥤ D`, then for all functors `H`,
+this is the induced bijection `(G' ⟶ H) ≃ (G ⟶ F ⋙ H)`. -/
+@[pp_dot]
 noncomputable def homEquivOfIsLeftKanExtension
     {G : C ⥤ E} (G' : D ⥤ E) (α : G ⟶ F ⋙ G') (H : D ⥤ E)
     [G'.IsLeftKanExtension α] : (G' ⟶ H) ≃ (G ⟶ F ⋙ H) where
@@ -86,6 +94,9 @@ noncomputable def homEquivOfIsLeftKanExtension
   right_inv := by aesop_cat
 
 variable (E) in
+/-- The left Kan extension functor `F.Lan` is left adjoint to the
+precomposition by `F`. -/
+@[pp_dot]
 noncomputable def lanAdjunction : F.lan ⊣ (whiskeringLeft C D E).obj F :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun G H => homEquivOfIsLeftKanExtension _ (F.lanUnit.app G) H
