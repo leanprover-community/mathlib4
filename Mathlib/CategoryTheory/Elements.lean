@@ -276,14 +276,12 @@ attribute [simps! unitIso_hom] costructuredArrowYonedaEquivalence
 -/
 theorem costructuredArrow_yoneda_equivalence_naturality {F₁ F₂ : Cᵒᵖ ⥤ Type v} (α : F₁ ⟶ F₂) :
     (map α).op ⋙ toCostructuredArrow F₂ = toCostructuredArrow F₁ ⋙ CostructuredArrow.map α := by
-  fapply Functor.ext
-  · intro X
-    simp only [CostructuredArrow.map_mk, toCostructuredArrow_obj, Functor.op_obj,
-      Functor.comp_obj]
-    congr
-    ext _ f
-    simpa using congr_fun (α.naturality f.op).symm (unop X).snd
-  · simp [autoParam]
+  refine' Functor.ext _ _
+  · intro x₁
+    apply CostructuredArrow.obj_ext (by rfl)
+    ext X x
+    exact (congr_fun (α.naturality x.op) _).symm
+  · simp
 #align category_theory.category_of_elements.costructured_arrow_yoneda_equivalence_naturality CategoryTheory.CategoryOfElements.costructuredArrow_yoneda_equivalence_naturality
 
 /-- The equivalence `F.elementsᵒᵖ ≌ (yoneda, F)` is compatible with the forgetful functors. -/

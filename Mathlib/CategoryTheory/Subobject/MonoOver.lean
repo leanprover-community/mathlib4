@@ -248,7 +248,10 @@ attribute [instance] mono_comp
 by post-composition with a monomorphism `f : X ⟶ Y`.
 -/
 def map (f : X ⟶ Y) [Mono f] : MonoOver X ⥤ MonoOver Y :=
-  lift (Over.map f) fun g => by apply mono_comp g.arrow f
+  lift (Over.map f) fun g => by
+    simp only [Over.map_obj_left, forget_obj_left, Functor.id_obj, Functor.const_obj_obj,
+      Over.map_obj_right, Over.map_obj_hom, forget_obj_hom]
+    apply mono_comp g.arrow f
 #align category_theory.mono_over.map CategoryTheory.MonoOver.map
 
 /-- `MonoOver.map` commutes with composition (up to a natural isomorphism). -/
@@ -271,15 +274,15 @@ theorem map_obj_left (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g : 
 #align category_theory.mono_over.map_obj_left CategoryTheory.MonoOver.map_obj_left
 
 @[simp]
-theorem map_obj_arrow (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g).arrow = g.arrow ≫ f :=
-  rfl
+theorem map_obj_arrow (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g).arrow = g.arrow ≫ f := by
+  simp [map]
 #align category_theory.mono_over.map_obj_arrow CategoryTheory.MonoOver.map_obj_arrow
 
 instance fullMap (f : X ⟶ Y) [Mono f] : Functor.Full (map f) where
   preimage {g h} e := by
     refine' homMk e.left _
     rw [← cancel_mono f, assoc]
-    apply w e
+    simpa using w e
 #align category_theory.mono_over.full_map CategoryTheory.MonoOver.fullMap
 
 instance faithful_map (f : X ⟶ Y) [Mono f] : Functor.Faithful (map f) where
@@ -440,8 +443,9 @@ def existsIsoMap (f : X ⟶ Y) [Mono f] : «exists» f ≅ map f :=
     suffices (forget _).obj ((«exists» f).obj Z) ≅ (forget _).obj ((map f).obj Z) by
       apply (forget _).preimageIso this
     apply Over.isoMk _ _
-    apply imageMonoIsoSource (Z.arrow ≫ f)
-    apply imageMonoIsoSource_hom_self)
+    · exact image.eqToIso (by simp) ≪≫ imageMonoIsoSource (Z.arrow ≫ f)
+    · dsimp only [arrow, «exists»]
+      simp)
 #align category_theory.mono_over.exists_iso_map CategoryTheory.MonoOver.existsIsoMap
 
 /-- `exists` is adjoint to `pullback` when images exist -/

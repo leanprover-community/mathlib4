@@ -519,11 +519,11 @@ def image.eqToIso (h : f = f') : image f ≅ image f' :=
 /-- As long as the category has equalizers,
 the image inclusion maps commute with `image.eqToIso`.
 -/
-theorem image.eq_fac [HasEqualizers C] (h : f = f') :
-    image.ι f = (image.eqToIso h).hom ≫ image.ι f' := by
-  apply image.ext
-  dsimp [asIso,image.eqToIso, image.eqToHom]
-  rw [image.lift_fac] -- Porting note: simp did not fire with this it seems
+@[reassoc (attr := simp)]
+theorem image.eq_fac (h : f = f') :
+    (image.eqToIso h).hom ≫ image.ι f' = image.ι f := by
+  subst h
+  apply image.lift_fac
 #align category_theory.limits.image.eq_fac CategoryTheory.Limits.image.eq_fac
 
 end
