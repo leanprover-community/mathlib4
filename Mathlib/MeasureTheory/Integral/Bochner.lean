@@ -1918,7 +1918,7 @@ theorem integral_unique [Unique α] (f : α → E) : ∫ x, f x ∂μ = (μ univ
 
 theorem integral_pos_of_integrable_nonneg_nonzero [TopologicalSpace α] [Measure.IsOpenPosMeasure μ]
     {f : α → ℝ} {x : α} (f_cont : Continuous f) (f_int : Integrable f μ) (f_nonneg : 0 ≤ f)
-    (f_x : f x ≠ 0) : 0 < (∫ x, f x ∂μ) :=
+    (f_x : f x ≠ 0) : 0 < ∫ x, f x ∂μ :=
   (integral_pos_iff_support_of_nonneg f_nonneg f_int).2
     (IsOpen.measure_pos μ f_cont.isOpen_support ⟨x, f_x⟩)
 
