@@ -34,7 +34,7 @@ Let `κ : kernel α (β × ℝ)` and `ν : kernel α β`.
 * `ProbabilityTheory.IsRatCondKernelCDF`: a function `f : α × β → ℚ → ℝ` is called a rational
   conditional kernel CDF of `κ` with respect to `ν` if is measurable and satisfies the same
   integral conditions as in the definition of `IsCondKernelCDF`, and the `ℚ → ℝ` function `f (a, b)`
-  satisfies the properties of a Sieltjes function for `(ν a)`-almost all `b : β`.
+  satisfies the properties of a Stieltjes function for `(ν a)`-almost all `b : β`.
 
 ## Main statements
 
@@ -64,11 +64,11 @@ and for all measurable sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (�
 Also the `ℚ → ℝ` function `f (a, b)` should satisfy the properties of a Sieltjes function for
 `(ν a)`-almost all `b : β`. -/
 structure IsRatCondKernelCDF (f : α × β → ℚ → ℝ) (κ : kernel α (β × ℝ)) (ν : kernel α β) : Prop :=
-  (measurable : Measurable f)
-  (isRatStieltjesPoint_ae (a : α) : ∀ᵐ b ∂(ν a), IsRatStieltjesPoint f (a, b))
-  (integrable (a : α) (q : ℚ) : Integrable (fun b ↦ f (a, b) q) (ν a))
-  (set_integral (a : α) {s : Set β} (_hs : MeasurableSet s) (q : ℚ) :
-    ∫ b in s, f (a, b) q ∂(ν a) = (κ a (s ×ˢ Iic (q : ℝ))).toReal)
+  measurable : Measurable f
+  isRatStieltjesPoint_ae (a : α) : ∀ᵐ b ∂(ν a), IsRatStieltjesPoint f (a, b)
+  integrable (a : α) (q : ℚ) : Integrable (fun b ↦ f (a, b) q) (ν a)
+  set_integral (a : α) {s : Set β} (_hs : MeasurableSet s) (q : ℚ) :
+    ∫ b in s, f (a, b) q ∂(ν a) = (κ a (s ×ˢ Iic (q : ℝ))).toReal
 
 lemma IsRatCondKernelCDF.mono (hf : IsRatCondKernelCDF f κ ν) (a : α) :
     ∀ᵐ b ∂(ν a), Monotone (f (a, b)) := by
@@ -223,25 +223,25 @@ conditions are the same, but the limit properties of `IsRatCondKernelCDF` are re
 limits of integrals. -/
 structure IsRatCondKernelCDFAux (f : α × β → ℚ → ℝ) (κ : kernel α (β × ℝ)) (ν : kernel α β) :
     Prop :=
-  (measurable : Measurable f)
-  (mono' (a : α) {q r : ℚ} (_hqr : q ≤ r) : ∀ᵐ c ∂(ν a), f (a, c) q ≤ f (a, c) r)
-  (nonneg' (a : α) (q : ℚ) : ∀ᵐ c ∂(ν a), 0 ≤ f (a, c) q)
-  (le_one' (a : α) (q : ℚ) : ∀ᵐ c ∂(ν a), f (a, c) q ≤ 1)
+  measurable : Measurable f
+  mono' (a : α) {q r : ℚ} (_hqr : q ≤ r) : ∀ᵐ c ∂(ν a), f (a, c) q ≤ f (a, c) r
+  nonneg' (a : α) (q : ℚ) : ∀ᵐ c ∂(ν a), 0 ≤ f (a, c) q
+  le_one' (a : α) (q : ℚ) : ∀ᵐ c ∂(ν a), f (a, c) q ≤ 1
   /- Same as `Tendsto (fun q : ℚ ↦ ∫ c, f (a, c) q ∂(ν a)) atBot (𝓝 0)` but slightly easier
   to prove in the current applications of this definition (some integral convergence lemmas
   currently apply only to `ℕ`, not `ℚ`) -/
-  (tendsto_integral_of_antitone (a : α) (seq : ℕ → ℚ) (_hs : Antitone seq)
+  tendsto_integral_of_antitone (a : α) (seq : ℕ → ℚ) (_hs : Antitone seq)
     (_hs_tendsto : Tendsto seq atTop atBot) :
-    Tendsto (fun m ↦ ∫ c, f (a, c) (seq m) ∂(ν a)) atTop (𝓝 0))
+    Tendsto (fun m ↦ ∫ c, f (a, c) (seq m) ∂(ν a)) atTop (𝓝 0)
   /- Same as `Tendsto (fun q : ℚ ↦ ∫ c, f (a, c) q ∂(ν a)) atTop (𝓝 (ν a univ).toReal)` but
   slightly easier to prove in the current applications of this definition (some integral convergence
   lemmas currently apply only to `ℕ`, not `ℚ`) -/
-  (tendsto_integral_of_monotone (a : α) (seq : ℕ → ℚ) (_hs : Monotone seq)
+  tendsto_integral_of_monotone (a : α) (seq : ℕ → ℚ) (_hs : Monotone seq)
     (_hs_tendsto : Tendsto seq atTop atTop) :
-    Tendsto (fun m ↦ ∫ c, f (a, c) (seq m) ∂(ν a)) atTop (𝓝 (ν a univ).toReal))
-  (integrable (a : α) (q : ℚ) : Integrable (fun c ↦ f (a, c) q) (ν a))
-  (set_integral (a : α) {A : Set β} (_hA : MeasurableSet A) (q : ℚ) :
-    ∫ c in A, f (a, c) q ∂(ν a) = (κ a (A ×ˢ Iic ↑q)).toReal)
+    Tendsto (fun m ↦ ∫ c, f (a, c) (seq m) ∂(ν a)) atTop (𝓝 (ν a univ).toReal)
+  integrable (a : α) (q : ℚ) : Integrable (fun c ↦ f (a, c) q) (ν a)
+  set_integral (a : α) {A : Set β} (_hA : MeasurableSet A) (q : ℚ) :
+    ∫ c in A, f (a, c) q ∂(ν a) = (κ a (A ×ˢ Iic ↑q)).toReal
 
 lemma IsRatCondKernelCDFAux.measurable_right (hf : IsRatCondKernelCDFAux f κ ν) (a : α) (q : ℚ) :
     Measurable (fun t ↦ f (a, t) q) := by
@@ -290,10 +290,8 @@ lemma IsRatCondKernelCDFAux.tendsto_atTop_one (hf : IsRatCondKernelCDFAux f κ �
     filter_upwards [this, hf.mono a] with t ht h_mono
     rw [tendsto_iff_tendsto_subseq_of_monotone h_mono tendsto_nat_cast_atTop_atTop]
     exact ht
-  let seq : ℕ → ℚ := fun n ↦ n
-  have hseq : Monotone seq := fun i j hij ↦ by simp [seq, hij]
-  have hseq_tendsto : Tendsto seq atTop atTop := tendsto_nat_cast_atTop_atTop
-  filter_upwards [hf.tendsto_one_of_monotone a seq hseq hseq_tendsto] with x hx using hx
+  filter_upwards [hf.tendsto_one_of_monotone a Nat.cast Nat.mono_cast tendsto_nat_cast_atTop_atTop]
+    with x hx using hx
 
 lemma IsRatCondKernelCDFAux.tendsto_atBot_zero (hf : IsRatCondKernelCDFAux f κ ν) [IsFiniteKernel ν]
     (a : α) :
@@ -309,20 +307,14 @@ lemma IsRatCondKernelCDFAux.tendsto_atBot_zero (hf : IsRatCondKernelCDFAux f κ 
     filter_upwards [this, hf.mono a] with t ht h_mono
     have h_anti : Antitone (fun q ↦ f (a, t) (-q)) := h_mono.comp_antitone monotone_id.neg
     exact (tendsto_iff_tendsto_subseq_of_antitone h_anti tendsto_nat_cast_atTop_atTop).mpr ht
-  let seq : ℕ → ℚ := fun n ↦ -n
-  have hseq : Antitone seq := fun i j hij ↦ neg_le_neg (by exact mod_cast hij)
-  have hseq_tendsto : Tendsto seq atTop atBot := by
-    simp only [seq, tendsto_neg_atBot_iff]
-    exact tendsto_nat_cast_atTop_atTop
-  convert hf.tendsto_zero_of_antitone a seq hseq hseq_tendsto with x n
+  exact hf.tendsto_zero_of_antitone _ _ Nat.mono_cast.neg
+    (tendsto_neg_atBot_iff.mpr tendsto_nat_cast_atTop_atTop)
 
 lemma IsRatCondKernelCDFAux.bddBelow_range (hf : IsRatCondKernelCDFAux f κ ν) (a : α) :
     ∀ᵐ t ∂(ν a), ∀ q : ℚ, BddBelow (range fun (r : Ioi q) ↦ f (a, t) r) := by
   filter_upwards [hf.nonneg a] with c hc
   refine fun q ↦ ⟨0, ?_⟩
-  rw [mem_lowerBounds]
-  rintro x ⟨y, rfl⟩
-  exact hc y
+  simp [mem_lowerBounds, hc]
 
 lemma IsRatCondKernelCDFAux.integrable_iInf_rat_gt (hf : IsRatCondKernelCDFAux f κ ν)
     [IsFiniteKernel ν] (a : α) (q : ℚ) :
@@ -417,12 +409,12 @@ respect to `ν` if it is measurable, tends to to 0 at -∞ and to 1 at +∞ for 
 measurable sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal`. -/
 structure IsCondKernelCDF (f : α × β → StieltjesFunction) (κ : kernel α (β × ℝ)) (ν : kernel α β) :
     Prop :=
-  (measurable (x : ℝ) : Measurable fun p ↦ f p x)
-  (integrable (a : α) (x : ℝ) : Integrable (fun b ↦ f (a, b) x) (ν a))
-  (tendsto_atTop_one (p : α × β) : Tendsto (f p) atTop (𝓝 1))
-  (tendsto_atBot_zero (p : α × β) : Tendsto (f p) atBot (𝓝 0))
-  (set_integral (a : α) {s : Set β} (_hs : MeasurableSet s) (x : ℝ) :
-    ∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal)
+  measurable (x : ℝ) : Measurable fun p ↦ f p x
+  integrable (a : α) (x : ℝ) : Integrable (fun b ↦ f (a, b) x) (ν a)
+  tendsto_atTop_one (p : α × β) : Tendsto (f p) atTop (𝓝 1)
+  tendsto_atBot_zero (p : α × β) : Tendsto (f p) atBot (𝓝 0)
+  set_integral (a : α) {s : Set β} (_hs : MeasurableSet s) (x : ℝ) :
+    ∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal
 
 lemma IsCondKernelCDF.nonneg (hf : IsCondKernelCDF f κ ν) (p : α × β) (x : ℝ) : 0 ≤ f p x :=
   Monotone.le_of_tendsto (f p).mono (hf.tendsto_atBot_zero p) x
@@ -479,13 +471,10 @@ lemma StieltjesFunction.measurable_measure {f : α → StieltjesFunction}
     (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic ?_ ?_ ?_ ?_ hs
   · simp only [measure_empty, measurable_const]
   · rintro S ⟨u, rfl⟩
-    simp_rw [StieltjesFunction.measure_Iic (f _) (hf_bot _)]
-    simp only [sub_zero]
+    simp_rw [StieltjesFunction.measure_Iic (f _) (hf_bot _), sub_zero]
     exact (hf _).ennreal_ofReal
   · intro t ht ht_cd_meas
-    have : (fun a ↦ (f a).measure tᶜ) =
-        (fun a ↦ (f a).measure univ)
-          - fun a ↦ (f a).measure t := by
+    have : (fun a ↦ (f a).measure tᶜ) = (fun a ↦ (f a).measure univ) - fun a ↦ (f a).measure t := by
       ext1 a
       rw [measure_compl ht, Pi.sub_apply]
       exact measure_ne_top _ _
@@ -667,28 +656,6 @@ lemma compProd_toKernel [IsFiniteKernel κ] [IsSFiniteKernel ν] (hf : IsCondKer
     ν ⊗ₖ hf.toKernel f = κ := by
   ext a s hs
   rw [kernel.compProd_apply _ _ _ hs, lintegral_toKernel_mem hf a hs]
-
-lemma ae_toKernel_eq_one [IsFiniteKernel κ] [IsSFiniteKernel ν] (hf : IsCondKernelCDF f κ ν) (a : α)
-    {s : Set ℝ} (hs : MeasurableSet s) (hκs : κ a {x | x.snd ∈ sᶜ} = 0) :
-    ∀ᵐ b ∂(ν a), hf.toKernel f (a, b) s = 1 := by
-  have h_eq : ν ⊗ₖ hf.toKernel f = κ := compProd_toKernel hf
-  have h : κ a {x | x.snd ∈ sᶜ} = (ν ⊗ₖ hf.toKernel f) a {x | x.snd ∈ sᶜ} := by rw [h_eq]
-  rw [hκs, kernel.compProd_apply] at h
-  swap; · exact measurable_snd hs.compl
-  rw [eq_comm, lintegral_eq_zero_iff] at h
-  swap
-  · simp only [mem_compl_iff, mem_setOf_eq]
-    change Measurable ((fun p ↦ hf.toKernel f p {c | c ∉ s}) ∘ (fun b : β ↦ (a, b)))
-    exact (kernel.measurable_coe _ hs.compl).comp measurable_prod_mk_left
-  simp only [mem_compl_iff, mem_setOf_eq, kernel.prodMkLeft_apply'] at h
-  filter_upwards [h] with b hb
-  change hf.toKernel f (a, b) sᶜ = 0 at hb
-  rwa [prob_compl_eq_zero_iff hs] at hb
-
-lemma measurableSet_toKernel_eq_one (hf : IsCondKernelCDF f κ ν)
-    {s : Set ℝ} (hs : MeasurableSet s) :
-    MeasurableSet {p | hf.toKernel f p s = 1} :=
-  (kernel.measurable_coe _ hs) (measurableSet_singleton 1)
 
 end
 

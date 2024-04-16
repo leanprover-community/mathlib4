@@ -3,12 +3,7 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Integral.SetIntegral
-import Mathlib.MeasureTheory.Function.LocallyIntegrable
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 #align_import measure_theory.integral.peak_function from "leanprover-community/mathlib"@"13b0d72fd8533ba459ac66e9a885e35ffabb32b2"
 
@@ -43,13 +38,6 @@ Note that there are related results about convolution with respect to peak funct
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
 
 open scoped Topology ENNReal
-
-/-- This lemma exists for finsets, but not for sets currently. porting note: move to
-data.set.basic after the port. -/
-theorem Set.disjoint_sdiff_inter {α : Type*} (s t : Set α) : Disjoint (s \ t) (s ∩ t) :=
-  disjoint_of_subset_right (inter_subset_right _ _) disjoint_sdiff_left
-#align set.disjoint_sdiff_inter Set.disjoint_sdiff_inter
-
 
 /-!
 ### General convergent result for integrals against a sequence of peak functions
@@ -186,9 +174,9 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_tendsto_aux
     ‖∫ x in s, φ i x • g x ∂μ‖ =
       ‖(∫ x in s \ u, φ i x • g x ∂μ) + ∫ x in s ∩ u, φ i x • g x ∂μ‖ := by
       conv_lhs => rw [← diff_union_inter s u]
-      rw [integral_union (disjoint_sdiff_inter _ _) (hs.inter u_open.measurableSet)
+      rw [integral_union disjoint_sdiff_inter (hs.inter u_open.measurableSet)
           (h''i.mono_set (diff_subset _ _)) (h''i.mono_set (inter_subset_left _ _))]
-    _ ≤ ‖∫ x in s \ u, φ i x • g x ∂μ‖ + ‖∫ x in s ∩ u, φ i x • g x ∂μ‖ := (norm_add_le _ _)
+    _ ≤ ‖∫ x in s \ u, φ i x • g x ∂μ‖ + ‖∫ x in s ∩ u, φ i x • g x ∂μ‖ := norm_add_le _ _
     _ ≤ (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ := add_le_add C B
 #align tendsto_set_integral_peak_smul_of_integrable_on_of_continuous_within_at_aux tendsto_set_integral_peak_smul_of_integrableOn_of_tendsto_aux
 @[deprecated] alias tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux :=
@@ -420,7 +408,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable
     (h : Tendsto (fun x ↦ ‖x‖ ^ finrank ℝ F * φ x) (cobounded F) (𝓝 0))
     {g : F → E} (hg : Integrable g μ) (h'g : ContinuousAt g 0) :
     Tendsto (fun (c : ℝ) ↦ ∫ x, (c ^ (finrank ℝ F) * φ (c • x)) • g x ∂μ) atTop (𝓝 (g 0)) := by
-  have I : Integrable φ μ := (integrable_of_integral_eq_one h'φ)
+  have I : Integrable φ μ := integrable_of_integral_eq_one h'φ
   apply tendsto_integral_peak_smul_of_integrable_of_tendsto (t := closedBall 0 1) (x₀ := 0)
   · exact isClosed_ball.measurableSet
   · exact closedBall_mem_nhds _ zero_lt_one
