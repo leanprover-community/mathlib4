@@ -61,7 +61,8 @@ theorem bernoulli_def (n : ℕ) : bernoulli n =
   rw [← sum_range_reflect, add_succ_sub_one, add_zero, bernoulli]
   apply sum_congr rfl
   rintro x hx
-  rw [mem_range_succ_iff] at hx; rw [choose_symm hx, tsub_tsub_cancel_of_le hx]
+  rw [mem_range_succ_iff] at hx
+  rw [choose_symm hx, tsub_tsub_cancel_of_le hx]
 #align polynomial.bernoulli_def Polynomial.bernoulli_def
 
 /-
@@ -76,11 +77,10 @@ theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 @[simp]
 theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by
   rw [bernoulli, eval_finset_sum, sum_range_succ]
-  have : (∑ x : ℕ in range n, _root_.bernoulli x * n.choose x * 0 ^ (n - x)) = 0 := by
+  have : ∑ x : ℕ in range n, _root_.bernoulli x * n.choose x * 0 ^ (n - x) = 0 := by
     apply sum_eq_zero fun x hx => _
     intros x hx
-    have h : x < n := (mem_range.1 hx)
-    simp [tsub_eq_zero_iff_le, h]
+    simp [tsub_eq_zero_iff_le, mem_range.1 hx]
   simp [this]
 #align polynomial.bernoulli_eval_zero Polynomial.bernoulli_eval_zero
 
@@ -91,8 +91,7 @@ theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
     (_root_.bernoulli _).mul_comm, sum_bernoulli, one_pow, mul_one, eval_C, eval_monomial, one_mul]
   by_cases h : n = 1
   · norm_num [h]
-  · simp [h]
-    exact bernoulli_eq_bernoulli'_of_ne_one h
+  · simp [h, bernoulli_eq_bernoulli'_of_ne_one h]
 #align polynomial.bernoulli_eval_one Polynomial.bernoulli_eval_one
 
 end Examples

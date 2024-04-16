@@ -498,12 +498,10 @@ instance IsRoot.decidable [DecidableEq R] : Decidable (IsRoot p a) := by
   unfold IsRoot; infer_instance
 #align polynomial.is_root.decidable Polynomial.IsRoot.decidable
 
--- Adaptation note: 2024-03-15: this was called `def`.
--- Should lean be changed to allow that as a name again?
 @[simp]
-theorem IsRoot.definition : IsRoot p a ↔ p.eval a = 0 :=
+theorem IsRoot.def : IsRoot p a ↔ p.eval a = 0 :=
   Iff.rfl
-#align polynomial.is_root.def Polynomial.IsRoot.definition
+#align polynomial.is_root.def Polynomial.IsRoot.def
 
 theorem IsRoot.eq_zero (h : IsRoot p x) : eval x p = 0 :=
   h
@@ -810,9 +808,7 @@ theorem coeff_map (n : ℕ) : coeff (p.map f) n = f (coeff p n) := by
   rw [map, eval₂_def, coeff_sum, sum]
   conv_rhs => rw [← sum_C_mul_X_pow_eq p, coeff_sum, sum, map_sum]
   refine' Finset.sum_congr rfl fun x _hx => _
-  -- porting note (#10745): was `simp [Function.comp, coeff_C_mul_X_pow, f.map_mul]`.
-  simp? [Function.comp, coeff_C_mul_X_pow, - map_mul, - coeff_C_mul] says
-    simp only [RingHom.coe_comp, Function.comp_apply, coeff_C_mul_X_pow]
+  simp only [RingHom.coe_comp, Function.comp, coeff_C_mul_X_pow]
   split_ifs <;> simp [f.map_zero]
 #align polynomial.coeff_map Polynomial.coeff_map
 
@@ -891,7 +887,7 @@ theorem map_monic_eq_zero_iff (hp : p.Monic) : p.map f = 0 ↔ ∀ x, f x = 0 :=
   ⟨fun hfp x =>
     calc
       f x = f x * f p.leadingCoeff := by simp only [mul_one, hp.leadingCoeff, f.map_one]
-      _ = f x * (p.map f).coeff p.natDegree := (congr_arg _ (coeff_map _ _).symm)
+      _ = f x * (p.map f).coeff p.natDegree := congr_arg _ (coeff_map _ _).symm
       _ = 0 := by simp only [hfp, mul_zero, coeff_zero]
       ,
     fun h => ext fun n => by simp only [h, coeff_map, coeff_zero]⟩
@@ -1160,11 +1156,11 @@ theorem coe_compRingHom_apply (p q : R[X]) : (compRingHom q : R[X] → R[X]) p =
 #align polynomial.coe_comp_ring_hom_apply Polynomial.coe_compRingHom_apply
 
 theorem root_mul_left_of_isRoot (p : R[X]) {q : R[X]} : IsRoot q a → IsRoot (p * q) a := fun H => by
-  rw [IsRoot, eval_mul, IsRoot.definition.1 H, mul_zero]
+  rw [IsRoot, eval_mul, IsRoot.def.1 H, mul_zero]
 #align polynomial.root_mul_left_of_is_root Polynomial.root_mul_left_of_isRoot
 
 theorem root_mul_right_of_isRoot {p : R[X]} (q : R[X]) : IsRoot p a → IsRoot (p * q) a := fun H =>
-  by rw [IsRoot, eval_mul, IsRoot.definition.1 H, zero_mul]
+  by rw [IsRoot, eval_mul, IsRoot.def.1 H, zero_mul]
 #align polynomial.root_mul_right_of_is_root Polynomial.root_mul_right_of_isRoot
 
 theorem eval₂_multiset_prod (s : Multiset R[X]) (x : S) :
@@ -1323,7 +1319,7 @@ theorem eval_sub (p q : R[X]) (x : R) : (p - q).eval x = p.eval x - q.eval x :=
 #align polynomial.eval_sub Polynomial.eval_sub
 
 theorem root_X_sub_C : IsRoot (X - C a) b ↔ a = b := by
-  rw [IsRoot.definition, eval_sub, eval_X, eval_C, sub_eq_zero, eq_comm]
+  rw [IsRoot.def, eval_sub, eval_X, eval_C, sub_eq_zero, eq_comm]
 #align polynomial.root_X_sub_C Polynomial.root_X_sub_C
 
 @[simp]

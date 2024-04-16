@@ -3,10 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Order.Sub.Canonical
 import Mathlib.Data.List.Perm
-import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Set.List
 import Mathlib.Init.Quot
 import Mathlib.Order.Hom.Basic
@@ -2957,7 +2957,7 @@ lemma filter_attach' (s : Multiset α) (p : {a // a ∈ s} → Prop) [DecidableE
   refine' Multiset.map_injective Subtype.val_injective _
   rw [map_filter' _ Subtype.val_injective]
   simp only [Function.comp, Subtype.exists, coe_mk, Subtype.map,
-    exists_and_right, exists_eq_right, attach_map_val, map_map, map_coe, id.def]
+    exists_and_right, exists_eq_right, attach_map_val, map_map, map_coe, id]
 #align multiset.filter_attach' Multiset.filter_attach'
 
 end Map

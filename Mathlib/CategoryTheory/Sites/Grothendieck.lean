@@ -426,7 +426,7 @@ instance : Coe (J.Cover X) (Sieve X) :=
 /-
 Porting note (#11445): Added this def as a replacement for the "dangerous" `Coe` above.
 -/
-/-- The sieve associated to a term of `J.Cover X`.-/
+/-- The sieve associated to a term of `J.Cover X`. -/
 def sieve (S : J.Cover X) : Sieve X := S.1
 
 /-
@@ -478,7 +478,8 @@ instance : Inhabited (J.Cover X) :=
   ⟨⊤⟩
 
 /-- An auxiliary structure, used to define `S.index`. -/
---@[nolint has_nonempty_instance, ext]
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 @[ext]
 structure Arrow (S : J.Cover X) where
   /-- The source of the arrow. -/
@@ -490,7 +491,8 @@ structure Arrow (S : J.Cover X) where
 #align category_theory.grothendieck_topology.cover.arrow CategoryTheory.GrothendieckTopology.Cover.Arrow
 
 /-- An auxiliary structure, used to define `S.index`. -/
---@[nolint has_nonempty_instance, ext]
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance, ext]
 @[ext]
 structure Relation (S : J.Cover X) where
   /-- The source of the first arrow. -/

@@ -847,10 +847,7 @@ theorem AffineMap.continuous_linear_iff {f : P →ᵃ[𝕜] P₂} : Continuous f
       (AffineIsometryEquiv.vaddConst 𝕜 <| f default).toHomeomorph.symm ∘
         f ∘ (AffineIsometryEquiv.vaddConst 𝕜 default).toHomeomorph := by
     ext v
-    -- Porting note: was just `simp`
-    simp only [(AffineIsometryEquiv.coe_toHomeomorph), Function.comp_apply, (AffineMap.map_vadd),
-      eq_self_iff_true, (AffineIsometryEquiv.toHomeomorph_symm),
-      (AffineIsometryEquiv.coe_vaddConst), (vadd_vsub), (AffineIsometryEquiv.coe_vaddConst_symm)]
+    simp
   rw [this]
   simp only [Homeomorph.comp_continuous_iff, Homeomorph.comp_continuous_iff']
 #align affine_map.continuous_linear_iff AffineMap.continuous_linear_iff
@@ -863,10 +860,7 @@ theorem AffineMap.isOpenMap_linear_iff {f : P →ᵃ[𝕜] P₂} : IsOpenMap f.l
       (AffineIsometryEquiv.vaddConst 𝕜 <| f default).toHomeomorph.symm ∘
         f ∘ (AffineIsometryEquiv.vaddConst 𝕜 default).toHomeomorph := by
     ext v
-    -- Porting note: was just `simp`
-    simp only [(AffineIsometryEquiv.coe_toHomeomorph), Function.comp_apply, (AffineMap.map_vadd),
-      eq_self_iff_true, (AffineIsometryEquiv.toHomeomorph_symm),
-      (AffineIsometryEquiv.coe_vaddConst), (vadd_vsub), (AffineIsometryEquiv.coe_vaddConst_symm)]
+    simp
   rw [this]
   simp only [Homeomorph.comp_isOpenMap_iff, Homeomorph.comp_isOpenMap_iff']
 #align affine_map.is_open_map_linear_iff AffineMap.isOpenMap_linear_iff
