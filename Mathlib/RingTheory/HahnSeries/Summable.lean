@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Scott Carnahan
 -/
 import Mathlib.RingTheory.HahnSeries.Multiplication
-import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.RingTheory.Valuation.Basic
 
 #align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
@@ -620,28 +619,34 @@ section Binomial
 
 variable [LinearOrderedAddCommGroup Γ] [CommRing R]
 
-theorem isUnit_one_sub_single {g : Γ} (hg : 0 < g) {r : R} : IsUnit (1 - single g r) := by
+theorem isUnit_one_sub_single {g : Γ} (hg : 0 < g) (r : R) : IsUnit (1 - single g r) := by
   refine isUnit_of_mul_eq_one _ _ (SummableFamily.one_sub_self_mul_hsum_powers ?_)
   by_cases hr : r = 0; · simp_all only [map_zero, orderTop_zero, WithTop.zero_lt_top]
   rw [orderTop_single hr, WithTop.coe_pos]
   exact hg
 
+/-!
+theorem coeff_one_sub_single_pow {g : Γ} (hg : 0 < g) {r : R} {n : ℤ} {k : ℕ} :
+    ((IsUnit.unit (isUnit_one_sub_single hg r)) ^ n).val.coeff (k • g) =
+      (-r) ^ k • Ring.choose n k := by
+-/
+
 -- these 3 seem superfluous...
-theorem single_add_single_coeff {g g' : Γ} (hgg' : g < g') {a b : R} (_ : a ≠ 0) :
+theorem single_add_single_coeff {g g' : Γ} (hgg' : g < g') {a b : R} :
     (single g a + single g' b).coeff g = a := by
   simp_all only [ne_eq, ne_of_lt hgg', not_false_eq_true, add_coeff, single_coeff_same,
       single_coeff_of_ne, add_zero]
 
 theorem single_add_single_coeff_ne {g g' : Γ} (hgg' : g < g') {a b : R} (ha : a ≠ 0) :
     single g a + single g' b ≠ 0 :=
-  ne_zero_of_coeff_ne_zero (ne_of_eq_of_ne (single_add_single_coeff hgg' ha) ha)
+  ne_zero_of_coeff_ne_zero (ne_of_eq_of_ne (single_add_single_coeff hgg') ha)
 
 theorem single_add_single_support {g g' : Γ} {a b : R} :
     (single g a + single g' b).support ⊆ {g} ∪ {g'} := by
   refine support_add_subset.trans ?_
   simp_all only [Set.union_singleton, Set.union_subset_iff]
   refine { left := fun _ hk => Set.mem_insert_of_mem g' (support_single_subset hk), right := ?_ }
-  rw [@Set.pair_comm]
+  rw [Set.pair_comm]
   exact fun k hk => Equiv.Set.union.proof_1 k <| Set.mem_insert_of_mem g (support_single_subset hk)
 
 theorem orderTop_binomial {g g' : Γ} (hgg' : g < g') {a b : R} (ha : a ≠ 0) :
@@ -658,7 +663,7 @@ theorem isUnit_binomial {g g' : Γ} (hgg' : g < g') (a : Units R) (b : R) :
     rw [ha, zero_mul] at aa
     rw [← one_mul (leadingCoeff ((single g) a.val + (single g') b)), ← aa, zero_mul, aa,
       isUnit_iff_dvd_one]
-  · rw [leadingCoeff, orderTop_binomial hgg' ha, coeffTop_eq, single_add_single_coeff hgg' ha]
+  · rw [leadingCoeff, orderTop_binomial hgg' ha, coeffTop_eq, single_add_single_coeff hgg']
     exact Units.isUnit a
 
 end Binomial
