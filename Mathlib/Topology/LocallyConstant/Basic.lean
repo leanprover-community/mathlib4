@@ -458,7 +458,7 @@ variable [TopologicalSpace Y]
 This definition only makes sense if `f` is continuous,
 in which case it sends locally constant functions to their precomposition with `f`.
 See also `LocallyConstant.coe_comap`. -/
-noncomputable def comap (f : C(X, Y)) (g : LocallyConstant Y Z) : LocallyConstant X Z :=
+def comap (f : C(X, Y)) (g : LocallyConstant Y Z) : LocallyConstant X Z :=
   ⟨g ∘ f, g.isLocallyConstant.comp_continuous f.continuous⟩
 #align locally_constant.comap LocallyConstant.comap
 
