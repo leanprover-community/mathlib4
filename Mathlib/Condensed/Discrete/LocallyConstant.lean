@@ -412,7 +412,8 @@ def unit : 𝟭 _ ⟶ functor ⋙ underlying _ where
   app X x := LocallyConstant.const _ x
 
 theorem locallyConstantAdjunction_left_triangle (X : Type (u + 1)) :
-    functorToPresheaves.map (unit.app X) ≫ (counit.app (functor.obj X)).val = 𝟙 (functorToPresheaves.obj X) := by
+    functorToPresheaves.map (unit.app X) ≫ (counit.app (functor.obj X)).val =
+    𝟙 (functorToPresheaves.obj X) := by
   ext ⟨S⟩ (f : LocallyConstant _ X)
   simp only [Functor.id_obj, Functor.comp_obj, underlying_obj, FunctorToTypes.comp, NatTrans.id_app,
     functorToPresheaves_obj_obj, types_id_apply]
@@ -420,8 +421,8 @@ theorem locallyConstantAdjunction_left_triangle (X : Type (u + 1)) :
   apply locallyConstantCondensed_ext (X := functor.obj X) (Y := functor.obj X) (f.map (unit.app X))
   intro a
   erw [incl_of_counitAppApp]
-  simp only [functor_obj_val, functorToPresheaves_obj_obj, unop_op, Functor.id_obj, map_apply, CompHaus.coe_of,
-    counitAppAppImage, functorToPresheaves_obj_map, Quiver.Hom.unop_op]
+  simp only [functor_obj_val, functorToPresheaves_obj_obj, unop_op, Functor.id_obj, map_apply,
+    CompHaus.coe_of, counitAppAppImage, functorToPresheaves_obj_map, Quiver.Hom.unop_op]
   ext x
   erw [← α.map_eq_image _ a x]
   rfl
