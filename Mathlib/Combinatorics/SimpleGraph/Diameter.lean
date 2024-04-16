@@ -9,7 +9,8 @@ import Mathlib.Combinatorics.SimpleGraph.Girth
 /-!
 # Diameter of a simple graph
 
-This file defines the diameter of a simple graph as the greatest distance between any two vertices in the graph.
+This file defines the diameter of a simple graph as the greatest distance between any two vertices
+in the graph.
 -/
 
 namespace SimpleGraph
