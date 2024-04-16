@@ -18,34 +18,48 @@ import Mathlib.Algebra.GroupWithZero.Hom
 
 namespace WithZero
 
-variable {G H : Type*} [Monoid G] [Monoid H]
+variable {G H : Type*}
 
 /-- If `G` is a monoid and `x y : WithZero G` have a nonzero product, then
   `unzero hxy = unzero (left_ne_zero_of_mul hxy) * unzero (right_ne_zero_of_mul hxy)`  -/
-theorem unzero_mul {x y : WithZero G} (hxy : x * y ≠ 0) :
+theorem unzero_mul [Mul G] {x y : WithZero G} (hxy : x * y ≠ 0) :
     unzero hxy = unzero (left_ne_zero_of_mul hxy) * unzero (right_ne_zero_of_mul hxy) := by
   simp only [← coe_inj, coe_mul, coe_unzero]
 
+/-- Coercion as a monoid hom -/
+@[simps apply]
+def coeMonoidHom [MulOneClass G] : G →* WithZero G where
+  toFun        := (↑)
+  map_one'     := rfl
+  map_mul' _ _ := rfl
+
+/-- The (multiplicative) universal property of `WithZero` -/
+noncomputable nonrec def lift' [MulOneClass G] [MonoidWithZero H] :
+    (G →* H) ≃ (WithZero G →*₀ H) where
+  toFun f :=
+    { toFun := fun
+        | 0 => 0
+        | (g : G) => f g
+      map_zero' := rfl
+      map_one' := map_one f
+      map_mul' := fun
+        | 0, _ => (zero_mul _).symm
+        | (_ : G), 0 => (mul_zero _).symm
+        | (_ : G), (_ : G) => map_mul f _ _ }
+  invFun F := F.toMonoidHom.comp coeMonoidHom
+  left_inv _ := rfl
+  right_inv f := DFunLike.ext _ _ fun
+    | 0 => (map_zero f).symm
+    | (_ : G) => rfl
+
+variable [MulOneClass G] [Monoid H]
+
 /-- The `MonoidWithZero` homomorphism `WithZero G →* WithZero H` induced by a monoid homomorphism
   `f : G →* H`. -/
-noncomputable def coeMonoidHom (f : G →* H) [DecidableEq (WithZero G)] :
-    WithZero G →*₀ WithZero H where
-  toFun x   := if hx : x = 0 then 0 else f (unzero hx)
-  map_zero' := by simp only [dif_pos]
-  map_one'  := by
-    have h1 : (1 : WithZero G) ≠ 0 := one_ne_zero
-    have h := Classical.choose_spec (ne_zero_iff_exists.mp h1)
-    simp only [dif_neg h1]
-    simp_rw [← coe_one] at h ⊢
-    rw [coe_inj, unzero_coe, f.map_one]
-  map_mul' x y := by
-    by_cases hxy : x * y = 0
-    · simp only [dif_pos hxy]
-      cases' zero_eq_mul.mp (Eq.symm hxy) with hx hy
-      · rw [dif_pos hx, MulZeroClass.zero_mul]
-      · rw [dif_pos hy, MulZeroClass.mul_zero]
-    · simp only
-      rw [dif_neg hxy, dif_neg (left_ne_zero_of_mul hxy), dif_neg (right_ne_zero_of_mul hxy), ←
-        coe_mul, coe_inj, ← f.map_mul, unzero_mul hxy]
+noncomputable def map' (f : G →* H) : WithZero G →*₀ WithZero H := lift' (coeMonoidHom.comp f)
+
+lemma map'_zero (f : G →* H) : map' f 0 = 0 := rfl
+
+lemma map'_coe (f : G →* H) (x : G) : map' f (x : WithZero G) = f x := rfl
 
 end WithZero
