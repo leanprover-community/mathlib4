@@ -166,6 +166,10 @@ theorem ext_iff {φ ψ : R⟦X⟧} : φ = ψ ↔ ∀ n, coeff R n φ = coeff R n
   ⟨fun h n => congr_arg (coeff R n) h, ext⟩
 #align power_series.ext_iff PowerSeries.ext_iff
 
+instance [Subsingleton R] : Subsingleton R⟦X⟧ := by
+  simp only [subsingleton_iff, ext_iff]
+  exact fun _ _ _ ↦ (subsingleton_iff).mp (by infer_instance) _ _
+
 /-- Constructor for formal power series. -/
 def mk {R} (f : ℕ → R) : R⟦X⟧ := fun s => f (s ())
 #align power_series.mk PowerSeries.mk
@@ -658,16 +662,18 @@ section CommRing
 
 variable {A : Type*} [CommRing A]
 
-theorem not_isField [Nontrivial A] : ¬IsField A⟦X⟧ := by
-  nontriviality A
-  rw [Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top]
-  use Ideal.span {X}
-  constructor
-  · rw [bot_lt_iff_ne_bot, Ne.def, Ideal.span_singleton_eq_bot]
-    exact X_ne_zero
-  · rw [lt_top_iff_ne_top, Ne.def, Ideal.eq_top_iff_one, Ideal.mem_span_singleton,
-      X_dvd_iff, constantCoeff_one]
-    exact one_ne_zero
+theorem not_isField : ¬IsField A⟦X⟧ := by
+  by_cases hA : Subsingleton A
+  · exact not_isField_of_subsingleton _
+  · nontriviality A
+    rw [Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top]
+    use Ideal.span {X}
+    constructor
+    · rw [bot_lt_iff_ne_bot, Ne.def, Ideal.span_singleton_eq_bot]
+      exact X_ne_zero
+    · rw [lt_top_iff_ne_top, Ne.def, Ideal.eq_top_iff_one, Ideal.mem_span_singleton,
+        X_dvd_iff, constantCoeff_one]
+      exact one_ne_zero
 
 @[simp]
 theorem rescale_X (a : A) : rescale a X = C A a * X := by
@@ -773,7 +779,7 @@ set_option linter.uppercaseLean3 false in
 #align power_series.X_prime PowerSeries.X_prime
 
 /-- The variable of the power series ring over an integral domain is irreducible. -/
-theorem X_Irreducible : Irreducible (X : R⟦X⟧) := X_prime.irreducible
+theorem X_irreducible : Irreducible (X : R⟦X⟧) := X_prime.irreducible
 
 theorem rescale_injective {a : R} (ha : a ≠ 0) : Function.Injective (rescale a) := by
   intro p q h

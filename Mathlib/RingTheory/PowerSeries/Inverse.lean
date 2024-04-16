@@ -228,7 +228,7 @@ theorem smul_inv (r : k) (φ : k⟦X⟧) : (r • φ)⁻¹ = r⁻¹ • φ⁻¹ 
 
 /-- `firstUnitCoeff` is the non-zero coefficient whose index is `f.order`, seen as a unit of the
   field. It is obtained using `divided_by_X_pow_order`, defined in `PowerSeries.Order`-/
-def firstUnitCoeff {f : k⟦X⟧} (hf : f ≠ 0) : kˣ := by
+def firstUnitCoeff {f : k⟦X⟧} (hf : f ≠ 0) : kˣ :=
   let d := f.order.get (order_finite_iff_ne_zero.mpr hf)
   have f_const : coeff k d f ≠ 0 := by apply coeff_order
   have : Invertible (constantCoeff k (divided_by_X_pow_order hf)) := by
@@ -238,7 +238,7 @@ def firstUnitCoeff {f : k⟦X⟧} (hf : f ≠ 0) : kˣ := by
     convert (coeff_X_pow_mul (exists_eq_mul_right_of_dvd (X_pow_order_dvd
       (order_finite_iff_ne_zero.mpr hf))).choose d 0).symm
     exact (self_eq_X_pow_order_mul_divided_by_X_pow_order hf).symm
-  exact unitOfInvertible (constantCoeff k (divided_by_X_pow_order hf))
+  unitOfInvertible (constantCoeff k (divided_by_X_pow_order hf))
 
 /-- `Inv_divided_by_X_pow_order` is the inverse of the element obtained by diving a non-zero power
 series by the largest power of `X` dividing it. Useful to create a term of type `Units`, done in
@@ -257,11 +257,10 @@ theorem Inv_divided_by_X_pow_order_leftInv {f : k⟦X⟧} (hf : f ≠ 0) :
   rw [mul_comm]
   exact mul_invOfUnit (divided_by_X_pow_order hf) (firstUnitCoeff hf) rfl
 
-open scoped Classical
 
 /-- `Unit_of_divided_by_X_pow_order` is the unit power series obtained by dividing a non-zero
 power series by the largest power of `X` that divides it. -/
-def Unit_of_divided_by_X_pow_order (f : k⟦X⟧) : k⟦X⟧ˣ :=
+def Unit_of_divided_by_X_pow_order (f : k⟦X⟧) [Decidable (f = 0)] : k⟦X⟧ˣ :=
   if hf : f = 0 then 1
   else
     { val := divided_by_X_pow_order hf
@@ -269,19 +268,21 @@ def Unit_of_divided_by_X_pow_order (f : k⟦X⟧) : k⟦X⟧ˣ :=
       val_inv := Inv_divided_by_X_pow_order_rightInv hf
       inv_val := Inv_divided_by_X_pow_order_leftInv hf }
 
-theorem isUnit_divided_by_X_pow_order {f : k⟦X⟧} (hf : f ≠ 0) :
+theorem isUnit_divided_by_X_pow_order {f : k⟦X⟧} [Decidable (f = 0)] (hf : f ≠ 0) :
     IsUnit (divided_by_X_pow_order hf) :=
   ⟨Unit_of_divided_by_X_pow_order f,
     by simp only [Unit_of_divided_by_X_pow_order, dif_neg hf, Units.val_mk]⟩
 
-theorem Unit_of_divided_by_X_pow_order_nonzero {f : k⟦X⟧} (hf : f ≠ 0) :
+@[simp]
+theorem Unit_of_divided_by_X_pow_order_nonzero {f : k⟦X⟧} [Decidable (f = 0)] (hf : f ≠ 0) :
     ↑(Unit_of_divided_by_X_pow_order f) = divided_by_X_pow_order hf := by
   simp only [Unit_of_divided_by_X_pow_order, dif_neg hf, Units.val_mk]
 
-theorem Unit_of_divided_by_X_pow_order_zero : Unit_of_divided_by_X_pow_order (0 : k⟦X⟧) = 1 := by
+theorem Unit_of_divided_by_X_pow_order_zero [DecidableEq k⟦X⟧] :
+    Unit_of_divided_by_X_pow_order (0 : k⟦X⟧) = 1 := by
   simp only [Unit_of_divided_by_X_pow_order, dif_pos]
 
-theorem eq_divided_by_X_pow_order_Iff_Unit {f : k⟦X⟧} (hf : f ≠ 0) :
+theorem eq_divided_by_X_pow_order_Iff_Unit {f : k⟦X⟧} (hf : f ≠ 0) [Decidable (f = 0)] :
     f = divided_by_X_pow_order hf ↔ IsUnit f :=
   ⟨fun h => by rw [h]; exact isUnit_divided_by_X_pow_order hf, fun h => by
     have : f.order.get (order_finite_iff_ne_zero.mpr hf) = 0 := by
@@ -309,13 +310,13 @@ end LocalRing
 
 section DiscreteValuationRing
 
-variable {k : Type*} [Field k]
+variable {k : Type*} [Field k] [DecidableEq k⟦X⟧]
 
 open DiscreteValuationRing
 
 theorem hasUnitMulPowIrreducibleFactorization :
     HasUnitMulPowIrreducibleFactorization k⟦X⟧ :=
-  ⟨X, And.intro X_Irreducible
+  ⟨X, And.intro X_irreducible
       (by
         intro f hf
         use f.order.get (order_finite_iff_ne_zero.mpr hf)
@@ -328,9 +329,6 @@ instance : UniqueFactorizationMonoid k⟦X⟧ :=
 
 instance : DiscreteValuationRing k⟦X⟧ :=
   ofHasUnitMulPowIrreducibleFactorization hasUnitMulPowIrreducibleFactorization
-
-instance : IsPrincipalIdealRing k⟦X⟧ :=
-  inferInstance
 
 instance isNoetherianRing : IsNoetherianRing k⟦X⟧ :=
   PrincipalIdealRing.isNoetherianRing
