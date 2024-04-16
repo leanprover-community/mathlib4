@@ -115,7 +115,8 @@ variable (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃)
 
 /-- Constructor for objects in `w.StructuredArrowRightwards g`. -/
 abbrev StructuredArrowRightwards.mk : w.StructuredArrowRightwards g :=
-  StructuredArrow.mk (Y := CostructuredArrow.mk b) (CostructuredArrow.homMk a comm)
+  StructuredArrow.mk (Y := CostructuredArrow.mk b)
+    (CostructuredArrow.homMk a (by simpa using comm))
 
 /-- Constructor for objects in `w.CostructuredArrowDownwards g`. -/
 abbrev CoStructuredArrowDownwards.mk : w.CostructuredArrowDownwards g :=
