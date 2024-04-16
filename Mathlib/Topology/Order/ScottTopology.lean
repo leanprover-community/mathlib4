@@ -46,7 +46,7 @@ A Scott continuous function between `OmegaCompletePartialOrder`s is always
 `OmegaCompletePartialOrder.Continuous'` (`OmegaCompletePartialOrder.ScottContinuous.continuous'`).
 The converse is true in some special cases, but not in general
 ([Domain Theory, 2.2.4][abramsky_gabbay_maibaum_1994]).
-
+`add_units.simps.coe`
 ## References
 
 * [Abramsky and Jung, *Domain Theory*][abramsky_gabbay_maibaum_1994]
