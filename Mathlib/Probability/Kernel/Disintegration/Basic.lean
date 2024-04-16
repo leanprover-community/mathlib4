@@ -43,7 +43,7 @@ The first step (building the measurable function on `ℚ`) is done differently d
 
 The conditional kernel is defined under the typeclass assumption
 `CountableOrCountablyGenerated α β`, which encodes the property
-`(Countable α ∧ MeasurableSingletonClass α) ∨ CountablyGenerated β`.
+`Countable α ∨ CountablyGenerated β`.
 
 Properties of integrals involving `condKernel` are collated in the file `Integral.lean`.
 The conditional kernel is unique (almost everywhere w.r.t. `fst κ`): this is proved in the file
@@ -97,7 +97,7 @@ property on `ℝ` to all these spaces. -/
 
 open Classical in
 /-- Auxiliary definition for `ProbabilityTheory.kernel.condKernel`.
-A Borel space `Ω` embedds measurably into `ℝ` (with embedding `e`), hence we can get a `kernel α Ω`
+A Borel space `Ω` embeds measurably into `ℝ` (with embedding `e`), hence we can get a `kernel α Ω`
 from a `kernel α ℝ` by taking the comap by `e`.
 Here we take the comap of a modification of `η : kernel α ℝ`, useful when `η a` is a probability
 measure with all its mass on `range e` almost everywhere with respect to some measure and we want to
