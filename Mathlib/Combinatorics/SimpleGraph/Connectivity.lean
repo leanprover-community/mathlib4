@@ -66,9 +66,6 @@ walks, trails, paths, circuits, cycles, bridge edges
 
 -/
 
-set_option autoImplicit true
-
-
 open Function
 
 universe u v w
@@ -830,6 +827,8 @@ only if `p` has defeq endpoints. -/
 inductive Nil : {v w : V} → G.Walk v w → Prop
   | nil {u : V} : Nil (nil : G.Walk u u)
 
+variable {u v w : V}
+
 @[simp] lemma nil_nil : (nil : G.Walk u u).Nil := Nil.nil
 
 @[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬ (cons h p).Nil := nofun
@@ -870,7 +869,7 @@ def sndOfNotNil (p : G.Walk v w) (hp : ¬ p.Nil) : V :=
   p.notNilRec (fun h _ => h) hp
 
 /-- The walk obtained by removing the first dart of a non-nil walk. -/
-def tail (p : G.Walk x y) (hp : ¬ p.Nil) : G.Walk (p.sndOfNotNil hp) y :=
+def tail (p : G.Walk u v) (hp : ¬ p.Nil) : G.Walk (p.sndOfNotNil hp) v :=
   p.notNilRec (fun _ q => q) hp
 
 /-- The first dart of a walk. -/
@@ -882,6 +881,8 @@ def firstDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
 
 lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
     (p.firstDart hp).edge = s(v, p.sndOfNotNil hp) := rfl
+
+variable {x y : V} -- TODO: rename to u, v, w instead?
 
 @[simp] lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
     cons (p.adj_sndOfNotNil hp) (p.tail hp) = p :=
@@ -895,7 +896,7 @@ lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
     (p.tail hp).length + 1 = p.length := by
   rw [← length_cons, cons_tail_eq]
 
-@[simp] lemma nil_copy {p : G.Walk x y} (hx : x = x') (hy : y = y') :
+@[simp] lemma nil_copy {x' y' : V} {p : G.Walk x y} (hx : x = x') (hy : y = y') :
     (p.copy hx hy).Nil = p.Nil := by
   subst_vars; rfl
 
@@ -915,7 +916,7 @@ structure IsPath {u v : V} (p : G.Walk u v) extends IsTrail p : Prop where
 #align simple_graph.walk.is_path SimpleGraph.Walk.IsPath
 
 -- Porting note: used to use `extends to_trail : is_trail p` in structure
-protected lemma IsPath.isTrail (h : IsPath p) : IsTrail p := h.toIsTrail
+protected lemma IsPath.isTrail {p : Walk G u v}(h : IsPath p) : IsTrail p := h.toIsTrail
 #align simple_graph.walk.is_path.to_trail SimpleGraph.Walk.IsPath.isTrail
 
 /-- A *circuit* at `u : V` is a nonempty trail beginning and ending at `u`. -/
@@ -926,7 +927,7 @@ structure IsCircuit {u : V} (p : G.Walk u u) extends IsTrail p : Prop where
 #align simple_graph.walk.is_circuit_def SimpleGraph.Walk.isCircuit_def
 
 -- Porting note: used to use `extends to_trail : is_trail p` in structure
-protected lemma IsCircuit.isTrail (h : IsCircuit p) : IsTrail p := h.toIsTrail
+protected lemma IsCircuit.isTrail {p : Walk G u u} (h : IsCircuit p) : IsTrail p := h.toIsTrail
 #align simple_graph.walk.is_circuit.to_trail SimpleGraph.Walk.IsCircuit.isTrail
 
 /-- A *cycle* at `u : V` is a circuit at `u` whose only repeating vertex
@@ -936,7 +937,7 @@ structure IsCycle {u : V} (p : G.Walk u u) extends IsCircuit p : Prop where
 #align simple_graph.walk.is_cycle SimpleGraph.Walk.IsCycle
 
 -- Porting note: used to use `extends to_circuit : is_circuit p` in structure
-protected lemma IsCycle.isCircuit (h : IsCycle p) : IsCircuit p := h.toIsCircuit
+protected lemma IsCycle.isCircuit {p : Walk G u u} (h : IsCycle p) : IsCircuit p := h.toIsCircuit
 #align simple_graph.walk.is_cycle.to_circuit SimpleGraph.Walk.IsCycle.isCircuit
 
 @[simp]
@@ -1041,7 +1042,7 @@ theorem cons_isPath_iff {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
   constructor <;> simp (config := { contextual := true }) [isPath_def]
 #align simple_graph.walk.cons_is_path_iff SimpleGraph.Walk.cons_isPath_iff
 
-protected lemma IsPath.cons (hp : p.IsPath) (hu : u ∉ p.support) {h : G.Adj u v} :
+protected lemma IsPath.cons {p : Walk G v w} (hp : p.IsPath) (hu : u ∉ p.support) {h : G.Adj u v} :
     (cons h p).IsPath :=
   (cons_isPath_iff _ _).2 ⟨hp, hu⟩
 
@@ -1775,6 +1776,8 @@ theorem transfer_self : p.transfer G p.edges_subset_edgeSet = p := by
   induction p <;> simp [*]
 #align simple_graph.walk.transfer_self SimpleGraph.Walk.transfer_self
 
+variable {H : SimpleGraph V}
+
 theorem transfer_eq_map_of_le (hp) (GH : G ≤ H) :
     p.transfer H hp = p.map (SimpleGraph.Hom.mapSpanningSubgraphs GH) := by
   induction p <;> simp [*]
@@ -1832,7 +1835,7 @@ theorem transfer_transfer (hp) {K : SimpleGraph V} (hp') :
 #align simple_graph.walk.transfer_transfer SimpleGraph.Walk.transfer_transfer
 
 @[simp]
-theorem transfer_append (q : G.Walk v w) (hpq) :
+theorem transfer_append {w : V} (q : G.Walk v w) (hpq) :
     (p.append q).transfer H hpq =
       (p.transfer H fun e he => hpq _ (by simp [he])).append
         (q.transfer H fun e he => hpq _ (by simp [he])) := by
@@ -1882,6 +1885,8 @@ theorem toDeleteEdges_cons (s : Set (Sym2 V)) {u v w : V} (h : G.Adj u v) (p : G
   rfl
 #align simple_graph.walk.to_delete_edges_cons SimpleGraph.Walk.toDeleteEdges_cons
 
+variable {v w : V}
+
 /-- Given a walk that avoids an edge, create a walk in the subgraph with that edge deleted.
 This is an abbreviation for `SimpleGraph.Walk.toDeleteEdges`. -/
 abbrev toDeleteEdge (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
@@ -1909,7 +1914,7 @@ protected theorem IsCycle.toDeleteEdges (s : Set (Sym2 V))
 #align simple_graph.walk.is_cycle.to_delete_edges SimpleGraph.Walk.IsCycle.toDeleteEdges
 
 @[simp]
-theorem toDeleteEdges_copy (s : Set (Sym2 V))
+theorem toDeleteEdges_copy {v u u' v' : V} (s : Set (Sym2 V))
     (p : G.Walk u v) (hu : u = u') (hv : v = v') (h) :
     (p.copy hu hv).toDeleteEdges s h =
       (p.toDeleteEdges s (by subst_vars; exact h)).copy hu hv := by
@@ -1987,14 +1992,15 @@ theorem reachable_iff_reflTransGen (u v : V) :
     | tail _ ha hr => exact Reachable.trans hr ⟨Walk.cons ha Walk.nil⟩
 #align simple_graph.reachable_iff_refl_trans_gen SimpleGraph.reachable_iff_reflTransGen
 
-protected theorem Reachable.map {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G →g G')
+protected theorem Reachable.map {u v : V} {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G →g G')
     (h : G.Reachable u v) : G'.Reachable (f u) (f v) :=
   h.elim fun p => ⟨p.map f⟩
 #align simple_graph.reachable.map SimpleGraph.Reachable.map
 
 @[mono]
-protected lemma Reachable.mono  {G G' : SimpleGraph V} (h : G ≤ G') (Guv : G.Reachable u v) :
-    G'.Reachable u v := Guv.map (SimpleGraph.Hom.mapSpanningSubgraphs h)
+protected lemma Reachable.mono {u v : V} {G G' : SimpleGraph V}
+    (h : G ≤ G') (Guv : G.Reachable u v) : G'.Reachable u v :=
+  Guv.map (SimpleGraph.Hom.mapSpanningSubgraphs h)
 
 theorem Iso.reachable_iff {G : SimpleGraph V} {G' : SimpleGraph V'} {φ : G ≃g G'} {u v : V} :
     G'.Reachable (φ u) (φ v) ↔ G.Reachable u v :=
@@ -2570,7 +2576,7 @@ theorem reachable_delete_edges_iff_exists_walk {v w : V} :
   constructor
   · rintro ⟨p⟩
     use p.map (Hom.mapSpanningSubgraphs (by simp))
-    simp_rw [Walk.edges_map, List.mem_map, Hom.mapSpanningSubgraphs_apply, Sym2.map_id', id.def]
+    simp_rw [Walk.edges_map, List.mem_map, Hom.mapSpanningSubgraphs_apply, Sym2.map_id', id]
     rintro ⟨e, h, rfl⟩
     simpa using p.edges_subset_edgeSet h
   · rintro ⟨p, h⟩

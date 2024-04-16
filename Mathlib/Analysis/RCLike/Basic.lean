@@ -40,9 +40,6 @@ their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter
 A few lemmas requiring heavier imports are in `Mathlib/Data/RCLike/Lemmas.lean`.
 -/
 
-set_option autoImplicit true
-
-
 open BigOperators
 
 section
@@ -74,7 +71,7 @@ class RCLike (K : semiOutParam (Type*)) extends DenselyNormedField K, StarRing K
   mul_im_I_ax : ∀ z : K, im z * im I = im z
   /-- only an instance in the `ComplexOrder` locale -/
   [toPartialOrder : PartialOrder K]
-  le_iff_re_im : z ≤ w ↔ re z ≤ re w ∧ im z = im w
+  le_iff_re_im {z w : K} : z ≤ w ↔ re z ≤ re w ∧ im z = im w
   -- note we cannot put this in the `extends` clause
   [toDecidableEq : DecidableEq K]
 #align is_R_or_C RCLike
@@ -521,7 +518,7 @@ theorem normSq_sub (z w : K) : normSq (z - w) = normSq z + normSq w - 2 * re (z 
   simp only [normSq_add, sub_eq_add_neg, map_neg, mul_neg, normSq_neg, map_neg]
 #align is_R_or_C.norm_sq_sub RCLike.normSq_sub
 
-theorem sqrt_normSq_eq_norm {z : K} : Real.sqrt (normSq z) = ‖z‖ := by
+theorem sqrt_normSq_eq_norm {z : K} : √(normSq z) = ‖z‖ := by
   rw [normSq_eq_def', Real.sqrt_sq (norm_nonneg _)]
 #align is_R_or_C.sqrt_norm_sq_eq_norm RCLike.sqrt_normSq_eq_norm
 
@@ -884,13 +881,13 @@ lemma neg_iff_exists_ofReal : z < 0 ↔ ∃ x < (0 : ℝ), x = z := by
 
 Note this is only an instance with `open scoped ComplexOrder`. -/
 lemma toStarOrderedRing : StarOrderedRing K :=
-  StarOrderedRing.ofNonnegIff'
+  StarOrderedRing.of_nonneg_iff'
     (h_add := fun {x y} hxy z => by
       rw [RCLike.le_iff_re_im] at *
       simpa [map_add, add_le_add_iff_left, add_right_inj] using hxy)
     (h_nonneg_iff := fun x => by
       rw [nonneg_iff]
-      refine ⟨fun h ↦ ⟨(re x).sqrt, by simp [ext_iff (K := K), h.1, h.2]⟩, ?_⟩
+      refine ⟨fun h ↦ ⟨√(re x), by simp [ext_iff (K := K), h.1, h.2]⟩, ?_⟩
       rintro ⟨s, rfl⟩
       simp [mul_comm, mul_self_nonneg, add_nonneg])
 
