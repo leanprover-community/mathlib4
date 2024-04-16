@@ -3,11 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.QuotientNilpotent
-import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.FinitePresentation
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+import Mathlib.RingTheory.QuotientNilpotent
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 
@@ -21,11 +21,12 @@ It is unramified if it is formally unramified and of finite presentation.
 We show that the property extends onto nilpotent ideals, and that it is stable
 under `R`-algebra homomorphisms and compositions.
 
-We show that being unramified is stable under compositions.
+We show that unramified is stable under algebra isomorphisms, composition and
+localization at an element.
 
 # TODO
 
-- show that unramified is stable under base change and localizations at f.g. monoids
+- Show that unramified is stable under base change.
 
 -/
 
@@ -250,7 +251,7 @@ theorem of_equiv [Unramified R A] (e : A ≃ₐ[R] B) : Unramified R B where
   formallyUnramified := FormallyUnramified.of_equiv e
   finiteType := FiniteType.equiv Unramified.finiteType e
 
-/-- Localization at an element preserves being unramified. -/
+/-- Localization at an element is unramified. -/
 theorem of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Unramified R A where
   formallyUnramified := Algebra.FormallyUnramified.of_isLocalization (Submonoid.powers r)
   finiteType := FiniteType.of_finitePresentation (IsLocalization.Away.finitePresentation r)
