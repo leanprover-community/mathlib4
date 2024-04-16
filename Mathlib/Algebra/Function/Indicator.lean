@@ -322,18 +322,8 @@ theorem mulIndicator_preimage_of_not_mem (s : Set α) (f : α → M) {t : Set M}
 @[to_additive]
 theorem mem_range_mulIndicator {r : M} {s : Set α} {f : α → M} :
     r ∈ range (mulIndicator s f) ↔ r = 1 ∧ s ≠ univ ∨ r ∈ f '' s := by
--- Porting note: This proof used to be:
-  -- simp [mulIndicator, ite_eq_iff, exists_or, eq_univ_iff_forall, and_comm, or_comm,
-  -- @eq_comm _ r 1]
-  simp only [mem_range, mulIndicator, ne_eq, mem_image]
-  rw [eq_univ_iff_forall, not_forall]
-  refine ⟨?_, ?_⟩
-  · rintro ⟨y, hy⟩
-    split_ifs at hy with hys
-    · tauto
-    · left
-      tauto
-  · rintro (⟨hr, ⟨x, hx⟩⟩ | ⟨x, ⟨hx, hxs⟩⟩) <;> use x <;> split_ifs <;> tauto
+  simp [mulIndicator, ite_eq_iff, exists_or, eq_univ_iff_forall, and_comm, or_comm,
+    @eq_comm _ r 1]
 #align set.mem_range_mul_indicator Set.mem_range_mulIndicator
 #align set.mem_range_indicator Set.mem_range_indicator
 
