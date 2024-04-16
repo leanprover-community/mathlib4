@@ -625,7 +625,7 @@ theorem of_not_dvd [CharP R p] (h : ¬p ∣ n) : NeZero (n : R) :=
 #align ne_zero.of_not_dvd NeZero.of_not_dvd
 
 theorem not_char_dvd (p : ℕ) [CharP R p] (k : ℕ) [h : NeZero (k : R)] : ¬p ∣ k := by
-  rwa [← CharP.cast_eq_zero_iff R p k, ← Ne.def, ← neZero_iff]
+  rwa [← CharP.cast_eq_zero_iff R p k, ← Ne, ← neZero_iff]
 #align ne_zero.not_char_dvd NeZero.not_char_dvd
 
 end NeZero

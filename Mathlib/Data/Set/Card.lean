@@ -132,7 +132,7 @@ theorem Finite.exists_encard_eq_coe (h : s.Finite) : ∃ (n : ℕ), s.encard = n
   ⟨fun h ↦ by_contra fun h' ↦ h.ne (Infinite.encard_eq h'), Finite.encard_lt_top⟩
 
 @[simp] theorem encard_eq_top_iff : s.encard = ⊤ ↔ s.Infinite := by
-  rw [← not_iff_not, ← Ne.def, ← lt_top_iff_ne_top, encard_lt_top_iff, not_infinite]
+  rw [← not_iff_not, ← Ne, ← lt_top_iff_ne_top, encard_lt_top_iff, not_infinite]
 
 theorem encard_ne_top_iff : s.encard ≠ ⊤ ↔ s.Finite := by
   simp
@@ -297,7 +297,7 @@ theorem encard_le_one_iff_eq : s.encard ≤ 1 ↔ s = ∅ ∨ ∃ x, s = {x} := 
     encard_eq_one]
 
 theorem encard_le_one_iff : s.encard ≤ 1 ↔ ∀ a b, a ∈ s → b ∈ s → a = b := by
-  rw [encard_le_one_iff_eq, or_iff_not_imp_left, ← Ne.def, ← nonempty_iff_ne_empty]
+  rw [encard_le_one_iff_eq, or_iff_not_imp_left, ← Ne, ← nonempty_iff_ne_empty]
   refine' ⟨fun h a b has hbs ↦ _,
     fun h ⟨x, hx⟩ ↦ ⟨x, ((singleton_subset_iff.2 hx).antisymm' (fun y hy ↦ h _ _ hy hx))⟩⟩
   obtain ⟨x, rfl⟩ := h ⟨_, has⟩

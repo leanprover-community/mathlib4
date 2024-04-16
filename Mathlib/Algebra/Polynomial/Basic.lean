@@ -141,6 +141,10 @@ instance mul' : Mul R[X] :=
   ⟨mul⟩
 #align polynomial.has_mul Polynomial.mul'
 
+-- If the private definitions are accidentally exposed, simplify them away.
+@[simp] theorem add_eq_add : add p q = p + q := rfl
+@[simp] theorem mul_eq_mul : mul p q = p * q := rfl
+
 instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] where
   smul r p := ⟨r • p.toFinsupp⟩
   smul_zero a := congr_arg ofFinsupp (smul_zero a)
@@ -490,9 +494,7 @@ theorem monomial_eq_zero_iff (t : R) (n : ℕ) : monomial n t = 0 ↔ t = 0 :=
 #align polynomial.monomial_eq_zero_iff Polynomial.monomial_eq_zero_iff
 
 theorem support_add : (p + q).support ⊆ p.support ∪ q.support := by
-  rcases p with ⟨⟩; rcases q with ⟨⟩
-  simp only [← ofFinsupp_add, support]
-  exact support_add
+  simpa [support] using Finsupp.support_add
 #align polynomial.support_add Polynomial.support_add
 
 /-- `C a` is the constant polynomial `a`.

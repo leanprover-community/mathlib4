@@ -75,11 +75,11 @@ theorem _root_.MeasureTheory.Memℒp.evariance_lt_top [IsFiniteMeasure μ] (hX :
 theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) (hX : ¬Memℒp X 2 μ) :
     evariance X μ = ∞ := by
   by_contra h
-  rw [← Ne.def, ← lt_top_iff_ne_top] at h
+  rw [← Ne, ← lt_top_iff_ne_top] at h
   have : Memℒp (fun ω => X ω - μ[X]) 2 μ := by
     refine' ⟨hXm.sub aestronglyMeasurable_const, _⟩
     rw [snorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top]
-    simp only [coe_two, ENNReal.one_toReal, ENNReal.rpow_two, Ne.def]
+    simp only [coe_two, ENNReal.one_toReal, ENNReal.rpow_two, Ne]
     exact ENNReal.rpow_lt_top_of_nonneg (by linarith) h.ne
   refine' hX _
   -- Porting note: `μ[X]` without whitespace is ambiguous as it could be GetElem,

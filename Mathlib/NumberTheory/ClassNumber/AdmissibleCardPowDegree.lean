@@ -159,7 +159,7 @@ theorem cardPowDegree_anti_archimedean {x y z : Fq[X]} {a : ℤ} (hxy : cardPowD
   · rwa [← hyz']
   by_cases hxz' : x = z
   · rwa [hxz', sub_self, map_zero]
-  rw [← Ne.def, ← sub_ne_zero] at hxy' hyz' hxz'
+  rw [← Ne, ← sub_ne_zero] at hxy' hyz' hxz'
   refine' lt_of_le_of_lt _ (max_lt hxy hyz)
   rw [cardPowDegree_nonzero _ hxz', cardPowDegree_nonzero _ hxy',
     cardPowDegree_nonzero _ hyz']
