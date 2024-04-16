@@ -23,15 +23,16 @@ the Kuratowski embedding.
 * [melleray_urysohn_2008]
 -/
 
+
 variable {α : Type _} [MetricSpace α]
 
 /-- A real valued function from a metric space is Katetov if
-  it satisfies the following inequalities: -/
+   it is 1-Lipschitz, and for all `x` and `y` we have `dist x y ≤ f x + f y`. -/
 @[mk_iff]
 structure IsKatetov (f : α → ℝ) : Prop where
   /-- Proposition that `f` is 1-Lipschitz -/
   abs_sub_le_dist : ∀ x y, |f x - f y| ≤ dist x y
-  /-- Second defining inequality of a Katetov map  -/
+  /-- "triangle inequality" for Katetov maps  -/
   dist_le_add : ∀ x y, dist x y ≤ f x + f y
 
 /-- The type of Katetov maps from `α` -/
@@ -42,7 +43,7 @@ structure KatetovMap (α : Type*) [MetricSpace α] where
   protected isKatetov : IsKatetov toFun
 
 /-- The type of Katetov maps from `α`. -/
-notation "E(" α ")" => KatetovMap α
+scoped[KatetovMap] notation "E(" α ")" => KatetovMap α
 
 section
 
@@ -60,9 +61,9 @@ variable {F α : Type*} [MetricSpace α] [FunLike F α  ℝ]
 variable [KatetovMapClass F α]
 
 /-- Coerce a bundled morphism with a `KatetovMapClass` instance to a `KatetovMap`. -/
-@[coe] def toKatetovMap (f : F) : E(α) := ⟨f, map_katetov f⟩
+@[coe] def toKatetovMap (f : F) : (KatetovMap α) := ⟨f, map_katetov f⟩
 
-instance : CoeTC F E(α) := ⟨toKatetovMap⟩
+instance : CoeTC F (KatetovMap α) := ⟨toKatetovMap⟩
 
 end KatetovMapClass
 
@@ -75,7 +76,7 @@ instance funLike : FunLike E(α) α ℝ where
   coe_injective' f g h := by cases f; cases g; congr
 
 instance toKatetovMapClass : KatetovMapClass E(α) α where
-  map_katetov := KatetovMap.IsKatetovtoFun
+  map_katetov := KatetovMap.isKatetov
 
 @[simp]
 theorem toFun_eq_coe {f : E(α)} : f.toFun = (f : α → ℝ) := rfl
@@ -98,7 +99,7 @@ theorem ext {f g : E(α)} (h : ∀ a, f a = g a) : f = g := DFunLike.ext _ _ h
 equalities. See Topology/ContinuousFunction.Basic -/
 protected def copy (f : E(α)) (f' : α → ℝ) (h : f' = f) : E(α) where
   toFun := f'
-  IsKatetovtoFun := h.symm ▸ f.IsKatetovtoFun
+  isKatetov := h.symm ▸ f.isKatetov
 
 @[simp]
 theorem coe_copy (f : E(α)) (f' : α → ℝ) (h : f' = f) : ⇑(f.copy f' h) = f' :=
@@ -110,7 +111,7 @@ theorem copy_eq (f : E(α)) (f' : α → ℝ) (h : f' = f) : f.copy f' h = f :=
 variable {f g : E(α)}
 
 theorem katetov_set_coe (s : Set E(α)) (f : s) : IsKatetov (f : α → ℝ) :=
-  f.1.IsKatetovtoFun
+  f.1.isKatetov
 
 theorem coe_injective : @Function.Injective E(α) (α → ℝ) (↑) :=
   fun f g h ↦ by cases f; cases g; congr
