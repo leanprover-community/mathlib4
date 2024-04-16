@@ -6,6 +6,15 @@ import Mathlib.Tactic.Tauto
 example : True := by
   tauto
 
+#guard_msgs in
+-- replace is ignored, no matter what
+example : True := by
+  let zero := 0
+  replace _zero := zero
+  let eq := (rfl : 0 = 0)
+  replace _eq := eq
+  exact .intro
+
 set_option linter.haveLet false in
 set_option linter.haveLet true in
 /--

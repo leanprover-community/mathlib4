@@ -39,6 +39,7 @@ def isHave? : Syntax → Bool
 
 /-- `SyntaxNodeKind`s that imply a `have` but should be ignored anyway. -/
 abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
+  |>.insert ``Lean.Parser.Tactic.replace
   |>.insert `Std.Tactic.classical!
   |>.insert `Mathlib.Tactic.Tauto.tauto
 

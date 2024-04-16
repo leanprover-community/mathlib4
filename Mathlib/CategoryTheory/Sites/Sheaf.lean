@@ -643,7 +643,7 @@ theorem isSheaf_iff_isSheaf' : IsSheaf J P' ↔ IsSheaf' J P' := by
     have q : Presieve.IsSheafFor (P' ⋙ coyoneda.obj X) _ := h X.unop _ hR
     rw [← Presieve.isSheafFor_iff_generate] at q
     rw [Equalizer.Presieve.sheaf_condition] at q
-    let q := Classical.choice q
+    replace q := Classical.choice q
     apply (isSheafForIsSheafFor' _ _ _ _).symm q
   · intro h U X S hS
     rw [Equalizer.Presieve.sheaf_condition]
