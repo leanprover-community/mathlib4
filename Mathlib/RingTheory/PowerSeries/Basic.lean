@@ -207,7 +207,6 @@ def constantCoeff : R⟦X⟧ →+* R :=
   MvPowerSeries.constantCoeff Unit R
 #align power_series.constant_coeff PowerSeries.constantCoeff
 
-
 /-- The constant formal power series. -/
 def C : R →+* R⟦X⟧ :=
   MvPowerSeries.C Unit R

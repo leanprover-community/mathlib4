@@ -132,8 +132,7 @@ protected def inv : k⟦X⟧ → k⟦X⟧ :=
   MvPowerSeries.inv
 #align power_series.inv PowerSeries.inv
 
-instance : Inv k⟦X⟧ :=
-  ⟨PowerSeries.inv⟩
+instance : Inv k⟦X⟧ := ⟨PowerSeries.inv⟩
 
 theorem inv_eq_inv_aux (φ : k⟦X⟧) : φ⁻¹ = inv.aux (constantCoeff k φ)⁻¹ φ :=
   rfl
@@ -355,7 +354,6 @@ theorem maximalIdeal_eq_span_X : LocalRing.maximalIdeal (k⟦X⟧) = Ideal.span 
       rw [← Ideal.eq_top_iff_one]
       apply Ideal.eq_top_of_isUnit_mem I hfI0 (IsUnit.map (C k) (Ne.isUnit hfX))
   rw [LocalRing.eq_maximalIdeal hX]
-
 
 instance isDedekindDomain : IsDedekindDomain k⟦X⟧ :=
   IsPrincipalIdealRing.isDedekindDomain (k⟦X⟧)
