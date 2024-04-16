@@ -416,7 +416,7 @@ Return a tuple (old_files, noaligns, old_declarations) consisting of
 - a list of all old files (i.e., mentioned in an align_import statement)
 - a list of #noalign-ed declarations
 - a dictionary of all align-ed declarations of the form {old: new}.'''
-def parse_aligns_noaligns_aligns_files(align_lines, _noalign_lines, align_imports):
+def parse_aligns_noaligns_aligns_files(align_lines, noalign_lines, align_imports):
     # Read in all #align statements and parse the names of the old and new declaration.
     aligns = dict()
     for line in align_lines:
@@ -444,8 +444,18 @@ def parse_aligns_noaligns_aligns_files(align_lines, _noalign_lines, align_import
         new_decl = new_decl.removesuffix('ₓ')
         aligns[old_decl] = new_decl
     noaligns = []
-    for line in _noalign_lines:
-        pass
+    for line in noalign_lines:
+        if line.startswith('--'):
+            continue
+        elif not line.startswith('#noalign '):
+            print(f'error: unknown line: {line}', file=sys.stderr)
+            continue
+        # Remove any trailing comments.
+        if '--' in line:
+            line = line[0:line.index('--')].rstrip()
+        # Strip a trailing ₓ in the declaration name.
+        decl = line.removeprefix("#noalign ").removesuffix('ₓ')
+        noaligns.append(decl)
     # Just the names of the new declarations.
     new_decl_names = [s.split('.')[-1] for s in aligns.values()]
     old_files = []
@@ -455,7 +465,7 @@ def parse_aligns_noaligns_aligns_files(align_lines, _noalign_lines, align_import
             continue
         elif not line.startswith("#align_import ") or " from " not in line:
             print(f'unknown line, ignoring: "{line}"', file=sys.stderr)
-        line = line[len("#align_import "):]
+        line = line.removeprefix("#align_import ")
         old_file = line[:line.find(' from ')]
         old_files.append(old_file)
         # Also append just the filename.
@@ -534,6 +544,13 @@ def test_backtick_linting():
         '#align long.decl.name_two Long.Decl.nameTwo',
         '#align cardignal Cardinal    -- comment',
     ]
+    noalign_lines = [
+        '#noalign convex    -- ignore comments',
+        '#noalign conv-- anthsdf #noalign test -- goes here',
+        '#noalign Setₓ --so is this',
+        '#noalign convex', # duplicates are not checked
+    ]
+    noaligns = ['convex', 'conv', 'Set', 'convex']
     decls = dict({
         'convex' : 'Convex', 'ring' : 'Ring', 'set' : 'Set',
         'long.decl_name' : 'Long.declName',
@@ -544,9 +561,12 @@ def test_backtick_linting():
         'decl.name_two' : 'Decl.nameTwo',
         'cardignal' : 'Cardinal',
     })
-    _old_files, _noaligns, parsed_decls = parse_aligns_noaligns_aligns_files(align_lines, [], [])
+    _old_files, parsed_noaligns, parsed_decls = parse_aligns_noaligns_aligns_files(align_lines, noalign_lines, [])
     if parsed_decls != decls:
         print(f'input parsing failed\nexpected declarations\n{decls}, got\n{parsed_decls}')
+        assert False
+    if parsed_noaligns != noaligns:
+        print(f'input parsing failed\nexpected noaligns\n{noaligns}, got\n{parsed_noaligns}')
         assert False
     # Phase 2: this gives the intended output.
     def check_fine(input):
