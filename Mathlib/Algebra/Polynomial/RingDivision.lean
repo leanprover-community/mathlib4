@@ -30,9 +30,6 @@ This file starts looking like the ring theory of $R[X]$
 
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 open Polynomial
@@ -738,7 +735,7 @@ theorem isRoot_of_mem_roots (h : a ∈ p.roots) : IsRoot p a :=
 #align polynomial.is_root_of_mem_roots Polynomial.isRoot_of_mem_roots
 
 -- Porting note: added during port.
-lemma mem_roots_iff_aeval_eq_zero (w : p ≠ 0) : x ∈ roots p ↔ aeval x p = 0 := by
+lemma mem_roots_iff_aeval_eq_zero {x : R} (w : p ≠ 0) : x ∈ roots p ↔ aeval x p = 0 := by
   rw [mem_roots w, IsRoot.def, aeval_def, eval₂_eq_eval_map]
   simp
 

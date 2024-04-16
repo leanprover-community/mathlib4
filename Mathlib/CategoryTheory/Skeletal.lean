@@ -48,7 +48,7 @@ structure IsSkeletonOf (F : D ⥤ C) where
   /-- The category `D` has isomorphic objects equal -/
   skel : Skeletal D
   /-- The functor `F` is an equivalence -/
-  eqv : IsEquivalence F
+  eqv : F.IsEquivalence
 #align category_theory.is_skeleton_of CategoryTheory.IsSkeletonOf
 
 attribute [local instance] isIsomorphicSetoid
@@ -90,16 +90,16 @@ noncomputable def fromSkeleton : Skeleton C ⥤ C :=
 #align category_theory.from_skeleton CategoryTheory.fromSkeleton
 
 -- Porting note: previously `fromSkeleton` used `deriving Faithful, Full`
-noncomputable instance : Full <| fromSkeleton C := by
+noncomputable instance : (fromSkeleton C).Full := by
   apply InducedCategory.full
-noncomputable instance : Faithful <| fromSkeleton C := by
+noncomputable instance : (fromSkeleton C).Faithful := by
   apply InducedCategory.faithful
 
-instance : EssSurj (fromSkeleton C) where mem_essImage X := ⟨Quotient.mk' X, Quotient.mk_out X⟩
+instance : (fromSkeleton C).EssSurj where mem_essImage X := ⟨Quotient.mk' X, Quotient.mk_out X⟩
 
 -- Porting note: named this instance
-noncomputable instance fromSkeleton.isEquivalence : IsEquivalence (fromSkeleton C) :=
-  Equivalence.ofFullyFaithfullyEssSurj (fromSkeleton C)
+noncomputable instance fromSkeleton.isEquivalence : (fromSkeleton C).IsEquivalence :=
+  Functor.IsEquivalence.ofFullyFaithfullyEssSurj (fromSkeleton C)
 
 /-- The equivalence between the skeleton and the category itself. -/
 noncomputable def skeletonEquivalence : Skeleton C ≌ C :=
@@ -254,7 +254,7 @@ section
 
 variable [Quiver.IsThin C]
 
-instance toThinSkeleton_faithful : Faithful (toThinSkeleton C) where
+instance toThinSkeleton_faithful : (toThinSkeleton C).Faithful where
 #align category_theory.thin_skeleton.to_thin_skeleton_faithful CategoryTheory.ThinSkeleton.toThinSkeleton_faithful
 
 /-- Use `Quotient.out` to create a functor out of the thin skeleton. -/
@@ -266,7 +266,7 @@ noncomputable def fromThinSkeleton : ThinSkeleton C ⥤ C where
       (Nonempty.some (Quotient.mk_out X)).hom ≫ f.le.some ≫ (Nonempty.some (Quotient.mk_out Y)).inv
 #align category_theory.thin_skeleton.from_thin_skeleton CategoryTheory.ThinSkeleton.fromThinSkeleton
 
-noncomputable instance fromThinSkeletonEquivalence : IsEquivalence (fromThinSkeleton C) where
+noncomputable instance fromThinSkeletonEquivalence : (fromThinSkeleton C).IsEquivalence where
   inverse := toThinSkeleton C
   counitIso := NatIso.ofComponents fun X => Nonempty.some (Quotient.mk_out X)
   unitIso := NatIso.ofComponents fun x => Quotient.recOnSubsingleton x fun X =>

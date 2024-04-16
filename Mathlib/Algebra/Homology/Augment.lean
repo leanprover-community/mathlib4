@@ -246,7 +246,6 @@ def augment (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 
     rcases j with (_ | _ | j) <;> cases i <;> try simp
     · contradiction
     · rw [C.shape]
-      simp only [Nat.succ_eq_add_one] at s
       simp only [ComplexShape.up_Rel]
       contrapose! s
       rw [← s]

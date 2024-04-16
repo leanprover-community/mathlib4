@@ -95,13 +95,13 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
     rw [cauchySeq_iff_le_tendsto_0]
     -- splits into three goals
     let b := fun n : ℕ => 8 * δ * (1 / (n + 1)) + 4 * (1 / (n + 1)) * (1 / (n + 1))
-    use fun n => sqrt (b n)
+    use fun n => √(b n)
     constructor
-    -- first goal :  `∀ (n : ℕ), 0 ≤ sqrt (b n)`
+    -- first goal :  `∀ (n : ℕ), 0 ≤ √(b n)`
     intro n
     exact sqrt_nonneg _
     constructor
-    -- second goal : `∀ (n m N : ℕ), N ≤ n → N ≤ m → dist ↑(w n) ↑(w m) ≤ sqrt (b N)`
+    -- second goal : `∀ (n m N : ℕ), N ≤ n → N ≤ m → dist ↑(w n) ↑(w m) ≤ √(b N)`
     intro p q N hp hq
     let wp := (w p : F)
     let wq := (w q : F)
@@ -162,7 +162,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
       _ = 8 * δ * div + 4 * div * div := by ring
     positivity
     -- third goal : `Tendsto (fun (n : ℕ) => √(b n)) atTop (𝓝 0)`
-    suffices Tendsto (fun x ↦ sqrt (8 * δ * x + 4 * x * x) : ℝ → ℝ) (𝓝 0) (𝓝 0)
+    suffices Tendsto (fun x ↦ √(8 * δ * x + 4 * x * x) : ℝ → ℝ) (𝓝 0) (𝓝 0)
       from this.comp tendsto_one_div_add_atTop_nhds_zero_nat
     exact Continuous.tendsto' (by continuity) _ _ (by simp)
   -- Step 3: By completeness of `K`, let `w : ℕ → K` converge to some `v : K`.

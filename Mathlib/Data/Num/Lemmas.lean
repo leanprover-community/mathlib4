@@ -810,7 +810,7 @@ theorem lt_iff_cmp {m n} : m < n ↔ cmp m n = Ordering.lt :=
 #align pos_num.lt_iff_cmp PosNum.lt_iff_cmp
 
 theorem le_iff_cmp {m n} : m ≤ n ↔ cmp m n ≠ Ordering.gt :=
-  not_congr <| lt_iff_cmp.trans <| by rw [← cmp_swap]; cases cmp m n <;> exact by decide
+  not_congr <| lt_iff_cmp.trans <| by rw [← cmp_swap]; cases cmp m n <;> decide
 #align pos_num.le_iff_cmp PosNum.le_iff_cmp
 
 end PosNum
@@ -865,7 +865,7 @@ theorem lt_iff_cmp {m n} : m < n ↔ cmp m n = Ordering.lt :=
 #align num.lt_iff_cmp Num.lt_iff_cmp
 
 theorem le_iff_cmp {m n} : m ≤ n ↔ cmp m n ≠ Ordering.gt :=
-  not_congr <| lt_iff_cmp.trans <| by rw [← cmp_swap]; cases cmp m n <;> exact by decide
+  not_congr <| lt_iff_cmp.trans <| by rw [← cmp_swap]; cases cmp m n <;> decide
 #align num.le_iff_cmp Num.le_iff_cmp
 
 theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool}

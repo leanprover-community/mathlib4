@@ -30,9 +30,6 @@ import Mathlib.Order.Bounds.Basic
 Bézout's lemma, Bezout's lemma
 -/
 
-set_option autoImplicit true
-
-
 /-! ### Extended Euclidean algorithm -/
 
 
@@ -49,9 +46,9 @@ def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ
 
 -- Porting note: these are not in mathlib3; these equation lemmas are to fix
 -- complaints by the Lean 4 `unusedHavesSuffices` linter obtained when `simp [xgcdAux]` is used.
-theorem xgcdAux_zero : xgcdAux 0 s t r' s' t' = (r', s', t') := rfl
+theorem xgcdAux_zero {s t : ℤ} {r' : ℕ} {s' t' : ℤ} : xgcdAux 0 s t r' s' t' = (r', s', t') := rfl
 
-theorem xgcdAux_succ : xgcdAux (succ k) s t r' s' t' =
+theorem xgcdAux_succ {k : ℕ} {s t : ℤ} {r' : ℕ} {s' t' : ℤ} : xgcdAux (succ k) s t r' s' t' =
     xgcdAux (r' % succ k) (s' - (r' / succ k) * s) (t' - (r' / succ k) * t) (succ k) s t := rfl
 
 @[simp]
@@ -482,9 +479,8 @@ theorem pow_gcd_eq_one {M : Type*} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 
     x ^ m.gcd n = 1 := by
   rcases m with (rfl | m); · simp [hn]
   obtain ⟨y, rfl⟩ := isUnit_ofPowEqOne hm m.succ_ne_zero
-  simp only [← Units.val_pow_eq_pow_val] at *
-  rw [← Units.val_one, ← zpow_natCast, ← Units.ext_iff] at *
-  simp only [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, hm, hn, one_zpow, one_mul]
+  rw [← Units.val_pow_eq_pow_val, ← Units.val_one (α := M), ← zpow_natCast, ← Units.ext_iff] at *
+  rw [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, zpow_mul, hn, hm, one_zpow, one_zpow, one_mul]
 #align pow_gcd_eq_one pow_gcd_eq_one
 #align gcd_nsmul_eq_zero gcd_nsmul_eq_zero
 

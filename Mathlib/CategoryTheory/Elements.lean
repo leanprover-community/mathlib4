@@ -120,9 +120,9 @@ def π : F.Elements ⥤ C where
   map f := f.val
 #align category_theory.category_of_elements.π CategoryTheory.CategoryOfElements.π
 
-instance : Faithful (π F) where
+instance : (π F).Faithful where
 
-instance : ReflectsIsomorphisms (π F) where
+instance : (π F).ReflectsIsomorphisms where
   reflects {X Y} f h := ⟨⟨⟨inv ((π F).map f),
     by rw [← map_snd f, ← FunctorToTypes.map_comp_apply]; simp⟩, by aesop_cat⟩⟩
 

@@ -294,7 +294,7 @@ theorem isNoetherianRing : IsNoetherianRing A := by
 theorem integrallyClosed : IsIntegrallyClosed A := by
   -- It suffices to show that for integral `x`,
   -- `A[x]` (which is a fractional ideal) is in fact equal to `A`.
-  refine ⟨fun {x hx} => ?_⟩
+  refine (isIntegrallyClosed_iff (FractionRing A)).mpr (fun {x hx} => ?_)
   rw [← Set.mem_range, ← Algebra.mem_bot, ← Subalgebra.mem_toSubmodule, Algebra.toSubmodule_bot,
     Submodule.one_eq_span, ← coe_spanSingleton A⁰ (1 : FractionRing A), spanSingleton_one, ←
     FractionalIdeal.adjoinIntegral_eq_one_of_isUnit x hx (h.isUnit _)]
@@ -818,7 +818,7 @@ theorem Ideal.exist_integer_multiples_not_mem {J : Ideal A} (hJ : J ≠ ⊤) {ι
   -- To show the inclusion of `J / I` into `I⁻¹ = 1 / I`, note that `J < I`.
   calc
     ↑J / I = ↑J * I⁻¹ := div_eq_mul_inv (↑J) I
-    _ < 1 * I⁻¹ := (mul_right_strictMono (inv_ne_zero hI0) ?_)
+    _ < 1 * I⁻¹ := mul_right_strictMono (inv_ne_zero hI0) ?_
     _ = I⁻¹ := one_mul _
   · rw [← coeIdeal_top]
     -- And multiplying by `I⁻¹` is indeed strictly monotone.
@@ -994,7 +994,7 @@ variable [IsDedekindDomain R]
 
 /-- The height one prime spectrum of a Dedekind domain `R` is the type of nonzero prime ideals of
 `R`. Note that this equals the maximal spectrum if `R` has Krull dimension 1. -/
--- Porting note: removed `has_nonempty_instance`, linter doesn't exist yet
+-- Porting note(#5171): removed `has_nonempty_instance`, linter doesn't exist yet
 @[ext, nolint unusedArguments]
 structure HeightOneSpectrum where
   asIdeal : Ideal R

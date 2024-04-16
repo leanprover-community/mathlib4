@@ -379,7 +379,7 @@ def precomp {X : C} (f : X ⟶ F.left) : ComposableArrows C (n + 1) where
   obj := Precomp.obj F X
   map g := Precomp.map F f _ _ (leOfHom g)
   map_id := Precomp.map_id F f
-  map_comp g g' := (Precomp.map_comp F f (leOfHom g) (leOfHom g'))
+  map_comp g g' := Precomp.map_comp F f (leOfHom g) (leOfHom g')
 
 /-- Constructor for `ComposableArrows C 2`. -/
 @[simp]
@@ -510,8 +510,7 @@ lemma hom_ext_succ {F G : ComposableArrows C (n + 1)} {f g : F ⟶ G}
   ext ⟨i, hi⟩
   obtain _ | i := i
   · exact h₀
-  · rw [Nat.succ_eq_add_one] at hi
-    exact congr_app h₁ ⟨i, by valid⟩
+  · exact congr_app h₁ ⟨i, by valid⟩
 
 /-- Inductive construction of isomorphisms in `ComposableArrows C (n + 1)`: in order to
 construct an isomorphism `F ≅ G`, it suffices to provide `α : F.obj' 0 ≅ G.obj' 0` and

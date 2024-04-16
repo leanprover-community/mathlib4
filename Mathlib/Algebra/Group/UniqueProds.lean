@@ -310,7 +310,6 @@ variable (G : Type u) (H : Type v) [Mul G] [Mul H]
 
 private abbrev I : Bool → Type max u v := Bool.rec (ULift.{v} G) (ULift.{u} H)
 @[to_additive] private instance : ∀ b, Mul (I G H b) := Bool.rec ULift.mul ULift.mul
-@[to_additive] private instance : Mul (∀ b, I G H b) := inferInstance
 @[to_additive] private def Prod.upMulHom : G × H →ₙ* ∀ b, I G H b :=
   ⟨fun x ↦ Bool.rec ⟨x.1⟩ ⟨x.2⟩, fun x y ↦ by ext (_|_) <;> rfl⟩
 @[to_additive] private def downMulHom : ULift G →ₙ* G := ⟨ULift.down, fun _ _ ↦ rfl⟩
@@ -469,7 +468,7 @@ open ULift in
   have : ∀ b, UniqueProds (I G H b) := Bool.rec ?_ ?_
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
   · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he => Prod.ext ?_ ?_)
-      (instUniqueProdsForAllInstMul <| I G H) <;> apply up_injective
+      (UniqueProds.instForall <| I G H) <;> apply up_injective
     exacts [congr_fun he false, congr_fun he true]
   · exact of_injective_mulHom (downMulHom G) down_injective ‹_›
 
@@ -554,7 +553,7 @@ open ULift in
   have : ∀ b, TwoUniqueProds (I G H b) := Bool.rec ?_ ?_
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
   · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he ↦ Prod.ext ?_ ?_)
-      (instTwoUniqueProdsForAllInstMul <| I G H) <;> apply up_injective
+      (TwoUniqueProds.instForall <| I G H) <;> apply up_injective
     exacts [congr_fun he false, congr_fun he true]
   · exact of_injective_mulHom (downMulHom G) down_injective ‹_›
 
