@@ -54,7 +54,7 @@ completed Hurwit zeta function). See `evenKernel_def` for the defining formula, 
     (fun ξ : ℝ ↦ rexp (-π * ξ ^ 2 * x) * re (jacobiTheta₂ (ξ * I * x) (I * x))) 1 by
       intro ξ
       simp only [ofReal_add, ofReal_one, add_mul, one_mul, jacobiTheta₂_add_left']
-   have : cexp (-↑π * I * ((I * ↑x) + 2 * (↑ξ * I * ↑x))) = rexp (π * (x + 2 * ξ * x)) := by
+      have : cexp (-↑π * I * ((I * ↑x) + 2 * (↑ξ * I * ↑x))) = rexp (π * (x + 2 * ξ * x)) := by
         ring_nf
         simp only [I_sq, mul_neg, mul_one, neg_mul, neg_neg, sub_neg_eq_add, ofReal_exp, ofReal_add,
           ofReal_mul, ofReal_ofNat]
@@ -121,27 +121,28 @@ lemma continuousOn_cosKernel (a : UnitAddCircle) : ContinuousOn (cosKernel a) (I
   apply continuous_re.comp_continuousOn (f := fun x ↦ (cosKernel a' x : ℂ))
   simp only [cosKernel_def]
   refine ContinuousAt.continuousOn (fun x hx ↦ ?_)
-  have h := continuousAt_jacobiTheta₂ a' (?_ : 0 < im (I * x))
-  · refine h.comp (f := fun u : ℝ ↦ ((a' : ℂ), I * u)) (by fun_prop)
-  · rwa [mul_im, I_re, I_im, zero_mul, one_mul, zero_add, ofReal_re]
+  have : 0 < im (I * x) := by rwa [mul_im, I_re, I_im, zero_mul, one_mul, zero_add, ofReal_re]
+  exact (continuousAt_jacobiTheta₂ a' this).comp (f := fun u : ℝ ↦ (_, I * u)) (by fun_prop)
 
 lemma evenKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
     evenKernel a x = 1 / x ^ (1 / 2 : ℝ) * cosKernel a (1 / x) := by
   rcases le_or_lt x 0 with hx | hx
   · rw [evenKernel_undef _ hx, cosKernel_undef, mul_zero]
     exact div_nonpos_of_nonneg_of_nonpos zero_le_one hx
-  induction' a using QuotientAddGroup.induction_on' with a'
-  rw [← ofReal_inj, ofReal_mul, evenKernel_def, cosKernel_def,
-      jacobiTheta₂_functional_equation]
-  have h1 : I * ↑(1 / x) = -1 / (I * ↑x) := by
-    push_cast; field_simp [hx.ne']; ring_nf; rw [I_sq]; ring_nf
-  have h2 : (a' * I * x / (I * x)) = a' := by { field_simp [hx.ne']; ring_nf }
+  induction' a using QuotientAddGroup.induction_on' with a
+  rw [← ofReal_inj, ofReal_mul, evenKernel_def, cosKernel_def, jacobiTheta₂_functional_equation]
+  have h1 : I * ↑(1 / x) = -1 / (I * x) := by
+    push_cast
+    rw [← div_div, mul_one_div, div_I, neg_one_mul, neg_neg]
+  have h2 : (a * I * x / (I * x)) = a := by
+    field_simp [hx.ne']
+    ring -- `rw [mul_assoc]` works, but we don't want to rely on the exact output of `field_simp`
   have h3 : 1 / (-I * (I * x)) ^ (1 / 2 : ℂ) = 1 / ↑(x ^ (1 / 2 : ℝ)) := by
-    rw [neg_mul, ← mul_assoc, I_mul_I, neg_one_mul, neg_neg,ofReal_cpow hx.le, ofReal_div, 
+    rw [neg_mul, ← mul_assoc, I_mul_I, neg_one_mul, neg_neg,ofReal_cpow hx.le, ofReal_div,
       ofReal_one, ofReal_ofNat]
-  have h4 : -↑π * I * (↑a' * I * ↑x) ^ 2 / (I * ↑x) = - (-π * a' ^ 2 * x) := by
+  have h4 : -π * I * (a * I * x) ^ 2 / (I * x) = - (-π * a ^ 2 * x) := by
     rw [mul_pow, mul_pow, I_sq]; field_simp [hx.ne']; ring_nf
-  rw [h1, h2, h3, h4, ← mul_assoc, mul_comm (cexp _), mul_assoc _ (cexp _) (cexp _), 
+  rw [h1, h2, h3, h4, ← mul_assoc, mul_comm (cexp _), mul_assoc _ (cexp _) (cexp _),
     ← Complex.exp_add, neg_add_self, Complex.exp_zero, mul_one, ofReal_div, ofReal_one]
 
 end kernel_defs
@@ -160,8 +161,7 @@ lemma hasSum_int_evenKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
   rw [jacobiTheta₂_term, ← Complex.exp_add]
   push_cast
   ring_nf
-  rw [I_sq]
-  ring_nf
+  simp only [I_sq, mul_neg, neg_mul, mul_one]
 
 lemma hasSum_int_cosKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℤ ↦ cexp (2 * π * I * a * n) * rexp (-π * n ^ 2 * t)) ↑(cosKernel a t) := by
@@ -170,8 +170,7 @@ lemma hasSum_int_cosKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
   rw [jacobiTheta₂_term, ofReal_exp, ← Complex.exp_add]
   push_cast
   ring_nf
-  rw [I_sq]
-  ring_nf
+  simp only [I_sq, mul_neg, neg_mul, mul_one, sub_eq_add_neg]
 
 /-- Modified version of `hasSum_int_evenKernel` omitting the constant term at `∞`. -/
 lemma hasSum_int_evenKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
