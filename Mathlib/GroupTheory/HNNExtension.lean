@@ -591,7 +591,7 @@ open NormalWord
 theorem of_injective : Function.Injective (of : G → HNNExtension G A B φ) := by
   rcases TransversalPair.nonempty G A B with ⟨d⟩
   refine Function.Injective.of_comp
-    (f := ((. • .) : HNNExtension G A B φ → NormalWord d → NormalWord d)) ?_
+    (f := ((· • ·) : HNNExtension G A B φ → NormalWord d → NormalWord d)) ?_
   intros _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
     by simp_all [Function.funext_iff, of_smul_eq_smul])

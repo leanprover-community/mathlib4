@@ -77,7 +77,7 @@ theorem squarefree_minpoly_mod {p : ℕ} [Fact p.Prime] (hdiv : ¬p ∣ n) :
   (separable_minpoly_mod h hdiv).squarefree
 #align is_primitive_root.squarefree_minpoly_mod IsPrimitiveRoot.squarefree_minpoly_mod
 
-/- Let `P` be the minimal polynomial of a root of unity `μ` and `Q` be the minimal polynomial of
+/-- Let `P` be the minimal polynomial of a root of unity `μ` and `Q` be the minimal polynomial of
 `μ ^ p`, where `p` is a natural number that does not divide `n`. Then `P` divides `expand ℤ p Q`. -/
 theorem minpoly_dvd_expand {p : ℕ} (hdiv : ¬p ∣ n) :
     minpoly ℤ μ ∣ expand ℤ p (minpoly ℤ (μ ^ p)) := by
@@ -90,7 +90,7 @@ theorem minpoly_dvd_expand {p : ℕ} (hdiv : ¬p ∣ n) :
     exact minpoly.aeval _ _
 #align is_primitive_root.minpoly_dvd_expand IsPrimitiveRoot.minpoly_dvd_expand
 
-/- Let `P` be the minimal polynomial of a root of unity `μ` and `Q` be the minimal polynomial of
+/-- Let `P` be the minimal polynomial of a root of unity `μ` and `Q` be the minimal polynomial of
 `μ ^ p`, where `p` is a prime that does not divide `n`. Then `P` divides `Q ^ p` modulo `p`. -/
 theorem minpoly_dvd_pow_mod {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
     map (Int.castRingHom (ZMod p)) (minpoly ℤ μ) ∣
@@ -104,7 +104,7 @@ theorem minpoly_dvd_pow_mod {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n)
   exact minpoly_dvd_expand h hdiv
 #align is_primitive_root.minpoly_dvd_pow_mod IsPrimitiveRoot.minpoly_dvd_pow_mod
 
-/- Let `P` be the minimal polynomial of a root of unity `μ` and `Q` be the minimal polynomial of
+/-- Let `P` be the minimal polynomial of a root of unity `μ` and `Q` be the minimal polynomial of
 `μ ^ p`, where `p` is a prime that does not divide `n`. Then `P` divides `Q` modulo `p`. -/
 theorem minpoly_dvd_mod_p {p : ℕ} [Fact p.Prime] (hdiv : ¬p ∣ n) :
     map (Int.castRingHom (ZMod p)) (minpoly ℤ μ) ∣
@@ -225,9 +225,9 @@ theorem totient_le_degree_minpoly : Nat.totient n ≤ (minpoly ℤ μ).natDegree
   -- minimal polynomial of `μ` sent to `K[X]`
   calc
     n.totient = (primitiveRoots n K).card := h.card_primitiveRoots.symm
-    _ ≤ P_K.roots.toFinset.card := (Finset.card_le_card (is_roots_of_minpoly h))
-    _ ≤ Multiset.card P_K.roots := (Multiset.toFinset_card_le _)
-    _ ≤ P_K.natDegree := (card_roots' _)
+    _ ≤ P_K.roots.toFinset.card := Finset.card_le_card (is_roots_of_minpoly h)
+    _ ≤ Multiset.card P_K.roots := Multiset.toFinset_card_le _
+    _ ≤ P_K.natDegree := card_roots' _
     _ ≤ P.natDegree := natDegree_map_le _ _
 #align is_primitive_root.totient_le_degree_minpoly IsPrimitiveRoot.totient_le_degree_minpoly
 

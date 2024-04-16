@@ -57,7 +57,7 @@ theorem bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[�
   refine' bound_of_shell _ r_pos hk (fun x hko hxo => _) _
   calc
     ‖f x‖ ≤ c := h _ (mem_ball_zero_iff.mpr hxo)
-    _ ≤ c * (‖x‖ * ‖k‖ / r) := (le_mul_of_one_le_right ?_ ?_)
+    _ ≤ c * (‖x‖ * ‖k‖ / r) := le_mul_of_one_le_right ?_ ?_
     _ = _ := by ring
   · exact le_trans (norm_nonneg _) (h 0 (by simp [r_pos]))
   · rw [div_le_iff (zero_lt_one.trans hk)] at hko
@@ -224,7 +224,7 @@ theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c
   · refine' opNorm_le_bound _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) fun x => _
     calc
       ‖c x • f‖ = ‖c x‖ * ‖f‖ := norm_smul _ _
-      _ ≤ ‖c‖ * ‖x‖ * ‖f‖ := (mul_le_mul_of_nonneg_right (le_opNorm _ _) (norm_nonneg _))
+      _ ≤ ‖c‖ * ‖x‖ * ‖f‖ := mul_le_mul_of_nonneg_right (le_opNorm _ _) (norm_nonneg _)
       _ = ‖c‖ * ‖f‖ * ‖x‖ := by ring
   · by_cases h : f = 0
     · simp [h]

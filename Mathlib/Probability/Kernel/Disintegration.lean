@@ -304,7 +304,7 @@ theorem exists_cond_kernel (γ : Type*) [MeasurableSpace γ] :
       Measure.map_apply h_prod_embed.measurable (h_prod_embed.measurableSet_image.mpr ht)]
     congr with x : 1
     rw [← @Prod.mk.eta _ _ x]
-    simp only [id.def, mem_preimage, Prod.map_mk, mem_image, Prod.mk.inj_iff, Prod.exists]
+    simp only [id, mem_preimage, Prod.map_mk, mem_image, Prod.mk.inj_iff, Prod.exists]
     refine' ⟨fun h => ⟨x.1, x.2, h, rfl, rfl⟩, _⟩
     rintro ⟨a, b, h_mem, rfl, hf_eq⟩
     rwa [hf.injective hf_eq] at h_mem
@@ -320,7 +320,7 @@ theorem exists_cond_kernel (γ : Type*) [MeasurableSpace γ] :
   · exact measurable_prod_mk_left ht
   have h1 : {c : ℝ | (a, c) ∈ Prod.map id f '' t} = f '' {c : Ω | (a, c) ∈ t} := by
     ext1 x
-    simp only [Prod_map, id.def, mem_image, Prod.mk.inj_iff, Prod.exists, mem_setOf_eq]
+    simp only [Prod_map, id, mem_image, Prod.mk.inj_iff, Prod.exists, mem_setOf_eq]
     constructor
     · rintro ⟨a', b, h_mem, rfl, hf_eq⟩
       exact ⟨b, h_mem, hf_eq⟩

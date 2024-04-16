@@ -325,8 +325,6 @@ instance Icc_smooth_manifold (x y : ℝ) [Fact (x < y)] :
 
 section
 
-attribute [local instance] Real.fact_zero_lt_one
-
 instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
 
 instance : SmoothManifoldWithCorners (𝓡∂ 1) (Icc (0 : ℝ) 1) := by infer_instance
