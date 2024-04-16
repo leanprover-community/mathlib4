@@ -317,7 +317,7 @@ theorem condexp_neg (f : α → F') : μ[-f|m] =ᵐ[μ] -μ[f|m] := by
   letI : Module ℝ (α → F') := @Pi.module α (fun _ => F') ℝ _ _ fun _ => inferInstance
   calc
     μ[-f|m] = μ[(-1 : ℝ) • f|m] := by rw [neg_one_smul ℝ f]
-    _ =ᵐ[μ] (-1 : ℝ) • μ[f|m] := (condexp_smul (-1) f)
+    _ =ᵐ[μ] (-1 : ℝ) • μ[f|m] := condexp_smul (-1) f
     _ = -μ[f|m] := neg_one_smul ℝ (μ[f|m])
 #align measure_theory.condexp_neg MeasureTheory.condexp_neg
 

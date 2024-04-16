@@ -132,7 +132,7 @@ theorem card_le_mul_sum {x k : ℕ} : (card (U x k) : ℝ) ≤ x * ∑ p in P x 
   have h : card (Finset.biUnion P N) ≤ ∑ p in P, card (N p) := card_biUnion_le
   calc
     (card (Finset.biUnion P N) : ℝ) ≤ ∑ p in P, (card (N p) : ℝ) := by assumption_mod_cast
-    _ ≤ ∑ p in P, x * (1 / (p : ℝ)) := (sum_le_sum fun p _ => ?_)
+    _ ≤ ∑ p in P, x * (1 / (p : ℝ)) := sum_le_sum fun p _ => ?_
     _ = x * ∑ p in P, 1 / (p : ℝ) := by rw [mul_sum]
   simp only [N, mul_one_div, Nat.card_multiples, Nat.cast_div_le]
 #align theorems_100.card_le_mul_sum Theorems100.card_le_mul_sum
@@ -168,7 +168,7 @@ theorem card_le_two_pow {x k : ℕ} :
     card M₁ ≤ card (image f K) := card_le_card h
     _ ≤ card K := card_image_le
     _ ≤ 2 ^ card (image Nat.succ (range k)) := by simp only [K, card_powerset]; rfl
-    _ ≤ 2 ^ card (range k) := (pow_le_pow_right one_le_two card_image_le)
+    _ ≤ 2 ^ card (range k) := pow_le_pow_right one_le_two card_image_le
     _ = 2 ^ k := by rw [card_range k]
 #align theorems_100.card_le_two_pow Theorems100.card_le_two_pow
 
@@ -205,7 +205,7 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : card (M x k) ≤ 2 ^ k * Nat.sqrt
   calc
     card (M x k) ≤ card (image f K) := card_le_card h1
     _ ≤ card K := card_image_le
-    _ = card M₁ * card M₂ := (card_product M₁ M₂)
+    _ = card M₁ * card M₂ := card_product M₁ M₂
     _ ≤ 2 ^ k * x.sqrt := mul_le_mul' card_le_two_pow h2
 #align theorems_100.card_le_two_pow_mul_sqrt Theorems100.card_le_two_pow_mul_sqrt
 
@@ -236,7 +236,7 @@ theorem Real.tendsto_sum_one_div_prime_atTop :
   have h3 :=
     calc
       (card U' : ℝ) ≤ x * ∑ p in P, 1 / (p : ℝ) := card_le_mul_sum
-      _ < x * (1 / 2) := (mul_lt_mul_of_pos_left (h1 x) (by norm_num [x]))
+      _ < x * (1 / 2) := mul_lt_mul_of_pos_left (h1 x) (by norm_num [x])
       _ = x / 2 := mul_one_div (x : ℝ) 2
   have h4 :=
     calc
@@ -246,7 +246,7 @@ theorem Real.tendsto_sum_one_div_prime_atTop :
   refine' lt_irrefl (x : ℝ) _
   calc
     (x : ℝ) = (card U' : ℝ) + (card M' : ℝ) := by assumption_mod_cast
-    _ < x / 2 + x / 2 := (add_lt_add_of_lt_of_le h3 h4)
+    _ < x / 2 + x / 2 := add_lt_add_of_lt_of_le h3 h4
     _ = x := add_halves (x : ℝ)
 #align theorems_100.real.tendsto_sum_one_div_prime_at_top Theorems100.Real.tendsto_sum_one_div_prime_atTop
 

@@ -1425,12 +1425,12 @@ theorem sep_false : { x ∈ s | False } = ∅ :=
 
 --Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem sep_empty (p : α → Prop) : { x ∈ (∅ : Set α) | p x } = ∅ :=
-  empty_inter p
+  empty_inter {x | p x}
 #align set.sep_empty Set.sep_empty
 
 --Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem sep_univ : { x ∈ (univ : Set α) | p x } = { x | p x } :=
-  univ_inter p
+  univ_inter {x | p x}
 #align set.sep_univ Set.sep_univ
 
 @[simp]
@@ -1440,12 +1440,12 @@ theorem sep_union : { x | (x ∈ s ∨ x ∈ t) ∧ p x } = { x ∈ s | p x } �
 
 @[simp]
 theorem sep_inter : { x | (x ∈ s ∧ x ∈ t) ∧ p x } = { x ∈ s | p x } ∩ { x ∈ t | p x } :=
-  inter_inter_distrib_right s t p
+  inter_inter_distrib_right s t {x | p x}
 #align set.sep_inter Set.sep_inter
 
 @[simp]
 theorem sep_and : { x ∈ s | p x ∧ q x } = { x ∈ s | p x } ∩ { x ∈ s | q x } :=
-  inter_inter_distrib_left s p q
+  inter_inter_distrib_left s {x | p x} {x | q x}
 #align set.sep_and Set.sep_and
 
 @[simp]
@@ -1574,6 +1574,11 @@ lemma disjoint_sdiff_left : Disjoint (t \ s) s := disjoint_sdiff_self_left
 
 lemma disjoint_sdiff_right : Disjoint s (t \ s) := disjoint_sdiff_self_right
 #align set.disjoint_sdiff_right Set.disjoint_sdiff_right
+
+-- TODO: prove this in terms of a lattice lemma
+theorem disjoint_sdiff_inter : Disjoint (s \ t) (s ∩ t) :=
+  disjoint_of_subset_right (inter_subset_right _ _) disjoint_sdiff_left
+#align set.disjoint_sdiff_inter Set.disjoint_sdiff_inter
 
 theorem diff_union_diff_cancel (hts : t ⊆ s) (hut : u ⊆ t) : s \ t ∪ t \ u = s \ u :=
   sdiff_sup_sdiff_cancel hts hut

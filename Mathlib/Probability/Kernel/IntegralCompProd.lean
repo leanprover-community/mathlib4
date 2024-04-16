@@ -56,8 +56,8 @@ theorem hasFiniteIntegral_prod_mk_left (a : α) {s : Set (β × γ)} (h2s : (κ 
       filter_upwards [ae_kernel_lt_top a h2s] with b hb
       rw [ofReal_toReal hb.ne]
       exact measure_mono (preimage_mono (subset_toMeasurable _ _))
-    _ ≤ (κ ⊗ₖ η) a t := (le_compProd_apply _ _ _ _)
-    _ = (κ ⊗ₖ η) a s := (measure_toMeasurable s)
+    _ ≤ (κ ⊗ₖ η) a t := le_compProd_apply _ _ _ _
+    _ = (κ ⊗ₖ η) a s := measure_toMeasurable s
     _ < ⊤ := h2s.lt_top
 #align probability_theory.has_finite_integral_prod_mk_left ProbabilityTheory.hasFiniteIntegral_prod_mk_left
 

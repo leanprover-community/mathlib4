@@ -313,7 +313,7 @@ theorem _root_.MeasurableSet.analyticSet {α : Type*} [t : TopologicalSpace α] 
     hs.isClopenable
   have A := @IsClosed.analyticSet α t' t'_polish s s_closed
   convert @AnalyticSet.image_of_continuous α t' α t s A id (continuous_id_of_le t't)
-  simp only [id.def, image_id']
+  simp only [id, image_id']
 #align measurable_set.analytic_set MeasurableSet.analyticSet
 
 /-- Given a Borel-measurable function from a Polish space to a second-countable space, there exists

@@ -76,7 +76,7 @@ def zetaKernel₁ (t : ℝ) : ℂ :=
 
 /-- Modified zeta kernel, whose Mellin transform is entire. --/
 def zetaKernel₂ : ℝ → ℂ :=
-  zetaKernel₁ + indicator (Ioc 0 1) fun t => ((1 - 1 / sqrt t) / 2 : ℂ)
+  zetaKernel₁ + indicator (Ioc 0 1) fun t => ((1 - 1 / (√t : ℝ)) / 2 : ℂ)
 #align zeta_kernel₂ zetaKernel₂
 
 /-- The completed Riemann zeta function with its poles removed, `Λ(s) + 1 / s - 1 / (s - 1)`. -/
@@ -177,14 +177,14 @@ theorem zetaKernel₂_one_div {t : ℝ} (ht : 0 ≤ t) :
     zetaKernel₂ (1 / t) = sqrt t * zetaKernel₂ t := by
   rcases ht.eq_or_lt with rfl|h't
   · simp [zetaKernel₂, zetaKernel₁]
-  have aux : ∀ {u : ℝ} (_ : 1 < u), zetaKernel₂ (1 / u) = sqrt u * zetaKernel₂ u := by
+  have aux : ∀ {u : ℝ} (_ : 1 < u), zetaKernel₂ (1 / u) = √u * zetaKernel₂ u := by
     intro u hu
     simp_rw [zetaKernel₂, Pi.add_apply]
     rw [indicator_of_mem, indicator_of_not_mem (not_mem_Ioc_of_gt hu), add_zero]
     swap; · exact ⟨one_div_pos.mpr (zero_lt_one.trans hu), (one_div u).symm ▸ inv_le_one hu.le⟩
     rw [zetaKernel₁_eq_jacobiTheta (one_div_pos.mpr <| zero_lt_one.trans hu),
       zetaKernel₁_eq_jacobiTheta (zero_lt_one.trans hu), ← add_div, ← mul_div_assoc, add_sub,
-      sub_add_cancel, sqrt_div zero_le_one, sqrt_one, one_div (sqrt _), ofReal_inv, ← one_div,
+      sub_add_cancel, sqrt_div zero_le_one, sqrt_one, one_div (√_), ofReal_inv, ← one_div,
       one_div_one_div, mul_sub, mul_one]
     congr 2
     let τ : UpperHalfPlane := .mk (u * I) ((mul_I_im u).symm ▸ zero_lt_one.trans hu)
@@ -219,7 +219,7 @@ theorem isBigO_atTop_zetaKernel₁ : IsBigO atTop zetaKernel₁ fun t => exp (-�
     rw [tendsto_comap_iff]
     convert tendsto_id
     ext1 t
-    rw [Function.comp_apply, mul_I_im, ofReal_re, id.def]
+    rw [Function.comp_apply, mul_I_im, ofReal_re, id]
   convert ((h.norm_left.comp_tendsto h').congr' (eventually_of_mem (Ioi_mem_atTop 0) fun t ht => _)
         (eventually_of_mem (Ioi_mem_atTop 0) fun t _ => _)).of_norm_left (E' := ℂ)
   · rw [Function.comp_apply, ← zetaKernel₁_eq_jacobiTheta ht]
@@ -238,14 +238,14 @@ set_option linter.uppercaseLean3 false in
 #align is_O_at_top_zeta_kernel₂ isBigO_atTop_zetaKernel₂
 
 /-- Precise but awkward-to-use bound for `zetaKernel₂` for `t → 0`. -/
-theorem isBigO_zero_zetaKernel₂ : IsBigO (𝓝[>] 0) zetaKernel₂ fun t => exp (-π / t) / sqrt t := by
+theorem isBigO_zero_zetaKernel₂ : IsBigO (𝓝[>] 0) zetaKernel₂ fun t => exp (-π / t) / √t := by
   have h1 := isBigO_atTop_zetaKernel₂.comp_tendsto tendsto_inv_zero_atTop
   simp_rw [← one_div] at h1
-  have h2 : zetaKernel₂ ∘ Div.div 1 =ᶠ[𝓝[>] 0] fun t => sqrt t * zetaKernel₂ t :=
+  have h2 : zetaKernel₂ ∘ Div.div 1 =ᶠ[𝓝[>] 0] fun t => √t * zetaKernel₂ t :=
     eventually_of_mem self_mem_nhdsWithin fun t ht => by
       dsimp only; rw [← zetaKernel₂_one_div (le_of_lt ht)]; rfl
   have h3 := h1.congr' h2 (EventuallyEq.refl _ _)
-  have h4 := h3.mul (isBigO_refl (fun t : ℝ => 1 / (sqrt t : ℂ)) (𝓝[>] 0)).norm_right
+  have h4 := h3.mul (isBigO_refl (fun t : ℝ => 1 / (↑(√t) : ℂ)) (𝓝[>] 0)).norm_right
   refine h4.congr' ?_ ?_
   · refine eventually_of_mem self_mem_nhdsWithin fun x hx => ?_
     dsimp
@@ -253,7 +253,7 @@ theorem isBigO_zero_zetaKernel₂ : IsBigO (𝓝[>] 0) zetaKernel₂ fun t => ex
     exact ofReal_ne_zero.mpr ((sqrt_ne_zero <| le_of_lt hx).mpr (ne_of_gt hx))
   · refine eventually_of_mem self_mem_nhdsWithin fun x _ => ?_
     dsimp only
-    rw [Function.comp_apply, mul_one_div, one_div (sqrt x : ℂ), norm_inv, Complex.norm_eq_abs,
+    rw [Function.comp_apply, mul_one_div, one_div, norm_inv, Complex.norm_eq_abs,
       abs_ofReal, abs_of_nonneg (sqrt_nonneg _), ← div_eq_mul_inv]
 set_option linter.uppercaseLean3 false in
 #align is_O_zero_zeta_kernel₂ isBigO_zero_zetaKernel₂
@@ -262,8 +262,8 @@ set_option linter.uppercaseLean3 false in
 theorem isBigO_zero_zetaKernel₂_rpow (a : ℝ) : IsBigO (𝓝[>] 0) zetaKernel₂ fun t => t ^ a := by
   have aux1 : IsBigO atTop (fun t => exp (-π * t)) fun t => t ^ (-a - 1 / 2) :=
     (isLittleO_exp_neg_mul_rpow_atTop pi_pos _).isBigO
-  have aux2 : IsBigO atTop (fun t => exp (-π * t) * sqrt t) fun t => t ^ (-a) := by
-    refine (aux1.mul (isBigO_refl sqrt _)).congr' (EventuallyEq.refl _ _) ?_
+  have aux2 : IsBigO atTop (fun t => exp (-π * t) * √t) fun t => t ^ (-a) := by
+    refine (aux1.mul (isBigO_refl _ _)).congr' (EventuallyEq.refl _ _) ?_
     refine (eventually_gt_atTop 0).mp (eventually_of_forall fun t ht => ?_)
     simp_rw [sqrt_eq_rpow, ← rpow_add ht, sub_add_cancel]
   refine isBigO_zero_zetaKernel₂.trans ((aux2.comp_tendsto tendsto_inv_zero_atTop).congr' ?_ ?_)
@@ -276,9 +276,8 @@ set_option linter.uppercaseLean3 false in
 
 /-- Bound for `zetaKernel₁` for `t → 0`. -/
 theorem isBigO_zero_zetaKernel₁ : IsBigO (𝓝[>] 0) zetaKernel₁ fun t => t ^ (-(1 / 2) : ℝ) := by
-  have : zetaKernel₁ =ᶠ[𝓝[>] 0] zetaKernel₂ + fun t => ((1 / sqrt t - 1) / 2 : ℂ) := by
-    refine
-      eventuallyEq_of_mem (Ioc_mem_nhdsWithin_Ioi <| left_mem_Ico.mpr zero_lt_one) fun t h => ?_
+  have : zetaKernel₁ =ᶠ[𝓝[>] 0] zetaKernel₂ + fun t => ((1 / (√t : ℝ) - 1) / 2 : ℂ) := by
+    filter_upwards [Ioc_mem_nhdsWithin_Ioi' zero_lt_one] with t h
     rw [Pi.add_apply, zetaKernel₂, Pi.add_apply, indicator_of_mem h]
     ring
   refine ((isBigO_zero_zetaKernel₂_rpow _).add ?_).congr' this.symm (EventuallyEq.refl _ _)
@@ -334,7 +333,7 @@ theorem differentiableAt_completed_zeta {s : ℂ} (hs : s ≠ 0) (hs' : s ≠ 1)
 theorem differentiableAt_riemannZeta {s : ℂ} (hs' : s ≠ 1) : DifferentiableAt ℂ riemannZeta s := by
   /- First claim: the result holds at `t` for `t ≠ 0`. Note we will need to use this for the case
     `s = 0` also, as a hypothesis for the removable-singularity criterion. -/
-  have c1 : ∀ (t : ℂ) (_ : t ≠ 0) (_ : t ≠ 1),
+  have c1 : ∀ t : ℂ, t ≠ 0 → t ≠ 1 →
       DifferentiableAt ℂ
         (fun u : ℂ => (π : ℂ) ^ (u / 2) * riemannCompletedZeta u / Gamma (u / 2)) t := by
     intro t ht ht'
@@ -378,12 +377,12 @@ theorem differentiableAt_riemannZeta {s : ℂ} (hs' : s ≠ 1) : DifferentiableA
     · refine Tendsto.mono_left ?_ nhdsWithin_le_nhds
       have : ContinuousAt riemannCompletedZeta₀ 0 :=
         differentiable_completed_zeta₀.continuous.continuousAt
-      simpa only [id.def, mul_zero] using Tendsto.mul this tendsto_id
+      simpa only [id, mul_zero] using Tendsto.mul this tendsto_id
     · refine tendsto_const_nhds.congr' (eventuallyEq_of_mem self_mem_nhdsWithin fun t ht => ?_)
       simp_rw [one_div_mul_cancel ht]
     · refine Tendsto.mono_left ?_ nhdsWithin_le_nhds
       suffices ContinuousAt (fun z : ℂ => 1 / (z - 1)) 0 by
-        simpa only [id.def, mul_zero] using Tendsto.mul this tendsto_id
+        simpa only [id, mul_zero] using Tendsto.mul this tendsto_id
       refine continuousAt_const.div (continuousAt_id.sub continuousAt_const) ?_
       simpa only [zero_sub] using neg_ne_zero.mpr one_ne_zero
   -- Now the main proof.
@@ -428,8 +427,8 @@ def RiemannHypothesis : Prop :=
 
 
 theorem hasMellin_one_div_sqrt_Ioc {s : ℂ} (hs : 1 / 2 < re s) :
-    HasMellin (indicator (Ioc 0 1) (fun t => 1 / ↑(sqrt t) : ℝ → ℂ)) s (1 / (s - 1 / 2)) := by
-  have h1 : EqOn (fun t => 1 / ↑(sqrt t) : ℝ → ℂ) (fun t => (t : ℂ) ^ (-1 / 2 : ℂ)) (Ioc 0 1) := by
+    HasMellin (indicator (Ioc 0 1) (fun t => 1 / ↑(√t) : ℝ → ℂ)) s (1 / (s - 1 / 2)) := by
+  have h1 : EqOn (fun t => 1 / ↑(√t) : ℝ → ℂ) (fun t => (t : ℂ) ^ (-1 / 2 : ℂ)) (Ioc 0 1) := by
     intro t ht
     simp_rw [neg_div, cpow_neg, ← one_div, sqrt_eq_rpow, ofReal_cpow ht.1.le]
     norm_num
@@ -441,18 +440,18 @@ theorem hasMellin_one_div_sqrt_Ioc {s : ℂ} (hs : 1 / 2 < re s) :
 
 /-- Evaluate the Mellin transform of the "fudge factor" in `zetaKernel₂` -/
 theorem hasMellin_one_div_sqrt_sub_one_div_two_Ioc {s : ℂ} (hs : 1 / 2 < s.re) :
-    HasMellin ((Ioc 0 1).indicator fun t => (1 - 1 / (sqrt t : ℂ)) / 2) s
+    HasMellin ((Ioc 0 1).indicator fun t => (1 - 1 / (↑(√t) : ℂ)) / 2) s
       (1 / (2 * s) - 1 / (2 * s - 1)) := by
   have step1 :
-    HasMellin (indicator (Ioc 0 1) (fun t => 1 - 1 / ↑(sqrt t) : ℝ → ℂ)) s
+    HasMellin (indicator (Ioc 0 1) (fun t => 1 - 1 / ↑(√t) : ℝ → ℂ)) s
       (1 / s - 1 / (s - 1 / 2)) := by
     have a := hasMellin_one_Ioc (one_half_pos.trans hs)
     have b := hasMellin_one_div_sqrt_Ioc hs
     simpa only [a.2, b.2, ← indicator_sub] using hasMellin_sub a.1 b.1
   -- todo: implement something like "indicator.const_div" (blocked by the port for now)
   rw [show
-      ((Ioc 0 1).indicator fun t => (1 - 1 / (sqrt t : ℂ)) / 2) = fun t =>
-        (Ioc 0 1).indicator (fun t => 1 - 1 / (sqrt t : ℂ)) t / 2
+      ((Ioc 0 1).indicator fun t => (1 - 1 / ((√t : ℝ) : ℂ)) / 2) = fun t =>
+        (Ioc 0 1).indicator (fun t => 1 - 1 / ((√t : ℝ) : ℂ)) t / 2
       by ext1 t; simp_rw [div_eq_inv_mul, indicator_mul_right]]
   simp_rw [HasMellin, mellin_div_const, step1.2, sub_div, div_div]
   refine ⟨step1.1.div_const _, ?_⟩
@@ -674,7 +673,7 @@ theorem riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℕ, s ≠ -n) (hs' : s ≠ 
   -- nontrivial facts (the doubling formula and reflection formula for Gamma) and a lot of careful
   -- rearrangement, requiring several non-vanishing statements as input to `field_simp`.
   have hs_ne : s ≠ 0 := by contrapose! hs; rw [hs]; exact ⟨0, by rw [Nat.cast_zero, neg_zero]⟩
-  have h_sqrt : (sqrt π : ℂ) ≠ 0 := ofReal_ne_zero.mpr (sqrt_ne_zero'.mpr pi_pos)
+  have h_sqrt : ((√π : ℝ) : ℂ) ≠ 0 := ofReal_ne_zero.mpr (sqrt_ne_zero'.mpr pi_pos)
   have h_pow : (2 : ℂ) ^ (s - 1) ≠ 0 := by
     rw [Ne, cpow_eq_zero_iff, not_and_or]
     exact Or.inl two_ne_zero
@@ -684,7 +683,7 @@ theorem riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℕ, s ≠ -n) (hs' : s ≠ 
     obtain ⟨m, hm⟩ := hs
     rw [div_eq_iff (two_ne_zero' ℂ), ← Nat.cast_two, neg_mul, ← Nat.cast_mul] at hm
     exact ⟨m * 2, by rw [hm]⟩
-  have h_Ga_eq : Gamma s = Gamma (s / 2) * Gamma ((s + 1) / 2) * (2 : ℂ) ^ (s - 1) / sqrt π := by
+  have h_Ga_eq : Gamma s = Gamma (s / 2) * Gamma ((s + 1) / 2) * (2 : ℂ) ^ (s - 1) / √π := by
     rw [add_div, Complex.Gamma_mul_Gamma_add_half, mul_div_cancel₀ _ (two_ne_zero' ℂ),
       (by ring : 1 - s = -(s - 1)), cpow_neg, ← div_eq_mul_inv, eq_div_iff h_sqrt,
       div_mul_eq_mul_div₀, div_mul_cancel₀ _ h_pow]
@@ -718,7 +717,7 @@ theorem riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℕ, s ≠ -n) (hs' : s ≠ 
       rwa [(by ring : 1 - (1 - s) / 2 = s / 2 + 1 / 2), inv_div,
         div_eq_iff (ofReal_ne_zero.mpr pi_pos.ne'), mul_comm _ (π : ℂ), mul_div_assoc'] at this]
   rw [(by rw [← neg_sub] : (2 : ℂ) ^ (1 - s) = (2 : ℂ) ^ (-(s - 1))), cpow_neg, h_Ga_eq]
-  suffices (π : ℂ) ^ ((1 - s) / 2) = (π : ℂ) ^ (-s) * sqrt π * (π : ℂ) ^ (s / 2) by
+  suffices (π : ℂ) ^ ((1 - s) / 2) = (π : ℂ) ^ (-s) * √π * (π : ℂ) ^ (s / 2) by
     rw [this]; field_simp;
     ring_nf; rw [← ofReal_pow, sq_sqrt pi_pos.le]; ring
   simp_rw [sqrt_eq_rpow, ofReal_cpow pi_pos.le, ← cpow_add _ _ (ofReal_ne_zero.mpr pi_pos.ne')]

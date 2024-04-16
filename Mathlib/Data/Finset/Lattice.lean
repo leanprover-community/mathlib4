@@ -266,7 +266,7 @@ theorem sup_le_of_le_directed {α : Type*} [SemilatticeSup α] [OrderBot α] (s 
       -- z ∈ s is above x and y
       obtain ⟨z, hzs, ⟨hxz, hyz⟩⟩ := hdir x hxs y hys
       use z, hzs
-      rw [sup_insert, id.def, sup_le_iff]
+      rw [sup_insert, id, sup_le_iff]
       exact ⟨le_trans hay hyz, le_trans hsx_sup hxz⟩
 #align finset.sup_le_of_le_directed Finset.sup_le_of_le_directed
 
@@ -1774,7 +1774,7 @@ theorem min_erase_ne_self {s : Finset α} : (s.erase x).min ≠ x := by
 theorem exists_next_right {x : α} {s : Finset α} (h : ∃ y ∈ s, x < y) :
     ∃ y ∈ s, x < y ∧ ∀ z ∈ s, x < z → y ≤ z :=
   have Hne : (s.filter (x < ·)).Nonempty := h.imp fun y hy => mem_filter.2 (by simpa)
-  have aux := (mem_filter.1 (min'_mem _ Hne))
+  have aux := mem_filter.1 (min'_mem _ Hne)
   ⟨min' _ Hne, aux.1, by simp, fun z hzs hz => min'_le _ _ <| mem_filter.2 ⟨hzs, by simpa⟩⟩
 #align finset.exists_next_right Finset.exists_next_right
 
