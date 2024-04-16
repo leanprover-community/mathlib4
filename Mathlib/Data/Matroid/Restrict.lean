@@ -24,7 +24,7 @@ It also proves some `Basis` analogues of `Base` lemmas that, while they could be
 
 ## Main Definitions
 
-* `M.restrict R`, written `M ↾ R`, is the restriction of `M : Matroid α` to `R : set α`: i.e.
+* `M.restrict R`, written `M ↾ R`, is the restriction of `M : Matroid α` to `R : Set α`: i.e.
   the matroid with ground set `R` whose independent sets are the `M`-independent subsets of `R`.
 
 * `Matroid.Restriction N M`, written `N ≤r M`, means that `N = M ↾ R` for some `R ⊆ M.E`.
@@ -118,7 +118,7 @@ section restrict
 def restrict (M : Matroid α) (R : Set α) : Matroid α := (M.restrictIndepMatroid R).matroid
 
 /-- `M ↾ R` means `M.restrict R`. -/
-infixl:65  " ↾ " => Matroid.restrict
+scoped infixl:65  " ↾ " => Matroid.restrict
 
 @[simp] theorem restrict_indep_iff : (M ↾ R).Indep I ↔ M.Indep I ∧ I ⊆ R := by
   simp [Matroid.restrict]
@@ -219,10 +219,10 @@ def Restriction (N M : Matroid α) : Prop := ∃ R ⊆ M.E, N = M ↾ R
 def StrictRestriction (N M : Matroid α) : Prop := Restriction N M ∧ ¬ Restriction M N
 
 /-- `N ≤r M` means that `N` is a `Restriction` of `M`. -/
-infix:50  " ≤r " => Restriction
+scoped infix:50  " ≤r " => Restriction
 
 /-- `N <r M` means that `N` is a `StrictRestriction` of `M`. -/
-infix:50  " <r " => StrictRestriction
+scoped infix:50  " <r " => StrictRestriction
 
 /-- A type synonym for matroids with the restriction order.
   (The `PartialOrder` on `Matroid α` is reserved for the minor order)  -/
@@ -241,7 +241,7 @@ instance {α : Type*} : PartialOrder (Matroidᵣ α) where
   le := (· ≤r ·)
   le_refl M := ⟨(M : Matroid α).E, Subset.rfl, (M : Matroid α).restrict_ground_eq_self.symm⟩
   le_trans M₁ M₂ M₃ := by
-    rintro  ⟨R, hR, h₁⟩ ⟨R', hR', h₂⟩
+    rintro ⟨R, hR, h₁⟩ ⟨R', hR', h₂⟩
     change _ ≤r _
     rw [h₂] at h₁ hR
     rw [h₁, restrict_restrict_eq _ (show R ⊆ R' from hR)]
