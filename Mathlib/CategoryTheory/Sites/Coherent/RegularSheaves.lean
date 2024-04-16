@@ -243,7 +243,7 @@ lemma isSheaf_yoneda_obj [Preregular C] (W : C)  :
   intro X S ⟨_, hS⟩
   have : S.regular := ⟨_, hS⟩
   obtain ⟨Y, f, rfl, hf⟩ := Presieve.regular.single_epi (R := S)
-  have h_colim := isColimitOfEffectiveEpiStruct f hf.effectiveEpi.some
+  let h_colim := isColimitOfEffectiveEpiStruct f hf.effectiveEpi.some
   rw [← Sieve.generateSingleton_eq, ← Presieve.ofArrows_pUnit] at h_colim
   intro x hx
   let x_ext := Presieve.FamilyOfElements.sieveExtend x

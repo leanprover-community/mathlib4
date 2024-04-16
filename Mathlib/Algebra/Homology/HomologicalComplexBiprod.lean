@@ -26,11 +26,11 @@ instance (i : ι) : HasBinaryBiproduct ((eval C c i).obj K) ((eval C c i).obj L)
   infer_instance
 
 instance (i : ι) : HasLimit ((pair K L) ⋙ (eval C c i)) := by
-  have e : _ ≅ pair (K.X i) (L.X i) := diagramIsoPair (pair K L ⋙ eval C c i)
+  let e : _ ≅ pair (K.X i) (L.X i) := diagramIsoPair (pair K L ⋙ eval C c i)
   exact hasLimitOfIso e.symm
 
 instance (i : ι) : HasColimit ((pair K L) ⋙ (eval C c i)) := by
-  have e : _ ≅ pair (K.X i) (L.X i) := diagramIsoPair (pair K L ⋙ eval C c i)
+  let e : _ ≅ pair (K.X i) (L.X i) := diagramIsoPair (pair K L ⋙ eval C c i)
   exact hasColimitOfIso e
 
 instance : HasBinaryBiproduct K L := HasBinaryBiproduct.of_hasBinaryProduct _ _
