@@ -47,6 +47,17 @@ instance (S : D) (T : C ⥤ D) : Category (StructuredArrow S T) := commaCategory
 
 namespace StructuredArrow
 
+lemma obj_ext {S : D} {T : C ⥤ D}
+    {Y₁ Y₂ : StructuredArrow S T} (h₁ : Y₁.right = Y₂.right)
+    (h₂ : Y₁.hom = Y₂.hom ≫ eqToHom (by rw [h₁])) : Y₁ = Y₂ := by
+  obtain ⟨⟨⟩, Y₁, f₁⟩ := Y₁
+  obtain ⟨⟨⟩, Y₂, f₂⟩ := Y₂
+  dsimp at h₁ h₂
+  obtain rfl := h₁
+  simp only [eqToHom_refl, Category.comp_id] at h₂
+  obtain rfl := h₂
+  rfl
+
 /-- The obvious projection functor from structured arrows. -/
 @[simps!]
 def proj (S : D) (T : C ⥤ D) : StructuredArrow S T ⥤ C :=
@@ -389,6 +400,17 @@ def CostructuredArrow (S : C ⥤ D) (T : D) :=
 instance (S : C ⥤ D) (T : D) : Category (CostructuredArrow S T) := commaCategory
 
 namespace CostructuredArrow
+
+lemma obj_ext {S : C ⥤ D} {T : D}
+    {X₁ X₂ : CostructuredArrow S T} (h₁ : X₁.left = X₂.left)
+    (h₂ : X₁.hom = eqToHom (by rw [h₁]) ≫ X₂.hom) : X₁ = X₂ := by
+  obtain ⟨X₁, ⟨⟩, f₁⟩ := X₁
+  obtain ⟨X₂, ⟨⟩, f₂⟩ := X₂
+  dsimp at h₁ h₂
+  obtain rfl := h₁
+  simp only [eqToHom_refl, Category.id_comp] at h₂
+  obtain rfl := h₂
+  rfl
 
 /-- The obvious projection functor from costructured arrows. -/
 @[simps!]

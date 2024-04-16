@@ -90,7 +90,7 @@ def loc (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] : L ⥤ D
     ext j
     simp only [Category.id_comp, limit.pre_π]
     congr 1
-    simp
+    exact StructuredArrow.obj_ext rfl (by simp)
   map_comp := by
     intro x y z f g
     apply limit.hom_ext
@@ -104,7 +104,7 @@ def loc (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] : L ⥤ D
     haveI : HasLimit ((StructuredArrow.map g ⋙ StructuredArrow.map f) ⋙ diagram ι F _) := h _
     erw [limit.pre_pre, limit.pre_π, limit.pre_π]
     congr 1
-    aesop_cat
+    exact StructuredArrow.obj_ext rfl (by simp)
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran.loc CategoryTheory.Ran.loc
 
@@ -147,8 +147,7 @@ def equiv (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] (G : L ⥤ D) :
     haveI : HasLimit (StructuredArrow.map j.hom ⋙ diagram ι F k) := h _
     erw [limit.pre_π]
     congr
-    rcases j with ⟨⟨⟩, _, _⟩
-    aesop_cat
+    exact StructuredArrow.obj_ext (by rfl) (by simp)
   right_inv := by aesop_cat
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran.equiv CategoryTheory.Ran.equiv
@@ -244,7 +243,7 @@ def loc (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] : L ⥤ D
     ext j
     erw [colimit.ι_pre, Category.comp_id]
     congr 1
-    simp
+    exact CostructuredArrow.obj_ext (by rfl) (by simp)
   map_comp := by
     intro x y z f g
     dsimp
@@ -261,7 +260,7 @@ def loc (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] : L ⥤ D
     change _ = colimit.ι ((ff ⋙ gg) ⋙ dd) j ≫ _ ≫ _
     erw [colimit.pre_pre dd gg ff, colimit.ι_pre, colimit.ι_pre]
     congr 1
-    simp
+    exact CostructuredArrow.obj_ext (by rfl) (by simp [ff, gg])
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan.loc CategoryTheory.Lan.loc
 
@@ -290,7 +289,7 @@ def equiv (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] (G : L ⥤ D) :
               erw [Category.comp_id])
         erw [colimit.w (diagram ι F (ι.obj y)) fff']
         congr
-        simp [fff] }
+        apply CostructuredArrow.obj_ext (by rfl) (by simp [fff, xx]) }
   invFun f :=
     { app := fun x => colimit.desc (diagram ι F x) (cocone _ f)
       naturality := by
@@ -315,9 +314,7 @@ def equiv (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] (G : L ⥤ D) :
     haveI : HasColimit (CostructuredArrow.map j.hom ⋙ diagram ι F k) := I _
     erw [colimit.ι_pre (diagram ι F k) (CostructuredArrow.map j.hom)]
     congr
-    rcases j with ⟨_, ⟨⟩, _⟩
-    simp only [CostructuredArrow.map_mk, Category.id_comp]
-    rfl
+    apply CostructuredArrow.obj_ext (by rfl) (by simp)
   right_inv := by aesop_cat
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan.equiv CategoryTheory.Lan.equiv
