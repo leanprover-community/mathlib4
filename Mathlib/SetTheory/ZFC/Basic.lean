@@ -1071,7 +1071,7 @@ theorem toSet_sInter {x : ZFSet.{u}} (h : x.Nonempty) : (⋂₀ x).toSet = ⋂�
 #align Set.to_set_sInter ZFSet.toSet_sInter
 
 theorem singleton_injective : Function.Injective (@singleton ZFSet ZFSet _) := fun x y H => by
-  let this := congr_arg sUnion H
+  have this := congr_arg sUnion H
   rwa [sUnion_singleton, sUnion_singleton] at this
 #align Set.singleton_injective ZFSet.singleton_injective
 
@@ -1349,7 +1349,7 @@ theorem map_unique {f : ZFSet.{u} → ZFSet.{u}} [H : Definable 1 f] {x z : ZFSe
     (zx : z ∈ x) : ∃! w, pair z w ∈ map f x :=
   ⟨f z, image.mk _ _ zx, fun y yx => by
     let ⟨w, _, we⟩ := mem_image.1 yx
-    let ⟨wz, fy⟩ := pair_injective we
+    have ⟨wz, fy⟩ := pair_injective we
     rw [← fy, wz]⟩
 #align Set.map_unique ZFSet.map_unique
 
@@ -1752,7 +1752,7 @@ theorem map_fval {f : ZFSet.{u} → ZFSet.{u}} [H : PSet.Definable 1 f] {x y : Z
     rw [Class.toSet_of_ZFSet, Class.coe_apply, mem_map]
     exact
       ⟨fun ⟨w, _, pr⟩ => by
-        let ⟨wy, fw⟩ := ZFSet.pair_injective pr
+        have ⟨wy, fw⟩ := ZFSet.pair_injective pr
         rw [← fw, wy], fun e => by
         subst e
         exact ⟨_, h, rfl⟩⟩

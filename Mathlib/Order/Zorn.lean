@@ -146,7 +146,7 @@ theorem zorn_nonempty_Ici₀ (a : α)
     (x : α) (hax : a ≤ x) : ∃ m, x ≤ m ∧ ∀ z, m ≤ z → z ≤ m := by
   let ⟨m, _, hxm, hm⟩ := zorn_nonempty_preorder₀ (Ici a) (fun c hca hc y hy ↦ ?_) x hax
   · exact ⟨m, hxm, fun z hmz => hm _ (hax.trans <| hxm.trans hmz) hmz⟩
-  · have ⟨ub, hub⟩ := ih c hca hc y hy; exact ⟨ub, (hca hy).trans (hub y hy), hub⟩
+  · let ⟨ub, hub⟩ := ih c hca hc y hy; exact ⟨ub, (hca hy).trans (hub y hy), hub⟩
 #align zorn_nonempty_Ici₀ zorn_nonempty_Ici₀
 
 end Preorder

@@ -108,7 +108,7 @@ lemma isRatCondKernelCDFAux_density_Iic (κ : kernel α (γ × ℝ)) [IsFiniteKe
     · ext x
       simp only [mem_iInter, mem_Iic, mem_empty_iff_false, iff_false, not_forall, not_le, s']
       rw [tendsto_atTop_atBot] at hs_tendsto
-      have ⟨q, hq⟩ := exists_rat_lt x
+      let ⟨q, hq⟩ := exists_rat_lt x
       obtain ⟨i, hi⟩ := hs_tendsto q
       refine ⟨i, lt_of_le_of_lt ?_ hq⟩
       exact mod_cast hi i le_rfl
@@ -121,7 +121,7 @@ lemma isRatCondKernelCDFAux_density_Iic (κ : kernel α (γ × ℝ)) [IsFiniteKe
     · ext x
       simp only [mem_iUnion, mem_Iic, mem_univ, iff_true]
       rw [tendsto_atTop_atTop] at hs_tendsto
-      have ⟨q, hq⟩ := exists_rat_gt x
+      let ⟨q, hq⟩ := exists_rat_gt x
       obtain ⟨i, hi⟩ := hs_tendsto q
       refine ⟨i, hq.le.trans ?_⟩
       exact mod_cast hi i le_rfl

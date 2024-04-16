@@ -421,7 +421,7 @@ private theorem isJacobson_polynomial_of_domain (R : Type*) [CommRing R] [IsDoma
     let x := (Polynomial.map (Quotient.mk P') p).leadingCoeff
     have hx : x ≠ 0 := by rwa [Ne, leadingCoeff_eq_zero]
     let φ : R ⧸ P' →+* R[X] ⧸ P := Ideal.quotientMap P (C : R →+* R[X]) le_rfl
-    let hφ : Function.Injective ↑φ := quotientMap_injective
+    have hφ : Function.Injective ↑φ := quotientMap_injective
     let Rₘ := Localization.Away x
     let Sₘ := (Localization ((Submonoid.powers x).map φ : Submonoid (R[X] ⧸ P)))
     refine' jacobson_bot_of_integral_localization (S := R[X] ⧸ P) (R := R ⧸ P') Rₘ Sₘ _ hφ _ hx _
@@ -512,7 +512,7 @@ theorem isMaximal_comap_C_of_isMaximal [Nontrivial R] (hP' : ∀ x : R, C x ∈ 
       (Localization M) (Localization M') _ _ P m hmem_P _ _ _ isloc
   rw [(map_bot.symm :
     (⊥ : Ideal (Localization M')) = map (algebraMap (R[X] ⧸ P) (Localization M')) ⊥)]
-  let bot_maximal := (bot_quotient_isMaximal_iff _).mpr hP
+  have bot_maximal := (bot_quotient_isMaximal_iff _).mpr hP
   refine' map.isMaximal (algebraMap (R[X] ⧸ P) (Localization M')) _ bot_maximal
   apply IsField.localization_map_bijective hM'
   rwa [← Quotient.maximal_ideal_iff_isField_quotient, ← bot_quotient_isMaximal_iff]

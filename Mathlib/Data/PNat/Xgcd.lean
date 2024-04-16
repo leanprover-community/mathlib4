@@ -284,7 +284,7 @@ theorem finish_isSpecial (hs : u.IsSpecial) : u.finish.IsSpecial := by
 #align pnat.xgcd_type.finish_is_special PNat.XgcdType.finish_isSpecial
 
 theorem finish_v (hr : u.r = 0) : u.finish.v = u.v := by
-  let ha : u.r + u.b * u.q = u.a := u.rq_eq
+  have ha : u.r + u.b * u.q = u.a := u.rq_eq
   rw [hr, zero_add] at ha
   ext
   · change (u.wp + 1) * u.b + ((u.wp + 1) * u.qp + u.x) * u.b = u.w * u.a + u.x * u.b
@@ -320,8 +320,8 @@ theorem step_isSpecial (hs : u.IsSpecial) : u.step.IsSpecial := by
 
 /-- The reduction step does not change the product vector. -/
 theorem step_v (hr : u.r ≠ 0) : u.step.v = u.v.swap := by
-  let ha : u.r + u.b * u.q = u.a := u.rq_eq
-  let hr : u.r - 1 + 1 = u.r := (add_comm _ 1).trans (add_tsub_cancel_of_le (Nat.pos_of_ne_zero hr))
+  have ha : u.r + u.b * u.q = u.a := u.rq_eq
+  have hr : u.r - 1 + 1 = u.r := (add_comm _ 1).trans (add_tsub_cancel_of_le (Nat.pos_of_ne_zero hr))
   ext
   · change ((u.y * u.q + u.z) * u.b + u.y * (u.r - 1 + 1) : ℕ) = u.y * u.a + u.z * u.b
     rw [← ha, hr]

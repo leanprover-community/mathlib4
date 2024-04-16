@@ -228,7 +228,7 @@ theorem isPell_one : IsPell (⟨a, 1⟩ : ℤ√(d a1)) :=
 theorem isPell_pellZd : ∀ n : ℕ, IsPell (pellZd a1 n)
   | 0 => rfl
   | n + 1 => by
-    let o := isPell_one a1
+    have o := isPell_one a1
     simp; exact Pell.isPell_mul (isPell_pellZd n) o
 #align pell.is_pell_pell_zd Pell.isPell_pellZd
 
@@ -671,7 +671,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
   | j + 1, ij, j2n, jnn, ntriv =>
     have lem2 : ∀ k > n, k ≤ 2 * n → (↑(xn a1 k % xn a1 n) : ℤ) =
         xn a1 n - xn a1 (2 * n - k) := fun k kn k2n => by
-      let k2nl :=
+      have k2nl :=
         lt_of_add_lt_add_right <|
           show 2 * n - k + k < n + k by
             rw [tsub_add_cancel_of_le]
@@ -714,7 +714,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
               rw [← two_mul]
               exact fun e =>
                 ntriv <| by
-                  let ⟨a2, s1⟩ :=
+                  have ⟨a2, s1⟩ :=
                     @eq_of_xn_modEq_lem2 _ a1 (n - 1)
                       (by rwa [tsub_add_cancel_of_le (succ_le_of_lt npos)])
                   have n1 : n = 1 := le_antisymm (tsub_eq_zero_iff_le.mp s1) npos

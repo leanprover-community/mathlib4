@@ -425,7 +425,7 @@ lemma exists_ideal_comap_le_prime (P : Ideal R) [P.IsPrime]
 theorem exists_ideal_over_prime_of_isIntegral (H : Algebra.IsIntegral R S) (P : Ideal R) [IsPrime P]
     (I : Ideal S) (hIP : I.comap (algebraMap R S) ≤ P) :
     ∃ Q ≥ I, IsPrime Q ∧ Q.comap (algebraMap R S) = P := by
-  have ⟨P', hP, hP', hP''⟩ := exists_ideal_comap_le_prime P I hIP
+  let ⟨P', hP, hP', hP''⟩ := exists_ideal_comap_le_prime P I hIP
   obtain ⟨Q, hQ, hQ', hQ''⟩ := exists_ideal_over_prime_of_isIntegral_of_isPrime H P P' hP''
   exact ⟨Q, hP.trans hQ, hQ', hQ''⟩
 #align ideal.exists_ideal_over_prime_of_is_integral Ideal.exists_ideal_over_prime_of_isIntegral
