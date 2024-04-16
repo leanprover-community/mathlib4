@@ -89,7 +89,7 @@ theorem prime_of_nat_prime_of_mod_four_eq_three (p : ℕ) [hp : Fact p.Prime] (h
     by_contradiction fun hpi =>
       let ⟨a, b, hab⟩ := sq_add_sq_of_nat_prime_of_not_irreducible p hpi
       have : ∀ a b : ZMod 4, a ^ 2 + b ^ 2 ≠ ↑p := by
-        erw [← ZMod.nat_cast_mod p 4, hp3]; exact by decide
+        erw [← ZMod.nat_cast_mod p 4, hp3]; decide
       this a b (hab ▸ by simp)
 #align gaussian_int.prime_of_nat_prime_of_mod_four_eq_three GaussianInt.prime_of_nat_prime_of_mod_four_eq_three
 

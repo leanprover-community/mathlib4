@@ -3,11 +3,11 @@ Copyright (c) 2020 Alexander Bentkamp, Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
 -/
+import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Data.Complex.Cardinality
 import Mathlib.Data.Fin.VecNotation
-import Mathlib.FieldTheory.Tower
-import Mathlib.Algebra.CharP.Invertible
+import Mathlib.LinearAlgebra.FiniteDimensional
 
 #align_import data.complex.module from "leanprover-community/mathlib"@"c7bce2818663f456335892ddbdd1809f111a5b72"
 
@@ -48,12 +48,14 @@ namespace Complex
 
 open ComplexConjugate
 
+open scoped SMul
+
 variable {R : Type*} {S : Type*}
 
 attribute [local ext] Complex.ext
 
 -- Test that the `SMul ℚ ℂ` instance is correct.
-example : (Complex.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
+example : (Complex.SMul.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
 
 /- The priority of the following instances has been manually lowered, as when they don't apply
 they lead Lean to a very costly path, and most often they don't apply (most actions on `ℂ` don't
@@ -341,7 +343,7 @@ theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
 def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
   { equivRealProdAddHom with
     -- Porting note: `simp` has issues with `Prod.smul_def`
-    map_smul' := fun r c => by simp [equivRealProdAddHom, (Prod.smul_def), smul_eq_mul] }
+    map_smul' := fun r c => by simp [equivRealProdAddHom, Prod.smul_def, smul_eq_mul] }
 #align complex.equiv_real_prod_lm Complex.equivRealProdLm
 
 theorem equivRealProdLm_symm_apply (p : ℝ × ℝ) :

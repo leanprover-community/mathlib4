@@ -20,7 +20,7 @@ namespace CategoryTheory
 variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
   [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis]
   [F.EffectivelyEnough]
-  [Preregular D] [Full F] [Faithful F]
+  [Preregular D] [F.Full] [F.Faithful]
 
 lemma Functor.reflects_preregular : Preregular C where
   exists_fac f g _ := by

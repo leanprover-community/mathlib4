@@ -237,7 +237,7 @@ theorem LipschitzWith.vadd [PseudoEMetricSpace α] {f : α → V} {g : α → P}
   calc
     edist (f x +ᵥ g x) (f y +ᵥ g y) ≤ edist (f x) (f y) + edist (g x) (g y) :=
       edist_vadd_vadd_le _ _ _ _
-    _ ≤ Kf * edist x y + Kg * edist x y := (add_le_add (hf x y) (hg x y))
+    _ ≤ Kf * edist x y + Kg * edist x y := add_le_add (hf x y) (hg x y)
     _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
 #align lipschitz_with.vadd LipschitzWith.vadd
 
@@ -247,7 +247,7 @@ theorem LipschitzWith.vsub [PseudoEMetricSpace α] {f g : α → P} {Kf Kg : ℝ
   calc
     edist (f x -ᵥ g x) (f y -ᵥ g y) ≤ edist (f x) (f y) + edist (g x) (g y) :=
       edist_vsub_vsub_le _ _ _ _
-    _ ≤ Kf * edist x y + Kg * edist x y := (add_le_add (hf x y) (hg x y))
+    _ ≤ Kf * edist x y + Kg * edist x y := add_le_add (hf x y) (hg x y)
     _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
 #align lipschitz_with.vsub LipschitzWith.vsub
 

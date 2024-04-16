@@ -350,7 +350,7 @@ def forget : HomologicalComplex V c ⥤ GradedObject ι V where
   map f := f.f
 #align homological_complex.forget HomologicalComplex.forget
 
-instance : Faithful (forget V c) where
+instance : (forget V c).Faithful where
   map_injective h := by
     ext i
     exact congr_fun h i
