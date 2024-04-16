@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.HomologySequence
+import Mathlib.Algebra.Homology.HomologySequenceLemmas
 import Mathlib.Algebra.Homology.Embedding.TruncGEHomology
 import Mathlib.Algebra.Homology.Embedding.TruncLE
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
