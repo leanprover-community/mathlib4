@@ -457,11 +457,13 @@ theorem real_sqrt_lt_nat_sqrt_succ {a : ℕ} : √(a : ℝ) < Nat.sqrt a + 1 := 
   · exact Nat.le_add_left 0 (Nat.sqrt a + 1)
 
 /-- The floor of the real square root is the same as the natural square root. -/
+@[simp]
 theorem floor_real_sqrt_eq_nat_sqrt {a : ℕ} : ⌊√(a : ℝ)⌋ = Nat.sqrt a := by
   rw [Int.floor_eq_iff]
   exact ⟨nat_sqrt_le_real_sqrt, real_sqrt_lt_nat_sqrt_succ⟩
 
 /-- The natural floor of the real square root is the same as the natural square root. -/
+@[simp]
 theorem nat_floor_real_sqrt_eq_nat_sqrt {a : ℕ} : ⌊√(a : ℝ)⌋₊ = Nat.sqrt a := by
   rw [Nat.floor_eq_iff (sqrt_nonneg ↑a)]
   exact ⟨nat_sqrt_le_real_sqrt, real_sqrt_lt_nat_sqrt_succ⟩
