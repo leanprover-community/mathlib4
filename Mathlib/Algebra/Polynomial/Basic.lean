@@ -304,7 +304,7 @@ instance semiring : Semiring R[X] :=
     toMul := Polynomial.mul'
     toZero := Polynomial.zero
     toOne := Polynomial.one
-    nsmul := (. • .)
+    nsmul := (· • ·)
     npow := fun n x => (x ^ n) }
 #align polynomial.semiring Polynomial.semiring
 
