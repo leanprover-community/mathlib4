@@ -46,6 +46,14 @@ def IsHomogeneous [CommSemiring R] (φ : MvPolynomial σ R) (n : ℕ) :=
   ∀ ⦃d⦄, coeff d φ ≠ 0 → ∑ i in d.support, d i = n
 #align mv_polynomial.is_homogeneous MvPolynomial.IsHomogeneous
 
+variable [CommSemiring R]
+
+theorem weightedTotalDegree_one (φ : MvPolynomial σ R) :
+    weightedTotalDegree (1 : σ → ℕ) φ = φ.totalDegree := by
+  simp only [totalDegree, weightedTotalDegree, weightedDegree, LinearMap.toAddMonoidHom_coe,
+    Finsupp.total, Pi.one_apply, Finsupp.coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe,
+    id, Algebra.id.smul_eq_mul, mul_one]
+
 variable (σ R)
 
 /-- The submodule of homogeneous `MvPolynomial`s of degree `n`. -/

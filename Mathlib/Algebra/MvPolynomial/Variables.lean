@@ -261,7 +261,7 @@ theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : 
       rfl
     intro d hd hd0
   on_goal 3 =>
-    rw [constantCoeff_eq, coeff, ← Ne.def, ← Finsupp.mem_support_iff] at h0
+    rw [constantCoeff_eq, coeff, ← Ne, ← Finsupp.mem_support_iff] at h0
     intro
     contradiction
   repeat'
