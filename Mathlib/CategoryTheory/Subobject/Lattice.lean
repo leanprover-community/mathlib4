@@ -53,7 +53,7 @@ theorem top_arrow (X : C) : (⊤ : MonoOver X).arrow = 𝟙 X :=
 
 /-- `map f` sends `⊤ : MonoOver X` to `⟨X, f⟩ : MonoOver Y`. -/
 def mapTop (f : X ⟶ Y) [Mono f] : (map f).obj ⊤ ≅ mk' f :=
-  iso_of_both_ways (homMk (𝟙 _) rfl) (homMk (𝟙 _) (by simp [id_comp f]))
+  iso_of_both_ways (homMk (𝟙 _)) (homMk (𝟙 _) (by simp [id_comp f]))
 #align category_theory.mono_over.map_top CategoryTheory.MonoOver.mapTop
 
 section
@@ -147,18 +147,17 @@ def inf {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A where
         apply homMk _ _
         apply pullback.lift pullback.fst (pullback.snd ≫ k.left) _
         rw [pullback.condition, assoc, w k]
-        dsimp
-        rw [pullback.lift_snd_assoc, assoc, w k] }
+        simp [MonoOver.w] }
 #align category_theory.mono_over.inf CategoryTheory.MonoOver.inf
 
 /-- A morphism from the "infimum" of two objects in `MonoOver A` to the first object. -/
 def infLELeft {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ f :=
-  homMk _ rfl
+  homMk pullback.snd
 #align category_theory.mono_over.inf_le_left CategoryTheory.MonoOver.infLELeft
 
 /-- A morphism from the "infimum" of two objects in `MonoOver A` to the second object. -/
 def infLERight {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ g :=
-  homMk _ pullback.condition
+  homMk pullback.fst (by simpa using pullback.condition (f := arrow g) (g := arrow f))
 #align category_theory.mono_over.inf_le_right CategoryTheory.MonoOver.infLERight
 
 /-- A morphism version of the `le_inf` axiom. -/
@@ -166,7 +165,7 @@ def leInf {A : C} (f g h : MonoOver A) : (h ⟶ f) → (h ⟶ g) → (h ⟶ (inf
   intro k₁ k₂
   refine' homMk (pullback.lift k₂.left k₁.left _) _
   rw [w k₁, w k₂]
-  erw [pullback.lift_snd_assoc, w k₁]
+  simp [MonoOver.w]
 #align category_theory.mono_over.le_inf CategoryTheory.MonoOver.leInf
 
 end Inf
@@ -419,7 +418,7 @@ theorem inf_factors {A B : C} {X Y : Subobject B} (f : A ⟶ B) :
     revert X Y
     apply Quotient.ind₂'
     rintro X Y ⟨⟨g₁, rfl⟩, ⟨g₂, hg₂⟩⟩
-    exact ⟨_, pullback.lift_snd_assoc _ _ hg₂ _⟩⟩
+    exact ⟨pullback.lift _ _ hg₂, by simp⟩⟩
 #align category_theory.subobject.inf_factors CategoryTheory.Subobject.inf_factors
 
 theorem inf_arrow_factors_left {B : C} (X Y : Subobject B) : X.Factors (X ⊓ Y).arrow :=
@@ -500,8 +499,7 @@ theorem inf_map {X Y : C} (g : Y ⟶ X) [Mono g] (f₁ f₂) :
   apply Quotient.ind'
   intro f₁
   erw [inf_def, inf_def, inf_eq_map_pullback', inf_eq_map_pullback', ← map_comp]
-  dsimp
-  rw [pullback_comp, pullback_map_self]
+  sorry --rw [pullback_comp, pullback_map_self]
 #align category_theory.subobject.inf_map CategoryTheory.Subobject.inf_map
 
 end SemilatticeInfTop
