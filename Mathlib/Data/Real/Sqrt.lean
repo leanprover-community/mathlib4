@@ -463,7 +463,7 @@ want `StarOrderedRing ℝ` to be available globally, so we include this instance
 In addition, providing this instance here makes it available earlier in the import
 hierarchy; otherwise in order to access it we would need to import `Analysis.RCLike.Basic` -/
 instance : StarOrderedRing ℝ :=
-  StarOrderedRing.ofNonnegIff' add_le_add_left fun r => by
+  StarOrderedRing.of_nonneg_iff' add_le_add_left fun r => by
     refine ⟨fun hr => ⟨√r, (mul_self_sqrt hr).symm⟩, ?_⟩
     rintro ⟨s, rfl⟩
     exact mul_self_nonneg s
@@ -471,7 +471,7 @@ instance : StarOrderedRing ℝ :=
 end Real
 
 instance NNReal.instStarOrderedRing : StarOrderedRing ℝ≥0 := by
-  refine .ofLEIff fun x y ↦ ⟨fun h ↦ ?_, ?_⟩
+  refine .of_le_iff fun x y ↦ ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨d, rfl⟩ := exists_add_of_le h
     refine ⟨sqrt d, ?_⟩
     simp only [star_trivial, mul_self_sqrt]
