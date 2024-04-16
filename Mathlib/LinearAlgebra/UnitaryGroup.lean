@@ -203,7 +203,7 @@ section specialUnitaryGroup
 variable (n) (α : Type v) [CommRing α] [StarRing α] {A : Matrix n n α}
 
 /--`Matrix.specialUnitaryGroup` is the group of unitary `n` by `n` matrices where the determinant
-is 1-/
+is 1. (This definition is only correct if 2 is invertible.)-/
 abbrev specialUnitaryGroup := (MonoidHom.restrict detMonoidHom (unitaryGroup n α)).ker
 
 theorem mem_specialUnitaryGroup_iff  (h : A ∈ unitaryGroup n α):
@@ -241,12 +241,12 @@ end OrthogonalGroup
 
 section specialOrthogonalGroup
 
-variable (n) (β : Type v) [CommRing β] [Invertible (2 : β)] (A : Matrix n n β)
+variable (n) (β : Type v) [CommRing β] (A : Matrix n n β)
 
 attribute [local instance] starRingOfComm
 
 /-- `Matrix.specialOrthogonalGroup n` is the group of orthogonal `n` by `n` where the determinant
-is one. -/
+is one. (This definition is only correct if 2 is invertible.)-/
 abbrev specialOrthogonalGroup := (MonoidHom.restrict detMonoidHom (orthogonalGroup n β)).ker
 
 theorem mem_specialOrthogonalGroup_iff  (h : A ∈ orthogonalGroup n β):
