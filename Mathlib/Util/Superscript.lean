@@ -193,6 +193,9 @@ def scriptParser (m : Mapping) (antiquotName errorMsg : String) (p : Parser)
 def scriptParser.parenthesizer (k : SyntaxNodeKind) (p : Parenthesizer) : Parenthesizer :=
   Parenthesizer.node.parenthesizer k p
 
+/- Apply the mapping to the string components of a `Format`.
+
+Returns the string that could not be converted on failure. -/
 def scriptParser.mapFormat (m : Mapping) (f : Format) : Except String Format :=
   match f with
   | .group f b => (.group · b) <$> scriptParser.mapFormat m f
@@ -204,15 +207,18 @@ def scriptParser.mapFormat (m : Mapping) (f : Format) : Except String Format :=
     .ok <| Std.Format.text ⟨s⟩
   | .align _ | .line | .nil => .ok f
 
-
 /-- Formatter for the script parser. -/
 def scriptParser.formatter (m : Mapping) (k : SyntaxNodeKind) (p : Formatter) : Formatter := do
   let stack ← modifyGet fun s => (s.stack, {s with stack := #[]})
   Formatter.node.formatter k p
   let s ← get
   match s.stack.mapM <| scriptParser.mapFormat m with
-  | .error s => throwError "Not a superscript: '{s}'"
-  | .ok newStack => set { s with stack := stack ++ newStack }
+  | .error err =>
+    -- TODO: this doesn't seem to go anywhere
+    Lean.logErrorAt (← get).stxTrav.cur s!"Not a superscript: '{err}'"
+    set { s with stack := stack ++ s.stack }
+  | .ok newStack =>
+    set { s with stack := stack ++ newStack }
 
 end Superscript
 
