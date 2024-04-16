@@ -803,9 +803,9 @@ theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ 
 #align ordinal.mul_le_of_limit Ordinal.mul_le_of_limit
 
 theorem mul_isNormal {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
-  -- Porting note: `dsimp only` is required for beta reduction.
+  -- Porting note(#12129): additional beta reduction needed
   ⟨fun b => by
-      dsimp only
+      beta_reduce
       rw [mul_succ]
       simpa only [add_zero] using (add_lt_add_iff_left (a * b)).2 h,
     fun b l c => mul_le_of_limit l⟩
@@ -2009,8 +2009,8 @@ def blsub₂ (o₁ o₂ : Ordinal) (op : {a : Ordinal} → (a < o₁) → {b : O
 theorem lt_blsub₂ {o₁ o₂ : Ordinal}
     (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) {a b : Ordinal}
     (ha : a < o₁) (hb : b < o₂) : op ha hb < blsub₂ o₁ o₂ op := by
-  convert lt_lsub _ (Prod.mk (enum (· < · ) a (by rwa [type_lt]))
-    (enum (· < · ) b (by rwa [type_lt])))
+  convert lt_lsub _ (Prod.mk (enum (· < ·) a (by rwa [type_lt]))
+    (enum (· < ·) b (by rwa [type_lt])))
   simp only [typein_enum]
 #align ordinal.lt_blsub₂ Ordinal.lt_blsub₂
 

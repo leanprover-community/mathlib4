@@ -832,7 +832,7 @@ theorem transferTransversal_apply'' (q : orbitRel.Quotient (zpowers g) (G ⧸ H)
       else g ^ (cast k : ℤ) * q.out'.out' := by
   rw [smul_apply_eq_smul_apply_inv_smul, transferTransversal_apply, transferFunction_apply, ←
     mul_smul, ← zpow_neg_one, ← zpow_add, quotientEquivSigmaZMod_apply, smul_eq_mul, ← mul_assoc,
-    ← zpow_one_add, Int.cast_add, Int.cast_neg, Int.cast_one, int_cast_cast, cast_id', id.def, ←
+    ← zpow_one_add, Int.cast_add, Int.cast_neg, Int.cast_one, int_cast_cast, cast_id', id, ←
     sub_eq_neg_add, cast_sub_one, add_sub_cancel]
   by_cases hk : k = 0
   · rw [if_pos hk, if_pos hk, zpow_natCast]

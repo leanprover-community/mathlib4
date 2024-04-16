@@ -1458,7 +1458,7 @@ instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearM
         ‖f n‖ = ‖f n - f 0 + f 0‖ := by
           congr 1
           abel
-        _ ≤ ‖f n - f 0‖ + ‖f 0‖ := (norm_add_le _ _)
+        _ ≤ ‖f n - f 0‖ + ‖f 0‖ := norm_add_le _ _
         _ ≤ b 0 + ‖f 0‖ := by
           apply add_le_add_right
           simpa [dist_eq_norm] using b_bound n 0 0 (zero_le _) (zero_le _)

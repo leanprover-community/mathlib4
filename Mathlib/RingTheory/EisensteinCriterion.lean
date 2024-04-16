@@ -56,7 +56,7 @@ theorem le_natDegree_of_map_eq_mul_X_pow {n : ℕ} {P : Ideal R} (hP : P.IsPrime
     (calc
       ↑n = degree (q.map (mk P)) := by
         rw [hq, degree_mul, hc0, zero_add, degree_pow, degree_X, nsmul_one]
-      _ ≤ degree q := (degree_map_le _ _)
+      _ ≤ degree q := degree_map_le _ _
       _ ≤ natDegree q := degree_le_natDegree
       )
 set_option linter.uppercaseLean3 false in

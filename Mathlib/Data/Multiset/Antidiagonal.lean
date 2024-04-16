@@ -87,7 +87,7 @@ theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
   induction' s using Multiset.induction_on with a s hs
   · simp only [antidiagonal_zero, powerset_zero, zero_tsub, map_singleton]
   · simp_rw [antidiagonal_cons, powerset_cons, map_add, hs, map_map, Function.comp, Prod.map_mk,
-      id.def, sub_cons, erase_cons_head]
+      id, sub_cons, erase_cons_head]
     rw [add_comm]
     congr 1
     refine' Multiset.map_congr rfl fun x hx ↦ _

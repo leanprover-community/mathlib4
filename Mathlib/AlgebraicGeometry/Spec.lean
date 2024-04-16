@@ -192,13 +192,7 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
       ((TopCat.Sheaf.pushforward _ β.base).obj X.sheaf).hom_ext _ PrimeSpectrum.isBasis_basic_opens
     intro r
     apply (StructureSheaf.to_basicOpen_epi R r).1
-    -- Porting note: was a one-liner `simpa using h r`
-    specialize h r
-    simp only [sheafedSpaceObj_carrier, Functor.op_obj, unop_op, TopCat.Presheaf.pushforwardObj_obj,
-      sheafedSpaceObj_presheaf, Category.assoc] at h
-    rw [NatTrans.comp_app, ← h]
-    congr
-    simp
+    simpa using h r
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.basic_open_hom_ext AlgebraicGeometry.Spec.basicOpen_hom_ext
 

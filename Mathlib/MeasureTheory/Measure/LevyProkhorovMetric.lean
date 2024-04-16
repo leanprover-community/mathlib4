@@ -330,7 +330,7 @@ lemma tendsto_integral_meas_thickening_le (f : Ω →ᵇ ℝ)
   · apply eventually_of_forall (fun t ↦ ?_)
     simp only [NNReal.tendsto_coe]
     apply (ENNReal.tendsto_toNNReal _).comp
-    apply (tendsto_measure_thickening_of_isClosed ?_ ?_)
+    apply tendsto_measure_thickening_of_isClosed ?_ ?_
     · exact ⟨1, ⟨Real.zero_lt_one, measure_ne_top _ _⟩⟩
     · exact isClosed_le continuous_const f.continuous
     · exact measure_ne_top _ _
