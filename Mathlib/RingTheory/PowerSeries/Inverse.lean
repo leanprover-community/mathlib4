@@ -23,7 +23,9 @@ the construction.)
 
 Formal (univariate) power series over a local ring form a local ring.
 
-Formal (univariate) power series over a field form a discrete valuation ring.
+Formal (univariate) power series over a field form a discrete valuation ring, and a normalization
+monoid. The definition `residueFieldOfPowerSeries` provides the isomorphism between the residue
+field of `k⟦X⟧` and `k`, when `k` is a field.
 
 -/
 
@@ -238,17 +240,20 @@ def firstUnitCoeff {f : k⟦X⟧} (hf : f ≠ 0) : kˣ := by
     exact (self_eq_X_pow_order_mul_divided_by_X_pow_order hf).symm
   exact unitOfInvertible (constantCoeff k (divided_by_X_pow_order hf))
 
-/-- `divided_by_X_pow_orderInv` is the inverse of the element obtained by diving a non-zero power
-series by the largest power of `X` dividing it. Useful to create a term of type `Units` -/
-def divided_by_X_pow_orderInv {f : k⟦X⟧} (hf : f ≠ 0) : k⟦X⟧ :=
+/-- `Inv_divided_by_X_pow_order` is the inverse of the element obtained by diving a non-zero power
+series by the largest power of `X` dividing it. Useful to create a term of type `Units`, done in
+`Unit_divided_by_X_pow_order` -/
+def Inv_divided_by_X_pow_order {f : k⟦X⟧} (hf : f ≠ 0) : k⟦X⟧ :=
   invOfUnit (divided_by_X_pow_order hf) (firstUnitCoeff hf)
 
-theorem divided_by_X_pow_orderInv_right_inv {f : k⟦X⟧} (hf : f ≠ 0) :
-    divided_by_X_pow_order hf * divided_by_X_pow_orderInv hf = 1 :=
+@[simp]
+theorem Inv_divided_by_X_pow_order_rightInv {f : k⟦X⟧} (hf : f ≠ 0) :
+    divided_by_X_pow_order hf * Inv_divided_by_X_pow_order hf = 1 :=
   mul_invOfUnit (divided_by_X_pow_order hf) (firstUnitCoeff hf) rfl
 
-theorem divided_by_X_pow_orderInv_left_inv {f : k⟦X⟧} (hf : f ≠ 0) :
-    (divided_by_X_pow_orderInv hf) * (divided_by_X_pow_order hf) = 1 := by
+@[simp]
+theorem Inv_divided_by_X_pow_order_leftInv {f : k⟦X⟧} (hf : f ≠ 0) :
+    (Inv_divided_by_X_pow_order hf) * (divided_by_X_pow_order hf) = 1 := by
   rw [mul_comm]
   exact mul_invOfUnit (divided_by_X_pow_order hf) (firstUnitCoeff hf) rfl
 
@@ -260,9 +265,9 @@ def Unit_of_divided_by_X_pow_order (f : k⟦X⟧) : k⟦X⟧ˣ :=
   if hf : f = 0 then 1
   else
     { val := divided_by_X_pow_order hf
-      inv := divided_by_X_pow_orderInv hf
-      val_inv := divided_by_X_pow_orderInv_right_inv hf
-      inv_val := divided_by_X_pow_orderInv_left_inv hf }
+      inv := Inv_divided_by_X_pow_order hf
+      val_inv := Inv_divided_by_X_pow_order_rightInv hf
+      inv_val := Inv_divided_by_X_pow_order_leftInv hf }
 
 theorem isUnit_divided_by_X_pow_order {f : k⟦X⟧} (hf : f ≠ 0) :
     IsUnit (divided_by_X_pow_order hf) :=
@@ -276,7 +281,7 @@ theorem Unit_of_divided_by_X_pow_order_nonzero {f : k⟦X⟧} (hf : f ≠ 0) :
 theorem Unit_of_divided_by_X_pow_order_zero : Unit_of_divided_by_X_pow_order (0 : k⟦X⟧) = 1 := by
   simp only [Unit_of_divided_by_X_pow_order, dif_pos]
 
-theorem eq_divided_by_X_iff_unit {f : k⟦X⟧} (hf : f ≠ 0) :
+theorem eq_divided_by_X_pow_order_Iff_Unit {f : k⟦X⟧} (hf : f ≠ 0) :
     f = divided_by_X_pow_order hf ↔ IsUnit f :=
   ⟨fun h => by rw [h]; exact isUnit_divided_by_X_pow_order hf, fun h => by
     have : f.order.get (order_finite_iff_ne_zero.mpr hf) = 0 := by
@@ -337,26 +342,25 @@ theorem maximalIdeal_eq_span_X : LocalRing.maximalIdeal (k⟦X⟧) = Ideal.span 
     constructor
     · rw [Ideal.mem_span_singleton]
       exact Prime.not_dvd_one X_prime
-    intro I f hI hfX hfI
-    rw [Ideal.mem_span_singleton, X_dvd_iff] at hfX
-    have hfI0 : C k (f 0) ∈ I := by
-      have : C k (f 0) = f - (f - C k (f 0)) := by rw [sub_sub_cancel]
-      rw [this]
-      apply Ideal.sub_mem I hfI
-      apply hI
-      rw [Ideal.mem_span_singleton, X_dvd_iff, map_sub, constantCoeff_C, ←
-        coeff_zero_eq_constantCoeff_apply, sub_eq_zero, coeff_zero_eq_constantCoeff]
-      rfl
-    rw [← Ideal.eq_top_iff_one]
-    apply Ideal.eq_top_of_isUnit_mem I hfI0 (IsUnit.map (C k) (Ne.isUnit hfX))
+    · intro I f hI hfX hfI
+      rw [Ideal.mem_span_singleton, X_dvd_iff] at hfX
+      have hfI0 : C k (f 0) ∈ I := by
+        have : C k (f 0) = f - (f - C k (f 0)) := by rw [sub_sub_cancel]
+        rw [this]
+        apply Ideal.sub_mem I hfI
+        apply hI
+        rw [Ideal.mem_span_singleton, X_dvd_iff, map_sub, constantCoeff_C, ←
+          coeff_zero_eq_constantCoeff_apply, sub_eq_zero, coeff_zero_eq_constantCoeff]
+        rfl
+      rw [← Ideal.eq_top_iff_one]
+      apply Ideal.eq_top_of_isUnit_mem I hfI0 (IsUnit.map (C k) (Ne.isUnit hfX))
   rw [LocalRing.eq_maximalIdeal hX]
 
 
 instance isDedekindDomain : IsDedekindDomain k⟦X⟧ :=
   IsPrincipalIdealRing.isDedekindDomain (k⟦X⟧)
 
-instance : NormalizationMonoid (k⟦X⟧)
-    where
+instance : NormalizationMonoid k⟦X⟧ where
   normUnit f := (Unit_of_divided_by_X_pow_order f)⁻¹
   normUnit_zero := by simp only [Unit_of_divided_by_X_pow_order_zero, inv_one]
   normUnit_mul  := fun hf hg => by
@@ -369,7 +373,7 @@ instance : NormalizationMonoid (k⟦X⟧)
     set u₀ := u.1 with hu
     have h₀ : IsUnit u₀ := ⟨u, hu.symm⟩
     rw [inv_inj, Units.ext_iff, ← hu, Unit_of_divided_by_X_pow_order_nonzero h₀.ne_zero]
-    exact ((eq_divided_by_X_iff_unit h₀.ne_zero).mpr h₀).symm
+    exact ((eq_divided_by_X_pow_order_Iff_Unit h₀.ne_zero).mpr h₀).symm
 
 open LocalRing
 
