@@ -193,10 +193,26 @@ def scriptParser (m : Mapping) (antiquotName errorMsg : String) (p : Parser)
 def scriptParser.parenthesizer (k : SyntaxNodeKind) (p : Parenthesizer) : Parenthesizer :=
   Parenthesizer.node.parenthesizer k p
 
+def scriptParser.mapFormat (m : Mapping) (f : Format) : Except String Format :=
+  match f with
+  | .group f b => (.group · b) <$> scriptParser.mapFormat m f
+  | .tag t g => .tag t <$> scriptParser.mapFormat m g
+  | .append f g => .append <$> scriptParser.mapFormat m f <*> scriptParser.mapFormat m g
+  | .nest n f => .nest n <$> scriptParser.mapFormat m f
+  | .text s => do
+    let .some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').find? | .error s
+    .ok <| Std.Format.text ⟨s⟩
+  | .align _ | .line | .nil => .ok f
+
+
 /-- Formatter for the script parser. -/
-def scriptParser.formatter (k : SyntaxNodeKind) (p : Formatter) : Formatter :=
-  -- FIXME, this is wrong since it doesn't superscript the text
+def scriptParser.formatter (m : Mapping) (k : SyntaxNodeKind) (p : Formatter) : Formatter := do
+  let stack ← modifyGet fun s => (s.stack, {s with stack := #[]})
   Formatter.node.formatter k p
+  let s ← get
+  match s.stack.mapM <| scriptParser.mapFormat m with
+  | .error s => throwError "Not a superscript: '{s}'"
+  | .ok newStack => set { s with stack := stack ++ newStack }
 
 end Superscript
 
@@ -221,7 +237,7 @@ def superscript (p : Parser) : Parser :=
 def superscript.parenthesizer := Superscript.scriptParser.parenthesizer ``superscript
 /-- Formatter for the superscript parser. -/
 @[combinator_formatter superscript]
-def superscript.formatter := Superscript.scriptParser.formatter ``superscript
+def superscript.formatter := Superscript.scriptParser.formatter .superscript ``superscript
 
 
 /--
@@ -246,7 +262,7 @@ def subscript (p : Parser) : Parser :=
 def subscript.parenthesizer := Superscript.scriptParser.parenthesizer ``subscript
 /-- Formatter for the subscript parser. -/
 @[combinator_formatter subscript]
-def subscript.formatter := Superscript.scriptParser.formatter ``subscript
+def subscript.formatter := Superscript.scriptParser.formatter .subscript ``subscript
 
 section deleteme -- lean4#2269
 

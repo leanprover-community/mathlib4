@@ -20,4 +20,27 @@ local macro:arg a:term:max b:subscript(term) : term => `($a $(⟨b.raw[0]⟩))
 example (a : Nat → Nat) (h : ∀ i, 1 ≤ (a)ᵢ) : 2 ≤ a ₀ + a ₁ :=
   Nat.add_le_add h₍₀₎ (h)₁
 
+set_option pp.rawOnError true in
+/--
+info: (a)ᵢ
+---
+info: (a)₃₇
+---
+info: (a)₍₁ ₊ ₁₎
+---
+info: [Error pretty printing syntax: Not a superscript: 'α✝'. Falling back to raw printer.]
+(term__._@.test.superscript._hyg.272 (Term.paren "(" `a ")") (Mathlib.Tactic.subscript `α._@.test.superscript._hyg.514))
+-/
+#guard_msgs in
+run_cmd do
+  let a := Lean.mkIdent `a
+  let i := Lean.mkIdent `i
+  Lean.logInfo <| ← `(term| ($a)$i:subscript)
+  let lit ← `(term| 37)
+  Lean.logInfo <| ← `(term| ($a)$lit:subscript)
+  let one_plus_one ← `(term| (1 + 1))
+  Lean.logInfo <| ← `(term| ($a)$one_plus_one:subscript)
+  let ohno ← `(α)
+  Lean.logInfo <| ← `(term| ($a)$ohno:subscript)
+
 end
