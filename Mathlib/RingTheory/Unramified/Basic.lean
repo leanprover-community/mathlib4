@@ -231,10 +231,10 @@ section
 variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [Semiring A] [Algebra R A]
 
-/-- An `R`-algebra `A` is unramified if it is formally unramified and of finite presentation. -/
+/-- An `R`-algebra `A` is unramified if it is formally unramified and of finite type. -/
 class Unramified : Prop where
   formallyUnramified : FormallyUnramified R A := by infer_instance
-  finitePresentation : FinitePresentation R A
+  finiteType : FiniteType R A
 
 end
 
@@ -248,12 +248,13 @@ variable {A B : Type u} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
 /-- Being unramified is transported via algebra isomorphisms. -/
 theorem of_equiv [Unramified R A] (e : A ≃ₐ[R] B) : Unramified R B where
   formallyUnramified := FormallyUnramified.of_equiv e
-  finitePresentation := FinitePresentation.equiv Unramified.finitePresentation e
+  finiteType := FiniteType.equiv Unramified.finiteType e
 
 /-- Localization at an element preserves being unramified. -/
 theorem of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Unramified R A where
   formallyUnramified := Algebra.FormallyUnramified.of_isLocalization (Submonoid.powers r)
-  finitePresentation := IsLocalization.Away.finitePresentation r
+  finiteType := FiniteType.of_finitePresentation (IsLocalization.Away.finitePresentation r)
+
 
 section Comp
 
@@ -263,8 +264,8 @@ variable [Algebra A B] [IsScalarTower R A B]
 /-- Unramified is stable under composition. -/
 theorem comp [Unramified R A] [Unramified A B] : Unramified R B where
   formallyUnramified := FormallyUnramified.comp R A B
-  finitePresentation := FinitePresentation.trans (A := A) Unramified.finitePresentation
-    Unramified.finitePresentation
+  finiteType := FiniteType.trans (S := A) Unramified.finiteType
+    Unramified.finiteType
 
 end Comp
 
