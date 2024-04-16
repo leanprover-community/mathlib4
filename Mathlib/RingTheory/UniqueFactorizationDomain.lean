@@ -432,7 +432,7 @@ theorem irreducible_iff_prime_of_exists_unique_irreducible_factors [CancelCommMo
           calc
             Multiset.prod (p ::ₘ fx) ~ᵤ a * b := by
               rw [hx, Multiset.prod_cons]; exact hfx.2.mul_left _
-            _ ~ᵤ fa.prod * fb.prod := (hfa.2.symm.mul_mul hfb.2.symm)
+            _ ~ᵤ fa.prod * fb.prod := hfa.2.symm.mul_mul hfb.2.symm
             _ = _ := by rw [Multiset.prod_add]
 
         exact
@@ -835,7 +835,7 @@ theorem dvdNotUnit_iff_normalizedFactors_lt_normalizedFactors {x y : α} (hx : x
     DvdNotUnit x y ↔ normalizedFactors x < normalizedFactors y := by
   constructor
   · rintro ⟨_, c, hc, rfl⟩
-    simp only [hx, right_ne_zero_of_mul hy, normalizedFactors_mul, Ne.def, not_false_iff,
+    simp only [hx, right_ne_zero_of_mul hy, normalizedFactors_mul, Ne, not_false_iff,
       lt_add_iff_pos_right, normalizedFactors_pos, hc]
   · intro h
     exact
@@ -998,7 +998,7 @@ theorem le_multiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} (
   intro b hb
   constructor
   · rintro ⟨c, rfl⟩
-    rw [Ne.def, pow_succ', mul_assoc, mul_eq_zero, not_or] at hb
+    rw [Ne, pow_succ', mul_assoc, mul_eq_zero, not_or] at hb
     rw [pow_succ', mul_assoc, normalizedFactors_mul hb.1 hb.2, replicate_succ,
       normalizedFactors_irreducible ha, singleton_add, cons_le_cons_iff, ← ih hb.2]
     apply Dvd.intro _ rfl
@@ -1194,7 +1194,7 @@ theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
       Finset.prod_subset (Finset.subset_union_left _ (normalizedFactors b).toFinset),
       Finset.prod_subset (Finset.subset_union_right _ (normalizedFactors b).toFinset), ←
       Finset.prod_mul_distrib]
-    simp_rw [id.def, ← pow_add, this]
+    simp_rw [id, ← pow_add, this]
     all_goals simp only [Multiset.mem_toFinset]
     · intro p _ hpb
       simp [hpb]
@@ -1776,7 +1776,7 @@ theorem count_mul [DecidableEq (Associates α)] {a : Associates α} (ha : a ≠ 
 theorem count_of_coprime [DecidableEq (Associates α)] {a : Associates α} (ha : a ≠ 0)
     {b : Associates α} (hb : b ≠ 0) (hab : ∀ d, d ∣ a → d ∣ b → ¬Prime d) {p : Associates α}
     (hp : Irreducible p) : count p a.factors = 0 ∨ count p b.factors = 0 := by
-  rw [or_iff_not_imp_left, ← Ne.def]
+  rw [or_iff_not_imp_left, ← Ne]
   intro hca
   contrapose! hab with hcb
   exact ⟨p, le_of_count_ne_zero ha hp hca, le_of_count_ne_zero hb hp hcb,
