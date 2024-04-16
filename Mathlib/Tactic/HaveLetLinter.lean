@@ -49,22 +49,21 @@ end Mathlib.Linter
 
 namespace Mathlib.Linter.haveLet
 
-/-- given a `LocalContext`, `MetavarContext` and an `Expr`ession `e`, `isType_toFormat`
-creates a `MetaM` context, checks whether `e` is a `Prop` and
-* if `e` is not a `Prop`, then it returns `some <pp-formatted e>`;
-* if `e` is a `Prop`, then it returns `none`.
+/-- given a `LocalContext`, `MetavarContext` and an `Expr`ession `e`, `isProp_toFormat`
+creates a `MetaM` context, and return a pair consisting of
+* a `Bool`ean, answering the question of whether the Type of `e` is a `Prop` or not, and
+* the pretty-printed `Format` of `e`.
 
-This essentially runs `inferType` in `CommandElabM`, which is the lift that `nonPropHaves`
-uses to decide whether the Type of a `have` is in `Prop` or not.
+Concretely, `isProp_toFormat` runs `inferType` in `CommandElabM`.
+This is the kind of monadic lift that `nonPropHaves` uses to decide whether the Type of a `have`
+is in `Prop` or not.
 
 The output `Format` is just so that the linter displays a better message. -/
-def isType_toFormat (lc : LocalContext) (mctx : MetavarContext) (e : Expr) :
-    CommandElabM (Option Format) := do
+def isProp_toFormat (lc : LocalContext) (mctx : MetavarContext) (e : Expr) :
+    CommandElabM (Bool × Format) := do
   let res ← liftCoreM do MetaM.run (ctx := { lctx := lc }) (s := { mctx := mctx }) <| do
     let typ ← inferType (← instantiateMVars e)
-    match typ.isProp with
-      | false => return some (← ppExpr e)
-      | true => return none
+    return (typ.isProp, ← ppExpr e)
   return res.1
 
 /-- returns the `have` syntax whose corresponding hypothesis does not have Type `Prop` and
@@ -88,9 +87,9 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format))
         -- and the last declaration introduced: the one that `have` created
         let ld := (lc.lastDecl.getD default).type
         -- now, we get the `MetaM` state up and running to find the type of `ld`
-        return match ← isType_toFormat lc mctx ld with
-          | none => nargs
-          | some fmt => nargs.push (stx, fmt)
+        return match ← isProp_toFormat lc mctx ld with
+          | (true, _) => nargs
+          | (false, fmt) => nargs.push (stx, fmt)
       else return nargs
     else return nargs
   | .context _ t => nonPropHaves t
