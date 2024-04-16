@@ -517,7 +517,7 @@ theorem diam_le_of_subset_closedBall {r : ℝ} (hr : 0 ≤ r) (h : s ⊆ closedB
   diam_le_of_forall_dist_le (mul_nonneg zero_le_two hr) fun a ha b hb =>
     calc
       dist a b ≤ dist a x + dist b x := dist_triangle_right _ _ _
-      _ ≤ r + r := (add_le_add (h ha) (h hb))
+      _ ≤ r + r := add_le_add (h ha) (h hb)
       _ = 2 * r := by simp [mul_two, mul_comm]
 #align metric.diam_le_of_subset_closed_ball Metric.diam_le_of_subset_closedBall
 

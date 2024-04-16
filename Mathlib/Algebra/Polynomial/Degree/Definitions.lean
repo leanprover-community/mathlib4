@@ -1482,7 +1482,7 @@ theorem degree_X_add_C (a : R) : degree (X + C a) = 1 := by
   have : degree (C a) < degree (X : R[X]) :=
     calc
       degree (C a) ≤ 0 := degree_C_le
-      _ < 1 := (WithBot.some_lt_some.mpr zero_lt_one)
+      _ < 1 := WithBot.some_lt_some.mpr zero_lt_one
       _ = degree X := degree_X.symm
   rw [degree_add_eq_left_of_degree_lt this, degree_X]
 #align polynomial.degree_X_add_C Polynomial.degree_X_add_C

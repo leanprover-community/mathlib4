@@ -48,7 +48,7 @@ def HomotopyCategory :=
   CategoryTheory.Quotient (homotopic V c)
 #align homotopy_category HomotopyCategory
 
-instance {v : ComplexShape ι} : Category (HomotopyCategory V v) := by
+instance : Category (HomotopyCategory V c) := by
   dsimp only [HomotopyCategory]
   infer_instance
 
