@@ -217,7 +217,7 @@ def pullback.lift {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbe
     W ⟶ pullback f hi where
   toFun := fun z => ⟨a z, by
     simp only [Set.mem_preimage]
-    use (b z)
+    use b z
     exact congr_fun (DFunLike.ext'_iff.mp w.symm) z⟩
   continuous_toFun := by
     apply Continuous.subtype_mk

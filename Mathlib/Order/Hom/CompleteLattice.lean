@@ -967,8 +967,8 @@ def Equiv.toOrderIsoSet (e : α ≃ β) : Set α ≃o Set β
     where
   toFun s := e '' s
   invFun s := e.symm '' s
-  left_inv s := by simp only [← image_comp, Equiv.symm_comp_self, id.def, image_id']
-  right_inv s := by simp only [← image_comp, Equiv.self_comp_symm, id.def, image_id']
+  left_inv s := by simp only [← image_comp, Equiv.symm_comp_self, id, image_id']
+  right_inv s := by simp only [← image_comp, Equiv.self_comp_symm, id, image_id']
   map_rel_iff' :=
     ⟨fun h => by simpa using @monotone_image _ _ e.symm _ _ h, fun h => monotone_image h⟩
 #align equiv.to_order_iso_set Equiv.toOrderIsoSet

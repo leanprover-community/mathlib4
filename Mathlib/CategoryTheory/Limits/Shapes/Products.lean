@@ -33,9 +33,6 @@ As with the other special shapes in the limits library, all the definitions here
 general limits can be used.
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 universe w w' w₂ w₃ v v₂ u u₂
@@ -127,7 +124,7 @@ lemma Fan.IsLimit.fac {F : β → C} {c : Fan F} (hc : IsLimit c) {A : C}
     Fan.IsLimit.desc hc f ≫ c.proj i = f i :=
   hc.fac (Fan.mk A f) ⟨i⟩
 
-lemma Fan.IsLimit.hom_ext {F : I → C} {c : Fan F} (hc : IsLimit c) {A : C}
+lemma Fan.IsLimit.hom_ext {I : Type*} {F : I → C} {c : Fan F} (hc : IsLimit c) {A : C}
     (f g : A ⟶ c.pt) (h : ∀ i, f ≫ c.proj i = g ≫ c.proj i) : f = g :=
   hc.hom_ext (fun ⟨i⟩ => h i)
 
@@ -152,7 +149,7 @@ lemma Cofan.IsColimit.fac {F : β → C} {c : Cofan F} (hc : IsColimit c) {A : C
     c.inj i ≫ Cofan.IsColimit.desc hc f = f i :=
   hc.fac (Cofan.mk A f) ⟨i⟩
 
-lemma Cofan.IsColimit.hom_ext {F : I → C} {c : Cofan F} (hc : IsColimit c) {A : C}
+lemma Cofan.IsColimit.hom_ext {I : Type*} {F : I → C} {c : Cofan F} (hc : IsColimit c) {A : C}
     (f g : c.pt ⟶ A) (h : ∀ i, c.inj i ≫ f = c.inj i ≫ g) : f = g :=
   hc.hom_ext (fun ⟨i⟩ => h i)
 
@@ -229,7 +226,7 @@ def coproductIsCoproduct (f : β → C) [HasCoproduct f] : IsColimit (Cofan.mk _
 -- https://github.com/leanprover-community/mathlib4/issues/5049
 -- They are used by `simp` in `Pi.whiskerEquiv` below.
 @[reassoc (attr := simp, nolint simpNF)]
-theorem Pi.π_comp_eqToHom (f : J → C) [HasProduct f] {j j' : J} (w : j = j') :
+theorem Pi.π_comp_eqToHom {J : Type*} (f : J → C) [HasProduct f] {j j' : J} (w : j = j') :
     Pi.π f j ≫ eqToHom (by simp [w]) = Pi.π f j' := by
   cases w
   simp
@@ -238,7 +235,7 @@ theorem Pi.π_comp_eqToHom (f : J → C) [HasProduct f] {j j' : J} (w : j = j') 
 -- https://github.com/leanprover-community/mathlib4/issues/5049
 -- They are used by `simp` in `Sigma.whiskerEquiv` below.
 @[reassoc (attr := simp, nolint simpNF)]
-theorem Sigma.eqToHom_comp_ι (f : J → C) [HasCoproduct f] {j j' : J} (w : j = j') :
+theorem Sigma.eqToHom_comp_ι {J : Type*} (f : J → C) [HasCoproduct f] {j j' : J} (w : j = j') :
     eqToHom (by simp [w]) ≫ Sigma.ι f j' = Sigma.ι f j := by
   cases w
   simp
@@ -467,7 +464,7 @@ abbrev Sigma.mapIso {f g : β → C} [HasCoproductsOfShape β C] (p : ∀ b, f b
 and up to isomorphism in the factors, are isomorphic.
 -/
 @[simps]
-def Pi.whiskerEquiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
+def Pi.whiskerEquiv {J K : Type*} {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
     [HasProduct f] [HasProduct g] : ∏ f ≅ ∏ g where
   hom := Pi.map' e.symm fun k => (w (e.symm k)).inv ≫ eqToHom (by simp)
   inv := Pi.map' e fun j => (w j).hom
@@ -476,12 +473,12 @@ def Pi.whiskerEquiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j
 and up to isomorphism in the factors, are isomorphic.
 -/
 @[simps]
-def Sigma.whiskerEquiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
+def Sigma.whiskerEquiv {J K : Type*} {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
     [HasCoproduct f] [HasCoproduct g] : ∐ f ≅ ∐ g where
   hom := Sigma.map' e fun j => (w j).inv
   inv := Sigma.map' e.symm fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom
 
-instance (f : ι → Type*) (g : (i : ι) → (f i) → C)
+instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ g i] :
     HasProduct fun p : Σ i, f i => g p.1 p.2 where
   exists_limit := Nonempty.intro
@@ -490,13 +487,13 @@ instance (f : ι → Type*) (g : (i : ι) → (f i) → C)
 
 /-- An iterated product is a product over a sigma type. -/
 @[simps]
-def piPiIso (f : ι → Type*) (g : (i : ι) → (f i) → C)
+def piPiIso {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ g i] :
     (∏ fun i => ∏ g i) ≅ (∏ fun p : Σ i, f i => g p.1 p.2) where
   hom := Pi.lift fun ⟨i, x⟩ => Pi.π _ i ≫ Pi.π _ x
   inv := Pi.lift fun i => Pi.lift fun x => Pi.π _ (⟨i, x⟩ : Σ i, f i)
 
-instance (f : ι → Type*) (g : (i : ι) → (f i) → C)
+instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasCoproduct (g i)] [HasCoproduct fun i => ∐ g i] :
     HasCoproduct fun p : Σ i, f i => g p.1 p.2 where
   exists_colimit := Nonempty.intro
@@ -507,7 +504,7 @@ instance (f : ι → Type*) (g : (i : ι) → (f i) → C)
 
 /-- An iterated coproduct is a coproduct over a sigma type. -/
 @[simps]
-def sigmaSigmaIso (f : ι → Type*) (g : (i : ι) → (f i) → C)
+def sigmaSigmaIso {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasCoproduct (g i)] [HasCoproduct fun i => ∐ g i] :
     (∐ fun i => ∐ g i) ≅ (∐ fun p : Σ i, f i => g p.1 p.2) where
   hom := Sigma.desc fun i => Sigma.desc fun x => Sigma.ι (fun p : Σ i, f i => g p.1 p.2) ⟨i, x⟩

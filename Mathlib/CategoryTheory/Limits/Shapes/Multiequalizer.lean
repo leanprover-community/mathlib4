@@ -147,7 +147,8 @@ lemma Hom.comp_eq_comp {X Y Z : WalkingMultispan fst snd}
 end WalkingMultispan
 
 /-- This is a structure encapsulating the data necessary to define a `Multicospan`. -/
---@[nolint has_nonempty_instance]
+-- Porting note(#5171): linter not ported yet
+-- @[nolint has_nonempty_instance]
 structure MulticospanIndex (C : Type u) [Category.{v} C] where
   (L R : Type w)
   (fstTo sndTo : R → L)
@@ -158,7 +159,8 @@ structure MulticospanIndex (C : Type u) [Category.{v} C] where
 #align category_theory.limits.multicospan_index CategoryTheory.Limits.MulticospanIndex
 
 /-- This is a structure encapsulating the data necessary to define a `Multispan`. -/
---@[nolint has_nonempty_instance]
+-- Porting note(#5171): linter not ported yet
+-- @[nolint has_nonempty_instance]
 structure MultispanIndex (C : Type u) [Category.{v} C] where
   (L R : Type w)
   (fstFrom sndFrom : L → R)
@@ -317,13 +319,15 @@ end MultispanIndex
 variable {C : Type u} [Category.{v} C]
 
 /-- A multifork is a cone over a multicospan. -/
---@[nolint has_nonempty_instance]
+-- Porting note(#5171): linter not ported yet
+-- @[nolint has_nonempty_instance]
 abbrev Multifork (I : MulticospanIndex.{w} C) :=
   Cone I.multicospan
 #align category_theory.limits.multifork CategoryTheory.Limits.Multifork
 
 /-- A multicofork is a cocone over a multispan. -/
---@[nolint has_nonempty_instance]
+-- Porting note(#5171): linter not ported yet
+-- @[nolint has_nonempty_instance]
 abbrev Multicofork (I : MultispanIndex.{w} C) :=
   Cocone I.multispan
 #align category_theory.limits.multicofork CategoryTheory.Limits.Multicofork

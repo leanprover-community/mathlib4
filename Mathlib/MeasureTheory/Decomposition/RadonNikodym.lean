@@ -437,9 +437,8 @@ lemma set_lintegral_rnDeriv_mul [HaveLebesgueDecomposition μ ν] (hμν : μ �
     (hf : AEMeasurable f ν) {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ x in s, μ.rnDeriv ν x * f x ∂ν = ∫⁻ x in s, f x ∂μ := by
   nth_rw 2 [← Measure.withDensity_rnDeriv_eq μ ν hμν]
-  rw [set_lintegral_withDensity_eq_lintegral_mul₀ (Measure.measurable_rnDeriv μ ν).aemeasurable hf
-    hs]
-  rfl
+  rw [set_lintegral_withDensity_eq_lintegral_mul₀ (measurable_rnDeriv μ ν).aemeasurable hf hs]
+  simp only [Pi.mul_apply]
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 

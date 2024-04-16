@@ -7,6 +7,7 @@ import Mathlib.Analysis.Convolution
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
 import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
 import Mathlib.Analysis.Analytic.IsolatedZeros
+import Mathlib.Analysis.Complex.CauchyIntegral
 
 #align_import analysis.special_functions.gamma.beta from "leanprover-community/mathlib"@"a3209ddf94136d36e5e5c624b10b2a347cc9d090"
 
@@ -32,7 +33,7 @@ refined properties of the Gamma function using these relations.
   `Gamma s * Gamma (1 - s) = π / sin π s`.
 * `Complex.differentiable_one_div_Gamma`: the function `1 / Γ(s)` is differentiable everywhere.
 * `Complex.Gamma_mul_Gamma_add_half`: Legendre's duplication formula
-  `Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * 2 ^ (1 - 2 * s) * sqrt π`.
+  `Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * 2 ^ (1 - 2 * s) * √π`.
 * `Real.Gamma_ne_zero`, `Real.GammaSeq_tendsto_Gamma`,
   `Real.Gamma_mul_Gamma_one_sub`, `Real.Gamma_mul_Gamma_add_half`: real versions of the above.
 -/
@@ -178,8 +179,8 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
       · rw [id_eq, ofReal_re]; exact hx.1
     have V : HasDerivAt (fun y : ℂ => (1 - y) ^ v) (-v * (1 - (x : ℂ)) ^ (v - 1)) ↑x := by
       have A := @HasDerivAt.cpow_const _ _ _ v (hasDerivAt_id (1 - (x : ℂ))) (Or.inl ?_)
-      swap; · rw [id.def, sub_re, one_re, ofReal_re, sub_pos]; exact hx.2
-      simp_rw [id.def] at A
+      swap; · rw [id, sub_re, one_re, ofReal_re, sub_pos]; exact hx.2
+      simp_rw [id] at A
       have B : HasDerivAt (fun y : ℂ => 1 - y) (-1) ↑x := by
         apply HasDerivAt.const_sub; apply hasDerivAt_id
       convert HasDerivAt.comp (↑x) A B using 1
@@ -568,9 +569,9 @@ do not have to do any special-case handling for the poles of `Γ`.)
 namespace Complex
 
 theorem Gamma_mul_Gamma_add_half (s : ℂ) :
-    Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * (2 : ℂ) ^ (1 - 2 * s) * ↑(Real.sqrt π) := by
+    Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * (2 : ℂ) ^ (1 - 2 * s) * ↑(√π) := by
   suffices (fun z => (Gamma z)⁻¹ * (Gamma (z + 1 / 2))⁻¹) = fun z =>
-      (Gamma (2 * z))⁻¹ * (2 : ℂ) ^ (2 * z - 1) / ↑(Real.sqrt π) by
+      (Gamma (2 * z))⁻¹ * (2 : ℂ) ^ (2 * z - 1) / ↑(√π) by
     convert congr_arg Inv.inv (congr_fun this s) using 1
     · rw [mul_inv, inv_inv, inv_inv]
     · rw [div_eq_mul_inv, mul_inv, mul_inv, inv_inv, inv_inv, ← cpow_neg, neg_sub]
@@ -579,7 +580,7 @@ theorem Gamma_mul_Gamma_add_half (s : ℂ) :
     refine' (differentiable_one_div_Gamma.mul _).differentiableOn
     exact differentiable_one_div_Gamma.comp (differentiable_id.add (differentiable_const _))
   have h2 : AnalyticOn ℂ
-      (fun z => (Gamma (2 * z))⁻¹ * (2 : ℂ) ^ (2 * z - 1) / ↑(Real.sqrt π)) univ := by
+      (fun z => (Gamma (2 * z))⁻¹ * (2 : ℂ) ^ (2 * z - 1) / ↑(√π)) univ := by
     refine' DifferentiableOn.analyticOn _ isOpen_univ
     refine' (Differentiable.mul _ (differentiable_const _)).differentiableOn
     apply Differentiable.mul
@@ -607,7 +608,7 @@ namespace Real
 open Complex
 
 theorem Gamma_mul_Gamma_add_half (s : ℝ) :
-    Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * (2 : ℝ) ^ (1 - 2 * s) * sqrt π := by
+    Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * (2 : ℝ) ^ (1 - 2 * s) * √π := by
   rw [← ofReal_inj]
   simpa only [← Gamma_ofReal, ofReal_cpow zero_le_two, ofReal_mul, ofReal_add, ofReal_div,
     ofReal_sub] using Complex.Gamma_mul_Gamma_add_half ↑s
