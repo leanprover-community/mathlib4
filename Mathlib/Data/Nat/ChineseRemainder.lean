@@ -63,8 +63,8 @@ def chineseRemainderOfList : (l : List ι) → l.Pairwise (Coprime on s) →
         forall_apply_eq_imp_iff₂]
       intro j hj
       exact (List.pairwise_cons.mp co).1 j hj
-    have ih := chineseRemainderOfList l co.of_cons
-    have k := chineseRemainder this (a i) ih
+    let ih := chineseRemainderOfList l co.of_cons
+    let k := chineseRemainder this (a i) ih
     use k
     simp only [List.mem_cons, forall_eq_or_imp, k.prop.1, true_and]
     intro j hj
