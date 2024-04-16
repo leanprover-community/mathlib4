@@ -206,7 +206,7 @@ instance preserveFiniteLimits_plusFunctor
     PreservesFiniteLimits (J.plusFunctor D) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{max v u}
   intro K _ _
-  have : ReflectsLimitsOfShape K (forget D) := reflectsLimitsOfShapeOfReflectsIsomorphisms
+  let _ : ReflectsLimitsOfShape K (forget D) := reflectsLimitsOfShapeOfReflectsIsomorphisms
   apply preservesLimitsOfShape_plusFunctor.{w, v, u}
 
 instance preservesLimitsOfShape_sheafification
@@ -247,10 +247,10 @@ instance preservesLimitsOfShape_presheafToSheaf :
   refine @preservesLimitsOfShapeOfEquiv _ _ _ _ _ _ _ _ e.symm _ (show _ from ?_)
   constructor; intro F; constructor; intro S hS
   apply isLimitOfReflects (sheafToPresheaf J D)
-  have : ReflectsLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K)) (forget D) :=
+  let _ : ReflectsLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K)) (forget D) :=
     reflectsLimitsOfShapeOfReflectsIsomorphisms
   -- Porting note: the mathlib proof was by `apply is_limit_of_preserves (J.sheafification D) hS`
-  have : PreservesLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K))
+  let _ : PreservesLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K))
       (plusPlusSheaf J D ⋙ sheafToPresheaf J D) :=
     preservesLimitsOfShapeOfNatIso (J.sheafificationIsoPresheafToSheafCompSheafToPreasheaf D)
   exact isLimitOfPreserves (plusPlusSheaf J D ⋙ sheafToPresheaf J D) hS

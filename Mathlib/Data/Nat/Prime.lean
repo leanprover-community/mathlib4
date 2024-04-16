@@ -723,7 +723,7 @@ theorem ne_one_iff_exists_prime_dvd : ∀ {n}, n ≠ 1 ↔ ∃ p : ℕ, p.Prime 
   | 1 => by simp [Nat.not_prime_one]
   | n + 2 => by
     let a := n + 2
-    let ha : a ≠ 1 := Nat.succ_succ_ne_one n
+    have ha : a ≠ 1 := Nat.succ_succ_ne_one n
     simp only [true_iff_iff, Ne, not_false_iff, ha]
     exact ⟨a.minFac, Nat.minFac_prime ha, a.minFac_dvd⟩
 #align nat.ne_one_iff_exists_prime_dvd Nat.ne_one_iff_exists_prime_dvd
@@ -732,10 +732,12 @@ theorem eq_one_iff_not_exists_prime_dvd {n : ℕ} : n = 1 ↔ ∀ p : ℕ, p.Pri
   simpa using not_iff_not.mpr ne_one_iff_exists_prime_dvd
 #align nat.eq_one_iff_not_exists_prime_dvd Nat.eq_one_iff_not_exists_prime_dvd
 
+set_option linter.haveLet false in
 theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul {p : ℕ} (p_prime : Prime p) {m n k l : ℕ}
     (hpm : p ^ k ∣ m) (hpn : p ^ l ∣ n) (hpmn : p ^ (k + l + 1) ∣ m * n) :
     p ^ (k + 1) ∣ m ∨ p ^ (l + 1) ∣ n := by
   have hpd : p ^ (k + l) * p ∣ m * n := by
+      -- changing to `have` makes the `unusedHavesSuffices` complain
       let hpmn' : p ^ (succ (k + l)) ∣ m * n := hpmn
       rwa [pow_succ'] at hpmn'
   have hpd2 : p ∣ m * n / p ^ (k + l) := dvd_div_of_mul_dvd hpd

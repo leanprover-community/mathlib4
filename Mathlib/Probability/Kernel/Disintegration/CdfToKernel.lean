@@ -118,7 +118,7 @@ lemma set_lintegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCond
   -- We use a monotone convergence argument to extend it to the reals.
   by_cases hρ_zero : (ν a).restrict s = 0
   · rw [hρ_zero, lintegral_zero_measure]
-    have ⟨q, hq⟩ := exists_rat_gt x
+    let ⟨q, hq⟩ := exists_rat_gt x
     suffices κ a (s ×ˢ Iic (q : ℝ)) = 0 by
       symm
       refine measure_mono_null (fun p ↦ ?_) this
@@ -245,7 +245,7 @@ structure IsRatCondKernelCDFAux (f : α × β → ℚ → ℝ) (κ : kernel α (
 
 lemma IsRatCondKernelCDFAux.measurable_right (hf : IsRatCondKernelCDFAux f κ ν) (a : α) (q : ℚ) :
     Measurable (fun t ↦ f (a, t) q) := by
-  let h := hf.measurable
+  have h := hf.measurable
   rw [measurable_pi_iff] at h
   exact (h q).comp measurable_prod_mk_left
 

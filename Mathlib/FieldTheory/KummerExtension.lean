@@ -142,7 +142,7 @@ theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : 
   have : ¬ IsUnit (X ^ p - C a) := by
     rw [Polynomial.isUnit_iff_degree_eq_zero, degree_X_pow_sub_C hp.pos, Nat.cast_eq_zero]
     exact hp.ne_zero
-  have ⟨g, hg, hg'⟩ := WfDvdMonoid.exists_irreducible_factor this (X_pow_sub_C_ne_zero hp.pos a)
+  let ⟨g, hg, hg'⟩ := WfDvdMonoid.exists_irreducible_factor this (X_pow_sub_C_ne_zero hp.pos a)
   -- It suffices to show that `deg g = p`.
   suffices natDegree g = p from (associated_of_dvd_of_natDegree_le hg'
     (X_pow_sub_C_ne_zero hp.pos a) (this.trans natDegree_X_pow_sub_C.symm).ge).irreducible hg
@@ -255,7 +255,7 @@ theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separabl
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   by_cases hn' : n = 1
   · rw [hn', pow_one]; exact separable_X_sub_C
-  have ⟨ζ, hζ⟩ := hζ
+  let ⟨ζ, hζ⟩ := hζ
   rw [mem_primitiveRoots (Nat.pos_of_ne_zero <| ne_zero_of_irreducible_X_pow_sub_C H)] at hζ
   rw [← separable_map (algebraMap K K[n√a]), Polynomial.map_sub, Polynomial.map_pow, map_C, map_X,
     algebraMap_eq, X_pow_sub_C_eq_prod (hζ.map_of_injective (algebraMap K _).injective) hn
@@ -383,7 +383,7 @@ lemma isSplittingField_AdjoinRoot_X_pow_sub_C :
   constructor
   · rw [← splits_id_iff_splits, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_C,
       Polynomial.map_X]
-    have ⟨_, hζ⟩ := hζ
+    let ⟨_, hζ⟩ := hζ
     rw [mem_primitiveRoots (Nat.pos_of_ne_zero <| ne_zero_of_irreducible_X_pow_sub_C H)] at hζ
     exact X_pow_sub_C_splits_of_isPrimitiveRoot (hζ.map_of_injective (algebraMap K _).injective)
       (root_X_pow_sub_C_pow n a)
@@ -468,7 +468,7 @@ lemma autEquivRootsOfUnity_apply_rootOfSplit (σ : L ≃ₐ[K] L) :
 
 lemma autEquivRootsOfUnity_smul (σ : L ≃ₐ[K] L) :
     autEquivRootsOfUnity hζ hn H L σ • α = σ α := by
-  have ⟨ζ, hζ'⟩ := hζ
+  let ⟨ζ, hζ'⟩ := hζ
   rw [mem_primitiveRoots hn] at hζ'
   rw [← mem_nthRoots hn, (hζ'.map_of_injective (algebraMap K L).injective).nthRoots_eq
     (rootOfSplitsXPowSubC_pow hn a L)] at hα
@@ -532,7 +532,7 @@ then `L = K[α]` for some `α ^ n ∈ K`. -/
 lemma exists_root_adjoin_eq_top_of_isCyclic :
     ∃ (α : L), α ^ (finrank K L) ∈ Set.range (algebraMap K L) ∧ K⟮α⟯ = ⊤ := by
   -- Let `ζ` be an `n`-th root of unity, and `σ` be a generator of `L ≃ₐ[K] L`.
-  have ⟨ζ, hζ⟩ := hK
+  let ⟨ζ, hζ⟩ := hK
   rw [mem_primitiveRoots finrank_pos] at hζ
   obtain ⟨σ, hσ⟩ := ‹IsCyclic (L ≃ₐ[K] L)›
   have hσ' := orderOf_eq_card_of_forall_mem_zpowers hσ
@@ -587,7 +587,7 @@ lemma isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top
   constructor
   · rw [← splits_id_iff_splits, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_C,
       Polynomial.map_X]
-    have ⟨_, hζ⟩ := hK
+    let ⟨_, hζ⟩ := hK
     rw [mem_primitiveRoots finrank_pos] at hζ
     exact X_pow_sub_C_splits_of_isPrimitiveRoot (hζ.map_of_injective (algebraMap K _).injective) ha
   · rw [eq_top_iff, ← IntermediateField.top_toSubalgebra, ← hα,

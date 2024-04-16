@@ -133,7 +133,7 @@ theorem isCompact_basicOpen (X : Scheme) {U : Opens X.carrier} (hU : IsCompact (
   let g : s → X.affineOpens := by
     intro V
     use V.1 ⊓ X.basicOpen f
-    have : V.1.1 ⟶ U := by
+    let this : V.1.1 ⟶ U := by
       apply homOfLE; change _ ⊆ (U : Set X.carrier); rw [e]
       convert @Set.subset_iUnion₂ _ _ _
         (fun (U : X.affineOpens) (_ : U ∈ s) => ↑U) V V.prop using 1

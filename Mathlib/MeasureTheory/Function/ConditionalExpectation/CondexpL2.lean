@@ -160,7 +160,7 @@ theorem integral_condexpL2_eq_of_fin_meas_real (f : Lp 𝕜 2 μ) (hs : Measurab
 
 theorem lintegral_nnnorm_condexpL2_le (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) (f : Lp ℝ 2 μ) :
     ∫⁻ x in s, ‖(condexpL2 ℝ ℝ hm f : α → ℝ) x‖₊ ∂μ ≤ ∫⁻ x in s, ‖f x‖₊ ∂μ := by
-  let h_meas := lpMeas.aeStronglyMeasurable' (condexpL2 ℝ ℝ hm f)
+  have h_meas := lpMeas.aeStronglyMeasurable' (condexpL2 ℝ ℝ hm f)
   let g := h_meas.choose
   have hg_meas : StronglyMeasurable[m] g := h_meas.choose_spec.1
   have hg_eq : g =ᵐ[μ] condexpL2 ℝ ℝ hm f := h_meas.choose_spec.2.symm

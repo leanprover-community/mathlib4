@@ -1004,13 +1004,13 @@ theorem isAtom_iff {f : ∀ i, π i} [∀ i, PartialOrder (π i)] [∀ i, OrderB
   case mpr =>
     rintro ⟨i, ⟨hfi, hlt⟩, hbot⟩
     refine ⟨fun h => hfi ((Pi.eq_bot_iff.1 h) _), fun g hgf => Pi.eq_bot_iff.2 fun j => ?_⟩
-    have ⟨hgf, k, hgfk⟩ := Pi.lt_def.1 hgf
+    let ⟨hgf, k, hgfk⟩ := Pi.lt_def.1 hgf
     obtain rfl : i = k := of_not_not fun hki => by rw [hbot _ (Ne.symm hki)] at hgfk; simp at hgfk
     if hij : j = i then subst hij; refine hlt _ hgfk else
     exact eq_bot_iff.2 <| le_trans (hgf _) (eq_bot_iff.1 (hbot _ hij))
   case mp =>
     rintro ⟨hbot, h⟩
-    have ⟨i, hbot⟩ : ∃ i, f i ≠ ⊥ := by rw [ne_eq, Pi.eq_bot_iff, not_forall] at hbot; exact hbot
+    let ⟨i, hbot⟩ : ∃ i, f i ≠ ⊥ := by rw [ne_eq, Pi.eq_bot_iff, not_forall] at hbot; exact hbot
     refine ⟨i, ⟨hbot, ?c⟩, ?d⟩
     case c =>
       intro b hb
@@ -1036,7 +1036,7 @@ theorem isAtom_iff_eq_single [DecidableEq ι] [∀ i, PartialOrder (π i)]
   constructor
   case mp =>
     intro h
-    have ⟨i, h, hbot⟩ := isAtom_iff.1 h
+    let ⟨i, h, hbot⟩ := isAtom_iff.1 h
     refine ⟨_, _, h, funext fun j => if hij : j = i then hij ▸ by simp else ?_⟩
     rw [Function.update_noteq hij, hbot _ hij, bot_apply]
   case mpr =>

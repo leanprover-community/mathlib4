@@ -141,7 +141,7 @@ instance : Inhabited (Partition G) := ⟨G.selfColoring.toPartition⟩
 theorem partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorable n := by
   constructor
   · rintro ⟨P, hf, hc⟩
-    have : Fintype P.parts := hf.fintype
+    let _ : Fintype P.parts := hf.fintype
     rw [Set.Finite.card_toFinset hf] at hc
     apply P.colorable.mono hc
   · rintro ⟨C⟩

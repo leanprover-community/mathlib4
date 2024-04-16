@@ -370,7 +370,7 @@ open FiniteDimensional
 equal or negations. -/
 theorem eq_or_eq_neg (x₁ x₂ : Orientation R M ι) (h : Fintype.card ι = finrank R M) :
     x₁ = x₂ ∨ x₁ = -x₂ := by
-  have e := (finBasis R M).reindex (Fintype.equivFinOfCardEq h).symm
+  let e := (finBasis R M).reindex (Fintype.equivFinOfCardEq h).symm
   letI := Classical.decEq ι
   -- Porting note: this needs to be made explicit for the simp below
   have orientation_neg_neg :

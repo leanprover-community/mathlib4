@@ -128,7 +128,7 @@ theorem exists_linearIndependent_snoc_of_lt_rank [StrongRankCondition R] {n : �
     (hv : LinearIndependent R v) (h : n < Module.rank R M) :
     ∃ (x : M), LinearIndependent R (Fin.snoc v x) := by
   simp only [Fin.snoc_eq_cons_rotate]
-  have ⟨x, hx⟩ := exists_linearIndependent_cons_of_lt_rank hv h
+  let ⟨x, hx⟩ := exists_linearIndependent_cons_of_lt_rank hv h
   exact ⟨x, hx.comp _ (finRotate _).injective⟩
 
 /-- Given a nonzero vector in a space of dimension `> 1`, one may find another vector linearly

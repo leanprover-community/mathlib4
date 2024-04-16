@@ -276,7 +276,7 @@ def inductionMut (C : Lists α → Sort*) (D : Lists' α true → Sort*)
   induction' l with a b a l IH₁ IH
   · exact ⟨C0 _, ⟨⟩⟩
   · exact ⟨C1 _ D0, D0⟩
-  · have : D (Lists'.cons' a l) := D1 ⟨_, _⟩ _ IH₁.1 IH.2
+  · let this : D (Lists'.cons' a l) := D1 ⟨_, _⟩ _ IH₁.1 IH.2
     exact ⟨C1 _ this, this⟩
 #align lists.induction_mut Lists.inductionMut
 

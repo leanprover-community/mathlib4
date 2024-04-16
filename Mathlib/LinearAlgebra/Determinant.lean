@@ -285,7 +285,7 @@ theorem det_zero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M] [Modul
 
 theorem det_eq_one_of_subsingleton [Subsingleton M] (f : M →ₗ[R] M) :
     LinearMap.det (f : M →ₗ[R] M) = 1 := by
-  have b : Basis (Fin 0) R M := Basis.empty M
+  let b : Basis (Fin 0) R M := Basis.empty M
   rw [← f.det_toMatrix b]
   exact Matrix.det_isEmpty
 #align linear_map.det_eq_one_of_subsingleton LinearMap.det_eq_one_of_subsingleton

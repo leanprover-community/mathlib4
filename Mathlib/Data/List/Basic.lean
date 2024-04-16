@@ -1582,7 +1582,7 @@ theorem map_eq_foldr (f : α → β) (l : List α) : map f l = foldr (fun a bs =
 theorem map_congr {f g : α → β} : ∀ {l : List α}, (∀ x ∈ l, f x = g x) → map f l = map g l
   | [], _ => rfl
   | a :: l, h => by
-    let ⟨h₁, h₂⟩ := forall_mem_cons.1 h
+    have ⟨h₁, h₂⟩ := forall_mem_cons.1 h
     rw [map, map, h₁, map_congr h₂]
 #align list.map_congr List.map_congr
 

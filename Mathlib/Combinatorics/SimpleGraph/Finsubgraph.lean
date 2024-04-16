@@ -142,9 +142,9 @@ theorem nonempty_hom_of_forall_finite_subgraph_hom [Finite W]
     simp only
     /- The homomorphism for each edge's singleton subgraph agrees with those for its source and
         target vertices. -/
-    have hv : Opposite.op (finsubgraphOfAdj e) ⟶ Opposite.op (singletonFinsubgraph v) :=
+    let hv : Opposite.op (finsubgraphOfAdj e) ⟶ Opposite.op (singletonFinsubgraph v) :=
       Quiver.Hom.op (CategoryTheory.homOfLE singletonFinsubgraph_le_adj_left)
-    have hv' : Opposite.op (finsubgraphOfAdj e) ⟶ Opposite.op (singletonFinsubgraph v') :=
+    let hv' : Opposite.op (finsubgraphOfAdj e) ⟶ Opposite.op (singletonFinsubgraph v') :=
       Quiver.Hom.op (CategoryTheory.homOfLE singletonFinsubgraph_le_adj_right)
     rw [← hu hv, ← hu hv']
     -- Porting note: was `apply Hom.map_adj`

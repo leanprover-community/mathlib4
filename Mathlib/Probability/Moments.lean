@@ -54,7 +54,7 @@ def moment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ :=
 
 /-- Central moment of a real random variable, `μ[(X - μ[X]) ^ p]`. -/
 def centralMoment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ := by
-  have m := fun (x : Ω) => μ[X] -- Porting note: Lean deems `μ[(X - fun x => μ[X]) ^ p]` ambiguous
+  let m := fun (x : Ω) => μ[X] -- Porting note: Lean deems `μ[(X - fun x => μ[X]) ^ p]` ambiguous
   exact μ[(X - m) ^ p]
 #align probability_theory.central_moment ProbabilityTheory.centralMoment
 

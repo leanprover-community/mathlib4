@@ -190,7 +190,7 @@ theorem toPGame_add : ∀ a b : Ordinal.{u}, a.toPGame + b.toPGame ≈ (a ♯ b)
     refine' ⟨le_of_forall_lf (fun i => _) isEmptyElim, le_of_forall_lf (fun i => _) isEmptyElim⟩
     · apply leftMoves_add_cases i <;>
       intro i <;>
-      let wf := toLeftMovesToPGame_symm_lt i <;>
+      have wf := toLeftMovesToPGame_symm_lt i <;>
       (try rw [add_moveLeft_inl]) <;>
       (try rw [add_moveLeft_inr]) <;>
       rw [toPGame_moveLeft', lf_congr_left (toPGame_add _ _), toPGame_lf_iff]

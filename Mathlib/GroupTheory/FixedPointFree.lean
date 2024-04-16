@@ -81,7 +81,7 @@ theorem orderOf_ne_two_of_involutive (g : G) : orderOf g ≠ 2 := by
   contradiction
 
 theorem odd_card_of_involutive : Odd (Nat.card G) := by
-  have := Fintype.ofFinite G
+  let _ := Fintype.ofFinite G
   by_contra h
   rw [← Nat.even_iff_not_odd, even_iff_two_dvd, Nat.card_eq_fintype_card] at h
   obtain ⟨g, hg⟩ := exists_prime_orderOf_dvd_card 2 h

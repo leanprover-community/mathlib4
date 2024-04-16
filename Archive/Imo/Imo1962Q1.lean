@@ -135,7 +135,7 @@ theorem satisfied_by_153846 : ProblemPredicate 153846 := by
 #align imo1962_q1.satisfied_by_153846 Imo1962Q1.satisfied_by_153846
 
 theorem no_smaller_solutions (n : ℕ) (h1 : ProblemPredicate n) : n ≥ 153846 := by
-  have ⟨c, h2⟩ := without_digits h1
+  let ⟨c, h2⟩ := without_digits h1
   have h3 : (digits 10 c).length < 6 ∨ (digits 10 c).length ≥ 6 := by apply lt_or_ge
   cases h3 with
   | inr h3 => exact case_more_digits h3 h2

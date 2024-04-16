@@ -114,7 +114,7 @@ protected theorem iUnion (m : OuterMeasure α) {β} [Countable β] (s : β → S
 theorem biUnion_null_iff (m : OuterMeasure α) {s : Set β} (hs : s.Countable) {t : β → Set α} :
     m (⋃ i ∈ s, t i) = 0 ↔ ∀ i ∈ s, m (t i) = 0 := by
   refine ⟨fun h i hi ↦ m.mono_null (subset_biUnion_of_mem hi) h, fun h ↦ ?_⟩
-  have _ := hs.toEncodable
+  let _ := hs.toEncodable
   simpa [h] using m.iUnion fun x : s ↦ t x
 #align measure_theory.outer_measure.bUnion_null_iff MeasureTheory.OuterMeasure.biUnion_null_iff
 

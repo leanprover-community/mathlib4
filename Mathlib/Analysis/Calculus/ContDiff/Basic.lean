@@ -638,9 +638,9 @@ theorem ContDiffOn.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F} (hg 
   let Fu : Type max uE uF uG := ULift.{max uE uG} F
   let Gu : Type max uE uF uG := ULift.{max uE uF} G
   -- declare the isomorphisms
-  have isoE : Eu ≃L[𝕜] E := ContinuousLinearEquiv.ulift
-  have isoF : Fu ≃L[𝕜] F := ContinuousLinearEquiv.ulift
-  have isoG : Gu ≃L[𝕜] G := ContinuousLinearEquiv.ulift
+  let isoE : Eu ≃L[𝕜] E := ContinuousLinearEquiv.ulift
+  let isoF : Fu ≃L[𝕜] F := ContinuousLinearEquiv.ulift
+  let isoG : Gu ≃L[𝕜] G := ContinuousLinearEquiv.ulift
   -- lift the functions to the new spaces, check smoothness there, and then go back.
   let fu : Eu → Fu := (isoF.symm ∘ f) ∘ isoE
   have fu_diff : ContDiffOn 𝕜 n fu (isoE ⁻¹' s) := by

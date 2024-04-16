@@ -212,7 +212,7 @@ instance : NormedSpace 𝕜 (V →A[𝕜] W) where
     -- Porting note: previously all these rewrites were in the `simp only`,
     -- but now they don't fire.
     -- (in fact, `norm_smul` fires, but only once rather than twice!)
-    have : NormedAddCommGroup (V →A[𝕜] W) := inferInstance -- this is necessary for `norm_smul`
+    let _ : NormedAddCommGroup (V →A[𝕜] W) := inferInstance -- this is necessary for `norm_smul`
     rw [coe_smul, Pi.smul_apply, norm_smul, norm_smul _ (f.contLinear),
       ← mul_max_of_nonneg _ _ (norm_nonneg t)]
 

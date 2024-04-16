@@ -240,7 +240,7 @@ theorem rq_eq : u.r + (u.bp + 1) * u.q = u.ap + 1 :=
 
 theorem qp_eq (hr : u.r = 0) : u.q = u.qp + 1 := by
   by_cases hq : u.q = 0
-  · let h := u.rq_eq
+  · have h := u.rq_eq
     rw [hr, hq, mul_zero, add_zero] at h
     cases h
   · exact (Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero hq)).symm
@@ -284,7 +284,7 @@ theorem finish_isSpecial (hs : u.IsSpecial) : u.finish.IsSpecial := by
 #align pnat.xgcd_type.finish_is_special PNat.XgcdType.finish_isSpecial
 
 theorem finish_v (hr : u.r = 0) : u.finish.v = u.v := by
-  let ha : u.r + u.b * u.q = u.a := u.rq_eq
+  have ha : u.r + u.b * u.q = u.a := u.rq_eq
   rw [hr, zero_add] at ha
   ext
   · change (u.wp + 1) * u.b + ((u.wp + 1) * u.qp + u.x) * u.b = u.w * u.a + u.x * u.b
@@ -320,8 +320,9 @@ theorem step_isSpecial (hs : u.IsSpecial) : u.step.IsSpecial := by
 
 /-- The reduction step does not change the product vector. -/
 theorem step_v (hr : u.r ≠ 0) : u.step.v = u.v.swap := by
-  let ha : u.r + u.b * u.q = u.a := u.rq_eq
-  let hr : u.r - 1 + 1 = u.r := (add_comm _ 1).trans (add_tsub_cancel_of_le (Nat.pos_of_ne_zero hr))
+  have ha : u.r + u.b * u.q = u.a := u.rq_eq
+  have hr : u.r - 1 + 1 = u.r :=
+    (add_comm _ 1).trans (add_tsub_cancel_of_le (Nat.pos_of_ne_zero hr))
   ext
   · change ((u.y * u.q + u.z) * u.b + u.y * (u.r - 1 + 1) : ℕ) = u.y * u.a + u.z * u.b
     rw [← ha, hr]
@@ -476,7 +477,7 @@ theorem gcd_props :
   exact hdet
   have hdet' : (w * z : ℕ) = x * y + 1 := by rw [← mul_coe, hdet, succPNat_coe]
   have _ : u.v = ⟨a, b⟩ := XgcdType.start_v a b
-  let hv : Prod.mk (w * d + x * ur.b : ℕ) (y * d + z * ur.b : ℕ) = ⟨a, b⟩ :=
+  have hv : Prod.mk (w * d + x * ur.b : ℕ) (y * d + z * ur.b : ℕ) = ⟨a, b⟩ :=
     u.reduce_v.trans (XgcdType.start_v a b)
   rw [← hb, ← add_mul, ← add_mul, ← ha', ← hb'] at hv
   have ha'' : (a : ℕ) = a' * d := (congr_arg Prod.fst hv).symm

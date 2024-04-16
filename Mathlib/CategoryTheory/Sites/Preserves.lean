@@ -87,7 +87,7 @@ theorem firstMap_eq_secondMap : Equalizer.Presieve.Arrows.firstMap F X c.inj =
     Equalizer.Presieve.Arrows.secondMap]
   by_cases hi : i = j
   · rw [hi, Mono.right_cancellation _ _ pullback.condition]
-  · have := preservesTerminalOfIsSheafForEmpty F hF hI
+  · let _ := preservesTerminalOfIsSheafForEmpty F hF hI
     apply_fun (F.mapIso ((hd hi).isoPullback).op ≪≫ F.mapIso (terminalIsoIsTerminal
       (terminalOpOfInitial initialIsInitial)).symm ≪≫ (PreservesTerminal.iso F)).hom using
       injective_of_mono _

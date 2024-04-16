@@ -435,7 +435,7 @@ theorem rank_dual_eq_card_dual_of_aleph0_le_rank' {V : Type*} [AddCommGroup V] [
     (h : ℵ₀ ≤ Module.rank K V) : Module.rank Kᵐᵒᵖ (V →ₗ[K] K) = #(V →ₗ[K] K) := by
   obtain ⟨⟨ι, b⟩⟩ := Module.Free.exists_basis (R := K) (M := V)
   rw [← b.mk_eq_rank'', aleph0_le_mk_iff] at h
-  have e := (b.constr Kᵐᵒᵖ (M' := K)).symm.trans
+  let e := (b.constr Kᵐᵒᵖ (M' := K)).symm.trans
     (LinearEquiv.piCongrRight fun _ ↦ MulOpposite.opLinearEquiv Kᵐᵒᵖ)
   rw [e.rank_eq, e.toEquiv.cardinal_eq]
   apply rank_fun_infinite
@@ -445,7 +445,7 @@ theorem rank_dual_eq_card_dual_of_aleph0_le_rank {K V} [Field K] [AddCommGroup V
     (h : ℵ₀ ≤ Module.rank K V) : Module.rank K (V →ₗ[K] K) = #(V →ₗ[K] K) := by
   obtain ⟨⟨ι, b⟩⟩ := Module.Free.exists_basis (R := K) (M := V)
   rw [← b.mk_eq_rank'', aleph0_le_mk_iff] at h
-  have e := (b.constr K (M' := K)).symm
+  let e := (b.constr K (M' := K)).symm
   rw [e.rank_eq, e.toEquiv.cardinal_eq]
   apply rank_fun_infinite
 

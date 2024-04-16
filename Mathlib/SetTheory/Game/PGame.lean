@@ -1484,7 +1484,7 @@ instance : Add PGame.{u} :=
   ⟨fun x y => by
     induction' x with xl xr _ _ IHxl IHxr generalizing y
     induction' y with yl yr yL yR IHyl IHyr
-    have y := mk yl yr yL yR
+    let y := mk yl yr yL yR
     refine' ⟨Sum xl yl, Sum xr yr, Sum.rec _ _, Sum.rec _ _⟩
     · exact fun i => IHxl i y
     · exact IHyl

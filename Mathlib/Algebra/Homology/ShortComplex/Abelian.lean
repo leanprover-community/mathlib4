@@ -86,7 +86,7 @@ noncomputable def ofAbelian : S.LeftHomologyData := by
   have fac : f' = Abelian.factorThruImage S.f ≫ e.hom ≫ kernel.ι γ := by
     rw [hf', he]
     simp only [f', kernel.lift_ι, abelianImageToKernel, ← cancel_mono (kernel.ι S.g), assoc]
-  have hπ : IsColimit (CokernelCofork.ofπ _ wπ) :=
+  let hπ : IsColimit (CokernelCofork.ofπ _ wπ) :=
     CokernelCofork.IsColimit.ofπ _ _
     (fun x hx => cokernel.desc _ x (by
       simpa only [← cancel_epi e.hom, ← cancel_epi (Abelian.factorThruImage S.f),
@@ -153,7 +153,7 @@ noncomputable def ofAbelian : S.RightHomologyData := by
     rw [hg', reassoc_of% he]
     simp only [g', cokernel.π_desc, ← cancel_epi (cokernel.π S.f),
       cokernel_π_comp_cokernelToAbelianCoimage_assoc]
-  have hι : IsLimit (KernelFork.ofι _ wι) :=
+  let hι : IsLimit (KernelFork.ofι _ wι) :=
     KernelFork.IsLimit.ofι _ _
       (fun x hx => kernel.lift _ x (by
         simpa only [← cancel_mono e.hom, ← cancel_mono (Abelian.factorThruCoimage S.g), assoc,
