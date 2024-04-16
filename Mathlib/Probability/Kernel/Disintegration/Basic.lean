@@ -382,14 +382,15 @@ variable {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ]
 /-- Conditional kernel of a measure on a product space: a Markov kernel such that
 `ρ = ρ.fst ⊗ₘ ρ.condKernel` (see `MeasureTheory.Measure.compProd_fst_condKernel`). -/
 noncomputable
-def _root_.MeasureTheory.Measure.condKernel (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ] :
+irreducible_def _root_.MeasureTheory.Measure.condKernel (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ] :
     kernel α Ω :=
   comap (condKernelUnitBorel (const Unit ρ)) (fun a ↦ ((), a)) measurable_prod_mk_left
 #align measure_theory.measure.cond_kernel MeasureTheory.Measure.condKernel
 
 lemma _root_.MeasureTheory.Measure.condKernel_apply (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ]
     (a : α) :
-    ρ.condKernel a = condKernelUnitBorel (const Unit ρ) ((), a) := rfl
+    ρ.condKernel a = condKernelUnitBorel (const Unit ρ) ((), a) := by
+  rw [Measure.condKernel]; rfl
 
 instance _root_.MeasureTheory.Measure.instIsMarkovKernelCondKernel
     (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ] : IsMarkovKernel ρ.condKernel := by
