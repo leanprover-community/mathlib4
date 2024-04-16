@@ -142,12 +142,12 @@ noncomputable def pointwiseLeftKanExtension : D ⥤ H where
     dsimp
     simp only [colimit.ι_desc, comp_id]
     congr
-    apply CostructuredArrow.map_id)
+    exact CostructuredArrow.obj_ext (by rfl) (by simp))
   map_comp {Y₁ Y₂ Y₃} f f' := colimit.hom_ext (fun j => by
     dsimp
     simp only [colimit.ι_desc, colimit.ι_desc_assoc, comp_obj, CostructuredArrow.proj_obj]
     congr 1
-    apply CostructuredArrow.map_comp)
+    exact CostructuredArrow.obj_ext (by rfl) (by simp))
 
 /-- The unit of the constructed pointwise left Kan extension when
 `HasPointwiseLeftKanExtension L F` holds. -/
@@ -156,12 +156,14 @@ noncomputable def pointwiseLeftKanExtensionUnit : F ⟶ L ⋙ pointwiseLeftKanEx
   app X := colimit.ι (CostructuredArrow.proj L (L.obj X) ⋙ F)
     (CostructuredArrow.mk (𝟙 (L.obj X)))
   naturality {X₁ X₂} f := by
-    simp only [comp_obj, pointwiseLeftKanExtension_obj, comp_map,
-      pointwiseLeftKanExtension_map, colimit.ι_desc, CostructuredArrow.map_mk]
-    rw [id_comp]
+    dsimp
+    rw [colimit.ι_desc]
+    simp only
     let φ : CostructuredArrow.mk (L.map f) ⟶ CostructuredArrow.mk (𝟙 (L.obj X₂)) :=
       CostructuredArrow.homMk f
-    exact colimit.w (CostructuredArrow.proj L (L.obj X₂) ⋙ F) φ
+    apply (colimit.w (CostructuredArrow.proj L (L.obj X₂) ⋙ F) φ).trans
+    congr 1
+    exact CostructuredArrow.obj_ext (by rfl) (by simp)
 
 /-- The functor `pointwiseLeftKanExtension L F` is a pointwise left Kan
 extension of `F` along `L`. -/
@@ -169,9 +171,10 @@ noncomputable def pointwiseLeftKanExtensionIsPointwiseLeftKanExtension :
     (LeftExtension.mk _ (pointwiseLeftKanExtensionUnit L F)).IsPointwiseLeftKanExtension :=
   fun X => IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (fun j => by
     dsimp
-    simp only [comp_id, colimit.ι_desc, CostructuredArrow.map_mk]
+    rw [comp_id, colimit.ι_desc]
+    simp only
     congr 1
-    rw [id_comp, ← CostructuredArrow.eq_mk]))
+    exact CostructuredArrow.obj_ext (by rfl) (by simp)))
 
 /-- The functor `pointwiseLeftKanExtension L F` is a left Kan extension of `F` along `L`. -/
 noncomputable def pointwiseLeftKanExtensionIsUniversal :
