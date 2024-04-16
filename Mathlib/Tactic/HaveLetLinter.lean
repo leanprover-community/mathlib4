@@ -15,6 +15,7 @@ The `have` vs `let` linter flags uses of `have` to introduce a hypothesis whose 
 TODO:
 * `replace` implies `have`: should it be ignored?
 * `haveI` may need to change to `let/letI`?
+* also do `let` vs `have`.
 -/
 
 open Lean Elab Command Meta

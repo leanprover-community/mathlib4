@@ -78,7 +78,7 @@ This operates on direct sums of tensors instead of tensors of direct sums. -/
 def gradedCommAux : DirectSum _ 𝒜ℬ →ₗ[R] DirectSum _ ℬ𝒜 := by
   refine DirectSum.toModule R _ _ fun i => ?_
   have o := DirectSum.lof R _ ℬ𝒜 i.swap
-  have s : ℤˣ := ((-1 : ℤˣ)^(i.1* i.2 : ι) : ℤˣ)
+  let s : ℤˣ := ((-1 : ℤˣ)^(i.1* i.2 : ι) : ℤˣ)
   exact (s • o) ∘ₗ (TensorProduct.comm R _ _).toLinearMap
 
 @[simp]

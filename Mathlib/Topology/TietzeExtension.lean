@@ -466,7 +466,7 @@ real-valued function `g : C(Y, ℝ)` such that `g y ∈ t` for all `y` and `g �
 theorem exists_extension_forall_mem_of_closedEmbedding (f : C(X, ℝ)) {t : Set ℝ} {e : X → Y}
     [hs : OrdConnected t] (hf : ∀ x, f x ∈ t) (hne : t.Nonempty) (he : ClosedEmbedding e) :
     ∃ g : C(Y, ℝ), (∀ y, g y ∈ t) ∧ g ∘ e = f := by
-  have h : ℝ ≃o Ioo (-1 : ℝ) 1 := orderIsoIooNegOneOne ℝ
+  let h : ℝ ≃o Ioo (-1 : ℝ) 1 := orderIsoIooNegOneOne ℝ
   let F : X →ᵇ ℝ :=
     { toFun := (↑) ∘ h ∘ f
       continuous_toFun := continuous_subtype_val.comp (h.continuous.comp f.continuous)
