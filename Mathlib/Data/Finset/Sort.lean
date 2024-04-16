@@ -291,11 +291,13 @@ variable {α : Type*} [LinearOrder α] {t : ℕ}
     rw [← Finset.coe_inj, ← Finset.range_orderEmbOfFin s rfl]
     simp
 
+/-- Extend `f` by adding a new element larger than all its current elements. -/
 def appendRight (f : Fin t ↪o α) (a : α) (ha : ∀ i, f i < a) : Fin (t+1) ↪o α :=
   OrderEmbedding.ofStrictMono (Fin.lastCases a f) (
     Fin.lastCases (fun b h ↦ (h.not_le <| Fin.le_last b).elim)
       (fun i ↦ Fin.lastCases (by simp [ha]) fun _ hij ↦ by simpa using hij))
 
+/-- If `f` has a well-defined maximum, extend it by adding an element larger than this maximum. -/
 @[reducible] def appendRight' (f : Fin (t+1) ↪o α) (a : α) (ha : f (Fin.last t) < a) :
     Fin (t+2) ↪o α :=
   appendRight f a (fun i ↦ (f.monotone (Fin.le_last i)).trans_lt ha)
@@ -313,9 +315,11 @@ def appendRight (f : Fin t ↪o α) (a : α) (ha : ∀ i, f i < a) : Fin (t+1) �
   ext x
   exact Fin.lastCases (i := x) (by simp) (fun i ↦ by simp)
 
+/-- Restrict `f` to an initial subsegment -/
 def truncate (f : Fin t ↪o α) {t' : ℕ} (ht' : t' ≤ t) : Fin t' ↪o α :=
   (Fin.castLEEmb ht').trans f
 
+/-- Erase the largest element of `f` -/
 def eraseRight (f : Fin (t+1) ↪o α) : Fin t ↪o α :=
   truncate f (Nat.le_add_right t 1)
 
