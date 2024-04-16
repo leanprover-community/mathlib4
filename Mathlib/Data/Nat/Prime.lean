@@ -732,11 +732,13 @@ theorem eq_one_iff_not_exists_prime_dvd {n : ℕ} : n = 1 ↔ ∀ p : ℕ, p.Pri
   simpa using not_iff_not.mpr ne_one_iff_exists_prime_dvd
 #align nat.eq_one_iff_not_exists_prime_dvd Nat.eq_one_iff_not_exists_prime_dvd
 
+set_option linter.haveLet false in
 theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul {p : ℕ} (p_prime : Prime p) {m n k l : ℕ}
     (hpm : p ^ k ∣ m) (hpn : p ^ l ∣ n) (hpmn : p ^ (k + l + 1) ∣ m * n) :
     p ^ (k + 1) ∣ m ∨ p ^ (l + 1) ∣ n := by
   have hpd : p ^ (k + l) * p ∣ m * n := by
-      have hpmn' : p ^ (succ (k + l)) ∣ m * n := hpmn
+      -- changing to `have` makes the `unusedHavesSuffices` complain
+      let hpmn' : p ^ (succ (k + l)) ∣ m * n := hpmn
       rwa [pow_succ'] at hpmn'
   have hpd2 : p ∣ m * n / p ^ (k + l) := dvd_div_of_mul_dvd hpd
   have hpd3 : p ∣ m * n / (p ^ k * p ^ l) := by simpa [pow_add] using hpd2
