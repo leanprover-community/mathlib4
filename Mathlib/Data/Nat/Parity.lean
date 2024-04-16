@@ -42,6 +42,11 @@ theorem even_iff : Even n ↔ n % 2 = 0 :=
 
 instance : DecidablePred (Even : ℕ → Prop) := fun _ => decidable_of_iff _ even_iff.symm
 
+/-- `IsSquare` can be decided on `ℕ` by checking against the square root. -/
+instance : DecidablePred (IsSquare : ℕ → Prop) :=
+  fun m ↦ decidable_of_iff' (Nat.sqrt m * Nat.sqrt m = m) <| by
+    simp_rw [← Nat.exists_mul_self m, IsSquare, eq_comm]
+
 theorem odd_iff : Odd n ↔ n % 2 = 1 :=
   ⟨fun ⟨m, hm⟩ => by norm_num [hm, add_mod],
     fun h => ⟨n / 2, (mod_add_div n 2).symm.trans (by rw [h, add_comm])⟩⟩

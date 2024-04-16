@@ -172,8 +172,6 @@ def aeval : R[X] →ₐ[R] A :=
   eval₂AlgHom' (Algebra.ofId _ _) x (Algebra.commutes · _)
 #align polynomial.aeval Polynomial.aeval
 
--- Porting note: removed `variable` due to redundant binder annotation update
-
 @[simp]
 theorem adjoin_X : Algebra.adjoin R ({X} : Set R[X]) = ⊤ := by
   refine' top_unique fun p _hp => _
@@ -529,7 +527,7 @@ theorem eval_mul_X_sub_C {p : R[X]} (r : R) : (p * (X - C r)).eval r = 0 := by
   have bound :=
     calc
       (p * (X - C r)).natDegree ≤ p.natDegree + (X - C r).natDegree := natDegree_mul_le
-      _ ≤ p.natDegree + 1 := (add_le_add_left (natDegree_X_sub_C_le _) _)
+      _ ≤ p.natDegree + 1 := add_le_add_left (natDegree_X_sub_C_le _) _
       _ < p.natDegree + 2 := lt_add_one _
   rw [sum_over_range' _ _ (p.natDegree + 2) bound]
   swap

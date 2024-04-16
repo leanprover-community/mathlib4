@@ -56,7 +56,7 @@ termination_by n
 decreasing_by exact mem_Iio.1 i.2
 #align gram_schmidt gramSchmidt
 
-/-- This lemma uses `∑ i in` instead of `∑ i :`.-/
+/-- This lemma uses `∑ i in` instead of `∑ i :`. -/
 theorem gramSchmidt_def (f : ι → E) (n : ι) :
     gramSchmidt 𝕜 f n = f n - ∑ i in Iio n, orthogonalProjection (𝕜 ∙ gramSchmidt 𝕜 f i) (f n) := by
   rw [← sum_attach, attach_eq_univ, gramSchmidt]

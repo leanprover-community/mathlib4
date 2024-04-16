@@ -765,7 +765,7 @@ section
 variable {ι : Type*}
 
 /-- The topological space `Π i, Y i` can be split as a product by separating the indices in ι
-  depending on whether they satisfy a predicate p or not.-/
+  depending on whether they satisfy a predicate p or not. -/
 @[simps!]
 def piEquivPiSubtypeProd (p : ι → Prop) (Y : ι → Type*) [∀ i, TopologicalSpace (Y i)]
     [DecidablePred p] : (∀ i, Y i) ≃ₜ (∀ i : { x // p x }, Y i) × ∀ i : { x // ¬p x }, Y i

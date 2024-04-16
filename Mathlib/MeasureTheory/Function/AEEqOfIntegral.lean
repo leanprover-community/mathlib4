@@ -96,7 +96,7 @@ theorem ae_eq_zero_of_forall_dual_of_isSeparable [NormedAddCommGroup E] [NormedS
     apply lt_irrefl ‖s x x‖
     calc
       ‖s x x‖ = ‖s x (x - a)‖ := by simp only [h, sub_zero, ContinuousLinearMap.map_sub]
-      _ ≤ 1 * ‖(x : E) - a‖ := (ContinuousLinearMap.le_of_opNorm_le _ (hs x).1 _)
+      _ ≤ 1 * ‖(x : E) - a‖ := ContinuousLinearMap.le_of_opNorm_le _ (hs x).1 _
       _ < ‖a‖ / 2 := by rw [one_mul]; rwa [dist_eq_norm'] at hx
       _ < ‖(x : E)‖ := I
       _ = ‖s x x‖ := by rw [(hs x).2, RCLike.norm_coe_norm]
@@ -209,7 +209,7 @@ theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite [SigmaFinite μ] {f g : 
       exact eventually_le_of_tendsto_lt hx this
     have L2 : ∀ᶠ n : ℕ in (atTop : Filter ℕ), g x ≤ (n : ℝ≥0) :=
       haveI : Tendsto (fun n : ℕ => ((n : ℝ≥0) : ℝ≥0∞)) atTop (𝓝 ∞) := by
-        simp only [ENNReal.coe_nat]
+        simp only [ENNReal.coe_natCast]
         exact ENNReal.tendsto_nat_nhds_top
       eventually_ge_of_tendsto_gt (hx.trans_le le_top) this
     apply Set.mem_iUnion.2
@@ -217,7 +217,7 @@ theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite [SigmaFinite μ] {f g : 
   refine' le_antisymm _ bot_le
   calc
     μ {x : α | (fun x : α => f x ≤ g x) x}ᶜ ≤ μ (⋃ n, s n) := measure_mono B
-    _ ≤ ∑' n, μ (s n) := (measure_iUnion_le _)
+    _ ≤ ∑' n, μ (s n) := measure_iUnion_le _
     _ = 0 := by simp only [μs, tsum_zero]
 #align measure_theory.ae_le_of_forall_set_lintegral_le_of_sigma_finite MeasureTheory.ae_le_of_forall_set_lintegral_le_of_sigmaFinite
 
@@ -563,7 +563,7 @@ theorem Integrable.ae_eq_of_forall_set_integral_eq (f g : α → E) (hf : Integr
 variable {β : Type*} [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β]
 
 /-- If an integrable function has zero integral on all closed sets, then it is zero
-almost everwhere.-/
+almost everwhere. -/
 lemma ae_eq_zero_of_forall_set_integral_isClosed_eq_zero {μ : Measure β} {f : β → E}
     (hf : Integrable f μ) (h'f : ∀ (s : Set β), IsClosed s → ∫ x in s, f x ∂μ = 0) :
     f =ᵐ[μ] 0 := by

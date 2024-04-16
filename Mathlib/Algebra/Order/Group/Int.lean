@@ -3,20 +3,18 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Nat.Order.Basic
-import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Algebra.Divisibility.Basic
 
 #align_import data.int.order.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
-# Order instances on the integers
+# The integers form a linear ordered group
 
-This file contains:
-* instances on `ℤ`. The stronger one is `Int.linearOrderedCommRing`.
-* basic lemmas about integers that involve order properties.
+This file contains the linear ordered group instance on the integers.
+
+See note [foundational algebra order theory].
 
 ## Recursors
 
@@ -28,30 +26,18 @@ This file contains:
   induction on numbers less than `b`.
 -/
 
+assert_not_exists Ring
+
 open Function Nat
 
 namespace Int
 
-instance linearOrderedCommRing : LinearOrderedCommRing ℤ :=
-  { instCommRingInt, instLinearOrderInt, instNontrivialInt with
-    add_le_add_left := @Int.add_le_add_left,
-    mul_pos := @Int.mul_pos, zero_le_one := le_of_lt Int.zero_lt_one }
+instance linearOrderedAddCommGroup : LinearOrderedAddCommGroup ℤ where
+  __ := instLinearOrderInt
+  __ := instAddCommGroup
+  add_le_add_left _ _ := Int.add_le_add_left
 
-/-! ### Extra instances to short-circuit type class resolution
--/
-
-
-instance orderedCommRing : OrderedCommRing ℤ :=
-  StrictOrderedCommRing.toOrderedCommRing'
-
-instance orderedRing : OrderedRing ℤ :=
-  StrictOrderedRing.toOrderedRing'
-
-instance linearOrderedAddCommGroup : LinearOrderedAddCommGroup ℤ := by infer_instance
-
-end Int
-
-namespace Int
+/-! ### Miscellaneous lemmas -/
 
 theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
   | (n : ℕ) => abs_of_nonneg <| ofNat_zero_le _
@@ -61,22 +47,12 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
 @[simp, norm_cast] lemma natCast_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm
 #align int.coe_nat_abs Int.natCast_natAbs
 
-lemma _root_.Nat.cast_natAbs {α : Type*} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| := by
-  rw [← natCast_natAbs, Int.cast_ofNat]
-#align nat.cast_nat_abs Nat.cast_natAbs
-
 theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; rfl
 #align int.nat_abs_abs Int.natAbs_abs
 
 theorem sign_mul_abs (a : ℤ) : sign a * |a| = a := by
   rw [abs_eq_natAbs, sign_mul_natAbs a]
 #align int.sign_mul_abs Int.sign_mul_abs
-
-lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by rw [sq, Int.natAbs_mul_self', sq]
-#align int.nat_abs_sq Int.natAbs_sq
-
-alias natAbs_pow_two := natAbs_sq
-#align int.nat_abs_pow_two Int.natAbs_pow_two
 
 lemma natAbs_le_self_sq (a : ℤ) : (Int.natAbs a : ℤ) ≤ a ^ 2 := by
   rw [← Int.natAbs_sq a, sq]
@@ -92,34 +68,8 @@ lemma le_self_sq (b : ℤ) : b ≤ b ^ 2 := le_trans le_natAbs (natAbs_le_self_s
 alias le_self_pow_two := le_self_sq
 #align int.le_self_pow_two Int.le_self_pow_two
 
-theorem natCast_eq_zero {n : ℕ} : (n : ℤ) = 0 ↔ n = 0 :=
-  Nat.cast_eq_zero
-#align int.coe_nat_eq_zero Int.natCast_eq_zero
-
-theorem natCast_ne_zero {n : ℕ} : (n : ℤ) ≠ 0 ↔ n ≠ 0 := by simp
-#align int.coe_nat_ne_zero Int.natCast_ne_zero
-
-theorem natCast_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n :=
-  ⟨fun h => Nat.pos_of_ne_zero (natCast_ne_zero.1 h),
-   fun h => (_root_.ne_of_lt (ofNat_lt.2 h)).symm⟩
-#align int.coe_nat_ne_zero_iff_pos Int.natCast_ne_zero_iff_pos
-
 @[norm_cast] lemma abs_natCast (n : ℕ) : |(n : ℤ)| = n := abs_of_nonneg (natCast_nonneg n)
 #align int.abs_coe_nat Int.abs_natCast
-
-theorem sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign = n.sign := by
-  have : (1 : ℤ) ≠ -1 := by decide
-  rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm, Int.negSucc_add_negSucc]
-  rw [Int.sign_eq_one_iff_pos]
-  apply Int.add_pos <;> · exact zero_lt_one.trans_le (le_add_of_nonneg_left <| natCast_nonneg _)
-#align int.sign_add_eq_of_sign_eq Int.sign_add_eq_of_sign_eq
-
-/-- Note this holds in marginally more generality than `Int.cast_mul` -/
-lemma cast_mul_eq_zsmul_cast {α : Type*} [AddCommGroupWithOne α] :
-    ∀ m n : ℤ, ↑(m * n) = m • (n : α) :=
-  fun m ↦ Int.induction_on m (by simp) (fun _ ih ↦ by simp [add_mul, add_zsmul, ih]) fun _ ih ↦ by
-    simp only [sub_mul, one_mul, cast_sub, ih, sub_zsmul, one_zsmul, ← sub_eq_add_neg, forall_const]
-#align int.cast_mul_eq_zsmul_cast Int.cast_mul_eq_zsmul_cast
 
 theorem natAbs_sub_pos_iff {i j : ℤ} : 0 < natAbs (i - j) ↔ i ≠ j := by
   rw [natAbs_pos, ne_eq, sub_eq_zero]
@@ -127,15 +77,14 @@ theorem natAbs_sub_pos_iff {i j : ℤ} : 0 < natAbs (i - j) ↔ i ≠ j := by
 theorem natAbs_sub_ne_zero_iff {i j : ℤ} : natAbs (i - j) ≠ 0 ↔ i ≠ j :=
   Nat.ne_zero_iff_zero_lt.trans natAbs_sub_pos_iff
 
-/-! ### succ and pred -/
-
+/-! #### succ and pred -/
 
 theorem lt_succ_self (a : ℤ) : a < succ a :=
-  lt_add_of_pos_right _ zero_lt_one
+  lt_add_of_pos_right _ Int.zero_lt_one
 #align int.lt_succ_self Int.lt_succ_self
 
 theorem pred_self_lt (a : ℤ) : pred a < a :=
-  sub_lt_self _ zero_lt_one
+  sub_lt_self _ Int.zero_lt_one
 #align int.pred_self_lt Int.pred_self_lt
 
 #align int.lt_add_one_iff Int.lt_add_one_iff
@@ -158,7 +107,7 @@ theorem abs_lt_one_iff {a : ℤ} : |a| < 1 ↔ a = 0 := by
 #align int.abs_lt_one_iff Int.abs_lt_one_iff
 
 theorem abs_le_one_iff {a : ℤ} : |a| ≤ 1 ↔ a = 0 ∨ a = 1 ∨ a = -1 := by
-  rw [le_iff_lt_or_eq, abs_lt_one_iff, abs_eq (zero_le_one' ℤ)]
+  rw [le_iff_lt_or_eq, abs_lt_one_iff, abs_eq Int.one_nonneg]
 #align int.abs_le_one_iff Int.abs_le_one_iff
 
 theorem one_le_abs {z : ℤ} (h₀ : z ≠ 0) : 1 ≤ |z| :=
@@ -216,8 +165,7 @@ protected theorem le_induction_down {P : ℤ → Prop} {m : ℤ} (h0 : P m)
     exact h1 k hle (hi hle)
 #align int.le_induction_down Int.le_induction_down
 
-/-! ### nat abs -/
-
+/-! #### nat abs -/
 
 variable {a b : ℤ} {n : ℕ}
 
@@ -225,7 +173,7 @@ attribute [simp] natAbs_ofNat natAbs_zero natAbs_one
 
 #align int.nat_abs_dvd_iff_dvd Int.natAbs_dvd_natAbs
 
-/-! ### `/`  -/
+/-! #### `/`  -/
 
 #align int.div_nonpos Int.ediv_nonpos
 
@@ -251,8 +199,7 @@ attribute [local simp] Int.zero_ediv Int.ediv_zero
 
 #align int.add_div_of_dvd_left Int.add_ediv_of_dvd_left
 
-/-! ### mod -/
-
+/-! #### mod -/
 
 @[simp]
 theorem emod_abs (a b : ℤ) : a % |b| = a % b :=
@@ -319,7 +266,7 @@ attribute [local simp] Int.zero_emod
 theorem neg_emod_two (i : ℤ) : -i % 2 = i % 2 := by
   apply Int.emod_eq_emod_iff_emod_sub_eq_zero.mpr
   convert Int.mul_emod_right 2 (-i) using 2
-  rw [two_mul, sub_eq_add_neg]
+  rw [Int.two_mul, sub_eq_add_neg]
 #align int.neg_mod_two Int.neg_emod_two
 
 /-! ### properties of `/` and `%` -/
@@ -343,22 +290,7 @@ theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
 
 #align int.div_le_self Int.ediv_le_self
 
-theorem emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 :=
-  have h : n % 2 < 2 := abs_of_nonneg (show 0 ≤ (2 : ℤ) by decide) ▸ Int.emod_lt _ (by decide)
-  have h₁ : 0 ≤ n % 2 := Int.emod_nonneg _ (by decide)
-  match n % 2, h, h₁ with
-  | (0 : ℕ), _ ,_ => Or.inl rfl
-  | (1 : ℕ), _ ,_ => Or.inr rfl
-  -- Porting note: this used to be `=> absurd h (by decide)`
-  -- see https://github.com/leanprover-community/mathlib4/issues/994
-  | (k + 2 : ℕ), h₁, _ => False.elim (h₁.not_le (by
-    rw [Nat.cast_add]
-    exact (le_add_iff_nonneg_left 2).2 (NonNeg.mk k)))
-  -- Porting note: this used to be `=> absurd h₁ (by decide)`
-  | -[a+1], _, h₁ => by cases h₁
-#align int.mod_two_eq_zero_or_one Int.emod_two_eq_zero_or_one
-
-/-! ### dvd -/
+/-! #### dvd -/
 
 #align int.dvd_of_mod_eq_zero Int.dvd_of_emod_eq_zero
 
@@ -408,24 +340,6 @@ theorem abs_sign_of_nonzero {z : ℤ} (hz : z ≠ 0) : |z.sign| = 1 := by
   rw [abs_eq_natAbs, natAbs_sign_of_nonzero hz, Int.ofNat_one]
 #align int.abs_sign_of_nonzero Int.abs_sign_of_nonzero
 
-/-- If `n > 0` then `m` is not divisible by `n` iff it is between `n * k` and `n * (k + 1)`
-  for some `k`. -/
-theorem exists_lt_and_lt_iff_not_dvd (m : ℤ) {n : ℤ} (hn : 0 < n) :
-    (∃ k, n * k < m ∧ m < n * (k + 1)) ↔ ¬n ∣ m := by
-  constructor
-  · rintro ⟨k, h1k, h2k⟩ ⟨l, rfl⟩
-    rw [mul_lt_mul_left hn] at h1k h2k
-    rw [lt_add_one_iff, ← not_lt] at h2k
-    exact h2k h1k
-  · intro h
-    rw [dvd_iff_emod_eq_zero, ← Ne] at h
-    have := (emod_nonneg m hn.ne.symm).lt_of_ne h.symm
-    rw [← emod_add_ediv m n]
-    refine' ⟨m / n, lt_add_of_pos_left _ this, _⟩
-    rw [add_comm _ (1 : ℤ), left_distrib, mul_one]
-    exact add_lt_add_right (emod_lt_of_pos _ hn) _
-#align int.exists_lt_and_lt_iff_not_dvd Int.exists_lt_and_lt_iff_not_dvd
-
 attribute [local simp] Int.ediv_zero
 
 #align int.mul_div_assoc Int.mul_ediv_assoc
@@ -443,7 +357,7 @@ protected theorem sign_eq_ediv_abs (a : ℤ) : sign a = a / |a| :=
   else (Int.ediv_eq_of_eq_mul_left (mt abs_eq_zero.1 az) (sign_mul_abs _).symm).symm
 #align int.sign_eq_div_abs Int.sign_eq_ediv_abs
 
-/-! ### `/` and ordering -/
+/-! #### `/` and ordering -/
 
 #align int.div_mul_le Int.ediv_mul_le
 #align int.div_le_of_le_mul Int.ediv_le_of_le_mul
@@ -473,7 +387,7 @@ theorem ediv_dvd_of_dvd {s t : ℤ} (hst : s ∣ t) : t / s ∣ t := by
   simp [hc, Int.mul_ediv_cancel_left _ hs]
 #align int.div_dvd_of_dvd Int.ediv_dvd_of_dvd
 
-/-! ### toNat -/
+/-! #### `toNat` -/
 
 
 @[simp]
@@ -540,38 +454,6 @@ lemma zpow_abs_eq_one (a : G) (n : ℤ) : a ^ |n| = 1 ↔ a ^ n = 1 := by
   rw [← Int.natCast_natAbs, zpow_natCast, pow_natAbs_eq_one]
 
 end Group
-
-section bit0_bit1
-variable {R}
-set_option linter.deprecated false
-
--- The next four lemmas allow us to replace multiplication by a numeral with a `zsmul` expression.
-
-section NonUnitalNonAssocRing
-variable [NonUnitalNonAssocRing R] (n r : R)
-
-lemma bit0_mul : bit0 n * r = (2 : ℤ) • (n * r) := by
-  rw [bit0, add_mul, ← one_add_one_eq_two, add_zsmul, one_zsmul]
-#align bit0_mul bit0_mul
-
-lemma mul_bit0 : r * bit0 n = (2 : ℤ) • (r * n) := by
-  rw [bit0, mul_add, ← one_add_one_eq_two, add_zsmul, one_zsmul]
-#align mul_bit0 mul_bit0
-
-end NonUnitalNonAssocRing
-
-section NonAssocRing
-variable [NonAssocRing R] (n r : R)
-
-lemma bit1_mul : bit1 n * r = (2 : ℤ) • (n * r) + r := by rw [bit1, add_mul, bit0_mul, one_mul]
-#align bit1_mul bit1_mul
-
-lemma mul_bit1 {n r : R} : r * bit1 n = (2 : ℤ) • (r * n) + r := by
-  rw [bit1, mul_add, mul_bit0, mul_one]
-#align mul_bit1 mul_bit1
-
-end NonAssocRing
-end bit0_bit1
 
 -- We should need only a minimal development of sets in order to get here.
 assert_not_exists Set.range
