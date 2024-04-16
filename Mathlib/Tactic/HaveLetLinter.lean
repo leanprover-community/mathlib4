@@ -119,7 +119,7 @@ def haveLetLinter : Linter where run := withSetOptionIn fun _stx => do
     for (s, fmt, haveLet?) in ← nonPropHaves t do
       if haveLet? then
         Linter.logLint linter.haveLet s m!"'{fmt}' is a Type and not a Prop. \
-          Consider using 'let' instead of 'have'"
+          Consider using 'let' instead of 'have'."
       else
         Linter.logLint linter.haveLet s m!"'{fmt}' is a Prop and not a Type. \
           Consider using 'have' instead of 'let'."
