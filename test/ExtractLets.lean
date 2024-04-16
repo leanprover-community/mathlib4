@@ -8,6 +8,7 @@ example (h : let x := 1; x = x) : True := by
   guard_hyp h :ₛ y = y
   trivial
 
+set_option linter.haveLet false in
 example : True := by
   let h : (let x := 1; x = x) := rfl
   extract_lets y at h
