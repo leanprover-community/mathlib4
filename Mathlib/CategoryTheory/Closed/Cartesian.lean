@@ -409,8 +409,8 @@ def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClos
   closed X :=
     { isAdj := by
         haveI q : Exponentiable (e.inverse.obj X) := inferInstance
-        have : IsLeftAdjoint (prod.functor.obj (e.inverse.obj X)) := q.isAdj
-        have : e.functor ⋙ prod.functor.obj X ⋙ e.inverse ≅
+        let _ : IsLeftAdjoint (prod.functor.obj (e.inverse.obj X)) := q.isAdj
+        let this : e.functor ⋙ prod.functor.obj X ⋙ e.inverse ≅
             prod.functor.obj (e.inverse.obj X) := by
           apply NatIso.ofComponents _ _
           · intro Y
@@ -421,11 +421,11 @@ def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClos
             simp [prodComparison, prod.comp_lift, ← e.inverse.map_comp, ← e.inverse.map_comp_assoc]
             -- I wonder if it would be a good idea to
             -- make `map_comp` a simp lemma the other way round
-        · have : IsLeftAdjoint (e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
+        · let _ : IsLeftAdjoint (e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
             Adjunction.leftAdjointOfNatIso this.symm
-          have : IsLeftAdjoint (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
+          let _ : IsLeftAdjoint (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
             Adjunction.leftAdjointOfComp e.inverse _
-          have :
+          let this :
             (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) ⋙ e.functor ≅
               prod.functor.obj X := by
             apply isoWhiskerRight e.counitIso (prod.functor.obj X ⋙ e.inverse ⋙ e.functor) ≪≫ _

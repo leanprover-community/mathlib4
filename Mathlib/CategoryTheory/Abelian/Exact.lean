@@ -407,7 +407,7 @@ def preservesKernelsOfMapExact (X Y : A) (f : X ⟶ Y) : PreservesLimit (paralle
     letI := preservesZeroMorphisms_of_map_exact L h
     letI := preservesMonomorphisms_of_map_exact L h
     letI := mono_of_isLimit_fork ic
-    have hf :=
+    let hf :=
       (isLimitMapConeForkEquiv' L (KernelFork.condition c)).symm
         (isLimitOfExactOfMono (L.map (Fork.ι c)) (L.map f)
           (h (exact_of_is_kernel (Fork.ι c) f (KernelFork.condition c)
@@ -422,7 +422,7 @@ def preservesCokernelsOfMapExact (X Y : A) (f : X ⟶ Y) :
     letI := preservesZeroMorphisms_of_map_exact L h
     letI := preservesEpimorphisms_of_map_exact L h
     letI := epi_of_isColimit_cofork ic
-    have hf :=
+    let hf :=
       (isColimitMapCoconeCoforkEquiv' L (CokernelCofork.condition c)).symm
         (isColimitOfExactOfEpi (L.map f) (L.map (Cofork.π c))
           (h (exact_of_is_cokernel f (Cofork.π c) (CokernelCofork.condition c)

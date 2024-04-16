@@ -98,16 +98,16 @@ def IsPreservedBy.hf' : PreservesColimit (parallelPair h.f' 0) F := IsPreservedB
 this is the induced left homology data `h.map F` for the short complex `S.map F`. -/
 @[simps]
 noncomputable def map : (S.map F).LeftHomologyData := by
-  have := IsPreservedBy.hg h F
-  have := IsPreservedBy.hf' h F
+  let _ := IsPreservedBy.hg h F
+  let _ := IsPreservedBy.hf' h F
   have wi : F.map h.i ≫ F.map S.g = 0 := by rw [← F.map_comp, h.wi, F.map_zero]
-  have hi := KernelFork.mapIsLimit _ h.hi F
+  let hi := KernelFork.mapIsLimit _ h.hi F
   let f' : F.obj S.X₁ ⟶ F.obj h.K := hi.lift (KernelFork.ofι (S.map F).f (S.map F).zero)
   have hf' : f' = F.map h.f' := Fork.IsLimit.hom_ext hi (by
     rw [Fork.IsLimit.lift_ι hi]
     simp only [KernelFork.map_ι, Fork.ι_ofι, map_f, ← F.map_comp, f'_i])
   have wπ : f' ≫ F.map h.π = 0 := by rw [hf', ← F.map_comp, f'_π, F.map_zero]
-  have hπ : IsColimit (CokernelCofork.ofπ (F.map h.π) wπ) := by
+  let hπ : IsColimit (CokernelCofork.ofπ (F.map h.π) wπ) := by
     let e : parallelPair f' 0 ≅ parallelPair (F.map h.f') 0 :=
       parallelPair.ext (Iso.refl _) (Iso.refl _) (by simpa using hf') (by simp)
     refine' IsColimit.precomposeInvEquiv e _
@@ -178,17 +178,17 @@ def IsPreservedBy.hg' : PreservesLimit (parallelPair h.g' 0) F :=
 this is the induced right homology data `h.map F` for the short complex `S.map F`. -/
 @[simps]
 noncomputable def map : (S.map F).RightHomologyData := by
-  have := IsPreservedBy.hf h F
-  have := IsPreservedBy.hg' h F
+  let _ := IsPreservedBy.hf h F
+  let _ := IsPreservedBy.hg' h F
   have wp : F.map S.f ≫ F.map h.p = 0 := by rw [← F.map_comp, h.wp, F.map_zero]
-  have hp := CokernelCofork.mapIsColimit _ h.hp F
+  let hp := CokernelCofork.mapIsColimit _ h.hp F
   let g' : F.obj h.Q ⟶ F.obj S.X₃ := hp.desc (CokernelCofork.ofπ (S.map F).g (S.map F).zero)
   have hg' : g' = F.map h.g' := by
     apply Cofork.IsColimit.hom_ext hp
     rw [Cofork.IsColimit.π_desc hp]
     simp only [Cofork.π_ofπ, CokernelCofork.map_π, map_g, ← F.map_comp, p_g']
   have wι : F.map h.ι ≫ g' = 0 := by rw [hg', ← F.map_comp, ι_g', F.map_zero]
-  have hι : IsLimit (KernelFork.ofι (F.map h.ι) wι) := by
+  let hι : IsLimit (KernelFork.ofι (F.map h.ι) wι) := by
     let e : parallelPair g' 0 ≅ parallelPair (F.map h.g') 0 :=
       parallelPair.ext (Iso.refl _) (Iso.refl _) (by simpa using hg') (by simp)
     refine' IsLimit.postcomposeHomEquiv e _
@@ -281,7 +281,7 @@ def PreservesLeftHomologyOf.mk' (h : S.LeftHomologyData) [h.IsPreservedBy F] :
   isPreservedBy h' :=
     { g := ShortComplex.LeftHomologyData.IsPreservedBy.hg h F
       f' := by
-        have := ShortComplex.LeftHomologyData.IsPreservedBy.hf' h F
+        let _ := ShortComplex.LeftHomologyData.IsPreservedBy.hf' h F
         let e : parallelPair h.f' 0 ≅ parallelPair h'.f' 0 :=
           parallelPair.ext (Iso.refl _) (ShortComplex.cyclesMapIso' (Iso.refl S) h h')
             (by simp) (by simp)
@@ -294,7 +294,7 @@ def PreservesRightHomologyOf.mk' (h : S.RightHomologyData) [h.IsPreservedBy F] :
   isPreservedBy h' :=
     { f := ShortComplex.RightHomologyData.IsPreservedBy.hf h F
       g' := by
-        have := ShortComplex.RightHomologyData.IsPreservedBy.hg' h F
+        let _ := ShortComplex.RightHomologyData.IsPreservedBy.hg' h F
         let e : parallelPair h.g' 0 ≅ parallelPair h'.g' 0 :=
           parallelPair.ext (ShortComplex.opcyclesMapIso' (Iso.refl S) h h') (Iso.refl _)
             (by simp) (by simp)
@@ -359,12 +359,12 @@ variable [hl₁.IsPreservedBy F] [hl₂.IsPreservedBy F]
 
 lemma map_cyclesMap' : F.map (ShortComplex.cyclesMap' φ hl₁ hl₂) =
     ShortComplex.cyclesMap' (F.mapShortComplex.map φ) (hl₁.map F) (hl₂.map F) := by
-  have γ : ShortComplex.LeftHomologyMapData φ hl₁ hl₂ := default
+  let γ : ShortComplex.LeftHomologyMapData φ hl₁ hl₂ := default
   rw [γ.cyclesMap'_eq, (γ.map F).cyclesMap'_eq,  ShortComplex.LeftHomologyMapData.map_φK]
 
 lemma map_leftHomologyMap' : F.map (ShortComplex.leftHomologyMap' φ hl₁ hl₂) =
     ShortComplex.leftHomologyMap' (F.mapShortComplex.map φ) (hl₁.map F) (hl₂.map F) := by
-  have γ : ShortComplex.LeftHomologyMapData φ hl₁ hl₂ := default
+  let γ : ShortComplex.LeftHomologyMapData φ hl₁ hl₂ := default
   rw [γ.leftHomologyMap'_eq, (γ.map F).leftHomologyMap'_eq,
     ShortComplex.LeftHomologyMapData.map_φH]
 
@@ -376,12 +376,12 @@ variable [hr₁.IsPreservedBy F] [hr₂.IsPreservedBy F]
 
 lemma map_opcyclesMap' : F.map (ShortComplex.opcyclesMap' φ hr₁ hr₂) =
     ShortComplex.opcyclesMap' (F.mapShortComplex.map φ) (hr₁.map F) (hr₂.map F) := by
-  have γ : ShortComplex.RightHomologyMapData φ hr₁ hr₂ := default
+  let γ : ShortComplex.RightHomologyMapData φ hr₁ hr₂ := default
   rw [γ.opcyclesMap'_eq, (γ.map F).opcyclesMap'_eq,  ShortComplex.RightHomologyMapData.map_φQ]
 
 lemma map_rightHomologyMap' : F.map (ShortComplex.rightHomologyMap' φ hr₁ hr₂) =
     ShortComplex.rightHomologyMap' (F.mapShortComplex.map φ) (hr₁.map F) (hr₂.map F) := by
-  have γ : ShortComplex.RightHomologyMapData φ hr₁ hr₂ := default
+  let γ : ShortComplex.RightHomologyMapData φ hr₁ hr₂ := default
   rw [γ.rightHomologyMap'_eq, (γ.map F).rightHomologyMap'_eq,
     ShortComplex.RightHomologyMapData.map_φH]
 
@@ -619,7 +619,7 @@ lemma mapHomologyIso'_eq_mapHomologyIso [S.HasHomology] [F.PreservesLeftHomology
     Functor.map_id, LeftHomologyData.map_H, leftHomologyMapIso'_inv, leftHomologyMapIso'_hom,
     LeftHomologyData.map_leftHomologyMap', ← rightHomologyMap'_comp_assoc, ← leftHomologyMap'_comp,
     ← leftHomologyMap'_comp_assoc, id_comp]
-  have γ : HomologyMapData (𝟙 (S.map F)) (map S F).homologyData (S.homologyData.map F) := default
+  let γ : HomologyMapData (𝟙 (S.map F)) (map S F).homologyData (S.homologyData.map F) := default
   have eq := γ.comm
   rw [← γ.left.leftHomologyMap'_eq, ← γ.right.rightHomologyMap'_eq] at eq
   dsimp at eq
@@ -754,7 +754,7 @@ variable (φ) [S₁.HasHomology] [S₂.HasHomology]
 instance quasiIso_map_of_preservesLeftHomology
     [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂]
     [QuasiIso φ] : QuasiIso (F.mapShortComplex.map φ) := by
-  have γ : LeftHomologyMapData φ S₁.leftHomologyData S₂.leftHomologyData := default
+  let γ : LeftHomologyMapData φ S₁.leftHomologyData S₂.leftHomologyData := default
   have : IsIso γ.φH := by
     rw [← γ.quasiIso_iff]
     infer_instance
@@ -765,7 +765,7 @@ lemma quasiIso_map_iff_of_preservesLeftHomology
     [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂]
     [F.ReflectsIsomorphisms] :
     QuasiIso (F.mapShortComplex.map φ) ↔ QuasiIso φ := by
-  have γ : LeftHomologyMapData φ S₁.leftHomologyData S₂.leftHomologyData := default
+  let γ : LeftHomologyMapData φ S₁.leftHomologyData S₂.leftHomologyData := default
   rw [γ.quasiIso_iff, (γ.map F).quasiIso_iff, LeftHomologyMapData.map_φH]
   constructor
   · intro
@@ -776,7 +776,7 @@ lemma quasiIso_map_iff_of_preservesLeftHomology
 instance quasiIso_map_of_preservesRightHomology
     [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂]
     [QuasiIso φ] : QuasiIso (F.mapShortComplex.map φ) := by
-  have γ : RightHomologyMapData φ S₁.rightHomologyData S₂.rightHomologyData := default
+  let γ : RightHomologyMapData φ S₁.rightHomologyData S₂.rightHomologyData := default
   have : IsIso γ.φH := by
     rw [← γ.quasiIso_iff]
     infer_instance
@@ -787,7 +787,7 @@ lemma quasiIso_map_iff_of_preservesRightHomology
     [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂]
     [F.ReflectsIsomorphisms] :
     QuasiIso (F.mapShortComplex.map φ) ↔ QuasiIso φ := by
-  have γ : RightHomologyMapData φ S₁.rightHomologyData S₂.rightHomologyData := default
+  let γ : RightHomologyMapData φ S₁.rightHomologyData S₂.rightHomologyData := default
   rw [γ.quasiIso_iff, (γ.map F).quasiIso_iff, RightHomologyMapData.map_φH]
   constructor
   · intro

@@ -139,7 +139,7 @@ theorem IsEulerian.even_degree_iff {x u v : V} {p : G.Walk u v} (ht : p.IsEuleri
   change Multiset.card _ = _
   congr 1
   convert_to _ = (ht.isTrail.edgesFinset.filter (Membership.mem x)).val
-  have : Fintype G.edgeSet := fintypeEdgeSet ht
+  let _ : Fintype G.edgeSet := fintypeEdgeSet ht
   rw [ht.edgesFinset_eq, G.incidenceFinset_eq_filter x]
 #align simple_graph.walk.is_eulerian.even_degree_iff SimpleGraph.Walk.IsEulerian.even_degree_iff
 

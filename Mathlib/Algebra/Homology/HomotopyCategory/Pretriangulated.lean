@@ -437,7 +437,7 @@ lemma complete_distinguished_triangle_morphism
     b' = e₁.inv.hom₂ ≫ b ≫ e₂.hom.hom₂ := ⟨_, rfl⟩
   obtain ⟨a'', rfl⟩ := (quotient _ _).map_surjective a'
   obtain ⟨b'', rfl⟩ := (quotient _ _).map_surjective b'
-  have H : Homotopy (φ₁ ≫ b'') (a'' ≫ φ₂) := homotopyOfEq _ _ (by
+  let H : Homotopy (φ₁ ≫ b'') (a'' ≫ φ₂) := homotopyOfEq _ _ (by
     have comm₁₁ := e₁.inv.comm₁
     have comm₁₂ := e₂.hom.comm₁
     dsimp at comm₁₁ comm₁₂

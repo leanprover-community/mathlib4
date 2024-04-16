@@ -219,7 +219,7 @@ instance Mem.decidable {α} [DecidableEq α] (x : α) : ∀ xs : LazyList α, De
       simp only [Membership.mem, LazyList.Mem]
       exact Or.inl h
     else by
-      have := Mem.decidable x ys.get
+      let _ := Mem.decidable x ys.get
       have : (x ∈ ys.get) ↔ (x ∈ cons y ys) := by simp [(· ∈ ·), LazyList.Mem, h]
       exact decidable_of_decidable_of_iff this
 #align lazy_list.mem.decidable LazyList.Mem.decidable

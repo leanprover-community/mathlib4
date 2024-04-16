@@ -195,7 +195,7 @@ theorem age_directLimit {ι : Type w} [Preorder ι] [IsDirected ι (· ≤ ·)] 
     obtain ⟨s, hs⟩ := Mfg.range e.toHom
     let out := @Quotient.out _ (DirectLimit.setoid G f)
     obtain ⟨i, hi⟩ := Finset.exists_le (s.image (Sigma.fst ∘ out))
-    have e' := (DirectLimit.of L ι G f i).equivRange.symm.toEmbedding
+    let e' := (DirectLimit.of L ι G f i).equivRange.symm.toEmbedding
     refine' ⟨i, Mfg, ⟨e'.comp ((Substructure.inclusion _).comp e.equivRange.toEmbedding)⟩⟩
     rw [← hs, closure_le]
     intro x hx

@@ -621,7 +621,7 @@ instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd : pullback f g ⟶ Y)
     have hu : PullbackToBiproductIsKernel.pullbackToBiproduct f g ≫ u = 0 := by simpa [u]
     -- pullback_to_biproduct f g is a kernel of (f, -g), so (f, -g) is a
     -- cokernel of pullback_to_biproduct f g
-    have :=
+    let this :=
       epiIsCokernelOfKernel _
         (PullbackToBiproductIsKernel.isLimitPullbackToBiproduct f g)
     -- We use this fact to obtain a factorization of u through (f, -g) via some d : Z ⟶ R.
@@ -654,7 +654,7 @@ instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst : pullback f g ⟶ X)
     have hu : PullbackToBiproductIsKernel.pullbackToBiproduct f g ≫ u = 0 := by simpa [u]
     -- pullback_to_biproduct f g is a kernel of (f, -g), so (f, -g) is a
     -- cokernel of pullback_to_biproduct f g
-    have :=
+    let this :=
       epiIsCokernelOfKernel _
         (PullbackToBiproductIsKernel.isLimitPullbackToBiproduct f g)
     -- We use this fact to obtain a factorization of u through (f, -g) via some d : Z ⟶ R.
@@ -707,7 +707,7 @@ instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr : Z ⟶ pushout f g
   mono_of_cancel_zero _ fun {R} e h => by
     let u := biprod.lift (0 : R ⟶ Y) e
     have hu : u ≫ BiproductToPushoutIsCokernel.biproductToPushout f g = 0 := by simpa [u]
-    have :=
+    let this :=
       monoIsKernelOfCokernel _
         (BiproductToPushoutIsCokernel.isColimitBiproductToPushout f g)
     obtain ⟨d, hd⟩ := KernelFork.IsLimit.lift' this u hu
@@ -730,7 +730,7 @@ instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl : Y ⟶ pushout f g
   mono_of_cancel_zero _ fun {R} e h => by
     let u := biprod.lift e (0 : R ⟶ Z)
     have hu : u ≫ BiproductToPushoutIsCokernel.biproductToPushout f g = 0 := by simpa [u]
-    have :=
+    let this :=
       monoIsKernelOfCokernel _
         (BiproductToPushoutIsCokernel.isColimitBiproductToPushout f g)
     obtain ⟨d, hd⟩ := KernelFork.IsLimit.lift' this u hu

@@ -37,7 +37,7 @@ each further intersecting family takes at most half of the sets that are in no p
 theorem Finset.card_biUnion_le_of_intersecting (s : Finset ι) (f : ι → Finset (Finset α))
     (hf : ∀ i ∈ s, (f i : Set (Finset α)).Intersecting) :
     (s.biUnion f).card ≤ 2 ^ Fintype.card α - 2 ^ (Fintype.card α - s.card) := by
-  have : DecidableEq ι := by
+  let _ : DecidableEq ι := by
     classical
     infer_instance
   obtain hs | hs := le_total (Fintype.card α) s.card

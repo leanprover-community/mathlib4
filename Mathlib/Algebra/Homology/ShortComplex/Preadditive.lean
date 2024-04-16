@@ -96,21 +96,21 @@ variable (h₁ h₂)
 @[simp]
 lemma leftHomologyMap'_neg :
     leftHomologyMap' (-φ) h₁ h₂ = -leftHomologyMap' φ h₁ h₂ := by
-  have γ : LeftHomologyMapData φ h₁ h₂ := default
+  let γ : LeftHomologyMapData φ h₁ h₂ := default
   simp only [γ.leftHomologyMap'_eq, γ.neg.leftHomologyMap'_eq, LeftHomologyMapData.neg_φH]
 
 @[simp]
 lemma cyclesMap'_neg :
     cyclesMap' (-φ) h₁ h₂ = -cyclesMap' φ h₁ h₂ := by
-  have γ : LeftHomologyMapData φ h₁ h₂ := default
+  let γ : LeftHomologyMapData φ h₁ h₂ := default
   simp only [γ.cyclesMap'_eq, γ.neg.cyclesMap'_eq, LeftHomologyMapData.neg_φK]
 
 @[simp]
 lemma leftHomologyMap'_add :
     leftHomologyMap' (φ + φ') h₁ h₂ = leftHomologyMap' φ h₁ h₂ +
       leftHomologyMap' φ' h₁ h₂ := by
-  have γ : LeftHomologyMapData φ h₁ h₂ := default
-  have γ' : LeftHomologyMapData φ' h₁ h₂ := default
+  let γ : LeftHomologyMapData φ h₁ h₂ := default
+  let γ' : LeftHomologyMapData φ' h₁ h₂ := default
   simp only [γ.leftHomologyMap'_eq, γ'.leftHomologyMap'_eq,
     (γ.add γ').leftHomologyMap'_eq, LeftHomologyMapData.add_φH]
 
@@ -118,8 +118,8 @@ lemma leftHomologyMap'_add :
 lemma cyclesMap'_add :
     cyclesMap' (φ + φ') h₁ h₂ = cyclesMap' φ h₁ h₂ +
       cyclesMap' φ' h₁ h₂ := by
-  have γ : LeftHomologyMapData φ h₁ h₂ := default
-  have γ' : LeftHomologyMapData φ' h₁ h₂ := default
+  let γ : LeftHomologyMapData φ h₁ h₂ := default
+  let γ' : LeftHomologyMapData φ' h₁ h₂ := default
   simp only [γ.cyclesMap'_eq, γ'.cyclesMap'_eq,
     (γ.add γ').cyclesMap'_eq, LeftHomologyMapData.add_φK]
 
@@ -205,21 +205,21 @@ variable (h₁ h₂)
 @[simp]
 lemma rightHomologyMap'_neg :
     rightHomologyMap' (-φ) h₁ h₂ = -rightHomologyMap' φ h₁ h₂ := by
-  have γ : RightHomologyMapData φ h₁ h₂ := default
+  let γ : RightHomologyMapData φ h₁ h₂ := default
   simp only [γ.rightHomologyMap'_eq, γ.neg.rightHomologyMap'_eq, RightHomologyMapData.neg_φH]
 
 @[simp]
 lemma opcyclesMap'_neg :
     opcyclesMap' (-φ) h₁ h₂ = -opcyclesMap' φ h₁ h₂ := by
-  have γ : RightHomologyMapData φ h₁ h₂ := default
+  let γ : RightHomologyMapData φ h₁ h₂ := default
   simp only [γ.opcyclesMap'_eq, γ.neg.opcyclesMap'_eq, RightHomologyMapData.neg_φQ]
 
 @[simp]
 lemma rightHomologyMap'_add :
     rightHomologyMap' (φ + φ') h₁ h₂ = rightHomologyMap' φ h₁ h₂ +
       rightHomologyMap' φ' h₁ h₂ := by
-  have γ : RightHomologyMapData φ h₁ h₂ := default
-  have γ' : RightHomologyMapData φ' h₁ h₂ := default
+  let γ : RightHomologyMapData φ h₁ h₂ := default
+  let γ' : RightHomologyMapData φ' h₁ h₂ := default
   simp only [γ.rightHomologyMap'_eq, γ'.rightHomologyMap'_eq,
     (γ.add γ').rightHomologyMap'_eq, RightHomologyMapData.add_φH]
 
@@ -227,8 +227,8 @@ lemma rightHomologyMap'_add :
 lemma opcyclesMap'_add :
     opcyclesMap' (φ + φ') h₁ h₂ = opcyclesMap' φ h₁ h₂ +
       opcyclesMap' φ' h₁ h₂ := by
-  have γ : RightHomologyMapData φ h₁ h₂ := default
-  have γ' : RightHomologyMapData φ' h₁ h₂ := default
+  let γ : RightHomologyMapData φ h₁ h₂ := default
+  let γ' : RightHomologyMapData φ' h₁ h₂ := default
   simp only [γ.opcyclesMap'_eq, γ'.opcyclesMap'_eq,
     (γ.add γ').opcyclesMap'_eq, RightHomologyMapData.add_φQ]
 

@@ -32,7 +32,7 @@ instance {J : Type} [SmallCategory J] (K : J ⥤ FintypeCat.{u}) (j : J) :
 has a finite limit. -/
 noncomputable instance finiteLimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J]
     (K : J ⥤ Type*) [∀ j, Finite (K.obj j)] : Fintype (limit K) := by
-  have : Fintype (sections K) := Fintype.ofFinite (sections K)
+  let _ : Fintype (sections K) := Fintype.ofFinite (sections K)
   exact Fintype.ofEquiv (sections K) (Types.limitEquivSections K).symm
 
 noncomputable instance inclusionCreatesFiniteLimits {J : Type} [SmallCategory J] [FinCategory J] :
@@ -65,7 +65,7 @@ has a finite colimit. -/
 noncomputable instance finiteColimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J]
     (K : J ⥤ Type*) [∀ j, Finite (K.obj j)] : Fintype (colimit K) := by
   have : Finite (Types.Quot K) := Quot.finite (Types.Quot.Rel K)
-  have : Fintype (Types.Quot K) := Fintype.ofFinite (Types.Quot K)
+  let _ : Fintype (Types.Quot K) := Fintype.ofFinite (Types.Quot K)
   exact Fintype.ofEquiv (Types.Quot K) (Types.colimitEquivQuot K).symm
 
 noncomputable instance inclusionCreatesFiniteColimits {J : Type} [SmallCategory J] [FinCategory J] :

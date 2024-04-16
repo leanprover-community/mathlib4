@@ -71,7 +71,7 @@ theorem encard_univ (α : Type*) :
   rw [encard, PartENat.card_congr (Equiv.Set.univ α)]
 
 theorem Finite.encard_eq_coe_toFinset_card (h : s.Finite) : s.encard = h.toFinset.card := by
-  have := h.fintype
+  let _ := h.fintype
   rw [encard, PartENat.card_eq_coe_fintype_card,
     PartENat.withTopEquiv_natCast, toFinite_toFinset, toFinset_card]
 
@@ -110,7 +110,7 @@ theorem encard_ne_zero : s.encard ≠ 0 ↔ s.Nonempty := by
 
 theorem encard_union_eq (h : Disjoint s t) : (s ∪ t).encard = s.encard + t.encard := by
   classical
-  have e := (Equiv.Set.union (by rwa [subset_empty_iff, ← disjoint_iff_inter_eq_empty])).symm
+  let e := (Equiv.Set.union (by rwa [subset_empty_iff, ← disjoint_iff_inter_eq_empty])).symm
   simp [encard, ← PartENat.card_congr e, PartENat.card_sum, PartENat.withTopEquiv]
 
 theorem encard_insert_of_not_mem {a : α} (has : a ∉ s) : (insert a s).encard = s.encard + 1 := by
@@ -479,7 +479,7 @@ theorem Finite.cast_ncard_eq (hs : s.Finite) : s.ncard = s.encard := by
 
 theorem Nat.card_coe_set_eq (s : Set α) : Nat.card s = s.ncard := by
   obtain (h | h) := s.finite_or_infinite
-  · have := h.fintype
+  · let _ := h.fintype
     rw [ncard, h.encard_eq_coe_toFinset_card, Nat.card_eq_fintype_card,
       toFinite_toFinset, toFinset_card, ENat.toNat_coe]
   have := infinite_coe_iff.2 h
@@ -525,7 +525,7 @@ theorem ncard_mono [Finite α] : @Monotone (Set α) _ _ _ ncard := fun _ _ ↦ n
 
 theorem ncard_univ (α : Type*) : (univ : Set α).ncard = Nat.card α := by
   cases' finite_or_infinite α with h h
-  · have hft := Fintype.ofFinite α
+  · let hft := Fintype.ofFinite α
     rw [ncard_eq_toFinset_card, Finite.toFinset_univ, Finset.card_univ, Nat.card_eq_fintype_card]
   rw [Nat.card_eq_zero_of_infinite, Infinite.ncard]
   exact infinite_univ
@@ -795,8 +795,8 @@ theorem surj_on_of_inj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
     rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
     simp only [f', Subtype.mk.injEq] at hxy ⊢
     apply hinj _ _ hx hy hxy
-  have hft := ht.fintype
-  have hft' := Fintype.ofInjective f' finj
+  let hft := ht.fintype
+  let hft' := Fintype.ofInjective f' finj
   set f'' : ∀ a, a ∈ s.toFinset → β := fun a h ↦ f a (by simpa using h)
   convert @Finset.surj_on_of_inj_on_of_card_le _ _ _ t.toFinset f'' _ _ _ _ (by simpa)
   · simp
@@ -995,7 +995,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_ncard {n : ℕ} (hst : 2 * n < (s 
 
 @[simp] theorem ncard_eq_one : s.ncard = 1 ↔ ∃ a, s = {a} := by
   refine' ⟨fun h ↦ _, by rintro ⟨a, rfl⟩; rw [ncard_singleton]⟩
-  have hft := (finite_of_ncard_ne_zero (ne_zero_of_eq_one h)).fintype
+  let hft := (finite_of_ncard_ne_zero (ne_zero_of_eq_one h)).fintype
   simp_rw [ncard_eq_toFinset_card', @Finset.card_eq_one _ (toFinset s)] at h
   refine' h.imp fun a ha ↦ _
   simp_rw [Set.ext_iff, mem_singleton_iff]

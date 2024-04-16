@@ -611,7 +611,7 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     simp
   have hdir : DirectedOn (· ≤ ·) (domain '' c) :=
     directedOn_image.2 (hc.mono @(domain_mono.monotone))
-  have P : ∀ x : ↥(sSup (domain '' c)), { p : c // (x : E) ∈ p.val.domain } := by
+  let P : ∀ x : ↥(sSup (domain '' c)), { p : c // (x : E) ∈ p.val.domain } := by
     rintro x
     apply Classical.indefiniteDescription
     have := (mem_sSup_of_directed (cne.image _) hdir).1 x.2

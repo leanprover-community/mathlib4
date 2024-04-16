@@ -119,7 +119,7 @@ variable [Φ.HasRightResolutions] (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W�
 lemma essSurj_of_hasRightResolutions : (Φ.functor ⋙ L₂).EssSurj where
   mem_essImage X₂ := by
     have := Localization.essSurj L₂ W₂
-    have R : Φ.RightResolution (L₂.objPreimage X₂) := Classical.arbitrary _
+    let R : Φ.RightResolution (L₂.objPreimage X₂) := Classical.arbitrary _
     exact ⟨R.X₁, ⟨(Localization.isoOfHom L₂ W₂ _ R.hw).symm ≪≫ L₂.objObjPreimageIso X₂⟩⟩
 
 lemma isIso_iff_of_hasRightResolutions {F G : D₂ ⥤ H} (α : F ⟶ G) :

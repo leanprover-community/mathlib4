@@ -52,7 +52,7 @@ lemma Preadditive.mono_iff_injective' {X Y : C} (f : X ⟶ Y) :
     Mono f ↔ Function.Injective ((forget C).map f) := by
   simp only [mono_iff_injective, ← CategoryTheory.mono_iff_injective]
   apply (MorphismProperty.RespectsIso.monomorphisms (Type w)).arrow_mk_iso_iff
-  have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
+  let e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
   exact Arrow.isoOfNatIso e (Arrow.mk f)
 
 lemma Preadditive.epi_iff_surjective {X Y : C} (f : X ⟶ Y) :
@@ -67,7 +67,7 @@ lemma Preadditive.epi_iff_surjective' {X Y : C} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective ((forget C).map f) := by
   simp only [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective]
   apply (MorphismProperty.RespectsIso.epimorphisms (Type w)).arrow_mk_iso_iff
-  have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
+  let e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
   exact Arrow.isoOfNatIso e (Arrow.mk f)
 
 namespace ShortComplex
@@ -134,8 +134,8 @@ variable (D : SnakeInput C)
 lemma δ_apply (x₃ : D.L₀.X₃) (x₂ : D.L₁.X₂) (x₁ : D.L₂.X₁)
     (h₂ : D.L₁.g x₂ = D.v₀₁.τ₃ x₃) (h₁ : D.L₂.f x₁ = D.v₁₂.τ₂ x₂) :
     D.δ x₃ = D.v₂₃.τ₁ x₁ := by
-  have := (forget₂ C Ab).preservesFiniteLimitsOfPreservesHomology
-  have : PreservesFiniteLimits (forget C) := by
+  let _ := (forget₂ C Ab).preservesFiniteLimitsOfPreservesHomology
+  let _ : PreservesFiniteLimits (forget C) := by
     have : forget₂ C Ab ⋙ forget Ab = forget C := HasForget₂.forget_comp
     simpa only [← this] using compPreservesFiniteLimits _ _
   have eq := congr_fun ((forget C).congr_map D.snd_δ)
@@ -159,7 +159,7 @@ lemma δ_apply' (x₃ : (forget₂ C Ab).obj D.L₀.X₃)
     (h₂ : (forget₂ C Ab).map D.L₁.g x₂ = (forget₂ C Ab).map D.v₀₁.τ₃ x₃)
     (h₁ : (forget₂ C Ab).map D.L₂.f x₁ = (forget₂ C Ab).map D.v₁₂.τ₂ x₂) :
     (forget₂ C Ab).map D.δ x₃ = (forget₂ C Ab).map D.v₂₃.τ₁ x₁ := by
-  have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
+  let e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
   apply (mono_iff_injective (e.hom.app _)).1 inferInstance
   refine (congr_hom (e.hom.naturality D.δ) x₃).trans
     ((D.δ_apply (e.hom.app _ x₃) (e.hom.app _ x₂) (e.hom.app _ x₁) ?_ ?_ ).trans

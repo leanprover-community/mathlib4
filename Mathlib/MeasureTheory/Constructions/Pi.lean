@@ -224,7 +224,7 @@ variable {δ : Type*} {π : δ → Type*} [∀ x, MeasurableSpace (π x)]
 protected def tprod (l : List δ) (μ : ∀ i, Measure (π i)) : Measure (TProd π l) := by
   induction' l with i l ih
   · exact dirac PUnit.unit
-  · have := (μ i).prod (α := π i) ih
+  · let this := (μ i).prod (α := π i) ih
     exact this
 #align measure_theory.measure.tprod MeasureTheory.Measure.tprod
 

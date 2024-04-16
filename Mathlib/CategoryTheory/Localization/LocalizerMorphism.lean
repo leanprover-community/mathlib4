@@ -149,7 +149,7 @@ localization functor for `W₁`, then `Φ` is a localized equivalence. -/
 lemma IsLocalizedEquivalence.of_isLocalization_of_isLocalization
     [(Φ.functor ⋙ L₂).IsLocalization W₁] :
     IsLocalizedEquivalence Φ := by
-  have : CatCommSq Φ.functor (Φ.functor ⋙ L₂) L₂ (𝟭 D₂) :=
+  let _ : CatCommSq Φ.functor (Φ.functor ⋙ L₂) L₂ (𝟭 D₂) :=
     CatCommSq.mk (Functor.rightUnitor _).symm
   exact IsLocalizedEquivalence.mk' Φ (Φ.functor ⋙ L₂) L₂ (𝟭 D₂)
 
