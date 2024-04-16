@@ -137,9 +137,9 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     (h₂ : ∀ j : J, f₂ ≫ (F.mapCone c).π.app j = s.π.app j) : f₁ = f₂ := by
   -- We can make two cones over the diagram of `s` via `f₁` and `f₂`.
   let α₁ : (F.mapCone c).toStructuredArrow ⋙ map f₁ ⟶ s.toStructuredArrow :=
-    { app := fun X => eqToHom (by simp [← h₁]) }
+    { app := fun X => eqToHom (StructuredArrow.obj_ext rfl (by simp [← h₁])) }
   let α₂ : (F.mapCone c).toStructuredArrow ⋙ map f₂ ⟶ s.toStructuredArrow :=
-    { app := fun X => eqToHom (by simp [← h₂]) }
+    { app := fun X => eqToHom (StructuredArrow.obj_ext rfl (by simp [← h₂])) }
   let c₁ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
     (Cones.postcompose (whiskerRight α₁ (pre s.pt K F) : _)).obj (c.toStructuredArrowCone F f₁)
   let c₂ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
@@ -256,7 +256,7 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
         Category.comp_id, colimit.ι_map]
       rcases j with ⟨j_left, ⟨⟨⟩⟩, j_hom⟩
       congr
-      rw [CostructuredArrow.map_mk, Category.id_comp, CostructuredArrow.mk])
+      exact CostructuredArrow.obj_ext (by rfl) (by simp))
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan_evaluation_iso_colim CategoryTheory.lanEvaluationIsoColim
 

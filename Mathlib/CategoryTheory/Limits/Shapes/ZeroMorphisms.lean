@@ -623,8 +623,7 @@ because `f = g` only implies `image f ≅ image g`.
 @[simp]
 theorem image.ι_zero' [HasEqualizers C] {X Y : C} {f : X ⟶ Y} (h : f = 0) [HasImage f] :
     image.ι f = 0 := by
-  rw [image.eq_fac h]
-  simp
+  rw [← image.eq_fac h, ι_zero, comp_zero]
 #align category_theory.limits.image.ι_zero' CategoryTheory.Limits.image.ι_zero'
 
 end Image

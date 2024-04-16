@@ -650,15 +650,17 @@ theorem map_pullback [HasPullbacks C] {X Y Z W : C} {f : X ⟶ Y} {g : X ⟶ Z} 
   apply Quotient.sound
   apply ThinSkeleton.equiv_of_both_ways
   · refine' MonoOver.homMk (pullback.lift pullback.fst _ _) (pullback.lift_snd _ _ _)
-    change _ ≫ a.arrow ≫ h = (pullback.snd ≫ g) ≫ _
-    rw [assoc, ← comm, pullback.condition_assoc]
+    simp [comm, pullback.condition_assoc]
   · refine' MonoOver.homMk (pullback.lift pullback.fst
       (PullbackCone.IsLimit.lift t (pullback.fst ≫ a.arrow) pullback.snd _)
       (PullbackCone.IsLimit.lift_fst _ _ _ _).symm) _
-    · rw [← pullback.condition, assoc]
-      rfl
-    · dsimp
-      rw [pullback.lift_snd_assoc]
+    · rw [← pullback.condition]
+      simp
+    · simp? says
+        simp only [Functor.id_obj, Functor.const_obj_obj, MonoOver.pullback_obj_left,
+          MonoOver.map_obj_left, MonoOver.forget_obj_left, MonoOver.forget_obj_hom,
+          MonoOver.map_obj_arrow, MonoOver.pullback_obj_arrow, limit.lift_π_assoc, id_eq,
+          eq_mpr_eq_cast, PullbackCone.mk_pt, PullbackCone.mk_π_app, cospan_one, cospan_right]
       apply PullbackCone.IsLimit.lift_snd
 #align category_theory.subobject.map_pullback CategoryTheory.Subobject.map_pullback
 
