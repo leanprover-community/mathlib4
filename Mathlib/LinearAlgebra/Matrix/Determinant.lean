@@ -516,7 +516,7 @@ theorem det_eq_of_forall_row_eq_smul_add_const {A B : Matrix n n R} (c : n → R
 
 theorem det_eq_of_forall_row_eq_smul_add_pred_aux {n : ℕ} (k : Fin (n + 1)) :
     ∀ (c : Fin n → R) (_hc : ∀ i : Fin n, k < i.succ → c i = 0)
-      {M N : Mat[n.succ,n.succ][R}] (_h0 : ∀ j, M 0 j = N 0 j)
+      {M N : Mat[n.succ,n.succ][R]} (_h0 : ∀ j, M 0 j = N 0 j)
       (_hsucc : ∀ (i : Fin n) (j), M i.succ j = N i.succ j + c i * M (Fin.castSucc i) j),
       det M = det N := by
   refine' Fin.induction _ (fun k ih => _) k <;> intro c hc M N h0 hsucc
@@ -553,7 +553,7 @@ theorem det_eq_of_forall_row_eq_smul_add_pred_aux {n : ℕ} (k : Fin (n + 1)) :
 #align matrix.det_eq_of_forall_row_eq_smul_add_pred_aux Matrix.det_eq_of_forall_row_eq_smul_add_pred_aux
 
 /-- If you add multiples of previous rows to the next row, the determinant doesn't change. -/
-theorem det_eq_of_forall_row_eq_smul_add_pred {n : ℕ} {A B : Mat[(n + 1),(n + 1)][R}]
+theorem det_eq_of_forall_row_eq_smul_add_pred {n : ℕ} {A B : Mat[(n + 1),(n + 1)][R]}
     (c : Fin n → R) (A_zero : ∀ j, A 0 j = B 0 j)
     (A_succ : ∀ (i : Fin n) (j), A i.succ j = B i.succ j + c i * A (Fin.castSucc i) j) :
     det A = det B :=
@@ -562,7 +562,7 @@ theorem det_eq_of_forall_row_eq_smul_add_pred {n : ℕ} {A B : Mat[(n + 1),(n + 
 #align matrix.det_eq_of_forall_row_eq_smul_add_pred Matrix.det_eq_of_forall_row_eq_smul_add_pred
 
 /-- If you add multiples of previous columns to the next columns, the determinant doesn't change. -/
-theorem det_eq_of_forall_col_eq_smul_add_pred {n : ℕ} {A B : Mat[(n + 1),(n + 1)][R}]
+theorem det_eq_of_forall_col_eq_smul_add_pred {n : ℕ} {A B : Mat[(n + 1),(n + 1)][R]}
     (c : Fin n → R) (A_zero : ∀ i, A i 0 = B i 0)
     (A_succ : ∀ (i) (j : Fin n), A i j.succ = B i j.succ + c j * A i (Fin.castSucc j)) :
     det A = det B := by
@@ -779,7 +779,7 @@ theorem det_succ_column {n : ℕ} (A : Mat[n.succ,n.succ][R]) (j : Fin n.succ) :
 
 /-- Determinant of 0x0 matrix -/
 @[simp]
-theorem det_fin_zero {A : Mat[0,0][R}] : det A = 1 :=
+theorem det_fin_zero {A : Mat[0,0][R]} : det A = 1 :=
   det_isEmpty
 #align matrix.det_fin_zero Matrix.det_fin_zero
 

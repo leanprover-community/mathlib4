@@ -364,8 +364,8 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
         rw [RingHom.map_det]
       _ = Matrix.det ((Ideal.Quotient.mk p).mapMatrix (Matrix.of A' - 1)) := rfl
       _ = Matrix.det fun i j =>
-          (Ideal.Quotient.mk p) (A' i j) - (1 : Mat[n,n][(R] ⧸ p)) i j := ?_
-      _ = Matrix.det (-1 : Mat[n,n][(R] ⧸ p)) := ?_
+          (Ideal.Quotient.mk p) (A' i j) - (1 : Mat[n,n][R ⧸ p]) i j := ?_
+      _ = Matrix.det (-1 : Mat[n,n][R ⧸ p]) := ?_
       _ = (-1 : R ⧸ p) ^ n := by rw [Matrix.det_neg, Fintype.card_fin, Matrix.det_one, mul_one]
       _ ≠ 0 := IsUnit.ne_zero (isUnit_one.neg.pow _)
     · refine congr_arg Matrix.det (Matrix.ext fun i j => ?_)
