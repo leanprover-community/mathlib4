@@ -310,9 +310,9 @@ theorem comap_bracket_eq {J₁ J₂ : LieIdeal R L'} (h : f.IsIdealMorphism) :
     simp only [hz₁, hz₂, Submodule.coe_mk, LieHom.map_lie]
   · rintro ⟨x, ⟨⟨z₁, hz₁⟩, ⟨z₂, hz₂⟩, hx⟩, hy⟩; rw [← hy, ← hx]
     have hz₁' : f z₁ ∈ f.idealRange ⊓ J₁ := by
-      rw [LieSubmodule.mem_inf]; exact ⟨f.mem_idealRange, hz₁⟩
+      rw [LieSubmodule.mem_inf]; exact ⟨f.mem_idealRange z₁, hz₁⟩
     have hz₂' : f z₂ ∈ f.idealRange ⊓ J₂ := by
-      rw [LieSubmodule.mem_inf]; exact ⟨f.mem_idealRange, hz₂⟩
+      rw [LieSubmodule.mem_inf]; exact ⟨f.mem_idealRange z₂, hz₂⟩
     use ⟨f z₁, hz₁'⟩, ⟨f z₂, hz₂'⟩; simp only [Submodule.coe_mk, LieHom.map_lie]
 #align lie_ideal.comap_bracket_eq LieIdeal.comap_bracket_eq
 

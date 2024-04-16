@@ -239,6 +239,17 @@ theorem liftIoc_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ioc a (a + p))
   rfl
 #align add_circle.lift_Ioc_coe_apply AddCircle.liftIoc_coe_apply
 
+lemma eq_coe_Ico (a : AddCircle p) : ∃ b, b ∈ Ico 0 p ∧ ↑b = a := by
+  let b := QuotientAddGroup.equivIcoMod hp.out 0 a
+  exact ⟨b.1, by simpa only [zero_add] using b.2,
+    (QuotientAddGroup.equivIcoMod hp.out 0).symm_apply_apply a⟩
+
+lemma coe_eq_zero_iff_of_mem_Ico (ha : a ∈ Ico 0 p) :
+    (a : AddCircle p) = 0 ↔ a = 0 := by
+  have h0 : 0 ∈ Ico 0 (0 + p) := by simpa [zero_add, left_mem_Ico] using hp.out
+  have ha' : a ∈ Ico 0 (0 + p) := by rwa [zero_add]
+  rw [← AddCircle.coe_eq_coe_iff_of_mem_Ico ha' h0, QuotientAddGroup.mk_zero]
+
 variable (p a)
 
 section Continuity
@@ -388,7 +399,7 @@ theorem addOrderOf_coe_rat {q : ℚ} : addOrderOf (↑(↑q * p) : AddCircle p) 
   have : (↑(q.den : ℤ) : 𝕜) ≠ 0 := by
     norm_cast
     exact q.pos.ne.symm
-  rw [← @Rat.num_den q, Rat.cast_mk_of_ne_zero _ _ this, Int.cast_natCast, Rat.num_den,
+  rw [← q.num_divInt_den, Rat.cast_divInt_of_ne_zero _ this, Int.cast_natCast, Rat.num_divInt_den,
     addOrderOf_div_of_gcd_eq_one' q.pos q.reduced]
 #align add_circle.add_order_of_coe_rat AddCircle.addOrderOf_coe_rat
 
@@ -500,13 +511,17 @@ instance : ProperlyDiscontinuousVAdd (zmultiples p).op ℝ :=
 
 end AddCircle
 
-attribute [local instance] Real.fact_zero_lt_one
+section UnitAddCircle
+
+instance instZeroLTOne [StrictOrderedSemiring 𝕜] : Fact ((0 : 𝕜) < 1) := ⟨zero_lt_one⟩
 
 /- ./././Mathport/Syntax/Translate/Command.lean:328:31: unsupported: @[derive] abbrev -/
 /-- The unit circle `ℝ ⧸ ℤ`. -/
 abbrev UnitAddCircle :=
   AddCircle (1 : ℝ)
 #align unit_add_circle UnitAddCircle
+
+end UnitAddCircle
 
 section IdentifyIccEnds
 

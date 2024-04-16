@@ -26,8 +26,6 @@ Results include
     The leading_coefficient of a sum is determined by the leading coefficients and degrees
 -/
 
-set_option autoImplicit true
-
 -- Porting note: `Mathlib.Data.Nat.Cast.WithTop` should be imported for `Nat.cast_withBot`.
 
 set_option linter.uppercaseLean3 false
@@ -1129,7 +1127,7 @@ theorem coeff_pow_mul_natDegree (p : R[X]) (n : ℕ) :
       exact coeff_mul_degree_add_degree _ _
 #align polynomial.coeff_pow_mul_nat_degree Polynomial.coeff_pow_mul_natDegree
 
-theorem coeff_mul_add_eq_of_natDegree_le {df dg : ℕ} {g : R[X]}
+theorem coeff_mul_add_eq_of_natDegree_le {df dg : ℕ} {f g : R[X]}
     (hdf : natDegree f ≤ df) (hdg : natDegree g ≤ dg) :
     (f * g).coeff (df + dg) = f.coeff df * g.coeff dg := by
   rw [coeff_mul, Finset.sum_eq_single_of_mem (df, dg)]
@@ -1484,7 +1482,7 @@ theorem degree_X_add_C (a : R) : degree (X + C a) = 1 := by
   have : degree (C a) < degree (X : R[X]) :=
     calc
       degree (C a) ≤ 0 := degree_C_le
-      _ < 1 := (WithBot.some_lt_some.mpr zero_lt_one)
+      _ < 1 := WithBot.some_lt_some.mpr zero_lt_one
       _ = degree X := degree_X.symm
   rw [degree_add_eq_left_of_degree_lt this, degree_X]
 #align polynomial.degree_X_add_C Polynomial.degree_X_add_C
