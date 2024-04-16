@@ -1631,6 +1631,8 @@ import Mathlib.Combinatorics.Quiver.Push
 import Mathlib.Combinatorics.Quiver.SingleObj
 import Mathlib.Combinatorics.Quiver.Subquiver
 import Mathlib.Combinatorics.Quiver.Symmetric
+import Mathlib.Combinatorics.Ramsey.HalesJewett
+import Mathlib.Combinatorics.Ramsey.Hypergraph
 import Mathlib.Combinatorics.Schnirelmann
 import Mathlib.Combinatorics.SetFamily.AhlswedeZhang
 import Mathlib.Combinatorics.SetFamily.CauchyDavenport
