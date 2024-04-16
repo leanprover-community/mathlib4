@@ -3245,7 +3245,6 @@ import Mathlib.Order.Monotone.Extension
 import Mathlib.Order.Monotone.Monovary
 import Mathlib.Order.Monotone.Odd
 import Mathlib.Order.Monotone.Union
-import Mathlib.Order.NatFiberEnum
 import Mathlib.Order.Notation
 import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Order.OrdContinuous

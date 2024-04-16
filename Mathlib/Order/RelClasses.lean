@@ -114,6 +114,11 @@ theorem IsLinearOrder.swap (r) [IsLinearOrder α r] : IsLinearOrder α (swap r) 
   { @IsPartialOrder.swap α r _, @IsTotal.swap α r _ with }
 #align is_linear_order.swap IsLinearOrder.swap
 
+instance isPartialOrder_eq (α : Type*) : IsPartialOrder α Eq where
+  refl _ := rfl
+  trans _ _ _ := Eq.trans
+  antisymm _ _ _ := Eq.symm
+
 protected theorem IsAsymm.isAntisymm (r) [IsAsymm α r] : IsAntisymm α r :=
   ⟨fun _ _ h₁ h₂ => (_root_.asymm h₁ h₂).elim⟩
 #align is_asymm.is_antisymm IsAsymm.isAntisymm
