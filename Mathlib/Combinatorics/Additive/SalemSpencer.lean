@@ -312,7 +312,7 @@ variable [DecidableEq α]
 
 section Monoid
 
-variable [Monoid α] [DecidableEq β] [Monoid β] (s t : Finset α) {m : ℕ}
+variable [Monoid α] [DecidableEq β] [Monoid β] (s t : Finset α)
 
 /-- The multiplicative Roth number of a finset is the cardinality of its biggest multiplicative
 Salem-Spencer subset. -/
