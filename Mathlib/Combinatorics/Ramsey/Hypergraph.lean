@@ -300,7 +300,7 @@ theorem exists_monochromatic_subsequence_tuple (c : (Fin k ↪o ℕ) → κ) :
 theorem exists_monochromatic_subsequence_finset {k : ℕ} (c : (s : Finset ℕ) → s.card = k → κ) :
     ∃ (c₀ : κ) (g : ℕ ↪o ℕ), ∀ (s : Finset ℕ) hs, c (s.map g.toEmbedding) (by simpa) = c₀ := by
   set c' := fun (s' : Fin k ↪o ℕ) ↦ c (Finset.univ.map s'.toEmbedding) (by simp)
-  obtain ⟨c₀, g, h⟩ := tuple c'
+  obtain ⟨c₀, g, h⟩ := exists_monochromatic_subsequence_tuple c'
   refine ⟨c₀, g, fun s hs ↦ ?_⟩
   convert h (s.orderEmbOfFin hs)
   rw [← Finset.coe_inj, Finset.coe_map, Finset.coe_map]
@@ -320,8 +320,8 @@ theorem exists_strong_monochromatic_subsequence_finset {κ : Fin k → Type*} [�
   set cs' : (i : Fin k) → (s : Finset ℕ) → s.card = i → κ (Fin.castSucc i) :=
     fun i s hs ↦ cs (Fin.castSucc i) s (by simpa)
   obtain ⟨c₀s', g', hg'⟩ := ih cs'
-  obtain ⟨c₀, g, hg⟩ :=
-    finset (fun (s : Finset ℕ) (hs) ↦ cs (Fin.last k) (s.map g'.toEmbedding) (by simpa))
+  obtain ⟨c₀, g, hg⟩ := exists_monochromatic_subsequence_finset
+    (fun (s : Finset ℕ) (hs) ↦ cs (Fin.last k) (s.map g'.toEmbedding) (by simpa))
   refine ⟨Fin.lastCases c₀ c₀s', g.trans g', Fin.lastCases (fun s hs ↦ ?_) (fun i s hs ↦ ?_)⟩
   · specialize hg s (by simpa using hs)
     simp only [Fin.lastCases_last, Finset.map_eq_image, Finset.image_image] at hg ⊢
@@ -338,7 +338,7 @@ theorem exists_strong_monochromatic_subsequence_finset'
     ∀ (s : Finset ℕ) (hs : s.card < k), cs (s.map g.toEmbedding) (by simpa) = c₀s ⟨s.card, hs⟩ := by
   set cs' : (i : Fin k) → (s : Finset ℕ) → (hs : s.card = i) → κ :=
     fun i s hs ↦ cs s (by rw [hs]; exact i.2)
-  obtain ⟨c₀s, g, hg⟩ := strong_finset cs'
+  obtain ⟨c₀s, g, hg⟩ := exists_strong_monochromatic_subsequence_finset cs'
   exact ⟨c₀s, g, fun s hs ↦ hg ⟨s.card, hs⟩ s rfl⟩
 
 /-- A version of ramsey's theorem with no ordered types.
@@ -349,7 +349,7 @@ theorem exists_monochromatic_infinite_subset {α : Type*} [Infinite α]
     (hs : s.card = k), (s : Set α) ⊆ a → c s hs = c₀ := by
   classical
   set e := Infinite.natEmbedding α
-  obtain ⟨c₀, g, h⟩ := finset (fun s hs ↦ c (s.map e) (by simpa))
+  obtain ⟨c₀, g, h⟩ := exists_monochromatic_subsequence_finset (fun s hs ↦ c (s.map e) (by simpa))
   refine ⟨range (g.toEmbedding.trans e), c₀, ?_, fun s hs hsr ↦ ?_⟩
   · exact infinite_range_of_injective <| Function.Embedding.injective _
   rw [← image_univ, Finset.subset_image_iff] at hsr
