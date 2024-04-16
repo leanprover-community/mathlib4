@@ -84,7 +84,7 @@ end Lintegral
 section Integral
 
 variable [CountableOrCountablyGenerated α β] {κ : kernel α (β × Ω)} [IsFiniteKernel κ]
-  {E : Type*} {f : β × Ω → E} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+  {E : Type*} {f : β × Ω → E} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 lemma _root_.MeasureTheory.AEStronglyMeasurable.integral_kernel_condKernel (a : α)
     (hf : AEStronglyMeasurable f (κ a)) :
@@ -188,7 +188,7 @@ end Lintegral
 section Integral
 
 variable {ρ : Measure (β × Ω)} [IsFiniteMeasure ρ]
-  {E : Type*} {f : β × Ω → E} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+  {E : Type*} {f : β × Ω → E} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 lemma _root_.MeasureTheory.AEStronglyMeasurable.integral_condKernel
     (hf : AEStronglyMeasurable f ρ) :
@@ -238,7 +238,7 @@ open ProbabilityTheory
 
 variable {α Ω E F : Type*} {mα : MeasurableSpace α} [MeasurableSpace Ω]
   [StandardBorelSpace Ω] [Nonempty Ω] [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [CompleteSpace E] [NormedAddCommGroup F] {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ]
+  [NormedAddCommGroup F] {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ]
 
 theorem AEStronglyMeasurable.ae_integrable_condKernel_iff {f : α × Ω → F}
     (hf : AEStronglyMeasurable f ρ) :
