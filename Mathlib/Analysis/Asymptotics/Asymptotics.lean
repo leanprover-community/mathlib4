@@ -1926,12 +1926,18 @@ theorem isLittleO_const_id_cobounded (c : F'') :
   isLittleO_const_left.2 <| .inr tendsto_norm_cobounded_atTop
 #align asymptotics.is_o_const_id_comap_norm_at_top Asymptotics.isLittleO_const_id_cobounded
 
-theorem isLittleO_const_id_atTop (c : E'') : (fun _x : ℝ => c) =o[atTop] id :=
-  isLittleO_const_left.2 <| Or.inr tendsto_abs_atTop_atTop
+theorem isLittleO_const_id_cocompact [ProperSpace F''] (c : E'') :
+    (fun _ => c) =o[cocompact F''] id :=
+  isLittleO_const_left.2 <| Or.inr tendsto_norm_cocompact_atTop
+
+theorem isLittleO_const_id_atTop [LinearOrder F''] [NoMaxOrder F''] [ClosedIciTopology F'']
+    [ProperSpace F''] (c : E'') : (fun _ : F'' => c) =o[atTop] id :=
+ (isLittleO_const_id_cocompact c).mono atTop_le_cocompact
 #align asymptotics.is_o_const_id_at_top Asymptotics.isLittleO_const_id_atTop
 
-theorem isLittleO_const_id_atBot (c : E'') : (fun _x : ℝ => c) =o[atBot] id :=
-  isLittleO_const_left.2 <| Or.inr tendsto_abs_atBot_atTop
+theorem isLittleO_const_id_atBot [LinearOrder F''] [NoMinOrder F''] [ClosedIicTopology F'']
+    [ProperSpace F''] (c : E'') : (fun _ : F'' => c) =o[atBot] id :=
+  (isLittleO_const_id_cocompact c).mono atBot_le_cocompact
 #align asymptotics.is_o_const_id_at_bot Asymptotics.isLittleO_const_id_atBot
 
 /-!
