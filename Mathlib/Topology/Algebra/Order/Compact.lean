@@ -571,19 +571,17 @@ theorem eq_Icc_of_connected_compact {s : Set α} (h₁ : IsConnected s) (h₂ : 
   eq_Icc_csInf_csSup_of_connected_bdd_closed h₁ h₂.bddBelow h₂.bddAbove h₂.isClosed
 #align eq_Icc_of_connected_compact eq_Icc_of_connected_compact
 
-/- If `f : γ → β → α` is a function that is continuous as a function on `γ × β`, `α` is a
+/-- If `f : γ → β → α` is a function that is continuous as a function on `γ × β`, `α` is a
 conditionally complete linear order, and `K : Set β` is a compact set, then
-`fun x ↦ sSup (f x '' K)` is a continuous function.
-
-Porting note (#11215): TODO: generalize. The following version seems to be true:
+`fun x ↦ sSup (f x '' K)` is a continuous function. -/
+/- Porting note (#11215): TODO: generalize. The following version seems to be true:
 ```
 theorem IsCompact.tendsto_sSup {f : γ → β → α} {g : β → α} {K : Set β} {l : Filter γ}
     (hK : IsCompact K) (hf : ∀ y ∈ K, Tendsto ↿f (l ×ˢ 𝓝[K] y) (𝓝 (g y)))
     (hgc : ContinuousOn g K) :
     Tendsto (fun x => sSup (f x '' K)) l (𝓝 (sSup (g '' K))) := _
 ```
-Moreover, it seems that `hgc` follows from `hf` (Yury Kudryashov).
--/
+Moreover, it seems that `hgc` follows from `hf` (Yury Kudryashov). -/
 theorem IsCompact.continuous_sSup {f : γ → β → α} {K : Set β} (hK : IsCompact K)
     (hf : Continuous ↿f) : Continuous fun x => sSup (f x '' K) := by
   rcases eq_empty_or_nonempty K with (rfl | h0K)

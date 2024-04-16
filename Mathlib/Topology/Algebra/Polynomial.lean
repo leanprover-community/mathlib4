@@ -124,7 +124,7 @@ theorem tendsto_abv_atTop {R k α : Type*} [Ring R] [LinearOrderedField k] (abv 
     [IsAbsoluteValue abv] (p : R[X]) (h : 0 < degree p) {l : Filter α} {z : α → R}
     (hz : Tendsto (abv ∘ z) l atTop) : Tendsto (fun x => abv (p.eval (z x))) l atTop := by
   apply tendsto_abv_eval₂_atTop _ _ _ h _ hz
-  exact (mt leadingCoeff_eq_zero.1 (ne_zero_of_degree_gt h))
+  exact mt leadingCoeff_eq_zero.1 (ne_zero_of_degree_gt h)
 #align polynomial.tendsto_abv_at_top Polynomial.tendsto_abv_atTop
 
 theorem tendsto_abv_aeval_atTop {R A k α : Type*} [CommSemiring R] [Ring A] [Algebra R A]
