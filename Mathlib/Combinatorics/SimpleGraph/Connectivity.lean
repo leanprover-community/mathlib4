@@ -1475,7 +1475,7 @@ theorem length_bypass_le {u v : V} (p : G.Walk u v) : p.bypass.length ≤ p.leng
       exact add_le_add_right ih 1
 #align simple_graph.walk.length_bypass_le SimpleGraph.Walk.length_bypass_le
 
-lemma bypass_eq_of_length_le {u v : V} (p : G.Walk u v) (h : p.length ≤ p.bypass.length) :
+lemma bypass_eq_self_of_length_le {u v : V} (p : G.Walk u v) (h : p.length ≤ p.bypass.length) :
     p.bypass = p := by
   induction p with
   | nil => rfl
