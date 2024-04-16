@@ -17,9 +17,6 @@ This module extends the core library's treatment of quotient types (`Init.Core`)
 quotient
 -/
 
-set_option autoImplicit true
-
-
 variable {α : Sort*} {β : Sort*}
 
 namespace Setoid
@@ -44,7 +41,7 @@ variable {ra : α → α → Prop} {rb : β → β → Prop} {φ : Quot ra → Q
 local notation3:arg "⟦" a "⟧" => Quot.mk _ a
 
 @[elab_as_elim]
-protected theorem induction_on {α : Sort u} {r : α → α → Prop} {β : Quot r → Prop} (q : Quot r)
+protected theorem induction_on {α : Sort*} {r : α → α → Prop} {β : Quot r → Prop} (q : Quot r)
     (h : ∀ a, β (Quot.mk r a)) : β q :=
   ind h q
 

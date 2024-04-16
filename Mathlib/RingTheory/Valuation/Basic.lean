@@ -71,7 +71,7 @@ section
 
 variable (F R) (Γ₀ : Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
 
---porting note (#10927): removed @[nolint has_nonempty_instance]
+--porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The type of `Γ₀`-valued valuations on `R`.
 
 When you extend this structure, make sure to extend `ValuationClass`. -/
@@ -292,7 +292,7 @@ theorem map_sub_swap (x y : R) : v (x - y) = v (y - x) :=
 theorem map_sub (x y : R) : v (x - y) ≤ max (v x) (v y) :=
   calc
     v (x - y) = v (x + -y) := by rw [sub_eq_add_neg]
-    _ ≤ max (v x) (v <| -y) := (v.map_add _ _)
+    _ ≤ max (v x) (v <| -y) := v.map_add _ _
     _ = max (v x) (v y) := by rw [map_neg]
 #align valuation.map_sub Valuation.map_sub
 
@@ -312,7 +312,7 @@ theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = max (v x) (v y) 
   apply lt_irrefl (v x)
   calc
     v x = v (x + y - y) := by simp
-    _ ≤ max (v <| x + y) (v y) := (map_sub _ _ _)
+    _ ≤ max (v <| x + y) (v y) := map_sub _ _ _
     _ < v x := max_lt h' vyx
 #align valuation.map_add_of_distinct_val Valuation.map_add_of_distinct_val
 
@@ -385,7 +385,7 @@ theorem map {v' : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f
   fun r s =>
   calc
     f (v r) ≤ f (v s) ↔ v r ≤ v s := by rw [H.le_iff_le]
-    _ ↔ v' r ≤ v' s := (h r s)
+    _ ↔ v' r ≤ v' s := h r s
     _ ↔ f (v' r) ≤ f (v' s) := by rw [H.le_iff_le]
 #align valuation.is_equiv.map Valuation.IsEquiv.map
 
@@ -486,9 +486,7 @@ theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
   · rw [isEquiv_iff_val_eq_one]
     intro h x
     by_cases hx : x = 0
-    · -- Porting note: this proof was `simp only [(zero_iff _).2 hx, zero_ne_one]`
-      rw [(zero_iff _).2 hx, (zero_iff _).2 hx]
-      simp only [zero_ne_one]
+    · simp only [(zero_iff _).2 hx, zero_ne_one]
     constructor
     · intro hh
       by_contra h_1
@@ -543,7 +541,7 @@ def supp : Ideal R where
   smul_mem' c x hx :=
     calc
       v (c * x) = v c * v x := map_mul v c x
-      _ = v c * 0 := (congr_arg _ hx)
+      _ = v c * 0 := congr_arg _ hx
       _ = 0 := mul_zero _
 #align valuation.supp Valuation.supp
 
@@ -590,7 +588,7 @@ section AddMonoid
 variable (R) [Ring R] (Γ₀ : Type*) [LinearOrderedAddCommMonoidWithTop Γ₀]
 
 /-- The type of `Γ₀`-valued additive valuations on `R`. -/
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 def AddValuation :=
   Valuation R (Multiplicative Γ₀ᵒᵈ)
 #align add_valuation AddValuation

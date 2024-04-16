@@ -117,7 +117,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
             linarith
           _ = γ - (1 / 2) ^ (n + 1) + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ n) := by
             simp only [sub_eq_add_neg]; abel
-          _ ≤ d (e (n + 1)) + d (f m n) := (add_le_add (le_of_lt <| he₂ _) ih)
+          _ ≤ d (e (n + 1)) + d (f m n) := add_le_add (le_of_lt <| he₂ _) ih
           _ ≤ d (e (n + 1)) + d (f m n \ e (n + 1)) + d (f m (n + 1)) := by
             rw [f_succ _ _ hmn, d_split (f m n) (e (n + 1)) (hf _ _) (he₁ _), add_assoc]
           _ = d (e (n + 1) ∪ f m n) + d (f m (n + 1)) := by
