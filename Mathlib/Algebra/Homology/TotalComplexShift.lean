@@ -72,23 +72,6 @@ lemma shiftFunctor₂XXIso_refl (a b y : ℤ) :
 
 variable (x y : ℤ) [K.HasTotal (up ℤ)]
 
--- to be moved
-lemma hasCoproduct_of_equiv_of_iso {C I J : Type*} [Category C] (X : I → C) (Y : J → C)
-    [HasCoproduct X] (e : J ≃ I) (iso : ∀ j, Y j ≅ X (e j)) : HasCoproduct Y := by
-  have : HasColimit ((Discrete.equivalence e).functor ⋙ Discrete.functor X) :=
-    hasColimit_equivalence_comp _
-  have α : Discrete.functor Y ≅ (Discrete.equivalence e).functor ⋙ Discrete.functor X :=
-    Discrete.natIso (fun ⟨j⟩ => iso j)
-  exact hasColimitOfIso α
-
-lemma hasProduct_of_equiv_of_iso {C I J : Type*} [Category C] (X : I → C) (Y : J → C)
-    [HasProduct X] (e : J ≃ I) (iso : ∀ j, Y j ≅ X (e j)) : HasProduct Y := by
-  have : HasLimit ((Discrete.equivalence e).functor ⋙ Discrete.functor X) :=
-    hasLimitEquivalenceComp _
-  have α : Discrete.functor Y ≅ (Discrete.equivalence e).functor ⋙ Discrete.functor X :=
-    Discrete.natIso (fun ⟨j⟩ => iso j)
-  exact hasLimitOfIso α.symm
-
 instance : ((shiftFunctor₁ C x).obj K).HasTotal (up ℤ) := fun n =>
   hasCoproduct_of_equiv_of_iso (K.toGradedObject.mapObjFun (π (up ℤ) (up ℤ) (up ℤ)) (n + x)) _
     { toFun := fun ⟨⟨a, b⟩, h⟩ => ⟨⟨a + x, b⟩, by
@@ -390,6 +373,8 @@ lemma totalShift₁Iso_trans_totalShift₂Iso :
   dsimp
   rw [Iso.inv_hom_id, comp_id, id_comp]
 
+/-- The compatibility isomorphisms of the total complex with the shifts
+in both variables "commute" only up to a sign `(x * y).negOnePow`. -/
 @[reassoc]
 lemma totalShift₁Iso_hom_totalShift₂Iso_hom :
     (((shiftFunctor₂ C y).obj K).totalShift₁Iso x).hom ≫ (K.totalShift₂Iso y).hom⟦x⟧' =
