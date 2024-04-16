@@ -151,6 +151,16 @@ lemma hom_ext_of_isLeftKanExtension {G : H ⥤ D} (γ₁ γ₂ : F' ⟶ G)
     (hγ : α ≫ whiskerLeft L γ₁ = α ≫ whiskerLeft L γ₂) : γ₁ = γ₂ :=
   (F'.isUniversalOfIsLeftKanExtension α).hom_ext hγ
 
+/-- If `(F', α)` is a left Kan extension of `F` along `L`, then this
+is the induced bijection `(F' ⟶ G) ≃ (F ⟶ L ⋙ G)` for all `G`. -/
+@[pp_dot]
+noncomputable def homEquivOfIsLeftKanExtension (G : H ⥤ D) :
+    (F' ⟶ G) ≃ (F ⟶ L ⋙ G) where
+  toFun β := α ≫ whiskerLeft _ β
+  invFun β := descOfIsLeftKanExtension _ α _ β
+  left_inv β := Functor.hom_ext_of_isLeftKanExtension _ α _ _ (by aesop_cat)
+  right_inv := by aesop_cat
+
 lemma isLeftKanExtension_of_iso {F' : H ⥤ D} {F'' : H ⥤ D} (e : F' ≅ F'')
     {L : C ⥤ H} {F : C ⥤ D} (α : F ⟶ L ⋙ F') (α' : F ⟶ L ⋙ F'')
     (comm : α ≫ whiskerLeft L e.hom = α') [F'.IsLeftKanExtension α] :
