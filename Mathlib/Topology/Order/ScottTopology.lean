@@ -373,17 +373,8 @@ def DirSupClosed (s : Set α) : Prop :=
   ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → d ⊆ s → a ∈ s
 -/
 
-#check Nonempty
-
-lemma test1 (S T : Set α) : S = T ↔ S ≤ T ∧ T ≤ S := by exact le_antisymm_iff
-
-lemma test2 (S : Set α) : (S = ∅) ∨ S.Nonempty := by exact eq_empty_or_nonempty S
-
-lemma test3 : sSup ∅ = (⊥ : α) := by exact sSup_empty
-
-lemma test4 (h : Prop) : true → h ∨ true := by exact fun a ↦ Or.inr a
-
-lemma test (U : Set α) : IsOpen U ↔ (∃ (a : α), U = (Iic a)ᶜ) ∨ U = univ := by
+lemma isOpen_iff_Iic_compl_or_univ (U : Set α) :
+    IsOpen U ↔ (∃ (a : α), U = (Iic a)ᶜ) ∨ U = univ := by
   constructor
   · intro hU
     rcases eq_empty_or_nonempty Uᶜ with eUc | neUc
@@ -391,23 +382,20 @@ lemma test (U : Set α) : IsOpen U ↔ (∃ (a : α), U = (Iic a)ᶜ) ∨ U = un
     · apply Or.inl
       let b := sSup Uᶜ
       use b
-      rw [eq_compl_comm]
-      rw [le_antisymm_iff]
+      rw [eq_compl_comm, le_antisymm_iff]
       constructor
       . have d1 : DirSupClosed Uᶜ :=
           (Topology.IsScott.isClosed_iff_isLowerSet_and_dirSupClosed.mp (isClosed_compl_iff.mpr hU)).right
         have m1 : b ∈ Uᶜ :=
           (dirSupClosed_iff_forall_sSup.mp d1) neUc (IsChain.directedOn (isChain_of_trichotomous Uᶜ)) (le_refl Uᶜ)
-
-
-
-
-    --have e2 :
-    have e1 : DirSupClosed U := IsUpperSet.dirSupClosed (Topology.IsScott.isUpperSet_of_isOpen hU)
-    --rw [compl_Iic]
-    sorry
-  · intro ⟨a,ha⟩
-    rw [← isClosed_compl_iff, ha, compl_compl]
-    exact Topology.IsScott.isClosed_Iic
+        have c1 : IsLowerSet Uᶜ := Topology.IsScott.isLowerSet_of_isClosed (isClosed_compl_iff.mpr hU)
+        exact IsLowerSet.Iic_subset c1 m1
+      · exact fun  _ ha ↦ CompleteLattice.le_sSup Uᶜ _ ha
+  · intro H
+    rcases H with ⟨a,ha⟩ | hU
+    · rw [← isClosed_compl_iff, ha, compl_compl]
+      exact Topology.IsScott.isClosed_Iic
+    · rw [hU]
+      exact isOpen_univ
 
 end LinearOrder
