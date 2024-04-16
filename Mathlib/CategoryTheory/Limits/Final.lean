@@ -408,7 +408,6 @@ theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ 
 
 end Final
 
-set_option linter.haveLet false in  -- have := (I d).inv PUnit.unit
 /-- If `colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit` for all `d : D`, then `F` is cofinal.
 -/
 theorem cofinal_of_colimit_comp_coyoneda_iso_pUnit
