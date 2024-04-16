@@ -70,7 +70,7 @@ theorem fourierIntegral_half_period_translate {w : V} (hw : w ≠ 0) :
   have hiw : ⟪i w, w⟫ = 1 / 2 := by
     rw [inner_smul_left, inner_self_eq_norm_sq_to_K, RCLike.ofReal_real_eq_id, id,
       RCLike.conj_to_real, ← div_div, div_mul_cancel₀]
-    rwa [Ne.def, sq_eq_zero_iff, norm_eq_zero]
+    rwa [Ne, sq_eq_zero_iff, norm_eq_zero]
   have :
     (fun v : V => 𝐞 (-⟪v, w⟫) • f (v + i w)) =
       fun v : V => (fun x : V => -(𝐞 (-⟪x, w⟫) • f x)) (v + i w) := by

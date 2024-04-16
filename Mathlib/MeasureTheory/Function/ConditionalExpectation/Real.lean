@@ -260,7 +260,7 @@ theorem condexp_stronglyMeasurable_mul_of_bound (hm : m ≤ m0) [IsFiniteMeasure
     hf.tendsto_approxBounded_ae hf_bound
   by_cases hμ : μ = 0
   · simp only [hμ, ae_zero]; norm_cast
-  have : μ.ae.NeBot := by simp only [hμ, ae_neBot, Ne.def, not_false_iff]
+  have : μ.ae.NeBot := by simp only [hμ, ae_neBot, Ne, not_false_iff]
   have hc : 0 ≤ c := by
     rcases hf_bound.exists with ⟨_x, hx⟩
     exact (norm_nonneg _).trans hx
