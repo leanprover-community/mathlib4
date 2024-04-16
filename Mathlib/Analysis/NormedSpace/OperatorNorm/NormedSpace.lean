@@ -280,7 +280,7 @@ theorem norm_smulRightL (c : E →L[𝕜] 𝕜) [Nontrivial Fₗ] : ‖smulRight
 
 variable (𝕜 E Fₗ) in
 /-- An auxiliary instance to be able to just state the fact that the norm of `smulRightL` makes
-sense. This shouldn't be needed. TODO: fix typeclass inference. -/
+sense. This shouldn't be needed. See lean4#3927. -/
 def seminormedAddCommGroup_aux_for_smulRightL :
     SeminormedAddCommGroup ((E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ) :=
   toSeminormedAddCommGroup (F := Fₗ →L[𝕜] E →L[𝕜] Fₗ) (𝕜 := 𝕜) (σ₁₂ := RingHom.id 𝕜)

@@ -954,7 +954,7 @@ def smulRightL : ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] Co
 
 variable (𝕜 E G) in
 /-- An auxiliary instance to be able to just state the fact that the norm of `smulRightL` makes
-sense. This shouldn't be needed. TODO: fix typeclass inference. -/
+sense. This shouldn't be needed. See lean4#3927. -/
 def seminormedAddCommGroup_aux_for_smulRightL :
     SeminormedAddCommGroup
       (ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] ContinuousMultilinearMap 𝕜 E G) :=
