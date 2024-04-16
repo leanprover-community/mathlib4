@@ -519,12 +519,31 @@ def lint_backticks_in_comments(old_files, old_declarations, lines):
     return errors, newlines
 
 def test_backtick_linting():
+    # Phase 1: a very basic test that generation of the declaration dictionary works.
+    align_lines = [
+        '#align convex Convex',
+        '#align ring Ring -- comment is ignored',
+        '#align set Setₓ--so is this',
+        '#align long.decl_name Long.declName',
+        '#align a.long.name A.Long.Module.name',
+        '#align long.decl.name_two Long.Decl.nameTwo',
+        '#align cardignal Cardinal    -- comment',
+    ]
     decls = dict({
         'convex' : 'Convex', 'ring' : 'Ring', 'set' : 'Set',
         'long.decl_name' : 'Long.declName',
         'a.long.name' : 'A.Long.Module.name',
-        'long.decl.name_two' : 'Long.Decl.nameTwo'
+        # no entry 'long.name' -> 'Long.Module.name' as different number of components
+        'long.decl.name_two' : 'Long.Decl.nameTwo',
+        # Added, as there are three components in old and new declaration.
+        'decl.name_two' : 'Decl.nameTwo',
+        'cardignal' : 'Cardinal',
     })
+    _old_files, parsed_decls = parse_aligns_aligns_files(align_lines, [])
+    if parsed_decls != decls:
+        print(f'input parsing failed\nexpected declarations\n{decls}, got\n{parsed_decls}')
+        assert False
+    # Phase 2: this gives the intended output.
     def check_fine(input):
         errors, new = lint_backticks_in_comments([], decls, [input])
         assert len(new) == 1
@@ -549,13 +568,8 @@ def test_backtick_linting():
     # omitting the trailing module is also treated.
     check_error("A `long.decl_name` is transformed", "A `Long.declName` is transformed")
     check_error("Also `long.decl.name_two`", "Also `Long.Decl.nameTwo`")
-    # FIXME: need to tweak my test to hit this
-    #check_error("Also `decl.name_two`", "Also `Decl.nameTwo`")
     # But not the last part (too many false positives, for now).
     check_fine("A bare `decl_name` is left invariant.")
-    # Different numbers of components are also left alone, for now.
-    # FIXME: need to tweak my test to hit this
-    # check_fine("`a.long.name` aligned to more components")
 
 
 def output_message(path, line_nr, code, msg):
