@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
 import Mathlib.Data.Finset.Sort
-import Mathlib.Order.NatFiberEnum
+import Mathlib.Order.Extension.Linear
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Set.Intervals.Infinite
@@ -14,13 +14,13 @@ import Mathlib.Data.Set.Intervals.Infinite
 
 Ramsey's theorem for infinite hypergraphs states that, for any colouring of the `k`-subsets of an
 infinite set `S` with a finite set of colours, there is an infinite subset `S₀` of `S`
-so that all `k`-subsets of `S₀` have the same colour. We prove a number of different versions of
-this theorem.
+so that all `k`-subsets of `S₀` have the same colour. We prove this theorem, and state
+a few equivalent versions.
 
 ## Main results
 
-- `Ramsey.exists_monochromatic_infinite_subset`: the infinite hypergraph Ramsey theorem; if we
-  colour every `s : Finset α` with `s.card = k` in an `Infinite` type `α`, then there is an
+- `Ramsey.exists_monochromatic_infinite_subset`: the infinite hypergraph Ramsey theorem;
+  if we colour every `s : Finset α` with `s.card = k` in an `Infinite` type `α`, then there is an
   infinite `y : Set α` whose `k`-element subsets qll have the same colour.
 
 - `Ramsey.exists_monochromatic_subsequence_tuple`: the infinite hypergraph Ramsey theorem where the
@@ -43,22 +43,22 @@ this theorem.
 
 The theorem is often stated and thought of in terms of arbitrary sets and their subsets,
 but to make the inductive proof work smoothly, it is more convenient to work in the type `ℕ`,
-and to think of everything as a function. This way, instead of working with images of sets
+and to think of everything as a function. This way, instead of considering with images of sets
 and the relevant coercions, we can deal with compositions of functions.
 
 Specifically, we encode each `s : Finset ℕ` with `s.card = k` as an order-embedding `s : Fin k ↪o ℕ`
 and we think of an subsequence `g : ℕ ↪o ℕ` instead of an infinite subset of `ℕ`. Once the proof
 is done, it is easy to derive the more traditionally stated versions.
 
-This perspective will should be even more helpful when proving more complicated but related Ramsey
-results such as the canonical hypergraph Ramsey theorem.
+Doing things this way isn't necessary, but should be the right perspective when proving more
+complicated but related Ramsey results such as the canonical hypergraph Ramsey theorem,
+in which the global ordering is crucial even for the statement.
 
-TODO : Finite versions.
+## TODO : Finite versions.
 
 The infinite version of hypergraph Ramsey is stronger than the finite versions; it implies them
 via Konig's infinity lemma, a standard compactness result. This method won't give explicit bounds,
 but gives a straightforward way to get to the finite results from what is done here.
-
 -/
 
 
@@ -74,8 +74,8 @@ theorem orderEmbedding_fin_finite {α : Type*} [Preorder α] [LocallyFiniteOrder
   exact (s.monotone le_top).trans hs
 
 theorem exists_enum_set_card (k : ℕ) : ∃ (e : ℕ ≃ (Fin (k+1) ↪o ℕ)), Monotone (e · ⊤) :=
-  exists_enum_by_fiber (α := Fin (k+1) ↪o ℕ) (fun s ↦ s ⊤) fun m ↦
-    (orderEmbedding_fin_finite k m).subset fun _ (hs : _ = _) ↦ hs.le
+  exists_nat_equiv_monotone_comp (α := Fin (k+1) ↪o ℕ) (fun s ↦ s ⊤)
+   fun m ↦ (orderEmbedding_fin_finite k m).subset fun _ (hs : _ = _) ↦ hs.le
 
 namespace Ramsey
 
@@ -268,7 +268,7 @@ theorem lim_rightMonochromatic (c : (Fin (k+2) ↪o ℕ) → κ) (ss : ℕ ↪ (
   exact le_max_of_le_right ((ub_fn ss).monotone (hy i).le)
 
 /-- Ramsey's theorem for infinite hypergraphs :
-  for every colouring `c` of the `t`-subsets of `ℕ` with a finite set of colours,
+  for every colouring `c` of the `k`-subsets of `ℕ` with a finite set of colours,
   there is a subsequence of `ℕ` on which the sets all have the same colour. -/
 theorem exists_monochromatic_subsequence_tuple (c : (Fin k ↪o ℕ) → κ) :
     ∃ (c₀ : κ) (g : ℕ ↪o ℕ), ∀ (s : Fin k ↪o ℕ), c (s.trans g) = c₀ := by
@@ -341,7 +341,7 @@ theorem exists_strong_monochromatic_subsequence_finset'
   obtain ⟨c₀s, g, hg⟩ := exists_strong_monochromatic_subsequence_finset cs'
   exact ⟨c₀s, g, fun s hs ↦ hg ⟨s.card, hs⟩ s rfl⟩
 
-/-- A version of ramsey's theorem with no ordered types.
+/-- A version of Ramsey's theorem with no ordered types.
   Given a colouring of the `k`-sets in an infinite type `α` with finitely many colours,
   there is an infinite `s : Set α` whose `k`-subsets all have the same colour.-/
 theorem exists_monochromatic_infinite_subset {α : Type*} [Infinite α]
