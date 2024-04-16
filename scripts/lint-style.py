@@ -408,16 +408,18 @@ def test_backtick_extraction():
 
 '''Read in information on old files and declarations.
 
-|all_aligns| and |align_imports| are lists of (newline-stripped) lines containing
-the #align and #align_import statements (in valid mathlib syntax) to be processed.
+|align_lines|, |noalign_lines| and |align_imports| are lists of (newline-stripped)
+lines containing the #align, #noaligns and #align_import statements to be processed.
+They have to be in mathlib syntax: trailing x is allowed, Lean comments also.
 
-Return a tuple (old_files, old_declarations) consisting of
+Return a tuple (old_files, noaligns, old_declarations) consisting of
 - a list of all old files (i.e., mentioned in an align_import statement)
+- a list of #noalign-ed declarations
 - a dictionary of all align-ed declarations of the form {old: new}.'''
-def parse_aligns_aligns_files(all_aligns, align_imports):
+def parse_aligns_noaligns_aligns_files(align_lines, _noalign_lines, align_imports):
     # Read in all #align statements and parse the names of the old and new declaration.
     aligns = dict()
-    for line in all_aligns:
+    for line in align_lines:
         # Ignore a Lean comment: this could contain e.g. the mathlib revision
         # this data was generated from.
         if line.startswith('--'):
@@ -441,6 +443,9 @@ def parse_aligns_aligns_files(all_aligns, align_imports):
         # Strip a trailing ₓ in the new declaration.
         new_decl = new_decl.removesuffix('ₓ')
         aligns[old_decl] = new_decl
+    noaligns = []
+    for line in _noalign_lines:
+        pass
     # Just the names of the new declarations.
     new_decl_names = [s.split('.')[-1] for s in aligns.values()]
     old_files = []
@@ -486,7 +491,7 @@ def parse_aligns_aligns_files(all_aligns, align_imports):
             new = aligns[decl]
             if new.count('.') == decl.count('.'):
                 old_decl_dict[decl[decl.index('.') + 1:]] = new[new.index('.') + 1:]
-    return old_files, old_decl_dict
+    return old_files, noaligns, old_decl_dict
 
 
 '''Check the contents of doc comments in `backticks`: for old file names or Lean declarations.'''
@@ -495,7 +500,7 @@ def parse_aligns_aligns_files(all_aligns, align_imports):
 # FUTURE ideas:
 # - file names exist (parse Mathlib.lean)
 # - enforce normal form for file names
-def lint_backticks_in_comments(old_files, old_declarations, lines):
+def lint_backticks_in_comments(old_files, _noaligns, old_declarations, lines):
     errors = False
     newlines = []
     for line in lines:
@@ -539,20 +544,20 @@ def test_backtick_linting():
         'decl.name_two' : 'Decl.nameTwo',
         'cardignal' : 'Cardinal',
     })
-    _old_files, parsed_decls = parse_aligns_aligns_files(align_lines, [])
+    _old_files, _noaligns, parsed_decls = parse_aligns_noaligns_aligns_files(align_lines, [], [])
     if parsed_decls != decls:
         print(f'input parsing failed\nexpected declarations\n{decls}, got\n{parsed_decls}')
         assert False
     # Phase 2: this gives the intended output.
     def check_fine(input):
-        errors, new = lint_backticks_in_comments([], decls, [input])
+        errors, new = lint_backticks_in_comments([], [], decls, [input])
         assert len(new) == 1
         actual = new[0]
         if actual != input:
             print(f'ERROR: input "{input}" should not be modified, actual output was\n{actual}')
         assert not errors, f'Input "{input}" should yield no errors'
     def check_error(input, expected):
-        errors, newlines = lint_backticks_in_comments([], decls, [input])
+        errors, newlines = lint_backticks_in_comments([], [], decls, [input])
         assert errors
         assert len(newlines) == 1
         actual = newlines[0]
@@ -624,14 +629,14 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_NSP", "Non-terminal simp. Replace with `simp?` and use the suggested output")
 
 
-def lint(path, old_files, old_declarations, fix=False):
+def lint(path, old_files, noaligns, old_declarations, fix=False):
     global new_exceptions
     with path.open(encoding="utf-8", newline="") as f:
         # We enumerate the lines so that we can report line numbers in the error messages correctly
         # we will modify lines as we go, so we need to keep track of the original line numbers
         lines = f.readlines()
         # This doesn't modify line numbers yet.
-        errors, newlines = lint_backticks_in_comments(old_files, old_declarations, lines)
+        errors, newlines = lint_backticks_in_comments(old_files, noaligns, old_declarations, lines)
         if errors: new_exceptions = True
         enum_lines = enumerate(newlines, 1)
         newlines = enum_lines
@@ -674,7 +679,7 @@ fix = "--fix" in sys.argv
 argv = [arg for arg in sys.argv[1:] if arg != "--fix"]
 
 for filename in argv:
-    lint(Path(filename), fix=fix)
+    lint(Path(filename), [], [], [], fix=fix)
 
 # If no single file was passed, lint all files in the project
 # (we allow restricting to and excluding subdirectories, hard-coded for now).
@@ -692,12 +697,15 @@ if not argv:
         line = line[len(f'import {projectname}.'):].strip()
         if line.startswith(dir) and not line.startswith(exclude):
             files.append(line)
+    # Currently, we read out aligns from a pre-generated file:
+    # this could be done in Lean, if this linter is worth it.
     align_lines = [line.strip() for line in open('all_aligns.txt', 'r', encoding='utf-8')]
     align_imports = [line.strip() for line in open('align_imports.txt', 'r', encoding='utf-8')]
-    old_files, old_declarations = parse_aligns_aligns_files(align_lines, align_imports)
+    old_files, _noaligns, old_declarations = (
+        parse_aligns_noaligns_aligns_files(align_lines, [], align_imports))
     for filename in files:
         path = f"{projectname}/{filename.replace('.', '/')}.lean"
-        lint(Path(path), old_files, old_declarations, fix=fix)
+        lint(Path(path), old_files, [], old_declarations, fix=fix)
 
 if new_exceptions:
     exit(1)
