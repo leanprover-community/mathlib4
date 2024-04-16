@@ -78,7 +78,7 @@ theorem ContinuousMultilinearMap.norm_map_init_le
     ‖f (init m) (m (last n))‖ ≤ ‖f (init m)‖ * ‖m (last n)‖ := (f (init m)).le_opNorm _
     _ ≤ (‖f‖ * ∏ i, ‖(init m) i‖) * ‖m (last n)‖ :=
       (mul_le_mul_of_nonneg_right (f.le_opNorm _) (norm_nonneg _))
-    _ = ‖f‖ * ((∏ i, ‖(init m) i‖) * ‖m (last n)‖) := (mul_assoc _ _ _)
+    _ = ‖f‖ * ((∏ i, ‖(init m) i‖) * ‖m (last n)‖) := mul_assoc _ _ _
     _ = ‖f‖ * ∏ i, ‖m i‖ := by
       rw [prod_univ_castSucc]
       rfl
