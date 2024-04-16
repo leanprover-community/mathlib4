@@ -88,6 +88,98 @@ variable {α β γ Ω : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace
   {mγ : MeasurableSpace γ} [MeasurableSpace.CountablyGenerated γ]
   [MeasurableSpace Ω] [StandardBorelSpace Ω] [Nonempty Ω]
 
+section Real
+
+/-! ### Disintegration of kernels from `α` to `γ × ℝ` for countably generated `γ` -/
+
+lemma isRatCondKernelCDFAux_density_Iic (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
+    IsRatCondKernelCDFAux (fun (p : α × γ) q ↦ density κ (fst κ) p.1 p.2 (Iic q)) κ (fst κ)
+      where
+  measurable := measurable_pi_iff.mpr fun _ ↦ measurable_density κ (fst κ) measurableSet_Iic
+  mono' a q r hqr :=
+    ae_of_all _ fun c ↦ density_mono_set le_rfl a c (Iic_subset_Iic.mpr (by exact_mod_cast hqr))
+  nonneg' a q := ae_of_all _ fun c ↦ density_nonneg le_rfl _ _ _
+  le_one' a q := ae_of_all _ fun c ↦ density_le_one le_rfl _ _ _
+  tendsto_integral_of_antitone a s hs_anti hs_tendsto := by
+    let s' : ℕ → Set ℝ := fun n ↦ Iic (s n)
+    refine tendsto_integral_density_of_antitone le_rfl a s' ?_ ?_ (fun _ ↦ measurableSet_Iic)
+    · refine fun i j hij ↦ Iic_subset_Iic.mpr ?_
+      exact mod_cast hs_anti hij
+    · ext x
+      simp only [mem_iInter, mem_Iic, mem_empty_iff_false, iff_false, not_forall, not_le, s']
+      rw [tendsto_atTop_atBot] at hs_tendsto
+      have ⟨q, hq⟩ := exists_rat_lt x
+      obtain ⟨i, hi⟩ := hs_tendsto q
+      refine ⟨i, lt_of_le_of_lt ?_ hq⟩
+      exact mod_cast hi i le_rfl
+  tendsto_integral_of_monotone a s hs_mono hs_tendsto := by
+    rw [fst_apply' _ _ MeasurableSet.univ]
+    let s' : ℕ → Set ℝ := fun n ↦ Iic (s n)
+    refine tendsto_integral_density_of_monotone (le_rfl : fst κ ≤ fst κ)
+      a s' ?_ ?_ (fun _ ↦ measurableSet_Iic)
+    · exact fun i j hij ↦ Iic_subset_Iic.mpr (by exact mod_cast hs_mono hij)
+    · ext x
+      simp only [mem_iUnion, mem_Iic, mem_univ, iff_true]
+      rw [tendsto_atTop_atTop] at hs_tendsto
+      have ⟨q, hq⟩ := exists_rat_gt x
+      obtain ⟨i, hi⟩ := hs_tendsto q
+      refine ⟨i, hq.le.trans ?_⟩
+      exact mod_cast hi i le_rfl
+  integrable a q := integrable_density le_rfl a measurableSet_Iic
+  set_integral a A hA q := set_integral_density le_rfl a measurableSet_Iic hA
+
+/-- Taking the kernel density of intervals `Iic q` for `q : ℚ` gives a function with the property
+`isRatCondKernelCDF`. -/
+lemma isRatCondKernelCDF_density_Iic (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
+    IsRatCondKernelCDF (fun (p : α × γ) q ↦ density κ (fst κ) p.1 p.2 (Iic q)) κ (fst κ) :=
+  (isRatCondKernelCDFAux_density_Iic κ).isRatCondKernelCDF
+
+/-- The conditional kernel CDF of a kernel `κ : kernel α (γ × ℝ)`, where `γ` is countably generated.
+-/
+noncomputable
+def condKernelCDF (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] : α × γ → StieltjesFunction :=
+  stieltjesOfMeasurableRat (fun (p : α × γ) q ↦ density κ (fst κ) p.1 p.2 (Iic q))
+    (isRatCondKernelCDF_density_Iic κ).measurable
+
+lemma isCondKernelCDF_condKernelCDF (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
+    IsCondKernelCDF (condKernelCDF κ) κ (fst κ) :=
+  isCondKernelCDF_stieltjesOfMeasurableRat (isRatCondKernelCDF_density_Iic κ)
+
+/-- Auxiliary definition for `ProbabilityTheory.kernel.condKernel`.
+A conditional kernel for `κ : kernel α (γ × ℝ)` where `γ` is countably generated. -/
+noncomputable
+def condKernelReal (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] : kernel (α × γ) ℝ :=
+  (isCondKernelCDF_condKernelCDF κ).toKernel
+
+instance instIsMarkovKernelCondKernelReal (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
+    IsMarkovKernel (condKernelReal κ) := by
+  rw [condKernelReal]
+  infer_instance
+
+lemma compProd_fst_condKernelReal (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
+    fst κ ⊗ₖ condKernelReal κ = κ := by
+  rw [condKernelReal, compProd_toKernel]
+
+/-- Auxiliary definition for `MeasureTheory.Measure.condKernel` and
+`ProbabilityTheory.kernel.condKernel`.
+A conditional kernel for `κ : kernel Unit (α × ℝ)`. -/
+noncomputable
+def condKernelUnitReal (κ : kernel Unit (α × ℝ)) [IsFiniteKernel κ] : kernel (Unit × α) ℝ :=
+  (isCondKernelCDF_condCDF (κ ())).toKernel
+
+instance instIsMarkovKernelCondKernelUnitReal (κ : kernel Unit (α × ℝ)) [IsFiniteKernel κ] :
+    IsMarkovKernel (condKernelUnitReal κ) := by
+  rw [condKernelUnitReal]
+  infer_instance
+
+lemma compProd_fst_condKernelUnitReal (κ : kernel Unit (α × ℝ)) [IsFiniteKernel κ] :
+    fst κ ⊗ₖ condKernelUnitReal κ = κ := by
+  rw [condKernelUnitReal, compProd_toKernel]
+  ext a
+  simp
+
+end Real
+
 section BorelSnd
 
 /-! ### Disintegration of kernels on standard Borel spaces
@@ -238,74 +330,6 @@ section CountablyGenerated
 
 open ProbabilityTheory.kernel
 
-lemma isRatCondKernelCDFAux_density_Iic (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
-    IsRatCondKernelCDFAux (fun (p : α × γ) q ↦ density κ (fst κ) p.1 p.2 (Iic q)) κ (fst κ)
-      where
-  measurable := measurable_pi_iff.mpr fun _ ↦ measurable_density κ (fst κ) measurableSet_Iic
-  mono' a q r hqr :=
-    ae_of_all _ fun c ↦ density_mono_set le_rfl a c (Iic_subset_Iic.mpr (by exact_mod_cast hqr))
-  nonneg' a q := ae_of_all _ fun c ↦ density_nonneg le_rfl _ _ _
-  le_one' a q := ae_of_all _ fun c ↦ density_le_one le_rfl _ _ _
-  tendsto_integral_of_antitone a s hs_anti hs_tendsto := by
-    let s' : ℕ → Set ℝ := fun n ↦ Iic (s n)
-    refine tendsto_integral_density_of_antitone le_rfl a s' ?_ ?_ (fun _ ↦ measurableSet_Iic)
-    · refine fun i j hij ↦ Iic_subset_Iic.mpr ?_
-      exact mod_cast hs_anti hij
-    · ext x
-      simp only [mem_iInter, mem_Iic, mem_empty_iff_false, iff_false, not_forall, not_le, s']
-      rw [tendsto_atTop_atBot] at hs_tendsto
-      have ⟨q, hq⟩ := exists_rat_lt x
-      obtain ⟨i, hi⟩ := hs_tendsto q
-      refine ⟨i, lt_of_le_of_lt ?_ hq⟩
-      exact mod_cast hi i le_rfl
-  tendsto_integral_of_monotone a s hs_mono hs_tendsto := by
-    rw [fst_apply' _ _ MeasurableSet.univ]
-    let s' : ℕ → Set ℝ := fun n ↦ Iic (s n)
-    refine tendsto_integral_density_of_monotone (le_rfl : fst κ ≤ fst κ)
-      a s' ?_ ?_ (fun _ ↦ measurableSet_Iic)
-    · exact fun i j hij ↦ Iic_subset_Iic.mpr (by exact mod_cast hs_mono hij)
-    · ext x
-      simp only [mem_iUnion, mem_Iic, mem_univ, iff_true]
-      rw [tendsto_atTop_atTop] at hs_tendsto
-      have ⟨q, hq⟩ := exists_rat_gt x
-      obtain ⟨i, hi⟩ := hs_tendsto q
-      refine ⟨i, hq.le.trans ?_⟩
-      exact mod_cast hi i le_rfl
-  integrable a q := integrable_density le_rfl a measurableSet_Iic
-  set_integral a A hA q := set_integral_density le_rfl a measurableSet_Iic hA
-
-/-- Taking the kernel density of intervals `Iic q` for `q : ℚ` gives a function with the property
-`isRatCondKernelCDF`. -/
-lemma isRatCondKernelCDF_density_Iic (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
-    IsRatCondKernelCDF (fun (p : α × γ) q ↦ density κ (fst κ) p.1 p.2 (Iic q)) κ (fst κ) :=
-  (isRatCondKernelCDFAux_density_Iic κ).isRatCondKernelCDF
-
-/-- The conditional kernel CDF of a kernel `κ : kernel α (γ × ℝ)`, where `γ` is countably generated.
--/
-noncomputable
-def condKernelCDF (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] : α × γ → StieltjesFunction :=
-  stieltjesOfMeasurableRat (fun (p : α × γ) q ↦ density κ (fst κ) p.1 p.2 (Iic q))
-    (isRatCondKernelCDF_density_Iic κ).measurable
-
-lemma isCondKernelCDF_condKernelCDF (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
-    IsCondKernelCDF (condKernelCDF κ) κ (fst κ) :=
-  isCondKernelCDF_stieltjesOfMeasurableRat (isRatCondKernelCDF_density_Iic κ)
-
-/-- Auxiliary definition for `ProbabilityTheory.kernel.condKernel`.
-A conditional kernel for `κ : kernel α (γ × ℝ)` where `γ` is countably generated. -/
-noncomputable
-def condKernelReal (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] : kernel (α × γ) ℝ :=
-  (isCondKernelCDF_condKernelCDF κ).toKernel
-
-instance instIsMarkovKernelCondKernelReal (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
-    IsMarkovKernel (condKernelReal κ) := by
-  rw [condKernelReal]
-  infer_instance
-
-lemma compProd_fst_condKernelReal (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
-    fst κ ⊗ₖ condKernelReal κ = κ := by
-  rw [condKernelReal, compProd_toKernel]
-
 /-- Auxiliary definition for `ProbabilityTheory.kernel.condKernel`.
 A conditional kernel for `κ : kernel α (γ × Ω)` where `γ` is countably generated and `Ω` is
 standard Borel. -/
@@ -328,24 +352,6 @@ lemma compProd_fst_condKernelBorel (κ : kernel α (γ × Ω)) [IsFiniteKernel �
 end CountablyGenerated
 
 section Unit
-
-/-- Auxiliary definition for `MeasureTheory.Measure.condKernel` and
-`ProbabilityTheory.kernel.condKernel`.
-A conditional kernel for `κ : kernel Unit (α × ℝ)`. -/
-noncomputable
-def condKernelUnitReal (κ : kernel Unit (α × ℝ)) [IsFiniteKernel κ] : kernel (Unit × α) ℝ :=
-  (isCondKernelCDF_condCDF (κ ())).toKernel
-
-instance instIsMarkovKernelCondKernelUnitReal (κ : kernel Unit (α × ℝ)) [IsFiniteKernel κ] :
-    IsMarkovKernel (condKernelUnitReal κ) := by
-  rw [condKernelUnitReal]
-  infer_instance
-
-lemma compProd_fst_condKernelUnitReal (κ : kernel Unit (α × ℝ)) [IsFiniteKernel κ] :
-    fst κ ⊗ₖ condKernelUnitReal κ = κ := by
-  rw [condKernelUnitReal, compProd_toKernel]
-  ext a
-  simp
 
 /-- Auxiliary definition for `MeasureTheory.Measure.condKernel` and
 `ProbabilityTheory.kernel.condKernel`.
