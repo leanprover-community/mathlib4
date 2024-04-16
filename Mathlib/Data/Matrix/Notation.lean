@@ -18,8 +18,8 @@ of the matrix notation `![a, b] = vecCons a (vecCons b vecEmpty)` defined in
 `Data.Fin.VecNotation`.
 
 This also provides the new notation `!![a, b; c, d] = Matrix.of ![![a, b], ![c, d]]`.
-This notation also works for empty matrices; `!![,,,] : Matrix (Fin 0) (Fin 3)` and
-`!![;;;] : Matrix (Fin 3) (Fin 0)`.
+This notation also works for empty matrices; `!![,,,] : Mat[0,3][α]` and
+`!![;;;] : Mat[3,0][α]`.
 
 ## Implementation notes
 
@@ -72,18 +72,18 @@ end toExpr
 section Parser
 open Lean Elab Term Macro TSyntax
 
-/-- Notation for m×n matrices, aka `Matrix (Fin m) (Fin n) α`.
+/-- Notation for m×n matrices, aka `Mat[m,n][α]`.
 
 For instance:
 * `!![a, b, c; d, e, f]` is the matrix with two rows and three columns, of type
-  `Matrix (Fin 2) (Fin 3) α`
-* `!![a, b, c]` is a row vector of type `Matrix (Fin 1) (Fin 3) α` (see also `Matrix.row`).
-* `!![a; b; c]` is a column vector of type `Matrix (Fin 3) (Fin 1) α` (see also `Matrix.col`).
+  `Mat[2,3][α]`
+* `!![a, b, c]` is a row vector of type `Mat[1,3][α]` (see also `Matrix.row`).
+* `!![a; b; c]` is a column vector of type `Mat[3,1][α]` (see also `Matrix.col`).
 
 This notation implements some special cases:
 
-* `![,,]`, with `n` `,`s, is a term of type `Matrix (Fin 0) (Fin n) α`
-* `![;;]`, with `m` `;`s, is a term of type `Matrix (Fin m) (Fin 0) α`
+* `![,,]`, with `n` `,`s, is a term of type `Mat[0,n][α]`
+* `![;;]`, with `m` `;`s, is a term of type `Mat[m,0][α]`
 * `![]` is the 0×0 matrix
 
 Note that vector notation is provided elsewhere (by `Matrix.vecNotation`) as `![a, b, c]`.
@@ -124,7 +124,7 @@ variable (a b : ℕ)
 #eval !![1, 2; 3, 4] + !![3, 4; 5, 6]  -- !![4, 6; 8, 10]
 ```
 -/
-instance repr [Repr α] : Repr (Matrix (Fin m) (Fin n) α) where
+instance repr [Repr α] : Repr (Mat[m,n][α]) where
   reprPrec f _p :=
     (Std.Format.bracket "!![" · "]") <|
       (Std.Format.joinSep · (";" ++ Std.Format.line)) <|
@@ -418,12 +418,12 @@ section One
 
 variable [Zero α] [One α]
 
-theorem one_fin_two : (1 : Matrix (Fin 2) (Fin 2) α) = !![1, 0; 0, 1] := by
+theorem one_fin_two : (1 : Mat[2,2][α]) = !![1, 0; 0, 1] := by
   ext i j
   fin_cases i <;> fin_cases j <;> rfl
 #align matrix.one_fin_two Matrix.one_fin_two
 
-theorem one_fin_three : (1 : Matrix (Fin 3) (Fin 3) α) = !![1, 0, 0; 0, 1, 0; 0, 0, 1] := by
+theorem one_fin_three : (1 : Mat[3,3][α]) = !![1, 0, 0; 0, 1, 0; 0, 0, 1] := by
   ext i j
   fin_cases i <;> fin_cases j <;> rfl
 #align matrix.one_fin_three Matrix.one_fin_three
@@ -433,35 +433,35 @@ end One
 section AddMonoidWithOne
 variable [AddMonoidWithOne α]
 
-theorem natCast_fin_two (n : ℕ) : (n : Matrix (Fin 2) (Fin 2) α) = !![↑n, 0; 0, ↑n] := by
+theorem natCast_fin_two (n : ℕ) : (n : Mat[2,2][α]) = !![↑n, 0; 0, ↑n] := by
   ext i j
   fin_cases i <;> fin_cases j <;> rfl
 
 theorem natCast_fin_three (n : ℕ) :
-    (n : Matrix (Fin 3) (Fin 3) α) = !![↑n, 0, 0; 0, ↑n, 0; 0, 0, ↑n] := by
+    (n : Mat[3,3][α]) = !![↑n, 0, 0; 0, ↑n, 0; 0, 0, ↑n] := by
   ext i j
   fin_cases i <;> fin_cases j <;> rfl
 
 -- See note [no_index around OfNat.ofNat]
 theorem ofNat_fin_two (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : Matrix (Fin 2) (Fin 2) α) =
+    (no_index (OfNat.ofNat n) : Mat[2,2][α]) =
       !![OfNat.ofNat n, 0; 0, OfNat.ofNat n] :=
   natCast_fin_two _
 
 -- See note [no_index around OfNat.ofNat]
 theorem ofNat_fin_three (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : Matrix (Fin 3) (Fin 3) α) =
+    (no_index (OfNat.ofNat n) : Mat[3,3][α]) =
       !![OfNat.ofNat n, 0, 0; 0, OfNat.ofNat n, 0; 0, 0, OfNat.ofNat n] :=
   natCast_fin_three _
 
 end AddMonoidWithOne
 
-theorem eta_fin_two (A : Matrix (Fin 2) (Fin 2) α) : A = !![A 0 0, A 0 1; A 1 0, A 1 1] := by
+theorem eta_fin_two (A : Mat[2,2][α]) : A = !![A 0 0, A 0 1; A 1 0, A 1 1] := by
   ext i j
   fin_cases i <;> fin_cases j <;> rfl
 #align matrix.eta_fin_two Matrix.eta_fin_two
 
-theorem eta_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
+theorem eta_fin_three (A : Mat[3,3][α]) :
     A = !![A 0 0, A 0 1, A 0 2;
            A 1 0, A 1 1, A 1 2;
            A 2 0, A 2 1, A 2 2] := by

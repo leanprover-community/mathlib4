@@ -39,9 +39,9 @@ attribute [-instance] Matrix.GeneralLinearGroup.instCoeFun
 
 local notation "GL(" n ", " R ")" "⁺" => Matrix.GLPos (Fin n) R
 local notation:1024 "↑ₘ" A:1024 =>
-  (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) _)
+  (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Mat[2,2][_])
 local notation:1024 "↑ₘ[" R "]" A:1024 =>
-  ((A : GL (Fin 2) R) : Matrix (Fin 2) (Fin 2) R)
+  ((A : GL (Fin 2) R) : Mat[2,2][R])
 
 /-- The open upper half plane -/
 def UpperHalfPlane :=
@@ -211,7 +211,7 @@ theorem denom_ne_zero (g : GL(2, ℝ)⁺) (z : ℍ) : denom g z ≠ 0 := by
   cases' H1 with H1
   · simp only [H1, Complex.ofReal_zero, denom, zero_mul, zero_add,
       Complex.ofReal_eq_zero] at H
-    rw [Matrix.det_fin_two (↑ₘg : Matrix (Fin 2) (Fin 2) ℝ)] at DET
+    rw [Matrix.det_fin_two (↑ₘg : Mat[2,2][ℝ])] at DET
     simp only [H, H1, mul_zero, sub_zero, lt_self_iff_false] at DET
   · change z.im > 0 at hz
     linarith
@@ -239,7 +239,7 @@ theorem smulAux'_im (g : GL(2, ℝ)⁺) (z : ℍ) :
   rw [smulAux', Complex.div_im]
   field_simp [smulAux', num, denom]
   -- Porting note: the local notation still didn't work here
-  rw [Matrix.det_fin_two ((g : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) ℝ)]
+  rw [Matrix.det_fin_two ((g : GL (Fin 2) ℝ) : Mat[2,2][ℝ])]
   ring
 #align upper_half_plane.smul_aux'_im UpperHalfPlane.smulAux'_im
 
@@ -442,7 +442,7 @@ nonrec theorem im_smul_eq_div_normSq :
 #align upper_half_plane.special_linear_group.im_smul_eq_div_norm_sq UpperHalfPlane.ModularGroup.im_smul_eq_div_normSq
 
 theorem denom_apply (g : SL(2, ℤ)) (z : ℍ) :
-    denom g z = (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 0 * z + (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 1 := by
+    denom g z = (↑g : Mat[2,2][ℤ]) 1 0 * z + (↑g : Mat[2,2][ℤ]) 1 1 := by
   simp [denom, coe']
 #align upper_half_plane.denom_apply UpperHalfPlane.ModularGroup.denom_apply
 

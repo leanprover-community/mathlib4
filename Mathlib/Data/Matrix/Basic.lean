@@ -25,7 +25,7 @@ This file defines basic properties of matrices.
 
 Matrices with rows indexed by `m`, columns indexed by `n`, and entries of type `α` are represented
 with `Matrix m n α`. For the typical approach of counting rows and columns,
-`Matrix (Fin m) (Fin n) α` can be used.
+`Mat[a,b][α]` (i.e. `Matrix (Fin a) (Fin b) α`) can be used for `(a b : ℕ)`.
 
 ## Notation
 
@@ -65,6 +65,10 @@ variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
 variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
 
 namespace Matrix
+
+/-- Notation for `m x n`-Matrices, where `(m n : ℕ)`.
+Short form of `Matrix (Fin m) (Fin n) α`. -/
+notation (name := concreteMatrix) "Mat["m","n"]["α"]" => Matrix (Fin m) (Fin n) α
 
 section Ext
 
@@ -972,7 +976,7 @@ theorem sum_apply [AddCommMonoid α] (i : m) (j : n) (s : Finset β) (g : β →
   (congr_fun (s.sum_apply i g) j).trans (s.sum_apply j _)
 #align matrix.sum_apply Matrix.sum_apply
 
-theorem two_mul_expl {R : Type*} [CommRing R] (A B : Matrix (Fin 2) (Fin 2) R) :
+theorem two_mul_expl {R : Type*} [CommRing R] (A B : Mat[2,2][R]) :
     (A * B) 0 0 = A 0 0 * B 0 0 + A 0 1 * B 1 0 ∧
     (A * B) 0 1 = A 0 0 * B 0 1 + A 0 1 * B 1 1 ∧
     (A * B) 1 0 = A 1 0 * B 0 0 + A 1 1 * B 1 0 ∧
@@ -2653,53 +2657,53 @@ theorem submatrix_mul_transpose_submatrix [Fintype m] [Fintype n] [AddCommMonoid
 
 /-- The left `n × l` part of an `n × (l+r)` matrix. -/
 @[reducible]
-def subLeft {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin l) α :=
+def subLeft {m l r : Nat} (A : Mat[m,(l + r)][α]) : Mat[m,l][α] :=
   submatrix A id (Fin.castAdd r)
 #align matrix.sub_left Matrix.subLeft
 
 /-- The right `n × r` part of an `n × (l+r)` matrix. -/
 @[reducible]
-def subRight {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin r) α :=
+def subRight {m l r : Nat} (A : Mat[m,(l + r)][α]) : Mat[m,r][α] :=
   submatrix A id (Fin.natAdd l)
 #align matrix.sub_right Matrix.subRight
 
 /-- The top `u × n` part of a `(u+d) × n` matrix. -/
 @[reducible]
-def subUp {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin u) (Fin n) α :=
+def subUp {d u n : Nat} (A : Mat[(u + d),n][α]) : Mat[u,n][α] :=
   submatrix A (Fin.castAdd d) id
 #align matrix.sub_up Matrix.subUp
 
 /-- The bottom `d × n` part of a `(u+d) × n` matrix. -/
 @[reducible]
-def subDown {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin d) (Fin n) α :=
+def subDown {d u n : Nat} (A : Mat[(u + d),n][α]) : Mat[d,n][α] :=
   submatrix A (Fin.natAdd u) id
 #align matrix.sub_down Matrix.subDown
 
 /-- The top-right `u × r` part of a `(u+d) × (l+r)` matrix. -/
 @[reducible]
-def subUpRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
-    Matrix (Fin u) (Fin r) α :=
+def subUpRight {d u l r : Nat} (A : Mat[(u + d),(l + r)][α]) :
+    Mat[u,r][α] :=
   subUp (subRight A)
 #align matrix.sub_up_right Matrix.subUpRight
 
 /-- The bottom-right `d × r` part of a `(u+d) × (l+r)` matrix. -/
 @[reducible]
-def subDownRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
-    Matrix (Fin d) (Fin r) α :=
+def subDownRight {d u l r : Nat} (A : Mat[(u + d),(l + r)][α]) :
+    Mat[d,r][α] :=
   subDown (subRight A)
 #align matrix.sub_down_right Matrix.subDownRight
 
 /-- The top-left `u × l` part of a `(u+d) × (l+r)` matrix. -/
 @[reducible]
-def subUpLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
-    Matrix (Fin u) (Fin l) α :=
+def subUpLeft {d u l r : Nat} (A : Mat[(u + d),(l + r)][α]) :
+    Mat[u,l][α] :=
   subUp (subLeft A)
 #align matrix.sub_up_left Matrix.subUpLeft
 
 /-- The bottom-left `d × l` part of a `(u+d) × (l+r)` matrix. -/
 @[reducible]
-def subDownLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
-    Matrix (Fin d) (Fin l) α :=
+def subDownLeft {d u l r : Nat} (A : Mat[(u + d),(l + r)][α]) :
+    Mat[d,l][α] :=
   subDown (subLeft A)
 #align matrix.sub_down_left Matrix.subDownLeft
 

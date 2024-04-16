@@ -207,7 +207,7 @@ The corresponding Dynkin diagram is:
 o --- o --- o --- o --- o
 ```
 -/
-def E₆ : Matrix (Fin 6) (Fin 6) ℤ :=
+def E₆ : Mat[6,6][ℤ] :=
   !![2, 0, -1, 0, 0, 0;
     0, 2, 0, -1, 0, 0;
     -1, 0, 2, -1, 0, 0;
@@ -225,7 +225,7 @@ The corresponding Dynkin diagram is:
 o --- o --- o --- o --- o --- o
 ```
 -/
-def E₇ : Matrix (Fin 7) (Fin 7) ℤ :=
+def E₇ : Mat[7,7][ℤ] :=
   !![2, 0, -1, 0, 0, 0, 0;
     0, 2, 0, -1, 0, 0, 0;
     -1, 0, 2, -1, 0, 0, 0;
@@ -244,7 +244,7 @@ The corresponding Dynkin diagram is:
 o --- o --- o --- o --- o --- o --- o
 ```
 -/
-def E₈ : Matrix (Fin 8) (Fin 8) ℤ :=
+def E₈ : Mat[8,8][ℤ] :=
   !![2, 0, -1, 0, 0, 0, 0, 0;
     0, 2, 0, -1, 0, 0, 0, 0;
     -1, 0, 2, -1, 0, 0, 0, 0;
@@ -262,7 +262,7 @@ The corresponding Dynkin diagram is:
 o --- o =>= o --- o
 ```
 -/
-def F₄ : Matrix (Fin 4) (Fin 4) ℤ :=
+def F₄ : Mat[4,4][ℤ] :=
   !![2, -1, 0, 0; -1, 2, -2, 0; 0, -1, 2, -1; 0, 0, -1, 2]
 #align cartan_matrix.F₄ CartanMatrix.F₄
 
@@ -274,7 +274,7 @@ o ≡>≡ o
 ```
 Actually we are using the transpose of Bourbaki's matrix. This is to make this matrix consistent
 with `CartanMatrix.F₄`, in the sense that all non-zero values below the diagonal are -1. -/
-def G₂ : Matrix (Fin 2) (Fin 2) ℤ :=
+def G₂ : Mat[2,2][ℤ] :=
   !![2, -3; -1, 2]
 #align cartan_matrix.G₂ CartanMatrix.G₂
 

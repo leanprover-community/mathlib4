@@ -71,7 +71,7 @@ noncomputable section
 
 local notation "SL(" n ", " R ")" => SpecialLinearGroup (Fin n) R
 
-local macro "↑ₘ" t:term:80 : term => `(term| ($t : Matrix (Fin 2) (Fin 2) ℤ))
+local macro "↑ₘ" t:term:80 : term => `(term| ($t : Mat[2,2][ℤ]))
 
 open scoped UpperHalfPlane ComplexConjugate
 
@@ -83,8 +83,8 @@ section BottomRow
 
 /-- The two numbers `c`, `d` in the "bottom_row" of `g=[[*,*],[c,d]]` in `SL(2, ℤ)` are coprime. -/
 theorem bottom_row_coprime {R : Type*} [CommRing R] (g : SL(2, R)) :
-    IsCoprime ((↑g : Matrix (Fin 2) (Fin 2) R) 1 0) ((↑g : Matrix (Fin 2) (Fin 2) R) 1 1) := by
-  use -(↑g : Matrix (Fin 2) (Fin 2) R) 0 1, (↑g : Matrix (Fin 2) (Fin 2) R) 0 0
+    IsCoprime ((↑g : Mat[2,2][R]) 1 0) ((↑g : Mat[2,2][R]) 1 1) := by
+  use -(↑g : Mat[2,2][R]) 0 1, (↑g : Mat[2,2][R]) 0 0
   rw [add_comm, neg_mul, ← sub_eq_add_neg, ← det_fin_two]
   exact g.det_coe
 #align modular_group.bottom_row_coprime ModularGroup.bottom_row_coprime
@@ -92,7 +92,7 @@ theorem bottom_row_coprime {R : Type*} [CommRing R] (g : SL(2, R)) :
 /-- Every pair `![c, d]` of coprime integers is the "bottom_row" of some element `g=[[*,*],[c,d]]`
 of `SL(2,ℤ)`. -/
 theorem bottom_row_surj {R : Type*} [CommRing R] :
-    Set.SurjOn (fun g : SL(2, R) => (↑g : Matrix (Fin 2) (Fin 2) R) 1) Set.univ
+    Set.SurjOn (fun g : SL(2, R) => (↑g : Mat[2,2][R]) 1) Set.univ
       {cd | IsCoprime (cd 0) (cd 1)} := by
   rintro cd ⟨b₀, a, gcd_eqn⟩
   let A := of ![![a, -b₀], cd]
@@ -164,14 +164,14 @@ theorem tendsto_normSq_coprime_pair :
 /-- Given `coprime_pair` `p=(c,d)`, the matrix `[[a,b],[*,*]]` is sent to `a*c+b*d`.
   This is the linear map version of this operation.
 -/
-def lcRow0 (p : Fin 2 → ℤ) : Matrix (Fin 2) (Fin 2) ℝ →ₗ[ℝ] ℝ :=
+def lcRow0 (p : Fin 2 → ℤ) : Mat[2,2][ℝ] →ₗ[ℝ] ℝ :=
   ((p 0 : ℝ) • LinearMap.proj (0 : Fin 2) +
       (p 1 : ℝ) • LinearMap.proj (1 : Fin 2) : (Fin 2 → ℝ) →ₗ[ℝ] ℝ).comp
     (LinearMap.proj 0)
 #align modular_group.lc_row0 ModularGroup.lcRow0
 
 @[simp]
-theorem lcRow0_apply (p : Fin 2 → ℤ) (g : Matrix (Fin 2) (Fin 2) ℝ) :
+theorem lcRow0_apply (p : Fin 2 → ℤ) (g : Mat[2,2][ℝ]) :
     lcRow0 p g = p 0 * g 0 0 + p 1 * g 0 1 :=
   rfl
 #align modular_group.lc_row0_apply ModularGroup.lcRow0_apply
@@ -180,7 +180,7 @@ theorem lcRow0_apply (p : Fin 2 → ℤ) (g : Matrix (Fin 2) (Fin 2) ℝ) :
 some fixed `(c₀, d₀)`. -/
 @[simps!]
 def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
-    Matrix (Fin 2) (Fin 2) ℝ ≃ₗ[ℝ] Matrix (Fin 2) (Fin 2) ℝ :=
+    Mat[2,2][ℝ] ≃ₗ[ℝ] Mat[2,2][ℝ] :=
   LinearEquiv.piCongrRight
     ![by
       refine'
@@ -199,16 +199,16 @@ attribute [nolint simpNF] lcRow0Extend_apply lcRow0Extend_symm_apply
 theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     Tendsto (fun g : { g : SL(2, ℤ) // (↑ₘg) 1 = cd } => lcRow0 cd ↑(↑g : SL(2, ℝ))) cofinite
       (cocompact ℝ) := by
-  let mB : ℝ → Matrix (Fin 2) (Fin 2) ℝ := fun t => of ![![t, (-(1 : ℤ) : ℝ)], (↑) ∘ cd]
+  let mB : ℝ → Mat[2,2][ℝ] := fun t => of ![![t, (-(1 : ℤ) : ℝ)], (↑) ∘ cd]
   have hmB : Continuous mB := by
     refine' continuous_matrix _
     simp only [mB, Fin.forall_fin_two, continuous_const, continuous_id', of_apply, cons_val_zero,
       cons_val_one, and_self_iff]
   refine' Filter.Tendsto.of_tendsto_comp _ (comap_cocompact_le hmB)
-  let f₁ : SL(2, ℤ) → Matrix (Fin 2) (Fin 2) ℝ := fun g =>
+  let f₁ : SL(2, ℤ) → Mat[2,2][ℝ] := fun g =>
     Matrix.map (↑g : Matrix _ _ ℤ) ((↑) : ℤ → ℝ)
   have cocompact_ℝ_to_cofinite_ℤ_matrix :
-    Tendsto (fun m : Matrix (Fin 2) (Fin 2) ℤ => Matrix.map m ((↑) : ℤ → ℝ)) cofinite
+    Tendsto (fun m : Mat[2,2][ℤ] => Matrix.map m ((↑) : ℤ → ℝ)) cofinite
       (cocompact _) := by
     simpa only [coprodᵢ_cofinite, coprodᵢ_cocompact] using
       Tendsto.pi_map_coprodᵢ fun _ : Fin 2 =>
@@ -248,7 +248,7 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
   have nonZ2 : (p 0 : ℂ) * z + p 1 ≠ 0 := by simpa using linear_ne_zero _ z this
   field_simp [nonZ1, nonZ2, denom_ne_zero, num]
   rw [(by simp :
-    (p 1 : ℂ) * z - p 0 = (p 1 * z - p 0) * ↑(Matrix.det (↑g : Matrix (Fin 2) (Fin 2) ℤ)))]
+    (p 1 : ℂ) * z - p 0 = (p 1 * z - p 0) * ↑(Matrix.det (↑g : Mat[2,2][ℤ])))]
   rw [← hg, det_fin_two]
   simp only [Int.coe_castRingHom, coe_matrix_coe, Int.cast_mul, ofReal_int_cast, map_apply, denom,
     Int.cast_sub, coe_GLPos_coe_GL_coe_matrix, coe'_apply_complex]

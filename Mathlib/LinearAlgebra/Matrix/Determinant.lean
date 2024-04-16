@@ -516,7 +516,7 @@ theorem det_eq_of_forall_row_eq_smul_add_const {A B : Matrix n n R} (c : n → R
 
 theorem det_eq_of_forall_row_eq_smul_add_pred_aux {n : ℕ} (k : Fin (n + 1)) :
     ∀ (c : Fin n → R) (_hc : ∀ i : Fin n, k < i.succ → c i = 0)
-      {M N : Matrix (Fin n.succ) (Fin n.succ) R} (_h0 : ∀ j, M 0 j = N 0 j)
+      {M N : Mat[n.succ,n.succ][R}] (_h0 : ∀ j, M 0 j = N 0 j)
       (_hsucc : ∀ (i : Fin n) (j), M i.succ j = N i.succ j + c i * M (Fin.castSucc i) j),
       det M = det N := by
   refine' Fin.induction _ (fun k ih => _) k <;> intro c hc M N h0 hsucc
@@ -553,7 +553,7 @@ theorem det_eq_of_forall_row_eq_smul_add_pred_aux {n : ℕ} (k : Fin (n + 1)) :
 #align matrix.det_eq_of_forall_row_eq_smul_add_pred_aux Matrix.det_eq_of_forall_row_eq_smul_add_pred_aux
 
 /-- If you add multiples of previous rows to the next row, the determinant doesn't change. -/
-theorem det_eq_of_forall_row_eq_smul_add_pred {n : ℕ} {A B : Matrix (Fin (n + 1)) (Fin (n + 1)) R}
+theorem det_eq_of_forall_row_eq_smul_add_pred {n : ℕ} {A B : Mat[(n + 1),(n + 1)][R}]
     (c : Fin n → R) (A_zero : ∀ j, A 0 j = B 0 j)
     (A_succ : ∀ (i : Fin n) (j), A i.succ j = B i.succ j + c i * A (Fin.castSucc i) j) :
     det A = det B :=
@@ -562,7 +562,7 @@ theorem det_eq_of_forall_row_eq_smul_add_pred {n : ℕ} {A B : Matrix (Fin (n + 
 #align matrix.det_eq_of_forall_row_eq_smul_add_pred Matrix.det_eq_of_forall_row_eq_smul_add_pred
 
 /-- If you add multiples of previous columns to the next columns, the determinant doesn't change. -/
-theorem det_eq_of_forall_col_eq_smul_add_pred {n : ℕ} {A B : Matrix (Fin (n + 1)) (Fin (n + 1)) R}
+theorem det_eq_of_forall_col_eq_smul_add_pred {n : ℕ} {A B : Mat[(n + 1),(n + 1)][R}]
     (c : Fin n → R) (A_zero : ∀ i, A i 0 = B i 0)
     (A_succ : ∀ (i) (j : Fin n), A i j.succ = B i j.succ + c j * A i (Fin.castSucc j)) :
     det A = det B := by
@@ -707,7 +707,7 @@ theorem det_fromBlocks_zero₁₂ (A : Matrix m m R) (C : Matrix n m R) (D : Mat
 #align matrix.det_from_blocks_zero₁₂ Matrix.det_fromBlocks_zero₁₂
 
 /-- Laplacian expansion of the determinant of an `n+1 × n+1` matrix along column 0. -/
-theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) :
+theorem det_succ_column_zero {n : ℕ} (A : Mat[n.succ,n.succ][R]) :
     det A = ∑ i : Fin n.succ, (-1) ^ (i : ℕ) * A i 0 * det (A.submatrix i.succAbove Fin.succ) := by
   rw [Matrix.det_apply, Finset.univ_perm_fin_succ, ← Finset.univ_product_univ]
   simp only [Finset.sum_map, Equiv.toEmbedding_apply, Finset.sum_product, Matrix.submatrix]
@@ -739,7 +739,7 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
 #align matrix.det_succ_column_zero Matrix.det_succ_column_zero
 
 /-- Laplacian expansion of the determinant of an `n+1 × n+1` matrix along row 0. -/
-theorem det_succ_row_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) :
+theorem det_succ_row_zero {n : ℕ} (A : Mat[n.succ,n.succ][R]) :
     det A = ∑ j : Fin n.succ, (-1) ^ (j : ℕ) * A 0 j * det (A.submatrix Fin.succ j.succAbove) := by
   rw [← det_transpose A, det_succ_column_zero]
   refine' Finset.sum_congr rfl fun i _ => _
@@ -748,7 +748,7 @@ theorem det_succ_row_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) :
 #align matrix.det_succ_row_zero Matrix.det_succ_row_zero
 
 /-- Laplacian expansion of the determinant of an `n+1 × n+1` matrix along row `i`. -/
-theorem det_succ_row {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (i : Fin n.succ) :
+theorem det_succ_row {n : ℕ} (A : Mat[n.succ,n.succ][R]) (i : Fin n.succ) :
     det A =
       ∑ j : Fin n.succ, (-1) ^ (i + j : ℕ) * A i j * det (A.submatrix i.succAbove j.succAbove) := by
   simp_rw [pow_add, mul_assoc, ← mul_sum]
@@ -769,7 +769,7 @@ theorem det_succ_row {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (i : Fin
 #align matrix.det_succ_row Matrix.det_succ_row
 
 /-- Laplacian expansion of the determinant of an `n+1 × n+1` matrix along column `j`. -/
-theorem det_succ_column {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (j : Fin n.succ) :
+theorem det_succ_column {n : ℕ} (A : Mat[n.succ,n.succ][R]) (j : Fin n.succ) :
     det A =
       ∑ i : Fin n.succ, (-1) ^ (i + j : ℕ) * A i j * det (A.submatrix i.succAbove j.succAbove) := by
   rw [← det_transpose, det_succ_row _ j]
@@ -779,12 +779,12 @@ theorem det_succ_column {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (j : 
 
 /-- Determinant of 0x0 matrix -/
 @[simp]
-theorem det_fin_zero {A : Matrix (Fin 0) (Fin 0) R} : det A = 1 :=
+theorem det_fin_zero {A : Mat[0,0][R}] : det A = 1 :=
   det_isEmpty
 #align matrix.det_fin_zero Matrix.det_fin_zero
 
 /-- Determinant of 1x1 matrix -/
-theorem det_fin_one (A : Matrix (Fin 1) (Fin 1) R) : det A = A 0 0 :=
+theorem det_fin_one (A : Mat[1,1][R]) : det A = A 0 0 :=
   det_unique A
 #align matrix.det_fin_one Matrix.det_fin_one
 
@@ -793,7 +793,7 @@ theorem det_fin_one_of (a : R) : det !![a] = a :=
 #align matrix.det_fin_one_of Matrix.det_fin_one_of
 
 /-- Determinant of 2x2 matrix -/
-theorem det_fin_two (A : Matrix (Fin 2) (Fin 2) R) : det A = A 0 0 * A 1 1 - A 0 1 * A 1 0 := by
+theorem det_fin_two (A : Mat[2,2][R]) : det A = A 0 0 * A 1 1 - A 0 1 * A 1 0 := by
   simp only [det_succ_row_zero, det_unique, Fin.default_eq_zero, submatrix_apply,
     Fin.succ_zero_eq_one, Fin.sum_univ_succ, Fin.val_zero, Fin.zero_succAbove, univ_unique,
     Fin.val_succ, Fin.coe_fin_one, Fin.succ_succAbove_zero, sum_singleton]
@@ -806,7 +806,7 @@ theorem det_fin_two_of (a b c d : R) : Matrix.det !![a, b; c, d] = a * d - b * c
 #align matrix.det_fin_two_of Matrix.det_fin_two_of
 
 /-- Determinant of 3x3 matrix -/
-theorem det_fin_three (A : Matrix (Fin 3) (Fin 3) R) :
+theorem det_fin_three (A : Mat[3,3][R]) :
     det A =
       A 0 0 * A 1 1 * A 2 2 - A 0 0 * A 1 2 * A 2 1
       - A 0 1 * A 1 0 * A 2 2 + A 0 1 * A 1 2 * A 2 0

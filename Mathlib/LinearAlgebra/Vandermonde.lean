@@ -37,7 +37,7 @@ namespace Matrix
 
 /-- `vandermonde v` is the square matrix with `i`th row equal to `1, v i, v i ^ 2, v i ^ 3, ...`.
 -/
-def vandermonde {n : ℕ} (v : Fin n → R) : Matrix (Fin n) (Fin n) R := fun i j => v i ^ (j : ℕ)
+def vandermonde {n : ℕ} (v : Fin n → R) : Mat[n,n][R] := fun i j => v i ^ (j : ℕ)
 #align matrix.vandermonde Matrix.vandermonde
 
 @[simp]
