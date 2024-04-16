@@ -109,7 +109,7 @@ by the elaborator.
 
 We set `pp.unicode.fun` to true as per Mathlib convention.
 -/
-def PasteString (e : Expr) : MetaM String :=
+def pasteString (e : Expr) : MetaM String :=
   withOptions (fun _ => Options.empty
     |>.setBool `pp.universes false
     |>.setBool `pp.unicode.fun true) do
@@ -119,7 +119,7 @@ namespace InteractiveUnfold
 
 /-- Return the tactic string that does the unfolding. -/
 def tacticString (e unfold : Expr) (occ : Option Nat) (loc : Option Name) : MetaM String := do
-  let rfl := s! "show {← PasteString (← mkEq e unfold)} from rfl"
+  let rfl := s! "show {← pasteString (← mkEq e unfold)} from rfl"
   return mkRewrite occ false rfl loc
 
 /-- Render the unfolds of `e` as given by `filteredUnfolds`, with buttons at each suggestion
