@@ -3,7 +3,7 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Disintegration
+import Mathlib.Probability.Kernel.Disintegration.Unique
 import Mathlib.Probability.Notation
 
 #align_import probability.kernel.cond_distrib from "leanprover-community/mathlib"@"00abe0695d8767201e6d008afa22393978bb324d"
@@ -74,7 +74,7 @@ variable {mβ : MeasurableSpace β} {s : Set Ω} {t : Set β} {f : β × Ω → 
 lemma condDistrib_apply_of_ne_zero [MeasurableSingletonClass β]
     (hY : Measurable Y) (x : β) (hX : μ.map X {x} ≠ 0) (s : Set Ω) :
     condDistrib Y X μ x s = (μ.map X {x})⁻¹ * μ.map (fun a => (X a, Y a)) ({x} ×ˢ s) := by
-  rw [condDistrib, condKernel_apply_of_ne_zero _ s]
+  rw [condDistrib, Measure.condKernel_apply_of_ne_zero _ s]
   · rw [Measure.fst_map_prod_mk hY]
   · rwa [Measure.fst_map_prod_mk hY]
 
@@ -125,7 +125,7 @@ theorem condDistrib_ae_eq_of_measure_eq_compProd (hX : Measurable X) (hY : Measu
     rw [Measure.map_apply hX hs, Measure.fst_apply hs, Measure.map_apply]
     exacts [rfl, Measurable.prod hX hY, measurable_fst hs]
   rw [heq, condDistrib]
-  refine' eq_condKernel_of_measure_eq_compProd _ _ _
+  refine eq_condKernel_of_measure_eq_compProd _ ?_
   convert hκ
   exact heq.symm
 
@@ -202,7 +202,7 @@ theorem set_lintegral_preimage_condDistrib (hX : Measurable X) (hY : AEMeasurabl
   -- (`rw` does not see that the two forms are defeq)
   conv_lhs => arg 2; change (fun a => ((condDistrib Y X μ) a) s) ∘ X
   rw [lintegral_comp (kernel.measurable_coe _ hs) hX, condDistrib, ← Measure.restrict_map hX ht, ←
-    Measure.fst_map_prod_mk₀ hY, set_lintegral_condKernel_eq_measure_prod _ ht hs,
+    Measure.fst_map_prod_mk₀ hY, Measure.set_lintegral_condKernel_eq_measure_prod ht hs,
     Measure.map_apply_of_aemeasurable (hX.aemeasurable.prod_mk hY) (ht.prod hs), mk_preimage_prod]
 #align probability_theory.set_lintegral_preimage_cond_distrib ProbabilityTheory.set_lintegral_preimage_condDistrib
 
@@ -248,7 +248,7 @@ theorem condexp_prod_ae_eq_integral_condDistrib' [NormedSpace ℝ F] [CompleteSp
     · rw [← Measure.restrict_map hX ht]
       exact (hf_int.1.integral_condDistrib_map hY).restrict
     rw [← Measure.restrict_map hX ht, ← Measure.fst_map_prod_mk₀ hY, condDistrib,
-      set_integral_condKernel_univ_right ht hf_int.integrableOn,
+      Measure.set_integral_condKernel_univ_right ht hf_int.integrableOn,
       set_integral_map (ht.prod MeasurableSet.univ) hf_int.1 (hX.aemeasurable.prod_mk hY),
       mk_preimage_prod, preimage_univ, inter_univ]
   · exact aestronglyMeasurable'_integral_condDistrib hX.aemeasurable hY hf_int.1
