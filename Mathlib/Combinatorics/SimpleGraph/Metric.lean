@@ -136,8 +136,7 @@ theorem Walk.IsPath_length_eq_dist {u v : V} (p : G.Walk u v) (hp : p.length = G
 lemma Reachable.exists_path_of_dist {u v : V} (hr : G.Reachable u v) :
     ∃ (p : G.Walk u v), p.IsPath ∧ p.length = G.dist u v := by
   obtain ⟨p, h⟩ := hr.exists_walk_of_dist
-  refine ⟨p, ?_, h⟩
-  exact p.IsPath_length_eq_dist h
+  exact ⟨p, p.IsPath_length_eq_dist h, h⟩
 
 lemma Connected.exists_path_of_dist (hconn : G.Connected) (u v : V) :
     ∃ (p : G.Walk u v), p.IsPath ∧ p.length = G.dist u v := by
