@@ -83,13 +83,13 @@ section restrict
     obtain ⟨B, hB, hIB, hBIB'⟩ := hI.exists_base_subset_union_base hB'
     rw [hB'.inter_basis_iff_compl_inter_basis_dual, diff_inter_diff] at hI'
 
-    have hss : M.E \ (B' ∪ (R ∩ M.E)) ⊆ M.E \ (B ∪ (R ∩ M.E))
-    · apply diff_subset_diff_right
+    have hss : M.E \ (B' ∪ (R ∩ M.E)) ⊆ M.E \ (B ∪ (R ∩ M.E)) := by
+      apply diff_subset_diff_right
       rw [union_subset_iff, and_iff_left (subset_union_right _ _), union_comm]
       exact hBIB'.trans (union_subset_union_left _ (subset_inter hIY hI.subset_ground))
 
-    have hi : M﹡.Indep (M.E \ (B ∪ (R ∩ M.E)))
-    · rw [dual_indep_iff_exists]
+    have hi : M﹡.Indep (M.E \ (B ∪ (R ∩ M.E))) := by
+      rw [dual_indep_iff_exists]
       exact ⟨B, hB, disjoint_of_subset_right (subset_union_left _ _) disjoint_sdiff_left⟩
 
     have h_eq := hI'.eq_of_subset_indep hi hss
@@ -433,8 +433,8 @@ theorem Basis.encard_eq_encard (hI : M.Basis I X) (hJ : M.Basis J X) : I.encard 
 theorem Indep.augment (hI : M.Indep I) (hJ : M.Indep J) (hIJ : I.encard < J.encard) :
     ∃ e ∈ J \ I, M.Indep (insert e I) := by
   by_contra! he
-  have hb : M.Basis I (I ∪ J)
-  · simp_rw [hI.basis_iff_forall_insert_dep (subset_union_left _ _), union_diff_left, mem_diff,
+  have hb : M.Basis I (I ∪ J) := by
+    simp_rw [hI.basis_iff_forall_insert_dep (subset_union_left _ _), union_diff_left, mem_diff,
       and_imp, dep_iff, insert_subset_iff, and_iff_left hI.subset_ground]
     exact fun e heJ heI ↦ ⟨he e ⟨heJ, heI⟩, hJ.subset_ground heJ⟩
   obtain ⟨J', hJ', hJJ'⟩ := hJ.subset_basis_of_subset (subset_union_right I J)

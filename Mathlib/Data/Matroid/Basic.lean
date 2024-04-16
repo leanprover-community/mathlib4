@@ -970,8 +970,8 @@ section Finite
 /-- For finite `E`, finitely many matroids have ground set contained in `E`. -/
 theorem finite_setOf_matroid {E : Set α} (hE : E.Finite) : {M : Matroid α | M.E ⊆ E}.Finite := by
   set f : Matroid α → Set α × (Set (Set α)) := fun M ↦ ⟨M.E, {B | M.Base B}⟩
-  have hf : f.Injective
-  · refine fun M M' hMM' ↦ ?_
+  have hf : f.Injective := by
+    refine fun M M' hMM' ↦ ?_
     rw [Prod.mk.injEq, and_comm, Set.ext_iff, and_comm] at hMM'
     exact eq_of_base_iff_base_forall hMM'.1 (fun B _ ↦ hMM'.2 B)
   rw [← Set.finite_image_iff (hf.injOn _)]
