@@ -38,7 +38,7 @@ set_option linter.uppercaseLean3 false
 
 @[simp]
 theorem SL_reduction_mod_hom_val (N : ℕ) (γ : SL(2, ℤ)) :
-    ∀ i j : Fin 2, (SLMOD(N) γ : Mat[2,2][(ZMod] N)) i j = ((↑ₘγ i j : ℤ) : ZMod N) :=
+    ∀ i j : Fin 2, (SLMOD(N) γ : Mat[2,2][ZMod N]) i j = ((↑ₘγ i j : ℤ) : ZMod N) :=
   fun _ _ => rfl
 #align SL_reduction_mod_hom_val SL_reduction_mod_hom_val
 
