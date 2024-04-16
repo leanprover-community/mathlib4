@@ -1,6 +1,6 @@
 import Mathlib.Topology.Category.Profinite.AsLimit
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
-import Mathlib.CategoryTheory.Limits.KanExtension
+import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 import Mathlib.CategoryTheory.Filtered.Final
 
 universe u
@@ -63,42 +63,47 @@ theorem functorOp_final (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Final (func
 
 section Limit
 
-variable {C : Type*} [Category C] (G : Profinite ⥤ C)
+variable {C : Type*} [Category C] (G : Profiniteᵒᵖ ⥤ C)
 
-def cone : Cone (F ⋙ toProfinite ⋙ G) := G.mapCone c
+def cocone : Cocone (F.op ⋙ toProfinite.op ⋙ G) := G.mapCocone c.op
 
-def cone' (S : Profinite) : Cone (Ran.diagram toProfinite (toProfinite ⋙ G) S) where
-  pt := G.obj S
-  π := {
-    app := fun i ↦ G.map i.hom
-    naturality := fun _ _ f ↦ (by
-      have := f.w
-      simp only [Functor.const_obj_obj, StructuredArrow.left_eq_id, Functor.const_obj_map,
-        Category.id_comp] at this
-      simp only [Functor.const_obj_obj, Functor.comp_obj, StructuredArrow.proj_obj,
-        Functor.const_obj_map, this, Functor.map_comp, Category.id_comp, Functor.comp_map,
-        StructuredArrow.proj_map]) }
+def cocone' (S : Profinite) :
+    Cocone (CostructuredArrow.proj toProfinite.op ⟨S⟩ ⋙ toProfinite.op ⋙ G) where
+  pt := sorry
+  ι := sorry
 
--- instance (hc : IsLimit c) : HasLimit (F ⋙ toProfinite) := ⟨c, hc⟩
+-- -- Cone (Ran.diagram toProfinite (toProfinite ⋙ G) S) where
+-- --   pt := G.obj S
+-- --   π := {
+-- --     app := fun i ↦ G.map i.hom
+-- --     naturality := fun _ _ f ↦ (by
+-- --       have := f.w
+-- --       simp only [Functor.const_obj_obj, StructuredArrow.left_eq_id, Functor.const_obj_map,
+-- --         Category.id_comp] at this
+-- --       simp only [Functor.const_obj_obj, Functor.comp_obj, StructuredArrow.proj_obj,
+-- --         Functor.const_obj_map, this, Functor.map_comp, Category.id_comp, Functor.comp_map,
+-- --         StructuredArrow.proj_map]) }
 
-example : cone c G = (cone' G c.pt).whisker (functor c) := rfl
+-- -- instance (hc : IsLimit c) : HasLimit (F ⋙ toProfinite) := ⟨c, hc⟩
 
-variable [HasLimit (F ⋙ toProfinite ⋙ G)]
+-- example : cone c G = (cone' G c.pt).whisker (functor c) := rfl
 
-noncomputable
-def can : G.obj c.pt ⟶ limit (F ⋙ toProfinite ⋙ G) :=
-  limit.lift (F ⋙ toProfinite ⋙ G) (G.mapCone c)
+-- variable [HasLimit (F ⋙ toProfinite ⋙ G)]
 
-variable [HasLimit (Ran.diagram toProfinite (toProfinite ⋙ G) c.pt)]
+-- noncomputable
+-- def can : G.obj c.pt ⟶ limit (F ⋙ toProfinite ⋙ G) :=
+--   limit.lift (F ⋙ toProfinite ⋙ G) (G.mapCone c)
 
-noncomputable
-def can' : G.obj c.pt ⟶ limit (Ran.diagram toProfinite (toProfinite ⋙ G) c.pt) :=
-  limit.lift (Ran.diagram toProfinite (toProfinite ⋙ G) c.pt) (cone' G c.pt)
+-- variable [HasLimit (Ran.diagram toProfinite (toProfinite ⋙ G) c.pt)]
 
-end Limit
+-- noncomputable
+-- def can' : G.obj c.pt ⟶ limit (Ran.diagram toProfinite (toProfinite ⋙ G) c.pt) :=
+--   limit.lift (Ran.diagram toProfinite (toProfinite ⋙ G) c.pt) (cone' G c.pt)
 
-section Colimit
+-- end Limit
 
-end Colimit
+-- section Colimit
 
-end Profinite.Extend
+-- end Colimit
+
+-- end Profinite.Extend
