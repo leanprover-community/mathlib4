@@ -108,33 +108,6 @@ theorem expMapCircle_add_two_pi (x : ℝ) : expMapCircle (x + 2 * π) = expMapCi
   periodic_expMapCircle x
 #align exp_map_circle_add_two_pi expMapCircle_add_two_pi
 
-namespace circle
-
-/-- `Complex.arg ∘ (↑)` and `expMapCircle` define a partial equivalence between `circle` and `ℝ`
-with `source = Set.univ` and `target = Set.Ioc (-π) π`. -/
-@[simps (config := .asFn)]
-noncomputable def argPartialHomeomorph : PartialHomeomorph circle ℝ :=
-  let fund : ∀ x : circle, Complex.arg x = Real.pi ↔ x = expMapCircle Real.pi :=
-    fun x ↦ ⟨fun hx ↦ hx ▸ (expMapCircle_arg x).symm,
-      fun hx ↦ hx ▸ arg_expMapCircle (neg_lt_self pi_pos) le_rfl⟩
-  { toFun := arg ∘ (↑)
-    invFun := expMapCircle
-    source := {expMapCircle π}ᶜ
-    target := Set.Ioo (-π) π
-    map_source' := fun x hx ↦ let h := arg_mem_Ioc x; ⟨h.1, lt_of_le_of_ne h.2 (hx ∘ (fund x).mp)⟩
-    map_target' := fun x hx hx' ↦ hx.2.ne
-      (by rwa [mem_singleton_iff, ← fund, arg_expMapCircle hx.1 hx.2.le] at hx')
-    left_inv' := fun x _ ↦ expMapCircle_arg x
-    right_inv' := fun x hx ↦ arg_expMapCircle hx.1 hx.2.le
-    open_source := isOpen_compl_singleton
-    open_target := isOpen_Ioo
-    continuousOn_toFun := (ContinuousAt.continuousOn fun _ ↦ continuousAt_arg).comp
-      continuous_induced_dom.continuousOn
-        (fun x h ↦ mem_slitPlane_iff_arg.mpr ⟨mt (fund x).mp h, ne_zero_of_mem_circle x⟩)
-    continuousOn_invFun := Continuous.continuousOn (by continuity) }
-
-end circle
-
 /-- `expMapCircle`, applied to a `Real.Angle`. -/
 noncomputable def Real.Angle.expMapCircle (θ : Real.Angle) : circle :=
   periodic_expMapCircle.lift θ
