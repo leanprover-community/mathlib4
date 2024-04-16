@@ -476,16 +476,21 @@ theorem count_finprod_coprime (exps : HeightOneSpectrum R → ℤ) :
   · intro w hw
     rw [count_zpow, count_maximal_coprime K v hw, MulZeroClass.mul_zero]
 
+theorem count_finsupp_prod (exps : HeightOneSpectrum R →₀ ℤ) :
+    count K v (exps.prod (HeightOneSpectrum.asIdeal · ^ ·)) = exps v := by
+  rw [Finsupp.prod, count_prod]
+  · simp only [count_zpow, count_maximal, mul_ite, mul_one, mul_zero, Finset.sum_ite_eq',
+      exps.mem_support_iff, ne_eq, ite_not, ite_eq_right_iff, @eq_comm ℤ 0, imp_self]
+  · exact fun v hv ↦ zpow_ne_zero _ (coeIdeal_ne_zero.mpr v.ne_bot)
+
 /-- If `exps` is finitely supported, then `val_v(∏_w w^{exps w}) = exps v`. -/
 theorem count_finprod (exps : HeightOneSpectrum R → ℤ)
     (h_exps : ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite, exps v = 0) :
     count K v (∏ᶠ v : HeightOneSpectrum R,
       (v.asIdeal : FractionalIdeal R⁰ K) ^ exps v) = exps v := by
-  rw [finprod_eq_finset_prod_of_mulSupport_subset (s := h_exps.toFinset), count_prod]
-  · simp only [count_zpow, count_maximal, mul_ite, mul_one, mul_zero, Finset.sum_ite_eq',
-    Finite.mem_toFinset, mem_compl_iff, mem_setOf_eq, eq_comm (a := exps v), ite_not,
-    ite_eq_right_iff, imp_self]
-  · exact fun v hv ↦ zpow_ne_zero _ (coeIdeal_ne_zero.mpr v.ne_bot)
+  convert count_finsupp_prod K v (Finsupp.mk h_exps.toFinset exps (fun _ ↦ h_exps.mem_toFinset))
+  rw [finprod_eq_finset_prod_of_mulSupport_subset (s := h_exps.toFinset), Finsupp.prod]
+  rfl
   · rw [Finite.coe_toFinset]
     intro v hv h
     rw [mem_mulSupport, h, zpow_zero] at hv
