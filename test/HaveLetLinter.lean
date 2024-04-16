@@ -11,6 +11,30 @@ example : True := by
 example : True := by
   let zero := 0
   replace _zero := zero
+  have eq := (rfl : 0 = 0)
+  replace _eq := eq
+  exact .intro
+
+set_option linter.haveLet false in
+set_option linter.haveLet true in
+/--
+warning: '0 = 0' is a Prop and not a Type. Consider using 'have' instead of 'let'. [linter.haveLet]
+-/
+#guard_msgs in
+example : True := by
+  let zero := 0
+  replace _zero := zero
+  let eq := (rfl : 0 = 0)
+  replace _eq := eq
+  exact .intro
+
+set_option linter.haveLet false in
+set_option linter.haveLet true in
+/--
+warning: '0 = 0' is a Prop and not a Type. Consider using 'have' instead of 'let'. [linter.haveLet]
+-/
+#guard_msgs in
+example : True := by
   let eq := (rfl : 0 = 0)
   replace _eq := eq
   exact .intro

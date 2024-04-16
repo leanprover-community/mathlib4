@@ -10,12 +10,13 @@ import Std.Data.List.Basic
 /-!
 #  The `have` vs `let` linter
 
-The `have` vs `let` linter flags uses of `have` to introduce a hypothesis whose Type is not `Prop`.
+The `have` vs `let` linter flags uses of
+* `have` to introduce a hypothesis whose Type is not `Prop`;
+* `let` to introduce a hypothesis whose Type is `Prop`.
 
 TODO:
-* `replace` implies `have`: should it be ignored?
-* `haveI` may need to change to `let/letI`?
-* also do `let` vs `have`.
+* `replace` is ignored always -- should `replace` have a `let`-like analogue?
+* `haveI` may need to change to `let`/`letI`?
 -/
 
 open Lean Elab Command Meta
@@ -70,16 +71,19 @@ def isProp_toFormat (lc : LocalContext) (mctx : MetavarContext) (e : Expr) :
     return (typ.isProp, ← ppExpr e)
   return res.1
 
-/-- returns the `have` syntax whose corresponding hypothesis does not have Type `Prop` and
-also a `Format`ted version of the corresponding Type. -/
+/-- returns
+* the `have` syntax nodes whose corresponding hypothesis does not have Type `Prop`, and
+* the `let` syntax nodes whose corresponding hypothesis has Type `Prop`.
+It also returns a `Format`ted version of the corresponding `Type`/`Prop` and a `Bool`ean
+that is `true` for `have` and `false` for `let`. -/
 partial
-def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format))
+def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format × Bool))
   | .node i args => do
     let nargs := (← args.toArray.mapM nonPropHaves).flatten
     if let .ofTacticInfo i := i then
       let stx := i.stx
       if exclusions.contains stx.getKind then return #[] else
-      if have_or_let? stx == some true then
+      if let some haveLet? := have_or_let? stx then
         let mctx := i.mctxAfter
         let mvdecls := (i.goalsAfter.map (mctx.decls.find? ·)).reduceOption
         let _ : Ord MetavarDecl := { compare := (compare ·.index ·.index) }
@@ -91,9 +95,11 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format))
         -- and the last declaration introduced: the one that `have` created
         let ld := (lc.lastDecl.getD default).type
         -- now, we get the `MetaM` state up and running to find the type of `ld`
-        return match ← isProp_toFormat lc mctx ld with
-          | (true, _) => nargs
-          | (false, fmt) => nargs.push (stx, fmt)
+        return match haveLet?, ← isProp_toFormat lc mctx ld with
+          | true, (true, _) => nargs
+          | true, (false, fmt) => nargs.push (stx, fmt, true)
+          | false, (false, _) => nargs
+          | false, (true, fmt) => nargs.push (stx, fmt, false)
       else return nargs
     else return nargs
   | .context _ t => nonPropHaves t
@@ -110,8 +116,12 @@ def haveLetLinter : Linter where run := withSetOptionIn fun _stx => do
     return
   let trees ← getInfoTrees
   for t in trees.toArray do
-    for (s, fmt) in ← nonPropHaves t do
-      Linter.logLint linter.haveLet s m!"'{fmt}' is a Type and not a Prop. \
-        Consider using 'let' instead of 'have'"
+    for (s, fmt, haveLet?) in ← nonPropHaves t do
+      if haveLet? then
+        Linter.logLint linter.haveLet s m!"'{fmt}' is a Type and not a Prop. \
+          Consider using 'let' instead of 'have'"
+      else
+        Linter.logLint linter.haveLet s m!"'{fmt}' is a Prop and not a Type. \
+          Consider using 'have' instead of 'let'."
 
 initialize addLinter haveLetLinter
