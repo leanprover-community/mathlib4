@@ -54,11 +54,10 @@ completed Hurwit zeta function). See `evenKernel_def` for the defining formula, 
     (fun ξ : ℝ ↦ rexp (-π * ξ ^ 2 * x) * re (jacobiTheta₂ (ξ * I * x) (I * x))) 1 by
       intro ξ
       simp only [ofReal_add, ofReal_one, add_mul, one_mul, jacobiTheta₂_add_left']
-      have : cexp (-↑π * I * ((I * ↑x) + 2 * (↑ξ * I * ↑x))) = rexp (π * (x + 2 * ξ * x)) := by
-        simp only [ofReal_exp, push_cast]
+   have : cexp (-↑π * I * ((I * ↑x) + 2 * (↑ξ * I * ↑x))) = rexp (π * (x + 2 * ξ * x)) := by
         ring_nf
-        rw [I_sq]
-        ring_nf
+        simp only [I_sq, mul_neg, mul_one, neg_mul, neg_neg, sub_neg_eq_add, ofReal_exp, ofReal_add,
+          ofReal_mul, ofReal_ofNat]
       rw [this, re_ofReal_mul, ← mul_assoc, ← Real.exp_add]
       ring_nf).lift a
 
@@ -134,19 +133,16 @@ lemma evenKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
   induction' a using QuotientAddGroup.induction_on' with a'
   rw [← ofReal_inj, ofReal_mul, evenKernel_def, cosKernel_def,
       jacobiTheta₂_functional_equation]
-  have : I * ↑(1 / x) = -1 / (I * ↑x) := by
+  have h1 : I * ↑(1 / x) = -1 / (I * ↑x) := by
     push_cast; field_simp [hx.ne']; ring_nf; rw [I_sq]; ring_nf
-  rw [this]
-  have : (a' * I * x / (I * x)) = a' := by { field_simp [hx.ne']; ring_nf }
-  rw [this]
-  have : 1 / (-I * (I * x)) ^ (1 / 2 : ℂ) = 1 / ↑(x  ^ (1 / 2 : ℝ)) := by
-    rw [neg_mul, ← mul_assoc, I_mul_I, neg_one_mul, neg_neg,
-        ofReal_cpow hx.le, ofReal_div, ofReal_one, ofReal_ofNat]
-  rw [this]
-  have : -↑π * I * (↑a' * I * ↑x) ^ 2 / (I * ↑x) = - (-π * a' ^ 2 * x) := by
+  have h2 : (a' * I * x / (I * x)) = a' := by { field_simp [hx.ne']; ring_nf }
+  have h3 : 1 / (-I * (I * x)) ^ (1 / 2 : ℂ) = 1 / ↑(x ^ (1 / 2 : ℝ)) := by
+    rw [neg_mul, ← mul_assoc, I_mul_I, neg_one_mul, neg_neg,ofReal_cpow hx.le, ofReal_div, 
+      ofReal_one, ofReal_ofNat]
+  have h4 : -↑π * I * (↑a' * I * ↑x) ^ 2 / (I * ↑x) = - (-π * a' ^ 2 * x) := by
     rw [mul_pow, mul_pow, I_sq]; field_simp [hx.ne']; ring_nf
-  rw [this, ← mul_assoc, mul_comm (cexp _), mul_assoc _ (cexp _) (cexp _), ← Complex.exp_add,
-      neg_add_self, Complex.exp_zero, mul_one, ofReal_div, ofReal_one]
+  rw [h1, h2, h3, h4, ← mul_assoc, mul_comm (cexp _), mul_assoc _ (cexp _) (cexp _), 
+    ← Complex.exp_add, neg_add_self, Complex.exp_zero, mul_one, ofReal_div, ofReal_one]
 
 end kernel_defs
 
