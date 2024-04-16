@@ -1630,7 +1630,7 @@ import Mathlib.Condensed.Abelian
 import Mathlib.Condensed.Adjunctions
 import Mathlib.Condensed.Basic
 import Mathlib.Condensed.Discrete.ConstantSheaf
-
+import Mathlib.Condensed.Discrete.LocallyConstant
 import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
 import Mathlib.Condensed.Functors
