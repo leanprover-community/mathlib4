@@ -491,6 +491,108 @@ theorem adjoin_rank_eq_rank_right [Module.Free R B] [Module.Flat R A]
     Module.rank A (Algebra.adjoin A (B : Set S)) = Module.rank R B :=
   H.symm.adjoin_rank_eq_rank_left
 
+-- TODO: move to suitable place
+variable (A B) in
+theorem _root_.Subalgebra.rank_sup_eq_rank_left_mul_rank_of_free
+    [Module.Free R A] [Module.Free A (Algebra.adjoin A (B : Set S))] :
+    Module.rank R ↥(A ⊔ B) = Module.rank R A * Module.rank A (Algebra.adjoin A (B : Set S)) := by
+  rcases subsingleton_or_nontrivial R with _ | _
+  · haveI := Module.subsingleton R S; simp
+  nontriviality S using rank_subsingleton'
+  letI : Algebra A (Algebra.adjoin A (B : Set S)) := Subalgebra.algebra _
+  letI : SMul A (Algebra.adjoin A (B : Set S)) := Algebra.toSMul
+  haveI : IsScalarTower R A (Algebra.adjoin A (B : Set S)) :=
+    IsScalarTower.of_algebraMap_eq (congrFun rfl)
+  rw [rank_mul_rank R A (Algebra.adjoin A (B : Set S))]
+  change _ = Module.rank R ((Algebra.adjoin A (B : Set S)).restrictScalars R)
+  rw [Algebra.restrictScalars_adjoin]; rfl
+
+-- TODO: move to suitable place
+variable (A B) in
+theorem _root_.Subalgebra.rank_sup_eq_rank_right_mul_rank_of_free
+    [Module.Free R B] [Module.Free B (Algebra.adjoin B (A : Set S))] :
+    Module.rank R ↥(A ⊔ B) = Module.rank R B * Module.rank B (Algebra.adjoin B (A : Set S)) := by
+  rw [sup_comm, rank_sup_eq_rank_left_mul_rank_of_free]
+
+-- TODO: move to suitable place
+variable (A B) in
+theorem _root_.Subalgebra.finrank_sup_eq_finrank_left_mul_finrank_of_free
+    [Module.Free R A] [Module.Free A (Algebra.adjoin A (B : Set S))] :
+    finrank R ↥(A ⊔ B) = finrank R A * finrank A (Algebra.adjoin A (B : Set S)) := by
+  simpa only [map_mul] using congr(Cardinal.toNat $(rank_sup_eq_rank_left_mul_rank_of_free A B))
+
+-- TODO: move to suitable place
+variable (A B) in
+theorem _root_.Subalgebra.finrank_sup_eq_finrank_right_mul_finrank_of_free
+    [Module.Free R B] [Module.Free B (Algebra.adjoin B (A : Set S))] :
+    finrank R ↥(A ⊔ B) = finrank R B * finrank B (Algebra.adjoin B (A : Set S)) := by
+  rw [sup_comm, finrank_sup_eq_finrank_left_mul_finrank_of_free]
+
+-- TODO: move to suitable place
+variable (A B) in
+theorem _root_.Subalgebra.finrank_left_dvd_finrank_sup_of_free
+    [Module.Free R A] [Module.Free A (Algebra.adjoin A (B : Set S))] :
+    finrank R A ∣ finrank R ↥(A ⊔ B) := ⟨_, finrank_sup_eq_finrank_left_mul_finrank_of_free A B⟩
+
+-- TODO: move to suitable place
+variable (A B) in
+theorem _root_.Subalgebra.finrank_right_dvd_finrank_sup_of_free
+    [Module.Free R B] [Module.Free B (Algebra.adjoin B (A : Set S))] :
+    finrank R B ∣ finrank R ↥(A ⊔ B) := ⟨_, finrank_sup_eq_finrank_right_mul_finrank_of_free A B⟩
+
+-- TODO: move to suitable place
+theorem _root_.bijective_algebraMap_of_linearEquiv
+    {F E : Type*} [CommRing F] [Ring E] [Algebra F E]
+    (b : F ≃ₗ[F] E) : Function.Bijective (algebraMap F E) := by
+  have h : b.symm (b 1 * b (b.symm 1)) = b.symm 1 * b.symm (b 1 * b 1) := by
+    let j := b.symm.toLinearMap ∘ₗ .mulLeft F (b 1) ∘ₗ b.toLinearMap
+    change j (b.symm 1) = (b.symm 1) • j 1
+    rw [← map_smul, smul_eq_mul, mul_one]
+  replace h : b 1 = (algebraMap F E) (b.symm (b 1 * b 1)) := by
+    apply_fun b at h
+    rwa [b.apply_symm_apply, b.apply_symm_apply, mul_one, mul_comm (b.symm 1),
+      ← smul_eq_mul, map_smul, b.apply_symm_apply, Algebra.smul_def, mul_one] at h
+  refine Function.bijective_iff_has_inverse.2 ⟨fun y ↦ b.symm y * b.symm (b 1 * b 1),
+    fun x ↦ b.injective ?_, fun y ↦ ?_⟩
+  · dsimp only; rw [mul_comm, ← smul_eq_mul, map_smul, Algebra.smul_def, ← h, b.apply_symm_apply,
+      ← Algebra.commutes x (b 1), ← Algebra.smul_def, ← map_smul, smul_eq_mul, mul_one]
+  · dsimp only; rw [map_mul, ← h, ← Algebra.smul_def, ← map_smul, smul_eq_mul, mul_one,
+      b.apply_symm_apply]
+
+-- TODO: move to suitable place
+theorem _root_.Subalgebra.eq_bot_of_finrank_one_of_free
+    {F E : Type*} [CommRing F] [StrongRankCondition F] [Ring E] [Algebra F E]
+    {S : Subalgebra F E} (h : finrank F S = 1) [Module.Free F S] : S = ⊥ := by
+  refine bot_unique fun x hx ↦ Algebra.mem_bot.2 ?_
+  obtain ⟨y, hy⟩ := (bijective_algebraMap_of_linearEquiv ((basisUnique Unit h).repr ≪≫ₗ
+    Finsupp.LinearEquiv.finsuppUnique _ _ _).symm).surjective ⟨x, hx⟩
+  exact ⟨y, congr(Subtype.val $(hy))⟩
+
+theorem of_finrank_coprime_of_free [Module.Free R A] [Module.Free R B]
+    [Module.Free A (Algebra.adjoin A (B : Set S))] [Module.Free B (Algebra.adjoin B (A : Set S))]
+    (H : (finrank R A).Coprime (finrank R B)) : A.LinearDisjoint B := by
+  nontriviality R
+  by_cases h1 : finrank R A = 0
+  · rw [h1, Nat.coprime_zero_left] at H
+    rw [eq_bot_of_finrank_one_of_free H]
+    exact of_bot_right _
+  by_cases h2 : finrank R B = 0
+  · rw [h2, Nat.coprime_zero_right] at H
+    rw [eq_bot_of_finrank_one_of_free H]
+    exact of_bot_left _
+  replace h1 := Nat.pos_of_ne_zero h1
+  haveI := Module.finite_of_finrank_pos h1
+  haveI := Module.finite_of_finrank_pos (Nat.pos_of_ne_zero h2)
+  haveI : Module.Finite R (toSubmodule (A ⊔ B)) := finite_sup A B
+  have : A ≤ A ⊔ B := le_sup_left
+  rw [← toSubmodule.map_rel_iff] at this
+  have := LinearMap.finrank_le_finrank_of_injective (Submodule.inclusion_injective this)
+  change finrank R A ≤ finrank R ↥(A ⊔ B) at this
+  exact of_finrank_sup_of_free <| (finrank_sup_le_of_free A B).antisymm <|
+    Nat.le_of_dvd (lt_of_lt_of_le h1 this) (H.mul_dvd_of_dvd_of_dvd
+      (finrank_left_dvd_finrank_sup_of_free A B)
+      (finrank_right_dvd_finrank_sup_of_free A B))
+
 end LinearDisjoint
 
 end CommRing

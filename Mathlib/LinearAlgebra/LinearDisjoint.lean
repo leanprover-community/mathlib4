@@ -217,14 +217,13 @@ def rTensorOne' : M ⊗[R] (1 : Submodule R S) →ₗ[R] M := by
     rw [mulMap_tmul]
     obtain ⟨_, y, rfl⟩ := r
     convert M.smul_mem y m.2 using 1
-    simp [Algebra.smul_def, show _ * _ = _ * _ from Algebra.commute_algebraMap_left y m.1]
+    simp [Algebra.smul_def, Algebra.commutes y m.1]
   | add x y hx hy => rw [_root_.map_add]; exact M.add_mem hx hy
 
 theorem rTensorOne'_apply
     (y : R) {hy : algebraMap R S y ∈ (1 : Submodule R S)}
     (m : M) : M.rTensorOne' (m ⊗ₜ[R] ⟨algebraMap R S y, hy⟩) = y • m :=
-  Subtype.val_injective <| by simp [rTensorOne', Algebra.smul_def,
-    show _ * _ = _ * _ from Algebra.commute_algebraMap_left y m.1]
+  Subtype.val_injective <| by simp [rTensorOne', Algebra.smul_def, Algebra.commutes y m.1]
 
 /-- If `M` is a submodule in an algebra `S` over `R`, there is the natural isomorphism between
 `M ⊗[R] i(R)` and `M` induced by multiplication in `S`, here `i : R → S` is the structure map.
