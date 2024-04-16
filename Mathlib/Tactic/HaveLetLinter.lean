@@ -49,6 +49,24 @@ end Mathlib.Linter
 
 namespace Mathlib.Linter.haveLet
 
+/-- given a `LocalContext`, `MetavarContext` and an `Expr`ession `e`, `isType_toFormat`
+creates a `MetaM` context, checks whether `e` is a `Prop` and
+* if `e` is not a `Prop`, then it returns `some <pp-formatted e>`;
+* if `e` is a `Prop`, then it returns `none`.
+
+This essentially runs `inferType` in `CommandElabM`, which is the lift that `nonPropHaves`
+uses to decide whether the Type of a `have` is in `Prop` or not.
+
+The output `Format` is just so that the linter displays a better message. -/
+def isType_toFormat (lc : LocalContext) (mctx : MetavarContext) (e : Expr) :
+    CommandElabM (Option Format) := do
+  let res ← liftCoreM do MetaM.run (ctx := { lctx := lc }) (s := { mctx := mctx }) <| do
+    let typ ← inferType (← instantiateMVars e)
+    match typ.isProp with
+      | false => return some (← ppExpr e)
+      | true => return none
+  return res.1
+
 /-- returns the `have` syntax whose corresponding hypothesis does not have Type `Prop` and
 also a `Format`ted version of the corresponding Type. -/
 partial
@@ -70,12 +88,9 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format))
         -- and the last declaration introduced: the one that `have` created
         let ld := (lc.lastDecl.getD default).type
         -- now, we get the `MetaM` state up and running to find the type of `ld`
-        let res ← liftCoreM do MetaM.run (ctx := { lctx := lc }) (s := { mctx := mctx }) <| do
-            let typ ← inferType (← instantiateMVars ld)
-            if ! typ.isProp then
-              return nargs.push (stx, ← ppExpr ld)
-            else return nargs
-        return res.1
+        return match ← isType_toFormat lc mctx ld with
+          | none => nargs
+          | some fmt => nargs.push (stx, fmt)
       else return nargs
     else return nargs
   | .context _ t => nonPropHaves t
