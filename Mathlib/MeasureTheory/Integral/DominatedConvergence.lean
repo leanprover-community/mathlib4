@@ -522,15 +522,20 @@ variable [IsLocallyFiniteMeasure μ] {f : X → ℝ → E}
 theorem continuous_parametric_primitive_of_continuous
     {a₀ : ℝ} (hf : Continuous f.uncurry) :
     Continuous fun p : X × ℝ ↦ ∫ t in a₀..p.2, f p.1 t ∂μ := by
+  -- We will prove continuity at a point `(q, b₀)`.
   rw [continuous_iff_continuousAt]
   rintro ⟨q, b₀⟩
   apply Metric.continuousAt_iff'.2 (fun ε εpos ↦ ?_)
+  -- choose `a` and `b` such that `(a, b)` contains both `a₀` and `b₀`. We will use uniform
+  -- estimates on a neighborhood of the compact set `{q} × [a, b]`.
   cases' exists_lt (min a₀ b₀) with a a_lt
   cases' exists_gt (max a₀ b₀) with b lt_b
   rw [lt_min_iff] at a_lt
   rw [max_lt_iff] at lt_b
   have : IsCompact ({q} ×ˢ (Icc a b)) := isCompact_singleton.prod isCompact_Icc
+  -- let `M` be a bound for `f` on the compact set `{q} × [a, b]`.
   obtain ⟨M, hM⟩ := this.bddAbove_image hf.norm.continuousOn
+  -- let `δ` be small enough to satisfy several properties that will show up later.
   obtain ⟨δ, δpos, hδ, h'δ, h''δ⟩ : ∃ (δ : ℝ), 0 < δ ∧ δ < 1 ∧ Icc (b₀ - δ) (b₀ + δ) ⊆ Icc a b ∧
       (M + 1) * (μ (Icc (b₀ - δ) (b₀ + δ))).toReal + δ * (μ (Icc a b)).toReal < ε := by
     have A : ∀ᶠ δ in 𝓝[>] (0 : ℝ), δ ∈ Ioo 0 1 := Ioo_mem_nhdsWithin_Ioi (by simp)
@@ -552,9 +557,14 @@ theorem continuous_parametric_primitive_of_continuous
       exact (tendsto_toReal zero_ne_top).comp (tendsto_measure_Icc _ _)
     rcases (A.and ((B.and C).filter_mono nhdsWithin_le_nhds)).exists with ⟨δ, hδ, h'δ, h''δ⟩
     exact ⟨δ, hδ.1, hδ.2, h'δ, h''δ⟩
+  -- By compactness of `[a, b]` and continuity of `f` there, if `p` is close enough to `q`
+  -- then `f p x` is `δ`-close to `f q x`, uniformly in `x ∈ [a, b]`.
+  -- (Note in particular that this implies a bound `M + δ ≤ M + 1` for `f p x`).
   obtain ⟨v, v_mem, hv⟩ : ∃ v ∈ 𝓝[univ] q, ∀ p ∈ v, ∀ x ∈ Icc a b, dist (f p x) (f q x) < δ :=
     IsCompact.mem_uniformity_of_prod isCompact_Icc hf.continuousOn (mem_univ _)
       (dist_mem_uniformity δpos)
+  -- for `p` in this neighborhood and `s` which is `δ`-close to `b₀`, we will show that the
+  -- integrals are `ε`-close.
   have : v ×ˢ (Ioo (b₀ - δ) (b₀ + δ)) ∈ 𝓝 (q, b₀) := by
     rw [nhdsWithin_univ] at v_mem
     simp only [prod_mem_nhds_iff, v_mem, true_and]
@@ -563,6 +573,10 @@ theorem continuous_parametric_primitive_of_continuous
   rintro ⟨p, s⟩ ⟨hp : p ∈ v, hs : s ∈ Ioo (b₀ - δ) (b₀ + δ)⟩
   simp only [dist_eq_norm] at hv ⊢
   have J r u v : IntervalIntegrable (f r) μ u v := (hf.uncurry_left _).intervalIntegrable _ _
+  /- we compute the difference between the integrals by splitting the contribution of the change
+  from `b₀` to `s` (which gives a contribution controlled by the measure of `(b₀ - δ, b₀ + δ)`,
+  small enough thanks to our choice of `δ`) and the change from `q` to `p`, which is small as
+  `f p x` and `f q x` are uniformly close by design. -/
   calc
   ‖∫ t in a₀..s, f p t ∂μ - ∫ t in a₀..b₀, f q t ∂μ‖
     = ‖(∫ t in a₀..s, f p t ∂μ - ∫ t in a₀..b₀, f p t ∂μ)
