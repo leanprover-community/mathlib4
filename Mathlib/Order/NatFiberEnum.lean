@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Peter Nelson
+Authors: Peter Nelson
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Set.Finite
