@@ -547,34 +547,29 @@ variable [LinearOrderedAddCommGroup Γ]
 section CommRing
 
 variable [CommRing R]
---change to leadingCoeff and leadingTerm
+
 theorem one_minus_single_mul (x y : HahnSeries Γ R) (r : R) (hr : r * x.leadingCoeff = 1)
     (hxy : x = y + x.leadingTerm) : 1 - single (-order x) r * x = -(single (-x.order) r * y) := by
-    nth_rw 2 [hxy]
-    rw [mul_add, leadingTerm_eq, single_mul_single, ← leadingCoeff_eq, hr, add_left_neg, sub_add_eq_sub_sub_swap, sub_eq_neg_self,
-    sub_eq_zero_of_eq]
-    exact rfl
+  nth_rw 2 [hxy]
+  rw [mul_add, leadingTerm_eq, single_mul_single, ← leadingCoeff_eq, hr, add_left_neg,
+    sub_add_eq_sub_sub_swap, sub_eq_neg_self, sub_eq_zero_of_eq]
+  exact rfl
 
 theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1) :
     0 < (1 - single (-x.order) r * x).orderTop := by
   let y := (x - x.leadingTerm)
   by_cases hy : y = 0
-  · have hx : x = x.leadingTerm := eq_of_sub_eq_zero hy
-    have hrx : (single (-order x)) r * x = 1 := by
-      nth_rw 2 [hx]
+  · have hrx : (single (-order x)) r * x = 1 := by
+      nth_rw 2 [eq_of_sub_eq_zero hy]
       simp only [leadingTerm_eq, single_mul_single, add_left_neg, hr, ← leadingCoeff_eq]
       exact rfl
     simp only [hrx, sub_self, orderTop_zero, WithTop.zero_lt_top]
-  have hxy : x = y + x.leadingTerm := by exact
-    (sub_add_cancel x x.leadingTerm).symm
   have hr' : ∀ (s : R), r * s = 0 → s = 0 :=
     fun s hs => by rw [← one_mul s, ← hr, mul_right_comm, hs, zero_mul]
-  have hry : (single (-x.order) r * y).order = -x.order + y.order :=
-    order_mul_single_of_nonzero_divisor hr' hy
   have hy' : 0 < (single (-x.order) r * y).order := by
-    rw [hry, lt_neg_add_iff_lt]
-    exact order_lt_add_single_support_order hxy hy
-  simp only [one_minus_single_mul x y r hr hxy, orderTop_neg]
+    rw [(order_mul_single_of_nonzero_divisor hr' hy), lt_neg_add_iff_lt]
+    exact order_lt_add_single_support_order (sub_add_cancel x x.leadingTerm).symm hy
+  simp only [one_minus_single_mul x y r hr (sub_add_cancel x x.leadingTerm).symm, orderTop_neg]
   exact zero_lt_orderTop_of_order hy'
 #align hahn_series.unit_aux HahnSeries.unit_aux
 
@@ -606,7 +601,7 @@ instance [Field R] : Field (HahnSeries Γ R) :=
     inv := fun x =>
       if x0 : x = 0 then 0
       else
-        (single (-x.order)) (x.coeff x.order)⁻¹ *
+        (single (-x.order)) (x.leadingCoeff)⁻¹ *
           (SummableFamily.powers (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mp x0)))).hsum
     inv_zero := dif_pos rfl
     mul_inv_cancel := fun x x0 => by
@@ -615,7 +610,7 @@ instance [Field R] : Field (HahnSeries Γ R) :=
         SummableFamily.one_sub_self_mul_hsum_powers
           (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mp x0)))
       rw [sub_sub_cancel] at h
-      rw [← mul_assoc, mul_comm x, ← leadingCoeff_eq, h]
+      rw [← mul_assoc, mul_comm x, h]
     qsmul := qsmulRec _ }
 
 end Inversion
@@ -625,27 +620,35 @@ section Binomial
 
 variable [LinearOrderedAddCommGroup Γ] [CommRing R]
 
-theorem binomial_nonzero (g g' : Γ) (hgg' : g < g') (a b : R) (ha : a ≠ 0) :
-    single g a + single g' b ≠ 0 := by
-  have h : (single g a + single g' b).coeff g = a := by
-    simp_all only [ne_eq, ne_of_lt hgg', not_false_eq_true, add_coeff, single_coeff_same,
+theorem isUnit_one_sub_single {g : Γ} (hg : 0 < g) {r : R} : IsUnit (1 - single g r) := by
+  refine isUnit_of_mul_eq_one _ _ (SummableFamily.one_sub_self_mul_hsum_powers ?_)
+  by_cases hr : r = 0; · simp_all only [map_zero, orderTop_zero, WithTop.zero_lt_top]
+  rw [orderTop_single hr, WithTop.coe_pos]
+  exact hg
+
+-- these 3 seem superfluous...
+theorem single_add_single_coeff {g g' : Γ} (hgg' : g < g') {a b : R} (_ : a ≠ 0) :
+    (single g a + single g' b).coeff g = a := by
+  simp_all only [ne_eq, ne_of_lt hgg', not_false_eq_true, add_coeff, single_coeff_same,
       single_coeff_of_ne, add_zero]
-  have h'' : (single g a + single g' b).coeff g ≠ 0 := by
-    rw [h]
-    exact ha
-  exact ne_zero_of_coeff_ne_zero h''
 
-/-!
-theorem orderTop_binomial (g g' : Γ) (hgg' : g < g') (a b : R) (ha : a ≠ 0) :
+theorem single_add_single_coeff_ne {g g' : Γ} (hgg' : g < g') {a b : R} (ha : a ≠ 0) :
+    single g a + single g' b ≠ 0 :=
+  ne_zero_of_coeff_ne_zero (ne_of_eq_of_ne (single_add_single_coeff hgg' ha) ha)
+
+theorem single_add_single_support {g g' : Γ} {a b : R} :
+    (single g a + single g' b).support ⊆ {g} ∪ {g'} := by
+  refine support_add_subset.trans ?_
+  simp_all only [Set.union_singleton, Set.union_subset_iff]
+  refine { left := fun _ hk => Set.mem_insert_of_mem g' (support_single_subset hk), right := ?_ }
+  rw [@Set.pair_comm]
+  exact fun k hk => Equiv.Set.union.proof_1 k <| Set.mem_insert_of_mem g (support_single_subset hk)
+
+theorem orderTop_binomial {g g' : Γ} (hgg' : g < g') {a b : R} (ha : a ≠ 0) :
     (single g a + single g' b).orderTop = g := by
-  have hs : (single g a + single g' b).support ⊆ {g} ∪ {g'} := by
-    refine support_add_subset.trans ?_
-    intro k hk
-    simp_all only [ne_eq, not_false_eq_true, support_single_of_ne, Set.singleton_union,
-      Set.mem_insert_iff, mem_support, Set.union_singleton, Set.mem_singleton_iff]
-    sorry
-
-  sorry
+  rw [← orderTop_single ha]
+  exact orderTop_add_eq (lt_of_eq_of_lt (orderTop_single ha)
+    (lt_of_lt_of_le (WithTop.coe_lt_coe.mpr hgg') orderTop_single_le))
 
 theorem isUnit_binomial {g g' : Γ} (hgg' : g < g') (a : Units R) (b : R) :
     IsUnit (single g a.val + single g' b) := by
@@ -653,12 +656,10 @@ theorem isUnit_binomial {g g' : Γ} (hgg' : g < g') (a : Units R) (b : R) :
   by_cases ha : a.val = 0
   · have aa: a.val * a.inv = 1 := Units.val_inv a
     rw [ha, zero_mul] at aa
-    rw [← one_mul (leadingCoeff ((single g) a.val + (single g') b)), ← aa, zero_mul, aa]
-    rw [@isUnit_iff_dvd_one]
-  · rw [leadingCoeff_of_ne (binomial_nonzero g g' hgg' a.val b ha)]
-    simp only [add_coeff', Pi.add_apply, single_coeff]
-    sorry
--/
+    rw [← one_mul (leadingCoeff ((single g) a.val + (single g') b)), ← aa, zero_mul, aa,
+      isUnit_iff_dvd_one]
+  · rw [leadingCoeff, orderTop_binomial hgg' ha, coeffTop_eq, single_add_single_coeff hgg' ha]
+    exact Units.isUnit a
 
 end Binomial
 

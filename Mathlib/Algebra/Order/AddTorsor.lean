@@ -29,8 +29,8 @@ variable {G P : Type*}
 
 /-- An ordered vector addition is a bi-monotone vector addition. -/
 class OrderedVAdd (G P : Type*) [LE G] [LE P] extends VAdd G P where
-  protected vadd_le_vadd_left : ∀ a b : P, a ≤ b → ∀ c : G, c +ᵥ a ≤ c +ᵥ b
-  protected vadd_le_vadd_right : ∀ c d : G, c ≤ d → ∀ a : P, c +ᵥ a ≤ d +ᵥ a
+  protected vadd_le_vadd_left : ∀ c d : P, c ≤ d → ∀ a : G, a +ᵥ c ≤ a +ᵥ d
+  protected vadd_le_vadd_right : ∀ a b : G, a ≤ b → ∀ c : P, a +ᵥ c ≤ b +ᵥ c
 
 instance OrderedAddCommMonoid.toOrderedVAdd [OrderedAddCommMonoid G] : OrderedVAdd G G where
   vadd := (· + ·)
@@ -41,9 +41,12 @@ instance OrderedVAdd.toCovariantClassLeft [LE G] [LE P] [OrderedVAdd G P] :
     CovariantClass G P (· +ᵥ ·) (· ≤ ·) where
   elim := fun a _ _ bc ↦ OrderedVAdd.vadd_le_vadd_left _ _ bc a
 
+theorem vAdd_le_vAdd' [Preorder G] [Preorder P] [OrderedVAdd G P] {a b : G} {c d : P} (hab : a ≤ b)
+    (hcd : c ≤ d) : a +ᵥ c ≤ b +ᵥ d :=
+  (OrderedVAdd.vadd_le_vadd_left _ _ hcd _).trans (OrderedVAdd.vadd_le_vadd_right _ _ hab _)
+
 -- lex prod instances? Pi instances?
 
-/-! see Algebra.Order.Monoid.WithTop for more API to copy -/
 section WithTop
 
 namespace WithTop
@@ -139,6 +142,10 @@ protected def Set.vAdd [VAdd G P] : VAdd (Set G) (Set P) :=
 scoped[Pointwise] attribute [instance] Set.vAdd
 
 open Pointwise
+
+theorem Set.mem_vAdd [VAdd G P] {s : Set G} {t : Set P} {b : P} :
+    b ∈ s +ᵥ t ↔ ∃ x ∈ s, ∃ y ∈ t, x +ᵥ y = b :=
+  Iff.rfl
 
 theorem Set.vAdd_mem_vAdd [VAdd G P] {s : Set G} {t : Set P} {a : G} {b : P} :
     a ∈ s → b ∈ t → a +ᵥ b ∈ s +ᵥ t :=
@@ -289,9 +296,31 @@ theorem Monotone.vAdd {γ : Type*} [Preorder G] [Preorder P] [Preorder γ] [Orde
   fun _ _ hab => (OrderedVAdd.vadd_le_vadd_left _ _ (hg hab) _).trans
     (OrderedVAdd.vadd_le_vadd_right _ _ (hf hab) _)
 
-theorem Set.IsPWO.vAdd [PartialOrder G] [PartialOrder P] [OrderedCancelVAdd G P] {s : Set G}
-    {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO ((fun x ↦ x.1 +ᵥ x.2) '' s ×ˢ t) := by
+
+namespace Set
+
+theorem Nonempty.vAdd [VAdd G P] {s : Set G} {t : Set P} :
+    s.Nonempty → t.Nonempty → (s +ᵥ t).Nonempty :=
+  Nonempty.image2
+
+theorem IsPWO.vAdd [PartialOrder G] [PartialOrder P] [OrderedCancelVAdd G P] {s : Set G}
+    {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s +ᵥ t) := by
+  rw [← @vadd_image_prod]
   exact (hs.prod ht).image_of_monotone (monotone_fst.vAdd monotone_snd)
+
+theorem IsWF.vAdd [LinearOrder G] [LinearOrder P] [OrderedCancelVAdd G P] {s : Set G}
+    {t : Set P} (hs : s.IsWF) (ht : t.IsWF) : IsWF (s +ᵥ t) :=
+  (hs.isPWO.vAdd ht.isPWO).isWF
+
+theorem IsWF.min_vAdd [LinearOrder G] [LinearOrder P] [OrderedCancelVAdd G P] {s : Set G}
+    {t : Set P} (hs : s.IsWF) (ht : t.IsWF) (hsn : s.Nonempty) (htn : t.Nonempty) :
+    (hs.vAdd ht).min (hsn.vAdd htn) = hs.min hsn +ᵥ ht.min htn := by
+  refine' le_antisymm (IsWF.min_le _ _ (mem_vAdd.2 ⟨_, hs.min_mem _, _, ht.min_mem _, rfl⟩)) _
+  rw [IsWF.le_min_iff]
+  rintro _ ⟨x, hx, y, hy, rfl⟩
+  exact vAdd_le_vAdd' (hs.min_le _ hx) (ht.min_le _ hy)
+
+end Set
 
 namespace Finset
 
@@ -323,11 +352,14 @@ theorem vAddAntidiagonal_mono_right {a : P} {hs : s.IsPWO} {ht : t.IsPWO} (h : v
   Set.Finite.toFinset_mono <| VAdd.antidiagonal_mono_right h
 
 theorem support_vAddAntidiagonal_subset_vAdd {hs : s.IsPWO} {ht : t.IsPWO} :
-    { a | (vAddAntidiagonal hs ht a).Nonempty } ⊆ ((fun x ↦ x.1 +ᵥ x.2) '' s ×ˢ t) :=
+    { a | (vAddAntidiagonal hs ht a).Nonempty } ⊆ (s +ᵥ t) :=
   fun a ⟨b, hb⟩ => by
   rw [mem_vAddAntidiagonal] at hb
-  refine (Set.mem_image (fun x ↦ x.1 +ᵥ x.2) (s ×ˢ t) a).mpr (Exists.intro b ?_)
-  exact { left := { left := hb.1, right := hb.2.1}, right := hb.2.2 }
+  rw [Set.mem_vAdd]
+  use b.1
+  refine { left := hb.1, right := ?_ }
+  use b.2
+  exact { left := hb.2.1, right := hb.2.2 }
 
 theorem isPWO_support_vAddAntidiagonal {hs : s.IsPWO} {ht : t.IsPWO} :
     { a | (vAddAntidiagonal hs ht a).Nonempty }.IsPWO :=
@@ -335,7 +367,7 @@ theorem isPWO_support_vAddAntidiagonal {hs : s.IsPWO} {ht : t.IsPWO} :
 
 end
 
-theorem vAddAntidiagonal_min_vAdd_min [LinearOrder G] [LinearOrder P]  [OrderedCancelVAdd G P]
+theorem vAddAntidiagonal_min_vAdd_min [LinearOrder G] [LinearOrder P] [OrderedCancelVAdd G P]
     {s : Set G} {t : Set P} (hs : s.IsWF) (ht : t.IsWF) (hns : s.Nonempty) (hnt : t.Nonempty) :
     vAddAntidiagonal hs.isPWO ht.isPWO (hs.min hns +ᵥ ht.min hnt) =
       {(hs.min hns, ht.min hnt)} := by
