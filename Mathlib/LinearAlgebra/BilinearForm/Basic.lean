@@ -135,7 +135,6 @@ theorem ext (H : ∀ x y : M, B x y = D x y) : B = D := ext₂ H
 theorem congr_fun (h : B = D) (x y : M) : B x y = D x y := congr_fun₂ h _ _
 #align bilin_form.congr_fun LinearMap.BilinForm.congr_fun
 
-set_option linter.deprecated false in
 @[deprecated ext_iff₂]
 theorem ext_iff : B = D ↔ ∀ x y, B x y = D x y := ext_iff₂
 #align bilin_form.ext_iff LinearMap.BilinForm.ext_iff
