@@ -510,7 +510,7 @@ def parse_aligns_noaligns_aligns_files(align_lines, noalign_lines, align_imports
 # FUTURE ideas:
 # - file names exist (parse Mathlib.lean)
 # - enforce normal form for file names
-def lint_backticks_in_comments(old_files, _noaligns, old_declarations, lines):
+def lint_backticks_in_comments(old_files, noaligns, old_declarations, lines):
     errors = False
     newlines = []
     for line in lines:
@@ -519,6 +519,9 @@ def lint_backticks_in_comments(old_files, _noaligns, old_declarations, lines):
         for item in s:
             if item in old_files:
                 print(f'old file "{item}" mentioned in line: "{line.strip()}"')
+                errors = True
+            elif item in noaligns:
+                print(f'noalign\'ed item "{item}" mentioned in line: "{line.strip()}"')
                 errors = True
             elif item in old_declarations:
                 # Some declarations are also mathlib4 tactics: skip these.
@@ -720,9 +723,10 @@ if not argv:
     # Currently, we read out aligns from a pre-generated file:
     # this could be done in Lean, if this linter is worth it.
     align_lines = [line.strip() for line in open('all_aligns.txt', 'r', encoding='utf-8')]
+    noalign_lines = [line.strip() for line in open('noaligns.txt', 'r', encoding='utf-8')]
     align_imports = [line.strip() for line in open('align_imports.txt', 'r', encoding='utf-8')]
-    old_files, _noaligns, old_declarations = (
-        parse_aligns_noaligns_aligns_files(align_lines, [], align_imports))
+    old_files, noaligns, old_declarations = (
+        parse_aligns_noaligns_aligns_files(align_lines, noalign_lines, align_imports))
     for filename in files:
         path = f"{projectname}/{filename.replace('.', '/')}.lean"
         lint(Path(path), old_files, [], old_declarations, fix=fix)
