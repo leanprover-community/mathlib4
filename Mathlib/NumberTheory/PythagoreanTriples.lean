@@ -176,7 +176,7 @@ theorem gcd_dvd : (Int.gcd x y : ℤ) ∣ z := by
     ∃ (k : ℕ) (x0 y0 : _), 0 < k ∧ Int.gcd x0 y0 = 1 ∧ x = x0 * k ∧ y = y0 * k :=
     Int.exists_gcd_one' (Nat.pos_of_ne_zero h0)
   rw [Int.gcd_mul_right, h2, Int.natAbs_ofNat, one_mul]
-  rw [← Int.pow_dvd_pow_iff zero_lt_two, sq z, ← h.eq]
+  rw [← Int.pow_dvd_pow_iff two_ne_zero, sq z, ← h.eq]
   rw [(by ring : x0 * k * (x0 * k) + y0 * k * (y0 * k) = (k : ℤ) ^ 2 * (x0 * x0 + y0 * y0))]
   exact dvd_mul_right _ _
 #align pythagorean_triple.gcd_dvd PythagoreanTriple.gcd_dvd

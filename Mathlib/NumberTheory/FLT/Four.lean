@@ -93,7 +93,7 @@ theorem coprime_of_minimal {a b c : ℤ} (h : Minimal a b c) : IsCoprime a b := 
   obtain ⟨a1, rfl⟩ := Int.natCast_dvd.mpr hpa
   obtain ⟨b1, rfl⟩ := Int.natCast_dvd.mpr hpb
   have hpc : (p : ℤ) ^ 2 ∣ c := by
-    rw [← Int.pow_dvd_pow_iff zero_lt_two, ← h.1.2.2]
+    rw [← Int.pow_dvd_pow_iff two_ne_zero, ← h.1.2.2]
     apply Dvd.intro (a1 ^ 4 + b1 ^ 4)
     ring
   obtain ⟨c1, rfl⟩ := hpc
