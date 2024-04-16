@@ -26,8 +26,7 @@ The following meta-properties are defined
 
 -/
 
-
-universe w v v' u u'
+universe v v₁ v₂ u u₁ u₂ u₃
 
 open CategoryTheory CategoryTheory.Limits Opposite
 
@@ -457,9 +456,50 @@ def monomorphisms : MorphismProperty C := fun _ _ f => Mono f
 def epimorphisms : MorphismProperty C := fun _ _ f => Epi f
 #align category_theory.morphism_property.epimorphisms CategoryTheory.MorphismProperty.epimorphisms
 
-section
+def quarrable : MorphismProperty C := fun _ Y f => ∀ ⦃Y' : C⦄ (g : Y' ⟶ Y), HasPullback f g
+
+def coquarrable : MorphismProperty C := fun X _ f => ∀ ⦃X' : C⦄ (g : X ⟶ X'), HasPushout f g
 
 variable {C}
+
+lemma quarrable.hasPullback {X Y Y' : C} (f : X ⟶ Y) (hf : quarrable C f) (g : Y' ⟶ Y) :
+    HasPullback f g := hf g
+
+lemma quarrable.hasPullback' {X Y Y' : C} (f : X ⟶ Y) (hf : quarrable C f) (g : Y' ⟶ Y) :
+    HasPullback g f := by
+  have : HasPullback f g := hasPullback f hf g
+  exact ⟨⟨_, (IsPullback.of_hasPullback f g).flip.isLimit'.some⟩⟩
+
+lemma coquarrable.hasPushout {X X' Y : C} (f : X ⟶ Y) (hf : coquarrable C f) (g : X ⟶ X') :
+    HasPushout f g := hf g
+
+lemma coquarrable.hasPushout' {X X' Y : C} (f : X ⟶ Y) (hf : coquarrable C f) (g : X ⟶ X') :
+    HasPushout g f := by
+  have : HasPushout f g := hasPushout f hf g
+  exact ⟨⟨_, (IsPushout.of_hasPushout f g).flip.isColimit'.some⟩⟩
+
+lemma quarrable.op {X Y : C} (f : X ⟶ Y) (hf : quarrable C f) : coquarrable Cᵒᵖ f.op := by
+  intro _ g
+  have : HasPullback f g.unop := hf _
+  exact ⟨_, (IsPullback.of_hasPullback f g.unop).flip.op.isColimit⟩
+
+lemma quarrable.unop {X Y : Cᵒᵖ} (f : X ⟶ Y) (hf : quarrable Cᵒᵖ f) : coquarrable C f.unop := by
+  intro _ g
+  have : HasPullback f g.op := hf _
+  exact ⟨_, (IsPullback.of_hasPullback f g.op).flip.unop.isColimit⟩
+
+lemma coquarrable.op {X Y : C} (f : X ⟶ Y) (hf : coquarrable C f) : quarrable Cᵒᵖ f.op := by
+  intro _ g
+  have : HasPushout f g.unop := hf _
+  exact ⟨_, (IsPushout.of_hasPushout f g.unop).flip.op.isLimit⟩
+
+lemma coquarrable.unop {X Y : Cᵒᵖ} (f : X ⟶ Y) (hf : coquarrable Cᵒᵖ f) : quarrable C f.unop := by
+  intro _ g
+  have : HasPushout f g.op := hf _
+  exact ⟨_, (IsPushout.of_hasPushout f g.op).flip.unop.isLimit⟩
+
+section
+
 variable {X Y : C} (f : X ⟶ Y)
 
 @[simp]
@@ -488,6 +528,8 @@ theorem epimorphisms.infer_property [hf : Epi f] : (epimorphisms C) f :=
 
 end
 
+variable (C)
+
 theorem RespectsIso.monomorphisms : RespectsIso (monomorphisms C) := by
   constructor <;>
     · intro X Y Z e f
@@ -512,6 +554,58 @@ theorem RespectsIso.isomorphisms : RespectsIso (isomorphisms C) := by
       infer_instance
 #align category_theory.morphism_property.respects_iso.isomorphisms CategoryTheory.MorphismProperty.RespectsIso.isomorphisms
 
+variable {C}
+
+lemma IsInvertedBy.of_iso (W : MorphismProperty C) {F G : C ⥤ D} (e : F ≅ G) (hF : W.IsInvertedBy F) :
+    W.IsInvertedBy G := fun X Y f hf =>
+  (RespectsIso.arrow_mk_iso_iff (RespectsIso.isomorphisms D)
+    (Arrow.isoMk (e.app X) (e.app Y) (by simp))).1 (hF f hf)
+
+lemma map_isInvertedBy_iff {E : Type _} [Category E]
+  (P : MorphismProperty C) (F : C ⥤ D) (G : D ⥤ E) :
+    (P.map F).IsInvertedBy G ↔ P.IsInvertedBy (F ⋙ G) := by
+  constructor
+  · intro h _ _ f hf
+    exact h _ (map_mem_map P F f hf)
+  · intro h _ _ f ⟨_, _, f', hf', ⟨iso⟩⟩
+    rw [← isomorphisms.iff]
+    exact (RespectsIso.arrow_mk_iso_iff (RespectsIso.isomorphisms E)
+      (G.mapArrow.mapIso iso)).1 (h _ hf')
+
+lemma isomorphisms_isInvertedBy (F : C ⥤ D) : (isomorphisms C).IsInvertedBy F := by
+  intro X Y f hf
+  simp only [isomorphisms.iff] at hf
+  infer_instance
+
+lemma subset_inverseImage_iff_map_subset (P : MorphismProperty C) (Q : MorphismProperty D)
+  (hQ : Q.RespectsIso)
+    (F : C ⥤ D) : P ⊆ Q.inverseImage F ↔ P.map F ⊆ Q := by
+  constructor
+  · intro h _ _ f ⟨_, _, f', hf', ⟨e⟩⟩
+    simpa only [← hQ.arrow_mk_iso_iff e] using h _ hf'
+  · intro h _ _ f hf
+    exact h _ (map_mem_map P F f hf)
+
+lemma map_inverseImage_subset (P : MorphismProperty D) (F : C ⥤ D) :
+    (P.inverseImage F).map F ⊆ P.isoClosure := fun _ _ _ ⟨_, _, f', hf', ⟨e⟩⟩ =>
+  ⟨_, _, F.map f', hf', ⟨e⟩⟩
+
+lemma isoClosure_inverseImage_equivalenceInverse (P : MorphismProperty C) (E : C ≌ D) :
+    P.isoClosure.inverseImage E.inverse = P.map E.functor := by
+  apply le_antisymm
+  · intro _ _ f ⟨_, _, f', hf', ⟨e⟩⟩
+    refine' ⟨_, _, f', hf', ⟨(E.inverse.mapArrow).preimageIso (_ ≪≫ e)⟩⟩
+    exact ((Functor.mapArrowFunctor _ _).mapIso E.unitIso.symm).app (Arrow.mk f')
+  · intro _ _ f ⟨_, _, f', hf', ⟨e⟩⟩
+    refine' ⟨_, _, f', hf', ⟨_ ≪≫ E.inverse.mapArrow.mapIso e⟩⟩
+    exact ((Functor.mapArrowFunctor _ _).mapIso E.unitIso).app (Arrow.mk f')
+
+lemma inverseImage_functorInv (P : MorphismProperty C) (F : C ⥤ D) [F.IsEquivalence] :
+    P.isoClosure.inverseImage F.inv = P.map F :=
+  P.isoClosure_inverseImage_equivalenceInverse F.asEquivalence
+
+variable (C)
+
 theorem StableUnderComposition.isomorphisms : StableUnderComposition (isomorphisms C) :=
   fun X Y Z f g hf hg => by
   rw [isomorphisms.iff] at hf hg ⊢
@@ -535,6 +629,18 @@ theorem StableUnderComposition.epimorphisms : StableUnderComposition (epimorphis
   haveI := hg
   apply epi_comp
 #align category_theory.morphism_property.stable_under_composition.epimorphisms CategoryTheory.MorphismProperty.StableUnderComposition.epimorphisms
+
+lemma StableUnderBaseChange.isomorphisms : StableUnderBaseChange (isomorphisms C) := by
+  intro X' Y Y' X f g f' g' h hg
+  have : IsIso g := hg
+  let c : PullbackCone g f := PullbackCone.mk (f ≫ inv g) (𝟙 X') (by simp)
+  refine' ⟨h.isLimit.lift c, _, h.isLimit.fac c (WalkingCospan.right)⟩
+  apply h.isLimit.hom_ext
+  intro j
+  rw [Category.assoc, h.isLimit.fac c j]
+  obtain (_|_|_) := j
+  all_goals
+    simp [c, ← cancel_mono g, h.toCommSq.w]
 
 variable {C}
 
@@ -677,10 +783,6 @@ lemma map_eq_of_iso (P : MorphismProperty C) {F G : C ⥤ D} (e : F ≅ G) :
     fun F G e => le_antisymm (this e) (this e.symm)
   intro F G e X Y f ⟨X', Y', f', hf', ⟨e'⟩⟩
   exact ⟨X', Y', f', hf', ⟨((Functor.mapArrowFunctor _ _).mapIso e.symm).app (Arrow.mk f') ≪≫ e'⟩⟩
-
-lemma map_inverseImage_subset (P : MorphismProperty D) (F : C ⥤ D) :
-    (P.inverseImage F).map F ⊆ P.isoClosure :=
-  fun _ _ _ ⟨_, _, f, hf, ⟨e⟩⟩ => ⟨_, _, F.map f, hf, ⟨e⟩⟩
 
 lemma inverseImage_equivalence_inverse_eq_map_functor
     (P : MorphismProperty D) (hP : RespectsIso P) (E : C ≌ D) :
@@ -894,6 +996,11 @@ lemma of_op (W : MorphismProperty C) [W.op.ContainsIdentities] :
 lemma of_unop (W : MorphismProperty Cᵒᵖ) [W.unop.ContainsIdentities] :
     W.ContainsIdentities := (inferInstance : W.unop.op.ContainsIdentities)
 
+instance (W : MorphismProperty D) (F : C ⥤ D) [W.ContainsIdentities] :
+    (W.inverseImage F).ContainsIdentities := ⟨fun X => by
+  dsimp [inverseImage]
+  simpa only [F.map_id] using W.id_mem (F.obj X)⟩
+
 end ContainsIdentities
 
 /-- A morphism property is multiplicative if it contains identities and is stable by
@@ -920,6 +1027,19 @@ lemma of_op (W : MorphismProperty C) [IsMultiplicative W.op] : IsMultiplicative 
 
 lemma of_unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W.unop] : IsMultiplicative W :=
   (inferInstance : IsMultiplicative W.unop.op)
+
+instance (W : MorphismProperty D) (F : C ⥤ D) [W.IsMultiplicative] :
+    (W.inverseImage F).IsMultiplicative where
+  stableUnderComposition := fun X Y Z f g hf hg => by
+    dsimp [inverseImage] at hf hg ⊢
+    rw [F.map_comp]
+    exact W.comp_mem _ _ hf hg
+
+instance : (isomorphisms C).ContainsIdentities where
+  id_mem' _ := isomorphisms.infer_property _
+
+instance : (isomorphisms C).IsMultiplicative where
+  stableUnderComposition := StableUnderComposition.isomorphisms C
 
 end IsMultiplicative
 
@@ -948,24 +1068,21 @@ end
 
 section
 
-variable {J : Type w} {C : J → Type u} {D : J → Type u'}
-  [∀ j, Category.{v} (C j)] [∀ j, Category.{v'} (D j)]
+variable {J : Type u₃} {C : J → Type u₁} {D : J → Type u₂}
+  [∀ j, Category.{v₁} (C j)] [∀ j, Category.{v₂} (D j)]
   (W : ∀ j, MorphismProperty (C j))
 
-/-- If `W j` are morphism properties on categories `C j` for all `j`, this is the
-induced morphism property on the category `∀ j, C j`. -/
 def pi : MorphismProperty (∀ j, C j) := fun _ _ f => ∀ j, (W j) (f j)
 
-instance Pi.containsIdentities [∀ j, (W j).ContainsIdentities] :
-    (pi W).ContainsIdentities :=
-  ⟨fun _ _ => MorphismProperty.id_mem _ _⟩
-
 lemma IsInvertedBy.pi (F : ∀ j, C j ⥤ D j) (hF : ∀ j, (W j).IsInvertedBy (F j)) :
-    (MorphismProperty.pi W).IsInvertedBy (Functor.pi F) := by
-  intro _ _ f hf
-  rw [isIso_pi_iff]
-  intro j
-  exact hF j _ (hf j)
+    (MorphismProperty.pi W).IsInvertedBy (Functor.pi F) :=
+  fun _ _ f hf => by
+    rw [isIso_pi_iff]
+    intro j
+    exact hF j _ (hf j)
+
+instance ContainsIdentities.pi [∀ j, (W j).ContainsIdentities] : (pi W).ContainsIdentities :=
+  ⟨fun _ _ => MorphismProperty.id_mem _ _⟩
 
 end
 
@@ -998,7 +1115,43 @@ variable (W)
 /-- The property that a morphism property `W` is stable under products indexed by a type `J`. -/
 abbrev IsStableUnderProductsOfShape (J : Type*) := W.IsStableUnderLimitsOfShape (Discrete J)
 
-lemma IsStableUnderProductsOfShape.mk (J : Type*)
+section
+variable {C J : Type _} [Category C] (X : Discrete J ⥤ C)
+  [HasProduct (fun j => X.obj (Discrete.mk j))]
+
+@[simps]
+def Pi.cone : Cone X where
+  pt := ∏ (fun j => X.obj (Discrete.mk j))
+  π := Discrete.natTrans (fun _ => Pi.π _ _)
+
+def productIsProduct' : IsLimit (Pi.cone X) where
+  lift s := Pi.lift (fun j => s.π.app ⟨j⟩)
+  fac s := by simp
+  uniq s m hm := by
+    dsimp
+    ext
+    simp only [limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
+    apply hm
+
+variable [HasLimit X]
+
+def Pi.isoLimit :
+    ∏ (fun j => X.obj (Discrete.mk j)) ≅ limit X :=
+  IsLimit.conePointUniqueUpToIso (productIsProduct' X) (limit.isLimit X)
+
+@[reassoc (attr := simp)]
+lemma Pi.isoLimit_inv_π (j : J) :
+    (Pi.isoLimit X).inv ≫ Pi.π _ j = limit.π _ (Discrete.mk j) :=
+  IsLimit.conePointUniqueUpToIso_inv_comp _ _ _
+
+@[reassoc (attr := simp)]
+lemma Pi.isoLimit_hom_π (j : J) :
+    (Pi.isoLimit X).hom ≫ limit.π _ (Discrete.mk j) = Pi.π _ j :=
+  IsLimit.conePointUniqueUpToIso_hom_comp _ _ _
+
+end
+
+lemma IsStableUnderProductsOfShape.mk (J : Type _)
     (hW₀ : W.RespectsIso) [HasProductsOfShape J C]
     (hW : ∀ (X₁ X₂ : J → C) (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
       W (Pi.map f)) : W.IsStableUnderProductsOfShape J := by

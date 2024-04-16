@@ -31,11 +31,11 @@ opposite, chain complex, cochain complex, homology, cohomology, homological comp
 
 noncomputable section
 
-open Opposite CategoryTheory CategoryTheory.Limits
+open Opposite CategoryTheory Limits
 
 section
 
-variable {V : Type*} [Category V] [Abelian V]
+/-variable {V : Type*} [Category V] [Abelian V]
 
 theorem imageToKernel_op {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
     imageToKernel g.op f.op (by rw [← op_comp, w, op_zero]) =
@@ -61,7 +61,9 @@ theorem imageToKernel_unop {X Y Z : Vᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f 
   simp only [Iso.trans_hom, Iso.symm_hom, Iso.trans_inv, kernelUnopUnop_inv, Category.assoc,
     imageToKernel_arrow, kernelSubobject_arrow', kernel.lift_ι, cokernel.π_desc, Iso.unop_inv,
     ← unop_comp, factorThruImage_comp_imageUnopOp_inv, Quiver.Hom.unop_op, imageSubobject_arrow]
-#align image_to_kernel_unop imageToKernel_unop
+#align image_to_kernel_unop imageToKernel_unop-/
+
+/- redundant with the new homology API
 
 /-- Given `f, g` with `f ≫ g = 0`, the homology of `g.op, f.op` is the opposite of the homology of
 `f, g`. -/
@@ -82,7 +84,7 @@ def homology'Unop {X Y Z : Vᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0
     cokernelUnopUnop _ ≪≫ (homology'IsoKernelDesc _ _ _ ≪≫
     kernelIsoOfEq (by ext; simp only [image.fac, cokernel.π_desc, cokernel.π_desc_assoc]) ≪≫
     kernelCompMono _ (image.ι g)).unop
-#align homology_unop homology'Unop
+#align homology_unop homology'Unop-/
 
 end
 
@@ -92,7 +94,7 @@ variable {ι V : Type*} [Category V] {c : ComplexShape ι}
 
 section
 
-variable [Preadditive V]
+variable [HasZeroMorphisms V]
 
 /-- Sends a complex `X` with objects in `V` to the corresponding complex with objects in `Vᵒᵖ`. -/
 @[simps]
@@ -246,12 +248,6 @@ def unopEquivalence : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≌ HomologicalComple
 
 variable {V c}
 
-instance opFunctor_additive : (@opFunctor ι V _ c _).Additive where
-#align homological_complex.op_functor_additive HomologicalComplex.opFunctor_additive
-
-instance unopFunctor_additive : (@unopFunctor ι V _ c _).Additive where
-#align homological_complex.unop_functor_additive HomologicalComplex.unopFunctor_additive
-
 instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
     K.op.HasHomology i :=
   (inferInstance : (K.sc i).op.HasHomology)
@@ -259,6 +255,16 @@ instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
 instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     K.unop.HasHomology i :=
   (inferInstance : (K.sc i).unop.HasHomology)
+
+instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
+    ((opFunctor V c).obj (op K)).HasHomology i := by
+  dsimp [opFunctor]
+  infer_instance
+
+instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
+    ((unopFunctor V c).obj (op K)).HasHomology i := by
+  dsimp [unopFunctor]
+  infer_instance
 
 /-- If `K` is a homological complex, then the homology of `K.op` identifies to
 the opposite of the homology of `K`. -/
@@ -273,6 +279,20 @@ def homologyUnop (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
   (K.unop.homologyOp i).unop
 
 end
+
+section
+
+variable [Preadditive V]
+
+instance opFunctor_additive : (opFunctor V c).Additive where
+#align homological_complex.op_functor_additive HomologicalComplex.opFunctor_additive
+
+instance unopFunctor_additive : (unopFunctor V c).Additive where
+#align homological_complex.unop_functor_additive HomologicalComplex.unopFunctor_additive
+
+end
+
+/- redundant with the new homology API
 
 variable [Abelian V] (C : HomologicalComplex V c) (i : ι)
 
@@ -301,6 +321,6 @@ objects in `V`) is the opposite of the `i`th homology of `C`. -/
 nonrec def homology'Unop (C : HomologicalComplex Vᵒᵖ c) :
     C.unop.homology' i ≅ Opposite.unop (C.homology' i) :=
   homology'UnopDef _ _ ≪≫ homology'Unop _ _ _
-#align homological_complex.homology_unop HomologicalComplex.homology'Unop
+#align homological_complex.homology_unop HomologicalComplex.homology'Unop-/
 
 end HomologicalComplex

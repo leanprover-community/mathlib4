@@ -31,6 +31,7 @@ because it can be replaced by the content of `Algebra.Homology.ShortComplex.Homo
 
 -/
 
+/- redundant with the new homology API
 
 open CategoryTheory.Limits
 
@@ -368,3 +369,4 @@ noncomputable def homology'FunctorIso (i : ι) :
 #align category_theory.functor.homology_functor_iso CategoryTheory.Functor.homology'FunctorIso
 
 end CategoryTheory.Functor
+-/

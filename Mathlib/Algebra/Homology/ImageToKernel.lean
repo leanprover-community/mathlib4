@@ -24,6 +24,11 @@ renamed `homology'`. It is planned that this definition shall be removed and rep
 
 -/
 
+/- redundant with the new homology API
+
+set_option autoImplicit true
+
+
 universe v u w
 
 open CategoryTheory CategoryTheory.Limits
@@ -373,11 +378,10 @@ variable {A B C : V} {f : A ⟶ B} {g : B ⟶ C} (w : f ≫ g = 0) {f' : A ⟶ B
 -- Porting note: removed the private auxiliary tactic which becomes unnecessary
 --/-- Custom tactic to golf and speedup boring proofs in `homology.congr`. -/
 --private unsafe def aux_tac : tactic Unit :=
---  sorry
+--  sorry -/
 
-/-- `homology f g w ≅ homology f' g' w'` if `f = f'` and `g = g'`.
+/- `homology' f g w ≅ homology' f' g' w'` if `f = f'` and `g = g'`.
 (Note the objects are not changing here.)
--/
 @[simps]
 def homology'.congr (pf : f = f') (pg : g = g') : homology' f g w ≅ homology' f' g' w' where
   hom := homology'.map w w' ⟨𝟙 _, 𝟙 _, by aesop_cat⟩ ⟨𝟙 _, 𝟙 _, by aesop_cat⟩ rfl
@@ -398,7 +402,7 @@ end
 
 /-!
 We provide a variant `imageToKernel' : image f ⟶ kernel g`,
-and use this to give alternative formulas for `homology f g w`.
+and use this to give alternative formulas for `homology' f g w`.
 -/
 
 
@@ -461,7 +465,7 @@ def homology'IsoCokernelImageToKernel' (w : f ≫ g = 0) :
 
 variable [HasEqualizers V]
 
-/-- `homology f g w` can be computed as the cokernel of `kernel.lift g f w`.
+/-- `homology' f g w` can be computed as the cokernel of `kernel.lift g f w`.
 -/
 def homology'IsoCokernelLift (w : f ≫ g = 0) : homology' f g w ≅ cokernel (kernel.lift g f w) := by
   refine' homology'IsoCokernelImageToKernel' f g w ≪≫ _
@@ -471,4 +475,4 @@ def homology'IsoCokernelLift (w : f ≫ g = 0) : homology' f g w ≅ cokernel (k
   exact (cokernelEpiComp _ _).symm ≪≫ cokernelIsoOfEq p
 #align homology_iso_cokernel_lift homology'IsoCokernelLift
 
-end imageToKernel'
+end imageToKernel'-/

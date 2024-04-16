@@ -33,7 +33,7 @@ instance [HasColimits C] (X : TopCat) : HasColimitsOfSize.{v} (Presheaf C X) :=
   Limits.functorCategoryHasColimitsOfSize
 
 instance [HasLimits C] (X : TopCat) : CreatesLimits (Sheaf.forget C X) :=
-  Sheaf.createsLimits.{u, v, v}
+  Sheaf.createsLimitsOfSize.{u, v, v}
 
 instance [HasLimits C] (X : TopCat) : HasLimitsOfSize.{v} (Sheaf.{v} C X) :=
   hasLimits_of_hasLimits_createsLimits (Sheaf.forget C X)

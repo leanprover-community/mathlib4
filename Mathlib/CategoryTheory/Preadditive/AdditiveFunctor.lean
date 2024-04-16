@@ -111,6 +111,9 @@ lemma additive_of_iso {G : C ⥤ D} (e : F ≅ G) : G.Additive := by
   simp only [← NatIso.naturality_1 e (f + g), map_add, Preadditive.add_comp,
     NatTrans.naturality, Preadditive.comp_add, Iso.inv_hom_id_app_assoc]
 
+lemma additive_iff_of_iso {G : C ⥤ D} (e : F ≅ G) : F.Additive ↔ G.Additive :=
+  ⟨fun _ => additive_of_iso e, fun _ => additive_of_iso e.symm⟩
+
 variable (F)
 
 lemma additive_of_full_essSurj_comp [Full F] [EssSurj F] (G : D ⥤ E)
@@ -132,6 +135,11 @@ lemma additive_of_comp_faithful
     F.Additive where
   map_add {_ _ f₁ f₂} := G.map_injective (by
     rw [← Functor.comp_map, G.map_add, (F ⋙ G).map_add, Functor.comp_map, Functor.comp_map])
+
+open ZeroObject Limits in
+lemma hasZeroObject_of_additive [HasZeroObject C] :
+    HasZeroObject D where
+  zero := ⟨F.obj 0, by rw [IsZero.iff_id_eq_zero, ← F.map_id, id_zero, F.map_zero]⟩
 
 end
 
@@ -177,6 +185,66 @@ theorem additive_of_preservesBinaryBiproducts [HasBinaryBiproducts C] [Preserves
       ← biprod.mapBiprod_hom_desc, Category.assoc, Iso.inv_hom_id_assoc, F.map_id,
       biprod.add_eq_lift_id_desc]
 #align category_theory.functor.additive_of_preserves_binary_biproducts CategoryTheory.Functor.additive_of_preservesBinaryBiproducts
+
+lemma additive_of_preserves_binary_products
+    [HasBinaryProducts C] [PreservesLimitsOfShape (Discrete WalkingPair) F]
+    [F.PreservesZeroMorphisms] : F.Additive := by
+  have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryProducts
+  have := preservesBinaryBiproductsOfPreservesBinaryProducts F
+  exact Functor.additive_of_preservesBinaryBiproducts F
+
+lemma additive_of_preserves_finite_products
+    [HasFiniteProducts C] [PreservesFiniteProducts F] : F.Additive := by
+  have : PreservesLimitsOfShape (Discrete WalkingPair) F := PreservesFiniteProducts.preserves _
+  have : PreservesLimitsOfShape (Discrete PEmpty) F := PreservesFiniteProducts.preserves _
+  exact F.additive_of_preserves_binary_products
+
+section
+
+variable {J : Type _} [Fintype J] {X : J → C} (c : Fan X) (hc : IsLimit c)
+  [DecidableEq J]
+
+@[simps]
+def biconeOfLimitCone : Bicone X where
+  pt := c.pt
+  π j := c.proj j
+  ι j := by exact hc.lift (Fan.mk (X j) (fun i => if h : j = i then eqToHom (by rw [h]) else 0))
+  ι_π i j := by
+    erw [IsLimit.fac]
+    dsimp
+    congr
+
+def isBilimitBiconeOfLimitCone : (biconeOfLimitCone c hc).IsBilimit :=
+  isBilimitOfTotal _ (hc.hom_ext (fun ⟨j⟩ => by
+    rw [Preadditive.sum_comp, Category.id_comp, Finset.sum_eq_single j]
+    · change _ ≫ (biconeOfLimitCone c hc).π j = _
+      rw [Category.assoc, Bicone.ι_π, dif_pos rfl, eqToHom_refl, Category.comp_id]
+      rfl
+    · intro i _ hi
+      dsimp
+      simp only [Category.assoc, IsLimit.fac, Fan.mk_pt, Fan.mk_π_app, dif_neg hi, comp_zero]
+    · intro h
+      simp at h ))
+
+end
+
+instance (priority := 100) preservesFiniteProductsOfAdditive [Additive F] :
+    PreservesFiniteProducts F where
+  preserves J _ :=
+    { preservesLimit := fun {K} => by
+        have : PreservesLimit (Discrete.functor (K.obj ∘ Discrete.mk)) F := by
+          refine' ⟨fun {c : Fan _} hc => _⟩
+          have : DecidableEq J := by
+            classical
+            infer_instance
+          let e : Discrete.functor (F.obj ∘ K.obj ∘ Discrete.mk) ≅
+              Discrete.functor (K.obj ∘ Discrete.mk) ⋙ F :=
+            Discrete.natIso (fun j => Iso.refl _)
+          refine' (IsLimit.postcomposeInvEquiv e _).1
+            (IsLimit.ofIsoLimit
+              (isBilimitOfPreserves F (isBilimitBiconeOfLimitCone c hc)).isLimit
+                (Cones.ext (Iso.refl _) (by aesop_cat)))
+        exact preservesLimitOfIsoDiagram _ Discrete.natIsoFunctor.symm}
 
 end
 

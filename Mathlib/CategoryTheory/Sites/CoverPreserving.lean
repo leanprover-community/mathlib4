@@ -68,6 +68,12 @@ structure CoverPreserving (G : C ⥤ D) : Prop where
   cover_preserve : ∀ {U : C} {S : Sieve U} (_ : S ∈ J U), S.functorPushforward G ∈ K (G.obj U)
 #align category_theory.cover_preserving CategoryTheory.CoverPreserving
 
+lemma CoverPreserving.of_iso {G : C ⥤ D} (hG : CoverPreserving J K G) {G' : C ⥤ D} (e : G ≅ G') :
+    CoverPreserving J K G' where
+  cover_preserve {U S} hS := by
+    simpa only [Sieve.functorPushforward_eq_of_iso e]
+      using K.pullback_stable (e.inv.app U) (hG.cover_preserve hS)
+
 /-- The identity functor on a site is cover-preserving. -/
 theorem idCoverPreserving : CoverPreserving J J (𝟭 _) :=
   ⟨fun hS => by simpa using hS⟩
@@ -80,6 +86,10 @@ theorem CoverPreserving.comp {F} (hF : CoverPreserving J K F) {G} (hG : CoverPre
     rw [Sieve.functorPushforward_comp]
     exact hG.cover_preserve (hF.cover_preserve hS)⟩
 #align category_theory.cover_preserving.comp CategoryTheory.CoverPreserving.comp
+
+theorem CoverPreserving.comp' {F} (hF : CoverPreserving J K F) {G} (hG : CoverPreserving K L G)
+    {H : C ⥤ A} (e : F ⋙ G ≅ H) : CoverPreserving J L H :=
+  (hF.comp hG).of_iso e
 
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is called compatible preserving if for each
 compatible family of elements at `C` and valued in `G.op ⋙ ℱ`, and each commuting diagram
@@ -95,6 +105,27 @@ structure CompatiblePreserving (K : GrothendieckTopology D) (G : C ⥤ D) : Prop
       {g₂ : Y₂ ⟶ Z} (hg₁ : T g₁) (hg₂ : T g₂) (_ : f₁ ≫ G.map g₁ = f₂ ≫ G.map g₂),
       ℱ.val.map f₁.op (x g₁ hg₁) = ℱ.val.map f₂.op (x g₂ hg₂)
 #align category_theory.compatible_preserving CategoryTheory.CompatiblePreserving
+
+lemma CompatiblePreserving.of_iso {G : C ⥤ D} (hG : CompatiblePreserving.{w} K G) {G' : C ⥤ D}
+    (e : G ≅ G') :
+    CompatiblePreserving.{w} K G' where
+  compatible ℱ Z T x hx Y₁ Y₂ X f₁ f₂ g₁ g₂ hg₁ hg₂ fac := by
+    let x' : FamilyOfElements (G.op ⋙ ℱ.val) T := fun Y f hf =>
+      ℱ.val.map (e.hom.app Y).op (x f hf)
+    have hx' : x'.Compatible := fun Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ fac => by
+      dsimp
+      refine' (congr_fun (ℱ.val.map_comp _ _) (x f₁ h₁)).symm.trans
+        (Eq.trans _ (congr_fun (ℱ.val.map_comp _ _) (x f₂ h₂)))
+      rw [← op_comp, ← op_comp, NatTrans.naturality, NatTrans.naturality,
+        op_comp, op_comp, Functor.map_comp, Functor.map_comp]
+      dsimp
+      have H := hx g₁ g₂ h₁ h₂ fac
+      dsimp at H
+      rw [H]
+    simpa only [x', ← FunctorToTypes.map_comp_apply, ← op_comp, Category.assoc,
+      e.inv_hom_id_app, Category.comp_id] using hG.compatible ℱ hx'
+      (f₁ ≫ e.inv.app Y₁) (f₂ ≫ e.inv.app Y₂) hg₁ hg₂
+      (by simp only [Category.assoc, ← e.inv.naturality, reassoc_of% fac])
 
 variable {J K} {G : C ⥤ D} (hG : CompatiblePreserving.{w} K G) (ℱ : SheafOfTypes.{w} K) {Z : C}
 variable {T : Presieve Z} {x : FamilyOfElements (G.op ⋙ ℱ.val) T} (h : x.Compatible)

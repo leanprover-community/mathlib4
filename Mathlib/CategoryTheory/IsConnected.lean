@@ -7,6 +7,7 @@ import Mathlib.Data.List.Chain
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Category.ULift
+import Mathlib.CategoryTheory.Comma.StructuredArrow
 
 #align_import category_theory.is_connected from "leanprover-community/mathlib"@"024a4231815538ac739f52d08dd20a55da0d6b23"
 
@@ -477,5 +478,35 @@ attribute [instance] nonempty_hom_of_preconnected_groupoid
 
 -- deprecated on 2024-02-19
 @[deprecated] alias nonempty_hom_of_connected_groupoid := nonempty_hom_of_preconnected_groupoid
+
+lemma Functor.isConnected_of_isConnected_costructuredArrow
+    {C₁ C₂ : Type*} [Category C₁] [Category C₂] (F : C₁ ⥤ C₂)
+    (hF : ∀ X₂, IsConnected (CostructuredArrow F X₂)) [IsConnected C₂] :
+    IsConnected C₁ := by
+  have : Nonempty C₁ :=
+    ⟨(Classical.arbitrary (CostructuredArrow F (Classical.arbitrary C₂))).left⟩
+  have H : ∀ ⦃X₂ Y₂ : C₂⦄ (_ : X₂ ⟶ Y₂),
+      ∀ (x : CostructuredArrow F X₂) (y : CostructuredArrow F Y₂), Zigzag x.left y.left := by
+    intro X₂ Y₂ f x y
+    exact (zigzag_obj_of_zigzag (CostructuredArrow.proj _ _)
+        (isPreconnected_zigzag x (Classical.arbitrary (CostructuredArrow F X₂)))).trans
+      (zigzag_obj_of_zigzag (CostructuredArrow.proj _ _)
+        (isPreconnected_zigzag ((CostructuredArrow.map f).obj _) y))
+  have : ∀ ⦃X₂ Y₂ : C₂⦄ (_ : Zigzag X₂ Y₂),
+      ∀ (x : CostructuredArrow F X₂) (y : CostructuredArrow F Y₂), Zigzag x.left y.left := by
+    intro X₂ Y₂ z
+    induction' z with Z₂ T₂ hxz hzt HXZ
+    · intro x y
+      exact zigzag_obj_of_zigzag (CostructuredArrow.proj _ _) (isPreconnected_zigzag x y)
+    · intro x t
+      have z : CostructuredArrow F Z₂ := Nonempty.some inferInstance
+      change Zigzag _ _ at hxz
+      refine' (HXZ x z).trans (_ : Zigzag _ _)
+      obtain ⟨⟨f⟩⟩ | ⟨⟨f⟩⟩ := hzt
+      · exact H f z t
+      · exact zigzag_symmetric (H f t z)
+  refine' zigzag_isConnected (fun X₁ Y₁ => _)
+  exact this (isPreconnected_zigzag (F.obj X₁) (F.obj Y₁)) (CostructuredArrow.mk (𝟙 _))
+    (CostructuredArrow.mk (𝟙 _))
 
 end CategoryTheory

@@ -305,20 +305,23 @@ lemma ofComplex_d_1_0 :
     (ofComplex Z).d 1 0 = d (Projective.π Z) := by
   simp [ofComplex]
 
+/-- The isomorphism `(ofComplex Z).X (n + 2) ≅ syzygies ((ofComplex Z).d (n + 1) n)` given
+by the induction construction. -/
+def ofComplexXIso (n : ℕ) : (ofComplex Z).X (n + 2) ≅ syzygies ((ofComplex Z).d (n + 1) n) := by
+  apply ChainComplex.mk'XIso
+
+/-- Isomorphism describing the (exact) short complex `(ofComplex Z).sc' (n + 2) (n + 1) n`. -/
+def ofComplexSc'Iso (n : ℕ) : (ofComplex Z).sc' (n + 2) (n + 1) n ≅
+    ShortComplex.mk (d ((ofComplex Z).d (n + 1) n)) ((ofComplex Z).d (n + 1) n) (by simp) :=
+  ShortComplex.isoMk (ofComplexXIso Z n) (Iso.refl _) (Iso.refl _) (by
+    dsimp [ofComplex, ofComplexXIso]
+    rw [comp_id, ChainComplex.mk'_d]) (by simp)
+
 lemma ofComplex_exactAt_succ (n : ℕ) :
     (ofComplex Z).ExactAt (n + 1) := by
-  rw [HomologicalComplex.exactAt_iff' _ (n + 1 + 1) (n + 1) n (by simp) (by simp)]
-  dsimp [ofComplex, HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor',
-      ChainComplex.mk', ChainComplex.mk]
-  simp only [ChainComplex.of_d]
-  -- TODO: this should just be apply exact_d_f so something is missing
-  match n with
-  | 0 =>
-    apply exact_d_f ((ChainComplex.mkAux _ _ _ (d (Projective.π Z)) (d (d (Projective.π Z))) _ _
-      0).g)
-  | n+1 =>
-    apply exact_d_f ((ChainComplex.mkAux _ _ _ (d (Projective.π Z)) (d (d (Projective.π Z))) _ _
-      (n+1)).g)
+  rw [HomologicalComplex.exactAt_iff' _ (n + 2) (n + 1) n (by simp only [ChainComplex.prev]; rfl)
+    (by simp), ShortComplex.exact_iff_of_iso (ofComplexSc'Iso Z n)]
+  apply exact_d_f
 
 instance (n : ℕ) : Projective ((ofComplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Projective.projective_over

@@ -56,6 +56,7 @@ protected abbrev factorThruImage : P ⟶ Abelian.image f :=
 
 -- Porting note (#10618): simp can prove this and reassoc version, removed tags
 /-- `f` factors through its image via the canonical morphism `p`. -/
+@[reassoc]
 protected theorem image.fac : Abelian.factorThruImage f ≫ image.ι f = f :=
   kernel.lift_ι _ _ _
 #align category_theory.abelian.image.fac CategoryTheory.Abelian.image.fac

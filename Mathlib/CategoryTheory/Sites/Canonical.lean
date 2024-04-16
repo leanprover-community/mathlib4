@@ -3,7 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.SheafOfTypes
+import Mathlib.CategoryTheory.Sites.Sheaf
 
 #align_import category_theory.sites.canonical from "leanprover-community/mathlib"@"9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a"
 
@@ -245,6 +245,20 @@ theorem isSheaf_of_representable {J : GrothendieckTopology C} (hJ : Subcanonical
     (P : Cᵒᵖ ⥤ Type v) [P.Representable] : Presieve.IsSheaf J P :=
   Presieve.isSheaf_of_le _ hJ (Sheaf.isSheaf_of_representable P)
 #align category_theory.sheaf.subcanonical.is_sheaf_of_representable CategoryTheory.Sheaf.Subcanonical.isSheaf_of_representable
+
+variable {J}
+variable (hJ : Subcanonical J)
+
+@[simps]
+def yoneda : C ⥤ Sheaf J (Type v) where
+  obj X := ⟨yoneda.obj X, by
+    rw [isSheaf_iff_isSheaf_of_type]
+    apply hJ.isSheaf_of_representable⟩
+  map f := ⟨yoneda.map f⟩
+
+def yonedaCompSheafToPresheaf :
+    hJ.yoneda ⋙ sheafToPresheaf J (Type v) ≅ CategoryTheory.yoneda :=
+  Iso.refl _
 
 end Subcanonical
 

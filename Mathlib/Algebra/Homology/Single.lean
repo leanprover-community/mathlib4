@@ -93,6 +93,19 @@ theorem single_map_f_self (j : ι) {A B : V} (f : A ⟶ B) :
   rfl
 #align homological_complex.single_map_f_self HomologicalComplex.single_map_f_self
 
+variable (V)
+
+@[simps!]
+noncomputable def singleCompEvalIsoSelf (j : ι) : single V c j ⋙ eval V c j ≅ 𝟭 V :=
+  NatIso.ofComponents (singleObjXSelf c j) (fun {A B} f => by simp [single_map_f_self])
+
+lemma isZero_single_comp_eval (j i : ι) (hi : i ≠ j) : IsZero (single V c j ⋙ eval V c i) := by
+  rw [Functor.isZero_iff]
+  intro A
+  exact isZero_single_obj_X c _ _ _ hi
+
+variable {V c}
+
 @[ext]
 lemma from_single_hom_ext {K : HomologicalComplex V c} {j : ι} {A : V}
     {f g : (single V c j).obj A ⟶ K} (hfg : f.f j = g.f j) : f = g := by
@@ -122,8 +135,6 @@ noncomputable instance (j : ι) : (single V c j).Full where
   witness f := by
     ext
     simp [single_map_f_self]
-
-variable {c}
 
 /-- Constructor for morphisms to a single homological complex. -/
 noncomputable def mkHomToSingle {K : HomologicalComplex V c} {j : ι} {A : V} (φ : K.X j ⟶ A)
@@ -172,6 +183,25 @@ lemma mkHomFromSingle_f {K : HomologicalComplex V c} {j : ι} {A : V} (φ : A �
   dsimp [mkHomFromSingle]
   rw [dif_pos rfl, comp_id]
   rfl
+
+noncomputable def toSingleEquiv (A : V) (K : HomologicalComplex V c) (i j : ι) (hij : c.Rel i j) :
+    (K ⟶ (single V c j).obj A) ≃ { f : K.X j ⟶ A // K.d i j ≫ f = 0 } where
+  toFun f := ⟨f.f j ≫ (singleObjXSelf c j A).hom, by
+    rw [← Hom.comm_assoc, single_obj_d, zero_comp, comp_zero]⟩
+  invFun f := HomologicalComplex.mkHomToSingle f (fun k hk => by
+    obtain rfl := (c.prev_eq' hij).symm.trans (c.prev_eq' hk)
+    simpa using f.2)
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
+
+noncomputable def fromSingleEquiv (A : V) (K : HomologicalComplex V c) (i j : ι) (hij : c.Rel i j) :
+    ((single V c i).obj A ⟶ K) ≃ { f : A ⟶ K.X i // f ≫ K.d i j = 0 } where
+  toFun f := ⟨(singleObjXSelf c i A).inv ≫ f.f i, by simp⟩
+  invFun f := HomologicalComplex.mkHomFromSingle f (fun k hk => by
+    obtain rfl := (c.next_eq' hij).symm.trans (c.next_eq' hk)
+    simpa using f.2)
+  left_inv f := by aesop_cat
+  right_inv f := by aesop_cat
 
 end HomologicalComplex
 

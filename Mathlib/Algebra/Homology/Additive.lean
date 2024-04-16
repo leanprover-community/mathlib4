@@ -112,7 +112,7 @@ namespace HomologicalComplex
 instance eval_additive (i : ι) : (eval V c i).Additive where
 #align homological_complex.eval_additive HomologicalComplex.eval_additive
 
-instance cycles'_additive [HasEqualizers V] : (cycles'Functor V c i).Additive where
+/-instance cycles'_additive [HasEqualizers V] : (cycles'Functor V c i).Additive where
 #align homological_complex.cycles_additive HomologicalComplex.cycles'_additive
 
 variable [HasImages V] [HasImageMaps V]
@@ -130,7 +130,7 @@ instance homology_additive : (homology'Functor V c i).Additive where
     congr
     ext
     simp
-#align homological_complex.homology_additive HomologicalComplex.homology_additive
+#align homological_complex.homology_additive HomologicalComplex.homology_additive-/
 
 end HomologicalComplex
 
@@ -186,6 +186,25 @@ instance Functor.mapHomologicalComplex_reflects_iso (F : V ⥤ W) [F.Additive]
     exact HomologicalComplex.Hom.isIso_of_components f⟩
 #align category_theory.functor.map_homological_complex_reflects_iso CategoryTheory.Functor.mapHomologicalComplex_reflects_iso
 
+
+instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [F.Faithful] :
+    (F.mapHomologicalComplex c).Faithful where
+  map_injective {K L} f₁ f₂ h := by
+    ext n
+    apply F.map_injective
+    exact (HomologicalComplex.eval W c n).congr_map h
+
+instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [F.Faithful] [F.Full] :
+    (F.mapHomologicalComplex c).Full where
+  preimage {X Y} f :=
+    { f := fun n => F.preimage (f.f n)
+      comm' := by
+        intro i j _
+        apply F.map_injective
+        dsimp
+        simp only [Functor.map_comp, Functor.image_preimage]
+        exact f.comm i j }
+
 /-- A natural transformation between functors induces a natural transformation
 between those functors applied to homological complexes.
 -/
@@ -229,6 +248,13 @@ def NatIso.mapHomologicalComplex {F G : V ⥤ W} [F.Additive] [G.Additive] (α :
   inv_hom_id := by simp only [← NatTrans.mapHomologicalComplex_comp, α.inv_hom_id,
     NatTrans.mapHomologicalComplex_id]
 #align category_theory.nat_iso.map_homological_complex CategoryTheory.NatIso.mapHomologicalComplex
+
+@[simps!]
+def Functor.mapHomologicalComplexCompIso {W' : Type*} [Category W'] [Preadditive W']
+    {F : V ⥤ W} {G : W ⥤ W'} {H : V ⥤ W'} (e : F ⋙ G ≅ H)
+    [F.Additive] [G.Additive] [H.Additive] (c : ComplexShape ι) :
+    H.mapHomologicalComplex c ≅ F.mapHomologicalComplex c ⋙ G.mapHomologicalComplex c :=
+  NatIso.mapHomologicalComplex e.symm c
 
 /-- An equivalence of categories induces an equivalences between the respective categories
 of homological complex.
@@ -275,8 +301,12 @@ noncomputable def singleMapHomologicalComplex (F : V ⥤ W) [F.Additive] (c : Co
     single V c j ⋙ F.mapHomologicalComplex _ ≅ F ⋙ single W c j :=
   NatIso.ofComponents
     (fun X =>
-      { hom := { f := fun i => if h : i = j then eqToHom (by simp [h]) else 0 }
-        inv := { f := fun i => if h : i = j then eqToHom (by simp [h]) else 0 }
+      { hom :=
+          { f := fun i => if h : i = j then eqToHom (by simp [h]) else 0
+            comm' := by intros; simp [F.map_zero] }
+        inv :=
+          { f := fun i => if h : i = j then eqToHom (by simp [h]) else 0
+            comm' := by intros; simp [F.map_zero] }
         hom_inv_id := by
           ext i
           dsimp

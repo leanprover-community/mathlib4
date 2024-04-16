@@ -78,7 +78,7 @@ def factorThru {J X Y : C} [Injective J] (g : X ⟶ J) (f : X ⟶ Y) [Mono f] : 
   (Injective.factors g f).choose
 #align category_theory.injective.factor_thru CategoryTheory.Injective.factorThru
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem comp_factorThru {J X Y : C} [Injective J] (g : X ⟶ J) (f : X ⟶ Y) [Mono f] :
     f ≫ factorThru g f = g :=
   (Injective.factors g f).choose_spec
@@ -87,6 +87,9 @@ theorem comp_factorThru {J X Y : C} [Injective J] (g : X ⟶ J) (f : X ⟶ Y) [M
 section
 
 open ZeroObject
+
+lemma injective_of_isZero (X : C) (hX : IsZero X) : Injective X where
+  factors _ _ _ := ⟨hX.from_ _, hX.eq_of_tgt _ _⟩
 
 instance zero_injective [HasZeroObject C] : Injective (0 : C) :=
   (isZero_zero C).injective
@@ -210,27 +213,37 @@ section EnoughInjectives
 
 variable [EnoughInjectives C]
 
+lemma exists_presentation' (X : C) : ∃ (I : InjectivePresentation X), IsZero X → IsZero I.J := by
+  by_cases h : IsZero X
+  · have := injective_of_isZero _ h
+    exact ⟨{ J := X, f := 𝟙 X}, by tauto⟩
+  · exact ⟨(EnoughInjectives.presentation X).some, by tauto⟩
+
 /-- `Injective.under X` provides an arbitrarily chosen injective object equipped with
 a monomorphism `Injective.ι : X ⟶ Injective.under X`.
 -/
 def under (X : C) : C :=
-  (EnoughInjectives.presentation X).some.J
+  (exists_presentation' X).choose.J
 #align category_theory.injective.under CategoryTheory.Injective.under
 
 instance injective_under (X : C) : Injective (under X) :=
-  (EnoughInjectives.presentation X).some.injective
+  (exists_presentation' X).choose.injective
 #align category_theory.injective.injective_under CategoryTheory.Injective.injective_under
 
 /-- The monomorphism `Injective.ι : X ⟶ Injective.under X`
 from the arbitrarily chosen injective object under `X`.
 -/
 def ι (X : C) : X ⟶ under X :=
-  (EnoughInjectives.presentation X).some.f
+  (exists_presentation' X).choose.f
 #align category_theory.injective.ι CategoryTheory.Injective.ι
 
 instance ι_mono (X : C) : Mono (ι X) :=
-  (EnoughInjectives.presentation X).some.mono
+  (exists_presentation' X).choose.mono
 #align category_theory.injective.ι_mono CategoryTheory.Injective.ι_mono
+
+lemma isZero_under (X : C) (hX : IsZero X) :
+    IsZero (under X) :=
+  (exists_presentation' X).choose_spec hX
 
 section
 
@@ -275,6 +288,10 @@ theorem enoughInjectives_of_enoughProjectives_op [EnoughProjectives Cᵒᵖ] : E
 
 open Injective
 
+/-
+
+redundant with Exact.descToInjective in CategoryTheory.Abelian.InjectiveResolution
+
 section
 
 variable [HasZeroMorphisms C] [HasImages Cᵒᵖ] [HasEqualizers Cᵒᵖ]
@@ -301,7 +318,7 @@ theorem Exact.comp_desc {J Q R S : C} [Injective J] (h : R ⟶ J) (f : Q ⟶ R) 
   convert congr_arg Quiver.Hom.unop (Exact.lift_comp h.op g.op f.op hgf (congrArg Quiver.Hom.op w))
 #align category_theory.injective.exact.comp_desc CategoryTheory.Injective.Exact.comp_desc
 
-end
+end-/
 
 end Injective
 

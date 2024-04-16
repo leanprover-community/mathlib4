@@ -6,6 +6,7 @@ Authors: Scott Morrison
 import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Tactic.Abel
+import Mathlib.CategoryTheory.MorphismProperty
 
 #align_import algebra.homology.homotopy from "leanprover-community/mathlib"@"618ea3d5c99240cd7000d8376924906a148bf9ff"
 
@@ -807,7 +808,7 @@ def ofIso {ι : Type*} {V : Type u} [Category.{v} V] [Preadditive V] {c : Comple
 
 end HomotopyEquiv
 
-variable [HasEqualizers V] [HasCokernels V] [HasImages V] [HasImageMaps V]
+/-variable [HasEqualizers V] [HasCokernels V] [HasImages V] [HasImageMaps V]
 
 /-- Homotopic maps induce the same map on homology.
 -/
@@ -840,7 +841,7 @@ def homologyObjIsoOfHomotopyEquiv (f : HomotopyEquiv C D) (i : ι) :
   inv_hom_id := by
     rw [← Functor.map_comp, homology'_map_eq_of_homotopy f.homotopyInvHomId,
       CategoryTheory.Functor.map_id]
-#align homology_obj_iso_of_homotopy_equiv homologyObjIsoOfHomotopyEquiv
+#align homology_obj_iso_of_homotopy_equiv homology'ObjIsoOfHomotopyEquiv-/
 
 end
 

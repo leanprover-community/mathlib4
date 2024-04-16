@@ -64,7 +64,6 @@ variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category
   (G' : D ⥤ E)
 
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-variable {L : GrothendieckTopology E}
 
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is called cocontinuous (SGA 4 III 2.1)
 if for all covering sieves `R` in `D`, `R.pullback G` is a covering sieve in `C`.
@@ -79,15 +78,32 @@ lemma Functor.cover_lift [G.IsCocontinuous J K] {U : C} {S : Sieve (G.obj U)}
   IsCocontinuous.cover_lift hS
 
 /-- The identity functor on a site is cocontinuous. -/
-instance isCocontinuous_id : Functor.IsCocontinuous (𝟭 C) J J :=
+instance Functor.isCocontinuous_id : Functor.IsCocontinuous (𝟭 C) J J :=
   ⟨fun h => by simpa using h⟩
-#align category_theory.id_cover_lifting CategoryTheory.isCocontinuous_id
+#align category_theory.id_cover_lifting CategoryTheory.Functor.isCocontinuous_id
 
 /-- The composition of two cocontinuous functors is cocontinuous. -/
-theorem isCocontinuous_comp [G.IsCocontinuous J K] [G'.IsCocontinuous K L] :
+theorem Functor.isCocontinuous_comp (J : GrothendieckTopology C)
+    (K : GrothendieckTopology D) (L : GrothendieckTopology E)
+    [G.IsCocontinuous J K] [G'.IsCocontinuous K L] :
     (G ⋙ G').IsCocontinuous J L where
   cover_lift h := G.cover_lift J K (G'.cover_lift K L h)
-#align category_theory.comp_cover_lifting CategoryTheory.isCocontinuous_comp
+#align category_theory.comp_cover_lifting CategoryTheory.Functor.isCocontinuous_comp
+
+lemma Functor.isCocontinuous_of_iso {G : C ⥤ D}  {G' : C ⥤ D} (e : G ≅ G')
+    (J : GrothendieckTopology C) (K : GrothendieckTopology D) [hG : G.IsCocontinuous J K] :
+    G'.IsCocontinuous J K where
+  cover_lift {U S} hS := by
+    simpa only [Sieve.functorPullback_eq_of_iso e S]
+      using hG.cover_lift (K.pullback_stable (e.hom.app U) hS)
+
+/-- The composition of two cocontinuous functors is cocontinuous. -/
+theorem Functor.isCocontinuous_comp' {F : C ⥤ D}  {G : D ⥤ E} {H : C ⥤ E} (e : F ⋙ G ≅ H)
+    (J : GrothendieckTopology C) (K : GrothendieckTopology D)
+    (L : GrothendieckTopology E) [hF : F.IsCocontinuous J K] [hG : G.IsCocontinuous K L] :
+    H.IsCocontinuous J L := by
+  have := isCocontinuous_comp F G J K L
+  exact isCocontinuous_of_iso e J L
 
 end IsCocontinuous
 

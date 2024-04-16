@@ -85,20 +85,19 @@ noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 =
     subst hpq
     have s_g := (σ (p + 1)).s_g
     have f_r := (σ (p + 1)).f_r
-    dsimp at s_g f_r ⊢
+    dsimp [ShortComplex.map] at s_g f_r ⊢
     simp? [mappingCone.ext_from_iff _ (p + 1) _ rfl, reassoc_of% f_r, reassoc_of% s_g] says
       simp only [Cochain.ofHom_v, id_comp, comp_sub, sub_comp, assoc, reassoc_of% s_g,
-        ShortComplex.Splitting.s_r_assoc, ShortComplex.map_X₃, eval_obj, ShortComplex.map_X₁,
-        zero_comp, comp_zero, reassoc_of% f_r, zero_sub, sub_neg_eq_add,
-        mappingCone.ext_from_iff _ (p + 1) _ rfl, comp_add, mappingCone.inl_v_fst_v_assoc,
-        mappingCone.inl_v_snd_v_assoc, shiftFunctor_obj_X', sub_zero, add_zero, comp_id,
-        mappingCone.inr_f_fst_v_assoc, mappingCone.inr_f_snd_v_assoc, add_left_eq_self, neg_eq_zero,
-        true_and]
+        ShortComplex.Splitting.s_r_assoc, zero_comp, comp_zero, reassoc_of% f_r, zero_sub,
+        sub_neg_eq_add, mappingCone.ext_from_iff _ (p + 1) _ rfl, comp_add,
+        mappingCone.inl_v_fst_v_assoc, mappingCone.inl_v_snd_v_assoc, shiftFunctor_obj_X',
+        sub_zero, add_zero, comp_id, mappingCone.inr_f_fst_v_assoc, mappingCone.inr_f_snd_v_assoc,
+        add_left_eq_self, neg_eq_zero, true_and]
     rw [← comp_f_assoc, S.zero, zero_f, zero_comp]
   inv_hom_id := by
     subst hpq
     have h := (σ (p + 1)).id
-    dsimp at h ⊢
+    dsimp [ShortComplex.map] at h ⊢
     simp only [id_comp, Cochain.ofHom_v, comp_sub, sub_comp, assoc, mappingCone.inl_v_fst_v_assoc,
       mappingCone.inr_f_fst_v_assoc, shiftFunctor_obj_X', zero_comp, comp_zero, sub_zero,
       mappingCone.inl_v_snd_v_assoc, mappingCone.inr_f_snd_v_assoc, zero_sub, sub_neg_eq_add, ← h]
@@ -222,5 +221,11 @@ lemma distinguished_iff_iso_trianglehOfDegreewiseSplit
       ((rotate _ ⋙ rotate _).mapIso e ≪≫
         CochainComplex.trianglehOfDegreewiseSplitRotateRotateIso S σ)
     exact ⟨_, _, _, ⟨Iso.refl _⟩⟩
+
+lemma trianglehOfDegreewiseSplit_distinguished (S : ShortComplex (CochainComplex C ℤ))
+  (σ : ∀ n, (S.map (HomologicalComplex.eval C _ n)).Splitting) :
+    CochainComplex.trianglehOfDegreewiseSplit S σ ∈ distTriang _ := by
+  rw [distinguished_iff_iso_trianglehOfDegreewiseSplit]
+  exact ⟨S, σ, ⟨Iso.refl _⟩⟩
 
 end HomotopyCategory

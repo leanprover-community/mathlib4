@@ -97,9 +97,7 @@ def symm (c : ComplexShape ι) : ComplexShape ι where
 #align complex_shape.symm_rel ComplexShape.symm_Rel
 
 @[simp]
-theorem symm_symm (c : ComplexShape ι) : c.symm.symm = c := by
-  ext
-  simp
+theorem symm_symm (c : ComplexShape ι) : c.symm.symm = c := rfl
 #align complex_shape.symm_symm ComplexShape.symm_symm
 
 theorem symm_bijective :
@@ -198,6 +196,9 @@ def up (α : Type*) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
 #align complex_shape.up ComplexShape.up
 #align complex_shape.up_rel ComplexShape.up_Rel
 
+instance (α : Type _) [AddRightCancelSemigroup α] [One α] [DecidableEq α] :
+  DecidableRel (up α).Rel := fun _ _ => by dsimp ; infer_instance
+
 /-- The `ComplexShape` appropriate for homology, so `d : X i ⟶ X j` only when `i = j + 1`.
 -/
 @[simps!]
@@ -205,6 +206,9 @@ def down (α : Type*) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
   down' 1
 #align complex_shape.down ComplexShape.down
 #align complex_shape.down_rel ComplexShape.down_Rel
+
+instance (α : Type _) [AddRightCancelSemigroup α] [One α] [DecidableEq α] :
+  DecidableRel (down α).Rel := fun _ _ => by dsimp ; infer_instance
 
 theorem down_mk {α : Type*} [AddRightCancelSemigroup α] [One α] (i j : α) (h : j + 1 = i) :
     (down α).Rel i j :=

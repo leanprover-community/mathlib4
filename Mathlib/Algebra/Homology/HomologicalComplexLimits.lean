@@ -3,7 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
+import Mathlib.Algebra.Homology.Single
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
@@ -21,7 +21,8 @@ open CategoryTheory Category Limits
 
 namespace HomologicalComplex
 
-variable {C ι J : Type*} [Category C] [Category J] {c : ComplexShape ι} [HasZeroMorphisms C]
+variable {C D ι J : Type*} [Category C] [Category D] [Category J] {c : ComplexShape ι}
+  [HasZeroMorphisms C] [HasZeroMorphisms D]
 
 section
 
@@ -192,5 +193,68 @@ def preservesColimitsOfShapeOfEval {D : Type*} [Category D]
     PreservesColimitsOfShape J G :=
   ⟨fun {_} => ⟨fun hs ↦ isColimitOfEval _ _
     (fun i => isColimitOfPreserves (G ⋙ eval C c i) hs)⟩⟩
+
+section
+
+variable (F : J ⥤ C) (hF : IsZero F) (G : C ⥤ D) (hG : IsZero G)
+  [HasZeroObject C] [HasZeroObject D]
+
+def IsLimit.ofIsZero (c : Cone F) (hc : IsZero c.pt) : IsLimit c where
+  lift _ := 0
+  fac _ j := (F.isZero_iff.1 hF j).eq_of_tgt _ _
+  uniq _ _ _ := hc.eq_of_tgt _ _
+
+def preservesLimitsOfShapeOfIsZero : PreservesLimitsOfShape J G :=
+  ⟨fun {_} => ⟨fun hc => by
+    rw [Functor.isZero_iff] at hG
+    apply IsLimit.ofIsZero
+    · rw [Functor.isZero_iff]
+      intro X
+      apply hG
+    · apply hG⟩⟩
+
+def IsColimit.ofIsZero (c : Cocone F) (hc : IsZero c.pt) : IsColimit c where
+  desc _ := 0
+  fac _ j := (F.isZero_iff.1 hF j).eq_of_src _ _
+  uniq _ _ _ := hc.eq_of_src _ _
+
+def preservesColimitsOfShapeOfIsZero : PreservesColimitsOfShape J G :=
+  ⟨fun {_} => ⟨fun hc => by
+    rw [Functor.isZero_iff] at hG
+    apply IsColimit.ofIsZero
+    · rw [Functor.isZero_iff]
+      intro X
+      apply hG
+    · apply hG⟩⟩
+
+end
+
+section
+
+variable [HasZeroObject C] [DecidableEq ι]
+
+noncomputable instance [HasLimitsOfShape J C] (i : ι) :
+    PreservesLimitsOfShape J (single C c i) :=
+  preservesLimitsOfShapeOfEval _ (fun j => by
+    by_cases h : j = i
+    · subst h
+      exact preservesLimitsOfShapeOfNatIso (singleCompEvalIsoSelf C c j).symm
+    · exact preservesLimitsOfShapeOfIsZero _ (isZero_single_comp_eval C c _ _ h))
+
+noncomputable instance [HasColimitsOfShape J C] (i : ι) :
+    PreservesColimitsOfShape J (single C c i) :=
+  preservesColimitsOfShapeOfEval _ (fun j => by
+    by_cases h : j = i
+    · subst h
+      exact preservesColimitsOfShapeOfNatIso (singleCompEvalIsoSelf C c j).symm
+    · exact preservesColimitsOfShapeOfIsZero _ (isZero_single_comp_eval C c _ _ h))
+
+noncomputable instance [HasFiniteLimits C] (i : ι) :
+    PreservesFiniteLimits (single C c i) := ⟨by intros ; infer_instance⟩
+
+noncomputable instance [HasFiniteColimits C] (i : ι) :
+    PreservesFiniteColimits (single C c i) := ⟨by intros ; infer_instance⟩
+
+end
 
 end HomologicalComplex

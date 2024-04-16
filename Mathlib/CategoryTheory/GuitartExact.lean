@@ -45,13 +45,51 @@ and construct (pointwise) derived functors using this notion
 
 -/
 
-universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
+universe v₁ v₂ v₃ v₄ v₁' v₂' v₃' v₄' u₁ u₂ u₃ u₄ u₁' u₂' u₃' u₄'
 
 namespace CategoryTheory
+
+open Limits
+
+namespace IsConnected
+
+variable {C D : Type*} [Category C] [Category D]
+
+instance [IsConnected C] [IsConnected D] : IsConnected (C × D) := by
+  apply zigzag_isConnected
+  intro ⟨X₁, Y₁⟩ ⟨X₂, Y₂⟩
+  exact (zigzag_obj_of_zigzag (Functor.prod' (𝟭 C) ((Functor.const C).obj Y₁))
+      (isPreconnected_zigzag X₁ X₂)).trans
+    (zigzag_obj_of_zigzag (Functor.prod' ((Functor.const D).obj X₂) (𝟭 D))
+      (isPreconnected_zigzag Y₁ Y₂))
+
+end IsConnected
+
+open Category
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {C₄ : Type u₄}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} C₄]
   (T : C₁ ⥤ C₂) (L : C₁ ⥤ C₃) (R : C₂ ⥤ C₄) (B : C₃ ⥤ C₄)
+
+section
+
+variable {T}
+
+theorem StructuredArrow.mk_surjective {X₂ : C₂} (f : StructuredArrow X₂ T) :
+    ∃ (X₁ : C₁) (g : X₂ ⟶ T.obj X₁), f = mk g := ⟨_, _, eq_mk f⟩
+
+theorem StructuredArrow.homMk_surjective {X₂ : C₂} {f g : StructuredArrow X₂ T} (φ : f ⟶ g) :
+    ∃ (ψ : f.right ⟶ g.right) (hψ : f.hom ≫ T.map ψ = g.hom),
+      φ = StructuredArrow.homMk ψ hψ := ⟨φ.right, StructuredArrow.w φ, rfl⟩
+
+theorem CostructuredArrow.mk_surjective {X₂ : C₂} (f : CostructuredArrow T X₂) :
+    ∃ (X₁ : C₁) (g :T.obj X₁ ⟶ X₂), f = mk g := ⟨_, _, eq_mk f⟩
+
+theorem CostructuredArrow.homMk_surjective {X₂ : C₂} {f g : CostructuredArrow T X₂} (φ : f ⟶ g) :
+    ∃ (ψ : f.left ⟶ g.left) (hψ : T.map ψ ≫ g.hom = f.hom),
+      φ = CostructuredArrow.homMk ψ hψ := ⟨φ.left, CostructuredArrow.w φ, rfl⟩
+
+end
 
 /-- A `2`-square consists of a natural transformation `T ⋙ R ⟶ L ⋙ B`
 involving fours functors `T`, `L`, `R`, `B` that are on the
@@ -118,9 +156,29 @@ abbrev StructuredArrowRightwards.mk : w.StructuredArrowRightwards g :=
   StructuredArrow.mk (Y := CostructuredArrow.mk b) (CostructuredArrow.homMk a comm)
 
 /-- Constructor for objects in `w.CostructuredArrowDownwards g`. -/
-abbrev CoStructuredArrowDownwards.mk : w.CostructuredArrowDownwards g :=
+abbrev CostructuredArrowDownwards.mk : w.CostructuredArrowDownwards g :=
   CostructuredArrow.mk (Y := StructuredArrow.mk a)
     (StructuredArrow.homMk b (by simpa using comm))
+
+variable {w g}
+
+lemma StructuredArrowRightwards.mk_surjective
+    (f : w.StructuredArrowRightwards g) :
+    ∃ (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃) (comm : R.map a ≫ w.app X₁ ≫ B.map b = g),
+      f = mk w g X₁ a b comm := by
+  obtain ⟨g, φ, rfl⟩ := StructuredArrow.mk_surjective f
+  obtain ⟨X₁, b, rfl⟩ := g.mk_surjective
+  obtain ⟨a, ha, rfl⟩ := CostructuredArrow.homMk_surjective φ
+  exact ⟨X₁, a, b, by simpa using ha, rfl⟩
+
+lemma CostructuredArrowDownwards.mk_surjective
+    (f : w.CostructuredArrowDownwards g) :
+    ∃ (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃) (comm : R.map a ≫ w.app X₁ ≫ B.map b = g),
+      f = mk w g X₁ a b comm := by
+  obtain ⟨g, φ, rfl⟩ := CostructuredArrow.mk_surjective f
+  obtain ⟨X₁, a, rfl⟩ := g.mk_surjective
+  obtain ⟨b, hb, rfl⟩ := StructuredArrow.homMk_surjective φ
+  exact ⟨X₁, a, b, by simpa using hb, rfl⟩
 
 end
 
@@ -222,6 +280,178 @@ instance [hw : w.GuitartExact] (X₂ : C₂) :
     (w.structuredArrowDownwards X₂).Initial := by
   rw [guitartExact_iff_initial] at hw
   apply hw
+
+instance [L.IsEquivalence] [R.IsEquivalence] [IsIso w] : GuitartExact w := by
+  rw [guitartExact_iff_initial]
+  intro X₂
+  have := StructuredArrow.isEquivalencePost X₂ T R
+  have : (Comma.mapRight _ w : StructuredArrow (R.obj X₂) _ ⥤ StructuredArrow (R.obj X₂) _).IsEquivalence :=
+    Functor.IsEquivalence.ofEquivalence (Comma.mapRightIso _ (asIso w))
+  have := StructuredArrow.isEquivalencePre (R.obj X₂) L B
+  dsimp only [structuredArrowDownwards]
+  infer_instance
+
+@[simps!]
+def whiskerVertical {L' : C₁ ⥤ C₃} {R' : C₂ ⥤ C₄} (α : L ⟶ L') (β : R' ⟶ R) :
+    TwoSquare T L' R' B :=
+  whiskerLeft _ β ≫ w ≫ whiskerRight α _
+
+namespace GuitartExact
+
+lemma whiskerVertical [w.GuitartExact] {L' : C₁ ⥤ C₃} {R' : C₂ ⥤ C₄}
+    (α : L ≅ L') (β : R ≅ R') : (w.whiskerVertical α.hom β.inv).GuitartExact := by
+  rw [guitartExact_iff_initial]
+  intro X₂
+  let e : structuredArrowDownwards (w.whiskerVertical α.hom β.inv) X₂ ≅
+      w.structuredArrowDownwards X₂ ⋙ (StructuredArrow.mapIso (β.app X₂) ).functor :=
+    NatIso.ofComponents (fun f => StructuredArrow.isoMk (α.symm.app f.right) (by
+      dsimp
+      simp only [NatTrans.naturality_assoc, assoc, NatIso.cancel_natIso_inv_left, ← B.map_comp,
+        Iso.hom_inv_id_app, B.map_id, comp_id])) (by aesop_cat)
+  rw [Functor.initial_natIso_iff e]
+  infer_instance
+
+@[simp]
+lemma whiskerVertical_iff {L' : C₁ ⥤ C₃} {R' : C₂ ⥤ C₄}
+    (α : L ≅ L') (β : R ≅ R') :
+    (w.whiskerVertical α.hom β.inv).GuitartExact ↔ w.GuitartExact := by
+  constructor
+  · intro h
+    have : w = TwoSquare.whiskerVertical
+        (TwoSquare.whiskerVertical w α.hom β.inv) α.inv β.hom := by
+      ext X₁
+      simp only [Functor.comp_obj, whiskerVertical_app, assoc, Iso.hom_inv_id_app_assoc,
+        ← B.map_comp, Iso.hom_inv_id_app, B.map_id, comp_id]
+    rw [this]
+    exact whiskerVertical (w.whiskerVertical α.hom β.inv) α.symm β.symm
+  · intro h
+    exact whiskerVertical w α β
+
+instance [w.GuitartExact] {L' : C₁ ⥤ C₃} {R' : C₂ ⥤ C₄} (α : L ⟶ L') (β : R' ⟶ R)
+    [IsIso α] [IsIso β] : (w.whiskerVertical α β).GuitartExact :=
+  whiskerVertical w (asIso α) (asIso β).symm
+
+end GuitartExact
+
+section prod
+
+variable {C₁' : Type u₁'} {C₂' : Type u₂'} {C₃' : Type u₃'} {C₄' : Type u₄'}
+  [Category.{v₁'} C₁'] [Category.{v₂'} C₂'] [Category.{v₃'} C₃'] [Category.{v₄'} C₄']
+  {T' : C₁' ⥤ C₂'} {L' : C₁' ⥤ C₃'} {R' : C₂' ⥤ C₄'} {B' : C₃' ⥤ C₄'}
+  (w' : TwoSquare T' L' R' B')
+
+def prod : TwoSquare (T.prod T') (L.prod L') (R.prod R') (B.prod B') := NatTrans.prod w w'
+
+section
+
+variable {Y₂ : C₂ × C₂'} {Y₃ : C₃ × C₃'} (g : (R.prod R').obj Y₂ ⟶ (B.prod B').obj Y₃)
+
+namespace JRightwardsProdEquivalence
+
+@[simp]
+def functorObj (X : StructuredArrowRightwards (w.prod w') g) : (StructuredArrowRightwards w g.1) × (StructuredArrowRightwards w' g.2) :=
+  ⟨StructuredArrowRightwards.mk w g.1 _ X.hom.left.1 X.right.hom.1
+      (by simpa using congr_arg _root_.Prod.fst X.hom.w),
+    StructuredArrowRightwards.mk w' g.2 _ X.hom.left.2 X.right.hom.2
+      (by simpa using congr_arg _root_.Prod.snd X.hom.w)⟩
+
+@[simps]
+def functor : StructuredArrowRightwards (w.prod w') g ⥤ (StructuredArrowRightwards w g.1) × (StructuredArrowRightwards w' g.2) where
+  obj X := functorObj w w' g X
+  map {X Y} f :=
+    ⟨StructuredArrow.homMk (CostructuredArrow.homMk f.right.left.1
+        (by simpa using congr_arg _root_.Prod.fst f.right.w)) (by
+          ext
+          have eq := StructuredArrow.w f
+          dsimp at eq ⊢
+          rw [← eq]
+          rfl),
+      StructuredArrow.homMk (CostructuredArrow.homMk f.right.left.2
+        (by simpa using congr_arg _root_.Prod.snd f.right.w)) (by
+          ext
+          have eq := StructuredArrow.w f
+          dsimp at eq ⊢
+          rw [← eq]
+          rfl)⟩
+  map_id _ := rfl
+  map_comp f g := rfl
+
+@[simp]
+def inverseObj (X : (StructuredArrowRightwards w g.1) × (StructuredArrowRightwards w' g.2)) : StructuredArrowRightwards (w.prod w') g :=
+  StructuredArrowRightwards.mk _ _ ⟨X.1.right.left, X.2.right.left⟩
+    ⟨X.1.hom.left, X.2.hom.left⟩ ⟨X.1.right.hom, X.2.right.hom⟩ (by
+      dsimp
+      ext
+      · simpa using X.1.hom.w
+      · simpa using X.2.hom.w)
+
+@[simps]
+def inverse : (StructuredArrowRightwards w g.1) × (StructuredArrowRightwards w' g.2) ⥤ StructuredArrowRightwards (w.prod w') g where
+  obj X := inverseObj w w' g X
+  map {X Y} f := StructuredArrow.homMk
+    (CostructuredArrow.homMk ⟨f.1.right.left, f.2.right.left⟩ (by
+      dsimp
+      ext
+      · exact CostructuredArrow.w f.1.right
+      · exact CostructuredArrow.w f.2.right)) (by
+      dsimp
+      ext
+      dsimp
+      ext
+      · have eq := StructuredArrow.w f.1
+        dsimp at eq ⊢
+        rw [← eq]
+        rfl
+      · have eq := StructuredArrow.w f.2
+        dsimp at eq ⊢
+        rw [← eq]
+        rfl)
+  map_id _ := rfl
+  map_comp _ _ := rfl
+
+end JRightwardsProdEquivalence
+
+set_option maxHeartbeats 400000 in
+@[simps]
+def StructuredArrowRightwardsProdEquivalence :
+    StructuredArrowRightwards (w.prod w') g ≌ (StructuredArrowRightwards w g.1) × (StructuredArrowRightwards w' g.2) where
+  functor := JRightwardsProdEquivalence.functor w w' g
+  inverse := JRightwardsProdEquivalence.inverse w w' g
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+  functor_unitIso_comp X := by
+    dsimp
+    erw [comp_id, comp_id]
+    rfl
+
+end
+
+namespace GuitartExact
+
+instance prod [w.GuitartExact] [w'.GuitartExact] :
+    (w.prod w').GuitartExact := by
+  rw [guitartExact_iff_isConnected_rightwards]
+  rintro Y₂ Y₃ g
+  exact isConnected_of_equivalent (StructuredArrowRightwardsProdEquivalence w w' g).symm
+
+instance id (F : C₁ ⥤ C₂) : TwoSquare.GuitartExact (show TwoSquare (𝟭 C₁) F F (𝟭 C₂) from 𝟙 F) := by
+  rw [guitartExact_iff_isConnected_rightwards]
+  intro X₂ X₃ (g : F.obj X₂ ⟶ X₃)
+  let Z := StructuredArrowRightwards (show TwoSquare (𝟭 C₁) F F (𝟭 C₂) from 𝟙 F) g
+  let X₀ : Z := StructuredArrow.mk (Y := CostructuredArrow.mk g) (CostructuredArrow.homMk (𝟙 _))
+  have φ : ∀ (X : Z), X₀ ⟶ X := fun X =>
+    StructuredArrow.homMk (CostructuredArrow.homMk X.hom.left
+      (by simpa using CostructuredArrow.w X.hom))
+  have : Nonempty Z := ⟨X₀⟩
+  change IsConnected Z
+  apply zigzag_isConnected
+  intro X Y
+  exact (zigzag_symmetric (Relation.ReflTransGen.single (Or.inl ⟨φ X⟩))).trans
+    (Relation.ReflTransGen.single (Or.inl ⟨φ Y⟩))
+
+end GuitartExact
+
+end prod
 
 end TwoSquare
 

@@ -29,6 +29,7 @@ shall be removed and replaced by the new API.
 
 -/
 
+/- redundant with the new homology API
 
 universe v u
 
@@ -69,7 +70,7 @@ theorem cycles_eq_top {i} (h : ¬c.Rel i (c.next i)) : C.cycles' i = ⊤ := by
   rw [eq_top_iff]
   apply le_kernelSubobject
   rw [C.dFrom_eq_zero h, comp_zero]
-#align homological_complex.cycles_eq_top HomologicalComplex.cycles_eq_top
+#align homological_complex.cycles_eq_top HomologicalComplex.cycles'_eq_top
 
 end Cycles
 
@@ -309,3 +310,4 @@ def gradedHomology'Functor [HasCokernels V] : HomologicalComplex V c ⥤ GradedO
 #align graded_homology_functor gradedHomology'Functor
 
 end
+-/

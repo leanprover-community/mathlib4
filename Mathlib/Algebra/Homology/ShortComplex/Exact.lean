@@ -3,10 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
-import Mathlib.CategoryTheory.Abelian.Exact
+import Mathlib.Algebra.Homology.ShortComplex.Abelian
+import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
+import Mathlib.CategoryTheory.Abelian.Opposite
+import Mathlib.CategoryTheory.Balanced
+import Mathlib.Algebra.Homology.ShortComplex.Homology
 import Mathlib.CategoryTheory.MorphismProperty
 import Mathlib.CategoryTheory.Preadditive.Injective
 
@@ -114,6 +116,10 @@ lemma exact_of_iso (e : S₁ ≅ S₂) (h : S₁.Exact) : S₂.Exact := by
 lemma exact_iff_of_iso (e : S₁ ≅ S₂) : S₁.Exact ↔ S₂.Exact :=
   ⟨exact_of_iso e, exact_of_iso e.symm⟩
 
+def exact_of_arrow₂Iso {D : Arrow₂ C} {S : ShortComplex C} (e : D ≅ S.arrow₂)
+    (hS : S.Exact) : (mkOfArrow₂Iso e).Exact :=
+  exact_of_iso (isoOfArrow₂Iso e).symm hS
+
 lemma exact_and_mono_f_iff_of_iso (e : S₁ ≅ S₂) :
     S₁.Exact ∧ Mono S₁.f ↔ S₂.Exact ∧ Mono S₂.f := by
   have : Mono S₁.f ↔ Mono S₂.f :=
@@ -174,14 +180,14 @@ lemma exact_iff_kernel_ι_comp_cokernel_π_zero [S.HasHomology]
   exact S.exact_iff_i_p_zero (LeftHomologyData.ofHasKernelOfHasCokernel S)
     (RightHomologyData.ofHasCokernelOfHasKernel S)
 
-/-- The notion of exactness given by `ShortComplex.Exact` is equivalent to
+/- The notion of exactness given by `ShortComplex.Exact` is equivalent to
 the one given by the previous API `CategoryTheory.Exact` in the case of
-abelian categories. -/
+abelian categories.
 lemma _root_.CategoryTheory.exact_iff_shortComplex_exact
     {A : Type*} [Category A] [Abelian A] (S : ShortComplex A) :
     CategoryTheory.Exact S.f S.g ↔ S.Exact := by
   simp only [Abelian.exact_iff, S.zero,
-    S.exact_iff_kernel_ι_comp_cokernel_π_zero, true_and]
+    S.exact_iff_kernel_ι_comp_cokernel_π_zero, true_and]-/
 
 variable {S}
 
@@ -243,15 +249,15 @@ lemma exact_map_iff_of_faithful [S.HasHomology]
     (F : C ⥤ D) [F.PreservesZeroMorphisms] [F.PreservesLeftHomologyOf S]
     [F.PreservesRightHomologyOf S] [F.Faithful] :
     (S.map F).Exact ↔ S.Exact := by
-  constructor
-  · intro h
-    rw [S.leftHomologyData.exact_iff, IsZero.iff_id_eq_zero]
-    rw [(S.leftHomologyData.map F).exact_iff, IsZero.iff_id_eq_zero,
-      LeftHomologyData.map_H] at h
-    apply F.map_injective
-    rw [F.map_id, F.map_zero, h]
-  · intro h
-    exact h.map F
+    constructor
+    · intro h
+      rw [S.leftHomologyData.exact_iff, IsZero.iff_id_eq_zero]
+      rw [(S.leftHomologyData.map F).exact_iff, IsZero.iff_id_eq_zero,
+        LeftHomologyData.map_H] at h
+      apply F.map_injective
+      rw [F.map_id, F.map_zero, h]
+    · intro h
+      exact h.map F
 
 variable {S}
 
@@ -840,6 +846,34 @@ end Preadditive
 section Abelian
 
 variable [Abelian C]
+
+section
+
+variable {X Y : C} (f : X ⟶ Y)
+
+@[simps]
+noncomputable def kernelSequence : ShortComplex C :=
+  ShortComplex.mk _ _ (kernel.condition f)
+
+@[simps]
+noncomputable def cokernelSequence : ShortComplex C :=
+  ShortComplex.mk _ _ (cokernel.condition f)
+
+instance : Mono (kernelSequence f).f := by
+  dsimp
+  infer_instance
+
+instance : Epi (cokernelSequence f).g := by
+  dsimp
+  infer_instance
+
+lemma kernelSequence_exact : (kernelSequence f).Exact :=
+  exact_of_f_is_kernel _ (kernelIsKernel f)
+
+lemma cokernelSequence_exact : (cokernelSequence f).Exact :=
+  exact_of_g_is_cokernel _ (cokernelIsCokernel f)
+
+end
 
 /-- Given a morphism of short complexes `φ : S₁ ⟶ S₂` in an abelian category, if `S₁.f`
 and `S₁.g` are zero (e.g. when `S₁` is of the form `0 ⟶ S₁.X₂ ⟶ 0`) and `S₂.f = 0`

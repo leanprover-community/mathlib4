@@ -448,6 +448,11 @@ theorem generate_sieve (S : Sieve X) : generate S = S :=
   giGenerate.l_u_eq S
 #align category_theory.sieve.generate_sieve CategoryTheory.Sieve.generate_sieve
 
+@[simp]
+lemma generate_le_iff (R : Presieve X) (S : Sieve X) :
+    generate R ≤ S ↔ R ≤ S :=
+  (giGenerate (X := X)).gc _ _
+
 /-- If the identity arrow is in a sieve, the sieve is maximal. -/
 theorem id_mem_iff_eq_top : S (𝟙 X) ↔ S = ⊤ :=
   ⟨fun h => top_unique fun Y f _ => by simpa using downward_closed _ h f, fun h => h.symm ▸ trivial⟩
@@ -674,6 +679,16 @@ theorem functorPullback_arrows (R : Sieve (F.obj X)) :
   rfl
 #align category_theory.sieve.functor_pullback_arrows CategoryTheory.Sieve.functorPullback_arrows
 
+lemma functorPullback_eq_of_iso {F G : C ⥤ D} (e : F ≅ G) (R : Sieve (G.obj X)) :
+    functorPullback F (Sieve.pullback (e.hom.app X) R) =
+      functorPullback G R := by
+  ext Y f
+  constructor
+  · intro h
+    simpa only [NatIso.naturality_1 e f] using R.downward_closed h (e.inv.app Y)
+  · intro (h : R.arrows _)
+    simpa only [← e.hom.naturality f] using R.downward_closed h (e.hom.app Y)
+
 @[simp]
 theorem functorPullback_id (R : Sieve X) : R.functorPullback (𝟭 _) = R := by
   ext
@@ -707,6 +722,18 @@ def functorPushforward (R : Sieve X) : Sieve (F.obj X)
     obtain ⟨X, α, β, hα, rfl⟩ := h
     exact ⟨X, α, g ≫ β, hα, by simp⟩
 #align category_theory.sieve.functor_pushforward CategoryTheory.Sieve.functorPushforward
+
+lemma functorPushforward_eq_of_iso {F G : C ⥤ D} (e : F ≅ G) (R : Sieve X) :
+    Sieve.pullback (e.inv.app X) (Sieve.functorPushforward F R) =
+      Sieve.functorPushforward G R := by
+  ext Y f
+  constructor
+  · rintro ⟨W, a, b, ha, fac⟩
+    refine' ⟨W, a, b ≫ e.hom.app W, ha, _⟩
+    rw [← cancel_mono (e.inv.app X), fac, assoc, assoc,
+      NatTrans.naturality, Iso.hom_inv_id_app_assoc]
+  · rintro ⟨W, a, b, ha, rfl⟩
+    exact ⟨W, a, b ≫ e.inv.app W, ha, by simp⟩
 
 @[simp]
 theorem functorPushforward_id (R : Sieve X) : R.functorPushforward (𝟭 _) = R := by

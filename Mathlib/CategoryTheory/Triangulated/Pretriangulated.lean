@@ -3,8 +3,9 @@ Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw, Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.TriangleShift
+import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+import Mathlib.CategoryTheory.Triangulated.TriangleShift
 
 #align_import category_theory.triangulated.pretriangulated from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
@@ -28,6 +29,43 @@ noncomputable section
 open CategoryTheory Preadditive Limits
 
 universe v v₀ v₁ v₂ u u₀ u₁ u₂
+
+namespace CategoryTheory
+
+namespace Limits
+
+-- should be moved to a better place
+namespace BinaryBiproductData
+
+variable {C : Type _} [Category C]
+    {X₁ X₂ : C} [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] (d : BinaryBiproductData X₁ X₂)
+
+def isoBiprod {C : Type _} [Category C]
+    {X₁ X₂ : C} [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] (d : BinaryBiproductData X₁ X₂) :
+    X₁ ⊞ X₂ ≅ d.bicone.pt :=
+  IsLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit X₁ X₂) d.isBilimit.isLimit
+
+@[reassoc (attr := simp)]
+lemma isoBiprod_inv_fst : d.isoBiprod.inv ≫ biprod.fst = d.bicone.fst :=
+  IsLimit.conePointUniqueUpToIso_inv_comp _ d.isBilimit.isLimit ⟨WalkingPair.left⟩
+
+@[reassoc (attr := simp)]
+lemma isoBiprod_inv_snd : d.isoBiprod.inv ≫ biprod.snd = d.bicone.snd :=
+  IsLimit.conePointUniqueUpToIso_inv_comp _ d.isBilimit.isLimit ⟨WalkingPair.right⟩
+
+@[reassoc (attr := simp)]
+lemma isoBiprod_hom_fst : d.isoBiprod.hom ≫ d.bicone.fst = biprod.fst := by
+  rw [← isoBiprod_inv_fst, Iso.hom_inv_id_assoc]
+
+@[reassoc (attr := simp)]
+lemma isoBiprod_hom_snd : d.isoBiprod.hom ≫ d.bicone.snd = biprod.snd := by
+  rw [← isoBiprod_inv_snd, Iso.hom_inv_id_assoc]
+
+end BinaryBiproductData
+
+end Limits
+
+end CategoryTheory
 
 namespace CategoryTheory
 
@@ -157,6 +195,19 @@ theorem comp_distTriang_mor_zero₃₁ (T : Triangle C) (H : T ∈ distTriang C)
   have H₂ := rot_of_distTriang T.rotate (rot_of_distTriang T H)
   simpa using comp_distTriang_mor_zero₁₂ T.rotate.rotate H₂
 #align category_theory.pretriangulated.comp_dist_triangle_mor_zero₃₁ CategoryTheory.Pretriangulated.comp_distTriang_mor_zero₃₁
+
+/-- The short complex `T.obj₁ ⟶ T.obj₂ ⟶ T.obj₃` attached to a distinguished triangle. -/
+@[simps]
+def shortComplexOfDistTriangle (T : Triangle C) (hT : T ∈ distTriang C) : ShortComplex C :=
+  ShortComplex.mk T.mor₁ T.mor₂ (comp_distTriang_mor_zero₁₂ _ hT)
+
+/-- The isomorphism between the short complex attached to
+two isomorphic distinguished triangles. -/
+@[simps!]
+def shortComplexOfDistTriangleIsoOfIso {T T' : Triangle C} (e : T ≅ T') (hT : T ∈ distTriang C) :
+    shortComplexOfDistTriangle T hT ≅ shortComplexOfDistTriangle T'
+      (isomorphic_distinguished _ hT _ e.symm) :=
+  ShortComplex.isoMk (Triangle.π₁.mapIso e) (Triangle.π₂.mapIso e) (Triangle.π₃.mapIso e)
 
 /-- Any morphism `Y ⟶ Z` is part of a distinguished triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` -/
 lemma distinguished_cocone_triangle₁ {Y Z : C} (g : Y ⟶ Z) :
@@ -400,6 +451,15 @@ lemma shift_distinguished (n : ℤ) :
     · exact H_neg_one
     · exact H_add hn H_neg_one rfl
 
+lemma shift_distinguished_iff (n : ℤ) :
+    (CategoryTheory.shiftFunctor (Triangle C) n).obj T ∈ (distTriang C) ↔ T ∈ distTriang C := by
+  constructor
+  · intro hT
+    exact isomorphic_distinguished _ (shift_distinguished _ hT (-n)) _
+      ((shiftEquiv (Triangle C) n).unitIso.app T)
+  · intro hT
+    exact shift_distinguished T hT n
+
 end Triangle
 
 instance : SplitEpiCategory C where
@@ -502,6 +562,7 @@ instance : HasBinaryBiproducts C := ⟨fun X₁ X₃ => by
 instance : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
 instance : HasFiniteCoproducts C := hasFiniteCoproducts_of_has_binary_and_initial
 instance : HasFiniteBiproducts C := HasFiniteBiproducts.of_hasFiniteProducts
+instance : HasBinaryProducts C := inferInstance
 
 lemma exists_iso_binaryBiproduct_of_distTriang (T : Triangle C) (hT : T ∈ distTriang C)
     (zero : T.mor₃ = 0) :
@@ -641,6 +702,32 @@ def isoTriangleOfIso₁₂ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang
     have eq := h.choose_spec.1
     dsimp at eq ⊢
     conv_lhs => rw [← eq, TriangleMorphism.comm₃])
+
+@[simps! hom_hom₁ hom_hom₃ inv_hom₁ inv_hom₃]
+def isoTriangleOfIso₁₃ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)
+    (hT₂ : T₂ ∈ distTriang C) (e₁ : T₁.obj₁ ≅ T₂.obj₁) (e₃ : T₁.obj₃ ≅ T₂.obj₃)
+    (comm : T₁.mor₃ ≫ (shiftFunctor C 1).map e₁.hom = e₃.hom ≫ T₂.mor₃) :
+      T₁ ≅ T₂ := by
+  have h := exists_iso_of_arrow_iso _ _ (inv_rot_of_distTriang _ hT₁)
+    (inv_rot_of_distTriang _ hT₂)
+    (Arrow.isoMk ((shiftFunctor C (-1)).mapIso e₃) e₁ (by
+      dsimp
+      simp only [comp_neg, neg_comp, assoc, neg_inj, ← Functor.map_comp_assoc, ← comm]
+      simp only [Functor.map_comp, assoc]
+      erw [← NatTrans.naturality]
+      rfl))
+  let e := h.choose
+  refine' Triangle.isoMk _ _ e₁ (Triangle.π₃.mapIso e) e₃ _ _ comm
+  · refine' e.hom.comm₂.trans _
+    congr 1
+    exact h.choose_spec.2
+  · rw [← cancel_mono ((shiftFunctorCompIsoId C (-1) 1 (neg_add_self 1)).inv.app T₂.obj₃)]
+    rw [assoc, assoc]
+    refine' Eq.trans _ e.hom.comm₃
+    rw [h.choose_spec.1]
+    dsimp
+    erw [assoc, ← NatTrans.naturality]
+    rfl
 
 end Pretriangulated
 
