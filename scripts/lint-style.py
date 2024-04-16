@@ -406,18 +406,18 @@ def test_backtick_extraction():
     check("``````test `one`", ["", "one"])
     print("All tests pass!")
 
-
 '''Read in information on old files and declarations.
+
+|all_aligns| and |align_imports| are lists of (newline-stripped) lines containing
+the #align and #align_import statements (in valid mathlib syntax) to be processed.
 
 Return a tuple (old_files, old_declarations) consisting of
 - a list of all old files (i.e., mentioned in an align_import statement)
 - a dictionary of all align-ed declarations of the form {old: new}.'''
-# Currently, this reads from local files, which have been pre-generated.
-def parse_old_files_declarations():
+def parse_aligns_aligns_files(all_aligns, align_imports):
     # Read in all #align statements and parse the names of the old and new declaration.
     aligns = dict()
-    for line in open('all_aligns.txt', 'r', encoding='utf-8'):
-        line = line.strip()
+    for line in all_aligns:
         # Ignore a Lean comment: this could contain e.g. the mathlib revision
         # this data was generated from.
         if line.startswith('--'):
@@ -444,7 +444,7 @@ def parse_old_files_declarations():
     # Just the names of the new declarations.
     new_decl_names = [s.split('.')[-1] for s in aligns.values()]
     old_files = []
-    for line in open('align_imports.txt', 'r', encoding='utf-8'):
+    for line in align_imports:
         # Ignore Lean comments, as above.
         if line.startswith('--'):
             continue
@@ -678,7 +678,9 @@ if not argv:
         line = line[len(f'import {projectname}.'):].strip()
         if line.startswith(dir) and not line.startswith(exclude):
             files.append(line)
-    old_files, old_declarations = parse_old_files_declarations()
+    align_lines = [line.strip() for line in open('all_aligns.txt', 'r', encoding='utf-8')]
+    align_imports = [line.strip() for line in open('align_imports.txt', 'r', encoding='utf-8')]
+    old_files, old_declarations = parse_aligns_aligns_files(align_lines, align_imports)
     for filename in files:
         path = f"{projectname}/{filename.replace('.', '/')}.lean"
         lint(Path(path), old_files, old_declarations, fix=fix)
