@@ -243,7 +243,7 @@ end
 
 section
 
-variable (L L' : C ⥤ H) (iso₁ : L ≅ L') (F F' : C ⥤ D) (e : H ≌ H') (iso₂ : F ≅ F')
+variable (L : C ⥤ H) (F : C ⥤ D) (e : H ≌ H')
 
 /-- The equivalence of categories `RightExtension (L ⋙ e.functor) F ≌ RightExtension L F`
 when `e` is an equivalence. -/
@@ -258,19 +258,24 @@ lemma hasRightExtension_iff_postcomp₁ :
     HasRightKanExtension L F ↔ HasRightKanExtension (L ⋙ e.functor) F :=
   (rightExtensionEquivalenceOfPostcomp₁ L F e).symm.hasTerminal_iff
 
-/-- The equivalence of categories `LeftExtension (L ⋙ e.functor) F ≌ LeftExtension L F`
-when `e` is an equivalence. -/
-noncomputable def leftExtensionEquivalenceOfPostcomp₁ :
-    LeftExtension (L ⋙ e.functor) F ≌ LeftExtension L F := by
-  have := StructuredArrow.isEquivalencePre F ((whiskeringLeft H H' D).obj e.functor)
-    ((whiskeringLeft C H D).obj L)
-  exact Functor.asEquivalence (StructuredArrow.pre F ((whiskeringLeft H H' D).obj e.functor)
-    ((whiskeringLeft C H D).obj L))
+--/-- The equivalence of categories `LeftExtension (L ⋙ e.functor) F ≌ LeftExtension L F`
+--when `e` is an equivalence. -/
+--noncomputable def leftExtensionEquivalenceOfPostcomp₁ :
+--    LeftExtension (L ⋙ e.functor) F ≌ LeftExtension L F := by
+--  have := StructuredArrow.isEquivalencePre F ((whiskeringLeft H H' D).obj e.functor)
+--    ((whiskeringLeft C H D).obj L)
+--  exact Functor.asEquivalence (StructuredArrow.pre F ((whiskeringLeft H H' D).obj e.functor)
+--    ((whiskeringLeft C H D).obj L))
+--
+--lemma hasLeftExtension_iff_postcomp₁ :
+--    HasLeftKanExtension L F ↔ HasLeftKanExtension (L ⋙ e.functor) F :=
+--  (leftExtensionEquivalenceOfPostcomp₁ L F e).symm.hasInitial_iff
 
-lemma hasLeftExtension_iff_postcomp₁ :
-    HasLeftKanExtension L F ↔ HasLeftKanExtension (L ⋙ e.functor) F :=
-  (leftExtensionEquivalenceOfPostcomp₁ L F e).symm.hasInitial_iff
+end
 
+section
+
+variable (L L' : C ⥤ H) (iso₁ : L ≅ L') (F F' : C ⥤ D) (iso₂ : F ≅ F')
 variable {L L'}
 
 /-- The equivalence `RightExtension L F ≌ RightExtension L' F` induced by
@@ -316,27 +321,32 @@ variable {L : C ⥤ H} {L' : C ⥤ H'}
   (F : C ⥤ D) (F' : H' ⥤ D) (α : F ⟶ L' ⋙ F')
 
 @[simps!]
-def LeftExtension.precomp₁ : LeftExtension L' F ⥤ LeftExtension L F :=
+def LeftExtension.postcomp₁ : LeftExtension L' F ⥤ LeftExtension L F :=
   StructuredArrow.map₂ (F := (whiskeringLeft H H' D).obj G) (G := 𝟭 _) (𝟙 _)
     ((whiskeringLeft C H' D).map e.inv)
 
-noncomputable instance : IsEquivalence (LeftExtension.precomp₁ G e F) := by
+noncomputable instance : IsEquivalence (LeftExtension.postcomp₁ G e F) := by
   have : EssSurj ((whiskeringLeft H H' D).obj G) := Equivalence.essSurj_of_equivalence _
   apply StructuredArrow.isEquivalenceMap₂
 
-lemma LeftExtension.isUniversalPrecomp₁Equiv (ex : LeftExtension L' F) :
-    ex.IsUniversal ≃ ((LeftExtension.precomp₁ G e F).obj ex).IsUniversal := by
-  apply Limits.IsInitial.isInitialIffObj (LeftExtension.precomp₁ G e F)
+variable {G} in
+lemma hasLeftExtension_iff_postcomp₁ :
+    HasLeftKanExtension L' F ↔ HasLeftKanExtension L F :=
+  (LeftExtension.postcomp₁ G e F).asEquivalence.hasInitial_iff
+
+lemma LeftExtension.isUniversalPostcomp₁Equiv (ex : LeftExtension L' F) :
+    ex.IsUniversal ≃ ((LeftExtension.postcomp₁ G e F).obj ex).IsUniversal := by
+  apply Limits.IsInitial.isInitialIffObj (LeftExtension.postcomp₁ G e F)
 
 variable {F F'}
 
-lemma isLeftKanExtension_iff_precomp₁ :
+lemma isLeftKanExtension_iff_postcomp₁ :
     F'.IsLeftKanExtension α ↔
       (G ⋙ F').IsLeftKanExtension (α ≫ whiskerRight e.inv _ ≫ (Functor.associator _ _ _).hom) := by
   let ex := LeftExtension.mk _ α
   let ex' := LeftExtension.mk _ (α ≫ whiskerRight e.inv _ ≫ (Functor.associator _ _ _).hom)
   have : ex.IsUniversal ≃ ex'.IsUniversal :=
-    (LeftExtension.isUniversalPrecomp₁Equiv G e F ex).trans
+    (LeftExtension.isUniversalPostcomp₁Equiv G e F ex).trans
     (IsInitial.equivOfIso (StructuredArrow.isoMk (Iso.refl _)))
   constructor
   · intro

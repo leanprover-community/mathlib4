@@ -133,8 +133,7 @@ lemma hasRightDerivedFunctor_iff :
   have : L.IsLocalization W := inferInstance
   have : HasRightDerivedFunctor F W ↔ HasLeftKanExtension W.Q F :=
     ⟨fun h => h.hasLeftKanExtension', fun h => ⟨h⟩⟩
-  rw [this, hasLeftExtension_iff_postcomp₁ W.Q F (Localization.uniq W.Q L W),
-    hasLeftExtension_iff_of_iso₁ (Localization.compUniqFunctor W.Q L W) F]
+  rw [this, hasLeftExtension_iff_postcomp₁ (Localization.compUniqFunctor W.Q L W) F]
 
 variable {F}
 
@@ -247,7 +246,7 @@ lemma isRightDerivedFunctor_iff_of_isLocalization
     RF.IsRightDerivedFunctor α W ↔ RF'.IsRightDerivedFunctor α' W := by
   have := Functor.IsEquivalence.of_localization_comparison L' L W G e
   rw [isRightDerivedFunctor_iff_isLeftKanExtension _ α W,
-    isLeftKanExtension_iff_precomp₁ G e α,
+    isLeftKanExtension_iff_postcomp₁ G e α,
     ← isRightDerivedFunctor_iff_isLeftKanExtension _ _ W]
   exact isRightDerivedFunctor_of_iso₂ W _ _ (Iso.refl _) e' (by simp [hα'])
 
