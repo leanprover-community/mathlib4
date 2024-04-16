@@ -247,7 +247,7 @@ attribute [local instance] starRingOfComm
 
 /-- `Matrix.specialOrthogonalGroup n` is the group of orthogonal `n` by `n` where the determinant
 is one. (This definition is only correct if 2 is invertible.)-/
-abbrev specialOrthogonalGroup := (MonoidHom.restrict detMonoidHom (orthogonalGroup n β)).ker
+abbrev specialOrthogonalGroup := specialUnitaryGroup n β
 
 theorem mem_specialOrthogonalGroup_iff  (h : A ∈ orthogonalGroup n β):
     ⟨A,h⟩ ∈ specialOrthogonalGroup n β ↔ A.det = 1 := by rfl
