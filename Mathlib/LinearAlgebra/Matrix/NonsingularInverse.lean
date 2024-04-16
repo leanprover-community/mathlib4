@@ -416,7 +416,7 @@ theorem vecMul_injective_iff_isUnit {A : Matrix m m K} :
   change Function.Injective A.vecMulLinear
   rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
   intro c hc
-  replace h := h.invertible
+  let h := h.invertible
   simpa using congr_arg A⁻¹.vecMulLinear hc
 
 theorem mulVec_injective_iff_isUnit {A : Matrix m m K} :

@@ -202,6 +202,7 @@ namespace FiniteField
 
 variable {K : Type*} [Field K] [Fintype K] {K' : Type*} [Field K'] [Fintype K']
 
+set_option linter.unusedVariables false in  -- `hK'Gal` gets flagged as unused
 /-- Uniqueness of finite fields:
   Any two finite fields of the same cardinality are (possibly non canonically) isomorphic-/
 def algEquivOfCardEq (p : ℕ) [h_prime : Fact p.Prime] [Algebra (ZMod p) K] [Algebra (ZMod p) K']
@@ -211,8 +212,8 @@ def algEquivOfCardEq (p : ℕ) [h_prime : Fact p.Prime] [Algebra (ZMod p) K] [Al
   choose n a hK using FiniteField.card K p
   choose n' a' hK' using FiniteField.card K' p
   rw [hK, hK'] at hKK'
-  have hGalK := GaloisField.algEquivGaloisField p n hK
-  have hK'Gal := (GaloisField.algEquivGaloisField p n' hK').symm
+  let hGalK := GaloisField.algEquivGaloisField p n hK
+  let hK'Gal := (GaloisField.algEquivGaloisField p n' hK').symm
   rw [Nat.pow_right_injective h_prime.out.one_lt hKK'] at *
   exact AlgEquiv.trans hGalK hK'Gal
 #align finite_field.alg_equiv_of_card_eq FiniteField.algEquivOfCardEq

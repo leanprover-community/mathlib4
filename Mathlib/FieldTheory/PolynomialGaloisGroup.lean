@@ -287,7 +287,7 @@ def restrictProd : (p * q).Gal →* p.Gal × q.Gal :=
 /-- `Polynomial.Gal.restrictProd` is actually a subgroup embedding. -/
 theorem restrictProd_injective : Function.Injective (restrictProd p q) := by
   by_cases hpq : p * q = 0
-  · have : Unique (p * q).Gal := by rw [hpq]; infer_instance
+  · let _ : Unique (p * q).Gal := by rw [hpq]; infer_instance
     exact fun f g _ => Eq.trans (Unique.eq_default f) (Unique.eq_default g).symm
   intro f g hfg
   classical

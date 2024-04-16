@@ -479,7 +479,7 @@ theorem essSurj : compactumToCompHaus.EssSurj :=
 
 /-- The functor `compactumToCompHaus` is an equivalence of categories. -/
 noncomputable instance isEquivalence : compactumToCompHaus.IsEquivalence := by
-  have := compactumToCompHaus.full
+  let _ := compactumToCompHaus.full
   have := compactumToCompHaus.faithful
   have := compactumToCompHaus.essSurj
   apply Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
