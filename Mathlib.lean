@@ -1616,8 +1616,6 @@ import Mathlib.Combinatorics.Enumerative.Catalan
 import Mathlib.Combinatorics.Enumerative.Composition
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.Enumerative.Partition
-import Mathlib.Combinatorics.Ramsey.HalesJewett
-import Mathlib.Combinatorics.Ramsey.Hypergraph
 import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Combinatorics.Hall.Finite
 import Mathlib.Combinatorics.Hindman
