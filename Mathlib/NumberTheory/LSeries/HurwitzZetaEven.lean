@@ -223,8 +223,8 @@ lemma hasSum_nat_cosKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
 
 /-- The function `evenKernel a - L` has exponential decay at `+∞`, where `L = 1` if
 `a = 0` and `L = 0` otherwise. -/
-lemma isBigO_atTop_evenKernel_sub (a : UnitAddCircle) : ∃ r : ℝ, 0 < r ∧
-    (evenKernel a · - (if a = 0 then 1 else 0)) =O[atTop] (rexp <| -r * ·) := by
+lemma isBigO_atTop_evenKernel_sub (a : UnitAddCircle) : ∃ p : ℝ, 0 < p ∧
+    (evenKernel a · - (if a = 0 then 1 else 0)) =O[atTop] (rexp <| -p * ·) := by
   obtain ⟨b, _, rfl⟩ := a.eq_coe_Ico
   obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_int_zero_sub b
   refine ⟨p, hp, (EventuallyEq.isBigO ?_).trans hp'⟩
@@ -237,17 +237,15 @@ lemma isBigO_atTop_cosKernel_sub (a : UnitAddCircle) :
     ∃ p, 0 < p ∧ IsBigO atTop (cosKernel a · - 1) (fun x ↦ Real.exp (-p * x)) := by
   induction' a using QuotientAddGroup.induction_on with a
   obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_nat_zero_sub zero_le_one
-  refine ⟨p, hp, .trans ?_ (hp'.const_mul_left 2)⟩
+  refine ⟨p, hp, (Eventually.isBigO ?_).trans (hp'.const_mul_left 2)⟩
   simp only [eq_false_intro one_ne_zero, if_false, sub_zero]
-  apply Eventually.isBigO
   filter_upwards [eventually_gt_atTop 0] with t ht
   rw [← (hasSum_nat_cosKernel₀ a ht).tsum_eq, HurwitzKernelBounds.F_nat]
-  apply tsum_of_norm_bounded (g := fun n ↦ 2 * HurwitzKernelBounds.f_nat 0 1 t n)
-  · exact (HurwitzKernelBounds.summable_f_nat 0 1 ht).hasSum.mul_left _
-  · intro n
-    rw [norm_mul, norm_mul, norm_two, mul_assoc, mul_le_mul_iff_of_pos_left two_pos,
-      norm_of_nonneg (exp_pos _).le, HurwitzKernelBounds.f_nat, pow_zero, one_mul, Real.norm_eq_abs]
-    exact mul_le_of_le_one_left (exp_pos _).le (abs_cos_le_one _)
+  apply tsum_of_norm_bounded ((HurwitzKernelBounds.summable_f_nat 0 1 ht).hasSum.mul_left 2)
+  intro n
+  rw [norm_mul, norm_mul, norm_two, mul_assoc, mul_le_mul_iff_of_pos_left two_pos,
+    norm_of_nonneg (exp_pos _).le, HurwitzKernelBounds.f_nat, pow_zero, one_mul, Real.norm_eq_abs]
+  exact mul_le_of_le_one_left (exp_pos _).le (abs_cos_le_one _)
 
 end asymp
 
@@ -264,7 +262,6 @@ def hurwitzEvenFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
     measurableSet_Ioi
   hg_int := (continuous_ofReal.comp_continuousOn (continuousOn_cosKernel a)).locallyIntegrableOn
     measurableSet_Ioi
-  k := 1 / 2
   hk := one_half_pos
   hε := one_ne_zero
   f₀ := if a = 0 then 1 else 0
