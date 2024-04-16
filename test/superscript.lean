@@ -18,8 +18,6 @@ info: aⁱ
 info: a³⁷
 ---
 info: a⁽¹ ⁺ ¹⁾
----
-info: aα
 -/
 #guard_msgs in
 run_cmd do
@@ -30,6 +28,14 @@ run_cmd do
   Lean.logInfo <| ← `(term| $a$lit:superscript)
   let one_plus_one ← `(term| (1 + 1))
   Lean.logInfo <| ← `(term| $a$one_plus_one:superscript)
+
+-- TODO: fix this
+/--
+info: aα
+-/
+#guard_msgs in
+run_cmd do
+  let a := Lean.mkIdent `a
   let α := Lean.mkIdent `α
   Lean.logInfo <| ← `(term| $a$α:superscript)
 
@@ -47,8 +53,6 @@ info: (a)ᵢ
 info: (a)₃₇
 ---
 info: (a)₍₁ ₊ ₁₎
----
-info: (a)α
 -/
 #guard_msgs in
 run_cmd do
@@ -59,6 +63,12 @@ run_cmd do
   Lean.logInfo <| ← `(term| ($a)$lit:subscript)
   let one_plus_one ← `(term| (1 + 1))
   Lean.logInfo <| ← `(term| ($a)$one_plus_one:subscript)
+
+-- TODO: fix this
+/-- info: (a)α -/
+#guard_msgs in
+run_cmd do
+  let a := Lean.mkIdent `a
   let α := Lean.mkIdent `α
   Lean.logInfo <| ← `(term| ($a)$α:subscript)
 

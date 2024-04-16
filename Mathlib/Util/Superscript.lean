@@ -193,32 +193,39 @@ def scriptParser (m : Mapping) (antiquotName errorMsg : String) (p : Parser)
 def scriptParser.parenthesizer (k : SyntaxNodeKind) (p : Parenthesizer) : Parenthesizer :=
   Parenthesizer.node.parenthesizer k p
 
+/-- Map over the strings in a `Format`. -/
+def _root_.Std.Format.mapStringsM {m} [Monad m] (f : Format) (f' : String → m String) : m Format :=
+  match f with
+  | .group f b => (.group · b) <$> Std.Format.mapStringsM f f'
+  | .tag t g => .tag t <$> Std.Format.mapStringsM g f'
+  | .append f g => .append <$> Std.Format.mapStringsM f f' <*> Std.Format.mapStringsM g f'
+  | .nest n f => .nest n <$> Std.Format.mapStringsM f f'
+  | .text s => .text <$> f' s
+  | .align _ | .line | .nil => pure f
+
 /- Apply the mapping to the string components of a `Format`.
 
 Returns the string that could not be converted on failure. -/
 def scriptParser.mapFormat (m : Mapping) (f : Format) : Except String Format :=
-  match f with
-  | .group f b => (.group · b) <$> scriptParser.mapFormat m f
-  | .tag t g => .tag t <$> scriptParser.mapFormat m g
-  | .append f g => .append <$> scriptParser.mapFormat m f <*> scriptParser.mapFormat m g
-  | .nest n f => .nest n <$> scriptParser.mapFormat m f
-  | .text s => do
+  f.mapStringsM fun s => do
     let .some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').find? | .error s
-    .ok <| Std.Format.text ⟨s⟩
-  | .align _ | .line | .nil => .ok f
+    .ok ⟨s⟩
 
 /-- Formatter for the script parser. -/
 def scriptParser.formatter (m : Mapping) (k : SyntaxNodeKind) (p : Formatter) : Formatter := do
   let stack ← modifyGet fun s => (s.stack, {s with stack := #[]})
   Formatter.node.formatter k p
-  let s ← get
-  match s.stack.mapM <| scriptParser.mapFormat m with
+  let st ← get
+  let transformed : Except String _ := st.stack.mapM (·.mapStringsM fun s => do
+    let .some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').find? | .error s
+    .ok ⟨s⟩)
+  match transformed with
   | .error err =>
     -- TODO: this doesn't seem to go anywhere
     Lean.logErrorAt (← get).stxTrav.cur s!"Not a superscript: '{err}'"
-    set { s with stack := stack ++ s.stack }
+    set { st with stack := stack ++ st.stack }
   | .ok newStack =>
-    set { s with stack := stack ++ newStack }
+    set { st with stack := stack ++ newStack }
 
 end Superscript
 
