@@ -144,7 +144,7 @@ variable [Nonempty V]
   neither is adjacent to, and then using transitivity. -/
 theorem isRegularOf_not_existsPolitician (hG' : ¬ExistsPolitician G) :
     ∃ d : ℕ, G.IsRegularOfDegree d := by
-  have v := Classical.arbitrary V
+  let v := Classical.arbitrary V
   use G.degree v
   intro x
   by_cases hvx : G.Adj v x; swap; · exact (degree_eq_of_not_adj hG hvx).symm
@@ -177,7 +177,7 @@ theorem isRegularOf_not_existsPolitician (hG' : ¬ExistsPolitician G) :
 
   This essentially means that the graph has `d ^ 2 - d + 1` vertices. -/
 theorem card_of_regular (hd : G.IsRegularOfDegree d) : d + (Fintype.card V - 1) = d * d := by
-  have v := Classical.arbitrary V
+  let v := Classical.arbitrary V
   trans ((G.adjMatrix ℕ ^ 2) *ᵥ (fun _ => 1)) v
   · rw [adjMatrix_sq_of_regular hG hd, mulVec, dotProduct, ← insert_erase (mem_univ v)]
     simp only [sum_insert, mul_one, if_true, Nat.cast_id, eq_self_iff_true, mem_erase, not_true,
@@ -306,7 +306,7 @@ theorem neighborFinset_eq_of_degree_eq_two (hd : G.IsRegularOfDegree 2) (v : V) 
 #align theorems_100.friendship.neighbor_finset_eq_of_degree_eq_two Theorems100.Friendship.neighborFinset_eq_of_degree_eq_two
 
 theorem existsPolitician_of_degree_eq_two (hd : G.IsRegularOfDegree 2) : ExistsPolitician G := by
-  have v := Classical.arbitrary V
+  let v := Classical.arbitrary V
   use v
   intro w hvw
   rw [← mem_neighborFinset, neighborFinset_eq_of_degree_eq_two hG hd v, Finset.mem_erase]
