@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: María Inés de Frutos-Fernández
+Authors: María Inés de Frutos-Fernández, Eric Wieser
 -/
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.GroupWithZero.Basic
@@ -12,7 +12,7 @@ import Mathlib.Algebra.GroupWithZero.Hom
 
 ## Main definitions
 
-* `WithOne.coeMonoidHom`: the `MonoidWithZero` homomorphism `WithZero G →* WithZero H` induced by
+* `WithZero.map'`: the `MonoidWithZero` homomorphism `WithZero G →* WithZero H` induced by
   a monoid homomorphism `f : G →* H`.
 -/
 
@@ -33,9 +33,21 @@ def coeMonoidHom [MulOneClass G] : G →* WithZero G where
   map_one'     := rfl
   map_mul' _ _ := rfl
 
+section lift
+variable [MulOneClass G] [MulZeroOneClass H]
+
+-- See note [partially-applied ext lemmas]
+@[ext high]
+theorem monoidWithZeroHom_ext ⦃f g : WithZero G →*₀ H⦄
+    (h : f.toMonoidHom.comp coeMonoidHom = g.toMonoidHom.comp coeMonoidHom) :
+    f = g :=
+  DFunLike.ext _ _ fun
+    | 0 => (map_zero f).trans (map_zero g).symm
+    | (g : G) => DFunLike.congr_fun h g
+
 /-- The (multiplicative) universal property of `WithZero` -/
-noncomputable nonrec def lift' [MulOneClass G] [MonoidWithZero H] :
-    (G →* H) ≃ (WithZero G →*₀ H) where
+@[simps! symm_apply_apply]
+noncomputable nonrec def lift' : (G →* H) ≃ (WithZero G →*₀ H) where
   toFun f :=
     { toFun := fun
         | 0 => 0
@@ -48,9 +60,11 @@ noncomputable nonrec def lift' [MulOneClass G] [MonoidWithZero H] :
         | (_ : G), (_ : G) => map_mul f _ _ }
   invFun F := F.toMonoidHom.comp coeMonoidHom
   left_inv _ := rfl
-  right_inv f := DFunLike.ext _ _ fun
-    | 0 => (map_zero f).symm
-    | (_ : G) => rfl
+  right_inv _ := monoidWithZeroHom_ext rfl
+
+@[simp] lemma lift'_coe (f : G →* H) (x : G) : lift' f (x : WithZero G) = f x := rfl
+
+end lift
 
 variable [MulOneClass G] [Monoid H]
 
@@ -60,6 +74,7 @@ noncomputable def map' (f : G →* H) : WithZero G →*₀ WithZero H := lift' (
 
 lemma map'_zero (f : G →* H) : map' f 0 = 0 := rfl
 
+@[simp]
 lemma map'_coe (f : G →* H) (x : G) : map' f (x : WithZero G) = f x := rfl
 
 end WithZero
