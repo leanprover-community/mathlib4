@@ -41,7 +41,7 @@ jobs:
         run: |
           DATE=$(date +%Y-%m-%d)
           BRANCH="shake-$DATE"
-          git checkout -b "$BRANCH"
+          git checkout -b "$BRANCH"  || exit 1
           git add .
           git commit -m "Automated shake fixes for $DATE"
           git push origin "$BRANCH"
