@@ -54,21 +54,23 @@ end Mathlib.Linter
 
 namespace Mathlib.Linter.haveLet
 
-/-- given a `LocalContext`, `MetavarContext` and an `Expr`ession `e`, `isProp_toFormat`
-creates a `MetaM` context, and return a pair consisting of
+/-- given a `LocalContext`, `MetavarContext` and an `Array` of `Expr`essions `es`,
+`areProp_toFormat` creates a `MetaM` context, and returns an array of pairs consisting of
 * a `Bool`ean, answering the question of whether the Type of `e` is a `Prop` or not, and
-* the pretty-printed `Format` of `e`.
+* the pretty-printed `Format` of `e`
+for each `Expr`ession `e` in `es`.
 
-Concretely, `isProp_toFormat` runs `inferType` in `CommandElabM`.
+Concretely, `areProp_toFormat` runs `inferType` in `CommandElabM`.
 This is the kind of monadic lift that `nonPropHaves` uses to decide whether the Type of a `have`
 is in `Prop` or not.
 
 The output `Format` is just so that the linter displays a better message. -/
-def isProp_toFormat (lc : LocalContext) (mctx : MetavarContext) (e : Expr) :
-    CommandElabM (Bool × Format) := do
+def areProp_toFormat (lc : LocalContext) (mctx : MetavarContext) (es : Array Expr) :
+    CommandElabM (Array (Bool × Format)) := do
   let res ← liftCoreM do MetaM.run (ctx := { lctx := lc }) (s := { mctx := mctx }) <| do
-    let typ ← inferType (← instantiateMVars e)
-    return (typ.isProp, ← ppExpr e)
+    es.mapM fun e => do
+      let typ ← inferType (← instantiateMVars e)
+      return (typ.isProp, ← ppExpr e)
   return res.1
 
 /-- returns
@@ -85,6 +87,12 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format × Bool))
       if exclusions.contains stx.getKind then return #[] else
       if let some haveLet? := have_or_let? stx then
         let mctx := i.mctxAfter
+        -- we extract the `FVarId`s present before applying the tactic to see which new
+        -- hypothesis `have`/`let` introduce
+        let mvdeclsOld := (i.goalsBefore.map (mctx.decls.find? ·)).reduceOption
+        let lctxOld := mvdeclsOld.map (·.lctx)
+        let declsOld := (lctxOld.map (·.decls.toList.reduceOption)).join
+        let fvAssOld := declsOld.map (·.fvarId)
         let mvdecls := (i.goalsAfter.map (mctx.decls.find? ·)).reduceOption
         let _ : Ord MetavarDecl := { compare := (compare ·.index ·.index) }
         -- we extract the `MetavarDecl` with largest index after a `have`, since this one
@@ -93,13 +101,19 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format × Bool))
         -- the relevant `LocalContext`
         let lc := (largestIdx.getD 0 default).lctx
         -- and the last declaration introduced: the one that `have` created
-        let ld := (lc.lastDecl.getD default).type
-        -- now, we get the `MetaM` state up and running to find the type of `ld`
-        return match haveLet?, ← isProp_toFormat lc mctx ld with
-          | true, (true, _) => nargs
-          | true, (false, fmt) => nargs.push (stx, fmt, true)
-          | false, (false, _) => nargs
-          | false, (true, fmt) => nargs.push (stx, fmt, false)
+        let lds := lc.decls.toList.reduceOption.filter (! fvAssOld.contains ·.fvarId)
+        let fmts ← areProp_toFormat lc mctx (lds.map (·.type)).toArray
+        let (propFmts, typeFmts) := (fmts.zip (lds.map (·.userName)).toArray).partition (·.1.1)
+        let propFmts := propFmts.map fun ((_, fmt), na) => (na, fmt)
+        let typeFmts := typeFmts.map fun ((_, fmt), na) => (na, fmt)
+        return nargs ++ if haveLet? then
+          -- everything that is a Type triggers a warning on `have`
+          (typeFmts.map fun (na, fmt) => (stx, f!"{na} : {fmt}", true))
+        else
+          -- only if everything is a Prop, we trigger a warning on `let`
+          if typeFmts.size == 0 then
+            (propFmts.map fun (na, fmt) => (stx, f!"{na} : {fmt}", false))
+          else #[]
       else return nargs
     else return nargs
   | .context _ t => nonPropHaves t
