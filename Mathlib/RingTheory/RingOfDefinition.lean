@@ -36,13 +36,20 @@ lemma MvPolynomial.coefficients_mem {p : MvPolynomial ι R} (m : ι →₀ ℕ) 
   Set.mem_image_of_mem p.coeff h
 
 def MvPolynomial.Set.coefficients (S : Set (MvPolynomial ι R)) : Set R :=
-  Set.iUnion (ι := S) (fun (p : S) ↦ p.val.coeff '' p.val.support)
+  Set.iUnion (ι := S) (fun (p : S) ↦ MvPolynomial.coefficients p.val)
 
-instance (p : MvPolynomial ι R) : Set.Finite (MvPolynomial.coefficients p) := by
+theorem MvPolynomial.coefficients_finite (p : MvPolynomial ι R) : Set.Finite (MvPolynomial.coefficients p) := by
   apply Set.Finite.image
   change Set.Finite (Finsupp.support p)
   rw [← Finsupp.fun_support_eq]
   exact Finsupp.finite_support p
+
+theorem MvPolynomial.Set.coefficients_finite_of_finite (S : Set (MvPolynomial ι R)) (hf : Set.Finite S) :
+    Set.Finite (MvPolynomial.Set.coefficients S) := by
+  letI : Finite S := hf
+  apply Set.finite_iUnion
+  intro p
+  exact MvPolynomial.coefficients_finite p.val
 
 lemma MvPolynomial.Set.coefficients_in (S : Set (MvPolynomial ι R))
     (p : MvPolynomial ι R) (hS : p ∈ S) :
@@ -53,7 +60,22 @@ lemma MvPolynomial.Set.coefficients_in (S : Set (MvPolynomial ι R))
   use ⟨p, hS⟩
   use m
 
-variable {S : Type w} [CommRing S] [Algebra R S]
+variable {S : Type w} [CommRing S]
+
+lemma Ideal.span_preimage_le_comap (f : R →+* S) (T : Set S) :
+    Ideal.span (f ⁻¹' T) ≤ Ideal.comap f (Ideal.span T) := by
+  intro p hp
+  refine Submodule.span_induction hp ?_ ?_ ?_ ?_
+  · intro s hs
+    apply Ideal.subset_span
+    exact hs
+  · simp
+  · intro x y hx hy
+    exact Ideal.add_mem _ hx hy
+  · intro a x hx
+    exact Ideal.mul_mem_left _ a hx
+
+variable [Algebra R S]
   {T : Type t} [CommRing T] [Algebra R T]
   {T' : Type t} [CommRing T'] [Algebra R T']
 
@@ -71,25 +93,11 @@ variable {S : Type w} [CommRing S] [Algebra R S]
 section
 
 variable {T : Type t} [CommRing T] [Algebra S T] {T' : Type v} [CommRing T'] [Algebra R T']
-variable (I : Ideal (MvPolynomial ι R))
-
-lemma foo_ext0 (f g : S ⊗[R] T' →ₐ[S] T)
-    (h : ∀ (t' : T'), f (1 ⊗ₜ t') = g (1 ⊗ₜ t')) : f = g := by
-  ext x
-  refine TensorProduct.induction_on x ?_ ?_ ?_
-  · simp
-  · intro s p
-    convert_to f ((s • 1) ⊗ₜ[R] p) = g ((s • 1) ⊗ₜ[R] p)
-    · simp
-    · simp
-    · simp only [← TensorProduct.smul_tmul', AlgHom.map_smul]
-      rw [h]
-  · intro x y hx hy
-    simp [hx, hy]
+variable {I : Ideal (MvPolynomial ι R)}
 
 variable [Algebra R T] [IsScalarTower R S T]
 
-lemma foo_ext {f g : S ⊗[R] (MvPolynomial ι R ⧸ I) →ₐ[S] T}
+lemma baseChange_MvPolynomialQuot_ext {f g : S ⊗[R] (MvPolynomial ι R ⧸ I) →ₐ[S] T}
     (h : ∀ (i : ι), f (1 ⊗ₜ (Ideal.Quotient.mk I <| MvPolynomial.X i))
       = g (1 ⊗ₜ (Ideal.Quotient.mk I <| MvPolynomial.X i))) : f = g := by
   apply TensorProduct.ext (by ext)
@@ -100,14 +108,13 @@ lemma foo_ext {f g : S ⊗[R] (MvPolynomial ι R ⧸ I) →ₐ[S] T}
 
 end
 
+namespace RingOfDefinition
+
 variable (I : Ideal (MvPolynomial ι S))
-variable (J : Ideal (MvPolynomial ι R)) (hJ : J ≤ Ideal.comap (MvPolynomial.aeval MvPolynomial.X) I)
+variable (J : Ideal (MvPolynomial ι R)) (hJ : J ≤ Ideal.comap (MvPolynomial.map <| algebraMap R S) I)
 
-noncomputable abbrev bar : Ideal (MvPolynomial ι R) := Ideal.comap (MvPolynomial.aeval MvPolynomial.X) I
-
-local notation "I₀" => bar I
-
-noncomputable def foo : S ⊗[R] (MvPolynomial ι R ⧸ J) →ₐ[S] MvPolynomial ι S ⧸ I := by
+noncomputable def baseChangeHom (hJ : J ≤ Ideal.comap (MvPolynomial.map <| algebraMap R S) I) :
+    S ⊗[R] (MvPolynomial ι R ⧸ J) →ₐ[S] MvPolynomial ι S ⧸ I := by
   fapply Algebra.TensorProduct.lift
   · exact Algebra.ofId _ _
   · let f : MvPolynomial ι R →ₐ[R] MvPolynomial ι S :=
@@ -126,12 +133,12 @@ noncomputable def foo : S ⊗[R] (MvPolynomial ι R ⧸ J) →ₐ[S] MvPolynomia
     apply mul_comm
 
 @[simp]
-lemma foo_mk (i : ι) :
-    (foo (R := R) I J hJ) (1 ⊗ₜ[R] (Ideal.Quotient.mk J) (MvPolynomial.X i))
+lemma baseChangeHom_mk_X (hJ : J ≤ Ideal.comap (MvPolynomial.map <| algebraMap R S) I) (i : ι) :
+    (baseChangeHom I J hJ) (1 ⊗ₜ[R] (Ideal.Quotient.mk J) (MvPolynomial.X i))
       = Ideal.Quotient.mk I (MvPolynomial.X i) := by
-  simp [foo]
+  simp [baseChangeHom]
 
-lemma fooz_aux2 (t : MvPolynomial ι S)
+lemma exists_preimage_of_coefficients (t : MvPolynomial ι S)
     (hc : MvPolynomial.coefficients t ⊆ Set.range (algebraMap R S)) :
     ∃ (p : MvPolynomial ι R), MvPolynomial.map (algebraMap R S) p = t := by
   have (m : ι →₀ ℕ) : ∃ (r : R), algebraMap R S r = t.coeff m ∧ (t.coeff m = 0 → r = 0) := by
@@ -158,14 +165,15 @@ lemma fooz_aux2 (t : MvPolynomial ι S)
 variable (T : Set (MvPolynomial ι S)) (hgen : I = Ideal.span T)
   (hcoeffs : (MvPolynomial.Set.coefficients T) ⊆ (Set.range <| algebraMap R S))
 
-noncomputable def barz : MvPolynomial ι S →ₐ[S] S ⊗[R] (MvPolynomial ι R) := by
+noncomputable def baseChangeInvAux : MvPolynomial ι S →ₐ[S] S ⊗[R] (MvPolynomial ι R) := by
   fapply MvPolynomial.aeval (S₁ := S ⊗[R] (MvPolynomial ι R))
   intro i
   exact 1 ⊗ₜ MvPolynomial.X i
 
-lemma barz_aux (p : MvPolynomial ι R) :
-    barz (MvPolynomial.map (algebraMap R S) p) = 1 ⊗ₜ p := by
-  simp [barz]
+@[simp]
+lemma baseChangeInvAux_map (p : MvPolynomial ι R) :
+    baseChangeInvAux (MvPolynomial.map (algebraMap R S) p) = 1 ⊗ₜ p := by
+  simp [baseChangeInvAux]
   rw [MvPolynomial.aeval_map_algebraMap]
   let f : MvPolynomial ι R →ₐ[R] S ⊗[R] MvPolynomial ι R :=
     MvPolynomial.aeval fun i ↦ (1 : S) ⊗ₜ[R] MvPolynomial.X i
@@ -178,24 +186,34 @@ lemma barz_aux (p : MvPolynomial ι R) :
   intro i
   simp [f, g]
 
-noncomputable def barzQuot : MvPolynomial ι S →ₐ[S] S ⊗[R] (MvPolynomial ι R ⧸ J) :=
+@[simp]
+lemma baseChangeInvAux_X (i : ι) :
+    baseChangeInvAux (MvPolynomial.X i) = (1 : S) ⊗ₜ (MvPolynomial.X (R := R) i) := by
+  simp [baseChangeInvAux]
+
+noncomputable def baseChangeInvQuotAux : MvPolynomial ι S →ₐ[S] S ⊗[R] (MvPolynomial ι R ⧸ J) :=
   letI f : S ⊗[R] (MvPolynomial ι R) →ₐ[S] S ⊗[R] (MvPolynomial ι R ⧸ J) :=
     Algebra.TensorProduct.map (AlgHom.id S S) (Ideal.Quotient.mkₐ R J)
-  AlgHom.comp f barz
+  AlgHom.comp f baseChangeInvAux
 
-lemma barzQuot_aux (p : MvPolynomial ι R) :
-    barzQuot (R := R) J
-      (MvPolynomial.map (algebraMap R S) p) = 1 ⊗ₜ (Ideal.Quotient.mk J p) := by
-  simp [barzQuot, AlgHom.coe_comp, Function.comp_apply, barz_aux p]
+@[simp]
+lemma baseChangeInvQuotAux_map (p : MvPolynomial ι R) :
+    baseChangeInvQuotAux J (MvPolynomial.map (algebraMap R S) p) = 1 ⊗ₜ (Ideal.Quotient.mk J p) := by
+  simp [baseChangeInvQuotAux, AlgHom.coe_comp, Function.comp_apply]
+
+@[simp]
+lemma baseChangeInvQuotAux_X (i : ι) :
+    (baseChangeInvQuotAux J) (MvPolynomial.X i) = (1 : S) ⊗ₜ[R] (Ideal.Quotient.mk J) (MvPolynomial.X i) := by
+  simp [baseChangeInvQuotAux]
 
 variable (hJl : (MvPolynomial.map (algebraMap R S)) ⁻¹' T ⊆ J)
 
-lemma barzQuot_aux2 (t : MvPolynomial ι S) (h : t ∈ T) :
-    barzQuot (R := R) J t = 0 := by
+lemma baseChangeInvQuotAux_vanish_of_generator (t : MvPolynomial ι S) (h : t ∈ T) :
+    baseChangeInvQuotAux (R := R) J t = 0 := by
   have hc : MvPolynomial.coefficients t ⊆ Set.range (algebraMap R S) :=
     Set.Subset.trans (MvPolynomial.Set.coefficients_in T t h) hcoeffs
-  obtain ⟨p, hp⟩ := fooz_aux2 t hc
-  rw [← hp, barzQuot_aux]
+  obtain ⟨p, hp⟩ := exists_preimage_of_coefficients t hc
+  rw [← hp, baseChangeInvQuotAux_map]
   have h1 : (Ideal.Quotient.mk J) p = 0 := by
     rw [← RingHom.mem_ker, Ideal.mk_ker]
     apply hJl
@@ -205,26 +223,26 @@ lemma barzQuot_aux2 (t : MvPolynomial ι S) (h : t ∈ T) :
 
 set_option synthInstance.maxHeartbeats 30000
 
-noncomputable def fooz : MvPolynomial ι S ⧸ I →ₐ[S] S ⊗[R] (MvPolynomial ι R ⧸ J) := by
+noncomputable def baseChangeInv : MvPolynomial ι S ⧸ I →ₐ[S] S ⊗[R] (MvPolynomial ι R ⧸ J) := by
   fapply Ideal.Quotient.liftₐ
-  · exact barzQuot J
+  · exact baseChangeInvQuotAux J
   · intro x hx
     subst hgen
     refine Submodule.span_induction hx ?_ ?_ ?_ ?_
     · intro x hxinT
-      exact barzQuot_aux2 J T hcoeffs hJl x hxinT
+      exact baseChangeInvQuotAux_vanish_of_generator J T hcoeffs hJl x hxinT
     · rw [AlgHom.map_zero]
     · intro x y hx hy
       rw [map_add, hx, hy, add_zero]
     · intro r x hx
-      change (barzQuot (R := R) J) (r * x) = 0
+      change (baseChangeInvQuotAux J) (r * x) = 0
       rw [AlgHom.map_mul, hx, mul_zero]
 
 @[simp]
-lemma fooz_mk' (i : ι) :
-    (fooz I J hJ T hgen hcoeffs hJl) ((Ideal.Quotient.mk I) (MvPolynomial.X i)) =
+lemma baseChangeInv_mk_X (i : ι) :
+    (baseChangeInv I J hJ T hgen hcoeffs hJl) ((Ideal.Quotient.mk I) (MvPolynomial.X i)) =
       1 ⊗ₜ (Ideal.Quotient.mk J (MvPolynomial.X i)) := by
-  simp [fooz, barzQuot, barz]
+  simp [baseChangeInv]
 
 instance : IsScalarTower R S (S ⊗[R] (MvPolynomial ι R ⧸ J)) := by
   apply IsScalarTower.of_algebraMap_eq' (R := R) (S := S) (A := S ⊗[R] (MvPolynomial ι R ⧸ J))
@@ -233,9 +251,9 @@ instance : IsScalarTower R S (S ⊗[R] (MvPolynomial ι R ⧸ J)) := by
 
 noncomputable def baseChangeIso : (MvPolynomial ι S ⧸ I) ≃ₐ[S] S ⊗[R] (MvPolynomial ι R ⧸ J) := by
   fapply AlgEquiv.ofAlgHom
-  · exact fooz I J hJ T hgen hcoeffs hJl
-  · exact foo I J hJ
-  · apply foo_ext
+  · exact baseChangeInv I J hJ T hgen hcoeffs hJl
+  · exact baseChangeHom I J hJ
+  · apply baseChange_MvPolynomialQuot_ext
     intro i
     simp
   · apply AlgHom.cancel_surjective (Ideal.Quotient.mkₐ S I)
@@ -244,7 +262,7 @@ noncomputable def baseChangeIso : (MvPolynomial ι S ⧸ I) ≃ₐ[S] S ⊗[R] (
     intro i
     simp
 
-end
+end RingOfDefinition
 
 variable (I : Ideal (MvPolynomial ι R)) (S : Set (MvPolynomial ι R))
   (hgenS : I = Ideal.span S) (hf : Set.Finite S)
@@ -265,26 +283,12 @@ local notation "I₀" => Ideal.span S₀
 
 local notation "A₀" => MvPolynomial ι R₀ ⧸ I₀
 
---noncomputable local instance : Algebra R₀ A₀ := Ideal.Quotient.algebra R₀
 noncomputable local instance : Module R₀ A₀ := Algebra.toModule
 
-lemma baseChange_aux : I₀ ≤ Ideal.comap (MvPolynomial.aeval MvPolynomial.X) I := by
-  intro p hp
-  refine Submodule.span_induction hp ?_ ?_ ?_ ?_
-  · intro s hs
-    simp [RingOfDefinition.Set] at hs
-    rw [hgenS]
-    apply Ideal.subset_span
-    exact hs
-  · simp
-  · intro x y hx hy
-    exact Ideal.add_mem _ hx hy
-  · intro a x hx
-    exact Ideal.mul_mem_left _ a hx
-
 noncomputable def baseChange : A ≃ₐ[R] R ⊗[R₀] A₀ := by
-  apply baseChangeIso (T := S) (hgen := hgenS)
-  · exact baseChange_aux I S hgenS
+  apply RingOfDefinition.baseChangeIso (T := S) (hgen := hgenS)
+  · rw [hgenS]
+    apply Ideal.span_preimage_le_comap
   · intro r hr
     use ⟨r, Algebra.subset_adjoin hr⟩
     rfl
