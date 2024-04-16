@@ -200,7 +200,7 @@ end UnitaryGroup
 
 section specialUnitaryGroup
 
-variable (n) (α : Type v) [CommRing α] [StarRing α] [Invertible (2 : α)] {A : Matrix n n α}
+variable (n) (α : Type v) [CommRing α] [StarRing α] {A : Matrix n n α}
 
 /--`Matrix.specialUnitaryGroup` is the group of unitary `n` by `n` matrices where the determinant
 is 1-/
