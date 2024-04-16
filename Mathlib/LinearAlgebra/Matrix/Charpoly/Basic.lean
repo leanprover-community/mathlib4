@@ -114,8 +114,8 @@ lemma charpoly_map (M : Matrix n n R) (f : R →+* S) :
     (M.map f).charpoly = M.charpoly.map f := by
   rw [charpoly, charmatrix_map, ← Polynomial.coe_mapRingHom, charpoly, RingHom.map_det]
   rfl
-@[simp]
 
+@[simp]
 lemma charpoly_fromBlocks_zero₁₂ :
     (fromBlocks M₁₁ 0 M₂₁ M₂₂).charpoly = (M₁₁.charpoly * M₂₂.charpoly) := by
   simp only [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ (Polynomial.C_0), neg_zero,
