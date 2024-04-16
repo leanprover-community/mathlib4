@@ -59,7 +59,8 @@ completed Hurwit zeta function). See `evenKernel_def` for the defining formula, 
         simp only [I_sq, mul_neg, mul_one, neg_mul, neg_neg, sub_neg_eq_add, ofReal_exp, ofReal_add,
           ofReal_mul, ofReal_ofNat]
       rw [this, re_ofReal_mul, ← mul_assoc, ← Real.exp_add]
-      ring_nf).lift a
+      congr
+      ring).lift a
 
 lemma evenKernel_def (a x : ℝ) :
     ↑(evenKernel ↑a x) = cexp (-π * a ^ 2 * x) * jacobiTheta₂ (a * I * x) (I * x) := by
@@ -134,14 +135,16 @@ lemma evenKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
   have h1 : I * ↑(1 / x) = -1 / (I * x) := by
     push_cast
     rw [← div_div, mul_one_div, div_I, neg_one_mul, neg_neg]
-  have h2 : (a * I * x / (I * x)) = a := by
-    field_simp [hx.ne']
-    ring -- `rw [mul_assoc]` works, but we don't want to rely on the exact output of `field_simp`
+  have hx' : I * x ≠ 0 := mul_ne_zero I_ne_zero (ofReal_ne_zero.mpr hx.ne')
+  have h2 : a * I * x / (I * x) = a := by
+    rw [div_eq_iff hx']
+    ring
   have h3 : 1 / (-I * (I * x)) ^ (1 / 2 : ℂ) = 1 / ↑(x ^ (1 / 2 : ℝ)) := by
     rw [neg_mul, ← mul_assoc, I_mul_I, neg_one_mul, neg_neg,ofReal_cpow hx.le, ofReal_div,
       ofReal_one, ofReal_ofNat]
   have h4 : -π * I * (a * I * x) ^ 2 / (I * x) = - (-π * a ^ 2 * x) := by
-    rw [mul_pow, mul_pow, I_sq]; field_simp [hx.ne']; ring_nf
+    rw [mul_pow, mul_pow, I_sq, div_eq_iff hx']
+    ring
   rw [h1, h2, h3, h4, ← mul_assoc, mul_comm (cexp _), mul_assoc _ (cexp _) (cexp _),
     ← Complex.exp_add, neg_add_self, Complex.exp_zero, mul_one, ofReal_div, ofReal_one]
 
@@ -156,21 +159,27 @@ section asymp
 lemma hasSum_int_evenKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℤ ↦ rexp (-π * (n + a) ^ 2 * t)) (evenKernel a t) := by
   rw [← hasSum_ofReal, evenKernel_def]
-  convert (hasSum_jacobiTheta₂_term _ (by rwa [I_mul_im, ofReal_re])).mul_left _
-    using 2 with n
-  rw [jacobiTheta₂_term, ← Complex.exp_add]
-  push_cast
-  ring_nf
-  simp only [I_sq, mul_neg, neg_mul, mul_one]
+  have (n : ℤ) : ↑(rexp (-π * (↑n + a) ^ 2 * t)) =
+      cexp (-↑π * ↑a ^ 2 * ↑t) * jacobiTheta₂_term n (↑a * I * ↑t) (I * ↑t) := by
+    rw [jacobiTheta₂_term, ← Complex.exp_add]
+    push_cast
+    congr
+    ring_nf
+    simp only [I_sq, mul_neg, neg_mul, mul_one]
+  simp only [this]
+  exact (hasSum_jacobiTheta₂_term _ (by rwa [I_mul_im, ofReal_re])).mul_left _
 
 lemma hasSum_int_cosKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℤ ↦ cexp (2 * π * I * a * n) * rexp (-π * n ^ 2 * t)) ↑(cosKernel a t) := by
   rw [cosKernel_def a t]
-  convert hasSum_jacobiTheta₂_term a (by rwa [I_mul_im, ofReal_re] : 0 < im (I * t)) using 2 with n
-  rw [jacobiTheta₂_term, ofReal_exp, ← Complex.exp_add]
-  push_cast
-  ring_nf
-  simp only [I_sq, mul_neg, neg_mul, mul_one, sub_eq_add_neg]
+  have (n : ℤ) : cexp (2 * ↑π * I * ↑a * ↑n) * ↑(rexp (-π * ↑n ^ 2 * t)) =
+      jacobiTheta₂_term n (↑a) (I * ↑t) := by
+    rw [jacobiTheta₂_term, ofReal_exp, ← Complex.exp_add]
+    push_cast
+    ring_nf
+    simp only [I_sq, mul_neg, neg_mul, mul_one, sub_eq_add_neg]
+  simp only [this]
+  exact hasSum_jacobiTheta₂_term a (by rwa [I_mul_im, ofReal_re] : 0 < im (I * t))
 
 /-- Modified version of `hasSum_int_evenKernel` omitting the constant term at `∞`. -/
 lemma hasSum_int_evenKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
@@ -180,7 +189,9 @@ lemma hasSum_int_evenKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
   split_ifs with h
   · obtain ⟨k, rfl⟩ := h
     simp_rw [← Int.cast_add, Int.cast_eq_zero, add_eq_zero_iff_eq_neg]
-    simpa using hasSum_ite_sub_hasSum (hasSum_int_evenKernel (k : ℝ) ht) (-k)
+    simpa only [Int.cast_add, neg_mul, Int.cast_neg, add_left_neg, ne_eq, OfNat.ofNat_ne_zero,
+      not_false_eq_true, zero_pow, mul_zero, zero_mul, Real.exp_zero]
+      using hasSum_ite_sub_hasSum (hasSum_int_evenKernel (k : ℝ) ht) (-k)
   · suffices ∀ (n : ℤ), n + a ≠ 0 by simpa [this] using hasSum_int_evenKernel a ht
     contrapose! h
     let ⟨n, hn⟩ := h
@@ -188,7 +199,8 @@ lemma hasSum_int_evenKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
 
 lemma hasSum_int_cosKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℤ ↦ if n = 0 then 0 else cexp (2 * π * I * a * n) * rexp (-π * n ^ 2 * t))
-    (↑(cosKernel a t) - 1) := by simpa using hasSum_ite_sub_hasSum (hasSum_int_cosKernel a ht) 0
+    (↑(cosKernel a t) - 1) := by
+  simpa using hasSum_ite_sub_hasSum (hasSum_int_cosKernel a ht) 0
 
 lemma hasSum_nat_cosKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℕ ↦ 2 * Real.cos (2 * π * a * (n + 1)) * rexp (-π * (n + 1) ^ 2 * t))
@@ -203,7 +215,7 @@ lemma hasSum_nat_cosKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
   convert this with n
   push_cast
   rw [Complex.cos, mul_div_cancel₀ _ two_ne_zero]
-  ring_nf
+  congr 3 <;> ring
 
 /-!
 ## Asymptotics of the kernels as `t → ∞`
@@ -253,7 +265,7 @@ def hurwitzEvenFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
   hg_int := (continuous_ofReal.comp_continuousOn (continuousOn_cosKernel a)).locallyIntegrableOn
     measurableSet_Ioi
   k := 1 / 2
-  hk := by norm_num
+  hk := one_half_pos
   hε := one_ne_zero
   f₀ := if a = 0 then 1 else 0
   hf_top r := by
@@ -266,8 +278,10 @@ def hurwitzEvenFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
   hg_top r := by
     obtain ⟨p, hp, hp'⟩ := isBigO_atTop_cosKernel_sub a
     rw [← isBigO_norm_left] at hp' ⊢
-    convert hp'.trans (isLittleO_exp_neg_mul_rpow_atTop hp _).isBigO
-    rw [← norm_real, ofReal_sub, ofReal_one, Function.comp_apply]
+    have (x : ℝ) : ‖(ofReal' ∘ cosKernel a) x - 1‖ = ‖cosKernel a x - 1‖ := by
+      rw [← norm_real, ofReal_sub, ofReal_one, Function.comp_apply]
+    simp only [this]
+    exact hp'.trans (isLittleO_exp_neg_mul_rpow_atTop hp _).isBigO
   h_feq x hx := by
     simp_rw [Function.comp_apply, one_mul, smul_eq_mul, ← ofReal_mul,
       evenKernel_functional_equation, one_div x, one_div x⁻¹, inv_rpow (le_of_lt hx),
@@ -327,7 +341,7 @@ lemma completedCosZeta_eq (a : UnitAddCircle) (s : ℂ) :
     completedCosZeta₀ a s - 1 / s - (if a = 0 then 1 else 0) / (1 - s) := by
   rw [completedCosZeta, WeakFEPair.Λ, sub_div, sub_div]
   congr 1
-  · rw [ completedCosZeta₀, WeakFEPair.symm, hurwitzEvenFEPair, smul_eq_mul, mul_one, div_div,
+  · rw [completedCosZeta₀, WeakFEPair.symm, hurwitzEvenFEPair, smul_eq_mul, mul_one, div_div,
       div_mul_cancel₀ _ (two_ne_zero' ℂ)]
   · simp_rw [WeakFEPair.symm, hurwitzEvenFEPair, push_cast, inv_one, smul_eq_mul,
       mul_comm _ (if _ then _ else _), mul_div_assoc, div_div, ← sub_div,
