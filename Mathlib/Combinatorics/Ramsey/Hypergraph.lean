@@ -91,7 +91,7 @@ theorem Stable.apply_of_le {s : Fin k ↪o ℕ} (h : Stable s f) (i : Fin k) (hn
 theorem Stable.mono {s t : Fin (k+1) ↪o ℕ} (h : Stable s f) (hts : t ⊤ ≤ s ⊤) : Stable t f :=
   fun _ ↦ h.apply_of_le _ ((t.monotone le_top).trans hts)
 
-/- Given a colouring `c` of all `(k+1)`-sets in `ℕ`, a `k`-set `s` is right-monochromatic if
+/-- Given a colouring `c` of all `(k+1)`-sets in `ℕ`, a `k`-set `s` is right-monochromatic if
   all sets obtained by adding an element above the maximum of `s` have the same colour.  -/
 def RightMonochromatic (c : (Fin (k+1) ↪o ℕ) → κ) (s : Fin k ↪o ℕ) : Prop :=
   ∃ c₀, ∀ (x : ℕ) (hx : ∀ i, s i < x), c (appendRight s x hx) = c₀
