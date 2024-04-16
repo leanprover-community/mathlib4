@@ -157,8 +157,8 @@ theorem prod_subset_idRel_Eq_singleton_right {X : Type _} {S T : Set X} (hS : S.
   replace h_diag := fun x hx y hy => (h_diag y hy x hx).symm
   exact prod_subset_idRel_Eq_singleton_left hT hS (prod_subset_iff.mpr h_diag)
 
-theorem prod_subset_idRel_Eq_singleton {X : Type _} {S T : Set X} (hS : S.Nonempty) (hT : T.Nonempty)
-    (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} ∧ T = {x} := by
+theorem prod_subset_idRel_Eq_singleton {X : Type _} {S T : Set X} (hS : S.Nonempty)
+    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} ∧ T = {x} := by
   obtain ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ := prod_subset_idRel_Eq_singleton_left hS hT h_diag,
     prod_subset_idRel_Eq_singleton_right hS hT h_diag
   refine' ⟨x, ⟨hx, _⟩⟩
