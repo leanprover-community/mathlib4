@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 #align_import category_theory.limits.preserves.opposites from "leanprover-community/mathlib"@"9ed4366659f4fcca0ee70310d26ac5518dcb6dd0"
 
 /-!
-# Limit preservation properties of `functor.op` and related constructions
+# Limit preservation properties of `Functor.op` and related constructions
 
 We formulate conditions about `F` which imply that `F.op`, `F.unop`, `F.left_op` and `F.right_op`
 preserve certain (co)limits.

@@ -179,7 +179,7 @@ end Approx
 open Approx
 
 /-- Internal definition for `M`. It is needed to avoid name clashes
-between `M.mk` and `M.cases_on` and the declarations generated for
+between `M.mk` and `M.casesOn` and the declarations generated for
 the structure -/
 structure MIntl where
   /-- An `n`-th level approximation, for each depth `n` -/

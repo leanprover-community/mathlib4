@@ -53,7 +53,7 @@ Lots is missing!
 -- (Riccardo) add inclusion into Laurent series.
 -- (Riccardo) giving a morphism (as `R`-alg, so in the commutative case)
   from `R[T,T⁻¹]` to `S` is the same as choosing a unit of `S`.
--- A "better" definition of `trunc` would be as an `R`-linear map.  This works:
+-- A "better" definition of `Trunc` would be as an `R`-linear map.  This works:
 --  ```
 --  def trunc : R[T;T⁻¹] →[R] R[X] :=
 --    refine (?_ : R[ℕ] →[R] R[X]).comp ?_
@@ -344,7 +344,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- `trunc : R[T;T⁻¹] →+ R[X]` maps a Laurent polynomial `f` to the polynomial whose terms of
 nonnegative degree coincide with the ones of `f`.  The terms of negative degree of `f` "vanish".
-`trunc` is a left-inverse to `Polynomial.toLaurent`. -/
+`Trunc` is a left-inverse to `Polynomial.toLaurent`. -/
 def trunc : R[T;T⁻¹] →+ R[X] :=
   (toFinsuppIso R).symm.toAddMonoidHom.comp <| comapDomain.addMonoidHom fun _ _ => Int.ofNat.inj
 #align laurent_polynomial.trunc LaurentPolynomial.trunc

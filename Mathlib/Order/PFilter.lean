@@ -131,7 +131,7 @@ section OrderTop
 
 variable [Preorder P] [OrderTop P] {F : PFilter P}
 
-/-- A specific witness of `pfilter.nonempty` when `P` has a top element. -/
+/-- A specific witness of `PFilter.nonempty` when `P` has a top element. -/
 @[simp] theorem top_mem : ⊤ ∈ F := Ideal.bot_mem _
 #align order.pfilter.top_mem Order.PFilter.top_mem
 
@@ -151,7 +151,7 @@ section SemilatticeInf
 
 variable [SemilatticeInf P] {x y : P} {F : PFilter P}
 
-/-- A specific witness of `pfilter.directed` when `P` has meets. -/
+/-- A specific witness of `PFilter.directed` when `P` has meets. -/
 theorem inf_mem (hx : x ∈ F) (hy : y ∈ F) : x ⊓ y ∈ F :=
   Ideal.sup_mem hx hy
 #align order.pfilter.inf_mem Order.PFilter.inf_mem

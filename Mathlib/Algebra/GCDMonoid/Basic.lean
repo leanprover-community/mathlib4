@@ -1091,7 +1091,7 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
         set l := Classical.choose (dvd_normalize_iff.2 ((gcd_dvd_left a b).trans (Dvd.intro b rfl)))
         obtain rfl | hb := eq_or_ne b 0
         -- Porting note: using `simp only` causes the propositions inside `Classical.choose` to
-        -- differ, so `set` is unable to produce `l = 0` inside `this`. See
+        -- differ, so `Set` is unable to produce `l = 0` inside `this`. See
         -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/
         -- Classical.2Echoose/near/317491179
         · rw [mul_zero a, normalize_zero, mul_eq_zero] at this

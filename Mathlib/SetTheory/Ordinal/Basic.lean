@@ -1306,7 +1306,7 @@ theorem mk_ordinal_out (o : Ordinal) : #o.out.α = o.card :=
 #align cardinal.mk_ordinal_out Cardinal.mk_ordinal_out
 
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal
-  whose cardinal is `c`. For the order-embedding version, see `ord.order_embedding`. -/
+  whose cardinal is `c`. For the order-embedding version, see `ord.orderEmbedding`. -/
 def ord (c : Cardinal) : Ordinal :=
   let F := fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2
   Quot.liftOn c F

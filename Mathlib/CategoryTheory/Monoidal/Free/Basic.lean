@@ -299,7 +299,7 @@ section Functor
 
 variable {D : Type u'} [Category.{v'} D] [MonoidalCategory D] (f : C → D)
 
-/-- Auxiliary definition for `free_monoidal_category.project`. -/
+/-- Auxiliary definition for `FreeMonoidalCategory.project`. -/
 def projectObj : F C → D
   | FreeMonoidalCategory.of X => f X
   | FreeMonoidalCategory.unit => 𝟙_ D

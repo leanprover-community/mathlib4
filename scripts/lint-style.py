@@ -680,7 +680,7 @@ for filename in argv:
 # (we allow restricting to and excluding subdirectories, hard-coded for now).
 if not argv:
     # Exclude all files whose name starts with one of these.
-    exclude = tuple([])#tuple(''.split(' '))
+    exclude = tuple('Tactic'.split(' '))
     # Lint all non-excluded files whose module name starts with this.
     # So "Foo.Bar" will lint all files in module "Foo.Bar" and "Foo.Bar.Baz", etc.
     dir = ''

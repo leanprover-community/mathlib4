@@ -110,7 +110,7 @@ abbrev Decomposed (J : Type u₁) [Category.{v₁} J] :=
 
 -- This name may cause clashes further down the road, and so might need to be changed.
 /--
-The inclusion of each component into the decomposed category. This is just `sigma.incl` but having
+The inclusion of each component into the decomposed category. This is just `Sigma.incl` but having
 this abbreviation helps guide typeclass search to get the right category instance on `decomposed J`.
 -/
 abbrev inclusion (j : ConnectedComponents J) : Component j ⥤ Decomposed J :=

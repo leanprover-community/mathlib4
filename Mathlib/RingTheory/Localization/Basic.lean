@@ -1344,7 +1344,7 @@ variable (S M)
 Given an algebra `R → S`, a submonoid `R` of `M`, and a localization `Rₘ` for `M`,
 let `Sₘ` be the localization of `S` to the image of `M` under `algebraMap R S`.
 Then this is the natural algebra structure on `Rₘ → Sₘ`, such that the entire square commutes,
-where `localization_map.map_comp` gives the commutativity of the underlying maps.
+where `LocalizationMap.map_comp` gives the commutativity of the underlying maps.
 
 This instance can be helpful if you define `Sₘ := Localization (Algebra.algebraMapSubmonoid S M)`,
 however we will instead use the hypotheses `[Algebra Rₘ Sₘ] [IsScalarTower R Rₘ Sₘ]` in lemmas

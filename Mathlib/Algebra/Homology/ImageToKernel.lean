@@ -371,7 +371,7 @@ variable {A B C : V} {f : A ⟶ B} {g : B ⟶ C} (w : f ≫ g = 0) {f' : A ⟶ B
   (w' : f' ≫ g' = 0) [HasKernels V] [HasCokernels V] [HasImages V] [HasImageMaps V]
 
 -- Porting note: removed the private auxiliary tactic which becomes unnecessary
---/-- Custom tactic to golf and speedup boring proofs in `homology.congr`. -/
+--/-- Custom tactic to golf and speedup boring proofs in `homology'.congr`. -/
 --private unsafe def aux_tac : tactic Unit :=
 --  sorry
 
