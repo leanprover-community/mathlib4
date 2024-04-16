@@ -14,9 +14,14 @@ import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 Given a fully faithful functor `F : C ⥤ D` into a precoherent category, which preserves and reflects
 finite effective epi families, and satisfies the property `F.EffectivelyEnough` (meaning that to
 every object in `C` there is an effective epi from an object in the image of `F`), the categories
-of coherent sheaves on `C` and `D` are equivalent.
+of coherent sheaves on `C` and `D` are equivalent (see
+`CategoryTheory.coherentTopology.equivalence`).
 
-We give the corresonding result for the regular topology as well.
+The main application of this equivalence is the characterisation of condensed sets as coherent
+sheaves on either `CompHaus`, `Profinite` or `Stonean`. See the file `Condensed/Equivalence.lean`
+
+We give the corresonding result for the regular topology as well (see
+`CategoryTheory.regularTopology.equivalence`).
 -/
 
 
@@ -102,8 +107,9 @@ variable {C D : Type (u+1)} [LargeCategory C] [LargeCategory D] (F : C ⥤ D)
   [F.EffectivelyEnough]
 
 /--
-The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompHaus`
-(i.e. condensed sets).
+The equivalence from coherent sheaves on `C` to coherent sheaves on `D`, given a fully faithful
+functor `F : C ⥤ D` to a precoherent category, which preserves and reflects effective epimorphic
+families, and satisfies `F.EffectivelyEnough`.
 -/
 noncomputable
 def equivalence (A : Type _) [Category.{u+1} A] [HasLimits A] : haveI := F.reflects_precoherent
@@ -125,8 +131,9 @@ variable {C D : Type (u+1)} [LargeCategory C] [LargeCategory D] (F : C ⥤ D)
   [F.EffectivelyEnough]
 
 /--
-The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompHaus`
-(i.e. condensed sets).
+The equivalence from coherent sheaves on `C` to coherent sheaves on `D`, given a fully faithful
+functor `F : C ⥤ D` to an extensive preregular category, which preserves and reflects effective
+epimorphisms and satisfies `F.EffectivelyEnough`.
 -/
 noncomputable
 def equivalence' (A : Type _) [Category.{u+1} A] [HasLimits A] :
@@ -207,8 +214,9 @@ variable {C D : Type (u+1)} [LargeCategory C] [LargeCategory D] (F : C ⥤ D)
   [F.EffectivelyEnough]
 
 /--
-The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompHaus`
-(i.e. condensed sets).
+The equivalence from regular sheaves on `C` to regular sheaves on `D`, given a fully faithful
+functor `F : C ⥤ D` to a preregular category, which preserves and reflects effective
+epimorphisms and satisfies `F.EffectivelyEnough`.
 -/
 noncomputable
 def equivalence (A : Type _) [Category.{u+1} A] [HasLimits A] : haveI := F.reflects_preregular
