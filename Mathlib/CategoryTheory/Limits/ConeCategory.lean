@@ -60,7 +60,7 @@ def _root_.CategoryTheory.Functor.toStructuredArrowIsoToStructuredArrow (G : J �
     (h : ∀ {Y Z : J} (g : Y ⟶ Z), f Y ≫ F.map (G.map g) = f Z) :
     G.toStructuredArrow X F f h ≅
       (Cone.mk X ⟨f, by simp [h]⟩).toStructuredArrow ⋙ StructuredArrow.pre _ _ _ :=
-  Iso.refl _
+  NatIso.ofComponents (fun j => StructuredArrow.isoMk (Iso.refl _))
 
 /-- Interpreting the legs of a cone as a structured arrow and then forgetting the arrow again does
     nothing. -/
@@ -120,7 +120,7 @@ arrows over `X` with `f` as the cone point.
 def Cone.toStructuredArrowCone {K : J ⥤ C} (c : Cone K) (F : C ⥤ D) {X : D} (f : X ⟶ F.obj c.pt) :
     Cone ((F.mapCone c).toStructuredArrow ⋙ StructuredArrow.map f ⋙ StructuredArrow.pre _ K F) where
   pt := StructuredArrow.mk f
-  π := { app := fun j => StructuredArrow.homMk (c.π.app j) rfl }
+  π := { app := fun j => StructuredArrow.homMk (c.π.app j) }
 #align category_theory.structured_arrow_cone.to_cone CategoryTheory.Limits.Cone.toStructuredArrowCone
 
 /-- Construct an object of the category `(Δ ↓ F)` from a cone on `F`. This is part of an
@@ -238,7 +238,7 @@ def _root_.CategoryTheory.Functor.toCostructuredArrowIsoToCostructuredArrow (G :
     (h : ∀ {Y Z : J} (g : Y ⟶ Z), F.map (G.map g) ≫ f Z = f Y) :
     G.toCostructuredArrow F X f h ≅
       (Cocone.mk X ⟨f, by simp [h]⟩).toCostructuredArrow ⋙ CostructuredArrow.pre _ _ _ :=
-  Iso.refl _
+  NatIso.ofComponents (fun j => CostructuredArrow.isoMk (Iso.refl _))
 
 /-- Interpreting the legs of a cocone as a costructured arrow and then forgetting the arrow again
     does nothing. -/
@@ -298,7 +298,7 @@ def Cocone.toCostructuredArrowCocone {K : J ⥤ C} (c : Cocone K) (F : C ⥤ D) 
     (f : F.obj c.pt ⟶ X) : Cocone ((F.mapCocone c).toCostructuredArrow ⋙
       CostructuredArrow.map f ⋙ CostructuredArrow.pre _ _ _) where
   pt := CostructuredArrow.mk f
-  ι := { app := fun j => CostructuredArrow.homMk (c.ι.app j) rfl }
+  ι := { app := fun j => CostructuredArrow.homMk (c.ι.app j) }
 
 /-- Construct an object of the category `(F ↓ Δ)` from a cocone on `F`. This is part of an
     equivalence, see `Cocone.equivStructuredArrow`. -/

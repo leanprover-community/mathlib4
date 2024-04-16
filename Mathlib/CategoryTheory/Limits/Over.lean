@@ -95,7 +95,7 @@ open Tactic
 
 /-- When `C` has pullbacks, a morphism `f : X ⟶ Y` induces a functor `Over Y ⥤ Over X`,
 by pulling back a morphism along `f`. -/
-@[simps]
+@[simps!]
 def pullback {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
   obj g := Over.mk (pullback.snd : CategoryTheory.Limits.pullback g.hom f ⟶ X)
   map := fun g {h} {k} =>
@@ -107,16 +107,12 @@ def mapPullbackAdj {A B : C} (f : A ⟶ B) : Over.map f ⊣ pullback f :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun g h =>
         { toFun := fun X =>
-            Over.homMk (pullback.lift X.left g.hom (Over.w X)) (pullback.lift_snd _ _ _)
-          invFun := fun Y => by
-            refine' Over.homMk _ _
-            refine' Y.left ≫ pullback.fst
+            Over.homMk (pullback.lift X.left g.hom (by simp)) (pullback.lift_snd _ _ _)
+          invFun := fun Y => Over.homMk (Y.left ≫ pullback.fst) (by
             dsimp
-            rw [← Over.w Y, Category.assoc, pullback.condition, Category.assoc]; rfl
-          left_inv := fun X => by
-            ext
-            dsimp
-            simp
+            rw [Category.assoc, map_obj_hom, ← Over.w Y, pullback.condition,
+              pullback_obj_hom, Category.assoc])
+          left_inv := fun X => by aesop_cat
           right_inv := fun Y => by
             -- TODO: It would be nice to replace the next two lines with just `ext`.
             apply OverMorphism.ext
@@ -125,10 +121,7 @@ def mapPullbackAdj {A B : C} (f : A ⟶ B) : Over.map f ⊣ pullback f :=
               simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
             · dsimp
               simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, ← Over.w Y ]
-              rfl }
-      -- This used to be automatic before leanprover/lean4#2644
-      homEquiv_naturality_right := by intros; dsimp; congr 1; aesop_cat
-      }
+              rfl } }
 #align category_theory.over.map_pullback_adj CategoryTheory.Over.mapPullbackAdj
 
 /-- pullback (𝟙 A) : Over A ⥤ Over A is the identity functor. -/

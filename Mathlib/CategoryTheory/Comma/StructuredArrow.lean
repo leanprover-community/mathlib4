@@ -235,7 +235,7 @@ def map (f : S ⟶ S') : StructuredArrow S' T ⥤ StructuredArrow S T :=
   Comma.mapLeft _ ((Functor.const _).map f)
 #align category_theory.structured_arrow.map CategoryTheory.StructuredArrow.map
 
-@[simp]
+/-@[simp]
 theorem map_mk {f : S' ⟶ T.obj Y} (g : S ⟶ S') : (map g).obj (mk f) = mk (g ≫ f) :=
   rfl
 #align category_theory.structured_arrow.map_mk CategoryTheory.StructuredArrow.map_mk
@@ -251,7 +251,7 @@ theorem map_comp {f : S ⟶ S'} {f' : S' ⟶ S''} {h : StructuredArrow S'' T} :
     (map (f ≫ f')).obj h = (map f).obj ((map f').obj h) := by
   rw [eq_mk h]
   simp
-#align category_theory.structured_arrow.map_comp CategoryTheory.StructuredArrow.map_comp
+#align category_theory.structured_arrow.map_comp CategoryTheory.StructuredArrow.map_comp-/
 
 /-- An isomorphism `S ≅ S'` induces an equivalence `StructuredArrow S T ≌ StructuredArrow S' T`. -/
 @[simp]
@@ -572,7 +572,7 @@ def map (f : T ⟶ T') : CostructuredArrow S T ⥤ CostructuredArrow S T' :=
   Comma.mapRight _ ((Functor.const _).map f)
 #align category_theory.costructured_arrow.map CategoryTheory.CostructuredArrow.map
 
-@[simp]
+/-@[simp]
 theorem map_mk {f : S.obj Y ⟶ T} (g : T ⟶ T') : (map g).obj (mk f) = mk (f ≫ g) :=
   rfl
 #align category_theory.costructured_arrow.map_mk CategoryTheory.CostructuredArrow.map_mk
@@ -588,7 +588,7 @@ theorem map_comp {f : T ⟶ T'} {f' : T' ⟶ T''} {h : CostructuredArrow S T} :
     (map (f ≫ f')).obj h = (map f').obj ((map f).obj h) := by
   rw [eq_mk h]
   simp
-#align category_theory.costructured_arrow.map_comp CategoryTheory.CostructuredArrow.map_comp
+#align category_theory.costructured_arrow.map_comp CategoryTheory.CostructuredArrow.map_comp-/
 
 /-- An isomorphism `T ≅ T'` induces an equivalence
     `CostructuredArrow S T ≌ CostructuredArrow S T'`. -/

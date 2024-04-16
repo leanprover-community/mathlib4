@@ -160,39 +160,26 @@ def forgetCocone (X : T) : Limits.Cocone (forget X) :=
 
 See <https://stacks.math.columbia.edu/tag/001G>.
 -/
+@[simps!]
 def map {Y : T} (f : X ⟶ Y) : Over X ⥤ Over Y :=
   Comma.mapRight _ <| Discrete.natTrans fun _ => f
 #align category_theory.over.map CategoryTheory.Over.map
+#align category_theory.over.map_obj_left CategoryTheory.Over.map_obj_left
+#align category_theory.over.map_obj_hom CategoryTheory.Over.map_obj_hom
+#align category_theory.over.map_map_left CategoryTheory.Over.map_map_left
 
 section
 
-variable {Y : T} {f : X ⟶ Y} {U V : Over X} {g : U ⟶ V}
-
-@[simp]
-theorem map_obj_left : ((map f).obj U).left = U.left :=
-  rfl
-#align category_theory.over.map_obj_left CategoryTheory.Over.map_obj_left
-
-@[simp]
-theorem map_obj_hom : ((map f).obj U).hom = U.hom ≫ f :=
-  rfl
-#align category_theory.over.map_obj_hom CategoryTheory.Over.map_obj_hom
-
-@[simp]
-theorem map_map_left : ((map f).map g).left = g.left :=
-  rfl
-#align category_theory.over.map_map_left CategoryTheory.Over.map_map_left
-
-variable (Y)
+variable (Y : T) {f : X ⟶ Y} {U V : Over X} {g : U ⟶ V}
 
 /-- Mapping by the identity morphism is just the identity functor. -/
 def mapId : map (𝟙 Y) ≅ 𝟭 _ :=
-  NatIso.ofComponents fun X => isoMk (Iso.refl _)
+  Comma.mapRightId _ _
 #align category_theory.over.map_id CategoryTheory.Over.mapId
 
 /-- Mapping by the composite morphism `f ≫ g` is the same as mapping by `f` then by `g`. -/
 def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map f ⋙ map g :=
-  NatIso.ofComponents fun X => isoMk (Iso.refl _)
+  NatIso.ofComponents (fun _ => isoMk (Iso.refl _))
 #align category_theory.over.map_comp CategoryTheory.Over.mapComp
 
 end
@@ -445,32 +432,21 @@ def forgetCone (X : T) : Limits.Cone (forget X) :=
 #align category_theory.under.forget_cone CategoryTheory.Under.forgetCone
 
 /-- A morphism `X ⟶ Y` induces a functor `Under Y ⥤ Under X` in the obvious way. -/
+@[simps!]
 def map {Y : T} (f : X ⟶ Y) : Under Y ⥤ Under X :=
   Comma.mapLeft _ <| Discrete.natTrans fun _ => f
 #align category_theory.under.map CategoryTheory.Under.map
+#align category_theory.under.map_obj_right CategoryTheory.Under.map_obj_right
+#align category_theory.under.map_obj_hom CategoryTheory.Under.map_obj_hom
+#align category_theory.under.map_map_right CategoryTheory.Under.map_map_right
 
 section
 
 variable {Y : T} {f : X ⟶ Y} {U V : Under Y} {g : U ⟶ V}
 
-@[simp]
-theorem map_obj_right : ((map f).obj U).right = U.right :=
-  rfl
-#align category_theory.under.map_obj_right CategoryTheory.Under.map_obj_right
-
-@[simp]
-theorem map_obj_hom : ((map f).obj U).hom = f ≫ U.hom :=
-  rfl
-#align category_theory.under.map_obj_hom CategoryTheory.Under.map_obj_hom
-
-@[simp]
-theorem map_map_right : ((map f).map g).right = g.right :=
-  rfl
-#align category_theory.under.map_map_right CategoryTheory.Under.map_map_right
-
 /-- Mapping by the identity morphism is just the identity functor. -/
 def mapId : map (𝟙 Y) ≅ 𝟭 _ :=
-  NatIso.ofComponents fun X => isoMk (Iso.refl _)
+  Comma.mapLeftId _ _
 #align category_theory.under.map_id CategoryTheory.Under.mapId
 
 /-- Mapping by the composite morphism `f ≫ g` is the same as mapping by `f` then by `g`. -/
