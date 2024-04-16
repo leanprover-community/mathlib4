@@ -508,14 +508,14 @@ def test_backtick_linting():
         'long.decl.name_two' : 'Long.Decl.nameTwo'
     })
     def check_fine(input):
-        errors, new = lint_backticks_in_comments([], decls, [(0, input)])
+        errors, new = lint_backticks_in_comments([], decls, [input])
         assert len(new) == 1
         actual = new[0]
         if actual != input:
             print(f'ERROR: input "{input}" should not be modified, actual output was\n{actual}')
         assert not errors, f'Input "{input}" should yield no errors'
     def check_error(input, expected):
-        errors, newlines = lint_backticks_in_comments([], decls, [(0, input)])
+        errors, newlines = lint_backticks_in_comments([], decls, [input])
         assert errors
         assert len(newlines) == 1
         actual = newlines[0]
