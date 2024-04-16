@@ -5,7 +5,8 @@ Authors: Yury G. Kudryashov, Alistair Tucker, Wen Yang
 -/
 import Mathlib.Data.Set.Intervals.Image
 import Mathlib.Order.CompleteLatticeIntervals
-import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.DenselyOrdered
+import Mathlib.Topology.Order.Monotone
 
 #align_import topology.algebra.order.intermediate_value from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
