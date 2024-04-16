@@ -257,10 +257,11 @@ theorem Inv_divided_by_X_pow_order_leftInv {f : k⟦X⟧} (hf : f ≠ 0) :
   rw [mul_comm]
   exact mul_invOfUnit (divided_by_X_pow_order hf) (firstUnitCoeff hf) rfl
 
+variable [DecidableEq k⟦X⟧]
 
 /-- `Unit_of_divided_by_X_pow_order` is the unit power series obtained by dividing a non-zero
 power series by the largest power of `X` that divides it. -/
-def Unit_of_divided_by_X_pow_order (f : k⟦X⟧) [Decidable (f = 0)] : k⟦X⟧ˣ :=
+def Unit_of_divided_by_X_pow_order (f : k⟦X⟧) : k⟦X⟧ˣ :=
   if hf : f = 0 then 1
   else
     { val := divided_by_X_pow_order hf
@@ -268,21 +269,20 @@ def Unit_of_divided_by_X_pow_order (f : k⟦X⟧) [Decidable (f = 0)] : k⟦X⟧
       val_inv := Inv_divided_by_X_pow_order_rightInv hf
       inv_val := Inv_divided_by_X_pow_order_leftInv hf }
 
-theorem isUnit_divided_by_X_pow_order {f : k⟦X⟧} [Decidable (f = 0)] (hf : f ≠ 0) :
+theorem isUnit_divided_by_X_pow_order {f : k⟦X⟧} (hf : f ≠ 0) :
     IsUnit (divided_by_X_pow_order hf) :=
   ⟨Unit_of_divided_by_X_pow_order f,
     by simp only [Unit_of_divided_by_X_pow_order, dif_neg hf, Units.val_mk]⟩
 
-@[simp]
-theorem Unit_of_divided_by_X_pow_order_nonzero {f : k⟦X⟧} [Decidable (f = 0)] (hf : f ≠ 0) :
+theorem Unit_of_divided_by_X_pow_order_nonzero {f : k⟦X⟧} (hf : f ≠ 0) :
     ↑(Unit_of_divided_by_X_pow_order f) = divided_by_X_pow_order hf := by
   simp only [Unit_of_divided_by_X_pow_order, dif_neg hf, Units.val_mk]
 
-theorem Unit_of_divided_by_X_pow_order_zero [DecidableEq k⟦X⟧] :
-    Unit_of_divided_by_X_pow_order (0 : k⟦X⟧) = 1 := by
+@[simp]
+theorem Unit_of_divided_by_X_pow_order_zero : Unit_of_divided_by_X_pow_order (0 : k⟦X⟧) = 1 := by
   simp only [Unit_of_divided_by_X_pow_order, dif_pos]
 
-theorem eq_divided_by_X_pow_order_Iff_Unit {f : k⟦X⟧} (hf : f ≠ 0) [Decidable (f = 0)] :
+theorem eq_divided_by_X_pow_order_Iff_Unit {f : k⟦X⟧} (hf : f ≠ 0) :
     f = divided_by_X_pow_order hf ↔ IsUnit f :=
   ⟨fun h => by rw [h]; exact isUnit_divided_by_X_pow_order hf, fun h => by
     have : f.order.get (order_finite_iff_ne_zero.mpr hf) = 0 := by
@@ -310,7 +310,9 @@ end LocalRing
 
 section DiscreteValuationRing
 
-variable {k : Type*} [Field k] [DecidableEq k⟦X⟧]
+variable {k : Type*} [Field k]
+
+instance : DecidableEq k⟦X⟧ := Classical.typeDecidableEq _
 
 open DiscreteValuationRing
 
@@ -383,7 +385,7 @@ theorem ker_coeff_eq_max_ideal : RingHom.ker (constantCoeff k) = maximalIdeal _ 
 and `K` itself. -/
 def residueFieldOfPowerSeries : ResidueField k⟦X⟧ ≃+* k :=
   (Ideal.quotEquivOfEq (ker_coeff_eq_max_ideal).symm).trans
-    (RingHom.quotientKerEquivOfSurjective PowerSeries.coeff_surj)
+    (RingHom.quotientKerEquivOfSurjective PowerSeries.constantCoeff_surj)
 
 end DiscreteValuationRing
 
