@@ -31,11 +31,15 @@ register_option linter.haveLet : Bool := {
 
 namespace haveLet
 
-/-- find the `have` syntax. -/
-partial
-def isHave? : Syntax → Bool
+/--
+* on input `have`, returns `some true`,
+* on input `let`, returns `some false`,
+* on all other inputs, returns `none`,
+-/
+def have_or_let? : Syntax → Option Bool
   | .node _ ``Lean.Parser.Tactic.tacticHave_ _ => true
-  |_ => false
+  | .node _ `Lean.Parser.Tactic.tacticLet_ _ => false
+  |_ => none
 
 /-- `SyntaxNodeKind`s that imply a `have` but should be ignored anyway. -/
 abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
@@ -75,7 +79,7 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format))
     if let .ofTacticInfo i := i then
       let stx := i.stx
       if exclusions.contains stx.getKind then return #[] else
-      if isHave? stx then
+      if have_or_let? stx == some true then
         let mctx := i.mctxAfter
         let mvdecls := (i.goalsAfter.map (mctx.decls.find? ·)).reduceOption
         let _ : Ord MetavarDecl := { compare := (compare ·.index ·.index) }
