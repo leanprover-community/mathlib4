@@ -722,7 +722,7 @@ if not argv:
             files.append(line)
     # Currently, we read out aligns from a pre-generated file:
     # this could be done in Lean, if this linter is worth it.
-    align_lines = [line.strip() for line in open('all_aligns.txt', 'r', encoding='utf-8')]
+    align_lines = [line.strip() for line in open('aligns.txt', 'r', encoding='utf-8')]
     noalign_lines = [line.strip() for line in open('noaligns.txt', 'r', encoding='utf-8')]
     align_imports = [line.strip() for line in open('align_imports.txt', 'r', encoding='utf-8')]
     old_files, noaligns, old_declarations = (
