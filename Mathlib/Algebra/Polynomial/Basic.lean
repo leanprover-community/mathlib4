@@ -143,7 +143,6 @@ instance mul' : Mul R[X] :=
 
 -- If the private definitions are accidentally exposed, simplify them away.
 @[simp] theorem add_eq_add : add p q = p + q := rfl
-@[simp] theorem neg_eq_neg : neg p = - p := rfl
 @[simp] theorem mul_eq_mul : mul p q = p * q := rfl
 
 instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] where
@@ -651,7 +650,7 @@ theorem monomial_mul_X_pow (n : ℕ) (r : R) (k : ℕ) :
     monomial n r * X ^ k = monomial (n + k) r := by
   induction' k with k ih
   · simp
-  · simp [ih, pow_succ, ← mul_assoc, add_assoc, Nat.succ_eq_add_one]
+  · simp [ih, pow_succ, ← mul_assoc, add_assoc]
 #align polynomial.monomial_mul_X_pow Polynomial.monomial_mul_X_pow
 
 @[simp]
@@ -691,9 +690,7 @@ theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp i = f.coeff i := by cases f
 #align polynomial.to_finsupp_apply Polynomial.toFinsupp_apply
 
 theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
-  -- porting note (#10745): was `simp [← ofFinsupp_single, coeff, LinearMap.coe_mk]`.
-  rw [← ofFinsupp_single]
-  simp only [coeff, LinearMap.coe_mk]
+  simp only [← ofFinsupp_single, coeff, LinearMap.coe_mk]
   rw [Finsupp.single_apply]
 #align polynomial.coeff_monomial Polynomial.coeff_monomial
 
@@ -959,8 +956,7 @@ theorem support_X (H : ¬(1 : R) = 0) : (X : R[X]).support = singleton 1 := by
 
 theorem monomial_left_inj {a : R} (ha : a ≠ 0) {i j : ℕ} :
     monomial i a = monomial j a ↔ i = j := by
-  -- porting note (#10745): was `simp [← ofFinsupp_single, Finsupp.single_left_inj ha]`
-  rw [← ofFinsupp_single, ← ofFinsupp_single, ofFinsupp.injEq, Finsupp.single_left_inj ha]
+  simp only [← ofFinsupp_single, ofFinsupp.injEq, Finsupp.single_left_inj ha]
 #align polynomial.monomial_left_inj Polynomial.monomial_left_inj
 
 theorem binomial_eq_binomial {k l m n : ℕ} {u v : R} (hu : u ≠ 0) (hv : v ≠ 0) :
@@ -1196,7 +1192,7 @@ instance ring : Ring R[X] :=
     toIntCast := Polynomial.intCast
     toNeg := Polynomial.neg'
     toSub := Polynomial.sub
-    zsmul := ((. • .) : ℤ → R[X] → R[X]) }
+    zsmul := ((· • ·) : ℤ → R[X] → R[X]) }
 #align polynomial.ring Polynomial.ring
 
 @[simp]
