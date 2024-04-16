@@ -8,7 +8,7 @@ import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.Sober
 
