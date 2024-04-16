@@ -87,7 +87,7 @@ theorem exists_inducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, Inducing f := by
       refine' (eventually_all_finite h_fin).2 fun UV _ => _
       exact (f UV).continuous.tendsto x (closedBall_mem_nhds _ δ0)
     refine' this.mono fun y hy => (BoundedContinuousFunction.dist_le δ0.le).2 fun UV => _
-    cases' le_total δ (ε UV) with hle hle
+    rcases le_total δ (ε UV) with hle | hle
     exacts [hy _ hle, (Real.dist_le_of_mem_Icc (hf0ε _ _) (hf0ε _ _)).trans (by rwa [sub_zero])]
   · /- Finally, we prove that each neighborhood `V` of `x : X`
     includes a preimage of a neighborhood of `F x` under `F`.
@@ -99,8 +99,8 @@ theorem exists_inducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, Inducing f := by
     rcases hB.exists_closure_subset (hB.mem_nhds hVB hxV) with ⟨U, hUB, hxU, hUV⟩
     set UV : ↥s := ⟨(U, V), ⟨hUB, hVB⟩, hUV⟩
     refine' ⟨ε UV, (ε01 UV).1, fun y (hy : dist (F y) (F x) < ε UV) => _⟩
-    replace hy : dist (F y UV) (F x UV) < ε UV
-    exact (BoundedContinuousFunction.dist_coe_le_dist _).trans_lt hy
+    replace hy : dist (F y UV) (F x UV) < ε UV :=
+      (BoundedContinuousFunction.dist_coe_le_dist _).trans_lt hy
     contrapose! hy
     rw [hF, hF, hfε UV hy, hf0 UV hxU, Pi.zero_apply, dist_zero_right]
     exact le_abs_self _

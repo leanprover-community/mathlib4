@@ -3,16 +3,12 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.Logic.Small.Basic
-import Mathlib.LinearAlgebra.StdBasis
-import Mathlib.LinearAlgebra.FinsuppVectorSpace
-import Mathlib.LinearAlgebra.TensorProductBasis
+import Mathlib.Data.Finsupp.Fintype
+import Mathlib.LinearAlgebra.TensorProduct.Basis
 
 #align_import linear_algebra.free_module.basic from "leanprover-community/mathlib"@"4e7e7009099d4a88a750de710909b95487bf0124"
 
 /-!
-
 # Free modules
 
 We introduce a class `Module.Free R M`, for `R` a `Semiring` and `M` an `R`-module and we provide
@@ -23,7 +19,6 @@ Use `Finsupp.total_id_surjective` to prove that any module is the quotient of a 
 ## Main definition
 
 * `Module.Free R M` : the class of free `R`-modules.
-
 -/
 
 
@@ -37,21 +32,18 @@ section Basic
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
-/-- `Module.Free R M` is the statement that the `R`-module `M` is free.-/
+/-- `Module.Free R M` is the statement that the `R`-module `M` is free. -/
 class Module.Free : Prop where
   exists_basis : Nonempty <| (I : Type v) × Basis I R M
 #align module.free Module.Free
 
-/- If `M` fits in universe `w`, then freeness is equivalent to existence of a basis in that
+/-- If `M` fits in universe `w`, then freeness is equivalent to existence of a basis in that
 universe.
 
 Note that if `M` does not fit in `w`, the reverse direction of this implication is still true as
 `Module.Free.of_basis`. -/
 theorem Module.free_def [Small.{w,v} M] :
     Module.Free R M ↔ ∃ I : Type w, Nonempty (Basis I R M) :=
-  -- Porting note: this is required or Lean cannot solve universe constraints
-  -- The same error presents if inferInstance is called to solve `small`
-  have _small (s : Set M) : Small.{w} ↑s := small_of_injective (fun _ _ => (Subtype.val_inj).mp)
   ⟨fun h =>
     ⟨Shrink (Set.range h.exists_basis.some.2),
       ⟨(Basis.reindexRange h.exists_basis.some.2).reindex (equivShrink _)⟩⟩,
@@ -76,7 +68,6 @@ namespace Module.Free
 section Semiring
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
-
 variable [AddCommMonoid N] [Module R N]
 
 /-- If `Module.Free R M` then `ChooseBasisIndex R M` is the `ι` which indexes the basis
@@ -120,6 +111,9 @@ instance (priority := 100) noZeroSMulDivisors [NoZeroDivisors R] : NoZeroSMulDiv
 
 instance [Nontrivial M] : Nonempty (Module.Free.ChooseBasisIndex R M) :=
   (Module.Free.chooseBasis R M).index_nonempty
+
+theorem infinite [Infinite R] [Nontrivial M] : Infinite M :=
+  (Equiv.infinite_iff (chooseBasis R M).repr.toEquiv).mpr Finsupp.infinite_of_right
 
 variable {R M N}
 
@@ -194,11 +188,10 @@ instance directSum {ι : Type*} (M : ι → Type*) [∀ i : ι, AddCommMonoid (M
 
 end Semiring
 
-section CommRing
+section CommSemiring
 
-variable [CommRing R] [AddCommGroup M] [Module R M] [Module.Free R M]
-
-variable [AddCommGroup N] [Module R N] [Module.Free R N]
+variable [CommSemiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
+  [AddCommMonoid N] [Module R N] [Module.Free R N]
 
 instance tensor : Module.Free R (M ⊗[R] N) :=
   let ⟨bM⟩ := exists_basis (R := R) (M := M)
@@ -206,6 +199,6 @@ instance tensor : Module.Free R (M ⊗[R] N) :=
   of_basis (bM.2.tensorProduct bN.2)
 #align module.free.tensor Module.Free.tensor
 
-end CommRing
+end CommSemiring
 
 end Module.Free

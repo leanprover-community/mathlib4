@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Topology.Category.TopCat.Opens
+import Mathlib.Data.Set.Basic
 
 #align_import topology.category.Top.open_nhds from "leanprover-community/mathlib"@"1ec4876214bf9f1ddfbf97ae4b0d777ebd5d6938"
 

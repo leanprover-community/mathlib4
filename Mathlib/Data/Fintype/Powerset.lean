@@ -40,7 +40,7 @@ lemma filter_subset_univ [DecidableEq α] (s : Finset α) :
   rw [← Finset.powerset_univ, powerset_inj]
 #align finset.powerset_eq_univ Finset.powerset_eq_univ
 
-@[simp] lemma mem_powersetCard_univ : s ∈ powersetCard k (univ : Finset α) ↔ card s = k :=
+lemma mem_powersetCard_univ : s ∈ powersetCard k (univ : Finset α) ↔ card s = k :=
   mem_powersetCard.trans <| and_iff_right <| subset_univ _
 #align finset.mem_powerset_len_univ_iff Finset.mem_powersetCard_univ
 
@@ -59,12 +59,10 @@ theorem Fintype.card_finset_len [Fintype α] (k : ℕ) :
 #align fintype.card_finset_len Fintype.card_finset_len
 
 instance Set.fintype [Fintype α] : Fintype (Set α) :=
-  ⟨(@Finset.univ α _).powerset.map ⟨(↑), coe_injective⟩, fun s => by
+  ⟨(@Finset.univ (Finset α) _).map coeEmb.1, fun s => by
     classical
-      refine' mem_map.2 ⟨Finset.univ.filter s, Finset.mem_powerset.2 (Finset.subset_univ _), _⟩
-      apply (coe_filter _ _).trans
-      simp
-      rfl⟩
+    refine mem_map.2 ⟨Finset.univ.filter (· ∈ s), Finset.mem_univ _, (coe_filter _ _).trans ?_⟩
+    simp⟩
 #align set.fintype Set.fintype
 
 -- Not to be confused with `Set.Finite`, the predicate

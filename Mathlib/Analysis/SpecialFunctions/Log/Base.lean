@@ -35,7 +35,7 @@ namespace Real
 variable {b x y : ℝ}
 
 /-- The real logarithm in a given base. As with the natural logarithm, we define `logb b x` to
-be `logb b |x|` for `x < 0`, and `0` for `x = 0`.-/
+be `logb b |x|` for `x < 0`, and `0` for `x = 0`. -/
 -- @[pp_nodot] -- Porting note: removed
 noncomputable def logb (b x : ℝ) : ℝ :=
   log x / log b
@@ -113,13 +113,19 @@ theorem div_logb {a b c : ℝ} (h₁ : c ≠ 0) (h₂ : c ≠ 1) (h₃ : c ≠ -
   div_div_div_cancel_left' _ _ <| log_ne_zero.mpr ⟨h₁, h₂, h₃⟩
 #align real.div_logb Real.div_logb
 
+theorem logb_rpow_eq_mul_logb_of_pos (hx : 0 < x) : logb b (x ^ y) = y * logb b x := by
+  rw [logb, log_rpow hx, logb, mul_div_assoc]
+
+theorem logb_pow {k : ℕ} (hx : 0 < x) : logb b (x ^ k) = k * logb b x := by
+  rw [← rpow_nat_cast, logb_rpow_eq_mul_logb_of_pos hx]
+
 section BPosAndNeOne
 
 variable (b_pos : 0 < b) (b_ne_one : b ≠ 1)
 
 private theorem log_b_ne_zero : log b ≠ 0 := by
-  have b_ne_zero : b ≠ 0; linarith
-  have b_ne_minus_one : b ≠ -1; linarith
+  have b_ne_zero : b ≠ 0 := by linarith
+  have b_ne_minus_one : b ≠ -1 := by linarith
   simp [b_ne_one, b_ne_zero, b_ne_minus_one]
 
 @[simp]
@@ -132,7 +138,7 @@ theorem rpow_logb_eq_abs (hx : x ≠ 0) : b ^ logb b x = |x| := by
   apply log_injOn_pos
   simp only [Set.mem_Ioi]
   apply rpow_pos_of_pos b_pos
-  simp only [abs_pos, mem_Ioi, Ne.def, hx, not_false_iff]
+  simp only [abs_pos, mem_Ioi, Ne, hx, not_false_iff]
   rw [log_rpow b_pos, logb, log_abs]
   field_simp [log_b_ne_zero b_pos b_ne_one]
 #align real.rpow_logb_eq_abs Real.rpow_logb_eq_abs
@@ -147,6 +153,11 @@ theorem rpow_logb_of_neg (hx : x < 0) : b ^ logb b x = -x := by
   rw [rpow_logb_eq_abs b_pos b_ne_one (ne_of_lt hx)]
   exact abs_of_neg hx
 #align real.rpow_logb_of_neg Real.rpow_logb_of_neg
+
+theorem logb_eq_iff_rpow_eq (hy : 0 < y) : logb b y = x ↔ b ^ x = y := by
+  constructor <;> rintro rfl
+  · exact rpow_logb b_pos b_ne_one hy
+  · exact logb_rpow b_pos b_ne_one
 
 theorem surjOn_logb : SurjOn (logb b) (Ioi 0) univ := fun x _ =>
   ⟨rpow b x, rpow_pos_of_pos b_pos x, logb_rpow b_pos b_ne_one⟩
@@ -182,7 +193,7 @@ private theorem b_ne_one' : b ≠ 1 := by linarith
 
 @[simp]
 theorem logb_le_logb (h : 0 < x) (h₁ : 0 < y) : logb b x ≤ logb b y ↔ x ≤ y := by
-  rw [logb, logb, div_le_div_right (log_pos hb), log_le_log h h₁]
+  rw [logb, logb, div_le_div_right (log_pos hb), log_le_log_iff h h₁]
 #align real.logb_le_logb Real.logb_le_logb
 
 @[gcongr]
@@ -295,7 +306,7 @@ private theorem b_ne_one : b ≠ 1 := by linarith
 
 @[simp]
 theorem logb_le_logb_of_base_lt_one (h : 0 < x) (h₁ : 0 < y) : logb b x ≤ logb b y ↔ y ≤ x := by
-  rw [logb, logb, div_le_div_right_of_neg (log_neg b_pos b_lt_one), log_le_log h₁ h]
+  rw [logb, logb, div_le_div_right_of_neg (log_neg b_pos b_lt_one), log_le_log_iff h₁ h]
 #align real.logb_le_logb_of_base_lt_one Real.logb_le_logb_of_base_lt_one
 
 theorem logb_lt_logb_of_base_lt_one (hx : 0 < x) (hxy : x < y) : logb b y < logb b x := by
@@ -414,7 +425,7 @@ theorem ceil_logb_nat_cast {b : ℕ} {r : ℝ} (hb : 1 < b) (hr : 0 ≤ r) :
   have hb1' : 1 < (b : ℝ) := Nat.one_lt_cast.mpr hb
   apply le_antisymm
   · rw [Int.ceil_le, logb_le_iff_le_rpow hb1' hr, rpow_int_cast]
-    refine' Int.self_le_zpow_clog hb r
+    exact Int.self_le_zpow_clog hb r
   · rw [← Int.le_zpow_iff_clog_le hb hr, ← rpow_int_cast b]
     refine' (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr).symm.trans_le _
     exact rpow_le_rpow_of_exponent_le hb1'.le (Int.le_ceil _)

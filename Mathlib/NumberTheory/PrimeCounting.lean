@@ -51,9 +51,9 @@ def primeCounting (n : ℕ) : ℕ :=
   primeCounting' (n + 1)
 #align nat.prime_counting Nat.primeCounting
 
-scoped notation "π" => Nat.primeCounting
+@[inherit_doc] scoped notation "π" => Nat.primeCounting
 
-scoped notation "π'" => Nat.primeCounting'
+@[inherit_doc] scoped notation "π'" => Nat.primeCounting'
 
 theorem monotone_primeCounting' : Monotone primeCounting' :=
   count_monotone Prime
@@ -90,7 +90,7 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
     _ ≤ π' k + ((Ico k (k + n)).filter Prime).card := by
       rw [primeCounting', count_eq_card_filter_range]
     _ ≤ π' k + ((Ico k (k + n)).filter (Coprime a)).card := by
-      refine' add_le_add_left (card_le_of_subset _) k.primeCounting'
+      refine' add_le_add_left (card_le_card _) k.primeCounting'
       simp only [subset_iff, and_imp, mem_filter, mem_Ico]
       intro p succ_k_le_p p_lt_n p_prime
       constructor

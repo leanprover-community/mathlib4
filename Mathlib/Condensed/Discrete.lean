@@ -21,14 +21,7 @@ universe u v w
 
 open CategoryTheory Limits Opposite GrothendieckTopology
 
-variable (C : Type w) [Category.{u+1} C] [ConcreteCategory C]
-  [PreservesLimits (forget C)] [ReflectsIsomorphisms (forget C)]
-  [∀ (P : CompHausᵒᵖ ⥤ C) X (S : Cover (coherentTopology CompHaus) X),
-    HasMultiequalizer (Cover.index S P)]
-  [∀ X, HasColimitsOfShape (Cover (coherentTopology CompHaus) X)ᵒᵖ C]
-  [∀ X, PreservesColimitsOfShape (Cover (coherentTopology CompHaus) X)ᵒᵖ (forget C)]
--- These conditions are satisfied by the category of abelian groups, and other "algebraic"
--- categories.
+variable (C : Type w) [Category.{u+1} C] [HasWeakSheafify (coherentTopology CompHaus) C]
 
 /--
 The discrete condensed object associated to an object of `C` is the constant sheaf at that object.

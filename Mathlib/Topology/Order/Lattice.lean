@@ -3,8 +3,8 @@ Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.Constructions
+import Mathlib.Topology.Order.OrderClosed
 
 #align_import topology.order.lattice from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
@@ -23,8 +23,6 @@ class `TopologicalLattice` as a topological space and lattice `L` extending `Con
 
 topological, lattice
 -/
-
-set_option autoImplicit true
 
 open Filter
 
@@ -79,14 +77,14 @@ instance (priority := 100) LinearOrder.topologicalLattice {L : Type*} [Topologic
   continuous_sup := continuous_max
 #align linear_order.topological_lattice LinearOrder.topologicalLattice
 
-variable [TopologicalSpace L] [TopologicalSpace X]
+variable {L X : Type*} [TopologicalSpace L] [TopologicalSpace X]
 
 @[continuity]
 theorem continuous_inf [Inf L] [ContinuousInf L] : Continuous fun p : L × L => p.1 ⊓ p.2 :=
   ContinuousInf.continuous_inf
 #align continuous_inf continuous_inf
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.inf [Inf L] [ContinuousInf L] {f g : X → L} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x => f x ⊓ g x :=
   continuous_inf.comp (hf.prod_mk hg : _)
@@ -97,7 +95,7 @@ theorem continuous_sup [Sup L] [ContinuousSup L] : Continuous fun p : L × L => 
   ContinuousSup.continuous_sup
 #align continuous_sup continuous_sup
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.sup [Sup L] [ContinuousSup L] {f g : X → L} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x => f x ⊔ g x :=
   continuous_sup.comp (hf.prod_mk hg : _)
@@ -133,7 +131,7 @@ end SupInf
 
 open Finset
 
-variable {ι : Type*} {s : Finset ι} {f : ι → α → L} {g : ι → L}
+variable {ι α : Type*} {s : Finset ι} {f : ι → α → L} {l : Filter α} {g : ι → L}
 
 lemma finset_sup'_nhds [SemilatticeSup L] [ContinuousSup L]
     (hne : s.Nonempty) (hs : ∀ i ∈ s, Tendsto (f i) l (𝓝 (g i))) :
@@ -191,6 +189,7 @@ lemma ContinuousAt.sup' (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
     ContinuousAt (f ⊔ g) x :=
   hf.sup_nhds' hg
 
+@[fun_prop]
 lemma ContinuousAt.sup (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
     ContinuousAt (fun a ↦ f a ⊔ g a) x :=
   hf.sup' hg
@@ -207,6 +206,7 @@ lemma ContinuousOn.sup' (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (f ⊔ g) s := fun x hx ↦
   (hf x hx).sup' (hg x hx)
 
+@[fun_prop]
 lemma ContinuousOn.sup (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun a ↦ f a ⊔ g a) s :=
   hf.sup' hg
@@ -223,6 +223,7 @@ lemma ContinuousAt.inf' (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
     ContinuousAt (f ⊓ g) x :=
   hf.inf_nhds' hg
 
+@[fun_prop]
 lemma ContinuousAt.inf (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
     ContinuousAt (fun a ↦ f a ⊓ g a) x :=
   hf.inf' hg
@@ -239,6 +240,7 @@ lemma ContinuousOn.inf' (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (f ⊓ g) s := fun x hx ↦
   (hf x hx).inf' (hg x hx)
 
+@[fun_prop]
 lemma ContinuousOn.inf (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun a ↦ f a ⊓ g a) s :=
   hf.inf' hg
