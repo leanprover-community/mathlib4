@@ -157,7 +157,7 @@ def relabellingMoveLeftAux (n : ℕ) {s : S} (h : turnBound s ≤ n)
         (turnBound_of_left ((leftMovesOfStateAux n h) t).2 (n - 1)
           (Nat.le_trans h le_tsub_add))) := by
   induction n
-  · have t' := (leftMovesOfStateAux 0 h) t
+  · let t' := (leftMovesOfStateAux 0 h) t
     exfalso; exact turnBound_ne_zero_of_left_move t'.2 (nonpos_iff_eq_zero.mp h)
   · rfl
 #align pgame.relabelling_move_left_aux SetTheory.PGame.relabellingMoveLeftAux
@@ -182,7 +182,7 @@ def relabellingMoveRightAux (n : ℕ) {s : S} (h : turnBound s ≤ n)
         (turnBound_of_right ((rightMovesOfStateAux n h) t).2 (n - 1)
           (Nat.le_trans h le_tsub_add))) := by
   induction n
-  · have t' := (rightMovesOfStateAux 0 h) t
+  · let t' := (rightMovesOfStateAux 0 h) t
     exfalso; exact turnBound_ne_zero_of_right_move t'.2 (nonpos_iff_eq_zero.mp h)
   · rfl
 #align pgame.relabelling_move_right_aux SetTheory.PGame.relabellingMoveRightAux
@@ -211,11 +211,11 @@ instance shortOfStateAux : ∀ (n : ℕ) {s : S} (h : turnBound s ≤ n), Short 
   | 0, s, h =>
     Short.mk'
       (fun i => by
-        have i := (leftMovesOfStateAux _ _).toFun i
+        let i := (leftMovesOfStateAux _ _).toFun i
         exfalso
         exact turnBound_ne_zero_of_left_move i.2 (nonpos_iff_eq_zero.mp h))
       fun j => by
-      have j := (rightMovesOfStateAux _ _).toFun j
+      let j := (rightMovesOfStateAux _ _).toFun j
       exfalso
       exact turnBound_ne_zero_of_right_move j.2 (nonpos_iff_eq_zero.mp h)
   | n + 1, s, h =>

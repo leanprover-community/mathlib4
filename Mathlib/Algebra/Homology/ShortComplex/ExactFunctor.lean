@@ -29,7 +29,7 @@ variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
 /-- An additive functor which preserves homology preserves finite limits. -/
 noncomputable def preservesFiniteLimitsOfPreservesHomology
     [HasFiniteProducts C] [HasKernels C] : PreservesFiniteLimits F := by
-  have := fun {X Y : C} (f : X ⟶ Y) => PreservesHomology.preservesKernel F f
+  let _ := fun {X Y : C} (f : X ⟶ Y) => PreservesHomology.preservesKernel F f
   have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryProducts
   have : HasEqualizers C := Preadditive.hasEqualizers_of_hasKernels
   have : HasZeroObject D :=
@@ -39,7 +39,7 @@ noncomputable def preservesFiniteLimitsOfPreservesHomology
 /-- An additive which preserves homology preserves finite colimits. -/
 noncomputable def preservesFiniteColimitsOfPreservesHomology
     [HasFiniteCoproducts C] [HasCokernels C] : PreservesFiniteColimits F := by
-  have := fun {X Y : C} (f : X ⟶ Y) => PreservesHomology.preservesCokernel F f
+  let _ := fun {X Y : C} (f : X ⟶ Y) => PreservesHomology.preservesCokernel F f
   have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryCoproducts
   have : HasCoequalizers C := Preadditive.hasCoequalizers_of_hasCokernels
   have : HasZeroObject D :=
