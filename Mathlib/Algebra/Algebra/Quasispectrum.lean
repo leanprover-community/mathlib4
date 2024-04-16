@@ -210,8 +210,8 @@ lemma IsQuasiregular.isUnit_one_add {R : Type*} [Semiring R] {x : R} (hx : IsQua
     IsUnit (1 + x) := by
   obtain ⟨y, hy₁, hy₂⟩ := isQuasiregular_iff.mp hx
   refine ⟨⟨1 + x, 1 + y, ?_, ?_⟩, rfl⟩
-  · convert congr(1 + $(hy₁)) using 1 <;> first | noncomm_ring | simp
-  · convert congr(1 + $(hy₂)) using 1 <;> first | noncomm_ring | simp
+  · convert congr(1 + $(hy₁)) using 1 <;> [noncomm_ring; simp]
+  · convert congr(1 + $(hy₂)) using 1 <;> [noncomm_ring; simp]
 
 lemma isQuasiregular_iff_isUnit {R : Type*} [Ring R] {x : R} :
     IsQuasiregular x ↔ IsUnit (1 + x) := by
@@ -279,7 +279,7 @@ lemma quasispectrum_eq_spectrum_union_zero (R : Type*) {A : Type*} [Semifield R]
     [Algebra R A] (a : A) : quasispectrum R a = spectrum R a ∪ {0} := by
   convert quasispectrum_eq_spectrum_union R a
   ext x
-  simpa using isUnit_iff_ne_zero |>.symm |> not_iff_not.mpr
+  simp
 
 namespace Unitization
 
@@ -321,3 +321,29 @@ lemma quasispectrum_eq_spectrum_inr' (R S : Type*) {A : Type*} [Semifield R]
   rw [← Set.union_eq_self_of_subset_right this, ← quasispectrum_eq_spectrum_union_zero]
   apply forall_congr' fun x ↦ ?_
   rw [not_iff_not, Units.smul_def, Units.smul_def, ← inr_smul, ← inr_neg, isQuasiregular_inr_iff]
+
+end Unitization
+
+/-- A class for `𝕜`-algebras with a partial order where the ordering is compatible with the
+(quasi)spectrum. -/
+class NonnegSpectrumClass (𝕜 A : Type*) [OrderedCommRing 𝕜] [NonUnitalRing A] [PartialOrder A]
+    [Module 𝕜 A] : Prop where
+  quasispectrum_nonneg_of_nonneg : ∀ a : A, 0 ≤ a → ∀ x ∈ quasispectrum 𝕜 a, 0 ≤ x
+
+export NonnegSpectrumClass (quasispectrum_nonneg_of_nonneg)
+
+namespace NonnegSpectrumClass
+
+lemma iff_spectrum_nonneg {𝕜 A : Type*} [LinearOrderedField 𝕜] [Ring A] [PartialOrder A]
+    [Algebra 𝕜 A] : NonnegSpectrumClass 𝕜 A ↔ ∀ a : A, 0 ≤ a → ∀ x ∈ spectrum 𝕜 a, 0 ≤ x := by
+  simp [show NonnegSpectrumClass 𝕜 A ↔ _ from ⟨fun ⟨h⟩ ↦ h, (⟨·⟩)⟩,
+    quasispectrum_eq_spectrum_union_zero]
+
+alias ⟨_, of_spectrum_nonneg⟩ := iff_spectrum_nonneg
+
+end NonnegSpectrumClass
+
+lemma spectrum_nonneg_of_nonneg {𝕜 A : Type*} [LinearOrderedField 𝕜] [Ring A] [PartialOrder A]
+    [Algebra 𝕜 A] [NonnegSpectrumClass 𝕜 A] ⦃a : A⦄ (ha : 0 ≤ a) ⦃x : 𝕜⦄ (hx : x ∈ spectrum 𝕜 a) :
+    0 ≤ x :=
+  NonnegSpectrumClass.iff_spectrum_nonneg.mp inferInstance a ha x hx

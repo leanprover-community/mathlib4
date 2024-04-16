@@ -82,7 +82,7 @@ theorem card_box : (box n d).card = d ^ n := by simp [box]
 theorem box_zero : box (n + 1) 0 = ∅ := by simp [box]
 #align behrend.box_zero Behrend.box_zero
 
-/-- The intersection of the sphere of radius `sqrt k` with the integer points in the positive
+/-- The intersection of the sphere of radius `√k` with the integer points in the positive
 quadrant. -/
 def sphere (n d k : ℕ) : Finset (Fin n → ℕ) :=
   (box n d).filter fun x => ∑ i, x i ^ 2 = k
@@ -100,7 +100,7 @@ theorem sphere_subset_box : sphere n d k ⊆ box n d :=
 #align behrend.sphere_subset_box Behrend.sphere_subset_box
 
 theorem norm_of_mem_sphere {x : Fin n → ℕ} (hx : x ∈ sphere n d k) :
-    ‖(WithLp.equiv 2 _).symm ((↑) ∘ x : Fin n → ℝ)‖ = Real.sqrt k := by
+    ‖(WithLp.equiv 2 _).symm ((↑) ∘ x : Fin n → ℝ)‖ = √↑k := by
   rw [EuclideanSpace.norm_eq]
   dsimp
   simp_rw [abs_cast, ← cast_pow, ← cast_sum, (mem_filter.1 hx).2]
@@ -108,7 +108,7 @@ theorem norm_of_mem_sphere {x : Fin n → ℕ} (hx : x ∈ sphere n d k) :
 
 theorem sphere_subset_preimage_metric_sphere : (sphere n d k : Set (Fin n → ℕ)) ⊆
     (fun x : Fin n → ℕ => (WithLp.equiv 2 _).symm ((↑) ∘ x : Fin n → ℝ)) ⁻¹'
-      Metric.sphere (0 : PiLp 2 fun _ : Fin n => ℝ) (Real.sqrt k) :=
+      Metric.sphere (0 : PiLp 2 fun _ : Fin n => ℝ) (√↑k) :=
   fun x hx => by rw [Set.mem_preimage, mem_sphere_zero_iff_norm, norm_of_mem_sphere hx]
 #align behrend.sphere_subset_preimage_metric_sphere Behrend.sphere_subset_preimage_metric_sphere
 
@@ -126,7 +126,7 @@ theorem map_zero (d : ℕ) (a : Fin 0 → ℕ) : map d a = 0 := by simp [map]
 
 theorem map_succ (a : Fin (n + 1) → ℕ) :
     map d a = a 0 + (∑ x : Fin n, a x.succ * d ^ (x : ℕ)) * d := by
-  simp [map, Fin.sum_univ_succ, _root_.pow_succ', ← mul_assoc, ← sum_mul]
+  simp [map, Fin.sum_univ_succ, _root_.pow_succ, ← mul_assoc, ← sum_mul]
 #align behrend.map_succ Behrend.map_succ
 
 theorem map_succ' (a : Fin (n + 1) → ℕ) : map d a = a 0 + map d (a ∘ Fin.succ) * d :=
@@ -174,7 +174,7 @@ nonrec theorem addSalemSpencer_sphere : AddSalemSpencer (sphere n d k : Set (Fin
       map_add' := fun _ _ => funext fun _ => cast_add _ _ }
   refine' AddSalemSpencer.of_image (f.toAddFreimanHom (sphere n d k : Set (Fin n → ℕ)) 2) _ _
   · exact cast_injective.comp_left.injOn _
-  refine' (addSalemSpencer_sphere 0 <| Real.sqrt k).mono (Set.image_subset_iff.2 fun x => _)
+  refine' (addSalemSpencer_sphere 0 (√↑k)).mono (Set.image_subset_iff.2 fun x => _)
   rw [Set.mem_preimage, mem_sphere_zero_iff_norm]
   exact norm_of_mem_sphere
 #align behrend.add_salem_spencer_sphere Behrend.addSalemSpencer_sphere
@@ -286,7 +286,7 @@ open Real
 
 section NumericalBounds
 
-theorem log_two_mul_two_le_sqrt_log_eight : log 2 * 2 ≤ sqrt (log 8) := by
+theorem log_two_mul_two_le_sqrt_log_eight : log 2 * 2 ≤ √(log 8) := by
   have : (8 : ℝ) = 2 ^ ((3 : ℕ) : ℝ) := by rw [rpow_nat_cast]; norm_num
   rw [this, log_rpow zero_lt_two (3 : ℕ)]
   apply le_sqrt_of_sq_le
@@ -304,7 +304,7 @@ theorem two_div_one_sub_two_div_e_le_eight : 2 / (1 - 2 / exp 1) ≤ 8 := by
   rw [sub_pos, div_lt_one] <;> exact exp_one_gt_d9.trans' (by norm_num)
 #align behrend.two_div_one_sub_two_div_e_le_eight Behrend.two_div_one_sub_two_div_e_le_eight
 
-theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) ≤ sqrt (log ↑N) := by
+theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) ≤ √(log ↑N) := by
   have : (12 : ℕ) * log 2 ≤ log N := by
     rw [← log_rpow zero_lt_two, rpow_nat_cast]
     exact log_le_log (by positivity) (mod_cast hN)
@@ -361,7 +361,7 @@ end NumericalBounds
 
 /-- The (almost) optimal value of `n` in `Behrend.bound_aux`. -/
 noncomputable def nValue (N : ℕ) : ℕ :=
-  ⌈sqrt (log N)⌉₊
+  ⌈√(log N)⌉₊
 #align behrend.n_value Behrend.nValue
 
 /-- The (almost) optimal value of `d` in `Behrend.bound_aux`. -/
@@ -390,7 +390,7 @@ theorem dValue_pos (hN₃ : 8 ≤ N) : 0 < dValue N := by
   have hN₀ : 0 < (N : ℝ) := cast_pos.2 (succ_pos'.trans_le hN₃)
   rw [dValue, floor_pos, ← log_le_log_iff zero_lt_one, log_one, log_div _ two_ne_zero, log_rpow hN₀,
     inv_mul_eq_div, sub_nonneg, le_div_iff]
-  · have : (nValue N : ℝ) ≤ 2 * sqrt (log N) := by
+  · have : (nValue N : ℝ) ≤ 2 * √(log N) := by
       apply (ceil_lt_add_one <| sqrt_nonneg _).le.trans
       rw [two_mul, add_le_add_iff_left]
       apply le_sqrt_of_sq_le
@@ -455,7 +455,7 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dV
 #align behrend.bound Behrend.bound
 
 theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
-    (N : ℝ) * exp (-4 * sqrt (log N)) < rothNumberNat N := by
+    (N : ℝ) * exp (-4 * √(log N)) < rothNumberNat N := by
   let n := nValue N
   have hn : 0 < (n : ℝ) := cast_pos.2 (nValue_pos <| hN.trans' <| by norm_num1)
   have hd : 0 < dValue N := dValue_pos (hN.trans' <| by norm_num1)
@@ -472,7 +472,7 @@ theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
     div_div, rpow_sub hN₀, rpow_one, div_div, div_eq_mul_inv]
   refine' mul_le_mul_of_nonneg_left _ (cast_nonneg _)
   rw [mul_inv, mul_inv, ← exp_neg, ← rpow_neg (cast_nonneg _), neg_sub, ← div_eq_mul_inv]
-  have : exp (-4 * sqrt (log N)) = exp (-2 * sqrt (log N)) * exp (-2 * sqrt (log N)) := by
+  have : exp (-4 * √(log N)) = exp (-2 * √(log N)) * exp (-2 * √(log N)) := by
     rw [← exp_add, ← add_mul]
     norm_num
   rw [this]
@@ -503,7 +503,7 @@ theorem four_zero_nine_six_lt_exp_sixteen : 4096 < exp 16 := by
 #align behrend.four_zero_nine_six_lt_exp_sixteen Behrend.four_zero_nine_six_lt_exp_sixteen
 
 theorem lower_bound_le_one' (hN : 2 ≤ N) (hN' : N ≤ 4096) :
-    (N : ℝ) * exp (-4 * sqrt (log N)) ≤ 1 := by
+    (N : ℝ) * exp (-4 * √(log N)) ≤ 1 := by
   rw [← log_le_log_iff (mul_pos (cast_pos.2 (zero_lt_two.trans_le hN)) (exp_pos _)) zero_lt_one,
     log_one, log_mul (cast_pos.2 (zero_lt_two.trans_le hN)).ne' (exp_pos _).ne', log_exp, neg_mul, ←
     sub_eq_add_neg, sub_nonpos, ←
@@ -515,13 +515,13 @@ theorem lower_bound_le_one' (hN : 2 ≤ N) (hN' : N ≤ 4096) :
 #align behrend.lower_bound_le_one' Behrend.lower_bound_le_one'
 
 theorem lower_bound_le_one (hN : 1 ≤ N) (hN' : N ≤ 4096) :
-    (N : ℝ) * exp (-4 * sqrt (log N)) ≤ 1 := by
+    (N : ℝ) * exp (-4 * √(log N)) ≤ 1 := by
   obtain rfl | hN := hN.eq_or_lt
   · norm_num
   · exact lower_bound_le_one' hN hN'
 #align behrend.lower_bound_le_one Behrend.lower_bound_le_one
 
-theorem roth_lower_bound : (N : ℝ) * exp (-4 * sqrt (log N)) ≤ rothNumberNat N := by
+theorem roth_lower_bound : (N : ℝ) * exp (-4 * √(log N)) ≤ rothNumberNat N := by
   obtain rfl | hN := Nat.eq_zero_or_pos N
   · norm_num
   obtain h₁ | h₁ := le_or_lt 4096 N

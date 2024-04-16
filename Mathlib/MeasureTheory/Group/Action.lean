@@ -310,7 +310,7 @@ theorem vadd_ae_eq_self_of_mem_zmultiples {G : Type u} {α : Type w} {s : Set α
     {μ : Measure α} [VAddInvariantMeasure G α μ] {x y : G}
     (hs : (x +ᵥ s : Set α) =ᵐ[μ] s) (hy : y ∈ AddSubgroup.zmultiples x) :
     (y +ᵥ s : Set α) =ᵐ[μ] s := by
-  letI : MeasurableSpace (Multiplicative G) := (inferInstanceAs (MeasurableSpace G))
+  letI : MeasurableSpace (Multiplicative G) := inferInstanceAs (MeasurableSpace G)
   letI : SMulInvariantMeasure (Multiplicative G) α μ :=
     ⟨fun g => VAddInvariantMeasure.measure_preimage_vadd (Multiplicative.toAdd g)⟩
   letI : MeasurableSMul (Multiplicative G) α :=

@@ -33,7 +33,7 @@ We express this in two equivalent ways, as
 * `is_limit (F.map_cone (cone U))`, or
 * `preserves_limit (diagram U) F`
 
-We show that this sheaf condition is equivalent to the `opens_le_cover` sheaf condition, and
+We show that this sheaf condition is equivalent to the `OpensLeCover` sheaf condition, and
 thereby also equivalent to the default sheaf condition.
 -/
 
@@ -52,7 +52,7 @@ section
 
 /-- An alternative formulation of the sheaf condition
 (which we prove equivalent to the usual one below as
-`is_sheaf_iff_is_sheaf_pairwise_intersections`).
+`isSheaf_iff_isSheafPairwiseIntersections`).
 
 A presheaf is a sheaf if `F` sends the cone `(pairwise.cocone U).op` to a limit cone.
 (Recall `Pairwise.cocone U` has cone point `supr U`, mapping down to the `U i` and the `U i ⊓ U j`.)
@@ -64,7 +64,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- An alternative formulation of the sheaf condition
 (which we prove equivalent to the usual one below as
-`is_sheaf_iff_is_sheaf_preserves_limit_pairwise_intersections`).
+`isSheaf_iff_isSheafPreservesLimitPairwiseIntersections`).
 
 A presheaf is a sheaf if `F` preserves the limit of `Pairwise.diagram U`.
 (Recall `Pairwise.diagram U` is the diagram consisting of the pairwise intersections
@@ -215,7 +215,7 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
                   List.Chain.nil)))⟩
 
 /-- The diagram in `opens X` indexed by pairwise intersections from `U` is isomorphic
-(in fact, equal) to the diagram factored through `opens_le_cover U`.
+(in fact, equal) to the diagram factored through `OpensLeCover U`.
 -/
 def pairwiseDiagramIso : Pairwise.diagram U ≅ pairwiseToOpensLeCover U ⋙ fullSubcategoryInclusion _
     where
@@ -226,7 +226,7 @@ set_option linter.uppercaseLean3 false in
 
 /--
 The cocone `Pairwise.cocone U` with cocone point `supr U` over `Pairwise.diagram U` is isomorphic
-to the cocone `opens_le_cover_cocone U` (with the same cocone point)
+to the cocone `opensLeCoverCocone U` (with the same cocone point)
 after appropriate whiskering and postcomposition.
 -/
 def pairwiseCoconeIso :

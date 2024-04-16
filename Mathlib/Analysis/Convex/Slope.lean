@@ -293,7 +293,7 @@ theorem StrictConvexOn.secant_strict_mono_aux1 (hf : StrictConvexOn 𝕜 s f) {x
   have hb : 0 < (y - x) / (z - x) := by positivity
   calc
     f y = f ((z - y) / (z - x) * x + (y - x) / (z - x) * z) := ?_
-    _ < (z - y) / (z - x) * f x + (y - x) / (z - x) * f z := (hf.2 hx hz (by linarith) ha hb ?_)
+    _ < (z - y) / (z - x) * f x + (y - x) / (z - x) * f z := hf.2 hx hz (by linarith) ha hb ?_
     _ = ((z - y) * f x + (y - x) * f z) / (z - x) := ?_
   · congr 1
     field_simp

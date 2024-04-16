@@ -13,6 +13,8 @@ import Mathlib.Data.Set.Lattice
 This file contains lemmas about intervals that cannot be included into `Data.Set.Intervals.Basic`
 because this would create an `import` cycle. Namely, lemmas in this file can use definitions
 from `Data.Set.Lattice`, including `Disjoint`.
+
+We consider various intersections and unions of half infinite intervals.
 -/
 
 
@@ -41,12 +43,12 @@ theorem Iio_disjoint_Ici (h : a ≤ b) : Disjoint (Iio a) (Ici b) :=
 
 @[simp]
 theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
-  (Iic_disjoint_Ioi h).mono le_rfl fun _ => And.left
+  (Iic_disjoint_Ioi h).mono le_rfl Ioc_subset_Ioi_self
 #align set.Iic_disjoint_Ioc Set.Iic_disjoint_Ioc
 
 @[simp]
 theorem Ioc_disjoint_Ioc_same : Disjoint (Ioc a b) (Ioc b c) :=
-  (Iic_disjoint_Ioc (le_refl b)).mono (fun _ => And.right) le_rfl
+  (Iic_disjoint_Ioc le_rfl).mono Ioc_subset_Iic_self le_rfl
 #align set.Ioc_disjoint_Ioc_same Set.Ioc_disjoint_Ioc_same
 
 @[simp]
@@ -148,6 +150,12 @@ theorem Ioc_disjoint_Ioc : Disjoint (Ioc a₁ a₂) (Ioc b₁ b₂) ↔ min a₂
   have h : _ ↔ min (toDual a₁) (toDual b₁) ≤ max (toDual a₂) (toDual b₂) := Ico_disjoint_Ico
   simpa only [dual_Ico] using h
 #align set.Ioc_disjoint_Ioc Set.Ioc_disjoint_Ioc
+
+@[simp]
+theorem Ioo_disjoint_Ioo [DenselyOrdered α] :
+    Disjoint (Set.Ioo a₁ a₂) (Set.Ioo b₁ b₂) ↔ min a₂ b₂ ≤ max a₁ b₁ := by
+  simp_rw [Set.disjoint_iff_inter_eq_empty, Ioo_inter_Ioo, Ioo_eq_empty_iff, inf_eq_min, sup_eq_max,
+    not_lt]
 
 /-- If two half-open intervals are disjoint and the endpoint of one lies in the other,
   then it must be equal to the endpoint of the other. -/
@@ -255,5 +263,22 @@ theorem iUnion_Iic_eq_Iic_iSup {R : Type*} [CompleteLinearOrder R] {f : ι → R
     (has_greatest_elem : (⨆ i, f i) ∈ range f) : ⋃ i : ι, Iic (f i) = Iic (⨆ i, f i) :=
   @iUnion_Ici_eq_Ici_iInf ι (OrderDual R) _ f has_greatest_elem
 #align Union_Iic_eq_Iic_supr iUnion_Iic_eq_Iic_iSup
+
+theorem iUnion_Iio_eq_univ_iff : ⋃ i, Iio (f i) = univ ↔ (¬ BddAbove (range f)) := by
+  simp [not_bddAbove_iff, Set.eq_univ_iff_forall]
+
+theorem iUnion_Iic_of_not_bddAbove_range (hf : ¬ BddAbove (range f)) : ⋃ i, Iic (f i) = univ := by
+  refine  Set.eq_univ_of_subset ?_ (iUnion_Iio_eq_univ_iff.mpr hf)
+  gcongr
+  exact Iio_subset_Iic_self
+
+theorem iInter_Iic_eq_empty_iff : ⋂ i, Iic (f i) = ∅ ↔ ¬ BddBelow (range f) := by
+  simp [not_bddBelow_iff, Set.eq_empty_iff_forall_not_mem]
+
+theorem iInter_Iio_of_not_bddBelow_range (hf : ¬ BddBelow (range f)) : ⋂ i, Iio (f i) = ∅ := by
+  refine' eq_empty_of_subset_empty _
+  rw [← iInter_Iic_eq_empty_iff.mpr hf]
+  gcongr
+  exact Iio_subset_Iic_self
 
 end UnionIxx

@@ -55,13 +55,12 @@ For consequences in infinite dimension (Hilbert bases, etc.), see the file
 
 set_option linter.uppercaseLean3 false
 
-open Real Set Filter IsROrC Submodule Function BigOperators Uniformity Topology NNReal ENNReal
+open Real Set Filter RCLike Submodule Function BigOperators Uniformity Topology NNReal ENNReal
   ComplexConjugate DirectSum
 
 noncomputable section
 
-variable {ι : Type*} {ι' : Type*}
-variable {𝕜 : Type*} [IsROrC 𝕜]
+variable {ι ι' 𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
@@ -108,27 +107,27 @@ def EuclideanSpace (𝕜 : Type*) (n : Type*) : Type _ :=
   PiLp 2 fun _ : n => 𝕜
 #align euclidean_space EuclideanSpace
 
-theorem EuclideanSpace.nnnorm_eq {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
+theorem EuclideanSpace.nnnorm_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x : EuclideanSpace 𝕜 n) : ‖x‖₊ = NNReal.sqrt (∑ i, ‖x i‖₊ ^ 2) :=
   PiLp.nnnorm_eq_of_L2 x
 #align euclidean_space.nnnorm_eq EuclideanSpace.nnnorm_eq
 
-theorem EuclideanSpace.norm_eq {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
-    (x : EuclideanSpace 𝕜 n) : ‖x‖ = Real.sqrt (∑ i, ‖x i‖ ^ 2) := by
+theorem EuclideanSpace.norm_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
+    (x : EuclideanSpace 𝕜 n) : ‖x‖ = √(∑ i, ‖x i‖ ^ 2) := by
   simpa only [Real.coe_sqrt, NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) x.nnnorm_eq
 #align euclidean_space.norm_eq EuclideanSpace.norm_eq
 
-theorem EuclideanSpace.dist_eq {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
-    (x y : EuclideanSpace 𝕜 n) : dist x y = (∑ i, dist (x i) (y i) ^ 2).sqrt :=
+theorem EuclideanSpace.dist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
+    (x y : EuclideanSpace 𝕜 n) : dist x y = √(∑ i, dist (x i) (y i) ^ 2) :=
   PiLp.dist_eq_of_L2 x y
 #align euclidean_space.dist_eq EuclideanSpace.dist_eq
 
-theorem EuclideanSpace.nndist_eq {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
+theorem EuclideanSpace.nndist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x y : EuclideanSpace 𝕜 n) : nndist x y = NNReal.sqrt (∑ i, nndist (x i) (y i) ^ 2) :=
   PiLp.nndist_eq_of_L2 x y
 #align euclidean_space.nndist_eq EuclideanSpace.nndist_eq
 
-theorem EuclideanSpace.edist_eq {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
+theorem EuclideanSpace.edist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x y : EuclideanSpace 𝕜 n) : edist x y = (∑ i, edist (x i) (y i) ^ 2) ^ (1 / 2 : ℝ) :=
   PiLp.edist_eq_of_L2 x y
 #align euclidean_space.edist_eq EuclideanSpace.edist_eq
@@ -738,7 +737,7 @@ unit length. -/
 @[simp]
 theorem OrthonormalBasis.det_to_matrix_orthonormalBasis : ‖a.toBasis.det b‖ = 1 := by
   have := (Matrix.det_of_mem_unitary (a.toMatrix_orthonormalBasis_mem_unitary b)).2
-  rw [star_def, IsROrC.mul_conj] at this
+  rw [star_def, RCLike.mul_conj] at this
   norm_cast at this
   rwa [pow_eq_one_iff_of_nonneg (norm_nonneg _) two_ne_zero] at this
 #align orthonormal_basis.det_to_matrix_orthonormal_basis OrthonormalBasis.det_to_matrix_orthonormalBasis
@@ -928,9 +927,9 @@ open FiniteDimensional
 /-- Let `S` be a subspace of a finite-dimensional complex inner product space `V`.  A linear
 isometry mapping `S` into `V` can be extended to a full isometry of `V`.
 
-TODO:  The case when `S` is a finite-dimensional subspace of an infinite-dimensional `V`.-/
+TODO:  The case when `S` is a finite-dimensional subspace of an infinite-dimensional `V`. -/
 noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[𝕜] V := by
-  -- Build an isometry from Sᗮ to L(S)ᗮ through euclidean_space
+  -- Build an isometry from Sᗮ to L(S)ᗮ through `EuclideanSpace`
   let d := finrank 𝕜 Sᗮ
   let LS := LinearMap.range L.toLinearMap
   have E : Sᗮ ≃ₗᵢ[𝕜] LSᗮ := by

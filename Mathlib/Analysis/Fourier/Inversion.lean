@@ -3,8 +3,8 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.SpecialFunctions.Gaussian
 import Mathlib.MeasureTheory.Integral.PeakFunction
+import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 
 /-!
 # Fourier inversion formula
@@ -77,7 +77,7 @@ lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕
     have : Integrable (fun w ↦ 𝐞 ⟪w, v⟫ • (𝓕 f) w) := by
       have B : Continuous fun p : V × V => (- innerₗ V) p.1 p.2 := continuous_inner.neg
       simpa using
-        (VectorFourier.fourier_integral_convergent_iff Real.continuous_fourierChar B v).1 h'f
+        (VectorFourier.fourierIntegral_convergent_iff Real.continuous_fourierChar B v).2 h'f
     convert tendsto_integral_cexp_sq_smul this using 4 with c w
     · rw [Submonoid.smul_def, Real.fourierChar_apply, smul_smul, ← Complex.exp_add, real_inner_comm]
       congr 3
