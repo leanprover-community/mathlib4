@@ -141,6 +141,11 @@ instance mul' : Mul R[X] :=
   ⟨mul⟩
 #align polynomial.has_mul Polynomial.mul'
 
+-- If the private definitions are accidentally exposes, simplify them away.
+@[simp] theorem add_eq_add : add p q = p + q := rfl
+@[simp] theorem neg_eq_neg : add p q = p + q := rfl
+@[simp] theorem mul_eq_mul : add p q = p + q := rfl
+
 instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] where
   smul r p := ⟨r • p.toFinsupp⟩
   smul_zero a := congr_arg ofFinsupp (smul_zero a)
@@ -299,7 +304,7 @@ instance semiring : Semiring R[X] :=
     toMul := Polynomial.mul'
     toZero := Polynomial.zero
     toOne := Polynomial.one
-    nsmul := (· • ·)
+    nsmul := (. • .)
     npow := fun n x => (x ^ n) }
 #align polynomial.semiring Polynomial.semiring
 
@@ -490,9 +495,7 @@ theorem monomial_eq_zero_iff (t : R) (n : ℕ) : monomial n t = 0 ↔ t = 0 :=
 #align polynomial.monomial_eq_zero_iff Polynomial.monomial_eq_zero_iff
 
 theorem support_add : (p + q).support ⊆ p.support ∪ q.support := by
-  rcases p with ⟨⟩; rcases q with ⟨⟩
-  simp only [← ofFinsupp_add, support]
-  exact support_add
+  simpa [support] using Finsupp.support_add
 #align polynomial.support_add Polynomial.support_add
 
 /-- `C a` is the constant polynomial `a`.
@@ -648,7 +651,7 @@ theorem monomial_mul_X_pow (n : ℕ) (r : R) (k : ℕ) :
     monomial n r * X ^ k = monomial (n + k) r := by
   induction' k with k ih
   · simp
-  · simp [ih, pow_succ, ← mul_assoc, add_assoc]
+  · simp [ih, pow_succ, ← mul_assoc, add_assoc, Nat.succ_eq_add_one]
 #align polynomial.monomial_mul_X_pow Polynomial.monomial_mul_X_pow
 
 @[simp]
@@ -688,7 +691,9 @@ theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp i = f.coeff i := by cases f
 #align polynomial.to_finsupp_apply Polynomial.toFinsupp_apply
 
 theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
-  simp only [← ofFinsupp_single, coeff, LinearMap.coe_mk]
+  -- porting note (#10745): was `simp [← ofFinsupp_single, coeff, LinearMap.coe_mk]`.
+  rw [← ofFinsupp_single]
+  simp only [coeff, LinearMap.coe_mk]
   rw [Finsupp.single_apply]
 #align polynomial.coeff_monomial Polynomial.coeff_monomial
 
@@ -954,7 +959,8 @@ theorem support_X (H : ¬(1 : R) = 0) : (X : R[X]).support = singleton 1 := by
 
 theorem monomial_left_inj {a : R} (ha : a ≠ 0) {i j : ℕ} :
     monomial i a = monomial j a ↔ i = j := by
-  simp only [← ofFinsupp_single, ofFinsupp.injEq, Finsupp.single_left_inj ha]
+  -- porting note (#10745): was `simp [← ofFinsupp_single, Finsupp.single_left_inj ha]`
+  rw [← ofFinsupp_single, ← ofFinsupp_single, ofFinsupp.injEq, Finsupp.single_left_inj ha]
 #align polynomial.monomial_left_inj Polynomial.monomial_left_inj
 
 theorem binomial_eq_binomial {k l m n : ℕ} {u v : R} (hu : u ≠ 0) (hv : v ≠ 0) :
@@ -1190,7 +1196,7 @@ instance ring : Ring R[X] :=
     toIntCast := Polynomial.intCast
     toNeg := Polynomial.neg'
     toSub := Polynomial.sub
-    zsmul := ((· • ·) : ℤ → R[X] → R[X]) }
+    zsmul := ((. • .) : ℤ → R[X] → R[X]) }
 #align polynomial.ring Polynomial.ring
 
 @[simp]
