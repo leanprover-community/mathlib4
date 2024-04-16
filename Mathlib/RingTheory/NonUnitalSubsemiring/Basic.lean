@@ -9,8 +9,8 @@ import Mathlib.Algebra.Group.Hom.Ring
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.GroupTheory.Subsemigroup.Membership
-import Mathlib.Algebra.Center.Ring
-import Mathlib.Algebra.Centralizer.Ring
+import Mathlib.Algebra.Ring.Center
+import Mathlib.Algebra.Ring.Centralizer
 import Mathlib.GroupTheory.Subsemigroup.Centralizer
 
 #align_import ring_theory.non_unital_subsemiring.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"

@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Star.Pointwise
-import Mathlib.Algebra.Centralizer.Basic
+import Mathlib.Algebra.Group.Centralizer
 
 /-! # `Set.center`, `Set.centralizer` and the `star` operation -/
 
