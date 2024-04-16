@@ -22,6 +22,7 @@ This is used to derive algebraic structures on `ℝ≥0` and `ℚ≥0` automatic
 * `{x : α // 0 ≤ x}` is a `CanonicallyLinearOrderedSemifield` if `α` is a `LinearOrderedField`.
 -/
 
+assert_not_exists abs_inv
 
 open Set
 

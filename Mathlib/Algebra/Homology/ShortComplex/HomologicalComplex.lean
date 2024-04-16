@@ -183,7 +183,7 @@ when `c.prev j = i`. -/
 noncomputable def homologyIsCokernel (hi : c.prev j = i) [K.HasHomology j] :
     IsColimit (CokernelCofork.ofπ (K.homologyπ j) (K.toCycles_comp_homologyπ i j)) := by
   subst hi
-  exact ((K.sc j).homologyIsCokernel)
+  exact (K.sc j).homologyIsCokernel
 
 /-- The opcycles in degree `i` of a homological complex. -/
 noncomputable def opcycles := (K.sc i).opcycles
