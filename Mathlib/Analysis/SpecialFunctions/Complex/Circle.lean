@@ -198,7 +198,7 @@ theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := 
 #align add_circle.injective_to_circle AddCircle.injective_toCircle
 
 /-- The homeomorphism between `AddCircle (2 * π)` and `circle`. -/
-noncomputable def homeomorphCircle' : AddCircle (2 * π) ≃ₜ circle where
+@[simps] noncomputable def homeomorphCircle' : AddCircle (2 * π) ≃ₜ circle where
   toFun := Angle.expMapCircle
   invFun := fun x ↦ arg x
   left_inv := Angle.arg_expMapCircle
@@ -211,13 +211,6 @@ noncomputable def homeomorphCircle' : AddCircle (2 * π) ≃ₜ circle where
       continuousAt_subtype_val
 
 theorem homeomorphCircle'_apply_mk (x : ℝ) : homeomorphCircle' x = expMapCircle x :=
-  rfl
-
-theorem homeomorphCircle'_apply (x : AddCircle (2 * π)) :
-    homeomorphCircle' x = Angle.expMapCircle x :=
-  rfl
-
-theorem homeomorphCircle'_symm_apply (x : circle) : homeomorphCircle'.symm x = arg x :=
   rfl
 
 /-- The homeomorphism between `AddCircle` and `circle`. -/
