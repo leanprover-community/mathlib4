@@ -321,7 +321,7 @@ def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair
     [PreservesColimitOfIsSplitPair G] [ReflectsColimitOfIsSplitPair G] : MonadicRightAdjoint G := by
   let i : IsRightAdjoint (comparison (ofRightAdjoint G)) := ⟨_, comparisonAdjunction⟩
   constructor
-  let _ : ∀ X : (ofRightAdjoint G).toMonad.Algebra,
+  have _ : ∀ X : (ofRightAdjoint G).toMonad.Algebra,
       IsIso ((ofRightAdjoint (comparison (ofRightAdjoint G))).unit.app X) := by
     intro X
     -- Porting note: passing instances through
@@ -333,7 +333,7 @@ def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair
           (IsColimit.coconePointUniqueUpToIso (beckCoequalizer X)
               (unitColimitOfPreservesCoequalizer X)).hom
       exact IsIso.of_iso (IsColimit.coconePointUniqueUpToIso _ _)
-  let _ : ∀ Y : D, IsIso ((ofRightAdjoint (comparison (ofRightAdjoint G))).counit.app Y) := by
+  have _ : ∀ Y : D, IsIso ((ofRightAdjoint (comparison (ofRightAdjoint G))).counit.app Y) := by
     intro Y
     change IsIso (comparisonAdjunction.counit.app Y)
     rw [comparisonAdjunction_counit_app]
@@ -433,7 +433,7 @@ def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRi
   letI i : IsRightAdjoint (comparison (Adjunction.ofRightAdjoint G)) :=
     ⟨_, comparisonAdjunction⟩
   constructor
-  let _ : ∀ X : (Adjunction.ofRightAdjoint G).toMonad.Algebra,
+  have _ : ∀ X : (Adjunction.ofRightAdjoint G).toMonad.Algebra,
       IsIso ((Adjunction.ofRightAdjoint
                 (comparison (Adjunction.ofRightAdjoint G))).unit.app X) := by
     intro X
@@ -446,7 +446,7 @@ def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRi
           (IsColimit.coconePointUniqueUpToIso (beckCoequalizer X)
               (unitColimitOfPreservesCoequalizer X)).hom
       apply IsIso.of_iso (IsColimit.coconePointUniqueUpToIso _ _)
-  let _ : ∀ Y : D,
+  have _ : ∀ Y : D,
       IsIso ((ofRightAdjoint (comparison (Adjunction.ofRightAdjoint G))).counit.app Y) := by
     intro Y
     change IsIso (comparisonAdjunction.counit.app Y)

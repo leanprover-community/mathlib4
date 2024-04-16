@@ -1088,7 +1088,7 @@ lemma isIso_homologyMap_of_isIso_opcyclesMap_of_mono {φ : S₁ ⟶ S₂}
   have h : (S₂.homologyι ≫ inv (opcyclesMap φ)) ≫ S₁.fromOpcycles = 0 := by
     simp only [← cancel_mono φ.τ₃, zero_comp, assoc, ← fromOpcycles_naturality,
       IsIso.inv_hom_id_assoc, homologyι_comp_fromOpcycles]
-  have ⟨z, hz⟩ := KernelFork.IsLimit.lift' S₁.homologyIsKernel _ h
+  let ⟨z, hz⟩ := KernelFork.IsLimit.lift' S₁.homologyIsKernel _ h
   dsimp at hz
   refine' ⟨⟨z, _, _⟩⟩
   · rw [← cancel_mono S₁.homologyι, id_comp, assoc, hz, homologyι_naturality_assoc,

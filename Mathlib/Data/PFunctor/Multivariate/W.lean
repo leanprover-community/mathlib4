@@ -222,7 +222,7 @@ theorem w_ind {α : TypeVec n} {C : P.W α → Prop}
   apply @wp_ind n P α fun a f => C ⟨a, f⟩
   intro a f f' ih'
   dsimp [wMk] at ih
-  let ih'' := ih a (P.wPathDestLeft f') fun i => ⟨f i, P.wPathDestRight f' i⟩
+  have ih'' := ih a (P.wPathDestLeft f') fun i => ⟨f i, P.wPathDestRight f' i⟩
   dsimp at ih''; rw [wPathCasesOn_eta] at ih''
   apply ih''
   apply ih'
