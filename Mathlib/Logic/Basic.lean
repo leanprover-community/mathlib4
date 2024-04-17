@@ -165,7 +165,7 @@ alias Iff.imp := imp_congr
 #align iff.imp Iff.imp
 
 @[simp] theorem eq_true_eq_id : Eq True = id := by
-  funext _; simp only [true_iff, id.def, eq_iff_iff]
+  funext _; simp only [true_iff, id, eq_iff_iff]
 #align eq_true_eq_id eq_true_eq_id
 
 #align imp_and_distrib imp_and
