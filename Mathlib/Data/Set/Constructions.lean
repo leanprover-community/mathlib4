@@ -82,4 +82,23 @@ theorem finiteInterClosure_insert {A : Set α} (cond : FiniteInter S) (P)
             constructor <;> simp (config := { contextual := true })⟩
 #align has_finite_inter.finite_inter_closure_insert FiniteInter.finiteInterClosure_insert
 
+open Set
+
+theorem mk₂ (h: ∀ ⦃s⦄, s ∈ S → ∀ ⦃t⦄, t ∈ S → s ∩ t ∈ S) : FiniteInter (insert (univ : Set α) S) where
+  univ_mem := Set.mem_insert Set.univ S
+  inter_mem s hs t ht:= by
+    simp at *
+    rcases hs with hsu | hsS
+    · rcases ht with htu | htS
+      · apply Or.inl
+        rw [hsu, htu, inter_self]
+      · apply Or.inr
+        rw [hsu, univ_inter]
+        exact htS
+    · apply Or.inr
+      rcases ht with htu | htS
+      · rw [htu, inter_univ]
+        exact hsS
+      · apply h hsS htS
+
 end FiniteInter
