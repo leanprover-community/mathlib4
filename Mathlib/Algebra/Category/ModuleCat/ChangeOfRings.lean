@@ -174,6 +174,18 @@ identity functor. -/
 def restrictScalarsId' : ModuleCat.restrictScalars.{v} f ≅ 𝟭 _ :=
     NatIso.ofComponents <| fun M ↦ restrictScalarsId'App f hf M
 
+@[reassoc]
+lemma restrictScalarsId'App_hom_naturality {M N : ModuleCat R} (φ : M ⟶ N) :
+    (restrictScalars f).map φ ≫ (restrictScalarsId'App f hf N).hom =
+      (restrictScalarsId'App f hf M).hom ≫ φ :=
+  (restrictScalarsId' f hf).hom.naturality φ
+
+@[reassoc]
+lemma restrictScalarsId'App_inv_naturality {M N : ModuleCat R} (φ : M ⟶ N) :
+    φ ≫ (restrictScalarsId'App f hf N).inv =
+      (restrictScalarsId'App f hf M).inv ≫ (restrictScalars f).map φ :=
+  (restrictScalarsId' f hf).inv.naturality φ
+
 variable (R)
 
 /-- The restriction of scalars by the identity morphisms identify to the
@@ -208,6 +220,20 @@ def restrictScalarsComp' :
     ModuleCat.restrictScalars.{v} gf ≅
       ModuleCat.restrictScalars g ⋙ ModuleCat.restrictScalars f :=
   NatIso.ofComponents <| fun M ↦ restrictScalarsComp'App f g gf hgf M
+
+@[reassoc]
+lemma restrictScalarsComp'App_hom_naturality {M N : ModuleCat R₃} (φ : M ⟶ N) :
+    (restrictScalars gf).map φ ≫ (restrictScalarsComp'App f g gf hgf N).hom =
+      (restrictScalarsComp'App f g gf hgf M).hom ≫
+        (restrictScalars f).map ((restrictScalars g).map φ) :=
+  (restrictScalarsComp' f g gf hgf).hom.naturality φ
+
+@[reassoc]
+lemma restrictScalarsComp'App_inv_naturality {M N : ModuleCat R₃} (φ : M ⟶ N) :
+    (restrictScalars f).map ((restrictScalars g).map φ) ≫
+        (restrictScalarsComp'App f g gf hgf N).inv =
+      (restrictScalarsComp'App f g gf hgf M).inv ≫ (restrictScalars gf).map φ :=
+  (restrictScalarsComp' f g gf hgf).inv.naturality φ
 
 /-- The restriction of scalars by a composition of ring morphisms identify to the
 composition of the restriction of scalars functors. -/
