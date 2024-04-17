@@ -287,7 +287,7 @@ open Real
 section NumericalBounds
 
 theorem log_two_mul_two_le_sqrt_log_eight : log 2 * 2 ≤ √(log 8) := by
-  have : (8 : ℝ) = 2 ^ ((3 : ℕ) : ℝ) := by rw [rpow_nat_cast]; norm_num
+  have : (8 : ℝ) = 2 ^ ((3 : ℕ) : ℝ) := by rw [rpow_natCast]; norm_num
   rw [this, log_rpow zero_lt_two (3 : ℕ)]
   apply le_sqrt_of_sq_le
   rw [mul_pow, sq (log 2), mul_assoc, mul_comm]
@@ -306,7 +306,7 @@ theorem two_div_one_sub_two_div_e_le_eight : 2 / (1 - 2 / exp 1) ≤ 8 := by
 
 theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) ≤ √(log ↑N) := by
   have : (12 : ℕ) * log 2 ≤ log N := by
-    rw [← log_rpow zero_lt_two, rpow_nat_cast]
+    rw [← log_rpow zero_lt_two, rpow_natCast]
     exact log_le_log (by positivity) (mod_cast hN)
   refine (mul_le_mul_of_nonneg_right (log_le_log ?_ two_div_one_sub_two_div_e_le_eight) <| by
     norm_num1).trans ?_
@@ -314,7 +314,7 @@ theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) �
     rw [sub_pos, div_lt_one (exp_pos _)]
     exact exp_one_gt_d9.trans_le' (by norm_num1)
   have l8 : log 8 = (3 : ℕ) * log 2 := by
-    rw [← log_rpow zero_lt_two, rpow_nat_cast]
+    rw [← log_rpow zero_lt_two, rpow_natCast]
     norm_num
   rw [l8]
   apply le_sqrt_of_sq_le (le_trans _ this)
@@ -378,7 +378,7 @@ theorem three_le_nValue (hN : 64 ≤ N) : 3 ≤ nValue N := by
   rw [nValue, ← lt_iff_add_one_le, lt_ceil, cast_two]
   apply lt_sqrt_of_sq_lt
   have : (2 : ℝ) ^ ((6 : ℕ) : ℝ) ≤ N := by
-    rw [rpow_nat_cast]
+    rw [rpow_natCast]
     exact (cast_le.2 hN).trans' (by norm_num1)
   apply lt_of_lt_of_le _ (log_le_log (rpow_pos_of_pos zero_lt_two _) this)
   rw [log_rpow zero_lt_two, ← div_lt_iff']
@@ -413,7 +413,7 @@ theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
   apply this.trans
   suffices ((2 * dValue N) ^ nValue N : ℝ) ≤ N from mod_cast this
   suffices i : (2 * dValue N : ℝ) ≤ (N : ℝ) ^ (nValue N : ℝ)⁻¹ by
-    rw [← rpow_nat_cast]
+    rw [← rpow_natCast]
     apply (rpow_le_rpow (mul_nonneg zero_le_two (cast_nonneg _)) i (cast_nonneg _)).trans
     rw [← rpow_mul (cast_nonneg _), inv_mul_cancel, rpow_one]
     rw [cast_ne_zero]
@@ -440,7 +440,7 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dV
       exact hN.trans_lt' (by norm_num1)
     apply le_sqrt_of_sq_le
     have : (12 : ℕ) * log 2 ≤ log N := by
-      rw [← log_rpow zero_lt_two, rpow_nat_cast]
+      rw [← log_rpow zero_lt_two, rpow_natCast]
       exact log_le_log (by positivity) (mod_cast hN)
     refine' le_trans _ this
     rw [← div_le_iff']
@@ -467,7 +467,7 @@ theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
     _ < _ := by gcongr; exacts [(tsub_pos_of_lt hn₂).ne', bound hN]
     _ ≤ rothNumberNat ((2 * dValue N - 1) ^ n) := bound_aux hd.ne' hn₂.le
     _ ≤ rothNumberNat N := mod_cast rothNumberNat.mono this
-  rw [← rpow_nat_cast, div_rpow (rpow_nonneg hN₀.le _) (exp_pos _).le, ← rpow_mul hN₀.le,
+  rw [← rpow_natCast, div_rpow (rpow_nonneg hN₀.le _) (exp_pos _).le, ← rpow_mul hN₀.le,
     inv_mul_eq_div, cast_sub hn₂.le, cast_two, same_sub_div hn.ne', exp_one_rpow,
     div_div, rpow_sub hN₀, rpow_one, div_div, div_eq_mul_inv]
   refine' mul_le_mul_of_nonneg_left _ (cast_nonneg _)
@@ -489,7 +489,7 @@ theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
 #align behrend.roth_lower_bound_explicit Behrend.roth_lower_bound_explicit
 
 theorem exp_four_lt : exp 4 < 64 := by
-  rw [show (64 : ℝ) = 2 ^ ((6 : ℕ) : ℝ) by rw [rpow_nat_cast]; norm_num1,
+  rw [show (64 : ℝ) = 2 ^ ((6 : ℕ) : ℝ) by rw [rpow_natCast]; norm_num1,
     ← lt_log_iff_exp_lt (rpow_pos_of_pos zero_lt_two _), log_rpow zero_lt_two, ← div_lt_iff']
   exact log_two_gt_d9.trans_le' (by norm_num1)
   norm_num
@@ -497,7 +497,7 @@ theorem exp_four_lt : exp 4 < 64 := by
 
 theorem four_zero_nine_six_lt_exp_sixteen : 4096 < exp 16 := by
   rw [← log_lt_iff_lt_exp (show (0 : ℝ) < 4096 by norm_num), show (4096 : ℝ) = 2 ^ 12 by norm_cast,
-    ← rpow_nat_cast, log_rpow zero_lt_two, cast_ofNat]
+    ← rpow_natCast, log_rpow zero_lt_two, cast_ofNat]
   have : 12 * (0.6931471808 : ℝ) < 16 := by norm_num
   linarith [log_two_lt_d9]
 #align behrend.four_zero_nine_six_lt_exp_sixteen Behrend.four_zero_nine_six_lt_exp_sixteen

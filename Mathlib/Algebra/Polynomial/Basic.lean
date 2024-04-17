@@ -553,9 +553,9 @@ theorem C_pow : C (a ^ n) = C a ^ n :=
 #align polynomial.C_pow Polynomial.C_pow
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-theorem C_eq_nat_cast (n : ℕ) : C (n : R) = (n : R[X]) :=
+theorem C_eq_natCast (n : ℕ) : C (n : R) = (n : R[X]) :=
   map_natCast C n
-#align polynomial.C_eq_nat_cast Polynomial.C_eq_nat_cast
+#align polynomial.C_eq_nat_cast Polynomial.C_eq_natCast
 
 @[simp]
 theorem C_mul_monomial : C a * monomial n b = monomial n (a * b) := by
@@ -757,8 +757,8 @@ theorem coeff_C_ne_zero (h : n ≠ 0) : (C a).coeff n = 0 := by rw [coeff_C, if_
 lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff_C]
 
 @[simp]
-theorem coeff_nat_cast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
-  simp only [← C_eq_nat_cast, coeff_C, Nat.cast_ite, Nat.cast_zero]
+theorem coeff_natCast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
+  simp only [← C_eq_natCast, coeff_C, Nat.cast_ite, Nat.cast_zero]
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
@@ -966,9 +966,9 @@ theorem binomial_eq_binomial {k l m n : ℕ} {u v : R} (hu : u ≠ 0) (hv : v �
   exact Finsupp.single_add_single_eq_single_add_single hu hv
 #align polynomial.binomial_eq_binomial Polynomial.binomial_eq_binomial
 
-theorem nat_cast_mul (n : ℕ) (p : R[X]) : (n : R[X]) * p = n • p :=
+theorem natCast_mul (n : ℕ) (p : R[X]) : (n : R[X]) * p = n • p :=
   (nsmul_eq_mul _ _).symm
-#align polynomial.nat_cast_mul Polynomial.nat_cast_mul
+#align polynomial.nat_cast_mul Polynomial.natCast_mul
 
 /-- Summing the values of a function applied to the coefficients of a polynomial -/
 def sum {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) : S :=
@@ -1226,8 +1226,8 @@ theorem support_neg {p : R[X]} : (-p).support = p.support := by
   rw [← ofFinsupp_neg, support, support]; apply Finsupp.support_neg
 #align polynomial.support_neg Polynomial.support_neg
 
-theorem C_eq_int_cast (n : ℤ) : C (n : R) = n := by simp
-#align polynomial.C_eq_int_cast Polynomial.C_eq_int_cast
+theorem C_eq_intCast (n : ℤ) : C (n : R) = n := by simp
+#align polynomial.C_eq_int_cast Polynomial.C_eq_intCast
 
 theorem C_neg : C (-a) = -C a :=
   RingHom.map_neg C a
