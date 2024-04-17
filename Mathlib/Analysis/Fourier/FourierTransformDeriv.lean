@@ -132,7 +132,8 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierSMulRight
     (ContinuousLinearMap.smulRightL ℝ W E).continuous₂
   have aux1 : AEStronglyMeasurable (fun v ↦ (L v, f v)) μ :=
     L.continuous.aestronglyMeasurable.prod_mk hf
-  exact aux0.comp_aestronglyMeasurable aux1
+  -- Elaboration without the expected type is faster here:
+  exact (aux0.comp_aestronglyMeasurable aux1 : _)
 
 variable {f}
 
