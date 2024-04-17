@@ -450,45 +450,6 @@ section Order
 
 section Semiring
 
--- this is *super* annoying, and it's probably not the statement we want anyway.
--- e.g., `NoZeroDivisors` is too strong
-instance ContinuousMapZero.instStarOrderedRing {α R : Type*} [TopologicalSpace α] [Zero α]
-    [TopologicalSpace R] [OrderedCommSemiring R] [NoZeroDivisors R] [StarRing R] [StarOrderedRing R]
-    [TopologicalSemiring R] [ContinuousStar R] [StarOrderedRing C(α, R)] :
-    StarOrderedRing C(α, R)₀ where
-  le_iff f g := by
-    constructor
-    · rw [le_def, ← ContinuousMap.coe_coe, ← ContinuousMap.coe_coe g, ← ContinuousMap.le_def,
-        StarOrderedRing.le_iff]
-      rintro ⟨p, hp_mem, hp⟩
-      induction hp_mem using AddSubmonoid.closure_induction_left generalizing f g with
-      | one => exact ⟨0, zero_mem _, by ext x; congrm($(hp) x)⟩
-      | mul_left s s_mem p p_mem hp' =>
-        obtain ⟨s, rfl⟩ := s_mem
-        simp only at *
-        have h₀ : (star s * s + p) 0 = 0 := by simpa using congr($(hp) 0).symm
-        rw [← add_assoc] at hp
-        have p'₀ : 0 ≤ p 0 := by rw [← StarOrderedRing.nonneg_iff] at p_mem; exact p_mem 0
-        have s₉ : (star s * s) 0 = 0 := le_antisymm ((le_add_of_nonneg_right p'₀).trans_eq h₀)
-          (star_mul_self_nonneg (s 0))
-        have s₀' : s 0 = 0 := by aesop
-        let s' : C(α, R)₀ := ⟨s, s₀'⟩
-        obtain ⟨p', hp'_mem, rfl⟩ := hp' (f + star s' * s') g hp
-        refine ⟨star s' * s' + p', ?_, by rw [add_assoc]⟩
-        exact add_mem (AddSubmonoid.subset_closure ⟨s', rfl⟩) hp'_mem
-    · rintro ⟨p, hp, rfl⟩
-      induction hp using AddSubmonoid.closure_induction' generalizing f with
-      | mem s s_mem =>
-        obtain ⟨s, rfl⟩ := s_mem
-        exact fun x ↦ le_add_of_nonneg_right (star_mul_self_nonneg (s x))
-      | one => simp
-      | mul g₁ _ g₂ _ h₁ h₂ => calc
-          f ≤ f + g₁ := h₁ f
-          _ ≤ (f + g₁) + g₂ := h₂ (f + g₁)
-          _ = f + (g₁ + g₂) := add_assoc _ _ _
-
-
-
 variable {R A : Type*} {p : A → Prop} [OrderedCommSemiring R] [Nontrivial R]
 variable [StarRing R] [StarOrderedRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
 variable [∀ (α) [Zero α] [TopologicalSpace α], StarOrderedRing C(α, R)₀]
