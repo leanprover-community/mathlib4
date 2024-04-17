@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Sites.ConcreteSheafification
+import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 #align_import category_theory.sites.limits from "leanprover-community/mathlib"@"95e83ced9542828815f53a1096a4d373c1b08a77"
@@ -40,10 +40,10 @@ open Opposite
 
 section Limits
 
-universe w v u z z'
+universe w w' v u z z'
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-variable {D : Type w} [Category.{max v u} D]
+variable {D : Type w} [Category.{w'} D]
 variable {K : Type z} [Category.{z'} K]
 
 noncomputable section
@@ -170,11 +170,15 @@ instance [HasFiniteProducts D] : HasFiniteProducts (Sheaf J D) :=
 
 end
 
-instance createsLimits [HasLimits D] : CreatesLimits (sheafToPresheaf J D) :=
+instance createsLimits [HasLimits D] : CreatesLimitsOfSize (sheafToPresheaf J D) :=
   ⟨createsLimitsOfShape⟩
 
-instance [HasLimits D] : HasLimits (Sheaf J D) :=
+instance hasLimitsOfSize [HasLimitsOfSize D] : HasLimitsOfSize (Sheaf J D) :=
   hasLimits_of_hasLimits_createsLimits (sheafToPresheaf J D)
+
+variable {D : Type w} [Category.{max v u} D]
+
+example [HasLimits D] : HasLimits (Sheaf J D) := inferInstance
 
 end
 
@@ -182,19 +186,20 @@ end Limits
 
 section Colimits
 
-universe w v u z z'
+universe w w' v u z z'
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-variable {D : Type w} [Category.{max v u} D]
+variable {D : Type w} [Category.{w'} D]
 variable {K : Type z} [Category.{z'} K]
 
 -- Now we need a handful of instances to obtain sheafification...
-variable [ConcreteCategory.{max v u} D]
-variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
-variable [PreservesLimits (forget D)]
-variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
-variable [(forget D).ReflectsIsomorphisms]
+-- variable [ConcreteCategory.{max v u} D]
+-- variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
+-- variable [PreservesLimits (forget D)]
+-- variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
+-- variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
+-- variable [(forget D).ReflectsIsomorphisms]
+variable [HasWeakSheafify J D]
 
 /-- Construct a cocone by sheafifying a cocone point of a cocone `E` of presheaves
 over a functor which factors through sheaves.
@@ -202,9 +207,9 @@ In `isColimitSheafifyCocone`, we show that this is a colimit cocone when `E` is 
 @[simps]
 noncomputable def sheafifyCocone {F : K ⥤ Sheaf J D}
     (E : Cocone (F ⋙ sheafToPresheaf J D)) : Cocone F where
-  pt := ⟨J.sheafify E.pt, GrothendieckTopology.Plus.isSheaf_plus_plus _ _⟩
+  pt := presheafToSheaf J D |>.obj E.pt
   ι :=
-    { app := fun k => ⟨E.ι.app k ≫ J.toSheafify E.pt⟩
+    { app := fun k => ⟨E.ι.app k ≫ toSheafify J E.pt⟩
       naturality := fun i j f => by
         ext1
         dsimp
@@ -217,17 +222,17 @@ then `sheafifyCocone E` is a colimit cocone. -/
 @[simps]
 noncomputable def isColimitSheafifyCocone {F : K ⥤ Sheaf J D}
     (E : Cocone (F ⋙ sheafToPresheaf J D)) (hE : IsColimit E) : IsColimit (sheafifyCocone E) where
-  desc S := ⟨J.sheafifyLift (hE.desc ((sheafToPresheaf J D).mapCocone S)) S.pt.2⟩
+  desc S := ⟨sheafifyLift J (hE.desc ((sheafToPresheaf J D).mapCocone S)) S.pt.2⟩
   fac := by
     intro S j
     ext1
     dsimp [sheafifyCocone]
-    erw [Category.assoc, J.toSheafify_sheafifyLift, hE.fac]
+    erw [Category.assoc, toSheafify_sheafifyLift, hE.fac]
     rfl
   uniq := by
     intro S m hm
     ext1
-    apply J.sheafifyLift_unique
+    apply sheafifyLift_unique
     apply hE.uniq ((sheafToPresheaf J D).mapCocone S)
     intro j
     dsimp
@@ -243,8 +248,12 @@ instance [HasColimitsOfShape K D] : HasColimitsOfShape K (Sheaf J D) :=
 instance [HasFiniteCoproducts D] : HasFiniteCoproducts (Sheaf J D) :=
   ⟨inferInstance⟩
 
-instance [HasColimits D] : HasColimits (Sheaf J D) :=
+instance [HasColimitsOfSize D] : HasColimitsOfSize (Sheaf J D) :=
   ⟨inferInstance⟩
+
+variable {D : Type w} [Category.{max v u} D]
+
+example [HasLimits D] : HasLimits (Sheaf J D) := inferInstance
 
 end Colimits
 

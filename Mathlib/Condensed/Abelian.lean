@@ -6,6 +6,7 @@ Authors: Adam Topaz
 import Mathlib.Algebra.Category.GroupCat.Abelian
 import Mathlib.Algebra.Category.GroupCat.FilteredColimits
 import Mathlib.CategoryTheory.Sites.Abelian
+import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.Condensed.Basic
 
 /-!
