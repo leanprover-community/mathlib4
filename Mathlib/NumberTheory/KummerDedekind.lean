@@ -245,7 +245,7 @@ attribute [local instance] Ideal.Quotient.field
 
 /-- The first half of the **Kummer-Dedekind Theorem** in the monogenic case, stating that the prime
     factors of `I*S` are in bijection with those of the minimal polynomial of the generator of `S`
-    over `R`, taken `mod I`.-/
+    over `R`, taken `mod I`. -/
 noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMaximal I)
     (hI' : I ≠ ⊥) (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x) :
     {J : Ideal S | J ∈ normalizedFactors (I.map (algebraMap R S))} ≃
@@ -261,8 +261,7 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
     · exact NoZeroSMulDivisors.algebraMap_injective (Algebra.adjoin R {x}) S
     · rw [Algebra.adjoin.powerBasis'_minpoly_gen hx']
   refine (normalizedFactorsEquivOfQuotEquiv f ?_ ?_).trans ?_
-  · rwa [Ne.def, map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S),
-      ← Ne.def]
+  · rwa [Ne, map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S), ← Ne]
   · by_contra h
     exact (show Polynomial.map (Ideal.Quotient.mk I) (minpoly R x) ≠ 0 from
       Polynomial.map_monic_ne_zero (minpoly.monic hx')) (span_singleton_eq_bot.mp h)

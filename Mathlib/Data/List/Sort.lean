@@ -11,8 +11,9 @@ import Mathlib.Data.List.Nodup
 /-!
 # Sorting algorithms on lists
 
-In this file we define `List.Sorted r l` to be an alias for `Pairwise r l`. This alias is preferred
-in the case that `r` is a `<` or `≤`-like relation. Then we define two sorting algorithms:
+In this file we define `List.Sorted r l` to be an alias for `List.Pairwise r l`.
+This alias is preferred in the case that `r` is a `<` or `≤`-like relation.
+Then we define two sorting algorithms:
 `List.insertionSort` and `List.mergeSort`, and prove their correctness.
 -/
 
@@ -32,7 +33,7 @@ section Sorted
 
 variable {α : Type uu} {r : α → α → Prop} {a : α} {l : List α}
 
-/-- `Sorted r l` is the same as `Pairwise r l`, preferred in the case that `r`
+/-- `Sorted r l` is the same as `List.Pairwise r l`, preferred in the case that `r`
   is a `<` or `≤`-like relation (transitive and antisymmetric or asymmetric) -/
 def Sorted :=
   @Pairwise

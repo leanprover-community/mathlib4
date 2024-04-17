@@ -208,7 +208,7 @@ theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
     (Real.sqrt_eq_iff_sq_eq (by positivity) (by positivity)).mpr (by norm_num)]
     exact Real.pi_gt_three
   refine Int.cast_lt.mp <| lt_of_lt_of_le ?_ (abs_discr_ge h)
-  rw [← _root_.div_lt_iff' (by positivity), Int.int_cast_ofNat]
+  rw [← _root_.div_lt_iff' (by positivity), Int.cast_ofNat]
   refine lt_of_lt_of_le ?_ (pow_le_pow_right (n := 2) h₁ h)
   rw [div_pow, _root_.lt_div_iff (by norm_num), mul_pow, show (2:ℝ) / (4 / 9) * 4 ^ 2 = 72 by
     norm_num, show (3:ℝ) ^ 2 = 9 by norm_num, ← _root_.div_lt_iff' (by positivity),
@@ -291,7 +291,7 @@ theorem rank_le_rankOfDiscrBdd :
       refine lt_of_le_of_lt ?_ (mul_lt_mul_of_pos_left
         (Real.rpow_lt_rpow_of_exponent_lt h₂ h) (by positivity : (0:ℝ) < 4 / 9))
       rw [Real.rpow_logb (lt_trans zero_lt_one h₂) (ne_of_gt h₂) (by positivity), ← mul_assoc,
-            ← inv_div, inv_mul_cancel (by norm_num), one_mul, Int.cast_ofNat]
+            ← inv_div, inv_mul_cancel (by norm_num), one_mul, Int.cast_natCast]
     · refine div_nonneg (Real.log_nonneg ?_) (Real.log_nonneg (le_of_lt h₂))
       rw [mul_comm, ← mul_div_assoc, _root_.le_div_iff (by positivity), one_mul,
         ← _root_.div_le_iff (by positivity)]
@@ -310,7 +310,7 @@ theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K ↑1 < boundOfDiscBd
   gcongr
   · exact pow_le_one _ (by positivity) (by norm_num)
   · rwa [sqrt_le_sqrt, ← NNReal.coe_le_coe, coe_nnnorm, Int.norm_eq_abs, ← Int.cast_abs,
-      NNReal.coe_nat_cast, ← Int.cast_ofNat, Int.cast_le]
+      NNReal.coe_nat_cast, ← Int.cast_natCast, Int.cast_le]
   · exact one_le_two
   · exact rank_le_rankOfDiscrBdd hK
 

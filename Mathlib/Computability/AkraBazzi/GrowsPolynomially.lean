@@ -135,7 +135,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
     refine (logb_le_logb (b := 2) (by norm_num) (zpow_pos_of_pos (by norm_num) _)
       (by positivity)).mp ?_
     rw [← rpow_int_cast, logb_rpow (by norm_num) (by norm_num), ← neg_le_neg_iff]
-    simp only [Int.cast_sub, Int.cast_neg, Int.cast_ofNat, Int.cast_one, neg_sub, sub_neg_eq_add]
+    simp only [Int.cast_sub, Int.cast_neg, Int.cast_natCast, Int.cast_one, neg_sub, sub_neg_eq_add]
     calc -logb 2 (x/x₀) ≤ ⌈-logb 2 (x/x₀)⌉₊ := Nat.le_ceil (-logb 2 (x / x₀))
          _ ≤ _ := by rw [add_comm]; exact_mod_cast Nat.ceil_le_floor_add_one _
   case ub =>
@@ -143,7 +143,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
     refine (logb_le_logb (b := 2) (by norm_num) (by positivity)
       (zpow_pos_of_pos (by norm_num) _)).mp ?_
     rw [← rpow_int_cast, logb_rpow (by norm_num) (by norm_num), ← neg_le_neg_iff]
-    simp only [Int.cast_neg, Int.cast_ofNat, neg_neg]
+    simp only [Int.cast_neg, Int.cast_natCast, neg_neg]
     have : 0 ≤ -logb 2 (x / x₀) := by
       rw [neg_nonneg]
       refine logb_nonpos (by norm_num) (by positivity) ?_

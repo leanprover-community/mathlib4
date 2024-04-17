@@ -28,7 +28,7 @@ variable {α : Type u} {β : Type v} {ι : Type*} {π : ι → Type*} [Topologic
 section TotallyDisconnected
 
 /-- A set `s` is called totally disconnected if every subset `t ⊆ s` which is preconnected is
-a subsingleton, ie either empty or a singleton.-/
+a subsingleton, ie either empty or a singleton. -/
 def IsTotallyDisconnected (s : Set α) : Prop :=
   ∀ t, t ⊆ s → IsPreconnected t → t.Subsingleton
 #align is_totally_disconnected IsTotallyDisconnected

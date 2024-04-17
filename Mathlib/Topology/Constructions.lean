@@ -545,7 +545,7 @@ theorem nhds_prod_eq {x : X} {y : Y} : 𝓝 (x, y) = 𝓝 x ×ˢ 𝓝 y := by
     (t₂ := TopologicalSpace.induced Prod.snd _), nhds_induced, nhds_induced]
 #align nhds_prod_eq nhds_prod_eq
 
--- Porting note: moved from `topology.continuous_on`
+-- Porting note: moved from `Topology.ContinuousOn`
 theorem nhdsWithin_prod_eq (x : X) (y : Y) (s : Set X) (t : Set Y) :
     𝓝[s ×ˢ t] (x, y) = 𝓝[s] x ×ˢ 𝓝[t] y := by
   simp only [nhdsWithin, nhds_prod_eq, ← prod_inf_prod, prod_principal_principal]
@@ -1352,6 +1352,11 @@ lemma Pi.induced_restrict (S : Set ι) :
   simp (config := { unfoldPartialApp := true }) [← iInf_subtype'', ← induced_precomp' ((↑) : S → ι),
     Set.restrict]
 
+lemma Pi.induced_restrict_sUnion (𝔖 : Set (Set ι)) :
+    induced (⋃₀ 𝔖).restrict (Pi.topologicalSpace (Y := fun i : (⋃₀ 𝔖) ↦ π i)) =
+    ⨅ S ∈ 𝔖, induced S.restrict Pi.topologicalSpace := by
+  simp_rw [Pi.induced_restrict, iInf_sUnion]
+
 theorem Filter.Tendsto.update [DecidableEq ι] {l : Filter Y} {f : Y → ∀ i, π i} {x : ∀ i, π i}
     (hf : Tendsto f l (𝓝 x)) (i : ι) {g : Y → π i} {xi : π i} (hg : Tendsto g l (𝓝 xi)) :
     Tendsto (fun a => update (f a) i (g a)) l (𝓝 <| update x i xi) :=
@@ -1415,7 +1420,7 @@ theorem isOpen_pi_iff {s : Set (∀ a, π a)} :
         (∀ a, a ∈ I → IsOpen (u a) ∧ f a ∈ u a) ∧ (I : Set ι).pi u ⊆ s := by
   rw [isOpen_iff_nhds]
   simp_rw [le_principal_iff, nhds_pi, Filter.mem_pi', mem_nhds_iff]
-  refine ball_congr fun a _ => ⟨?_, ?_⟩
+  refine forall₂_congr fun a _ => ⟨?_, ?_⟩
   · rintro ⟨I, t, ⟨h1, h2⟩⟩
     refine ⟨I, fun a => eval a '' (I : Set ι).pi fun a => (h1 a).choose, fun i hi => ?_, ?_⟩
     · simp_rw [Set.eval_image_pi (Finset.mem_coe.mpr hi)
@@ -1442,7 +1447,7 @@ theorem isOpen_pi_iff' [Finite ι] {s : Set (∀ a, π a)} :
   cases nonempty_fintype ι
   rw [isOpen_iff_nhds]
   simp_rw [le_principal_iff, nhds_pi, Filter.mem_pi', mem_nhds_iff]
-  refine ball_congr fun a _ => ⟨?_, ?_⟩
+  refine forall₂_congr fun a _ => ⟨?_, ?_⟩
   · rintro ⟨I, t, ⟨h1, h2⟩⟩
     refine
       ⟨fun i => (h1 i).choose,

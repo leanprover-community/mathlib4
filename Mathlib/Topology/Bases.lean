@@ -833,7 +833,7 @@ lemma secondCountableTopology_iInf {ι} [Countable ι] {t : ι → TopologicalSp
   exact SecondCountableTopology.mk' <|
     countable_iUnion fun i => @countable_countableBasis _ (t i) (ht i)
 
--- TODO: more fine grained instances for first_countable_topology, separable_space, t2_space, ...
+-- TODO: more fine grained instances for `FirstCountableTopology`, `SeparableSpace`, `T2Space`, ...
 instance {β : Type*} [TopologicalSpace β] [SecondCountableTopology α] [SecondCountableTopology β] :
     SecondCountableTopology (α × β) :=
   ((isBasis_countableBasis α).prod (isBasis_countableBasis β)).secondCountableTopology <|
