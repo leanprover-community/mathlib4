@@ -17,6 +17,9 @@ This file defines unoriented angles in real inner product spaces.
 
 * `InnerProductGeometry.angle` is the undirected angle between two vectors.
 
+## TODO
+
+Prove the triangle inequality for the angle.
 -/
 
 
@@ -112,6 +115,8 @@ theorem angle_neg_left (x y : V) : angle (-x) y = π - angle x y := by
   rw [← angle_neg_neg, neg_neg, angle_neg_right]
 #align inner_product_geometry.angle_neg_left InnerProductGeometry.angle_neg_left
 
+proof_wanted angle_triangle (x y z : V) : angle x z ≤ angle x y + angle y z
+
 /-- The angle between the zero vector and a vector. -/
 @[simp]
 theorem angle_zero_left (x : V) : angle 0 x = π / 2 := by
@@ -185,7 +190,7 @@ theorem cos_angle_mul_norm_mul_norm (x y : V) : Real.cos (angle x y) * (‖x‖ 
 /-- The sine of the angle between two vectors, multiplied by the
 product of their norms. -/
 theorem sin_angle_mul_norm_mul_norm (x y : V) :
-    Real.sin (angle x y) * (‖x‖ * ‖y‖) = Real.sqrt (⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) := by
+    Real.sin (angle x y) * (‖x‖ * ‖y‖) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) := by
   unfold angle
   rw [Real.sin_arccos, ← Real.sqrt_mul_self (mul_nonneg (norm_nonneg x) (norm_nonneg y)),
     ← Real.sqrt_mul' _ (mul_self_nonneg _), sq,
@@ -223,7 +228,7 @@ vectors and a third vector add to π. -/
 theorem angle_add_angle_eq_pi_of_angle_eq_pi {x y : V} (z : V) (h : angle x y = π) :
     angle x z + angle y z = π := by
   rcases angle_eq_pi_iff.1 h with ⟨_, ⟨r, ⟨hr, rfl⟩⟩⟩
-  rw [angle_smul_left_of_neg x z hr, angle_neg_left, add_sub_cancel'_right]
+  rw [angle_smul_left_of_neg x z hr, angle_neg_left, add_sub_cancel]
 #align inner_product_geometry.angle_add_angle_eq_pi_of_angle_eq_pi InnerProductGeometry.angle_add_angle_eq_pi_of_angle_eq_pi
 
 /-- Two vectors have inner product 0 if and only if the angle between

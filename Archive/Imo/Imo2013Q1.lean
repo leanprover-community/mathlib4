@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.Parity
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Positivity.Basic
 
 #align_import imo.imo2013_q1 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
@@ -31,15 +32,15 @@ open scoped BigOperators
 
 namespace Imo2013Q1
 
--- porting note: simplified proof using `positivity`
+-- Porting note: simplified proof using `positivity`
 theorem arith_lemma (k n : ℕ) : 0 < 2 * n + 2 ^ k.succ := by positivity
 #align imo2013_q1.arith_lemma Imo2013Q1.arith_lemma
 
 theorem prod_lemma (m : ℕ → ℕ+) (k : ℕ) (nm : ℕ+) :
     ∏ i : ℕ in Finset.range k, ((1 : ℚ) + 1 / ↑(if i < k then m i else nm)) =
       ∏ i : ℕ in Finset.range k, (1 + 1 / (m i : ℚ)) := by
-  suffices : ∀ i, i ∈ Finset.range k → (1 : ℚ) + 1 / ↑(if i < k then m i else nm) = 1 + 1 / m i
-  exact Finset.prod_congr rfl this
+  suffices ∀ i, i ∈ Finset.range k → (1 : ℚ) + 1 / ↑(if i < k then m i else nm) = 1 + 1 / m i from
+    Finset.prod_congr rfl this
   intro i hi
   simp [Finset.mem_range.mp hi]
 #align imo2013_q1.prod_lemma Imo2013Q1.prod_lemma
@@ -67,18 +68,15 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
     use m
     have hmpk : (m pk : ℚ) = 2 * t + 2 ^ pk.succ := by
       have : m pk = ⟨2 * t + 2 ^ pk.succ, _⟩ := if_neg (irrefl pk); simp [this]
-    have denom_ne_zero : (2 * (t : ℚ) + 2 * 2 ^ pk) ≠ 0 := by positivity
     calc
       ((1 : ℚ) + (2 ^ pk.succ - 1) / (n : ℚ) : ℚ)= 1 + (2 * 2 ^ pk - 1) / (2 * (t + 1) : ℕ) := by
-        rw [ht, pow_succ]
+        rw [ht, pow_succ']
       _ = (1 + 1 / (2 * t + 2 * 2 ^ pk)) * (1 + (2 ^ pk - 1) / (↑t + 1)) := by
-        field_simp [t.cast_add_one_ne_zero]
+        field_simp
         ring
       _ = (1 + 1 / (2 * t + 2 ^ pk.succ)) * (1 + (2 ^ pk - 1) / t_succ) := by
-        -- porting note: used to work with `norm_cast`
-        simp only [PNat.mk_coe, Nat.cast_add, Nat.cast_one, mul_eq_mul_right_iff]
-        left
-        rfl
+        -- Porting note: used to work with `norm_cast`
+        simp only [t_succ, PNat.mk_coe, Nat.cast_add, Nat.cast_one, mul_eq_mul_right_iff, pow_succ']
       _ = (∏ i in Finset.range pk, (1 + 1 / (m i : ℚ))) * (1 + 1 / m pk) := by
         rw [prod_lemma, hpm, ← hmpk, mul_comm]
       _ = ∏ i in Finset.range pk.succ, (1 + 1 / (m i : ℚ)) := by rw [← Finset.prod_range_succ _ pk]
@@ -90,12 +88,11 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
     have hmpk : (m pk : ℚ) = 2 * t + 1 := by
       have : m pk = ⟨2 * t + 1, _⟩ := if_neg (irrefl pk)
       simp [this]
-    have denom_ne_zero : 2 * (t : ℚ) + 1 ≠ 0 := by norm_cast; apply (2 * t).succ_ne_zero
     calc
       ((1 : ℚ) + (2 ^ pk.succ - 1) / ↑n : ℚ) = 1 + (2 * 2 ^ pk - 1) / (2 * t + 1 : ℕ) := by
-        rw [ht, pow_succ]
+        rw [ht, pow_succ']
       _ = (1 + 1 / (2 * t + 1)) * (1 + (2 ^ pk - 1) / (t + 1)) := by
-        field_simp [t.cast_add_one_ne_zero]
+        field_simp
         ring
       _ = (1 + 1 / (2 * t + 1)) * (1 + (2 ^ pk - 1) / t_succ) := by norm_cast
       _ = (∏ i in Finset.range pk, (1 + 1 / (m i : ℚ))) * (1 + 1 / ↑(m pk)) := by

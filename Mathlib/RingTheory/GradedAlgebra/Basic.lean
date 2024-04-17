@@ -48,7 +48,6 @@ variable {ι R A σ : Type*}
 section GradedRing
 
 variable [DecidableEq ι] [AddMonoid ι] [CommSemiring R] [Semiring A] [Algebra R A]
-
 variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ)
 
 open DirectSum
@@ -74,8 +73,7 @@ a ring to a direct sum of components. -/
 def decomposeRingEquiv : A ≃+* ⨁ i, 𝒜 i :=
   RingEquiv.symm
     { (decomposeAddEquiv 𝒜).symm with
-      map_mul' := (coeRingHom 𝒜).map_mul
-      map_add' := (coeRingHom 𝒜).map_add }
+      map_mul' := (coeRingHom 𝒜).map_mul }
 #align direct_sum.decompose_ring_equiv DirectSum.decomposeRingEquiv
 
 @[simp]
@@ -131,7 +129,6 @@ section AddCancelMonoid
 open DirectSum
 
 variable [DecidableEq ι] [Semiring A] [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ)
-
 variable {i j : ι}
 
 namespace DirectSum
@@ -167,7 +164,6 @@ end AddCancelMonoid
 section GradedAlgebra
 
 variable [DecidableEq ι] [AddMonoid ι] [CommSemiring R] [Semiring A] [Algebra R A]
-
 variable (𝒜 : ι → Submodule R A)
 
 /-- A special case of `GradedRing` with `σ = Submodule R A`. This is useful both because it
@@ -203,14 +199,31 @@ namespace DirectSum
 
 /-- If `A` is graded by `ι` with degree `i` component `𝒜 i`, then it is isomorphic as
 an algebra to a direct sum of components. -/
-@[simps!]
+-- Porting note: deleted [simps] and added the corresponding lemmas by hand
 def decomposeAlgEquiv : A ≃ₐ[R] ⨁ i, 𝒜 i :=
   AlgEquiv.symm
     { (decomposeAddEquiv 𝒜).symm with
       map_mul' := (coeAlgHom 𝒜).map_mul
-      map_add' := (coeAlgHom 𝒜).map_add
       commutes' := (coeAlgHom 𝒜).commutes }
 #align direct_sum.decompose_alg_equiv DirectSum.decomposeAlgEquiv
+
+@[simp]
+lemma decomposeAlgEquiv_apply (a : A) :
+    decomposeAlgEquiv 𝒜 a = decompose 𝒜 a := rfl
+
+@[simp]
+lemma decomposeAlgEquiv_symm_apply (a : ⨁ i, 𝒜 i) :
+    (decomposeAlgEquiv 𝒜).symm a = (decompose 𝒜).symm a := rfl
+
+@[simp]
+lemma decompose_algebraMap (r : R) :
+    decompose 𝒜 (algebraMap R A r) = algebraMap R (⨁ i, 𝒜 i) r :=
+  (decomposeAlgEquiv 𝒜).commutes r
+
+@[simp]
+lemma decompose_symm_algebraMap (r : R) :
+    (decompose 𝒜).symm (algebraMap R (⨁ i, 𝒜 i) r) = algebraMap R A r :=
+  (decomposeAlgEquiv 𝒜).symm.commutes r
 
 end DirectSum
 
@@ -244,9 +257,7 @@ section CanonicalOrder
 open SetLike.GradedMonoid DirectSum
 
 variable [Semiring A] [DecidableEq ι]
-
-variable [CanonicallyOrderedAddMonoid ι]
-
+variable [CanonicallyOrderedAddCommMonoid ι]
 variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
 
 /-- If `A` is graded by a canonically ordered add monoid, then the projection map `x ↦ x₀` is a ring

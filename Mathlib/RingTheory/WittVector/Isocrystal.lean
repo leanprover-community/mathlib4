@@ -35,7 +35,7 @@ The construction is described in Dupuis, Lewis, and Macbeth,
 
 ## Notation
 
-This file introduces notation in the locale `isocrystal`.
+This file introduces notation in the locale `Isocrystal`.
 * `K(p, k)`: `FractionRing (WittVector p k)`
 * `φ(p, k)`: `WittVector.FractionRing.frobeniusRingHom p k`
 * `M →ᶠˡ[p, k] M₂`: `LinearMap (WittVector.FractionRing.frobeniusRingHom p k) M M₂`
@@ -62,7 +62,6 @@ open FiniteDimensional
 namespace WittVector
 
 variable (p : ℕ) [Fact p.Prime]
-
 variable (k : Type*) [CommRing k]
 
 scoped[Isocrystal] notation "K(" p ", " k ")" => FractionRing (WittVector p k)
@@ -118,9 +117,7 @@ class Isocrystal (V : Type*) [AddCommGroup V] extends Module K(p, k) V where
 open WittVector
 
 variable (V : Type*) [AddCommGroup V] [Isocrystal p k V]
-
 variable (V₂ : Type*) [AddCommGroup V₂] [Isocrystal p k V₂]
-
 variable {V}
 
 /--
@@ -135,15 +132,13 @@ variable (V)
 scoped[Isocrystal] notation "Φ(" p ", " k ")" => WittVector.Isocrystal.frobenius p k
 
 /-- A homomorphism between isocrystals respects the Frobenius map. -/
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5171):
--- removed @[nolint has_nonempty_instance]
+-- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 structure IsocrystalHom extends V →ₗ[K(p, k)] V₂ where
   frob_equivariant : ∀ x : V, Φ(p, k) (toLinearMap x) = toLinearMap (Φ(p, k) x)
 #align witt_vector.isocrystal_hom WittVector.IsocrystalHom
 
 /-- An isomorphism between isocrystals respects the Frobenius map. -/
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5171):
--- removed @[nolint has_nonempty_instance]
+-- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 structure IsocrystalEquiv extends V ≃ₗ[K(p, k)] V₂ where
   frob_equivariant : ∀ x : V, Φ(p, k) (toLinearEquiv x) = toLinearEquiv (Φ(p, k) x)
 #align witt_vector.isocrystal_equiv WittVector.IsocrystalEquiv
@@ -169,8 +164,7 @@ def FractionRing.module : Module K(p, k) K(p, k) :=
 of slope `m : ℤ`.
 -/
 @[nolint unusedArguments]
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5171):
--- removed @[nolint has_nonempty_instance]
+-- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 def StandardOneDimIsocrystal (_m : ℤ) : Type _ :=
   K(p, k)
 #align witt_vector.standard_one_dim_isocrystal WittVector.StandardOneDimIsocrystal
@@ -197,11 +191,7 @@ instance (m : ℤ) : Isocrystal p k (StandardOneDimIsocrystal p k m) where
 
 @[simp]
 theorem StandardOneDimIsocrystal.frobenius_apply (m : ℤ) (x : StandardOneDimIsocrystal p k m) :
-    Φ(p, k) x = (p : K(p, k)) ^ m • φ(p, k) x := by
-  -- Porting note: was just `rfl`
-  erw [smul_eq_mul]
-  simp only [map_zpow₀, map_natCast]
-  rfl
+    Φ(p, k) x = (p : K(p, k)) ^ m • φ(p, k) x := rfl
 #align witt_vector.standard_one_dim_isocrystal.frobenius_apply WittVector.StandardOneDimIsocrystal.frobenius_apply
 
 end PerfectRing
@@ -235,7 +225,7 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
   -- Porting note: `refine'` below gets confused when this is inlined.
   let E := (LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F
   refine' ⟨⟨E, _⟩⟩
-  simp only
+  simp only [E]
   intro c
   rw [LinearEquiv.trans_apply, LinearEquiv.trans_apply, LinearEquiv.smulOfNeZero_apply,
     LinearEquiv.smulOfNeZero_apply, LinearEquiv.map_smul, LinearEquiv.map_smul]
@@ -248,9 +238,6 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
     LinearEquiv.map_smulₛₗ, StandardOneDimIsocrystal.frobenius_apply, Algebra.id.smul_eq_mul]
   simp only [← mul_smul]
   congr 1
-  -- Porting note: added the next two lines
-  erw [smul_eq_mul]
-  simp only [map_zpow₀, map_natCast]
   linear_combination φ(p, k) c * hmb
 #align witt_vector.isocrystal_classification WittVector.isocrystal_classification
 

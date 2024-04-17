@@ -33,7 +33,6 @@ section Functor
 
 -- Porting note: `parameter` doesn't seem to work yet.
 variable {t t' : Type u → Type u} (eqv : ∀ α, t α ≃ t' α)
-
 variable [Functor t]
 
 open Functor
@@ -60,7 +59,7 @@ protected theorem id_map {α : Type u} (x : t' α) : Equiv.map eqv id x = x := b
 
 protected theorem comp_map {α β γ : Type u} (g : α → β) (h : β → γ) (x : t' α) :
     Equiv.map eqv (h ∘ g) x = Equiv.map eqv h (Equiv.map eqv g x) := by
-  simp [Equiv.map]; apply comp_map
+  simpa [Equiv.map] using comp_map ..
 #align equiv.comp_map Equiv.comp_map
 
 protected theorem lawfulFunctor : @LawfulFunctor _ (Equiv.functor eqv) :=
@@ -88,11 +87,8 @@ end Functor
 section Traversable
 
 variable {t t' : Type u → Type u} (eqv : ∀ α, t α ≃ t' α)
-
 variable [Traversable t]
-
 variable {m : Type u → Type u} [Applicative m]
-
 variable {α β : Type u}
 
 /-- Like `Equiv.map`, a function `t' : Type u → Type u` can be given
@@ -101,6 +97,10 @@ the structure of a traversable functor using a traversable functor
 protected def traverse (f : α → m β) (x : t' α) : m (t' β) :=
   eqv β <$> traverse f ((eqv α).symm x)
 #align equiv.traverse Equiv.traverse
+
+theorem traverse_def (f : α → m β) (x : t' α) :
+    Equiv.traverse eqv f x = eqv β <$> traverse f ((eqv α).symm x) :=
+  rfl
 
 /-- The function `Equiv.traverse` transfers a traversable functor
 instance across the equivalences `eqv`. -/
@@ -117,13 +117,9 @@ variable {t t' : Type u → Type u} (eqv : ∀ α, t α ≃ t' α)
 
 -- Is this to do with the fact it lives in `Type (u+1)` not `Prop`?
 variable [Traversable t] [LawfulTraversable t]
-
 variable {F G : Type u → Type u} [Applicative F] [Applicative G]
-
 variable [LawfulApplicative F] [LawfulApplicative G]
-
 variable (η : ApplicativeTransformation F G)
-
 variable {α β γ : Type u}
 
 open LawfulTraversable Functor
@@ -131,19 +127,19 @@ open LawfulTraversable Functor
 -- Porting note: Id.bind_eq is missing an `#align`.
 
 protected theorem id_traverse (x : t' α) : Equiv.traverse eqv (pure : α → Id α) x = x := by
-  -- Porting note: Changing this `simp` to an `rw` somehow breaks the proof of `comp_traverse`.
-  simp [Equiv.traverse]
+  rw [Equiv.traverse, id_traverse, Id.map_eq, apply_symm_apply]
 #align equiv.id_traverse Equiv.id_traverse
 
 protected theorem traverse_eq_map_id (f : α → β) (x : t' α) :
     Equiv.traverse eqv ((pure : β → Id β) ∘ f) x = pure (Equiv.map eqv f x) := by
-  simp [Equiv.traverse, traverse_eq_map_id, functor_norm]; rfl
+  simp only [Equiv.traverse, traverse_eq_map_id, Id.map_eq, Id.pure_eq]; rfl
 #align equiv.traverse_eq_map_id Equiv.traverse_eq_map_id
 
 protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : t' α) :
     Equiv.traverse eqv (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Equiv.traverse eqv f <$> Equiv.traverse eqv g x) := by
-  simp [Equiv.traverse, comp_traverse, functor_norm]; congr; ext; simp
+  rw [traverse_def, comp_traverse, Comp.map_mk]
+  simp only [map_map, Function.comp_def, traverse_def, symm_apply_apply]
 #align equiv.comp_traverse Equiv.comp_traverse
 
 protected theorem naturality (f : α → F β) (x : t' α) :

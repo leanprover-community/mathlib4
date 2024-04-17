@@ -18,7 +18,6 @@ rewriting inside the operand of a `Finset.sum`.
 
 open Lean Expr Parser.Tactic Elab Command Elab.Tactic Meta Conv
 
-open private mkFun from Lean.Meta.AppBuilder in
 /--
 Apply a congruence lemma inside `conv` mode.
 
@@ -74,11 +73,12 @@ def Lean.Elab.Tactic.applyCongr (q : Option Expr) : TacticM Unit := do
     | none =>
       let congrTheorems ←
         (fun congrTheoremMap => congrTheoremMap.get lhsFun) <$> getSimpCongrTheorems
-      congrTheorems.mapM (fun congrTheorem => liftM <| Prod.fst <$> mkFun congrTheorem.theoremName)
+      congrTheorems.mapM (fun congrTheorem =>
+        liftM <| mkConstWithFreshMVarLevels congrTheorem.theoremName)
   if congrTheoremExprs == [] then
     throwError "No matching congr lemmas found"
   -- For every lemma:
-  liftMetaTactic <| fun mainGoal => congrTheoremExprs.firstM (fun congrTheoremExpr => do
+  liftMetaTactic fun mainGoal => congrTheoremExprs.firstM (fun congrTheoremExpr => do
     let newGoals ← mainGoal.apply congrTheoremExpr { newGoals := .nonDependentOnly }
     newGoals.mapM fun newGoal => Prod.snd <$> newGoal.intros)
 

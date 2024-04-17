@@ -5,7 +5,7 @@ Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Semicontinuous
-import Mathlib.Topology.MetricSpace.Baire
+import Mathlib.Topology.Baire.Lemmas
 
 /-!
 # Barrelled spaces and the Banach-Steinhaus theorem / Uniform Boundedness Principle
@@ -138,7 +138,7 @@ instance BaireSpace.instBarrelledSpace [TopologicalSpace E] [TopologicalAddGroup
     -- Hence, for `y` sufficiently close to `0`, we have
     -- `p y = p (x + y - x) ≤ p (x + y) + p x ≤ 2*n`
     filter_upwards [hxn] with y hy
-    calc p y = p (x + y - x) := by rw [add_sub_cancel']
+    calc p y = p (x + y - x) := by rw [add_sub_cancel_left]
       _ ≤ p (x + y) + p x := map_sub_le_add _ _ _
       _ ≤ n + n := add_le_add hy hxn'
 
@@ -156,7 +156,7 @@ protected theorem banach_steinhaus (H : ∀ k x, BddAbove (range fun i ↦ q k (
     UniformEquicontinuous ((↑) ∘ 𝓕) := by
   -- We just have to prove that `⊔ i, (q k) ∘ (𝓕 i)` is a (well-defined) continuous seminorm
   -- for all `k`.
-  refine (hq.uniformEquicontinuous_iff_bddAbove_and_continuous_iSup ((toLinearMap) ∘ 𝓕)).mpr ?_
+  refine (hq.uniformEquicontinuous_iff_bddAbove_and_continuous_iSup (toLinearMap ∘ 𝓕)).mpr ?_
   intro k
   -- By assumption the supremum `⊔ i, q k (𝓕 i x)` is well-defined for all `x`, hence the
   -- supremum `⊔ i, (q k) ∘ (𝓕 i)` is well defined in the lattice of seminorms.
@@ -173,7 +173,7 @@ protected theorem banach_steinhaus (H : ∀ k x, BddAbove (range fun i ↦ q k (
 domain is barrelled, the Banach-Steinhaus theorem is used to guarantee that the limit map
 is a *continuous* linear map as well.
 
-This actually works for any *countably generated* filter instead of `AtTop : Filter ℕ`,
+This actually works for any *countably generated* filter instead of `atTop : Filter ℕ`,
 but the proof ultimately goes back to sequences. -/
 protected def continuousLinearMapOfTendsto [T2Space F] {l : Filter α} [l.IsCountablyGenerated]
     [l.NeBot] (g : α → E →SL[σ₁₂] F) {f : E → F} (h : Tendsto (fun n x ↦ g n x) l (𝓝 f)) :
@@ -182,11 +182,11 @@ protected def continuousLinearMapOfTendsto [T2Space F] {l : Filter α} [l.IsCoun
   cont := by
     -- Since the filter `l` is countably generated and nontrivial, we can find a sequence
     -- `u : ℕ → α` that tends to `l`. By considering `g ∘ u` instead of `g`, we can thus assume
-    -- that `α = ℕ` and `l = AtTop`
+    -- that `α = ℕ` and `l = atTop`
     rcases l.exists_seq_tendsto with ⟨u, hu⟩
     -- We claim that the limit is continuous because it's a limit of an equicontinuous family.
     -- By the Banach-Steinhaus theorem, this equicontinuity will follow from pointwise boundedness.
-    refine (h.comp hu).continuous_of_equicontinuous_at (hq.banach_steinhaus ?_).equicontinuous
+    refine (h.comp hu).continuous_of_equicontinuous (hq.banach_steinhaus ?_).equicontinuous
     -- For `k` and `x` fixed, we need to show that `(i : ℕ) ↦ q k (g i x)` is bounded.
     intro k x
     -- This follows from the fact that this sequences converges (to `q k (f x)`) by hypothesis and

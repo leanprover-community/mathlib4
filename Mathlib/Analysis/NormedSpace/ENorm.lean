@@ -120,7 +120,7 @@ theorem map_add_le (x y : V) : e (x + y) ≤ e x + e y :=
 theorem map_sub_le (x y : V) : e (x - y) ≤ e x + e y :=
   calc
     e (x - y) = e (x + -y) := by rw [sub_eq_add_neg]
-    _ ≤ e x + e (-y) := (e.map_add_le x (-y))
+    _ ≤ e x + e (-y) := e.map_add_le x (-y)
     _ = e x + e y := by rw [e.map_neg]
 #align enorm.map_sub_le ENorm.map_sub_le
 
@@ -225,8 +225,7 @@ theorem finite_edist_eq (x y : e.finiteSubspace) : edist x y = e (x - y) :=
 
 /-- Normed group instance on `e.finiteSubspace`. -/
 instance normedAddCommGroup : NormedAddCommGroup e.finiteSubspace :=
-  { e.metricSpace,
-    Submodule.addCommGroup _ with
+  { e.metricSpace with
     norm := fun x => (e x).toReal
     dist_eq := fun _ _ => rfl }
 

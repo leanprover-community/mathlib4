@@ -30,7 +30,6 @@ universe w' w v₁ v₂ u₁ u₂ v v' u u'
 namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
-
 variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
 
 @[reassoc (attr := simp)]
@@ -319,8 +318,9 @@ theorem colimit_obj_ext {H : J ⥤ K ⥤ C} [HasColimitsOfShape J C] {k : K} {W 
   simpa using w j
 #align category_theory.limits.colimit_obj_ext CategoryTheory.Limits.colimit_obj_ext
 
-instance evaluationPreservesLimits [HasLimits C] (k : K) : PreservesLimits ((evaluation K C).obj k)
-    where preservesLimitsOfShape {J} 𝒥 := by skip; infer_instance
+instance evaluationPreservesLimits [HasLimits C] (k : K) :
+    PreservesLimits ((evaluation K C).obj k) where
+  preservesLimitsOfShape {_} _𝒥 := inferInstance
 #align category_theory.limits.evaluation_preserves_limits CategoryTheory.Limits.evaluationPreservesLimits
 
 /-- `F : D ⥤ K ⥤ C` preserves the limit of some `G : J ⥤ D` if it does for each `k : K`. -/
@@ -357,7 +357,7 @@ instance preservesLimitsConst : PreservesLimitsOfSize.{w', w} (const D : C ⥤ _
 
 instance evaluationPreservesColimits [HasColimits C] (k : K) :
     PreservesColimits ((evaluation K C).obj k) where
-  preservesColimitsOfShape := by skip; infer_instance
+  preservesColimitsOfShape := inferInstance
 #align category_theory.limits.evaluation_preserves_colimits CategoryTheory.Limits.evaluationPreservesColimits
 
 /-- `F : D ⥤ K ⥤ C` preserves the colimit of some `G : J ⥤ D` if it does for each `k : K`. -/

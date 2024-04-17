@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Category.GroupCat.Basic
-import Mathlib.Algebra.Hom.Equiv.TypeTags
+import Mathlib.Algebra.Group.Equiv.TypeTags
 
 #align_import algebra.category.Group.equivalence_Group_AddGroup from "leanprover-community/mathlib"@"47b51515e69f59bca5cf34ef456e6000fe205a69"
 
@@ -79,7 +79,6 @@ end AddCommGroupCat
 
 /-- The equivalence of categories between `Group` and `AddGroup`
 -/
-@[simps!]
 def groupAddGroupEquivalence : GroupCat ≌ AddGroupCat :=
   CategoryTheory.Equivalence.mk GroupCat.toAddGroupCat AddGroupCat.toGroupCat
     (NatIso.ofComponents fun X => MulEquiv.toGroupCatIso (MulEquiv.multiplicativeAdditive X))
@@ -88,7 +87,6 @@ def groupAddGroupEquivalence : GroupCat ≌ AddGroupCat :=
 
 /-- The equivalence of categories between `CommGroup` and `AddCommGroup`.
 -/
-@[simps!]
 def commGroupAddCommGroupEquivalence : CommGroupCat ≌ AddCommGroupCat :=
   CategoryTheory.Equivalence.mk CommGroupCat.toAddCommGroupCat AddCommGroupCat.toCommGroupCat
     (NatIso.ofComponents fun X => MulEquiv.toCommGroupCatIso (MulEquiv.multiplicativeAdditive X))

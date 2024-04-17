@@ -29,7 +29,6 @@ open CategoryTheory CategoryTheory.Category
 namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
-
 variable {D : Type u'} [Category.{v'} D] (G : C ⥤ D)
 
 -- We hide the "implementation details" inside a namespace
@@ -160,8 +159,8 @@ def coequalizerCocone (F : WalkingParallelPair ⥤ C) : Cocone F :=
   Cocone.ofCofork
     (Cofork.ofπ (pushoutInl F) (by
         conv_rhs => rw [pushoutInl_eq_pushout_inr]
-        convert (whisker_eq Limits.coprod.inr pushout.condition
-          : (_ : F.obj _ ⟶ constructCoequalizer _) = _) using 1 <;> simp))
+        convert (whisker_eq Limits.coprod.inr pushout.condition :
+          (_ : F.obj _ ⟶ constructCoequalizer _) = _) using 1 <;> simp))
 #align category_theory.limits.has_coequalizers_of_has_pushouts_and_binary_coproducts.coequalizer_cocone CategoryTheory.Limits.HasCoequalizersOfHasPushoutsAndBinaryCoproducts.coequalizerCocone
 
 /-- Show the equalizing cocone is a colimit -/

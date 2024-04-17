@@ -39,7 +39,6 @@ noncomputable section
 
 namespace IsometryEquiv
 
-set_option maxHeartbeats 250000 in
 /-- If an isometric self-homeomorphism of a normed vector space over `ℝ` fixes `x` and `y`,
 then it fixes the midpoint of `[x, y]`. This is a lemma for a more general Mazur-Ulam theorem,
 see below. -/
@@ -51,7 +50,7 @@ theorem midpoint_fixed {x y : PE} :
   haveI : Nonempty s := ⟨⟨IsometryEquiv.refl PE, rfl, rfl⟩⟩
   -- On the one hand, `e` cannot send the midpoint `z` of `[x, y]` too far
   have h_bdd : BddAbove (range fun e : s => dist ((e : PE ≃ᵢ PE) z) z) := by
-    refine' ⟨dist x z + dist x z, forall_range_iff.2 <| Subtype.forall.2 _⟩
+    refine' ⟨dist x z + dist x z, forall_mem_range.2 <| Subtype.forall.2 _⟩
     rintro e ⟨hx, _⟩
     calc
       dist (e z) z ≤ dist (e z) x + dist x z := dist_triangle (e z) x z
@@ -65,13 +64,13 @@ theorem midpoint_fixed {x y : PE} :
   -- Note that `f` doubles the value of `dist (e z) z`
   have hf_dist : ∀ e, dist (f e z) z = 2 * dist (e z) z := by
     intro e
-    dsimp
+    dsimp [f, R]
     rw [dist_pointReflection_fixed, ← e.dist_eq, e.apply_symm_apply,
       dist_pointReflection_self_real, dist_comm]
   -- Also note that `f` maps `s` to itself
   have hf_maps_to : MapsTo f s s := by
     rintro e ⟨hx, hy⟩
-    constructor <;> simp [hx, hy, e.symm_apply_eq.2 hx.symm, e.symm_apply_eq.2 hy.symm]
+    constructor <;> simp [f, R, z, hx, hy, e.symm_apply_eq.2 hx.symm, e.symm_apply_eq.2 hy.symm]
   -- Therefore, `dist (e z) z = 0` for all `e ∈ s`.
   set c := ⨆ e : s, dist ((e : PE ≃ᵢ PE) z) z
   have : c ≤ c / 2 := by
@@ -79,8 +78,7 @@ theorem midpoint_fixed {x y : PE} :
     rintro ⟨e, he⟩
     simp only [Subtype.coe_mk, le_div_iff' (zero_lt_two' ℝ), ← hf_dist]
     exact le_ciSup h_bdd ⟨f e, hf_maps_to he⟩
-  replace : c ≤ 0
-  · linarith
+  replace : c ≤ 0 := by linarith
   refine' fun e hx hy => dist_le_zero.1 (le_trans _ this)
   exact le_ciSup h_bdd ⟨e, hx, hy⟩
 #align isometry_equiv.midpoint_fixed IsometryEquiv.midpoint_fixed
@@ -90,10 +88,10 @@ theorem map_midpoint (f : PE ≃ᵢ PF) (x y : PE) : f (midpoint ℝ x y) = midp
   set e : PE ≃ᵢ PE :=
     ((f.trans <| (pointReflection ℝ <| midpoint ℝ (f x) (f y)).toIsometryEquiv).trans f.symm).trans
       (pointReflection ℝ <| midpoint ℝ x y).toIsometryEquiv
-  have hx : e x = x := by simp
-  have hy : e y = y := by simp
+  have hx : e x = x := by simp [e]
+  have hy : e y = y := by simp [e]
   have hm := e.midpoint_fixed hx hy
-  simp only [trans_apply] at hm
+  simp only [e, trans_apply] at hm
   rwa [← eq_symm_apply, toIsometryEquiv_symm, pointReflection_symm, coe_toIsometryEquiv,
     coe_toIsometryEquiv, pointReflection_self, symm_apply_eq, @pointReflection_fixed_iff] at hm
 #align isometry_equiv.map_midpoint IsometryEquiv.map_midpoint
@@ -112,16 +110,16 @@ def toRealLinearIsometryEquivOfMapZero (f : E ≃ᵢ F) (h0 : f 0 = 0) : E ≃�
 #align isometry_equiv.to_real_linear_isometry_equiv_of_map_zero IsometryEquiv.toRealLinearIsometryEquivOfMapZero
 
 @[simp]
-theorem coe_to_real_linear_equiv_of_map_zero (f : E ≃ᵢ F) (h0 : f 0 = 0) :
+theorem coe_toRealLinearIsometryEquivOfMapZero (f : E ≃ᵢ F) (h0 : f 0 = 0) :
     ⇑(f.toRealLinearIsometryEquivOfMapZero h0) = f :=
   rfl
-#align isometry_equiv.coe_to_real_linear_equiv_of_map_zero IsometryEquiv.coe_to_real_linear_equiv_of_map_zero
+#align isometry_equiv.coe_to_real_linear_equiv_of_map_zero IsometryEquiv.coe_toRealLinearIsometryEquivOfMapZero
 
 @[simp]
-theorem coe_to_real_linear_equiv_of_map_zero_symm (f : E ≃ᵢ F) (h0 : f 0 = 0) :
+theorem coe_toRealLinearIsometryEquivOfMapZero_symm (f : E ≃ᵢ F) (h0 : f 0 = 0) :
     ⇑(f.toRealLinearIsometryEquivOfMapZero h0).symm = f.symm :=
   rfl
-#align isometry_equiv.coe_to_real_linear_equiv_of_map_zero_symm IsometryEquiv.coe_to_real_linear_equiv_of_map_zero_symm
+#align isometry_equiv.coe_to_real_linear_equiv_of_map_zero_symm IsometryEquiv.coe_toRealLinearIsometryEquivOfMapZero_symm
 
 /-- **Mazur-Ulam Theorem**: if `f` is an isometric bijection between two normed vector spaces
 over `ℝ`, then `x ↦ f x - f 0` is a linear isometry equivalence. -/
@@ -131,10 +129,10 @@ def toRealLinearIsometryEquiv (f : E ≃ᵢ F) : E ≃ₗᵢ[ℝ] F :=
 #align isometry_equiv.to_real_linear_isometry_equiv IsometryEquiv.toRealLinearIsometryEquiv
 
 @[simp]
-theorem to_real_linear_equiv_apply (f : E ≃ᵢ F) (x : E) :
+theorem toRealLinearIsometryEquiv_apply (f : E ≃ᵢ F) (x : E) :
     (f.toRealLinearIsometryEquiv : E → F) x = f x - f 0 :=
   (sub_eq_add_neg (f x) (f 0)).symm
-#align isometry_equiv.to_real_linear_equiv_apply IsometryEquiv.to_real_linear_equiv_apply
+#align isometry_equiv.to_real_linear_equiv_apply IsometryEquiv.toRealLinearIsometryEquiv_apply
 
 @[simp]
 theorem toRealLinearIsometryEquiv_symm_apply (f : E ≃ᵢ F) (y : F) :

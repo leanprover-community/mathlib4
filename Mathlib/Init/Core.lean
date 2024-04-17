@@ -2,17 +2,16 @@
 Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
-
-notation, basic datatypes and type classes
 -/
 import Mathlib.Mathport.Rename
-import Std.Classes.SetNotation
-import Std.Classes.Dvd
-import Mathlib.Tactic.Relation.Rfl
-import Mathlib.Tactic.Relation.Symm
+import Std.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Trans
 
-/-! ### alignments from lean 3 `init.core` -/
+/-!
+# Notation, basic datatypes and type classes
+
+This file contains alignments from lean 3 `init.core`.
+-/
 
 set_option autoImplicit true
 

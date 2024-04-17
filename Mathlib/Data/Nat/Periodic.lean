@@ -5,6 +5,7 @@ Authors: Bolton Bailey
 -/
 import Mathlib.Algebra.Periodic
 import Mathlib.Data.Nat.Count
+import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Interval
 
 #align_import data.nat.periodic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
@@ -25,7 +26,7 @@ theorem periodic_gcd (a : ℕ) : Periodic (gcd a) a := by
   simp only [forall_const, gcd_add_self_right, eq_self_iff_true, Periodic]
 #align nat.periodic_gcd Nat.periodic_gcd
 
-theorem periodic_coprime (a : ℕ) : Periodic (coprime a) a := by
+theorem periodic_coprime (a : ℕ) : Periodic (Coprime a) a := by
   simp only [coprime_add_self_right, forall_const, iff_self_iff, eq_iff_iff, Periodic]
 #align nat.periodic_coprime Nat.periodic_coprime
 

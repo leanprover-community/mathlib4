@@ -33,9 +33,9 @@ needed. In the future there will likely be a data-carrying, constructive, typecl
 When `CompleteLattice.Independent (Set.range A)` (a weaker condition than
 `DirectSum.IsInternal A`), these provide a grading of `⨆ i, A i`, and the
 mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
-`DirectSum.toAddMonoid (fun i ↦ AddSubmonoid.inclusion $ le_iSup A i)`.
+`DirectSum.toAddMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
 
-## tags
+## Tags
 
 internally graded ring
 -/
@@ -59,23 +59,23 @@ theorem SetLike.algebraMap_mem_graded [Zero ι] [CommSemiring S] [Semiring R] [A
   exact (A 0).smul_mem s <| SetLike.one_mem_graded _
 #align set_like.algebra_map_mem_graded SetLike.algebraMap_mem_graded
 
-theorem SetLike.nat_cast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R]
+theorem SetLike.natCast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R]
     [AddSubmonoidClass σ R] (A : ι → σ) [SetLike.GradedOne A] (n : ℕ) : (n : R) ∈ A 0 := by
   induction' n with _ n_ih
   · rw [Nat.cast_zero]
     exact zero_mem (A 0)
   · rw [Nat.cast_succ]
     exact add_mem n_ih (SetLike.one_mem_graded _)
-#align set_like.nat_cast_mem_graded SetLike.nat_cast_mem_graded
+#align set_like.nat_cast_mem_graded SetLike.natCast_mem_graded
 
-theorem SetLike.int_cast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
+theorem SetLike.intCast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
     [AddSubgroupClass σ R] (A : ι → σ) [SetLike.GradedOne A] (z : ℤ) : (z : R) ∈ A 0 := by
   induction z
-  · rw [Int.ofNat_eq_coe, Int.cast_ofNat]
-    exact SetLike.nat_cast_mem_graded _ _
+  · rw [Int.ofNat_eq_coe, Int.cast_natCast]
+    exact SetLike.natCast_mem_graded _ _
   · rw [Int.cast_negSucc]
-    exact neg_mem (SetLike.nat_cast_mem_graded _ _)
-#align set_like.int_cast_mem_graded SetLike.int_cast_mem_graded
+    exact neg_mem (SetLike.natCast_mem_graded _ _)
+#align set_like.int_cast_mem_graded SetLike.intCast_mem_graded
 
 section DirectSum
 
@@ -106,7 +106,7 @@ instance gsemiring [AddMonoid ι] [Semiring R] [SetLike σ R] [AddSubmonoidClass
     zero_mul := fun _ => Subtype.ext (zero_mul _)
     mul_add := fun _ _ _ => Subtype.ext (mul_add _ _ _)
     add_mul := fun _ _ _ => Subtype.ext (add_mul _ _ _)
-    natCast := fun n => ⟨n, SetLike.nat_cast_mem_graded _ _⟩
+    natCast := fun n => ⟨n, SetLike.natCast_mem_graded _ _⟩
     natCast_zero := Subtype.ext Nat.cast_zero
     natCast_succ := fun n => Subtype.ext (Nat.cast_succ n) }
 #align set_like.gsemiring SetLike.gsemiring
@@ -121,8 +121,8 @@ instance gcommSemiring [AddCommMonoid ι] [CommSemiring R] [SetLike σ R] [AddSu
 instance gring [AddMonoid ι] [Ring R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ)
     [SetLike.GradedMonoid A] : DirectSum.GRing fun i => A i :=
   { SetLike.gsemiring A with
-    intCast := fun z => ⟨z, SetLike.int_cast_mem_graded _ _⟩
-    intCast_ofNat := fun _n => Subtype.ext <| Int.cast_ofNat _
+    intCast := fun z => ⟨z, SetLike.intCast_mem_graded _ _⟩
+    intCast_ofNat := fun _n => Subtype.ext <| Int.cast_natCast _
     intCast_negSucc_ofNat := fun n => Subtype.ext <| Int.cast_negSucc n }
 #align set_like.gring SetLike.gring
 
@@ -218,11 +218,10 @@ theorem coe_mul_of_apply_add [AddRightCancelMonoid ι] [SetLike.GradedMonoid A] 
 
 end coe
 
-section CanonicallyOrderedAddMonoid
+section CanonicallyOrderedAddCommMonoid
 
 variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
-
-variable [CanonicallyOrderedAddMonoid ι] [SetLike.GradedMonoid A]
+variable [CanonicallyOrderedAddCommMonoid ι] [SetLike.GradedMonoid A]
 
 theorem coe_of_mul_apply_of_not_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) (h : ¬i ≤ n) :
     ((of (fun i => A i) i r * r') n : R) = 0 := by
@@ -251,7 +250,7 @@ theorem coe_mul_of_apply_of_not_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι)
 variable [Sub ι] [OrderedSub ι] [ContravariantClass ι ι (· + ·) (· ≤ ·)]
 
 /- The following two lemmas only require the same hypotheses as `eq_tsub_iff_add_eq_of_le`, but we
-  state them for `CanonicallyOrderedAddMonoid` + the above three typeclasses for convenience. -/
+  state them for `CanonicallyOrderedAddCommMonoid` + the above three typeclasses for convenience. -/
 theorem coe_mul_of_apply_of_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) (h : i ≤ n) :
     ((r * of (fun i => A i) i r') n : R) = r (n - i) * r' :=
   coe_mul_of_apply_aux _ _ _ fun _x => (eq_tsub_iff_add_eq_of_le h).symm
@@ -274,7 +273,7 @@ theorem coe_of_mul_apply {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) [Decidabl
   exacts [coe_of_mul_apply_of_le _ _ _ n h, coe_of_mul_apply_of_not_le _ _ _ n h]
 #align direct_sum.coe_of_mul_apply DirectSum.coe_of_mul_apply
 
-end CanonicallyOrderedAddMonoid
+end CanonicallyOrderedAddCommMonoid
 
 end DirectSum
 
@@ -317,7 +316,7 @@ end Submodule
 /-- The canonical algebra isomorphism between `⨁ i, A i` and `R`. -/
 def DirectSum.coeAlgHom [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedMonoid A] : (⨁ i, A i) →ₐ[S] R :=
-  DirectSum.toAlgebra S _ (fun i => (A i).subtype) rfl (fun _ _ => rfl) fun _ => rfl
+  DirectSum.toAlgebra S _ (fun i => (A i).subtype) rfl (fun _ _ => rfl)
 #align direct_sum.coe_alg_hom DirectSum.coeAlgHom
 
 /-- The supremum of submodules that form a graded monoid is a subalgebra, and equal to the range of

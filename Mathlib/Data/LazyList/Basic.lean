@@ -5,7 +5,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Control.Traversable.Equiv
 import Mathlib.Control.Traversable.Instances
-import Mathlib.Data.LazyList
+import Std.Data.LazyList
 import Mathlib.Lean.Thunk
 
 #align_import data.lazy_list.basic from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
@@ -82,7 +82,7 @@ instance : LawfulTraversable LazyList := by
   · simp only [traverse, Equiv.traverse, listEquivLazyList, Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk]
     induction' xs using LazyList.rec with _ tl ih _ ih
     · simp only [List.traverse, map_pure]; rfl
-    · have : tl.get.traverse f = ofList <$> tl.get.toList.traverse f := ih
+    · replace ih : tl.get.traverse f = ofList <$> tl.get.toList.traverse f := ih
       simp only [traverse._eq_2, ih, Functor.map_map, seq_map_assoc, toList, List.traverse, map_seq]
       · rfl
     · apply ih

@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Unique
+import Mathlib.MeasureTheory.Function.L2Space
 
 #align_import measure_theory.function.conditional_expectation.condexp_L2 from "leanprover-community/mathlib"@"d8bbb04e2d2a44596798a9207ceefc0fb236e41e"
 
@@ -25,7 +26,7 @@ the orthogonal projection on the subspace `lpMeas`.
 ## Implementation notes
 
 Most of the results in this file are valid for a complete real normed space `F`.
-However, some lemmas also use `𝕜 : IsROrC`:
+However, some lemmas also use `𝕜 : RCLike`:
 * `condexpL2` is defined only for an `InnerProductSpace` for now, and we use `𝕜` for its field.
 * results about scalar multiplication are stated not only for `ℝ` but also for `𝕜` if we happen to
   have `NormedSpace 𝕜 F`.
@@ -40,7 +41,7 @@ open scoped ENNReal Topology MeasureTheory
 
 namespace MeasureTheory
 
-variable {α E E' F G G' 𝕜 : Type*} {p : ℝ≥0∞} [IsROrC 𝕜]
+variable {α E E' F G G' 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- E for an inner product space
   [NormedAddCommGroup E]
@@ -98,7 +99,7 @@ theorem norm_condexpL2_le_one (hm : m ≤ m0) : ‖@condexpL2 α E 𝕜 _ _ _ _ 
 #align measure_theory.norm_condexp_L2_le_one MeasureTheory.norm_condexpL2_le_one
 
 theorem norm_condexpL2_le (hm : m ≤ m0) (f : α →₂[μ] E) : ‖condexpL2 E 𝕜 hm f‖ ≤ ‖f‖ :=
-  ((@condexpL2 _ E 𝕜 _ _ _ _ _ _ μ hm).le_op_norm f).trans
+  ((@condexpL2 _ E 𝕜 _ _ _ _ _ _ μ hm).le_opNorm f).trans
     (mul_le_of_le_one_left (norm_nonneg _) (norm_condexpL2_le_one hm))
 #align measure_theory.norm_condexp_L2_le MeasureTheory.norm_condexpL2_le
 
@@ -131,7 +132,7 @@ theorem condexpL2_indicator_of_measurable (hm : m ≤ m0) (hs : MeasurableSet[m]
   have h_mem : indicatorConstLp 2 (hm s hs) hμs c ∈ lpMeas E 𝕜 m 2 μ :=
     mem_lpMeas_indicatorConstLp hm hs hμs
   let ind := (⟨indicatorConstLp 2 (hm s hs) hμs c, h_mem⟩ : lpMeas E 𝕜 m 2 μ)
-  have h_coe_ind : (ind : α →₂[μ] E) = indicatorConstLp 2 (hm s hs) hμs c := by rfl
+  have h_coe_ind : (ind : α →₂[μ] E) = indicatorConstLp 2 (hm s hs) hμs c := rfl
   have h_orth_mem := orthogonalProjection_mem_subspace_eq_self ind
   rw [← h_coe_ind, h_orth_mem]
 #align measure_theory.condexp_L2_indicator_of_measurable MeasureTheory.condexpL2_indicator_of_measurable
@@ -183,8 +184,8 @@ theorem lintegral_nnnorm_condexpL2_le (hs : MeasurableSet[m] s) (hμs : μ s ≠
 
 theorem condexpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) {f : Lp ℝ 2 μ}
     (hf : f =ᵐ[μ.restrict s] 0) : condexpL2 ℝ ℝ hm f =ᵐ[μ.restrict s] (0 : α → ℝ) := by
-  suffices h_nnnorm_eq_zero : ∫⁻ x in s, ‖(condexpL2 ℝ ℝ hm f : α → ℝ) x‖₊ ∂μ = 0
-  · rw [lintegral_eq_zero_iff] at h_nnnorm_eq_zero
+  suffices h_nnnorm_eq_zero : ∫⁻ x in s, ‖(condexpL2 ℝ ℝ hm f : α → ℝ) x‖₊ ∂μ = 0 by
+    rw [lintegral_eq_zero_iff] at h_nnnorm_eq_zero
     refine' h_nnnorm_eq_zero.mono fun x hx => _
     dsimp only at hx
     rw [Pi.zero_apply] at hx ⊢
@@ -273,7 +274,7 @@ theorem integral_condexpL2_eq (hm : m ≤ m0) (f : Lp E' 2 μ) (hs : MeasurableS
   exact integral_condexpL2_eq_of_fin_meas_real _ hs hμs
 #align measure_theory.integral_condexp_L2_eq MeasureTheory.integral_condexpL2_eq
 
-variable {E'' 𝕜' : Type*} [IsROrC 𝕜'] [NormedAddCommGroup E''] [InnerProductSpace 𝕜' E'']
+variable {E'' 𝕜' : Type*} [RCLike 𝕜'] [NormedAddCommGroup E''] [InnerProductSpace 𝕜' E'']
   [CompleteSpace E''] [NormedSpace ℝ E'']
 
 variable (𝕜 𝕜')
@@ -328,8 +329,7 @@ theorem condexpL2_indicator_eq_toSpanSingleton_comp (hm : m ≤ m0) (hs : Measur
     (condexpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α →₂[μ] ℝ)
   rw [← EventuallyEq] at h_comp
   refine' EventuallyEq.trans _ h_comp.symm
-  refine' eventually_of_forall fun y => _
-  rfl
+  filter_upwards with y using rfl
 #align measure_theory.condexp_L2_indicator_eq_to_span_singleton_comp MeasureTheory.condexpL2_indicator_eq_toSpanSingleton_comp
 
 variable {𝕜}
@@ -358,7 +358,8 @@ theorem lintegral_nnnorm_condexpL2_indicator_le (hm : m ≤ m0) (hs : Measurable
   · rw [lpMeas_coe]
     exact (Lp.aestronglyMeasurable _).ennnorm
   refine' (set_lintegral_nnnorm_condexpL2_indicator_le hm hs hμs x ht hμt).trans _
-  exact mul_le_mul_right' (measure_mono (Set.inter_subset_left _ _)) _
+  gcongr
+  apply Set.inter_subset_left
 #align measure_theory.lintegral_nnnorm_condexp_L2_indicator_le MeasureTheory.lintegral_nnnorm_condexpL2_indicator_le
 
 /-- If the measure `μ.trim hm` is sigma-finite, then the conditional expectation of a measurable set
@@ -371,7 +372,8 @@ theorem integrable_condexpL2_indicator (hm : m ≤ m0) [SigmaFinite (μ.trim hm)
   · rw [lpMeas_coe]; exact Lp.aestronglyMeasurable _
   · refine' fun t ht hμt =>
       (set_lintegral_nnnorm_condexpL2_indicator_le hm hs hμs x ht hμt).trans _
-    exact mul_le_mul_right' (measure_mono (Set.inter_subset_left _ _)) _
+    gcongr
+    apply Set.inter_subset_left
 #align measure_theory.integrable_condexp_L2_indicator MeasureTheory.integrable_condexpL2_indicator
 
 end CondexpL2Indicator
@@ -443,7 +445,8 @@ theorem lintegral_nnnorm_condexpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSet s
   refine' lintegral_le_of_forall_fin_meas_le' hm (μ s * ‖x‖₊) _ fun t ht hμt => _
   · exact (Lp.aestronglyMeasurable _).ennnorm
   refine' (set_lintegral_nnnorm_condexpIndSMul_le hm hs hμs x ht hμt).trans _
-  exact mul_le_mul_right' (measure_mono (Set.inter_subset_left _ _)) _
+  gcongr
+  apply Set.inter_subset_left
 #align measure_theory.lintegral_nnnorm_condexp_ind_smul_le MeasureTheory.lintegral_nnnorm_condexpIndSMul_le
 
 /-- If the measure `μ.trim hm` is sigma-finite, then the conditional expectation of a measurable set
@@ -455,7 +458,8 @@ theorem integrable_condexpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hs
       _
   · exact Lp.aestronglyMeasurable _
   · refine' fun t ht hμt => (set_lintegral_nnnorm_condexpIndSMul_le hm hs hμs x ht hμt).trans _
-    exact mul_le_mul_right' (measure_mono (Set.inter_subset_left _ _)) _
+    gcongr
+    apply Set.inter_subset_left
 #align measure_theory.integrable_condexp_ind_smul MeasureTheory.integrable_condexpIndSMul
 
 theorem condexpIndSMul_empty {x : G} : condexpIndSMul hm MeasurableSet.empty
@@ -471,7 +475,7 @@ theorem set_integral_condexpL2_indicator (hs : MeasurableSet[m] s) (ht : Measura
     ∫ x in s, (condexpL2 ℝ ℝ hm (indicatorConstLp 2 ht hμt 1) : α → ℝ) x ∂μ =
         ∫ x in s, indicatorConstLp 2 ht hμt (1 : ℝ) x ∂μ :=
       @integral_condexpL2_eq α _ ℝ _ _ _ _ _ _ _ _ _ hm (indicatorConstLp 2 ht hμt (1 : ℝ)) hs hμs
-    _ = (μ (t ∩ s)).toReal • (1 : ℝ) := (set_integral_indicatorConstLp (hm s hs) ht hμt 1)
+    _ = (μ (t ∩ s)).toReal • (1 : ℝ) := set_integral_indicatorConstLp (hm s hs) ht hμt 1
     _ = (μ (t ∩ s)).toReal := by rw [smul_eq_mul, mul_one]
 #align measure_theory.set_integral_condexp_L2_indicator MeasureTheory.set_integral_condexpL2_indicator
 

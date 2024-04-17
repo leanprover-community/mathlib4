@@ -3,7 +3,8 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.FieldTheory.Normal
+import Mathlib.FieldTheory.SplittingField.IsSplittingField
+import Mathlib.Algebra.CharP.Algebra
 
 #align_import field_theory.splitting_field.construction from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
 
@@ -100,7 +101,7 @@ theorem natDegree_removeFactor (f : K[X]) : f.removeFactor.natDegree = f.natDegr
 #align polynomial.nat_degree_remove_factor Polynomial.natDegree_removeFactor
 
 theorem natDegree_removeFactor' {f : K[X]} {n : ℕ} (hfn : f.natDegree = n + 1) :
-  f.removeFactor.natDegree = n := by rw [natDegree_removeFactor, hfn, n.add_sub_cancel]
+    f.removeFactor.natDegree = n := by rw [natDegree_removeFactor, hfn, n.add_sub_cancel]
 #align polynomial.nat_degree_remove_factor' Polynomial.natDegree_removeFactor'
 
 /-- Auxiliary construction to a splitting field of a polynomial, which removes
@@ -110,7 +111,7 @@ It constructs the type, proves that is a field and algebra over the base field.
 
 Uses recursion on the degree.
 -/
-def SplittingFieldAuxAux (n : ℕ) : ∀ {K : Type u} [Field K], ∀ _ : K[X],
+def SplittingFieldAuxAux (n : ℕ) : ∀ {K : Type u} [Field K], K[X] →
     Σ (L : Type u) (_ : Field L), Algebra K L :=
   -- Porting note: added motive
   Nat.recOn (motive := fun (_x : ℕ) => ∀ {K : Type u} [_inst_4 : Field K], K[X] →
@@ -194,27 +195,25 @@ theorem adjoin_rootSet (n : ℕ) :
   Nat.recOn (motive := fun n =>
     ∀ {K : Type u} [Field K],
       ∀ (f : K[X]) (_hfn : f.natDegree = n),
-        Algebra.adjoin K
-            (↑(f.map <| algebraMap K <| SplittingFieldAux n f).roots.toFinset :
-              Set (SplittingFieldAux n f)) = ⊤)
+        Algebra.adjoin K (f.rootSet (SplittingFieldAux n f)) = ⊤)
     n (fun {K} _ f _hf => Algebra.eq_top_iff.2 fun x => Subalgebra.range_le _ ⟨x, rfl⟩)
     fun n ih {K} _ f hfn => by
     have hndf : f.natDegree ≠ 0 := by intro h; rw [h] at hfn; cases hfn
     have hfn0 : f ≠ 0 := by intro h; rw [h] at hndf; exact hndf rfl
     have hmf0 : map (algebraMap K (SplittingFieldAux n.succ f)) f ≠ 0 := map_ne_zero hfn0
-    rw [algebraMap_succ, ←map_map, ←X_sub_C_mul_removeFactor _ hndf, Polynomial.map_mul] at hmf0 ⊢
-    rw [roots_mul hmf0, Polynomial.map_sub, map_X, map_C, roots_X_sub_C, Multiset.toFinset_add,
+    rw [rootSet_def, aroots_def]
+    rw [algebraMap_succ, ← map_map, ← X_sub_C_mul_removeFactor _ hndf, Polynomial.map_mul] at hmf0 ⊢
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [roots_mul hmf0, Polynomial.map_sub, map_X, map_C, roots_X_sub_C, Multiset.toFinset_add,
       Finset.coe_union, Multiset.toFinset_singleton, Finset.coe_singleton,
       Algebra.adjoin_union_eq_adjoin_adjoin, ← Set.image_singleton,
-      Algebra.adjoin_algebraMap K (AdjoinRoot f.factor) (SplittingFieldAux n f.removeFactor),
+      Algebra.adjoin_algebraMap K (SplittingFieldAux n f.removeFactor),
       AdjoinRoot.adjoinRoot_eq_top, Algebra.map_top]
     /- Porting note: was `rw [IsScalarTower.adjoin_range_toAlgHom K (AdjoinRoot f.factor)
         (SplittingFieldAux n f.removeFactor)]` -/
     have := IsScalarTower.adjoin_range_toAlgHom K (AdjoinRoot f.factor)
         (SplittingFieldAux n f.removeFactor)
-        (↑(f.removeFactor.map <| algebraMap (AdjoinRoot f.factor) <|
-          SplittingFieldAux n f.removeFactor).roots.toFinset :
-              Set (SplittingFieldAux n f.removeFactor))
+        (f.removeFactor.rootSet (SplittingFieldAux n f.removeFactor))
     refine this.trans ?_
     rw [ih _ (natDegree_removeFactor' hfn), Subalgebra.restrictScalars_top]
 #align polynomial.splitting_field_aux.adjoin_root_set Polynomial.SplittingFieldAux.adjoin_rootSet
@@ -268,39 +267,31 @@ def algEquivSplittingFieldAux (f : K[X]) : SplittingField f ≃ₐ[K] SplittingF
   Ideal.quotientKerAlgEquivOfSurjective fun x => ⟨MvPolynomial.X x, by simp⟩
 #align polynomial.splitting_field.alg_equiv_splitting_field_aux Polynomial.SplittingField.algEquivSplittingFieldAux
 
-instance : Field (SplittingField f) :=
+instance instGroupWithZero : GroupWithZero (SplittingField f) :=
   let e := algEquivSplittingFieldAux f
-  { toCommRing := SplittingField.commRing f
-    ratCast := fun a => algebraMap K _ (a : K)
-    inv := fun a => e.symm (e a)⁻¹
-    qsmul := (· • ·)
-    qsmul_eq_mul' := fun a x =>
-      Quotient.inductionOn x (fun p => congr_arg Quotient.mk''
-        (by ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]))
-    ratCast_mk := fun a b h1 h2 => by
-      apply_fun e
-      change e (algebraMap K _ _) = _
-      simp only [map_ratCast, map_natCast, map_mul, map_intCast, AlgEquiv.commutes,
-        AlgEquiv.apply_symm_apply]
-      apply Field.ratCast_mk
-    exists_pair_ne := ⟨e.symm 0, e.symm 1, fun w => zero_ne_one ((e.symm).injective w)⟩
-    mul_inv_cancel := fun a w => by
-      -- This could surely be golfed.
-      apply_fun e
-      have : e a ≠ 0 := fun w' => by
-        apply w
-        simp at w'
-        exact w'
-      simp only [map_mul, AlgEquiv.apply_symm_apply, ne_eq, AddEquivClass.map_eq_zero_iff, map_one]
-      rw [mul_inv_cancel]
-      assumption
-    inv_zero := by simp }
+  { inv := fun a ↦ e.symm (e a)⁻¹
+    inv_zero := by simp
+    mul_inv_cancel := fun a ha ↦ e.injective $ by simp [(AddEquivClass.map_ne_zero_iff _).2 ha]
+    __ := e.surjective.nontrivial }
+
+instance instField : Field (SplittingField f) where
+  __ := commRing _
+  __ := instGroupWithZero _
+  ratCast q := algebraMap K _ q
+  ratCast_def q := by
+    change algebraMap K _ _ = _; rw [Rat.cast_def, map_div₀, map_intCast, map_natCast]
+  qsmul := (· • ·)
+  qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' $ by
+    ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
 
 instance instCharZero [CharZero K] : CharZero (SplittingField f) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
 
 instance instCharP (p : ℕ) [CharP K p] : CharP (SplittingField f) p :=
   charP_of_injective_algebraMap (algebraMap K _).injective p
+
+instance instExpChar (p : ℕ) [ExpChar K p] : ExpChar (SplittingField f) p :=
+  expChar_of_injective_algebraMap (algebraMap K _).injective p
 
 -- The algebra instance deriving from `K` should be definitionally equal to that
 -- deriving from the field structure on `SplittingField f`.
@@ -348,7 +339,6 @@ namespace IsSplittingField
 
 variable (K L)
 variable [Algebra K L]
-
 variable {K}
 
 instance (f : K[X]) : FiniteDimensional K f.SplittingField :=
@@ -361,33 +351,12 @@ instance (f : K[X]) : NoZeroSMulDivisors K f.SplittingField :=
   inferInstance
 
 /-- Any splitting field is isomorphic to `SplittingFieldAux f`. -/
-def algEquiv (f : K[X]) [IsSplittingField K L f] : L ≃ₐ[K] SplittingField f := by
-  refine'
-    AlgEquiv.ofBijective (lift L f <| splits (SplittingField f) f)
-      ⟨RingHom.injective (lift L f <| splits (SplittingField f) f).toRingHom, _⟩
-  haveI := finiteDimensional (SplittingField f) f
-  haveI := finiteDimensional L f
-  have : FiniteDimensional.finrank K L = FiniteDimensional.finrank K (SplittingField f) :=
-    le_antisymm
-      (LinearMap.finrank_le_finrank_of_injective
-        (show Function.Injective (lift L f <| splits (SplittingField f) f).toLinearMap from
-          RingHom.injective (lift L f <| splits (SplittingField f) f : L →+* f.SplittingField)))
-      (LinearMap.finrank_le_finrank_of_injective
-        (show Function.Injective (lift (SplittingField f) f <| splits L f).toLinearMap from
-          RingHom.injective (lift (SplittingField f) f <| splits L f : f.SplittingField →+* L)))
-  change Function.Surjective (lift L f <| splits (SplittingField f) f).toLinearMap
-  refine' (LinearMap.injective_iff_surjective_of_finrank_eq_finrank this).1 _
-  exact RingHom.injective (lift L f <| splits (SplittingField f) f : L →+* f.SplittingField)
+def algEquiv (f : K[X]) [h : IsSplittingField K L f] : L ≃ₐ[K] SplittingField f :=
+  AlgEquiv.ofBijective (lift L f <| splits (SplittingField f) f) <|
+    have := finiteDimensional L f
+    ((Algebra.IsAlgebraic.of_finite K L).algHom_bijective₂ _ <| lift _ f h.1).1
 #align polynomial.is_splitting_field.alg_equiv Polynomial.IsSplittingField.algEquiv
 
 end IsSplittingField
 
 end Polynomial
-
-section Normal
-
-instance Polynomial.SplittingField.instNormal [Field F] (p : F[X]) : Normal F p.SplittingField :=
-  Normal.of_isSplittingField p
-#align polynomial.splitting_field.normal Polynomial.SplittingField.instNormal
-
-end Normal

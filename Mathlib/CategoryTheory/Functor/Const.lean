@@ -27,7 +27,6 @@ open CategoryTheory
 namespace CategoryTheory.Functor
 
 variable (J : Type u₁) [Category.{v₁} J]
-
 variable {C : Type u₂} [Category.{v₂} C]
 
 /-- The functor sending `X : C` to the constant functor `J ⥤ C` sending everything to `X`.
@@ -101,8 +100,17 @@ def constComp (X : C) (F : C ⥤ D) : (const J).obj X ⋙ F ≅ (const J).obj (F
 #align category_theory.functor.const_comp CategoryTheory.Functor.constComp
 
 /-- If `J` is nonempty, then the constant functor over `J` is faithful. -/
-instance [Nonempty J] : Faithful (const J : C ⥤ J ⥤ C)
-    where map_injective e := NatTrans.congr_app e (Classical.arbitrary J)
+instance [Nonempty J] : Faithful (const J : C ⥤ J ⥤ C) where
+  map_injective e := NatTrans.congr_app e (Classical.arbitrary J)
+
+/-- The canonical isomorphism
+`F ⋙ Functor.const J ≅ Functor.const F ⋙ (whiskeringRight J _ _).obj L`. -/
+@[simps!]
+def compConstIso (F : C ⥤ D) :
+    F ⋙ Functor.const J ≅ Functor.const J ⋙ (whiskeringRight J C D).obj F :=
+  NatIso.ofComponents
+    (fun X => NatIso.ofComponents (fun j => Iso.refl _) (by aesop_cat))
+    (by aesop_cat)
 
 end
 
