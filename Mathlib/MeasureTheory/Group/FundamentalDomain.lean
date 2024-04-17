@@ -501,7 +501,7 @@ protected theorem setIntegral_eq (hs : IsFundamentalDomain G s μ) (ht : IsFunda
 
 @[deprecated]
 alias set_integral_eq :=
-  setIntegral_eq -- deprecated on 2024-04-17
+  MeasureTheory.IsFundamentalDomain.setIntegral_eq -- deprecated on 2024-04-17
 
 /-- If the action of a countable group `G` admits an invariant measure `μ` with a fundamental domain
 `s`, then every null-measurable set `t` such that the sets `g • t ∩ s` are pairwise a.e.-disjoint
