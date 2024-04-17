@@ -1100,15 +1100,27 @@ theorem basis_apply (i : ι) : basis A b i = 1 ⊗ₜ b i := basis_repr_symm_app
 theorem basis_repr_symm_apply' (a : A) (i : ι) : a • basis A b i = a ⊗ₜ b i := by
   simpa using basis_repr_symm_apply b a i
 
-open LinearMap in
-lemma _root_.Basis.baseChange_end [Fintype ι] [DecidableEq ι]
-    (A : Type*) [CommSemiring A] [Algebra R A] (b : Basis ι R M) (ij : ι × ι) :
-    baseChange A (b.end ij) = (basis A b).end ij := by
-  apply (basis A b).ext
+section baseChange
+
+open LinearMap
+
+variable [Fintype ι] [DecidableEq ι]
+variable {ι' N : Type*} [Fintype ι'] [DecidableEq ι'] [AddCommMonoid N] [Module R N]
+variable (A : Type*) [CommSemiring A] [Algebra R A]
+
+lemma _root_.Basis.baseChange_linearMap (b : Basis ι R M) (b' : Basis ι' R N) (ij : ι × ι') :
+    baseChange A (b'.linearMap b ij) = (basis A b').linearMap (basis A b) ij := by
+  apply (basis A b').ext
   intro k
   conv_lhs => simp only [basis_apply, baseChange_tmul]
-  simp_rw [Basis.end_apply_apply, basis_apply]
+  simp_rw [Basis.linearMap_apply_apply, basis_apply]
   split <;> simp only [TensorProduct.tmul_zero]
+
+lemma _root_.Basis.baseChange_end (b : Basis ι R M) (ij : ι × ι) :
+    baseChange A (b.end ij) = (basis A b).end ij :=
+  b.baseChange_linearMap A b ij
+
+end baseChange
 
 end Basis
 
