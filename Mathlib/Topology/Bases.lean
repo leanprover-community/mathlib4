@@ -120,26 +120,6 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
     exact ⟨{t}, ⟨finite_singleton t, singleton_subset_iff.2 ht⟩, rfl⟩
 #align topological_space.is_topological_basis_of_subbasis TopologicalSpace.isTopologicalBasis_of_subbasis
 
-lemma test {s : Set (Set α)} (hsi : FiniteInter s) :
-    (fun g => ⋂₀ g) '' { f : Set (Set α) | f.Finite ∧ f ⊆ s } = s := by
-  rw [le_antisymm_iff]
-  constructor
-  · intro F
-    simp only [mem_image, mem_setOf_eq, forall_exists_index, and_imp]
-    intro G hG hGs hi
-    rw [← hi]
-    let G' := Finite.toFinset hG
-    have e1 : G = G' := by
-      aesop
-    rw [e1]
-    apply @FiniteInter.finiteInter_mem _ s hsi G'
-    rw [← e1]
-    exact hGs
-  · intro t hts
-    use {t}
-    simp only [mem_setOf_eq, finite_singleton, singleton_subset_iff, true_and, sInter_singleton,
-      and_true, hts]
-
 theorem isTopologicalBasis_of_subbasis_of_finiteInter {s : Set (Set α)} (hsg : t = generateFrom s)
     (hsi : FiniteInter s) : IsTopologicalBasis s := by
   have e1 {s : Set (Set α)} (hsi : FiniteInter s) :
