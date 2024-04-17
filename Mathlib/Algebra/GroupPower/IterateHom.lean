@@ -117,7 +117,7 @@ variable [Monoid G] (a : G) (n : ℕ)
 @[to_additive (attr := simp)]
 theorem smul_iterate [MulAction G H] : (a • · : H → H)^[n] = (a ^ n • ·) :=
   funext fun b =>
-    Nat.recOn n (by rw [iterate_zero, id.def, pow_zero, one_smul])
+    Nat.recOn n (by rw [iterate_zero, id, pow_zero, one_smul])
     fun n ih => by rw [iterate_succ', comp_apply, ih, pow_succ', mul_smul]
 #align smul_iterate smul_iterate
 #align vadd_iterate vadd_iterate
@@ -175,12 +175,13 @@ section Semigroup
 
 variable [Semigroup G] {a b c : G}
 
--- Porting note (#10971): need `dsimp only`, see https://leanprover.zulipchat.com/#narrow/stream/
+-- Porting note(#12129): additional beta reduction needed
+-- see also https://leanprover.zulipchat.com/#narrow/stream/
 -- 287929-mathlib4/topic/dsimp.20before.20rw/near/317063489
 @[to_additive]
 theorem SemiconjBy.function_semiconj_mul_left (h : SemiconjBy a b c) :
     Function.Semiconj (a * ·) (b * ·) (c * ·) := fun j => by
-  dsimp only; rw [← mul_assoc, h.eq, mul_assoc]
+  beta_reduce; rw [← mul_assoc, h.eq, mul_assoc]
 #align semiconj_by.function_semiconj_mul_left SemiconjBy.function_semiconj_mul_left
 #align add_semiconj_by.function_semiconj_add_left AddSemiconjBy.function_semiconj_add_left
 

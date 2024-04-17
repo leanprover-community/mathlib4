@@ -351,7 +351,7 @@ theorem exists_fg_substructure_in_Sigma (S : L.Substructure (DirectLimit G f)) (
   let ⟨A, A_closure⟩ := S_fg
   let ⟨i, y, eq_y⟩ := exists_quotient_mk'_sigma_mk'_eq G _ (fun a : A ↦ a.1)
   use i
-  use (Substructure.closure L (range y))
+  use Substructure.closure L (range y)
   rw [Substructure.map_closure]
   simp only [Embedding.coe_toHom, of_apply]
   rw [← image_univ, image_image, image_univ, ← eq_y,

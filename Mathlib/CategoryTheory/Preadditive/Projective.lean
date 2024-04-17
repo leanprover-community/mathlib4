@@ -54,7 +54,7 @@ section
 /-- A projective presentation of an object `X` consists of an epimorphism `f : P ⟶ X`
 from some projective object `P`.
 -/
--- Porting note: was @[nolint has_nonempty_instance]
+-- Porting note(#5171): was @[nolint has_nonempty_instance]
 structure ProjectivePresentation (X : C) where
   p : C
   [projective : Projective p]

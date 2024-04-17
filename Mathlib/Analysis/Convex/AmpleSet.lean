@@ -20,7 +20,7 @@ differential relations.
 - `AmpleSet.vadd`: in particular, ample-ness is invariant under affine translations
 
 ## TODO
-`AmpleSet.of_two_le_codim`: a linear subspace of codimension at least two has an ample complement.
+`AmpleSet.of_one_lt_codim`: a linear subspace of codimension at least two has an ample complement.
 This is the crucial geometric ingredient which allows to apply convex integration
 to the theory of immersions in positive codimension.
 
