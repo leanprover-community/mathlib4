@@ -467,56 +467,23 @@ variable (α)
 
 variable [LinearOrder α] [TopologicalSpace α] [IsLower α]
 
-lemma test1 : {s : Set α | ∃ a, (Iic a)ᶜ = s} =
-    ((fun f => ⋂₀ f) '' { f : Set (Set α) | f.Finite ∧ f ⊆ {s : Set α | ∃ a, (Iic a)ᶜ = s} }) := by
-  rw [image]
-
-#check {s : Set α | ∃ a, (Iic a)ᶜ = s}
-
-/-
-def Ioi (a : α) :=
-  { x | a < x }
--/
-
---insert (univ : Set α) S
-
-lemma basis_inter : ∀ ⦃s⦄, s ∈ {r : Set α | ∃ a, (Iic a)ᶜ = r} →
-    ∀ ⦃t⦄, t ∈ {r : Set α | ∃ a, (Iic a)ᶜ = r} → s ∩ t ∈ {r : Set α | ∃ a, (Iic a)ᶜ = r} := by
+lemma basis_inter : ∀ ⦃s⦄, s ∈ {r : Set α | ∃ a, (Ici a)ᶜ = r} →
+    ∀ ⦃t⦄, t ∈ {r : Set α | ∃ a, (Ici a)ᶜ = r} → s ∩ t ∈ {r : Set α | ∃ a, (Ici a)ᶜ = r} := by
   intros s hs t ht
   simp at *
   rcases hs with ⟨b, hb⟩
   rcases ht with ⟨c, hc⟩
-  use b ⊔ c
-  rw [← hc, ← hb, Ioi_inter_Ioi]
+  use b ⊓ c
+  rw [← hc, ← hb, Iio_inter_Iio]
 
-lemma basis_finiteInter : FiniteInter (insert (univ : Set α) {s : Set α | ∃ a, (Iic a)ᶜ = s}) :=
+lemma basis_finiteInter : FiniteInter (insert (univ : Set α) {s : Set α | ∃ a, (Ici a)ᶜ = s}) :=
   (FiniteInter.mk₂ (basis_inter α))
 
-/-
-lemma basis_finiteInter : FiniteInter ({s : Set α | ∃ a, (Iic a)ᶜ = s}∪{(univ : Set α)}) :=
-where
-  univ_mem := by
-    simp only [compl_Iic, union_singleton, mem_insert_iff, mem_setOf_eq, true_or]
-  inter_mem u hu v hv := by
-    simp [mem_setOf_eq] at *
-    rcases hu with (huu | ⟨b, hb⟩)
-    · rcases hv with (hvu | ⟨c, hc⟩)
-      · apply Or.inl
-        rw [huu, hvu, inter_eq_left]
-      · apply Or.inr
-        use c
-        rw [hc, huu, univ_inter]
-    · apply Or.inr
-      rcases hv with (hvu | ⟨c, hc⟩)
-      · use b
-        rw [hb, hvu, inter_univ]
-      · use b ⊔ c
-        rw [← hc, ← hb, Ioi_inter_Ioi]
--/
-
-lemma test : IsTopologicalBasis (insert univ {s : Set α | ∃ a, (Iic a)ᶜ = s}) := by
-  apply isTopologicalBasis_of_subbasis_of_inter (_) (basis_inter α)
-  --letI := lower α
-  rw [Topology.IsLower.topology_eq α]
+lemma test :
+    IsTopologicalBasis (insert univ {s : Set α | ∃ a, (Ici a)ᶜ = s}) := by
+  exact isTopologicalBasis_of_subbasis_of_inter (by
+    rw [Topology.IsLower.topology_eq α]
+    exact rfl
+  ) (basis_inter α)
 
 end LinearOrder
