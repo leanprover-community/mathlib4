@@ -91,13 +91,10 @@ lemma summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum
   · rw [filter_insert]
     split_ifs with hpp
     · constructor
-      · simp only [← (equivProdNatFactoredNumbers hpp hp).summable_iff, Function.comp_def, 
+      · simp only [← (equivProdNatFactoredNumbers hpp hp).summable_iff, Function.comp_def,
           equivProdNatFactoredNumbers_apply', factoredNumbers.map_prime_pow_mul hmul hpp hp]
         refine Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun _ ↦ norm_mul_le ..) ?_
-        apply summable_mul_of_summable_norm (f := fun x : ℕ ↦ ‖f (p ^ x)‖)
-          (g := fun x : factoredNumbers s ↦ ‖f x.val‖) <;>
-          simp_rw [norm_norm]
-        exacts [hsum hpp, ih.1]
+        apply Summable.mul_of_nonneg (hsum hpp) ih.1 <;> exact fun n ↦ norm_nonneg _
       · have hp' : p ∉ s.filter Nat.Prime := mt (mem_of_mem_filter p) hp
         rw [prod_insert hp', ← (equivProdNatFactoredNumbers hpp hp).hasSum_iff, Function.comp_def]
         conv =>
@@ -106,7 +103,7 @@ lemma summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum
         have : T3Space R := instT3Space -- speeds up the following
         apply (hsum hpp).of_norm.hasSum.mul ih.2
         -- `exact summable_mul_of_summable_norm (hsum hpp) ih.1` gives a time-out
-        convert summable_mul_of_summable_norm (hsum hpp) ih.1
+        apply summable_mul_of_summable_norm (hsum hpp) ih.1
     · rwa [factoredNumbers_insert s hpp]
 
 /-- A version of `EulerProduct.summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum`
@@ -170,12 +167,14 @@ theorem eulerProduct_hasProd (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
     HasProd (fun p : Primes ↦ ∑' e, f (p ^ e)) (∑' n, f n) := by
   let F : ℕ → R := fun n ↦ ∑' e, f (n ^ e)
   change HasProd (F ∘ Subtype.val) _
-  rw [hasProd_subtype_iff_mulIndicator, HasProd, Metric.tendsto_atTop]
+  rw [hasProd_subtype_iff_mulIndicator,
+    show Set.mulIndicator (fun p : ℕ ↦ Irreducible p) =  {p | Nat.Prime p}.mulIndicator from rfl,
+    HasProd, Metric.tendsto_atTop]
   intro ε hε
   obtain ⟨N₀, hN₀⟩ := norm_tsum_factoredNumbers_sub_tsum_lt hsum.of_norm hf₀ hε
   refine ⟨range N₀, fun s hs ↦ ?_⟩
-  have : ∏ p in s, Set.mulIndicator (fun p ↦ Irreducible p) F p = ∏ p in s.filter Nat.Prime, F p :=
-    prod_mulIndicator_eq_prod_filter s (fun _ ↦ F) (fun _ ↦ {p | Nat.Prime p}) id
+  have : ∏ p in s, {p | Nat.Prime p}.mulIndicator F p = ∏ p in s.filter Nat.Prime, F p :=
+    prod_mulIndicator_eq_prod_filter s (fun _ ↦ F) _ id
   rw [this, dist_eq_norm, prod_filter_prime_tsum_eq_tsum_factoredNumbers hf₁ hmul hsum,
     norm_sub_rev]
   exact hN₀ s fun p hp ↦ hs <| mem_range.mpr <| lt_of_mem_primesBelow hp
