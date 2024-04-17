@@ -512,8 +512,13 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
     Meta.withLCtx lctx md.localInstances do
 
       let { userNames := initNames, .. } ← getMCtx
-      let some (subExpr, occ) ← viewKAbstractSubExpr (← loc.rootExpr) loc.pos |
+      let rootExpr ← loc.rootExpr
+      let some (subExpr, occ) ← viewKAbstractSubExpr rootExpr loc.pos |
         return .text "expressions with bound variables are not supported"
+      unless ← kabstractIsTypeCorrect rootExpr subExpr loc.pos do
+        return .text <| "The selected expression cannot be rewritten, because the motive is " ++
+          "not type correct. This usually occurs when trying to rewrite a term that appears " ++
+          "as a dependent argument."
       let location ← loc.location
 
       let unfoldsHtml ← InteractiveUnfold.renderUnfolds subExpr occ location props.replaceRange doc

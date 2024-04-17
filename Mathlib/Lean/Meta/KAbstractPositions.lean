@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
 import Lean.HeadIndex
+import Qq
 import Lean.Meta.ExprLens
 /-! # Find the positions of a pattern in an expression -/
 
@@ -54,3 +55,17 @@ def viewKAbstractSubExpr (e : Expr) (pos : SubExpr.Pos) : MetaM (Option (Expr ×
   let positions ← kabstractPositions subExpr e
   let some n := positions.getIdx? pos | unreachable!
   return some (subExpr, if positions.size == 1 then none else some (n + 1))
+
+/-- Determine whether the result of abstracting `subExpr` from `e` at position `pos` results
+in a well typed expression. This is important if you want to rewrite at this position.
+
+Here is an example of what goes wrong with an ill-typed kabstract result:
+
+```
+example (h : [5] ≠ []) : List.getLast [5] h = 5 := by
+  rw [show [5] = [5] from rfl] -- tactic 'rewrite' failed, motive is not type correct
+```
+-/
+def kabstractIsTypeCorrect (e subExpr : Expr) (pos : SubExpr.Pos) : MetaM Bool := do
+  withLocalDeclD `_a (← inferType subExpr) fun fvar => do
+    isTypeCorrect (← replaceSubexpr (fun _ => pure fvar) pos e)
