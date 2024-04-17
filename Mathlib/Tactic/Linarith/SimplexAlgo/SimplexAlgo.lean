@@ -73,9 +73,11 @@ def chooseEnteringVar : SimplexAlgoM Nat := do
   | .none => throw SimplexAlgoException.infeasible
   | .some enterIdx => return enterIdx
 
-/- Chooses an exiting variable: the variable imposing the strictest limit on the increase of the
-entering variable, breaking ties by choosing the variable with smallest index. -/
-def chooseExitingVar (enterIdx : Nat ) : SimplexAlgoM Nat := do
+/--
+Chooses an exiting variable: the variable imposing the strictest limit on the increase of the
+entering variable, breaking ties by choosing the variable with smallest index.
+-/
+def chooseExitingVar (enterIdx : Nat) : SimplexAlgoM Nat := do
   let mut exitIdxOpt : Option Nat := .none -- index of entering variable in the `basic` array
   let mut minCoef := 0
   let mut minIdx := 0
