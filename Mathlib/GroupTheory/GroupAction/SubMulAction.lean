@@ -432,20 +432,20 @@ variable {M α : Type*} [Monoid M] [MulAction M α]
 /-- The inclusion of a SubMulAction into the ambient set, as an equivariant map -/
 def inclusion (s : SubMulAction M α) : s →[M] α where
 -- The inclusion map of the inclusion of a SubMulAction
-  toFun := fun x => x.val
+  toFun := Subtype.val
 -- The commutation property
   map_smul' _ _ := rfl
 
 theorem inclusion.toFun_eq_coe (s : SubMulAction M α) :
-    s.inclusion.toFun = fun x => x.val := rfl
+    s.inclusion.toFun = Subtype.val := rfl
+
+theorem inclusion.coe_eq (s : SubMulAction M α) :
+    ⇑s.inclusion = Subtype.val := rfl
 
 lemma image_inclusion (s : SubMulAction M α) :
-    Set.range s.inclusion = s.carrier  := by
-  ext a
-  simp only [Set.mem_range, Subtype.exists, mem_carrier, SetLike.mem_coe]
-  constructor
-  · rintro ⟨a, h, rfl⟩; exact h
-  · exact fun h ↦ ⟨a, h, rfl⟩
+    Set.range s.inclusion = s.carrier := by
+  rw [inclusion.coe_eq]
+  exact Subtype.range_coe
 
 lemma inclusion_injective (s : SubMulAction M α) :
     Function.Injective s.inclusion := by

@@ -2,7 +2,6 @@
 Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
-
 -/
 
 import Mathlib.Data.Setoid.Partition
@@ -16,10 +15,10 @@ import Mathlib.GroupTheory.Subgroup.Actions
 Given `SMul G X`, an action of a type `G` on a type `X`, we define
 
 - the predicate `IsBlock G B` states that `B : Set X` is a block,
-which means that the sets `g • B`, for `g ∈ G` form a partition of `X`.
+  which means that the sets `g • B`, for `g ∈ G` form a partition of `X`.
 
 - a bunch of lemmas that give examples of “trivial” blocks : ⊥, ⊤, singletons,
-and non trivial blocks: orbit of the group, orbit of a normal subgroup…
+  and non trivial blocks: orbit of the group, orbit of a normal subgroup…
 
 The non-existence of nontrivial blocks is the definition of primitive actions.
 

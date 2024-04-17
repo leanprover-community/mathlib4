@@ -694,15 +694,15 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
     apply Eq.subset
     rw [← mem_stabilizer_iff]
     exact hyp hg
-  intro hyp
-  intro g hg
-  rw [mem_stabilizer_iff]
-  apply subset_antisymm
-  exact hyp g hg
-  intro x hx; use g⁻¹ • x; constructor
-  apply hyp g⁻¹ (inv_mem hg)
-  simp only [Set.smul_mem_smul_set_iff, hx]
-  simp only [smul_inv_smul]
+  · intro hyp g hg
+    rw [mem_stabilizer_iff]
+    apply subset_antisymm (hyp g hg)
+    intro x hx
+    use g⁻¹ • x
+    constructor
+    · apply hyp g⁻¹ (inv_mem hg)
+      simp only [Set.smul_mem_smul_set_iff, hx]
+    · simp only [smul_inv_smul]
 
 /-- To prove membership to stabilizer of a *finite set*, it is enough to prove one inclusion. -/
 theorem mem_stabilizer_of_finite_iff_smul_le (s : Set α) (hs : s.Finite) (g : G) :
