@@ -3,9 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yakov Pechersky, Eric Wieser
 -/
-import Mathlib.Data.Nat.Basic
 import Mathlib.Init.Data.List.Basic
-import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Data.Prod.Basic
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Convert
 
@@ -53,11 +52,11 @@ theorem mem_enumFrom {x : α} {i : ℕ} :
         j ≤ i ∧ i < j + (length ys + 1) ∧ (x = y ∨ x ∈ ys)
       by simpa [enumFrom, mem_enumFrom ys]
     rintro (h | h)
-    · refine' ⟨le_of_eq h.1.symm, h.1 ▸ _, Or.inl h.2⟩
+    · refine' ⟨Nat.le_of_eq h.1.symm, h.1 ▸ _, Or.inl h.2⟩
       apply Nat.lt_add_of_pos_right; simp
     · have ⟨hji, hijlen, hmem⟩ := mem_enumFrom _ h
       refine' ⟨_, _, _⟩
-      · exact le_trans (Nat.le_succ _) hji
+      · exact Nat.le_trans (Nat.le_succ _) hji
       · convert hijlen using 1
         omega
       · simp [hmem]
