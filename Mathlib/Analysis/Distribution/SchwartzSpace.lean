@@ -706,7 +706,7 @@ lemma pow_mul_le_of_le_of_pow_mul_le {C₁ C₂ : ℝ} {k l : ℕ} {x f : ℝ} (
     · linarith
   · calc
     x ^ k * f = x ^ (-(l:ℝ)) * (x ^ (k + l) * f) := by
-      rw [← Real.rpow_nat_cast, ← Real.rpow_nat_cast, ← mul_assoc, ← Real.rpow_add (by linarith)]
+      rw [← Real.rpow_natCast, ← Real.rpow_natCast, ← mul_assoc, ← Real.rpow_add (by linarith)]
       simp
     _ ≤ ((1 + x) / 2) ^ (-(l:ℝ)) * (C₁ + C₂) := by
       apply mul_le_mul _ _ (by positivity) (by positivity)
