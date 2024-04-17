@@ -33,10 +33,21 @@ that evaluates on elements `x` of `L` to the characteristic polynomial of `φ x`
   with respect to bases `b₁` and `b₂` of the domain and codomain.
 * `LinearMap.polyCharpoly`: the multivariate polynomial that evaluates on elements `x` of `L`
   to the characteristic polynomial of `φ x`.
-* `LinearMap.polyCharpoly_map`: the evaluation of `polyCharpoly` on elements `x` of `L`
+* `LinearMap.polyCharpoly_map_eq_charpoly`: the evaluation of `polyCharpoly` on elements `x` of `L`
   is the characteristic polynomial of `φ x`.
 * `LinearMap.polyCharpoly_coeff_isHomogeneous`: the coefficients of `polyCharpoly`
   are homogeneous polynomials in the parameters.
+
+## Implementation details
+
+We show that `LinearMap.polyCharpoly` does not depend on the choice of basis of the target module.
+This is done via `LinearMap.polyCharpoly_eq_polyCharpolyAux`
+and `LinearMap.polyCharpolyAux_basisIndep`.
+The latter is proven by considering
+the base change of the `R`-linear map `φ : L →ₗ[R] End R M`
+to the multivariate polynomial ring `MvPolynomial ι R`,
+and showing that `polyCharpolyAux φ` is equal to the characteristic polynomial of this base change.
+The proof concludes because characteristic polynomials are independent of the chosen basis.
 
 -/
 
@@ -276,13 +287,12 @@ lemma polyCharpolyAux_map_aeval
 open Algebra.TensorProduct MvPolynomial in
 /-- `LinearMap.polyCharpolyAux` is independent of the choice of basis of the target module.
 
-We prove this by rewriting `polyCharpolyAux`
-as the (honest, ordinary) characteristic polynomial of the basechange of `φ` to `R[X]`
-and then using that the characteristic polynomial of a linear map
-is independent of the choice of basis.
-
-This independence result is used transitively via
-`LinearMap.polyCharpolyAux_map_aeval` and `LinearMap.polyCharpolyAux_map_eq_charpoly`. -/
+Proof strategy:
+1. Rewrite `polyCharpolyAux` as the (honest, ordinary) characteristic polynomial
+   of the basechange of `φ` to the multivariate polynomial ring `MvPolynomial ι R`.
+2. Use that the characteristic polynomial of a linear map is independent of the choice of basis.
+   This independence result is used transitively via
+   `LinearMap.polyCharpolyAux_map_aeval` and `LinearMap.polyCharpolyAux_map_eq_charpoly`. -/
 lemma polyCharpolyAux_basisIndep {ιM' : Type*} [Fintype ιM'] [DecidableEq ιM']
     (bₘ' : Basis ιM' R M) :
     polyCharpolyAux φ b bₘ = polyCharpolyAux φ b bₘ' := by
