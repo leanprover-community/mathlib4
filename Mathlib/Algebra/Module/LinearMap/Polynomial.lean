@@ -172,7 +172,7 @@ variable [Fintype ι] [Fintype ιM] [DecidableEq ι]
 
 namespace LinearMap
 
-section basic
+section aux
 
 variable [DecidableEq ιM] (b : Basis ι R L) (bₘ : Basis ιM R M)
 
@@ -251,11 +251,24 @@ lemma polyCharpolyAux_map_eq_toMatrix_charpoly (x : L) :
   rw [of_apply, Function.curry_apply, toMvPolynomial_eval_eq_apply, LinearEquiv.symm_apply_apply]
   rfl
 
+open LinearMap in
+lemma polyCharpolyAux_eval_eq_toMatrix_charpoly_coeff (x : L) (i : ℕ) :
+    MvPolynomial.eval (b.repr x) ((polyCharpolyAux φ b bₘ).coeff i) =
+      (toMatrix bₘ bₘ (φ x)).charpoly.coeff i := by
+  simp [← polyCharpolyAux_map_eq_toMatrix_charpoly φ b bₘ x]
+
+@[simp]
 lemma polyCharpolyAux_map_eq_charpoly [Module.Finite R M] [Module.Free R M]
     (x : L) :
     (polyCharpolyAux φ b bₘ).map (MvPolynomial.eval (b.repr x)) = (φ x).charpoly := by
   nontriviality R
   rw [polyCharpolyAux_map_eq_toMatrix_charpoly, LinearMap.charpoly_toMatrix]
+
+@[simp]
+lemma polyCharpolyAux_coeff_eval [Module.Finite R M] [Module.Free R M] (x : L) (i : ℕ) :
+    MvPolynomial.eval (b.repr x) ((polyCharpolyAux φ b bₘ).coeff i) = (φ x).charpoly.coeff i := by
+  nontriviality R
+  rw [← polyCharpolyAux_map_eq_charpoly φ b bₘ x, Polynomial.coeff_map]
 
 lemma polyCharpolyAux_map_eval [Module.Finite R M] [Module.Free R M]
     (x : ι → R) :
@@ -292,30 +305,7 @@ lemma polyCharpolyAux_basisIndep {ιM' : Type*} [Fintype ιM'] [DecidableEq ιM'
     Module.Free.of_basis (basis (MvPolynomial ι R) bₘ)
   simp only [f, polyCharpolyAux_map_aeval, polyCharpolyAux_map_aeval]
 
-open LinearMap in
-lemma polyCharpolyAux_eval_eq_toMatrix_charpoly_coeff (x : L) (i : ℕ) :
-    MvPolynomial.eval (b.repr x) ((polyCharpolyAux φ b bₘ).coeff i) =
-      (toMatrix bₘ bₘ (φ x)).charpoly.coeff i := by
-  simp [← polyCharpolyAux_map_eq_toMatrix_charpoly φ b bₘ x]
-
-end basic
-
-section module
-
-variable [DecidableEq ιM] [Nontrivial R] [Module.Finite R M] [Module.Free R M]
-variable (b : Basis ι R L) (bₘ : Basis ιM R M) (x : L)
-
-@[simp]
-lemma polyCharpolyAux_map :
-    (polyCharpolyAux φ b bₘ).map (MvPolynomial.eval (b.repr x)) = (φ x).charpoly := by
-  rw [polyCharpolyAux_map_eq_toMatrix_charpoly, LinearMap.charpoly_toMatrix]
-
-@[simp]
-lemma polyCharpolyAux_eval (i : ℕ) :
-    MvPolynomial.eval (b.repr x) ((polyCharpolyAux φ b bₘ).coeff i) = (φ x).charpoly.coeff i := by
-  rw [polyCharpolyAux_eval_eq_toMatrix_charpoly_coeff, LinearMap.charpoly_toMatrix]
-
-end module
+end aux
 
 open FiniteDimensional Matrix
 
@@ -349,11 +339,38 @@ lemma polyCharpoly_natDegree [Nontrivial R] [StrongRankCondition R] : -- remove 
 lemma polyCharpoly_coeff_isHomogeneous (i j : ℕ) (hij : i + j = finrank R M)
     [StrongRankCondition R] : -- remove [SRC]?
     ((polyCharpoly φ b).coeff i).IsHomogeneous j := by
-  rw [polyCharpoly, polyCharpolyAux, Polynomial.coeff_map, ← one_mul j]
-  apply (charpoly.univ_coeff_isHomogeneous _ _ _ _ _).eval₂
-  · exact fun r ↦ MvPolynomial.isHomogeneous_C _ _
-  · exact LinearMap.toMvPolynomial_isHomogeneous _ _ _
-  · rw [hij, finrank_eq_card_chooseBasisIndex]
+  apply polyCharpolyAux_coeff_isHomogeneous
+  rwa [← finrank_eq_card_chooseBasisIndex]
+
+-- move this
+open TensorProduct in
+instance TensorProduct.Free (A : Type*) [CommRing A] [Algebra R A] :
+    Module.Free A (A ⊗[R] M) :=
+  Module.Free.of_basis <| Algebra.TensorProduct.basis A (Module.Free.chooseBasis R M)
+
+-- move this
+open TensorProduct in
+instance TensorProduct.Finite (A : Type*) [CommRing A] [Algebra R A] :
+    Module.Finite A (TensorProduct R A M) :=
+  Module.Finite.of_basis <| Algebra.TensorProduct.basis A (Module.Free.chooseBasis R M)
+
+open Algebra.TensorProduct MvPolynomial in
+lemma polyCharpoly_baseChange (A : Type*) [CommRing A] [Algebra R A] :
+    polyCharpoly (tensorProduct _ _ _ _ ∘ₗ φ.baseChange A) (basis A b) =
+      (polyCharpoly φ b).map (MvPolynomial.map (algebraMap R A)) := by
+  unfold polyCharpoly
+  rw [← φ.polyCharpolyAux_baseChange]
+  apply polyCharpolyAux_basisIndep
+
+@[simp]
+lemma polyCharpoly_coeff_map (x : L) :
+    (polyCharpoly φ b).map (MvPolynomial.eval (b.repr x)) = (φ x).charpoly := by
+  rw [polyCharpoly, polyCharpolyAux_map_eq_charpoly]
+
+@[simp]
+lemma polyCharpoly_coeff_eval (x : L) (i : ℕ) :
+    MvPolynomial.eval (b.repr x) ((polyCharpoly φ b).coeff i) = (φ x).charpoly.coeff i := by
+  rw [polyCharpoly, polyCharpolyAux_coeff_eval]
 
 end LinearMap
 
