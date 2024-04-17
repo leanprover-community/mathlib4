@@ -16,7 +16,11 @@ import Mathlib.RingTheory.TensorProduct.Basic
 An `R`-algebra `A` is formally unramified if for every `R`-algebra,
 every square-zero ideal `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists
 at most one lift `A →ₐ[R] B`.
-It is unramified if it is formally unramified and of finite presentation.
+It is unramified if it is formally unramified and of finite type.
+
+Note that there are multiple definitions in the literature. The definition we give is equivalent to
+the one in the Stacks Project https://stacks.math.columbia.edu/tag/00US. Note that in EGA unramified
+is defined as formally unramified and of finite presentation.
 
 We show that the property extends onto nilpotent ideals, and that it is stable
 under `R`-algebra homomorphisms and compositions.
@@ -232,7 +236,8 @@ section
 variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [Semiring A] [Algebra R A]
 
-/-- An `R`-algebra `A` is unramified if it is formally unramified and of finite type. -/
+/-- An `R`-algebra `A` is unramified if it is formally unramified and of finite type.
+-/
 class Unramified : Prop where
   formallyUnramified : FormallyUnramified R A := by infer_instance
   finiteType : FiniteType R A
