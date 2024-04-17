@@ -143,7 +143,6 @@ instance mul' : Mul R[X] :=
 
 -- If the private definitions are accidentally exposed, simplify them away.
 @[simp] theorem add_eq_add : add p q = p + q := rfl
-@[simp] theorem neg_eq_neg : neg p = - p := rfl
 @[simp] theorem mul_eq_mul : mul p q = p * q := rfl
 
 instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] where
