@@ -495,7 +495,7 @@ theorem integral_indicatorConstLp [CompleteSpace E]
   calc
     ∫ x, indicatorConstLp p ht hμt e x ∂μ = ∫ x in univ, indicatorConstLp p ht hμt e x ∂μ := by
       rw [integral_univ]
-    _ = (μ (t ∩ univ)).toReal • e := (set_integral_indicatorConstLp MeasurableSet.univ ht hμt e)
+    _ = (μ (t ∩ univ)).toReal • e := set_integral_indicatorConstLp MeasurableSet.univ ht hμt e
     _ = (μ t).toReal • e := by rw [inter_univ]
 set_option linter.uppercaseLean3 false in
 #align measure_theory.integral_indicator_const_Lp MeasureTheory.integral_indicatorConstLp
@@ -970,6 +970,20 @@ end ContinuousSetIntegral
 
 end MeasureTheory
 
+section OpenPos
+
+open Measure
+
+variable [TopologicalSpace X] [OpensMeasurableSpace X] {μ : Measure X} [IsOpenPosMeasure μ]
+
+theorem Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero [IsFiniteMeasureOnCompacts μ]
+    {f : X → ℝ} {x : X} (f_cont : Continuous f) (f_comp : HasCompactSupport f) (f_nonneg : 0 ≤ f)
+    (f_x : f x ≠ 0) : 0 < ∫ x, f x ∂μ :=
+  integral_pos_of_integrable_nonneg_nonzero f_cont (f_cont.integrable_of_hasCompactSupport f_comp)
+    f_nonneg f_x
+
+end OpenPos
+
 /-! Fundamental theorem of calculus for set integrals -/
 section FTC
 
@@ -1334,7 +1348,7 @@ theorem integral_withDensity_eq_integral_smul₀ {f : X → ℝ≥0} (hf : AEMea
       apply withDensity_congr_ae
       filter_upwards [hf.ae_eq_mk] with x hx
       rw [hx]
-    _ = ∫ x, f' x • g x ∂μ := (integral_withDensity_eq_integral_smul hf.measurable_mk _)
+    _ = ∫ x, f' x • g x ∂μ := integral_withDensity_eq_integral_smul hf.measurable_mk _
     _ = ∫ x, f x • g x ∂μ := by
       apply integral_congr_ae
       filter_upwards [hf.ae_eq_mk] with x hx

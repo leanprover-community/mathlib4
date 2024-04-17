@@ -20,23 +20,18 @@ casting lemmas showing the well-behavedness of this injection.
 
 ## Notations
 
-- `/.` is infix notation for `rat.mk`.
+- `/.` is infix notation for `Rat.divInt`.
 
 ## Tags
 
 rat, rationals, field, ℚ, numerator, denominator, num, denom, cast, coercion, casting
 -/
 
-
 variable {F ι α β : Type*}
 
 namespace Rat
 
-open Rat
-
-section WithDivRing
-
-variable [DivisionRing α]
+variable [DivisionRing α] {p q : ℚ}
 
 @[simp, norm_cast]
 theorem cast_intCast (n : ℤ) : ((n : ℚ) : α) = n :=
@@ -80,7 +75,7 @@ theorem commute_cast (a : α) (r : ℚ) : Commute a r :=
 #align rat.commute_cast Rat.commute_cast
 
 @[norm_cast]
-theorem cast_mk_of_ne_zero (a b : ℤ) (b0 : (b : α) ≠ 0) : (a /. b : α) = a / b := by
+lemma cast_divInt_of_ne_zero (a : ℤ) {b : ℤ} (b0 : (b : α) ≠ 0) : (a /. b : α) = a / b := by
   have b0' : b ≠ 0 := by
     refine' mt _ b0
     simp (config := { contextual := true })
@@ -92,96 +87,60 @@ theorem cast_mk_of_ne_zero (a b : ℤ) (b0 : (b : α) ≠ 0) : (a /. b : α) = a
     have : (b : α) = (d : α) * (k : α) := by rw [ke, Int.cast_mul, Int.cast_natCast]
     rw [d0, zero_mul] at this
     contradiction
-  rw [num_den'] at e
+  rw [mk'_eq_divInt] at e
   have := congr_arg ((↑) : ℤ → α)
     ((divInt_eq_iff b0' <| ne_of_gt <| Int.natCast_pos.2 h.bot_lt).1 e)
   rw [Int.cast_mul, Int.cast_mul, Int.cast_natCast] at this
-  -- Porting note: was `symm`
-  apply Eq.symm
-  rw [cast_def, div_eq_mul_inv, eq_div_iff_mul_eq d0, mul_assoc, (d.commute_cast _).eq, ← mul_assoc,
-    this, mul_assoc, mul_inv_cancel b0, mul_one]
-#align rat.cast_mk_of_ne_zero Rat.cast_mk_of_ne_zero
+  rw [eq_comm, cast_def, div_eq_mul_inv, eq_div_iff_mul_eq d0, mul_assoc, (d.commute_cast _).eq,
+    ← mul_assoc, this, mul_assoc, mul_inv_cancel b0, mul_one]
+#align rat.cast_mk_of_ne_zero Rat.cast_divInt_of_ne_zero
 
 @[norm_cast]
-theorem cast_add_of_ne_zero :
-    ∀ {m n : ℚ}, (m.den : α) ≠ 0 → (n.den : α) ≠ 0 → ((m + n : ℚ) : α) = m + n
-  | ⟨n₁, d₁, h₁, c₁⟩, ⟨n₂, d₂, h₂, c₂⟩ => fun (d₁0 : (d₁ : α) ≠ 0) (d₂0 : (d₂ : α) ≠ 0) => by
-    have d₁0' : (d₁ : ℤ) ≠ 0 :=
-      Int.natCast_ne_zero.2 fun e => by rw [e] at d₁0; exact d₁0 Nat.cast_zero
-    have d₂0' : (d₂ : ℤ) ≠ 0 :=
-      Int.natCast_ne_zero.2 fun e => by rw [e] at d₂0; exact d₂0 Nat.cast_zero
-    rw [num_den', num_den', add_def'' d₁0' d₂0']
-    suffices (n₁ * (d₂ * ((d₂ : α)⁻¹ * (d₁ : α)⁻¹)) + n₂ * (d₁ * (d₂ : α)⁻¹) * (d₁ : α)⁻¹ : α)
-        = n₁ * (d₁ : α)⁻¹ + n₂ * (d₂ : α)⁻¹ by
-      rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero, cast_mk_of_ne_zero]
-      · simpa [division_def, left_distrib, right_distrib, mul_inv_rev, d₁0, d₂0, mul_assoc]
-      all_goals simp [d₁0, d₂0]
-    rw [← mul_assoc (d₂ : α), mul_inv_cancel d₂0, one_mul, (Nat.cast_commute _ _).eq]
-    simp [d₁0, mul_assoc]
+lemma cast_mkRat_of_ne_zero (a : ℤ) {b : ℕ} (hb : (b : α) ≠ 0) : (mkRat a b : α) = a / b := by
+  rw [Rat.mkRat_eq, cast_divInt_of_ne_zero, Int.cast_natCast]; rwa [Int.cast_natCast]
+
+@[norm_cast]
+lemma cast_add_of_ne_zero {q r : ℚ} (hq : (q.den : α) ≠ 0) (hr : (r.den : α) ≠ 0) :
+    (q + r : ℚ) = (q + r : α) := by
+  rw [add_def', cast_mkRat_of_ne_zero, cast_def, cast_def, mul_comm r.num,
+    (Nat.cast_commute _ _).div_add_div (Nat.commute_cast _ _) hq hr]
+  push_cast
+  rfl
+  · push_cast
+    exact mul_ne_zero hq hr
 #align rat.cast_add_of_ne_zero Rat.cast_add_of_ne_zero
 
-@[simp, norm_cast]
-theorem cast_neg : ∀ n, ((-n : ℚ) : α) = -n
-  | ⟨n, d, h, c⟩ => by
-    simpa only [cast_def] using
-      show (↑(-n) / d : α) = -(n / d) by
-        rw [div_eq_mul_inv, div_eq_mul_inv, Int.cast_neg, neg_mul_eq_neg_mul]
+@[simp, norm_cast] lemma cast_neg (q : ℚ) : ↑(-q) = (-q : α) := by simp [cast_def, neg_div]
 #align rat.cast_neg Rat.cast_neg
 
-@[norm_cast]
-theorem cast_sub_of_ne_zero {m n : ℚ} (m0 : (m.den : α) ≠ 0) (n0 : (n.den : α) ≠ 0) :
-    ((m - n : ℚ) : α) = m - n := by
-  have : ((-n).den : α) ≠ 0 := by cases n; exact n0
-  simp [sub_eq_add_neg, cast_add_of_ne_zero m0 this]
+@[norm_cast] lemma cast_sub_of_ne_zero (hp : (p.den : α) ≠ 0) (hq : (q.den : α) ≠ 0) :
+    ↑(p - q) = (p - q : α) := by simp [sub_eq_add_neg, cast_add_of_ne_zero, hp, hq]
 #align rat.cast_sub_of_ne_zero Rat.cast_sub_of_ne_zero
 
-@[norm_cast]
-theorem cast_mul_of_ne_zero :
-    ∀ {m n : ℚ}, (m.den : α) ≠ 0 → (n.den : α) ≠ 0 → ((m * n : ℚ) : α) = m * n
-  | ⟨n₁, d₁, h₁, c₁⟩, ⟨n₂, d₂, h₂, c₂⟩ => fun (d₁0 : (d₁ : α) ≠ 0) (d₂0 : (d₂ : α) ≠ 0) => by
-    have d₁0' : (d₁ : ℤ) ≠ 0 :=
-      Int.natCast_ne_zero.2 fun e => by rw [e] at d₁0; exact d₁0 Nat.cast_zero
-    have d₂0' : (d₂ : ℤ) ≠ 0 :=
-      Int.natCast_ne_zero.2 fun e => by rw [e] at d₂0; exact d₂0 Nat.cast_zero
-    rw [num_den', num_den', mul_def' d₁0' d₂0']
-    suffices (n₁ * (n₂ * (d₂ : α)⁻¹ * (d₁ : α)⁻¹) : α) = n₁ * ((d₁ : α)⁻¹ * (n₂ * (d₂ : α)⁻¹)) by
-      rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero, cast_mk_of_ne_zero]
-      · simpa [division_def, mul_inv_rev, d₁0, d₂0, mul_assoc]
-      all_goals simp [d₁0, d₂0]
-    rw [(d₁.commute_cast (_ : α)).inv_right₀.eq]
+@[norm_cast] lemma cast_mul_of_ne_zero (hp : (p.den : α) ≠ 0) (hq : (q.den : α) ≠ 0) :
+    ↑(p * q) = (p * q : α) := by
+  rw [mul_def', cast_mkRat_of_ne_zero, cast_def, cast_def,
+    (Nat.commute_cast _ _).div_mul_div_comm (Int.commute_cast _ _)]
+  push_cast
+  rfl
+  · push_cast
+    exact mul_ne_zero hp hq
 #align rat.cast_mul_of_ne_zero Rat.cast_mul_of_ne_zero
 
 @[norm_cast]
-theorem cast_inv_of_ne_zero :
-    ∀ {n : ℚ}, (n.num : α) ≠ 0 → (n.den : α) ≠ 0 → ((n⁻¹ : ℚ) : α) = (n : α)⁻¹
-  | ⟨n, d, h, c⟩ => fun (n0 : (n : α) ≠ 0) (d0 : (d : α) ≠ 0) => by
-    rw [num_den', inv_def']
-    rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero, inv_div] <;> simp [n0, d0]
+lemma cast_inv_of_ne_zero (hq : (q.num : α) ≠ 0) : ↑(q⁻¹) = (q⁻¹ : α) := by
+  rw [inv_def', cast_divInt_of_ne_zero _ hq, cast_def, inv_div, Int.cast_natCast]
 #align rat.cast_inv_of_ne_zero Rat.cast_inv_of_ne_zero
 
-@[norm_cast]
-theorem cast_div_of_ne_zero {m n : ℚ} (md : (m.den : α) ≠ 0) (nn : (n.num : α) ≠ 0)
-    (nd : (n.den : α) ≠ 0) : ((m / n : ℚ) : α) = m / n := by
-  have : (n⁻¹.den : ℤ) ∣ n.num := by
-    conv in n⁻¹.den => rw [← @num_den n, inv_def']
-    apply den_dvd
-  have : (n⁻¹.den : α) = 0 → (n.num : α) = 0 := fun h => by
-    let ⟨k, e⟩ := this
-    have := congr_arg ((↑) : ℤ → α) e; rwa [Int.cast_mul, Int.cast_natCast, h, zero_mul] at this
-  rw [division_def, cast_mul_of_ne_zero md (mt this nn), cast_inv_of_ne_zero nn nd, division_def]
+@[norm_cast] lemma cast_div_of_ne_zero (hp : (p.den : α) ≠ 0) (hq : (q.num : α) ≠ 0) :
+    ↑(p / q) = (p / q : α) := by
+  rw [div_def', cast_divInt_of_ne_zero, cast_def, cast_def, div_eq_mul_inv (_ / _), inv_div,
+    (Int.commute_cast _ _).div_mul_div_comm (Nat.commute_cast _ _)]
+  push_cast
+  rfl
+  · push_cast
+    exact mul_ne_zero hp hq
 #align rat.cast_div_of_ne_zero Rat.cast_div_of_ne_zero
-
-end WithDivRing
-
--- Porting note: statement made more explicit
-@[norm_cast]
-theorem cast_id (n : ℚ) : Rat.cast n = n := rfl
-#align rat.cast_id Rat.cast_id
-
-@[simp]
-theorem cast_eq_id : ((↑) : ℚ → ℚ) = id :=
-  funext fun _ => rfl
-#align rat.cast_eq_id Rat.cast_eq_id
 
 end Rat
 
@@ -194,10 +153,8 @@ theorem map_ratCast [DivisionRing α] [DivisionRing β] [RingHomClass F α β] (
     f q = q := by rw [cast_def, map_div₀, map_intCast, map_natCast, cast_def]
 #align map_rat_cast map_ratCast
 
-@[simp]
-theorem eq_ratCast {k} [DivisionRing k] [FunLike F ℚ k] [RingHomClass F ℚ k] (f : F) (r : ℚ) :
-    f r = r := by
-  rw [← map_ratCast f, Rat.cast_id]
+@[simp] lemma eq_ratCast [DivisionRing α] [FunLike F ℚ α] [RingHomClass F ℚ α] (f : F) (q : ℚ) :
+    f q = q := by rw [← map_ratCast f, Rat.cast_id]
 #align eq_rat_cast eq_ratCast
 
 namespace MonoidWithZeroHom
@@ -248,25 +205,19 @@ instance Rat.subsingleton_ringHom {R : Type*} [Semiring R] : Subsingleton (ℚ �
   ⟨RingHom.ext_rat⟩
 #align rat.subsingleton_ring_hom Rat.subsingleton_ringHom
 
-section SMul
+/-! ### Scalar multiplication -/
 
 namespace Rat
+variable [DivisionRing α]
 
-variable {K : Type*} [DivisionRing K]
-
-instance (priority := 100) distribSMul : DistribSMul ℚ K where
+instance (priority := 100) instDistribSMul : DistribSMul ℚ α where
   smul := (· • ·)
   smul_zero a := by rw [smul_def, mul_zero]
   smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
-#align rat.distrib_smul Rat.distribSMul
+#align rat.distrib_smul Rat.instDistribSMul
 
-instance isScalarTower_right : IsScalarTower ℚ K K :=
-  ⟨fun a x y => by simp only [smul_def, smul_eq_mul, mul_assoc]⟩
-#align rat.is_scalar_tower_right Rat.isScalarTower_right
+instance instIsScalarTowerRight : IsScalarTower ℚ α α where
+  smul_assoc a x y := by simp only [smul_def, smul_eq_mul, mul_assoc]
+#align rat.is_scalar_tower_right Rat.instIsScalarTowerRight
 
 end Rat
-
-end SMul
-
--- Guard against import creep regression.
-assert_not_exists add_div

@@ -344,6 +344,17 @@ theorem range_basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) (v :
 
 end DivisionRing
 
+section Tower
+
+variable (F K A : Type*) [DivisionRing F] [DivisionRing K] [AddCommGroup A]
+variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
+
+theorem trans [FiniteDimensional F K] [FiniteDimensional K A] : FiniteDimensional F A :=
+  Module.Finite.trans K A
+#align finite_dimensional.trans FiniteDimensional.trans
+
+end Tower
+
 end FiniteDimensional
 
 section ZeroRank
@@ -1280,7 +1291,7 @@ theorem ker_pow_eq_ker_pow_finrank_of_le [FiniteDimensional K V] {f : End K V} {
     LinearMap.ker (f ^ m) = LinearMap.ker (f ^ (k + (m - k))) := by
       rw [add_tsub_cancel_of_le (h_k_le.trans hm)]
     _ = LinearMap.ker (f ^ k) := by rw [ker_pow_constant hk _]
-    _ = LinearMap.ker (f ^ (k + (finrank K V - k))) := (ker_pow_constant hk (finrank K V - k))
+    _ = LinearMap.ker (f ^ (k + (finrank K V - k))) := ker_pow_constant hk (finrank K V - k)
     _ = LinearMap.ker (f ^ finrank K V) := by rw [add_tsub_cancel_of_le h_k_le]
 #align module.End.ker_pow_eq_ker_pow_finrank_of_le Module.End.ker_pow_eq_ker_pow_finrank_of_le
 
@@ -1308,7 +1319,7 @@ theorem cardinal_mk_eq_cardinal_mk_field_pow_rank (K V : Type u) [DivisionRing K
   let hs := Basis.ofVectorSpace K V
   calc
     #V = #(s →₀ K) := Quotient.sound ⟨hs.repr.toEquiv⟩
-    _ = #(s → K) := (Quotient.sound ⟨Finsupp.equivFunOnFinite⟩)
+    _ = #(s → K) := Quotient.sound ⟨Finsupp.equivFunOnFinite⟩
     _ = _ := by rw [← Cardinal.lift_inj.1 hs.mk_eq_rank, Cardinal.power_def]
 #align cardinal_mk_eq_cardinal_mk_field_pow_rank cardinal_mk_eq_cardinal_mk_field_pow_rank
 

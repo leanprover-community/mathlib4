@@ -366,7 +366,7 @@ open Set Real
 to the Pell equation `x^2 - d*y^2 = 1`. -/
 theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃ x y : ℤ, x ^ 2 - d * y ^ 2 = 1 ∧ y ≠ 0 := by
-  let ξ : ℝ := sqrt d
+  let ξ : ℝ := √d
   have hξ : Irrational ξ := by
     refine' irrational_nrt_of_notint_nrt 2 d (sq_sqrt <| Int.cast_nonneg.mpr h₀.le) _ two_pos
     rintro ⟨x, hx⟩
@@ -396,7 +396,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     rintro rfl
     obtain ⟨q, hq⟩ := hm.nonempty
     rw [mem_setOf, sub_eq_zero, mul_comm] at hq
-    obtain ⟨a, ha⟩ := (Int.pow_dvd_pow_iff two_pos).mp ⟨d, hq⟩
+    obtain ⟨a, ha⟩ := (Int.pow_dvd_pow_iff two_ne_zero).mp ⟨d, hq⟩
     rw [ha, mul_pow, mul_right_inj' (pow_pos (Int.natCast_pos.mpr q.pos) 2).ne'] at hq
     exact hd ⟨a, sq a ▸ hq.symm⟩
   haveI := neZero_iff.mpr (Int.natAbs_ne_zero.mpr hm₀)
@@ -650,8 +650,8 @@ theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solu
     abs_mul, ← sq_lt_sq, mul_pow, a.prop_x]
   calc
     a.y ^ 2 = 1 * a.y ^ 2 := (one_mul _).symm
-    _ ≤ d * a.y ^ 2 := ((mul_le_mul_right <| sq_pos_of_pos hay).mpr h.d_pos)
-    _ < d * a.y ^ 2 + 1 := (lt_add_one _)
+    _ ≤ d * a.y ^ 2 := (mul_le_mul_right <| sq_pos_of_pos hay).mpr h.d_pos
+    _ < d * a.y ^ 2 + 1 := lt_add_one _
     _ = (1 + d * a.y ^ 2) * 1 := by rw [add_comm, mul_one]
     _ ≤ (1 + d * a.y ^ 2) * a₁.y ^ 2 :=
       (mul_le_mul_left (by have := h.d_pos; positivity)).mpr (sq_pos_of_pos h.2.1)

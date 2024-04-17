@@ -808,9 +808,7 @@ theorem coeff_map (n : ℕ) : coeff (p.map f) n = f (coeff p n) := by
   rw [map, eval₂_def, coeff_sum, sum]
   conv_rhs => rw [← sum_C_mul_X_pow_eq p, coeff_sum, sum, map_sum]
   refine' Finset.sum_congr rfl fun x _hx => _
-  -- porting note (#10745): was `simp [Function.comp, coeff_C_mul_X_pow, f.map_mul]`.
-  simp? [Function.comp, coeff_C_mul_X_pow, - map_mul, - coeff_C_mul] says
-    simp only [RingHom.coe_comp, Function.comp_apply, coeff_C_mul_X_pow]
+  simp only [RingHom.coe_comp, Function.comp, coeff_C_mul_X_pow]
   split_ifs <;> simp [f.map_zero]
 #align polynomial.coeff_map Polynomial.coeff_map
 
@@ -889,7 +887,7 @@ theorem map_monic_eq_zero_iff (hp : p.Monic) : p.map f = 0 ↔ ∀ x, f x = 0 :=
   ⟨fun hfp x =>
     calc
       f x = f x * f p.leadingCoeff := by simp only [mul_one, hp.leadingCoeff, f.map_one]
-      _ = f x * (p.map f).coeff p.natDegree := (congr_arg _ (coeff_map _ _).symm)
+      _ = f x * (p.map f).coeff p.natDegree := congr_arg _ (coeff_map _ _).symm
       _ = 0 := by simp only [hfp, mul_zero, coeff_zero]
       ,
     fun h => ext fun n => by simp only [h, coeff_map, coeff_zero]⟩

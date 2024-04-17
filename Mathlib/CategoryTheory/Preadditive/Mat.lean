@@ -77,7 +77,7 @@ namespace Mat_
 
 variable {C}
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- A morphism in `Mat_ C` is a dependently typed matrix of morphisms. -/
 def Hom (M N : Mat_ C) : Type v₁ :=
   DMatrix M.ι N.ι fun i j => M.X i ⟶ N.X j
@@ -313,10 +313,10 @@ set_option linter.uppercaseLean3 false in
 
 namespace Embedding
 
-instance : Faithful (embedding C) where
+instance : (embedding C).Faithful where
   map_injective h := congr_fun (congr_fun h PUnit.unit) PUnit.unit
 
-instance : Full (embedding C) where preimage f := f PUnit.unit PUnit.unit
+instance : (embedding C).Full where preimage f := f PUnit.unit PUnit.unit
 
 instance : Functor.Additive (embedding C) where
 
@@ -637,16 +637,16 @@ def equivalenceSingleObjInverse : Mat_ (SingleObj Rᵐᵒᵖ) ⥤ Mat R where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.equivalence_single_obj_inverse CategoryTheory.Mat.equivalenceSingleObjInverse
 
-instance : Faithful (equivalenceSingleObjInverse R) where
+instance : (equivalenceSingleObjInverse R).Faithful where
   map_injective w := by
     ext
     apply_fun MulOpposite.unop using MulOpposite.unop_injective
     exact congr_fun (congr_fun w _) _
 
-instance : Full (equivalenceSingleObjInverse R) where
+instance : (equivalenceSingleObjInverse R).Full where
   preimage f i j := MulOpposite.op (f i j)
 
-instance : EssSurj (equivalenceSingleObjInverse R) where
+instance : (equivalenceSingleObjInverse R).EssSurj where
   mem_essImage X :=
     ⟨{  ι := X
         X := fun _ => PUnit.unit }, ⟨eqToIso (by dsimp; cases X; congr)⟩⟩
@@ -654,7 +654,7 @@ instance : EssSurj (equivalenceSingleObjInverse R) where
 /-- The categorical equivalence between the category of matrices over a ring,
 and the category of matrices over that ring considered as a single-object category. -/
 def equivalenceSingleObj : Mat R ≌ Mat_ (SingleObj Rᵐᵒᵖ) :=
-  haveI := Equivalence.ofFullyFaithfullyEssSurj (equivalenceSingleObjInverse R)
+  haveI := Functor.IsEquivalence.ofFullyFaithfullyEssSurj (equivalenceSingleObjInverse R)
   (equivalenceSingleObjInverse R).asEquivalence.symm
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.equivalence_single_obj CategoryTheory.Mat.equivalenceSingleObj
