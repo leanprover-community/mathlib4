@@ -514,18 +514,9 @@ where
         rw [← hc, ← hb, Ioi_inter_Ioi]
 -/
 
-lemma test : IsTopologicalBasis ({s : Set α | ∃ a, (Iic a)ᶜ = s}∪{(univ : Set α)}) := by
-
-  apply isTopologicalBasis_of_subbasis_of_finiteInter (by
-    rw [Topology.IsLower.topology_eq α]
-    simp?
-
-    sorry
-  ) (basis_finiteInter α)
+lemma test : IsTopologicalBasis (insert univ {s : Set α | ∃ a, (Iic a)ᶜ = s}) := by
+  apply isTopologicalBasis_of_subbasis_of_inter (_) (basis_inter α)
+  --letI := lower α
   rw [Topology.IsLower.topology_eq α]
-
-
-
-
 
 end LinearOrder
