@@ -46,6 +46,12 @@ instance (G : C ⥤ E) : (F.lan.obj G).IsLeftKanExtension (F.lanUnit.app G) := b
   dsimp [lan, lanUnit]
   infer_instance
 
+instance (G : D ⥤ E) :
+    (((whiskeringLeft C D E).obj F ⋙ F.lan).obj G).IsLeftKanExtension
+      (F.lanUnit.app (F ⋙ G)) := by
+  dsimp
+  infer_instance
+
 /-- If there exists a pointwise left Kan extension of `G` along `F`,
 then `F.lan.obj G` is a pointwise left Kan extension of `G`. -/
 noncomputable def isPointwiseLeftKanExtensionLanUnit
@@ -80,6 +86,25 @@ lemma lanAdjunction_unit :
   ext G : 2
   dsimp [lanAdjunction, homEquivOfIsLeftKanExtension]
   simp
+
+lemma lanAdjunction_counit_app (G : D ⥤ E) :
+    (F.lanAdjunction E).counit.app G =
+      descOfIsLeftKanExtension (F.lan.obj (F ⋙ G)) (F.lanUnit.app (F ⋙ G)) G (𝟙 (F ⋙ G)) :=
+  rfl
+
+@[reassoc (attr := simp)]
+lemma lanUnit_app_whiskerLeft_lanAdjunction_counit_app (G : D ⥤ E) :
+    F.lanUnit.app (F ⋙ G) ≫ whiskerLeft F ((F.lanAdjunction E).counit.app G) = 𝟙 (F ⋙ G) := by
+  simp [lanAdjunction_counit_app]
+
+@[reassoc (attr := simp)]
+lemma lanUnit_app_app_lanAdjunction_counit_app_app (G : D ⥤ E) (X : C) :
+    (F.lanUnit.app (F ⋙ G)).app X ≫ ((F.lanAdjunction E).counit.app G).app (F.obj X) = 𝟙 _ :=
+  congr_app (F.lanUnit_app_whiskerLeft_lanAdjunction_counit_app G) X
+
+lemma isIso_lanAdjunction_counit_app_iff (G : D ⥤ E) :
+    IsIso ((F.lanAdjunction E).counit.app G) ↔ G.IsLeftKanExtension (𝟙 (F ⋙ G)) :=
+  (isLeftKanExtension_iff_isIso _ (F.lanUnit.app (F ⋙ G)) _ (by simp)).symm
 
 section
 

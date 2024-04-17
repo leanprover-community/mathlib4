@@ -138,6 +138,7 @@ a natural transformation, this is the induced morphism `F' ⟶ G`. -/
 noncomputable def descOfIsLeftKanExtension (G : H ⥤ D) (β : F ⟶ L ⋙ G) : F' ⟶ G :=
   (F'.isUniversalOfIsLeftKanExtension α).desc (LeftExtension.mk G β)
 
+@[reassoc (attr := simp)]
 lemma descOfIsLeftKanExtension_fac (G : H ⥤ D) (β : F ⟶ L ⋙ G) :
     α ≫ whiskerLeft L (F'.descOfIsLeftKanExtension α G β) = β :=
   (F'.isUniversalOfIsLeftKanExtension α).fac (LeftExtension.mk G β)
@@ -178,6 +179,27 @@ lemma isLeftKanExtension_iff_of_iso {F' : H ⥤ D} {F'' : H ⥤ D} (e : F' ≅ F
   · intro
     refine isLeftKanExtension_of_iso e.symm α' α ?_
     rw [← comm, assoc, ← whiskerLeft_comp, Iso.symm_hom, e.hom_inv_id, whiskerLeft_id', comp_id]
+
+/-- Two left Kan extensions are (canonically) isomorphic. -/
+@[simps]
+noncomputable def leftKanExtensionUnique
+    (F'' : H ⥤ D) (α' : F ⟶ L ⋙ F'') [F''.IsLeftKanExtension α'] : F' ≅ F'' where
+  hom := F'.descOfIsLeftKanExtension α F'' α'
+  inv := F''.descOfIsLeftKanExtension α' F' α
+  hom_inv_id := F'.hom_ext_of_isLeftKanExtension α _ _ (by simp)
+  inv_hom_id := F''.hom_ext_of_isLeftKanExtension α' _ _ (by simp)
+
+lemma isLeftKanExtension_iff_isIso {F' : H ⥤ D} {F'' : H ⥤ D} (φ : F' ⟶ F'')
+    {L : C ⥤ H} {F : C ⥤ D} (α : F ⟶ L ⋙ F') (α' : F ⟶ L ⋙ F'')
+    (comm : α ≫ whiskerLeft L φ = α') [F'.IsLeftKanExtension α] :
+    F''.IsLeftKanExtension α' ↔ IsIso φ := by
+  constructor
+  · intro
+    rw [F'.hom_ext_of_isLeftKanExtension α φ (leftKanExtensionUnique _ α _ α').hom
+      (by simp [comm])]
+    infer_instance
+  · intro
+    exact isLeftKanExtension_of_iso (asIso φ) α α' comm
 
 end
 
