@@ -11,10 +11,21 @@ import Mathlib.Combinatorics.SimpleGraph.Girth
 
 This file defines the diameter of a simple graph as the greatest distance between any two vertices
 in the graph.
+
+## Main definitions
+
+- `SimpleGraph.diam` is the graph diameter.
+
+- `SimpleGraph.ediam` is the graph extended diameter.
+
+## Todo
+
+- Prove that `ENat.toNat G.girth ≤ 2 * G.diam + 1` when the diameter is non-zero.
+
 -/
 
 namespace SimpleGraph
-variable {α : Type*} {G : SimpleGraph α}
+variable {α : Type*} {G G' : SimpleGraph α}
 
 /- The diameter of a simple graph is a greatest distance between any two vertices. -/
 noncomputable def diam (G : SimpleGraph α) : ℕ :=
@@ -25,12 +36,11 @@ lemma diam_ne_zero_nonempty (h : G.diam ≠ 0) : Nonempty α := by
   unfold diam
   aesop
 
-lemma not_bddAbove_diam_eq_zero (h : ¬BddAbove {d | ∃ u v, d = G.dist u v}) :
+private lemma not_bddAbove_diam_eq_zero (h : ¬BddAbove {d | ∃ u v, d = G.dist u v}) :
     G.diam = 0 := by
   apply Set.infinite_of_not_bddAbove at h
   rw [diam, Set.Infinite.Nat.sSup_eq_zero h]
 
-@[simp]
 lemma diam_exists [Nonempty α] : ∃ u v, G.dist u v = G.diam := by
   let s := {d | ∃ u v, d = G.dist u v}
   let u := Classical.arbitrary α
@@ -95,6 +105,17 @@ lemma diam_le (h : G.diam ≠ 0) : ∀ u v, G.dist u v ≤ G.diam := by
   exact h.1
   aesop
 
+lemma diam_le_subgraph_diam [Nonempty α] (hg: G.Connected) (hz : G.diam ≠ 0) (h : G ≤ G') :
+     G'.diam ≤ G.diam := by
+  obtain ⟨u', v', huv'⟩ := G'.diam_exists
+  have : G'.dist u' v' ≤ G.dist u' v' := by
+    apply dist_le_subgraph_dist h
+    rw [connected_iff_exists_forall_reachable] at hg
+    obtain ⟨_, hx⟩ := hg
+    exact Reachable.trans (hx u').symm (hx v')
+  rw [← huv']
+  exact LE.le.trans this (G.diam_le hz u' v')
+
 noncomputable def ediam (G : SimpleGraph α) : ℕ∞ :=
   sSup {d | ∃ u v : α, d = G.dist u v}
 
@@ -108,11 +129,8 @@ private lemma top_not_mem_of_sup_ne_top {s : Set ℕ∞} (h : sSup s ≠ ⊤) : 
   intros
   use ⊤
 
-variable [Nonempty α]
-
-/- There exists vertices which the distance of attains the extended diameter. -/
-@[simp]
-lemma ediam_exists : G.ediam ≠ ⊤ ↔ ∃ (u v : α),  G.dist u v = G.ediam := by
+/- The extended diameter is equal to the distance of some vertices iff it is not infinite. -/
+lemma ediam_exists [Nonempty α] : G.ediam ≠ ⊤ ↔ ∃ (u v : α),  G.dist u v = G.ediam := by
   refine ⟨fun h => ?_, ?_⟩
   unfold ediam at h ⊢
   let s' := WithTop.some ⁻¹' {d : ℕ∞ | ∃ u v : α, d = G.dist u v}
@@ -134,15 +152,7 @@ lemma ediam_exists : G.ediam ≠ ⊤ ↔ ∃ (u v : α),  G.dist u v = G.ediam :
   use u, v, huv.symm
   aesop
 
-lemma ediam_eq_top_infinite_support (h : G.ediam = ⊤) : Infinite α := by
-  rw [ediam, sSup_eq_top] at h
-  simp only [Set.mem_setOf_eq] at h
-  contrapose! h
-  rw [not_infinite_iff_finite] at h
-  --apply Finite.exists_max (G.dist)
-  sorry
-
-lemma zero_lt_ediam_iff (ht : G.ediam ≠ ⊤) :
+lemma zero_lt_ediam_iff [Nonempty α] (ht : G.ediam ≠ ⊤) :
     0 < G.ediam ↔ ∃ (u v : α), G.ediam = G.dist u v ∧ G.Reachable u v ∧ u ≠ v := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨u, v, huv⟩ := ediam_exists.mp ht
@@ -152,48 +162,3 @@ lemma zero_lt_ediam_iff (ht : G.ediam ≠ ⊤) :
   · obtain ⟨u, v, h⟩ := h
     rw [h.1, Nat.cast_pos]
     apply LT.lt.nat_succ_le (Reachable.pos_dist_of_ne h.2.1 h.2.2)
-
-lemma ediam_le_subgraph_ediam {G' : SimpleGraph α} (hg: G.Connected) (h : G ≤ G') :
-    G'.ediam ≤ G.ediam := by
-  by_cases ht : G.ediam = ⊤
-  · rw [ht]
-    apply le_top
-  · obtain ⟨u, v, huv⟩ := ediam_exists.mp ht
-    by_cases ht' : G'.ediam = ⊤
-    · exfalso
-      rw [← not_ne_iff, ediam_exists.not] at ht'
-      push_neg at ht'
-      sorry
-    · obtain ⟨u', v', huv'⟩ := ediam_exists.mp ht'
-      replace h : G'.dist u' v' ≤ G.dist u' v' := by
-        apply dist_le_subgraph_dist h
-        rw [connected_iff_exists_forall_reachable] at hg
-        obtain ⟨_, hx⟩ := hg
-        exact Reachable.trans (hx u').symm (hx v')
-      have h' : G.dist u' v' ≤ G.ediam := le_ediam
-      rw [← huv, ← huv', Nat.cast_le]
-      rw [← ENat.coe_toNat ht, Nat.cast_inj] at huv
-      rw [← ENat.coe_toNat ht, Nat.cast_le, ← huv] at h'
-      exact LE.le.trans h h'
-
-lemma diam_anti : Antitone (ediam : SimpleGraph α → ℕ∞) := by sorry
-  --fun _ _ => diam_le_subgraph_diam
-
-open ENat
-
-theorem girth_le_two_diam_plus_one (h : ¬G.IsAcyclic) : G.girth ≤ 2 * toNat G.ediam + 1 := by
-  have hg : ∃ (n : ℕ), ↑n = G.girth := by
-    rw [← girth_eq_top, ← ne_eq, WithTop.ne_top_iff_exists] at h
-    exact h
-  rw [← exists_girth_eq_length] at h
-  obtain ⟨v, c, h, h'⟩ := h
-  obtain ⟨_, hn⟩ := hg
-  rw [← hn, Nat.cast_inj] at h'
-  rw [← hn]
-  norm_cast
-  by_contra
-  have hcon : 2 * (toNat G.ediam + 1) ≤ c.length := by omega
-  have he : ∃ a b, (c.toSubgraph.coe).dist a b = toNat G.ediam + 1 := by
-    sorry
-  obtain ⟨a, b, he⟩ := he
-  sorry
