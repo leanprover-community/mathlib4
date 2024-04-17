@@ -352,7 +352,7 @@ theorem modDivAux_spec :
 #align pnat.mod_div_aux_spec PNat.modDivAux_spec
 
 theorem mod_add_div (m k : ℕ+) : (mod m k + k * div m k : ℕ) = m := by
-  let h₀ := Nat.mod_add_div (m : ℕ) (k : ℕ)
+  have h₀ := Nat.mod_add_div (m : ℕ) (k : ℕ)
   have : ¬((m : ℕ) % (k : ℕ) = 0 ∧ (m : ℕ) / (k : ℕ) = 0) := by
     rintro ⟨hr, hq⟩
     rw [hr, hq, mul_zero, zero_add] at h₀
@@ -384,7 +384,7 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
     by_cases h₁ : (m : ℕ) / (k : ℕ) = 0
     · rw [h₁, mul_zero] at hm
       exact (lt_irrefl _ hm).elim
-    · let h₂ : (k : ℕ) * 1 ≤ k * (m / k) :=
+    · have h₂ : (k : ℕ) * 1 ≤ k * (m / k) :=
         -- Porting note: Specified type of `h₂` explicitly because `rw` could not unify
         -- `succ 0` with `1`.
         Nat.mul_le_mul_left (k : ℕ) (Nat.succ_le_of_lt (Nat.pos_of_ne_zero h₁))

@@ -296,7 +296,7 @@ theorem t_le_t (hi : i ∈ bcubes cs c) (j : Fin n) :
 /-- Every cube in the valley must be smaller than it -/
 theorem w_lt_w (hi : i ∈ bcubes cs c) : (cs i).w < c.w := by
   apply lt_of_le_of_ne _ (v.2.2 i hi.1)
-  have j : Fin n := ⟨1, Nat.le_of_succ_le_succ h.three_le⟩
+  let j : Fin n := ⟨1, Nat.le_of_succ_le_succ h.three_le⟩
   rw [← add_le_add_iff_left ((cs i).b j.succ)]
   apply le_trans (t_le_t hi j); rw [add_le_add_iff_right]; apply b_le_b hi
 #align theorems_100.«82».w_lt_w Theorems100.«82».w_lt_w
@@ -553,7 +553,7 @@ def decreasingSequence (k : ℕ) : ℝ :=
 
 theorem strictAnti_sequenceOfCubes : StrictAnti <| decreasingSequence h :=
   strictAnti_nat_of_succ_lt fun k => by
-    let v := (sequenceOfCubes h k).2; dsimp only [decreasingSequence, sequenceOfCubes]
+    have v := (sequenceOfCubes h k).2; dsimp only [decreasingSequence, sequenceOfCubes]
     apply w_lt_w h v (mi_mem_bcubes : mi h v ∈ _)
 #align theorems_100.«82».strict_anti_sequence_of_cubes Theorems100.«82».strictAnti_sequenceOfCubes
 

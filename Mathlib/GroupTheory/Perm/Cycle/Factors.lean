@@ -604,8 +604,8 @@ theorem cycle_is_cycleOf {f c : Equiv.Perm α} {a : α} (ha : a ∈ c.support)
     exact
       Equiv.Perm.IsCycle.cycleOf_eq (Equiv.Perm.mem_cycleFactorsFinset_iff.mp hc).left
         (Equiv.Perm.mem_support.mp ha)
-  let hfc := (Equiv.Perm.disjoint_mul_inv_of_mem_cycleFactorsFinset hc).symm
-  let hfc2 := Perm.Disjoint.commute hfc
+  have hfc := (Equiv.Perm.disjoint_mul_inv_of_mem_cycleFactorsFinset hc).symm
+  have hfc2 := Perm.Disjoint.commute hfc
   rw [← Equiv.Perm.cycleOf_mul_of_apply_right_eq_self hfc2]
   simp only [hfc2.eq, inv_mul_cancel_right]
   -- a est dans le support de c, donc pas dans celui de g c⁻¹

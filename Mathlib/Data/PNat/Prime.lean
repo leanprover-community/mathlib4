@@ -57,7 +57,7 @@ def gcd (n m : ℕ+) : ℕ+ :=
   viewed as positive natural number. -/
 def lcm (n m : ℕ+) : ℕ+ :=
   ⟨Nat.lcm (n : ℕ) (m : ℕ), by
-    let h := mul_pos n.pos m.pos
+    have h := mul_pos n.pos m.pos
     rw [← gcd_mul_lcm (n : ℕ) (m : ℕ), mul_comm] at h
     exact pos_of_dvd_of_pos (Dvd.intro (Nat.gcd (n : ℕ) (m : ℕ)) rfl) h⟩
 #align pnat.lcm PNat.lcm

@@ -84,7 +84,7 @@ theorem aeval_pow_two_pow_dvd_aeval_iterate_newtonMap
   induction n with
   | zero => simp
   | succ n ih =>
-    have ⟨d, hd⟩ := binomExpansion (P.map (algebraMap R S)) (P.newtonMap^[n] x)
+    let ⟨d, hd⟩ := binomExpansion (P.map (algebraMap R S)) (P.newtonMap^[n] x)
       (-Ring.inverse (aeval (P.newtonMap^[n] x) <| derivative P) * aeval (P.newtonMap^[n] x) P)
     rw [eval_map_algebraMap, eval_map_algebraMap] at hd
     rw [iterate_succ', comp_apply, newtonMap_apply, sub_eq_add_neg, neg_mul_eq_neg_mul, hd]
@@ -114,7 +114,7 @@ theorem exists_unique_nilpotent_sub_and_aeval_eq_zero
     rw [← zero_dvd_iff, ← pow_eq_zero_of_le n.lt_two_pow.le hn]
     exact aeval_pow_two_pow_dvd_aeval_iterate_newtonMap h h' n
   · -- Uniqueness
-    have ⟨u, hu⟩ := binomExpansion (P.map (algebraMap R S)) r₁ (r₂ - r₁)
+    let ⟨u, hu⟩ := binomExpansion (P.map (algebraMap R S)) r₁ (r₂ - r₁)
     suffices IsUnit (aeval r₁ (derivative P) + u * (r₂ - r₁)) by
       rwa [derivative_map, eval_map_algebraMap, eval_map_algebraMap, eval_map_algebraMap,
         add_sub_cancel, hr₂', hr₁', zero_add, pow_two, ← mul_assoc, ← add_mul, eq_comm,

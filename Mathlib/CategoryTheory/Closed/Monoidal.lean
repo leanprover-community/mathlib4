@@ -310,7 +310,7 @@ noncomputable def ofEquiv (F : MonoidalFunctor C D) [F.IsEquivalence]
     { isAdj := by
         haveI q : Closed (F.obj X) := inferInstance
         haveI : IsLeftAdjoint (tensorLeft (F.obj X)) := q.isAdj
-        have i := (MonoidalFunctor.commTensorLeft F X).compInvIso
+        let i := (MonoidalFunctor.commTensorLeft F X).compInvIso
         exact Adjunction.leftAdjointOfNatIso i }
 #align category_theory.monoidal_closed.of_equiv CategoryTheory.MonoidalClosed.ofEquiv
 

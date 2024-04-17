@@ -239,7 +239,7 @@ theorem ae_lineDeriv_sum_eq
 theorem ae_exists_fderiv_of_countable
     (hf : LipschitzWith C f) {s : Set E} (hs : s.Countable) :
     ∀ᵐ x ∂μ, ∃ (L : E →L[ℝ] ℝ), ∀ v ∈ s, HasLineDerivAt ℝ f (L v) x v := by
-  have B := Basis.ofVectorSpace ℝ E
+  let B := Basis.ofVectorSpace ℝ E
   have I1 : ∀ᵐ (x : E) ∂μ, ∀ v ∈ s, lineDeriv ℝ f x (∑ i, (B.repr v i) • B i) =
                                   ∑ i, B.repr v i • lineDeriv ℝ f x (B i) :=
     (ae_ball_iff hs).2 (fun v _ ↦ hf.ae_lineDeriv_sum_eq _ _ _)
@@ -353,7 +353,7 @@ theorem ae_differentiableWithinAt_of_mem_pi
 Lipschitz on a set is differentiable almost everywere in this set. -/
 theorem ae_differentiableWithinAt_of_mem {f : E → F} (hf : LipschitzOnWith C f s) :
     ∀ᵐ x ∂μ, x ∈ s → DifferentiableWithinAt ℝ f s x := by
-  have A := (Basis.ofVectorSpace ℝ F).equivFun.toContinuousLinearEquiv
+  let A := (Basis.ofVectorSpace ℝ F).equivFun.toContinuousLinearEquiv
   suffices H : ∀ᵐ x ∂μ, x ∈ s → DifferentiableWithinAt ℝ (A ∘ f) s x by
     filter_upwards [H] with x hx xs
     have : f = (A.symm ∘ A) ∘ f := by

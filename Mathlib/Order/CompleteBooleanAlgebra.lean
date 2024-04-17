@@ -123,7 +123,7 @@ theorem iSup_iInf_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
   refine le_antisymm iSup_iInf_le ?_
   rw [iInf_iSup_eq]
   refine iSup_le fun g => ?_
-  have ⟨a, ha⟩ : ∃ a, ∀ b, ∃ f, ∃ h : a = g f, h ▸ b = f (g f) := of_not_not fun h => by
+  let ⟨a, ha⟩ : ∃ a, ∀ b, ∃ f, ∃ h : a = g f, h ▸ b = f (g f) := of_not_not fun h => by
     push_neg at h
     choose h hh using h
     have := hh _ h rfl
@@ -142,7 +142,7 @@ instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
       if h : ∀ i, f i = false then
         simp [h, iInf_subtype, ← sInf_eq_iInf]
       else
-        have ⟨i, h⟩ : ∃ i, f i = true := by simpa using h
+        let ⟨i, h⟩ : ∃ i, f i = true := by simpa using h
         refine le_trans (iInf_le _ i) ?_
         simp [h]
   inf_sSup_le_iSup_inf a s := calc

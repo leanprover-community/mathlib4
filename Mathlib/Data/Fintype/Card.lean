@@ -640,7 +640,7 @@ variable [Finite α]
 -- Porting note (#10756): new theorem
 theorem surjective_of_injective {f : α → α} (hinj : Injective f) : Surjective f := by
   intro x
-  have := Classical.propDecidable
+  let _ := Classical.propDecidable
   cases nonempty_fintype α
   have h₁ : image f univ = univ :=
     eq_of_subset_of_card_le (subset_univ _)

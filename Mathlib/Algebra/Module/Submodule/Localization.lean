@@ -44,8 +44,8 @@ def Submodule.localized' : Submodule S N where
     (M'.smul_mem s hn), s * t, by rw [← hx, ← hy, IsLocalizedModule.mk'_add_mk']⟩
   zero_mem' := ⟨0, zero_mem _, 1, by simp⟩
   smul_mem' := fun r x h ↦ by
-    have ⟨m, hm, s, hx⟩ := h
-    have ⟨y, t, hyt⟩ := IsLocalization.mk'_surjective p r
+    let ⟨m, hm, s, hx⟩ := h
+    let ⟨y, t, hyt⟩ := IsLocalization.mk'_surjective p r
     exact ⟨y • m, M'.smul_mem y hm, t * s, by simp [← hyt, ← hx, IsLocalizedModule.mk'_smul_mk']⟩
 
 /-- The localization of an `R`-submodule of `M` at `p` viewed as an `Rₚ`-submodule of `Mₚ`. -/

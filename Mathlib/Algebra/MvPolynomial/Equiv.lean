@@ -436,7 +436,7 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
     rw [Finset.nonempty_iff_ne_empty, ne_eq, support_eq_empty]
     exact hi
   -- Let σ be a monomial index of ((finSuccEquiv R n p).coeff i) of maximal total degree
-  have ⟨σ, hσ1, hσ2⟩ := Finset.exists_mem_eq_sup (support _) hf'_sup
+  let ⟨σ, hσ1, hσ2⟩ := Finset.exists_mem_eq_sup (support _) hf'_sup
                           (fun s => Finsupp.sum s fun _ e => e)
   -- Then cons i σ is a monomial index of p with total degree equal to the desired bound
   let σ' : Fin (n+1) →₀ ℕ := cons i σ

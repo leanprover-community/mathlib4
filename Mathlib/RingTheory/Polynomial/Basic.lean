@@ -1190,7 +1190,7 @@ instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
     NoZeroDivisors (MvPolynomial σ R) where
   eq_zero_or_eq_zero_of_mul_eq_zero {p q} h := by
     obtain ⟨s, p, q, rfl, rfl⟩ := exists_finset_rename₂ p q
-    let _nzd := MvPolynomial.noZeroDivisors_of_finite R s
+    have _nzd := MvPolynomial.noZeroDivisors_of_finite R s
     have : p * q = 0 := by
       apply rename_injective _ Subtype.val_injective
       simpa using h

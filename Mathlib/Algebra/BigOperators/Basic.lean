@@ -373,7 +373,7 @@ theorem prod_union [DecidableEq α] (h : Disjoint s₁ s₂) :
 theorem prod_filter_mul_prod_filter_not
     (s : Finset α) (p : α → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] (f : α → β) :
     (∏ x in s.filter p, f x) * ∏ x in s.filter fun x => ¬p x, f x = ∏ x in s, f x := by
-  have := Classical.decEq α
+  let _ := Classical.decEq α
   rw [← prod_union (disjoint_filter_filter_neg s s p), filter_union_filter_neg_eq]
 #align finset.prod_filter_mul_prod_filter_not Finset.prod_filter_mul_prod_filter_not
 #align finset.sum_filter_add_sum_filter_not Finset.sum_filter_add_sum_filter_not
@@ -2283,7 +2283,7 @@ theorem prod_toFinset {M : Type*} [DecidableEq α] [CommMonoid M] (f : α → M)
     ∀ {l : List α} (_hl : l.Nodup), l.toFinset.prod f = (l.map f).prod
   | [], _ => by simp
   | a :: l, hl => by
-    let ⟨not_mem, hl⟩ := List.nodup_cons.mp hl
+    have ⟨not_mem, hl⟩ := List.nodup_cons.mp hl
     simp [Finset.prod_insert (mt List.mem_toFinset.mp not_mem), prod_toFinset _ hl]
 #align list.prod_to_finset List.prod_toFinset
 #align list.sum_to_finset List.sum_toFinset

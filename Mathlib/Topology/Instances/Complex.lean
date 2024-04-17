@@ -56,7 +56,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
     ⟨by
       erw [uniformity_subtype, uniformity_subtype, Filter.comap_comap]
       congr ⟩
-  let di := ui.denseInducing (?_ : DenseRange ι)
+  have di := ui.denseInducing (?_ : DenseRange ι)
   · -- extψ : closure(K) →+* ℂ is the extension of ψ : K →+* ℂ
     let extψ := DenseInducing.extendRingHom ui di.dense hc
     haveI hψ := (uniformContinuous_uniformly_extend ui di.dense hc).continuous

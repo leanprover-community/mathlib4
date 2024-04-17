@@ -605,7 +605,7 @@ lemma spectralRadius_eq {𝕜₁ 𝕜₂ A : Type*} [NormedField 𝕜₁] [Norme
   all_goals apply iSup₂_le fun x hx ↦ ?_
   · refine congr_arg ((↑) : ℝ≥0 → ℝ≥0∞) (this x) |>.symm.trans_le <| le_iSup₂ (α := ℝ≥0∞) _ ?_
     exact (spectrum.algebraMap_mem_iff _).mpr hx
-  · have ⟨y, hy, hy'⟩ := h.algebraMap_image.symm ▸ hx
+  · let ⟨y, hy, hy'⟩ := h.algebraMap_image.symm ▸ hx
     subst hy'
     exact this y ▸ le_iSup₂ (α := ℝ≥0∞) y hy
 

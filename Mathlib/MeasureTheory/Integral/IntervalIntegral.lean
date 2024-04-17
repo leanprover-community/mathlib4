@@ -1150,7 +1150,7 @@ theorem integral_lt_integral_of_continuousOn_of_le_of_exists_lt {f g : ℝ → �
 
 theorem integral_nonneg_of_ae_restrict (hab : a ≤ b) (hf : 0 ≤ᵐ[μ.restrict (Icc a b)] f) :
     0 ≤ ∫ u in a..b, f u ∂μ := by
-  let H := ae_restrict_of_ae_restrict_of_subset Ioc_subset_Icc_self hf
+  have H := ae_restrict_of_ae_restrict_of_subset Ioc_subset_Icc_self hf
   simpa only [integral_of_le hab] using set_integral_nonneg_of_ae_restrict H
 #align interval_integral.integral_nonneg_of_ae_restrict intervalIntegral.integral_nonneg_of_ae_restrict
 
@@ -1177,7 +1177,7 @@ variable (hab : a ≤ b) (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegr
 
 theorem integral_mono_ae_restrict (h : f ≤ᵐ[μ.restrict (Icc a b)] g) :
     (∫ u in a..b, f u ∂μ) ≤ ∫ u in a..b, g u ∂μ := by
-  let H := h.filter_mono <| ae_mono <| Measure.restrict_mono Ioc_subset_Icc_self <| le_refl μ
+  have H := h.filter_mono <| ae_mono <| Measure.restrict_mono Ioc_subset_Icc_self <| le_refl μ
   simpa only [integral_of_le hab] using set_integral_mono_ae_restrict hf.1 hg.1 H
 #align interval_integral.integral_mono_ae_restrict intervalIntegral.integral_mono_ae_restrict
 
@@ -1187,7 +1187,7 @@ theorem integral_mono_ae (h : f ≤ᵐ[μ] g) : (∫ u in a..b, f u ∂μ) ≤ �
 
 theorem integral_mono_on (h : ∀ x ∈ Icc a b, f x ≤ g x) :
     (∫ u in a..b, f u ∂μ) ≤ ∫ u in a..b, g u ∂μ := by
-  let H x hx := h x <| Ioc_subset_Icc_self hx
+  have H x hx := h x <| Ioc_subset_Icc_self hx
   simpa only [integral_of_le hab] using set_integral_mono_on hf.1 hg.1 measurableSet_Ioc H
 #align interval_integral.integral_mono_on intervalIntegral.integral_mono_on
 

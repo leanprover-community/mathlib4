@@ -302,7 +302,7 @@ theorem memℒp_trim_of_mem_lpMeasSubgroup (hm : m ≤ m0) (f : Lp F p μ)
 `lpMeasSubgroup F m p μ`. -/
 theorem mem_lpMeasSubgroup_toLp_of_trim (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) :
     (memℒp_of_memℒp_trim hm (Lp.memℒp f)).toLp f ∈ lpMeasSubgroup F m p μ := by
-  let hf_mem_ℒp := memℒp_of_memℒp_trim hm (Lp.memℒp f)
+  have hf_mem_ℒp := memℒp_of_memℒp_trim hm (Lp.memℒp f)
   rw [mem_lpMeasSubgroup_iff_aeStronglyMeasurable']
   refine' AEStronglyMeasurable'.congr _ (Memℒp.coeFn_toLp hf_mem_ℒp).symm
   refine' aeStronglyMeasurable'_of_aeStronglyMeasurable'_trim hm _

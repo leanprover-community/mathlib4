@@ -423,7 +423,7 @@ def LimZero {abv : β → α} (f : CauSeq β abv) : Prop :=
 theorem add_limZero {f g : CauSeq β abv} (hf : LimZero f) (hg : LimZero g) : LimZero (f + g)
   | ε, ε0 =>
     (exists_forall_ge_and (hf _ <| half_pos ε0) (hg _ <| half_pos ε0)).imp fun i H j ij => by
-      let ⟨H₁, H₂⟩ := H _ ij
+      have ⟨H₁, H₂⟩ := H _ ij
       simpa [add_halves ε] using lt_of_le_of_lt (abv_add abv _ _) (add_lt_add H₁ H₂)
 #align cau_seq.add_lim_zero CauSeq.add_limZero
 
@@ -491,7 +491,7 @@ theorem sub_equiv_sub {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 �
 theorem equiv_def₃ {f g : CauSeq β abv} (h : f ≈ g) {ε : α} (ε0 : 0 < ε) :
     ∃ i, ∀ j ≥ i, ∀ k ≥ j, abv (f k - g j) < ε :=
   (exists_forall_ge_and (h _ <| half_pos ε0) (f.cauchy₃ <| half_pos ε0)).imp fun i H j ij k jk => by
-    let ⟨h₁, h₂⟩ := H _ ij
+    have ⟨h₁, h₂⟩ := H _ ij
     have := lt_of_le_of_lt (abv_add abv (f j - g j) _) (add_lt_add h₁ (h₂ _ jk))
     rwa [sub_add_sub_cancel', add_halves] at this
 #align cau_seq.equiv_def₃ CauSeq.equiv_def₃
@@ -854,7 +854,7 @@ theorem coe_inf (f g : CauSeq α abs) : ⇑(f ⊓ g) = (f : ℕ → α) ⊓ g :=
 theorem sup_limZero {f g : CauSeq α abs} (hf : LimZero f) (hg : LimZero g) : LimZero (f ⊔ g)
   | ε, ε0 =>
     (exists_forall_ge_and (hf _ ε0) (hg _ ε0)).imp fun i H j ij => by
-      let ⟨H₁, H₂⟩ := H _ ij
+      have ⟨H₁, H₂⟩ := H _ ij
       rw [abs_lt] at H₁ H₂ ⊢
       exact ⟨lt_sup_iff.mpr (Or.inl H₁.1), sup_lt_iff.mpr ⟨H₁.2, H₂.2⟩⟩
 #align cau_seq.sup_lim_zero CauSeq.sup_limZero
@@ -862,7 +862,7 @@ theorem sup_limZero {f g : CauSeq α abs} (hf : LimZero f) (hg : LimZero g) : Li
 theorem inf_limZero {f g : CauSeq α abs} (hf : LimZero f) (hg : LimZero g) : LimZero (f ⊓ g)
   | ε, ε0 =>
     (exists_forall_ge_and (hf _ ε0) (hg _ ε0)).imp fun i H j ij => by
-      let ⟨H₁, H₂⟩ := H _ ij
+      have ⟨H₁, H₂⟩ := H _ ij
       rw [abs_lt] at H₁ H₂ ⊢
       exact ⟨lt_inf_iff.mpr ⟨H₁.1, H₂.1⟩, inf_lt_iff.mpr (Or.inl H₁.2)⟩
 #align cau_seq.inf_lim_zero CauSeq.inf_limZero

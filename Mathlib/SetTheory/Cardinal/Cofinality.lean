@@ -236,7 +236,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
           (fun s : typein ((· < ·) : o.out.α → o.out.α → Prop) ⁻¹' Set.range f =>
             Classical.choose s.prop)
           fun s t hst => by
-          let H := congr_arg f hst
+          have H := congr_arg f hst
           rwa [Classical.choose_spec s.prop, Classical.choose_spec t.prop, typein_inj,
             Subtype.coe_inj] at H)
     have := typein_lt_self a
@@ -765,7 +765,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
       cases' Cardinal.lift_down h with a e
       refine' Quotient.inductionOn a (fun α e => _) e
       cases' Quotient.exact e with f
-      have f := Equiv.ulift.symm.trans f
+      let f := Equiv.ulift.symm.trans f
       let g a := (f a).1
       let o := succ (sup.{u, u} g)
       rcases H o with ⟨b, h, l⟩
@@ -1044,7 +1044,7 @@ theorem le_range_of_union_finset_eq_top {α β : Type*} [Infinite β] (f : α �
     exact infinite_univ
   by_contra h
   simp only [not_le] at h
-  let u : ∀ b, ∃ a, b ∈ f a := fun b => by simpa using (w.ge : _) (Set.mem_univ b)
+  have u : ∀ b, ∃ a, b ∈ f a := fun b => by simpa using (w.ge : _) (Set.mem_univ b)
   let u' : β → range f := fun b => ⟨f (u b).choose, by simp⟩
   have v' : ∀ a, u' ⁻¹' {⟨f a, by simp⟩} ≤ f a := by
     rintro a p m

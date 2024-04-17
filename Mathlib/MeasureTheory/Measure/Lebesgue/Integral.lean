@@ -113,7 +113,7 @@ theorem integral_comp_abs {f : ℝ → ℝ} :
   by_cases hf : IntegrableOn (fun x => f |x|) (Ioi 0)
   · have int_Iic : IntegrableOn (fun x ↦ f |x|) (Iic 0) := by
       rw [← Measure.map_neg_eq_self (volume : Measure ℝ)]
-      let m : MeasurableEmbedding fun x : ℝ => -x := (Homeomorph.neg ℝ).measurableEmbedding
+      have m : MeasurableEmbedding fun x : ℝ => -x := (Homeomorph.neg ℝ).measurableEmbedding
       rw [m.integrableOn_map_iff]
       simp_rw [Function.comp, abs_neg, neg_preimage, preimage_neg_Iic, neg_zero]
       exact integrableOn_Ici_iff_integrableOn_Ioi.mpr hf

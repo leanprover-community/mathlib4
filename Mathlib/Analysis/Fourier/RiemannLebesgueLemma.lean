@@ -272,7 +272,7 @@ theorem tendsto_integral_exp_smul_cocompact (μ : Measure V) [μ.IsAddHaarMeasur
   -- refer to the inner product. So we choose an arbitrary inner-product space isomorphic to V
   -- and port the result over from there.
   let V' := EuclideanSpace ℝ (Fin (finrank ℝ V))
-  have A : V ≃L[ℝ] V' := toEuclidean
+  let A : V ≃L[ℝ] V' := toEuclidean
   borelize V'
   -- various equivs derived from A
   let Aₘ : MeasurableEquiv V V' := A.toHomeomorph.toMeasurableEquiv

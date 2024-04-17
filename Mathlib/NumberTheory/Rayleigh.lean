@@ -119,8 +119,8 @@ theorem compl_beattySeq {r s : ℝ} (hrs : r.IsConjExponent s) :
   · exact (Set.not_disjoint_iff.2 ⟨j, h₁, h₂⟩ (Beatty.no_collision hrs)).elim
   · simp only [Set.mem_compl_iff, h₁, h₂, not_true_eq_false]
   · simp only [Set.mem_compl_iff, h₁, h₂, not_false_eq_true]
-  · have ⟨k, h₁₁, h₁₂⟩ := (Beatty.hit_or_miss hrs.pos).resolve_left h₁
-    have ⟨m, h₂₁, h₂₂⟩ := (Beatty.hit_or_miss' hrs.symm.pos).resolve_left h₂
+  · let ⟨k, h₁₁, h₁₂⟩ := (Beatty.hit_or_miss hrs.pos).resolve_left h₁
+    let ⟨m, h₂₁, h₂₂⟩ := (Beatty.hit_or_miss' hrs.symm.pos).resolve_left h₂
     exact (Beatty.no_anticollision hrs ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩).elim
 
 theorem compl_beattySeq' {r s : ℝ} (hrs : r.IsConjExponent s) :

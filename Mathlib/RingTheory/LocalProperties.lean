@@ -311,7 +311,7 @@ theorem localization_isReduced : LocalizationPreserves fun R hR => IsReduced R :
   · simpa using congr_arg (· * x) e
   obtain ⟨⟨y, m⟩, hx⟩ := IsLocalization.surj M x
   dsimp only at hx
-  let hx' := congr_arg (· ^ n.succ) hx
+  have hx' := congr_arg (· ^ n.succ) hx
   simp only [mul_pow, e, zero_mul, ← RingHom.map_pow] at hx'
   rw [← (algebraMap R S).map_zero] at hx'
   obtain ⟨m', hm'⟩ := (IsLocalization.eq_iff_exists M S).mp hx'

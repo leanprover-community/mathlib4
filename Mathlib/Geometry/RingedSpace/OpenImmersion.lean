@@ -765,7 +765,7 @@ instance forgetCreatesPullbackOfRight : CreatesLimit (cospan g f) forget :=
 instance sheafedSpaceForgetPreservesOfLeft : PreservesLimit (cospan f g) (SheafedSpace.forget C) :=
   @Limits.compPreservesLimit _ _ _ _ _ _ (cospan f g) _ _ forget (PresheafedSpace.forget C)
     inferInstance <| by
-      have : PreservesLimit
+      let _ : PreservesLimit
         (cospan ((cospan f g ⋙ forget).map Hom.inl)
           ((cospan f g ⋙ forget).map Hom.inr)) (PresheafedSpace.forget C) := by
         dsimp
@@ -1073,13 +1073,13 @@ instance forgetToTopPreservesPullbackOfLeft :
     PresheafedSpace.forget _
   -- Porting note: was `apply (config := { instances := False }) ...`
   -- See https://github.com/leanprover/lean4/issues/2273
-  have : PreservesLimit
+  let _ : PreservesLimit
       (cospan ((cospan f g ⋙ forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace).map
         WalkingCospan.Hom.inl)
       ((cospan f g ⋙ forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace).map
         WalkingCospan.Hom.inr)) (PresheafedSpace.forget CommRingCat) := by
     dsimp; infer_instance
-  have : PreservesLimit (cospan f g ⋙ forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace)
+  let _ : PreservesLimit (cospan f g ⋙ forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace)
       (PresheafedSpace.forget CommRingCat) := by
     apply preservesLimitOfIsoDiagram _ (diagramIsoCospan _).symm
   apply Limits.compPreservesLimit

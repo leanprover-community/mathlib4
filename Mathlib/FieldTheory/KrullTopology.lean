@@ -229,7 +229,7 @@ theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
         rw [AlgEquiv.apply_symm_apply f (g x), ne_comm]
         exact hx
       let E : IntermediateField K L := IntermediateField.adjoin K {x}
-      let h_findim : FiniteDimensional K E := IntermediateField.adjoin.finiteDimensional (h_int x)
+      have h_findim : FiniteDimensional K E := IntermediateField.adjoin.finiteDimensional (h_int x)
       let H := E.fixingSubgroup
       have h_basis : (H : Set (L ≃ₐ[K] L)) ∈ galGroupBasis K L := ⟨H, ⟨E, ⟨h_findim, rfl⟩⟩, rfl⟩
       have h_nhd := GroupFilterBasis.mem_nhds_one (galGroupBasis K L) h_basis

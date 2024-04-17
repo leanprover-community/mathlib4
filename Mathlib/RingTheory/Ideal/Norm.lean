@@ -314,7 +314,7 @@ theorem natAbs_det_equiv (I : Ideal S) {E : Type*} [EquivLike E S I] [AddEquivCl
   have ab_eq := I.selfBasis_def b hI
   let e' : S ≃ₗ[ℤ] I := b'.equiv ab (Equiv.refl _)
   let f : S →ₗ[ℤ] S := (I.subtype.restrictScalars ℤ).comp (e' : S →ₗ[ℤ] I)
-  let f_apply : ∀ x, f x = b'.equiv ab (Equiv.refl _) x := fun x => rfl
+  have f_apply : ∀ x, f x = b'.equiv ab (Equiv.refl _) x := fun x => rfl
   suffices (LinearMap.det f).natAbs = Ideal.absNorm I by
     calc
       _ = (LinearMap.det ((Submodule.subtype I).restrictScalars ℤ ∘ₗ

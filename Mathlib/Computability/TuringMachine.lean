@@ -850,7 +850,7 @@ theorem mem_eval {σ} {f : σ → Option σ} {a b} : b ∈ eval f a ↔ Reaches 
 
 theorem eval_maximal₁ {σ} {f : σ → Option σ} {a b} (h : b ∈ eval f a) (c) : ¬Reaches₁ f b c
   | bc => by
-    let ⟨_, b0⟩ := mem_eval.1 h
+    have ⟨_, b0⟩ := mem_eval.1 h
     let ⟨b', h', _⟩ := TransGen.head'_iff.1 bc
     cases b0.symm.trans h'
 #align turing.eval_maximal₁ Turing.eval_maximal₁
@@ -896,7 +896,7 @@ theorem tr_reaches {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H : 
     (aa : tr a₁ a₂) {b₁} (ab : Reaches f₁ a₁ b₁) : ∃ b₂, tr b₁ b₂ ∧ Reaches f₂ a₂ b₂ := by
   rcases reflTransGen_iff_eq_or_transGen.1 ab with (rfl | ab)
   · exact ⟨_, aa, ReflTransGen.refl⟩
-  · have ⟨b₂, bb, h⟩ := tr_reaches₁ H aa ab
+  · let ⟨b₂, bb, h⟩ := tr_reaches₁ H aa ab
     exact ⟨b₂, bb, h.to_reflTransGen⟩
 #align turing.tr_reaches Turing.tr_reaches
 

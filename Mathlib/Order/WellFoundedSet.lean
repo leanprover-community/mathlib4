@@ -74,7 +74,7 @@ variable {f : β → α} {s t : Set α} {x y : α}
 
 theorem wellFoundedOn_iff :
     s.WellFoundedOn r ↔ WellFounded fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s := by
-  have f : RelEmbedding (fun (a : s) (b : s) => r a b) fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s :=
+  let f : RelEmbedding (fun (a : s) (b : s) => r a b) fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s :=
     ⟨⟨(↑), Subtype.coe_injective⟩, by simp⟩
   refine' ⟨fun h => _, f.wellFounded⟩
   rw [WellFounded.wellFounded_iff_has_min]

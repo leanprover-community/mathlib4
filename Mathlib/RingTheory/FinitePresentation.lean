@@ -176,7 +176,7 @@ theorem iff_quotient_mvPolynomial' :
     -- convert Submodule.fg_bot
     -- exact RingHom.ker_coe_equiv ulift_var.toRingEquiv
   · rintro ⟨ι, hfintype, f, hf⟩
-    have equiv := MvPolynomial.renameEquiv R (Fintype.equivFin ι)
+    let equiv := MvPolynomial.renameEquiv R (Fintype.equivFin ι)
     refine'
       ⟨Fintype.card ι, f.comp equiv.symm, hf.1.comp (AlgEquiv.symm equiv).surjective,
         Ideal.fg_ker_comp _ f _ hf.2 equiv.symm.surjective⟩

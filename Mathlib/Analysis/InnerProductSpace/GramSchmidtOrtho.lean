@@ -148,7 +148,7 @@ theorem gramSchmidt_mem_span (f : ι → E) :
   simp_rw [orthogonalProjection_singleton]
   refine' Submodule.sub_mem _ (subset_span (mem_image_of_mem _ hij))
     (Submodule.sum_mem _ fun k hk => _)
-  let hkj : k < j := (Finset.mem_Iio.1 hk).trans_le hij
+  have hkj : k < j := (Finset.mem_Iio.1 hk).trans_le hij
   exact smul_mem _ _
     (span_mono (image_subset f <| Iic_subset_Iic.2 hkj.le) <| gramSchmidt_mem_span _ le_rfl)
 termination_by j => j

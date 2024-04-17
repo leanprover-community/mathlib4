@@ -198,7 +198,7 @@ theorem map_Hσ {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additi
   have eq := HomologicalComplex.congr_hom (map_nullHomotopicMap' G (@hσ' _ _ _ X q)) n
   simp only [Functor.mapHomologicalComplex_map_f, ← map_hσ'] at eq
   rw [eq]
-  let h := (Functor.congr_obj (map_alternatingFaceMapComplex G) X).symm
+  have h := (Functor.congr_obj (map_alternatingFaceMapComplex G) X).symm
   congr
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.map_Hσ AlgebraicTopology.DoldKan.map_Hσ

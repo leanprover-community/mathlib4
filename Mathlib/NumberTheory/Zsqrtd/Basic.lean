@@ -940,11 +940,11 @@ theorem nonneg_antisymm : ∀ {a : ℤ√d}, Nonneg a → Nonneg (-a) → a = 0
   | ⟨0, -[y+1]⟩, xy, _ => absurd xy (not_sqLe_succ _ _ _ d_pos)
   | ⟨0, (y + 1 : Nat)⟩, _, yx => absurd yx (not_sqLe_succ _ _ _ d_pos)
   | ⟨(x + 1 : Nat), -[y+1]⟩, (xy : SqLe _ _ _ _), (yx : SqLe _ _ _ _) => by
-    let t := le_antisymm yx xy
+    have t := le_antisymm yx xy
     rw [one_mul] at t
     exact absurd t (not_divides_sq _ _)
   | ⟨-[x+1], (y + 1 : Nat)⟩, (xy : SqLe _ _ _ _), (yx : SqLe _ _ _ _) => by
-    let t := le_antisymm xy yx
+    have t := le_antisymm xy yx
     rw [one_mul] at t
     exact absurd t (not_divides_sq _ _)
 #align zsqrtd.nonneg_antisymm Zsqrtd.nonneg_antisymm

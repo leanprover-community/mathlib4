@@ -904,7 +904,7 @@ second countable group. -/
 theorem absolutelyContinuous_isHaarMeasure [LocallyCompactSpace G]
     [SecondCountableTopology G] (μ ν : Measure G)
     [SigmaFinite μ] [IsMulLeftInvariant μ] [IsHaarMeasure ν] : μ ≪ ν := by
-  have K : PositiveCompacts G := Classical.arbitrary _
+  let K : PositiveCompacts G := Classical.arbitrary _
   have h : haarMeasure K = (haarScalarFactor (haarMeasure K) ν : ℝ≥0∞) • ν :=
     isMulLeftInvariant_eq_smul (haarMeasure K) ν
   rw [haarMeasure_unique μ K, h, smul_smul]
@@ -932,7 +932,7 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_regular
   have μeq : μ = c ^ 2 • μ := by
     rw [map_map continuous_inv.measurable continuous_inv.measurable] at this
     simpa only [inv_involutive, Involutive.comp_self, Measure.map_id]
-  have K : PositiveCompacts G := Classical.arbitrary _
+  let K : PositiveCompacts G := Classical.arbitrary _
   have : c ^ 2 * μ K = 1 ^ 2 * μ K := by
     conv_rhs => rw [μeq]
     simp
@@ -959,7 +959,7 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_innerRegular
   have μeq : μ = c ^ 2 • μ := by
     rw [map_map continuous_inv.measurable continuous_inv.measurable] at this
     simpa only [inv_involutive, Involutive.comp_self, Measure.map_id]
-  have K : PositiveCompacts G := Classical.arbitrary _
+  let K : PositiveCompacts G := Classical.arbitrary _
   have : c ^ 2 * μ K = 1 ^ 2 * μ K := by
     conv_rhs => rw [μeq]
     simp

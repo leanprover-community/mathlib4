@@ -599,7 +599,7 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
           id_comp, productTriangle.zero₃₁]
         intro j
         exact comp_distTriang_mor_zero₃₁ _ (hT j)
-      have ⟨g, hg⟩ := T'.coyoneda_exact₁ hT' (a ≫ (productTriangle T).mor₃) (by
+      let ⟨g, hg⟩ := T'.coyoneda_exact₁ hT' (a ≫ (productTriangle T).mor₃) (by
         rw [assoc, zero, comp_zero])
       exact ⟨g, hg.symm⟩
     have ha'' := fun (j : J) => (T j).coyoneda_exact₃ (hT j) ((a - a' ≫ φ'.hom₃) ≫ Pi.π _ j) (by

@@ -107,12 +107,12 @@ private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toC
     (has : a ∈ s) (hat : a ∉ t) : ∃ b, b ∈ u ∧ b ∉ s ∧ a ≤ b := by
   classical
   let s' : Finset α := s.filter fun b ↦ b ∉ t ∧ a ≤ b
-  have ⟨b, hb, hbmax⟩ := exists_maximal s' ⟨a, by simp [s', has, hat]⟩
+  let ⟨b, hb, hbmax⟩ := exists_maximal s' ⟨a, by simp [s', has, hat]⟩
   simp only [s', mem_filter, and_imp] at hb hbmax
-  have ⟨c, hct, hcs, hbc⟩ := hst hb.1 hb.2.1
+  let ⟨c, hct, hcs, hbc⟩ := hst hb.1 hb.2.1
   by_cases hcu : c ∈ u
   · exact ⟨c, hcu, hcs, hb.2.2.trans hbc⟩
-  have ⟨d, hdu, hdt, hcd⟩ := htu hct hcu
+  let ⟨d, hdu, hdt, hcd⟩ := htu hct hcu
   have had : a ≤ d := hb.2.2.trans <| hbc.trans hcd
   refine ⟨d, hdu, fun hds ↦ ?_, had⟩
   exact hbmax d hds hdt had <| hbc.trans_lt <| hcd.lt_of_ne <| ne_of_mem_of_not_mem hct hdt
@@ -120,7 +120,7 @@ private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toC
 private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ toColex s) : s ⊆ t := by
   intro a has
   by_contra! hat
-  have ⟨_b, hb₁, hb₂, _⟩ := trans_aux hst hts has hat
+  let ⟨_b, hb₁, hb₂, _⟩ := trans_aux hst hts has hat
   exact hb₂ hb₁
 
 instance instPartialOrder : PartialOrder (Colex α) where
@@ -128,9 +128,9 @@ instance instPartialOrder : PartialOrder (Colex α) where
   le_antisymm s t hst hts := Colex.ext _ _ <| (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
   le_trans s t u hst htu a has hau := by
     by_cases hat : a ∈ ofColex t
-    · have ⟨b, hbu, hbt, hab⟩ := htu hat hau
+    · let ⟨b, hbu, hbt, hab⟩ := htu hat hau
       by_cases hbs : b ∈ ofColex s
-      · have ⟨c, hcu, hcs, hbc⟩ := trans_aux hst htu hbs hbt
+      · let ⟨c, hcu, hcs, hbc⟩ := trans_aux hst htu hbs hbt
         exact ⟨c, hcu, hcs, hab.trans hbc⟩
       · exact ⟨b, hbu, hbs, hab⟩
     · exact trans_aux hst htu has hat
@@ -259,7 +259,7 @@ instance instLinearOrder : LinearOrder (Colex α) where
     classical
     obtain rfl | hts := eq_or_ne t s
     · simp
-    have ⟨a, ha, hamax⟩ := exists_max_image _ id (symmDiff_nonempty.2 <| ofColex_ne_ofColex.2 hts)
+    let ⟨a, ha, hamax⟩ := exists_max_image _ id (symmDiff_nonempty.2 <| ofColex_ne_ofColex.2 hts)
     simp_rw [mem_symmDiff] at ha hamax
     exact ha.imp (fun ha b hbs hbt ↦ ⟨a, ha.1, ha.2, hamax _ <| Or.inr ⟨hbs, hbt⟩⟩)
       (fun ha b hbt hbs ↦ ⟨a, ha.1, ha.2, hamax _ <| Or.inl ⟨hbt, hbs⟩⟩)
@@ -286,7 +286,7 @@ lemma toColex_le_toColex_iff_max'_mem :
   · set m := (s ∆ t).max' (symmDiff_nonempty.2 hst)
     by_contra hmt
     have hms : m ∈ s := by simpa [mem_symmDiff, hmt] using max'_mem _ <| symmDiff_nonempty.2 hst
-    have ⟨b, hbt, hbs, hmb⟩ := h hms hmt
+    let ⟨b, hbt, hbs, hmb⟩ := h hms hmt
     exact lt_irrefl _ <| (max'_lt_iff _ _).1 (hmb.lt_of_ne <| ne_of_mem_of_not_mem hms hbs) _ <|
       mem_symmDiff.2 <| Or.inr ⟨hbt, hbs⟩
   · have hst : s ≠ t := ne_of_mem_of_not_mem' has hat
@@ -337,7 +337,7 @@ lemma IsInitSeg.total (h₁ : IsInitSeg 𝒜₁ r) (h₂ : IsInitSeg 𝒜₂ r) 
   classical
   simp_rw [← sdiff_eq_empty_iff_subset, ← not_nonempty_iff_eq_empty]
   by_contra! h
-  have ⟨⟨s, hs⟩, t, ht⟩ := h
+  let ⟨⟨s, hs⟩, t, ht⟩ := h
   rw [mem_sdiff] at hs ht
   obtain hst | hst | hts := trichotomous_of (α := Colex α) (· < ·) (toColex s) (toColex t)
   · exact hs.2 <| h₂.2 ht.1 ⟨hst, h₁.1 hs.1⟩

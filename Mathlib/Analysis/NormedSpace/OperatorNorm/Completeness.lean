@@ -250,7 +250,7 @@ theorem opNorm_extend_le :
   · cases le_total 0 N with
     | inl hN => exact mul_nonneg hN (norm_nonneg _)
     | inr hN =>
-      have : Unique E := ⟨⟨0⟩, fun x ↦ norm_le_zero_iff.mp <|
+      let _ : Unique E := ⟨⟨0⟩, fun x ↦ norm_le_zero_iff.mp <|
         (h_e x).trans (mul_nonpos_of_nonpos_of_nonneg hN (norm_nonneg _))⟩
       obtain rfl : f = 0 := Subsingleton.elim ..
       simp

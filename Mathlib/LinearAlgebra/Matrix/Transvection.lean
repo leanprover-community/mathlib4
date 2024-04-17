@@ -669,7 +669,7 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_aux (n : Type) [F
     ext i j
     rw [Fintype.card_eq_zero_iff] at hn
     exact hn.elim' i
-  · have e : n ≃ Sum (Fin r) Unit := by
+  · let e : n ≃ Sum (Fin r) Unit := by
       refine' Fintype.equivOfCardEq _
       rw [hn]
       rw [@Fintype.card_sum (Fin r) Unit _ _]
@@ -684,7 +684,7 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_aux (n : Type) [F
 theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal (M : Matrix n n 𝕜) :
     ∃ (L L' : List (TransvectionStruct n 𝕜)) (D : n → 𝕜),
       (L.map toMatrix).prod * M * (L'.map toMatrix).prod = diagonal D := by
-  have e : n ≃ Fin (Fintype.card n) := Fintype.equivOfCardEq (by simp)
+  let e : n ≃ Fin (Fintype.card n) := Fintype.equivOfCardEq (by simp)
   apply reindex_exists_list_transvec_mul_mul_list_transvec_eq_diagonal M e
   apply exists_list_transvec_mul_mul_list_transvec_eq_diagonal_aux
 #align matrix.pivot.exists_list_transvec_mul_mul_list_transvec_eq_diagonal Matrix.Pivot.exists_list_transvec_mul_mul_list_transvec_eq_diagonal

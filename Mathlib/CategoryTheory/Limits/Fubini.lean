@@ -279,8 +279,8 @@ noncomputable def limitUncurryIsoLimitCompLim : limit (uncurry.obj F) ≅ limit 
   let P : IsLimit c := limit.isLimit _
   let G := DiagramOfCones.mkOfHasLimits F
   let Q : ∀ j, IsLimit (G.obj j) := fun j => limit.isLimit _
-  have Q' := coneOfConeUncurryIsLimit Q P
-  have Q'' := limit.isLimit (F ⋙ lim)
+  let Q' := coneOfConeUncurryIsLimit Q P
+  let Q'' := limit.isLimit (F ⋙ lim)
   exact IsLimit.conePointUniqueUpToIso Q' Q''
 #align category_theory.limits.limit_uncurry_iso_limit_comp_lim CategoryTheory.Limits.limitUncurryIsoLimitCompLim
 
@@ -338,8 +338,8 @@ noncomputable def colimitUncurryIsoColimitCompColim :
   let P : IsColimit c := colimit.isColimit _
   let G := DiagramOfCocones.mkOfHasColimits F
   let Q : ∀ j, IsColimit (G.obj j) := fun j => colimit.isColimit _
-  have Q' := coconeOfCoconeUncurryIsColimit Q P
-  have Q'' := colimit.isColimit (F ⋙ colim)
+  let Q' := coconeOfCoconeUncurryIsColimit Q P
+  let Q'' := colimit.isColimit (F ⋙ colim)
   exact IsColimit.coconePointUniqueUpToIso Q' Q''
 
 @[simp, reassoc]
@@ -443,7 +443,7 @@ showing that the limit of `G` can be computed as
 the limit of the limits of the functors `G.obj (j, _)`.
 -/
 noncomputable def limitIsoLimitCurryCompLim : limit G ≅ limit (curry.obj G ⋙ lim) := by
-  have i : G ≅ uncurry.obj ((@curry J _ K _ C _).obj G) := currying.symm.unitIso.app G
+  let i : G ≅ uncurry.obj ((@curry J _ K _ C _).obj G) := currying.symm.unitIso.app G
   haveI : Limits.HasLimit (uncurry.obj ((@curry J _ K _ C _).obj G)) := hasLimitOfIso i
   trans limit (uncurry.obj ((@curry J _ K _ C _).obj G))
   · apply HasLimit.isoOfNatIso i
@@ -479,7 +479,7 @@ showing that the colimit of `G` can be computed as
 the colimit of the colimits of the functors `G.obj (j, _)`.
 -/
 noncomputable def colimitIsoColimitCurryCompColim : colimit G ≅ colimit (curry.obj G ⋙ colim) := by
-  have i : G ≅ uncurry.obj ((@curry J _ K _ C _).obj G) := currying.symm.unitIso.app G
+  let i : G ≅ uncurry.obj ((@curry J _ K _ C _).obj G) := currying.symm.unitIso.app G
   haveI : Limits.HasColimit (uncurry.obj ((@curry J _ K _ C _).obj G)) := hasColimitOfIso i.symm
   trans colimit (uncurry.obj ((@curry J _ K _ C _).obj G))
   apply HasColimit.isoOfNatIso i

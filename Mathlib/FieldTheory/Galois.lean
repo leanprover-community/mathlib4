@@ -374,7 +374,7 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
     change (K⟮x⟯ →ₐ[F] E) ≃ Σ f : K →ₐ[F] E, _
     exact algHomEquivSigma
   haveI : ∀ f : K →ₐ[F] E, Fintype (@AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f)) := fun f => by
-    have := Fintype.ofEquiv _ key_equiv
+    let _ := Fintype.ofEquiv _ key_equiv
     apply Fintype.ofInjective (Sigma.mk f) fun _ _ H => eq_of_heq (Sigma.ext_iff.mp H).2
   rw [Fintype.card_congr key_equiv, Fintype.card_sigma, IntermediateField.adjoin.finrank h]
   apply Finset.sum_const_nat

@@ -304,7 +304,7 @@ theorem pseudo_injective_of_mono {P Q : C} (f : P ⟶ Q) [Mono f] : Function.Inj
   refine' Quotient.inductionOn₂ abar abar' fun a a' ha => _
   apply Quotient.sound
   have : ⟦(a.hom ≫ f : Over Q)⟧ = ⟦↑(a'.hom ≫ f)⟧ := by convert ha
-  have ⟨R, p, q, ep, Eq, comm⟩ := Quotient.exact this
+  let ⟨R, p, q, ep, Eq, comm⟩ := Quotient.exact this
   exact ⟨R, p, q, ep, Eq, (cancel_mono f).1 <| by
     simp only [Category.assoc]
     exact comm⟩
@@ -341,12 +341,12 @@ end
 /-- A morphism that is surjective on pseudoelements is an epimorphism. -/
 theorem epi_of_pseudo_surjective {P Q : C} (f : P ⟶ Q) : Function.Surjective f → Epi f := by
   intro h
-  have ⟨pbar, hpbar⟩ := h (𝟙 Q)
-  have ⟨p, hp⟩ := Quotient.exists_rep pbar
+  let ⟨pbar, hpbar⟩ := h (𝟙 Q)
+  let ⟨p, hp⟩ := Quotient.exists_rep pbar
   have : ⟦(p.hom ≫ f : Over Q)⟧ = ⟦↑(𝟙 Q)⟧ := by
     rw [← hp] at hpbar
     exact hpbar
-  have ⟨R, x, y, _, ey, comm⟩ := Quotient.exact this
+  let ⟨R, x, y, _, ey, comm⟩ := Quotient.exact this
   apply @epi_of_epi_fac _ _ _ _ _ (x ≫ p.hom) f y ey
   dsimp at comm
   rw [Category.assoc, comm]

@@ -302,7 +302,7 @@ theorem wbtw_self_right (x y : P) : Wbtw R x y y :=
 theorem wbtw_self_iff {x y : P} : Wbtw R x y x ↔ y = x := by
   refine' ⟨fun h => _, fun h => _⟩
   · -- Porting note: Originally `simpa [Wbtw, affineSegment] using h`
-    have ⟨_, _, h₂⟩ := h
+    let ⟨_, _, h₂⟩ := h
     rw [h₂.symm, lineMap_same_apply]
   · rw [h]
     exact wbtw_self_left R x x

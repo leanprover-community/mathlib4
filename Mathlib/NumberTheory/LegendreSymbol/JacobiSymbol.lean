@@ -482,7 +482,7 @@ theorem quadratic_reciprocity_one_mod_four' {a b : ℕ} (ha : Odd a) (hb : b % 4
 both congruent to `3` mod `4`, then `J(a | b) = -J(b | a)`. -/
 theorem quadratic_reciprocity_three_mod_four {a b : ℕ} (ha : a % 4 = 3) (hb : b % 4 = 3) :
     J(a | b) = -J(b | a) := by
-  let nop := @neg_one_pow_div_two_of_three_mod_four
+  have nop := @neg_one_pow_div_two_of_three_mod_four
   rw [quadratic_reciprocity, pow_mul, nop ha, nop hb, neg_one_mul] <;>
     rwa [odd_iff, odd_of_mod_four_eq_three]
 #align jacobi_sym.quadratic_reciprocity_three_mod_four jacobiSym.quadratic_reciprocity_three_mod_four

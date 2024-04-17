@@ -114,7 +114,7 @@ theorem mem_vanishingIdeal_singleton_iff (x : σ → k) (p : MvPolynomial σ k) 
 
 instance vanishingIdeal_singleton_isMaximal {x : σ → k} :
     (vanishingIdeal {x} : Ideal (MvPolynomial σ k)).IsMaximal := by
-  have : MvPolynomial σ k ⧸ vanishingIdeal {x} ≃+* k :=
+  let this : MvPolynomial σ k ⧸ vanishingIdeal {x} ≃+* k :=
     RingEquiv.ofBijective
       (Ideal.Quotient.lift _ (eval x) fun p h => (mem_vanishingIdeal_singleton_iff x p).mp h)
       (by

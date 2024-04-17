@@ -1555,7 +1555,7 @@ theorem max_eq_eval_unapply :
 theorem chain'_cons_of_lt (l : MaxProducts C ho)
     (q : Products I) (hq : q < l.val.Tail) :
     List.Chain' (fun x x_1 ↦ x > x_1) (term I ho :: q.val) := by
-  have : Inhabited I := ⟨term I ho⟩
+  let _ : Inhabited I := ⟨term I ho⟩
   rw [List.chain'_iff_pairwise]
   simp only [gt_iff_lt, List.pairwise_cons]
   refine ⟨fun a ha ↦ lt_of_le_of_lt (Products.rel_head!_of_mem ha) ?_,
@@ -1570,7 +1570,7 @@ theorem chain'_cons_of_lt (l : MaxProducts C ho)
 
 theorem good_lt_maxProducts (q : GoodProducts (π C (ord I · < o)))
     (l : MaxProducts C ho) : List.Lex (·<·) q.val.val l.val.val := by
-  have : Inhabited I := ⟨term I ho⟩
+  let _ : Inhabited I := ⟨term I ho⟩
   by_cases h : q.val.val = []
   · rw [h, max_eq_o_cons_tail C hsC ho l]
     exact List.Lex.nil
@@ -1587,7 +1587,7 @@ Removing the leading `o` from a term of `MaxProducts C` yields a list which `is
 theorem maxTail_isGood (l : MaxProducts C ho)
     (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
     l.val.Tail.isGood (C' C ho) := by
-  have : Inhabited I := ⟨term I ho⟩
+  let _ : Inhabited I := ⟨term I ho⟩
   -- Write `l.Tail` as a linear combination of smaller products:
   intro h
   rw [Finsupp.mem_span_image_iff_total, ← max_eq_eval C hsC ho] at h

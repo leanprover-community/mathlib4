@@ -55,7 +55,7 @@ theorem out_proof {p : Prop} (a : Erased p) : p :=
 
 @[simp]
 theorem out_mk {α} (a : α) : (mk a).out = a := by
-  let h := (mk a).2; show Classical.choose h = a
+  have h := (mk a).2; show Classical.choose h = a
   have := Classical.choose_spec h
   exact cast (congr_fun this a).symm rfl
 #align erased.out_mk Erased.out_mk

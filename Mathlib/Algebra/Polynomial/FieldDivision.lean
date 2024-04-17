@@ -633,7 +633,7 @@ isCoprime_of_is_root_of_eval_derivative_ne_zero because the original proof was t
 theorem X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic {K : Type*} [Field K] (f : K[X]) {a : K}
     (hf : (X - C a) ∣ f /ₘ (X - C a)) : X - C a ∣ derivative f := by
   have key := divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative f a
-  have ⟨u,hu⟩ := hf
+  let ⟨u,hu⟩ := hf
   rw [← key, hu, ← mul_add (X - C a) u _]
   use (u + derivative ((X - C a) * u))
 

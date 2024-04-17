@@ -108,7 +108,7 @@ lemma isRatCondKernelCDFAux_density_Iic (κ : kernel α (γ × ℝ)) [IsFiniteKe
     · ext x
       simp only [mem_iInter, mem_Iic, mem_empty_iff_false, iff_false, not_forall, not_le, s']
       rw [tendsto_atTop_atBot] at hs_tendsto
-      have ⟨q, hq⟩ := exists_rat_lt x
+      let ⟨q, hq⟩ := exists_rat_lt x
       obtain ⟨i, hi⟩ := hs_tendsto q
       refine ⟨i, lt_of_le_of_lt ?_ hq⟩
       exact mod_cast hi i le_rfl
@@ -121,7 +121,7 @@ lemma isRatCondKernelCDFAux_density_Iic (κ : kernel α (γ × ℝ)) [IsFiniteKe
     · ext x
       simp only [mem_iUnion, mem_Iic, mem_univ, iff_true]
       rw [tendsto_atTop_atTop] at hs_tendsto
-      have ⟨q, hq⟩ := exists_rat_gt x
+      let ⟨q, hq⟩ := exists_rat_gt x
       obtain ⟨i, hi⟩ := hs_tendsto q
       refine ⟨i, hq.le.trans ?_⟩
       exact mod_cast hi i le_rfl
@@ -263,7 +263,7 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
           (measurable_id.prod_map (measurableEmbedding_embeddingReal Ω).measurable)) ⊗ₖ η)
         (MeasurableEmbedding.id.prod_mk (measurableEmbedding_embeddingReal Ω)) := by
   let e := embeddingReal Ω
-  let he := measurableEmbedding_embeddingReal Ω
+  have he := measurableEmbedding_embeddingReal Ω
   let κ' := map κ (Prod.map (id : β → β) e) (measurable_id.prod_map he.measurable)
   have hη' : fst κ' ⊗ₖ η = κ' := hη
   have h_prod_embed : MeasurableEmbedding (Prod.map (id : β → β) e) :=
@@ -312,7 +312,7 @@ lemma compProd_fst_borelMarkovFromReal (κ : kernel α (β × Ω)) [IsSFiniteKer
         (measurable_id.prod_map (measurableEmbedding_embeddingReal Ω).measurable)) :
     fst κ ⊗ₖ borelMarkovFromReal Ω η = κ := by
   let e := embeddingReal Ω
-  let he := measurableEmbedding_embeddingReal Ω
+  have he := measurableEmbedding_embeddingReal Ω
   let κ' := map κ (Prod.map (id : β → β) e) (measurable_id.prod_map he.measurable)
   have hη' : fst κ' ⊗ₖ η = κ' := hη
   have h_prod_embed : MeasurableEmbedding (Prod.map (id : β → β) e) :=

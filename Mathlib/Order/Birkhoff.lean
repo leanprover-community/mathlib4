@@ -157,7 +157,7 @@ variable [SemilatticeSup α] [OrderBot α] [Finite α]
   obtain ⟨s, hs⟩ := s
   obtain ⟨a, rfl⟩ := supIrred_iff_of_finite.1 hs
   cases nonempty_fintype α
-  have : LocallyFiniteOrder α := Fintype.toLocallyFiniteOrder
+  let _ : LocallyFiniteOrder α := Fintype.toLocallyFiniteOrder
   simp [symm_apply_eq]
 
 end SemilatticeSup
@@ -171,7 +171,7 @@ variable [SemilatticeInf α] [OrderTop α] [Finite α]
   obtain ⟨s, hs⟩ := s
   obtain ⟨a, rfl⟩ := infIrred_iff_of_finite.1 hs
   cases nonempty_fintype α
-  have : LocallyFiniteOrder α := Fintype.toLocallyFiniteOrder
+  let _ : LocallyFiniteOrder α := Fintype.toLocallyFiniteOrder
   simp [symm_apply_eq]
 
 end SemilatticeInf
@@ -211,7 +211,7 @@ noncomputable def birkhoffSet : α ↪o Set {a : α // SupIrred a} := by
   by_cases h : IsEmpty α
   · exact OrderEmbedding.ofIsEmpty
   rw [not_isEmpty_iff] at h
-  have := Fintype.toOrderBot α
+  let _ := Fintype.toOrderBot α
   exact OrderIso.lowerSetSupIrred.toOrderEmbedding.trans ⟨⟨_, SetLike.coe_injective⟩, Iff.rfl⟩
 
 /-- **Birkhoff's Representation Theorem**. Any finite distributive lattice can be embedded in a

@@ -192,7 +192,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (P : R[X]) {a b :
 lemma isNilpotent_aeval_sub_of_isNilpotent_sub (h : IsNilpotent (a - b)) :
     IsNilpotent (aeval a P - aeval b P) := by
   simp only [← eval_map_algebraMap]
-  have ⟨c, hc⟩ := evalSubFactor (map (algebraMap R S) P) a b
+  let ⟨c, hc⟩ := evalSubFactor (map (algebraMap R S) P) a b
   exact hc ▸ (Commute.all _ _).isNilpotent_mul_right h
 
 variable {P}

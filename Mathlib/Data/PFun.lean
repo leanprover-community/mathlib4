@@ -259,14 +259,14 @@ def fix (f : α →. Sum β α) : α →. β := fun a =>
 #align pfun.fix PFun.fix
 
 theorem dom_of_mem_fix {f : α →. Sum β α} {a : α} {b : β} (h : b ∈ f.fix a) : (f a).Dom := by
-  let ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
+  have ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
   rw [WellFounded.fixFEq] at h₂; exact h₂.fst.fst
 #align pfun.dom_of_mem_fix PFun.dom_of_mem_fix
 
 theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
     b ∈ f.fix a ↔ Sum.inl b ∈ f a ∨ ∃ a', Sum.inr a' ∈ f a ∧ b ∈ f.fix a' :=
   ⟨fun h => by
-    let ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
+    have ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
     rw [WellFounded.fixFEq] at h₂
     simp only [Part.mem_assert_iff] at h₂
     cases' h₂ with h₂ h₃

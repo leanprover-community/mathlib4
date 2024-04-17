@@ -1566,7 +1566,7 @@ theorem continuous_L1_toL1 {μ' : Measure α} (c' : ℝ≥0∞) (hc' : c' ≠ �
   refine' ⟨div_pos (half_pos hε_pos) (toReal_pos hc'0 hc'), _⟩
   intro g hfg
   rw [Lp.dist_def] at hfg ⊢
-  let h_int := fun f' : α →₁[μ] G => (L1.integrable_coeFn f').of_measure_le_smul c' hc' hμ'_le
+  have h_int := fun f' : α →₁[μ] G => (L1.integrable_coeFn f').of_measure_le_smul c' hc' hμ'_le
   have :
     snorm (⇑(Integrable.toL1 g (h_int g)) - ⇑(Integrable.toL1 f (h_int f))) 1 μ' =
       snorm (⇑g - ⇑f) 1 μ' :=

@@ -94,7 +94,7 @@ theorem pow_dvd (p n : ℕ) : p ^ (p.maxPowDiv n) ∣ n := by
   by_cases h : (1 < p ∧ 0 < n ∧ n % p = 0)
   · have : n / p < n := by apply Nat.div_lt_self <;> aesop
     rw [if_pos h]
-    have ⟨c,hc⟩ := pow_dvd p (n / p)
+    let ⟨c,hc⟩ := pow_dvd p (n / p)
     rw [go_succ, pow_succ]
     nth_rw 2 [← mod_add_div' n p]
     rw [h.right.right, zero_add]
@@ -104,7 +104,7 @@ theorem pow_dvd (p n : ℕ) : p ^ (p.maxPowDiv n) ∣ n := by
 
 theorem le_of_dvd {p n pow : ℕ} (hp : 1 < p) (hn : 0 < n) (h : p ^ pow ∣ n) :
     pow ≤ p.maxPowDiv n := by
-  have ⟨c, hc⟩ := h
+  let ⟨c, hc⟩ := h
   have : 0 < c := by
     apply Nat.pos_of_ne_zero
     intro h'
