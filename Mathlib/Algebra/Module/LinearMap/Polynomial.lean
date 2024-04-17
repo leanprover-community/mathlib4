@@ -342,13 +342,13 @@ lemma polyCharpoly_coeff_isHomogeneous (i j : ℕ) (hij : i + j = finrank R M)
   apply polyCharpolyAux_coeff_isHomogeneous
   rwa [← finrank_eq_card_chooseBasisIndex]
 
--- move this
+-- move to Mathlib.RingTheory.TensorProduct.Basic
 open TensorProduct in
 instance TensorProduct.Free (A : Type*) [CommRing A] [Algebra R A] :
     Module.Free A (A ⊗[R] M) :=
   Module.Free.of_basis <| Algebra.TensorProduct.basis A (Module.Free.chooseBasis R M)
 
--- move this
+-- move to Mathlib.RingTheory.TensorProduct.Basic
 open TensorProduct in
 instance TensorProduct.Finite (A : Type*) [CommRing A] [Algebra R A] :
     Module.Finite A (TensorProduct R A M) :=
