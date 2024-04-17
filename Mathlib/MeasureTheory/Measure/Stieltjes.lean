@@ -496,7 +496,7 @@ end StieltjesFunction
 variable (μ : Measure ℝ) [IsFiniteMeasureOnCompacts μ]
 
 -- TODO: where is a good place to move this?
-lemma tendsto_measure_Icc_nhdsWithin_gt (b : ℝ) :
+lemma tendsto_measure_Icc_nhdsWithin_right' (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝[>] (0 : ℝ)) (𝓝 (μ {b})) := by
   rw [Real.singleton_eq_inter_Ioo]
   apply tendsto_measure_biInter_gt (fun r hr ↦ measurableSet_Icc)
@@ -507,9 +507,8 @@ lemma tendsto_measure_Icc_nhdsWithin_gt (b : ℝ) :
 -- TODO: is there a better place for this lemma?
 lemma tendsto_measure_Icc_nhdsWithin_right (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝[≥] (0 : ℝ)) (𝓝 (μ {b})) := by
-  simp only [nhdsWithin_right_eq_nhdsWithin_gt_union_nhdsWithin_singleton,
-    nhdsWithin_singleton, tendsto_sup,
-    tendsto_measure_Icc_nhdsWithin_gt μ b, true_and, tendsto_pure_left]
+  simp only [nhdsWithin_right_sup_nhds_singleton, nhdsWithin_singleton, tendsto_sup,
+    tendsto_measure_Icc_nhdsWithin_right' μ b, true_and, tendsto_pure_left]
   intro s hs
   simpa using mem_of_mem_nhds hs
 

@@ -124,8 +124,8 @@ theorem nhds_left'_sup_nhds_right' (a : α) : 𝓝[<] a ⊔ 𝓝[>] a = 𝓝[≠
   rw [← nhdsWithin_union, Iio_union_Ioi]
 #align nhds_left'_sup_nhds_right' nhds_left'_sup_nhds_right'
 
-lemma nhdsWithin_right_eq_nhdsWithin_gt_union_nhdsWithin_singleton (a : α) :
-    𝓝[≥] a = 𝓝[>] a ⊔ 𝓝[{a}] a := by
+lemma nhdsWithin_right_sup_nhds_singleton (a : α) :
+    𝓝[>] a ⊔ 𝓝[{a}] a = 𝓝[≥] a := by
   simp only [union_singleton, Ioi_insert, ← nhdsWithin_union]
 
 theorem continuousAt_iff_continuous_left_right {a : α} {f : α → β} :
