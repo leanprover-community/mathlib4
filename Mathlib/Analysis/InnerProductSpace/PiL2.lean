@@ -1029,17 +1029,11 @@ theorem piLp_equiv_toEuclideanLin (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜
 #align matrix.pi_Lp_equiv_to_euclidean_lin Matrix.piLp_equiv_toEuclideanLin
 
 theorem toEuclideanLin_apply (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :
-    toEuclideanLin M v =
-      (WithLp.equiv 2 (m → 𝕜)).symm (M *ᵥ (WithLp.equiv 2 (n → 𝕜)) v) :=
+    WithLp.equiv 2 (m → 𝕜) (toEuclideanLin M v) = (M *ᵥ (WithLp.equiv 2 (n → 𝕜)) v) :=
   rfl
 
 @[simp]
 theorem toEuclidean_apply_eq_mulVec (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :
- WithLp.equiv 2 (m → 𝕜) (toEuclideanLin M v) = M *ᵥ WithLp.equiv 2 (n → 𝕜) v :=
- rfl
-
-@[simp]
-theorem toEuclideanLin_apply_eq_mulVec' (M : Matrix m n 𝕜) (v : n → 𝕜) :
  toEuclideanLin M ((WithLp.equiv 2 (n→ 𝕜)).symm v) = (WithLp.equiv 2 (m → 𝕜)).symm (M *ᵥ v) :=
  rfl
 
