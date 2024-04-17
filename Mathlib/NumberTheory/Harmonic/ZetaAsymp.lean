@@ -281,8 +281,8 @@ lemma continuousOn_term_tsum : ContinuousOn term_tsum (Ici 1) := by
     all_goals linarith [hx.1]
 
 /-- First version of the limit formula, with a limit over real numbers tending to 1 from above. -/
-lemma tendsto_riemannZeta_nhds_right : Tendsto (fun s : ℝ ↦ riemannZeta s - 1 / (s - 1))
-    (𝓝[>] 1) (𝓝 eulerMascheroniConstant) := by
+lemma tendsto_riemannZeta_sub_one_div_nhds_right :
+    Tendsto (fun s : ℝ ↦ riemannZeta s - 1 / (s - 1)) (𝓝[>] 1) (𝓝 eulerMascheroniConstant) := by
   suffices Tendsto (fun s : ℝ ↦ (∑' n : ℕ, 1 / (n + 1 : ℝ) ^ s) - 1 / (s - 1))
     (𝓝[>] 1) (𝓝 eulerMascheroniConstant) by
     apply ((Complex.continuous_ofReal.tendsto _).comp this).congr'
@@ -315,7 +315,7 @@ theorem _root_.tendsto_riemannZeta_sub_one_div :
   suffices ∃ C, Tendsto f (𝓝[≠] 1) (𝓝 C) by
     cases' this with C hC
     suffices Tendsto (fun s : ℝ ↦ f s) _ _
-      from (tendsto_nhds_unique this tendsto_riemannZeta_nhds_right) ▸ hC
+      from (tendsto_nhds_unique this tendsto_riemannZeta_sub_one_div_nhds_right) ▸ hC
     refine hC.comp (tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_ ?_)
     · exact (Complex.continuous_ofReal.tendsto 1).mono_left (nhdsWithin_le_nhds ..)
     · filter_upwards [self_mem_nhdsWithin] with a ha
