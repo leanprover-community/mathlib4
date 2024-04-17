@@ -117,7 +117,7 @@ theorem logb_rpow_eq_mul_logb_of_pos (hx : 0 < x) : logb b (x ^ y) = y * logb b 
   rw [logb, log_rpow hx, logb, mul_div_assoc]
 
 theorem logb_pow {k : ℕ} (hx : 0 < x) : logb b (x ^ k) = k * logb b x := by
-  rw [← rpow_nat_cast, logb_rpow_eq_mul_logb_of_pos hx]
+  rw [← rpow_natCast, logb_rpow_eq_mul_logb_of_pos hx]
 
 section BPosAndNeOne
 
