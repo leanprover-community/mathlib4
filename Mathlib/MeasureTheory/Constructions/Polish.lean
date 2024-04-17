@@ -313,7 +313,7 @@ theorem _root_.MeasurableSet.analyticSet {α : Type*} [t : TopologicalSpace α] 
     hs.isClopenable
   have A := @IsClosed.analyticSet α t' t'_polish s s_closed
   convert @AnalyticSet.image_of_continuous α t' α t s A id (continuous_id_of_le t't)
-  simp only [id.def, image_id']
+  simp only [id, image_id']
 #align measurable_set.analytic_set MeasurableSet.analyticSet
 
 /-- Given a Borel-measurable function from a Polish space to a second-countable space, there exists
@@ -1090,5 +1090,14 @@ theorem exists_measurableEmbedding_real : ∃ f : α → ℝ, MeasurableEmbeddin
   obtain ⟨s, hs, ⟨e⟩⟩ := exists_subset_real_measurableEquiv α
   exact ⟨(↑) ∘ e, (MeasurableEmbedding.subtype_coe hs).comp e.measurableEmbedding⟩
 #align measure_theory.exists_measurable_embedding_real MeasureTheory.exists_measurableEmbedding_real
+
+/-- A measurable embedding of a standard Borel space into `ℝ`. -/
+noncomputable
+def embeddingReal (Ω : Type*) [MeasurableSpace Ω] [StandardBorelSpace Ω] : Ω → ℝ :=
+  (exists_measurableEmbedding_real Ω).choose
+
+lemma measurableEmbedding_embeddingReal (Ω : Type*) [MeasurableSpace Ω] [StandardBorelSpace Ω] :
+    MeasurableEmbedding (embeddingReal Ω) :=
+  (exists_measurableEmbedding_real Ω).choose_spec
 
 end MeasureTheory

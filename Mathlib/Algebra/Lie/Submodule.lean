@@ -1104,7 +1104,7 @@ theorem idealRange_eq_map : f.idealRange = LieIdeal.map f ⊤ := by
   rfl
 #align lie_hom.ideal_range_eq_map LieHom.idealRange_eq_map
 
-/-- The condition that the image of a morphism of Lie algebras is an ideal. -/
+/-- The condition that the range of a morphism of Lie algebras is an ideal. -/
 def IsIdealMorphism : Prop :=
   (f.idealRange : LieSubalgebra R L') = f.range
 #align lie_hom.is_ideal_morphism LieHom.IsIdealMorphism
@@ -1149,7 +1149,7 @@ theorem mem_ker {x : L} : x ∈ ker f ↔ f x = 0 :=
     simp only [ker_coeSubmodule, LinearMap.mem_ker, coe_toLinearMap]
 #align lie_hom.mem_ker LieHom.mem_ker
 
-theorem mem_idealRange {x : L} : f x ∈ idealRange f := by
+theorem mem_idealRange (x : L) : f x ∈ idealRange f := by
   rw [idealRange_eq_map]
   exact LieIdeal.mem_map (LieSubmodule.mem_top x)
 #align lie_hom.mem_ideal_range LieHom.mem_idealRange
