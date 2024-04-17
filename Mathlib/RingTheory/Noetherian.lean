@@ -445,13 +445,13 @@ lemma LinearMap.eventually_iSup_ker_pow_eq (f : M →ₗ[R] M) :
 namespace Orzech
 
 variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {N : Submodule R M}
+  (f : N →ₗ[R] M) (hf : Surjective f) (n : ℕ)
 
 open scoped Classical in
 /-- Zero extension of `f` to `M → M`. -/
-private noncomputable def fext (f : N →ₗ[R] M) (x : M) : M :=
-  if h : x ∈ N then f ⟨x, h⟩ else 0
+private noncomputable def fext (x : M) : M := if h : x ∈ N then f ⟨x, h⟩ else 0
 
-private theorem fext_zero (f : N →ₗ[R] M) : fext f 0 = 0 := by
+private theorem fext_zero : fext f 0 = 0 := by
   rw [fext, dif_pos (zero_mem N)]; exact _root_.map_zero _
 
 /-- Define `D'_n` to be `(f⁻¹ ∘ ⋯ ∘ f⁻¹)(N)` (`n` times`). -/
@@ -459,8 +459,7 @@ private def D' (f : N →ₗ[R] M) : (n : ℕ) → Submodule R M
   | 0 => N
   | n + 1 => ((D' f n).comap f).map N.subtype
 
-private theorem map_comap_D'_le (f : N →ₗ[R] M) (n : ℕ) :
-    ((D' f (n + 1)).comap N.subtype).map f ≤ D' f n := by
+private theorem map_comap_D'_le : ((D' f (n + 1)).comap N.subtype).map f ≤ D' f n := by
   rw [D', comap_map_eq_of_injective N.injective_subtype]
   exact map_comap_le _ _
 
@@ -469,13 +468,12 @@ private def D (f : N →ₗ[R] M) : (n : ℕ) → Submodule R M
   | 0 => ⊤
   | n + 1 => D f n ⊓ D' f n
 
-private theorem D_le_N (f : N →ₗ[R] M) (n : ℕ) : D f (n + 1) ≤ N := by
+private theorem D_le_N : D f (n + 1) ≤ N := by
   induction n with
   | zero => exact inf_le_right
   | succ n ih => exact inf_le_left.trans ih
 
-private theorem map_comap_D_le (f : N →ₗ[R] M) (n : ℕ) :
-    ((D f (n + 1)).comap N.subtype).map f ≤ D f n := by
+private theorem map_comap_D_le : ((D f (n + 1)).comap N.subtype).map f ≤ D f n := by
   induction n with
   | zero => exact le_top
   | succ n ih =>
@@ -483,29 +481,25 @@ private theorem map_comap_D_le (f : N →ₗ[R] M) (n : ℕ) :
       (le_trans (map_mono (comap_mono inf_le_right)) (map_comap_D'_le f n))
 
 /-- The `f : N → M` can be restricted to `D_{n+1} → D_n`. -/
-private def f' (f : N →ₗ[R] M) (n : ℕ) : D f (n + 1) →ₗ[R] D f n :=
+private def f' : D f (n + 1) →ₗ[R] D f n :=
   f.restrict (fun _ h ↦ map_comap_D_le f n (mem_map_of_mem h)) ∘ₗ
     (comapSubtypeEquivOfLe (D_le_N f n)).symm.toLinearMap
 
-private theorem coe_f'_apply (f : N →ₗ[R] M) (n : ℕ) (x : D f (n + 1)) :
-    (f' f n x).1 = fext f x.1 := by
-  rw [fext, dif_pos (D_le_N f _ x.2)]
-  rfl
+private theorem coe_f'_apply (x : D f (n + 1)) : (f' f n x).1 = fext f x.1 := by
+  rw [fext, dif_pos (D_le_N f _ x.2)]; rfl
 
 /-- The map `f ^ n : D_n → M`. -/
 private def fn (f : N →ₗ[R] M) : (n : ℕ) → D f n →ₗ[R] M
   | 0 => Submodule.subtype _
   | n + 1 => fn f n ∘ₗ f' f n
 
-private theorem fn_apply (f : N →ₗ[R] M) (n : ℕ) (x : D f n) :
-    fn f n x = (fext f)^[n] x.1 := by
+private theorem fn_apply (x : D f n) : fn f n x = (fext f)^[n] x.1 := by
   induction n with
   | zero => rfl
   | succ n ih =>
-    rw [fn, LinearMap.comp_apply, ih, coe_f'_apply, Function.iterate_succ_apply]
+    rw [fn, LinearMap.comp_apply, ih, coe_f'_apply, iterate_succ_apply]
 
-private theorem map_comap_N_le_D' (f : N →ₗ[R] M) (n : ℕ) :
-    (N.comap (fn f n)).map (D f n).subtype ≤ D' f n := by
+private theorem map_comap_N_le_D' : (N.comap (fn f n)).map (D f n).subtype ≤ D' f n := by
   induction n with
   | zero => exact Submodule.map_comap_le _ _
   | succ n ih =>
@@ -520,29 +514,22 @@ private theorem map_comap_N_le_D' (f : N →ₗ[R] M) (n : ℕ) :
     rwa [coe_f'_apply, fext, dif_pos (D_le_N f _ y.2)] at hy
 
 /-- Define `K_n` to be the kernel of `f ^ n`. -/
-private def K (f : N →ₗ[R] M) (n : ℕ) : Submodule R M :=
-  (LinearMap.ker (fn f n)).map (D f n).subtype
-
-private theorem K_le_D_succ (f : N →ₗ[R] M) (n : ℕ) : K f n ≤ D f (n + 1) :=
-  le_inf (map_subtype_le _ _)
-    (le_trans (map_mono (comap_mono bot_le)) (map_comap_N_le_D' f n))
-
-private theorem K_mono (f : N →ₗ[R] M) (n : ℕ) : K f n ≤ K f (n + 1) := fun x hx ↦ by
-  rw [K, Submodule.mem_map]
-  refine ⟨⟨x, K_le_D_succ f n hx⟩, ?_, rfl⟩
-  rw [K, Submodule.mem_map] at hx
-  obtain ⟨y, hy, rfl⟩ := hx
-  rw [LinearMap.mem_ker, fn_apply] at hy ⊢
-  change (fext f)^[n + 1] y.1 = 0
-  rw [Function.iterate_succ_apply', hy, fext_zero]
+private def K : Submodule R M := (LinearMap.ker (fn f n)).map (D f n).subtype
 
 /-- The map `n ↦ K_n` is mono. -/
-private def Kmono (f : N →ₗ[R] M) : ℕ →o Submodule R M where
+private def Kmono : ℕ →o Submodule R M where
   toFun := K f
-  monotone' := monotone_nat_of_le_succ (K_mono f)
+  monotone' := monotone_nat_of_le_succ fun n x hx ↦ by
+    rw [K, Submodule.mem_map]
+    refine ⟨⟨x, le_inf (map_subtype_le _ _)
+      (le_trans (map_mono (comap_mono bot_le)) (map_comap_N_le_D' f n)) hx⟩, ?_, rfl⟩
+    rw [K, Submodule.mem_map] at hx
+    obtain ⟨y, hy, rfl⟩ := hx
+    rw [LinearMap.mem_ker, fn_apply] at hy ⊢
+    change (fext f)^[n + 1] y.1 = 0
+    rw [iterate_succ_apply', hy, fext_zero]
 
-private theorem map_comap_D_eq (f : N →ₗ[R] M) (hf : Function.Surjective f) (n : ℕ) :
-    ((D f (n + 1)).comap N.subtype).map f = D f n := by
+private theorem map_comap_D_eq : ((D f (n + 1)).comap N.subtype).map f = D f n := by
   induction n with
   | zero =>
     simpa only [D, D', inf_of_le_right le_top, comap_subtype_self,
@@ -554,23 +541,19 @@ private theorem map_comap_D_eq (f : N →ₗ[R] M) (hf : Function.Surjective f) 
     rw [D, Submodule.comap_inf, D', comap_map_eq_of_injective N.injective_subtype]
     exact ⟨hy, mem_comap.2 hx.2⟩
 
-private theorem f'_surjective (f : N →ₗ[R] M) (hf : Function.Surjective f) (n : ℕ) :
-    Function.Surjective (f' f n) := fun x ↦ by
+private theorem f'_surjective : Surjective (f' f n) := fun x ↦ by
   have hx := (map_comap_D_eq f hf n).ge x.2
   simp_rw [Submodule.mem_map, Submodule.mem_comap] at hx
   obtain ⟨y, hy, hx⟩ := hx
-  use ⟨y.1, hy⟩
-  apply_fun _ using Subtype.val_injective
-  rw [coe_f'_apply, fext, dif_pos y.2, hx]
+  exact ⟨⟨y.1, hy⟩, Subtype.val_injective (by rw [coe_f'_apply, fext, dif_pos y.2, hx])⟩
 
-private theorem fn_surjective (f : N →ₗ[R] M) (hf : Function.Surjective f) (n : ℕ) :
-    Function.Surjective (fn f n) := by
+private theorem fn_surjective : Surjective (fn f n) := by
   induction n with
   | zero => exact Submodule.topEquiv.surjective
   | succ n ih => exact ih.comp (f'_surjective f hf n)
 
-private theorem ker_eq_bot_of_surjective_of_K_eq (f : N →ₗ[R] M) (hf : Function.Surjective f)
-    (n : ℕ) (H : K f n = K f (n + 1)) : LinearMap.ker f = ⊥ := by
+private theorem ker_eq_bot_of_surjective_of_K_eq
+    (H : K f n = K f (n + 1)) : LinearMap.ker f = ⊥ := by
   refine LinearMap.ker_eq_bot'.2 fun x hx ↦ ?_
   obtain ⟨y, hy⟩ := fn_surjective f hf n x.1
   have hysucc : y.1 ∈ D f (n + 1) := by
@@ -579,13 +562,12 @@ private theorem ker_eq_bot_of_surjective_of_K_eq (f : N →ₗ[R] M) (hf : Funct
     exact ⟨y, hy.symm ▸ x.2, rfl⟩
   rw [fn_apply] at hy
   have hy' : fn f (n + 1) ⟨y.1, hysucc⟩ = 0 := by
-    rw [fn_apply, Function.iterate_succ_apply', hy, fext, dif_pos x.2, hx]
+    rw [fn_apply, iterate_succ_apply', hy, fext, dif_pos x.2, hx]
   replace hy' : y.1 ∈ K f (n + 1) := mem_map_of_mem (LinearMap.mem_ker.2 hy')
   rw [← H, K, Submodule.mem_map] at hy'
   obtain ⟨z, h1, h2 : z.1 = y.1⟩ := hy'
   rw [LinearMap.mem_ker, fn_apply] at h1
-  apply_fun _ using Subtype.val_injective
-  rw [← hy, ← h2, h1]; rfl
+  exact Subtype.val_injective (by rw [← hy, ← h2, h1]; rfl)
 
 end Orzech
 
@@ -594,7 +576,7 @@ open Orzech in
 `M` is a Noetherian `R`-module, `N` is a submodule, `f : N →ₗ[R] M` is surjective, then `f` is also
 injective. The proof is adapted from <https://math.stackexchange.com/a/1066128/235999>. -/
 theorem IsNoetherian.injective_of_surjective_of_submodule
-    {N : Submodule R M} (f : N →ₗ[R] M) (hf : Function.Surjective f) : Function.Injective f := by
+    {N : Submodule R M} (f : N →ₗ[R] M) (hf : Surjective f) : Injective f := by
   obtain ⟨n, H⟩ := monotone_stabilizes_iff_noetherian.2 ‹_› (Kmono f)
   exact LinearMap.ker_eq_bot.1 (ker_eq_bot_of_surjective_of_K_eq f hf n (H _ (Nat.le_succ _)))
 
@@ -602,7 +584,7 @@ theorem IsNoetherian.injective_of_surjective_of_submodule
 `M` and `N` are `R`-modules, `M` is Noetherian, `i : N →ₗ[R] M` is injective,
 `f : N →ₗ[R] M` is surjective, then `f` is also injective. -/
 theorem IsNoetherian.injective_of_surjective_of_injective (i f : N →ₗ[R] M)
-    (hi : Function.Injective i) (hf : Function.Surjective f) : Function.Injective f := by
+    (hi : Injective i) (hf : Surjective f) : Injective f := by
   have := IsNoetherian.injective_of_surjective_of_submodule
       (f ∘ₗ (LinearEquiv.ofInjective i hi).symm.toLinearMap) <| by
     rwa [LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.surjective_comp]
