@@ -125,7 +125,7 @@ lemma test {s : Set (Set α)} (hsi : FiniteInter s) :
   rw [image]
   simp only [mem_setOf_eq]
   rw [le_antisymm_iff]
-  simp
+  simp only [le_eq_subset]
   constructor
   · intro F
     simp only [mem_setOf_eq, forall_exists_index, and_imp]
@@ -135,7 +135,7 @@ lemma test {s : Set (Set α)} (hsi : FiniteInter s) :
     have e1 : G = G' := by
       aesop
     rw [e1]
-    apply @FiniteInter.finiteInter_mem _ s hsi G' -- hGs --(Finite.toFinset hG)
+    apply @FiniteInter.finiteInter_mem _ s hsi G'
     rw [← e1]
     exact hGs
   · intro t hts
@@ -157,7 +157,7 @@ theorem isTopologicalBasis_of_subbasis_of_inter {r : Set (Set α)} (hsg : t = ge
     rw [hsg]
     apply le_antisymm
     apply le_generateFrom
-    simp
+    simp only [mem_insert_iff, forall_eq_or_imp, isOpen_univ, true_and]
     apply isOpen_generateFrom_of_mem
     apply (generateFrom_anti <| subset_insert univ r)
   apply isTopologicalBasis_of_subbasis_of_finiteInter hsg' (FiniteInter.mk₂ hsi)
