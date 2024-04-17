@@ -199,7 +199,7 @@ theorem preCDF_le_one (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
   exact Measure.IicSnd_le_fst ρ r s
 #align probability_theory.pre_cdf_le_one ProbabilityTheory.preCDF_le_one
 
-lemma set_integral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) {s : Set α} (hs : MeasurableSet s)
+lemma setIntegral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) {s : Set α} (hs : MeasurableSet s)
     [IsFiniteMeasure ρ] :
     ∫ x in s, (preCDF ρ r x).toReal ∂ρ.fst = (ρ.IicSnd r s).toReal := by
   rw [integral_toReal]
@@ -211,7 +211,7 @@ lemma set_integral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) {s : Set α} 
 
 lemma integral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) [IsFiniteMeasure ρ] :
     ∫ x, (preCDF ρ r x).toReal ∂ρ.fst = (ρ.IicSnd r univ).toReal := by
-  rw [← integral_univ, set_integral_preCDF_fst ρ _ MeasurableSet.univ]
+  rw [← integral_univ, setIntegral_preCDF_fst ρ _ MeasurableSet.univ]
 
 lemma integrable_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℚ) :
     Integrable (fun a ↦ (preCDF ρ x a).toReal) ρ.fst := by
@@ -251,8 +251,8 @@ lemma isRatCondKernelCDFAux_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure �
       ENNReal.continuousAt_toReal (measure_ne_top _ _)
     exact h0.comp (h.comp hs_tendsto)
   integrable _ q := integrable_preCDF ρ q
-  set_integral a s hs q := by rw [kernel.const_apply, kernel.const_apply,
-    set_integral_preCDF_fst _ _ hs, Measure.IicSnd_apply _ _ hs]
+  setIntegral a s hs q := by rw [kernel.const_apply, kernel.const_apply,
+    setIntegral_preCDF_fst _ _ hs, Measure.IicSnd_apply _ _ hs]
 
 lemma isRatCondKernelCDF_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
     IsRatCondKernelCDF (fun p r ↦ (preCDF ρ r p.2).toReal)
@@ -373,10 +373,10 @@ theorem integrable_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : 
   (isCondKernelCDF_condCDF ρ).integrable () x
 #align probability_theory.integrable_cond_cdf ProbabilityTheory.integrable_condCDF
 
-theorem set_integral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) {s : Set α}
+theorem setIntegral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) {s : Set α}
     (hs : MeasurableSet s) : ∫ a in s, condCDF ρ a x ∂ρ.fst = (ρ (s ×ˢ Iic x)).toReal :=
-  (isCondKernelCDF_condCDF ρ).set_integral () hs x
-#align probability_theory.set_integral_cond_cdf ProbabilityTheory.set_integral_condCDF
+  (isCondKernelCDF_condCDF ρ).setIntegral () hs x
+#align probability_theory.setIntegral_cond_cdf ProbabilityTheory.setIntegral_condCDF
 
 theorem integral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) :
     ∫ a, condCDF ρ a x ∂ρ.fst = (ρ (univ ×ˢ Iic x)).toReal :=
