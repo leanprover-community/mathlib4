@@ -471,9 +471,57 @@ lemma test1 : {s : Set α | ∃ a, (Iic a)ᶜ = s} =
     ((fun f => ⋂₀ f) '' { f : Set (Set α) | f.Finite ∧ f ⊆ {s : Set α | ∃ a, (Iic a)ᶜ = s} }) := by
   rw [image]
 
-lemma test : IsTopologicalBasis ({s : Set α | ∃ a, (Iic a)ᶜ = s}) := by
-  rw [test1]
-  apply isTopologicalBasis_of_subbasis
+#check {s : Set α | ∃ a, (Iic a)ᶜ = s}
+
+/-
+def Ioi (a : α) :=
+  { x | a < x }
+-/
+
+--insert (univ : Set α) S
+
+lemma basis_inter : ∀ ⦃s⦄, s ∈ {r : Set α | ∃ a, (Iic a)ᶜ = r} →
+    ∀ ⦃t⦄, t ∈ {r : Set α | ∃ a, (Iic a)ᶜ = r} → s ∩ t ∈ {r : Set α | ∃ a, (Iic a)ᶜ = r} := by
+  intros s hs t ht
+  simp at *
+  rcases hs with ⟨b, hb⟩
+  rcases ht with ⟨c, hc⟩
+  use b ⊔ c
+  rw [← hc, ← hb, Ioi_inter_Ioi]
+
+lemma basis_finiteInter : FiniteInter (insert (univ : Set α) {s : Set α | ∃ a, (Iic a)ᶜ = s}) :=
+  (FiniteInter.mk₂ (basis_inter α))
+
+/-
+lemma basis_finiteInter : FiniteInter ({s : Set α | ∃ a, (Iic a)ᶜ = s}∪{(univ : Set α)}) :=
+where
+  univ_mem := by
+    simp only [compl_Iic, union_singleton, mem_insert_iff, mem_setOf_eq, true_or]
+  inter_mem u hu v hv := by
+    simp [mem_setOf_eq] at *
+    rcases hu with (huu | ⟨b, hb⟩)
+    · rcases hv with (hvu | ⟨c, hc⟩)
+      · apply Or.inl
+        rw [huu, hvu, inter_eq_left]
+      · apply Or.inr
+        use c
+        rw [hc, huu, univ_inter]
+    · apply Or.inr
+      rcases hv with (hvu | ⟨c, hc⟩)
+      · use b
+        rw [hb, hvu, inter_univ]
+      · use b ⊔ c
+        rw [← hc, ← hb, Ioi_inter_Ioi]
+-/
+
+lemma test : IsTopologicalBasis ({s : Set α | ∃ a, (Iic a)ᶜ = s}∪{(univ : Set α)}) := by
+
+  apply isTopologicalBasis_of_subbasis_of_finiteInter (by
+    rw [Topology.IsLower.topology_eq α]
+    simp?
+
+    sorry
+  ) (basis_finiteInter α)
   rw [Topology.IsLower.topology_eq α]
 
 
