@@ -131,11 +131,11 @@ theorem isTopologicalBasis_of_subbasis_of_finiteInter {s : Set (Set α)} (hsg : 
       intro G hG hGs hi
       rw [← hi]
       let G' := Finite.toFinset hG
-      have e1 : G = G' := by
+      have eG : G = G' := by
         aesop
-      rw [e1]
+      rw [eG]
       apply @FiniteInter.finiteInter_mem _ s hsi G'
-      rw [← e1]
+      rw [← eG]
       exact hGs
     · intro t hts
       use {t}
