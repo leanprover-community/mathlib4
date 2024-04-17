@@ -349,7 +349,7 @@ instance essSurj_map₂ [F.EssSurj] [G.Full] [IsIso α] [IsIso β] : (map₂ α 
   apply Comma.essSurj_map
 
 noncomputable instance isEquivalenceMap₂
-    [F.Faithful] [G.Faithful] [F.EssSurj] [F.Full] [G.Full] [IsIso α] [IsIso β] :
+    [F.IsEquivalence] [G.Faithful] [G.Full] [IsIso α] [IsIso β] :
     (map₂ α β).IsEquivalence := by
   apply Comma.isEquivalenceMap
 
@@ -714,7 +714,7 @@ instance essSurj_map₂ [F.EssSurj] [G.Full] [IsIso α] [IsIso β] : (map₂ α 
   apply Comma.essSurj_map
 
 noncomputable instance isEquivalenceMap₂
-    [F.Faithful] [G.Faithful] [F.EssSurj] [F.Full] [G.Full] [IsIso α] [IsIso β] :
+    [F.IsEquivalence] [G.Faithful] [G.Full] [IsIso α] [IsIso β] :
     (map₂ α β).IsEquivalence := by
   apply Comma.isEquivalenceMap
 
