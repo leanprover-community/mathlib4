@@ -122,13 +122,10 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
 
 lemma test {s : Set (Set α)} (hsi : FiniteInter s) :
     (fun g => ⋂₀ g) '' { f : Set (Set α) | f.Finite ∧ f ⊆ s } = s := by
-  rw [image]
-  simp only [mem_setOf_eq]
   rw [le_antisymm_iff]
-  simp only [le_eq_subset]
   constructor
   · intro F
-    simp only [mem_setOf_eq, forall_exists_index, and_imp]
+    simp only [mem_image, mem_setOf_eq, forall_exists_index, and_imp]
     intro G hG hGs hi
     rw [← hi]
     let G' := Finite.toFinset hG
@@ -139,28 +136,42 @@ lemma test {s : Set (Set α)} (hsi : FiniteInter s) :
     rw [← e1]
     exact hGs
   · intro t hts
-    simp only [mem_setOf_eq]
     use {t}
-    simp only [finite_singleton, singleton_subset_iff, true_and, sInter_singleton, and_true]
-    exact hts
+    simp only [mem_setOf_eq, finite_singleton, singleton_subset_iff, true_and, sInter_singleton,
+      and_true, hts]
 
 theorem isTopologicalBasis_of_subbasis_of_finiteInter {s : Set (Set α)} (hsg : t = generateFrom s)
     (hsi : FiniteInter s) : IsTopologicalBasis s := by
-  rw [← test hsi]
+  have e1 {s : Set (Set α)} (hsi : FiniteInter s) :
+    (fun g => ⋂₀ g) '' { f : Set (Set α) | f.Finite ∧ f ⊆ s } = s := by
+    rw [le_antisymm_iff]
+    constructor
+    · intro F
+      simp only [mem_image, mem_setOf_eq, forall_exists_index, and_imp]
+      intro G hG hGs hi
+      rw [← hi]
+      let G' := Finite.toFinset hG
+      have e1 : G = G' := by
+        aesop
+      rw [e1]
+      apply @FiniteInter.finiteInter_mem _ s hsi G'
+      rw [← e1]
+      exact hGs
+    · intro t hts
+      use {t}
+      simp only [mem_setOf_eq, finite_singleton, singleton_subset_iff, true_and, sInter_singleton,
+        and_true, hts]
+  rw [← e1 hsi]
   apply isTopologicalBasis_of_subbasis hsg
 
 theorem isTopologicalBasis_of_subbasis_of_inter {r : Set (Set α)} (hsg : t = generateFrom r)
-    (hsi : ∀ ⦃s⦄, s ∈ r →
-    ∀ ⦃t⦄, t ∈ r → s ∩ t ∈ r) :
-    IsTopologicalBasis (insert univ r) := by
-  have hsg' : t = generateFrom (insert univ r) := by
-    rw [hsg]
-    apply le_antisymm
-    apply le_generateFrom
-    simp only [mem_insert_iff, forall_eq_or_imp, isOpen_univ, true_and]
-    apply isOpen_generateFrom_of_mem
-    apply (generateFrom_anti <| subset_insert univ r)
-  apply isTopologicalBasis_of_subbasis_of_finiteInter hsg' (FiniteInter.mk₂ hsi)
+    (hsi : ∀ ⦃s⦄, s ∈ r → ∀ ⦃t⦄, t ∈ r → s ∩ t ∈ r) : IsTopologicalBasis (insert univ r) := by
+  apply isTopologicalBasis_of_subbasis_of_finiteInter _ (FiniteInter.mk₂ hsi)
+  rw [hsg]
+  apply le_antisymm _ (generateFrom_anti <| subset_insert univ r)
+  exact le_generateFrom fun _ hs => (by
+    rcases hs with h | h; simp only [h, isOpen_univ];
+    exact isOpen_generateFrom_of_mem h)
 
 theorem IsTopologicalBasis.of_hasBasis_nhds {s : Set (Set α)}
     (h_nhds : ∀ a, (𝓝 a).HasBasis (fun t ↦ t ∈ s ∧ a ∈ t) id) : IsTopologicalBasis s where
