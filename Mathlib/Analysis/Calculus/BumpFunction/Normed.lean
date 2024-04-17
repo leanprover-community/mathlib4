@@ -110,7 +110,7 @@ theorem integral_normed_smul {X} [NormedAddCommGroup X] [NormedSpace ℝ X]
 
 theorem measure_closedBall_le_integral : (μ (closedBall c f.rIn)).toReal ≤ ∫ x, f x ∂μ := by calc
   (μ (closedBall c f.rIn)).toReal = ∫ x in closedBall c f.rIn, 1 ∂μ := by simp
-  _ = ∫ x in closedBall c f.rIn, f x ∂μ := set_integral_congr (measurableSet_closedBall)
+  _ = ∫ x in closedBall c f.rIn, f x ∂μ := set_integral_congr measurableSet_closedBall
         (fun x hx ↦ (one_of_mem_closedBall f hx).symm)
   _ ≤ ∫ x, f x ∂μ := set_integral_le_integral f.integrable (eventually_of_forall (fun x ↦ f.nonneg))
 

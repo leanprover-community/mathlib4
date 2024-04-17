@@ -261,7 +261,7 @@ theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : 
       rfl
     intro d hd hd0
   on_goal 3 =>
-    rw [constantCoeff_eq, coeff, ← Ne.def, ← Finsupp.mem_support_iff] at h0
+    rw [constantCoeff_eq, coeff, ← Ne, ← Finsupp.mem_support_iff] at h0
     intro
     contradiction
   repeat'
@@ -308,7 +308,7 @@ theorem hom_congr_vars {f₁ f₂ : MvPolynomial σ R →+* S} {p₁ p₂ : MvPo
     (hp : p₁ = p₂) : f₁ p₁ = f₂ p₂ :=
   calc
     f₁ p₁ = eval₂Hom (f₁.comp C) (f₁ ∘ X) p₁ := RingHom.congr_fun (by ext <;> simp) _
-    _ = eval₂Hom (f₂.comp C) (f₂ ∘ X) p₂ := (eval₂Hom_congr' hC hv hp)
+    _ = eval₂Hom (f₂.comp C) (f₂ ∘ X) p₂ := eval₂Hom_congr' hC hv hp
     _ = f₂ p₂ := RingHom.congr_fun (by ext <;> simp) _
 #align mv_polynomial.hom_congr_vars MvPolynomial.hom_congr_vars
 
