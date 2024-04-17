@@ -129,4 +129,25 @@ theorem dist_le_subgraph_dist {G' : SimpleGraph V} {u v : V} (h : G ≤ G') (hr 
   rw [← hw, ← Walk.length_map (Hom.mapSpanningSubgraphs h)]
   apply dist_le
 
+/- The distance between vertices is equal to `1` if and only if these vertices are adjacent. -/
+theorem dist_eq_one_iff_adj {u v : V} : G.dist u v = 1 ↔ G.Adj u v := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · have : u ≠ v ∧ G.Reachable u v := by
+      rw [and_iff_not_or_not, ne_eq, not_not, ← Iff.not dist_eq_zero_iff_eq_or_not_reachable, h]
+      apply one_ne_zero
+    obtain ⟨w, hw⟩ := Reachable.exists_walk_of_dist this.2
+    rw [h] at hw
+    apply w.eq_of_length_eq_one hw
+  · have : (Adj.toWalk h).length = 1 := by rw [Walk.length_cons, Walk.length_nil]
+    have : G.dist u v ≤ 1 := by
+      rw [← this]
+      apply dist_le
+    rw [← LE.le.ge_iff_eq this, Nat.succ_le_iff]
+    apply Reachable.pos_dist_of_ne
+    · apply Adj.reachable h
+    · apply Adj.ne h
+
+lemma dist_bot : ∀ u v, (⊥ : SimpleGraph V).dist u v = 0 :=
+  fun u v => by by_cases h : u = v <;> simp [h]
+
 end SimpleGraph

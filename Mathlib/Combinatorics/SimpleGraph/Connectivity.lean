@@ -420,6 +420,16 @@ theorem eq_of_length_eq_zero {u v : V} : ∀ {p : G.Walk u v}, p.length = 0 → 
   | nil, _ => rfl
 #align simple_graph.walk.eq_of_length_eq_zero SimpleGraph.Walk.eq_of_length_eq_zero
 
+theorem eq_of_length_eq_one {u v : V} : ∀ {p : G.Walk u v}, p.length = 1 → G.Adj u v
+  | nil => by simp
+  | cons h nil => by intro; exact h
+  | cons h _ => by
+    rw [length_cons, add_left_eq_self]
+    intro h'
+    apply eq_of_length_eq_zero at h'
+    rw [h'] at h
+    exact h
+
 @[simp]
 theorem exists_length_eq_zero_iff {u v : V} : (∃ p : G.Walk u v, p.length = 0) ↔ u = v := by
   constructor
@@ -2011,6 +2021,16 @@ variable (G)
 theorem reachable_is_equivalence : Equivalence G.Reachable :=
   Equivalence.mk (@Reachable.refl _ G) (@Reachable.symm _ G) (@Reachable.trans _ G)
 #align simple_graph.reachable_is_equivalence SimpleGraph.reachable_is_equivalence
+
+/- Distinct vertices are not reachable in the empty graph. -/
+@[simp]
+lemma reachable_bot : (⊥ : SimpleGraph V).Reachable u v ↔ u = v := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · apply h.elim
+    intro p
+    match p with
+    | .nil => rfl
+  · rw [h]
 
 /-- The equivalence relation on vertices given by `SimpleGraph.Reachable`. -/
 def reachableSetoid : Setoid V := Setoid.mk _ G.reachable_is_equivalence

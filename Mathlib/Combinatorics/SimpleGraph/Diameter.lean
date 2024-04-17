@@ -18,21 +18,21 @@ variable {α : Type*} {G : SimpleGraph α}
 
 /- The diameter of a simple graph is a greatest distance between any two vertices. -/
 noncomputable def diam (G : SimpleGraph α) : ℕ :=
-  sSup {d | ∃ u v : α, d = G.dist u v}
+  sSup {d | ∃ u v, d = G.dist u v}
 
 lemma diam_ne_zero_nonempty (h : G.diam ≠ 0) : Nonempty α := by
   contrapose h
   unfold diam
   aesop
 
-lemma not_bddAbove_diam_eq_zero (h : ¬BddAbove {d | ∃ u v : α, d = G.dist u v}) :
+lemma not_bddAbove_diam_eq_zero (h : ¬BddAbove {d | ∃ u v, d = G.dist u v}) :
     G.diam = 0 := by
   apply Set.infinite_of_not_bddAbove at h
   rw [diam, Set.Infinite.Nat.sSup_eq_zero h]
 
 @[simp]
-lemma diam_exists [Nonempty α] : ∃ u v : α, G.dist u v = G.diam := by
-  let s := {d | ∃ u v : α, d = G.dist u v}
+lemma diam_exists [Nonempty α] : ∃ u v, G.dist u v = G.diam := by
+  let s := {d | ∃ u v, d = G.dist u v}
   let u := Classical.arbitrary α
   by_cases h : BddAbove s
   · have : s.Nonempty := ⟨0, u, u, dist_self.symm⟩
@@ -41,18 +41,35 @@ lemma diam_exists [Nonempty α] : ∃ u v : α, G.dist u v = G.diam := by
   · rw [not_bddAbove_diam_eq_zero h]
     use u, u, dist_self
 
-lemma bddAbove_dist_le_diam (h : BddAbove {d | ∃ u v : α, d = G.dist u v}) :
+lemma bddAbove_dist_le_diam (h : BddAbove {d | ∃ u v, d = G.dist u v}) :
     ∀ u v, G.dist u v ≤ G.diam := by
   rw [diam, Nat.sSup_def h]
   aesop
 
-lemma diam_eq_zero {n : ℕ} :
-    G.diam = 0 ↔ ¬BddAbove {d | ∃ u v : α, d = G.dist u v} ∨ G = ⊥ := by
+lemma diam_bot : (⊥ : SimpleGraph α).diam = 0 := by
+  unfold diam
+  by_cases h : Nonempty α
+  · have : {d | ∃ u v, d = (⊥ : SimpleGraph α).dist u v} = {0} := by
+      ext d
+      rw [Set.mem_setOf_eq, Set.mem_singleton_iff]
+      refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+      · obtain ⟨_, _, h⟩ := h
+        rw [h, dist_bot]
+      · let u := Classical.arbitrary α
+        use u, u
+        rw [dist_bot, h]
+    rw [this, csSup_singleton]
+  · convert_to sSup ∅ = 0
+    · aesop
+    · rw [csSup_empty, bot_eq_zero']
+
+lemma diam_eq_zero :
+    G.diam = 0 ↔ ¬BddAbove {d | ∃ u v, d = G.dist u v} ∨ G = ⊥ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · by_cases h' : G = ⊥
     · apply Or.inr h'
     · apply Or.inl
-      have : ∃ u v : α, G.Adj u v := by
+      have : ∃ u v, G.Adj u v := by
         by_contra
         have : G = emptyGraph α := by
           unfold emptyGraph
@@ -66,11 +83,12 @@ lemma diam_eq_zero {n : ℕ} :
       have := con u v
       rw [huv, h] at this
       omega
-  ·
-    sorry
+  · cases' h with h h
+    · apply not_bddAbove_diam_eq_zero h
+    · rw [h, diam_bot]
 
 /- this lemma is not true in general, i plan to add conditions -/
-lemma diam_lt {n : ℕ} : G.diam ≤ n ↔ ∀ u v: α, G.dist u v ≤ n := by
+lemma diam_lt {n : ℕ} : G.diam ≤ n ↔ ∀ u v, G.dist u v ≤ n := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · intro u v
 
