@@ -23,7 +23,7 @@ open Lean Elab Command Meta
 namespace Mathlib.Linter
 
 /-- The `have` vs `let` linter emits a warning on `have`s introducing a hypothesis whose
-Type is not `Prop`. -/
+Type is not `Prop` *if* the proof is incomplete. -/
 register_option linter.haveLet : Bool := {
   defValue := true
   descr := "enable the `have` vs `let` linter"
@@ -109,8 +109,7 @@ def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.haveLet o
 def haveLetLinter : Linter where run := withSetOptionIn fun _stx => do
   unless getLinterHash (← getOptions) && (← getInfoState).enabled do
     return
-  if (← MonadState.get).messages.hasErrors then
-    return
+  unless (← MonadState.get).messages.isEmpty do
   let trees ← getInfoTrees
   for t in trees.toArray do
     for (s, fmt) in ← nonPropHaves t do
