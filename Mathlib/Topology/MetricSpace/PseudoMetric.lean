@@ -1409,7 +1409,7 @@ theorem Real.Icc_eq_closedBall (x y : ℝ) : Icc x y = closedBall ((x + y) / 2) 
 
 lemma Real.singleton_eq_inter_Ioo (b : ℝ): {b} = ⋂ (r > 0), Icc (b - r) (b + r) := by
   simp? [Real.Icc_eq_closedBall] says
-    simp only [gt_iff_lt, Real.Icc_eq_closedBall,
+    simp only [gt_iff_lt, Icc_eq_closedBall,
       sub_add_add_cancel, half_add_self, add_sub_sub_cancel]
   rw [biInter_basis_nhds Metric.nhds_basis_closedBall]
 
