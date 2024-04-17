@@ -36,7 +36,6 @@ variable {J : GrothendieckTopology C}
 variable [HasSheafify J D] [HasFiniteLimits D]
 
 instance sheafIsAbelian : Abelian (Sheaf J D) :=
-  have : HasFiniteLimits (Sheaf J D) := ⟨fun _ ↦ inferInstance⟩
   let adj := sheafificationAdjunction J D
   abelianOfAdjunction _ _ (asIso adj.counit) adj
 set_option linter.uppercaseLean3 false in
