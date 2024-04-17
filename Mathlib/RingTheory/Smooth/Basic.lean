@@ -385,7 +385,7 @@ variable (R A B)
 variable [Algebra A B] [IsScalarTower R A B]
 
 /-- Smooth is stable under composition. -/
-theorem comp [Smooth R A] [Smooth A B]: Smooth R B where
+theorem comp [Smooth R A] [Smooth A B] : Smooth R B where
   formallySmooth := FormallySmooth.comp R A B
   finitePresentation := FinitePresentation.trans (A := A) Smooth.finitePresentation
     Smooth.finitePresentation
