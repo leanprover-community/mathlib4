@@ -142,7 +142,7 @@ theorem isTopologicalBasis_of_subbasis_of_finiteInter {s : Set (Set α)} (hsg : 
       simp only [mem_setOf_eq, finite_singleton, singleton_subset_iff, true_and, sInter_singleton,
         and_true, hts]
   rw [← e1 hsi]
-  apply isTopologicalBasis_of_subbasis hsg
+  exact isTopologicalBasis_of_subbasis hsg
 
 theorem isTopologicalBasis_of_subbasis_of_inter {r : Set (Set α)} (hsg : t = generateFrom r)
     (hsi : ∀ ⦃s⦄, s ∈ r → ∀ ⦃t⦄, t ∈ r → s ∩ t ∈ r) : IsTopologicalBasis (insert univ r) := by
