@@ -1113,16 +1113,10 @@ lemma _root_.Basis.baseChange_end [Fintype ι] [DecidableEq ι]
 end Basis
 
 instance (R A M : Type*)
-    [CommSemiring R] [AddCommMonoid M] [Module R M] [Module.Free R M] [Module.Finite R M]
+    [CommSemiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
     [CommSemiring A] [Algebra R A] :
     Module.Free A (A ⊗[R] M) :=
   Module.Free.of_basis <| Algebra.TensorProduct.basis A (Module.Free.chooseBasis R M)
-
-instance (R A M : Type*)
-    [CommRing R] [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M]
-    [CommSemiring A] [Algebra R A] :
-    Module.Finite A (A ⊗[R] M) :=
-  Module.Finite.of_basis <| Algebra.TensorProduct.basis A (Module.Free.chooseBasis R M)
 
 end TensorProduct
 
@@ -1156,7 +1150,7 @@ open scoped TensorProduct
 /-- The natural linear map $A ⊗ \text{Hom}_R(M, N) → \text{Hom}_A (M_A, N_A)$,
 where $M_A$ and $N_A$ are the respective modules over $A$ obtained by extension of scalars.
 
-See `TensorProductEnd` for this map specialized to endomorphisms,
+See `LinearMap.tensorProductEnd` for this map specialized to endomorphisms,
 and bundled as `A`-algebra homomorphism. -/
 @[simps!]
 noncomputable

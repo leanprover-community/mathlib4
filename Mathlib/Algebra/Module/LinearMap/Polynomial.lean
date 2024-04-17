@@ -323,9 +323,11 @@ noncomputable
 def polyCharpoly : Polynomial (MvPolynomial ι R) :=
   φ.polyCharpolyAux b (Module.Free.chooseBasis R M)
 
-lemma polyCharpoly_eq_polyCharpolyAux [DecidableEq ιM] (bₘ : Basis ιM R M) :
-    polyCharpoly φ b = φ.polyCharpolyAux b bₘ := by
-  rw [polyCharpoly, φ.polyCharpolyAux_basisIndep b (Module.Free.chooseBasis R M) bₘ]
+lemma polyCharpoly_eq_of_basis [DecidableEq ιM] (bₘ : Basis ιM R M) :
+    polyCharpoly φ b =
+    (charpoly.univ R ιM).map (MvPolynomial.bind₁ (φ.toMvPolynomial b bₘ.end)) := by
+  rw [polyCharpoly, φ.polyCharpolyAux_basisIndep b (Module.Free.chooseBasis R M) bₘ,
+    polyCharpolyAux]
 
 lemma polyCharpoly_monic : (polyCharpoly φ b).Monic :=
   (charpoly.univ_monic R _).map _
