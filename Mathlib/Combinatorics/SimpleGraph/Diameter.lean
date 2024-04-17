@@ -27,7 +27,8 @@ in the graph.
 namespace SimpleGraph
 variable {α : Type*} {G G' : SimpleGraph α}
 
-/- The diameter of a simple graph is a greatest distance between any two vertices. -/
+/-- The diameter is the greatest distance between any two vertices, with the value `0` in case the
+distances are not bounded above. -/
 noncomputable def diam (G : SimpleGraph α) : ℕ :=
   sSup {d | ∃ u v, d = G.dist u v}
 
@@ -116,6 +117,8 @@ lemma diam_le_subgraph_diam [Nonempty α] (hg: G.Connected) (hz : G.diam ≠ 0) 
   rw [← huv']
   exact LE.le.trans this (G.diam_le hz u' v')
 
+/-- The extended diameter is the greatest distance between any two vertices, with the value `⊤` in
+case the distances are not bounded above. -/
 noncomputable def ediam (G : SimpleGraph α) : ℕ∞ :=
   sSup {d | ∃ u v : α, d = G.dist u v}
 
@@ -129,7 +132,7 @@ private lemma top_not_mem_of_sup_ne_top {s : Set ℕ∞} (h : sSup s ≠ ⊤) : 
   intros
   use ⊤
 
-/- The extended diameter is equal to the distance of some vertices iff it is not infinite. -/
+/-- The extended diameter is equal to the distance of some vertices iff it is not infinite. -/
 lemma ediam_exists [Nonempty α] : G.ediam ≠ ⊤ ↔ ∃ (u v : α),  G.dist u v = G.ediam := by
   refine ⟨fun h => ?_, ?_⟩
   unfold ediam at h ⊢
