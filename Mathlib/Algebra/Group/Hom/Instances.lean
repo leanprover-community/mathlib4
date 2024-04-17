@@ -68,6 +68,9 @@ instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M 
       simp,
     zpow_succ' := fun n f => by
       ext x
+      -- Adaptation note: nightly-2024-03-24
+      -- We used to need a `simp [mul_comm]` after `simp [zpow_add_one]`.
+      -- Writing `simp [zpow_add_one, mul_comm]` still shows the bug mentioned below.
       -- Adaptation note: nightly-2024-03-13
       -- https://github.com/leanprover-community/mathlib4/issues/11357
       -- If add `mul_comm` to the simp call we reveal a bug: "unexpected bound variable #0"
