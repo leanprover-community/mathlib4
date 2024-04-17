@@ -622,9 +622,11 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
      fun b h => eq_of_mem_replicate (mem_reverse.1 h)⟩
 #align list.reverse_replicate List.reverse_replicate
 
-theorem reverse_disjoint_iff_disjoint (l₁ l₂: List α) : Disjoint l₁.reverse l₂.reverse ↔ Disjoint l₁ l₂ := by
+theorem reverse_disjoint_iff_disjoint (l₁ l₂: List α) :
+    Disjoint l₁.reverse l₂.reverse ↔ Disjoint l₁ l₂ := by
   rw [disjoint_left]
   aesop
+
 /-! ### empty -/
 
 -- Porting note: this does not work as desired
