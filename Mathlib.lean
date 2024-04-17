@@ -1664,7 +1664,7 @@ import Mathlib.Data.Analysis.Topology
 import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.Array.Lemmas
-import Mathlib.Data.Array.extractLemmas
+import Mathlib.Data.Array.ExtractLemmas
 import Mathlib.Data.BinaryHeap
 import Mathlib.Data.BitVec.Defs
 import Mathlib.Data.BitVec.Lemmas
