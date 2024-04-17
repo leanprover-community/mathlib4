@@ -68,8 +68,7 @@ variable {R : Type*} [NormedCommRing R] [CompleteSpace R] {f : ℕ → R}
 variable (hf₁ : f 1 = 1) (hmul : ∀ {m n}, Nat.Coprime m n → f (m * n) = f m * f n)
 
 -- local instance to speed up typeclass search
-@[nolint defLemma docBlame] -- workaround for linter bug
-local instance : T0Space R := MetricSpace.instT0Space
+@[local instance] private lemma instT0Space : T0Space R := MetricSpace.instT0Space
 
 namespace EulerProduct
 
