@@ -118,8 +118,9 @@ end Defs
 
 section Continuous
 
-/- In this section we assume 𝕜, V, W have topologies, and L, e are continuous (but f needn't be).
-   This is used to ensure that `e [-L v w]` is (ae strongly) measurable. We could get away with
+/-! In this section we assume 𝕜, `V`, `W` have topologies,
+  and `L`, `e` are continuous (but `f` needn't be).
+   This is used to ensure that `e [-L v w]` is (a.e. strongly) measurable. We could get away with
    imposing only a measurable-space structure on 𝕜 (it doesn't have to be the Borel sigma-algebra of
    a topology); but it seems hard to imagine cases where this extra generality would be useful, and
    allowing it would complicate matters in the most important use cases.

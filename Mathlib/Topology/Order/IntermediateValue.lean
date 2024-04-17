@@ -5,7 +5,8 @@ Authors: Yury G. Kudryashov, Alistair Tucker, Wen Yang
 -/
 import Mathlib.Data.Set.Intervals.Image
 import Mathlib.Order.CompleteLatticeIntervals
-import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.DenselyOrdered
+import Mathlib.Topology.Order.Monotone
 
 #align_import topology.algebra.order.intermediate_value from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
@@ -203,7 +204,7 @@ theorem mem_range_of_exists_le_of_exists_ge [PreconnectedSpace X] {c : α} {f : 
 
 In this section we prove the following results:
 
-* `IsPreconnected.ordConnected`: any preconnected set `s` in a linear order is `ord_connected`,
+* `IsPreconnected.ordConnected`: any preconnected set `s` in a linear order is `OrdConnected`,
   i.e. `a ∈ s` and `b ∈ s` imply `Icc a b ⊆ s`;
 
 * `IsPreconnected.mem_intervals`: any preconnected set `s` in a conditionally complete linear order
@@ -335,7 +336,7 @@ theorem setOf_isPreconnected_subset_of_ordered :
 /-!
 ### Intervals are connected
 
-In this section we prove that a closed interval (hence, any `ord_connected` set) in a dense
+In this section we prove that a closed interval (hence, any `OrdConnected` set) in a dense
 conditionally complete linear order is preconnected.
 -/
 
