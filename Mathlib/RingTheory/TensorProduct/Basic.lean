@@ -1112,6 +1112,18 @@ lemma _root_.Basis.baseChange_end [Fintype ι] [DecidableEq ι]
 
 end Basis
 
+instance (R A M : Type*)
+    [CommSemiring R] [AddCommMonoid M] [Module R M] [Module.Free R M] [Module.Finite R M]
+    [CommSemiring A] [Algebra R A] :
+    Module.Free A (A ⊗[R] M) :=
+  Module.Free.of_basis <| Algebra.TensorProduct.basis A (Module.Free.chooseBasis R M)
+
+instance (R A M : Type*)
+    [CommRing R] [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M]
+    [CommSemiring A] [Algebra R A] :
+    Module.Finite A (A ⊗[R] M) :=
+  Module.Finite.of_basis <| Algebra.TensorProduct.basis A (Module.Free.chooseBasis R M)
+
 end TensorProduct
 
 end Algebra

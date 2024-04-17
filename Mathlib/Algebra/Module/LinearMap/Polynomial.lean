@@ -338,18 +338,6 @@ lemma polyCharpoly_coeff_isHomogeneous (i j : ℕ) (hij : i + j = finrank R M)
   · exact fun r ↦ MvPolynomial.isHomogeneous_C _ _
   · exact LinearMap.toMvPolynomial_isHomogeneous _ _ _
 
--- move to Mathlib.RingTheory.TensorProduct.Basic
-open TensorProduct in
-instance TensorProduct.Free (A : Type*) [CommRing A] [Algebra R A] :
-    Module.Free A (A ⊗[R] M) :=
-  Module.Free.of_basis <| Algebra.TensorProduct.basis A (Module.Free.chooseBasis R M)
-
--- move to Mathlib.RingTheory.TensorProduct.Basic
-open TensorProduct in
-instance TensorProduct.Finite (A : Type*) [CommRing A] [Algebra R A] :
-    Module.Finite A (TensorProduct R A M) :=
-  Module.Finite.of_basis <| Algebra.TensorProduct.basis A (Module.Free.chooseBasis R M)
-
 open Algebra.TensorProduct MvPolynomial in
 lemma polyCharpoly_baseChange (A : Type*) [CommRing A] [Algebra R A] :
     polyCharpoly (tensorProduct _ _ _ _ ∘ₗ φ.baseChange A) (basis A b) =
