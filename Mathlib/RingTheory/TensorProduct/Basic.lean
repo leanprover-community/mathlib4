@@ -516,11 +516,9 @@ instance instCommSemiring : CommSemiring (A ⊗[R] B) where
       · intro a₂ b₂
         simp [mul_comm]
       · intro a₂ b₂ ha hb
-        -- porting note (#10745): was `simp` not `rw`
-        rw [mul_add, add_mul, ha, hb]
+        simp [mul_add, add_mul, ha, hb]
     · intro x₁ x₂ h₁ h₂
-      -- porting note (#10745): was `simp` not `rw`
-      rw [mul_add, add_mul, h₁, h₂]
+      simp [mul_add, add_mul, h₁, h₂]
 
 end CommSemiring
 
@@ -1154,11 +1152,16 @@ theorem endTensorEndAlgHom_apply (f : End A M) (g : End R N) :
 
 end Module
 
+theorem Subalgebra.finite_sup {K L : Type*} [CommRing K] [CommRing L] [Algebra K L]
+    (E1 E2 : Subalgebra K L) [Module.Finite K E1] [Module.Finite K E2] :
+    Module.Finite K ↥(E1 ⊔ E2) := by
+  rw [← E1.range_val, ← E2.range_val, ← Algebra.TensorProduct.productMap_range]
+  exact Module.Finite.range (Algebra.TensorProduct.productMap E1.val E2.val).toLinearMap
+
+@[deprecated Subalgebra.finite_sup] -- 2024-04-11
 theorem Subalgebra.finiteDimensional_sup {K L : Type*} [Field K] [CommRing L] [Algebra K L]
     (E1 E2 : Subalgebra K L) [FiniteDimensional K E1] [FiniteDimensional K E2] :
-    FiniteDimensional K (E1 ⊔ E2 : Subalgebra K L) := by
-  rw [← E1.range_val, ← E2.range_val, ← Algebra.TensorProduct.productMap_range]
-  exact (Algebra.TensorProduct.productMap E1.val E2.val).toLinearMap.finiteDimensional_range
+    FiniteDimensional K (E1 ⊔ E2 : Subalgebra K L) := Subalgebra.finite_sup E1 E2
 #align subalgebra.finite_dimensional_sup Subalgebra.finiteDimensional_sup
 
 namespace TensorProduct.Algebra
@@ -1209,7 +1212,7 @@ protected def module : Module (A ⊗[R] B) M where
   smul_add x m₁ m₂ := by simp only [(· • ·), map_add]
   add_smul x y m := by simp only [(· • ·), map_add, LinearMap.add_apply]
   one_smul m := by
-    -- Porting note: was one `simp only` not two in lean 3
+    -- Porting note: was one `simp only`, not two
     simp only [(· • ·), Algebra.TensorProduct.one_def]
     simp only [moduleAux_apply, one_smul]
   mul_smul x y m := by
@@ -1222,28 +1225,22 @@ protected def module : Module (A ⊗[R] B) M where
     · intro a b
       simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
     · intro a₁ b₁ a₂ b₂
-      -- porting note; was one `simp only` not two and a `rw` in mathlib3
+      -- Porting note: was one `simp only`, not two
       simp only [(· • ·), Algebra.TensorProduct.tmul_mul_tmul]
-      simp only [moduleAux_apply, mul_smul]
-      rw [smul_comm a₁ b₂]
+      simp only [moduleAux_apply, mul_smul, smul_comm a₁ b₂]
     · intro z w hz hw a b
-      -- Porting note: was one `simp only` but random stuff doesn't work
+      -- Porting note: was one `simp only`, but random stuff doesn't work
       simp only [(· • ·)] at hz hw ⊢
-      simp only [moduleAux_apply]
-      rw [mul_add]  -- simp only doesn't work
-      simp only [LinearMap.map_add, LinearMap.add_apply, moduleAux_apply, hz, hw, smul_add]
+      simp only [moduleAux_apply, mul_add, LinearMap.map_add,
+        LinearMap.add_apply, moduleAux_apply, hz, hw, smul_add]
     · intro z w _ _
       simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b z w hz hw
-      simp only [(· • ·)] at hz hw
-      simp only [(· • ·), LinearMap.map_add, add_mul, LinearMap.add_apply, hz, hw]
+      simp only [(· • ·)] at hz hw ⊢
+      simp only [LinearMap.map_add, add_mul, LinearMap.add_apply, hz, hw]
     · intro u v _ _ z w hz hw
-      simp only [(· • ·)] at hz hw
-      -- Porting note: no idea why this is such a struggle
-      simp only [(· • ·)]
-      rw [add_mul, LinearMap.map_add, LinearMap.add_apply, hz, hw]
-      simp only [LinearMap.map_add, LinearMap.add_apply]
-      rw [add_add_add_comm]
+      simp only [(· • ·)] at hz hw ⊢
+      simp only [add_mul, LinearMap.map_add, LinearMap.add_apply, hz, hw, add_add_add_comm]
 #align tensor_product.algebra.module TensorProduct.Algebra.module
 
 attribute [local instance] TensorProduct.Algebra.module

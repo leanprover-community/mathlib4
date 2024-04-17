@@ -176,7 +176,7 @@ theorem gcd_dvd : (Int.gcd x y : ℤ) ∣ z := by
     ∃ (k : ℕ) (x0 y0 : _), 0 < k ∧ Int.gcd x0 y0 = 1 ∧ x = x0 * k ∧ y = y0 * k :=
     Int.exists_gcd_one' (Nat.pos_of_ne_zero h0)
   rw [Int.gcd_mul_right, h2, Int.natAbs_ofNat, one_mul]
-  rw [← Int.pow_dvd_pow_iff zero_lt_two, sq z, ← h.eq]
+  rw [← Int.pow_dvd_pow_iff two_ne_zero, sq z, ← h.eq]
   rw [(by ring : x0 * k * (x0 * k) + y0 * k * (y0 * k) = (k : ℤ) ^ 2 * (x0 * x0 + y0 * y0))]
   exact dvd_mul_right _ _
 #align pythagorean_triple.gcd_dvd PythagoreanTriple.gcd_dvd
@@ -420,7 +420,7 @@ private theorem coprime_sq_sub_sq_sum_of_odd_odd {m n : ℤ} (h : Int.gcd m n = 
   have h2 : (m0 * 2 + 1) ^ 2 - (n0 * 2 + 1) ^ 2 = 2 * (2 * (m0 ^ 2 - n0 ^ 2 + m0 - n0)) := by ring
   have h3 : ((m0 * 2 + 1) ^ 2 - (n0 * 2 + 1) ^ 2) / 2 % 2 = 0 := by
     rw [h2, Int.mul_ediv_cancel_left, Int.mul_emod_right]
-    exact by decide
+    decide
   refine' ⟨⟨_, h1⟩, ⟨_, h2⟩, h3, _⟩
   have h20 : (2 : ℤ) ≠ 0 := by decide
   rw [h1, h2, Int.mul_ediv_cancel_left _ h20, Int.mul_ediv_cancel_left _ h20]
