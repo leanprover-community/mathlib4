@@ -192,6 +192,7 @@ theorem exists_disjoint_subfamily_covering_enlargment_closedBall [MetricSpace α
     exact ⟨c, cu, by simp only [closedBall_eq_empty.2 h'a, empty_subset]⟩
 #align vitali.exists_disjoint_subfamily_covering_enlargment_closed_ball Vitali.exists_disjoint_subfamily_covering_enlargment_closedBall
 
+set_option linter.haveLet false in
 /-- The measurable Vitali covering theorem. Assume one is given a family `t` of closed sets with
 nonempty interior, such that each `a ∈ t` is included in a ball `B (x, r)` and covers a definite
 proportion of the ball `B (x, 3 r)` for a given measure `μ` (think of the situation where `μ` is

@@ -519,6 +519,7 @@ theorem quot_mul_neg (x y : PGame) : ⟦x * -y⟧ = (-⟦x * y⟧ : Game) :=
   Quot.sound (mulNegRelabelling x y).equiv
 #align pgame.quot_mul_neg SetTheory.PGame.quot_mul_neg
 
+set_option linter.haveLet false in
 @[simp]
 theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * y⟧ + ⟦x * z⟧ :=
   match x, y, z with
@@ -689,6 +690,7 @@ theorem one_mul_equiv (x : PGame) : 1 * x ≈ x :=
   Quotient.exact <| quot_one_mul x
 #align pgame.one_mul_equiv SetTheory.PGame.one_mul_equiv
 
+set_option linter.haveLet false in
 theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * z)⟧ :=
   match x, y, z with
   | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR => by

@@ -35,10 +35,12 @@ section
 
 variable (X : Scheme)
 
+set_option linter.haveLet false in
 /-- `f ⁻¹ᵁ U` is notation for `(Opens.map f.1.base).obj U`,
   the preimage of an open set `U` under `f`. -/
 notation3:90 f:91 "⁻¹ᵁ " U:90 => (Opens.map (f : LocallyRingedSpace.Hom _ _).val.base).obj U
 
+set_option linter.haveLet false in
 /-- `X ∣_ᵤ U` is notation for `X.restrict U.openEmbedding`, the restriction of `X` to an open set
   `U` of `X`. -/
 notation3:60 X:60 " ∣_ᵤ " U:61 => Scheme.restrict X (U : Opens X).openEmbedding
