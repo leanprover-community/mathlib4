@@ -67,14 +67,9 @@ where `R` is a complete normed commutative ring. The main result is `EulerProduc
 variable {R : Type*} [NormedCommRing R] [CompleteSpace R] {f : ℕ → R}
 variable (hf₁ : f 1 = 1) (hmul : ∀ {m n}, Nat.Coprime m n → f (m * n) = f m * f n)
 
--- local instances to speed up typeclass search
-@[nolint defLemma docBlame] local instance : TopologicalSpace R := UniformSpace.toTopologicalSpace
-@[nolint defLemma docBlame] local instance : T0Space R := MetricSpace.instT0Space
-@[nolint defLemma docBlame] local instance : RegularSpace R := TopologicalAddGroup.regularSpace R
-@[nolint defLemma docBlame] local instance : TopologicalSpace.MetrizableSpace R :=
-  MetricSpace.toMetrizableSpace
-@[nolint defLemma docBlame] local instance : T2Space R :=
-  TopologicalSpace.t2Space_of_metrizableSpace
+-- local instance to speed up typeclass search
+@[nolint defLemma docBlame] -- workaround for linter bug
+local instance : T0Space R := MetricSpace.instT0Space
 
 namespace EulerProduct
 
@@ -267,15 +262,6 @@ Then we can use the formula for geometric series to simplify the statement. This
 -/
 
 variable {F : Type*} [NormedField F] [CompleteSpace F]
-
--- local instances to speed up typeclass search
-@[nolint defLemma docBlame] local instance : TopologicalSpace.MetrizableSpace F :=
-  MetricSpace.toMetrizableSpace
-@[nolint defLemma docBlame] local instance : T2Space F :=
-  TopologicalSpace.t2Space_of_metrizableSpace
-@[nolint defLemma docBlame] local instance : One F := Semiring.toOne
-@[nolint defLemma docBlame]  local instance : MonoidHomClass (ℕ →*₀ F) ℕ F :=
-  MonoidWithZeroHomClass.toMonoidHomClass
 
 namespace EulerProduct
 
