@@ -194,7 +194,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
       _ = ‖f (z + v) - f z - f' (z + v - z)‖ := by
         simp only [v, ContinuousLinearMap.NonlinearRightInverse.right_inv, add_sub_cancel_left,
           sub_add_cancel]
-      _ ≤ c * ‖z + v - z‖ := (hf _ (hε hgz) _ (hε hz))
+      _ ≤ c * ‖z + v - z‖ := hf _ (hε hgz) _ (hε hz)
       _ ≤ c * (f'symm.nnnorm * dist (f z) y) := by
         gcongr
         simpa [dist_eq_norm'] using f'symm.bound (y - f z)
@@ -233,7 +233,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
         (1 - c * f'symm.nnnorm) * dist (f b) y :=
       calc
         dist (g (u n)) b ≤ dist (g (u n)) (u n) + dist (u n) b := dist_triangle _ _ _
-        _ ≤ f'symm.nnnorm * dist (f (u n)) y + dist (u n) b := (add_le_add (A _) le_rfl)
+        _ ≤ f'symm.nnnorm * dist (f (u n)) y + dist (u n) b := add_le_add (A _) le_rfl
         _ ≤ f'symm.nnnorm * (((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y) +
               f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) / (1 - c * f'symm.nnnorm) *
                 dist (f b) y := by gcongr; exact IH.1; exact IH.2
@@ -253,7 +253,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
     refine cauchySeq_of_le_geometric _ (↑f'symm.nnnorm * dist (f b) y) Icf' fun n ↦ ?_
     calc
       dist (u n) (u (n + 1)) = dist (g (u n)) (u n) := by rw [usucc, dist_comm]
-      _ ≤ f'symm.nnnorm * dist (f (u n)) y := (A _)
+      _ ≤ f'symm.nnnorm * dist (f (u n)) y := A _
       _ ≤ f'symm.nnnorm * (((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y) := by
         gcongr
         exact (D n).1
@@ -386,7 +386,7 @@ theorem to_inv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c) (hc : Sub
       congr 2
       simp only [ContinuousLinearEquiv.apply_symm_apply, ContinuousLinearEquiv.map_sub]
       abel
-    _ ≤ N * (c * ‖y' - x'‖) := (mul_le_mul_of_nonneg_left (hf _ y's _ x's) (NNReal.coe_nonneg _))
+    _ ≤ N * (c * ‖y' - x'‖) := mul_le_mul_of_nonneg_left (hf _ y's _ x's) (NNReal.coe_nonneg _)
     _ ≤ N * (c * (((N⁻¹ - c)⁻¹ : ℝ≥0) * ‖A y' - A x'‖)) := by
       gcongr
       rw [← dist_eq_norm, ← dist_eq_norm]

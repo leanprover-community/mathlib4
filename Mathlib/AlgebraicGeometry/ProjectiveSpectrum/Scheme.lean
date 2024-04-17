@@ -407,7 +407,7 @@ variable {𝒜} {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m)
 open Lean Meta Elab Tactic
 
 macro "mem_tac_aux" : tactic =>
-  `(tactic| first | exact pow_mem_graded _ (Submodule.coe_mem _) | exact nat_cast_mem_graded _ _ |
+  `(tactic| first | exact pow_mem_graded _ (Submodule.coe_mem _) | exact natCast_mem_graded _ _ |
     exact pow_mem_graded _ f_deg)
 
 macro "mem_tac" : tactic =>
@@ -737,8 +737,8 @@ lemma image_basicOpen_eq_basicOpen (a : A) (i : ℕ) :
 end toSpec
 
 variable {𝒜} in
-/--The continuous function `Spec A⁰_f → Proj|D(f)` by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}` where
-`m` is the degree of `f`.-/
+/-- The continuous function `Spec A⁰_f → Proj|D(f)` sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}` where
+`m` is the degree of `f` -/
 def fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     (Spec.T (A⁰_ f)) ⟶ (Proj.T| (pbo f)) where
   toFun := FromSpec.toFun f_deg hm

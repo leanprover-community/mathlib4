@@ -231,7 +231,7 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
   let f : ∀ (i j : ℕ), i ≤ j → (G i).val ↪[L] (G j).val := by
     refine DirectedSystem.natLERec (G' := fun i => (G i).val) (L := L) ?_
     dsimp only [G]
-    exact (fun n => (hP _ n).some)
+    exact fun n => (hP _ n).some
   have : DirectedSystem (fun n ↦ (G n).val) fun i j h ↦ ↑(f i j h) := by
     dsimp [f, G]; infer_instance
   refine ⟨Bundled.of (@DirectLimit L _ _ (fun n ↦ (G n).val) _ f _ _), ?_, ?_⟩

@@ -36,8 +36,6 @@ open Complex MeasureTheory Set intervalIntegral
 
 local notation "𝕌" => UnitAddCircle
 
-attribute [local instance] Real.fact_zero_lt_one
-
 section BernoulliFunProps
 
 /-! Simple properties of the Bernoulli polynomial, as a function `ℝ → ℝ`. -/
@@ -70,7 +68,7 @@ theorem hasDerivAt_bernoulliFun (k : ℕ) (x : ℝ) :
     HasDerivAt (bernoulliFun k) (k * bernoulliFun (k - 1) x) x := by
   convert ((Polynomial.bernoulli k).map <| algebraMap ℚ ℝ).hasDerivAt x using 1
   simp only [bernoulliFun, Polynomial.derivative_map, Polynomial.derivative_bernoulli k,
-    Polynomial.map_mul, Polynomial.map_nat_cast, Polynomial.eval_mul, Polynomial.eval_nat_cast]
+    Polynomial.map_mul, Polynomial.map_natCast, Polynomial.eval_mul, Polynomial.eval_natCast]
 #align has_deriv_at_bernoulli_fun hasDerivAt_bernoulliFun
 
 theorem antideriv_bernoulliFun (k : ℕ) (x : ℝ) :
@@ -117,7 +115,7 @@ theorem bernoulliFourierCoeff_recurrence (k : ℕ) {n : ℤ} (hn : n ≠ 0) :
     add_sub_cancel_left]
   congr 2
   · split_ifs <;> simp only [ofReal_one, ofReal_zero, one_mul]
-  · simp_rw [ofReal_mul, ofReal_nat_cast, fourierCoeffOn.const_mul]
+  · simp_rw [ofReal_mul, ofReal_natCast, fourierCoeffOn.const_mul]
 #align bernoulli_fourier_coeff_recurrence bernoulliFourierCoeff_recurrence
 
 /-- The Fourier coefficients of `B₀(x) = 1`. -/
@@ -226,7 +224,7 @@ theorem hasSum_one_div_pow_mul_fourier_mul_bernoulliFun {k : ℕ} (hk : 2 ≤ k)
     exact Or.inl two_pi_I_ne_zero
   · exact Nat.cast_ne_zero.mpr (Nat.factorial_ne_zero _)
   · rw [ContinuousMap.coe_mk, Function.comp_apply, ofReal_inj, periodizedBernoulli,
-      AddCircle.liftIco_coe_apply (by rwa [zero_add])]
+      AddCircle.liftIco_coe_apply (show y ∈ Ico 0 (0 + 1) by rwa [zero_add])]
 #align has_sum_one_div_pow_mul_fourier_mul_bernoulli_fun hasSum_one_div_pow_mul_fourier_mul_bernoulliFun
 
 end BernoulliPeriodized
@@ -276,14 +274,14 @@ theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
     rw [ofReal_mul]; rw [← mul_div]; congr
     · rw [ofReal_div, ofReal_one, ofReal_pow]; rfl
     · rw [ofReal_cos, ofReal_mul, fourier_coe_apply, fourier_coe_apply, cos, ofReal_one, div_one,
-        div_one, ofReal_mul, ofReal_mul, ofReal_two, Int.cast_neg, Int.cast_ofNat,
-        ofReal_nat_cast]
+        div_one, ofReal_mul, ofReal_mul, ofReal_two, Int.cast_neg, Int.cast_natCast,
+        ofReal_natCast]
       congr 3
       · ring
       · ring
   · convert (ofReal_re _).symm
     rw [ofReal_mul, ofReal_div, ofReal_div, ofReal_mul, ofReal_pow, ofReal_pow, ofReal_neg,
-      ofReal_nat_cast, ofReal_mul, ofReal_two, ofReal_one]
+      ofReal_natCast, ofReal_mul, ofReal_two, ofReal_one]
     rw [bernoulliFun]
     ring
 #align has_sum_one_div_nat_pow_mul_cos hasSum_one_div_nat_pow_mul_cos
@@ -317,14 +315,14 @@ theorem hasSum_one_div_nat_pow_mul_sin {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
     rw [ofReal_mul]; rw [← mul_div]; congr
     · rw [ofReal_div, ofReal_one, ofReal_pow]; rfl
     · rw [ofReal_sin, ofReal_mul, fourier_coe_apply, fourier_coe_apply, sin, ofReal_one, div_one,
-        div_one, ofReal_mul, ofReal_mul, ofReal_two, Int.cast_neg, Int.cast_ofNat,
-        ofReal_nat_cast, ← div_div, div_I, div_mul_eq_mul_div₀, ← neg_div, ← neg_mul, neg_sub]
+        div_one, ofReal_mul, ofReal_mul, ofReal_two, Int.cast_neg, Int.cast_natCast,
+        ofReal_natCast, ← div_div, div_I, div_mul_eq_mul_div₀, ← neg_div, ← neg_mul, neg_sub]
       congr 4
       · ring
       · ring
   · convert (ofReal_re _).symm
     rw [ofReal_mul, ofReal_div, ofReal_div, ofReal_mul, ofReal_pow, ofReal_pow, ofReal_neg,
-      ofReal_nat_cast, ofReal_mul, ofReal_two, ofReal_one, ← div_div, div_I,
+      ofReal_natCast, ofReal_mul, ofReal_two, ofReal_one, ← div_div, div_I,
       div_mul_eq_mul_div₀]
     have : ∀ α β γ δ : ℂ, α * I * β / γ * δ * I = I ^ 2 * α * β / γ * δ := by intros; ring
     rw [this, I_sq]
