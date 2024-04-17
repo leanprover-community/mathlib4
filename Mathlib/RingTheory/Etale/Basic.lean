@@ -184,7 +184,7 @@ section Comp
 variable (R A B)
 variable [Algebra A B] [IsScalarTower R A B]
 
-/-- Etale is stable under composition. -/
+/-- Étale is stable under composition. -/
 theorem comp [Etale R A] [Etale A B] : Etale R B where
   formallyEtale := FormallyEtale.comp R A B
   finitePresentation := FinitePresentation.trans (A := A) Etale.finitePresentation
