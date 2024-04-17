@@ -51,7 +51,7 @@ instance Set.instTietzeExtensionUnitBall {𝕜 : Type v} [RCLike 𝕜] {E : Type
 instance Set.instTietzeExtensionUnitClosedBall {𝕜 : Type v} [RCLike 𝕜] {E : Type w}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] :
     TietzeExtension.{u, w} (Metric.closedBall (0 : E) 1) := by
-  have : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
+  let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   have : IsScalarTower ℝ 𝕜 E := Real.isScalarTower
   -- I didn't find this retract in Mathlib.
   let g : E → E := fun x ↦ ‖x‖⁻¹ • x

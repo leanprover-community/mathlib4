@@ -97,7 +97,7 @@ theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
 -- The parallelepiped associated to an orthonormal basis of `ℝ` is either `[0, 1]` or `[-1, 0]`.
 theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ) :
     parallelepiped b = Icc 0 1 ∨ parallelepiped b = Icc (-1) 0 := by
-  have e : ι ≃ Fin 1 := by
+  let e : ι ≃ Fin 1 := by
     apply Fintype.equivFinOfCardEq
     simp only [← finrank_eq_card_basis b.toBasis, finrank_self]
   have B : parallelepiped (b.reindex e) = parallelepiped b := by

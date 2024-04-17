@@ -850,7 +850,7 @@ irreducible_def stdOrthonormalBasis : OrthonormalBasis (Fin (finrank 𝕜 E)) �
 /-- An orthonormal basis of `ℝ` is made either of the vector `1`, or of the vector `-1`. -/
 theorem orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ) :
     (⇑b = fun _ => (1 : ℝ)) ∨ ⇑b = fun _ => (-1 : ℝ) := by
-  have : Unique ι := b.toBasis.unique
+  let _ : Unique ι := b.toBasis.unique
   have : b default = 1 ∨ b default = -1 := by
     have : ‖b default‖ = 1 := b.orthonormal.1 _
     rwa [Real.norm_eq_abs, abs_eq (zero_le_one' ℝ)] at this
@@ -932,7 +932,7 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
   -- Build an isometry from Sᗮ to L(S)ᗮ through `EuclideanSpace`
   let d := finrank 𝕜 Sᗮ
   let LS := LinearMap.range L.toLinearMap
-  have E : Sᗮ ≃ₗᵢ[𝕜] LSᗮ := by
+  let E : Sᗮ ≃ₗᵢ[𝕜] LSᗮ := by
     have dim_LS_perp : finrank 𝕜 LSᗮ = d :=
       calc
         finrank 𝕜 LSᗮ = finrank 𝕜 V - finrank 𝕜 LS := by

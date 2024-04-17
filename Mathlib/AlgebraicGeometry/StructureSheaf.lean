@@ -706,7 +706,7 @@ theorem locally_const_basicOpen (U : Opens (PrimeSpectrum.Top R))
   rw [← pow_succ, Ideal.mem_span_singleton'] at hn
   cases' hn with c hc
   have basic_opens_eq := PrimeSpectrum.basicOpen_pow h (n + 1) (by omega)
-  have i_basic_open := eqToHom basic_opens_eq ≫ homOfLE hDhV
+  let i_basic_open := eqToHom basic_opens_eq ≫ homOfLE hDhV
   -- We claim that `(f * c) / h ^ (n+1)` is our desired representation
   use f * c, h ^ (n + 1), i_basic_open ≫ iVU, (basic_opens_eq.symm.le : _) hxDh
   rw [op_comp, Functor.map_comp] --, comp_apply, ← s_eq, res_const]

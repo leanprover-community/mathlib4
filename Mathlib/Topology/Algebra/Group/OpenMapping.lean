@@ -53,7 +53,7 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
   let F : ℕ × s → Set X := fun p ↦ (K p.1 ∩ (p.2 : G) • V) • ({x} : Set X)
   obtain ⟨⟨n, ⟨g, hg⟩⟩, hi⟩ : ∃ i, (interior (F i)).Nonempty := by
     have : Nonempty X := ⟨x⟩
-    have : Encodable s := Countable.toEncodable s_count
+    let _ : Encodable s := Countable.toEncodable s_count
     apply nonempty_interior_of_iUnion_of_closed
     · rintro ⟨n, ⟨g, hg⟩⟩
       apply IsCompact.isClosed

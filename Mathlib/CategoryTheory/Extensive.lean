@@ -421,12 +421,12 @@ theorem finitaryExtensive_of_reflective
     [∀ X Y (f : X ⟶ Gl.obj Y), PreservesLimit (cospan (Gr.map f) (adj.unit.app Y)) Gl]
     [PreservesPullbacksOfInclusions Gl] :
     FinitaryExtensive D := by
-  have : PreservesColimitsOfSize Gl := adj.leftAdjointPreservesColimits
+  let _ : PreservesColimitsOfSize Gl := adj.leftAdjointPreservesColimits
   constructor
   intros X Y c hc
   apply (IsVanKampenColimit.precompose_isIso_iff
     (isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom).mp
-  have : ∀ (Z : C) (i : Discrete WalkingPair) (f : Z ⟶ (colimit.cocone (pair X Y ⋙ Gr)).pt),
+  let _ : ∀ (Z : C) (i : Discrete WalkingPair) (f : Z ⟶ (colimit.cocone (pair X Y ⋙ Gr)).pt),
         PreservesLimit (cospan f ((colimit.cocone (pair X Y ⋙ Gr)).ι.app i)) Gl := by
     have : pair X Y ⋙ Gr = pair (Gr.obj X) (Gr.obj Y) := by
       apply Functor.hext
@@ -466,7 +466,7 @@ theorem finitaryExtensive_of_preserves_and_reflects (F : C ⥤ D) [FinitaryExten
   constructor
   intros X Y c hc
   refine IsVanKampenColimit.of_iso ?_ (hc.uniqueUpToIso (coprodIsCoprod X Y)).symm
-  have (i : Discrete WalkingPair) (Z : C) (f : Z ⟶ X ⨿ Y) :
+  let _ (i : Discrete WalkingPair) (Z : C) (f : Z ⟶ X ⨿ Y) :
     PreservesLimit (cospan f ((BinaryCofan.mk coprod.inl coprod.inr).ι.app i)) F := by
     rcases i with ⟨_|_⟩ <;> dsimp <;> infer_instance
   refine (FinitaryExtensive.vanKampen _

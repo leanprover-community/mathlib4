@@ -67,7 +67,7 @@ instance [DecidableEq ι] [DecidableEq α] : Decidable (SupIndep s f) := by
   rintro t -
   refine @Finset.decidableDforallFinset _ _ _ (?_)
   rintro i -
-  have : Decidable (Disjoint (f i) (sup t f)) := decidable_of_iff' (_ = ⊥) disjoint_iff
+  let _ : Decidable (Disjoint (f i) (sup t f)) := decidable_of_iff' (_ = ⊥) disjoint_iff
   infer_instance
 
 theorem SupIndep.subset (ht : t.SupIndep f) (h : s ⊆ t) : s.SupIndep f := fun _ hu _ hi =>

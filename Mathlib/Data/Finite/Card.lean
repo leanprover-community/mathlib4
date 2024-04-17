@@ -36,7 +36,7 @@ variable {α β γ : Type*}
 
 /-- There is (noncomputably) an equivalence between a finite type `α` and `Fin (Nat.card α)`. -/
 def Finite.equivFin (α : Type*) [Finite α] : α ≃ Fin (Nat.card α) := by
-  have := (Finite.exists_equiv_fin α).choose_spec.some
+  let this := (Finite.exists_equiv_fin α).choose_spec.some
   rwa [Nat.card_eq_of_equiv_fin this]
 #align finite.equiv_fin Finite.equivFin
 
@@ -218,8 +218,8 @@ namespace Finite
 variable {s t : Set α} (ht : t.Finite)
 
 theorem card_lt_card (hsub : s ⊂ t) : Nat.card s < Nat.card t := by
-  have : Fintype t := Finite.fintype ht
-  have : Fintype s := Finite.fintype (subset ht (subset_of_ssubset hsub))
+  let _ : Fintype t := Finite.fintype ht
+  let _ : Fintype s := Finite.fintype (subset ht (subset_of_ssubset hsub))
   simp only [Nat.card_eq_fintype_card]
   exact Set.card_lt_card hsub
 

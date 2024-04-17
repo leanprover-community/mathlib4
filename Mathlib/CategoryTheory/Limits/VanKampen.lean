@@ -313,8 +313,8 @@ theorem IsUniversalColimit.map_reflective
     [∀ X (f : X ⟶ Gl.obj c.pt), HasPullback (Gr.map f) (adj.unit.app c.pt)]
     [∀ X (f : X ⟶ Gl.obj c.pt), PreservesLimit (cospan (Gr.map f) (adj.unit.app c.pt)) Gl] :
     IsUniversalColimit (Gl.mapCocone c) := by
-  have := adj.rightAdjointPreservesLimits
-  have : PreservesColimitsOfSize.{u', v'} Gl := adj.leftAdjointPreservesColimits
+  let _ := adj.rightAdjointPreservesLimits
+  let _ : PreservesColimitsOfSize.{u', v'} Gl := adj.leftAdjointPreservesColimits
   intros F' c' α f h hα hc'
   have : HasPullback (Gl.map (Gr.map f)) (Gl.map (adj.unit.app c.pt)) :=
     ⟨⟨_, isLimitPullbackConeMapOfIsLimit _ pullback.condition
@@ -384,7 +384,7 @@ theorem IsUniversalColimit.map_reflective
     rw [← IsIso.eq_comp_inv] at this
     rw [this]
     infer_instance
-  have ⟨Hc''⟩ := H c'' (whiskerRight α' Gr) pullback.snd ?_ (hα'.whiskerRight Gr) ?_
+  let ⟨Hc''⟩ := H c'' (whiskerRight α' Gr) pullback.snd ?_ (hα'.whiskerRight Gr) ?_
   · exact ⟨IsColimit.precomposeHomEquiv β c' <|
       (isColimitOfPreserves Gl Hc'').ofIsoColimit (asIso cf).symm⟩
   · ext j
@@ -416,8 +416,8 @@ theorem IsVanKampenColimit.map_reflective [HasColimitsOfShape J C]
     [∀ X (f : X ⟶ Gl.obj c.pt), PreservesLimit (cospan (Gr.map f) (adj.unit.app c.pt)) Gl]
     [∀ X i (f : X ⟶ c.pt), PreservesLimit (cospan f (c.ι.app i)) Gl] :
     IsVanKampenColimit (Gl.mapCocone c) := by
-  have := adj.rightAdjointPreservesLimits
-  have : PreservesColimitsOfSize.{u', v'} Gl := adj.leftAdjointPreservesColimits
+  let _ := adj.rightAdjointPreservesLimits
+  let _ : PreservesColimitsOfSize.{u', v'} Gl := adj.leftAdjointPreservesColimits
   intro F' c' α f h hα
   refine ⟨?_, H.isUniversal.map_reflective adj c' α f h hα⟩
   intro ⟨hc'⟩ j
@@ -486,8 +486,8 @@ theorem hasStrictInitial_of_isUniversal [HasInitial C]
 
 theorem isVanKampenColimit_of_isEmpty [HasStrictInitialObjects C] [IsEmpty J] {F : J ⥤ C}
     (c : Cocone F) (hc : IsColimit c) : IsVanKampenColimit c := by
-  have : IsInitial c.pt := by
-    have := (IsColimit.precomposeInvEquiv (Functor.uniqueFromEmpty _) _).symm
+  let this : IsInitial c.pt := by
+    let this := (IsColimit.precomposeInvEquiv (Functor.uniqueFromEmpty _) _).symm
       (hc.whiskerEquivalence (equivalenceOfIsEmpty (Discrete PEmpty.{1}) J))
     exact IsColimit.ofIsoColimit this (Cocones.ext (Iso.refl c.pt) (fun {X} ↦ isEmptyElim X))
   replace this := IsInitial.isVanKampenColimit this

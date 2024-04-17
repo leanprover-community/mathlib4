@@ -94,8 +94,8 @@ in terms of the pairwise distances between the points in that
 combination. -/
 theorem dist_affineCombination {ι : Type*} {s : Finset ι} {w₁ w₂ : ι → ℝ} (p : ι → P)
     (h₁ : ∑ i in s, w₁ i = 1) (h₂ : ∑ i in s, w₂ i = 1) : by
-      have a₁ := s.affineCombination ℝ p w₁
-      have a₂ := s.affineCombination ℝ p w₂
+      let a₁ := s.affineCombination ℝ p w₁
+      let a₂ := s.affineCombination ℝ p w₂
       exact dist a₁ a₂ * dist a₁ a₂ = (-∑ i₁ in s, ∑ i₂ in s,
         (w₁ - w₂) i₁ * (w₁ - w₂) i₂ * (dist (p i₁) (p i₂) * dist (p i₁) (p i₂))) / 2 := by
   dsimp only

@@ -42,7 +42,7 @@ theorem Fintype.card_eq_card_units_add_one [GroupWithZero α] [Fintype α] [Deci
 
 theorem Nat.card_eq_card_units_add_one [GroupWithZero α] [Finite α] :
     Nat.card α = Nat.card αˣ + 1 := by
-  have : Fintype α := Fintype.ofFinite α
+  let _ : Fintype α := Fintype.ofFinite α
   classical
     rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card, Fintype.card_eq_card_units_add_one]
 

@@ -1482,7 +1482,7 @@ theorem sqrt : @Primrec' 1 fun v => v.head.sqrt := by
     have :=
       @prec' 1 _ _
         (fun v => by
-          have x := v.head; have y := v.tail.head;
+          let x := v.head; let y := v.tail.head;
             exact if x.succ < y.succ * y.succ then y else y.succ)
         head (const 0) ?_
     · exact this

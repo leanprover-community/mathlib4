@@ -332,7 +332,7 @@ theorem card_sylow_modEq_one [Fact p.Prime] [Fintype (Sylow p G)] :
         _ ↔ Q.1 = P.1 := ⟨P.3 Q.2, ge_of_eq⟩
         _ ↔ Q ∈ {P} := Sylow.ext_iff.symm.trans Set.mem_singleton_iff.symm
 
-  have fin : Fintype (fixedPoints P.1 (Sylow p G)) := by
+  let fin : Fintype (fixedPoints P.1 (Sylow p G)) := by
     rw [this]
     infer_instance
   have : card (fixedPoints P.1 (Sylow p G)) = 1 := by simp [this]
@@ -552,7 +552,7 @@ theorem card_quotient_normalizer_modEq_card_quotient [Fintype G] {p : ℕ} {n : 
   normalizer of `H` is congruent mod `p ^ (n + 1)` to the cardinality of `G`.  -/
 theorem card_normalizer_modEq_card [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact p.Prime] {H : Subgroup G}
     (hH : Fintype.card H = p ^ n) : card (normalizer H) ≡ card G [MOD p ^ (n + 1)] := by
-  have : H.subgroupOf (normalizer H) ≃ H := (subgroupOfEquivOfLe le_normalizer).toEquiv
+  let this : H.subgroupOf (normalizer H) ≃ H := (subgroupOfEquivOfLe le_normalizer).toEquiv
   rw [card_eq_card_quotient_mul_card_subgroup H,
     card_eq_card_quotient_mul_card_subgroup (H.subgroupOf (normalizer H)), Fintype.card_congr this,
     hH, pow_succ']

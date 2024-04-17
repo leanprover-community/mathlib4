@@ -433,7 +433,7 @@ theorem Zlattice.FG [hs : IsZlattice K L] : AddSubgroup.FG L := by
       rw [← hs.span_top, ← h_span]
       exact span_mono (by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, subset_rfl]))
     rw [show span ℤ s = span ℤ (Set.range b) by simp [b, Basis.coe_mk, Subtype.range_coe_subtype]]
-    have : Fintype s := h_lind.setFinite.fintype
+    let _ : Fintype s := h_lind.setFinite.fintype
     refine Set.Finite.of_finite_image (f := ((↑) : _ →  E) ∘ Zspan.quotientEquiv b) ?_
       (Function.Injective.injOn (Subtype.coe_injective.comp (Zspan.quotientEquiv b).injective) _)
     have : Set.Finite ((Zspan.fundamentalDomain b) ∩ L) :=
@@ -479,7 +479,7 @@ instance instModuleFinite_of_discrete_addSubgroup {E : Type*} [NormedAddCommGrou
 
 theorem Zlattice.module_free [IsZlattice K L] : Module.Free ℤ L := by
   have : Module.Finite ℤ L := module_finite K L
-  have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
+  let _ : Module ℚ E := Module.compHom E (algebraMap ℚ K)
   have : NoZeroSMulDivisors ℤ E := RatModule.noZeroSMulDivisors
   have : NoZeroSMulDivisors ℤ L := by
     change NoZeroSMulDivisors ℤ (AddSubgroup.toIntSubmodule L)
@@ -489,7 +489,7 @@ theorem Zlattice.module_free [IsZlattice K L] : Module.Free ℤ L := by
 instance instModuleFree__of_discrete_addSubgroup {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : AddSubgroup E) [DiscreteTopology L] :
     Module.Free ℤ L := by
-  have : Module ℚ E := Module.compHom E (algebraMap ℚ ℝ)
+  let _ : Module ℚ E := Module.compHom E (algebraMap ℚ ℝ)
   have : NoZeroSMulDivisors ℤ E := RatModule.noZeroSMulDivisors
   have : NoZeroSMulDivisors ℤ L := by
     change NoZeroSMulDivisors ℤ (AddSubgroup.toIntSubmodule L)
@@ -500,7 +500,7 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
   classical
   have : Module.Finite ℤ L := module_finite K L
   have : Module.Free ℤ L := module_free K L
-  have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
+  let _ : Module ℚ E := Module.compHom E (algebraMap ℚ K)
   let b₀ := Module.Free.chooseBasis ℤ L
   -- Let `b` be a `ℤ`-basis of `L` formed of vectors of `E`
   let b := Subtype.val ∘ b₀
@@ -528,7 +528,7 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
     obtain ⟨t, ⟨ht_inc, ⟨ht_span, ht_lin⟩⟩⟩ := exists_linearIndependent K (Set.range b)
     -- `e` is a `K`-basis of `E` formed of vectors of `b`
     let e : Basis t K E := Basis.mk ht_lin (by simp [ht_span, h_spanE])
-    have : Fintype t := Set.Finite.fintype ((Set.range b).toFinite.subset ht_inc)
+    let _ : Fintype t := Set.Finite.fintype ((Set.range b).toFinite.subset ht_inc)
     have h : LinearIndependent ℤ (fun x : (Set.range b) => (x : E)) := by
       rwa [linearIndependent_subtype_range (Subtype.coe_injective.comp b₀.injective)]
     contrapose! h
@@ -587,7 +587,7 @@ def Basis.ofZlatticeBasis :
   have : Finite ℤ L := Zlattice.module_finite K L
   have : Free ℤ L := Zlattice.module_free K L
   let e :=  Basis.indexEquiv (Free.chooseBasis ℤ L) b
-  have : Fintype ι := Fintype.ofEquiv _ e
+  let _ : Fintype ι := Fintype.ofEquiv _ e
   refine basisOfTopLeSpanOfCardEqFinrank (L.subtype.toIntLinearMap ∘ b) ?_ ?_
   · rw [← span_span_of_tower ℤ, Set.range_comp, ← map_span, Basis.span_eq, Submodule.map_top,
       top_le_iff, AddMonoidHom.coe_toIntLinearMap_range, AddSubgroup.subtype_range,

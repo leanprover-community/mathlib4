@@ -1850,7 +1850,7 @@ variable {c : Cardinal}
 /-- **König's theorem** -/
 theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f < prod g :=
   lt_of_not_ge fun ⟨F⟩ => by
-    have : Inhabited (∀ i : ι, (g i).out) := by
+    let _ : Inhabited (∀ i : ι, (g i).out) := by
       refine' ⟨fun i => Classical.choice <| mk_ne_zero_iff.1 _⟩
       rw [mk_out]
       exact (H i).ne_bot

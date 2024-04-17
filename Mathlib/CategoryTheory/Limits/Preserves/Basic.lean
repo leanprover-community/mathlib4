@@ -239,7 +239,7 @@ def preservesLimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅
     PreservesLimit K₂ F where
   preserves {c} t := by
     apply IsLimit.postcomposeInvEquiv (isoWhiskerRight h F : _) _ _
-    have := (IsLimit.postcomposeInvEquiv h c).symm t
+    let this := (IsLimit.postcomposeInvEquiv h c).symm t
     apply IsLimit.ofIsoLimit (isLimitOfPreserves F this)
     exact Cones.ext (Iso.refl _)
 #align category_theory.limits.preserves_limit_of_iso_diagram CategoryTheory.Limits.preservesLimitOfIsoDiagram
@@ -268,7 +268,7 @@ def preservesLimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : J 
   preservesLimit {K} :=
     { preserves := fun {c} t => by
         let equ := e.invFunIdAssoc (K ⋙ F)
-        have := (isLimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
+        let this := (isLimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
         apply ((IsLimit.postcomposeHomEquiv equ _).symm this).ofIsoLimit
         refine' Cones.ext (Iso.refl _) fun j => _
         · dsimp
@@ -307,7 +307,7 @@ def preservesColimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ �
     PreservesColimit K₂ F where
   preserves {c} t := by
     apply IsColimit.precomposeHomEquiv (isoWhiskerRight h F : _) _ _
-    have := (IsColimit.precomposeHomEquiv h c).symm t
+    let this := (IsColimit.precomposeHomEquiv h c).symm t
     apply IsColimit.ofIsoColimit (isColimitOfPreserves F this)
     exact Cocones.ext (Iso.refl _)
 #align category_theory.limits.preserves_colimit_of_iso_diagram CategoryTheory.Limits.preservesColimitOfIsoDiagram
@@ -337,7 +337,7 @@ def preservesColimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : 
     {
       preserves := fun {c} t => by
         let equ := e.invFunIdAssoc (K ⋙ F)
-        have := (isColimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
+        let this := (isColimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
         apply ((IsColimit.precomposeInvEquiv equ _).symm this).ofIsoColimit
         refine' Cocones.ext (Iso.refl _) fun j => _
         · dsimp

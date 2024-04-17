@@ -83,7 +83,7 @@ def preservesLimitOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
     [Category.{w₂} J] (K : J ⥤ C)
     (h : PreservesLimit K (F ⋙ Action.forget V G)) : PreservesLimit K F := by
   let F' : C ⥤ SingleObj G ⥤ V := F ⋙ (Action.functorCategoryEquivalence V G).functor
-  have : PreservesLimit K F' := SingleObj.preservesLimit _ _ h
+  let _ : PreservesLimit K F' := SingleObj.preservesLimit _ _ h
   apply preservesLimitOfReflectsOfPreserves F (Action.functorCategoryEquivalence V G).functor
 
 /-- `F : C ⥤ Action V G` preserves limits of some shape `J`
@@ -122,7 +122,7 @@ def preservesColimitOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
     [Category.{w₂} J] (K : J ⥤ C)
     (h : PreservesColimit K (F ⋙ Action.forget V G)) : PreservesColimit K F := by
   let F' : C ⥤ SingleObj G ⥤ V := F ⋙ (Action.functorCategoryEquivalence V G).functor
-  have : PreservesColimit K F' := SingleObj.preservesColimit _ _ h
+  let _ : PreservesColimit K F' := SingleObj.preservesColimit _ _ h
   apply preservesColimitOfReflectsOfPreserves F (Action.functorCategoryEquivalence V G).functor
 
 /-- `F : C ⥤ Action V G` preserves colimits of some shape `J`
@@ -164,7 +164,7 @@ noncomputable instance {J : Type w₁} [Category.{w₂} J] [HasColimitsOfShape J
 noncomputable instance [HasFiniteLimits V] : PreservesFiniteLimits (Action.forget V G) := by
   show PreservesFiniteLimits ((Action.functorCategoryEquivalence V G).functor ⋙
     (evaluation (SingleObj G) V).obj (SingleObj.star G))
-  have : PreservesFiniteLimits ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
+  let _ : PreservesFiniteLimits ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
     constructor
     intro _ _ _
     infer_instance
@@ -173,7 +173,7 @@ noncomputable instance [HasFiniteLimits V] : PreservesFiniteLimits (Action.forge
 noncomputable instance [HasFiniteColimits V] : PreservesFiniteColimits (Action.forget V G) := by
   show PreservesFiniteColimits ((Action.functorCategoryEquivalence V G).functor ⋙
     (evaluation (SingleObj G) V).obj (SingleObj.star G))
-  have : PreservesFiniteColimits ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
+  let _ : PreservesFiniteColimits ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
     constructor
     intro _ _ _
     infer_instance

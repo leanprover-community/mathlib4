@@ -343,7 +343,7 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
     (H : IsOpen (f '' SetLike.coe U)) : (pullbackObj f ℱ).obj (op U) ≅ ℱ.obj (op ⟨_, H⟩) := by
   let x : CostructuredArrow (Opens.map f).op (op U) := CostructuredArrow.mk
     (@homOfLE _ _ _ ((Opens.map f).obj ⟨_, H⟩) (Set.image_preimage.le_u_l _)).op
-  have hx : IsTerminal x :=
+  let hx : IsTerminal x :=
     { lift := fun s ↦ by
         fapply CostructuredArrow.homMk
         change op (unop _) ⟶ op (⟨_, H⟩ : Opens _)
