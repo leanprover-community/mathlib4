@@ -747,6 +747,43 @@ lemma coe_ofIsEmpty [IsEmpty α] : (ofIsEmpty : α ↪o β) = (isEmptyElim : α 
 
 end OrderEmbedding
 
+section Disjoint
+
+variable [PartialOrder α] [PartialOrder β] (f : OrderEmbedding α β)
+
+/-- If the images by an order embedding of two elements are disjoint, then they are themselves
+disjoint. -/
+lemma Disjoint.of_orderEmbedding [OrderBot α] [OrderBot β] {a₁ a₂ : α} :
+    Disjoint (f a₁) (f a₂) → Disjoint a₁ a₂ := by
+  simp_rw [Disjoint]
+  intro h x h₁ h₂
+  have hx₁ : f x ≤ f a₁ := (OrderEmbedding.le_iff_le f).mpr h₁
+  have hx₂ : f x ≤ f a₂ := (OrderEmbedding.le_iff_le f).mpr h₂
+  have hxb : f x ≤ ⊥ := h hx₁ hx₂
+  have hxeb : f x ≤ e ⊥ := le_trans hxb (OrderBot.bot_le (e ⊥))
+  exact (OrderEmbedding.le_iff_le e).mp hxeb
+
+/-- If the images by an order embedding of two elements are codisjoint, then they are themselves
+codisjoint. -/
+lemma Codisjoint.of_orderEmbedding [OrderTop α] [OrderTop β] (e : OrderEmbedding α β) {a₁ a₂ : α} :
+    Codisjoint (e a₁) (e a₂) → Codisjoint a₁ a₂ := by
+  simp_rw [Codisjoint]
+  intro h x h₁ h₂
+  have hx₁ : e a₁ ≤ e x := (OrderEmbedding.le_iff_le e).mpr h₁
+  have hx₂ : e a₂ ≤ e x := (OrderEmbedding.le_iff_le e).mpr h₂
+  have hxt : ⊤ ≤ e x := h hx₁ hx₂
+  have hxet : e ⊤ ≤ e x := le_trans (OrderTop.le_top (e ⊤)) hxt
+  exact (OrderEmbedding.le_iff_le e).mp hxet
+
+/-- If the images by an order embedding of two elements are complements, then they are themselves
+complements. -/
+lemma IsCompl.of_orderEmbedding [BoundedOrder α] [BoundedOrder β] (e : OrderEmbedding α β)
+    {a₁ a₂ : α} : IsCompl (e a₁) (e a₂) → IsCompl a₁ a₂ := by
+  intro ⟨hd, hcd⟩
+  exact ⟨Disjoint.of_orderEmbedding e hd, Codisjoint.of_orderEmbedding e hcd⟩
+
+end Disjoint
+
 section RelHom
 
 variable [PartialOrder α] [Preorder β]
