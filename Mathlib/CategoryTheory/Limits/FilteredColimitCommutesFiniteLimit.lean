@@ -159,6 +159,7 @@ open CategoryTheory.Prod
 
 variable [IsFiltered K]
 
+set_option linter.haveLet false in  -- `clear_value` complains
 /-- This follows this proof from
 * Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
 although with different names.
@@ -187,6 +188,7 @@ theorem colimitLimitToLimitColimit_surjective :
     -- As a first step, we use that `K` is filtered to pick some point `k' : K` above all the `k j`
     let k' : K := IsFiltered.sup (Finset.univ.image k) ∅
     -- and name the morphisms as `g j : k j ⟶ k'`.
+    -- changing `have` to `let` causes `clear_value k'` to complain
     have g : ∀ j, k j ⟶ k' := fun j => IsFiltered.toSup (Finset.univ.image k) ∅ (by simp)
     clear_value k'
     -- Recalling that the components of `x`, which are indexed by `j : J`, are "coherent",

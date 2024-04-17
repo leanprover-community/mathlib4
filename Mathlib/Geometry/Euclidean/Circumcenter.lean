@@ -210,7 +210,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
         simp? [Set.singleton_subset_iff] at hdist says
           simp only [Set.singleton_subset_iff, Metric.mem_sphere, dist_self] at hdist
         rw [hi default, hdist]
-    · have i := hne.some
+    · let i := hne.some
       let ι2 := { x // x ≠ i }
       have hc : Fintype.card ι2 = m + 1 := by
         rw [Fintype.card_of_subtype (Finset.univ.filter fun x => x ≠ i)]
@@ -364,7 +364,7 @@ theorem circumradius_pos {n : ℕ} (s : Simplex ℝ P (n + 1)) : 0 < s.circumrad
 /-- The circumcenter of a 0-simplex equals its unique point. -/
 theorem circumcenter_eq_point (s : Simplex ℝ P 0) (i : Fin 1) : s.circumcenter = s.points i := by
   have h := s.circumcenter_mem_affineSpan
-  have : Unique (Fin 1) := ⟨⟨0, by decide⟩, fun a => by simp only [Fin.eq_zero]⟩
+  let _ : Unique (Fin 1) := ⟨⟨0, by decide⟩, fun a => by simp only [Fin.eq_zero]⟩
   simp only [Set.range_unique, AffineSubspace.mem_affineSpan_singleton] at h
   rw [h]
   congr

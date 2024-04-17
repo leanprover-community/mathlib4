@@ -156,7 +156,7 @@ always a two-sided prime ideal, but mathlib's `Ideal.IsPrime` is not the correct
 for noncommutative rings. -/
 theorem IsSimpleModule.annihilator_isMaximal {R} [CommRing R] [Module R M]
     [simple : IsSimpleModule R M] : (Module.annihilator R M).IsMaximal := by
-  have ⟨I, max, ⟨e⟩⟩ := isSimpleModule_iff_quot_maximal.mp simple
+  let ⟨I, max, ⟨e⟩⟩ := isSimpleModule_iff_quot_maximal.mp simple
   rwa [e.annihilator_eq, I.annihilator_quotient]
 
 theorem isSimpleModule_iff_toSpanSingleton_surjective : IsSimpleModule R M ↔

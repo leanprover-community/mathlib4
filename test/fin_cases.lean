@@ -30,6 +30,7 @@ example (x2 : Fin 2) (x3 : Fin 3) : True := by
   fin_cases x2, x3
   all_goals trivial
 
+set_option linter.haveLet false in
 -- Checking that `fin_cases` can handle a metavariable for the type
 example (p : ℕ) (h2 : 2 < p) (h5 : p < 5) : p = 3 ∨ p = 4 := by
   have hp : ?_ := ?foo

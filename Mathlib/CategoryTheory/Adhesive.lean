@@ -320,8 +320,8 @@ theorem adhesive_of_reflective [HasPullbacks D] [Adhesive C] [HasPullbacks C] [H
     {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Gr.Full] [Gr.Faithful]
     [PreservesLimitsOfShape WalkingCospan Gl] :
     Adhesive D := by
-  have := adj.leftAdjointPreservesColimits
-  have := adj.rightAdjointPreservesLimits
+  let _ := adj.leftAdjointPreservesColimits
+  let _ := adj.rightAdjointPreservesLimits
   apply Adhesive.mk (hasPushout_of_mono_left := H₂)
   intro W X Y Z f g h i _ H
   have := Adhesive.van_kampen (IsPushout.of_hasPushout (Gr.map f) (Gr.map g))

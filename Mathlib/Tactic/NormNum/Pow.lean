@@ -157,7 +157,7 @@ theorem isRat_pow {α} [Ring α] {f : α → ℕ → α} {a : α} {an cn : ℤ} 
     Int.pow an b' = cn → Nat.pow ad b' = cd →
     IsRat (f a b) cn cd := by
   rintro rfl ⟨_, rfl⟩ ⟨rfl⟩ (rfl : an ^ b = _) (rfl : ad ^ b = _)
-  have := invertiblePow (ad:α) b
+  let this := invertiblePow (ad:α) b
   rw [← Nat.cast_pow] at this
   use this; simp [invOf_pow, Commute.mul_pow]
 

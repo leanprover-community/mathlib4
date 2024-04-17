@@ -463,7 +463,7 @@ lemma homologyMap_eq :
     homologyMap φ = h₁.homologyIso.hom ≫ γ.φH ≫ h₂.homologyIso.inv := by
   dsimp [homologyMap, homologyMap', RightHomologyData.homologyIso,
     rightHomologyIso, RightHomologyData.rightHomologyIso]
-  have γ' : HomologyMapData φ S₁.homologyData S₂.homologyData := default
+  let γ' : HomologyMapData φ S₁.homologyData S₂.homologyData := default
   simp only [← γ.rightHomologyMap'_eq, assoc, ← rightHomologyMap'_comp_assoc,
     id_comp, comp_id, γ'.left.leftHomologyMap'_eq, γ'.right.rightHomologyMap'_eq, ← γ'.comm_assoc,
     Iso.hom_inv_id]
@@ -1028,7 +1028,7 @@ lemma homologyMap'_op : (homologyMap' φ h₁ h₂).op =
     h₂.iso.inv.op ≫ homologyMap' (opMap φ) h₂.op h₁.op ≫ h₁.iso.hom.op :=
   Quiver.Hom.unop_inj (by
     dsimp
-    have γ : HomologyMapData φ h₁ h₂ := default
+    let γ : HomologyMapData φ h₁ h₂ := default
     simp only [γ.homologyMap'_eq, γ.op.homologyMap'_eq, HomologyData.op_left,
       HomologyMapData.op_left, RightHomologyMapData.op_φH, Quiver.Hom.unop_op, assoc,
       ← γ.comm_assoc, Iso.hom_inv_id, comp_id])

@@ -57,7 +57,7 @@ theorem effectiveEpi_iff_quotientMap {B X : TopCat.{u}} (π : X ⟶ B) :
   /- Since `TopCat` has pullbacks, `π` is in fact a `RegularEpi`. This means that it exhibits `B` as
     a coequalizer of two maps into `X`. It suffices to prove that `π` followed by the isomorphism to
     an arbitrary coequalizer is a quotient map. -/
-  have hπ : RegularEpi π := inferInstance
+  let hπ : RegularEpi π := inferInstance
   let F := parallelPair hπ.left hπ.right
   let i : B ≅ colimit F := hπ.isColimit.coconePointUniqueUpToIso (colimit.isColimit _)
   suffices QuotientMap (homeoOfIso i ∘ π) by

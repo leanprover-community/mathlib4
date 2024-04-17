@@ -788,7 +788,7 @@ theorem lift_down' {a : Cardinal.{u}} {b : Ordinal.{max u v}}
         rw [card_type, ← Cardinal.lift_id'.{max u v, u} #β, ← Cardinal.lift_umax.{u, v},
           lift_mk_eq.{u, max u v, max u v}] at e'
         cases' e' with f
-        have g := RelIso.preimage f s
+        let g := RelIso.preimage f s
         haveI := (g : f ⁻¹'o s ↪r s).isWellOrder
         have := lift_type_eq.{u, max u v, max u v}.2 ⟨g⟩
         rw [lift_id, lift_umax.{u, v}] at this
@@ -1346,7 +1346,7 @@ theorem ord_le {c o} : ord c ≤ o ↔ c ≤ o.card :=
           let ⟨f⟩ := h
           ⟨f.toEmbedding⟩
       · cases' h with f
-        have g := RelEmbedding.preimage f s
+        let g := RelEmbedding.preimage f s
         haveI := RelEmbedding.isWellOrder g
         exact le_trans (ord_le_type _) g.ordinal_type_le
 #align cardinal.ord_le Cardinal.ord_le

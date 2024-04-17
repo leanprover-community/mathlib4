@@ -697,7 +697,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         IsSupported x s ∧
           ∀ [DecidablePred (· ∈ s)],
             lift (fun ix : s => f' ix.1.1 j (H ix ix.2) ix.1.2) (restriction s x) = (0 : G j) := by
-  have := Classical.decEq
+  let _ := Classical.decEq
   refine' span_induction (Ideal.Quotient.eq_zero_iff_mem.1 H) _ _ _ _
   · rintro x (⟨i, j, hij, x, rfl⟩ | ⟨i, rfl⟩ | ⟨i, x, y, rfl⟩ | ⟨i, x, y, rfl⟩)
     · refine'

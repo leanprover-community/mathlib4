@@ -112,8 +112,8 @@ lemma card_image_le (hs : s.Finite) : Nat.card (f '' s) ≤ Nat.card s :=
 lemma card_image_of_injOn (hf : s.InjOn f) : Nat.card (f '' s) = Nat.card s := by
   classical
   obtain hs | hs := s.finite_or_infinite
-  · have := hs.fintype
-    have := fintypeImage s f
+  · let _ := hs.fintype
+    let _ := fintypeImage s f
     simp_rw [Nat.card_eq_fintype_card, Set.card_image_of_inj_on hf]
   · have := hs.to_subtype
     have := (hs.image hf).to_subtype
@@ -166,8 +166,8 @@ theorem card_eq_two_iff' (x : α) : Nat.card α = 2 ↔ ∃! y, y ≠ x :=
 
 @[simp]
 theorem card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + Nat.card β := by
-  have := Fintype.ofFinite α
-  have := Fintype.ofFinite β
+  let _ := Fintype.ofFinite α
+  let _ := Fintype.ofFinite β
   simp_rw [Nat.card_eq_fintype_card, Fintype.card_sum]
 
 @[simp]

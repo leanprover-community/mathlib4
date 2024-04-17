@@ -59,7 +59,7 @@ def Functor.sheafPullback : Sheaf J A ⥤ Sheaf K A :=
 #align category_theory.sites.pushforward CategoryTheory.Functor.sheafPullback
 
 instance [RepresentablyFlat G] : PreservesFiniteLimits (G.sheafPullback A J K) := by
-  have : PreservesFiniteLimits (lan (Functor.op G) ⋙ presheafToSheaf K A) :=
+  let _ : PreservesFiniteLimits (lan (Functor.op G) ⋙ presheafToSheaf K A) :=
     compPreservesFiniteLimits _ _
   apply compPreservesFiniteLimits
 

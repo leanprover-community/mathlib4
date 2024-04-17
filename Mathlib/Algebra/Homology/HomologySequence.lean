@@ -171,11 +171,11 @@ lemma opcycles_right_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.E
     (ShortComplex.mk (opcyclesMap S.f i) (opcyclesMap S.g i)
       (by rw [← opcyclesMap_comp, S.zero, opcyclesMap_zero])).Exact := by
   have : Epi (ShortComplex.map S (eval C c i)).g := by dsimp; infer_instance
-  have hj := (hS.map (HomologicalComplex.eval C c i)).gIsCokernel
+  let hj := (hS.map (HomologicalComplex.eval C c i)).gIsCokernel
   apply ShortComplex.exact_of_g_is_cokernel
   refine' CokernelCofork.IsColimit.ofπ' _ _  (fun {A} k hk => by
     dsimp at k hk ⊢
-    have H := CokernelCofork.IsColimit.desc' hj (S.X₂.pOpcycles i ≫ k) (by
+    let H := CokernelCofork.IsColimit.desc' hj (S.X₂.pOpcycles i ≫ k) (by
       dsimp
       rw [← p_opcyclesMap_assoc, hk, comp_zero])
     dsimp at H
@@ -193,11 +193,11 @@ lemma cycles_left_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exac
     (ShortComplex.mk (cyclesMap S.f i) (cyclesMap S.g i)
       (by rw [← cyclesMap_comp, S.zero, cyclesMap_zero])).Exact := by
   have : Mono (ShortComplex.map S (eval C c i)).f := by dsimp; infer_instance
-  have hi := (hS.map (HomologicalComplex.eval C c i)).fIsKernel
+  let hi := (hS.map (HomologicalComplex.eval C c i)).fIsKernel
   apply ShortComplex.exact_of_f_is_kernel
   exact KernelFork.IsLimit.ofι' _ _ (fun {A} k hk => by
     dsimp at k hk ⊢
-    have H := KernelFork.IsLimit.lift' hi (k ≫ S.X₂.iCycles i) (by
+    let H := KernelFork.IsLimit.lift' hi (k ≫ S.X₂.iCycles i) (by
       dsimp
       rw [assoc, ← cyclesMap_i, reassoc_of% hk, zero_comp])
     dsimp at H
@@ -292,7 +292,7 @@ lemma homology_exact₂ : (ShortComplex.mk (HomologicalComplex.homologyMap S.f i
   · have := hS.epi_g
     have : ∀ (K : HomologicalComplex C c), IsIso (K.homologyι i) :=
       fun K => ShortComplex.isIso_homologyι (K.sc i) (K.shape _ _ h)
-    have e : S.map (HomologicalComplex.homologyFunctor C c i) ≅
+    let e : S.map (HomologicalComplex.homologyFunctor C c i) ≅
         S.map (HomologicalComplex.opcyclesFunctor C c i) :=
       ShortComplex.isoMk (asIso (S.X₁.homologyι i))
         (asIso (S.X₂.homologyι i)) (asIso (S.X₃.homologyι i)) (by aesop_cat) (by aesop_cat)

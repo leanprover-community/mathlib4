@@ -1311,10 +1311,10 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
   let eE' : Type max uE' uG uF uP := ULift.{max uG uF uP} E'
   let eF : Type max uF uG uE' uP := ULift.{max uG uE' uP} F
   let eP : Type max uP uG uE' uF := ULift.{max uG uE' uF} P
-  have isoG : eG ≃L[𝕜] G := ContinuousLinearEquiv.ulift
-  have isoE' : eE' ≃L[𝕜] E' := ContinuousLinearEquiv.ulift
-  have isoF : eF ≃L[𝕜] F := ContinuousLinearEquiv.ulift
-  have isoP : eP ≃L[𝕜] P := ContinuousLinearEquiv.ulift
+  let isoG : eG ≃L[𝕜] G := ContinuousLinearEquiv.ulift
+  let isoE' : eE' ≃L[𝕜] E' := ContinuousLinearEquiv.ulift
+  let isoF : eF ≃L[𝕜] F := ContinuousLinearEquiv.ulift
+  let isoP : eP ≃L[𝕜] P := ContinuousLinearEquiv.ulift
   let ef := f ∘ isoG
   let eμ : MeasureTheory.Measure eG := Measure.map isoG.symm μ
   let eg : eP → eG → eE' := fun ep ex => isoE'.symm (g (isoP ep) (isoG ex))
@@ -1332,9 +1332,6 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
       exact hgs _ _ hp hx
     · apply (locallyIntegrable_map_homeomorph isoG.symm.toHomeomorph).2
       convert hf
-      ext1 x
-      simp only [ef, ContinuousLinearEquiv.coe_toHomeomorph, (· ∘ ·),
-        ContinuousLinearEquiv.apply_symm_apply]
     · apply isoE'.symm.contDiff.comp_contDiffOn
       apply hg.comp (isoP.prod isoG).contDiff.contDiffOn
       rintro ⟨p, x⟩ ⟨hp, -⟩
@@ -1355,11 +1352,6 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
     rw [ClosedEmbedding.integral_map, ← isoF.integral_comp_comm]
     swap; · exact isoG.symm.toHomeomorph.closedEmbedding
     congr 1
-    ext1 a
-    simp only [ef, eg, eL, (· ∘ ·), ContinuousLinearEquiv.apply_symm_apply, coe_comp',
-      ContinuousLinearEquiv.prod_apply, ContinuousLinearEquiv.map_sub,
-      ContinuousLinearEquiv.arrowCongr, ContinuousLinearEquiv.arrowCongrSL_symm_apply,
-      ContinuousLinearEquiv.coe_coe, Function.comp_apply, ContinuousLinearEquiv.apply_symm_apply]
   simp_rw [this] at A
   exact A
 #align cont_diff_on_convolution_right_with_param contDiffOn_convolution_right_with_param

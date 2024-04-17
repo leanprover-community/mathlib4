@@ -2,6 +2,7 @@ import Mathlib.Tactic.ProdAssoc
 
 variable {α β γ δ : Type*}
 
+set_option linter.haveLet false in
 example : (α × β) × (γ × δ) ≃ α × (β × γ) × δ := by
   have := (prod_assoc% : (α × β) × (γ × δ) ≃ α × (β × γ) × δ)
   exact this

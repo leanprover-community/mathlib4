@@ -109,7 +109,7 @@ def equivOfTranscendenceBasis [IsAlgClosed K] [IsAlgClosed L] (e : ι ≃ κ)
     (hv : IsTranscendenceBasis R v) (hw : IsTranscendenceBasis R w) : K ≃+* L := by
   letI := isAlgClosure_of_transcendence_basis v hv
   letI := isAlgClosure_of_transcendence_basis w hw
-  have e : Algebra.adjoin R (Set.range v) ≃+* Algebra.adjoin R (Set.range w) := by
+  let e : Algebra.adjoin R (Set.range v) ≃+* Algebra.adjoin R (Set.range w) := by
     refine' hv.1.aevalEquiv.symm.toRingEquiv.trans _
     refine' (AlgEquiv.ofAlgHom (MvPolynomial.rename e)
       (MvPolynomial.rename e.symm) _ _).toRingEquiv.trans _

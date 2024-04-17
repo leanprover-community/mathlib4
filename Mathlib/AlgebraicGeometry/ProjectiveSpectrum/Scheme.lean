@@ -631,7 +631,7 @@ lemma toSpec_fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) (x :
     simp only [smul_eq_mul, SetLike.coe_gnpow, GradedAlgebra.proj_apply,
       DirectSum.decompose_of_mem_same 𝒜 s_mem]
     by_cases ineq : f^k = 0
-    · have := IsLocalization.uniqueOfZeroMem (M := Submonoid.powers f) (S := Localization.Away f)
+    · let _ := IsLocalization.uniqueOfZeroMem (M := Submonoid.powers f) (S := Localization.Away f)
         ⟨k, ineq⟩
       exact Subsingleton.elim _ _
     · simp_rw [← pow_mul]; congr
@@ -654,7 +654,7 @@ lemma toSpec_fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) (x :
       rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
         HomogeneousLocalization.pow_val, z.eq_num_div_den, Localization.mk_pow]
       by_cases ineq : f^k = 0
-      · have := IsLocalization.uniqueOfZeroMem (M := Submonoid.powers f) (S := Localization.Away f)
+      · let _ := IsLocalization.uniqueOfZeroMem (M := Submonoid.powers f) (S := Localization.Away f)
           ⟨k, ineq⟩
         exact Subsingleton.elim _ _
       · dsimp; congr 2

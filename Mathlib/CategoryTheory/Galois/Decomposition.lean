@@ -87,7 +87,7 @@ private lemma has_decomp_connected_components_aux (F : C ⥤ FintypeCat.{w}) [Fi
     have hn1 : Nat.card (F.obj Y) < n := by
       rw [hn]
       exact ltCardFiber_of_mono_of_notIso F v hvnoiso
-    have i : X ≅ Y ⨿ Z := (colimit.isoColimitCocone t).symm
+    let i : X ≅ Y ⨿ Z := (colimit.isoColimitCocone t).symm
     have hnn : Nat.card (F.obj X) = Nat.card (F.obj Y) + Nat.card (F.obj Z) := by
       rw [cardFiber_eq_of_iso F i]
       exact cardFiber_coprod_eq_sum F Y Z
@@ -126,7 +126,7 @@ variable (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
 lemma fiber_in_connected_component (X : C) (x : F.obj X) : ∃ (Y : C) (i : Y ⟶ X) (y : F.obj Y),
     F.map i y = x ∧ IsConnected Y ∧ Mono i := by
   obtain ⟨ι, f, g, hl, hc, he⟩ := has_decomp_connected_components X
-  have : Fintype ι := Fintype.ofFinite ι
+  let _ : Fintype ι := Fintype.ofFinite ι
   let s : Cocone (Discrete.functor f ⋙ F) := F.mapCocone (Cofan.mk X g)
   let s' : IsColimit s := isColimitOfPreserves F hl
   obtain ⟨⟨j⟩, z, h⟩ := Concrete.isColimit_exists_rep _ s' x

@@ -338,7 +338,7 @@ theorem strongEpi_map_iff_strongEpi_of_isEquivalence [IsEquivalence F] :
     StrongEpi (F.map f) ↔ StrongEpi f := by
   constructor
   · intro
-    have e : Arrow.mk f ≅ Arrow.mk (F.inv.map (F.map f)) :=
+    let e : Arrow.mk f ≅ Arrow.mk (F.inv.map (F.map f)) :=
       Arrow.isoOfNatIso F.asEquivalence.unitIso (Arrow.mk f)
     rw [StrongEpi.iff_of_arrow_iso e]
     infer_instance

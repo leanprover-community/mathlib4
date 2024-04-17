@@ -63,7 +63,7 @@ theorem hasKernels [PreservesFiniteLimits G] : HasKernels C :=
 /-- No point making this an instance, as it requires `i` and `adj`. -/
 theorem hasCokernels : HasCokernels C :=
   { has_colimit := fun f => by
-      have : PreservesColimits G := adj.leftAdjointPreservesColimits
+      let _ : PreservesColimits G := adj.leftAdjointPreservesColimits
       have := NatIso.naturality_1 i f
       simp? at this says
         simp only [Functor.id_obj, Functor.comp_obj, Functor.comp_map, Functor.id_map] at this
@@ -78,7 +78,7 @@ variable [Limits.HasCokernels C]
 def cokernelIso {X Y : C} (f : X ⟶ Y) : G.obj (cokernel (F.map f)) ≅ cokernel f := by
   -- We have to write an explicit `PreservesColimits` type here,
   -- as `leftAdjointPreservesColimits` has universe variables.
-  have : PreservesColimits G := adj.leftAdjointPreservesColimits
+  let _ : PreservesColimits G := adj.leftAdjointPreservesColimits
   calc
     G.obj (cokernel (F.map f)) ≅ cokernel (G.map (F.map f)) :=
       (asIso (cokernelComparison _ G)).symm
@@ -92,7 +92,7 @@ variable [Limits.HasKernels C] [PreservesFiniteLimits G]
 /-- Auxiliary construction for `coimageIsoImage` -/
 def coimageIsoImageAux {X Y : C} (f : X ⟶ Y) :
     kernel (G.map (cokernel.π (F.map f))) ≅ kernel (cokernel.π f) := by
-  have : PreservesColimits G := adj.leftAdjointPreservesColimits
+  let _ : PreservesColimits G := adj.leftAdjointPreservesColimits
   calc
     kernel (G.map (cokernel.π (F.map f))) ≅
         kernel (cokernel.π (G.map (F.map f)) ≫ cokernelComparison (F.map f) G) :=
@@ -118,7 +118,7 @@ variable [Functor.PreservesZeroMorphisms F]
 We still need to check that this agrees with the canonical morphism.
 -/
 def coimageIsoImage {X Y : C} (f : X ⟶ Y) : Abelian.coimage f ≅ Abelian.image f := by
-  have : PreservesLimits F := adj.rightAdjointPreservesLimits
+  let _ : PreservesLimits F := adj.rightAdjointPreservesLimits
   calc
     Abelian.coimage f ≅ cokernel (kernel.ι f) := Iso.refl _
     _ ≅ G.obj (cokernel (F.map (kernel.ι f))) := (cokernelIso _ _ i adj _).symm

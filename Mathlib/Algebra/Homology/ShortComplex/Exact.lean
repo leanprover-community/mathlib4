@@ -550,7 +550,7 @@ lemma ext_s (s s' : S.Splitting) (h : s.s = s'.s) : s = s' := by
 @[simps]
 noncomputable def leftHomologyData [HasZeroObject C] (s : S.Splitting) :
     LeftHomologyData S := by
-  have hi := KernelFork.IsLimit.ofι S.f S.zero
+  let hi := KernelFork.IsLimit.ofι S.f S.zero
     (fun x _ => x ≫ s.r)
     (fun x hx => by simp only [assoc, s.r_f, comp_sub, comp_id,
       sub_eq_self, reassoc_of% hx, zero_comp])
@@ -562,7 +562,7 @@ noncomputable def leftHomologyData [HasZeroObject C] (s : S.Splitting) :
     erw [Fork.IsLimit.lift_ι hi]
     simp only [Fork.ι_ofι, id_comp]
   have wπ : f' ≫ (0 : S.X₁ ⟶ 0) = 0 := comp_zero
-  have hπ : IsColimit (CokernelCofork.ofπ 0 wπ) := CokernelCofork.IsColimit.ofEpiOfIsZero _
+  let hπ : IsColimit (CokernelCofork.ofπ 0 wπ) := CokernelCofork.IsColimit.ofEpiOfIsZero _
       (by rw [hf']; infer_instance) (isZero_zero _)
   exact
     { K := S.X₁
@@ -578,7 +578,7 @@ noncomputable def leftHomologyData [HasZeroObject C] (s : S.Splitting) :
 @[simps]
 noncomputable def rightHomologyData [HasZeroObject C] (s : S.Splitting) :
     RightHomologyData S := by
-  have hp := CokernelCofork.IsColimit.ofπ S.g S.zero
+  let hp := CokernelCofork.IsColimit.ofπ S.g S.zero
     (fun x _ => s.s ≫ x)
     (fun x hx => by simp only [s.g_s_assoc, sub_comp, id_comp, sub_eq_self, assoc, hx, comp_zero])
     (fun x _ b hb => by simp only [← hb, s.s_g_assoc])
@@ -589,7 +589,7 @@ noncomputable def rightHomologyData [HasZeroObject C] (s : S.Splitting) :
     erw [Cofork.IsColimit.π_desc hp]
     simp only [Cofork.π_ofπ, comp_id]
   have wι : (0 : 0 ⟶ S.X₃) ≫ g' = 0 := zero_comp
-  have hι : IsLimit (KernelFork.ofι 0 wι) := KernelFork.IsLimit.ofMonoOfIsZero _
+  let hι : IsLimit (KernelFork.ofι 0 wι) := KernelFork.IsLimit.ofMonoOfIsZero _
       (by rw [hg']; dsimp; infer_instance) (isZero_zero _)
   exact
     { Q := S.X₃
